@@ -10,6 +10,7 @@ import { requireUser, requireAccount } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as L from '../services/lessons.js';
+import * as F from '../services/game-folders.js';
 import * as games from '../services/games.js';
 import { publish } from '../services/publish.js';
 import { draftLesson } from '../services/lesson-ai.js';
@@ -410,11 +411,27 @@ export function teacherLessonsPanel(req, c) {
         <form data-api="/api/class-lessons/${cl.id}/delete" data-reload data-confirm="${t('lessons.class.unassignConfirm', { name: cl.title })}"><button class="btn btn-sm btn-danger" type="submit">${t('lessons.class.unassign')}</button></form>
       </div></details></span></li>`;
   };
-  const readyMade = html`<nav class="chips readymade" id="ready-made" aria-label="${t('folders.courses')}"><span class="ajump-l">${t('folders.courses')}</span><a class="chip" href="/teachers/number-quest">🔢 ${t('lessons.library.numberQuest')}</a><a class="chip" href="/teach/cs-quest?school=${c.school_id}">💻 ${t('cs.program.title')}</a><a class="chip" href="/teach/cyber-defenders">🦉 ${t('teach.cd.title')}</a></nav>`;
-  const acts = html`<div class="row emptyacts"><a class="btn btn-primary" href="/build/new" id="cl-newgame">✨ ${t('build.newGame')}</a><a class="btn" href="/build">📁 ${t('folders.assignMine')}</a><a class="btn" href="/learn">🦉 ${t('folders.findOomba')}</a></div>`;
-  return html`<section class="panel" id="lessons" aria-labelledby="ls-h"><h2 id="ls-h" class="sr-only">🎮 ${t('folders.assigned')}</h2>
-    ${count ? '' : html`<div class="empty"><div class="emo" aria-hidden="true">🎮</div><h3>${t('folders.classEmpty')}</h3>${staff ? html`<p>${t('folders.classEmptyText')}</p>${acts}${readyMade}` : ''}</div>`}
-    ${count ? html`<div class="cl-tools"><div class="cl-more">${staff ? acts : ''}${gcLessonsButton(req, c)}</div>${staff ? readyMade : ''}</div>` : html`<div class="cl-tools"><div class="cl-more">${gcLessonsButton(req, c)}</div></div>`}
+  // The Games tab, top to bottom (owner, 18 Nov 2026: "the organization [must be] perfect on both desktop and mobile"):
+  // a toolbar (New folder, Build new game, Find Oomba games; Google Classroom at the end), the teacher's folders on a row
+  // of their own, then the assigned games (or one line saying there are none). New folder opens as a small panel under
+  // its button, so the toolbar never reflows; on a phone the toolbar's buttons stack full width.
+  const folders = staff ? F.foldersOf(u.id) : [];
+  const gc = gcLessonsButton(req, c);
+  const bar = staff || gc ? html`<div class="cl-bar">
+      ${staff ? html`<div class="cl-acts">
+        <details class="cl-nf"><summary class="btn">📁 ${t('folders.new')}</summary>
+          <form class="cl-nf-panel" data-api="/api/game-folders" novalidate><label for="cl-gf-name">${t('folders.name')}</label>
+            <div class="row"><input class="input grow" id="cl-gf-name" name="name" maxlength="60" placeholder="${t('folders.namePlaceholder')}" required>
+            <button class="btn btn-primary" type="submit">${t('folders.create')}</button></div></form></details>
+        <a class="btn btn-primary" href="/build/new" id="cl-newgame">✨ ${t('folders.buildNew')}</a>
+        <a class="btn" href="/learn">🦉 ${t('folders.findOomba')}</a></div>` : ''}
+      ${gc ? html`<div class="cl-side">${gc}</div>` : ''}</div>` : '';
+  const shelf = folders.length ? html`<nav class="cl-folders" aria-labelledby="cl-folders-h"><h3 id="cl-folders-h" class="cl-sub">📁 ${t('folders.title')}</h3>
+      <ul class="plain gfo-list">${folders.map(fd => html`<li><a class="gfo-chip" href="/build/folders/${fd.id}">📁 <b dir="auto">${fd.name}</b> <span class="muted">${fd.games}</span></a></li>`)}</ul></nav>` : '';
+  return html`<section class="panel cl-games" id="lessons" aria-labelledby="ls-h"><h2 id="ls-h" class="sr-only">🎮 ${t('folders.assigned')}</h2>
+    ${bar}${shelf}
+    <h3 class="cl-sub cl-assigned-h">📌 ${t('folders.assigned')}</h3>
+    ${count ? '' : html`<div class="cl-none"><span class="emo" aria-hidden="true">🎮</span><div><b>${t('folders.classEmpty')}</b>${staff ? html`<p class="small muted">${t('folders.classEmptyText')}</p>` : ''}</div></div>`}
     ${plan.map((g, gi) => g.unit || g.lessons.length ? html`<div class="unit">
       ${g.unit ? html`<div class="unit-head"><h3>🗂️ ${g.unit.name}</h3><span class="acts">
         ${gi > 1 ? html`<form data-api="/api/class-units/${g.unit.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${gi < plan.length - 1 ? html`<form data-api="/api/class-units/${g.unit.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
@@ -432,7 +449,7 @@ export function studentLessonsPanel(req, c) {
   const done = P.studentSummary(c.id, req.user.id);
   const doneN = cl => Math.min(done[cl.id] || 0, cl.steps);
   const state = cl => { const d = doneN(cl); return cl.steps && d >= cl.steps ? html`<span class="stepstate is-done">✅ ${t('progress.status.done')}</span>` : d ? html`<span class="stepstate">${t('progress.student.doneOf', { done: d, total: cl.steps })}</span>` : ''; };
-  if (!plan.length) return html`<section class="panel">${emptyState({ emoji: '📚', title: t('classes.noLessons'), text: t('classes.noLessonsText') })}</section>`;
+  if (!plan.length) return html`<section class="panel">${emptyState({ emoji: '🎮', title: t('folders.classEmpty'), text: t('folders.studentEmptyText') })}</section>`;
   return html`<section class="panel" aria-labelledby="sl-h"><h2 id="sl-h">📌 ${t('folders.assigned')}</h2>${plan.map(g => html`<div class="unit">
     ${g.unit ? html`<h3>🗂️ ${g.unit.name}</h3>` : ''}
     <ol class="plain cl-list">${g.lessons.map(cl => html`<li class="cl-row"><a class="cl-main" href="/class/${c.id}/lessons/${cl.id}"><b dir="auto">${cl.title}</b>

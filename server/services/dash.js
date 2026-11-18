@@ -105,7 +105,7 @@ TOOL_WORDS.fractions.push('mode', 'modeCompare', 'modeAdd', 'modeSub', 'modeMul'
 TOOL_WORDS.fractions.push('partsOf');
 // Fractions, dividing as measuring: Show the answer, typing an answer to check, Fit one more and the working's steps.
 TOOL_WORDS.fractions.push('show', 'yourAnswer', 'check', 'checkRight', 'checkSimplify', 'checkNo', 'checkUnread', 'fitOne', 'again',
-  'fitSoFar', 'fitPart', 'fitAll', 'stepNext', 'stepHide', 'stepCommon', 'stepRename', 'stepAddTops', 'stepSubTops', 'stepGrid',
+  'fitSoFar', 'fitPart', 'fitAll', 'stepNext', 'stepBack', 'stepClear', 'stepCleared', 'stepHide', 'stepCommon', 'stepRename', 'stepAddTops', 'stepSubTops', 'stepGrid',
   'stepShade', 'stepOverlap', 'stepKeep', 'stepChange', 'stepFlip', 'stepTimes');
 // Fractions, equations (docs/decisions.md "Classroom dashboards: fractions, equations"): a student's Build it equation
 // (the answer bar, its parts and wholes) and the note when + goes past a fraction's limit.

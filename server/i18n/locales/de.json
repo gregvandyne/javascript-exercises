@@ -9761,6 +9761,9 @@
         "fitPart": "{n} passen, und {f} von einem weiteren.",
         "fitAll": "Genau {n} passen.",
         "stepNext": "Nächster Schritt",
+        "stepBack": "Einen Schritt zurück",
+        "stepClear": "Schritte löschen",
+        "stepCleared": "Schritte gelöscht.",
         "stepHide": "Schritte ausblenden",
         "stepCommon": "Gleicher Nenner: {n}",
         "stepRename": "Umschreiben: {a} und {b}",
@@ -10981,7 +10984,7 @@
     "scores": "Punkte",
     "courses": "Fertige Kurse",
     "classEmpty": "Noch keine Spiele zugewiesen",
-    "classEmptyText": "Baue ein Spiel mit dem Baukasten oder weise eines aus deinen Ordnern oder von Oomba zu. Fertige Kurse findest du unten.",
+    "classEmptyText": "Baue ein Spiel oder weise eines aus deinen Ordnern oder von Oomba zu.",
     "myGamesFolders": "Meine Spiele und Ordner",
     "assignNote": "Die Kinder sehen es auf ihrer Klassenseite. Ihre Punkte stehen im Reiter Zugewiesene Spiele der Klasse.",
     "errors": {
@@ -11000,6 +11003,11 @@
     "copy": "In meine Ordner kopieren",
     "sharedToast": "Mit deiner Schule geteilt",
     "unsharedToast": "Nicht mehr geteilt",
-    "copied": "In deine Ordner kopiert"
+    "copied": "In deine Ordner kopiert",
+    "buildNew": "Neues Spiel bauen",
+    "progressEmptyText": "Weise im Reiter Spiele ein Spiel zu, dann siehst du hier, wie es bei jedem Kind läuft.",
+    "studentEmptyText": "Deine Lehrkraft fügt hier Spiele hinzu.",
+    "liveHistory": "Bisherige Live-Spiele",
+    "liveHistoryNone": "Noch keine Live-Spiele mit dieser Klasse."
   }
 }

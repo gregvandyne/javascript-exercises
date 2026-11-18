@@ -120,13 +120,15 @@ router.get('/build/save', requireUser, (req, res) => {
   const list = F.foldersOf(u.id), have = F.foldersWith(u.id, g.id);
   const body = html`<div class="pagehead"><h1>📁 ${t('folders.saveTitle', { game: gl.title })}</h1></div>
   <section class="panel gfo-save" aria-labelledby="gs-h"><h2 id="gs-h" class="sr-only">${t('folders.title')}</h2>
-    ${list.length ? html`<ul class="plain gfo-pick">${list.map(f => html`<li class="row"><span class="grow">📁 <b dir="auto">${f.name}</b> <span class="small muted">${t('folders.gamesN', { count: f.games })}</span></span>
-      ${have.has(f.id) ? html`<span class="chip-s good">✅ ${t('folders.saved')}</span><form data-api="/api/game-folders/${f.id}/games/${g.id}/delete" data-reload><button class="btn btn-sm" type="submit">${t('folders.removeGame')}</button></form>`
-        : html`<form data-api="/api/game-folders/${f.id}/games" data-reload><input type="hidden" name="gameId" value="${g.id}"><button class="btn btn-sm btn-primary" type="submit">📁 ${t('folders.addHere')}</button></form>`}</li>`)}</ul>`
+    ${list.length ? html`<ul class="plain gfo-pick">${list.map(f => html`<li class="${have.has(f.id) ? 'is-in' : ''}">
+      <span class="gfo-fname"><b dir="auto">📁 ${f.name}</b><span class="small muted">${have.has(f.id) ? `✅ ${t('folders.saved')} · ` : ''}${t('folders.gamesN', { count: f.games })}</span></span>
+      ${have.has(f.id) ? html`<form class="gfo-fact" data-api="/api/game-folders/${f.id}/games/${g.id}/delete" data-reload><button class="btn btn-sm" type="submit">${t('folders.removeGame')}</button></form>`
+        : html`<form class="gfo-fact" data-api="/api/game-folders/${f.id}/games" data-reload><input type="hidden" name="gameId" value="${g.id}"><button class="btn btn-sm btn-primary" type="submit">📁 ${t('folders.addHere')}</button></form>`}</li>`)}</ul>`
       : html`<p class="muted">${t('folders.none')}</p>`}
-    <form class="row gfo-newsave" data-api="/api/game-folders" data-reload novalidate><input type="hidden" name="gameId" value="${g.id}">
-      <label class="sr-only" for="gs-name">${t('folders.name')}</label><input class="input grow" id="gs-name" name="name" maxlength="60" placeholder="${t('folders.namePlaceholder')}" required>
-      <button class="btn" type="submit">➕ ${t('folders.newWithGame')}</button></form>
+    <form class="gfo-newsave" data-api="/api/game-folders" data-reload novalidate><input type="hidden" name="gameId" value="${g.id}">
+      <label for="gs-name">➕ ${t('folders.new')}</label>
+      <div class="row"><input class="input grow" id="gs-name" name="name" maxlength="60" placeholder="${t('folders.namePlaceholder')}" required>
+      <button class="btn" type="submit">${t('folders.newWithGame')}</button></div></form>
     <p class="row"><a class="btn btn-ghost" href="${playHref(u, g)}">▶ ${t('game.play')}</a><a class="btn btn-ghost" href="/build">🛠️ ${t('nav.build')}</a></p>
   </section>`;
   page(req, res, { title: t('folders.saveTitle', { game: gl.title }), active: 'build', back: '/build', backLabel: t('nav.build'), body, head: CSS });

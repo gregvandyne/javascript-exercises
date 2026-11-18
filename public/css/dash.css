@@ -576,6 +576,9 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
   .dash-wb{container-type:inline-size;overflow:visible;flex:none;height:auto!important}
   /* the ring on a phone: the widget is as tall as its content, so the ring's area is given a height (most of the width) */
   .dw-ring{flex:none;height:min(76cqi,340px)}
+  /* the graphic organizer on a phone: each box as tall as its text (no tall empty boxes, nothing scrolls inside a box) */
+  .dash-wb .dt-org-seq .dt-orggrid,.dash-wb .dt-org-main .dt-orggrid{grid-template-rows:none;grid-auto-rows:minmax(3.4em,auto);overflow:visible}
+  .dash-wb .dt-org-seq .dt-orgl,.dash-wb .dt-org-main .dt-orgl{overflow:visible}
   .dash-tools{position:static;margin-top:var(--s2);box-shadow:none;background:var(--card-2);max-width:none}
   .dash-tray{top:auto;inset-inline:var(--s3);width:auto;margin-top:var(--s2);position:relative}
   .dash-hint{display:none}
@@ -832,7 +835,6 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dt-fdo{flex:none;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 8px;max-width:100%}
 .dt-fsteps{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 6px;min-width:0}
 .dt-fstep{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 4px;border-radius:999px;background:color-mix(in srgb,var(--line) 55%,var(--card));font-weight:700;font-size:.92rem;line-height:1.2}
-.dt-fstep-n{padding:3px;position:relative}
 .dt-fstepn{display:inline-grid;place-items:center;min-width:1.5em;height:1.5em;border-radius:50%;background:var(--text);color:var(--card);font-size:.875rem}
 .dt-ffb{font-weight:800;font-size:clamp(.95rem,min(5.5cqh,3.6cqi),1.3rem)}
 .dt-ffb.is-right{color:var(--ok)}
@@ -1369,7 +1371,7 @@ html.gb-maxed,html.gb-maxed body{overflow:hidden}
 /* Review: written in where it is. Inputs look like the words they hold; a box's text area lies over its list (the same
    type) and shows while the box is being written in. */
 .dt-orgin{display:block;width:100%;padding:0 4px;margin:0;border:0;border-radius:6px;background:transparent;color:inherit;font-family:inherit;line-height:1.25;text-overflow:clip}
-input.dt-orgtitle{font-weight:800}
+textarea.dt-orgtitle{font-weight:800;resize:none;overflow:hidden;text-align:center;line-height:1.25;white-space:pre-wrap}
 input.dt-orgh{font-weight:800}
 .dt-orgin::placeholder{color:inherit;opacity:1}
 input.dt-orgtitle::placeholder{color:var(--muted)}
@@ -1908,6 +1910,8 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 .dt-feqctl .dt-steplab{text-align:end;max-width:12em}
 .dt-feqctl .dt-pm{min-width:44px;min-height:44px}
 .dt-feqhint{margin:0;color:var(--text-2);font-size:.9rem;text-align:center;max-width:36em}
+/* a short widget: the one-line how-to above already says what to do, so the longer hint gives way first */
+@container (max-height:600px){.dt-feqhint{display:none}.dt-feqb{gap:10px}}
 /* the fraction operations' note when + goes past a fraction's limit */
 .dt-flimit{margin:0 auto 4px;padding:8px 12px;border-radius:12px;background:#FFF4CC;color:#3b2f00;font-weight:600;font-size:clamp(.82rem,min(4.6cqh,2.6cqi),1rem);line-height:1.35;text-align:start;max-width:40em;overflow-wrap:anywhere}
 @media (max-width:719px){
@@ -1979,7 +1983,9 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 .dash-projector .dt-stepsl li,.dash-projector .dt-stepssum,.dash-projector .dt-stepsbox .dt-stepst{font-size:1.1rem}
 .dt-stepsl.is-compact{display:flex;flex-wrap:wrap;gap:6px}
 .dt-stepsl.is-compact li{flex:1 1 100%}
-.dt-stepsl.is-compact li.dt-fstep-n{flex:none;display:inline-grid;grid-template-columns:1.6em;background:none;padding:0}
+.dt-stepsl.is-compact li.dt-fstep-sm{font-size:.82rem;opacity:.85}
+.dt-fstepacts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.dt-stepsbody .dt-fstepacts .dt-fstepbtn{margin-top:0}
 .dt-stepsbox .dt-fstep{background:none;padding:0;border-radius:0}
 /* Number rods: "Longer rod [20 ▾]" at the end of the tray, Turn/Copy/Delete by the chosen rod */
 .dt .dt-rbtn.dt-rlongadd{width:auto;padding:0 6px}

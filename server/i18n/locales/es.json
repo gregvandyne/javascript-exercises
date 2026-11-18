@@ -9760,6 +9760,9 @@
         "fitPart": "Caben {n} y {f} de otra.",
         "fitAll": "Caben exactamente {n}.",
         "stepNext": "Siguiente paso",
+        "stepBack": "Un paso atrás",
+        "stepClear": "Borrar los pasos",
+        "stepCleared": "Pasos borrados.",
         "stepHide": "Ocultar los pasos",
         "stepCommon": "Mismo denominador: {n}",
         "stepRename": "Reescribir: {a} y {b}",
@@ -10980,7 +10983,7 @@
     "scores": "Puntuaciones",
     "courses": "Cursos listos",
     "classEmpty": "Aún no hay juegos asignados",
-    "classEmptyText": "Crea un juego con el Creador, o asigna uno de tus carpetas o de los juegos de Oomba. Los cursos listos están abajo.",
+    "classEmptyText": "Crea un juego o asigna uno de tus carpetas o de los juegos de Oomba.",
     "myGamesFolders": "Mis juegos y carpetas",
     "assignNote": "Los alumnos lo ven en la página de su clase. Sus puntuaciones están en la pestaña Juegos asignados de la clase.",
     "errors": {
@@ -10999,6 +11002,11 @@
     "copy": "Copiar a mis carpetas",
     "sharedToast": "Compartida con tu escuela",
     "unsharedToast": "Ya no se comparte",
-    "copied": "Copiada a tus carpetas"
+    "copied": "Copiada a tus carpetas",
+    "buildNew": "Crear un juego nuevo",
+    "progressEmptyText": "Asigna un juego en la pestaña Juegos y aquí verás cómo le va a cada alumno.",
+    "studentEmptyText": "Tu docente añadirá juegos aquí.",
+    "liveHistory": "Historial de juegos en directo",
+    "liveHistoryNone": "Aún no hay juegos en directo con esta clase."
   }
 }

@@ -9760,6 +9760,9 @@
         "fitPart": "{n} tiennent, plus {f} d’une autre.",
         "fitAll": "Exactement {n} tiennent.",
         "stepNext": "Étape suivante",
+        "stepBack": "Revenir d'une étape",
+        "stepClear": "Effacer les étapes",
+        "stepCleared": "Étapes effacées.",
         "stepHide": "Cacher les étapes",
         "stepCommon": "Même dénominateur : {n}",
         "stepRename": "Réécrire : {a} et {b}",
@@ -10980,7 +10983,7 @@
     "scores": "Scores",
     "courses": "Cours prêts à l'emploi",
     "classEmpty": "Aucun jeu attribué pour l'instant",
-    "classEmptyText": "Crée un jeu avec le Créateur, ou attribues-en un depuis tes dossiers ou les jeux d'Oomba. Les cours prêts à l'emploi sont plus bas.",
+    "classEmptyText": "Crée un jeu, ou attribues-en un depuis tes dossiers ou les jeux d'Oomba.",
     "myGamesFolders": "Mes jeux et dossiers",
     "assignNote": "Les élèves le voient sur la page de leur classe. Leurs scores sont dans l'onglet Jeux attribués de la classe.",
     "errors": {
@@ -10999,6 +11002,11 @@
     "copy": "Copier dans mes dossiers",
     "sharedToast": "Partagé avec ton école",
     "unsharedToast": "N'est plus partagé",
-    "copied": "Copié dans tes dossiers"
+    "copied": "Copié dans tes dossiers",
+    "buildNew": "Créer un nouveau jeu",
+    "progressEmptyText": "Attribue un jeu dans l'onglet Jeux, et tu verras ici où en est chaque élève.",
+    "studentEmptyText": "Ton enseignant ajoutera des jeux ici.",
+    "liveHistory": "Historique des jeux en direct",
+    "liveHistoryNone": "Aucun jeu en direct avec cette classe pour l'instant."
   }
 }

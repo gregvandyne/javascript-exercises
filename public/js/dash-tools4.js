@@ -1040,8 +1040,13 @@ function organizer(body, s, ctx) {
     T.stage.textContent = '';
     const wrap = el('div', `dt-org dt-org-${st.kind}`);
     if (canEdit) {
-      const title = inline(Object.assign(el('input', 'dt-orgtitle dt-orgin'), { maxLength: 60, placeholder: W.title, type: 'text' }), () => st.title, v => { st.title = v.slice(0, 60); }, () => T.stage.querySelector('[data-org="h0"]'));
-      title.dataset.org = 'title'; title.setAttribute('aria-label', W.title); wrap.appendChild(title);
+      // A one-line textarea, not an input, so a long title wraps onto a second line instead of being cut off (phones);
+      // Enter still goes on to the first box, and a pasted line break becomes a space.
+      const title = inline(Object.assign(el('textarea', 'dt-orgtitle dt-orgin'), { maxLength: 60, placeholder: W.title, rows: 1 }), () => st.title, v => { st.title = v.replace(/\s*\n\s*/g, ' ').slice(0, 60); }, () => T.stage.querySelector('[data-org="h0"]'));
+      title.dataset.org = 'title'; title.setAttribute('aria-label', W.title); title.spellcheck = false; wrap.appendChild(title);
+      const fitTitle = () => { title.style.height = 'auto'; title.style.height = `${title.scrollHeight}px`; };
+      title.addEventListener('input', () => { if (/\n/.test(title.value)) { const at = title.selectionStart; title.value = title.value.replace(/\s*\n\s*/g, ' '); title.setSelectionRange(at, at); } fitTitle(); });
+      requestAnimationFrame(fitTitle);
     } else if (st.title) { const h = el('div', 'dt-orgtitle', st.title); h.dir = 'auto'; wrap.appendChild(h); }
     const grid = el('div', 'dt-orggrid'); grid.style.setProperty('--n', st.boxes.length);
     let into = grid, cols = 0;

@@ -164,7 +164,7 @@ test('pages: school console for admins, teacher pages for teachers, student clas
   const reqId = S.pendingRequests(c.id)[0].id;
   assert.equal((await as(elmTeacher)(`/api/join-requests/${reqId}/approve`, { method: 'POST', body: { rosterName: 'Web Kid' } })).status, 404);
   r = await as(rivera)(`/api/join-requests/${reqId}/approve`, { method: 'POST', body: { rosterName: 'Wendy Kidd' } }); assert.equal(r.status, 200);
-  r = await as(kid)(`/class/${c.id}`); assert.equal(r.status, 200); assert.match(r.text, /No lessons yet/);
+  r = await as(kid)(`/class/${c.id}`); assert.equal(r.status, 200); assert.match(r.text, /No games assigned yet/);
   assert.doesNotMatch(r.text, /Wendy Kidd|Lia Park|Omar Diaz/, 'students never see real names');
   assert.match((await as(rivera)(`/class/${c.id}?tab=students`)).text, /Wendy Kidd/);
   // nav: school people get a Classes tab

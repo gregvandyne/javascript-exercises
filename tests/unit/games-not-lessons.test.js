@@ -127,7 +127,8 @@ test('pages: Build shows folders, a folder page, Save to folder, the class page 
   assert.ok(r.json.ok); assert.match(r.json.toast, /Quick picks/);
   const klass = await as(ana)(`/class/${cls.id}`);
   assert.doesNotMatch(klass.text, /Draft with AI|New unit|Lesson library/);
-  assert.match(klass.text, /href="\/build\/new"/); assert.match(klass.text, /Assign from my games/); assert.match(klass.text, /Ready-made courses/);
+  assert.match(klass.text, /href="\/build\/new"/); assert.match(klass.text, /Build new game/); assert.match(klass.text, /New folder/); assert.match(klass.text, /Find Oomba games/);
+  assert.doesNotMatch(klass.text, /Ready-made courses/); assert.match(klass.text, /href="\/build\/folders\//, 'the teacher\'s folders to open');
   assert.match(klass.text, /Fraction Fun/);
   const lib = await as(ana)('/teach/lessons?school=x'); assert.equal(lib.status, 302); assert.equal(lib.location, '/build');
   const assign = await as(ana)(`/teach/assign?id=${draft.id}&class=${cls.id}`);
