@@ -146,7 +146,7 @@ export function privateAddress(ip) {
   return true;
 }
 /** dns.lookup that refuses private addresses (the connection uses exactly the address checked: no rebinding). */
-function safeLookup(host, opts, cb) {
+export function safeLookup(host, opts, cb) {
   dns.lookup(host, { all: true }, (err, list) => {
     if (err) return cb(err);
     const ok = (list || []).filter(a => !privateAddress(a.address));

@@ -9793,10 +9793,12 @@
       },
       "schedule": {
         "name": "Schedule for the day",
-        "desc": "Today's periods, with the one on now lit up.",
+        "desc": "Today's periods, with the one on now lit up. Set a standard week, upload an agenda or connect a calendar.",
         "s": {
           "periods": "Periods",
-          "view": "Show"
+          "view": "Show",
+          "week": "Week",
+          "cal": "Calendar"
         },
         "empty": "Add today's periods in Edit screen.",
         "now": "Now",
@@ -9816,7 +9818,26 @@
           }
         },
         "nothingNext": "Nothing after this",
-        "starts": "Starts at {time}"
+        "starts": "Starts at {time}",
+        "everyDay": "Every day",
+        "sameAsEvery": "{day} uses the Every day schedule.",
+        "ownDay": "Give {day} its own schedule",
+        "backToEvery": "Use the Every day schedule",
+        "upload": "Upload an agenda",
+        "uploadHint": "A calendar file (.ics) fills the week ahead. A .csv or .txt file, or pasted text, takes one line a period, like “8:30–9:15 Reading”; a line with a day's name (Monday) starts that day.",
+        "paste": "Paste an agenda",
+        "pasteHint": "8:30–9:15 Reading\n9:15 Math\n10:00 Recess",
+        "pasteGo": "Use this agenda",
+        "imported": "{n, plural, one {# period added.} other {# periods added.}}",
+        "importedWeek": "Agenda added for {days}.",
+        "importNone": "No times found. Try one line a period, like “8:30–9:15 Reading”, or a calendar file (.ics).",
+        "calLabel": "Connected calendar",
+        "calHint": "Paste the calendar's iCal address",
+        "calConnect": "Connect",
+        "calNote": "Google Calendar: Settings → your calendar → “Secret address in iCal format”. Outlook: Settings → Calendar → Shared calendars → Publish → ICS link. Today's timed events become the schedule, and everyone who sees this widget sees them, so connect a calendar meant for the class. The address itself stays private.",
+        "calRemove": "Disconnect",
+        "calOn": "{name} is connected.",
+        "calToday": "Today's events come from this calendar (checked every 15 minutes). On a day with none, the schedule below is shown."
       },
       "weather": {
         "name": "Weather",
@@ -11033,10 +11054,11 @@
       },
       "jobs": {
         "name": "Class jobs",
-        "desc": "Jobs for everyone, turned each week. Uses the class's Oomba names.",
+        "desc": "Jobs for everyone, turned each week. Uses the class's Oomba names, or names you type.",
         "s": {
           "jobs": "Jobs (one per line; empty for the usual ones)",
-          "crew": "Who does what"
+          "crew": "Who does what",
+          "names": "Students (one per line; empty for the class's students)"
         },
         "rotate": "Next week",
         "shuffle": "Shuffle",
@@ -11044,7 +11066,8 @@
         "shuffled": "Jobs shuffled.",
         "nobody": "No students in this class yet.",
         "open": "Open",
-        "defaults": "Line leader\nDoor holder\nLights\nPlant helper\nBook helper\nTidy-up captain\nMessenger\nBoard cleaner"
+        "defaults": "Line leader\nDoor holder\nLights\nPlant helper\nBook helper\nTidy-up captain\nMessenger\nBoard cleaner",
+        "nobodyTyped": "No students yet: type names under Students in this widget's settings, or add students to the class."
       },
       "mood": {
         "name": "Mood check-in",
@@ -11254,7 +11277,11 @@
       "buildTool": "That tool can't make a Build it set.",
       "buildTargets": "Type or make at least one target.",
       "buildClosed": "That Build it set has ended.",
-      "buildItem": "That target isn't in the set."
+      "buildItem": "That target isn't in the set.",
+      "feedAddress": "That isn't a calendar address. Paste the https:// or webcal:// link to an .ics calendar.",
+      "feedTooMany": "This class has too many connected calendars. Disconnect one first.",
+      "feedNotCalendar": "That address isn't a calendar (.ics) file. Check it's the iCal address, not the calendar's web page.",
+      "feedUnreachable": "We couldn't reach that calendar. Check the address and that the calendar is shared, then try again."
     },
     "tools": {
       "send": "Send to students",

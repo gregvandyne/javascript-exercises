@@ -26,6 +26,7 @@ import { RENDER5, points } from './dash-class5.js';
 import { camera } from './dash-camera.js';
 import { numField } from './dash-num.js';
 import { format } from './i18n-format.js';
+import { periodsFor } from './agenda.js';
 
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 /** Text a person typed: its own direction (an English agenda on a Hebrew page reads left to right). */
@@ -287,10 +288,28 @@ function timer(body, s, ctx) {
 }
 
 // ---------------------------------------------------------------- the day's schedule (the school's time zone)
+// Which list today: the connected calendar's events today (when it has any), else the weekday's own list, else every
+// day's (public/js/agenda.js periodsFor). Redrawn when that choice changes (a new day, the calendar's answer).
 function schedule(body, s, ctx) {
+  let inner = null, key = null;
+  const pick = live => {
+    const cal = s.cal && ((live || ctx.live() || {}).agenda || {})[ctx.id];
+    if (cal && cal.periods && cal.periods.length) return cal.periods;
+    return periodsFor(s, weekdayIn(ctx.tz || 'America/New_York'));
+  };
+  const build = live => {
+    const periods = pick(live), k = JSON.stringify(periods);
+    if (k === key) return; key = k;
+    inner?.destroy?.(); body.textContent = ''; body.classList.remove('dw-sched', 'dw-nownext', 'dw5'); body.style.removeProperty('--nnk');
+    inner = scheduleDay(body, s, ctx, periods);
+  };
+  build();
+  return { tick: () => { build(); inner?.tick?.(); }, live: l => build(l), destroy: () => inner?.destroy?.() };
+}
+const weekdayIn = tz => ({ Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7 })[new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'short' }).format(new Date())] || 1;
+function scheduleDay(body, s, ctx, periods) {
   const W = ctx.type.words;
   body.classList.add('dw-sched');
-  const periods = s.periods || [];
   if (!periods.length) { body.appendChild(el('p', 'dw-empty', ctx.role === 'teacher' ? W.empty : '')); return null; }
   const fmt = new Intl.DateTimeFormat(ctx.intl, { hour: 'numeric', minute: '2-digit', timeZone: 'UTC' });
   const at = hhmm => { const [h, m] = hhmm.split(':').map(Number); return fmt.format(Date.UTC(2020, 0, 1, h, m)); };

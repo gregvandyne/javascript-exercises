@@ -9367,10 +9367,12 @@
       },
       "schedule": {
         "name": "Dagrooster",
-        "desc": "De lessen van vandaag; de les van nu licht op.",
+        "desc": "De lessen van vandaag, met de huidige uitgelicht. Stel een standaardweek in, upload een dagplanning of koppel een agenda.",
         "s": {
           "periods": "Lessen",
-          "view": "Tonen"
+          "view": "Tonen",
+          "week": "Week",
+          "cal": "Agenda"
         },
         "empty": "Voeg de lessen van vandaag toe bij Scherm bewerken.",
         "now": "Nu",
@@ -9390,7 +9392,26 @@
           }
         },
         "nothingNext": "Hierna niets meer",
-        "starts": "Begint om {time}"
+        "starts": "Begint om {time}",
+        "everyDay": "Elke dag",
+        "sameAsEvery": "{day} gebruikt het rooster van elke dag.",
+        "ownDay": "Geef {day} een eigen rooster",
+        "backToEvery": "Rooster van elke dag gebruiken",
+        "upload": "Dagplanning uploaden",
+        "uploadHint": "Een agendabestand (.ics) vult de komende week. Een .csv- of .txt-bestand, of geplakte tekst, gebruikt één regel per les, zoals ‘8:30–9:15 Lezen’; een regel met een dag (maandag) begint die dag.",
+        "paste": "Dagplanning plakken",
+        "pasteHint": "8:30–9:15 Lezen\n9:15 Rekenen\n10:00 Pauze",
+        "pasteGo": "Deze planning gebruiken",
+        "imported": "{n, plural, one {# les toegevoegd.} other {# lessen toegevoegd.}}",
+        "importedWeek": "Dagplanning toegevoegd voor {days}.",
+        "importNone": "Geen tijden gevonden. Probeer één regel per les, zoals ‘8:30–9:15 Lezen’, of een agendabestand (.ics).",
+        "calLabel": "Gekoppelde agenda",
+        "calHint": "Plak het iCal-adres van de agenda",
+        "calConnect": "Koppelen",
+        "calNote": "Google Agenda: Instellingen → je agenda → ‘Geheim adres in iCal-indeling’. Outlook: Instellingen → Agenda → Gedeelde agenda's → Publiceren → ICS-link. De afspraken van vandaag worden het rooster en iedereen die deze widget ziet, ziet ze, dus koppel een agenda die voor de klas bedoeld is. Het adres zelf blijft privé.",
+        "calRemove": "Ontkoppelen",
+        "calOn": "{name} is gekoppeld.",
+        "calToday": "De afspraken van vandaag komen uit deze agenda (elke 15 minuten bekeken). Op een dag zonder afspraken staat het rooster hieronder."
       },
       "weather": {
         "name": "Weer",
@@ -10607,10 +10628,11 @@
       },
       "jobs": {
         "name": "Klassentaken",
-        "desc": "Een taak voor iedereen, die elke week doorschuift. Met de Oomba-namen van de klas.",
+        "desc": "Taken voor iedereen, elke week doorgedraaid. Gebruikt de Oomba-namen van de klas, of namen die je typt.",
         "s": {
           "jobs": "Taken (één op elke regel; leeg voor de gewone)",
-          "crew": "Wie doet wat"
+          "crew": "Wie doet wat",
+          "names": "Leerlingen (één per regel; leeg voor de leerlingen van de klas)"
         },
         "rotate": "Volgende week",
         "shuffle": "Husselen",
@@ -10618,7 +10640,8 @@
         "shuffled": "Taken gehusseld.",
         "nobody": "Nog geen leerlingen in deze klas.",
         "open": "Vrij",
-        "defaults": "Rijleider\nDeurwachter\nLichten\nPlanten\nBoeken\nOpruimbaas\nBoodschapper\nBord schoonmaken"
+        "defaults": "Rijleider\nDeurwachter\nLichten\nPlanten\nBoeken\nOpruimbaas\nBoodschapper\nBord schoonmaken",
+        "nobodyTyped": "Nog geen leerlingen: typ namen bij ‘Leerlingen’ in de instellingen van deze widget, of voeg leerlingen toe aan de klas."
       },
       "mood": {
         "name": "Hoe voel ik me",
@@ -10828,7 +10851,11 @@
       "buildTool": "Met dat hulpmiddel kan geen ‘Bouw het’-reeks.",
       "buildTargets": "Typ of maak minstens één doel.",
       "buildClosed": "Die ‘Bouw het’-reeks is afgelopen.",
-      "buildItem": "Dat doel zit niet in de reeks."
+      "buildItem": "Dat doel zit niet in de reeks.",
+      "feedAddress": "Dat is geen agenda-adres. Plak de https://- of webcal://-link naar een .ics-agenda.",
+      "feedTooMany": "Deze klas heeft te veel gekoppelde agenda's. Ontkoppel er eerst een.",
+      "feedNotCalendar": "Dat adres is geen agendabestand (.ics). Kijk of het het iCal-adres is en niet de webpagina van de agenda.",
+      "feedUnreachable": "We konden die agenda niet bereiken. Controleer het adres en of de agenda gedeeld is, en probeer het opnieuw."
     },
     "tools": {
       "send": "Naar de klas sturen",

@@ -1052,6 +1052,13 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS game_sets (id TEXT PRIMARY KEY, game_id TEXT NOT NULL, owner_id TEXT NOT NULL, items TEXT NOT NULL,
       created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
     CREATE INDEX IF NOT EXISTS idx_game_sets_owner ON game_sets(owner_id, game_id);`],
+  // A calendar a teacher connects to a class's schedule widget (services/dash-calendar.js; docs/decisions.md "Schedule: a
+  // standard week, uploaded agendas, a connected calendar"). The address is a private link, so it lives here, never in
+  // the widget's settings (which pinned widgets send to students): the widget keeps only this row's id and a name.
+  ['0088_dash_feeds', `
+    CREATE TABLE IF NOT EXISTS dash_feeds (id TEXT PRIMARY KEY, class_id TEXT NOT NULL, owner_id TEXT NOT NULL, url TEXT NOT NULL,
+      name TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_dash_feeds_class ON dash_feeds(class_id);`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

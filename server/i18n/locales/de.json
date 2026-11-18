@@ -9367,10 +9367,12 @@
       },
       "schedule": {
         "name": "Tagesplan",
-        "desc": "Die Stunden von heute; die aktuelle leuchtet.",
+        "desc": "Die Stunden von heute, die aktuelle hervorgehoben. Lege eine Standardwoche fest, lade einen Tagesplan hoch oder verbinde einen Kalender.",
         "s": {
           "periods": "Stunden",
-          "view": "Anzeigen"
+          "view": "Anzeigen",
+          "week": "Woche",
+          "cal": "Kalender"
         },
         "empty": "Füge die Stunden von heute unter „Bildschirm bearbeiten“ hinzu.",
         "now": "Jetzt",
@@ -9390,7 +9392,26 @@
           }
         },
         "nothingNext": "Danach kommt nichts mehr",
-        "starts": "Beginnt um {time}"
+        "starts": "Beginnt um {time}",
+        "everyDay": "Jeden Tag",
+        "sameAsEvery": "{day} nutzt den Plan für jeden Tag.",
+        "ownDay": "{day} einen eigenen Plan geben",
+        "backToEvery": "Plan für jeden Tag nutzen",
+        "upload": "Tagesplan hochladen",
+        "uploadHint": "Eine Kalenderdatei (.ics) füllt die kommende Woche. Eine .csv- oder .txt-Datei oder eingefügter Text braucht eine Zeile je Stunde, etwa „8:30–9:15 Lesen“; eine Zeile mit einem Wochentag (Montag) beginnt diesen Tag.",
+        "paste": "Tagesplan einfügen",
+        "pasteHint": "8:30–9:15 Lesen\n9:15 Mathe\n10:00 Pause",
+        "pasteGo": "Diesen Plan nutzen",
+        "imported": "{n, plural, one {# Stunde hinzugefügt.} other {# Stunden hinzugefügt.}}",
+        "importedWeek": "Tagesplan hinzugefügt für {days}.",
+        "importNone": "Keine Uhrzeiten gefunden. Versuche eine Zeile je Stunde, etwa „8:30–9:15 Lesen“, oder eine Kalenderdatei (.ics).",
+        "calLabel": "Verbundener Kalender",
+        "calHint": "iCal-Adresse des Kalenders einfügen",
+        "calConnect": "Verbinden",
+        "calNote": "Google Kalender: Einstellungen → dein Kalender → „Privatadresse im iCal-Format“. Outlook: Einstellungen → Kalender → Freigegebene Kalender → Veröffentlichen → ICS-Link. Die Termine von heute werden zum Plan, und alle, die dieses Widget sehen, sehen sie – verbinde also einen Kalender für die Klasse. Die Adresse selbst bleibt privat.",
+        "calRemove": "Trennen",
+        "calOn": "{name} ist verbunden.",
+        "calToday": "Die Termine von heute kommen aus diesem Kalender (alle 15 Minuten geprüft). An Tagen ohne Termine wird der Plan unten gezeigt."
       },
       "weather": {
         "name": "Wetter",
@@ -10607,10 +10628,11 @@
       },
       "jobs": {
         "name": "Klassendienste",
-        "desc": "Dienste für alle, jede Woche weitergedreht. Mit den Oomba-Namen der Klasse.",
+        "desc": "Dienste für alle, jede Woche weitergedreht. Nutzt die Oomba-Namen der Klasse oder Namen, die du eintippst.",
         "s": {
           "jobs": "Dienste (einer in jeder Zeile; leer für die üblichen)",
-          "crew": "Wer macht was"
+          "crew": "Wer macht was",
+          "names": "Kinder (eines in jeder Zeile; leer für die Kinder der Klasse)"
         },
         "rotate": "Nächste Woche",
         "shuffle": "Mischen",
@@ -10618,7 +10640,8 @@
         "shuffled": "Dienste gemischt.",
         "nobody": "Noch keine Kinder in dieser Klasse.",
         "open": "Frei",
-        "defaults": "Reihenführung\nTürdienst\nLichtdienst\nPflanzendienst\nBücherdienst\nAufräumchef\nBotendienst\nTafeldienst"
+        "defaults": "Reihenführung\nTürdienst\nLichtdienst\nPflanzendienst\nBücherdienst\nAufräumchef\nBotendienst\nTafeldienst",
+        "nobodyTyped": "Noch keine Kinder: Tippe Namen bei „Kinder“ in den Einstellungen dieses Widgets ein oder füge der Klasse Kinder hinzu."
       },
       "mood": {
         "name": "Stimmungsbarometer",
@@ -10828,7 +10851,11 @@
       "buildTool": "Mit diesem Werkzeug geht kein „Bau es“.",
       "buildTargets": "Tippe oder erstelle mindestens ein Ziel.",
       "buildClosed": "Dieses „Bau es“ ist beendet.",
-      "buildItem": "Dieses Ziel gehört nicht dazu."
+      "buildItem": "Dieses Ziel gehört nicht dazu.",
+      "feedAddress": "Das ist keine Kalenderadresse. Füge den https://- oder webcal://-Link zu einem .ics-Kalender ein.",
+      "feedTooMany": "Diese Klasse hat zu viele verbundene Kalender. Trenne zuerst einen.",
+      "feedNotCalendar": "Diese Adresse ist keine Kalenderdatei (.ics). Prüfe, ob es die iCal-Adresse ist und nicht die Webseite des Kalenders.",
+      "feedUnreachable": "Wir konnten den Kalender nicht erreichen. Prüfe die Adresse und ob der Kalender freigegeben ist, und versuche es noch einmal."
     },
     "tools": {
       "send": "An die Klasse senden",

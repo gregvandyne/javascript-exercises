@@ -9368,10 +9368,12 @@
       },
       "schedule": {
         "name": "Horário do dia",
-        "desc": "As aulas de hoje; a que está acontecendo fica em destaque.",
+        "desc": "Os tempos de hoje, com o atual em destaque. Define uma semana tipo, carrega um horário ou liga um calendário.",
         "s": {
           "periods": "Aulas",
-          "view": "Mostrar"
+          "view": "Mostrar",
+          "week": "Semana",
+          "cal": "Calendário"
         },
         "empty": "Adicione as aulas de hoje em Editar tela.",
         "now": "Agora",
@@ -9391,7 +9393,26 @@
           }
         },
         "nothingNext": "Não há nada depois",
-        "starts": "Começa às {time}"
+        "starts": "Começa às {time}",
+        "everyDay": "Todos os dias",
+        "sameAsEvery": "{day} usa o horário de todos os dias.",
+        "ownDay": "Dar a {day} um horário próprio",
+        "backToEvery": "Usar o horário de todos os dias",
+        "upload": "Carregar um horário",
+        "uploadHint": "Um ficheiro de calendário (.ics) preenche a semana seguinte. Um ficheiro .csv ou .txt, ou texto colado, leva uma linha por tempo, como «8:30–9:15 Leitura»; uma linha com um dia (segunda-feira) começa esse dia.",
+        "paste": "Colar um horário",
+        "pasteHint": "8:30–9:15 Leitura\n9:15 Matemática\n10:00 Intervalo",
+        "pasteGo": "Usar este horário",
+        "imported": "{n, plural, one {# tempo adicionado.} other {# tempos adicionados.}}",
+        "importedWeek": "Horário adicionado para {days}.",
+        "importNone": "Não encontrámos horas. Experimenta uma linha por tempo, como «8:30–9:15 Leitura», ou um ficheiro de calendário (.ics).",
+        "calLabel": "Calendário ligado",
+        "calHint": "Cola o endereço iCal do calendário",
+        "calConnect": "Ligar",
+        "calNote": "Google Calendar: Definições → o teu calendário → «Endereço secreto no formato iCal». Outlook: Definições → Calendário → Calendários partilhados → Publicar → ligação ICS. Os eventos de hoje passam a ser o horário e quem vê este widget vê-os, por isso liga um calendário pensado para a turma. O endereço continua privado.",
+        "calRemove": "Desligar",
+        "calOn": "{name} está ligado.",
+        "calToday": "Os eventos de hoje vêm deste calendário (verificado a cada 15 minutos). Num dia sem eventos, mostra-se o horário abaixo."
       },
       "weather": {
         "name": "Tempo",
@@ -10608,10 +10629,11 @@
       },
       "jobs": {
         "name": "Tarefas da turma",
-        "desc": "Uma tarefa para cada um, que gira toda semana. Com os nomes Oomba da turma.",
+        "desc": "Tarefas para todos, que rodam todas as semanas. Usa os nomes Oomba da turma ou nomes que escreves.",
         "s": {
           "jobs": "Tarefas (uma em cada linha; vazio para as de sempre)",
-          "crew": "Quem faz o quê"
+          "crew": "Quem faz o quê",
+          "names": "Alunos (um por linha; vazio para os alunos da turma)"
         },
         "rotate": "Próxima semana",
         "shuffle": "Misturar",
@@ -10619,7 +10641,8 @@
         "shuffled": "Tarefas misturadas.",
         "nobody": "Ainda não há alunos nesta turma.",
         "open": "Livre",
-        "defaults": "Líder da fila\nPorta\nLuzes\nPlantas\nLivros\nChefe da arrumação\nMensageiro\nQuadro"
+        "defaults": "Líder da fila\nPorta\nLuzes\nPlantas\nLivros\nChefe da arrumação\nMensageiro\nQuadro",
+        "nobodyTyped": "Ainda não há alunos: escreve nomes em «Alunos» nas definições deste widget, ou junta alunos à turma."
       },
       "mood": {
         "name": "Como estou",
@@ -10829,7 +10852,11 @@
       "buildTool": "Essa ferramenta não faz uma série “Monte”.",
       "buildTargets": "Digite ou crie pelo menos um alvo.",
       "buildClosed": "Essa série “Monte” terminou.",
-      "buildItem": "Esse alvo não está na série."
+      "buildItem": "Esse alvo não está na série.",
+      "feedAddress": "Isso não é um endereço de calendário. Cola a ligação https:// ou webcal:// de um calendário .ics.",
+      "feedTooMany": "Esta turma tem demasiados calendários ligados. Desliga um primeiro.",
+      "feedNotCalendar": "Esse endereço não é um ficheiro de calendário (.ics). Confirma que é o endereço iCal e não a página web do calendário.",
+      "feedUnreachable": "Não conseguimos chegar a esse calendário. Confirma o endereço e que o calendário está partilhado, e tenta de novo."
     },
     "tools": {
       "send": "Enviar para a turma",

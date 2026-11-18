@@ -19,6 +19,8 @@ import { parseVideo, siteUrl, webAddress, tooLongForQr } from '/js/dash-video.js
 import { PASS_ICON, secsText } from '/js/dash-class5.js';
 import { tip } from '/js/dash-tip.js';
 import * as B from '/js/dash-build.js';
+import * as AG from '/js/agenda.js';
+import { format } from '/js/i18n-format.js';
 import { withMode, modeState } from '/js/dash-modes.js';
 
 const D = pageData();
@@ -735,32 +737,111 @@ function start() {
       field.innerHTML = `<label for="${id}">${esc(f.label)}</label><select class="input" id="${id}"><option value="">${esc(t('js.dash.side.zoneNone'))}</option>${list.map(z => `<option value="${esc(z)}"${w.s[f.key] === z ? ' selected' : ''}>${esc(cityOf(z))}</option>`).join('')}</select>`;
       field.querySelector('select').addEventListener('change', e => { w.s[f.key] = e.target.value; commit(); redraw(); });
     },
+    // The schedule's periods. With a week (the schedule widget): "Every day" and each weekday, a weekday either using
+    // every day's list or its own; and an agenda uploaded (.ics, .csv, .txt) or pasted, read by public/js/agenda.js.
     periods(field, f, w, id, type, { commit, redraw }) {
-      const W = type.words;
+      const W = type.words, weekly = type.settings.some(x => x.type === 'week');
       field.className = 'field dash-periods';
-      const draw = () => {
-        const list = w.s[f.key] || (w.s[f.key] = []);
-        field.innerHTML = `<span class="dash-lab" id="${id}-l">${esc(f.label)}</span><ol class="plain dash-prows" aria-labelledby="${id}-l">${list.map((p, i) => `<li class="dash-perrow" data-i="${i}">
+      let day = 0;   // 0: every day; 1..7: Monday ... Sunday
+      const dayFmt = new Intl.DateTimeFormat(INTL, { weekday: 'short', timeZone: 'UTC' }), dayLong = new Intl.DateTimeFormat(INTL, { weekday: 'long', timeZone: 'UTC' });
+      const dayName = (d, long) => (long ? dayLong : dayFmt).format(Date.UTC(2024, 0, d)); // 1 Jan 2024 was a Monday
+      const own = d => !!(w.s.week && Array.isArray(w.s.week[d]) && w.s.week[d].length);
+      const list = () => (day ? (own(day) ? w.s.week[day] : null) : (w.s[f.key] || (w.s[f.key] = [])));
+      const rowsHtml = l => `<ol class="plain dash-prows" aria-labelledby="${id}-l">${l.map((p, i) => `<li class="dash-perrow" data-i="${i}">
           <label class="sr-only" for="${id}-n${i}">${esc(W.period)} ${i + 1}</label><input class="input dash-pername" id="${id}-n${i}" data-k="name" maxlength="40" dir="auto" value="${esc(p.name)}" placeholder="${esc(W.period)} ${i + 1}">
           <button class="btn btn-sm dash-perrm" type="button" data-rm="${i}" aria-label="${esc(W.remove)} ${i + 1}">✖</button>
           <span class="dash-pertimes"><span class="dash-pertime"><label for="${id}-s${i}">${esc(W.from)}</label><input class="input" id="${id}-s${i}" data-k="start" type="time" value="${esc(p.start)}"></span>
           <span class="dash-pertime"><label for="${id}-e${i}">${esc(W.to)}</label><input class="input" id="${id}-e${i}" data-k="end" type="time" value="${esc(p.end)}"></span></span></li>`).join('')}</ol>
           <button class="btn btn-sm" type="button" data-addp>➕ ${esc(W.addPeriod)}</button>`;
+      const draw = () => {
+        const l = list();
+        const chips = weekly ? `<div class="dash-days" role="group" aria-label="${esc(f.label)}">${[0, 1, 2, 3, 4, 5, 6, 7].map(d => `<button type="button" class="chip dash-day${d && own(d) ? ' has-own' : ''}" data-day="${d}" aria-pressed="${d === day}"${d ? ` aria-label="${esc(dayName(d, true))}"` : ''}>${esc(d ? dayName(d) : W.everyDay)}</button>`).join('')}</div>` : '';
+        const body = l ? rowsHtml(l) + (day ? ` <button class="btn btn-sm btn-ghost" type="button" data-back>↩ ${esc(W.backToEvery)}</button>` : '')
+          : `<p class="small muted dash-sameas">${esc(fill(W.sameAsEvery, { day: dayName(day, true) }))}</p><button class="btn btn-sm" type="button" data-own>✏️ ${esc(fill(W.ownDay, { day: dayName(day, true) }))}</button>`;
+        const tools = weekly ? `<div class="dash-agtools"><label class="btn btn-sm dash-upload">📄 ${esc(W.upload)}<input type="file" accept=".ics,.ical,.csv,.txt,text/calendar,text/csv,text/plain" data-file hidden></label>
+          <details class="dash-paste"><summary class="btn btn-sm">📋 ${esc(W.paste)}</summary><label class="sr-only" for="${id}-pt">${esc(W.paste)}</label><textarea class="input" id="${id}-pt" rows="5" maxlength="6000" dir="auto" placeholder="${esc(W.pasteHint)}"></textarea><button class="btn btn-sm" type="button" data-pastego>${esc(W.pasteGo)}</button></details>
+          <p class="small muted">${esc(W.uploadHint)}</p></div>` : '';
+        field.innerHTML = `<span class="dash-lab" id="${id}-l">${esc(day ? dayName(day, true) : f.label)}</span>${chips}${body}${tools}`;
       };
       draw();
-      field.addEventListener('input', e => { const li = e.target.closest('[data-i]'); if (!li || !e.target.dataset.k) return; w.s[f.key][+li.dataset.i][e.target.dataset.k] = e.target.value; redraw(); });
-      field.addEventListener('change', () => commit());
+      const refocus = sel => field.querySelector(sel)?.focus();
+      /** An agenda read from a file or pasted text: { all, days } -> into the schedule. Every day's list goes to the day
+       *  being edited (every day, or that weekday); weekday lists go to those weekdays. */
+      const useAgenda = r => {
+        const days = Object.keys(r.days || {}).map(Number);
+        if (!r.all.length && !days.length) { announce(W.importNone); toast(W.importNone, { bad: true }); return; }
+        if (r.all.length) { if (day) (w.s.week ||= {})[day] = r.all; else w.s[f.key] = r.all; }
+        for (const d of days) (w.s.week ||= {})[d] = r.days[d];
+        if (!r.all.length && days.length && !day) day = days[0];
+        commit(); redraw(); draw();
+        const msg = days.length ? fill(W.importedWeek, { days: days.sort().map(d => dayName(d)).join(', ') }) : format(W.imported, { n: r.all.length }, INTL);
+        announce(msg); toast(msg);
+      };
+      const todayYmd = () => new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+      const readAgenda = text => (/BEGIN:VCALENDAR/i.test(text.slice(0, 4096)) ? AG.icsWeek(text, todayYmd(), TZ) : AG.readText(text, [INTL]));
+      field.addEventListener('input', e => { const li = e.target.closest('[data-i]'); const l = list(); if (!li || !l || !e.target.dataset.k) return; l[+li.dataset.i][e.target.dataset.k] = e.target.value; redraw(); });
+      field.addEventListener('change', async e => {
+        if (e.target.matches('[data-file]')) {
+          const file = e.target.files && e.target.files[0]; e.target.value = '';
+          if (!file) return;
+          if (file.size > 3 * 1024 * 1024) { toast(W.importNone, { bad: true }); return; }
+          useAgenda(readAgenda(await file.text())); refocus('.dash-upload'); return;
+        }
+        if (e.target.closest('[data-i]')) commit();
+      });
       field.addEventListener('click', e => {
-        const rm = e.target.closest('[data-rm]'), addB = e.target.closest('[data-addp]');
-        if (rm) { w.s[f.key].splice(+rm.dataset.rm, 1); commit(); redraw(); draw(); field.querySelector('[data-addp]').focus(); }
+        const rm = e.target.closest('[data-rm]'), addB = e.target.closest('[data-addp]'), dayB = e.target.closest('[data-day]');
+        if (dayB) { day = +dayB.dataset.day; draw(); refocus(`[data-day="${day}"]`); return; }
+        if (e.target.closest('[data-own]')) { (w.s.week ||= {})[day] = (w.s[f.key] || []).map(p => ({ ...p })); if (!w.s.week[day].length) w.s.week[day] = [{ name: '', start: '08:30', end: '09:15' }]; commit(); redraw(); draw(); refocus(`#${CSS.escape(`${id}-n0`)}`); return; }
+        if (e.target.closest('[data-back]')) { if (w.s.week) delete w.s.week[day]; commit(); redraw(); draw(); refocus('[data-own]'); return; }
+        if (e.target.closest('[data-pastego]')) { const ta = field.querySelector('textarea'); useAgenda(readAgenda(ta.value)); return; }
+        const l = list(); if (!l) return;
+        if (rm) {
+          l.splice(+rm.dataset.rm, 1);
+          if (day && !l.length && w.s.week) delete w.s.week[day];
+          commit(); redraw(); draw(); refocus('[data-addp]') || refocus('[data-own]');
+        }
         if (addB) {
-          const list = w.s[f.key] || []; if (list.length >= 16) return;
-          const last = list[list.length - 1], start = last ? last.end : '08:30';
+          if (l.length >= 16) return;
+          const last = l[l.length - 1], start = last ? last.end : '08:30';
           const [h, m] = start.split(':').map(Number), endMin = Math.min(23 * 60 + 59, h * 60 + m + 45);
-          list.push({ name: '', start, end: `${String(Math.floor(endMin / 60)).padStart(2, '0')}:${String(endMin % 60).padStart(2, '0')}` });
-          w.s[f.key] = list; commit(); redraw(); draw(); field.querySelector(`#${CSS.escape(`${id}-n${list.length - 1}`)}`)?.focus();
+          l.push({ name: '', start, end: `${String(Math.floor(endMin / 60)).padStart(2, '0')}:${String(endMin % 60).padStart(2, '0')}` });
+          commit(); redraw(); draw(); refocus(`#${CSS.escape(`${id}-n${l.length - 1}`)}`);
         }
       });
+    },
+    // A calendar connected to the schedule (services/dash-calendar.js): the address goes to the server, which checks it
+    // by fetching it and keeps it; the widget keeps only { id, name }.
+    feed(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words;
+      field.classList.add('dash-feed');
+      const draw = () => {
+        const cur = w.s[f.key];
+        field.innerHTML = cur
+          ? `<span class="dash-lab">${esc(W.calLabel)}</span><p class="dash-cur" dir="auto">📅 ${esc(fill(W.calOn, { name: cur.name || '…' }))}</p><p class="small muted">${esc(W.calToday)}</p><button class="btn btn-sm" type="button" data-calrm>✖ ${esc(W.calRemove)}</button>`
+          : `<label for="${id}">${esc(W.calLabel)}</label><div class="row dash-findrow"><input class="input grow" id="${id}" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="500" dir="ltr" placeholder="${esc(W.calHint)}" aria-describedby="${id}-m ${id}-n"><button class="btn btn-sm" type="button" data-calgo>🔗 ${esc(W.calConnect)}</button></div>
+             <p class="small dash-fieldmsg" id="${id}-m" role="status"></p><p class="small muted" id="${id}-n">${esc(W.calNote)}</p>`;
+      };
+      draw();
+      const go = async () => {
+        const inp = field.querySelector('input'), msg = field.querySelector('.dash-fieldmsg'), btn = field.querySelector('[data-calgo]');
+        if (!inp.value.trim()) { inp.focus(); return; }
+        btn.disabled = true; msg.textContent = '…'; msg.classList.remove('err');
+        try {
+          const r = await api(`/api/dash/${CID}/feeds`, { method: 'POST', body: { url: inp.value.trim() } });
+          w.s[f.key] = r.feed; commit(); redraw(); draw(); field.querySelector('[data-calrm]')?.focus();
+          announce(fill(W.calOn, { name: r.feed.name }));
+        } catch (err) { msg.textContent = `✖ ${err.message}`; msg.classList.add('err'); btn.disabled = false; }
+      };
+      field.addEventListener('click', async e => {
+        if (e.target.closest('[data-calgo]')) go();
+        if (e.target.closest('[data-calrm]')) {
+          const cur = w.s[f.key];
+          if (cur) api(`/api/dash/${CID}/feeds/${encodeURIComponent(cur.id)}/delete`, { method: 'POST', body: {} }).catch(() => {});
+          w.s[f.key] = null; commit(); redraw(); draw(); field.querySelector('input')?.focus();
+        }
+      });
+      field.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('input')) { e.preventDefault(); go(); } });
     },
     place(field, f, w, id, type, { commit, redraw }) {
       const W = type.words;
