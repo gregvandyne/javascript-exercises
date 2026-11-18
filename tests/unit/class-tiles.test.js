@@ -31,7 +31,7 @@ const tilesOf = text => { const m = text.match(/<div class="classtiles[^"]*">([\
 test('class page: four tiles with the same links as the buttons they stand in for, Host a live game first', async () => {
   const text = await get(teacher, `/class/${c.id}`);
   const tiles = tilesOf(text);
-  assert.deepEqual(tiles.map(x => x.href), [`/live?class=${c.id}`, `/class/${c.id}/dashboard`, '/build/new', '/learn']);
+  assert.deepEqual(tiles.map(x => x.href), [`/live?class=${c.id}`, `/class/${c.id}/dashboard`, `/build/new?for=class&class=${c.id}`, '/learn']);
   assert.deepEqual(tiles.map(x => x.label), ['Host a live game', 'Class dashboard', 'Build new game', 'Find Oomba games']);
   assert.deepEqual(tiles.map(x => x.hot), [true, false, false, false], 'only Host a live game is the green one');
   // The buttons and chip they replace on phones are still in the page (wider screens show them).
