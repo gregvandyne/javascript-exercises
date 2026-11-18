@@ -172,3 +172,37 @@ test("sharing a folder with colleagues: shared on Build, opened read-only, copie
   assert.deepEqual(F.sharedWith(ben), [], 'stopped sharing: gone for colleagues');
   assert.equal((await as(ben)(`/build/folders/${f.id}`)).status, 404);
 });
+
+test('drag to reorder and the Save to folder pop-up: a whole new order saved at once; the pop-up has the folders and its words', async () => {
+  const a = F.createFolder(ana, 'Order A').folder, b = F.createFolder(ana, 'Order B').folder, c = F.createFolder(ana, 'Order C').folder;
+  const mineIds = () => F.foldersOf(ana.id).map(f => f.id);
+  const rest = mineIds().filter(id => ![a.id, b.id, c.id].includes(id));
+  // Folders: the order as dragged; ids that are not hers are ignored; folders left out keep their order after.
+  const theirs = F.createFolder(ben, 'Not hers').folder;
+  let r = await as(ana)('/api/game-folders/order', { method: 'POST', body: { ids: [c.id, theirs.id, a.id] } });
+  assert.ok(r.json.ok);
+  assert.deepEqual(mineIds(), [c.id, a.id, ...rest, b.id], 'the two given first, then the others in their old order');
+  assert.equal(F.getFolder(theirs.id).owner_id, ben.id, "another teacher's folder untouched");
+  // Games in a folder.
+  F.addGame(ana, a.id, oomba.id); F.addGame(ana, a.id, mine.id); F.addGame(ana, a.id, other.id);
+  r = await as(ana)(`/api/game-folders/${a.id}/order`, { method: 'POST', body: { ids: [other.id, oomba.id] } });
+  assert.ok(r.json.ok);
+  assert.deepEqual(F.gamesIn(ana, a.id).map(g => g.id), [other.id, oomba.id, mine.id]);
+  assert.equal((await as(ben)(`/api/game-folders/${a.id}/order`, { method: 'POST', body: { ids: [mine.id] } })).status, 404, 'only the owner reorders');
+  // The folder page: no ↑ ↓; both lists can be dragged, with the words for it.
+  const page = await as(ana)(`/build/folders/${a.id}`);
+  assert.doesNotMatch(page.text, /data-api="\/api\/game-folders\/[^"]+\/(up|down)"/);
+  assert.match(page.text, /data-reorder="\/api\/game-folders\/order"/); assert.match(page.text, new RegExp(`data-reorder="/api/game-folders/${a.id}/order"`));
+  assert.match(page.text, /data-moved="\{name\}: \{n\} of \{total\}"/); assert.match(page.text, /class="gfo-grip"/);
+  // The pop-up's data: the game, each folder (and whether it has it), and the words with {folder} left to fill in.
+  const s = await as(ana)(`/api/game-folders/save?id=${oomba.id}`);
+  assert.equal(s.json.game.id, oomba.id);
+  assert.ok(s.json.folders.find(f => f.id === a.id).has); assert.ok(!s.json.folders.find(f => f.id === b.id).has);
+  assert.equal(s.json.words.savedTo, 'Saved to {folder}'); assert.equal(s.json.words.open, 'Open {folder}'); assert.equal(s.json.words.keep, 'Keep browsing');
+  // Saving answers with the folder, so the pop-up can link to it.
+  r = await as(ana)(`/api/game-folders/${b.id}/games`, { method: 'POST', body: { gameId: oomba.id } });
+  assert.equal(r.json.folder.id, b.id); assert.equal(r.json.already, false);
+  r = await as(ana)('/api/game-folders', { method: 'POST', body: { name: 'From the pop-up', gameId: oomba.id } });
+  assert.equal(r.json.folder.name, 'From the pop-up');
+  assert.equal((await as(ana)('/api/game-folders/save?id=nope')).status, 404);
+});

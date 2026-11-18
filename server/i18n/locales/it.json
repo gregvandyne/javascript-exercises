@@ -4977,7 +4977,8 @@
       "popcornHush": "Un misuratore di rumore per la classe: restate in silenzio perché i popcorn non scoppino, dato che troppo rumore fa saltare i chicchi.",
       "sudoku": "Rompicapi di logica, da un mini 4×4 con le figure al classico 9×9: in ogni riga, colonna e riquadro ogni numero c’è una volta.",
       "sumSpotter": "Trova il numero che è la somma (o il prodotto) di altri due, dalle somme fino a 10 alle tabelline, con una sfida a tempo di 60 secondi.",
-      "wordTrail": "Le parole inglesi più frequenti, dalla scuola dell’infanzia alla terza, su un sentiero da fiaba con Bramble il riccio: ascolta una parola e toccala, completa una frase, componila con le lettere, in lezioni brevi con una serie giornaliera."
+      "wordTrail": "Le parole inglesi più frequenti, dalla scuola dell’infanzia alla terza, su un sentiero da fiaba con Bramble il riccio: ascolta una parola e toccala, completa una frase, componila con le lettere, in lezioni brevi con una serie giornaliera.",
+      "crossword": "Trasforma qualsiasi lista di vocaboli in un cruciverba: scrivi o carica le parole, aggiungi le definizioni o lasciale scrivere all'IA e condividilo con la classe."
     },
     "hubs": {
       "math": {
@@ -9411,7 +9412,9 @@
         "calNote": "Google Calendar: Impostazioni → il tuo calendario → «Indirizzo segreto in formato iCal». Outlook: Impostazioni → Calendario → Calendari condivisi → Pubblica → link ICS. Gli eventi di oggi diventano l'orario e chi vede questo widget li vede, quindi collega un calendario pensato per la classe. L'indirizzo resta privato.",
         "calRemove": "Scollega",
         "calOn": "{name} è collegato.",
-        "calToday": "Gli eventi di oggi vengono da questo calendario (controllato ogni 15 minuti). Nei giorni senza eventi si vede l'orario qui sotto."
+        "calToday": "Gli eventi di oggi vengono da questo calendario (controllato ogni 15 minuti). Nei giorni senza eventi si vede l'orario qui sotto.",
+        "instructions": "Istruzioni",
+        "agendaLabel": "Importa un orario"
       },
       "weather": {
         "name": "Meteo",
@@ -10591,7 +10594,8 @@
         "note": "Si tiene solo il numero del video, non il link. Va nel lettore con privacy avanzata del servizio e solo sul tuo schermo.",
         "secsHint": "Minuti e secondi, per esempio 1:30.",
         "secsBad": "Scrivi il tempo in minuti e secondi, per esempio 1:30.",
-        "title": "Lettore video"
+        "title": "Lettore video",
+        "openOn": "Apri su {site}"
       },
       "site": {
         "name": "Finestra web",
@@ -10672,9 +10676,10 @@
         "name": "Incarichi di classe",
         "desc": "Incarichi per tutti, a rotazione ogni settimana. Usa i nomi Oomba della classe o nomi che scrivi tu.",
         "s": {
-          "jobs": "Incarichi (uno in ogni riga; vuoto per i soliti)",
+          "jobs": "Incarichi",
           "crew": "Chi fa cosa",
-          "names": "Alunni (uno per riga; vuoto per gli alunni della classe)"
+          "names": "Nomi che ho scritto",
+          "from": "Gli alunni vengono da"
         },
         "rotate": "Settimana dopo",
         "shuffle": "Mescola",
@@ -10683,7 +10688,29 @@
         "nobody": "Ancora nessun alunno in questa classe.",
         "open": "Libero",
         "defaults": "Capofila\nPorta\nLuci\nPiante\nLibri\nCapo del riordino\nMessaggero\nLavagna",
-        "nobodyTyped": "Ancora nessun alunno: scrivi dei nomi in «Alunni» nelle impostazioni di questo widget, oppure aggiungi alunni alla classe."
+        "nobodyTyped": "Ancora nessun alunno: aggiungi dei nomi nelle impostazioni di questo widget, oppure aggiungi alunni alla classe.",
+        "waiting": "In attesa: {names}",
+        "cardsIntro": "Ogni incarico ha la sua scheda. Scegli chi lo fa questa settimana. {rotate} sul widget fa passare tutti all’incarico successivo.",
+        "job": "Incarico",
+        "jobN": "Incarico {n}",
+        "student": "Alunno",
+        "studentFor": "Alunno per {job}",
+        "nobodyYet": "— Ancora nessuno —",
+        "typeName": "Scrivi un nome…",
+        "nameLabel": "Nuovo nome",
+        "addName": "Aggiungi",
+        "addJob": "Aggiungi un incarico",
+        "newJob": "Nuovo incarico",
+        "removeJob": "Togli {job}",
+        "removedJob": "{job} tolto.",
+        "picked": "Ora {name} fa {job}.",
+        "movedUp": "{job} è salito al numero {n}, così {name} può farlo.",
+        "fromNames": "Nomi che scrivo io",
+        "fromClass": "Gli alunni di {class}",
+        "removeName": "Togli {name}",
+        "removedName": "{name} tolto.",
+        "noNames": "Ancora nessun nome: in un incarico scegli «Scrivi un nome…».",
+        "maxJobs": "Al massimo {n} incarichi."
       },
       "mood": {
         "name": "Come mi sento",
@@ -11038,6 +11065,12 @@
     "assign": "Assegna",
     "removeGame": "Togli dalla cartella",
     "save": "Salva in una cartella",
+    "pick": "In quale cartella?",
+    "keepBrowsing": "Continua a esplorare",
+    "openFolder": "Apri {folder}",
+    "reorderHint": "Trascina per cambiare l’ordine (su telefono o tablet, tieni premuto prima). Da tastiera: Alt e le frecce.",
+    "move": "Sposta {name}",
+    "moved": "{name}: {n} di {total}",
     "saveTitle": "Salva «{game}» in una cartella",
     "gamesN": "{count, plural, one {# gioco} other {# giochi}}",
     "saved": "In questa cartella",

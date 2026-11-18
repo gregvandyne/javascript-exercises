@@ -369,7 +369,7 @@ const browser = await chromium.launch({ ...(exe ? { executablePath: exe } : {}),
 /** Stage 5: the outside pages are stubs the browser answers itself (nothing leaves the machine). */
 const STUB = (title, bg) => `<!doctype html><html><body style="margin:0;height:100vh;display:grid;place-items:center;background:${bg};color:#fff;font:700 18px sans-serif">${title}</body></html>`;
 async function stubOutside(page) {
-  await page.route(/^https:\/\/(www\.youtube-nocookie\.com|player\.vimeo\.com)\//, r => r.fulfill({ status: 200, contentType: 'text/html', body: STUB('▶ video', '#202020') }));
+  await page.route(/^https:\/\/(www\.youtube\.com|www\.youtube-nocookie\.com|player\.vimeo\.com)\//, r => r.fulfill({ status: 200, contentType: 'text/html', body: STUB('▶ video', '#202020') }));
   await page.route(/^https:\/\/bibliothek\.example\.org\//, r => r.fulfill({ status: 200, contentType: 'text/html', body: STUB('bibliothek.example.org', '#2F6F5E') }));
 }
 
@@ -550,6 +550,16 @@ function problems() {
       if (inSvg) { const m = e.getScreenCTM(); size *= m ? Math.hypot(m.a, m.b) : 1; }
       if (size < floor - 0.25) out.push(`${name(w)}: "${txt.slice(0, 24)}" is ${size.toFixed(1)}px (needs ${floor})`);
       if (inSvg && e.closest('.dt-graph') && /…$/.test(txt)) out.push(`${name(w)}: the label "${txt}" is cut short`);
+    }
+  }
+  // The shape board's labels (corner letters, side lengths, angles, text labels) never sit on each other (docs/decisions.md
+  // "Shape board: labels you can read"). A text box is taller than its letters, so a fifth is taken off top and bottom.
+  for (const b of document.querySelectorAll('.dash-w .gb-svg')) {
+    const w = b.closest('.dash-w'); if (!w.offsetParent) continue;
+    const bx = [...b.querySelectorAll('.gb-marks text, .gb-note text')].map(t => { const r = t.getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top + r.height * 0.2, b: r.bottom - r.height * 0.2, s: t.textContent }; });
+    for (let i = 0; i < bx.length; i++) for (let j = i + 1; j < bx.length; j++) {
+      const p = bx[i], c = bx[j];
+      if (p.l < c.r - 1 && c.l < p.r - 1 && p.t < c.b - 1 && c.t < p.b - 1) out.push(`${name(w)}: the board's labels "${p.s}" and "${c.s}" sit on each other`);
     }
   }
   // Stage 4 review: a short label (one word or number) never breaks across lines ("1" over "0" for 10).

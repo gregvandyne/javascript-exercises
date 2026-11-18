@@ -6388,8 +6388,13 @@ that touches a camera), `public/js/dash-video.js` (the browser's copy of the vid
 - **Video** (teacher only, never pinned or pushed). The teacher pastes a YouTube or Vimeo link; only `{ p, id }` (and an
   unlisted Vimeo video's hash) is kept, after checking the host is the provider's own and the id is well formed
   (11 characters for YouTube, digits for Vimeo). Anything else is refused and nothing of the link is stored or echoed.
-  Players come from `www.youtube-nocookie.com` and `player.vimeo.com?dnt=1`, sandboxed (scripts, same origin,
-  presentation; no popups or navigation of the page). Options: start, end (YouTube only: Vimeo's player has no end
+  Players come from `www.youtube.com` and `player.vimeo.com?dnt=1`, sandboxed (scripts, same origin, presentation,
+  popups that escape the sandbox, storage access after a tap; never navigation of the page). **Changed (Nov 2026):** they
+  were `www.youtube-nocookie.com` with no popups, but YouTube now often answers an embed with "Sign in to confirm you're
+  not a bot": its Sign in button needs a popup, and a sign-in on youtube.com never reaches the nocookie host, so a
+  teacher could not get past it. The widget is teacher only (never on a student's screen), so the teacher's own YouTube
+  sign-in is what lets it play. Under the player, "↗ Open on YouTube/Vimeo" opens the video's own page (at the start
+  time) for when the player still won't play here. Options: start, end (YouTube only: Vimeo's player has no end
   parameter, the settings say so), muted, loop. A time in a pasted link (`t=1m30s`) becomes the start. **Decided:** the
   frame sends `strict-origin-when-cross-origin` (the school site's origin only): both players refuse to play without
   knowing the embedding site, and the site's own `same-origin` policy would send nothing.
@@ -7981,3 +7986,166 @@ code is its own (`public/js/dash-tools4.js`: `tileTray`, `tileDrag`, `balance`, 
 - Words in all 12 languages; the fit check adds a full balance (negatives, tipped, checked) and a checked challenge.
   Tests: tests/unit/dash-algebra-drag.test.js (state, moves and tilt, Both sides, Check, rows and challenge, and a
   Chromium drag with a mouse and with touch, taps and the keyboard).
+
+## Crossword: a teacher's vocabulary list as a crossword (18 Nov 2026)
+
+Owner: "Create a crossword puzzle game where a teacher can upload their vocab words and you create a crossword puzzle
+out of this. Allow them to also build manually, or just provide a list of words, and have AI create the definitions."
+Then: "Let's make this outside of the Oomba Kit", "make it resemble more of the widget feel", and "make sure games are
+played end to end twice assessing for UX/UI in all the nooks and crannies before shipping".
+- **Where it lives.** `seed-games/crossword.html`, hand-written, on the Learn shelf (words, grades 2-8; migration
+  0089_crossword_shelf, as each new Learn game). Its own page, not an Oomba Kit game: no scene, title screen or
+  character. It looks like the classroom dashboard's widgets: cream cards with the group colour on the top edge and the
+  icon chip, the schedule's dark "Now" block for the clue on now, a dotted mint board, light and dark (BRB.theme),
+  Bricolage Grotesque from Google Fonts, a few BRB.sfx sounds and its own confetti (none with reduced motion).
+- **Making one.** Paste a list or upload a .txt or .csv file (one word a line; a clue after a tab, dash, colon, = or the
+  first comma; bullets, numbers and a header row are dropped), or type words and clues; 3 to 30 words, letters only
+  (any script; spaces, hyphens and apostrophes are left out of the grid). **Write clues with AI** fills the missing clues
+  (or rewrites them all) for a grown-up who may host: `services/set-ai.js draftClues`, the words as data, never the word
+  or its family in its clue (a clue that gives its word away is dropped), the words' own language; the teacher reads and
+  edits them and a note says some were written by AI. Options: a word bank, hints.
+- **The grid** (`crossword-core` in the page, tested on its own): the most words crossing in the smallest square-ish
+  grid, at most 25 a side, words never touching side by side, numbered in reading order; the same words and seed always
+  make the same grid, so only the seed is saved. **Try another layout** changes the seed until the grid changes. Words
+  that can't cross are listed ("These words didn't fit"), never forced in.
+- **Sharing.** Save and get a link keeps it as a question set (`game_sets`, `cleanCrossItems`): the title, words and
+  clues are the teacher's own text, so each passes the site's text filter (no rude words, personal details or links),
+  as live quiz sets do. The class code, the link, a QR code (the site's own encoder, copied into the page), Copy, and
+  Assign to a class (Also post to Google Classroom). The teacher's crosswords are listed on the game's home.
+- **Playing.** Tap a square (again to turn) or a clue, type (one hidden field, so a phone's keyboard opens; arrows, Tab,
+  Backspace and Space work); the clue on now in the dark bar; Check marks wrong letters, Hint fills one (if allowed);
+  accents don't count against a student. Squares stay at least 30 px while playing: a big grid scrolls sideways in its
+  box, following the square picked. Progress is kept between visits. Solved: the letters as written, a wave, stars
+  (hints and checks), Play again, and one BRB.gameOver (the step done, the Classroom completion grade). A sample puzzle
+  in every language (Traditional Chinese: 6 words, as its short words cross less) and a class code box for students.
+- **Checked end to end twice** before shipping: desktop in light mode and English (upload, AI clues, a long title,
+  layouts, play from the preview, keyboard, save, reopen, resume, check, hint, solve, play again) and a phone in dark mode
+  (a wrong code, 30 long clues, a sign-in error on save, a missing link, Hebrew and Arabic right to left, Japanese kana).
+  Fixed on the way: inputs that took the widget style, a ✓ on clues that were only full, a stale message after solving,
+  tiny squares on a phone, and a layout button that could give back the same grid.
+- **Documents, saving and sharing** (later the same day). Owner: "They should also be able to upload a pdf or word
+  document and you should be able to take out the information from this and create the crossword puzzle", "There should
+  also be a way to save these crossword puzzles so they can reference again", and "assign these or create a QR code and
+  link for students to sign in and take the test".
+  - **Upload a list or document** takes .pdf and .docx too (2 MB, inside the site's 3 MB request limit as base64). A
+    .docx's text is read on the server (`services/docx-text.js`: the zip's word/document.xml, a table row a line with its
+    cells apart by a tab, no outside library); a PDF goes to the model as a document (`set-ai.js draftWordsFromDoc`:
+    the document's own word list and definitions when it has one, else its key terms; the document is data, never
+    instructions; never stored or logged, only how many words). The words and clues land in the list for the teacher to
+    check, and the document's title fills an empty name. An old .doc asks for .docx or PDF.
+  - **Your crosswords** on the game's home: every draft saves itself a moment after a change (and with Save), kept in
+    the teacher's game save, so it follows their account to any device (a guest is told to sign in to keep them). Each
+    shows its words, when it last changed and its class code, with Edit, Play, Share and Delete (pressed twice).
+  - **Share** from the list saves it on Oomba when it isn't yet and opens "Share with your students": the class code,
+    the link, the QR code and Assign to a class (with Google Classroom), as from the preview.
+
+## Shape board: labels you can read (18 Nov 2026)
+The owner found the board's labels (corner letters, side lengths, angles, text labels) too small on the smallest Shape
+board. They had one floor for all of them (13px on the screen, 16px on the projector) and were otherwise a fixed share
+of the board, so on a 5 × 8 widget (a board about 280-330px across) every label sat at 13px.
+- **Sizes** (`LABEL_SIZES`, `labelPx` in `public/js/dash-math4.js`): each kind is its share of the board, never under
+  its own floor: letters 17px, side lengths 16px, angles 15px, text labels 18px, the ruler 16px (21/20/19/22/20px on the
+  projector); on a big board they grow with it. Zoomed, they keep their size on the screen as before.
+- **Placed, not just pushed out** (`placeLabels`): the angles first (they have least room, inside their shape), then the
+  letters, then the sides. Each tries its own spot, then spots turned round its corner or side and a little further out,
+  and takes the one that covers least: other labels, the text labels and the selected band's handles (most), the pegs,
+  and its own band's sides. Labels still on another are tried again with the rest in place. An angle only turns a little
+  and stays near its corner (so it is never read as another corner's); where a small shape on a dense board has no room
+  it is drawn smaller, down to 12px (14px on the projector), never below, and only if that is not enough turns further
+  round its corner. Labels stay inside the board.
+- **Checked:** the fit check now fails when two of a shape board's labels sit on each other (the busy boards: twelve
+  bands on 11 × 11 pegs, triangle dots, the circle, at the default and smallest sizes); unit tests cover the sizes, the
+  placing and the 12px minimum.
+
+
+## Schedule settings: the calendar and agenda as cards at the top, instructions folded (18 Nov 2026)
+Owner: "Make this more modular and put it at the top of the widget. Instead of just having the text there put
+Instructions with a drop down caret." Then: "Remove this from the individual days and just make it visible when you
+click Give (that day) its own schedule."
+- The schedule's settings open with two cards: **Connected calendar** (the `cal` setting now comes before `periods`)
+  and **Import an agenda** (upload or paste; moved from the bottom of the periods editor to its top). Each card's long
+  help (`calNote`, `uploadHint`) sits under "▸ Instructions", a `<details>` with a caret that turns when open (mirrored
+  right to left); the calendar field still points at its text with aria-describedby. New words `instructions` and
+  `agendaLabel` in 13 languages.
+- On a weekday the cards are gone while the day uses Every day (only "Give Monday its own schedule" shows). Once the
+  day has its own schedule, Import an agenda shows and imports into that day. The connected calendar fills every day,
+  so it shows only on Every day.
+## Machine Line: a clear board, the voice from the start, order of operations, drag and drop (18 Nov 2026)
+Owner: "The machine line game seems to have that same sort of foggy distortion as another game yesterday ... the initial
+instructions are the computer voice and not AI. Also, I am a bit worried that the game may confuse the student about
+orders of operation. Can you create a solution for this?" And: "you should be able to drag and drop the numbers."
+- **The fog.** The board (the line of machines, the values, the number line) was a sprite in the 3D scene, drawn
+  brighter than white (1.12): the haze and, on Beautiful graphics, the glow (bloom) haloed every edge, as Crate
+  Stacker's truck numbers were. The same picture is now a page canvas over the 3D view (drawn at twice its size, so it is
+  crisp on any screen), placed every frame where the 3D board stands; the 3D board stays as the unseen stand-in that
+  pops in, shakes and sizes, so nothing else moved.
+- **The voice.** Round lines change every play (the numbers), so the warm-up can't have them, and the SDK reads a line
+  that hasn't arrived in 4 s with the device voice: the first instruction was always the computer voice. The play's lap
+  is now chosen while the start card or the menu shows (inside `playLap`, so tests that pin a lap still do), and the
+  first round's lines (and the rule) are asked for then with `BRB.prefetchSpeech`; each round asks for its closing line
+  and the next round's question.
+- **Order of operations.** A line runs its machines in the order they stand; written down, brackets come first, then
+  × and ÷, then + and −. Three things tie the two together: (1) while a line is built the board writes what it makes
+  so far ("your line: 3(n + 5)" or "3n + 5"), the brackets showing where the order needs them; (2) Build the Line's
+  first round opens with the rule, spoken: "Machines run in the order you put them. Written down, brackets come first,
+  then times and divide, then plus and minus."; (3) the right-machines-wrong-order hints say why: "Without brackets,
+  multiplying comes before adding or subtracting, so the times machine goes first." and "Brackets come first, so the
+  plus machine goes first, then the times machine." (A wrong plan's board already writes the line it made beside what
+  it should give.)
+- **Drag and drop.** A machine block can be dragged onto a slot of the line (it goes in there and the rest move along;
+  on a full line it takes that slot's place and the block there goes back), dragged from slot to slot, or dragged off
+  the board to take it out. Taps and keys work as before; a ghost of the block follows the finger and the board is
+  outlined while it would take it.
+- tests/unit/machine-line.test.js (all ten, the browser play-throughs included) expects the rule and the new hints.
+
+
+## Folders: drag to reorder, save in a pop-up (18 Nov 2026)
+Owner: "Remove the up and down and just let users edit the order by clicking and dragging, or holding down and dragging
+on mobile and tablet. You should be able to move the games around this way too. Make Save to folder a pop-up that asks
+which folder, confirms it saved, and offers to return to the Oomba game list or go to the folder."
+- **Reorder** (public/js/reorder.js): the folder chips under "My folders" (on Build and on every folder page) and the
+  games in one's own folder are lists marked `data-reorder`. A mouse drags after a few pixels; a finger or pen holds
+  still for 350 ms first, so a swipe still scrolls the page (a short buzz where the device allows). The item lifts and
+  follows the pointer while the others make room (one column: above an item's middle goes before it; wrapped chips:
+  reading order, mirrored right to left). A drop over a chip never opens it. Keyboard: a focused chip or a game's ⠿
+  grip moves one place with Alt and an arrow key; the new place is announced ("Word Trail: 1 of 3"). Each change posts
+  the whole order: `POST /api/game-folders/order` and `POST /api/game-folders/:id/order` with `{ ids }`
+  (services/game-folders.js `orderFolders`, `orderGames`: only the owner's, unknown ids ignored, the rest kept after in
+  their old order, one transaction). If saving fails the page reloads with the saved order. The ↑ ↓ buttons are gone
+  (their routes stay for anything that still calls them). A short hint under each list says how.
+- **Save to folder** (public/js/folder-save.js): every link to `/build/save?…` (the Oomba game list on /learn, a game's
+  page, the Studio, folders shared with you, a lesson) opens a pop-up instead: "Which folder?" with each folder (one
+  that already has the game is marked and can't be picked) or a new folder by name, then Save. The pop-up says "✅ Saved
+  to Fun Games" and offers "Keep browsing" (closes it, so the teacher is still on the game list) or "Open Fun Games".
+  Its data and words come from `GET /api/game-folders/save`; saving uses the existing routes, which now answer with the
+  folder. A modifier-key click (new tab) and a browser without script still get the /build/save page.
+- app.js loads both only where they are used (a list to drag, a click on Save to folder), with its own version.
+- Words in 13 languages: `folders.pick`, `keepBrowsing`, `openFolder`, `reorderHint`, `move`, `moved`.
+- Checks: tests/unit/games-not-lessons.test.js (both orders, owner only, the pop-up's data, the folder in the save
+  answer, no ↑ ↓); in a browser: chips and games by mouse, games by touch hold-and-drag, a swipe not reordering, Alt +
+  arrows, the order after a reload, and the pop-up into an existing and a new folder with both ways out.
+
+## Class jobs: one card per job (18 Nov 2026)
+
+The owner approved a mockup: the Class jobs settings had two big textareas (Jobs, Students) that didn't say who does
+which job. Now each job is a card.
+
+- **Cards** (public/js/dash-class5.js `jobsEditor`, EDITORS.jobcards in dash.js): a number, the job's name, ✕ (44 px,
+  not on the last job), and a Student dropdown showing who has the job this week: the people, "— Nobody yet —" on an
+  open job, and, for typed names, "✏️ Type a name…" (a field to add a name, which takes that job). ➕ Add a job under
+  the cards (16 at most); an empty job is dropped when saved. With no jobs typed, the usual jobs are the cards and are
+  saved once one is changed.
+- **Students come from:** "Names I type" or "<class>'s students", saved as `from` ('names' | 'class'). Dashboards saved
+  before have no `from` ('auto'): typed names if any, else the class, as before, so they show the same chart with no
+  migration. Typed names are listed under it, each with ✕ to take it off.
+- **Still positional.** Nothing new is stored for who does what: the sheet turns the people to shift 0 (job i is
+  person i) and a change puts them in a new order (`names` text or `crew.order`), so Next week and Shuffle work as
+  before. Picking someone already on a job, or waiting, swaps the two. An open job (more jobs than people) can't hold a
+  person at its place, so picking someone for it moves the job up to that person's place (the two jobs change places,
+  and the sheet says so); every other pair stays. Removing a job: its person takes the first open job or waits first
+  in line; removing a typed name: the next one waiting takes the job, or that job moves after the others' jobs.
+- **Waiting:** more students than jobs, the ones without a job this turn are one line under the jobs, "Waiting: Sam,
+  Ava" (in the order they come in with Next week), on the widget and under the cards.
+- The class's list is the teacher's live list (ids and names, teacher only); the widget now puts it in the saved order
+  at once, so a change shows before the next check. Next week with typed names keeps the class's saved order.
+- Words in 12 languages (`dash.w.jobs.*`). Checks: tests/unit/dash-stage5.test.js "class jobs cards".

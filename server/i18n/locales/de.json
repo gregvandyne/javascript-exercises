@@ -4977,7 +4977,8 @@
       "popcornHush": "Ein Lärmmesser für die Klasse: Bleibt leise, damit das Popcorn nicht aufpoppt, denn zu viel Lärm lässt die Maiskörner platzen.",
       "sudoku": "Logikrätsel vom Mini-4×4 mit Bildern bis zum klassischen 9×9: In jeder Reihe, Spalte und jedem Kästchen steht jede Zahl einmal.",
       "sumSpotter": "Finde die Zahl, die zwei andere zusammen (oder mal genommen) ergeben, von Summen bis 10 bis zum Einmaleins, mit einem 60-Sekunden-Tempolauf.",
-      "wordTrail": "Die häufigsten englischen Wörter (Sichtwörter) von der Vorschule bis Klasse 3 auf einem Märchenpfad mit Bramble, dem Igel: Wort hören und antippen, Satz ergänzen, mit Buchstaben legen, in kurzen Lektionen mit Tagesserie."
+      "wordTrail": "Die häufigsten englischen Wörter (Sichtwörter) von der Vorschule bis Klasse 3 auf einem Märchenpfad mit Bramble, dem Igel: Wort hören und antippen, Satz ergänzen, mit Buchstaben legen, in kurzen Lektionen mit Tagesserie.",
+      "crossword": "Mach aus jeder Vokabelliste ein Kreuzworträtsel: Wörter eintippen oder hochladen, Hinweise ergänzen oder von der KI schreiben lassen und mit der Klasse teilen."
     },
     "hubs": {
       "math": {
@@ -9411,7 +9412,9 @@
         "calNote": "Google Kalender: Einstellungen → dein Kalender → „Privatadresse im iCal-Format“. Outlook: Einstellungen → Kalender → Freigegebene Kalender → Veröffentlichen → ICS-Link. Die Termine von heute werden zum Plan, und alle, die dieses Widget sehen, sehen sie – verbinde also einen Kalender für die Klasse. Die Adresse selbst bleibt privat.",
         "calRemove": "Trennen",
         "calOn": "{name} ist verbunden.",
-        "calToday": "Die Termine von heute kommen aus diesem Kalender (alle 15 Minuten geprüft). An Tagen ohne Termine wird der Plan unten gezeigt."
+        "calToday": "Die Termine von heute kommen aus diesem Kalender (alle 15 Minuten geprüft). An Tagen ohne Termine wird der Plan unten gezeigt.",
+        "instructions": "Anleitung",
+        "agendaLabel": "Tagesplan übernehmen"
       },
       "weather": {
         "name": "Wetter",
@@ -10591,7 +10594,8 @@
         "note": "Gespeichert wird nur die Nummer des Videos, nicht der Link. Es läuft im datenschutzfreundlichen Player des Anbieters und nur auf deinem Bildschirm.",
         "secsHint": "Minuten und Sekunden, z. B. 1:30.",
         "secsBad": "Gib die Zeit als Minuten und Sekunden ein, z. B. 1:30.",
-        "title": "Videoplayer"
+        "title": "Videoplayer",
+        "openOn": "Auf {site} öffnen"
       },
       "site": {
         "name": "Webseitenfenster",
@@ -10672,9 +10676,10 @@
         "name": "Klassendienste",
         "desc": "Dienste für alle, jede Woche weitergedreht. Nutzt die Oomba-Namen der Klasse oder Namen, die du eintippst.",
         "s": {
-          "jobs": "Dienste (einer in jeder Zeile; leer für die üblichen)",
+          "jobs": "Dienste",
           "crew": "Wer macht was",
-          "names": "Kinder (eines in jeder Zeile; leer für die Kinder der Klasse)"
+          "names": "Eingetippte Namen",
+          "from": "Die Kinder kommen aus"
         },
         "rotate": "Nächste Woche",
         "shuffle": "Mischen",
@@ -10683,7 +10688,29 @@
         "nobody": "Noch keine Kinder in dieser Klasse.",
         "open": "Frei",
         "defaults": "Reihenführung\nTürdienst\nLichtdienst\nPflanzendienst\nBücherdienst\nAufräumchef\nBotendienst\nTafeldienst",
-        "nobodyTyped": "Noch keine Kinder: Tippe Namen bei „Kinder“ in den Einstellungen dieses Widgets ein oder füge der Klasse Kinder hinzu."
+        "nobodyTyped": "Noch keine Kinder: Füge in den Einstellungen dieses Widgets Namen hinzu oder füge der Klasse Kinder hinzu.",
+        "waiting": "Warten: {names}",
+        "cardsIntro": "Jeder Dienst hat seine eigene Karte. Wähle, wer ihn diese Woche macht. {rotate} im Widget schiebt alle einen Dienst weiter.",
+        "job": "Dienst",
+        "jobN": "Dienst {n}",
+        "student": "Kind",
+        "studentFor": "Kind für {job}",
+        "nobodyYet": "— Noch niemand —",
+        "typeName": "Namen eintippen…",
+        "nameLabel": "Neuer Name",
+        "addName": "Hinzufügen",
+        "addJob": "Dienst hinzufügen",
+        "newJob": "Neuer Dienst",
+        "removeJob": "{job} entfernen",
+        "removedJob": "{job} entfernt.",
+        "picked": "{name} macht jetzt {job}.",
+        "movedUp": "{job} ist auf Nummer {n} hochgerückt, damit {name} ihn machen kann.",
+        "fromNames": "Namen, die ich eintippe",
+        "fromClass": "Kinder der Klasse {class}",
+        "removeName": "{name} entfernen",
+        "removedName": "{name} entfernt.",
+        "noNames": "Noch keine Namen: Wähle bei einem Dienst „Namen eintippen…“.",
+        "maxJobs": "Höchstens {n} Dienste."
       },
       "mood": {
         "name": "Stimmungsbarometer",
@@ -11038,6 +11065,12 @@
     "assign": "Zuweisen",
     "removeGame": "Aus dem Ordner entfernen",
     "save": "In Ordner speichern",
+    "pick": "Welcher Ordner?",
+    "keepBrowsing": "Weiterstöbern",
+    "openFolder": "{folder} öffnen",
+    "reorderHint": "Zum Sortieren ziehen (auf Handy oder Tablet erst gedrückt halten). Mit der Tastatur: Alt und die Pfeiltasten.",
+    "move": "{name} verschieben",
+    "moved": "{name}: {n} von {total}",
     "saveTitle": "„{game}“ in einem Ordner speichern",
     "gamesN": "{count, plural, one {# Spiel} other {# Spiele}}",
     "saved": "In diesem Ordner",

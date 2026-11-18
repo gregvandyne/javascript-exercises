@@ -5319,7 +5319,8 @@
       "popcornHush": "A classroom noise meter: keep the room calm so the popcorn stays unpopped, because too much noise makes the kernels pop.",
       "sudoku": "Logic puzzles from a tiny 4×4 with pictures to the classic 9×9: every row, column and box gets each number once.",
       "sumSpotter": "Spot the number that two others add up to (or multiply to make), from sums to 10 to times tables, with a 60-second Rush.",
-      "wordTrail": "The sight words, from Pre-primer to Grade 3, on a storybook trail with Bramble the hedgehog: hear a word and tap it, finish a sentence, spell it with letter tiles, in short lessons with a daily streak."
+      "wordTrail": "The sight words, from Pre-primer to Grade 3, on a storybook trail with Bramble the hedgehog: hear a word and tap it, finish a sentence, spell it with letter tiles, in short lessons with a daily streak.",
+      "crossword": "Turn any vocabulary list into a crossword: type or upload the words, add clues or let AI write them, and share it with the class."
     },
     "hubs": {
       "math": {
@@ -9837,7 +9838,9 @@
         "calNote": "Google Calendar: Settings → your calendar → “Secret address in iCal format”. Outlook: Settings → Calendar → Shared calendars → Publish → ICS link. Today's timed events become the schedule, and everyone who sees this widget sees them, so connect a calendar meant for the class. The address itself stays private.",
         "calRemove": "Disconnect",
         "calOn": "{name} is connected.",
-        "calToday": "Today's events come from this calendar (checked every 15 minutes). On a day with none, the schedule below is shown."
+        "calToday": "Today's events come from this calendar (checked every 15 minutes). On a day with none, the schedule below is shown.",
+        "instructions": "Instructions",
+        "agendaLabel": "Import an agenda"
       },
       "weather": {
         "name": "Weather",
@@ -11017,7 +11020,8 @@
         "note": "Only the video's number is kept, not the link. It plays from the providers' privacy-enhanced players and only on your screen.",
         "secsHint": "Minutes and seconds, like 1:30.",
         "secsBad": "Type the time as minutes and seconds, like 1:30.",
-        "title": "Video player"
+        "title": "Video player",
+        "openOn": "Open on {site}"
       },
       "site": {
         "name": "Site window",
@@ -11098,9 +11102,10 @@
         "name": "Class jobs",
         "desc": "Jobs for everyone, turned each week. Uses the class's Oomba names, or names you type.",
         "s": {
-          "jobs": "Jobs (one per line; empty for the usual ones)",
+          "jobs": "Jobs",
           "crew": "Who does what",
-          "names": "Students (one per line; empty for the class's students)"
+          "names": "Names I typed",
+          "from": "Students come from"
         },
         "rotate": "Next week",
         "shuffle": "Shuffle",
@@ -11109,7 +11114,29 @@
         "nobody": "No students in this class yet.",
         "open": "Open",
         "defaults": "Line leader\nDoor holder\nLights\nPlant helper\nBook helper\nTidy-up captain\nMessenger\nBoard cleaner",
-        "nobodyTyped": "No students yet: type names under Students in this widget's settings, or add students to the class."
+        "nobodyTyped": "No students yet: add names in this widget's settings, or add students to the class.",
+        "waiting": "Waiting: {names}",
+        "cardsIntro": "Each job has its own card. Pick who does it this week. {rotate} on the widget moves everyone down one job.",
+        "job": "Job",
+        "jobN": "Job {n}",
+        "student": "Student",
+        "studentFor": "Student for {job}",
+        "nobodyYet": "— Nobody yet —",
+        "typeName": "Type a name…",
+        "nameLabel": "New name",
+        "addName": "Add",
+        "addJob": "Add a job",
+        "newJob": "New job",
+        "removeJob": "Remove {job}",
+        "removedJob": "{job} removed.",
+        "picked": "{name} does {job} now.",
+        "movedUp": "{job} moved up to number {n}, so {name} can do it.",
+        "fromNames": "Names I type",
+        "fromClass": "{class}'s students",
+        "removeName": "Remove {name}",
+        "removedName": "{name} removed.",
+        "noNames": "No names yet: on a job, choose Type a name…",
+        "maxJobs": "{n} jobs at most."
       },
       "mood": {
         "name": "Mood check-in",
@@ -11464,6 +11491,12 @@
     "assign": "Assign",
     "removeGame": "Remove from folder",
     "save": "Save to folder",
+    "pick": "Which folder?",
+    "keepBrowsing": "Keep browsing",
+    "openFolder": "Open {folder}",
+    "reorderHint": "Drag to change the order (on a phone or tablet, press and hold first). With a keyboard: Alt and the arrow keys.",
+    "move": "Move {name}",
+    "moved": "{name}: {n} of {total}",
     "saveTitle": "Save “{game}” to a folder",
     "gamesN": "{count, plural, one {# game} other {# games}}",
     "saved": "In this folder",

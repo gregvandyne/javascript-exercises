@@ -307,3 +307,55 @@ test('the renderer: pointer events with no page scroll on the board, pinch only 
   assert.match(css, /\.dt \.gb-btn\{[^}]*min-width:44px;min-height:44px/);
   assert.doesNotMatch(src, /innerHTML|insertAdjacentHTML|outerHTML/);
 });
+
+test('the board\'s labels are readable on the smallest widget: never under their floor, bigger on the projector, growing with the board', () => {
+  // The smallest shape board on a phone draws its board about 280-330px across; there the words used to be 13px.
+  for (const kind of Object.keys(G.LABEL_SIZES)) {
+    for (const boardPx of [0, 200, 280, 330]) {
+      const px = G.labelPx(kind, boardPx), proj = G.labelPx(kind, boardPx, true);
+      assert.ok(px >= 15, `${kind} at ${boardPx}px is ${px}px`);
+      assert.ok(px >= 12 && proj > px, `${kind}: ${px}px on the screen, ${proj}px on the projector`);
+    }
+    assert.ok(G.labelPx(kind, 1000) > G.labelPx(kind, 330), `${kind} grows with a big board`);
+    assert.ok(G.labelPx(kind, 1000) <= 30, `${kind} stays a label on a big board`);
+  }
+  assert.ok(G.labelPx('letter', 330) > 13 && G.labelPx('side', 330) > 13 && G.labelPx('angle', 330) > 13, 'bigger than they were');
+  assert.deepEqual(G.LABEL_MIN_PX, [12, 14]);
+  // The renderer sizes every label this way, and an angle may shrink only to the minimum.
+  const src = fs.readFileSync('public/js/dash-shapeboard.js', 'utf8');
+  assert.match(src, /G\.labelPx\(kind, pxPerUnit \* VB, projecting\(\)\)/);
+  assert.match(src, /G\.LABEL_MIN_PX\[projecting\(\) \? 1 : 0\]/);
+  assert.match(src, /G\.placeLabels\(/);
+  assert.doesNotMatch(src, /floor = projecting\(\) \? 16 : 13/, 'the old 13px floor is gone');
+});
+
+test('the board\'s labels are placed off each other, off the pegs and off their own band', () => {
+  const box = (p, it) => ({ x: p.x, y: p.y, w: it.w * (p.scale || 1), h: it.h * (p.scale || 1) });
+  // Two corners close together whose labels would land on the same spot: they are moved apart.
+  const items = [{ x: 100, y: 100, dx: 1, dy: 0, d: 20, w: 30, h: 16 }, { x: 104, y: 100, dx: 1, dy: 0, d: 20, w: 30, h: 16 }];
+  const at = G.placeLabels(items, { box: [0, 0, 1000, 1000] });
+  assert.ok(!G.labelsOverlap(box(at[0], items[0]), box(at[1], items[1])), JSON.stringify(at));
+  assert.deepEqual([at[0].x, at[0].y], [120, 100], 'the first keeps its own spot');
+  // A label whose own spot is on a peg moves off it; one whose spot is clear stays.
+  const onPeg = G.placeLabels([{ x: 0, y: 50, dx: 1, dy: 0, d: 50, w: 20, h: 14 }], { pegs: [{ x: 50, y: 50 }], peg: 6, box: [-500, -500, 500, 500] })[0];
+  assert.ok(Math.abs(onPeg.x - 50) > 10 + 6 || Math.abs(onPeg.y - 50) > 7 + 6, JSON.stringify(onPeg));
+  assert.deepEqual(G.placeLabels([{ x: 0, y: 0, dx: 0, dy: -1, d: 30, w: 20, h: 14 }], { pegs: [{ x: 200, y: 200 }], peg: 6 })[0], { x: 0, y: -30, scale: 1 });
+  // Kept inside the board.
+  const edge = G.placeLabels([{ x: 5, y: 500, dx: -1, dy: 0, d: 20, w: 20, h: 14 }], { box: [0, 0, 1000, 1000] })[0];
+  assert.ok(edge.x - 10 >= 0, JSON.stringify(edge));
+  // Notes and handles already there are kept clear of.
+  const nt = G.placeLabels([{ x: 0, y: 0, dx: 1, dy: 0, d: 30, w: 20, h: 14 }], { fixed: [{ x: 30, y: 0, w: 40, h: 20 }] })[0];
+  assert.ok(!G.labelsOverlap({ x: nt.x, y: nt.y, w: 20, h: 14 }, { x: 30, y: 0, w: 40, h: 20 }), JSON.stringify(nt));
+  // A label keeps off its own band's sides (a side crossing its spot), not another band's.
+  assert.equal(G.segmentInBox([0, 0, 100, 100], 40, 40, 60, 60), true);
+  assert.equal(G.segmentInBox([0, 0, 100, 0], 40, 40, 60, 60), false);
+  const own = G.placeLabels([{ x: 0, y: 0, dx: 1, dy: 0, d: 30, w: 20, h: 14, band: 0 }], { lines: [[30, -50, 30, 50, 0]] })[0];
+  assert.notDeepEqual([own.x, own.y], [30, 0]);
+  const other = G.placeLabels([{ x: 0, y: 0, dx: 1, dy: 0, d: 30, w: 20, h: 14, band: 1 }], { lines: [[30, -50, 30, 50, 0]] })[0];
+  assert.deepEqual([other.x, other.y], [30, 0]);
+  // An angle stays in its corner: with no room it is drawn smaller (down to its minScale), never moved far away.
+  const crowd = Array.from({ length: 4 }, () => ({ x: 0, y: 0, dx: 1, dy: 0, d: 20, w: 40, h: 16, near: true, minScale: 0.8 }));
+  const ang = G.placeLabels(crowd, { box: [-1000, -1000, 1000, 1000] });
+  for (const p of ang) { assert.ok(Math.hypot(p.x, p.y) <= 20 * 1.6 + 1e-9, JSON.stringify(p)); assert.ok(p.scale >= 0.8 - 1e-9 && p.scale <= 1); }
+  assert.ok(ang.some(p => p.scale < 1), 'crowded angles were made smaller');
+});

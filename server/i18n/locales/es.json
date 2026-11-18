@@ -4976,7 +4976,8 @@
       "popcornHush": "Un medidor de ruido para la clase: mantened la calma para que las palomitas no estallen, porque demasiado ruido hace saltar los granos.",
       "sudoku": "Acertijos de lógica, desde un mini 4×4 con dibujos hasta el clásico 9×9: cada fila, columna y caja tiene cada número una vez.",
       "sumSpotter": "Encuentra el número que es la suma (o el producto) de otros dos, desde sumas hasta 10 hasta las tablas, con una carrera de 60 segundos.",
-      "wordTrail": "Las palabras más frecuentes del inglés, de preescolar a 3.º grado, en un sendero de cuento con Bramble, el erizo: escucha una palabra y tócala, completa una frase, deletréala con fichas, en lecciones cortas con racha diaria."
+      "wordTrail": "Las palabras más frecuentes del inglés, de preescolar a 3.º grado, en un sendero de cuento con Bramble, el erizo: escucha una palabra y tócala, completa una frase, deletréala con fichas, en lecciones cortas con racha diaria.",
+      "crossword": "Convierte cualquier lista de vocabulario en un crucigrama: escribe o sube las palabras, añade pistas o deja que la IA las escriba, y compártelo con la clase."
     },
     "hubs": {
       "math": {
@@ -9410,7 +9411,9 @@
         "calNote": "Google Calendar: Configuración → tu calendario → «Dirección secreta en formato iCal». Outlook: Configuración → Calendario → Calendarios compartidos → Publicar → enlace ICS. Los eventos de hoy pasan a ser el horario y todos los que ven este widget los ven, así que conecta un calendario pensado para la clase. La dirección en sí sigue siendo privada.",
         "calRemove": "Desconectar",
         "calOn": "{name} está conectado.",
-        "calToday": "Los eventos de hoy vienen de este calendario (se revisa cada 15 minutos). Un día sin eventos, se muestra el horario de abajo."
+        "calToday": "Los eventos de hoy vienen de este calendario (se revisa cada 15 minutos). Un día sin eventos, se muestra el horario de abajo.",
+        "instructions": "Instrucciones",
+        "agendaLabel": "Importar un horario"
       },
       "weather": {
         "name": "El tiempo",
@@ -10590,7 +10593,8 @@
         "note": "Solo se guarda el número del vídeo, no el enlace. Se reproduce en el reproductor con privacidad mejorada del servicio y solo en tu pantalla.",
         "secsHint": "Minutos y segundos, por ejemplo 1:30.",
         "secsBad": "Escribe el tiempo en minutos y segundos, por ejemplo 1:30.",
-        "title": "Reproductor de vídeo"
+        "title": "Reproductor de vídeo",
+        "openOn": "Abrir en {site}"
       },
       "site": {
         "name": "Ventana web",
@@ -10671,9 +10675,10 @@
         "name": "Tareas de clase",
         "desc": "Tareas para todos, que rotan cada semana. Usa los nombres Oomba de la clase o nombres que escribas.",
         "s": {
-          "jobs": "Tareas (una en cada línea; vacío para las de siempre)",
+          "jobs": "Tareas",
           "crew": "Quién hace qué",
-          "names": "Alumnos (uno por línea; vacío para los alumnos de la clase)"
+          "names": "Nombres que escribí",
+          "from": "Los alumnos vienen de"
         },
         "rotate": "Semana siguiente",
         "shuffle": "Mezclar",
@@ -10682,7 +10687,29 @@
         "nobody": "Todavía no hay alumnos en esta clase.",
         "open": "Libre",
         "defaults": "Encargado de la fila\nPuerta\nLuces\nPlantas\nLibros\nOrden\nMensajero\nPizarra",
-        "nobodyTyped": "Aún no hay alumnos: escribe nombres en «Alumnos» en los ajustes de este widget, o añade alumnos a la clase."
+        "nobodyTyped": "Aún no hay alumnos: añade nombres en los ajustes de este widget, o añade alumnos a la clase.",
+        "waiting": "Esperan: {names}",
+        "cardsIntro": "Cada tarea tiene su propia tarjeta. Elige quién la hace esta semana. {rotate} en el widget pasa a todos a la tarea siguiente.",
+        "job": "Tarea",
+        "jobN": "Tarea {n}",
+        "student": "Alumno",
+        "studentFor": "Alumno para {job}",
+        "nobodyYet": "— Nadie todavía —",
+        "typeName": "Escribir un nombre…",
+        "nameLabel": "Nombre nuevo",
+        "addName": "Añadir",
+        "addJob": "Añadir una tarea",
+        "newJob": "Tarea nueva",
+        "removeJob": "Quitar {job}",
+        "removedJob": "{job} quitada.",
+        "picked": "{name} hace ahora {job}.",
+        "movedUp": "{job} ha subido al número {n} para que {name} pueda hacerla.",
+        "fromNames": "Nombres que escribo",
+        "fromClass": "Alumnos de {class}",
+        "removeName": "Quitar a {name}",
+        "removedName": "{name} quitado.",
+        "noNames": "Aún no hay nombres: en una tarea, elige «Escribir un nombre…».",
+        "maxJobs": "{n} tareas como máximo."
       },
       "mood": {
         "name": "¿Cómo estás?",
@@ -11037,6 +11064,12 @@
     "assign": "Asignar",
     "removeGame": "Quitar de la carpeta",
     "save": "Guardar en carpeta",
+    "pick": "¿En qué carpeta?",
+    "keepBrowsing": "Seguir explorando",
+    "openFolder": "Abrir {folder}",
+    "reorderHint": "Arrastra para cambiar el orden (en teléfono o tableta, mantén pulsado primero). Con teclado: Alt y las flechas.",
+    "move": "Mover {name}",
+    "moved": "{name}: {n} de {total}",
     "saveTitle": "Guardar «{game}» en una carpeta",
     "gamesN": "{count, plural, one {# juego} other {# juegos}}",
     "saved": "En esta carpeta",

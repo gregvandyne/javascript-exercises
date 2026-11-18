@@ -47,6 +47,8 @@ export const GROUPS = ['join', 'time', 'class', 'show', 'teach', 'words', 'tools
  * rebuilt by services/dash-tools.js) and 'pic' (stage 3: one of the teacher's own pictures for this class). Every type is
  * rebuilt on the server (cleanSettings). send: the teacher can send it to students, each of whom gets their own copy.
  * 'events': countdowns, each a label, a day and an optional time (cleanEvents).
+ * 'choice' (one of choices, set by a custom editor, no labels of its own). editor: the settings panel's own editor for a
+ * field (public/js/dash.js EDITORS), else the type's.
  */
 /** The words each teaching tool shows (dash.w.<id>.<word>); the words they share are dash.tools.<word> (TOOL_COMMON). */
 const TOOL_WORDS = {
@@ -186,10 +188,12 @@ export const WIDGETS = [
   // edited with the periods), 'cal' a calendar connected through services/dash-calendar.js (its id and name only).
   { id: 'schedule', icon: '🗓️', group: 'time', who: 'teacher', size: [4, 4], min: [3, 2], words: ['empty', 'now', 'next', 'left', 'after', 'before', 'addPeriod', 'period', 'from', 'to', 'remove', 'nothingNext', 'starts',
     'everyDay', 'sameAsEvery', 'ownDay', 'backToEvery', 'upload', 'uploadHint', 'paste', 'pasteHint', 'pasteGo', 'imported', 'importedWeek', 'importNone',
-    'calLabel', 'calHint', 'calConnect', 'calNote', 'calRemove', 'calOn', 'calToday'], settings: [
+    'calLabel', 'calHint', 'calConnect', 'calNote', 'calRemove', 'calOn', 'calToday', 'instructions', 'agendaLabel'], settings: [
+    // The connected calendar first, then the periods (whose editor opens with the agenda import): the two ways to bring a
+    // schedule in sit at the top of the settings, each a card with its instructions folded away.
+    { key: 'cal', type: 'feed', def: null },
     { key: 'periods', type: 'periods', def: [] },
     { key: 'week', type: 'week', hidden: true, def: {} },
-    { key: 'cal', type: 'feed', def: null },
     { key: 'view', type: 'select', options: ['list', 'nownext'], def: 'list' }] },
   { id: 'weather', icon: '⛅', group: 'show', who: 'teacher', size: [4, 3], min: [3, 2], words: ['empty', 'resting', 'loading', 'hiLo', 'find', 'search', 'searchHint', 'none', 'place',
     'clear', 'clearNight', 'partly', 'cloudy', 'fog', 'drizzle', 'rain', 'snow', 'storm'], settings: [
@@ -262,7 +266,7 @@ export const WIDGETS = [
     { key: 'fit', type: 'select', options: ['contain', 'cover'], def: 'contain' }] },
   // ---- stage 5: video, a site window and a document camera (the teacher's screen and projector only); a hall pass, class
   // jobs, a mood check-in (students see only their own); and calm, note and checklist widgets.
-  { id: 'video', icon: '🎬', group: 'show', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['empty', 'paste', 'pasteHint', 'bad', 'ok', 'endNote', 'note', 'secsHint', 'secsBad', 'title'], settings: [
+  { id: 'video', icon: '🎬', group: 'show', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['empty', 'paste', 'pasteHint', 'bad', 'ok', 'endNote', 'note', 'secsHint', 'secsBad', 'title', 'openOn'], settings: [
     { key: 'video', type: 'video', def: null },
     { key: 'start', type: 'secs', def: 0 },
     { key: 'end', type: 'secs', def: 0 },
@@ -277,11 +281,18 @@ export const WIDGETS = [
     { key: 'places', type: 'places', def: PASS_PLACES },
     { key: 'oneOut', type: 'bool', def: true },
     { key: 'mins', type: 'number', min: 1, max: 30, def: 5 }] },
-  { id: 'jobs', icon: '🧹', group: 'class', who: 'teacher', size: [5, 5], min: [4, 4], words: ['rotate', 'shuffle', 'rotated', 'shuffled', 'nobody', 'nobodyTyped', 'open', 'defaults'], settings: [
-    { key: 'jobs', type: 'textarea', max: 400, def: '' },
-    // Names the teacher types (one a line), used instead of the class's students when given: a class without student
-    // accounts yet, or a teacher who wants first names on the chart (owner, 18 Nov 2026).
-    { key: 'names', type: 'textarea', max: 1200, def: '' },
+  { id: 'jobs', icon: '🧹', group: 'class', who: 'teacher', size: [5, 5], min: [4, 4], words: ['rotate', 'shuffle', 'rotated', 'shuffled', 'nobody', 'nobodyTyped', 'open', 'defaults', 'waiting',
+    // The settings sheet: one card per job (docs/decisions.md "Class jobs: one card per job").
+    'cardsIntro', 'job', 'jobN', 'student', 'studentFor', 'nobodyYet', 'typeName', 'nameLabel', 'addName', 'addJob', 'newJob', 'removeJob', 'removedJob', 'picked', 'movedUp',
+    'fromNames', 'fromClass', 'removeName', 'removedName', 'noNames', 'maxJobs'], settings: [
+    // Edited as cards (editor 'jobcards'), saved as before: one job a line (16 at most; empty: the usual ones).
+    { key: 'jobs', type: 'textarea', editor: 'jobcards', max: 700, def: '' },
+    // Names the teacher types (one a line), used instead of the class's students: a class without student accounts yet,
+    // or a teacher who wants first names on the chart (owner, 18 Nov 2026). Edited on the job cards.
+    { key: 'names', type: 'textarea', hidden: true, max: 1200, def: '' },
+    // Where the people come from: 'names' (typed), 'class' (the roster), or 'auto' (dashboards saved before the cards:
+    // the typed names if there are any, else the class).
+    { key: 'from', type: 'choice', hidden: true, choices: ['auto', 'names', 'class'], def: 'auto' },
     { key: 'crew', type: 'crew', hidden: true, def: { order: [], shift: 0 } }] },
   { id: 'mood', icon: '😊', group: 'check', who: 'teacher', pinDef: true, size: [4, 4], min: [4, 4], words: ['ask', 'mine', 'counts', 'names', 'nobody', 'notYet', 'saved', 'countsHidden', ...MOODS.map(m => `m_${m}`)], settings: [] },
   { id: 'breathe', icon: '🫧', group: 'tools', who: 'both', size: [3, 4], min: [3, 4], words: ['start', 'pause', 'in', 'hold', 'out', 'ready'], settings: [
@@ -477,6 +488,7 @@ export function cleanSettings(type, s = {}, role = 'teacher') {
     const v = src[f.key];
     if (f.type === 'bool') out[f.key] = v === undefined ? f.def : v === true || v === 1 || v === '1' || v === 'true';
     else if (f.type === 'select') out[f.key] = f.options.includes(v) ? v : f.def;
+    else if (f.type === 'choice') out[f.key] = f.choices.includes(v) ? v : f.def;
     else if (f.type === 'number') { const n = Math.round(Number(v)); out[f.key] = v !== undefined && v !== '' && Number.isFinite(n) ? Math.min(f.max, Math.max(f.min, n)) : f.def; }
     else if (f.type === 'zone') out[f.key] = v && isZone(v) ? String(v) : '';
     else if (f.type === 'periods') out[f.key] = cleanPeriods(v);
