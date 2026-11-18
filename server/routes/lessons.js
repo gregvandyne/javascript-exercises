@@ -205,7 +205,7 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   const l = L.getLesson(req.params.id);
   const edit = L.canEditLesson(u, l);
   if (!l || !(edit || L.canSeeShared(u, l))) return no(req, res);
-  // A teacher-made lesson is retired: its games are in the folder made from it (0084_game_folders). An assigned game opens
+  // A teacher-made lesson is retired: its games are in the folder made from it (0085_game_folders). An assigned game opens
   // as the game. Ready-made course copies (CS Quest) and live homework still open here.
   const retired = l.kind === 'lesson' && (q.get('SELECT 1 FROM lessons_retired WHERE lesson_id=? LIMIT 1', l.id) || q.get('SELECT 1 FROM game_folders WHERE from_lesson=? LIMIT 1', l.id));
   if (retired) { const fd = q.get('SELECT id FROM game_folders WHERE from_lesson=? AND owner_id=?', l.id, u.id); return res.redirect(302, fd ? `/build/folders/${fd.id}` : '/build'); }

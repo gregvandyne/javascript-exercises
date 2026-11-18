@@ -52,7 +52,9 @@ let busy = 0;   // set() is running: the old field may be taken out of the page 
  *   off           true: shown only (edit mode)
  *   key           a name that stays the same when the widget draws the field again
  *   cls           more classes; width: at least this many characters wide (it grows with what it holds)
- *   decimal       true: inputmode decimal; inputMode: another keyboard (a slope's "1/2" needs the ordinary one) */
+ *   decimal       true: inputmode decimal; inputMode: another keyboard (a slope's "1/2" needs the ordinary one)
+ *   out(n)        optional: a number outside the limits was typed (n, as typed; the nearest limit is used first), so
+ *                  the widget can say why (the fractions' "That's as big as it goes") */
 export function numField(o) {
   const fmt = o.format || numText, parse = o.parse || numParse;
   const inp = document.createElement('input');
@@ -96,10 +98,16 @@ export function numField(o) {
    *  typing began: "2/5" in a slope field leaves the slope as it was, not at the 2 it passed through). */
   const finish = () => {
     if (inp.readOnly || !S) return;
-    const d = numDecide(inp.value, val(o.min), val(o.max), parse);
+    const d = numDecide(inp.value, val(o.min), val(o.max), parse), focused = document.activeElement === inp;
     // Not a number (or empty): the value from before typing comes back, as with Escape.
     const n = d.kind === 'ok' ? d.n : d.kind === 'out' ? d.clamped : S.orig;
     if (n !== S.applied) apply(n, false);
+    if (d.kind === 'out' && o.out) {
+      busy++; try { o.out(d.n); } finally { busy--; }
+      // The widget drew the field again to say why: the focus goes on in the new one (Enter, not leaving the field).
+      const next = focused && !inp.isConnected && o.key && [...document.querySelectorAll('input.dash-num')].find(x => x.dataset.numkey === o.key && x.isConnected && x.numAdopt);
+      if (next && document.activeElement !== next) next.numAdopt(null, null);
+    }
     inp.removeAttribute('aria-invalid');
     if (inp.isConnected) { inp.value = fmt(o.get()); fit(); begin(); }
   };

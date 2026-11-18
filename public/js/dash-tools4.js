@@ -218,14 +218,18 @@ function angle(body, s, ctx) {
   const T = shell(body, s, ctx, 'angle'), { W, st } = T;
   const fill = (msg, vars) => format(msg, vars, ctx.intl);
   let face, drag = null;
-  const setA = (a, say = true) => { a = Math.max(0, Math.min(360, Math.round(a))); if (a === st.a) return; st.a = a; T.commit(); if (say) ctx.say(`${st.a}°, ${W[G.angleKind(st.a)]}`); };
+  const setA = (a, say = true) => { a = Math.max(0, Math.min(360, Math.round(a))); if (a === st.a) return; st.a = a; T.commit(); if (say) ctx.say(T.hid() ? W.ray : `${st.a}°, ${W[G.angleKind(st.a)]}`); };
   // Typed: any whole degree 0-360 (the − and + step by the step chosen in Options).
   const step = T.stepper(W.ray, () => `${st.a}°`, () => setA(st.a - st.step), () => setA(st.a + st.step), `${W.ray} −${st.step}°`, `${W.ray} +${st.step}°`,
-    { value: () => st.a, min: 0, max: 360, format: v => `${v}°`, parse: t => numParse(String(t).replace(/°$/, '')), set: a => { st.a = a; T.commit(); ctx.say(`${st.a}°, ${W[G.angleKind(st.a)]}`); } });
+    { value: () => st.a, min: 0, max: 360, format: v => `${v}°`, parse: t => numParse(String(t).replace(/°$/, '')), mask: () => T.hid(), set: a => { st.a = a; T.commit(); ctx.say(`${st.a}°, ${W[G.angleKind(st.a)]}`); } });
   T.top.appendChild(step);
-  const presets = el('div', 'dt-seg'); presets.setAttribute('role', 'group'); presets.setAttribute('aria-label', W.ray);
-  for (const a of [45, 90, 135, 180, 270]) { const b = btn(`${a}°`, 'btn btn-sm'); b.dir = 'ltr'; b.addEventListener('click', () => setA(a)); presets.appendChild(b); }
-  T.top.appendChild(presets);
+  // The five presets as one dropdown, "Jump to…" (docs/decisions.md "one calm row of buttons"): picking one sets the
+  // angle, then the dropdown shows "Jump to…" again so the same one can be picked again.
+  const presets = selectOf([['', T.C.jumpTo], ...[45, 90, 135, 180, 270].map(a => [a, `${a}°`])], '');
+  presets.classList.add('dt-select', 'dt-pick', 'dt-jump'); presets.setAttribute('aria-label', `${W.ray}: ${T.C.jumpTo}`);
+  presets.addEventListener('change', () => { const v = presets.value; presets.value = ''; if (v) setA(Number(v)); });
+  // A student's "Build it" copy has no presets (a preset would build the angle for them).
+  if (!ctx.build) T.top.appendChild(presets);
   const proto = T.toggle(`📐 ${W.proto}`, null, () => st.proto, v => { st.proto = v; T.commit(); });
   const arc = T.toggle(`◜ ${W.arc}`, null, () => st.arc, v => { st.arc = v; T.commit(); });
   T.foot.append(proto, arc);
@@ -234,7 +238,7 @@ function angle(body, s, ctx) {
     const R = 170, a = st.a, rad = (a * Math.PI) / 180, full = a > 180;
     T.stage.textContent = '';
     const vb = full ? [-215, -215, 430, 430] : [-215, -215, 430, 250];
-    face = svg('svg', { viewBox: vb.join(' '), class: 'dt-angle', role: 'slider', tabindex: ctx.editing ? '-1' : '0', 'aria-label': W.ray, 'aria-valuemin': 0, 'aria-valuemax': 360, 'aria-valuenow': a, 'aria-valuetext': `${a}°, ${W[G.angleKind(a)]}`, style: `--ts:${tsFor(T, vb[2], vb[3], 15).toFixed(3)}` });
+    face = svg('svg', { viewBox: vb.join(' '), class: 'dt-angle', role: 'slider', tabindex: ctx.editing ? '-1' : '0', 'aria-label': W.ray, 'aria-valuemin': 0, 'aria-valuemax': 360, 'aria-valuenow': a, 'aria-valuetext': T.hid() ? '?' : `${a}°, ${W[G.angleKind(a)]}`, style: `--ts:${tsFor(T, vb[2], vb[3], 15).toFixed(3)}` });
     face.setAttribute('direction', 'ltr');
     if (st.proto) {
       // A protractor of our own: half a circle (a full one for reflex angles), a tick every 5°, numbers every 30°.
@@ -252,7 +256,7 @@ function angle(body, s, ctx) {
       else face.appendChild(svg('path', { d: `M${r} 0A${r} ${r} 0 ${large} 0 ${r * Math.cos(rad)} ${-r * Math.sin(rad)}`, class: 'dt-aarc' }));
       const mid = rad / 2, lr = a < 40 ? 96 : 84;
       // The degrees by the arc only where they can't run into the protractor's numbers (the readout always has them).
-      if (tsFor(T, vb[2], vb[3], 15) < 1.5) face.appendChild(svg('text', { x: lr * Math.cos(mid), y: -lr * Math.sin(mid) + 8, 'text-anchor': 'middle', class: 'dt-alab' }, `${a}°`));
+      if (tsFor(T, vb[2], vb[3], 15) < 1.5 && !T.hid()) face.appendChild(svg('text', { x: lr * Math.cos(mid), y: -lr * Math.sin(mid) + 8, 'text-anchor': 'middle', class: 'dt-alab' }, `${a}°`));
     } else if (st.arc && a === 360) face.appendChild(svg('circle', { r: 58, class: 'dt-aarc' }));
     face.appendChild(svg('line', { x1: 0, y1: 0, x2: 200, y2: 0, class: 'dt-ray' }));
     face.appendChild(svg('line', { x1: 0, y1: 0, x2: 200 * Math.cos(rad), y2: -200 * Math.sin(rad), class: 'dt-ray dt-ray2' }));
@@ -417,7 +421,8 @@ function transform(body, s, ctx) {
   const T = shell(body, s, ctx, 'transform'), { W, st } = T;
   const fill = (msg, vars) => format(msg, vars, ctx.intl);
   let plane, drag = null;
-  const ops = T.seg(W.move, [['translate', W.translate, null, '➡️'], ['reflect', W.reflect, null, '🪞'], ['rotate', W.rotate, null, '🔄']], () => st.op, v => { st.op = v; T.commit(`${W[v]}: ${G.ruleText(tr())}`); });
+  const ops = T.pick(W.move, [['translate', W.translate], ['reflect', W.reflect], ['rotate', W.rotate]], () => st.op, v => { st.op = v; T.commit(`${W[v]}: ${G.ruleText(tr())}`); });
+  ops.dataset.pair = '1';
   T.top.appendChild(ops);
   const tr = () => ({ op: st.op, dx: st.dx, dy: st.dy, axis: st.axis, turn: st.turn });
   const dx = T.stepper('x', () => minus(st.dx), () => { if (st.dx > -8) { st.dx--; T.commit(G.ruleText(tr())); } }, () => { if (st.dx < 8) { st.dx++; T.commit(G.ruleText(tr())); } }, 'x −1', 'x +1',
@@ -455,23 +460,25 @@ function transform(body, s, ctx) {
     const path = ps => ps.map(([x, y]) => `${X(Math.max(TR_MIN - 1, Math.min(TR_MAX + 1, x)))},${Y(Math.max(TR_MIN - 1, Math.min(TR_MAX + 1, y)))}`).join(' ');
     const clip = svg('clipPath', { id: `trc-${ctx.id}` }); clip.appendChild(svg('rect', { x: P, y: P, width: S - 2 * P, height: S - 2 * P })); plane.appendChild(clip);
     if (st.ghost) plane.appendChild(svg('polygon', { points: path(pts), class: 'dt-trghost' }));
-    if (st.op === 'translate' && (st.dx || st.dy)) plane.appendChild(svg('line', { x1: X(pts[0][0]), y1: Y(pts[0][1]), x2: X(img[0][0]), y2: Y(img[0][1]), class: 'dt-trvec', 'clip-path': `url(#trc-${ctx.id})` }));
-    plane.appendChild(svg('polygon', { points: path(img), class: 'dt-trimg', 'clip-path': `url(#trc-${ctx.id})` }));
+    // The answer hidden (where does point A land?): the image, its points and its column of the table go.
+    const hid = T.hid();
+    if (!hid && st.op === 'translate' && (st.dx || st.dy)) plane.appendChild(svg('line', { x1: X(pts[0][0]), y1: Y(pts[0][1]), x2: X(img[0][0]), y2: Y(img[0][1]), class: 'dt-trvec', 'clip-path': `url(#trc-${ctx.id})` }));
+    if (!hid) plane.appendChild(svg('polygon', { points: path(img), class: 'dt-trimg', 'clip-path': `url(#trc-${ctx.id})` }));
     const inGrid = ([x, y]) => x >= TR_MIN && x <= TR_MAX && y >= TR_MIN && y <= TR_MAX;
     pts.forEach((p, i) => {
       if (st.ghost) plane.appendChild(svg('text', { x: X(p[0]) - 12, y: Y(p[1]) - 8, class: 'dt-trl dt-trl0', 'text-anchor': 'end' }, LABELS[i]));
-      if (inGrid(img[i])) { plane.appendChild(svg('circle', { cx: X(img[i][0]), cy: Y(img[i][1]), r: 6, class: 'dt-trpt' })); plane.appendChild(svg('text', { x: X(img[i][0]) + 10, y: Y(img[i][1]) - 8, class: 'dt-trl' }, `${LABELS[i]}′`)); }
+      if (!hid && inGrid(img[i])) { plane.appendChild(svg('circle', { cx: X(img[i][0]), cy: Y(img[i][1]), r: 6, class: 'dt-trpt' })); plane.appendChild(svg('text', { x: X(img[i][0]) + 10, y: Y(img[i][1]) - 8, class: 'dt-trl' }, `${LABELS[i]}′`)); }
     });
     wrap.appendChild(plane);
     if (st.table) {
       // Beside the grid: a row per point. Under it (a narrow tool): a column per point, so the grid keeps its room.
       const tb = el('table', 'dt-table dt-trtable dt-trtall'); tb.dir = 'ltr';
       const head = el('tr'); head.append(el('th', null, W.original), el('th', null, W.image)); tb.appendChild(head);
-      pts.forEach((p, i) => { const r = el('tr'); r.append(el('td', null, `${LABELS[i]} ${G.pointText(p)}`), el('td', null, `${LABELS[i]}′ ${G.pointText(img[i])}`)); tb.appendChild(r); });
+      pts.forEach((p, i) => { const r = el('tr'); r.append(el('td', null, `${LABELS[i]} ${G.pointText(p)}`), el('td', null, `${LABELS[i]}′ ${hid ? '?' : G.pointText(img[i])}`)); tb.appendChild(r); });
       const wide = el('table', 'dt-table dt-trtable dt-trwide'); wide.dir = 'ltr';
       const r0 = el('tr'), r1 = el('tr'), r2 = el('tr');
       r0.appendChild(el('th')); r1.appendChild(el('th', null, W.original)); r2.appendChild(el('th', null, W.image));
-      pts.forEach((p, i) => { r0.appendChild(el('th', null, LABELS[i])); r1.appendChild(el('td', null, G.pointText(p))); r2.appendChild(el('td', null, G.pointText(img[i]))); });
+      pts.forEach((p, i) => { r0.appendChild(el('th', null, LABELS[i])); r1.appendChild(el('td', null, G.pointText(p))); r2.appendChild(el('td', null, hid ? '?' : G.pointText(img[i]))); });
       wide.append(r0, r1, r2);
       wrap.append(tb, wide);
     }
@@ -515,14 +522,18 @@ function transform(body, s, ctx) {
 function balance(body, s, ctx) {
   const T = shell(body, s, ctx, 'balance'), { W, st } = T;
   const fill = (msg, vars) => format(msg, vars, ctx.intl);
-  const where = T.seg(W.where, [['both', W.both], ['left', W.left], ['right', W.right]], () => st.where, v => { st.where = v; T.commit(W[v]); });
+  const where = T.pick(W.where, [['both', W.both], ['left', W.left], ['right', W.right]], () => st.where, v => { st.where = v; T.commit(W[v]); });
+  where.dataset.pair = '1';
   T.top.appendChild(where);
   const L = () => ({ x: st.lx, u: st.lu }), R = () => ({ x: st.rx, u: st.ru });
   const eq = () => `${G.sideText(L())} ${G.tip(L(), R(), st.x) ? '≠' : '='} ${G.sideText(R())}`;
   const opB = (op, label, aria) => { const b = btn(label, 'btn btn-sm dt-balop', aria); b.dir = 'ltr'; b.addEventListener('click', () => doOp(op)); return b; };
   const addx = opB('addx', '+ x', W.addx), subx = opB('subx', '− x', W.subx), add1 = opB('add1', '+ 1', W.add1), sub1 = opB('sub1', '− 1', W.sub1), div = opB('div', '÷', W.div);
   const undo = ibtn('↶', W.undo), fresh = ibtn('🎲', W.new);
-  T.foot.append(addx, subx, add1, sub1, div, undo, fresh);
+  // The five steps are the balance's own controls (a row above); Undo and New equation are the row at the bottom.
+  const ops = el('div', 'dt-seg dt-balops'); ops.append(addx, subx, add1, sub1, div);
+  T.ctl.appendChild(ops);
+  T.foot.append(undo, fresh);
   const g = () => [st.lx, st.lu, st.rx, st.ru].reduce((a, b) => M.gcd(a, b), 0);
   const doOp = op => {
     const n = g(), r = G.balanceOp(L(), R(), op, st.where, n);
@@ -763,7 +774,8 @@ function chance(body, s, ctx) {
   const T = shell(body, s, ctx, 'chance'), { W, st } = T;
   const fill = (msg, vars) => format(msg, vars, ctx.intl);
   let anim = 0, last = null;
-  const kind = T.seg(W.kind, [['coin', W.coin, null, '🪙'], ['dice', W.dice, null, '🎲'], ['spinner', W.spinner, null, '🎡']], () => st.kind, v => { cancelAnimationFrame(anim); st.kind = v; st.counts = G.outcomes(v, st.dice, st.parts).map(() => 0); last = null; T.commit(W[v]); });
+  const kind = T.pick(W.kind, [['coin', W.coin], ['dice', W.dice], ['spinner', W.spinner]], () => st.kind, v => { cancelAnimationFrame(anim); st.kind = v; st.counts = G.outcomes(v, st.dice, st.parts).map(() => 0); last = null; T.commit(W[v]); });
+  kind.dataset.pair = '1';
   T.top.appendChild(kind);
   const runs = rowSelect(W.runs, [], st.runs, v => { st.runs = +v; T.commit(); });
   const run = ibtn('▶️', W.run), reset = ibtn('🧹', W.reset);
@@ -1129,7 +1141,8 @@ function map(body, s, ctx) {
     svgEl.appendChild(svg('rect', { x: 0, y: 0, width: MW, height: MH, rx: 18, class: st.kind === 'world' ? 'dt-sea' : 'dt-gpaper' }));
     if (st.kind === 'world') {
       for (const id of G.CONTINENT_IDS) for (const p of G.CONTINENTS[id]) svgEl.appendChild(svg('polygon', { points: p.map(q => q.join(',')).join(' '), class: `dt-land dt-land-${id}` }));
-      if (st.names) {
+      // The answer hidden (which continent is the pin on?): the map's names go.
+      if (st.names && !(T.hid() && st.kind !== 'grid')) {
         // A name never sits under a pin, a pin's label or another name: it moves below or above them, and on a map too
         // small for every name the oceans' names give way first (the continents' are placed first). Pins always show.
         const boxes = st.pins.flatMap(p => [[p.x - 20 * ts, p.y - 54 * ts, p.x + 20 * ts, p.y + 2], ...(p.l ? [[p.x + 22 * ts, p.y - 48 * ts, p.x + (26 + [...p.l].length * 10) * ts, p.y - 20 * ts]] : [])]);

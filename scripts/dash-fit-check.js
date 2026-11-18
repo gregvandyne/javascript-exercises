@@ -58,6 +58,7 @@ const D = await import('../server/services/dash.js');
 const DT = await import('../server/services/dash-tools.js');
 const { createApp } = await import('../server/app.js');
 const { tFor } = await import('../server/i18n/index.js');
+const BLD = await import('../public/js/dash-build.js');
 
 const OUT = process.env.OUT || '';
 if (OUT) fs.mkdirSync(OUT, { recursive: true });
@@ -261,6 +262,15 @@ for (const size of ['size', 'min']) {
     LAYOUTS.push({ key: name, widgets, own, chip: 1, stage5: !!widgets.stage5 });
   });
 }
+// Build it (docs/decisions.md "Classroom dashboards: Build it"): a layout per size with every tool (mode) a set can be
+// made from, plus a place value chart and base-ten blocks whose typed number is refused (the message under it shows).
+// On the teacher's screens the place value number is typed into; on a student's screens a set of each tool (the
+// teacher's, sent for that layout) is opened in turn in its sheet, Checked once ("Not yet" and its hint), and checked.
+for (const size of ['size', 'min']) {
+  const items = BLD.BUILD_TOOLS.map(m => ({ ...D.widgetType(DT.MODE_HOME[m] || m), wid: `wb-${m}`, s: { state: DT.MODE_HOME[m] ? { tab: m } : {} } }))
+    .concat([{ ...D.widgetType('placeval'), wid: 'wpvedit', s: { state: { v: 9999999 } } }, { ...D.widgetType('placeval'), wid: 'wb10edit', s: { state: { tab: 'base10', base10: { h: 9, t: 19, o: 19 } } } }]);
+  pack(size, items).forEach((widgets, k) => LAYOUTS.push({ key: `${size === 'size' ? 'default' : 'min'}-buildit${k ? `-${k + 1}` : ''}`, widgets, own: [], chip: 1, stage5: false, buildit: true }));
+}
 // Ready-made layouts: built per language in the loop below.
 for (const x of D.LAYOUT_TEMPLATES) LAYOUTS.push({ key: `tpl-${x.id}`, tpl: x.id, widgets: [], own: [], chip: 1, stage5: false });
 // The schedule at pinned times of day (docs/decisions.md "Classroom dashboards: the schedule at every time of day"): the
@@ -362,7 +372,7 @@ async function stubOutside(page) {
 /** In the page: every problem with every widget. */
 function problems() {
   const out = [];
-  const name = w => w.querySelector('.dash-wt')?.textContent || w.dataset.id;
+  const name = w => w.querySelector('.dash-wt')?.textContent || w.getAttribute('aria-label') || w.dataset.id;
   const scrolls = x => { const st = getComputedStyle(x); return (/(auto|scroll)/.test(st.overflowY) && x.scrollHeight > x.clientHeight + 1) || (/(auto|scroll)/.test(st.overflowX) && x.scrollWidth > x.clientWidth + 1); };
   const clips = x => { const st = getComputedStyle(x); return st.overflowX !== 'visible' || st.overflowY !== 'visible'; };
   const label = e => (e.getAttribute('aria-label') || e.textContent || e.className || e.tagName).toString().trim().replace(/\s+/g, ' ').slice(0, 30);
@@ -471,6 +481,23 @@ function problems() {
     for (const c of cards.querySelectorAll('.dt-card')) { const q = c.getBoundingClientRect(); if (q.width < 96) out.push(`${name(w)}: the card "${label(c)}" is only ${Math.round(q.width)}px wide`); }
     if (getComputedStyle(x).flexDirection === 'column' && cr.width < xr.width - 2) out.push(`${name(w)}: the cards over the grid are ${Math.round(cr.width)}px wide, not the tool's ${Math.round(xr.width)}px`);
   }
+  // One calm row of buttons (docs/decisions.md "Classroom dashboards: one calm row of buttons"): a tool's bottom is one
+  // row, never more, and nothing in it is pushed out sideways; at most three of the tool's own buttons stay in it (four
+  // on the teaching clock), the rest are behind ⋯; Share and ⋯ come after them; Options and Show/Hide the answer are in
+  // the header, never in the row.
+  for (const f of document.querySelectorAll('.dash-w .dt-foot')) {
+    const w = f.closest('.dash-w'); if (!w.offsetParent || !f.getClientRects().length) continue;
+    const vis = [...f.querySelectorAll(':scope > .dt-acts > *, :scope > :not(.dt-acts):not(.dt-fgap):not(.dt-menu)')].filter(e => e.getClientRects().length);
+    const mids = vis.map(e => { const r = e.getBoundingClientRect(); return (r.top + r.bottom) / 2; });
+    if (mids.length && Math.max(...mids) - Math.min(...mids) > 8) out.push(`${name(w)}: the buttons at the bottom are more than one row`);
+    if (f.scrollWidth > f.clientWidth + 1) out.push(`${name(w)}: the row at the bottom is ${f.scrollWidth - f.clientWidth}px too wide`);
+    const own = [...f.querySelectorAll(':scope > .dt-acts > .dt-act')].filter(e => e.getClientRects().length).length;
+    if (own > (w.querySelector('.dt-tclock') ? 4 : 3)) out.push(`${name(w)}: ${own} of the tool's own buttons in the bottom row`);
+    if (vis.some(e => e.matches('.dt-opt, .dt-ans, .dt-send, .dt-ask, .dt-buildit, .dt-practice:not(.dt-practice1)'))) out.push(`${name(w)}: Options, the answer or a Share item sits in the bottom row`);
+    // (a student's screen has no Share: its own 🎮 Practice it is the last button instead)
+    const order = vis.map(e => (e.matches('.dt-share, .dt-practice1') ? 's' : e.classList.contains('dt-morebtn') ? 'm' : 'a')).join('');
+    if (/s./.test(order) || /m.*a/.test(order)) out.push(`${name(w)}: Share and ⋯ are not at the end of the bottom row (${order})`);
+  }
   // Stage 3 review: small text, cut labels, and widgets hidden behind the bars.
   // Fractions as a number sentence: each bar's fraction is level with its bar, and the sentence reads left to right
   // (the first fraction, the second, the answer) in every language.
@@ -573,7 +600,7 @@ function problems() {
   const sticky = b => getComputedStyle(b).position === 'sticky';
   const bars = [...document.querySelectorAll('.dash-top, .dash-foot, .dash-edithead, .dash-switch')].filter(b => shown(b) && !sticky(b)).map(b => b.getBoundingClientRect());
   for (const w of document.querySelectorAll('.dash-w')) {
-    if (!w.offsetParent) continue;
+    if (!w.offsetParent || w.closest('.sheet')) continue;   // a copy in a sheet sits over the bars, as the sheet does
     const r = w.getBoundingClientRect();
     let clip = { top: 0, bottom: innerHeight, left: 0, right: innerWidth }, scroller = null;
     for (let a = w.parentElement; a && a !== document.body; a = a.parentElement) {
@@ -639,6 +666,25 @@ for (const L of RUN) {
  D.updateLayout(T, C, first.id, { name: L.key, widgets: L.widgets, bg: D.DEFAULT_BG });
  D.useLayout(T, C, first.id);
  if (L.stage5) { seed5(); siteOk = !L.key.startsWith('min'); }
+ // Build it: this layout's sets (the last layout's are ended first, so a student's tray holds only these).
+ const builds = [];
+ if (L.buildit) {
+   for (const p of D.todaysPushes(C).filter(x => x.kind === 'build')) D.endPush(T, C, p.id);
+   q.run("DELETE FROM dash_pushes WHERE class_id=? AND kind='build' AND ended_at IS NOT NULL", C.id);
+   for (const w of L.widgets.filter(x => x.id.startsWith('wb-'))) {
+     const mode = w.id.slice(3), st = (w.s.state && w.s.state[mode]) || (w.s.state && !w.s.state.tab ? w.s.state : {}), b = BLD.baseFor(mode, DT.cleanToolState(mode, st), 'en');
+     const gen = BLD.gensFor(mode, b).slice(-1)[0];
+     const r = D.push(T, C, { kind: 'build', ref: w.id, build: { mode, base: b, targets: BLD.makeTargets(mode, gen, 12, b, BLD.seeded(5)), say: 'Benutze die Werkzeuge, um jede Zahl ganz genau nachzubauen, und drücke dann auf Prüfen.' } });
+     if (r.push) builds.push(r.push); else console.log(`  build it: ${mode} could not be sent (${r.error})`);
+   }
+   // Fractions' equations (docs/decisions.md "Classroom dashboards: fractions, equations"): a set of all four operations,
+   // its answers up to three wholes, opened by a student like the others.
+   const fw = L.widgets.find(x => x.id === 'wb-fractions');
+   if (fw) {
+     const k = { task: 'eq', ops: 'all' }, r = D.push(T, C, { kind: 'build', ref: fw.id, build: { mode: 'fractions', base: {}, targets: BLD.makeTargets('fractions', 'eqAny', 12, k, BLD.seeded(7)), say: '' } });
+     if (r.push) builds.push(r.push); else console.log(`  build it: fraction equations could not be sent (${r.error})`);
+   }
+ }
  // The timer layouts: each timer paused at its time (a countdown set to it, a stopwatch run that long and paused).
  for (const [id, m, ms] of L.timers || []) { const t0 = Date.now(); if (m === 'down') D.timerAction(T, C, id, { action: 'set', ms }, t0); else { D.timerAction(T, C, id, { action: 'start' }, t0 - ms); D.timerAction(T, C, id, { action: 'pause' }, t0); } }
  for (const k of [kids[1], kids[2]]) D.saveStudent(k, C, { widgets: L.own.length ? L.own : [{ id: 'clock1', type: 'clock', x: 0, y: 0, w: 4, h: 2 }], pins: {} });
@@ -665,15 +711,84 @@ for (const L of RUN) {
     // Exercise the widgets that change size once used: roll the dice, pick a number, make groups.
     if (v.who === T) for (const sel of ['.dw-dice .btn-primary', '.dw-rand .btn-primary', '.dw-groups .btn-primary', '.dw-camera .dw5-camtop .btn-primary', '.dw-breathe .btn-primary']) if (await page.$(sel)) await page.click(sel, { timeout: 3000 }).catch(() => {});
     await page.waitForTimeout(700);
-    // The fraction tool switched between modes and views in turn (a mode is its place in the first row of buttons: 1
-    // Compare, 2 Add, 3 Subtract, 4 Multiply, 5 Divide; a view in the second: 1 Bars, 2 Circles), ending in Divide with bars.
+    // The fraction tool switched between modes and views in turn (a mode is its place in the dropdown: 1 Compare, 2 Add,
+    // 3 Subtract, 4 Multiply, 5 Divide; a view in Bars | Circles: 1 Bars, 2 Circles), ending in Divide with bars.
     if (v.who === T && await page.$('.dash-w[data-id="wfrswitch"]')) {
-      const seg = (k, n) => page.click(`.dash-w[data-id="wfrswitch"] .dt-top .dt-seg:nth-child(${k}) button:nth-child(${n})`, { timeout: 3000 }).then(() => page.waitForTimeout(80));
+      // The mode is the tool's dropdown now (docs/decisions.md "one calm row of buttons"); the view, Bars | Circles beside it.
+      const OPS = ['compare', 'add', 'sub', 'mul', 'div'], W0 = '.dash-w[data-id="wfrswitch"]';
+      const seg = (k, n) => (k === 1 ? page.selectOption(`${W0} .dt-modesel`, `fractions:${OPS[n - 1]}`, { timeout: 3000 }) : page.click(`${W0} .dt-modes .dt-seg button:nth-child(${n})`, { timeout: 3000 })).then(() => page.waitForTimeout(80));
       for (const [k, n] of [[1, 3], [2, 2], [1, 5], [2, 1], [1, 2], [2, 2], [1, 4], [1, 3], [2, 1], [1, 1], [2, 2], [1, 5], [2, 1]]) await seg(k, n).catch(e => errors.push(`the fraction tool's switch can't be pressed (${e.message.split('\n')[0]})`));
       await page.waitForTimeout(300);
     }
+    // The fractions' Steps panels open (every step shown on the busy Divide widgets), as a teacher opens them.
+    if (v.who === T) for (const b of await page.$$('.dash-w[data-id^="wfr"] .dt-stepst[aria-expanded="false"]')) { await b.evaluate(x => x.click()).catch(() => {}); await page.waitForTimeout(40); }
     if (process.env.DEBUG) await page.evaluate(() => { window.__fitDebug = true; });
     const found = [...await page.evaluate(problems), ...errors.map(e => `page error: ${e}`)];
+    // The small menus (Share, ⋯, View; docs/decisions.md "one calm row of buttons"): each opens whole inside the screen
+    // (inside its widget when it fits there), is never clipped, holds only buttons of 44px, takes the focus, and Escape
+    // closes it with the focus back on its button. Share is hidden on the projector.
+    if (process.env.MENUS !== '0') found.push(...await page.evaluate(async projector => {
+      const out = [], name = e => e.closest('.dash-w')?.querySelector('.dash-wt')?.textContent || '';
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+      for (const b of document.querySelectorAll('.dash-w .dt-share, .dash-w .dt-morebtn, .dash-w .dt-rviewbtn')) {
+        if (!b.closest('.dash-w').offsetParent) continue;
+        if (projector && b.classList.contains('dt-share')) { if (b.getClientRects().length) out.push(`${name(b)}: Share shows on the projector`); continue; }
+        if (!b.getClientRects().length) { if (b.classList.contains('dt-share') && !b.hidden) out.push(`${name(b)}: Share is not shown`); continue; }
+        b.scrollIntoView({ block: 'center' }); b.focus(); b.click();
+        await wait(40);
+        const m = document.getElementById(b.getAttribute('aria-controls'));
+        if (!m || !m.matches(':popover-open')) { out.push(`${name(b)}: "${b.getAttribute('aria-label')}" does not open its menu`); continue; }
+        if (b.getAttribute('aria-expanded') !== 'true') out.push(`${name(b)}: "${b.getAttribute('aria-label')}" does not say its menu is open`);
+        const r = m.getBoundingClientRect();
+        if (r.left < -0.5 || r.top < -0.5 || r.right > innerWidth + 0.5 || r.bottom > innerHeight + 0.5) out.push(`${name(b)}: the menu "${m.getAttribute('aria-label')}" goes outside the screen`);
+        if (m.scrollHeight > m.clientHeight + 1 && r.height < innerHeight - 20) out.push(`${name(b)}: the menu "${m.getAttribute('aria-label')}" scrolls`);
+        for (const x of m.querySelectorAll('button, a')) {
+          if (!x.getClientRects().length) continue;
+          const q = x.getBoundingClientRect();
+          if (q.height < 43.5) out.push(`${name(b)}: "${x.getAttribute('aria-label')}" in the menu is under 44px tall`);
+          if (q.left < r.left - 0.5 || q.right > r.right + 0.5) out.push(`${name(b)}: "${x.getAttribute('aria-label')}" is cut in the menu`);
+          for (const t of x.querySelectorAll('.dt-lbl')) if (t.scrollWidth > t.clientWidth + 1) out.push(`${name(b)}: "${t.textContent}" is cut in the menu`);
+        }
+        if (!m.contains(document.activeElement)) out.push(`${name(b)}: the focus is not in the menu "${m.getAttribute('aria-label')}" once it opens`);
+        (m.contains(document.activeElement) ? document.activeElement : m).dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        await wait(40);
+        if (m.matches(':popover-open')) { out.push(`${name(b)}: Escape does not close the menu "${m.getAttribute('aria-label')}"`); m.hidePopover(); }
+        else if (document.activeElement !== b) out.push(`${name(b)}: after Escape the focus is not back on "${b.getAttribute('aria-label')}"`);
+      }
+      return out;
+    }, !!v.projector));
+    // Build it: the place value number typed into and refused (its message under it), then each set opened by a student.
+    if (L.buildit && v.who === T && !v.projector) {
+      for (const id of ['wpvedit', 'wb10edit'].filter(x => L.widgets.some(y => y.id === x))) {
+        const inp = page.locator(`.dash-w[data-id="${id}"] .dt-bigin`);
+        if (!(await inp.count())) { found.push(`${id}: the number can't be typed into`); continue; }
+        await inp.scrollIntoViewIfNeeded().catch(() => {});
+        await inp.fill('12.345.678,9999').catch(e => found.push(`${id}: ${e.message.split('\n')[0]}`)); await inp.press('Enter').catch(() => {});
+        await page.waitForTimeout(80);
+        if (!(await page.locator(`.dash-w[data-id="${id}"] .dt-editmsg`).isVisible())) found.push(`${id}: no message for a number out of range`);
+      }
+      found.push(...(await page.evaluate(problems)).map(x => `typed number: ${x}`));
+    }
+    if (L.buildit && v.who !== T) {
+      for (const pid of builds) {
+        await page.evaluate(id => { const a = document.createElement('a'); a.href = `#build-${id}`; document.body.appendChild(a); a.click(); a.remove(); }, pid);
+        await page.waitForTimeout(250);
+        const name = await page.locator('.dash-buildsheet .dash-wbuild').getAttribute('aria-label').catch(() => null);
+        if (!name) { found.push(`build it ${pid}: the student's sheet does not open`); continue; }
+        await page.click('.dash-buildsheet [data-bcheck]', { timeout: 3000 }).catch(e => found.push(`build it ${name}: Check can't be pressed (${e.message.split('\n')[0]})`));
+        await page.waitForTimeout(120);
+        found.push(...(await page.evaluate(problems)).map(x => `build it: ${x}`));
+        found.push(...await page.evaluate(() => {
+          const out = [], sh = document.querySelector('.dash-buildsheet');
+          for (const e of sh.querySelectorAll('.dash-bhead *, .dash-bsay, .dash-btarget, .dash-bacts, .dash-bacts *')) if (e.clientWidth && e.scrollWidth > e.clientWidth + 1) out.push(`build it: "${e.textContent.slice(0, 24)}" is cut`);
+          const r = sh.getBoundingClientRect(); if (r.right > innerWidth + 1 || r.left < -1) out.push('build it: the sheet is wider than the screen');
+          for (const b of sh.querySelectorAll('.dash-bacts .btn')) if (b.getBoundingClientRect().height < 43.5) out.push(`build it: "${b.textContent.trim()}" is under 44px tall`);
+          return out;
+        }));
+        if (OUT) await page.screenshot({ path: `${OUT}/fit-${L.key}-${lang}-${v.name}-build-${name.replace(/\W+/g, '_')}.png` }).catch(() => {});
+        await page.keyboard.press('Escape'); await page.waitForTimeout(60);
+      }
+    }
     // Help on the maths tools: each tool's ⓘ panel, opened one at a time, fits its widget without scrolling and no line
     // of it is cut (docs/decisions.md "Classroom dashboards: help on the maths tools"). Not on the projector (hidden).
     if (!v.projector && process.env.HELP !== '0') {

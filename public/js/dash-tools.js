@@ -13,6 +13,11 @@ import * as M from './dash-math.js';
 import { questionFor } from './dash-ask.js';
 import { tip } from './dash-tip.js';
 import { numField } from './dash-num.js';
+import { BUILD, answerBars } from './dash-build.js';
+
+/** The tools with the shared Show/Hide the answer (server/services/dash-tools.js ANSWER_TOOLS, tested to agree). */
+export const ANSWER_TOOLS = new Set(['numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp', 'geoboard',
+  'pattern', 'angle', 'solids', 'transform', 'balance', 'algebra', 'coins', 'chance', 'letters', 'map', 'rods']);
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
@@ -38,20 +43,24 @@ export function shadedWords(n, d, words, intl) {
 const spoken = (s, rep) => String(s).replace('…', ` ${rep}`);
 
 /** The parts every tool shares: the state (the widget's own, or the type's starting state), a row of mode buttons on top,
- *  the model, a readout, and a row of buttons below ending with Options and Send to students (the one primary button). */
+ *  the model, a readout, the tool's own controls (T.ctl: selects and steppers) and ONE row at the bottom
+ *  (docs/decisions.md "Classroom dashboards: one calm row of buttons"): up to three of the tool's most-used actions as
+ *  icon buttons, ⋯ for the tool's other actions, and 📤 Share ▾ (Send to students, Build it, Make a question, Practice it).
+ *  Show/Hide the answer and Options are small icons in the widget's header, next to ⓘ. */
 function shell(body, s, ctx, id) {
   const W = ctx.type.words, C = ctx.common || {};
   const def = ((ctx.type.settings || []).find(f => f.key === 'state') || {}).def || {};
   const st = { ...clone(def), ...clone(s.state || {}) };
   body.classList.add('dt', `dt-${id}`);
   if (ctx.editing) body.classList.add('is-static');
-  const top = el('div', 'dt-top dw-row'), stage = el('div', 'dt-stage'), read = el('div', 'dt-read'), foot = el('div', 'dt-foot dw-row');
+  const top = el('div', 'dt-top dw-row'), stage = el('div', 'dt-stage'), read = el('div', 'dt-read'), ctl = el('div', 'dt-ctl dw-row'), foot = el('div', 'dt-foot dw-row');
   read.setAttribute('aria-live', 'polite');
+  read.dataset.ans = C.ansHidden || '?';   // what a screen reader hears for the "?" while the answer is hidden
   // The one-line instruction under the title (a maths tool's `howto`; T.howto changes it, e.g. for a mode).
   const howRow = el('div', 'dt-howrow'), how = el('p', 'dt-howto'); how.dir = 'auto'; howRow.appendChild(how);
-  const setHow = text => { how.textContent = text || ''; howRow.hidden = !text && !howRow.querySelector('.dt-info'); };
+  const setHow = text => { how.textContent = text || ''; howRow.hidden = !text && !howRow.querySelector('.dt-info,.dt-hbtn'); };
   setHow(W.howto);
-  body.append(howRow, top, stage, read, foot);
+  body.append(howRow, top, stage, read, ctl, foot);
   // Drawn again when the model's area changes size, so labels stay readable (see T.ts).
   let lw = 0, lh = 0, raf = 0;
   const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => {
@@ -60,9 +69,18 @@ function shell(body, s, ctx, id) {
   }) : null;
   if (ro) ro.observe(stage);
   const T = {
-    W, C, st, top, stage, read, foot, draw: () => {}, sized: true, howto: setHow,
+    W, C, st, top, stage, read, ctl, foot, draw: () => {}, sized: true, howto: setHow,
     /** Stage 4: a quick check made from what the tool shows now, or null. */
     question: () => questionFor(id, st, W, ctx.askWords || {}, ctx.intl),
+    /** Show/Hide the answer (docs/decisions.md "Classroom dashboards: Build it"): true while what gives the answer away
+     *  is hidden: after Make a question or the teacher's 🙈 (st.qh), and always on a student's "Build it" copy. A tool
+     *  with its own hide (fractions, bar models) sets ownHide/setOwnHide (and ansSay(hidden): what is said). Each tool
+     *  hides its own giveaways (counts, labels, a typed value); the readout under the model is hidden here for every tool. */
+    ownHide: null, setOwnHide: null, ansSay: null, ansCls: '',
+    hid: () => !!ctx.build || (T.ownHide ? !!T.ownHide() : !!st.qh),
+    hideAnswer() { if (T.setOwnHide) T.setOwnHide(true); else st.qh = true; },
+    /** Optional: (buttons) => put Show/Hide the answer somewhere other than the header. */
+    placeExtra: null,
     /** How much to grow an SVG's text so it is at least min px on screen: the model's viewBox is vbW x vbH user units and
      *  its text is base units. -> a factor >= 1 (CSS --ts). */
     /** Screen pixels per SVG unit for a viewBox of vbW x vbH drawn in the model's area (0 before it has a size). */
@@ -90,6 +108,15 @@ function shell(body, s, ctx, id) {
       g.sync();
       return g;
     },
+    /** A choice of three or more as a dropdown (a native select, named): what a row of pills was (docs/decisions.md
+     *  "Classroom dashboards: one calm row of buttons"). options: [[value, text]]; set(value) as T.seg's. */
+    pick(label, options, get, set) {
+      const s = selectOf(options.map(([v, text]) => [v, text]), get());
+      s.classList.add('dt-select', 'dt-pick'); s.setAttribute('aria-label', label);
+      s.addEventListener('change', () => { const o = options.find(([v]) => String(v) === s.value); if (o) set(o[0]); });
+      s.sync = () => { s.value = String(get()); };
+      return s;
+    },
     /** − value + with a label; the value is announced. num: the value can be typed too (public/js/dash-num.js):
      *  { value() (the number), min, max, set(n) (the buttons' own rules: commits), format?, parse?, width?, decimal? };
      *  ArrowUp and ArrowDown are inc and dec, and the tool's state as typing began is kept for rules that tie values
@@ -98,7 +125,7 @@ function shell(body, s, ctx, id) {
       const g = el('div', 'dt-step'); g.setAttribute('role', 'group'); g.setAttribute('aria-label', label);
       const lab = el('span', 'dt-steplab', label); lab.setAttribute('aria-hidden', 'true');
       const minus = btn('−', 'btn btn-sm dt-pm', decAria), plus = btn('+', 'btn btn-sm dt-pm', incAria);
-      const val = num ? T.num({ label, get: num.value, set: num.set, min: num.min, max: num.max, up: inc, down: dec, format: num.format, parse: num.parse, width: num.width, decimal: num.decimal, inputMode: num.inputMode, cls: 'dt-stepval' }) : ltr('b', 'dt-stepval');
+      const val = num ? T.num({ label, get: num.value, set: num.set, min: num.min, max: num.max, up: inc, down: dec, format: num.format, parse: num.parse, width: num.width, decimal: num.decimal, inputMode: num.inputMode, mask: num.mask, cls: 'dt-stepval' }) : ltr('b', 'dt-stepval');
       minus.addEventListener('click', dec); plus.addEventListener('click', inc);
       g.append(lab, minus, val, plus);
       g.sync = () => { if (num) val.sync(); else val.textContent = String(get()); };
@@ -116,59 +143,290 @@ function shell(body, s, ctx, id) {
       b.sync();
       return b;
     },
-    /** Options in a sheet (built by fn into the sheet's body); Send to students for the class's teacher. */
-    finish({ options } = {}) {
+    /** Buttons of the tool's own that go behind ⋯ (its less-used actions), whatever the room. */
+    more(...bs) { for (const b of bs) if (b) b.dataset.more = '1'; return bs[0]; },
+    /** The bottom row (call once, after the tool's buttons are in T.foot): the tool's buttons (row: how many stay in
+     *  the row; the rest go behind ⋯; selects and steppers go to T.ctl), then 📤 Share ▾; Options and Show/Hide the
+     *  answer go into the header. Options in a sheet (built by fn into the sheet's body). */
+    finish({ options, row: rowMax = 3, side = [] } = {}) {
+      // A student's "Build it" copy: the tool only (no Options, games, question, sending or answer button).
+      if (ctx.build) options = null;
+      const card = body.closest('.dash-w') || body.parentElement, head = card && card.querySelector(':scope > .dash-wh');
+      const heads = [];
+      /** A small icon button in the header, before ⓘ (or in the instruction row when there is no header). */
+      const headBtn = (cls, label) => {
+        const b = tip(btn('', `dt-hbtn ${cls}`, label), label); const i = el('span', 'dt-hic'); i.setAttribute('aria-hidden', 'true'); b.appendChild(i);
+        const info = head && head.querySelector(':scope > .dt-info');
+        if (head) { if (info) info.before(b); else head.appendChild(b); } else { howRow.appendChild(b); howRow.hidden = false; }
+        heads.push(b); return b;
+      };
+      // ---- the tool's own buttons: the row, ⋯, and T.ctl for anything that is not a button
+      const given = [...foot.children]; foot.textContent = '';
+      const acts = [], moved = [];
+      for (const x of given) { if (x.matches('button, a')) acts.push(x); else { ctl.appendChild(x); moved.push(x); } }
+      // The tool's selects from the row sit at its start when everything fits on one row (a wide widget), else above it.
+      const inline = el('div', 'dt-ctlin');
+      const rowBtns = [], extra = [];
+      for (const b of acts) (b.dataset.more || rowBtns.length >= rowMax ? extra : rowBtns).push(b);
+      for (const b of rowBtns) rowItem(b);
+      const tools = el('div', 'dt-acts'); tools.append(...rowBtns);
+      const gap = el('span', 'dt-fgap'); gap.setAttribute('aria-hidden', 'true');
+      // side: a tool's own menu buttons that stay at the end, before ⋯ and Share (Number rods' 👁️ View).
+      foot.append(inline, tools, gap, ...side);
+      let moreM = null;
+      if (extra.length) {
+        const mb = tip(btn('', 'btn btn-sm dt-morebtn', C.moreActs), C.moreActs);
+        const i = el('span', 'dt-ic', '⋯'); i.setAttribute('aria-hidden', 'true'); mb.appendChild(i);
+        moreM = popMenu(mb, C.moreActs, 'dt-moremenu');
+        for (const b of extra) moreM.add(b);
+        foot.append(mb, moreM.el);
+      }
+      // ---- Options: ⚙️ in the header
+      let optB = null;
       if (options && !ctx.editing) {
-        const ob = btn(`⚙️ ${C.options}`, 'btn btn-sm dt-opt', fill(C.optionsFor, { name: ctx.type.name }));
+        const label = fill(C.optionsFor, { name: ctx.type.name }), ob = optB = headBtn('dt-opt', label);
+        ob.firstChild.textContent = '⚙️'; ob.setAttribute('aria-haspopup', 'dialog');
         ob.addEventListener('click', () => {
-          const sh = ctx.sheet({ title: fill(C.optionsFor, { name: ctx.type.name }), content: '' });
+          const sh = ctx.sheet({ title: label, content: '' });
           const box = el('div', 'stack dt-opts'); sh.el.querySelector('.sheet-body').appendChild(box);
           options(box, sh);
           box.querySelector('input,select,button')?.focus();
         });
-        foot.appendChild(ob);
       }
-      // Stage 4: "Practice it" (official games every student can open; nothing when there is no clean match) and "Make a
-      // question from it" (the teacher's own screen: what the tool shows now, as a multiple-choice quick check).
+      // ---- Share ▾: Send to students, Build it, Make a question, Practice it (only these)
+      const mine = ctx.teacher && !ctx.copy && !ctx.editing && !ctx.build;
+      const share = [];
+      if (mine && ctx.send && ctx.type.send) {
+        const sb = item('📤', C.send, 'dt-send dt-mprimary');
+        sb.addEventListener('click', async () => { sb.disabled = true; try { await ctx.send(clone(st)); } finally { sb.disabled = false; } });
+        share.push(sb);
+      }
+      // "Build it": a set of targets to build, sent to students (the tools that can be built with).
+      let build = null;
+      if (mine && ctx.buildIt && BUILD[id]) {
+        build = item('🧱', C.build, 'dt-buildit');
+        build.addEventListener('click', () => ctx.buildIt(id, clone(st)));
+        share.push(build);
+      }
+      // Stage 4: "Make a question from it" (the teacher's own screen: what the tool shows now, as a multiple-choice quick
+      // check) and "Practice it" (official games every student can open; nothing when there is no clean match).
       let ask = null;
-      const games = ctx.editing ? [] : (ctx.practice || []).slice(0, 2);
+      if (mine && ctx.ask) {
+        ask = item('❓', C.ask, 'dt-ask');
+        // The question is made from the tool as it is, then whatever gives its answer away is hidden on this screen (and
+        // the projector) until the teacher presses Show the answer.
+        ask.addEventListener('click', () => { const made = T.question(); if (!made) return; if (!T.hid()) { T.hideAnswer(); T.commit(C.ansHidden); } askSheet(ctx, made); });
+        share.push(ask);
+      }
+      let practice = null;
+      const games = ctx.editing || ctx.build ? [] : (ctx.practice || []).slice(0, 2);
       if (games.length) {
         // One game: a link straight to it. Two: a short list to pick from.
-        const one = games.length === 1, a = el(one ? 'a' : 'button', 'btn btn-sm dt-practice');
-        const name = one ? fill(C.practiceName, { title: games[0].title }) : C.practice;
-        if (one) a.href = games[0].href; else a.type = 'button';
-        a.setAttribute('aria-label', name); tip(a, name);
-        const i = el('span', 'dt-ic', '🎮'), l = el('span', 'dt-lbl', C.practice); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
-        a.append(i, l);
-        if (!one) a.addEventListener('click', () => {
+        const one = games.length === 1, name = one ? fill(C.practiceName, { title: games[0].title }) : C.practice;
+        practice = item('🎮', C.practice, 'dt-practice', one ? 'a' : 'button');
+        practice.setAttribute('aria-label', name);
+        if (one) practice.href = games[0].href;
+        else practice.addEventListener('click', () => {
           const sh = ctx.sheet({ title: C.practice, content: '' });
           const ul = el('ul', 'plain stack dt-practicelist'); sh.el.querySelector('.sheet-body').appendChild(ul);
           for (const g of games) { const li = el('li'), link = el('a', 'btn dt-practicego'); link.href = g.href; const t = el('span', null, g.title); t.dir = 'auto'; link.append(el('span', 'dt-ic', g.icon || '🎮'), t); li.appendChild(link); ul.appendChild(li); }
           ul.querySelector('a')?.focus();
         });
-        foot.appendChild(a);
+        share.push(practice);
       }
-      if (ctx.teacher && !ctx.copy && !ctx.editing && ctx.ask) {
-        ask = tip(btn('', 'btn btn-sm dt-ask', C.ask), C.ask);
-        const i = el('span', 'dt-ic', '❓'), l = el('span', 'dt-lbl', C.ask); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
-        ask.append(i, l);
-        ask.addEventListener('click', () => askSheet(ctx, T.question()));
-        foot.appendChild(ask);
+      let shareM = null;
+      if (share.length && !mine) {
+        // A student's screen or copy: Practice it is the only one, so it is a button of its own at the end of the row.
+        rowItem(practice); practice.classList.add('dt-practice1'); foot.appendChild(practice);
+      } else if (share.length) {
+        const sb = tip(btn('', 'btn btn-sm btn-primary dt-share', C.share), C.share);
+        const i = el('span', 'dt-ic', '📤'), l = el('span', 'dt-lbl', C.share), caret = el('span', 'dt-caret', '▾');
+        for (const x of [i, l, caret]) x.setAttribute('aria-hidden', 'true');
+        sb.append(i, l, caret);
+        shareM = popMenu(sb, C.share, 'dt-sharemenu');
+        for (const b of share) shareM.add(b);
+        foot.append(sb, shareM.el);
       }
-      if (ctx.teacher && !ctx.copy && !ctx.editing && ctx.send && ctx.type.send) {
-        const sb = btn(`📤 ${C.send}`, 'btn btn-sm btn-primary dt-send');
-        sb.addEventListener('click', async () => { sb.disabled = true; try { await ctx.send(clone(st)); } finally { sb.disabled = false; } });
-        foot.appendChild(sb);
+      if (ctx.copy && !ctx.build) foot.before(el('p', 'small muted dt-copynote', C.copyNote));
+      // ---- Show/Hide the answer: 👀/🙈 in the header. The shared one on the teacher's own screen; a tool's own hide
+      // (fractions, bar models) wherever the tool shows it, as before. Its words say what it does (no aria-pressed).
+      let ans = null;
+      const own = !!T.setOwnHide;
+      if (own ? !ctx.editing && !ctx.build : mine && ANSWER_TOOLS.has(id)) {
+        ans = headBtn(`dt-ans ${T.ansCls}`.trim(), C.hideAns); ans.dataset.k = 'ans';
+        const hidden = () => (own ? !!T.ownHide() : !!st.qh);
+        ans.sync = () => { const h = hidden(), w = h ? C.showAns : C.hideAns; ans.firstChild.textContent = h ? '👀' : '🙈'; ans.setAttribute('aria-label', w); tip(ans, w); };
+        ans.addEventListener('click', () => {
+          const h = !hidden();
+          if (own) T.setOwnHide(h); else if (h) st.qh = true; else delete st.qh;
+          T.commit(T.ansSay ? T.ansSay(h) : h ? C.ansHidden : C.ansShown); ans.focus();
+        });
+        if (optB) ans.after(optB);   // 🙈 ⚙️ ⓘ
       }
-      if (ctx.copy) foot.appendChild(el('p', 'small muted dt-copynote', C.copyNote));
-      if (ask) { const d = T.draw; T.draw = () => { d(); ask.hidden = !T.question(); }; }
+      // Keep the row one row (docs/decisions.md): when the widget is too narrow, Share shows only its icon, then the
+      // row's last buttons move behind ⋯ (back again when there is room).
+      const fitRow = (resized = false) => {
+        if (!foot.isConnected || !foot.getClientRects().length) return;
+        foot.classList.remove('is-tight');
+        for (const b of [...(moreM ? moreM.el.querySelectorAll('[data-fit]') : [])]) { delete b.dataset.fit; rowItem(b); tools.appendChild(b); }
+        const over = () => foot.scrollWidth > foot.clientWidth + 1;
+        // (tried only when the widget changes size: moving a select would take its focus while it is used)
+        if (moved.length) {
+          if (resized && moved[0].parentElement !== inline) inline.append(...moved);
+          if (moved[0].parentElement === inline && over()) ctl.prepend(...moved);
+        }
+        if (!over()) { if (moreM) moreM.sync(); return; }
+        foot.classList.add('is-tight');
+        if (over() && !moreM) {
+          const mb = tip(btn('', 'btn btn-sm dt-morebtn', C.moreActs), C.moreActs);
+          const i = el('span', 'dt-ic', '⋯'); i.setAttribute('aria-hidden', 'true'); mb.appendChild(i);
+          moreM = popMenu(mb, C.moreActs, 'dt-moremenu'); gap.after(mb, moreM.el);
+        }
+        while (over() && tools.children.length) { const b = tools.lastElementChild; b.dataset.fit = '1'; moreM.add(b, true); }
+        if (moreM) moreM.sync();
+      };
+      let fraf = 0;
+      const fro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { cancelAnimationFrame(fraf); fraf = requestAnimationFrame(() => fitRow(true)); }) : null;
+      if (fro) fro.observe(foot);
+      {
+        const d = T.draw;
+        T.draw = () => {
+          d();
+          // While the answer is hidden the readout under the model shows only "?" (CSS: .dt-ans-off), whatever writes it.
+          body.classList.toggle('dt-ans-off', !!ctx.build || (!T.ownHide && !!st.qh));
+          if (ask) ask.hidden = !T.question();
+          if (ans) ans.sync();
+          if (T.placeExtra && ans) T.placeExtra([ans]);
+          if (shareM) shareM.sync();
+          // Nothing to show (a student's screen of a tool with no buttons of its own): no empty row.
+          foot.classList.toggle('is-empty', ![...foot.querySelectorAll('button, a')].some(b => !b.hidden && !b.closest('.dt-menu')));
+          fitRow();
+        };
+      }
       const help = W.helpUse && !ctx.editing ? helpButton(body, howRow, ctx) : null;
       setHow(how.textContent);
       T.draw();
-      return { destroy() { if (ro) ro.disconnect(); cancelAnimationFrame(raf); if (help) help.destroy(); } };
+      return { destroy() { if (ro) ro.disconnect(); if (fro) fro.disconnect(); cancelAnimationFrame(raf); cancelAnimationFrame(fraf); if (help) help.destroy(); if (moreM) moreM.destroy(); if (shareM) shareM.destroy(); for (const b of heads) b.remove(); } };
     },
   };
   return T;
+}
+/** A button of a menu: its icon and its words. tag: 'button' or 'a'. */
+function item(icon, text, cls, tag = 'button') {
+  const b = el(tag, `btn btn-sm ${cls}`); if (tag === 'button') b.type = 'button';
+  const i = el('span', 'dt-ic', icon), l = el('span', 'dt-lbl', text);
+  i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
+  b.append(i, l); b.setAttribute('aria-label', text); return b;
+}
+/** A button's icon and words as two parts (.dt-ic, .dt-lbl) when it has them only as text ("🧹 Clear"): an icon is the
+ *  first word when it has no letter or digit, the words are the rest (when they have a letter). Buttons that are only
+ *  short text ("+5", "× 10") stay as they are. -> the button's name. */
+function splitIcon(b) {
+  const name = (b.getAttribute('aria-label') || b.textContent || '').trim().replace(/\s+/g, ' ');
+  if (b.querySelector('.dt-ic, .dt-lbl')) return name;
+  const text = b.textContent.trim().replace(/\s+/g, ' '), sp = text.indexOf(' ');
+  const first = sp > 0 ? text.slice(0, sp) : '', rest = sp > 0 ? text.slice(sp + 1) : '';
+  if (first && !/[\p{L}\p{N}]/u.test(first) && /\p{L}/u.test(rest)) {
+    b.textContent = '';
+    const i = el('span', 'dt-ic', first), l = el('span', 'dt-lbl', rest); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
+    b.append(i, l); if (!b.getAttribute('aria-label')) b.setAttribute('aria-label', rest);
+    return b.getAttribute('aria-label');
+  }
+  return name;
+}
+/** A tool's button in the bottom row: its icon only when it has one (the words in its tooltip and name), else its short
+ *  text; never a native title as well. */
+function rowItem(b) {
+  if (!b) return;
+  const name = splitIcon(b);
+  b.classList.remove('dt-mi'); b.classList.add('dt-act'); b.classList.toggle('dt-icon', !!b.querySelector('.dt-ic'));
+  if (name && (b.querySelector('.dt-ic') || b.getAttribute('aria-label'))) tip(b, name); else b.removeAttribute('title');
+}
+/** A small menu that opens from a button (Share, ⋯, View): a popover in the page's top layer, so nothing around it can
+ *  clip it, placed by its button inside the widget when it fits there, else inside the screen. It closes on a tap
+ *  outside, on Escape (the focus goes back to its button) and after one of its buttons is used (a button marked
+ *  data-stay keeps it open: View's switches). ↑ ↓ Home End move between its buttons. Its buttons are the tools' own
+ *  buttons, moved in: what they do is unchanged. -> { el, add(button, first), sync(), close(), destroy() } */
+let menuIds = 0;
+const POPOVER = typeof HTMLElement !== 'undefined' && Object.prototype.hasOwnProperty.call(HTMLElement.prototype, 'popover');
+function popMenu(trigger, label, cls = '') {
+  const m = el('div', `dt-menu ${cls}`.trim()); m.id = `dt-menu${++menuIds}`;
+  m.setAttribute('role', 'group'); m.setAttribute('aria-label', label);
+  if (POPOVER) m.popover = 'auto'; else m.hidden = true;
+  trigger.setAttribute('aria-expanded', 'false'); trigger.setAttribute('aria-controls', m.id);
+  m.tabIndex = -1;
+  const items = () => [...m.querySelectorAll('button, a[href]')].filter(b => !b.hidden && !b.disabled && b.getClientRects().length);
+  const isOpen = () => (POPOVER ? m.matches(':popover-open') : !m.hidden);
+  function place() {
+    if (!isOpen()) return;
+    const vw = document.documentElement.clientWidth || innerWidth, vh = innerHeight, M = 8;
+    m.style.maxHeight = `${vh - 2 * M}px`;
+    const t = trigger.getBoundingClientRect(), card = (trigger.closest('.dash-w') || trigger.closest('.sheet') || document.body).getBoundingClientRect();
+    const w = m.offsetWidth, h = m.offsetHeight;
+    const scr = { l: M, r: vw - M, t: M, b: vh - M };
+    const inner = { l: Math.max(card.left + M, M), r: Math.min(card.right - M, vw - M), t: Math.max(card.top + M, M), b: Math.min(card.bottom - M, vh - M) };
+    const B = w <= inner.r - inner.l && h <= inner.b - inner.t ? inner : scr;
+    // Above its button (the row is at the bottom of the widget), else below it, else wherever it fits.
+    let top = t.top - 6 - h;
+    if (top < B.t) top = t.bottom + 6 + h <= B.b ? t.bottom + 6 : Math.max(B.t, B.b - h);
+    const rtl = getComputedStyle(trigger).direction === 'rtl';
+    let left = rtl ? t.left : t.right - w;
+    left = Math.max(B.l, Math.min(left, B.r - w));
+    m.style.left = `${Math.round(left)}px`; m.style.top = `${Math.round(top)}px`;
+  }
+  const onScroll = e => { if (!m.contains(e.target)) place(); };
+  const onResize = () => place();
+  const onOut = e => { if (!POPOVER && !m.contains(e.target) && !trigger.contains(e.target)) close(false); };
+  function opened() {
+    trigger.setAttribute('aria-expanded', 'true');
+    place();
+    document.addEventListener('scroll', onScroll, true); window.addEventListener('resize', onResize);
+    if (!POPOVER) document.addEventListener('pointerdown', onOut, true);
+    (items()[0] || m).focus({ preventScroll: true });
+  }
+  function closed(back) {
+    trigger.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('scroll', onScroll, true); window.removeEventListener('resize', onResize); document.removeEventListener('pointerdown', onOut, true);
+    if (back || m.contains(document.activeElement)) trigger.focus({ preventScroll: true });
+  }
+  let back = false;
+  function open() { if (POPOVER) { try { m.showPopover(); } catch { /* gone */ } } else { m.hidden = false; opened(); } }
+  function close(b = true) { if (!isOpen()) return; back = b; if (POPOVER) { try { m.hidePopover(); } catch { /* gone */ } } else { m.hidden = true; closed(b); } }
+  if (POPOVER) m.addEventListener('toggle', e => { if (e.newState === 'open') opened(); else { closed(back); back = false; } });
+  // The button opens and closes it: as the popover's invoker (a press on it while it is open is not a tap outside).
+  if (POPOVER) { trigger.popoverTargetElement = m; trigger.popoverTargetAction = 'toggle'; }
+  trigger.addEventListener('click', e => { e.stopPropagation(); if (POPOVER) return; if (isOpen()) close(); else open(); });
+  m.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); return; }
+    const list = items(), i = list.indexOf(document.activeElement);
+    const to = { ArrowDown: i + 1, ArrowUp: i - 1, Home: 0, End: list.length - 1 }[e.key];
+    if (to === undefined || !list.length) return;
+    e.preventDefault(); list[(to + list.length) % list.length].focus();
+  });
+  // Leaving it with Tab closes it.
+  m.addEventListener('focusout', e => { if (isOpen() && e.relatedTarget && !m.contains(e.relatedTarget) && e.relatedTarget !== trigger) close(false); });
+  // A button used: the menu closes first (so a sheet it opens takes the focus from Share, not from a hidden button).
+  m.addEventListener('click', e => { const b = e.target.closest('button, a'); if (b && m.contains(b) && !b.closest('[data-stay]') && !b.disabled) close(); }, true);
+  const api = {
+    el: m,
+    /** Move a button in (first: at the top): its icon and words both show, as a line of the menu. */
+    add(b, first = false) {
+      splitIcon(b);
+      if (!b.querySelector('.dt-lbl')) {
+        const name = (b.getAttribute('aria-label') || b.textContent).trim(), text = b.textContent.trim();
+        b.textContent = '';
+        const i = el('span', 'dt-ic', text !== name ? text : ''), l = el('span', 'dt-lbl', name); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
+        i.dir = 'ltr'; b.append(i, l); b.setAttribute('aria-label', name);
+      }
+      b.classList.add('dt-mi'); b.removeAttribute('title');
+      if (first) m.prepend(b); else m.appendChild(b);
+    },
+    /** The button shows only while the menu has something in it. */
+    sync() { const any = [...m.querySelectorAll('button, a')].some(b => !b.hidden); trigger.hidden = !any; if (!any) close(false); else place(); },
+    open, close,
+    destroy() { close(false); document.removeEventListener('scroll', onScroll, true); window.removeEventListener('resize', onResize); document.removeEventListener('pointerdown', onOut, true); },
+  };
+  return api;
 }
 /** ⓘ in the widget's header (top right; on a student's copy in a sheet, at the end of the instruction row): a short panel
  *  inside the widget: the title ("How to use Fraction bars"), at most three short points (helpUse, one a line) and, for
@@ -284,6 +542,46 @@ function stacked(n, d, cls = 'dt-frac') {
   f.append(a, line, b); return f;
 }
 
+/** The big number under a tool, typed straight into (docs/decisions.md "Classroom dashboards: Build it": place value and
+ *  base-ten blocks). A text field that looks like the number: tap or click it, type, then Enter or leave it. A number
+ *  the tool can show is used (o.set); anything else keeps the old value, and a short message says why (o.why(reason)).
+ *  Escape puts back the old value. It is made once and kept across redraws (a redraw never takes the focus or what is
+ *  being typed). o: { label, get, format, parse(text) -> { ok, v } | { ok: false, why }, set(v), why(reason), off }. */
+let editIds = 0;
+function bigEdit(o) {
+  const wrap = el('div', 'dt-bigedit'), inp = el('input', 'dt-big dt-bigin'), msg = el('p', 'dt-editmsg'), help = el('span', 'sr-only', o.hint || '');
+  const id = `dt-be${++editIds}`;
+  Object.assign(inp, { type: 'text', autocomplete: 'off', spellcheck: false, id }); inp.dir = 'ltr';
+  inp.inputMode = 'decimal'; inp.setAttribute('enterkeyhint', 'done'); inp.setAttribute('aria-label', o.label);
+  msg.id = `${id}m`; help.id = `${id}h`; msg.setAttribute('role', 'status'); msg.hidden = true;
+  inp.setAttribute('aria-describedby', `${help.id} ${msg.id}`);
+  wrap.append(inp, help, msg);
+  const fit = () => inp.style.setProperty('--len', Math.max(2, [...inp.value].length));
+  const say = text => { msg.textContent = text || ''; msg.hidden = !text; if (text) inp.setAttribute('aria-invalid', 'true'); else inp.removeAttribute('aria-invalid'); };
+  const show = () => { inp.value = o.format(o.get()); fit(); };
+  let typing = false;
+  const commit = () => {
+    if (!typing) return;
+    typing = false;
+    const text = inp.value;
+    if (text.trim() === o.format(o.get())) { say(''); show(); return; }
+    const r = o.parse(text);
+    if (r.ok) { say(''); if (r.v !== o.get()) o.set(r.v); show(); }
+    else { say(o.why(r.why)); show(); }
+  };
+  inp.addEventListener('focus', () => { typing = true; inp.select(); });
+  inp.addEventListener('input', () => { typing = true; fit(); if (!msg.hidden) say(''); });
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); typing = true; inp.select(); }
+    else if (e.key === 'Escape' && inp.value !== o.format(o.get())) { e.preventDefault(); e.stopPropagation(); say(''); show(); inp.select(); }
+  });
+  inp.addEventListener('blur', commit);
+  wrap.sync = () => { inp.readOnly = !!o.off; inp.tabIndex = o.off ? -1 : 0; if (document.activeElement !== inp) show(); };
+  wrap.input = inp;
+  wrap.sync();
+  return wrap;
+}
+
 // ================================================================ 1. fraction bars and circles
 // Compare (one to three fractions, as in stage 3) and, since "help on the maths tools", Add, Subtract, Multiply and
 // Divide two fractions (docs/decisions.md "Classroom dashboards: help on the maths tools"). The maths is M.operate (exact); a new
@@ -294,28 +592,35 @@ const MODE_WORD = { compare: 'modeCompare', add: 'modeAdd', sub: 'modeSub', mul:
 function fractions(body, s, ctx) {
   const T = shell(body, s, ctx, 'fractions'), { W, st } = T;
   const mode = () => (M.OPS[st.mode] ? st.mode : 'compare');
-  const modes = T.seg(W.mode, M.FRACTION_MODES.map(m => [m, W[MODE_WORD[m]], null, MODE_ICON[m]]), mode, v => {
+  // A student's "Build it" equation (docs/decisions.md "Classroom dashboards: fractions, equations"): { op, a, b }.
+  const eqT = ctx.build && ctx.build.target && ctx.build.target.op ? ctx.build.target : null;
+  body.classList.toggle('dt-feqbody', !!eqT);
+  // What to do, as a dropdown (inside the tool's mode switch it is that dropdown: fractions.merge below).
+  const modes = T.pick(W.mode, M.FRACTION_MODES.map(m => [m, W[MODE_WORD[m]]]), mode, v => {
     if (v !== mode()) fresh();
     st.mode = v; if (M.OPS[v]) { st.a = M.clampOperand(st.a || M.OP_START.a); st.b = M.clampOperand(st.b || M.OP_START.b); }
     zeroNote = v === 'div' && !st.b.n; if (zeroNote) st.b.n = 1;
     T.commit(M.OPS[v] ? `${W[MODE_WORD[v]]}: ${opSay()}` : W[MODE_WORD[v]]);
   });
+  modes.dataset.merge = '1';
   const shapes = T.seg(W.bar, [['bar', W.bar], ['circle', W.circle]], () => st.shape, v => { st.shape = v; T.commit(); });
+  shapes.dataset.pair = '1';
   const same = T.toggle(`🧩 ${W.same}`, null, () => st.same, v => { st.same = v; T.commit(sameText()); });
   T.top.append(modes, shapes, same);
   const add = btn(`➕ ${W.add}`, 'btn btn-sm'), rm = btn(`➖ ${W.remove}`, 'btn btn-sm');
-  // The answer starts hidden. The button says what it does ("👀 Show the answer", then "🙈 Hide the answer"): its words
-  // change with the state, so it is not a toggle with aria-pressed as well (that once read "Hide the answer, pressed"
-  // while the answer was hidden).
-  const hide = btn('', 'btn btn-sm dt-fshow');
-  hide.addEventListener('click', () => { st.hide = !st.hide; T.commit(st.hide ? '' : opSay()); });
-  hide.sync = () => { hide.textContent = st.hide ? `👀 ${W.show}` : `🙈 ${W.hide}`; };
+  // The answer starts hidden. 👀/🙈 in the header (the shell's, class dt-fshow) says what it does ("Show the answer",
+  // then "Hide the answer"): its words change with the state, so it is not a toggle with aria-pressed as well (that once
+  // read "Hide the answer, pressed" while the answer was hidden). The fraction tool's own hide is the answer's (Make a
+  // question hides it too; docs/decisions.md "Build it").
+  T.ownHide = () => st.hide; T.setOwnHide = v => { st.hide = !!v; }; T.ansCls = 'dt-fshow';
+  T.ansSay = h => (h ? '' : opSay());
   const swap = btn(`⇄ ${W.swap}`, 'btn btn-sm dt-fswap');
   add.addEventListener('click', () => { if (st.bars.length < 3) { st.bars.push({ n: 1, d: st.bars[st.bars.length - 1]?.d || 4 }); T.commit(); T.stage.querySelectorAll('.dt-fshape')[st.bars.length - 1]?.focus(); } });
   rm.addEventListener('click', () => { if (st.bars.length > 1) { st.bars.pop(); T.commit(); } });
   swap.addEventListener('click', () => { [st.a, st.b] = [st.b, st.a]; fresh(); T.commit(opSay()); });
-  T.foot.append(add, rm, swap, hide);
+  T.foot.append(add, rm, swap);
   let zeroNote = false;   // Divide: the divisor's top number was kept at 1 (nothing is divided by zero); say why
+  let limitNote = '';     // + (or a typed number) went past a fraction's limit: say why, until the next change
   const cd = () => M.commonDenominator(st.bars);
   const sameText = () => {
     if (!st.same) return '';
@@ -332,8 +637,12 @@ function fractions(body, s, ctx) {
   };
   T.draw = () => {
     const op = mode();
-    modes.sync(); shapes.sync(); same.sync(); hide.sync();
+    modes.sync(); shapes.sync(); same.sync();
     same.hidden = add.hidden = rm.hidden = op !== 'compare'; shapes.hidden = op === 'mul';
+    // A student's Build it copy shades one bar in Compare: no other modes, no second bar.
+    if (ctx.build) modes.hidden = same.hidden = add.hidden = rm.hidden = true;
+    // A student's Build it equation: the question's bars and the answer bar they shade, nothing else.
+    if (eqT) { shapes.hidden = swap.hidden = true; T.howto(W.howtoEq); eqView(); return; }
     T.howto(op === 'compare' ? W.howto : op === 'mul' ? W.howtoMul : op === 'div' ? W.howtoDiv : W.howtoOp);
     if (op === 'compare') { swap.hidden = true; compareView(); } else opView(op);
   };
@@ -344,14 +653,15 @@ function fractions(body, s, ctx) {
     const wrap = el('div', `dt-fwrap dt-f-${st.shape}`); wrap.style.setProperty('--rows', st.bars.length); T.stage.appendChild(wrap);
     st.bars.forEach((b, i) => {
       const row = el('div', 'dt-frow');
-      const lab = el('div', 'dt-flab'); lab.appendChild(stacked(b.n, b.d));
+      // A student's "Build it" copy: the bar's fraction is what they are building, so it shows as "?".
+      const lab = el('div', 'dt-flab'); lab.appendChild(ctx.build ? ltr('span', 'dt-frac dt-fq', '?') : stacked(b.n, b.d));
       if (useL && c.L !== b.d) { const eq = el('span', 'dt-feq'); eq.dir = 'ltr'; const sign = el('span', 'dt-eqsign', '='); sign.setAttribute('aria-hidden', 'true'); eq.append(sign, stacked(c.list[i].n, c.L)); lab.appendChild(eq); }
       const parts = useL ? c.L : b.d, shaded = useL ? c.list[i].n : b.n;
       const shape = st.shape === 'bar' ? barSvg(parts, shaded, i, useL ? c.L / b.d : 1) : pieSvg(parts, shaded, i, useL ? c.L / b.d : 1);
       shape.classList.add('dt-fshape');
       shape.setAttribute('role', 'slider'); shape.setAttribute('tabindex', ctx.editing ? '-1' : '0');
       shape.setAttribute('aria-valuemin', '0'); shape.setAttribute('aria-valuemax', String(b.d)); shape.setAttribute('aria-valuenow', String(b.n));
-      shape.setAttribute('aria-valuetext', shadedWords(b.n, b.d, W, ctx.intl));
+      shape.setAttribute('aria-valuetext', ctx.build ? fill(W.parts, { n: b.d }) : shadedWords(b.n, b.d, W, ctx.intl));
       shape.setAttribute('aria-label', fill(W.which, { n: i + 1 }));
       const setN = (n, keep = true) => { n = Math.max(0, Math.min(b.d, n)); if (n === b.n) return; b.n = n; T.commit(); if (keep) T.stage.querySelectorAll('.dt-fshape')[i]?.focus(); say(i); };
       shape.addEventListener('keydown', e => {
@@ -425,6 +735,8 @@ function fractions(body, s, ctx) {
     if (!phone && st.step > 1 && pic.clientHeight < 150) wrap.replaceChild(stepRow(r, meas, steps, true), wrap.lastChild);
     // Still too little: Fit one more and Next step show only their icons (they keep their names) beside the steps.
     if (!phone && st.step > 1 && pic.clientHeight < 116) wrap.replaceChild(stepRow(r, meas, steps, true, true), wrap.lastChild);
+    // The readout's line is the open Steps panel's last line (not said twice).
+    if (stepsOpen.get(ctx.id)) T.read.querySelector('.dt-sub')?.remove();
     const room = { w: pic.clientWidth, h: phone ? 0 : pic.clientHeight };
     if (op === 'mul') pic.appendChild(areaModel(r, room));
     else if (st.shape === 'circle') circleDraw(r, meas, pic, room);
@@ -435,7 +747,7 @@ function fractions(body, s, ctx) {
     }
   }
   /** Changing a fraction or the mode starts the working again: no copies laid, no steps shown, nothing typed. */
-  const fresh = () => { st.fit = 0; st.step = 0; guess = ''; checked = ''; };
+  const fresh = () => { st.fit = 0; st.step = 0; guess = ''; checked = ''; limitNote = ''; };
   let guess = '', checked = '';   // what a student typed as the answer and what Check said ('' | right | simplify | no | unread)
   const CHECK = { right: 'checkRight', simplify: 'checkSimplify', no: 'checkNo', unread: 'checkUnread' };
   /** Divide's copies laid so far, in words: "2 fit so far." / "2 fit, and 1/4 of one more." / "3 fit exactly." */
@@ -448,6 +760,7 @@ function fractions(body, s, ctx) {
   function readout(op, r, meas) {
     T.read.textContent = '';
     const notes = [];
+    if (limitNote) { const x = el('div', 'dt-flimit', `✋ ${limitNote}`); x.dir = 'auto'; T.read.appendChild(x); }
     if (zeroNote) notes.push(W.noZero);
     if (st.hide) {
       if (meas && st.fit) notes.push(fitWords(meas, st.fit));
@@ -507,7 +820,8 @@ function fractions(body, s, ctx) {
     box.append(inp, go);
     return box;
   }
-  /** Fit one more (Divide; Start again once all are laid) and Next step, then the steps shown so far. */
+  /** Fit one more (Divide; Start again once all are laid), then the Steps panel: the steps shown so far, Next step and
+   *  the readout's line (docs/decisions.md "Classroom dashboards: one calm row of buttons"). */
   function stepRow(r, meas, steps, compact = false, icons = false) {
     const row = el('div', 'dt-fdo');
     const iconOnly = (b, icon, name) => { if (!icons) return; b.textContent = icon; b.setAttribute('aria-label', name); tip(b, name); b.classList.add('dt-fdo-i'); };
@@ -519,20 +833,13 @@ function fractions(body, s, ctx) {
       row.appendChild(b);
     }
     const n = steps.length, done = st.step >= n;
-    const sb = btn(done ? `↺ ${W.stepHide}` : `👣 ${W.stepNext}`, 'btn btn-sm dt-fstepbtn'); sb.dataset.k = 'step'; sb.disabled = !!ctx.editing;
-    if (!done) sb.setAttribute('aria-label', `${W.stepNext} (${st.step + 1}/${n})`);
-    iconOnly(sb, done ? '↺' : '👣', done ? W.stepHide : `${W.stepNext} (${st.step + 1}/${n})`);
-    sb.addEventListener('click', () => { st.step = done ? 0 : st.step + 1; T.commit(st.step ? steps[st.step - 1] : ''); });
-    row.appendChild(sb);
-    if (st.step) {
-      const ol = el('ol', 'dt-fsteps');
-      steps.slice(0, st.step).forEach((t, i) => {
-        const li = el('li', 'dt-fstep'); li.dir = 'auto'; const k = el('b', 'dt-fstepn', String(i + 1)); k.setAttribute('aria-hidden', 'true');
-        if (compact && i < st.step - 1) { li.classList.add('dt-fstep-n'); li.appendChild(k); li.appendChild(el('span', 'sr-only', t)); } else li.append(k, el('span', null, t));
-        ol.appendChild(li);
-      });
-      row.appendChild(ol);
+    let next = null;
+    if (!done) {
+      next = btn(`👣 ${W.stepNext}`, 'btn btn-sm dt-fstepbtn', `${W.stepNext} (${st.step + 1}/${n})`); next.dataset.k = 'step'; next.disabled = !!ctx.editing; tip(next, `${W.stepNext} (${st.step + 1}/${n})`);
+      next.addEventListener('click', () => { st.step += 1; stepsOpen.set(ctx.id, true); T.commit(steps[st.step - 1]); });
     }
+    row.appendChild(stepsPanel({ key: ctx.id, C: T.C, items: steps.slice(0, st.step), total: n, next, compact, summary: T.read.querySelector('.dt-sub')?.textContent || '',
+      onToggle: () => T.draw() }));
     return row;
   }
   /** A fraction stacked (a whole number plain, a minus in front). */
@@ -560,18 +867,96 @@ function fractions(body, s, ctx) {
       m.dataset.k = `${k}${key}-`; p.dataset.k = `${k}${key}+`;
       // Divide: the second fraction's top number stops at 1 (nothing is divided by zero); − there says why instead.
       const noZero = mode() === 'div' && k === 'b' && key === 'n';
-      m.disabled = ctx.editing || f[key] <= lo && !(noZero && f[key] === 1); p.disabled = ctx.editing || f[key] >= hi;
-      const set = x => { zeroNote = noZero && x < 1; if (zeroNote) { T.draw(); ctx.say(W.noZero); return; } st[k] = M.clampOperand({ ...st[k], [key]: x }); fresh(); T.commit(opSay()); };
+      // + stays tappable at the limit (each fraction at most three wholes, a top and a bottom number at most 12): past
+      // it, a note in the readout says why (docs/decisions.md "Classroom dashboards: fractions, equations").
+      m.disabled = ctx.editing || f[key] <= lo && !(noZero && f[key] === 1); p.disabled = !!ctx.editing;
+      const top = () => (key === 'n' ? Math.min(M.OP_LIMITS.nMax, M.OP_LIMITS.wholes * st[k].d) : M.OP_LIMITS.dMax);
+      const set = x => {
+        zeroNote = noZero && x < 1; if (zeroNote) { limitNote = ''; T.draw(); ctx.say(W.noZero); return; }
+        if (x > top()) { limitNote = limitWords(st[k], key); T.draw(); ctx.say(limitNote); return; }
+        st[k] = M.clampOperand({ ...st[k], [key]: x }); fresh(); T.commit(opSay());
+      };
       m.addEventListener('click', () => set(f[key] - 1)); p.addEventListener('click', () => set(f[key] + 1));
       // The number typed: the same limits (a top number at most three wholes; dividing, never by zero), drawn again
       // as it is typed (the field moves to the new sentence with what is being typed).
-      const v = T.num({ label: `${word} (${who})`, key: `${k}${key}`, get: () => st[k][key], min: noZero ? 1 : lo, max: () => (key === 'n' ? Math.min(M.OP_LIMITS.nMax, M.OP_LIMITS.wholes * st[k].d) : hi), cls: 'dt-fov',
-        up: () => set(st[k][key] + 1), down: () => set(st[k][key] - 1), set });
+      const v = T.num({ label: `${word} (${who})`, key: `${k}${key}`, get: () => st[k][key], min: noZero ? 1 : lo, max: top, cls: 'dt-fov',
+        up: () => set(st[k][key] + 1), down: () => set(st[k][key] - 1), set, out: n => { if (n > top()) set(n); } });
       r.append(m, v, p); return r;
     };
     const line = el('div', 'dt-fol'); line.setAttribute('aria-hidden', 'true');
     g.append(row('n', 0, Math.min(M.OP_LIMITS.nMax, M.OP_LIMITS.wholes * f.d), W.num), line, row('d', 1, M.OP_LIMITS.dMax, W.den));
     return g;
+  }
+  /** Why + went no further: at most three wholes (3/1, 12/4...), else a top or a bottom number of at most 12. */
+  const limitWords = (f, key) => {
+    if (key === 'd') return W.limitBottom;
+    return M.OP_LIMITS.wholes * f.d <= M.OP_LIMITS.nMax ? fill(W.limitWholes, { f: iso(`${M.OP_LIMITS.wholes * f.d}/${f.d}`) }) : W.limitTop;
+  };
+  /** A student's Build it equation (docs/decisions.md "Classroom dashboards: fractions, equations"): "1/2 + 1/4 = ?" as
+   *  the question's two fractions drawn as fixed bars (coloured as the operations' bars, on one scale: a whole is the
+   *  same length in every row), then a dashed answer bar the student builds: − and + for the parts in each whole (1-12),
+   *  − and + for the wholes (1-3, for an answer bigger than one), a tap shades up to the part tapped. st.bars holds it,
+   *  one bar a whole, all cut the same (public/js/dash-build.js answerBars), so the server checks it as it is. */
+  function eqView() {
+    const x = eqT, d = Math.max(1, Math.min(12, Math.round(st.bars[0] && st.bars[0].d) || 2));
+    const wholes = Math.max(1, Math.min(M.OP_LIMITS.wholes, st.bars.length));
+    const shaded = st.bars.slice(0, wholes).reduce((t, b) => t + Math.max(0, Math.min(d, Math.round(b.n) || 0)), 0);
+    st.bars = answerBars(shaded, d, wholes);
+    const had = T.stage.contains(document.activeElement) ? document.activeElement.dataset.k || '' : '';
+    const wholesOf = f => Math.max(1, Math.ceil(f.n / f.d));
+    const W0 = Math.max(wholesOf(x.a), wholesOf(x.b), wholes);
+    const say = () => fill(W.eqShaded, { n: shaded, d });
+    const setAns = (n, dd = d, ww = wholes, msg) => { st.bars = answerBars(n, dd, ww); T.commit(msg || fill(W.eqShaded, { n: Math.min(n, dd * ww), d: dd })); };
+    T.stage.textContent = ''; T.read.textContent = '';
+    const wrap = el('div', 'dt-feqb'); wrap.dir = 'ltr';
+    const grid = el('div', 'dt-fbars dt-feqbars');
+    const rowOf = (label, cls) => { const lab = el('div', 'dt-fblab'); lab.appendChild(label); const c = el('div', `dt-fbarc ${cls || ''}`.trim()); grid.append(lab, c); return c; };
+    const cA = rowOf(tag('', x.a)), cB = rowOf(tag(M.OPS[x.op].sign, x.b)), cN = rowOf(tag('=', null, true), 'dt-feqans');
+    // The parts in each whole (typed too) and the wholes.
+    const ctl = el('div', 'dt-feqctl');
+    const parts = n => setAns(Math.min(shaded, n * wholes), n, wholes, fill(W.parts, { n }));
+    const pStep = T.stepper(W.eqParts, () => d, () => { if (d > 1) parts(d - 1); }, () => { if (d < 12) parts(d + 1); }, `${W.fewer}`, `${W.more}`,
+      { value: () => d, min: 1, max: 12, set: n => parts(n) });
+    const wSet = n => setAns(Math.min(shaded, d * n), d, n, fill(W.eqWholesNow, { n }));
+    const wStep = T.stepper(W.eqWholes, () => wholes, () => { if (wholes > 1) wSet(wholes - 1); }, () => { if (wholes < M.OP_LIMITS.wholes) wSet(wholes + 1); }, W.eqLessWhole, W.eqMoreWhole,
+      { value: () => wholes, min: 1, max: M.OP_LIMITS.wholes, set: n => wSet(n) });
+    const [pm, pp] = pStep.querySelectorAll('.dt-pm'), [wm, wp] = wStep.querySelectorAll('.dt-pm');
+    pm.disabled = d <= 1; pp.disabled = d >= 12; wm.disabled = wholes <= 1; wp.disabled = wholes >= M.OP_LIMITS.wholes;
+    pm.dataset.k = 'eqp-'; pp.dataset.k = 'eqp+'; wm.dataset.k = 'eqw-'; wp.dataset.k = 'eqw+';
+    ctl.append(pStep, wStep);
+    const hint = el('p', 'dt-feqhint', W.eqHint); hint.dir = 'auto';
+    wrap.append(grid, ctl, hint);
+    T.stage.appendChild(wrap);
+    // One scale: the widest row (the most wholes) fills the cell; every whole is the same length.
+    const phone = matchMedia('(max-width: 719px)').matches;
+    const room = T.stage.clientHeight - ctl.offsetHeight - hint.offsetHeight - 40;
+    const bh = phone || room <= 0 ? 48 : Math.max(32, Math.min(64, Math.floor((room - 24) / 3)));
+    grid.style.setProperty('--bh', `${bh}px`);
+    const cw = Math.max(60, cA.clientWidth - 12), gap = W0 > 1 ? 8 : 0, uw = (cw - gap * (W0 - 1)) / W0;
+    const strip = (n, per, on, cls, aria, answer) => {
+      const w = n * uw + (n - 1) * gap;
+      const sv = svg('svg', { viewBox: `0 0 ${w} ${bh}`, width: w, height: bh, class: `dt-fstrip dt-feqstrip${answer ? ' dt-feqa' : ''}`, role: answer ? 'slider' : 'img', 'aria-label': aria });
+      for (let k = 0; k < n; k++) {
+        const x0 = k * (uw + gap);
+        for (let i = 0; i < per; i++) { const g = k * per + i; sv.appendChild(svg('rect', { x: x0 + (i * uw) / per, y: 0, width: uw / per, height: bh, class: g < on ? `dt-on ${cls}` : 'dt-off', ...(answer ? { 'data-piece': g } : {}) })); }
+        for (let i = 1; i < per; i++) sv.appendChild(svg('line', { x1: x0 + (i * uw) / per, x2: x0 + (i * uw) / per, y1: 0, y2: bh, class: 'dt-thin' }));
+        sv.appendChild(svg('rect', { x: x0, y: 0, width: uw, height: bh, class: 'dt-outline' }));
+      }
+      return sv;
+    };
+    cA.appendChild(strip(wholesOf(x.a), x.a.d, x.a.n, 'dt-c0', `${W.first}: ${x.a.n}/${x.a.d}`));
+    cB.appendChild(strip(wholesOf(x.b), x.b.d, x.b.n, 'dt-c1', `${W.second}: ${x.b.n}/${x.b.d}`));
+    const ans = strip(wholes, d, shaded, 'dt-c2', W.yourAnswer, true);
+    ans.dataset.k = 'eqans'; ans.setAttribute('tabindex', ctx.editing ? '-1' : '0');
+    ans.setAttribute('aria-valuemin', '0'); ans.setAttribute('aria-valuemax', String(d * wholes)); ans.setAttribute('aria-valuenow', String(shaded)); ans.setAttribute('aria-valuetext', say());
+    const shade = n => { n = Math.max(0, Math.min(d * wholes, n)); if (n !== shaded) setAns(n); };
+    ans.addEventListener('click', e => { const p = e.target.closest('[data-piece]'); if (!p || ctx.editing) return; const k = +p.dataset.piece + 1; shade(k === shaded ? k - 1 : k); });
+    ans.addEventListener('keydown', e => {
+      const k = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key];
+      if (k) { e.preventDefault(); shade(shaded + k); } else if (e.key === 'Home') { e.preventDefault(); shade(0); } else if (e.key === 'End') { e.preventDefault(); shade(d * wholes); }
+    });
+    const box = el('div', 'dt-feqabox'); box.appendChild(ans); cN.appendChild(box);
+    if (had) T.stage.querySelector(`[data-k="${had}"]:not(:disabled)`)?.focus();
   }
   /** The answer in the sentence: the fraction in lowest terms, and as a mixed number when it is more than one whole. */
   const answerEl = f => {
@@ -633,6 +1018,8 @@ function fractions(body, s, ctx) {
   /** Bars: a row each (on one scale: the same length is the same amount), every whole its own bar; Divide's answer counts
    *  copies, so it is on a scale of its own, one bar a copy. */
   function barDraw(r, meas, box, room) {
+    // The answer's row is always drawn: "= ?" and an empty dashed bar while the answer is hidden, so the room the bars
+    // leave for the answer (3/2 + 3/2 on a scale of 3 wholes) reads as the answer's place, not as empty bars.
     const p = pictures(r, meas), rows = [[p.A, tag('', r.a)], [p.B, tag(r.sign, r.b)], [p.ans, tag('=', p.ans.f, true)]];
     const W0 = p.own ? p.A.wholes : Math.max(p.A.wholes, p.B.wholes, p.ans.wholes);
     const grid = el('div', 'dt-fbars'); box.appendChild(grid);
@@ -727,6 +1114,48 @@ function fractions(body, s, ctx) {
   }
   return T.finish();
 }
+/** Inside the tool's mode switch (public/js/dash-modes.js) the fraction tool's "what to do" is that dropdown: Compare,
+ *  Add, Subtract, Multiply, Divide (then the switch's other mode, Fraction, decimal, percent). The same rules as its own
+ *  dropdown: a new operation starts the working again, and nothing is divided by zero. */
+fractions.merge = {
+  list: M.FRACTION_MODES.map(m => [m, MODE_WORD[m]]),
+  get: st => (M.OPS[st.mode] ? st.mode : 'compare'),
+  set(st, v) {
+    if (!M.FRACTION_MODES.includes(v)) return;
+    if (v !== (M.OPS[st.mode] ? st.mode : 'compare')) { st.fit = 0; st.step = 0; }
+    st.mode = v;
+    if (M.OPS[v]) { st.a = M.clampOperand(st.a || M.OP_START.a); st.b = M.clampOperand(st.b || M.OP_START.b); if (v === 'div' && !st.b.n) st.b.n = 1; }
+  },
+};
+/** Whether a widget's Steps panel is open (this page's memory: closed until opened). */
+const stepsOpen = new Map();
+/** A list of steps in one panel (docs/decisions.md "Classroom dashboards: one calm row of buttons"): "💡 Steps 2 of 4"
+ *  and ▸/▾ as its toggle (closed at first), then the steps shown so far as a numbered list, Next step (o.next, a button)
+ *  and a summary line in bold. o: { key (the widget: open or closed is kept for it), C (the shared words), items,
+ *  total, next, summary, compact (earlier steps as their numbers only, each still read out), onToggle }. */
+function stepsPanel(o) {
+  const open = !!stepsOpen.get(o.key);
+  const box = el('section', 'dt-stepsbox'), id = `dt-steps${++stepIds}`;
+  box.setAttribute('aria-label', o.C.steps);
+  const t = el('button', 'dt-stepst'); t.type = 'button'; t.setAttribute('aria-expanded', String(open)); t.setAttribute('aria-controls', id); t.dataset.k = 'steps';
+  const ic = el('span', 'dt-ic', '💡'), name = el('span', null, o.C.steps), count = el('span', 'dt-stepsn', fill(o.C.stepsOf, { n: o.items.length, total: o.total })), tri = el('span', 'dt-stepstri', open ? '▾' : '▸');
+  ic.setAttribute('aria-hidden', 'true'); tri.setAttribute('aria-hidden', 'true');
+  t.append(ic, name, count, tri);
+  t.addEventListener('click', () => { stepsOpen.set(o.key, !open); o.onToggle(); });
+  const inner = el('div', 'dt-stepsbody'); inner.id = id; inner.hidden = !open;
+  const ol = el('ol', `dt-stepsl${o.compact ? ' is-compact' : ''}`);
+  o.items.forEach((text, i) => {
+    const li = el('li', 'dt-fstep'); li.dir = 'auto'; const k = el('b', 'dt-fstepn', String(i + 1)); k.setAttribute('aria-hidden', 'true');
+    if (o.compact && i < o.items.length - 1) { li.classList.add('dt-fstep-n'); li.append(k, el('span', 'sr-only', text)); } else li.append(k, el('span', null, text));
+    ol.appendChild(li);
+  });
+  inner.appendChild(ol);
+  if (o.next) inner.appendChild(o.next);
+  if (o.summary) { const sum = el('p', 'dt-stepssum', o.summary); sum.dir = 'auto'; inner.appendChild(sum); }
+  box.append(t, inner);
+  return box;
+}
+let stepIds = 0;
 /** A copy's number (or the part of one) fits inside it when there is this much room, in px. */
 const LABEL_ROOM = 22;
 /** A row of the operations' bars, drawn at its size in px (so its labels are real px): `wholes` bars side by side with a
@@ -962,6 +1391,8 @@ function coord(body, s, ctx) {
   const range = () => (st.quads === 1 ? [0, 2 * st.size] : [-st.size, st.size]);
   T.draw = () => {
     slope.sync(); startS.sync();
+    // The answer hidden (a question about the slope): the slope's stepper, rise and run and the table's y go.
+    const hid = T.hid(); slope.hidden = hid;
     const [lo, hi] = range(), n = hi - lo, P = 40, S = 520, u = (S - 2 * P) / n;
     cur.x = Math.max(lo, Math.min(hi, cur.x)); cur.y = Math.max(lo, Math.min(hi, cur.y));
     const X = v => P + (v - lo) * u, Y = v => S - P - (v - lo) * u;
@@ -1000,7 +1431,7 @@ function coord(body, s, ctx) {
         plane.appendChild(svg('line', { x1: X(seg[0][0]), y1: Y(seg[0][1]), x2: X(seg[1][0]), y2: Y(seg[1][1]), class: 'dt-line' }));
         // Rise over run, from where the line starts (0, b) when that is on the grid.
         const sl = m();
-        if (st.b >= lo && st.b <= hi && sl.n && 0 >= lo && sl.d <= hi && st.b + sl.n >= lo && st.b + sl.n <= hi) {
+        if (!hid && st.b >= lo && st.b <= hi && sl.n && 0 >= lo && sl.d <= hi && st.b + sl.n >= lo && st.b + sl.n <= hi) {
           plane.appendChild(svg('path', { d: `M${X(0)} ${Y(st.b)}H${X(sl.d)}V${Y(st.b + sl.n)}`, class: 'dt-tri' }));
           plane.appendChild(svg('text', { x: (X(0) + X(sl.d)) / 2, y: Y(st.b) + (sl.n > 0 ? 22 : -10), class: 'dt-tril', 'text-anchor': 'middle' }, `${W.run} ${sl.d}`));
           plane.appendChild(svg('text', { x: X(sl.d) + 8, y: (Y(st.b) + Y(st.b + sl.n)) / 2 + 6, class: 'dt-tril' }, `${W.rise} ${svgText(sl.n)}`));
@@ -1015,7 +1446,7 @@ function coord(body, s, ctx) {
       const tb = el('table', 'dt-table'); tb.dir = 'ltr';
       const r1 = el('tr'), r2 = el('tr');
       r1.appendChild(el('th', null, 'x')); r2.appendChild(el('th', null, 'y'));
-      for (const p of M.valueTable(m(), st.b, xsOf())) { r1.appendChild(el('td', null, svgText(p.x))); r2.appendChild(el('td', null, M.fracText(p.y))); }
+      for (const p of M.valueTable(m(), st.b, xsOf())) { r1.appendChild(el('td', null, svgText(p.x))); r2.appendChild(el('td', null, hid ? '?' : M.fracText(p.y))); }
       tb.append(r1, r2); box.appendChild(tb);
     }
     T.stage.appendChild(box);
@@ -1070,7 +1501,8 @@ function coord(body, s, ctx) {
 const GRAPH_ICONS = ['🍎', '⭐', '🐶', '🐱', '⚽', '🌻', '🚌', '📚', '🍕', '🐟', '🎈', '❤️'];
 function graph(body, s, ctx) {
   const T = shell(body, s, ctx, 'graph'), { W, st } = T;
-  const kinds = T.seg(W.kind, [['bar', W.bar, null, '📊'], ['line', W.line, null, '📈'], ['picture', W.picture, null, '🍎'], ['dot', W.dot, null, '⚫']], () => st.kind, v => { st.kind = v; T.commit(W[v]); });
+  const kinds = T.pick(W.kind, [['bar', W.bar], ['line', W.line], ['picture', W.picture], ['dot', W.dot]], () => st.kind, v => { st.kind = v; T.commit(W[v]); });
+  kinds.dataset.pair = '1';
   T.top.appendChild(kinds);
   const labelOf = (r, i) => r.l || String.fromCharCode(65 + i);
   T.draw = () => {
@@ -1216,13 +1648,14 @@ function base10(body, s, ctx) {
   const clear = btn(`🧹 ${W.clear}`, 'btn btn-sm');
   clear.addEventListener('click', () => { Object.assign(st, { h: 0, t: 0, o: 0 }); T.commit(W.clear); });
   T.foot.append(up, down, clear);
-  const say = () => ctx.say(`${M.blocksValue(st)}: ${st.h} ${W.hundreds}, ${st.t} ${W.tens}, ${st.o} ${W.ones}`);
+  // While the answer is hidden the number is not said (the blocks are: what a sighted student sees).
+  const say = () => ctx.say(`${T.hid() ? '' : `${M.blocksValue(st)}: `}${st.h} ${W.hundreds}, ${st.t} ${W.tens}, ${st.o} ${W.ones}`);
   const change = (p, d) => { const n = st[p] + d; if (n < 0 || n > M.BASE10_MAX[p]) return false; st[p] = n; sel = p; T.commit(); say(); return true; };
   const tradeFor = dir => (dir === 'up' ? (sel === 'h' ? null : sel === 't' ? ['t', 'up'] : ['o', 'up']) : (sel === 'o' ? null : [sel, 'down']));
   const doTrade = dir => {
     let tr = tradeFor(dir); if (!tr) tr = dir === 'up' ? ['o', 'up'] : ['t', 'down'];
     const x = M.trade(st, tr[0], tr[1]); if (!x) return;
-    Object.assign(st, x); T.commit(); ctx.say(`${W.traded} ${M.blocksValue(st)}: ${st.h} ${W.hundreds}, ${st.t} ${W.tens}, ${st.o} ${W.ones}`);
+    Object.assign(st, x); T.commit(); ctx.say(`${W.traded} ${T.hid() ? '' : `${M.blocksValue(st)}: `}${st.h} ${W.hundreds}, ${st.t} ${W.tens}, ${st.o} ${W.ones}`);
   };
   /** Drag a block in from the header (or out of the mat to take it away). */
   let drag = null;
@@ -1235,7 +1668,8 @@ function base10(body, s, ctx) {
       const head = el('div', 'dt-mathead');
       const piece = el('span', `dt-piece dt-piece-${p}`); piece.setAttribute('aria-hidden', 'true'); piece.title = W.drop;
       // How many, typed too (0 to the most a mat holds): the − and + below's own rule.
-      const count = T.num({ label: name, key: `mat${p}`, get: () => st[p], min: 0, max: M.BASE10_MAX[p], cls: 'dt-matn', set: n => { st[p] = n; sel = p; T.commit(); say(); },
+      // While the answer is hidden the counts show "?" (the blocks are counted, not read).
+      const count = T.num({ label: name, key: `mat${p}`, get: () => st[p], min: 0, max: M.BASE10_MAX[p], cls: 'dt-matn', mask: () => T.hid(), set: n => { st[p] = n; sel = p; T.commit(); say(); },
         up: () => change(p, 1), down: () => change(p, -1) });
       head.append(piece, el('b', 'dt-matname', name), count);
       const area = el('div', 'dt-matarea'); area.setAttribute('role', 'img'); area.setAttribute('aria-label', `${st[p]} ${name}`);
@@ -1275,15 +1709,26 @@ function base10(body, s, ctx) {
       mats.appendChild(col);
     }
     syncSel();
-    const v = M.blocksValue(st);
-    T.read.textContent = '';
-    T.read.append(ltr('div', 'dt-big', String(v)), ltr('div', 'dt-sub', `${st.h * 100} + ${st.t * 10} + ${st.o}`));
-    if (st.o >= 10 || st.t >= 10) T.read.appendChild(el('div', 'dt-sub dt-note', W.hint));
+    if (!T.read.contains(edit)) { T.read.textContent = ''; T.read.append(edit, parts, note); }
+    edit.sync(); parts.textContent = `${st.h * 100} + ${st.t * 10} + ${st.o}`;
+    note.hidden = !(st.o >= 10 || st.t >= 10);
   };
+  // The number is typed straight into too (0-999): the blocks become its hundreds, tens and ones.
+  const C = T.C;
+  const edit = bigEdit({
+    label: fill(C.editFor, { name: ctx.type.name }), hint: C.editHint, off: ctx.editing, get: () => M.blocksValue(st), format: v => String(v),
+    parse: text => { const r = M.pvParse(text, ctx.intl, 0, 999000); return r.ok ? { ok: true, v: r.v / 1000 } : r; },
+    set: v => { Object.assign(st, M.blocksOf(v)); T.commit(); say(); },
+    why: k => (k === 'places' ? C.editWhole : k === 'range' ? fill(C.editRange, { max: '999' }) : C.editBad),
+  });
+  const parts = ltr('div', 'dt-sub'), note = el('div', 'dt-sub dt-note', W.hint);
   function syncSel() {
     for (const c of mats.children) c.classList.toggle('is-sel', c.dataset.place === sel);
     const u = tradeFor('up') || ['o', 'up'], d = tradeFor('down') || ['t', 'down'];
-    up.textContent = u[0] === 't' ? W.tradeUpT : W.tradeUp; down.textContent = d[0] === 'h' ? W.tradeDownH : W.tradeDown;
+    // In the row: "10 → 1" and "1 → 10" (the same for tens and hundreds); the tooltip and the name say it in full.
+    const upName = u[0] === 't' ? W.tradeUpT : W.tradeUp, downName = d[0] === 'h' ? W.tradeDownH : W.tradeDown;
+    up.textContent = '10 → 1'; down.textContent = '1 → 10'; up.dir = down.dir = 'ltr';
+    up.setAttribute('aria-label', upName); tip(up, upName); down.setAttribute('aria-label', downName); tip(down, downName);
     up.disabled = !M.trade(st, u[0], u[1]); down.disabled = !M.trade(st, d[0], d[1]);
     clear.disabled = !M.blocksValue(st);
   }
@@ -1327,9 +1772,21 @@ function placeval(body, s, ctx) {
   x10.addEventListener('click', () => set(M.pvTimes10(st.v), W.times10));
   d10.addEventListener('click', () => set(st.dec ? M.pvDiv10(st.v) : null, W.div10));
   T.foot.append(minus, plus, x10, d10);
+  T.more(d10);
   const nf = new Intl.NumberFormat(ctx.intl, { maximumFractionDigits: 3 });
+  // The big number is typed straight into (docs/decisions.md "Build it"): "3,405.27", in the reader's own marks.
+  const C = T.C;
+  const edit = bigEdit({
+    label: fill(C.editFor, { name: ctx.type.name }), hint: C.editHint, off: ctx.editing, get: () => st.v, format: v => M.pvFormat(v, ctx.intl),
+    parse: text => M.pvParse(text, ctx.intl, st.dec ? 3 : 0),
+    set: v => set(v),
+    why: k => (k === 'places' ? (st.dec ? fill(C.editPlaces, { n: 3 }) : C.editWhole) : k === 'range' ? fill(C.editRange, { max: M.pvFormat(st.dec ? M.PV_MAX : M.PV_MAX - 999, ctx.intl) }) : C.editBad),
+  });
+  const expanded = ltr('div', 'dt-sub');
   T.draw = () => {
     if (!cols().includes(sel)) sel = 3;
+    // The answer hidden (what number is shown?): with the discs on, the digits under them show "?" too.
+    const hideDigits = T.hid() && !ctx.build && st.discs;
     const dg = M.pvDigits(st.v);
     T.stage.textContent = '';
     const chart = el('div', `dt-pv${st.discs ? ' has-discs' : ''}`); chart.dir = 'ltr';
@@ -1339,11 +1796,12 @@ function placeval(body, s, ctx) {
       if (i === 4) chart.appendChild(el('span', 'dt-pvdot', '.'));
       const c = el('div', `dt-pvcol dt-pv${i}${i === sel ? ' is-sel' : ''}`);
       c.setAttribute('role', 'spinbutton'); c.setAttribute('aria-label', name(i)); c.setAttribute('aria-valuenow', String(dg[i])); c.setAttribute('aria-valuemin', '0'); c.setAttribute('aria-valuemax', '9');
+      if (hideDigits) c.setAttribute('aria-valuetext', `${dg[i]} ${W.discs}`);
       c.tabIndex = i === sel && !ctx.editing ? 0 : -1;
       const head = el('div', 'dt-pvh', name(i)); head.dir = 'auto';
       const discs = el('div', 'dt-pvdiscs'); discs.setAttribute('aria-hidden', 'true');
       if (st.discs) for (let k = 0; k < dg[i]; k++) discs.appendChild(el('span', `dt-disc dt-disc${i}`)).appendChild(el('span', 'dt-disct', DISC[i]));
-      c.append(head, discs, el('div', 'dt-pvd', String(dg[i])));
+      c.append(head, discs, el('div', 'dt-pvd', hideDigits ? '?' : String(dg[i])));
       c.addEventListener('click', () => { if (ctx.editing) return; sel = i; syncSel(); c.focus(); });
       c.addEventListener('focus', () => { if (sel !== i) { sel = i; syncSel(); } });
       c.addEventListener('keydown', e => {
@@ -1354,16 +1812,16 @@ function placeval(body, s, ctx) {
     }
     roving(chart, cells, cells.length, j => { sel = cols()[j]; syncSel(); });
     T.stage.appendChild(chart);
-    T.read.textContent = '';
     const ex = M.pvExpanded(st.v).map(x => nf.format(x.value)).join(' + ') || '0';
-    T.read.append(ltr('div', 'dt-big', M.pvFormat(st.v, ctx.intl)), ltr('div', 'dt-sub', `${W.expanded}: ${ex}`));
+    if (!T.read.contains(edit)) { T.read.textContent = ''; T.read.append(edit, expanded); }
+    edit.sync(); expanded.textContent = `${W.expanded}: ${ex}`;
     syncSel();
   };
   const focusSel = () => T.stage.querySelector('.dt-pvcol.is-sel')?.focus();
   function syncSel() {
     for (const c of T.stage.querySelectorAll('.dt-pvcol')) { const on = c.classList.contains(`dt-pv${sel}`); c.classList.toggle('is-sel', on); c.tabIndex = on && !ctx.editing ? 0 : -1; }
     minus.setAttribute('aria-label', `${W.less}: ${name(sel)}`); plus.setAttribute('aria-label', `${W.more}: ${name(sel)}`);
-    minus.title = minus.getAttribute('aria-label'); plus.title = plus.getAttribute('aria-label');
+    tip(minus, minus.getAttribute('aria-label')); tip(plus, plus.getAttribute('aria-label'));
     minus.disabled = M.pvAdd(st.v, sel, -1) === null; plus.disabled = M.pvAdd(st.v, sel, 1) === null;
     x10.disabled = M.pvTimes10(st.v) === null; d10.disabled = !st.dec || M.pvDiv10(st.v) === null;
   }
@@ -1388,6 +1846,7 @@ function tenframe(body, s, ctx) {
   take.addEventListener('click', () => { for (let i = n() - 1; i >= 0; i--) if (st.cells[i]) { st.cells[i] = 0; T.commit(); say(); return; } });
   clear.addEventListener('click', () => { st.cells = st.cells.map(() => 0); T.commit(W.clear); });
   T.foot.append(addR, addY, take, clear);
+  T.more(take);   // in ⋯ (docs/decisions.md "one calm row of buttons"): red +, yellow + and Clear stay in the row
   let focusAt = -1;
   T.draw = () => {
     const c = counts(), full = c.r + c.y, wasHere = !!document.activeElement?.classList?.contains('dt-tfcell') && body.contains(document.activeElement);
@@ -1452,13 +1911,14 @@ function hundreds(body, s, ctx) {
   let focusAt = 0;
   T.draw = () => {
     skip.value = String(st.skip); hide.value = st.hide; clear.disabled = !st.shade.length && !st.skip;
-    const shaded = new Set(st.shade), counted = new Set(M.skipCount(st.skip, st.start, last()));
+    const shaded = new Set(st.shade), skipped = M.skipCount(st.skip, st.start, last()), counted = new Set(skipped);
     T.stage.textContent = '';
     const g = el('div', `dt-hgrid${last() === 120 ? ' is-120' : ''}`); g.dir = 'ltr'; g.setAttribute('role', 'group'); g.setAttribute('aria-label', ctx.type.name);
     const cells = [];
     for (let k = 0; k <= last() - st.start; k++) {
       const v = k + st.start, on = shaded.has(v), sk = counted.has(v);
-      const hid = st.hide === 'all' || (st.hide === 'shaded' && (on || sk));
+      // The answer hidden (counting by n, what comes next?): the counted numbers after the third one show no number.
+      const hid = st.hide === 'all' || (st.hide === 'shaded' && (on || sk)) || (T.hid() && sk && v > skipped[2]);
       const b = btn(hid ? '' : String(v), `dt-hcell${on ? ' is-on' : ''}${sk ? ' is-skip' : ''}`);
       b.setAttribute('aria-label', `${hid ? W.hidden : v}${on ? `, ${W.shaded}` : ''}${sk ? `, ${fill(W.skipBy, { n: st.skip })}` : ''}`);
       b.setAttribute('aria-pressed', String(on));
@@ -1505,7 +1965,7 @@ function area(body, s, ctx) {
   T.draw = () => {
     views.sync(); rows.sync(); cols.sync(); split.sync();
     views.querySelectorAll('button')[0].disabled = st.a > 12 || st.b > 12;
-    const r = pp(), V = view();
+    const r = pp(), V = view(), hid = T.hid();
     const pad = 46, maxW = 560, maxH = 400, k = Math.min((maxW - pad) / st.b, (maxH - pad) / st.a);
     const w = st.b * k, h = st.a * k;
     // Partial products go inside their part when they fit at a readable size (14px, 16 on the projector); a part too
@@ -1525,7 +1985,7 @@ function area(body, s, ctx) {
             const fs = Math.min(Math.max(34, fMin * 1.6), cw / ([...String(part.p)].length * 0.62), ch / 2.3, (cw - 8) / (top.length * 0.6 * 0.72));
             if (fs * 0.72 >= fMin) place.push({ part, inside: true, x, y, cw, ch, fs, top });
             else {
-              const below = i === r.rows.length - 1 && r.rows.length > 1, fo = fMin * 1.1, text = `${top} = ${part.p}`;
+              const below = i === r.rows.length - 1 && r.rows.length > 1, fo = fMin * 1.1, text = `${top} = ${hid ? '?' : part.p}`;
               place.push({ part, inside: false, below, x, y, cw, ch, fo, text, line: below ? nB++ : 0 });
               if (!below) needR = Math.max(needR, tw(text, fo) + 28);
             }
@@ -1541,7 +2001,7 @@ function area(body, s, ctx) {
     function Y0of(p) { return p; }
     const VW = w + pad + 8 + mR, VH = h + pad + 8 + mB;
     const ts = T.ts(VW, VH, 22, T.minPx());
-    const sv = svg('svg', { viewBox: `0 0 ${VW} ${VH}`, class: 'dt-area', style: `--ts:${ts.toFixed(3)}`, role: 'img', 'aria-label': sayIt() });
+    const sv = svg('svg', { viewBox: `0 0 ${VW} ${VH}`, class: 'dt-area', style: `--ts:${ts.toFixed(3)}`, role: 'img', 'aria-label': hid ? `${st.a} × ${st.b}` : sayIt() });
     sv.setAttribute('direction', 'ltr');
     const X0 = pad, Y0 = pad;
     if (V === 'array') {
@@ -1559,7 +2019,7 @@ function area(body, s, ctx) {
         const cx = c.x + c.cw / 2, cy = c.y + c.ch / 2;
         if (c.inside) {
           sv.appendChild(svg('text', { x: cx, y: cy - c.fs * 0.12, 'font-size': c.fs * 0.72, 'text-anchor': 'middle', class: 'dt-rl' }, c.top));
-          sv.appendChild(svg('text', { x: cx, y: cy + c.fs * 0.85, 'font-size': c.fs, 'text-anchor': 'middle', class: 'dt-rv' }, c.part.p));
+          sv.appendChild(svg('text', { x: cx, y: cy + c.fs * 0.85, 'font-size': c.fs, 'text-anchor': 'middle', class: 'dt-rv' }, hid ? '?' : c.part.p));
         } else if (c.below) {
           const ly = Y0 + h + 14 + (c.line + 1) * c.fo * 1.5 - c.fo * 0.35, lx = Math.max(X0 + tw(c.text, c.fo) / 2, Math.min(X0 + w - tw(c.text, c.fo) / 2 + mR, cx));
           sv.appendChild(svg('path', { d: `M${cx} ${cy}V${ly - c.fo * 1.05}`, class: 'dt-leader' }));
@@ -1640,7 +2100,8 @@ function times(body, s, ctx) {
       g.appendChild(el('span', `dt-th${st.r === i ? ' is-lit' : ''}`, String(i)));
       for (let j = 1; j <= N; j++) {
         const on = lit(i, j), here = (i === st.r && j === st.c) || (st.mark === 'turn' && i === st.c && j === st.r);
-        const show = !st.hide || on;
+        // The answer hidden (a question about r × c): the fact's own cell shows no number.
+        const show = (!st.hide || on) && !(here && T.hid());
         const b = btn(show ? String(i * j) : '', `dt-tcell${on ? ' is-lit' : ''}${here ? ' is-here' : ''}${i === j ? ' is-sq' : ''}`, `${i} × ${j}${show ? ` = ${i * j}` : ''}`);
         b.removeAttribute('title');
         if (ctx.editing) b.disabled = true;
@@ -1735,7 +2196,9 @@ function tclock(body, s, ctx) {
     const end = e => { if (!drag || drag.id !== e.pointerId) return; drag = null; T.commit(); ctx.say(timeText(st[editing])); face.focus(); };
     face.addEventListener('pointerup', end); face.addEventListener('pointercancel', end);
   }
+  // All four steps stay in the row (the one tool allowed four: docs/decisions.md "one calm row of buttons").
   return T.finish({
+    row: 4,
     options: box => {
       checkRow(box, W.digital, st.digital, v => { st.digital = v; T.commit(); });
       checkRow(box, W.h24, st.h24, v => { st.h24 = v; T.commit(); });
@@ -1747,7 +2210,7 @@ function tclock(body, s, ctx) {
 // ================================================================ 12. fraction, decimal, percent
 function fdp(body, s, ctx) {
   const T = shell(body, s, ctx, 'fdp'), { W, st } = T;
-  const say = () => ctx.say(`${st.n}/${st.d} = ${spoken(M.decimalString(st.n, st.d), W.hint)} = ${spoken(M.percentString(st.n, st.d), W.hint)}`);
+  const say = () => ctx.say(T.hid() ? `${st.n}/${st.d}` : `${st.n}/${st.d} = ${spoken(M.decimalString(st.n, st.d), W.hint)} = ${spoken(M.percentString(st.n, st.d), W.hint)}`);
   // Typed too: the top number 0 to the bottom one, the bottom 1-100 (the top comes down with it, as with −).
   const top = T.stepper(W.top, () => st.n, () => { if (st.n > 0) { st.n--; T.commit(); say(); } }, () => { if (st.n < st.d) { st.n++; T.commit(); say(); } }, `${W.top} −`, `${W.top} +`,
     { value: () => st.n, min: 0, max: () => st.d, set: n => { st.n = n; T.commit(); say(); } });
@@ -1769,10 +2232,12 @@ function fdp(body, s, ctx) {
     const fr = el('div', 'dt-cardv'); fr.dir = 'ltr'; fr.appendChild(stacked(st.n, st.d));
     if (simp.d !== st.d && st.n) { fr.append(' = '); fr.appendChild(stacked(simp.n, simp.d)); }
     const dec = M.decimalString(st.n, st.d), pct = M.percentString(st.n, st.d);
-    cards.append(card(W.fraction, fr), card(W.decimal, dec, spoken(dec, W.hint)), card(W.percent, pct, spoken(pct, W.hint)));
+    // The answer hidden (which decimal is n/d?): the decimal and percent cards show "?".
+    const hid = T.hid();
+    cards.append(card(W.fraction, fr), card(W.decimal, hid ? '?' : dec, hid ? '?' : spoken(dec, W.hint)), card(W.percent, hid ? '?' : pct, hid ? '?' : spoken(pct, W.hint)));
     // 10 x 10: a square is one hundredth; tap one to show that many hundredths.
     const h = M.hundredGrid(st.n, st.d);
-    grid = svg('svg', { viewBox: '0 0 104 104', class: 'dt-hund', role: 'slider', tabindex: ctx.editing ? '-1' : '0', 'aria-label': W.grid, 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': Math.round(h.full + h.part), 'aria-valuetext': fill(W.outOf, { n: spoken(M.decimalString(st.n * 100, st.d), W.hint) }) });
+    grid = svg('svg', { viewBox: '0 0 104 104', class: 'dt-hund', role: 'slider', tabindex: ctx.editing ? '-1' : '0', 'aria-label': W.grid, 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': Math.round(h.full + h.part), 'aria-valuetext': hid ? '?' : fill(W.outOf, { n: spoken(M.decimalString(st.n * 100, st.d), W.hint) }) });
     grid.setAttribute('direction', 'ltr');
     for (let k = 0; k < 100; k++) {
       const x = 2 + (k % 10) * 10, y = 2 + Math.floor(k / 10) * 10;
@@ -1949,4 +2414,4 @@ const C = ctx => ctx.common || {};
 export const TOOLS = { fractions, numline, coord, graph, base10, placeval, tenframe, hundreds, area, times, tclock, fdp, board, picture };
 export const PEN_COLORS = PENS;
 /** The shared parts, for stage 4's tools (public/js/dash-tools4.js). */
-export const parts = { shell, field, selectOf, numberIn, checkRow, roving, stacked, el, svg, btn, fill, clone, ltr, svgPoint, svgText, iso };
+export const parts = { shell, field, selectOf, numberIn, checkRow, roving, stacked, el, svg, btn, fill, clone, ltr, svgPoint, svgText, iso, bigEdit, popMenu, stepsPanel };

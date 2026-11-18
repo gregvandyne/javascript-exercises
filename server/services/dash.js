@@ -26,6 +26,9 @@ import { liveOn, openForClass } from './classlive-sessions.js';
 import { isOfficial } from './classlive-access.js';
 import { TOOL_IDS, TOOL_MODES, MODE_HOME, cleanToolState, moveToolState } from './dash-tools.js';
 import { cleanVideo } from './dash-media.js';
+// "Build it" (docs/decisions.md "Classroom dashboards: Build it"): the browser's own pure module, so a student's check is
+// worked out here exactly as on their screen.
+import * as B from '../../public/js/dash-build.js';
 import { lookup } from '../i18n/index.js';
 import { fits, MAX_DASH_VERSION } from './qr.js';
 
@@ -82,7 +85,7 @@ const TOOL_WORDS = {
   bars: ['kind', 'mul', 'part', 'cmp', 'groups', 'each', 'parts', 'partN', 'first', 'second', 'total', 'whole', 'diff', 'newProblem', 'unknown', 'unknownIs',
     'braceWhole', 'braceOne', 'braceDiff', 'oneGroup', 'nGroups', 'qGroups', 'hide', 'show', 'answerIs', 'sentences', 'box', 'right', 'wrong', 'story', 'storyBtn', 'storyLocal',
     'model', 'max', 'sayMul', 'sayPart', 'sayCmp', 'find'],
-  rods: ['palette', 'addRod', 'rodN', 'longer', 'board', 'boardKeys', 'lying', 'standing', 'added', 'copied', 'deleted', 'moved', 'full', 'noRoom', 'tooLong',
+  rods: ['palette', 'addRod', 'rodN', 'longer', 'longRod', 'board', 'boardKeys', 'lying', 'standing', 'added', 'copied', 'deleted', 'moved', 'full', 'noRoom', 'tooLong',
     'dirH', 'dirV', 'grid', 'units', 'zoomIn', 'zoomOut', 'undo', 'redo', 'turn', 'copy', 'del', 'reset', 'resetDone', 'chosen', 'eq', 'eqOff', 'box', 'blank',
     'right', 'wrong', 'newEq', 'typeEq', 'typeLabel', 'typeHint', 'typeBad', 'model', 'modelled', 'trainIs', 'same', 'notSame', 'empty', 'count', 'find'],
   map: ['world', 'grid', 'names', 'pin', 'label', 'clear', 'remove', 'cursor', 'placed', 'removed', 'hint', 'compass', 'n', 'e', 's', 'w', 'square', 'sea', 'pins', 'none',
@@ -104,12 +107,21 @@ TOOL_WORDS.fractions.push('partsOf');
 TOOL_WORDS.fractions.push('show', 'yourAnswer', 'check', 'checkRight', 'checkSimplify', 'checkNo', 'checkUnread', 'fitOne', 'again',
   'fitSoFar', 'fitPart', 'fitAll', 'stepNext', 'stepHide', 'stepCommon', 'stepRename', 'stepAddTops', 'stepSubTops', 'stepGrid',
   'stepShade', 'stepOverlap', 'stepKeep', 'stepChange', 'stepFlip', 'stepTimes');
+// Fractions, equations (docs/decisions.md "Classroom dashboards: fractions, equations"): a student's Build it equation
+// (the answer bar, its parts and wholes) and the note when + goes past a fraction's limit.
+TOOL_WORDS.fractions.push('howtoEq', 'eqHint', 'eqParts', 'eqWholes', 'eqShaded', 'eqWholesNow', 'eqLessWhole', 'eqMoreWhole',
+  'limitWholes', 'limitTop', 'limitBottom');
 /** Words every teaching tool shares (dash.tools.<word>). */
 export const TOOL_COMMON = ['send', 'options', 'optionsFor', 'pin', 'pinned', 'copyNote', 'yourCopy', 'done',
   // maths tools combined: the mode switch ("Choose what Place value shows")
   'modeFor',
+  // one calm row of buttons: Share ▾, ⋯ (more of the tool's actions), Number rods' View, the Steps panel, Jump to…
+  'share', 'moreActs', 'view', 'steps', 'stepsOf', 'jumpTo',
   // stage 4: "Make a question from it" and "Practice it"
   'ask', 'askTitle', 'askNote', 'askRight', 'askSend', 'askQ', 'askOpt', 'practice', 'practiceName',
+  // "Build it" (docs/decisions.md "Classroom dashboards: Build it"): Show/Hide the answer, the Build it button, and the
+  // big number typed straight into (place value, base-ten blocks)
+  'showAns', 'hideAns', 'ansHidden', 'ansShown', 'build', 'editFor', 'editHint', 'editBad', 'editRange', 'editPlaces', 'editWhole',
   // help on the maths tools: the ⓘ panel
   'helpFor', 'helpClose', 'helpTry'];
 /** Stage 4: the question each tool can make from what it shows (dash.ask.<key>; public/js/dash-ask.js). */
@@ -222,7 +234,7 @@ export const WIDGETS = [
   // place value, multiply and divide, fractions, the shape board, geometry, algebra and data and chance (TOOL_MODES,
   // RETIRED). A tool with modes is as big as its biggest mode needs, plus the row of its mode switch.
   ...[['fractions', '🍕', [6, 8], [5, 8]], ['numline', '📏', [8, 4], [6, 4]], ['coord', '📈', [6, 6], [5, 6]],
-    ['placeval', '🔟', [7, 7], [6, 6]], ['tenframe', '🔴', [5, 5], [4, 6]], ['hundreds', '💯', [5, 7], [4, 6]],
+    ['placeval', '🔟', [7, 7], [6, 6]], ['tenframe', '🔴', [5, 5], [4, 6]], ['hundreds', '💯', [5, 7], [4, 7]],
     ['area', '🔲', [7, 8], [6, 8]], ['tclock', '🕰️', [4, 6], [4, 5]]]
     .map(([id, icon, size, min]) => toolType(id, icon, size, min, 'teach')),
   // ---- stage 4: teaching tools part 2 (docs/decisions.md "Classroom dashboards, stage 4"), the same rules. Maths tools in
@@ -780,7 +792,7 @@ export function removeLink(u, c, id) {
 }
 
 // ---------------------------------------------------------------- pushes and the tray
-export const PUSH_KINDS = ['game', 'live', 'lesson', 'link', 'tool'];
+export const PUSH_KINDS = ['game', 'live', 'lesson', 'link', 'tool', 'build'];
 export const MAX_PUSHES_A_DAY = 40;
 /** A game students of the class can open: live, and public, shared with the school, or shared with this class. */
 export function pushableGame(c, g) {
@@ -804,7 +816,7 @@ export function pushOptions(u, c, text = '') {
   for (const g of found) { if (seen.has(g.id) || !pushableGame(c, g)) continue; seen.add(g.id); list.push({ id: g.id, title: g.title, icon: g.icon }); if (list.length >= 12) break; }
   return { games: list, live: liveRoom(c), lessons: openLessons(c), links: linksOf(c.id) };
 }
-export function push(u, c, { kind, ref, state } = {}) {
+export function push(u, c, { kind, ref, state, build } = {}) {
   if (!PUSH_KINDS.includes(kind)) return { error: 'kind' };
   const day = dayOf(c);
   if (q.get('SELECT COUNT(*) n FROM dash_pushes WHERE class_id=? AND day=?', c.id, day).n >= MAX_PUSHES_A_DAY) return { error: 'tooManyPushes' };
@@ -818,11 +830,24 @@ export function push(u, c, { kind, ref, state } = {}) {
     const w = teacherWidget(u, c, r, TOOL_IDS); if (!w) return { error: 'tool' };
     data = { type: w.type, state: cleanToolState(w.type, state === undefined ? w.s.state : state) };
     title = w.type;
+  } else if (kind === 'build') {
+    // "Build it": a set of targets for one of this teacher's maths tools (a mode of it), built from the tool as it is on
+    // their screen (base, rebuilt from the mode's spec), with the teacher's instruction (cleaned, no links or markup).
+    const w = teacherWidget(u, c, r, TOOL_IDS); if (!w) return { error: 'tool' };
+    const b = build && typeof build === 'object' ? build : {};
+    const mode = String(b.mode || w.type);
+    if (!B.BUILD[mode] || (mode !== w.type && !(TOOL_MODES[w.type] || []).includes(mode))) return { error: 'buildTool' };
+    const base = cleanToolState(mode, B.baseFor(mode, b.base, 'en'));
+    const targets = B.cleanTargets(mode, b.targets, base);
+    if (!targets.length) return { error: 'buildTargets' };
+    data = { type: w.type, mode, base, targets, say: cleanText(b.say, 120) };
+    title = w.type;
   } else { const l = getLink(c.id, r); if (!l) return { error: 'link' }; title = l.title; }
   const id = uid(12);
   tx(() => {
     // Older days' pushes are only history nobody reads: keep two weeks.
     q.run('DELETE FROM dash_push_hidden WHERE push_id IN (SELECT id FROM dash_pushes WHERE class_id=? AND created_at<?)', c.id, now() - 14 * 86400e3);
+    q.run('DELETE FROM dash_builds WHERE class_id=? AND (at<? OR push_id IN (SELECT id FROM dash_pushes WHERE class_id=? AND created_at<?))', c.id, now() - 14 * 86400e3, c.id, now() - 14 * 86400e3);
     q.run('DELETE FROM dash_pushes WHERE class_id=? AND created_at<?', c.id, now() - 14 * 86400e3);
     q.run('INSERT INTO dash_pushes(id, class_id, day, kind, ref, title, by_id, created_at, data) VALUES (?,?,?,?,?,?,?,?,?)', id, c.id, day, kind, r, cleanText(title, 80) || '…', u.id, now(), JSON.stringify(data));
   });
@@ -846,6 +871,7 @@ export function pushHref(c, p) {
   if (p.kind === 'link') return getLink(c.id, p.ref) ? `/class/${c.id}/dashboard/link/${p.ref}` : null;
   // A teaching tool opens on the dashboard itself, as the student's own copy.
   if (p.kind === 'tool') return `#tool-${p.id}`;
+  if (p.kind === 'build') return `#build-${p.id}`;
   // A quick check opens on the dashboard itself while it is open.
   if (p.kind === 'check') return q.get('SELECT 1 FROM dash_checks WHERE id=? AND class_id=? AND ended_at IS NULL', p.ref, c.id) ? `#check-${p.ref}` : null;
   return null;
@@ -854,8 +880,55 @@ export function pushHref(c, p) {
 export function todaysPushes(c, userId = null) {
   const hidden = userId ? new Set(q.all('SELECT h.push_id FROM dash_push_hidden h JOIN dash_pushes p ON p.id=h.push_id WHERE p.class_id=? AND h.user_id=?', c.id, userId).map(r => r.push_id)) : new Set();
   return q.all('SELECT id, kind, ref, title, created_at, data FROM dash_pushes WHERE class_id=? AND day=? AND ended_at IS NULL ORDER BY created_at DESC, rowid DESC', c.id, dayOf(c))
-    .map(p => ({ id: p.id, kind: p.kind, title: p.kind === 'tool' ? '' : p.title, at: p.created_at, href: pushHref(c, p), hidden: hidden.has(p.id), ...(p.kind === 'tool' ? { tool: toolOfPush(p) } : {}) }))
+    .map(p => ({ id: p.id, kind: p.kind, title: p.kind === 'tool' || p.kind === 'build' ? '' : p.title, at: p.created_at, href: pushHref(c, p), hidden: hidden.has(p.id),
+      ...(p.kind === 'tool' ? { tool: toolOfPush(p) } : {}), ...(p.kind === 'build' ? { build: buildOfPush(p, userId) } : {}) }))
     .filter(p => p.href);
+}
+
+// ---------------------------------------------------------------- "Build it" practice sets
+// (docs/decisions.md "Classroom dashboards: Build it"). The set is a push's data; each student builds on their own copy
+// of the tool (in their browser) and presses Check: the state they built comes here, is rebuilt from the tool's spec
+// and checked with the same code their screen used, and only right / not yet is kept for that target. What they built
+// is never stored. The teacher sees each student (Oomba name) with how many are done and right; a student only their
+// own; the projector never shows names. Never sent to an AI.
+/** A build push as the tray gets it: the set, and for a student their own results ({ i, right, tries }). */
+function buildOfPush(p, userId) {
+  const d = json(p.data, {});
+  const mine = userId ? q.all('SELECT item AS i, ok, tries FROM dash_builds WHERE push_id=? AND user_id=? ORDER BY item', p.id, userId).map(r => ({ i: r.i, right: !!r.ok, tries: r.tries })) : undefined;
+  return { type: d.type, mode: d.mode, base: d.base, targets: d.targets || [], say: d.say || '', ...(mine ? { mine } : {}) };
+}
+/** Today's open build push of the class, or null. */
+const openBuild = (c, id) => q.get("SELECT * FROM dash_pushes WHERE id=? AND class_id=? AND kind='build' AND day=? AND ended_at IS NULL", String(id || ''), c.id, dayOf(c)) || null;
+/** A student checks what they built for target `item`. -> { right } | { error } */
+export function buildCheck(u, c, id, { item, state } = {}) {
+  const p = openBuild(c, id); if (!p) return { error: 'buildClosed' };
+  const d = json(p.data, {}), i = Number(item), list = d.targets || [];
+  if (!Number.isInteger(i) || i < 0 || i >= list.length || !B.BUILD[d.mode]) return { error: 'buildItem' };
+  const st = cleanToolState(d.mode, state, { student: true });
+  const right = st ? !!B.checkBuild(d.mode, st, list[i], d.base || {}).ok : false;
+  q.run(`INSERT INTO dash_builds(push_id, class_id, user_id, item, ok, tries, at) VALUES (?,?,?,?,?,1,?)
+    ON CONFLICT(push_id, user_id, item) DO UPDATE SET ok=MAX(ok, excluded.ok), tries=MIN(tries + 1, 999), at=excluded.at`, p.id, c.id, u.id, i, right ? 1 : 0, now());
+  return { right };
+}
+/** A student: their own results on a set (today's, open or ended). -> { mine } */
+export function buildMine(c, id, userId) {
+  const p = q.get("SELECT id FROM dash_pushes WHERE id=? AND class_id=? AND kind='build'", String(id || ''), c.id); if (!p) return { error: 'notFound' };
+  return { mine: q.all('SELECT item AS i, ok, tries FROM dash_builds WHERE push_id=? AND user_id=? ORDER BY item', p.id, userId).map(r => ({ i: r.i, right: !!r.ok, tries: r.tries })) };
+}
+/** The teacher: each current student with how many targets they have done and got right, and which they have not got
+ *  right yet (by index); and per target, how many got it right and how many tried. -> { targets, students, items } */
+export function buildProgress(c, id) {
+  const p = q.get("SELECT * FROM dash_pushes WHERE id=? AND class_id=? AND kind='build'", String(id || ''), c.id); if (!p) return { error: 'notFound' };
+  const d = json(p.data, {}), n = (d.targets || []).length;
+  const kids = studentsOf(c), rows = new Map(kids.map(k => [k.id, []]));
+  for (const r of q.all('SELECT user_id, item, ok FROM dash_builds WHERE push_id=?', p.id)) if (rows.has(r.user_id) && r.item < n) rows.get(r.user_id).push(r);
+  const items = Array.from({ length: n }, () => ({ right: 0, tried: 0 }));
+  const students = kids.map(k => {
+    const rs = rows.get(k.id);
+    for (const r of rs) { items[r.item].tried++; if (r.ok) items[r.item].right++; }
+    return { name: k.name, done: rs.length, right: rs.filter(r => r.ok).length, wrong: rs.filter(r => !r.ok).map(r => r.item).sort((a, b) => a - b) };
+  }).sort((a, b) => a.name.localeCompare(b.name));
+  return { ref: p.ref, mode: d.mode, type: d.type, base: d.base, targets: d.targets || [], say: d.say || '', open: !p.ended_at, students, items };
 }
 /** A sent tool as students open it. One sent before "maths tools combined" with a retired tool's type opens as that
  *  mode of the tool it became (dash_pushes.data is never rewritten). */
@@ -1476,6 +1549,7 @@ export function forgetUser(userId) {
   for (const p of q.all('SELECT id FROM dash_pictures WHERE owner_id=?', userId)) dropPicture(p.id);
   q.run('DELETE FROM dash_students WHERE user_id=?', userId);
   q.run('DELETE FROM dash_push_hidden WHERE user_id=?', userId);
+  q.run('DELETE FROM dash_builds WHERE user_id=?', userId);   // "Build it": their right / not yet per target
   // Stage 2: their place in help queues, their check answers, and any picker list they are on.
   q.run('DELETE FROM dash_help WHERE user_id=?', userId);
   q.run('DELETE FROM dash_answers WHERE user_id=?', userId);

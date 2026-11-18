@@ -63,7 +63,7 @@ export function bars(body, s, ctx) {
   const change = (fn, msg) => { fn(); Object.assign(st, B.clampBars(st)); T.commit(msg || sayModel()); };
 
   // ---- top: the kind, two steppers, a new problem
-  const kinds = T.seg(W.kind, [['mul', W.mul, null, '✖️'], ['part', W.part, null, '➕'], ['cmp', W.cmp, null, '⚖️']], () => st.kind, v => {
+  const kinds = T.pick(W.kind, [['mul', W.mul], ['part', W.part], ['cmp', W.cmp]], () => st.kind, v => {
     if (v === st.kind) return;
     pick = 0; st.kind = v; st.unk = 0; Object.assign(st, B.clampBars(st));
     T.commit(`${W[v]}: ${sayModel()}`);
@@ -91,19 +91,22 @@ export function bars(body, s, ctx) {
     pick = 0; Object.assign(st, { g: next.g, e: next.e, p: next.p, ca: next.ca, cb: next.cb, unk: next.unk, hide: true });
     T.commit(`${W.newProblem}: ${sayModel()}`);
   });
+  kinds.dataset.pair = '1';
   const ctl = el('div', 'dt-bctl'); ctl.append(s1, s2, fresh);
   T.top.append(kinds, ctl);
 
   // ---- foot: what is unknown, the braces, hide/show the answer, the word problem
   const unk = el('select', 'input dt-select'); unk.setAttribute('aria-label', W.unknown);
   unk.addEventListener('change', () => change(() => { st.unk = Number(unk.value); st.hide = true; }));
-  const hide = T.toggle('', null, () => !st.hide, v => change(() => { st.hide = !v; }, v ? fill(W.answerIs, { n: B.barModel(st).answer }) : sayModel()));
-  const hideIc = el('span', 'dt-ic', '👁️'), hideL = el('span', 'dt-lbl'); hideIc.setAttribute('aria-hidden', 'true'); hideL.setAttribute('aria-hidden', 'true'); hide.append(hideIc, hideL);
   let storyOpen = !!st.story;
   const write = T.toggle('', null, () => storyOpen, v => { storyOpen = v; T.draw(); if (v) T.read.querySelector('.dt-bstory textarea')?.focus(); });
   tip(write, W.story); write.setAttribute('aria-label', W.story);
   { const i = el('span', 'dt-ic', '✏️'), l = el('span', 'dt-lbl', W.storyBtn); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true'); write.append(i, l); }
-  T.foot.append(unk, hide, write);
+  T.foot.append(unk, write);
+  // Bar models' own hide is the answer's (Make a question hides it too; docs/decisions.md "Build it"): 👀/🙈 in the
+  // header (the shell's), saying the answer when it shows.
+  T.ownHide = () => st.hide; T.setOwnHide = v => { st.hide = !!v; Object.assign(st, B.clampBars(st)); };
+  T.ansSay = h => (h ? sayModel() : fill(W.answerIs, { n: B.barModel(st).answer }));
 
   // ---- the sentence boxes (this page only)
   const sig = () => JSON.stringify([st.kind, st.g, st.e, st.p, st.ca, st.cb]);
@@ -158,7 +161,11 @@ export function bars(body, s, ctx) {
       // A curly brace from xa to xb: its point at the middle, away from the bar.
       const d = up ? -1 : 1, h = 26, mid = (xa + xb) / 2, q = Math.min(18, (xb - xa) / 4);
       sv.appendChild(svg('path', { d: `M${xa} ${y}q0 ${d * h / 2} ${q} ${d * h / 2}H${mid - q}q${q} 0 ${q} ${d * h / 2}q0 ${-d * h / 2} ${q} ${-d * h / 2}H${xb - q}q${q} 0 ${q} ${-d * h / 2}`, class: `dt-brace ${cls || ''}` }));
-      const t = svg('text', { x: mid, y: up ? y - h - 14 : y + h + 40, 'text-anchor': 'middle', class: `dt-blab${text === '?' ? ' is-unk' : ''}` }, text);
+      // Centred under its point, but never past the model's edges (a short first part's "1 group: 100" was cut off at the
+      // left on a phone): then it starts at the left edge or ends at the right one.
+      const half = ([...String(text)].length * 34 * ts * 0.62) / 2;
+      const [tx, anchor] = mid - half < 2 ? [2, 'start'] : mid + half > V - 2 ? [V - 2, 'end'] : [mid, 'middle'];
+      const t = svg('text', { x: tx, y: up ? y - h - 14 : y + h + 40, 'text-anchor': anchor, class: `dt-blab${text === '?' ? ' is-unk' : ''}` }, text);
       sv.appendChild(t);
     };
     for (const it of items) {
@@ -282,7 +289,7 @@ export function bars(body, s, ctx) {
   let sentBox = null, storyBox = null;
   T.draw = () => {
     const m = B.barModel(st);
-    kinds.sync(); hide.sync(); write.sync();
+    kinds.sync(); write.sync();
     // The steppers say what they change in this kind.
     const lab = (g, text) => { g.querySelector('.dt-steplab').textContent = text; g.dataset.label = text; };
     if (m.kind === 'mul') { lab(s1, W.groups); lab(s2, W.each); s1.sync(...LIM.g); s2.sync(...LIM.e); }
@@ -297,8 +304,6 @@ export function bars(body, s, ctx) {
     // What is unknown.
     unk.textContent = '';
     m.slots.forEach((x, i) => { const o = el('option', null, fill(W.unknownIs, { name: slotName(x.key) })); o.value = String(i); if (i === m.unk) o.selected = true; unk.appendChild(o); });
-    hideL.textContent = st.hide ? W.show : W.hide; tip(hide, st.hide ? W.show : W.hide); hide.setAttribute('aria-label', st.hide ? W.show : W.hide);
-    hideIc.textContent = st.hide ? '👁️' : '🙈';
     T.stage.textContent = ''; T.stage.appendChild(model());
     // The sentences and the word problem are built again only when the model's numbers change, so a redraw (the widget
     // changing size) never takes the focus out of a box someone is typing in.

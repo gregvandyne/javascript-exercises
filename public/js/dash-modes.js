@@ -27,11 +27,14 @@ export function withMode(st, own, modes, m, part) {
   return out;
 }
 
+/** Tools whose modes stay a row of pills (two short names). */
+const PILLS = new Set(['placeval']);
 /** A renderer for tool `own` that shows the switch and draws the chosen mode with base[mode]. */
 export function moded(own, base) {
   return (body, s, ctx) => {
     const type = ctx.type, modes = (type.modes || []).filter(m => base[m.id]);
-    if (modes.length < 2) return base[own](body, s, ctx);
+    // A student's "Build it" copy shows one mode only, without the switch (public/js/dash.js openBuild).
+    if (modes.length < 2 || ctx.build) return base[own](body, s, ctx);
     const ids = modes.map(m => m.id);
     const def = ((type.settings || []).find(f => f.key === 'state') || {}).def || {};
     let st = clone(s.state && typeof s.state === 'object' ? s.state : def);
@@ -39,23 +42,52 @@ export function moded(own, base) {
     let cur = null;
     const current = () => (ids.includes(st.tab) ? st.tab : own);
     const keepAll = () => { if (!ctx.editing && ctx.keep) ctx.keep(clone(st)); };
+    // The switch: a dropdown (docs/decisions.md "Classroom dashboards: one calm row of buttons"), with the mode's own
+    // main choice beside it on the same row (a renderer marks it data-pair: Translate/Reflect/Rotate, Coin/Dice/
+    // Spinner...). A renderer with `merge` puts its own choices in the same dropdown instead of its own mode's name (the
+    // fraction tool: Compare, Add, Subtract, Multiply, Divide, then Fraction, decimal, percent). Place value keeps its
+    // two pills.
+    const merge = base[own].merge || null;
     function switcher(m) {
       const g = el('div', 'dt-modes'); g.setAttribute('role', 'group'); g.setAttribute('aria-label', fill((ctx.common || {}).modeFor, { name: type.name }));
-      for (const x of modes) {
-        const b = el('button', 'btn btn-sm dt-mode'); b.type = 'button'; b.dataset.mode = x.id;
-        const i = el('span', 'dt-modeic', x.icon || ''); i.setAttribute('aria-hidden', 'true');
-        const t = el('span', 'dt-modetext', x.name); t.dir = 'auto';
-        b.append(i, t); b.title = x.name;
-        b.setAttribute('aria-pressed', String(x.id === m));
-        b.addEventListener('click', () => {
-          if (x.id === current()) return;
-          if (x.id === own) delete st.tab; else st.tab = x.id;
-          keepAll(); draw();
-          body.querySelector(`.dt-modes [data-mode="${x.id}"]`)?.focus();
-          ctx.say(x.name);
-        });
-        g.appendChild(b);
+      if (PILLS.has(own)) {
+        for (const x of modes) {
+          const b = el('button', 'btn btn-sm dt-mode'); b.type = 'button'; b.dataset.mode = x.id;
+          const i = el('span', 'dt-modeic', x.icon || ''); i.setAttribute('aria-hidden', 'true');
+          const t = el('span', 'dt-modetext', x.name); t.dir = 'auto';
+          b.append(i, t); b.title = x.name;
+          b.setAttribute('aria-pressed', String(x.id === m));
+          b.addEventListener('click', () => {
+            if (x.id === current()) return;
+            if (x.id === own) delete st.tab; else st.tab = x.id;
+            keepAll(); draw();
+            body.querySelector(`.dt-modes [data-mode="${x.id}"]`)?.focus();
+            ctx.say(x.name);
+          });
+          g.appendChild(b);
+        }
+        return g;
       }
+      g.classList.add('has-pick');
+      const sel = el('select', 'input dt-select dt-pick dt-modesel'); sel.setAttribute('aria-label', fill((ctx.common || {}).modeFor, { name: type.name }));
+      for (const x of modes) {
+        const subs = x.id === own && merge ? merge.list : [[null, null]];
+        for (const [v, word] of subs) {
+          const o = el('option', null, v === null ? x.name : (type.words || {})[word] || v);
+          o.value = v === null ? x.id : `${x.id}:${v}`; sel.appendChild(o);
+        }
+      }
+      sel.value = m === own && merge ? `${own}:${merge.get(st)}` : m;
+      sel.addEventListener('change', () => {
+        const [to, sub] = sel.value.split(':');
+        if (to !== current()) { if (to === own) delete st.tab; else st.tab = to; }
+        if (sub && merge) merge.set(st, sub);
+        const said = sel.selectedOptions[0]?.textContent || '';
+        keepAll(); draw();
+        body.querySelector('.dt-modesel')?.focus();
+        ctx.say(said);
+      });
+      g.appendChild(sel);
       return g;
     }
     function draw() {
@@ -72,7 +104,13 @@ export function moded(own, base) {
         practice: ctx.practiceOf ? ctx.practiceOf(m) : (m === own ? ctx.practice : []),
       };
       cur = base[m](body, { ...s, state: part }, subCtx) || null;
-      body.prepend(switcher(m));
+      const g = switcher(m);
+      body.prepend(g);
+      if (g.classList.contains('has-pick')) {
+        if (m === own && merge) for (const x of body.querySelectorAll('[data-merge]')) x.remove();
+        const pair = body.querySelector('[data-pair]');
+        if (pair) g.appendChild(pair);
+      }
     }
     draw();
     return {

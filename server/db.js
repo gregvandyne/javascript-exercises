@@ -1011,6 +1011,15 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS staff_email_invites_school ON staff_email_invites(school_id, status);
     CREATE INDEX IF NOT EXISTS staff_email_invites_by ON staff_email_invites(invited_by);
     CREATE INDEX IF NOT EXISTS staff_email_invites_email ON staff_email_invites(email);`],
+  // Classroom dashboards: "Build it" practice sets (services/dash.js; docs/decisions.md "Classroom dashboards: Build
+  // it"). The set itself (the tool, its targets, the instruction) is a push's data (dash_pushes, kind 'build').
+  // dash_builds: one row per student per target they have checked: ok (1 once it was right; it stays right) and tries
+  // (how many checks). Nothing a student built is kept. Rows go with their push (14 days), their class and account.
+  ['0084_dash_builds', `
+    CREATE TABLE IF NOT EXISTS dash_builds (push_id TEXT NOT NULL, class_id TEXT NOT NULL, user_id TEXT NOT NULL, item INTEGER NOT NULL,
+      ok INTEGER NOT NULL DEFAULT 0, tries INTEGER NOT NULL DEFAULT 0, at INTEGER NOT NULL, PRIMARY KEY (push_id, user_id, item));
+    CREATE INDEX IF NOT EXISTS idx_dash_builds_class ON dash_builds(class_id);
+    CREATE INDEX IF NOT EXISTS idx_dash_builds_user ON dash_builds(user_id);`],
   // Games, not lessons (owner, 17 Nov 2026: "get rid of lessons and instead just have the builder here with games that
   // teachers can put in folders and assign"). lessons.kind says what a lesson row is now: 'game' (one game assigned to a
   // class, made by Assign), 'course' (a ready-made course's copy, CS Quest: template_key), 'homework' (a live question
@@ -1019,7 +1028,7 @@ export const MIGRATIONS = [
   // Backfill: each teacher-made lesson with games becomes a folder named after it holding those games (from_lesson), and
   // its assignments leave their classes with the usual soft remove (class_lessons.removed_at); lessons_retired keeps
   // which rows this did, so it can be undone. Nothing is deleted: lessons, steps and students' work all stay.
-  ['0084_game_folders', `
+  ['0085_game_folders', `
     ALTER TABLE lessons ADD COLUMN kind TEXT NOT NULL DEFAULT 'lesson';
     CREATE TABLE IF NOT EXISTS game_folders (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL, name TEXT NOT NULL, position INTEGER NOT NULL DEFAULT 0,
       from_lesson TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
@@ -1032,13 +1041,13 @@ export const MIGRATIONS = [
   // Shared folders (owner: "Teachers should also still be able to share games"): a folder shared with one school its owner
   // is staff of (school_id; NULL = private). That school's staff see it under "Shared by colleagues" on Build, open it
   // read-only (only the games they can open), play or assign its games, and copy it into their own folders.
-  ['0085_game_folder_sharing', `
+  ['0086_game_folder_sharing', `
     ALTER TABLE game_folders ADD COLUMN school_id TEXT;
     ALTER TABLE game_folders ADD COLUMN shared_at INTEGER;
     CREATE INDEX IF NOT EXISTS game_folders_school ON game_folders(school_id, shared_at);`],
 ];
 
-/** 0084's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by
+/** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by
  *  Assign or the same shape; a live set sent as homework; else a teacher-made lesson), then a folder for each teacher-made
  *  lesson that has games (its games in step order, de-duplicated), and its open assignments retired (soft-removed,
  *  listed in lessons_retired). Lessons, steps and students' work are all kept. */
@@ -1077,6 +1086,12 @@ export function newFriendCode(conn = db) {
 
 db.exec('CREATE TABLE IF NOT EXISTS migrations (name TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)');
 export function migrate(extra = []) {
+  // The game-folder migrations were numbered 0084/0085 on their branch until main took 0084 (dash_builds): a database
+  // that ran them under the old names keeps them as run (renamed), so they never run twice.
+  if (db.prepare("SELECT 1 FROM migrations WHERE name='0084_game_folders'").get()) {
+    db.prepare("UPDATE migrations SET name='0086_game_folder_sharing' WHERE name='0085_game_folder_sharing'").run();
+    db.prepare("UPDATE migrations SET name='0085_game_folders' WHERE name='0084_game_folders'").run();
+  }
   const applied = new Set(db.prepare('SELECT name FROM migrations').all().map(r => r.name));
   // An entry is [name, sql] or [name, sql, after]: after(db) runs in the same transaction, for a backfill SQL can't do.
   for (const [name, sql, after] of [...MIGRATIONS, ...extra]) {

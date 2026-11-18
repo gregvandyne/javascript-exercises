@@ -18,6 +18,8 @@ import { RENDER, checkChoices, skewOf, fill, qrForget } from '/js/dash-widgets.j
 import { parseVideo, siteUrl, webAddress, tooLongForQr } from '/js/dash-video.js';
 import { PASS_ICON, secsText } from '/js/dash-class5.js';
 import { tip } from '/js/dash-tip.js';
+import * as B from '/js/dash-build.js';
+import { withMode, modeState } from '/js/dash-modes.js';
 
 const D = pageData();
 const root = document.getElementById('dash');
@@ -198,6 +200,8 @@ function start() {
     // games every student of the class can open (worked out by the server with the page).
     ask: TEACHER ? async ({ question, options }, errEl) => { const r = await act('/checks', { kind: 'choice', question, options }, errEl); if (r) { toast(r.toast || t('js.dash.push.sent')); poll(); } return r; } : null,
     askWords: D.registry.ask || {},
+    // "Build it" (docs/decisions.md "Classroom dashboards: Build it"): the teacher makes a set of targets from this tool.
+    buildIt: TEACHER ? (mode, state) => openBuildIt(w, mode, state) : null,
     practice: (D.practice || {})[w.type] || [],
     // Maths tools combined: a tool's mode looks up its own games (PRACTICE is keyed by mode; a tool's own mode is its id).
     practiceOf: mode => (D.practice || {})[mode] || [],
@@ -1095,10 +1099,14 @@ function start() {
     catch (err) { toast(err.message, { bad: true }); }
   });
 
-  const KIND_ICON = { game: '🎮', live: '📡', lesson: '📚', link: '🔗', check: '✅', tool: '🧮' };
+  const KIND_ICON = { game: '🎮', live: '📡', lesson: '📚', link: '🔗', check: '✅', tool: '🧮', build: '🧱' };
   /** A sent tool is named by its mode when it has one ("Base-ten blocks", not "Place value"). */
   const toolName = tool => { const ty = types.get(tool && tool.type) || {}; const m = (ty.modes || []).find(x => x.id === ((tool.state && tool.state.tab) || ty.id)); return (m && m.name) || ty.name; };
-  const titleOf = p => (p.kind === 'tool' ? toolName(p.tool) || t('js.dash.kind.tool') : p.title || t(`js.dash.kind.${p.kind}`));
+  /** A Build it set's name: the tool's mode ("Fraction bars"), or the tool itself ("Fractions") for a set of equations. */
+  const buildName = (type, mode, eq) => (eq ? (types.get(type) || {}).name : toolName({ type, state: { tab: mode } })) || '';
+  const titleOf = p => (p.kind === 'tool' ? toolName(p.tool) || t('js.dash.kind.tool')
+    : p.kind === 'build' ? t('js.dash.build.title', { name: p.build ? buildName(p.build.type, p.build.mode, !!(p.build.targets && p.build.targets[0] && p.build.targets[0].op)) : '' })
+      : p.title || t(`js.dash.kind.${p.kind}`));
   let pushSheet = null, pushTab = 'game';
   $('#dash-push')?.addEventListener('click', () => openPush());
   async function openPush(q = '') {
@@ -1121,7 +1129,7 @@ function start() {
           <p class="err form-err" role="alert"></p><div class="row"><button class="btn" type="submit">✅ ${esc(t('js.dash.push.linkAdd'))}</button></div></form>`,
     };
     const content = `<section class="dash-sent"><h3 class="dash-h3">${esc(t('js.dash.push.sentToday'))}</h3>
-      <ul class="plain dash-plist">${sent.map(p => row(KIND_ICON[p.kind] || '📤', titleOf(p), `${t(`js.dash.kind.${p.kind}`)} · ${timeOf(p.at)}`, `<button class="btn btn-sm" type="button" data-end="${esc(p.id)}" aria-label="${esc(t('js.dash.push.endName', { title: titleOf(p) }))}">${esc(t('js.dash.push.end'))}</button>`)).join('') || `<li class="small muted">${esc(t('js.dash.push.noneYet'))}</li>`}</ul></section>
+      <ul class="plain dash-plist">${sent.map(p => row(KIND_ICON[p.kind] || '📤', titleOf(p), `${t(`js.dash.kind.${p.kind}`)} · ${timeOf(p.at)}`, `${p.kind === 'build' ? `<button class="btn btn-sm" type="button" data-progress="${esc(p.id)}" aria-label="${esc(t('js.dash.build.progressName', { title: titleOf(p) }))}">📋 ${esc(t('js.dash.build.progress'))}</button>` : ''}<button class="btn btn-sm" type="button" data-end="${esc(p.id)}" aria-label="${esc(t('js.dash.push.endName', { title: titleOf(p) }))}">${esc(t('js.dash.push.end'))}</button>`)).join('') || `<li class="small muted">${esc(t('js.dash.push.noneYet'))}</li>`}</ul></section>
       <div class="chips dash-ptabs" role="tablist" aria-label="${esc(t('js.dash.push.what'))}">${tabs.map(k => `<button class="chip" type="button" role="tab" id="dash-ptab-${k}" aria-controls="dash-ppanel" aria-selected="${k === pushTab}" tabindex="${k === pushTab ? 0 : -1}" data-ptab="${k}">${KIND_ICON[k]} ${esc(t(`js.dash.push.tab.${k}`))}</button>`).join('')}</div>
       <div class="dash-ppanel" id="dash-ppanel" role="tabpanel" aria-labelledby="dash-ptab-${pushTab}">${panel[pushTab]}</div>`;
     if (pushSheet) { $('.sheet-body', pushSheet.el).innerHTML = content; } else { pushSheet = sheet({ title: t('js.dash.push.title'), content, onClose: () => { pushSheet = null; } }); wirePush(); }
@@ -1132,6 +1140,8 @@ function start() {
     el.addEventListener('click', async e => {
       const tab = e.target.closest('[data-ptab]');
       if (tab) { pushTab = tab.dataset.ptab; await openPush(); $(`#dash-ptab-${pushTab}`, el)?.focus(); return; }
+      const pr = e.target.closest('[data-progress]');
+      if (pr) { pushSheet.close(); openProgress(pr.dataset.progress); return; }
       const s = e.target.closest('[data-send]'), end = e.target.closest('[data-end]'), un = e.target.closest('[data-unlink]');
       try {
         if (s) { s.disabled = true; const r = await api(`/api/dash/${CID}/pushes`, { method: 'POST', body: { kind: s.dataset.send, ref: s.dataset.ref } }); toast(r.toast || t('js.dash.push.sent')); await poll(); await openPush(); }
@@ -1156,7 +1166,7 @@ function start() {
   }
 
   // ---------------------------------------------------------------- what the live state shows
-  const ACT = { game: 'play', live: 'join', lesson: 'lesson', link: 'link', check: 'answer', tool: 'open' };
+  const ACT = { game: 'play', live: 'join', lesson: 'lesson', link: 'link', check: 'answer', tool: 'open', build: 'open' };
   const openAttrs = p => (p.kind === 'link' ? ' target="_blank" rel="noopener noreferrer"' : '');
   function showLive() {
     const live = S.live || { pushes: [] };
@@ -1231,6 +1241,8 @@ function start() {
     document.addEventListener('click', async e => {
       const tool = e.target.closest('a[href^="#tool-"]');
       if (tool) { e.preventDefault(); setTray(false); openCopy(tool.getAttribute('href').slice(6)); return; }
+      const bld = e.target.closest('a[href^="#build-"]');
+      if (bld) { e.preventDefault(); setTray(false); openBuild(bld.getAttribute('href').slice(7)); return; }
       const go = e.target.closest('a[href^="#check-"]');
       if (go) { e.preventDefault(); setTray(false); const box = $('#dash-check'); if (box && !box.hidden) { box.scrollIntoView({ block: 'nearest' }); (box.querySelector('.dash-ans[aria-pressed="false"]') || box).focus(); } return; }
       const a = e.target.closest('[data-answer]');
@@ -1279,6 +1291,220 @@ function start() {
       sh.close(); toast(C.pinned); announce(C.pinned);
       grid.querySelector(`[data-id="${CSS.escape(mine.id)}"]`)?.scrollIntoView({ block: 'nearest' });
     });
+  }
+
+
+  // ---------------------------------------------------------------- "Build it" practice sets
+  // (docs/decisions.md "Classroom dashboards: Build it"; the targets, generators and checks are public/js/dash-build.js).
+  // The teacher makes a set from a maths tool (typed or ready-made targets, an instruction) and sends it; each student
+  // builds one target at a time on their own copy of the tool, with the answer hidden, and presses Check. What they build
+  // stays in this browser; the server checks it again and keeps only right / not yet. The teacher sees each student's
+  // progress (names never on the projector) and can show any target built on the board.
+  /** A tool's mode as the renderers and the words need it: its name, words and a type for its renderer alone. */
+  function modeOf(typeId, mode) {
+    const ty = types.get(typeId); if (!ty) return null;
+    const m = (ty.modes || []).find(x => x.id === mode);
+    if (mode !== typeId && !m) return null;
+    const name = m ? m.name : ty.name, own = mode === typeId;
+    const sub = own ? { ...ty, modes: undefined, name } : { ...ty, modes: undefined, name, words: m.words || {}, settings: [{ key: 'state', type: 'tool', hidden: true, def: m.def || {} }] };
+    return { ty, name, words: sub.words || {}, sub, ids: (ty.modes || []).map(x => x.id) };
+  }
+  const hintText = (h, W) => (h ? t(`js.dash.build.hint.${h.k}`, { ...h, place: h.place ? (W[h.place] || h.place) : '' }) : '');
+  const tText = (mode, x, base) => B.targetText(mode, x, base, INTL);
+  /** The default instruction of a set: the tool's own, or the fractions' for equations. */
+  const sayDefOf = (mode, eq) => t(`js.dash.build.sayDef.${mode === 'fractions' && eq ? 'fractionsEq' : mode}`);
+  /** The teacher: make a set of questions from the tool as it is now, and send it. In order: what students do and which
+   *  equations (fractions only, dropdowns), the instruction, then "Questions students will get": 🎲 Pick some for me
+   *  ([kind ▾] [how many ▾] Pick) fills the box below it, or the teacher types their own; then how many there are and
+   *  what was left out (docs/decisions.md "Classroom dashboards: fractions, equations"). */
+  function openBuildIt(w, mode, st) {
+    const info = modeOf(w.type, mode); if (!info || !B.BUILD[mode]) return;
+    const base = B.baseFor(mode, st, INTL), eqs = !!B.BUILD[mode].eqGens;
+    const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
+    const sh = sheet({ title: t('js.dash.build.makeTitle', { name: info.name }), content: `<form class="stack dash-biform" novalidate>
+      <p class="small muted">${esc(t('js.dash.build.intro'))}</p>
+      ${eqs ? `<div class="field"><label for="dash-bi-task">${esc(t('js.dash.build.task'))}</label><select class="input" id="dash-bi-task">${opt('shade', t('js.dash.build.taskShade'), true)}${opt('eq', t('js.dash.build.taskEq'))}</select></div>
+      <div class="field" id="dash-bi-opsf" hidden><label for="dash-bi-ops">${esc(t('js.dash.build.ops'))}</label><select class="input" id="dash-bi-ops">${B.EQ_SETS.map(k => opt(k, t(`js.dash.build.opsList.${k}`), k === 'add')).join('')}</select></div>` : ''}
+      <div class="field"><label for="dash-bi-say">${esc(t('js.dash.build.say'))}</label><input class="input" id="dash-bi-say" maxlength="120" dir="auto" autocomplete="off" value="${esc(sayDefOf(mode, false))}"></div>
+      <fieldset class="dash-biq"><legend id="dash-bi-qh">${esc(t('js.dash.build.questions'))}</legend>
+        <div class="dash-bipick" role="group" aria-labelledby="dash-bi-pickt"><span class="dash-bipickt" id="dash-bi-pickt"><span aria-hidden="true">🎲</span> ${esc(t('js.dash.build.pick'))}</span>
+          <div class="dash-bipickrow"><select class="input" id="dash-bi-gen" aria-label="${esc(t('js.dash.build.gen'))}"></select>
+            <select class="input" id="dash-bi-n" aria-label="${esc(t('js.dash.build.howMany'))}">${B.COUNTS.map(n => opt(n, String(n), n === B.DEFAULT_COUNT)).join('')}</select>
+            <button class="btn" type="button" id="dash-bi-make">${esc(t('js.dash.build.make'))}</button></div></div>
+        <textarea class="input" id="dash-bi-list" rows="2" dir="auto" autocomplete="off" spellcheck="false" aria-labelledby="dash-bi-qh" aria-describedby="dash-bi-eg dash-bi-preview"></textarea>
+        <p class="small muted" id="dash-bi-eg"></p></fieldset>
+      <div class="dash-bipreview" id="dash-bi-preview" aria-live="polite"></div>
+      <p class="err form-err" role="alert"></p>
+      <div class="row"><button class="btn btn-primary" type="submit">📤 ${esc(t('js.dash.build.send'))}</button></div></form>` });
+    sh.el.querySelector('.sheet').classList.add('dash-bisheet');
+    const f = sh.el.querySelector('form'), list = $('#dash-bi-list', f), prev = $('#dash-bi-preview', f), err = $('.form-err', f);
+    const say = $('#dash-bi-say', f), gen = $('#dash-bi-gen', f), task = $('#dash-bi-task', f), ops = $('#dash-bi-ops', f);
+    // What the questions are read with: the tool as it is, and (fractions) equations of the chosen operations.
+    const eqOn = () => !!(task && task.value === 'eq');
+    const kind = () => (eqOn() ? { ...base, task: 'eq', ops: ops.value } : base);
+    let parsed = { targets: [], bad: [], over: false };
+    const preview = () => {
+      parsed = B.parseTargets(mode, list.value, kind(), INTL);
+      prev.innerHTML = parsed.targets.length ? `<p class="small dash-bicount"><b>${esc(t('js.dash.build.count', { n: parsed.targets.length }))}</b></p>` : '';
+      if (parsed.bad.length) prev.insertAdjacentHTML('beforeend', `<p class="small dash-bibad">${esc(t(eqOn() ? 'js.dash.build.badEq' : 'js.dash.build.bad', { list: parsed.bad.join(', ') }))}</p>`);
+      if (parsed.over) prev.insertAdjacentHTML('beforeend', `<p class="small dash-bibad">${esc(t('js.dash.build.over', { n: B.MAX_TARGETS }))}</p>`);
+      if (parsed.targets.length) err.textContent = '';
+    };
+    /** The picker's kinds and the example under the box, for what students do now. */
+    const kinds = () => {
+      const k = kind(), gens = B.gensFor(mode, k), was = gen.value;
+      gen.innerHTML = gens.map(g => opt(g, t(`js.dash.build.gens.${g}`), g === was)).join('');
+      const eg = B.makeTargets(mode, gens[eqOn() ? 0 : Math.min(2, gens.length - 1)], eqOn() ? 2 : 3, k, B.seeded(11)).map(x => tText(mode, x, base)).join(', ');
+      $('#dash-bi-eg', f).textContent = t('js.dash.build.typeHint', { eg });
+    };
+    kinds();
+    // Shade a fraction | Solve equations, and which equations: the kinds, the example and the default instruction follow
+    // (an instruction the teacher wrote stays); questions of the other kind are taken out of the box.
+    let sayWas = say.value;
+    const retask = () => {
+      $('#dash-bi-opsf', f).hidden = !eqOn();
+      sh.el.querySelector('#sheet-title').textContent = t('js.dash.build.makeTitle', { name: eqOn() ? buildName(w.type, mode, true) : info.name });
+      if (say.value.trim() === sayWas) say.value = sayWas = sayDefOf(mode, eqOn());
+      kinds();
+      if (list.value.trim() && !B.parseTargets(mode, list.value, kind(), INTL).targets.length) list.value = '';
+      preview();
+    };
+    task?.addEventListener('change', retask);
+    ops?.addEventListener('change', retask);
+    list.addEventListener('input', preview);
+    $('#dash-bi-make', f).addEventListener('click', () => {
+      const xs = B.makeTargets(mode, gen.value, +$('#dash-bi-n', f).value, kind());
+      list.value = xs.map(x => tText(mode, x, base)).join(mode === 'coord' ? ' ' : ', ');
+      preview(); list.focus();
+    });
+    f.addEventListener('submit', async e => {
+      e.preventDefault();
+      preview();
+      if (!parsed.targets.length) { err.textContent = t('js.dash.build.none'); list.focus(); return; }
+      const go = f.querySelector('[type="submit"]'); go.disabled = true;
+      if (saveTimer) await flush();
+      const r = await act('/pushes', { kind: 'build', ref: w.id, build: { mode, base, targets: parsed.targets, say: say.value.trim() } }, err);
+      go.disabled = false;
+      if (!r) return;
+      sh.close(); toast(t('js.dash.build.sent')); await poll();
+      if (r.push) openProgress(r.push);
+    });
+    setTimeout(() => (task || list).focus(), 40);
+  }
+  /** The teacher: who is done and right on a set, live while the sheet is open, and each target shown built on the board. */
+  async function openProgress(pid) {
+    let data = null, timer = null;
+    const sh = sheet({ title: t('js.dash.build.progressTitle'), content: '<div class="dash-bprog"><p class="small muted">…</p></div>', onClose: () => clearInterval(timer) });
+    sh.el.querySelector('.sheet').classList.add('dash-bisheet');
+    const box = sh.el.querySelector('.dash-bprog');
+    const draw = () => {
+      if (!data) return;
+      const info = modeOf(data.type, data.mode) || { name: '', words: {} }, n = data.targets.length;
+      const had = sh.el.contains(document.activeElement) ? document.activeElement.dataset.board : null;
+      const names = !document.body.classList.contains('dash-projector');
+      const started = data.students.filter(x => x.done);
+      box.innerHTML = `<p class="dash-bsayt" dir="auto"><b>${esc(info.name)}</b>${data.say ? ` · ${esc(data.say)}` : ''}</p>
+        <section><h3 class="dash-h3">${esc(t('js.dash.build.targetsH'))}</h3><ol class="plain dash-btlist">${data.targets.map((x, i) => `<li><b class="dash-btt" dir="ltr">${esc(tText(data.mode, x, data.base))}</b>
+          <span class="small muted grow">${esc(t('js.dash.build.rightOf', { right: data.items[i].right, tried: data.items[i].tried }))}</span>
+          ${B.BUILD[data.mode].solve ? `<button class="btn btn-sm" type="button" data-board="${i}" aria-label="${esc(t('js.dash.build.onBoardName', { target: tText(data.mode, x, data.base) }))}">👀 ${esc(t('js.dash.build.onBoard'))}</button>` : ''}</li>`).join('')}</ol></section>
+        <section><h3 class="dash-h3">${esc(t('js.dash.build.studentsH'))}</h3>${!names ? `<p class="small muted">${esc(t('js.dash.build.projector'))}</p>`
+          : !started.length ? `<p class="small muted">${esc(t('js.dash.build.nobody'))}</p>`
+            : `<ul class="plain dash-bslist">${data.students.map(x => `<li><b dir="auto">${esc(x.name)}</b><span class="small">${esc(t('js.dash.build.doneOf', { done: x.done, n, right: x.right }))}</span>${x.wrong.length ? `<span class="small dash-bwrong">${esc(t('js.dash.build.notYetList', { list: x.wrong.map(i => tText(data.mode, data.targets[i], data.base)).join(', ') }))}</span>` : ''}</li>`).join('')}</ul>`}</section>`;
+      if (had != null) box.querySelector(`[data-board="${had}"]`)?.focus();
+    };
+    const load = async () => {
+      try { data = await api(`/api/dash/${CID}/builds/${pid}`, { background: true }); draw(); }
+      catch (err) { clearInterval(timer); box.innerHTML = `<p class="err">${esc(err.message)}</p>`; }
+    };
+    box.addEventListener('click', e => { const b = e.target.closest('[data-board]'); if (b && data) { showOnBoard(data, +b.dataset.board); sh.close(); } });
+    timer = setInterval(() => { if (!document.hidden && sh.el.isConnected) load(); }, POLL_MS);
+    await load();
+  }
+  /** One target of a set built on the teacher's own tool (its mode on, the answer shown), for the whole class to see. */
+  function showOnBoard(data, i) {
+    const w = S.widgets.find(x => x.id === data.ref), info = w && modeOf(w.type, data.mode);
+    const solved = info && B.solveState(data.mode, data.base, data.targets[i]);
+    if (!solved) { toast(t('js.dash.build.gone'), { bad: true }); return; }
+    const def = ((info.ty.settings || []).find(f => f.key === 'state') || {}).def || {};
+    let st = clone(w.s && w.s.state ? w.s.state : def);
+    const part = { ...(modeState(st, w.type, info.ids, data.mode) || {}), ...solved }; delete part.qh;
+    st = withMode(st, w.type, info.ids, data.mode, part);
+    if (data.mode === w.type) delete st.tab; else st.tab = data.mode;
+    w.s = { ...w.s, state: st }; render(); save();
+    const card = grid.querySelector(`[data-id="${CSS.escape(w.id)}"]`);
+    card?.scrollIntoView({ block: 'center' });
+    announce(t('js.dash.build.shown', { target: tText(data.mode, data.targets[i], data.base) }));
+  }
+  /** A student: their own copy of the tool, one target at a time, Check, then the next; a finish screen at the end. What
+   *  they build is kept in this browser only (until the page reloads); the server keeps only right / not yet. */
+  const builds = new Map();
+  function openBuild(pid) {
+    const p = (S.live.pushes || []).find(x => x.id === pid && x.kind === 'build'), b = p && p.build;
+    const info = b && modeOf(b.type, b.mode);
+    if (!info || !RENDER[b.mode] || !B.BUILD[b.mode] || !b.targets.length) return;
+    const n = b.targets.length, W = info.words;
+    let mem = builds.get(pid);
+    if (!mem) {
+      mem = { at: 0, states: {}, results: {} };
+      for (const r of b.mine || []) mem.results[r.i] = { right: r.right };
+      const first = b.targets.findIndex((x, i) => !(mem.results[i] && mem.results[i].right));
+      mem.at = first < 0 ? n : first;
+      builds.set(pid, mem);
+    }
+    const sh = sheet({ title: `🧱 ${t('js.dash.build.title', { name: buildName(b.type, b.mode, !!(b.targets[0] && b.targets[0].op)) || info.name })}`, content: '<div class="dash-build"></div>', onClose: () => { if (live && live.destroy) live.destroy(); } });
+    sh.el.querySelector('.sheet').classList.add('dash-copysheet', 'dash-buildsheet');
+    const box = sh.el.querySelector('.dash-build');
+    let live = null;
+    // An equation to work out ("1/2 + 1/4 = ?"; docs/decisions.md "Classroom dashboards: fractions, equations").
+    const isEq = x => !!(x && typeof x === 'object' && x.op);
+    const say = b.say || sayDefOf(b.mode, isEq(b.targets[0]));
+    function finish() {
+      if (live && live.destroy) live.destroy(); live = null;
+      const right = b.targets.filter((x, i) => mem.results[i] && mem.results[i].right).length;
+      const again = b.targets.map((x, i) => [x, i]).filter(([, i]) => !(mem.results[i] && mem.results[i].right));
+      box.innerHTML = `<div class="dash-bdone"><p class="dash-bdonebig">🎉 ${esc(t('js.dash.build.allDone'))}</p><p class="dash-bdonen">${esc(t('js.dash.build.gotRight', { right, n }))}</p>
+        ${again.length ? `<p>${esc(t('js.dash.build.again'))}</p><ul class="plain dash-bagain">${again.map(([x, i]) => `<li><button class="btn" type="button" data-bgo="${i}" dir="ltr">${esc(tText(b.mode, x, b.base))}</button></li>`).join('')}</ul>` : ''}
+        <p class="small muted">${esc(t('js.dash.build.private'))}</p>
+        <div class="row dash-bacts"><button class="btn btn-primary" type="button" data-bclose>${esc(t('js.dash.build.close'))}</button></div></div>`;
+      (box.querySelector('[data-bgo]') || box.querySelector('[data-bclose]')).focus();
+      announce(t('js.dash.build.gotRight', { right, n }));
+    }
+    function show(i) {
+      if (live && live.destroy) live.destroy(); live = null;
+      mem.at = i;
+      if (i >= n) { finish(); return; }
+      const x = b.targets[i], was = mem.results[i];
+      box.innerHTML = `<div class="dash-bhead"><span class="dash-bstep">${esc(t('js.dash.build.of', { i: i + 1, n }))}</span><span class="dash-bbar" aria-hidden="true"><span style="width:${Math.round((100 * i) / n)}%"></span></span></div>
+        <p class="dash-bsay" dir="auto">${esc(say)}</p>
+        <p class="dash-btarget"><span class="dash-blab">${esc(t(isEq(x) ? 'js.dash.build.workOut' : 'js.dash.build.build'))}</span> <b class="dash-bnum" dir="ltr">${esc(tText(b.mode, x, b.base))}${isEq(x) ? ' = ?' : ''}</b></p>
+        <section class="dash-w dash-wcopy dash-wbuild" data-group="${esc(info.ty.group)}" aria-label="${esc(info.name)}"><div class="dash-wb"></div></section>
+        <div class="dash-bacts"><p class="dash-bfb${was && was.right ? ' is-right' : ''}" role="status">${was && was.right ? `✔ ${esc(t('js.dash.build.yes'))}` : ''}</p>
+          <button class="btn" type="button" data-bnext>${esc(t(i + 1 < n ? 'js.dash.build.next' : 'js.dash.build.finish'))} →</button>
+          <button class="btn btn-primary" type="button" data-bcheck>✔ ${esc(t('js.dash.build.check'))}</button></div>`;
+      const body = box.querySelector('.dash-wb');
+      const w = { id: `build-${pid}-${i}`, type: b.mode, s: { state: mem.states[i] || B.startState(b.mode, b.base, x) } };
+      const ctx = { ...ctxFor(w, info.sub), own: true, copy: true, build: { target: x }, send: null, upload: null, checks: null, ask: null, buildIt: null,
+        practice: [], practiceOf: null, keep: state => { mem.states[i] = state; }, set: () => {} };
+      live = RENDER[b.mode](body, w.s, ctx) || null;
+      box.querySelector('[data-bcheck]').focus({ preventScroll: true });
+    }
+    box.addEventListener('click', async e => {
+      if (e.target.closest('[data-bclose]')) { sh.close(); return; }
+      const go = e.target.closest('[data-bgo]'); if (go) { show(+go.dataset.bgo); return; }
+      if (e.target.closest('[data-bnext]')) { show(mem.at + 1); return; }
+      const chk = e.target.closest('[data-bcheck]'); if (!chk) return;
+      const i = mem.at, x = b.targets[i], st = mem.states[i] || B.startState(b.mode, b.base, x);
+      const r = B.checkBuild(b.mode, st, x, b.base, INTL), fb = box.querySelector('.dash-bfb');
+      fb.className = `dash-bfb ${r.ok ? 'is-right' : 'is-no'}`;
+      // Right: "Yes!" (and, for an equation, one line of why); not yet: one gentle hint.
+      fb.textContent = r.ok ? `🎉 ${t('js.dash.build.yes')} ${hintText(r.hint, W)}`.trim() : `${t('js.dash.build.notYet')} ${hintText(r.hint, W)}`.trim();
+      mem.results[i] = { right: r.ok || !!(mem.results[i] && mem.results[i].right) };
+      if (r.ok) { const nx = box.querySelector('[data-bnext]'); nx.classList.add('btn-primary'); chk.classList.remove('btn-primary'); nx.focus(); }
+      chk.disabled = true; setTimeout(() => { if (chk.isConnected) chk.disabled = false; }, 600);
+      try { await api(`/api/dash/${CID}/builds/${pid}/check`, { method: 'POST', body: { item: i, state: st } }); }
+      catch (err) { toast(err.message, { bad: true }); }
+    });
+    show(mem.at);
   }
 
   // ---------------------------------------------------------------- projector mode (the teacher)

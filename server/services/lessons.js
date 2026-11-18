@@ -147,7 +147,7 @@ export function cleanLesson(fields = {}, old = {}) {
   if (!v.template_key) v.template_version = 0;
   return ok({ v });
 }
-/** What a lesson row is (0084_game_folders): 'game' (one assigned game), 'course' (a ready-made course's copy),
+/** What a lesson row is (0085_game_folders): 'game' (one assigned game), 'course' (a ready-made course's copy),
  *  'homework' (a live question set sent as homework), 'lesson' (a teacher-made lesson, no longer offered). */
 export const LESSON_KINDS = ['lesson', 'game', 'course', 'homework'];
 export function createLesson(u, schoolId, { title, folderId = null, summary = '', subject = '', grade = '', objectives = '', templateKey = '', templateVersion = 0, kind = '' }) {

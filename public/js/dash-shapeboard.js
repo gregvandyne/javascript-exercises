@@ -916,6 +916,8 @@ export function geoboard(body, s, ctx) {
 
   // ---------------------------------------------------------------- the shell
   T.draw = render;
+  // Show/Hide the answer is 👀/🙈 in the header and Build it is in Share (docs/decisions.md "one calm row of buttons"),
+  // as on every tool.
   const r = T.finish();
   tidyHelp();
   return {

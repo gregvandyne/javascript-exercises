@@ -1,5 +1,5 @@
 // Games, not lessons (owner, 17 Nov 2026): teachers keep games in folders (their own Builder games and Oomba's) and
-// assign games to classes; teacher-made lessons are retired (hidden everywhere, nothing deleted). Covers the 0084 backfill
+// assign games to classes; teacher-made lessons are retired (hidden everywhere, nothing deleted). Covers the 0085 backfill
 // (a folder per lesson with games, its assignments soft-removed and listed, other kinds kept), folders, Save to folder,
 // assigning (Oomba, own published, own draft, twice), the class page, the library redirect, and who may do what.
 process.env.BRB_DB = ':memory:'; process.env.BRB_SILENT = '1'; process.env.LOG_REQUESTS = '0';
@@ -46,7 +46,7 @@ const mine = made(ana, { title: 'Ana Quiz', visibility: 'class' });
 const draft = made(ana, { title: 'Ana Draft', publish: false });
 const other = made(boss, { title: 'Planet Race' });
 
-test('0084 backfill: a lesson with games becomes a folder; its assignments leave the class (listed); games, courses and homework stay', () => {
+test('0085 backfill: a lesson with games becomes a folder; its assignments leave the class (listed); games, courses and homework stay', () => {
   // a teacher-made lesson: text, two games (one twice), assigned, with a student's work on it
   const lesson = L.createLesson(ana, oak.id, { title: 'Space week' }).lesson;
   L.addStep(ana, lesson.id, { kind: 'text', title: 'Read', body: 'Planets.' });
@@ -61,7 +61,7 @@ test('0084 backfill: a lesson with games becomes a folder; its assignments leave
   const gameCl = L.assign(ana, cls.id, game.id).classLesson; audit(ana.id, 'lesson.assignGame', game.id, {});
   const course = L.createLesson(ana, oak.id, { title: 'CS 1.2', templateKey: 'csq-1b-1.2', templateVersion: 1 }).lesson;
   const courseCl = L.assign(ana, cls.id, course.id).classLesson;
-  q.run("UPDATE lessons SET kind='lesson'");   // as before 0084
+  q.run("UPDATE lessons SET kind='lesson'");   // as before 0085
   retireLessons(db);
   const kinds = Object.fromEntries(q.all('SELECT id, kind FROM lessons').map(r => [r.id, r.kind]));
   assert.deepEqual([kinds[lesson.id], kinds[textOnly.id], kinds[game.id], kinds[course.id]], ['lesson', 'lesson', 'game', 'course']);

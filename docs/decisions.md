@@ -7544,14 +7544,14 @@ Classroom**; folders live on **Build**, and the **class page** lists the class's
   Oomba games, the ready-made courses, then the assigned games (and course lessons and live homework) with due chips,
   done counts, and ⋯: dates, Scores, Student view, Save to folder, Unassign. Gone from it: the lesson picker, New lesson,
   Draft with AI, Lesson library and New unit. Students' heading is "📌 Assigned games"; a game row says "🎮 Game".
-- **lessons.kind** (`0084_game_folders`): 'game' (assigned by Assign: the audit log's lesson.assignGame, or the same shape),
+- **lessons.kind** (`0085_game_folders`): 'game' (assigned by Assign: the audit log's lesson.assignGame, or the same shape),
   'course' (a CS Quest copy: template_key), 'homework' (a live question set sent as homework), 'lesson' (teacher-made).
   `retireLessons()` (db.js, run once by the migration, safe to run again) makes a folder named after each teacher-made
   lesson that has games (its games in step order), and soft-removes that lesson's open assignments
   (`class_lessons.removed_at`, the same remove every query already honours), recording each in `lessons_retired` so it
   can be undone. Lessons, steps, students' work and rubric marks all stay. A retired lesson's editor link opens its folder.
 - **Sharing** (owner: "Teachers should also still be able to share games"; picked: share **folders** with colleagues,
-  `0085_game_folder_sharing`): on a folder's page its owner shares it with one school they are staff of (a select when
+  `0086_game_folder_sharing`): on a folder's page its owner shares it with one school they are staff of (a select when
   they have several), or stops sharing. That school's staff (teachers and admins, never students or other schools) see
   it under "🤝 Shared by colleagues" on Build with the owner's name, open it read-only (Play, Assign, Save to folder),
   and "Copy to my folders" (the same name, the games they can open). Colleagues only ever see games they can open, so a
@@ -7569,3 +7569,156 @@ Classroom**; folders live on **Build**, and the **class page** lists the class's
   person's folders; school delete clears `lessons_retired` with the class's assignments (admin-delete.test.js).
 - Tests: tests/unit/games-not-lessons.test.js (the backfill, folders, assign, the pages); updated: lessons, progress,
   gclassroom (an assigned game posts to Classroom), teach-loop, classroom-homes, course-teacher-view.
+## Classroom dashboards: Build it, the answer hidden, the place value number typed in (17 Nov 2026)
+Owner: "A lot of the times when you have the make a question feature you are showing the answer to the question on the
+screen and there is no way to hide it... These math widgets should be good for explaining a concept, but also for
+teachers to then push this to their students and have them practice using the widget to build understanding." And on
+place value: "User should be able to edit the 3,405.27 number directly." Code: `public/js/dash-build.js` (targets,
+generators, checks; pure, run in the browser and on the server), the shell in `public/js/dash-tools.js` (`T.hid`,
+`T.hideAnswer`, the 🙈/👀 button, Build it, `bigEdit`), the student's and the teacher's sheets in `public/js/dash.js`
+(`openBuildIt`, `openProgress`, `showOnBoard`, `openBuild`), `pvParse`/`blocksOf` in `public/js/dash-math.js`, the
+push and progress in `server/services/dash.js` (`push` kind `build`, `buildCheck`, `buildProgress`, `buildMine`), two
+routes in `server/routes/dash.js`, `qh` and `ANSWER_TOOLS` in `server/services/dash-tools.js`; migration 0084
+(`dash_builds`); strings `dash.tools.showAns|hideAns|ansHidden|ansShown|build|edit*`, `dash.errors.build*`,
+`js.dash.build.*`, `js.dash.kind.build` in all 12 full locales (en-GB: "colours"). Tests: `tests/unit/dash-build.test.js`.
+- **The answer hidden after Make a question.** The question is made from the tool as it is, then the tool hides what
+  gives the answer away on the teacher's screen (and so the projector) until the teacher presses **👀 Show the answer**.
+  The fraction tool and bar models already had their own Show/Hide (the fractions' PR #392 pattern: "👀 Show the
+  answer" / "🙈 Hide the answer", a dashed "?"); Make a question now sets that. Every other tool that makes a question
+  gets the same button (teacher's screen only; never on a student's copy) and a new state key, `qh` (kept only when
+  true, so every saved layout and push loads as before; tested). While hidden, the readout under the model is one
+  dashed "?" for every tool (CSS `.dt-ans-off`, read as "The answer is hidden."), and each tool hides its own
+  giveaways:
+
+  | Tool (mode) | Its question | Hidden while `qh` | Build it |
+  |---|---|---|---|
+  | Base-ten blocks | the number | the number, the expanded sum, each mat's count ("?"), the number in what is said | ✔ 1-999 |
+  | Place value chart | the number | the number and expanded form; with discs on, the digits too | ✔ to 9,999.999 |
+  | Ten frames | how many | the sum and the number bond | ✔ a count or two colours ("3 + 4") |
+  | Number chart | skip counting next / how many shaded | the counted numbers after the third; the count | ✔ find and shade one number |
+  | Area model and arrays | a × b | the product and each part's product | ✔ "3 × 4" (either way) or any array of 12 |
+  | Times table grid | a × b | the fact's own cell and the readout | — (its own Hide stays) |
+  | Teaching clock | the time | the digital time and elapsed time | ✔ a time (12 h: either half of the day) |
+  | Fraction, decimal, percent | the decimal | the decimal and percent cards | ✔ "3/4", "0.25", "25%" |
+  | Fraction bars | per mode | its own hide (as before) | ✔ shade a fraction (an equal one is right) |
+  | Number line | where a jump lands / a point | the jumps' sum | ✔ one point on a tick of the line |
+  | Coordinate plane | the slope | the slope's stepper, rise and run, the table's y | ✔ plot one point |
+  | Graph maker | which is most | the readout | — |
+  | Shape board | the area | area and perimeter | ✔ a closed shape with this area (halves too) |
+  | Angle maker | the kind | degrees (the typed field shows "?"), its name, the arc's label | ✔ an angle (no presets on a student's copy) |
+  | Pattern blocks | part of a hexagon | the readout | ✔ "1 1/2" hexagons (shown as text only) |
+  | 3D shapes, balance, algebra tiles, chance, letter tiles | counts, x, the expression, the chance, vowels | the readout | — |
+  | Transformations | where A lands | the image, its points, the image column | — |
+  | Coins and money | the total / change | the readout | ✔ make an amount |
+  | Maps | the continent | the continents' and oceans' names | — |
+  | Number rods | the box | the readout | ✔ a train this long |
+  | Bar models | the ? | its own hide (as before) | — |
+
+  **Decided:** the question's answer order never changes with `qh` (it is left out of the seed).
+- **Build it.** On the tools marked above, the teacher's tool has **🧱 Build it**: a sheet with an instruction (a default
+  per tool: "Use the base-ten blocks to build each number."), targets typed with commas ("347, 1205, 58", "3:45, 7:10",
+  in the reader's own number marks; "1,205" stays one number) or made by a ready-made generator (41 kinds: 2-digit
+  numbers, quarter hours, tenths, facts to 5 × 5...), and **Send to students**. What a tool can't build is listed as
+  left out ("1205": base-ten blocks have no thousands); at most 12, no repeats. The push (kind `build`) stores the
+  tool, the mode, the teacher's tool as a base (its line's range, the chart's decimals, the coins' currency: "auto" is
+  the teacher's), the targets (rebuilt on the server: only ones the tool can build) and the instruction (cleaned).
+- **On a student's device** the banner or tray opens a sheet: "3 of 5", the instruction, "Build: 347", their own copy
+  of that one mode (no mode switch, no Options, Make a question, Send, Practice it or answer button), the answer
+  hidden, then **Check** and **Next**. "🎉 Yes!" or "Not yet." with one gentle hint from the tool's own state ("Tens:
+  you have 3; you need 4.", "The minutes are right. Now check the hour hand.", "Your train is 6 long; you need 10.").
+  A finish screen: "All done! 4 of 5 right." and a button for each one to have another go. What they build stays in
+  their browser; Check sends only the target's index and the tool's state, which the server cleans and checks again
+  with the same code (`server/services/dash.js` imports `public/js/dash-build.js`, pure). **Decided:** a student may
+  go on after "Not yet" (practice, not a test), and once right a target stays right.
+- **The teacher's live view** (from the sheet after sending, and "📋 Progress" in Sent today): each target with how many
+  got it right of those who tried and **👀 Show on the board** (that target built on the teacher's own tool, its mode on
+  and the answer shown); each student by Oomba name with "2 of 5 done · 1 right" and "Not yet: 347, 58". Refreshed every
+  4 s while open. **On the projector the names are hidden** ("Names are on your own screen, not the projector").
+- **Privacy and safety.** `dash_builds` keeps only (push, class, student, target, ok, tries, at). Rows go with the
+  push after 14 days (as pushes and hidden pushes do), with the student's account (`forgetUser`) and with the school
+  (`BY_CLASS`). The progress route is the class's teacher's; a student gets only their own; everyone else 404. No AI,
+  no free text between students (a student's view has no field at all), Oomba names only.
+- **The place value number typed in.** The big number under the chart (and under the base-ten blocks) is a field that
+  looks like the number (a faint dashed underline): click or tap, type, Enter or leave it. Commas and points in the
+  reader's own marks ("3,405.27", "3.405,27" in German, "3 405,27", Arabic digits); a mark followed by three digits is
+  a grouping mark when it is the reader's, otherwise the point. Out of range ("12,345"), more places than the chart has
+  (or any with the decimal columns off) or not a number: the old value stays, with a short message under it
+  (`aria-invalid`, read with the field). Escape puts the old value back. The columns, discs and expanded form follow.
+  Base-ten blocks take 0-999 (the blocks become its hundreds, tens and ones). Named "Place value chart: type a
+  number"; while the answer is hidden the field is hidden with the readout.
+- **Fit check.** `npm run dash:fit` has `default-buildit` and `min-buildit` layouts: every Build it tool and two
+  number fields; on the teacher's screens the numbers are typed (refused, with the message showing), and on a student's
+  screens each set is opened in its sheet, Checked once and checked (nothing cut, no sideways scroll, 44px buttons).
+
+## Classroom dashboards: one calm row of buttons (17 Nov 2026)
+The maths tools' bottoms had grown to three to six rows of pills (Options, Practice it, Make a question, Hide the answer,
+Build it, Send to students under the tool's own buttons). The owner approved a calmer layout (mockups of ten frames,
+base-ten blocks, the teaching clock, number rods, fractions and coins, and the mode-dropdown audit).
+- **One row, never more** (`shell().finish()` in `public/js/dash-tools.js`): up to three of the tool's most-used
+  buttons as icons (named by their tooltip and `aria-label`), then **⋯** for the tool's other actions (`T.more(b)`, e.g.
+  ten frames' Take one, place value's ÷ 10), then **📤 Share ▾** at the end: Send to students, 🧱 Build it (where the tool
+  has it), ❓ Make a question, 🎮 Practice it, and nothing else. The teaching clock keeps its four steps (`row: 4`, the
+  one exception). A tool's selects and steppers that were in the row stay at its start when everything fits on one row (a
+  wide widget), else they go to the tool's own row above it (`T.ctl`; the balance's five steps are always there). When a widget is too narrow, Share shows only its icon, then the row's last buttons move behind ⋯
+  (and back when there is room). A student's own screen or copy has no Share: Practice it is its own 🎮 button.
+- **Header icons** next to ⓘ: 👀/🙈 Show/Hide the answer (the shared one on the teacher's own screen; fractions' and bar
+  models' own hide wherever they showed it before; its words say what it does, no `aria-pressed`) and ⚙️ Options.
+- **The menus** (Share, ⋯, Number rods' 👁️ View) are popovers (`popover="auto"`, the top layer, so nothing clips them),
+  placed by their button inside the widget when they fit there, else inside the screen. Outside tap and Escape close
+  them (Escape gives the focus back to the button); ↑ ↓ Home End move inside; Tab out closes. A used item closes Share and
+  ⋯ (before its action, so a sheet it opens returns the focus to Share); View stays open for its switches and zoom.
+  Share is hidden on the projector; a student's Build it copy still has no Share or Options.
+- **Number rods:** Turn, Copy and Delete are a small bar by the chosen rod, only while one is chosen; the way new rods
+  lie, Grid, Unit lines, Zoom out/in and the Equation are in 👁️ View (a tick shows a switch that is on); the longer rod
+  is "Longer rod [20 ▾]" at the end of the tray (the words are the rod: tap or drag it in). Undo, Redo and Reset stay.
+- **Mode dropdowns** (`public/js/dash-modes.js`): a tool with modes shows a native select instead of pills (place value
+  keeps its two pills), with the mode's main choice beside it on one row (`data-pair`): Translate/Reflect/Rotate,
+  Coin/Dice/Spinner, the kind of graph, Both sides/Left/Right, the bar model's kind. Fractions has one dropdown (Compare,
+  Add, Subtract, Multiply, Divide, then Fraction, decimal, percent: `fractions.merge`) beside Bars | Circles, and its
+  empty "= ?" bar is drawn only once the answer shows. The angle maker's five presets are one "Jump to…" dropdown.
+- **Steps:** fractions' working is one "💡 Steps 2 of 4" panel (closed at first, this page remembers it open): a
+  numbered list, Next step inside it, and the readout's line in bold at its end (`stepsPanel` in `parts`).
+- Nothing was removed, and the state format is unchanged (saved layouts and pushed tools load as before). New words:
+  `dash.tools.share/moreActs/view/steps/stepsOf/jumpTo` and `dash.w.rods.longRod`, in all 12 languages.
+- **Check:** `npm run dash:fit` fails when a tool's bottom is more than one row or too wide, has more than three of the
+  tool's own buttons (four on the clock), has Options, the answer or a Share item in it, or Share/⋯ not at its end; and
+  it opens every Share, ⋯ and View menu: whole inside the screen, never scrolling or cut, 44px items, the focus inside,
+  Escape closing it with the focus back on its button, Share hidden on the projector. Fractions' Steps panels are opened
+  before the check.
+
+## Classroom dashboards: fractions, equations (18 Nov 2026)
+Owner approved from mockups: Fractions' Build it can ask students to **solve equations** and shade the answer, the Build
+it sheet is tidier for every tool ("use drop downs to keep things clean"), and the fraction operations say why + stops.
+Code: `public/js/dash-build.js` (`eqParse`, `eqAnswer`, `answerBars`, `EQ_OPS`, the `eq*` generators, the fractions
+entry's check/solve), `eqView` and `limitWords` in `public/js/dash-tools.js`, `out(n)` in `public/js/dash-num.js`,
+`openBuildIt`/`openBuild` in `public/js/dash.js`; strings `js.dash.build.*` (new and reworded) and
+`dash.w.fractions.howtoEq|eq*|limit*` in all 12 full locales. Tests: `tests/unit/dash-build.test.js`.
+- **The sheet, for every tool:** the intro; (fractions only) **What do students do?** [Shade a fraction | Solve
+  equations] and **Which equations?** [Add, Subtract, Add and subtract, Multiply, Divide, All four], both dropdowns;
+  the instruction; **Questions students will get**: "🎲 Pick some for me" [kind ▾] [how many ▾] [Pick] fills the box
+  below it, "Or type your own, with commas between, like …"; then one line ("5 questions") and what was left out. The
+  list of chips under the box is gone; "Targets" reads "Questions" (the progress sheet too). Changing what students do
+  or which equations swaps the picker's kinds, the example and the default instruction ("Work out each one. Shade the
+  answer bar."; an instruction the teacher wrote stays).
+- **An equation** is a target `{ op, a, b }` (the fractions' own `n/d` targets are unchanged, so every set sent before
+  loads and checks as it did; no migration). Typed with + - − x × * · ÷ : or a spaced / ("1/2 / 1/4"), "= ?" allowed.
+  Kept only when each fraction is inside the tool's `OP_LIMITS` (bottom 1-12, top 0-12, at most 3 wholes), it never
+  divides by zero, and the answer is more than 0, at most 3 wholes and has a bottom number of at most 12 in its simplest
+  form, so a bar of 1-12 parts can show it. **Decided:** an answer of 0 is left out (nothing to shade), and any
+  operation typed is kept whatever "Which equations?" says (it chooses the picker's kinds). Kinds: same bottom number,
+  bottoms like 3 and 6, unit fractions, a whole number × a fraction, with a whole number (1 ÷ 1/3, 1/2 ÷ 3), easier
+  ones, any (operands in simplest form; subtracting always bigger first).
+- **The student** sees "Work out: 1/2 + 1/4 = ?", the two fractions as fixed bars in the operations' colours on one
+  scale, and a dashed answer bar: − and + for the parts in each whole (1-12, typed too), − and + for the wholes (1-3),
+  tap or arrow keys to shade. It is stored as the tool's own `bars` (one bar a whole, all cut the same), so the server
+  cleans and checks it with no new state. Right is any equal amount (6/8 for 3/4) with one line of why ("With 4 parts
+  in each whole: 2/4 + 1/4 = 3/4."); not yet gives one hint: nothing shaded, tops and bottoms both added, pieces that
+  can't make the answer (with the same-size parts to try), too much or too little. The server keeps only right / not
+  yet, as before.
+- **Show on the board** turns the teacher's tool to that operation with the two fractions, the answer shown and the
+  working reset (`mode`, `a`, `b`, `hide: false`, `step`/`fit` 0); their Compare bars are kept.
+- **The limit note:** in Add, Subtract, Multiply and Divide, + is no longer silently disabled at a limit. Past it, the
+  readout shows "✋ That's as big as it goes. Each fraction can be at most 3 wholes, and 3/1 is already 3 wholes." (or
+  the top / bottom number "can be at most 12"), said aloud too; a number typed past it gives the same note (held at
+  the limit). The next change takes it away.
+- **Fit check:** the Build it layouts also send a set of fraction equations of all four operations for students.
