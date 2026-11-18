@@ -1,10 +1,10 @@
-// Games in folders, assigned to classes (services/game-folders.js): the folder pages under Build, "Save to folder" for
+// Games in folders, assigned to classes (services/game-folders.js): the old folder page's redirect (folders are a
+// sidebar on Build and the class page now: routes/game-shelf.js), "Assign all" for a folder, "Save to folder" for
 // any game a person can see (their own and Oomba's), and the Assign page (a class, an optional due day, and "Also post
 // to Google Classroom"). These replace the teacher's lesson library: see docs/decisions.md "Games, not lessons".
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
 import { page, notFound, VERSION } from '../views/layout.js';
-import { coverArt, emptyState } from '../views/components.js';
 import { requireUser, requireBuilder } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
@@ -39,80 +39,23 @@ const fail = (req, res, r) => res.status(r.code === 'notFound' ? 404 : 400).json
 /** A game by id, or an Oomba game by its slug (?game=fraction-factory). */
 const gameOf = (id, slug) => (id ? games.getGame(String(id)) : slug ? games.getGameBySlug(String(slug)) : null);
 /** Where a game card's Play goes: its page (Oomba's and published ones), else the Studio (a draft of one's own). */
-/** "{name}: {n} of {total}" with its placeholders kept, for public/js/reorder.js to fill in. */
-const movedTpl = t => t('folders.moved', { name: '{name}', n: '{n}', total: '{total}' });
 const playHref = (u, g) => (g.published_version_id || g.source === 'seed' ? `/g/${g.slug}` : `/studio/${g.id}`);
 
-/** The "📁 My folders" strip on Build: each folder (with its count) and New folder. */
-export function foldersStrip(req, current = '') {
-  const t = req.t, list = F.foldersOf(req.user.id);
-  return html`<section class="build-sec gfo-strip" aria-labelledby="gf-h">
-    <h2 id="gf-h">📁 ${t('folders.title')}</h2>
-    <p class="small muted">${t('folders.why')}</p>
-    <ul class="plain gfo-list"${list.length > 1 ? html` data-reorder="/api/game-folders/order" data-moved="${movedTpl(t)}" aria-describedby="gf-order"` : ''}>${list.map(f => html`<li data-id="${f.id}"><a class="gfo-chip${f.id === current ? ' is-on' : ''}" href="/build/folders/${f.id}" data-grip ${f.id === current ? raw('aria-current="page"') : ''}>📁 <b dir="auto">${f.name}</b> <span class="muted">${f.games}</span></a></li>`)}
-      <li class="gfo-newli"><details class="libdrop gfo-new"><summary class="btn">➕ ${t('folders.new')}</summary>
-        <form class="row" data-api="/api/game-folders" novalidate><label class="sr-only" for="gf-name">${t('folders.name')}</label>
-          <input class="input grow" id="gf-name" name="name" maxlength="60" placeholder="${t('folders.namePlaceholder')}" required>
-          <button class="btn btn-primary" type="submit">📁 ${t('folders.create')}</button></form></details></li></ul>
-    ${list.length > 1 ? html`<p class="small muted gfo-hint" id="gf-order">↕️ ${t('folders.reorderHint')}</p>` : ''}
-  </section>${sharedStrip(req, current)}`;
-}
-/** "🤝 Shared by colleagues" on Build: folders staff of the same school shared (only when there are some). */
-function sharedStrip(req, current = '') {
-  const t = req.t, list = F.sharedWith(req.user);
-  if (!list.length) return '';
-  return html`<section class="build-sec gfo-strip" aria-labelledby="gfs-h"><h2 id="gfs-h">🤝 ${t('folders.sharedTitle')}</h2>
-    <ul class="plain gfo-list">${list.map(f => html`<li><a class="gfo-chip${f.id === current ? ' is-on' : ''}" href="/build/folders/${f.id}" ${f.id === current ? raw('aria-current="page"') : ''}>📁 <b dir="auto">${f.name}</b> <span class="muted"><bdi>${t('folders.by', { name: f.owner_name })}</bdi> · ${f.games}</span></a></li>`)}</ul>
-  </section>`;
+/** Where a folder action goes back to: the class page it was made from (its classId, when this person manages that
+ *  class), else Build; with the folder picked in the sidebar when there is one. */
+function backTo(req, folderId = '') {
+  const c = b(req).classId ? S.getClass(String(b(req).classId)) : null;
+  const base = c && S.canManageClass(req.user, c) ? `/class/${c.id}` : '/build';
+  return folderId ? `${base}?folder=${encodeURIComponent(folderId)}` : base;
 }
 
-/** One game card in a folder: cover, title, Play, Assign (school staff), Remove from the folder. */
-function folderGame(req, f, g, staff, mine = true) {
-  const t = req.t;
-  return html`<li class="mygame panel gfo-game" data-id="${g.id}">
-    ${mine ? html`<button class="gfo-grip" type="button" data-grip aria-label="${t('folders.move', { name: g.title })}" aria-describedby="gf-gorder"><span aria-hidden="true">⠿</span></button>` : ''}
-    <a class="mg-cover" href="${playHref(req.user, g)}" tabindex="-1" aria-hidden="true">${coverArt(g, '', { draft: !g.published_version_id && g.source !== 'seed' })}</a>
-    <div class="mg-body"><h3><a href="${playHref(req.user, g)}" dir="auto">${g.title}</a></h3>
-      <p class="small muted">${g.source === 'seed' ? `🦉 ${t('folders.oombaGame')}` : g.owner_id === req.user.id ? `🛠️ ${t('folders.myGame')}` : ''}</p></div>
-    <div class="mg-actions"><div class="mg-row">
-      <a class="btn" href="${playHref(req.user, g)}">▶ ${t('game.play')}</a>
-      ${staff ? html`<a class="btn btn-primary" href="/teach/assign?id=${g.id}">📌 ${t('folders.assign')}</a>` : ''}
-    </div>${mine ? html`<div class="mg-row mg-more">
-      <form data-api="/api/game-folders/${f.id}/games/${g.id}/delete" data-reload><button class="btn" type="submit">${t('folders.removeGame')}</button></form>
-    </div>` : html`<div class="mg-row mg-more"><a class="btn" href="/build/save?id=${g.id}">📁 ${t('folders.save')}</a></div>`}</div></li>`;
-}
-
+// The folder page is now the sidebar on Build (docs/decisions.md "Folders in a sidebar, on Build and the class page"):
+// its old address (in emails, bookmarks and links already sent) opens Build with that folder picked. A folder this
+// person can't open is still not found.
 router.get('/build/folders/:id', requireBuilder, (req, res) => {
-  const t = req.t, f = F.getFolder(req.params.id);
+  const f = F.getFolder(req.params.id);
   if (!f || !F.canSee(req.user, f)) return notFound(req, res);
-  const list = F.gamesIn(req.user, f.id), staff = S.isSchoolStaff(req.user), mine = f.owner_id === req.user.id;
-  const schools = mine ? F.staffSchools(req.user) : [], sharedIn = f.school_id ? (S.getSchool(f.school_id) || {}).name || '' : '';
-  const owner = mine ? null : (F.sharedWith(req.user).find(x => x.id === f.id) || {}).owner_name || '';
-  // Sharing (the owner): with one of their schools, or not; colleagues only see games they can open.
-  const share = mine && schools.length ? html`<section class="panel gfo-share" aria-labelledby="gsh-h"><h2 id="gsh-h" class="sr-only">🤝 ${t('folders.shareTitle')}</h2>
-    ${f.school_id ? html`<p>🤝 ${t('folders.sharedWithSchool', { school: sharedIn })}</p><p class="small muted">${t('folders.shareNote')}</p>
-      <form data-api="/api/game-folders/${f.id}/share" data-reload><input type="hidden" name="schoolId" value=""><button class="btn btn-sm" type="submit">${t('folders.unshare')}</button></form>`
-    : html`<form class="row" data-api="/api/game-folders/${f.id}/share" data-reload>${schools.length > 1 ? html`<label class="sr-only" for="gsh-s">${t('folders.shareTitle')}</label><select class="input" id="gsh-s" name="schoolId">${schools.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select>` : html`<input type="hidden" name="schoolId" value="${schools[0].id}">`}
-      <button class="btn" type="submit">🤝 ${schools.length > 1 ? t('folders.shareTitle') : t('folders.shareWith', { school: schools[0].name })}</button></form><p class="small muted">${t('folders.shareNote')}</p>`}
-  </section>` : '';
-  // The owner's tools in one row under the name (a row, not a ⋯ menu: it never runs off a phone's screen).
-  const head = mine ? html`<div class="row gfo-tools">
-      <details class="libdrop gfo-rename"><summary class="btn btn-sm">🏷️ ${t('build.rename')}</summary>
-        <form class="row" data-api="/api/game-folders/${f.id}" data-reload><label class="sr-only" for="gf-rn">${t('folders.name')}</label><input class="input input-sm grow" id="gf-rn" name="name" value="${f.name}" maxlength="60"><button class="btn btn-sm btn-primary" type="submit">${t('school.save')}</button></form></details>
-      <form data-api="/api/game-folders/${f.id}/delete" data-redirect="/build" data-confirm="${t('folders.deleteConfirm', { name: f.name })}"><button class="btn btn-sm btn-danger" type="submit">🗑️ ${t('folders.delete')}</button></form>
-    </div>` : '';
-  const body = html`<div class="pagehead"><h1 dir="auto">📁 ${f.name}</h1></div>${head}
-  ${mine ? '' : html`<p class="muted">🤝 <bdi>${t('folders.by', { name: owner })}</bdi> · ${t('folders.sharedWithSchool', { school: sharedIn })}</p>
-    <form data-api="/api/game-folders/${f.id}/copy"><button class="btn btn-primary" type="submit">📁 ${t('folders.copy')}</button></form>`}
-  ${share}
-  ${foldersStrip(req, f.id)}
-  <section class="build-sec" aria-labelledby="gf-in-h"><h2 id="gf-in-h" class="sr-only">${f.name}</h2>
-    ${mine ? html`<p class="row"><a class="btn btn-primary" href="/build/new?folder=${f.id}">✨ ${t('build.newGame')}</a><a class="btn" href="/learn">🦉 ${t('folders.findOomba')}</a></p>` : ''}
-    ${list.length ? html`<ul class="mygames"${mine && list.length > 1 ? html` data-reorder="/api/game-folders/${f.id}/order" data-moved="${movedTpl(t)}"` : ''}>${list.map(g => folderGame(req, f, g, staff, mine))}</ul>
-      ${mine && list.length > 1 ? html`<p class="small muted gfo-hint" id="gf-gorder">↕️ ${t('folders.reorderHint')}</p>` : ''}`
-      : emptyState({ emoji: '📁', title: t('folders.emptyTitle'), text: t('folders.emptyText') })}
-  </section>`;
-  page(req, res, { title: f.name, active: 'build', back: '/build', backLabel: req.t('nav.build'), body, head: CSS });
+  res.redirect(302, `/build?folder=${encodeURIComponent(f.id)}`);
 });
 
 /** "Save to folder": the person's folders, each with Add or (already there) Remove, and a new folder made with the game in it. */
@@ -157,10 +100,10 @@ router.post('/api/game-folders', requireUser, rateLimit('game-folder', 120, 3600
   const r = F.createFolder(req.user, b(req).name);
   if (!r.ok) return fail(req, res, r);
   if (b(req).gameId) { const a = F.addGame(req.user, r.folder.id, b(req).gameId); if (!a.ok) return fail(req, res, a); return res.json({ ok: true, folder: { id: r.folder.id, name: r.folder.name }, toast: req.t('folders.savedTo', { folder: r.folder.name }) }); }
-  res.json({ ok: true, redirect: `/build/folders/${r.folder.id}` });
+  res.json({ ok: true, redirect: backTo(req, r.folder.id) });
 });
 router.post('/api/game-folders/:id', requireUser, (req, res) => { const r = F.renameFolder(req.user, req.params.id, b(req).name); r.ok ? res.json({ ok: true }) : fail(req, res, r); });
-router.post('/api/game-folders/:id/delete', requireUser, (req, res) => { const r = F.deleteFolder(req.user, req.params.id); r.ok ? res.json({ ok: true, redirect: '/build' }) : fail(req, res, r); });
+router.post('/api/game-folders/:id/delete', requireUser, (req, res) => { const r = F.deleteFolder(req.user, req.params.id); r.ok ? res.json({ ok: true, redirect: backTo(req) }) : fail(req, res, r); });
 router.post('/api/game-folders/:id/up', requireUser, (req, res) => { const r = F.moveFolder(req.user, req.params.id, -1); r.ok ? res.json({ ok: true }) : fail(req, res, r); });
 router.post('/api/game-folders/:id/down', requireUser, (req, res) => { const r = F.moveFolder(req.user, req.params.id, 1); r.ok ? res.json({ ok: true }) : fail(req, res, r); });
 router.post('/api/game-folders/:id/games', requireUser, rateLimit('game-folder', 120, 3600e3), (req, res) => {
@@ -169,7 +112,7 @@ router.post('/api/game-folders/:id/games', requireUser, rateLimit('game-folder',
 });
 router.post('/api/game-folders/:id/order', requireUser, rateLimit('game-folder-order', 600, 3600e3), (req, res) => { const r = F.orderGames(req.user, req.params.id, b(req).ids); r.ok ? res.json({ ok: true }) : fail(req, res, r); });
 router.post('/api/game-folders/:id/share', requireUser, (req, res) => { const r = F.shareFolder(req.user, req.params.id, b(req).schoolId); r.ok ? res.json({ ok: true, toast: req.t(r.folder.school_id ? 'folders.sharedToast' : 'folders.unsharedToast') }) : fail(req, res, r); });
-router.post('/api/game-folders/:id/copy', requireUser, rateLimit('game-folder', 120, 3600e3), (req, res) => { const r = F.copyFolder(req.user, req.params.id); r.ok ? res.json({ ok: true, toast: req.t('folders.copied'), redirect: `/build/folders/${r.folder.id}` }) : fail(req, res, r); });
+router.post('/api/game-folders/:id/copy', requireUser, rateLimit('game-folder', 120, 3600e3), (req, res) => { const r = F.copyFolder(req.user, req.params.id); r.ok ? res.json({ ok: true, toast: req.t('folders.copied'), redirect: backTo(req, r.folder.id) }) : fail(req, res, r); });
 router.post('/api/game-folders/:id/games/:gid/delete', requireUser, (req, res) => { const r = F.removeGame(req.user, req.params.id, req.params.gid); r.ok ? res.json({ ok: true }) : fail(req, res, r); });
 
 // ---------------------------------------------------------------- Assign a game to a class
@@ -215,5 +158,28 @@ router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 
   if (!r.ok) return fail(req, res, r);
   const also = await gcAfterAssign(req, r.classLesson);
   const toast = req.t('lessons.assign.done', { class: r.class.name });
-  res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, redirect: `/class/${r.class.id}` });
+  // From a folder on the class page's sidebar: back to that folder, to assign the next one.
+  const fid = String(b(req).folder || '');
+  res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, redirect: `/class/${r.class.id}${/^[\w-]{1,40}$/.test(fid) ? `?folder=${encodeURIComponent(fid)}` : ''}` });
+});
+/** "Assign all" (a folder on the class page): each game in the folder (one's own, or shared with one) that the class can
+ *  play and doesn't have yet, with one due day, and posted to Google Classroom when asked. Games that need setting up
+ *  first (a draft, a live-only game, a problem set) and games the class already has are skipped and counted. */
+router.post('/api/teach/assign-folder', requireUser, rateLimit('lesson-new', 120, 3600e3), async (req, res) => {
+  const u = req.user, { folderId, classId, dueAt } = b(req);
+  if (!S.isSchoolStaff(u)) return res.status(404).json({ error: req.t('lessons.errors.notFound') });
+  const f = F.getFolder(folderId), c = S.getClass(String(classId || ''));
+  if (!f || !F.canSee(u, f) || !c || c.archived_at || !S.canManageClass(u, c)) return res.status(404).json({ error: req.t('lessons.errors.notFound') });
+  let done = 0, skipped = 0; const also = [];
+  for (const g of F.gamesIn(u, f.id)) {
+    const lg = g.source === 'seed' ? liveGameOf(g) : null;
+    if (setGameOf(g) || (lg && !lg.play)) { skipped++; continue; }
+    const r = F.assignGame(u, c.id, g.id, { dueAt });
+    if (!r.ok) { skipped++; continue; }
+    done++;
+    const line = await gcAfterAssign(req, r.classLesson); if (line && !also.includes(line)) also.push(line);
+  }
+  if (!done) return res.status(400).json({ error: req.t('folders.assignAllNone', { class: c.name }) });
+  const toast = [req.t('folders.assignAllDone', { count: done, class: c.name }), skipped ? req.t('folders.assignAllSkipped', { count: skipped }) : '', ...also].filter(Boolean).join(' · ');
+  res.json({ ok: true, toast, redirect: `/class/${c.id}?view=assigned` });
 });

@@ -11049,7 +11049,6 @@
   },
   "folders": {
     "title": "Le mie cartelle",
-    "why": "Le cartelle ordinano i tuoi giochi, i tuoi e quelli di Oomba. Mettere un gioco in una cartella non cambia mai chi può giocarci.",
     "new": "Nuova cartella",
     "name": "Nome della cartella",
     "namePlaceholder": "es. Settimana delle frazioni",
@@ -11110,6 +11109,23 @@
     "progressEmptyText": "Assegna un gioco nella scheda Giochi e qui vedrai come va ogni alunno.",
     "studentEmptyText": "Il tuo insegnante aggiungerà qui dei giochi.",
     "liveHistory": "Storico dei giochi dal vivo",
-    "liveHistoryNone": "Ancora nessun gioco dal vivo con questa classe."
+    "liveHistoryNone": "Ancora nessun gioco dal vivo con questa classe.",
+    "allGames": "Tutti i miei giochi",
+    "assignedTo": "Assegnati a {class}",
+    "studentShared": "Giochi condivisi dagli studenti",
+    "fromClass": "Dalla nostra classe",
+    "sideClass": "Giochi per questa classe",
+    "assignTo": "Assegna a {class}",
+    "assignAll": "{count, plural, one {Assegna # gioco} other {Assegna tutti e #}}",
+    "assignAllNote": "Ogni gioco qui a cui {class} può giocare viene assegnato con questa scadenza. I giochi che la classe ha già, e quelli da preparare prima, vengono saltati.",
+    "assignAllDone": "{count, plural, one {# gioco assegnato a {class}} other {# giochi assegnati a {class}}}",
+    "assignAllSkipped": "{count, plural, one {# saltato} other {# saltati}}",
+    "assignAllNone": "Niente di nuovo da assegnare: questi giochi sono già in {class} o vanno preparati prima.",
+    "assignedChip": "Assegnato",
+    "assignedWhere": "I giochi assegnati sono elencati in «Assegnati a {class}», con le loro scadenze.",
+    "saveAnother": "Salva in un'altra cartella",
+    "moveUp": "Sposta su",
+    "moveDown": "Sposta giù",
+    "sharedEmpty": "Qui non ci sono ancora giochi che puoi aprire."
   }
 }

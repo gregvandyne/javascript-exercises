@@ -11049,7 +11049,6 @@
   },
   "folders": {
     "title": "Mijn mappen",
-    "why": "Mappen ordenen je spellen, je eigen en die van Oomba. Een spel in een map zetten verandert nooit wie het kan spelen.",
     "new": "Nieuwe map",
     "name": "Naam van de map",
     "namePlaceholder": "bv. Breukenweek",
@@ -11110,6 +11109,23 @@
     "progressEmptyText": "Wijs een spel toe op het tabblad Spellen, dan zie je hier hoe het met elke leerling gaat.",
     "studentEmptyText": "Je leerkracht zet hier spellen klaar.",
     "liveHistory": "Eerdere livespellen",
-    "liveHistoryNone": "Nog geen livespellen met deze klas."
+    "liveHistoryNone": "Nog geen livespellen met deze klas.",
+    "allGames": "Al mijn spellen",
+    "assignedTo": "Toegewezen aan {class}",
+    "studentShared": "Spellen gedeeld door leerlingen",
+    "fromClass": "Uit onze klas",
+    "sideClass": "Spellen voor deze klas",
+    "assignTo": "Toewijzen aan {class}",
+    "assignAll": "{count, plural, one {# spel toewijzen} other {Alle # toewijzen}}",
+    "assignAllNote": "Elk spel hier dat {class} kan spelen, wordt toegewezen met deze inleverdag. Spellen die de klas al heeft, en spellen die eerst klaargezet moeten worden, worden overgeslagen.",
+    "assignAllDone": "{count, plural, one {# spel toegewezen aan {class}} other {# spellen toegewezen aan {class}}}",
+    "assignAllSkipped": "{count, plural, one {# overgeslagen} other {# overgeslagen}}",
+    "assignAllNone": "Niets nieuws om toe te wijzen: deze spellen staan al in {class} of moeten eerst klaargezet worden.",
+    "assignedChip": "Toegewezen",
+    "assignedWhere": "Toegewezen spellen staan onder ‘Toegewezen aan {class}’, met hun inleverdagen.",
+    "saveAnother": "In een andere map bewaren",
+    "moveUp": "Omhoog",
+    "moveDown": "Omlaag",
+    "sharedEmpty": "Hier staan nog geen spellen die je kunt openen."
   }
 }

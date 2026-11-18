@@ -432,10 +432,10 @@ test('class pages: "Games from our class" for students, the Games tab for teache
   assert.equal(r.status, 200); assert.match(r.text, /Games from our class/); assert.match(r.text, new RegExp(`/g/${g.slug}"`)); assert.doesNotMatch(r.text, new RegExp(gB.slug));
   r = await as(w.kidNone)(`/class/${A.id}`); assert.equal(r.status, 404);
   const empty = await as(kidB)(`/class/${B.id}`); assert.match(empty.text, new RegExp(`/g/${gB.slug}"`));
-  r = await as(t1)(`/class/${A.id}?tab=games`);
+  r = await as(t1)(`/class/${A.id}?view=students`);
   assert.equal(r.status, 200); assert.match(r.text, /aria-current="page"><span aria-hidden="true">🎮<\/span> Games/);
   assert.match(r.text, /Olly Owner/, 'staff see the real name'); assert.match(r.text, new RegExp(`/api/classes/${A.id}/games/${g.id}/remove`));
-  assert.match((await as(w.SA)(`/class/${A.id}?tab=games`)).text, /Our Class Game/, 'school admins see it too');
+  assert.match((await as(w.SA)(`/class/${A.id}?view=students`)).text, /Our Class Game/, 'school admins see it too');
   // Not a manager, or not on this class: 404.
   assert.equal((await as(kidA)(`/api/classes/${A.id}/games/${g.id}/remove`, { method: 'POST', body: {} })).status, 404);
   assert.equal((await as(t1)(`/api/classes/${A.id}/games/${gB.id}/remove`, { method: 'POST', body: {} })).status, 404);
@@ -445,7 +445,7 @@ test('class pages: "Games from our class" for students, the Games tab for teache
   const row = q.get("SELECT * FROM audit_log WHERE action='class.game_remove' AND target=? ORDER BY created_at DESC", A.id);
   assert.equal(row.actor_id, t1.id); assert.deepEqual(JSON.parse(row.details), { game: g.id, owner: O.id });
   assert.equal((await pub.publish(O, g.id, 'class', { classIds: [A.id] })).code, 'classRemoved', "the owner can't put it back");
-  r = await as(t1)(`/class/${A.id}?tab=games`); assert.match(r.text, /1 game taken off/); assert.match(r.text, /No games shared with this class yet/);
+  r = await as(t1)(`/class/${A.id}?view=students`); assert.match(r.text, /1 game taken off/); assert.match(r.text, /No games shared with this class yet/);
   r = await as(t1)(`/api/classes/${A.id}/games/${g.id}/restore`, { method: 'POST', body: {} });
   // "Allow again" only lifts the block: the class does not get the game back until its owner chooses it again.
   assert.equal(r.status, 200); assert.equal(games.canView(kidA, fresh(g)), false, 'no audience grows without the owner');
@@ -455,7 +455,7 @@ test('class pages: "Games from our class" for students, the Games tab for teache
   assert.equal((await as(t1)(`/api/classes/${A.id}/games/${g.id}/restore`, { method: 'POST', body: {} })).status, 404, 'nothing to put back');
   // An archived class lists nothing.
   S.archiveClass(t1, A.id, true);
-  assert.match((await as(t1)(`/class/${A.id}?tab=games`)).text, /No games shared with this class yet/);
+  assert.match((await as(t1)(`/class/${A.id}?view=students`)).text, /No games shared with this class yet/);
   // The audit log shows names.
   const log = mod.auditLog(50).find(x => x.action === 'class.game_remove' && x.target === A.id);
   assert.match(log.targetLabel, /5A/); assert.match(log.detailsLabel, /game: Our Class Game · owner: @/);

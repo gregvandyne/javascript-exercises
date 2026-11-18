@@ -11048,7 +11048,6 @@
   },
   "folders": {
     "title": "マイフォルダー",
-    "why": "フォルダーで、自分のゲームも Oomba のゲームも整理できます。フォルダーに入れても、遊べる人は変わりません。",
     "new": "新しいフォルダー",
     "name": "フォルダー名",
     "namePlaceholder": "例：分数の週",
@@ -11109,6 +11108,23 @@
     "progressEmptyText": "「ゲーム」タブでゲームを課題にすると、ここで一人ひとりの様子が見られます。",
     "studentEmptyText": "先生がここにゲームを追加します。",
     "liveHistory": "ライブゲームの履歴",
-    "liveHistoryNone": "このクラスでのライブゲームはまだありません。"
+    "liveHistoryNone": "このクラスでのライブゲームはまだありません。",
+    "allGames": "自分のゲームすべて",
+    "assignedTo": "{class} の課題",
+    "studentShared": "児童・生徒が共有したゲーム",
+    "fromClass": "わたしたちのクラスから",
+    "sideClass": "このクラスのゲーム",
+    "assignTo": "{class} の課題にする",
+    "assignAll": "{count, plural, other {# 本すべてを課題にする}}",
+    "assignAllNote": "ここにある、{class} が遊べるゲームをすべてこの期限で課題にします。クラスにすでにあるゲームと、先に準備が必要なゲームは飛ばします。",
+    "assignAllDone": "{count, plural, other {# 本のゲームを {class} の課題にしました}}",
+    "assignAllSkipped": "{count, plural, other {# 本は飛ばしました}}",
+    "assignAllNone": "新しく課題にできるゲームはありません。すでに {class} にあるか、先に準備が必要です。",
+    "assignedChip": "課題にしました",
+    "assignedWhere": "課題にしたゲームは期限と一緒に「{class} の課題」に並びます。",
+    "saveAnother": "ほかのフォルダーに保存",
+    "moveUp": "上へ",
+    "moveDown": "下へ",
+    "sharedEmpty": "ここにはまだ、あなたが開けるゲームがありません。"
   }
 }

@@ -8178,3 +8178,47 @@ which job. Now each job is a card.
 - The class's list is the teacher's live list (ids and names, teacher only); the widget now puts it in the saved order
   at once, so a change shows before the next check. Next week with typed names keeps the class's saved order.
 - Words in 12 languages (`dash.w.jobs.*`). Checks: tests/unit/dash-stage5.test.js "class jobs cards".
+
+## Folders in a sidebar, on Build and the class page (18 Nov 2026)
+Owner: clicking a folder opened a separate folder page, which they didn't want. They picked mockup "option B": a folder
+sidebar on Build and on the class page's Games tab, so a teacher never leaves the page.
+- **One shelf for both pages** (routes/game-shelf.js `shelf`, `shelfReply`; public/js/shelf.js; `.shelf-*` in app.css):
+  a left column of plain links and, on the right, what is picked. What is picked is in the address (`?folder=<id>`, or
+  `?view=all` on Build, `?view=assigned | students` on the class page), so a reload, Back and a shared link keep it.
+  shelf.js fetches the same address with the `X-Shelf` header, which answers the right side alone as JSON (`no-store`,
+  `Vary: X-Shelf`), swaps it in, marks the item (`aria-current="true"`), pushes the address and says the new heading to
+  screen readers; Back and Forward swap in place too. Without script, or with a modifier key, the link simply loads.
+- **Build** (grown-ups and teachers, `shelfOn`): New game, "All my games" (n), My folders (each with its count, drag to
+  reorder as before), + New folder, Shared by colleagues. The right side: the games (cover, title, Oomba game or My
+  game with its status chips, Edit for one's own, Play, Assign for school staff, and ⋯: Remove from folder, Save to
+  another folder, Rename and Delete for one's own). A folder's head: its name, "n games · Shared with <school>", Find
+  Oomba games and a ⋯ menu (Rename, Share or Stop sharing, Move up, Move down, Delete). A colleague's folder is read
+  only: "by <name> · Shared with <school>" and Copy to my folders. "Make your own game by chatting" stays as one compact
+  line over the right side. Kids and students keep the plain list of their own games, now without Save to folder:
+  students never see folders or Assign.
+- **The class page's Games tab:** Build new game, "Assigned to <class>" (n: the assigned games with due dates and their
+  ⋯ menus, as before: this replaces the Assigned games section), Find Oomba games, My folders and + New folder, Shared by
+  colleagues, "Games students shared" (n: the old "Games from our class" box with Take off and Allow again), and Google
+  Classroom at the bottom. In a folder each game has Play and "Assign to <class>" (a fold with the due day and Also post
+  to Google Classroom; a draft, a live-only game or a problem-set game opens the Assign page, which says why; a game the
+  class already has says ✅ Assigned), and the head has "Assign all N" (`POST /api/teach/assign-folder`: every game the
+  class can play and doesn't have, one due day, Classroom posts when asked; the rest are skipped and counted). Assigned
+  is picked by default when the class has assignments, else the first folder, else the empty Assigned with its hint. An
+  archived class shows no Build or Assign. The header, the tabs and Progress, Students and Settings are unchanged.
+- **Old links:** `/build/folders/:id` redirects to `/build?folder=<id>` (a folder you can't open is still not found); a
+  retired lesson's editor link, the Save to folder pop-up's "Open <folder>" (the class page's own sidebar when saved
+  from there), a new folder and a copied one all open in the sidebar. A folder made, copied or deleted from the class
+  page (its `classId`, only for a class you manage) comes back to the class page.
+- **Phone (≤ 820 px):** the column becomes New game full width over one row of chips (the current one dark, New folder
+  dashed) that scrolls sideways on its own; group names stay as the lists' names for screen readers. Game rows put
+  Play, Assign and ⋯ under the title; the Assign folds open in place. No sideways page scroll at 360 to 390 px, right to
+  left too.
+- Nothing widens who sees what: folders are the owner's or shared with their school, games only those they can open,
+  every folder API keeps its owner check (a shared folder answers 404 to every change), Assign stays school staff only.
+- Strings (13 languages): folders.allGames, assignedTo, studentShared, fromClass, sideClass, assignTo, assignAll,
+  assignAllNote, assignAllDone, assignAllSkipped, assignAllNone, assignedChip, assignedWhere, saveAnother, moveUp,
+  moveDown, sharedEmpty; folders.why (the old strip's line) removed.
+- Tests: tests/unit/folders-sidebar.test.js (both pages, the address and X-Shelf, the redirect, read-only shared
+  folders, Assign all, students and kids), tests/unit/folders-sidebar-browser.test.js (Chromium: in place with no page
+  load, Back, reload and keyboard; Assigned first; Assign from a folder; chips at 390 and 360 px and right to left;
+  dark). Updated: games-not-lessons, lessons, class-sharing, e2e lessons and school-teacher-mobile.

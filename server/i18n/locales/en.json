@@ -11475,7 +11475,6 @@
   },
   "folders": {
     "title": "My folders",
-    "why": "Folders sort your games, your own and Oomba's. Putting a game in a folder never changes who can play it.",
     "new": "New folder",
     "name": "Folder name",
     "namePlaceholder": "e.g. Fractions week",
@@ -11536,6 +11535,23 @@
     "progressEmptyText": "Assign a game on the Games tab, and you'll see how each student is doing here.",
     "studentEmptyText": "Your teacher will add games here.",
     "liveHistory": "Live games history",
-    "liveHistoryNone": "No live games with this class yet."
+    "liveHistoryNone": "No live games with this class yet.",
+    "allGames": "All my games",
+    "assignedTo": "Assigned to {class}",
+    "studentShared": "Games students shared",
+    "fromClass": "From our class",
+    "sideClass": "Games for this class",
+    "assignTo": "Assign to {class}",
+    "assignAll": "{count, plural, one {Assign # game} other {Assign all #}}",
+    "assignAllNote": "Every game here that {class} can play is assigned with this due day. Games already in the class, and games that need setting up first, are skipped.",
+    "assignAllDone": "{count, plural, one {# game assigned to {class}} other {# games assigned to {class}}}",
+    "assignAllSkipped": "{count, plural, one {# skipped} other {# skipped}}",
+    "assignAllNone": "Nothing new to assign: these games are already in {class} or need setting up first.",
+    "assignedChip": "Assigned",
+    "assignedWhere": "Assigned games are listed under “Assigned to {class}”, with their due dates.",
+    "saveAnother": "Save to another folder",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "sharedEmpty": "There are no games here that you can open yet."
   }
 }

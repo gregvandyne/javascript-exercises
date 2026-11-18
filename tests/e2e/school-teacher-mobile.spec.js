@@ -167,13 +167,14 @@ test('the key layouts: jump chips, cards with labels, the name filter, the folde
   const course = page.locator('details.coursepanel').first();
   await expect(course).not.toHaveAttribute('open', '');
   await expect(course.locator('summary')).toContainText(`0 of ${NAMES.length} started`);
-  // Games tab (first): New folder, Build new game and Find Oomba games, each a full-width button on a phone; no lesson tools
+  // Games tab (first): Build new game full width, then the sidebar as one row of chips (Assigned, Find Oomba games, the
+  // folders, New folder...) that scrolls sideways on its own; no lesson tools
   await page.goto(`/class/${cls}`);
   await expect(page.locator('nav.classtabs a').first()).toContainText('Games');
-  for (const sel of ['#lessons .cl-nf > summary', '#cl-newgame', '#lessons a[href="/learn"]']) {
-    const box = await page.locator(sel).first().boundingBox();
-    expect(box.height, sel).toBeGreaterThanOrEqual(43.5); expect(box.x + box.width, sel).toBeLessThanOrEqual(390);
-  }
+  const go = await page.locator('#cl-newgame').boundingBox();
+  expect(go.height).toBeGreaterThanOrEqual(43.5); expect(go.x + go.width).toBeLessThanOrEqual(390);
+  for (const sel of ['#lessons .shelf-newf > summary', '#lessons .shelf-nav a[href="/learn"]']) expect((await page.locator(sel).first().boundingBox()).height, sel).toBeGreaterThanOrEqual(43.5);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
   await expect(page.locator('#lessons')).not.toContainText('New unit');
   await ctx.close();
   // School People: counts on the headings and jump chips; grades show as text with ✏️ that opens the same field
