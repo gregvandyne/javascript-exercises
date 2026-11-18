@@ -8,6 +8,12 @@
 //   play: how it will be played (the "How will it be played?" step): 'live' (with a class or group on Oomba Live: everyone
 //   on their own device, a teacher or grown-up hosts it from the big screen), 'screen' (on one screen: the board, or one
 //   device passed around) or 'solo' (on my own); left out when not answered (an older page): the Builder decides.
+//   kind: 'activity' (a classroom activity on Oomba Canvas: the "What are you making?" card) or 'arcade' (or left out:
+//   an arcade game, everything above). An activity's plan is { v, kind: 'activity', topic, tool, support, played, grade }
+//   (and the arcade fields empty): topic { id } (a chip of CANVAS_TOPICS) or { text } (typed, screened like any message),
+//   tool the kit tool the chip means ('' for typed words: the Builder picks), support 'watch' | 'count' | 'guided' |
+//   'own', played 'devices' | 'board' | 'both', grade the class's grade ('K', '1'...'8' or ''). Only the topic and the
+//   grade reach the model: never the class, never a student.
 // This module: what the steps offer (from the Builder's own catalogue, never typed twice), the check of a plan that
 // came from a page (normalisePlan: unknown ids are dropped, typed text is trimmed), the sentence the builder reads and
 // sends (planSentence, their language), the engine the plan means (planEngine, engineFor) and the block the model reads
@@ -91,8 +97,9 @@ export const PLAYS = ['live', 'screen', 'solo'];
  *    survey: answers are only counted on this device and never sent anywhere (docs/decisions.md, the class survey)
  *    exitticket: stores nothing per student; each student's answers belong in a class lesson's question step */
 export const LIVE_NOT = { quiet: 'board', spinner: 'board', scoreboard: 'board', survey: 'survey', exitticket: 'exitticket' };
-/** And by engine: the ready-made 3D worlds (Kit 2, Oomba3D) have no live play yet (kit2.js KIT2_RULES say so too). */
-export const LIVE_NOT_ENGINE = { kit2: 'kit2' };
+/** And by engine: the ready-made 3D worlds (Kit 2, Oomba3D) have no live play yet (kit2.js KIT2_RULES say so too), nor
+ *  do classroom activities (Oomba Canvas: live canvas runs are a later phase). */
+export const LIVE_NOT_ENGINE = { kit2: 'kit2', canvas: 'canvas' };
 /** The default answer by type for a teacher (staff) and for everyone else. A teacher's classroom types that work live
  *  start on Live; the tools for the board start on one screen; everyone else starts on their own, except the types that
  *  are one screen by nature (the board tools, two players on one keyboard). */
@@ -114,6 +121,46 @@ export function playDefault(plan, { forKid = false } = {}) {
   return want === 'live' && liveNot(plan) ? (t && LIVE_NOT[t] ? 'screen' : 'solo') : want;
 }
 export const LEARN = ['math', 'reading', 'science', 'geography', 'fun'];
+
+// ---- Classroom activities (Oomba Canvas, docs/canvas-api.md) -------------------------------------------------------
+/** The first question of /build/new, "What are you making?": a classroom activity or an arcade game. */
+export const KINDS = ['activity', 'arcade'];
+/** The card that starts selected (one tap switches): Classroom activity for every teacher and whenever the page was
+ *  opened from a class or a lesson (?for=class); Arcade game for kids and families. */
+export const startKind = ({ teacher = false, forClass = false } = {}) => (teacher || forClass ? 'activity' : 'arcade');
+/** "How much help?": the Big Divide's support modes. */
+export const SUPPORTS = ['watch', 'count', 'guided', 'own'];
+/** "How will it be played?" for an activity: on their own devices (results to Progress), on the board together (the
+ *  teacher drives, no score), or both. Live comes later (phase 3). */
+export const CANVAS_PLAYS = ['devices', 'board', 'both'];
+export const GRADES = ['K', '1', '2', '3', '4', '5', '6', '7', '8'];
+/** The class's grade as the steps use it: 'K', '1'...'8', or '' (a grade of another shape, or none). */
+export const gradeOf = g => { const v = String(g ?? '').trim().toUpperCase().replace(/^GRADE\s*/, '').replace(/^0+(?=\d)/, ''); return GRADES.includes(v) ? v : ''; };
+/** The topic chips: each is a kit tool and a generator for a fresh set per student (canvas/src/logic.js), for these
+ *  grades. Their names are buildSetup.canvas.topics.<id>. */
+export const CANVAS_TOPICS = [
+  { id: 'evenOdd', grades: ['K', '1', '2', '3'], gen: { tool: 'tiles.sort', rule: 'evenodd', lo: 1, hi: 50, tiles: 6 } },
+  { id: 'orderNumbers', grades: ['K', '1', '2', '3'], gen: { tool: 'tiles.order', lo: 1, hi: 100, tiles: 5 } },
+  { id: 'numberLineJumps', grades: ['K', '1', '2'], gen: { tool: 'numberline.jump', lo: 0, hi: 20, subs: [1] } },
+  { id: 'addColumns', grades: ['1', '2', '3', '4'], gen: { tool: 'digits.add', digits: 2 } },
+  { id: 'subColumns', grades: ['2', '3', '4'], gen: { tool: 'digits.sub', digits: 3 } },
+  { id: 'shadeFractions', grades: ['2', '3'], gen: { tool: 'fractions.shade', dens: [2, 3, 4, 6, 8] } },
+  { id: 'equivFractions', grades: ['3', '4', '5'], gen: { tool: 'fractions.equiv', dens: [2, 3, 4], mult: [2, 3] } },
+  { id: 'fractionsLine', grades: ['3', '4', '5'], gen: { tool: 'numberline.point', lo: 0, hi: 1, subs: [2, 3, 4, 6, 8] } },
+  { id: 'compareFractions', grades: ['3', '4', '5'], gen: { tool: 'fractions.compare', dens: [2, 3, 4, 6, 8, 12] } },
+  { id: 'multiplyOne', grades: ['3', '4', '5'], gen: { tool: 'digits.mul', digits: 2 } },
+  { id: 'multiples', grades: ['3', '4', '5', '6'], gen: { tool: 'tiles.sort', rule: 'mult', n: 3, lo: 1, hi: 60, tiles: 8 } },
+  { id: 'orderFractions', grades: ['4', '5', '6'], gen: { tool: 'tiles.order', fractions: true, dens: [2, 3, 4, 5, 6, 8, 10, 12], tiles: 4 } },
+  { id: 'bigAdd', grades: ['4', '5', '6', '7', '8'], gen: { tool: 'digits.add', digits: 4 } },
+];
+export const topicById = id => CANVAS_TOPICS.find(x => x.id === id) || null;
+/** The chips for a grade, in order (no grade, or one with no chips: the middle grades' chips). */
+export function topicsFor(grade) {
+  const g = gradeOf(grade), list = g ? CANVAS_TOPICS.filter(x => x.grades.includes(g)) : [];
+  return list.length ? list : CANVAS_TOPICS.filter(x => x.grades.includes('3') || x.grades.includes('4')).slice(0, 8);
+}
+/** Words that name a classroom activity (the start card follows them when typed elsewhere: CLASSROOM_WORDS' sibling). */
+export const CLASSROOM_ACTIVITY_WORDS = /\b(practi[cs]e|worksheet|activity|manipulatives?|fractions?|place value|number line|times tables?|for my class)\b/i;
 /** The sections of "Who is in it?": the heroes, then every animal group of the catalogue (kit2/creature-groups.json). */
 export const CHARACTER_GROUPS = ['heroes', ...KIT2_CREATURE_GROUPS];
 /** A 2D sprite's group: the list's (kit2/creature-groups.json), else its pack's ('dinosaur'), else wild. */
@@ -162,6 +209,7 @@ const choice = (v, ids) => {
  */
 export function normalisePlan(raw, { forKid = false } = {}) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  if (raw.kind === 'activity') return activityPlan(raw);
   const ids = forKid ? TYPE_IDS.filter(id => !typeById(id).teacher) : TYPE_IDS;
   let type = choice(raw.type, ids);
   if (type && type.from === 'custom') { const id = classroomTypeFor(type.text, { forKid }); if (id) type = { from: 'pack', id }; }
@@ -184,11 +232,26 @@ export function normalisePlan(raw, { forKid = false } = {}) {
     v: PLAN_VERSION, type, look: LOOKS.includes(raw.look) ? raw.look : null, world: choice(raw.world, WORLD_IDS),
     characters, learn, notes: clean(raw.notes, LIMITS.notes),
   };
+  // Made from a class (?for=class): only that it was, never which class (the Studio offers "Make it a classroom activity").
+  if (raw.forClass === true) plan.forClass = true;
   // How it is played: a known answer this plan allows; Live where it cannot be (a ready-made 3D world, a tool for the
   // board) becomes this viewer's default for it. Not answered: no play at all (the Builder decides, as before the step).
   if (PLAYS.includes(raw.play)) plan.play = raw.play === 'live' && liveNot(plan) ? playDefault(plan, { forKid }) : raw.play;
   return plan.type || plan.look || plan.world || characters.length || learn.length || plan.notes || plan.play ? plan : null;
 }
+/** A classroom activity's plan (normalisePlan, kind 'activity'): a known topic chip (and its tool) or typed words, a
+ *  known support and way of playing (Guided and their own devices when left out), the grade if it is one. Kids may make
+ *  one too: nothing in it depends on who builds it. The arcade fields are there and empty. */
+function activityPlan(raw) {
+  const t = raw.topic && typeof raw.topic === 'object' ? raw.topic : null, chip = t && typeof t.id === 'string' ? topicById(t.id) : null;
+  const text = t && !chip ? clean(t.text, LIMITS.idea) : '';
+  return {
+    v: PLAN_VERSION, kind: 'activity', topic: chip ? { id: chip.id } : text ? { text } : null, tool: chip ? chip.gen.tool : '',
+    support: SUPPORTS.includes(raw.support) ? raw.support : 'guided', played: CANVAS_PLAYS.includes(raw.played) ? raw.played : 'devices', grade: gradeOf(raw.grade),
+    type: null, look: null, world: null, characters: [], learn: [], notes: clean(raw.notes, LIMITS.notes), ...(raw.forClass === true ? { forClass: true } : {}),
+  };
+}
+export const isActivity = plan => !!plan && plan.kind === 'activity';
 /** The parts of a plan that are outside the packs: ['type', 'world', 'character'] (each at most once). */
 export const customParts = plan => [plan.type && plan.type.from === 'custom' && 'type', plan.world && plan.world.from === 'custom' && 'world', plan.characters.some(c => c.from === 'custom') && 'character'].filter(Boolean);
 
@@ -202,8 +265,20 @@ export const learnLabel = (l, t = tEn) => (l.id ? t(`buildSetup.learn.${l.id}.ti
  * The plan as short plain sentences in the builder's language ("Here is my game plan. Kind of game: Adventure. Make it
  * 3D. World: Castle Quest. In it: Knight and Fox. It teaches: Math."). files: how many files they added.
  */
+/** A topic in the reader's words: our chip's name, or their own words. */
+export const topicLabel = (topic, t = tEn) => (!topic ? '' : topic.id ? t(`buildSetup.canvas.topics.${topic.id}`) : topic.text);
 export function planSentence(plan, t = tEn, { files = 0 } = {}) {
   const loc = t.locale || 'en', out = [t('buildSetup.say.start')];
+  if (isActivity(plan)) {
+    out[0] = t('buildSetup.say.activity');   // "Here is my plan: a classroom activity."
+    if (plan.grade) out.push(plan.grade === 'K' ? t('buildSetup.say.gradeK') : t('buildSetup.say.grade', { grade: plan.grade }));
+    if (plan.topic) out.push(t('buildSetup.say.practise', { topic: topicLabel(plan.topic, t) }));
+    out.push(t('buildSetup.say.help', { help: t(`buildSetup.canvas.help.${plan.support}.title`) }));
+    out.push(t(`buildSetup.say.played.${plan.played}`));
+    if (files > 0) out.push(t('buildSetup.say.file'));
+    if (plan.notes) out.push(/[.!?。！？]$/.test(plan.notes) ? plan.notes : `${plan.notes}.`);
+    return out.join(' ');
+  }
   if (plan.type) out.push(t('buildSetup.say.type', { value: choiceLabel('type', plan.type, t) }));
   if (plan.look === '3d' || plan.look === '2d') out.push(t(`buildSetup.say.look${plan.look}`));
   if (plan.world) out.push(t('buildSetup.say.world', { value: choiceLabel('world', plan.world, t) }));
@@ -240,8 +315,10 @@ function homeOf(chars) {
  *       the board and phones, never a 3D world, the kit's worlds or sprites (the plan has none: normalisePlan)
  *   { engine: 'scratch' }   "you pick" with a world of their own: the Builder decides 2D or its own 3D, never a pack world
  *   { engine: 'open' }      nothing here decides: the message is read as any typed message is today
+ *   { engine: 'canvas', tool, topic, support, played, grade }   a classroom activity on Oomba Canvas (kind 'activity')
  */
 export function planEngine(plan) {
+  if (isActivity(plan)) return { engine: 'canvas', tool: plan.tool || '', topic: plan.topic, support: plan.support, played: plan.played, grade: plan.grade };
   const picked = plan.characters.filter(c => c.from === 'pack').map(c => c.id);
   const chars = picked.map(characterById).filter(Boolean), only2d = picked.filter(id => !characterById(id));
   const type = plan.type && plan.type.from === 'pack' ? GAME_TYPES.find(x => x.id === plan.type.id) : null;
@@ -281,6 +358,8 @@ export function engineFor(state, plan, text, version) {
   if (!plan) return wantsKit2(state, text, version);
   playFor(state, plan);
   const e = planEngine(plan), cur = version ? kit2Of(version.html) : null;
+  // A classroom activity: Oomba Canvas, never a ready-made world (prompt.js wantsCanvas reads state.canvas).
+  if (e.engine === 'canvas') { if (state) { state.canvas = true; delete state.kit2; delete state.art2d; delete state.wants3d; } return null; }
   if (e.engine === 'open') return wantsKit2(state, text, version);
   if (e.engine === 'kit2') {
     const pick = { world: e.world, hero: e.hero, ...(e.companion ? { companion: e.companion } : {}) };
@@ -299,6 +378,8 @@ export function engineFor(state, plan, text, version) {
  * live" sets it again). state.play remembers the answer and the kind of game for the Studio's live line.
  */
 export function playFor(state, plan) {
+  if (state && plan && plan.forClass) state.fromClass = true;
+  if (state && isActivity(plan)) { delete state.wantsLive; state.canvas = true; state.play = { how: plan.played === 'board' ? 'screen' : 'solo', type: '' }; return; }
   if (!state || !plan || !plan.play) return;
   if (plan.play === 'live') state.wantsLive = true; else delete state.wantsLive;
   state.play = { how: plan.play, type: plan.type && plan.type.from === 'pack' ? plan.type.id : '' };
@@ -346,12 +427,49 @@ export const CLASSROOM_NOTES = {
   scoreboard: 'A TEAM SCOREBOARD for the board: one big column per team (CONFIG.teams, labelled Team 1, Team 2... or CONFIG.labels such as colours or animals, never students\' names), + and - buttons and number keys (1 to 6 add, Shift with a number takes away), Undo and a reset that asks first.',
 };
 const q = s => JSON.stringify(String(s));
+const HELP_BRIEF = { watch: 'WATCH (the kit shows each worked answer first, then the student tries)', count: 'COUNT UP (step answers with ▲ ▼ buttons)', guided: 'GUIDED (the Steps panel open, step answers typed with the keypad)', own: 'ON MY OWN (the Steps panel closed until they open it)' };
+const PLAYED_BRIEF = {
+  devices: 'ON THEIR OWN DEVICES: each student their own copy; the end result goes to Progress (config.board false)',
+  board: 'ON THE BOARD TOGETHER: the teacher drives on the big screen, big type, no score sent (config.board true)',
+  both: 'BOTH: on their own devices (config.board false); the teacher may also show it on the board',
+};
+/** The SETUP CHOICES block of a classroom activity's first build (planNote). */
+function canvasNote(plan) {
+  const chip = plan.topic && plan.topic.id ? topicById(plan.topic.id) : null, lines = [];
+  lines.push('- Kind: a CLASSROOM ACTIVITY on Oomba Canvas (the builder chose "Classroom activity", not "Arcade game").');
+  lines.push(chip ? `- Practise: PACK topic ${q(chip.id)} (${tEn(`buildSetup.canvas.topics.${chip.id}`)}): tool ${q(chip.gen.tool)}, generator ${JSON.stringify(chip.gen)}.`
+    : plan.topic ? `- Practise: CUSTOM ${q(plan.topic.text)} (typed by the builder): pick the kit tool that fits best and make problems or a generator for it.`
+      : '- Practise: not chosen (you decide a good first activity for the grade).');
+  lines.push(plan.grade ? `- Grade: ${plan.grade === 'K' ? 'kindergarten' : `grade ${plan.grade}`} (the class's grade: the only thing known about the class; never ask about the students).` : '- Grade: not known (keep it middle-of-primary unless their words say otherwise).');
+  lines.push(`- Help: ${HELP_BRIEF[plan.support]} -> config.support ${q(plan.support)}.`);
+  lines.push(`- How it is played: ${PLAYED_BRIEF[plan.played]}. Not live.`);
+  if (plan.notes) lines.push(`- Their note: ${q(plan.notes)}`);
+  const how = [
+    'Build it as a classroom activity on Oomba Canvas (the CANVAS RULES): start_from_template "canvas", then edit_game its oc-activity JSON block only (config, task, problems or gen) and the <title>. It is not an Oomba Kit game: never add the kit, lives, timers, enemies or a title screen.',
+    chip ? `Use the generator for a fresh set per student: "gen": ${JSON.stringify(chip.gen)}, config.count 5, config.fresh true (tune its numbers to the grade if needed), and "problems": [] or a few fixed ones of the same tool.` : 'Choose problems (or a generator) that the kit can check: never write a checker of your own.',
+    'Every version must pass the kit\'s self-test (each problem solvable by its worked answer, never right when empty): a version that fails is not saved, and the reply names the problem to fix.',
+    'Write task.title and task.say in the builder\'s language (config.lang too). Leave steps and hints empty: the kit writes them in every language.',
+  ];
+  return `SETUP CHOICES (the builder picked these in the setup steps before this chat; their first message says the same in words).
+${lines.join('\n')}
+How to use them:
+- Do not ask the setup questions again (what it is, the topic, the help, how it is played): say your plan in two short sentences and build now.
+${how.map(x => `- ${x}`).join('\n')}`;
+}
+/** The activity a classroom activity plan starts from (the mock Builder's build, and tools.js planFallback): the starter's
+ *  data with the topic's generator, the help and the way of playing. t: the builder's words (the title). */
+export function canvasActivity(plan, t = tEn) {
+  const chip = plan && plan.topic && plan.topic.id ? topicById(plan.topic.id) : null, gen = chip ? chip.gen : CANVAS_TOPICS.find(x => x.id === 'equivFractions').gen;
+  const title = (plan && plan.topic ? topicLabel(plan.topic, t) : '') || t('buildSetup.canvas.topics.equivFractions');
+  return { config: { lang: t.locale || 'en', support: plan && SUPPORTS.includes(plan.support) ? plan.support : 'guided', count: 5, fresh: true, board: !!plan && plan.played === 'board' }, task: { title: title.slice(0, 60), say: title.slice(0, 120) }, problems: [], gen: { ...gen }, steps: {}, hints: {} };
+}
 const picked = plan => plan.characters.filter(c => c.from === 'pack').map(c => c.id);
 const who = id => { const c = setupCharacter(id); return c ? `${c.id} (${c.name})` : id; };
 const PLAY_BRIEF = { live: 'LIVE (Oomba Live, a teacher or grown-up hosts)', screen: 'on one screen (not live)', solo: 'on my own (not live)' };
 /** One line for the transcript of later turns (builder/claude.js historyToMessages): what was pack and what was custom. */
 export function planBrief(plan) {
   if (!plan) return '';
+  if (isActivity(plan)) return `[Setup choices: a CLASSROOM ACTIVITY on Oomba Canvas (not an arcade game); topic ${plan.topic ? (plan.topic.id ? `pack ${plan.topic.id} (tool ${plan.tool})` : `custom ${q(plan.topic.text)}`) : 'not chosen'}; ${plan.grade ? `grade ${plan.grade}; ` : ''}help ${plan.support}; played ${plan.played}. The CANVAS RULES apply; do not ask the setup questions again.]`;
   const part = (name, c) => (c ? `${name} ${c.from === 'pack' ? `pack ${c.id}` : `custom ${q(c.text)}`}` : '');
   const bits = [part('type', plan.type), plan.look && plan.look !== 'auto' ? `look ${plan.look.toUpperCase()}` : '', part('world', plan.world), ...plan.characters.map(c => part('character', c)), plan.play ? `played ${PLAY_BRIEF[plan.play]}` : ''].filter(Boolean);
   return bits.length ? `[Setup choices: ${bits.join('; ')}. Pack parts are used as given; custom parts are outside the packs and built from scratch.${plan.play ? ' How it is played was answered: do not ask whether it should be live or closed.' : ''}]` : '';
@@ -362,6 +480,7 @@ export function planBrief(plan) {
  */
 export function planNote(plan) {
   if (!plan) return '';
+  if (isActivity(plan)) return canvasNote(plan);
   const e = planEngine(plan), lines = [];
   const t = plan.type, w = plan.world, type = t && t.from === 'pack' ? GAME_TYPES.find(x => x.id === t.id) : null;
   lines.push(!t ? (e.engine === '2d' && e.art ? '- Game type: not chosen: a running game ("runner") or a catching game ("catch"), you decide which. Only those two draw the 2D art and the characters they picked.' : '- Game type: not chosen (you decide).')

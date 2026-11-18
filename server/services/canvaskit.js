@@ -1,0 +1,111 @@
+// Oomba Canvas: the classroom activity kit (canvas/, docs/canvas-api.md), self-hosted under
+// public/vendor/oomba-canvas/<version>/ and loaded with exactly the tag canvasTag() makes (pinned version, SRI,
+// crossorigin="anonymous"), the same way as the Oomba Kit (kit.js). Version folders never change and CANVAS_VERSIONS only
+// grows; scripts/build-canvas.js writes the hash, canvas/SHIPPED.json locks it.
+// Also here: the scanner's pinned-tag check (checkCanvas, like kit.js checkKit), and the Builder's self-test of an
+// activity, run with the kit's OWN frozen file (the maths a published activity really uses), never the source.
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import { fileURLToPath } from 'node:url';
+
+export const CANVAS_PATH = '/vendor/oomba-canvas/';
+// version -> sha384 of oomba-canvas.js (tests/unit/canvas-kit.test.js checks these against the files on disk).
+export const CANVAS_VERSIONS = Object.freeze({
+  '1.0.0': 'sha384-flFB2WSAsKElDVg0GmNowkuiZ1BK2p6gcygy6l0MgomzZl6alrNHMRgtwrNl7u6V',
+});
+export const CANVAS_LATEST = '1.0.0';
+export const canvasSrc = (v = CANVAS_LATEST) => `${CANVAS_PATH}${v}/oomba-canvas.js`;
+const PUBLIC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
+
+/** The one script tag an activity uses to load the kit. */
+export function canvasTag(v = CANVAS_LATEST) {
+  if (!CANVAS_VERSIONS[v]) throw new Error(`unknown Oomba Canvas version ${v}`);
+  return `<script src="${canvasSrc(v)}" integrity="${CANVAS_VERSIONS[v]}" crossorigin="anonymous"></script>`;
+}
+
+const SCRIPT_RE = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
+const ATTR_RE = /([a-z-]+)\s*(?:=\s*("[^"]*"|'[^']*'|[^\s"'>]+))?/gi;
+function attrs(s) {
+  const out = {}; let m;
+  ATTR_RE.lastIndex = 0;
+  while ((m = ATTR_RE.exec(s))) out[m[1].toLowerCase()] = m[2] == null ? '' : m[2].replace(/^["']|["']$/g, '');
+  return out;
+}
+const PIN_RE = /^\/vendor\/oomba-canvas\/(\d+\.\d+\.\d+)\/oomba-canvas\.js$/;
+
+/** The pinned Oomba Canvas version a game loads (a valid pin), or null: this version is a classroom activity. */
+export function canvasVersion(html) {
+  for (const m of String(html || '').matchAll(SCRIPT_RE)) {
+    const a = attrs(m[1]), p = PIN_RE.exec(a.src || '');
+    if (p && CANVAS_VERSIONS[p[1]] === a.integrity && a.crossorigin === 'anonymous') return p[1];
+  }
+  return null;
+}
+/** Does this game name the kit at all (a pin, or a wrong one)? */
+export const usesCanvas = html => String(html || '').includes(CANVAS_PATH);
+
+/**
+ * Scanner rule (scanner.js), the same as kit.js checkKit -> { issues: [{ level, code, message }], rest } where rest is the
+ * game with the pinned tag taken out (so the external-script check never sees it). Accepted: exactly canvasTag(v) for a
+ * known v (attributes in any order and quoting, nothing else in the tag). Anything else that names /vendor/oomba-canvas/
+ * fails, with a message the Builder can act on.
+ */
+export function checkCanvas(src) {
+  src = String(src || '');
+  const issues = [];
+  const add = (code, message) => { if (!issues.some(i => i.message === message)) issues.push({ level: 'fail', code, message }); };
+  const rest = src.replace(SCRIPT_RE, (block, attrText, body) => {
+    const a = attrs(attrText);
+    if (!(a.src || '').includes(CANVAS_PATH)) return block;
+    const p = PIN_RE.exec(a.src), extra = Object.keys(a).filter(k => !['src', 'integrity', 'crossorigin'].includes(k));
+    if (!p || !CANVAS_VERSIONS[p[1]]) { add('canvas_pin', `Loads an Oomba Canvas version we do not have. Use exactly: ${canvasTag()}`); return block; }
+    if (a.integrity !== CANVAS_VERSIONS[p[1]]) { add('canvas_pin', `The Oomba Canvas tag has the wrong integrity value. Use exactly: ${canvasTag(p[1])}`); return block; }
+    if (a.crossorigin !== 'anonymous') { add('canvas_pin', `The Oomba Canvas tag needs crossorigin="anonymous". Use exactly: ${canvasTag(p[1])}`); return block; }
+    if (extra.length || body.trim()) { add('canvas_pin', `The Oomba Canvas tag must be exactly: ${canvasTag(p[1])}`); return block; }
+    return ' ';
+  });
+  if (rest.includes(CANVAS_PATH) || /\/vendor\/oomba-canvas\b/.test(rest)) add('canvas_tag', `Uses the Oomba Canvas files in a way we do not allow (only the script tag may name them). Load it with exactly: ${canvasTag()}`);
+  return { issues, rest };
+}
+
+// ---------------------------------------------------------------- the activity's data and the self-test
+const DATA_RE = /<script\b[^>]*\bid\s*=\s*["']?oc-activity["']?[^>]*>([\s\S]*?)<\/script\s*>/i;
+/** The activity's data block (<script type="application/json" id="oc-activity">) -> { data } or { why } or null (none). */
+export function activityData(html) {
+  const m = DATA_RE.exec(String(html || ''));
+  if (!m) return null;
+  try { const data = JSON.parse(m[1]); return data && typeof data === 'object' && !Array.isArray(data) ? { data } : { why: 'the oc-activity block must be one JSON object' }; } catch (e) { return { why: `the oc-activity block is not valid JSON (${String(e.message).slice(0, 80)})` }; }
+}
+
+const kits = new Map();
+/** The pure parts of a kit version, from its own frozen file (run once in an empty context: no document, no network). */
+export function canvasKit(v = CANVAS_LATEST) {
+  if (!CANVAS_VERSIONS[v]) return null;
+  if (!kits.has(v)) {
+    const src = fs.readFileSync(path.join(PUBLIC, 'vendor/oomba-canvas', v, 'oomba-canvas.js'), 'utf8');
+    const ctx = vm.createContext({});
+    vm.runInContext(src, ctx, { timeout: 2000, filename: `oomba-canvas-${v}.js` });
+    kits.set(v, ctx.OombaCanvas);
+  }
+  return kits.get(v);
+}
+/**
+ * The Builder's self-test of an activity version (builder/autotest.js canvasSelfTest): null when the version is not an
+ * Oomba Canvas activity; else { ok, problems: [{ at, why }] } from the kit's own selfTest (every problem solvable by its
+ * worked answer, the empty start never right, steps and hints there), plus a missing or broken data block.
+ */
+export function selfTestHtml(html) {
+  const v = canvasVersion(html); if (!v) return null;
+  const d = activityData(html);
+  if (!d) return { ok: false, problems: [{ at: 'activity', why: 'there is no <script type="application/json" id="oc-activity"> block with the activity' }] };
+  if (d.why) return { ok: false, problems: [{ at: 'activity', why: d.why }] };
+  if (!/\bOc\s*\.\s*activity\s*\(|\bOombaCanvas\s*\.\s*activity\s*\(/.test(String(html))) return { ok: false, problems: [{ at: 'activity', why: 'the page never calls Oc.activity() with the activity' }] };
+  const r = canvasKit(v).selfTest(d.data);
+  return { ok: !!r.ok, problems: JSON.parse(JSON.stringify(r.problems || [])) };
+}
+/** The page with its oc-activity block set to this data (pretty JSON, one key per line: easy for edit_game). */
+export function withActivityData(html, data) {
+  const json = JSON.stringify(data, null, 2).replace(/</g, '\\u003c');
+  return String(html).replace(DATA_RE, m => m.replace(/(<script\b[^>]*>)[\s\S]*?(<\/script\s*>)$/i, (x, a, b) => `${a}\n${json}\n${b}`));
+}

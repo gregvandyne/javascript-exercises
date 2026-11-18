@@ -1727,6 +1727,15 @@
       "step": "Stap van de les: {title}",
       "back": "Terug naar de les",
       "handIn": "Inleveren"
+    },
+    "canvasLine": {
+      "activity": "Klasactiviteit · resultaten gaan naar Voortgang",
+      "board": "Klasactiviteit · op het bord",
+      "arcade": "Arcadespel · gemaakt voor je klas",
+      "toArcade": "Maak er toch een arcadespel van",
+      "toArcadeAsk": "Maak er toch een arcadespel van: een quiz-, ren- of vangspel met dezelfde opgaven.",
+      "toCanvas": "Maak er een klasactiviteit van",
+      "toCanvasAsk": "Maak er toch een klasactiviteit van: een werkvlak met dezelfde vragen, stappen en tips."
     }
   },
   "publish": {
@@ -2703,7 +2712,16 @@
         "pickedWorld": "{count} gekozen. Ze wonen allemaal in {world}.",
         "cleared": "Weggehaald"
       },
-      "progress": "Stap {n} van {total}"
+      "progress": "Stap {n} van {total}",
+      "canvas": {
+        "activity": "Klasactiviteit",
+        "rows": {
+          "kind": "Wat",
+          "practise": "Oefenen",
+          "help": "Hulp",
+          "played": "Gespeeld"
+        }
+      }
     },
     "dash": {
       "dropHint": "Voeg hier een widget uit de bibliotheek toe",
@@ -9146,7 +9164,8 @@
         "kit2": "De kant-en-klare 3D-werelden kun je nog niet live spelen.",
         "board": "Dit draait op één scherm voor de hele klas.",
         "survey": "Antwoorden van de enquête blijven op dit apparaat en worden nooit verstuurd, dus hij wordt niet live gespeeld.",
-        "exitticket": "Een exitkaart blijft op één apparaat. Voor de antwoorden van elke leerling gebruik je een vraagstap in een klasles."
+        "exitticket": "Een exitkaart blijft op één apparaat. Voor de antwoorden van elke leerling gebruik je een vraagstap in een klasles.",
+        "canvas": "Klasactiviteiten kunnen nog niet live gespeeld worden."
       }
     },
     "learn": {
@@ -9196,7 +9215,17 @@
       "file": "Gebruik het bestand dat ik heb toegevoegd.",
       "playlive": "We spelen het live met mijn klas of groep op Oomba Live.",
       "playscreen": "We spelen het samen op één scherm.",
-      "playsolo": "Ik speel het in mijn eentje."
+      "playsolo": "Ik speel het in mijn eentje.",
+      "activity": "Dit is mijn plan: een klasactiviteit.",
+      "grade": "Voor groep {grade}.",
+      "gradeK": "Voor de kleuters.",
+      "practise": "Oefenen: {topic}.",
+      "help": "Hulp: {help}.",
+      "played": {
+        "devices": "Leerlingen spelen het op hun eigen apparaat.",
+        "board": "We spelen het samen op het bord.",
+        "both": "Leerlingen spelen het op hun eigen apparaat, en we laten het ook op het bord zien."
+      }
     },
     "flatNote": "In 2D kunnen voorlopig alleen ren- en vanggames onze werelden en figuren gebruiken. Bij andere games gebruikt de Bouwer zijn klassieke uiterlijk.",
     "typeGroups": {
@@ -9205,6 +9234,102 @@
       "games": "Spellen",
       "classText": "Activiteiten voor het digibord en voor telefoons.",
       "gamesText": "Spellen om te spelen en te delen."
+    },
+    "kind": {
+      "heading": "Wat ga je maken?",
+      "text": "Je kunt het in de Builder altijd nog veranderen.",
+      "forClassTitle": "Maak iets voor je klas",
+      "forChip": "Voor {name} · {grade}",
+      "forChipNoGrade": "Voor {name}",
+      "forClass": "Voor je klas",
+      "check": "Controleer",
+      "hint": "Tip",
+      "activity": {
+        "title": "Klasactiviteit",
+        "text": "Een werkvlak om mee te doen: leerlingen slepen, bouwen en controleren, stap voor stap, met tips. De resultaten gaan naar Voortgang."
+      },
+      "arcade": {
+        "title": "Arcadespel",
+        "text": "Een leuk spel om te spelen en te delen: rennen, vangen, quiz, race, in 2D of een 3D-wereld."
+      },
+      "tools": {
+        "fractions": "Breukstroken",
+        "numberline": "Getallenlijn",
+        "digits": "Cijfervakjes",
+        "tiles": "Sorteren en koppelen"
+      },
+      "games": {
+        "runner": "Renspel",
+        "catch": "Vangen",
+        "quiz": "Quiz",
+        "worlds": "3D-werelden"
+      },
+      "toolsText": "Een stiltespel, een draaischijf of een scorebord nodig?",
+      "toolsLink": "Klashulpmiddelen"
+    },
+    "canvas": {
+      "nextHelp": "Volgende: hoeveel hulp",
+      "nextPlayed": "Volgende: hoe het gespeeld wordt",
+      "practise": {
+        "heading": "Wat moeten leerlingen oefenen?",
+        "text": "Kies er een of typ je eigen onderwerp. De Builder maakt 5 opgaven met stappen en tips.",
+        "label": "Wat moeten leerlingen oefenen?",
+        "placeholder": "Bijvoorbeeld: gelijkwaardige breuken met achtsten en zesden",
+        "ideas": "Ideeën",
+        "ideasFor": "Ideeën voor {grade}",
+        "privacy": "De Builder krijgt alleen je onderwerp en het leerjaar van de klas. Nooit namen of werk van leerlingen."
+      },
+      "help": {
+        "heading": "Hoeveel hulp?",
+        "hint": "Je kunt het in de Builder altijd nog veranderen.",
+        "watch": {
+          "title": "Kijken",
+          "text": "Laat zien hoe elke opgave gaat, daarna proberen leerlingen het."
+        },
+        "count": {
+          "title": "Optellen",
+          "text": "Antwoorden van stappen met ▲ ▼, zonder typen."
+        },
+        "guided": {
+          "title": "Met hulp",
+          "text": "Stappen open, met tot 3 tips."
+        },
+        "own": {
+          "title": "Zelf",
+          "text": "De stappen blijven verborgen tot leerlingen erom vragen."
+        }
+      },
+      "played": {
+        "heading": "Hoe wordt het gespeeld?",
+        "hint": "Live spelen met activiteiten komt later.",
+        "devices": {
+          "title": "Op hun eigen apparaat",
+          "text": "Elke leerling werkt aan een eigen kopie. De resultaten gaan naar Voortgang."
+        },
+        "board": {
+          "title": "Op het bord",
+          "text": "Jullie doen het samen op het grote scherm. Zonder scores."
+        },
+        "both": {
+          "title": "Allebei",
+          "text": "Op hun eigen apparaat, en op het bord wanneer je wilt."
+        }
+      },
+      "topics": {
+        "evenOdd": "Even en oneven",
+        "orderNumbers": "Getallen ordenen",
+        "numberLineJumps": "Sprongen op de getallenlijn",
+        "addColumns": "Cijferend optellen",
+        "subColumns": "Cijferend aftrekken",
+        "shadeFractions": "Een breuk kleuren",
+        "equivFractions": "Gelijkwaardige breuken",
+        "fractionsLine": "Breuken op de getallenlijn",
+        "compareFractions": "Breuken vergelijken",
+        "multiplyOne": "Vermenigvuldigen met één cijfer",
+        "multiples": "Veelvouden",
+        "orderFractions": "Breuken ordenen",
+        "bigAdd": "Grote getallen optellen"
+      }
     }
   },
   "dash": {

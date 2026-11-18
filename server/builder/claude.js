@@ -26,7 +26,7 @@
 import { config } from '../config.js';
 import { anthropic } from './anthropic.js';
 import * as aiBudget from '../services/ai-budget.js';
-import { SYSTEM_PROMPT, TOOLS, THREE_D_RULES, KIT_3D_BRIDGE_RULES, usesKit3d, LIVE_RULES, sourceBlock, languageBlock, wants3d, wantsLive, KIT2_RULES, wantsKit2, kit2Note, ART2D_RULES, wantsArt2d, art2dNote, pickKit2 } from './prompt.js';
+import { SYSTEM_PROMPT, TOOLS, THREE_D_RULES, KIT_3D_BRIDGE_RULES, usesKit3d, LIVE_RULES, sourceBlock, languageBlock, wants3d, wantsLive, KIT2_RULES, wantsKit2, kit2Note, ART2D_RULES, wantsArt2d, art2dNote, pickKit2, CANVAS_RULES, wantsCanvas } from './prompt.js';
 import { tEn } from '../i18n/index.js';
 import { summariseEvents } from './chat.js';
 import { modelBlocks, transcriptNote } from './uploads.js';
@@ -217,6 +217,9 @@ export async function run(ctx) {
       ...(cur && usesKit3d(cur.html) ? [{ type: 'text', text: KIT_3D_BRIDGE_RULES }] : []),
       // (Live class games are built on the Oomba Kit's live pack: not for Kit 2 games yet, whose rules say so.)
       ...(!k2 && wantsLive(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: LIVE_RULES, cache_control: { type: 'ephemeral' } }] : []),
+      // A classroom activity (Oomba Canvas): its fixed rules, only for canvas builds (no cache point of its own: the
+      // game's block caches it), so an arcade build's prefix never changes.
+      ...(!k2 && wantsCanvas(st, ctx.text, cur) ? [{ type: 'text', text: CANVAS_RULES }] : []),
       { type: 'text', text: sourceBlock(cur, ctx.tools.game()), cache_control: { type: 'ephemeral' } },
       ...(k2 ? [{ type: 'text', text: kit2Note(k2) }] : []),
       // The 2D art rules and this turn's pick: after the cached blocks (at most four cache points are allowed, and

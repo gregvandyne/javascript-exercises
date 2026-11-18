@@ -9,6 +9,20 @@
 // quoted, cleaned and cut short, never instructions.
 import { cleanNote } from './steps.js';
 import { trustedMaker } from './usage.js';
+import { selfTestHtml } from '../services/canvaskit.js';
+
+// ---- The classroom activity check (Oomba Canvas, docs/canvas-api.md) -------------------------------------------------
+// An activity's answer key is checked by the kit itself before anything else: every problem (or 30 a generator makes)
+// must be solvable by its worked answer, the empty start must never count as right, and its steps and hints must be
+// there. It runs on the kit's own frozen file (services/canvaskit.js selfTestHtml), never in a browser, so it is exact
+// and fast. A failure blocks the version: tools.js saveVersion refuses to save it (so it can never be shared or
+// published) and names each problem for the model to fix; the playtest report lists it too.
+/** null when the version is not a canvas activity; else { ok, problems: [{ at, why }] }. */
+export function canvasSelfTest(html) {
+  try { return selfTestHtml(html); } catch (e) { return { ok: false, problems: [{ at: 'activity', why: `the self-test could not run (${String((e && e.message) || e).slice(0, 100)})` }] }; }
+}
+/** The self-test's problems as one line for the model ("problem 3: cannot be solved: 5/6 cannot be made with pieces of 1/4"). */
+export const canvasProblemsText = rep => (rep && rep.problems ? rep.problems.map(p => `${p.at}: ${cleanNote(p.why, 160)}`).join('; ') : '');
 
 /** Tests: raw(html, version) replaces the browser run (it returns what snapshot.autoplayGame would). */
 export const hooks = { raw: null };
@@ -106,13 +120,16 @@ export function buildReport(raw, o = {}) {
   else if (frozen) add('frozen', 'After starting, nothing on screen moved and nothing changed during the whole playtest (keys, taps, swipes, buttons): the game looks frozen. Check the game loop keeps running (requestAnimationFrame) and nothing waits forever.');
   if (!blank && started && !frozen && input === 'no') add('input', heroes.length > 1 ? 'The hero never moved and the score never changed while the playtest pressed arrows, WASD and space, tapped, swiped and pressed the game\'s buttons: the controls seem not to work. Check the key and touch handlers (and that they listen on window or the canvas, not an element that never gets focus).' : 'The screen did not react to any input (arrows, WASD, space, taps, swipes, the game\'s own buttons): check the controls are wired up.');
   if (instantOver) add('over', `The game ended ${Math.max(0, Math.round(firstOver / 100) / 10)} s after it started: a round should not be over before the player has a chance (check the start state: lives, timers, collisions at the start position).`);
-  if (!blank && started && !frozen && scoring && !scoreChanged && !numbersChanged && !overEvents.length && input !== 'no') add('score', `In ${facts.playSecs} s of play (arrows, WASD, space, taps, swipes and the game's own buttons) the score never changed and no numbers on screen changed. If this game is about scoring, check points are really added (and shown). If it is a calm game or waits for an answer, ignore this.`, true);
+  if (!/\/vendor\/oomba-canvas\//.test(html) && !blank && started && !frozen && scoring && !scoreChanged && !numbersChanged && !overEvents.length && input !== 'no') add('score', `In ${facts.playSecs} s of play (arrows, WASD, space, taps, swipes and the game's own buttons) the score never changed and no numbers on screen changed. If this game is about scoring, check points are really added (and shown). If it is a calm game or waits for an answer, ignore this.`, true);
   // A Kit 2 game draws a whole ready-made world of models, and Oomba3D lowers its own graphics level on a slow device;
   // the test machine has no graphics card, so only a game that barely moves there is called slow.
   const slowAt = /\bfrom\s*["']oomba3d["']/.test(html) ? 3 : 8;
   if (fps !== null && fps > 0 && fps < slowAt) add('slow', `It ran at about ${fps} frames a second on the test machine: far too slow. Draw less each frame (fewer objects, smaller canvases, no work that grows every frame).`);
   for (const v of layout) if (v.problems.length) add(`layout:${v.label}`, `On ${v.label.toLowerCase()} (${v.width}x${v.height}): ${v.problems.join('; ')}.`);
   for (const w of (raw.kitWarnings || []).slice(0, 3)) add(`kit:${cleanNote(w, 40)}`, `Oomba Kit warning: ${q(w)}.`);
+  // A classroom activity: the kit's self-test of its answer key (a hard problem: the same check refuses to save it).
+  const canvas = canvasSelfTest(html);
+  if (canvas && !canvas.ok) add('canvas', `The classroom activity's self-test failed (fix the PROBLEMS or GEN data, never the kit): ${canvasProblemsText(canvas)}.`);
   const problems = issues.map(i => i.text);
 
   const seen = [

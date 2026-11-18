@@ -5,7 +5,9 @@
 // The KIT RULES (how every new game is built on the Oomba Kit) end SYSTEM_PROMPT: generated from docs/kit-api.md into
 // kit-rules.js (scripts/build-kit-rules.js), with the pinned kit and pack tags put in here. They change only when the
 // docs or the kit change, so the prefix stays the same for every builder between releases.
-import { localeInfo } from '../i18n/index.js';
+import { localeInfo, CODES, translate } from '../i18n/index.js';
+import { canvasTag, canvasVersion } from '../services/canvaskit.js';
+import { CANVAS_RULES_SOURCE } from './canvas-rules.js';
 import { THREE_VERSION, threeImportMap, isThreeGame } from '../services/vendor.js';
 import { kitTag, kitPackTag } from '../services/kit.js';
 import { KIT_RULES_SOURCE, KIT_3D_RULES_SOURCE, KIT_LIVE_RULES_SOURCE } from './kit-rules.js';
@@ -478,3 +480,22 @@ and everyone joins on their own device. Keep the game exactly as it is for playi
 - Use edit_game; tell the builder in one short sentence that a teacher or grown-up can now host it live.
 
 ${withTags(KIT_LIVE_RULES_SOURCE)}`;
+
+// ---- Classroom activities (Oomba Canvas, docs/canvas-api.md) -------------------------------------------------------
+// The CANVAS RULES: a separate fixed block (generated from docs/canvas-api.md into canvas-rules.js), sent only for canvas
+// builds: a setup plan that chose "Classroom activity", a game whose current version is an activity, or the Studio's
+// fixed "Make it a classroom activity" message. SYSTEM_PROMPT and TOOLS never change for it, so every arcade build keeps
+// the same cached prefix (tests/unit/builder-canvas.test.js).
+export const CANVAS_RULES = `${CANVAS_RULES_SOURCE}
+- The pinned kit tag (start_from_template "canvas" puts it in; never change it): ${canvasTag()}`;
+/** The Studio's fixed messages (studio.canvasLine.*Ask in every language): exactly as sent, nothing else matches. */
+const fixedAsks = key => new Set(CODES.map(c => translate(c, key)).filter(Boolean).map(s => s.trim()));
+let ASKS = null;
+const asks = () => (ASKS = ASKS || { toCanvas: fixedAsks('studio.canvasLine.toCanvasAsk'), toArcade: fixedAsks('studio.canvasLine.toArcadeAsk') });
+/** Is this turn a classroom activity build? (state.canvas remembers a plan's or the Studio message's choice.) */
+export function wantsCanvas(state, text, version) {
+  const said = String(text || '').trim();
+  if (state && asks().toArcade.has(said)) { delete state.canvas; return !!(version && canvasVersion(version.html)); }
+  if (state && asks().toCanvas.has(said)) state.canvas = true;
+  return !!(state && state.canvas) || !!(version && canvasVersion(version.html));
+}

@@ -7,6 +7,7 @@ import { checkKit } from './kit.js';
 import { lintGame } from './stylelint.js';
 import { lintKit2 } from './kit2-lint.js';
 import { checkArt2d } from './art2d.js';
+import { checkCanvas } from './canvaskit.js';
 import { lintArt2d } from './art2d-lint.js';
 import { checkHtml as liveCheckHtml } from './classlive-lint.js';
 
@@ -170,9 +171,13 @@ export function scanVersion(html) {
   // 2D art packs (art2d.js): exactly the pinned Oomba2D and pack tags pass and are taken out; any other mention fails.
   const art2d = checkArt2d(kit2.rest);
   for (const i of art2d.issues) add(i.level, i.code, i.message);
-  if (/<script\b[^>]*\bsrc\s*=\s*["']?(?!["']|https:\/\/cdnjs\.cloudflare\.com\/)/i.test(art2d.rest)) add('fail', 'external_script', 'Loads a script from somewhere we do not allow.');
+  // Oomba Canvas (canvaskit.js, the classroom activity kit): exactly the pinned tag passes and is taken out; any other
+  // mention of its files fails.
+  const canvas = checkCanvas(art2d.rest);
+  for (const i of canvas.issues) add(i.level, i.code, i.message);
+  if (/<script\b[^>]*\bsrc\s*=\s*["']?(?!["']|https:\/\/cdnjs\.cloudflare\.com\/)/i.test(canvas.rest)) add('fail', 'external_script', 'Loads a script from somewhere we do not allow.');
   // 3D games: exactly the pinned, self-hosted Three.js (import map with integrity, or the Kit 2 map); any other Three.js fails.
-  for (const i of checkThree(art2d.rest)) add(i.level, i.code, i.message);
+  for (const i of checkThree(canvas.rest)) add(i.level, i.code, i.message);
   if (/<a\b[^>]*\bhref\s*=\s*["']?(https?:|\/\/|mailto:|tel:|javascript:)/i.test(src)) issues.push({ level: 'fail', code: 'link', message: 'Has a link that leaves the game.' });
   // Visible text and string literals: profanity and personal-info requests.
   const text = visibleText(src).slice(0, 200000); const literals = stringLiterals(src).slice(0, 5000);

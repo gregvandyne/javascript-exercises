@@ -279,7 +279,8 @@ const clipped = page => page.$$eval('.su-screen:not([hidden]) .su-desc, .su-scre
 for (const [label, opts] of VIEWS) {
   test(`the step in Chromium, teacher, ${label}: a quiz starts on Live; a survey's Live is greyed out with its reason; the plan says so`, { skip }, async () => {
     const { ctx, page, errors } = await pageFor(teach.c, opts);
-    await page.goto(`${BASE}/build/new`); await page.click('#su-guide');
+    // a teacher starts on Classroom activity: Arcade game, then "Help me choose" (today's steps)
+    await page.goto(`${BASE}/build/new`); await page.click('.su-kind[data-kind="arcade"]'); await page.click('#su-guide');
     await page.click('.su-pick[data-step="type"][data-id="quiz"]');
     for (let i = 0; i < 4; i++) await next(page);   // past 2D or 3D, world, characters
     assert.equal(await shown(page), 'play');
