@@ -201,6 +201,182 @@ export function jobAssign(jobCount, people, shift = 0) {
 /** The names the teacher typed for the chart (one a line, at most 60 of 40 characters), or [] to use the class's students. */
 export const typedCrew = s => String(s.names || '').split('\n').map(x => x.trim().slice(0, 40)).filter(Boolean).slice(0, 60);
 export const jobList = (s, W) => { const own = String(s.jobs || '').split('\n').map(x => x.trim()).filter(Boolean).slice(0, 16); return own.length ? { list: own, typed: true } : { list: String(W.defaults || '').split('\n').filter(Boolean), typed: false }; };
+export const MAX_JOBS = 16, MAX_NAMES = 60;
+/** Where the chart's people come from: 'names' (typed) or 'class' (the roster). Dashboards saved before the job cards
+ *  ('auto', or nothing): the typed names if there are any, else the class. */
+export const crewFrom = s => (s.from === 'names' || s.from === 'class' ? s.from : (typedCrew(s).length ? 'names' : 'class'));
+/** The class's students in the saved order (ids in crew.order first, the rest as they came): what the server sends,
+ *  put in order at once after a change here. Students get names only (no ids), which leaves their list as it is. */
+export const orderBy = (people, order = []) => { const at = new Map((order || []).map((id, i) => [id, i])); return people.map((p, i) => [p, at.has(p.id) ? at.get(p.id) : order.length + i]).sort((a, b) => a[1] - b[1]).map(x => x[0]); };
+/** The same people, turned so that the shift is 0: the one with job 1, job 2, … then those waiting, in the order they
+ *  come in (jobAssign(n, unturn(p, s), 0) is jobAssign(n, p, s)). */
+export const unturn = (people, shift = 0) => { const n = people.length; if (!n) return []; const k = ((shift % n) + n) % n; return [...people.slice(k), ...people.slice(0, k)]; };
+/** More people than jobs: who has no job this turn, in the order they come in with ↻ Next week. */
+export const jobWaiting = (jobCount, people, shift = 0) => unturn(people, shift).slice(jobCount);
+// The job cards' changes, on { jobs, people } turned to shift 0 (job i is people[i]; jobs from people.length on are open).
+// The chart stays positional: a change puts people (or, for an open job, jobs) in a new order. -> a new { jobs, people, at }.
+/** Job i goes to people[p]. A job someone has: the two change places (from another job, or from waiting). An open job
+ *  (more jobs than people): p already has a job, so the two jobs change places and the job moves up to number p. at:
+ *  where job i is now. */
+export function pickFor(st, i, p) {
+  const jobs = [...st.jobs], people = [...st.people], n = people.length;
+  if (!(p >= 0 && p < n && i >= 0 && i < jobs.length)) return { jobs, people, at: i };
+  if (i < n) { [people[i], people[p]] = [people[p], people[i]]; return { jobs, people, at: i }; }
+  [jobs[i], jobs[p]] = [jobs[p], jobs[i]];
+  return { jobs, people, at: p };
+}
+/** Job i is removed. Everyone else keeps their job; its person takes the first open job, or waits first in line. */
+export function dropJob(st, i) {
+  const jobs = [...st.jobs], people = [...st.people], m = Math.min(jobs.length, people.length);
+  if (i < 0 || i >= jobs.length) return { jobs, people, at: i };
+  jobs.splice(i, 1);
+  if (i < m) { const [who] = people.splice(i, 1); people.splice(m - 1, 0, who); }
+  return { jobs, people, at: Math.min(i, jobs.length - 1) };
+}
+/** A typed name is removed. Waiting: just gone. With a job: the next one waiting takes it; nobody waiting: the job goes
+ *  to the end of the jobs people have, so everyone else keeps theirs. */
+export function dropName(st, p) {
+  const jobs = [...st.jobs], people = [...st.people], n = people.length, J = jobs.length;
+  if (p < 0 || p >= n) return { jobs, people, at: -1 };
+  if (p >= Math.min(J, n)) { people.splice(p, 1); return { jobs, people, at: -1 }; }
+  if (n > J) { people[p] = people[J]; people.splice(J, 1); return { jobs, people, at: p }; }
+  [jobs[p], jobs[n - 1]] = [jobs[n - 1], jobs[p]]; people[p] = people[n - 1]; people.pop();
+  return { jobs, people, at: p };
+}
+/** A new typed name, given job i at once. */
+export const addName = (st, name, i) => pickFor({ jobs: st.jobs, people: [...st.people, name] }, i, st.people.length);
+/** What the cards save: empty jobs dropped (as dropJob), the people's order, and the shift back to 0. */
+export function jobsSaved(st) {
+  let cur = { jobs: st.jobs.map(x => String(x).trim()), people: st.people };
+  for (let i = cur.jobs.length - 1; i >= 0; i--) if (!cur.jobs[i]) cur = dropJob(cur, i);
+  return { jobs: cur.jobs, people: cur.people };
+}
+const listOf = names => { try { return new Intl.ListFormat(document.documentElement.lang || 'en', { style: 'short', type: 'unit' }).format(names); } catch { return names.join(', '); } };
+/** The settings sheet's job cards (public/js/dash.js EDITORS.jobcards; docs/decisions.md "Class jobs: one card per
+ *  job"): one card per job with its name and who does it this week, ➕ Add a job, where the students come from, and,
+ *  for typed names, the names to take off. Saved as before: `jobs` and `names` one a line, `crew` { order, shift }, with
+ *  the people put in order so job i is people[i] (shift 0), so ↻ Next week and 🔀 Shuffle work as they did.
+ *  o: { id, roster() (the class's students, { id, name }, the teacher's live list), className, commit, redraw, say }. */
+export function jobsEditor(field, w, W, o) {
+  field.className = 'field dw5-jobed';
+  const sOf = () => w.s;
+  const peopleOf = from => {
+    const s = sOf(), crew = s.crew || { order: [], shift: 0 };
+    return unturn(from === 'names' ? typedCrew(s) : orderBy(o.roster() || [], crew.order), crew.shift || 0);
+  };
+  const { list, typed: own } = jobList(sOf(), W);
+  const st = { from: crewFrom(sOf()), own, jobs: [...list], people: [] };
+  st.people = peopleOf(st.from);
+  let typing = -1;
+  const nameOf = p => (st.from === 'names' ? p : p.name);
+  const jobName = i => String(st.jobs[i] || '').trim() || fill(W.jobN, { n: i + 1 });
+  /** Saves the cards: the jobs (once the teacher has changed one, or always once they are their own), the names or the
+   *  class's order, the shift back to 0, and where the people come from. */
+  const write = touchJobs => {
+    const s = sOf(), cur = jobsSaved(st), crew = s.crew || { order: [], shift: 0 };
+    if (touchJobs) st.own = true;
+    if (st.own && cur.jobs.length) s.jobs = cur.jobs.join('\n');
+    s.from = st.from;
+    if (st.from === 'names') { s.names = cur.people.join('\n'); s.crew = { order: crew.order || [], shift: 0 }; }
+    else if (cur.people.length) s.crew = { order: cur.people.map(p => p.id), shift: 0 };
+  };
+  const apply = (next, focus, msg) => {
+    const moved = next.jobs.join('\n') !== st.jobs.join('\n');
+    st.jobs = next.jobs; st.people = next.people;
+    write(moved); o.commit(); o.redraw(); render(focus);
+    if (msg) o.say(msg);
+  };
+  const ctl = (tag, cls, f) => { const e = el(tag, cls); if (f) e.dataset.f = f; return e; };
+  const labelled = (cls, text, input, idx) => {
+    const box = el('div', cls), lab = el('label', 'dw5-jlabel', text);
+    input.id = `${o.id}-${idx}`; lab.htmlFor = input.id;
+    box.append(lab, input);
+    return box;
+  };
+  function render(focus) {
+    field.textContent = '';
+    const n = st.people.length, J = st.jobs.length;
+    field.appendChild(el('p', 'small muted dw5-jtop', fill(W.cardsIntro, { rotate: `↻ ${W.rotate}` })));
+    const ol = el('ol', 'dw5-jcards');
+    ol.setAttribute('aria-label', o.label || W.job);
+    st.jobs.forEach((job, i) => {
+      const li = el('li', 'dw5-jcard'), row = el('div', 'dw5-jrow');
+      const num = el('span', 'dw5-jn', String(i + 1)); num.setAttribute('aria-hidden', 'true');
+      const inp = ctl('input', 'input', `job:${i}`);
+      inp.value = job; inp.maxLength = 40; inp.dir = 'auto'; inp.autocomplete = 'off'; inp.placeholder = W.newJob;
+      inp.setAttribute('aria-label', `${W.job} ${i + 1}`);
+      inp.addEventListener('input', () => { st.jobs[i] = inp.value; write(true); o.redraw(); });
+      const x = ctl('button', 'btn dw5-jx', `x:${i}`); x.type = 'button'; x.textContent = '✕';
+      const sel = ctl('select', 'input', `who:${i}`);
+      const names = () => { x.setAttribute('aria-label', fill(W.removeJob, { job: jobName(i) })); sel.setAttribute('aria-label', fill(W.studentFor, { job: jobName(i) })); };
+      names();
+      inp.addEventListener('change', () => { o.commit(); names(); });
+      x.disabled = J <= 1;
+      x.addEventListener('click', () => { const name = jobName(i), next = dropJob(st, i); apply(next, next.jobs.length ? `x:${Math.min(i, next.jobs.length - 1)}` : 'add', fill(W.removedJob, { job: name })); });
+      row.append(num, labelled('dw5-jlab', W.job, inp, `j${i}`), x);
+      if (i >= n) sel.appendChild(new Option(W.nobodyYet, '', true, true));
+      st.people.forEach((p, k) => { const op = new Option(nameOf(p), String(k), false, k === i); op.dir = 'auto'; sel.appendChild(op); });
+      if (st.from === 'names' && n < MAX_NAMES) sel.appendChild(new Option(`✏️ ${W.typeName}`, '+'));
+      sel.disabled = sel.options.length < 2;
+      sel.addEventListener('change', () => {
+        const v = sel.value;
+        if (v === '+') { typing = i; render(`type:${i}`); return; }
+        if (v === '') return;
+        const p = +v, who = nameOf(st.people[p]), next = pickFor(st, i, p);
+        apply(next, `who:${next.at}`, next.at === i ? fill(W.picked, { name: who, job: jobName(i) }) : fill(W.movedUp, { job: jobName(i), n: next.at + 1, name: who }));
+      });
+      li.append(row, labelled('dw5-jlab dw5-jsub', W.student, sel, `w${i}`));
+      if (typing === i) {
+        const t = ctl('input', 'input', `type:${i}`); t.maxLength = 40; t.dir = 'auto'; t.autocomplete = 'off'; t.setAttribute('autocapitalize', 'words');
+        const add = el('button', 'btn btn-primary dw5-jadd2', W.addName); add.type = 'button';
+        const go = () => {
+          const name = t.value.trim().replace(/\s+/g, ' ').slice(0, 40);
+          typing = -1;
+          if (!name) { render(`who:${i}`); return; }
+          const next = addName(st, name, i);
+          apply(next, `who:${next.at}`, next.at === i ? fill(W.picked, { name, job: jobName(i) }) : fill(W.movedUp, { job: jobName(i), n: next.at + 1, name }));
+        };
+        add.addEventListener('click', go);
+        t.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); go(); } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); typing = -1; render(`who:${i}`); } });
+        const box = labelled('dw5-jlab dw5-jsub dw5-jtype', W.nameLabel, t, `t${i}`), r2 = el('div', 'dw5-jtrow');
+        r2.append(t, add); box.appendChild(r2);
+        li.appendChild(box);
+      }
+      ol.appendChild(li);
+    });
+    field.appendChild(ol);
+    // More people than jobs: who waits this turn, as the widget shows it.
+    const waiting = st.people.slice(J);
+    if (waiting.length) { const p = el('p', 'dw5-jobwait small', fill(W.waiting, { names: listOf(waiting.map(nameOf)) })); p.dir = 'auto'; field.appendChild(p); }
+    const add = ctl('button', 'btn dw5-jaddjob', 'add'); add.type = 'button';
+    add.append(icon('➕'), el('span', '', ` ${W.addJob}`));
+    add.disabled = J >= MAX_JOBS;
+    add.addEventListener('click', () => { if (st.jobs.length >= MAX_JOBS) return; st.jobs.push(''); render(`job:${st.jobs.length - 1}`); });
+    field.appendChild(add);
+    if (J >= MAX_JOBS) field.appendChild(el('p', 'small muted', fill(W.maxJobs, { n: MAX_JOBS })));
+    // Where the students come from.
+    const from = ctl('select', 'input', 'from');
+    from.append(new Option(W.fromNames, 'names', false, st.from === 'names'), new Option(fill(W.fromClass, { class: o.className || '' }), 'class', false, st.from === 'class'));
+    from.addEventListener('change', () => { st.from = from.value; typing = -1; st.people = peopleOf(st.from); write(false); o.commit(); o.redraw(); render('from'); });
+    field.appendChild(labelled('dw5-jlab dw5-jfrom', o.fromLabel || W.fromNames, from, 'from'));
+    if (!n) field.appendChild(el('p', 'small muted dw5-jnote', st.from === 'names' ? W.noNames : W.nobody));
+    // Typed names: each can be taken off the chart.
+    if (st.from === 'names' && n) {
+      const h = el('p', 'dw5-jlabel', o.namesLabel || W.fromNames); h.id = `${o.id}-names`;
+      const ul = el('ul', 'dw5-jnames'); ul.setAttribute('aria-labelledby', h.id);
+      st.people.forEach((name, p) => {
+        const li = el('li'), b = ctl('button', 'btn btn-sm dw5-jname', `name:${p}`); b.type = 'button';
+        b.append(typed('span', '', name), icon(' ✕'));
+        b.setAttribute('aria-label', fill(W.removeName, { name }));
+        b.addEventListener('click', () => { const next = dropName(st, p); apply(next, st.people.length > 1 ? `name:${Math.min(p, st.people.length - 2)}` : 'from', fill(W.removedName, { name })); });
+        li.appendChild(b); ul.appendChild(li);
+      });
+      field.append(h, ul);
+    }
+    if (focus) field.querySelector(`[data-f="${CSS.escape(focus)}"]`)?.focus();
+  }
+  render();
+}
 const rnd = n => (globalThis.crypto && crypto.getRandomValues ? crypto.getRandomValues(new Uint32Array(1))[0] % n : Math.floor(Math.random() * n));
 function jobs(body, s, ctx) {
   const W = ctx.type.words;
@@ -209,12 +385,19 @@ function jobs(body, s, ctx) {
   const grid = el('ul', 'dw5-jobgrid dw-scroll');
   body.appendChild(grid);
   const crew = s.crew || { order: [], shift: 0 };
-  // Typed names (settings "Students") come first; else the class's students, from the server in the saved order.
-  const typedNames = typedCrew(s), byHand = typedNames.length > 0;
+  // Typed names, or the class's students (from the server, put in the saved order).
+  const typedNames = typedCrew(s), byHand = crewFrom(s) === 'names';
   let people = [];
+  const wait = el('p', 'dw5-jobwait small');
+  wait.dir = 'auto';
+  body.appendChild(wait);
   const draw = live => {
-    people = byHand ? typedNames.map((name, i) => ({ id: `t${i}`, name })) : (((live || ctx.live()).crew) || {})[ctx.id] || [];
+    people = byHand ? typedNames.map((name, i) => ({ id: `t${i}`, name })) : orderBy((((live || ctx.live()).crew) || {})[ctx.id] || [], crew.order);
     const who = jobAssign(names.length, people, crew.shift || 0);
+    // More students than jobs: the ones with no job this turn, on one line (they come in with ↻ Next week).
+    const waiting = jobWaiting(names.length, people, crew.shift || 0);
+    wait.textContent = waiting.length ? fill(W.waiting, { names: listOf(waiting.map(p => p.name)) }) : '';
+    wait.hidden = !waiting.length;
     grid.textContent = '';
     names.forEach((job, i) => {
       const li = el('li', 'dw5-job');
@@ -227,12 +410,12 @@ function jobs(body, s, ctx) {
   if (ctx.teacher && !ctx.editing) {
     const row = el('div', 'dw-row dw-foot');
     const rot = ibtn('↻', W.rotate, 'btn btn-sm btn-primary'), mix = ibtn('🔀', W.shuffle, 'btn btn-sm');
-    rot.addEventListener('click', () => { ctx.set('crew', { order: byHand ? [] : people.map(p => p.id), shift: (crew.shift || 0) + 1 }); ctx.say(W.rotated); });
+    rot.addEventListener('click', () => { ctx.set('crew', { order: byHand ? (crew.order || []) : people.map(p => p.id), shift: (crew.shift || 0) + 1 }); ctx.say(W.rotated); });
     mix.addEventListener('click', () => {
       if (byHand) {   // typed names: the list itself is put in a new order (and the chart starts from the top)
         const list = [...typedNames];
         for (let i = list.length - 1; i > 0; i--) { const j = rnd(i + 1); [list[i], list[j]] = [list[j], list[i]]; }
-        ctx.set('names', list.join('\n')); ctx.set('crew', { order: [], shift: 0 }); ctx.say(W.shuffled);
+        ctx.set('names', list.join('\n')); ctx.set('crew', { order: crew.order || [], shift: 0 }); ctx.say(W.shuffled);
         return;
       }
       const ids = people.map(p => p.id);

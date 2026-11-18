@@ -10634,9 +10634,10 @@
         "name": "Tarefas da turma",
         "desc": "Tarefas para todos, que rodam todas as semanas. Usa os nomes Oomba da turma ou nomes que escreves.",
         "s": {
-          "jobs": "Tarefas (uma em cada linha; vazio para as de sempre)",
+          "jobs": "Tarefas",
           "crew": "Quem faz o quê",
-          "names": "Alunos (um por linha; vazio para os alunos da turma)"
+          "names": "Nomes que escrevi",
+          "from": "Os alunos vêm de"
         },
         "rotate": "Próxima semana",
         "shuffle": "Misturar",
@@ -10645,7 +10646,29 @@
         "nobody": "Ainda não há alunos nesta turma.",
         "open": "Livre",
         "defaults": "Líder da fila\nPorta\nLuzes\nPlantas\nLivros\nChefe da arrumação\nMensageiro\nQuadro",
-        "nobodyTyped": "Ainda não há alunos: escreve nomes em «Alunos» nas definições deste widget, ou junta alunos à turma."
+        "nobodyTyped": "Ainda não há alunos: junta nomes nas definições deste widget, ou junta alunos à turma.",
+        "waiting": "À espera: {names}",
+        "cardsIntro": "Cada tarefa tem o seu cartão. Escolhe quem a faz esta semana. {rotate} no widget passa todos para a tarefa seguinte.",
+        "job": "Tarefa",
+        "jobN": "Tarefa {n}",
+        "student": "Aluno",
+        "studentFor": "Aluno para {job}",
+        "nobodyYet": "— Ainda ninguém —",
+        "typeName": "Escrever um nome…",
+        "nameLabel": "Nome novo",
+        "addName": "Juntar",
+        "addJob": "Juntar uma tarefa",
+        "newJob": "Tarefa nova",
+        "removeJob": "Tirar {job}",
+        "removedJob": "{job} tirada.",
+        "picked": "{name} faz agora {job}.",
+        "movedUp": "{job} subiu para o número {n}, para {name} a poder fazer.",
+        "fromNames": "Nomes que eu escrevo",
+        "fromClass": "Alunos de {class}",
+        "removeName": "Tirar {name}",
+        "removedName": "{name} tirado.",
+        "noNames": "Ainda não há nomes: numa tarefa, escolhe «Escrever um nome…».",
+        "maxJobs": "No máximo {n} tarefas."
       },
       "mood": {
         "name": "Como estou",

@@ -16,7 +16,7 @@ import { api, toast, sheet, pageData, esc, $, $$, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
 import { RENDER, checkChoices, skewOf, fill, qrForget } from '/js/dash-widgets.js';
 import { parseVideo, siteUrl, webAddress, tooLongForQr } from '/js/dash-video.js';
-import { PASS_ICON, secsText } from '/js/dash-class5.js';
+import { PASS_ICON, secsText, jobsEditor } from '/js/dash-class5.js';
 import { tip } from '/js/dash-tip.js';
 import * as B from '/js/dash-build.js';
 import * as AG from '/js/agenda.js';
@@ -537,8 +537,8 @@ function start() {
       } else if (f.type === 'select') {
         field.innerHTML = `<label for="${id}">${esc(f.label)}</label><select class="input" id="${id}">${f.options.map(o => `<option value="${esc(o)}"${w.s[f.key] === o ? ' selected' : ''}>${esc(f.labels[o])}</option>`).join('')}</select>`;
         field.querySelector('select').addEventListener('change', e => { w.s[f.key] = e.target.value; commit(); redraw(); });
-      } else if (EDITORS[f.type]) {
-        EDITORS[f.type](field, f, w, id, type, { commit, redraw });
+      } else if (EDITORS[f.editor || f.type]) {
+        EDITORS[f.editor || f.type](field, f, w, id, type, { commit, redraw });
       } else {
         const tag = f.type === 'textarea' ? `<textarea class="input" id="${id}" rows="${f.max > 300 ? 7 : 3}" maxlength="${f.max}"></textarea>` : `<input class="input" id="${id}" maxlength="${f.max}">`;
         field.innerHTML = `<label for="${id}">${esc(f.label)}</label>${tag}`;
@@ -650,6 +650,12 @@ function start() {
         if (!on.length) { field.querySelector(`input[value="${CSS.escape((w.s[f.key] || f.def)[0])}"]`).checked = true; return; }
         w.s[f.key] = on; commit(); redraw();
       });
+    },
+    // Class jobs: one card per job, who does it, and where the students come from (dash-class5.js jobsEditor). The class's
+    // students are the teacher's live list (ids and Oomba names, on the teacher's screen only).
+    jobcards(field, f, w, id, type, { commit, redraw }) {
+      const label = k => (type.settings.find(x => x.key === k) || {}).label;
+      jobsEditor(field, w, type.words, { id, roster: () => ((S.live && S.live.crew) || {})[w.id] || [], className: D.className || '', label: f.label, fromLabel: label('from'), namesLabel: label('names'), commit, redraw, say: announce });
     },
     // Stage 3: the Picture widget's picture (the class's teacher uploads; the stage 1 checks).
     pic(field, f, w, id, type, { commit, redraw }) {

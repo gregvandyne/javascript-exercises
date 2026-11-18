@@ -517,6 +517,74 @@ test('state cleaning: every new setting is rebuilt on the server', () => {
   assert.deepEqual(out, { id: 'v1', type: 'video', x: 8, y: 0, w: 4, h: 8, s: { video: { p: 'youtube', id: 'aqz-KE-bpKQ' }, start: 0, end: 0, mute: false, loop: false } });
 });
 
+test('class jobs cards: old dashboards read the same, picking swaps, rotation still turns, the waiting line, add and remove', () => {
+  const P = n => Array.from({ length: n }, (_, i) => `K${i}`);
+  const W2 = { defaults: 'A\nB\nC' };
+  // Old dashboards (no `from`): typed names if any, else the class; a choice made on the cards wins.
+  assert.equal(C5.crewFrom({ names: 'Ana\nBen' }), 'names');
+  assert.equal(C5.crewFrom({ names: '' }), 'class');
+  assert.equal(C5.crewFrom({ names: 'Ana', from: 'class' }), 'class');
+  assert.equal(C5.crewFrom({ from: 'names' }), 'names');
+  assert.equal(C5.crewFrom({ names: 'Ana', from: 'auto' }), 'names');
+  assert.equal(D.cleanSettings(D.widgetType('jobs'), { from: 'nope' }).from, 'auto', 'an unknown source is the old rule');
+  assert.equal(D.cleanSettings(D.widgetType('jobs'), { from: 'class' }).from, 'class');
+  assert.deepEqual(D.cleanSettings(D.widgetType('jobs'), { jobs: 'A\nB', names: 'Ana', crew: { order: ['x'], shift: 3 } }),
+    { jobs: 'A\nB', names: 'Ana', from: 'auto', crew: { order: ['x'], shift: 3 } }, 'an old dashboard keeps what it had');
+  // The cards start from the people turned to shift 0: the same jobs as the widget shows, for every shift.
+  for (const [J, n] of [[5, 2], [5, 7], [4, 4], [8, 3]]) for (let sft = 0; sft < 9; sft++) {
+    assert.deepEqual(C5.jobAssign(J, C5.unturn(P(n), sft), 0), C5.jobAssign(J, P(n), sft));
+    const shown = new Set(C5.jobAssign(J, P(n), sft).filter(Boolean)), waiting = C5.jobWaiting(J, P(n), sft);
+    assert.equal(waiting.length, Math.max(0, n - J));
+    assert.ok(waiting.every(k => !shown.has(k)), 'someone waiting has no job');
+    // The first one waiting comes in with Next week (they have the last job then).
+    if (waiting.length) assert.equal(C5.jobAssign(J, P(n), sft + 1)[J - 1], waiting[0]);
+  }
+  assert.deepEqual(C5.orderBy([{ id: 'a' }, { id: 'b' }, { id: 'c' }], ['c', 'gone', 'a']).map(x => x.id), ['c', 'a', 'b'], 'the class in the saved order at once');
+  assert.deepEqual(C5.orderBy([{ name: 'x' }, { name: 'y' }], ['a']).map(x => x.name), ['x', 'y'], 'names only: left as they came');
+  // Picking: job 1 to someone on job 3 swaps them; to someone waiting, the one who had it waits.
+  const st = { jobs: ['L', 'P', 'B'], people: ['Sam', 'Ava', 'Leo', 'Mia', 'Eli'] };
+  let r = C5.pickFor(st, 0, 2);
+  assert.deepEqual(C5.jobAssign(3, r.people), ['Leo', 'Ava', 'Sam']); assert.equal(r.at, 0);
+  r = C5.pickFor(st, 1, 4);
+  assert.deepEqual(C5.jobAssign(3, r.people), ['Sam', 'Eli', 'Leo']); assert.deepEqual(C5.jobWaiting(3, r.people), ['Mia', 'Ava']);
+  assert.deepEqual(st.people, ['Sam', 'Ava', 'Leo', 'Mia', 'Eli'], 'nothing changed in place');
+  // An open job (more jobs than people): the job moves up to that person's place; every other pair stays.
+  const few = { jobs: ['L', 'P', 'B', 'T', 'M'], people: ['Greg', 'James'] };
+  r = C5.pickFor(few, 3, 0);
+  assert.deepEqual(r.jobs, ['T', 'P', 'B', 'L', 'M']); assert.equal(r.at, 0);
+  assert.deepEqual(C5.jobAssign(5, r.people).map((k, i) => k && `${r.jobs[i]}:${k}`).filter(Boolean), ['T:Greg', 'P:James']);
+  // A typed name added on a job: it gets the job at once.
+  r = C5.addName(few, 'Ava', 2);
+  assert.deepEqual(C5.jobAssign(5, r.people), ['Greg', 'James', 'Ava', null, null]);
+  r = C5.addName(few, 'Ava', 4);
+  assert.deepEqual(r.jobs.map((j, i) => `${j}:${C5.jobAssign(5, r.people)[i] || '-'}`), ['L:Greg', 'P:James', 'M:Ava', 'T:-', 'B:-']);
+  // Rotation still turns everyone down one job from what the cards saved (shift 0).
+  r = C5.pickFor(st, 0, 3);
+  assert.deepEqual(C5.jobAssign(3, r.people, 1), C5.jobAssign(3, C5.unturn(r.people, 1)));
+  assert.deepEqual(C5.jobAssign(3, r.people, 1), ['Ava', 'Leo', 'Sam']);
+  // Removing a job: everyone else keeps theirs; its person takes the first open job, or waits first in line.
+  r = C5.dropJob(st, 0);
+  assert.deepEqual(r.jobs, ['P', 'B']); assert.deepEqual(C5.jobAssign(2, r.people), ['Ava', 'Leo']); assert.deepEqual(C5.jobWaiting(2, r.people), ['Sam', 'Mia', 'Eli']);
+  r = C5.dropJob(few, 0);
+  assert.deepEqual(r.jobs.map((j, i) => `${j}:${C5.jobAssign(4, r.people)[i] || '-'}`), ['P:James', 'B:Greg', 'T:-', 'M:-']);
+  // Removing a typed name: the next one waiting takes the job; nobody waiting, the job moves after the others'.
+  r = C5.dropName(st, 1);
+  assert.deepEqual(C5.jobAssign(3, r.people), ['Sam', 'Mia', 'Leo']); assert.deepEqual(C5.jobWaiting(3, r.people), ['Eli']);
+  r = C5.dropName(few, 0);
+  assert.deepEqual(r.jobs.map((j, i) => `${j}:${C5.jobAssign(5, r.people)[i] || '-'}`), ['P:James', 'L:-', 'B:-', 'T:-', 'M:-']);
+  assert.deepEqual(C5.dropName(st, 4).people, ['Sam', 'Ava', 'Leo', 'Mia'], 'someone waiting just goes');
+  // Adding a job: the next one waiting gets it; nothing else moves. What is saved drops empty jobs the same way.
+  assert.deepEqual(C5.jobAssign(4, st.people), ['Sam', 'Ava', 'Leo', 'Mia']);
+  assert.deepEqual(C5.jobsSaved({ jobs: ['L', ' ', 'B', ''], people: ['Sam', 'Ava', 'Leo'] }), { jobs: ['L', 'B'], people: ['Sam', 'Leo', 'Ava'] });
+  // The usual jobs are the cards when the teacher typed none; 16 jobs at most.
+  assert.deepEqual(C5.jobList({ jobs: '' }, W2).list, ['A', 'B', 'C']);
+  assert.equal(C5.MAX_JOBS, 16);
+  assert.equal(C5.jobList({ jobs: Array.from({ length: 20 }, (_, i) => `J${i}`).join('\n') }, W2).list.length, 16);
+  // Sixteen long jobs still fit what the server keeps.
+  const long = Array.from({ length: 16 }, () => 'x'.repeat(40)).join('\n');
+  assert.equal(D.cleanSettings(D.widgetType('jobs'), { jobs: long }).jobs, long);
+});
+
 test('the browser helpers: breathing patterns, times, now and next', () => {
   assert.deepEqual(C5.breathAt('calm', 0), { phase: 'in', left: 4, i: 0, len: 4 });
   assert.deepEqual(C5.breathAt('calm', 4.5), { phase: 'out', left: 4, i: 1, len: 4 });

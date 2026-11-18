@@ -10633,9 +10633,10 @@
         "name": "Klassentaken",
         "desc": "Taken voor iedereen, elke week doorgedraaid. Gebruikt de Oomba-namen van de klas, of namen die je typt.",
         "s": {
-          "jobs": "Taken (één op elke regel; leeg voor de gewone)",
+          "jobs": "Taken",
           "crew": "Wie doet wat",
-          "names": "Leerlingen (één per regel; leeg voor de leerlingen van de klas)"
+          "names": "Namen die ik typte",
+          "from": "De leerlingen komen uit"
         },
         "rotate": "Volgende week",
         "shuffle": "Husselen",
@@ -10644,7 +10645,29 @@
         "nobody": "Nog geen leerlingen in deze klas.",
         "open": "Vrij",
         "defaults": "Rijleider\nDeurwachter\nLichten\nPlanten\nBoeken\nOpruimbaas\nBoodschapper\nBord schoonmaken",
-        "nobodyTyped": "Nog geen leerlingen: typ namen bij ‘Leerlingen’ in de instellingen van deze widget, of voeg leerlingen toe aan de klas."
+        "nobodyTyped": "Nog geen leerlingen: voeg namen toe in de instellingen van deze widget, of voeg leerlingen toe aan de klas.",
+        "waiting": "Wachten: {names}",
+        "cardsIntro": "Elke taak heeft een eigen kaart. Kies wie hem deze week doet. {rotate} op de widget schuift iedereen één taak door.",
+        "job": "Taak",
+        "jobN": "Taak {n}",
+        "student": "Leerling",
+        "studentFor": "Leerling voor {job}",
+        "nobodyYet": "— Nog niemand —",
+        "typeName": "Typ een naam…",
+        "nameLabel": "Nieuwe naam",
+        "addName": "Toevoegen",
+        "addJob": "Taak toevoegen",
+        "newJob": "Nieuwe taak",
+        "removeJob": "{job} weghalen",
+        "removedJob": "{job} weggehaald.",
+        "picked": "{name} doet nu {job}.",
+        "movedUp": "{job} is naar nummer {n} geschoven, zodat {name} hem kan doen.",
+        "fromNames": "Namen die ik typ",
+        "fromClass": "Leerlingen van {class}",
+        "removeName": "{name} weghalen",
+        "removedName": "{name} weggehaald.",
+        "noNames": "Nog geen namen: kies bij een taak ‘Typ een naam…’.",
+        "maxJobs": "Hoogstens {n} taken."
       },
       "mood": {
         "name": "Hoe voel ik me",

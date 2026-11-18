@@ -8089,3 +8089,28 @@ which folder, confirms it saved, and offers to return to the Oomba game list or 
 - Checks: tests/unit/games-not-lessons.test.js (both orders, owner only, the pop-up's data, the folder in the save
   answer, no ↑ ↓); in a browser: chips and games by mouse, games by touch hold-and-drag, a swipe not reordering, Alt +
   arrows, the order after a reload, and the pop-up into an existing and a new folder with both ways out.
+
+## Class jobs: one card per job (18 Nov 2026)
+
+The owner approved a mockup: the Class jobs settings had two big textareas (Jobs, Students) that didn't say who does
+which job. Now each job is a card.
+
+- **Cards** (public/js/dash-class5.js `jobsEditor`, EDITORS.jobcards in dash.js): a number, the job's name, ✕ (44 px,
+  not on the last job), and a Student dropdown showing who has the job this week: the people, "— Nobody yet —" on an
+  open job, and, for typed names, "✏️ Type a name…" (a field to add a name, which takes that job). ➕ Add a job under
+  the cards (16 at most); an empty job is dropped when saved. With no jobs typed, the usual jobs are the cards and are
+  saved once one is changed.
+- **Students come from:** "Names I type" or "<class>'s students", saved as `from` ('names' | 'class'). Dashboards saved
+  before have no `from` ('auto'): typed names if any, else the class, as before, so they show the same chart with no
+  migration. Typed names are listed under it, each with ✕ to take it off.
+- **Still positional.** Nothing new is stored for who does what: the sheet turns the people to shift 0 (job i is
+  person i) and a change puts them in a new order (`names` text or `crew.order`), so Next week and Shuffle work as
+  before. Picking someone already on a job, or waiting, swaps the two. An open job (more jobs than people) can't hold a
+  person at its place, so picking someone for it moves the job up to that person's place (the two jobs change places,
+  and the sheet says so); every other pair stays. Removing a job: its person takes the first open job or waits first
+  in line; removing a typed name: the next one waiting takes the job, or that job moves after the others' jobs.
+- **Waiting:** more students than jobs, the ones without a job this turn are one line under the jobs, "Waiting: Sam,
+  Ava" (in the order they come in with Next week), on the widget and under the cards.
+- The class's list is the teacher's live list (ids and names, teacher only); the widget now puts it in the saved order
+  at once, so a change shows before the next check. Next week with typed names keeps the class's saved order.
+- Words in 12 languages (`dash.w.jobs.*`). Checks: tests/unit/dash-stage5.test.js "class jobs cards".

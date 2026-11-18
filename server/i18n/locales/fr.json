@@ -10632,9 +10632,10 @@
         "name": "Métiers de la classe",
         "desc": "Des responsabilités pour tous, qui tournent chaque semaine. Utilise les noms Oomba de la classe, ou des noms que tu tapes.",
         "s": {
-          "jobs": "Métiers (un par ligne ; vide pour les habituels)",
+          "jobs": "Métiers",
           "crew": "Qui fait quoi",
-          "names": "Élèves (un par ligne ; vide pour les élèves de la classe)"
+          "names": "Noms que j’ai tapés",
+          "from": "Les élèves viennent de"
         },
         "rotate": "Semaine suivante",
         "shuffle": "Mélanger",
@@ -10643,7 +10644,29 @@
         "nobody": "Pas encore d’élèves dans cette classe.",
         "open": "Libre",
         "defaults": "Chef de rang\nPortier\nLumières\nPlantes\nLivres\nChef du rangement\nMessager\nTableau",
-        "nobodyTyped": "Pas encore d'élèves : tape des noms dans « Élèves » dans les réglages de ce widget, ou ajoute des élèves à la classe."
+        "nobodyTyped": "Pas encore d'élèves : ajoute des noms dans les réglages de ce widget, ou ajoute des élèves à la classe.",
+        "waiting": "En attente : {names}",
+        "cardsIntro": "Chaque métier a sa carte. Choisis qui le fait cette semaine. {rotate} sur le widget fait passer chacun au métier suivant.",
+        "job": "Métier",
+        "jobN": "Métier {n}",
+        "student": "Élève",
+        "studentFor": "Élève pour {job}",
+        "nobodyYet": "— Personne pour l’instant —",
+        "typeName": "Taper un nom…",
+        "nameLabel": "Nouveau nom",
+        "addName": "Ajouter",
+        "addJob": "Ajouter un métier",
+        "newJob": "Nouveau métier",
+        "removeJob": "Retirer {job}",
+        "removedJob": "{job} retiré.",
+        "picked": "{name} fait maintenant {job}.",
+        "movedUp": "{job} monte au numéro {n} pour que {name} puisse le faire.",
+        "fromNames": "Des noms que je tape",
+        "fromClass": "Les élèves de {class}",
+        "removeName": "Retirer {name}",
+        "removedName": "{name} retiré.",
+        "noNames": "Pas encore de noms : sur un métier, choisis « Taper un nom… ».",
+        "maxJobs": "{n} métiers au maximum."
       },
       "mood": {
         "name": "Météo des émotions",
