@@ -1,4 +1,4 @@
-// Practising on my own (a student without a teacher's code): long division or multiplication, a level, and the help they
+// Practicing on my own (a student without a teacher's code): long division or multiplication, a level, and the help they
 // want; then a fresh set of problems, made at random and never one this student has had lately. The problems they have
 // had are kept in their game save (per kind and level, the last 300), so a new set, on any day or device, is new.
 

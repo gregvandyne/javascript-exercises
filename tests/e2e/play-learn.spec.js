@@ -66,12 +66,13 @@ test('Play and Learn for the signed out, a kid, a student and a teacher: no side
   expect(await check(browser, kid, ['/', '/learn'], { lang: 'he' })).toEqual([]);
 });
 
-test('the tab bars: each role\'s first tab, five tabs, Play and Learn shared; \'/\' lands on the first tab', async ({ browser }) => {
+test('the tab bars: each role\'s first tab, Play and Learn shared (a teacher\'s in the account menu); \'/\' lands on the first tab', async ({ browser }) => {
   const tabs = async (state, path) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: state }); const page = await ctx.newPage();
     await page.goto(path);
     const r = { url: new URL(page.url()).pathname, tabs: await page.locator('.tabbar a.tab').evaluateAll(a => a.map(x => x.getAttribute('href'))),
-      cur: await page.locator('.tabbar a.tab[aria-current="page"]').evaluateAll(a => a.map(x => x.getAttribute('href'))) };
+      cur: await page.locator('.tabbar a.tab[aria-current="page"]').evaluateAll(a => a.map(x => x.getAttribute('href'))),
+      tiles: await page.locator('.acct-staff .acct-tiles a').evaluateAll(a => a.map(x => [x.getAttribute('href'), x.getAttribute('aria-current')])) };
     await ctx.close(); return r;
   };
   const off = l => l.filter(h => h !== '/plans');
@@ -83,10 +84,13 @@ test('the tab bars: each role\'s first tab, five tabs, Play and Learn shared; \'
   expect(st.url).toBe('/classes'); expect(off(st.tabs)).toEqual(['/classes', '/play', '/learn', '/build', '/me']); expect(st.cur).toEqual(['/classes']);
   const teacher = await stateFor(browser, 'DemoTeacher');
   const te = await tabs(teacher, '/');
-  // '/' is the Classroom tab; DemoTeacher has one class, which it opens directly.
-  expect(te.url).toMatch(/^\/(teach|class\/[^/]+)$/); expect(off(te.tabs)).toEqual(['/teach', '/learn', '/play', '/live', '/me']); expect(te.cur).toEqual(['/teach']);
-  const tl = await tabs(teacher, '/learn'); expect(tl.cur).toEqual(['/learn']);
-  const tp = await tabs(teacher, '/play'); expect(tp.cur).toEqual(['/play']);
+  // '/' is the Classroom tab; DemoTeacher has one class, which it opens directly. School staff's tab bar is Classroom ·
+  // Build · Live · Me (docs/decisions.md "Teachers' top bar: Classroom, Build, Live"): Play and Learn are the account
+  // menu's two tiles, still open at /play and /learn, where no tab is marked and the tile is.
+  expect(te.url).toMatch(/^\/(teach|class\/[^/]+)$/); expect(off(te.tabs)).toEqual(['/teach', '/build', '/live', '/me']); expect(te.cur).toEqual(['/teach']);
+  expect(te.tiles).toEqual([['/play', null], ['/learn', null]]);
+  const tl = await tabs(teacher, '/learn'); expect(tl.cur).toEqual([]); expect(tl.tiles).toEqual([['/play', null], ['/learn', 'page']]);
+  const tp = await tabs(teacher, '/play'); expect(tp.cur).toEqual([]); expect(tp.tiles).toEqual([['/play', 'page'], ['/learn', null]]);
 });
 
 test('Learn filters work as links and with the grade picker; staff buttons for the teacher only; assign end to end', async ({ browser }) => {

@@ -182,7 +182,7 @@ test('access matrix: a grown-up gets 404 on every kid route group, and can play 
   assert.equal((await go('/grown-ups')).location, '/parents#families', 'the old grown-ups page moves to the one parent page');
   // The Builder and the Studio are open (a Studio for a game that isn't theirs is the Studio's own 404).
   const build = await go('/build');
-  assert.equal(build.status, 200); assert.match(build.text, /id="newgame"/); assert.match(build.text, /data-template=/);
+  assert.equal(build.status, 200); assert.match(build.text, /id="newgame"/); // The Start-from template cards left Build in #387 (docs/decisions.md); New game is the way in.
   assert.equal((await go('/api/studio/abc')).json.error, 'Game not found.', 'the Studio API answers, not the fence');
   assert.equal((await go('/api/friends')).status, 200, 'grown-up connections');
   // Nav: Family, Play, Learn, Build (and Plans), Account; no Friends or Me tab (tests/unit/nav-roles.test.js has every role's).

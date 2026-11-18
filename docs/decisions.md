@@ -8443,3 +8443,39 @@ has a **method**; the standard algorithms stay the default.
   (`overflow-wrap:anywhere`), the school name ellipsises. No new strings: the tiles reuse `live.entry.host`,
   `dash.entry.teacher`, `folders.buildNew`, `folders.findOomba`.
 - Tests: tests/unit/class-tiles.test.js; folders-sidebar(-browser) and the mobile e2e updated.
+- **Fix: the second problem on (owner: "works perfectly for the first question and then starts to not work after the
+  second").** From problem 2, the work stopped following what was typed (68 ÷ 2: 34 on top, then "What is ? × 2?", no
+  difference box, so no Check), in the ladder and the area model for division (multiplication's work doesn't change with
+  what's typed, so it only looked right). Cause: each field's input had `bind:this={inputs[f.id]}` inside the
+  `{#key index}` work; when the last problem's work was taken down, Svelte read that field again to clear the binding,
+  which ran the player's `work` once more against the last problem's `values`, and that left `work` listening to the
+  old problem's fields. Now the player finds a field's input by `data-field` when it needs it (no `bind:this` in the
+  work), and `values` is `$state.raw`, a new object on each change (`put`), so the work depends on that one value.
+  Tests: three problems in a row for each method, Guided and On my own, on a phone, every Guided question checked; the
+  area model by a class code and in Practice.
+- **The area model for division, checked against the classroom model** (Common Core 4.NBT.6 and 5.NBT.6, as Eureka
+  Math and Illustrative Math draw it: the divisor on the side, a section side by side for each place-value chunk, its
+  width on top, its area inside, what's left carried on, the widths added). The layout and the checking already were.
+  Now its words are: "How wide is this section? ... A place-value chunk like 10, 20 or 30 works well", "The section's
+  area: what is 30 × 2?", Watch says "Make a section 30 wide", and the hints lead with the biggest place-value chunk
+  (3 × 2 = 6, so 30 × 2 = 60). A first section that takes the whole quotient at once (34 for 68 ÷ 2) is right, but
+  Guided says once "Try a friendly chunk like 10, 20 or 30 first, or press Next to keep 34" (`wholeChunkAdvice`). On a
+  phone the squares size to the place-value path's sections (945 ÷ 7: three), so the whole rectangle fits. The ladder
+  keeps its words. The multiplication area model ((40 + 6) × (20 + 3): a box for each pair, then the sum) was right.
+
+## Crossword: a parent sees only what works for them (18 Nov 2026)
+Owner: "Hide those for parents." A family grown-up's Crossword showed the teacher tools that the fence
+(routes/family.js `grownupMay`) refuses them, and they failed when tapped.
+- **One rule:** the frame asks the fence (`fenceLets(u, method, path)`, exported from routes/family.js) for the calls a
+  button would make, so the page and the server cannot drift. AI clues and reading a PDF or Word file (`clues`, now
+  also needing the fence to allow `/clues` and `/words-from-doc`), saving a set (`setSave: false`) and looking up a
+  class code (`setFind: false`). The SDK has `BRB.canSaveSet` and `BRB.canFindSet` (false only when the frame says so).
+- **Hidden for a parent:** Write clues with AI / Rewrite all clues with AI, Upload a word list (PDF or Word) and its
+  limits line (the file picker takes .txt and .csv only), the "Grade or level (for AI clues)" field, Save and share on
+  the preview, Share in Your crosswords, and the class code box on the home screen.
+- **Kept for a parent:** typing or pasting words, a .txt or .csv list, drafts in Your crosswords (their game save),
+  Try another layout, Play it, and Print (the puzzle, never the answer key). Step 1's note says "or type it in step 2"
+  instead of offering AI, and Step 2 says "Type a clue for each word." (`addPNoAi`, `typeClues`, in all 13 languages).
+- Teachers are unchanged. A kid or a teacher without AI also gets the no-AI wording (they never had the AI buttons).
+- Tests: tests/unit/crossword-family.test.js (the fence, each account's frame flags, and the game in Chromium with the
+  frame the server sends: a parent sees none of the tools above, a teacher sees them all, both make, play and print).
