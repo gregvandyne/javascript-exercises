@@ -1102,8 +1102,10 @@ function start() {
   const KIND_ICON = { game: '🎮', live: '📡', lesson: '📚', link: '🔗', check: '✅', tool: '🧮', build: '🧱' };
   /** A sent tool is named by its mode when it has one ("Base-ten blocks", not "Place value"). */
   const toolName = tool => { const ty = types.get(tool && tool.type) || {}; const m = (ty.modes || []).find(x => x.id === ((tool.state && tool.state.tab) || ty.id)); return (m && m.name) || ty.name; };
+  /** A Build it set's name: the tool's mode ("Fraction bars"), or the tool itself ("Fractions") for a set of equations. */
+  const buildName = (type, mode, eq) => (eq ? (types.get(type) || {}).name : toolName({ type, state: { tab: mode } })) || '';
   const titleOf = p => (p.kind === 'tool' ? toolName(p.tool) || t('js.dash.kind.tool')
-    : p.kind === 'build' ? t('js.dash.build.title', { name: (p.build && toolName({ type: p.build.type, state: { tab: p.build.mode } })) || '' })
+    : p.kind === 'build' ? t('js.dash.build.title', { name: p.build ? buildName(p.build.type, p.build.mode, !!(p.build.targets && p.build.targets[0] && p.build.targets[0].op)) : '' })
       : p.title || t(`js.dash.kind.${p.kind}`));
   let pushSheet = null, pushTab = 'game';
   $('#dash-push')?.addEventListener('click', () => openPush());
@@ -1361,6 +1363,7 @@ function start() {
     let sayWas = say.value;
     const retask = () => {
       $('#dash-bi-opsf', f).hidden = !eqOn();
+      sh.el.querySelector('#sheet-title').textContent = t('js.dash.build.makeTitle', { name: eqOn() ? buildName(w.type, mode, true) : info.name });
       if (say.value.trim() === sayWas) say.value = sayWas = sayDefOf(mode, eqOn());
       kinds();
       if (list.value.trim() && !B.parseTargets(mode, list.value, kind(), INTL).targets.length) list.value = '';
@@ -1448,7 +1451,7 @@ function start() {
       mem.at = first < 0 ? n : first;
       builds.set(pid, mem);
     }
-    const sh = sheet({ title: `🧱 ${t('js.dash.build.title', { name: info.name })}`, content: '<div class="dash-build"></div>', onClose: () => { if (live && live.destroy) live.destroy(); } });
+    const sh = sheet({ title: `🧱 ${t('js.dash.build.title', { name: buildName(b.type, b.mode, !!(b.targets[0] && b.targets[0].op)) || info.name })}`, content: '<div class="dash-build"></div>', onClose: () => { if (live && live.destroy) live.destroy(); } });
     sh.el.querySelector('.sheet').classList.add('dash-copysheet', 'dash-buildsheet');
     const box = sh.el.querySelector('.dash-build');
     let live = null;
