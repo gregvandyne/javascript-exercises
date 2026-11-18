@@ -1048,9 +1048,11 @@
     if (Array.isArray(m.clues) && m.clues.every(function (c) { return typeof c === 'string'; })) w({ clues: m.clues.slice() });
     else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
   });
-  // Crossword's "Upload a document" (the same grown-ups as writeClues): BRB.wordsFromDoc(file, { kind: 'pdf'|'docx', level })
-  // -> a Promise of { title, words: [[word, clue]] } or { error } ('notAllowed', 'aiOff', 'aiFailed', 'docBad', 'docBig',
-  // 'docEmpty', 'docNone', 'offline'). The file (a Blob, at most 2 MB) goes to the page, which sends it to the server.
+  // Crossword's "Upload a word list" (the same grown-ups as writeClues): BRB.wordsFromDoc(file, { kind: 'pdf'|'docx', level })
+  // -> a Promise of { title, words: [[word, clue]], cut, ai } or { error } ('notAllowed', 'aiOff', 'aiFailed', 'docBad',
+  // 'docBig', 'docType', 'docPages', 'docScan', 'docEmpty', 'docNone', 'docLimit', 'offline'). cut: only the first
+  // pages were read; ai: the AI took the words out (false: a plain list, read as it is). The file (a Blob, at most
+  // 2 MB) goes to the page, which sends it to the server.
   var docWait = {}, docSeq = 0;
   function wordsFromDoc(file, opts) {
     if (typeof Promise !== 'function') return null;
@@ -1069,7 +1071,7 @@
     if (e.source !== parentWin) return;
     var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:doc-done' || typeof m.id !== 'number') return;
     var w = docWait[m.id]; if (!w) return;
-    if (Array.isArray(m.words) && m.words.every(function (p) { return Array.isArray(p) && p.length === 2 && typeof p[0] === 'string' && typeof p[1] === 'string'; })) w({ title: typeof m.title === 'string' ? m.title : '', words: m.words.slice(0, 30) });
+    if (Array.isArray(m.words) && m.words.every(function (p) { return Array.isArray(p) && p.length === 2 && typeof p[0] === 'string' && typeof p[1] === 'string'; })) w({ title: typeof m.title === 'string' ? m.title : '', words: m.words.slice(0, 30), cut: m.cut === true, ai: m.ai !== false });
     else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
   });
   // Assign what the teacher made to a class (a set game, school staff only: BRB.canAssign): the page, after a tap, opens
