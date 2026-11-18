@@ -11407,7 +11407,7 @@
     "scores": "Scores",
     "courses": "Ready-made courses",
     "classEmpty": "No games assigned yet",
-    "classEmptyText": "Make a game with the Builder, or assign one from your folders or Oomba's games. Ready-made courses are below.",
+    "classEmptyText": "Build a game, or assign one from your folders or Oomba's games.",
     "myGamesFolders": "My games and folders",
     "assignNote": "Students see it on their class page. Their scores are on the class's Assigned games tab.",
     "errors": {
@@ -11426,6 +11426,11 @@
     "copy": "Copy to my folders",
     "sharedToast": "Shared with your school",
     "unsharedToast": "No longer shared",
-    "copied": "Copied to your folders"
+    "copied": "Copied to your folders",
+    "buildNew": "Build new game",
+    "progressEmptyText": "Assign a game on the Games tab, and you'll see how each student is doing here.",
+    "studentEmptyText": "Your teacher will add games here.",
+    "liveHistory": "Live games history",
+    "liveHistoryNone": "No live games with this class yet."
   }
 }

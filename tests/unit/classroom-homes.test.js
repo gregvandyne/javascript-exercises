@@ -148,7 +148,7 @@ test('one class: /teach opens it; ?all=1, New class, a welcome or an invite keep
   assert.match(c.text, /class="panel tl tl-compact" id="teach-loop"/);
   assert.doesNotMatch((await get(`/class/${only.id}?tab=students`, solo)).text, /tl-compact/, 'only on the Lessons tab');
   assert.match(c.text, /id="cl-newgame"/, 'the class page: New game, Assign a game, ready-made courses');
-  assert.match(c.text, /Ready-made courses/);
+  assert.match(c.text, /New folder/); assert.doesNotMatch(c.text, /Ready-made courses/, 'courses are on Learn');
   // An invite to answer: the list, where it is said.
   const other = SC.createSchool(boss, { name: 'Inviting School' }).school;
   assert.ok(SC.inviteStaff(boss, other.id, solo.id, 'teacher').ok);

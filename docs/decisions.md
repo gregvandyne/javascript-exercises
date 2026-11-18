@@ -7817,3 +7817,26 @@ Answers: **Algebra Builder**; question sets **saved on Oomba** under a short cod
   `build.mjs` and tests/unit/algebra-builder.test.js check the name appears nowhere (the CSS text-cursor property aside).
 - **Safety scan.** `build.mjs` removes what the scanner refuses in the bundle: Svelte's and Tailwind's web addresses,
   a validator's `Function('')` probe (answered "no"), its address pattern and its 64-bit limits written as digits.
+
+## Class page: three game actions and your folders; Live games history; teams on Students (18 Nov 2026)
+Owner, on the live class pages: "It's a bit confusing that we have no lessons yet listed here", "where it says Live Games,
+perhaps we can do something like a Live Games History instead of the edit teams there. I think the edit teams
+functionality should be listed under students", the Save to folder page on a phone should be clean, and the Games tab's
+buttons cleaned up: no ready-made chips, three options, and the existing folders to click into.
+- **Games tab:** 📁 New folder (a fold with the name box; it opens the new folder), ✨ Build new game, 🦉 Find Oomba games
+  (the owner's list named "Create New Folder" twice; the third is Find Oomba games). Under them, "📁 My folders": the
+  teacher's folders, each opening its page. The ready-made course chips are gone from the class page; the courses stay
+  on Learn (their cards' "Assign to a class"). Google Classroom stays. Full-width buttons on a phone.
+- **Empty states:** Progress says "No games assigned yet · Assign a game on the Games tab…"; a student's class page says
+  "No games assigned yet · Your teacher will add games here." The gradebook's jump chip is 🎮 Games.
+- **Progress → 📡 Live games history:** the class's past live games (date, players, teams) and the live results table;
+  with none yet, one line and Host a live game. Saved support data stays here.
+- **Students → 👥 Teams for live games** (`classTeamsSection` in routes/progress.js): the teams editor (or, with live
+  teams off, Forget saved teams), next to the roster the teams are made from.
+- **Save to folder on a phone:** each folder is a row with its name (wraps), "✅ In this folder · n games" or the count,
+  and one action (Remove from folder / Add here), full width under the name on a narrow screen; the folder holding the
+  game is outlined. The new-folder box has a visible "New folder" label. Folder styles moved to app.css (the class page
+  uses them too).
+- Strings: folders.buildNew, progressEmptyText, studentEmptyText, liveHistory, liveHistoryNone; classEmptyText reworded,
+  all 13 locales. Tests updated: games-not-lessons, classroom-homes, course-teacher-view, live-teacher, schools,
+  school-teacher-mobile.spec.

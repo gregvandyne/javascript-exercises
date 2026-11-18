@@ -10980,7 +10980,7 @@
     "scores": "分數",
     "courses": "現成課程",
     "classEmpty": "還沒有指派遊戲",
-    "classEmptyText": "用創作工具做一個遊戲，或從你的資料夾或 Oomba 的遊戲中指派。現成課程在下方。",
+    "classEmptyText": "建立一個遊戲，或從你的資料夾或 Oomba 的遊戲中指派。",
     "myGamesFolders": "我的遊戲和資料夾",
     "assignNote": "學生會在班級頁面看到它。他們的分數在班級的「已指派的遊戲」分頁。",
     "errors": {
@@ -10999,6 +10999,11 @@
     "copy": "複製到我的資料夾",
     "sharedToast": "已與你的學校分享",
     "unsharedToast": "已停止分享",
-    "copied": "已複製到你的資料夾"
+    "copied": "已複製到你的資料夾",
+    "buildNew": "建立新遊戲",
+    "progressEmptyText": "在「遊戲」分頁指派遊戲後，就能在這裡看到每位學生的進度。",
+    "studentEmptyText": "老師會在這裡加入遊戲。",
+    "liveHistory": "即時遊戲紀錄",
+    "liveHistoryNone": "這個班級還沒有玩過即時遊戲。"
   }
 }

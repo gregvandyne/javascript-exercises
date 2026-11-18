@@ -10981,7 +10981,7 @@
     "scores": "Punteggi",
     "courses": "Corsi pronti",
     "classEmpty": "Nessun gioco assegnato per ora",
-    "classEmptyText": "Crea un gioco con il Creatore, oppure assegnane uno dalle tue cartelle o dai giochi di Oomba. I corsi pronti sono qui sotto.",
+    "classEmptyText": "Crea un gioco, oppure assegnane uno dalle tue cartelle o dai giochi di Oomba.",
     "myGamesFolders": "I miei giochi e cartelle",
     "assignNote": "Gli alunni lo vedono sulla pagina della loro classe. I loro punteggi sono nella scheda Giochi assegnati della classe.",
     "errors": {
@@ -11000,6 +11000,11 @@
     "copy": "Copia nelle mie cartelle",
     "sharedToast": "Condivisa con la tua scuola",
     "unsharedToast": "Non più condivisa",
-    "copied": "Copiata nelle tue cartelle"
+    "copied": "Copiata nelle tue cartelle",
+    "buildNew": "Crea un nuovo gioco",
+    "progressEmptyText": "Assegna un gioco nella scheda Giochi e qui vedrai come va ogni alunno.",
+    "studentEmptyText": "Il tuo insegnante aggiungerà qui dei giochi.",
+    "liveHistory": "Storico dei giochi dal vivo",
+    "liveHistoryNone": "Ancora nessun gioco dal vivo con questa classe."
   }
 }

@@ -21,6 +21,7 @@ import { tFor, LOCALES, CODES } from '../i18n/index.js';
 import { audit } from '../db.js';
 import { cleanName } from '../services/textfilter.js';
 import { teacherLessonsPanel, studentLessonsPanel, dueChip } from './lessons.js';
+import { classTeamsSection } from './progress.js';
 import * as P from '../services/progress.js';
 import * as L from '../services/lessons.js';
 import * as games from '../services/games.js';
@@ -1025,9 +1026,11 @@ function teacherClass(req, res, c) {
   // shows, comes with them, on the Lessons tab.
   const loopHere = tab === 'lessons' && (onlyClass(req.user) || {}).id === c.id && TL.showCard(TL.loopState(req.user));
   const loopCard = loopHere ? teacherLoop(t, { variant: 'compact', links: TL.loopLinks(req.user), state: TL.loopState(req.user), live: liveOn() && liveCanHost(req.user) }) : '';
+  // Teams for live games live on the Students tab (owner, 18 Nov 2026), next to the roster they are made from.
+  const teams = tab === 'students' ? classTeamsSection(req, c) : { html: '', scripts: [] };
   const body = html`${classHeader(req, c, tab)}${loopCard}
-  ${tab === 'students' ? studentsTab : tab === 'settings' ? settingsTab : html`${teacherLessonsPanel(req, c)}${classGamesTab(req, c, people)}`}`;
-  page(req, res, { title: c.name, active: 'classes', body, head: loopHere ? html`${CSS}${LOOP_CSS}` : CSS, scripts: ['/js/schools.js'], ...classBack(req, c) });
+  ${tab === 'students' ? html`${studentsTab}${teams.html}` : tab === 'settings' ? settingsTab : html`${teacherLessonsPanel(req, c)}${classGamesTab(req, c, people)}`}`;
+  page(req, res, { title: c.name, active: 'classes', body, head: loopHere ? html`${CSS}${LOOP_CSS}` : CSS, scripts: ['/js/schools.js', ...teams.scripts], ...classBack(req, c) });
 }
 function studentClass(req, res, c) {
   const t = req.t; const s = S.getSchool(c.school_id);

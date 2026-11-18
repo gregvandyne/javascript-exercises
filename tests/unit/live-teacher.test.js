@@ -549,7 +549,8 @@ test('pages and APIs: the dashboard (the host only, no-store), remembered settin
   S.archiveClass(teacher, cls.id, true);
   config.liveTeams = false;
   try {
-    const off = await call(`/class/${cls.id}/progress`, { user: teacher });
+    // (teams are on the class's Students tab: owner, 18 Nov 2026)
+    const off = await call(`/class/${cls.id}?tab=students`, { user: teacher });
     if (off.status === 200) assert.match(off.text, /id="lv-class-teams-off"/, 'Forget saved teams is offered with teams off');
     assert.equal((await call(sup, { method: 'DELETE', user: teacher2 })).status, 404, 'only its teachers');
     assert.equal((await call(sup, { method: 'DELETE', user: teacher })).json.cleared, 1);

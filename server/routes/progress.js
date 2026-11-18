@@ -177,7 +177,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   const body = html`
   ${gb.lessons.length && gb.students.length ? html`<div class="row gb-tools" id="gb"><details class="gbhelp" data-open-wide><summary>ⓘ ${t('cs.standards.legend.h')}</summary><div class="small muted gbhelp-text"><p>${t('progress.gradebook.text')}</p><p><b>${t('gradebook.workDone')}:</b> ${t('gradebook.help.workDone')}</p><p><b>${t('gradebook.score')}:</b> ${t('gradebook.help.score')}</p><p><b>⏰ ${t('lessons.class.late')}:</b> ${t('gradebook.help.late')} ${zoneNote(t, c.school_id)}</p><p>${t('gradebook.help.names')}</p></div></details><a class="btn btn-sm" href="/class/${c.id}/progress.csv" download>⬇️ ${t('progress.gradebook.csv')}</a></div>` : ''}
   ${toReview.length ? html`<p class="notice gb-review" id="to-review">✍️ <b>${t('progress.gradebook.toReviewList')}</b> ${toReview.map((r, i) => html`${i ? ' · ' : ''}<a href="/class/${c.id}/progress/${r.cl}#answers" dir="auto">${t('progress.gradebook.reviewLink', { title: r.title, count: r.n })}</a>`)}</p>` : ''}
-  ${!gb.lessons.length ? html`<section class="panel">${emptyState({ emoji: '📚', title: t('progress.gradebook.noLessons'), text: t('progress.gradebook.noLessonsText') })}</section>`
+  ${!gb.lessons.length ? html`<section class="panel">${emptyState({ emoji: '🎮', title: t('folders.classEmpty'), text: t('folders.progressEmptyText') })}</section>`
     : !gb.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
     : html`<section class="panel">${gb.students.length > 8 ? nameFilter(t, 'gb-lessons') : ''}${table}<p class="small muted gb-key"><span>✅ ${t('progress.key.done')}</span><span><span class="pbar"><span style="width:60%"></span></span> ${t('progress.key.steps')}</span><span class="gb-late-key">⏰ ${t('progress.key.late')}</span><span>🎯 ${t('gradebook.key.score')}</span><span>✍️ ${t('progress.key.toRead')}</span>${gb.anyRubric ? html`<span>📏 ${t('rubrics.gradebook.key')}</span>` : ''}</p></section>`}`;
   // Courses: per-student completion status, step progress and recorded check scores for every registered
@@ -215,35 +215,22 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
     <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>${live.runs.map(r => html`<th scope="col"><a href="/live/results/${r.id}" dir="auto">${r.title || t('live.results.title')}</a><span class="gb-dates"><span class="nw">${f.day(r.ended_at, SHORT)}</span>${r.linked ? html`<span class="chip-s" title="${t('gradebook.live.linked')}">📚<span class="sr-only"> ${t('gradebook.live.linked')}</span></span>` : ''}</span></th>`)}</tr></thead>
     <tbody>${gb.students.map(p => html`<tr><th scope="row" class="gb-name"><span class="pp">${avatar(p, 28)}${staffStudentName(p, { href: studentHref(c, p) })}</span></th>${live.runs.map(r => html`<td>${liveCell(t, live.by, r, p)}</td>`)}</tr>`)}</tbody></table></div>
     <p class="small muted gb-key"><span><b dir="ltr">7/10</b> ${t('gradebook.live.keyRight')}</span><span>✓ ${t('gradebook.live.keyPlayed')}</span><span>– ${t('gradebook.live.keyAbsent')}</span><span>📚 ${t('gradebook.live.linked')}</span></p>` : '';
-  const teamsHere = liveOn() && liveTeamsOn() && S.teaches(req.user, c.id);
-  const presets = teamsHere || runs.some(r => r.teams) ? presetsFor(t) : [];
+  // Live games history (owner, 18 Nov 2026): the class's past live games, their results table and saved support data.
+  // The teams editor is on the Students tab (classTeamsSection).
+  const presets = runs.some(r => r.teams) ? presetsFor(t) : [];
   const runTeams = r => { try { const x = r.teams ? JSON.parse(r.teams) : null; return x && Array.isArray(x.list) ? x.list : []; } catch { return []; } };
-  const saved = teamsHere ? loadClassTeams(c.id) : null;
-  // Saved student data stays visible and deletable after a flag is turned off (or the class is archived): support rows
-  // whatever LIVE_SAVE_SUPPORT says now, and saved teams when the teams editor is off.
   const teacher = S.teaches(req.user, c.id);
   const sup = teacher ? liveSupport(c.id) : [];
-  const savedOff = teacher && !teamsHere ? loadClassTeams(c.id) : null;
-  const livePanel = runs.length || teamsHere || sup.length || savedOff ? html`<section class="panel" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">📡 ${t('live.panel.title')}</h2>
-    ${runs.length ? html`<ul class="plain">${runs.map(r => html`<li><a href="/live/results/${r.id}" dir="auto">${r.title || t('live.results.title')}</a> <span class="small muted">${f.day(r.ended_at)} · ${t('live.results.playersCount', { count: r.players })}</span>${runTeams(r).length ? html` <span class="lv-run-teams" aria-label="${t('live.team.heading')}">${runTeams(r).sort((a, b) => (a.rank || 99) - (b.rank || 99)).map(x => presets[x.p] ? html`<span class="lv-team-chip lv-team-chip-sm" style="--team:${presets[x.p].color};--team-ink:${presets[x.p].ink}" title="${presets[x.p].name}"><span aria-hidden="true">${presets[x.p].icon}</span><span class="sr-only">${presets[x.p].name}</span></span>` : '')}</span>` : ''}</li>`)}</ul>` : ''}
+  const livePanel = runs.length || sup.length || (teacher && liveOn()) ? html`<section class="panel" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">📡 ${t('folders.liveHistory')}</h2>
+    ${runs.length ? html`<ul class="plain">${runs.map(r => html`<li><a href="/live/results/${r.id}" dir="auto">${r.title || t('live.results.title')}</a> <span class="small muted">${f.day(r.ended_at)} · ${t('live.results.playersCount', { count: r.players })}</span>${runTeams(r).length ? html` <span class="lv-run-teams" aria-label="${t('live.team.heading')}">${runTeams(r).sort((a, b) => (a.rank || 99) - (b.rank || 99)).map(x => presets[x.p] ? html`<span class="lv-team-chip lv-team-chip-sm" style="--team:${presets[x.p].color};--team-ink:${presets[x.p].ink}" title="${presets[x.p].name}"><span aria-hidden="true">${presets[x.p].icon}</span><span class="sr-only">${presets[x.p].name}</span></span>` : '')}</span>` : ''}</li>`)}</ul>`
+      : html`<p class="muted">${t('folders.liveHistoryNone')}</p>${liveOn() && liveCanHost(req.user) && !c.archived_at ? html`<p><a class="btn" href="/live?class=${c.id}">📡 ${t('live.entry.host')}</a></p>` : ''}`}
     ${liveTable}
-    ${teamsHere ? html`<section class="lv-class-teams" id="lv-class-teams" aria-labelledby="lv-class-teams-h" data-api="/api/live/classes/${c.id}/teams">
-      <h3 id="lv-class-teams-h">${t('live.team.editor')}</h3>
-      <p class="small muted">${t('live.team.editorHint')}</p>
-      <p class="small" id="lv-class-teams-state">${saved ? t('live.team.savedCount', { count: saved.plan.size }) : t('live.team.notSaved')}</p>
-      <button class="btn btn-sm" type="button" id="lv-class-teams-open">${t('live.team.edit')}</button>
-      <div class="lv-class-teams-board" id="lv-class-teams-board" hidden></div>
-      ${shapesSprite()}
-      ${jsonData('lv-class-teams-data', { classId: c.id, api: `/api/live/classes/${c.id}/teams`, presets, text: { ...teamText(t), save: t('live.settings.save'), cancel: t('live.play.cancel') } })}
-    </section>` : ''}
-    ${savedOff ? html`<section class="lv-class-teams" id="lv-class-teams-off"><h3>${t('live.team.heading')}</h3><p class="small">${t('live.team.savedCount', { count: savedOff.plan.size })}</p>
-      <form class="lv-inline" data-api="/api/live/classes/${c.id}/teams" data-method="DELETE" data-reload data-confirm="${t('live.team.forgetConfirm')}"><button class="btn btn-sm" type="submit">${t('live.team.forgetLast')}</button><p class="err form-err" aria-live="polite"></p></form></section>` : ''}
     ${sup.length ? html`<section class="lv-class-support" id="lv-class-support"><h3>${t('live.dash.support')}</h3><p class="small">${t('live.support.count', { count: sup.length })}</p>
       <form class="lv-inline" data-api="/api/live/classes/${c.id}/support" data-method="DELETE" data-reload data-confirm="${t('live.support.clearConfirm')}"><button class="btn btn-sm" type="submit">${t('live.support.clear')}</button><p class="err form-err" aria-live="polite"></p></form></section>` : ''}
   </section>` : '';
   // Jump chips to the sections below the gradebook (only the ones on this page).
-  const nav = gb.students.length ? jumpNav(t, [gb.lessons.length ? ['gb', `📚 ${t('school.classTabs.lessons')}`] : null, ...C.COURSES.map(course => [`course-${course.slug}`, `${course.emoji} ${t(`${course.key}.title`)}`]), livePanel ? ['live-games', `📡 ${t('live.panel.title')}`] : null]) : '';
-  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${classHeader(req, c, 'progress')}${nav}${body}${coursePanels}${livePanel}`, head: CSS, ...classBack(req, c), scripts: ['/js/schools.js', ...(teamsHere && CLASS_TEAMS_JS ? ['/js/live-class-teams.js'] : [])] });
+  const nav = gb.students.length ? jumpNav(t, [gb.lessons.length ? ['gb', `🎮 ${t('school.classTabs.games')}`] : null, ...C.COURSES.map(course => [`course-${course.slug}`, `${course.emoji} ${t(`${course.key}.title`)}`]), livePanel ? ['live-games', `📡 ${t('folders.liveHistory')}`] : null]) : '';
+  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${classHeader(req, c, 'progress')}${nav}${body}${coursePanels}${livePanel}`, head: CSS, ...classBack(req, c), scripts: ['/js/schools.js'] });
 });
 
 /** CSV: one row per student, one column per lesson (steps done of total, '–' before it opens), then Work done (the same
@@ -580,3 +567,27 @@ router.post('/api/progress/:clid/:sid/build', requireUser, rateLimit('studio-new
   P.buildGame(req.user, c.cl.id, c.step.id, g.id);
   res.json({ ok: true, redirect: `/studio/${g.id}?ask=${encodeURIComponent(c.step.body.slice(0, 300))}` });
 });
+
+/** Teams for live games (the Students tab): the class's saved teams, made before a lesson and used by "Use last teams"
+ *  in a live game. Its teachers only, while live teams are on; with them off, saved teams can still be forgotten.
+ *  -> { html, scripts } */
+export function classTeamsSection(req, c) {
+  const t = req.t, teacher = S.teaches(req.user, c.id);
+  if (!teacher) return { html: '', scripts: [] };
+  const on = liveOn() && liveTeamsOn();
+  if (on) {
+    const saved = loadClassTeams(c.id);
+    return { scripts: CLASS_TEAMS_JS ? ['/js/live-class-teams.js'] : [], html: html`<section class="panel lv-class-teams" id="lv-class-teams" aria-labelledby="lv-class-teams-h" data-api="/api/live/classes/${c.id}/teams">
+      <h2 id="lv-class-teams-h">👥 ${t('live.team.editor')}</h2>
+      <p class="small muted">${t('live.team.editorHint')}</p>
+      <p class="small" id="lv-class-teams-state">${saved ? t('live.team.savedCount', { count: saved.plan.size }) : t('live.team.notSaved')}</p>
+      <button class="btn" type="button" id="lv-class-teams-open">${t('live.team.edit')}</button>
+      <div class="lv-class-teams-board" id="lv-class-teams-board" hidden></div>
+      ${shapesSprite()}
+      ${jsonData('lv-class-teams-data', { classId: c.id, api: `/api/live/classes/${c.id}/teams`, presets: presetsFor(t), text: { ...teamText(t), save: t('live.settings.save'), cancel: t('live.play.cancel') } })}
+    </section>` };
+  }
+  const savedOff = loadClassTeams(c.id);
+  return { scripts: [], html: savedOff ? html`<section class="panel lv-class-teams" id="lv-class-teams-off"><h2>👥 ${t('live.team.heading')}</h2><p class="small">${t('live.team.savedCount', { count: savedOff.plan.size })}</p>
+    <form class="lv-inline" data-api="/api/live/classes/${c.id}/teams" data-method="DELETE" data-reload data-confirm="${t('live.team.forgetConfirm')}"><button class="btn btn-sm" type="submit">${t('live.team.forgetLast')}</button><p class="err form-err" aria-live="polite"></p></form></section>` : '' };
+}

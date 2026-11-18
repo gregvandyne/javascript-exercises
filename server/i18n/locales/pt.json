@@ -10982,7 +10982,7 @@
     "scores": "Pontuações",
     "courses": "Cursos prontos",
     "classEmpty": "Ainda não há jogos atribuídos",
-    "classEmptyText": "Cria um jogo com o Criador, ou atribui um das tuas pastas ou dos jogos da Oomba. Os cursos prontos estão abaixo.",
+    "classEmptyText": "Cria um jogo, ou atribui um das tuas pastas ou dos jogos da Oomba.",
     "myGamesFolders": "Os meus jogos e pastas",
     "assignNote": "Os alunos veem-no na página da turma. As pontuações estão no separador Jogos atribuídos da turma.",
     "errors": {
@@ -11001,6 +11001,11 @@
     "copy": "Copiar para as minhas pastas",
     "sharedToast": "Partilhada com a tua escola",
     "unsharedToast": "Já não é partilhada",
-    "copied": "Copiada para as tuas pastas"
+    "copied": "Copiada para as tuas pastas",
+    "buildNew": "Criar um jogo novo",
+    "progressEmptyText": "Atribui um jogo no separador Jogos e vais ver aqui como está cada aluno.",
+    "studentEmptyText": "O teu professor vai pôr jogos aqui.",
+    "liveHistory": "Histórico de jogos ao vivo",
+    "liveHistoryNone": "Ainda não há jogos ao vivo com esta turma."
   }
 }
