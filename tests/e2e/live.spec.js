@@ -387,7 +387,7 @@ test('entry points: "Host a live game" on the class page, "Join a game" for sign
   await host.goto('/live');
   const classId = await host.locator('#lv-class option').first().getAttribute('value');
   await host.goto(`/class/${classId}`);
-  await expect(host.locator(`a[href="/live?class=${classId}"]`)).toBeVisible();
+  await expect(host.locator(`.classacts a[href="/live?class=${classId}"]`)).toBeVisible();
   const out = await (await browser.newContext({ viewport: { width: 1600, height: 800 } })).newPage();
   await out.goto('/');
   await expect(out.locator('#home-join')).toBeVisible();

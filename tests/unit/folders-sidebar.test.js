@@ -63,7 +63,7 @@ test('the sidebar renders for a teacher on Build and on the class page, the same
   assert.match(build.text, new RegExp(`data-id="${anaGame.id}"`)); assert.match(build.text, /data-rename/); assert.match(build.text, /data-delete/);
   const klass = await as(ana)(`/class/${cls.id}`);
   assert.equal(klass.status, 200);
-  assert.match(klass.text, /<div class="shelf" data-shelf id="lessons">/);
+  assert.match(klass.text, /<div class="shelf shelf-class" data-shelf id="lessons">/);
   assert.match(klass.text, /id="cl-newgame">[^]*?Build new game/);
   for (const w of ['Assigned to Ana 5C', 'Find Oomba games', 'My folders', 'New folder', 'Shared by colleagues', 'Games students shared']) assert.ok(klass.text.includes(w), w);
   assert.match(klass.text, new RegExp(`href="/class/${cls.id}\\?folder=${fun.id}"`)); assert.match(klass.text, new RegExp(`href="/class/${cls.id}\\?view=students"`));

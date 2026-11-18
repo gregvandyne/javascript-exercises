@@ -383,8 +383,9 @@ router.post('/api/lessons/:id/assign', requireUser, (req, res) => {
 // ================================================================ class page panels (used by routes/schools.js)
 /** The class page's "Assigned to <class>" (the Games tab's sidebar, routes/game-shelf.js): the class's assigned games
  *  (and its ready-made courses' lessons and live homework) by unit, each opening its progress, with due chips, done
- *  counts, ↑ ↓ and ⋯ (dates, Scores, Student view, Save to folder, Unassign). -> { count, pane() } */
-export function assignedPane(req, c) {
+ *  counts, ↑ ↓ and ⋯ (dates, Scores, Student view, Save to folder, Unassign). tools: buttons for its head that only
+ *  phones show (the Google Classroom button, which wider screens have in the sidebar). -> { count, pane() } */
+export function assignedPane(req, c, { tools = '' } = {}) {
   // Games, not lessons (docs/decisions.md "Games, not lessons").
   const t = req.t, f = req.fmt, u = req.user;
   const plan = L.classPlan(c.id);
@@ -412,7 +413,7 @@ export function assignedPane(req, c) {
           <form data-api="/api/class-lessons/${cl.id}/delete" data-reload data-confirm="${t('lessons.class.unassignConfirm', { name: cl.title })}"><button class="btn btn-sm btn-danger" type="submit">${t('lessons.class.unassign')}</button></form>
         </div></details></span></li>`;
     };
-    return html`<div class="shelf-head"><div class="shelf-title"><h2 id="shelf-h" tabindex="-1" dir="auto">${t('folders.assignedTo', { class: c.name })}</h2><p class="small muted">${t('folders.gamesN', { count })}</p></div></div>
+    return html`<div class="shelf-head"><div class="shelf-title"><h2 id="shelf-h" tabindex="-1" dir="auto">${t('folders.assignedTo', { class: c.name })}</h2><p class="small muted">${t('folders.gamesN', { count })}</p></div>${tools ? html`<div class="shelf-tools shelf-phone-tools">${tools}</div>` : ''}</div>
       ${count ? '' : html`<div class="cl-none"><span class="emo" aria-hidden="true">🎮</span><div><b>${t('folders.classEmpty')}</b>${staff ? html`<p class="small muted">${t('folders.classEmptyText')}</p>` : ''}</div></div>`}
       ${plan.map((g, gi) => g.unit || g.lessons.length ? html`<div class="unit">
         ${g.unit ? html`<div class="unit-head"><h3>🗂️ ${g.unit.name}</h3><span class="acts">

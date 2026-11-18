@@ -1051,11 +1051,31 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 @media (min-width:640px){.classhead .classacts .cx-chip{min-height:44px;padding-inline:14px}}
 @media (max-width:639px){
   .classhead{position:relative}
-  .classhead .classschool{display:block;padding-inline-end:150px;min-height:36px;line-height:36px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .classhead>div:first-child{min-width:0}
+  .classhead .classschool{display:block;padding-inline-end:160px;min-height:44px;line-height:44px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .classhead h1{overflow-wrap:anywhere;hyphens:auto}
   .classhead .classacts{display:contents}
   .classhead .cx-menu{position:absolute;top:0;inset-inline-end:0}
-  .classhead .classacts>.btn{flex:1 1 100%}
+  .classhead .cx-chip{min-height:44px;padding-inline:14px}
+  /* The class dashboard and Host a live game buttons: the tiles below stand in for them. */
+  .classhead .classacts>.btn{display:none}
 }
+/* Phones: the class's actions as a 2×2 grid of tiles (routes/schools.js classTiles), Host a live game first and green.
+   Wider screens keep the header's buttons and the Games tab's sidebar, so the tiles are hidden there. */
+.classtiles{display:none}
+@media (max-width:639px){
+  .classtiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 var(--s4)}
+  .classtiles.is-one{grid-template-columns:minmax(0,1fr)}
+  .classtile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:0;min-height:84px;padding:10px 8px;border-radius:var(--r);background:var(--card);box-shadow:inset 0 0 0 2px var(--line);color:var(--text);font:800 1.02rem/1.2 var(--font);text-align:center;text-decoration:none;overflow-wrap:anywhere;hyphens:auto}
+  .classtile:hover{background:var(--hover);text-decoration:none}
+  .classtile.is-hot{background:var(--accent);color:var(--on-accent);box-shadow:0 4px 0 var(--accent-press)}
+  .classtile.is-hot:hover{background:var(--accent-hover)}
+  .classtile.is-hot:active{box-shadow:0 1px 0 var(--accent-press);transform:translateY(3px)}
+  .classtile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  .classtile-e{font-size:1.6rem;line-height:1}
+  .classtile-l{min-width:0;max-width:100%}
+}
+@media (max-width:400px){.classtile{font-size:.95rem}}
 .cx-menu{position:relative}
 .cx-chip{display:inline-flex;align-items:center;gap:10px;min-height:36px;padding:4px 12px;border-radius:999px;font-size:.8125rem;font-weight:700;cursor:pointer;white-space:nowrap;list-style:none;background:var(--card-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--line)}
 .cx-chip::-webkit-details-marker{display:none}

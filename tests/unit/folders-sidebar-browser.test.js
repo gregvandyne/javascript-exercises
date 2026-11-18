@@ -140,8 +140,17 @@ for (const [label, opts] of [['390', { viewport: { width: 390, height: 844 }, is
       assert.ok(await noSideways(page), `${path}: no sideways scroll`);
       const nav = await page.$eval('.shelf-nav', el => ({ row: getComputedStyle(el).flexDirection, scrolls: el.scrollWidth > el.clientWidth }));
       assert.equal(nav.row, 'row', 'chips in a row');
-      const chip = await page.$eval('.shelf-item[aria-current="true"]', el => el.getBoundingClientRect().height);
-      assert.ok(chip >= 44, 'chips are 44 px tall');
+      if (path.startsWith('/class/')) {
+        // The class page (docs/decisions.md "Action tiles on the class page, on phones"): the chips wrap instead of
+        // scrolling; Assigned and Find Oomba games are not chips (the Games tab and a tile stand in for them).
+        assert.equal(nav.scrolls, false, 'the class page\'s chips wrap');
+        const hs = await page.$$eval('.shelf-nav .shelf-item', els => els.map(el => [el.dataset.shelfKey || el.getAttribute('href'), el.getBoundingClientRect().height]));
+        assert.ok(hs.filter(([k]) => k === 'assigned' || k === '/learn').every(([, h]) => h === 0), 'no Assigned or Find chip');
+        assert.ok(hs.filter(([k, h]) => h && k !== 'assigned' && k !== '/learn').every(([, h]) => h >= 44), 'chips are 44 px tall');
+      } else {
+        const chip = await page.$eval('.shelf-item[aria-current="true"]', el => el.getBoundingClientRect().height);
+        assert.ok(chip >= 44, 'chips are 44 px tall');
+      }
       if (label === '390' && path === `/build?folder=${fun.id}`) await shot(page, 'build-folder-390');
       if (label === '390' && path === `/class/${cls.id}?folder=${fun.id}`) await shot(page, 'class-folder-390');
       if (opts.lang && path === `/class/${cls.id}?folder=${fun.id}`) await shot(page, 'class-folder-360-rtl');
