@@ -107,10 +107,10 @@ const frameInit = async (query, user = null) => {
   return JSON.parse(/window\.__BRB_INIT__=(\{.*?\});<\/script>/.exec(frame.text)[1]);
 };
 
-test('question sets: only clean questions (an activity, a short problem in the math alphabet, two settings), 1 to 10', () => {
+test('question sets: only clean questions (an activity, a short problem in the math alphabet, two settings), 1 to 20', () => {
   assert.deepEqual(gameSets.cleanItems(ITEMS), ITEMS);
   assert.deepEqual(gameSets.cleanItems([{ a: 'solve', p: ' 2X + 3 = 7 ', s: 'odd', l: 'yes' }]), [{ a: 'solve', p: '2x + 3 = 7', s: 'all', l: true }]);
-  for (const bad of [[], 'x', null, Array(11).fill(ITEMS[0]), [{ a: 'divide', p: '2x=4' }], [{ a: 'solve', p: 'call me 555' }], [{ a: 'solve', p: '<b>' }], [{ a: 'solve', p: '2x+3=7'.repeat(8) }], [{ a: 'solve', p: '()+=' }]]) {
+  for (const bad of [[], 'x', null, Array(21).fill(ITEMS[0]), [{ a: 'divide', p: '2x=4' }], [{ a: 'solve', p: 'call me 555' }], [{ a: 'solve', p: '<b>' }], [{ a: 'solve', p: '2x+3=7'.repeat(8) }], [{ a: 'solve', p: '()+=' }]]) {
     assert.equal(gameSets.cleanItems(bad), null, JSON.stringify(bad));
   }
 });
@@ -179,7 +179,28 @@ test('the play page takes the set games\' messages (BRB.copy, BRB.saveQuestionSe
   assert.equal(validMessage(ev({ type: 'brb:copy', id: 0, text: 'x' }), frame), null);
   assert.equal(validMessage(ev({ type: 'brb:copy', id: 3, text: 7 }), frame), null);
   assert.ok(validMessage(ev({ type: 'brb:set-save', id: 1, items: [{ a: 'solve', p: '2x=4' }], set: null }), frame));
-  assert.equal(validMessage(ev({ type: 'brb:set-save', id: 1, items: Array(11).fill({}) }), frame), null);
+  assert.equal(validMessage(ev({ type: 'brb:set-save', id: 1, items: Array(21).fill({}) }), frame), null);
   assert.ok(validMessage(ev({ type: 'brb:assign', opts: 'chapter=s-0123456789&lock=1' }), frame));
   assert.equal(validMessage(ev({ type: 'brb:assign', opts: 5 }), frame), null);
+});
+
+test('class codes: a student types a set code (any case, spaces or dashes) and gets that set; new codes avoid look-alike characters', async () => {
+  reset();
+  const r = await call(`/api/games/${SET_GAME.id}/sets`, { method: 'POST', body: { items: ITEMS }, user: teacher });
+  const id = r.json.id;
+  assert.doesNotMatch(id.slice(2), /[ilo01]/, 'no i, l, o, 0 or 1 in a new code');
+  const code = id.slice(2).toUpperCase();
+  for (const typed of [code, `${code.slice(0, 5)} ${code.slice(5)}`, `${code.slice(0, 5)}-${code.slice(5)}`.toLowerCase()]) {
+    const g = await call(`/api/games/${SET_GAME.id}/sets/${encodeURIComponent(typed)}`, { user: kid });
+    assert.equal(g.status, 200, typed); assert.deepEqual(g.json, { id, items: ITEMS });
+  }
+  assert.equal(gameSets.codeToId(`s-${code}`), id);
+  assert.equal((await call(`/api/games/${SET_GAME.id}/sets/ZZZZZ99999`, { user: kid })).status, 404);
+  assert.equal((await call(`/api/games/${SET_GAME.id}/sets/short`, { user: kid })).status, 404);
+  assert.equal((await call(`/api/games/${SET_GAME.id}/sets/${code}`)).status, 200, 'signed out too (a code is what a teacher hands out)');
+  const other = publish(official, '<!doctype html><title>t</title><p>x</p>', { source: 'seed', slug: 'not-a-code-game', title: 'X' });
+  assert.equal((await call(`/api/games/${other.id}/sets/${code}`, { user: kid })).status, 404, 'only set games');
+  const play = fs.readFileSync(path.join(ROOT, 'public/js/play.js'), 'utf8');
+  assert.match(play, /case 'brb:set-find': findSetForGame\(m\)/);
+  assert.match(fs.readFileSync(path.join(ROOT, 'public/sdk/brb-sdk.js'), 'utf8'), /findQuestionSet: findQuestionSet,/);
 });

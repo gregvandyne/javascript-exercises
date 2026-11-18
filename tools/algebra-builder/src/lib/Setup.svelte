@@ -4,7 +4,7 @@
 	// carries the problem (on Oomba, in the game's lesson parameters: lib/oomba.ts).
 	import { Check, Copy, ExternalLink, GraduationCap, ListPlus, QrCode } from '@lucide/svelte';
 	import { go, goBack, nav, sets } from '$lib/nav.svelte';
-	import { MAX_ITEMS, assignLink, canAssign, copy, noLinkReason, shareLink, type Item } from '$lib/oomba';
+	import { MAX_ITEMS, assignLink, canAssign, canSaveSets, classCode, copy, keepMySet, noLinkReason, saveSet, shareLink, type Item } from '$lib/oomba';
 	import { formatPoly, prettyText, readProblem, type Activity } from '$lib/algebra';
 	import { activityInfo } from '$lib/activities';
 	import { STARTS, layPiles, panPiles, startingPiles, type Start } from '$lib/settings';
@@ -31,6 +31,24 @@
 	const forSet = was?.forSet;
 	const inSet = forSet !== undefined && !!sets.draft;
 	const setFull = $derived(!!sets.draft && sets.draft.items.length >= MAX_ITEMS);
+	/** A class code for this one problem (saved as a one-question set), for students who type a code instead of
+	 *  opening the link. A new code whenever the problem or its settings change. */
+	let code = $state<{ key: string; id: string } | null>(null);
+	let coding = $state(false);
+	let codeError = $state('');
+	const codeKey = $derived(`${activity}|${text}|${start}|${live}`);
+	async function getCode() {
+		if (!problem.ok || coding) return;
+		coding = true;
+		codeError = '';
+		const item: Item = { a: activity, p: text, s: start, l: live };
+		const r = await saveSet([item], null);
+		coding = false;
+		if (r.id) {
+			code = { key: codeKey, id: r.id };
+			keepMySet(r.id, [item]);
+		} else codeError = r.error === 'guest' ? 'Sign in to Oomba to get a class code.' : 'Couldn’t make a code just now. Try again.';
+	}
 	/** Put this problem in the set being made (in its place, or at the end), and show the set. */
 	function toSet() {
 		if (!problem.ok) return;
@@ -319,6 +337,18 @@
 					>
 				{/if}
 			</div>
+			{#if canSaveSets() && problem.ok}
+				<div class="code-row">
+					{#if code && code.key === codeKey}
+						<span class="code-label">Class code</span>
+						<span class="code-val">{classCode(code.id)}</span>
+						<span class="code-hint">Students choose “I’m a student” and type it.</span>
+					{:else}
+						<button type="button" class="btn-ghost" disabled={coding} onclick={getCode}>{coding ? 'Making a code…' : 'Get a class code'}</button>
+						{#if codeError}<span class="code-hint bad">{codeError}</span>{/if}
+					{/if}
+				</div>
+			{/if}
 			<div class="qr">
 				{#if qr}
 					<svg
@@ -635,6 +665,35 @@
 		flex-direction: column;
 		gap: 0.5rem;
 		margin-top: 0.75rem;
+	}
+	.code-row {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0.15rem;
+		margin-top: 0.75rem;
+		text-align: center;
+	}
+	.code-row .code-label {
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+	.code-row .code-val {
+		padding: 0.4rem;
+		border: 2px solid var(--ink);
+		border-radius: 12px;
+		background: #fff1cc;
+		font: 800 1.5rem/1.1 ui-monospace, monospace;
+		letter-spacing: 0.08em;
+	}
+	.code-hint {
+		color: var(--muted);
+		font-size: 0.82rem;
+	}
+	.code-hint.bad {
+		color: var(--bad);
 	}
 	.qr {
 		display: flex;

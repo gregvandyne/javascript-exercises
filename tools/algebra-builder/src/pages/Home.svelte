@@ -14,7 +14,7 @@
 	import ActivityPicture from '$lib/ActivityPicture.svelte';
 	import Footer from '$lib/Footer.svelte';
 	import Logo from '$lib/Logo.svelte';
-	import { go, sets } from '$lib/nav.svelte';
+	import { go, goBack, nav, sets } from '$lib/nav.svelte';
 	import { mySets, type MySet } from '$lib/oomba';
 	import { ListPlus } from '@lucide/svelte';
 
@@ -139,7 +139,10 @@
 <div class="page">
 	<div class="cards-side">
 		<header>
-			<p class="brand"><Logo size={40} /> Algebra Builder</p>
+			<div class="top">
+				<p class="brand"><Logo size={40} /> Algebra Builder</p>
+				<button type="button" class="btn-ghost switch" onclick={() => (nav.back.length ? goBack() : (nav.view = { name: 'start' }))}>← Not a teacher?</button>
+			</div>
 			<h1>Choose an activity</h1>
 			<p class="lede">Type one problem, then share the activity link with your students. Or put several together in a question set.</p>
 		</header>
@@ -171,7 +174,7 @@
 				<h2 id="sets-title">Question sets</h2>
 				<button type="button" class="setup small" onclick={newSet}><ListPlus size={18} /> Make a question set</button>
 			</div>
-			<p class="sets-about">Up to 10 questions from any activity, on one link. Students answer them in order.</p>
+			<p class="sets-about">Up to 20 questions from any activity, on one link. Students answer them in order.</p>
 			{#if saved.length}
 				<ul class="saved">
 					{#each saved as s (s.id)}
@@ -249,6 +252,17 @@
 	}
 	.cards-side {
 		flex: 1;
+	}
+	.top {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.6rem 1rem;
+	}
+	.switch {
+		padding: 0.45rem 0.9rem;
+		font-size: 0.9rem;
 	}
 	.brand {
 		display: flex;

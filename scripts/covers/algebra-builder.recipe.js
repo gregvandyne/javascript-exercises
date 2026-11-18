@@ -1,10 +1,12 @@
-// Algebra Builder' card cover (loaded by scripts/covers.js): the game's own gallery of activities (its title, then the
+// Algebra Builder's card cover (loaded by scripts/covers.js): the game's own gallery of activities (the teacher's path) (its title, then the
 // Solve balance and the Multiply rectangle), as a teacher first sees it. Playwright frame calls only.
 export default {
   'algebra-builder': {
     viewport: { width: 360, height: 480 },
     scale: 1.5,
     async prep(f) {
+      await f.waitForSelector('text=Who’s playing?', { timeout: 30000 });
+      await f.click('text=I’m a teacher');
       await f.waitForSelector('text=Choose an activity', { timeout: 30000 });
       await f.evaluate(() => document.fonts.ready);
       await f.waitForTimeout(800);

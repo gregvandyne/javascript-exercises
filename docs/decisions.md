@@ -7791,7 +7791,7 @@ Answers: **Algebra Builder**; question sets **saved on Oomba** under a short cod
   `p q e o c`, at most 16 characters; `level` 1/2 is the live balance on/off for Solve, all tiles/none otherwise). A
   problem too long for that says so on its setup page; a preview has no link.
 - **Question sets.** "Make a question set" on the gallery, or "Start a question set with it" on any setup page: up to
-  10 questions from any activity, each made on that activity's setup page (Add to the set / Save this question),
+  10 questions (20 since the teacher generator) from any activity, each made on that activity's setup page (Add to the set / Save this question),
   reordered, changed or removed in the set's list. **Save and get link** keeps it on Oomba (`game_sets`, migration
   0085; `server/services/game-sets.js`) and shows its link `?chapter=s-xxxxxxxxxx&lock=1`, the QR code and Copy; saving
   again keeps the link. Signed-in players only (a guest is told to sign in; a preview has no links). The teacher's
@@ -7853,3 +7853,63 @@ and mobile." The buttons, the folder chips and Google Classroom shared one wrapp
   yet · Build a game, or assign one from your folders or Oomba's games."
 - **Phone (≤ 600 px):** the toolbar's buttons stack full width, New folder's panel opens in place under its button,
   Google Classroom full width. Checked at 1280 × 900 and 390 × 844 with no sideways scroll (`.cl-*` in app.css).
+
+## Algebra Builder: who's playing, class codes, practice, hints, a question generator (18 Nov 2026)
+Owner: "Can we also add hints if students get stuck? ... At the beginning when you click into the game can you create a
+student and teacher path. For a teacher it should be the flow as is. For the student, they should either be able to add
+a code to take a teacher's assignment, or they should be able to practice independently ... choose difficulty level and
+then randomly creates a bunch of different problems ... make sure they don't receive the same problems each time." And:
+"for the teachers, they should be able to select the number of questions they'd like, the mix of questions ... and then
+it should be able to randomly generate the questions for the teacher if they so choose."
+- **Who's playing?** Opened without a link or a lesson, the game starts with two big choices. **I'm a teacher**: the
+  gallery, as before (with "Not a teacher?" to go back). **I'm a student**: a class code, or practising alone. Links,
+  QR codes and lessons still open their problem or set straight away.
+- **Class codes.** A saved question set shows its code (the set id without `s-`, as `ABCDE 23456`) beside its link;
+  a single problem gets one with **Get a class code** (saved as a one-question set). New codes leave out i, l, o, 0, 1.
+  A student types it (any case, spaces, dashes); the page looks it up (`BRB.findQuestionSet`, `GET
+  /api/games/:id/sets/:code`) and the set plays. No `<form>`: the sandboxed frame blocks form submits.
+- **Practising alone.** Solve, Multiply or Factor; Easy, Medium or Hard (each described for the activity chosen); 5
+  problems made at random, each one a teacher could type. The ones a student has had are kept in their save (per
+  activity and level, the last 200), and a new set avoids them until a level runs out of new ones (then the oldest come
+  back). Checked over 40 sets each: no repeat before 200 for Solve, 192 / 157 for hard Multiply / Factor, and the
+  smaller easy pools (48 Multiply, 33 Factor) go round only when used up. "5 new problems" at the end.
+- **Hints.** A Hint button beside Check: up to three per step, from the idea of the step to this problem's own tiles
+  (for x − 9 = 4x + 3: put 1 red −x tile in both pans, then 3 red −1 tiles; it ends with 3 x tiles against 12 red −1
+  tiles). They never do the step. After two Checks that didn't pass, or a minute on a step, it lights up as "Stuck?
+  Hint". The hints box takes the place of the Check message and can be closed (on a phone it would cover the board).
+- **Make questions for me** (a teacher's question set): how many of each activity (− and +), a level, replace or add;
+  the generator above makes them, all different, then the teacher can change, move or remove any. A set now holds up to
+  20 questions (was 10).
+
+## Box by Box: long division and multiplication, box by box (18 Nov 2026)
+Owner: a second game for Oomba from a web app they own, played end to end as teacher and student first, rebuilt with the
+same features and the same connectivity as Algebra Builder (tracking, submission, Google Classroom), under a new name;
+for privacy, nothing in the game or the repository points back to the original.
+- **Where it lives.** `tools/box-by-box` (Svelte) builds into `seed-games/box-by-box.html` (`npm run build:box-by-box`;
+  `build.mjs --check`). Play shelf, category puzzle. `build.mjs` and tests/unit/box-by-box.test.js refuse any word that
+  points back to the original (written as character codes, so the checks don't carry them either).
+- **The game.** Long division (10 to 999,999 by 2 to 9,999) and multiplication (10 to 9,999 times 2 to 999), worked on
+  graph paper one digit box at a time: divide, multiply, subtract, bring down; multiply each digit with carries,
+  placeholder zeros, add. Support modes Watch, Count up, Guided and On my own (and Prompted or a custom mix from older
+  activities): spotlight, questions, zoom, building as you go, drawn signs, automatic bring-down, marking mistakes at
+  once. Check compares the answer boxes: a second try, then the answer is shown. A keypad for touch screens.
+- **Teachers** make activities in the game (problem ranges, remainders on or off, a fresh set for each student, how
+  many, problems typed, pasted or reordered); they are kept in the teacher's game save, so they follow the teacher to
+  any device (no backup files). **Sharing** saves the activity as a question set (one activity per set, only numbers and
+  settings: the title stays in the teacher's save) and gives its link and QR code; saving again keeps the link.
+- **Assign to a class** (school staff) opens the Assign page: "Students open: Long division, 16 problems, Guided", the
+  lesson is named after it, and "Also post to Google Classroom" for a linked class. The end screen calls
+  `BRB.gameOver({ won: true, score })` once per run: the step done, and the Classroom completion grade.
+- **Fixed on the way:** Enter in a digit box no longer skips the result; the "to go" chip ends at the end; "1 problem".
+- **Who's playing, class codes, practice, hints** (owner: the same as Algebra Builder's). Opened without a link, it asks
+  first: a teacher gets their activities (with "Not a teacher?"), a student a class code or practising alone. A saved
+  activity shows its class code in the share panel. Practising alone: long division or multiplication; Easy (2 digits
+  by 1, no remainders / 2 digits times 1), Medium (3 by 1 with remainders / 3 digits times 1), Hard (4 by 2 / 3 digits
+  times 2); and the help (Guided, Count up, On my own); 5 problems, none the student has had lately (the last 300 per
+  kind and level in their save), "5 new problems" at the end. Checked over 30 sets each: no repeat in 150, except easy
+  division's smaller pool (115). Hints: a Hint button in the bottom band, up to three per step from the step's own
+  numbers (divide: how many fit, count up by the divisor, the digit; multiply: count by the digit, the carry;
+  subtract, bring down, add, carries); it lights up as "Stuck?" after a failed Check or count, two wrong digits on the
+  step, or 45 seconds on it. (Teachers already generate problems in the editor: ranges, How many, New problems.)
+- **Left out:** help email, analytics, outbound links, backup and restore files.
+
