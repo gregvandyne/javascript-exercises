@@ -258,7 +258,7 @@ export const WIDGETS = [
     { key: 'fit', type: 'select', options: ['contain', 'cover'], def: 'contain' }] },
   // ---- stage 5: video, a site window and a document camera (the teacher's screen and projector only); a hall pass, class
   // jobs, a mood check-in (students see only their own); and calm, note and checklist widgets.
-  { id: 'video', icon: '🎬', group: 'show', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['empty', 'paste', 'pasteHint', 'bad', 'ok', 'endNote', 'note', 'secsHint', 'secsBad', 'title'], settings: [
+  { id: 'video', icon: '🎬', group: 'show', who: 'teacher', pin: false, size: [6, 5], min: [4, 4], words: ['empty', 'paste', 'pasteHint', 'bad', 'ok', 'endNote', 'note', 'secsHint', 'secsBad', 'title', 'openOn'], settings: [
     { key: 'video', type: 'video', def: null },
     { key: 'start', type: 'secs', def: 0 },
     { key: 'end', type: 'secs', def: 0 },

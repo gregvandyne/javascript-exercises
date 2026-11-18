@@ -10549,7 +10549,8 @@
         "note": "Si tiene solo il numero del video, non il link. Va nel lettore con privacy avanzata del servizio e solo sul tuo schermo.",
         "secsHint": "Minuti e secondi, per esempio 1:30.",
         "secsBad": "Scrivi il tempo in minuti e secondi, per esempio 1:30.",
-        "title": "Lettore video"
+        "title": "Lettore video",
+        "openOn": "Apri su {site}"
       },
       "site": {
         "name": "Finestra web",

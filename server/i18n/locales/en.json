@@ -10975,7 +10975,8 @@
         "note": "Only the video's number is kept, not the link. It plays from the providers' privacy-enhanced players and only on your screen.",
         "secsHint": "Minutes and seconds, like 1:30.",
         "secsBad": "Type the time as minutes and seconds, like 1:30.",
-        "title": "Video player"
+        "title": "Video player",
+        "openOn": "Open on {site}"
       },
       "site": {
         "name": "Site window",
