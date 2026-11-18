@@ -84,8 +84,9 @@ test('the gradebook page shows both course panels for the class\u2019s own teach
 
 test('the Teach area has Cyber Defenders: Learn and the lesson library link it and the page renders the program (teacher-1)', async () => {
   // My classes no longer lists courses ("My classes, simpler"): the lesson library's ready-made chips and Learn's course cards do (classroom-homes.test.js).
-  const lib = await get('/teach/lessons', ana);
-  assert.ok(lib.text.includes('href="/teach/cyber-defenders"'), 'the lesson library\'s ready-made chips');
+  // The ready-made courses are on each class page (games, not lessons: there is no lesson library any more).
+  const lib = await get(`/class/${clsA.id}`, ana);
+  assert.ok(lib.text.includes('href="/teach/cyber-defenders"'), 'the class page\'s ready-made courses');
   const r = await get('/teach/cyber-defenders', ana);
   assert.equal(r.status, 200);
   assert.ok(r.text.includes('Cyber Defenders'));

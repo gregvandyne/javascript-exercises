@@ -14,7 +14,8 @@ import { html, raw } from './html.js';
 
 /** The four steps: an emoji and the tools each one uses (link names from loopLinks). */
 export const LOOP = [
-  { step: 'plan', emoji: '📝', tools: ['library', 'draftAi', 'builder'] },
+  // Games, not lessons: plan with your games and folders, and the Builder.
+  { step: 'plan', emoji: '📝', tools: ['library', 'builder'] },
   { step: 'play', emoji: '🎮', tools: ['assign', 'live'] },
   { step: 'check', emoji: '📊', tools: ['gradebook', 'attention'] },
   { step: 'feedback', emoji: '💬', tools: ['review', 'written'] },
@@ -29,7 +30,9 @@ const check = svg('tl-check'), lpCheck = svg('lp-check');
 /** Which tools a step lists: "Host a live game" only while live games are on. */
 const toolsOf = (s, live) => s.tools.filter(k => k !== 'live' || live);
 /** A tool's name as words (no link): the gradebook says it downloads as CSV, since there is no separate CSV button. */
-const plainName = (t, k) => t(`teach.loop.tools.${k === 'gradebook' ? 'gradebookCsv' : k}`);
+const NAMES = { library: 'folders.myGamesFolders', builder: 'build.newGame' };
+const toolName = (t, k) => t(NAMES[k] || `teach.loop.tools.${k}`);
+const plainName = (t, k) => (k === 'gradebook' ? t('teach.loop.tools.gradebookCsv') : toolName(t, k));
 const img = (t, name, sizes, cls = '') => html`<img${cls ? raw(` class="${cls}"`) : ''} src="/img/teach-loop/${name}.webp?v=${SHOT_V}" width="${SHOT_W}" height="${SHOT_H}" sizes="${sizes}" alt="${t(`teach.loop.shots.${name}.alt`)}" loading="lazy" decoding="async">`;
 
 export function teacherLoop(t, opts = {}) {
@@ -66,7 +69,7 @@ function tool(t, k, links) {
   // No link: "Host a live game" for a teacher who can't host is left out; any other tool (no class yet, or a visitor) is
   // its name in plain words.
   if (!href) return links && k === 'live' ? '' : html`<li class="tl-tool">${check}<span>${plainName(t, k)}</span></li>`;
-  const label = t(`teach.loop.tools.${k}`);
+  const label = toolName(t, k);
   const extra = k === 'gradebook' && links.csv ? html`<a class="btn btn-sm tl-csv" href="${links.csv}" download>⬇️ ${t('teach.loop.tools.csv')}</a>` : '';
   return html`<li class="tl-tool"><a class="btn btn-sm" href="${href}">${label}</a>${extra}</li>`;
 }
@@ -103,7 +106,7 @@ function compact(t, { links, state, live, id }) {
   ${makeClass(t, links)}
   <ol class="plain tl-mini">${LOOP.map(s => { const on = !!st.done[s.step], next = s.step === nextStep;
     return html`<li class="tl-mstep${on ? ' is-done' : ''}${next ? ' is-next' : ''}">${tick(t, on)}<span class="tl-mtext"><b>${s.emoji} ${t(`teach.loop.steps.${s.step}.name`)}</b><span class="small muted">${t(`teach.loop.steps.${s.step}.benefit`)}</span>
-      <span class="tl-mtools">${toolsOf(s, live).filter(k => links && links[k]).map(k => html`<a class="chip" href="${links[k]}">${t(`teach.loop.tools.${k}`)}</a>`)}</span></span></li>`; })}</ol>
+      <span class="tl-mtools">${toolsOf(s, live).filter(k => links && links[k]).map(k => html`<a class="chip" href="${links[k]}">${toolName(t, k)}</a>`)}</span></span></li>`; })}</ol>
   <div class="small tl-more"><a href="/teach/loop">${t('teach.loop.page.link')}</a>
     <form class="tl-hide" data-api="/api/teach/loop/hide" data-reload data-toast="${t('teach.loop.home.hidden')}"><button class="btn btn-sm" type="submit">${t('teach.loop.home.hide')}</button></form></div>
 </section>`;

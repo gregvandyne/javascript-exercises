@@ -145,3 +145,10 @@ export async function openLiveRoom(page) {
   await liveStep(page, 'open');
   await page.locator('#lv-new button[type=submit]').click();
 }
+/** A teacher's lesson made through the API, for the specs that test the lesson editor (ready-made course copies use it;
+ *  there is no lesson library page any more: games, not lessons). -> the editor's URL */
+export async function newLesson(page, title, classId = '') {
+  const school = (await (await page.request.get('/teach?all=1')).text()).match(/name="schoolId" value="([^"]+)"/)[1];
+  const r = await page.request.post('/api/lessons', { data: { schoolId: school, title, ...(classId ? { classId } : {}) } });
+  return (await r.json()).redirect;
+}

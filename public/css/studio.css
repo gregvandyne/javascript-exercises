@@ -338,3 +338,19 @@ button.stp-line{cursor:pointer}
 /* Opened from a lesson's build step: the way back to the lesson (and its Hand in). */
 .st-lesson{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding:8px 12px;border-radius:12px;background:var(--hover);font-weight:700}
 /* A 3D world card on /build: the world's own picture as its cover. */
+/* Folders of games (routes/game-folders.js): the strip on Build and a folder page, the Save to folder list. */
+.gfo-strip h2{margin-bottom:4px}
+.gfo-list{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.gfo-chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:6px 14px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);color:var(--text);text-decoration:none;font-weight:700}
+.gfo-chip:hover{box-shadow:inset 0 0 0 2px var(--edge)}
+.gfo-chip.is-on{box-shadow:inset 0 0 0 3px var(--accent-line,var(--edge));background:var(--accent-soft,var(--card))}
+.gfo-chip .muted{font-weight:600}
+.gfo-new[open]{flex-basis:100%}
+.gfo-new form{margin-top:8px;max-width:520px}
+.gfo-pick{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;margin:0 0 14px}
+.gfo-pick>li{padding:8px 12px;border-radius:var(--r-sm);background:var(--card-2);min-height:52px;align-items:center;flex-wrap:wrap}
+.gfo-newsave{max-width:560px;margin-bottom:12px}
+.gfo-tools{gap:8px;flex-wrap:wrap;align-items:flex-start;margin:-6px 0 14px}
+.gfo-rename[open]{flex-basis:100%}
+.gfo-rename form{margin-top:8px;max-width:520px}
+.gfo-share .btn{white-space:normal;max-width:100%;height:auto;text-align:center}

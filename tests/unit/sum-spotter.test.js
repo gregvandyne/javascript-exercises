@@ -207,7 +207,9 @@ test('registration: seeded, on the Learn shelf as math for grades 1 to 5, a migr
   assert.deepEqual(SHELF_INFO['sum-spotter'], { subject: 'math', from: 1, to: 5 });
   assert.equal(LEARNING['sum-spotter'].key, 'sumSpotter'); assert.equal(LEARNING['sum-spotter'].level, 'Grades 1-5');
   const names = MIGRATIONS.map(m => m[0]), mi = names.indexOf('0082_sum_spotter_shelf');
-  assert.ok(mi >= 0, 'its own migration'); assert.equal(mi, names.length - 1, 'numbered after the others');
+  assert.ok(mi >= 0, 'its own migration');
+  // numbered after every migration before it (later migrations, such as 0083, may follow it)
+  assert.ok(names.slice(0, mi).every(n => n < '0082_sum_spotter_shelf') && names.slice(mi + 1).every(n => n > '0082_sum_spotter_shelf'), 'numbered in order');
   assert.ok(!MIGRATIONS.find(m => m[0] === '0062_game_shelf')[2].toString().includes('sum-spotter'), 'the old migration is untouched');
   for (const l of LANGS.filter(x => !x.startsWith('en'))) {
     assert.ok(META.l10n[l] && META.l10n[l].description && META.l10n[l].tags, `l10n ${l}`);

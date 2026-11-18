@@ -61,8 +61,9 @@ test('a new teacher: the card near the top of /teach, nothing ticked, links to t
   assert.equal((c.match(/class="tl-mstep is-next"/g) || []).length, 1, 'one next step (the only one open on a phone)');
   assert.match(c, /class="tl-mstep is-next"><span class="tl-tick"[^]*?Plan/, 'Plan is next');
   assert.doesNotMatch(c, /teach\.loop\.home\.makeClass|Make your first class/, 'they have a class');
-  for (const href of [`/teach/lessons?school=${school.id}`, `/teach/lessons?school=${school.id}&amp;class=${cls.id}&amp;open=ai`, `/teach/lessons?school=${school.id}&amp;class=${cls.id}&amp;open=new`,
-    `/class/${cls.id}/progress`, `/class/${cls.id}/progress#to-review`]) assert.ok(c.includes(`href="${href}"`), href);
+  // Games, not lessons: Plan is Build (games and folders) and the Builder.
+  for (const href of ['/build', '/build/new', `/class/${cls.id}/progress`, `/class/${cls.id}/progress#to-review`]) assert.ok(c.includes(`href="${href}"`), href);
+  assert.doesNotMatch(c, /\/teach\/lessons|Draft with AI|Lesson library/, 'no lesson library or lesson drafting');
   assert.ok(!c.includes(`/class/${cls.id}/standards`), 'no Standards link (taken off 12 Nov 2026)');
   assert.match(c, /data-api="\/api\/teach\/loop\/hide"/);
   assert.match(c, /href="\/teach\/loop"/);
@@ -76,7 +77,7 @@ test('each step ticks itself off from real data: a lesson, assigning it, opening
   const lesson = L.createLesson(teacher, school.id, { title: 'Loop lesson' }).lesson;
   const q = L.addStep(teacher, lesson.id, { kind: 'question', title: 'Exit ticket', body: 'Why?' }).step;
   assert.equal(st().plan, true, 'Plan: a lesson in their library');
-  assert.equal(TL.loopLinks(auth.getUser(teacher.id)).builder, `/teach/lessons/${lesson.id}#new-game`, 'Turn a lesson into a game: the lesson\'s own New game');
+  assert.equal(TL.loopLinks(auth.getUser(teacher.id)).builder, '/build/new', 'New game: the Builder');
   const cl = L.assign(teacher, cls.id, lesson.id, {}).classLesson;
   assert.equal(st().play, true, 'Play: assigned to a class');
   // Check: only the teacher's own class pages count; another teacher's 404 doesn't tick theirs.
@@ -153,8 +154,9 @@ test('the landing at "/": one teaching-loop section after the students build, wi
   const sec = s.slice(at, s.indexOf('</section>', at));
   assert.match(sec, /<h2 id="loop-h">Plan → Play → Check → Feedback<\/h2>/);
   assert.equal((sec.match(/class="lp-card lp-step lp-loop-step rv"/g) || []).length, 4);
-  for (const w of ['Lesson library', 'Draft with AI', 'Turn a lesson into a game', 'Assign to a class', 'Gradebook with CSV download', 'Needs attention first', 'Answers to review', 'Written feedback students see']) assert.ok(sec.includes(w), w);
+  for (const w of ['My games and folders', 'New game', 'Assign to a class', 'Gradebook with CSV download', 'Needs attention first', 'Answers to review', 'Written feedback students see']) assert.ok(sec.includes(w), w);
   assert.ok(!sec.includes('Standards tab'), 'no Standards tab');
+  assert.ok(!/Lesson library|Draft with AI/.test(sec), 'games, not lessons');
   assert.doesNotMatch(sec, /href="\/(?:class|teach)\//, 'no links into teacher-only pages for signed-out visitors');
   assert.match(sec, /href="\/trial" data-cta="trial"/);
   for (const [name] of V.SHOTS) {

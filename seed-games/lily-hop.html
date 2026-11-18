@@ -85,7 +85,11 @@
   .lh-menu .lh-btn { flex: 1 1 0; max-width: 230px; min-height: 112px; font-size: 21px; gap: 6px; }
   .lh-menu .lh-btn .i { font-size: 44px; }
   .lh-star { font-size: 76px; line-height: 1; }
-  .lh-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; }
+  /* The loading screen covers the 3D view (in the page's own colour) until the first screen is set up and drawn once,
+     then fades: the scene is never seen half-built (docs/decisions.md "Garden Count: Tens and Ones, and a clean start"). */
+  .lh-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; z-index: 50; background: #bfe6ff; transition: opacity .35s ease; }
+  .lh-load.out { opacity: 0; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { .lh-load { transition: none; } }
   /* Wide screens: the words, the sum and the round dots share one line across the top, so the pond gets the height. */
   @media (min-aspect-ratio: 9/10) { .lh-line { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px 12px; } }
   @media (max-width: 480px) { .lh .lh-btn { min-height: 72px; font-size: 15px; border-radius: 18px; } .lh-btn .i { font-size: 26px; } .lh-menu { gap: 8px; } .lh-menu .lh-btn { min-height: 104px; font-size: 16px; padding: 6px 4px; } .lh-menu .lh-btn .i { font-size: 36px; } .lh-star { font-size: 60px; } }
@@ -291,7 +295,15 @@ el.say.addEventListener('click', () => { if (S.line) speak(S.line[0], S.line[1],
 function wobble(b) { if (!b) return; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 900); }
 const timers = new Set();
 const later = (ms, fn) => { const t = setTimeout(() => { timers.delete(t); fn(); }, S.fast ? Math.min(ms, 20) : ms); timers.add(t); return t; };
-const clearTimers = () => { for (const t of timers) clearTimeout(t); timers.clear(); };
+// The next question waits for the line being said (BRB.afterSpeech: an AI line still on its way counts), so a voice is
+// never cut off by the next one; at least ms, at most 10 s more. Without the SDK's afterSpeech, the plain wait.
+const waits = new Set();
+function afterLine(ms, fn) {
+  if (S.fast || !B || typeof B.afterSpeech !== 'function') return later(ms, fn);
+  const stop = B.afterSpeech(() => { waits.delete(stop); fn(); }, { min: ms, max: ms + 10000 });
+  waits.add(stop);
+}
+const clearTimers = () => { for (const t of timers) clearTimeout(t); timers.clear(); for (const w of waits) w(); waits.clear(); };
 
 /* ---------- the 3D pond ---------- */
 let g;
@@ -655,7 +667,7 @@ function right(key, vars, ms, then) {
   sfx('cheer');
   showSum(S.R, true); say(key, vars, { queue: true });
   if (then) then();
-  later(ms, nextRound);
+  afterLine(ms, nextRound);
 }
 function finish() {
   S.screen = 'end'; S.phase = 'idle'; S.done[S.chapter] = true; store();
@@ -787,7 +799,11 @@ window.__lh = window.__brbTest = {
   spot: v => { const p = S.pads[v]; if (!p) return null; const q = p.position.clone().setY(0.3).project(g.camera), r = g.renderer.domElement.getBoundingClientRect(); return [(q.x + 1) / 2 * r.width + r.left, (1 - q.y) / 2 * r.height + r.top]; },
 };
 
-el.load.hidden = true; el.load.remove(); el.lh.hidden = false;
+el.lh.hidden = false;
 await showHeroes();
+// One frame drawn of the first screen (two animation frames, or 300 ms in a tab that draws none), then the loading
+// screen fades away.
+await Promise.race([new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))), new Promise(r => setTimeout(r, 300))]);
+el.load.classList.add('out'); setTimeout(() => el.load.remove(), reduced ? 0 : 400);
 window.__ready = true;
 </script>

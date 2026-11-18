@@ -37,7 +37,7 @@ if (box && wrap && open) {
   function build(hasSaved) {
     open.hidden = true; wrap.hidden = false; wrap.textContent = '';
     wrap.innerHTML = `<div class="lv-class-tools row">
-        <div class="field"><label for="lv-ct-n"></label><select id="lv-ct-n">${[2, 3, 4, 5, 6].map(x => `<option value="${x}">${x}</option>`).join('')}</select></div>
+        <div class="field"><label for="lv-ct-n"></label><select class="input" id="lv-ct-n">${[2, 3, 4, 5, 6].map(x => `<option value="${x}">${x}</option>`).join('')}</select></div>
         <button class="btn btn-sm" type="button" data-ct="balance"></button>
         <button class="btn btn-sm" type="button" data-ct="shuffle"></button>
       </div>
@@ -69,7 +69,7 @@ if (box && wrap && open) {
     list().forEach(t => {
       const f = document.createElement('div'); f.className = 'field lv-preset-pick';
       const l = document.createElement('label'); l.htmlFor = `lv-ct-p${t.k}`; l.append(shapeSvg(presets[t.p].shape), ` ${presets[t.p].name}`); paintTeam(l, presets[t.p], t.k);
-      const sel = document.createElement('select'); sel.id = `lv-ct-p${t.k}`; sel.dataset.k = t.k;
+      const sel = document.createElement('select'); sel.className = 'input'; sel.id = `lv-ct-p${t.k}`; sel.dataset.k = t.k;
       presets.forEach((p, i) => { const o = document.createElement('option'); o.value = i; o.textContent = `${p.icon} ${p.name}`; o.selected = i === t.p; sel.append(o); });
       f.append(l, sel); pp.append(f);
     });

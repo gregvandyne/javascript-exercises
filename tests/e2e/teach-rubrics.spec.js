@@ -6,7 +6,7 @@
 // Screenshots go to /dev/shm/teach-rubrics (SHOTS_DIR) for a person to look at.
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
-import { login } from './helpers.js';
+import { login, newLesson } from './helpers.js';
 import { findTouching } from './touching.js';
 
 const DEMO = 'demo-pass-123';
@@ -35,9 +35,8 @@ test('rubrics: make, attach, score, gradebook and the student\'s own result', as
   const t = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
   await login(t, 'DemoTeacher', DEMO);
 
-  // ---- the library: a new rubric from the Rubrics tab of the lesson library
-  await t.goto('/teach/lessons');
-  await t.click('nav.tabs a[href*="/teach/rubrics"]');
+  // ---- a new rubric on the Rubrics page (there is no lesson library page any more: games, not lessons)
+  await t.goto('/teach/rubrics');
   await expect(t.locator('h1')).toContainText('Rubrics');
   await t.fill('#nr-t', 'Explain your game');
   await Promise.all([t.waitForURL(/\/teach\/rubrics\/\w+$/), t.click('form[data-api="/api/rubrics"] button[type=submit]')]);
@@ -67,9 +66,7 @@ test('rubrics: make, attach, score, gradebook and the student\'s own result', as
   // ---- a lesson with a written question scored by the rubric, and the whole lesson too
   const teach = await (await t.request.get('/teach?all=1')).text();
   const classId = teach.match(/\/class\/([A-Za-z0-9]+)/)[1];
-  await t.goto('/teach/lessons');
-  await t.fill('#nl-t', 'Rubric e2e lesson');
-  await Promise.all([t.waitForURL(/\/teach\/lessons\/\w+/), t.click('form[data-api="/api/lessons"] button[type=submit]')]);
+  await t.goto(await newLesson(t, 'Rubric e2e lesson'));
   const lessonId = t.url().match(/\/teach\/lessons\/(\w+)/)[1];
   const add = t.locator('#add-step form.stepgrid');
   await expect(add.locator('.f-rub')).toBeHidden();

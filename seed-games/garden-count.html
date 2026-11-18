@@ -86,7 +86,11 @@
   .gc-menu .gc-btn { flex: 1 1 200px; max-width: 240px; min-height: 150px; font-size: 22px; gap: 8px; }
   .gc-menu .gc-btn .i { font-size: 60px; }
   .gc-star { font-size: 84px; line-height: 1; }
-  .gc-load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; }
+  /* The loading screen covers the garden (the sky's own colour) until the helpers stand in place and the camera has
+     framed them, then fades: the 3D view is never seen half-built (a black sky, a giant ground tile up close). */
+  .gc-load { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 24px; text-align: center; padding: 20px; background: #bfe3ff; transition: opacity .35s ease; }
+  .gc-load.out { opacity: 0; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { .gc-load { transition: none; } }
   /* Wide screens: the words, the big number and the round dots share one line across the top, so the garden gets the height. */
   @media (min-aspect-ratio: 9/10) { .gc-line { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px 12px; } }
   @media (max-width: 480px) { .gc .gc-btn { min-height: 70px; font-size: 15px; border-radius: 18px; } .gc-btn .i { font-size: 26px; } .gc-num { min-width: 70px; height: 70px; font-size: 48px; border-radius: 20px; } .gc-menu .gc-btn { min-height: 104px; flex-basis: 100%; flex-direction: row; gap: 14px; max-width: 340px; font-size: 21px; } .gc-menu .gc-btn .i { font-size: 46px; } }
@@ -219,6 +223,8 @@ const I18N = {
     "teens.now": "Now we have {n}. Tap Done.",
     "teens.full": "The ten is full. Add one more.",
     "teens.hint": "Start at ten. Then count on.",
+    "teens.tens": "Tens",
+    "teens.ones": "Ones",
     "win": "You did it!",
     "win.card": "The garden is counted. Well done!",
     "round": "Round {n} of {m}",
@@ -288,7 +294,17 @@ el.say.addEventListener('click', () => { if (S.line) speak(S.line[0], S.line[1],
 function wobble(b) { if (!b) return; b.classList.remove('no'); void b.offsetWidth; b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 900); }
 const timers = new Set();
 const later = (ms, fn) => { const t = setTimeout(() => { timers.delete(t); fn(); }, S.fast ? Math.min(ms, 20) : ms); timers.add(t); return t; };
-const clearTimers = () => { for (const t of timers) clearTimeout(t); timers.clear(); };
+// The next question waits for the line being said (BRB.afterSpeech: an AI line still on its way counts), so a voice is
+// never cut off by the next one; at least ms, at most 10 s more. Without the SDK's afterSpeech, the plain wait.
+const waits = new Set();
+function afterLine(ms, fn) {
+  if (S.fast || !B || typeof B.afterSpeech !== 'function') return later(ms, fn);
+  const stop = B.afterSpeech(() => { waits.delete(stop); fn(); }, { min: ms, max: ms + 10000 });
+  waits.add(stop);
+}
+const clearTimers = () => { for (const t of timers) clearTimeout(t); timers.clear(); for (const w of waits) w(); waits.clear(); };
+/** AI voices: ask for lines a little before they are said, so they play at once (nothing happens without AI voices). */
+function prefetch(lines) { try { if (B && B.prefetchSpeech) B.prefetchSpeech(lines.filter(Boolean).map(([k, v]) => fmt(k, v)), { lang: 'en', voice: 'friendly' }); } catch (e) { /* no page */ } }
 
 /* ---------- the 3D garden ---------- */
 let g;
@@ -347,6 +363,25 @@ function slab(x, z, w, d, h, material) {
   o.add(edge, m); o.position.set(x, 0, z);
   return o;
 }
+/** A place-value sign that always faces the player: its heading (Tens or Ones) and how many are on its bed, which
+ *  set(n) changes. The tens sign is green, the ones sign the bed's brown, as their beds. */
+function placeSign(word, tint, size = 1.9) {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 256;
+  const x = c.getContext('2d'), tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, fog: false, toneMapped: false })); s.scale.setScalar(size);
+  s.userData.set = n => {
+    x.clearRect(0, 0, 256, 256); x.lineWidth = 12; x.strokeStyle = '#141414';
+    x.fillStyle = '#FFFDF2'; x.beginPath(); x.roundRect(10, 10, 236, 236, 40); x.fill();
+    x.fillStyle = tint; x.beginPath(); x.roundRect(10, 10, 236, 84, [40, 40, 0, 0]); x.fill();
+    x.beginPath(); x.roundRect(10, 10, 236, 236, 40); x.stroke(); x.beginPath(); x.moveTo(10, 94); x.lineTo(246, 94); x.stroke();
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillStyle = '#FFFDF2'; x.font = '900 56px system-ui, sans-serif'; x.fillText(word, 128, 54, 210);
+    x.fillStyle = '#141414'; x.font = '900 120px system-ui, sans-serif'; x.fillText(String(n), 128, 174);
+    tex.needsUpdate = true;
+  };
+  s.userData.set(0);
+  return s;
+}
 /** A number on a sign that always faces the player. */
 function sign(text, size = 1.7) {
   const c = document.createElement('canvas'); c.width = c.height = 256;
@@ -403,9 +438,10 @@ const LAY = {
     const x0 = -(n - 1) / 2 * PITCH + 0.9;
     return { n, a: i => [x0 + i * PITCH, -1.05], b: i => [x0 + i * PITCH, 1.05], signA: [x0 - 1.9, -1.05], signB: [x0 - 1.9, 1.05], beds: [[0.9, -1.05, len + 0.3, 1.3], [0.9, 1.05, len + 0.3, 1.3]], rect: [x0 - 2.9, x0 + (n - 1) * PITCH + 0.9, -1.9, 1.9], hero: [0.9, -4.2] };
   },
+  // teens: the ten-frame (tens) and the ones bed, each with its sign behind it (tens, ones and how many are there)
   teens: () => (tall
-    ? { frame: [-2.3, -2.4], loose: [-2.3, 1.1], rect: [-3.3, 3.3, -3.4, 3.1], hero: [0, -5.6] }
-    : { frame: [-6.4, -0.575], loose: [1.0, -0.575], rect: [-7.3, 6.5, -1.5, 1.5], hero: [-0.2, -3.8] }),
+    ? { frame: [-2.3, -2.4], loose: [-2.3, 2.2], signT: [0, -3.75], signO: [0, 1.05], rect: [-3.3, 3.3, -4.6, 4.2], hero: [2.6, -5.4] }
+    : { frame: [-6.4, -0.575], loose: [1.0, -0.575], signT: [-4.1, -2.05], signO: [3.3, -2.05], rect: [-7.3, 6.5, -2.7, 1.5], hero: [-0.2, -3.8] }),
 };
 const grid = (o, cols) => i => V3(o[0] + (i % cols) * PITCH, TOP, o[1] + Math.floor(i / cols) * PITCH);
 const gridRect = (o, cols, rows) => [o[0] + (cols - 1) * PITCH / 2, o[1] + (rows - 1) * PITCH / 2, cols * PITCH + 0.35, rows * PITCH + 0.35];
@@ -549,18 +585,30 @@ function nextRound() {
   S.round++; S.R = GC.round(S.chapter, S.round, S.lap); S.count = 0; S.phase = 'play'; S.basket = []; S.shown = false;
   hint(); dots(); redraw();
   const R = S.R;
-  if (R.kind === 'count') ask('count.ask', { n: R.target });
-  else if (R.kind === 'compare') ask(R.form === 'numbers' ? (R.same ? 'compare.num.same' : R.ask === 'more' ? 'compare.num.more' : 'compare.num.less') : (R.same ? 'compare.same' : 'compare.' + R.ask));
-  else if (R.kind === 'make') ask('teens.make', { n: R.target });
-  else ask('teens.howmany');
+  ask(...askOf(R));
+  // the line this round ends with, and the next round's question: fetched now, so neither waits for the voice
+  prefetch([rightOf(R), S.round < GC.ROUNDS ? askOf(GC.round(S.chapter, S.round + 1, S.lap)) : null]);
   frame();
+}
+/** A round's question and the line it ends with when it is right, as [key, vars]. */
+function askOf(R) {
+  if (R.kind === 'count') return ['count.ask', { n: R.target }];
+  if (R.kind === 'compare') return [R.form === 'numbers' ? (R.same ? 'compare.num.same' : R.ask === 'more' ? 'compare.num.more' : 'compare.num.less') : (R.same ? 'compare.same' : 'compare.' + R.ask)];
+  return R.kind === 'make' ? ['teens.make', { n: R.target }] : ['teens.howmany'];
+}
+function rightOf(R) {
+  if (R.kind === 'count') return ['count.right', { n: R.target }];
+  if (R.kind !== 'compare') return ['teens.sum', { a: 10, b: R.target - 10, c: R.target }];
+  const hi = Math.max(R.a, R.b), lo = Math.min(R.a, R.b);
+  if (R.answer === 'same') return ['compare.right.same', { a: R.a, b: R.b }];
+  return R.ask === 'more' ? ['compare.right.more', { a: hi, b: lo }] : [R.form === 'numbers' ? 'compare.right.less' : 'compare.right.fewer', { a: lo, b: hi }];
 }
 /** The round is right: cheer, say what is true, then the next round (or the end). */
 function right(key, vars) {
   S.phase = 'right'; hint();
   sfx('cheer'); heroMove('cheer', 1500);
   S.line = [key, vars]; el.askt.textContent = fmt(key, vars); speak(key, vars);
-  later(S.R.kind === 'compare' && S.R.form === 'numbers' ? 2600 : 2000, nextRound);
+  afterLine(S.R.kind === 'compare' && S.R.form === 'numbers' ? 2600 : 2000, nextRound);
 }
 function finish() {
   S.screen = 'end'; S.phase = 'idle'; S.done[S.chapter] = true; store();
@@ -653,10 +701,7 @@ function drawCompare(R, L) {
       return hint(R.same && R.answer === 'same' ? 'compare.hint.same' : numbers ? 'compare.hint.num.' + (R.ask === 'more' ? 'more' : 'less') : 'compare.hint.' + R.ask);
     }
     if (numbers) fill(true); else signs();
-    const hi = Math.max(R.a, R.b), lo = Math.min(R.a, R.b);
-    if (R.answer === 'same') right('compare.right.same', { a: R.a, b: R.b });
-    else if (R.ask === 'more') right('compare.right.more', { a: hi, b: lo });
-    else right(numbers ? 'compare.right.less' : 'compare.right.fewer', { a: lo, b: hi });
+    right(...rightOf(R));
   };
   // a tap anywhere along a bed picks it
   for (const [x, at] of [['a', L.a], ['b', L.b]]) for (let i = 0; i < L.n; i++) targets.push({ at: () => V3(at(i)[0], 0.5, at(i)[1]), r: 0.62, go: () => answer(x) });
@@ -674,10 +719,14 @@ function drawTeens(R, L) {
   put(slab(fr[0], fr[1], fr[2] + 0.1, fr[3] + 0.1, TOP * 0.7, M.inkFlat));
   for (let i = 0; i < 10; i++) { const p = fSlot(i), c = new THREE.Mesh(GEO.box, M.cream); c.scale.set(PITCH - 0.12, TOP, PITCH - 0.12); c.position.set(p.x, TOP / 2, p.z); c.receiveShadow = true; put(c); }
   put(slab(lr[0], lr[1], lr[2], lr[3], TOP * 0.5, M.soil));
+  // which bed is which: Tens behind the ten-frame, Ones behind the loose apples, each with how many it holds now
+  const tens = put(placeSign(fmt('teens.tens'), '#2f8f5b', tall ? 1.6 : 1.9)), ones = put(placeSign(fmt('teens.ones'), '#8a5a3c', tall ? 1.6 : 1.9));
+  tens.position.set(L.signT[0], tall ? 0.95 : 1.1, L.signT[1]); ones.position.set(L.signO[0], tall ? 0.95 : 1.1, L.signO[1]);
   const slot = i => (i < 10 ? fSlot(i) : lSlot(i - 10).setY(TOP * 0.5));
   const fruits = [];
   const sum = () => {
     const n = S.count;
+    tens.userData.set(Math.min(10, n)); ones.userData.set(Math.max(0, n - 10));
     el.sum.textContent = n > 10 ? fmt('teens.sum', { a: 10, b: n - 10, c: n }).replace(/\.$/, '') : n === 10 ? '10' : '';
     el.sum.hidden = !el.sum.textContent; showNum();
   };
@@ -689,10 +738,12 @@ function drawTeens(R, L) {
   };
   if (R.kind === 'howmany') {
     S.count = R.target; set(R.target, false); el.num.hidden = true; el.sum.hidden = true;
+    ones.userData.set('?');   // how many: the ten is full (Tens 10); the player counts the ones, so that sign doesn't say yet
     const answer = (v, b) => {
       if (S.phase !== 'play') return;
       if (v !== R.target) { wobble(b || document.getElementById('gc-n' + v)); return hint('teens.hint'); }
       el.sum.textContent = fmt('teens.sum', { a: 10, b: R.target - 10, c: R.target }).replace(/\.$/, ''); el.sum.hidden = false;
+      tens.userData.set(10); ones.userData.set(R.target - 10);
       right('teens.sum', { a: 10, b: R.target - 10, c: R.target });
     };
     S.act = { answer: v => answer(v) };
@@ -734,7 +785,11 @@ window.__gc = window.__brbTest = {
   act: (name, arg) => (S.act && S.act[name] ? S.act[name](arg) : undefined),
 };
 
-el.load.hidden = true; el.load.remove(); el.gc.hidden = false;
+el.gc.hidden = false;
 await showHeroes();
+// One frame drawn from where the helpers are seen (two animation frames, or 300 ms in a tab that draws none), then the
+// loading screen fades away.
+await Promise.race([new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))), new Promise(r => setTimeout(r, 300))]);
+el.load.classList.add('out'); setTimeout(() => el.load.remove(), reduced ? 0 : 400);
 window.__ready = true;
 </script>

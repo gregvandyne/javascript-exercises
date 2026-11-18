@@ -144,7 +144,7 @@ body.lv-offline .lv-stage { outline: 4px dashed var(--edge); }
 .lv-teamsbox .lv-h2 { text-align: start; font-size: 1.15rem; }
 .lv-teams-row { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
 .lv-teams-row legend { font-weight: 800; margin-block-end: 6px; }
-.lv-teamsbox .lv-teams-row legend { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.lv-teamsbox .lv-teams-row > legend { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .lv-seg { display: flex; flex-wrap: wrap; gap: 6px; }
 .lv-seg-opt { display: inline-flex; align-items: center; gap: 4px; min-block-size: 44px; min-inline-size: 44px; padding-inline: 10px; border: 2px solid var(--line); border-radius: 12px; background: var(--card); font-weight: 800; cursor: pointer; justify-content: center; }
 .lv-seg-opt:has(input:checked) { border-color: var(--brand-leaf); background: var(--accent-soft); color: var(--accent-ink); }
@@ -152,6 +152,11 @@ body.lv-offline .lv-stage { outline: 4px dashed var(--edge); }
 .lv-seg-opt input { position: absolute; opacity: 0; pointer-events: none; }
 .lv-seg-opt:has(input:disabled) { opacity: .55; cursor: default; }
 .lv-team-scoring { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; }
+/* "How to score": a smaller heading than the row's own, and radios big enough to see and tap */
+.lv-team-scoring { margin-block-start: 12px; min-inline-size: 0; }
+.lv-team-scoring > legend { font-size: 1rem; font-weight: 800; margin-block-end: 4px; padding: 0; }
+.lv-radio input[type="radio"], .lv-check input[type="checkbox"] { inline-size: 24px; block-size: 24px; margin: 0; flex: none; cursor: pointer; }
+.lv-radio, .lv-check { gap: 12px; cursor: pointer; }
 .lv-teams-summary { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
 /* the team board (projector during play, dashboard, player end box) */
 .lv-team-board, .lv-end-teams { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
@@ -519,6 +524,13 @@ body[data-lv-mode="doodle"] #toasts { inset-block-end: auto; inset-block-start: 
 .lv-wiz .su-row[hidden] { display: none; }
 .lv-settings-landing.panel { padding: 0 20px; }
 .lv-settings-landing.panel[open] { padding-block-end: 16px; }
-.lv-settings-landing.panel summary { min-block-size: 52px; font-weight: 700; }
+/* closed, the box is just its heading, centred in it (a flex box would add its gap under the summary) */
+.lv-settings-landing.panel { display: block; }
+.lv-settings-landing.panel[open] { display: flex; }
+.lv-settings-landing.panel summary { min-block-size: 56px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none; }
+.lv-settings-landing.panel summary::-webkit-details-marker { display: none; }
+.lv-settings-landing.panel summary::before { content: '▸'; }
+[dir="rtl"] .lv-settings-landing.panel summary::before { content: '◂'; }
+.lv-settings-landing.panel[open] summary::before { content: '▾'; }
 .lv-wiz .su-nav[hidden] { display: none; }
 .lv-wiz .lv-recent-wrap[hidden] { display: none; }

@@ -6830,6 +6830,13 @@ renderer `public/js/dash-shapeboard.js` (imported by `dash-tools4.js`), the geom
   Its safety scan now also reads `dash-shapeboard.js`. New: `tests/unit/dash-shapeboard.test.js`. The fit check has three
   busy geoboards of their own (twelve bands with labels, angles, grid lines, labels and strokes and a long German title;
   triangle dots; the 24-peg circle).
+- **Fixed (17 Nov 2026): the board drawn again every frame on the projector.** Whether the measures go beside the board
+  was decided from the stage's height, but the stage is taller with the readout beside it than with it underneath: at
+  the smallest size on the projector (605 × 383 with the readout under, 605 × 448 beside) each draw moved the readout and
+  the next moved it back, so the board was redrawn every frame with its words sized for the other arrangement (the fit
+  check's "Geoboard: "A" is 10.1px (needs 13)" in some runs, and a page too busy to click the layout chip). The room is
+  now the stage plus the readout when it is underneath, the same either way, and once beside it stays there until the
+  room is 16px short of the threshold. The fit check is unchanged.
 
 ## Classroom dashboards: the schedule at every time of day (16 Nov 2026)
 The schedule failed the fit check at some times of day and not others (a period row cut in half on the projector, a list
@@ -7470,6 +7477,143 @@ bottom", then "Leave out the Help and add the My School". School staff's menu (l
 - Tests: nav-roles (the card first, tiles, My school for a school admin only, Plans, Settings, Sign out, the switch at
   the bottom, Dark on), classroom-homes, teacher-quick-wins; e2e schools.spec lists the head's menu links.
 
+## Host a live game: "How to score", bigger radios, Game settings box, the app's dropdowns (17 Nov 2026)
+Owner feedback on the steps from #387:
+- **Teams → How to score.** The two scoring choices (Average per player, Total points) now sit under their own heading,
+  "How to score" (`live.team.scoringHow`, in every locale but en-GB, which falls back to English), as a fieldset in
+  the teams row. Radios and checkboxes in the live pages are 24px (were the browser's 13px), with a 12px gap.
+- **Game settings** (the last step): closed, the box is just its heading, centred in it (the box was a flex column,
+  so its gap sat under the summary), with the ▸ / ◂ / ▾ of the other live disclosures in place of the browser's marker.
+- **Dropdowns.** The Game settings selects, the co-host picker, the dashboard's move picker, the homework class picker,
+  the class-teams count and team pickers (live-class-teams.js, live-host.js) and the Number Quest placement start
+  point were bare browser selects; they now have `class="input"`. **Decided: a test keeps it so**
+  (`tests/unit/selects-styled.test.js`): every `<select>` in a view or script has class `input`, and every select made
+  with `createElement('select')` is given it in the same or the next statement.
+
+## Fraction Factory: Pro is its own game; the controls in one card (17 Nov 2026)
+Owner: "I still don't see the difference between pro and explorer in fraction factory", and the controls looked
+scattered (the slicer wrapping 2 + 3, "not cut yet" alone, Hint on its own line). Picked from three mock-ups: **A, one
+panel beside the cake**; for Pro: **unlike denominators** and **multiply and divide**.
+- **Root cause:** every order was made with `bands: ['1b', '2']`, so Explorer and Pro played the same 21 orders (and
+  stars, kept per order id, counted for both). Now `L()` makes an Explorer order and `P()` a Pro one; no order is in
+  both bands. Explorer is unchanged (First Folds, First Cuts, Re-Slice, Recipe Math: the Number Quest Unit 4 links all
+  pass `band=1b`). Pro has four chapters of six orders: **Common Cuts** (1/3 + 1/4, 3/4 + 2/3 past one whole),
+  **Take Away** (3/4 − 1/6, 5/4 − 1/3), **Scale Up** (3 × 1/4, 4 × 2/3 over three cakes, 1/2 × 3/4, 2/3 × 3/4) and
+  **Share Out** (2 ÷ 1/4, 3/2 ÷ 1/4, 3/4 ÷ 1/12: build the amount in servings and count them). Each has an intro,
+  three hints and a check, the Jumble's wrong answers (5/7 for 3/4 + 2/3, 4/1 for 5/4 − 1/3, 5/7 for 3/4 × 2/3),
+  and every spoken line in the I18N block.
+- **Engine:** types `sub`, `mul`, `div` beside `add`; an order needs as many wholes as its amount (`wholesFor`, up to
+  3); a level may carry its own `cuts` (Pro: 2, 3, 4, 6, 8, 10, 12; Explorer keeps 2, 3, 4, 6, 8). **Decided:** a
+  product is served by any cut that builds it exactly (2/3 × 3/4 = 6/12 or one half), a sum or difference by its cut
+  or a finer one (as before), and a share-out only in the serving's own cut, since it counts servings (new feedback
+  `why.div-cut`). A link to an Explorer chapter with `band=2` plays it in Explorer.
+- **The map** says what each band plays under the switch ("Explorer · grades 3–5: fair shares, re-slicing, comparing
+  and adding", "Pro · grades 5–6 and up: unlike parts, taking away, multiplying and dividing").
+- **Controls (layout A):** an order built on the tray gets one card beside the wholes (under them on a phone):
+  "1 · Slicer: cut into" with one row of number buttons (named "Cut into n"), "2 · On the tray" with the reading and a
+  short line, then a wide Serve it! with Hint beside it. Two or three cakes stand in one row, smaller; a source amount
+  of more than one whole draws one row per whole. Checked with no scroll at 1280×720, 1000×504 and 390×844.
+- **Standards and shelf:** the game's CCSS list and `FRACTION_CHAPTERS` gain 5.NF.A.1-2, 5.NF.B.4, 5.NF.B.6,
+  5.NF.B.7 and 6.NS.A.1; the Learn shelf says grades 3-6.
+- Tests: tests/unit/fraction-factory-pro.test.js (bands disjoint, the goals, the cut rules, every Pro order solved by
+  its advice script); fraction-factory.test.js's chapter contract is per band; the e2e spec presses the slicer by its
+  name ("Cut into 4").
+
+## Games, not lessons: folders of games, assigned to classes (17 Nov 2026)
+Owner: "Let's get rid of lessons and instead just have the builder here with games that teachers can put in folders and
+assign", and "there should still be a folder system so they can organize games (including the ability to save oomba
+games to a folder)". Decided with the owner: **the ready-made courses stay as they are** (Number Quest, CS Quest, Cyber
+Defenders); **teacher-made lessons are hidden, nothing is deleted**, and the games in them go into folders; an assigned
+game **shows on the student's class page, the teacher sees scores, it may have a due date and can be posted to Google
+Classroom**; folders live on **Build**, and the **class page** lists the class's assigned games with New game.
+- **Folders** (`game_folders`, `game_folder_items`, services/game-folders.js, routes/game-folders.js): per person, one
+  level, any game they can see (their own Builder games, drafts included, and Oomba's). A folder only sorts: putting a
+  game in one never changes who can play it, and deleting a folder never deletes its games. "📁 My folders" sits on
+  Build above My games; a folder page (`/build/folders/:id`) lists its games with Play, Assign and Remove, New game and
+  Find Oomba games, and rename, move and delete in its ⋯ menu. **Save to folder** (`/build/save?id=`) is on every
+  My games card, on Oomba game pages and Learn cards (school staff), and on an assigned game's ⋯ menu: each folder with
+  Add here or (already there) Remove, and "New folder with this game". Caps: 100 folders, 200 games a folder.
+- **Assign** (`/teach/assign?id=` or `?game=<slug>`, `F.assignGame`): a class, an optional due day, and "Also post to
+  Google Classroom" (when a class is linked; the same post and grades as before). Underneath it is still a one-game
+  assignment (a lesson of kind 'game' with one game step), so progress, scores, due dates, the gradebook, the dashboard
+  and Google Classroom all work unchanged. An Oomba game: published, public, not course-only. A teacher's own game: once
+  published for the school, publicly, or for classes (a class game reaches the class it is assigned to: it is added to
+  the game's class list); a draft or a private game says "Publish this game first". The same game is never in a class
+  twice (`alreadyAssigned`).
+- **The class page** (first tab, now "📌 Assigned games"; its key stays `lessons`): New game, Assign from my games, Find
+  Oomba games, the ready-made courses, then the assigned games (and course lessons and live homework) with due chips,
+  done counts, and ⋯: dates, Scores, Student view, Save to folder, Unassign. Gone from it: the lesson picker, New lesson,
+  Draft with AI, Lesson library and New unit. Students' heading is "📌 Assigned games"; a game row says "🎮 Game".
+- **lessons.kind** (`0085_game_folders`): 'game' (assigned by Assign: the audit log's lesson.assignGame, or the same shape),
+  'course' (a CS Quest copy: template_key), 'homework' (a live question set sent as homework), 'lesson' (teacher-made).
+  `retireLessons()` (db.js, run once by the migration, safe to run again) makes a folder named after each teacher-made
+  lesson that has games (its games in step order), and soft-removes that lesson's open assignments
+  (`class_lessons.removed_at`, the same remove every query already honours), recording each in `lessons_retired` so it
+  can be undone. Lessons, steps, students' work and rubric marks all stay. A retired lesson's editor link opens its folder.
+- **Sharing** (owner: "Teachers should also still be able to share games"; picked: share **folders** with colleagues,
+  `0086_game_folder_sharing`): on a folder's page its owner shares it with one school they are staff of (a select when
+  they have several), or stops sharing. That school's staff (teachers and admins, never students or other schools) see
+  it under "🤝 Shared by colleagues" on Build with the owner's name, open it read-only (Play, Assign, Save to folder),
+  and "Copy to my folders" (the same name, the games they can open). Colleagues only ever see games they can open, so a
+  teacher's own draft or class-only game stays theirs; the share note says to publish for the school.
+- **Class page tabs:** 🎮 Games (first: build, assign, organise; the assigned games; the games shared with the class),
+  Progress, Students, Settings. The old Lessons and Games tabs are this one (`?tab=games` lands on it).
+- **Elsewhere:** `/teach/lessons` redirects to `/build`; Classroom home's tools button is "📁 My games and folders" and each
+  class card's is "🎮 Assign a game"; the teaching loop's Plan tools are My games and folders and New game; the CS Quest
+  page no longer links the library; the trial email's courses link goes to Learn.
+- **Still there underneath, on purpose:** the lesson editor and the lesson APIs (CS Quest copies are edited there, and
+  their rubrics and standards), and units (CS Quest's assign-a-unit makes them; the class page shows their headings).
+  No screen makes a new teacher lesson any more. **Open:** remove the lesson-library code and the teacher-lesson APIs
+  once the owner is sure nothing should come back; the teaching loop's words still say "lesson" in places.
+- Privacy: folders are private to their owner (another teacher's folder is not found); account delete removes the
+  person's folders; school delete clears `lessons_retired` with the class's assignments (admin-delete.test.js).
+- Tests: tests/unit/games-not-lessons.test.js (the backfill, folders, assign, the pages); updated: lessons, progress,
+  gclassroom (an assigned game posts to Classroom), teach-loop, classroom-homes, course-teacher-view.
+
+## Voices finish before the next question (17 Nov 2026)
+Owner: "All of the games seem to have the voices cut off as they transition from one question to the next. Make sure
+all of the transitions are perfect." Cause: a game said a line ("Yes! 10 and 4 make 14.") and moved on after a fixed
+wait (2 s in Garden Count, a 2-3 s game-time pause in the Number Quest games); the next question's line, spoken without
+queue, cancelled it. With AI voices a line that is not cached yet can take a few seconds to arrive, so it was cut off,
+or never heard at all.
+- **SDK:** `BRB.afterSpeech(fn, { min, max, gap })` calls fn once nothing is being said (a line playing, queued, or
+  still on its way from the AI voice) for `gap` ms (250), never before `min` and never after `max` (10 s, so a line
+  that never says it ended can't hold a game); it returns a cancel function. `BRB.speaking()` says whether anything is.
+  docs/sdk.md lists both; tests/unit/voice.test.js checks a slow AI line holds the wait.
+- **Games:** every automatic move to the next question goes through it, keeping each game's own minimum wait and its
+  cancelling (a screen change still stops it), instant as before in the tests' fast mode, and the old timer where the
+  SDK has no afterSpeech. A tap the player makes may still cut a line (that is their choice).
+- **Garden Count** also asks for each round's closing line and the next question ahead (`BRB.prefetchSpeech`), so the
+  AI voice is ready the moment they are said; tests/unit/garden-count.test.js answers every line 3 s late and checks
+  the next question waits for it.
+
+## Garden Count: Tens and Ones, and a clean start (17 Nov 2026)
+Owner: "This should be more clear that the left is for 10's and the right is for 1's. The beginning of garden count is
+also quite glitchy."
+- **Tens and Ones:** in the teens chapter a sign stands behind each bed, like the columns of a place-value chart: a
+  green "Tens" over the ten-frame and a brown "Ones" over the loose apples, each with how many it holds now (10 | 4,
+  matching "10 and 4 make 14" at the top). In "How many apples?" Tens shows 10 and Ones shows "?" until the answer is
+  right. On a tall phone the ones bed moves down a little to make room for its sign. (I18N `teens.tens`, `teens.ones`.)
+- **The start:** the loading screen was removed before the helpers had loaded and the camera had framed them, and it
+  was see-through, so the 3D view flashed half-built (a black sky, a giant ground tile up close). It now has the sky's
+  colour, stays until the helpers stand in place and one frame is drawn from where they are seen, then fades (no fade
+  with reduced motion).
+- **Every Number Quest game** (Balance Bridge, Keep Builder, Kitchen Rush, Lantern Mix, Launch Lab,
+  Lily Hop, Machine Line, Rocket Supply, Scale Scout, Shape Hunt, Sky Lines, Sub Zero; Crate Stacker had its own fix
+  in #391, a curtain and a voice coach, kept as it is) had the same see-through
+  loading screen removed too early, and gets the same fix (owner: "Make sure the start of all those games are not
+  glitchy as well"): the page's own colour, removed after the first screen is drawn, a fade. Recorded from the first
+  frame in the production frame: each shows its loading screen, then its finished first screen, nothing between.
+- **Other games with automatic moves after speech:** Shark Plank's results card waits for the win or lose line, and
+  Hero of Sunvale's cutscenes hold their clock before the next caption while a voiced line is still playing (at most
+  10 s a line; a tap, Skip and the test hooks move on at once). Word Trail's speed-round clock starts once the word has
+  been said. Fraction Factory, Gulp City, Jungle Cup, Word Hunt and Word Peek move on only on a tap (unchanged).
+
+## Landing: no floating game covers round the hero (17 Nov 2026)
+Owner: "Remove the floating games on the outside... its a bit too distracting." The five game covers that drifted at
+the hero's edges on very wide screens (`.lp-floats`, from 1360px) are gone, with their styles. The covers fanned in
+the hero's "30+ games" link stay. tests/unit/teacher-landing.test.js checks there are none.
+
 ## Classroom dashboards: Build it, the answer hidden, the place value number typed in (17 Nov 2026)
 Owner: "A lot of the times when you have the make a question feature you are showing the answer to the question on the
 screen and there is no way to hide it... These math widgets should be good for explaining a concept, but also for
@@ -7623,3 +7767,53 @@ entry's check/solve), `eqView` and `limitWords` in `public/js/dash-tools.js`, `o
   the top / bottom number "can be at most 12"), said aloud too; a number typed past it gives the same note (held at
   the limit). The next change takes it away.
 - **Fit check:** the Build it layouts also send a set of fraction equations of all four operations for students.
+
+## Algebra Builder (adapted from Algebra Tiles), with question sets (18 Nov 2026)
+Owner: "Add this game to oomba: [teacher.dev's algebra-tiles] Make sure all functionality stays the same but use oomba
+branding. This should be listed under games, but should use our animation packs. I want to use a similar board like
+structure." Answers: keep its whiteboard; the Oomba Kit's effects only (no character); activity links and QR codes
+open the problem on Oomba; keep its math input field, which we have permission to use, but nothing in the game or the
+repository names it. Then: "Change the name of the game, as well. And allow teachers to create multiple questions."
+Answers: **Algebra Builder**; question sets **saved on Oomba** under a short code; a set **may mix activities**.
+- **Where it lives.** `tools/algebra-builder` (the original's Svelte app, Apache-2.0: LICENSE, NOTICE with what changed,
+  README) builds into `seed-games/algebra-builder.html` (`npm run build:algebra-builder`; `node build.mjs --check`).
+  Play shelf, category puzzle, cover from its gallery (`scripts/covers/algebra-builder.recipe.js`), a share picture.
+  The original is credited by name in the page's banner, About, NOTICE and the seed notes, as its license asks.
+- **The same game.** Gallery, a setup page per activity, and the whiteboard: Solve (Isolate, Divide, Answer, live
+  balance on or off), Multiply and Factor (rectangle, sides, equation; all tiles or none), their checks, toolbar, tray,
+  pan and zoom are the original's code. Its pages became screens in one page, with an in-game Back (no history in the
+  frame). Oomba look: paper, ink and green, Bricolage Grotesque, rounded cards, pill buttons; the tile colours stay.
+  It reads nothing aloud, as the original didn't (registered for AI voices with no lines; a "no-table" game).
+- **Effects.** A passed step: the kit's `correct` and a pop of the problem bar; a wrong Check: `wrong` and a small
+  shake; a question of a set done: `levelup` and a pop; the finish (a problem, or a set's last question): `win`,
+  confetti and `BRB.gameOver({ won: true })` once (completes a lesson step). Reduced motion skips the movement.
+- **One problem, one link** (as the original): `?mode=solve&chapter=2xp3q7&level=1&lock=1` (`+ = ^ ( )` written
+  `p q e o c`, at most 16 characters; `level` 1/2 is the live balance on/off for Solve, all tiles/none otherwise). A
+  problem too long for that says so on its setup page; a preview has no link.
+- **Question sets.** "Make a question set" on the gallery, or "Start a question set with it" on any setup page: up to
+  10 questions from any activity, each made on that activity's setup page (Add to the set / Save this question),
+  reordered, changed or removed in the set's list. **Save and get link** keeps it on Oomba (`game_sets`, migration
+  0085; `server/services/game-sets.js`) and shows its link `?chapter=s-xxxxxxxxxx&lock=1`, the QR code and Copy; saving
+  again keeps the link. Signed-in players only (a guest is told to sign in; a preview has no links). The teacher's
+  sets are listed on the gallery from their game save (`algebra-builder-sets-v1`). Students get "1 of 5" in the bar,
+  **Next question** after each, then "All 5 questions done!" with Do them again; the teacher opening their own link
+  gets "Change this set". A deleted set's link says it isn't there any more. A set is only activities, problems in a
+  fixed math alphabet and two settings (no free text), and goes with its owner's account.
+- **Assigning, and Google Classroom.** Owner: "Make sure this flows into Google classroom if assigned to the class." A
+  teacher (school staff) gets **Assign to a class** beside the link of a problem and of a saved set. It opens Oomba's
+  Assign page for the game with that problem or set (`/teach/assign?game=algebra-builder&opts=…`, routes/game-folders.js): "Students open: your
+  question set (5 questions)", the class and due date, and **Also post to Google Classroom (for …)** when the teacher
+  can post to a linked class. The lesson is named after what it opens ("Algebra Builder: Solve 2x + 3 = 7"), its game
+  step carries the options, so the lesson's Play opens the problem or set straight away, and the same problem or set
+  can't be assigned twice to a class. Without options (the Learn tab's Assign) the page asks the teacher to choose in
+  the game first: students would otherwise land on the teacher's gallery. A student finishing it (`BRB.gameOver`, once,
+  at the end of the problem or the whole set) is the step done: the completion grade Classroom gets (send grades, or
+  automatic grades, on the class's Google Classroom page). tests/unit/gclassroom.test.js walks it end to end.
+- **SDK.** `BRB.gameUrl` (the frame gets the game's own `/play/<slug>` address), `BRB.copy(textOrPng)` (the play page
+  writes the clipboard only for that game's own link, with a query, or a PNG up to 300 KB, right after a tap) and
+  `BRB.questionSet` / `BRB.saveQuestionSet` (docs/sdk.md "Question sets").
+- **Left out.** The original's email links, its "suggest an activity" form and its analytics.
+- **The math input field** is vendored under `tools/algebra-builder/vendor/mathfield-*` with its package names changed;
+  `build.mjs` and tests/unit/algebra-builder.test.js check the name appears nowhere (the CSS text-cursor property aside).
+- **Safety scan.** `build.mjs` removes what the scanner refuses in the bundle: Svelte's and Tailwind's web addresses,
+  a validator's `Function('')` probe (answered "no"), its address pattern and its 64-bit limits written as digits.

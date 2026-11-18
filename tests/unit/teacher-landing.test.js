@@ -50,6 +50,7 @@ test('no session (a first visit or a search engine): "/" is the teacher landing 
     assert.equal(r.status, 200);
     assert.ok(isLanding(r.text), ua);
     assert.equal(r.text.match(/<h1\b/g).length, 1, 'one h1');
+    assert.doesNotMatch(r.text, /lp-floats?\b|lp-bob/, 'no game covers floating round the hero (too distracting)');
     assert.match(r.text, /<h1 id="lp-h1" class="lp-h1">One screen to run your class\. Games to make it stick\.<\/h1>/);
     assert.match(r.text, /<meta name="robots" content="index, follow, max-image-preview:large">/);
     assert.match(r.text, new RegExp(`<link rel="canonical" href="${base}/">`));

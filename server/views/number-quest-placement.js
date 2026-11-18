@@ -101,7 +101,7 @@ export function startingPointPage({ child, placement, note, canManage }) {
     <h2>Override: your word is final</h2>
     <p>Placement is advice the platform gives, never a gate it keeps. You can move this learner to any start point, or turn the Sorting Game off for them.</p>
     <form id="nq-override-form" class="row">
-      <label>Start point <select id="nq-override-node">${P.START_NODES.map(n => html`<option value="${n.node}" ${placement.startNode === n.node ? 'selected' : ''}>${n.workshop} (${n.node})</option>`)}</select></label>
+      <label>Start point <select class="input" id="nq-override-node">${P.START_NODES.map(n => html`<option value="${n.node}" ${placement.startNode === n.node ? 'selected' : ''}>${n.workshop} (${n.node})</option>`)}</select></label>
       <button type="submit" class="btn btn-primary">Set start point</button>
     </form>
     <p><button type="button" class="btn" id="nq-toggle-disabled">${placement.disabled ? 'Turn the Sorting Game back on' : 'Turn the Sorting Game off for this learner'}</button></p>

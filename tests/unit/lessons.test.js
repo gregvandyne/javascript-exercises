@@ -21,7 +21,7 @@ const as = who => async (path, { method = 'GET', body } = {}) => {
   const headers = { cookie: cookieFor(who.id) }; if (body !== undefined) headers['content-type'] = 'application/json';
   const r = await fetch(base + path, { method, headers, body: body !== undefined ? JSON.stringify(body) : undefined, redirect: 'manual' });
   const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
-  return { status: r.status, text, json };
+  return { status: r.status, text, json, location: r.headers.get('location') };
 };
 
 const boss = createUser({ username: 'LessonBoss', password: 'secret123', role: 'admin' });
@@ -139,8 +139,9 @@ test('AI draft without a key: a template in the teacher’s language with a matc
 });
 
 test('pages and APIs: library, editor, draft, class lessons, student lesson page, build step, 404s', async () => {
-  let r = await as(ana)('/teach/lessons'); assert.equal(r.status, 200); assert.match(r.text, /Lesson library/);
-  assert.equal((await as(kid)('/teach/lessons')).status, 404);
+  // Games, not lessons: the library page is Build now (the lessons, the editor and the APIs below stay for ready-made
+  // course copies and assigned games).
+  let r = await as(ana)('/teach/lessons'); assert.equal(r.status, 302); assert.equal(r.location, '/build');
   r = await as(ana)('/api/lessons/draft', { method: 'POST', body: { schoolId: oak.id, topic: 'Planets', grade: '4' } });
   assert.equal(r.status, 200); const id = r.json.redirect.match(/lessons\/([^?]+)/)[1];
   assert.ok(L.steps(id).length >= 3, 'the draft has steps');
@@ -174,15 +175,11 @@ test('class Lessons tab and editor: one assignment per class, rows open progress
   const c5 = S.createClass(ana, oak.id, { name: 'Ana 5C' }).class;
   const benClass = S.createClass(ben, oak.id, { name: 'Ben 6A' }).class;
   const benLesson = L.createLesson(ben, oak.id, { title: 'Ben shared lesson' }).lesson; L.updateLesson(ben, benLesson.id, { shared: true });
-  // a new class: the empty state leads to a new lesson / an AI draft that come back with the class
+  // a new class: the empty state is games (New game, Assign from my games, ready-made courses), no lesson tools
   let r = await as(ana)(`/class/${c5.id}`);
-  assert.match(r.text, new RegExp(`/teach/lessons\\?school=${oak.id}&class=${c5.id}&open=new`));
-  assert.match(r.text, new RegExp(`<option value="${l.id}">`));
-  assert.doesNotMatch(r.text, new RegExp(`<option value="${benLesson.id}"`), "a colleague's lesson is copied first, not assigned");
-  assert.match(r.text, /tab=shared/, 'with a hint pointing at Shared by colleagues');
+  assert.match(r.text, /No games assigned yet/); assert.match(r.text, /href="\/build\/new"/);
+  assert.doesNotMatch(r.text, /\/teach\/lessons\?|<option value=/, 'no lesson library, no lesson picker');
   assert.equal((await as(ana)(`/api/classes/${c5.id}/lessons`, { method: 'POST', body: { lessonId: benLesson.id } })).status, 404);
-  r = await as(ana)(`/teach/lessons?school=${oak.id}&class=${c5.id}&open=ai`);
-  assert.match(r.text, new RegExp(`name="classId" value="${c5.id}"`)); assert.match(r.text, /class="libdrop aidraft" open/);
   r = await as(ana)('/api/lessons', { method: 'POST', body: { schoolId: oak.id, title: 'From the class', classId: c5.id } });
   assert.match(r.json.redirect, new RegExp(`\\?class=${c5.id}$`));
   r = await as(ana)('/api/lessons', { method: 'POST', body: { schoolId: oak.id, title: 'Not my class', classId: benClass.id } });
@@ -197,8 +194,7 @@ test('class Lessons tab and editor: one assignment per class, rows open progress
   assert.match(r.text, new RegExp(`<li class="cl-row" id="cl-${cl.id}">`));
   assert.match(r.text, new RegExp(`<a class="cl-main" href="/class/${c5.id}/progress/${cl.id}">`), 'the row opens its progress');
   assert.match(r.text, new RegExp(`href="/class/${c5.id}/lessons/${cl.id}"`), 'student view in the ⋯ menu');
-  assert.match(r.text, new RegExp(`href="/teach/lessons/${l.id}\\?from=${c5.id}"`));
-  assert.doesNotMatch(r.text, new RegExp(`<option value="${l.id}">`), 'not offered twice');
+  assert.match(r.text, new RegExp(`href="/class/${c5.id}/progress/${cl.id}">📊 Scores`), 'Scores in the ⋯ menu');
   assert.match(r.text, /<h2 id="ls-h" class="sr-only">/, 'the tab heading is for screen readers only');
   // the editor: one line per class (linking to the row), live notice, class not offered again, back to the class
   r = await as(ana)(`/teach/lessons/${l.id}?from=${c5.id}`);
@@ -227,8 +223,4 @@ test('class Lessons tab and editor: one assignment per class, rows open progress
   const copyId = r.json.id; assert.equal(r.json.redirect, `/teach/lessons/${copyId}?copied=1`);
   assert.equal(L.getLesson(copyId).folder_id, folder.id);
   assert.match((await as(ana)(r.json.redirect)).text, /This is your copy/);
-  // sharing is one button; the Shared by colleagues tab says what it lists
-  r = await as(ana)(`/teach/lessons?school=${oak.id}&folder=${folder.id}`);
-  assert.match(r.text, new RegExp(`data-api="/api/lessons/${l.id}" data-reload[^>]*><input type="hidden" name="shared" value="1">`));
-  r = await as(head)(`/teach/lessons?school=${oak.id}&tab=shared`); assert.match(r.text, /Shared by colleagues/);
 });

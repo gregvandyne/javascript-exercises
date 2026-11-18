@@ -431,7 +431,7 @@ function fakeTts({ voices = LISTS.chromeOS, synth = true, langs = ['en', 'fr', '
   const st = (f, ms) => { timers.push({ f, ms, id: ++tid, done: false }); return tid; };
   const ct = id => { const t = timers.find(x => x.id === id); if (t) t.done = true; };
   const api = new Function('window', 'INIT', 'setTimeout', 'clearTimeout', 'send', 'parentWin', 'Audio', 'URL', 'document',
-    SPEECH + '\nreturn { speak: speak, stopSpeaking: stopSpeaking, prefetchSpeech: prefetchSpeech, aiVoice: aiVoice, aiVoiceCheck: aiVoiceCheck, ttsLocale: ttsLocale };')(
+    SPEECH + '\nreturn { speak: speak, stopSpeaking: stopSpeaking, prefetchSpeech: prefetchSpeech, aiVoice: aiVoice, aiVoiceCheck: aiVoiceCheck, ttsLocale: ttsLocale, speaking: speaking, afterSpeech: afterSpeech };')(
     win, { user, tts: langs ? { langs } : undefined }, st, ct, (type, m) => sent.push({ type, ...m }), parent, FakeAudio, FakeURL, doc);
   const run = ms => timers.filter(t => !t.done && (ms === undefined || t.ms === ms)).forEach(t => { t.done = true; t.f(); });
   const reply = (m, source = parent) => (winListeners.message || []).forEach(f => f({ source, data: { brb: 1, type: 'brb:tts', ...m } }));
@@ -458,6 +458,30 @@ test('AI voices: speak asks the play page, plays the bytes it gets back, onend o
   assert.deepEqual(a.plays, ['blob:fake/1', 'blob:fake/2']);
   a.end(); a.end(); assert.equal(ends2, 1, 'onend once'); assert.equal(ends, 1);
   f.reply({ id: 1, ok: true, buf: buf() }); assert.equal(a.plays.length, 2, 'a repeated reply is ignored');
+});
+
+test('afterSpeech: the next question waits for the line being said, a line still on its way from the server included', async () => {
+  const f = fakeTts();
+  const tick = (n = 1) => { for (let i = 0; i < n; i++) { f.run(0); f.run(60); } };
+  let next = 0;
+  f.api.speak('Yes! 10 and 4 make 14.');                                     // asked of the server, not back yet
+  assert.equal(f.api.speaking(), true, 'a line on its way counts');
+  f.api.afterSpeech(() => next++, { min: 2000 });
+  tick(60);                                                                  // 3.6 s: the 2 s a game used to wait has passed
+  assert.equal(next, 0, 'still waiting for the line');
+  f.reply({ id: 1, ok: true, buf: buf() }); await f.flush();
+  tick(10); assert.equal(next, 0, 'playing');
+  f.audios[0].end();
+  assert.equal(f.api.speaking(), false);
+  tick(3); assert.equal(next, 0, 'a short breath after the line'); tick(3);
+  assert.equal(next, 1, 'then the next question'); tick(20); assert.equal(next, 1, 'once');
+  // nothing said: min only; a line that never ends: max; cancelled: never
+  let a = 0, b = 0, c = 0;
+  f.api.afterSpeech(() => a++, { min: 600 }); tick(9); assert.equal(a, 0); tick(6); assert.equal(a, 1);
+  f.api.speak('Stuck line.');
+  f.api.afterSpeech(() => b++, { max: 1200 }); tick(19); assert.equal(b, 0); tick(3); assert.equal(b, 1, 'max: the game is never held');
+  f.api.stopSpeaking();
+  const stop = f.api.afterSpeech(() => c++, { min: 120 }); stop(); tick(20); assert.equal(c, 0, 'cancelled');
 });
 
 test('AI voices: no answer in 4 s, a refusal or audio that will not play -> the device voice, onend once; late replies dropped', async () => {

@@ -123,6 +123,11 @@ const TYPES = {
     && (m.check === undefined || m.check === true),
   // Loudness (BRB.loudness; only page-data.mic pages ever listen, public/js/loudness.js): hello / start / keep / stop.
   'brb:loud': m => LOUD_OPS.includes(m.op),
+  // BRB.copy: a link to this game's own page or a small PNG (copyForGame checks which); BRB.saveQuestionSet: a set game's
+  // questions (the server cleans them); BRB.assign: a set game's lesson parameters (the server cleans them).
+  'brb:copy': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && (typeof m.text === 'string' || (typeof Blob === 'function' && m.png instanceof Blob)),
+  'brb:set-save': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.items) && m.items.length <= 10 && (m.set === null || m.set === undefined || typeof m.set === 'string'),
+  'brb:assign': m => typeof m.opts === 'string',
 };
 const LOUD_OPS = ['hello', 'start', 'keep', 'stop'];
 const TTS_ROLES = ['narrator', 'friendly', 'bright', 'deep', 'wise', 'grumpy'];
@@ -225,6 +230,13 @@ addEventListener('message', e => {
     case 'brb:orientation': if (m.value.startsWith('landscape')) { $('#orient').classList.add('show'); orientDismissed = false; orientSync(); } break;
     // "Try again" on the 3D card: reload the page, which makes a fresh frame link and sends the sign-in cookie.
     case 'brb:retry': if (tappedJustNow()) location.reload(); break;
+    // BRB.copy: the frame can't use the clipboard (sandboxed), so the page copies for it, only right after a tap, and
+    // only a link to this game's own play page (Algebra Builder's activity links) or a PNG picture (that link's QR code).
+    case 'brb:copy': copyForGame(m); break;
+    // BRB.saveQuestionSet (an official game that keeps question sets): the page saves it for the signed-in teacher.
+    case 'brb:set-save': saveSetForGame(m); break;
+    // BRB.assign (a teacher in a set game): after a tap, the game's Assign page with the problem or set it opens at.
+    case 'brb:assign': if (typeof m.opts === 'string' && m.opts.length <= 200 && /^[a-z0-9=&-]*$/.test(m.opts) && tappedJustNow('brb-assign-at', 2000)) location.href = `/teach/assign?game=${encodeURIComponent(d.slug)}&opts=${encodeURIComponent(m.opts)}`; break;
   }
 });
 addEventListener('pagehide', () => { if (pendingSave) { navigator.sendBeacon && fetch(`/api/games/${d.gameId}/save`, { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ data: pendingSave }) }); } });
@@ -295,6 +307,32 @@ function stopLoud() { loudGen++; if (loudBridge) loudBridge.stop('stopped'); }
 // Only official games listed for voices, games the admin switched on and Builder games whose published version passed
 // the safety scanner get d.tts (a token bound to this player and
 // game); the server checks the game, the language and the words again. Any refusal, a timeout or the device choice: the frame is told no, and it uses the device's voice.
+/** BRB.copy (docs/sdk.md): a link to this game's play page (any query, at most 400 characters) or a PNG of at most
+ *  300 KB, after a tap. The answer goes back as brb:copied { id, ok }. */
+async function copyForGame(m) {
+  let ok = false;
+  try {
+    const own = `${location.origin}/play/${d.slug}`;
+    const link = typeof m.text === 'string' && m.text.length <= 400 && (m.text === own || m.text.startsWith(own + '?'));
+    const png = typeof Blob === 'function' && m.png instanceof Blob && m.png.type === 'image/png' && m.png.size <= 300 * 1024;
+    if (tappedJustNow('brb-copy-at', 1000) && navigator.clipboard && (link || png)) {
+      if (link) await navigator.clipboard.writeText(m.text);
+      else await navigator.clipboard.write([new ClipboardItem({ 'image/png': m.png })]);
+      ok = true;
+    }
+  } catch { ok = false; }
+  if (typeof m.id === 'number') toFrame({ type: 'brb:copied', id: m.id, ok });
+}
+async function saveSetForGame(m) {
+  if (typeof m.id !== 'number') return;
+  let out = { error: 'offline' };
+  if (!d.signedIn) out = { error: 'guest' };
+  else {
+    try { const r = await api(`/api/games/${d.gameId}/sets`, { method: 'POST', body: { items: m.items, ...(typeof m.set === 'string' ? { id: m.set } : {}) } }); out = { set: r.id }; }
+    catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'bad' : 'offline') }; }
+  }
+  toFrame({ type: 'brb:set-saved', id: m.id, ...out });
+}
 const toFrame = (msg, transfer) => { try { frame.contentWindow.postMessage({ brb: 1, ...msg }, '*', transfer || []); } catch { /* frame gone */ } };
 function tellMode() { if (d.tts) toFrame({ type: 'brb:tts-mode', mode: voiceMode() }); }
 // After the server says "slow down" ('fast'), prefetches pause for a minute so the lines actually spoken keep their

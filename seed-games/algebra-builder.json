@@ -1,0 +1,65 @@
+{
+  "slug": "algebra-builder",
+  "title": "Algebra Builder",
+  "icon": "🟩",
+  "cover": "mint",
+  "category": "puzzle",
+  "shelf": "play",
+  "tags": "algebra,algebra tiles,equations,solve for x,balance,multiply,factor,polynomials,quadratics,area model,distributive property,middle school,high school,grade 7,grade 8,grade 9,math,maths,whiteboard,teacher,question set,worksheet",
+  "description": "Build algebra with tiles. Solve an equation by keeping a balance level, multiply two factors into a rectangle, or factor a polynomial back into its sides. Teachers type one problem and share it as a link or QR code; students drag, flip and turn tiles on a whiteboard, then press Check at each step. Teachers can also save a set of up to 10 questions on one link.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Adapted from Algebra Tiles by teacher.dev (EdTech-a-thon 2026, Apache License 2.0; tools/algebra-builder/LICENSE and NOTICE). Built by tools/algebra-builder/build.mjs (Svelte + Vite into one page; npm run build:algebra-builder) from tools/algebra-builder; tests/unit/algebra-builder.test.js checks the committed file is the build. Same activities, checks and steps as the original: Solve (Isolate, Divide, Answer; live balance on or off), Multiply and Factor (rectangle, sides, equation; all tiles or none to start), on its whiteboard (problem bar with steps and Check, the mat or balance, the toolbar of select, pan, undo, redo, reset, flip, turn, the tile tray and trash, pan and zoom). Oomba look (paper, ink and green, Bricolage Grotesque, rounded cards) and the Oomba Kit's effects only (pinned kit tag; no character): a passed step plays 'correct' and pops the bar, a wrong Check plays 'wrong' and shakes it, the finish plays 'win' with confetti and calls BRB.gameOver({ won: true }) once. Teachers' setup page per activity is in-game: its activity link and QR code open the same problem on Oomba through lesson params (mode = solve | multiply | factor; chapter = the problem with + = ^ ( ) written as p q e o c, so 2x+3=7 is 2xp3q7, at most 16 characters; level 1 or 2 = live balance on/off for Solve, all tiles/none for Multiply and Factor; lock = 1), and the same query can go in a lesson step. Copying goes through BRB.copy (the play page writes the clipboard, only this game's own link or a small PNG, after a tap). Question sets (server/services/game-sets.js, migration 0085): a teacher saves up to 10 questions from any activity under a short code (chapter=s-xxxxxxxxxx&lock=1), BRB.questionSet hands the set to the game, BRB.saveQuestionSet saves it through the page (signed-in, not guests); students see '1 of 5', Next question, and the last one's finish calls BRB.gameOver once. The original's email links, suggestion form and analytics are left out. Nothing is saved.",
+  "l10n": {
+    "en-GB": {
+      "description": "Build algebra with tiles. Solve an equation by keeping a balance level, multiply two factors into a rectangle, or factor a polynomial back into its sides. Teachers type one problem and share it as a link or QR code; students drag, flip and turn tiles on a whiteboard, then press Check at each step. Teachers can also save a set of up to 10 questions on one link.",
+      "tags": "algebra,algebra tiles,equations,solve for x,balance,multiply,factorise,polynomials,quadratics,area model,year 8,year 9,maths,whiteboard,teacher"
+    },
+    "pt": {
+      "description": "Monte álgebra com peças. Resolva uma equação mantendo a balança equilibrada, multiplique dois fatores formando um retângulo ou fatore um polinômio de volta em seus lados. O professor digita um problema e compartilha por link ou QR code; os alunos arrastam, viram e giram as peças num quadro e tocam em Verificar a cada etapa. O professor também pode salvar um conjunto de até 10 questões num só link.",
+      "tags": "álgebra,peças de álgebra,equações,balança,multiplicar,fatorar,polinômios,matemática,quadro"
+    },
+    "fr": {
+      "description": "Fais de l’algèbre avec des tuiles. Résous une équation en gardant la balance en équilibre, multiplie deux facteurs en un rectangle ou factorise un polynôme pour retrouver ses côtés. L’enseignant tape un problème et le partage par lien ou QR code ; les élèves déplacent, retournent et tournent les tuiles sur un tableau, puis appuient sur Vérifier à chaque étape. L’enseignant peut aussi enregistrer une série de 10 questions maximum sur un seul lien.",
+      "tags": "algèbre,tuiles algébriques,équations,balance,multiplier,factoriser,polynômes,maths,tableau"
+    },
+    "es": {
+      "description": "Construye álgebra con fichas. Resuelve una ecuación manteniendo la balanza equilibrada, multiplica dos factores en un rectángulo o factoriza un polinomio para hallar sus lados. El docente escribe un problema y lo comparte con un enlace o código QR; los alumnos arrastran, voltean y giran fichas en una pizarra y pulsan Comprobar en cada paso. El docente también puede guardar una serie de hasta 10 preguntas en un solo enlace.",
+      "tags": "álgebra,fichas de álgebra,ecuaciones,balanza,multiplicar,factorizar,polinomios,matemáticas,pizarra"
+    },
+    "de": {
+      "description": "Algebra mit Plättchen bauen. Löse eine Gleichung, indem du die Waage im Gleichgewicht hältst, multipliziere zwei Faktoren zu einem Rechteck oder zerlege ein Polynom wieder in seine Seiten. Lehrkräfte tippen eine Aufgabe ein und teilen sie als Link oder QR-Code; Schüler ziehen, spiegeln und drehen Plättchen auf einer Tafel und tippen bei jedem Schritt auf Prüfen. Lehrkräfte können auch eine Reihe von bis zu 10 Aufgaben unter einem Link speichern.",
+      "tags": "algebra,algebra-plättchen,gleichungen,waage,multiplizieren,faktorisieren,polynome,mathe,tafel"
+    },
+    "he": {
+      "description": "בונים אלגברה עם אריחים. פותרים משוואה כשהמאזניים נשארים מאוזנים, כופלים שני גורמים למלבן, או מפרקים פולינום בחזרה לצלעות שלו. המורה מקליד בעיה אחת ומשתף בקישור או בקוד QR; התלמידים גוררים, הופכים ומסובבים אריחים על לוח, ולוחצים על בדיקה בכל שלב. המורה יכול גם לשמור סדרה של עד 10 שאלות בקישור אחד.",
+      "tags": "אלגברה,אריחי אלגברה,משוואות,מאזניים,כפל,פירוק לגורמים,פולינומים,מתמטיקה,לוח"
+    },
+    "ja": {
+      "description": "タイルで代数をつくろう。てんびんをつり合わせて方程式を解いたり、2つの因数をかけて長方形をつくったり、多項式を因数分解して辺にもどしたりします。先生は問題を1つ入力してリンクやQRコードで共有。生徒はホワイトボードでタイルを動かし、裏返し、回して、各ステップで「チェック」を押します。 先生は最大10問のセットを1つのリンクに保存することもできます。",
+      "tags": "代数,代数タイル,方程式,てんびん,かけ算,因数分解,多項式,数学,ホワイトボード"
+    },
+    "ar": {
+      "description": "ابنِ الجبر بالبلاطات. حُلّ معادلة بإبقاء الميزان متوازنًا، أو اضرب عاملين لتكوين مستطيل، أو حلّل كثيرة حدود إلى أضلاعها. يكتب المعلم مسألة واحدة ويشاركها برابط أو رمز QR، ويسحب الطلاب البلاطات ويقلبونها ويديرونها على السبورة ثم يضغطون تحقّق في كل خطوة. ويمكن للمعلم أيضًا حفظ مجموعة من 10 أسئلة على الأكثر في رابط واحد.",
+      "tags": "جبر,بلاطات الجبر,معادلات,ميزان,ضرب,تحليل إلى عوامل,كثيرات الحدود,رياضيات,سبورة"
+    },
+    "ru": {
+      "description": "Алгебра из плиток. Решай уравнение, удерживая весы в равновесии, умножай два множителя в прямоугольник или раскладывай многочлен на множители-стороны. Учитель вводит одну задачу и делится ссылкой или QR-кодом; ученики перетаскивают, переворачивают и поворачивают плитки на доске и на каждом шаге нажимают «Проверить». Учитель может также сохранить подборку до 10 задач под одной ссылкой.",
+      "tags": "алгебра,алгебраические плитки,уравнения,весы,умножение,разложение на множители,многочлены,математика,доска"
+    },
+    "it": {
+      "description": "Costruisci l’algebra con le tessere. Risolvi un’equazione tenendo la bilancia in equilibrio, moltiplica due fattori in un rettangolo o scomponi un polinomio nei suoi lati. L’insegnante scrive un problema e lo condivide con un link o un codice QR; gli studenti trascinano, capovolgono e ruotano le tessere su una lavagna e premono Verifica a ogni passo. L’insegnante può anche salvare una serie di massimo 10 domande in un solo link.",
+      "tags": "algebra,tessere algebriche,equazioni,bilancia,moltiplicare,scomporre,polinomi,matematica,lavagna"
+    },
+    "zh-Hant": {
+      "description": "用代數磚學代數。讓天平保持平衡來解方程式，把兩個因式相乘拼成長方形，或把多項式因式分解回它的邊長。老師輸入一個題目，用連結或 QR 碼分享；學生在白板上拖曳、翻轉、旋轉磚塊，每一步按「檢查」。老師也可以把最多 10 題存成一組，用同一個連結分享。",
+      "tags": "代數,代數磚,方程式,天平,乘法,因式分解,多項式,數學,白板"
+    },
+    "nl": {
+      "description": "Bouw algebra met tegels. Los een vergelijking op door de weegschaal in evenwicht te houden, vermenigvuldig twee factoren tot een rechthoek of ontbind een veelterm weer in zijn zijden. De leraar typt één opgave en deelt die als link of QR-code; leerlingen slepen, spiegelen en draaien tegels op een whiteboard en drukken bij elke stap op Controleer. De leraar kan ook een reeks van maximaal 10 vragen onder één link bewaren.",
+      "tags": "algebra,algebrategels,vergelijkingen,weegschaal,vermenigvuldigen,ontbinden,veeltermen,wiskunde,whiteboard"
+    }
+  }
+}

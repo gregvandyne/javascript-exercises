@@ -29,6 +29,7 @@ import { router as adminRoutes } from './routes/admin.js';
 import { router as schoolRoutes } from './routes/schools.js';
 import { router as staffInviteRoutes } from './routes/staff-invites.js';
 import { router as lessonRoutes } from './routes/lessons.js';
+import { router as gameFolderRoutes } from './routes/game-folders.js';
 import { router as rubricRoutes } from './routes/rubrics.js';
 import { router as progressRoutes } from './routes/progress.js';
 import { router as infoRoutes } from './routes/info.js';
@@ -209,7 +210,7 @@ export function createApp() {
   // Oomba Live before the Google routes: /join takes live codes and hands class codes on (routes/live.js).
   // LANDING HOOK (routes/landing.js): just before the home route, "/" with no session is the teacher landing page and
   // /play is today's guest home ("Just Play"). Everyone with a session gets the home route below, unchanged.
-  for (const r of [authRoutes, onboardingRoutes, passwordResetRoutes, familyRoutes, plansRoutes, teacherPlanRoutes, schoolBillingRoutes, quickLiveRoutes, liveRoutes, googleRoutes, gclassroomRoutes, landingRoutes, discoverRoutes, courseRoutes, parentRoutes, trustRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, buildSetupRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, teachLoopRoutes, dashRoutes, staffInviteRoutes, schoolRoutes, standardsRoutes, csQuestRoutes, cyberRoutes, numberQuestRoutes, moveRoutes, storyRoutes, progressRoutes, rubricRoutes, lessonRoutes, digestRoutes, infoRoutes, kitRoutes]) app.use(r);
+  for (const r of [authRoutes, onboardingRoutes, passwordResetRoutes, familyRoutes, plansRoutes, teacherPlanRoutes, schoolBillingRoutes, quickLiveRoutes, liveRoutes, googleRoutes, gclassroomRoutes, landingRoutes, discoverRoutes, courseRoutes, parentRoutes, trustRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, buildSetupRoutes, studioRoutes, gameFolderRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, teachLoopRoutes, dashRoutes, staffInviteRoutes, schoolRoutes, standardsRoutes, csQuestRoutes, cyberRoutes, numberQuestRoutes, moveRoutes, storyRoutes, progressRoutes, rubricRoutes, lessonRoutes, digestRoutes, infoRoutes, kitRoutes]) app.use(r);
 
   app.use('/api', (req, res) => res.status(404).json({ error: tReq(req)('errors.api.notFound') }));
   app.use((req, res) => notFound(req, res));
