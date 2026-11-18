@@ -2747,7 +2747,9 @@
         "zoneNone": "無",
         "placeNote": "輸入城鎮或城市。Oomba 從不使用任何人的位置。",
         "qrNote": "只能顯示班級核准的連結和 Oomba 的頁面。",
-        "undo": "復原"
+        "undo": "復原",
+        "done": "完成",
+        "saved": "已儲存"
       },
       "bgChanged": "已更換背景",
       "uploading": "正在檢查你的圖片…",
@@ -9343,6 +9345,10 @@
         "mode": "計時器或碼錶",
         "toTimer": "計時器：倒數計時",
         "toStopwatch": "碼錶：從零開始正數",
+        "editHint": "點一下以更改時間",
+        "editLabel": "新的時間：分鐘，或 分:秒",
+        "editBad": "請輸入分鐘（8）或分鐘和秒（8:30），最多 180 分鐘。",
+        "editSet": "計時器已設定為 {time}",
         "o": {
           "mode": {
             "timer": "計時器",
@@ -11045,7 +11051,6 @@
   },
   "folders": {
     "title": "我的資料夾",
-    "why": "資料夾可以整理你的遊戲，包括你自己的和 Oomba 的。把遊戲放進資料夾，不會改變誰能玩它。",
     "new": "新增資料夾",
     "name": "資料夾名稱",
     "namePlaceholder": "例如：分數週",
@@ -11106,6 +11111,23 @@
     "progressEmptyText": "在「遊戲」分頁指派遊戲後，就能在這裡看到每位學生的進度。",
     "studentEmptyText": "老師會在這裡加入遊戲。",
     "liveHistory": "即時遊戲紀錄",
-    "liveHistoryNone": "這個班級還沒有玩過即時遊戲。"
+    "liveHistoryNone": "這個班級還沒有玩過即時遊戲。",
+    "allGames": "我的所有遊戲",
+    "assignedTo": "已指派給 {class}",
+    "studentShared": "學生分享的遊戲",
+    "fromClass": "來自我們班",
+    "sideClass": "這個班的遊戲",
+    "assignTo": "指派給 {class}",
+    "assignAll": "{count, plural, other {全部指派（# 個）}}",
+    "assignAllNote": "這裡 {class} 能玩的每個遊戲，都會用這個截止日期指派。班上已有的遊戲，以及需要先設定的遊戲，會略過。",
+    "assignAllDone": "{count, plural, other {已將 # 個遊戲指派給 {class}}}",
+    "assignAllSkipped": "{count, plural, other {略過 # 個}}",
+    "assignAllNone": "沒有新的遊戲可以指派：這些遊戲已在 {class} 中，或需要先設定。",
+    "assignedChip": "已指派",
+    "assignedWhere": "已指派的遊戲會連同截止日期列在「已指派給 {class}」底下。",
+    "saveAnother": "存到其他資料夾",
+    "moveUp": "上移",
+    "moveDown": "下移",
+    "sharedEmpty": "這裡還沒有你能開啟的遊戲。"
   }
 }

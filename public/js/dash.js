@@ -375,7 +375,11 @@ function start() {
 
   // ---------------------------------------------------------------- saving
   let saveTimer = null;
-  function save() { clearTimeout(saveTimer); saveTimer = setTimeout(flush, 700); }
+  function save() {
+    clearTimeout(saveTimer); saveTimer = setTimeout(flush, 700);
+    if (board) { board.dirty = true; if (board.status) board.status.textContent = ''; }
+  }
+  /** Saves now; true when it was saved. The board's settings sheet says so ("Saved"). */
   async function flush() {
     clearTimeout(saveTimer); saveTimer = null;
     const strip = w => ({ id: w.id, type: w.type, x: w.x, y: w.y, w: w.w, h: w.h, s: w.s, ...(w.pin ? { pin: true } : {}) });
@@ -388,7 +392,9 @@ function start() {
         const r = await api(`/api/dash/${CID}/me`, { method: 'POST', body: { widgets: S.widgets.filter(x => !x.pinned).map(strip), pins, bg: S.bg } });
         S.mine = r.state;
       }
-    } catch (err) { toast(err.message, { bad: true }); }
+      if (board && board.status && !saveTimer) board.status.textContent = `✓ ${t('js.dash.side.saved')}`;
+      return true;
+    } catch (err) { toast(err.message, { bad: true }); return false; }
   }
   addEventListener('pagehide', () => { if (saveTimer) flush(); });
 
@@ -462,6 +468,9 @@ function start() {
   // ---------------------------------------------------------------- edit mode on and off
   const keyhelp = document.createElement('p'); keyhelp.id = 'dash-keyhelp'; keyhelp.className = 'sr-only'; keyhelp.textContent = t('js.dash.keyHelp'); root.appendChild(keyhelp);
   function setEditing(on) {
+    // A settings field still being typed in lets go first, so its change is kept (Safari keeps the focus in it when
+    // Done is tapped, and fires no change).
+    if (!on && $('#dash-side')?.contains(document.activeElement)) document.activeElement.blur?.();
     S.editing = on; S.selected = null; S.undo = on ? [] : S.undo;
     root.classList.toggle('is-editing', on);
     for (const id of ['dash-lib', 'dash-side', 'dash-editfoot', 'dash-edithead']) { const x = document.getElementById(id); if (x) x.hidden = !on; }
@@ -572,15 +581,20 @@ function start() {
   function boardSettings(id) {
     const w = S.widgets.find(x => x.id === id), type = w && types.get(w.type);
     if (!TEACHER || S.editing || !type || board) return;
-    const sh = sheet({ title: t('js.dash.side.title', { name: type.name }), content: `<div class="dash-boardset" id="dash-boardset" data-for=""></div><div class="dash-boardacts"><button class="btn btn-sm" type="button" data-bundo disabled>↶ ${esc(t('js.dash.side.undo'))}</button></div>`,
-      onClose: () => {
+    // Every change is kept as it is made (and a field still being typed in when the sheet closes, however it closes:
+    // public/js/app.js sheet); Done says so and closes, and "Saved" shows once the server has it.
+    const sh = sheet({ title: t('js.dash.side.title', { name: type.name }), content: `<div class="dash-boardset" id="dash-boardset" data-for=""></div><div class="dash-boardacts"><button class="btn btn-sm" type="button" data-bundo disabled>↶ ${esc(t('js.dash.side.undo'))}</button><span class="small dash-saved" role="status"></span><button class="btn btn-sm btn-primary dash-bdone" type="button" data-bdone>${esc(t('js.dash.side.done'))}</button></div>`,
+      onClose: async () => {
+        const dirty = board && board.dirty;
         board = null;
-        if (saveTimer) flush();
         const g = grid.querySelector(`[data-id="${CSS.escape(id)}"] .dash-wgear`);
         if (g) { g.setAttribute('aria-expanded', 'false'); g.focus({ preventScroll: true }); }
+        const ok = saveTimer ? await flush() : true;
+        if (dirty && ok) toast(`✓ ${t('js.dash.side.saved')}`);
       } });
     sh.el.querySelector('.sheet').classList.add('dash-setsheet');
-    board = { id, sh, box: sh.el.querySelector('#dash-boardset'), h: sh.el.querySelector('#sheet-title'), base: S.undo.length, undo: sh.el.querySelector('[data-bundo]') };
+    board = { id, sh, box: sh.el.querySelector('#dash-boardset'), h: sh.el.querySelector('#sheet-title'), base: S.undo.length, undo: sh.el.querySelector('[data-bundo]'), status: sh.el.querySelector('.dash-saved'), dirty: false };
+    sh.el.querySelector('[data-bdone]').addEventListener('click', () => sh.close());
     board.undo.addEventListener('click', () => { undo(); (board?.box.querySelector('input,select,textarea,button') || board?.undo)?.focus(); });
     grid.querySelector(`[data-id="${CSS.escape(id)}"] .dash-wgear`)?.setAttribute('aria-expanded', 'true');
     renderSide(); syncUndo();
@@ -739,6 +753,9 @@ function start() {
     number(field, f, w, id, type, { commit, redraw }) {
       field.innerHTML = `<label for="${id}">${esc(f.label)}</label><input class="input" id="${id}" type="number" inputmode="numeric" min="${f.min}" max="${f.max}">`;
       const inp = field.querySelector('input'); inp.value = w.s[f.key] ?? f.def;
+      // Kept as it is typed (Safari fires no change on a number field until it lets go, and the sheet may close first);
+      // a number out of range waits for the field to let go, then is brought into range.
+      inp.addEventListener('input', () => { const n = +inp.value; if (inp.value !== '' && Number.isInteger(n) && n >= f.min && n <= f.max && w.s[f.key] !== n) { w.s[f.key] = n; redraw(); } });
       inp.addEventListener('change', () => { const n = Math.round(+inp.value); w.s[f.key] = Number.isFinite(n) && inp.value !== '' ? Math.min(f.max, Math.max(f.min, n)) : f.def; inp.value = w.s[f.key]; commit(); redraw(); });
     },
     zone(field, f, w, id, type, { commit, redraw }) {

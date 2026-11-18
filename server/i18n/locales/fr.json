@@ -2747,7 +2747,9 @@
         "zoneNone": "Aucun",
         "placeNote": "Tape une ville ou un village. Oomba n’utilise jamais la position de personne.",
         "qrNote": "Seuls les liens approuvés de la classe et les pages Oomba peuvent être affichés.",
-        "undo": "Annuler"
+        "undo": "Annuler",
+        "done": "Terminé",
+        "saved": "Enregistré"
       },
       "bgChanged": "Fond changé",
       "uploading": "Vérification de ton image…",
@@ -9343,6 +9345,10 @@
         "mode": "Minuteur ou chronomètre",
         "toTimer": "Minuteur : compte à rebours",
         "toStopwatch": "Chronomètre : compte à partir de zéro",
+        "editHint": "Touchez pour changer le temps",
+        "editLabel": "Nouveau temps : minutes, ou minutes:secondes",
+        "editBad": "Tapez des minutes (8) ou des minutes et secondes (8:30), 180 minutes au plus.",
+        "editSet": "Minuteur réglé sur {time}",
         "o": {
           "mode": {
             "timer": "Minuteur",
@@ -11045,7 +11051,6 @@
   },
   "folders": {
     "title": "Mes dossiers",
-    "why": "Les dossiers rangent tes jeux, les tiens et ceux d'Oomba. Mettre un jeu dans un dossier ne change jamais qui peut y jouer.",
     "new": "Nouveau dossier",
     "name": "Nom du dossier",
     "namePlaceholder": "ex. Semaine des fractions",
@@ -11106,6 +11111,23 @@
     "progressEmptyText": "Attribue un jeu dans l'onglet Jeux, et tu verras ici où en est chaque élève.",
     "studentEmptyText": "Ton enseignant ajoutera des jeux ici.",
     "liveHistory": "Historique des jeux en direct",
-    "liveHistoryNone": "Aucun jeu en direct avec cette classe pour l'instant."
+    "liveHistoryNone": "Aucun jeu en direct avec cette classe pour l'instant.",
+    "allGames": "Tous mes jeux",
+    "assignedTo": "Attribués à {class}",
+    "studentShared": "Jeux partagés par les élèves",
+    "fromClass": "De notre classe",
+    "sideClass": "Jeux de cette classe",
+    "assignTo": "Attribuer à {class}",
+    "assignAll": "{count, plural, one {Attribuer # jeu} other {Attribuer les #}}",
+    "assignAllNote": "Chaque jeu d'ici auquel {class} peut jouer est attribué avec cette date limite. Les jeux que la classe a déjà, et ceux qu'il faut d'abord préparer, sont ignorés.",
+    "assignAllDone": "{count, plural, one {# jeu attribué à {class}} other {# jeux attribués à {class}}}",
+    "assignAllSkipped": "{count, plural, one {# ignoré} other {# ignorés}}",
+    "assignAllNone": "Rien de nouveau à attribuer : ces jeux sont déjà dans {class} ou doivent d'abord être préparés.",
+    "assignedChip": "Attribué",
+    "assignedWhere": "Les jeux attribués sont listés sous « Attribués à {class} », avec leurs dates limites.",
+    "saveAnother": "Ranger dans un autre dossier",
+    "moveUp": "Monter",
+    "moveDown": "Descendre",
+    "sharedEmpty": "Il n'y a pas encore ici de jeu que tu peux ouvrir."
   }
 }

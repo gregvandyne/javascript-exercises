@@ -41,13 +41,16 @@ export async function openSave(href) {
   });
 }
 
-/** The confirmation: where it went, then keep browsing (close) or open that folder. */
+/** The confirmation: where it went, then keep browsing (close) or open that folder: in the sidebar of the page it was
+ *  saved from when that is a class page, else on Build. On a page with the folder sidebar (public/js/shelf.js), keep
+ *  browsing reloads it, so the folders' counts are right. */
 function done(sh, W, folder, already) {
   const body = $('.sheet-body', sh.el);
+  const base = /^\/class\/[^/]+$/.test(location.pathname) ? location.pathname : '/build';
   body.innerHTML = `<div class="stack fsave-done" role="status"><p class="fsave-ok"><span aria-hidden="true">✅</span> <b dir="auto">${esc(fillIn(already ? W.already : W.savedTo, folder.name))}</b></p>
     <div class="fsave-acts"><button class="btn btn-block" type="button" data-keep>${esc(W.keep)}</button>
-    <a class="btn btn-primary btn-block" href="/build/folders/${encodeURIComponent(folder.id)}" dir="auto">📁 ${esc(fillIn(W.open, folder.name))}</a></div></div>`;
-  $('[data-keep]', body).addEventListener('click', () => sh.close());
+    <a class="btn btn-primary btn-block" href="${base}?folder=${encodeURIComponent(folder.id)}" dir="auto">📁 ${esc(fillIn(W.open, folder.name))}</a></div></div>`;
+  $('[data-keep]', body).addEventListener('click', () => { sh.close(); if (!already && document.querySelector('[data-shelf]')) location.reload(); });
   $('[data-keep]', body).focus();
 }
 

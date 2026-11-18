@@ -77,7 +77,7 @@ test('0085 backfill: a lesson with games becomes a folder; its assignments leave
   retireLessons(db);
   assert.equal(F.foldersOf(ana.id).length, 1, 'running it again makes no second folder');
   // the editor of a retired lesson opens its folder
-  return as(ana)(`/teach/lessons/${lesson.id}`).then(r => { assert.equal(r.status, 302); assert.equal(r.location, `/build/folders/${fs[0].id}`); });
+  return as(ana)(`/teach/lessons/${lesson.id}`).then(r => { assert.equal(r.status, 302); assert.equal(r.location, `/build?folder=${fs[0].id}`); });
 });
 
 test('folders: private, named, any game you can see (Oomba and your own drafts), never a game you cannot', () => {
@@ -113,14 +113,17 @@ test('assign: an Oomba game or your own published game (shared with the class); 
   assert.ok(P.gameScore(kid, cl.id, step.id, 7).ok);
 });
 
-test('pages: Build shows folders, a folder page, Save to folder, the class page has games (no lessons), the library redirects', async () => {
+test('pages: Build shows folders, a folder in its sidebar, Save to folder, the class page has games (no lessons), the library redirects', async () => {
   const f = F.createFolder(ana, 'Week 2').folder; F.addGame(ana, f.id, oomba.id);
   const build = await as(ana)('/build');
-  assert.match(build.text, /My folders/); assert.match(build.text, /href="\/build\/folders\//);
+  assert.match(build.text, /My folders/); assert.match(build.text, new RegExp(`href="/build\\?folder=${f.id}"`));
   assert.match(build.text, new RegExp(`href="/build/save\\?id=${mine.id}"`)); assert.match(build.text, new RegExp(`href="/teach/assign\\?id=${mine.id}"`));
-  const page = await as(ana)(`/build/folders/${f.id}`);
+  const old = await as(ana)(`/build/folders/${f.id}`);
+  assert.equal(old.status, 302); assert.equal(old.location, `/build?folder=${f.id}`, 'the old folder page opens Build with the folder picked');
+  const page = await as(ana)(`/build?folder=${f.id}`);
   assert.equal(page.status, 200); assert.match(page.text, /Fraction Fun/); assert.match(page.text, new RegExp(`/teach/assign\\?id=${oomba.id}`));
   assert.equal((await as(ben)(`/build/folders/${f.id}`)).status, 404, "another teacher's folder is not found");
+  assert.doesNotMatch((await as(ben)(`/build?folder=${f.id}`)).text, /Week 2/, 'nor shown on their Build');
   const save = await as(ana)(`/build/save?id=${oomba.id}`);
   assert.match(save.text, /In this folder/); assert.match(save.text, /New folder with this game/);
   const r = await as(ana)('/api/game-folders', { method: 'POST', body: { name: 'Quick picks', gameId: other.id } });
@@ -128,7 +131,7 @@ test('pages: Build shows folders, a folder page, Save to folder, the class page 
   const klass = await as(ana)(`/class/${cls.id}`);
   assert.doesNotMatch(klass.text, /Draft with AI|New unit|Lesson library/);
   assert.match(klass.text, /href="\/build\/new"/); assert.match(klass.text, /Build new game/); assert.match(klass.text, /New folder/); assert.match(klass.text, /Find Oomba games/);
-  assert.doesNotMatch(klass.text, /Ready-made courses/); assert.match(klass.text, /href="\/build\/folders\//, 'the teacher\'s folders to open');
+  assert.doesNotMatch(klass.text, /Ready-made courses/); assert.match(klass.text, new RegExp(`href="/class/${cls.id}\\?folder=${f.id}"`), 'the teacher\'s folders, in the class page\'s sidebar');
   assert.match(klass.text, /Fraction Fun/);
   const lib = await as(ana)('/teach/lessons?school=x'); assert.equal(lib.status, 302); assert.equal(lib.location, '/build');
   const assign = await as(ana)(`/teach/assign?id=${draft.id}&class=${cls.id}`);
@@ -157,8 +160,8 @@ test("sharing a folder with colleagues: shared on Build, opened read-only, copie
   assert.equal(F.addGame(ben, f.id, other.id).code, 'notFound', 'read-only for colleagues');
   // the pages: Build lists it, the folder opens read-only with Copy, and copying makes Ben's own folder
   const build = await as(ben)('/build');
-  assert.match(build.text, /Shared by colleagues/); assert.match(build.text, new RegExp(`href="/build/folders/${f.id}"`));
-  const page = await as(ben)(`/build/folders/${f.id}`);
+  assert.match(build.text, /Shared by colleagues/); assert.match(build.text, new RegExp(`href="/build\\?folder=${f.id}"`));
+  const page = await as(ben)(`/build?folder=${f.id}`);
   assert.equal(page.status, 200); assert.match(page.text, /Copy to my folders/); assert.match(page.text, /Fraction Fun/);
   assert.doesNotMatch(page.text, /Ana Draft|Remove from folder|deleteConfirm|\/api\/game-folders\/[^/]+\/delete/);
   assert.equal((await as(elmT)(`/build/folders/${f.id}`)).status, 404);
@@ -166,7 +169,7 @@ test("sharing a folder with colleagues: shared on Build, opened read-only, copie
   assert.ok(copy.json.ok);
   const mineNow = F.foldersOf(ben.id).find(x => x.name === 'Shared week');
   assert.deepEqual(F.gamesIn(ben, mineNow.id).map(g => g.title), ['Fraction Fun']);
-  const own = await as(ana)(`/build/folders/${f.id}`);
+  const own = await as(ana)(`/build?folder=${f.id}`);
   assert.match(own.text, /Shared with Oak Folders/); assert.match(own.text, /Stop sharing/);
   assert.ok(F.shareFolder(ana, f.id, '').ok);
   assert.deepEqual(F.sharedWith(ben), [], 'stopped sharing: gone for colleagues');
@@ -189,9 +192,9 @@ test('drag to reorder and the Save to folder pop-up: a whole new order saved at 
   assert.ok(r.json.ok);
   assert.deepEqual(F.gamesIn(ana, a.id).map(g => g.id), [other.id, oomba.id, mine.id]);
   assert.equal((await as(ben)(`/api/game-folders/${a.id}/order`, { method: 'POST', body: { ids: [mine.id] } })).status, 404, 'only the owner reorders');
-  // The folder page: no ↑ ↓; both lists can be dragged, with the words for it.
-  const page = await as(ana)(`/build/folders/${a.id}`);
-  assert.doesNotMatch(page.text, /data-api="\/api\/game-folders\/[^"]+\/(up|down)"/);
+  // The folder in Build's sidebar: both lists can be dragged, with the words for it; Move up / Move down are in its ⋯ menu.
+  const page = await as(ana)(`/build?folder=${a.id}`);
+  assert.match(page.text, new RegExp(`data-api="/api/game-folders/${a.id}/(up|down)"`));
   assert.match(page.text, /data-reorder="\/api\/game-folders\/order"/); assert.match(page.text, new RegExp(`data-reorder="/api/game-folders/${a.id}/order"`));
   assert.match(page.text, /data-moved="\{name\}: \{n\} of \{total\}"/); assert.match(page.text, /class="gfo-grip"/);
   // The pop-up's data: the game, each folder (and whether it has it), and the words with {folder} left to fill in.
