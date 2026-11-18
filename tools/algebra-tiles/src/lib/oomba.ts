@@ -1,0 +1,127 @@
+// Algebra Tiles on Oomba: everything that talks to the platform (the BRB SDK in the game frame) and to the Oomba Kit
+// (its sounds and effects), in one place, so the original app's files stay as they were.
+//
+// One link, one problem, as before (an activity link carries its problem), but in Oomba's lesson parameters, which
+// allow only a few keys of letters, digits and "-": /play/algebra-tiles?mode=solve&chapter=2xp3q7&level=1&lock=1
+//   mode     the activity: solve, multiply or factor
+//   chapter  the problem as typed, without spaces, with + = ^ ( ) written as p q e o c (2x+3=7 is 2xp3q7)
+//   level    Solve: 1 the live balance, 2 without it; Multiply and Factor: 1 all the tiles they need, 2 none
+//   lock     1: straight to the problem (no gallery), as the original's student links
+// A lesson step can carry the same query, so a teacher can put one problem in a lesson.
+
+import type { Activity } from './algebra';
+import type { Start } from './settings';
+
+type Brb = {
+	params?: Record<string, string | number | undefined>;
+	gameUrl?: string | null;
+	copy?: (what: string | Blob) => Promise<boolean> | null;
+	gameOver?: (o: { won: boolean; score?: number }) => void;
+	sfx?: { play: (name: string) => void };
+};
+type Kit = {
+	sfx?: (name: string, o?: Record<string, unknown>) => void;
+	juice?: { confetti?: () => void; pop?: (el: Element) => void; shake?: (trauma: number, el?: Element) => void };
+};
+const brb = (): Brb | null => (typeof window !== 'undefined' ? ((window as unknown as { BRB?: Brb }).BRB ?? null) : null);
+const kit = (): Kit | null => (typeof window !== 'undefined' ? ((window as unknown as { Oomba?: Kit }).Oomba ?? null) : null);
+export const reducedMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// --- the problem in a link ---
+
+const TO: Record<string, string> = { '+': 'p', '=': 'q', '^': 'e', '(': 'o', ')': 'c' };
+const FROM: Record<string, string> = Object.fromEntries(Object.entries(TO).map(([k, v]) => [v, k]));
+export const ACTIVITIES: Activity[] = ['solve', 'multiply', 'factor'];
+
+/** The problem as a lesson parameter, or null when it can't be one (a letter other than x, a symbol the code has no
+ *  letter for, or longer than 16 characters once written). */
+export function encodeProblem(text: string): string | null {
+	const t = text.replace(/\s+/g, '').toLowerCase().replace(/[−–]/g, '-');
+	if (!t || /[^0-9x+\-=^()]/.test(t)) return null;
+	const code = [...t].map((c) => TO[c] ?? c).join('');
+	return /^[a-z0-9-]{1,16}$/.test(code) ? code : null;
+}
+export const decodeProblem = (code: string): string => [...String(code)].map((c) => FROM[c] ?? c).join('');
+
+/** The link to one problem on Oomba, or '' when the game can't make one (a preview, or a problem too long for a link). */
+export function shareLink(activity: Activity, text: string, start: Start, live: boolean): string {
+	const base = brb()?.gameUrl;
+	const code = encodeProblem(text);
+	if (!base || !code) return '';
+	const level = activity === 'solve' ? (live ? 1 : 2) : start === 'all' ? 1 : 2;
+	return `${base}?mode=${activity}&chapter=${code}&level=${level}&lock=1`;
+}
+/** Why there is no link, for the setup page (or '' when there is one, or the problem doesn't work yet). */
+export function noLinkReason(text: string): string {
+	if (!brb()?.gameUrl) return 'Activity links work in the published game, not in a preview.';
+	if (!encodeProblem(text)) return 'That problem is too long for an activity link. Try one with fewer terms or smaller numbers.';
+	return '';
+}
+
+/** The problem this game was opened with (an activity link, or a lesson step), or null for the gallery. */
+export function openedWith(): { type: Activity; p: string; start: Start; live: boolean } | null {
+	const p = brb()?.params ?? {};
+	const type = ACTIVITIES.find((a) => a === p.mode);
+	if (!type || typeof p.chapter !== 'string' || !p.chapter) return null;
+	const two = p.level === 2;
+	return { type, p: decodeProblem(p.chapter), start: type !== 'solve' && two ? 'none' : 'all', live: !(type === 'solve' && two) };
+}
+
+/** Copy through the play page (the frame can't use the clipboard). */
+export async function copy(what: string | Blob): Promise<boolean> {
+	try {
+		const c = brb()?.copy;
+		return c ? (await c(what)) === true : false;
+	} catch {
+		return false;
+	}
+}
+
+// --- sounds and effects: the Oomba Kit's ---
+
+function sound(name: string) {
+	try {
+		const k = kit();
+		if (k?.sfx) k.sfx(name, { caption: false });
+		else brb()?.sfx?.play(name === 'wrong' ? 'hit' : 'coin');
+	} catch {
+		/* no sound */
+	}
+}
+/** A step's Check passed: its sound, and the bar's steps pop. */
+export function stepPassed(el?: Element | null) {
+	sound('correct');
+	try {
+		if (el && !reducedMotion()) kit()?.juice?.pop?.(el);
+	} catch {
+		/* fine */
+	}
+}
+/** A Check found something wrong: a soft sound and a small shake of the message (never a buzzer). */
+export function stepWrong(el?: Element | null) {
+	sound('wrong');
+	try {
+		if (el && !reducedMotion()) kit()?.juice?.shake?.(0.25, el);
+	} catch {
+		/* fine */
+	}
+}
+let reported = false;
+/** The problem is complete: the cheer and the confetti, and (once) the finish for a lesson step. */
+export function complete() {
+	sound('win');
+	try {
+		if (!reducedMotion()) kit()?.juice?.confetti?.();
+	} catch {
+		/* fine */
+	}
+	if (reported) return;
+	reported = true;
+	try {
+		brb()?.gameOver?.({ won: true });
+	} catch {
+		/* no page */
+	}
+}
+/** Tiles zeroed out, or a tile came out of the tray: a small sound. */
+export const tap = () => sound('pop');

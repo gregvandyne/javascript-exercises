@@ -1,0 +1,28 @@
+{
+  "name": "oomba-algebra-tiles",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Algebra Tiles on Oomba: built into seed-games/algebra-tiles.html by build.mjs (see README.md).",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "node build.mjs --check"
+  },
+  "devDependencies": {
+    "@lucide/svelte": "^1.52.0",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@tailwindcss/vite": "^4.3.0",
+    "svelte": "^5.56.1",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16",
+    "vite-plugin-singlefile": "^2.3.0"
+  },
+  "dependencies": {
+    "@oomba-mathfield/core": "file:vendor/mathfield-core",
+    "@oomba-mathfield/math": "file:vendor/mathfield-math",
+    "@oomba-mathfield/svelte": "file:vendor/mathfield-svelte",
+    "qrcode-generator": "^2.0.4"
+  }
+}

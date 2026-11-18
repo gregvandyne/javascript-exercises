@@ -33,7 +33,8 @@
     "dash:fit": "node scripts/dash-fit-check.js",
     "dash:video": "node scripts/dash-video.js",
     "focus:sheet": "node scripts/focus-sheet.js",
-    "build:jungle": "node tools/jungle-cup/build.mjs"
+    "build:jungle": "node tools/jungle-cup/build.mjs",
+    "build:algebra-tiles": "cd tools/algebra-tiles && node build.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.1.0",

@@ -960,6 +960,25 @@
       return p;
     })).then(function (all) { return all.every(Boolean) && ttsMode === 'ai'; });
   }
+  // copy(text | Blob): the frame can't use the clipboard (it is sandboxed), so the play page copies for it: only a link
+  // to this game's own play page (BRB.gameUrl, with any query), or a PNG picture (a QR code of that link), and only
+  // right after a tap. -> Promise<boolean> (false when refused, or no answer in 3 s).
+  var copyWait = {}, copySeq = 0;
+  function copy(what) {
+    if (typeof Promise !== 'function') return null;
+    var isPng = typeof Blob === 'function' && what instanceof Blob;
+    if (!isPng && typeof what !== 'string') return Promise.resolve(false);
+    return new Promise(function (res) {
+      var id = ++copySeq, timer = setTimeout(function () { delete copyWait[id]; res(false); }, 3000);
+      copyWait[id] = function (ok) { clearTimeout(timer); delete copyWait[id]; res(ok === true); };
+      send('brb:copy', isPng ? { id: id, png: what } : { id: id, text: what });
+    });
+  }
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:copied' || typeof m.id !== 'number') return;
+    var w = copyWait[m.id]; if (w) w(m.ok);
+  });
   var synthCancel = synth ? synth.cancel : null;
   if (TTS) {
     window.addEventListener('message', function (e) {
@@ -1183,7 +1202,11 @@
     prefetchSpeech: prefetchSpeech,
     aiVoice: aiVoice,
     // Whether the AI voice will read these lines (a Promise of true/false); speak(text, { ai: 'only' }) reads them.
-    aiVoiceCheck: aiVoiceCheck
+    aiVoiceCheck: aiVoiceCheck,
+    // The game's own play page (https://…/play/<slug>), or null in a preview: a game that shares a link to itself
+    // (with lesson parameters, docs/sdk.md "Lesson parameters") builds it from this.
+    gameUrl: INIT.game && typeof INIT.game.url === 'string' && /^https?:\/\/[^/]+\/play\/[a-z0-9-]+$/.test(INIT.game.url) ? INIT.game.url : null,
+    copy: copy
   };
   Object.freeze(BRB.storage); Object.freeze(BRB.score);
   try { Object.defineProperty(window, 'BRB', { value: BRB, writable: false, configurable: false }); } catch (e) { window.BRB = BRB; }

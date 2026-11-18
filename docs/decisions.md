@@ -7594,3 +7594,31 @@ routes in `server/routes/dash.js`, `qh` and `ANSWER_TOOLS` in `server/services/d
 - **Fit check.** `npm run dash:fit` has `default-buildit` and `min-buildit` layouts: every Build it tool and two
   number fields; on the teacher's screens the numbers are typed (refused, with the message showing), and on a student's
   screens each set is opened in its sheet, Checked once and checked (nothing cut, no sideways scroll, 44px buttons).
+
+## Algebra Tiles, adapted for Oomba (18 Nov 2026)
+Owner: "Add this game to oomba: [teacher.dev's algebra-tiles] Make sure all functionality stays the same but use oomba
+branding. This should be listed under games, but should use our animation packs. I want to use a similar board like
+structure." Answers: keep its whiteboard; the Oomba Kit's effects only (no character); activity links and QR codes
+open the problem on Oomba; keep its math input field, which we have permission to use, but nothing in the game or the
+repository names it.
+- **Where it lives.** `tools/algebra-tiles` (the original's Svelte app, Apache-2.0: LICENSE, NOTICE with what changed,
+  README) builds into `seed-games/algebra-tiles.html` (`npm run build:algebra-tiles`; `node build.mjs --check`). Play
+  shelf, category puzzle, cover from its gallery (`scripts/covers/algebra-tiles.recipe.js`).
+- **The same game.** Gallery, a setup page per activity, and the whiteboard: Solve (Isolate, Divide, Answer, live
+  balance on or off), Multiply and Factor (rectangle, sides, equation; all tiles or none), their checks, toolbar, tray,
+  pan and zoom are the original's code. Its pages became screens in one page, with an in-game Back (no history in the
+  frame). Oomba look: paper, ink and green, Bricolage Grotesque, rounded cards, pill buttons; the tile colours stay.
+- **Effects.** A passed step: the kit's `correct` and a pop of the problem bar; a wrong Check: `wrong` and a small
+  shake; the finish: `win`, confetti and `BRB.gameOver({ won: true })` once (completes a lesson step). Reduced motion
+  skips the movement.
+- **Links.** A problem rides in lesson params: `?mode=solve&chapter=2xp3q7&level=1&lock=1` (`+ = ^ ( )` written
+  `p q e o c`, at most 16 characters; `level` 1/2 is the live balance on/off for Solve, all tiles/none otherwise). The
+  setup page shows a problem too long for that as "too long for an activity link", and a preview as having no link.
+- **SDK.** `BRB.gameUrl` (the frame now gets the game's own `/play/<slug>` address) and `BRB.copy(textOrPng)`: the
+  play page writes the clipboard for the frame, only that game's own link (or with a query) or a PNG up to 300 KB,
+  and only right after a tap.
+- **Left out.** The original's email links, its "suggest an activity" form and its analytics. Nothing is saved.
+- **The math input field** is vendored under `tools/algebra-tiles/vendor/mathfield-*` with its package names changed;
+  `build.mjs` and tests/unit/algebra-tiles.test.js check the name appears nowhere (the CSS text-cursor property aside).
+- **Safety scan.** `build.mjs` removes what the scanner refuses in the bundle: Svelte's and Tailwind's web addresses,
+  a validator's `Function('')` probe (answered "no"), its address pattern and its 64-bit limits written as digits.

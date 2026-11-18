@@ -9,7 +9,7 @@ import * as seo from '../seo.js';
 import { LEARNING, isLearningGame, gradeBand, ageBand, hubOfGame } from '../learn.js';
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
-import { frameDocument, sendFrame, sendFrameText, frameOrigins, SANDBOX } from '../services/frame.js';
+import { frameDocument, sendFrame, sendFrameText, frameOrigins, requestOrigin, SANDBOX } from '../services/frame.js';
 import { signToken, readToken, requireUser, getUser, createGuest, startSession, isGrownup } from '../auth.js';
 import { rateLimit, allow, ipOf, GUESTS_PER_IP_HOUR } from '../services/ratelimit.js';
 import { q, uid, now, audit } from '../db.js';
@@ -373,7 +373,9 @@ router.get('/frame/:token', (req, res) => {
   const lang = normalizeCode(tok.l) || req.locale;
   const init = {
     user: { ...(u ? { displayName: u.display_name, avatar: u.avatar, isGuest: !!u.is_guest, character: characterOf(u) } : { displayName: t('play.defaultPlayer'), avatar: '🙂', isGuest: true }), lang, dir: localeInfo(lang).dir },
-    game: { id: g.id, title: g.title },
+    // url: the game's own play page, for a game that shares a link to itself (BRB.gameUrl: a link with lesson
+    // parameters, as Algebra Tiles' activity links are). Never another page.
+    game: { id: g.id, title: g.title, url: `${requestOrigin(req)}/play/${g.slug}` },
     // The site theme for games that follow it (Oomba Kit games); 'system' is left out so the device decides.
     ...(req.theme === 'light' || req.theme === 'dark' ? { theme: req.theme } : {}),
     save: u && !preview ? games.getSave(g.id, u.id) : {},
