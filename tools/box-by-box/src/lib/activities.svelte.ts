@@ -1,5 +1,6 @@
 // The teacher's activities, kept in their own game save (BRB.storage) under one key: a list of
-//   { id, savedAt, edited?, title, kind, problems, settings: { level, custom, perStudent }, plan, setId?, shared? }
+//   { id, savedAt, edited?, title, kind, problems, settings: { level, custom, perStudent, method }, plan, setId?, shared? }
+// (method came later: an activity saved before it is worked the standard way)
 // setId is the question set it was last shared as (its link), and shared the item saved there then, so the editor can
 // tell whether what's on screen is what students get.
 
@@ -17,6 +18,7 @@ import {
 	type Problem,
 	type Settings
 } from './logic';
+import { methodOr } from './methods';
 import { SAVE_ERRORS, load, saveSet, store } from './oomba';
 
 export type Activity = {
@@ -59,7 +61,8 @@ function fromSave(raw: unknown): Activity | null {
 		settings: {
 			level: LEVELS.includes(s.level as Level) ? (s.level as Level) : 'guided',
 			custom,
-			perStudent: s.perStudent === true
+			perStudent: s.perStudent === true,
+			method: methodOr(kind, s.method)
 		},
 		plan: o.plan ? k.parse(o.plan) : k.fresh(),
 		...(typeof o.setId === 'string' ? { setId: o.setId } : {}),
