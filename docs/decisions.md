@@ -7818,6 +7818,8 @@ Answers: **Algebra Builder**; question sets **saved on Oomba** under a short cod
 - **Safety scan.** `build.mjs` removes what the scanner refuses in the bundle: Svelte's and Tailwind's web addresses,
   a validator's `Function('')` probe (answered "no"), its address pattern and its 64-bit limits written as digits.
 
+## Classroom dashboards: steps never vanish; Back a step and Clear the steps (18 Nov 2026)
+The owner saw the Fractions tool's step 1 lose its words when step 2 showed: in a small widget the Steps panel turned earlier steps into their numbers only, to keep the picture's size. Every shown step now keeps its words; the tight mode only makes the earlier ones a little smaller. Once a step shows, "Back a step" and "Clear the steps" sit beside Next step, so a Next step pressed by mistake can be taken back one at a time or all at once. Both save through the same path as Next step. New strings `dash.w.fractions.stepBack`, `stepClear`, `stepCleared` in every language; `tests/unit/dash-steps.test.js` checks it in Chromium.
 ## Class page: three game actions and your folders; Live games history; teams on Students (18 Nov 2026)
 Owner, on the live class pages: "It's a bit confusing that we have no lessons yet listed here", "where it says Live Games,
 perhaps we can do something like a Live Games History instead of the edit teams there. I think the edit teams
