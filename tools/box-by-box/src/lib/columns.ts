@@ -23,8 +23,9 @@ function lineUp(top: number, bottom: number, answer: (x: number, y: number) => n
 	const y = digits(Y);
 	const z = digits(Z);
 	const n = Math.max(x.length, y.length, z.length);
-	const W = n + (P ? 1 : 0);
-	const colOf = (p: number) => W - p - (P && p >= P ? 1 : 0);
+	// digits side by side; the points on the line after the ones
+	const W = n;
+	const colOf = (p: number) => W - p;
 	const pointCol = W - P;
 	const name = (p: number) => (p >= P ? WHOLE[p - P] : PART[P - p - 1]) ?? `${p}`;
 	return { P, X, Y, Z, x, y, z, n, W, colOf, pointCol, name };
@@ -50,7 +51,7 @@ function builder() {
 function given(cells: Cell[], L: ReturnType<typeof lineUp>, sign: string, digitsTop: number, digitsBottom: number) {
 	const write = (ds: number[], row: number, key: string, count: number, padFrom: number) => {
 		ds.slice(0, count).forEach((d, p) => cells.push({ kind: 'given', row, col: L.colOf(p), text: String(d), key: `${key}${p}`, ...(p < padFrom ? { faint: true } : {}) }));
-		if (L.P) cells.push({ kind: 'given', row, col: L.pointCol, text: '.', key: `${key}pt` });
+		if (L.P) cells.push({ kind: 'given', row, col: L.pointCol, text: '.', key: `${key}pt`, dot: true });
 	};
 	write(L.x, 1, 't', digitsTop, 0);
 	write(L.y, 2, 'm', digitsBottom, 0);
@@ -171,6 +172,10 @@ export function subtractSheet({ top, bottom }: { top: number; bottom: number }):
 		else crossedBy[key] = by;
 	};
 	const view: View = { top: 0, left: 0, bottom: 3, right: L.W };
+	const nudge = (p: number) => {
+		const c = cells.find((x) => x.kind === 'given' && x.key === `t${p}`);
+		if (c && c.kind === 'given') c.nudge = true;
+	};
 	// each column's value as it stands, and where it is written: the given digit, or the new digit over it
 	const cur = L.x.slice(0, nTop);
 	const shownAt: ('t' | 'w')[] = cur.map(() => 't');
@@ -214,6 +219,7 @@ export function subtractSheet({ top, bottom }: { top: number; bottom: number }):
 			// across zeros: each 0 becomes 10, then gives 1 on and is 9
 			for (const m of [...middle].reverse()) {
 				const om = `o${m}`;
+				nudge(m);
 				b.add([{ id: om, digit: 1, row: 1, col: L.colOf(m), corner: true }], {
 					kind: 'borrow',
 					prompt: () => `The 1 ${ONE[L.name(m + 1)]} is 10 ${L.name(m)}: write a small 1 in front of the 0 to make 10.`,
@@ -239,6 +245,7 @@ export function subtractSheet({ top, bottom }: { top: number; bottom: number }):
 			// the column that borrows: a small 1 in front makes it 10 more
 			const op = `o${p}`;
 			const onW = shownAt[p] === 'w';
+			if (!onW) nudge(p);
 			b.add([{ id: op, digit: 1, row: onW ? 0 : 1, col: L.colOf(p), corner: true }], {
 				kind: 'borrow',
 				prompt: () => `The ${place} get 10 more: write a small 1 in front of the ${was} to make ${was + 10}.`,

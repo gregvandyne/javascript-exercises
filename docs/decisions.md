@@ -8561,3 +8561,9 @@ replaces), so nothing new to learn for anyone who doesn't want it.
   problems); tests/unit/box-by-box-kinds.test.js (Chromium, on a phone: three problems in a row for each new kind and
   option, Guided with every question read and On my own, 400 − 167's questions in order, the arrows, Watch and Count up
   for each); tests/unit/box-by-box.test.js (sets: `r`, `dec`, the new kinds, old sets byte for byte, labels).
+- **Layout fixes after review.** A decimal point no longer takes a grid column: it is drawn on the line after the last
+  whole digit, the same in the quotient, the dividend and the answers of addition and subtraction (the point the
+  student types is a small box on that line). Digits stay in adjacent columns, so 1 and 0 brought down read "10"; the
+  lifted point's arrow runs up in the gap before the first decimal digit. Each minus sign sits right before its
+  product's first digit (a leading 0 isn't written). In regrouping, a digit that gets a small 1 is nudged right to make
+  room in the corner, and a strike covers only the digit, so the 1 stays clear of it.

@@ -46,7 +46,9 @@ const M = await import(path.join(ROOT, 'tools/box-by-box/src/lib/methods.ts'));
 const N = await import(path.join(ROOT, 'tools/box-by-box/src/lib/numbers.ts'));
 const gcd = (a, b) => (b ? gcd(b, a % b) : a);
 /** The quotient's digits as the sheet's boxes hold them, the point included. */
-const quotientText = (s) => s.answerBoxes.filter((id) => id[0] === 'q').sort((a, b) => boxAt(s, a).col - boxAt(s, b).col).map((id) => L.boxOf(s, id).digit).join('');
+// (a point is on the line after its square's digit)
+const across = (s, id) => boxAt(s, id).col + (boxAt(s, id).point ? 0.5 : 0);
+const quotientText = (s) => s.answerBoxes.filter((id) => id[0] === 'q').sort((a, b) => across(s, a) - across(s, b)).map((id) => L.boxOf(s, id).digit).join('');
 
 test('remainders: the old on/off reads as R/none; the form rides in the item only as a fraction or a decimal', () => {
   assert.equal(L.remainderForm(true), 'R');
@@ -434,4 +436,34 @@ test('addition and subtraction: their own items (k add or subtract), the standar
   }
   assert.equal(L.parseItem({ k: 'subtract', p: [[167, 400]], l: 'guided' }), null, 'the smaller on top is not a problem');
   assert.equal(L.parseItem({ k: 'nonsense', p: [[92, 4]], l: 'guided' }).kind, 'divide', 'an unknown kind is long division, as always');
+});
+
+test('decimal points sit on the line: the digits side by side, no column of their own, and the minus signs next to their numbers', () => {
+  const s = L.divideSheet({ dividend: 745, divisor: 6, form: 'decimal' });
+  const qp = boxAt(s, 'qp'), np = boxAt(s, 'np');
+  assert.ok(qp.point && np.point && qp.col === np.col, 'the same line, quotient and dividend');
+  assert.equal(qp.col, boxAt(s, 'q2').col, 'on the line after the 4 of 124');
+  assert.equal(boxAt(s, 'q3').col, qp.col + 1, 'the next digit in the very next column');
+  // every row's digits are in adjacent columns, and each minus sits right before its number
+  const rows = new Map();
+  for (const c of s.cells) if (c.kind === 'box' && !c.point && c.row > 1) rows.set(c.row, [...(rows.get(c.row) ?? []), c.col]);
+  for (const [r, cols] of rows) { cols.sort((a, b) => a - b); cols.forEach((c, i) => i && assert.equal(c, cols[i - 1] + 1, `row ${r}: no gap`)); }
+  for (const m of s.cells.filter((c) => c.kind === 'given' && c.text === '−')) {
+    const first = Math.min(...s.cells.filter((c) => c.kind === 'box' && c.row === m.row).map((c) => c.col));
+    assert.equal(m.col, first - 1, `row ${m.row}: the minus right before its number`);
+  }
+  for (const [k, a, b] of [['add', 3.5, 2.75], ['subtract', 5.2, 1.75]]) {
+    const t = (k === 'add' ? C.addSheet : C.subtractSheet)({ top: a, bottom: b });
+    assert.equal(t.cols, 4, `${a} ${k} ${b}: a sign and three digits, no column for the point`);
+    assert.ok(t.cells.filter((c) => c.text === '.').every((c) => c.dot));
+  }
+});
+
+test('regrouping: a small 1 goes in the corner of a digit set aside for it, clear of any strike', () => {
+  const s = C.subtractSheet({ top: 400, bottom: 167 });
+  for (const id of ['o0', 'o1']) {
+    const o = boxAt(s, id);
+    const t = s.cells.find((c) => c.kind === 'given' && c.row === o.row && c.col === o.col);
+    assert.ok(o.corner && t.nudge, `${id}: in the corner, its digit nudged over`);
+  }
 });

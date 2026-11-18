@@ -32,12 +32,11 @@
 		const d = x2 > x1 ? 1 : -1;
 		return `M ${x1} 0.8 Q ${(x1 + x2) / 2} -0.75 ${x2} 0.8 M ${x2 - d * 0.16} 0.68 L ${x2} 0.8 L ${x2 + d * 0.02} 0.6`;
 	}
-	function arrowPath(up: boolean, span: number): string {
+	function arrowPath(up: boolean, span: number, at = 0.86): string {
 		if (up) {
-			const x = 0.86;
-			const y1 = span - 0.3;
-			const y2 = 0.5;
-			return `M ${x} ${y1} V ${y2} M ${x - 0.1} ${y2 + 0.13} L ${x} ${y2} L ${x + 0.1} ${y2 + 0.13}`;
+			const x = at;
+			// (numbers written out: the build's safety scan reads 0.58000000000001 in a string as a phone number)
+			return `M ${x} ${span - 0.25} V 0.45 M ${x - 0.1} 0.58 L ${x} 0.45 L ${x + 0.1} 0.58`;
 		}
 		const y1 = 0.88;
 		const y2 = span - 1 + 0.06;
@@ -57,6 +56,7 @@
 					class:dot={c.dot}
 					class:note={c.note}
 					class:crossed={crossed(c)}
+					class:nudge={c.nudge}
 					class:dim
 					class:drawn={draw && c.step !== undefined}
 					aria-hidden={c.faint}
@@ -69,6 +69,7 @@
 					class:half-top={c.half === 'top'}
 					class:half-bottom={c.half === 'bottom'}
 					class:corner={c.corner}
+					class:on-line={c.point}
 					class:dim
 					style:grid-row={c.row + 1}
 					style:grid-column={c.col + 1}>{@render box(c.id, !!c.small)}</span
@@ -105,7 +106,7 @@
 					viewBox="0 0 1 {span}"
 					style:grid-row="{top + 1} / span {span}"
 					style:grid-column={c.col + 1}
-					><path d={arrowPath(c.toRow < c.row, span)} /></svg
+					><path d={arrowPath(c.toRow < c.row, span, c.x)} /></svg
 				>
 			{:else}
 				<svg
@@ -227,6 +228,7 @@
 		font-size: calc(var(--cell) * 0.28);
 		white-space: nowrap;
 	}
+	/* the strike goes over the digit only, so a small 1 in the corner stays clear of it */
 	.given.crossed {
 		color: var(--muted);
 		background-image: linear-gradient(
@@ -235,6 +237,25 @@
 			var(--ink-soft) calc(50% - 1.5px) calc(50% + 1.5px),
 			transparent calc(50% + 1.5px)
 		);
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: 52% 62%;
+	}
+	.given.nudge {
+		padding-left: calc(var(--cell) * 0.3);
+	}
+	.given.nudge.crossed {
+		background-position: calc(50% + var(--cell) * 0.15) center;
+	}
+	/* a point: a small box on the line after its square */
+	.slot.on-line {
+		justify-self: end;
+		align-self: end;
+		width: 36%;
+		height: 44%;
+		margin-right: calc(var(--cell) * -0.18);
+		padding: 0;
+		z-index: 2;
 	}
 	.slot.half-top,
 	.slot.half-bottom {
@@ -250,8 +271,8 @@
 	.slot.corner {
 		align-self: start;
 		justify-self: start;
-		width: 42%;
-		height: 42%;
+		width: 34%;
+		height: 38%;
 		padding: 0;
 		z-index: 1;
 	}

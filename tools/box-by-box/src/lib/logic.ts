@@ -33,6 +33,8 @@ export type Cell =
 			note?: boolean;
 			/** Crossed out once this box (the new digit written over it) is filled. */
 			crossBy?: string;
+			/** Set a little right, to leave room for a small regrouping 1 in the corner. */
+			nudge?: boolean;
 	  }
 	| {
 			kind: 'box';
@@ -44,7 +46,7 @@ export type Cell =
 			half?: 'top' | 'bottom';
 			/** A small 1 in the square's top left corner (regrouping: 2 becomes 12). */
 			corner?: boolean;
-			/** Takes a decimal point, not a digit. */
+			/** Takes a decimal point, not a digit: a small box on the line after its square, as a point is written. */
 			point?: boolean;
 	  }
 	| { kind: 'rule'; row: number; from: number; to: number; key: string; step?: number; mid?: boolean }
@@ -53,7 +55,7 @@ export type Cell =
 	| { kind: 'bracket'; row: number; col: number; to: number; key: string }
 	/** A small arrow drawn on the paper, kept once its step is done: a bring-down (a digit straight down from the number
 	 *  being divided) or a point lifted straight up. after: the box whose filling draws it. */
-	| { kind: 'arrow'; row: number; col: number; toRow: number; key: string; step?: number; after?: string };
+	| { kind: 'arrow'; row: number; col: number; toRow: number; key: string; step?: number; after?: string; x?: number };
 export type StepKind =
 	| 'divide'
 	| 'multiply'
@@ -173,8 +175,9 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 	const total = all.length;
 	const dv = digitsOf(B);
 	const D = dv.length;
-	const col = (i: number) => D + i + (hasPoint && i >= intLen ? 1 : 0);
-	const pointCol = D + intLen;
+	// every digit in its own column, side by side as on paper; a point sits on the line after the last whole digit
+	const col = (i: number) => D + i;
+	const pointCol = D + intLen - 1;
 	const T = shifted ? 2 : 0;
 	const qRow = T;
 	const dRow = T + 1;
@@ -251,7 +254,7 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 	} else {
 		dv.forEach((d, i) => cells.push({ kind: 'given', row: dRow, col: i, text: String(d), key: 'divisor' }));
 		n.forEach((d, k) => {
-			if (pointGiven && k === intLen) cells.push({ kind: 'given', row: dRow, col: pointCol, text: '.', key: 'np' });
+			if (pointGiven && k === intLen) cells.push({ kind: 'given', row: dRow, col: pointCol, text: '.', key: 'np', dot: true });
 			cells.push({ kind: 'given', row: dRow, col: col(k), text: String(d), key: `n${k}` });
 		});
 	}
@@ -274,7 +277,8 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 			lit: ['np', 'qp', 'lift'],
 			view: { top: 0, left: 0, bottom: dRow, right: col(total - 1) }
 		});
-		cells.push({ kind: 'arrow', row: dRow, col: pointCol, toRow: qRow, key: 'lift', step: at, after: 'qp' });
+		// up beside the points, in the gap before the first decimal digit
+		cells.push({ kind: 'arrow', row: dRow, col: pointCol + 1, toRow: qRow, key: 'lift', step: at, after: 'qp', x: 0.2 });
 	};
 	if (pointGiven) lift(false);
 
@@ -323,7 +327,9 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 		const width = i - m + 1;
 		const pDigits = String(product).padStart(width, '0').split('').map(Number);
 		const pIds: string[] = [];
-		cells.push({ kind: 'given', row, col: col(m) - 1, text: '−', key: `minus${i}`, step: mulStep });
+		// the minus right before the product's first digit (a leading 0 isn't written: "− 6" under "10")
+		const lead = pDigits.findIndex((d, k) => d !== 0 || k === width - 1);
+		cells.push({ kind: 'given', row, col: col(m + lead) - 1, text: '−', key: `minus${i}`, step: mulStep });
 		pDigits.forEach((d, k) => {
 			const at = m + k;
 			if (d === 0 && k < width - 1 && pDigits.slice(0, k).every((x) => x === 0)) return;
@@ -389,7 +395,7 @@ export function divideSheet({ dividend, divisor, form = 'R' }: { dividend: numbe
 					lit: [...dIds, 'np', zId],
 					view: { top: 0, left: 0, bottom: row, right: col(k) }
 				});
-				cells.push({ kind: 'rule', row: qRow, from: pointCol, to: col(k) + 1, key: `bracket${k}`, step: steps.length - 1 });
+				cells.push({ kind: 'rule', row: qRow, from: col(k), to: col(k) + 1, key: `bracket${k}`, step: steps.length - 1 });
 				lift(true);
 			} else {
 				place(zId, 0, dRow, col(k));

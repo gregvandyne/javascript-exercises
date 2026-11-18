@@ -1173,11 +1173,13 @@
 		font-size: calc(var(--cell) * 0.42);
 	}
 	.digit.corner {
-		font-size: calc(var(--cell) * 0.3);
+		font-size: calc(var(--cell) * 0.28);
 		border-radius: 4px;
 	}
 	.digit.point {
-		font-size: calc(var(--cell) * 0.7);
+		border-radius: 5px;
+		font-size: calc(var(--cell) * 0.5);
+		line-height: 0.6;
 	}
 	.digit.remainder {
 		background: color-mix(in srgb, var(--remainder-wash) 70%, transparent);
