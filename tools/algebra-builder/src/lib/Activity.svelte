@@ -1900,24 +1900,28 @@
 						<span class="yay"><Check size={18} strokeWidth={3} /> Yay! It’s complete.</span>
 					</p>
 				</div>
-				<button
-					type="button"
-					class="btn-ghost hint-btn"
-					class:off={step === 'done'}
-					class:stuck
-					disabled={hintShown >= hints.length && hintOpen}
-					aria-label={hintShown >= hints.length ? (hintOpen ? 'No more hints for this step' : 'Show the hints again') : stuck ? 'Stuck? Get a hint' : 'Get a hint'}
-					onclick={showHint}
-				>
-					<Lightbulb size={16} /><span class="hint-word">{stuck ? 'Stuck? Hint' : 'Hint'}</span>
-				</button>
+				<!-- Hint and Check, or Start again and Next: one place, as wide as the
+				     wider pair, so the steps keep the rest of the bar. -->
 				<div class="actions">
-					<button
-						type="button"
-						class="btn-primary check"
-						class:off={step === 'done'}
-						onclick={check}>Check</button
-					>
+					<div class="ask">
+						<button
+							type="button"
+							class="btn-ghost hint-btn"
+							class:off={step === 'done'}
+							class:stuck
+							disabled={hintShown >= hints.length && hintOpen}
+							aria-label={hintShown >= hints.length ? (hintOpen ? 'No more hints for this step' : 'Show the hints again') : stuck ? 'Stuck? Get a hint' : 'Get a hint'}
+							onclick={showHint}
+						>
+							<Lightbulb size={16} /><span class="hint-word">{stuck ? 'Stuck? Hint' : 'Hint'}</span>
+						</button>
+						<button
+							type="button"
+							class="btn-primary check"
+							class:off={step === 'done'}
+							onclick={check}>Check</button
+						>
+					</div>
 					<div class="after" class:off={step !== 'done'}>
 						<button type="button" class="btn-ghost again" onclick={reset}>
 							<RotateCcw size={16} /> Start again
@@ -2711,6 +2715,11 @@
 		align-items: center;
 		margin-left: auto;
 	}
+	.ask {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
 	/* A state that isn't the current one keeps its room, unseen. */
 	.off {
 		visibility: hidden;
@@ -2719,13 +2728,30 @@
 		.rule.last {
 			display: none;
 		}
-		/* The steps, or the answer and Check, on a line of their own. */
+		/* The steps (or the answer) on a line of their own, then Hint and Check
+		   (or Start again and Next) on the right of the line under them. */
 		.work {
 			flex-basis: 100%;
+			flex-wrap: wrap;
+		}
+		.states {
+			flex-basis: 100%;
+		}
+		/* On the smallest phones, Start again and Next stack rather than spill out. */
+		.actions {
+			flex-shrink: 1;
+			min-width: 0;
+		}
+		.after {
+			flex-wrap: wrap;
+			justify-content: flex-end;
 		}
 		.steps {
-			flex: 1 1 auto;
-			min-width: 0;
+			gap: 0.3rem 0.55rem;
+			font-size: 0.78rem;
+		}
+		.steps li {
+			gap: 0.25rem;
 		}
 		.bar {
 			padding: 0.5rem 0.6rem;
@@ -2805,7 +2831,6 @@
 	.hint-btn {
 		flex: none;
 		gap: 0.35rem;
-		margin-left: 0.25rem;
 		padding: 0.45rem 0.8rem;
 		white-space: nowrap;
 	}
@@ -3160,9 +3185,37 @@
 			transition-delay: 0s !important;
 		}
 	}
-	@media (max-width: 900px) {
+	/* A tablet or a small laptop: the toolbar is as wide as the screen allows
+	   and the zoom sits above its right end, so the two never overlap. */
+	@media (max-width: 1299px) {
 		.toolbar {
-			bottom: 4rem;
+			max-width: calc(100% - 2rem);
+		}
+		.zoom {
+			bottom: calc(var(--toolbar-h) + 1.75rem);
+		}
+	}
+	/* A tablet held upright: the tools lose their labels to fit across. */
+	@media (min-width: 601px) and (max-width: 900px) {
+		.group {
+			padding: 0 0.4rem;
+		}
+		.tool.labeled {
+			width: 2.8rem;
+			height: 2.8rem;
+		}
+		.tool.labeled > span:not(.sign-switch) {
+			display: none;
+		}
+		.sign-tool {
+			width: auto !important;
+		}
+		.palette {
+			gap: 0.6rem;
+			padding: 0 0.7rem 0.45rem;
+		}
+		.trash {
+			width: 3.6rem;
 		}
 	}
 	/* On a phone the toolbar fits the screen, 16px in from each side, in two
