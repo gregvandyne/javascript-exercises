@@ -933,8 +933,9 @@ function fractions(body, s, ctx) {
   /** Bars: a row each (on one scale: the same length is the same amount), every whole its own bar; Divide's answer counts
    *  copies, so it is on a scale of its own, one bar a copy. */
   function barDraw(r, meas, box, room) {
-    // The answer's row ("= ?" and an empty dashed bar) is drawn only once the answer shows.
-    const p = pictures(r, meas), rows = [[p.A, tag('', r.a)], [p.B, tag(r.sign, r.b)], [p.ans, tag('=', p.ans.f, true)]].filter(([x]) => x !== p.ans || x.f);
+    // The answer's row is always drawn: "= ?" and an empty dashed bar while the answer is hidden, so the room the bars
+    // leave for the answer (3/2 + 3/2 on a scale of 3 wholes) reads as the answer's place, not as empty bars.
+    const p = pictures(r, meas), rows = [[p.A, tag('', r.a)], [p.B, tag(r.sign, r.b)], [p.ans, tag('=', p.ans.f, true)]];
     const W0 = p.own ? p.A.wholes : Math.max(p.A.wholes, p.B.wholes, p.ans.wholes);
     const grid = el('div', 'dt-fbars'); box.appendChild(grid);
     const cells = rows.map(([x, t]) => { const lab = el('div', 'dt-fblab'); lab.appendChild(t); const c = el('div', 'dt-fbarc'); grid.append(lab, c); return c; });
