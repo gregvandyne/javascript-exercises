@@ -37,7 +37,9 @@ export function hintsFor(sheet: Sheet, i: number, v: Values): string[] {
 					`It’s ${digits}. Write it under the digits you divided into, lined up on the right.`
 				];
 			}
-			if (sc.by === 0 || sc.times === 0) return [`Anything times 0 is 0.`, st.told ? st.told(v) : `It’s 0.`];
+			// (times 0: start at 0 and count 0 times, the same way as any count)
+			if (sc.by === 0 || sc.times === 0)
+				return [`Anything times 0 is 0: start at 0, then count by ${sc.by}s, ${sc.times} ${sc.times === 1 ? 'time' : 'times'}.`, st.told ? st.told(v) : `It’s 0.`];
 			return [
 				`Multiply the ${sc.by} by the ${sc.times}${sc.carry ? `, then add the ${sc.carry} you carried` : ''}.`,
 				`Count by ${sc.by}s, ${sc.times} times: ${countBy(sc.by, sc.times)}.${sc.carry ? ` Then add ${sc.carry}.` : ''}`,

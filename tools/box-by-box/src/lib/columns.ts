@@ -268,7 +268,7 @@ export function subtractSheet({ top, bottom }: { top: number; bottom: number }):
 			told: () => `${top_} − ${bd} = ${diff}.`,
 			hints: () => [
 				`Subtract in the ${place} column: the top number take away the bottom one.`,
-				bd ? `Count up from ${bd} to ${top_}: how many steps is that?` : `Taking away 0 leaves ${top_}.`,
+				`Count up from ${bd} to ${top_}: how many steps is that?`,
 				`It’s ${diff}.`
 			],
 			lit: [said(p), `o${p}`, `m${p}`, 'sign', 'rule', id],

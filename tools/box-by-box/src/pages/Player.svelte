@@ -216,10 +216,12 @@
 				const want = String(skipValue(counted));
 				return { digits: [...typed], row: counted.row, onesCol: counted.onesCol, over: typed.length >= want.length && typed !== want };
 			}
-			// (subtraction counts up to the top digit: the count, not where it stands, is the answer, so only the words show it)
-			return count === null || count === 0 || counted.words === 'sub'
-				? null
-				: { digits: [...String((counted.start ?? 0) + count * counted.by)], row: counted.row, onesCol: counted.onesCol, over: count > counted.times };
+			// The first ▲ puts the starting number in the box (count 0), every step alike, a step of 0 too: the sum so far
+			// (addition), the product so far (multiplication), or (subtraction, which counts up to the top digit) how many
+			// steps so far, which is its answer. Before that the box is empty, and That's it asks for the ▲ first.
+			if (count === null) return null;
+			const shown = counted.words === 'sub' ? count : (counted.start ?? 0) + count * counted.by;
+			return { digits: [...String(shown)], row: counted.row, onesCol: counted.onesCol, over: count > counted.times };
 		}
 		const cu = steps[at]?.countUp;
 		return !cu || count === null
@@ -242,26 +244,27 @@
 	const skipValue = (s: NonNullable<Step['skipCount']>) => (s.words === 'sub' ? s.times : (s.start ?? 0) + s.by * s.times);
 	function skipPrompt(s: NonNullable<Step['skipCount']>) {
 		const start = s.start ?? 0;
+		// Every step the same way, a step of 0 too: ▲ starts at the starting number, then ▲ once for each to count, then
+		// That's it (counting 0 times: start, then That's it).
+		const done = count === s.times ? ' Press That’s it.' : '';
 		if (s.words === 'add') {
 			if (typed) return `${start} + ${s.times} = ${typed}? Press That’s it.`;
-			if (s.times === 0 && !count) return `${start} + 0 = ${start}: there’s nothing to count. Press That’s it.`;
-			if (count === null || count === 0) return `${start} + ${s.times}: count on ${s.times} from ${start} with ▲, or type it.`;
-			return `${Array.from({ length: count }, (_, i) => start + i + 1).join(', ')}: that’s ${count} on from ${start}.`;
+			if (count === null) return `${start} + ${s.times}: start at ${start} with ▲, then count on ${s.times}. Or type it.`;
+			if (count === 0) return `${start}: you start at ${start}. Count on ${s.times} with ▲.${done}`;
+			return `${Array.from({ length: count }, (_, i) => start + i + 1).join(', ')}: that’s ${count} on from ${start}.${done}`;
 		}
 		if (s.words === 'sub') {
 			const goal = start + s.times;
 			if (typed) return `From ${start} up to ${goal} is ${typed}? Press That’s it.`;
-			if (s.times === 0 && !count) return `${goal} − ${start} = 0: there’s nothing to count. Press That’s it.`;
-			if (count === null || count === 0) return `${goal} − ${start}: count up from ${start} to ${goal} with ▲. How many steps?`;
+			if (count === null) return `${goal} − ${start}: start at ${start} with ▲, then count up to ${goal}. How many steps?`;
 			const at = start + count;
+			if (count === 0) return `You start at ${start}: 0 up.${at < goal ? ` Count up to ${goal} with ▲.` : ' Press That’s it.'}`;
 			return `${Array.from({ length: count }, (_, i) => start + i + 1).join(', ')}: ${count} up, at ${at}.${at < goal ? ' Keep going.' : at === goal ? ' Press That’s it.' : ' Too far: go back with ▼.'}`;
 		}
 		if (typed) return `${s.by} × ${s.times} = ${typed}? Press That’s it.`;
-		if (s.times === 0 && !count) return `${s.by} × 0 = 0: there’s nothing to count. Press That’s it.`;
-		const t = `${s.by} × ${s.times}: count by ${s.by}s, ${s.times} times, with ▲, or type it.`;
-		return count === null || count === 0
-			? t
-			: `${Array.from({ length: count }, (_, i) => (i + 1) * s.by).join(', ')}: that’s ${count} ${count === 1 ? 'time' : 'times'}.`;
+		if (count === null) return `${s.by} × ${s.times}: start at 0 with ▲, then count by ${s.by}s, ${s.times} ${s.times === 1 ? 'time' : 'times'}. Or type it.`;
+		if (count === 0) return `0: you start at 0. Count by ${s.by}s, ${s.times} ${s.times === 1 ? 'time' : 'times'}, with ▲.${done}`;
+		return `${Array.from({ length: count }, (_, i) => (i + 1) * s.by).join(', ')}: that’s ${count} ${count === 1 ? 'time' : 'times'}.${done}`;
 	}
 	const prompt = $derived.by(() => {
 		if (!sheet || phase !== 'working') return '';
@@ -655,7 +658,9 @@
 	function bump(by: number) {
 		if (!counting || busy) return;
 		typed = '';
-		setCount(count === null ? +(by > 0) : Math.max(0, Math.min(9, count + by)));
+		// a count by skips starts with ▲ at the starting number (count 0); a quotient digit starts at 1 (or 0 with ▼)
+		if (steps[at]?.skipCount) setCount(count === null ? (by > 0 ? 0 : null) : Math.max(0, Math.min(9, count + by)));
+		else setCount(count === null ? +(by > 0) : Math.max(0, Math.min(9, count + by)));
 	}
 	function setCount(n: number | null) {
 		count = n;
@@ -678,7 +683,6 @@
 			typed = '';
 			count = sc.times;
 		}
-		if (sc && sc.times === 0 && count === null) count = 0;
 		if (sc && sc.carry > 0 && count === sc.times) {
 			nudge = '';
 			carryStep = at;
@@ -686,7 +690,7 @@
 			return;
 		}
 		if (count === null) {
-			nudge = 'Count up with ▲ first.';
+			nudge = sc ? `Start with ▲: you start at ${sc.start ?? 0}.` : 'Count up with ▲ first.';
 			return;
 		}
 		if (sc) {
