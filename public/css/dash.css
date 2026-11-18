@@ -1911,6 +1911,8 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 .dt-feqctl .dt-steplab{text-align:end;max-width:12em}
 .dt-feqctl .dt-pm{min-width:44px;min-height:44px}
 .dt-feqhint{margin:0;color:var(--text-2);font-size:.9rem;text-align:center;max-width:36em}
+/* a short widget: the one-line how-to above already says what to do, so the longer hint gives way first */
+@container (max-height:600px){.dt-feqhint{display:none}.dt-feqb{gap:10px}}
 /* the fraction operations' note when + goes past a fraction's limit */
 .dt-flimit{margin:0 auto 4px;padding:8px 12px;border-radius:12px;background:#FFF4CC;color:#3b2f00;font-weight:600;font-size:clamp(.82rem,min(4.6cqh,2.6cqi),1rem);line-height:1.35;text-align:start;max-width:40em;overflow-wrap:anywhere}
 @media (max-width:719px){
