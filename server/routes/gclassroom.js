@@ -453,6 +453,14 @@ export function gcAssignField(req, c) {
   // Unticked: a post reaches real students in Classroom and can't be taken back from here, so the teacher asks for it.
   return html`<label class="field gc-also wide"><span class="gc-check"><input type="checkbox" name="gcPost" value="1"> <span>🎓 ${req.t('gclassroom.post.also')}</span></span></label>`;
 }
+/** The game Assign page (a class picked from a list): "Also post to Google Classroom" when this teacher can post to at
+ *  least one of those classes' linked Classroom classes (gcAfterAssign checks the class picked). */
+export function gcAssignFieldAny(req, classes) {
+  if (!GC.enabled() || !GC.mayConnect(req.user) || GC.connectionState(req.user.id) !== 'ok' || !GC.can(req.user.id, 'coursework')) return '';
+  const linked = classes.filter(c => GC.linkOf(c.id));
+  if (!linked.length) return '';
+  return html`<label class="field gc-also wide"><span class="gc-check"><input type="checkbox" name="gcPost" value="1"> <span>🎓 ${req.t('gclassroom.post.alsoLinked', { classes: linked.map(c => c.name).join(', ') })}</span></span></label>`;
+}
 /** After an assign from that form: post it too. -> a line for the toast ('' when not asked). */
 export async function gcAfterAssign(req, classLesson) {
   const v = b(req).gcPost;

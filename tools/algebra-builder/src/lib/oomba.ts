@@ -22,6 +22,8 @@ type Brb = {
 	saveQuestionSet?: (items: Item[], id?: string | null) => Promise<{ id?: string; error?: string }> | null;
 	storage?: { get: (k: string) => unknown; set: (k: string, v: unknown) => void };
 	user?: { isGuest?: boolean };
+	canAssign?: boolean;
+	assign?: (query: string) => boolean;
 	gameUrl?: string | null;
 	copy?: (what: string | Blob) => Promise<boolean> | null;
 	gameOver?: (o: { won: boolean; score?: number }) => void;
@@ -129,6 +131,20 @@ export function forgetMySet(id: string) {
 		brb()?.storage?.set(MINE, mySets().filter((s) => s.id !== id));
 	} catch {
 		/* fine */
+	}
+}
+
+// --- assigning to a class (teachers): Oomba's Assign page, with "Also post to Google Classroom" ---
+
+/** Whether this player is a teacher who can assign what they made to a class. */
+export const canAssign = () => brb()?.canAssign === true && !!brb()?.assign;
+/** Open Oomba's Assign page for this problem or set (its lesson parameters: the part of its link after '?'). */
+export function assignLink(link: string) {
+	const q = link.split('?')[1] ?? '';
+	try {
+		return !!q && brb()?.assign?.(q) === true;
+	} catch {
+		return false;
 	}
 }
 

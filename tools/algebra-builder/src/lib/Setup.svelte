@@ -2,9 +2,9 @@
 	// An activity's setup page: type one problem, choose what students start
 	// with, and share it as an activity link. Nothing is saved; the link
 	// carries the problem (on Oomba, in the game's lesson parameters: lib/oomba.ts).
-	import { Check, Copy, ExternalLink, ListPlus, QrCode } from '@lucide/svelte';
+	import { Check, Copy, ExternalLink, GraduationCap, ListPlus, QrCode } from '@lucide/svelte';
 	import { go, goBack, nav, sets } from '$lib/nav.svelte';
-	import { MAX_ITEMS, copy, noLinkReason, shareLink, type Item } from '$lib/oomba';
+	import { MAX_ITEMS, assignLink, canAssign, copy, noLinkReason, shareLink, type Item } from '$lib/oomba';
 	import { formatPoly, prettyText, readProblem, type Activity } from '$lib/algebra';
 	import { activityInfo } from '$lib/activities';
 	import { STARTS, layPiles, panPiles, startingPiles, type Start } from '$lib/settings';
@@ -313,6 +313,11 @@
 				<button type="button" class="btn-ghost" disabled={!problem.ok} onclick={tryIt}
 					><ExternalLink size={16} /> Try it as a student</button
 				>
+				{#if canAssign()}
+					<button type="button" class="btn-ghost" disabled={!link} onclick={() => assignLink(link)}
+						><GraduationCap size={16} /> Assign to a class</button
+					>
+				{/if}
 			</div>
 			<div class="qr">
 				{#if qr}

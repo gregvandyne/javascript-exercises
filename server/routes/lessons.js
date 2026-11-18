@@ -54,7 +54,9 @@ import { lessonTags } from '../services/standards-ccss.js';
 import { stepGameCodes, stepGameCover, lessonGrade } from '../standards/official-tags.js';
 import { codeChips, fwName } from '../views/standards.js';
 import { CCSS_IDS } from '../standards/frameworks.js';
-import { gcLessonsButton, gcAssignField, gcAfterAssign } from './gclassroom.js';
+import { gcLessonsButton, gcAssignField, gcAssignFieldAny, gcAfterAssign } from './gclassroom.js';
+import * as gameSets from '../services/game-sets.js';
+import { cleanOptions, parseParams } from '../services/play-params.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}"><link rel="stylesheet" href="/css/standards.css?v=${VERSION}">`);
@@ -584,21 +586,32 @@ router.get('/teach/assign', requireUser, (req, res) => {
   if (!found) return notFound(req, res);
   const g = found.game;
   const classes = assignClasses(u);
+  // A game that opens at a problem or a question set (Algebra Builder): the options its Assign button sent; without
+  // them the class would land on the teacher's gallery, so the page sends the teacher back to the game first.
+  const opts = cleanOptions(String(req.query.opts || '')) || '';
+  const what = setGameOf(g) ? gameSets.describe(g.id, parseParams(opts)) : null;
+  const needsPick = setGameOf(g) && !what;
+  const opensLine = what ? html`<p class="lead">${t('teach.assign.opens', { what: what.kind === 'set' ? t('teach.assign.set', { count: what.n }) : what.label })}</p>` : '';
   const body = html`<div class="pagehead"><h1>📌 ${t('teach.assign.title', { game: g.title })}</h1></div>
   <section class="panel assign-game" aria-labelledby="ag-h">
     <h2 id="ag-h" class="sr-only">${t('teach.assign.pickClass')}</h2>
-    ${found.liveOnly ? html`<p class="notice">${t('teach.assign.liveOnly')}</p>${liveOn() && liveCanHost(u) ? html`<p><a class="btn btn-primary" href="/live?mode=${liveGameOf(g).mode}">📡 ${t('live.entry.hostLive')}</a></p>` : ''}`
-      : classes.length ? html`<form class="formgrid assigngrid" data-api="/api/teach/assign-game" novalidate><input type="hidden" name="game" value="${g.slug}">
+    ${opensLine}
+    ${needsPick ? html`<p class="notice">${t('teach.assign.pickFirst')}</p><p><a class="btn btn-primary" href="/play/${g.slug}">▶ ${t('teach.assign.openGame')}</a></p>`
+      : found.liveOnly ? html`<p class="notice">${t('teach.assign.liveOnly')}</p>${liveOn() && liveCanHost(u) ? html`<p><a class="btn btn-primary" href="/live?mode=${liveGameOf(g).mode}">📡 ${t('live.entry.hostLive')}</a></p>` : ''}`
+      : classes.length ? html`<form class="formgrid assigngrid" data-api="/api/teach/assign-game" novalidate><input type="hidden" name="game" value="${g.slug}">${opts ? html`<input type="hidden" name="opts" value="${opts}">` : ''}
       <div class="field"><label for="ag-c">${t('teach.assign.pickClass')}</label><select class="input" id="ag-c" name="classId">${classes.map(c => html`<option value="${c.id}">${c.name}</option>`)}</select></div>
       <div class="field"><label for="ag-d">${t('lessons.assign.due')}</label><input class="input" id="ag-d" name="dueAt" type="date"></div>
+      ${gcAssignFieldAny(req, classes)}
       <div class="field end"><button class="btn btn-primary" type="submit" id="ag-go">📌 ${t('teach.assign.submit')}</button></div>
-      <p class="small muted wide">${t('teach.assign.note')}</p><p class="form-err err wide" role="alert"></p></form>`
+      <p class="small muted wide">${t('teach.assign.note')}</p>${gcAssignFieldAny(req, classes) ? html`<p class="small muted wide">🎓 ${t('teach.assign.gcGrades')}</p>` : ''}<p class="form-err err wide" role="alert"></p></form>`
       : html`<p class="muted">${t('teach.assign.none')}</p><p><a class="btn" href="/teach">${t('nav.classroom')}</a></p>`}
     <p class="row"><a class="btn" href="/play/${g.slug}">▶ ${t('learn.tab.try')}</a><a class="btn btn-ghost" href="/g/${g.slug}">${t('learn.about')}</a></p>
   </section>`;
   page(req, res, { title: t('teach.assign.title', { game: g.title }), active: 'learn', back: '/learn', backLabel: t('nav.learn'), body });
 });
-router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 3600e3), (req, res) => {
+/** An official game that opens at a teacher's problem or question set (services/game-sets.js SET_GAMES). */
+const setGameOf = g => !!g && gameSets.SET_GAMES.has(g.slug) && g.source === 'seed';
+router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 3600e3), async (req, res) => {
   const u = req.user; const { game, classId, dueAt } = b(req);
   if (!S.isSchoolStaff(u)) return err(req, res, 'notFound', 404);
   const found = assignableGame(u, game);
@@ -607,16 +620,23 @@ router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 
   const c = S.getClass(String(classId || ''));
   if (!c || !S.canManageClass(u, c)) return err(req, res, 'notFound', 404);
   const g = found.game;
-  // The same game assigned again to the same class: the lesson made last time, never a second copy.
+  // A set game: the problem or question set it opens at (its options), which must open one; it names the lesson.
+  const opts = setGameOf(g) ? cleanOptions(String(b(req).opts || '')) || '' : '';
+  const what = setGameOf(g) ? gameSets.describe(g.id, parseParams(opts)) : null;
+  if (setGameOf(g) && !what) return res.status(400).json({ error: req.t('teach.assign.pickFirst') });
+  const title = what ? `${g.title}: ${what.kind === 'set' ? req.t('teach.assign.set', { count: what.n }) : what.label}`.slice(0, 100) : g.title;
+  // The same game (at the same problem or set) assigned again to the same class: the lesson made last time, never a second copy.
   const prior = q.get(`SELECT l.id FROM lessons l JOIN lesson_steps s ON s.lesson_id=l.id JOIN class_lessons cl ON cl.lesson_id=l.id
-    WHERE l.owner_id=? AND l.school_id=? AND s.kind='game' AND s.game_id=? AND cl.class_id=? AND cl.removed_at IS NULL LIMIT 1`, u.id, c.school_id, g.id, c.id);
+    WHERE l.owner_id=? AND l.school_id=? AND s.kind='game' AND s.game_id=? AND s.options=? AND cl.class_id=? AND cl.removed_at IS NULL LIMIT 1`, u.id, c.school_id, g.id, opts, c.id);
   if (prior) return res.status(400).json({ error: req.t('lessons.errors.alreadyAssigned', { class: c.name }) });
-  const made = L.createLesson(u, c.school_id, { title: g.title });
+  const made = L.createLesson(u, c.school_id, { title });
   if (!made.ok) return err(req, res, made.code);
-  const step = L.addStep(u, made.lesson.id, { kind: 'game', gameId: g.id, title: g.title });
+  const step = L.addStep(u, made.lesson.id, { kind: 'game', gameId: g.id, title, ...(opts ? { options: opts } : {}) });
   if (!step.ok) { L.deleteLesson(u, made.lesson.id); return err(req, res, step.code); }
   const r = L.assign(u, c.id, made.lesson.id, { dueAt });
   if (!r.ok) { L.deleteLesson(u, made.lesson.id); return assignReply(req, res, r); }
   audit(u.id, 'lesson.assignGame', made.lesson.id, { game: g.slug, class: c.id });
-  res.json({ ok: true, toast: req.t('lessons.assign.done', { class: c.name }), redirect: `/class/${c.id}` });
+  // "Also post to Google Classroom" (a class linked to Classroom): the lesson becomes a Classroom assignment too.
+  const gc = await gcAfterAssign(req, r.classLesson);
+  res.json({ ok: true, toast: [req.t('lessons.assign.done', { class: c.name }), gc].filter(Boolean).join(' '), redirect: `/class/${c.id}` });
 });

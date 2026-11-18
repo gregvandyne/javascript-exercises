@@ -64,3 +64,23 @@ export function save(gameId, ownerId, rawItems, id = null) {
 
 /** An account's sets go with it. */
 export function forgetUser(userId) { q.run('DELETE FROM game_sets WHERE owner_id=?', userId); }
+
+const ACT_NAME = { solve: 'Solve', multiply: 'Multiply', factor: 'Factor' };
+const FROM = { p: '+', q: '=', e: '^', o: '(', c: ')' };
+/** A problem as it reads: 2xp3q7 -> "2x + 3 = 7", x^2 -> x². */
+export function readable(code) {
+  const t = [...String(code)].map(ch => FROM[ch] || ch).join('');
+  return t.replace(/\^2/g, '²').replace(/\^3/g, '³').replace(/([+=])/g, ' $1 ').replace(/(\w|\))-/g, '$1 − ').replace(/^-/, '−').replace(/\s+/g, ' ').trim();
+}
+/** What a set game's lesson options open, for the assign page and the lesson's title: a set (its size), one problem, or
+ *  null when they open neither (the teacher's gallery). params: parseParams() of the options. */
+export function describe(gameId, params) {
+  const ch = params && params.chapter;
+  if (!ch) return null;
+  if (SET_ID.test(ch)) {
+    const s = get(gameId, ch);
+    return s ? { kind: 'set', n: s.items.length } : null;
+  }
+  if (ACT_NAME[params.mode]) return { kind: 'one', label: `${ACT_NAME[params.mode]} ${readable(ch)}` };
+  return null;
+}

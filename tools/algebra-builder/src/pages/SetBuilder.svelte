@@ -2,11 +2,11 @@
 	// Oomba: a question set. A teacher puts up to 10 questions together, from any activity (each made on that
 	// activity's own setup page), saves the set on Oomba and shares one link and QR code for all of them. Students
 	// answer them in order. A saved set keeps its link when it is changed and saved again.
-	import { ArrowDown, ArrowUp, Check, Copy, ExternalLink, Pencil, Plus, QrCode, Trash2 } from '@lucide/svelte';
+	import { ArrowDown, ArrowUp, Check, Copy, ExternalLink, GraduationCap, Pencil, Plus, QrCode, Trash2 } from '@lucide/svelte';
 	import { prettyText, type Activity } from '$lib/algebra';
 	import { ACTIVITIES } from '$lib/activities';
 	import { go, goBack, sets } from '$lib/nav.svelte';
-	import { MAX_ITEMS, canSaveSets, isPreview, copy, keepMySet, saveSet, setLink, type Item } from '$lib/oomba';
+	import { MAX_ITEMS, assignLink, canAssign, canSaveSets, isPreview, copy, keepMySet, saveSet, setLink, type Item } from '$lib/oomba';
 	import { makeQr, qrExtent, qrPath, qrPng } from '$lib/qr';
 	import Footer from '$lib/Footer.svelte';
 	import Logo from '$lib/Logo.svelte';
@@ -192,7 +192,13 @@
 					<button type="button" class="btn-primary" onclick={copyLink}>
 						{#if copied === 'link'}<Check size={16} /> Copied{:else}<Copy size={16} /> Copy set link{/if}
 					</button>
+					{#if canAssign()}
+						<button type="button" class="btn-ghost" disabled={!d.saved} onclick={() => assignLink(link)}
+							><GraduationCap size={16} /> Assign to a class</button
+						>
+					{/if}
 				</div>
+				{#if canAssign() && !d.saved}<p class="note">Save your changes to assign the set.</p>{/if}
 			{/if}
 			<div class="buttons">
 				<button type="button" class="btn-ghost" disabled={!d.items.length} onclick={tryIt}

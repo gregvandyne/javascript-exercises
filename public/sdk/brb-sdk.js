@@ -1004,6 +1004,13 @@
     var items = Array.isArray(s.items) ? s.items.map(function (it) { return Object.freeze({ a: it.a, p: it.p, s: it.s, l: it.l }); }) : [];
     return Object.freeze({ id: s.id, items: Object.freeze(items), mine: s.mine === true });
   })(INIT.set);
+  // Assign what the teacher made to a class (a set game, school staff only: BRB.canAssign): the page, after a tap, opens
+  // its Assign page with these lesson parameters (the problem or the set the class will open).
+  function assign(query) {
+    if (INIT.canAssign !== true || typeof query !== 'string' || query.length > 200) return false;
+    send('brb:assign', { opts: query.replace(/^\?/, '') });
+    return true;
+  }
   var synthCancel = synth ? synth.cancel : null;
   if (TTS) {
     window.addEventListener('message', function (e) {
@@ -1233,7 +1240,9 @@
     gameUrl: INIT.game && typeof INIT.game.url === 'string' && /^https?:\/\/[^/]+\/play\/[a-z0-9-]+$/.test(INIT.game.url) ? INIT.game.url : null,
     copy: copy,
     questionSet: questionSet,
-    saveQuestionSet: saveQuestionSet
+    saveQuestionSet: saveQuestionSet,
+    canAssign: INIT.canAssign === true,
+    assign: assign
   };
   Object.freeze(BRB.storage); Object.freeze(BRB.score);
   try { Object.defineProperty(window, 'BRB', { value: BRB, writable: false, configurable: false }); } catch (e) { window.BRB = BRB; }

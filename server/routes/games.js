@@ -34,7 +34,7 @@ import * as ttsGames from '../services/tts-games.js';
 
 import { courseOfSlug } from '../services/course-catalog.js';
 import * as courses from '../services/courses.js';
-import { isStaff } from '../services/schools.js';
+import { isStaff, isSchoolStaff } from '../services/schools.js';
 import { micGame, MIC_POLICY } from '../services/mic-games.js';
 export const router = Router();
 /** Art styles a play page may pass on to its game frame (?style=, the kit's okStyle). */
@@ -387,6 +387,9 @@ router.get('/frame/:token', (req, res) => {
     // A question set (services/game-sets.js) a teacher saved in this game, when the link's chapter is its code
     // (BRB.questionSet: { id, items, mine }); a code with no set: { id, missing: true }.
     ...(setFor(g, unpackParams(tok.o).chapter, u)),
+    // A teacher (school staff) in a set game may assign what they made to a class (BRB.canAssign / BRB.assign: the page
+    // opens /teach/assign with it, where "Also post to Google Classroom" is offered for a linked class).
+    ...(!preview && setGame(g) && isSchoolStaff(u) ? { canAssign: true } : {}),
     // AI voices (routes/tts.js): the TTS locales on now, for games that may use them (official games, a game the admin
     // switched on, and a Builder game's published, scanner-passed version); absent otherwise and in every preview (the
     // SDK then speaks with the device's voice exactly as before).

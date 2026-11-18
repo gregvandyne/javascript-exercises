@@ -332,6 +332,11 @@ of questions on Oomba, so one short link (and its QR code, and a lesson step) op
 - `BRB.saveQuestionSet(items, id?)` → a Promise of `{ id }` or `{ error }` (`guest`, `bad`, `full`, `notYours`,
   `offline`). The page posts it to `POST /api/games/:id/sets` for the signed-in player (not a guest): a new set, or with
   `id` their own set changed under the same code. 1 to 10 items; 200 sets per player per game.
+- `BRB.canAssign` / `BRB.assign(query)`: a teacher (school staff, not in a preview) may assign what they made. `query`
+  is the problem's or set's lesson parameters (`chapter=s-…&lock=1`); after a tap the page opens
+  `/teach/assign?game=<slug>&opts=<query>`, which says what students will open, makes a one-step lesson named after it
+  whose game step carries those options, and offers "Also post to Google Classroom" for a class linked to Classroom.
+  Students finish it with `BRB.gameOver` (the step done), which is the Classroom completion grade.
 - Sets go with their owner's account. Nothing about who played is kept.
 
 ## Loudness (`BRB.loudness`)

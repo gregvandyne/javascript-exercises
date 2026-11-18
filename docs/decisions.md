@@ -7626,6 +7626,16 @@ Answers: **Algebra Builder**; question sets **saved on Oomba** under a short cod
   **Next question** after each, then "All 5 questions done!" with Do them again; the teacher opening their own link
   gets "Change this set". A deleted set's link says it isn't there any more. A set is only activities, problems in a
   fixed math alphabet and two settings (no free text), and goes with its owner's account.
+- **Assigning, and Google Classroom.** Owner: "Make sure this flows into Google classroom if assigned to the class." A
+  teacher (school staff) gets **Assign to a class** beside the link of a problem and of a saved set. It opens Oomba's
+  Assign page for the game with that problem or set (`/teach/assign?game=algebra-builder&opts=…`): "Students open: your
+  question set (5 questions)", the class and due date, and **Also post to Google Classroom (for …)** when the teacher
+  can post to a linked class. The lesson is named after what it opens ("Algebra Builder: Solve 2x + 3 = 7"), its game
+  step carries the options, so the lesson's Play opens the problem or set straight away, and the same problem or set
+  can't be assigned twice to a class. Without options (the Learn tab's Assign) the page asks the teacher to choose in
+  the game first: students would otherwise land on the teacher's gallery. A student finishing it (`BRB.gameOver`, once,
+  at the end of the problem or the whole set) is the step done: the completion grade Classroom gets (send grades, or
+  automatic grades, on the class's Google Classroom page). tests/unit/gclassroom.test.js walks it end to end.
 - **SDK.** `BRB.gameUrl` (the frame gets the game's own `/play/<slug>` address), `BRB.copy(textOrPng)` (the play page
   writes the clipboard only for that game's own link, with a query, or a PNG up to 300 KB, right after a tap) and
   `BRB.questionSet` / `BRB.saveQuestionSet` (docs/sdk.md "Question sets").

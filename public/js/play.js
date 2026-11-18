@@ -123,6 +123,11 @@ const TYPES = {
     && (m.check === undefined || m.check === true),
   // Loudness (BRB.loudness; only page-data.mic pages ever listen, public/js/loudness.js): hello / start / keep / stop.
   'brb:loud': m => LOUD_OPS.includes(m.op),
+  // BRB.copy: a link to this game's own page or a small PNG (copyForGame checks which); BRB.saveQuestionSet: a set game's
+  // questions (the server cleans them); BRB.assign: a set game's lesson parameters (the server cleans them).
+  'brb:copy': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && (typeof m.text === 'string' || (typeof Blob === 'function' && m.png instanceof Blob)),
+  'brb:set-save': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.items) && m.items.length <= 10 && (m.set === null || m.set === undefined || typeof m.set === 'string'),
+  'brb:assign': m => typeof m.opts === 'string',
 };
 const LOUD_OPS = ['hello', 'start', 'keep', 'stop'];
 const TTS_ROLES = ['narrator', 'friendly', 'bright', 'deep', 'wise', 'grumpy'];
@@ -230,6 +235,8 @@ addEventListener('message', e => {
     case 'brb:copy': copyForGame(m); break;
     // BRB.saveQuestionSet (an official game that keeps question sets): the page saves it for the signed-in teacher.
     case 'brb:set-save': saveSetForGame(m); break;
+    // BRB.assign (a teacher in a set game): after a tap, the game's Assign page with the problem or set it opens at.
+    case 'brb:assign': if (typeof m.opts === 'string' && m.opts.length <= 200 && /^[a-z0-9=&-]*$/.test(m.opts) && tappedJustNow('brb-assign-at', 2000)) location.href = `/teach/assign?game=${encodeURIComponent(d.slug)}&opts=${encodeURIComponent(m.opts)}`; break;
   }
 });
 addEventListener('pagehide', () => { if (pendingSave) { navigator.sendBeacon && fetch(`/api/games/${d.gameId}/save`, { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ data: pendingSave }) }); } });

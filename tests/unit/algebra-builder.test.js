@@ -167,3 +167,19 @@ test('question sets: the SDK hands the game its set and saves through the page',
   assert.match(play, /case 'brb:set-save': saveSetForGame\(m\)/);
   assert.match(play, /api\(`\/api\/games\/\$\{d\.gameId\}\/sets`/);
 });
+
+test('the play page takes the set games\' messages (BRB.copy, BRB.saveQuestionSet, BRB.assign) and nothing else of that kind', () => {
+  const src = fs.readFileSync(path.join(ROOT, 'public/js/play.js'), 'utf8');
+  const start = src.indexOf('const TYPES = {'), end = src.indexOf('let saveTimer');
+  const validMessage = new Function(src.slice(start, end).replace('export function', 'function') + '\nreturn validMessage;')();
+  const frame = {};
+  const ev = data => ({ source: frame, origin: 'null', data: { brb: 1, ...data } });
+  assert.ok(validMessage(ev({ type: 'brb:copy', id: 1, text: 'https://x/play/algebra-builder?chapter=s-0123456789&lock=1' }), frame));
+  assert.ok(validMessage(ev({ type: 'brb:copy', id: 2, png: new Blob(['x'], { type: 'image/png' }) }), frame));
+  assert.equal(validMessage(ev({ type: 'brb:copy', id: 0, text: 'x' }), frame), null);
+  assert.equal(validMessage(ev({ type: 'brb:copy', id: 3, text: 7 }), frame), null);
+  assert.ok(validMessage(ev({ type: 'brb:set-save', id: 1, items: [{ a: 'solve', p: '2x=4' }], set: null }), frame));
+  assert.equal(validMessage(ev({ type: 'brb:set-save', id: 1, items: Array(11).fill({}) }), frame), null);
+  assert.ok(validMessage(ev({ type: 'brb:assign', opts: 'chapter=s-0123456789&lock=1' }), frame));
+  assert.equal(validMessage(ev({ type: 'brb:assign', opts: 5 }), frame), null);
+});

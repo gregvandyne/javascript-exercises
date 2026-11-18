@@ -7740,7 +7740,12 @@
       "submit": "Assign",
       "note": "Your class gets a one-step lesson that plays this game. You can change it later in the Lessons library.",
       "none": "You have no classes yet. Make one in Classroom first.",
-      "liveOnly": "This is a live class game: host it on the big screen instead of assigning it."
+      "liveOnly": "This is a live class game: host it on the big screen instead of assigning it.",
+      "opens": "Students open: {what}",
+      "set": "{count, plural, one {your question set (# question)} other {your question set (# questions)}}",
+      "pickFirst": "Choose a problem, or make and save a question set, in the game first. Then press Assign to a class there, so your students open it straight away.",
+      "openGame": "Open the game",
+      "gcGrades": "Google Classroom gets a grade when a student finishes it: send grades from the class's Google Classroom page, or turn on automatic grades there."
     },
     "home": {
       "hello": "Hello, {name}",
@@ -8825,7 +8830,8 @@
       "open": "Open in Classroom",
       "noLessons": "No lessons in this class yet. Assign one on the Lessons tab.",
       "doneScheduled": "Scheduled in Google Classroom: students see it on {date}, when the lesson opens.",
-      "locked": "To post lessons, send grades and share materials, allow Oomba Academy to post to Classroom."
+      "locked": "To post lessons, send grades and share materials, allow Oomba Academy to post to Classroom.",
+      "alsoLinked": "Also post to Google Classroom (for {classes})"
     },
     "grades": {
       "text": "This is a completion grade: the share of the lesson's steps a student has done, out of 100. It doesn't count right answers. Students who haven't started are left out.",
