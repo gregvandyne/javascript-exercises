@@ -518,149 +518,472 @@ function transform(body, s, ctx) {
 }
 
 
+// ---------------------------------------------------------------- tiles to drag: the balance scale and algebra tiles
+// Since "the balance scale by drag and drop" (docs/decisions.md), both modes of Algebra work like the Algebra Builder
+// game (tools/algebra-builder): a tray with a + / − switch for the sign of new tiles and one tile of each kind, dragged
+// (mouse, touch or pen) onto the scale's pans or the mat and off them again; a tap picks a tile and a second tap says
+// where it goes, for anyone who doesn't drag (and the keyboard: Enter, then Tab to where it goes; Delete takes away).
+// Only the idea is the game's: this is the widget's own code.
+const TNAME = { x2: 'x²', x: 'x', 1: '1' };
+const tileSym = (k, neg) => `${neg ? '−' : '+'}${TNAME[k]}`;
+const tcls = k => (k === '1' ? 'one' : k);
+/** A tile as drawn (not a button): its colour by kind, striped and dashed when negative, its symbol on it. */
+function tileFace(k, neg, text = `${neg ? '−' : ''}${TNAME[k]}`) {
+  const t = el('span', `dt-tl dt-tl-${tcls(k)}${neg ? ' is-neg' : ''}`); t.setAttribute('aria-hidden', 'true');
+  t.appendChild(el('span', 'dt-tlt', text)); return t;
+}
+/** The tray: the sign switch (+ | −, the one shown in bold is the sign new tiles have) and a tile of each kind. W: the
+ *  mode's words (sign, pos, neg, tray, tileOf). -> { el, tiles: [button], sync(picked) }. */
+function tileTray(W, kinds, fill, getNeg, setNeg) {
+  const tray = el('div', 'dt-tray'); tray.setAttribute('role', 'group'); tray.setAttribute('aria-label', W.tray); tray.dir = 'ltr';
+  tray.dataset.zone = 'tray';
+  const sw = btn('', 'btn btn-sm dt-sign');
+  const p = el('span', 'dt-signp', '+'), n = el('span', 'dt-signn', '−'); p.setAttribute('aria-hidden', 'true'); n.setAttribute('aria-hidden', 'true');
+  sw.append(p, n); sw.addEventListener('click', () => setNeg(!getNeg()));
+  tray.appendChild(sw);
+  const tiles = kinds.map(k => {
+    const b = btn('', 'btn btn-sm dt-traytile'); b.dataset.drag = 'tray'; b.dataset.k = k; b.removeAttribute('title');
+    tray.appendChild(b); return b;
+  });
+  return {
+    el: tray, tiles,
+    sync(picked) {
+      const neg = getNeg(), say = fill(W.sign, { s: neg ? W.neg : W.pos });
+      sw.classList.toggle('is-neg', neg); sw.setAttribute('aria-label', say); tip(sw, say);
+      for (const b of tiles) {
+        const k = b.dataset.k; b.dataset.neg = neg ? '1' : '';
+        b.textContent = ''; b.appendChild(tileFace(k, neg));
+        const name = fill(W.tileOf, { t: tileSym(k, neg) });
+        b.setAttribute('aria-label', name); tip(b, name);
+        b.setAttribute('aria-pressed', String(!!picked && picked.from === 'tray' && picked.k === k && picked.neg === neg));
+      }
+    },
+  };
+}
+/** Drag and drop of tiles (Pointer Events: mouse, touch, pen). A press on anything in root with data-drag that moves
+ *  more than 8px lifts a copy of its tile, which follows the pointer; the drop zone under it (data-zone, in root) lights
+ *  up. Let go: drop(source, zone or null). A press that doesn't move stays a tap (the button's click); the click that
+ *  follows a drag is swallowed. Escape or a cancelled pointer: nothing changes. */
+function tileDrag(root, { drop, off = () => false }) {
+  let d = null, ghost = null, lit = null, ended = 0, from = null;
+  const zoneAt = (x, y) => { const z = document.elementFromPoint(x, y)?.closest('[data-zone]'); return z && root.contains(z) ? z : null; };
+  const light = z => { if (lit === z) return; lit?.classList.remove('is-drop'); lit = z; lit?.classList.add('is-drop'); };
+  const stop = () => { ghost?.remove(); ghost = null; light(null); d?.src.classList.remove('is-dragsrc'); if (d?.esc) document.removeEventListener('keydown', d.esc, true); d = null; };
+  root.addEventListener('pointerdown', e => {
+    const src = e.target.closest('[data-drag]');
+    if (!src || !root.contains(src) || e.button > 0 || src.disabled || off() || d) return;
+    d = { src, id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
+    try { src.setPointerCapture(e.pointerId); } catch { /* not capturable */ }
+  });
+  root.addEventListener('pointermove', e => {
+    if (!d || d.id !== e.pointerId) return;
+    if (!d.moved && Math.hypot(e.clientX - d.x, e.clientY - d.y) > 8) {
+      d.moved = true;
+      const face = d.src.querySelector('.dt-tl'), r = (face || d.src).getBoundingClientRect();
+      ghost = el('div', 'dt-tghost'); ghost.setAttribute('aria-hidden', 'true');
+      const copy = (face || d.src).cloneNode(true); copy.style.width = `${r.width}px`; copy.style.height = `${r.height}px`; ghost.appendChild(copy);
+      d.ox = r.width / 2; d.oy = r.height / 2;
+      (document.fullscreenElement || document.body).appendChild(ghost);
+      d.src.classList.add('is-dragsrc');
+      const me = d; d.esc = ev => { if (ev.key === 'Escape' && d === me) { ev.preventDefault(); ended = Date.now(); from = me.src; stop(); } };
+      document.addEventListener('keydown', d.esc, true);
+    }
+    if (!d.moved) return;
+    e.preventDefault();
+    ghost.style.transform = `translate(${e.clientX - d.ox}px, ${e.clientY - d.oy}px) rotate(-4deg) scale(1.08)`;
+    const z = zoneAt(e.clientX, e.clientY); light(z); ghost.classList.toggle('is-out', !z);
+  });
+  const up = e => {
+    if (!d || d.id !== e.pointerId) return;
+    const me = d, z = me.moved && e.type === 'pointerup' ? zoneAt(e.clientX, e.clientY) : null;
+    if (me.moved) { ended = Date.now(); from = me.src; }
+    stop();
+    if (me.moved && e.type === 'pointerup') drop(me.src, z);
+  };
+  root.addEventListener('pointerup', up); root.addEventListener('pointercancel', up);
+  // Only the click that follows a drag (straight after it) is swallowed.
+  root.addEventListener('click', e => { if (ended && Date.now() - ended < 400 && from && (from.contains(e.target) || e.target.contains(from))) { e.stopPropagation(); e.preventDefault(); } ended = 0; from = null; }, true);
+}
+
 // ================================================================ 6. balance scale
+/** The balance scale (docs/decisions.md "the balance scale by drag and drop"): x tiles and 1 tiles (and their negatives)
+ *  dragged onto either pan, or onto Both sides under the scale to do the same to both at once. Whatever is done to one
+ *  side tips the scale, as far as the two sides' weights (with the secret x) differ; the same done to the other side
+ *  levels it again. Remove zero pairs (a tile and its opposite on one side make 0), ÷ when every count shares evenly, and
+ *  Check: try a value of x on the equation as it is now. */
 function balance(body, s, ctx) {
   const T = shell(body, s, ctx, 'balance'), { W, st } = T;
   const fill = (msg, vars) => format(msg, vars, ctx.intl);
-  const where = T.pick(W.where, [['both', W.both], ['left', W.left], ['right', W.right]], () => st.where, v => { st.where = v; T.commit(W[v]); });
-  where.dataset.pair = '1';
-  T.top.appendChild(where);
-  const L = () => ({ x: st.lx, u: st.lu }), R = () => ({ x: st.rx, u: st.ru });
+  const off = () => !!ctx.editing;
+  const NEG = ['lnx', 'lnu', 'rnx', 'rnu'];
+  let neg = false, sel = null, tryV = st.tx ?? 1;
+  const P = { left: 'l', right: 'r' };
+  const sideOf = w => { const p = P[w]; return { x: st[`${p}x`], u: st[`${p}u`], nx: st[`${p}nx`] || 0, nu: st[`${p}nu`] || 0 }; };
+  const L = () => sideOf('left'), R = () => sideOf('right');
+  const put = (w, o) => { const p = P[w]; st[`${p}x`] = o.x; st[`${p}u`] = o.u; for (const [k, v] of [['nx', o.nx], ['nu', o.nu]]) { if (v) st[`${p}${k}`] = v; else delete st[`${p}${k}`]; } };
   const eq = () => `${G.sideText(L())} ${G.tip(L(), R(), st.x) ? '≠' : '='} ${G.sideText(R())}`;
-  const opB = (op, label, aria) => { const b = btn(label, 'btn btn-sm dt-balop', aria); b.dir = 'ltr'; b.addEventListener('click', () => doOp(op)); return b; };
-  const addx = opB('addx', '+ x', W.addx), subx = opB('subx', '− x', W.subx), add1 = opB('add1', '+ 1', W.add1), sub1 = opB('sub1', '− 1', W.sub1), div = opB('div', '÷', W.div);
-  const undo = ibtn('↶', W.undo), fresh = ibtn('🎲', W.new);
-  // The five steps are the balance's own controls (a row above); Undo and New equation are the row at the bottom.
-  const ops = el('div', 'dt-seg dt-balops'); ops.append(addx, subx, add1, sub1, div);
-  T.ctl.appendChild(ops);
-  T.foot.append(undo, fresh);
-  const g = () => [st.lx, st.lu, st.rx, st.ru].reduce((a, b) => M.gcd(a, b), 0);
-  const doOp = op => {
-    const n = g(), r = G.balanceOp(L(), R(), op, st.where, n);
-    if (!r) { ctx.say(W.cant); return; }
-    st.hist = [...st.hist, { lx: st.lx, lu: st.lu, rx: st.rx, ru: st.ru, op, n: op === 'div' ? n : 0, w: st.where }].slice(-12);
-    Object.assign(st, { lx: r.L.x, lu: r.L.u, rx: r.R.x, ru: r.R.u });
-    T.commit(`${W[op].replace('{n}', n)}: ${eq()}`);
+  const sideName = w => W[w];
+  const status = () => { const t = G.tip(L(), R(), st.x); return t ? (t < 0 ? W.tipsL : W.tipsR) : W.level; };
+  const snap = op => { const h = { lx: st.lx, lu: st.lu, rx: st.rx, ru: st.ru, op: op.op, n: op.n || 0, w: op.w || 'both' }; for (const k of NEG) if (st[k]) h[k] = st[k]; return h; };
+  const step = (op, apply, msg) => {
+    st.hist = [...st.hist, snap(op)].slice(-12); apply(); delete st.tx; sel = null;
+    T.commit(`${msg} ${status()}`);
     const v = G.solvedValue(L(), R()); if (v !== null && !G.tip(L(), R(), st.x)) ctx.say(fill(W.solved, { x: v }));
   };
-  undo.addEventListener('click', () => { const h = st.hist.pop(); if (!h) return; Object.assign(st, { lx: h.lx, lu: h.lu, rx: h.rx, ru: h.ru }); T.commit(`${W.undo}: ${eq()}`); });
-  fresh.addEventListener('click', () => { const x = 1 + Math.floor(Math.random() * 6), e = G.makeEquation(x); Object.assign(st, { x, lx: e.L.x, lu: e.L.u, rx: e.R.x, ru: e.R.u, hist: [], where: 'both', show: false }); T.commit(`${W.new}: ${eq()}`); });
+  const opOf = (pre, k, n) => `${pre}${n ? 'n' : ''}${k === 'x' ? 'x' : '1'}`;
+  /** A tile from the tray (add) or from a side (take away / move) to a side, both sides, or away. */
+  function act(src, to) {
+    const t = tileSym(src.k, src.neg);
+    if (src.from === 'tray') {
+      if (!to || to === 'tray') return;
+      const r = G.panMove(L(), R(), { k: src.k, neg: src.neg, add: true, where: to });
+      if (!r) { ctx.say(W.full); return; }
+      step({ op: opOf('add', src.k, src.neg), w: to }, () => { put('left', r.L); put('right', r.R); }, fill(to === 'both' ? W.bothAdd : W.addedTo, { t, side: sideName(to) }));
+      return;
+    }
+    const from = src.from;
+    if (to === from) return;
+    if (to === 'both') {
+      const r = G.panMove(L(), R(), { k: src.k, neg: src.neg, add: false, where: 'both' });
+      if (!r) { ctx.say(W.full); return; }
+      step({ op: opOf('sub', src.k, src.neg), w: 'both' }, () => { put('left', r.L); put('right', r.R); }, fill(W.bothTake, { t }));
+      return;
+    }
+    const less = G.sideMove(sideOf(from), src.k, src.neg, false); if (!less) return;
+    if (to === 'left' || to === 'right') {
+      const more = G.sideMove(sideOf(to), src.k, src.neg, true); if (!more) { ctx.say(W.full); return; }
+      step({ op: opOf('mv', src.k, src.neg), w: to }, () => { put(from, less); put(to, more); }, fill(W.movedTo, { t, side: sideName(to) }));
+      return;
+    }
+    step({ op: opOf('sub', src.k, src.neg), w: from }, () => put(from, less), fill(W.takenFrom, { t, side: sideName(from) }));
+  }
+  const srcOf = b => ({ from: b.dataset.drag === 'tray' ? 'tray' : b.dataset.side, k: b.dataset.k, neg: !!b.dataset.neg });
+  const tray = tileTray(W, ['x', '1'], fill, () => neg, v => { neg = v; if (sel && sel.from === 'tray') sel = { ...sel, neg }; T.draw(); ctx.say(fill(W.sign, { s: neg ? W.neg : W.pos })); });
+  for (const b of tray.tiles) b.addEventListener('click', () => { const x = srcOf(b); sel = sel && sel.from === 'tray' && sel.k === x.k && sel.neg === x.neg ? null : x; T.draw(); if (sel) ctx.say(fill(W.picked, { t: tileSym(x.k, x.neg) })); b.focus(); });
+  // Take away: where a side's tile goes when it is picked (it can be dragged to the tray, or off the scale, too).
+  const away = btn('', 'btn btn-sm dt-taway'); away.dataset.zone = 'tray';
+  away.addEventListener('click', () => { if (sel && sel.from !== 'tray') act(sel, 'tray'); });
+  tray.el.appendChild(away);
+  T.top.appendChild(tray.el);
+  // ÷ (when every count on both sides shares evenly), and Check: try a value of x.
+  const div = btn('÷', 'btn btn-sm dt-balop'); div.dir = 'ltr';
+  div.addEventListener('click', () => {
+    const n = G.shareBy(L(), R()), r = n >= 2 && G.balanceOp(L(), R(), 'div', 'both', n); if (!r) { ctx.say(W.cant); return; }
+    step({ op: 'div', n, w: 'both' }, () => { put('left', G.fullSide(r.L)); put('right', G.fullSide(r.R)); }, `${fill(W.div, { n })}: ${eq()}.`);
+  });
+  const tryS = T.stepper(W.tryX, () => minus(tryV), () => { if (tryV > -20) { tryV--; unchecked(); } }, () => { if (tryV < 20) { tryV++; unchecked(); } }, `${W.tryX} −`, `${W.tryX} +`,
+    { value: () => tryV, min: -20, max: 20, set: v => { tryV = v; unchecked(); } });
+  const unchecked = () => { if (st.tx !== undefined && st.tx !== tryV) { delete st.tx; T.commit(); } else T.draw(); };
+  const check = ibtn('✓', W.check, 'btn btn-sm dt-bcheck');
+  const result = el('p', 'dt-bres'); result.setAttribute('aria-live', 'polite'); result.dir = 'ltr';
+  check.addEventListener('click', () => { st.tx = tryV; T.commit(resultText()); });
+  const resultText = () => {
+    const c = G.checkX(L(), R(), st.tx);
+    return c.ok ? fill(W.ckYes, { x: minus(st.tx), v: minus(c.l.v) }) : fill(W.ckNo, { l: c.l.text, r: c.r.text });
+  };
+  const checkRowEl = el('div', 'dt-bcheckrow'); checkRowEl.append(div, tryS, check);
+  T.ctl.append(checkRowEl, result);
+  const undo = ibtn('↶', W.undo), zero = ibtn('±', W.zero), fresh = ibtn('🎲', W.new);
+  T.foot.append(undo, zero, fresh);
+  zero.addEventListener('click', () => {
+    const n = G.sidePairs(L()) + G.sidePairs(R()); if (!n) return;
+    step({ op: 'zero' }, () => { put('left', G.sideZero(L())); put('right', G.sideZero(R())); }, `${fill(W.zeroed, { n })}: ${eq()}.`);
+  });
+  undo.addEventListener('click', () => {
+    const h = st.hist.pop(); if (!h) return;
+    for (const k of ['lx', 'lu', 'rx', 'ru']) st[k] = h[k];
+    for (const k of NEG) { if (h[k]) st[k] = h[k]; else delete st[k]; }
+    sel = null; delete st.tx; T.commit(`${W.undo}: ${eq()}. ${status()}`);
+  });
+  fresh.addEventListener('click', () => {
+    const x = 1 + Math.floor(Math.random() * 6), e = G.makeEquation(x);
+    for (const k of NEG) delete st[k]; delete st.tx; sel = null;
+    Object.assign(st, { x, lx: e.L.x, lu: e.L.u, rx: e.R.x, ru: e.R.u, hist: [], where: 'both', show: false });
+    T.commit(`${W.new}: ${eq()}`);
+  });
+  body.addEventListener('keydown', e => { if (e.key === 'Escape' && sel) { sel = null; T.draw(); } });
+  tileDrag(body, { off, drop: (b, z) => act(srcOf(b), z ? z.dataset.zone : b.dataset.drag === 'tray' ? null : 'tray') });
+
+  /** One side's pan: its tiles in groups (x, −x, 1, −1), each group a button (drag or tap one of its tiles), the side as
+   *  it reads under them, and, while a tile is picked, the place to put it. */
+  const panOf = w => {
+    const sd = sideOf(w), pan = el('div', `dt-bpan dt-bpan-${w}`); pan.dataset.zone = w;
+    pan.setAttribute('role', 'group'); pan.setAttribute('aria-label', `${sideName(w)}: ${G.sideText(sd)}`);
+    const tiles = el('div', 'dt-btiles');
+    for (const [k, n, key] of [['x', false, 'x'], ['x', true, 'nx'], ['1', false, 'u'], ['1', true, 'nu']]) {
+      const c = sd[key]; if (!c) continue;
+      const g = btn('', `dt-bgrp dt-bgrp-${tcls(k)}${sel && sel.from === w && sel.k === k && sel.neg === n ? ' is-sel' : ''}`, `${sideName(w)}: ${c} × ${fill(W.tileOf, { t: tileSym(k, n) })}`);
+      g.removeAttribute('title'); g.dataset.drag = 'pan'; g.dataset.side = w; g.dataset.k = k; g.dataset.neg = n ? '1' : '';
+      g.setAttribute('aria-pressed', String(g.classList.contains('is-sel')));
+      for (let i = 0; i < c; i++) g.appendChild(tileFace(k, n, k === 'x' && st.show && !T.hid() ? `${n ? '−' : ''}${st.x}` : undefined));
+      if (off()) g.disabled = true;
+      g.addEventListener('click', () => { const x = srcOf(g); sel = sel && sel.from === w && sel.k === k && sel.neg === n ? null : x; T.draw(); if (sel) ctx.say(fill(W.picked, { t: tileSym(k, n) })); focusSel(); });
+      g.addEventListener('keydown', e => { if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); act(srcOf(g), 'tray'); } });
+      tiles.appendChild(g);
+    }
+    pan.appendChild(tiles);
+    if (sel && sel.from !== w && !off()) {
+      const to = btn(`⤓ ${fill(W.putOn, { t: tileSym(sel.k, sel.neg), side: sideName(w) })}`, 'btn btn-sm dt-bput');
+      to.removeAttribute('title'); to.addEventListener('click', () => act(sel, w)); pan.appendChild(to);
+    }
+    const cap = ltr('div', 'dt-bcap', G.sideText(sd)); cap.setAttribute('aria-hidden', 'true');
+    pan.appendChild(cap);
+    // A tap on the pan itself (not on a tile) puts the picked tile there too.
+    pan.addEventListener('click', e => { if (sel && sel.from !== w && !e.target.closest('button')) act(sel, w); });
+    return pan;
+  };
+  const focusSel = () => { const f = T.stage.querySelector('.dt-bgrp.is-sel') || T.stage.querySelector('.dt-bput'); f?.focus(); };
+  let tu = 44, hang = 26, md = 26, tight = false, scroll = false;
   T.draw = () => {
-    where.sync();
-    const l = L(), r = R(), tilt = G.tip(l, r, st.x), n = g();
-    for (const [b, op] of [[addx, 'addx'], [subx, 'subx'], [add1, 'add1'], [sub1, 'sub1']]) b.disabled = !G.balanceOp(l, r, op, st.where);
-    div.disabled = st.where !== 'both' || n < 2; div.textContent = n >= 2 ? `÷ ${n}` : '÷'; div.setAttribute('aria-label', fill(W.div, { n: n >= 2 ? n : 2 })); div.title = div.getAttribute('aria-label');
-    undo.disabled = !st.hist.length;
+    const l = L(), r = R(), n = G.shareBy(l, r);
+    const a = document.activeElement, had = a && T.stage.contains(a) ? (a.classList.contains('dt-bboth') ? '.dt-bboth' : a.dataset.side ? `.dt-bgrp[data-side="${a.dataset.side}"][data-k="${a.dataset.k}"][data-neg="${a.dataset.neg}"]` : null) : null;
+    tray.sync(sel);
+    for (const b of tray.tiles) b.disabled = off();
+    away.hidden = !sel || sel.from === 'tray';
+    if (sel && sel.from !== 'tray') { const t = fill(W.takeAway, { t: tileSym(sel.k, sel.neg) }); away.textContent = `🗑️ ${t}`; }
+    div.hidden = n < 2 || !G.balanceOp(l, r, 'div', 'both', n); div.textContent = `÷ ${n}`; div.setAttribute('aria-label', fill(W.div, { n: Math.max(2, n) })); tip(div, div.getAttribute('aria-label'));
+    undo.disabled = !st.hist.length; zero.disabled = !(G.sidePairs(l) + G.sidePairs(r));
+    tryS.sync(); check.disabled = off();
+    result.textContent = st.tx === undefined ? '' : resultText();
+    result.className = `dt-bres${st.tx === undefined ? '' : G.checkX(l, r, st.tx).ok ? ' dt-good' : ' is-no'}`;
+    result.hidden = st.tx === undefined;
+    // The scale: the post and the beam (drawn once the pans are laid out), the two pans hanging from its ends, Both sides
+    // at its foot.
     T.stage.textContent = '';
-    const VW = 640, VH = 330, ang = tilt * 9, cx = VW / 2, cy = 120, arm = 230;
-    const ts = tsFor(T, VW, VH, 22);
-    const sv = svg('svg', { viewBox: `0 0 ${VW} ${VH}`, class: 'dt-bal', role: 'img', 'aria-label': `${W.scale}: ${eq()}`, style: `--ts:${ts.toFixed(3)}` });
-    sv.setAttribute('direction', 'ltr');
-    sv.appendChild(svg('path', { d: `M${cx} ${cy}L${cx - 50} ${VH - 14}H${cx + 50}Z`, class: 'dt-balstand' }));
-    const beam = svg('g', { transform: `rotate(${ang} ${cx} ${cy})` });
-    beam.appendChild(svg('rect', { x: cx - arm - 10, y: cy - 7, width: 2 * arm + 20, height: 14, rx: 7, class: 'dt-balbeam' }));
-    sv.appendChild(beam);
-    sv.appendChild(svg('circle', { cx, cy, r: 10, class: 'dt-balpin' }));
-    // Each pan hangs straight down from its end of the beam.
-    const rad = (ang * Math.PI) / 180;
-    [[l, -1], [r, 1]].forEach(([side, k]) => {
-      const ex = cx + k * arm * Math.cos(rad), ey = cy + k * arm * Math.sin(rad), py = ey + 150, pw = 200;
-      sv.appendChild(svg('path', { d: `M${ex} ${ey}L${ex - pw / 2 + 10} ${py}M${ex} ${ey}L${ex + pw / 2 - 10} ${py}`, class: 'dt-balstring' }));
-      sv.appendChild(svg('path', { d: `M${ex - pw / 2} ${py}h${pw}l-14 14h${-pw + 28}z`, class: 'dt-balpan' }));
-      // x-boxes in rows of 4 (bottom up), then unit weights in rows of 10.
-      let y = py;
-      const xs = side.x, rowsX = Math.ceil(xs / 4);
-      for (let i = 0; i < xs; i++) {
-        const row = Math.floor(i / 4), col = i % 4, inRow = Math.min(4, xs - row * 4), bw = Math.min(46, 38 * ts);
-        const bx = ex - (inRow * (bw + 4)) / 2 + col * (bw + 4), by = py - (row + 1) * (bw + 4);
-        sv.appendChild(svg('rect', { x: bx, y: by, width: bw, height: bw, rx: 6, class: 'dt-xbox' }));
-        sv.appendChild(svg('text', { x: bx + bw / 2, y: by + bw * 0.68, 'text-anchor': 'middle', class: 'dt-xboxt', 'font-size': (bw * 0.58).toFixed(1) }, st.show ? String(st.x) : 'x'));
-      }
-      y = py - rowsX * (Math.min(46, 38 * ts) + 4);
-      for (let i = 0; i < side.u; i++) {
-        const row = Math.floor(i / 10), col = i % 10, inRow = Math.min(10, side.u - row * 10), d = 17;
-        sv.appendChild(svg('circle', { cx: ex - (inRow * d) / 2 + col * d + d / 2, cy: y - row * d - d / 2 - 1, r: d / 2 - 1, class: 'dt-unit1' }));
-      }
-      const lab = svg('text', { x: ex, y: py + 46, 'text-anchor': 'middle', class: 'dt-balside' }, G.sideText(side));
-      sv.appendChild(lab);
-    });
-    T.stage.appendChild(sv);
+    const wrap = el('div', `dt-bwrap${sel ? ' is-picking' : ''}`); wrap.dir = 'ltr';
+    const art = svg('svg', { class: 'dt-bart', 'aria-hidden': 'true' });
+    const pans = el('div', 'dt-bpans'), lp = panOf('left'), rp = panOf('right');
+    pans.append(lp, rp);
+    const both = btn('', 'btn btn-sm dt-bboth'); both.dataset.zone = 'both';
+    both.append(el('span', 'dt-bbothn', `⚖️ ${W.both}`), el('span', 'dt-bbothh', sel ? fill(sel.from === 'tray' ? W.bothPut : W.bothOff, { t: tileSym(sel.k, sel.neg) }) : W.bothHint));
+    both.removeAttribute('title'); both.setAttribute('aria-label', sel ? fill(sel.from === 'tray' ? W.bothPut : W.bothOff, { t: tileSym(sel.k, sel.neg) }) : `${W.both}: ${W.bothHint}`);
+    if (off()) both.disabled = true;
+    both.addEventListener('click', () => { if (sel) act(sel, 'both'); else ctx.say(W.pickFirst); });
+    wrap.append(art, pans, both);
+    T.stage.appendChild(wrap);
+    // Room above and below the pans for the most they ever move (maxDrop), so the scale never jumps as it tips. When the
+    // scale doesn't fit the space it has: the strings shorten, it tips less far, it goes tight (a short needle, no words
+    // under Both sides or the pans: the equation is under the scale), the tiles shrink (their words go below 36px), and
+    // last of all the scale scrolls inside its own area.
+    const narrow = matchMedia('(max-width: 719px)').matches, armW = wrap.clientWidth / 4 + 14;
+    let cy = 0, padTop = 0;
+    const lay = () => {
+      const est = maxDrop(armW); cy = Math.round(est + (tight ? 16 : 30)); padTop = Math.round(cy + est + hang);
+      pans.style.marginTop = `${padTop}px`; both.style.marginTop = `${Math.round(est + 8)}px`; wrap.style.setProperty('--tu', `${tu}px`);
+      wrap.classList.toggle('is-tight', tight); wrap.classList.toggle('is-small', tu < 36); wrap.classList.toggle('is-scroll', scroll);
+    };
+    const wide = () => pans.scrollWidth <= pans.clientWidth + 1 && lp.scrollWidth <= lp.clientWidth + 1 && rp.scrollWidth <= rp.clientWidth + 1;
+    const room = () => wide() && (narrow || !T.stage.clientHeight || wrap.scrollHeight <= T.stage.clientHeight + 1);
+    // Fitted once now and again after the page has laid it out (measured inside a redraw, the sizes can be the old ones).
+    const fit = () => {
+      const was = `${tu} ${hang} ${md} ${tight} ${scroll}`;
+      tu = projecting() ? 56 : 44; hang = 26; md = 26; tight = false; scroll = false; lay();
+      while (!room() && hang > 10) { hang -= 4; lay(); }
+      while (!room() && md > 12) { md -= 2; lay(); }
+      if (!room()) { tight = true; lay(); }
+      while (!room() && tu > 28) { tu -= 2; lay(); }
+      if (!room()) { scroll = true; lay(); }
+      return was !== `${tu} ${hang} ${md} ${tight} ${scroll}`;
+    };
+    const deg = G.tiltDeg(l, r, st.x);
+    fit(); drawArt(wrap, art, lp, rp, deg, cy, padTop);
+    requestAnimationFrame(() => { if (wrap.isConnected && fit()) { art.textContent = ''; lastDeg = deg; drawArt(wrap, art, lp, rp, deg, cy, padTop); } });
+    if (had) T.stage.querySelector(had)?.focus();
     T.read.textContent = '';
     T.read.appendChild(ltr('div', 'dt-big dt-baleq', eq()));
-    const v = G.solvedValue(l, r);
+    const v = G.solvedValue(l, r), tilt = G.tip(l, r, st.x);
     const sub = el('div', 'dt-sub');
-    if (v !== null && !tilt) { sub.textContent = fill(W.solved, { x: v }); sub.classList.add('dt-good'); }
-    else sub.textContent = tilt ? (tilt < 0 ? W.tipsL : W.tipsR) : W.level;
+    if (v !== null && !tilt) { sub.textContent = fill(W.solved, { x: minus(v) }); sub.classList.add('dt-good'); }
+    else { sub.textContent = status(); if (tilt) sub.classList.add('dt-bwarn'); }
     T.read.appendChild(sub);
   };
+  /** The post, the beam turned by deg (clockwise: the right side down) and each pan with its strings, hanging as far
+   *  down (or up) as its end of the beam moved. They move there from where they were (unless motion is reduced). */
+  let lastDeg = null;
+  /** How far a pan hangs below level at most: a fifth of the arm, never more than md px (so the scale stays short). */
+  const maxDrop = arm => Math.min(md, arm / 5);
+  // Nothing here is measured but the scale's width: where the pans lie follows from it (two columns, 28px apart, the
+  // pans' tops at the padding above them), so the drawing is right even before the page has laid the widget out.
+  function drawArt(wrap, art, lp, rp, deg, cy, top) {
+    const W0 = wrap.clientWidth, cx = W0 / 2, pw = (W0 - 4 - 28) / 2, arm = (pw + 28) / 2;
+    const lx = [2, cx + 14];
+    // The post runs down behind the pans to Both sides (the drawing is cut at the bottom of the scale).
+    art.appendChild(svg('rect', { x: cx - 6, y: cy, width: 12, height: 4000, class: 'dt-balstand' }));
+    const pos = new Map([[lp, lx[0]], [rp, lx[1]]]);
+    const hang = [[lp, -1], [rp, 1]].map(([p, k]) => {
+      const g = svg('g', { class: 'dt-bhang' }), ex = cx + k * arm, x0 = pos.get(p);
+      g.appendChild(svg('path', { d: `M${ex} ${cy}L${x0 + 10} ${top}M${ex} ${cy}L${x0 + pw - 10} ${top}`, class: 'dt-balstring' }));
+      art.appendChild(g); return [g, p, k];
+    });
+    const beam = svg('g', { class: 'dt-bbeam' });
+    beam.style.transformOrigin = `${cx}px ${cy}px`;
+    beam.appendChild(svg('rect', { x: cx - arm - 8, y: cy - 6, width: 2 * arm + 16, height: 12, rx: 6, class: 'dt-balbeam' }));
+    if (!tight) beam.appendChild(svg('rect', { x: cx - 2, y: cy - 28, width: 4, height: 24, rx: 2, class: 'dt-balbeam' }));
+    art.append(beam, svg('circle', { cx, cy, r: 8, class: 'dt-balpin' }));
+    // The beam turns as far as the pans move: at most maxDrop, the most for the heaviest tip (G.tiltDeg's 12).
+    const at = t => {
+      const dy = (maxDrop(arm) * t) / 12, d = (Math.asin(Math.max(-1, Math.min(1, dy / arm))) * 180) / Math.PI;
+      beam.style.transform = `rotate(${d.toFixed(2)}deg)`;
+      for (const [g, p, k] of hang) { const t = `translateY(${(k * dy).toFixed(1)}px)`; g.style.transform = t; p.style.transform = t; }
+    };
+    const from = lastDeg === null ? deg : lastDeg; lastDeg = deg;
+    at(from);
+    if (from !== deg) { wrap.getBoundingClientRect(); requestAnimationFrame(() => at(deg)); }
+  }
   return T.finish({
     options: box => {
       checkRow(box, W.show, st.show, v => { st.show = v; T.commit(); });
       const sec = field(box, W.secret, numberIn(st.x, 1, 9)); sec.addEventListener('change', () => { st.x = Math.max(1, Math.min(9, Math.round(+sec.value) || 1)); sec.value = st.x; T.commit(); });
       const st0 = field(box, W.start, selectOf([['', '—'], ...[1, 2, 3, 4, 5, 6].map(x => [x, `x = ${x}`])], ''));
-      st0.addEventListener('change', () => { if (!st0.value) return; const x = +st0.value, e = G.makeEquation(x); Object.assign(st, { x, lx: e.L.x, lu: e.L.u, rx: e.R.x, ru: e.R.u, hist: [], where: 'both' }); T.commit(eq()); });
+      st0.addEventListener('change', () => { if (!st0.value) return; const x = +st0.value, e = G.makeEquation(x); for (const k of NEG) delete st[k]; delete st.tx; Object.assign(st, { x, lx: e.L.x, lu: e.L.u, rx: e.R.x, ru: e.R.u, hist: [], where: 'both' }); T.commit(eq()); });
       if (st.hist.length) {
         box.appendChild(el('h3', 'dash-h3', W.steps));
         const ol = el('ol', 'dt-steps'); ol.dir = 'ltr';
-        for (const h of st.hist) ol.appendChild(el('li', null, `${G.sideText({ x: h.lx, u: h.lu })} = ${G.sideText({ x: h.rx, u: h.ru })}  →  ${W[h.op === 'new' ? 'new' : h.op].replace('{n}', h.n)}${h.w !== 'both' ? ` (${W[h.w]})` : ''}`));
+        const sideT = (h, p) => G.sideText({ x: h[`${p}x`], u: h[`${p}u`], nx: h[`${p}nx`] || 0, nu: h[`${p}nu`] || 0 });
+        for (const h of st.hist) ol.appendChild(el('li', null, `${sideT(h, 'l')} = ${sideT(h, 'r')}  →  ${histText(h)}`));
         ol.appendChild(el('li', null, eq())); box.appendChild(ol);
       }
     },
   });
+  /** A step of the history in words: the old buttons' own words, else the tile and where it went. */
+  function histText(h) {
+    if (h.op === 'div') return fill(W.div, { n: h.n });
+    if (h.op === 'zero') return W.zero;
+    if (h.op === 'new') return W.new;
+    const m = /^(add|sub|mv)(n?)(x|1)$/.exec(h.op); if (!m) return h.op;
+    const t = tileSym(m[3], !!m[2]), side = sideName(h.w);
+    if (m[1] === 'add') return fill(h.w === 'both' ? W.bothAdd : W.addedTo, { t, side });
+    if (m[1] === 'sub') return fill(h.w === 'both' ? W.bothTake : W.takenFrom, { t, side });
+    return fill(W.movedTo, { t, side });
+  }
 }
 
 // ================================================================ 7. algebra tiles
+/** Algebra tiles (docs/decisions.md "the balance scale by drag and drop"): tiles dragged (or tapped) from the tray onto
+ *  the mat, where they sort themselves into rows by kind, each zero pair (a tile and its opposite) together in a dashed
+ *  box. Drag a tile onto its opposite (or tap one, then the other) and the pair makes 0; drag a tile off the mat to take
+ *  it away. An optional challenge: build an expression, then Check. */
 function algebra(body, s, ctx) {
   const T = shell(body, s, ctx, 'algebra'), { W, st } = T;
   const fill = (msg, vars) => format(msg, vars, ctx.intl);
-  let sel = -1;
-  const names = { x2: 'x²', x: 'x', 1: '1' };
-  const tileName = t => `${t.neg ? '−' : '+'}${names[t.k]}`;
-  const adds = el('div', 'dt-seg dt-algadd'); adds.setAttribute('role', 'group'); adds.setAttribute('aria-label', W.tile);
-  for (const k of G.TILE_KINDS) for (const neg of [false, true]) {
-    const b = btn(`${neg ? '−' : '+'}${names[k]}`, `btn btn-sm dt-algb${neg ? ' is-neg' : ''}`, fill(W.added, { t: `${neg ? W.neg : W.pos} ${W[k === '1' ? 'one' : k]}` })); b.dir = 'ltr';
-    b.addEventListener('click', () => { if (st.tiles.length >= 36) { ctx.say(W.full); return; } st.tiles.push({ k, neg }); sel = st.tiles.length - 1; T.commit(fill(W.added, { t: tileName({ k, neg }) })); });
-    adds.appendChild(b);
-  }
-  T.top.appendChild(adds);
+  const off = () => !!ctx.editing;
+  let neg = false, sel = -1, busy = false;
+  const tileName = t => tileSym(t.k, t.neg);
+  const changed = () => { delete st.gk; };
+  const add = (k, n) => {
+    if (st.tiles.length >= 36) { ctx.say(W.full); return; }
+    st.tiles.push({ k, neg: n }); sel = -1; changed();
+    T.commit(`${fill(W.added, { t: tileSym(k, n) })}: ${G.polyText(G.simplifyTiles(st.tiles))}`);
+  };
+  const remove = i => { const t = st.tiles.splice(i, 1)[0]; if (!t) return; sel = -1; changed(); T.commit(`${fill(W.removed, { t: tileName(t) })}: ${G.polyText(G.simplifyTiles(st.tiles))}`); };
+  const opposite = (i, j) => i !== j && st.tiles[i] && st.tiles[j] && st.tiles[i].k === st.tiles[j].k && st.tiles[i].neg !== st.tiles[j].neg;
+  /** A tile and its opposite make 0: they puff away, and what that means is said. */
+  const cancel = (i, j) => {
+    if (busy || !opposite(i, j)) return;
+    const a = st.tiles[i], msg = fill(W.cancel, { a: tileSym(a.k, false), b: tileSym(a.k, true) });
+    busy = true;
+    for (const x of [i, j]) T.stage.querySelector(`.dt-mtile[data-i="${x}"]`)?.classList.add('is-poof');
+    const done = () => { busy = false; st.tiles = st.tiles.filter((_, k) => k !== i && k !== j); sel = -1; changed(); T.commit(`${msg} ${G.polyText(G.simplifyTiles(st.tiles))}`); };
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) done(); else setTimeout(done, 320);
+  };
+  const tray = tileTray(W, G.TILE_KINDS, fill, () => neg, v => { neg = v; T.draw(); ctx.say(fill(W.sign, { s: neg ? W.neg : W.pos })); });
+  for (const b of tray.tiles) b.addEventListener('click', () => { add(b.dataset.k, neg); tray.tiles.find(x => x.dataset.k === b.dataset.k)?.focus(); });
+  T.top.appendChild(tray.el);
+  // The challenge: Build this (an expression), a new one, Check, and back to building freely.
+  const goalTxt = () => G.polyText({ a: st.goal[0], b: st.goal[1], c: st.goal[2] });
+  const newGoal = () => { const g = G.makeGoal(); st.goal = [g.a, g.b, g.c]; delete st.gk; T.commit(fill(W.goal, { e: goalTxt() })); };
+  const start = ibtn('🎯', W.challenge), again = ibtn('🎲', W.newGoal), check = ibtn('✓', W.check, 'btn btn-sm dt-bcheck'), free = ibtn('✕', W.free);
+  const goalLine = ltr('b', 'dt-agoal');
+  const result = el('p', 'dt-bres'); result.setAttribute('aria-live', 'polite');
+  start.addEventListener('click', newGoal); again.addEventListener('click', newGoal);
+  free.addEventListener('click', () => { delete st.goal; delete st.gk; T.commit(W.free); });
+  const resultText = () => {
+    const g = { a: st.goal[0], b: st.goal[1], c: st.goal[2] }, diff = G.goalDiff(st.tiles, g);
+    if (!diff.length) return { ok: true, text: fill(W.yes, { e: goalTxt() }) };
+    return { ok: false, text: fill(W.notYet, { e: G.polyText(G.simplifyTiles(st.tiles)), why: diff.map(k => fill(W.diff, { k: TNAME[k] })).join(' ') }) };
+  };
+  check.addEventListener('click', () => { if (!st.goal) return; st.gk = true; T.commit(resultText().text); });
+  const goalRow = el('div', 'dt-bcheckrow'); goalRow.append(start, goalLine, again, check, free);
+  T.ctl.append(goalRow, result);
+  // Named by their tooltips and aria-labels (Flip sign, Remove zero pairs, Clear), as every tool's row is.
   const flip = ibtn('⇅', W.flip), zero = ibtn('±', W.zero), clear = ibtn('🧹', W.clear);
   T.foot.append(flip, zero, clear);
-  const remove = i => { const t = st.tiles.splice(i, 1)[0]; sel = Math.min(i, st.tiles.length - 1); T.commit(fill(W.removed, { t: tileName(t) })); T.stage.querySelectorAll('.dt-tile')[sel]?.focus(); };
-  flip.addEventListener('click', () => { const t = st.tiles[sel]; if (!t) return; t.neg = !t.neg; T.commit(tileName(t)); T.stage.querySelectorAll('.dt-tile')[sel]?.focus(); });
-  zero.addEventListener('click', () => { const n = G.zeroPairs(st.tiles).size / 2; if (!n) return; st.tiles = G.removeZeroPairs(st.tiles); sel = -1; T.commit(`${fill(W.pairs, { n })}: ${G.polyText(G.simplifyTiles(st.tiles))}`); });
-  clear.addEventListener('click', () => { st.tiles = []; sel = -1; T.commit(W.clear); });
+  flip.addEventListener('click', () => { const t = st.tiles[sel]; if (!t) { ctx.say(W.pickTile); return; } t.neg = !t.neg; changed(); const i = sel; T.commit(`${tileName(t)}: ${G.polyText(G.simplifyTiles(st.tiles))}`); sel = i; T.draw(); T.stage.querySelector(`.dt-mtile[data-i="${sel}"]`)?.focus(); });
+  zero.addEventListener('click', () => { const n = G.zeroPairs(st.tiles).size / 2; if (!n) return; st.tiles = G.removeZeroPairs(st.tiles); sel = -1; changed(); T.commit(`${fill(W.pairs, { n })} = 0: ${G.polyText(G.simplifyTiles(st.tiles))}`); });
+  clear.addEventListener('click', () => { st.tiles = []; sel = -1; changed(); T.commit(W.clear); });
+  body.addEventListener('keydown', e => { if (e.key === 'Escape' && sel >= 0) { sel = -1; T.draw(); } });
+  tileDrag(body, { off, drop: (b, z) => {
+    const zone = z ? z.dataset.zone : null;
+    if (b.dataset.drag === 'tray') { if (zone === 'mat' || (zone && zone.startsWith('tile:'))) add(b.dataset.k, !!b.dataset.neg); return; }
+    const i = +b.dataset.i;
+    if (zone && zone.startsWith('tile:')) { const j = +zone.slice(5); if (opposite(i, j)) cancel(i, j); else if (i !== j) ctx.say(W.notPair); return; }
+    if (zone !== 'mat') remove(i);
+  } });
   T.draw = () => {
-    const z = G.zeroPairs(st.tiles), had = body.contains(document.activeElement) && document.activeElement.classList.contains('dt-tile');
-    flip.disabled = !st.tiles[sel]; zero.disabled = !z.size; clear.disabled = !st.tiles.length;
-    for (const b of adds.children) b.disabled = st.tiles.length >= 36;
+    const z = G.zeroPairs(st.tiles), had = body.contains(document.activeElement) && document.activeElement.classList.contains('dt-mtile');
+    if (sel >= st.tiles.length) sel = -1;
+    tray.sync(null);
+    for (const b of tray.tiles) b.disabled = off() || st.tiles.length >= 36;
+    flip.disabled = !st.tiles.length; zero.disabled = !z.size; clear.disabled = !st.tiles.length;
+    const has = !!st.goal;
+    start.hidden = has; again.hidden = check.hidden = free.hidden = goalLine.hidden = !has;
+    goalLine.textContent = has ? fill(W.goal, { e: goalTxt() }) : '';
+    const res = has && st.gk ? resultText() : null;
+    result.hidden = !res; result.textContent = res ? res.text : ''; result.className = `dt-bres${res ? (res.ok ? ' dt-good' : ' is-no') : ''}`;
     T.stage.textContent = '';
-    const mat = el('div', 'dt-algmat'); mat.dir = 'ltr'; mat.setAttribute('role', 'group'); mat.setAttribute('aria-label', W.mat);
+    const mat = el('div', `dt-algmat${sel >= 0 ? ' is-picking' : ''}`); mat.dir = 'ltr'; mat.setAttribute('role', 'group'); mat.setAttribute('aria-label', W.mat); mat.dataset.zone = 'mat';
     const cells = [];
-    // The tiles in rows by kind (x², x, 1): positives first, then negatives; tiles in a zero pair show it.
-    for (const k of G.TILE_KINDS) {
-      const row = el('div', `dt-algrow dt-alg-${k === '1' ? 'one' : k}`);
-      const idx = st.tiles.map((t, i) => ({ t, i })).filter(x => x.t.k === k).sort((a, b) => Number(a.t.neg) - Number(b.t.neg) || a.i - b.i);
-      for (const { t, i } of idx) {
-        const b = btn('', `dt-tile dt-t-${k === '1' ? 'one' : k}${t.neg ? ' is-neg' : ''}${z.has(i) ? ' is-zero' : ''}${i === sel ? ' is-sel' : ''}`, `${tileName(t)}${z.has(i) ? `, ${W.zero}` : ''}`);
-        b.removeAttribute('title'); b.setAttribute('aria-pressed', String(i === sel));
-        b.appendChild(el('span', 'dt-tilet', `${t.neg ? '−' : ''}${names[k]}`));
-        if (ctx.editing) b.disabled = true;
-        b.addEventListener('click', () => { sel = i; T.draw(); T.stage.querySelector(`[data-i="${i}"]`)?.focus(); });
-        b.addEventListener('keydown', e => { if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); remove(i); } else if (e.key === 'f' || e.key === 'F') { e.preventDefault(); sel = i; flip.click(); } });
-        b.dataset.i = i; row.appendChild(b); cells.push(b);
-      }
-      mat.appendChild(row);
+    const cell = i => {
+      const t = st.tiles[i], pair = z.has(i);
+      const b = btn('', `dt-mtile${i === sel ? ' is-sel' : ''}${sel >= 0 && opposite(sel, i) ? ' is-match' : ''}`, `${fill(W.tileOf, { t: tileName(t) })}${pair ? `, ${W.inPair}` : ''}`);
+      b.removeAttribute('title'); b.setAttribute('aria-pressed', String(i === sel));
+      b.appendChild(tileFace(t.k, t.neg));
+      b.dataset.drag = 'mat'; b.dataset.i = i; b.dataset.zone = `tile:${i}`;
+      if (off()) b.disabled = true;
+      b.addEventListener('click', () => {
+        if (sel >= 0 && opposite(sel, i)) { cancel(sel, i); return; }
+        sel = sel === i ? -1 : i; T.draw();
+        if (sel >= 0) ctx.say(fill(W.picked, { t: tileName(t) }));
+        T.stage.querySelector(`.dt-mtile[data-i="${i}"]`)?.focus();
+      });
+      b.addEventListener('keydown', e => { if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); remove(i); } else if (e.key === 'f' || e.key === 'F') { e.preventDefault(); sel = i; flip.click(); } });
+      cells.push(b); return b;
+    };
+    // Rows by kind (x², x, 1): each zero pair together in a dashed box, then the tiles left over.
+    for (const row of G.tileRows(st.tiles)) {
+      if (!row.pairs.length && !row.rest.length) continue;
+      const r = el('div', `dt-algrow dt-alg-${tcls(row.k)}`);
+      for (const [i, j] of row.pairs) { const p = el('span', 'dt-zpair'); p.append(cell(i), cell(j)); r.appendChild(p); }
+      for (const i of row.rest) r.appendChild(cell(i));
+      mat.appendChild(r);
     }
     if (!st.tiles.length) mat.appendChild(el('p', 'dw-empty', W.empty));
     T.stage.appendChild(mat);
-    if (cells.length && !ctx.editing) { cells.forEach(c => { c.tabIndex = -1; }); (cells.find(c => +c.dataset.i === sel) || cells[0]).tabIndex = 0; roving(mat, cells, 99); }
-    if (had) T.stage.querySelector(`[data-i="${sel}"]`)?.focus();
+    // A full mat: the tiles shrink (to 24px) until every row fits (now, and again once the page has laid it out); on a
+    // very small widget the mat scrolls.
+    // Over: the rows (from the first one's top to the last one's bottom) are taller than the mat inside its padding.
+    const over = () => {
+      const rows = [...mat.children]; if (!rows.length) return false;
+      const cs = getComputedStyle(mat), inside = mat.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      return rows[rows.length - 1].getBoundingClientRect().bottom - rows[0].getBoundingClientRect().top > inside || mat.scrollWidth > mat.clientWidth + 1;
+    };
+    // Short of height, the kinds sit side by side (is-flow) before the tiles shrink below 36px.
+    const fitMat = () => {
+      const top = Math.max(44, Math.min(96, 0.24 * T.stage.clientHeight, 0.11 * T.stage.clientWidth));
+      const set = (tu, flow) => { mat.style.setProperty('--tu', `${tu}px`); mat.classList.toggle('is-flow', flow); mat.classList.toggle('is-small', tu < 36); };
+      let tu = top; set(tu, false);
+      while (over() && tu > 36) set(tu -= 4, false);
+      if (over()) { tu = top; set(tu, true); while (over() && tu > 24) set(tu -= 4, true); }
+    };
+    fitMat(); requestAnimationFrame(() => { if (mat.isConnected) fitMat(); });
+    if (cells.length && !off()) { cells.forEach(c => { c.tabIndex = -1; }); (cells.find(c => +c.dataset.i === sel) || cells[0]).tabIndex = 0; roving(mat, cells, 99); }
+    if (had) T.stage.querySelector(`.dt-mtile[data-i="${Math.max(0, sel)}"]`)?.focus();
     T.read.textContent = '';
     const raw = G.rawText(st.tiles), simple = G.polyText(G.simplifyTiles(st.tiles));
     const big = ltr('div', 'dt-big dt-algexp');
-    if (raw !== simple) big.append(el('span', 'dt-algraw', raw), el('span', 'dt-eqsign', ' = '), el('b', null, simple)); else big.append(el('b', null, simple));
+    if (raw !== simple) big.append(el('span', 'dt-algraw', raw), el('span', 'dt-eqsign', ' → '), el('b', null, simple)); else big.append(el('b', null, simple));
     T.read.appendChild(big);
-    T.read.appendChild(el('div', 'dt-sub', z.size ? fill(W.pairs, { n: z.size / 2 }) : W.hint));
+    T.read.appendChild(el('div', 'dt-sub', sel >= 0 ? fill(W.selHint, { t: tileName(st.tiles[sel]) }) : z.size ? `${fill(W.pairs, { n: z.size / 2 })}: ${W.legend}` : W.hint));
   };
   return T.finish();
 }

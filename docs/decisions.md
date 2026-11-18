@@ -7957,6 +7957,36 @@ for privacy, nothing in the game or the repository points back to the original.
 - **Left out:** help email, analytics, outbound links, backup and restore files.
 
 
+## Classroom dashboards: the balance scale and algebra tiles by drag and drop (18 Nov 2026)
+The owner asked for the Algebra widget's Balance scale to work "more like the algebra game": drag and drop, no switching
+between Left side / Right side / Both sides, easier to try things and check. Later, the same for Algebra tiles ("can we
+make this more intuitive?"). Only the interaction model comes from Algebra Builder (tools/algebra-builder); the widget's
+code is its own (`public/js/dash-tools4.js`: `tileTray`, `tileDrag`, `balance`, `algebra`; the maths in
+`public/js/dash-math4.js`).
+- **A tray** above the model: a + / − switch (the sign new tiles have) and a tile of each kind (x and 1; x², x and 1).
+  Tiles are dragged with Pointer Events (mouse, touch, pen); a lifted copy follows the finger and the place it would land
+  lights up. Tap a tile, then tap where it goes, is the same without dragging; the keyboard is Enter, Tab to the place,
+  Enter; Delete takes a tile away; Escape lets go. Every move is said (`ctx.say`), with whether the scale is level.
+- **Balance scale:** no side dropdown. A tile dropped on a pan goes on that side only, and the scale tips: as far as the
+  two sides' weights (with the secret x) differ (`tiltDeg`: 3° plus the difference, at most 12°, drawn as at most a fifth
+  of the arm), and the readout says which side is heavier. **Both sides**, a drop zone at the scale's foot, does the same
+  to both: a tile from the tray goes on both; a tile from a pan comes off both, and a side without that tile gets its
+  opposite (taking away x is adding −x, as in the game). A pan's tile dragged off the scale (or onto the tray, or Delete)
+  is taken away; onto the other pan, it moves there. ÷ n shows when every count shares by n; ± Remove zero pairs. "Try
+  x = [−|4|+] ✓ Check" weighs the equation as it is now with that x: "Yes, x = 5: both sides make 20." / "Not yet: left
+  3·4 + 5 = 17, right 2·4 + 10 = 18." It shows outside the readout, so it still works while the answer is hidden.
+- **State:** negative tiles are `lnx lnu rnx rnu`, the x last checked `tx`; each kept only when set, so every saved
+  balance cleans exactly as before (`where` is no longer set and is kept only for that). History steps add `addnx`,
+  `subnx`, `mv…` and `zero`. Make a question counts negative tiles.
+- **Algebra tiles:** tiles sort themselves into rows by kind; each zero pair sits together in a dashed box, explained
+  under the mat. Drag a tile onto its opposite (or tap one, then the other) and the pair puffs away: "+x and −x make 0."
+  Footer: ⇅ Flip sign, ± Remove zero pairs, 🧹 Clear (named by their tooltips, as the calm row has it). 🎯 Challenge:
+  "Build 2x² − x + 3", 🎲 a new one, ✓ Check ("Yes! That is …" / "Not yet: you have … The x tiles don't match."), ✕
+  Free play. State: `goal` [a, b, c] and `gk`, kept only when set.
+- Words in all 12 languages; the fit check adds a full balance (negatives, tipped, checked) and a checked challenge.
+  Tests: tests/unit/dash-algebra-drag.test.js (state, moves and tilt, Both sides, Check, rows and challenge, and a
+  Chromium drag with a mouse and with touch, taps and the keyboard).
+
 ## Crossword: a teacher's vocabulary list as a crossword (18 Nov 2026)
 
 Owner: "Create a crossword puzzle game where a teacher can upload their vocab words and you create a crossword puzzle

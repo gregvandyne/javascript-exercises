@@ -182,6 +182,10 @@ const GEO_EXTRA = [
     bands: [{ pts: [0, 4, 8, 12, 16, 20].map(x => ({ x, y: 0 })), closed: true, c: 0 }, { pts: [0, 9, 24].map(x => ({ x, y: 0 })), closed: true, c: 1 }] } } },
 ];
 const STAGE4_EXTRA = [...GEO_EXTRA,
+  // The balance scale by drag and drop (docs/decisions.md): the most tiles a side holds, negative ones, tipped, a Check shown;
+  // and algebra tiles with a challenge checked.
+  { ...D.widgetType('algebra'), wid: 'wbalfull', s: { state: { tab: 'balance', balance: { x: 9, lx: 9, lu: 30, rx: 2, ru: 4, lnx: 3, lnu: 9, rnx: 9, rnu: 30, tx: -7, show: true, hist: [{ lx: 9, lu: 30, rx: 2, ru: 4, op: 'addnx', n: 0, w: 'left' }] } } } },
+  { ...D.widgetType('algebra'), wid: 'walggoal', s: { state: { tiles: [{ k: 'x2', neg: false }, { k: 'x', neg: true }, { k: '1', neg: false }], goal: [-2, 4, -5], gk: true } } },
   { ...D.widgetType('organizer'), wid: 'worgseq', s: { state: { kind: 'seq', n: 10, title: 'Die Verwandlung der kleinen Raupe Nimmersatt', boxes: Array.from({ length: 10 }, (_, i) => ({ h: i === 3 ? 'Verpuppungszeitraum' : '', t: LONG.slice(0, 1 + (i % 4)).join('\n') })) } } },
   { ...D.widgetType('organizer'), wid: 'worgvenn', s: { state: { kind: 'venn', title: 'Frösche und Kröten im Vergleich', boxes: [{ h: 'Froschlurche', t: 'Glatte, feuchte Haut\nLange Hinterbeine\nLeben am Wasser' }, { h: '', t: 'Amphibienentwicklung\nLegen Eier\nKönnen schwimmen' }, { h: 'Kröten', t: 'Warzige, trockene Haut\nKurze Beine\nLeben an Land' }] } } },
   { ...D.widgetType('organizer'), wid: 'worgmain', s: { state: { kind: 'main', d: 6, title: 'Warum Bienen wichtig sind', boxes: [{ h: '', t: 'Bienen bestäuben Pflanzen und sichern unsere Ernährung' }, ...Array.from({ length: 6 }, (_, i) => ({ h: '', t: LONG[i % 4] }))] } } },
