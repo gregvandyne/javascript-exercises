@@ -1,0 +1,149 @@
+@import 'tailwindcss';
+
+/* Oomba's look: cream paper on a warm ground, ink text, Oomba green, Bricolage Grotesque (the Oomba Kit loads it),
+   round pill buttons. The digit boxes on the graph paper keep a blue of their own, so "the box to fill" never looks
+   like "filled in for you" (green). */
+:root {
+	--ground: #f4f1e6;
+	--paper: #fffdf2;
+	--paper-low: #f6f2e4;
+	--line: #e2ddcb;
+	--line-strong: #8a8573;
+	--ink: #141414;
+	--ink-soft: #3b3a35;
+	--muted: #5b584f;
+	--accent: #14744a;
+	--accent-dark: #0f5a37;
+	--accent-wash: #e1f1e1;
+	--accent-line: #66c792;
+	--oomba-green: #66c792;
+	--oomba-green-hover: #58bc86;
+	--oomba-green-press: #1f9d63;
+	--link: #14744a;
+	--good: #0f6b3f;
+	--good-wash: #ddf3e2;
+	--good-line: #8fd4a9;
+	--bad: #b3321f;
+	--bad-wash: #fbe3de;
+	--bad-line: #f0c3b9;
+	--remainder: #8f5207;
+	--remainder-wash: #fbeccf;
+	--box: #2f5fb3;
+	--box-dark: #234a91;
+	--box-wash: #e2eafa;
+	--box-line: #b8cbef;
+	--grid-line: #e8e3d2;
+	--graph-line: #efeadb;
+	--graph-ground: #fffdf6;
+
+	--radius: 14px;
+	--radius-lg: 20px;
+	--sans: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+	font-family: var(--sans);
+	color: var(--ink);
+}
+
+/* The player's camera: these move smoothly when the sheet pans and zooms */
+@property --zoom {
+	syntax: '<number>';
+	inherits: true;
+	initial-value: 1;
+}
+@property --pan-x {
+	syntax: '<length>';
+	inherits: true;
+	initial-value: 0px;
+}
+@property --pan-y {
+	syntax: '<length>';
+	inherits: true;
+	initial-value: 0px;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	background: var(--ground);
+}
+
+.btn-primary,
+.btn-ghost,
+.btn-dark,
+.btn-danger {
+	padding: 0.6rem 1.15rem;
+	border-radius: 999px;
+	font-family: var(--sans);
+	font-size: 0.95rem;
+	font-weight: 700;
+	cursor: pointer;
+	border: 2px solid transparent;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
+	line-height: 1;
+	white-space: nowrap;
+}
+.btn-primary {
+	background: var(--oomba-green);
+	color: var(--ink);
+	font-weight: 800;
+	box-shadow: 0 4px 0 var(--oomba-green-press);
+}
+.btn-primary:hover:not(:disabled) {
+	background: var(--oomba-green-hover);
+}
+.btn-primary:active:not(:disabled) {
+	transform: translateY(2px);
+	box-shadow: 0 2px 0 var(--oomba-green-press);
+}
+.btn-primary:disabled {
+	background: #d7d2c2;
+	color: #6f6b5f;
+	box-shadow: none;
+	cursor: default;
+}
+.btn-ghost {
+	background: var(--paper);
+	color: var(--ink-soft);
+	border-color: var(--line-strong);
+}
+.btn-ghost:hover:not(:disabled) {
+	background: var(--paper-low);
+}
+.btn-ghost:disabled {
+	color: #a29d8c;
+	border-color: var(--line);
+	cursor: default;
+}
+.btn-dark {
+	background: var(--ink-soft);
+	color: var(--paper);
+}
+.btn-dark:hover {
+	background: var(--ink);
+}
+.btn-danger {
+	background: var(--bad);
+	color: #fff;
+}
+.btn-danger:hover {
+	filter: brightness(0.92);
+}
+:focus-visible {
+	outline: 3px solid var(--oomba-green-press);
+	outline-offset: 2px;
+}
+.sr-only {
+	clip-path: inset(50%);
+	white-space: nowrap;
+	width: 1px;
+	height: 1px;
+	position: absolute;
+	overflow: hidden;
+}

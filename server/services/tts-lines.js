@@ -156,6 +156,8 @@ export const GAMES = {
   // Algebra Builder (adapted from Algebra Tiles by teacher.dev) reads nothing aloud, like the original: its words are
   // the activities' labels and Check's messages, which it shows. Registered so the platform knows it (no I18N block).
   'algebra-builder': { title: 'Algebra Builder', role: 'friendly', spoken: /(?!)/ },
+  // Box by Box reads nothing aloud either: its questions and messages are shown, step by step.
+  'box-by-box': { title: 'Box by Box', role: 'friendly', spoken: /(?!)/ },
   // Jungle Cup: the story, the people's lines and the finale (d.*, story.*, end.*), each speaker's role from its VOICES block.
   'jungle-cup': { title: 'Jungle Cup', role: 'narrator', spoken: /^(?:d\.[a-z]+\.[a-z0-9]+|story\.\d+|end\.\d+|sign\.[a-z]+|lift\.(?:open|locked))$/ },
 };

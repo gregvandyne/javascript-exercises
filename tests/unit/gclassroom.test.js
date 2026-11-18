@@ -1192,3 +1192,31 @@ test('Algebra Builder: a teacher assigns a problem or a saved question set to a 
   const sub = room.courseWork.get(GC.postOf(cl.id).coursework_id).submissions.find(z => z.userId === '400000000000000000071');
   assert.equal(sub.draftGrade, 100);
 });
+
+test('Box by Box: an activity assigned to a linked class is posted to Classroom, named after it, and finishing it is the grade', async () => {
+  const games = await import('../../server/services/games.js');
+  const { OFFICIAL, getUserByName } = await import('../../server/auth.js');
+  const official = getUserByName(OFFICIAL) || createUser({ username: OFFICIAL, password: 'official-pass-123' });
+  let g = games.getGameBySlug('box-by-box');
+  if (!g) {
+    g = games.createGame(official.id, { title: 'Box by Box', source: 'seed', slug: 'box-by-box' });
+    const v = games.addVersion(g.id, '<!doctype html><title>t</title><p>bb</p>', { createdBy: official.id, safetyStatus: 'pass' });
+    q.run("UPDATE games SET status='published', visibility='public', published_version_id=?, current_version_id=? WHERE id=?", v.id, v.id, g.id);
+  }
+  const { c, kid, tc, kc } = school();
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '400000000000000000081', kid.id, 'bb-kid@dwes.test', 'dwes.test', Date.now());
+  const id = course([{ userId: '400000000000000000081', fullName: 'Kid Here' }]);
+  await connect(tc, c.id); await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: id }, tc);
+  const set = await (await post(`/api/games/${g.id}/sets`, { items: [{ k: 'multiply', p: [[24, 13], [57, 6]], l: 'onMyOwn' }] }, tc)).json();
+  const opts = `chapter=${set.id}&lock=1`;
+  const a = await (await post('/api/teach/assign-game', { game: 'box-by-box', opts, classId: c.id, dueAt: new Date(Date.now() + 7 * DAY).toISOString().slice(0, 10), gcPost: '1' }, tc)).json();
+  assert.equal(a.ok, true, JSON.stringify(a)); assert.match(a.toast, /Posted to Google Classroom\./);
+  assert.equal(room.calls.findLast(x => x.method === 'POST').body.title, 'Box by Box: Multiplication, 2 problems, On my own');
+  const cl = L.classLessons(c.id).find(x => x.title.startsWith('Box by Box'));
+  const step = L.steps(cl.lesson_id)[0];
+  assert.equal(step.options, opts);
+  await post(`/api/progress/${cl.id}/${step.id}/game`, { event: 'end', score: 2 }, kc);
+  assert.equal(P.get(cl.id, step.id, kid.id).status, 'done'); assert.equal(P.get(cl.id, step.id, kid.id).score, 2);
+  await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc);
+  assert.equal(room.courseWork.get(GC.postOf(cl.id).coursework_id).submissions.find(z => z.userId === '400000000000000000081').draftGrade, 100);
+});

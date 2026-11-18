@@ -53,3 +53,48 @@ test('box-by-box: a teacher saves an activity, its link opens it, the Assign pag
   assert.match(pg.text, /Students open: Long division, 3 problems, Guided/);
   assert.match((await call('/teach/assign?game=box-by-box', { user: teacher })).text, /in the game first/);
 });
+
+// ---------------------------------------------------------------- the game file
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { scanVersion } from '../../server/services/scanner.js';
+import { sanitizeGameHtml } from '../../server/services/sanitize.js';
+import { kitTag } from '../../server/services/kit.js';
+import { SEED_GAMES } from '../../scripts/seed.js';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const html = fs.readFileSync(path.join(ROOT, 'seed-games/box-by-box.html'), 'utf8');
+const meta = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-games/box-by-box.json'), 'utf8'));
+
+test('box-by-box: a registered Play game that passes the safety scan, with the pinned Oomba Kit tag and no outside address', () => {
+  assert.ok(SEED_GAMES.includes('box-by-box'));
+  assert.equal(meta.slug, 'box-by-box'); assert.equal(meta.shelf, 'play'); assert.equal(meta.title, 'Box by Box');
+  for (const l of ['en-GB', 'pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl']) assert.ok(meta.l10n[l]?.description.length > 80, l);
+  assert.ok(fs.existsSync(path.join(ROOT, 'public/covers/box-by-box.jpg')), 'its cover');
+  const r = scanVersion(sanitizeGameHtml(html).html);
+  assert.equal(r.status, 'pass', JSON.stringify(r.issues));
+  assert.ok(html.includes(kitTag()));
+  const urls = (html.match(/(?:https?:)?\/\/[a-z0-9.-]+\.[a-z]{2,}[^\s"'`)<>]*/gi) || []).filter(u => !/^http:\/\/www\.w3\.org\//.test(u));
+  assert.deepEqual(urls, []);
+  assert.doesNotMatch(html, /mailto:|googletagmanager|\bgtag\(|posthog|beacon/i);
+});
+
+test('box-by-box: nothing in the game, its sources, its metadata or its docs points back to the app it was rebuilt from', () => {
+  // The words are kept out of this file too: spelled by character code.
+  const w = codes => String.fromCharCode(...codes);
+  const KEPT = [w([100, 105, 103, 105, 116]) + '\\s*-?\\s*' + w([100, 114, 105, 108, 108, 115]), w([116, 101, 97, 99, 104, 101, 114, 46, 100, 101, 118]),
+    w([116, 101, 97, 99, 104, 101, 114, 100, 111, 116, 100, 101, 118]), w([109, 100, 112, 114, 97, 99, 116, 105, 99, 101]), w([109, 97, 116, 104, 102, 114, 111, 103]),
+    w([109, 117, 108, 116, 105, 112, 108, 105, 99, 97, 116, 105, 111, 110, 45, 100, 105, 118, 105, 115, 105, 111, 110, 45, 112, 114, 97, 99, 116, 105, 99, 101])];
+  const re = new RegExp(KEPT.join('|'), 'i');
+  const files = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => (e.name === 'node_modules' || e.name === 'dist' ? [] : e.isDirectory() ? files(path.join(d, e.name)) : [path.join(d, e.name)]));
+  for (const f of [path.join(ROOT, 'seed-games/box-by-box.html'), path.join(ROOT, 'seed-games/box-by-box.json'), path.join(ROOT, 'scripts/covers/box-by-box.recipe.js'),
+    path.join(ROOT, 'tests/unit/box-by-box.test.js'), path.join(ROOT, 'server/services/game-sets.js'), path.join(ROOT, 'docs/sdk.md'),
+    ...files(path.join(ROOT, 'tools/box-by-box'))]) {
+    assert.doesNotMatch(fs.readFileSync(f, 'utf8'), re, path.relative(ROOT, f));
+  }
+  // The decision log: Box by Box's own entry (other entries credit other games' sources, as their licenses ask).
+  const log = fs.readFileSync(path.join(ROOT, 'docs/decisions.md'), 'utf8');
+  const entry = log.slice(log.indexOf('## Box by Box'));
+  assert.ok(entry.length > 200);
+  assert.doesNotMatch(entry.slice(0, entry.indexOf('\n## ', 5) > 0 ? entry.indexOf('\n## ', 5) : undefined), re, 'docs/decisions.md: the Box by Box entry');
+});
