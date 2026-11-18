@@ -7988,3 +7988,18 @@ played end to end twice assessing for UX/UI in all the nooks and crannies before
   (a wrong code, 30 long clues, a sign-in error on save, a missing link, Hebrew and Arabic right to left, Japanese kana).
   Fixed on the way: inputs that took the widget style, a ✓ on clues that were only full, a stale message after solving,
   tiny squares on a phone, and a layout button that could give back the same grid.
+- **Documents, saving and sharing** (later the same day). Owner: "They should also be able to upload a pdf or word
+  document and you should be able to take out the information from this and create the crossword puzzle", "There should
+  also be a way to save these crossword puzzles so they can reference again", and "assign these or create a QR code and
+  link for students to sign in and take the test".
+  - **Upload a list or document** takes .pdf and .docx too (2 MB, inside the site's 3 MB request limit as base64). A
+    .docx's text is read on the server (`services/docx-text.js`: the zip's word/document.xml, a table row a line with its
+    cells apart by a tab, no outside library); a PDF goes to the model as a document (`set-ai.js draftWordsFromDoc`:
+    the document's own word list and definitions when it has one, else its key terms; the document is data, never
+    instructions; never stored or logged, only how many words). The words and clues land in the list for the teacher to
+    check, and the document's title fills an empty name. An old .doc asks for .docx or PDF.
+  - **Your crosswords** on the game's home: every draft saves itself a moment after a change (and with Save), kept in
+    the teacher's game save, so it follows their account to any device (a guest is told to sign in to keep them). Each
+    shows its words, when it last changed and its class code, with Edit, Play, Share and Delete (pressed twice).
+  - **Share** from the list saves it on Oomba when it isn't yet and opens "Share with your students": the class code,
+    the link, the QR code and Assign to a class (with Google Classroom), as from the preview.

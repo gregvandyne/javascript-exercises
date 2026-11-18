@@ -23,7 +23,8 @@ import { characterOf } from '../services/character.js';
 import * as match from '../services/match.js';
 import * as polls from '../services/polls.js';
 import * as gameSets from '../services/game-sets.js';
-import { draftClues } from '../services/set-ai.js';
+import { draftClues, draftWordsFromDoc, DOC } from '../services/set-ai.js';
+import { docxText } from '../services/docx-text.js';
 import { hasModel } from '../builder/anthropic.js';
 import { onlineGame } from './match.js';
 import fs from 'node:fs';
@@ -463,6 +464,28 @@ router.post('/api/games/:id/clues', requireUser, rateLimit('game-clues', 30, 360
   if (!r.ok) return res.status(r.code === 'words' ? 400 : 503).json({ error: req.t('errors.api.badRequest'), code: r.code });
   audit(req.user.id, 'game.clues', g.id, { count: b.words.length });
   res.json({ clues: r.clues });
+});
+// Crossword words from a document (services/set-ai.js draftWordsFromDoc): a PDF goes to the model as a document; a
+// Word file's text is read here (services/docx-text.js). Body { kind: 'pdf'|'docx', data: base64, level }.
+// -> { title, words: [[word, clue]] } | { code }. The document is never stored or logged (only how many words).
+router.post('/api/games/:id/words-from-doc', requireUser, rateLimit('game-doc', 20, 3600e3), async (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!cluesGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  if (!liveCanHost(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' });
+  const b = req.body || {}, max = DOC.pdfBytes;   // 2 MB either way (base64 inside the site's 3 MB JSON limit)
+  if (!['pdf', 'docx'].includes(b.kind) || typeof b.data !== 'string' || b.data.length > Math.ceil(max / 3) * 4 + 4 || !/^[A-Za-z0-9+/]+=*$/.test(b.data)) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'docBad' });
+  const buf = Buffer.from(b.data, 'base64');
+  let r;
+  if (b.kind === 'docx') {
+    const text = docxText(buf);
+    if (text === null) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'docBad' });
+    try { r = await draftWordsFromDoc({ text, level: typeof b.level === 'string' ? b.level : '', locale: req.locale }); } catch { r = { ok: false, code: 'aiFailed' }; }
+  } else {
+    try { r = await draftWordsFromDoc({ pdf: buf, level: typeof b.level === 'string' ? b.level : '', locale: req.locale }); } catch { r = { ok: false, code: 'aiFailed' }; }
+  }
+  if (!r.ok) return res.status(r.code === 'aiOff' || r.code === 'aiFailed' ? 503 : 400).json({ error: req.t('errors.api.badRequest'), code: r.code });
+  audit(req.user.id, 'game.doc_words', g.id, { kind: b.kind, count: r.words.length });
+  res.json({ title: r.title, words: r.words });
 });
 const pollGame = g => polls.POLL_GAMES.has(g.slug) && g.source === 'seed' && (games.getOwner(g) || {}).username === OFFICIAL;
 router.post('/api/games/:id/poll', requireUser, rateLimit('poll', 240, 60e3), (req, res) => {

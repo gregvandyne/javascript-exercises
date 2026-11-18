@@ -130,6 +130,9 @@ const TYPES = {
   'brb:assign': m => typeof m.opts === 'string',
   // BRB.findQuestionSet: a class code a student typed (the server reads it).
   'brb:set-find': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.code === 'string' && m.code.length <= 40,
+  // BRB.wordsFromDoc (Crossword): a PDF or Word file of at most 2 MB, for AI words (the server checks who may ask).
+  'brb:doc': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof Blob === 'function' && m.file instanceof Blob && m.file.size > 0 && m.file.size <= 2 * 1024 * 1024
+    && (m.kind === 'pdf' || m.kind === 'docx') && typeof m.level === 'string' && m.level.length <= 60,
   // BRB.writeClues (Crossword): the teacher's words, for AI clues (the server checks who may ask).
   'brb:clues': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.words) && m.words.length >= 1 && m.words.length <= 30
     && m.words.every(w => typeof w === 'string' && w.length <= 40) && typeof m.level === 'string' && m.level.length <= 60,
@@ -242,6 +245,7 @@ addEventListener('message', e => {
     case 'brb:set-save': saveSetForGame(m); break;
     case 'brb:set-find': findSetForGame(m); break;
     case 'brb:clues': cluesForGame(m); break;
+    case 'brb:doc': docForGame(m); break;
     // BRB.assign (a teacher in a set game): after a tap, the game's Assign page with the problem or set it opens at.
     case 'brb:assign': if (typeof m.opts === 'string' && m.opts.length <= 200 && /^[a-z0-9=&-]*$/.test(m.opts) && tappedJustNow('brb-assign-at', 2000)) location.href = `/teach/assign?game=${encodeURIComponent(d.slug)}&opts=${encodeURIComponent(m.opts)}`; break;
   }
@@ -338,6 +342,16 @@ async function findSetForGame(m) {
     catch (e) { out = { error: e.status === 404 ? 'none' : 'offline' }; }
   }
   toFrame({ type: 'brb:set-found', id: m.id, ...out });
+}
+async function docForGame(m) {
+  let out;
+  try {
+    const bytes = new Uint8Array(await m.file.arrayBuffer());
+    let bin = ''; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    const r = await api(`/api/games/${d.gameId}/words-from-doc`, { method: 'POST', body: { kind: m.kind, data: btoa(bin), level: m.level } });
+    out = { title: String(r.title || ''), words: Array.isArray(r.words) ? r.words.map(p => [String(p[0]), String(p[1])]) : [] };
+  } catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'aiFailed' : 'offline') }; }
+  toFrame({ type: 'brb:doc-done', id: m.id, ...out });
 }
 async function cluesForGame(m) {
   let out;
