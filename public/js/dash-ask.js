@@ -176,9 +176,10 @@ export function questionFor(type, st, W = {}, A = {}, intl = 'en') {
       return choice(fill(Q.transform, { p: M4.pointText(A0) }), M4.pointText(M4.transformPoint(A0, t)), wrong.map(w => M4.pointText(M4.transformPoint(A0, w))), seed);
     }
     case 'balance': {
-      const L = { x: st.lx, u: st.lu }, R = { x: st.rx, u: st.ru };
-      if (M4.tip(L, R, st.x) || L.x === R.x) return null;
-      return choice(Q.balance, nf(st.x), near(st.x, [1, -1, 2]).filter(x => x > 0).concat([Math.abs(L.u - R.u)]).map(nf), seed);
+      // Negative tiles (−x, −1) weigh against their twins (docs/decisions.md "the balance scale by drag and drop").
+      const L = { x: st.lx, u: st.lu, nx: st.lnx || 0, nu: st.lnu || 0 }, R = { x: st.rx, u: st.ru, nx: st.rnx || 0, nu: st.rnu || 0 };
+      if (M4.tip(L, R, st.x) || L.x - L.nx === R.x - R.nx) return null;
+      return choice(Q.balance, nf(st.x), near(st.x, [1, -1, 2]).filter(x => x > 0).concat([Math.abs(L.u - L.nu - R.u + R.nu)]).map(nf), seed);
     }
     case 'algebra': {
       const tiles = st.tiles || []; if (!tiles.length) return null;

@@ -484,12 +484,53 @@ export function ruleText(t) {
 }
 export const pointText = ([x, y]) => `(${minus(x)}, ${minus(y)})`;
 
-// ================================================================ the balance scale: x-boxes and unit weights
-/** What a side weighs when each x-box weighs x. */
-export const weigh = (side, x) => side.x * x + side.u;
+// ================================================================ the balance scale: x tiles and 1 tiles, positive and negative
+// A side is { x, u } (positive x tiles and 1 tiles) plus, since "the balance scale by drag and drop" (docs/decisions.md),
+// nx and nu: its negative tiles (−x and −1, as in Algebra Builder). A side saved before has none, and weighs as before.
+/** What a side weighs when each x tile weighs x (a negative tile weighs the opposite of its twin). */
+export const weigh = (side, x) => (side.x - (side.nx || 0)) * x + side.u - (side.nu || 0);
 /** −1: the left side is down, 1: the right side is down, 0: level. */
 export const tip = (L, R, x) => Math.sign(weigh(R, x) - weigh(L, x));
+/** How far the beam turns, in degrees, clockwise (the right side down): more the more one side outweighs the other, at
+ *  most 12, and never so little it can't be seen (4 for a difference of 1). */
+export function tiltDeg(L, R, x) {
+  const d = weigh(R, x) - weigh(L, x);
+  return d ? Math.sign(d) * Math.min(12, 3 + Math.abs(d)) : 0;
+}
 export const BAL_MAX = { x: 9, u: 30 };
+/** A side with all four counts (a saved side may lack nx and nu). */
+export const fullSide = s => ({ x: s.x || 0, u: s.u || 0, nx: s.nx || 0, nu: s.nu || 0 });
+/** The count a tile is kept in: 'x' | 'u' | 'nx' | 'nu'. k: 'x' or '1'. */
+export const tileKey = (k, neg) => (k === 'x' ? (neg ? 'nx' : 'x') : neg ? 'nu' : 'u');
+const room = key => (key === 'x' || key === 'nx' ? BAL_MAX.x : BAL_MAX.u);
+/** One tile into a side (null when the side is full of that tile) or out of it (null when it has none). */
+export function sideMove(s, k, neg, add) {
+  const key = tileKey(k, neg), o = fullSide(s);
+  if (add ? o[key] >= room(key) : o[key] <= 0) return null;
+  o[key] += add ? 1 : -1; return o;
+}
+/** A tile moved on the scale: { k: 'x' | '1', neg, add: true (put in) | false (taken out), where: 'left' | 'right' |
+ *  'both' }. Taking a tile away from both sides takes it from each side that has one and, on a side that has none, puts
+ *  in its opposite (taking away x is adding −x), as in Algebra Builder. -> the new sides, or null (can't be done). */
+export function panMove(L, R, m) {
+  const one = s => {
+    if (m.add) return sideMove(s, m.k, m.neg, true);
+    if (m.where !== 'both') return sideMove(s, m.k, m.neg, false);
+    return sideMove(s, m.k, m.neg, false) || sideMove(s, m.k, !m.neg, true);
+  };
+  const l = m.where === 'right' ? fullSide(L) : one(L), r = m.where === 'left' ? fullSide(R) : one(R);
+  return l && r ? { L: l, R: r } : null;
+}
+/** The zero pairs on a side (a tile and its opposite): how many. */
+export const sidePairs = s => Math.min(s.x || 0, s.nx || 0) + Math.min(s.u || 0, s.nu || 0);
+/** A side with its zero pairs taken away (it weighs the same). */
+export function sideZero(s) {
+  const o = fullSide(s), a = Math.min(o.x, o.nx), b = Math.min(o.u, o.nu);
+  return { x: o.x - a, nx: o.nx - a, u: o.u - b, nu: o.nu - b };
+}
+/** What both sides can be shared by: the greatest number every count divides by (0 for an empty scale). */
+export const shareBy = (L, R) => [L.x, L.u, L.nx || 0, L.nu || 0, R.x, R.u, R.nx || 0, R.nu || 0].reduce((a, b) => gcdOf(a, b), 0);
+const gcdOf = (a, b) => (b ? gcdOf(b, a % b) : Math.abs(a));
 /** Do something to one side or both: 'addx' | 'subx' | 'add1' | 'sub1' | 'div' (share into n equal groups, keep one).
  *  -> the new sides, or null when it can't be done (nothing to take, too many, not shared evenly). */
 export function balanceOp(L, R, op, where = 'both', n = 2) {
@@ -498,22 +539,41 @@ export function balanceOp(L, R, op, where = 'both', n = 2) {
     if (op === 'subx') return s.x > 0 ? { ...s, x: s.x - 1 } : null;
     if (op === 'add1') return s.u < BAL_MAX.u ? { ...s, u: s.u + 1 } : null;
     if (op === 'sub1') return s.u > 0 ? { ...s, u: s.u - 1 } : null;
-    if (op === 'div') return n > 1 && s.x % n === 0 && s.u % n === 0 ? { x: s.x / n, u: s.u / n } : null;
+    if (op === 'div') {
+      if (n < 2 || [s.x, s.u, s.nx || 0, s.nu || 0].some(v => v % n)) return null;
+      const o = { x: s.x / n, u: s.u / n };
+      if (s.nx || s.nu) Object.assign(o, { nx: (s.nx || 0) / n, nu: (s.nu || 0) / n });
+      return o;
+    }
     return null;
   };
   const l = where === 'right' ? L : one(L), r = where === 'left' ? R : one(R);
   return l && r ? { L: l, R: r } : null;
 }
-/** Solved: x on its own on one side, only unit weights on the other. -> the value, or null. */
+/** The working when x is a number: "3·4 + 5 = 17", "−x" as "−4", "2·(−3) − 1 = −7". -> { text, v }. */
+export function workText(side, x) {
+  const a = side.x - (side.nx || 0), b = side.u - (side.nu || 0), xs = x < 0 ? `(${minus(x)})` : String(x);
+  let t = a ? `${a === 1 ? '' : a === -1 ? '−' : `${minus(a)}·`}${a === 1 || a === -1 ? (x < 0 && a === -1 ? xs : minus(x)) : xs}` : '';
+  if (b) t = t ? `${t} ${b < 0 ? '−' : '+'} ${Math.abs(b)}` : minus(b);
+  const v = weigh(side, x);
+  return { text: t && t !== minus(v) ? `${t} = ${minus(v)}` : minus(v), v };
+}
+/** Check a value of x on the scale as it is: { ok, l, r } (l and r: workText of each side). */
+export function checkX(L, R, x) { const l = workText(L, x), r = workText(R, x); return { ok: l.v === r.v, l, r }; }
+/** Solved: one x tile on its own on one side, only 1 tiles on the other (positive or negative, no zero pairs left).
+ *  -> the value, or null. */
 export function solvedValue(L, R) {
-  if (L.x === 1 && L.u === 0 && R.x === 0) return R.u;
-  if (R.x === 1 && R.u === 0 && L.x === 0) return L.u;
+  const alone = s => s.x === 1 && !s.u && !s.nx && !s.nu, units = s => !s.x && !s.nx && !(s.u && s.nu);
+  if (alone(L) && units(R)) return R.u - (R.nu || 0);
+  if (alone(R) && units(L)) return L.u - (L.nu || 0);
   return null;
 }
-/** "3x + 2", "x", "4", "0". */
+/** "3x + 2", "x", "4", "0"; with negative tiles as they lie: "3x − x + 5 − 2", "−x + 4". */
 export function sideText(s) {
-  const xs = s.x ? `${s.x === 1 ? '' : s.x}x` : '';
-  return xs && s.u ? `${xs} + ${s.u}` : xs || String(s.u);
+  const parts = [];
+  const add = (n, body, neg) => { if (!n) return; const t = body ? `${n === 1 ? '' : n}${body}` : String(n); parts.push(parts.length ? `${neg ? '−' : '+'} ${t}` : `${neg ? '−' : ''}${t}`); };
+  add(s.x, 'x', false); add(s.nx || 0, 'x', true); add(s.u, '', false); add(s.nu || 0, '', true);
+  return parts.join(' ') || '0';
 }
 /** A new equation with x as the answer: ax + b = cx + d (a > c), everything within the scale's limits. rnd() in [0, 1). */
 export function makeEquation(x, rnd = Math.random) {
@@ -564,6 +624,31 @@ export function zeroPairs(tiles) {
 export const removeZeroPairs = tiles => { const z = zeroPairs(tiles); return tiles.filter((_, i) => !z.has(i)); };
 /** The value at a number x (to check that simplifying keeps it). */
 export const tilesValue = (tiles, x) => tiles.reduce((s, t) => s + (t.neg ? -1 : 1) * (t.k === 'x2' ? x * x : t.k === 'x' ? x : 1), 0);
+/** Algebra tiles' "Build this" challenge (docs/decisions.md "the balance scale by drag and drop"): an expression
+ *  ax² + bx + c to build, a from −2 to 2, b from −4 to 4, c from −5 to 5, never 0 and never one term alone. rnd() in [0, 1). */
+export function makeGoal(rnd = Math.random) {
+  for (let k = 0; k < 100; k++) {
+    const g = { a: Math.floor(rnd() * 5) - 2, b: Math.floor(rnd() * 9) - 4, c: Math.floor(rnd() * 11) - 5 };
+    if ([g.a, g.b, g.c].filter(Boolean).length >= 2) return g;
+  }
+  return { a: 1, b: -1, c: 3 };
+}
+/** The kinds of tile whose total differs from the goal's: some of 'x2', 'x', '1' (none: built). */
+export function goalDiff(tiles, goal) {
+  const s = simplifyTiles(tiles);
+  return [['x2', s.a, goal.a], ['x', s.b, goal.b], ['1', s.c, goal.c]].filter(([, have, want]) => have !== want).map(([k]) => k);
+}
+/** The tiles on the mat in the order they are drawn: by kind (x², x, 1), each zero pair together (a positive, then its
+ *  negative), then the tiles left over (positives, then negatives). -> [{ k, pairs: [[i, j]], rest: [i] }] (indexes). */
+export function tileRows(tiles) {
+  return TILE_KINDS.map(k => {
+    const pos = [], neg = [];
+    tiles.forEach((t, i) => { if (t.k === k) (t.neg ? neg : pos).push(i); });
+    const n = Math.min(pos.length, neg.length), pairs = [];
+    for (let i = 0; i < n; i++) pairs.push([pos[i], neg[i]]);
+    return { k, pairs, rest: [...pos.slice(n), ...neg.slice(n)] };
+  });
+}
 
 // ================================================================ coins and money (whole cents; original simple designs)
 /** Each currency's coins and notes in cents (or plain units for the generic set). note: drawn as a note. */
