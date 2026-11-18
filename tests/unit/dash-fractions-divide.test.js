@@ -84,7 +84,7 @@ test('words: every new string in all 13 languages, one-line instructions and the
   const en = loc('en').dash.w.fractions, codes = fs.readdirSync('server/i18n/locales').map(x => x.replace('.json', ''));
   assert.equal(codes.length, 13);
   const keys = ['show', 'yourAnswer', 'check', 'checkRight', 'checkSimplify', 'checkNo', 'checkUnread', 'fitOne', 'again', 'fitSoFar', 'fitPart', 'fitAll',
-    'stepNext', 'stepHide', 'stepCommon', 'stepRename', 'stepAddTops', 'stepSubTops', 'stepGrid', 'stepShade', 'stepOverlap', 'stepKeep', 'stepChange', 'stepFlip', 'stepTimes'];
+    'stepNext', 'stepBack', 'stepClear', 'stepCleared', 'stepHide', 'stepCommon', 'stepRename', 'stepAddTops', 'stepSubTops', 'stepGrid', 'stepShade', 'stepOverlap', 'stepKeep', 'stepChange', 'stepFlip', 'stepTimes'];
   for (const k of keys) assert.match(src, new RegExp(`TOOL_WORDS\\.fractions\\.push\\([^)]*'${k}'`), `${k} reaches the browser`);
   const words = s => s.split(/\s+/).filter(x => /[\p{L}\p{N}]/u.test(x)).length;
   for (const code of codes.filter(c => c !== 'en-GB')) {   // en-GB keeps only its own spellings; the rest is en

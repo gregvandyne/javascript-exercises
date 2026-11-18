@@ -835,7 +835,6 @@ a.dw-tile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .dt-fdo{flex:none;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 8px;max-width:100%}
 .dt-fsteps{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 6px;min-width:0}
 .dt-fstep{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 4px;border-radius:999px;background:color-mix(in srgb,var(--line) 55%,var(--card));font-weight:700;font-size:.92rem;line-height:1.2}
-.dt-fstep-n{padding:3px;position:relative}
 .dt-fstepn{display:inline-grid;place-items:center;min-width:1.5em;height:1.5em;border-radius:50%;background:var(--text);color:var(--card);font-size:.875rem}
 .dt-ffb{font-weight:800;font-size:clamp(.95rem,min(5.5cqh,3.6cqi),1.3rem)}
 .dt-ffb.is-right{color:var(--ok)}
@@ -1984,7 +1983,9 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 .dash-projector .dt-stepsl li,.dash-projector .dt-stepssum,.dash-projector .dt-stepsbox .dt-stepst{font-size:1.1rem}
 .dt-stepsl.is-compact{display:flex;flex-wrap:wrap;gap:6px}
 .dt-stepsl.is-compact li{flex:1 1 100%}
-.dt-stepsl.is-compact li.dt-fstep-n{flex:none;display:inline-grid;grid-template-columns:1.6em;background:none;padding:0}
+.dt-stepsl.is-compact li.dt-fstep-sm{font-size:.82rem;opacity:.85}
+.dt-fstepacts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.dt-stepsbody .dt-fstepacts .dt-fstepbtn{margin-top:0}
 .dt-stepsbox .dt-fstep{background:none;padding:0;border-radius:0}
 /* Number rods: "Longer rod [20 ▾]" at the end of the tray, Turn/Copy/Delete by the chosen rod */
 .dt .dt-rbtn.dt-rlongadd{width:auto;padding:0 6px}
