@@ -19,6 +19,7 @@
 		kindInfo,
 		levelInfo,
 		problemsForRun,
+		sheetFor,
 		showAnswer,
 		stepOfBox,
 		type Cell,
@@ -54,7 +55,7 @@
 	const kind = $derived(kindInfo(activity.kind));
 	let runs = 0;
 	// The first run plays the activity's own problems; a practice run after that gets a new set.
-	const makeSheets = () => (fresh && runs++ > 0 ? fresh() : problemsForRun(activity)).map(kind.sheet);
+	const makeSheets = () => (fresh && runs++ > 0 ? fresh() : problemsForRun(activity)).map((p) => sheetFor(activity, p));
 
 	let phase = $state<'setup' | 'working' | 'feedback' | 'over'>('setup');
 	let sheets = $state.raw<SheetT[]>([]);
@@ -261,7 +262,10 @@
 	});
 
 	function shown(c: Cell) {
-		return !sheet || isReveal || !flags.build || phase === 'setup' ? true : cellStep(sheet, c) <= furthest;
+		if (!sheet || isReveal || phase === 'setup') return true;
+		// an arrow (a bring-down, a lifted point) is drawn once its box is filled, and stays
+		if (c.kind === 'arrow' && c.after) return !!values[c.after];
+		return !flags.build ? true : cellStep(sheet, c) <= furthest;
 	}
 	const litSet = $derived.by(() => {
 		if (!flags.spotlight || active < 0) return null;
@@ -839,6 +843,7 @@
 		autocomplete="off"
 		maxlength="2"
 		class="digit"
+		data-box={id}
 		class:small
 		class:current={current === id && phase === 'working'}
 		class:wrong={wrongNow}

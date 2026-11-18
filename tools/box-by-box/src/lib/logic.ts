@@ -13,7 +13,10 @@ export type Cell =
 	| { kind: 'given'; row: number; col: number; text: string; key: string; step?: number; label?: boolean; faint?: boolean }
 	| { kind: 'box'; row: number; col: number; id: string; small?: boolean }
 	| { kind: 'rule'; row: number; from: number; to: number; key: string; step?: number }
-	| { kind: 'bracket'; row: number; col: number; to: number; key: string };
+	| { kind: 'bracket'; row: number; col: number; to: number; key: string }
+	/** A small arrow drawn on the paper, kept once its step is done: a bring-down (a digit straight down from the number
+	 *  being divided) or a point lifted straight up. after: the box whose filling draws it. */
+	| { kind: 'arrow'; row: number; col: number; toRow: number; key: string; step?: number; after?: string };
 export type StepKind = 'divide' | 'multiply' | 'subtract' | 'bringDown' | 'zero' | 'add' | 'sumCarry' | 'carry';
 export type Step = {
 	kind: StepKind;
@@ -170,10 +173,11 @@ export function divideSheet({ dividend, divisor }: { dividend: number; divisor: 
 			kind: 'bringDown',
 			boxes: [bId],
 			prompt: () => `Bring down the ${next}.`,
-			lit: [...dIds, `n${i + 1}`, bId],
+			lit: [...dIds, `n${i + 1}`, bId, `down${i + 1}`],
 			view: { top: 0, left: 0, bottom: row, right: col(i + 1) },
 			slide: { row: 1, col: col(i + 1) }
 		});
+		cells.push({ kind: 'arrow', row: 1, col: col(i + 1), toRow: row, key: `down${i + 1}`, step: steps.length - 1, after: bId });
 		partial = diff * 10 + next;
 		partialIds = [...dIds, bId];
 		viewBottom = row;
@@ -782,5 +786,8 @@ export function problemsForRun(a: Playable, r: Rand = Math.random): Problem[] {
 	const count = a.problems.length || k.setSize;
 	return k.settings.generate({ ...(a.plan ?? k.settings.fresh()), count }, r);
 }
+
+/** A problem's sheet, as this activity works it. */
+export const sheetFor = (a: Playable, p: Problem): Sheet => kindInfo(a.kind).sheet(p);
 
 export const showAnswer = (s: string) => s.replace(' R 0', '');

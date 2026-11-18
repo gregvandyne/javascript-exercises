@@ -21,6 +21,20 @@
 		draw?: boolean;
 		label?: string;
 	} = $props();
+
+	/** An arrow down the middle of its column, from under the digit to just over the box it goes to; or (up) a short one
+	 *  beside a lifted point, from the row below to the row above. */
+	function arrowPath(up: boolean, span: number): string {
+		if (up) {
+			const x = 0.86;
+			const y1 = span - 0.3;
+			const y2 = 0.5;
+			return `M ${x} ${y1} V ${y2} M ${x - 0.1} ${y2 + 0.13} L ${x} ${y2} L ${x + 0.1} ${y2 + 0.13}`;
+		}
+		const y1 = 0.88;
+		const y2 = span - 1 + 0.06;
+		return `M 0.5 ${y1} V ${y2} M 0.38 ${y2 - 0.14} L 0.5 ${y2} L 0.62 ${y2 - 0.14}`;
+	}
 </script>
 
 <div class="sheet" class:paper role="group" aria-label={label ?? sheet.title} style:--cols={sheet.cols} style:--rows={sheet.rows}>
@@ -49,6 +63,18 @@
 					style:grid-row={c.row + 1}
 					style:grid-column="{c.from + 1} / {c.to + 1}"
 				></span>
+			{:else if c.kind === 'arrow'}
+				{@const top = Math.min(c.row, c.toRow)}
+				{@const span = Math.abs(c.toRow - c.row) + 1}
+				<svg
+					class="arrow"
+					class:dim
+					aria-hidden="true"
+					viewBox="0 0 1 {span}"
+					style:grid-row="{top + 1} / span {span}"
+					style:grid-column={c.col + 1}
+					><path d={arrowPath(c.toRow < c.row, span)} /></svg
+				>
 			{:else}
 				<svg
 					class="bracket"
@@ -138,6 +164,21 @@
 		stroke: var(--ink);
 		stroke-width: 3px;
 		stroke-linecap: round;
+	}
+	.arrow {
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+		pointer-events: none;
+		fill: none;
+		stroke: var(--arrow, var(--accent));
+		stroke-width: 0.045;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		opacity: 0.75;
+	}
+	.arrow.dim {
+		opacity: 0.18;
 	}
 	.rule.drawn {
 		transform-origin: 0;

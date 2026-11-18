@@ -8479,3 +8479,12 @@ Owner: "Hide those for parents." A family grown-up's Crossword showed the teache
 - Teachers are unchanged. A kid or a teacher without AI also gets the no-AI wording (they never had the AI buttons).
 - Tests: tests/unit/crossword-family.test.js (the fence, each account's frame flags, and the game in Chromium with the
   frame the server sends: a parent sees none of the tools above, a teacher sees them all, both make, play and print).
+
+## The Big Divide: remainders, decimals, addition and subtraction (18 Nov 2026)
+From 215 teacher comments the owner approved four changes, each put into a choice the game already had (or one it
+replaces), so nothing new to learn for anyone who doesn't want it.
+- **A bring-down arrow that stays.** After each bring-down in long division, a small arrow is drawn from the digit
+  straight down to where it was brought, and it stays, as on paper. It is drawn when its box is filled (`after` on the
+  `arrow` cell in `logic.ts`; Watch, Guided and Count up slide the digit down first, On my own draws it when the student
+  types it), lit with its step under the spotlight, and nothing else ever sits in its column on the way down. Visual
+  only, no setting.
