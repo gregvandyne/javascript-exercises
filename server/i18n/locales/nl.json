@@ -9411,7 +9411,9 @@
         "calNote": "Google Agenda: Instellingen → je agenda → ‘Geheim adres in iCal-indeling’. Outlook: Instellingen → Agenda → Gedeelde agenda's → Publiceren → ICS-link. De afspraken van vandaag worden het rooster en iedereen die deze widget ziet, ziet ze, dus koppel een agenda die voor de klas bedoeld is. Het adres zelf blijft privé.",
         "calRemove": "Ontkoppelen",
         "calOn": "{name} is gekoppeld.",
-        "calToday": "De afspraken van vandaag komen uit deze agenda (elke 15 minuten bekeken). Op een dag zonder afspraken staat het rooster hieronder."
+        "calToday": "De afspraken van vandaag komen uit deze agenda (elke 15 minuten bekeken). Op een dag zonder afspraken staat het rooster hieronder.",
+        "instructions": "Uitleg",
+        "agendaLabel": "Dagplanning importeren"
       },
       "weather": {
         "name": "Weer",

@@ -596,6 +596,9 @@ function start() {
   const pushOpts = async (q = '') => { if (!q && optsCache) return optsCache; const r = await api(`/api/dash/${CID}/push-options${q ? `?q=${encodeURIComponent(q)}` : ''}`); if (!q) optsCache = r; return r; };
   /** Stage 5: "1:30", "90" or "1:02:03" -> seconds, or null (the same rule as services/dash.js cleanSecs). */
   const secsOf = v => { const x = String(v || '').trim(); if (!x) return 0; if (/^\d{1,5}$/.test(x)) return Math.min(86400, +x); const m = /^(?:(\d{1,2}):)?(\d{1,3}):([0-5]\d)$/.exec(x); return m ? Math.min(86400, (+m[1] || 0) * 3600 + +m[2] * 60 + +m[3]) : null; };
+  /** Instructions folded away under a caret: a <details>, so it opens with a tap, Enter or Space, with no script. The text's
+   *  id lets a field point at it with aria-describedby (read even while folded). */
+  const howTo = (label, text, tid) => `<details class="dash-howto"><summary><span class="dash-caret" aria-hidden="true"></span>${esc(label)}</summary><p class="small" id="${tid}">${esc(text)}</p></details>`;
   const EDITORS = {
     // ---- stage 5: a video link (only the provider and the video's id are kept), a time in the video, a site's address,
     // the hall pass's places.
@@ -758,10 +761,16 @@ function start() {
         const chips = weekly ? `<div class="dash-days" role="group" aria-label="${esc(f.label)}">${[0, 1, 2, 3, 4, 5, 6, 7].map(d => `<button type="button" class="chip dash-day${d && own(d) ? ' has-own' : ''}" data-day="${d}" aria-pressed="${d === day}"${d ? ` aria-label="${esc(dayName(d, true))}"` : ''}>${esc(d ? dayName(d) : W.everyDay)}</button>`).join('')}</div>` : '';
         const body = l ? rowsHtml(l) + (day ? ` <button class="btn btn-sm btn-ghost" type="button" data-back>↩ ${esc(W.backToEvery)}</button>` : '')
           : `<p class="small muted dash-sameas">${esc(fill(W.sameAsEvery, { day: dayName(day, true) }))}</p><button class="btn btn-sm" type="button" data-own>✏️ ${esc(fill(W.ownDay, { day: dayName(day, true) }))}</button>`;
-        const tools = weekly ? `<div class="dash-agtools"><label class="btn btn-sm dash-upload">📄 ${esc(W.upload)}<input type="file" accept=".ics,.ical,.csv,.txt,text/calendar,text/csv,text/plain" data-file hidden></label>
-          <details class="dash-paste"><summary class="btn btn-sm">📋 ${esc(W.paste)}</summary><label class="sr-only" for="${id}-pt">${esc(W.paste)}</label><textarea class="input" id="${id}-pt" rows="5" maxlength="6000" dir="auto" placeholder="${esc(W.pasteHint)}"></textarea><button class="btn btn-sm" type="button" data-pastego>${esc(W.pasteGo)}</button></details>
-          <p class="small muted">${esc(W.uploadHint)}</p></div>` : '';
-        field.innerHTML = `<span class="dash-lab" id="${id}-l">${esc(day ? dayName(day, true) : f.label)}</span>${chips}${body}${tools}`;
+        // The agenda import: a card at the top (after the connected calendar's), its instructions folded away. On a weekday
+        // it shows only once that day has its own schedule ("Give Monday its own schedule"), and imports into that day.
+        const tools = weekly && (!day || l) ? `<section class="dash-mod dash-agtools" aria-labelledby="${id}-agh"><h3 class="dash-modh" id="${id}-agh"><span aria-hidden="true">📄</span> ${esc(W.agendaLabel)}</h3>
+          <div class="dash-modrow"><label class="btn btn-sm dash-upload">📤 ${esc(W.upload)}<input type="file" accept=".ics,.ical,.csv,.txt,text/calendar,text/csv,text/plain" data-file hidden></label>
+          <details class="dash-paste"><summary class="btn btn-sm">📋 ${esc(W.paste)}</summary><label class="sr-only" for="${id}-pt">${esc(W.paste)}</label><textarea class="input" id="${id}-pt" rows="5" maxlength="6000" dir="auto" placeholder="${esc(W.pasteHint)}"></textarea><button class="btn btn-sm" type="button" data-pastego>${esc(W.pasteGo)}</button></details></div>
+          ${howTo(W.instructions, W.uploadHint, `${id}-agi`)}</section>` : '';
+        field.innerHTML = `${tools}<span class="dash-lab" id="${id}-l">${esc(day ? dayName(day, true) : f.label)}</span>${chips}${body}`;
+        // The connected calendar (the field above) fills every day, so it belongs to Every day: hidden on a weekday.
+        const feed = field.parentElement && field.parentElement.querySelector(':scope > .dash-feed');
+        if (feed) feed.hidden = !!day;
       };
       draw();
       const refocus = sel => field.querySelector(sel)?.focus();
@@ -814,13 +823,13 @@ function start() {
     // by fetching it and keeps it; the widget keeps only { id, name }.
     feed(field, f, w, id, type, { commit, redraw }) {
       const W = type.words;
-      field.classList.add('dash-feed');
+      field.classList.add('dash-feed', 'dash-mod');
       const draw = () => {
         const cur = w.s[f.key];
         field.innerHTML = cur
-          ? `<span class="dash-lab">${esc(W.calLabel)}</span><p class="dash-cur" dir="auto">📅 ${esc(fill(W.calOn, { name: cur.name || '…' }))}</p><p class="small muted">${esc(W.calToday)}</p><button class="btn btn-sm" type="button" data-calrm>✖ ${esc(W.calRemove)}</button>`
-          : `<label for="${id}">${esc(W.calLabel)}</label><div class="row dash-findrow"><input class="input grow" id="${id}" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="500" dir="ltr" placeholder="${esc(W.calHint)}" aria-describedby="${id}-m ${id}-n"><button class="btn btn-sm" type="button" data-calgo>🔗 ${esc(W.calConnect)}</button></div>
-             <p class="small dash-fieldmsg" id="${id}-m" role="status"></p><p class="small muted" id="${id}-n">${esc(W.calNote)}</p>`;
+          ? `<span class="dash-modh"><span aria-hidden="true">📅</span> ${esc(W.calLabel)}</span><p class="dash-cur" dir="auto">✅ ${esc(fill(W.calOn, { name: cur.name || '…' }))}</p><p class="small muted">${esc(W.calToday)}</p><button class="btn btn-sm" type="button" data-calrm>✖ ${esc(W.calRemove)}</button>`
+          : `<label class="dash-modh" for="${id}"><span aria-hidden="true">📅</span> ${esc(W.calLabel)}</label><div class="row dash-findrow"><input class="input grow" id="${id}" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="500" dir="ltr" placeholder="${esc(W.calHint)}" aria-describedby="${id}-m ${id}-n"><button class="btn btn-sm" type="button" data-calgo>🔗 ${esc(W.calConnect)}</button></div>
+             <p class="small dash-fieldmsg" id="${id}-m" role="status"></p>${howTo(W.instructions, W.calNote, `${id}-n`)}`;
       };
       draw();
       const go = async () => {

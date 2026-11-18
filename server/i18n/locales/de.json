@@ -9411,7 +9411,9 @@
         "calNote": "Google Kalender: Einstellungen → dein Kalender → „Privatadresse im iCal-Format“. Outlook: Einstellungen → Kalender → Freigegebene Kalender → Veröffentlichen → ICS-Link. Die Termine von heute werden zum Plan, und alle, die dieses Widget sehen, sehen sie – verbinde also einen Kalender für die Klasse. Die Adresse selbst bleibt privat.",
         "calRemove": "Trennen",
         "calOn": "{name} ist verbunden.",
-        "calToday": "Die Termine von heute kommen aus diesem Kalender (alle 15 Minuten geprüft). An Tagen ohne Termine wird der Plan unten gezeigt."
+        "calToday": "Die Termine von heute kommen aus diesem Kalender (alle 15 Minuten geprüft). An Tagen ohne Termine wird der Plan unten gezeigt.",
+        "instructions": "Anleitung",
+        "agendaLabel": "Tagesplan übernehmen"
       },
       "weather": {
         "name": "Wetter",

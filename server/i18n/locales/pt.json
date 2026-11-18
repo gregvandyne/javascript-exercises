@@ -9412,7 +9412,9 @@
         "calNote": "Google Calendar: Definições → o teu calendário → «Endereço secreto no formato iCal». Outlook: Definições → Calendário → Calendários partilhados → Publicar → ligação ICS. Os eventos de hoje passam a ser o horário e quem vê este widget vê-os, por isso liga um calendário pensado para a turma. O endereço continua privado.",
         "calRemove": "Desligar",
         "calOn": "{name} está ligado.",
-        "calToday": "Os eventos de hoje vêm deste calendário (verificado a cada 15 minutos). Num dia sem eventos, mostra-se o horário abaixo."
+        "calToday": "Os eventos de hoje vêm deste calendário (verificado a cada 15 minutos). Num dia sem eventos, mostra-se o horário abaixo.",
+        "instructions": "Instruções",
+        "agendaLabel": "Importar um horário"
       },
       "weather": {
         "name": "Tempo",

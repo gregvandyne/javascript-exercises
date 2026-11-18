@@ -2015,8 +2015,25 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 .dash-day.has-own:not([aria-pressed="true"]){border-color:var(--accent-line)}
 .dash-day.has-own::after{content:"•";margin-inline-start:2px}
 .dash-sameas{margin:0}
-.dash-agtools{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px;margin-top:var(--s2);padding-top:var(--s2);border-top:1px solid var(--line)}
-.dash-agtools > p{flex-basis:100%;margin:0}
+/* A settings card (the schedule's connected calendar and agenda import, at the top of its settings): a title, the
+   controls, and the instructions folded under a caret (.dash-howto). */
+.dash-mod{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--card-2)}
+.dash-mod + .dash-mod,.dash-feed.dash-mod + .field .dash-mod{margin-top:0}
+.dash-modh{display:flex;align-items:center;gap:8px;margin:0;font-size:1rem;font-weight:800;line-height:1.2;color:var(--text)}
+.dash-modrow{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px}
+.dash-mod .dash-cur,.dash-mod > p{margin:0}
+.dash-mod .dash-fieldmsg:empty{display:none}
+.dash-periods > .dash-mod{margin-bottom:var(--s3)}
+.dash-howto > summary{list-style:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-weight:700;font-size:.9rem;color:var(--link);
+  padding:4px 8px 4px 4px;margin-inline-start:-4px;border-radius:8px;user-select:none}
+.dash-howto > summary::-webkit-details-marker{display:none}
+.dash-howto > summary:hover{background:var(--hover)}
+.dash-howto > summary:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.dash-caret{width:0;height:0;border-block:5px solid transparent;border-inline-start:7px solid currentColor;transition:transform .2s ease}
+.dash-howto[open] .dash-caret{transform:rotate(90deg)}
+[dir="rtl"] .dash-howto[open] .dash-caret{transform:rotate(-90deg)}
+.dash-howto > p{margin:6px 0 0;color:var(--muted);line-height:1.45}
+@media (prefers-reduced-motion:reduce){.dash-caret{transition:none}}
 .dash-upload{cursor:pointer}
 .dash-upload:focus-within{outline:3px solid var(--focus);outline-offset:2px}
 .dash-paste{flex:1 1 100%}
@@ -2025,3 +2042,6 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 .dash-paste[open] > summary{margin-bottom:6px}
 .dash-paste textarea{width:100%;min-height:110px;margin-bottom:6px}
 .dw-sched-src{font-size:.8em;opacity:.75;margin:0}
+/* The calendar address gets the card's full width when the settings panel is narrow; Connect wraps below it. */
+.dash-mod .dash-findrow{flex-wrap:wrap}
+.dash-mod .dash-findrow > .input{flex:1 1 220px;min-width:0}
