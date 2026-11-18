@@ -33,7 +33,9 @@ test('a registered game yields its lines, unless it is one of the known no-table
   // any future marked block is picked up automatically (Escape the Post Office and Trick Inbox left this list
   // when their how-to cards got a marked block in every language, kit 1.1.6). Adding a name here needs the
   // owner's say-so, not just a failing game.
-  const NO_TABLE = new Set(['atlas-quest', 'code-isle']);
+  // Algebra Builder (Nov 2026, added on the owner's request to bring the game over unchanged) speaks no lines at all,
+  // as the original didn't.
+  const NO_TABLE = new Set(['atlas-quest', 'code-isle', 'algebra-builder']);
   for (const slug of lines.TTS_GAMES) {
     const g = lines.readGame(slug);
     if (!g) { assert.ok(NO_TABLE.has(slug), `${slug} is registered but its lines cannot be read`); continue; }

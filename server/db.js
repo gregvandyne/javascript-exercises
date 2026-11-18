@@ -1020,6 +1020,13 @@ export const MIGRATIONS = [
       ok INTEGER NOT NULL DEFAULT 0, tries INTEGER NOT NULL DEFAULT 0, at INTEGER NOT NULL, PRIMARY KEY (push_id, user_id, item));
     CREATE INDEX IF NOT EXISTS idx_dash_builds_class ON dash_builds(class_id);
     CREATE INDEX IF NOT EXISTS idx_dash_builds_user ON dash_builds(user_id);`],
+  // Question sets an official game keeps for a teacher (services/game-sets.js; Algebra Builder): id is the short code
+  // its link carries (s-xxxxxxxxxx), items the questions as JSON (an activity, a short math problem, two settings).
+  // Rows go with their owner's account.
+  ['0085_game_sets', `
+    CREATE TABLE IF NOT EXISTS game_sets (id TEXT PRIMARY KEY, game_id TEXT NOT NULL, owner_id TEXT NOT NULL, items TEXT NOT NULL,
+      created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_game_sets_owner ON game_sets(owner_id, game_id);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

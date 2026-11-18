@@ -4,12 +4,23 @@
 
 import type { Activity } from './algebra';
 import type { Start } from './settings';
+import type { Item } from './oomba';
 
 export type View =
 	| { name: 'home' }
-	| { name: 'setup'; activity: Activity; text?: string; start?: Start; live?: boolean }
+	| { name: 'setup'; activity: Activity; text?: string; start?: Start; live?: boolean; forSet?: number }
 	| { name: 'play'; type: Activity; p: string; start: Start; live: boolean; from: 'link' | 'setup' }
+	| { name: 'set' }
+	| { name: 'set-play'; items: Item[]; from: 'link' | 'set'; id?: string; mine?: boolean }
+	| { name: 'set-missing' }
 	| { name: 'about' };
+
+/** A question set being made or changed: its questions, and its code once saved (with whether what's on screen is
+ *  what was saved). */
+export type Draft = { items: Item[]; id: string | null; saved: boolean };
+
+/** The set being made (one at a time; setup pages add to it). */
+export const sets = $state<{ draft: Draft | null }>({ draft: null });
 
 export const nav = $state<{ view: View; back: View[] }>({ view: { name: 'home' }, back: [] });
 

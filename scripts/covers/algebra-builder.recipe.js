@@ -1,7 +1,7 @@
-// Algebra Tiles' card cover (loaded by scripts/covers.js): the game's own gallery of activities (its title, then the
+// Algebra Builder' card cover (loaded by scripts/covers.js): the game's own gallery of activities (its title, then the
 // Solve balance and the Multiply rectangle), as a teacher first sees it. Playwright frame calls only.
 export default {
-  'algebra-tiles': {
+  'algebra-builder': {
     viewport: { width: 360, height: 480 },
     scale: 1.5,
     async prep(f) {

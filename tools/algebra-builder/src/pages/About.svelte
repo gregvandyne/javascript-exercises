@@ -1,6 +1,6 @@
 <script lang="ts">
 	// About: what the game is, how a problem travels, and the credit for the app it is adapted from (Apache-2.0: the
-	// license and what was changed are in tools/algebra-tiles/LICENSE and NOTICE).
+	// license and what was changed are in tools/algebra-builder/LICENSE and NOTICE).
 	import Logo from '$lib/Logo.svelte';
 	import Footer from '$lib/Footer.svelte';
 	import { goBack } from '$lib/nav.svelte';
@@ -9,7 +9,7 @@
 <div class="page">
 	<header class="bar">
 		<button type="button" class="btn-ghost" onclick={goBack}>← Back</button>
-		<h1><Logo size={32} /> About Algebra Tiles</h1>
+		<h1><Logo size={32} /> About Algebra Builder</h1>
 	</header>
 
 	<section class="card">

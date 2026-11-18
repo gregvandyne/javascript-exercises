@@ -1,6 +1,6 @@
-// Algebra Tiles on Oomba: builds tools/algebra-tiles (a Svelte app, adapted from Algebra Tiles by teacher.dev, Apache-2.0:
-// LICENSE and NOTICE here) into the single self-contained seed game seed-games/algebra-tiles.html.
-//   cd tools/algebra-tiles && npm install && node build.mjs          write the game file
+// Algebra Builder: builds tools/algebra-builder (a Svelte app, adapted from Algebra Tiles by teacher.dev, Apache-2.0:
+// LICENSE and NOTICE here) into the single self-contained seed game seed-games/algebra-builder.html.
+//   cd tools/algebra-builder && npm install && node build.mjs          write the game file
 //   node build.mjs --check                                            exit 1 when the committed file is not what the sources build
 // Vite (vite.config.js) bundles the app into one page; then this script
 //   - puts the pinned Oomba Kit tag where index.html says <!--@@KIT@@--> (its sounds, effects and font),
@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
-export const OUT = path.join(ROOT, 'seed-games', 'algebra-tiles.html');
+export const OUT = path.join(ROOT, 'seed-games', 'algebra-builder.html');
 const check = process.argv.includes('--check');
 
 execFileSync(process.execPath, [path.join(HERE, 'node_modules/vite/bin/vite.js'), 'build', '--logLevel', 'warn'], { cwd: HERE, stdio: 'inherit' });
@@ -48,8 +48,8 @@ for (const [digits, same] of [['-9223372036854775808', '(-(2n**63n))'], ['922337
 const KEPT_OUT = String.fromCharCode(99, 97, 114, 101, 116);
 html = html.replaceAll(`${KEPT_OUT}s-to-axis`, 'arrows-to-axis');
 
-const banner = `<!-- Algebra Tiles on Oomba. Adapted from Algebra Tiles by teacher.dev (EdTech-a-thon 2026), Apache License 2.0.
-     Built by tools/algebra-tiles/build.mjs from tools/algebra-tiles (LICENSE and NOTICE there): do not edit by hand. -->\n`;
+const banner = `<!-- Algebra Builder. Adapted from Algebra Tiles by teacher.dev (EdTech-a-thon 2026), Apache License 2.0.
+     Built by tools/algebra-builder/build.mjs from tools/algebra-builder (LICENSE and NOTICE there): do not edit by hand. -->\n`;
 html = html.replace(/^<!doctype html>\n?/i, m => m + banner);
 
 // What must never be in the page: an outside web address (SVG namespaces aside), the word kept out (the CSS property
@@ -64,8 +64,8 @@ if (scan.status !== 'pass') throw new Error(`build.mjs: the safety scan says ${s
 
 if (check) {
   const now = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
-  if (now !== html) { console.error('seed-games/algebra-tiles.html is not what tools/algebra-tiles builds: run node tools/algebra-tiles/build.mjs'); process.exit(1); }
-  console.log('seed-games/algebra-tiles.html is up to date');
+  if (now !== html) { console.error('seed-games/algebra-builder.html is not what tools/algebra-builder builds: run node tools/algebra-builder/build.mjs'); process.exit(1); }
+  console.log('seed-games/algebra-builder.html is up to date');
 } else {
   fs.writeFileSync(OUT, html);
   console.log(`wrote ${path.relative(ROOT, OUT)} (${(Buffer.byteLength(html) / 1024).toFixed(0)} KB), scan: ${scan.status}`);

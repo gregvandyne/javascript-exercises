@@ -1,4 +1,4 @@
-Algebra Tiles on Oomba
+Algebra Builder
 
 This game is adapted from Algebra Tiles by teacher.dev (made at the EdTech-a-thon 2026), used under the
 Apache License, Version 2.0 (the LICENSE file here). The original project's own notices, if any, are kept
@@ -12,7 +12,10 @@ Changes made for Oomba (November 2026):
   finish, which also tells Oomba the problem is complete.
 - Activity links and QR codes open the problem on Oomba, written in Oomba's lesson parameters
   (src/lib/oomba.ts); copying goes through the Oomba page.
-- Left out: email links, the "suggest an activity" form, and analytics. Nothing is saved or sent.
+- Renamed Algebra Builder on Oomba.
+- Added question sets (src/pages/SetBuilder.svelte, src/pages/SetPlay.svelte): up to 10 questions from
+  any activity, saved on Oomba under a short code, played in order.
+- Left out: email links, the "suggest an activity" form, and analytics.
 - The math input field is a third-party package, vendored in vendor/mathfield-* under its own terms
   (used with permission), with its package names changed.
 - build.mjs makes the bundle pass Oomba's safety scan (no outside addresses, no code built from text).

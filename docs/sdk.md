@@ -72,6 +72,7 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.voice(lang?)` | The `SpeechSynthesisVoice` `BRB.speak` would use for a language tag (default `BRB.user.lang`), or `null`. |
 | `BRB.gameUrl` | The game's own play page (`https://…/play/<slug>`), or `null` in a preview. A game that shares a link to itself adds lesson parameters to it (`?mode=…&chapter=…&lock=1`, see [Lesson parameters](#lesson-parameters)). |
 | `BRB.copy(textOrPng)` | Copies for the game, which can't use the clipboard itself (it is sandboxed): a link to the game's own play page (`BRB.gameUrl`, with any query, at most 400 characters) or a PNG `Blob` (at most 300 KB, such as that link's QR code). The play page copies only right after a tap. A Promise of `true` when copied, `false` when refused or after 3 s. |
+| `BRB.questionSet` / `BRB.saveQuestionSet(items, id?)` | Official games on the list only (Algebra Builder): the teacher's question set a link opened, and saving one. See [Question sets](#question-sets-brbquestionset). |
 | `BRB.afterSpeech(fn, opts?)` | Calls `fn` once nothing is being said: no line playing, queued, or still on its way from the AI voice, for `gap` ms (250). Never before `min` ms (0) nor after `max` ms (10000), so a line that never ends can't hold the game. Returns a function that cancels it. Use it wherever the game moves on to the next question, so the last line is never cut off by the next one. |
 | `BRB.speaking()` | `true` while a line is playing, queued or on its way from the AI voice. |
 | `BRB.prefetchSpeech(lines, opts?)` | AI voices only (see [AI voices](#ai-voices)): asks for lines the game will say soon (a whole conversation card), so they start at once. `opts`: `{ lang, voice, rate }`. `false` (and nothing happens) without AI voices. |
@@ -319,6 +320,19 @@ the Builder's class survey starter counts on the device instead (docs/decisions.
 and resolves to `{ a, b, total, min }` (show a percentage only when `total >= min`), or `null` when polls are off, the
 player is offline or the page is slow (5 s). Messages: `brb:poll {item, choice, seat, n}` to the page and
 `brb:pollResult {n, a, b, total, min}` (or `{n, off: true}`) back.
+
+## Question sets (`BRB.questionSet`)
+An official game on the list (`SET_GAMES` in `server/services/game-sets.js`: Algebra Builder) can keep a teacher's list
+of questions on Oomba, so one short link (and its QR code, and a lesson step) opens all of them:
+`/play/<slug>?chapter=s-<10 letters and digits>&lock=1`.
+- `BRB.questionSet`: the set the link opened, `{ id, items, mine }` (`mine`: the player saved it), or
+  `{ id, missing: true }` for a code with no set; `null` without one. An item is `{ a, p, s, l }`: the activity
+  (`solve`, `multiply`, `factor`), the problem in the math alphabet (digits, x, `+ - − = ^ ( )` and spaces, at most 40
+  characters), what students start with (`all` or `none`) and the live balance (true or false). No free text.
+- `BRB.saveQuestionSet(items, id?)` → a Promise of `{ id }` or `{ error }` (`guest`, `bad`, `full`, `notYours`,
+  `offline`). The page posts it to `POST /api/games/:id/sets` for the signed-in player (not a guest): a new set, or with
+  `id` their own set changed under the same code. 1 to 10 items; 200 sets per player per game.
+- Sets go with their owner's account. Nothing about who played is kept.
 
 ## Loudness (`BRB.loudness`)
 How loud the room is, as one number. Any game may use it (the official noise meters, and Builder games since 13 Nov

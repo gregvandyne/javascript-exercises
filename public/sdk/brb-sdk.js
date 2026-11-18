@@ -979,6 +979,31 @@
     var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:copied' || typeof m.id !== 'number') return;
     var w = copyWait[m.id]; if (w) w(m.ok);
   });
+  // Question sets (an official game on the list; docs/sdk.md "Question sets"): BRB.questionSet is the set a link opened
+  // ({ id, items, mine } or { id, missing: true }), null otherwise. BRB.saveQuestionSet(items, id?) asks the page to save
+  // a teacher's set (a new one, or their own one changed): a Promise of { id } or { error } ('guest', 'bad', 'full',
+  // 'notYours', 'offline').
+  var setWait = {}, setSeq = 0;
+  function saveQuestionSet(items, id) {
+    if (typeof Promise !== 'function') return null;
+    return new Promise(function (res) {
+      var n = ++setSeq, timer = setTimeout(function () { delete setWait[n]; res({ error: 'offline' }); }, 10000);
+      setWait[n] = function (r) { clearTimeout(timer); delete setWait[n]; res(r); };
+      send('brb:set-save', { id: n, items: items, set: typeof id === 'string' ? id : null });
+    });
+  }
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:set-saved' || typeof m.id !== 'number') return;
+    var w = setWait[m.id]; if (!w) return;
+    w(typeof m.set === 'string' && /^s-[a-z0-9]{10}$/.test(m.set) ? { id: m.set } : { error: typeof m.error === 'string' ? m.error : 'offline' });
+  });
+  var questionSet = (function (s) {
+    if (!s || typeof s !== 'object' || typeof s.id !== 'string') return null;
+    if (s.missing) return Object.freeze({ id: s.id, missing: true });
+    var items = Array.isArray(s.items) ? s.items.map(function (it) { return Object.freeze({ a: it.a, p: it.p, s: it.s, l: it.l }); }) : [];
+    return Object.freeze({ id: s.id, items: Object.freeze(items), mine: s.mine === true });
+  })(INIT.set);
   var synthCancel = synth ? synth.cancel : null;
   if (TTS) {
     window.addEventListener('message', function (e) {
@@ -1206,7 +1231,9 @@
     // The game's own play page (https://…/play/<slug>), or null in a preview: a game that shares a link to itself
     // (with lesson parameters, docs/sdk.md "Lesson parameters") builds it from this.
     gameUrl: INIT.game && typeof INIT.game.url === 'string' && /^https?:\/\/[^/]+\/play\/[a-z0-9-]+$/.test(INIT.game.url) ? INIT.game.url : null,
-    copy: copy
+    copy: copy,
+    questionSet: questionSet,
+    saveQuestionSet: saveQuestionSet
   };
   Object.freeze(BRB.storage); Object.freeze(BRB.score);
   try { Object.defineProperty(window, 'BRB', { value: BRB, writable: false, configurable: false }); } catch (e) { window.BRB = BRB; }

@@ -7595,30 +7595,42 @@ routes in `server/routes/dash.js`, `qh` and `ANSWER_TOOLS` in `server/services/d
   number fields; on the teacher's screens the numbers are typed (refused, with the message showing), and on a student's
   screens each set is opened in its sheet, Checked once and checked (nothing cut, no sideways scroll, 44px buttons).
 
-## Algebra Tiles, adapted for Oomba (18 Nov 2026)
+## Algebra Builder (adapted from Algebra Tiles), with question sets (18 Nov 2026)
 Owner: "Add this game to oomba: [teacher.dev's algebra-tiles] Make sure all functionality stays the same but use oomba
 branding. This should be listed under games, but should use our animation packs. I want to use a similar board like
 structure." Answers: keep its whiteboard; the Oomba Kit's effects only (no character); activity links and QR codes
 open the problem on Oomba; keep its math input field, which we have permission to use, but nothing in the game or the
-repository names it.
-- **Where it lives.** `tools/algebra-tiles` (the original's Svelte app, Apache-2.0: LICENSE, NOTICE with what changed,
-  README) builds into `seed-games/algebra-tiles.html` (`npm run build:algebra-tiles`; `node build.mjs --check`). Play
-  shelf, category puzzle, cover from its gallery (`scripts/covers/algebra-tiles.recipe.js`).
+repository names it. Then: "Change the name of the game, as well. And allow teachers to create multiple questions."
+Answers: **Algebra Builder**; question sets **saved on Oomba** under a short code; a set **may mix activities**.
+- **Where it lives.** `tools/algebra-builder` (the original's Svelte app, Apache-2.0: LICENSE, NOTICE with what changed,
+  README) builds into `seed-games/algebra-builder.html` (`npm run build:algebra-builder`; `node build.mjs --check`).
+  Play shelf, category puzzle, cover from its gallery (`scripts/covers/algebra-builder.recipe.js`), a share picture.
+  The original is credited by name in the page's banner, About, NOTICE and the seed notes, as its license asks.
 - **The same game.** Gallery, a setup page per activity, and the whiteboard: Solve (Isolate, Divide, Answer, live
   balance on or off), Multiply and Factor (rectangle, sides, equation; all tiles or none), their checks, toolbar, tray,
   pan and zoom are the original's code. Its pages became screens in one page, with an in-game Back (no history in the
   frame). Oomba look: paper, ink and green, Bricolage Grotesque, rounded cards, pill buttons; the tile colours stay.
+  It reads nothing aloud, as the original didn't (registered for AI voices with no lines; a "no-table" game).
 - **Effects.** A passed step: the kit's `correct` and a pop of the problem bar; a wrong Check: `wrong` and a small
-  shake; the finish: `win`, confetti and `BRB.gameOver({ won: true })` once (completes a lesson step). Reduced motion
-  skips the movement.
-- **Links.** A problem rides in lesson params: `?mode=solve&chapter=2xp3q7&level=1&lock=1` (`+ = ^ ( )` written
-  `p q e o c`, at most 16 characters; `level` 1/2 is the live balance on/off for Solve, all tiles/none otherwise). The
-  setup page shows a problem too long for that as "too long for an activity link", and a preview as having no link.
-- **SDK.** `BRB.gameUrl` (the frame now gets the game's own `/play/<slug>` address) and `BRB.copy(textOrPng)`: the
-  play page writes the clipboard for the frame, only that game's own link (or with a query) or a PNG up to 300 KB,
-  and only right after a tap.
-- **Left out.** The original's email links, its "suggest an activity" form and its analytics. Nothing is saved.
-- **The math input field** is vendored under `tools/algebra-tiles/vendor/mathfield-*` with its package names changed;
-  `build.mjs` and tests/unit/algebra-tiles.test.js check the name appears nowhere (the CSS text-cursor property aside).
+  shake; a question of a set done: `levelup` and a pop; the finish (a problem, or a set's last question): `win`,
+  confetti and `BRB.gameOver({ won: true })` once (completes a lesson step). Reduced motion skips the movement.
+- **One problem, one link** (as the original): `?mode=solve&chapter=2xp3q7&level=1&lock=1` (`+ = ^ ( )` written
+  `p q e o c`, at most 16 characters; `level` 1/2 is the live balance on/off for Solve, all tiles/none otherwise). A
+  problem too long for that says so on its setup page; a preview has no link.
+- **Question sets.** "Make a question set" on the gallery, or "Start a question set with it" on any setup page: up to
+  10 questions from any activity, each made on that activity's setup page (Add to the set / Save this question),
+  reordered, changed or removed in the set's list. **Save and get link** keeps it on Oomba (`game_sets`, migration
+  0085; `server/services/game-sets.js`) and shows its link `?chapter=s-xxxxxxxxxx&lock=1`, the QR code and Copy; saving
+  again keeps the link. Signed-in players only (a guest is told to sign in; a preview has no links). The teacher's
+  sets are listed on the gallery from their game save (`algebra-builder-sets-v1`). Students get "1 of 5" in the bar,
+  **Next question** after each, then "All 5 questions done!" with Do them again; the teacher opening their own link
+  gets "Change this set". A deleted set's link says it isn't there any more. A set is only activities, problems in a
+  fixed math alphabet and two settings (no free text), and goes with its owner's account.
+- **SDK.** `BRB.gameUrl` (the frame gets the game's own `/play/<slug>` address), `BRB.copy(textOrPng)` (the play page
+  writes the clipboard only for that game's own link, with a query, or a PNG up to 300 KB, right after a tap) and
+  `BRB.questionSet` / `BRB.saveQuestionSet` (docs/sdk.md "Question sets").
+- **Left out.** The original's email links, its "suggest an activity" form and its analytics.
+- **The math input field** is vendored under `tools/algebra-builder/vendor/mathfield-*` with its package names changed;
+  `build.mjs` and tests/unit/algebra-builder.test.js check the name appears nowhere (the CSS text-cursor property aside).
 - **Safety scan.** `build.mjs` removes what the scanner refuses in the bundle: Svelte's and Tailwind's web addresses,
   a validator's `Function('')` probe (answered "no"), its address pattern and its 64-bit limits written as digits.

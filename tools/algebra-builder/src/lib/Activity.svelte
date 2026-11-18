@@ -118,12 +118,23 @@
 	let {
 		problem,
 		start = 'all',
-		live = true
+		live = true,
+		onfinish,
+		onnext,
+		nextLabel = 'Next question',
+		badge = ''
 	}: {
 		problem: Extract<Problem, { ok: true }>;
 		start?: Start;
 		/** Solve: whether the balance tips as the student works, or always hangs level. */
 		live?: boolean;
+		/** Oomba, a question set: called when this problem is complete, in place of the finish (the set says when). */
+		onfinish?: (bar: HTMLElement | undefined) => void;
+		/** Oomba, a question set: a button to the next question once this one is complete. */
+		onnext?: () => void;
+		nextLabel?: string;
+		/** Oomba, a question set: where this one is ("2 of 5"), shown before the activity in the bar. */
+		badge?: string;
 	} = $props();
 
 	// The problem never changes for the life of this view; the page makes a new one per link.
@@ -450,7 +461,10 @@
 		const next = steps[steps.indexOf(step) + 1] ?? 'done';
 		step = next;
 		// Oomba: the Kit's sounds and effects for a passed step, and the finish (the cheer, confetti, a lesson step done)
-		if (next === 'done') complete();
+		if (next === 'done') {
+			if (onfinish) onfinish(headerEl);
+			else complete();
+		}
 		else stepPassed(headerEl);
 		past = [];
 		future = [];
@@ -1796,6 +1810,7 @@
 	     On the last step, the answer field takes the steps' place. -->
 	<div class="topbar" bind:this={headerEl}>
 		<header class="bar">
+			{#if badge}<span class="badge">{badge}</span>{/if}
 			<span class="kind"
 				>{p.type === 'multiply' ? 'Multiply' : p.type === 'factor' ? 'Factor' : 'Solve'}</span
 			>
@@ -1855,9 +1870,14 @@
 						class:off={step === 'done'}
 						onclick={check}>Check</button
 					>
-					<button type="button" class="btn-ghost again" class:off={step !== 'done'} onclick={reset}>
-						<RotateCcw size={16} /> Start again
-					</button>
+					<div class="after" class:off={step !== 'done'}>
+						<button type="button" class="btn-ghost again" onclick={reset}>
+							<RotateCcw size={16} /> Start again
+						</button>
+						{#if onnext}
+							<button type="button" class="btn-primary next" onclick={onnext}>{nextLabel} →</button>
+						{/if}
+					</div>
 				</div>
 			</div>
 		</header>
@@ -2697,8 +2717,24 @@
 		color: var(--ink);
 		font-size: 1.15rem;
 	}
-	.again {
+	.again,
+	.next {
 		white-space: nowrap;
+	}
+	.badge {
+		flex: none;
+		padding: 0.2rem 0.6rem;
+		border-radius: 999px;
+		background: var(--ink);
+		color: var(--paper);
+		font-size: 0.78rem;
+		font-weight: 800;
+		white-space: nowrap;
+	}
+	.after {
+		display: flex;
+		gap: 0.5rem;
+		align-items: center;
 	}
 	/* What a failed Check found wrong, just under the bar. */
 	.error,

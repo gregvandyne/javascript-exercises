@@ -226,8 +226,10 @@ addEventListener('message', e => {
     // "Try again" on the 3D card: reload the page, which makes a fresh frame link and sends the sign-in cookie.
     case 'brb:retry': if (tappedJustNow()) location.reload(); break;
     // BRB.copy: the frame can't use the clipboard (sandboxed), so the page copies for it, only right after a tap, and
-    // only a link to this game's own play page (Algebra Tiles' activity links) or a PNG picture (that link's QR code).
+    // only a link to this game's own play page (Algebra Builder's activity links) or a PNG picture (that link's QR code).
     case 'brb:copy': copyForGame(m); break;
+    // BRB.saveQuestionSet (an official game that keeps question sets): the page saves it for the signed-in teacher.
+    case 'brb:set-save': saveSetForGame(m); break;
   }
 });
 addEventListener('pagehide', () => { if (pendingSave) { navigator.sendBeacon && fetch(`/api/games/${d.gameId}/save`, { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ data: pendingSave }) }); } });
@@ -313,6 +315,16 @@ async function copyForGame(m) {
     }
   } catch { ok = false; }
   if (typeof m.id === 'number') toFrame({ type: 'brb:copied', id: m.id, ok });
+}
+async function saveSetForGame(m) {
+  if (typeof m.id !== 'number') return;
+  let out = { error: 'offline' };
+  if (!d.signedIn) out = { error: 'guest' };
+  else {
+    try { const r = await api(`/api/games/${d.gameId}/sets`, { method: 'POST', body: { items: m.items, ...(typeof m.set === 'string' ? { id: m.set } : {}) } }); out = { set: r.id }; }
+    catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'bad' : 'offline') }; }
+  }
+  toFrame({ type: 'brb:set-saved', id: m.id, ...out });
 }
 const toFrame = (msg, transfer) => { try { frame.contentWindow.postMessage({ brb: 1, ...msg }, '*', transfer || []); } catch { /* frame gone */ } };
 function tellMode() { if (d.tts) toFrame({ type: 'brb:tts-mode', mode: voiceMode() }); }

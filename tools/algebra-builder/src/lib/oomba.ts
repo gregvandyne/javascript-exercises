@@ -1,8 +1,8 @@
-// Algebra Tiles on Oomba: everything that talks to the platform (the BRB SDK in the game frame) and to the Oomba Kit
+// Algebra Builder: everything that talks to the platform (the BRB SDK in the game frame) and to the Oomba Kit
 // (its sounds and effects), in one place, so the original app's files stay as they were.
 //
 // One link, one problem, as before (an activity link carries its problem), but in Oomba's lesson parameters, which
-// allow only a few keys of letters, digits and "-": /play/algebra-tiles?mode=solve&chapter=2xp3q7&level=1&lock=1
+// allow only a few keys of letters, digits and "-": /play/algebra-builder?mode=solve&chapter=2xp3q7&level=1&lock=1
 //   mode     the activity: solve, multiply or factor
 //   chapter  the problem as typed, without spaces, with + = ^ ( ) written as p q e o c (2x+3=7 is 2xp3q7)
 //   level    Solve: 1 the live balance, 2 without it; Multiply and Factor: 1 all the tiles they need, 2 none
@@ -12,8 +12,16 @@
 import type { Activity } from './algebra';
 import type { Start } from './settings';
 
+/** One question of a set: the activity, the problem as typed, what students start with (Multiply and Factor) and
+ *  whether the balance is live (Solve). */
+export type Item = { a: Activity; p: string; s: Start; l: boolean };
+type SavedSet = { id: string; items?: readonly Item[]; mine?: boolean; missing?: boolean };
 type Brb = {
 	params?: Record<string, string | number | undefined>;
+	questionSet?: SavedSet | null;
+	saveQuestionSet?: (items: Item[], id?: string | null) => Promise<{ id?: string; error?: string }> | null;
+	storage?: { get: (k: string) => unknown; set: (k: string, v: unknown) => void };
+	user?: { isGuest?: boolean };
 	gameUrl?: string | null;
 	copy?: (what: string | Blob) => Promise<boolean> | null;
 	gameOver?: (o: { won: boolean; score?: number }) => void;
@@ -67,6 +75,63 @@ export function openedWith(): { type: Activity; p: string; start: Start; live: b
 	return { type, p: decodeProblem(p.chapter), start: type !== 'solve' && two ? 'none' : 'all', live: !(type === 'solve' && two) };
 }
 
+// --- question sets: saved on Oomba under a short code (s- and 10 letters and digits), which the link carries ---
+
+export const MAX_ITEMS = 10;
+/** The link to a saved set, or '' in a preview. */
+export function setLink(id: string): string {
+	const base = brb()?.gameUrl;
+	return base ? `${base}?chapter=${id}&lock=1` : '';
+}
+/** The set this game was opened with: its questions, 'missing' (deleted, or a wrong code), or null. */
+export function openedSet(): { items: Item[]; id: string; mine: boolean } | 'missing' | null {
+	const s = brb()?.questionSet;
+	if (!s) return null;
+	if (s.missing || !s.items?.length) return 'missing';
+	return { id: s.id, items: s.items.map((i) => ({ ...i })), mine: !!s.mine };
+}
+/** In a preview (no published game, so no links). */
+export const isPreview = () => !brb()?.gameUrl;
+/** Whether this player can save a set (signed in, not a guest, not a preview). */
+export const canSaveSets = () => !!brb()?.saveQuestionSet && !!brb()?.gameUrl && brb()?.user?.isGuest !== true;
+/** Save the set (a new one, or the teacher's own one again): its code, or why not. */
+export async function saveSet(items: Item[], id: string | null): Promise<{ id?: string; error?: string }> {
+	try {
+		const f = brb()?.saveQuestionSet;
+		if (!f) return { error: 'preview' };
+		return (await f(items, id)) ?? { error: 'offline' };
+	} catch {
+		return { error: 'offline' };
+	}
+}
+
+/** The sets this teacher made, kept in their game save (newest first): the code and the questions. */
+const MINE = 'algebra-builder-sets-v1';
+export type MySet = { id: string; items: Item[]; at: number };
+export function mySets(): MySet[] {
+	try {
+		const v = brb()?.storage?.get(MINE);
+		return Array.isArray(v) ? (v as MySet[]).filter((s) => s && typeof s.id === 'string' && Array.isArray(s.items)) : [];
+	} catch {
+		return [];
+	}
+}
+export function keepMySet(id: string, items: Item[]) {
+	try {
+		const list = [{ id, items, at: Date.now() }, ...mySets().filter((s) => s.id !== id)].slice(0, 50);
+		brb()?.storage?.set(MINE, list);
+	} catch {
+		/* not kept */
+	}
+}
+export function forgetMySet(id: string) {
+	try {
+		brb()?.storage?.set(MINE, mySets().filter((s) => s.id !== id));
+	} catch {
+		/* fine */
+	}
+}
+
 /** Copy through the play page (the frame can't use the clipboard). */
 export async function copy(what: string | Blob): Promise<boolean> {
 	try {
@@ -107,7 +172,16 @@ export function stepWrong(el?: Element | null) {
 	}
 }
 let reported = false;
-/** The problem is complete: the cheer and the confetti, and (once) the finish for a lesson step. */
+/** One question of a set is complete (not the last): a smaller cheer, no finish yet. */
+export function questionDone(el?: Element | null) {
+	sound('levelup');
+	try {
+		if (el && !reducedMotion()) kit()?.juice?.pop?.(el);
+	} catch {
+		/* fine */
+	}
+}
+/** The problem (or the whole set) is complete: the cheer and the confetti, and (once) the finish for a lesson step. */
 export function complete() {
 	sound('win');
 	try {

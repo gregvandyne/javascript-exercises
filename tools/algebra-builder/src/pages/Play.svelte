@@ -18,7 +18,7 @@
 	const problem = $derived(readProblem(type, p));
 	const title = $derived(`${NAMES[type]} ${problem.ok ? prettyText(problem.given) : ''}`);
 	$effect(() => {
-		document.title = `${title} · Algebra Tiles`;
+		document.title = `${title} · Algebra Builder`;
 	});
 </script>
 
@@ -65,5 +65,12 @@
 		margin: 0;
 		z-index: 30;
 		box-shadow: var(--shadow);
+	}
+	@media (max-width: 1299px) {
+		/* Above the toolbar, so it never covers the problem's bar or the tiles. */
+		.try-back {
+			top: auto;
+			bottom: 170px;
+		}
 	}
 </style>

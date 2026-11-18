@@ -2,9 +2,9 @@
 	// An activity's setup page: type one problem, choose what students start
 	// with, and share it as an activity link. Nothing is saved; the link
 	// carries the problem (on Oomba, in the game's lesson parameters: lib/oomba.ts).
-	import { Check, Copy, ExternalLink, QrCode } from '@lucide/svelte';
-	import { go, goBack, nav } from '$lib/nav.svelte';
-	import { copy, noLinkReason, shareLink } from '$lib/oomba';
+	import { Check, Copy, ExternalLink, ListPlus, QrCode } from '@lucide/svelte';
+	import { go, goBack, nav, sets } from '$lib/nav.svelte';
+	import { MAX_ITEMS, copy, noLinkReason, shareLink, type Item } from '$lib/oomba';
 	import { formatPoly, prettyText, readProblem, type Activity } from '$lib/algebra';
 	import { activityInfo } from '$lib/activities';
 	import { STARTS, layPiles, panPiles, startingPiles, type Start } from '$lib/settings';
@@ -27,6 +27,22 @@
 	let start = $state<Start>(was?.start ?? 'all');
 	/** Solve: whether the balance tips as students work. Off, it always hangs level. */
 	let live = $state(was?.live ?? true);
+	/** Oomba: making a question for a question set (its place in the set), rather than one activity link. */
+	const forSet = was?.forSet;
+	const inSet = forSet !== undefined && !!sets.draft;
+	const setFull = $derived(!!sets.draft && sets.draft.items.length >= MAX_ITEMS);
+	/** Put this problem in the set being made (in its place, or at the end), and show the set. */
+	function toSet() {
+		if (!problem.ok) return;
+		const item: Item = { a: activity, p: text, s: start, l: live };
+		if (!sets.draft) sets.draft = { items: [], id: null, saved: false };
+		const d = sets.draft;
+		if (forSet !== undefined && forSet < d.items.length) d.items[forSet] = item;
+		else if (d.items.length < MAX_ITEMS) d.items.push(item);
+		d.saved = false;
+		if (inSet) goBack();
+		else go({ name: 'set' });
+	}
 
 	const problem = $derived(readProblem(activity, text));
 	const link = $derived(problem.ok ? shareLink(activity, text, start, live) : '');
@@ -120,13 +136,16 @@
 
 <div class="page">
 	<button type="button" class="brand" onclick={() => go({ name: 'home' })}>
-		<Logo size={28} /> Algebra Tiles
+		<Logo size={28} /> Algebra Builder
 	</button>
 	<header class="bar">
-		<button type="button" class="btn-ghost back" onclick={goBack}>← Activities</button>
+		<button type="button" class="btn-ghost back" onclick={goBack}>{inSet ? '← Question set' : '← Activities'}</button>
 		<h1>{info.name}</h1>
 	</header>
-	<p class="lede">{info.tagline} Type one problem and share it as an activity link.</p>
+	<p class="lede">
+		{#if inSet}{info.tagline} Type the problem for question {(forSet ?? 0) + 1} of your set.{:else}{info.tagline} Type one
+			problem and share it as an activity link, or add it to a question set.{/if}
+	</p>
 
 	<div class="columns">
 		<section class="card">
@@ -263,6 +282,25 @@
 			</fieldset>
 		</section>
 
+		{#if inSet}
+		<section class="card share">
+			<h2>Question {(forSet ?? 0) + 1}</h2>
+			<p class="set-note">
+				{#if problem.ok}{summary}{:else}Type a problem that works to add it to your set.{/if}
+			</p>
+			<div class="buttons">
+				<button type="button" class="btn-primary" disabled={!problem.ok} onclick={toSet}>
+					<ListPlus size={16} />
+					{(forSet ?? 0) < (sets.draft?.items.length ?? 0) ? 'Save this question' : 'Add to the set'}
+				</button>
+				<button type="button" class="btn-ghost" disabled={!problem.ok} onclick={tryIt}
+					><ExternalLink size={16} /> Try it as a student</button
+				>
+				<button type="button" class="btn-ghost" onclick={goBack}>Cancel</button>
+			</div>
+		</section>
+		{:else}
+		<div class="side">
 		<section class="card share" class:off={!link}>
 			<h2>Share it</h2>
 			<p class="link" class:waiting={!link} title={link}>
@@ -297,6 +335,17 @@
 				{/if}
 			</div>
 		</section>
+		<section class="card more">
+			<h2>More than one question?</h2>
+			<p class="set-note">Put this problem in a question set with others, from any activity. Students answer them in order.</p>
+			<button type="button" class="btn-ghost" disabled={!problem.ok || setFull} onclick={toSet}>
+				<ListPlus size={16} />
+				{sets.draft?.items.length ? `Add to your set (${sets.draft.items.length} so far)` : 'Start a question set with it'}
+			</button>
+			{#if setFull}<p class="set-note">Your set has {MAX_ITEMS} questions, the most a set can have.</p>{/if}
+		</section>
+		</div>
+		{/if}
 	</div>
 
 	<Footer />
@@ -349,15 +398,30 @@
 		gap: 1.25rem;
 		align-items: start;
 	}
-	.columns .share {
+	.columns > .share,
+	.columns > .side {
 		position: sticky;
 		top: 1.25rem;
+	}
+	.side .share {
+		margin-top: 1.25rem;
+	}
+	.more .btn-ghost {
+		width: 100%;
+		margin-top: 0.75rem;
+	}
+	.set-note {
+		margin-top: 0.4rem;
+		color: var(--muted);
+		font-size: 0.92rem;
+		line-height: 1.4;
 	}
 	@media (max-width: 960px) {
 		.columns {
 			grid-template-columns: minmax(0, 1fr);
 		}
-		.columns .share {
+		.columns > .share,
+		.columns > .side {
 			position: static;
 		}
 	}

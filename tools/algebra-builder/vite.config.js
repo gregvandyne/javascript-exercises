@@ -1,5 +1,5 @@
-// Algebra Tiles on Oomba: one self-contained page (vite-plugin-singlefile inlines the script and the CSS), which
-// build.mjs turns into seed-games/algebra-tiles.html. $lib is the original app's alias for src/lib.
+// Algebra Builder: one self-contained page (vite-plugin-singlefile inlines the script and the CSS), which
+// build.mjs turns into seed-games/algebra-builder.html. $lib is the original app's alias for src/lib.
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';

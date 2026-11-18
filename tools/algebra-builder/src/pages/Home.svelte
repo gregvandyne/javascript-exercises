@@ -14,7 +14,22 @@
 	import ActivityPicture from '$lib/ActivityPicture.svelte';
 	import Footer from '$lib/Footer.svelte';
 	import Logo from '$lib/Logo.svelte';
-	import { go } from '$lib/nav.svelte';
+	import { go, sets } from '$lib/nav.svelte';
+	import { mySets, type MySet } from '$lib/oomba';
+	import { ListPlus } from '@lucide/svelte';
+
+	// Oomba: question sets. The teacher's saved sets (kept in their game save), newest first.
+	const saved: MySet[] = mySets().slice(0, 6);
+	const KIND = { solve: 'Solve', multiply: 'Multiply', factor: 'Factor' } as const;
+	const kinds = (s: MySet) => [...new Set(s.items.map((i) => KIND[i.a]))].join(', ');
+	function newSet() {
+		if (!sets.draft || sets.draft.saved) sets.draft = { items: [], id: null, saved: false };
+		go({ name: 'set' });
+	}
+	function openSet(s: MySet) {
+		sets.draft = { items: s.items.map((i) => ({ ...i })), id: s.id, saved: true };
+		go({ name: 'set' });
+	}
 
 	/** Whether the details sit beside the cards, or come up in a drawer. */
 	let wide = $state(false);
@@ -124,9 +139,9 @@
 <div class="page">
 	<div class="cards-side">
 		<header>
-			<p class="brand"><Logo size={40} /> Algebra Tiles</p>
+			<p class="brand"><Logo size={40} /> Algebra Builder</p>
 			<h1>Choose an activity</h1>
-			<p class="lede">Type one problem, then share the activity link with your students.</p>
+			<p class="lede">Type one problem, then share the activity link with your students. Or put several together in a question set.</p>
 		</header>
 
 		<section class="cards" aria-label="Activities">
@@ -149,6 +164,26 @@
 					</li>
 				{/each}
 			</ul>
+		</section>
+
+		<section class="sets" aria-labelledby="sets-title">
+			<div class="sets-head">
+				<h2 id="sets-title">Question sets</h2>
+				<button type="button" class="setup small" onclick={newSet}><ListPlus size={18} /> Make a question set</button>
+			</div>
+			<p class="sets-about">Up to 10 questions from any activity, on one link. Students answer them in order.</p>
+			{#if saved.length}
+				<ul class="saved">
+					{#each saved as s (s.id)}
+						<li>
+							<button type="button" class="saved-set" onclick={() => openSet(s)}>
+								<span class="saved-n">{s.items.length} question{s.items.length === 1 ? '' : 's'}</span>
+								<span class="saved-kinds">{kinds(s)} · starts {prettyText(s.items[0].p)}</span>
+							</button>
+						</li>
+					{/each}
+				</ul>
+			{/if}
 		</section>
 	</div>
 
@@ -292,6 +327,67 @@
 		color: var(--muted);
 		font-size: 0.88rem;
 		line-height: 1.4;
+	}
+	.sets {
+		margin-top: 2rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--line);
+	}
+	.sets-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+	}
+	.sets h2 {
+		font-size: 1.3rem;
+		font-weight: 700;
+	}
+	.sets-about {
+		margin-top: 0.3rem;
+		color: var(--muted);
+	}
+	.setup.small {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		width: auto;
+		margin: 0;
+		padding: 0.6rem 1.1rem;
+		font-size: 0.95rem;
+	}
+	.saved {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+		gap: 0.6rem;
+		margin-top: 0.9rem;
+		padding: 0;
+		list-style: none;
+	}
+	.saved-set {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+		width: 100%;
+		padding: 0.75rem 0.9rem;
+		border: 2px solid var(--line);
+		border-radius: 14px;
+		background: var(--paper);
+		color: var(--ink);
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+	}
+	.saved-set:hover {
+		border-color: var(--line-strong);
+	}
+	.saved-n {
+		font-weight: 700;
+	}
+	.saved-kinds {
+		color: var(--muted);
+		font-size: 0.85rem;
 	}
 	/* On a wide screen, two panels the height of the window, and the page
 	   itself doesn't scroll: the cards scroll on their own, on the left, and

@@ -4,7 +4,7 @@
 </script>
 
 <footer>
-	<span>Algebra Tiles on Oomba</span>
+	<span>Algebra Builder</span>
 	<button type="button" class="link" onclick={() => go({ name: 'about' })}>About</button>
 </footer>
 

@@ -1,9 +1,9 @@
 {
-  "name": "oomba-algebra-tiles",
+  "name": "oomba-algebra-builder",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Algebra Tiles on Oomba: built into seed-games/algebra-tiles.html by build.mjs (see README.md).",
+  "description": "Algebra Builder: built into seed-games/algebra-builder.html by build.mjs (see README.md).",
   "license": "Apache-2.0",
   "scripts": {
     "build": "node build.mjs",
