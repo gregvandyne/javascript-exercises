@@ -36,9 +36,12 @@ test('a registered game yields its lines, unless it is one of the known no-table
   // Algebra Builder (Nov 2026, added on the owner's request to bring the game over unchanged) speaks no lines at all,
   // as the original didn't.
   const NO_TABLE = new Set(['atlas-quest', 'code-isle', 'algebra-builder', 'box-by-box']);
+  // Crossword (Nov 2026) has a marked I18N block but reads nothing aloud: its clues are the teacher's own words, shown.
+  const SILENT = new Set(['crossword']);
   for (const slug of lines.TTS_GAMES) {
     const g = lines.readGame(slug);
     if (!g) { assert.ok(NO_TABLE.has(slug), `${slug} is registered but its lines cannot be read`); continue; }
+    if (SILENT.has(slug)) { assert.equal(lines.gameLines(slug, 'en', g).length, 0, `${slug} reads nothing aloud`); continue; }
     assert.ok(lines.gameLines(slug, 'en', g).length > 0, `${slug} yields spoken lines`);
   }
 });

@@ -1059,6 +1059,9 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS dash_feeds (id TEXT PRIMARY KEY, class_id TEXT NOT NULL, owner_id TEXT NOT NULL, url TEXT NOT NULL,
       name TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL);
     CREATE INDEX IF NOT EXISTS idx_dash_feeds_class ON dash_feeds(class_id);`],
+  // Crossword (seed-games/crossword.json, docs/decisions.md "Crossword") is a Learn game: its own shelf step, as each new
+  // Learn game gets (0062 is never edited).
+  ['0089_crossword_shelf', "UPDATE games SET shelf='learn' WHERE source='seed' AND slug='crossword';"],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

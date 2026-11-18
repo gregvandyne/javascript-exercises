@@ -130,6 +130,9 @@ const TYPES = {
   'brb:assign': m => typeof m.opts === 'string',
   // BRB.findQuestionSet: a class code a student typed (the server reads it).
   'brb:set-find': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.code === 'string' && m.code.length <= 40,
+  // BRB.writeClues (Crossword): the teacher's words, for AI clues (the server checks who may ask).
+  'brb:clues': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.words) && m.words.length >= 1 && m.words.length <= 30
+    && m.words.every(w => typeof w === 'string' && w.length <= 40) && typeof m.level === 'string' && m.level.length <= 60,
 };
 const LOUD_OPS = ['hello', 'start', 'keep', 'stop'];
 const TTS_ROLES = ['narrator', 'friendly', 'bright', 'deep', 'wise', 'grumpy'];
@@ -238,6 +241,7 @@ addEventListener('message', e => {
     // BRB.saveQuestionSet (an official game that keeps question sets): the page saves it for the signed-in teacher.
     case 'brb:set-save': saveSetForGame(m); break;
     case 'brb:set-find': findSetForGame(m); break;
+    case 'brb:clues': cluesForGame(m); break;
     // BRB.assign (a teacher in a set game): after a tap, the game's Assign page with the problem or set it opens at.
     case 'brb:assign': if (typeof m.opts === 'string' && m.opts.length <= 200 && /^[a-z0-9=&-]*$/.test(m.opts) && tappedJustNow('brb-assign-at', 2000)) location.href = `/teach/assign?game=${encodeURIComponent(d.slug)}&opts=${encodeURIComponent(m.opts)}`; break;
   }
@@ -334,6 +338,12 @@ async function findSetForGame(m) {
     catch (e) { out = { error: e.status === 404 ? 'none' : 'offline' }; }
   }
   toFrame({ type: 'brb:set-found', id: m.id, ...out });
+}
+async function cluesForGame(m) {
+  let out;
+  try { const r = await api(`/api/games/${d.gameId}/clues`, { method: 'POST', body: { words: m.words, level: m.level } }); out = { clues: Array.isArray(r.clues) ? r.clues.map(c => String(c)) : [] }; }
+  catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'aiFailed' : 'offline') }; }
+  toFrame({ type: 'brb:clues-done', id: m.id, ...out });
 }
 async function saveSetForGame(m) {
   if (typeof m.id !== 'number') return;

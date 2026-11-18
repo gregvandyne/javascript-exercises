@@ -7951,3 +7951,40 @@ for privacy, nothing in the game or the repository points back to the original.
   step, or 45 seconds on it. (Teachers already generate problems in the editor: ranges, How many, New problems.)
 - **Left out:** help email, analytics, outbound links, backup and restore files.
 
+
+## Crossword: a teacher's vocabulary list as a crossword (18 Nov 2026)
+
+Owner: "Create a crossword puzzle game where a teacher can upload their vocab words and you create a crossword puzzle
+out of this. Allow them to also build manually, or just provide a list of words, and have AI create the definitions."
+Then: "Let's make this outside of the Oomba Kit", "make it resemble more of the widget feel", and "make sure games are
+played end to end twice assessing for UX/UI in all the nooks and crannies before shipping".
+- **Where it lives.** `seed-games/crossword.html`, hand-written, on the Learn shelf (words, grades 2-8; migration
+  0089_crossword_shelf, as each new Learn game). Its own page, not an Oomba Kit game: no scene, title screen or
+  character. It looks like the classroom dashboard's widgets: cream cards with the group colour on the top edge and the
+  icon chip, the schedule's dark "Now" block for the clue on now, a dotted mint board, light and dark (BRB.theme),
+  Bricolage Grotesque from Google Fonts, a few BRB.sfx sounds and its own confetti (none with reduced motion).
+- **Making one.** Paste a list or upload a .txt or .csv file (one word a line; a clue after a tab, dash, colon, = or the
+  first comma; bullets, numbers and a header row are dropped), or type words and clues; 3 to 30 words, letters only
+  (any script; spaces, hyphens and apostrophes are left out of the grid). **Write clues with AI** fills the missing clues
+  (or rewrites them all) for a grown-up who may host: `services/set-ai.js draftClues`, the words as data, never the word
+  or its family in its clue (a clue that gives its word away is dropped), the words' own language; the teacher reads and
+  edits them and a note says some were written by AI. Options: a word bank, hints.
+- **The grid** (`crossword-core` in the page, tested on its own): the most words crossing in the smallest square-ish
+  grid, at most 25 a side, words never touching side by side, numbered in reading order; the same words and seed always
+  make the same grid, so only the seed is saved. **Try another layout** changes the seed until the grid changes. Words
+  that can't cross are listed ("These words didn't fit"), never forced in.
+- **Sharing.** Save and get a link keeps it as a question set (`game_sets`, `cleanCrossItems`): the title, words and
+  clues are the teacher's own text, so each passes the site's text filter (no rude words, personal details or links),
+  as live quiz sets do. The class code, the link, a QR code (the site's own encoder, copied into the page), Copy, and
+  Assign to a class (Also post to Google Classroom). The teacher's crosswords are listed on the game's home.
+- **Playing.** Tap a square (again to turn) or a clue, type (one hidden field, so a phone's keyboard opens; arrows, Tab,
+  Backspace and Space work); the clue on now in the dark bar; Check marks wrong letters, Hint fills one (if allowed);
+  accents don't count against a student. Squares stay at least 30 px while playing: a big grid scrolls sideways in its
+  box, following the square picked. Progress is kept between visits. Solved: the letters as written, a wave, stars
+  (hints and checks), Play again, and one BRB.gameOver (the step done, the Classroom completion grade). A sample puzzle
+  in every language (Traditional Chinese: 6 words, as its short words cross less) and a class code box for students.
+- **Checked end to end twice** before shipping: desktop in light mode and English (upload, AI clues, a long title,
+  layouts, play from the preview, keyboard, save, reopen, resume, check, hint, solve, play again) and a phone in dark mode
+  (a wrong code, 30 long clues, a sign-in error on save, a missing link, Hebrew and Arabic right to left, Japanese kana).
+  Fixed on the way: inputs that took the widget style, a ✓ on clues that were only full, a stale message after solving,
+  tiny squares on a phone, and a layout button that could give back the same grid.

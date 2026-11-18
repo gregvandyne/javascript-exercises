@@ -7,6 +7,7 @@
 // their owner's account.
 import crypto from 'node:crypto';
 import { q, now } from '../db.js';
+import { cleanText } from './textfilter.js';
 
 export const MAX_ITEMS = 20;
 /** How many sets one account may keep in one game. */
@@ -80,8 +81,46 @@ export function cleanBoxItems(raw) {
   return [out];
 }
 
+// ---------------------------------------------------------------- Crossword: one puzzle per set
+// [{ t: title ('' allowed), w: [[word, clue], ...] (3-30), r: the layout's seed, b: word bank shown, h: hints allowed }].
+// Unlike the math games, a crossword is the teacher's own words, so it holds free text: every word, clue and the title
+// go through the site's text filter (no rude words, no personal details, no links) as live quiz sets do
+// (docs/decisions.md "Crossword"). The grid is worked out in the game from the words and r, so it is never stored.
+export const CROSS = { min: 3, max: 30, word: 24, clue: 150, title: 60 };
+/** A crossword answer as typed: letters (any script), with spaces, hyphens and apostrophes the grid leaves out. */
+const CROSS_WORD = /^[\p{L}\p{M}][\p{L}\p{M} '’-]*$/u;
+/** The letters a word puts in the grid (what the game compares against). */
+export const crossLetters = w => String(w).normalize('NFC').replace(/[ '’-]/g, '').toLocaleUpperCase();
+export function cleanCrossItems(raw) {
+  if (!Array.isArray(raw) || raw.length !== 1 || !raw[0] || typeof raw[0] !== 'object') return null;
+  const it = raw[0];
+  if (!Array.isArray(it.w) || it.w.length < CROSS.min || it.w.length > CROSS.max) return null;
+  const words = [], seen = new Set();
+  for (const pair of it.w) {
+    if (!Array.isArray(pair) || pair.length !== 2 || typeof pair[0] !== 'string' || typeof pair[1] !== 'string') return null;
+    const w = pair[0].normalize('NFC').replace(/\s+/g, ' ').trim(), c = pair[1].replace(/\s+/g, ' ').trim();
+    if (!w || w.length > CROSS.word || !CROSS_WORD.test(w) || [...crossLetters(w)].length < 2) return null;
+    if (!c || c.length > CROSS.clue) return null;
+    const key = crossLetters(w);
+    if (seen.has(key)) return null;
+    seen.add(key);
+    const cw = cleanText(w, CROSS.word), cc = cleanText(c, CROSS.clue);
+    if (!cw.ok || !cc.ok) return null;
+    words.push([cw.value, cc.value]);
+  }
+  let t = '';
+  if (it.t !== undefined && it.t !== '') {
+    if (typeof it.t !== 'string' || it.t.length > CROSS.title) return null;
+    const ct = cleanText(it.t.replace(/\s+/g, ' '), CROSS.title);
+    if (!ct.ok) return null;
+    t = ct.value;
+  }
+  const r = Number.isInteger(it.r) && it.r >= 1 && it.r <= 999999 ? it.r : 1;
+  return [{ t, w: words, r, b: it.b === true, h: it.h !== false }];
+}
+
 /** Official games that may keep question sets (slug -> the cleaner of their sets). */
-export const SET_GAMES = new Map([['algebra-builder', cleanItems], ['box-by-box', cleanBoxItems]]);
+export const SET_GAMES = new Map([['algebra-builder', cleanItems], ['box-by-box', cleanBoxItems], ['crossword', cleanCrossItems]]);
 
 // New codes leave out letters and digits that read alike (i l 1, o 0), since a student may type one as a class code.
 // (Codes made before keep working: SET_ID still takes any letter or digit.)
@@ -144,6 +183,10 @@ export function describe(gameId, params, slug = 'algebra-builder') {
   if (SET_ID.test(ch)) {
     const s = get(gameId, ch);
     if (!s) return null;
+    if (slug === 'crossword') {
+      const a = s.items[0], n = a.w.length;
+      return { kind: 'one', label: `${a.t ? `${a.t}: ` : ''}crossword, ${n} words` };
+    }
     if (slug === 'box-by-box') {
       const a = s.items[0], n = a.d ? (a.p.length || (a.k === 'divide' ? 16 : 12)) : a.p.length;
       return { kind: 'one', label: `${BB_KIND[a.k]}, ${n} problem${n === 1 ? '' : 's'}${a.d ? ' (different for each student)' : ''}, ${BB_LEVEL[a.l]}` };

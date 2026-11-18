@@ -1,0 +1,65 @@
+{
+  "slug": "crossword",
+  "title": "Crossword",
+  "icon": "🧩",
+  "cover": "sky",
+  "category": "words",
+  "shelf": "learn",
+  "tags": "crossword,vocabulary,spelling,definitions,word puzzle,word list,teacher,any subject,ela,science words,review,grade 2,grade 3,grade 4,grade 5,grade 6,grade 7,grade 8",
+  "description": "Turn any vocabulary list into a crossword. Teachers upload or paste their words, type the clues or let AI write them, pick a layout and share it as a link, QR code or class code, or assign it to a class. Students tap a square or a clue, type the answers, and use Check and Hint when they're stuck.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Hand-written as its own page, outside the Oomba Kit (seed-games/crossword.html), in the look of the classroom dashboard's widgets (cream cards with a group colour on the top edge and the icon chip, the dark Now-style clue bar, a dotted mint board; light and dark from BRB.theme; Bricolage Grotesque from Google Fonts; BRB.sfx for a few sounds): the pure core between crossword-core:begin and crossword-core:end (word lists, the grid's letters, the seeded layout: the most words crossing in the smallest square-ish grid, at most 25 squares a side), the site's own QR encoder (crossword-qr), the words in 13 languages and the game. Teachers make a crossword (3 to 30 words): paste a list or upload a .txt or .csv file (a clue after a tab, dash, colon, = or the first comma), or type words and clues; Write clues with AI (BRB.writeClues, grown-ups who may host, services/set-ai.js draftClues) fills the missing clues for the teacher to check. Options: a word bank and hints. The preview shows the grid with its answers and Try another layout. Save and get a link keeps it as a question set (server/services/game-sets.js cleanCrossItems: words, clues and the title pass the site's text filter; the layout seed and two options): chapter=s-xxxxxxxxxx&lock=1, the class code, a QR code, Copy, and Assign to a class (BRB.assign, Also post to Google Classroom). The teacher's crosswords are kept in their game save (BRB.storage 'crossword-v1', with puzzles in progress). Students open a link, type a class code (BRB.findQuestionSet) or try the sample; tap a square (again to turn), type, Check marks wrong letters, Hint fills one in; accents don't count against a student. Solving ends with BRB.gameOver once (the step done, the Classroom completion grade). Reads nothing aloud. Grid squares stay at least 30 px while playing (a big grid scrolls sideways in its box, following the square picked).",
+  "l10n": {
+    "en-GB": {
+      "description": "Turn any vocabulary list into a crossword. Teachers upload or paste their words, type the clues or let AI write them, pick a layout and share it as a link, QR code or class code, or assign it to a class. Pupils tap a square or a clue, type the answers, and use Check and Hint when they're stuck.",
+      "tags": "crossword,vocabulary,spelling,definitions,word puzzle,word list,any subject,english,science words,revision,year 3,year 4,year 5,year 6"
+    },
+    "de": {
+      "description": "Mach aus jeder Vokabelliste ein Kreuzworträtsel. Lehrkräfte laden ihre Wörter hoch oder fügen sie ein, schreiben die Hinweise selbst oder lassen sie von der KI schreiben, wählen ein Raster und teilen es als Link, QR-Code oder Klassencode oder weisen es einer Klasse zu. Schüler tippen auf ein Kästchen oder einen Hinweis, geben die Lösungen ein und nutzen Prüfen und Tipp, wenn sie nicht weiterkommen.",
+      "tags": "kreuzworträtsel,vokabeln,rechtschreibung,wortschatz,wortliste,jedes fach,wiederholung"
+    },
+    "fr": {
+      "description": "Transforme n'importe quelle liste de vocabulaire en mots croisés. L'enseignant importe ou colle ses mots, écrit les définitions ou laisse l'IA les écrire, choisit une grille et la partage par lien, QR code ou code de classe, ou l'assigne à une classe. Les élèves touchent une case ou une définition, tapent les réponses et utilisent Vérifier et Indice quand ils bloquent.",
+      "tags": "mots croisés,vocabulaire,orthographe,définitions,liste de mots,toutes matières,révision"
+    },
+    "es": {
+      "description": "Convierte cualquier lista de vocabulario en un crucigrama. El docente sube o pega sus palabras, escribe las pistas o deja que la IA las escriba, elige una cuadrícula y la comparte con un enlace, un código QR o un código de clase, o la asigna a una clase. Los alumnos tocan una casilla o una pista, escriben las respuestas y usan Comprobar y Ayuda cuando se atascan.",
+      "tags": "crucigrama,vocabulario,ortografía,definiciones,lista de palabras,cualquier materia,repaso"
+    },
+    "it": {
+      "description": "Trasforma qualsiasi lista di vocaboli in un cruciverba. L'insegnante carica o incolla le parole, scrive le definizioni o le fa scrivere all'IA, sceglie uno schema e lo condivide con un link, un codice QR o un codice classe, oppure lo assegna a una classe. Gli studenti toccano una casella o una definizione, scrivono le risposte e usano Verifica e Aiuto quando si bloccano.",
+      "tags": "cruciverba,vocabolario,ortografia,definizioni,lista di parole,ogni materia,ripasso"
+    },
+    "pt": {
+      "description": "Transforme qualquer lista de vocabulário em palavras cruzadas. O professor envia ou cola as palavras, escreve as dicas ou deixa a IA escrever, escolhe um layout e compartilha por link, QR code ou código da turma, ou atribui a uma turma. Os alunos tocam em um quadrado ou em uma dica, digitam as respostas e usam Verificar e Ajuda quando travam.",
+      "tags": "palavras cruzadas,cruzadinha,vocabulário,ortografia,definições,lista de palavras,qualquer matéria,revisão"
+    },
+    "nl": {
+      "description": "Maak van elke woordenlijst een kruiswoordpuzzel. Leraren uploaden of plakken hun woorden, typen de omschrijvingen of laten AI ze schrijven, kiezen een indeling en delen hem als link, QR-code of klascode, of geven hem op aan een klas. Leerlingen tikken op een vakje of een omschrijving, typen de antwoorden en gebruiken Controleer en Hint als ze vastlopen.",
+      "tags": "kruiswoordpuzzel,woordenschat,spelling,omschrijvingen,woordenlijst,elk vak,herhaling"
+    },
+    "ru": {
+      "description": "Превращай любой список слов в кроссворд. Учитель загружает или вставляет слова, пишет подсказки сам или доверяет их ИИ, выбирает сетку и делится ссылкой, QR-кодом или кодом класса либо задаёт кроссворд классу. Ученики нажимают на клетку или подсказку, вписывают ответы и пользуются кнопками «Проверить» и «Подсказка», если застряли.",
+      "tags": "кроссворд,словарный запас,орфография,определения,список слов,любой предмет,повторение"
+    },
+    "ja": {
+      "description": "どんな単語リストもクロスワードに。先生は単語をアップロードまたは貼り付け、カギを自分で書くか AI に書いてもらい、配置を選んで、リンク・QR コード・クラスコードで共有したり、クラスに課題として出したりできます。生徒はマスやカギをタップして答えを入力し、困ったら「チェック」と「ヒント」を使います。",
+      "tags": "クロスワード,語彙,単語,つづり,意味,単語リスト,全教科,復習"
+    },
+    "zh-Hant": {
+      "description": "把任何詞彙表變成填字遊戲。老師上傳或貼上詞語，自己寫線索或讓 AI 來寫，選一個版面，用連結、QR 碼或班級代碼分享，也可以指派給班級。學生點一個格子或一條線索，輸入答案，卡住時可以用「檢查」和「提示」。",
+      "tags": "填字遊戲,詞彙,拼寫,定義,詞語表,各科,複習"
+    },
+    "ar": {
+      "description": "حوّل أي قائمة مفردات إلى كلمات متقاطعة. يرفع المعلم كلماته أو يلصقها، ويكتب التلميحات أو يدع الذكاء الاصطناعي يكتبها، ويختار شكل الشبكة ويشاركها برابط أو رمز QR أو رمز الصف، أو يكلّف بها صفًا. يلمس الطلاب مربعًا أو تلميحًا، ويكتبون الإجابات، ويستخدمون تحقّق ومساعدة عندما يتعثرون.",
+      "tags": "كلمات متقاطعة,مفردات,إملاء,تعريفات,قائمة كلمات,أي مادة,مراجعة"
+    },
+    "he": {
+      "description": "הפכו כל רשימת אוצר מילים לתשבץ. המורה מעלה או מדביק את המילים, כותב את ההגדרות או נותן ל-AI לכתוב אותן, בוחר פריסה ומשתף בקישור, בקוד QR או בקוד כיתה, או מקצה לכיתה. התלמידים מקישים על משבצת או על הגדרה, מקלידים את התשובות ומשתמשים בבדיקה וברמז כשהם נתקעים.",
+      "tags": "תשבץ,אוצר מילים,כתיב,הגדרות,רשימת מילים,כל מקצוע,חזרה"
+    }
+  }
+}

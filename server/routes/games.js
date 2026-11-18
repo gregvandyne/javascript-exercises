@@ -23,6 +23,8 @@ import { characterOf } from '../services/character.js';
 import * as match from '../services/match.js';
 import * as polls from '../services/polls.js';
 import * as gameSets from '../services/game-sets.js';
+import { draftClues } from '../services/set-ai.js';
+import { hasModel } from '../builder/anthropic.js';
 import { onlineGame } from './match.js';
 import fs from 'node:fs';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
@@ -392,6 +394,8 @@ router.get('/frame/:token', (req, res) => {
     // A teacher (school staff) in a set game may assign what they made to a class (BRB.canAssign / BRB.assign: the page
     // opens /teach/assign with it, where "Also post to Google Classroom" is offered for a linked class).
     ...(!preview && setGame(g) && isSchoolStaff(u) ? { canAssign: true } : {}),
+    // Crossword's "Write clues with AI" (BRB.canWriteClues / BRB.writeClues): grown-ups who may host, with a model set.
+    ...(!preview && cluesGame(g) && liveCanHost(u) && hasModel() ? { clues: true } : {}),
     // AI voices (routes/tts.js): the TTS locales on now, for games that may use them (official games, a game the admin
     // switched on, and a Builder game's published, scanner-passed version); absent otherwise and in every preview (the
     // SDK then speaks with the device's voice exactly as before).
@@ -443,6 +447,22 @@ router.post('/api/games/:id/sets', requireUser, rateLimit('game-sets', 60, 60e3)
   const r = gameSets.save(g.id, req.user.id, b.items, id, g.slug);
   if (r.error) return res.status(r.error === 'notYours' ? 404 : 400).json({ error: req.t('errors.api.badRequest'), code: r.error });
   res.json({ id: r.id });
+});
+// Crossword clues (services/set-ai.js draftClues): Claude writes a clue for each of the teacher's words, for the game's
+// word list only (nothing is saved here). Body { words: [string] (1-30), level }. -> { clues: [string] } | { code }.
+const cluesGame = g => setGame(g) && g.slug === 'crossword';
+router.post('/api/games/:id/clues', requireUser, rateLimit('game-clues', 30, 3600e3), async (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!cluesGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  if (!liveCanHost(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' });
+  const b = req.body || {};
+  if (!Array.isArray(b.words) || !b.words.length || b.words.length > 30 || !b.words.every(w => typeof w === 'string' && w.length <= 40)) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'words' });
+  let r;
+  try { r = await draftClues({ words: b.words, level: typeof b.level === 'string' ? b.level : '', locale: req.locale }); }
+  catch { r = { ok: false, code: 'aiFailed' }; }
+  if (!r.ok) return res.status(r.code === 'words' ? 400 : 503).json({ error: req.t('errors.api.badRequest'), code: r.code });
+  audit(req.user.id, 'game.clues', g.id, { count: b.words.length });
+  res.json({ clues: r.clues });
 });
 const pollGame = g => polls.POLL_GAMES.has(g.slug) && g.source === 'seed' && (games.getOwner(g) || {}).username === OFFICIAL;
 router.post('/api/games/:id/poll', requireUser, rateLimit('poll', 240, 60e3), (req, res) => {

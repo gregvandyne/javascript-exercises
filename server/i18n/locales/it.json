@@ -4977,7 +4977,8 @@
       "popcornHush": "Un misuratore di rumore per la classe: restate in silenzio perché i popcorn non scoppino, dato che troppo rumore fa saltare i chicchi.",
       "sudoku": "Rompicapi di logica, da un mini 4×4 con le figure al classico 9×9: in ogni riga, colonna e riquadro ogni numero c’è una volta.",
       "sumSpotter": "Trova il numero che è la somma (o il prodotto) di altri due, dalle somme fino a 10 alle tabelline, con una sfida a tempo di 60 secondi.",
-      "wordTrail": "Le parole inglesi più frequenti, dalla scuola dell’infanzia alla terza, su un sentiero da fiaba con Bramble il riccio: ascolta una parola e toccala, completa una frase, componila con le lettere, in lezioni brevi con una serie giornaliera."
+      "wordTrail": "Le parole inglesi più frequenti, dalla scuola dell’infanzia alla terza, su un sentiero da fiaba con Bramble il riccio: ascolta una parola e toccala, completa una frase, componila con le lettere, in lezioni brevi con una serie giornaliera.",
+      "crossword": "Trasforma qualsiasi lista di vocaboli in un cruciverba: scrivi o carica le parole, aggiungi le definizioni o lasciale scrivere all'IA e condividilo con la classe."
     },
     "hubs": {
       "math": {

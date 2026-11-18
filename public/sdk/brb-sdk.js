@@ -1026,6 +1026,28 @@
     var items = Array.isArray(s.items) ? freeze(JSON.parse(JSON.stringify(s.items))) : Object.freeze([]);
     return Object.freeze({ id: s.id, items: items, mine: s.mine === true });
   })(INIT.set);
+  // Crossword's "Write clues with AI" (BRB.canWriteClues: a grown-up who may host, with AI on): BRB.writeClues(words,
+  // { level }) asks the page, which asks the server; a Promise of { clues: [string] } (same order, '' where none) or
+  // { error } ('notAllowed', 'aiOff', 'aiFailed', 'words', 'offline'). The clues are for the teacher to read and edit.
+  var clueWait = {}, clueSeq = 0;
+  function writeClues(words, opts) {
+    if (typeof Promise !== 'function') return null;
+    return new Promise(function (res) {
+      if (INIT.clues !== true) return res({ error: 'notAllowed' });
+      if (!Array.isArray(words) || !words.length || words.length > 30 || !words.every(function (w) { return typeof w === 'string' && w.length <= 40; })) return res({ error: 'words' });
+      var level = opts && typeof opts.level === 'string' ? opts.level.slice(0, 60) : '';
+      var n = ++clueSeq, timer = setTimeout(function () { delete clueWait[n]; res({ error: 'offline' }); }, 100000);
+      clueWait[n] = function (r) { clearTimeout(timer); delete clueWait[n]; res(r); };
+      send('brb:clues', { id: n, words: words.slice(), level: level });
+    });
+  }
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:clues-done' || typeof m.id !== 'number') return;
+    var w = clueWait[m.id]; if (!w) return;
+    if (Array.isArray(m.clues) && m.clues.every(function (c) { return typeof c === 'string'; })) w({ clues: m.clues.slice() });
+    else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
+  });
   // Assign what the teacher made to a class (a set game, school staff only: BRB.canAssign): the page, after a tap, opens
   // its Assign page with these lesson parameters (the problem or the set the class will open).
   function assign(query) {
@@ -1265,6 +1287,8 @@
     saveQuestionSet: saveQuestionSet,
     findQuestionSet: findQuestionSet,
     canAssign: INIT.canAssign === true,
+    canWriteClues: INIT.clues === true,
+    writeClues: writeClues,
     assign: assign
   };
   Object.freeze(BRB.storage); Object.freeze(BRB.score);
