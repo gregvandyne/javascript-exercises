@@ -8004,6 +8004,25 @@ played end to end twice assessing for UX/UI in all the nooks and crannies before
   - **Share** from the list saves it on Oomba when it isn't yet and opens "Share with your students": the class code,
     the link, the QR code and Assign to a class (with Google Classroom), as from the preview.
 
+## Shape board: labels you can read (18 Nov 2026)
+The owner found the board's labels (corner letters, side lengths, angles, text labels) too small on the smallest Shape
+board. They had one floor for all of them (13px on the screen, 16px on the projector) and were otherwise a fixed share
+of the board, so on a 5 × 8 widget (a board about 280-330px across) every label sat at 13px.
+- **Sizes** (`LABEL_SIZES`, `labelPx` in `public/js/dash-math4.js`): each kind is its share of the board, never under
+  its own floor: letters 17px, side lengths 16px, angles 15px, text labels 18px, the ruler 16px (21/20/19/22/20px on the
+  projector); on a big board they grow with it. Zoomed, they keep their size on the screen as before.
+- **Placed, not just pushed out** (`placeLabels`): the angles first (they have least room, inside their shape), then the
+  letters, then the sides. Each tries its own spot, then spots turned round its corner or side and a little further out,
+  and takes the one that covers least: other labels, the text labels and the selected band's handles (most), the pegs,
+  and its own band's sides. Labels still on another are tried again with the rest in place. An angle only turns a little
+  and stays near its corner (so it is never read as another corner's); where a small shape on a dense board has no room
+  it is drawn smaller, down to 12px (14px on the projector), never below, and only if that is not enough turns further
+  round its corner. Labels stay inside the board.
+- **Checked:** the fit check now fails when two of a shape board's labels sit on each other (the busy boards: twelve
+  bands on 11 × 11 pegs, triangle dots, the circle, at the default and smallest sizes); unit tests cover the sizes, the
+  placing and the 12px minimum.
+
+
 ## Schedule settings: the calendar and agenda as cards at the top, instructions folded (18 Nov 2026)
 Owner: "Make this more modular and put it at the top of the widget. Instead of just having the text there put
 Instructions with a drop down caret." Then: "Remove this from the individual days and just make it visible when you

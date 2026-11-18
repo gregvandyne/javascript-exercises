@@ -479,9 +479,10 @@ export function geoboard(body, s, ctx) {
     // Screen pixels per viewBox unit with the whole board in view (the board box is square-ish; a phone uses its width).
     const bw = boardBox.clientWidth, bh = boardBox.clientHeight; boxSize = { w: bw, h: bh };
     pxPerUnit = (phone || !bh ? bw : Math.min(bw, bh)) / VB || 0.5;
-    const z = ui.view.z, floor = projecting() ? 16 : 13;
-    // Text keeps its size on the screen when the board is zoomed (the pegs and bands grow; the words don't).
-    const fs = base => Math.max(base / z, floor / (pxPerUnit * z));
+    const z = ui.view.z;
+    // Each kind of label is its share of the board, never under its floor on the screen (G.labelPx), and keeps its size
+    // on the screen when the board is zoomed (the pegs and bands grow; the words don't). In viewBox units:
+    const fs = kind => G.labelPx(kind, pxPerUnit * VB, projecting()) / (pxPerUnit * z);
     const big = projecting() ? 1.5 : 1;
     const peg = Math.max(Math.min(13, f.sp * 0.13) * big, 3.2 / (pxPerUnit * z));
     const lw = Math.max(9 * big, 3 / (pxPerUnit * z));
@@ -520,15 +521,23 @@ export function geoboard(body, s, ctx) {
     const pg = svg('g', { class: 'gb-pegs' });
     for (const p of G.pegList(st.board, N)) { const q = at(p); pg.appendChild(svg('circle', { cx: q.x.toFixed(1), cy: q.y.toFixed(1), r: peg.toFixed(1) })); }
     board.appendChild(pg);
+    const handleR = Math.max(peg * 1.9, 9 / (pxPerUnit * z));
     // The selected band's corners: handles to drag (the first one ringed while the band is open, to close it).
     if (sel) sel.pts.forEach((p, i) => {
       const q = at(p);
-      board.appendChild(svg('circle', { cx: q.x, cy: q.y, r: Math.max(peg * 1.9, 9 / (pxPerUnit * z)), class: `gb-handle gb-c${sel.c}${i === ui.corner ? ' is-active' : ''}${!sel.closed && i === 0 && sel.pts.length >= 3 ? ' is-first' : ''}` }));
+      board.appendChild(svg('circle', { cx: q.x, cy: q.y, r: handleR, class: `gb-handle gb-c${sel.c}${i === ui.corner ? ' is-active' : ''}${!sel.closed && i === 0 && sel.pts.length >= 3 ? ' is-first' : ''}` }));
     });
     // Letters, side lengths and angles: the selected band's, or every band's when none is selected.
     const marked = sel ? [st.cur] : bands.map((b, k) => k);
+    // Notes go where they were put; the letters, lengths and angles are then placed round them, the pegs and each other.
+    const noteAt = st.notes.map(note => {
+      const size = fs('note'), half = Math.min(VB / 2, G.labelWidth(note.t, size) / 2 + 8);
+      return { x: Math.max(half, Math.min(VB - half, note.x)), y: Math.max(size * 0.7, Math.min(VB - size * 0.7, note.y)), size, w: half * 2 - 16, h: size };
+    });
     if (st.labels || st.angles) {
       const tg = svg('g', { class: 'gb-marks' });
+      const items = [], arcs = [];   // the labels, placed together at the end
+      const add = (band, kind, cls, text, x, y, dx, dy, d, prio) => { const size = fs(kind); items.push({ band, kind, cls, text, x, y, dx, dy, d, prio, size, w: G.labelWidth(text, size), h: size * 0.86, near: kind === 'angle', minScale: kind === 'angle' ? G.LABEL_MIN_PX[projecting() ? 1 : 0] / (size * pxPerUnit * z) : 1 }); };
       let letter = 0;
       bands.forEach((b, k) => {
         const P = b.pts.map(at), m = P.length; if (!m) return;
@@ -547,8 +556,8 @@ export function geoboard(body, s, ctx) {
           return inside ? { x: -bx, y: -by } : { x: bx, y: by };
         };
         if (st.labels) P.forEach((v, i) => {
-          const o = outward(i), d = fs(26) * 1.05;
-          tg.appendChild(svg('text', { x: v.x + o.x * d, y: v.y + o.y * d, class: `gb-letter gb-t${b.c}`, 'text-anchor': 'middle', 'dominant-baseline': 'central', style: `font-size:${fs(26).toFixed(1)}px` }, G.vertexLetter(letter + i)));
+          const o = outward(i), size = fs('letter');
+          add(k, 'letter', `gb-letter gb-t${b.c}`, G.vertexLetter(letter + i), v.x, v.y, o.x, o.y, size * 0.75 + peg, 1);
         });
         if (marked.includes(k)) {
           if (st.labels) {
@@ -557,8 +566,10 @@ export function geoboard(body, s, ctx) {
               const a = P[i], c = P[(i + 1) % m], L = G.sideLength(st.board, N, b.pts[i], b.pts[(i + 1) % m]);
               const mx = (a.x + c.x) / 2, my = (a.y + c.y) / 2, len = Math.hypot(c.x - a.x, c.y - a.y) || 1;
               let nx = -(c.y - a.y) / len, ny = (c.x - a.x) / len; if (nx * (cx - mx) + ny * (cy - my) > 0) { nx = -nx; ny = -ny; }
-              const d = fs(20) * 0.95;
-              tg.appendChild(svg('text', { x: mx + nx * d, y: my + ny * d, class: 'gb-side', 'text-anchor': 'middle', 'dominant-baseline': 'central', style: `font-size:${fs(20).toFixed(1)}px` }, L.inexact ? `≈${G.approxText(L, ctx.intl)}` : G.lengthText(L)));
+              const size = fs('side'), text = L.inexact ? `≈${G.approxText(L, ctx.intl)}` : G.lengthText(L);
+              // Out from the side by half the label's height or width, whichever way the side runs.
+              const d = Math.abs(nx) * G.labelWidth(text, size) / 2 + Math.abs(ny) * size * 0.43 + lw / 2 + peg * 1.6;
+              add(k, 'side', 'gb-side', text, mx, my, nx, ny, d, 2);
             }
           }
           if (st.angles && angs) P.forEach((v, i) => {
@@ -573,13 +584,26 @@ export function geoboard(body, s, ctx) {
             const x1 = v.x + r * Math.cos(start), y1 = v.y + r * Math.sin(start), x2 = v.x + r * Math.cos(start + span), y2 = v.y + r * Math.sin(start + span);
             if (Math.abs(angs[i] - 90) < 0.01) {
               const s1 = { x: Math.cos(a1) * r * 0.7, y: Math.sin(a1) * r * 0.7 }, s2 = { x: Math.cos(a2) * r * 0.7, y: Math.sin(a2) * r * 0.7 };
-              tg.appendChild(svg('path', { d: `M${v.x + s1.x},${v.y + s1.y} L${v.x + s1.x + s2.x},${v.y + s1.y + s2.y} L${v.x + s2.x},${v.y + s2.y}`, class: 'gb-arc' }));
-            } else tg.appendChild(svg('path', { d: `M${x1},${y1} A${r},${r} 0 ${Math.abs(span) > Math.PI ? 1 : 0} ${span > 0 ? 1 : 0} ${x2},${y2}`, class: 'gb-arc' }));
-            const d = r + fs(19) * 1.6;
-            tg.appendChild(svg('text', { x: v.x - o.x * d, y: v.y - o.y * d, class: 'gb-angle', 'text-anchor': 'middle', 'dominant-baseline': 'central', style: `font-size:${fs(19).toFixed(1)}px` }, G.angleText(angs[i], ctx.intl)));
+              arcs.push(svg('path', { d: `M${v.x + s1.x},${v.y + s1.y} L${v.x + s1.x + s2.x},${v.y + s1.y + s2.y} L${v.x + s2.x},${v.y + s2.y}`, class: 'gb-arc' }));
+            } else arcs.push(svg('path', { d: `M${x1},${y1} A${r},${r} 0 ${Math.abs(span) > Math.PI ? 1 : 0} ${span > 0 ? 1 : 0} ${x2},${y2}`, class: 'gb-arc' }));
+            const size = fs('angle'), text = G.angleText(angs[i], ctx.intl);
+            add(k, 'angle', 'gb-angle', text, v.x, v.y, -o.x, -o.y, r + Math.max(G.labelWidth(text, size), size) * 0.6, 0);
           });
         }
         letter += m;
+      });
+      arcs.forEach(a => tg.appendChild(a));
+      // The angles first (they have least room, inside their shape), then the corners' letters, then the sides.
+      const order = items.map((it, i) => i).sort((p, q) => items[p].prio - items[q].prio || p - q);
+      const spots = G.placeLabels(order.map(i => items[i]), {
+        pegs: G.pegList(st.board, N).map(at), peg: peg * 1.2, lines: bands.flatMap((b, k) => { const P = b.pts.map(at); return P.slice(0, b.closed ? P.length : P.length - 1).map((a, i) => { const c = P[(i + 1) % P.length]; return [a.x, a.y, c.x, c.y, k]; }); }), box: [8, 8, VB - 8, VB - 8], gap: 1.5 / (pxPerUnit * z),
+        // The notes (with their halo) and the selected band's corner handles are there already.
+        fixed: [...noteAt.map(n => ({ x: n.x, y: n.y, w: n.w + n.size * 0.5, h: n.h + n.size * 0.4 })),
+          ...(sel ? sel.pts.map(p => { const q = at(p); return { x: q.x, y: q.y, w: handleR * 1.6, h: handleR * 1.6 }; }) : [])],
+      });
+      order.forEach((i, k) => {
+        const it = items[i], p = spots[k];
+        tg.appendChild(svg('text', { x: p.x.toFixed(1), y: p.y.toFixed(1), class: it.cls, 'text-anchor': 'middle', 'dominant-baseline': 'central', style: `font-size:${(it.size * p.scale).toFixed(1)}px` }, it.text));
       });
       board.appendChild(tg);
     }
@@ -589,9 +613,8 @@ export function geoboard(body, s, ctx) {
     board.appendChild(ink);
     st.notes.forEach((note, i) => {
       const g = svg('g', { class: 'gb-note', tabindex: ctx.editing ? '-1' : '0', role: 'button', 'aria-label': fill(W.labelIs, { t: note.t }), 'data-note': i });
-      // Kept inside the board: a label near an edge is moved in by about half its width.
-      const size = fs(30), half = Math.min(VB / 2, [...note.t].length * size * 0.3 + 8);
-      const lx = Math.max(half, Math.min(VB - half, note.x)), ly = Math.max(size * 0.7, Math.min(VB - size * 0.7, note.y));
+      // Kept inside the board: a label near an edge is moved in by about half its width (noteAt, above).
+      const { x: lx, y: ly, size } = noteAt[i];
       g.appendChild(svg('text', { x: lx, y: ly, 'text-anchor': 'middle', 'dominant-baseline': 'central', style: `font-size:${size.toFixed(1)}px` }, note.t));
       board.appendChild(g);
     });
@@ -607,7 +630,7 @@ export function geoboard(body, s, ctx) {
       for (const [end, q] of [['a', a], ['b', b]]) board.appendChild(svg('circle', { cx: q.x, cy: q.y, r: Math.max(20, 14 / (pxPerUnit * z)), class: 'gb-rhandle', 'data-rh': end }));
       const L = G.sideLength(st.board, N, r.a, r.b), mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
       const flip = Math.abs(ang) > 90 ? 180 : 0;
-      board.appendChild(svg('text', { x: mx, y: my, class: 'gb-rulert', 'text-anchor': 'middle', 'dominant-baseline': 'central', transform: `rotate(${ang + flip} ${mx} ${my})`, style: `font-size:${fs(24).toFixed(1)}px` }, G.lengthLabel(L, ctx.intl)));
+      board.appendChild(svg('text', { x: mx, y: my, class: 'gb-rulert', 'text-anchor': 'middle', 'dominant-baseline': 'central', transform: `rotate(${ang + flip} ${mx} ${my})`, style: `font-size:${fs('ruler').toFixed(1)}px` }, G.lengthLabel(L, ctx.intl)));
     }
     // The keyboard's peg cursor (shown only while the board has the keyboard focus).
     const cq = at(ui.cursor);
