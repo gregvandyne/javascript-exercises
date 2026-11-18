@@ -136,6 +136,8 @@ const TYPES = {
   // BRB.writeClues (Crossword): the teacher's words, for AI clues (the server checks who may ask).
   'brb:clues': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.words) && m.words.length >= 1 && m.words.length <= 30
     && m.words.every(w => typeof w === 'string' && w.length <= 40) && typeof m.level === 'string' && m.level.length <= 60,
+  // BRB.print (Crossword): the puzzle as plain data, at most 20,000 characters (the server checks every part of it).
+  'brb:print': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && !!m.doc && typeof m.doc === 'object' && !Array.isArray(m.doc) && JSON.stringify(m.doc).length <= 20000,
 };
 const LOUD_OPS = ['hello', 'start', 'keep', 'stop'];
 const TTS_ROLES = ['narrator', 'friendly', 'bright', 'deep', 'wise', 'grumpy'];
@@ -246,6 +248,8 @@ addEventListener('message', e => {
     case 'brb:set-find': findSetForGame(m); break;
     case 'brb:clues': cluesForGame(m); break;
     case 'brb:doc': docForGame(m); break;
+    // BRB.print (Crossword): the frame can't print, so the page does, only right after a tap.
+    case 'brb:print': printForGame(m, tappedJustNow('brb-print-at', 2000)); break;
     // BRB.assign (a teacher in a set game): after a tap, the game's Assign page with the problem or set it opens at.
     case 'brb:assign': if (typeof m.opts === 'string' && m.opts.length <= 200 && /^[a-z0-9=&-]*$/.test(m.opts) && tappedJustNow('brb-assign-at', 2000)) location.href = `/teach/assign?game=${encodeURIComponent(d.slug)}&opts=${encodeURIComponent(m.opts)}`; break;
   }
@@ -352,6 +356,32 @@ async function docForGame(m) {
     out = { title: String(r.title || ''), words: Array.isArray(r.words) ? r.words.map(p => [String(p[0]), String(p[1])]) : [], cut: r.cut === true, ai: r.ai !== false };
   } catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'aiFailed' : 'offline') }; }
   toFrame({ type: 'brb:doc-done', id: m.id, ...out });
+}
+/** BRB.print (docs/sdk.md "Printing"): the server checks the puzzle (its words and clues through the text filter, the
+ *  layout, the answer key for teachers only) and makes the printable page in the viewer's language; it goes into a
+ *  print area of its own on this page, which is all that prints (public/css/app.css "Printing"), and this page prints.
+ *  The answer goes back as brb:printed { id, ok } or { id, error }. */
+let printing = false;
+async function printForGame(m, tapped) {
+  const done = out => toFrame({ type: 'brb:printed', id: m.id, ...out });
+  if (!d.print) return done({ error: 'notAllowed' });
+  if (!tapped) return done({ error: 'tap' });
+  if (printing) return done({ error: 'tap' });
+  printing = true;
+  try {
+    const r = await api(`/api/games/${d.gameId}/print`, { method: 'POST', body: { doc: m.doc }, active: playing() });
+    if (!r || typeof r.html !== 'string') throw new Error('bad');
+    let area = document.getElementById('print-area');
+    if (!area) { area = document.createElement('div'); area.id = 'print-area'; area.className = 'print-area'; document.body.appendChild(area); }
+    area.innerHTML = r.html;   // the server's own page: every word in it is escaped there
+    document.body.classList.add('printing');
+    const after = () => { document.body.classList.remove('printing'); area.innerHTML = ''; removeEventListener('afterprint', after); };
+    addEventListener('afterprint', after);
+    done({ ok: true });
+    window.print();
+  } catch (e) {
+    done({ error: e && e.data && (e.data.code === 'key' || e.data.code === 'bad') ? e.data.code : 'offline' });
+  } finally { printing = false; }
 }
 async function cluesForGame(m) {
   let out;

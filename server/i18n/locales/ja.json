@@ -1206,7 +1206,20 @@
       "lostText": "ときどき こうなるよ。「もういちど」を タップして さいしょから あそぼう。",
       "retry": "もういちど"
     },
-    "voices": "AIのこえ"
+    "voices": "AIのこえ",
+    "print": {
+      "untitled": "クロスワード",
+      "name": "なまえ：",
+      "date": "日付：",
+      "across": "ヨコ",
+      "down": "タテ",
+      "bank": "単語リスト",
+      "key": "こたえ",
+      "keyTitle": "{title}：こたえ",
+      "made": "Oomba Academy で作りました",
+      "code": "クラスコード：{code}",
+      "grid": "クロスワードのマス"
+    }
   },
   "friends": {
     "title": "フレンド",

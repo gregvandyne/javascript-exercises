@@ -270,6 +270,7 @@ The SDK talks to the page with `postMessage`. Every message is `{ brb: 1, type, 
 | `brb:back` | – | `BRB.back()`: the page navigates back to the course step or class lesson the game was launched from, only right after a tap and only when the play page carries that back context (course step or lesson); otherwise ignored |
 | `brb:online` | – | `BRB.match.menu()`: opens the "Play online" sheet, for online games only, right after a tap |
 | `brb:tts` | `{ id, text, lang, role, rate, pre? }` | AI voices (official games, when on): fetches the line from `/api/tts` and posts the MP3's bytes back (`{ id, ok, buf }`), or `{ id, ok:false, why }`; `pre`: fetch only, no answer |
+| `brb:print` | `{ id, doc }` | Crossword's `BRB.print` (see "Printing" below): right after a tap, the server checks `doc` and makes the printable page; the page prints it and answers `brb:printed { id, ok }` or `{ id, error }` |
 
 The parent checks that each message comes from its own game frame (`event.source`), has the expected shape,
 and the server validates and rate-limits every resulting API call (`public/js/play.js`, `public/js/studio.js`, `public/js/admin.js`).
@@ -348,6 +349,25 @@ cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, 
   student typed (the set id without `s-`, any case, spaces or dashes; `GET /api/games/:id/sets/:code`, open to anyone
   who can open the game, 30 a minute per address). New codes leave out i, l, o, 0 and 1.
 - Sets go with their owner's account. Nothing about who played is kept.
+
+## Printing (`BRB.print`)
+Crossword only (frames where `INIT.print` is set: the official Crossword, not in a preview). The frame can't print (no
+`allow-modals`, no popups), so the play page prints for it.
+- `BRB.canPrint`: true when printing is on. `BRB.print(doc)` → a Promise of `{ ok: true }` or `{ error }` (`notAllowed`,
+  `bad`, `key`, `tap`, `offline`). Call it from a tap: the page checks `navigator.userActivation` when the message
+  arrives and answers `tap` otherwise.
+- `doc` is plain data, never HTML (at most 20,000 characters as JSON; the SDK, the page and the server each check):
+  `{ t, w: [[word, clue]], b, g: { w, h, e: [[word index, 'a'|'d', row, col]] }, key, set }`: the title, the words and
+  clues (a question set's rules, `cleanCrossItems`: each word, clue and the title pass the site's text filter), the word
+  bank option, the layout as numbers (1 to 25 a side, at most one entry per word), the answer key (true or false) and the
+  saved set's id (or `''`). The server puts the letters down from the words (a layout that doesn't spell its words is
+  refused), counts the clue numbers in reading order, and adds the class code and link to the footer only for a set of
+  this game that exists.
+- `POST /api/games/:id/print` `{ doc }` → `{ html }` (the printable page in the viewer's language and direction) or
+  `{ code: 'bad' }` (400), `{ code: 'key' }` (403: the answer key is for school staff only, BRB.canAssign's check). Open
+  to anyone who can open the game, 20 a minute per address. Nothing is kept.
+- The page puts the HTML in `#print-area` (hidden on screen; in print it is all that shows, `public/css/app.css`
+  "Printing"), calls `window.print()` and empties it after printing.
 
 ## Loudness (`BRB.loudness`)
 How loud the room is, as one number. Any game may use it (the official noise meters, and Builder games since 13 Nov

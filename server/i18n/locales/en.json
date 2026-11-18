@@ -1207,7 +1207,20 @@
       "lostText": "That can happen sometimes. Tap Try again to start the game over.",
       "retry": "Try again"
     },
-    "voices": "AI voices"
+    "voices": "AI voices",
+    "print": {
+      "untitled": "Crossword",
+      "name": "Name:",
+      "date": "Date:",
+      "across": "Across",
+      "down": "Down",
+      "bank": "Word bank",
+      "key": "Answer key",
+      "keyTitle": "{title}: Answer key",
+      "made": "Made with Oomba Academy",
+      "code": "Class code: {code}",
+      "grid": "Crossword grid"
+    }
   },
   "friends": {
     "title": "Friends",

@@ -1206,7 +1206,20 @@
       "lostText": "有時候會這樣。點一下「再試一次」就能重新開始遊戲。",
       "retry": "再試一次"
     },
-    "voices": "AI 聲音"
+    "voices": "AI 聲音",
+    "print": {
+      "untitled": "填字遊戲",
+      "name": "姓名：",
+      "date": "日期：",
+      "across": "橫向",
+      "down": "直向",
+      "bank": "詞語庫",
+      "key": "答案",
+      "keyTitle": "{title}：答案",
+      "made": "用 Oomba Academy 製作",
+      "code": "班級代碼：{code}",
+      "grid": "填字遊戲格子"
+    }
   },
   "friends": {
     "title": "好友",

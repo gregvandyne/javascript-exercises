@@ -1207,7 +1207,20 @@
       "lostText": "Isso às vezes acontece. Toque em Tentar de novo para recomeçar o jogo.",
       "retry": "Tentar de novo"
     },
-    "voices": "Vozes de IA"
+    "voices": "Vozes de IA",
+    "print": {
+      "untitled": "Palavras cruzadas",
+      "name": "Nome:",
+      "date": "Data:",
+      "across": "Horizontal",
+      "down": "Vertical",
+      "bank": "Banco de palavras",
+      "key": "Gabarito",
+      "keyTitle": "{title}: gabarito",
+      "made": "Feito com a Oomba Academy",
+      "code": "Código da turma: {code}",
+      "grid": "Grade das palavras cruzadas"
+    }
   },
   "friends": {
     "title": "Amigos",

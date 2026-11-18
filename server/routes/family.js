@@ -89,7 +89,7 @@ const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere|forgot|rese
   /^\/api\/family\/asks\/[^/]+\/dismiss$/,   // a child's "Ask my grown-up" (services/sparks.js)
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
   /^\/api\/number-quest\/placement\/override$/,   // a grown-up's absolute placement override for a linked child (link checked in the route)
-  /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report|poll)$/,
+  /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report|poll|print)$/,   // print: Crossword's puzzle (never its answer key)
   /^\/api\/live(\/[^/]+)+$/, /^\/api\/match(\/join|\/[^/]+\/(accept|decline|leave|send))?$/,
   /^\/api\/chat\/oombaacademy$/i];
 // Building games (docs/decisions.md "Grown-ups can build"): the Builder, the Studio and its APIs, and grown-up connections

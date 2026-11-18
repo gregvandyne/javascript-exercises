@@ -8075,6 +8075,40 @@ under it giving the limits, and is kept cheap:
 - Tests: tests/unit/crossword-upload.test.js (PDFs and .docx files made in the test, `_crossword-files.js`; the AI
   stood in for through `crossword-doc.js hooks.client`).
 
+## Crossword: print a puzzle (18 Nov 2026)
+
+Owner: "Also, create a print option for the teacher or student to print off the crossword".
+- **Through the platform, as data.** The game runs in a sandboxed frame with no `allow-modals` and no popups, so
+  `window.print()` can't work there. A new SDK call, `BRB.print(doc)` (`brb:print`, docs/sdk.md "Printing"), hands the
+  puzzle to the play page as plain data: the words and clues, the word bank option and the layout as numbers
+  (`[word, 'a'|'d', row, col]`), whether to add the answer key, and the saved set's id. Never HTML.
+- **Checked and drawn on the server** (`services/crossword-print.js`, `POST /api/games/:id/print`): the words, clues and
+  title go through `cleanCrossItems` (the site's text filter, as a saved set's do); the server puts the letters down from
+  the words itself (a layout that doesn't spell its words, runs off the grid or uses a word twice is refused), counts the
+  clue numbers in reading order as the game does, and answers with the printable page in the viewer's language and
+  direction. The play page puts it in a print area of its own and prints the PARENT page; the print CSS shows only that
+  area. Why not a server print page for saved puzzles (`/play/crossword/print?chapter=…`)? The layout is made in the game,
+  an unsaved draft has no set to read, and one path for drafts, saved puzzles and the sample is simpler; the layout comes
+  from the game, but the server owns every letter and number printed.
+- **What prints** (one page for most puzzles, US Letter or A4, black on white, no fills): the title, Name and Date lines,
+  the empty grid (an SVG as wide as the page allows, with clue numbers; a Hebrew or Arabic puzzle runs right to left, as
+  in the game), Across and Down with numbers and lengths, the word bank when the puzzle has it, and a small footer: "Made
+  with Oomba Academy", and the class code and link when the puzzle is saved. A big puzzle's clues go on to a second
+  page. The page's words are in the viewer's language (`play.print.*`, 13 languages); in Hebrew and Arabic the lists run
+  right to left and the grid keeps its own direction.
+- **The answer key is for teachers.** It is the filled grid on a page of its own after the puzzle. The game offers
+  "Puzzle" or "Puzzle + answer key" from Print on the preview and share screen only when `BRB.canAssign` (school staff);
+  everyone else gets the puzzle at once. The server checks again (`isSchoolStaff`, the same check as `canAssign`): a
+  student, a kid, a family grown-up, a guest or a visitor asking for the key gets a 403 and no page.
+- **Students** get Print on the play screen: the blank puzzle (never their typed letters, never the answers), to fill
+  in by hand. Anyone who can open the game may print a puzzle (a teacher's unsaved draft, a shared set, the sample);
+  family grown-ups may too (the fence lets `print` through with the other play-page calls). 20 a minute per address;
+  nothing is kept; only after a tap.
+- Tests: tests/unit/crossword-print.test.js (the request's checks and the text filter, the numbers against the game's
+  own layouts, the page, the key's page, Hebrew, the route: who gets the key, the footer); tests/e2e/crossword-print.spec.js
+  (the real play page in Chromium: a teacher's draft with its key and the saved puzzle with its class code, a student's
+  blank puzzle, Hebrew; in print media and as PDFs in Letter and A4).
+
 ## Shape board: labels you can read (18 Nov 2026)
 The owner found the board's labels (corner letters, side lengths, angles, text labels) too small on the smallest Shape
 board. They had one floor for all of them (13px on the screen, 16px on the projector) and were otherwise a fixed share
