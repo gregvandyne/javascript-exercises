@@ -1,12 +1,13 @@
 <script lang="ts">
-	// Oomba: a question set. A teacher puts up to 10 questions together, from any activity (each made on that
+	// Oomba: a question set. A teacher puts up to 20 questions together, from any activity (each made on that
 	// activity's own setup page), saves the set on Oomba and shares one link and QR code for all of them. Students
 	// answer them in order. A saved set keeps its link when it is changed and saved again.
-	import { ArrowDown, ArrowUp, Check, Copy, ExternalLink, GraduationCap, Pencil, Plus, QrCode, Trash2 } from '@lucide/svelte';
+	import { ArrowDown, ArrowUp, Check, Copy, Dices, ExternalLink, GraduationCap, Minus, Pencil, Plus, QrCode, Trash2 } from '@lucide/svelte';
 	import { prettyText, type Activity } from '$lib/algebra';
 	import { ACTIVITIES } from '$lib/activities';
 	import { go, goBack, sets } from '$lib/nav.svelte';
-	import { MAX_ITEMS, assignLink, canAssign, canSaveSets, isPreview, copy, keepMySet, saveSet, setLink, type Item } from '$lib/oomba';
+	import { MAX_ITEMS, assignLink, canAssign, canSaveSets, classCode, isPreview, copy, keepMySet, saveSet, setLink, type Item } from '$lib/oomba';
+	import { LEVELS, generate, type Level } from '$lib/practice';
 	import { makeQr, qrExtent, qrPath, qrPng } from '$lib/qr';
 	import Footer from '$lib/Footer.svelte';
 	import Logo from '$lib/Logo.svelte';
@@ -92,6 +93,32 @@
 			/* no copy */
 		}
 	}
+	// --- Make questions for me: how many of each activity, and how hard; the game makes them (new ones each time) ---
+	let mix = $state<Record<Activity, number>>({ solve: 4, multiply: 3, factor: 3 });
+	let genLevel = $state<Level>('easy');
+	let replace = $state(true);
+	const room = $derived(replace ? MAX_ITEMS : MAX_ITEMS - d.items.length);
+	const wanted = $derived(mix.solve + mix.multiply + mix.factor);
+	function bump(a: Activity, by: number) {
+		const n = Math.max(0, Math.min(MAX_ITEMS, mix[a] + by));
+		if (by > 0 && wanted >= room) return;
+		mix = { ...mix, [a]: n };
+	}
+	let made = $state('');
+	function makeThem() {
+		if (!wanted || wanted > room) return;
+		const have = new Set((replace ? [] : d.items).map((i) => `${i.a}|${i.p}`));
+		const fresh: Item[] = [];
+		for (const a of ['solve', 'multiply', 'factor'] as Activity[]) {
+			if (!mix[a]) continue;
+			const avoid = new Set([...have].filter((k) => k.startsWith(`${a}|`)).map((k) => k.slice(a.length + 1)));
+			for (const p of generate(a, genLevel, mix[a], avoid)) fresh.push({ a, p, s: 'all', l: true });
+		}
+		d.items = replace ? fresh : [...d.items, ...fresh];
+		d.saved = false;
+		made = `Made ${fresh.length} question${fresh.length === 1 ? '' : 's'}. Change, move or remove any of them, then save.`;
+	}
+
 	const tryIt = () => go({ name: 'set-play', items: d.items.map((i) => ({ ...i })), from: 'set' });
 </script>
 
@@ -150,7 +177,37 @@
 				<p class="empty">No questions yet. Add the first one below.</p>
 			{/if}
 
-			<h3>Add a question</h3>
+			<div class="gen">
+				<h3><Dices size={18} /> Make questions for me</h3>
+				<p class="gen-about">Choose how many of each, and how hard. New problems every time.</p>
+				<div class="mix">
+					{#each ACTIVITIES as a (a.activity)}
+						<div class="mix-row">
+							<span class="mix-name">{a.name}</span>
+							<span class="stepper" role="group" aria-label="{a.name}: how many">
+								<button type="button" class="icon" aria-label="One fewer {a.name}" disabled={mix[a.activity] === 0} onclick={() => bump(a.activity, -1)}><Minus size={16} /></button>
+								<span class="count-n" aria-live="polite">{mix[a.activity]}</span>
+								<button type="button" class="icon" aria-label="One more {a.name}" disabled={wanted >= room} onclick={() => bump(a.activity, 1)}><Plus size={16} /></button>
+							</span>
+						</div>
+					{/each}
+				</div>
+				<div class="gen-levels" role="radiogroup" aria-label="How hard">
+					{#each LEVELS as l (l.level)}
+						<button type="button" role="radio" aria-checked={genLevel === l.level} class="seg" class:on={genLevel === l.level} onclick={() => (genLevel = l.level)}>{l.name}</button>
+					{/each}
+				</div>
+				{#if d.items.length}
+					<label class="replace"><input type="checkbox" bind:checked={replace} /> Replace the questions already here</label>
+				{/if}
+				<button type="button" class="btn-primary gen-go" disabled={!wanted || wanted > room} onclick={makeThem}>
+					<Dices size={16} /> Make {wanted} question{wanted === 1 ? '' : 's'}
+				</button>
+				{#if wanted > room}<p class="note">A set holds up to {MAX_ITEMS} questions{replace ? '' : `: there’s room for ${room} more`}.</p>{/if}
+				{#if made}<p class="note" role="status">{made}</p>{/if}
+			</div>
+
+			<h3>Or add one at a time</h3>
 			{#if d.items.length >= MAX_ITEMS}
 				<p class="empty">This set has {MAX_ITEMS} questions, the most a set can have.</p>
 			{:else}
@@ -187,6 +244,11 @@
 			{/if}
 
 			{#if link}
+				<div class="code-box">
+					<span class="code-label">Class code</span>
+					<span class="code-val">{classCode(d.id ?? '')}</span>
+					<span class="code-hint">Students choose “I’m a student” and type it.</span>
+				</div>
 				<p class="link" title={link}>{link}</p>
 				<div class="buttons">
 					<button type="button" class="btn-primary" onclick={copyLink}>
@@ -437,6 +499,124 @@
 		border: 2px dashed var(--line);
 		border-radius: 12px;
 		color: var(--muted);
+	}
+	.gen {
+		margin-top: 1.4rem;
+		padding: 1rem;
+		border: 2px dashed var(--line-strong);
+		border-radius: 16px;
+		background: var(--ground);
+	}
+	.gen h3 {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin-top: 0;
+	}
+	.gen-about {
+		margin-top: 0.2rem;
+		color: var(--muted);
+		font-size: 0.9rem;
+	}
+	.mix {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.5rem;
+		margin-top: 0.75rem;
+	}
+	.mix-row {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.35rem;
+		padding: 0.6rem 0.4rem;
+		border: 1px solid var(--line);
+		border-radius: 12px;
+		background: var(--paper);
+		text-align: center;
+	}
+	.mix-name {
+		font-size: 0.9rem;
+		font-weight: 700;
+	}
+	.stepper {
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+	.count-n {
+		min-width: 1.6rem;
+		font-size: 1.3rem;
+		font-weight: 800;
+		text-align: center;
+	}
+	.gen-levels {
+		display: flex;
+		gap: 0.3rem;
+		margin-top: 0.75rem;
+		padding: 0.25rem;
+		border-radius: 999px;
+		background: var(--paper);
+		border: 1px solid var(--line);
+	}
+	.seg {
+		flex: 1;
+		padding: 0.45rem 0.6rem;
+		border: 0;
+		border-radius: 999px;
+		background: none;
+		color: var(--ink);
+		font: inherit;
+		font-weight: 700;
+		cursor: pointer;
+	}
+	.seg.on {
+		background: var(--oomba-green);
+	}
+	.replace {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		margin-top: 0.7rem;
+		font-size: 0.9rem;
+	}
+	.gen-go {
+		margin-top: 0.75rem;
+	}
+	.code-box {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.15rem;
+		margin-top: 0.9rem;
+		padding: 0.75rem;
+		border: 2px solid var(--ink);
+		border-radius: 14px;
+		background: #fff1cc;
+		text-align: center;
+	}
+	.code-label {
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+	.code-val {
+		font: 800 1.7rem/1.1 ui-monospace, monospace;
+		letter-spacing: 0.08em;
+	}
+	.code-hint {
+		color: var(--muted);
+		font-size: 0.82rem;
+	}
+	@media (max-width: 520px) {
+		.mix {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.mix-row {
+			flex-direction: row;
+			justify-content: space-between;
+		}
 	}
 	.fresh {
 		width: 100%;

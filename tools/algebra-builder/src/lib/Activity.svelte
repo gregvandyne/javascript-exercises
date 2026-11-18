@@ -30,12 +30,14 @@
 	// shares the units out among the boxes. Once that passes, all boxes but the
 	// first fade away. With one x tile, there's no division step.
 	import { onMount, tick } from 'svelte';
-	import { complete, stepPassed, stepWrong } from '$lib/oomba';
+	import { complete, stepPassed, stepWrong, tap as tapSound } from '$lib/oomba';
+	import { hintsFor } from '$lib/hints';
 	import {
 		Check,
 		Copy,
 		FlipVertical2,
 		Hand,
+		Lightbulb,
 		Maximize,
 		Minus,
 		MousePointer2,
@@ -341,6 +343,40 @@
 	/** What a failed Check found wrong: the only message the board shows. */
 	let error = $state('');
 	let note = $state('');
+
+	// --- hints (Oomba): up to three for the step the student is on, one per press of Hint. "Stuck?" lights up after
+	// two Checks that didn't pass, or a minute on the step without getting it. ---
+	const hints = $derived(step === 'done' ? [] : hintsFor(step, p, liveBalance));
+	let hintShown = $state(0);
+	/** The hints box is open (closing it keeps the hints: Hint opens it again, with the next one). */
+	let hintOpen = $state(false);
+	let fails = $state(0);
+	let slow = $state(false);
+	let hintTimer: ReturnType<typeof setTimeout> | undefined;
+	$effect(() => {
+		void step;
+		hintShown = 0;
+		hintOpen = false;
+		fails = 0;
+		slow = false;
+		clearTimeout(hintTimer);
+		if (step !== 'done') hintTimer = setTimeout(() => (slow = true), 60000);
+		return () => clearTimeout(hintTimer);
+	});
+	const stuck = $derived((fails >= 2 || slow) && hintShown < hints.length);
+	function showHint() {
+		if (hintShown >= hints.length) {
+			hintOpen = true;
+			return;
+		}
+		hintShown += 1;
+		hintOpen = true;
+		slow = false;
+		fails = 0;
+		clearTimeout(hintTimer);
+		hintTimer = setTimeout(() => (slow = true), 60000);
+		tapSound();
+	}
 	function clearMarks() {
 		wrong = new Set();
 		gaps = [];
@@ -451,6 +487,7 @@
 			gaps = result.gaps;
 			badBoxes = result.badBoxes ?? [];
 			error = result.message;
+			fails += 1;
 			// Oomba: the Kit's soft sound and a small shake of the bar (never a buzzer)
 			stepWrong(headerEl);
 			return;
@@ -1863,6 +1900,17 @@
 						<span class="yay"><Check size={18} strokeWidth={3} /> Yay! It’s complete.</span>
 					</p>
 				</div>
+				<button
+					type="button"
+					class="btn-ghost hint-btn"
+					class:off={step === 'done'}
+					class:stuck
+					disabled={hintShown >= hints.length && hintOpen}
+					aria-label={hintShown >= hints.length ? (hintOpen ? 'No more hints for this step' : 'Show the hints again') : stuck ? 'Stuck? Get a hint' : 'Get a hint'}
+					onclick={showHint}
+				>
+					<Lightbulb size={16} /><span class="hint-word">{stuck ? 'Stuck? Hint' : 'Hint'}</span>
+				</button>
 				<div class="actions">
 					<button
 						type="button"
@@ -1881,10 +1929,23 @@
 				</div>
 			</div>
 		</header>
-		{#if error && step !== 'done'}
+		{#if hintShown && hintOpen && step !== 'done'}
+			<!-- The hints, in the place of a Check's message (closing them shows it again). -->
+		{:else if error && step !== 'done'}
 			<p class="error" aria-live="polite">{error}</p>
 		{:else if note}
 			<p class="note">{note}</p>
+		{/if}
+		{#if hintShown && hintOpen && step !== 'done'}
+			<div class="hint-box" aria-live="polite">
+				<p class="hint-head">
+					<Lightbulb size={15} /> Hint {hintShown} of {hints.length}
+					<button type="button" class="hint-close" aria-label="Hide the hints" onclick={() => (hintOpen = false)}>✕</button>
+				</p>
+				<ol>
+					{#each hints.slice(0, hintShown) as h, i (i)}<li>{h}</li>{/each}
+				</ol>
+			</div>
 		{/if}
 	</div>
 
@@ -2737,6 +2798,79 @@
 		align-items: center;
 	}
 	/* What a failed Check found wrong, just under the bar. */
+	.hint-btn {
+		flex: none;
+		gap: 0.35rem;
+		margin-left: 0.25rem;
+		padding: 0.45rem 0.8rem;
+		white-space: nowrap;
+	}
+	.hint-btn.stuck {
+		border-color: #c58a12;
+		background: #fff1cc;
+		animation: hint-glow 1.6s ease-in-out infinite;
+	}
+	@keyframes hint-glow {
+		50% {
+			box-shadow: 0 0 0 5px rgb(245 186 66 / 0.35);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.hint-btn.stuck {
+			animation: none;
+		}
+	}
+	@media (max-width: 640px) {
+		.hint-word {
+			display: none;
+		}
+		.hint-btn.stuck .hint-word {
+			display: inline;
+		}
+	}
+	.hint-box {
+		max-width: min(40rem, 100%);
+		margin-top: 0.4rem;
+		padding: 0.55rem 0.95rem;
+		border: 1px solid #f0d58c;
+		border-radius: 10px;
+		background: #fff8e1;
+		color: var(--ink);
+		font-size: 0.92rem;
+		line-height: 1.4;
+		box-shadow: 0 4px 14px rgb(29 40 56 / 0.12);
+	}
+	.hint-head {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		color: #8a5a00;
+		font-size: 0.78rem;
+		font-weight: 800;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+	.hint-close {
+		margin-left: auto;
+		padding: 0.1rem 0.4rem;
+		border: 0;
+		border-radius: 8px;
+		background: none;
+		color: #8a5a00;
+		font: inherit;
+		font-size: 0.9rem;
+		cursor: pointer;
+	}
+	.hint-close:hover {
+		background: #fde7a8;
+	}
+	.hint-box ol {
+		margin: 0.25rem 0 0;
+		padding-left: 1.2rem;
+	}
+	.hint-box li + li {
+		margin-top: 0.25rem;
+	}
 	.error,
 	.note {
 		max-width: min(40rem, 100%);

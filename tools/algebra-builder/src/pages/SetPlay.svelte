@@ -7,9 +7,39 @@
 	import { prettyText, readProblem } from '$lib/algebra';
 	import { go, goBack, sets } from '$lib/nav.svelte';
 	import { complete, questionDone, type Item } from '$lib/oomba';
+	import { LEVELS, practiceSet, type Level } from '$lib/practice';
+	import { activityInfo } from '$lib/activities';
+	import type { Activity } from '$lib/algebra';
 	import Logo from '$lib/Logo.svelte';
 
-	let { items, from, id, mine }: { items: Item[]; from: 'link' | 'set'; id?: string; mine?: boolean } = $props();
+	let {
+		items: given,
+		from,
+		id,
+		mine,
+		practice
+	}: {
+		items: Item[];
+		from: 'link' | 'set' | 'code' | 'practice';
+		id?: string;
+		mine?: boolean;
+		practice?: { activity: Activity; level: Level };
+	} = $props();
+	// svelte-ignore state_referenced_locally
+	let items = $state(given);
+	/** Practising alone: a fresh set of the same activity and level (never ones they've had lately). */
+	function more() {
+		if (!practice) return;
+		const fresh = practiceSet(practice.activity, practice.level);
+		if (!fresh.length) return;
+		items = fresh;
+		at = 0;
+		finished = false;
+		window.scrollTo(0, 0);
+	}
+	const practiceName = $derived(
+		practice ? `${activityInfo(practice.activity).name}, ${LEVELS.find((l) => l.level === practice.level)?.name}` : ''
+	);
 
 	let at = $state(0);
 	let finished = $state(false);
@@ -44,14 +74,22 @@
 	<main class="finish">
 		<Logo size={56} />
 		<h1>All {items.length} questions done!</h1>
+		{#if practice}<p class="what">{practiceName}</p>{/if}
 		<ol class="list">
 			{#each items as it, i (i)}
 				<li><span class="tick">✓</span> {prettyText(it.p)}</li>
 			{/each}
 		</ol>
 		<div class="buttons">
-			<button type="button" class="btn-primary" onclick={again}>Do them again</button>
-			{#if from === 'set'}
+			{#if practice}
+				<button type="button" class="btn-primary" onclick={more}>{items.length} new problems ▸</button>
+				<button type="button" class="btn-ghost" onclick={goBack}>Practise something else</button>
+			{:else}
+				<button type="button" class="btn-primary" onclick={again}>Do them again</button>
+			{/if}
+			{#if from === 'code'}
+				<button type="button" class="btn-ghost" onclick={goBack}>← Back</button>
+			{:else if from === 'set'}
 				<button type="button" class="btn-ghost" onclick={goBack}>← Back to the set</button>
 			{:else if mine}
 				<button type="button" class="btn-ghost" onclick={editSet}>Change this set</button>
@@ -72,6 +110,8 @@
 	{/key}
 	{#if from === 'set'}
 		<button type="button" class="btn-ghost corner" onclick={goBack}>← Back to the set</button>
+	{:else if from === 'practice' || from === 'code'}
+		<button type="button" class="btn-ghost corner" onclick={goBack}>← {from === 'practice' ? 'Practice' : 'Back'}</button>
 	{:else if mine}
 		<button type="button" class="btn-ghost corner" onclick={editSet}>Change this set</button>
 	{/if}
@@ -106,6 +146,10 @@
 	}
 	p {
 		color: var(--muted);
+	}
+	.what {
+		margin-top: -0.4rem;
+		font-weight: 700;
 	}
 	.list {
 		display: flex;

@@ -20,6 +20,7 @@ type Brb = {
 	params?: Record<string, string | number | undefined>;
 	questionSet?: SavedSet | null;
 	saveQuestionSet?: (items: Item[], id?: string | null) => Promise<{ id?: string; error?: string }> | null;
+	findQuestionSet?: (code: string) => Promise<{ id?: string; items?: readonly Item[]; error?: string }> | null;
 	storage?: { get: (k: string) => unknown; set: (k: string, v: unknown) => void };
 	user?: { isGuest?: boolean };
 	canAssign?: boolean;
@@ -79,7 +80,7 @@ export function openedWith(): { type: Activity; p: string; start: Start; live: b
 
 // --- question sets: saved on Oomba under a short code (s- and 10 letters and digits), which the link carries ---
 
-export const MAX_ITEMS = 10;
+export const MAX_ITEMS = 20;
 /** The link to a saved set, or '' in a preview. */
 export function setLink(id: string): string {
 	const base = brb()?.gameUrl;
@@ -92,6 +93,41 @@ export function openedSet(): { items: Item[]; id: string; mine: boolean } | 'mis
 	if (s.missing || !s.items?.length) return 'missing';
 	return { id: s.id, items: s.items.map((i) => ({ ...i })), mine: !!s.mine };
 }
+/** A set's class code as a teacher shows it and a student types it: "C5EXP 1CM9H". */
+export const classCode = (id: string) => {
+	const c = id.replace(/^s-/, '').toUpperCase();
+	return `${c.slice(0, 5)} ${c.slice(5)}`;
+};
+/** The set a student's class code opens: its questions, or why not ('none': no such code; 'offline'; 'preview'). */
+export async function findSet(code: string): Promise<{ id: string; items: Item[] } | { error: string }> {
+	const t = code.toLowerCase().replace(/[^a-z0-9]/g, '');
+	if (t.length !== 10) return { error: 'short' };
+	try {
+		const f = brb()?.findQuestionSet;
+		if (!f) return { error: 'preview' };
+		const r = await f(t);
+		if (r && r.id && Array.isArray(r.items) && r.items.length) return { id: r.id, items: r.items.map((i) => ({ ...i })) };
+		return { error: r?.error === 'offline' ? 'offline' : 'none' };
+	} catch {
+		return { error: 'offline' };
+	}
+}
+/** The player's own save: a small value under a key (or null). */
+export function load<T>(key: string): T | null {
+	try {
+		return (brb()?.storage?.get(key) as T) ?? null;
+	} catch {
+		return null;
+	}
+}
+export function keep(key: string, value: unknown) {
+	try {
+		brb()?.storage?.set(key, value);
+	} catch {
+		/* not kept */
+	}
+}
+
 /** In a preview (no published game, so no links). */
 export const isPreview = () => !brb()?.gameUrl;
 /** Whether this player can save a set (signed in, not a guest, not a preview). */

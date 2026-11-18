@@ -126,8 +126,10 @@ const TYPES = {
   // BRB.copy: a link to this game's own page or a small PNG (copyForGame checks which); BRB.saveQuestionSet: a set game's
   // questions (the server cleans them); BRB.assign: a set game's lesson parameters (the server cleans them).
   'brb:copy': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && (typeof m.text === 'string' || (typeof Blob === 'function' && m.png instanceof Blob)),
-  'brb:set-save': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.items) && m.items.length <= 10 && JSON.stringify(m.items).length <= 20000 && (m.set === null || m.set === undefined || typeof m.set === 'string'),
+  'brb:set-save': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.items) && m.items.length <= 20 && JSON.stringify(m.items).length <= 20000 && (m.set === null || m.set === undefined || typeof m.set === 'string'),
   'brb:assign': m => typeof m.opts === 'string',
+  // BRB.findQuestionSet: a class code a student typed (the server reads it).
+  'brb:set-find': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.code === 'string' && m.code.length <= 40,
 };
 const LOUD_OPS = ['hello', 'start', 'keep', 'stop'];
 const TTS_ROLES = ['narrator', 'friendly', 'bright', 'deep', 'wise', 'grumpy'];
@@ -235,6 +237,7 @@ addEventListener('message', e => {
     case 'brb:copy': copyForGame(m); break;
     // BRB.saveQuestionSet (an official game that keeps question sets): the page saves it for the signed-in teacher.
     case 'brb:set-save': saveSetForGame(m); break;
+    case 'brb:set-find': findSetForGame(m); break;
     // BRB.assign (a teacher in a set game): after a tap, the game's Assign page with the problem or set it opens at.
     case 'brb:assign': if (typeof m.opts === 'string' && m.opts.length <= 200 && /^[a-z0-9=&-]*$/.test(m.opts) && tappedJustNow('brb-assign-at', 2000)) location.href = `/teach/assign?game=${encodeURIComponent(d.slug)}&opts=${encodeURIComponent(m.opts)}`; break;
   }
@@ -322,6 +325,15 @@ async function copyForGame(m) {
     }
   } catch { ok = false; }
   if (typeof m.id === 'number') toFrame({ type: 'brb:copied', id: m.id, ok });
+}
+async function findSetForGame(m) {
+  let out = { error: 'none' };
+  const code = m.code.replace(/[^A-Za-z0-9-]/g, '');
+  if (code) {
+    try { const r = await api(`/api/games/${d.gameId}/sets/${encodeURIComponent(code)}`); out = { set: r.id, items: r.items }; }
+    catch (e) { out = { error: e.status === 404 ? 'none' : 'offline' }; }
+  }
+  toFrame({ type: 'brb:set-found', id: m.id, ...out });
 }
 async function saveSetForGame(m) {
   if (typeof m.id !== 'number') return;

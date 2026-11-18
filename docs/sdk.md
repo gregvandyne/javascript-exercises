@@ -327,19 +327,22 @@ cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, 
 `/play/<slug>?chapter=s-<10 letters and digits>&lock=1`.
 - `BRB.questionSet`: the set the link opened, `{ id, items, mine }` (`mine`: the player saved it), or
   `{ id, missing: true }` for a code with no set; `null` without one. The items are the game's own shape, as its
-  cleaner left them. Algebra Builder: 1 to 10 items `{ a, p, s, l }`: the activity (`solve`, `multiply`, `factor`), the
+  cleaner left them. Algebra Builder: 1 to 20 items `{ a, p, s, l }`: the activity (`solve`, `multiply`, `factor`), the
   problem in the math alphabet (digits, x, `+ - − = ^ ( )` and spaces, at most 40 characters), what students start with
   (`all` or `none`) and the live balance (true or false). Box by Box: one item `{ k, p, l, c?, d?, g? }`: `divide` or
   `multiply`, up to 100 `[a, b]` problems it can work, the support level, the 7 flags of a custom mix, `d: 1` for a fresh
   set per student and the plan `g` it is made from. No free text in either.
 - `BRB.saveQuestionSet(items, id?)` → a Promise of `{ id }` or `{ error }` (`guest`, `bad`, `full`, `notYours`,
   `offline`). The page posts it to `POST /api/games/:id/sets` for the signed-in player (not a guest): a new set, or with
-  `id` their own set changed under the same code. 1 to 10 items; 200 sets per player per game.
+  `id` their own set changed under the same code. 1 to 20 items (Algebra Builder); 200 sets per player per game.
 - `BRB.canAssign` / `BRB.assign(query)`: a teacher (school staff, not in a preview) may assign what they made. `query`
   is the problem's or set's lesson parameters (`chapter=s-…&lock=1`); after a tap the page opens
   `/teach/assign?game=<slug>&opts=<query>`, which says what students will open, makes a one-step lesson named after it
   whose game step carries those options, and offers "Also post to Google Classroom" for a class linked to Classroom.
   Students finish it with `BRB.gameOver` (the step done), which is the Classroom completion grade.
+- `BRB.findQuestionSet(code)` → a Promise of `{ id, items }` or `{ error: 'none' | 'offline' }`: a class code a
+  student typed (the set id without `s-`, any case, spaces or dashes; `GET /api/games/:id/sets/:code`, open to anyone
+  who can open the game, 30 a minute per address). New codes leave out i, l, o, 0 and 1.
 - Sets go with their owner's account. Nothing about who played is kept.
 
 ## Loudness (`BRB.loudness`)

@@ -992,6 +992,26 @@
       send('brb:set-save', { id: n, items: items, set: typeof id === 'string' ? id : null });
     });
   }
+  // BRB.findQuestionSet(code): a class code a student typed -> a Promise of { id, items } or { error: 'none'|'offline' }.
+  var findWait = {}, findSeq = 0;
+  function findQuestionSet(code) {
+    if (typeof Promise !== 'function') return null;
+    return new Promise(function (res) {
+      if (typeof code !== 'string' || code.length > 40) return res({ error: 'none' });
+      var n = ++findSeq, timer = setTimeout(function () { delete findWait[n]; res({ error: 'offline' }); }, 10000);
+      findWait[n] = function (r) { clearTimeout(timer); delete findWait[n]; res(r); };
+      send('brb:set-find', { id: n, code: code });
+    });
+  }
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:set-found' || typeof m.id !== 'number') return;
+    var w = findWait[m.id]; if (!w) return;
+    if (typeof m.set === 'string' && /^s-[a-z0-9]{10}$/.test(m.set) && Array.isArray(m.items)) {
+      var fz = function (v) { if (v && typeof v === 'object') { Object.keys(v).forEach(function (k) { fz(v[k]); }); Object.freeze(v); } return v; };
+      w({ id: m.set, items: fz(JSON.parse(JSON.stringify(m.items))) });
+    } else w({ error: m.error === 'offline' ? 'offline' : 'none' });
+  });
   window.addEventListener('message', function (e) {
     if (e.source !== parentWin) return;
     var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:set-saved' || typeof m.id !== 'number') return;
@@ -1243,6 +1263,7 @@
     copy: copy,
     questionSet: questionSet,
     saveQuestionSet: saveQuestionSet,
+    findQuestionSet: findQuestionSet,
     canAssign: INIT.canAssign === true,
     assign: assign
   };

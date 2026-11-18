@@ -424,6 +424,16 @@ function setFor(g, chapter, u) {
   const s = gameSets.get(g.id, chapter);
   return { set: s ? { id: s.id, items: s.items, mine: !!u && s.ownerId === u.id } : { id: chapter, missing: true } };
 }
+// A class code a student typed in the game (BRB.findQuestionSet): the set, to play straight away. Anyone who can open the
+// game may look one up (a code is what a teacher hands out); slowed per address, so codes can't be guessed in bulk.
+router.get('/api/games/:id/sets/:code', rateLimit('game-set-code', 30, 60e3, 'errors.api.slowDown', { byIp: true }), (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!setGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  const id = gameSets.codeToId(req.params.code);
+  const s = id && gameSets.get(g.id, id);
+  if (!s) return res.status(404).json({ error: req.t('game.api.notFound'), code: 'noSet' });
+  res.json({ id: s.id, items: s.items });
+});
 router.post('/api/games/:id/sets', requireUser, rateLimit('game-sets', 60, 60e3), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
   if (!setGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });

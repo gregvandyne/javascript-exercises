@@ -7791,7 +7791,7 @@ Answers: **Algebra Builder**; question sets **saved on Oomba** under a short cod
   `p q e o c`, at most 16 characters; `level` 1/2 is the live balance on/off for Solve, all tiles/none otherwise). A
   problem too long for that says so on its setup page; a preview has no link.
 - **Question sets.** "Make a question set" on the gallery, or "Start a question set with it" on any setup page: up to
-  10 questions from any activity, each made on that activity's setup page (Add to the set / Save this question),
+  10 questions (20 since the teacher generator) from any activity, each made on that activity's setup page (Add to the set / Save this question),
   reordered, changed or removed in the set's list. **Save and get link** keeps it on Oomba (`game_sets`, migration
   0085; `server/services/game-sets.js`) and shows its link `?chapter=s-xxxxxxxxxx&lock=1`, the QR code and Copy; saving
   again keeps the link. Signed-in players only (a guest is told to sign in; a preview has no links). The teacher's
@@ -7817,6 +7817,33 @@ Answers: **Algebra Builder**; question sets **saved on Oomba** under a short cod
   `build.mjs` and tests/unit/algebra-builder.test.js check the name appears nowhere (the CSS text-cursor property aside).
 - **Safety scan.** `build.mjs` removes what the scanner refuses in the bundle: Svelte's and Tailwind's web addresses,
   a validator's `Function('')` probe (answered "no"), its address pattern and its 64-bit limits written as digits.
+
+## Algebra Builder: who's playing, class codes, practice, hints, a question generator (18 Nov 2026)
+Owner: "Can we also add hints if students get stuck? ... At the beginning when you click into the game can you create a
+student and teacher path. For a teacher it should be the flow as is. For the student, they should either be able to add
+a code to take a teacher's assignment, or they should be able to practice independently ... choose difficulty level and
+then randomly creates a bunch of different problems ... make sure they don't receive the same problems each time." And:
+"for the teachers, they should be able to select the number of questions they'd like, the mix of questions ... and then
+it should be able to randomly generate the questions for the teacher if they so choose."
+- **Who's playing?** Opened without a link or a lesson, the game starts with two big choices. **I'm a teacher**: the
+  gallery, as before (with "Not a teacher?" to go back). **I'm a student**: a class code, or practising alone. Links,
+  QR codes and lessons still open their problem or set straight away.
+- **Class codes.** A saved question set shows its code (the set id without `s-`, as `ABCDE 23456`) beside its link;
+  a single problem gets one with **Get a class code** (saved as a one-question set). New codes leave out i, l, o, 0, 1.
+  A student types it (any case, spaces, dashes); the page looks it up (`BRB.findQuestionSet`, `GET
+  /api/games/:id/sets/:code`) and the set plays. No `<form>`: the sandboxed frame blocks form submits.
+- **Practising alone.** Solve, Multiply or Factor; Easy, Medium or Hard (each described for the activity chosen); 5
+  problems made at random, each one a teacher could type. The ones a student has had are kept in their save (per
+  activity and level, the last 200), and a new set avoids them until a level runs out of new ones (then the oldest come
+  back). Checked over 40 sets each: no repeat before 200 for Solve, 192 / 157 for hard Multiply / Factor, and the
+  smaller easy pools (48 Multiply, 33 Factor) go round only when used up. "5 new problems" at the end.
+- **Hints.** A Hint button beside Check: up to three per step, from the idea of the step to this problem's own tiles
+  (for x − 9 = 4x + 3: put 1 red −x tile in both pans, then 3 red −1 tiles; it ends with 3 x tiles against 12 red −1
+  tiles). They never do the step. After two Checks that didn't pass, or a minute on a step, it lights up as "Stuck?
+  Hint". The hints box takes the place of the Check message and can be closed (on a phone it would cover the board).
+- **Make questions for me** (a teacher's question set): how many of each activity (− and +), a level, replace or add;
+  the generator above makes them, all different, then the teacher can change, move or remove any. A set now holds up to
+  20 questions (was 10).
 
 ## Box by Box: long division and multiplication, box by box (18 Nov 2026)
 Owner: a second game for Oomba from a web app they own, played end to end as teacher and student first, rebuilt with the

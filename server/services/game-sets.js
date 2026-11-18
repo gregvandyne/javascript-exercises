@@ -8,7 +8,7 @@
 import crypto from 'node:crypto';
 import { q, now } from '../db.js';
 
-export const MAX_ITEMS = 10;
+export const MAX_ITEMS = 20;
 /** How many sets one account may keep in one game. */
 export const MAX_PER_OWNER = 200;
 /** A set's code, as it rides in the lesson parameter chapter. */
@@ -18,7 +18,7 @@ const ACTIVITIES = ['solve', 'multiply', 'factor'];
 const PROBLEM = /^[0-9x+\-−=^() ]{1,40}$/;
 
 /** Algebra Builder: the clean list of questions, or null when it isn't one: [{ a: activity, p: problem, s: 'all'|'none',
- *  l: bool }], 1 to 10. */
+ *  l: bool }], 1 to 20. */
 export function cleanItems(raw) {
   if (!Array.isArray(raw) || raw.length < 1 || raw.length > MAX_ITEMS) return null;
   const out = [];
@@ -83,10 +83,18 @@ export function cleanBoxItems(raw) {
 /** Official games that may keep question sets (slug -> the cleaner of their sets). */
 export const SET_GAMES = new Map([['algebra-builder', cleanItems], ['box-by-box', cleanBoxItems]]);
 
+// New codes leave out letters and digits that read alike (i l 1, o 0), since a student may type one as a class code.
+// (Codes made before keep working: SET_ID still takes any letter or digit.)
+const CODE_LETTERS = 'abcdefghjkmnpqrstuvwxyz23456789';
 const newId = () => {
-  const L = 'abcdefghijklmnopqrstuvwxyz0123456789', b = crypto.randomBytes(10);
-  return 's-' + [...b].map(x => L[x % L.length]).join('');
+  const b = crypto.randomBytes(10);
+  return 's-' + [...b].map(x => CODE_LETTERS[x % CODE_LETTERS.length]).join('');
 };
+/** A class code as a student types it ("C5EXP 1CM9H", any case, spaces or dashes) -> the set id, or null. */
+export function codeToId(typed) {
+  const t = String(typed || '').toLowerCase().replace(/^s-/, '').replace(/[^a-z0-9]/g, '');
+  return /^[a-z0-9]{10}$/.test(t) ? `s-${t}` : null;
+}
 
 /** A set of this game: { id, items, ownerId } or null. */
 export function get(gameId, id) {
