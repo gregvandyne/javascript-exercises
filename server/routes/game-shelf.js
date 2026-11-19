@@ -163,7 +163,7 @@ function gameRow(req, ctx, g0, { folder = null, own = false, grip = false } = {}
     ctx.kind === 'build' && mineGame ? html`<button class="btn" type="button" data-rename>🏷️ ${t('build.rename')}</button><button class="btn mg-del" type="button" data-delete>🗑️ ${t('build.delete')}</button>` : '',
   ];
   const live = mineGame && g.status === 'published' && g.published_version_id;
-  return html`<li class="mygame shelf-game" data-id="${g.id}" data-title="${g.title}" data-live="${live ? '1' : ''}"${folder && own ? html` data-folder="${folder.id}" data-folder-name="${folder.name}"` : ''}>
+  return html`<li class="mygame shelf-game" data-id="${g.id}" data-title="${g.title}" data-published="${live ? '1' : ''}"${folder && own ? html` data-folder="${folder.id}" data-folder-name="${folder.name}"` : ''}>
     ${grip ? html`<button class="gfo-grip" type="button" data-grip aria-label="${t('folders.move', { name: g.title })}" aria-describedby="shelf-gorder"><span aria-hidden="true">⠿</span></button>` : ''}
     <a class="mg-cover" href="${mineGame && ctx.kind === 'build' ? `/studio/${g.id}` : play}" tabindex="-1" aria-hidden="true">${coverArt(g, '', { draft: mineGame })}</a>
     <div class="mg-body"><h3><a href="${mineGame && ctx.kind === 'build' ? `/studio/${g.id}` : play}" dir="auto">${g.title}</a></h3>

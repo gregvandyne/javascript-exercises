@@ -1,5 +1,6 @@
 // Shared UI components (server-rendered). Markup contracts used by public/js/*.js:
-//  - live counts: any element with [data-live="<gameId>"] gets its text updated every 30s by app.js
+//  - live counts: any element with [data-live="<gameId>"] and a data-live-format gets its text updated every 30s by
+//    app.js (it replaces the element's whole text, so never put data-live on anything else)
 // Text comes from the request's language via current() (server/i18n); outside a request it is English.
 import { html, raw, esc } from './html.js';
 import { current, tHtml } from '../i18n/index.js';

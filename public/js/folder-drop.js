@@ -1,13 +1,16 @@
 // Drag a game onto one of my folders in the left column to save it there (docs/decisions.md "Drag a game onto a
 // folder"). The folders that take a game carry data-drop-folder="<id>" (server/routes/game-shelf.js, one's own folders
-// only). Two ways a drag starts: in a folder whose games can be put in order, reorder.js already drags the card and asks
-// here whether it is over a folder; everywhere else on the shelf (All my games, Find Oomba games, a shared folder) a
-// small picture of the game follows the pointer. A mouse drags at once (after a few pixels); a finger or pen holds still
-// first, so a swipe still scrolls. Dropping saves it the way ⋯ › Save to folder does (POST /api/game-folders/:id/games),
-// which stays the way to do it from a keyboard. A game already in that folder is not added twice. A game dragged out
-// of one of my folders onto another asks first, in a small pop-up beside the folder: Move here (it leaves the folder it
-// came from) or Keep in both.
+// only). This is the one drag for games on the shelf (docs/decisions.md "Folders: one drag for games"): in a folder with
+// one game or many, All my games, Find Oomba games or a shared folder, the row fades in place (is-lifted), a small
+// picture of the game follows the pointer (.drop-ghost), and a folder under it lights up (is-drop). In a folder whose
+// games can be put in order (data-reorder, reorder.js), the faded row also moves to where it will land while the
+// pointer is over the list; over a folder, or outside the list, it goes back to its place. A mouse drags at once (after
+// a few pixels); a finger or pen holds still first, so a swipe still scrolls. Escape puts everything back.
+// Dropping on a folder saves it the way ⋯ › Save to folder does (POST /api/game-folders/:id/games), which stays the way to
+// do it from a keyboard. A game already in that folder is not added twice. A game dragged out of one of my folders onto
+// another asks first, in a small pop-up beside the folder: Move here (it leaves the folder it came from) or Keep in both.
 import { $$, api, toast } from '/js/app.js';
+import { itemsOf, placeAt, putBack, saveOrder, say, movedMsg } from '/js/reorder.js';
 
 const HOLD_MS = 350, SLOP = 8, MOUSE_SLOP = 5;
 let over = null;
@@ -127,7 +130,13 @@ export function dropOn(target, li) {
   if (from) askMove(target, li); else add(target, li.dataset.id);
 }
 
-/** The games on the shelf's right side that are not in a list reorder.js drags. */
+/** Is the pointer over the list (or just beside it), where a drop puts the game in a new place? */
+function overList(list, x, y) {
+  const r = list.getBoundingClientRect(), m = 40;
+  return x >= r.left - m && x <= r.right + m && y >= r.top - m && y <= r.bottom + m;
+}
+
+/** Every game on the shelf's right side (the one drag for games: see the top of this file). */
 export function wire(main) {
   if (!main || main.dataset.dropOn) return;
   main.dataset.dropOn = '1';
@@ -135,8 +144,10 @@ export function wire(main) {
 
   const rowOf = el => {
     const li = el instanceof Element && el.closest('.shelf-game[data-id]');
-    return li && main.contains(li) && !li.parentElement.matches('[data-reorder]') ? li : null;
+    return li && main.contains(li) ? li : null;
   };
+  /** The list this row can be put in order in (reorder.js has wired it), or null. */
+  const sortable = li => { const l = li.parentElement; return l && l.matches('[data-reorder]') && l.dataset.reorderOn ? l : null; };
   const ghostOf = li => {
     const g = document.createElement('div');
     g.className = 'drop-ghost'; g.setAttribute('aria-hidden', 'true');
@@ -147,10 +158,17 @@ export function wire(main) {
     return g;
   };
   const place = (x, y) => { if (drag.ghost) drag.ghost.style.transform = `translate(${x + 12}px, ${y + 12}px)`; };
+  /** Light the folder under the pointer; in a list that can be put in order, move the faded row to where it lands. */
+  const track = (x, y) => {
+    const t = hover(x, y), { list, li } = drag;
+    if (!list) return;
+    if (!t && overList(list, x, y)) placeAt(list, li, x, y); else putBack(list, li, drag.from);
+  };
   const start = () => {
     drag.on = true;
     drag.li.classList.add('is-lifted'); document.body.classList.add('is-sorting');
-    drag.ghost = ghostOf(drag.li); place(drag.x, drag.y); hover(drag.x, drag.y);
+    if (drag.list) drag.list.classList.add('is-sorting');
+    drag.ghost = ghostOf(drag.li); place(drag.x, drag.y); track(drag.x, drag.y);
     if (navigator.vibrate && drag.touch) try { navigator.vibrate(12); } catch { /* not allowed */ }
   };
   const end = commit => {
@@ -159,20 +177,29 @@ export function wire(main) {
     const d = drag; drag = null;
     if (!d.on) return;
     d.li.classList.remove('is-lifted'); document.body.classList.remove('is-sorting');
+    if (d.list) d.list.classList.remove('is-sorting');
     if (d.ghost) d.ghost.remove();
     eatClick = true; setTimeout(() => { eatClick = false; }, 50);
-    const t = commit ? targetAt(d.x, d.y) : null;
+    const t = commit && d.li.isConnected ? targetAt(d.x, d.y) : null;
     clear();
+    if (d.list) {
+      // A new place in the list: saved (reorder.js; a failed save puts the server's order back). Anything else: back.
+      const to = itemsOf(d.list).indexOf(d.li);
+      if (commit && !t && d.li.isConnected && to !== d.from) { saveOrder(d.list); say(movedMsg(d.list, d.li, to + 1, itemsOf(d.list).length)); }
+      else putBack(d.list, d.li, d.from);
+    }
     if (t) dropOn(t, d.li);
   };
 
   main.addEventListener('pointerdown', e => {
-    if (drag || e.button > 0 || !hasTargets()) return;
+    if (drag || e.button > 0) return;
     const li = rowOf(e.target); if (!li) return;
-    // Buttons, menus and forms keep their own taps; the cover, the title and the card itself start a drag.
-    if (e.target.closest('input, select, textarea, button, form, .mg-actions, details')) return;
+    const list = sortable(li);
+    if (!list && !hasTargets()) return;
+    // Buttons, menus and forms keep their own taps; the grip, the cover, the title and the card itself start a drag.
+    if (e.target.closest('input, select, textarea, button, form, .mg-actions, details') && !e.target.closest('[data-grip]')) return;
     const touch = e.pointerType !== 'mouse';
-    drag = { li, x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, on: false, touch, id: e.pointerId, ghost: null };
+    drag = { li, list, from: list ? itemsOf(list).indexOf(li) : -1, x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, on: false, touch, id: e.pointerId, ghost: null };
     if (touch) holdTimer = setTimeout(() => { if (drag && !drag.on) start(); }, HOLD_MS);
   });
   addEventListener('pointermove', e => {
@@ -185,14 +212,16 @@ export function wire(main) {
       start();
     }
     e.preventDefault();
-    place(e.clientX, e.clientY); hover(e.clientX, e.clientY);
+    // The right side was swapped for another folder mid-drag: this game is gone, so the drag is too.
+    if (!drag.li.isConnected) { end(false); return; }
+    place(e.clientX, e.clientY); track(e.clientX, e.clientY);
   });
   addEventListener('pointerup', e => { if (drag && e.pointerId === drag.id) end(true); });
   addEventListener('pointercancel', e => { if (drag && e.pointerId === drag.id) end(false); });
-  addEventListener('keydown', e => { if (e.key === 'Escape' && drag) end(false); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && drag) { if (drag.on) e.preventDefault(); end(false); } });
   addEventListener('touchmove', e => { if (drag && drag.on) e.preventDefault(); }, { passive: false });
   main.addEventListener('contextmenu', e => { if (drag) e.preventDefault(); });
   main.addEventListener('click', e => { if (eatClick) { e.preventDefault(); e.stopPropagation(); } }, true);
   // No native link or picture drag for the games (it would hide the pointer events).
-  main.addEventListener('dragstart', e => { if (rowOf(e.target) && hasTargets()) e.preventDefault(); });
+  main.addEventListener('dragstart', e => { if (rowOf(e.target)) e.preventDefault(); });
 }
