@@ -153,6 +153,14 @@ test('"Make problems like" works for every kind it can vary: each pattern passes
     return probs.map(p => { const x = patternFor(p); return x ? [p.tool, K.selfTest({ problems: [], gen: x.gen }).ok] : [p.tool, 'none']; });
   });
   for (const [tool, ok] of out) expect(ok, tool).toBe(true);
+  // a take-away (the net force) defaults to ranges that never give a zero or negative answer, and "where" keeps it above 0
+  const force = await page.evaluate(async () => {
+    const { patternFor } = await import('/js/activity-panel/patterns.js');
+    const x = patternFor({ tool: 'figure.number', q: 'What is the net force on the box?', fig: { kind: 'freeBody', body: 'box', forces: [{ name: 'F', dir: 'right', size: 10 }, { name: 'Ff', dir: 'left', size: 4 }] }, answer: 6, unit: 'N', work: ['10 N − 4 N', '= 6 N'] });
+    return { a: x.ranges.a, b: x.ranges.b, where: x.gen.where };
+  });
+  expect(force.b.to).toBeLessThan(force.a.from);
+  expect(force.where).toBe('a-b>0');
   // what cannot be varied from one problem: the Builder's own word groups, and a figure question with choices
   expect(await page.evaluate(async () => { const { patternFor } = await import('/js/activity-panel/patterns.js');
     return [patternFor({ tool: 'tiles.sort', bins: ['A', 'B'], items: [{ t: 'x', bin: 0 }, { t: 'y', bin: 1 }] }), patternFor({ tool: 'figure.choice', q: 'Real?', fig: { kind: 'rays' }, choices: ['real', 'virtual'], answer: 0, work: ['real'] })]; })).toEqual([null, null]);

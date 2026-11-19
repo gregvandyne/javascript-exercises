@@ -71,6 +71,14 @@ function rangeOf(p, v) {
   const step = 10 ** -decimals(v.x), from = Math.max(step, +numText(Math.round(v.x / 2 / step) * step));
   return { from, to: +numText(Math.max(v.x * 2, v.x + 5 * step)), step, x: v.x };
 }
+/** A take-away (a net force, change, what is left) starts with the second number below the first's lowest value, so
+ *  the default ranges never make a zero or negative answer (the teacher can still widen them; "where" keeps it above 0). */
+function defaultRange(p, v, rel, ranges) {
+  const R = rangeOf(p, v);
+  if (rel.op !== '-' || v.name !== 'b' || !ranges.a) return R;
+  const to = +numText(+ranges.a.from - R.step);
+  return to >= R.from ? { ...R, to: Math.min(R.to, to) } : R;
+}
 function setAt(obj, path, value) { let o = obj; for (const k of path.slice(0, -1)) o = o[k]; o[path[path.length - 1]] = value; }
 function figurePattern(p, r) {
   if (p.tool !== 'figure.number' || !p.fig) return null;
@@ -78,7 +86,7 @@ function figurePattern(p, r) {
   const ranges = {}, keys = {}, vars = {}, fig = clone(p.fig);
   let q = p.q;
   for (const v of rel.vars) {
-    const R = (r && r[v.name]) || rangeOf(p, v);
+    const R = (r && r[v.name]) || defaultRange(p, v, rel, ranges);
     ranges[v.name] = R; keys[v.name] = ['from', 'to', 'step'];
     vars[v.name] = [+R.from, +R.to, +R.step || 1];
     setAt(fig, v.path, `{${v.name}}`);
@@ -88,7 +96,7 @@ function figurePattern(p, r) {
   const reading = fig.kind === 'reading' && rel.expr === 'v';
   const work = reading ? [P('genWork1'), P('genWork2', { v: ans, u })]
     : rel.expr === 'v' ? [P('genWorkLook'), P('genWorkAns', { v: ans, u })] : [P('genWorkCalc', { calc: `{a} ${rel.sign} {b}` }), P('genWorkAns', { v: ans, u })];
-  const where = rel.op === '-' ? 'a-b>=0' : rel.op === '/' ? 'b>0' : undefined;
+  const where = rel.op === '-' ? 'a-b>0' : rel.op === '/' ? 'b>0' : undefined;
   return { ranges, keys, gen: { tool: 'figure.number', vars, ...(where ? { where } : {}), q, fig, answer: rel.expr, ...(p.dp ? { dp: p.dp } : {}), ...(p.unit ? { unit: p.unit } : {}), work } };
 }
 
