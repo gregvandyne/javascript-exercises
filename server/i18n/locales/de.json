@@ -1821,7 +1821,26 @@
     "liveFamily": "Live für Ihre Familie! Sie und die Kinder, die mit Ihrer Familie verknüpft sind, können es spielen.",
     "liveConnections": "Mit Ihren Erwachsenen-Kontakten geteilt! Nur Sie und diese Kontakte können es spielen.",
     "waitingTeam": "Deine Freunde können es schon spielen! Jemand vom Oomba-Team prüft jedes Spiel, bevor alle es spielen können. Wir schicken dir eine Nachricht, wenn es fertig ist.",
-    "waitingTeamGrownup": "Ihre Erwachsenen-Kontakte können es schon spielen. Jemand vom Oomba-Team prüft jedes Spiel, bevor alle es spielen können, und wir schicken Ihnen eine Nachricht, wenn es fertig ist."
+    "waitingTeamGrownup": "Ihre Erwachsenen-Kontakte können es schon spielen. Jemand vom Oomba-Team prüft jedes Spiel, bevor alle es spielen können, und wir schicken Ihnen eine Nachricht, wenn es fertig ist.",
+    "play": {
+      "blocked": "Der Baumeister konnte dein Spiel nicht zu Ende spielen: {why}. Bitte den Baumeister, es zu reparieren, und gib es dann noch einmal frei.",
+      "ask": "Beim Durchspielen meines Spiels ist das passiert: {why}. Bitte repariere es, damit man es bis zum Ende spielen kann.",
+      "busy": "Der Baumeister konnte dein Spiel gerade nicht ganz durchspielen. Versuch es in einer Minute noch mal.",
+      "why": {
+        "error": "es gab einen Fehler ({error})",
+        "errorAt": "es gab einen Fehler in Level {level} ({error})",
+        "stuck": "es ist hängen geblieben",
+        "stuckAt": "es ist in Level {level} hängen geblieben",
+        "stuckProblem": "es ist bei Frage {n} hängen geblieben",
+        "noend": "es kam in {secs} Sekunden Spielzeit nicht ans Ende",
+        "noGameOver": "das Spiel hat nie gemeldet, dass es vorbei ist",
+        "noScore": "das Spiel endete ohne Punktzahl",
+        "hint": "nach einer falschen Antwort kam kein Tipp",
+        "answer": "bei Frage {n} ließ sich die richtige Antwort nicht eingeben",
+        "start": "das Spiel ist nicht gestartet",
+        "failed": "das Spiel ist beim Spielen eingefroren"
+      }
+    }
   },
   "builder": {
     "kindRefusal": "Dabei kann ich leider nicht helfen. Lass uns lieber etwas Lustiges bauen. Was für ein Spiel hättest du gern?",
@@ -2588,7 +2607,16 @@
       "sparks": "{n, plural, one {# Nachricht aus Funkenpaketen} other {# Nachrichten aus Funkenpaketen}}",
       "activityEdit": "Aktivität bearbeiten",
       "asStudent": "Als Schüler",
-      "activitySaveFirst": "Speichern oder verwerfen Sie zuerst Ihre Änderungen im Aktivitätsbereich."
+      "activitySaveFirst": "Speichern oder verwerfen Sie zuerst Ihre Änderungen im Aktivitätsbereich.",
+      "play": {
+        "pass": "Ganz durchgespielt",
+        "endless": "Ohne Probleme gespielt (es hat kein Ende)",
+        "title": "Noch nicht bereit zum Freigeben",
+        "fix": "Baumeister soll's reparieren",
+        "anyway": "Trotzdem freigeben",
+        "confirm": "Freigeben, ohne dass es ganz durchgespielt wurde? Spieler könnten hängen bleiben.",
+        "checking": "Dein Spiel wird erst einmal ganz durchgespielt …"
+      }
     },
     "character": {
       "unsaved": "Noch nicht gespeichert",

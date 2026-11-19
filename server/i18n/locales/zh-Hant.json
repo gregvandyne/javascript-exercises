@@ -1820,7 +1820,26 @@
     "liveFamily": "已分享給你的家人！你和連結到你家庭的孩子可以玩。",
     "liveConnections": "已分享給你的大人聯絡人！只有你和他們可以玩。",
     "waitingTeam": "你的朋友現在就能玩了!在所有人都能玩之前,Oomba 團隊會有人檢查每一個遊戲。完成後我們會傳訊息給你。",
-    "waitingTeamGrownup": "你的大人聯絡人現在就能玩了。在所有人都能玩之前,Oomba 團隊會有人檢查每一個遊戲,完成後我們會傳訊息給你。"
+    "waitingTeamGrownup": "你的大人聯絡人現在就能玩了。在所有人都能玩之前,Oomba 團隊會有人檢查每一個遊戲,完成後我們會傳訊息給你。",
+    "play": {
+      "blocked": "小幫手沒辦法把你的遊戲玩到最後：{why}。請小幫手修好，然後再發布一次。",
+      "ask": "你把我的遊戲從頭玩到尾的時候，{why}。請修好它，讓它可以一路玩到最後。",
+      "busy": "小幫手現在沒辦法把你的遊戲玩到最後。請過一分鐘再試一次。",
+      "why": {
+        "error": "出現了錯誤（{error}）",
+        "errorAt": "在第 {level} 關出現了錯誤（{error}）",
+        "stuck": "遊戲卡住了",
+        "stuckAt": "遊戲在第 {level} 關卡住了",
+        "stuckProblem": "遊戲在第 {n} 題卡住了",
+        "noend": "玩了 {secs} 秒還沒到結尾",
+        "noGameOver": "遊戲一直沒有說它結束了",
+        "noScore": "遊戲結束了，但沒有分數",
+        "hint": "答錯之後沒有出現提示",
+        "answer": "第 {n} 題沒辦法填入正確答案",
+        "start": "遊戲沒有開始",
+        "failed": "遊戲玩到一半當掉了"
+      }
+    }
   },
   "builder": {
     "kindRefusal": "這個我沒辦法幫忙。我們來做點好玩的東西吧！你想做什麼樣的遊戲？",
@@ -2587,7 +2606,16 @@
       "sparks": "{n, plural, other {火花包 # 次}}",
       "activityEdit": "編輯活動",
       "asStudent": "以學生身分",
-      "activitySaveFirst": "請先儲存或復原活動面板中的修改。"
+      "activitySaveFirst": "請先儲存或復原活動面板中的修改。",
+      "play": {
+        "pass": "已經從頭玩到尾",
+        "endless": "玩起來沒有問題（這個遊戲沒有結尾）",
+        "title": "還不能發布",
+        "fix": "請小幫手修好",
+        "anyway": "還是要發布",
+        "confirm": "還沒從頭玩到尾就要發布嗎？玩家可能會卡住。",
+        "checking": "先把你的遊戲從頭玩到尾…"
+      }
     },
     "character": {
       "unsaved": "還沒儲存",

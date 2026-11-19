@@ -46,7 +46,8 @@ router.post('/api/admin-tool/games/:id/source', gate, express.json({ limit: '3mb
   if (html.length < 100 || html.length > 2 * 1024 * 1024) return res.status(400).json({ error: 'html must be a whole game under 2 MB' });
   const v = games.addVersion(g.id, html, { notes: String((req.body || {}).notes || 'Fixed by the admin').slice(0, 300), createdBy: req.admin.id });
   if (!(g.status === 'published' && g.published_version_id)) return res.json({ ok: true, version: v.number, state: 'saved' });
-  let r = await publish(req.admin, g.id, g.visibility, { versionId: v.id });
+  // override: the admin's own "publish anyway" (the fixed version is played all the way through first otherwise)
+  let r = await publish(req.admin, g.id, g.visibility, { versionId: v.id, override: (req.body || {}).override === true });
   if (r.ok && r.state !== 'live' && games.getGame(g.id).pending_version_id === v.id) { approve(req.admin, g.id, 'Fixed by the admin'); r = { ok: true, state: 'live' }; }
   res.status(r.ok ? 200 : 400).json({ ok: !!r.ok, version: v.number, state: r.state, message: r.message, report: r.report });
 });

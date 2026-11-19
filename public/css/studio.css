@@ -266,6 +266,8 @@ button.stp-line{cursor:pointer}
 .st-safety{padding:8px 10px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:600;font-size:.95rem}
 .st-safety:empty{display:none}
 .st-safety ul{margin:0;padding-inline-start:20px;flex-basis:100%;font-weight:500}
+.st-safety .st-played{white-space:nowrap}
+.st-playblock{margin:0 0 4px;font-weight:600}
 .st-liveclass{padding:8px 10px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.95rem;min-width:0}
 .st-liveclass .stchip{white-space:normal;overflow-wrap:anywhere;max-width:100%}
 .st-live-why{flex-basis:100%;margin:0}

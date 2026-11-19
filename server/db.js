@@ -1065,6 +1065,9 @@ export const MIGRATIONS = [
   // A game step's best score that came from a set where the teacher showed an answer (Oomba Canvas 1.3.0's Show answer:
   // those problems are not in the score). Shown to the class's staff only, beside that score (routes/progress.js).
   ['0090_step_progress_helped', 'ALTER TABLE step_progress ADD COLUMN helped INTEGER NOT NULL DEFAULT 0;'],
+  // The Builder's full playthrough of each version (services/playthrough.js): '' not played yet, 'pass' it reached the
+  // game's end, 'fail' it did not (playthrough_report says why). Publishing needs a pass.
+  ['0091_version_playthrough', "ALTER TABLE game_versions ADD COLUMN playthrough_status TEXT NOT NULL DEFAULT ''; ALTER TABLE game_versions ADD COLUMN playthrough_report TEXT NOT NULL DEFAULT '';"],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

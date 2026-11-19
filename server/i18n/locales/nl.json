@@ -1821,7 +1821,26 @@
     "liveFamily": "Live voor je gezin! Jij en de kinderen die aan je gezin gekoppeld zijn, kunnen het spelen.",
     "liveConnections": "Gedeeld met je volwassen contacten! Alleen jij en zij kunnen het spelen.",
     "waitingTeam": "Je vrienden kunnen het nu al spelen! Iemand van het Oomba-team bekijkt elk spel voordat iedereen het kan spelen. We sturen je een bericht als het klaar is.",
-    "waitingTeamGrownup": "Je volwassen contacten kunnen het nu al spelen. Iemand van het Oomba-team bekijkt elk spel voordat iedereen het kan spelen, en we sturen je een bericht als het klaar is."
+    "waitingTeamGrownup": "Je volwassen contacten kunnen het nu al spelen. Iemand van het Oomba-team bekijkt elk spel voordat iedereen het kan spelen, en we sturen je een bericht als het klaar is.",
+    "play": {
+      "blocked": "De Bouwer kon je spel niet uitspelen: {why}. Vraag de Bouwer om het te repareren en publiceer het daarna opnieuw.",
+      "ask": "Bij het uitspelen van mijn spel ging het mis: {why}. Repareer het alsjeblieft, zodat het tot het einde gespeeld kan worden.",
+      "busy": "De Bouwer kon je spel nu even niet helemaal uitspelen. Probeer het over een minuut opnieuw.",
+      "why": {
+        "error": "er ging iets fout ({error})",
+        "errorAt": "er ging iets fout in level {level} ({error})",
+        "stuck": "het bleef hangen",
+        "stuckAt": "het bleef hangen in level {level}",
+        "stuckProblem": "het bleef hangen bij vraag {n}",
+        "noend": "het kwam in {secs} seconden spelen niet aan het einde",
+        "noGameOver": "het spel meldde nooit dat het afgelopen was",
+        "noScore": "het spel eindigde zonder score",
+        "hint": "na een fout antwoord kwam er geen hint",
+        "answer": "het goede antwoord op vraag {n} kon niet gegeven worden",
+        "start": "het spel startte niet",
+        "failed": "het spel liep vast tijdens het spelen"
+      }
+    }
   },
   "builder": {
     "kindRefusal": "Daar kan ik niet mee helpen. Laten we iets leuks bouwen! Wat voor game wil je graag?",
@@ -2588,7 +2607,16 @@
       "sparks": "{n, plural, one {# bericht uit Vonkpakketten} other {# berichten uit Vonkpakketten}}",
       "activityEdit": "Activiteit bewerken",
       "asStudent": "Als leerling",
-      "activitySaveFirst": "Sla eerst je wijzigingen in het activiteitenpaneel op of maak ze ongedaan."
+      "activitySaveFirst": "Sla eerst je wijzigingen in het activiteitenpaneel op of maak ze ongedaan.",
+      "play": {
+        "pass": "Helemaal uitgespeeld",
+        "endless": "Zonder problemen gespeeld (het heeft geen einde)",
+        "title": "Nog niet klaar om te publiceren",
+        "fix": "Laat de Bouwer het repareren",
+        "anyway": "Toch publiceren",
+        "confirm": "Publiceren terwijl het niet helemaal is uitgespeeld? Spelers kunnen vast komen te zitten.",
+        "checking": "Je spel wordt eerst helemaal uitgespeeld…"
+      }
     },
     "character": {
       "unsaved": "Nog niet bewaard",

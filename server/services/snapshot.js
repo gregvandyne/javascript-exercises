@@ -16,6 +16,7 @@
 // locally and in the worker.
 import fs from 'node:fs';
 import { layoutProblems, canvasToEnd } from './layout-check.js';
+import { playToEnd, speedScript } from './playthrough-play.js';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -112,10 +113,10 @@ export async function closeBrowser() {
 }
 const idle = () => { clearTimeout(idleTimer); idleTimer = setTimeout(() => { closeBrowser(); }, IDLE_MS); idleTimer.unref?.(); };
 
-/** One job at a time, each with a hard time limit. */
-function serial(fn) {
+/** One job at a time, each with a hard time limit (JOB_MS; a full playthrough has its own, PLAY_JOB_MS). */
+function serial(fn, ms = JOB_MS) {
   const run = () => new Promise((resolve, reject) => {
-    const timer = setTimeout(() => { reject(new Error('Screenshot timed out')); closeBrowser(); }, JOB_MS);
+    const timer = setTimeout(() => { reject(new Error('Screenshot timed out')); closeBrowser(); }, ms);
     fn().then(resolve, reject).finally(() => { clearTimeout(timer); idle(); });
   });
   const p = chain.then(run, run);
@@ -184,9 +185,17 @@ export function autoplayGame(gameHtml, opts = {}) {
   return runGame(gameHtml, { scale: 1, ...opts, mode: 'autoplay', size: 'phone' });
 }
 
+/** The Builder's full playthrough of a game (playthrough-play.js playToEnd): opts { kind, data, scoring, orientation,
+ *  lang, dir, title, budgetMs (at most PLAY_MS) }. -> raw facts for services/playthrough.js. */
+export const PLAY_MS = 60_000;
+export const PLAY_JOB_MS = PLAY_MS + 12_000;   // loading the game (twice for an activity) on top of the play itself
+export function playthroughGame(gameHtml, opts = {}) {
+  return runGame(gameHtml, { scale: 1, ...opts, budgetMs: Math.min(PLAY_MS, opts.budgetMs || PLAY_MS), mode: 'playthrough', size: 'phone' });
+}
+
 /** Always run locally in this process (one game at a time, time-limited). The worker calls this. */
 export function runLocal(gameHtml, opts = {}) {
-  return serial(() => capture(gameHtml, opts));
+  return serial(() => capture(gameHtml, opts), opts.mode === 'playthrough' ? PLAY_JOB_MS : JOB_MS);
 }
 
 // ---- Remote worker client / wire format ---------------------------------------------
@@ -203,7 +212,7 @@ function jsonToResult(j) {
 const workerDown = msg => Object.assign(new Error(msg), { workerDown: true });
 async function runRemote(gameHtml, opts) {
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), JOB_MS + 15_000);
+  const timer = setTimeout(() => ctrl.abort(), (opts && opts.mode === 'playthrough' ? PLAY_JOB_MS : JOB_MS) + 15_000);
   try {
     let res;
     try {
@@ -229,11 +238,12 @@ async function runRemote(gameHtml, opts) {
 
 async function capture(gameHtml, opts) {
   const o = { size: 'cover', orientation: 'portrait', lang: 'en', dir: 'ltr', title: 'Game', titleMs: 1400, playMs: 2200, scale: 1.5, quality: 72, ...opts };
-  const shape = SIZES[o.size][o.orientation === 'landscape' ? 'landscape' : 'portrait'];
+  // A playthrough of an activity starts on a phone held upright (then a desktop); other games at their own orientation.
+  const shape = o.mode === 'playthrough' && o.kind === 'canvas' ? { width: 390, height: 844 } : SIZES[o.size][o.orientation === 'landscape' ? 'landscape' : 'portrait'];
   const doc = frameDocument(gameHtml, { user: { displayName: 'Player', avatar: '🦊', isGuest: false, lang: o.lang, dir: o.dir }, game: { id: 'preview', title: o.title }, save: {}, canSave: false, preview: true });
   // The automatic playtest also logs what the game tells the platform through the SDK (score, game over, saves): the
   // SDK posts those to the page around the frame, which is this host page here.
-  const listen = o.mode === 'autoplay' ? `<script>${HOST_LOG}</script>` : '';
+  const listen = o.mode === 'autoplay' || o.mode === 'playthrough' ? `<script>${HOST_LOG}</script>` : '';
   const host = `<!doctype html><meta charset="utf-8"><style>html,body{margin:0;height:100%;background:#000;overflow:hidden}iframe{width:100%;height:100%;border:0;display:block}</style>${listen}<iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>`;
   const b = await browser();
   const ctx = await b.newContext({ viewport: shape, deviceScaleFactor: o.scale, hasTouch: true, isMobile: false, reducedMotion: 'no-preference', serviceWorkers: 'block', locale: o.lang });
@@ -252,6 +262,8 @@ async function capture(gameHtml, opts) {
         }
       } catch (e) { /* ignore */ }
     });
+    // A free game's playthrough: its clocks run faster, so a round with a timer ends inside the time the playthrough has.
+    if (o.mode === 'playthrough' && o.kind === 'free' && o.speed > 1) await ctx.addInitScript({ content: speedScript(Math.min(4, o.speed)) });
     await ctx.route('**/*', route => {
       const u = route.request().url();
       if (u === `${HOST}/`) return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: host });
@@ -277,6 +289,13 @@ async function capture(gameHtml, opts) {
     page.on('dialog', d => d.dismiss().catch(() => {}));
     await page.goto(`${HOST}/`, { waitUntil: 'domcontentloaded', timeout: 15000 });
     const frame = await waitFrame(page);
+    if (o.mode === 'playthrough') {
+      // The same game again on a fresh page (an activity's desktop pass): a new set, nothing remembered.
+      const reopen = async () => { await page.goto(`${HOST}/`, { waitUntil: 'domcontentloaded', timeout: 15000 }); return waitFrame(page); };
+      const r = await playToEnd({ page, frame, errors, o, reopen, helpers: { startTarget, apButtons, PLAY_WORDS, AVOID_WORDS } });
+      const title = await page.screenshot({ type: 'jpeg', quality: 45 }).catch(() => null);
+      return { mode: 'playthrough', ...r, title: title || Buffer.alloc(0), kitWarnings: [...new Set(kitWarnings)].slice(0, 6), launches };
+    }
     // An activity on an older Oomba Canvas: the kit's own parts are as that version shipped (1.3.1 fixed their phone
     // layout), and the model may not change the kit, so the layout check looks only at what the activity adds.
     const cv = canvasVersion(gameHtml), skipKit = !!cv && cv !== CANVAS_LATEST;
@@ -359,7 +378,7 @@ function apButtons(avoid) {
   return [...document.querySelectorAll('button,[role=button],.btn,[onclick]')].filter(vis)
     .filter(el => !el.closest('.ok-corner, .ok-hud, .ok-modal .ok-close, [data-ap-skip]'))
     .filter(el => !re.test(((el.getAttribute('aria-label') || '') + ' ' + (el.getAttribute('title') || '') + ' ' + (el.textContent || '')).trim()))
-    .slice(0, 12).map(el => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+    .slice(0, 40).map(el => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, k: `${(el.id || '')}|${(el.textContent || '').trim().slice(0, 24)}|${Math.round(r.left)},${Math.round(r.top)}` }; });
 }
 
 /** The automatic playtest, in an open game (capture() with mode 'autoplay'). Returns raw facts (no pictures but one). */

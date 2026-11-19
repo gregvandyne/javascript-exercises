@@ -142,7 +142,8 @@ export async function run(ctx) {
   async function autoCheck() {
     if (!auto.dirty || !ctx.tools.autoPlaytest || aborted() || timeLeft() < autotest.TEST_NEEDS_MS) return null;
     auto.dirty = false;
-    const a = await ctx.tools.autoPlaytest();
+    // the full playthrough too while there is time for it (else publishing plays it: services/playthrough.js)
+    const a = await ctx.tools.autoPlaytest({ playthrough: timeLeft() > autotest.TEST_NEEDS_MS + autotest.PLAY_NEEDS_MS });
     if (!a || !a.ran || aborted()) return null;
     auto.left2fix = a.issues.filter(i => !i.soft);
     const fresh = a.issues.filter(i => !i.soft || !auto.seen.has(i.key));

@@ -383,6 +383,13 @@ window.__brbTest = {
   drive(o) { drive = o ? Object.assign({}, o) : null; },   // { x: -1..1, z: -1..1 (forward), jump: true } or null
   teleport(x, z) { hero.x = x; hero.z = z; hero.y = groundAt(x, z); hero.vy = 0; },
   look(yaw) { cam.yaw = yaw; },
+  // the platform's playthrough (services/playthrough.js): finish the round the way a player does, by picking up the last one
+  win() {
+    if (S.screen !== 'play') this.start();
+    const left = pickups.filter(p => !p.got), last = left.pop();
+    for (const p of left) { p.got = true; p.mesh.visible = false; S.got++; S.score += 10; }
+    if (last) { hero.x = last.x; hero.z = last.z; hero.y = last.y - 0.8; hero.vy = 0; }
+  },
 };
 toTitle();
 if (window.__worldStartWanted) window.__brbTest.start();

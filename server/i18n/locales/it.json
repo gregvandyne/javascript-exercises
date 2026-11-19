@@ -1821,7 +1821,26 @@
     "liveFamily": "Online per la vostra famiglia! Voi e i figli collegati alla vostra famiglia potete giocarci.",
     "liveConnections": "Condiviso con i vostri contatti adulti! Solo voi e loro potete giocarci.",
     "waitingTeam": "I tuoi amici possono già giocarci! Qualcuno del team Oomba controlla ogni gioco prima che tutti possano giocarci. Ti manderemo un messaggio quando abbiamo finito.",
-    "waitingTeamGrownup": "I tuoi contatti adulti possono già giocarci. Qualcuno del team Oomba controlla ogni gioco prima che tutti possano giocarci, e ti manderemo un messaggio quando abbiamo finito."
+    "waitingTeamGrownup": "I tuoi contatti adulti possono già giocarci. Qualcuno del team Oomba controlla ogni gioco prima che tutti possano giocarci, e ti manderemo un messaggio quando abbiamo finito.",
+    "play": {
+      "blocked": "Il Costruttore non è riuscito a finire il tuo gioco: {why}. Chiedi al Costruttore di sistemarlo, poi pubblicalo di nuovo.",
+      "ask": "Giocando il mio gioco fino alla fine, {why}. Per favore sistemalo così si può giocare fino in fondo.",
+      "busy": "Il Costruttore non è riuscito a giocare il tuo gioco fino alla fine proprio ora. Riprova tra un minuto.",
+      "why": {
+        "error": "c’è stato un errore ({error})",
+        "errorAt": "c’è stato un errore al livello {level} ({error})",
+        "stuck": "si è bloccato",
+        "stuckAt": "si è bloccato al livello {level}",
+        "stuckProblem": "si è bloccato alla domanda {n}",
+        "noend": "non è arrivato alla fine in {secs} secondi di gioco",
+        "noGameOver": "il gioco non ha mai detto di essere finito",
+        "noScore": "il gioco è finito senza punteggio",
+        "hint": "dopo una risposta sbagliata non è comparso nessun suggerimento",
+        "answer": "non è stato possibile dare la risposta giusta alla domanda {n}",
+        "start": "il gioco non è partito",
+        "failed": "il gioco si è congelato mentre veniva giocato"
+      }
+    }
   },
   "builder": {
     "kindRefusal": "Con questo non posso aiutarti. Creiamo invece qualcosa di divertente! Che tipo di gioco ti piacerebbe?",
@@ -2588,7 +2607,16 @@
       "sparks": "{n, plural, one {# messaggio dai Pacchetti Scintilla} other {# messaggi dai Pacchetti Scintilla}}",
       "activityEdit": "Modifica attività",
       "asStudent": "Come studente",
-      "activitySaveFirst": "Prima salvi o annulli le modifiche nel pannello attività."
+      "activitySaveFirst": "Prima salvi o annulli le modifiche nel pannello attività.",
+      "play": {
+        "pass": "Giocato fino alla fine",
+        "endless": "Giocato senza problemi (non ha una fine)",
+        "title": "Non ancora pronto da pubblicare",
+        "fix": "Fai sistemare al Costruttore",
+        "anyway": "Pubblica lo stesso",
+        "confirm": "Pubblicare senza averlo giocato fino alla fine? I giocatori potrebbero bloccarsi.",
+        "checking": "Prima giochiamo il tuo gioco fino alla fine…"
+      }
     },
     "character": {
       "unsaved": "Non ancora salvato",

@@ -35,6 +35,27 @@ export const fixRounds = u => (trustedMaker(u) ? 3 : 1);
 export const FIX_NEEDS_MS = 4 * 60_000;
 /** ...and this much to run the playtest at all. */
 export const TEST_NEEDS_MS = 75_000;
+/** ...and this much more to also play it all the way through (services/playthrough.js: up to 60 s of play, plus loading). */
+export const PLAY_NEEDS_MS = 75_000;
+
+// ---- Played all the way through (services/playthrough.js) ------------------------------------------------------------
+// After the playtest, the platform plays the version to its end (an activity answered through its results card, a kit
+// game level by level, any other game until BRB.gameOver). Not reaching the end is a hard problem: publishing needs it.
+const PLAY_FIX = {
+  error: 'Find and fix the cause (the quote is from the game\'s console).',
+  stuck: 'Make sure every level and round can be finished and ends with BRB.gameOver({ won, score }) and a results screen. If a round is long or needs real skill, give window.__brbTest a win() that finishes the round the way a player would (for example: take what is left, then the game\'s own ending), so the platform can play it to the end.',
+  nogameover: 'Call BRB.gameOver({ won, score }) when a round ends (also on the results screen of the last level).',
+  noscore: 'Send the score at the end: BRB.gameOver({ won, score }).',
+  start: 'Make sure a round starts from __brbTest.start() and from the game\'s Play button.',
+  canvas: 'Fix the activity data (PROBLEMS or GEN, steps and hints; never the kit) so every problem can be answered on screen and the hint shows after a wrong answer.',
+};
+/** The playthrough's finding for the model, or '' when it passed (or could not run). */
+export function playthroughProblem(pt) {
+  if (!pt || pt.ok || pt.code === 'busy') return '';
+  const fix = pt.code === 'error' ? PLAY_FIX.error : pt.code === 'nogameover' ? PLAY_FIX.nogameover : pt.code === 'noscore' ? PLAY_FIX.noscore
+    : pt.code === 'start' ? PLAY_FIX.start : pt.kind === 'canvas' ? PLAY_FIX.canvas : pt.code === 'failed' ? 'The game may freeze or loop forever: check the start-up code and any while/for loops.' : PLAY_FIX.stuck;
+  return `Played all the way through: it did not reach the end. The platform played it to the end like a player${pt.kind === 'canvas' ? ' (every problem answered with its own worked answer, one wrong answer first)' : pt.kind === 'kit' ? ' (level by level)' : ''}, and ${cleanNote(pt.text, 260)}. ${fix} A version that cannot be played to the end cannot be published.`;
+}
 
 const q = (s, n = 140) => `"${cleanNote(String(s || ''), n).replace(/"/g, '\'')}"`;
 const num = x => (typeof x === 'number' && Number.isFinite(x) ? x : null);
@@ -140,14 +161,18 @@ export function buildReport(raw, o = {}) {
     if (bad.length) add('figures', `The figure libraries are not loaded from their pinned tags: ${bad.map(i => cleanNote(i.message, 220)).join(' | ')}`);
     else if (figureLibs(html)['oomba-figures'] && !blank && !readings.some(r => (r.svgs || 0) > 0) && !(raw.s0 && raw.s0.svgs > 0)) add('figures', 'The game loads Oomba Figures but no figure (an <svg>) was on screen while it was played: check that OF.draw(...) is called and its result is added to the page, and that OF.check(kind, data) is [] for the data.');
   }
+  const pt = o.playthrough || null, ptText = playthroughProblem(pt);
+  if (ptText) add('playthrough', ptText);
   const problems = issues.map(i => i.text);
 
   const seen = [
     `Started: ${started ? 'yes' : 'no'} (${facts.startedHow}). Input made a difference: ${input}. Score changed: ${scoreChanged ? 'yes' : 'no'}${numbersChanged ? '; numbers on screen changed' : ''}.`,
     scenes.length ? `Scenes seen: ${scenes.join(' → ')}.` : '',
     facts.gameOver ? `Game over: ${firstOver !== null ? `after ${Math.round(firstOver / 1000)} s` : 'reached'}.` : 'Game over: not reached in the playtest.',
+    pt && pt.code !== 'busy' ? `Played all the way through: ${pt.ok ? `yes, ${cleanNote(pt.text, 120)}` : 'no'}.` : '',
     `Screen movement (share of the screen that changed between pictures): with no input ${pct(idle)}, while playing ${pct(avgPlay)} on average, ${pct(maxPlay)} at most.${fps ? ` About ${fps} frames a second on a slow test machine.` : ''}`,
   ].filter(Boolean);
+  if (pt) facts.playthrough = pt.ok ? 'pass' : pt.code;
   return { facts, issues, problems, forModel: text(o.version, problems, seen), clean: problems.length === 0 };
 }
 

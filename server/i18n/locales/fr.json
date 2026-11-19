@@ -1820,7 +1820,26 @@
     "liveFamily": "En ligne pour votre famille ! Vous et les enfants liés à votre famille pouvez y jouer.",
     "liveConnections": "Partagé avec vos contacts adultes ! Seuls vous et eux pouvez y jouer.",
     "waitingTeam": "Tes amis peuvent déjà y jouer ! Quelqu'un de l'équipe Oomba vérifie chaque jeu avant que tout le monde puisse y jouer. On t'enverra un message quand ce sera fait.",
-    "waitingTeamGrownup": "Vos contacts adultes peuvent déjà y jouer. Quelqu'un de l'équipe Oomba vérifie chaque jeu avant que tout le monde puisse y jouer, et nous vous enverrons un message quand ce sera fait."
+    "waitingTeamGrownup": "Vos contacts adultes peuvent déjà y jouer. Quelqu'un de l'équipe Oomba vérifie chaque jeu avant que tout le monde puisse y jouer, et nous vous enverrons un message quand ce sera fait.",
+    "play": {
+      "blocked": "Le Constructeur n’a pas pu finir ton jeu : {why}. Demande au Constructeur de le réparer, puis publie-le à nouveau.",
+      "ask": "En jouant mon jeu jusqu’au bout, {why}. Répare-le s’il te plaît pour qu’on puisse y jouer jusqu’à la fin.",
+      "busy": "Le Constructeur n’a pas pu jouer ton jeu jusqu’au bout pour l’instant. Réessaie dans une minute.",
+      "why": {
+        "error": "il y a eu une erreur ({error})",
+        "errorAt": "il y a eu une erreur au niveau {level} ({error})",
+        "stuck": "il est resté bloqué",
+        "stuckAt": "il est resté bloqué au niveau {level}",
+        "stuckProblem": "il est resté bloqué à la question {n}",
+        "noend": "il n’est pas arrivé à la fin en {secs} secondes de jeu",
+        "noGameOver": "le jeu n’a jamais signalé qu’il était terminé",
+        "noScore": "le jeu s’est terminé sans score",
+        "hint": "aucun indice ne s’est affiché après une mauvaise réponse",
+        "answer": "impossible de donner la bonne réponse à la question {n}",
+        "start": "le jeu n’a pas démarré",
+        "failed": "le jeu s’est figé pendant la partie"
+      }
+    }
   },
   "builder": {
     "kindRefusal": "Je ne peux pas t’aider pour ça. Créons plutôt quelque chose d’amusant ! Quel genre de jeu aimerais-tu ?",
@@ -2587,7 +2606,16 @@
       "sparks": "{n, plural, one {# message de Packs Étincelle} other {# messages de Packs Étincelle}}",
       "activityEdit": "Modifier l'activité",
       "asStudent": "Comme un élève",
-      "activitySaveFirst": "Enregistrez ou annulez d'abord vos changements dans le panneau d'activité."
+      "activitySaveFirst": "Enregistrez ou annulez d'abord vos changements dans le panneau d'activité.",
+      "play": {
+        "pass": "Joué jusqu’au bout",
+        "endless": "Joué sans problème (il n’a pas de fin)",
+        "title": "Pas encore prêt à publier",
+        "fix": "Réparer avec le Constructeur",
+        "anyway": "Publier quand même",
+        "confirm": "Publier sans l’avoir joué jusqu’au bout ? Les joueurs risquent de rester bloqués.",
+        "checking": "On joue d’abord ton jeu jusqu’au bout…"
+      }
     },
     "character": {
       "unsaved": "Pas encore enregistré",
