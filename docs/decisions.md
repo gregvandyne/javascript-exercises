@@ -8908,3 +8908,33 @@ There is now one drag for games (public/js/folder-drop.js), the one a folder wit
 - Every Builder playtest checks the layout at 390x844 (a phone held upright, tap targets 40 px) and 1280x800 first, then phone landscape and tablet portrait, in the same page and browser (one resize each); a classroom activity is also played to its end card and that card checked at both sizes. Findings ("At 390px wide (phone portrait, 390x844): the buttons "Try new ones" and "Print worksheet" overlap") go back to the model like the other playtest problems (a fix round; the version is still saved). Rows that scroll sideways on purpose, content passing under a sticky bar and a page scrolled down are not findings; on an activity pinned to an older kit, the kit's own parts are left out (the model may not change the kit). — "Make sure the builder is optimizing for both mobile and desktop." About 1.5 s more per activity build, about 0.5 s per arcade build.
 - CANVAS_RULES gain one line (390 px phone and 1280 px desktop, no fixed widths for buttons); the arcade SYSTEM_PROMPT and TOOLS are unchanged (their hash is pinned), so arcade games get this only through the playtest's feedback.
 - The play page's title wraps to two lines on a phone instead of "Co…" beside the icon buttons.
+
+## Classroom setup in four steps (19 Nov 2026)
+
+A Classroom lesson in /build/new now has 4 steps: what you are making → your lesson → "How will students use it?" →
+how much help, then the plan ("Step N of 4"). Three of the old choices overlapped or no longer needed asking:
+"Practice on screen" and "On their own devices" meant the same thing; every activity has Board mode under the kit's
+Teacher button (Oomba Canvas 1.3.0); and a question generator is a switch in the Studio's Activity panel ("New ones for
+each student"), which the teacher's "New set" uses.
+
+- **"How will students use it?"**: On their devices and/or On paper (at least one), with one quiet line under the
+  cards: the board is always there from the Teacher button, and a fresh set is made whenever possible. "What is it
+  for?" (with its Question generator card) and "How will it be played?" are gone; the arcade path is unchanged.
+- **The plan the Builder gets** keeps its old fields (builder/plan.js usesPlan; the page does the same): purpose is the
+  uses plus `generator` always, so the Builder writes a generator whenever the problems allow one (and is told to leave
+  `generator` out of config.purpose when none fits, since the kit refuses it without `gen`). played is `both` when
+  students use it on their devices (their own copy, results to Progress, Board mode from the Teacher button) and
+  `board` on paper only (nobody plays it on their own device: config.board true, no score sent). The note tells the
+  Builder only what was picked: no worksheet without paper, no devices without devices.
+- **The plan screen** has one Use row ("On their devices and on paper"); its Change goes back to step 3.
+- **Older plans** (the five-step page still open somewhere, saved chats) are read as they are, never migrated:
+  usesOf maps purpose to uses (a worksheet is paper; practice on screen, or a generator alone, is devices), and an old
+  "On the board" with practice on screen still says "We play it together on the board".
+
+Follow-up (same day): the plan screen says what the Builder gets from "Your lesson" — one line under the message
+("Plus your lesson file: NAME, N pages. The Builder reads all of it.", or the first part when the file was cut at its
+limit) and a closed "Show what the Builder reads" with each part and the start of the file, from the same scrubbed
+plan the server sends (the LESSON CONTEXT carries the file's text, up to its limit, in the first build). The first
+message is a box the teacher may edit, with Reset; their words go as plan.told and are sent instead of the sentence
+(builder/runner.js submit; classroom activities only), the plan still with them, their students' names taken out and
+screened like any typed message. Step 3 starts on "On their devices" again.

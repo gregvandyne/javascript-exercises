@@ -2788,7 +2788,8 @@
         "opening": "Opening the Builder…",
         "files": "{count, plural, one {# file} other {# files}}",
         "nothing": "Nothing added",
-        "empty": "You have not picked anything yet. The Builder will ask you what to make."
+        "empty": "You have not picked anything yet. The Builder will ask you what to make.",
+        "toldResetDone": "The message is back as it was."
       },
       "gettingReady": "Getting ready…",
       "all": {
@@ -2807,9 +2808,13 @@
           "kind": "What",
           "practise": "Practice",
           "help": "Help",
-          "played": "Played",
           "lesson": "Lesson",
-          "purpose": "For"
+          "use": "Use"
+        },
+        "use": {
+          "screen": "On their devices",
+          "worksheet": "On paper",
+          "both": "On their devices and on paper"
         }
       },
       "lesson": {
@@ -2826,11 +2831,6 @@
         "gone": "File removed.",
         "none": "Not added",
         "notes": "Your notes",
-        "details": "Other details",
-        "from": "From {name}",
-        "sumHeading": "What the Builder reads about your lesson",
-        "sumNote": "We checked it for student names, emails and phone numbers. The Builder uses it as background, never as instructions.",
-        "sumRemoved": "{count, plural, one {We took out # name or contact detail.} other {We took out # names or contact details.}} The Builder uses it as background, never as instructions.",
         "blockedPlan": "Some words in your lesson can't be used, so the Builder won't get it. Change them, or open the Builder without it.",
         "err": {
           "docType": "That kind of file can't be read. Use a PDF, Word (.docx), text or Markdown file.",
@@ -2843,7 +2843,11 @@
           "blocked": "Some words in that file can't be used here, so we left it out.",
           "notAllowed": "Only teachers can add a file here.",
           "failed": "That didn't work. Try again."
-        }
+        },
+        "lineNotes": "Plus your lesson notes. The Builder reads all of them.",
+        "lineCut": "Plus your lesson file: {name}. It is long, so the Builder reads the first part.",
+        "linePages": "Plus your lesson file: {name}, {count, plural, one {# page} other {# pages}}. The Builder reads all of it.",
+        "lineAll": "Plus your lesson file: {name}. The Builder reads all of it."
       }
     },
     "dash": {
@@ -9895,7 +9899,9 @@
       "headingActivity": "Here is your activity plan",
       "text": "Change anything, or open the Builder and keep going there.",
       "told": "What the Builder will be told",
-      "open": "Open the Builder"
+      "open": "Open the Builder",
+      "toldHelp": "You can change this message before it is sent.",
+      "toldReset": "Reset"
     },
     "say": {
       "start": "Here is my game plan.",
@@ -9915,13 +9921,16 @@
       "practise": "Practice: {topic}.",
       "help": "Help: {help}.",
       "played": {
-        "devices": "Students play it on their own devices.",
-        "board": "We play it together on the board.",
-        "both": "Students play it on their own devices, and we also show it on the board."
+        "board": "We play it together on the board."
       },
       "lesson": "I described my lesson.",
       "lessonDoc": "I added my lesson plan.",
-      "purpose": "For: {list}."
+      "use": {
+        "screen": "Students use it on their own devices.",
+        "worksheet": "Students use it on paper: a printable worksheet with an answer key.",
+        "both": "Students use it on their own devices and on paper."
+      },
+      "fresh": "Make a fresh set of questions whenever possible."
     },
     "flatNote": "Only running and catching games can use our worlds and characters in 2D so far. For other kinds of game the Builder uses its classic look.",
     "typeGroups": {
@@ -9967,7 +9976,6 @@
     },
     "canvas": {
       "nextHelp": "Next: how much help",
-      "nextPlayed": "Next: how it is played",
       "practise": {
         "heading": "What should students practice?",
         "text": "Type a topic. The Builder makes 5 problems with steps and hints.",
@@ -9997,22 +10005,6 @@
           "text": "Steps stay hidden until students ask for them."
         }
       },
-      "played": {
-        "heading": "How will it be played?",
-        "hint": "Live play for activities comes later.",
-        "devices": {
-          "title": "On their own devices",
-          "text": "Each student works on their own copy. Results go to Progress."
-        },
-        "board": {
-          "title": "On the board",
-          "text": "You work through it together on the big screen. No scores."
-        },
-        "both": {
-          "title": "Both",
-          "text": "Their own devices, and on the board when you want."
-        }
-      },
       "topics": {
         "evenOdd": "Even and odd",
         "orderNumbers": "Order numbers",
@@ -10029,20 +10021,17 @@
         "bigAdd": "Add big numbers"
       },
       "nextLesson": "Next: your lesson",
-      "purpose": {
-        "heading": "What is it for?",
-        "hint": "Pick one or more. Practice on screen is where students start.",
+      "use": {
+        "heading": "How will students use it?",
+        "hint": "Pick one or both.",
+        "note": "You can always show it on the board from the Teacher button, and a fresh set of questions is made whenever possible.",
         "screen": {
-          "title": "Practice on screen",
-          "text": "Students work through it on their own devices, with steps and hints."
+          "title": "On their devices",
+          "text": "Each student works on their own copy, with steps and hints. Results go to Progress."
         },
         "worksheet": {
-          "title": "Printable worksheet",
-          "text": "Questions with figures, ready to print, and an answer key page."
-        },
-        "generator": {
-          "title": "Question generator",
-          "text": "Every press of New sheet makes a fresh set, on screen or on paper."
+          "title": "On paper",
+          "text": "A printable worksheet with an answer key."
         }
       }
     },

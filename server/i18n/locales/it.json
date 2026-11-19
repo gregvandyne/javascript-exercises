@@ -2770,7 +2770,8 @@
         "opening": "Apro il Costruttore…",
         "files": "{count, plural, one {# file} other {# file}}",
         "nothing": "Niente di aggiunto",
-        "empty": "Non hai ancora scelto niente. Il Costruttore ti chiederà che cosa fare."
+        "empty": "Non hai ancora scelto niente. Il Costruttore ti chiederà che cosa fare.",
+        "toldResetDone": "Il messaggio è tornato come prima."
       },
       "gettingReady": "Preparazione…",
       "all": {
@@ -2789,9 +2790,13 @@
           "kind": "Che cosa",
           "practise": "Esercitare",
           "help": "Aiuto",
-          "played": "Si gioca",
           "lesson": "Lezione",
-          "purpose": "Per"
+          "use": "Uso"
+        },
+        "use": {
+          "screen": "Sui loro dispositivi",
+          "worksheet": "Su carta",
+          "both": "Sui loro dispositivi e su carta"
         }
       },
       "lesson": {
@@ -2808,11 +2813,6 @@
         "gone": "File tolto.",
         "none": "Non aggiunto",
         "notes": "Le tue note",
-        "details": "Altri dettagli",
-        "from": "Da {name}",
-        "sumHeading": "Cosa legge il Builder sulla tua lezione",
-        "sumNote": "Abbiamo cercato nomi di studenti, email e numeri di telefono. Il Builder lo usa come contesto, mai come istruzioni.",
-        "sumRemoved": "{count, plural, one {Abbiamo tolto # nome o recapito.} other {Abbiamo tolto # nomi o recapiti.}} Il Builder lo usa come contesto, mai come istruzioni.",
         "blockedPlan": "Alcune parole della tua lezione non si possono usare, quindi il Builder non la riceverà. Cambiale o apri il Builder senza.",
         "err": {
           "docType": "Questo tipo di file non si può leggere. Usa un file PDF, Word (.docx), di testo o Markdown.",
@@ -2825,7 +2825,11 @@
           "blocked": "Alcune parole di questo file non si possono usare qui, quindi lo abbiamo lasciato fuori.",
           "notAllowed": "Solo gli insegnanti possono aggiungere un file qui.",
           "failed": "Non ha funzionato. Riprova."
-        }
+        },
+        "lineNotes": "In più, i tuoi appunti della lezione. Il Builder li legge tutti.",
+        "lineCut": "In più, il tuo file della lezione: {name}. È lungo, quindi il Builder ne legge la prima parte.",
+        "linePages": "In più, il tuo file della lezione: {name}, {count, plural, one {# pagina} other {# pagine}}. Il Builder lo legge tutto.",
+        "lineAll": "In più, il tuo file della lezione: {name}. Il Builder lo legge tutto."
       }
     },
     "dash": {
@@ -9469,7 +9473,9 @@
       "headingActivity": "Ecco il piano della tua attività",
       "text": "Cambia quello che vuoi, oppure apri il Costruttore e continua lì.",
       "told": "Che cosa diremo al Costruttore",
-      "open": "Apri il Costruttore"
+      "open": "Apri il Costruttore",
+      "toldHelp": "Puoi cambiare questo messaggio prima di inviarlo.",
+      "toldReset": "Ripristina"
     },
     "say": {
       "start": "Ecco il piano del mio gioco.",
@@ -9489,13 +9495,16 @@
       "practise": "Esercitare: {topic}.",
       "help": "Aiuto: {help}.",
       "played": {
-        "devices": "Gli alunni giocano sui loro dispositivi.",
-        "board": "Giochiamo insieme alla lavagna.",
-        "both": "Gli alunni giocano sui loro dispositivi e lo mostriamo anche alla lavagna."
+        "board": "Giochiamo insieme alla lavagna."
       },
       "lesson": "Ho descritto la mia lezione.",
       "lessonDoc": "Ho aggiunto la mia programmazione.",
-      "purpose": "Per: {list}."
+      "use": {
+        "screen": "Gli alunni lo usano sui loro dispositivi.",
+        "worksheet": "Gli alunni lo usano su carta: una scheda da stampare con le soluzioni.",
+        "both": "Gli alunni lo usano sui loro dispositivi e su carta."
+      },
+      "fresh": "Crea una nuova serie di domande quando possibile."
     },
     "flatNote": "In 2D, per ora solo i giochi di corsa e di presa possono usare i nostri mondi e personaggi. Negli altri giochi il Costruttore usa il suo aspetto classico.",
     "typeGroups": {
@@ -9541,7 +9550,6 @@
     },
     "canvas": {
       "nextHelp": "Avanti: quanto aiuto",
-      "nextPlayed": "Avanti: come si gioca",
       "practise": {
         "heading": "Che cosa devono esercitare gli alunni?",
         "text": "Scrivi un argomento. Il Builder crea 5 problemi con passaggi e suggerimenti.",
@@ -9571,22 +9579,6 @@
           "text": "I passi restano nascosti finché gli alunni non li chiedono."
         }
       },
-      "played": {
-        "heading": "Come si giocherà?",
-        "hint": "Il gioco dal vivo per le attività arriverà più avanti.",
-        "devices": {
-          "title": "Sui loro dispositivi",
-          "text": "Ogni alunno lavora sulla sua copia. I risultati vanno in Progressi."
-        },
-        "board": {
-          "title": "Alla lavagna",
-          "text": "Lo fate insieme sul grande schermo. Senza punteggi."
-        },
-        "both": {
-          "title": "Entrambi",
-          "text": "Sui loro dispositivi, e alla lavagna quando vuoi."
-        }
-      },
       "topics": {
         "evenOdd": "Pari e dispari",
         "orderNumbers": "Ordina i numeri",
@@ -9603,20 +9595,17 @@
         "bigAdd": "Addiziona numeri grandi"
       },
       "nextLesson": "Avanti: la tua lezione",
-      "purpose": {
-        "heading": "A cosa serve?",
-        "hint": "Scegline una o più. Gli studenti iniziano dalla pratica sullo schermo.",
+      "use": {
+        "heading": "Come lo useranno gli alunni?",
+        "hint": "Scegline uno o tutti e due.",
+        "note": "Puoi sempre mostrarlo alla lavagna con il pulsante Insegnante, e quando possibile si crea una nuova serie di domande.",
         "screen": {
-          "title": "Pratica sullo schermo",
-          "text": "Gli studenti lavorano sul proprio dispositivo, con passaggi e suggerimenti."
+          "title": "Sui loro dispositivi",
+          "text": "Ogni alunno lavora sulla sua copia, con passaggi e suggerimenti. I risultati vanno in Progressi."
         },
         "worksheet": {
-          "title": "Scheda da stampare",
-          "text": "Domande con figure da stampare e una pagina di soluzioni."
-        },
-        "generator": {
-          "title": "Generatore di domande",
-          "text": "Ogni volta che premi Nuova scheda arriva una serie nuova, sullo schermo o su carta."
+          "title": "Su carta",
+          "text": "Una scheda da stampare con le soluzioni."
         }
       }
     },

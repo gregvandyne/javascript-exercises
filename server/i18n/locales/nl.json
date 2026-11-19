@@ -2770,7 +2770,8 @@
         "opening": "De Bouwer wordt geopend…",
         "files": "{count, plural, one {# bestand} other {# bestanden}}",
         "nothing": "Niets toegevoegd",
-        "empty": "Je hebt nog niets gekozen. De Bouwer vraagt je wat je wilt maken."
+        "empty": "Je hebt nog niets gekozen. De Bouwer vraagt je wat je wilt maken.",
+        "toldResetDone": "Het bericht staat weer zoals het was."
       },
       "gettingReady": "Even klaarmaken…",
       "all": {
@@ -2789,9 +2790,13 @@
           "kind": "Wat",
           "practise": "Oefenen",
           "help": "Hulp",
-          "played": "Gespeeld",
           "lesson": "Les",
-          "purpose": "Voor"
+          "use": "Gebruik"
+        },
+        "use": {
+          "screen": "Op hun apparaat",
+          "worksheet": "Op papier",
+          "both": "Op hun apparaat en op papier"
         }
       },
       "lesson": {
@@ -2808,11 +2813,6 @@
         "gone": "Bestand weggehaald.",
         "none": "Niet toegevoegd",
         "notes": "Je notities",
-        "details": "Andere details",
-        "from": "Uit {name}",
-        "sumHeading": "Wat de Builder over je les leest",
-        "sumNote": "We hebben gezocht naar namen van leerlingen, e-mailadressen en telefoonnummers. De Builder gebruikt het als achtergrond, nooit als opdracht.",
-        "sumRemoved": "{count, plural, one {We hebben # naam of contactgegeven weggehaald.} other {We hebben # namen of contactgegevens weggehaald.}} De Builder gebruikt het als achtergrond, nooit als opdracht.",
         "blockedPlan": "Sommige woorden in je les kunnen niet, dus de Builder krijgt hem niet. Pas ze aan, of open de Builder zonder.",
         "err": {
           "docType": "Dit soort bestand kan niet gelezen worden. Gebruik een PDF-, Word- (.docx), tekst- of Markdown-bestand.",
@@ -2825,7 +2825,11 @@
           "blocked": "Sommige woorden in dat bestand kunnen hier niet, dus we hebben het weggelaten.",
           "notAllowed": "Alleen leerkrachten kunnen hier een bestand toevoegen.",
           "failed": "Dat lukte niet. Probeer het nog eens."
-        }
+        },
+        "lineNotes": "Plus je lesnotities. De Builder leest ze helemaal.",
+        "lineCut": "Plus je lesbestand: {name}. Het is lang, dus de Builder leest het eerste deel.",
+        "linePages": "Plus je lesbestand: {name}, {count, plural, one {# pagina} other {# pagina’s}}. De Builder leest het helemaal.",
+        "lineAll": "Plus je lesbestand: {name}. De Builder leest het helemaal."
       }
     },
     "dash": {
@@ -9469,7 +9473,9 @@
       "headingActivity": "Dit is je activiteitenplan",
       "text": "Verander wat je wilt, of open de Bouwer en ga daar verder.",
       "told": "Dit krijgt de Bouwer te horen",
-      "open": "Open de Bouwer"
+      "open": "Open de Bouwer",
+      "toldHelp": "Je kunt dit bericht aanpassen voordat het wordt verstuurd.",
+      "toldReset": "Terugzetten"
     },
     "say": {
       "start": "Dit is mijn gameplan.",
@@ -9489,13 +9495,16 @@
       "practise": "Oefenen: {topic}.",
       "help": "Hulp: {help}.",
       "played": {
-        "devices": "Leerlingen spelen het op hun eigen apparaat.",
-        "board": "We spelen het samen op het bord.",
-        "both": "Leerlingen spelen het op hun eigen apparaat, en we laten het ook op het bord zien."
+        "board": "We spelen het samen op het bord."
       },
       "lesson": "Ik heb mijn les beschreven.",
       "lessonDoc": "Ik heb mijn lesplan toegevoegd.",
-      "purpose": "Voor: {list}."
+      "use": {
+        "screen": "Leerlingen gebruiken het op hun eigen apparaat.",
+        "worksheet": "Leerlingen gebruiken het op papier: een werkblad om af te drukken, met antwoordblad.",
+        "both": "Leerlingen gebruiken het op hun eigen apparaat en op papier."
+      },
+      "fresh": "Maak waar het kan een nieuwe set vragen."
     },
     "flatNote": "In 2D kunnen voorlopig alleen ren- en vanggames onze werelden en figuren gebruiken. Bij andere games gebruikt de Bouwer zijn klassieke uiterlijk.",
     "typeGroups": {
@@ -9541,7 +9550,6 @@
     },
     "canvas": {
       "nextHelp": "Volgende: hoeveel hulp",
-      "nextPlayed": "Volgende: hoe het gespeeld wordt",
       "practise": {
         "heading": "Wat moeten leerlingen oefenen?",
         "text": "Typ een onderwerp. De Builder maakt 5 opgaven met stappen en hints.",
@@ -9571,22 +9579,6 @@
           "text": "De stappen blijven verborgen tot leerlingen erom vragen."
         }
       },
-      "played": {
-        "heading": "Hoe wordt het gespeeld?",
-        "hint": "Live spelen met activiteiten komt later.",
-        "devices": {
-          "title": "Op hun eigen apparaat",
-          "text": "Elke leerling werkt aan een eigen kopie. De resultaten gaan naar Voortgang."
-        },
-        "board": {
-          "title": "Op het bord",
-          "text": "Jullie doen het samen op het grote scherm. Zonder scores."
-        },
-        "both": {
-          "title": "Allebei",
-          "text": "Op hun eigen apparaat, en op het bord wanneer je wilt."
-        }
-      },
       "topics": {
         "evenOdd": "Even en oneven",
         "orderNumbers": "Getallen ordenen",
@@ -9603,20 +9595,17 @@
         "bigAdd": "Grote getallen optellen"
       },
       "nextLesson": "Volgende: je les",
-      "purpose": {
-        "heading": "Waarvoor is het?",
-        "hint": "Kies er één of meer. Leerlingen beginnen met oefenen op het scherm.",
+      "use": {
+        "heading": "Hoe gebruiken leerlingen het?",
+        "hint": "Kies er één of allebei.",
+        "note": "Je kunt het altijd op het bord laten zien met de knop Leraar, en waar het kan komt er een nieuwe set vragen.",
         "screen": {
-          "title": "Oefenen op het scherm",
-          "text": "Leerlingen werken op hun eigen apparaat, met stappen en hints."
+          "title": "Op hun apparaat",
+          "text": "Elke leerling werkt aan een eigen kopie, met stappen en hints. De resultaten gaan naar Voortgang."
         },
         "worksheet": {
-          "title": "Werkblad om af te drukken",
-          "text": "Vragen met figuren om af te drukken, plus een antwoordblad."
-        },
-        "generator": {
-          "title": "Vragengenerator",
-          "text": "Elke keer dat je op Nieuw blad drukt, komt er een nieuwe set, op het scherm of op papier."
+          "title": "Op papier",
+          "text": "Een werkblad om af te drukken, met antwoordblad."
         }
       }
     },
