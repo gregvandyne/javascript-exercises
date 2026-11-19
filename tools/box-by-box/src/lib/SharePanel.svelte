@@ -31,7 +31,11 @@
 	let printing = $state(false);
 	let printNote = $state('');
 	// the teacher's own instructions for the top of the sheet, kept with the activity as they type
-	let mine = $state(activity.printNote ?? '');
+	let mine = $state('');
+	// follows the activity shown (and its saved note)
+	$effect.pre(() => {
+		mine = activity.printNote ?? '';
+	});
 	async function print(key: boolean) {
 		if (printing || !activity.problems.length) return;
 		printing = true;
