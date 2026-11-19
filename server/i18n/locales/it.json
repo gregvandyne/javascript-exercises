@@ -2747,7 +2747,7 @@
       },
       "progress": "Passo {n} di {total}",
       "canvas": {
-        "activity": "Attività di classe",
+        "activity": "Lezione in classe",
         "rows": {
           "kind": "Che cosa",
           "practise": "Esercitare",
@@ -9062,7 +9062,7 @@
       "text": "Tutte e due le strade portano al Costruttore. Lì puoi cambiare tutto.",
       "guide": "Aiutami a scegliere",
       "guideText": "Scegli un tipo di gioco, un mondo e i personaggi in sei passi veloci.",
-      "direct": "So già cosa voglio",
+      "direct": "Lo descrivo e basta",
       "directText": "Vai subito dal Costruttore e racconta il tuo gioco con parole tue."
     },
     "else": {
@@ -9317,8 +9317,12 @@
       "check": "Controlla",
       "hint": "Aiuto",
       "activity": {
-        "title": "Attività di classe",
+        "title": "Lezione in classe",
         "text": "Uno spazio da manipolare: gli alunni trascinano, costruiscono e controllano, un passo alla volta, con aiuti. I risultati vanno in Progressi."
+      },
+      "classgame": {
+        "title": "Gioco di classe",
+        "text": "Per tutta la classe, alla lavagna: tabellone a categorie, tombola, flashcard, gioco del silenzio, ruota, segnapunti."
       },
       "arcade": {
         "title": "Gioco arcade",
@@ -9335,9 +9339,7 @@
         "catch": "Prendi",
         "quiz": "Quiz",
         "worlds": "Mondi 3D"
-      },
-      "toolsText": "Ti serve un gioco del silenzio, una ruota o un segnapunti?",
-      "toolsLink": "Strumenti per la classe"
+      }
     },
     "canvas": {
       "nextHelp": "Avanti: quanto aiuto",
@@ -11329,6 +11331,7 @@
     "keepBrowsing": "Continua a esplorare",
     "openFolder": "Apri {folder}",
     "reorderHint": "Trascina per cambiare l’ordine (su telefono o tablet, tieni premuto prima). Da tastiera: Alt e le frecce.",
+    "dropHint": "Trascina un gioco su una cartella per salvarlo lì.",
     "move": "Sposta {name}",
     "moved": "{name}: {n} di {total}",
     "saveTitle": "Salva «{game}» in una cartella",

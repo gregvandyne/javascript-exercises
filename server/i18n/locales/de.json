@@ -2747,7 +2747,7 @@
       },
       "progress": "Schritt {n} von {total}",
       "canvas": {
-        "activity": "Klassenaktivität",
+        "activity": "Unterrichtsstunde",
         "rows": {
           "kind": "Was",
           "practise": "Üben",
@@ -9062,7 +9062,7 @@
       "text": "Beide Wege führen zum Baumeister. Dort kannst du alles ändern.",
       "guide": "Hilf mir beim Aussuchen",
       "guideText": "Such in sechs kurzen Schritten eine Spielart, eine Welt und Figuren aus.",
-      "direct": "Ich weiß, was ich will",
+      "direct": "Ich beschreibe es einfach",
       "directText": "Geh direkt zum Baumeister und beschreib dein Spiel mit deinen Worten."
     },
     "else": {
@@ -9317,8 +9317,12 @@
       "check": "Prüfen",
       "hint": "Tipp",
       "activity": {
-        "title": "Klassenaktivität",
+        "title": "Unterrichtsstunde",
         "text": "Eine Arbeitsfläche zum Anfassen: Die Kinder ziehen, bauen und prüfen, Schritt für Schritt, mit Tipps. Die Ergebnisse gehen in den Fortschritt."
+      },
+      "classgame": {
+        "title": "Klassenspiel",
+        "text": "Für die ganze Klasse an der Tafel: Kategorien-Board, Bingo, Lernkarten, Leise-Spiel, Glücksrad, Punktetafel."
       },
       "arcade": {
         "title": "Arcade-Spiel",
@@ -9335,9 +9339,7 @@
         "catch": "Fangen",
         "quiz": "Quiz",
         "worlds": "3D-Welten"
-      },
-      "toolsText": "Brauchst du ein Leisespiel, ein Glücksrad oder eine Punktetafel?",
-      "toolsLink": "Klassen-Werkzeuge"
+      }
     },
     "canvas": {
       "nextHelp": "Weiter: wie viel Hilfe",
@@ -11329,6 +11331,7 @@
     "keepBrowsing": "Weiterstöbern",
     "openFolder": "{folder} öffnen",
     "reorderHint": "Zum Sortieren ziehen (auf Handy oder Tablet erst gedrückt halten). Mit der Tastatur: Alt und die Pfeiltasten.",
+    "dropHint": "Zieh ein Spiel auf einen Ordner, um es dort zu speichern.",
     "move": "{name} verschieben",
     "moved": "{name}: {n} von {total}",
     "saveTitle": "„{game}“ in einem Ordner speichern",

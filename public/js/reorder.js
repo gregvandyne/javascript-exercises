@@ -4,6 +4,7 @@
 // order is posted as { ids } to the list's URL; if that fails, the page reloads with the order that was saved.
 // Loaded by app.js on pages that have such a list.
 import { $$, api, toast } from '/js/app.js';
+import * as drop from '/js/folder-drop.js';
 
 const HOLD_MS = 350, SLOP = 8, MOUSE_SLOP = 5;
 let live = null;
@@ -57,16 +58,28 @@ function wire(list) {
       if (before) list.insertBefore(li, before); else if (tail && tail !== li) tail.after(li);
     }
     const r = li.getBoundingClientRect();
-    li.style.transform = `translate(${x - drag.dx - r.left}px, ${y - drag.dy - r.top}px)`;
+    // A game card over one of my folders (folder-drop.js): it shrinks toward the pointer, so the folder shows.
+    const onFolder = drag.games && drop.hover(x, y);
+    li.style.transformOrigin = `${drag.dx}px ${drag.dy}px`;
+    li.style.transform = `translate(${x - drag.dx - r.left}px, ${y - drag.dy - r.top}px)${onFolder ? ' scale(.3)' : ''}`;
   };
   const end = commit => {
     clearTimeout(holdTimer);
     if (!drag) return;
-    const { li, on, from } = drag;
+    const { li, on, from, x, y, games } = drag;
     drag = null;
     if (!on) return;
-    li.classList.remove('is-dragging'); li.style.transform = ''; list.classList.remove('is-sorting'); document.body.classList.remove('is-sorting');
+    li.classList.remove('is-dragging'); li.style.transform = ''; li.style.transformOrigin = ''; list.classList.remove('is-sorting'); document.body.classList.remove('is-sorting');
     eatClick = true; setTimeout(() => { eatClick = false; }, 50);
+    // Dropped on one of my folders: the game is saved there and keeps its place here.
+    const folder = games && commit ? drop.targetAt(x, y) : null;
+    if (games) drop.clear();
+    if (folder) {
+      const items = itemsOf(list).filter(o => o !== li), at = items[from];
+      if (at) list.insertBefore(li, at); else if (items.length) items.at(-1).after(li);
+      drop.dropOn(folder, li.dataset.id);
+      return;
+    }
     const to = itemsOf(list).indexOf(li);
     if (commit && to !== from) { saveOrder(list); say(movedMsg(list, li, to + 1, itemsOf(list).length)); }
   };
@@ -77,7 +90,7 @@ function wire(list) {
     // Buttons, fields and forms in a card keep their own taps; the grip and the card itself start a drag.
     if (e.target.closest('input, select, textarea, form, .mg-actions, details') && !e.target.closest('[data-grip]')) return;
     const touch = e.pointerType !== 'mouse';
-    drag = { li, x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, on: false, touch, from: itemsOf(list).indexOf(li), id: e.pointerId };
+    drag = { li, x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, on: false, touch, from: itemsOf(list).indexOf(li), id: e.pointerId, games: li.classList.contains('shelf-game') };
     if (touch) holdTimer = setTimeout(() => { if (drag && !drag.on) { startDrag(); follow(drag.x, drag.y); } }, HOLD_MS);
   });
   addEventListener('pointermove', e => {

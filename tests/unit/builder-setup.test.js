@@ -239,8 +239,8 @@ test('/build/new: the start, seven steps, every live world with a Preview, group
   // "What are you making?" first (a kid starts on Arcade game), then the two ways in
   assert.match(h, /<h1 id="su-h-start" tabindex="-1">What are you making\?<\/h1>/);
   assert.match(h, /class="su-kind" data-kind="arcade" aria-pressed="true"/); assert.match(h, /class="su-kind" data-kind="activity" aria-pressed="false"/);
-  assert.match(h, /id="su-guide" data-for="arcade">Help me choose/, 'help me choose');
-  assert.match(h, /id="su-direct" data-for="both">I know what I want</, 'the bypass');
+  assert.match(h, /id="su-guide" data-for="arcade classgame">Help me choose/, 'help me choose');
+  assert.match(h, /id="su-direct" data-for="both">I’ll just describe it</, 'the bypass');
   assert.match(h, /id="su-skipall" hidden>Skip to the Builder</);
   assert.deepEqual([...h.matchAll(/data-screen="([\w-]+)"/g)].map(m => m[1]), ['start', 'lesson', 'purpose', 'help', 'played', 'type', 'look', 'world', 'chars', 'play', 'learn', 'extras', 'plan']);
   for (const q of ['What kind of game?', '2D or 3D?', 'Where does it happen?', 'Who is in it?', 'How will it be played?', 'What should it teach?', 'Anything to add?', 'Here is your game plan']) assert.ok(h.includes(q), q);

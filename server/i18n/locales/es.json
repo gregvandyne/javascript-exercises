@@ -2746,7 +2746,7 @@
       },
       "progress": "Paso {n} de {total}",
       "canvas": {
-        "activity": "Actividad de clase",
+        "activity": "Lección de clase",
         "rows": {
           "kind": "Qué",
           "practise": "Practicar",
@@ -9061,7 +9061,7 @@
       "text": "Los dos caminos llevan al Constructor. Allí puedes cambiar lo que quieras.",
       "guide": "Ayúdame a elegir",
       "guideText": "Elige un tipo de juego, un mundo y personajes en seis pasos rápidos.",
-      "direct": "Ya sé lo que quiero",
+      "direct": "Solo lo describiré",
       "directText": "Ve directo al Constructor y cuenta tu juego con tus palabras."
     },
     "else": {
@@ -9316,8 +9316,12 @@
       "check": "Comprobar",
       "hint": "Pista",
       "activity": {
-        "title": "Actividad de clase",
+        "title": "Lección de clase",
         "text": "Un lienzo práctico: los alumnos arrastran, construyen y comprueban, paso a paso, con pistas. Los resultados van a Progreso."
+      },
+      "classgame": {
+        "title": "Juego de clase",
+        "text": "Para toda la clase, en la pizarra: tablero de categorías, bingo, tarjetas, juego del silencio, ruleta, marcador."
       },
       "arcade": {
         "title": "Juego arcade",
@@ -9334,9 +9338,7 @@
         "catch": "Atrapar",
         "quiz": "Preguntas",
         "worlds": "Mundos 3D"
-      },
-      "toolsText": "¿Necesitas un juego de silencio, una ruleta o un marcador?",
-      "toolsLink": "Herramientas de clase"
+      }
     },
     "canvas": {
       "nextHelp": "Siguiente: cuánta ayuda",
@@ -11328,6 +11330,7 @@
     "keepBrowsing": "Seguir explorando",
     "openFolder": "Abrir {folder}",
     "reorderHint": "Arrastra para cambiar el orden (en teléfono o tableta, mantén pulsado primero). Con teclado: Alt y las flechas.",
+    "dropHint": "Arrastra un juego a una carpeta para guardarlo allí.",
     "move": "Mover {name}",
     "moved": "{name}: {n} de {total}",
     "saveTitle": "Guardar «{game}» en una carpeta",

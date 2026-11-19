@@ -4,6 +4,7 @@
 // the right side only, marks the item (aria-current) and pushes the address: a reload and Back keep what was picked.
 // A modifier-key click (a new tab) or a failed fetch opens the page as a link would.
 import { $, $$ } from '/js/app.js';
+import { wire as wireDrop } from '/js/folder-drop.js';
 
 const shelf = $('[data-shelf]');
 const V = new URL(import.meta.url).search;
@@ -50,6 +51,8 @@ async function show(href, { push = true } = {}) {
 }
 
 if (shelf) {
+  // Games on the right side can be dragged onto one of my folders on the left (folder-drop.js).
+  wireDrop(mainOf());
   history.replaceState({ shelf: mainOf()?.dataset.shelfKey || '' }, '', location.href);
   shelf.addEventListener('click', e => {
     // The left column's items, and links in the right side that open another part of it (Find Oomba games, its subjects).

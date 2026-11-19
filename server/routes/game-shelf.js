@@ -86,9 +86,9 @@ const gradeNum = g => (g === 'K' ? 0 : +g);
 const oombaFits = (info, f) => !!info && (!f.subject || info.subject === f.subject) && (!f.grade || (info.from <= gradeNum(f.grade) && gradeNum(f.grade) <= info.to));
 
 /** One item in the left column: a link, its icon, name and count (the count read as "n games"). */
-function item(req, ctx, sel, it, { grip = false } = {}) {
+function item(req, ctx, sel, it, { grip = false, drop = '' } = {}) {
   const on = it.key === sel.key;
-  return html`<a class="shelf-item${on ? ' is-on' : ''}" href="${it.href}" data-shelf-key="${it.key}"${on ? raw(' aria-current="true"') : ''}${grip ? raw(' data-grip') : ''}>${icon(it.icon)}<span class="shelf-name" dir="auto">${it.name}</span>${it.count === undefined ? '' : html`<span class="n" aria-hidden="true">${it.count}</span><span class="sr-only">, ${req.t('folders.gamesN', { count: it.count })}</span>`}</a>`;
+  return html`<a class="shelf-item${on ? ' is-on' : ''}" href="${it.href}" data-shelf-key="${it.key}"${on ? raw(' aria-current="true"') : ''}${grip ? raw(' data-grip') : ''}${drop ? html` data-drop-folder="${drop}"` : ''}>${icon(it.icon)}<span class="shelf-name" dir="auto">${it.name}</span>${it.count === undefined ? '' : html`<span class="n" aria-hidden="true">${it.count}</span><span class="sr-only">, ${req.t('folders.gamesN', { count: it.count })}</span>`}</a>`;
 }
 
 /** The New folder box in the left column (a fold: its name and Create). On the class page it comes back to the class. */
@@ -117,7 +117,8 @@ function side(req, ctx, sel, mine, shared) {
       <ul class="shelf-group${ctx.kind === 'class' ? ' shelf-cltop' : ''}">${first.map(it => html`<li>${item(req, ctx, sel, it)}</li>`)}
         ${oombaOn(ctx) ? html`<li>${item(req, ctx, sel, { key: 'oomba', href: `${ctx.base}?view=oomba`, icon: 'find', name: t('folders.findOomba') })}</li>` : ''}</ul>
       ${ctx.folders ? html`<p class="shelf-lab" id="shelf-lab-mine">${t('folders.title')}</p>
-      ${mine.length ? html`<ul class="shelf-group" aria-labelledby="shelf-lab-mine"${mine.length > 1 ? html` data-reorder="/api/game-folders/order" data-moved="${movedTpl(t)}" aria-describedby="shelf-order"` : ''}>${mine.map(f => html`<li data-id="${f.id}">${item(req, ctx, sel, fItem(f), { grip: mine.length > 1 })}</li>`)}</ul>` : ''}
+      ${mine.length ? html`<ul class="shelf-group" aria-labelledby="shelf-lab-mine"${mine.length > 1 ? html` data-reorder="/api/game-folders/order" data-moved="${movedTpl(t)}" aria-describedby="shelf-order"` : ''}>${mine.map(f => html`<li data-id="${f.id}">${item(req, ctx, sel, fItem(f), { grip: mine.length > 1, drop: f.id })}</li>`)}</ul>
+      <p class="small muted shelf-drophint">${t('folders.dropHint')}</p>` : ''}
       ${mine.length > 1 ? html`<p class="sr-only" id="shelf-order">${t('folders.reorderHint')}</p>` : ''}
       ${newFolder(req, ctx)}
       ${shared.length ? html`<p class="shelf-lab" id="shelf-lab-shared">${t('folders.sharedTitle')}</p>
