@@ -1878,6 +1878,7 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .shelf-game .mg-body p{margin:4px 0 0}
 .shelf-game .mg-actions{display:flex;flex-direction:column;gap:8px;align-items:stretch}
 .shelf-game .mg-row{display:flex;gap:8px;justify-content:flex-end;align-items:center;flex-wrap:wrap}
+.shelf-game .mg-row svg{flex:none}
 .shelf-done{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:44px;padding:0 14px;border-radius:999px;background:var(--ok-bg);color:var(--text);font-weight:800;white-space:nowrap}
 .shelf-menu,.shelf-pop{position:relative}
 .shelf-more{min-width:44px;padding:0 10px;color:var(--text)}
@@ -1947,7 +1948,9 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
   .shelf-game .mg-row{display:flex;flex-wrap:wrap;gap:8px}
   .shelf-game .mg-row>.btn,.shelf-game .mg-row>.shelf-pop,.shelf-game .mg-row>.shelf-done{flex:1 1 0;min-width:0}
   .shelf-game .mg-row>.btn-primary,.shelf-game .mg-row>.shelf-pop,.shelf-game .mg-row>.shelf-done{flex-grow:2}
-  .shelf-game .mg-row>.btn,.shelf-pop>summary.btn{white-space:normal;text-align:center;line-height:1.2;width:100%}
+  .shelf-game .mg-row>.btn,.shelf-pop>summary.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;text-align:center;line-height:1.2;width:100%;padding-inline:10px}
+  /* the icon stays beside its word and at its size (an SVG in a shrinking flex button was squeezed to a dot) */
+  .shelf-game .mg-row svg{flex:none;width:14px;height:14px}
   .shelf-menu{flex:none}
   .shelf-pop[open]{flex-basis:100%}
   .shelf-pop-panel{position:static;width:auto;margin-top:8px;box-shadow:inset 0 0 0 2px var(--line)}
