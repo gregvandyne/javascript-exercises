@@ -183,7 +183,7 @@ test('the mock Builder: a figure topic with a worksheet purpose builds a figure 
   const playPage = pageData((await kid.c(`/play/${games.getGame(game.id).slug}`)).text);
   assert.equal(playPage.print, true, 'the play page prints for the frame');
   const games_ = fs.readFileSync(path.join(ROOT, 'server/routes/games.js'), 'utf8');
-  assert.match(games_, /canvasPrintable\(v\.html\) \? \{ print: true, \.\.\.\(canvasKeyFor\(u, g\) \? \{ printKey: true \} : \{\}\) \}/, 'INIT.printKey only for the maker and staff');
+  assert.match(games_, /canvasPrintable\(v\.html\) \? \{ print: true, \.\.\.\(!tok\.st && canvasKeyFor\(u, g\) \? \{ printKey: true \} : \{\}\) \}/, 'INIT.printKey only for the maker and staff (and never under \"As a student\")');
   const sdk = fs.readFileSync(path.join(ROOT, 'public/sdk/brb-sdk.js'), 'utf8');
   assert.match(sdk, /canPrintKey: INIT\.print === true && INIT\.printKey === true/);
 });
