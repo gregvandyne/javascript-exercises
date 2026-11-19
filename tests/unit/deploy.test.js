@@ -498,6 +498,19 @@ test('the Docker image carries every folder the server reads at run time (kit/de
   for (const dir of ['server', 'public', 'scripts', 'seed-games', 'kit/demo']) assert.match(df, new RegExp(`^COPY ${dir.replace('/', '\\/')} \\./${dir.replace('/', '\\/')}$`, 'm'), dir);
 });
 
+test('every repo file the server reads by path from the project root (path.join(ROOT, ...)) is copied into the Docker image', () => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  const df = fs.readFileSync(path.join(root, 'Dockerfile'), 'utf8');
+  const copied = [...df.matchAll(/^COPY (?!--)(\S+) \.\/\S+$/gm)].map(m => m[1].replace(/\/$/, ''));
+  const covered = rel => copied.some(d => rel === d || rel.startsWith(d + '/'));
+  const all = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? all(path.join(dir, e.name)) : e.name.endsWith('.js') ? [path.join(dir, e.name)] : []);
+  const read = new Set();
+  for (const f of all(path.join(root, 'server'))) for (const m of fs.readFileSync(f, 'utf8').matchAll(/path\.(?:join|resolve)\(ROOT,\s*['"]([\w./-]+)['"]/g)) read.add(m[1]);
+  assert.ok(read.has('figures/SHIPPED.json'), 'the scan finds the figure lock');
+  const missing = [...read].filter(rel => fs.existsSync(path.join(root, rel)) && !covered(rel));
+  assert.deepEqual(missing, [], 'add a COPY line to the Dockerfile for these');
+});
+
 test('every file the server imports (followed through relative imports) is copied into the Docker image', () => {
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
   const df = fs.readFileSync(path.join(root, 'Dockerfile'), 'utf8');
