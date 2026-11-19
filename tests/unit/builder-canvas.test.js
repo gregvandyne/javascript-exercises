@@ -190,7 +190,7 @@ test('POST /api/build/plan and the first build: an activity plan builds an Oomba
   assert.equal(chat.state.canvas, true);
   // the Studio's line: an activity, results to Progress, and the switch to an arcade game (a fixed message)
   const st = (await teacher.c(`/api/studio/${g.json.id}`)).json;
-  assert.deepEqual(st.canvasLine, { kind: 'activity', label: 'Classroom activity · results go to Progress', button: 'Make it an arcade game instead', ask: tFor('en')('studio.canvasLine.toArcadeAsk') });
+  assert.deepEqual(st.canvasLine, { kind: 'activity', label: 'Classroom activity · results go to Progress', button: 'Make it an arcade game', ask: tFor('en')('studio.canvasLine.toArcadeAsk') });
   assert.match(st.liveClass ? st.liveClass.why : 'Classroom activities can\'t be played live yet.', /can't be played live yet/);
   // "I know what I want" with Classroom activity: the activity starter
   const d = await teacher.c('/api/studio/new', { method: 'POST', body: { template: 'canvas' } });

@@ -1764,7 +1764,7 @@
       "activity": "Actividad de clase · los resultados van a Progreso",
       "board": "Actividad de clase · en la pizarra",
       "arcade": "Juego arcade · hecho para tu clase",
-      "toArcade": "Mejor hazlo un juego arcade",
+      "toArcade": "Hazlo un juego arcade",
       "toArcadeAsk": "Mejor hazlo un juego arcade: un juego de preguntas, de correr o de atrapar con los mismos problemas.",
       "toCanvas": "Hazlo una actividad de clase",
       "toCanvasAsk": "Mejor hazlo una actividad de clase: un lienzo práctico con las mismas preguntas, pasos y pistas."
@@ -1982,7 +1982,8 @@
       "invitePlay": "¡A jugar!",
       "inviteNo": "Ahora no",
       "ok": "Aceptar",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "fullExit": "Salir de pantalla completa"
     },
     "game": {
       "needSignIn": "Primero toca “Jugar como invitado” o entra a tu cuenta.",
@@ -2001,8 +2002,6 @@
     "play": {
       "saveFailed": "No se pudo guardar tu progreso.",
       "newBest": "¡Nuevo récord: {score}!",
-      "noFullscreen": "La pantalla completa no está disponible aquí.",
-      "tapFullscreen": "Toca el botón Agrandar para verlo en grande.",
       "signInToLike": "Entra a tu cuenta o juega como invitado para guardar favoritos.",
       "signInToRate": "Entra a tu cuenta o juega como invitado para calificar juegos.",
       "liked": "¡Añadido a tus favoritos!",
@@ -2091,7 +2090,6 @@
       "fixButton": "Arreglar con el Constructor",
       "fixMessage": "Por favor, arregla los problemas de la revisión de seguridad de la versión {number}:",
       "buildFirst": "¡Primero crea algo!",
-      "noFullscreen": "La pantalla completa no está permitida aquí.",
       "roundOver": "¡Terminó la ronda! Puntos: {score}",
       "noAnswer": "El Constructor no pudo responder. Inténtalo de nuevo, por favor.",
       "signInAgain": "Volver a entrar",
@@ -2151,8 +2149,8 @@
         "publishBtn": "Publicar",
         "fix": "En vivo, pero hay que arreglar algo: {issue}",
         "fixBtn": "Arreglarlo",
-        "off": "No es un juego en vivo",
-        "make": "Hacerlo en vivo"
+        "make": "Hazlo un juego en vivo",
+        "game": "Juego en vivo"
       },
       "safety": {
         "chipPass": "Seguro",
@@ -2585,7 +2583,7 @@
       "world2dUse": "Usa el mundo 2D {name}.",
       "animal2dUse": "Que el héroe sea este animal: {name}.",
       "sparks": "{n, plural, one {# mensaje de Paquetes Chispa} other {# mensajes de Paquetes Chispa}}",
-      "activityEdit": "Editar actividad",
+      "activityEdit": "Editar lección",
       "asStudent": "Como estudiante",
       "activitySaveFirst": "Primero guarda o deshaz los cambios del panel de actividad."
     },

@@ -1,9 +1,10 @@
 // The Studio's Activity panel (docs/canvas-api.md "The Activity panel"): a classroom activity's problems, how much help,
 // problems in a set and what it is for, changed without a Builder message. Desktop: a Builder | Activity switch at the
-// top of the Studio's left column. Phones: "🧮 Edit activity" opens it as a full-height sheet. Only for an Oomba Canvas
-// activity's owner (the server sends S.activity to editors only). Changes collect until Save (Undo takes the last one
-// back); routes/activity-panel.js saves them as a new version.
-//   mountPanel(S, hooks) -> { dirty(), openSheet(), update(S) }
+// top of the Studio's left column. Phones: "🧮 Edit lesson" under the preview opens it right below that button, as an
+// accordion that pushes the rest of the page down (tapped again, it closes). Only for an Oomba Canvas activity's owner
+// (the server sends S.activity to editors only). Changes collect until Save (Undo takes the last one back), open or
+// closed; routes/activity-panel.js saves them as a new version.
+//   mountPanel(S, hooks) -> { dirty(), toggleInline(), update(S) }
 //   hooks: { state() (the Studio state now), applyState(st), showVersion(st) }
 import { $, esc } from '/js/app.js';
 import { P, E, clone, loadScript } from './shared.js';
@@ -31,7 +32,7 @@ export async function mountPanel(S0, H) {
   M.commit = (change, fn) => { M.undo.push({ data: clone(M.data), changes: clone(M.changes) }); fn(M.data); M.changes.push(change); M.fail = ''; };
   M.edit = i => openEditor(M, i);
 
-  // ---- the place: a tab beside the Builder (desktop), a sheet (phones)
+  // ---- the place: a tab beside the Builder (desktop), an accordion under "Edit lesson" (phones)
   const tabs = document.createElement('div'); tabs.className = 'st-lefttabs'; tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', P('switchLabel'));
   tabs.innerHTML = `<button type="button" role="tab" id="ap-tab-b" aria-selected="true" aria-controls="st-log">🤖 ${E('builder')}</button><button type="button" role="tab" id="ap-tab-a" aria-selected="false" aria-controls="st-activity" tabindex="-1">🧮 ${E('activity')}</button>`;
   chat.prepend(tabs);
@@ -47,10 +48,24 @@ export async function mountPanel(S0, H) {
   tabs.addEventListener('keydown', e => { if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return; const a = !chat.classList.contains('ap-tab'); setTab(a); $(a ? '#ap-tab-a' : '#ap-tab-b').focus(); });
   let want = false; try { want = localStorage.getItem('brb-ap-tab') === '1'; } catch { /* private mode */ }
   setTab(want);
-  function openSheet() { box.classList.add('is-sheet'); document.body.classList.add('ap-open'); render(); const h = $('#ap-h'); if (h) h.focus(); }
-  function closeSheet() { box.classList.remove('is-sheet'); document.body.classList.remove('ap-open'); const b = $('[data-act="edit-activity"]'); if (b) b.focus(); }
-  addEventListener('keydown', e => { if (e.key === 'Escape' && box.classList.contains('is-sheet') && !document.querySelector('.sheet-bg')) closeSheet(); });
-  narrow.addEventListener('change', () => { if (!narrow.matches) closeSheet(); });
+  // Phones: the panel lives in the Studio's accordion slot (#st-acc, under "Edit lesson"); wider: in the left column.
+  let open = false;
+  const editBtn = () => $('[data-act="edit-activity"]');
+  function place() {
+    const slot = $('#st-acc'), inline = narrow.matches && !!slot;
+    const home = inline ? slot : chat;
+    if (box.parentNode !== home) home.append(box);
+    box.classList.toggle('is-inline', inline);
+    if (slot) slot.hidden = !(inline && open);
+    const b = editBtn(); if (b) b.setAttribute('aria-expanded', String(inline && open));
+  }
+  function setInline(on) {
+    open = !!on; place();
+    if (open) { render(); const h = $('#ap-h'); if (h) h.focus({ preventScroll: true }); }
+  }
+  function toggleInline() { setInline(!open); if (!open) { const b = editBtn(); if (b) b.focus(); } }
+  narrow.addEventListener('change', place);
+  place();
 
   // ---- drawing
   const tile = (name, key, on, dis, title, desc) => `<label class="ap-tile${on ? ' on' : ''}${dis ? ' dis' : ''}"><input type="checkbox" name="${name}" value="${key}"${on ? ' checked' : ''}${dis ? ' disabled' : ''}><span><b>${title}</b><small>${desc}</small></span></label>`;
@@ -93,7 +108,7 @@ export async function mountPanel(S0, H) {
   }
   function wire(max) {
     const on = (sel, fn, ev = 'click') => box.querySelectorAll(sel).forEach(el => el.addEventListener(ev, fn));
-    on('[data-ap="close"]', closeSheet);
+    on('[data-ap="close"]', () => { setInline(false); const b = editBtn(); if (b) b.focus(); });
     on('[data-ap="list"]', () => { if (!M.data.gen) return; M.genKeep = clone(M.data.gen); M.commit({ k: 'list' }, d => { d.gen = null; if (Array.isArray(d.config.purpose)) d.config.purpose = d.config.purpose.filter(x => x !== 'generator'); }); render(); });
     on('[data-ap="gen"]', () => { if (M.data.gen) return; if (!genOn(M)) { M.fail = P('genNone'); } render(); });
     on('input[name="ap-sup"]', e => {
@@ -118,10 +133,11 @@ export async function mountPanel(S0, H) {
   render();
   return {
     dirty: () => M.changes.length > 0,
-    openSheet,
+    toggleInline,
     /** A new Studio state (a Builder version, a restore): the panel follows it, unless it holds changes (then it says so). */
     update(S) {
-      if (!S.activity) { box.remove(); tabs.remove(); chat.classList.remove('ap-tab'); return false; }
+      if (!S.activity) { box.remove(); tabs.remove(); chat.classList.remove('ap-tab'); open = false; const slot = $('#st-acc'); if (slot) slot.hidden = true; return false; }
+      place();
       if (S.activity.base === M.base) { render(); return true; }
       if (M.changes.length) M.stale = true; else load(S.activity, S);
       render(); return true;
