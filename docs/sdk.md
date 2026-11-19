@@ -270,7 +270,7 @@ The SDK talks to the page with `postMessage`. Every message is `{ brb: 1, type, 
 | `brb:back` | – | `BRB.back()`: the page navigates back to the course step or class lesson the game was launched from, only right after a tap and only when the play page carries that back context (course step or lesson); otherwise ignored |
 | `brb:online` | – | `BRB.match.menu()`: opens the "Play online" sheet, for online games only, right after a tap |
 | `brb:tts` | `{ id, text, lang, role, rate, pre? }` | AI voices (official games, when on): fetches the line from `/api/tts` and posts the MP3's bytes back (`{ id, ok, buf }`), or `{ id, ok:false, why }`; `pre`: fetch only, no answer |
-| `brb:print` | `{ id, doc }` | Crossword's `BRB.print` (see "Printing" below): right after a tap, the server checks `doc` and makes the printable page; the page prints it and answers `brb:printed { id, ok }` or `{ id, error }` |
+| `brb:print` | `{ id, doc }` | `BRB.print` (Crossword, The Big Divide) (see "Printing" below): right after a tap, the server checks `doc` and makes the printable page; the page prints it and answers `brb:printed { id, ok }` or `{ id, error }` |
 
 The parent checks that each message comes from its own game frame (`event.source`), has the expected shape,
 and the server validates and rate-limits every resulting API call (`public/js/play.js`, `public/js/studio.js`, `public/js/admin.js`).
@@ -354,12 +354,16 @@ cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, 
 - Sets go with their owner's account. Nothing about who played is kept.
 
 ## Printing (`BRB.print`)
-Crossword only (frames where `INIT.print` is set: the official Crossword, not in a preview). The frame can't print (no
+Crossword and The Big Divide (frames where `INIT.print` is set: those official games, not in a preview; each game's
+printer is in `server/services/game-print.js`). The frame can't print (no
 `allow-modals`, no popups), so the play page prints for it.
 - `BRB.canPrint`: true when printing is on. `BRB.print(doc)` → a Promise of `{ ok: true }` or `{ error }` (`notAllowed`,
   `bad`, `key`, `tap`, `offline`). Call it from a tap: the page checks `navigator.userActivation` when the message
   arrives and answers `tap` otherwise.
-- `doc` is plain data, never HTML (at most 20,000 characters as JSON; the SDK, the page and the server each check):
+- `doc` is plain data, never HTML (at most 20,000 characters as JSON; the SDK, the page and the server each check).
+  The Big Divide's: `{ k, p, r?, dec?, m?, key, set }`, an activity's kind, problems and options exactly as a question
+  set's item (`cleanBoxItems`: numbers and fixed words only); the server works out the answers for the key
+  (`services/box-by-box-print.js`). Crossword's:
   `{ t, w: [[word, clue]], b, g: { w, h, e: [[word index, 'a'|'d', row, col]] }, key, set }`: the title, the words and
   clues (a question set's rules, `cleanCrossItems`: each word, clue and the title pass the site's text filter), the word
   bank option, the layout as numbers (1 to 25 a side, at most one entry per word), the answer key (true or false) and the

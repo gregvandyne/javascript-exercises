@@ -1219,6 +1219,32 @@
       "made": "用 Oomba Academy 製作",
       "code": "班級代碼：{code}",
       "grid": "填字遊戲格子"
+    },
+    "printBox": {
+      "divide": "直式除法",
+      "multiply": "乘法",
+      "add": "加法",
+      "subtract": "減法",
+      "howR": "做除法。餘數用 R 寫，例如 7 R 2。",
+      "howFraction": "做除法。餘數寫成分母是除數的分數，例如 7 2/3。",
+      "howDecimal": "做除法。數字用完時，寫小數點和 0 繼續除。除盡或到小數第二位就停，並四捨五入。",
+      "howShift": "除以小數時，先把兩個小數點向右移動一樣多位。",
+      "how": {
+        "multiply": "做乘法。",
+        "multiplyDec": "先當作沒有小數點來乘，再數小數位數點上小數點。",
+        "add": "做加法。",
+        "addDec": "做加法。小數點要對齊。",
+        "subtract": "做減法。",
+        "subtractDec": "做減法。小數點要對齊。"
+      },
+      "method": {
+        "ladder": "用階梯法（部分商）。",
+        "area": "用面積模型。",
+        "partial": "用部分積。"
+      },
+      "problem": "第 {n} 題",
+      "rounds": "四捨五入：{x}",
+      "simpler": "約分：{x}"
     }
   },
   "friends": {

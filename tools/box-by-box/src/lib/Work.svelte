@@ -6,7 +6,8 @@
 	// left to right, whatever the page's language.
 	import type { Snippet } from 'svelte';
 	import type { Values } from './logic';
-	import type { Field, Work } from './methods';
+	import { partValue, type Field, type Work } from './methods';
+	import { t } from './i18n';
 
 	let {
 		work,
@@ -28,6 +29,9 @@
 	const len = (n: number) => String(n).length;
 	/** A number's digits in squares, lined up on the right in `n` squares. */
 	const pad = (s: string, n: number) => [...s.padStart(n, ' ')].slice(-n);
+	/** Decimals in a column line up on their points: each padded on the right to `places` decimal places. */
+	const placesIn = (s: string) => (s.includes('.') ? s.length - s.indexOf('.') - 1 : 0);
+	const aligned = (s: string, places: number) => (places ? s + ' '.repeat(places - placesIn(s) + (s.includes('.') ? 0 : 1)) : s);
 </script>
 
 {#snippet digits(text: string, n: number, key: string, cls = '')}
@@ -43,15 +47,16 @@
 		</span>
 	{/if}
 {/snippet}
-{#snippet mirror(id: string, n: number)}
-	{@render digits(values[id] ?? '', n, id, 'mirror')}
+{#snippet mirror(id: string, n: number, places = 0)}
+	{@render digits(aligned(values[id] ?? '', places), n, id, 'mirror')}
 {/snippet}
 
 <div class="work" dir="ltr" role="group" aria-label={label ?? work.title}>
 	{#if work.kind === 'divide' && work.method === 'ladder'}
 		{@const D = len(work.divisor)}
-		{@const N = len(work.dividend)}
-		{@const S = Math.max(1, len(Math.floor(work.dividend / work.divisor)))}
+		{@const shownN = work.f.show(work.dividend)}
+		{@const N = Math.max(shownN.length, ...work.fields.filter((x) => x.role === 'product' || x.role === 'difference').map((x) => x.len))}
+		{@const S = Math.max(1, byId.get('quotient')?.len ?? 1, ...work.fields.filter((x) => x.role === 'choice').map((x) => x.len))}
 		{@const main = D + 1}
 		{@const end = D + N}
 		{@const sideEnd = end + 1 + S}
@@ -60,7 +65,7 @@
 		<div class="ladder" style:--cols={sideEnd + fr} style:--rows={lastRow + 1}>
 			<span class="cell" style:grid-row="1" style:grid-column="1 / span {D}">{@render digits(String(work.divisor), D, 'divisor')}</span>
 			<span class="cell bracket" class:dim={!lit('dividend')} style:grid-row="1" style:grid-column="{main} / span {N}"
-				>{@render digits(String(work.dividend), N, 'dividend')}</span
+				>{@render digits(shownN, N, 'dividend')}</span
 			>
 			<span class="side-head" style:grid-row="1" style:grid-column="{end + 2} / span {S}" aria-hidden="true">×{work.divisor}</span>
 			<span class="divider" style:grid-row="1 / span {lastRow + 1}" style:grid-column={end + 1} aria-hidden="true"></span>
@@ -87,7 +92,7 @@
 							>{@render slot('remainder')}<span class="slash" class:dim={!lit('den')} aria-hidden="true">/</span>{@render slot('den')}</span
 						>
 					{/if}
-				{:else}
+				{:else if rm}
 					{#if shown('remainder')}
 						<span class="r-label" class:dim={!lit('remainder')} style:grid-row={lastRow + 1} style:grid-column={end - rm.len} aria-hidden="true">R</span>
 					{/if}
@@ -96,7 +101,8 @@
 			{/if}
 		</div>
 	{:else if work.kind === 'divide'}
-		{@const N = len(work.dividend)}
+		{@const shown_ = work.f.show(work.dividend)}
+		{@const N = Math.max(shown_.length, ...work.fields.filter((x) => x.role === 'product' || x.role === 'difference').map((x) => x.len))}
 		<div class="adiv">
 			<div class="sections">
 				<span class="dvr" class:dim={!lit('divisor')}>{@render digits(String(work.divisor), len(work.divisor), 'divisor')}</span>
@@ -106,7 +112,7 @@
 						<div class="width">{@render slot(r.q)}</div>
 						<div class="box">
 							<div class="line">
-								{#if i === 0}{@render digits(String(work.dividend), N, 'dividend')}{:else}{@render mirror(work.rungs[i - 1].r, N)}{/if}
+								{#if i === 0}{@render digits(shown_, N, 'dividend')}{:else}{@render mirror(work.rungs[i - 1].r, N)}{/if}
 							</div>
 							<div class="line take" class:dim={!lit(r.p)}>
 								<span class="sq sign-sq" aria-hidden="true">{visible ? '−' : ''}</span>{@render slot(r.p)}
@@ -118,7 +124,7 @@
 			</div>
 			{#if work.closed || shown('quotient')}
 				<div class="total" class:dim={!lit('quotient')}>
-					<span class="words">Quotient</span>
+					<span class="words">{t('ui.field.quotient')}</span>
 					{#if work.rungs.length > 1}
 						<span class="sum-words" aria-hidden="true">{work.rungs.map((r) => values[r.q] || '?').join(' + ')} =</span>
 					{/if}
@@ -127,7 +133,7 @@
 						{#if byId.has('den')}
 							<span class="frac">{@render slot('remainder')}<span class="slash" class:dim={!lit('den')} aria-hidden="true">/</span>{@render slot('den')}</span>
 						{/if}
-					{:else}
+					{:else if byId.has('remainder')}
 						<span class="words rem-word" class:dim={!lit('remainder')}>R</span>
 						{@render slot('remainder')}
 					{/if}
@@ -135,16 +141,17 @@
 			{/if}
 		</div>
 	{:else if work.method === 'area'}
-		{@const widths = work.cells[0].map((_, j) => Math.max(...work.cells.map((row) => len(row[j].value))) + 0.5)}
-		{@const P = len(work.top * work.bottom)}
+		{@const widths = work.cells[0].map((_, j) => Math.max(...work.cells.map((row) => partValue(row[j]).length)) + 0.5)}
 		{@const flat = work.cells.flat()}
+		{@const places = Math.max(0, ...flat.map((c) => placesIn(partValue(c))))}
+		{@const P = Math.max(aligned(work.answer, places).length, ...flat.map((c) => aligned(partValue(c), places).length))}
 		<div class="amul" style:grid-template-columns="auto {widths.map((w) => `calc(var(--sq) * ${w})`).join(' ')}">
 			<span class="corner" aria-hidden="true">×</span>
 			{#each work.cells[0] as c (c.id)}
-				<span class="part top-part" class:dim={!lit(`top${c.top}`)}>{c.top}</span>
+				<span class="part top-part" class:dim={!lit(`top${c.top}`)}>{c.text?.top ?? c.top}</span>
 			{/each}
 			{#each work.cells as row, i (i)}
-				<span class="part side-part" class:dim={!lit(`bottom${row[0].bottom}`)}>{row[0].bottom}</span>
+				<span class="part side-part" class:dim={!lit(`bottom${row[0].bottom}`)}>{row[0].text?.bottom ?? row[0].bottom}</span>
 				{#each row as c (c.id)}
 					<span class="area-cell" class:faint={!shown(c.id)}>{@render slot(c.id)}</span>
 				{/each}
@@ -155,15 +162,15 @@
 				{#each flat as c, i (c.id)}
 					<span class="row" style:grid-row={i + 1}>
 						{#if i === flat.length - 1}<span class="sq sign-sq" aria-hidden="true">+</span>{/if}
-						{@render mirror(c.id, P)}
+						{@render mirror(c.id, P, places)}
 					</span>
 				{/each}
 				<span class="rule" style:grid-row={flat.length} style:grid-column="1 / span {P + 1}" aria-hidden="true"></span>
-				<span class="row" style:grid-row={flat.length + 1}>{@render slot('sum')}</span>
+				<span class="row" style:grid-row={flat.length + 1}>{@render slot('sum')}{#each Array(aligned(work.answer, places).length - work.answer.length) as _, i (i)}<span class="sq"></span>{/each}</span>
 			</div>
 		{/if}
 	{:else}
-		{@const P = len(work.top * work.bottom)}
+		{@const P = work.answer.length}
 		{@const tp = [...String(work.top)]}
 		{@const bt = [...String(work.bottom)]}
 		{@const rows = work.rows.length}

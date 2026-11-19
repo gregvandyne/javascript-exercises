@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from './i18n';
 	// "Replace your problems?": asked before new problems would replace ones the teacher changed by hand.
 	let dialog = $state<HTMLDialogElement>();
 	let answer: ((yes: boolean) => void) | null = null;
@@ -26,11 +27,11 @@
 	onclick={(e) => e.target === dialog && done(false)}
 >
 	<div class="box">
-		<h2 id="replace-title">Replace your problems?</h2>
-		<p id="replace-text">This will replace your problems, including the changes you made by hand. Continue?</p>
+		<h2 id="replace-title">{t('ui.replace.title')}</h2>
+		<p id="replace-text">{t('ui.replace.text')}</p>
 		<div class="actions">
-			<button type="button" class="btn-ghost" onclick={() => done(false)}>Keep my problems</button>
-			<button type="button" class="btn-primary" onclick={() => done(true)}>Replace them</button>
+			<button type="button" class="btn-ghost" onclick={() => done(false)}>{t('ui.replace.keep')}</button>
+			<button type="button" class="btn-primary" onclick={() => done(true)}>{t('ui.replace.go')}</button>
 		</div>
 	</div>
 </dialog>

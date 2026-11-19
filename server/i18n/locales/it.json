@@ -1220,6 +1220,32 @@
       "made": "Fatto con Oomba Academy",
       "code": "Codice classe: {code}",
       "grid": "Griglia del cruciverba"
+    },
+    "printBox": {
+      "divide": "Divisione in colonna",
+      "multiply": "Moltiplicazione",
+      "add": "Addizione",
+      "subtract": "Sottrazione",
+      "howR": "Dividi. Scrivi il resto con R, come 7 R 2.",
+      "howFraction": "Dividi. Scrivi il resto come frazione sul divisore, come 7 2/3.",
+      "howDecimal": "Dividi. Quando finiscono le cifre, scrivi un punto decimale e degli zeri e continua. Fermati quando la divisione è esatta o a 2 cifre decimali, e arrotonda.",
+      "howShift": "Per dividere per un numero decimale, sposta prima i due punti dello stesso numero di posti verso destra.",
+      "how": {
+        "multiply": "Moltiplica.",
+        "multiplyDec": "Moltiplica come se non ci fossero punti, poi conta le cifre decimali per mettere il punto.",
+        "add": "Somma.",
+        "addDec": "Somma. Allinea i punti decimali.",
+        "subtract": "Sottrai.",
+        "subtractDec": "Sottrai. Allinea i punti decimali."
+      },
+      "method": {
+        "ladder": "Usa la scala (quozienti parziali).",
+        "area": "Usa il modello dell'area.",
+        "partial": "Usa i prodotti parziali."
+      },
+      "problem": "Problema {n}",
+      "rounds": "Arrotondato: {x}",
+      "simpler": "Semplificato: {x}"
     }
   },
   "friends": {

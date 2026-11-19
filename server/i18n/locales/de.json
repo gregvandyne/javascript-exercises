@@ -1220,6 +1220,32 @@
       "made": "Gemacht mit Oomba Academy",
       "code": "Klassencode: {code}",
       "grid": "Kreuzworträtsel-Gitter"
+    },
+    "printBox": {
+      "divide": "Schriftliche Division",
+      "multiply": "Multiplikation",
+      "add": "Addition",
+      "subtract": "Subtraktion",
+      "howR": "Dividiere. Schreibe den Rest mit R, zum Beispiel 7 R 2.",
+      "howFraction": "Dividiere. Schreibe den Rest als Bruch mit dem Teiler als Nenner, zum Beispiel 7 2/3.",
+      "howDecimal": "Dividiere. Wenn die Ziffern aus sind, schreibe einen Dezimalpunkt und Nullen und rechne weiter. Hör auf, wenn es aufgeht oder bei 2 Nachkommastellen, und runde.",
+      "howShift": "Um durch eine Dezimalzahl zu teilen, verschiebe zuerst beide Punkte um gleich viele Stellen nach rechts.",
+      "how": {
+        "multiply": "Multipliziere.",
+        "multiplyDec": "Multipliziere, als gäbe es keine Punkte, und zähle dann die Nachkommastellen, um den Punkt zu setzen.",
+        "add": "Addiere.",
+        "addDec": "Addiere. Schreibe die Dezimalpunkte untereinander.",
+        "subtract": "Subtrahiere.",
+        "subtractDec": "Subtrahiere. Schreibe die Dezimalpunkte untereinander."
+      },
+      "method": {
+        "ladder": "Rechne mit der Leiter (Teilquotienten).",
+        "area": "Rechne mit dem Flächenmodell.",
+        "partial": "Rechne mit Teilprodukten."
+      },
+      "problem": "Aufgabe {n}",
+      "rounds": "Gerundet: {x}",
+      "simpler": "Gekürzt: {x}"
     }
   },
   "friends": {

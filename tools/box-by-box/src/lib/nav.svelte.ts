@@ -2,13 +2,14 @@
 // history: the in-game buttons go back).
 
 import type { Kind, Numbers, Playable } from './logic';
+import type { Method } from './methods';
 
 export type View =
 	| { name: 'start' }
 	| { name: 'student' }
 	| { name: 'home' }
 	| { name: 'edit'; id: string }
-	| { name: 'play'; activity: Playable; title: string; from: 'link' | 'editor' | 'code' | 'practice'; practice?: { kind: Kind; hard: 'easy' | 'medium' | 'hard'; numbers?: Numbers }; id?: string; setId?: string; mine?: boolean; item?: unknown }
+	| { name: 'play'; activity: Playable; title: string; from: 'link' | 'editor' | 'code' | 'practice'; practice?: { kind: Kind; hard: 'easy' | 'medium' | 'hard'; numbers?: Numbers; method?: Method }; id?: string; setId?: string; mine?: boolean; item?: unknown }
 	| { name: 'invalid' }
 	| { name: 'about' };
 

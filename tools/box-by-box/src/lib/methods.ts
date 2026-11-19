@@ -6,6 +6,8 @@
 // last difference still holds the divisor). No platform calls and no DOM here, so it runs as it is in Node too.
 
 import type { Kind, Problem, RemainderForm, Values } from './logic';
+import { m as ln, orList, t, tn, tx, type Msg } from './i18n.ts';
+import { asText, placesOf, scaled } from './numbers.ts';
 
 export type Method = 'standard' | 'ladder' | 'area' | 'partial';
 export const METHOD_NAMES: Method[] = ['standard', 'ladder', 'area', 'partial'];
@@ -20,68 +22,18 @@ export type MethodInfo = {
 	steps: string[];
 };
 
-const STANDARD_ONLY = (about: string): MethodInfo[] => [{ name: 'standard', label: 'Standard', about, steps: [] }];
+const STEPS: Record<string, number> = { 'divide.ladder': 4, 'divide.area': 4, 'multiply.area': 3, 'multiply.partial': 3 };
+const info = (kind: Kind, name: Method): MethodInfo => ({
+	name,
+	label: t(`ui.method.${name}`),
+	about: t(`ui.method.${kind}.${name}`),
+	steps: Array.from({ length: STEPS[`${kind}.${name}`] ?? 0 }, (_, i) => t(`ui.method.${kind}.${name}.${i + 1}`))
+});
 export const METHODS: Record<Kind, MethodInfo[]> = {
-	add: STANDARD_ONLY('Add each column from the right, carrying a 1 over the next column.'),
-	subtract: STANDARD_ONLY('Subtract each column from the right, regrouping when the top digit is smaller.'),
-	divide: [
-		{
-			name: 'standard',
-			label: 'Standard',
-			about: 'Long division: divide, multiply, subtract and bring down, one digit at a time.',
-			steps: []
-		},
-		{
-			name: 'ladder',
-			label: 'Ladder',
-			about: 'Partial quotients: take away friendly groups of the divisor (×100, ×10, ×5 …) down a ladder, then add them up.',
-			steps: [
-				'Pick how many groups of the divisor to take away, like 100, 10, 5 or 2. Write it on the side.',
-				'Multiply to see how much that is, and write it under what’s left.',
-				'Subtract. Keep going down the ladder until what’s left is smaller than the divisor.',
-				'Add the numbers on the side: that’s the quotient. What’s left at the bottom is the remainder.'
-			]
-		},
-		{
-			name: 'area',
-			label: 'Area model',
-			about: 'Box method: fill sections of a rectangle with the divisor on the side, then add the section widths.',
-			steps: [
-				'The divisor goes on the side of a rectangle, and the number to divide goes inside.',
-				'Pick a width for a section, like 100, 10 or 5, and write it on top. Multiply it by the divisor and take it away.',
-				'Start a new section with what’s left, until it’s smaller than the divisor.',
-				'Add the widths on top: that’s the quotient. What’s left in the last section is the remainder.'
-			]
-		}
-	],
-	multiply: [
-		{
-			name: 'standard',
-			label: 'Standard',
-			about: 'The standard algorithm: multiply each digit, carry, and add the rows.',
-			steps: []
-		},
-		{
-			name: 'area',
-			label: 'Area model',
-			about: 'Break both numbers into place-value parts, like (40 + 6) × (20 + 3), fill each box of a rectangle, then add the boxes.',
-			steps: [
-				'Break both numbers into their place values: 46 is 40 + 6, and 23 is 20 + 3.',
-				'Each box of the rectangle is one part times another. Multiply to fill it.',
-				'Add all the boxes together: that’s the answer.'
-			]
-		},
-		{
-			name: 'partial',
-			label: 'Partial products',
-			about: 'List each place-value product down the page (3 × 6, 3 × 40, 20 × 6, 20 × 40), then add the list.',
-			steps: [
-				'Multiply each place of the bottom number by each place of the top number, starting with the ones.',
-				'Write each product on its own line, lined up on the right.',
-				'Add all the lines together: that’s the answer.'
-			]
-		}
-	]
+	add: [info('add', 'standard')],
+	subtract: [info('subtract', 'standard')],
+	divide: [info('divide', 'standard'), info('divide', 'ladder'), info('divide', 'area')],
+	multiply: [info('multiply', 'standard'), info('multiply', 'area'), info('multiply', 'partial')]
 };
 
 export const methodsFor = (kind: Kind): MethodInfo[] => METHODS[kind];
@@ -94,7 +46,6 @@ export const methodOr = (kind: Kind, raw: unknown): Method => (METHODS[kind].som
 const len = (n: number) => String(n).length;
 /** "0035" -> "35", "" stays "". */
 export const norm = (s: string) => (s === '' ? '' : s.replace(/^0+(?=\d)/, ''));
-const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 const countBy = (n: number, times: number) => Array.from({ length: times }, (_, i) => n * (i + 1)).join(', ');
 const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
 /** The trailing zeros of a number: 400 -> 2. */
@@ -112,6 +63,25 @@ export function placeParts(n: number): number[] {
 	return d.map((x, i) => x * 10 ** (d.length - 1 - i)).filter((x) => x > 0);
 }
 
+// --- decimals in the work ---
+
+/** How the numbers in a piece of work are written and read back. k = 0: whole numbers. k = 2 (the area model with
+ *  decimals, 7.5 ÷ 3): the work is done in whole hundredths (750 ÷ 3), so every rule and check is the whole-number one,
+ *  and each number is shown and typed as a decimal ("2", "0.5", "1.5"; a typed "0.50" or ".5" is the same number). */
+export type Nums = { k: number; show: (n: number) => string; read: (s: string) => number };
+const trimZeros = (s: string) => (s.includes('.') ? s.replace(/0+$/, '').replace(/\.$/, '') : s);
+/** A decimal as written with as few places as it needs: 2.50 -> "2.5", 3.00 -> "3". */
+export const decText = (n: number, k: number) => trimZeros(asText(n, k));
+export const nums = (k: number): Nums =>
+	k
+		? {
+				k,
+				show: (n) => (Number.isFinite(n) ? decText(n, k) : '?'),
+				read: (s) => (/^(\d+\.?\d*|\.\d+)$/.test(s) && placesOf(Number(s)) <= k ? scaled(Number(s), k) : NaN)
+			}
+		: { k: 0, show: (n) => String(n), read: (s) => Number(s) };
+const WHOLE = nums(0);
+
 // --- division: the ladder and the area model ---
 
 /** The most rungs (or sections) one problem may take: past this, a choice must finish it. */
@@ -125,17 +95,21 @@ export function chooseCheck(left: number, divisor: number, q: number, last = fal
 	if (last && left - q * divisor >= divisor) return 'short';
 	return null;
 }
-export function chooseNudge(left: number, divisor: number, q: number, last = false): string | null {
+export function chooseNudgeMsg(left: number, divisor: number, q: number, last = false, f: Nums = WHOLE): Msg | null {
 	switch (chooseCheck(left, divisor, q, last)) {
 		case 'zero':
-			return `Take away at least one ${divisor}.`;
+			return ln(f.k ? 'q.lad.atLeastSome' : 'q.lad.atLeastOne', { d: divisor });
 		case 'over':
-			return `${q} × ${divisor} = ${q * divisor}, more than ${left}. Try a smaller number.`;
+			return ln('q.lad.over', { q: f.show(q), d: divisor, x: f.show(q * divisor), l: f.show(left) });
 		case 'short':
-			return `That leaves ${left - q * divisor}, and this is the last step. Take away more.`;
+			return ln('q.lad.short', { x: f.show(left - q * divisor) });
 		default:
 			return null;
 	}
+}
+export function chooseNudge(left: number, divisor: number, q: number, last = false, f: Nums = WHOLE): string | null {
+	const n = chooseNudgeMsg(left, divisor, q, last, f);
+	return n ? tx(n) : null;
 }
 /** The biggest "one digit and zeros" number of divisors that fits: 945 ÷ 7 -> 100, 245 ÷ 7 -> 30. */
 export function placeValueMultiple(left: number, divisor: number): number {
@@ -171,13 +145,16 @@ export function placeChunks(left: number, divisor: number): number[] {
 	const p = 10 ** (len(pv) - 1);
 	return Array.from({ length: pv / p }, (_, k) => (k + 1) * p).slice(-3);
 }
-const orList = (xs: number[]) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} or ${xs.at(-1)}` : String(xs[0] ?? ''));
 /** The area model's advice (not a mistake) on a first section that takes the whole quotient at once (68 ÷ 2: 34) when
  *  it has more than one place: the classroom model splits it into place-value sections (30, then 4). Null otherwise. */
-export function wholeChunkAdvice(dividend: number, divisor: number, q: number): string | null {
+export function wholeChunkAdviceMsg(dividend: number, divisor: number, q: number, f: Nums = WHOLE): Msg | null {
 	const most = Math.floor(dividend / divisor);
 	if (q !== most || placeValueMultiple(dividend, divisor) === most) return null;
-	return `${q} × ${divisor} = ${q * divisor} works, but the area model splits it into sections. Try a friendly chunk like ${orList(placeChunks(dividend, divisor))} first, or press Next to keep ${q}.`;
+	return ln('q.area.advice', { q: f.show(q), d: divisor, x: f.show(q * divisor), list: orList(placeChunks(dividend, divisor).map(f.show)) });
+}
+export function wholeChunkAdvice(dividend: number, divisor: number, q: number, f: Nums = WHOLE): string | null {
+	const a = wholeChunkAdviceMsg(dividend, divisor, q, f);
+	return a ? tx(a) : null;
 }
 
 export function friendlySteps(left: number, divisor: number): number[] {
@@ -194,20 +171,20 @@ export type LadderCheck = { right: boolean; wrong: string[]; closed: boolean; qu
 /** A whole ladder, checked: each rung must take away a whole number (at least 1) of divisors, no more than is left; each
  *  product and difference must be worked out right; it must go on until less than the divisor is left; and the quotient
  *  and remainder must be right. Any path that does so is right. qs, products, diffs are what was typed, rung by rung. */
-export function checkLadder(dividend: number, divisor: number, qs: string[], products: string[], diffs: string[], quotient: string, remainder: string): LadderCheck {
+export function checkLadder(dividend: number, divisor: number, qs: string[], products: string[], diffs: string[], quotient: string, remainder: string, f: Nums = WHOLE): LadderCheck {
 	const wrong: string[] = [];
 	let left = dividend;
 	let closed = false;
 	const n = qs.length;
 	for (let i = 0; i < n; i++) {
-		const q = Number(qs[i]);
+		const q = f.read(qs[i]);
 		if (qs[i] === '' || chooseCheck(left, divisor, q, i === MAX_RUNGS - 1)) {
 			wrong.push(`q${i}`);
 			break;
 		}
-		if (Number(products[i]) !== q * divisor || products[i] === '' || products[i] === undefined) wrong.push(`p${i}`);
+		if (f.read(products[i]) !== q * divisor || products[i] === '' || products[i] === undefined) wrong.push(`p${i}`);
 		const diff = left - q * divisor;
-		if (diffs[i] === '' || diffs[i] === undefined || Number(diffs[i]) !== diff) wrong.push(`r${i}`);
+		if (diffs[i] === '' || diffs[i] === undefined || f.read(diffs[i]) !== diff) wrong.push(`r${i}`);
 		left = diff;
 		if (left < divisor) {
 			closed = i === n - 1;
@@ -216,18 +193,41 @@ export function checkLadder(dividend: number, divisor: number, qs: string[], pro
 	}
 	const Q = Math.floor(dividend / divisor);
 	const R = dividend % divisor;
-	if (quotient === '' || Number(quotient) !== Q) wrong.push('quotient');
-	if (remainder === '' || Number(remainder) !== R) wrong.push('remainder');
+	if (quotient === '' || f.read(quotient) !== Q) wrong.push('quotient');
+	if (remainder === '' || f.read(remainder) !== R) wrong.push('remainder');
 	return { right: closed && wrong.length === 0, wrong, closed, quotient: Q, remainder: R };
 }
 
 // --- multiplication: the area model and partial products ---
 
-export type PartProduct = { id: string; top: number; bottom: number; value: number };
-/** The area model's boxes, row by row (a row for each part of the bottom number, a column for each part of the top). */
+/** A part times a part. With decimals the parts and the product are also written out (2.3 × 1.4: 0.3 × 0.4 = 0.12),
+ *  worked from whole numbers so no floating point creeps in: tk, bk, k are the decimal places of each. */
+export type PartProduct = { id: string; top: number; bottom: number; value: number; text?: { top: string; bottom: string; value: string; places: number } };
+/** A number's place-value parts, as whole numbers of 10^-k, with the places it is written with: 2.3 -> [20, 3], 1. */
+function decParts(x: number) {
+	const k = placesOf(x);
+	return { k, parts: placeParts(scaled(x, k)) };
+}
+/** The area model's boxes, row by row (a row for each part of the bottom number, a column for each part of the top).
+ *  Decimals split by place value too: 2.3 is 2 + 0.3. */
 export function areaCells(top: number, bottom: number): PartProduct[][] {
+	if (placesOf(top) || placesOf(bottom)) {
+		const T = decParts(top);
+		const B = decParts(bottom);
+		const k = T.k + B.k;
+		return B.parts.map((b, i) =>
+			T.parts.map((tp, j) => {
+				const text = { top: decText(tp, T.k), bottom: decText(b, B.k), value: decText(tp * b, k), places: k };
+				return { id: `c${i}_${j}`, top: Number(text.top), bottom: Number(text.bottom), value: Number(text.value), text };
+			})
+		);
+	}
 	return placeParts(bottom).map((b, i) => placeParts(top).map((t, j) => ({ id: `c${i}_${j}`, top: t, bottom: b, value: t * b })));
 }
+/** The product of two decimals, written out exactly: 2.3 × 1.4 -> "3.22". */
+export const decProduct = (a: number, b: number) => decText(scaled(a, placesOf(a)) * scaled(b, placesOf(b)), placesOf(a) + placesOf(b));
+/** How a part or a total is written: its text with decimals, else the number. */
+export const partValue = (p: PartProduct) => p.text?.value ?? String(p.value);
 /** Partial products, in the order they're written: each place of the bottom number (ones first) times each place of the
  *  top number (ones first). */
 export function partialProducts(top: number, bottom: number): PartProduct[] {
@@ -253,20 +253,30 @@ export type Field = {
 	expect: string | null;
 	/** A choice: null when it works, else why not (Guided says so at once; Check marks it). */
 	nudge?: (v: string) => string | null;
+	nudgeSay?: (v: string) => Msg | null;
 	/** A fraction's part: any part of a fraction equal to the remainder over the divisor is right (simplifying is up
 	 *  to the student), so this says whether what's typed is, in place of expect. */
 	accept?: (v: string) => boolean;
 	/** A choice that works but isn't the method's way (an area model's one section for all of it): Guided says so once,
 	 *  and Next keeps it. */
 	advice?: (v: string) => string | null;
+	adviceSay?: (v: string) => Msg | null;
 	/** The question Guided asks, the line said when the page writes it, and up to three hints. */
 	prompt: string;
 	told: string;
+	/** The question and that line as lines of the table (the speaker button reads them). */
+	ask?: Msg[];
+	tell?: Msg[];
 	hints: string[];
 	/** The keys to keep at full strength while it is worked (the spotlight). */
 	lit: string[];
 	/** Count up: choose a partial quotient with ▲ ▼, skip-count a product (by, times, then the zeros), or the page writes it. */
-	countUp?: { choose: { left: number; divisor: number; last: boolean } } | { skip: { by: number; times: number; zeros: number; value: number } } | { auto: true };
+	countUp?:
+		| { choose: { left: number; divisor: number; last: boolean; f: Nums } }
+		| { skip: { by: number; times: number; zeros: number; places?: number; value: number | string } }
+		| { auto: true };
+	/** Typed with a decimal point (the area model with decimals). */
+	point?: boolean;
 };
 export type Rung = { q: string; p: string; r: string; left: number; leftKey: string };
 export type Work =
@@ -277,23 +287,37 @@ export type Work =
 			answer: string;
 			fields: Field[];
 			closed: boolean;
+			/** (in whole hundredths with decimals: f.k is 2) */
 			dividend: number;
 			divisor: number;
 			rungs: Rung[];
 			/** The remainder as a fraction (beside the quotient), not as R. */
 			fraction?: boolean;
+			/** How its numbers are written (decimals: no remainder; the problems come out by hundredths). */
+			f: Nums;
 	  }
 	| { method: 'area'; kind: 'multiply'; title: string; answer: string; fields: Field[]; closed: true; top: number; bottom: number; cells: PartProduct[][]; sum: string | null }
 	| { method: 'partial'; kind: 'multiply'; title: string; answer: string; fields: Field[]; closed: true; top: number; bottom: number; rows: PartProduct[]; sum: string | null };
 
 const has = (v: Values, id: string) => !!v[id];
+const lines = (x: Msg | Msg[]) => (Array.isArray(x) ? x : [x]);
+/** A field's question and told line, from lines of the table. */
+const words = (ask: Msg | Msg[], tell: Msg | Msg[]) => ({ prompt: tx(ask), ask: lines(ask), told: tx(tell), tell: lines(tell) });
 
-function divisionWork(method: 'ladder' | 'area', dividend: number, divisor: number, v: Values, form: RemainderForm = 'R'): Work {
+function divisionWork(method: 'ladder' | 'area', given: number, divisor: number, v: Values, form: RemainderForm = 'R'): Work {
+	// decimals (the ladder or the area model: a decimal divided by a whole number, coming out by hundredths): worked in
+	// hundredths
+	const f = nums(form === 'decimal' ? 2 : 0);
+	const S = f.show;
+	const rd = f.read;
+	const dividend = f.k ? scaled(given, f.k) : given;
+	/** How many squares a number up to n takes, written as this work writes it (with decimals: up to hundredths). */
+	const width = (n: number) => (f.k ? len(Math.floor(n / 10 ** f.k)) + 1 + f.k : len(n));
 	const Q = Math.floor(dividend / divisor);
 	const R = dividend % divisor;
 	const fields: Field[] = [];
 	const rungs: Rung[] = [];
-	const side = method === 'ladder' ? 'on the side' : 'on top';
+	const on = method === 'ladder' ? 'Side' : 'Top';
 	let left = dividend;
 	let closed = false;
 	const qs: number[] = [];
@@ -306,144 +330,161 @@ function divisionWork(method: 'ladder' | 'area', dividend: number, divisor: numb
 		rungs.push({ q: qId, p: pId, r: rId, left, leftKey });
 		const pv = placeValueMultiple(left, divisor);
 		const fr = friendlyMultiple(left, divisor);
-		const fits = [1000, 100, 10, 5, 2].filter((x) => x * divisor <= left);
+		// friendly numbers of groups (decimals: tenths too, in hundredths: 0.5 is 50)
+		const fits = (f.k ? [100000, 10000, 1000, 500, 200, 100, 50, 20, 10] : [1000, 100, 10, 5, 2]).filter((x) => x * divisor <= left);
 		const thisLeft = left;
 		const chunks = placeChunks(left, divisor);
 		const pvCore = pv / 10 ** zerosOf(pv);
 		fields.push({
 			id: qId,
-			len: Math.max(1, len(Q)),
+			len: Math.max(1, width(Q)),
 			role: 'choice',
 			expect: null,
-			nudge: (s) => (s === '' ? null : chooseNudge(thisLeft, divisor, Number(s), last)),
-			prompt: last
-				? `This is the last step: how many ${divisor}s can you take away from ${left}? Take away as many as you can.`
-				: method === 'area'
-					? `How wide is this section? Pick how many ${divisor}s to take from ${left}.${chunks.length ? ` A place-value chunk like ${orList(chunks)} works well.` : ''}`
-					: `How many ${divisor}s will you take away from ${left}?${fits.length ? ` A friendly number like ${fits.slice(0, 2).join(' or ')} is easy.` : ''}`,
-			told:
+			nudge: (s) => (s === '' ? null : chooseNudge(thisLeft, divisor, rd(s), last, f)),
+			nudgeSay: (s) => (s === '' ? null : chooseNudgeMsg(thisLeft, divisor, rd(s), last, f)),
+			...words(
+				last
+					? ln('q.lad.last', { d: divisor, l: S(left) })
+					: method === 'area'
+						? [ln('q.area.howWide', { d: divisor, l: S(left) }), ...(chunks.length ? [ln('q.area.chunk', { list: orList(chunks.map(S)) })] : [])]
+						: [ln('q.lad.howMany', { d: divisor, l: S(left) }), ...(fits.length ? [ln('q.lad.friendly', { list: orList(fits.slice(0, 2).map(S)) })] : [])],
 				method === 'area'
-					? `Make a section ${pv} wide: ${pv} × ${divisor} = ${pv * divisor} fits in ${left}. Write ${pv} on top.`
-					: `Take away ${pv} ${pv === 1 ? 'group' : 'groups'} of ${divisor}. Write ${pv} ${side}.`,
+					? ln('q.area.told', { q: S(pv), d: divisor, x: S(pv * divisor), l: S(left) })
+					: f.k
+						? ln('q.lad.toldDec', { q: S(pv), d: divisor })
+						: ln('q.lad.told', { d: divisor }, pv)
+			),
 			hints: [
-				`Take away a friendly number of ${divisor}s, no more than ${thisLeft}: groups of 10 or 100 are the easiest to multiply.${i > 0 ? ' Any number that fits is fine.' : ''}`,
-				pv >= 10
-					? `Think in place values: ${pvCore} × ${divisor} = ${pvCore * divisor}, so ${pv} × ${divisor} = ${pv * divisor}, and that isn’t more than ${thisLeft}. So ${pv} fits.`
+				tx([ln(f.k ? 'h.lad.choose1dec' : 'h.lad.choose1', { d: divisor, l: S(thisLeft) }), ...(i > 0 ? [ln('h.lad.anyFits')] : [])]),
+				pv >= 10 || (f.k && pv > 0)
+					? t('h.lad.choose2pv', { c: pvCore, d: divisor, x: pvCore * divisor, q: S(pv), y: S(pv * divisor), l: S(thisLeft) })
 					: fr > 1
-						? `${fr} × ${divisor} = ${fr * divisor}, and that isn’t more than ${thisLeft}, so ${fr} fits.${fr * 2 * divisor <= thisLeft ? ` Even ${fr * 2} × ${divisor} = ${fr * 2 * divisor} fits.` : ''}`
-						: `${divisor} goes into ${thisLeft} just ${plural(Math.floor(thisLeft / divisor), 'time', 'times')}.`,
-				`Try ${pv}: ${pv} × ${divisor} = ${pv * divisor}, the most you can take away with one digit and zeros. Write ${pv}.`
+						? tx([ln('h.lad.choose2fr', { q: fr, d: divisor, x: fr * divisor, l: thisLeft }), ...(fr * 2 * divisor <= thisLeft ? [ln('h.lad.even', { q: fr * 2, d: divisor, x: fr * 2 * divisor })] : [])])
+						: tn('h.lad.choose2one', Math.floor(thisLeft / divisor), { d: divisor, l: thisLeft }),
+				t('h.lad.choose3', { q: S(pv), d: divisor, x: S(pv * divisor) })
 			],
-			advice: method === 'area' && i === 0 ? (s) => (s === '' ? null : wholeChunkAdvice(dividend, divisor, Number(s))) : undefined,
+			advice: method === 'area' && i === 0 ? (s) => (s === '' ? null : wholeChunkAdvice(dividend, divisor, rd(s), f)) : undefined,
+			adviceSay: method === 'area' && i === 0 ? (s) => (s === '' ? null : wholeChunkAdviceMsg(dividend, divisor, rd(s), f)) : undefined,
 			lit: [leftKey, 'divisor', qId],
-			countUp: { choose: { left, divisor, last } }
+			countUp: { choose: { left, divisor, last, f } },
+			...(f.k ? { point: true } : {})
 		});
 		const qs_ = v[qId] ?? '';
-		const q = Number(qs_);
+		const q = rd(qs_);
 		const ok = qs_ !== '' && chooseCheck(left, divisor, q, last) === null;
 		const product = q * divisor;
 		const diff = left - product;
 		const zq = zerosOf(q);
 		const core = q / 10 ** zq;
+		const pt = f.k ? { point: true } : {};
 		fields.push({
 			id: pId,
-			len: len(left),
+			len: width(left),
 			role: 'product',
-			expect: qs_ !== '' && q >= 1 && product <= left ? String(product) : null,
-			prompt: method === 'area' ? `The section’s area: what is ${qs_ || '?'} × ${divisor}?` : `What is ${qs_ || '?'} × ${divisor}?`,
-			told: `${qs_ || pv} × ${divisor} = ${qs_ ? product : pv * divisor}.`,
+			expect: qs_ !== '' && q >= 1 && product <= left ? S(product) : null,
+			...words(
+				ln(method === 'area' ? 'q.area.area' : 'q.whatIsTimes', { a: qs_ || '?', b: divisor }),
+				ln('q.eq', { a: qs_ || S(pv), b: divisor, x: S(qs_ ? product : pv * divisor) })
+			),
 			hints: [
-				`Multiply the number you wrote ${side} by ${divisor}.`,
-				zq > 0
-					? `Work out ${core} × ${divisor} = ${core * divisor}, then put the ${plural(zq, 'zero', 'zeros')} back on.`
-					: q >= 1 && q <= 10
-						? `Count by ${divisor}s, ${plural(q, 'time', 'times')}: ${countBy(divisor, q)}.`
-						: `Break ${q} into parts: ${placeParts(q).map((x) => `${x} × ${divisor} = ${x * divisor}`).join(', ')}. Then add them.`,
-				`It’s ${product}.`
+				t(`h.lad.product1${on}`, { d: divisor }),
+				f.k
+					? t('h.lad.product2dec', { c: core, d: divisor, x: core * divisor, q: S(q), y: S(product) })
+					: zq > 0
+						? tn('h.lad.product2zeros', zq, { c: core, d: divisor, x: core * divisor })
+						: q >= 1 && q <= 10
+							? tn('h.lad.product2count', q, { d: divisor, list: countBy(divisor, q) })
+							: t('h.lad.product2parts', { q, parts: placeParts(q).map((x) => `${x} × ${divisor} = ${x * divisor}`).join(', ') }),
+				t('h.its', { x: S(product) })
 			],
 			lit: [qId, 'divisor', pId],
-			countUp: { auto: true }
+			countUp: { auto: true },
+			...pt
 		});
 		fields.push({
 			id: rId,
-			len: len(left),
+			len: width(left),
 			role: 'difference',
-			expect: ok ? String(diff) : null,
-			prompt: `What is ${left} − ${v[pId] || product}?`,
-			told: `${left} − ${product} = ${diff}.${diff < divisor ? ` ${diff} is less than ${divisor}, so you’re done taking away.` : ''}`,
-			hints: [
-				`Subtract: take ${v[pId] || product} away from ${left}.`,
-				`Subtract one column at a time, starting with the ones. Regroup when the top digit is smaller.`,
-				`It’s ${diff}.`
-			],
-			lit: [leftKey, pId, rId]
+			expect: ok ? S(diff) : null,
+			...words(ln('q.whatIsMinus', { a: S(left), b: v[pId] || S(product) }), [
+				ln('q.sub.diffTold', { a: S(left), b: S(product), x: S(diff) }),
+				...(diff < divisor ? [f.k ? ln('q.lad.doneDec') : ln('q.lad.done', { x: diff, d: divisor })] : [])
+			]),
+			hints: [t('h.lad.diff1', { a: S(left), b: v[pId] || S(product) }), t(f.k ? 'h.lad.diff2dec' : 'h.lad.diff2'), t('h.its', { x: S(diff) })],
+			lit: [leftKey, pId, rId],
+			...pt
 		});
 		if (qs_ !== '') qs.push(q);
 		const typed = v[rId] ?? '';
 		// the next rung: once the difference is written and still holds the divisor
-		if (typed === '' || Number(typed) < divisor || last) {
-			closed = typed !== '' && (Number(typed) < divisor || last);
+		if (typed === '' || rd(typed) < divisor || last) {
+			closed = typed !== '' && (rd(typed) < divisor || last);
 			break;
 		}
-		left = ok ? diff : Number(typed);
+		left = ok ? diff : rd(typed);
 	}
-	const sumText = qs.length ? qs.join(' + ') : '';
+	const sumText = qs.length ? qs.map(S).join(' + ') : '';
 	fields.push({
 		id: 'quotient',
-		len: Math.max(1, len(Q)),
+		len: Math.max(1, width(Q)),
 		role: 'quotient',
-		expect: String(Q),
-		prompt: `Add the numbers ${side}${sumText && qs.length > 1 ? `: ${sumText}` : ''}. What’s the quotient?`,
-		told: `${qs.length > 1 ? `${sumText} = ${Q}` : `The quotient is ${Q}`}.`,
-		hints: [
-			`The quotient is how many ${divisor}s you took away in all: add up the numbers ${side}.`,
-			qs.length > 1 ? `${sumText}: add them one at a time.` : `There’s just the one number ${side}.`,
-			`It’s ${Q}.`
-		],
-		lit: [...rungs.map((r) => r.q), 'quotient']
+		expect: S(Q),
+		...words(
+			ln(sumText && qs.length > 1 ? `q.lad.add${on}List` : `q.lad.add${on}`, { xs: sumText }),
+			qs.length > 1 ? ln('q.col.sumIs', { xs: sumText, s: S(Q) }) : ln('q.lad.quotientIs', { q: S(Q) })
+		),
+		hints: [t(`h.lad.quot1${on}`, { d: divisor }), qs.length > 1 ? t('h.lad.quot2', { xs: sumText }) : t(`h.lad.quot2one${on}`), t('h.its', { x: S(Q) })],
+		lit: [...rungs.map((r) => r.q), 'quotient'],
+		...(f.k ? { point: true } : {})
 	});
 	const lastR = rungs.at(-1)!.r;
+	const title = `${given} ÷ ${divisor}`;
+	// decimals come out by hundredths: nothing left over, so no remainder to write; a number may be typed with more
+	// zeros than it needs (0.50 for 0.5)
+	if (f.k) {
+		for (const x of fields) if (x.role !== 'choice' && x.expect !== null) x.accept = sameNumber(x.expect);
+		return { method, kind: 'divide', title, answer: S(Q), fields, closed, dividend, divisor, rungs, f };
+	}
 	if (form === 'fraction') {
 		// the remainder over the divisor, beside the quotient (nothing left over: no fraction)
 		if (R > 0) {
 			const g = gcd(R, divisor);
-			const simpler = g > 1 ? ` You may simplify it: ${R}/${divisor} = ${R / g}/${divisor / g}.` : '';
-			const numOk = (s: string) => s !== '' && Number(s) >= 1 && Number(s) <= R && (Number(s) * divisor) % R === 0;
+			const simpler = g > 1 ? [ln('q.simplify', { r: R, d: divisor, rs: R / g, ds: divisor / g })] : [];
+			const numOk = (s: string) => s !== '' && rd(s) >= 1 && rd(s) <= R && (rd(s) * divisor) % R === 0;
 			fields.push({
 				id: 'remainder',
 				len: len(R),
 				role: 'remainder',
 				expect: String(R),
 				accept: numOk,
-				prompt: `${R} is left ${method === 'ladder' ? 'at the bottom' : 'in the last section'}. Write it on top of a fraction, beside the quotient.`,
-				told: `${R} is left over: it goes on top of the fraction.`,
-				hints: [`What’s left at the end goes on top of the fraction.`, `Copy the last number you got when you subtracted.`, `It’s ${R}.`],
+				...words(ln(`q.lad.fracTop${method === 'ladder' ? 'Ladder' : 'Area'}`, { r: R }), ln('q.frac.topTold', { r: R })),
+				hints: [t('h.lad.fracTop1'), t('h.lad.copyLast'), t('h.its', { x: R })],
 				lit: [lastR, 'remainder']
 			});
-			const n = Number(v.remainder ?? '');
+			const n = rd(v.remainder ?? '');
 			fields.push({
 				id: 'den',
 				len: len(divisor),
 				role: 'denominator',
 				expect: String(divisor),
-				accept: (s) => numOk(v.remainder ?? '') && s !== '' && Number(s) >= 1 && n * divisor === R * Number(s),
-				prompt: `Under the line goes the number you divided by.${simpler}`,
-				told: `${divisor} goes under the line: ${Q} ${R}/${divisor}.${simpler}`,
-				hints: [`The bottom of the fraction says how big a whole group is: the number you divided by.`, `It’s ${divisor}.${simpler}`],
+				accept: (s) => numOk(v.remainder ?? '') && s !== '' && rd(s) >= 1 && n * divisor === R * rd(s),
+				...words([ln('q.frac.bottom'), ...simpler], [ln('q.frac.bottomTold', { d: divisor, q: Q, r: R }), ...simpler]),
+				hints: [t('h.frac.bottom1'), tx([ln('h.its', { x: divisor }), ...simpler])],
 				lit: ['divisor', 'den']
 			});
 		}
 		return {
 			method,
 			kind: 'divide',
-			title: `${dividend} ÷ ${divisor}`,
+			title,
 			answer: R ? `${Q} ${R}/${divisor}` : String(Q),
 			fields,
 			closed,
 			dividend,
 			divisor,
 			rungs,
-			fraction: true
+			fraction: true,
+			f
 		};
 	}
 	fields.push({
@@ -451,63 +492,72 @@ function divisionWork(method: 'ladder' | 'area', dividend: number, divisor: numb
 		len: Math.max(1, len(divisor - 1)),
 		role: 'remainder',
 		expect: String(R),
-		prompt: `What’s left ${method === 'ladder' ? 'at the bottom' : 'in the last section'} is the remainder. What is it?`,
-		told: R ? `${R} is left over: the remainder is ${R}.` : `Nothing is left over: the remainder is 0.`,
-		hints: [`The remainder is what’s left at the end, less than ${divisor}.`, `Copy the last number you got when you subtracted.`, `It’s ${R}.`],
+		...words(ln(`q.lad.rem${method === 'ladder' ? 'Ladder' : 'Area'}`), R ? ln('q.lad.remTold', { r: R }) : ln('q.lad.remNone')),
+		hints: [t('h.lad.rem1', { d: divisor }), t('h.lad.copyLast'), t('h.its', { x: R })],
 		lit: [lastR, 'remainder']
 	});
 	return {
 		method,
 		kind: 'divide',
-		title: `${dividend} ÷ ${divisor}`,
+		title,
 		answer: `${Q} R ${R}`,
 		fields,
 		closed,
 		dividend,
 		divisor,
-		rungs
+		rungs,
+		f
 	};
 }
 
 /** The words for a part's product: the area model says top × side (40 × 20), partial products bottom × top (3 × 40). */
-export const partText = (p: PartProduct, role: 'cell' | 'product') => (role === 'cell' ? `${p.top} × ${p.bottom}` : `${p.bottom} × ${p.top}`);
+export const partText = (p: PartProduct, role: 'cell' | 'product') =>
+	role === 'cell' ? `${p.text?.top ?? p.top} × ${p.text?.bottom ?? p.bottom}` : `${p.text?.bottom ?? p.bottom} × ${p.text?.top ?? p.top}`;
+/** The same number, however it is typed: "0.30" or ".3" for 0.3 (a decimal field), else the digits as they are. */
+const sameNumber = (want: string) => (s: string) => s !== '' && /^(\d+\.?\d*|\.\d+)$/.test(s) && Number(s) === Number(want);
 function partField(p: PartProduct, role: 'cell' | 'product', where: string): Field {
-	const a = p.top / 10 ** zerosOf(p.top);
-	const b = p.bottom / 10 ** zerosOf(p.bottom);
-	const zeros = zerosOf(p.top) + zerosOf(p.bottom);
-	const t = partText(p, role);
+	// a part is one digit and a power of ten: 40 is 4 and a zero, 0.3 is 3 and a decimal place
+	const digitOf = (x: string) => Number(x.replace('.', '').replace(/^0+/, '').replace(/0+$/, '') || '0');
+	const shift = (x: string) => (x.includes('.') ? -(x.length - x.indexOf('.') - 1) : String(Number(x)).length - String(digitOf(x)).length);
+	const ts = p.text?.top ?? String(p.top);
+	const bs = p.text?.bottom ?? String(p.bottom);
+	const a = digitOf(ts);
+	const b = digitOf(bs);
+	const e10 = shift(ts) + shift(bs);
+	const zeros = Math.max(0, e10);
+	const places = Math.max(0, -e10);
+	const e = partText(p, role);
+	const value = partValue(p);
 	return {
 		id: p.id,
-		len: len(p.value),
+		len: value.length,
 		role,
-		expect: String(p.value),
-		prompt: `What is ${t}?`,
-		told: `${t} = ${p.value}.`,
+		expect: value,
+		...(p.text ? { accept: sameNumber(value), point: true } : {}),
+		...words(ln('q.part.whatIs', { e }), ln('q.part.is', { e, x: value })),
 		hints: [
-			`Multiply ${where}: ${t}.`,
-			zeros > 0
-				? `${a} × ${b} = ${a * b}. Then put on ${plural(zeros, 'zero', 'zeros')}, one for each zero in ${p.top} and ${p.bottom}.`
-				: `Count by ${a}s, ${plural(b, 'time', 'times')}: ${countBy(a, b)}.`,
-			`It’s ${p.value}.`
+			t(`h.part.mul1.${where}`, { e }),
+			places > 0
+				? tn('h.part.mul2places', places, { a, b, x: a * b, y: value })
+				: zeros > 0
+					? tn('h.part.mul2zeros', zeros, { a, b, x: a * b, t: ts, s: bs })
+					: tn('h.part.mul2count', b, { a, list: countBy(a, b) }),
+			t('h.its', { x: value })
 		],
 		lit: [`top${p.top}`, `bottom${p.bottom}`, p.id],
-		countUp: { skip: { by: a, times: b, zeros, value: p.value } }
+		countUp: { skip: { by: a, times: b, zeros, ...(places ? { places } : {}), value: p.text ? value : p.value } }
 	};
 }
-function sumField(parts: PartProduct[], v: Values, total: number, what: string): Field {
-	const list = parts.map((p) => v[p.id] || String(p.value));
+function sumField(parts: PartProduct[], v: Values, total: string, what: string, point: boolean): Field {
+	const list = parts.map((p) => v[p.id] || partValue(p));
 	return {
 		id: 'sum',
-		len: len(total),
+		len: total.length,
 		role: 'sum',
-		expect: String(total),
-		prompt: `Add ${what}: ${list.join(' + ')}.`,
-		told: `${list.join(' + ')} = ${total}.`,
-		hints: [
-			`Add up ${what}.`,
-			`Line them up on the right and add one column at a time, starting with the ones. Carry when a column makes 10 or more.`,
-			`It’s ${total}.`
-		],
+		expect: total,
+		...(point ? { accept: sameNumber(total), point: true } : {}),
+		...words(ln(`q.part.add.${what}`, { xs: list.join(' + ') }), ln('q.col.sumIs', { xs: list.join(' + '), s: total })),
+		hints: [t(`h.part.add1.${what}`), t(point ? 'h.part.add2dec' : 'h.part.add2'), t('h.its', { x: total })],
 		lit: [...parts.map((p) => p.id), 'sum']
 	};
 }
@@ -515,20 +565,21 @@ function sumField(parts: PartProduct[], v: Values, total: number, what: string):
 /** The work for a problem by a method (not the standard one), from what has been typed so far. */
 export function buildWork(method: Method, kind: Kind, [a, b]: Problem, v: Values = {}, form: RemainderForm = 'R'): Work {
 	if (kind === 'divide') return divisionWork(method === 'area' ? 'area' : 'ladder', a, b, v, form);
-	const product = a * b;
+	const dec = !!(placesOf(a) || placesOf(b));
+	const product = dec ? decProduct(a, b) : String(a * b);
 	if (method === 'partial') {
 		const rows = partialProducts(a, b);
-		const fields = rows.map((p) => partField(p, 'product', 'this place of the bottom number by this place of the top'));
+		const fields = rows.map((p) => partField(p, 'product', 'partial'));
 		const one = rows.length === 1;
-		if (!one) fields.push(sumField(rows, v, product, 'all the lines'));
-		return { method: 'partial', kind: 'multiply', title: `${a} × ${b}`, answer: String(product), fields, closed: true, top: a, bottom: b, rows, sum: one ? null : 'sum' };
+		if (!one) fields.push(sumField(rows, v, product, 'lines', false));
+		return { method: 'partial', kind: 'multiply', title: `${a} × ${b}`, answer: product, fields, closed: true, top: a, bottom: b, rows, sum: one ? null : 'sum' };
 	}
 	const cells = areaCells(a, b);
 	const flat = cells.flat();
-	const fields = flat.map((p) => partField(p, 'cell', 'the part on top by the part on the side'));
+	const fields = flat.map((p) => partField(p, 'cell', 'area'));
 	const one = flat.length === 1;
-	if (!one) fields.push(sumField(flat, v, product, 'all the boxes'));
-	return { method: 'area', kind: 'multiply', title: `${a} × ${b}`, answer: String(product), fields, closed: true, top: a, bottom: b, cells, sum: one ? null : 'sum' };
+	if (!one) fields.push(sumField(flat, v, product, 'boxes', dec));
+	return { method: 'area', kind: 'multiply', title: `${a} × ${b}`, answer: product, fields, closed: true, top: a, bottom: b, cells, sum: one ? null : 'sum' };
 }
 
 /** Whether what's typed in a field is wrong (empty is not wrong): a choice that doesn't work, or not what it must be. */
@@ -556,15 +607,16 @@ export const allRight = (w: Work, v: Values) => allFilled(w, v) && w.fields.ever
 export function watchValues(method: Method, kind: Kind, p: Problem, form: RemainderForm = 'R'): Values {
 	const v: Values = {};
 	if (kind === 'divide') {
-		const [dividend, divisor] = p;
+		const { f, dividend, divisor } = buildWork(method, kind, p, {}, form) as Extract<Work, { kind: 'divide' }>;
 		let left = dividend;
 		watchPath(dividend, divisor).forEach((q, i) => {
-			v[`q${i}`] = String(q);
-			v[`p${i}`] = String(q * divisor);
+			v[`q${i}`] = f.show(q);
+			v[`p${i}`] = f.show(q * divisor);
 			left -= q * divisor;
-			v[`r${i}`] = String(left);
+			v[`r${i}`] = f.show(left);
 		});
-		v.quotient = String(Math.floor(dividend / divisor));
+		v.quotient = f.show(Math.floor(dividend / divisor));
+		if (f.k) return v;
 		v.remainder = String(dividend % divisor);
 		if (form === 'fraction') {
 			if (dividend % divisor) v.den = String(divisor);
@@ -583,12 +635,13 @@ export function checkWork(w: Work, v: Values): { right: boolean; wrong: string[]
 		if (w.fraction) {
 			// the ladder as R (what's left must be right), then the fraction's own parts, either of them simplified
 			const R = w.dividend % w.divisor;
-			const c = checkLadder(w.dividend, w.divisor, at('q'), at('p'), at('r'), v.quotient ?? '', String(R));
+			const c = checkLadder(w.dividend, w.divisor, at('q'), at('p'), at('r'), v.quotient ?? '', String(R), w.f);
 			const parts = w.fields.filter((f) => f.role === 'remainder' || f.role === 'denominator');
 			const wrong = [...c.wrong.filter((x) => x !== 'remainder'), ...parts.filter((f) => !has(v, f.id) || fieldWrong(f, v)).map((f) => f.id)];
 			return { right: c.closed && wrong.length === 0, wrong };
 		}
-		const c = checkLadder(w.dividend, w.divisor, at('q'), at('p'), at('r'), v.quotient ?? '', v.remainder ?? '');
+		// (decimals come out by hundredths: nothing is left, and there is no remainder to write)
+		const c = checkLadder(w.dividend, w.divisor, at('q'), at('p'), at('r'), v.quotient ?? '', w.f.k ? '0' : (v.remainder ?? ''), w.f);
 		return { right: c.right, wrong: c.wrong };
 	}
 	const wrong = w.fields.filter((f) => !has(v, f.id) || fieldWrong(f, v)).map((f) => f.id);
@@ -598,13 +651,13 @@ export function checkWork(w: Work, v: Values): { right: boolean; wrong: string[]
 /** About how many squares wide the work is laid out (Work.svelte), so the player can size its squares to fit. */
 export function workWidth(w: Work): number {
 	if (w.kind === 'divide') {
-		const N = len(w.dividend);
+		const N = w.f.show(w.dividend).length + (w.f.k ? 1 : 0);
 		// the area model: a section side by side for each chunk (as many as the place-value path takes, or as typed)
 		const frac = w.fraction ? len(w.divisor) * 2 + 2 : 0;
 		return w.method === 'ladder'
 			? len(w.divisor) + N + 1 + Math.max(1, len(Math.floor(w.dividend / w.divisor))) + frac
 			: Math.max(len(w.divisor) + Math.max(2, w.rungs.length, watchPath(w.dividend, w.divisor).length) * (N + 1), 8 + frac);
 	}
-	if (w.method === 'area') return len(w.bottom) + 1 + w.cells[0].reduce((s, _, j) => s + Math.max(...w.cells.map((r) => len(r[j].value))) + 0.5, 0);
-	return len(w.top * w.bottom) + 1 + 3.5;
+	if (w.method === 'area') return len(w.bottom) + 1 + w.cells[0].reduce((s, _, j) => s + Math.max(...w.cells.map((r) => partValue(r[j]).length)) + 0.5, 0);
+	return w.answer.length + 1 + 3.5;
 }

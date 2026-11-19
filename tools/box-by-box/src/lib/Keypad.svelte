@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from './i18n';
 	// The number keys: 7 8 9 / 4 5 6 / 1 2 3 / 0 and Erase. They never take the focus, so it stays in the box.
 	import { Delete } from '@lucide/svelte';
 	let {
@@ -10,16 +11,16 @@
 	}: { ontap: (key: string) => void; disabled?: boolean; wide?: boolean; fill?: boolean; point?: boolean } = $props();
 </script>
 
-<div class="keypad" class:wide class:fill class:point role="group" aria-label="Keypad">
+<div class="keypad" dir="ltr" class:wide class:fill class:point role="group" aria-label={t('ui.keypad')}>
 	{#each ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', ...(point ? ['.'] : [])] as k (k)}
-		<button type="button" class="key" class:zero={k === '0'} aria-label={k === '.' ? 'Decimal point' : undefined} {disabled} onpointerdown={(e) => e.preventDefault()} onclick={() => ontap(k)}
+		<button type="button" class="key" class:zero={k === '0'} aria-label={k === '.' ? t('ui.box.point') : undefined} {disabled} onpointerdown={(e) => e.preventDefault()} onclick={() => ontap(k)}
 			>{k}</button
 		>
 	{/each}
 	<button
 		type="button"
 		class="key erase"
-		aria-label="Erase"
+		aria-label={t('ui.erase')}
 		{disabled}
 		onpointerdown={(e) => e.preventDefault()}
 		onclick={() => ontap('')}><Delete size={22} aria-hidden="true" /></button
