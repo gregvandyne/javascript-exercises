@@ -11331,6 +11331,14 @@
     "openFolder": "開啟 {folder}",
     "reorderHint": "拖曳即可調整順序（手機或平板請先長按）。使用鍵盤：Alt 加方向鍵。",
     "dropHint": "把遊戲拖到資料夾上，就能存進去。",
+    "dropAsk": {
+      "title": "{game} → {folder}",
+      "move": "移到這裡",
+      "moveNote": "會從 {from} 移除",
+      "keep": "兩邊都保留",
+      "cancel": "取消",
+      "moved": "已把 {game} 移到 {folder}"
+    },
     "move": "移動 {name}",
     "moved": "{name}：第 {n} 個，共 {total} 個",
     "saveTitle": "把「{game}」存到資料夾",

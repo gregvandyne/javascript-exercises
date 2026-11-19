@@ -11331,6 +11331,14 @@
     "openFolder": "Ouvrir {folder}",
     "reorderHint": "Faites glisser pour changer l’ordre (sur téléphone ou tablette, appuyez longuement d’abord). Au clavier : Alt et les flèches.",
     "dropHint": "Fais glisser un jeu sur un dossier pour l’y enregistrer.",
+    "dropAsk": {
+      "title": "{game} → {folder}",
+      "move": "Déplacer ici",
+      "moveNote": "Le retire de {from}",
+      "keep": "Garder dans les deux",
+      "cancel": "Annuler",
+      "moved": "{game} déplacé vers {folder}"
+    },
     "move": "Déplacer {name}",
     "moved": "{name} : {n} sur {total}",
     "saveTitle": "Ranger « {game} » dans un dossier",

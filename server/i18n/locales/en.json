@@ -11758,6 +11758,14 @@
     "openFolder": "Open {folder}",
     "reorderHint": "Drag to change the order (on a phone or tablet, press and hold first). With a keyboard: Alt and the arrow keys.",
     "dropHint": "Drag a game onto a folder to save it there.",
+    "dropAsk": {
+      "title": "{game} → {folder}",
+      "move": "Move here",
+      "moveNote": "Takes it out of {from}",
+      "keep": "Keep in both",
+      "cancel": "Cancel",
+      "moved": "Moved {game} to {folder}"
+    },
     "move": "Move {name}",
     "moved": "{name}: {n} of {total}",
     "saveTitle": "Save “{game}” to a folder",

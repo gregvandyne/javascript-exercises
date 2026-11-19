@@ -90,10 +90,27 @@ test('Find Oomba games: drop a game on my folder saves it there, once', { skip }
   await ctx.close();
 });
 
-test('A folder in order: drop one of its games on another folder; it keeps its place here', { skip }, async () => {
+test('From one of my folders: it asks; Cancel and Escape do nothing, Keep in both keeps its place here', { skip }, async () => {
   const { ctx, page, errors } = await open(ana, `/build?folder=${fun.id}`);
   const before = await page.$$eval('#shelf-main .shelf-game', els => els.map(e => e.dataset.id));
-  assert.equal(await dragTo(page, `#shelf-main .shelf-game[data-id="${g2.id}"] .mg-cover`, folderSel(test1)), true);
+  const card = `#shelf-main .shelf-game[data-id="${g2.id}"] .mg-cover`;
+  // On the folder it is already in: nothing.
+  await dragTo(page, card, folderSel(fun)); await page.waitForTimeout(200);
+  assert.equal(await page.locator('.drop-ask').count(), 0);
+  // Cancel, then Escape: nothing changes.
+  assert.equal(await dragTo(page, card, folderSel(test1)), true);
+  await page.waitForSelector('.drop-ask');
+  assert.match(await page.textContent('.drop-ask-h'), /→ Test$/);
+  assert.match(await page.textContent('.drop-ask-move'), /Move here\s*Takes it out of Fun Games/);
+  assert.equal(await page.evaluate(() => document.activeElement.classList.contains('drop-ask-move')), true, 'Move here has the focus');
+  await page.click('.drop-ask-cancel'); assert.equal(await page.locator('.drop-ask').count(), 0);
+  await dragTo(page, card, folderSel(test1)); await page.waitForSelector('.drop-ask');
+  await page.keyboard.press('Escape'); assert.equal(await page.locator('.drop-ask').count(), 0);
+  await page.waitForTimeout(200);
+  assert.ok(!idsIn(test1).includes(g2.id), 'nothing saved');
+  // Keep in both.
+  await dragTo(page, card, folderSel(test1)); await page.waitForSelector('.drop-ask');
+  await page.click('.drop-ask-keep');
   await page.waitForFunction(sel => document.querySelector(sel).textContent.trim() === '2', `${folderSel(test1)} .n`);
   assert.ok(idsIn(test1).includes(g2.id));
   assert.deepEqual(await page.$$eval('#shelf-main .shelf-game', els => els.map(e => e.dataset.id)), before);
@@ -104,6 +121,21 @@ test('A folder in order: drop one of its games on another folder; it keeps its p
   await page.waitForFunction(id => document.querySelector('#shelf-main .shelf-game').dataset.id === id, g2.id);
   await page.waitForTimeout(300);
   assert.deepEqual(idsIn(fun), [g2.id, g1.id]);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('Move here: it is saved in the other folder and leaves this one; both counts follow', { skip }, async () => {
+  const { ctx, page, errors } = await open(ana, `/build?folder=${fun.id}`);
+  const n0 = await countOf(page, test1), f0 = await countOf(page, fun);
+  assert.ok(idsIn(fun).includes(g1.id) && !idsIn(test1).includes(g1.id));
+  await dragTo(page, `#shelf-main .shelf-game[data-id="${g1.id}"] .mg-cover`, folderSel(test1));
+  await page.waitForSelector('.drop-ask'); await page.click('.drop-ask-move');
+  await page.waitForFunction(id => !document.querySelector(`#shelf-main .shelf-game[data-id="${id}"]`), g1.id);
+  assert.equal(await countOf(page, test1), n0 + 1); assert.equal(await countOf(page, fun), f0 - 1);
+  assert.ok(idsIn(test1).includes(g1.id)); assert.ok(!idsIn(fun).includes(g1.id));
+  assert.match(await page.textContent('#toasts'), /Moved .+ to Test/);
+  assert.equal(await page.textContent('#shelf-h').then(x => x.trim()), 'Fun Games', 'still showing the folder it came from');
   assert.deepEqual(errors, []);
   await ctx.close();
 });

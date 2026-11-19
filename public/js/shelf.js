@@ -62,6 +62,8 @@ if (shelf) {
     if (a.getAttribute('aria-current') === 'true') return;
     show(a.href);
   });
+  // A game moved out of the folder on show (folder-drop.js): show that folder again, as it is now.
+  document.addEventListener('shelf:refresh', () => show(location.href, { push: false }));
   addEventListener('popstate', e => { if (e.state && 'shelf' in e.state) show(location.href, { push: false }); });
   // Find Oomba games: a new grade, or the search sent with Enter, loads that list in place (the form's own GET address).
   const formHref = form => { const u = new URL(form.action, location.href); u.search = new URLSearchParams(new FormData(form)).toString(); return u.pathname + u.search; };

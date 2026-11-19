@@ -8877,3 +8877,5 @@ On Build and the class page's Games tab, a game on the right can be dragged onto
 ## Make a game: three tracks
 
 The first screen of /build/new offers Classroom lesson (the canvas activity), Classroom game (the board starters: Category Board, bingo, flashcards...) and Arcade game. Classroom game and Arcade game share the guided steps, but the game-type step shows only that track's kinds (no tabs to cross over); switching tracks lets go of a kind picked in the other. "I know what I want" became "I’ll just describe it".
+
+A game dragged out of one of my folders onto another asks first, in a small pop-up beside the folder (folder-drop.js askMove): Move here (saves it there, then takes it out of the folder it came from, and the right side shows that folder again) or Keep in both; Cancel, Escape or a tap outside does nothing. Dropped on the folder it is already in: nothing. From All my games, Find Oomba games or a shared folder there is nothing to move out of, so it is just saved. The words come from the server (a <template id="drop-ask"> in the left column).

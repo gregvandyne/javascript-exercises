@@ -11333,6 +11333,14 @@
     "openFolder": "לפתוח את {folder}",
     "reorderHint": "גוררים כדי לשנות את הסדר (בטלפון או בטאבלט, קודם לוחצים לחיצה ארוכה). במקלדת: Alt והחיצים.",
     "dropHint": "גוררים משחק לתיקייה כדי לשמור אותו בה.",
+    "dropAsk": {
+      "title": "{game} ← {folder}",
+      "move": "להעביר לכאן",
+      "moveNote": "מוציא אותו מ{from}",
+      "keep": "להשאיר בשתיהן",
+      "cancel": "ביטול",
+      "moved": "{game} הועבר ל{folder}"
+    },
     "move": "להזיז את {name}",
     "moved": "{name}: {n} מתוך {total}",
     "saveTitle": "שמירת „{game}” בתיקייה",

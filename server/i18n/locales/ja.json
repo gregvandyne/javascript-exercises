@@ -11331,6 +11331,14 @@
     "openFolder": "{folder}を開く",
     "reorderHint": "ドラッグで並べ替え（スマホやタブレットでは長押ししてから）。キーボードでは Alt と矢印キー。",
     "dropHint": "ゲームをフォルダーにドラッグすると、そこに保存できます。",
+    "dropAsk": {
+      "title": "{game} → {folder}",
+      "move": "ここに移動",
+      "moveNote": "{from} から外します",
+      "keep": "両方に残す",
+      "cancel": "キャンセル",
+      "moved": "{game} を {folder} に移動しました"
+    },
     "move": "{name}を移動",
     "moved": "{name}：{total}件中{n}番目",
     "saveTitle": "「{game}」をフォルダーに保存",
