@@ -3302,6 +3302,22 @@
       "genWorkAns": "התשובה היא {v}{u}.",
       "gVar": "המספר {x} באיור",
       "gDigits": "ספרות בכל מספר"
+    },
+    "library": {
+      "pageOf": "עמוד {page} מתוך {pages}",
+      "backToQuestions": "חזרה לשאלות",
+      "toQuestions": "שאלות",
+      "next": "הבא",
+      "stop": "עצור",
+      "readToMe": "הקרא לי",
+      "answered": "כבר ענית על זו.",
+      "readQuestion": "הקרא לי",
+      "readFirst": "קודם קראו את הסיפור עד העמוד האחרון.",
+      "right": "כן, נכון!",
+      "tryAgain": "נסו שוב! הסתכלו בעמוד {page}.",
+      "lookAt": "לעמוד {page}",
+      "doneMsg": "סיימת! {right} מתוך {total} נכונות בניסיון הראשון. קריאה נהדרת!",
+      "doneShort": "סיימת! קריאה נהדרת!"
     }
   },
   "favorites": {
@@ -11609,6 +11625,99 @@
       "oombaSub": "עיון בכל משחקי Oomba",
       "collectionEmpty": "האוסף הזה עדיין ריק",
       "allEmpty": "עדיין לא בנית משחק."
+    }
+  },
+  "library": {
+    "title": "ספריית הסיפורים",
+    "lead": "ספרי תמונות לקרוא לבד או לשמוע, עם 3 שאלות בסוף. {count} סיפורים בחינם.",
+    "level": "שלב {n}",
+    "levelLong": "שלב {n} · {name}",
+    "levels": {
+      "l1": "רק מתחילים",
+      "l2": "לומדים לקרוא",
+      "l3": "קוראים לבד"
+    },
+    "meta": "{pages, plural, one {עמוד אחד} other {# עמודים}} · 🔊 הקרא לי · {questions, plural, one {שאלה אחת} other {# שאלות}}",
+    "words": "{count, plural, one {מילה אחת} other {# מילים}}",
+    "read": "לקרוא",
+    "continue": "להמשיך לקרוא (עמוד {page})",
+    "assign": "להקצות",
+    "state": {
+      "done": "נקרא · {right} מתוך {total} נכונות",
+      "quiz": "השאלות מחכות",
+      "reading": "עמוד {page} מתוך {pages}"
+    },
+    "forClass": "בחרו סיפור להקצות לכיתה {class}.",
+    "backToClass": "חזרה לכיתה",
+    "searchLabel": "חיפוש סיפורים",
+    "levelsLabel": "שלב קריאה",
+    "allLevels": "כל השלבים",
+    "searchPlaceholder": "חיפוש סיפורים",
+    "searchGo": "חיפוש",
+    "found": "{count, plural, one {סיפור אחד} other {# סיפורים}}",
+    "none": "לא נמצאו סיפורים",
+    "noneText": "נסו מילים אחרות או הסתכלו בכל השלבים.",
+    "footCredit": "סיפורים ואיורים: Pratham Books, StoryWeaver. רישיון:",
+    "footQuestions": "בכל ספר מופיעים הכותב, המאייר והמתרגם. את השאלות בסוף כתבה Oomba, והן לא חלק מהספרים.",
+    "glossary": "מילים שכדאי להכיר",
+    "glossaryNote": "הסברים של Oomba למילים מהודו.",
+    "aboutTitle": "על הספר",
+    "aboutQuestions": "אחרי העמוד האחרון יש 3 שאלות. Oomba Academy כתבה אותן, והן לא חלק מהספר.",
+    "credits": {
+      "text": "סיפור: {names}",
+      "illustration": "איורים: {names}",
+      "translation": "תרגום: {names}",
+      "changes": "Oomba שינתה את גודל התמונות ומציגה את הספר עמוד אחר עמוד. Pratham Books לא ממליצה על Oomba.",
+      "original": "לספר המקורי."
+    },
+    "readToMe": "הקרא לי",
+    "pagesLabel": "עמודים",
+    "back": "אחורה",
+    "next": "הבא",
+    "toQuestions": "שאלות",
+    "pageOf": "עמוד {page} מתוך {pages}",
+    "finished": "סיימת לקרוא את „{title}”",
+    "questionsLead": "{count, plural, one {שאלה אחת} other {# שאלות}} על הסיפור",
+    "readAgain": "לקרוא שוב",
+    "backTo": "חזרה אל {name}",
+    "moreBooks": "עוד סיפורים",
+    "needJs": "בשביל השאלות צריך JavaScript פעיל.",
+    "errors": {
+      "readFirst": "קודם קראו את הסיפור עד העמוד האחרון.",
+      "alreadyAssigned": "הסיפור הזה כבר הוקצה לכיתה {class}.",
+      "pickStory": "בחרו סיפור מהספרייה."
+    },
+    "assignTitle": "הקצאת „{title}”",
+    "assignNote": "התלמידים יראו אותו בדף הכיתה. הם יקראו, יענו על 3 שאלות, ואתם תראו בהתקדמות מי קרא ואת התוצאות.",
+    "preview": "לקרוא קודם",
+    "kindStory": "סיפור",
+    "findStories": "ספריית הסיפורים",
+    "door": {
+      "title": "ספריית הסיפורים",
+      "kids": "{count} ספרי תמונות. קראו אותם או הקישו על הקרא לי!",
+      "staff": "{count} ספרי תמונות לפי שלבים, עם שאלות. הקצו אחד לכיתה."
+    },
+    "results": {
+      "withAloud": "עם הקרא לי",
+      "onOwn": "לבד",
+      "questionsLeft": "קרא, נשארו שאלות",
+      "pageOf": "עמוד {page} מתוך {pages}",
+      "usedAloud": "השתמש בהקרא לי",
+      "notStarted": "לא התחיל",
+      "qN": "שאלה {n}",
+      "summary": "התחילו: {started} מתוך {total} · סיימו: {finished}",
+      "readTogether": "לקרוא יחד",
+      "assignAnother": "להקצות סיפור אחר",
+      "read": "קריאה",
+      "questions": "שאלות",
+      "rightOf": "{right} / {total}",
+      "firstTry": "נכון בניסיון הראשון",
+      "key": "שאלה נספרת כשהתשובה נכונה בניסיון הראשון (✓ נכון, ✗ היה צורך בעוד ניסיון). מי שמנסה שוב עדיין יכול לסיים.",
+      "byQuestion": "השאלות",
+      "hardest": "שאלה {n} הייתה הקשה ביותר לכיתה.",
+      "answer": "תשובה: {answer}",
+      "page": "עמוד {page}",
+      "missed": "טעו בפעם הראשונה: {count}"
     }
   }
 }

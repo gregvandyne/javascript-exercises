@@ -3302,6 +3302,22 @@
       "genWorkAns": "Het antwoord is {v}{u}.",
       "gVar": "Het getal {x} in de figuur",
       "gDigits": "Cijfers per getal"
+    },
+    "library": {
+      "pageOf": "Bladzijde {page} van {pages}",
+      "backToQuestions": "Terug naar de vragen",
+      "toQuestions": "Vragen",
+      "next": "Volgende",
+      "stop": "Stop",
+      "readToMe": "Lees voor",
+      "answered": "Deze heb je al beantwoord.",
+      "readQuestion": "Lees voor",
+      "readFirst": "Lees eerst het verhaal tot de laatste bladzijde.",
+      "right": "Ja, goed zo!",
+      "tryAgain": "Probeer het nog eens! Kijk op bladzijde {page}.",
+      "lookAt": "Kijk op bladzijde {page}",
+      "doneMsg": "Klaar! {right} van {total} in één keer goed. Goed gelezen!",
+      "doneShort": "Klaar! Goed gelezen!"
     }
   },
   "favorites": {
@@ -11608,6 +11624,99 @@
       "oombaSub": "Bekijk alle Oomba-spellen",
       "collectionEmpty": "Deze collectie is nog leeg",
       "allEmpty": "Je hebt nog geen spel gebouwd."
+    }
+  },
+  "library": {
+    "title": "Verhalenbibliotheek",
+    "lead": "Prentenboeken om zelf te lezen of voor te laten lezen, met 3 vragen aan het eind. {count} gratis verhalen.",
+    "level": "Niveau {n}",
+    "levelLong": "Niveau {n} · {name}",
+    "levels": {
+      "l1": "Ik begin net",
+      "l2": "Ik leer lezen",
+      "l3": "Ik lees zelf"
+    },
+    "meta": "{pages, plural, one {# bladzijde} other {# bladzijden}} · 🔊 Lees voor · {questions, plural, one {# vraag} other {# vragen}}",
+    "words": "{count, plural, one {# woord} other {# woorden}}",
+    "read": "Lezen",
+    "continue": "Verder lezen (bladzijde {page})",
+    "assign": "Toewijzen",
+    "state": {
+      "done": "Gelezen · {right} van {total} goed",
+      "quiz": "Vragen nog open",
+      "reading": "Bladzijde {page} van {pages}"
+    },
+    "forClass": "Kies een verhaal om toe te wijzen aan {class}.",
+    "backToClass": "Terug naar de klas",
+    "searchLabel": "Verhalen zoeken",
+    "levelsLabel": "Leesniveau",
+    "allLevels": "Alle niveaus",
+    "searchPlaceholder": "Verhalen zoeken",
+    "searchGo": "Zoeken",
+    "found": "{count, plural, one {# verhaal} other {# verhalen}}",
+    "none": "Geen verhalen gevonden",
+    "noneText": "Probeer andere woorden of kijk bij alle niveaus.",
+    "footCredit": "Verhalen en tekeningen: Pratham Books, StoryWeaver. Licentie:",
+    "footQuestions": "Bij elk boek staan de schrijver, tekenaar en vertaler. De vragen aan het eind zijn van Oomba en horen niet bij de boeken.",
+    "glossary": "Woorden om te kennen",
+    "glossaryNote": "Uitleg van Oomba bij woorden uit India.",
+    "aboutTitle": "Over dit boek",
+    "aboutQuestions": "Na de laatste bladzijde komen 3 vragen. Die zijn geschreven door Oomba Academy en horen niet bij het boek.",
+    "credits": {
+      "text": "Verhaal: {names}",
+      "illustration": "Tekeningen: {names}",
+      "translation": "Vertaling: {names}",
+      "changes": "Oomba heeft de plaatjes kleiner gemaakt en toont het boek bladzijde voor bladzijde. Pratham Books staat niet achter Oomba.",
+      "original": "Bekijk het originele boek."
+    },
+    "readToMe": "Lees voor",
+    "pagesLabel": "Bladzijden",
+    "back": "Terug",
+    "next": "Volgende",
+    "toQuestions": "Vragen",
+    "pageOf": "Bladzijde {page} van {pages}",
+    "finished": "Je hebt “{title}” uit!",
+    "questionsLead": "{count, plural, one {# vraag} other {# vragen}} over het verhaal",
+    "readAgain": "Nog eens lezen",
+    "backTo": "Terug naar {name}",
+    "moreBooks": "Meer verhalen",
+    "needJs": "Voor de vragen moet JavaScript aan staan.",
+    "errors": {
+      "readFirst": "Lees eerst het verhaal tot de laatste bladzijde.",
+      "alreadyAssigned": "Dit verhaal is al toegewezen aan {class}.",
+      "pickStory": "Kies een verhaal uit de bibliotheek."
+    },
+    "assignTitle": "“{title}” toewijzen",
+    "assignNote": "Leerlingen zien het op de klaspagina. Ze lezen het, beantwoorden 3 vragen en u ziet bij Voortgang wie het las en hoe het ging.",
+    "preview": "Eerst zelf lezen",
+    "kindStory": "Verhaal",
+    "findStories": "Verhalenbibliotheek",
+    "door": {
+      "title": "Verhalenbibliotheek",
+      "kids": "{count} prentenboeken. Lees ze, of tik op Lees voor!",
+      "staff": "{count} prentenboeken op niveau, met vragen. Wijs er een toe aan een klas."
+    },
+    "results": {
+      "withAloud": "met Lees voor",
+      "onOwn": "zelf",
+      "questionsLeft": "Gelezen, vragen open",
+      "pageOf": "bladzijde {page} van {pages}",
+      "usedAloud": "Gebruikte Lees voor",
+      "notStarted": "niet begonnen",
+      "qN": "Vraag {n}",
+      "summary": "{started} van {total} begonnen · {finished} klaar",
+      "readTogether": "Samen lezen",
+      "assignAnother": "Ander verhaal toewijzen",
+      "read": "Gelezen",
+      "questions": "Vragen",
+      "rightOf": "{right} / {total}",
+      "firstTry": "in één keer goed",
+      "key": "Een vraag telt als hij in één keer goed is (✓ goed, ✗ moest nog eens proberen). Wie opnieuw probeert, kan het boek toch afmaken.",
+      "byQuestion": "De vragen",
+      "hardest": "Vraag {n} was het moeilijkst voor de klas.",
+      "answer": "Antwoord: {answer}",
+      "page": "bladzijde {page}",
+      "missed": "{count} hadden het de eerste keer fout"
     }
   }
 }

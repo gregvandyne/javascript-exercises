@@ -986,5 +986,10 @@
         "name": "Maths"
       }
     }
+  },
+  "library": {
+    "door": {
+      "staff": "{count} levelled picture books with questions. Assign one to a class."
+    }
   }
 }

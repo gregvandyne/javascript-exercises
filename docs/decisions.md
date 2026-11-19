@@ -8932,3 +8932,71 @@ plan the server sends (the LESSON CONTEXT carries the file's text, up to its lim
 message is a box the teacher may edit, with Reset; their words go as plan.told and are sent instead of the sentence
 (builder/runner.js submit; classroom activities only), the plan still with them, their students' names taken out and
 screened like any typed message. Step 3 starts on "On their devices" again.
+
+## Story Library: open-licensed picture books to read, hear and answer (19 Nov 2026)
+
+Owner: kids read illustrated open-licensed picture books one page at a time (big text, optional read-aloud), answer 3
+short questions at the end, and teachers assign a story to a class and see who read it and their scores; "be careful
+to only select the right ones". Built to the approved mockups (library grid, reader, end screen, teacher results).
+
+- **Source and licences.** StoryWeaver books by Pratham Books, from the `global-asp/pb-source` text and
+  `global-asp/pb-imagebank` pictures. `scripts/import-stories.js` (pure parts in `server/library/import-lib.js`) keeps a
+  book only when its text and **every picture it uses** are CC BY 4.0 or Public Domain, read row by row from the
+  picture metadata; NC, ND, SA, other versions, missing or unreadable licences are left out, as is any book whose
+  pictures do not line up one-to-one with its pages (picture 01 the cover, N+1 page N) or whose metadata lists a
+  picture the image bank lacks. Nothing is guessed. Of 395 English books: 60 in the launch set; the report with every
+  book and its reason is `docs/story-library-sources.md` (written by the importer; never edited by hand).
+- **The words are never changed** (whitespace and conversion leftovers only), so books with mistakes in their own text
+  were left out rather than corrected. Picture-book English titles keep their own spelling ("Colours").
+- **Choosing the launch set.** Every candidate was read in full for ages 4 to 10: no violence beyond mild peril,
+  nothing scary, no romance, no religious instruction or religion-centred plots (festivals mentioned in passing are
+  kept), no stereotypes or labels on children, nothing likely to upset parents (e.g. a child crossing a busy road, a
+  pet snake eating a mouse, hunters with guns). The site's text scanners (profanity, personal info, the Builder's
+  prefilter and mock classifier) run on every page; three false alarms ("blood" in a science question, "don't talk to
+  strangers", "my sister") were reviewed by a person and are listed in the report. Reasons for each book read and left
+  out are in `seed-library/storyweaver.json` (`skipped`). **Owner may want to check:** "Fat King Thin Dog" (from the
+  approved mockup; a king gets thin chasing his dog) and "Didi and the Colourful Treasure" (children who live by a
+  garbage dump and do not go to school, until a young woman brings books).
+- **Levels**, from words per text page and words in all: Level 1 Just starting (≤ 12 a page on average, no page over
+  20, ≤ 150 in all), Level 2 Learning to read (≤ 30 a page, ≤ 450 in all), Level 3 Reading on my own (up to 1,200;
+  longer books are left out). The launch set: 19 / 25 / 16.
+- **Questions and glossary are Oomba's** (`seed-library/storyweaver.json`): 3 multiple-choice questions a book (3
+  choices, two about what the text says and one small inference, each pointing at the page that answers it) and short
+  notes for words from India (kheer, pakodas, sooji...). Both are labelled as written by Oomba, not part of the book.
+  The importer places the right answer at a stable spot (not always first); the answers never reach the browser: the
+  server checks each one.
+- **Data model.** `server/library/manifest.json` (id `sw-NNNN`, `source: 'storyweaver'`, pages with picture sizes,
+  credits with each part's licence, level, word counts, glossary, questions). A second source (Bloom Library, which needs
+  an API key we do not have) adds its own parser returning the same shape and an id prefix; no schema change. Nothing is
+  fetched from Bloom or anywhere at run time. Pictures are WebP in `public/img/library/<id>/` (from the image bank's
+  `large` copies: pages at most 720 px, covers 440 px), 14.6 MB for the 60 books.
+- **Integrated like an assigned game, not a parallel system** (migration `0091_story_library`). A book assigned to a
+  class is a lesson of kind `story` with one step of kind `story` (`lesson_steps.story_id`), assigned with the same
+  `L.assign` (due date, unassign, reorder, Student view, Google Classroom post when linked). The class page lists it
+  ("📖 Story", its cover on phones); the gradebook counts it as one step; its questions count in the **Score** like a
+  quiz: 1 point each, right on the first try (a wrong first try is still shown, and the child can try again until
+  right to finish). `/class/:cid/progress/:clid` for a story shows the results: who read it, with Read to me or on
+  their own, the score with ✓/✗ per question, where they stopped, last active, and the hardest question.
+- **Progress.** `story_reads` keeps each reader's own furthest page, Read to me used, and first-try marks; the
+  assignment's `step_progress` row is started when the book is opened from the class and done when its questions are
+  finished. A book the child had already finished before it was assigned counts when they open it from the class.
+  Visitors can read and answer with nothing saved. The questions need the last page reached (signed in). Account delete
+  removes `story_reads`.
+- **Read to me** uses the site's voice stack: the device voice per sentence with `speechSynthesis` word boundaries
+  lighting each word (sentence highlight where boundaries never fire), or, when AI voices are on for English, the AI
+  voice by sentence (`/api/tts` ctx `story`: book, page and sentence by number only; the server reads the manifest; the
+  sentence cut is `public/js/library-text.js`, shared by both), falling back to the device voice on any failure. Stories
+  are English only for now (no language picker in the reader, unlike the mockup).
+- **Where it lives.** `/library` (Learn: a "Story Library" door at the top of the Learn tab; the tab stays highlighted),
+  `/library/:id`, `/library/:id/read`, `/library/:id/assign`. Teachers: Assign on every card and book page, "Story
+  Library" in the class page's sidebar (`/library?class=` keeps the class), "Assign another story" and "Read it
+  together" on the results. Credits and the license link are under every reader page and on every book page; the
+  library's footer names Pratham Books, StoryWeaver and CC BY 4.0. External links (license deed, the original book)
+  open in a new tab.
+- **Not done / open:** the library is not in the sitemap; other languages of the same books (pb-source has many) are a
+  later import (text licences would be checked the same way); a projector mode beyond the reader itself; Bloom Library.
+- Tests: `tests/unit/library.test.js` (licence filter on fixtures with CC BY, NC, SA, ND, PD, mixed pictures, missing
+  and unreadable metadata; parsing; leveling; the manifest; the sentence cut; the pages and APIs over HTTP: assign,
+  progress, answers, results, Score; the TTS ctx; account delete), `tests/unit/library-browser.test.js` (Chromium:
+  filter and search, reading to the end with Read to me highlighting, wrong then right answer with "Look at page N",
+  a teacher's assign and results, phones and a tablet).

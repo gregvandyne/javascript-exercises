@@ -3302,6 +3302,22 @@
       "genWorkAns": "A resposta é {v}{u}.",
       "gVar": "O número {x} da figura",
       "gDigits": "Algarismos em cada número"
+    },
+    "library": {
+      "pageOf": "Página {page} de {pages}",
+      "backToQuestions": "Voltar às perguntas",
+      "toQuestions": "Perguntas",
+      "next": "Próxima",
+      "stop": "Parar",
+      "readToMe": "Leia para mim",
+      "answered": "Você já respondeu esta.",
+      "readQuestion": "Leia para mim",
+      "readFirst": "Primeiro leia a história até a última página.",
+      "right": "Isso, acertou!",
+      "tryAgain": "Tente de novo! Veja a página {page}.",
+      "lookAt": "Ver a página {page}",
+      "doneMsg": "Pronto! {right} de {total} certas na primeira tentativa. Ótima leitura!",
+      "doneShort": "Pronto! Ótima leitura!"
     }
   },
   "favorites": {
@@ -11609,6 +11625,99 @@
       "oombaSub": "Ver todos os jogos Oomba",
       "collectionEmpty": "Esta coleção ainda está vazia",
       "allEmpty": "Você ainda não criou nenhum jogo."
+    }
+  },
+  "library": {
+    "title": "Biblioteca de histórias",
+    "lead": "Livros ilustrados para ler sozinho ou ouvir alguém ler, com 3 perguntas no final. {count} histórias grátis.",
+    "level": "Nível {n}",
+    "levelLong": "Nível {n} · {name}",
+    "levels": {
+      "l1": "Começando",
+      "l2": "Aprendendo a ler",
+      "l3": "Leio sozinho"
+    },
+    "meta": "{pages, plural, one {# página} other {# páginas}} · 🔊 Leia para mim · {questions, plural, one {# pergunta} other {# perguntas}}",
+    "words": "{count, plural, one {# palavra} other {# palavras}}",
+    "read": "Ler",
+    "continue": "Continuar lendo (página {page})",
+    "assign": "Atribuir",
+    "state": {
+      "done": "Lido · {right} de {total} certas",
+      "quiz": "Faltam as perguntas",
+      "reading": "Página {page} de {pages}"
+    },
+    "forClass": "Escolha uma história para atribuir a {class}.",
+    "backToClass": "Voltar para a turma",
+    "searchLabel": "Buscar histórias",
+    "levelsLabel": "Nível de leitura",
+    "allLevels": "Todos os níveis",
+    "searchPlaceholder": "Buscar histórias",
+    "searchGo": "Buscar",
+    "found": "{count, plural, one {# história} other {# histórias}}",
+    "none": "Nenhuma história encontrada",
+    "noneText": "Tente outras palavras ou veja todos os níveis.",
+    "footCredit": "Histórias e ilustrações: Pratham Books, StoryWeaver. Licença:",
+    "footQuestions": "Cada livro mostra o autor, o ilustrador e o tradutor. As perguntas do final são escritas pela Oomba e não fazem parte dos livros.",
+    "glossary": "Palavras para saber",
+    "glossaryNote": "Notas da Oomba para ajudar com palavras da Índia.",
+    "aboutTitle": "Sobre este livro",
+    "aboutQuestions": "Depois da última página há 3 perguntas. Elas são escritas pela Oomba Academy e não fazem parte do livro.",
+    "credits": {
+      "text": "História: {names}",
+      "illustration": "Ilustrações: {names}",
+      "translation": "Tradução: {names}",
+      "changes": "A Oomba mudou o tamanho das imagens e mostra o livro uma página por vez. A Pratham Books não endossa a Oomba.",
+      "original": "Ver o livro original."
+    },
+    "readToMe": "Leia para mim",
+    "pagesLabel": "Páginas",
+    "back": "Voltar",
+    "next": "Próxima",
+    "toQuestions": "Perguntas",
+    "pageOf": "Página {page} de {pages}",
+    "finished": "Você terminou “{title}”",
+    "questionsLead": "{count, plural, one {# pergunta} other {# perguntas}} sobre a história",
+    "readAgain": "Ler de novo",
+    "backTo": "Voltar para {name}",
+    "moreBooks": "Mais histórias",
+    "needJs": "As perguntas precisam do JavaScript ligado.",
+    "errors": {
+      "readFirst": "Primeiro leia a história até a última página.",
+      "alreadyAssigned": "Esta história já foi atribuída a {class}.",
+      "pickStory": "Escolha uma história da biblioteca."
+    },
+    "assignTitle": "Atribuir “{title}”",
+    "assignNote": "Os alunos veem na página da turma. Eles leem, respondem 3 perguntas e você vê quem leu e as notas em Progresso.",
+    "preview": "Ler primeiro",
+    "kindStory": "História",
+    "findStories": "Biblioteca de histórias",
+    "door": {
+      "title": "Biblioteca de histórias",
+      "kids": "{count} livros ilustrados. Leia ou toque em Leia para mim!",
+      "staff": "{count} livros ilustrados por nível, com perguntas. Atribua um a uma turma."
+    },
+    "results": {
+      "withAloud": "com Leia para mim",
+      "onOwn": "sozinho",
+      "questionsLeft": "Leu, faltam perguntas",
+      "pageOf": "página {page} de {pages}",
+      "usedAloud": "Usou Leia para mim",
+      "notStarted": "não começou",
+      "qN": "Pergunta {n}",
+      "summary": "{started} de {total} começaram · {finished} terminaram",
+      "readTogether": "Ler juntos",
+      "assignAnother": "Atribuir outra história",
+      "read": "Leitura",
+      "questions": "Perguntas",
+      "rightOf": "{right} / {total}",
+      "firstTry": "certas na primeira tentativa",
+      "key": "A pergunta conta quando acerta na primeira tentativa (✓ certa, ✗ precisou tentar de novo). Quem tenta de novo ainda pode terminar.",
+      "byQuestion": "As perguntas",
+      "hardest": "A pergunta {n} foi a mais difícil para a turma.",
+      "answer": "Resposta: {answer}",
+      "page": "página {page}",
+      "missed": "{count} erraram na primeira vez"
     }
   }
 }

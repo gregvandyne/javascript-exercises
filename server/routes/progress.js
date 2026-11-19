@@ -36,6 +36,8 @@ import * as R from '../services/rubrics.js';
 import { scoreFields, scoreInput, resultView, totalText } from '../views/rubrics.js';
 import * as SC from '../services/scores.js';
 import { router as studentRoutes, studentHref } from './student-report.js';
+import { storyResults } from './library.js';
+import * as LIB from '../services/library.js';
 /** The class teams editor's script (Oomba Live part 3; the page shows the saved state without it). */
 const CLASS_TEAMS_JS = fs.existsSync(fileURLToPath(new URL('../../public/js/live-class-teams.js', import.meta.url)));
 const liveHostOk = u => liveOn() && liveCanHost(u);
@@ -45,7 +47,7 @@ router.use(studentRoutes);   // /class/:id/student/:uid: one student's page for 
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
 const b = req => req.body || {};
 const nameOf = r => r.roster_name || r.display_name;
-const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩' };
+const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩', story: '📚' };
 /** Official games a class plays only when the teacher hosts them live (the Oomba Live built-in modes, Would You Rather
  *  Live among them): a lesson step on one of them shows "Your teacher hosts this live" instead of Play and "I played it",
  *  and the server refuses the student's own progress calls on it: the live run writes that cell (CS Quest P5;
@@ -278,6 +280,8 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   if (!lp || lp.cl.class_id !== c.id) return no(req, res);
   const t = req.t, f = req.fmt;
   const l = L.getLesson(lp.cl.lesson_id);
+  // A Story Library book (routes/library.js): who read it, Read to me or on their own, the score, the hardest question.
+  if (l.kind === 'story') return storyResults(req, res, c, lp.cl, l);
   const doneN = lp.students.filter(p => p.total && p.done >= p.total).length;
   const toRead = lp.students.reduce((n, p) => n + p.toRead, 0);
   const lateFor = L.isOpen(lp.cl) && L.dueState(lp.cl) === 'late' ? p => p.done < p.total : () => false;
@@ -444,6 +448,14 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   if (!cl || cl.class_id !== req.params.cid || !L.canViewClassLesson(u, cl)) return no(req, res);
   // QUIZ_STEPS off: quiz steps are left off the page (an emergency switch; the gradebook still counts them).
   const c = S.getClass(cl.class_id), l = L.getLesson(cl.lesson_id), st = L.steps(l.id).filter(s => config.quizSteps || s.kind !== 'quiz');
+  // A Story Library book opens in the reader: for a student with the assignment (so the class sees the progress), for
+  // the class's staff as it is (nothing is saved for the class).
+  if (l.kind === 'story') {
+    const s = st.find(x => x.kind === 'story'), bk = s && LIB.getBook(s.story_id);
+    if (!bk) return no(req, res);
+    const student = !S.canManageClass(u, c) && S.classMember(c.id, u.id)?.role === 'student';
+    return res.redirect(302, `/library/${bk.id}/read${student ? `?cl=${encodeURIComponent(cl.id)}&step=${encodeURIComponent(s.id)}` : ''}`);
+  }
   const teacher = S.canManageClass(u, c);
   const student = !teacher && S.classMember(c.id, u.id)?.role === 'student';
   const mine = student ? P.forStudent(cl.id, u.id) : {};

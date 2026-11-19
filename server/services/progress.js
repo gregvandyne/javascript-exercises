@@ -69,6 +69,7 @@ const done = old => ({ status: 'done', done_at: (old && old.done_at) || now() })
 export function markDone(u, clId, stepId, isDone = true) {
   const c = context(u, clId, stepId); if (!c.ok) return c;
   if (c.step.kind === 'question') return fail('answerFirst');
+  if (c.step.kind === 'story') return fail('notFound');   // done by reading to the end and answering (storyStep)
   if (hostedLive(c.step)) return fail('notFound');   // the live run writes this cell
   const old = get(clId, stepId, u.id);
   if (!isDone) return ok({ row: upsert(clId, stepId, u.id, { status: 'started', done_at: null }) });
@@ -110,6 +111,23 @@ export function quizAnswer(u, clId, stepId, i, c) {
   upsert(clId, stepId, u.id, finished ? { score, label: 'quiz', ...done(old) } : {});
   q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', marks, clId, stepId, u.id);
   return ok({ right, answer: items[i].answer, next: marks.indexOf('-'), score });
+}
+/** A Story Library step (services/library.js): the student is reading the step's book, or has finished it. The book's
+ *  progress lives in story_reads; this row is the class's copy: started, then done with marks (first try per question,
+ *  '1'/'0'), score (% right first time) and label ('aloud' when Read to me was used, else 'own').
+ *  -> { ok, row } | { ok: false, code } */
+export function storyStep(u, clId, stepId, { bookId, done: isDone = false, marks = '', aloud = false } = {}) {
+  const c = context(u, clId, stepId); if (!c.ok) return c;
+  if (c.step.kind !== 'story' || c.step.story_id !== bookId) return fail('notFound');
+  const old = get(clId, stepId, u.id);
+  if (old && old.status === 'done') return ok({ row: old });   // the first finished reading is the one that counts
+  const label = aloud || (old && old.label === 'aloud') ? 'aloud' : 'own';
+  if (!isDone) return ok({ row: upsert(clId, stepId, u.id, { label }) });
+  const m = String(marks || '');
+  const score = m && !/[^01]/.test(m) ? Math.round((100 * [...m].filter(x => x === '1').length) / m.length) : null;
+  upsert(clId, stepId, u.id, { label, score, ...done(old) });
+  q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', m, clId, stepId, u.id);
+  return ok({ row: get(clId, stepId, u.id) });
 }
 /** The student opened a game step's game from the lesson. */
 export function gameStarted(u, clId, stepId) {
