@@ -8794,3 +8794,10 @@ next page." "What are you making?" no longer has "What should students practice?
 next step: a lesson file and a box to describe it, with its headings) asks for everything, and the topic was already
 optional (no topic: the Builder decides from the lesson). The plan's summary shows a Practice row only when a topic
 exists; the words stay in the locales for that. Tests: builder-canvas and builder-setup-layout follow.
+
+## Builder setup: the Arcade picture shows in every browser
+
+The "What are you making?" Arcade card's picture is built from spans that are all absolutely placed, so its box gets its
+size only from the card. Inside a `<button>`, some browsers (Safari) don't turn those spans into blocks, and the picture
+had no size and showed nothing. Each part of the card (`.su-kpic`, `.su-kt`, `.su-kd`, the picture's pieces) now says
+`display:block`, and the page's two stylesheets carry `?v=` like the rest, so a cached old copy can't hide new rules.

@@ -21,7 +21,7 @@
 // students switch between them).
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
-import { page } from '../views/layout.js';
+import { page, VERSION } from '../views/layout.js';
 import { requireBuilder } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { KIT2_WORLDS, worldById } from '../builder/kit2.js';
@@ -278,7 +278,7 @@ router.get('/build/new', requireBuilder, (req, res) => {
   </div>
   ${jsonData('page-data', setupData(t, { teacher, forClass }))}`;
   page(req, res, { title: t('buildSetup.title'), active: 'build', back: forClass ? `/class/${forClass.id}` : '/build', backLabel: forClass ? forClass.name : t('nav.build'), body, mid: true, bodyClass: 'setup-page',
-    head: raw('<link rel="stylesheet" href="/css/studio.css"><link rel="stylesheet" href="/css/build-setup.css">'), scripts: ['/js/buildsetup.js'], });
+    head: raw(`<link rel="stylesheet" href="/css/studio.css?v=${VERSION}"><link rel="stylesheet" href="/css/build-setup.css?v=${VERSION}">`), scripts: ['/js/buildsetup.js'], });
 });
 
 // The summary's sentence, made on the server from the choices (the same sentence the Builder gets when the builder
