@@ -2747,7 +2747,7 @@
       },
       "progress": "Passo {n} de {total}",
       "canvas": {
-        "activity": "Atividade de sala",
+        "activity": "Aula em turma",
         "rows": {
           "kind": "O quê",
           "practise": "Praticar",
@@ -9063,7 +9063,7 @@
       "text": "Os dois caminhos levam ao Construtor. Lá você pode mudar tudo.",
       "guide": "Me ajude a escolher",
       "guideText": "Escolha um tipo de jogo, um mundo e personagens em seis passos rápidos.",
-      "direct": "Já sei o que quero",
+      "direct": "Vou só descrever",
       "directText": "Vá direto para o Construtor e conte seu jogo com as suas palavras."
     },
     "else": {
@@ -9318,8 +9318,12 @@
       "check": "Conferir",
       "hint": "Dica",
       "activity": {
-        "title": "Atividade de sala",
+        "title": "Aula em turma",
         "text": "Uma tela de manipular: os alunos arrastam, montam e conferem, um passo de cada vez, com dicas. Os resultados vão para Progresso."
+      },
+      "classgame": {
+        "title": "Jogo de turma",
+        "text": "Para a turma toda, no quadro: quadro de categorias, bingo, cartões, jogo do silêncio, roleta, placar."
       },
       "arcade": {
         "title": "Jogo arcade",
@@ -9336,9 +9340,7 @@
         "catch": "Pegar",
         "quiz": "Quiz",
         "worlds": "Mundos 3D"
-      },
-      "toolsText": "Precisa de um jogo do silêncio, uma roleta ou um placar?",
-      "toolsLink": "Ferramentas de sala"
+      }
     },
     "canvas": {
       "nextHelp": "Próximo: quanta ajuda",
@@ -11330,6 +11332,7 @@
     "keepBrowsing": "Continuar explorando",
     "openFolder": "Abrir {folder}",
     "reorderHint": "Arraste para mudar a ordem (no celular ou tablet, toque e segure primeiro). No teclado: Alt e as setas.",
+    "dropHint": "Arraste um jogo para uma pasta para guardá-lo lá.",
     "move": "Mover {name}",
     "moved": "{name}: {n} de {total}",
     "saveTitle": "Guardar “{game}” numa pasta",

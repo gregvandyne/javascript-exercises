@@ -1887,6 +1887,18 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .shelf-pop-panel .form-err:empty,.shelf-pop-panel .gc-also{margin:0}
 .is-reorderable .shelf-item{cursor:grab}
 .is-reorderable > [data-id].is-dragging .shelf-item{background:var(--accent-soft);color:var(--text);box-shadow:inset 0 0 0 2px var(--accent-line),var(--shadow-lg)}
+.shelf-drophint{margin:2px 14px 6px;font-size:.85rem}
+/* Drag a game onto one of my folders (public/js/folder-drop.js). */
+.shelf-item[data-drop-folder]{transition:background .12s,box-shadow .12s,transform .12s}
+.shelf-item.is-drop,.shelf-item.is-drop:hover{background:var(--accent-soft);color:var(--text);box-shadow:inset 0 0 0 2px var(--accent-line);transform:scale(1.04)}
+.shelf-item.is-dropped{animation:drop-pop .6s ease}
+@keyframes drop-pop{40%{background:var(--accent-soft);transform:scale(1.06)}}
+.shelf-game.is-lifted{opacity:.45}
+.drop-ghost{position:fixed;left:0;top:0;z-index:60;display:flex;align-items:center;gap:8px;max-width:240px;padding:6px 12px 6px 6px;border-radius:999px;background:var(--card);box-shadow:var(--shadow-lg),inset 0 0 0 2px var(--accent-line);pointer-events:none;font:700 .95rem/1.2 var(--font);color:var(--text)}
+.drop-ghost-cover{display:block;flex:none;width:40px;height:40px;overflow:hidden;border-radius:50%}
+.drop-ghost-cover>*{width:100%;height:100%;object-fit:cover}
+.drop-ghost b{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+@media (prefers-reduced-motion:reduce){.shelf-item[data-drop-folder]{transition:none}.shelf-item.is-dropped{animation:none}.shelf-item.is-drop{transform:none}}
 /* Buttons in the "Assigned to <class>" head that only phones show (the Google Classroom button; wider screens have it
    in the sidebar's foot). */
 .shelf-phone-tools{display:none}
@@ -1897,7 +1909,7 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
   .shelf-nav{flex-direction:row;gap:8px;overflow-x:auto;margin:0 -16px;padding:2px 16px 6px;scrollbar-width:thin;overscroll-behavior-x:contain}
   .shelf-group{flex-direction:row;flex:none;gap:8px}
   /* The group names stay the lists' names for screen readers (aria-labelledby reads hidden text). */
-  .shelf-lab,.shelf-nav .shelf-ico{display:none}
+  .shelf-lab,.shelf-nav .shelf-ico,.shelf-drophint{display:none}
   .shelf-nav .shelf-add .shelf-ico{display:block;width:16px;height:16px}
   .shelf-item{width:auto;flex:none;gap:6px;padding:0 14px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);white-space:nowrap;font-size:.95rem}
   .shelf-item.is-on,.shelf-item.is-on:hover{box-shadow:inset 0 0 0 2px var(--current)}

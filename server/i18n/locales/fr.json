@@ -2746,7 +2746,7 @@
       },
       "progress": "Étape {n} sur {total}",
       "canvas": {
-        "activity": "Activité de classe",
+        "activity": "Leçon en classe",
         "rows": {
           "kind": "Quoi",
           "practise": "À travailler",
@@ -9061,7 +9061,7 @@
       "text": "Les deux chemins mènent au Constructeur. Tu pourras tout changer là-bas.",
       "guide": "Aide-moi à choisir",
       "guideText": "Choisis un type de jeu, un monde et des personnages en six étapes rapides.",
-      "direct": "Je sais ce que je veux",
+      "direct": "Je vais juste le décrire",
       "directText": "Va tout de suite au Constructeur et décris ton jeu avec tes mots."
     },
     "else": {
@@ -9316,8 +9316,12 @@
       "check": "Vérifier",
       "hint": "Indice",
       "activity": {
-        "title": "Activité de classe",
+        "title": "Leçon en classe",
         "text": "Un espace de manipulation : les élèves glissent, construisent et vérifient, étape par étape, avec des indices. Les résultats vont dans Progrès."
+      },
+      "classgame": {
+        "title": "Jeu de classe",
+        "text": "Pour toute la classe, au tableau : tableau de catégories, bingo, cartes mémoire, jeu du silence, roue, tableau des scores."
       },
       "arcade": {
         "title": "Jeu d’arcade",
@@ -9334,9 +9338,7 @@
         "catch": "Attraper",
         "quiz": "Quiz",
         "worlds": "Mondes 3D"
-      },
-      "toolsText": "Besoin d’un jeu du silence, d’une roue ou d’un tableau des scores ?",
-      "toolsLink": "Outils de classe"
+      }
     },
     "canvas": {
       "nextHelp": "Suivant : combien d’aide",
@@ -11328,6 +11330,7 @@
     "keepBrowsing": "Continuer à parcourir",
     "openFolder": "Ouvrir {folder}",
     "reorderHint": "Faites glisser pour changer l’ordre (sur téléphone ou tablette, appuyez longuement d’abord). Au clavier : Alt et les flèches.",
+    "dropHint": "Fais glisser un jeu sur un dossier pour l’y enregistrer.",
     "move": "Déplacer {name}",
     "moved": "{name} : {n} sur {total}",
     "saveTitle": "Ranger « {game} » dans un dossier",

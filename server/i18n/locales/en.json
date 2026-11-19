@@ -2765,7 +2765,7 @@
       },
       "progress": "Step {n} of {total}",
       "canvas": {
-        "activity": "Classroom activity",
+        "activity": "Classroom lesson",
         "rows": {
           "kind": "What",
           "practise": "Practice",
@@ -9488,7 +9488,7 @@
       "text": "Both ways end in the Builder. You can change anything there.",
       "guide": "Help me choose",
       "guideText": "Pick a game type, a world and characters in six quick steps.",
-      "direct": "I know what I want",
+      "direct": "I’ll just describe it",
       "directText": "Go straight to the Builder and describe your game in your own words."
     },
     "else": {
@@ -9743,8 +9743,12 @@
       "check": "Check",
       "hint": "Hint",
       "activity": {
-        "title": "Classroom activity",
+        "title": "Classroom lesson",
         "text": "A hands-on canvas: students drag, build and check, one step at a time, with hints. Results go to Progress."
+      },
+      "classgame": {
+        "title": "Classroom game",
+        "text": "For the whole room, on the board: Category Board, bingo, flashcards, a quiet game, a spinner, a scoreboard."
       },
       "arcade": {
         "title": "Arcade game",
@@ -9761,9 +9765,7 @@
         "catch": "Catch",
         "quiz": "Quiz",
         "worlds": "3D worlds"
-      },
-      "toolsText": "Need a quiet game, a spinner or a scoreboard?",
-      "toolsLink": "Classroom tools"
+      }
     },
     "canvas": {
       "nextHelp": "Next: how much help",
@@ -11755,6 +11757,7 @@
     "keepBrowsing": "Keep browsing",
     "openFolder": "Open {folder}",
     "reorderHint": "Drag to change the order (on a phone or tablet, press and hold first). With a keyboard: Alt and the arrow keys.",
+    "dropHint": "Drag a game onto a folder to save it there.",
     "move": "Move {name}",
     "moved": "{name}: {n} of {total}",
     "saveTitle": "Save “{game}” to a folder",

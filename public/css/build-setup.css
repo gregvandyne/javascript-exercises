@@ -155,10 +155,10 @@
 .su-for svg{color:var(--accent-ink)}
 .su-for{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px;border-radius:999px;background:color-mix(in srgb,var(--accent) 20%,var(--card));font-weight:700;font-size:.92rem}
 .su-start{padding-block:8px 24px}
-/* The two cards are always the same height: side by side the row stretches them, and stacked on a phone every row is
+/* The three cards (Classroom lesson, Classroom game, Arcade game) are always the same height: side by side the row stretches them, and stacked on a phone every row is
    1fr (the taller card's height, no more). Inside, the picture box has one fixed height in both and the tags sit at the
    bottom, so nothing lines up differently. tests/unit/builder-setup-layout.test.js measures it at 390 and 1280. */
-.su-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:16px;width:min(100%,860px);text-align:start;margin-top:8px}
+.su-kinds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:16px;width:min(100%,1180px);text-align:start;margin-top:8px}
 .su-kind{position:relative;display:flex;flex-direction:column;gap:10px;padding:18px 18px 20px;border:0;border-radius:var(--r);background:var(--card);box-shadow:inset 0 0 0 2px var(--edge);color:var(--text);font:inherit;text-align:start;cursor:pointer}
 .su-kind:hover{background:var(--hover)}
 .su-kind[aria-pressed="true"]{box-shadow:inset 0 0 0 3px var(--accent-press),0 4px 0 var(--accent-press);background:color-mix(in srgb,var(--accent) 12%,var(--card))}
@@ -194,14 +194,19 @@
 .su-chips{display:flex;flex-wrap:wrap;gap:8px}
 .su-chips .chip[aria-pressed="true"]{background:var(--current);color:var(--on-current);border-color:var(--current)}
 .su-safe{margin:0}
-.su-kways{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:min(100%,860px)}
+.su-kways{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:min(100%,1180px)}
+@media (max-width:980px) and (min-width:641px){.su-kinds{grid-template-columns:minmax(0,1fr);width:min(100%,640px)}}
 .su-kways .btn{min-width:200px}
-.su-tools{margin:0;font-size:.95rem}
+.su-kboard{display:flex;flex-direction:column;justify-content:center;gap:6px;padding:12px 14px;background:#1f3a5f}
+.su-kbrow{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.su-kbt{display:grid;place-items:center;height:30px;border-radius:6px;background:#2e5a8f;color:#FFD23F;font-weight:800;font-size:.85rem;box-shadow:inset 0 -3px 0 rgb(0 0 0 / .25)}
+.su-kbt-on{background:#FFD23F;color:#1f3a5f}
 .su-grid-4{--cols:4}
 @media (max-width:900px){.su-grid-4{--cols:2}}
 @media (max-width:640px){
   .su-kinds{grid-template-columns:minmax(0,1fr);grid-auto-rows:1fr;gap:12px}
   .su-kpic{height:104px}
+  .su-kboard{gap:4px;padding:8px 12px}.su-kbrow{gap:4px}.su-kbt{height:24px;font-size:.75rem}
   .su-karcade .su-kcoin[style*="bottom"]{bottom:72px!important}
   .su-kind{padding:14px 14px 16px}
   .su-kt{font-size:1.2rem}

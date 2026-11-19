@@ -140,8 +140,9 @@ test('/build/new: both cards; Classroom activity for a teacher and from their cl
   const k = (await kid.c('/build/new')).text, t = (await teacher.c('/build/new')).text;
   for (const h of [k, t]) {
     assert.match(h, /What are you making\?/); assert.match(h, /data-kind="activity"/); assert.match(h, /data-kind="arcade"/);
-    assert.match(h, />Classroom activity</); assert.match(h, />Arcade game</);
-    assert.match(h, /Need a quiet game, a spinner or a scoreboard\? <a href="#type" id="su-tools">Classroom tools<\/a>/);
+    assert.match(h, /data-kind="classgame"/);
+    assert.match(h, />Classroom lesson</); assert.match(h, />Classroom game</); assert.match(h, />Arcade game</);
+    assert.doesNotMatch(h, /id="su-tools"/, 'Classroom game is its own card now, not a link');
     assert.ok(h.includes('data-screen="lesson"') && h.includes('data-screen="help"') && h.includes('data-screen="played"'));
     // the owner's change: one text box, no starter chips ("Even and odd", "Order numbers", "Add in columns"...)
     assert.doesNotMatch(h, /data-topic=|class="su-chips"|>Even and odd<|>Order numbers<|>Add in columns</, 'no topic chips');
@@ -196,7 +197,7 @@ test('POST /api/build/plan and the first build: an activity plan builds an Oomba
   assert.equal(d.status, 200); assert.equal(canvasVersion(games.getVersion(games.getGame(d.json.id).current_version_id).html), CANVAS_LATEST);
 });
 test('every language has the new words of the start, the activity steps and the Studio line', () => {
-  const keys = ['buildSetup.kind.heading', 'buildSetup.kind.activity.title', 'buildSetup.kind.arcade.title', 'buildSetup.kind.toolsLink', 'buildSetup.canvas.practise.heading', 'buildSetup.canvas.practise.privacy',
+  const keys = ['buildSetup.kind.heading', 'buildSetup.kind.activity.title', 'buildSetup.kind.arcade.title', 'buildSetup.kind.classgame.title', 'buildSetup.kind.classgame.text', 'buildSetup.start.direct', 'buildSetup.canvas.practise.heading', 'buildSetup.canvas.practise.privacy',
     ...plan.SUPPORTS.map(s => `buildSetup.canvas.help.${s}.title`), 'buildSetup.lesson.heading', 'buildSetup.lesson.safe', 'buildSetup.lesson.fileText', ...plan.LESSON_HEADS.flatMap(k => [`buildSetup.lesson.heads.${k}`, `buildSetup.lesson.prompt.${k}`]),
     'js.buildsetup.lesson.readPages', 'js.buildsetup.lesson.err.docBig', 'js.buildsetup.lesson.err.docType', 'js.buildsetup.lesson.sumHeading', 'js.buildsetup.canvas.rows.lesson', ...plan.CANVAS_PLAYS.map(s => `buildSetup.canvas.played.${s}.text`), ...plan.CANVAS_TOPICS.map(x => `buildSetup.canvas.topics.${x.id}`),
     'buildSetup.say.activity', 'buildSetup.play.why.canvas', 'studio.canvasLine.activity', 'studio.canvasLine.toArcadeAsk', 'studio.canvasLine.toCanvasAsk', 'js.buildsetup.canvas.rows.practise'];

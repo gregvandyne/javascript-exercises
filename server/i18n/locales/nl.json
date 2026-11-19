@@ -2747,7 +2747,7 @@
       },
       "progress": "Stap {n} van {total}",
       "canvas": {
-        "activity": "Klasactiviteit",
+        "activity": "Klasles",
         "rows": {
           "kind": "Wat",
           "practise": "Oefenen",
@@ -9062,7 +9062,7 @@
       "text": "Beide manieren eindigen bij de Bouwer. Daar kun je alles nog veranderen.",
       "guide": "Help me kiezen",
       "guideText": "Kies in zes snelle stappen een soort game, een wereld en figuren.",
-      "direct": "Ik weet wat ik wil",
+      "direct": "Ik beschrijf het gewoon",
       "directText": "Ga direct naar de Bouwer en vertel in je eigen woorden over je game."
     },
     "else": {
@@ -9317,8 +9317,12 @@
       "check": "Controleer",
       "hint": "Tip",
       "activity": {
-        "title": "Klasactiviteit",
+        "title": "Klasles",
         "text": "Een werkvlak om mee te doen: leerlingen slepen, bouwen en controleren, stap voor stap, met tips. De resultaten gaan naar Voortgang."
+      },
+      "classgame": {
+        "title": "Klassenspel",
+        "text": "Voor de hele klas, op het bord: categoriebord, bingo, flitskaarten, stiltespel, draaiwiel, scorebord."
       },
       "arcade": {
         "title": "Arcadespel",
@@ -9335,9 +9339,7 @@
         "catch": "Vangen",
         "quiz": "Quiz",
         "worlds": "3D-werelden"
-      },
-      "toolsText": "Een stiltespel, een draaischijf of een scorebord nodig?",
-      "toolsLink": "Klashulpmiddelen"
+      }
     },
     "canvas": {
       "nextHelp": "Volgende: hoeveel hulp",
@@ -11329,6 +11331,7 @@
     "keepBrowsing": "Verder kijken",
     "openFolder": "{folder} openen",
     "reorderHint": "Sleep om de volgorde te veranderen (op een telefoon of tablet eerst ingedrukt houden). Met het toetsenbord: Alt en de pijltjestoetsen.",
+    "dropHint": "Sleep een spel naar een map om het daar te bewaren.",
     "move": "{name} verplaatsen",
     "moved": "{name}: {n} van {total}",
     "saveTitle": "‘{game}’ in een map bewaren",

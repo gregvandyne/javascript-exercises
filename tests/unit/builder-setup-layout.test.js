@@ -321,7 +321,7 @@ test('keyboard only: through the steps to the plan; the plan marks custom rows; 
   await ctx.close();
 });
 
-test('"I know what I want" and "Skip to the Builder" go straight to an empty Studio, as "New game" always did', { skip }, async () => {
+test('"I’ll just describe it" and "Skip to the Builder" go straight to an empty Studio, as "New game" always did', { skip }, async () => {
   const { ctx, page } = await open(390);
   await Promise.all([page.waitForURL(/\/studio\/[\w-]+$/), page.click('#su-direct')]);
   const id = page.url().split('/').pop();
@@ -394,7 +394,7 @@ async function openTeacher(width, height = 844) {
   return { ctx, page };
 }
 for (const width of [390, 1280]) {
-  test(`at ${width} wide "Classroom activity" and "Arcade game" are the same height, their pictures too, and there are no topic chips`, { skip }, async () => {
+  test(`at ${width} wide "Classroom lesson", "Classroom game" and "Arcade game" are the same height, their pictures too, and there are no topic chips`, { skip }, async () => {
     const { ctx, page } = await openTeacher(width);
     const m = await page.evaluate(() => {
       const r = el => el.getBoundingClientRect(), cards = [...document.querySelectorAll('.su-kind')], pics = [...document.querySelectorAll('.su-kpic')];
@@ -403,11 +403,11 @@ for (const width of [390, 1280]) {
         tagsBottom: cards.map(c => Math.round(r(c).bottom - r(c.querySelector('.su-ktags')).bottom)), chips: document.querySelectorAll('[data-topic], .su-chips').length,
         scrollW: document.documentElement.scrollWidth, clientW: document.documentElement.clientWidth };
     });
-    assert.equal(m.h.length, 2); assert.equal(m.h[0], m.h[1], `the two cards are one height (${m.h.join(' / ')})`);
-    assert.equal(m.pics[0], m.pics[1], 'their pictures are one height');
-    assert.equal(m.tagsBottom[0], m.tagsBottom[1], 'the tags line up at the bottom of both');
+    assert.equal(m.h.length, 3); assert.ok(m.h.every(h => h === m.h[0]), `the three cards are one height (${m.h.join(' / ')})`);
+    assert.ok(m.pics.every(h => h === m.pics[0]), 'their pictures are one height');
+    assert.ok(m.tagsBottom.every(b => b === m.tagsBottom[0]), 'the tags line up at the bottom of all three');
     assert.ok(m.inside, 'nothing sticks out of a card');
-    if (width === 390) { assert.notEqual(m.top[0], m.top[1], 'stacked on a phone'); assert.ok(m.h[0] < 520, `no taller than it needs (${m.h[0]})`); } else assert.equal(m.top[0], m.top[1], 'side by side');
+    if (width === 390) { assert.notEqual(m.top[0], m.top[1], 'stacked on a phone'); assert.ok(m.h[0] < 520, `no taller than it needs (${m.h[0]})`); } else assert.ok(m.top.every(t => t === m.top[0]), 'side by side');
     assert.equal(m.chips, 0, 'no topic chips'); assert.equal(await page.locator('#su-topic-in').count(), 0, 'no topic box: "Your lesson" asks for it');
     assert.ok(m.scrollW <= m.clientW);
     await ctx.close();
@@ -458,7 +458,7 @@ test('390 wide: "Your lesson" (a PDF read, Remove, a wrong file said), help as c
   await page.click('.su-screen:not([hidden]) [data-go="next"]'); await page.click('.su-screen:not([hidden]) [data-go="next"]');
   await page.waitForSelector('#su-lsum:not([hidden])');
   const rows = await page.evaluate(() => [...document.querySelectorAll('.su-row')].map(r => [r.querySelector('dt').textContent, r.querySelector('.su-val').textContent]));
-  assert.deepEqual(rows, [['What', 'Classroom activity'], ['Lesson', 'lesson.pdf · Your notes'], ['For', 'Practice on screen and Printable worksheet'], ['Help', 'Watch and Count up'], ['Played', 'On their own devices']]);
+  assert.deepEqual(rows, [['What', 'Classroom lesson'], ['Lesson', 'lesson.pdf · Your notes'], ['For', 'Practice on screen and Printable worksheet'], ['Help', 'Watch and Count up'], ['Played', 'On their own devices']]);
   const sum = await page.textContent('#su-lsum');
   assert.match(sum, /What the Builder reads about your lesson/); assert.match(sum, /adding the denominators/); assert.match(sum, /\[student\] shows 2\/8 \+ 3\/8/); assert.doesNotMatch(sum, /Ana/);
   await Promise.all([page.waitForURL(/\/studio\/[\w-]+$/), page.click('#su-open')]);
@@ -490,3 +490,22 @@ for (const width of [390, 1280]) {
     await ctx.close();
   });
 }
+
+test('three tracks: Classroom game shows only the classroom kinds, Arcade game only the games, and no tabs to cross over', { skip }, async () => {
+  const { ctx, page } = await openTeacher(1280);
+  const shown = () => page.$$eval('.su-screen[data-screen="type"] .su-card[data-tgroup]', els => [...new Set(els.filter(e => !e.hidden).map(e => e.dataset.tgroup))]);
+  await page.click('.su-kind[data-kind="classgame"]');
+  assert.equal(await page.isVisible('#su-guide'), true); assert.equal(await page.isVisible('#su-cnext'), false);
+  await page.click('#su-guide'); await page.waitForSelector('.su-screen[data-screen="type"]:not([hidden])');
+  assert.deepEqual(await shown(), ['class']);
+  assert.equal(await page.isVisible('.su-tabs'), false, 'no "For your class" / "Games" choice');
+  assert.equal(await page.isVisible('.su-pick[data-step="type"][data-id="bingo"]'), true);
+  await page.click('.su-pick[data-step="type"][data-id="bingo"]');
+  await page.click('.su-screen[data-screen="type"] [data-go="back"]'); await page.waitForSelector('.su-screen[data-screen="start"]:not([hidden])');
+  await page.click('.su-kind[data-kind="arcade"]'); await page.click('#su-guide');
+  await page.waitForSelector('.su-screen[data-screen="type"]:not([hidden])');
+  assert.deepEqual(await shown(), ['games']);
+  assert.equal(await page.$eval('.su-pick[data-step="type"][data-id="bingo"]', b => b.getAttribute('aria-pressed')), 'false', 'a classroom kind picked before is let go');
+  assert.equal(await page.textContent('#su-direct'), 'I’ll just describe it');
+  await ctx.close();
+});

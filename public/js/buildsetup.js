@@ -4,7 +4,7 @@
 // The choices live in this page only (nothing is stored, here or on the server) until "Open the Builder": that makes
 // the game, adds a chosen file with the Studio's own upload, and starts the first build with the plan as data
 // ({ plan }: each of game type, world and character is { from: 'pack', id } or { from: 'custom', text }). The server
-// writes the message from the plan and screens it like any typed message. "I know what I want" and "Skip to the
+// writes the message from the plan and screens it like any typed message. "I’ll just describe it" and "Skip to the
 // Builder" make an empty game and open the Studio, exactly as "New game" always did.
 import { api, toast, sheet, esc, $, $$, t } from '/js/app.js';
 import { LANG } from '/js/i18n.js';
@@ -215,8 +215,15 @@ function selectAll(btn) {
 function setKind(kind) {
   S.kind = kind;
   for (const b of $$('.su-kind')) b.setAttribute('aria-pressed', String(b.dataset.kind === kind));
-  for (const el of $$('.su-start [data-for]')) el.hidden = !(el.dataset.for === 'both' || el.dataset.for === kind);
+  for (const el of $$('.su-start [data-for]')) el.hidden = !(el.dataset.for === 'both' || el.dataset.for.split(' ').includes(kind));
   $('.su-start').dataset.kind = kind;
+  // Classroom game and Arcade game each see only their own kinds of game on the next step (no tabs to cross over);
+  // a kind picked from the other one is let go.
+  const group = kind === 'classgame' ? 'class' : 'games', g = D.typeGroups.find(x => x.id === group);
+  if (g) {
+    showGroup(group);
+    if (S.sel.type.length && !S.sel.type.every(id => g.items.includes(id))) { S.sel.type = []; paint('type'); refreshLimits(); }
+  }
 }
 /** What they typed under "What should students practise?" (no chips since #431's follow-up: one box). */
 const topicOf = () => { const text = S.topicText.trim().replace(/\s+/g, ' '); return text ? { text } : null; };
@@ -394,7 +401,7 @@ async function newGame(body = {}) { if (!S.gameId) S.gameId = (await api('/api/s
 async function direct(btn) {
   if (S.busy) return; S.busy = true;
   const old = btn.textContent; if (btn.id === 'su-skipall') btn.textContent = t('js.buildsetup.gettingReady'); btn.setAttribute('aria-busy', 'true');
-  // "I know what I want" with Classroom activity picked: the activity starter, so the Builder works on an activity from
+  // "I’ll just describe it" with Classroom activity picked: the activity starter, so the Builder works on an activity from
   // its first message (an arcade game starts empty, as it always did)
   try { location.href = `/studio/${await newGame(S.kind === 'activity' && btn.id === 'su-direct' ? { template: 'canvas' } : {})}`; }
   catch (e) { S.busy = false; btn.textContent = old; btn.removeAttribute('aria-busy'); if (e.signedOut) location.href = `/login?next=${encodeURIComponent('/build/new')}`; else toast(e.message, { bad: true }); }
@@ -476,8 +483,6 @@ if (L.file) {
 // No topic box on the start screen any more ("Your lesson" asks for it all); kept optional for a page that has one.
 $('#su-topic-in')?.addEventListener('input', e => { S.topicText = e.target.value; });
 $('#su-topic-in')?.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); show(CSTEPS[0]); } });
-// "Classroom tools": today's eight board starters (the game-type step, on its "For your class" group)
-$('#su-tools').addEventListener('click', e => { e.preventDefault(); setKind('arcade'); show(KEYS[0]); if (D.typeGroups.some(g => g.id === 'class')) showGroup('class'); });
 $('#su-direct').addEventListener('click', e => direct(e.currentTarget));
 $('#su-skipall').addEventListener('click', e => direct(e.currentTarget));
 $('#su-open').addEventListener('click', openBuilder);
@@ -490,6 +495,5 @@ $('#su-notes').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.is
 $('#su-file-btn').addEventListener('click', () => $('#su-file').click());
 $('#su-file').addEventListener('change', e => { addFiles([...e.target.files]); e.target.value = ''; });
 refreshLimits();
-if (D.typeGroups.length) showGroup(D.typeGroups[0].id);
 paintProgress();
 setKind(S.kind); paintHelp(); paintPurpose(); paint('played'); paintCount();

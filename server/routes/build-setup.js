@@ -1,5 +1,5 @@
 // The step-by-step game setup before the Builder: /build/new (the "New game" button on /build opens it).
-//   Start: "Help me choose" (seven steps, then "Here is your game plan") or "I know what I want" (a new, empty game and
+//   Start: "Help me choose" (seven steps, then "Here is your game plan") or "I’ll just describe it" (a new, empty game and
 //   straight to the Studio, exactly as "New game" always did). Every step also has "Skip to the Builder".
 // What the steps offer comes from the Builder's own lists (builder/plan.js: game types, the shipped 3D worlds, the
 // heroes and animals of both catalogues by group: the 3D worlds' and the 2D sprites'), so a newly shipped world or
@@ -176,7 +176,7 @@ router.get('/build/new', requireBuilder, (req, res) => {
   const grids = {
     // Two groups ("For your class" and "Games"), one shown at a time; the first is shown at first: for a teacher "For
     // your class", for everyone else the games (in the order they always had) and then the classroom types for kids.
-    type: () => html`<div class="su-tabs" role="group" aria-label="${t('buildSetup.typeGroups.label')}">${groups.map((g, i) => html`<button type="button" class="su-tab" data-tgroup-btn="${g.id}" aria-pressed="${i === 0 ? 'true' : 'false'}" aria-controls="su-grid-type">${t(`buildSetup.typeGroups.${g.id}`)}</button>`)}</div>
+    type: () => html`<div class="su-tabs" hidden role="group" aria-label="${t('buildSetup.typeGroups.label')}">${groups.map((g, i) => html`<button type="button" class="su-tab" data-tgroup-btn="${g.id}" aria-pressed="${i === 0 ? 'true' : 'false'}" aria-controls="su-grid-type">${t(`buildSetup.typeGroups.${g.id}`)}</button>`)}</div>
       ${groups.map((g, i) => html`<p class="su-thint" data-tgroup-hint="${g.id}"${i ? raw(' hidden') : ''}>${t(`buildSetup.typeGroups.${g.id}Text`)}</p>`)}
       <div class="su-grid su-grid-text" id="su-grid-type" role="group" aria-labelledby="su-h-type">${groups.map((g, i) => g.items.map(x => card({ step: 'type', id: x.id, pic: art(x.id), title: t(`buildSetup.types.${x.id}.title`), text: t(`buildSetup.types.${x.id}.text`), wrap: ` data-tgroup="${g.id}"${i ? ' hidden' : ''}` })))}${elseCard('type')}</div>`,
     look: () => html`<div class="su-grid su-grid-text su-grid-3" role="group" aria-labelledby="su-h-look">${LOOKS.map(id => card({ step: 'look', id, pic: art(id), title: t(`buildSetup.looks.${id}.title`), text: t(`buildSetup.looks.${id}.text`) }))}</div>`,
@@ -250,6 +250,12 @@ router.get('/build/new', requireBuilder, (req, res) => {
           <span class="su-kd">${t('buildSetup.kind.activity.text')}</span>
           <span class="su-ktags">${['fractions', 'numberline', 'digits', 'tiles'].map(k => html`<span>${t(`buildSetup.kind.tools.${k}`)}</span>`)}</span>
         </button>
+        <button type="button" class="su-kind" data-kind="classgame" aria-pressed="false">
+          <span class="su-kpic su-kboard" aria-hidden="true">${[1, 2, 3].map(r => raw(`<span class="su-kbrow">${[0, 1, 2, 3].map(c => `<span class="su-kbt${r === 2 && c === 1 ? ' su-kbt-on' : ''}">${r}00</span>`).join('')}</span>`))}</span>
+          <span class="su-kt">${t('buildSetup.kind.classgame.title')}</span>
+          <span class="su-kd">${t('buildSetup.kind.classgame.text')}</span>
+          <span class="su-ktags">${(groups.find(g => g.id === 'class')?.items || []).filter(x => x.starter).slice(0, 4).map(x => html`<span>${t(`buildSetup.types.${x.id}.title`)}</span>`)}</span>
+        </button>
         <button type="button" class="su-kind" data-kind="arcade" aria-pressed="${kind === 'arcade' ? 'true' : 'false'}">
           <span class="su-kpic su-karcade" aria-hidden="true"><span class="su-ksun"></span><span class="su-khill"></span><span class="su-kground"></span><span class="su-kcoin" style="inset-inline-start:58%"></span><span class="su-kcoin" style="inset-inline-start:70%;bottom:110px"></span><span class="su-kp">${ICON.runner}</span></span>
           <span class="su-kt">${t('buildSetup.kind.arcade.title')}</span>
@@ -261,9 +267,8 @@ router.get('/build/new', requireBuilder, (req, res) => {
       <div class="su-kways">
         <button type="button" class="btn" id="su-direct" data-for="both">${t('buildSetup.start.direct')}</button>
         <button type="button" class="btn btn-primary" id="su-cnext" data-for="activity"${kind === 'activity' ? '' : raw(' hidden')}>${t('buildSetup.canvas.nextLesson')} <span aria-hidden="true">›</span></button>
-        <button type="button" class="btn btn-primary" id="su-guide" data-for="arcade"${kind === 'arcade' ? '' : raw(' hidden')}>${t('buildSetup.start.guide')} <span aria-hidden="true">›</span></button>
+        <button type="button" class="btn btn-primary" id="su-guide" data-for="arcade classgame"${kind === 'arcade' ? '' : raw(' hidden')}>${t('buildSetup.start.guide')} <span aria-hidden="true">›</span></button>
       </div>
-      <p class="su-tools muted">${t('buildSetup.kind.toolsText')} <a href="#type" id="su-tools">${t('buildSetup.kind.toolsLink')}</a></p>
     </section>
     ${CANVAS_STEPS.map((k, i) => html`<section class="su-screen su-step su-cstep" data-screen="${k}" aria-labelledby="su-h-${k}" hidden>
       <div class="su-progress"><span class="su-dots" aria-hidden="true">${[...Array(CANVAS_STEPS.length + 1).keys()].map(n => raw(`<i${n <= i + 1 ? ' class="on"' : ''}></i>`))}</span><span class="su-count">${t('buildSetup.progress', { n: i + 2, total: CANVAS_STEPS.length + 1 })}</span></div>

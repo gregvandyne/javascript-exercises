@@ -2746,7 +2746,7 @@
       },
       "progress": "第 {n} 步，共 {total} 步",
       "canvas": {
-        "activity": "課堂活動",
+        "activity": "課堂課程",
         "rows": {
           "kind": "內容",
           "practise": "練習",
@@ -9061,7 +9061,7 @@
       "text": "兩種方式最後都會到小幫手那裡。到時候什麼都可以改。",
       "guide": "幫我選",
       "guideText": "用六個簡單的步驟選好遊戲類型、世界和角色。",
-      "direct": "我知道我要什麼",
+      "direct": "我直接描述",
       "directText": "直接去找小幫手，用自己的話說出你的遊戲。"
     },
     "else": {
@@ -9316,8 +9316,12 @@
       "check": "檢查",
       "hint": "提示",
       "activity": {
-        "title": "課堂活動",
+        "title": "課堂課程",
         "text": "動手操作的畫布：學生拖曳、組合、檢查，一步一步來，還有提示。結果會進入「學習進度」。"
+      },
+      "classgame": {
+        "title": "課堂遊戲",
+        "text": "全班一起在白板上玩：分類題板、賓果、閃卡、安靜遊戲、轉盤、計分板。"
       },
       "arcade": {
         "title": "街機遊戲",
@@ -9334,9 +9338,7 @@
         "catch": "接東西",
         "quiz": "問答",
         "worlds": "3D 世界"
-      },
-      "toolsText": "需要安靜遊戲、轉盤或計分板嗎？",
-      "toolsLink": "課堂工具"
+      }
     },
     "canvas": {
       "nextHelp": "下一步：需要多少幫助",
@@ -11328,6 +11330,7 @@
     "keepBrowsing": "繼續瀏覽",
     "openFolder": "開啟 {folder}",
     "reorderHint": "拖曳即可調整順序（手機或平板請先長按）。使用鍵盤：Alt 加方向鍵。",
+    "dropHint": "把遊戲拖到資料夾上，就能存進去。",
     "move": "移動 {name}",
     "moved": "{name}：第 {n} 個，共 {total} 個",
     "saveTitle": "把「{game}」存到資料夾",

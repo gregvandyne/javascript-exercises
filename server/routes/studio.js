@@ -336,7 +336,7 @@ router.post('/api/studio/new', requireBuilder, rateLimit('studio-new', 30, 3600e
   const key = String((req.body || {}).template || '');
   // A 3D world card: the Kit 2 starter in that world (the world must be a shipped one; the hero is the world's first).
   const world = key === 'oomba3d' ? String((req.body || {}).world || '') : '';
-  // (the classroom activity starter too: /build/new's "I know what I want" with Classroom activity picked)
+  // (the classroom activity starter too: /build/new's "I’ll just describe it" with Classroom activity picked)
   if (key === 'oomba3d' ? !WORLD_IDS.includes(world) : key && !TEMPLATE_KEYS.includes(key) && !CANVAS_TEMPLATE_KEYS.includes(key)) return res.status(400).json({ error: t('studio.api.pickStarter') });
   if (!req.user.builder_enabled) return res.status(403).json({ error: t('studio.api.buildingOff') });
   if (!key) {
