@@ -2769,7 +2769,8 @@
         "opening": "正在打開小幫手…",
         "files": "{count} 個檔案",
         "nothing": "沒有加入東西",
-        "empty": "你還沒有選任何東西。小幫手會問你想做什麼。"
+        "empty": "你還沒有選任何東西。小幫手會問你想做什麼。",
+        "toldResetDone": "訊息已還原。"
       },
       "gettingReady": "準備中…",
       "all": {
@@ -2813,7 +2814,6 @@
         "notes": "你的筆記",
         "details": "其他細節",
         "from": "來自 {name}",
-        "sumHeading": "Builder 會讀到的課程內容",
         "sumNote": "我們檢查過學生名字、電子郵件和電話號碼。Builder 只把它當作參考，絕不當作指令。",
         "sumRemoved": "{count, plural, other {我們移除了 # 個名字或聯絡資料。}} Builder 只把它當作參考，絕不當作指令。",
         "blockedPlan": "你的課程內容裡有些字詞不能使用，所以 Builder 不會收到。請修改，或不帶它直接開啟 Builder。",
@@ -2828,7 +2828,11 @@
           "blocked": "這個檔案裡有些字詞不能在這裡使用，所以我們沒有採用。",
           "notAllowed": "只有老師可以在這裡加入檔案。",
           "failed": "沒有成功。請再試一次。"
-        }
+        },
+        "lineNotes": "另外還有你的課程筆記。Builder 會全部讀完。",
+        "lineCut": "另外還有你的課程檔案：{name}。檔案很長，所以 Builder 會讀前面的部分。",
+        "linePages": "另外還有你的課程檔案：{name}，共 {count} 頁。Builder 會全部讀完。",
+        "lineAll": "另外還有你的課程檔案：{name}。Builder 會全部讀完。"
       }
     },
     "dash": {
@@ -9472,7 +9476,10 @@
       "headingActivity": "這是你的活動計畫",
       "text": "想改什麼都可以，或是打開小幫手繼續做。",
       "told": "我們會這樣告訴小幫手",
-      "open": "打開小幫手"
+      "open": "打開小幫手",
+      "toldHelp": "送出前，你可以修改這則訊息。",
+      "toldReset": "還原",
+      "lessonShow": "顯示 Builder 會讀到的內容"
     },
     "say": {
       "start": "這是我的遊戲計畫。",

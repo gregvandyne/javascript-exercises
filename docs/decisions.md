@@ -8924,3 +8924,11 @@ each student"), which the teacher's "New set" uses.
 - **Older plans** (the five-step page still open somewhere, saved chats) are read as they are, never migrated:
   usesOf maps purpose to uses (a worksheet is paper; practice on screen, or a generator alone, is devices), and an old
   "On the board" with practice on screen still says "We play it together on the board".
+
+Follow-up (same day): the plan screen says what the Builder gets from "Your lesson" — one line under the message
+("Plus your lesson file: NAME, N pages. The Builder reads all of it.", or the first part when the file was cut at its
+limit) and a closed "Show what the Builder reads" with each part and the start of the file, from the same scrubbed
+plan the server sends (the LESSON CONTEXT carries the file's text, up to its limit, in the first build). The first
+message is a box the teacher may edit, with Reset; their words go as plan.told and are sent instead of the sentence
+(builder/runner.js submit; classroom activities only), the plan still with them, their students' names taken out and
+screened like any typed message. Step 3 starts on "On their devices" again.

@@ -2769,7 +2769,8 @@
         "opening": "Ouverture du Constructeur…",
         "files": "{count, plural, one {# fichier} other {# fichiers}}",
         "nothing": "Rien d’ajouté",
-        "empty": "Tu n’as encore rien choisi. Le Constructeur te demandera quoi faire."
+        "empty": "Tu n’as encore rien choisi. Le Constructeur te demandera quoi faire.",
+        "toldResetDone": "Le message est revenu comme avant."
       },
       "gettingReady": "Préparation…",
       "all": {
@@ -2813,7 +2814,6 @@
         "notes": "Tes notes",
         "details": "Autres précisions",
         "from": "Tiré de {name}",
-        "sumHeading": "Ce que le Builder lit sur ta leçon",
         "sumNote": "Nous avons cherché les noms d'élèves, les e-mails et les numéros de téléphone. Le Builder s'en sert comme contexte, jamais comme consignes.",
         "sumRemoved": "{count, plural, one {Nous avons retiré # nom ou coordonnée.} other {Nous avons retiré # noms ou coordonnées.}} Le Builder s'en sert comme contexte, jamais comme consignes.",
         "blockedPlan": "Certains mots de ta leçon ne sont pas acceptés, donc le Builder ne la recevra pas. Modifie-les, ou ouvre le Builder sans elle.",
@@ -2828,7 +2828,11 @@
           "blocked": "Certains mots de ce fichier ne sont pas acceptés ici, donc nous ne l’avons pas gardé.",
           "notAllowed": "Seuls les enseignants peuvent ajouter un fichier ici.",
           "failed": "Ça n'a pas marché. Réessaie."
-        }
+        },
+        "lineNotes": "En plus, tes notes de leçon. Le Builder les lit en entier.",
+        "lineCut": "En plus, ton fichier de leçon : {name}. Il est long, le Builder en lit donc le début.",
+        "linePages": "En plus, ton fichier de leçon : {name}, {count, plural, one {# page} other {# pages}}. Le Builder le lit en entier.",
+        "lineAll": "En plus, ton fichier de leçon : {name}. Le Builder le lit en entier."
       }
     },
     "dash": {
@@ -9472,7 +9476,10 @@
       "headingActivity": "Voici le plan de ton activité",
       "text": "Change ce que tu veux, ou ouvre le Constructeur et continue là-bas.",
       "told": "Ce que le Constructeur va lire",
-      "open": "Ouvrir le Constructeur"
+      "open": "Ouvrir le Constructeur",
+      "toldHelp": "Tu peux modifier ce message avant son envoi.",
+      "toldReset": "Rétablir",
+      "lessonShow": "Voir ce que lit le Builder"
     },
     "say": {
       "start": "Voici le plan de mon jeu.",

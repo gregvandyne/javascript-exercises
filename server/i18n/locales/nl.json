@@ -2770,7 +2770,8 @@
         "opening": "De Bouwer wordt geopend…",
         "files": "{count, plural, one {# bestand} other {# bestanden}}",
         "nothing": "Niets toegevoegd",
-        "empty": "Je hebt nog niets gekozen. De Bouwer vraagt je wat je wilt maken."
+        "empty": "Je hebt nog niets gekozen. De Bouwer vraagt je wat je wilt maken.",
+        "toldResetDone": "Het bericht staat weer zoals het was."
       },
       "gettingReady": "Even klaarmaken…",
       "all": {
@@ -2814,7 +2815,6 @@
         "notes": "Je notities",
         "details": "Andere details",
         "from": "Uit {name}",
-        "sumHeading": "Wat de Builder over je les leest",
         "sumNote": "We hebben gezocht naar namen van leerlingen, e-mailadressen en telefoonnummers. De Builder gebruikt het als achtergrond, nooit als opdracht.",
         "sumRemoved": "{count, plural, one {We hebben # naam of contactgegeven weggehaald.} other {We hebben # namen of contactgegevens weggehaald.}} De Builder gebruikt het als achtergrond, nooit als opdracht.",
         "blockedPlan": "Sommige woorden in je les kunnen niet, dus de Builder krijgt hem niet. Pas ze aan, of open de Builder zonder.",
@@ -2829,7 +2829,11 @@
           "blocked": "Sommige woorden in dat bestand kunnen hier niet, dus we hebben het weggelaten.",
           "notAllowed": "Alleen leerkrachten kunnen hier een bestand toevoegen.",
           "failed": "Dat lukte niet. Probeer het nog eens."
-        }
+        },
+        "lineNotes": "Plus je lesnotities. De Builder leest ze helemaal.",
+        "lineCut": "Plus je lesbestand: {name}. Het is lang, dus de Builder leest het eerste deel.",
+        "linePages": "Plus je lesbestand: {name}, {count, plural, one {# pagina} other {# pagina’s}}. De Builder leest het helemaal.",
+        "lineAll": "Plus je lesbestand: {name}. De Builder leest het helemaal."
       }
     },
     "dash": {
@@ -9473,7 +9477,10 @@
       "headingActivity": "Dit is je activiteitenplan",
       "text": "Verander wat je wilt, of open de Bouwer en ga daar verder.",
       "told": "Dit krijgt de Bouwer te horen",
-      "open": "Open de Bouwer"
+      "open": "Open de Bouwer",
+      "toldHelp": "Je kunt dit bericht aanpassen voordat het wordt verstuurd.",
+      "toldReset": "Terugzetten",
+      "lessonShow": "Laat zien wat de Builder leest"
     },
     "say": {
       "start": "Dit is mijn gameplan.",

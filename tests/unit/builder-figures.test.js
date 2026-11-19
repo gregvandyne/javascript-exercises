@@ -110,13 +110,13 @@ test('the figures flag comes from the topic, the lesson (and its file) or the no
   assert.equal(plan.normalisePlan({ kind: 'activity', lesson: { doc: { name: 'plan.pdf', kind: 'pdf', pages: 1, text: 'Halbwertszeit und Zerfall' } } }).figures, true);
   assert.ok(figureWords('מדחום ומשורה'));
 });
-test('/build/new: "How will students use it?" right after "Your lesson", two checkboxes, nothing picked to start; no generator card', async () => {
+test('/build/new: "How will students use it?" right after "Your lesson", two checkboxes, On their devices to start; no generator card', async () => {
   const h = (await teacher.c('/build/new')).text, d = pageData(h);
-  assert.deepEqual(d.canvas.uses, ['screen', 'worksheet']); assert.deepEqual(d.canvas.use, [], 'nothing picked to start');
+  assert.deepEqual(d.canvas.uses, ['screen', 'worksheet']); assert.deepEqual(d.canvas.use, ['screen'], 'On their devices to start');
   const order = [...h.matchAll(/data-screen="(lesson|use|purpose|help|played)"/g)].map(m => m[1]);
   assert.deepEqual(order, ['lesson', 'use', 'help']);
   const boxes = [...h.matchAll(/<input type="checkbox" class="sr-only su-pbox" data-use="(\w+)" value="\w+"( checked)?>/g)].map(m => [m[1], !!m[2]]);
-  assert.deepEqual(boxes, [['screen', false], ['worksheet', false]]);
+  assert.deepEqual(boxes, [['screen', true], ['worksheet', false]]);
   assert.match(h, /<h1 id="su-h-use" tabindex="-1">How will students use it\?<\/h1>/); assert.match(h, />On their devices</); assert.match(h, />On paper</);
   assert.doesNotMatch(h, /Question generator|What is it for\?|data-purpose=/);
   assert.match(h, /aria-describedby="su-hint-use su-use-note"/);

@@ -127,6 +127,13 @@
 .su-told p{margin:0}
 .su-told-h{font-size:.9rem;font-weight:700;color:var(--warn-ink)}
 .su-told-t{font-weight:700;overflow-wrap:anywhere}
+.su-told-t[hidden]{display:none}
+/* an activity's first message: theirs to edit, with Reset */
+.su-tedit{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.su-tedit[hidden]{display:none}
+.su-told-in{width:100%;min-height:6.5em;resize:vertical;font-weight:700;line-height:1.4;overflow-y:hidden}
+.su-tedit-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.su-told-reset[hidden]{display:none}
 .su-open{min-height:52px;padding-inline:28px;font-size:1.05rem}
 
 /* a world's close-up (app.js sheet, made wide) */
@@ -257,11 +264,20 @@
 @media (max-width:640px){.su-ltext{min-height:200px}}
 
 /* the plan: what the Builder reads about their lesson */
-.su-lsum{display:flex;flex-direction:column;gap:8px;box-shadow:inset 0 0 0 2px var(--line)}
+.su-lsum{display:block;box-shadow:inset 0 0 0 2px var(--line);padding-top:4px;padding-bottom:4px}
 .su-lsum[hidden]{display:none}
-.su-lsum-h{margin:0;font-size:1.05rem}
+.su-lsum-s{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center;gap:8px;list-style:none}
+.su-lsum-s::-webkit-details-marker{display:none}
+.su-lsum-s::before{content:"";flex:none;width:8px;height:8px;border:solid currentColor;border-width:0 2.5px 2.5px 0;transform:rotate(-45deg);transition:transform .15s}
+:root[dir="rtl"] .su-lsum-s::before{transform:rotate(135deg)}
+.su-lsum[open] .su-lsum-s::before{transform:rotate(45deg)}
+.su-lsum[open] .su-lsum-s{margin-bottom:8px}
+#su-lsum-body{display:flex;flex-direction:column;gap:8px;padding-bottom:10px}
+/* the line under the message: what the Builder gets from their lesson file */
+.su-lline{margin:0;font-weight:600;color:var(--text-2);overflow-wrap:anywhere}
+.su-lline[hidden]{display:none}
 .su-lparts{margin:0;display:flex;flex-direction:column;gap:8px}
 .su-lpart dt{color:var(--muted);font-size:.9rem;font-weight:700}
 .su-lpart dd{margin:0;white-space:pre-line;overflow-wrap:anywhere}
-.su-lexcerpt{font-size:.92rem;color:var(--text-2);max-height:7.5em;overflow:hidden}
+.su-lexcerpt{font-size:.92rem;color:var(--text-2)}
 .su-lsum-note,.su-lsum .su-flag{margin:0}

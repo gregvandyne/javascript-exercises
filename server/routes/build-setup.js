@@ -34,6 +34,7 @@ import { gradeLabel } from '../views/components.js';
 import { teacherHost } from '../services/classlive-access.js';
 import { ART2D_TEMPLATES, ART2D_WORLD_IDS } from '../builder/art2d.js';
 import { LIMITS as UPLOADS } from '../builder/uploads.js';
+import { MAX_INPUT } from '../builder/agent.js';
 
 export const router = Router();
 
@@ -118,11 +119,13 @@ export function setupData(t, { teacher = false, forClass = null } = {}) {
   return {
     // "What are you making?": the card that starts selected, and the classroom activity's steps (the grade's topic chips
     // with the kit tool each one means, and the class: only a flag and the grade, never an id the plan carries)
-    canvas: { kind: startKind({ teacher, forClass: !!forClass }), supports: SUPPORTS, help: ['guided'], uses: CANVAS_USES, use: [], grade: forClass ? forClass.grade : '', forClass: !!forClass },
+    canvas: { kind: startKind({ teacher, forClass: !!forClass }), supports: SUPPORTS, help: ['guided'], uses: CANVAS_USES, use: ['screen'], grade: forClass ? forClass.grade : '', forClass: !!forClass },
     // "Your lesson": the headings the prompts put in the box (in this language), its limit, and the file the page may
     // send (teachers only: a kid's own work is never uploaded here)
     lesson: { heads: Object.fromEntries(LESSON_HEADS.map(k => [k, t(`buildSetup.lesson.heads.${k}`)])), max: LESSON.text,
       file: teacher ? { accept: FILE_ACCEPT, kinds: ['pdf', 'docx', 'txt', 'md'], bytes: FILE_LIMITS.bytes } : null },
+    // the activity plan's first message, which the teacher may edit: a chat message's limit
+    told: { max: MAX_INPUT },
     steps: STEPS, types: GAME_TYPES.map(x => x.id), looks: LOOKS,
     // the game-type step's groups for this viewer (the first one shows first), and the steps each type skips (a survey
     // or a scoreboard has no 2D or 3D, world or characters)
@@ -232,10 +235,10 @@ router.get('/build/new', requireBuilder, (req, res) => {
   const helpBody = html`<div class="su-grid su-grid-text su-grid-4 su-grid-check" role="group" aria-labelledby="su-h-help" aria-describedby="su-hint-help">${SUPPORTS.map(id => html`<div class="su-card su-check" data-card="${id}">
       <label class="su-pick su-cpick"><input type="checkbox" class="sr-only su-cbox" data-help="${id}" value="${id}"${id === 'guided' ? raw(' checked') : ''}>${art(id)}<span class="su-name">${t(`buildSetup.canvas.help.${id}.title`)}</span><span class="su-desc">${t(`buildSetup.canvas.help.${id}.text`)}</span><span class="su-box" aria-hidden="true">${check}</span></label></div>`)}</div>
       <p class="su-flag su-one" id="su-help-one" role="status" hidden>${t('buildSetup.lesson.atLeastOne')}</p>`;
-  // "How will students use it?": the same checkbox cards; one or both. Nothing is picked to start and Next asks for at
-  // least one (public/js/buildsetup.js). Under them, one quiet line: the board and fresh sets need no answer.
+  // "How will students use it?": the same checkbox cards; one or both, On their devices to start. With both unticked,
+  // Next asks for at least one (public/js/buildsetup.js). Under them, one quiet line: the board and fresh sets need no answer.
   const useBody = html`<div class="su-grid su-grid-text su-grid-2 su-grid-check" role="group" aria-labelledby="su-h-use" aria-describedby="su-hint-use su-use-note">${CANVAS_USES.map(id => html`<div class="su-card su-check" data-card="${id}">
-      <label class="su-pick su-cpick"><input type="checkbox" class="sr-only su-pbox" data-use="${id}" value="${id}">${art(USE_ART[id])}<span class="su-name">${t(`buildSetup.canvas.use.${id}.title`)}</span><span class="su-desc">${t(`buildSetup.canvas.use.${id}.text`)}</span><span class="su-box" aria-hidden="true">${check}</span></label></div>`)}</div>
+      <label class="su-pick su-cpick"><input type="checkbox" class="sr-only su-pbox" data-use="${id}" value="${id}"${id === 'screen' ? raw(' checked') : ''}>${art(USE_ART[id])}<span class="su-name">${t(`buildSetup.canvas.use.${id}.title`)}</span><span class="su-desc">${t(`buildSetup.canvas.use.${id}.text`)}</span><span class="su-box" aria-hidden="true">${check}</span></label></div>`)}</div>
       <p class="su-flag su-one" id="su-use-one" role="status" hidden>${t('buildSetup.lesson.atLeastOne')}</p>
       <p class="small muted su-unote" id="su-use-note">${t('buildSetup.canvas.use.note')}</p>`;
 
@@ -285,9 +288,16 @@ router.get('/build/new', requireBuilder, (req, res) => {
     <section class="su-screen su-plan" data-screen="plan" aria-labelledby="su-h-plan" hidden>
       <h1 id="su-h-plan" tabindex="-1" data-game="${t('buildSetup.plan.heading')}" data-activity="${t('buildSetup.plan.headingActivity')}">${t('buildSetup.plan.heading')}</h1><p class="su-hint">${t('buildSetup.plan.text')}</p>
       <dl class="su-rows panel" id="su-rows"></dl>
-      <section class="su-lsum panel" id="su-lsum" aria-live="polite" hidden></section>
       <p class="su-flag" id="su-plan-2d" hidden>${t('buildSetup.flatNote')}</p>
-      <div class="su-told"><p class="su-told-h" id="su-told-h">${t('buildSetup.plan.told')}</p><p class="su-told-t" id="su-told" aria-labelledby="su-told-h" aria-live="polite"></p></div>
+      ${'' /* An activity's first message can be edited (a textarea, with Reset); an arcade game's is shown as it is. */}
+      <div class="su-told"><p class="su-told-h" id="su-told-h">${t('buildSetup.plan.told')}</p><p class="su-told-t" id="su-told" aria-labelledby="su-told-h" aria-live="polite"></p>
+        <div class="su-tedit" id="su-tedit" hidden>
+          <textarea class="input su-told-in" id="su-told-in" rows="4" maxlength="${MAX_INPUT}" dir="auto" aria-labelledby="su-told-h" aria-describedby="su-told-help"></textarea>
+          <div class="su-tedit-row"><p class="small muted su-told-help" id="su-told-help">${t('buildSetup.plan.toldHelp')}</p><button type="button" class="btn btn-ghost btn-sm su-told-reset" id="su-told-reset" hidden>${t('buildSetup.plan.toldReset')}</button></div>
+        </div></div>
+      ${'' /* What the Builder gets from "Your lesson": one line, and the parts and the file's start in a closed <details>. */}
+      <p class="su-lline" id="su-lline" hidden></p>
+      <details class="su-lsum panel" id="su-lsum" hidden><summary class="su-lsum-s">${t('buildSetup.plan.lessonShow')}</summary><div id="su-lsum-body"></div></details>
       <div class="su-nav"><button type="button" class="btn" data-go="back">${t('buildSetup.back')}</button><button type="button" class="btn btn-hot su-open" id="su-open">${t('buildSetup.plan.open')}</button></div>
     </section>
     <p class="sr-only" id="su-live" aria-live="polite"></p>

@@ -2788,7 +2788,8 @@
         "opening": "Opening the Builder…",
         "files": "{count, plural, one {# file} other {# files}}",
         "nothing": "Nothing added",
-        "empty": "You have not picked anything yet. The Builder will ask you what to make."
+        "empty": "You have not picked anything yet. The Builder will ask you what to make.",
+        "toldResetDone": "The message is back as it was."
       },
       "gettingReady": "Getting ready…",
       "all": {
@@ -2832,7 +2833,6 @@
         "notes": "Your notes",
         "details": "Other details",
         "from": "From {name}",
-        "sumHeading": "What the Builder reads about your lesson",
         "sumNote": "We checked it for student names, emails and phone numbers. The Builder uses it as background, never as instructions.",
         "sumRemoved": "{count, plural, one {We took out # name or contact detail.} other {We took out # names or contact details.}} The Builder uses it as background, never as instructions.",
         "blockedPlan": "Some words in your lesson can't be used, so the Builder won't get it. Change them, or open the Builder without it.",
@@ -2847,7 +2847,11 @@
           "blocked": "Some words in that file can't be used here, so we left it out.",
           "notAllowed": "Only teachers can add a file here.",
           "failed": "That didn't work. Try again."
-        }
+        },
+        "lineNotes": "Plus your lesson notes. The Builder reads all of them.",
+        "lineCut": "Plus your lesson file: {name}. It is long, so the Builder reads the first part.",
+        "linePages": "Plus your lesson file: {name}, {count, plural, one {# page} other {# pages}}. The Builder reads all of it.",
+        "lineAll": "Plus your lesson file: {name}. The Builder reads all of it."
       }
     },
     "dash": {
@@ -9899,7 +9903,10 @@
       "headingActivity": "Here is your activity plan",
       "text": "Change anything, or open the Builder and keep going there.",
       "told": "What the Builder will be told",
-      "open": "Open the Builder"
+      "open": "Open the Builder",
+      "toldHelp": "You can change this message before it is sent.",
+      "toldReset": "Reset",
+      "lessonShow": "Show what the Builder reads"
     },
     "say": {
       "start": "Here is my game plan.",

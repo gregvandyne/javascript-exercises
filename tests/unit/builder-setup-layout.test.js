@@ -433,11 +433,12 @@ test('390 wide: "Your lesson" (a PDF read, Remove, a wrong file said), help as c
   assert.ok(wide[0] <= wide[1], `no sideways scroll on "Your lesson" (${wide})`);
   assert.deepEqual(await measure(page).then(x => x.small), [], 'every target is at least 44 px');
   await page.click('.su-screen:not([hidden]) [data-go="next"]');
-  // "How will students use it?" (step 3 of 4, its heading focused): nothing picked to start; one or both, and Next asks
-  // for at least one; the cards one size, no sideways scroll
+  // "How will students use it?" (step 3 of 4, its heading focused): On their devices to start; one or both, and with
+  // both unticked Next asks for at least one; the cards one size, no sideways scroll
   assert.equal(await page.evaluate(() => [document.activeElement.id, document.querySelector('.su-screen:not([hidden]) .su-count').textContent].join(' ')), 'su-h-use Step 3 of 4');
   const uses = () => page.evaluate(() => [...document.querySelectorAll('.su-pbox')].filter(b => b.checked).map(b => b.dataset.use));
-  assert.deepEqual(await uses(), []); assert.equal(await page.isVisible('#su-use-one'), false);
+  assert.deepEqual(await uses(), ['screen']); assert.equal(await page.isVisible('#su-use-one'), false);
+  await page.click('.su-card[data-card="screen"] label'); assert.deepEqual(await uses(), []);
   await page.click('.su-screen:not([hidden]) [data-go="next"]');
   assert.equal(await page.evaluate(() => document.querySelector('.su-screen:not([hidden])').dataset.screen), 'use', 'at least one: Next stays');
   assert.equal(await page.isVisible('#su-use-one'), true); assert.equal(await page.evaluate(() => document.activeElement.dataset.use), 'screen', 'the first card gets the focus');
@@ -467,12 +468,32 @@ test('390 wide: "Your lesson" (a PDF read, Remove, a wrong file said), help as c
   await page.waitForSelector('#su-lsum:not([hidden])');
   const rows = await page.evaluate(() => [...document.querySelectorAll('.su-row')].map(r => [r.querySelector('dt').textContent, r.querySelector('.su-val').textContent]));
   assert.deepEqual(rows, [['What', 'Classroom lesson'], ['Lesson', 'lesson.pdf · Your notes'], ['Use', 'On their devices and on paper'], ['Help', 'Watch and Count up']]);
-  assert.match(await page.textContent('#su-told'), /Students use it on their own devices and on paper\. Help: Watch and Count up\. .*Make a fresh set of questions whenever possible\./);
+  // the first message: a box they may edit, filled with the sentence
+  const sentence = await page.inputValue('#su-told-in');
+  assert.match(sentence, /Students use it on their own devices and on paper\. Help: Watch and Count up\. .*Make a fresh set of questions whenever possible\./);
+  assert.equal(await page.isVisible('#su-told'), false); assert.equal(await page.isVisible('#su-told-reset'), false, 'nothing to reset yet');
+  // what the Builder gets from the lesson: one line (the file, all of it read), and the parts and the file's start in a
+  // closed "Show what the Builder reads", as the server will send them (the student's name already out)
+  assert.equal(await page.textContent('#su-lline'), '📄 Plus your lesson file: lesson.pdf, 3 pages. The Builder reads all of it.');
+  assert.equal(await page.$eval('#su-lsum', d => d.open), false, 'closed to start');
+  assert.equal(await page.textContent('#su-lsum summary'), 'Show what the Builder reads'); assert.equal(await page.isVisible('#su-lsum-body'), false);
+  await page.click('#su-lsum summary'); assert.equal(await page.isVisible('#su-lsum-body'), true);
   const sum = await page.textContent('#su-lsum');
-  assert.match(sum, /What the Builder reads about your lesson/); assert.match(sum, /adding the denominators/); assert.match(sum, /\[student\] shows 2\/8 \+ 3\/8/); assert.doesNotMatch(sum, /Ana/);
+  assert.match(sum, /Common mistakes\s*adding the denominators/); assert.match(sum, /From lesson\.pdf/); assert.match(sum, /\[student\] shows 2\/8 \+ 3\/8/); assert.doesNotMatch(sum, /Ana/);
+  assert.deepEqual(await measure(page).then(x => x.small), [], 'every target is at least 44 px');
+  const pw = await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);
+  assert.ok(pw[0] <= pw[1], `no sideways scroll on the plan (${pw})`);
+  // edit it: Reset appears and brings the sentence back; then the edit is what is sent
+  await page.fill('#su-told-in', 'Something else');
+  assert.equal(await page.isVisible('#su-told-reset'), true);
+  await page.click('#su-told-reset'); assert.equal(await page.inputValue('#su-told-in'), sentence, 'Reset restores the sentence'); assert.equal(await page.isVisible('#su-told-reset'), false);
+  const mine = 'Please make six problems about adding fractions with like denominators, and keep the numbers small.';
+  await page.fill('#su-told-in', mine);
+  assert.equal(await page.getAttribute('#su-told-in', 'maxlength'), '2000', 'a chat message\'s limit');
   await Promise.all([page.waitForURL(/\/studio\/[\w-]+$/), page.click('#su-open')]);
   const id = page.url().split('/').pop(); await runner.idle(id);
   const first = loadChat(id).messages[0];
+  assert.equal(first.text, mine, 'the edited message is the first message');
   assert.deepEqual(first.plan.help, ['watch', 'count']); assert.deepEqual(first.plan.purpose, ['screen', 'worksheet', 'generator']); assert.equal(first.plan.played, 'both'); assert.equal(first.plan.lesson.mistakes, 'adding the denominators');
   assert.doesNotMatch(JSON.stringify(first.plan), /Ana/);
   await ctx.close();
@@ -511,12 +532,12 @@ for (const width of [390, 1280]) {
     const seen = [];
     for (;;) {
       const k = await shown(); if (k === 'plan') break; seen.push([k, await count()]);
-      if (k === 'use') { await next(page); assert.equal(await shown(), 'use', 'nothing picked: Next stays'); await page.click('.su-card[data-card="screen"] label'); }
+      if (k === 'use') assert.equal(await page.isChecked('.su-pbox[data-use="screen"]'), true, 'On their devices to start');
       await next(page);
     }
     assert.deepEqual(seen, [['lesson', 'Step 2 of 4'], ['use', 'Step 3 of 4'], ['help', 'Step 4 of 4']]);
     const row = () => page.evaluate(() => { const r = [...document.querySelectorAll('.su-row')].find(x => x.querySelector('dt').textContent === 'Use'); return r && [r.querySelector('.su-val').textContent, r.querySelector('.su-change').getAttribute('aria-label')]; });
-    const told = async () => { await page.waitForFunction(() => !['', '…'].includes(document.querySelector('#su-told').textContent)); return page.textContent('#su-told'); };
+    const told = async () => { await page.waitForFunction(() => !['', '…'].includes(document.querySelector('#su-told-in').value)); return page.inputValue('#su-told-in'); };
     const rows = () => page.$$eval('#su-rows dt', d => d.map(x => x.textContent));
     assert.deepEqual(await rows(), ['What', 'Lesson', 'Use', 'Help'], 'one Use row: no For, no Played');
     // on their devices (the start)
@@ -545,6 +566,8 @@ for (const width of [390, 1280]) {
     await page.click('.su-card[data-card="worksheet"] label'); assert.equal(await page.isVisible('#su-use-one'), false);
     await next(page); assert.equal(await shown(), 'plan'); await told();
     want.push([['worksheet'], ['worksheet', 'generator'], 'board']);
+    // no lesson added: no line about it, nothing to show
+    assert.equal(await page.isVisible('#su-lline'), false); assert.equal(await page.isVisible('#su-lsum'), false);
     const plans = sent.filter(p => p.kind === 'activity').map(p => [p.purpose, p.played]);
     assert.deepEqual(plans, want.map(([, purpose, played]) => [purpose, played]), 'each combination: the purpose and played sent to the Builder');
     assert.ok(sent.every(p => !('use' in p)));

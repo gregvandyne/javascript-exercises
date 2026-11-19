@@ -22,7 +22,7 @@ const STEPS = D.steps, KEYS = STEPS.map(s => s.key), CSTEPS = ['lesson', 'use', 
 const ORDER = ['start', ...KEYS, ...CSTEPS, 'plan'];
 const order = () => (S.kind === 'activity' ? ['start', ...CSTEPS, 'plan'] : ['start', ...KEYS, 'plan']);
 const stepOf = key => STEPS.find(s => s.key === key) || (CSTEPS.includes(key) ? { key } : null);
-const S = { kind: D.canvas.kind, topicText: '', lesson: { text: '', doc: null, busy: false }, screen: 'start', sel: { type: [], look: [], world: [], chars: [], play: [], learn: [], help: [...D.canvas.help], use: [...D.canvas.use] }, idea: { type: '', world: '', chars: '', learn: '' }, notes: '', files: [], back: null, gameId: null, busy: false, playPicked: false };
+const S = { kind: D.canvas.kind, topicText: '', lesson: { text: '', doc: null, busy: false }, screen: 'start', sel: { type: [], look: [], world: [], chars: [], play: [], learn: [], help: [...D.canvas.help], use: [...D.canvas.use] }, idea: { type: '', world: '', chars: '', learn: '' }, notes: '', files: [], back: null, gameId: null, busy: false, playPicked: false, told: { gen: '', edited: false } };
 const list = items => { try { return new Intl.ListFormat(LANG, { style: 'long', type: 'conjunction' }).format(items); } catch { return items.join(', '); } };
 const say = msg => { const l = $('#su-live'); l.textContent = ''; setTimeout(() => { l.textContent = msg; }, 30); };
 
@@ -61,7 +61,7 @@ history.replaceState({ su: 'start' }, '', location.pathname);   // a reload star
 
 /** Next / Skip this step / Back. A step opened with "Change" on the plan goes back to the plan. */
 function go(dir) {
-  // "How will students use it?" starts with nothing picked: on to the next step (or back to the plan) only once one is
+  // "How will students use it?" with both unticked: on to the next step (or back to the plan) only once one is picked
   if (S.screen === 'use' && !S.sel.use.length && (dir !== 'back' || S.back)) return needUse();
   if (S.back && S.screen !== 'plan') { const to = S.back; S.back = null; return show(to); }
   const list = order().filter(k => S.kind === 'activity' || !skipped().includes(k)), i = list.indexOf(S.screen);
@@ -247,7 +247,8 @@ function paintHelp() {
 }
 
 // ---------------------------------------------------------------- "How will students use it?": one or both (checkboxes)
-// On their devices, on paper (builder/plan.js CANVAS_USES). Nothing is picked to start; Next asks for at least one.
+// On their devices, on paper (builder/plan.js CANVAS_USES). On their devices to start; with both unticked, Next asks
+// for at least one.
 const USE_ORDER = D.canvas.uses;
 function toggleUse(box) {
   const id = box.dataset.use, on = box.checked;
@@ -332,6 +333,9 @@ const isEmpty = p => p.kind !== 'activity' && !p.type && !p.look && !p.world && 
 const nameOf = (key, id) => { const el = $(`.su-pick[data-step="${key}"][data-id="${id}"] .su-name`); return el ? el.textContent : id; };
 function renderPlan() {
   const h = $('#su-h-plan'); h.textContent = S.kind === 'activity' ? h.dataset.activity : h.dataset.game;
+  // an activity's first message is a box they may edit; an arcade game's is shown as it is
+  $('#su-told').hidden = S.kind === 'activity'; $('#su-tedit').hidden = S.kind !== 'activity';
+  if (S.kind !== 'activity') { $('#su-lline').hidden = true; $('#su-lsum').hidden = true; }
   if (S.kind === 'activity') return renderActivityPlan();
   const rows = STEPS.filter(s => !skipped().includes(s.key)).map(s => {
     const name = t(`js.buildsetup.stepNames.${s.key}`);
@@ -369,23 +373,48 @@ function renderActivityPlan() {
   ];
   $('#su-rows').innerHTML = rows.map(([k, value, step]) => { const n = t(`js.buildsetup.canvas.rows.${k}`); return `<div class="su-row"><dt>${esc(n)}</dt><dd><span class="su-val" dir="auto">${esc(value)}</span></dd>
     <button type="button" class="btn btn-ghost btn-sm su-change" data-change="${step}" aria-label="${esc(t('js.buildsetup.plan.changeLabel', { name: n }))}">${esc(t('js.buildsetup.plan.change'))}</button></div>`; }).join('');
-  const told = $('#su-told'), box = $('#su-lsum'); told.textContent = '…'; box.hidden = true; box.innerHTML = '';
+  const box = $('#su-lsum'), line = $('#su-lline'), inp = $('#su-told-in');
+  box.hidden = true; line.hidden = true; $('#su-lsum-body').innerHTML = '';
+  if (!S.told.edited) { inp.value = '…'; inp.style.height = ''; }
   api('/api/build/plan', { method: 'POST', body: { plan: buildPlan(), files: 0 } })
-    .then(r => { if (S.screen !== 'plan') return; told.textContent = r.text || t('js.buildsetup.plan.empty'); renderLessonSum(r); })
-    .catch(e => { if (e.signedOut) { location.href = `/login?next=${encodeURIComponent('/build/new')}`; return; } told.textContent = e.message; });
+    .then(r => { if (S.screen !== 'plan') return; S.told.gen = r.text || ''; if (!S.told.edited) inp.value = S.told.gen; paintTold(); renderLessonSum(r); })
+    .catch(e => { if (e.signedOut) { location.href = `/login?next=${encodeURIComponent('/build/new')}`; return; } if (!S.told.edited) inp.value = ''; toast(e.message, { bad: true }); });
 }
-/** "What the Builder reads about your lesson": each part they wrote, and the start of their file. */
+// ---------------------------------------------------------------- the first message: theirs to edit
+// What they type is sent instead of the sentence (as plan.told: builder/runner.js submit); the plan and what it says
+// about their lesson still go with it. Screened on the server like any typed message. Reset brings the sentence back.
+function paintTold() {
+  const inp = $('#su-told-in'), v = inp.value.trim();
+  // the box grows with what is in it (no scrolling inside a small box, on a phone too)
+  inp.style.height = 'auto'; inp.style.height = `${inp.scrollHeight + 4}px`;
+  S.told.edited = v !== S.told.gen.trim();   // an emptied box shows Reset too, and sends the sentence
+  $('#su-told-reset').hidden = !S.told.edited;
+}
+function resetTold() {
+  const inp = $('#su-told-in'); inp.value = S.told.gen; paintTold();
+  say(t('js.buildsetup.plan.toldResetDone')); inp.focus();
+}
+/** The first message as it will be sent: their edit, or '' for the plan's own sentence. */
+const toldOf = () => (S.kind === 'activity' && S.told.edited ? $('#su-told-in').value.trim() : '');
+/** What the Builder gets from "Your lesson", as the server will send it (r.plan.lesson: names, emails and phone numbers
+ *  already out): one line under the message (their file, and whether all of it is read: the first part only when it
+ *  was cut at the limit), and a closed "Show what the Builder reads" with each part they wrote and the start of the file. */
 function renderLessonSum(r) {
-  const box = $('#su-lsum'), l = r.plan && r.plan.lesson;
-  if (r.lessonBlocked) { box.hidden = false; box.innerHTML = `<p class="su-flag">${esc(t('js.buildsetup.lesson.blockedPlan'))}</p>`; return; }
+  const box = $('#su-lsum'), body = $('#su-lsum-body'), line = $('#su-lline'), l = r.plan && r.plan.lesson;
+  if (r.lessonBlocked) { line.hidden = false; line.innerHTML = `<span class="su-flag">${esc(t('js.buildsetup.lesson.blockedPlan'))}</span>`; return; }
   if (!l) return;
+  const d = l.doc, cut = !!(S.lesson.doc && S.lesson.doc.cut);
+  const say1 = !d ? t('js.buildsetup.lesson.lineNotes')
+    : cut ? t('js.buildsetup.lesson.lineCut', { name: d.name })
+      : d.pages ? t('js.buildsetup.lesson.linePages', { name: d.name, count: d.pages }) : t('js.buildsetup.lesson.lineAll', { name: d.name });
+  line.hidden = false; line.innerHTML = `<span aria-hidden="true">📄</span> <span dir="auto">${esc(say1)}</span>`;
   const label = k => (k === 'details' ? t('js.buildsetup.lesson.details') : L.heads[k].replace(/[:：]\s*$/, ''));
   const part = (k, v) => `<div class="su-lpart"><dt>${esc(label(k))}</dt><dd dir="auto">${esc(v.length > 280 ? `${v.slice(0, 280)}…` : v)}</dd></div>`;
   const parts = ['goal', 'mistakes', 'vocabulary', 'avoid', 'details'].filter(k => l[k]).map(k => part(k, l[k]));
-  if (l.doc) parts.push(`<div class="su-lpart"><dt>${esc(t('js.buildsetup.lesson.from', { name: l.doc.name }))}</dt><dd dir="auto" class="su-lexcerpt">${esc(l.doc.text.slice(0, 360))}${l.doc.text.length > 360 ? '…' : ''}</dd></div>`);
-  box.hidden = false;
-  box.innerHTML = `<h2 class="su-lsum-h">${esc(t('js.buildsetup.lesson.sumHeading'))}</h2><dl class="su-lparts">${parts.join('')}</dl>
+  if (d) parts.push(`<div class="su-lpart"><dt>${esc(t('js.buildsetup.lesson.from', { name: d.name }))}</dt><dd dir="auto" class="su-lexcerpt">${esc(d.text.slice(0, 600))}${d.text.length > 600 ? '…' : ''}</dd></div>`);
+  body.innerHTML = `<dl class="su-lparts">${parts.join('')}</dl>
     <p class="small muted su-lsum-note">${esc(r.removed ? t('js.buildsetup.lesson.sumRemoved', { count: r.removed }) : t('js.buildsetup.lesson.sumNote'))}</p>`;
+  box.hidden = false;
 }
 
 // ---------------------------------------------------------------- files (worksheets and notes; the Studio's own upload)
@@ -418,7 +447,7 @@ const newCid = () => (crypto.randomUUID ? crypto.randomUUID() : Array.from(crypt
 /** "Open the Builder": the game, the file (if any), then the first build with the plan. If the build cannot start
  *  (no messages left today, the Builder is resting), the Studio opens with the sentence in the box and says why. */
 async function openBuilder() {
-  const btn = $('#su-open'), plan = buildPlan();
+  const btn = $('#su-open'), told = toldOf(), plan = { ...buildPlan(), ...(told ? { told } : {}) };
   if (isEmpty(plan)) return direct(btn);
   if (S.busy) return; S.busy = true;
   const old = btn.textContent; btn.textContent = t('js.buildsetup.plan.opening'); btn.setAttribute('aria-busy', 'true');
@@ -446,8 +475,8 @@ async function openBuilder() {
     const res = await fetch(`/api/studio/${id}/chat`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ plan, uploads: S.files.map(f => f.id), cid: newCid(), detach: true, pro }) });
     ok = res.ok;
   } catch { ok = false; }
-  const told = $('#su-told').textContent;
-  location.href = ok || !told || told === '…' ? `/studio/${id}` : `/studio/${id}?ask=${encodeURIComponent(told.slice(0, 600))}`;
+  const ask = S.kind === 'activity' ? $('#su-told-in').value.trim() : $('#su-told').textContent;
+  location.href = ok || !ask || ask === '…' ? `/studio/${id}` : `/studio/${id}?ask=${encodeURIComponent(ask.slice(0, 600))}`;
 }
 
 // ---------------------------------------------------------------- a world's close-up
@@ -494,6 +523,8 @@ $('#su-topic-in')?.addEventListener('keydown', e => { if (e.key === 'Enter' && !
 $('#su-direct').addEventListener('click', e => direct(e.currentTarget));
 $('#su-skipall').addEventListener('click', e => direct(e.currentTarget));
 $('#su-open').addEventListener('click', openBuilder);
+$('#su-told-in').addEventListener('input', paintTold);
+$('#su-told-reset').addEventListener('click', resetTold);
 for (const inp of $$('[data-idea]')) {
   inp.addEventListener('input', () => { S.idea[inp.dataset.idea] = inp.value; });
   inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); go('next'); } });

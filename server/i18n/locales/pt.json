@@ -2770,7 +2770,8 @@
         "opening": "Abrindo o Construtor…",
         "files": "{count, plural, one {# arquivo} other {# arquivos}}",
         "nothing": "Nada adicionado",
-        "empty": "Você ainda não escolheu nada. O Construtor vai perguntar o que fazer."
+        "empty": "Você ainda não escolheu nada. O Construtor vai perguntar o que fazer.",
+        "toldResetDone": "A mensagem voltou ao que era."
       },
       "gettingReady": "Preparando…",
       "all": {
@@ -2814,7 +2815,6 @@
         "notes": "As suas notas",
         "details": "Outros detalhes",
         "from": "De {name}",
-        "sumHeading": "O que o Builder lê sobre a sua aula",
         "sumNote": "Procuramos nomes de alunos, e-mails e telefones. O Builder usa isso como contexto, nunca como instruções.",
         "sumRemoved": "{count, plural, one {Tiramos # nome ou contato.} other {Tiramos # nomes ou contatos.}} O Builder usa isso como contexto, nunca como instruções.",
         "blockedPlan": "Algumas palavras da sua aula não podem ser usadas, então o Builder não vai recebê-la. Mude-as ou abra o Builder sem ela.",
@@ -2829,7 +2829,11 @@
           "blocked": "Algumas palavras desse arquivo não podem ser usadas aqui, então o deixamos de fora.",
           "notAllowed": "Só professores podem acrescentar um arquivo aqui.",
           "failed": "Não deu certo. Tente de novo."
-        }
+        },
+        "lineNotes": "Além disso, suas anotações da aula. O Builder lê tudo.",
+        "lineCut": "Além disso, seu arquivo da aula: {name}. É longo, então o Builder lê a primeira parte.",
+        "linePages": "Além disso, seu arquivo da aula: {name}, {count, plural, one {# página} other {# páginas}}. O Builder lê tudo.",
+        "lineAll": "Além disso, seu arquivo da aula: {name}. O Builder lê tudo."
       }
     },
     "dash": {
@@ -9474,7 +9478,10 @@
       "headingActivity": "Este é o plano da sua atividade",
       "text": "Mude o que quiser, ou abra o Construtor e continue por lá.",
       "told": "O que vamos dizer ao Construtor",
-      "open": "Abrir o Construtor"
+      "open": "Abrir o Construtor",
+      "toldHelp": "Você pode mudar esta mensagem antes de enviar.",
+      "toldReset": "Restaurar",
+      "lessonShow": "Mostrar o que o Builder lê"
     },
     "say": {
       "start": "Este é o plano do meu jogo.",

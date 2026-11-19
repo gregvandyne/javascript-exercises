@@ -2770,7 +2770,8 @@
         "opening": "Apro il Costruttore…",
         "files": "{count, plural, one {# file} other {# file}}",
         "nothing": "Niente di aggiunto",
-        "empty": "Non hai ancora scelto niente. Il Costruttore ti chiederà che cosa fare."
+        "empty": "Non hai ancora scelto niente. Il Costruttore ti chiederà che cosa fare.",
+        "toldResetDone": "Il messaggio è tornato come prima."
       },
       "gettingReady": "Preparazione…",
       "all": {
@@ -2814,7 +2815,6 @@
         "notes": "Le tue note",
         "details": "Altri dettagli",
         "from": "Da {name}",
-        "sumHeading": "Cosa legge il Builder sulla tua lezione",
         "sumNote": "Abbiamo cercato nomi di studenti, email e numeri di telefono. Il Builder lo usa come contesto, mai come istruzioni.",
         "sumRemoved": "{count, plural, one {Abbiamo tolto # nome o recapito.} other {Abbiamo tolto # nomi o recapiti.}} Il Builder lo usa come contesto, mai come istruzioni.",
         "blockedPlan": "Alcune parole della tua lezione non si possono usare, quindi il Builder non la riceverà. Cambiale o apri il Builder senza.",
@@ -2829,7 +2829,11 @@
           "blocked": "Alcune parole di questo file non si possono usare qui, quindi lo abbiamo lasciato fuori.",
           "notAllowed": "Solo gli insegnanti possono aggiungere un file qui.",
           "failed": "Non ha funzionato. Riprova."
-        }
+        },
+        "lineNotes": "In più, i tuoi appunti della lezione. Il Builder li legge tutti.",
+        "lineCut": "In più, il tuo file della lezione: {name}. È lungo, quindi il Builder ne legge la prima parte.",
+        "linePages": "In più, il tuo file della lezione: {name}, {count, plural, one {# pagina} other {# pagine}}. Il Builder lo legge tutto.",
+        "lineAll": "In più, il tuo file della lezione: {name}. Il Builder lo legge tutto."
       }
     },
     "dash": {
@@ -9473,7 +9477,10 @@
       "headingActivity": "Ecco il piano della tua attività",
       "text": "Cambia quello che vuoi, oppure apri il Costruttore e continua lì.",
       "told": "Che cosa diremo al Costruttore",
-      "open": "Apri il Costruttore"
+      "open": "Apri il Costruttore",
+      "toldHelp": "Puoi cambiare questo messaggio prima di inviarlo.",
+      "toldReset": "Ripristina",
+      "lessonShow": "Mostra cosa legge il Builder"
     },
     "say": {
       "start": "Ecco il piano del mio gioco.",

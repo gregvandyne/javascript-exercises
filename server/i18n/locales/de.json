@@ -2770,7 +2770,8 @@
         "opening": "Baumeister wird geöffnet…",
         "files": "{count, plural, one {# Datei} other {# Dateien}}",
         "nothing": "Nichts dazugegeben",
-        "empty": "Du hast noch nichts ausgesucht. Der Baumeister fragt dich, was es werden soll."
+        "empty": "Du hast noch nichts ausgesucht. Der Baumeister fragt dich, was es werden soll.",
+        "toldResetDone": "Die Nachricht ist wieder wie vorher."
       },
       "gettingReady": "Wird vorbereitet…",
       "all": {
@@ -2814,7 +2815,6 @@
         "notes": "Deine Notizen",
         "details": "Weitere Angaben",
         "from": "Aus {name}",
-        "sumHeading": "Was der Builder über deine Stunde liest",
         "sumNote": "Wir haben es auf Namen der Kinder, E-Mails und Telefonnummern geprüft. Der Builder nutzt es als Hintergrund, nie als Anweisung.",
         "sumRemoved": "{count, plural, one {Wir haben # Namen oder Kontaktangabe entfernt.} other {Wir haben # Namen oder Kontaktangaben entfernt.}} Der Builder nutzt es als Hintergrund, nie als Anweisung.",
         "blockedPlan": "Einige Wörter in deiner Stunde gehen hier nicht, deshalb bekommt der Builder sie nicht. Ändere sie oder öffne den Builder ohne sie.",
@@ -2829,7 +2829,11 @@
           "blocked": "Einige Wörter in dieser Datei gehen hier nicht, deshalb haben wir sie weggelassen.",
           "notAllowed": "Nur Lehrkräfte können hier eine Datei hinzufügen.",
           "failed": "Das hat nicht geklappt. Versuch es noch einmal."
-        }
+        },
+        "lineNotes": "Dazu deine Notizen zur Stunde. Der Builder liest sie ganz.",
+        "lineCut": "Dazu deine Unterrichtsdatei: {name}. Sie ist lang, darum liest der Builder den ersten Teil.",
+        "linePages": "Dazu deine Unterrichtsdatei: {name}, {count, plural, one {# Seite} other {# Seiten}}. Der Builder liest sie ganz.",
+        "lineAll": "Dazu deine Unterrichtsdatei: {name}. Der Builder liest sie ganz."
       }
     },
     "dash": {
@@ -9473,7 +9477,10 @@
       "headingActivity": "Das ist dein Aktivitätsplan",
       "text": "Ändere, was du willst, oder öffne den Baumeister und mach dort weiter.",
       "told": "Das erfährt der Baumeister",
-      "open": "Baumeister öffnen"
+      "open": "Baumeister öffnen",
+      "toldHelp": "Du kannst diese Nachricht ändern, bevor sie gesendet wird.",
+      "toldReset": "Zurücksetzen",
+      "lessonShow": "Zeigen, was der Builder liest"
     },
     "say": {
       "start": "Das ist mein Spielplan.",
