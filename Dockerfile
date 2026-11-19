@@ -42,6 +42,9 @@ COPY kit2/SHIPPED.json ./kit2/SHIPPED.json
 # The 2D art lock: server/services/art2d.js reads it at start for the pinned Oomba2D and pack tags; without it the
 # server refuses to start.
 COPY kit2/ART2D.json ./kit2/ART2D.json
+# The figure libraries' lock: server/services/figlibs.js reads it at start for the pinned JSXGraph, SmilesDrawer and
+# Oomba Figures tags; without it the server refuses to start.
+COPY figures/SHIPPED.json ./figures/SHIPPED.json
 RUN chmod 0755 scripts/entrypoint.sh && mkdir -p /data && chown node:node /data
 EXPOSE 3000
 VOLUME ["/data"]
