@@ -329,7 +329,7 @@ function renderActivityPlan() {
   const lessonVal = !lesson ? t('js.buildsetup.lesson.none') : [lesson.doc ? lesson.doc.name : '', lesson.text ? t('js.buildsetup.lesson.notes') : ''].filter(Boolean).join(' · ');
   const rows = [
     ['kind', t('js.buildsetup.canvas.activity'), 'start'],
-    ['practise', topic ? topic.text : t('js.buildsetup.plan.decides'), 'start'],
+    ...(topic ? [['practise', topic.text, 'start']] : []),
     ['lesson', lessonVal, 'lesson'],
     ['help', list(S.sel.help.map(id => $(`.su-cbox[data-help="${id}"]`).closest('label').querySelector('.su-name').textContent)), 'help'],
     ['played', nameOf('played', S.sel.played[0]), 'played'],
@@ -454,8 +454,9 @@ if (L.file) {
   $('#su-lfile-btn').addEventListener('click', () => $('#su-lfile').click());
   $('#su-lfile').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) readFile(f); });
 }
-$('#su-topic-in').addEventListener('input', e => { S.topicText = e.target.value; });
-$('#su-topic-in').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); show(CSTEPS[0]); } });
+// No topic box on the start screen any more ("Your lesson" asks for it all); kept optional for a page that has one.
+$('#su-topic-in')?.addEventListener('input', e => { S.topicText = e.target.value; });
+$('#su-topic-in')?.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); show(CSTEPS[0]); } });
 // "Classroom tools": today's eight board starters (the game-type step, on its "For your class" group)
 $('#su-tools').addEventListener('click', e => { e.preventDefault(); setKind('arcade'); show(KEYS[0]); if (D.typeGroups.some(g => g.id === 'class')) showGroup('class'); });
 $('#su-direct').addEventListener('click', e => direct(e.currentTarget));

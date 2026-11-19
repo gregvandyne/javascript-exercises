@@ -145,7 +145,7 @@ test('/build/new: both cards; Classroom activity for a teacher and from their cl
     assert.ok(h.includes('data-screen="lesson"') && h.includes('data-screen="help"') && h.includes('data-screen="played"'));
     // the owner's change: one text box, no starter chips ("Even and odd", "Order numbers", "Add in columns"...)
     assert.doesNotMatch(h, /data-topic=|class="su-chips"|>Even and odd<|>Order numbers<|>Add in columns</, 'no topic chips');
-    assert.match(h, /id="su-topic-in"/, 'the text box stays');
+    assert.doesNotMatch(h, /id="su-topic-in"|What should students practice\?/, 'no topic box on the first step: "Your lesson" asks for it all');
     assert.equal(pageData(h).canvas.topics, undefined, 'CANVAS_TOPICS are not in the page');
     // "How much help?": four checkboxes, Guided ticked to start
     const boxes = [...h.matchAll(/<input type="checkbox" class="sr-only su-cbox" data-help="(\w+)" value="\w+"( checked)?>/g)].map(m => [m[1], !!m[2]]);
@@ -156,7 +156,6 @@ test('/build/new: both cards; Classroom activity for a teacher and from their cl
   assert.match(t, /Don&#39;t include student names or work\. We remove any we find\./);
   assert.ok(pageData(t).lesson.file && pageData(k).lesson.file === null);
   assert.match(k, /data-kind="arcade" aria-pressed="true"/); assert.equal(pageData(k).canvas.kind, 'arcade');
-  assert.match(k, /id="su-topic" data-for="activity" hidden/, 'a kid sees the topic box once they pick an activity');
   assert.match(t, /data-kind="activity" aria-pressed="true"/); assert.equal(pageData(t).canvas.kind, 'activity');
   assert.doesNotMatch(t, /class="su-for"/, 'no class chip without a class');
   const c = (await teacher.c(`/build/new?for=class&class=${cls.id}`)).text;

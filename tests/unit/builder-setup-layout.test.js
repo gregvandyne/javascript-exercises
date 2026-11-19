@@ -408,14 +408,14 @@ for (const width of [390, 1280]) {
     assert.equal(m.tagsBottom[0], m.tagsBottom[1], 'the tags line up at the bottom of both');
     assert.ok(m.inside, 'nothing sticks out of a card');
     if (width === 390) { assert.notEqual(m.top[0], m.top[1], 'stacked on a phone'); assert.ok(m.h[0] < 520, `no taller than it needs (${m.h[0]})`); } else assert.equal(m.top[0], m.top[1], 'side by side');
-    assert.equal(m.chips, 0, 'no topic chips'); assert.equal(await page.isVisible('#su-topic-in'), true, 'the text box stays');
+    assert.equal(m.chips, 0, 'no topic chips'); assert.equal(await page.locator('#su-topic-in').count(), 0, 'no topic box: "Your lesson" asks for it');
     assert.ok(m.scrollW <= m.clientW);
     await ctx.close();
   });
 }
 test('390 wide: "Your lesson" (a PDF read, Remove, a wrong file said), help as checkboxes (at least one), and the plan', { skip, timeout: 60_000 }, async () => {
   const { ctx, page } = await openTeacher(390);
-  await page.fill('#su-topic-in', 'Adding fractions'); await page.click('#su-cnext');
+  await page.click('#su-cnext');
   await page.waitForSelector('.su-screen[data-screen="lesson"]:not([hidden])');
   assert.match(await page.textContent('.su-lsafe'), /Don't include student names or work\. We remove any we find\./);
   await page.setInputFiles('#su-lfile', { name: 'lesson.pdf', mimeType: 'application/pdf', buffer: makePdf([['Ana Lee shows 2/8 + 3/8'], ['Page two'], ['Page three']]) });
@@ -447,7 +447,7 @@ test('390 wide: "Your lesson" (a PDF read, Remove, a wrong file said), help as c
   await page.click('.su-screen:not([hidden]) [data-go="next"]'); await page.click('.su-screen:not([hidden]) [data-go="next"]');
   await page.waitForSelector('#su-lsum:not([hidden])');
   const rows = await page.evaluate(() => [...document.querySelectorAll('.su-row')].map(r => [r.querySelector('dt').textContent, r.querySelector('.su-val').textContent]));
-  assert.deepEqual(rows, [['What', 'Classroom activity'], ['Practice', 'Adding fractions'], ['Lesson', 'lesson.pdf · Your notes'], ['Help', 'Watch and Count up'], ['Played', 'On their own devices']]);
+  assert.deepEqual(rows, [['What', 'Classroom activity'], ['Lesson', 'lesson.pdf · Your notes'], ['Help', 'Watch and Count up'], ['Played', 'On their own devices']]);
   const sum = await page.textContent('#su-lsum');
   assert.match(sum, /What the Builder reads about your lesson/); assert.match(sum, /adding the denominators/); assert.match(sum, /\[student\] shows 2\/8 \+ 3\/8/); assert.doesNotMatch(sum, /Ana/);
   await Promise.all([page.waitForURL(/\/studio\/[\w-]+$/), page.click('#su-open')]);
