@@ -11317,6 +11317,12 @@
     "assign": "課題にする",
     "removeGame": "フォルダーから外す",
     "save": "フォルダーに保存",
+    "oomba": {
+      "title": "Oombaのゲーム",
+      "search": "Oombaのゲームを検索",
+      "none": "該当するゲームがありません。教科や学年を変えてみてください。",
+      "live": "ライブ"
+    },
     "pick": "どのフォルダに？",
     "keepBrowsing": "一覧に戻る",
     "openFolder": "{folder}を開く",

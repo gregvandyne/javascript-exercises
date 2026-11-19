@@ -2155,3 +2155,17 @@ body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;curs
 .ocp-kans{font-size:12pt}
 .ocp-work{list-style:none;margin:2pt 0 0;padding:0;font-size:9.5pt}
 .ocp-code{font-variant-numeric:tabular-nums}
+
+/* ---- Find Oomba games in the shelf (server/routes/game-shelf.js oombaPane): one strip of filters, then the games. */
+.oomba-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.oomba-bar .oomba-q{flex:1 1 240px;min-width:0}
+.oomba-bar .oomba-grade{flex:0 0 auto;width:auto;min-width:140px}
+.shelf-main>.oomba-subjects{margin-top:12px;margin-bottom:12px}
+.oomba-subjects{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.oomba-subjects::-webkit-scrollbar{display:none}
+.oomba-subjects .chip{flex:none}
+.oomba-list{border-top:1px solid var(--line)}
+.oomba-game[hidden]{display:none}
+.oomba-live{color:var(--accent-ink);font-weight:700}
+.lib-oomba .shelf-head{padding:4px 0 12px;border-bottom:0}
+.lib-oomba .oomba-bar,.lib-oomba .oomba-subjects{margin:0 0 12px}

@@ -110,7 +110,7 @@ test('My library: All my games, own collections (shared marked), New collection,
     [`/class/${cls.id}?folder=${spare.id}`, 'Spare', ''],
     [`/class/${cls.id}?folder=${benF.id}`, 'Spelling warm-ups', 'by Ben Patel · read only'],
     [`/class/${cls.id}?view=students`, 'Games students shared', 'Made by Ana 5C students'],
-    ['/learn', 'Oomba games', 'Browse every Oomba game'],
+    [`/class/${cls.id}?view=oomba`, 'Oomba games', 'Browse every Oomba game'],
   ]);
   assert.match(p, /<span class="lib-name">New collection<\/span>/);
   assert.match(p, new RegExp(`<form class="lib-newf-panel" data-api="/api/game-folders" novalidate><input type="hidden" name="classId" value="${cls.id}">`));

@@ -52,13 +52,18 @@ async function show(href, { push = true } = {}) {
 if (shelf) {
   history.replaceState({ shelf: mainOf()?.dataset.shelfKey || '' }, '', location.href);
   shelf.addEventListener('click', e => {
-    const a = e.target instanceof Element && e.target.closest('a.shelf-item[data-shelf-key]');
+    // The left column's items, and links in the right side that open another part of it (Find Oomba games, its subjects).
+    const a = e.target instanceof Element && e.target.closest('a.shelf-item[data-shelf-key], #shelf-main a[data-shelf-go]');
     if (!a || e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
     if (a.getAttribute('aria-current') === 'true') return;
     show(a.href);
   });
   addEventListener('popstate', e => { if (e.state && 'shelf' in e.state) show(location.href, { push: false }); });
+  // Find Oomba games: a new grade, or the search sent with Enter, loads that list in place (the form's own GET address).
+  const formHref = form => { const u = new URL(form.action, location.href); u.search = new URLSearchParams(new FormData(form)).toString(); return u.pathname + u.search; };
+  shelf.addEventListener('change', e => { const sel = e.target instanceof Element && e.target.closest('#shelf-main [data-oomba-grade]'); if (sel) show(formHref(sel.form)); });
+  shelf.addEventListener('submit', e => { const f = e.target instanceof Element && e.target.closest('#shelf-main form[data-oomba-form]'); if (!f) return; e.preventDefault(); show(formHref(f)); });
 
   // The ⋯ menus and the Assign folds: one open at a time; a tap outside or Escape closes them.
   const folds = () => $$('details.shelf-menu[open],details.shelf-pop[open],details.shelf-newf[open]', shelf);
@@ -74,3 +79,15 @@ if (shelf) {
     for (const d of folds()) { d.open = false; const s = d.querySelector('summary'); if (s) s.focus(); }
   });
 }
+
+// Find Oomba games' search box filters the list as it is typed (each game's title, subject and grades), here and in the
+// phone's library; Enter (or the grade) asks the server, so the address keeps it.
+document.addEventListener('input', e => {
+  const box = e.target instanceof Element && e.target.closest('[data-oomba-q]'); if (!box) return;
+  const pane = box.closest('#shelf-main, .lib-oomba') || document;
+  const words = box.value.toLowerCase().split(/\s+/).filter(Boolean);
+  let n = 0;
+  for (const li of $$('.oomba-game', pane)) { const hit = words.every(w => (li.dataset.q || '').includes(w)); li.hidden = !hit; if (hit) n++; }
+  const none = $('.oomba-none', pane); if (none) none.hidden = n > 0;
+  const count = $('[data-oomba-count]', pane); if (count) count.textContent = n === 1 ? count.dataset.one : count.dataset.many.replace('{n}', n);
+});

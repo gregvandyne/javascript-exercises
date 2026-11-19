@@ -8836,3 +8836,22 @@ or when a figure's data fails `OF.check`.
 worksheet), energy-level diagrams, compound circuits beyond one level of branches, thick lenses, and moving physics
 figures. The mock Builder builds a small figure activity (a free-body question, a Bohr model, a thermometer reading and
 a ray diagram) for figure topics.
+## Find Oomba games in the shelf (19 Nov 2026)
+Owner: "When I select Find Oomba games I'd like the list of Oomba games to show to the right where the Fun Games folder
+is, so it doesn't navigate away from this page. And clean up the top of this page. Make it simpler."
+- **In the shelf** (server/routes/game-shelf.js `oombaPane`): "Find Oomba games" is now a shelf item (`?view=oomba`,
+  marked when picked) on the class page's Games tab for the school's staff, and on Build for teachers, and the "Find
+  Oomba games" buttons in folders open it too (`data-shelf-go`). The right side lists Oomba's Learn games (the same
+  official games and Learn subjects and grades as /learn) as shelf rows: cover, title, "Subject · Grades" (one grade
+  reads "Grade 2"), 📡 Live for a live game; Try it, then Host live (a live game) or Assign to <class> (the shelf's
+  Assign, with its due day and Google Classroom), and ⋯ with Save to folder (the pop-up). On a phone the class header's
+  Find Oomba games tile and the library's Oomba games row open the same list inside the library card.
+- **Simpler filters** than /learn's four rows: one search box, a grade picker and one row of subject chips (no standards
+  box, no "How you play": live games are marked instead). Subjects and the grade are links and a GET form
+  (`?view=oomba&subject=&grade=&q=`), so the address keeps them and they work without script; public/js/shelf.js swaps
+  them in place, and the search box filters the rows as it is typed (title, subject and grades), with the count and a
+  "No games match" line following.
+- Words: `folders.oomba.title`, `search`, `none`, `live` in 13 languages.
+- Checks: tests/unit/folders-sidebar.test.js (the side item, the strip, the filters in the shelf's reply, the Assign and
+  Save to folder actions, not for students or another teacher); class-tiles and folders-phone follow the new links; in a
+  browser: open, subject, grade and search in place, Save to folder from the list, Back, and the phone's list.

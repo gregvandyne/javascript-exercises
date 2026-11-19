@@ -18,6 +18,8 @@ import * as games from '../services/games.js';
 import * as gameSets from '../services/game-sets.js';
 import { liveGameOf } from '../live/live-games.js';
 import { gcAssignField } from './gclassroom.js';
+import { SUBJECTS, SHELF_INFO, shelfGrades } from '../learn.js';
+import { liveOn } from '../services/classlive-sessions.js';
 
 /** A grown-up's or teacher's account (school staff, or signed up as a teacher): "All my games" offers Find Oomba games.
  *  Kids and students keep their own folders on Build as before, without it. */
@@ -55,14 +57,33 @@ function picked(req, ctx, mine, shared) {
     const f = mine.find(x => x.id === fid) || shared.find(x => x.id === fid);
     if (f) return { key: `f-${f.id}`, folder: f, own: f.owner_id === req.user.id };
   }
-  const views = ctx.kind === 'build' ? ['all'] : ['assigned', 'students'];
+  const views = [...(ctx.kind === 'build' ? ['all'] : ['assigned', 'students']), ...(oombaOn(ctx) ? ['oomba'] : [])];
   if (views.includes(view)) return { key: view, view };
   if (ctx.kind === 'build') return { key: 'all', view: 'all' };
   // The class page: its assigned games when it has some, else the first folder, else the (empty) assigned games.
   if (!ctx.assigned.count && ctx.folders && mine.length) return { key: `f-${mine[0].id}`, folder: mine[0], own: true };
   return { key: 'assigned', view: 'assigned' };
 }
-const hrefOf = (ctx, sel) => (sel.folder ? `${ctx.base}?folder=${encodeURIComponent(sel.folder.id)}` : ctx.kind === 'build' && sel.view === 'all' ? ctx.base : `${ctx.base}?view=${sel.view}`);
+const hrefOf = (ctx, sel, req = null) => (sel.folder ? `${ctx.base}?folder=${encodeURIComponent(sel.folder.id)}` : ctx.kind === 'build' && sel.view === 'all' ? ctx.base
+  : sel.view === 'oomba' && req ? oombaHref(ctx, oombaFilters(req)) : `${ctx.base}?view=${sel.view}`);
+
+// ---------------------------------------------------------------- Oomba's games, in the right side
+// docs/decisions.md "Find Oomba games in the shelf": "Find Oomba games" opens Oomba's Learn games on the right instead of
+// going to /learn, with one simple strip of filters (search, grade, subject) in place of Learn's four rows. Staff on the
+// class page and teachers on Build (who can assign); the filters are in the address like everything else here.
+const GRADES = ['K', '1', '2', '3', '4', '5', '6', '7', '8'];
+const oombaOn = ctx => (ctx.kind === 'class' ? !!ctx.staff : !!ctx.adult);
+function oombaFilters(req) {
+  const subject = SUBJECTS.some(x => x.key === req.query.subject) ? String(req.query.subject) : '';
+  const grade = GRADES.includes(String(req.query.grade || '')) ? String(req.query.grade) : '';
+  return { subject, grade, q: String(req.query.q || '').trim().slice(0, 60) };
+}
+function oombaHref(ctx, f, over = {}) {
+  const p = { view: 'oomba', ...f, ...over }, qs = new URLSearchParams(Object.entries(p).filter(([, v]) => v)).toString();
+  return `${ctx.base}?${qs}`;
+}
+const gradeNum = g => (g === 'K' ? 0 : +g);
+const oombaFits = (info, f) => !!info && (!f.subject || info.subject === f.subject) && (!f.grade || (info.from <= gradeNum(f.grade) && gradeNum(f.grade) <= info.to));
 
 /** One item in the left column: a link, its icon, name and count (the count read as "n games"). */
 function item(req, ctx, sel, it, { grip = false } = {}) {
@@ -94,7 +115,7 @@ function side(req, ctx, sel, mine, shared) {
     ${top}
     <nav class="shelf-nav" aria-label="${ctx.kind === 'build' ? t('folders.myGamesFolders') : t('folders.sideClass')}">
       <ul class="shelf-group${ctx.kind === 'class' ? ' shelf-cltop' : ''}">${first.map(it => html`<li>${item(req, ctx, sel, it)}</li>`)}
-        ${ctx.kind === 'class' && ctx.staff ? html`<li><a class="shelf-item" href="/learn">${icon('find')}<span class="shelf-name">${t('folders.findOomba')}</span></a></li>` : ''}</ul>
+        ${oombaOn(ctx) ? html`<li>${item(req, ctx, sel, { key: 'oomba', href: `${ctx.base}?view=oomba`, icon: 'find', name: t('folders.findOomba') })}</li>` : ''}</ul>
       ${ctx.folders ? html`<p class="shelf-lab" id="shelf-lab-mine">${t('folders.title')}</p>
       ${mine.length ? html`<ul class="shelf-group" aria-labelledby="shelf-lab-mine"${mine.length > 1 ? html` data-reorder="/api/game-folders/order" data-moved="${movedTpl(t)}" aria-describedby="shelf-order"` : ''}>${mine.map(f => html`<li data-id="${f.id}">${item(req, ctx, sel, fItem(f), { grip: mine.length > 1 })}</li>`)}</ul>` : ''}
       ${mine.length > 1 ? html`<p class="sr-only" id="shelf-order">${t('folders.reorderHint')}</p>` : ''}
@@ -156,7 +177,60 @@ function gameRow(req, ctx, g0, { folder = null, own = false, grip = false } = {}
 
 /** The right side's head: the name, a line under it, and its buttons. */
 const head = (title, meta, tools) => html`<div class="shelf-head"><div class="shelf-title"><h2 id="shelf-h" tabindex="-1" dir="auto">${title}</h2>${meta ? html`<p class="small muted">${meta}</p>` : ''}</div>${tools ? html`<div class="shelf-tools">${tools}</div>` : ''}</div>`;
-const findBtn = t => html`<a class="btn" href="/learn">🦉 ${t('folders.findOomba')}</a>`;
+const findBtn = (t, ctx = null) => html`<a class="btn" href="${ctx && oombaOn(ctx) ? `${ctx.base}?view=oomba` : '/learn'}"${ctx && oombaOn(ctx) ? raw(' data-shelf-go') : ''}>🦉 ${t('folders.findOomba')}</a>`;
+
+/** One Oomba game on the right side: cover, title, "Subject · Grades" (and Live), Try it, the main action (Host live for
+ *  a live game, else Assign) and ⋯ (Save to folder; Assign for a live game that can also be assigned). */
+function oombaRow(req, ctx, g0, idp) {
+  const t = req.t, g = games.localizeGame(g0), info = SHELF_INFO[g0.slug], lg = liveGameOf(g0), live = !!(lg && liveOn());
+  const gr = shelfGrades(g0.slug);
+  // One grade reads "Grade 2", not "Grades 2–2".
+  const grades = gr && gr.from === gr.to ? (gr.from === 'K' ? t('learn.tab.gradeK') : t('learn.tab.gradeN', { n: gr.from })) : gr ? t('learn.grades', gr) : '';
+  const meta = info ? t('learn.tab.meta', { subject: t(`learn.tab.subjects.${info.subject}`), grades }) : '';
+  const assign = ctx.kind === 'class' ? assignHere(req, ctx, g0, null)
+    : html`<a class="btn btn-primary" href="/teach/assign?game=${g0.slug}">📌 ${t('learn.tab.assign')}</a>`;
+  const main = live ? html`<a class="btn btn-hot" href="/live?mode=${lg.mode}">📡 ${t('learn.tab.host')}</a>` : lg && !lg.play ? '' : assign;
+  const more = [
+    live && !liveOnly(g0) ? (ctx.kind === 'class' ? html`<a class="btn" href="/teach/assign?id=${g0.id}&amp;class=${ctx.c.id}">📌 ${t('folders.assignTo', { class: ctx.c.name })}</a>` : html`<a class="btn" href="/teach/assign?game=${g0.slug}">📌 ${t('learn.tab.assign')}</a>`) : '',
+    html`<a class="btn" href="/build/save?id=${g0.id}">📁 ${t('folders.save')}</a>`,
+  ];
+  const tryHref = `/play/${lg && lg.solo ? lg.solo : g0.slug}`;
+  return html`<li class="mygame shelf-game oomba-game" data-id="${g0.id}" data-q="${`${g.title} ${meta}`.toLowerCase()}">
+    <a class="mg-cover" href="/g/${g0.slug}" tabindex="-1" aria-hidden="true">${coverArt(g, '')}</a>
+    <div class="mg-body"><h3><a href="/g/${g0.slug}" dir="auto">${g.title}</a></h3>
+      <p class="small muted shelf-kind">${meta}${live ? html` · <span class="oomba-live">📡 ${t('folders.oomba.live')}</span>` : ''}</p></div>
+    <div class="mg-actions"><div class="mg-row">
+      <a class="btn" href="${tryHref}">${PLAY} ${t('learn.tab.try')}</a>
+      ${main}
+      ${menu(t('folders.more', { name: g.title }), more)}
+    </div></div></li>`;
+}
+
+/** The right side for Find Oomba games: a search box, a grade and the subjects in one strip, then the games. idp keeps
+ *  the phone's copy's ids apart from the wider screens'. */
+function oombaPane(req, ctx, { idp = 'oo', heading = 'shelf-h' } = {}) {
+  const t = req.t, f = oombaFilters(req);
+  const all = games.listVisible(req.user, { shelf: 'learn', official: true, order: 'plays', limit: 60 }).filter(g => SHELF_INFO[g.slug]);
+  const q = f.q.toLowerCase();
+  const list = all.filter(g => oombaFits(SHELF_INFO[g.slug], f) && (!q || games.localizeGame(g).title.toLowerCase().includes(q)));
+  const chip = (on, href, label, emoji = '') => html`<a class="chip${on ? ' on' : ''}" href="${href}" data-shelf-go${on ? raw(' aria-current="true"') : ''}>${emoji ? html`<span aria-hidden="true">${emoji}</span> ` : ''}${label}</a>`;
+  const gradeLabel = g => (g === 'K' ? t('learn.tab.gradeK') : t('learn.tab.gradeN', { n: g }));
+  return html`<div class="shelf-head"><div class="shelf-title"><h2 id="${heading}" tabindex="-1">🦉 ${t('folders.oomba.title')}</h2><p class="small muted" data-oomba-count data-one="${t('folders.gamesN', { count: 1 })}" data-many="${t('folders.gamesN', { count: 2 }).replace('2', '{n}')}">${t('folders.gamesN', { count: list.length })}</p></div></div>
+    <form class="oomba-bar" method="get" action="${ctx.base}" role="search" data-oomba-form>
+      <input type="hidden" name="view" value="oomba">${f.subject ? html`<input type="hidden" name="subject" value="${f.subject}">` : ''}
+      <label class="sr-only" for="${idp}-q">${t('folders.oomba.search')}</label>
+      <input class="input oomba-q" id="${idp}-q" type="search" name="q" value="${f.q}" placeholder="${t('folders.oomba.search')}" autocomplete="off" data-oomba-q>
+      <label class="sr-only" for="${idp}-g">${t('learn.tab.grade')}</label>
+      <select class="input oomba-grade" id="${idp}-g" name="grade" data-oomba-grade>${[['', t('learn.tab.gradeAny')], ...GRADES.map(g => [g, gradeLabel(g)])].map(([v, l]) => html`<option value="${v}"${f.grade === v ? raw(' selected') : ''}>${l}</option>`)}</select>
+      <noscript><button class="btn" type="submit">${t('learn.tab.filter')}</button></noscript>
+    </form>
+    <div class="chips scroll oomba-subjects" role="group" aria-label="${t('learn.tab.subject')}">
+      ${chip(!f.subject, oombaHref(ctx, f, { subject: '' }), t('learn.tab.subjects.all'))}
+      ${SUBJECTS.map(x => chip(f.subject === x.key, oombaHref(ctx, f, { subject: x.key }), t(`learn.tab.subjects.${x.key}`), x.emoji))}
+    </div>
+    ${list.length ? html`<ul class="mygames shelf-games oomba-list">${list.map(g => oombaRow(req, ctx, g, idp))}</ul>` : ''}
+    <div class="shelf-empty oomba-none"${list.length ? raw(' hidden') : ''}>${emptyState({ emoji: '🦉', title: t('folders.oomba.none'), text: '' })}</div>`;
+}
 
 /** "Assign all N" (the class page, in a folder): each game the class can play and doesn't have yet, one due day. */
 function assignAll(req, ctx, f, list, idp = 'sa-all-d') {
@@ -193,20 +267,20 @@ function folderPane(req, ctx, sel, mine) {
   const school = f.school_id ? (S.getSchool(f.school_id) || {}).name || '' : '';
   const meta = [t('folders.gamesN', { count: list.length }), own ? '' : t('folders.by', { name: f.owner_name || '' }), school ? t('folders.sharedWithSchool', { school }) : ''].filter(Boolean).join(' · ');
   const tools = [
-    ctx.kind === 'class' ? assignAll(req, ctx, f, list) : findBtn(t),
+    ctx.kind === 'class' ? assignAll(req, ctx, f, list) : findBtn(t, ctx),
     own ? folderMenu(req, ctx, f, mine) : html`<form data-api="/api/game-folders/${f.id}/copy">${ctx.c ? html`<input type="hidden" name="classId" value="${ctx.c.id}">` : ''}<button class="btn btn-primary" type="submit">📁 ${t('folders.copy')}</button></form>`,
   ];
   const drag = own && list.length > 1;
   return html`${head(f.name, meta, tools)}
     ${list.length ? html`<ul class="mygames shelf-games"${drag ? html` data-reorder="/api/game-folders/${f.id}/order" data-moved="${movedTpl(t)}"` : ''}>${list.map(g => gameRow(req, ctx, g, { folder: f, own, grip: drag }))}</ul>
       ${drag || ctx.kind === 'class' ? html`<div class="small muted shelf-note">${drag ? html`<p id="shelf-gorder">↕️ ${t('folders.reorderHint')}</p>` : ''}${ctx.kind === 'class' ? html`<p>${t('folders.assignedWhere', { class: ctx.c.name })}</p>` : ''}</div>` : ''}`
-      : html`<div class="shelf-empty">${emptyState({ emoji: '📁', title: t('folders.emptyTitle'), text: own ? t('folders.emptyText') : t('folders.sharedEmpty') })}${ctx.kind === 'class' ? html`<p>${findBtn(t)}</p>` : ''}</div>`}`;
+      : html`<div class="shelf-empty">${emptyState({ emoji: '📁', title: t('folders.emptyTitle'), text: own ? t('folders.emptyText') : t('folders.sharedEmpty') })}${ctx.kind === 'class' ? html`<p>${findBtn(t, ctx)}</p>` : ''}</div>`}`;
 }
 
 /** Build's "All my games": the person's own games, newest change first. */
 function allPane(req, ctx) {
   const t = req.t, list = ctx.mine;
-  return html`${head(t('folders.allGames'), t('folders.gamesN', { count: list.length }), ctx.adult ? findBtn(t) : '')}
+  return html`${head(t('folders.allGames'), t('folders.gamesN', { count: list.length }), ctx.adult ? findBtn(t, ctx) : '')}
     ${list.length ? html`<ul class="mygames shelf-games">${list.map(g => gameRow(req, ctx, g))}</ul>`
       : html`<div class="shelf-empty">${emptyState({ emoji: '🌱', title: t('home.empty.title'), text: t('build.empty'), action: { href: '/build/new', label: `✨ ${t('build.newGame')}` } })}</div>`}`;
 }
@@ -229,6 +303,7 @@ function phonePicked(req, ctx, mine, shared) {
     if (f) return { view: 'folder', folder: f, own: f.owner_id === req.user.id };
   }
   if (view === 'students') return { view };
+  if (view === 'oomba' && ctx.staff) return { view };
   if (ctx.folders && ['library', 'all'].includes(view)) return { view };
   return { view: 'assigned' };
 }
@@ -256,7 +331,7 @@ function libList(req, ctx, mine, shared, myGames) {
     <ul class="lib-items" aria-labelledby="lib-others">
       ${shared.map(f => libItem(req, { href: fHref(f), emo: '🤝', name: f.name, sub: t('folders.phone.byReadOnly', { name: f.owner_name || '' }), count: f.games }))}
       ${libItem(req, { href: `${base}?view=students`, emo: '🎒', name: t('folders.studentShared'), sub: t('folders.phone.studentsSub', { class: c.name }), count: ctx.students.count })}
-      ${ctx.staff ? libItem(req, { href: '/learn', emo: '🦉', name: t('folders.phone.oomba'), sub: t('folders.phone.oombaSub') }) : ''}
+      ${ctx.staff ? libItem(req, { href: `${base}?view=oomba`, emo: '🦉', name: t('folders.phone.oomba'), sub: t('folders.phone.oombaSub') }) : ''}
     </ul>`;
 }
 
@@ -337,6 +412,8 @@ function phoneLib(req, ctx, mine, shared) {
     // The wider screens' list, with its ids made the phone's own.
     const pane = String(ctx.students.pane()).replace('id="shelf-h" tabindex="-1"', 'id="lib-h"').replace(' id="shared-games"', '');
     body = html`${ctx.folders ? html`<a class="lib-back" href="${base}?view=library">${BACK} ${t('folders.phone.library')}</a>` : ''}<div class="lib-students">${raw(pane)}</div>`;
+  } else if (sel.view === 'oomba') {
+    body = html`<a class="lib-back" href="${base}?view=library">${BACK} ${t('folders.phone.library')}</a><div class="lib-oomba">${oombaPane(req, ctx, { idp: 'lib-oo', heading: 'lib-h' })}</div>`;
   } else body = libFolder(req, ctx, sel, mine, myGames);
   const seg = (on, href, emo, label, n) => html`<a class="lib-seg${on ? ' is-on' : ''}" href="${href}"${on ? raw(' aria-current="page"') : ''}><span aria-hidden="true">${emo}</span> <span class="lib-segl">${label}</span>${n === undefined ? '' : html` <span class="lib-segn">${n}</span>`}</a>`;
   return html`<div class="lib" data-lib="${sel.view}">
@@ -350,6 +427,7 @@ function pane(req, ctx, sel, mine) {
   if (sel.folder) return folderPane(req, ctx, sel, mine);
   if (sel.view === 'all') return allPane(req, ctx);
   if (sel.view === 'students') return ctx.students.pane();
+  if (sel.view === 'oomba') return oombaPane(req, ctx);
   return ctx.assigned.pane();
 }
 
@@ -366,7 +444,7 @@ export function shelf(req, ctx, { id = '' } = {}) {
   // Google Classroom foot give way to the class header's tiles, the Games tab and the Assigned card's head (app.css).
   return html`${ph}<div class="shelf${ctx.kind === 'class' ? ' shelf-class' : ''}" data-shelf${id ? html` id="${id}"` : ''}>
     ${side(req, ctx, sel, mine, shared)}
-    <div class="shelf-col">${ctx.top || ''}<section class="shelf-main panel" id="shelf-main" aria-labelledby="shelf-h" data-shelf-key="${sel.key}" data-href="${hrefOf(ctx, sel)}">${main}</section></div>
+    <div class="shelf-col">${ctx.top || ''}<section class="shelf-main panel" id="shelf-main" aria-labelledby="shelf-h" data-shelf-key="${sel.key}" data-href="${hrefOf(ctx, sel, req)}">${main}</section></div>
     <p class="sr-only" id="shelf-say" aria-live="polite"></p>
   </div>`;
 }
@@ -376,6 +454,6 @@ export function shelfReply(req, res, ctx) {
   res.vary('X-Shelf');
   if (!req.get('x-shelf')) return false;
   const { sel, main } = parts(req, ctx);
-  res.set('Cache-Control', 'no-store').json({ key: sel.key, href: hrefOf(ctx, sel), html: String(main) });
+  res.set('Cache-Control', 'no-store').json({ key: sel.key, href: hrefOf(ctx, sel, req), html: String(main) });
   return true;
 }

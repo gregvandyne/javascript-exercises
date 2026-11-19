@@ -11317,6 +11317,12 @@
     "assign": "Attribuer",
     "removeGame": "Retirer du dossier",
     "save": "Ranger dans un dossier",
+    "oomba": {
+      "title": "Jeux Oomba",
+      "search": "Chercher dans les jeux Oomba",
+      "none": "Aucun jeu ne correspond. Essayez une autre matière ou un autre niveau.",
+      "live": "En direct"
+    },
     "pick": "Quel dossier ?",
     "keepBrowsing": "Continuer à parcourir",
     "openFolder": "Ouvrir {folder}",
