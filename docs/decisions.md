@@ -8787,3 +8787,10 @@ is, so it doesn't navigate away from this page. And clean up the top of this pag
 - Checks: tests/unit/folders-sidebar.test.js (the side item, the strip, the filters in the shelf's reply, the Assign and
   Save to folder actions, not for students or another teacher); class-tiles and folders-phone follow the new links; in a
   browser: open, subject, grade and search in place, Save to folder from the list, Back, and the phone's list.
+
+## Builder: no topic box on the first step (19 Nov 2026)
+Owner: "On the builder, I think you can get rid of the bottom question since we are asking for all of the details on the
+next page." "What are you making?" no longer has "What should students practice?" under the cards: "Your lesson" (the
+next step: a lesson file and a box to describe it, with its headings) asks for everything, and the topic was already
+optional (no topic: the Builder decides from the lesson). The plan's summary shows a Practice row only when a topic
+exists; the words stay in the locales for that. Tests: builder-canvas and builder-setup-layout follow.

@@ -248,13 +248,7 @@ router.get('/build/new', requireBuilder, (req, res) => {
           <span class="su-ktags">${['runner', 'catch', 'quiz', 'worlds'].map(k => html`<span>${t(`buildSetup.kind.games.${k}`)}</span>`)}</span>
         </button>
       </div>
-      <div class="su-topic" id="su-topic" data-for="activity"${kind === 'activity' ? '' : raw(' hidden')}>
-        <h2 id="su-h-practise">${t('buildSetup.canvas.practise.heading')}</h2>
-        <p class="small muted su-topic-text" id="su-topic-hint">${t('buildSetup.canvas.practise.text')}</p>
-        <label class="sr-only" for="su-topic-in">${t('buildSetup.canvas.practise.label')}</label>
-        <input class="input" id="su-topic-in" maxlength="${LIMITS.idea}" dir="auto" autocomplete="off" aria-describedby="su-topic-hint" placeholder="${t('buildSetup.canvas.practise.placeholder')}">
-        <p class="su-safe muted small">${ICON.lock} ${t('buildSetup.canvas.practise.privacy')}</p>
-      </div>
+      ${'' /* No topic box here: "Your lesson" (the next step) asks for everything about the lesson (docs/decisions.md "Builder: no topic box on the first step"). */}
       <div class="su-kways">
         <button type="button" class="btn" id="su-direct" data-for="both">${t('buildSetup.start.direct')}</button>
         <button type="button" class="btn btn-primary" id="su-cnext" data-for="activity"${kind === 'activity' ? '' : raw(' hidden')}>${t('buildSetup.canvas.nextLesson')} <span aria-hidden="true">›</span></button>
