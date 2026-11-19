@@ -162,13 +162,15 @@
 .su-kind{position:relative;display:flex;flex-direction:column;gap:10px;padding:18px 18px 20px;border:0;border-radius:var(--r);background:var(--card);box-shadow:inset 0 0 0 2px var(--edge);color:var(--text);font:inherit;text-align:start;cursor:pointer}
 .su-kind:hover{background:var(--hover)}
 .su-kind[aria-pressed="true"]{box-shadow:inset 0 0 0 3px var(--accent-press),0 4px 0 var(--accent-press);background:color-mix(in srgb,var(--accent) 12%,var(--card))}
-.su-kt{font-size:1.4rem;font-weight:800;line-height:1.15}
-.su-kd{color:var(--text-2)}
+.su-kt{display:block;font-size:1.4rem;font-weight:800;line-height:1.15}
+.su-kd{display:block;color:var(--text-2)}
 .su-rec{z-index:2;position:absolute;top:14px;inset-inline-end:14px;display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 12px;border-radius:999px;background:var(--accent);color:var(--on-accent);box-shadow:0 2px 0 var(--accent-press);font-weight:800;font-size:.82rem}
 .su-kind[aria-pressed="false"] .su-rec{background:var(--card-2);color:var(--text-2);box-shadow:inset 0 0 0 2px var(--line)}
 .su-rtick{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:999px;background:var(--text);color:var(--card);font-size:.8rem}
 .su-kind[aria-pressed="false"] .su-rtick{display:none}
-.su-kpic{position:relative;height:150px;border-radius:var(--r-sm);overflow:hidden}
+/* Every part of the card says its own display: inside a <button> some browsers (Safari) don't turn spans into blocks,
+   and the Arcade picture, whose parts are all absolutely placed, then had no size and showed nothing. */
+.su-kpic{position:relative;display:block;width:100%;height:150px;border-radius:var(--r-sm);overflow:hidden}
 .su-kcanvas{background-color:var(--card);background-image:linear-gradient(color-mix(in srgb,var(--line) 60%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--line) 60%,transparent) 1px,transparent 1px);background-size:18px 18px;box-shadow:inset 0 0 0 2px var(--line);display:flex;flex-direction:column;justify-content:center;gap:10px;padding:14px 18px}
 .su-kbar{display:grid;grid-template-columns:repeat(var(--n),1fr);height:30px;border:2.5px solid var(--text);border-radius:3px;overflow:hidden}
 .su-kbar i{border-inline-end:2px solid var(--text)}.su-kbar i:last-child{border:0}
@@ -179,6 +181,8 @@
 .su-kmbtn{display:inline-flex;align-items:center;min-height:30px;padding:0 12px;border-radius:999px;font-size:.8rem;font-weight:700;background:var(--card);box-shadow:inset 0 0 0 2px var(--line)}
 .su-kmgo{background:var(--accent);color:var(--on-accent);box-shadow:inset 0 -3px 0 var(--accent-press)}
 .su-karcade{background:linear-gradient(#8fd8ff,#c8f0ff 60%,#66C792 60%)}
+.su-ksun,.su-khill,.su-kp,.su-kcoin,.su-kground{display:block}
+.su-kp svg{display:block}
 .su-ksun{position:absolute;top:16px;right:26px;width:34px;height:34px;border-radius:999px;background:#FFD23F}
 .su-khill{position:absolute;bottom:-40px;left:-20px;width:240px;height:110px;border-radius:50%;background:#2F9E6A}
 .su-kp{position:absolute;bottom:40px;left:44%;color:#141414}
