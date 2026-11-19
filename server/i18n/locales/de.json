@@ -11332,6 +11332,14 @@
     "openFolder": "{folder} öffnen",
     "reorderHint": "Zum Sortieren ziehen (auf Handy oder Tablet erst gedrückt halten). Mit der Tastatur: Alt und die Pfeiltasten.",
     "dropHint": "Zieh ein Spiel auf einen Ordner, um es dort zu speichern.",
+    "dropAsk": {
+      "title": "{game} → {folder}",
+      "move": "Hierher verschieben",
+      "moveNote": "Nimmt es aus {from} heraus",
+      "keep": "In beiden behalten",
+      "cancel": "Abbrechen",
+      "moved": "{game} nach {folder} verschoben"
+    },
     "move": "{name} verschieben",
     "moved": "{name}: {n} von {total}",
     "saveTitle": "„{game}“ in einem Ordner speichern",

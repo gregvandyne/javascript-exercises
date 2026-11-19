@@ -77,7 +77,7 @@ function wire(list) {
     if (folder) {
       const items = itemsOf(list).filter(o => o !== li), at = items[from];
       if (at) list.insertBefore(li, at); else if (items.length) items.at(-1).after(li);
-      drop.dropOn(folder, li.dataset.id);
+      drop.dropOn(folder, li);
       return;
     }
     const to = itemsOf(list).indexOf(li);

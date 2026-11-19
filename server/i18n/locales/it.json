@@ -11332,6 +11332,14 @@
     "openFolder": "Apri {folder}",
     "reorderHint": "Trascina per cambiare l’ordine (su telefono o tablet, tieni premuto prima). Da tastiera: Alt e le frecce.",
     "dropHint": "Trascina un gioco su una cartella per salvarlo lì.",
+    "dropAsk": {
+      "title": "{game} → {folder}",
+      "move": "Sposta qui",
+      "moveNote": "Lo toglie da {from}",
+      "keep": "Tieni in entrambe",
+      "cancel": "Annulla",
+      "moved": "{game} spostato in {folder}"
+    },
     "move": "Sposta {name}",
     "moved": "{name}: {n} di {total}",
     "saveTitle": "Salva «{game}» in una cartella",

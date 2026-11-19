@@ -4,7 +4,9 @@
 // here whether it is over a folder; everywhere else on the shelf (All my games, Find Oomba games, a shared folder) a
 // small picture of the game follows the pointer. A mouse drags at once (after a few pixels); a finger or pen holds still
 // first, so a swipe still scrolls. Dropping saves it the way ⋯ › Save to folder does (POST /api/game-folders/:id/games),
-// which stays the way to do it from a keyboard. A game already in that folder is not added twice.
+// which stays the way to do it from a keyboard. A game already in that folder is not added twice. A game dragged out
+// of one of my folders onto another asks first, in a small pop-up beside the folder: Move here (it leaves the folder it
+// came from) or Keep in both.
 import { $$, api, toast } from '/js/app.js';
 
 const HOLD_MS = 350, SLOP = 8, MOUSE_SLOP = 5;
@@ -24,24 +26,105 @@ export function hover(x, y) {
 export function clear() { if (over) over.classList.remove('is-drop'); over = null; }
 export const hasTargets = (root = document) => !!root.querySelector('[data-drop-folder]');
 
-/** Save the game in the folder; the folder's count goes up when it was new there. */
-export async function dropOn(target, gameId) {
+/** Add to (+1) or take from (-1) a folder's count in the left column (it can be there twice: the class page's chips). */
+function bump(id, by) {
+  for (const a of $$(`[data-drop-folder="${CSS.escape(id)}"]`)) {
+    const n = a.querySelector('.n'), sr = a.querySelector('.n + .sr-only');
+    if (n && /^\d+$/.test(n.textContent.trim())) {
+      const was = +n.textContent.trim(), now = Math.max(0, was + by); n.textContent = String(now);
+      if (sr) sr.textContent = sr.textContent.replace(String(was), String(now));
+    }
+  }
+}
+const fill = (s, vars) => Object.entries(vars).reduce((out, [k, v]) => out.split(`{${k}}`).join(v), s || '');
+
+/** Save the game in the folder; its count goes up when it was new there. -> the server's answer, or null. */
+async function add(target, gameId, { quiet = false } = {}) {
   const id = target.dataset.dropFolder;
-  target.classList.add('is-dropped'); setTimeout(() => target.classList.remove('is-dropped'), 700);
   try {
     const r = await api(`/api/game-folders/${encodeURIComponent(id)}/games`, { method: 'POST', body: { gameId } });
-    if (r && !r.already) {
-      // The same folder can be in the column twice (the class page's chips and the side): count both.
-      for (const a of $$(`[data-drop-folder="${CSS.escape(id)}"]`)) {
-        const n = a.querySelector('.n'), sr = a.querySelector('.n + .sr-only');
-        if (n && /^\d+$/.test(n.textContent.trim())) {
-          const was = +n.textContent.trim(); n.textContent = String(was + 1);
-          if (sr) sr.textContent = sr.textContent.replace(String(was), String(was + 1));
-        }
-      }
-    }
-    if (r && r.toast) toast(r.toast);
+    if (r && !r.already) bump(id, 1);
+    if (r && r.toast && !quiet) toast(r.toast);
+    return r;
+  } catch (err) { toast(err.message, { bad: true }); return null; }
+}
+
+// ---- Move here or Keep in both: a game dragged out of one of my folders onto another ----
+let ask = null;
+function closeAsk({ focus = true } = {}) {
+  if (!ask) return;
+  const { box, back } = ask; ask = null;
+  box.remove(); document.removeEventListener('pointerdown', outside, true); document.removeEventListener('keydown', onKey, true);
+  if (focus && back && back.isConnected) back.focus({ preventScroll: true });
+}
+function outside(e) { if (ask && !ask.box.contains(e.target)) closeAsk({ focus: false }); }
+function onKey(e) {
+  if (!ask) return;
+  if (e.key === 'Escape') { e.preventDefault(); closeAsk(); return; }
+  if (e.key === 'Tab') {   // keep Tab inside the pop-up
+    const els = [...ask.box.querySelectorAll('button')], i = els.indexOf(document.activeElement);
+    e.preventDefault(); els[(i + (e.shiftKey ? -1 : 1) + els.length) % els.length].focus();
+  }
+}
+/** The pop-up beside the folder: Move here (takes it out of the folder it came from) / Keep in both / Cancel. */
+function askMove(target, li) {
+  closeAsk({ focus: false });
+  const tpl = document.getElementById('drop-ask'); if (!tpl) { add(target, li.dataset.id); return; }
+  const w = tpl.dataset, game = li.dataset.title || '', from = li.dataset.folderName || '';
+  const folder = (target.querySelector('.shelf-name') || target).textContent.trim();
+  const box = document.createElement('div');
+  box.className = 'drop-ask'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'false');
+  box.innerHTML = `<p class="drop-ask-h" id="drop-ask-h"></p>
+    <button type="button" class="btn btn-primary drop-ask-move" data-act="move"><span class="drop-ask-l"></span><span class="drop-ask-n"></span></button>
+    <button type="button" class="btn drop-ask-keep" data-act="keep"></button>
+    <button type="button" class="btn btn-ghost btn-sm drop-ask-cancel" data-act="cancel"></button>`;
+  box.setAttribute('aria-labelledby', 'drop-ask-h');
+  box.querySelector('.drop-ask-h').textContent = fill(w.title, { game, folder });
+  box.querySelector('.drop-ask-l').textContent = w.move;
+  box.querySelector('.drop-ask-n').textContent = fill(w.moveNote, { from });
+  box.querySelector('.drop-ask-keep').textContent = w.keep;
+  box.querySelector('.drop-ask-cancel').textContent = w.cancel;
+  document.body.appendChild(box);
+  // Beside the folder (or under it, when the folders are a row of chips at the top of a phone), kept on screen.
+  const r = target.getBoundingClientRect(), b = box.getBoundingClientRect(), pad = 12, rtl = getComputedStyle(target).direction === 'rtl';
+  const side = rtl ? r.left - b.width - 10 : r.right + 10;
+  let x, y;
+  if (side >= pad && side + b.width <= innerWidth - pad) { x = side; y = r.top + r.height / 2 - 28; }
+  else { x = r.left + r.width / 2 - b.width / 2; y = r.bottom + 8; }
+  x = Math.max(pad, Math.min(innerWidth - b.width - pad, x)); y = Math.max(pad, Math.min(innerHeight - b.height - pad, y));
+  box.style.left = `${x}px`; box.style.top = `${y}px`;
+  ask = { box, back: li.querySelector('h3 a') };
+  box.addEventListener('click', async e => {
+    const btn = e.target.closest('[data-act]'); if (!btn) return;
+    const act = btn.dataset.act;
+    closeAsk({ focus: act === 'cancel' });
+    if (act === 'keep') add(target, li.dataset.id);
+    else if (act === 'move') move(target, li, { game, folder });
+  });
+  setTimeout(() => { document.addEventListener('pointerdown', outside, true); document.addEventListener('keydown', onKey, true); }, 0);
+  box.querySelector('.drop-ask-move').focus({ preventScroll: true });
+}
+/** Save it in the new folder, then take it out of the one it came from; the right side then shows that folder again. */
+async function move(target, li, { game, folder }) {
+  const from = li.dataset.folder, gameId = li.dataset.id;
+  const r = await add(target, gameId, { quiet: true }); if (!r) return;
+  try {
+    await api(`/api/game-folders/${encodeURIComponent(from)}/games/${encodeURIComponent(gameId)}/delete`, { method: 'POST' });
+    bump(from, -1);
+    li.classList.add('is-leaving');
+    const tpl = document.getElementById('drop-ask');
+    toast(fill(tpl ? tpl.dataset.moved : '', { game, folder }));
+    setTimeout(() => document.dispatchEvent(new CustomEvent('shelf:refresh')), 250);
   } catch (err) { toast(err.message, { bad: true }); }
+}
+
+/** A game dropped on a folder: from another of my folders, ask Move here or Keep in both; otherwise just save it there.
+ *  Dropped on the folder it is already in: nothing happens. */
+export function dropOn(target, li) {
+  target.classList.add('is-dropped'); setTimeout(() => target.classList.remove('is-dropped'), 700);
+  const from = li.dataset.folder;
+  if (from && from === target.dataset.dropFolder) return;
+  if (from) askMove(target, li); else add(target, li.dataset.id);
 }
 
 /** The games on the shelf's right side that are not in a list reorder.js drags. */
@@ -80,7 +163,7 @@ export function wire(main) {
     eatClick = true; setTimeout(() => { eatClick = false; }, 50);
     const t = commit ? targetAt(d.x, d.y) : null;
     clear();
-    if (t) dropOn(t, d.li.dataset.id);
+    if (t) dropOn(t, d.li);
   };
 
   main.addEventListener('pointerdown', e => {

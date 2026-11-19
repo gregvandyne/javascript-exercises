@@ -11333,6 +11333,14 @@
     "openFolder": "Abrir {folder}",
     "reorderHint": "Arraste para mudar a ordem (no celular ou tablet, toque e segure primeiro). No teclado: Alt e as setas.",
     "dropHint": "Arraste um jogo para uma pasta para guardá-lo lá.",
+    "dropAsk": {
+      "title": "{game} → {folder}",
+      "move": "Mover para cá",
+      "moveNote": "Tira de {from}",
+      "keep": "Manter nas duas",
+      "cancel": "Cancelar",
+      "moved": "{game} movido para {folder}"
+    },
     "move": "Mover {name}",
     "moved": "{name}: {n} de {total}",
     "saveTitle": "Guardar “{game}” numa pasta",

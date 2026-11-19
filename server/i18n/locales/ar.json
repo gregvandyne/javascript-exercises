@@ -11332,6 +11332,14 @@
     "openFolder": "افتح {folder}",
     "reorderHint": "اسحب لتغيير الترتيب (على الهاتف أو الجهاز اللوحي، اضغط مطولًا أولًا). بلوحة المفاتيح: Alt والأسهم.",
     "dropHint": "اسحب لعبة إلى مجلد لحفظها فيه.",
+    "dropAsk": {
+      "title": "{game} ← {folder}",
+      "move": "انقلها إلى هنا",
+      "moveNote": "تُزيلها من {from}",
+      "keep": "أبقِها في المجلدين",
+      "cancel": "إلغاء",
+      "moved": "نُقلت {game} إلى {folder}"
+    },
     "move": "انقل {name}",
     "moved": "{name}: {n} من {total}",
     "saveTitle": "احفظ «{game}» في مجلد",

@@ -118,7 +118,8 @@ function side(req, ctx, sel, mine, shared) {
         ${oombaOn(ctx) ? html`<li>${item(req, ctx, sel, { key: 'oomba', href: `${ctx.base}?view=oomba`, icon: 'find', name: t('folders.findOomba') })}</li>` : ''}</ul>
       ${ctx.folders ? html`<p class="shelf-lab" id="shelf-lab-mine">${t('folders.title')}</p>
       ${mine.length ? html`<ul class="shelf-group" aria-labelledby="shelf-lab-mine"${mine.length > 1 ? html` data-reorder="/api/game-folders/order" data-moved="${movedTpl(t)}" aria-describedby="shelf-order"` : ''}>${mine.map(f => html`<li data-id="${f.id}">${item(req, ctx, sel, fItem(f), { grip: mine.length > 1, drop: f.id })}</li>`)}</ul>
-      <p class="small muted shelf-drophint">${t('folders.dropHint')}</p>` : ''}
+      <p class="small muted shelf-drophint">${t('folders.dropHint')}</p>
+      <template id="drop-ask" data-title="${t('folders.dropAsk.title', { game: '{game}', folder: '{folder}' })}" data-move="${t('folders.dropAsk.move')}" data-move-note="${t('folders.dropAsk.moveNote', { from: '{from}' })}" data-keep="${t('folders.dropAsk.keep')}" data-cancel="${t('folders.dropAsk.cancel')}" data-moved="${t('folders.dropAsk.moved', { game: '{game}', folder: '{folder}' })}"></template>` : ''}
       ${mine.length > 1 ? html`<p class="sr-only" id="shelf-order">${t('folders.reorderHint')}</p>` : ''}
       ${newFolder(req, ctx)}
       ${shared.length ? html`<p class="shelf-lab" id="shelf-lab-shared">${t('folders.sharedTitle')}</p>
@@ -162,7 +163,7 @@ function gameRow(req, ctx, g0, { folder = null, own = false, grip = false } = {}
     ctx.kind === 'build' && mineGame ? html`<button class="btn" type="button" data-rename>🏷️ ${t('build.rename')}</button><button class="btn mg-del" type="button" data-delete>🗑️ ${t('build.delete')}</button>` : '',
   ];
   const live = mineGame && g.status === 'published' && g.published_version_id;
-  return html`<li class="mygame shelf-game" data-id="${g.id}" data-title="${g.title}" data-live="${live ? '1' : ''}">
+  return html`<li class="mygame shelf-game" data-id="${g.id}" data-title="${g.title}" data-live="${live ? '1' : ''}"${folder && own ? html` data-folder="${folder.id}" data-folder-name="${folder.name}"` : ''}>
     ${grip ? html`<button class="gfo-grip" type="button" data-grip aria-label="${t('folders.move', { name: g.title })}" aria-describedby="shelf-gorder"><span aria-hidden="true">⠿</span></button>` : ''}
     <a class="mg-cover" href="${mineGame && ctx.kind === 'build' ? `/studio/${g.id}` : play}" tabindex="-1" aria-hidden="true">${coverArt(g, '', { draft: mineGame })}</a>
     <div class="mg-body"><h3><a href="${mineGame && ctx.kind === 'build' ? `/studio/${g.id}` : play}" dir="auto">${g.title}</a></h3>

@@ -11332,6 +11332,14 @@
     "openFolder": "{folder} openen",
     "reorderHint": "Sleep om de volgorde te veranderen (op een telefoon of tablet eerst ingedrukt houden). Met het toetsenbord: Alt en de pijltjestoetsen.",
     "dropHint": "Sleep een spel naar een map om het daar te bewaren.",
+    "dropAsk": {
+      "title": "{game} → {folder}",
+      "move": "Hierheen verplaatsen",
+      "moveNote": "Haalt het uit {from}",
+      "keep": "In allebei houden",
+      "cancel": "Annuleren",
+      "moved": "{game} verplaatst naar {folder}"
+    },
     "move": "{name} verplaatsen",
     "moved": "{name}: {n} van {total}",
     "saveTitle": "‘{game}’ in een map bewaren",
