@@ -1302,7 +1302,8 @@
       remove: function (k) { local.removeItem(k); }
     },
     score: { submit: function (score, label) { var n = Math.floor(+score); if (!isFinite(n) || n < 0) return; send('brb:score', { score: n, label: String(label || '').slice(0, 40) }); } },
-    gameOver: function (r) { r = r || {}; send('brb:gameover', { won: !!r.won, score: isFinite(+r.score) ? Math.floor(+r.score) : null }); if (r.score != null) BRB.score.submit(r.score); },
+    // helped (optional, Oomba Canvas 1.3.0): the teacher showed an answer in this set (those problems are not in the score).
+    gameOver: function (r) { r = r || {}; var m = { won: !!r.won, score: isFinite(+r.score) ? Math.floor(+r.score) : null }; if (r.helped === true) m.helped = true; send('brb:gameover', m); if (r.score != null) BRB.score.submit(r.score); },
     fullscreen: function () { return askFullscreen(); },
     // Start the game over from scratch (a "Try again" after the game could not start): the play page reloads it. Only
     // after a tap (the page checks), so a game can never reload itself in a loop.
@@ -1344,6 +1345,8 @@
     canPrint: INIT.print === true,
     // A classroom activity's answer key (Oomba Canvas 1.2.0): its maker and school staff only (the server checks too).
     canPrintKey: INIT.print === true && INIT.printKey === true,
+    // A classroom activity's teacher controls (Oomba Canvas 1.3.0): its maker and school staff only, never "As a student".
+    canTeach: INIT.teach === true,
     print: askPrint,
     assign: assign
   };

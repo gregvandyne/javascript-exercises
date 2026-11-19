@@ -55,7 +55,7 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.storage.set(key, value)` / `remove(key)` | Writes are debounced and sent to the server. Max ~450 KB per game per player. |
 | `localStorage` / `sessionStorage` | Work as usual. `localStorage` is a shim backed by the same cloud save, pre-filled before the game starts, so older games just work. |
 | `BRB.score.submit(score, label)` | Leaderboard entry (best score only, whole numbers ≥ 0). |
-| `BRB.gameOver({ won, score })` | Call at the end of each round (also submits the score). |
+| `BRB.gameOver({ won, score, helped? })` | Call at the end of each round (also submits the score). `helped: true` (optional, Oomba Canvas 1.3.0): a teacher showed an answer in this set; those problems are not in the score. Older pages and servers ignore it. |
 | `BRB.fullscreen()` | Asks the page to go full screen. `element.requestFullscreen()` is routed here too. |
 | `BRB.retry()` | Asks the page to load the game again from scratch, for a "Try again" button when the game could not start (a reload from inside the frame would go without the sign-in). Works only right after a tap. |
 | `BRB.back()` | Asks the page to go back to where the game was launched from (a course step or a class lesson), for a "Back to class/course" button at the end of a course chapter. The frame cannot navigate the page itself. Works only right after a tap, and only when the game was launched from somewhere with a way back; in free play it does nothing. |
@@ -352,6 +352,12 @@ cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, 
   this viewer (the frame's `setSave: false` / `setFind: false`: a family grown-up, whom the fence in routes/family.js
   keeps to playing), `true` otherwise. A game hides those buttons when they are `false`.
 - Sets go with their owner's account. Nothing about who played is kept.
+
+## Teacher controls (`BRB.canTeach`)
+A Builder classroom activity on Oomba Canvas 1.3.0 shows its teacher controls (Show answer, Board mode, Help on this
+screen, New set; docs/canvas-api.md) only when `BRB.canTeach` is true: from `INIT.teach`, which the server sets by the
+same rule as `INIT.printKey` (the activity's maker, school staff) and never for a student or the Studio's "As a student"
+preview. Nothing in those controls reaches the server.
 
 ## Printing (`BRB.print`)
 Crossword and The Big Divide (frames where `INIT.print` is set: those official games, not in a preview; each game's

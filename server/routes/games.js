@@ -27,6 +27,7 @@ import { draftClues } from '../services/set-ai.js';
 import { wordsFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
 import { PRINTERS } from '../services/game-print.js';
 import { canvasPrintable, cleanCanvasPrintDoc, canvasPrintHtml } from '../services/canvas-print.js';
+import { canvasVersion } from '../services/canvaskit.js';
 import { hasModel } from '../builder/anthropic.js';
 import { onlineGame } from './match.js';
 import fs from 'node:fs';
@@ -408,7 +409,11 @@ router.get('/frame/:token', (req, res) => {
     ...(!preview && printGame(g) ? { print: true } : {}),
     // A classroom activity that prints (canvas-print.js), in the Studio's preview too (its maker): printKey offers the
     // answer key (BRB.canPrintKey) to its maker and school staff only; the print route checks again.
-    ...(canvasPrintable(v.html) ? { print: true, ...(canvasKeyFor(u, g) ? { printKey: true } : {}) } : {}),
+    // tok.st: the Studio's "As a student" preview, which shows the activity exactly as a student gets it.
+    ...(canvasPrintable(v.html) ? { print: true, ...(!tok.st && canvasKeyFor(u, g) ? { printKey: true } : {}) } : {}),
+    // Oomba Canvas 1.3.0: the teacher's controls inside an activity (BRB.canTeach: Show answer, Board mode, Help on this
+    // screen, New set), by the same rule as the answer key; never for a student, never under "As a student".
+    ...(!tok.st && canvasVersion(v.html) && canvasKeyFor(u, g) ? { teach: true } : {}),
     // AI voices (routes/tts.js): the TTS locales on now, for games that may use them (official games, a game the admin
     // switched on, and a Builder game's published, scanner-passed version); absent otherwise and in every preview (the
     // SDK then speaks with the device's voice exactly as before).

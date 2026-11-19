@@ -110,7 +110,7 @@ const TYPES = {
   'brb:ready': m => true,
   'brb:save': m => m.data && typeof m.data === 'object' && !Array.isArray(m.data) && Object.values(m.data).every(v => typeof v === 'string') && JSON.stringify(m.data).length < 500000,
   'brb:score': m => Number.isFinite(m.score) && m.score >= 0 && m.score <= 1e9 && (m.label === undefined || typeof m.label === 'string'),
-  'brb:gameover': m => typeof m.won === 'boolean' && (m.score === null || Number.isFinite(m.score)),
+  'brb:gameover': m => typeof m.won === 'boolean' && (m.score === null || Number.isFinite(m.score)) && (m.helped === undefined || m.helped === true),
   'brb:fullscreen': m => typeof m.on === 'boolean',
   'brb:orientation': m => typeof m.value === 'string' && m.value.length < 40,
   'brb:retry': m => true,
@@ -193,7 +193,7 @@ addEventListener('message', e => {
       break;
     }
     case 'brb:gameover': {
-      lessonEvent({ event: 'end', score: m.score });
+      lessonEvent({ event: 'end', score: m.score, ...(m.helped === true ? { helped: true } : {}) });
       // The game ended without the assigned part won (Sum Racer reports every race's end; only 1st place
       // is a win): say so on the page, with the way back — the game's own results screen celebrates any
       // finish, so without this the student cannot tell a counted finish from an uncounted one.

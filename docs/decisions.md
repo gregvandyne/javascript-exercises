@@ -8879,3 +8879,17 @@ On Build and the class page's Games tab, a game on the right can be dragged onto
 The first screen of /build/new offers Classroom lesson (the canvas activity), Classroom game (the board starters: Category Board, bingo, flashcards...) and Arcade game. Classroom game and Arcade game share the guided steps, but the game-type step shows only that track's kinds (no tabs to cross over); switching tracks lets go of a kind picked in the other. "I know what I want" became "I’ll just describe it".
 
 A game dragged out of one of my folders onto another asks first, in a small pop-up beside the folder (folder-drop.js askMove): Move here (saves it there, then takes it out of the folder it came from, and the right side shows that folder again) or Keep in both; Cancel, Escape or a tap outside does nothing. Dropped on the folder it is already in: nothing. From All my games, Find Oomba games or a shared folder there is nothing to move out of, so it is just saved. The words come from the server (a <template id="drop-ask"> in the left column).
+
+## Builder part 2: the Activity panel and teacher controls (Oomba Canvas 1.3.0)
+
+A classroom activity's owner changes its problems, help, set size and purpose in the Studio's Activity panel without a
+Builder message (desktop: Builder | Activity at the top of the left column; phones: 🧮 Edit activity opens a sheet).
+The save route rewrites only the `oc-activity` JSON, screens any typed text exactly like a Builder message (text only,
+no students' names, then the Builder's screening), runs the kit's self-test and the scanner, and saves a version
+labelled with what changed. Saves by the same person within a minute join one version (kept in memory: a restart only
+means one more version). It refuses while a Builder turn runs and when the version changed since the panel loaded.
+Older activities move to the new kit only when saved from the panel. Advanced fields sit behind "More options".
+Oomba Canvas 1.3.0 adds the teacher's controls (Show answer, Board mode, Help on this screen, New set) behind
+`INIT.teach` / `BRB.canTeach` (the answer key's rule; never a student, never "As a student"): a bar at 561 px and wider,
+one Teacher button and a sheet below. Board mode sends no score; after Show answer the result is sent with `helped: true`
+and the shown problems out of the score. The server accepts `helped` and does not store it yet.
