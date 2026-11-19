@@ -9013,6 +9013,7 @@
       "points": "Punktzahl (Punkte)",
       "lateCount": "Verspätete Lektionen",
       "scoreCol": "{title} (Punktzahl %)",
+      "helpedCol": "{title} (Antworten von der Lehrkraft gezeigt)",
       "lateCol": "{title} (verspätet)",
       "late": "überfällig",
       "doneLate": "verspätet erledigt",

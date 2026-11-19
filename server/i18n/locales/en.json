@@ -9439,6 +9439,7 @@
       "points": "Score (points)",
       "lateCount": "Late lessons",
       "scoreCol": "{title} (score %)",
+      "helpedCol": "{title} (answers shown by the teacher)",
       "lateCol": "{title} (late)",
       "late": "late",
       "doneLate": "done late",

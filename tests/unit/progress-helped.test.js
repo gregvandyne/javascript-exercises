@@ -64,3 +64,17 @@ test('the mark shows on the staff\'s lesson progress page, never on the student\
   assert.doesNotMatch(own.text, /Teacher showed an answer|st-helped/);
   assert.equal((await as(mia)(`/class/${cls.id}/progress/${cl.id}`)).status, 404, 'students never see the progress page');
 });
+test('the class progress CSV has a column for answers the teacher showed, only for lessons where that happened', async () => {
+  const csv = await as(ana)(`/class/${cls.id}/progress.csv`);
+  assert.equal(csv.status, 200);
+  const [head, row] = csv.text.replace(/^﻿/, '').trim().split('\r\n').map(l => l.split(','));
+  const i = head.indexOf('Scales (answers shown by the teacher)');
+  assert.ok(i > 0, 'the column is there');
+  assert.equal(row[i], '1', 'one game score came after the teacher showed an answer');
+  assert.equal(head.indexOf('Scales (answers shown by the teacher)'), head.length - 1, 'new columns go at the end');
+  q.run('UPDATE step_progress SET helped=0');
+  const none = await as(ana)(`/class/${cls.id}/progress.csv`);
+  assert.doesNotMatch(none.text, /answers shown by the teacher/, 'no column when no answer was shown');
+  q.run('UPDATE step_progress SET helped=1');
+  assert.notEqual((await as(mia)(`/class/${cls.id}/progress.csv`)).status, 200, 'students never get the CSV');
+});

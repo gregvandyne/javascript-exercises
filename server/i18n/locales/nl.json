@@ -9013,6 +9013,7 @@
       "points": "Score (punten)",
       "lateCount": "Lessen te laat",
       "scoreCol": "{title} (score %)",
+      "helpedCol": "{title} (antwoorden getoond door de leraar)",
       "lateCol": "{title} (te laat)",
       "late": "te laat",
       "doneLate": "te laat af",

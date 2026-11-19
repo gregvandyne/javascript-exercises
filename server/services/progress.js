@@ -256,7 +256,8 @@ export function classProgress(classId, t = now()) {
   const lessons = L.classPlan(classId).flatMap(g => g.lessons.map(cl => ({ ...cl, unit: g.unit, locked: !L.isOpen(cl, t), due: L.dueState(cl, t) })));
   const students = studentsOf(classId);
   const counts = q.all(`SELECT p.class_lesson_id cl, p.user_id u, SUM(p.status='done') done, SUM(p.answer!='' AND p.reviewed_at IS NULL AND s.kind='question') toread, MAX(p.updated_at) last,
-      AVG(CASE WHEN s.kind='quiz' AND p.status='done' AND p.score IS NOT NULL THEN p.score END) quiz, SUM(s.kind='quiz' AND p.status='done' AND p.score IS NOT NULL) quizzes
+      AVG(CASE WHEN s.kind='quiz' AND p.status='done' AND p.score IS NOT NULL THEN p.score END) quiz, SUM(s.kind='quiz' AND p.status='done' AND p.score IS NOT NULL) quizzes,
+      SUM(p.helped) helped
     FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
     WHERE c.class_id=? GROUP BY p.class_lesson_id, p.user_id`, classId);
   const by = new Map(counts.map(r => [`${r.u}:${r.cl}`, r]));
@@ -277,6 +278,8 @@ export function classProgress(classId, t = now()) {
       lateSteps, lateDone: !cl.locked && cl.steps > 0 && done >= cl.steps && lateSteps > 0,
       items: its, score: SC.total(its),
       quiz: r && r.quizzes ? Math.round(r.quiz) : null, quizzes: r ? r.quizzes || 0 : 0,
+      // game steps whose kept score came after the teacher showed an answer (Oomba Canvas 1.3.0); staff-only
+      helped: r ? r.helped || 0 : 0,
       points: sc ? sc.points : null, maxPoints: sc ? sc.max : null, scored: sc ? sc.scored : 0, criteria: sc ? sc.of : 0 };
   }) }));
   for (const p of rows) { p.overall = overall(p.cells); p.rubric = rubricOverall(p.cells); p.quiz = quizOverall(p.cells); p.score = scoreOverall(p.cells); p.lateCount = p.cells.filter(x => x.late || x.lateDone).length; }

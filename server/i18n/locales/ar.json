@@ -9013,6 +9013,7 @@
       "points": "الدرجة (نقاط)",
       "lateCount": "دروس متأخرة",
       "scoreCol": "{title} (الدرجة %)",
+      "helpedCol": "{title} (إجابات عرضها المعلم)",
       "lateCol": "{title} (تأخير)",
       "late": "متأخر",
       "doneLate": "أُنجز متأخرًا",

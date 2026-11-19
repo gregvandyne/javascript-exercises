@@ -9012,6 +9012,7 @@
       "points": "得分（分數）",
       "lateCount": "逾期課程",
       "scoreCol": "{title}（得分 %）",
+      "helpedCol": "{title}（老師顯示的答案）",
       "lateCol": "{title}（逾期）",
       "late": "逾期",
       "doneLate": "逾期完成",

@@ -9012,6 +9012,7 @@
       "points": "Score (points)",
       "lateCount": "Leçons en retard",
       "scoreCol": "{title} (score %)",
+      "helpedCol": "{title} (réponses montrées par l'enseignant)",
       "lateCol": "{title} (en retard)",
       "late": "en retard",
       "doneLate": "fait en retard",

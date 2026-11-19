@@ -251,13 +251,17 @@ router.get('/class/:id/progress.csv', requireUser, (req, res) => {
   // New columns go at the end, so a spreadsheet built on the older ones keeps working: the Score (percent, then points),
   // each lesson's score and whether it was late, then each live game (right/asked; "played" when there was nothing to mark).
   const scored = gb.lessons.map((l, i) => gb.students.some(p => p.cells[i].score)), dated = gb.lessons.map(l => !!l.due_at);
+  // how many of a lesson's game scores came after the teacher showed an answer: only for lessons where that happened
+  const helped = gb.lessons.map((l, i) => gb.students.some(p => p.cells[i].helped > 0));
   const live = liveOn() ? SC.classLive(c.id, 8) : { runs: [], by: new Map() };
   const tail = [t('gradebook.score'), t('gradebook.csv.points'), t('gradebook.csv.lateCount'),
     ...gb.lessons.flatMap((l, i) => [...(scored[i] ? [t('gradebook.csv.scoreCol', { title: l.title })] : []), ...(dated[i] ? [t('gradebook.csv.lateCol', { title: l.title })] : [])]),
-    ...live.runs.map(r => t('gradebook.csv.live', { title: r.title || t('live.results.title'), date: req.fmt.day(r.ended_at, SHORT) }))];
+    ...live.runs.map(r => t('gradebook.csv.live', { title: r.title || t('live.results.title'), date: req.fmt.day(r.ended_at, SHORT) })),
+    ...gb.lessons.flatMap((l, i) => (helped[i] ? [t('gradebook.csv.helpedCol', { title: l.title })] : []))];
   const tailOf = p => [p.score ? `${p.score.pct}%` : '–', p.score ? SC.pointsText(p.score.earned, p.score.possible) : '', p.lateCount,
     ...p.cells.flatMap((x, i) => [...(scored[i] ? [x.score ? `${x.score.pct}%` : ''] : []), ...(dated[i] ? [lateKind(x) ? t(`gradebook.csv.${lateKind(x)}`) : ''] : [])]),
-    ...live.runs.map(r => { const k = `${r.id}:${p.id}`; if (!live.by.has(k)) return ''; const x = live.by.get(k); return x ? `${x.right}/${x.total}` : t('gradebook.live.keyPlayed'); })];
+    ...live.runs.map(r => { const k = `${r.id}:${p.id}`; if (!live.by.has(k)) return ''; const x = live.by.get(k); return x ? `${x.right}/${x.total}` : t('gradebook.live.keyPlayed'); }),
+    ...p.cells.flatMap((x, i) => (helped[i] ? [x.helped || ''] : []))];
   const lines = [[t('school.people.name'), t('school.people.username'), ...head, t('gradebook.workDone'), ...(anyQz ? [t('progress.csv.quizAll')] : []), ...(anyRb ? [t('rubrics.csv.totalPoints'), t('rubrics.csv.totalPercent')] : []), ...tail].map(cell).join(',')];
   for (const p of gb.students) {
     const cols = p.cells.flatMap((x, i) => [x.locked ? '–' : `${x.done}/${x.total}`, ...(qz[i] ? [x.quiz !== null ? `${x.quiz}%` : ''] : []), ...(rb[i] ? (x.maxPoints > 0 ? [R.pointsText(x.points, x.maxPoints), `${R.percent(x.points, x.maxPoints)}%`] : ['', '']) : [])]);

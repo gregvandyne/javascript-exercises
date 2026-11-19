@@ -9012,6 +9012,7 @@
       "points": "スコア（点）",
       "lateCount": "遅れたレッスン",
       "scoreCol": "{title}（スコア %）",
+      "helpedCol": "{title}（先生が見せた答え）",
       "lateCol": "{title}（遅れ）",
       "late": "期限切れ",
       "doneLate": "期限後に完了",
