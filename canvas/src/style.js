@@ -163,5 +163,28 @@ button.oc-part:hover:not(:disabled):not(.oc-on){background:var(--card-2)}
   .oc-signs{font-size:1.5rem;gap:10px}.oc-sign{min-width:52px;min-height:52px}
   .oc-hint{font-size:.92rem}
 }
+.oc-fig{display:flex;justify-content:center;width:100%}
+.oc-fig svg{display:block;width:auto;max-width:min(100%,560px);max-height:52vh;height:auto}
+.oc-figq{align-items:center}
+.oc-figans{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px}
+.oc-figbox{min-width:8ch;height:56px;font-size:1.45rem}
+.oc-unit{font-weight:800;font-size:1.2rem}
+.oc-figmiss{color:var(--bad-ink);font-weight:700}
+.oc-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;width:100%;max-width:640px;margin-top:6px}
+.oc-choice{justify-content:flex-start;white-space:normal;text-align:start;min-height:52px}
+.oc-choice b{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:999px;background:var(--card-2);font-size:.9rem}
+.oc-choice[aria-pressed="true"]{background:var(--text);color:var(--card)}
+.oc-choice[aria-pressed="true"] b{background:var(--card);color:var(--text)}
+.oc-print{margin:10px max(14px,env(safe-area-inset-right)) 0 max(14px,env(safe-area-inset-left));padding:12px 16px;display:flex;flex-direction:column;gap:10px;border:2px solid var(--line)}
+.oc-ptop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.oc-ptop h2{margin:0;font-size:1.1rem;font-weight:800}
+.oc-prow{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px}
+.oc-plab{font-weight:700;min-width:7.5em}
+.oc-pstep,.oc-pseg{display:inline-flex;align-items:center;gap:6px}
+.oc-pnum{min-width:2.4ch;text-align:center;font-size:1.2rem;font-variant-numeric:tabular-nums}
+.oc-tog[aria-pressed="true"]{background:var(--accent-press);color:#fff;box-shadow:none}
+.oc-seed{min-width:8ch}
+.oc-psmall{margin:0;font-size:.85rem;color:var(--muted)}
+.oc-pmsg{font-weight:700;color:var(--accent-ink)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 `;

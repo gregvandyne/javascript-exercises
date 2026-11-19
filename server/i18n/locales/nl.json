@@ -1246,6 +1246,13 @@
       "problem": "Som {n}",
       "rounds": "Afgerond: {x}",
       "simpler": "Vereenvoudigd: {x}"
+    },
+    "printCanvas": {
+      "untitled": "Werkblad",
+      "sheet": "Blad {code}",
+      "answer": "Antwoord:",
+      "choose": "Omcirkel er één.",
+      "figure": "Figuur bij vraag {n}"
     }
   },
   "friends": {
@@ -2746,7 +2753,8 @@
           "practise": "Oefenen",
           "help": "Hulp",
           "played": "Gespeeld",
-          "lesson": "Les"
+          "lesson": "Les",
+          "purpose": "Voor"
         }
       },
       "lesson": {
@@ -9287,7 +9295,8 @@
         "both": "Leerlingen spelen het op hun eigen apparaat, en we laten het ook op het bord zien."
       },
       "lesson": "Ik heb mijn les beschreven.",
-      "lessonDoc": "Ik heb mijn lesplan toegevoegd."
+      "lessonDoc": "Ik heb mijn lesplan toegevoegd.",
+      "purpose": "Voor: {list}."
     },
     "flatNote": "In 2D kunnen voorlopig alleen ren- en vanggames onze werelden en figuren gebruiken. Bij andere games gebruikt de Bouwer zijn klassieke uiterlijk.",
     "typeGroups": {
@@ -9392,7 +9401,23 @@
         "orderFractions": "Breuken ordenen",
         "bigAdd": "Grote getallen optellen"
       },
-      "nextLesson": "Volgende: je les"
+      "nextLesson": "Volgende: je les",
+      "purpose": {
+        "heading": "Waarvoor is het?",
+        "hint": "Kies er één of meer. Leerlingen beginnen met oefenen op het scherm.",
+        "screen": {
+          "title": "Oefenen op het scherm",
+          "text": "Leerlingen werken op hun eigen apparaat, met stappen en hints."
+        },
+        "worksheet": {
+          "title": "Werkblad om af te drukken",
+          "text": "Vragen met figuren om af te drukken, plus een antwoordblad."
+        },
+        "generator": {
+          "title": "Vragengenerator",
+          "text": "Elke keer dat je op Nieuw blad drukt, komt er een nieuwe set, op het scherm of op papier."
+        }
+      }
     },
     "lesson": {
       "heading": "Je les",

@@ -242,11 +242,11 @@ test('/build/new: the start, seven steps, every live world with a Preview, group
   assert.match(h, /id="su-guide" data-for="arcade">Help me choose/, 'help me choose');
   assert.match(h, /id="su-direct" data-for="both">I know what I want</, 'the bypass');
   assert.match(h, /id="su-skipall" hidden>Skip to the Builder</);
-  assert.deepEqual([...h.matchAll(/data-screen="([\w-]+)"/g)].map(m => m[1]), ['start', 'lesson', 'help', 'played', 'type', 'look', 'world', 'chars', 'play', 'learn', 'extras', 'plan']);
+  assert.deepEqual([...h.matchAll(/data-screen="([\w-]+)"/g)].map(m => m[1]), ['start', 'lesson', 'purpose', 'help', 'played', 'type', 'look', 'world', 'chars', 'play', 'learn', 'extras', 'plan']);
   for (const q of ['What kind of game?', '2D or 3D?', 'Where does it happen?', 'Who is in it?', 'How will it be played?', 'What should it teach?', 'Anything to add?', 'Here is your game plan']) assert.ok(h.includes(q), q);
-  // seven arcade steps, the activity's three (your lesson, how much help, how it is played: only "Your lesson" can be
-  // skipped) and the plan
-  assert.equal((h.match(/data-go="back"/g) || []).length, 11); assert.equal((h.match(/data-go="skip"/g) || []).length, 8); assert.equal((h.match(/data-go="next"/g) || []).length, 10);
+  // seven arcade steps, the activity's four (your lesson, what it is for, how much help, how it is played: only "Your
+  // lesson" can be skipped) and the plan
+  assert.equal((h.match(/data-go="back"/g) || []).length, 12); assert.equal((h.match(/data-go="skip"/g) || []).length, 8); assert.equal((h.match(/data-go="next"/g) || []).length, 11);
   assert.match(h, /Step 1 of 7/); assert.match(h, /Step 7 of 7/);
   // twelve live worlds (Wild Woods, Dino Valley and Under the Sea too), each with its real cover and a Preview button; every preview picture exists, large
   assert.equal(kit2.KIT2_WORLDS.length, 12);

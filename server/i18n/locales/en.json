@@ -1246,6 +1246,13 @@
       "problem": "Problem {n}",
       "rounds": "Rounded: {x}",
       "simpler": "Simplified: {x}"
+    },
+    "printCanvas": {
+      "untitled": "Worksheet",
+      "sheet": "Sheet {code}",
+      "answer": "Answer:",
+      "choose": "Circle one.",
+      "figure": "Figure for question {n}"
     }
   },
   "friends": {
@@ -2764,7 +2771,8 @@
           "practise": "Practice",
           "help": "Help",
           "played": "Played",
-          "lesson": "Lesson"
+          "lesson": "Lesson",
+          "purpose": "For"
         }
       },
       "lesson": {
@@ -9713,7 +9721,8 @@
         "both": "Students play it on their own devices, and we also show it on the board."
       },
       "lesson": "I described my lesson.",
-      "lessonDoc": "I added my lesson plan."
+      "lessonDoc": "I added my lesson plan.",
+      "purpose": "For: {list}."
     },
     "flatNote": "Only running and catching games can use our worlds and characters in 2D so far. For other kinds of game the Builder uses its classic look.",
     "typeGroups": {
@@ -9818,7 +9827,23 @@
         "orderFractions": "Order fractions",
         "bigAdd": "Add big numbers"
       },
-      "nextLesson": "Next: your lesson"
+      "nextLesson": "Next: your lesson",
+      "purpose": {
+        "heading": "What is it for?",
+        "hint": "Pick one or more. Practice on screen is where students start.",
+        "screen": {
+          "title": "Practice on screen",
+          "text": "Students work through it on their own devices, with steps and hints."
+        },
+        "worksheet": {
+          "title": "Printable worksheet",
+          "text": "Questions with figures, ready to print, and an answer key page."
+        },
+        "generator": {
+          "title": "Question generator",
+          "text": "Every press of New sheet makes a fresh set, on screen or on paper."
+        }
+      }
     },
     "lesson": {
       "heading": "Your lesson",

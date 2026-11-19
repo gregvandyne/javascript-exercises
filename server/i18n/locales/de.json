@@ -1246,6 +1246,13 @@
       "problem": "Aufgabe {n}",
       "rounds": "Gerundet: {x}",
       "simpler": "Gekürzt: {x}"
+    },
+    "printCanvas": {
+      "untitled": "Arbeitsblatt",
+      "sheet": "Blatt {code}",
+      "answer": "Antwort:",
+      "choose": "Kreise eine Antwort ein.",
+      "figure": "Abbildung zu Aufgabe {n}"
     }
   },
   "friends": {
@@ -2746,7 +2753,8 @@
           "practise": "Üben",
           "help": "Hilfe",
           "played": "Gespielt",
-          "lesson": "Stunde"
+          "lesson": "Stunde",
+          "purpose": "Wofür"
         }
       },
       "lesson": {
@@ -9287,7 +9295,8 @@
         "both": "Die Kinder spielen auf ihren Geräten, und wir zeigen es auch an der Tafel."
       },
       "lesson": "Ich habe meine Stunde beschrieben.",
-      "lessonDoc": "Ich habe meinen Stundenplan hinzugefügt."
+      "lessonDoc": "Ich habe meinen Stundenplan hinzugefügt.",
+      "purpose": "Wofür: {list}."
     },
     "flatNote": "In 2D können bisher nur Lauf- und Fangspiele unsere Welten und Figuren zeigen. Bei anderen Spielen nimmt der Baumeister sein klassisches Aussehen.",
     "typeGroups": {
@@ -9392,7 +9401,23 @@
         "orderFractions": "Brüche ordnen",
         "bigAdd": "Große Zahlen addieren"
       },
-      "nextLesson": "Weiter: deine Stunde"
+      "nextLesson": "Weiter: deine Stunde",
+      "purpose": {
+        "heading": "Wofür ist es?",
+        "hint": "Wähle eins oder mehr. Die Schülerinnen und Schüler beginnen mit dem Üben am Bildschirm.",
+        "screen": {
+          "title": "Üben am Bildschirm",
+          "text": "Alle arbeiten auf dem eigenen Gerät, mit Schritten und Tipps."
+        },
+        "worksheet": {
+          "title": "Arbeitsblatt zum Drucken",
+          "text": "Aufgaben mit Abbildungen zum Drucken und eine Lösungsseite."
+        },
+        "generator": {
+          "title": "Aufgabengenerator",
+          "text": "Jeder Klick auf „Neues Blatt“ macht neue Aufgaben, am Bildschirm oder auf Papier."
+        }
+      }
     },
     "lesson": {
       "heading": "Deine Stunde",

@@ -3,11 +3,12 @@
 // their own device: their place in the set is kept in their own game save (BRB.storage 'oc-progress-v1'), and nothing
 // leaves the device but the end result (BRB.gameOver once per set). Students only tap, drag and type digits (the
 // kit's own keypad and digit keys): there is no text field anywhere.
-import { TOOLS, SUPPORTS, MAX_COUNT, deal, selfTest, seeded, manipulativeOf, cleanProblem } from './logic.js';
+import { TOOLS, SUPPORTS, PURPOSES, MAX_COUNT, MAX_PROBLEMS, deal, selfTest, seeded, manipulativeOf, cleanProblem, numText } from './logic.js';
+import { sheet } from './sheet.js';
 import { WORDS, wordsFor } from './words.js';
 import { CSS } from './style.js';
 
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 const SAVE_KEY = 'oc-progress-v1';
 const IDLE_MS = 45000;
 
@@ -43,6 +44,12 @@ export function activity(input) {
   const modes = supports.length > 1 ? supports : null, board = cfg.board === true;
   const task = A.task && typeof A.task === 'object' ? A.task : {};
   const ownSteps = A.steps && typeof A.steps === 'object' ? A.steps : {}, ownHints = A.hints && typeof A.hints === 'object' ? A.hints : {};
+  // 1.2.0: what it is for (config.purpose): practice on screen (always), a printable worksheet, a question generator.
+  // Printing goes through the page (BRB.print: the frame cannot print); the answer key only where the page says the
+  // viewer may print it (BRB.canPrintKey: the activity's maker, school staff; never a student).
+  const purpose = Array.isArray(cfg.purpose) && cfg.purpose.some(x => PURPOSES.includes(x)) ? PURPOSES.filter(x => cfg.purpose.includes(x)) : ['screen'];
+  const printable = (purpose.includes('worksheet') || purpose.includes('generator')) && B().canPrint === true && typeof B().print === 'function';
+  const fresh = purpose.includes('generator') && !!(A.gen && TOOLS[A.gen.tool]);
 
   // ---- words: {name} values are numbers, fractions [n, d], keys of the table, or { k, v } / { text } groups
   const val = v => (Array.isArray(v) && v.length === 2 ? frac(v[0], v[1]) : v && typeof v === 'object' ? (v.text !== undefined ? String(v.text) : rich(v.k, v.v)) : typeof v === 'string' && v in WORDS.en ? W[v] : String(v));
@@ -71,10 +78,12 @@ export function activity(input) {
     board ? h('span', { class: 'oc-chip' }, T('board')) : null,
     h('span', { class: 'oc-grow' }),
     el.ok = h('span', { class: 'oc-chip oc-ok' }), el.no = h('span', { class: 'oc-chip oc-no' }), el.left = h('span', { class: 'oc-chip' }),
+    fresh ? h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => again(true) }, '🎲 ', T('newSheet')) : null,
+    printable ? (el.printBtn = h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-expanded': 'false', 'aria-controls': 'oc-print', onclick: () => printPanel(!PR.open) }, '🖨 ', T('print'))) : null,
     el.keyBtn = h('button', { type: 'button', class: 'oc-btn oc-sm oc-keybtn', 'aria-pressed': 'false', 'aria-controls': 'oc-keys', onclick: () => keypad(!S.keys) }, '⌨ ', T('keypad')));
   const canSay = !!(task.say && B().speak);
   const card = h('section', { class: 'oc-task', 'aria-label': T('task') },
-    h('div', { class: 'oc-taskt' }, el.n = h('span', { class: 'oc-n' }), el.task = h('p', { id: 'oc-taskline' })),
+    h('div', { class: 'oc-taskt' }, el.n = h('span', { class: 'oc-n' }), el.task = h('p', { id: 'oc-taskline', dir: 'auto' })),
     canSay ? h('button', { type: 'button', class: 'oc-say', 'aria-label': T('readAloud'), onclick: () => call(() => B().speak(String(task.say).slice(0, 300), { lang: cfg.lang || lang })) }, '🔊') : null);
   el.work = h('section', { class: 'oc-card oc-work', 'aria-label': T('workspace') });
   el.stepsBox = h('aside', { class: 'oc-card oc-steps', 'aria-labelledby': 'oc-steps-h' },
@@ -83,17 +92,19 @@ export function activity(input) {
     el.steps = h('ol', { id: 'oc-steps-list' }));
   el.hint = h('div', { class: 'oc-hint', role: 'note', hidden: true });
   el.fb = h('div', { class: 'oc-fb', role: 'status', 'aria-live': 'polite' });
-  el.ask = h('p', { class: 'oc-ask' });
+  el.ask = h('p', { class: 'oc-ask', dir: 'auto' });
   el.check = h('button', { type: 'button', class: 'oc-btn oc-primary', onclick: () => (S.phase === 'done' ? next() : doCheck()) });
   el.hintBtn = h('button', { type: 'button', class: 'oc-btn', onclick: showHint });
   el.clear = h('button', { type: 'button', class: 'oc-btn', onclick: clear }, '⌫ ', T('clear'));
   el.keys = h('div', { class: 'oc-keys', id: 'oc-keys', hidden: true, dir: 'ltr', role: 'group', 'aria-label': T('keypad') },
     ...['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].map(d => h('button', { type: 'button', class: 'oc-key', onclick: () => typeDigit(+d) }, d)),
+    el.dot = h('button', { type: 'button', class: 'oc-key', 'aria-label': T('point'), hidden: true, onclick: () => typeDigit('.') }, '.'),
     h('button', { type: 'button', class: 'oc-key', 'aria-label': T('del'), onclick: () => typeDigit(null) }, '⌫'));
   const band = h('footer', { class: 'oc-band' }, el.hint, el.fb, h('div', { class: 'oc-act' }, el.ask, h('div', { class: 'oc-btns' }, el.check, el.hintBtn, el.clear)), el.keys);
   el.end = h('section', { class: 'oc-end', hidden: true, 'aria-labelledby': 'oc-end-h' });
   el.main = h('div', { class: 'oc-main' }, el.work, el.stepsBox);
-  const shell = h('div', { class: `oc${board ? ' oc-board' : ''}`, 'data-support': support }, strip, card, el.main, band, el.end);
+  el.print = h('section', { class: 'oc-card oc-print', id: 'oc-print', hidden: true, 'aria-labelledby': 'oc-print-h' });
+  const shell = h('div', { class: `oc${board ? ' oc-board' : ''}`, 'data-support': support }, strip, el.print, card, el.main, band, el.end);
   root.append(shell);
 
   // ---- the set: fresh per student (a seed of their own, never the same problem twice), and where they were
@@ -119,6 +130,7 @@ export function activity(input) {
     S.st = resumeSt && typeof resumeSt === 'object' ? resumeSt : t.start(p); S.tries = 0; S.phase = 'work'; S.hintN = 0; S.stuck = false; S.sel = null; S.idle = Date.now();
     const steps = stepList(p); S.stepVal = steps.map(() => null); S.stepDone = steps.map(() => false);
     el.hint.hidden = true; el.fb.textContent = ''; el.fb.className = 'oc-fb';
+    if (p.tool === 'figure.number') S.sel = 'fig';
     S.watching = support === 'watch' && !resumeSt;
     if (S.watching) { S.st = t.solve(p) || S.st; steps.forEach((s, i) => { if (s.ans !== undefined) { S.stepVal[i] = s.ans; } S.stepDone[i] = true; }); }
     paint();
@@ -152,8 +164,9 @@ export function activity(input) {
     el.no.textContent = `✗ ${S.wrong}`; el.no.setAttribute('aria-label', `${T('notYet')} ${S.wrong}`);
     el.left.textContent = T('toGo', { n: total - S.i - (S.phase === 'done' ? 1 : 0) });
     el.n.textContent = T('problemOf', { n: S.i + 1, total });
-    const tk = t.task(p); el.task.textContent = ''; el.task.append(rich(tk.k, tk.v));
-    const q = t.ask(p); el.ask.textContent = ''; el.ask.append(rich(q.k, q.v));
+    const tk = t.task(p); el.task.textContent = ''; el.task.append(line(tk));
+    const q = t.ask(p); el.ask.textContent = ''; el.ask.append(line(q));
+    el.dot.hidden = p.tool !== 'figure.number';
     el.check.textContent = S.phase === 'done' ? `${T('next')} ›` : `✓ ${T('check')}`;
     el.check.disabled = S.watching;
     el.hintBtn.textContent = ''; el.hintBtn.append(S.stuck ? '🙋 ' : '💡 ', T(S.stuck ? 'stuck' : 'hint'));
@@ -161,7 +174,7 @@ export function activity(input) {
     el.clear.disabled = S.phase !== 'work' || S.watching;
     el.work.dataset.tool = p.tool;
     el.work.textContent = '';
-    el.work.append(VIEWS[p.tool](p, S.st, { locked: S.phase !== 'work' || S.watching, set, rich, T, guide: support !== 'own', select: sel => { S.sel = sel; paint(); }, sel: S.sel }));
+    el.work.append(VIEWS[p.tool](p, S.st, { locked: S.phase !== 'work' || S.watching, set, rich, T, lang, guide: support !== 'own', select: sel => { S.sel = sel; if (sel && coarse()) keypad(true); paint(); }, sel: S.sel }));
     paintSteps();
   }
   function paintSteps() {
@@ -200,7 +213,15 @@ export function activity(input) {
   /** A digit from the keypad or the keyboard: into the selected step box or digit box (null: delete). */
   function typeDigit(d) {
     S.idle = Date.now();
+    if (S.sel === 'seed' && PR.open) { if (d === '.') return; const cur = PR.retype && d !== null ? '' : String(PR.seed); PR.retype = false; const nx = d === null ? cur.slice(0, -1) : (cur === '0' ? '' : cur) + d; PR.seed = Math.min(999999, +nx.slice(0, 6) || 0); paintPrint(); return; }
     if (!S.sel || S.phase !== 'work' || S.watching) return;
+    if (S.sel === 'fig' && P().tool === 'figure.number') {
+      const cur = (S.st && typeof S.st.typed === 'string' ? S.st.typed : '');
+      if (d === '.' && cur.includes('.')) return;
+      const nx = d === null ? cur.slice(0, -1) : (cur + (d === '.' && !cur ? '0.' : d)).slice(0, 9);
+      set({ typed: nx }); return;
+    }
+    if (d === '.') return;
     if (S.sel.startsWith('step:')) {
       const i = +S.sel.slice(5), s = stepList(P())[i]; if (!s || s.ans === undefined || S.stepDone[i]) return;
       const cur = S.stepVal[i] === null ? '' : String(S.stepVal[i]);
@@ -267,16 +288,57 @@ export function activity(input) {
     el.end.hidden = false; el.end.textContent = '';
     el.end.append(h('h2', { id: 'oc-end-h' }, T('endH', { right: S.right, total })), h('p', {}, T(S.right === total ? 'endAll' : 'endSome')),
       h('div', { class: 'oc-btns' },
-        h('button', { type: 'button', class: 'oc-btn oc-primary', onclick: again }, A.gen ? `🎲 ${T('newSet')}` : `↻ ${T('again')}`),
+        h('button', { type: 'button', class: 'oc-btn oc-primary', onclick: () => again() }, A.gen ? `🎲 ${T('newSet')}` : `↻ ${T('again')}`),
+        printable ? h('button', { type: 'button', class: 'oc-btn', onclick: () => printPanel(true) }, `🖨 ${T('print')}`) : null,
         B().back ? h('button', { type: 'button', class: 'oc-btn', onclick: () => call(() => B().back()) }, `← ${T('back')}`) : null));
     el.left.textContent = T('toGo', { n: 0 });
     el.end.querySelector('button').focus({ preventScroll: true });
   }
-  function again() {
+  function again(newSheet) {
     if (A.gen) S.seed = (S.seed * 48271 + 11) % 2147483647 || 7;
+    if (newSheet === true) S.seen = [];   // "New sheet" (1.2.0): a fresh set from the generator, on screen
     dealSet(false); save();
     el.main.hidden = false; card.hidden = false; band.hidden = false; el.end.hidden = true;
     begin();
+  }
+  // ---- printing (1.2.0): a sheet of N questions from a seed (its number, printed on the sheet, makes it again), on A4
+  // or US Letter, with the answer key on a page of its own when the viewer may print it. The page and the server make
+  // the printable page from the activity's own data (sheet.js); the frame only asks.
+  const maxQ = A.gen && TOOLS[A.gen.tool] ? MAX_PROBLEMS : Math.max(1, deal(A, { count: MAX_PROBLEMS }).length);
+  const PR = { open: false, n: Math.min(maxQ, Number.isInteger(cfg.count) ? cfg.count : 5), paper: /^en$|^en-US/.test(lang) ? 'letter' : 'a4', key: false, seed: 0, busy: false, msg: '' };
+  function printPanel(on) {
+    PR.open = !!on; el.print.hidden = !PR.open; if (el.printBtn) el.printBtn.setAttribute('aria-expanded', String(PR.open));
+    if (PR.open) { if (!PR.seed) PR.seed = (S.seed % 999999) || 1; PR.msg = ''; paintPrint(); call(() => el.print.querySelector('h2').focus()); } else { if (S.sel === 'seed') S.sel = null; call(() => el.printBtn && el.printBtn.focus()); }
+  }
+  function paintPrint() {
+    const canKey = B().canPrintKey === true, seedSel = S.sel === 'seed';
+    const tog = (on, label, fn) => h('button', { type: 'button', class: 'oc-btn oc-sm oc-tog', 'aria-pressed': String(on), onclick: fn }, label);
+    el.print.textContent = '';
+    el.print.append(
+      h('div', { class: 'oc-ptop' }, h('h2', { id: 'oc-print-h', tabindex: '-1' }, '🖨 ', T('printH')), h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-label': T('close'), onclick: () => printPanel(false) }, '✕')),
+      h('div', { class: 'oc-prow' }, h('span', { class: 'oc-plab', id: 'oc-pn' }, T('printCount')),
+        h('span', { class: 'oc-pstep', role: 'group', 'aria-labelledby': 'oc-pn' },
+          h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-label': T('fewer'), disabled: PR.n <= 1, onclick: () => { PR.n = Math.max(1, PR.n - 1); paintPrint(); } }, '−'),
+          h('b', { class: 'oc-pnum', 'aria-live': 'polite' }, String(PR.n)),
+          h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-label': T('more'), disabled: PR.n >= maxQ, onclick: () => { PR.n = Math.min(maxQ, PR.n + 1); paintPrint(); } }, '+'))),
+      h('div', { class: 'oc-prow' }, h('span', { class: 'oc-plab', id: 'oc-pp' }, T('paper')),
+        h('span', { class: 'oc-pseg', role: 'group', 'aria-labelledby': 'oc-pp' }, tog(PR.paper === 'a4', T('a4'), () => { PR.paper = 'a4'; paintPrint(); }), tog(PR.paper === 'letter', T('letter'), () => { PR.paper = 'letter'; paintPrint(); }))),
+      canKey ? h('div', { class: 'oc-prow' }, tog(PR.key, `🔑 ${T('keyAdd')}`, () => { PR.key = !PR.key; paintPrint(); })) : null,
+      h('div', { class: 'oc-prow' }, h('span', { class: 'oc-plab', id: 'oc-ps' }, T('sheetNoH')),
+        h('button', { type: 'button', class: `oc-box oc-seed${seedSel ? ' oc-sel' : ''}`, dir: 'ltr', 'aria-labelledby': 'oc-ps', 'aria-pressed': String(seedSel), onclick: () => { S.sel = seedSel ? null : 'seed'; PR.retype = !seedSel; if (!seedSel && coarse()) keypad(true); paintPrint(); } }, String(PR.seed || '')),
+        A.gen ? h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => { PR.seed = 1 + Math.floor(Math.random() * 999998); paintPrint(); } }, '🎲 ', T('newSheet')) : null),
+      h('p', { class: 'oc-psmall' }, T('sheetType')),
+      h('div', { class: 'oc-prow' }, h('button', { type: 'button', class: 'oc-btn oc-primary', disabled: PR.busy || !PR.seed, onclick: doPrint }, '🖨 ', T('printGo')), h('span', { class: 'oc-pmsg', role: 'status' }, PR.msg)));
+  }
+  function doPrint() {
+    if (PR.busy || !PR.seed) return;
+    PR.busy = true; PR.msg = T('printBusy'); paintPrint();
+    let r = null; try { r = B().print({ k: 'canvas', seed: PR.seed, n: PR.n, paper: PR.paper, key: PR.key && B().canPrintKey === true }); } catch (e) { r = null; }
+    Promise.resolve(r).then(x => {
+      PR.busy = false;
+      PR.msg = x && x.ok ? T('printOk') : T(x && x.error === 'tap' ? 'printTap' : x && x.error === 'key' ? 'keyTeacher' : x && x.error === 'notAllowed' ? 'printNo' : 'printErr');
+      paintPrint();
+    });
   }
   function keypad(on) { S.keys = !!on; el.keys.hidden = !S.keys; el.keyBtn.setAttribute('aria-pressed', String(S.keys)); }
   const coarse = () => typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
@@ -285,6 +347,8 @@ export function activity(input) {
   addEventListener('keydown', e => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (/^[0-9]$/.test(e.key) && S.sel) { e.preventDefault(); typeDigit(+e.key); }
+    else if ((e.key === '.' || e.key === ',') && S.sel === 'fig') { e.preventDefault(); typeDigit('.'); }
+    else if (e.key === 'Escape' && PR.open) { printPanel(false); }
     else if (e.key === 'Backspace' && S.sel) { e.preventDefault(); typeDigit(null); }
   });
   // "Stuck?" lights up after 45 s without a move, the same as the Big Divide
@@ -297,7 +361,9 @@ export function activity(input) {
   if (support === 'own') S.stepsOpen = false, paintSteps();
   const api = {
     version: VERSION, selfTest: () => selfTest(A, WORDS.en),
-    state: () => ({ screen: el.end.hidden ? 'work' : 'end', problem: S.i + 1, problems: S.set.length, right: S.right, wrong: S.wrong, tool: P() && P().tool, phase: S.phase, score: S.right, controls: 'none', support, supports: modes || [support] }),
+    state: () => ({ screen: el.end.hidden ? 'work' : 'end', problem: S.i + 1, problems: S.set.length, right: S.right, wrong: S.wrong, tool: P() && P().tool, phase: S.phase, score: S.right, controls: 'none', support, supports: modes || [support], purpose, seed: S.seed }),
+    /** The printable sheet for a seed (sheet.js), as data: what the page prints for this activity. */
+    sheet: (seed, n) => sheet(A, { seed, n, lang }),
   };
   call(() => { window.__brbTest = { state: api.state, start() {} }; });
   return api;
@@ -389,6 +455,24 @@ const VIEWS = {
       h('div', { class: 'oc-tray', role: 'group', 'aria-label': c.T('tiles') }, h('b', {}, c.T('tiles')), ...p.items.map((_, i) => (slots.includes(i) ? null : tile(i))), h('span', { class: 'oc-count' }, c.T('pickTile'))));
   },
 };
+/** A figure question (1.2.0): the figure (Oomba Figures, when its pinned tag is on the page), then the answer: a box
+ *  the kit's keypad and the digit keys type into (figure.number), or 2 to 4 answers to tap (figure.choice). */
+function figPic(p, c) {
+  if (!p.fig) return null;
+  const OF = typeof globalThis !== 'undefined' ? globalThis.OombaFigures : null;
+  if (!OF || typeof OF.draw !== 'function') { call(() => console.warn('[oomba] figure: add the pinned Oomba Figures tag (docs/figures-api.md)')); return h('p', { class: 'oc-figmiss' }, c.T('figMissing')); }
+  let el = null; const { kind, hide, ...data } = p.fig;
+  try { el = OF.draw(kind, { kind, ...data }, { lang: c.lang, title: p.q, hide: hide || false }); } catch (e) { el = null; }
+  return h('div', { class: 'oc-fig' }, el || h('p', { class: 'oc-figmiss' }, c.T('figMissing')));
+}
+VIEWS['figure.number'] = (p, st, c) => {
+  const on = c.sel === 'fig', typed = typeof st.typed === 'string' ? st.typed : '';
+  return h('div', { class: 'oc-stack oc-figq' }, figPic(p, c),
+    h('div', { class: 'oc-figans', dir: 'ltr' }, tapped(h('button', { type: 'button', class: `oc-box oc-figbox${on ? ' oc-sel' : ''}`, 'aria-pressed': String(on), 'aria-label': c.T('box'), disabled: c.locked }, typed), () => c.select(on ? null : 'fig')),
+      p.unit ? h('span', { class: 'oc-unit', dir: 'auto' }, p.unit) : null));
+};
+VIEWS['figure.choice'] = (p, st, c) => h('div', { class: 'oc-stack oc-figq' }, figPic(p, c),
+  h('div', { class: 'oc-choices', role: 'group', 'aria-label': c.T('figPickQ') }, ...p.choices.map((t, i) => tapped(h('button', { type: 'button', class: 'oc-btn oc-choice', 'aria-pressed': String(st.pick === i), disabled: c.locked, dir: 'auto' }, h('b', { 'aria-hidden': 'true' }, `${String.fromCharCode(65 + i)}`), ' ', t), () => c.set({ pick: i })))));
 function lineView(p, st, c, from) {
   const lo = p.lo * p.sub, hi = p.hi * p.sub, n = hi - lo, R = v => { const r = Array.isArray(v) ? { n: v[0], d: v[1] } : { n: v, d: 1 }; return (r.n * p.sub) / r.d; };
   const ticks = [];
@@ -420,4 +504,4 @@ function loadFont() {
   }
 }
 
-export { TOOLS, deal, selfTest, seeded, manipulativeOf, cleanProblem, WORDS, VERSION, MAX_COUNT };
+export { TOOLS, deal, selfTest, seeded, manipulativeOf, cleanProblem, WORDS, VERSION, MAX_COUNT, sheet, numText };

@@ -111,7 +111,7 @@ test('the arcade prompt is unchanged: SYSTEM_PROMPT and TOOLS never name the can
 // ---------------------------------------------------------------- the starter, the self-test, the save
 test('the activity starter: pinned tag, data as JSON, scanned clean, and it passes the self-test', async () => {
   const html = loadTemplate('canvas');
-  assert.equal(canvasVersion(html), CANVAS_LATEST); assert.equal(CANVAS_LATEST, '1.1.0', 'new activities pin Oomba Canvas 1.1.0');
+  assert.equal(canvasVersion(html), CANVAS_LATEST); assert.equal(CANVAS_LATEST, '1.2.0', 'new activities pin Oomba Canvas 1.2.0');
   assert.ok(activityData(html).data.problems.length >= 3);
   assert.deepEqual(autotest.canvasSelfTest(html), { ok: true, problems: [] });
   assert.equal(autotest.canvasSelfTest('<p>arcade</p>'), null);
@@ -163,7 +163,7 @@ test('/build/new: both cards; Classroom activity for a teacher and from their cl
   assert.match(c, /data-kind="activity" aria-pressed="true"/);
   assert.match(c, /<span class="su-for">[\s\S]*?For 4B · Grade 4<\/span>/); assert.match(c, /Make something for your class/);
   const d = pageData(c);
-  assert.deepEqual(d.canvas, { kind: 'activity', supports: ['watch', 'count', 'guided', 'own'], help: ['guided'], plays: ['devices', 'board', 'both'], grade: '4', forClass: true });
+  assert.deepEqual(d.canvas, { kind: 'activity', supports: ['watch', 'count', 'guided', 'own'], help: ['guided'], purposes: ['screen', 'worksheet', 'generator'], purpose: ['screen'], plays: ['devices', 'board', 'both'], grade: '4', forClass: true });
   assert.doesNotMatch(JSON.stringify(d), new RegExp(cls.id), 'the class id is not in the page data the plan is made from');
   assert.match(c, new RegExp(`href="/class/${cls.id}"`), 'the way back is the class');
   // a class this user does not teach: the page opens as usual (no grade, no chip)

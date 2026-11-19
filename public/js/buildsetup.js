@@ -10,18 +10,18 @@ import { api, toast, sheet, esc, $, $$, t } from '/js/app.js';
 import { LANG } from '/js/i18n.js';
 
 // "What are you making?" comes first: a Classroom activity (four short steps: what to practise, on the start screen;
-// your lesson; how much help; how it is played) or an Arcade game (the steps below, unchanged). D.canvas.kind is the
+// your lesson; what it is for; how much help; how it is played) or an Arcade game (the steps below, unchanged). D.canvas.kind is the
 // card that starts selected (a teacher, or opened from a class); one tap switches. An activity's plan is { kind:
 // 'activity', topic, help: [modes], played, grade, lesson: { text, doc } } (builder/plan.js): the topic, the class's
 // grade and what they add about their lesson, never the class or its students. "Your lesson" is optional: a file
 // (teachers: read on the server, never kept; only its text comes back, with the names of their students, emails and
 // phone numbers already taken out) and a box to describe what they want. "How much help?" takes one or more.
 const D = JSON.parse($('#page-data').textContent);
-const STEPS = D.steps, KEYS = STEPS.map(s => s.key), CSTEPS = ['lesson', 'help', 'played'];
+const STEPS = D.steps, KEYS = STEPS.map(s => s.key), CSTEPS = ['lesson', 'purpose', 'help', 'played'];
 const ORDER = ['start', ...KEYS, ...CSTEPS, 'plan'];
 const order = () => (S.kind === 'activity' ? ['start', ...CSTEPS, 'plan'] : ['start', ...KEYS, 'plan']);
 const stepOf = key => STEPS.find(s => s.key === key) || (CSTEPS.includes(key) ? { key } : null);
-const S = { kind: D.canvas.kind, topicText: '', lesson: { text: '', doc: null, busy: false }, screen: 'start', sel: { type: [], look: [], world: [], chars: [], play: [], learn: [], help: [...D.canvas.help], played: ['devices'] }, idea: { type: '', world: '', chars: '', learn: '' }, notes: '', files: [], back: null, gameId: null, busy: false, playPicked: false };
+const S = { kind: D.canvas.kind, topicText: '', lesson: { text: '', doc: null, busy: false }, screen: 'start', sel: { type: [], look: [], world: [], chars: [], play: [], learn: [], help: [...D.canvas.help], purpose: [...D.canvas.purpose], played: ['devices'] }, idea: { type: '', world: '', chars: '', learn: '' }, notes: '', files: [], back: null, gameId: null, busy: false, playPicked: false };
 const list = items => { try { return new Intl.ListFormat(LANG, { style: 'long', type: 'conjunction' }).format(items); } catch { return items.join(', '); } };
 const say = msg => { const l = $('#su-live'); l.textContent = ''; setTimeout(() => { l.textContent = msg; }, 30); };
 
@@ -237,6 +237,22 @@ function paintHelp() {
   for (const b of $$('.su-cbox')) { const on = S.sel.help.includes(b.dataset.help); b.checked = on; b.closest('.su-card').classList.toggle('is-on', on); }
 }
 
+// ---------------------------------------------------------------- "What is it for?": one or more (checkboxes)
+// Practice on screen, a printable worksheet, a question generator (builder/plan.js PURPOSES); at least one.
+const PURPOSE_ORDER = D.canvas.purposes;
+function togglePurpose(box) {
+  const id = box.dataset.purpose, on = box.checked;
+  if (!on && S.sel.purpose.length === 1 && S.sel.purpose[0] === id) {
+    box.checked = true; $('#su-purpose-one').hidden = false; say(t('js.buildsetup.lesson.atLeastOne')); return;
+  }
+  $('#su-purpose-one').hidden = true;
+  S.sel.purpose = PURPOSE_ORDER.filter(p => (p === id ? on : S.sel.purpose.includes(p)));
+  paintPurpose();
+}
+function paintPurpose() {
+  for (const b of $$('.su-pbox')) { const on = S.sel.purpose.includes(b.dataset.purpose); b.checked = on; b.closest('.su-card').classList.toggle('is-on', on); }
+}
+
 // ---------------------------------------------------------------- "Your lesson": a file and a box (all optional)
 const L = D.lesson;
 const nf = n => { try { return new Intl.NumberFormat(LANG).format(n); } catch { return String(n); } };
@@ -285,7 +301,7 @@ const ideaOf = key => S.idea[key].trim().replace(/\s+/g, ' ');
 /** The choices as the Builder gets them: pack choices by id, typed ones as custom text; blank means it decides. */
 function buildPlan() {
   const from = D.canvas.forClass ? { forClass: true } : {};
-  if (S.kind === 'activity') { const lesson = lessonOf(); return { kind: 'activity', topic: topicOf(), help: [...S.sel.help], played: S.sel.played[0] || 'devices', grade: D.canvas.grade || '', ...(lesson ? { lesson } : {}), ...from }; }
+  if (S.kind === 'activity') { const lesson = lessonOf(); return { kind: 'activity', topic: topicOf(), help: [...S.sel.help], purpose: [...S.sel.purpose], played: S.sel.played[0] || 'devices', grade: D.canvas.grade || '', ...(lesson ? { lesson } : {}), ...from }; }
   const skip = skipped();
   const one = key => { const id = S.sel[key][0]; if (!id || skip.includes(key)) return null; if (id === 'else') return ideaOf(key) ? { from: 'custom', text: ideaOf(key) } : null; return { from: 'pack', id }; };
   return {
@@ -331,6 +347,7 @@ function renderActivityPlan() {
     ['kind', t('js.buildsetup.canvas.activity'), 'start'],
     ['practise', topic ? topic.text : t('js.buildsetup.plan.decides'), 'start'],
     ['lesson', lessonVal, 'lesson'],
+    ['purpose', list(S.sel.purpose.map(id => $(`.su-pbox[data-purpose="${id}"]`).closest('label').querySelector('.su-name').textContent)), 'purpose'],
     ['help', list(S.sel.help.map(id => $(`.su-cbox[data-help="${id}"]`).closest('label').querySelector('.su-name').textContent)), 'help'],
     ['played', nameOf('played', S.sel.played[0]), 'played'],
   ];
@@ -449,6 +466,7 @@ $('#su-guide').addEventListener('click', () => show(KEYS[0]));
 $('#su-cnext').addEventListener('click', () => show(CSTEPS[0]));
 for (const b of $$('.su-kind')) b.addEventListener('click', () => setKind(b.dataset.kind));
 for (const b of $$('.su-cbox')) b.addEventListener('change', () => toggleHelp(b));
+for (const b of $$('.su-pbox')) b.addEventListener('change', () => togglePurpose(b));
 $('#su-ltext').addEventListener('input', e => { S.lesson.text = e.target.value; paintCount(); });
 if (L.file) {
   $('#su-lfile-btn').addEventListener('click', () => $('#su-lfile').click());
@@ -472,4 +490,4 @@ $('#su-file').addEventListener('change', e => { addFiles([...e.target.files]); e
 refreshLimits();
 if (D.typeGroups.length) showGroup(D.typeGroups[0].id);
 paintProgress();
-setKind(S.kind); paintHelp(); paint('played'); paintCount();
+setKind(S.kind); paintHelp(); paintPurpose(); paint('played'); paintCount();

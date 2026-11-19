@@ -15,9 +15,13 @@
 //   key(p)        a short id, so a fresh set never deals the same problem twice
 // A value that is a fraction is [n, d] in a v: the game draws it stacked, and reads it as "n/d".
 
+import { evalExpr } from './expr.js';
+
 export const MAX_PROBLEMS = 30;
 export const MAX_COUNT = 12;
 export const SUPPORTS = ['watch', 'count', 'guided', 'own'];
+/** 1.2.0, config.purpose: practice on screen, a printable worksheet (with its answer key), a question generator. */
+export const PURPOSES = ['screen', 'worksheet', 'generator'];
 
 /** A small seeded random source (the same xorshift as the dashboard's seeded()): a fresh set per student. */
 export function seeded(seed) { let s = (seed >>> 0) || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
@@ -327,12 +331,141 @@ const order = {
   key: p => `order:${p.dir}:${JSON.stringify(p.items)}`,
 };
 
-/** Every tool, by id. The four manipulatives: fractions, numberline, digits, tiles. */
+// ---------------------------------------------------------------- figure questions (1.2.0)
+// A question about a figure (Oomba Figures, docs/figures-api.md): the student reads the figure and types a number
+// (figure.number) or taps one of 2 to 4 answers (figure.choice). The Builder writes the question, the figure's data,
+// the answer and the WORKED answer (the lines the answer key prints, and the student sees after a second try); the kit
+// checks the answer exactly (to dp decimal places) and the self-test checks the worked answer ends on it.
+//   figure.number { q, fig?: { kind, ...data }, answer: a number 0 or more, dp?: decimal places (0 to 3), unit?,
+//                   work: [lines], hints?: [1 to 3 lines], tol?: how far off still counts }
+//   figure.choice { q, fig?, choices: [2 to 4 short answers], answer: the index of the right one, work, hints? }
+// A generator makes fresh ones from a template: { tool, vars: { m: [lo, hi] | [lo, hi, step] | { of: [values] } },
+// where?: a formula that must hold, q, fig, answer: a number or a formula, dp, unit, work, hints, choices }: in text
+// "{m}" is a value and "{=m*a}" a formula (canvas/src/expr.js: + - * / ^, sqrt, sin in degrees, round...); in the
+// figure's data a string that is only "{m}" or "{=formula}" becomes the number itself.
+const FIG_JSON_MAX = 4000;
+const figLine = (s, n) => (typeof s === 'string' ? s.replace(/\s+/g, ' ').trim().slice(0, n) : '');
+const figLines = (v, lo, hi) => (Array.isArray(v) && v.length >= lo && v.length <= hi && v.every(x => typeof x === 'string' && x.trim() && x.length <= 160) ? v.map(x => x.replace(/\s+/g, ' ').trim()) : null);
+/** A figure's data: undefined -> null (no figure); a { kind } object of at most 4,000 characters -> a copy; else false. */
+function figData(f) {
+  if (f === undefined || f === null) return null;
+  if (!f || typeof f !== 'object' || Array.isArray(f) || typeof f.kind !== 'string' || !/^[a-zA-Z]{2,20}$/.test(f.kind)) return false;
+  const s = JSON.stringify(f); return s.length > FIG_JSON_MAX ? false : JSON.parse(s);
+}
+/** A number as the kit writes and reads it: at most dp decimals, no trailing zeros, a point for the decimal mark. */
+export function numText(x, dp = 3) { const k = 10 ** dp, r = Math.round((x + Math.sign(x) * 1e-12) * k) / k; return String(r === 0 ? 0 : r); }
+const decimalsOf = x => { const s = numText(x, 6); return s.includes('.') ? s.split('.')[1].length : 0; };
+const figCommon = (p, tool, T) => {
+  if (typeof p.why === 'string') return fail(`the generator: ${p.why}`, T.clean);
+  const q = figLine(p.q, 200); if (!q) return fail('"q" must be the question (one or two short sentences)', T.clean);
+  const fig = figData(p.fig); if (fig === false) return fail('"fig" must be a figure: { "kind": one of the Oomba Figures, ...its data } (at most 4,000 characters)', T.clean);
+  const work = figLines(p.work, 1, 6); if (!work) return fail('"work" must be the worked answer: 1 to 6 short lines, the last one ending on the answer', T.clean);
+  const hints = p.hints === undefined ? null : figLines(p.hints, 1, 3); if (p.hints !== undefined && !hints) return fail('"hints" must be 1 to 3 short lines', T.clean);
+  return { tool, q, ...(fig ? { fig } : {}), work, ...(hints ? { hints } : {}) };
+};
+const FIG_STEPS = (p, last) => [{ k: 'figRead', v: {} }, { k: 'figWork', v: {} }, last, PRESS];
+const figHints = p => (p.hints ? p.hints.map(text => ({ text })) : [{ k: 'figH1', v: {} }, { k: 'figH2', v: {} }, { k: 'figH3', v: {} }]);
+const figNumber = {
+  clean(p) {
+    const T = figNumber, c = figCommon(p, 'figure.number', T); if (!c) return null;
+    if (typeof p.answer !== 'number' || !Number.isFinite(p.answer) || p.answer < 0 || p.answer > 1e7) return fail('"answer" must be a number from 0 up (ask for a size and say any direction in words: the keypad has no minus sign)', T.clean);
+    const dp = p.dp === undefined ? Math.min(3, decimalsOf(p.answer)) : p.dp;
+    if (!isInt(dp, 0, 3)) return fail('"dp" (decimal places in the answer) must be 0 to 3', T.clean);
+    if (Math.abs(+numText(p.answer, dp) - p.answer) > 1e-9) return fail(`"answer" ${p.answer} has more than ${dp} decimal places: round it, or raise "dp"`, T.clean);
+    if (p.tol !== undefined && (typeof p.tol !== 'number' || !(p.tol >= 0) || p.tol > Math.max(1, p.answer))) return fail('"tol" must be a small number 0 or more', T.clean);
+    const unit = figLine(p.unit, 12);
+    return { ...c, answer: +numText(p.answer, dp), dp, ...(unit ? { unit } : {}), ...(p.tol !== undefined ? { tol: p.tol } : {}) };
+  },
+  start: () => ({ typed: '' }),
+  check(p, st) {
+    const t = st && typeof st.typed === 'string' ? st.typed : '';
+    if (!/\d/.test(t)) return { ok: false, hint: { k: 'fbNum', v: {} } };
+    const v = Number(t);
+    if (!Number.isFinite(v)) return { ok: false, hint: { k: 'fbNum', v: {} } };
+    return Math.abs(v - p.answer) <= (p.tol || 0) + 1e-9 ? { ok: true, hint: null } : { ok: false, hint: { k: 'fbFig', v: {} } };
+  },
+  solve: p => ({ typed: numText(p.answer, p.dp) }),
+  steps: p => FIG_STEPS(p, { k: p.unit ? 'figTypeU' : 'figType', v: { u: { text: p.unit || '' } } }),
+  hints: figHints,
+  task: p => ({ text: p.q }),
+  ask: p => (p.dp ? { k: 'figAskDp', v: { dp: p.dp } } : { k: 'figAsk', v: {} }),
+  gen: (rnd, o) => figGen(rnd, o, 'figure.number'),
+  key: p => `fn:${p.q}:${p.answer}`,
+};
+const figChoice = {
+  clean(p) {
+    const T = figChoice, c = figCommon(p, 'figure.choice', T); if (!c) return null;
+    const ch = Array.isArray(p.choices) && p.choices.length >= 2 && p.choices.length <= 4 ? p.choices.map(x => figLine(typeof x === 'number' ? String(x) : x, 60)) : null;
+    if (!ch || ch.some(x => !x) || new Set(ch.map(x => x.toLowerCase())).size !== ch.length) return fail('"choices" must list 2 to 4 different short answers', T.clean);
+    if (!isInt(p.answer, 0, ch.length - 1)) return fail('"answer" must be the index of the right choice (0 for the first)', T.clean);
+    return { ...c, choices: ch, answer: p.answer };
+  },
+  start: () => ({ pick: null }),
+  check(p, st) {
+    const k = st && st.pick;
+    if (!isInt(k, 0, p.choices.length - 1)) return { ok: false, hint: { k: 'fbPickOne', v: {} } };
+    return k === p.answer ? { ok: true, hint: null } : { ok: false, hint: { k: 'fbFig', v: {} } };
+  },
+  solve: p => ({ pick: p.answer }),
+  steps: p => FIG_STEPS(p, { k: 'figPick', v: {} }),
+  hints: figHints,
+  task: p => ({ text: p.q }),
+  ask: () => ({ k: 'figPickQ', v: {} }),
+  gen: (rnd, o) => figGen(rnd, o, 'figure.choice'),
+  key: p => `fc:${p.q}:${p.choices.join('|')}`,
+};
+/** One problem from a figure generator's template (see above), or an object clean() turns away with its reason. */
+function figGen(rnd, o, tool) {
+  const vars = o && o.vars && typeof o.vars === 'object' && !Array.isArray(o.vars) ? o.vars : {};
+  const names = Object.keys(vars).filter(k => /^[a-zA-Z_][a-zA-Z0-9_]{0,15}$/.test(k)).slice(0, 8);
+  let val = null;
+  for (let tries = 0; tries < 40 && !val; tries++) {
+    const v = {};
+    for (const k of names) {
+      const r = vars[k];
+      if (Array.isArray(r) && r.length >= 2 && r.length <= 3 && r.every(x => typeof x === 'number' && Number.isFinite(x)) && r[1] >= r[0]) {
+        const step = r[2] > 0 ? r[2] : 1, n = Math.floor((r[1] - r[0]) / step + 1e-9);
+        v[k] = +numText(r[0] + between(rnd, 0, Math.min(n, 100000)) * step, 6);
+      } else if (r && Array.isArray(r.of) && r.of.length) v[k] = pick(rnd, r.of.slice(0, 50));
+      else return { tool, why: `vars.${k} must be [lo, hi], [lo, hi, step] or { "of": [values] }` };
+    }
+    try { if (typeof o.where !== 'string' || evalExpr(o.where, numsOf(v))) val = v; } catch (e) { return { tool, why: `"where": ${e.message}` }; }
+  }
+  if (!val) return { tool, why: '"where" was never true for the values: widen the ranges' };
+  const nums = numsOf(val), dp = isInt(o.dp, 0, 3) ? o.dp : undefined;
+  const fill = s => String(s).replace(/\{=([^{}]{1,200})\}/g, (m, e) => numText(evalExpr(e, nums), 3)).replace(/\{([a-zA-Z_][a-zA-Z0-9_]{0,15})\}/g, (m, k) => (k in val ? String(val[k]) : m));
+  const deep = x => {
+    if (typeof x === 'string') { const one = /^\{=([^{}]{1,200})\}$/.exec(x), name = /^\{([a-zA-Z_][a-zA-Z0-9_]{0,15})\}$/.exec(x); return one ? +numText(evalExpr(one[1], nums), 6) : name && name[1] in val ? val[name[1]] : fill(x); }
+    if (Array.isArray(x)) return x.map(deep);
+    if (x && typeof x === 'object') return Object.fromEntries(Object.entries(x).map(([k, y]) => [k, deep(y)]));
+    return x;
+  };
+  try {
+    const answer = typeof o.answer === 'string' ? evalExpr(o.answer, nums) : o.answer;
+    return {
+      tool, q: fill(o.q || ''), ...(o.fig ? { fig: deep(o.fig) } : {}), work: Array.isArray(o.work) ? o.work.map(fill) : o.work,
+      ...(Array.isArray(o.hints) ? { hints: o.hints.map(fill) } : {}), ...(o.unit ? { unit: fill(o.unit) } : {}), ...(o.tol !== undefined ? { tol: o.tol } : {}),
+      ...(tool === 'figure.choice' ? { choices: Array.isArray(o.choices) ? o.choices.map(fill) : o.choices, answer: Math.round(answer) } : { answer: dp === undefined ? +numText(answer, 3) : +numText(answer, dp), ...(dp !== undefined ? { dp } : {}) }),
+    };
+  } catch (e) { return { tool, why: String(e.message) }; }
+}
+/** Does the last worked line say this answer? A number must stand on its own ("= 6 N" says 6, "16" does not); a decimal
+ *  comma reads as a point ("9,8"), and a thousands comma or space is ignored ("1,200", "1 200"). */
+const lastHas = (lines, ans) => {
+  const raw = String(lines[lines.length - 1] || '').toLowerCase(), a = String(ans).toLowerCase();
+  if (!/^[\d.]+$/.test(a)) return raw.includes(a);
+  const l = raw.replace(/(\d)[, \u00a0\u202f](?=\d{3}(?!\d))/g, '$1').replace(/(\d),(?=\d)/g, '$1.');
+  return new RegExp(`(^|[^\\d.])${a.replace('.', '\\.')}(?!\\d|\\.\\d)`).test(l);
+};
+const numsOf = v => Object.fromEntries(Object.entries(v).filter(([, x]) => typeof x === 'number'));
+
+/** Every tool, by id. The four manipulatives (fractions, numberline, digits, tiles) and, since 1.2.0, figure questions. */
 export const TOOLS = {
   'fractions.equiv': equiv, 'fractions.shade': shade, 'fractions.compare': compare,
   'numberline.point': point, 'numberline.jump': jump,
   'digits.add': colTool('digits.add'), 'digits.sub': colTool('digits.sub'), 'digits.mul': colTool('digits.mul'),
   'tiles.sort': sort, 'tiles.order': order,
+  'figure.number': figNumber, 'figure.choice': figChoice,
 };
 export const TOOL_IDS = Object.keys(TOOLS);
 export const manipulativeOf = id => String(id || '').split('.')[0];
@@ -347,9 +480,10 @@ export function cleanProblem(raw) {
   return p ? { p } : { why: T.clean.why || 'not a problem this tool can make' };
 }
 /** Deal a set: the fixed problems, or count new ones from the generator (fresh: never one from seen). */
-export function deal(activity, { seed = 1, seen = [] } = {}) {
+export function deal(activity, { seed = 1, seen = [], count: want = null } = {}) {
   const a = activity || {}, cfg = a.config || {};
-  const count = isInt(cfg.count, 1, MAX_COUNT) ? cfg.count : 5;
+  // want (1.2.0): a printed sheet's own number of questions (up to MAX_PROBLEMS); else the set's config.count
+  const count = isInt(want, 1, MAX_PROBLEMS) ? want : isInt(cfg.count, 1, MAX_COUNT) ? cfg.count : 5;
   const gen = a.gen && TOOLS[a.gen.tool] ? a.gen : null;
   if (gen && (cfg.fresh !== false || !Array.isArray(a.problems) || !a.problems.length)) {
     const rnd = seeded(seed), T = TOOLS[gen.tool], keys = new Set(seen), out = [];
@@ -362,7 +496,8 @@ export function deal(activity, { seed = 1, seen = [] } = {}) {
     for (let i = 0; out.length < count && i < count * 4; i++) { const c = cleanProblem(T.gen(rnd, gen)); if (c.p) out.push(c.p); }
     return out;
   }
-  return (Array.isArray(a.problems) ? a.problems : []).slice(0, MAX_PROBLEMS).map(x => cleanProblem(x).p).filter(Boolean);
+  const fixed = (Array.isArray(a.problems) ? a.problems : []).slice(0, MAX_PROBLEMS).map(x => cleanProblem(x).p).filter(Boolean);
+  return isInt(want, 1, MAX_PROBLEMS) ? fixed.slice(0, want) : fixed;
 }
 
 /**
@@ -396,13 +531,34 @@ export function selfTest(activity, words = null) {
     const steps = T.steps(p), hints = T.hints(p);
     if (!Array.isArray(steps) || !steps.length) return add(at, 'it has no steps');
     if (!Array.isArray(hints) || !hints.length || hints.length > 3) return add(at, 'it needs one to three hints');
-    if (words) for (const x of [T.task(p), T.ask(p), ...steps, ...hints]) if (!(x.k in words)) return add(at, `the words table has no "${x.k}"`);
+    if (words) for (const x of [T.task(p), T.ask(p), ...steps, ...hints]) if (x.text === undefined && !(x.k in words)) return add(at, `the words table has no "${x.k}"`);
+    // 1.2.0, figure questions: the worked answer (what the answer key prints) must end on the answer itself
+    if (p.tool === 'figure.number' && !lastHas(p.work, numText(p.answer, p.dp))) return add(at, `the worked answer must end on the answer: its last line does not say ${numText(p.answer, p.dp)}`);
+    if (p.tool === 'figure.choice' && !lastHas(p.work, p.choices[p.answer])) return add(at, `the worked answer must end on the answer: its last line does not say "${p.choices[p.answer]}"`);
     return null;
   };
   fixed.slice(0, MAX_PROBLEMS).forEach((raw, i) => one(raw, `problem ${i + 1}`));
   if (gen && TOOLS[gen.tool]) {
     const T = TOOLS[gen.tool];
     for (let i = 1; i <= 30; i++) { const raw = T.gen(seeded(i * 7919), gen); if (!cleanProblem(raw).p || one(raw, 'generator') !== null) { if (!cleanProblem(raw).p) add('generator', `made a problem it cannot use (${cleanProblem(raw).why})`); break; } if (out.some(x => x.at === 'generator')) break; }
+  }
+  // 1.2.0: what the activity is for. A question generator needs a generator; a printed worksheet needs problems (or a
+  // generator), and a sheet of N questions must have N answers in its key (sheet.js makes both from the same problems).
+  if (cfg.purpose !== undefined) {
+    const pu = cfg.purpose;
+    if (!Array.isArray(pu) || !pu.length || pu.some(x => !PURPOSES.includes(x)) || new Set(pu).size !== pu.length) add('config', `purpose must be a list of one to three of ${PURPOSES.join(', ')}, each once`);
+    else {
+      if (pu.includes('generator') && !(gen && TOOLS[gen.tool])) add('config', 'purpose "generator" needs a generator ("gen"): each New sheet is a fresh set from it');
+      if (pu.includes('worksheet') || pu.includes('generator')) {
+        const n = isInt(cfg.count, 1, MAX_COUNT) ? cfg.count : 5, want = gen && TOOLS[gen.tool] ? n : Math.min(n, fixed.length);
+        for (const seed of [1, 2]) {
+          const set = deal(a, { seed, count: want });
+          if (set.length !== want) { add('worksheet', `a printed sheet of ${want} questions came out with ${set.length}`); break; }
+          const keyed = set.filter(p => { const T = TOOLS[p.tool], st = T.solve(p); return st && T.check(p, st).ok; });
+          if (keyed.length !== set.length) { add('worksheet', `a printed sheet of ${want} questions has only ${keyed.length} answers in its key`); break; }
+        }
+      }
+    }
   }
   // The Builder's own steps and hints (text only): short lines, at most 3 hints a tool.
   for (const [k, list] of Object.entries(a.steps && typeof a.steps === 'object' ? a.steps : {})) if (!TOOLS[k] || !Array.isArray(list) || list.length > 6 || list.some(s => typeof s !== 'string' || !s.trim() || s.length > 160)) add('steps', `steps for "${k.slice(0, 30)}" must be up to 6 short lines for a known tool`);

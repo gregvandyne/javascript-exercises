@@ -8767,3 +8767,72 @@ Round two of The Big Divide, in the order the owner asked for, plus three change
   code, play, practice); the edge cases. Fixed: the speaker blink above; a carry into the millions (9999 × 999) had no
   place name; decimal chunks in a list and Russian plurals were refused by the voice. Left as is: a subtraction's bottom
   number is 10 or more (so 1000 − 1 is 1000 − 10 here), and partial products stay whole numbers only.
+
+## Figures for science, maths and graphs; "What is it for?"; Oomba Canvas 1.2.0 (19 Nov 2026)
+
+The owner looked at worksheet figure generators (free-body diagrams, ray diagrams, circuits, motion graphs, Bohr models,
+Lewis structures, scale readings, half-life and titration curves) and asked for two things: the Builder should draw
+such figures with open-source libraries under suitable licences, and a classroom activity should be able to print.
+
+**Feature 1: figure libraries** (`docs/figures-api.md`, `docs/third-party.md`).
+- **Vendored, pinned, locked.** JSXGraph 1.14.3 (MIT OR LGPL-3.0-or-later; we use it under **MIT** and record that in
+  its manifest and the notice) and SmilesDrawer 2.4.2 (MIT; its bundled chroma-js is BSD-3-Clause) are copied from npm
+  by `scripts/vendor-figures.js` into `public/vendor/<lib>/<version>/`, each with the package's own LICENSE file and a
+  `manifest.json` of sha256 and sha384 hashes. The script refuses a package whose licence is not the one checked from
+  its LICENSE file. `figures/SHIPPED.json` locks every file. No GPL code: no CircuitJS, no PhET; Ketcher is too big;
+  matter-js is not needed because Phaser 3.90 (already vendored) carries Matter physics. None of the owner's example
+  sites' code (their figures are CC0, their code is not open) was copied or looked at.
+- **Allowed exactly like the kits.** `server/services/figlibs.js` makes the one tag per library (pinned URL, SRI hash,
+  `crossorigin="anonymous"`); the scanner admits exactly those (`checkFigures`) and fails anything else naming their
+  folders; the frame CSP lists the three pinned files **file by file** (never a folder, scripts only); the screenshot
+  worker serves only those files. JSXGraph and SmilesDrawer both run under the frame's CSP (no `unsafe-eval`): a
+  browser test draws a board and a structure inside the real sandboxed frame.
+- **Oomba Figures 1.0.0** (`figures/src`, built by `scripts/build-figures.js` into a pinned, versioned file, MIT): 14
+  kinds as plain SVG, pure functions (`OF.svg` gives the text anywhere; `OF.draw` the element; `OF.check` names what
+  is wrong in plain English). Plain SVG rather than JSXGraph for the ready figures, because the same code then prints
+  on the server (a printed worksheet cannot run scripts) and is unit-tested without a browser; JSXGraph is there for
+  interactive boards (`OF.board`, in the Oomba colours) and SmilesDrawer for skeletal structures (`OF.structure`).
+  Every figure is drawn **to scale** from its numbers and refuses data it cannot draw truthfully (see the page); the
+  tests check arrow lengths, the lens and mirror equations against the drawn rays, electron counts, the reading's
+  position and the titration chemistry. `hide` leaves the answer out; `print` is black on white; figures never mirror
+  in Hebrew and Arabic, their labels read right to left by themselves; default words in every site language.
+- **Builder rules.** `FIGURE_RULES` (generated from the page, like the CANVAS RULES, with the pinned tags) go to the
+  model only when a build calls for figures: the plan's `figures` flag (set from the topic, the lesson and its file,
+  or the note), figure words in the message in any site language (`server/builder/figures.js`), or a version that
+  already loads a figure library. The arcade `SYSTEM_PROMPT` and `TOOLS` hash is unchanged. The CANVAS RULES point to
+  the FIGURE RULES. The playtest checks that a build with figures loads them only from the pinned tags and shows at
+  least one `<svg>`; the activity self-test runs `OF.check` on every figure (and three sets from a generator) with the
+  pinned Oomba Figures file and requires its tag.
+
+**Feature 2: "What is it for?"** — a **separate step** right after "Your lesson" (lesson, what is it for, help, how
+it is played, plan). Not merged into "How it is played": that step is one answer about devices and the board, this
+one is one or more answers about what the activity produces, and merging would make one card grid mean two things.
+Practice on screen, Printable worksheet, Question generator; checkboxes like "How much help?", at least one, Practice on
+screen to start. The plan keeps `purpose: [...]`; `normalisePlan` reads a missing or empty one as `['screen']`, and the
+plan sentence says nothing extra for the default, so older plans read as before. The plan summary has a "For" row.
+
+**Oomba Canvas 1.2.0** (new files; 1.0.0 and 1.1.0 byte-for-byte unchanged, tests check both folders' manifests and
+every file; the scanner admits all three tags). `config.purpose`; figure questions (`figure.number` with a typed answer
+and a decimal point on the keypad, `figure.choice`) with their own worked answers, and template generators (`vars`,
+`{m}`, `{=formula}`) in a small safe formula language (`canvas/src/expr.js`: parsed by hand, no eval); "🎲 New sheet"
+for a generator; and **🖨 Print worksheet**. The frame cannot print (no `allow-modals`), so it reuses The Big Divide's
+pipeline: the kit sends numbers only (`{ k: 'canvas', seed, n, paper, key }`), the play page (and now the Studio's
+preview) asks `POST /api/games/:id/print`, and `server/services/canvas-print.js` builds the page from the version's own
+data with the kit's own frozen file (`sheet.js`) and the pinned Oomba Figures file, in the viewer's language, escaped.
+A4 or US Letter (named CSS pages), name and date lines, numbered questions with figures and answer lines, the sheet
+number in the footer (the same number makes the same sheet again; it can be typed back with the kit's keypad), and the
+answer key with worked answers on a page of its own. No student data on the sheet.
+
+**Who may print the key.** Roles reach the frame only as flags the server sets in `INIT`; there is a reliable one, so
+the key is not limited to the preview: `INIT.printKey` (the SDK's `BRB.canPrintKey`) is set for the activity's maker
+(the Studio's preview and their own play page) and for school staff, never for a student; the kit shows the key option
+only then, and the print route refuses `key: true` from anyone else.
+
+**Self-test.** A version is refused when a figure question's worked answer does not end on its answer (the key would
+disagree with the work), when a printed sheet of N questions would not have N answers, when "generator" has no `gen`,
+or when a figure's data fails `OF.check`.
+
+**Deferred.** Skeletal (SmilesDrawer) structures on printed sheets (they need a browser; use a Lewis structure in a
+worksheet), energy-level diagrams, compound circuits beyond one level of branches, thick lenses, and moving physics
+figures. The mock Builder builds a small figure activity (a free-body question, a Bohr model, a thermometer reading and
+a ray diagram) for figure topics.

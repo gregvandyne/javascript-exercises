@@ -28,6 +28,7 @@ import { KIT2_WORLDS, KIT2_CHARACTERS, KIT2_CREATURE_GROUPS, KIT2_GROUP_LIST, WO
 import { ART2D_CHARACTERS, ART2D_WORLD_IDS, ART2D_TEMPLATES, art2dCharacter, art2dFriends, isArt2dGame, wantsArt2d } from './art2d.js';
 import { BUILDER_TEMPLATE_KEYS } from './catalog.js';
 import { tEn, lookup, CODES } from '../i18n/index.js';
+import { figureWords, planText } from './figures.js';
 
 export const PLAN_VERSION = 1;
 // characters: as many as they like ("Select all" on every group picks everyone there is), with room to grow.
@@ -146,6 +147,18 @@ export function helpOf(help, support) {
 /** "How will it be played?" for an activity: on their own devices (results to Progress), on the board together (the
  *  teacher drives, no score), or both. Live comes later (phase 3). */
 export const CANVAS_PLAYS = ['devices', 'board', 'both'];
+/** "What is it for?" (the step after "Your lesson"): practice on screen, a printable worksheet (questions with figures and
+ *  an answer key on its own page), a question generator (each "New sheet" a fresh set, on screen or on paper). One or
+ *  more; Practice on screen to start. Oomba Canvas 1.2.0's config.purpose takes exactly these. */
+export const PURPOSES = ['screen', 'worksheet', 'generator'];
+/** The purpose a plan or page sent -> the answers in PURPOSES order, no repeats; nothing known (an older page): screen. */
+export function purposeOf(raw) {
+  const list = Array.isArray(raw) ? raw : typeof raw === 'string' ? [raw] : [];
+  const out = PURPOSES.filter(p => list.includes(p));
+  return out.length ? out : ['screen'];
+}
+/** Does the purpose ask for printing (a worksheet or a generator)? */
+export const printsPurpose = purpose => purposeOf(purpose).some(p => p !== 'screen');
 export const GRADES = ['K', '1', '2', '3', '4', '5', '6', '7', '8'];
 /** The class's grade as the steps use it: 'K', '1'...'8', or '' (a grade of another shape, or none). */
 export const gradeOf = g => { const v = String(g ?? '').trim().toUpperCase().replace(/^GRADE\s*/, '').replace(/^0+(?=\d)/, ''); return GRADES.includes(v) ? v : ''; };
@@ -288,12 +301,16 @@ function activityPlan(raw) {
   const t = raw.topic && typeof raw.topic === 'object' ? raw.topic : null, chip = t && typeof t.id === 'string' ? topicById(t.id) : null;
   const text = t && !chip ? clean(t.text, LIMITS.idea) : '', grade = gradeOf(raw.grade);
   const help = helpOf(raw.help, raw.support), lesson = lessonOf(raw.lesson);
-  return {
+  const plan = {
     v: PLAN_VERSION, kind: 'activity', topic: chip ? { id: chip.id } : text ? { text } : null, tool: chip ? chip.gen.tool : '',
-    help, support: help[0], played: CANVAS_PLAYS.includes(raw.played) ? raw.played : 'devices', grade,
+    help, support: help[0], purpose: purposeOf(raw.purpose), played: CANVAS_PLAYS.includes(raw.played) ? raw.played : 'devices', grade,
     type: null, look: null, world: null, characters: [], learn: [], notes: clean(raw.notes, LIMITS.notes), ...(raw.forClass === true ? { forClass: true } : {}),
     ...(lesson ? { lesson } : {}),
   };
+  // the plan flag for figures (builder/figures.js): the topic, the lesson or the note calls for science, maths or graph
+  // figures, in any site language; then the FIGURE RULES go with the build
+  if (figureWords(planText(plan))) plan.figures = true;
+  return plan;
 }
 
 // ---- "Your lesson": what the teacher typed and the text of the file they added -------------------------------------
@@ -366,6 +383,8 @@ export function planSentence(plan, t = tEn, { files = 0 } = {}) {
     out[0] = t('buildSetup.say.activity');   // "Here is my plan: a classroom activity."
     if (plan.grade) out.push(plan.grade === 'K' ? t('buildSetup.say.gradeK') : t('buildSetup.say.grade', { grade: plan.grade }));
     if (plan.topic) out.push(t('buildSetup.say.practise', { topic: topicLabel(plan.topic, t) }));
+    const pu = purposeOf(plan.purpose);
+    if (pu.join() !== 'screen') out.push(t('buildSetup.say.purpose', { list: listOf(pu.map(p => t(`buildSetup.canvas.purpose.${p}.title`)), loc) }));
     out.push(t('buildSetup.say.help', { help: listOf(helpOf(plan.help, plan.support).map(h => t(`buildSetup.canvas.help.${h}.title`)), loc) }));
     out.push(t(`buildSetup.say.played.${plan.played}`));
     if (plan.lesson) out.push(t(plan.lesson.doc ? 'buildSetup.say.lessonDoc' : 'buildSetup.say.lesson'));
@@ -412,7 +431,7 @@ function homeOf(chars) {
  *   { engine: 'canvas', tool, topic, help, support, played, grade }   a classroom activity on Oomba Canvas (kind 'activity')
  */
 export function planEngine(plan) {
-  if (isActivity(plan)) { const help = helpOf(plan.help, plan.support); return { engine: 'canvas', tool: plan.tool || '', topic: plan.topic, help, support: help[0], played: plan.played, grade: plan.grade }; }
+  if (isActivity(plan)) { const help = helpOf(plan.help, plan.support); return { engine: 'canvas', tool: plan.tool || '', topic: plan.topic, help, support: help[0], purpose: purposeOf(plan.purpose), played: plan.played, grade: plan.grade }; }
   const picked = plan.characters.filter(c => c.from === 'pack').map(c => c.id);
   const chars = picked.map(characterById).filter(Boolean), only2d = picked.filter(id => !characterById(id));
   const type = plan.type && plan.type.from === 'pack' ? GAME_TYPES.find(x => x.id === plan.type.id) : null;
@@ -522,6 +541,11 @@ export const CLASSROOM_NOTES = {
 };
 const q = s => JSON.stringify(String(s));
 const HELP_BRIEF = { watch: 'WATCH (the kit shows each worked answer first, then the student tries)', count: 'COUNT UP (step answers with ▲ ▼ buttons)', guided: 'GUIDED (the Steps panel open, step answers typed with the keypad)', own: 'ON MY OWN (the Steps panel closed until they open it)' };
+const PURPOSE_BRIEF = {
+  screen: 'PRACTICE ON SCREEN (each student works through it on their device)',
+  worksheet: 'A PRINTABLE WORKSHEET (the kit prints the questions with their figures, and the answer key on its own page)',
+  generator: 'A QUESTION GENERATOR (each New sheet is a fresh set from the generator, on screen or printed)',
+};
 const PLAYED_BRIEF = {
   devices: 'ON THEIR OWN DEVICES: each student their own copy; the end result goes to Progress (config.board false)',
   board: 'ON THE BOARD TOGETHER: the teacher drives on the big screen, big type, no score sent (config.board true)',
@@ -540,6 +564,9 @@ function canvasNote(plan) {
     ? `- Help: the activity offers ${help.map(h => HELP_BRIEF[h]).join(', ')}. Students (or the teacher on the board) switch between them with the kit's switcher -> config.supports ${JSON.stringify(help)}, config.support ${q(help[0])} (where it starts: the first of them).`
     : `- Help: ${HELP_BRIEF[help[0]]} only -> config.support ${q(help[0])}, config.supports ${JSON.stringify(help)} (no switcher).`);
   lines.push(`- How it is played: ${PLAYED_BRIEF[plan.played]}. Not live.`);
+  const pu = purposeOf(plan.purpose);
+  lines.push(`- What it is for: ${pu.map(p => PURPOSE_BRIEF[p]).join(', ')} -> config.purpose ${JSON.stringify(pu)}.`);
+  if (plan.figures) lines.push('- Figures: the topic or the lesson calls for science, maths or graph figures: use figure questions drawn by Oomba Figures (the FIGURE RULES), correct to scale.');
   if (plan.notes) lines.push(`- Their note: ${q(plan.notes)}`);
   const how = [
     'Build it as a classroom activity on Oomba Canvas (the CANVAS RULES): start_from_template "canvas", then edit_game its oc-activity JSON block only (config, task, problems or gen) and the <title>. It is not an Oomba Kit game: never add the kit, lives, timers, enemies or a title screen.',
@@ -549,6 +576,9 @@ function canvasNote(plan) {
     plan.lesson ? 'Write task.title and task.say in the builder\'s language (config.lang too). Leave steps empty: the kit writes them in every language. Hints: the kit\'s own, unless the lesson context names common mistakes; then up to 3 short hints of your own for that tool that speak to those mistakes, in the builder\'s language.'
       : 'Write task.title and task.say in the builder\'s language (config.lang too). Leave steps and hints empty: the kit writes them in every language.',
   ];
+  if (printsPurpose(pu)) how.push(pu.includes('generator')
+    ? 'It prints worksheets and makes fresh sets: give a generator ("gen"), so each New sheet is a new set, and make sure every problem has a worked answer for the answer key (figure questions: "work" lines ending on the answer). Never build printing of your own: the kit prints.'
+    : 'It prints a worksheet: give a generator ("gen") or at least config.count problems, each with a worked answer for the answer key (figure questions: "work" lines ending on the answer). Never build printing of your own: the kit prints.');
   if (plan.lesson) how.push('Use the LESSON CONTEXT below to choose the tool, the numbers, the difficulty and the words of task.title and task.say (its goal and its words or examples first). If it asks for something the kit cannot check, use the nearest tool and say so in one short sentence.');
   return `SETUP CHOICES (the builder picked these in the setup steps before this chat; their first message says the same in words).
 ${lines.join('\n')}
@@ -584,7 +614,8 @@ export function canvasActivity(plan, t = tEn) {
   const gen = (chip || (plan && plan.grade ? topicsFor(plan.grade)[0] : null) || topicById('equivFractions')).gen;
   const title = (plan && plan.topic ? topicLabel(plan.topic, t) : '') || t('buildSetup.canvas.topics.equivFractions');
   const help = helpOf(plan && plan.help, plan && plan.support);
-  return { config: { lang: t.locale || 'en', support: help[0], supports: help, count: 5, fresh: true, board: !!plan && plan.played === 'board' }, task: { title: title.slice(0, 60), say: title.slice(0, 120) }, problems: [], gen: { ...gen }, steps: {}, hints: {} };
+  const pu = purposeOf(plan && plan.purpose);
+  return { config: { lang: t.locale || 'en', support: help[0], supports: help, count: 5, fresh: true, board: !!plan && plan.played === 'board', ...(pu.join() !== 'screen' ? { purpose: pu } : {}) }, task: { title: title.slice(0, 60), say: title.slice(0, 120) }, problems: [], gen: { ...gen }, steps: {}, hints: {} };
 }
 const picked = plan => plan.characters.filter(c => c.from === 'pack').map(c => c.id);
 const who = id => { const c = setupCharacter(id); return c ? `${c.id} (${c.name})` : id; };
@@ -594,7 +625,7 @@ export function planBrief(plan) {
   if (!plan) return '';
   if (isActivity(plan)) {
     const help = helpOf(plan.help, plan.support);
-    const line = `[Setup choices: a CLASSROOM ACTIVITY on Oomba Canvas (not an arcade game); topic ${plan.topic ? (plan.topic.id ? `pack ${plan.topic.id} (tool ${plan.tool})` : `custom ${q(plan.topic.text)}`) : 'not chosen'}; ${plan.grade ? `grade ${plan.grade}; ` : ''}help ${help.join(', ')} (config.supports ${JSON.stringify(help)}, starts on ${help[0]}); played ${plan.played}. The CANVAS RULES apply; do not ask the setup questions again.]`;
+    const line = `[Setup choices: a CLASSROOM ACTIVITY on Oomba Canvas (not an arcade game); topic ${plan.topic ? (plan.topic.id ? `pack ${plan.topic.id} (tool ${plan.tool})` : `custom ${q(plan.topic.text)}`) : 'not chosen'}; ${plan.grade ? `grade ${plan.grade}; ` : ''}help ${help.join(', ')} (config.supports ${JSON.stringify(help)}, starts on ${help[0]}); for ${purposeOf(plan.purpose).join(', ')} (config.purpose); played ${plan.played}${plan.figures ? '; figures: yes (the FIGURE RULES)' : ''}. The CANVAS RULES apply; do not ask the setup questions again.]`;
     return plan.lesson ? `${line}\n[${lessonContext(plan.lesson, { short: true })}]` : line;
   }
   const part = (name, c) => (c ? `${name} ${c.from === 'pack' ? `pack ${c.id}` : `custom ${q(c.text)}`}` : '');

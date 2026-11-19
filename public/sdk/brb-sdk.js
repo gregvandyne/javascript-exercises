@@ -1342,6 +1342,8 @@
     writeClues: writeClues,
     wordsFromDoc: wordsFromDoc,
     canPrint: INIT.print === true,
+    // A classroom activity's answer key (Oomba Canvas 1.2.0): its maker and school staff only (the server checks too).
+    canPrintKey: INIT.print === true && INIT.printKey === true,
     print: askPrint,
     assign: assign
   };
