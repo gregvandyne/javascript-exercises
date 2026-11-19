@@ -3,6 +3,8 @@
 // here, so no dialog opens). Checked in print media and as a PDF (Letter and A4):
 //   - a teacher's unsaved draft from the preview: Print offers "Puzzle" and "Puzzle + answer key"; the key is a page of
 //     its own with the letters; the puzzle has the grid numbers, Across and Down, the word bank, Name and Date;
+//   - the teacher's own instructions (the box under Print): printed above the grid with their line breaks, never on the
+//     answer key, kept with the crossword (the game's save) and still there when it is opened again;
 //   - saved: the class code is in the footer;
 //   - a student on the shared link: Print on the play screen gives the blank puzzle (none of their typed letters), no
 //     key choice, and the server refuses them the key if asked directly;
@@ -66,6 +68,13 @@ test('a teacher prints an unsaved draft with its answer key, then the saved puzz
   await expect(f.locator('#cw-printask')).toBeHidden();
   await f.locator('#cw-print').scrollIntoViewIfNeeded();
   await shot(page, '1-teacher-print-button');
+  // the teacher's own instructions: a box under Print, kept with the crossword
+  const NOTE = 'Use a pencil.\nCheck your spelling before you hand it in.';
+  await expect(f.locator('label[for="cw-mine-note"]')).toHaveText('Your instructions (optional)');
+  await expect(f.locator('#cw-mine-note')).toHaveAttribute('maxlength', '300');
+  await expect(f.locator('#cw-mine-note')).toHaveAttribute('placeholder', 'For example: Use a pencil. Check your spelling.');
+  await expect(f.locator('#cw-mine-hint')).toHaveText('Printed at the top of the puzzle, above the grid.');
+  await f.fill('#cw-mine-note', NOTE);
   await f.click('#cw-print');
   await expect(f.locator('#cw-printask')).toBeVisible();
   await expect(f.locator('#cw-print-puzzle')).toBeFocused();
@@ -88,12 +97,17 @@ test('a teacher prints an unsaved draft with its answer key, then the saved puzz
   expect(await area.locator('.cwp-puzzle rect').count()).toBe(s.cells);
   for (const a of s.answers) await expect(area.locator(`.cwp-list:has(h2:text("${a.dir === 'a' ? 'Across' : 'Down'}")) li:has(b:text-is("${a.num}"))`)).toHaveCount(1);
   await expect(area.locator('.cwp-foot').first()).toHaveText('Made with Oomba Academy');
+  // the note: on the puzzle, above the grid, with its line break; never on the key
+  await expect(area.locator('.cwp-puzzle .cwp-mine')).toHaveText(NOTE, { useInnerText: true });
+  expect(await area.locator('.cwp-puzzle .cwp-mine + .cwp-gridbox').count()).toBe(1);
+  await expect(area.locator('.cwp-key .cwp-mine')).toHaveCount(0);
   // in print: only the print area; the key starts its own page (Letter and A4: the puzzle, then the key)
   const pages = await printView(page, '3-print-puzzle-and-key');
   expect(pages).toEqual({ Letter: 2, A4: 2 });
   // Save, then the puzzle only: the class code in the footer, no key
   await f.click('#cw-edit'); await f.check('#cw-bank'); await f.click('#cw-makego');
   await f.waitForFunction(() => window.__brbTest.cwState().screen === 'preview');
+  await expect(f.locator('#cw-mine-note')).toHaveValue(NOTE);   // kept with the crossword
   await f.click('#cw-save');
   await f.waitForSelector('#cw-classcode');
   setId = await f.evaluate(() => window.__brbTest.cwState().set || '');
@@ -105,7 +119,15 @@ test('a teacher prints an unsaved draft with its answer key, then the saved puzz
   await expect(area.locator('.cwp-foot')).toContainText(`Class code: ${code}`);
   await expect(area.locator('.cwp-bank h2')).toHaveText('Word bank');
   await expect(area.locator('.cwp-bank li')).toHaveCount(6);
+  await expect(area.locator('.cwp-mine')).toHaveText(NOTE, { useInnerText: true });
   expect(await printView(page, '4-print-puzzle-only')).toEqual({ Letter: 1, A4: 1 });
+  // a phone: the box fits, no sideways scroll
+  await page.setViewportSize({ width: 390, height: 844 });
+  await f.locator('#cw-mine-note').scrollIntoViewIfNeeded();
+  const fit = await f.evaluate(() => { const b = document.getElementById('cw-mine-note').getBoundingClientRect(); return { l: b.left, r: b.right, w: innerWidth, sw: document.documentElement.scrollWidth }; });
+  expect(fit.l).toBeGreaterThanOrEqual(0); expect(fit.r).toBeLessThanOrEqual(fit.w); expect(fit.sw).toBeLessThanOrEqual(fit.w);
+  await shot(page, '4b-phone-note-box');
+  await page.setViewportSize({ width: 1180, height: 900 });
 });
 
 test('a student prints the shared puzzle from the play screen: blank, no answer key; Hebrew reads right to left', async ({ browser }) => {
@@ -133,6 +155,7 @@ test('a student prints the shared puzzle from the play screen: blank, no answer 
   await expect(area.locator('.cwp-l')).toHaveCount(0);
   await expect(area.locator('.cwp-key')).toHaveCount(0);
   await expect(area.locator('.cwp-bank li')).toHaveCount(6);
+  await expect(area.locator('.cwp-mine')).toHaveCount(0);   // the teacher's note stays in their own save, not the set
   expect(await printView(page, '6-student-print')).toEqual({ Letter: 1, A4: 1 });
   // asked straight from the page (or a frame that lies): the server says no to the key
   const r = await page.evaluate(async () => {

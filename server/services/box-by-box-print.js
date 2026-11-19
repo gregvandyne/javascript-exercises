@@ -6,10 +6,12 @@
 // works them (whole numbers of hundredths, never floating point; tested against the game's own sheets), and is for school
 // staff only (the route checks who asks, as for Crossword).
 import { cleanBoxItems, SET_ID } from './game-sets.js';
+import { cleanPrintNote, PRINT_NOTE_MAX } from './print-note.js';
 
 const KEYS = new Set(['k', 'p', 'r', 'dec', 'm', 'key', 'set', 'note']);
-/** The teacher's own instructions for the top of the sheet: plain text, printed as typed (escaped), line breaks kept. */
-export const PRINT_NOTE_MAX = 300;
+/** The teacher's own instructions for the top of the sheet: plain text, printed as typed (escaped), line breaks kept
+ *  (services/print-note.js, shared with Crossword). */
+export { PRINT_NOTE_MAX };
 export const BOX_PRINT = { bytes: 20000 };
 
 // ---------------------------------------------------------------- numbers, as the game's numbers.ts writes them
@@ -84,8 +86,8 @@ export function cleanBoxPrintDoc(raw) {
   if (size > BOX_PRINT.bytes || Object.keys(raw).some((k) => !KEYS.has(k))) return no;
   if (raw.key !== undefined && typeof raw.key !== 'boolean') return no;
   if (raw.set !== undefined && raw.set !== '' && !(typeof raw.set === 'string' && SET_ID.test(raw.set))) return no;
-  if (raw.note !== undefined && (typeof raw.note !== 'string' || raw.note.length > PRINT_NOTE_MAX)) return no;
-  const note = typeof raw.note === 'string' ? raw.note.replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g, '').replace(/\n{3,}/g, '\n\n').trim() : '';
+  const note = cleanPrintNote(raw.note);
+  if (note === null) return no;
   const item = { k: raw.k, p: raw.p, l: 'guided' };
   for (const x of ['r', 'dec', 'm']) if (raw[x] !== undefined) item[x] = raw[x];
   const c = cleanBoxItems([item]);
