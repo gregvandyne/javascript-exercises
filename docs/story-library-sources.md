@@ -28,15 +28,15 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 ## Totals
 
 - Books in the source: 395
-- Included: **60** (level 1: 19, level 2: 25, level 3: 16)
-- Left out: 335
+- Included: **58** (level 1: 18, level 2: 25, level 3: 15)
+- Left out: 337
   - licensed, not picked for the launch set: 222
   - pictures do not line up with pages: 52
-  - read and left out: 38
+  - read and left out: 40
   - too long for the launch set: 15
   - an image license: unreadable: 6
   - picture N.jpg is in the metadata but not in the image bank: 2
-- Pictures on the site: 14.6 MB (WebP, pages at most 720 px, covers 440 px)
+- Pictures on the site: 14.1 MB (WebP, pages at most 720 px, covers 440 px)
 
 ## Included
 
@@ -46,7 +46,6 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0073 | Colours (Tell me now series) | 1 | 65 | 11 | Madhav Chavan | Rijuta Ghate | – | CC BY 4.0 |
 | sw-0382 | Crocky and friends | 1 | 74 | 7 | Khushboo Awasthi | Herminder Ohri, Bulbul Sharma | – | CC BY 4.0 |
 | sw-0055 | Curly and Straight | 1 | 73 | 13 | Radha HS | Ruchi Shah | – | CC BY 4.0 |
-| sw-0002 | Fat King Thin Dog | 1 | 62 | 7 | Parismita | Parismita | – | CC BY 4.0 |
 | sw-0072 | Happy and Sad (Tell me now series) | 1 | 64 | 11 | Madhav Chavan | Rijuta Ghate | – | CC BY 4.0 |
 | sw-0114 | I Am Not Afraid! | 1 | 106 | 11 | Mini Shrinivasan | Rayika Sen | – | CC BY 4.0 |
 | sw-0100 | I Can Climb! | 1 | 89 | 11 | Mini Shrinivasan | Deval Maniar | – | CC BY 4.0 |
@@ -89,7 +88,6 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0120 | Anaya's Thumb | 3 | 445 | 9 | Natasha Sharma | Ruchi Shah | – | CC BY 4.0 |
 | sw-0013 | Aunty Jui's Baby | 3 | 682 | 17 | Madhuri Purandare | Madhuri Purandare | Pratham Books Team | CC BY 4.0 |
 | sw-0062 | Bheema, the Sleepyhead | 3 | 281 | 7 | Kiran Kasturia | Shweta Mohapatra | Rajesh Khar | CC BY 4.0 |
-| sw-0167 | Didi and the Colourful Treasure | 3 | 434 | 12 | Rukmini Banerji | Kaveri Gopalakrishnan | Rukmini Banerji | CC BY 4.0 |
 | sw-0094 | Going to Buy a Book | 3 | 278 | 9 | Rukmini Banerji | Santosh Pujari | – | CC BY 4.0 |
 | sw-0056 | Goodnight, Tinku! | 3 | 421 | 11 | Preethi Nambiar | Sonal Goyal, Sumit Sakhuja | – | CC BY 4.0 |
 | sw-0061 | Lassi, Ice-cream or Falooda? | 3 | 299 | 7 | Mala Kumar, Manisha Chaudhry | Priya Kuriyan | – | CC BY 4.0 |
@@ -113,6 +111,7 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 
 | Id | Title | Reason |
 | --- | --- | --- |
+| sw-0002 | Fat King Thin Dog | read and left out: Held back for the owner to decide: the jokes poke fun at body size ("fat king"). |
 | sw-0004 | Chuskit Goes to School! | pictures do not line up with pages (23 images for 21 pages) |
 | sw-0006 | Counting on Moru | picture 25.jpg is in the metadata but not in the image bank |
 | sw-0007 | Listen to My Body | read and left out: A mistake in the source text ("mothers kitchen"). |
@@ -218,6 +217,7 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0164 | The Horrible Crocobots | too long for the launch set (1552 words) |
 | sw-0165 | The Story-Pooping Cat | licensed, not picked for the launch set (not read yet) |
 | sw-0166 | Have You Seen These Birds? | read and left out: A list of bird names, not a story (too little text for 3 questions). |
+| sw-0167 | Didi and the Colourful Treasure | read and left out: Held back for the owner to decide: children live by a garbage dump and do not go to school. |
 | sw-0168 | My Anti Litter Poem | licensed, not picked for the launch set (not read yet) |
 | sw-0169 | Eat and Share | licensed, not picked for the launch set (not read yet) |
 | sw-0170 | What Makes You Special? | read and left out: A mistake in the source text ("What's makes you special?"). |

@@ -8944,7 +8944,7 @@ to only select the right ones". Built to the approved mockups (library grid, rea
   book only when its text and **every picture it uses** are CC BY 4.0 or Public Domain, read row by row from the
   picture metadata; NC, ND, SA, other versions, missing or unreadable licences are left out, as is any book whose
   pictures do not line up one-to-one with its pages (picture 01 the cover, N+1 page N) or whose metadata lists a
-  picture the image bank lacks. Nothing is guessed. Of 395 English books: 60 in the launch set; the report with every
+  picture the image bank lacks. Nothing is guessed. Of 395 English books: 58 in the launch set; the report with every
   book and its reason is `docs/story-library-sources.md` (written by the importer; never edited by hand).
 - **The words are never changed** (whitespace and conversion leftovers only), so books with mistakes in their own text
   were left out rather than corrected. Picture-book English titles keep their own spelling ("Colours").
@@ -8954,9 +8954,9 @@ to only select the right ones". Built to the approved mockups (library grid, rea
   pet snake eating a mouse, hunters with guns). The site's text scanners (profanity, personal info, the Builder's
   prefilter and mock classifier) run on every page; three false alarms ("blood" in a science question, "don't talk to
   strangers", "my sister") were reviewed by a person and are listed in the report. Reasons for each book read and left
-  out are in `seed-library/storyweaver.json` (`skipped`). **Owner may want to check:** "Fat King Thin Dog" (from the
-  approved mockup; a king gets thin chasing his dog) and "Didi and the Colourful Treasure" (children who live by a
-  garbage dump and do not go to school, until a young woman brings books).
+  out are in `seed-library/storyweaver.json` (`skipped`). **Held back until the owner decides** (picks kept under `held` in that file): "Fat King Thin Dog"
+  (from the approved mockup; the jokes poke fun at body size) and "Didi and the Colourful Treasure" (children who live
+  by a garbage dump and do not go to school, until a young woman brings books). Move a pick back and re-run the importer.
 - **Levels**, from words per text page and words in all: Level 1 Just starting (≤ 12 a page on average, no page over
   20, ≤ 150 in all), Level 2 Learning to read (≤ 30 a page, ≤ 450 in all), Level 3 Reading on my own (up to 1,200;
   longer books are left out). The launch set: 19 / 25 / 16.
@@ -8969,7 +8969,7 @@ to only select the right ones". Built to the approved mockups (library grid, rea
   credits with each part's licence, level, word counts, glossary, questions). A second source (Bloom Library, which needs
   an API key we do not have) adds its own parser returning the same shape and an id prefix; no schema change. Nothing is
   fetched from Bloom or anywhere at run time. Pictures are WebP in `public/img/library/<id>/` (from the image bank's
-  `large` copies: pages at most 720 px, covers 440 px), 14.6 MB for the 60 books.
+  `large` copies: pages at most 720 px, covers 440 px), 14.1 MB for the 58 books.
 - **Integrated like an assigned game, not a parallel system** (migration `0091_story_library`). A book assigned to a
   class is a lesson of kind `story` with one step of kind `story` (`lesson_steps.story_id`), assigned with the same
   `L.assign` (due date, unassign, reorder, Student view, Google Classroom post when linked). The class page lists it

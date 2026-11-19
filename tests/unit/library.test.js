@@ -298,8 +298,8 @@ test('Read to me with the AI voice: ctx story reads sentence s of page p by its 
 
 test('account delete removes the reader\'s own progress', async () => {
   const s = librarySeed({ book: null });
-  LIB.progress(s.outsider, 'sw-0002', { page: 2 });
-  assert.ok(LIB.readOf(s.outsider.id, 'sw-0002'));
+  LIB.progress(s.outsider, 'sw-0003', { page: 2 });
+  assert.ok(LIB.readOf(s.outsider.id, 'sw-0003'));
   const del = await import('../../server/services/account-delete.js');
   const r = del.deleteAccount(s.outsider.id, s.boss, { by: 'admin', parentMade: false });
   assert.ok(r.ok, JSON.stringify(r));
