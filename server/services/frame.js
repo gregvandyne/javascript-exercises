@@ -10,6 +10,7 @@ import { deviceNeeds, VENDOR_PATH, DATA_PATH, KIT2_PATH, THEMES_PATH } from './v
 import { KIT_PATH, upgradeKitPins } from './kit.js';
 import { ART2D_PATH } from './art2d.js';
 import { CANVAS_PATH } from './canvaskit.js';
+import { FIG_SCRIPTS } from './figlibs.js';
 import { config } from '../config.js';
 
 const SDK_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public/sdk/brb-sdk.js');
@@ -27,7 +28,8 @@ const ORIGIN_URL_RE = /^https?:\/\/(\[[0-9a-f:.]+\]|[a-z0-9.-]+)(:\d{1,5})?$/i;
 export function frameCsp(origins = '') {
   const own = [...new Set([].concat(origins || []).filter(o => typeof o === 'string' && ORIGIN_URL_RE.test(o)).map(o => o.toLowerCase()))];
   // Scripts: the 3D library, the Oomba Kit, the reviewed game data packs, Kit 2's engines and the 2D art packs. Fonts: the kit's self-hosted font files.
-  const vendor = own.map(o => ` ${o}${VENDOR_PATH} ${o}${KIT_PATH} ${o}${DATA_PATH} ${o}${KIT2_PATH} ${o}${ART2D_PATH} ${o}${CANVAS_PATH}`).join('');
+  // The figure libraries (figlibs.js) are named file by file: each pinned script, never their folders.
+  const vendor = own.map(o => ` ${o}${VENDOR_PATH} ${o}${KIT_PATH} ${o}${DATA_PATH} ${o}${KIT2_PATH} ${o}${ART2D_PATH} ${o}${CANVAS_PATH}${FIG_SCRIPTS.map(f => ` ${o}${f}`).join('')}`).join('');
   // (Oomba Canvas, the classroom activity kit: its pinned script and its own copy of the font, canvaskit.js.)
   const fonts = own.map(o => ` ${o}${KIT_PATH} ${o}${CANVAS_PATH}`).join('');
   // Kit 2 theme art (models, textures, sounds) is fetched by the pinned loaders, so only /vendor/themes/ is reachable for

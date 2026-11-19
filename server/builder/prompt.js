@@ -8,6 +8,10 @@
 import { localeInfo, CODES, translate } from '../i18n/index.js';
 import { canvasTag, canvasVersion } from '../services/canvaskit.js';
 import { CANVAS_RULES_SOURCE } from './canvas-rules.js';
+import { FIGURE_RULES_SOURCE } from './figure-rules.js';
+import { figTags } from '../services/figlibs.js';
+import { wantsFigures } from './figures.js';
+export { wantsFigures };
 import { THREE_VERSION, threeImportMap, isThreeGame } from '../services/vendor.js';
 import { kitTag, kitPackTag } from '../services/kit.js';
 import { KIT_RULES_SOURCE, KIT_3D_RULES_SOURCE, KIT_LIVE_RULES_SOURCE } from './kit-rules.js';
@@ -499,3 +503,11 @@ export function wantsCanvas(state, text, version) {
   if (state && asks().toCanvas.has(said)) state.canvas = true;
   return !!(state && state.canvas) || !!(version && canvasVersion(version.html));
 }
+
+// ---- Figures (Oomba Figures, docs/figures-api.md) --------------------------------------------------------------------
+// The FIGURE RULES: a fixed block (generated from docs/figures-api.md into figure-rules.js) with the pinned tags, sent
+// only when a build calls for science, maths or graph figures (builder/figures.js wantsFigures: the plan, the words in
+// any site language, or a version that already loads a figure library). SYSTEM_PROMPT and TOOLS never change for it.
+export const FIGURE_RULES = `${FIGURE_RULES_SOURCE}
+- The pinned tags (exactly these, in this order; leave out JSXGraph or SmilesDrawer when you do not use OF.board or OF.structure):
+${figTags()}`;

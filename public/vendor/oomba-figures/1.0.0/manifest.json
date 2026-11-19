@@ -1,0 +1,16 @@
+{
+  "name": "oomba-figures",
+  "version": "1.0.0",
+  "license": "MIT",
+  "source": "figures/src (this repository)",
+  "files": {
+    "oomba-figures.js": {
+      "sha256": "94ae975f1f139d5e48c83d62be0ae3e09f9b1018f25cd7c4761176fbac00da1f",
+      "sri": "sha384-4wDkN0Akg39xtTCZDlHLkI1GMhFaksKCPvRzO50MW+OD0Q1sHx9p+GZgmNqO9+N6"
+    },
+    "LICENSE": {
+      "sha256": "59a565d531abd490066205c8b601cf317088e7b46b61406ec955b4bfeb0f7e30",
+      "sri": "sha384-/KV4l5vstBer6zAQ1HMRT1WLPPcl2p5ZWbsGlaO4jj8pj0T6TCn0R2AJdDpdSGyd"
+    }
+  }
+}

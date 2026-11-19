@@ -1246,6 +1246,13 @@
       "problem": "Problema {n}",
       "rounds": "Arredondado: {x}",
       "simpler": "Simplificado: {x}"
+    },
+    "printCanvas": {
+      "untitled": "Ficha",
+      "sheet": "Ficha {code}",
+      "answer": "Resposta:",
+      "choose": "Rodeia uma.",
+      "figure": "Figura da pergunta {n}"
     }
   },
   "friends": {
@@ -2746,7 +2753,8 @@
           "practise": "Praticar",
           "help": "Ajuda",
           "played": "Jogado",
-          "lesson": "Aula"
+          "lesson": "Aula",
+          "purpose": "Para"
         }
       },
       "lesson": {
@@ -9261,6 +9269,7 @@
     },
     "plan": {
       "heading": "Este é o plano do seu jogo",
+      "headingActivity": "Este é o plano da sua atividade",
       "text": "Mude o que quiser, ou abra o Construtor e continue por lá.",
       "told": "O que vamos dizer ao Construtor",
       "open": "Abrir o Construtor"
@@ -9288,7 +9297,8 @@
         "both": "Os alunos jogam nos próprios aparelhos, e também mostramos na lousa."
       },
       "lesson": "Descrevi a minha aula.",
-      "lessonDoc": "Acrescentei o meu plano de aula."
+      "lessonDoc": "Acrescentei o meu plano de aula.",
+      "purpose": "Para: {list}."
     },
     "flatNote": "Em 2D, por enquanto só os jogos de corrida e de pegar podem usar nossos mundos e personagens. Nos outros jogos o Construtor usa o visual clássico.",
     "typeGroups": {
@@ -9393,7 +9403,23 @@
         "orderFractions": "Ordenar frações",
         "bigAdd": "Somar números grandes"
       },
-      "nextLesson": "Próximo: a sua aula"
+      "nextLesson": "Próximo: a sua aula",
+      "purpose": {
+        "heading": "Para que serve?",
+        "hint": "Escolhe uma ou mais. Os alunos começam pela prática no ecrã.",
+        "screen": {
+          "title": "Prática no ecrã",
+          "text": "Os alunos fazem no seu próprio dispositivo, com passos e dicas."
+        },
+        "worksheet": {
+          "title": "Ficha para imprimir",
+          "text": "Perguntas com figuras para imprimir e uma página de soluções."
+        },
+        "generator": {
+          "title": "Gerador de perguntas",
+          "text": "Cada vez que carregas em Nova ficha sai um conjunto novo, no ecrã ou em papel."
+        }
+      }
     },
     "lesson": {
       "heading": "A sua aula",

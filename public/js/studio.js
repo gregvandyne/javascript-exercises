@@ -295,9 +295,37 @@ addEventListener('message', e => {
   if (e.data.type === 'brb:fullscreen') { if (!!e.data.on !== !!document.fullscreenElement) full(); }
   else if (e.data.type === 'brb:gameover' && typeof e.data.score === 'number') toast(t('js.studio.roundOver', { score: e.data.score }));
   else if (e.data.type === 'brb:retry' && tappedJustNow()) retryPreview();
+  // A classroom activity's printed worksheet (BRB.print, Oomba Canvas 1.2.0): the preview prints through this page,
+  // the version on show, as the play page does (POST /api/games/:id/print with { doc, v }).
+  else if (e.data.type === 'brb:print' && Number.isInteger(e.data.id) && e.data.id > 0 && e.data.id < 1e9 && e.data.doc && typeof e.data.doc === 'object' && !Array.isArray(e.data.doc) && JSON.stringify(e.data.doc).length <= 2000) printForPreview(e.data, tappedJustNow('brb-print-at', 2000));
   // Loudness (BRB.loudness): this page, never the preview frame, opens the microphone, and only after a real tap.
   else if (e.data.type === 'brb:loud' && e.origin === 'null' && LOUD_OPS.includes(e.data.op)) { if (!S.loud) toFrame({ type: 'brb:loudState', state: 'off' }); else loudMessage(e.data); }
 });
+
+// ---------------------------------------------------------------- printing from the preview (Oomba Canvas 1.2.0)
+// The server checks the request (numbers only) and makes the printable page from the version's own data, with the
+// answer key only for the activity's maker and school staff; it goes into this page's print area (public/css/app.css
+// "Printing"), which is all that prints.
+let printing = false;
+async function printForPreview(m, tapped) {
+  const done = out => toFrame({ type: 'brb:printed', id: m.id, ...out });
+  if (!tapped || printing) return done({ error: 'tap' });
+  printing = true;
+  try {
+    const r = await api(`/api/games/${ID}/print`, { method: 'POST', body: { doc: m.doc, ...(shownVersion ? { v: shownVersion } : {}) } });
+    if (!r || typeof r.html !== 'string') throw new Error('bad');
+    let area = document.getElementById('print-area');
+    if (!area) { area = document.createElement('div'); area.id = 'print-area'; area.className = 'print-area'; document.body.appendChild(area); }
+    area.innerHTML = r.html;   // the server's own page: every word in it is escaped there
+    document.body.classList.add('printing');
+    const after = () => { document.body.classList.remove('printing'); area.innerHTML = ''; removeEventListener('afterprint', after); };
+    addEventListener('afterprint', after);
+    done({ ok: true });
+    window.print();
+  } catch (e) {
+    done({ error: e && e.data && (e.data.code === 'key' || e.data.code === 'bad') ? e.data.code : e && e.status === 404 ? 'notAllowed' : 'offline' });
+  } finally { printing = false; }
+}
 
 // ---------------------------------------------------------------- loudness in the preview (docs/safety.md "Loudness")
 // The same page-side listening as the play page (public/js/loudness.js): a tap, the browser's own prompt, the page's

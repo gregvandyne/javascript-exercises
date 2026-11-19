@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
+import { figureLibs, figuresKit } from './figlibs.js';
 
 export const CANVAS_PATH = '/vendor/oomba-canvas/';
 // version -> sha384 of oomba-canvas.js (tests/unit/canvas-kit.test.js checks these against the files on disk).
@@ -17,8 +18,12 @@ export const CANVAS_VERSIONS = Object.freeze({
   // Activities saved on 1.0.0 keep their pin and keep working: the scanner admits both tags, the self-test runs each
   // activity with the kit file it pins.
   '1.1.0': 'sha384-C0DFMSJtEKN3ZjnzoMjRGbKZ36KZSolo6OknV5vnJ5fcKvI5WlZjNUHtVdbt1MHK',
+  // 1.2.0: config.purpose (practice on screen, a printable worksheet, a question generator), the print panel (BRB.print:
+  // the page and server/services/canvas-print.js make the printable sheet from the activity's own data, sheet.js), and
+  // figure questions (figure.number, figure.choice) drawn by Oomba Figures. 1.0.0 and 1.1.0 stay as they are.
+  '1.2.0': 'sha384-ioyClGMBQEaIiIDCGa+zeMkl4MbfUZrKcUewnP9QCsxMCeVxYZxbaEtli6AH3UKD',
 });
-export const CANVAS_LATEST = '1.1.0';
+export const CANVAS_LATEST = '1.2.0';
 export const canvasSrc = (v = CANVAS_LATEST) => `${CANVAS_PATH}${v}/oomba-canvas.js`;
 const PUBLIC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
 
@@ -106,7 +111,32 @@ export function selfTestHtml(html) {
   if (d.why) return { ok: false, problems: [{ at: 'activity', why: d.why }] };
   if (!/\bOc\s*\.\s*activity\s*\(|\bOombaCanvas\s*\.\s*activity\s*\(/.test(String(html))) return { ok: false, problems: [{ at: 'activity', why: 'the page never calls Oc.activity() with the activity' }] };
   const r = canvasKit(v).selfTest(d.data);
-  return { ok: !!r.ok, problems: JSON.parse(JSON.stringify(r.problems || [])) };
+  const problems = JSON.parse(JSON.stringify(r.problems || []));
+  if (problems.length < 12) problems.push(...figureProblems(v, d.data, html).slice(0, 12 - problems.length));
+  return { ok: !problems.length, problems };
+}
+/**
+ * 1.2.0: the activity's figures. Every problem with a "fig" (the fixed ones, and three sets from a generator) needs the
+ * pinned Oomba Figures tag on the page, and its data must pass that version's own check() (an element it knows, a ray
+ * diagram with an image, a reading on its scale, electrons that add up...): a wrong figure is never saved.
+ */
+export function figureProblems(v, data, html) {
+  const kit = canvasKit(v); if (!kit || !kit.logic || typeof kit.sheet !== 'function') return [];
+  const out = [], seen = new Set(), list = [];
+  (Array.isArray(data.problems) ? data.problems : []).slice(0, 30).forEach((raw, i) => { const c = kit.logic.cleanProblem(raw); if (c.p) list.push([`problem ${i + 1}`, c.p]); });
+  if (data.gen) for (const seed of [1, 2, 3]) for (const p of kit.logic.deal(data, { seed: seed * 7919, count: 12 })) list.push(['generator', p]);
+  const withFig = list.filter(([, p]) => p.fig);
+  if (!withFig.length) return out;
+  const fv = figureLibs(html)['oomba-figures'];
+  if (!fv) return [{ at: 'figures', why: 'the activity draws figures but the page does not load Oomba Figures: add its pinned tag (the FIGURE RULES) before the kit\'s' }];
+  const F = figuresKit(fv);
+  for (const [at, p] of withFig) {
+    const { kind, hide, ...rest } = p.fig, why = F.check(kind, { kind, ...rest });
+    const key = `${at}:${why.join(';')}`;
+    if (why.length && !seen.has(key)) { seen.add(key); out.push({ at, why: `its figure (${String(kind).slice(0, 20)}): ${why.slice(0, 2).join('; ')}` }); }
+    if (out.length >= 6) break;
+  }
+  return out;
 }
 /** The page with its oc-activity block set to this data (pretty JSON, one key per line: easy for edit_game). */
 export function withActivityData(html, data) {

@@ -23,6 +23,7 @@ import { VENDOR_PATH, DATA_PATH, THREE_MODULE, THREE_CORE, KIT2_PATH, THEMES_PAT
 import { ART2D_PATH } from './art2d.js';
 import { KIT_PATH } from './kit.js';
 import { CANVAS_PATH } from './canvaskit.js';
+import { figureFile } from './figlibs.js';
 import { config } from '../config.js';
 
 const HOST = 'http://game.invalid';
@@ -308,6 +309,8 @@ async function capture(gameHtml, opts) {
         if (!f) return route.fulfill({ status: 404, body: '' });
         return route.fulfill({ status: 200, headers: { 'content-type': VENDOR_TYPES[f.split('.').pop()] || 'text/plain; charset=utf-8', 'access-control-allow-origin': '*', 'cross-origin-resource-policy': 'cross-origin' }, body: fs.readFileSync(f) });
       }
+      // the figure libraries: exactly their pinned script files (figlibs.js), nothing else in their folders
+      if (u.startsWith(`${HOST}/vendor/`)) { const f = figureFile(new URL(u).pathname); if (f) return route.fulfill({ status: 200, headers: { 'content-type': 'text/javascript; charset=utf-8', 'access-control-allow-origin': '*', 'cross-origin-resource-policy': 'cross-origin' }, body: fs.readFileSync(f) }); }
       if (ALLOWED.test(u)) return route.continue();
       return route.abort();
     });
@@ -390,7 +393,7 @@ function apRead() {
   }
   const text = ((document.body && document.body.innerText) || '').replace(/\s+/g, ' ').trim();
   return { hook, state, nums: nums.join(','), scoreWord: /score|points|punkte|points|puntos|pontos|punti|punten|очки|счёт|スコア|得分|分數|ניקוד|نقاط/i.test(text), textLen: text.length,
-    canvases: [...document.querySelectorAll('canvas')].filter(vis).length, raf: window.__apRaf || 0 };
+    canvases: [...document.querySelectorAll('canvas')].filter(vis).length, svgs: [...document.querySelectorAll('svg')].filter(vis).length, raf: window.__apRaf || 0 };
 }
 /** In the game frame: count animation frames from now (the fps estimate). */
 function apRaf() { if (window.__apRafOn) return; window.__apRafOn = 1; window.__apRaf = 0; const f = () => { window.__apRaf++; requestAnimationFrame(f); }; requestAnimationFrame(f); }

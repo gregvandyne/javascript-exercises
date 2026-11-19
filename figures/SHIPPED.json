@@ -1,0 +1,41 @@
+{
+ "_": "Figure libraries that have shipped (docs/figures-api.md, docs/third-party.md). Their files never change bytes: saved games pin the script hashes (server/services/figlibs.js). scripts/build-figures.js writes this list; tests/unit/figures-vendor.test.js checks it against public/vendor.",
+ "files": {
+  "jsxgraph/1.14.3/LICENSE": {
+   "sha256": "43e325001487de7f09745fbe086b054bb1b70d4ab58060e87153849365b23ff1",
+   "sri": "sha384-LNk4Kkz77lHZ4HVjLZGU7DLRINOfYxGQYkqRCFGMOeh3L5IOIQUBKwhUBKG7YR0G"
+  },
+  "jsxgraph/1.14.3/jsxgraphcore.js": {
+   "sha256": "3b256219e90c83e183f253374ffcecab0cfbb1350a7b4252a69af134a684ee43",
+   "sri": "sha384-/gRtLXAXiYXfed0Ajep7yLSyD64K0WQYnhZ2nAVPArQLm7X6VRHGWvhOSHgcUMBL"
+  },
+  "jsxgraph/1.14.3/manifest.json": {
+   "sha256": "528e8cf5ef7b1cf9bbe609d124a7bb691bd25437c8b4a6e0bffe6908b9db35b2",
+   "sri": "sha384-SOUiN9C+6b4sGwwzyv+FW8FE02X2vfNiUZ0IBJJwMX3I3FKICt1H/jCmyRDnd2i3"
+  },
+  "smiles-drawer/2.4.2/LICENSE": {
+   "sha256": "919c7fa7363867d5785a1362aeb1df8ffa62f976db7f963fd57c397c2cbadeb4",
+   "sri": "sha384-ttgaiPXSTnkvyFPmFxfLcoCvWZDHM35UUovsjbEIqwfly94pN/5j+H39RkjFgUJG"
+  },
+  "smiles-drawer/2.4.2/manifest.json": {
+   "sha256": "6b180b8481caffc70b20e0d7597d91ee7375c1a9983886adc38af1b473b96db5",
+   "sri": "sha384-n5iwivlo3gL8pUdmhk7lOuy0MnJDEu9oSF78xqMLaIm8WnMLSeNi9wFccwdWKNLL"
+  },
+  "smiles-drawer/2.4.2/smiles-drawer.min.js": {
+   "sha256": "3c756602a120b8ac1590fd7d79e84458a851aacef1243d3974c2289b88f4e45d",
+   "sri": "sha384-LRC4uaF5O8kDk4KFwnk94mk+AeK6RoE29vlm6X+xyfdW59ImqvrHZRWy89CgUcSs"
+  },
+  "oomba-figures/1.0.0/LICENSE": {
+   "sha256": "59a565d531abd490066205c8b601cf317088e7b46b61406ec955b4bfeb0f7e30",
+   "sri": "sha384-/KV4l5vstBer6zAQ1HMRT1WLPPcl2p5ZWbsGlaO4jj8pj0T6TCn0R2AJdDpdSGyd"
+  },
+  "oomba-figures/1.0.0/manifest.json": {
+   "sha256": "2d7cd030042c1576053776f1033c70bd7ac8ca6e264ede156b82e6021cca27ca",
+   "sri": "sha384-bTinJCodh1cw/1DlCy1W5EQxH3XHxUI6RS/dCoIHaXy6dLRbiNsHAxhRKzvqxyOA"
+  },
+  "oomba-figures/1.0.0/oomba-figures.js": {
+   "sha256": "94ae975f1f139d5e48c83d62be0ae3e09f9b1018f25cd7c4761176fbac00da1f",
+   "sri": "sha384-4wDkN0Akg39xtTCZDlHLkI1GMhFaksKCPvRzO50MW+OD0Q1sHx9p+GZgmNqO9+N6"
+  }
+ }
+}

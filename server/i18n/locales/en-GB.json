@@ -865,6 +865,12 @@
       "practise": {
         "heading": "What should students practise?",
         "label": "What should students practise?"
+      },
+      "purpose": {
+        "hint": "Pick one or more. Practise on screen is where students start.",
+        "screen": {
+          "title": "Practise on screen"
+        }
       }
     },
     "say": {

@@ -355,7 +355,10 @@ cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, 
 
 ## Printing (`BRB.print`)
 Crossword and The Big Divide (frames where `INIT.print` is set: those official games, not in a preview; each game's
-printer is in `server/services/game-print.js`). The frame can't print (no
+printer is in `server/services/game-print.js`), and Builder classroom activities on Oomba Canvas 1.2.0 whose purpose is a
+worksheet or a question generator (also in the Studio's preview; `server/services/canvas-print.js`: the doc is only
+`{ k: 'canvas', seed, n, paper, key }` and the server makes the sheet from the version's own data; `BRB.canPrintKey` is
+true only for the activity's maker and school staff, from `INIT.printKey`). The frame can't print (no
 `allow-modals`, no popups), so the play page prints for it.
 - `BRB.canPrint`: true when printing is on. `BRB.print(doc)` → a Promise of `{ ok: true }` or `{ error }` (`notAllowed`,
   `bad`, `key`, `tap`, `offline`). Call it from a tap: the page checks `navigator.userActivation` when the message

@@ -2,6 +2,7 @@
   "_": "Oomba Canvas versions that have shipped. Their files and SRI hashes may never change again: saved activities pin the hash. scripts/build-canvas.js refuses to rebuild them, and tests/unit/canvas-kit.test.js checks CANVAS_VERSIONS (server/services/canvaskit.js) and the files on disk against this list. Add a version here in the same change that ships it.",
   "versions": {
     "1.0.0": "sha384-flFB2WSAsKElDVg0GmNowkuiZ1BK2p6gcygy6l0MgomzZl6alrNHMRgtwrNl7u6V",
-    "1.1.0": "sha384-C0DFMSJtEKN3ZjnzoMjRGbKZ36KZSolo6OknV5vnJ5fcKvI5WlZjNUHtVdbt1MHK"
+    "1.1.0": "sha384-C0DFMSJtEKN3ZjnzoMjRGbKZ36KZSolo6OknV5vnJ5fcKvI5WlZjNUHtVdbt1MHK",
+    "1.2.0": "sha384-ioyClGMBQEaIiIDCGa+zeMkl4MbfUZrKcUewnP9QCsxMCeVxYZxbaEtli6AH3UKD"
   }
 }

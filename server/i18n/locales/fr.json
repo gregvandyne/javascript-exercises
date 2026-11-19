@@ -1245,6 +1245,13 @@
       "problem": "Problème {n}",
       "rounds": "Arrondi : {x}",
       "simpler": "Simplifié : {x}"
+    },
+    "printCanvas": {
+      "untitled": "Fiche",
+      "sheet": "Fiche {code}",
+      "answer": "Réponse :",
+      "choose": "Entoure une réponse.",
+      "figure": "Figure de la question {n}"
     }
   },
   "friends": {
@@ -2745,7 +2752,8 @@
           "practise": "À travailler",
           "help": "Aide",
           "played": "Joué",
-          "lesson": "Leçon"
+          "lesson": "Leçon",
+          "purpose": "Pour"
         }
       },
       "lesson": {
@@ -9259,6 +9267,7 @@
     },
     "plan": {
       "heading": "Voici le plan de ton jeu",
+      "headingActivity": "Voici le plan de ton activité",
       "text": "Change ce que tu veux, ou ouvre le Constructeur et continue là-bas.",
       "told": "Ce que le Constructeur va lire",
       "open": "Ouvrir le Constructeur"
@@ -9286,7 +9295,8 @@
         "both": "Les élèves y jouent sur leurs appareils, et nous l’affichons aussi au tableau."
       },
       "lesson": "J'ai décrit ma leçon.",
-      "lessonDoc": "J'ai ajouté ma fiche de préparation."
+      "lessonDoc": "J'ai ajouté ma fiche de préparation.",
+      "purpose": "Pour : {list}."
     },
     "flatNote": "En 2D, seuls les jeux de course et d’attrape peuvent utiliser nos mondes et nos personnages pour l’instant. Pour les autres jeux, le Constructeur garde son style classique.",
     "typeGroups": {
@@ -9391,7 +9401,23 @@
         "orderFractions": "Ranger des fractions",
         "bigAdd": "Additionner de grands nombres"
       },
-      "nextLesson": "Suivant : ta leçon"
+      "nextLesson": "Suivant : ta leçon",
+      "purpose": {
+        "heading": "À quoi ça sert ?",
+        "hint": "Choisis une ou plusieurs options. Les élèves commencent par l’entraînement à l’écran.",
+        "screen": {
+          "title": "Entraînement à l’écran",
+          "text": "Les élèves travaillent sur leur propre appareil, avec des étapes et des indices."
+        },
+        "worksheet": {
+          "title": "Fiche à imprimer",
+          "text": "Des questions avec figures à imprimer, et une page de corrigé."
+        },
+        "generator": {
+          "title": "Générateur de questions",
+          "text": "Chaque appui sur Nouvelle fiche donne une nouvelle série, à l’écran ou sur papier."
+        }
+      }
     },
     "lesson": {
       "heading": "Ta leçon",

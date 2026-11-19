@@ -1245,6 +1245,13 @@
       "problem": "第 {n} 題",
       "rounds": "四捨五入：{x}",
       "simpler": "約分：{x}"
+    },
+    "printCanvas": {
+      "untitled": "學習單",
+      "sheet": "學習單 {code}",
+      "answer": "答案：",
+      "choose": "圈出一個。",
+      "figure": "第{n}題的圖"
     }
   },
   "friends": {
@@ -2745,7 +2752,8 @@
           "practise": "練習",
           "help": "幫助",
           "played": "玩法",
-          "lesson": "課程"
+          "lesson": "課程",
+          "purpose": "用途"
         }
       },
       "lesson": {
@@ -9259,6 +9267,7 @@
     },
     "plan": {
       "heading": "這是你的遊戲計畫",
+      "headingActivity": "這是你的活動計畫",
       "text": "想改什麼都可以，或是打開小幫手繼續做。",
       "told": "我們會這樣告訴小幫手",
       "open": "打開小幫手"
@@ -9286,7 +9295,8 @@
         "both": "學生在自己的裝置上玩，我們也會投影到黑板上。"
       },
       "lesson": "我說明了我的課程。",
-      "lessonDoc": "我加上了我的教案。"
+      "lessonDoc": "我加上了我的教案。",
+      "purpose": "用途：{list}。"
     },
     "flatNote": "在 2D 裡，目前只有跑酷和接東西遊戲可以使用我們的世界和角色。其他遊戲小幫手會用經典樣式。",
     "typeGroups": {
@@ -9391,7 +9401,23 @@
         "orderFractions": "分數排順序",
         "bigAdd": "大數加法"
       },
-      "nextLesson": "下一步：你的課程"
+      "nextLesson": "下一步：你的課程",
+      "purpose": {
+        "heading": "要用來做什麼？",
+        "hint": "選一個或多個。學生會先從螢幕練習開始。",
+        "screen": {
+          "title": "螢幕練習",
+          "text": "學生在自己的裝置上做，有步驟和提示。"
+        },
+        "worksheet": {
+          "title": "可列印的學習單",
+          "text": "附圖的題目可直接列印，另附一頁解答。"
+        },
+        "generator": {
+          "title": "題目產生器",
+          "text": "每按一次「新的一張」就出一組新題目，可在螢幕上做或印在紙上。"
+        }
+      }
     },
     "lesson": {
       "heading": "你的課程",

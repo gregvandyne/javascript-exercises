@@ -25,7 +25,7 @@ import { page, VERSION } from '../views/layout.js';
 import { requireBuilder } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { KIT2_WORLDS, worldById } from '../builder/kit2.js';
-import { GAME_TYPES, LOOKS, LEARN, LIMITS, PLAYS, LIVE_NOT, LIVE_NOT_ENGINE, characterGroups, characterName, normalisePlan, planSentence, planEngine, customParts, typeGroups, playDefault, startKind, gradeOf, SUPPORTS, CANVAS_PLAYS, LESSON, LESSON_HEADS } from '../builder/plan.js';
+import { GAME_TYPES, LOOKS, LEARN, LIMITS, PLAYS, LIVE_NOT, LIVE_NOT_ENGINE, characterGroups, characterName, normalisePlan, planSentence, planEngine, customParts, typeGroups, playDefault, startKind, gradeOf, SUPPORTS, CANVAS_PLAYS, PURPOSES, LESSON, LESSON_HEADS } from '../builder/plan.js';
 import { FILE_LIMITS, FILE_ACCEPT, kindOf, readLessonFile, scrub, scrubPlan, screenLesson, studentNames } from '../builder/lesson.js';
 import express from 'express';
 import { allow, count as countLimit } from '../services/ratelimit.js';
@@ -90,6 +90,9 @@ const ART = {
   guided: svg('<path d="M8 40V28h10V18h10V8h12"/><circle cx="12" cy="22" r="3"/>'),
   own: svg('<circle cx="24" cy="14" r="6"/><path d="M14 42c0-8 4-14 10-14s10 6 10 14"/><path d="M34 8l4 4 6-7"/>'),
   devices: svg('<rect x="6" y="14" width="14" height="22" rx="2"/><rect x="28" y="14" width="14" height="22" rx="2"/><path d="M11 31h4M33 31h4"/>'),
+  // "What is it for?": a page of questions (a worksheet), fresh sets (a generator)
+  worksheet: svg('<path d="M12 4h18l8 8v32H12z"/><path d="M30 4v8h8"/><path d="M18 20h14M18 27h14M18 34h9"/>'),
+  generator: svg('<rect x="8" y="8" width="32" height="32" rx="6"/><circle cx="17" cy="17" r="2.5"/><circle cx="31" cy="31" r="2.5"/><circle cx="24" cy="24" r="2.5"/><path d="M40 4l4 4-4 4"/>'),
   both: svg('<rect x="6" y="6" width="36" height="20" rx="2"/><rect x="10" y="30" width="10" height="14" rx="2"/><rect x="28" y="30" width="10" height="14" rx="2"/>'),
 };
 ART.board = ART.screen;
@@ -101,7 +104,9 @@ const ICON = {
   runner: icon('<circle cx="15" cy="4" r="2"/><path d="M7 11l4-3 4 3 3 1"/><path d="M11 8l-2 6 4 3v5"/><path d="M9 14l-3 3H3"/>', 44),
 };
 /** The classroom activity's steps after "What should students practise?" (on the start screen). */
-export const CANVAS_STEPS = ['lesson', 'help', 'played'];
+// "What is it for?" sits right after "Your lesson" (docs/decisions.md "What is it for?"): it is a choice of its own
+// (one or more), not part of how it is played.
+export const CANVAS_STEPS = ['lesson', 'purpose', 'help', 'played'];
 /** The Classroom activity card's small picture: a fraction bar (g green, y yellow, e empty parts). */
 const miniBar = (n, parts) => `<span class="su-kbar" style="--n:${n}">${parts.split('').map(c => `<i class="su-kb-${c}"></i>`).join('')}</span>`;
 const art = id => raw(`<span class="su-pic su-art">${ART[id] || ART.else}</span>`);
@@ -112,7 +117,7 @@ export function setupData(t, { teacher = false, forClass = null } = {}) {
   return {
     // "What are you making?": the card that starts selected, and the classroom activity's steps (the grade's topic chips
     // with the kit tool each one means, and the class: only a flag and the grade, never an id the plan carries)
-    canvas: { kind: startKind({ teacher, forClass: !!forClass }), supports: SUPPORTS, help: ['guided'], plays: CANVAS_PLAYS, grade: forClass ? forClass.grade : '', forClass: !!forClass },
+    canvas: { kind: startKind({ teacher, forClass: !!forClass }), supports: SUPPORTS, help: ['guided'], purposes: PURPOSES, purpose: ['screen'], plays: CANVAS_PLAYS, grade: forClass ? forClass.grade : '', forClass: !!forClass },
     // "Your lesson": the headings the prompts put in the box (in this language), its limit, and the file the page may
     // send (teachers only: a kid's own work is never uploaded here)
     lesson: { heads: Object.fromEntries(LESSON_HEADS.map(k => [k, t(`buildSetup.lesson.heads.${k}`)])), max: LESSON.text,
@@ -226,6 +231,10 @@ router.get('/build/new', requireBuilder, (req, res) => {
   const helpBody = html`<div class="su-grid su-grid-text su-grid-4 su-grid-check" role="group" aria-labelledby="su-h-help" aria-describedby="su-hint-help">${SUPPORTS.map(id => html`<div class="su-card su-check" data-card="${id}">
       <label class="su-pick su-cpick"><input type="checkbox" class="sr-only su-cbox" data-help="${id}" value="${id}"${id === 'guided' ? raw(' checked') : ''}>${art(id)}<span class="su-name">${t(`buildSetup.canvas.help.${id}.title`)}</span><span class="su-desc">${t(`buildSetup.canvas.help.${id}.text`)}</span><span class="su-box" aria-hidden="true">${check}</span></label></div>`)}</div>
       <p class="su-flag su-one" id="su-help-one" role="status" hidden>${t('buildSetup.lesson.atLeastOne')}</p>`;
+  // "What is it for?": the same checkbox cards; one or more (at least one), Practice on screen to start.
+  const purposeBody = html`<div class="su-grid su-grid-text su-grid-3 su-grid-check" role="group" aria-labelledby="su-h-purpose" aria-describedby="su-hint-purpose">${PURPOSES.map(id => html`<div class="su-card su-check" data-card="${id}">
+      <label class="su-pick su-cpick"><input type="checkbox" class="sr-only su-pbox" data-purpose="${id}" value="${id}"${id === 'screen' ? raw(' checked') : ''}>${art(id)}<span class="su-name">${t(`buildSetup.canvas.purpose.${id}.title`)}</span><span class="su-desc">${t(`buildSetup.canvas.purpose.${id}.text`)}</span><span class="su-box" aria-hidden="true">${check}</span></label></div>`)}</div>
+      <p class="su-flag su-one" id="su-purpose-one" role="status" hidden>${t('buildSetup.lesson.atLeastOne')}</p>`;
 
   const body = html`
   <div class="su" id="su">
@@ -257,17 +266,17 @@ router.get('/build/new', requireBuilder, (req, res) => {
       <p class="su-tools muted">${t('buildSetup.kind.toolsText')} <a href="#type" id="su-tools">${t('buildSetup.kind.toolsLink')}</a></p>
     </section>
     ${CANVAS_STEPS.map((k, i) => html`<section class="su-screen su-step su-cstep" data-screen="${k}" aria-labelledby="su-h-${k}" hidden>
-      <div class="su-progress"><span class="su-dots" aria-hidden="true">${[0, 1, 2, 3].map(n => raw(`<i${n <= i + 1 ? ' class="on"' : ''}></i>`))}</span><span class="su-count">${t('buildSetup.progress', { n: i + 2, total: CANVAS_STEPS.length + 1 })}</span></div>
+      <div class="su-progress"><span class="su-dots" aria-hidden="true">${[...Array(CANVAS_STEPS.length + 1).keys()].map(n => raw(`<i${n <= i + 1 ? ' class="on"' : ''}></i>`))}</span><span class="su-count">${t('buildSetup.progress', { n: i + 2, total: CANVAS_STEPS.length + 1 })}</span></div>
       <h1 id="su-h-${k}" tabindex="-1">${t(k === 'lesson' ? 'buildSetup.lesson.heading' : `buildSetup.canvas.${k}.heading`)}</h1><p class="su-hint" id="su-hint-${k}">${t(k === 'lesson' ? 'buildSetup.lesson.hint' : `buildSetup.canvas.${k}.hint`)}</p>
-      ${k === 'lesson' ? lessonBody : k === 'help' ? helpBody
+      ${k === 'lesson' ? lessonBody : k === 'purpose' ? purposeBody : k === 'help' ? helpBody
         : html`<div class="su-grid su-grid-text su-grid-3" role="group" aria-labelledby="su-h-${k}">${CANVAS_PLAYS.map(id => card({ step: k, id, pic: art(id), title: t(`buildSetup.canvas.${k}.${id}.title`), text: t(`buildSetup.canvas.${k}.${id}.text`) }))}</div>`}
-      <div class="su-nav"><button type="button" class="btn" data-go="back">${t('buildSetup.back')}</button><span class="su-nav-end">${k === 'lesson' ? html`<button type="button" class="btn btn-ghost su-skipstep" data-go="skip">${t('buildSetup.skip')}</button>` : ''}<button type="button" class="btn btn-primary" data-go="next">${k === 'lesson' ? t('buildSetup.next') : k === 'help' ? t('buildSetup.canvas.nextPlayed') : t('buildSetup.next')}</button></span></div>
+      <div class="su-nav"><button type="button" class="btn" data-go="back">${t('buildSetup.back')}</button><span class="su-nav-end">${k === 'lesson' ? html`<button type="button" class="btn btn-ghost su-skipstep" data-go="skip">${t('buildSetup.skip')}</button>` : ''}<button type="button" class="btn btn-primary" data-go="next">${k === 'lesson' ? t('buildSetup.next') : k === 'purpose' ? t('buildSetup.canvas.nextHelp') : k === 'help' ? t('buildSetup.canvas.nextPlayed') : t('buildSetup.next')}</button></span></div>
     </section>`)}
     ${STEPS.map((s, i) => html`<section class="su-screen su-step" data-screen="${s.key}" aria-labelledby="su-h-${s.key}" hidden>
       ${head(s, i)}${grids[s.key]()}${s.other ? elseBox(s) : ''}${nav}
     </section>`)}
     <section class="su-screen su-plan" data-screen="plan" aria-labelledby="su-h-plan" hidden>
-      <h1 id="su-h-plan" tabindex="-1">${t('buildSetup.plan.heading')}</h1><p class="su-hint">${t('buildSetup.plan.text')}</p>
+      <h1 id="su-h-plan" tabindex="-1" data-game="${t('buildSetup.plan.heading')}" data-activity="${t('buildSetup.plan.headingActivity')}">${t('buildSetup.plan.heading')}</h1><p class="su-hint">${t('buildSetup.plan.text')}</p>
       <dl class="su-rows panel" id="su-rows"></dl>
       <section class="su-lsum panel" id="su-lsum" aria-live="polite" hidden></section>
       <p class="su-flag" id="su-plan-2d" hidden>${t('buildSetup.flatNote')}</p>

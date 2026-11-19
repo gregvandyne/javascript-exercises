@@ -1245,6 +1245,13 @@
       "problem": "Problema {n}",
       "rounds": "Redondeado: {x}",
       "simpler": "Simplificado: {x}"
+    },
+    "printCanvas": {
+      "untitled": "Ficha",
+      "sheet": "Ficha {code}",
+      "answer": "Respuesta:",
+      "choose": "Rodea una.",
+      "figure": "Figura de la pregunta {n}"
     }
   },
   "friends": {
@@ -2745,7 +2752,8 @@
           "practise": "Practicar",
           "help": "Ayuda",
           "played": "Se juega",
-          "lesson": "Clase"
+          "lesson": "Clase",
+          "purpose": "Para"
         }
       },
       "lesson": {
@@ -9259,6 +9267,7 @@
     },
     "plan": {
       "heading": "Este es el plan de tu juego",
+      "headingActivity": "Este es el plan de tu actividad",
       "text": "Cambia lo que quieras, o abre el Constructor y sigue allí.",
       "told": "Lo que le diremos al Constructor",
       "open": "Abrir el Constructor"
@@ -9286,7 +9295,8 @@
         "both": "Los alumnos lo juegan en sus dispositivos y también lo mostramos en la pizarra."
       },
       "lesson": "He descrito mi clase.",
-      "lessonDoc": "He añadido mi planificación."
+      "lessonDoc": "He añadido mi planificación.",
+      "purpose": "Para: {list}."
     },
     "flatNote": "En 2D, por ahora solo los juegos de carrera y de atrapar pueden usar nuestros mundos y personajes. En los otros juegos el Constructor usa su estilo clásico.",
     "typeGroups": {
@@ -9391,7 +9401,23 @@
         "orderFractions": "Ordenar fracciones",
         "bigAdd": "Sumar números grandes"
       },
-      "nextLesson": "Siguiente: tu clase"
+      "nextLesson": "Siguiente: tu clase",
+      "purpose": {
+        "heading": "¿Para qué es?",
+        "hint": "Elige una o más. La práctica en pantalla es donde empiezan los alumnos.",
+        "screen": {
+          "title": "Práctica en pantalla",
+          "text": "Los alumnos lo hacen en sus propios dispositivos, con pasos y pistas."
+        },
+        "worksheet": {
+          "title": "Ficha para imprimir",
+          "text": "Preguntas con figuras para imprimir y una página de soluciones."
+        },
+        "generator": {
+          "title": "Generador de preguntas",
+          "text": "Cada vez que pulsas Ficha nueva sale un conjunto nuevo, en pantalla o en papel."
+        }
+      }
     },
     "lesson": {
       "heading": "Tu clase",

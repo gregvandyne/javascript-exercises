@@ -26,6 +26,7 @@ import * as gameSets from '../services/game-sets.js';
 import { draftClues } from '../services/set-ai.js';
 import { wordsFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
 import { PRINTERS } from '../services/game-print.js';
+import { canvasPrintable, cleanCanvasPrintDoc, canvasPrintHtml } from '../services/canvas-print.js';
 import { hasModel } from '../builder/anthropic.js';
 import { onlineGame } from './match.js';
 import fs from 'node:fs';
@@ -341,7 +342,7 @@ router.get('/play/:slug', (req, res) => {
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}${frameQ}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo" aria-hidden="true">📱</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) ? { print: true } : {}) })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}) })}`;
   // (keyboard: Doodle Hoot's guess box; an on-screen keyboard shrinks the page, so the box and the drawing stay in view)
   page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'], i18n: mic ? ['js.match', 'js.loudness'] : ['js.match'] });
 });
@@ -405,6 +406,9 @@ router.get('/frame/:token', (req, res) => {
     ...(!preview && cluesGame(g) && liveCanHost(u) && hasModel() && fenceLets(u, 'POST', `/api/games/${g.id}/clues`) && fenceLets(u, 'POST', `/api/games/${g.id}/words-from-doc`) ? { clues: true } : {}),
     // Print (BRB.canPrint / BRB.print; Crossword, The Big Divide): the play page prints for the frame (POST /api/games/:id/print).
     ...(!preview && printGame(g) ? { print: true } : {}),
+    // A classroom activity that prints (canvas-print.js), in the Studio's preview too (its maker): printKey offers the
+    // answer key (BRB.canPrintKey) to its maker and school staff only; the print route checks again.
+    ...(canvasPrintable(v.html) ? { print: true, ...(canvasKeyFor(u, g) ? { printKey: true } : {}) } : {}),
     // AI voices (routes/tts.js): the TTS locales on now, for games that may use them (official games, a game the admin
     // switched on, and a Builder game's published, scanner-passed version); absent otherwise and in every preview (the
     // SDK then speaks with the device's voice exactly as before).
@@ -467,6 +471,18 @@ router.post('/api/games/:id/sets', requireUser, rateLimit('game-sets', 60, 60e3)
 const cluesGame = g => setGame(g) && g.slug === 'crossword';
 /** A game that prints (services/game-print.js): Crossword's puzzles, The Big Divide's worksheets. */
 const printGame = g => setGame(g) && PRINTERS.has(g.slug);
+/** A Builder classroom activity that prints (Oomba Canvas 1.2.0 with a worksheet or generator purpose,
+ *  services/canvas-print.js): the published version, or (for its maker or an admin) the version they ask for, as in
+ *  the Studio's preview. -> the version or null. */
+function canvasPrintVersion(g, u, vid) {
+  const id = typeof vid === 'string' && vid ? vid : g.published_version_id;
+  const v = id ? games.getVersion(id) : null;
+  if (!v || v.game_id !== g.id) return null;
+  if (v.id !== g.published_version_id && !games.canEdit(u, g)) return null;
+  return canvasPrintable(v.html) ? v : null;
+}
+/** Who may print an activity's answer key: school staff and the activity's own maker (never a student playing it). */
+const canvasKeyFor = (u, g) => !!u && !u.is_guest && (isSchoolStaff(u) || games.canEdit(u, g));
 router.post('/api/games/:id/clues', requireUser, rateLimit('game-clues', 30, 3600e3), async (req, res) => {
   const g = apiGame(req, res); if (!g) return;
   if (!cluesGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
@@ -511,7 +527,17 @@ router.post('/api/games/:id/words-from-doc', requireUser, rateLimit('game-doc', 
 router.post('/api/games/:id/print', rateLimit('game-print', 20, 60e3, 'errors.api.slowDown', { byIp: true }), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
   const printer = printGame(g) && PRINTERS.get(g.slug);
-  if (!printer) return res.status(404).json({ error: req.t('game.api.notFound') });
+  // A Builder classroom activity (Oomba Canvas 1.2.0): its sheet from the version's own data; body { doc, v? } (v: the
+  // version a Studio preview shows; the published one otherwise). The key: its maker and school staff only.
+  if (!printer) {
+    const v = canvasPrintVersion(g, req.user, (req.body || {}).v);
+    if (!v) return res.status(404).json({ error: req.t('game.api.notFound') });
+    const r = cleanCanvasPrintDoc((req.body || {}).doc);
+    if (!r.ok) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
+    if (r.doc.key && !canvasKeyFor(req.user, g)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'key' });
+    const out = canvasPrintHtml(v.html, r.doc, { t: req.t, dir: localeInfo(req.locale).dir, lang: req.locale });
+    return out ? res.json({ html: out }) : res.status(404).json({ error: req.t('game.api.notFound') });
+  }
   const r = printer.clean((req.body || {}).doc);
   if (!r.ok) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
   if (r.doc.key && !isSchoolStaff(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'key' });

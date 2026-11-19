@@ -40,6 +40,7 @@ import { wantsArt2d, isArt2dGame, art2dEdits, art2dWorld, art2dCharacter, ART2D_
 import { buildKit2, followUpKit2 } from './mock-kit2.js';
 import { engineFor, art2dFor, planEngine, customParts, choiceLabel, GAME_TYPES, canvasActivity, topicLabel } from './plan.js';
 import { canvasVersion, activityData, withActivityData } from '../services/canvaskit.js';
+import { figTag } from '../services/figlibs.js';
 import { tFor } from '../i18n/index.js';
 import { characterById, worldById } from './kit2.js';   // (the plan's own lines, below)
 
@@ -455,11 +456,27 @@ async function buildCanvas(ctx, m) {
   ctx.tools.exec('set_game', { title, icon: '🧮', description: 'A classroom activity: build it, check it, one step at a time.', category: 'learning', tags: ['activity', p.tool || 'canvas'], players: 1, cover: 'mint' });
   const s = await ctx.tools.exec('start_from_template', { template: 'canvas', notes: 'Started your classroom activity' });
   if (!s.ok) { await say(ctx, 'Hmm, I could not start the activity. Ask me again!'); return; }
-  const cur = ctx.tools.current(), html = withActivityData(cur.html, data).replace(/<title>[^<]*<\/title>/, `<title>${title.replace(/[<&]/g, '')}</title>`);
+  // a plan that calls for figures (plan.figures): figure questions drawn by Oomba Figures, and its pinned tag first
+  if (p.figures) Object.assign(data, figureSample(data));
+  const cur0 = ctx.tools.current(), withFigs = p.figures ? cur0.html.replace(/(<script\b[^>]*\/vendor\/oomba-canvas\/)/, `${figTag('oomba-figures')}\n$1`) : cur0.html;
+  const cur = { ...cur0, html: withFigs }, html = withActivityData(cur.html, data).replace(/<title>[^<]*<\/title>/, `<title>${title.replace(/[<&]/g, '')}</title>`);
   const r = ctx.tools.exec('write_game', { html, notes: `${title}: a fresh set for each student` });
   if (!r.ok) { await say(ctx, 'Hmm, the activity check found a problem. Ask me to fix it and I will!'); return; }
   await say(ctx, `I made ${title}: 5 problems where students build each answer, with steps and up to 3 hints. Each student gets a fresh set.\n\n✅ Every problem checked: each one can be solved, and an empty start is never right.\n📈 Each finished set goes to Progress.`);
   ctx.tools.exec('ask_user', { question: 'What should we change next?', options: CANVAS_CHIPS });
+}
+/** The mock's figure activity (a plan with figures): a free-body question, a Bohr model, a thermometer reading and a ray
+ *  diagram, each with its worked answer; with a generator purpose, a free-body generator (each New sheet a fresh set). */
+function figureSample(data) {
+  const problems = [
+    { tool: 'figure.number', q: 'A 2 kg box is pushed with 10 N to the right. Friction is 4 N. What is the net force on the box?', fig: { kind: 'freeBody', body: 'box', label: '2 kg', forces: [{ name: 'W', dir: 'down', size: 19.6 }, { name: 'N', dir: 'up', size: 19.6 }, { name: 'F', dir: 'right', size: 10 }, { name: 'Ff', dir: 'left', size: 4 }] }, answer: 6, unit: 'N', work: ['Up and down balance: 19.6 N each way.', 'Sideways: 10 N − 4 N', '= 6 N to the right'] },
+    { tool: 'figure.number', q: 'How many electrons are in the outer shell of this sodium atom?', fig: { kind: 'bohr', element: 'Na', hide: 'electrons' }, answer: 1, work: ['Sodium has 11 electrons: 2, then 8, then 1.', 'The outer shell has 1 electron.'] },
+    { tool: 'figure.number', q: 'What temperature does the thermometer show?', fig: { kind: 'reading', type: 'thermometer', value: 23.5, min: -10, max: 50, step: 1, major: 10, hide: 'value' }, answer: 23.5, dp: 1, unit: '°C', work: ['Each small mark is 1 °C.', 'The liquid stops half way between 23 and 24.', 'The reading is 23.5 °C.'] },
+    { tool: 'figure.choice', q: 'The object is 25 cm from a converging lens with a focal length of 10 cm. What kind of image does it make?', fig: { kind: 'rays', type: 'convex-lens', f: 10, u: 25, h: 4 }, choices: ['real and upside down', 'virtual and upright'], answer: 0, work: ['The object is further away than F, so the rays meet on the other side.', 'The image is real and upside down.'] },
+  ];
+  const gen = { tool: 'figure.number', vars: { m: [2, 10], a: [1, 5] }, q: 'A {m} kg cart speeds up at {a} m/s². What is the net force on it?', fig: { kind: 'freeBody', body: 'box', label: '{m} kg', forces: [{ name: 'F', dir: 'right', size: '{=m*a}' }] }, answer: 'm*a', dp: 0, unit: 'N', work: ['F = m × a', '= {m} × {a}', '= {=m*a} N'] };
+  const gen2 = (data.config.purpose || []).includes('generator');
+  return { problems, gen: gen2 ? gen : null, config: { ...data.config, count: gen2 ? 5 : problems.length, fresh: gen2 } };
 }
 /** A change to a classroom activity: harder numbers, or an arcade game instead (the mock's simple version of each). */
 async function followUpCanvas(ctx, m, cur) {

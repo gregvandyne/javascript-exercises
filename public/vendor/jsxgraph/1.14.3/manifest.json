@@ -1,0 +1,17 @@
+{
+  "name": "jsxgraph",
+  "version": "1.14.3",
+  "license": "(MIT OR LGPL-3.0-or-later)",
+  "usedUnder": "MIT",
+  "source": "npm jsxgraph@1.14.3 (distrib/jsxgraphcore.js, LICENSE.MIT)",
+  "files": {
+    "jsxgraphcore.js": {
+      "sha256": "3b256219e90c83e183f253374ffcecab0cfbb1350a7b4252a69af134a684ee43",
+      "sri": "sha384-/gRtLXAXiYXfed0Ajep7yLSyD64K0WQYnhZ2nAVPArQLm7X6VRHGWvhOSHgcUMBL"
+    },
+    "LICENSE": {
+      "sha256": "43e325001487de7f09745fbe086b054bb1b70d4ab58060e87153849365b23ff1",
+      "sri": "sha384-LNk4Kkz77lHZ4HVjLZGU7DLRINOfYxGQYkqRCFGMOeh3L5IOIQUBKwhUBKG7YR0G"
+    }
+  }
+}

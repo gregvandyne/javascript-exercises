@@ -1246,6 +1246,13 @@
       "problem": "Problema {n}",
       "rounds": "Arrotondato: {x}",
       "simpler": "Semplificato: {x}"
+    },
+    "printCanvas": {
+      "untitled": "Scheda",
+      "sheet": "Scheda {code}",
+      "answer": "Risposta:",
+      "choose": "Cerchia una risposta.",
+      "figure": "Figura della domanda {n}"
     }
   },
   "friends": {
@@ -2746,7 +2753,8 @@
           "practise": "Esercitare",
           "help": "Aiuto",
           "played": "Si gioca",
-          "lesson": "Lezione"
+          "lesson": "Lezione",
+          "purpose": "Per"
         }
       },
       "lesson": {
@@ -9260,6 +9268,7 @@
     },
     "plan": {
       "heading": "Ecco il piano del tuo gioco",
+      "headingActivity": "Ecco il piano della tua attività",
       "text": "Cambia quello che vuoi, oppure apri il Costruttore e continua lì.",
       "told": "Che cosa diremo al Costruttore",
       "open": "Apri il Costruttore"
@@ -9287,7 +9296,8 @@
         "both": "Gli alunni giocano sui loro dispositivi e lo mostriamo anche alla lavagna."
       },
       "lesson": "Ho descritto la mia lezione.",
-      "lessonDoc": "Ho aggiunto la mia programmazione."
+      "lessonDoc": "Ho aggiunto la mia programmazione.",
+      "purpose": "Per: {list}."
     },
     "flatNote": "In 2D, per ora solo i giochi di corsa e di presa possono usare i nostri mondi e personaggi. Negli altri giochi il Costruttore usa il suo aspetto classico.",
     "typeGroups": {
@@ -9392,7 +9402,23 @@
         "orderFractions": "Ordina le frazioni",
         "bigAdd": "Addiziona numeri grandi"
       },
-      "nextLesson": "Avanti: la tua lezione"
+      "nextLesson": "Avanti: la tua lezione",
+      "purpose": {
+        "heading": "A cosa serve?",
+        "hint": "Scegline una o più. Gli studenti iniziano dalla pratica sullo schermo.",
+        "screen": {
+          "title": "Pratica sullo schermo",
+          "text": "Gli studenti lavorano sul proprio dispositivo, con passaggi e suggerimenti."
+        },
+        "worksheet": {
+          "title": "Scheda da stampare",
+          "text": "Domande con figure da stampare e una pagina di soluzioni."
+        },
+        "generator": {
+          "title": "Generatore di domande",
+          "text": "Ogni volta che premi Nuova scheda arriva una serie nuova, sullo schermo o su carta."
+        }
+      }
     },
     "lesson": {
       "heading": "La tua lezione",
