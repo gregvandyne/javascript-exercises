@@ -11719,6 +11719,12 @@
     "assign": "Assign",
     "removeGame": "Remove from folder",
     "save": "Save to folder",
+    "oomba": {
+      "title": "Oomba games",
+      "search": "Search Oomba games",
+      "none": "No games match. Try another subject or grade.",
+      "live": "Live"
+    },
     "pick": "Which folder?",
     "keepBrowsing": "Keep browsing",
     "openFolder": "Open {folder}",

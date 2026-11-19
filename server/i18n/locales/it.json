@@ -11293,6 +11293,12 @@
     "assign": "Assegna",
     "removeGame": "Togli dalla cartella",
     "save": "Salva in una cartella",
+    "oomba": {
+      "title": "Giochi di Oomba",
+      "search": "Cerca giochi di Oomba",
+      "none": "Nessun gioco trovato. Prova un’altra materia o un’altra classe.",
+      "live": "Dal vivo"
+    },
     "pick": "In quale cartella?",
     "keepBrowsing": "Continua a esplorare",
     "openFolder": "Apri {folder}",

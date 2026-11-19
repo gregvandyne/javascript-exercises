@@ -11293,6 +11293,12 @@
     "assign": "Toewijzen",
     "removeGame": "Uit de map halen",
     "save": "Bewaren in map",
+    "oomba": {
+      "title": "Oomba-spellen",
+      "search": "Oomba-spellen zoeken",
+      "none": "Geen spellen gevonden. Probeer een ander vak of een andere groep.",
+      "live": "Live"
+    },
     "pick": "Welke map?",
     "keepBrowsing": "Verder kijken",
     "openFolder": "{folder} openen",

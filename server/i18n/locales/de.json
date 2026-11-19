@@ -11293,6 +11293,12 @@
     "assign": "Zuweisen",
     "removeGame": "Aus dem Ordner entfernen",
     "save": "In Ordner speichern",
+    "oomba": {
+      "title": "Oomba-Spiele",
+      "search": "Oomba-Spiele suchen",
+      "none": "Keine Spiele gefunden. Probier ein anderes Fach oder eine andere Klasse.",
+      "live": "Live"
+    },
     "pick": "Welcher Ordner?",
     "keepBrowsing": "Weiterstöbern",
     "openFolder": "{folder} öffnen",

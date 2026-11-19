@@ -876,7 +876,8 @@ function classTiles(req, c, { host, dash }) {
     host && { href: `/live?class=${c.id}`, emoji: '📡', label: t('live.entry.host'), hot: true },
     dash && { href: `/class/${c.id}/dashboard`, emoji: '🖥️', label: t('dash.entry.teacher') },
     staff && { href: `/build/new?for=class&class=${c.id}`, emoji: '🛠️', label: t('folders.buildNew') },
-    staff && { href: '/learn', emoji: '🦉', label: t('folders.findOomba') },
+    // Find Oomba games opens the Games tab's own list of them (game-shelf.js oombaPane), so the teacher stays on the class.
+    staff && { href: `/class/${c.id}?tab=lessons&view=oomba`, emoji: '🦉', label: t('folders.findOomba') },
   ].filter(Boolean);
   if (!tiles.length) return '';
   return html`<div class="classtiles${tiles.length === 1 ? ' is-one' : ''}">${tiles.map(x => html`<a class="classtile${x.hot ? ' is-hot' : ''}" href="${x.href}"><span class="classtile-e" aria-hidden="true">${x.emoji}</span><span class="classtile-l">${x.label}</span></a>`)}</div>`;
