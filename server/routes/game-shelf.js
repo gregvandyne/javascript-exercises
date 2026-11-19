@@ -9,6 +9,7 @@
 // the owner's own (F.foldersOf) or shared with their school (F.sharedWith, F.gamesIn: only games they can open), Assign
 // is for school staff, sharing needs a school one is staff of, and students never see a teacher's folders or Assign
 // (the class page's shelf is behind its manager check; a student's Build shelf holds only their own folders).
+import * as LIB from '../services/library.js';
 import { html, raw } from '../views/html.js';
 import { coverArt, emptyState } from '../views/components.js';
 import { accountKind } from '../auth.js';
@@ -30,6 +31,7 @@ const ICON = {
   folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
   assigned: '<path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/>',
   find: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+  book: '<path d="M4 5a2 2 0 0 1 2-2h5v17H6a2 2 0 0 0-2 2z"/><path d="M20 5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 1 2 2z"/>',
   students: '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14 20c0-2.5 1.5-4.5 3.5-5"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
 };
@@ -115,7 +117,8 @@ function side(req, ctx, sel, mine, shared) {
     ${top}
     <nav class="shelf-nav" aria-label="${ctx.kind === 'build' ? t('folders.myGamesFolders') : t('folders.sideClass')}">
       <ul class="shelf-group${ctx.kind === 'class' ? ' shelf-cltop' : ''}">${first.map(it => html`<li>${item(req, ctx, sel, it)}</li>`)}
-        ${oombaOn(ctx) ? html`<li>${item(req, ctx, sel, { key: 'oomba', href: `${ctx.base}?view=oomba`, icon: 'find', name: t('folders.findOomba') })}</li>` : ''}</ul>
+        ${oombaOn(ctx) ? html`<li>${item(req, ctx, sel, { key: 'oomba', href: `${ctx.base}?view=oomba`, icon: 'find', name: t('folders.findOomba') })}</li>` : ''}
+        ${ctx.kind === 'class' && ctx.staff ? html`<li>${item(req, ctx, sel, { key: 'library', href: `/library?class=${ctx.c.id}`, icon: 'book', name: t('library.findStories') })}</li>` : ''}</ul>
       ${ctx.folders ? html`<p class="shelf-lab" id="shelf-lab-mine">${t('folders.title')}</p>
       ${mine.length ? html`<ul class="shelf-group" aria-labelledby="shelf-lab-mine"${mine.length > 1 ? html` data-reorder="/api/game-folders/order" data-moved="${movedTpl(t)}" aria-describedby="shelf-order"` : ''}>${mine.map(f => html`<li data-id="${f.id}">${item(req, ctx, sel, fItem(f), { grip: mine.length > 1, drop: f.id })}</li>`)}</ul>
       <p class="small muted shelf-drophint">${t('folders.dropHint')}</p>
@@ -334,6 +337,7 @@ function libList(req, ctx, mine, shared, myGames) {
       ${shared.map(f => libItem(req, { href: fHref(f), emo: '🤝', name: f.name, sub: t('folders.phone.byReadOnly', { name: f.owner_name || '' }), count: f.games }))}
       ${libItem(req, { href: `${base}?view=students`, emo: '🎒', name: t('folders.studentShared'), sub: t('folders.phone.studentsSub', { class: c.name }), count: ctx.students.count })}
       ${ctx.staff ? libItem(req, { href: `${base}?view=oomba`, emo: '🦉', name: t('folders.phone.oomba'), sub: t('folders.phone.oombaSub') }) : ''}
+      ${ctx.staff ? libItem(req, { href: `/library?class=${c.id}`, emo: '📚', name: t('library.findStories'), sub: t('library.door.staff', { count: LIB.books().length }) }) : ''}
     </ul>`;
 }
 

@@ -1065,6 +1065,16 @@ export const MIGRATIONS = [
   // A game step's best score that came from a set where the teacher showed an answer (Oomba Canvas 1.3.0's Show answer:
   // those problems are not in the score). Shown to the class's staff only, beside that score (routes/progress.js).
   ['0090_step_progress_helped', 'ALTER TABLE step_progress ADD COLUMN helped INTEGER NOT NULL DEFAULT 0;'],
+  // Story Library (docs/decisions.md "Story Library"; server/services/library.js). story_reads: each reader's own progress
+  // on a book (furthest page, whether Read to me was used, the questions: marks = first try per question '1'/'0'/'-',
+  // solved = got it right in the end '1'/'-'). A book assigned to a class is a lesson of kind 'story' with one step of
+  // kind 'story' whose story_id names the book (lesson_steps.story_id), so the class page, due dates, the gradebook and
+  // the Score treat it like an assigned game; its step_progress row holds done, the first-try marks and the score.
+  ['0091_story_library', `CREATE TABLE IF NOT EXISTS story_reads (user_id TEXT NOT NULL, book_id TEXT NOT NULL, page INTEGER NOT NULL DEFAULT 0,
+      pages INTEGER NOT NULL DEFAULT 0, aloud INTEGER NOT NULL DEFAULT 0, marks TEXT NOT NULL DEFAULT '', solved TEXT NOT NULL DEFAULT '',
+      finished_at INTEGER, quiz_at INTEGER, started_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (user_id, book_id));
+    CREATE INDEX IF NOT EXISTS story_reads_user ON story_reads(user_id, updated_at);
+    ALTER TABLE lesson_steps ADD COLUMN story_id TEXT;`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

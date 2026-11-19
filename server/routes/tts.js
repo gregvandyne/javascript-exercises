@@ -26,6 +26,10 @@
 //                  English with Tally's voice (Fraction Factory's registered role). The page never sends text.
 //     ctx 'lesson' { clId, stepId, i }  a lesson quiz step's question i, behind the same access as its quiz API, in the
 //                  page's language.
+//     ctx 'story'  { book, page, s }  sentence s of page `page` (1-based) of a Story Library book, by its numbers only: the
+//                  server reads the book's own words from the manifest (services/library.js; cut into sentences by
+//                  public/js/library-text.js, the same cut the reader highlights). English, narrator role. No account
+//                  needed: the words are a published book's, never typed by anyone.
 //     ctx 'move'   { episode, seg, line }  one narration line of a Brain Break (Oomba Breathe & Bend, /move), by its
 //                  numbers only: the server reads the registered line (services/tts-lines.js MOVE_LINES, from
 //                  services/move-data.js) in English, in the narrator role with the series' pinned voice
@@ -58,6 +62,8 @@ import { ADMIN_BODY, ADMIN_CSS, note } from '../views/admin-ui.js';
 import * as COURSES from '../services/courses.js';
 import * as NQP from '../services/number-quest-placement.js';
 import { sayOf } from '../views/courses.js';
+import * as LIB from '../services/library.js';
+import { sentences as storySentences } from '../../public/js/library-text.js';
 import { isStaff } from '../services/schools.js';
 
 export const router = Router();
@@ -183,6 +189,13 @@ function resolve(req, b) {
     const it = Number.isInteger(b.i) ? r.items[b.i] : null;
     if (!it) return { error: [404, 'off'] };
     return { text: questionText(it.q, it.choices), locale: V.ttsLocale(req.locale) || 'en', role: 'narrator', rate: 'normal' };
+  }
+  if (b.ctx === 'story') {
+    const bk = LIB.getBook(String(b.book || ''));
+    const pg = bk && Number.isInteger(b.page) ? bk.pages[b.page - 1] : null;
+    const sen = pg && Number.isInteger(b.s) ? storySentences(pg.text)[b.s] : null;
+    if (!sen) return { error: [404, 'off'] };
+    return { text: sen.text, locale: 'en', role: 'narrator', rate: 'normal' };
   }
   if (b.ctx === 'move') {
     // A Brain Break is public (guests play free in class), so no account is needed; the words are ours

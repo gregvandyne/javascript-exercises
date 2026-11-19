@@ -1,6 +1,7 @@
 // Lesson plans: the teacher's library (/teach/lessons), the lesson editor (/teach/lessons/:id) and the lessons panel on a
 // class page (exported for routes/schools.js). The lesson page students work through is in routes/progress.js.
 // Permissions come from services/lessons.js and services/schools.js; no access means 404.
+import * as LIB from '../services/library.js';
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
 import { page, notFound, VERSION } from '../views/layout.js';
@@ -391,13 +392,13 @@ export function assignedPane(req, c, { tools = '' } = {}) {
   const plan = L.classPlan(c.id);
   const count = plan.reduce((n, g) => n + g.lessons.length, 0);
   const staff = S.schoolsOf(u.id).some(s => s.id === c.school_id && s.role !== 'student');
-  const icon = cl => { const g = cl.kind === 'game' && cl.first_game ? games.getGame(cl.first_game) : null; return g ? (g.icon || '🎮') : cl.kind === 'homework' ? '📝' : '📚'; };
+  const icon = cl => { const g = cl.kind === 'game' && cl.first_game ? games.getGame(cl.first_game) : null; return g ? (g.icon || '🎮') : cl.kind === 'homework' ? '📝' : cl.kind === 'story' ? '📖' : '📚'; };
   const pane = () => {
     const sums = count ? P.lessonSummaries(c.id) : {};
     const lessonRow = (cl, i, n) => {
       const sm = sums[cl.id] || { done: 0, students: 0, toRead: 0 };
       return html`<li class="cl-row" id="cl-${cl.id}">
-      <a class="cl-main" href="/class/${c.id}/progress/${cl.id}"><b dir="auto"><span aria-hidden="true">${icon(cl)}</span> ${cl.title}</b><span class="small muted cl-meta">${cl.kind === 'game' ? html`<span>🎮 ${t('folders.kindGame')}</span>` : html`<span>${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}</span>`}
+      <a class="cl-main" href="/class/${c.id}/progress/${cl.id}"><b dir="auto"><span aria-hidden="true">${icon(cl)}</span> ${cl.title}</b><span class="small muted cl-meta">${cl.kind === 'game' ? html`<span>🎮 ${t('folders.kindGame')}</span>` : cl.kind === 'story' ? html`<span>📖 ${t('library.kindStory')}</span>` : html`<span>${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}</span>`}
         ${cl.opens_at && !L.isOpen(cl) ? html`<span class="chip-s">🔒 ${t('lessons.class.opensOn', { date: f.day(cl.opens_at) })}</span>` : ''}${dueChip(t, f, cl, { done: !sm.students || sm.done >= sm.students })}</span>
         ${sm.students ? html`<span class="small cl-stats"><span>${t('lessons.class.doneOf', { done: sm.done, students: sm.students })}</span>${sm.toRead ? html`<span class="chip-s warn">✍️ ${t('lessons.class.toReview', { count: sm.toRead })}</span>` : ''}</span>` : ''}</a>
       <span class="acts">${i ? html`<form data-api="/api/class-lessons/${cl.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${i < n - 1 ? html`<form data-api="/api/class-lessons/${cl.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
@@ -440,8 +441,9 @@ export function assignedPane(req, c, { tools = '' } = {}) {
     const row = (cl, i, len) => {
       const sm = sums[cl.id] || { done: 0, students: 0 };
       const g = cl.kind === 'game' && cl.first_game ? games.getGame(cl.first_game) : null;
-      const thumb = g ? coverArt(g.source === 'seed' ? games.localizeGame(g) : g, 'lib-thumb') : html`<div class="coverart cover-sunset lib-thumb"><div class="art" aria-hidden="true">${icon(cl)}</div></div>`;
-      const play = g ? (g.published_version_id || g.source === 'seed' ? `/g/${g.slug}` : null) : null;
+      const bk = cl.kind === 'story' && cl.first_story ? LIB.getBook(cl.first_story) : null;
+      const thumb = g ? coverArt(g.source === 'seed' ? games.localizeGame(g) : g, 'lib-thumb') : bk ? html`<div class="coverart has-shot lib-thumb"><img src="${bk.cover.src}" alt="" loading="lazy" decoding="async" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}"></div>` : html`<div class="coverart cover-sunset lib-thumb"><div class="art" aria-hidden="true">${icon(cl)}</div></div>`;
+      const play = g ? (g.published_version_id || g.source === 'seed' ? `/g/${g.slug}` : null) : bk ? `/library/${bk.id}/read` : null;
       const up = t('folders.phone.up', { name: cl.title }), down = t('folders.phone.down', { name: cl.title });
       const acts = reorder && canMove
         ? html`<span class="lib-moves">${i ? html`<form data-api="/api/class-lessons/${cl.id}/up" data-reload><button class="btn lib-mv" type="submit" aria-label="${up}" title="${up}"><span class="lib-arrow" aria-hidden="true">↑</span></button></form>` : html`<span class="lib-mv-gap"></span>`}${i < len - 1 ? html`<form data-api="/api/class-lessons/${cl.id}/down" data-reload><button class="btn lib-mv" type="submit" aria-label="${down}" title="${down}"><span class="lib-arrow" aria-hidden="true">↓</span></button></form>` : html`<span class="lib-mv-gap"></span>`}</span>`
@@ -488,7 +490,7 @@ export function studentLessonsPanel(req, c) {
   return html`<section class="panel" aria-labelledby="sl-h"><h2 id="sl-h">📌 ${t('folders.assigned')}</h2>${plan.map(g => html`<div class="unit">
     ${g.unit ? html`<h3>🗂️ ${g.unit.name}</h3>` : ''}
     <ol class="plain cl-list">${g.lessons.map(cl => html`<li class="cl-row"><a class="cl-main" href="/class/${c.id}/lessons/${cl.id}"><b dir="auto">${cl.title}</b>
-      <span class="small muted cl-meta"><span>${cl.kind === 'game' ? `🎮 ${t('folders.kindGame')}` : html`${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}`}</span>${dueChip(t, f, cl, { done: !!cl.steps && doneN(cl) >= cl.steps })}</span></a>${state(cl)}</li>`)}</ol></div>`)}</section>`;
+      <span class="small muted cl-meta"><span>${cl.kind === 'game' ? `🎮 ${t('folders.kindGame')}` : cl.kind === 'story' ? `📖 ${t('library.kindStory')}` : html`${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}`}</span>${dueChip(t, f, cl, { done: !!cl.steps && doneN(cl) >= cl.steps })}</span></a>${state(cl)}</li>`)}</ol></div>`)}</section>`;
 }
 
 // ---- class lesson APIs

@@ -3320,6 +3320,22 @@
       "genWorkAns": "The answer is {v}{u}.",
       "gVar": "The number {x} on the figure",
       "gDigits": "Digits in each number"
+    },
+    "library": {
+      "pageOf": "Page {page} of {pages}",
+      "backToQuestions": "Back to the questions",
+      "toQuestions": "Questions",
+      "next": "Next",
+      "stop": "Stop",
+      "readToMe": "Read to me",
+      "answered": "You answered this one.",
+      "readQuestion": "Read it to me",
+      "readFirst": "Read the story to the last page first.",
+      "right": "Yes, that's right!",
+      "tryAgain": "Try again! Look at page {page}.",
+      "lookAt": "Look at page {page}",
+      "doneMsg": "All done! {right} of {total} right on the first try. Great reading!",
+      "doneShort": "All done! Great reading!"
     }
   },
   "favorites": {
@@ -12034,6 +12050,99 @@
       "oombaSub": "Browse every Oomba game",
       "collectionEmpty": "Nothing in this collection yet",
       "allEmpty": "You haven't built a game yet."
+    }
+  },
+  "library": {
+    "title": "Story Library",
+    "lead": "Picture books to read on your own or to have read to you, with 3 questions at the end. {count} free stories.",
+    "level": "Level {n}",
+    "levelLong": "Level {n} · {name}",
+    "levels": {
+      "l1": "Just starting",
+      "l2": "Learning to read",
+      "l3": "Reading on my own"
+    },
+    "meta": "{pages, plural, one {# page} other {# pages}} · 🔊 Read to me · {questions, plural, one {# question} other {# questions}}",
+    "words": "{count, plural, one {# word} other {# words}}",
+    "read": "Read",
+    "continue": "Keep reading (page {page})",
+    "assign": "Assign",
+    "state": {
+      "done": "Read · {right} of {total} right",
+      "quiz": "Questions waiting",
+      "reading": "Page {page} of {pages}"
+    },
+    "forClass": "Pick a story to assign to {class}.",
+    "backToClass": "Back to the class",
+    "searchLabel": "Search stories",
+    "levelsLabel": "Reading level",
+    "allLevels": "All levels",
+    "searchPlaceholder": "Search stories",
+    "searchGo": "Search",
+    "found": "{count, plural, one {# story} other {# stories}}",
+    "none": "No stories found",
+    "noneText": "Try other words, or look at every level.",
+    "footCredit": "Stories and pictures: Pratham Books, StoryWeaver. License:",
+    "footQuestions": "Each book lists its author, illustrator and translator. The questions at the end are written by Oomba, not part of the books.",
+    "glossary": "Words to know",
+    "glossaryNote": "Notes by Oomba to help with words from India.",
+    "aboutTitle": "About this book",
+    "aboutQuestions": "After the last page there are 3 questions. They are written by Oomba Academy and are not part of the book.",
+    "credits": {
+      "text": "Story: {names}",
+      "illustration": "Pictures: {names}",
+      "translation": "Translation: {names}",
+      "changes": "Oomba resized the pictures and shows the book one page at a time. Pratham Books does not endorse Oomba.",
+      "original": "See the original book."
+    },
+    "readToMe": "Read to me",
+    "pagesLabel": "Pages",
+    "back": "Back",
+    "next": "Next",
+    "toQuestions": "Questions",
+    "pageOf": "Page {page} of {pages}",
+    "finished": "You finished “{title}”",
+    "questionsLead": "{count, plural, one {# question} other {# questions}} about the story",
+    "readAgain": "Read it again",
+    "backTo": "Back to {name}",
+    "moreBooks": "More stories",
+    "needJs": "The questions need JavaScript turned on.",
+    "errors": {
+      "readFirst": "Read the story to the last page first.",
+      "alreadyAssigned": "This story is already assigned to {class}.",
+      "pickStory": "Pick a story from the library."
+    },
+    "assignTitle": "Assign “{title}”",
+    "assignNote": "Students see it on the class page. They read it, answer 3 questions, and you see who read it and their scores under Progress.",
+    "preview": "Read it first",
+    "kindStory": "Story",
+    "findStories": "Story Library",
+    "door": {
+      "title": "Story Library",
+      "kids": "{count} picture books. Read them, or tap Read to me!",
+      "staff": "{count} leveled picture books with questions. Assign one to a class."
+    },
+    "results": {
+      "withAloud": "with Read to me",
+      "onOwn": "on their own",
+      "questionsLeft": "Read it, questions left",
+      "pageOf": "page {page} of {pages}",
+      "usedAloud": "Used Read to me",
+      "notStarted": "not started",
+      "qN": "Question {n}",
+      "summary": "{started} of {total} started · {finished} finished",
+      "readTogether": "Read it together",
+      "assignAnother": "Assign another story",
+      "read": "Read",
+      "questions": "Questions",
+      "rightOf": "{right} / {total}",
+      "firstTry": "right on the first try",
+      "key": "Questions count when right on the first try (✓ right, ✗ needed another try). A student who tries again can still finish.",
+      "byQuestion": "The questions",
+      "hardest": "Question {n} was the hardest for the class.",
+      "answer": "Answer: {answer}",
+      "page": "page {page}",
+      "missed": "{count} missed it the first time"
     }
   }
 }

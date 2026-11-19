@@ -148,8 +148,9 @@ export function cleanLesson(fields = {}, old = {}) {
   return ok({ v });
 }
 /** What a lesson row is (0085_game_folders): 'game' (one assigned game), 'course' (a ready-made course's copy),
- *  'homework' (a live question set sent as homework), 'lesson' (a teacher-made lesson, no longer offered). */
-export const LESSON_KINDS = ['lesson', 'game', 'course', 'homework'];
+ *  'homework' (a live question set sent as homework), 'lesson' (a teacher-made lesson, no longer offered), 'story' (one
+ *  Story Library book: services/library.js). */
+export const LESSON_KINDS = ['lesson', 'game', 'course', 'homework', 'story'];
 export function createLesson(u, schoolId, { title, folderId = null, summary = '', subject = '', grade = '', objectives = '', templateKey = '', templateVersion = 0, kind = '' }) {
   if (!isStaffOf(u, schoolId)) return fail('notFound');
   const c = cleanLesson({ title, summary, subject, grade, objectives, templateKey, templateVersion }); if (!c.ok) return c;
@@ -411,6 +412,7 @@ export function gamesForPicker(u, schoolId) {
 export const unitsOf = classId => q.all('SELECT * FROM class_units WHERE class_id=? ORDER BY position, created_at', classId);
 export const classLessons = classId => withZones(q.all(`SELECT cl.*, l.title, l.summary, l.subject, l.grade, l.owner_id, l.school_id, l.kind, sch.settings school_settings,
     (SELECT s.game_id FROM lesson_steps s WHERE s.lesson_id=l.id AND s.kind='game' ORDER BY s.position LIMIT 1) first_game,
+    (SELECT s.story_id FROM lesson_steps s WHERE s.lesson_id=l.id AND s.kind='story' ORDER BY s.position LIMIT 1) first_story,
     (SELECT COUNT(*) FROM lesson_steps s WHERE s.lesson_id=l.id) steps, (SELECT COALESCE(SUM(minutes),0) FROM lesson_steps s WHERE s.lesson_id=l.id) minutes
   FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id ${SCHOOL_OF} WHERE cl.class_id=? AND cl.removed_at IS NULL ORDER BY cl.position, cl.assigned_at`, classId));
 

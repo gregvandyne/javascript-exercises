@@ -3301,6 +3301,22 @@
       "genWorkAns": "答えは {v}{u} です。",
       "gVar": "図の数 {x}",
       "gDigits": "それぞれの数のけた数"
+    },
+    "library": {
+      "pageOf": "{pages}ページ中{page}ページ",
+      "backToQuestions": "質問にもどる",
+      "toQuestions": "質問へ",
+      "next": "つぎへ",
+      "stop": "とめる",
+      "readToMe": "読んで",
+      "answered": "この質問にはもう答えたよ。",
+      "readQuestion": "読んで",
+      "readFirst": "まず、さいごのページまで読んでね。",
+      "right": "せいかい！",
+      "tryAgain": "もういちど！{page}ページを見てみよう。",
+      "lookAt": "{page}ページを見る",
+      "doneMsg": "できた！1回目で{total}問中{right}問せいかい。よく読めたね！",
+      "doneShort": "できた！よく読めたね！"
     }
   },
   "favorites": {
@@ -11607,6 +11623,99 @@
       "oombaSub": "Oombaのゲームをすべて見る",
       "collectionEmpty": "このコレクションはまだ空です",
       "allEmpty": "まだゲームを作っていません。"
+    }
+  },
+  "library": {
+    "title": "おはなしライブラリー",
+    "lead": "ひとりで読んだり、読んでもらったりできる絵本です。さいごに3つの質問があります。無料のおはなし{count}さつ。",
+    "level": "レベル{n}",
+    "levelLong": "レベル{n}・{name}",
+    "levels": {
+      "l1": "はじめて読む",
+      "l2": "読むれんしゅう",
+      "l3": "ひとりで読める"
+    },
+    "meta": "{pages}ページ · 🔊 読んで · 質問{questions}こ",
+    "words": "{count}語",
+    "read": "読む",
+    "continue": "つづきを読む（{page}ページ）",
+    "assign": "課題にする",
+    "state": {
+      "done": "読んだ · {total}問中{right}問正解",
+      "quiz": "質問がまってるよ",
+      "reading": "{pages}ページ中{page}ページ"
+    },
+    "forClass": "{class}に出すおはなしを選んでください。",
+    "backToClass": "クラスにもどる",
+    "searchLabel": "おはなしをさがす",
+    "levelsLabel": "読むレベル",
+    "allLevels": "すべてのレベル",
+    "searchPlaceholder": "おはなしをさがす",
+    "searchGo": "さがす",
+    "found": "{count}さつ",
+    "none": "おはなしが見つかりません",
+    "noneText": "ほかのことばでさがすか、すべてのレベルを見てね。",
+    "footCredit": "おはなしと絵：Pratham Books、StoryWeaver。ライセンス：",
+    "footQuestions": "どの本にも作者、絵、ほんやくの人の名前があります。さいごの質問はOombaが書いたもので、本の一部ではありません。",
+    "glossary": "知っておきたいことば",
+    "glossaryNote": "インドのことばについてのOombaのメモです。",
+    "aboutTitle": "この本について",
+    "aboutQuestions": "さいごのページのあとに3つの質問があります。Oomba Academyが書いたもので、本の一部ではありません。",
+    "credits": {
+      "text": "おはなし：{names}",
+      "illustration": "絵：{names}",
+      "translation": "ほんやく：{names}",
+      "changes": "Oombaは絵の大きさを変え、本を1ページずつ見せています。Pratham BooksがOombaを推薦しているわけではありません。",
+      "original": "もとの本を見る。"
+    },
+    "readToMe": "読んで",
+    "pagesLabel": "ページ",
+    "back": "もどる",
+    "next": "つぎへ",
+    "toQuestions": "質問へ",
+    "pageOf": "{pages}ページ中{page}ページ",
+    "finished": "「{title}」を読みおわったね！",
+    "questionsLead": "おはなしについての質問{count}こ",
+    "readAgain": "もういちど読む",
+    "backTo": "{name}にもどる",
+    "moreBooks": "ほかのおはなし",
+    "needJs": "質問にはJavaScriptが必要です。",
+    "errors": {
+      "readFirst": "まず、さいごのページまで読んでね。",
+      "alreadyAssigned": "このおはなしは、もう{class}に出しています。",
+      "pickStory": "ライブラリーからおはなしを選んでください。"
+    },
+    "assignTitle": "「{title}」を課題にする",
+    "assignNote": "児童はクラスのページで見られます。読んで3つの質問に答えると、だれが読んだかと結果を「進み具合」で見られます。",
+    "preview": "先に読んでみる",
+    "kindStory": "おはなし",
+    "findStories": "おはなしライブラリー",
+    "door": {
+      "title": "おはなしライブラリー",
+      "kids": "絵本が{count}さつ。読んでもいいし、「読んで」をおしてもいいよ！",
+      "staff": "レベル別の絵本{count}さつ、質問つき。クラスに課題として出せます。"
+    },
+    "results": {
+      "withAloud": "「読んで」をつかった",
+      "onOwn": "ひとりで読んだ",
+      "questionsLeft": "読んだ、質問はまだ",
+      "pageOf": "{pages}ページ中{page}ページ",
+      "usedAloud": "「読んで」をつかった",
+      "notStarted": "まだ",
+      "qN": "質問{n}",
+      "summary": "{total}人中{started}人が開始 · {finished}人が終了",
+      "readTogether": "いっしょに読む",
+      "assignAnother": "ほかのおはなしを出す",
+      "read": "読書",
+      "questions": "質問",
+      "rightOf": "{right} / {total}",
+      "firstTry": "1回目で正解",
+      "key": "1回目で正解した質問を数えます（✓ 正解、✗ もう1回答えた）。やり直した児童も最後まで進めます。",
+      "byQuestion": "質問",
+      "hardest": "クラスにとって一番むずかしかったのは質問{n}です。",
+      "answer": "答え：{answer}",
+      "page": "{page}ページ",
+      "missed": "1回目にまちがえた人：{count}"
     }
   }
 }

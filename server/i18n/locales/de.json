@@ -3302,6 +3302,22 @@
       "genWorkAns": "Die Antwort ist {v}{u}.",
       "gVar": "Die Zahl {x} in der Abbildung",
       "gDigits": "Ziffern pro Zahl"
+    },
+    "library": {
+      "pageOf": "Seite {page} von {pages}",
+      "backToQuestions": "Zurück zu den Fragen",
+      "toQuestions": "Fragen",
+      "next": "Weiter",
+      "stop": "Stopp",
+      "readToMe": "Vorlesen",
+      "answered": "Diese Frage hast du schon beantwortet.",
+      "readQuestion": "Vorlesen",
+      "readFirst": "Lies die Geschichte zuerst bis zur letzten Seite.",
+      "right": "Ja, richtig!",
+      "tryAgain": "Versuch es noch mal! Schau auf Seite {page}.",
+      "lookAt": "Seite {page} ansehen",
+      "doneMsg": "Fertig! {right} von {total} beim ersten Versuch richtig. Toll gelesen!",
+      "doneShort": "Fertig! Toll gelesen!"
     }
   },
   "favorites": {
@@ -11608,6 +11624,99 @@
       "oombaSub": "Alle Oomba-Spiele ansehen",
       "collectionEmpty": "Diese Sammlung ist noch leer",
       "allEmpty": "Du hast noch kein Spiel gebaut."
+    }
+  },
+  "library": {
+    "title": "Geschichtenbibliothek",
+    "lead": "Bilderbücher zum Selberlesen oder Vorlesenlassen, mit 3 Fragen am Ende. {count} kostenlose Geschichten.",
+    "level": "Stufe {n}",
+    "levelLong": "Stufe {n} · {name}",
+    "levels": {
+      "l1": "Ich fange an",
+      "l2": "Ich lerne lesen",
+      "l3": "Ich lese allein"
+    },
+    "meta": "{pages, plural, one {# Seite} other {# Seiten}} · 🔊 Vorlesen · {questions, plural, one {# Frage} other {# Fragen}}",
+    "words": "{count, plural, one {# Wort} other {# Wörter}}",
+    "read": "Lesen",
+    "continue": "Weiterlesen (Seite {page})",
+    "assign": "Zuweisen",
+    "state": {
+      "done": "Gelesen · {right} von {total} richtig",
+      "quiz": "Fragen offen",
+      "reading": "Seite {page} von {pages}"
+    },
+    "forClass": "Wähle eine Geschichte für {class}.",
+    "backToClass": "Zurück zur Klasse",
+    "searchLabel": "Geschichten suchen",
+    "levelsLabel": "Lesestufe",
+    "allLevels": "Alle Stufen",
+    "searchPlaceholder": "Geschichten suchen",
+    "searchGo": "Suchen",
+    "found": "{count, plural, one {# Geschichte} other {# Geschichten}}",
+    "none": "Keine Geschichten gefunden",
+    "noneText": "Versuche andere Wörter oder schau dir alle Stufen an.",
+    "footCredit": "Geschichten und Bilder: Pratham Books, StoryWeaver. Lizenz:",
+    "footQuestions": "Jedes Buch nennt Autorin oder Autor, Illustration und Übersetzung. Die Fragen am Ende schreibt Oomba, sie gehören nicht zu den Büchern.",
+    "glossary": "Wörter zum Wissen",
+    "glossaryNote": "Hinweise von Oomba zu Wörtern aus Indien.",
+    "aboutTitle": "Über dieses Buch",
+    "aboutQuestions": "Nach der letzten Seite kommen 3 Fragen. Sie sind von Oomba Academy und gehören nicht zum Buch.",
+    "credits": {
+      "text": "Geschichte: {names}",
+      "illustration": "Bilder: {names}",
+      "translation": "Übersetzung: {names}",
+      "changes": "Oomba hat die Bilder verkleinert und zeigt das Buch Seite für Seite. Pratham Books unterstützt Oomba nicht offiziell.",
+      "original": "Zum Originalbuch."
+    },
+    "readToMe": "Vorlesen",
+    "pagesLabel": "Seiten",
+    "back": "Zurück",
+    "next": "Weiter",
+    "toQuestions": "Fragen",
+    "pageOf": "Seite {page} von {pages}",
+    "finished": "Du hast „{title}“ gelesen!",
+    "questionsLead": "{count, plural, one {# Frage} other {# Fragen}} zur Geschichte",
+    "readAgain": "Noch mal lesen",
+    "backTo": "Zurück zu {name}",
+    "moreBooks": "Mehr Geschichten",
+    "needJs": "Für die Fragen muss JavaScript an sein.",
+    "errors": {
+      "readFirst": "Lies die Geschichte zuerst bis zur letzten Seite.",
+      "alreadyAssigned": "Diese Geschichte ist {class} schon zugewiesen.",
+      "pickStory": "Wähle eine Geschichte aus der Bibliothek."
+    },
+    "assignTitle": "„{title}“ zuweisen",
+    "assignNote": "Die Kinder sehen sie auf der Klassenseite. Sie lesen sie, beantworten 3 Fragen, und Sie sehen unter Fortschritt, wer sie gelesen hat und wie gut.",
+    "preview": "Zuerst selbst lesen",
+    "kindStory": "Geschichte",
+    "findStories": "Geschichtenbibliothek",
+    "door": {
+      "title": "Geschichtenbibliothek",
+      "kids": "{count} Bilderbücher. Lies sie oder tippe auf Vorlesen!",
+      "staff": "{count} Bilderbücher nach Lesestufen, mit Fragen. Weisen Sie eines einer Klasse zu."
+    },
+    "results": {
+      "withAloud": "mit Vorlesen",
+      "onOwn": "allein",
+      "questionsLeft": "Gelesen, Fragen offen",
+      "pageOf": "Seite {page} von {pages}",
+      "usedAloud": "Hat Vorlesen benutzt",
+      "notStarted": "nicht begonnen",
+      "qN": "Frage {n}",
+      "summary": "{started} von {total} begonnen · {finished} fertig",
+      "readTogether": "Gemeinsam lesen",
+      "assignAnother": "Andere Geschichte zuweisen",
+      "read": "Gelesen",
+      "questions": "Fragen",
+      "rightOf": "{right} / {total}",
+      "firstTry": "beim ersten Versuch richtig",
+      "key": "Eine Frage zählt, wenn sie beim ersten Versuch richtig ist (✓ richtig, ✗ brauchte noch einen Versuch). Wer es noch mal versucht, kann trotzdem fertig werden.",
+      "byQuestion": "Die Fragen",
+      "hardest": "Frage {n} war für die Klasse am schwersten.",
+      "answer": "Antwort: {answer}",
+      "page": "Seite {page}",
+      "missed": "{count} lagen beim ersten Mal falsch"
     }
   }
 }

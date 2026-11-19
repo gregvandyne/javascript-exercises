@@ -3301,6 +3301,22 @@
       "genWorkAns": "答案是 {v}{u}。",
       "gVar": "圖上的數字 {x}",
       "gDigits": "每個數的位數"
+    },
+    "library": {
+      "pageOf": "第{page}頁，共{pages}頁",
+      "backToQuestions": "回到問題",
+      "toQuestions": "問題",
+      "next": "下一頁",
+      "stop": "停止",
+      "readToMe": "讀給我聽",
+      "answered": "你已經回答過了。",
+      "readQuestion": "讀給我聽",
+      "readFirst": "請先把故事讀到最後一頁。",
+      "right": "答對了！",
+      "tryAgain": "再試一次！看看第{page}頁。",
+      "lookAt": "看第{page}頁",
+      "doneMsg": "完成了！第一次就答對{total}題中的{right}題。讀得真好！",
+      "doneShort": "完成了！讀得真好！"
     }
   },
   "favorites": {
@@ -11607,6 +11623,99 @@
       "oombaSub": "瀏覽所有 Oomba 遊戲",
       "collectionEmpty": "這個合集還是空的",
       "allEmpty": "你還沒有製作任何遊戲。"
+    }
+  },
+  "library": {
+    "title": "故事圖書館",
+    "lead": "可以自己讀，也可以聽別人讀的繪本，最後有3個問題。共{count}本免費故事。",
+    "level": "第{n}級",
+    "levelLong": "第{n}級 · {name}",
+    "levels": {
+      "l1": "剛開始",
+      "l2": "學習閱讀",
+      "l3": "自己閱讀"
+    },
+    "meta": "{pages}頁 · 🔊 讀給我聽 · {questions}個問題",
+    "words": "{count}個字",
+    "read": "閱讀",
+    "continue": "繼續閱讀（第{page}頁）",
+    "assign": "指派",
+    "state": {
+      "done": "已讀 · {total}題答對{right}題",
+      "quiz": "還有問題要回答",
+      "reading": "第{page}頁，共{pages}頁"
+    },
+    "forClass": "選一個故事指派給{class}。",
+    "backToClass": "回到班級",
+    "searchLabel": "搜尋故事",
+    "levelsLabel": "閱讀等級",
+    "allLevels": "所有等級",
+    "searchPlaceholder": "搜尋故事",
+    "searchGo": "搜尋",
+    "found": "{count}個故事",
+    "none": "找不到故事",
+    "noneText": "試試別的字，或看看所有等級。",
+    "footCredit": "故事與插圖：Pratham Books、StoryWeaver。授權：",
+    "footQuestions": "每本書都列出作者、插畫家和譯者。最後的問題由Oomba撰寫，不是書的一部分。",
+    "glossary": "要知道的字詞",
+    "glossaryNote": "Oomba為來自印度的字詞寫的說明。",
+    "aboutTitle": "關於這本書",
+    "aboutQuestions": "最後一頁之後有3個問題。這些問題由Oomba Academy撰寫，不是書的一部分。",
+    "credits": {
+      "text": "故事：{names}",
+      "illustration": "插圖：{names}",
+      "translation": "翻譯：{names}",
+      "changes": "Oomba調整了圖片大小，並一次顯示一頁。Pratham Books並未為Oomba背書。",
+      "original": "查看原書。"
+    },
+    "readToMe": "讀給我聽",
+    "pagesLabel": "頁面",
+    "back": "上一頁",
+    "next": "下一頁",
+    "toQuestions": "問題",
+    "pageOf": "第{page}頁，共{pages}頁",
+    "finished": "你讀完《{title}》了！",
+    "questionsLead": "關於故事的{count}個問題",
+    "readAgain": "再讀一次",
+    "backTo": "回到{name}",
+    "moreBooks": "更多故事",
+    "needJs": "回答問題需要開啟JavaScript。",
+    "errors": {
+      "readFirst": "請先把故事讀到最後一頁。",
+      "alreadyAssigned": "這個故事已經指派給{class}了。",
+      "pickStory": "請從圖書館選一個故事。"
+    },
+    "assignTitle": "指派《{title}》",
+    "assignNote": "學生會在班級頁面看到。他們閱讀並回答3個問題，你可以在「進度」看到誰讀了和他們的成績。",
+    "preview": "先讀一讀",
+    "kindStory": "故事",
+    "findStories": "故事圖書館",
+    "door": {
+      "title": "故事圖書館",
+      "kids": "{count}本繪本。自己讀，或按「讀給我聽」！",
+      "staff": "{count}本分級繪本，附問題。可以指派給班級。"
+    },
+    "results": {
+      "withAloud": "使用讀給我聽",
+      "onOwn": "自己讀",
+      "questionsLeft": "已讀，問題未答",
+      "pageOf": "第{page}頁，共{pages}頁",
+      "usedAloud": "使用了讀給我聽",
+      "notStarted": "尚未開始",
+      "qN": "問題{n}",
+      "summary": "{total}人中{started}人開始 · {finished}人完成",
+      "readTogether": "一起讀",
+      "assignAnother": "指派另一個故事",
+      "read": "閱讀",
+      "questions": "問題",
+      "rightOf": "{right} / {total}",
+      "firstTry": "第一次就答對",
+      "key": "第一次就答對的問題才計分（✓ 答對，✗ 需要再試一次）。再試的學生仍然可以完成。",
+      "byQuestion": "問題",
+      "hardest": "對全班來說，問題{n}最難。",
+      "answer": "答案：{answer}",
+      "page": "第{page}頁",
+      "missed": "第一次答錯：{count}人"
     }
   }
 }

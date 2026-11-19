@@ -1,0 +1,135 @@
+/* Story Library (server/routes/library.js, public/js/library.js). Colours are the site's tokens only (app.css holds
+   every light and dark value). */
+
+/* ---- level chips */
+.lb-lvl{display:inline-flex;align-items:center;gap:4px;align-self:flex-start;padding:2px 10px;border-radius:999px;font-size:.8rem;font-weight:800;color:var(--text);white-space:nowrap}
+.lb-l1{background:var(--accent-soft);color:var(--accent-ink)}
+.lb-l2{background:color-mix(in srgb,var(--gb0) 16%,var(--card))}
+.lb-l3{background:color-mix(in srgb,var(--gb3) 18%,var(--card))}
+
+/* ---- the library */
+.lb-head h1{display:flex;align-items:center;gap:10px}
+.lb-forclass{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 16px}
+.lb-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:0 0 20px}
+.lb-levels{flex:0 0 auto;max-width:100%;margin:0;padding-inline:0}
+.lb-search{display:flex;gap:8px;flex:1 1 280px;max-width:420px}
+.lb-search .input{flex:1;min-width:0}
+.lb-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px 16px}
+.lb-card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.lb-cover{display:block;background:var(--card-2)}
+.lb-cover img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover}
+.lb-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.lb-title{margin:0;font-size:1.08rem;line-height:1.25}
+.lb-title a{color:var(--text);text-decoration:none}
+.lb-title a:hover{text-decoration:underline}
+.lb-meta{margin:0}
+.lb-state{font-size:.85rem;font-weight:700;color:var(--text-2)}
+.lb-state.is-done{color:var(--ok)}
+.lb-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:6px}
+.lb-foot{margin:24px 0 0;padding-top:12px;border-top:1px solid var(--line)}
+@media (max-width:520px){
+  .lb-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px}
+  .lb-body{padding:10px 10px 12px}
+  .lb-title{font-size:1rem}
+  .lb-acts .btn{flex:1 1 100%;padding:0 10px}
+  .lb-search{max-width:none}
+  .lb-levels{margin:0 -16px;padding-inline:16px;max-width:none;flex:1 1 100%}
+}
+
+/* ---- one book */
+.lb-book{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.lb-book-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:center}
+.lb-book-cover{width:100%;height:auto;border-radius:var(--r-sm);background:var(--card-2)}
+.lb-book-info{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.lb-book-info h1{margin:0}
+.lb-book-info p{margin:0}
+.lb-gloss h2,.lb-about h2{font-size:1.1rem;margin:0 0 8px}
+.lb-gloss dl{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px 16px;margin:0 0 8px}
+.lb-gloss dl div{background:var(--card-2);border-radius:var(--r-sm);padding:8px 12px}
+.lb-gloss dt{font-weight:800}
+.lb-gloss dd{margin:0}
+@media (max-width:700px){.lb-book-top{grid-template-columns:1fr}}
+
+/* ---- credits (every page) */
+.lb-credit{margin:16px 0 0;padding-top:10px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:2px;line-height:1.4}
+
+/* ---- the reader */
+.rd{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:16px 20px 18px;max-width:980px;margin:0 auto}
+.rd-top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:12px}
+.rd-back{font-weight:700;color:var(--text);text-decoration:none;min-height:44px;display:inline-flex;align-items:center;gap:6px;justify-self:start;min-width:0}
+.rd-back span[dir]{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rd-title{margin:0;font-size:1.05rem;text-align:center}
+.rd-aloud{justify-self:end}
+.rd-aloud[aria-pressed="true"]{background:var(--current);color:var(--on-current);box-shadow:none}
+.rd-pic{margin:0;background:var(--card-2);border-radius:var(--r-sm);display:flex;justify-content:center;overflow:hidden}
+.rd-pic img{display:block;max-width:100%;width:auto;height:auto;max-height:min(52vh,460px);object-fit:contain}
+.rd-text{font-size:clamp(1.45rem,1.1rem + 1.4vw,2.1rem);line-height:1.5;font-weight:650;text-align:center;margin:18px 8px 14px;min-height:2.9em;color:var(--text)}
+.rd-text .w{border-radius:6px;padding:0 1px;transition:background .12s}
+.rd-text .hl,.rd-text .hl-s{background:var(--spark);color:var(--on-accent)}
+.rd-nav{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px}
+.rd-nav .btn{min-height:52px;font-size:1.1rem;padding:0 22px}
+.rd-prev[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.rd-dots{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;grid-column:2;grid-row:1}
+.rd-dots i{width:10px;height:10px;border-radius:50%;background:var(--line);display:block}
+.rd-dots i.on{background:var(--accent-press)}
+.rd-count{grid-column:2;grid-row:1;text-align:center;align-self:end;transform:translateY(22px)}
+.rd .lb-credit{margin-top:24px}
+@media (max-width:640px){
+  .rd{padding:12px 12px 14px;border-radius:var(--r-sm)}
+  .rd-top{grid-template-columns:1fr auto;grid-template-areas:"back aloud" "title title";gap:6px 8px}
+  .rd-back{grid-area:back}
+  .rd-aloud{grid-area:aloud}
+  .rd-title{grid-area:title;text-align:start;font-size:1rem}
+  .rd-pic img{max-height:38vh}
+  .rd-text{margin:12px 2px 10px;line-height:1.45}
+  /* Back / Next stay in reach above the tab bar while the words scroll. */
+  .rd-nav{position:sticky;bottom:calc(var(--tabbar) + env(safe-area-inset-bottom) + 8px);background:var(--card);padding:8px 0;z-index:5}
+  .rd-nav .btn{padding:0 16px}
+  .rd-dots{display:none}
+  .rd-count{transform:none;align-self:center}
+}
+@media (min-width:641px) and (max-width:1024px){.rd-pic img{max-height:44vh}}
+
+/* ---- after the last page: the questions */
+.rd-end-head{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:12px}
+.rd-end-head img{width:min(320px,70%);height:auto;border-radius:var(--r-sm)}
+.rd-end-head h2{margin:6px 0 0;font-size:1.5rem}
+.rd-end-head p{margin:0}
+.rd-qs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+.rd-q{background:var(--card-2);border-radius:var(--r);padding:16px}
+.rd-q h3{margin:0 0 8px;font-size:1.15rem}
+.rd-qread{margin:0 0 8px}
+.rd-opts{display:flex;flex-direction:column;gap:10px}
+.rd-opt{display:block;width:100%;text-align:start;min-height:52px;padding:10px 16px;border-radius:var(--r-sm);border:2px solid var(--line);background:var(--card);color:var(--text);font:700 1.05rem var(--font);cursor:pointer}
+.rd-opt:hover:not(:disabled){border-color:var(--accent-line)}
+.rd-opt:disabled{cursor:default}
+.rd-opt.ok{border-color:var(--ok);background:var(--ok-bg)}
+.rd-opt.ok::after{content:" ✓"}
+.rd-opt.no{border-color:var(--danger);background:var(--bad-bg);color:var(--bad-ink)}
+.rd-opt.no::after{content:" ✗"}
+.rd-q.is-solved .rd-opt:not(.ok){opacity:.6}
+.rd-hint{margin:10px 0 0;font-weight:700;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.rd-hint:empty{display:none}
+.rd-done{margin-top:16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+.rd-done[hidden]{display:none}
+.rd-done-msg{font-size:1.25rem;font-weight:800;margin:0}
+
+/* ---- Assign */
+.lb-assign-book{display:flex;gap:16px;align-items:center;margin-bottom:16px}
+.lb-assign-book img{width:160px;height:auto;border-radius:var(--r-sm)}
+.lb-assign-book p{margin:6px 0 0}
+
+/* ---- teacher results */
+.lr-table td,.lr-table th{vertical-align:middle}
+.lr-read{font-weight:700;white-space:nowrap}
+.lr-read.is-done{color:var(--ok)}
+.lr-marks{display:inline-flex;gap:4px;margin-inline-start:6px}
+.lr-marks .ok{color:var(--ok);font-weight:800}
+.lr-marks .no{color:var(--danger);font-weight:800}
+.lr-qlist{margin:0 0 8px;padding-inline-start:20px;display:flex;flex-direction:column;gap:8px}
+.rd.is-end .rd-aloud{visibility:hidden}
+.lr-table tbody th{font-size:1rem;color:var(--text);text-transform:none;letter-spacing:normal;font-weight:700}
+.lb-assign-book{flex-wrap:wrap}
+.lb-assign-book>div{min-width:0;flex:1 1 180px}
+.lb-assign-book .lb-lvl,.lb-book-info .lb-lvl{white-space:normal}
+@media (max-width:520px){.lb-assign-book img{width:120px}}

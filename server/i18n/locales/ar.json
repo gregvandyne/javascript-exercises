@@ -3302,6 +3302,22 @@
       "genWorkAns": "الإجابة هي {v}{u}.",
       "gVar": "العدد {x} على الشكل",
       "gDigits": "عدد الأرقام في كل عدد"
+    },
+    "library": {
+      "pageOf": "الصفحة {page} من {pages}",
+      "backToQuestions": "العودة إلى الأسئلة",
+      "toQuestions": "الأسئلة",
+      "next": "التالي",
+      "stop": "توقف",
+      "readToMe": "اقرأ لي",
+      "answered": "أجبت عن هذا السؤال.",
+      "readQuestion": "اقرأ لي",
+      "readFirst": "اقرأ القصة حتى الصفحة الأخيرة أولًا.",
+      "right": "نعم، صحيح!",
+      "tryAgain": "حاول مرة أخرى! انظر في الصفحة {page}.",
+      "lookAt": "انظر في الصفحة {page}",
+      "doneMsg": "أحسنت! {right} من {total} صحيحة من المحاولة الأولى. قراءة رائعة!",
+      "doneShort": "أحسنت! قراءة رائعة!"
     }
   },
   "favorites": {
@@ -11608,6 +11624,99 @@
       "oombaSub": "تصفّح كل ألعاب Oomba",
       "collectionEmpty": "هذه المجموعة فارغة حتى الآن",
       "allEmpty": "لم تصنع أي لعبة بعد."
+    }
+  },
+  "library": {
+    "title": "مكتبة القصص",
+    "lead": "كتب مصوّرة تقرؤها وحدك أو تستمع إليها، وفي النهاية 3 أسئلة. {count} قصة مجانية.",
+    "level": "المستوى {n}",
+    "levelLong": "المستوى {n} · {name}",
+    "levels": {
+      "l1": "أبدأ القراءة",
+      "l2": "أتعلّم القراءة",
+      "l3": "أقرأ وحدي"
+    },
+    "meta": "{pages, plural, zero {لا صفحات} one {صفحة واحدة} two {صفحتان} few {# صفحات} many {# صفحة} other {# صفحة}} · 🔊 اقرأ لي · {questions, plural, zero {لا أسئلة} one {سؤال واحد} two {سؤالان} few {# أسئلة} many {# سؤالًا} other {# سؤال}}",
+    "words": "{count, plural, zero {لا كلمات} one {كلمة واحدة} two {كلمتان} few {# كلمات} many {# كلمة} other {# كلمة}}",
+    "read": "اقرأ",
+    "continue": "تابع القراءة (الصفحة {page})",
+    "assign": "تعيين",
+    "state": {
+      "done": "قُرئت · {right} من {total} صحيحة",
+      "quiz": "الأسئلة بانتظارك",
+      "reading": "الصفحة {page} من {pages}"
+    },
+    "forClass": "اختر قصة لتعيينها لصف {class}.",
+    "backToClass": "العودة إلى الصف",
+    "searchLabel": "ابحث عن قصص",
+    "levelsLabel": "مستوى القراءة",
+    "allLevels": "كل المستويات",
+    "searchPlaceholder": "ابحث عن قصص",
+    "searchGo": "بحث",
+    "found": "{count, plural, zero {لا قصص} one {قصة واحدة} two {قصتان} few {# قصص} many {# قصة} other {# قصة}}",
+    "none": "لم نجد قصصًا",
+    "noneText": "جرّب كلمات أخرى أو انظر في كل المستويات.",
+    "footCredit": "القصص والرسوم: Pratham Books وStoryWeaver. الترخيص:",
+    "footQuestions": "يذكر كل كتاب مؤلفه ورسّامه ومترجمه. الأسئلة في النهاية كتبتها Oomba وليست جزءًا من الكتب.",
+    "glossary": "كلمات مفيدة",
+    "glossaryNote": "ملاحظات من Oomba لشرح كلمات من الهند.",
+    "aboutTitle": "عن هذا الكتاب",
+    "aboutQuestions": "بعد الصفحة الأخيرة 3 أسئلة. كتبتها Oomba Academy وليست جزءًا من الكتاب.",
+    "credits": {
+      "text": "القصة: {names}",
+      "illustration": "الرسوم: {names}",
+      "translation": "الترجمة: {names}",
+      "changes": "غيّرت Oomba حجم الصور وتعرض الكتاب صفحةً صفحة. لا تؤيد Pratham Books منصة Oomba.",
+      "original": "الكتاب الأصلي."
+    },
+    "readToMe": "اقرأ لي",
+    "pagesLabel": "الصفحات",
+    "back": "السابق",
+    "next": "التالي",
+    "toQuestions": "الأسئلة",
+    "pageOf": "الصفحة {page} من {pages}",
+    "finished": "أنهيت قصة «{title}»",
+    "questionsLead": "{count, plural, zero {لا أسئلة} one {سؤال واحد} two {سؤالان} few {# أسئلة} many {# سؤالًا} other {# سؤال}} عن القصة",
+    "readAgain": "اقرأها مرة أخرى",
+    "backTo": "العودة إلى {name}",
+    "moreBooks": "قصص أخرى",
+    "needJs": "تحتاج الأسئلة إلى تشغيل JavaScript.",
+    "errors": {
+      "readFirst": "اقرأ القصة حتى الصفحة الأخيرة أولًا.",
+      "alreadyAssigned": "هذه القصة معيّنة بالفعل لصف {class}.",
+      "pickStory": "اختر قصة من المكتبة."
+    },
+    "assignTitle": "تعيين «{title}»",
+    "assignNote": "يراها الطلاب في صفحة الصف. يقرؤونها ويجيبون عن 3 أسئلة، وترى في التقدّم من قرأها ونتائجهم.",
+    "preview": "اقرأها أولًا",
+    "kindStory": "قصة",
+    "findStories": "مكتبة القصص",
+    "door": {
+      "title": "مكتبة القصص",
+      "kids": "{count} كتابًا مصوّرًا. اقرأها أو اضغط اقرأ لي!",
+      "staff": "{count} كتابًا مصوّرًا حسب المستوى، مع أسئلة. عيّن واحدًا لصف."
+    },
+    "results": {
+      "withAloud": "مع اقرأ لي",
+      "onOwn": "وحده",
+      "questionsLeft": "قرأها، بقيت الأسئلة",
+      "pageOf": "الصفحة {page} من {pages}",
+      "usedAloud": "استخدم اقرأ لي",
+      "notStarted": "لم يبدأ",
+      "qN": "السؤال {n}",
+      "summary": "بدأ {started} من {total} · أنهى {finished}",
+      "readTogether": "اقرؤوها معًا",
+      "assignAnother": "عيّن قصة أخرى",
+      "read": "القراءة",
+      "questions": "الأسئلة",
+      "rightOf": "{right} / {total}",
+      "firstTry": "صحيحة من المحاولة الأولى",
+      "key": "يُحتسب السؤال إذا كانت الإجابة صحيحة من المحاولة الأولى (✓ صحيح، ✗ احتاج محاولة أخرى). من يحاول مجددًا يمكنه أن ينهي.",
+      "byQuestion": "الأسئلة",
+      "hardest": "كان السؤال {n} الأصعب على الصف.",
+      "answer": "الإجابة: {answer}",
+      "page": "الصفحة {page}",
+      "missed": "أخطأ في المرة الأولى: {count}"
     }
   }
 }

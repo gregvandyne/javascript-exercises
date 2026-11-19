@@ -3302,6 +3302,22 @@
       "genWorkAns": "La risposta è {v}{u}.",
       "gVar": "Il numero {x} della figura",
       "gDigits": "Cifre di ogni numero"
+    },
+    "library": {
+      "pageOf": "Pagina {page} di {pages}",
+      "backToQuestions": "Torna alle domande",
+      "toQuestions": "Domande",
+      "next": "Avanti",
+      "stop": "Ferma",
+      "readToMe": "Leggimelo",
+      "answered": "Hai già risposto.",
+      "readQuestion": "Leggimela",
+      "readFirst": "Prima leggi la storia fino all’ultima pagina.",
+      "right": "Sì, giusto!",
+      "tryAgain": "Riprova! Guarda la pagina {page}.",
+      "lookAt": "Guarda la pagina {page}",
+      "doneMsg": "Finito! {right} su {total} giuste al primo tentativo. Bravissimo!",
+      "doneShort": "Finito! Bravissimo!"
     }
   },
   "favorites": {
@@ -11608,6 +11624,99 @@
       "oombaSub": "Sfoglia tutti i giochi Oomba",
       "collectionEmpty": "Questa raccolta è ancora vuota",
       "allEmpty": "Non hai ancora creato un gioco."
+    }
+  },
+  "library": {
+    "title": "Biblioteca delle storie",
+    "lead": "Libri illustrati da leggere da soli o da ascoltare, con 3 domande alla fine. {count} storie gratuite.",
+    "level": "Livello {n}",
+    "levelLong": "Livello {n} · {name}",
+    "levels": {
+      "l1": "Inizio a leggere",
+      "l2": "Imparo a leggere",
+      "l3": "Leggo da solo"
+    },
+    "meta": "{pages, plural, one {# pagina} other {# pagine}} · 🔊 Leggimelo · {questions, plural, one {# domanda} other {# domande}}",
+    "words": "{count, plural, one {# parola} other {# parole}}",
+    "read": "Leggi",
+    "continue": "Continua (pagina {page})",
+    "assign": "Assegna",
+    "state": {
+      "done": "Letto · {right} su {total} giuste",
+      "quiz": "Domande da fare",
+      "reading": "Pagina {page} di {pages}"
+    },
+    "forClass": "Scegli una storia da assegnare a {class}.",
+    "backToClass": "Torna alla classe",
+    "searchLabel": "Cerca storie",
+    "levelsLabel": "Livello di lettura",
+    "allLevels": "Tutti i livelli",
+    "searchPlaceholder": "Cerca storie",
+    "searchGo": "Cerca",
+    "found": "{count, plural, one {# storia} other {# storie}}",
+    "none": "Nessuna storia trovata",
+    "noneText": "Prova altre parole o guarda tutti i livelli.",
+    "footCredit": "Storie e illustrazioni: Pratham Books, StoryWeaver. Licenza:",
+    "footQuestions": "Ogni libro indica autore, illustratore e traduttore. Le domande finali sono scritte da Oomba e non fanno parte dei libri.",
+    "glossary": "Parole da sapere",
+    "glossaryNote": "Note di Oomba per capire parole che vengono dall’India.",
+    "aboutTitle": "Questo libro",
+    "aboutQuestions": "Dopo l’ultima pagina ci sono 3 domande. Sono scritte da Oomba Academy e non fanno parte del libro.",
+    "credits": {
+      "text": "Storia: {names}",
+      "illustration": "Illustrazioni: {names}",
+      "translation": "Traduzione: {names}",
+      "changes": "Oomba ha ridimensionato le immagini e mostra il libro una pagina alla volta. Pratham Books non sostiene Oomba.",
+      "original": "Vedi il libro originale."
+    },
+    "readToMe": "Leggimelo",
+    "pagesLabel": "Pagine",
+    "back": "Indietro",
+    "next": "Avanti",
+    "toQuestions": "Domande",
+    "pageOf": "Pagina {page} di {pages}",
+    "finished": "Hai finito «{title}»!",
+    "questionsLead": "{count, plural, one {# domanda} other {# domande}} sulla storia",
+    "readAgain": "Leggilo ancora",
+    "backTo": "Torna a {name}",
+    "moreBooks": "Altre storie",
+    "needJs": "Per le domande serve JavaScript attivo.",
+    "errors": {
+      "readFirst": "Prima leggi la storia fino all’ultima pagina.",
+      "alreadyAssigned": "Questa storia è già assegnata a {class}.",
+      "pickStory": "Scegli una storia dalla biblioteca."
+    },
+    "assignTitle": "Assegna «{title}»",
+    "assignNote": "Gli studenti la vedono nella pagina della classe. La leggono, rispondono a 3 domande e tu vedi chi l’ha letta e i risultati in Progressi.",
+    "preview": "Leggila prima tu",
+    "kindStory": "Storia",
+    "findStories": "Biblioteca delle storie",
+    "door": {
+      "title": "Biblioteca delle storie",
+      "kids": "{count} libri illustrati. Leggili o tocca Leggimelo!",
+      "staff": "{count} libri illustrati per livello, con domande. Assegnane uno a una classe."
+    },
+    "results": {
+      "withAloud": "con Leggimelo",
+      "onOwn": "da solo",
+      "questionsLeft": "Letto, domande da fare",
+      "pageOf": "pagina {page} di {pages}",
+      "usedAloud": "Ha usato Leggimelo",
+      "notStarted": "non iniziato",
+      "qN": "Domanda {n}",
+      "summary": "{started} su {total} hanno iniziato · {finished} hanno finito",
+      "readTogether": "Leggerla insieme",
+      "assignAnother": "Assegna un’altra storia",
+      "read": "Lettura",
+      "questions": "Domande",
+      "rightOf": "{right} / {total}",
+      "firstTry": "giuste al primo tentativo",
+      "key": "Una domanda conta se è giusta al primo tentativo (✓ giusta, ✗ ha dovuto riprovare). Chi riprova può comunque finire.",
+      "byQuestion": "Le domande",
+      "hardest": "La domanda {n} è stata la più difficile per la classe.",
+      "answer": "Risposta: {answer}",
+      "page": "pagina {page}",
+      "missed": "{count} hanno sbagliato la prima volta"
     }
   }
 }

@@ -5,6 +5,7 @@
 // Games are listed only when they are an official launch game anyone may open now (canView for a signed-out visitor):
 // never a game a child made. The text is under teachers.* and learn.* in the locale files. Until a language has it, a
 // paragraph shows the English, marked lang="en" dir="ltr", and search engines are told the page is English only.
+import * as LIB from '../services/library.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { canHost, GROWNUP_OPEN_MAX, capacityFor } from '../services/classlive-access.js';
 import { LIMITS as SET_LIMITS } from '../services/classlive-sets.js';
@@ -637,6 +638,7 @@ router.get('/learn', (req, res) => {
       </div>
     </form>
     ${subj && subj.hub ? html`<p class="learn-more"><a href="${lp(req, `/learn/${subj.hub}`)}">${t('learn.tab.moreAbout', { subject: subjName(subj.key) })} <span class="flip" aria-hidden="true">→</span></a></p>` : ''}
+    ${f.how === 'two' || f.how === 'live' || std ? '' : html`<div class="home-join learn-join learn-library"><a class="door" href="/library" id="learn-library"><span class="door-e" aria-hidden="true">📚</span><span class="door-t"><span class="door-h">${t('library.door.title')}</span><span class="door-s">${staff ? t('library.door.staff', { count: LIB.books().length }) : t('library.door.kids', { count: LIB.books().length })}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>`}
     ${courseMarkup}
     ${liveFirst ? liveSec : ''}
     <section class="lp-sec" id="learn-games" aria-labelledby="learn-games-h"><h2 id="learn-games-h">🎓 ${t('learn.tab.games')}</h2>
