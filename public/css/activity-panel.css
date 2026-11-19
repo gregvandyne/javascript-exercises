@@ -31,8 +31,10 @@ body.ap-open{overflow:hidden}
 .ap-row.is-sel{border-color:#5AA9D6;box-shadow:0 0 0 2px color-mix(in srgb,#5AA9D6 30%,transparent)}
 .ap-row.is-bad{border-color:color-mix(in srgb,var(--danger) 50%,var(--line))}
 .ap-row.is-over{border-style:dashed;border-color:var(--accent-line)}
-.ap-row.is-drag{opacity:.5}
+
 .ap-grip,.ap-edit{display:grid;place-items:center;width:32px;height:40px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-size:1.1rem;cursor:grab}
+.ap-grip{touch-action:none;user-select:none;-webkit-user-select:none}
+.ap-row.is-drag{position:relative;z-index:2;box-shadow:var(--shadow-lg)}
 .ap-edit{width:44px;height:44px;cursor:pointer;font-size:1.15rem}
 .ap-grip:hover,.ap-edit:hover{background:var(--card-2)}
 .ap-grip:focus-visible,.ap-edit:focus-visible{outline:3px solid var(--focus);outline-offset:1px}

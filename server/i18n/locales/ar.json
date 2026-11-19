@@ -3292,7 +3292,12 @@
         "step": "الخطوة"
       },
       "genWork1": "اقرأ التدريج حيث يتوقف.",
-      "genWork2": "القراءة هي {v}{u}."
+      "genWork2": "القراءة هي {v}{u}.",
+      "genWorkLook": "اقرأ الأعداد على الشكل.",
+      "genWorkCalc": "احسب: {calc}.",
+      "genWorkAns": "الإجابة هي {v}{u}.",
+      "gVar": "العدد {x} على الشكل",
+      "gDigits": "عدد الأرقام في كل عدد"
     }
   },
   "favorites": {
@@ -4169,7 +4174,8 @@
       "selfMarked": "علّمه الطالب بنفسه منجزًا، دون اللعب هنا",
       "minutes": "{count, plural, zero {# دقيقة} one {دقيقة واحدة} two {دقيقتان} few {# دقائق} many {# دقيقة} other {# دقيقة}}",
       "swipe": "اسحب الجدول جانبًا لترى كل الخطوات",
-      "quizScore": "{right} من {total} صحيحة ({pct}%)"
+      "quizScore": "{right} من {total} صحيحة ({pct}%)",
+      "helped": "عرض المعلم إجابة"
     },
     "student": {
       "doneOf": "تم {done} من {total}",

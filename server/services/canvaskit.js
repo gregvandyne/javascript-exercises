@@ -26,7 +26,7 @@ export const CANVAS_VERSIONS = Object.freeze({
   // maker and school staff only (BRB.canTeach, from INIT.teach), a worked answer's own lines on screen, and a result
   // marked helped when the teacher showed an answer. Older activities move to it only when saved from the Studio's
   // Activity panel (server/builder/activity-data.js), never on their own.
-  '1.3.0': 'sha384-1UFcXTdOzFVy7e4YtyhmUVSOB+D67Jcs4n2U4hhenZLNogJ3eEmsVyPXoW4YguB7',
+  '1.3.0': 'sha384-Y9ODTlYNiRPfeIC7I1iKqhk8Eu55RJ8/xuCQGDe/Px6xCVU0+oT1yYiOyntno79+',
 });
 export const CANVAS_LATEST = '1.3.0';
 export const canvasSrc = (v = CANVAS_LATEST) => `${CANVAS_PATH}${v}/oomba-canvas.js`;

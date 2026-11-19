@@ -3292,7 +3292,12 @@
         "step": "Passo"
       },
       "genWork1": "Leggi la scala dove si ferma.",
-      "genWork2": "La lettura è {v}{u}."
+      "genWork2": "La lettura è {v}{u}.",
+      "genWorkLook": "Leggi i numeri sulla figura.",
+      "genWorkCalc": "Calcola: {calc}.",
+      "genWorkAns": "La risposta è {v}{u}.",
+      "gVar": "Il numero {x} della figura",
+      "gDigits": "Cifre di ogni numero"
     }
   },
   "favorites": {
@@ -4169,7 +4174,8 @@
       "selfMarked": "Segnato come fatto dallo studente, senza giocare qui",
       "minutes": "{count, plural, one {# min} other {# min}}",
       "swipe": "Scorri la tabella di lato per vedere tutti i passaggi",
-      "quizScore": "{right} su {total} giuste ({pct}%)"
+      "quizScore": "{right} su {total} giuste ({pct}%)",
+      "helped": "L'insegnante ha mostrato una risposta"
     },
     "student": {
       "doneOf": "{done} su {total} fatti",

@@ -1710,6 +1710,7 @@ function activity(input) {
   const root = document.getElementById('oc-app') || document.body.appendChild(h('div', { id: 'oc-app' }));
   root.textContent = '';
   const el = {};
+  const arrow = c => h('span', { dir: 'ltr', 'aria-hidden': 'true' }, c);
   const strip = h('header', { class: 'oc-strip' },
     el.title = h('h1', { dir: 'auto' }, String(task.title || document.title || '').slice(0, 80)),
     modes ? (el.modes = h('div', { class: 'oc-modes', role: 'group', 'aria-label': T('helpMode') }, ...modes.map(m => h('button', { type: 'button', class: 'oc-mode', 'data-mode': m, 'aria-pressed': String(m === support), onclick: () => setSupport(m) }, T(m)))))
@@ -1717,7 +1718,9 @@ function activity(input) {
     board ? h('span', { class: 'oc-chip' }, T('board')) : null,
     teach ? (el.boardChip = h('span', { class: 'oc-chip oc-bchip', hidden: true }, h('span', { 'aria-hidden': 'true' }, '📽 '), T('boardChip'))) : null,
     h('span', { class: 'oc-grow' }),
-    teach ? (el.nav = h('span', { class: 'oc-bnav', hidden: true }, h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => boardGo(-1) }, '‹ ', T('back')), el.navAt = h('b', { 'aria-live': 'polite' }), h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => boardGo(1) }, T('next'), ' ›'))) : null,
+    // (Back and Next follow the reading direction: the strip is a row in the page's direction, the arrows point outward;
+    // each arrow is set left to right so the browser never mirrors it a second time)
+    teach ? (el.nav = h('span', { class: 'oc-bnav', hidden: true }, h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => boardGo(-1) }, arrow(dir === 'rtl' ? '›' : '‹'), ' ', T('back')), el.navAt = h('b', { 'aria-live': 'polite' }), h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => boardGo(1) }, T('next'), ' ', arrow(dir === 'rtl' ? '‹' : '›')))) : null,
     el.ok = h('span', { class: 'oc-chip oc-ok' }), el.no = h('span', { class: 'oc-chip oc-no' }), el.left = h('span', { class: 'oc-chip oc-togo' }),
     fresh ? h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => again(true) }, '🎲 ', T('newSheet')) : null,
     printable ? (el.printBtn = h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-expanded': 'false', 'aria-controls': 'oc-print', onclick: () => printPanel(!PR.open) }, '🖨 ', T('print'))) : null,

@@ -293,6 +293,7 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .st{display:inline-flex;align-items:center;gap:6px;justify-content:center;min-height:28px}
 .st-none{color:var(--muted)}
 .st-score{font-weight:700;font-variant-numeric:tabular-nums}
+.st-helped{margin-inline-start:3px;font-size:.85em}
 .gradebook td>.small{display:block;margin-top:2px}
 
 /* ---------- Progress: written answers (teachers) ---------- */

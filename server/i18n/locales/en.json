@@ -3310,7 +3310,12 @@
         "step": "Step"
       },
       "genWork1": "Read the scale where it stops.",
-      "genWork2": "The reading is {v}{u}."
+      "genWork2": "The reading is {v}{u}.",
+      "genWorkLook": "Read the numbers on the figure.",
+      "genWorkCalc": "Work it out: {calc}.",
+      "genWorkAns": "The answer is {v}{u}.",
+      "gVar": "The number {x} on the figure",
+      "gDigits": "Digits in each number"
     }
   },
   "favorites": {
@@ -4200,7 +4205,8 @@
       "selfMarked": "Marked done by the student, not played here",
       "minutes": "{count, plural, one {# min} other {# min}}",
       "swipe": "Swipe the table sideways to see every step",
-      "quizScore": "{right} of {total} right ({pct}%)"
+      "quizScore": "{right} of {total} right ({pct}%)",
+      "helped": "Teacher showed an answer"
     },
     "student": {
       "doneOf": "{done} of {total} done",

@@ -3292,7 +3292,12 @@
         "step": "Passo"
       },
       "genWork1": "Leia a escala onde ela para.",
-      "genWork2": "A leitura é {v}{u}."
+      "genWork2": "A leitura é {v}{u}.",
+      "genWorkLook": "Leia os números da figura.",
+      "genWorkCalc": "Calcule: {calc}.",
+      "genWorkAns": "A resposta é {v}{u}.",
+      "gVar": "O número {x} da figura",
+      "gDigits": "Algarismos em cada número"
     }
   },
   "favorites": {
@@ -4170,7 +4175,8 @@
       "selfMarked": "Marcado como feito pelo aluno, sem jogar aqui",
       "minutes": "{count, plural, one {# min} other {# min}}",
       "swipe": "Deslize a tabela para o lado para ver todas as etapas",
-      "quizScore": "{right} de {total} certas ({pct}%)"
+      "quizScore": "{right} de {total} certas ({pct}%)",
+      "helped": "O professor mostrou uma resposta"
     },
     "student": {
       "doneOf": "{done} de {total} feitas",

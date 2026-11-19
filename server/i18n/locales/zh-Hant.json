@@ -3291,7 +3291,12 @@
         "step": "間隔"
       },
       "genWork1": "讀出刻度停住的位置。",
-      "genWork2": "讀數是 {v}{u}。"
+      "genWork2": "讀數是 {v}{u}。",
+      "genWorkLook": "讀出圖上的數字。",
+      "genWorkCalc": "算算看：{calc}。",
+      "genWorkAns": "答案是 {v}{u}。",
+      "gVar": "圖上的數字 {x}",
+      "gDigits": "每個數的位數"
     }
   },
   "favorites": {
@@ -4168,7 +4173,8 @@
       "selfMarked": "學生自己標記完成，沒有在這裡玩",
       "minutes": "{count, plural, other {# 分鐘}}",
       "swipe": "左右滑動表格，看全部步驟",
-      "quizScore": "{total} 題答對 {right} 題（{pct}%）"
+      "quizScore": "{total} 題答對 {right} 題（{pct}%）",
+      "helped": "老師顯示了答案"
     },
     "student": {
       "doneOf": "已完成 {done}/{total}",

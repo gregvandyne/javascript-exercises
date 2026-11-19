@@ -8892,4 +8892,6 @@ Older activities move to the new kit only when saved from the panel. Advanced fi
 Oomba Canvas 1.3.0 adds the teacher's controls (Show answer, Board mode, Help on this screen, New set) behind
 `INIT.teach` / `BRB.canTeach` (the answer key's rule; never a student, never "As a student"): a bar at 561 px and wider,
 one Teacher button and a sheet below. Board mode sends no score; after Show answer the result is sent with `helped: true`
-and the shown problems out of the score. The server accepts `helped` and does not store it yet.
+and the shown problems out of the score; a lesson stores it with the best score (migration 0090) and the staff's lesson
+progress page marks it. "New ones for each student" works from any problem the kit can vary; rows drag with pointer
+events (touch too); board mode's Back/Next follow the reading direction.

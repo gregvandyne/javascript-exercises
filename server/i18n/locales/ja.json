@@ -3291,7 +3291,12 @@
         "step": "間隔"
       },
       "genWork1": "目盛りが止まっているところを読みます。",
-      "genWork2": "値は {v}{u} です。"
+      "genWork2": "値は {v}{u} です。",
+      "genWorkLook": "図の数を読みます。",
+      "genWorkCalc": "計算します：{calc}。",
+      "genWorkAns": "答えは {v}{u} です。",
+      "gVar": "図の数 {x}",
+      "gDigits": "それぞれの数のけた数"
     }
   },
   "favorites": {
@@ -4168,7 +4173,8 @@
       "selfMarked": "生徒が自分で「できた」にした（ここではプレイしていない）",
       "minutes": "{count, plural, other {#分}}",
       "swipe": "表を横にスワイプすると、すべてのステップが見られます",
-      "quizScore": "{total}問中{right}問正解（{pct}%）"
+      "quizScore": "{total}問中{right}問正解（{pct}%）",
+      "helped": "先生が答えを見せました"
     },
     "student": {
       "doneOf": "{done}/{total} できた",

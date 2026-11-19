@@ -3292,7 +3292,12 @@
         "step": "קפיצה"
       },
       "genWork1": "קראו את הסקאלה במקום שבו היא נעצרת.",
-      "genWork2": "הקריאה היא {v}{u}."
+      "genWork2": "הקריאה היא {v}{u}.",
+      "genWorkLook": "קראו את המספרים באיור.",
+      "genWorkCalc": "חשבו: {calc}.",
+      "genWorkAns": "התשובה היא {v}{u}.",
+      "gVar": "המספר {x} באיור",
+      "gDigits": "ספרות בכל מספר"
     }
   },
   "favorites": {
@@ -4170,7 +4175,8 @@
       "selfMarked": "סומן כבוצע על ידי התלמיד, בלי לשחק כאן",
       "minutes": "{count, plural, one {דקה אחת} two {# דק׳} other {# דק׳}}",
       "swipe": "החליקו את הטבלה הצידה כדי לראות את כל השלבים",
-      "quizScore": "{right} מתוך {total} נכונות ({pct}%)"
+      "quizScore": "{right} מתוך {total} נכונות ({pct}%)",
+      "helped": "המורה הציג תשובה"
     },
     "student": {
       "doneOf": "{done} מתוך {total} הושלמו",

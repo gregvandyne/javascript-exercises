@@ -3291,7 +3291,12 @@
         "step": "Шаг"
       },
       "genWork1": "Посмотри, где останавливается указатель на шкале.",
-      "genWork2": "Показание: {v}{u}."
+      "genWork2": "Показание: {v}{u}.",
+      "genWorkLook": "Посмотри на числа на рисунке.",
+      "genWorkCalc": "Вычисли: {calc}.",
+      "genWorkAns": "Ответ: {v}{u}.",
+      "gVar": "Число {x} на рисунке",
+      "gDigits": "Цифр в каждом числе"
     }
   },
   "favorites": {
@@ -4168,7 +4173,8 @@
       "selfMarked": "Ученик отметил сам, не играя здесь",
       "minutes": "{count, plural, one {# мин} few {# мин} many {# мин} other {# мин}}",
       "swipe": "Проведи по таблице вбок, чтобы увидеть все шаги",
-      "quizScore": "{right} из {total} верно ({pct}%)"
+      "quizScore": "{right} из {total} верно ({pct}%)",
+      "helped": "Учитель показал ответ"
     },
     "student": {
       "doneOf": "Готово {done} из {total}",

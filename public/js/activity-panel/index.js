@@ -19,7 +19,7 @@ export async function mountPanel(S0, H) {
   const A0 = S0.activity;
   await Promise.all([loadScript(A0.kitSrc), loadScript(A0.figures)]);
   const chat = $('.st-chat');
-  const M = { sel: 0, genSeed: 7, genFrom: null, genRange: null, genKeep: null, genMore: false, helpMore: false, lastSave: null, drag: null };
+  const M = { sel: 0, genSeed: 7, genFrom: null, genRange: null, genKeep: null, genMore: false, helpMore: false, lastSave: null };
   function load(A, S) {
     M.base = A.base; M.number = A.number; M.next = Math.max(0, ...(S.versions || []).map(v => v.number)) + 1;
     M.kit = A.kit; M.latest = A.latest;

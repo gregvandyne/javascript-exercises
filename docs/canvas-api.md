@@ -159,13 +159,17 @@ Teacher button opens them as a bottom sheet. They change this screen only; nothi
 
 Results: a set run in board mode sends nothing. After Show answer the set's result is still sent, as
 `BRB.gameOver({ won, score, helped: true })`: the score counts only the problems the student answered, and `won` means
-every one of those was right (docs/sdk.md).
+every one of those was right (docs/sdk.md). A Classroom lesson stores it with the step's best score
+(`step_progress.helped`), and the class's lesson progress page marks that score 👀 "Teacher showed an answer" (staff only).
 
 ## The Activity panel (Studio)
 
 A classroom activity's owner changes it without a Builder message: the problems (edit, reorder by dragging or with the
-arrow keys and Up/Down, add, copy, delete), "The same list for everyone" or "New ones for each student" (a pattern made
-from one problem, with three examples and a check of 30 made-up problems), how much help, problems in a set, and what
+handle with a mouse or a finger, the arrow keys, Up/Down; add, copy, delete), "The same list for everyone" or "New ones for each
+student" (a pattern made from one problem of any kind (`public/js/activity-panel/patterns.js`): the tool's own generator
+from its numbers, or for a figure question the figure's numbers as ranges with the answer and worked lines as formulas;
+not a sort into the Builder's own word groups, a figure question with choices, or a figure whose answer is not one of its
+numbers or two of them put together), with three examples and a check of 30 made-up problems), how much help, problems in a set, and what
 it is for. `public/js/activity-panel/` draws it; `POST /api/studio/:id/activity` (`server/routes/activity-panel.js`)
 saves it: only the `oc-activity` block changes (`server/builder/activity-data.js`, problems cleaned by the kit's own
 1.3.0 file), any text the teacher typed (a question, worked steps) is screened exactly like a Builder message (no

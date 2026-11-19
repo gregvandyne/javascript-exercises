@@ -52,13 +52,13 @@ export function context(u, clId, stepId) {
 function upsert(clId, stepId, userId, fields, { byStaff = false } = {}) {
   const old = get(clId, stepId, userId); const t = byStaff ? (old ? old.updated_at : 0) : now();
   if (!old) {
-    const row = { status: 'started', score: null, label: '', plays: 0, seconds: 0, answer: '', game_id: null, feedback: '', reviewed_at: null, reviewed_by: null, done_at: null, ...fields };
-    q.run(`INSERT INTO step_progress(class_lesson_id, step_id, user_id, status, score, label, plays, seconds, answer, game_id, feedback, reviewed_at, reviewed_by, started_at, done_at, updated_at)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, clId, stepId, userId, row.status, row.score, row.label, row.plays, row.seconds, row.answer, row.game_id, row.feedback, row.reviewed_at, row.reviewed_by, now(), row.done_at, t);
+    const row = { status: 'started', score: null, label: '', plays: 0, seconds: 0, answer: '', game_id: null, feedback: '', reviewed_at: null, reviewed_by: null, done_at: null, helped: 0, ...fields };
+    q.run(`INSERT INTO step_progress(class_lesson_id, step_id, user_id, status, score, label, plays, seconds, answer, game_id, feedback, reviewed_at, reviewed_by, started_at, done_at, updated_at, helped)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, clId, stepId, userId, row.status, row.score, row.label, row.plays, row.seconds, row.answer, row.game_id, row.feedback, row.reviewed_at, row.reviewed_by, now(), row.done_at, t, row.helped);
   } else {
     const row = { ...old, ...fields };
-    q.run(`UPDATE step_progress SET status=?, score=?, label=?, plays=?, seconds=?, answer=?, game_id=?, feedback=?, reviewed_at=?, reviewed_by=?, done_at=?, updated_at=?
-      WHERE class_lesson_id=? AND step_id=? AND user_id=?`, row.status, row.score, row.label, row.plays, row.seconds, row.answer, row.game_id, row.feedback, row.reviewed_at, row.reviewed_by, row.done_at, t, clId, stepId, userId);
+    q.run(`UPDATE step_progress SET status=?, score=?, label=?, plays=?, seconds=?, answer=?, game_id=?, feedback=?, reviewed_at=?, reviewed_by=?, done_at=?, updated_at=?, helped=?
+      WHERE class_lesson_id=? AND step_id=? AND user_id=?`, row.status, row.score, row.label, row.plays, row.seconds, row.answer, row.game_id, row.feedback, row.reviewed_at, row.reviewed_by, row.done_at, t, row.helped, clId, stepId, userId);
   }
   return get(clId, stepId, userId);
 }
@@ -129,13 +129,16 @@ export function gameTime(u, clId, stepId, seconds) {
 /** A score (best kept) or the end of a game: the step is done. score null = a game ended without a score. Also how a
  *  live run writes a hosted-live step's cell (classlive-results.js, label 'live'); the student-facing route refuses such
  *  steps before it gets here (routes/progress.js). */
-export function gameScore(u, clId, stepId, score, label = '') {
+/** helped: the set's result came after the teacher showed an answer (BRB.gameOver({ helped: true })). It goes with the
+ *  best score; an equal score without help clears it. */
+export function gameScore(u, clId, stepId, score, label = '', helped = false) {
   const c = context(u, clId, stepId); if (!c.ok) return c;
   if (c.step.kind !== 'game') return fail('notFound');
   const old = get(clId, stepId, u.id);
   const s = score === null || score === undefined || !Number.isFinite(+score) ? null : Math.max(0, Math.min(1e9, Math.floor(+score)));
   const better = s !== null && (!old || old.score === null || s > old.score);
-  return ok({ row: upsert(clId, stepId, u.id, { ...(better ? { score: s, label: String(label || '').slice(0, 40) } : {}), ...done(old) }) });
+  const h = better ? { helped: helped ? 1 : 0 } : s !== null && old && s === old.score && old.helped && !helped ? { helped: 0 } : {};
+  return ok({ row: upsert(clId, stepId, u.id, { ...(better ? { score: s, label: String(label || '').slice(0, 40) } : {}), ...h, ...done(old) }) });
 }
 /** A build step: the game the student is making (made once, then reopened). */
 export function buildGame(u, clId, stepId, gameId) {

@@ -99,3 +99,61 @@ test('the Studio\'s Activity panel: move a problem with the keyboard, Undo, Save
   await expect(fr.locator('.oc-tbtn')).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test.describe('on a phone, with touch', () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  test('the ⠿ handle drags a problem with a finger; a pattern is made from a fraction-bar problem', async ({ page }) => {
+    const errors = []; page.on('pageerror', e => errors.push(String(e)));
+    await teacherSignup(page);
+    const g = await templateGame(page, { template: 'canvas' });
+    await page.click('[data-act="edit-activity"]');
+    await expect(page.locator('#st-activity.is-sheet .ap-row')).not.toHaveCount(0);
+    const second = await page.locator('.ap-row[data-i="1"] .ap-t b').textContent();
+    // a finger on the second row's handle, moved up onto the first row, then lifted (real touch events, not a mouse)
+    const from = await page.locator('.ap-row[data-i="1"] .ap-grip').boundingBox(), to = await page.locator('.ap-row[data-i="0"]').boundingBox();
+    const cdp = await page.context().newCDPSession(page);
+    const pt = (x, y) => [{ x: Math.round(x), y: Math.round(y), id: 1 }];
+    const x0 = from.x + from.width / 2, y0 = from.y + from.height / 2, y1 = to.y + to.height / 2;
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pt(x0, y0) });
+    for (let k = 1; k <= 6; k++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(x0, y0 + ((y1 - y0) * k) / 6) });
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await expect(page.locator('.ap-row[data-i="0"] .ap-t b')).toHaveText(second);
+    await expect(page.locator('.ap-sum')).toContainText('Problem 2 moved up');
+    // "New ones for each student" from the starter's own kind (fraction bars): three examples and the 30-problem check
+    await page.locator('[data-ap="gen"]').click();
+    await expect(page.locator('.ap-genbox .ap-chips .stchip')).toHaveCount(3);
+    await expect(page.locator('.ap-genbox .ap-check.good')).toContainText('Checked 30 made-up problems');
+    await page.getByRole('button', { name: /Save as version/ }).click();
+    await expect(page.locator('.toast').last()).toContainText('Saved as version');
+    const st = await studioState(page, g.id);
+    expect(st.activity.data.gen.tool).toMatch(/^fractions\./);
+    expect(st.activity.data.config.fresh).toBe(true);
+    expect(errors).toEqual([]);
+  });
+});
+
+test('"Make problems like" works for every kind it can vary: each pattern passes the kit\'s 30-problem check', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await teacherSignup(page);
+  await templateGame(page, { template: 'canvas' });
+  await page.waitForFunction(() => !!window.OombaCanvas);
+  const out = await page.evaluate(async () => {
+    const { patternFor } = await import('/js/activity-panel/patterns.js');
+    const K = window.OombaCanvas;
+    const probs = [
+      { tool: 'fractions.equiv', from: [3, 4], to: 8 }, { tool: 'fractions.shade', n: 3, d: 5 }, { tool: 'fractions.compare', a: [3, 4], b: [5, 8] },
+      { tool: 'numberline.point', at: [3, 4], lo: 0, hi: 2, sub: 4 }, { tool: 'numberline.jump', from: 1, by: [1, 2], lo: 0, hi: 3, sub: 2 },
+      { tool: 'digits.add', a: 478, b: 256 }, { tool: 'digits.sub', a: 503, b: 128 }, { tool: 'digits.mul', a: 47, b: 6 },
+      { tool: 'tiles.sort', rule: 'evenodd', items: [2, 7, 10, 13] }, { tool: 'tiles.sort', rule: 'mult', n: 3, items: [9, 10, 12, 14] },
+      { tool: 'tiles.sort', rule: 'half', items: [[1, 3], [3, 4], [2, 5], [5, 8]] }, { tool: 'tiles.sort', rule: 'less', n: 50, items: [12, 70, 49, 51] },
+      { tool: 'tiles.order', items: [12, 5, 40], dir: 'up' }, { tool: 'tiles.order', items: [[3, 4], [1, 2], [2, 3]], dir: 'down' },
+      { tool: 'figure.number', q: 'What temperature does the thermometer show?', fig: { kind: 'reading', type: 'thermometer', value: 23, min: 0, max: 40, step: 1, major: 10, hide: 'value' }, answer: 23, unit: '°C', work: ['The reading is 23 °C.'] },
+      { tool: 'figure.number', q: 'What is the net force on the box?', fig: { kind: 'freeBody', body: 'box', forces: [{ name: 'F', dir: 'right', size: 10 }, { name: 'Ff', dir: 'left', size: 4 }] }, answer: 6, unit: 'N', work: ['10 N − 4 N', '= 6 N'] },
+    ];
+    return probs.map(p => { const x = patternFor(p); return x ? [p.tool, K.selfTest({ problems: [], gen: x.gen }).ok] : [p.tool, 'none']; });
+  });
+  for (const [tool, ok] of out) expect(ok, tool).toBe(true);
+  // what cannot be varied from one problem: the Builder's own word groups, and a figure question with choices
+  expect(await page.evaluate(async () => { const { patternFor } = await import('/js/activity-panel/patterns.js');
+    return [patternFor({ tool: 'tiles.sort', bins: ['A', 'B'], items: [{ t: 'x', bin: 0 }, { t: 'y', bin: 1 }] }), patternFor({ tool: 'figure.choice', q: 'Real?', fig: { kind: 'rays' }, choices: ['real', 'virtual'], answer: 0, work: ['real'] })]; })).toEqual([null, null]);
+});

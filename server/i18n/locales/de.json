@@ -3292,7 +3292,12 @@
         "step": "Schritt"
       },
       "genWork1": "Lies die Skala dort ab, wo es aufhört.",
-      "genWork2": "Der Messwert ist {v}{u}."
+      "genWork2": "Der Messwert ist {v}{u}.",
+      "genWorkLook": "Lies die Zahlen in der Abbildung ab.",
+      "genWorkCalc": "Rechne aus: {calc}.",
+      "genWorkAns": "Die Antwort ist {v}{u}.",
+      "gVar": "Die Zahl {x} in der Abbildung",
+      "gDigits": "Ziffern pro Zahl"
     }
   },
   "favorites": {
@@ -4169,7 +4174,8 @@
       "selfMarked": "Vom Schüler als erledigt markiert, nicht hier gespielt",
       "minutes": "{count, plural, one {# Min.} other {# Min.}}",
       "swipe": "Wische die Tabelle zur Seite, um alle Schritte zu sehen",
-      "quizScore": "{right} von {total} richtig ({pct} %)"
+      "quizScore": "{right} von {total} richtig ({pct} %)",
+      "helped": "Lehrkraft hat eine Antwort gezeigt"
     },
     "student": {
       "doneOf": "{done} von {total} geschafft",

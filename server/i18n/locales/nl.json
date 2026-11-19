@@ -3292,7 +3292,12 @@
         "step": "Stap"
       },
       "genWork1": "Lees de schaal af waar hij stopt.",
-      "genWork2": "De aflezing is {v}{u}."
+      "genWork2": "De aflezing is {v}{u}.",
+      "genWorkLook": "Lees de getallen in de figuur af.",
+      "genWorkCalc": "Reken uit: {calc}.",
+      "genWorkAns": "Het antwoord is {v}{u}.",
+      "gVar": "Het getal {x} in de figuur",
+      "gDigits": "Cijfers per getal"
     }
   },
   "favorites": {
@@ -4169,7 +4174,8 @@
       "selfMarked": "Door de leerling als klaar gemarkeerd, hier niet gespeeld",
       "minutes": "{count, plural, one {# min} other {# min}}",
       "swipe": "Veeg de tabel opzij om alle stappen te zien",
-      "quizScore": "{right} van {total} goed ({pct}%)"
+      "quizScore": "{right} van {total} goed ({pct}%)",
+      "helped": "Leraar liet een antwoord zien"
     },
     "student": {
       "doneOf": "{done} van {total} klaar",
