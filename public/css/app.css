@@ -1888,7 +1888,8 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .is-reorderable .shelf-item{cursor:grab}
 .is-reorderable > [data-id].is-dragging .shelf-item{background:var(--accent-soft);color:var(--text);box-shadow:inset 0 0 0 2px var(--accent-line),var(--shadow-lg)}
 .shelf-drophint{margin:2px 14px 6px;font-size:.85rem}
-/* Drag a game onto one of my folders (public/js/folder-drop.js). */
+/* Drag a game onto one of my folders, or into a new place in its folder (public/js/folder-drop.js, the one drag for
+   games: the row fades in place, .drop-ghost follows the pointer, the folder under it lights up). */
 .shelf-item[data-drop-folder]{transition:background .12s,box-shadow .12s,transform .12s}
 .shelf-item.is-drop,.shelf-item.is-drop:hover{background:var(--accent-soft);color:var(--text);box-shadow:inset 0 0 0 2px var(--accent-line);transform:scale(1.04)}
 .shelf-item.is-dropped{animation:drop-pop .6s ease}
@@ -2060,7 +2061,6 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 /* ---- Folders: drag to reorder (public/js/reorder.js) and Save to folder in a pop-up (public/js/folder-save.js). */
 .is-reorderable > [data-id]{touch-action:pan-y;-webkit-touch-callout:none}
 .is-reorderable > [data-id].is-dragging{position:relative;z-index:30;cursor:grabbing;box-shadow:var(--shadow-lg);transition:box-shadow .15s;pointer-events:none}
-.shelf-game.is-dragging{outline:2px solid var(--accent-line);transform-origin:center}
 body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;cursor:grabbing}
 .gfo-grip{display:grid;place-items:center;width:32px;align-self:stretch;min-height:44px;border:0;border-radius:10px;background:none;color:var(--muted);font-size:1.3rem;line-height:1;cursor:grab;touch-action:none}
 .gfo-grip:hover{background:var(--hover);color:var(--text)}

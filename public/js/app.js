@@ -171,8 +171,12 @@ if (FIRST) {
 }
 
 // ---- Live player counts: refresh every 30 s without reloads ----
+// Only the counts server/views/components.js and the game page print (data-live="<gameId>" with data-live-format). A
+// bare data-live elsewhere is another script's marker (the Studio's chat), and writing a count into it wipes it: the
+// folder sidebar's game rows once carried one, and every 30 s all the games in a folder vanished.
+const LIVE_COUNTS = '[data-live][data-live-format]';
 export async function refreshLive() {
-  const els = $$('[data-live]'); if (!els.length) return;
+  const els = $$(LIVE_COUNTS).filter(e => e.dataset.live); if (!els.length) return;
   const ids = [...new Set(els.map(e => e.dataset.live))].slice(0, 100);
   try {
     const { counts } = await api('/api/live?ids=' + encodeURIComponent(ids.join(',')), { background: true });
@@ -184,7 +188,7 @@ export async function refreshLive() {
     }
   } catch { /* offline: try again later */ }
 }
-if (FIRST && document.querySelector('[data-live]')) setInterval(() => { if (!document.hidden) refreshLive(); }, 30000);
+if (FIRST && document.querySelector(LIVE_COUNTS)) setInterval(() => { if (!document.hidden) refreshLive(); }, 30000);
 
 // A sign-up form that sets up a school sends this browser's time zone (an IANA name such as "America/Chicago"; the
 // server checks it), so due dates end at midnight where the teacher is.
