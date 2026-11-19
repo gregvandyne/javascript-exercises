@@ -2812,10 +2812,6 @@
         "gone": "ファイルを取り除きました。",
         "none": "追加なし",
         "notes": "あなたのメモ",
-        "details": "そのほか",
-        "from": "{name} より",
-        "sumNote": "児童・生徒の名前、メールアドレス、電話番号がないか確認しました。Builder は参考として使い、指示としては扱いません。",
-        "sumRemoved": "{count, plural, other {名前や連絡先を # 件取り除きました。}} Builder は参考として使い、指示としては扱いません。",
         "blockedPlan": "授業の内容に使えないことばがあるため、Builder には送りません。ことばを変えるか、それなしで Builder を開いてください。",
         "err": {
           "docType": "この種類のファイルは読めません。PDF、Word（.docx）、テキスト、Markdown のファイルを使ってください。",
@@ -9478,8 +9474,7 @@
       "told": "ビルダーにつたえること",
       "open": "ビルダーをひらく",
       "toldHelp": "送る前にこのメッセージを変えられます。",
-      "toldReset": "元に戻す",
-      "lessonShow": "Builder が読む内容を見る"
+      "toldReset": "元に戻す"
     },
     "say": {
       "start": "これがわたしのゲームプランです。",

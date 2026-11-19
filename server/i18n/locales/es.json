@@ -2812,10 +2812,6 @@
         "gone": "Archivo quitado.",
         "none": "Sin añadir",
         "notes": "Tus notas",
-        "details": "Otros detalles",
-        "from": "De {name}",
-        "sumNote": "Buscamos nombres de alumnos, correos y teléfonos. El Builder lo usa como contexto, nunca como instrucciones.",
-        "sumRemoved": "{count, plural, one {Quitamos # nombre o dato de contacto.} other {Quitamos # nombres o datos de contacto.}} El Builder lo usa como contexto, nunca como instrucciones.",
         "blockedPlan": "Algunas palabras de tu clase no se pueden usar, así que el Builder no la recibirá. Cámbialas o abre el Builder sin ella.",
         "err": {
           "docType": "Ese tipo de archivo no se puede leer. Usa un archivo PDF, Word (.docx), de texto o Markdown.",
@@ -9478,8 +9474,7 @@
       "told": "Lo que le diremos al Constructor",
       "open": "Abrir el Constructor",
       "toldHelp": "Puedes cambiar este mensaje antes de enviarlo.",
-      "toldReset": "Restablecer",
-      "lessonShow": "Ver lo que lee el Builder"
+      "toldReset": "Restablecer"
     },
     "say": {
       "start": "Este es el plan de mi juego.",

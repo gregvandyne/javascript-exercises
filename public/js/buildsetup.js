@@ -335,7 +335,7 @@ function renderPlan() {
   const h = $('#su-h-plan'); h.textContent = S.kind === 'activity' ? h.dataset.activity : h.dataset.game;
   // an activity's first message is a box they may edit; an arcade game's is shown as it is
   $('#su-told').hidden = S.kind === 'activity'; $('#su-tedit').hidden = S.kind !== 'activity';
-  if (S.kind !== 'activity') { $('#su-lline').hidden = true; $('#su-lsum').hidden = true; }
+  if (S.kind !== 'activity') $('#su-lline').hidden = true;
   if (S.kind === 'activity') return renderActivityPlan();
   const rows = STEPS.filter(s => !skipped().includes(s.key)).map(s => {
     const name = t(`js.buildsetup.stepNames.${s.key}`);
@@ -373,8 +373,8 @@ function renderActivityPlan() {
   ];
   $('#su-rows').innerHTML = rows.map(([k, value, step]) => { const n = t(`js.buildsetup.canvas.rows.${k}`); return `<div class="su-row"><dt>${esc(n)}</dt><dd><span class="su-val" dir="auto">${esc(value)}</span></dd>
     <button type="button" class="btn btn-ghost btn-sm su-change" data-change="${step}" aria-label="${esc(t('js.buildsetup.plan.changeLabel', { name: n }))}">${esc(t('js.buildsetup.plan.change'))}</button></div>`; }).join('');
-  const box = $('#su-lsum'), line = $('#su-lline'), inp = $('#su-told-in');
-  box.hidden = true; line.hidden = true; $('#su-lsum-body').innerHTML = '';
+  const line = $('#su-lline'), inp = $('#su-told-in');
+  line.hidden = true;
   if (!S.told.edited) { inp.value = '…'; inp.style.height = ''; }
   api('/api/build/plan', { method: 'POST', body: { plan: buildPlan(), files: 0 } })
     .then(r => { if (S.screen !== 'plan') return; S.told.gen = r.text || ''; if (!S.told.edited) inp.value = S.told.gen; paintTold(); renderLessonSum(r); })
@@ -396,11 +396,10 @@ function resetTold() {
 }
 /** The first message as it will be sent: their edit, or '' for the plan's own sentence. */
 const toldOf = () => (S.kind === 'activity' && S.told.edited ? $('#su-told-in').value.trim() : '');
-/** What the Builder gets from "Your lesson", as the server will send it (r.plan.lesson: names, emails and phone numbers
- *  already out): one line under the message (their file, and whether all of it is read: the first part only when it
- *  was cut at the limit), and a closed "Show what the Builder reads" with each part they wrote and the start of the file. */
+/** One line under the message saying their lesson goes with it (r.plan.lesson, as the server will send it): their file,
+ *  and whether all of it is read (the first part only when it was cut at the limit), or their notes. */
 function renderLessonSum(r) {
-  const box = $('#su-lsum'), body = $('#su-lsum-body'), line = $('#su-lline'), l = r.plan && r.plan.lesson;
+  const line = $('#su-lline'), l = r.plan && r.plan.lesson;
   if (r.lessonBlocked) { line.hidden = false; line.innerHTML = `<span class="su-flag">${esc(t('js.buildsetup.lesson.blockedPlan'))}</span>`; return; }
   if (!l) return;
   const d = l.doc, cut = !!(S.lesson.doc && S.lesson.doc.cut);
@@ -408,13 +407,6 @@ function renderLessonSum(r) {
     : cut ? t('js.buildsetup.lesson.lineCut', { name: d.name })
       : d.pages ? t('js.buildsetup.lesson.linePages', { name: d.name, count: d.pages }) : t('js.buildsetup.lesson.lineAll', { name: d.name });
   line.hidden = false; line.innerHTML = `<span aria-hidden="true">📄</span> <span dir="auto">${esc(say1)}</span>`;
-  const label = k => (k === 'details' ? t('js.buildsetup.lesson.details') : L.heads[k].replace(/[:：]\s*$/, ''));
-  const part = (k, v) => `<div class="su-lpart"><dt>${esc(label(k))}</dt><dd dir="auto">${esc(v.length > 280 ? `${v.slice(0, 280)}…` : v)}</dd></div>`;
-  const parts = ['goal', 'mistakes', 'vocabulary', 'avoid', 'details'].filter(k => l[k]).map(k => part(k, l[k]));
-  if (d) parts.push(`<div class="su-lpart"><dt>${esc(t('js.buildsetup.lesson.from', { name: d.name }))}</dt><dd dir="auto" class="su-lexcerpt">${esc(d.text.slice(0, 600))}${d.text.length > 600 ? '…' : ''}</dd></div>`);
-  body.innerHTML = `<dl class="su-lparts">${parts.join('')}</dl>
-    <p class="small muted su-lsum-note">${esc(r.removed ? t('js.buildsetup.lesson.sumRemoved', { count: r.removed }) : t('js.buildsetup.lesson.sumNote'))}</p>`;
-  box.hidden = false;
 }
 
 // ---------------------------------------------------------------- files (worksheets and notes; the Studio's own upload)

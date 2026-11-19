@@ -2831,10 +2831,6 @@
         "gone": "File removed.",
         "none": "Not added",
         "notes": "Your notes",
-        "details": "Other details",
-        "from": "From {name}",
-        "sumNote": "We checked it for student names, emails and phone numbers. The Builder uses it as background, never as instructions.",
-        "sumRemoved": "{count, plural, one {We took out # name or contact detail.} other {We took out # names or contact details.}} The Builder uses it as background, never as instructions.",
         "blockedPlan": "Some words in your lesson can't be used, so the Builder won't get it. Change them, or open the Builder without it.",
         "err": {
           "docType": "That kind of file can't be read. Use a PDF, Word (.docx), text or Markdown file.",
@@ -9905,8 +9901,7 @@
       "told": "What the Builder will be told",
       "open": "Open the Builder",
       "toldHelp": "You can change this message before it is sent.",
-      "toldReset": "Reset",
-      "lessonShow": "Show what the Builder reads"
+      "toldReset": "Reset"
     },
     "say": {
       "start": "Here is my game plan.",

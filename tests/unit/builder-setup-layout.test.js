@@ -465,21 +465,16 @@ test('390 wide: "Your lesson" (a PDF read, Remove, a wrong file said), help as c
   assert.equal(new Set(cards).size, 1, `help cards one size (${cards})`);
   await page.click('.su-card[data-card="watch"] label');
   await page.click('.su-screen:not([hidden]) [data-go="next"]');   // the last step: straight to the plan
-  await page.waitForSelector('#su-lsum:not([hidden])');
+  await page.waitForSelector('#su-lline:not([hidden])');
   const rows = await page.evaluate(() => [...document.querySelectorAll('.su-row')].map(r => [r.querySelector('dt').textContent, r.querySelector('.su-val').textContent]));
   assert.deepEqual(rows, [['What', 'Classroom lesson'], ['Lesson', 'lesson.pdf · Your notes'], ['Use', 'On their devices and on paper'], ['Help', 'Watch and Count up']]);
   // the first message: a box they may edit, filled with the sentence
   const sentence = await page.inputValue('#su-told-in');
   assert.match(sentence, /Students use it on their own devices and on paper\. Help: Watch and Count up\. .*Make a fresh set of questions whenever possible\./);
   assert.equal(await page.isVisible('#su-told'), false); assert.equal(await page.isVisible('#su-told-reset'), false, 'nothing to reset yet');
-  // what the Builder gets from the lesson: one line (the file, all of it read), and the parts and the file's start in a
-  // closed "Show what the Builder reads", as the server will send them (the student's name already out)
+  // what the Builder gets from the lesson: one line saying the file goes with the message (all of it read); no preview
   assert.equal(await page.textContent('#su-lline'), '📄 Plus your lesson file: lesson.pdf, 3 pages. The Builder reads all of it.');
-  assert.equal(await page.$eval('#su-lsum', d => d.open), false, 'closed to start');
-  assert.equal(await page.textContent('#su-lsum summary'), 'Show what the Builder reads'); assert.equal(await page.isVisible('#su-lsum-body'), false);
-  await page.click('#su-lsum summary'); assert.equal(await page.isVisible('#su-lsum-body'), true);
-  const sum = await page.textContent('#su-lsum');
-  assert.match(sum, /Common mistakes\s*adding the denominators/); assert.match(sum, /From lesson\.pdf/); assert.match(sum, /\[student\] shows 2\/8 \+ 3\/8/); assert.doesNotMatch(sum, /Ana/);
+  assert.equal(await page.locator('#su-lsum, details.su-lsum').count(), 0, 'no "Show what the Builder reads" preview');
   assert.deepEqual(await measure(page).then(x => x.small), [], 'every target is at least 44 px');
   const pw = await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);
   assert.ok(pw[0] <= pw[1], `no sideways scroll on the plan (${pw})`);
@@ -567,7 +562,7 @@ for (const width of [390, 1280]) {
     await next(page); assert.equal(await shown(), 'plan'); await told();
     want.push([['worksheet'], ['worksheet', 'generator'], 'board']);
     // no lesson added: no line about it, nothing to show
-    assert.equal(await page.isVisible('#su-lline'), false); assert.equal(await page.isVisible('#su-lsum'), false);
+    assert.equal(await page.isVisible('#su-lline'), false);
     const plans = sent.filter(p => p.kind === 'activity').map(p => [p.purpose, p.played]);
     assert.deepEqual(plans, want.map(([, purpose, played]) => [purpose, played]), 'each combination: the purpose and played sent to the Builder');
     assert.ok(sent.every(p => !('use' in p)));
