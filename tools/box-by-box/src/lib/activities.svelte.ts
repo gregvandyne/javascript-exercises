@@ -8,6 +8,7 @@ import {
 	freshSettings,
 	kindInfo,
 	kindOr,
+	methodFor,
 	numbersOf,
 	parseFlags,
 	toItem,
@@ -20,7 +21,6 @@ import {
 	type Problem,
 	type Settings
 } from './logic';
-import { methodOr } from './methods';
 import { SAVE_ERRORS, load, saveSet, store } from './oomba';
 
 export type Activity = {
@@ -34,7 +34,13 @@ export type Activity = {
 	plan: Plan;
 	setId?: string;
 	shared?: string;
+	/** The teacher's own words for the top of the printed worksheet (plain text, at most PRINT_NOTE_MAX). */
+	printNote?: string;
 };
+
+export const PRINT_NOTE_MAX = 300;
+export const cleanPrintNote = (v: unknown): string =>
+	typeof v === 'string' ? v.replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g, '').replace(/\n{3,}/g, '\n\n').trim().slice(0, PRINT_NOTE_MAX) : '';
 
 const KEY = 'box-by-box-activities-v1';
 export const list = $state<{ items: Activity[]; loaded: boolean }>({ items: [], loaded: false });
@@ -65,11 +71,12 @@ function fromSave(raw: unknown): Activity | null {
 			level: LEVELS.includes(s.level as Level) ? (s.level as Level) : 'guided',
 			custom,
 			perStudent: s.perStudent === true,
-			method: numbersOf(plan.numbers) === 'decimal' ? 'standard' : methodOr(kind, s.method)
+			method: methodFor(kind, s.method, numbersOf(plan.numbers))
 		},
 		plan,
 		...(typeof o.setId === 'string' ? { setId: o.setId } : {}),
-		...(typeof o.shared === 'string' ? { shared: o.shared } : {})
+		...(typeof o.shared === 'string' ? { shared: o.shared } : {}),
+		...(cleanPrintNote(o.printNote) ? { printNote: cleanPrintNote(o.printNote) } : {})
 	};
 }
 const flagString = (f: Record<string, unknown>) =>
@@ -123,6 +130,15 @@ export function markShared(id: string, setId: string, item: Item) {
 	if (!a) return;
 	a.setId = setId;
 	a.shared = JSON.stringify(item);
+	persist();
+}
+/** The teacher's instructions for the printed worksheet; saved with the activity, not with the shared set. */
+export function setPrintNote(id: string, text: string) {
+	const a = find(id);
+	if (!a) return;
+	const v = cleanPrintNote(text);
+	if (v) a.printNote = v;
+	else delete a.printNote;
 	persist();
 }
 export function forgetShare(id: string) {

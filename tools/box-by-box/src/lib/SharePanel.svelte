@@ -3,7 +3,7 @@
 	// Sharing an activity: saved on Oomba (its problems and support, not its title) for a student link and a QR code.
 	// Saving again after a change keeps the same link.
 	import { Check, Copy, GraduationCap, KeyRound, Printer, QrCode } from '@lucide/svelte';
-	import { isShared, shareActivity, type Activity } from './activities.svelte';
+	import { PRINT_NOTE_MAX, cleanPrintNote, isShared, setPrintNote, shareActivity, type Activity } from './activities.svelte';
 	import { assign, canAssign, canPrint, classCode, copy, isGuest, isPreview, printSheet, setLink } from './oomba';
 	import { toItem } from './logic';
 	import { makeQr, qrExtent, qrPath, qrPng } from './qr';
@@ -30,12 +30,18 @@
 	// and fixed words; the answer key on a page of its own, for school staff only (the server checks too) ---
 	let printing = $state(false);
 	let printNote = $state('');
+	// the teacher's own instructions for the top of the sheet, kept with the activity as they type
+	let mine = $state('');
+	// follows the activity shown (and its saved note)
+	$effect.pre(() => {
+		mine = activity.printNote ?? '';
+	});
 	async function print(key: boolean) {
 		if (printing || !activity.problems.length) return;
 		printing = true;
 		printNote = '';
 		const { k, p, r, dec, m } = toItem(activity);
-		const out = await printSheet({ k, p, ...(r ? { r } : {}), ...(dec ? { dec } : {}), ...(m ? { m } : {}), key, set: isShared(activity) ? (activity.setId ?? '') : '' });
+		const out = await printSheet({ k, p, ...(r ? { r } : {}), ...(dec ? { dec } : {}), ...(m ? { m } : {}), ...(cleanPrintNote(mine) ? { note: cleanPrintNote(mine) } : {}), key, set: isShared(activity) ? (activity.setId ?? '') : '' });
 		printing = false;
 		if (out !== 'ok') printNote = t(out === 'key' ? 'ui.print.key' : out === 'bad' ? 'ui.print.bad' : out === 'tap' ? 'ui.print.tap' : 'ui.print.offline');
 	}
@@ -96,6 +102,11 @@
 		<div class="print">
 			<h2>{t('ui.print.title')}</h2>
 			<p class="note">{t(canAssign() ? 'ui.print.aboutStaff' : 'ui.print.about')}</p>
+			<label class="mine">
+				<span>{t('ui.print.mineLabel')}</span>
+				<textarea rows="3" maxlength={PRINT_NOTE_MAX} placeholder={t('ui.print.minePlaceholder')} bind:value={mine} onchange={() => setPrintNote(activity.id, mine)} onblur={() => setPrintNote(activity.id, mine)}></textarea>
+				<small>{t('ui.print.mineHint')}</small>
+			</label>
 			<button type="button" class="btn-ghost wide" disabled={printing || !activity.problems.length} onclick={() => print(false)}
 				><Printer size={16} aria-hidden="true" /> {t('ui.print.sheet')}</button
 			>
@@ -191,6 +202,35 @@
 		margin-top: 0.4rem;
 		padding-top: 0.8rem;
 		border-top: 2px solid var(--line);
+	}
+	.mine {
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
+		font-weight: 700;
+	}
+	.mine textarea {
+		width: 100%;
+		box-sizing: border-box;
+		min-height: 4.5rem;
+		padding: 0.55rem 0.7rem;
+		border: 2px solid var(--line);
+		border-radius: 12px;
+		background: var(--paper);
+		color: var(--ink);
+		font-family: inherit;
+		font-size: 1rem;
+		font-weight: 400;
+		line-height: 1.4;
+		resize: vertical;
+	}
+	.mine textarea:focus-visible {
+		outline: 3px solid var(--focus, #2f5fd0);
+		outline-offset: 1px;
+	}
+	.mine small {
+		font-weight: 400;
+		color: var(--muted);
 	}
 	.qr {
 		display: flex;

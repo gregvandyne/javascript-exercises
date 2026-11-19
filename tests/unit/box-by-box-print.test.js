@@ -126,3 +126,19 @@ test('route: anyone may print the worksheet; only school staff get the answer ke
   assert.match((await call('/play/box-by-box')).text, /"print":true/);
 });
 
+
+test('the teacher’s own instructions: printed at the top as plain text (escaped, line breaks kept), never on the key; checked', () => {
+  const bad = (d, why) => assert.deepEqual(BP.cleanBoxPrintDoc(d), { ok: false, code: 'bad' }, why);
+  const note = 'Show your work.\nCircle <b>your</b> answer & check it.';
+  const r = BP.cleanBoxPrintDoc({ ...DOCS.R, note, key: true });
+  assert.equal(r.ok, true);
+  const html = BP.boxPrintHtml(r.doc, { t: tEn });
+  const sheet = html.split('cwp-key')[0];
+  assert.match(sheet, /<p class="bbp-mine" dir="auto">Show your work\.\nCircle &lt;b&gt;your&lt;\/b&gt; answer &amp; check it\.<\/p><p class="bbp-how">/);
+  assert.equal(html.match(/bbp-mine/g).length, 1, 'on the worksheet only, not the answer key');
+  assert.doesNotMatch(BP.boxPrintHtml(BP.cleanBoxPrintDoc(DOCS.R).doc, { t: tEn }), /bbp-mine/, 'none without a note');
+  assert.doesNotMatch(BP.boxPrintHtml(BP.cleanBoxPrintDoc({ ...DOCS.R, note: '  \n ' }).doc, { t: tEn }), /bbp-mine/, 'blank is none');
+  assert.equal(BP.cleanBoxPrintDoc({ ...DOCS.R, note: 'a\u0000b\n\n\n\nc' }).doc.note, 'ab\n\nc');
+  bad({ ...DOCS.R, note: 'x'.repeat(BP.PRINT_NOTE_MAX + 1) }, 'too long');
+  bad({ ...DOCS.R, note: 7 }, 'not text');
+});
