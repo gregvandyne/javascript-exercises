@@ -8,6 +8,7 @@ import { lintGame } from './stylelint.js';
 import { lintKit2 } from './kit2-lint.js';
 import { checkArt2d } from './art2d.js';
 import { checkCanvas } from './canvaskit.js';
+import { checkFigures } from './figlibs.js';
 import { lintArt2d } from './art2d-lint.js';
 import { checkHtml as liveCheckHtml } from './classlive-lint.js';
 
@@ -175,9 +176,13 @@ export function scanVersion(html) {
   // mention of its files fails.
   const canvas = checkCanvas(art2d.rest);
   for (const i of canvas.issues) add(i.level, i.code, i.message);
-  if (/<script\b[^>]*\bsrc\s*=\s*["']?(?!["']|https:\/\/cdnjs\.cloudflare\.com\/)/i.test(canvas.rest)) add('fail', 'external_script', 'Loads a script from somewhere we do not allow.');
+  // The figure libraries (figlibs.js: JSXGraph, SmilesDrawer, Oomba Figures): exactly the pinned tags pass and are taken
+  // out; any other mention of their folders fails.
+  const figs = checkFigures(canvas.rest);
+  for (const i of figs.issues) add(i.level, i.code, i.message);
+  if (/<script\b[^>]*\bsrc\s*=\s*["']?(?!["']|https:\/\/cdnjs\.cloudflare\.com\/)/i.test(figs.rest)) add('fail', 'external_script', 'Loads a script from somewhere we do not allow.');
   // 3D games: exactly the pinned, self-hosted Three.js (import map with integrity, or the Kit 2 map); any other Three.js fails.
-  for (const i of checkThree(canvas.rest)) add(i.level, i.code, i.message);
+  for (const i of checkThree(figs.rest)) add(i.level, i.code, i.message);
   if (/<a\b[^>]*\bhref\s*=\s*["']?(https?:|\/\/|mailto:|tel:|javascript:)/i.test(src)) issues.push({ level: 'fail', code: 'link', message: 'Has a link that leaves the game.' });
   // Visible text and string literals: profanity and personal-info requests.
   const text = visibleText(src).slice(0, 200000); const literals = stringLiterals(src).slice(0, 5000);

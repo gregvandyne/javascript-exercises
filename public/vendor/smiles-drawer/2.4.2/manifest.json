@@ -1,0 +1,17 @@
+{
+  "name": "smiles-drawer",
+  "version": "2.4.2",
+  "license": "MIT",
+  "usedUnder": "MIT",
+  "source": "npm smiles-drawer@2.4.2 (dist/smiles-drawer.min.js, LICENSE.md)",
+  "files": {
+    "smiles-drawer.min.js": {
+      "sha256": "3c756602a120b8ac1590fd7d79e84458a851aacef1243d3974c2289b88f4e45d",
+      "sri": "sha384-LRC4uaF5O8kDk4KFwnk94mk+AeK6RoE29vlm6X+xyfdW59ImqvrHZRWy89CgUcSs"
+    },
+    "LICENSE": {
+      "sha256": "919c7fa7363867d5785a1362aeb1df8ffa62f976db7f963fd57c397c2cbadeb4",
+      "sri": "sha384-ttgaiPXSTnkvyFPmFxfLcoCvWZDHM35UUovsjbEIqwfly94pN/5j+H39RkjFgUJG"
+    }
+  }
+}
