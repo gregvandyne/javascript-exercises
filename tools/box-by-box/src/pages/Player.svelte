@@ -1038,6 +1038,7 @@
 	{#if padOpen && !narrow && way !== 'watch'}
 		<FloatingKeypad
 			top={barH}
+			point={hasPoints}
 			disabled={phase !== 'working'}
 			ontap={keypad}
 			onclose={() => setPad(false)}

@@ -16,6 +16,7 @@
 	import MethodPicture from '$lib/MethodPicture.svelte';
 	import { methodInfo, methodsFor, type Method } from '$lib/methods';
 	import SharePanel from '$lib/SharePanel.svelte';
+	import SaveBar from '$lib/SaveBar.svelte';
 	import Footer from '$lib/Footer.svelte';
 
 	let { id }: { id: string } = $props();
@@ -617,6 +618,7 @@
 					{@const bad = fault(r)}
 					{#if bad}<p class="fault" role="alert">{t('ui.ed.fault', { n: i + 1, x: bad })}</p>{/if}
 				{/each}
+				<SaveBar {activity} />
 				<Footer />
 			</section>
 		</div>
