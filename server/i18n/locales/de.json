@@ -2770,7 +2770,8 @@
         "opening": "Baumeister wird geöffnet…",
         "files": "{count, plural, one {# Datei} other {# Dateien}}",
         "nothing": "Nichts dazugegeben",
-        "empty": "Du hast noch nichts ausgesucht. Der Baumeister fragt dich, was es werden soll."
+        "empty": "Du hast noch nichts ausgesucht. Der Baumeister fragt dich, was es werden soll.",
+        "toldResetDone": "Die Nachricht ist wieder wie vorher."
       },
       "gettingReady": "Wird vorbereitet…",
       "all": {
@@ -2789,9 +2790,13 @@
           "kind": "Was",
           "practise": "Üben",
           "help": "Hilfe",
-          "played": "Gespielt",
           "lesson": "Stunde",
-          "purpose": "Wofür"
+          "use": "Nutzung"
+        },
+        "use": {
+          "screen": "Auf ihren Geräten",
+          "worksheet": "Auf Papier",
+          "both": "Auf ihren Geräten und auf Papier"
         }
       },
       "lesson": {
@@ -2810,7 +2815,6 @@
         "notes": "Deine Notizen",
         "details": "Weitere Angaben",
         "from": "Aus {name}",
-        "sumHeading": "Was der Builder über deine Stunde liest",
         "sumNote": "Wir haben es auf Namen der Kinder, E-Mails und Telefonnummern geprüft. Der Builder nutzt es als Hintergrund, nie als Anweisung.",
         "sumRemoved": "{count, plural, one {Wir haben # Namen oder Kontaktangabe entfernt.} other {Wir haben # Namen oder Kontaktangaben entfernt.}} Der Builder nutzt es als Hintergrund, nie als Anweisung.",
         "blockedPlan": "Einige Wörter in deiner Stunde gehen hier nicht, deshalb bekommt der Builder sie nicht. Ändere sie oder öffne den Builder ohne sie.",
@@ -2825,7 +2829,11 @@
           "blocked": "Einige Wörter in dieser Datei gehen hier nicht, deshalb haben wir sie weggelassen.",
           "notAllowed": "Nur Lehrkräfte können hier eine Datei hinzufügen.",
           "failed": "Das hat nicht geklappt. Versuch es noch einmal."
-        }
+        },
+        "lineNotes": "Dazu deine Notizen zur Stunde. Der Builder liest sie ganz.",
+        "lineCut": "Dazu deine Unterrichtsdatei: {name}. Sie ist lang, darum liest der Builder den ersten Teil.",
+        "linePages": "Dazu deine Unterrichtsdatei: {name}, {count, plural, one {# Seite} other {# Seiten}}. Der Builder liest sie ganz.",
+        "lineAll": "Dazu deine Unterrichtsdatei: {name}. Der Builder liest sie ganz."
       }
     },
     "dash": {
@@ -9469,7 +9477,10 @@
       "headingActivity": "Das ist dein Aktivitätsplan",
       "text": "Ändere, was du willst, oder öffne den Baumeister und mach dort weiter.",
       "told": "Das erfährt der Baumeister",
-      "open": "Baumeister öffnen"
+      "open": "Baumeister öffnen",
+      "toldHelp": "Du kannst diese Nachricht ändern, bevor sie gesendet wird.",
+      "toldReset": "Zurücksetzen",
+      "lessonShow": "Zeigen, was der Builder liest"
     },
     "say": {
       "start": "Das ist mein Spielplan.",
@@ -9489,13 +9500,16 @@
       "practise": "Üben: {topic}.",
       "help": "Hilfe: {help}.",
       "played": {
-        "devices": "Die Kinder spielen auf ihren eigenen Geräten.",
-        "board": "Wir spielen gemeinsam an der Tafel.",
-        "both": "Die Kinder spielen auf ihren Geräten, und wir zeigen es auch an der Tafel."
+        "board": "Wir spielen gemeinsam an der Tafel."
       },
       "lesson": "Ich habe meine Stunde beschrieben.",
       "lessonDoc": "Ich habe meinen Stundenplan hinzugefügt.",
-      "purpose": "Wofür: {list}."
+      "use": {
+        "screen": "Die Kinder nutzen es auf ihren eigenen Geräten.",
+        "worksheet": "Die Kinder nutzen es auf Papier: ein Arbeitsblatt zum Drucken mit Lösungsseite.",
+        "both": "Die Kinder nutzen es auf ihren eigenen Geräten und auf Papier."
+      },
+      "fresh": "Mach wann immer möglich einen neuen Satz Aufgaben."
     },
     "flatNote": "In 2D können bisher nur Lauf- und Fangspiele unsere Welten und Figuren zeigen. Bei anderen Spielen nimmt der Baumeister sein klassisches Aussehen.",
     "typeGroups": {
@@ -9541,7 +9555,6 @@
     },
     "canvas": {
       "nextHelp": "Weiter: wie viel Hilfe",
-      "nextPlayed": "Weiter: wie gespielt wird",
       "practise": {
         "heading": "Was sollen die Kinder üben?",
         "text": "Schreib ein Thema. Der Builder macht 5 Aufgaben mit Schritten und Tipps.",
@@ -9571,22 +9584,6 @@
           "text": "Die Schritte bleiben verborgen, bis die Kinder sie öffnen."
         }
       },
-      "played": {
-        "heading": "Wie wird gespielt?",
-        "hint": "Live-Spiel für Aktivitäten kommt später.",
-        "devices": {
-          "title": "Auf ihren eigenen Geräten",
-          "text": "Jedes Kind arbeitet an seiner eigenen Kopie. Die Ergebnisse gehen in den Fortschritt."
-        },
-        "board": {
-          "title": "An der Tafel",
-          "text": "Ihr macht es gemeinsam auf dem großen Bildschirm. Ohne Punkte."
-        },
-        "both": {
-          "title": "Beides",
-          "text": "Auf ihren Geräten, und an der Tafel, wenn du willst."
-        }
-      },
       "topics": {
         "evenOdd": "Gerade und ungerade",
         "orderNumbers": "Zahlen ordnen",
@@ -9603,20 +9600,17 @@
         "bigAdd": "Große Zahlen addieren"
       },
       "nextLesson": "Weiter: deine Stunde",
-      "purpose": {
-        "heading": "Wofür ist es?",
-        "hint": "Wähle eins oder mehr. Die Schülerinnen und Schüler beginnen mit dem Üben am Bildschirm.",
+      "use": {
+        "heading": "Wie nutzen die Kinder es?",
+        "hint": "Wähle eins oder beide.",
+        "note": "Über die Schaltfläche „Lehrkraft“ kannst du es jederzeit an der Tafel zeigen, und wann immer möglich gibt es einen neuen Satz Aufgaben.",
         "screen": {
-          "title": "Üben am Bildschirm",
-          "text": "Alle arbeiten auf dem eigenen Gerät, mit Schritten und Tipps."
+          "title": "Auf ihren Geräten",
+          "text": "Jedes Kind arbeitet an seiner eigenen Kopie, mit Schritten und Tipps. Die Ergebnisse gehen in den Fortschritt."
         },
         "worksheet": {
-          "title": "Arbeitsblatt zum Drucken",
-          "text": "Aufgaben mit Abbildungen zum Drucken und eine Lösungsseite."
-        },
-        "generator": {
-          "title": "Aufgabengenerator",
-          "text": "Jeder Klick auf „Neues Blatt“ macht neue Aufgaben, am Bildschirm oder auf Papier."
+          "title": "Auf Papier",
+          "text": "Ein Arbeitsblatt zum Drucken mit Lösungsseite."
         }
       }
     },

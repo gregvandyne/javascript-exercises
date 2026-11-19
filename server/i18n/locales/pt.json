@@ -2770,7 +2770,8 @@
         "opening": "Abrindo o Construtor…",
         "files": "{count, plural, one {# arquivo} other {# arquivos}}",
         "nothing": "Nada adicionado",
-        "empty": "Você ainda não escolheu nada. O Construtor vai perguntar o que fazer."
+        "empty": "Você ainda não escolheu nada. O Construtor vai perguntar o que fazer.",
+        "toldResetDone": "A mensagem voltou ao que era."
       },
       "gettingReady": "Preparando…",
       "all": {
@@ -2789,9 +2790,13 @@
           "kind": "O quê",
           "practise": "Praticar",
           "help": "Ajuda",
-          "played": "Jogado",
           "lesson": "Aula",
-          "purpose": "Para"
+          "use": "Uso"
+        },
+        "use": {
+          "screen": "Nos aparelhos deles",
+          "worksheet": "No papel",
+          "both": "Nos aparelhos deles e no papel"
         }
       },
       "lesson": {
@@ -2810,7 +2815,6 @@
         "notes": "As suas notas",
         "details": "Outros detalhes",
         "from": "De {name}",
-        "sumHeading": "O que o Builder lê sobre a sua aula",
         "sumNote": "Procuramos nomes de alunos, e-mails e telefones. O Builder usa isso como contexto, nunca como instruções.",
         "sumRemoved": "{count, plural, one {Tiramos # nome ou contato.} other {Tiramos # nomes ou contatos.}} O Builder usa isso como contexto, nunca como instruções.",
         "blockedPlan": "Algumas palavras da sua aula não podem ser usadas, então o Builder não vai recebê-la. Mude-as ou abra o Builder sem ela.",
@@ -2825,7 +2829,11 @@
           "blocked": "Algumas palavras desse arquivo não podem ser usadas aqui, então o deixamos de fora.",
           "notAllowed": "Só professores podem acrescentar um arquivo aqui.",
           "failed": "Não deu certo. Tente de novo."
-        }
+        },
+        "lineNotes": "Além disso, suas anotações da aula. O Builder lê tudo.",
+        "lineCut": "Além disso, seu arquivo da aula: {name}. É longo, então o Builder lê a primeira parte.",
+        "linePages": "Além disso, seu arquivo da aula: {name}, {count, plural, one {# página} other {# páginas}}. O Builder lê tudo.",
+        "lineAll": "Além disso, seu arquivo da aula: {name}. O Builder lê tudo."
       }
     },
     "dash": {
@@ -9470,7 +9478,10 @@
       "headingActivity": "Este é o plano da sua atividade",
       "text": "Mude o que quiser, ou abra o Construtor e continue por lá.",
       "told": "O que vamos dizer ao Construtor",
-      "open": "Abrir o Construtor"
+      "open": "Abrir o Construtor",
+      "toldHelp": "Você pode mudar esta mensagem antes de enviar.",
+      "toldReset": "Restaurar",
+      "lessonShow": "Mostrar o que o Builder lê"
     },
     "say": {
       "start": "Este é o plano do meu jogo.",
@@ -9490,13 +9501,16 @@
       "practise": "Praticar: {topic}.",
       "help": "Ajuda: {help}.",
       "played": {
-        "devices": "Os alunos jogam nos próprios aparelhos.",
-        "board": "Jogamos juntos na lousa.",
-        "both": "Os alunos jogam nos próprios aparelhos, e também mostramos na lousa."
+        "board": "Jogamos juntos na lousa."
       },
       "lesson": "Descrevi a minha aula.",
       "lessonDoc": "Acrescentei o meu plano de aula.",
-      "purpose": "Para: {list}."
+      "use": {
+        "screen": "Os alunos usam nos próprios aparelhos.",
+        "worksheet": "Os alunos usam no papel: uma ficha para imprimir com gabarito.",
+        "both": "Os alunos usam nos próprios aparelhos e no papel."
+      },
+      "fresh": "Crie um novo conjunto de perguntas sempre que possível."
     },
     "flatNote": "Em 2D, por enquanto só os jogos de corrida e de pegar podem usar nossos mundos e personagens. Nos outros jogos o Construtor usa o visual clássico.",
     "typeGroups": {
@@ -9542,7 +9556,6 @@
     },
     "canvas": {
       "nextHelp": "Próximo: quanta ajuda",
-      "nextPlayed": "Próximo: como vai ser jogado",
       "practise": {
         "heading": "O que os alunos devem praticar?",
         "text": "Escreva um tema. O Builder faz 5 problemas com passos e dicas.",
@@ -9572,22 +9585,6 @@
           "text": "Os passos ficam escondidos até os alunos pedirem."
         }
       },
-      "played": {
-        "heading": "Como vai ser jogado?",
-        "hint": "Jogar ao vivo com atividades vem depois.",
-        "devices": {
-          "title": "Nos próprios aparelhos",
-          "text": "Cada aluno trabalha na sua própria cópia. Os resultados vão para Progresso."
-        },
-        "board": {
-          "title": "Na lousa",
-          "text": "Vocês fazem juntos na tela grande. Sem pontos."
-        },
-        "both": {
-          "title": "Os dois",
-          "text": "Nos próprios aparelhos, e na lousa quando você quiser."
-        }
-      },
       "topics": {
         "evenOdd": "Par e ímpar",
         "orderNumbers": "Ordenar números",
@@ -9604,20 +9601,17 @@
         "bigAdd": "Somar números grandes"
       },
       "nextLesson": "Próximo: a sua aula",
-      "purpose": {
-        "heading": "Para que serve?",
-        "hint": "Escolhe uma ou mais. Os alunos começam pela prática no ecrã.",
+      "use": {
+        "heading": "Como os alunos vão usar?",
+        "hint": "Escolha uma ou as duas.",
+        "note": "Você sempre pode mostrar na lousa pelo botão Professor, e um novo conjunto de perguntas é criado sempre que possível.",
         "screen": {
-          "title": "Prática no ecrã",
-          "text": "Os alunos fazem no seu próprio dispositivo, com passos e dicas."
+          "title": "Nos aparelhos deles",
+          "text": "Cada aluno trabalha na sua própria cópia, com passos e dicas. Os resultados vão para Progresso."
         },
         "worksheet": {
-          "title": "Ficha para imprimir",
-          "text": "Perguntas com figuras para imprimir e uma página de soluções."
-        },
-        "generator": {
-          "title": "Gerador de perguntas",
-          "text": "Cada vez que carregas em Nova ficha sai um conjunto novo, no ecrã ou em papel."
+          "title": "No papel",
+          "text": "Uma ficha para imprimir com gabarito."
         }
       }
     },
