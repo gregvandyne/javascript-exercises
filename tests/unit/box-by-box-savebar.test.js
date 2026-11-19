@@ -21,3 +21,12 @@ test('the editor form has its own Save, using the same save as Share, with its w
     for (const k of ['ui.ed.save', 'ui.ed.saveHint', 'ui.ed.savedHint']) assert.ok(d[k]?.trim(), `${f} ${k}`);
   }
 });
+
+test('every keypad offers the decimal point when the problem has a point to type (the floating one too)', () => {
+  const p = src('pages/Player.svelte');
+  assert.match(p, /<FloatingKeypad\s+top=\{barH\}\s+point=\{hasPoints\}/, 'the floating keypad in the standard player');
+  assert.match(p, /<Keypad wide point=\{hasPoints\}/);
+  const m = src('pages/MethodPlayer.svelte');
+  assert.match(m, /<FloatingKeypad[^>]*point=\{fields\.some\(\(x\) => x\.point\)\}/);
+  assert.match(m, /<Keypad wide point=\{fields\.some\(\(x\) => x\.point\)\}/);
+});
