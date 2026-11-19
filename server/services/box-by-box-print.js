@@ -7,7 +7,9 @@
 // staff only (the route checks who asks, as for Crossword).
 import { cleanBoxItems, SET_ID } from './game-sets.js';
 
-const KEYS = new Set(['k', 'p', 'r', 'dec', 'm', 'key', 'set']);
+const KEYS = new Set(['k', 'p', 'r', 'dec', 'm', 'key', 'set', 'note']);
+/** The teacher's own instructions for the top of the sheet: plain text, printed as typed (escaped), line breaks kept. */
+export const PRINT_NOTE_MAX = 300;
 export const BOX_PRINT = { bytes: 20000 };
 
 // ---------------------------------------------------------------- numbers, as the game's numbers.ts writes them
@@ -82,6 +84,8 @@ export function cleanBoxPrintDoc(raw) {
   if (size > BOX_PRINT.bytes || Object.keys(raw).some((k) => !KEYS.has(k))) return no;
   if (raw.key !== undefined && typeof raw.key !== 'boolean') return no;
   if (raw.set !== undefined && raw.set !== '' && !(typeof raw.set === 'string' && SET_ID.test(raw.set))) return no;
+  if (raw.note !== undefined && (typeof raw.note !== 'string' || raw.note.length > PRINT_NOTE_MAX)) return no;
+  const note = typeof raw.note === 'string' ? raw.note.replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g, '').replace(/\n{3,}/g, '\n\n').trim() : '';
   const item = { k: raw.k, p: raw.p, l: 'guided' };
   for (const x of ['r', 'dec', 'm']) if (raw[x] !== undefined) item[x] = raw[x];
   const c = cleanBoxItems([item]);
@@ -89,7 +93,7 @@ export function cleanBoxPrintDoc(raw) {
   const it = c[0];
   const form = it.dec ? 'decimal' : it.r === 'fraction' ? 'fraction' : it.r === 'decimal' && !it.m ? 'decimal' : 'R';
   const answers = it.p.map(([a, b]) => (it.k === 'divide' ? divideAnswer(a, b, form) : columnAnswer(it.k, a, b)));
-  return { ok: true, doc: { k: it.k, p: it.p, form, dec: it.dec === 1, m: it.m || 'standard', key: raw.key === true, set: raw.set || '', answers } };
+  return { ok: true, doc: { k: it.k, p: it.p, form, dec: it.dec === 1, m: it.m || 'standard', key: raw.key === true, set: raw.set || '', answers, ...(note ? { note } : {}) } };
 }
 
 // ---------------------------------------------------------------- the page
@@ -178,7 +182,7 @@ export function boxPrintHtml(doc, { t, dir = 'ltr', lang = 'en', code = '', link
   const cols = doc.k === 'divide' ? 'bbp-two' : 'bbp-three';
   const sheet = `<section class="cwp-page bbp-sheet">
 <header class="cwp-head"><h1>${esc(title)}</h1><p class="cwp-lines"><span class="cwp-line">${esc(t('play.print.name'))}<i class="cwp-blank cwp-blank-name"></i></span><span class="cwp-line">${esc(t('play.print.date'))}<i class="cwp-blank"></i></span></p></header>
-<p class="bbp-how">${esc(howTo(doc, t))}</p>
+${doc.note ? `<p class="bbp-mine" dir="auto">${esc(doc.note)}</p>` : ''}<p class="bbp-how">${esc(howTo(doc, t))}</p>
 <div class="bbp-grid ${cols}">${layout(false)}</div>
 ${foot}</section>`;
   const key = doc.key ? `<section class="cwp-page cwp-key bbp-key">

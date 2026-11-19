@@ -188,3 +188,9 @@ for (const c of CASES)
     assert.deepEqual(errors, []);
     await ctx.close();
   });
+
+test('a saved decimals activity keeps its ladder or area model when the list is loaded again', async () => {
+  const src = (await import('node:fs')).readFileSync(path.join(ROOT, 'tools/box-by-box/src/lib/activities.svelte.ts'), 'utf8');
+  assert.match(src, /method: methodFor\(kind, s\.method, numbersOf\(plan\.numbers\)\)/);
+  assert.doesNotMatch(src, /=== 'decimal' \? 'standard'/);
+});
