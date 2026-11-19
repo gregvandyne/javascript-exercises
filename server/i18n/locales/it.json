@@ -2813,10 +2813,6 @@
         "gone": "File tolto.",
         "none": "Non aggiunto",
         "notes": "Le tue note",
-        "details": "Altri dettagli",
-        "from": "Da {name}",
-        "sumNote": "Abbiamo cercato nomi di studenti, email e numeri di telefono. Il Builder lo usa come contesto, mai come istruzioni.",
-        "sumRemoved": "{count, plural, one {Abbiamo tolto # nome o recapito.} other {Abbiamo tolto # nomi o recapiti.}} Il Builder lo usa come contesto, mai come istruzioni.",
         "blockedPlan": "Alcune parole della tua lezione non si possono usare, quindi il Builder non la riceverà. Cambiale o apri il Builder senza.",
         "err": {
           "docType": "Questo tipo di file non si può leggere. Usa un file PDF, Word (.docx), di testo o Markdown.",
@@ -9479,8 +9475,7 @@
       "told": "Che cosa diremo al Costruttore",
       "open": "Apri il Costruttore",
       "toldHelp": "Puoi cambiare questo messaggio prima di inviarlo.",
-      "toldReset": "Ripristina",
-      "lessonShow": "Mostra cosa legge il Builder"
+      "toldReset": "Ripristina"
     },
     "say": {
       "start": "Ecco il piano del mio gioco.",

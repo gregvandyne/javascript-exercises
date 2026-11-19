@@ -2813,10 +2813,6 @@
         "gone": "Datei entfernt.",
         "none": "Nicht hinzugefügt",
         "notes": "Deine Notizen",
-        "details": "Weitere Angaben",
-        "from": "Aus {name}",
-        "sumNote": "Wir haben es auf Namen der Kinder, E-Mails und Telefonnummern geprüft. Der Builder nutzt es als Hintergrund, nie als Anweisung.",
-        "sumRemoved": "{count, plural, one {Wir haben # Namen oder Kontaktangabe entfernt.} other {Wir haben # Namen oder Kontaktangaben entfernt.}} Der Builder nutzt es als Hintergrund, nie als Anweisung.",
         "blockedPlan": "Einige Wörter in deiner Stunde gehen hier nicht, deshalb bekommt der Builder sie nicht. Ändere sie oder öffne den Builder ohne sie.",
         "err": {
           "docType": "Diese Art von Datei kann nicht gelesen werden. Nimm eine PDF-, Word- (.docx), Text- oder Markdown-Datei.",
@@ -9479,8 +9475,7 @@
       "told": "Das erfährt der Baumeister",
       "open": "Baumeister öffnen",
       "toldHelp": "Du kannst diese Nachricht ändern, bevor sie gesendet wird.",
-      "toldReset": "Zurücksetzen",
-      "lessonShow": "Zeigen, was der Builder liest"
+      "toldReset": "Zurücksetzen"
     },
     "say": {
       "start": "Das ist mein Spielplan.",

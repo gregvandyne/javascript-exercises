@@ -297,7 +297,6 @@ router.get('/build/new', requireBuilder, (req, res) => {
         </div></div>
       ${'' /* What the Builder gets from "Your lesson": one line, and the parts and the file's start in a closed <details>. */}
       <p class="su-lline" id="su-lline" hidden></p>
-      <details class="su-lsum panel" id="su-lsum" hidden><summary class="su-lsum-s">${t('buildSetup.plan.lessonShow')}</summary><div id="su-lsum-body"></div></details>
       <div class="su-nav"><button type="button" class="btn" data-go="back">${t('buildSetup.back')}</button><button type="button" class="btn btn-hot su-open" id="su-open">${t('buildSetup.plan.open')}</button></div>
     </section>
     <p class="sr-only" id="su-live" aria-live="polite"></p>

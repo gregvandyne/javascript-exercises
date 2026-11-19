@@ -2812,10 +2812,6 @@
         "gone": "已移除檔案。",
         "none": "未加入",
         "notes": "你的筆記",
-        "details": "其他細節",
-        "from": "來自 {name}",
-        "sumNote": "我們檢查過學生名字、電子郵件和電話號碼。Builder 只把它當作參考，絕不當作指令。",
-        "sumRemoved": "{count, plural, other {我們移除了 # 個名字或聯絡資料。}} Builder 只把它當作參考，絕不當作指令。",
         "blockedPlan": "你的課程內容裡有些字詞不能使用，所以 Builder 不會收到。請修改，或不帶它直接開啟 Builder。",
         "err": {
           "docType": "無法讀取這種檔案。請用 PDF、Word（.docx）、文字或 Markdown 檔。",
@@ -9478,8 +9474,7 @@
       "told": "我們會這樣告訴小幫手",
       "open": "打開小幫手",
       "toldHelp": "送出前，你可以修改這則訊息。",
-      "toldReset": "還原",
-      "lessonShow": "顯示 Builder 會讀到的內容"
+      "toldReset": "還原"
     },
     "say": {
       "start": "這是我的遊戲計畫。",
