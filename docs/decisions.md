@@ -8109,6 +8109,23 @@ Owner: "Also, create a print option for the teacher or student to print off the 
   (the real play page in Chromium: a teacher's draft with its key and the saved puzzle with its class code, a student's
   blank puzzle, Hebrew; in print media and as PDFs in Letter and A4).
 
+## Crossword: the teacher's own instructions on the printed puzzle (19 Nov 2026)
+Greg asked for what The Big Divide shipped in #435: an optional line or two of the teacher's own on the printout.
+- **The box.** "Your instructions (optional)" (300 characters, line breaks kept) under Print on the preview and share
+  screen, wherever Print shows (`BRB.canPrint`). The play screen keeps just its Print button; a teacher's own crossword
+  printed from there still carries its note. Nothing new for family grown-ups: the fence and frame flags are unchanged.
+- **Where it is kept: the game's own save, not the question set.** The note is on the crossword in `SAVE.mine` (the
+  teacher's crosswords, `BRB.storage`, saved with the draft's other fields by `remember`). A set's items go through
+  `cleanCrossItems`, which keeps only `t`, `w`, `r`, `b`, `h`; widening that schema (and its text filter) for a print-only
+  field wasn't worth it. So a student opening the shared set never sees or prints the teacher's note.
+- **Printed** (`services/crossword-print.js`): sent as `note` with `BRB.print`; checked and cleaned by the shared
+  `services/print-note.js` (a string of at most 300 characters, else `bad`; control characters other than a line break
+  dropped, three or more line breaks made two, trimmed; blank is none), also used by The Big Divide. It prints in bold
+  above the grid (`.cwp-mine`; the grid gives up a little height for it) and never on the answer key.
+- Tests: tests/unit/crossword-print.test.js (escaped, line breaks kept, above the grid, not on the key, blank prints
+  nothing, too long or not text refused); tests/e2e/crossword-print.spec.js (the box, kept on reopening, the printout,
+  none on a student's print of the set, 390px phone).
+
 ## Shape board: labels you can read (18 Nov 2026)
 The owner found the board's labels (corner letters, side lengths, angles, text labels) too small on the smallest Shape
 board. They had one floor for all of them (13px on the screen, 16px on the projector) and were otherwise a fixed share

@@ -2088,6 +2088,9 @@ body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;curs
 .cwp-blank-name{width:2.1in}
 .cwp-gridbox{display:flex;justify-content:center;margin:0 0 12pt}
 .cwp-grid{display:block;width:100%;height:auto;max-height:6.4in;break-inside:avoid}
+/* The teacher's own instructions above the grid (crossword-print.js; as The Big Divide's .bbp-mine); the grid gives up a little height for them. */
+.cwp-mine{margin:0 0 10pt;font-size:12.5pt;font-weight:700;white-space:pre-line;overflow-wrap:anywhere}
+.cwp-mine~.cwp-gridbox .cwp-grid{max-height:5.7in}
 .cwp-grid rect{fill:#fff;stroke:#000;stroke-width:0.45}
 .cwp-grid .cwp-n{font-size:3.1px;font-weight:700;fill:#000;font-family:Arial,sans-serif}
 .cwp-grid .cwp-l{font-size:5.6px;font-weight:700;fill:#000;font-family:Arial,"Noto Sans",sans-serif}

@@ -5,14 +5,15 @@
 // option and the layout as numbers only ({ w, h, e: [[word index, 'a'|'d', row, col]] }). The letters of the grid are
 // the words' own, put down here, so a layout that doesn't spell its words (two letters in one square) is refused; the
 // clue numbers are counted here in reading order, as the game counts them. The answer key is for teachers only (the
-// route checks who asks).
+// route checks who asks). note: the teacher's own instructions, printed at the top of the puzzle (never on the key).
 import { cleanCrossItems, crossLetters, SET_ID } from './game-sets.js';
+import { cleanPrintNote } from './print-note.js';
 
 export const PRINT = { side: 25, bytes: 20000 };
 const RTL = /[֐-ࣿיִ-﷿ﹰ-﻿]/;
-const KEYS = new Set(['t', 'w', 'b', 'g', 'key', 'set']);
+const KEYS = new Set(['t', 'w', 'b', 'g', 'key', 'set', 'note']);
 
-/** The game's print request -> { ok: true, doc: { t, w, b, key, set, W, H, grid, nums, across, down, rtl } } or
+/** The game's print request -> { ok: true, doc: { t, w, b, key, set, W, H, grid, nums, across, down, rtl, note? } } or
  *  { ok: false, code: 'bad' }. Strict: unknown keys, a bad layout or any text the filter refuses, and it is turned down. */
 export function cleanPrintDoc(raw) {
   const no = { ok: false, code: 'bad' };
@@ -23,6 +24,8 @@ export function cleanPrintDoc(raw) {
   if (raw.b !== undefined && typeof raw.b !== 'boolean') return no;
   if (raw.key !== undefined && typeof raw.key !== 'boolean') return no;
   if (raw.set !== undefined && raw.set !== '' && !(typeof raw.set === 'string' && SET_ID.test(raw.set))) return no;
+  const note = cleanPrintNote(raw.note);
+  if (note === null) return no;
   const items = cleanCrossItems([{ t: raw.t || '', w: raw.w, r: 1, b: raw.b === true, h: true }]);
   if (!items) return no;
   const { t, w } = items[0];
@@ -60,6 +63,7 @@ export function cleanPrintDoc(raw) {
     doc: {
       t, w, b: raw.b === true, key: raw.key === true, set: raw.set || '', W, H, grid, nums,
       across: list('a'), down: list('d'), bank: entries.map(e => w[e.i][0]).sort((a, b) => a.localeCompare(b)), rtl: all > 0 && rtlN * 2 > all,
+      ...(note ? { note } : {}),
     },
   };
 }
@@ -91,7 +95,7 @@ export function printHtml(doc, { t, dir = 'ltr', lang = 'en', code = '', link = 
   const gridDir = doc.rtl ? 'rtl' : 'ltr';
   const puzzle = `<section class="cwp-page cwp-puzzle">
 <header class="cwp-head"><h1 dir="auto">${esc(title)}</h1><p class="cwp-lines"><span class="cwp-line">${esc(t('play.print.name'))}<i class="cwp-blank cwp-blank-name"></i></span><span class="cwp-line">${esc(t('play.print.date'))}<i class="cwp-blank"></i></span></p></header>
-<div class="cwp-gridbox" dir="${gridDir}">${gridSvg(doc, { letters: false, label: t('play.print.grid') })}</div>
+${doc.note ? `<p class="cwp-mine" dir="auto">${esc(doc.note)}</p>` : ''}<div class="cwp-gridbox" dir="${gridDir}">${gridSvg(doc, { letters: false, label: t('play.print.grid') })}</div>
 <div class="cwp-clues">${clues('a', doc.across)}${clues('d', doc.down)}</div>
 ${doc.b ? `<section class="cwp-bank"><h2>${esc(t('play.print.bank'))}</h2><ul>${doc.bank.map(x => `<li dir="auto">${esc(x)}</li>`).join('')}</ul></section>` : ''}
 ${foot}</section>`;

@@ -361,15 +361,17 @@ printer is in `server/services/game-print.js`). The frame can't print (no
   `bad`, `key`, `tap`, `offline`). Call it from a tap: the page checks `navigator.userActivation` when the message
   arrives and answers `tap` otherwise.
 - `doc` is plain data, never HTML (at most 20,000 characters as JSON; the SDK, the page and the server each check).
-  The Big Divide's: `{ k, p, r?, dec?, m?, key, set }`, an activity's kind, problems and options exactly as a question
+  The Big Divide's: `{ k, p, r?, dec?, m?, key, set, note? }`, an activity's kind, problems and options exactly as a question
   set's item (`cleanBoxItems`: numbers and fixed words only); the server works out the answers for the key
   (`services/box-by-box-print.js`). Crossword's:
-  `{ t, w: [[word, clue]], b, g: { w, h, e: [[word index, 'a'|'d', row, col]] }, key, set }`: the title, the words and
+  `{ t, w: [[word, clue]], b, g: { w, h, e: [[word index, 'a'|'d', row, col]] }, key, set, note? }`: the title, the words and
   clues (a question set's rules, `cleanCrossItems`: each word, clue and the title pass the site's text filter), the word
   bank option, the layout as numbers (1 to 25 a side, at most one entry per word), the answer key (true or false) and the
   saved set's id (or `''`). The server puts the letters down from the words (a layout that doesn't spell its words is
   refused), counts the clue numbers in reading order, and adds the class code and link to the footer only for a set of
-  this game that exists.
+  this game that exists. Both take `note`, the teacher's own instructions: plain text of at most 300 characters
+  (`services/print-note.js`: control characters dropped, line breaks kept, blank is none), printed in bold at the top of
+  the sheet and never on the answer key.
 - `POST /api/games/:id/print` `{ doc }` → `{ html }` (the printable page in the viewer's language and direction) or
   `{ code: 'bad' }` (400), `{ code: 'key' }` (403: the answer key is for school staff only, BRB.canAssign's check). Open
   to anyone who can open the game, 20 a minute per address. Nothing is kept.

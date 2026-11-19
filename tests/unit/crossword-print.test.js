@@ -4,6 +4,8 @@
 //     that doesn't spell its words or runs off the grid, a word used twice, and any word, clue or title the site's text
 //     filter refuses are all turned down; what the game sends for a real layout passes;
 //   - the clue numbers are counted on the server, in reading order, and match the game's own (crossword-core);
+//   - the teacher's own instructions (note): checked and cleaned (services/print-note.js), printed above the grid, never
+//     on the answer key;
 //   - the printable page: the title, Name and Date lines, the grid's squares and numbers, the Across and Down clues, the
 //     word bank only when the puzzle has it, the footer, every word escaped; the answer key on a page of its own;
 //   - the route: anyone who can open the game may print the puzzle; only school staff get the answer key (a student, a
@@ -21,6 +23,7 @@ import { call, publish, official, teacher, kid, mum, mia, auth } from './_live.j
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const CP = await import('../../server/services/crossword-print.js');
+const NOTE = await import('../../server/services/print-note.js');
 const G = await import('../../server/services/game-sets.js');
 const { tFor } = await import('../../server/i18n/index.js');
 const HTML = fs.readFileSync(path.join(ROOT, 'seed-games/crossword.html'), 'utf8');
@@ -135,6 +138,30 @@ test('the answer key: the filled grid on a page of its own; Hebrew: the lists ri
   const c0 = he.doc.grid.findIndex(row => row[0]);
   const x0 = (he.doc.W - 1) * 10 + 1;
   assert.match(hh, new RegExp(`<rect x="${x0}" y="${c0 * 10 + 1}"`));
+});
+
+test('the teacher’s own instructions: printed at the top of the puzzle as plain text (escaped, line breaks kept), never on the key; checked', () => {
+  const bad = (d, why) => assert.deepEqual(CP.cleanPrintDoc(d), { ok: false, code: 'bad' }, why);
+  const { PRINT_NOTE_MAX } = NOTE;
+  const note = 'Use a pencil.\nCheck <b>your</b> spelling & have fun.';
+  const r = CP.cleanPrintDoc(docFor(WORDS, 3, { note, key: true }).doc);
+  assert.equal(r.ok, true); assert.equal(r.doc.note, note);
+  const html = CP.printHtml(r.doc, { t: tEn });
+  const puzzle = html.split('cwp-key')[0];
+  assert.match(puzzle, /<\/header>\n<p class="cwp-mine" dir="auto">Use a pencil\.\nCheck &lt;b&gt;your&lt;\/b&gt; spelling &amp; have fun\.<\/p><div class="cwp-gridbox"/, 'under the title, above the grid and clues');
+  assert.ok(puzzle.indexOf('cwp-mine') < puzzle.indexOf('cwp-clues'));
+  assert.equal(html.match(/cwp-mine/g).length, 1, 'on the puzzle only, not the answer key');
+  assert.doesNotMatch(CP.printHtml(CP.cleanPrintDoc(docFor().doc).doc, { t: tEn }), /cwp-mine/, 'none without a note');
+  for (const blank of ['', '  \n ', '\u0007\n\n']) {
+    const b = CP.cleanPrintDoc(docFor(WORDS, 3, { note: blank }).doc);
+    assert.equal(b.ok, true); assert.equal(b.doc.note, undefined);
+    assert.doesNotMatch(CP.printHtml(b.doc, { t: tEn }), /cwp-mine/, `blank ${JSON.stringify(blank)} prints nothing`);
+  }
+  assert.equal(CP.cleanPrintDoc(docFor(WORDS, 3, { note: ' a\u0000b\n\n\n\nc\t ' }).doc).doc.note, 'ab\n\nc', 'control characters dropped, blank lines collapsed, trimmed');
+  assert.equal(CP.cleanPrintDoc(docFor(WORDS, 3, { note: 'x'.repeat(PRINT_NOTE_MAX) }).doc).ok, true, 'exactly the limit');
+  bad(docFor(WORDS, 3, { note: 'x'.repeat(PRINT_NOTE_MAX + 1) }).doc, 'too long');
+  for (const v of [7, null, true, ['a'], { a: 1 }]) bad(docFor(WORDS, 3, { note: v }).doc, `not text: ${JSON.stringify(v)}`);
+  assert.match(fs.readFileSync(path.join(ROOT, 'public/css/app.css'), 'utf8'), /\.cwp-mine\{[^}]*white-space:pre-line/);
 });
 
 // ---------------------------------------------------------------- the route
