@@ -9694,6 +9694,7 @@
     },
     "plan": {
       "heading": "Here is your game plan",
+      "headingActivity": "Here is your activity plan",
       "text": "Change anything, or open the Builder and keep going there.",
       "told": "What the Builder will be told",
       "open": "Open the Builder"

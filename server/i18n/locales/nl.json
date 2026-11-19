@@ -9268,6 +9268,7 @@
     },
     "plan": {
       "heading": "Dit is je gameplan",
+      "headingActivity": "Dit is je activiteitenplan",
       "text": "Verander wat je wilt, of open de Bouwer en ga daar verder.",
       "told": "Dit krijgt de Bouwer te horen",
       "open": "Open de Bouwer"

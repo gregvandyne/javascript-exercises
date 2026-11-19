@@ -315,6 +315,7 @@ function buildPlan() {
 const isEmpty = p => p.kind !== 'activity' && !p.type && !p.look && !p.world && !p.characters.length && !p.learn.length && !p.notes && !S.files.length && !(p.play && S.playPicked);
 const nameOf = (key, id) => { const el = $(`.su-pick[data-step="${key}"][data-id="${id}"] .su-name`); return el ? el.textContent : id; };
 function renderPlan() {
+  const h = $('#su-h-plan'); h.textContent = S.kind === 'activity' ? h.dataset.activity : h.dataset.game;
   if (S.kind === 'activity') return renderActivityPlan();
   const rows = STEPS.filter(s => !skipped().includes(s.key)).map(s => {
     const name = t(`js.buildsetup.stepNames.${s.key}`);

@@ -244,6 +244,9 @@ test('/build/new: the start, seven steps, every live world with a Preview, group
   assert.match(h, /id="su-skipall" hidden>Skip to the Builder</);
   assert.deepEqual([...h.matchAll(/data-screen="([\w-]+)"/g)].map(m => m[1]), ['start', 'lesson', 'purpose', 'help', 'played', 'type', 'look', 'world', 'chars', 'play', 'learn', 'extras', 'plan']);
   for (const q of ['What kind of game?', '2D or 3D?', 'Where does it happen?', 'Who is in it?', 'How will it be played?', 'What should it teach?', 'Anything to add?', 'Here is your game plan']) assert.ok(h.includes(q), q);
+  // the plan's heading names an activity or a game; the page's script picks one from the kind chosen
+  assert.match(h, /<h1 id="su-h-plan" tabindex="-1" data-game="Here is your game plan" data-activity="Here is your activity plan">/);
+  assert.match(fs.readFileSync(path.join(ROOT, 'public/js/buildsetup.js'), 'utf8'), /S\.kind === 'activity' \? h\.dataset\.activity : h\.dataset\.game/);
   // seven arcade steps, the activity's four (your lesson, what it is for, how much help, how it is played: only "Your
   // lesson" can be skipped) and the plan
   assert.equal((h.match(/data-go="back"/g) || []).length, 12); assert.equal((h.match(/data-go="skip"/g) || []).length, 8); assert.equal((h.match(/data-go="next"/g) || []).length, 11);

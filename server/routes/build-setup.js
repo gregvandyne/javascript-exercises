@@ -282,7 +282,7 @@ router.get('/build/new', requireBuilder, (req, res) => {
       ${head(s, i)}${grids[s.key]()}${s.other ? elseBox(s) : ''}${nav}
     </section>`)}
     <section class="su-screen su-plan" data-screen="plan" aria-labelledby="su-h-plan" hidden>
-      <h1 id="su-h-plan" tabindex="-1">${t('buildSetup.plan.heading')}</h1><p class="su-hint">${t('buildSetup.plan.text')}</p>
+      <h1 id="su-h-plan" tabindex="-1" data-game="${t('buildSetup.plan.heading')}" data-activity="${t('buildSetup.plan.headingActivity')}">${t('buildSetup.plan.heading')}</h1><p class="su-hint">${t('buildSetup.plan.text')}</p>
       <dl class="su-rows panel" id="su-rows"></dl>
       <section class="su-lsum panel" id="su-lsum" aria-live="polite" hidden></section>
       <p class="su-flag" id="su-plan-2d" hidden>${t('buildSetup.flatNote')}</p>

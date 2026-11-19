@@ -9267,6 +9267,7 @@
     },
     "plan": {
       "heading": "Voici le plan de ton jeu",
+      "headingActivity": "Voici le plan de ton activité",
       "text": "Change ce que tu veux, ou ouvre le Constructeur et continue là-bas.",
       "told": "Ce que le Constructeur va lire",
       "open": "Ouvrir le Constructeur"

@@ -9267,6 +9267,7 @@
     },
     "plan": {
       "heading": "Este es el plan de tu juego",
+      "headingActivity": "Este es el plan de tu actividad",
       "text": "Cambia lo que quieras, o abre el Constructor y sigue allí.",
       "told": "Lo que le diremos al Constructor",
       "open": "Abrir el Constructor"

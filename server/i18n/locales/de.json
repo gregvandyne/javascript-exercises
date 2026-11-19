@@ -9268,6 +9268,7 @@
     },
     "plan": {
       "heading": "Das ist dein Spielplan",
+      "headingActivity": "Das ist dein Aktivitätsplan",
       "text": "Ändere, was du willst, oder öffne den Baumeister und mach dort weiter.",
       "told": "Das erfährt der Baumeister",
       "open": "Baumeister öffnen"
