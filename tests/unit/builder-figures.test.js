@@ -123,7 +123,7 @@ test('/build/new: "How will students use it?" right after "Your lesson", two che
   assert.match(h, /<p class="small muted su-unote" id="su-use-note">You can always show it on the board from the Teacher button, and a fresh set of questions is made whenever possible\.<\/p>/);
   assert.match(h, /id="su-use-one"[^>]*hidden>Pick at least one\./);
   const js = fs.readFileSync(path.join(ROOT, 'public/js/buildsetup.js'), 'utf8');
-  assert.match(js, /CSTEPS = \['lesson', 'use', 'help'\]/); assert.match(js, /\.\.\.usesPlan\(S\.sel\.use\)/); assert.match(js, /\['use', t\(/, 'a row on the plan summary');
+  assert.match(js, /CSTEPS = \['lesson', 'use', 'help'\]/); assert.match(js, /\.\.\.usesPlan\(S\.sel\.use\.length \? S\.sel\.use : \['screen'\]\)/); assert.match(js, /\['use', t\(/, 'a row on the plan summary');
   // the page's usesPlan says what builder/plan.js usesPlan says
   assert.match(js, /const usesPlan = use => \(\{ purpose: \[\.\.\.use, 'generator'\], played: use\.includes\('screen'\) \? 'both' : 'board' \}\);/);
   const r = await teacher.c('/api/build/plan', { method: 'POST', body: { plan: { kind: 'activity', topic: { text: 'Circuits' }, ...plan.usesPlan(['worksheet']) } } });
