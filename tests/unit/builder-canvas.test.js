@@ -111,7 +111,7 @@ test('the arcade prompt is unchanged: SYSTEM_PROMPT and TOOLS never name the can
 // ---------------------------------------------------------------- the starter, the self-test, the save
 test('the activity starter: pinned tag, data as JSON, scanned clean, and it passes the self-test', async () => {
   const html = loadTemplate('canvas');
-  assert.equal(canvasVersion(html), CANVAS_LATEST); assert.equal(CANVAS_LATEST, '1.3.0', 'new activities pin Oomba Canvas 1.3.0');
+  assert.equal(canvasVersion(html), CANVAS_LATEST); assert.equal(CANVAS_LATEST, '1.3.1', 'new activities pin Oomba Canvas 1.3.1');
   assert.ok(activityData(html).data.problems.length >= 3);
   assert.deepEqual(autotest.canvasSelfTest(html), { ok: true, problems: [] });
   assert.equal(autotest.canvasSelfTest('<p>arcade</p>'), null);

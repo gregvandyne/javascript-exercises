@@ -27,8 +27,13 @@ export const CANVAS_VERSIONS = Object.freeze({
   // marked helped when the teacher showed an answer. Older activities move to it only when saved from the Studio's
   // Activity panel (server/builder/activity-data.js), never on their own.
   '1.3.0': 'sha384-Y9ODTlYNiRPfeIC7I1iKqhk8Eu55RJ8/xuCQGDe/Px6xCVU0+oT1yYiOyntno79+',
+  // 1.3.1: the phone layout. The top strip in three groups (title; help mode, ✓, ✗, to go; New sheet, Print, Teacher,
+  // Keypad), each one row that scrolls sideways rather than leaving a button alone on a line; short labels on narrow
+  // phones; 44 px tap targets; the end card's buttons stacked full width on a narrow card, never overlapping or cut.
+  // Same data, same behaviour as 1.3.0. Older activities move to it when saved from the Activity panel.
+  '1.3.1': 'sha384-nBxrzjj32SwbLiMLJCVazX7WMixUv1Rp3dy3n75rCki8YUpEKdjgN6xlNPOtXDrV',
 });
-export const CANVAS_LATEST = '1.3.0';
+export const CANVAS_LATEST = '1.3.1';
 export const canvasSrc = (v = CANVAS_LATEST) => `${CANVAS_PATH}${v}/oomba-canvas.js`;
 const PUBLIC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
 

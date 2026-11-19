@@ -5,13 +5,17 @@
 // kit's own keypad and digit keys): there is no text field anywhere.
 // 1.3.0: the teacher's controls (teach.js) for the activity's maker and school staff (BRB.canTeach), and the worked
 // answer's own lines on screen when it is shown.
+// 1.3.1: phone layout. The top strip is three groups (the title; the status: help mode, ✓, ✗, to go; the actions: New
+// sheet, Print, Teacher, Keypad), each one row that scrolls sideways when it cannot fit, never a lone button on a line
+// of its own; short labels on narrow phones; 44 px tap targets; the end card's buttons stack full width on a narrow
+// card and wrap whole otherwise (style.js).
 import { TOOLS, SUPPORTS, PURPOSES, MAX_COUNT, MAX_PROBLEMS, deal, selfTest, seeded, manipulativeOf, cleanProblem, numText } from './logic.js';
 import { sheet } from './sheet.js';
 import { WORDS, wordsFor } from './words.js';
 import { CSS } from './style.js';
 import { teachControls } from './teach.js';
 
-const VERSION = '1.3.0';
+const VERSION = '1.3.1';
 const SAVE_KEY = 'oc-progress-v1';
 const IDLE_MS = 45000;
 
@@ -77,23 +81,27 @@ export function activity(input) {
   root.textContent = '';
   const el = {};
   const arrow = c => h('span', { dir: 'ltr', 'aria-hidden': 'true' }, c);
+  // a label with a shorter twin for narrow phones (1.3.1: style.js shows one of the two)
+  const dual = (long, short) => [h('span', { class: 'oc-ll' }, long), h('span', { class: 'oc-ls', 'aria-hidden': 'true' }, short)];
   const strip = h('header', { class: 'oc-strip' },
     el.title = h('h1', { dir: 'auto' }, String(task.title || document.title || '').slice(0, 80)),
-    modes ? (el.modes = h('div', { class: 'oc-modes', role: 'group', 'aria-label': T('helpMode') }, ...modes.map(m => h('button', { type: 'button', class: 'oc-mode', 'data-mode': m, 'aria-pressed': String(m === support), onclick: () => setSupport(m) }, T(m)))))
-      : (el.sup = h('span', { class: 'oc-chip oc-sup' }, T(support))),
-    board ? h('span', { class: 'oc-chip' }, T('board')) : null,
-    teach ? (el.boardChip = h('span', { class: 'oc-chip oc-bchip', hidden: true }, h('span', { 'aria-hidden': 'true' }, '📽 '), T('boardChip'))) : null,
-    h('span', { class: 'oc-grow' }),
+    el.stat = h('div', { class: 'oc-stat' },
+      modes ? (el.modes = h('div', { class: 'oc-modes', role: 'group', 'aria-label': T('helpMode') }, ...modes.map(m => h('button', { type: 'button', class: 'oc-mode', 'data-mode': m, 'aria-pressed': String(m === support), onclick: () => setSupport(m) }, T(m)))))
+        : (el.sup = h('span', { class: 'oc-chip oc-sup' }, T(support))),
+      board ? h('span', { class: 'oc-chip' }, T('board')) : null,
+      teach ? (el.boardChip = h('span', { class: 'oc-chip oc-bchip', hidden: true }, h('span', { 'aria-hidden': 'true' }, '📽 '), T('boardChip'))) : null,
+      el.ok = h('span', { class: 'oc-chip oc-ok' }), el.no = h('span', { class: 'oc-chip oc-no' }), el.left = h('span', { class: 'oc-chip oc-togo' })),
     // (Back and Next follow the reading direction: the strip is a row in the page's direction, the arrows point outward;
     // each arrow is set left to right so the browser never mirrors it a second time)
     teach ? (el.nav = h('span', { class: 'oc-bnav', hidden: true }, h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => boardGo(-1) }, arrow(dir === 'rtl' ? '›' : '‹'), ' ', T('back')), el.navAt = h('b', { 'aria-live': 'polite' }), h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => boardGo(1) }, T('next'), ' ', arrow(dir === 'rtl' ? '‹' : '›')))) : null,
-    el.ok = h('span', { class: 'oc-chip oc-ok' }), el.no = h('span', { class: 'oc-chip oc-no' }), el.left = h('span', { class: 'oc-chip oc-togo' }),
-    fresh ? h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => again(true) }, '🎲 ', T('newSheet')) : null,
-    printable ? (el.printBtn = h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-expanded': 'false', 'aria-controls': 'oc-print', onclick: () => printPanel(!PR.open) }, '🖨 ', T('print'))) : null,
-    el.keyBtn = h('button', { type: 'button', class: 'oc-btn oc-sm oc-keybtn', 'aria-pressed': 'false', 'aria-controls': 'oc-keys', onclick: () => keypad(!S.keys) }, '⌨ ', T('keypad')));
+    el.acts = h('div', { class: 'oc-acts' },
+      fresh ? h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-label': T('newSheet'), onclick: () => again(true) }, h('span', { 'aria-hidden': 'true' }, '🎲'), ' ', ...dual(T('newSheet'), T('newShort'))) : null,
+      printable ? (el.printBtn = h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-label': T('print'), 'aria-expanded': 'false', 'aria-controls': 'oc-print', onclick: () => printPanel(!PR.open) }, h('span', { 'aria-hidden': 'true' }, '🖨'), ' ', ...dual(T('print'), T('printGo')))) : null,
+      el.keyBtn = h('button', { type: 'button', class: 'oc-btn oc-sm oc-keybtn', 'aria-pressed': 'false', 'aria-controls': 'oc-keys', onclick: () => keypad(!S.keys) }, h('span', { 'aria-hidden': 'true' }, '⌨'), ' ', T('keypad'))));
   // 1.3.0: the teacher's controls (teach.js): a bar under the strip, or one Teacher button and its menu on phones
+  // (1.3.1: the button sits with the other actions, not on top of the title)
   const TC = teach ? teachControls({ h, T, supports: SUPPORTS, gen: !!(A.gen && TOOLS[A.gen.tool]), state: () => ({ board: S.boardOn }), on: { show: showAnswer, board: setBoard, help: m => setSupport(m, true), newSet: () => again(true) } }) : null;
-  if (TC) strip.insertBefore(TC.button, el.keyBtn);
+  if (TC) el.acts.insertBefore(TC.button, el.keyBtn);
   const canSay = !!(task.say && B().speak);
   const card = h('section', { class: 'oc-task', 'aria-label': T('task') },
     h('div', { class: 'oc-taskt' }, el.n = h('span', { class: 'oc-n' }), el.task = h('p', { id: 'oc-taskline', dir: 'auto' })),
@@ -363,10 +371,10 @@ export function activity(input) {
     el.main.hidden = true; card.hidden = true; band.hidden = true;
     el.end.hidden = false; el.end.textContent = '';
     el.end.append(h('h2', { id: 'oc-end-h' }, T('endH', { right: S.right, total })), h('p', {}, T(S.right === total ? 'endAll' : 'endSome')),
-      h('div', { class: 'oc-btns' },
+      h('div', { class: 'oc-btns oc-endbtns' },
         h('button', { type: 'button', class: 'oc-btn oc-primary', onclick: () => again() }, A.gen ? `🎲 ${T('newSet')}` : `↻ ${T('again')}`),
         printable ? h('button', { type: 'button', class: 'oc-btn', onclick: () => printPanel(true) }, `🖨 ${T('print')}`) : null,
-        B().back ? h('button', { type: 'button', class: 'oc-btn', onclick: () => call(() => B().back()) }, `← ${T('back')}`) : null));
+        B().back ? h('button', { type: 'button', class: 'oc-btn', onclick: () => call(() => B().back()) }, arrow(dir === 'rtl' ? '→' : '←'), ` ${T('back')}`) : null));   // (1.3.1: points back in Hebrew and Arabic too)
     el.left.textContent = T('toGo', { n: 0 });
     el.end.querySelector('button').focus({ preventScroll: true });
   }
@@ -494,7 +502,7 @@ const VIEWS = {
   },
   'fractions.shade'(p, st, c) {
     const on = new Set(st.on || []);
-    const bar = h('div', { class: 'oc-bar oc-tall', role: 'group', 'aria-label': c.T('workspace') }, ...Array.from({ length: p.d }, (_, i) => tapped(h('button', { type: 'button', class: `oc-part${on.has(i) ? ' oc-on oc-c1' : ''}`, style: `width:${pct(1 / p.d)}`, 'aria-pressed': String(on.has(i)), 'aria-label': `${i + 1}/${p.d}`, disabled: c.locked }), () => { const n = new Set(on); n.has(i) ? n.delete(i) : n.add(i); c.set({ on: [...n] }); })));
+    const bar = h('div', { class: 'oc-bar oc-tall', role: 'group', 'aria-label': c.T('workspace'), 'data-oc-dense': '' }, ...Array.from({ length: p.d }, (_, i) => tapped(h('button', { type: 'button', class: `oc-part${on.has(i) ? ' oc-on oc-c1' : ''}`, style: `width:${pct(1 / p.d)}`, 'aria-pressed': String(on.has(i)), 'aria-label': `${i + 1}/${p.d}`, disabled: c.locked }), () => { const n = new Set(on); n.has(i) ? n.delete(i) : n.add(i); c.set({ on: [...n] }); })));
     return h('div', { class: 'oc-stack', dir: 'ltr' }, row(c.T('target'), frac(p.n, p.d), h('div', { class: 'oc-q oc-big' }, frac(p.n, p.d))), row(c.T('yours'), frac(on.size, p.d), bar));
   },
   'fractions.compare'(p, st, c) {
@@ -557,7 +565,9 @@ function lineView(p, st, c, from) {
     ticks.push(tapped(h('button', { type: 'button', class: `oc-tick${whole ? ' oc-whole' : ''}${on ? ' oc-on' : ''}${start ? ' oc-start' : ''}`, style: `left:${pct((t - lo) / n)}`, 'aria-pressed': String(on), disabled: c.locked,
       'aria-label': whole ? String(t / p.sub) : `${t - Math.floor(t / p.sub) * p.sub}/${p.sub} + ${Math.floor(t / p.sub)}` }, h('i', { 'aria-hidden': 'true' }), whole ? h('span', { class: 'oc-tlab' }, String(t / p.sub)) : null), () => c.set({ tick: t })));
   }
-  return h('div', { class: 'oc-stack', dir: 'ltr' }, h('div', { class: 'oc-line' }, h('div', { class: 'oc-axis', 'aria-hidden': 'true' }), ...ticks));
+  // (1.3.1: each tick is as wide as its share of the line, at most 44 px, so a tap anywhere on the line lands on the
+  // nearest tick and neighbours never overlap; data-oc-dense tells the Builder's layout check they are small by design)
+  return h('div', { class: 'oc-stack', dir: 'ltr' }, h('div', { class: 'oc-line', style: `--oc-gap:${(100 / n).toFixed(3)}%`, 'data-oc-dense': '' }, h('div', { class: 'oc-axis', 'aria-hidden': 'true' }), ...ticks));
 }
 function colView(p, st, c, sign) {
   const ans = st.ans || [], cols = ans.length, A = String(p.a).split('').reverse(), Bd = String(p.b).split('').reverse();

@@ -564,6 +564,13 @@ const WORDS_130 = {
   },
 };
 for (const l of Object.keys(WORDS_130)) Object.assign(WORDS[l], WORDS_130[l]);
+// 1.3.1: the short label of New sheet on a narrow phone (Print worksheet uses printGo).
+const WORDS_131 = {
+  en: { newShort: 'New' }, es: { newShort: 'Nueva' }, fr: { newShort: 'Nouvelle' }, de: { newShort: 'Neu' }, it: { newShort: 'Nuova' },
+  pt: { newShort: 'Nova' }, nl: { newShort: 'Nieuw' }, ru: { newShort: 'Новый' }, ja: { newShort: '新しく' }, 'zh-Hant': { newShort: '換一張' },
+  ar: { newShort: 'جديدة' }, he: { newShort: 'חדש' },
+};
+for (const l of Object.keys(WORDS_131)) Object.assign(WORDS[l], WORDS_131[l]);
 export const WORD_LANGS = Object.keys(WORDS);
 /** The table for a site language: the language, its base ('en-GB' -> 'en'), then English, key by key. */
 export function wordsFor(lang) {

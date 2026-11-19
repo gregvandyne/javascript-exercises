@@ -486,7 +486,10 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .playbar .livecount{font-size:.82rem;font-weight:700;color:var(--brand-mint);white-space:nowrap}
 .playbar .lbl{display:inline}
 .playbar :focus-visible{outline-color:var(--brand-spark)}
-@media (max-width:560px){.playbar .lbl{display:none}}
+@media (max-width:560px){.playbar .lbl{display:none}
+  /* a phone: the title gets two lines (whole words) rather than "Co…" beside the icon buttons */
+  .playbar{gap:2px}.playbar .ptitle{font-size:.84rem;line-height:1.15;white-space:normal;overflow-wrap:break-word;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2}
+  .playbar .iconbtn{padding:0 8px}}
 .stage{position:fixed;top:52px;inset-inline:0;bottom:0;background:#000}
 .stage iframe,.studio-preview iframe{width:100%;height:100%;border:0;display:block;background:#fff}
 .stage:fullscreen{top:0}

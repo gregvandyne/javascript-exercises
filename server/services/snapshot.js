@@ -15,6 +15,7 @@
 // files (the same sources its CSP allows); the vendor files are answered from disk, so 3D and kit games work the same
 // locally and in the worker.
 import fs from 'node:fs';
+import { layoutProblems, canvasToEnd } from './layout-check.js';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -22,7 +23,7 @@ import { frameDocument, frameCsp, SANDBOX } from './frame.js';
 import { VENDOR_PATH, DATA_PATH, THREE_MODULE, THREE_CORE, KIT2_PATH, THEMES_PATH } from './vendor.js';
 import { ART2D_PATH } from './art2d.js';
 import { KIT_PATH } from './kit.js';
-import { CANVAS_PATH } from './canvaskit.js';
+import { CANVAS_PATH, CANVAS_LATEST, canvasVersion } from './canvaskit.js';
 import { figureFile } from './figlibs.js';
 import { config } from '../config.js';
 
@@ -71,6 +72,8 @@ export const VIEWS = [
   { key: 'tablet-landscape', label: 'Tablet landscape', width: 1180, height: 820 },
   { key: 'desktop', label: 'Desktop', width: 1280, height: 800 },
 ];
+/** The sizes the automatic playtest checks the layout at, in order (phone upright and desktop first: always there). */
+export const LAYOUT_VIEWS = ['phone-portrait', 'desktop', 'phone-landscape', 'tablet-portrait'];
 // Words on a start button, in the site's languages (lower case).
 const PLAY_WORDS = /\b(play|start|go|begin|let'?s go|tap to (play|start))\b|jouer|commencer|jugar|empezar|comenzar|spielen|starten|los geht|jogar|começar|iniciar|gioca|inizia|spelen|begin|играть|начать|старт|スタート|あそぶ|はじめる|開始|遊戲|שחק|התחל|العب|ابدأ|▶|►/i;
 
@@ -147,58 +150,7 @@ function inspect(W) {
   };
 }
 
-/** Layout problems at the current window size, in the game frame (short sentences for the model, at most 6): sideways
- *  scrolling, text or buttons cut off at an edge, text cut off inside its box, things on top of each other, buttons too
- *  small to tap or squashed thin. Only visible things on top count (not a board under a question card, not floating
- *  layers that ignore the pointer, such as banners and confetti). */
-function layoutProblems() {
-  const W = innerWidth, H = innerHeight, out = [];
-  const say = s => { if (out.length < 6 && !out.includes(s)) out.push(s); };
-  const de = document.documentElement;
-  if (de.scrollWidth > W + 2 || (document.body && document.body.scrollWidth > W + 2)) say('the page is wider than the screen and scrolls sideways');
-  const shown = el => {
-    if (el.closest('[aria-hidden="true"],[hidden]')) return false;
-    for (let e = el; e; e = e.parentElement) { const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < 0.2) return false; }
-    const r = el.getBoundingClientRect(); return r.width > 2 && r.height > 2;
-  };
-  const floating = el => { for (let e = el; e; e = e.parentElement) if (getComputedStyle(e).pointerEvents === 'none') return true; return false; };
-  const txt = el => `"${(el.innerText || el.value || el.getAttribute('aria-label') || el.tagName.toLowerCase()).trim().replace(/\s+/g, ' ').slice(0, 28)}"`;
-  const ownText = el => [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
-  const scrollerOf = el => { for (let e = el.parentElement; e && e !== document.body; e = e.parentElement) { const o = getComputedStyle(e).overflowY; if (o === 'auto' || o === 'scroll') return e; } return null; };
-  const items = [];
-  for (const el of document.body ? document.body.querySelectorAll('*') : []) {
-    if (/^(SCRIPT|STYLE|CANVAS|TEMPLATE|NOSCRIPT|svg|path|g)$/i.test(el.tagName)) continue;
-    const control = el.matches('button,[role="button"],a[href],input,select,textarea');
-    if (!control && !ownText(el)) continue;
-    if (!shown(el)) continue;
-    const r = el.getBoundingClientRect();
-    const cx = Math.min(W - 1, Math.max(0, r.left + r.width / 2)), cy = Math.min(H - 1, Math.max(0, r.top + r.height / 2));
-    const hit = document.elementFromPoint(cx, cy);
-    if (hit && !el.contains(hit) && !hit.contains(el) && !floating(hit) && cy === r.top + r.height / 2) continue;   // covered by another layer
-    items.push({ el, control, r, float: floating(el), scroller: scrollerOf(el) });
-    if (items.length > 400) break;
-  }
-  for (const it of items) {
-    const r = it.r;
-    if (!it.float && !it.scroller && (r.left < -2 || r.top < -2 || r.right > W + 2 || r.bottom > H + 2)) say(`cut off at the screen edge: ${txt(it.el)}`);
-    const cs = getComputedStyle(it.el);
-    if (!it.control && /hidden|clip/.test(cs.overflowX + cs.overflowY) && cs.textOverflow !== 'ellipsis' && (it.el.scrollWidth > it.el.clientWidth + 2 || it.el.scrollHeight > it.el.clientHeight + 3)) say(`text cut off inside its box: ${txt(it.el)}`);
-    if (it.control && !it.float) {
-      const w = Math.round(r.width), h = Math.round(r.height);
-      if (Math.min(w, h) < 44) say(`too small to tap (${w}x${h}px, needs 44): ${txt(it.el)}`);
-      else if (h / w > 1.5) say(`squashed tall and thin (${w}x${h}px): ${txt(it.el)}`);
-    }
-  }
-  const flat = items.filter(it => !it.float);
-  for (let i = 0; i < flat.length && out.length < 6; i++) for (let j = i + 1; j < flat.length; j++) {
-    const a = flat[i], b = flat[j];
-    if (a.el.contains(b.el) || b.el.contains(a.el)) continue;
-    if (a.control !== b.control && (a.el.closest('button,[role="button"]') || b.el.closest('button,[role="button"]'))) continue;
-    const x = Math.min(a.r.right, b.r.right) - Math.max(a.r.left, b.r.left), y = Math.min(a.r.bottom, b.r.bottom) - Math.max(a.r.top, b.r.top);
-    if (x > 4 && y > 4 && x * y > Math.min(a.r.width * a.r.height, b.r.width * b.r.height) * 0.2) { say(`on top of each other: ${txt(a.el)} and ${txt(b.el)}`); break; }
-  }
-  return out;
-}
+// layoutProblems (the layout check at the current window size, in the game frame) and canvasToEnd: layout-check.js
 
 /** Find what to tap to start: the test hook's start(), a Play-ish button, the biggest button, or the middle of the screen. */
 function startTarget(words) {
@@ -325,7 +277,10 @@ async function capture(gameHtml, opts) {
     page.on('dialog', d => d.dismiss().catch(() => {}));
     await page.goto(`${HOST}/`, { waitUntil: 'domcontentloaded', timeout: 15000 });
     const frame = await waitFrame(page);
-    if (o.mode === 'autoplay') return await autoplay({ ctx, page, frame, errors, kitWarnings, o, shape });
+    // An activity on an older Oomba Canvas: the kit's own parts are as that version shipped (1.3.1 fixed their phone
+    // layout), and the model may not change the kit, so the layout check looks only at what the activity adds.
+    const cv = canvasVersion(gameHtml), skipKit = !!cv && cv !== CANVAS_LATEST;
+    if (o.mode === 'autoplay') return await autoplay({ ctx, page, frame, errors, kitWarnings, o: { ...o, skipKit }, shape });
     await wait(o.titleMs);
     const before = await frame.evaluate(inspect, shape.width).catch(e => ({ error: e.message }));
     const title = await page.screenshot({ type: 'jpeg', quality: o.quality });
@@ -336,7 +291,7 @@ async function capture(gameHtml, opts) {
       for (const v of views) {
         await page.setViewportSize({ width: v.width, height: v.height });
         await wait(450);
-        v[stage] = await frame.evaluate(layoutProblems).catch(e => [`the layout check failed (${String(e.message || e).split('\n')[0].slice(0, 80)})`]);
+        v[stage] = await frame.evaluate(layoutProblems, { minTap: v.key === 'phone-portrait' ? 40 : 44 }).catch(e => [`the layout check failed (${String(e.message || e).split('\n')[0].slice(0, 80)})`]);
         shotsOf[stage].push(await page.screenshot({ type: 'jpeg', quality: 50 }));
       }
       await page.setViewportSize(shape); await wait(350);
@@ -371,8 +326,8 @@ async function capture(gameHtml, opts) {
 // ---- The automatic playtest (the Builder runs it after every build: builder/autotest.js) -------------------------------
 // About 18 s of real play with simulated input (keys, taps, swipes, the game's own buttons, mouse movement), sampling the
 // screen to tell a moving game from a frozen or blank one, reading what the game reports (the SDK's score / game over /
-// saves, the kit's or game's __brbTest.state(), numbers shown on screen), then the layout at phone landscape and tablet
-// portrait (and desktop when there is time). Raw facts only: builder/autotest.js turns them into a report.
+// saves, the kit's or game's __brbTest.state(), numbers shown on screen), then the layout (LAYOUT_VIEWS: a phone held
+// upright and a desktop, then phone landscape and tablet portrait when there is time; an activity's end card too). Raw facts only: builder/autotest.js turns them into a report.
 export const AUTOPLAY_MS = 18_000;
 /** In the host page (the frame's parent): keep what the SDK posts (brb:score, brb:gameover, brb:save, brb:ready). */
 const HOST_LOG = "window.__ap=[];window.__ap0=Date.now();addEventListener('message',function(e){var d=e.data;if(!d||d.brb!==1||typeof d.type!=='string'||window.__ap.length>200)return;window.__ap.push({type:d.type.slice(0,20),score:typeof d.score==='number'?d.score:null,won:!!d.won,t:Date.now()-window.__ap0});});";
@@ -453,22 +408,31 @@ async function autoplay({ page, frame, errors, kitWarnings, o, shape }) {
   const rafSecs = (Date.now() - playFrom) / 1000 + 0.7 + 1.2;   // counting began right after the start tap
   const s2 = await read(); await shot('play');
   const events = await hostLog();
-  // Layout at the sizes most kids play on (resized, as turning a tablet does); desktop too when there is time.
+  // Layout at the sizes most kids play on (resized, as turning a tablet does): a phone held upright (390x844) and a
+  // desktop (1280x800) always (one resize each, the same page and browser), then phone landscape and tablet portrait.
+  // On the phone a tap target needs 40 px. A classroom activity (Oomba Canvas) is also played to its end card and that
+  // card is checked at both sizes. About 1 to 2 s in all.
   const layout = [];
-  for (const v of VIEWS.filter(x => x.key === 'phone-landscape' || x.key === 'tablet-portrait' || (x.key === 'desktop'))) {
-    if (v.key === 'desktop' && left() < 6000) break;
-    if (left() < 2500) break;
+  const check = async (v, extra = '') => {
     await page.setViewportSize({ width: v.width, height: v.height }).catch(() => {});
     await wait(450);
-    layout.push({ key: v.key, label: v.label, width: v.width, height: v.height, problems: await frame.evaluate(layoutProblems).catch(e => [`the layout check failed (${String(e.message || e).split('\n')[0].slice(0, 80)})`]) });
+    const problems = await frame.evaluate(layoutProblems, { minTap: v.key === 'phone-portrait' ? 40 : 44, skipKit: o.skipKit }).catch(e => [`the layout check failed (${String(e.message || e).split('\n')[0].slice(0, 80)})`]);
+    layout.push({ key: v.key + extra, label: v.label + (extra ? ', results card' : ''), width: v.width, height: v.height, problems });
+  };
+  const layoutFrom = Date.now();
+  for (const v of LAYOUT_VIEWS.map(k => VIEWS.find(x => x.key === k))) {
+    if (left() < 2500) break;
+    await check(v);
   }
+  if (left() > 3000 && await frame.evaluate(canvasToEnd).catch(() => false)) for (const k of ['phone-portrait', 'desktop']) { if (left() < 1500) break; await check(VIEWS.find(x => x.key === k), ':end'); }
+  const layoutMs = Date.now() - layoutFrom;
   await page.setViewportSize(shape).catch(() => {});
   const diffs = await picDiffs(page.context(), shots.map(s => s.buf)).catch(() => null);
   const title = shots.length ? shots[shots.length - 1].buf : await page.screenshot({ type: 'jpeg', quality: 45 });
   return {
     mode: 'autoplay', title, launches, started, startedAt, inputs: i, pressed, playMs: Date.now() - playFrom, ms: Date.now() - t0,
     errors: [...new Set(errors)].slice(0, 12), kitWarnings: [...new Set(kitWarnings)].slice(0, 6),
-    s0, s1, s2, readings, events, layout, fps: s2 && s2.raf ? Math.round(s2.raf / rafSecs) : null,
+    s0, s1, s2, readings, events, layout, layoutMs, fps: s2 && s2.raf ? Math.round(s2.raf / rafSecs) : null,
     shots: shots.map((s, k) => ({ at: s.at, t: s.t, ...(diffs ? diffs[k] : {}) })),
   };
 }

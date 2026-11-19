@@ -55,7 +55,7 @@ router.post('/api/studio/:id/activity', requireBuilder, rateLimit('studio-activi
       return res.status(400).json({ error: `${s.message} ${s.suggestion}`.trim(), code: 'screen', category: s.category });
     }
   }
-  // The new page: the data block only (and the kit tag moved to 1.3.0), then the same checks as every Builder version.
+  // The new page: the data block only (and the kit tag moved to the newest, 1.3.1), then the same checks as every Builder version.
   const { html } = sanitizeGameHtml(applyPanel(cur.html, c.data));
   const st = selfTestHtml(html);
   if (!st || !st.ok) return res.status(422).json({ error: t('studio.activity.errors.selfTest'), code: 'selfTest', problems: st ? st.problems : [] });

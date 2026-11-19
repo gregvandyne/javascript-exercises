@@ -1,7 +1,7 @@
 // The automatic playtest (docs/decisions.md "The Builder playtests every build"). After the AI finishes a build that
 // saved a new version, and before the build ends, the platform plays the game like a kid would (snapshot.js autoplay():
-// about 18 s of keys, taps, swipes, the game's own buttons and mouse movement, then the layout at phone landscape,
-// tablet portrait and desktop). buildReport() turns those raw facts into a short report: what happened, and the
+// about 18 s of keys, taps, swipes, the game's own buttons and mouse movement, then the layout at a phone held upright
+// (390x844) and desktop (1280x800), phone landscape and tablet portrait, and a classroom activity's end card). buildReport() turns those raw facts into a short report: what happened, and the
 // problems that are clearly real (errors, it never started, a blank or frozen screen, input ignored, a score that never
 // changes in a scoring game, a game over within seconds, layout problems, very slow). claude.js sends the report to the
 // AI as a platform note to fix, re-tests the fixed version, and stops when the test is clean or the rounds are used up
@@ -126,7 +126,9 @@ export function buildReport(raw, o = {}) {
   // the test machine has no graphics card, so only a game that barely moves there is called slow.
   const slowAt = /\bfrom\s*["']oomba3d["']/.test(html) ? 3 : 8;
   if (fps !== null && fps > 0 && fps < slowAt) add('slow', `It ran at about ${fps} frames a second on the test machine: far too slow. Draw less each frame (fewer objects, smaller canvases, no work that grows every frame).`);
-  for (const v of layout) if (v.problems.length) add(`layout:${v.label}`, `On ${v.label.toLowerCase()} (${v.width}x${v.height}): ${v.problems.join('; ')}.`);
+  // e.g. "At 390px wide (phone portrait, 390x844): the buttons "Try new ones" and "Print worksheet" overlap." Layout
+  // findings are hard ones, like before: they start a fix round, and the version is still saved.
+  for (const v of layout) if (v.problems.length) add(`layout:${v.label}`, `At ${v.width}px wide (${v.label.toLowerCase()}, ${v.width}x${v.height}): ${v.problems.join('; ')}.`);
   for (const w of (raw.kitWarnings || []).slice(0, 3)) add(`kit:${cleanNote(w, 40)}`, `Oomba Kit warning: ${q(w)}.`);
   // A classroom activity: the kit's self-test of its answer key (a hard problem: the same check refuses to save it).
   const canvas = canvasSelfTest(html);
@@ -154,7 +156,7 @@ const pct = x => `${Math.round(x * 100)}%`;
 
 function text(version, problems, seen) {
   const out = [
-    `[Automatic playtest from the platform, of version ${version || '?'}: it played the game for about 18 s like a kid would (arrow keys, WASD, space, Enter, taps across the screen, swipes, the game's own answer/move buttons, mouse movement), then checked the layout on phone landscape, tablet portrait and desktop.]`,
+    `[Automatic playtest from the platform, of version ${version || '?'}: it played the game for about 18 s like a kid would (arrow keys, WASD, space, Enter, taps across the screen, swipes, the game's own answer/move buttons, mouse movement), then checked the layout on a phone held upright (390 px wide), a desktop (1280 px), phone landscape and tablet portrait.]`,
     ...seen,
     problems.length ? `Problems found:\n- ${problems.join('\n- ')}` : 'No problems found.',
     problems.length ? 'Fix the real problems now with edit_game (or write_game for big ones), keeping everything that works. Judge each one against what this game is meant to be: some can be false alarms (a calm game with no score, a quiz or story waiting for an answer, a game played only by dragging). Skip those, and do not mention them. The platform plays the fixed version again by itself, so do not call playtest_game for this. Any question you already asked stays on screen: do not ask again. End with one short, honest sentence to the builder about what you fixed.' : '',
