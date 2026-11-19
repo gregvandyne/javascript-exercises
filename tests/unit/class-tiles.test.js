@@ -31,7 +31,7 @@ const tilesOf = text => { const m = text.match(/<div class="classtiles[^"]*">([\
 test('class page: four tiles with the same links as the buttons they stand in for, Host a live game first', async () => {
   const text = await get(teacher, `/class/${c.id}`);
   const tiles = tilesOf(text);
-  assert.deepEqual(tiles.map(x => x.href), [`/live?class=${c.id}`, `/class/${c.id}/dashboard`, `/build/new?for=class&class=${c.id}`, '/learn']);
+  assert.deepEqual(tiles.map(x => x.href), [`/live?class=${c.id}`, `/class/${c.id}/dashboard`, `/build/new?for=class&class=${c.id}`, `/class/${c.id}?tab=lessons&view=oomba`], 'Find Oomba games stays on the class');
   assert.deepEqual(tiles.map(x => x.label), ['Host a live game', 'Class dashboard', 'Build new game', 'Find Oomba games']);
   assert.deepEqual(tiles.map(x => x.hot), [true, false, false, false], 'only Host a live game is the green one');
   // The buttons and chip they replace on phones are still in the page (wider screens show them).
@@ -47,7 +47,7 @@ test('the Games tab leads to the assigned games; Assigned and Find are in the ch
   assert.match(games, /<div class="shelf shelf-class" data-shelf/);
   const top = games.match(/<ul class="shelf-group shelf-cltop">([\s\S]*?)<\/ul>/);
   assert.ok(top, 'the class shelf marks its first group');
-  assert.match(top[1], /data-shelf-key="assigned"/); assert.match(top[1], /href="\/learn"/);
+  assert.match(top[1], /data-shelf-key="assigned"/); assert.match(top[1], new RegExp(`href="/class/${c.id}\\?view=oomba" data-shelf-key="oomba"`), 'Find Oomba games opens on the right');
   assert.match(games, /<h2 id="shelf-h"[^>]*>Assigned to 4b math<\/h2>/, '?view=assigned opens the assigned games');
   // Build's shelf is untouched.
   assert.doesNotMatch(await get(teacher, '/build'), /shelf-class|shelf-cltop/);

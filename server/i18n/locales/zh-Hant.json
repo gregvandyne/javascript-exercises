@@ -11292,6 +11292,12 @@
     "assign": "指派",
     "removeGame": "從資料夾移除",
     "save": "存到資料夾",
+    "oomba": {
+      "title": "Oomba 遊戲",
+      "search": "搜尋 Oomba 遊戲",
+      "none": "找不到符合的遊戲。換個科目或年級試試。",
+      "live": "即時"
+    },
     "pick": "存到哪個資料夾？",
     "keepBrowsing": "繼續瀏覽",
     "openFolder": "開啟 {folder}",

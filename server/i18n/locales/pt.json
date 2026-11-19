@@ -11294,6 +11294,12 @@
     "assign": "Atribuir",
     "removeGame": "Tirar da pasta",
     "save": "Guardar numa pasta",
+    "oomba": {
+      "title": "Jogos da Oomba",
+      "search": "Buscar jogos da Oomba",
+      "none": "Nenhum jogo encontrado. Tente outra matéria ou outro ano.",
+      "live": "Ao vivo"
+    },
     "pick": "Em qual pasta?",
     "keepBrowsing": "Continuar explorando",
     "openFolder": "Abrir {folder}",

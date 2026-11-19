@@ -176,3 +176,27 @@ test("students and kids: never a teacher's folders or Assign; on Build their own
     assert.deepEqual(F.foldersOf(who.id).map(x => x.id), [other.id, own.id]);
   }
 });
+
+test('Find Oomba games opens on the right of the class page: the side item, one strip of filters, and the games', async () => {
+  // Two official Learn games (owned by Oomba Academy, on the learn shelf, with a subject and grades in learn.js).
+  const off = q.get("SELECT * FROM users WHERE username='OombaAcademy'") || createUser({ username: 'OombaAcademy', password: 'secret123', role: 'admin' });
+  const official = (slug, title) => { const g = made(off, { title, seed: true }); q.run("UPDATE games SET slug=?, shelf='learn', status='published', visibility='public' WHERE id=?", slug, g.id); return games.getGame(g.id); };
+  const sum = official('sum-racer', 'Sum Racer'), trail = official('word-trail', 'Word Trail');
+  const page = (await as(ana)(`/class/${cls.id}?view=oomba`)).text;
+  assert.match(page, new RegExp(`<a class="shelf-item is-on" href="/class/${cls.id}\\?view=oomba" data-shelf-key="oomba" aria-current="true">`), 'the side item, picked');
+  assert.match(page, /<h2 id="shelf-h" tabindex="-1">🦉 Oomba games<\/h2>/);
+  assert.match(page, /<form class="oomba-bar" method="get"/); assert.match(page, /placeholder="Search Oomba games"/); assert.match(page, /data-oomba-grade/);
+  assert.doesNotMatch(page.slice(page.indexOf('id="shelf-main"')), /e\.g\. 3\.OA|How you play/, 'no standard box or "How you play" row');
+  assert.match(page, new RegExp(`data-id="${sum.id}"`)); assert.match(page, new RegExp(`data-id="${trail.id}"`));
+  // The shelf's own reply (what public/js/shelf.js swaps in), filtered by subject, grade and search.
+  const part = async qs => (await as(ana)(`/class/${cls.id}?view=oomba${qs}`, { headers: shelfOnly })).json;
+  let r = await part('&subject=math');
+  assert.equal(r.key, 'oomba'); assert.equal(r.href, `/class/${cls.id}?view=oomba&subject=math`);
+  assert.match(r.html, new RegExp(`data-id="${sum.id}"`)); assert.doesNotMatch(r.html, new RegExp(`data-id="${trail.id}"`));
+  r = await part('&grade=7'); assert.doesNotMatch(r.html, new RegExp(`data-id="${sum.id}"`), 'Sum Racer is grades 1–5');
+  r = await part('&q=trail'); assert.match(r.html, new RegExp(`data-id="${trail.id}"`)); assert.doesNotMatch(r.html, new RegExp(`data-id="${sum.id}"`));
+  assert.match(r.html, /Assign to Ana 5C/); assert.match(r.html, new RegExp(`/build/save\\?id=${trail.id}`));
+  // Not for students or another teacher's class page.
+  assert.doesNotMatch((await as(kid)(`/class/${cls.id}?view=oomba`)).text, /class="oomba-bar"/);
+  assert.notEqual((await as(ben)(`/class/${cls.id}?view=oomba`, { headers: shelfOnly })).json?.key, 'oomba');
+});

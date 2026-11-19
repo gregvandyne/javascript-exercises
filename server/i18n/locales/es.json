@@ -11292,6 +11292,12 @@
     "assign": "Asignar",
     "removeGame": "Quitar de la carpeta",
     "save": "Guardar en carpeta",
+    "oomba": {
+      "title": "Juegos de Oomba",
+      "search": "Buscar juegos de Oomba",
+      "none": "Ningún juego coincide. Prueba otra materia u otro grado.",
+      "live": "En vivo"
+    },
     "pick": "¿En qué carpeta?",
     "keepBrowsing": "Seguir explorando",
     "openFolder": "Abrir {folder}",
