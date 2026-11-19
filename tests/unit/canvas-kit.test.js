@@ -150,7 +150,9 @@ test('the server runs the kit\'s own frozen file: an activity page passes, a bro
 });
 
 // ---------------------------------------------------------------- the frozen file
-test('Oomba Canvas 1.0.0: the hash in canvaskit.js and canvas/SHIPPED.json match the file, and a fresh build makes the same bytes', async () => {
+test('Oomba Canvas 1.0.0 and 1.1.0: the hashes in canvaskit.js and canvas/SHIPPED.json match the files, and a fresh build makes the latest\'s bytes', async () => {
+  assert.deepEqual(Object.keys(CANVAS_VERSIONS), ['1.0.0', '1.1.0']); assert.equal(CANVAS_LATEST, '1.1.0');
+  assert.deepEqual(Object.keys(JSON.parse(fs.readFileSync(path.join(ROOT, 'canvas/SHIPPED.json'), 'utf8')).versions), ['1.0.0', '1.1.0'], 'both are locked');
   const shipped = JSON.parse(fs.readFileSync(path.join(ROOT, 'canvas/SHIPPED.json'), 'utf8')).versions;
   for (const [v, h] of Object.entries(CANVAS_VERSIONS)) {
     const f = fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-canvas', v, 'oomba-canvas.js'));
@@ -163,6 +165,30 @@ test('Oomba Canvas 1.0.0: the hash in canvaskit.js and canvas/SHIPPED.json match
   const js = built['oomba-canvas.js'].toString();
   assert.doesNotMatch(js, /\bfetch\s*\(|XMLHttpRequest|WebSocket|localStorage|\beval\s*\(|new Function/, 'no network, no browser storage, no eval');
   assert.doesNotMatch(js, /<input|contenteditable|<textarea/i, 'no text field anywhere: digits only, through the kit');
+});
+test('Oomba Canvas 1.0.0 is byte-for-byte what shipped: its manifest, and every file the manifest names', () => {
+  const dir = path.join(ROOT, 'public/vendor/oomba-canvas/1.0.0'), h = b => `sha384-${crypto.createHash('sha384').update(b).digest('base64')}`;
+  // the manifest as it shipped in #431 (it lists the sha384 of every file in the folder)
+  assert.equal(h(fs.readFileSync(path.join(dir, 'manifest.json'))), 'sha384-Yw3RA6E5ZqCu586uJ81v16Mpg8PtGqsfgAREroRF0dW57Tda2oydd4+AX1fMMXki');
+  const m = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.json'), 'utf8'));
+  assert.equal(m.version, '1.0.0');
+  for (const [f, want] of Object.entries(m.files)) assert.equal(h(fs.readFileSync(path.join(dir, f))), want, f);
+  const all = []; const walk = d => { for (const e of fs.readdirSync(d, { withFileTypes: true })) e.isDirectory() ? walk(path.join(d, e.name)) : all.push(path.relative(dir, path.join(d, e.name))); }; walk(dir);
+  assert.deepEqual(all.sort(), ['manifest.json', ...Object.keys(m.files)].sort(), 'nothing added to or taken from the 1.0.0 folder');
+  assert.equal(canvasKit('1.0.0').version, '1.0.0'); assert.equal(canvasKit('1.1.0').version, '1.1.0');
+});
+test('1.1.0: config.supports, the help modes an activity offers; the self-test checks them; 1.0.0 ignores them', () => {
+  const base = { config: { support: 'count', supports: ['count', 'guided'] }, problems: [{ tool: 'digits.add', a: 23, b: 45 }] };
+  assert.deepEqual(selfTest(base), { ok: true, problems: [] });
+  for (const [supports, why] of [[[], /supports must be a list/], [['count', 'count'], /each once/], [['loud'], /supports must be a list/], ['guided', /supports must be a list/]]) {
+    const r = selfTest({ ...base, config: { supports } }); assert.equal(r.ok, false); assert.match(r.problems[0].why, why);
+  }
+  const off = selfTest({ ...base, config: { support: 'own', supports: ['count', 'guided'] } });
+  assert.equal(off.ok, false); assert.match(off.problems[0].why, /support must be one of supports/);
+  // the server's self-test runs each activity with the kit it pins: 1.0.0 knows nothing of supports and still passes it
+  assert.deepEqual(JSON.parse(JSON.stringify(canvasKit('1.0.0').selfTest({ ...base, config: { supports: ['count', 'count'] } }))), { ok: true, problems: [] });
+  assert.equal(canvasKit('1.1.0').selfTest({ ...base, config: { supports: ['count', 'count'] } }).ok, false);
+  assert.equal(WORDS.en.helpMode, 'Help', 'the switcher\'s name, in every language (the words test below)');
 });
 test('the kit\'s words: every language has every key, with the same {values}', () => {
   const keys = Object.keys(WORDS.en), want = s => [...String(s).matchAll(/\{(\w+)\}/g)].map(m => m[1]).sort();
@@ -191,13 +217,20 @@ test('the kit\'s colours are a copy of the site\'s tokens (light and dark)', () 
 // ---------------------------------------------------------------- the scanner
 test('the scanner admits exactly the pinned Oomba Canvas tag and refuses altered ones', () => {
   const page = tag => `<title>A</title>${tag}<div id="oc-app"></div><script>Oc.activity({})</script>`;
-  const good = scanVersion(page(canvasTag()));
-  assert.equal(good.status, 'pass', JSON.stringify(good.issues));
-  assert.deepEqual(checkCanvas(page(canvasTag())).issues, []);
+  // both pinned versions: a new activity pins 1.1.0, and every activity saved on 1.0.0 keeps working
+  for (const v of ['1.0.0', '1.1.0']) {
+    const good = scanVersion(page(canvasTag(v)));
+    assert.equal(good.status, 'pass', `${v}: ${JSON.stringify(good.issues)}`);
+    assert.deepEqual(checkCanvas(page(canvasTag(v))).issues, [], v);
+    assert.equal(canvasVersion(page(canvasTag(v))), v);
+  }
+  assert.equal(canvasTag(), canvasTag('1.1.0'));
+  const swapped = canvasTag('1.0.0').replace(CANVAS_VERSIONS['1.0.0'], CANVAS_VERSIONS['1.1.0']);
+  assert.equal(scanVersion(page(swapped)).status, 'fail', 'one version\'s file with the other\'s hash');
   const h = CANVAS_VERSIONS[CANVAS_LATEST];
   const bad = [
     canvasTag().replace(h, 'sha384-' + 'A'.repeat(64)),                               // another hash
-    canvasTag().replace('1.0.0', '9.9.9'),                                             // a version we do not have
+    canvasTag().replace(CANVAS_LATEST, '9.9.9'),                                       // a version we do not have
     canvasTag().replace(' crossorigin="anonymous"', ''),                               // no crossorigin
     canvasTag().replace('></script>', ' data-x="1"></script>'),                        // anything extra
     canvasTag().replace('></script>', '>alert(1)</script>'),                           // code inside the tag

@@ -19,6 +19,11 @@ html,body{margin:0;min-height:100%;background:var(--card);color:var(--text);font
 .oc-grow{flex:1 1 auto}
 .oc-chip{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:0 12px;border-radius:999px;font-weight:700;font-size:.9rem;white-space:nowrap;background:var(--card-2);font-variant-numeric:tabular-nums}
 .oc-sup,.oc-ok{background:color-mix(in srgb,var(--accent) 22%,var(--card));color:var(--accent-ink)}
+.oc-modes{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:999px;background:color-mix(in srgb,var(--accent) 14%,var(--card));box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--accent) 40%,var(--card))}
+.oc-mode{min-height:38px;min-width:44px;padding:0 12px;border:0;border-radius:999px;background:transparent;color:var(--accent-ink);font:inherit;font-weight:700;font-size:.88rem;white-space:nowrap;cursor:pointer}
+.oc-mode:hover{background:color-mix(in srgb,var(--accent) 22%,var(--card))}
+.oc-mode[aria-pressed="true"]{background:var(--accent-press);color:#fff}
+.oc-mode:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .oc-no{background:var(--bad-bg);color:var(--bad-ink)}
 .oc-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;min-width:48px;padding:0 20px;border-radius:999px;border:0;font:700 1rem var(--font);cursor:pointer;background:var(--card);color:var(--text);box-shadow:inset 0 0 0 2px var(--line);white-space:nowrap;touch-action:manipulation}
 .oc-btn:hover:not(:disabled){background:var(--card-2)}
@@ -140,6 +145,7 @@ button.oc-part:hover:not(:disabled):not(.oc-on){background:var(--card-2)}
   .oc-task{margin:10px 12px 0;padding:12px 14px}
   .oc-task p{font-size:1.2rem}
   .oc-strip{gap:6px;padding:8px 10px}.oc-strip h1{font-size:1rem;flex:1 1 100%}.oc-chip{min-height:30px;padding:0 9px;font-size:.8rem}
+  .oc-mode{min-height:36px;padding:0 9px;font-size:.8rem}
   .oc-grow{display:none}
   .oc-keybtn{margin-inline-start:auto}
   .oc-say{width:40px;height:40px}

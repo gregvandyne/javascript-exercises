@@ -9,16 +9,19 @@
 import { api, toast, sheet, esc, $, $$, t } from '/js/app.js';
 import { LANG } from '/js/i18n.js';
 
-// "What are you making?" comes first: a Classroom activity (three short steps: what to practise, on the start screen;
-// how much help; how it is played) or an Arcade game (the steps below, unchanged). D.canvas.kind is the card that starts
-// selected (a teacher, or opened from a class); one tap switches. An activity's plan is { kind: 'activity', topic,
-// support, played, grade } (builder/plan.js): only the topic and the class's grade, never the class or its students.
+// "What are you making?" comes first: a Classroom activity (four short steps: what to practise, on the start screen;
+// your lesson; how much help; how it is played) or an Arcade game (the steps below, unchanged). D.canvas.kind is the
+// card that starts selected (a teacher, or opened from a class); one tap switches. An activity's plan is { kind:
+// 'activity', topic, help: [modes], played, grade, lesson: { text, doc } } (builder/plan.js): the topic, the class's
+// grade and what they add about their lesson, never the class or its students. "Your lesson" is optional: a file
+// (teachers: read on the server, never kept; only its text comes back, with the names of their students, emails and
+// phone numbers already taken out) and a box to describe what they want. "How much help?" takes one or more.
 const D = JSON.parse($('#page-data').textContent);
-const STEPS = D.steps, KEYS = STEPS.map(s => s.key), CSTEPS = ['help', 'played'];
+const STEPS = D.steps, KEYS = STEPS.map(s => s.key), CSTEPS = ['lesson', 'help', 'played'];
 const ORDER = ['start', ...KEYS, ...CSTEPS, 'plan'];
 const order = () => (S.kind === 'activity' ? ['start', ...CSTEPS, 'plan'] : ['start', ...KEYS, 'plan']);
 const stepOf = key => STEPS.find(s => s.key === key) || (CSTEPS.includes(key) ? { key } : null);
-const S = { kind: D.canvas.kind, topic: null, topicText: '', screen: 'start', sel: { type: [], look: [], world: [], chars: [], play: [], learn: [], help: ['guided'], played: ['devices'] }, idea: { type: '', world: '', chars: '', learn: '' }, notes: '', files: [], back: null, gameId: null, busy: false, playPicked: false };
+const S = { kind: D.canvas.kind, topicText: '', lesson: { text: '', doc: null, busy: false }, screen: 'start', sel: { type: [], look: [], world: [], chars: [], play: [], learn: [], help: [...D.canvas.help], played: ['devices'] }, idea: { type: '', world: '', chars: '', learn: '' }, notes: '', files: [], back: null, gameId: null, busy: false, playPicked: false };
 const list = items => { try { return new Intl.ListFormat(LANG, { style: 'long', type: 'conjunction' }).format(items); } catch { return items.join(', '); } };
 const say = msg => { const l = $('#su-live'); l.textContent = ''; setTimeout(() => { l.textContent = msg; }, 30); };
 
@@ -81,7 +84,7 @@ function paint(key) {
   }
 }
 function pick(key, id) {
-  if (CSTEPS.includes(key)) { S.sel[key] = [id]; paint(key); return; }   // an activity's steps: always one answer
+  if (key === 'played') { S.sel[key] = [id]; paint(key); return; }   // how an activity is played: one answer
   const st = stepOf(key), cur = S.sel[key], had = cur.includes(id);
   S.sel[key] = st.multi ? (had ? cur.filter(x => x !== id) : [...cur, id]) : had ? [] : [id];
   paint(key);
@@ -215,19 +218,74 @@ function setKind(kind) {
   for (const el of $$('.su-start [data-for]')) el.hidden = !(el.dataset.for === 'both' || el.dataset.for === kind);
   $('.su-start').dataset.kind = kind;
 }
-/** A topic chip (one at a time; a tap on the picked one clears it), or their own words in the box (typed words win). */
-function pickTopic(id) {
-  S.topic = S.topic === id ? null : id;
-  for (const c of $$('[data-topic]')) c.setAttribute('aria-pressed', String(c.dataset.topic === S.topic));
+/** What they typed under "What should students practise?" (no chips since #431's follow-up: one box). */
+const topicOf = () => { const text = S.topicText.trim().replace(/\s+/g, ' '); return text ? { text } : null; };
+
+// ---------------------------------------------------------------- "How much help?": one or more (checkboxes)
+const HELP_ORDER = D.canvas.supports;
+/** Tick or untick a mode; the last one ticked cannot be unticked (at least one), and the page says so. */
+function toggleHelp(box) {
+  const id = box.dataset.help, on = box.checked;
+  if (!on && S.sel.help.length === 1 && S.sel.help[0] === id) {
+    box.checked = true; $('#su-help-one').hidden = false; say(t('js.buildsetup.lesson.atLeastOne')); return;
+  }
+  $('#su-help-one').hidden = true;
+  S.sel.help = HELP_ORDER.filter(h => (h === id ? on : S.sel.help.includes(h)));
+  paintHelp();
 }
-const topicOf = () => { const text = S.topicText.trim().replace(/\s+/g, ' '); return text ? { text } : S.topic ? { id: S.topic } : null; };
+function paintHelp() {
+  for (const b of $$('.su-cbox')) { const on = S.sel.help.includes(b.dataset.help); b.checked = on; b.closest('.su-card').classList.toggle('is-on', on); }
+}
+
+// ---------------------------------------------------------------- "Your lesson": a file and a box (all optional)
+const L = D.lesson;
+const nf = n => { try { return new Intl.NumberFormat(LANG).format(n); } catch { return String(n); } };
+function paintCount() { const n = $('#su-ltext').value.length; $('#su-lcount').innerHTML = `<span dir="ltr">${esc(t('js.buildsetup.lesson.count', { n: nf(n), max: nf(L.max) }))}</span>`; }   // "45 / 2,000" reads the same way in Hebrew and Arabic
+/** A prompt chip: its heading at the end of the box (on a line of its own), and the cursor after it. */
+function addHead(key) {
+  const box = $('#su-ltext'), head = L.heads[key], cur = box.value;
+  const sep = !cur.trim() ? '' : cur.endsWith('\n\n') ? '' : cur.endsWith('\n') ? '\n' : '\n\n';
+  const next = `${cur.trim() ? cur : ''}${sep}${head} `;
+  if (next.length > L.max) { say(t('js.buildsetup.lesson.full')); return; }
+  box.value = next; S.lesson.text = next; paintCount();
+  box.focus(); box.setSelectionRange(next.length, next.length); box.scrollTop = box.scrollHeight;
+}
+const lessonErr = msg => { const e = $('#su-lerr'); e.textContent = msg || ''; e.hidden = !msg; };
+function paintFile() {
+  const st = $('#su-lstatus'), d = S.lesson.doc; if (!st) return;
+  if (S.lesson.busy) { st.hidden = false; st.className = 'su-lstatus is-busy'; st.innerHTML = `<span class="su-lname" dir="auto">${esc(t('js.buildsetup.lesson.reading', { name: S.lesson.busy }))}</span>`; return; }
+  if (!d) { st.hidden = true; st.innerHTML = ''; $('#su-lfile-btn').hidden = false; return; }
+  const read = d.kind === 'pdf' ? t('js.buildsetup.lesson.readPages', { count: d.pages, name: d.name }) : t('js.buildsetup.lesson.readWords', { count: d.words, n: nf(d.words), name: d.name });
+  st.hidden = false; st.className = 'su-lstatus';
+  st.innerHTML = `<span class="su-lread"><span class="su-lname" dir="auto">${esc(read)}</span>${d.removed ? `<span class="su-lnote">${esc(t('js.buildsetup.lesson.removed', { count: d.removed }))}</span>` : ''}${d.cut ? `<span class="su-lnote">${esc(t('js.buildsetup.lesson.cut'))}</span>` : ''}</span>
+    <button type="button" class="btn btn-ghost btn-sm su-lremove" id="su-lremove" aria-label="${esc(t('js.buildsetup.lesson.removeLabel', { name: d.name }))}">${esc(t('js.buildsetup.lesson.remove'))}</button>`;
+  $('#su-lfile-btn').hidden = true;
+}
+/** Read a file on the server (never kept there); only its text comes back. Checked here first (kind, size). */
+async function readFile(f) {
+  lessonErr('');
+  const ext = ((f.name.match(/\.([a-z0-9]+)$/i) || [])[1] || '').toLowerCase().replace(/^markdown$/, 'md');
+  if (!L.file.kinds.includes(ext)) { lessonErr(t('js.buildsetup.lesson.err.docType')); return; }
+  if (f.size > L.file.bytes) { lessonErr(t('js.buildsetup.lesson.err.docBig')); return; }
+  S.lesson.busy = f.name; paintFile();
+  try {
+    const res = await fetch(`/api/build/lesson-file?name=${encodeURIComponent(f.name)}`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/octet-stream', Accept: 'application/json' }, body: f });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401) { location.href = `/login?next=${encodeURIComponent('/build/new')}`; return; }
+    if (!res.ok) { S.lesson.busy = false; paintFile(); lessonErr(data.code ? t(`js.buildsetup.lesson.err.${data.code}`) : data.error || t('js.buildsetup.lesson.err.failed')); return; }
+    S.lesson.doc = { name: data.name, kind: data.kind, pages: data.pages, words: data.words, cut: !!data.cut, removed: data.removed | 0, text: data.text };
+    S.lesson.busy = false; paintFile(); say($('#su-lstatus .su-lname').textContent);
+    const rm = $('#su-lremove'); if (rm) rm.focus();
+  } catch { S.lesson.busy = false; paintFile(); lessonErr(t('js.buildsetup.lesson.err.failed')); }
+}
+const lessonOf = () => { const text = S.lesson.text.trim(), d = S.lesson.doc; return text || d ? { text, doc: d ? { name: d.name, kind: d.kind, pages: d.pages, text: d.text } : null } : null; };
 
 // ---------------------------------------------------------------- the plan
 const ideaOf = key => S.idea[key].trim().replace(/\s+/g, ' ');
 /** The choices as the Builder gets them: pack choices by id, typed ones as custom text; blank means it decides. */
 function buildPlan() {
   const from = D.canvas.forClass ? { forClass: true } : {};
-  if (S.kind === 'activity') return { kind: 'activity', topic: topicOf(), support: S.sel.help[0] || 'guided', played: S.sel.played[0] || 'devices', grade: D.canvas.grade || '', ...from };
+  if (S.kind === 'activity') { const lesson = lessonOf(); return { kind: 'activity', topic: topicOf(), help: [...S.sel.help], played: S.sel.played[0] || 'devices', grade: D.canvas.grade || '', ...(lesson ? { lesson } : {}), ...from }; }
   const skip = skipped();
   const one = key => { const id = S.sel[key][0]; if (!id || skip.includes(key)) return null; if (id === 'else') return ideaOf(key) ? { from: 'custom', text: ideaOf(key) } : null; return { from: 'pack', id }; };
   return {
@@ -264,21 +322,37 @@ function renderPlan() {
     .catch(e => { if (e.signedOut) { location.href = `/login?next=${encodeURIComponent('/build/new')}`; return; } told.textContent = e.message; });
 }
 
-/** An activity's plan: what it is, what they practise, how much help, how it is played. */
+/** An activity's plan: what it is, what they practise, their lesson, how much help, how it is played. Under the rows,
+ *  what the Builder will read about their lesson, as the server will send it (names, emails and phone numbers out). */
 function renderActivityPlan() {
-  const topic = topicOf(), chip = topic && topic.id ? $(`[data-topic="${topic.id}"]`) : null;
+  const topic = topicOf(), lesson = lessonOf();
+  const lessonVal = !lesson ? t('js.buildsetup.lesson.none') : [lesson.doc ? lesson.doc.name : '', lesson.text ? t('js.buildsetup.lesson.notes') : ''].filter(Boolean).join(' · ');
   const rows = [
     ['kind', t('js.buildsetup.canvas.activity'), 'start'],
-    ['practise', topic ? topic.text || (chip ? chip.textContent.trim() : topic.id) : t('js.buildsetup.plan.decides'), 'start'],
-    ['help', nameOf('help', S.sel.help[0]), 'help'],
+    ['practise', topic ? topic.text : t('js.buildsetup.plan.decides'), 'start'],
+    ['lesson', lessonVal, 'lesson'],
+    ['help', list(S.sel.help.map(id => $(`.su-cbox[data-help="${id}"]`).closest('label').querySelector('.su-name').textContent)), 'help'],
     ['played', nameOf('played', S.sel.played[0]), 'played'],
   ];
   $('#su-rows').innerHTML = rows.map(([k, value, step]) => { const n = t(`js.buildsetup.canvas.rows.${k}`); return `<div class="su-row"><dt>${esc(n)}</dt><dd><span class="su-val" dir="auto">${esc(value)}</span></dd>
     <button type="button" class="btn btn-ghost btn-sm su-change" data-change="${step}" aria-label="${esc(t('js.buildsetup.plan.changeLabel', { name: n }))}">${esc(t('js.buildsetup.plan.change'))}</button></div>`; }).join('');
-  const told = $('#su-told'); told.textContent = '…';
+  const told = $('#su-told'), box = $('#su-lsum'); told.textContent = '…'; box.hidden = true; box.innerHTML = '';
   api('/api/build/plan', { method: 'POST', body: { plan: buildPlan(), files: 0 } })
-    .then(r => { if (S.screen === 'plan') told.textContent = r.text || t('js.buildsetup.plan.empty'); })
+    .then(r => { if (S.screen !== 'plan') return; told.textContent = r.text || t('js.buildsetup.plan.empty'); renderLessonSum(r); })
     .catch(e => { if (e.signedOut) { location.href = `/login?next=${encodeURIComponent('/build/new')}`; return; } told.textContent = e.message; });
+}
+/** "What the Builder reads about your lesson": each part they wrote, and the start of their file. */
+function renderLessonSum(r) {
+  const box = $('#su-lsum'), l = r.plan && r.plan.lesson;
+  if (r.lessonBlocked) { box.hidden = false; box.innerHTML = `<p class="su-flag">${esc(t('js.buildsetup.lesson.blockedPlan'))}</p>`; return; }
+  if (!l) return;
+  const label = k => (k === 'details' ? t('js.buildsetup.lesson.details') : L.heads[k].replace(/[:：]\s*$/, ''));
+  const part = (k, v) => `<div class="su-lpart"><dt>${esc(label(k))}</dt><dd dir="auto">${esc(v.length > 280 ? `${v.slice(0, 280)}…` : v)}</dd></div>`;
+  const parts = ['goal', 'mistakes', 'vocabulary', 'avoid', 'details'].filter(k => l[k]).map(k => part(k, l[k]));
+  if (l.doc) parts.push(`<div class="su-lpart"><dt>${esc(t('js.buildsetup.lesson.from', { name: l.doc.name }))}</dt><dd dir="auto" class="su-lexcerpt">${esc(l.doc.text.slice(0, 360))}${l.doc.text.length > 360 ? '…' : ''}</dd></div>`);
+  box.hidden = false;
+  box.innerHTML = `<h2 class="su-lsum-h">${esc(t('js.buildsetup.lesson.sumHeading'))}</h2><dl class="su-lparts">${parts.join('')}</dl>
+    <p class="small muted su-lsum-note">${esc(r.removed ? t('js.buildsetup.lesson.sumRemoved', { count: r.removed }) : t('js.buildsetup.lesson.sumNote'))}</p>`;
 }
 
 // ---------------------------------------------------------------- files (worksheets and notes; the Studio's own upload)
@@ -361,7 +435,9 @@ function preview(id) {
 
 // ---------------------------------------------------------------- events
 document.addEventListener('click', e => {
-  const p = e.target.closest('.su-pick'); if (p) { if (!p.disabled) pick(p.dataset.step, p.dataset.id); return; }
+  const p = e.target.closest('button.su-pick'); if (p) { if (!p.disabled) pick(p.dataset.step, p.dataset.id); return; }
+  const hd = e.target.closest('[data-head]'); if (hd) { addHead(hd.dataset.head); return; }
+  if (e.target.closest('#su-lremove')) { S.lesson.doc = null; paintFile(); lessonErr(''); say(t('js.buildsetup.lesson.gone')); $('#su-lfile-btn').focus(); return; }
   const tg = e.target.closest('[data-tgroup-btn]'); if (tg) { showGroup(tg.dataset.tgroupBtn); return; }
   const all = e.target.closest('.su-all'); if (all) { selectAll(all); return; }
   const g = e.target.closest('[data-go]'); if (g) { go(g.dataset.go); return; }
@@ -372,7 +448,12 @@ document.addEventListener('click', e => {
 $('#su-guide').addEventListener('click', () => show(KEYS[0]));
 $('#su-cnext').addEventListener('click', () => show(CSTEPS[0]));
 for (const b of $$('.su-kind')) b.addEventListener('click', () => setKind(b.dataset.kind));
-for (const c of $$('[data-topic]')) c.addEventListener('click', () => pickTopic(c.dataset.topic));
+for (const b of $$('.su-cbox')) b.addEventListener('change', () => toggleHelp(b));
+$('#su-ltext').addEventListener('input', e => { S.lesson.text = e.target.value; paintCount(); });
+if (L.file) {
+  $('#su-lfile-btn').addEventListener('click', () => $('#su-lfile').click());
+  $('#su-lfile').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) readFile(f); });
+}
 $('#su-topic-in').addEventListener('input', e => { S.topicText = e.target.value; });
 $('#su-topic-in').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); show(CSTEPS[0]); } });
 // "Classroom tools": today's eight board starters (the game-type step, on its "For your class" group)
@@ -391,4 +472,4 @@ $('#su-file').addEventListener('change', e => { addFiles([...e.target.files]); e
 refreshLimits();
 if (D.typeGroups.length) showGroup(D.typeGroups[0].id);
 paintProgress();
-setKind(S.kind); paint('help'); paint('played');
+setKind(S.kind); paintHelp(); paint('played'); paintCount();

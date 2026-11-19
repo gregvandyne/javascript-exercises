@@ -78,13 +78,14 @@ const FACTUAL = /\b(quiz\w*|trivia|questions?|facts?|history|historical|records?
 export const isFactual = text => FACTUAL.test(String(text || ''));
 // Even in a quiz, jokes or insults about a named real person stay refused.
 const MOCKING = /\b(makes? fun|making fun|poke fun|mock\w*|laugh at|roast\w*|insult\w*|ugly|stupid|dumb|idiot\w*|loser|hate|hates|hating|embarrass\w*|rumou?rs?|gossip|fake news)\b/i;
-/** Keyword pre-filter. -> category | null */
-export function prefilter(text) {
+/** Keyword pre-filter. -> category | null. personal: false skips the personal-details check (a teacher's lesson text,
+ *  where builder/lesson.js scrub has already taken emails and phone numbers out, and a number is often just maths). */
+export function prefilter(text, { personal = true } = {}) {
   const v = views(text);
   if (hasProfanity(v.raw) || hasProfanity(v.plain) || hasProfanity(v.leet)) return matchRules(CATEGORY_RULES, v) || 'profanity';
   if (/<\/?\s*(system|instructions?|admin|assistant)\s*>|\[\s*(system|inst)\s*\]|^\s*(system|assistant)\s*:/im.test(v.raw)) return 'rules';
   const r = matchRules(PREFILTER, v); if (r) return r;
-  const pi = personalInfo(v.raw); if (pi && pi !== 'handle') return pi === 'link' ? 'links' : 'personal';
+  const pi = personal ? personalInfo(v.raw) : null; if (pi && pi !== 'handle') return pi === 'link' ? 'links' : 'personal';
   for (const [cat, re] of SQUASHED) if (cat === 'rules' && re.test(v.squashed)) return 'rules';
   return null;
 }

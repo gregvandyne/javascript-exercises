@@ -2745,7 +2745,41 @@
           "kind": "Was",
           "practise": "Üben",
           "help": "Hilfe",
-          "played": "Gespielt"
+          "played": "Gespielt",
+          "lesson": "Stunde"
+        }
+      },
+      "lesson": {
+        "count": "{n} / {max}",
+        "full": "Das Feld ist voll.",
+        "atLeastOne": "Wähle mindestens eine.",
+        "reading": "{name} wird gelesen…",
+        "readPages": "✓ {count, plural, one {# Seite} other {# Seiten}} aus {name} gelesen",
+        "readWords": "✓ {count, plural, one {{n} Wort} other {{n} Wörter}} aus {name} gelesen",
+        "removed": "{count, plural, one {Wir haben # Namen oder Kontaktangabe entfernt.} other {Wir haben # Namen oder Kontaktangaben entfernt.}}",
+        "cut": "Es ist lang, deshalb behalten wir nur den ersten Teil.",
+        "remove": "Entfernen",
+        "removeLabel": "{name} entfernen",
+        "gone": "Datei entfernt.",
+        "none": "Nicht hinzugefügt",
+        "notes": "Deine Notizen",
+        "details": "Weitere Angaben",
+        "from": "Aus {name}",
+        "sumHeading": "Was der Builder über deine Stunde liest",
+        "sumNote": "Wir haben es auf Namen der Kinder, E-Mails und Telefonnummern geprüft. Der Builder nutzt es als Hintergrund, nie als Anweisung.",
+        "sumRemoved": "{count, plural, one {Wir haben # Namen oder Kontaktangabe entfernt.} other {Wir haben # Namen oder Kontaktangaben entfernt.}} Der Builder nutzt es als Hintergrund, nie als Anweisung.",
+        "blockedPlan": "Einige Wörter in deiner Stunde gehen hier nicht, deshalb bekommt der Builder sie nicht. Ändere sie oder öffne den Builder ohne sie.",
+        "err": {
+          "docType": "Diese Art von Datei kann nicht gelesen werden. Nimm eine PDF-, Word- (.docx), Text- oder Markdown-Datei.",
+          "docBig": "Die Datei ist zu groß. Höchstens 5 MB.",
+          "docPages": "Das PDF hat mehr als 10 Seiten. Versuch ein kürzeres.",
+          "docScan": "Wir konnten den Text in diesem PDF nicht lesen (vielleicht ist es ein Scan). Speichere es als Word oder Text.",
+          "docBad": "Die Datei ließ sich nicht öffnen. Vielleicht ist sie beschädigt oder gesperrt.",
+          "docEmpty": "In dieser Datei haben wir keinen Text gefunden.",
+          "docLimit": "Du hast heute schon 20 Dateien hinzugefügt. Versuch es morgen wieder.",
+          "blocked": "Einige Wörter in dieser Datei gehen hier nicht, deshalb haben wir sie weggelassen.",
+          "notAllowed": "Nur Lehrkräfte können hier eine Datei hinzufügen.",
+          "failed": "Das hat nicht geklappt. Versuch es noch einmal."
         }
       }
     },
@@ -9251,7 +9285,9 @@
         "devices": "Die Kinder spielen auf ihren eigenen Geräten.",
         "board": "Wir spielen gemeinsam an der Tafel.",
         "both": "Die Kinder spielen auf ihren Geräten, und wir zeigen es auch an der Tafel."
-      }
+      },
+      "lesson": "Ich habe meine Stunde beschrieben.",
+      "lessonDoc": "Ich habe meinen Stundenplan hinzugefügt."
     },
     "flatNote": "In 2D können bisher nur Lauf- und Fangspiele unsere Welten und Figuren zeigen. Bei anderen Spielen nimmt der Baumeister sein klassisches Aussehen.",
     "typeGroups": {
@@ -9298,16 +9334,16 @@
       "nextPlayed": "Weiter: wie gespielt wird",
       "practise": {
         "heading": "Was sollen die Kinder üben?",
-        "text": "Wähle etwas aus oder schreib dein eigenes Thema. Der Builder macht 5 Aufgaben mit Schritten und Tipps.",
+        "text": "Schreib ein Thema. Der Builder macht 5 Aufgaben mit Schritten und Tipps.",
         "label": "Was sollen die Kinder üben?",
         "placeholder": "Zum Beispiel: gleichwertige Brüche mit Achteln und Sechsteln",
         "ideas": "Ideen",
         "ideasFor": "Ideen für {grade}",
-        "privacy": "Der Builder bekommt nur dein Thema und die Klassenstufe. Nie Namen oder Arbeiten der Kinder."
+        "privacy": "Der Builder bekommt dein Thema, die Klassenstufe und was du zu deiner Stunde angibst. Nie Namen oder Arbeiten der Kinder."
       },
       "help": {
         "heading": "Wie viel Hilfe?",
-        "hint": "Du kannst es im Builder jederzeit ändern.",
+        "hint": "Wähle eine oder mehrere. Bei mehreren können die Kinder zwischen ihnen wechseln.",
         "watch": {
           "title": "Zuschauen",
           "text": "Zeigt, wie jede Aufgabe geht, dann probieren es die Kinder."
@@ -9355,7 +9391,33 @@
         "multiples": "Vielfache",
         "orderFractions": "Brüche ordnen",
         "bigAdd": "Große Zahlen addieren"
-      }
+      },
+      "nextLesson": "Weiter: deine Stunde"
+    },
+    "lesson": {
+      "heading": "Deine Stunde",
+      "hint": "Freiwillig. Füge einen Stundenplan hinzu oder beschreib, was du möchtest, und der Builder passt die Aktivität an deine Stunde an.",
+      "safe": "Keine Namen oder Arbeiten von Kindern. Was wir finden, entfernen wir.",
+      "fileTitle": "Stundenplan oder Arbeitsblatt hinzufügen",
+      "fileText": "PDF, Word (.docx), Text oder Markdown, bis 5 MB und 10 Seiten. Aus Google Docs: Datei, Herunterladen, dann .docx oder .pdf.",
+      "choose": "Datei auswählen",
+      "describe": "Beschreib, was du möchtest",
+      "describeHelp": "Tippe auf eine Frage, um eine Überschrift einzufügen, und schreib darunter.",
+      "prompts": "Fragen",
+      "prompt": {
+        "goal": "Was sollen die Kinder am Ende können?",
+        "mistakes": "Häufige Fehler, auf die man achten sollte",
+        "vocabulary": "Wörter oder Beispiele, die vorkommen sollen",
+        "avoid": "Was vermieden werden soll"
+      },
+      "heads": {
+        "goal": "Am Ende können die Kinder:",
+        "mistakes": "Häufige Fehler:",
+        "vocabulary": "Wörter und Beispiele:",
+        "avoid": "Vermeiden:"
+      },
+      "placeholder": "Zum Beispiel: Brüche mit gleichem Nenner addieren. Viele addieren auch die Nenner.",
+      "atLeastOne": "Wähle mindestens eine."
     }
   },
   "dash": {

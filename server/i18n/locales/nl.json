@@ -2745,7 +2745,41 @@
           "kind": "Wat",
           "practise": "Oefenen",
           "help": "Hulp",
-          "played": "Gespeeld"
+          "played": "Gespeeld",
+          "lesson": "Les"
+        }
+      },
+      "lesson": {
+        "count": "{n} / {max}",
+        "full": "Het vak is vol.",
+        "atLeastOne": "Kies er minstens één.",
+        "reading": "{name} wordt gelezen…",
+        "readPages": "✓ {count, plural, one {# pagina} other {# pagina’s}} gelezen uit {name}",
+        "readWords": "✓ {count, plural, one {{n} woord} other {{n} woorden}} gelezen uit {name}",
+        "removed": "{count, plural, one {We hebben # naam of contactgegeven weggehaald.} other {We hebben # namen of contactgegevens weggehaald.}}",
+        "cut": "Het is lang, dus we houden alleen het eerste deel.",
+        "remove": "Weghalen",
+        "removeLabel": "{name} weghalen",
+        "gone": "Bestand weggehaald.",
+        "none": "Niet toegevoegd",
+        "notes": "Je notities",
+        "details": "Andere details",
+        "from": "Uit {name}",
+        "sumHeading": "Wat de Builder over je les leest",
+        "sumNote": "We hebben gezocht naar namen van leerlingen, e-mailadressen en telefoonnummers. De Builder gebruikt het als achtergrond, nooit als opdracht.",
+        "sumRemoved": "{count, plural, one {We hebben # naam of contactgegeven weggehaald.} other {We hebben # namen of contactgegevens weggehaald.}} De Builder gebruikt het als achtergrond, nooit als opdracht.",
+        "blockedPlan": "Sommige woorden in je les kunnen niet, dus de Builder krijgt hem niet. Pas ze aan, of open de Builder zonder.",
+        "err": {
+          "docType": "Dit soort bestand kan niet gelezen worden. Gebruik een PDF-, Word- (.docx), tekst- of Markdown-bestand.",
+          "docBig": "Dat bestand is te groot. Hoogstens 5 MB.",
+          "docPages": "Die PDF heeft meer dan 10 pagina’s. Probeer een kortere.",
+          "docScan": "We konden de tekst in die PDF niet lezen (misschien is het een scan). Sla hem op als Word of tekst.",
+          "docBad": "Dat bestand kon niet worden geopend. Misschien is het beschadigd of beveiligd.",
+          "docEmpty": "We vonden geen tekst in dat bestand.",
+          "docLimit": "Je hebt vandaag al 20 bestanden toegevoegd. Probeer het morgen weer.",
+          "blocked": "Sommige woorden in dat bestand kunnen hier niet, dus we hebben het weggelaten.",
+          "notAllowed": "Alleen leerkrachten kunnen hier een bestand toevoegen.",
+          "failed": "Dat lukte niet. Probeer het nog eens."
         }
       }
     },
@@ -9251,7 +9285,9 @@
         "devices": "Leerlingen spelen het op hun eigen apparaat.",
         "board": "We spelen het samen op het bord.",
         "both": "Leerlingen spelen het op hun eigen apparaat, en we laten het ook op het bord zien."
-      }
+      },
+      "lesson": "Ik heb mijn les beschreven.",
+      "lessonDoc": "Ik heb mijn lesplan toegevoegd."
     },
     "flatNote": "In 2D kunnen voorlopig alleen ren- en vanggames onze werelden en figuren gebruiken. Bij andere games gebruikt de Bouwer zijn klassieke uiterlijk.",
     "typeGroups": {
@@ -9298,16 +9334,16 @@
       "nextPlayed": "Volgende: hoe het gespeeld wordt",
       "practise": {
         "heading": "Wat moeten leerlingen oefenen?",
-        "text": "Kies er een of typ je eigen onderwerp. De Builder maakt 5 opgaven met stappen en tips.",
+        "text": "Typ een onderwerp. De Builder maakt 5 opgaven met stappen en hints.",
         "label": "Wat moeten leerlingen oefenen?",
         "placeholder": "Bijvoorbeeld: gelijkwaardige breuken met achtsten en zesden",
         "ideas": "Ideeën",
         "ideasFor": "Ideeën voor {grade}",
-        "privacy": "De Builder krijgt alleen je onderwerp en het leerjaar van de klas. Nooit namen of werk van leerlingen."
+        "privacy": "De Builder krijgt je onderwerp, de groep van de klas en wat je over je les toevoegt. Nooit namen of werk van leerlingen."
       },
       "help": {
         "heading": "Hoeveel hulp?",
-        "hint": "Je kunt het in de Builder altijd nog veranderen.",
+        "hint": "Kies er een of meer. Bij meer dan één kunnen leerlingen ertussen wisselen.",
         "watch": {
           "title": "Kijken",
           "text": "Laat zien hoe elke opgave gaat, daarna proberen leerlingen het."
@@ -9355,7 +9391,33 @@
         "multiples": "Veelvouden",
         "orderFractions": "Breuken ordenen",
         "bigAdd": "Grote getallen optellen"
-      }
+      },
+      "nextLesson": "Volgende: je les"
+    },
+    "lesson": {
+      "heading": "Je les",
+      "hint": "Niet verplicht. Voeg een lesplan toe of zeg wat je wilt, en de Builder past de activiteit aan je les aan.",
+      "safe": "Zet er geen namen of werk van leerlingen in. Wat we vinden, halen we weg.",
+      "fileTitle": "Een lesplan of werkblad toevoegen",
+      "fileText": "PDF, Word (.docx), tekst of Markdown, tot 5 MB en 10 pagina’s. Uit Google Documenten: Bestand, Downloaden, dan .docx of .pdf.",
+      "choose": "Kies een bestand",
+      "describe": "Beschrijf wat je wilt",
+      "describeHelp": "Tik op een vraag om een kopje toe te voegen en schrijf eronder.",
+      "prompts": "Vragen",
+      "prompt": {
+        "goal": "Wat moeten leerlingen aan het eind kunnen?",
+        "mistakes": "Veelgemaakte fouten om op te letten",
+        "vocabulary": "Woorden of voorbeelden om te gebruiken",
+        "avoid": "Wat je wilt vermijden"
+      },
+      "heads": {
+        "goal": "Aan het eind kunnen leerlingen:",
+        "mistakes": "Veelgemaakte fouten:",
+        "vocabulary": "Woorden en voorbeelden:",
+        "avoid": "Vermijden:"
+      },
+      "placeholder": "Bijvoorbeeld: breuken met dezelfde noemer optellen. Veel leerlingen tellen de noemers ook op.",
+      "atLeastOne": "Kies er minstens één."
     }
   },
   "dash": {

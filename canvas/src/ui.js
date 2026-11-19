@@ -7,7 +7,7 @@ import { TOOLS, SUPPORTS, MAX_COUNT, deal, selfTest, seeded, manipulativeOf, cle
 import { WORDS, wordsFor } from './words.js';
 import { CSS } from './style.js';
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 const SAVE_KEY = 'oc-progress-v1';
 const IDLE_MS = 45000;
 
@@ -35,7 +35,12 @@ export function activity(input) {
   const A = input && typeof input === 'object' ? input : {};
   const cfg = A.config && typeof A.config === 'object' ? A.config : {};
   const lang = (B().user && B().user.lang) || cfg.lang || 'en', W = wordsFor(lang), dir = (B().user && B().user.dir) || (/^(ar|he)\b/.test(lang) ? 'rtl' : 'ltr');
-  const support = SUPPORTS.includes(cfg.support) ? cfg.support : 'guided', board = cfg.board === true;
+  // 1.1.0: config.supports, the help modes this activity offers (in SUPPORTS order). More than one: the support chip is a
+  // small switcher, so a student (or the teacher on the board) moves between them; it starts on config.support when that
+  // is one of them, else on the first. One, or none (a 1.0.0 activity): the chip, as before.
+  const supports = Array.isArray(cfg.supports) ? SUPPORTS.filter(x => cfg.supports.includes(x)) : [];
+  let support = SUPPORTS.includes(cfg.support) && (!supports.length || supports.includes(cfg.support)) ? cfg.support : supports[0] || 'guided';
+  const modes = supports.length > 1 ? supports : null, board = cfg.board === true;
   const task = A.task && typeof A.task === 'object' ? A.task : {};
   const ownSteps = A.steps && typeof A.steps === 'object' ? A.steps : {}, ownHints = A.hints && typeof A.hints === 'object' ? A.hints : {};
 
@@ -61,7 +66,8 @@ export function activity(input) {
   const el = {};
   const strip = h('header', { class: 'oc-strip' },
     el.title = h('h1', { dir: 'auto' }, String(task.title || document.title || '').slice(0, 80)),
-    h('span', { class: 'oc-chip oc-sup' }, T(support)),
+    modes ? (el.modes = h('div', { class: 'oc-modes', role: 'group', 'aria-label': T('helpMode') }, ...modes.map(m => h('button', { type: 'button', class: 'oc-mode', 'data-mode': m, 'aria-pressed': String(m === support), onclick: () => setSupport(m) }, T(m)))))
+      : h('span', { class: 'oc-chip oc-sup' }, T(support)),
     board ? h('span', { class: 'oc-chip' }, T('board')) : null,
     h('span', { class: 'oc-grow' }),
     el.ok = h('span', { class: 'oc-chip oc-ok' }), el.no = h('span', { class: 'oc-chip oc-no' }), el.left = h('span', { class: 'oc-chip' }),
@@ -130,6 +136,15 @@ export function activity(input) {
     return TOOLS[p.tool].hints(p).slice(0, 3);
   }
   const line = x => (x.text !== undefined ? document.createTextNode(x.text) : rich(x.k, x.v));
+  /** The switcher (1.1.0): another help mode for the problem on screen. It starts that problem again in the new mode
+   *  (Watch shows the worked answer first; On my own closes the Steps panel); the set, the score and the place stay. */
+  function setSupport(m) {
+    if (!modes || !modes.includes(m) || m === support) return;
+    support = m; shell.dataset.support = m;
+    for (const b of el.modes.children) b.setAttribute('aria-pressed', String(b.dataset.mode === m));
+    S.stepsOpen = m !== 'own';
+    if (S.phase === 'work') begin(null); else paint();
+  }
 
   function paint() {
     const p = P(), t = Tool(), total = S.set.length;
@@ -282,7 +297,7 @@ export function activity(input) {
   if (support === 'own') S.stepsOpen = false, paintSteps();
   const api = {
     version: VERSION, selfTest: () => selfTest(A, WORDS.en),
-    state: () => ({ screen: el.end.hidden ? 'work' : 'end', problem: S.i + 1, problems: S.set.length, right: S.right, wrong: S.wrong, tool: P() && P().tool, phase: S.phase, score: S.right, controls: 'none' }),
+    state: () => ({ screen: el.end.hidden ? 'work' : 'end', problem: S.i + 1, problems: S.set.length, right: S.right, wrong: S.wrong, tool: P() && P().tool, phase: S.phase, score: S.right, controls: 'none', support, supports: modes || [support] }),
   };
   call(() => { window.__brbTest = { state: api.state, start() {} }; });
   return api;

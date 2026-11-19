@@ -12,15 +12,23 @@
 // (Oomba Canvas: three short steps, what to practise, how much help, how it is played) or an Arcade game (the steps
 // above, unchanged). Classroom activity starts selected for every teacher and when the page is opened from a class
 // (?for=class&class=<id>, the class page's Build buttons); kids and families start on Arcade game. Either can switch.
-// The class only gives the page its grade (for the topic chips) and its name (for the chip and the way back), and only
-// when this user teaches it: nothing about its students is read, and only the grade goes into the plan.
+// The class only gives the page its grade and its name (for the chip and the way back), and only when this user teaches
+// it: nothing about its students goes into the plan, and only the grade does.
+// After #431 (docs/decisions.md "Your lesson: upload and describe"): no topic chips (one text box), a "Your lesson" step
+// (an optional lesson plan or worksheet, read on the server and never kept, and a box to describe what they want; every
+// word of it goes through builder/lesson.js, which takes out the names of this teacher's students, emails and phone
+// numbers), and "How much help?" takes one or more answers (the activity offers only those; Oomba Canvas 1.1.0 lets
+// students switch between them).
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { page } from '../views/layout.js';
 import { requireBuilder } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { KIT2_WORLDS, worldById } from '../builder/kit2.js';
-import { GAME_TYPES, LOOKS, LEARN, LIMITS, PLAYS, LIVE_NOT, LIVE_NOT_ENGINE, characterGroups, characterName, normalisePlan, planSentence, planEngine, customParts, typeGroups, playDefault, startKind, topicsFor, gradeOf, SUPPORTS, CANVAS_PLAYS } from '../builder/plan.js';
+import { GAME_TYPES, LOOKS, LEARN, LIMITS, PLAYS, LIVE_NOT, LIVE_NOT_ENGINE, characterGroups, characterName, normalisePlan, planSentence, planEngine, customParts, typeGroups, playDefault, startKind, gradeOf, SUPPORTS, CANVAS_PLAYS, LESSON, LESSON_HEADS } from '../builder/plan.js';
+import { FILE_LIMITS, FILE_ACCEPT, kindOf, readLessonFile, scrub, scrubPlan, screenLesson, studentNames } from '../builder/lesson.js';
+import express from 'express';
+import { allow, count as countLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import { gradeLabel } from '../views/components.js';
 import { teacherHost } from '../services/classlive-access.js';
@@ -93,7 +101,7 @@ const ICON = {
   runner: icon('<circle cx="15" cy="4" r="2"/><path d="M7 11l4-3 4 3 3 1"/><path d="M11 8l-2 6 4 3v5"/><path d="M9 14l-3 3H3"/>', 44),
 };
 /** The classroom activity's steps after "What should students practise?" (on the start screen). */
-export const CANVAS_STEPS = ['help', 'played'];
+export const CANVAS_STEPS = ['lesson', 'help', 'played'];
 /** The Classroom activity card's small picture: a fraction bar (g green, y yellow, e empty parts). */
 const miniBar = (n, parts) => `<span class="su-kbar" style="--n:${n}">${parts.split('').map(c => `<i class="su-kb-${c}"></i>`).join('')}</span>`;
 const art = id => raw(`<span class="su-pic su-art">${ART[id] || ART.else}</span>`);
@@ -104,7 +112,11 @@ export function setupData(t, { teacher = false, forClass = null } = {}) {
   return {
     // "What are you making?": the card that starts selected, and the classroom activity's steps (the grade's topic chips
     // with the kit tool each one means, and the class: only a flag and the grade, never an id the plan carries)
-    canvas: { kind: startKind({ teacher, forClass: !!forClass }), topics: topicsFor(forClass && forClass.grade).map(x => ({ id: x.id, tool: x.gen.tool })), supports: SUPPORTS, plays: CANVAS_PLAYS, grade: forClass ? forClass.grade : '', forClass: !!forClass },
+    canvas: { kind: startKind({ teacher, forClass: !!forClass }), supports: SUPPORTS, help: ['guided'], plays: CANVAS_PLAYS, grade: forClass ? forClass.grade : '', forClass: !!forClass },
+    // "Your lesson": the headings the prompts put in the box (in this language), its limit, and the file the page may
+    // send (teachers only: a kid's own work is never uploaded here)
+    lesson: { heads: Object.fromEntries(LESSON_HEADS.map(k => [k, t(`buildSetup.lesson.heads.${k}`)])), max: LESSON.text,
+      file: teacher ? { accept: FILE_ACCEPT, kinds: ['pdf', 'docx', 'txt', 'md'], bytes: FILE_LIMITS.bytes } : null },
     steps: STEPS, types: GAME_TYPES.map(x => x.id), looks: LOOKS,
     // the game-type step's groups for this viewer (the first one shows first), and the steps each type skips (a survey
     // or a scoreboard has no 2D or 3D, world or characters)
@@ -140,7 +152,7 @@ export function setupClass(user, q = {}) {
 
 router.get('/build/new', requireBuilder, (req, res) => {
   const t = req.t, total = STEPS.length, teacher = setupTeacher(req.user), groups = typeGroups({ teacher });
-  const forClass = setupClass(req.user, req.query), kind = startKind({ teacher, forClass: !!forClass }), topics = topicsFor(forClass && forClass.grade);
+  const forClass = setupClass(req.user, req.query), kind = startKind({ teacher, forClass: !!forClass });
   // One card: a real button (aria-pressed), a picture or drawing, a name of at most two lines and a line under it.
   const card = ({ step, id, pic, title, text = '', extra = '', attrs = '', wrap = '' }) => html`<div class="su-card${extra ? ' has-more' : ''}" data-card="${id}"${raw(wrap)}>
     <button type="button" class="su-pick" data-step="${step}" data-id="${id}" aria-pressed="false"${raw(attrs)}>${pic}<span class="su-name">${title}</span><span class="su-desc">${text}</span>${check}</button>${extra}</div>`;
@@ -192,6 +204,29 @@ router.get('/build/new', requireBuilder, (req, res) => {
     </div>`,
   };
 
+  // "Your lesson": an optional file (teachers: a lesson plan or worksheet, read on the server and never kept) and a box to
+  // describe what they want, with prompts that put a heading in it. Everything here is optional ("Skip").
+  const lessonBody = html`<p class="su-safe su-lsafe">${ICON.lock} <span>${t('buildSetup.lesson.safe')}</span></p>
+      ${teacher ? html`<div class="su-file su-lfile panel" id="su-lfile-box">
+        <h2 id="su-lfile-h">${t('buildSetup.lesson.fileTitle')}</h2>
+        <p class="su-file-text" id="su-lfile-kinds">${t('buildSetup.lesson.fileText')}</p>
+        <input type="file" id="su-lfile" class="sr-only" accept="${FILE_ACCEPT}" aria-labelledby="su-lfile-h" aria-describedby="su-lfile-kinds" tabindex="-1">
+        <button type="button" class="btn" id="su-lfile-btn">${t('buildSetup.lesson.choose')}</button>
+        <div class="su-lstatus" id="su-lstatus" aria-live="polite" hidden></div>
+        <p class="su-lerr" id="su-lerr" role="alert" hidden></p>
+      </div>` : ''}
+      <div class="su-describe panel">
+        <label class="su-dlabel" for="su-ltext">${t('buildSetup.lesson.describe')}</label>
+        <p class="small muted su-dhelp" id="su-ltext-help">${t('buildSetup.lesson.describeHelp')}</p>
+        <div class="su-heads" role="group" aria-label="${t('buildSetup.lesson.prompts')}">${LESSON_HEADS.map(k => html`<button type="button" class="chip su-head" data-head="${k}" aria-controls="su-ltext"><span aria-hidden="true">+</span> ${t(`buildSetup.lesson.prompt.${k}`)}</button>`)}</div>
+        <textarea class="input su-ltext" id="su-ltext" rows="9" maxlength="${LESSON.text}" dir="auto" aria-describedby="su-ltext-help su-lcount" placeholder="${t('buildSetup.lesson.placeholder')}"></textarea>
+        <p class="su-lcount small muted" id="su-lcount" aria-live="polite"><span dir="ltr">0 / ${LESSON.text}</span></p>
+      </div>`;
+  // "How much help?": real checkboxes, styled as the cards; one or more (at least one), Guided to start.
+  const helpBody = html`<div class="su-grid su-grid-text su-grid-4 su-grid-check" role="group" aria-labelledby="su-h-help" aria-describedby="su-hint-help">${SUPPORTS.map(id => html`<div class="su-card su-check" data-card="${id}">
+      <label class="su-pick su-cpick"><input type="checkbox" class="sr-only su-cbox" data-help="${id}" value="${id}"${id === 'guided' ? raw(' checked') : ''}>${art(id)}<span class="su-name">${t(`buildSetup.canvas.help.${id}.title`)}</span><span class="su-desc">${t(`buildSetup.canvas.help.${id}.text`)}</span><span class="su-box" aria-hidden="true">${check}</span></label></div>`)}</div>
+      <p class="su-flag su-one" id="su-help-one" role="status" hidden>${t('buildSetup.lesson.atLeastOne')}</p>`;
+
   const body = html`
   <div class="su" id="su">
     <div class="su-top"><p class="su-brand">${forClass ? t('buildSetup.kind.forClassTitle') : t('buildSetup.title')}</p><button type="button" class="btn" id="su-skipall" hidden>${t('buildSetup.skipAll')}</button></div>
@@ -215,24 +250,24 @@ router.get('/build/new', requireBuilder, (req, res) => {
       </div>
       <div class="su-topic" id="su-topic" data-for="activity"${kind === 'activity' ? '' : raw(' hidden')}>
         <h2 id="su-h-practise">${t('buildSetup.canvas.practise.heading')}</h2>
-        <p class="small muted su-topic-text">${t('buildSetup.canvas.practise.text')}</p>
+        <p class="small muted su-topic-text" id="su-topic-hint">${t('buildSetup.canvas.practise.text')}</p>
         <label class="sr-only" for="su-topic-in">${t('buildSetup.canvas.practise.label')}</label>
-        <input class="input" id="su-topic-in" maxlength="${LIMITS.idea}" dir="auto" autocomplete="off" placeholder="${t('buildSetup.canvas.practise.placeholder')}">
-        <div class="su-chips" role="group" aria-label="${forClass && forClass.raw ? t('buildSetup.canvas.practise.ideasFor', { grade: gradeLabel(t, forClass.raw) }) : t('buildSetup.canvas.practise.ideas')}">${topics.map(x => html`<button type="button" class="chip" data-topic="${x.id}" aria-pressed="false">${t(`buildSetup.canvas.topics.${x.id}`)}</button>`)}</div>
+        <input class="input" id="su-topic-in" maxlength="${LIMITS.idea}" dir="auto" autocomplete="off" aria-describedby="su-topic-hint" placeholder="${t('buildSetup.canvas.practise.placeholder')}">
         <p class="su-safe muted small">${ICON.lock} ${t('buildSetup.canvas.practise.privacy')}</p>
       </div>
       <div class="su-kways">
         <button type="button" class="btn" id="su-direct" data-for="both">${t('buildSetup.start.direct')}</button>
-        <button type="button" class="btn btn-primary" id="su-cnext" data-for="activity"${kind === 'activity' ? '' : raw(' hidden')}>${t('buildSetup.canvas.nextHelp')} <span aria-hidden="true">›</span></button>
+        <button type="button" class="btn btn-primary" id="su-cnext" data-for="activity"${kind === 'activity' ? '' : raw(' hidden')}>${t('buildSetup.canvas.nextLesson')} <span aria-hidden="true">›</span></button>
         <button type="button" class="btn btn-primary" id="su-guide" data-for="arcade"${kind === 'arcade' ? '' : raw(' hidden')}>${t('buildSetup.start.guide')} <span aria-hidden="true">›</span></button>
       </div>
       <p class="su-tools muted">${t('buildSetup.kind.toolsText')} <a href="#type" id="su-tools">${t('buildSetup.kind.toolsLink')}</a></p>
     </section>
     ${CANVAS_STEPS.map((k, i) => html`<section class="su-screen su-step su-cstep" data-screen="${k}" aria-labelledby="su-h-${k}" hidden>
-      <div class="su-progress"><span class="su-dots" aria-hidden="true">${[0, 1, 2].map(n => raw(`<i${n <= i + 1 ? ' class="on"' : ''}></i>`))}</span><span class="su-count">${t('buildSetup.progress', { n: i + 2, total: 3 })}</span></div>
-      <h1 id="su-h-${k}" tabindex="-1">${t(`buildSetup.canvas.${k}.heading`)}</h1><p class="su-hint">${t(`buildSetup.canvas.${k}.hint`)}</p>
-      <div class="su-grid su-grid-text ${k === 'help' ? 'su-grid-4' : 'su-grid-3'}" role="group" aria-labelledby="su-h-${k}">${(k === 'help' ? SUPPORTS : CANVAS_PLAYS).map(id => card({ step: k, id, pic: art(id), title: t(`buildSetup.canvas.${k}.${id}.title`), text: t(`buildSetup.canvas.${k}.${id}.text`) }))}</div>
-      <div class="su-nav"><button type="button" class="btn" data-go="back">${t('buildSetup.back')}</button><span class="su-nav-end"><button type="button" class="btn btn-primary" data-go="next">${k === 'help' ? t('buildSetup.canvas.nextPlayed') : t('buildSetup.next')}</button></span></div>
+      <div class="su-progress"><span class="su-dots" aria-hidden="true">${[0, 1, 2, 3].map(n => raw(`<i${n <= i + 1 ? ' class="on"' : ''}></i>`))}</span><span class="su-count">${t('buildSetup.progress', { n: i + 2, total: CANVAS_STEPS.length + 1 })}</span></div>
+      <h1 id="su-h-${k}" tabindex="-1">${t(k === 'lesson' ? 'buildSetup.lesson.heading' : `buildSetup.canvas.${k}.heading`)}</h1><p class="su-hint" id="su-hint-${k}">${t(k === 'lesson' ? 'buildSetup.lesson.hint' : `buildSetup.canvas.${k}.hint`)}</p>
+      ${k === 'lesson' ? lessonBody : k === 'help' ? helpBody
+        : html`<div class="su-grid su-grid-text su-grid-3" role="group" aria-labelledby="su-h-${k}">${CANVAS_PLAYS.map(id => card({ step: k, id, pic: art(id), title: t(`buildSetup.canvas.${k}.${id}.title`), text: t(`buildSetup.canvas.${k}.${id}.text`) }))}</div>`}
+      <div class="su-nav"><button type="button" class="btn" data-go="back">${t('buildSetup.back')}</button><span class="su-nav-end">${k === 'lesson' ? html`<button type="button" class="btn btn-ghost su-skipstep" data-go="skip">${t('buildSetup.skip')}</button>` : ''}<button type="button" class="btn btn-primary" data-go="next">${k === 'lesson' ? t('buildSetup.next') : k === 'help' ? t('buildSetup.canvas.nextPlayed') : t('buildSetup.next')}</button></span></div>
     </section>`)}
     ${STEPS.map((s, i) => html`<section class="su-screen su-step" data-screen="${s.key}" aria-labelledby="su-h-${s.key}" hidden>
       ${head(s, i)}${grids[s.key]()}${s.other ? elseBox(s) : ''}${nav}
@@ -240,6 +275,7 @@ router.get('/build/new', requireBuilder, (req, res) => {
     <section class="su-screen su-plan" data-screen="plan" aria-labelledby="su-h-plan" hidden>
       <h1 id="su-h-plan" tabindex="-1">${t('buildSetup.plan.heading')}</h1><p class="su-hint">${t('buildSetup.plan.text')}</p>
       <dl class="su-rows panel" id="su-rows"></dl>
+      <section class="su-lsum panel" id="su-lsum" aria-live="polite" hidden></section>
       <p class="su-flag" id="su-plan-2d" hidden>${t('buildSetup.flatNote')}</p>
       <div class="su-told"><p class="su-told-h" id="su-told-h">${t('buildSetup.plan.told')}</p><p class="su-told-t" id="su-told" aria-labelledby="su-told-h" aria-live="polite"></p></div>
       <div class="su-nav"><button type="button" class="btn" data-go="back">${t('buildSetup.back')}</button><button type="button" class="btn btn-hot su-open" id="su-open">${t('buildSetup.plan.open')}</button></div>
@@ -253,11 +289,43 @@ router.get('/build/new', requireBuilder, (req, res) => {
 
 // The summary's sentence, made on the server from the choices (the same sentence the Builder gets when the builder
 // opens it: runner.submit). Nothing is stored; the typed words are only trimmed here, and screened when they are sent.
-// Body: { plan, files } -> { plan (as the Builder will use it), text, custom: ['type' | 'world' | 'character'], engine }.
+// A classroom activity's plan comes back as the model would see it: builder/lesson.js scrubPlan takes out the names of
+// this teacher's students, emails, phone numbers and links, and a lesson that fails the Builder's pre-filter is left
+// out (lessonBlocked says why, so the page can say so before anything is sent).
+// Body: { plan, files } -> { plan (as the Builder will use it), text, custom: ['type' | 'world' | 'character'], engine,
+// lessonBlocked?, removed? }.
 router.post('/api/build/plan', requireBuilder, rateLimit('build-plan', 60, 60e3), (req, res) => {
-  const b = req.body || {}, plan = normalisePlan(b.plan, { forKid: !setupTeacher(req.user) });
+  const b = req.body || {};
+  let plan = normalisePlan(b.plan, { forKid: !setupTeacher(req.user) });
   if (!plan) return res.json({ plan: null, text: '', custom: [], engine: 'open' });
+  const sc = scrubPlan(plan, req.user); plan = sc.plan;
   const e = planEngine(plan), files = Math.max(0, Math.min(SETUP_FILES.max, Math.round(+b.files || 0)));
-  res.json({ plan, text: planSentence(plan, req.t, { files }), custom: customParts(plan), engine: e.engine, ...(e.engine === 'kit2' ? { world: e.world, worldName: req.t(`studio.worlds.names.${worldById(e.world).id}`) } : {}) });
+  res.json({ plan, text: planSentence(plan, req.t, { files }), custom: customParts(plan), engine: e.engine, ...(e.engine === 'kit2' ? { world: e.world, worldName: req.t(`studio.worlds.names.${worldById(e.world).id}`) } : {}),
+    ...(e.engine === 'canvas' ? { removed: Object.values(sc.removed).reduce((a, n) => a + n, 0), ...(sc.blocked ? { lessonBlocked: true } : {}) } : {}) });
 });
 
+// "Your lesson": a teacher's lesson plan or worksheet -> its text, for the page to keep with the other setup choices
+// (builder/lesson.js readLessonFile: Crossword's readers, no AI). The raw body is the file; ?name= its name (its kind
+// comes from it: .pdf, .docx, .txt, .md). Teachers only (a kid's own work is never uploaded here); 5 MB, a PDF of at most
+// 10 pages, 20 files read a day. The file is never stored or logged: it is read in memory and let go; what comes back is
+// its text, cut to 10,000 characters, after the scrubber took out the names of this teacher's students, emails, phone
+// numbers and links, and only when it passes the Builder's pre-filter.
+// -> { name, kind, pages, words, cut, removed, text } | { error, code }.
+router.post('/api/build/lesson-file', requireBuilder, rateLimit('build-lesson', 20, 60e3),
+  express.raw({ type: () => true, limit: FILE_LIMITS.bytes + 1024, inflate: false }), (req, res) => {
+    const fail = (status, code) => res.status(status).json({ error: req.t(`js.buildsetup.lesson.err.${code}`), code });
+    if (!setupTeacher(req.user)) return fail(403, 'notAllowed');
+    const name = String(req.query.name || '').normalize('NFC').replace(/[\u0000-\u001f\u007f/\\]+/g, ' ').trim().slice(0, LESSON.name) || 'lesson';
+    const kind = kindOf(name), buf = Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0);
+    if (!kind) return fail(400, 'docType');
+    if (buf.length > FILE_LIMITS.bytes) return fail(413, 'docBig');
+    const day = `build-lesson-day:${req.user.id}`;
+    if (countLimit(day) >= FILE_LIMITS.perDay) return fail(429, 'docLimit');
+    const r = readLessonFile({ kind, buf });
+    if (!r.ok) return fail(400, r.code);
+    allow(day, FILE_LIMITS.perDay, 864e5);   // a file read counts towards the day's 20 (one turned away for its size or kind does not)
+    const names = studentNames(req.user), text = scrub(r.text, names), shown = scrub(name, names).text;
+    if (screenLesson(text.text)) return fail(400, 'blocked');
+    const removed = Object.values(text.removed).reduce((a, n) => a + n, 0);
+    res.json({ name: shown, kind, pages: r.pages, words: r.words, cut: r.cut, removed, text: text.text });
+  });
