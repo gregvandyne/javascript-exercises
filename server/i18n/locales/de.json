@@ -2789,9 +2789,13 @@
           "kind": "Was",
           "practise": "Üben",
           "help": "Hilfe",
-          "played": "Gespielt",
           "lesson": "Stunde",
-          "purpose": "Wofür"
+          "use": "Nutzung"
+        },
+        "use": {
+          "screen": "Auf ihren Geräten",
+          "worksheet": "Auf Papier",
+          "both": "Auf ihren Geräten und auf Papier"
         }
       },
       "lesson": {
@@ -9489,13 +9493,16 @@
       "practise": "Üben: {topic}.",
       "help": "Hilfe: {help}.",
       "played": {
-        "devices": "Die Kinder spielen auf ihren eigenen Geräten.",
-        "board": "Wir spielen gemeinsam an der Tafel.",
-        "both": "Die Kinder spielen auf ihren Geräten, und wir zeigen es auch an der Tafel."
+        "board": "Wir spielen gemeinsam an der Tafel."
       },
       "lesson": "Ich habe meine Stunde beschrieben.",
       "lessonDoc": "Ich habe meinen Stundenplan hinzugefügt.",
-      "purpose": "Wofür: {list}."
+      "use": {
+        "screen": "Die Kinder nutzen es auf ihren eigenen Geräten.",
+        "worksheet": "Die Kinder nutzen es auf Papier: ein Arbeitsblatt zum Drucken mit Lösungsseite.",
+        "both": "Die Kinder nutzen es auf ihren eigenen Geräten und auf Papier."
+      },
+      "fresh": "Mach wann immer möglich einen neuen Satz Aufgaben."
     },
     "flatNote": "In 2D können bisher nur Lauf- und Fangspiele unsere Welten und Figuren zeigen. Bei anderen Spielen nimmt der Baumeister sein klassisches Aussehen.",
     "typeGroups": {
@@ -9541,7 +9548,6 @@
     },
     "canvas": {
       "nextHelp": "Weiter: wie viel Hilfe",
-      "nextPlayed": "Weiter: wie gespielt wird",
       "practise": {
         "heading": "Was sollen die Kinder üben?",
         "text": "Schreib ein Thema. Der Builder macht 5 Aufgaben mit Schritten und Tipps.",
@@ -9571,22 +9577,6 @@
           "text": "Die Schritte bleiben verborgen, bis die Kinder sie öffnen."
         }
       },
-      "played": {
-        "heading": "Wie wird gespielt?",
-        "hint": "Live-Spiel für Aktivitäten kommt später.",
-        "devices": {
-          "title": "Auf ihren eigenen Geräten",
-          "text": "Jedes Kind arbeitet an seiner eigenen Kopie. Die Ergebnisse gehen in den Fortschritt."
-        },
-        "board": {
-          "title": "An der Tafel",
-          "text": "Ihr macht es gemeinsam auf dem großen Bildschirm. Ohne Punkte."
-        },
-        "both": {
-          "title": "Beides",
-          "text": "Auf ihren Geräten, und an der Tafel, wenn du willst."
-        }
-      },
       "topics": {
         "evenOdd": "Gerade und ungerade",
         "orderNumbers": "Zahlen ordnen",
@@ -9603,20 +9593,17 @@
         "bigAdd": "Große Zahlen addieren"
       },
       "nextLesson": "Weiter: deine Stunde",
-      "purpose": {
-        "heading": "Wofür ist es?",
-        "hint": "Wähle eins oder mehr. Die Schülerinnen und Schüler beginnen mit dem Üben am Bildschirm.",
+      "use": {
+        "heading": "Wie nutzen die Kinder es?",
+        "hint": "Wähle eins oder beide.",
+        "note": "Über die Schaltfläche „Lehrkraft“ kannst du es jederzeit an der Tafel zeigen, und wann immer möglich gibt es einen neuen Satz Aufgaben.",
         "screen": {
-          "title": "Üben am Bildschirm",
-          "text": "Alle arbeiten auf dem eigenen Gerät, mit Schritten und Tipps."
+          "title": "Auf ihren Geräten",
+          "text": "Jedes Kind arbeitet an seiner eigenen Kopie, mit Schritten und Tipps. Die Ergebnisse gehen in den Fortschritt."
         },
         "worksheet": {
-          "title": "Arbeitsblatt zum Drucken",
-          "text": "Aufgaben mit Abbildungen zum Drucken und eine Lösungsseite."
-        },
-        "generator": {
-          "title": "Aufgabengenerator",
-          "text": "Jeder Klick auf „Neues Blatt“ macht neue Aufgaben, am Bildschirm oder auf Papier."
+          "title": "Auf Papier",
+          "text": "Ein Arbeitsblatt zum Drucken mit Lösungsseite."
         }
       }
     },

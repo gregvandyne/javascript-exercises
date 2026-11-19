@@ -2788,9 +2788,13 @@
           "kind": "Quoi",
           "practise": "À travailler",
           "help": "Aide",
-          "played": "Joué",
           "lesson": "Leçon",
-          "purpose": "Pour"
+          "use": "Utilisation"
+        },
+        "use": {
+          "screen": "Sur leurs appareils",
+          "worksheet": "Sur papier",
+          "both": "Sur leurs appareils et sur papier"
         }
       },
       "lesson": {
@@ -9488,13 +9492,16 @@
       "practise": "À travailler : {topic}.",
       "help": "Aide : {help}.",
       "played": {
-        "devices": "Les élèves y jouent sur leurs propres appareils.",
-        "board": "Nous y jouons ensemble au tableau.",
-        "both": "Les élèves y jouent sur leurs appareils, et nous l’affichons aussi au tableau."
+        "board": "Nous y jouons ensemble au tableau."
       },
       "lesson": "J'ai décrit ma leçon.",
       "lessonDoc": "J'ai ajouté ma fiche de préparation.",
-      "purpose": "Pour : {list}."
+      "use": {
+        "screen": "Les élèves l’utilisent sur leurs propres appareils.",
+        "worksheet": "Les élèves l’utilisent sur papier : une fiche à imprimer avec son corrigé.",
+        "both": "Les élèves l’utilisent sur leurs propres appareils et sur papier."
+      },
+      "fresh": "Crée une nouvelle série de questions dès que possible."
     },
     "flatNote": "En 2D, seuls les jeux de course et d’attrape peuvent utiliser nos mondes et nos personnages pour l’instant. Pour les autres jeux, le Constructeur garde son style classique.",
     "typeGroups": {
@@ -9540,7 +9547,6 @@
     },
     "canvas": {
       "nextHelp": "Suivant : combien d’aide",
-      "nextPlayed": "Suivant : comment on joue",
       "practise": {
         "heading": "Que doivent travailler les élèves ?",
         "text": "Écris un thème. Le Builder crée 5 problèmes avec des étapes et des indices.",
@@ -9570,22 +9576,6 @@
           "text": "Les étapes restent cachées jusqu’à ce que les élèves les demandent."
         }
       },
-      "played": {
-        "heading": "Comment va-t-on jouer ?",
-        "hint": "Le jeu en direct pour les activités viendra plus tard.",
-        "devices": {
-          "title": "Sur leurs appareils",
-          "text": "Chaque élève travaille sur sa propre copie. Les résultats vont dans Progrès."
-        },
-        "board": {
-          "title": "Au tableau",
-          "text": "Vous le faites ensemble sur le grand écran. Sans scores."
-        },
-        "both": {
-          "title": "Les deux",
-          "text": "Sur leurs appareils, et au tableau quand tu veux."
-        }
-      },
       "topics": {
         "evenOdd": "Pair et impair",
         "orderNumbers": "Ranger des nombres",
@@ -9602,20 +9592,17 @@
         "bigAdd": "Additionner de grands nombres"
       },
       "nextLesson": "Suivant : ta leçon",
-      "purpose": {
-        "heading": "À quoi ça sert ?",
-        "hint": "Choisis une ou plusieurs options. Les élèves commencent par l’entraînement à l’écran.",
+      "use": {
+        "heading": "Comment les élèves vont-ils l’utiliser ?",
+        "hint": "Choisis l’un ou les deux.",
+        "note": "Tu peux toujours l’afficher au tableau avec le bouton Enseignant, et une nouvelle série de questions est créée dès que possible.",
         "screen": {
-          "title": "Entraînement à l’écran",
-          "text": "Les élèves travaillent sur leur propre appareil, avec des étapes et des indices."
+          "title": "Sur leurs appareils",
+          "text": "Chaque élève travaille sur sa propre copie, avec des étapes et des indices. Les résultats vont dans Progrès."
         },
         "worksheet": {
-          "title": "Fiche à imprimer",
-          "text": "Des questions avec figures à imprimer, et une page de corrigé."
-        },
-        "generator": {
-          "title": "Générateur de questions",
-          "text": "Chaque appui sur Nouvelle fiche donne une nouvelle série, à l’écran ou sur papier."
+          "title": "Sur papier",
+          "text": "Une fiche à imprimer avec son corrigé."
         }
       }
     },

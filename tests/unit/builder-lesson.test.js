@@ -74,7 +74,7 @@ test('help: an array in SUPPORTS order (no repeats, unknown dropped), the old si
   assert.deepEqual([n({}).help, n({ help: [] }).help, n({ help: ['nope'] }).help], [['guided'], ['guided'], ['guided']]);
   assert.deepEqual(plan.helpOf(['guided', 'count']), ['count', 'guided']);
   const p = n({ topic: { text: 'Adding' }, help: ['guided', 'count'], grade: '2' });
-  assert.equal(plan.planSentence(p, tFor('en')), 'Here is my plan: a classroom activity. For grade 2. Practice: Adding. Help: Count up and Guided. Students play it on their own devices.');
+  assert.equal(plan.planSentence(p, tFor('en')), 'Here is my plan: a classroom activity. For grade 2. Practice: Adding. Students use it on their own devices. Help: Count up and Guided.');
   assert.equal(plan.planEngine(p).support, 'count'); assert.deepEqual(plan.planEngine(p).help, ['count', 'guided']);
 });
 test('the activity offers ONLY the chosen modes: the data, the note for the model, and a mock build end to end', async () => {

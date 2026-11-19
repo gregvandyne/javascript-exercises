@@ -9,19 +9,20 @@
 import { api, toast, sheet, esc, $, $$, t } from '/js/app.js';
 import { LANG } from '/js/i18n.js';
 
-// "What are you making?" comes first: a Classroom activity (four short steps: what to practise, on the start screen;
-// your lesson; what it is for; how much help; how it is played) or an Arcade game (the steps below, unchanged). D.canvas.kind is the
+// "What are you making?" comes first: a Classroom activity (four steps in all: what it is, on the start screen; your
+// lesson; how students will use it; how much help) or an Arcade game (the steps below, unchanged). D.canvas.kind is the
 // card that starts selected (a teacher, or opened from a class); one tap switches. An activity's plan is { kind:
-// 'activity', topic, help: [modes], played, grade, lesson: { text, doc } } (builder/plan.js): the topic, the class's
+// 'activity', topic, help: [modes], purpose, played, grade, lesson: { text, doc } } (builder/plan.js): the topic, the class's
 // grade and what they add about their lesson, never the class or its students. "Your lesson" is optional: a file
 // (teachers: read on the server, never kept; only its text comes back, with the names of their students, emails and
-// phone numbers already taken out) and a box to describe what they want. "How much help?" takes one or more.
+// phone numbers already taken out) and a box to describe what they want. "How will students use it?" (on their devices,
+// on paper) takes one or both, and "How much help?" one or more.
 const D = JSON.parse($('#page-data').textContent);
-const STEPS = D.steps, KEYS = STEPS.map(s => s.key), CSTEPS = ['lesson', 'purpose', 'help', 'played'];
+const STEPS = D.steps, KEYS = STEPS.map(s => s.key), CSTEPS = ['lesson', 'use', 'help'];
 const ORDER = ['start', ...KEYS, ...CSTEPS, 'plan'];
 const order = () => (S.kind === 'activity' ? ['start', ...CSTEPS, 'plan'] : ['start', ...KEYS, 'plan']);
 const stepOf = key => STEPS.find(s => s.key === key) || (CSTEPS.includes(key) ? { key } : null);
-const S = { kind: D.canvas.kind, topicText: '', lesson: { text: '', doc: null, busy: false }, screen: 'start', sel: { type: [], look: [], world: [], chars: [], play: [], learn: [], help: [...D.canvas.help], purpose: [...D.canvas.purpose], played: ['devices'] }, idea: { type: '', world: '', chars: '', learn: '' }, notes: '', files: [], back: null, gameId: null, busy: false, playPicked: false };
+const S = { kind: D.canvas.kind, topicText: '', lesson: { text: '', doc: null, busy: false }, screen: 'start', sel: { type: [], look: [], world: [], chars: [], play: [], learn: [], help: [...D.canvas.help], use: [...D.canvas.use] }, idea: { type: '', world: '', chars: '', learn: '' }, notes: '', files: [], back: null, gameId: null, busy: false, playPicked: false };
 const list = items => { try { return new Intl.ListFormat(LANG, { style: 'long', type: 'conjunction' }).format(items); } catch { return items.join(', '); } };
 const say = msg => { const l = $('#su-live'); l.textContent = ''; setTimeout(() => { l.textContent = msg; }, 30); };
 
@@ -60,6 +61,8 @@ history.replaceState({ su: 'start' }, '', location.pathname);   // a reload star
 
 /** Next / Skip this step / Back. A step opened with "Change" on the plan goes back to the plan. */
 function go(dir) {
+  // "How will students use it?" starts with nothing picked: on to the next step (or back to the plan) only once one is
+  if (S.screen === 'use' && !S.sel.use.length && (dir !== 'back' || S.back)) return needUse();
   if (S.back && S.screen !== 'plan') { const to = S.back; S.back = null; return show(to); }
   const list = order().filter(k => S.kind === 'activity' || !skipped().includes(k)), i = list.indexOf(S.screen);
   show(list[Math.max(0, Math.min(list.length - 1, i + (dir === 'back' ? -1 : 1)))]);
@@ -84,7 +87,6 @@ function paint(key) {
   }
 }
 function pick(key, id) {
-  if (key === 'played') { S.sel[key] = [id]; paint(key); return; }   // how an activity is played: one answer
   const st = stepOf(key), cur = S.sel[key], had = cur.includes(id);
   S.sel[key] = st.multi ? (had ? cur.filter(x => x !== id) : [...cur, id]) : had ? [] : [id];
   paint(key);
@@ -244,21 +246,28 @@ function paintHelp() {
   for (const b of $$('.su-cbox')) { const on = S.sel.help.includes(b.dataset.help); b.checked = on; b.closest('.su-card').classList.toggle('is-on', on); }
 }
 
-// ---------------------------------------------------------------- "What is it for?": one or more (checkboxes)
-// Practice on screen, a printable worksheet, a question generator (builder/plan.js PURPOSES); at least one.
-const PURPOSE_ORDER = D.canvas.purposes;
-function togglePurpose(box) {
-  const id = box.dataset.purpose, on = box.checked;
-  if (!on && S.sel.purpose.length === 1 && S.sel.purpose[0] === id) {
-    box.checked = true; $('#su-purpose-one').hidden = false; say(t('js.buildsetup.lesson.atLeastOne')); return;
-  }
-  $('#su-purpose-one').hidden = true;
-  S.sel.purpose = PURPOSE_ORDER.filter(p => (p === id ? on : S.sel.purpose.includes(p)));
-  paintPurpose();
+// ---------------------------------------------------------------- "How will students use it?": one or both (checkboxes)
+// On their devices, on paper (builder/plan.js CANVAS_USES). Nothing is picked to start; Next asks for at least one.
+const USE_ORDER = D.canvas.uses;
+function toggleUse(box) {
+  const id = box.dataset.use, on = box.checked;
+  S.sel.use = USE_ORDER.filter(u => (u === id ? on : S.sel.use.includes(u)));
+  if (S.sel.use.length) $('#su-use-one').hidden = true;
+  paintUse();
 }
-function paintPurpose() {
-  for (const b of $$('.su-pbox')) { const on = S.sel.purpose.includes(b.dataset.purpose); b.checked = on; b.closest('.su-card').classList.toggle('is-on', on); }
+/** Next with nothing picked: the page says so, and the first card gets the focus. */
+function needUse() {
+  $('#su-use-one').hidden = false; say(t('js.buildsetup.lesson.atLeastOne'));
+  $('.su-pbox').focus();
 }
+function paintUse() {
+  for (const b of $$('.su-pbox')) { const on = S.sel.use.includes(b.dataset.use); b.checked = on; b.closest('.su-card').classList.toggle('is-on', on); }
+}
+/** The uses as the plan's purpose and played (the same as builder/plan.js usesPlan): a question generator always (the
+ *  Builder writes one whenever the problems allow); on their devices is played 'both' (Board mode is always under the
+ *  kit's Teacher button), on paper only is 'board' (nobody plays it on their own device). */
+const usesPlan = use => ({ purpose: [...use, 'generator'], played: use.includes('screen') ? 'both' : 'board' });
+const useKey = () => (S.sel.use.length > 1 ? 'both' : S.sel.use[0] || 'screen');
 
 // ---------------------------------------------------------------- "Your lesson": a file and a box (all optional)
 const L = D.lesson;
@@ -308,7 +317,7 @@ const ideaOf = key => S.idea[key].trim().replace(/\s+/g, ' ');
 /** The choices as the Builder gets them: pack choices by id, typed ones as custom text; blank means it decides. */
 function buildPlan() {
   const from = D.canvas.forClass ? { forClass: true } : {};
-  if (S.kind === 'activity') { const lesson = lessonOf(); return { kind: 'activity', topic: topicOf(), help: [...S.sel.help], purpose: [...S.sel.purpose], played: S.sel.played[0] || 'devices', grade: D.canvas.grade || '', ...(lesson ? { lesson } : {}), ...from }; }
+  if (S.kind === 'activity') { const lesson = lessonOf(); return { kind: 'activity', topic: topicOf(), help: [...S.sel.help], ...usesPlan(S.sel.use.length ? S.sel.use : ['screen']), grade: D.canvas.grade || '', ...(lesson ? { lesson } : {}), ...from }; }
   const skip = skipped();
   const one = key => { const id = S.sel[key][0]; if (!id || skip.includes(key)) return null; if (id === 'else') return ideaOf(key) ? { from: 'custom', text: ideaOf(key) } : null; return { from: 'pack', id }; };
   return {
@@ -346,7 +355,7 @@ function renderPlan() {
     .catch(e => { if (e.signedOut) { location.href = `/login?next=${encodeURIComponent('/build/new')}`; return; } told.textContent = e.message; });
 }
 
-/** An activity's plan: what it is, what they practise, their lesson, how much help, how it is played. Under the rows,
+/** An activity's plan: what it is, what they practise, their lesson, how students use it, how much help. Under the rows,
  *  what the Builder will read about their lesson, as the server will send it (names, emails and phone numbers out). */
 function renderActivityPlan() {
   const topic = topicOf(), lesson = lessonOf();
@@ -355,9 +364,8 @@ function renderActivityPlan() {
     ['kind', t('js.buildsetup.canvas.activity'), 'start'],
     ...(topic ? [['practise', topic.text, 'start']] : []),
     ['lesson', lessonVal, 'lesson'],
-    ['purpose', list(S.sel.purpose.map(id => $(`.su-pbox[data-purpose="${id}"]`).closest('label').querySelector('.su-name').textContent)), 'purpose'],
+    ['use', t(`js.buildsetup.canvas.use.${useKey()}`), 'use'],
     ['help', list(S.sel.help.map(id => $(`.su-cbox[data-help="${id}"]`).closest('label').querySelector('.su-name').textContent)), 'help'],
-    ['played', nameOf('played', S.sel.played[0]), 'played'],
   ];
   $('#su-rows').innerHTML = rows.map(([k, value, step]) => { const n = t(`js.buildsetup.canvas.rows.${k}`); return `<div class="su-row"><dt>${esc(n)}</dt><dd><span class="su-val" dir="auto">${esc(value)}</span></dd>
     <button type="button" class="btn btn-ghost btn-sm su-change" data-change="${step}" aria-label="${esc(t('js.buildsetup.plan.changeLabel', { name: n }))}">${esc(t('js.buildsetup.plan.change'))}</button></div>`; }).join('');
@@ -474,7 +482,7 @@ $('#su-guide').addEventListener('click', () => show(KEYS[0]));
 $('#su-cnext').addEventListener('click', () => show(CSTEPS[0]));
 for (const b of $$('.su-kind')) b.addEventListener('click', () => setKind(b.dataset.kind));
 for (const b of $$('.su-cbox')) b.addEventListener('change', () => toggleHelp(b));
-for (const b of $$('.su-pbox')) b.addEventListener('change', () => togglePurpose(b));
+for (const b of $$('.su-pbox')) b.addEventListener('change', () => toggleUse(b));
 $('#su-ltext').addEventListener('input', e => { S.lesson.text = e.target.value; paintCount(); });
 if (L.file) {
   $('#su-lfile-btn').addEventListener('click', () => $('#su-lfile').click());
@@ -496,4 +504,4 @@ $('#su-file-btn').addEventListener('click', () => $('#su-file').click());
 $('#su-file').addEventListener('change', e => { addFiles([...e.target.files]); e.target.value = ''; });
 refreshLimits();
 paintProgress();
-setKind(S.kind); paintHelp(); paintPurpose(); paint('played'); paintCount();
+setKind(S.kind); paintHelp(); paintUse(); paintCount();

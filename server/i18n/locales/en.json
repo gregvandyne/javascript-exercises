@@ -2807,9 +2807,13 @@
           "kind": "What",
           "practise": "Practice",
           "help": "Help",
-          "played": "Played",
           "lesson": "Lesson",
-          "purpose": "For"
+          "use": "Use"
+        },
+        "use": {
+          "screen": "On their devices",
+          "worksheet": "On paper",
+          "both": "On their devices and on paper"
         }
       },
       "lesson": {
@@ -9915,13 +9919,16 @@
       "practise": "Practice: {topic}.",
       "help": "Help: {help}.",
       "played": {
-        "devices": "Students play it on their own devices.",
-        "board": "We play it together on the board.",
-        "both": "Students play it on their own devices, and we also show it on the board."
+        "board": "We play it together on the board."
       },
       "lesson": "I described my lesson.",
       "lessonDoc": "I added my lesson plan.",
-      "purpose": "For: {list}."
+      "use": {
+        "screen": "Students use it on their own devices.",
+        "worksheet": "Students use it on paper: a printable worksheet with an answer key.",
+        "both": "Students use it on their own devices and on paper."
+      },
+      "fresh": "Make a fresh set of questions whenever possible."
     },
     "flatNote": "Only running and catching games can use our worlds and characters in 2D so far. For other kinds of game the Builder uses its classic look.",
     "typeGroups": {
@@ -9967,7 +9974,6 @@
     },
     "canvas": {
       "nextHelp": "Next: how much help",
-      "nextPlayed": "Next: how it is played",
       "practise": {
         "heading": "What should students practice?",
         "text": "Type a topic. The Builder makes 5 problems with steps and hints.",
@@ -9997,22 +10003,6 @@
           "text": "Steps stay hidden until students ask for them."
         }
       },
-      "played": {
-        "heading": "How will it be played?",
-        "hint": "Live play for activities comes later.",
-        "devices": {
-          "title": "On their own devices",
-          "text": "Each student works on their own copy. Results go to Progress."
-        },
-        "board": {
-          "title": "On the board",
-          "text": "You work through it together on the big screen. No scores."
-        },
-        "both": {
-          "title": "Both",
-          "text": "Their own devices, and on the board when you want."
-        }
-      },
       "topics": {
         "evenOdd": "Even and odd",
         "orderNumbers": "Order numbers",
@@ -10029,20 +10019,17 @@
         "bigAdd": "Add big numbers"
       },
       "nextLesson": "Next: your lesson",
-      "purpose": {
-        "heading": "What is it for?",
-        "hint": "Pick one or more. Practice on screen is where students start.",
+      "use": {
+        "heading": "How will students use it?",
+        "hint": "Pick one or both.",
+        "note": "You can always show it on the board from the Teacher button, and a fresh set of questions is made whenever possible.",
         "screen": {
-          "title": "Practice on screen",
-          "text": "Students work through it on their own devices, with steps and hints."
+          "title": "On their devices",
+          "text": "Each student works on their own copy, with steps and hints. Results go to Progress."
         },
         "worksheet": {
-          "title": "Printable worksheet",
-          "text": "Questions with figures, ready to print, and an answer key page."
-        },
-        "generator": {
-          "title": "Question generator",
-          "text": "Every press of New sheet makes a fresh set, on screen or on paper."
+          "title": "On paper",
+          "text": "A printable worksheet with an answer key."
         }
       }
     },

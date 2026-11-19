@@ -93,9 +93,9 @@ test('purpose: normalised (missing is Practice on screen, unknown dropped, setup
   assert.deepEqual(plan.normalisePlan({ kind: 'activity', purpose: [] }).purpose, ['screen'], 'never empty');
   assert.deepEqual(plan.normalisePlan({ kind: 'activity', purpose: 'worksheet' }).purpose, ['worksheet']);
   const p = plan.normalisePlan({ kind: 'activity', topic: { text: 'Forces on a ramp' }, purpose: ['screen', 'worksheet', 'generator'], grade: '8' });
-  assert.equal(plan.planSentence(p, tFor('en')), 'Here is my plan: a classroom activity. For grade 8. Practice: Forces on a ramp. For: Practice on screen, Printable worksheet, and Question generator. Help: Guided. Students play it on their own devices.');
-  assert.doesNotMatch(plan.planSentence(p0, tFor('en')), /For:/, 'the default adds nothing (older plans read as before)');
-  assert.match(plan.planSentence(p, tFor('fr')), /Pour : /); assert.match(plan.planSentence(p, tFor('he')), /מטרה: /);
+  assert.equal(plan.planSentence(p, tFor('en')), 'Here is my plan: a classroom activity. For grade 8. Practice: Forces on a ramp. Students use it on their own devices and on paper. Help: Guided. Make a fresh set of questions whenever possible.');
+  assert.equal(plan.planSentence(p0, tFor('en')), 'Here is my plan: a classroom activity. Practice: Fractions. Students use it on their own devices. Help: Guided.', 'the default promises no paper and no fresh sets (older plans read as before)');
+  assert.match(plan.planSentence(p, tFor('fr')), /sur leurs propres appareils et sur papier/); assert.match(plan.planSentence(p, tFor('he')), /במכשירים שלהם ועל דף/);
   const note = plan.planNote(p);
   assert.match(note, /config\.purpose \["screen","worksheet","generator"\]/); assert.match(note, /give a generator \("gen"\)/); assert.match(note, /Never build printing of your own/);
   assert.match(note, /Figures: .*FIGURE RULES/, 'the topic named forces');
@@ -110,20 +110,78 @@ test('the figures flag comes from the topic, the lesson (and its file) or the no
   assert.equal(plan.normalisePlan({ kind: 'activity', lesson: { doc: { name: 'plan.pdf', kind: 'pdf', pages: 1, text: 'Halbwertszeit und Zerfall' } } }).figures, true);
   assert.ok(figureWords('מדחום ומשורה'));
 });
-test('/build/new: the "What is it for?" step right after "Your lesson", three checkboxes, Practice on screen to start', async () => {
+test('/build/new: "How will students use it?" right after "Your lesson", two checkboxes, nothing picked to start; no generator card', async () => {
   const h = (await teacher.c('/build/new')).text, d = pageData(h);
-  assert.deepEqual(d.canvas.purposes, ['screen', 'worksheet', 'generator']); assert.deepEqual(d.canvas.purpose, ['screen']);
-  const order = [...h.matchAll(/data-screen="(lesson|purpose|help|played)"/g)].map(m => m[1]);
-  assert.deepEqual(order, ['lesson', 'purpose', 'help', 'played']);
-  const boxes = [...h.matchAll(/<input type="checkbox" class="sr-only su-pbox" data-purpose="(\w+)" value="\w+"( checked)?>/g)].map(m => [m[1], !!m[2]]);
-  assert.deepEqual(boxes, [['screen', true], ['worksheet', false], ['generator', false]]);
-  assert.match(h, /What is it for\?/); assert.match(h, /Printable worksheet/); assert.match(h, /Question generator/);
-  assert.match(h, /id="su-purpose-one"[^>]*hidden>Pick at least one\./);
+  assert.deepEqual(d.canvas.uses, ['screen', 'worksheet']); assert.deepEqual(d.canvas.use, [], 'nothing picked to start');
+  const order = [...h.matchAll(/data-screen="(lesson|use|purpose|help|played)"/g)].map(m => m[1]);
+  assert.deepEqual(order, ['lesson', 'use', 'help']);
+  const boxes = [...h.matchAll(/<input type="checkbox" class="sr-only su-pbox" data-use="(\w+)" value="\w+"( checked)?>/g)].map(m => [m[1], !!m[2]]);
+  assert.deepEqual(boxes, [['screen', false], ['worksheet', false]]);
+  assert.match(h, /<h1 id="su-h-use" tabindex="-1">How will students use it\?<\/h1>/); assert.match(h, />On their devices</); assert.match(h, />On paper</);
+  assert.doesNotMatch(h, /Question generator|What is it for\?|data-purpose=/);
+  assert.match(h, /aria-describedby="su-hint-use su-use-note"/);
+  assert.match(h, /<p class="small muted su-unote" id="su-use-note">You can always show it on the board from the Teacher button, and a fresh set of questions is made whenever possible\.<\/p>/);
+  assert.match(h, /id="su-use-one"[^>]*hidden>Pick at least one\./);
   const js = fs.readFileSync(path.join(ROOT, 'public/js/buildsetup.js'), 'utf8');
-  assert.match(js, /CSTEPS = \['lesson', 'purpose', 'help', 'played'\]/); assert.match(js, /purpose: \[\.\.\.S\.sel\.purpose\]/); assert.match(js, /\['purpose', list\(/, 'a row on the plan summary');
-  const r = await teacher.c('/api/build/plan', { method: 'POST', body: { plan: { kind: 'activity', topic: { text: 'Circuits' }, purpose: ['worksheet'] } } });
-  assert.deepEqual(r.json.plan.purpose, ['worksheet']); assert.equal(r.json.plan.figures, true); assert.match(r.json.text, /For: Printable worksheet\./);
-  for (const code of CODES) for (const k of ['buildSetup.canvas.purpose.heading', 'buildSetup.canvas.purpose.screen.title', 'buildSetup.canvas.purpose.worksheet.text', 'buildSetup.canvas.purpose.generator.title', 'buildSetup.say.purpose', 'js.buildsetup.canvas.rows.purpose', 'play.printCanvas.sheet', 'play.printCanvas.answer']) assert.ok(tFor(code)(k) && tFor(code)(k) !== k, `${code} ${k}`);
+  assert.match(js, /CSTEPS = \['lesson', 'use', 'help'\]/); assert.match(js, /\.\.\.usesPlan\(S\.sel\.use\)/); assert.match(js, /\['use', t\(/, 'a row on the plan summary');
+  // the page's usesPlan says what builder/plan.js usesPlan says
+  assert.match(js, /const usesPlan = use => \(\{ purpose: \[\.\.\.use, 'generator'\], played: use\.includes\('screen'\) \? 'both' : 'board' \}\);/);
+  const r = await teacher.c('/api/build/plan', { method: 'POST', body: { plan: { kind: 'activity', topic: { text: 'Circuits' }, ...plan.usesPlan(['worksheet']) } } });
+  assert.deepEqual([r.json.plan.purpose, r.json.plan.played], [['worksheet', 'generator'], 'board']); assert.equal(r.json.plan.figures, true);
+  assert.match(r.json.text, /Students use it on paper: a printable worksheet with an answer key\./); assert.doesNotMatch(r.json.text, /own devices|on the board/);
+  for (const code of CODES) for (const k of ['buildSetup.canvas.use.heading', 'buildSetup.canvas.use.hint', 'buildSetup.canvas.use.note', 'buildSetup.canvas.use.screen.title', 'buildSetup.canvas.use.worksheet.text', 'buildSetup.say.use.both', 'buildSetup.say.fresh', 'js.buildsetup.canvas.rows.use', 'js.buildsetup.canvas.use.both', 'play.printCanvas.sheet', 'play.printCanvas.answer']) assert.ok(tFor(code)(k) && tFor(code)(k) !== k, `${code} ${k}`);
+});
+test('the four-step setup: each choice of "How will students use it?" -> the purpose and played the Builder gets, and what it is told', () => {
+  const want = [
+    [['screen'], ['screen', 'generator'], 'both', 'Students use it on their own devices.'],
+    [['worksheet'], ['worksheet', 'generator'], 'board', 'Students use it on paper: a printable worksheet with an answer key.'],
+    [['screen', 'worksheet'], ['screen', 'worksheet', 'generator'], 'both', 'Students use it on their own devices and on paper.'],
+  ];
+  for (const [use, purpose, played, says] of want) {
+    assert.deepEqual(plan.usesPlan(use), { purpose, played }, use.join());
+    const p = plan.normalisePlan({ kind: 'activity', topic: { text: 'Adding' }, ...plan.usesPlan(use) });
+    assert.deepEqual([p.purpose, p.played], [purpose, played], `${use}: kept as sent`);
+    assert.deepEqual(plan.usesOf(p), use, `${use}: read back as the same uses`);
+    const text = plan.planSentence(p, tFor('en')), note = plan.planNote(p), data = plan.canvasActivity(p, tFor('en'));
+    assert.equal(text, `Here is my plan: a classroom activity. Practice: Adding. ${says} Help: Guided. Make a fresh set of questions whenever possible.`);
+    // a generator whenever possible, and what to do when none fits (the kit refuses "generator" without "gen")
+    assert.match(note, new RegExp(`config\\.purpose ${JSON.stringify(purpose).replace(/[[\]]/g, '\\$&')}`));
+    assert.match(note, /Fresh sets whenever possible: give a generator \("gen"\) when the problems allow one/); assert.match(note, /leave "generator" out of config\.purpose/);
+    assert.deepEqual(data.config.purpose, purpose); assert.equal(data.config.board, played === 'board');
+    // never what the teacher did not pick
+    if (use.includes('screen')) { assert.match(note, /How it is played: ON THEIR OWN DEVICES: .*config\.board false.*Board mode \(under its Teacher button\)/); assert.doesNotMatch(note, /ON THE BOARD TOGETHER|NOT PLAYED ON STUDENTS/); }
+    else { assert.match(note, /How it is played: NOT PLAYED ON STUDENTS' DEVICES: it is used on paper.*config\.board true/); assert.doesNotMatch(note, /ON THEIR OWN DEVICES|PRACTICE ON SCREEN/); assert.doesNotMatch(text, /own devices|board/); }
+    if (use.includes('worksheet')) assert.match(note, /It prints a worksheet/); else { assert.doesNotMatch(note, /It prints a worksheet|PRINTABLE WORKSHEET/); assert.doesNotMatch(text, /paper|print/); }
+    assert.match(plan.planBrief(p), new RegExp(`for ${purpose.join(', ')} \\(config\\.purpose\\); played ${played}`));
+  }
+  // nothing, or something unknown: on their devices
+  assert.deepEqual(plan.usesPlan([]), { purpose: ['screen', 'generator'], played: 'both' }); assert.deepEqual(plan.usesPlan(['poster']), plan.usesPlan(['screen']));
+});
+test('an older setup (played "board", purpose "generator", from the five-step page or a saved chat) still loads, reads sensibly and builds', async () => {
+  const old = { kind: 'activity', topic: { text: 'Adding' }, help: ['guided'], purpose: ['generator'], played: 'board', grade: '3' };
+  const p = plan.normalisePlan(old);
+  assert.deepEqual([p.purpose, p.played], [['generator'], 'board'], 'not migrated: kept as it was');
+  assert.deepEqual(plan.usesOf(p), ['screen']);
+  assert.equal(plan.planSentence(p, tFor('en')), 'Here is my plan: a classroom activity. For grade 3. Practice: Adding. We play it together on the board. Help: Guided. Make a fresh set of questions whenever possible.');
+  assert.match(plan.planNote(p), /How it is played: ON THE BOARD TOGETHER/); assert.match(plan.planNote(p), /config\.purpose \["generator"\]/);
+  assert.equal(plan.canvasActivity(p, tFor('en')).config.board, true);
+  // every older answer reads without an error, in every language
+  for (const played of plan.CANVAS_PLAYS) for (const purpose of [['screen'], ['worksheet'], ['generator'], ['screen', 'worksheet', 'generator'], undefined]) {
+    const q = plan.normalisePlan({ kind: 'activity', purpose, played });
+    for (const code of CODES) { const s = plan.planSentence(q, tFor(code)); assert.ok(s && !/buildSetup\./.test(s), `${code} ${played} ${purpose}: ${s}`); }
+    assert.ok(plan.planNote(q).includes('How it is played: ') && !plan.planNote(q).includes('undefined'), `${played} ${purpose}`);
+  }
+  assert.match(plan.planSentence(plan.normalisePlan({ kind: 'activity', purpose: ['screen', 'worksheet'], played: 'board' }), tFor('en')), /We play it together on the board\. Students use it on paper/);
+  // the first build with the old plan, end to end with the mock Builder
+  const r = await teacher.c('/api/build/plan', { method: 'POST', body: { plan: old } });
+  assert.equal(r.status, 200); assert.equal(r.json.engine, 'canvas'); assert.match(r.json.text, /We play it together on the board/);
+  const g = await teacher.c('/api/studio/new', { method: 'POST', body: {} });
+  const sent = await teacher.c(`/api/studio/${g.json.id}/chat`, { method: 'POST', body: { detach: true, plan: old } });
+  assert.ok([200, 202].includes(sent.status), sent.text);
+  await runner.idle(g.json.id);
+  const v = games.getVersion(games.getGame(g.json.id).current_version_id), data = activityData(v.html).data;
+  assert.deepEqual([data.config.board, data.config.purpose, !!data.gen], [true, ['generator'], true]);
+  assert.deepEqual(autotest.canvasSelfTest(v.html), { ok: true, problems: [] });
 });
 
 // ---------------------------------------------------------------- the self-test's answer key

@@ -2789,9 +2789,13 @@
           "kind": "Wat",
           "practise": "Oefenen",
           "help": "Hulp",
-          "played": "Gespeeld",
           "lesson": "Les",
-          "purpose": "Voor"
+          "use": "Gebruik"
+        },
+        "use": {
+          "screen": "Op hun apparaat",
+          "worksheet": "Op papier",
+          "both": "Op hun apparaat en op papier"
         }
       },
       "lesson": {
@@ -9489,13 +9493,16 @@
       "practise": "Oefenen: {topic}.",
       "help": "Hulp: {help}.",
       "played": {
-        "devices": "Leerlingen spelen het op hun eigen apparaat.",
-        "board": "We spelen het samen op het bord.",
-        "both": "Leerlingen spelen het op hun eigen apparaat, en we laten het ook op het bord zien."
+        "board": "We spelen het samen op het bord."
       },
       "lesson": "Ik heb mijn les beschreven.",
       "lessonDoc": "Ik heb mijn lesplan toegevoegd.",
-      "purpose": "Voor: {list}."
+      "use": {
+        "screen": "Leerlingen gebruiken het op hun eigen apparaat.",
+        "worksheet": "Leerlingen gebruiken het op papier: een werkblad om af te drukken, met antwoordblad.",
+        "both": "Leerlingen gebruiken het op hun eigen apparaat en op papier."
+      },
+      "fresh": "Maak waar het kan een nieuwe set vragen."
     },
     "flatNote": "In 2D kunnen voorlopig alleen ren- en vanggames onze werelden en figuren gebruiken. Bij andere games gebruikt de Bouwer zijn klassieke uiterlijk.",
     "typeGroups": {
@@ -9541,7 +9548,6 @@
     },
     "canvas": {
       "nextHelp": "Volgende: hoeveel hulp",
-      "nextPlayed": "Volgende: hoe het gespeeld wordt",
       "practise": {
         "heading": "Wat moeten leerlingen oefenen?",
         "text": "Typ een onderwerp. De Builder maakt 5 opgaven met stappen en hints.",
@@ -9571,22 +9577,6 @@
           "text": "De stappen blijven verborgen tot leerlingen erom vragen."
         }
       },
-      "played": {
-        "heading": "Hoe wordt het gespeeld?",
-        "hint": "Live spelen met activiteiten komt later.",
-        "devices": {
-          "title": "Op hun eigen apparaat",
-          "text": "Elke leerling werkt aan een eigen kopie. De resultaten gaan naar Voortgang."
-        },
-        "board": {
-          "title": "Op het bord",
-          "text": "Jullie doen het samen op het grote scherm. Zonder scores."
-        },
-        "both": {
-          "title": "Allebei",
-          "text": "Op hun eigen apparaat, en op het bord wanneer je wilt."
-        }
-      },
       "topics": {
         "evenOdd": "Even en oneven",
         "orderNumbers": "Getallen ordenen",
@@ -9603,20 +9593,17 @@
         "bigAdd": "Grote getallen optellen"
       },
       "nextLesson": "Volgende: je les",
-      "purpose": {
-        "heading": "Waarvoor is het?",
-        "hint": "Kies er één of meer. Leerlingen beginnen met oefenen op het scherm.",
+      "use": {
+        "heading": "Hoe gebruiken leerlingen het?",
+        "hint": "Kies er één of allebei.",
+        "note": "Je kunt het altijd op het bord laten zien met de knop Leraar, en waar het kan komt er een nieuwe set vragen.",
         "screen": {
-          "title": "Oefenen op het scherm",
-          "text": "Leerlingen werken op hun eigen apparaat, met stappen en hints."
+          "title": "Op hun apparaat",
+          "text": "Elke leerling werkt aan een eigen kopie, met stappen en hints. De resultaten gaan naar Voortgang."
         },
         "worksheet": {
-          "title": "Werkblad om af te drukken",
-          "text": "Vragen met figuren om af te drukken, plus een antwoordblad."
-        },
-        "generator": {
-          "title": "Vragengenerator",
-          "text": "Elke keer dat je op Nieuw blad drukt, komt er een nieuwe set, op het scherm of op papier."
+          "title": "Op papier",
+          "text": "Een werkblad om af te drukken, met antwoordblad."
         }
       }
     },
