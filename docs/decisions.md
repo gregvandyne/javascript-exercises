@@ -8872,7 +8872,7 @@ had no size and showed nothing. Each part of the card (`.su-kpic`, `.su-kt`, `.s
 
 ## Drag a game onto a folder
 
-On Build and the class page's Games tab, a game on the right can be dragged onto one of my folders in the left column to save it there (public/js/folder-drop.js; POST /api/game-folders/:id/games, the same as ⋯ › Save to folder, which stays the keyboard way). Only one's own folders take a drop (data-drop-folder); a game already there is not added twice. In a folder whose games can be put in order, reorder.js drags the card as before and, over a folder, hands it to folder-drop.js; the card keeps its place. A mouse drags at once; a finger holds still first.
+On Build and the class page's Games tab, a game on the right can be dragged onto one of my folders in the left column to save it there (public/js/folder-drop.js; POST /api/game-folders/:id/games, the same as ⋯ › Save to folder, which stays the keyboard way). Only one's own folders take a drop (data-drop-folder); a game already there is not added twice. In a folder whose games can be put in order, the same drag also puts it in a new place (see "Folders: one drag for games"); dropped on a folder, the game keeps its place. A mouse drags at once; a finger holds still first.
 
 ## Make a game: three tracks
 
@@ -8895,3 +8895,10 @@ one Teacher button and a sheet below. Board mode sends no score; after Show answ
 and the shown problems out of the score; a lesson stores it with the best score (migration 0090) and the staff's lesson
 progress page marks it. "New ones for each student" works from any problem the kit can vary; rows drag with pointer
 events (touch too); board mode's Back/Next follow the reading direction.
+## Folders: one drag for games (19 Nov 2026)
+
+Greg reported two things in the folder sidebar. Games in a folder "sometimes all disappeared while dragging", and dragging felt different in a folder with one game than in one with several.
+
+The disappearing games were not the drag and nothing was lost on the server. Each game row carried data-live as a flag (is the game published), and app.js refreshes live player counts every 30 seconds on every [data-live] element: it wrote "0 playing" over each row and hid it, so the list emptied while the folder's header still said 3 games. The rows now say data-published, and the refresh only touches real counts ([data-live] with a data-live-format).
+
+There is now one drag for games (public/js/folder-drop.js), the one a folder with a single game always had: the row fades in place, a small round picture of the game follows the pointer, and a folder under it lights up. In a folder that can be put in order, the faded row also moves to where it will land while the pointer is over the list; over a folder or outside the list it goes back to its place, and Escape cancels. reorder.js keeps the folder chips' drag and Alt and the arrow keys, and saves one order at a time; a save that fails puts the list back in the order the server last saved, with no reload.
