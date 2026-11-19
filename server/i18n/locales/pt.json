@@ -9014,6 +9014,7 @@
       "points": "Pontuação (pontos)",
       "lateCount": "Lições em atraso",
       "scoreCol": "{title} (pontuação %)",
+      "helpedCol": "{title} (respostas mostradas pelo professor)",
       "lateCol": "{title} (atraso)",
       "late": "em atraso",
       "doneLate": "feito com atraso",

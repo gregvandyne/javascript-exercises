@@ -9013,6 +9013,7 @@
       "points": "Punteggio (punti)",
       "lateCount": "Lezioni in ritardo",
       "scoreCol": "{title} (punteggio %)",
+      "helpedCol": "{title} (risposte mostrate dall'insegnante)",
       "lateCol": "{title} (ritardo)",
       "late": "in ritardo",
       "doneLate": "fatto in ritardo",

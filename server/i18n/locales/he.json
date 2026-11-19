@@ -9014,6 +9014,7 @@
       "points": "ציון (נקודות)",
       "lateCount": "שיעורים באיחור",
       "scoreCol": "{title} (ציון %)",
+      "helpedCol": "{title} (תשובות שהמורה הציג)",
       "lateCol": "{title} (איחור)",
       "late": "באיחור",
       "doneLate": "הושלם באיחור",
