@@ -8869,3 +8869,11 @@ The "What are you making?" Arcade card's picture is built from spans that are al
 size only from the card. Inside a `<button>`, some browsers (Safari) don't turn those spans into blocks, and the picture
 had no size and showed nothing. Each part of the card (`.su-kpic`, `.su-kt`, `.su-kd`, the picture's pieces) now says
 `display:block`, and the page's two stylesheets carry `?v=` like the rest, so a cached old copy can't hide new rules.
+
+## Drag a game onto a folder
+
+On Build and the class page's Games tab, a game on the right can be dragged onto one of my folders in the left column to save it there (public/js/folder-drop.js; POST /api/game-folders/:id/games, the same as ⋯ › Save to folder, which stays the keyboard way). Only one's own folders take a drop (data-drop-folder); a game already there is not added twice. In a folder whose games can be put in order, reorder.js drags the card as before and, over a folder, hands it to folder-drop.js; the card keeps its place. A mouse drags at once; a finger holds still first.
+
+## Make a game: three tracks
+
+The first screen of /build/new offers Classroom lesson (the canvas activity), Classroom game (the board starters: Category Board, bingo, flashcards...) and Arcade game. Classroom game and Arcade game share the guided steps, but the game-type step shows only that track's kinds (no tabs to cross over); switching tracks lets go of a kind picked in the other. "I know what I want" became "I’ll just describe it".
