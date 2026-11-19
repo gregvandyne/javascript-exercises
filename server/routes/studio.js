@@ -22,7 +22,9 @@ import { log } from '../services/log.js';
 import { config } from '../config.js';
 import { audit } from '../db.js';
 import { templateHtml, templateInfo, TEMPLATE_KEYS, CANVAS_TEMPLATE_KEYS } from '../builder/catalog.js';
-import { canvasVersion } from '../services/canvaskit.js';
+import { canvasVersion, canvasSrc } from '../services/canvaskit.js';
+import { figureLibs, figSrc } from '../services/figlibs.js';
+import { panelOf, PANEL_KIT } from '../builder/activity-data.js';
 import { scanVersion } from '../services/scanner.js';
 import { THEMES, ALIAS as THEME_ALIAS } from '../../kit/packs/dress.js';
 import { SANDBOX } from '../services/frame.js'; // the SAME sandbox players get (never allow-same-origin)
@@ -183,7 +185,19 @@ export function studioState(user, gameId, t = tEn, req = null) {
     liveClass: liveOn() && cur ? liveClassState(user, g, cur, t, chat.state) : null,
     // A classroom activity (Oomba Canvas): one line under the safety line, with its fixed switch (canvasLineState).
     canvasLine: cur ? canvasLineState(cur, t, chat.state) : null,
+    // The Activity panel (public/js/activity-panel/): a classroom activity's data, edited without a Builder message.
+    activity: cur ? activityPanelState(user, g, cur, t) : null,
   };
+}
+/**
+ * The Activity panel's start (routes/activity-panel.js saves it): the version it edits (base), its data block, the kit
+ * it pins now, the kit and Oomba Figures files the panel uses for its own checks and thumbnails, and the "As a student"
+ * preview (no teacher controls, no answer key). null for anything that is not an Oomba Canvas activity.
+ */
+export function activityPanelState(user, g, cur, t) {
+  const p = panelOf(cur.html); if (!p) return null;
+  const fv = figureLibs(cur.html)['oomba-figures'];
+  return { base: cur.id, number: cur.number, kit: p.kit, latest: PANEL_KIT, data: p.data, kitSrc: canvasSrc(PANEL_KIT), figures: fv ? figSrc('oomba-figures', fv) : null, studentPreview: previewUrl(cur, g, user.id, t.locale, true) };
 }
 /**
  * The live line: one of
@@ -318,7 +332,7 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
     </div>
   </div>
   ${jsonData('page-data', { ...state, icons: ICONS, categories: games.CATEGORIES.map(([k, i]) => [k, i, categoryLabel(k, t)]), covers: games.COVERS })}`;
-  page(req, res, { title: t('studio.title', { title: g.title }), active: 'build', back: '/build', backLabel: t('home.rails.mine'), body, bodyClass: 'studio-page', head: raw('<link rel="stylesheet" href="/css/studio.css">'), scripts: ['/js/studio.js'], i18n: state.loud ? ['js.loudness'] : [] });
+  page(req, res, { title: t('studio.title', { title: g.title }), active: 'build', back: '/build', backLabel: t('home.rails.mine'), body, bodyClass: 'studio-page', head: raw('<link rel="stylesheet" href="/css/studio.css"><link rel="stylesheet" href="/css/activity-panel.css">'), scripts: ['/js/studio.js'], i18n: ['js.activityPanel', ...(state.loud ? ['js.loudness'] : [])] });
 });
 
 // ---------------------------------------------------------------- APIs

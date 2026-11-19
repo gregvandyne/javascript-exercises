@@ -3,12 +3,15 @@
 // their own device: their place in the set is kept in their own game save (BRB.storage 'oc-progress-v1'), and nothing
 // leaves the device but the end result (BRB.gameOver once per set). Students only tap, drag and type digits (the
 // kit's own keypad and digit keys): there is no text field anywhere.
+// 1.3.0: the teacher's controls (teach.js) for the activity's maker and school staff (BRB.canTeach), and the worked
+// answer's own lines on screen when it is shown.
 import { TOOLS, SUPPORTS, PURPOSES, MAX_COUNT, MAX_PROBLEMS, deal, selfTest, seeded, manipulativeOf, cleanProblem, numText } from './logic.js';
 import { sheet } from './sheet.js';
 import { WORDS, wordsFor } from './words.js';
 import { CSS } from './style.js';
+import { teachControls } from './teach.js';
 
-const VERSION = '1.2.0';
+const VERSION = '1.3.0';
 const SAVE_KEY = 'oc-progress-v1';
 const IDLE_MS = 45000;
 
@@ -42,6 +45,8 @@ export function activity(input) {
   const supports = Array.isArray(cfg.supports) ? SUPPORTS.filter(x => cfg.supports.includes(x)) : [];
   let support = SUPPORTS.includes(cfg.support) && (!supports.length || supports.includes(cfg.support)) ? cfg.support : supports[0] || 'guided';
   const modes = supports.length > 1 ? supports : null, board = cfg.board === true;
+  // 1.3.0: the teacher's controls, only where the server says this viewer may have them (never a student)
+  const teach = B().canTeach === true;
   const task = A.task && typeof A.task === 'object' ? A.task : {};
   const ownSteps = A.steps && typeof A.steps === 'object' ? A.steps : {}, ownHints = A.hints && typeof A.hints === 'object' ? A.hints : {};
   // 1.2.0: what it is for (config.purpose): practice on screen (always), a printable worksheet, a question generator.
@@ -71,23 +76,31 @@ export function activity(input) {
   const root = document.getElementById('oc-app') || document.body.appendChild(h('div', { id: 'oc-app' }));
   root.textContent = '';
   const el = {};
+  const arrow = c => h('span', { dir: 'ltr', 'aria-hidden': 'true' }, c);
   const strip = h('header', { class: 'oc-strip' },
     el.title = h('h1', { dir: 'auto' }, String(task.title || document.title || '').slice(0, 80)),
     modes ? (el.modes = h('div', { class: 'oc-modes', role: 'group', 'aria-label': T('helpMode') }, ...modes.map(m => h('button', { type: 'button', class: 'oc-mode', 'data-mode': m, 'aria-pressed': String(m === support), onclick: () => setSupport(m) }, T(m)))))
-      : h('span', { class: 'oc-chip oc-sup' }, T(support)),
+      : (el.sup = h('span', { class: 'oc-chip oc-sup' }, T(support))),
     board ? h('span', { class: 'oc-chip' }, T('board')) : null,
+    teach ? (el.boardChip = h('span', { class: 'oc-chip oc-bchip', hidden: true }, h('span', { 'aria-hidden': 'true' }, '📽 '), T('boardChip'))) : null,
     h('span', { class: 'oc-grow' }),
-    el.ok = h('span', { class: 'oc-chip oc-ok' }), el.no = h('span', { class: 'oc-chip oc-no' }), el.left = h('span', { class: 'oc-chip' }),
+    // (Back and Next follow the reading direction: the strip is a row in the page's direction, the arrows point outward;
+    // each arrow is set left to right so the browser never mirrors it a second time)
+    teach ? (el.nav = h('span', { class: 'oc-bnav', hidden: true }, h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => boardGo(-1) }, arrow(dir === 'rtl' ? '›' : '‹'), ' ', T('back')), el.navAt = h('b', { 'aria-live': 'polite' }), h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => boardGo(1) }, T('next'), ' ', arrow(dir === 'rtl' ? '‹' : '›')))) : null,
+    el.ok = h('span', { class: 'oc-chip oc-ok' }), el.no = h('span', { class: 'oc-chip oc-no' }), el.left = h('span', { class: 'oc-chip oc-togo' }),
     fresh ? h('button', { type: 'button', class: 'oc-btn oc-sm', onclick: () => again(true) }, '🎲 ', T('newSheet')) : null,
     printable ? (el.printBtn = h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-expanded': 'false', 'aria-controls': 'oc-print', onclick: () => printPanel(!PR.open) }, '🖨 ', T('print'))) : null,
     el.keyBtn = h('button', { type: 'button', class: 'oc-btn oc-sm oc-keybtn', 'aria-pressed': 'false', 'aria-controls': 'oc-keys', onclick: () => keypad(!S.keys) }, '⌨ ', T('keypad')));
+  // 1.3.0: the teacher's controls (teach.js): a bar under the strip, or one Teacher button and its menu on phones
+  const TC = teach ? teachControls({ h, T, supports: SUPPORTS, gen: !!(A.gen && TOOLS[A.gen.tool]), state: () => ({ board: S.boardOn }), on: { show: showAnswer, board: setBoard, help: m => setSupport(m, true), newSet: () => again(true) } }) : null;
+  if (TC) strip.insertBefore(TC.button, el.keyBtn);
   const canSay = !!(task.say && B().speak);
   const card = h('section', { class: 'oc-task', 'aria-label': T('task') },
     h('div', { class: 'oc-taskt' }, el.n = h('span', { class: 'oc-n' }), el.task = h('p', { id: 'oc-taskline', dir: 'auto' })),
     canSay ? h('button', { type: 'button', class: 'oc-say', 'aria-label': T('readAloud'), onclick: () => call(() => B().speak(String(task.say).slice(0, 300), { lang: cfg.lang || lang })) }, '🔊') : null);
   el.work = h('section', { class: 'oc-card oc-work', 'aria-label': T('workspace') });
   el.stepsBox = h('aside', { class: 'oc-card oc-steps', 'aria-labelledby': 'oc-steps-h' },
-    h('div', { class: 'oc-steps-top' }, h('h2', { id: 'oc-steps-h' }, h('span', { 'aria-hidden': 'true' }, '🪜 '), T('steps')),
+    h('div', { class: 'oc-steps-top' }, el.stepsH = h('h2', { id: 'oc-steps-h' }, h('span', { 'aria-hidden': 'true' }, '🪜 '), T('steps')),
       el.stepsToggle = h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-expanded': support === 'own' ? 'false' : 'true', 'aria-controls': 'oc-steps-list', onclick: () => { S.stepsOpen = !S.stepsOpen; paintSteps(); } })),
     el.steps = h('ol', { id: 'oc-steps-list' }));
   el.hint = h('div', { class: 'oc-hint', role: 'note', hidden: true });
@@ -104,7 +117,7 @@ export function activity(input) {
   el.end = h('section', { class: 'oc-end', hidden: true, 'aria-labelledby': 'oc-end-h' });
   el.main = h('div', { class: 'oc-main' }, el.work, el.stepsBox);
   el.print = h('section', { class: 'oc-card oc-print', id: 'oc-print', hidden: true, 'aria-labelledby': 'oc-print-h' });
-  const shell = h('div', { class: `oc${board ? ' oc-board' : ''}`, 'data-support': support }, strip, el.print, card, el.main, band, el.end);
+  const shell = h('div', { class: `oc${board ? ' oc-board' : ''}${teach ? ' oc-teach' : ''}`, 'data-support': support }, strip, TC ? TC.bar : null, el.print, card, el.main, band, el.end, TC ? TC.scrim : null, TC ? TC.menu : null);
   root.append(shell);
 
   // ---- the set: fresh per student (a seed of their own, never the same problem twice), and where they were
@@ -113,21 +126,24 @@ export function activity(input) {
   const S = {
     seed: saved && Number.isInteger(saved.seed) ? saved.seed : (Math.floor(Math.random() * 2 ** 31) || 7), seen: saved && Array.isArray(saved.seen) ? saved.seen.slice(-200) : [],
     set: [], i: 0, right: 0, wrong: 0, st: null, tries: 0, phase: 'work', hintN: 0, stuck: false, keys: false, stepsOpen: support !== 'own', stepVal: [], stepDone: [], sel: null, watching: false, reported: false, idle: 0,
+    // 1.3.0: shown (the problems whose answer the teacher showed: not counted), boardOn (board mode now), boardUsed (this
+    // set was run on the board: no score), revealed (the worked answer is on screen)
+    shown: saved && Array.isArray(saved.sh) ? saved.sh.filter(Number.isInteger) : [], boardOn: false, boardUsed: false, revealed: false, byTeacher: false,
   };
   function dealSet(resume) {
     S.set = deal(A, { seed: S.seed, seen: S.seen });
-    S.i = 0; S.right = 0; S.wrong = 0; S.reported = false;
-    if (resume && saved && !saved.done && Number.isInteger(saved.i) && saved.i < S.set.length) { S.i = saved.i; S.right = saved.right | 0; S.wrong = saved.wrong | 0; }
+    S.i = 0; S.right = 0; S.wrong = 0; S.reported = false; S.boardUsed = S.boardOn;
+    if (resume && saved && !saved.done && Number.isInteger(saved.i) && saved.i < S.set.length) { S.i = saved.i; S.right = saved.right | 0; S.wrong = saved.wrong | 0; } else S.shown = [];
     for (const p of S.set) { const k = TOOLS[p.tool].key(p); if (!S.seen.includes(k)) S.seen.push(k); }
   }
-  const save = (extra = {}) => call(() => B().storage && B().storage.set(SAVE_KEY, { sig, seed: S.seed, seen: S.seen.slice(-200), i: S.i, right: S.right, wrong: S.wrong, st: S.phase === 'work' ? S.st : null, ...extra }));
+  const save = (extra = {}) => call(() => B().storage && B().storage.set(SAVE_KEY, { sig, seed: S.seed, seen: S.seen.slice(-200), i: S.i, right: S.right, wrong: S.wrong, st: S.phase === 'work' ? S.st : null, ...(S.shown.length ? { sh: S.shown } : {}), ...extra }));
 
   // ---- one problem
   const P = () => S.set[S.i];
   const Tool = () => TOOLS[P().tool];
   function begin(resumeSt) {
     const p = P(), t = Tool();
-    S.st = resumeSt && typeof resumeSt === 'object' ? resumeSt : t.start(p); S.tries = 0; S.phase = 'work'; S.hintN = 0; S.stuck = false; S.sel = null; S.idle = Date.now();
+    S.st = resumeSt && typeof resumeSt === 'object' ? resumeSt : t.start(p); S.tries = 0; S.phase = 'work'; S.hintN = 0; S.stuck = false; S.sel = null; S.idle = Date.now(); S.revealed = false; S.byTeacher = false;
     const steps = stepList(p); S.stepVal = steps.map(() => null); S.stepDone = steps.map(() => false);
     el.hint.hidden = true; el.fb.textContent = ''; el.fb.className = 'oc-fb';
     if (p.tool === 'figure.number') S.sel = 'fig';
@@ -150,10 +166,13 @@ export function activity(input) {
   const line = x => (x.text !== undefined ? document.createTextNode(x.text) : rich(x.k, x.v));
   /** The switcher (1.1.0): another help mode for the problem on screen. It starts that problem again in the new mode
    *  (Watch shows the worked answer first; On my own closes the Steps panel); the set, the score and the place stay. */
-  function setSupport(m) {
-    if (!modes || !modes.includes(m) || m === support) return;
+  function setSupport(m, byTeacher = false) {
+    // 1.3.0: the teacher's Help (byTeacher) may pick any of the four, for this screen only; students only the offered ones
+    if (byTeacher ? !SUPPORTS.includes(m) : !modes || !modes.includes(m)) return;
+    if (m === support) return;
     support = m; shell.dataset.support = m;
-    for (const b of el.modes.children) b.setAttribute('aria-pressed', String(b.dataset.mode === m));
+    if (el.modes) for (const b of el.modes.children) b.setAttribute('aria-pressed', String(b.dataset.mode === m));
+    if (el.sup) el.sup.textContent = T(m);
     S.stepsOpen = m !== 'own';
     if (S.phase === 'work') begin(null); else paint();
   }
@@ -176,9 +195,26 @@ export function activity(input) {
     el.work.textContent = '';
     el.work.append(VIEWS[p.tool](p, S.st, { locked: S.phase !== 'work' || S.watching, set, rich, T, lang, guide: support !== 'own', select: sel => { S.sel = sel; if (sel && coarse()) keypad(true); paint(); }, sel: S.sel }));
     paintSteps();
+    if (TC) {
+      el.navAt.textContent = T('nOfN', { n: S.i + 1, total });
+      TC.paint({ support, board: S.boardOn, shown: S.shown.includes(S.i), done: S.phase === 'done' });
+    }
   }
   function paintSteps() {
-    const p = P(), steps = stepList(p), now = steps.findIndex((s, i) => s.ans !== undefined && !S.stepDone[i]);
+    const p = P();
+    // 1.3.0: a worked answer on screen (the teacher's Show answer, or the kit's after a second try) lists a figure
+    // question's own "work" lines, the last one (the answer) marked
+    const work = S.revealed && Array.isArray(p.work) && p.work.length ? p.work : null;
+    el.stepsBox.classList.toggle('oc-worked', !!work);
+    el.stepsH.textContent = '';
+    el.stepsH.append(h('span', { 'aria-hidden': 'true' }, work ? '👀 ' : '🪜 '), T(work ? 'workedAnswer' : 'steps'));
+    el.stepsToggle.hidden = !!work;
+    if (work) {
+      el.steps.hidden = false; el.stepsBox.classList.remove('oc-closed'); el.steps.textContent = '';
+      work.forEach((w, i) => el.steps.append(h('li', { class: i === work.length - 1 ? 'oc-done oc-last' : 'oc-done' }, h('span', { class: 'oc-k', 'aria-hidden': 'true' }, String(i + 1)), h('div', {}, h('p', { dir: 'auto' }, w)))));
+      return;
+    }
+    const steps = stepList(p), now = steps.findIndex((s, i) => s.ans !== undefined && !S.stepDone[i]);
     const at = now >= 0 ? now : Math.max(0, steps.findIndex(s => s.k === 'pressCheck'));
     const allDone = S.phase === 'done' && S.lastOk;
     el.stepsToggle.textContent = T(S.stepsOpen ? 'hideSteps' : 'showSteps'); el.stepsToggle.setAttribute('aria-expanded', String(S.stepsOpen));
@@ -266,13 +302,50 @@ export function activity(input) {
       const f = document.createDocumentFragment(); f.append(h('b', {}, T('notYet')), ' ', r.hint ? rich(r.hint.k, r.hint.v) : '', ' ', T('tryAgain'));
       feedback('try', f);
     } else {
-      S.wrong++; S.phase = 'done'; S.lastOk = false; S.st = t.solve(p) || S.st;
-      const steps = stepList(p); steps.forEach((s, i) => { if (s.ans !== undefined) S.stepVal[i] = s.ans; S.stepDone[i] = true; });
+      S.wrong++; S.phase = 'done'; S.lastOk = false; reveal(p);
       feedback('shown', rich('shown'));
     }
     save({ i: S.phase === 'done' ? S.i + 1 : S.i });
     paint();
     el.check.focus({ preventScroll: true });
+  }
+  /** The worked answer on screen: the manipulative solved, every step box filled, and a figure's own work lines. */
+  function reveal(p) {
+    S.st = Tool().solve(p) || S.st; S.revealed = true;
+    stepList(p).forEach((s, i) => { if (s.ans !== undefined) S.stepVal[i] = s.ans; S.stepDone[i] = true; });
+  }
+  // ---- 1.3.0: the teacher's controls (teach.js). None of them reaches the server.
+  /** Show answer: the worked answer of the problem on screen. Unanswered, it counts neither right nor wrong. */
+  function showAnswer() {
+    if (!TC) return;
+    const p = P(); if (!p) return;
+    if (S.phase === 'work') {
+      S.watching = false; S.phase = 'done'; S.lastOk = false; S.byTeacher = true;
+      if (!S.shown.includes(S.i)) S.shown.push(S.i);
+      reveal(p);
+      const f = document.createDocumentFragment(); f.append(h('span', { 'aria-hidden': 'true' }, '👀 '), T('shownByTeacher'));
+      feedback('shown oc-tans', f);
+      save({ i: S.i + 1 });
+    } else S.revealed = true;
+    paint();
+  }
+  /** Board mode: big type, Back / n of N / Next, no ✓ ✗ and no keypad; a set run on the board sends no score. */
+  function setBoard(on) {
+    if (!TC) return;
+    S.boardOn = !!on; if (S.boardOn) S.boardUsed = true;
+    document.documentElement.classList.toggle('oc-boardon', S.boardOn);
+    shell.classList.toggle('oc-boardmode', S.boardOn);
+    el.boardChip.hidden = !S.boardOn; el.nav.hidden = !S.boardOn;
+    if (S.boardOn) keypad(false);
+    TC.close(); paint();
+  }
+  /** Board mode's Back and Next: the teacher moves through the set (nothing is counted on the board). */
+  function boardGo(d) {
+    if (!S.boardOn || !el.end.hidden) return;
+    const to = S.i + d;
+    if (to < 0) return;
+    if (to >= S.set.length) return finish();
+    S.i = to; save(); begin();
   }
   function next() {
     if (S.i + 1 >= S.set.length) return finish();
@@ -282,7 +355,10 @@ export function activity(input) {
   function finish() {
     const total = S.set.length;
     save({ i: total, done: true });
-    if (!board && !S.reported) { S.reported = true; call(() => B().gameOver && B().gameOver({ won: S.right === total, score: S.right })); }
+    // 1.3.0: a problem the teacher showed is not counted (won: every other one right), and the result says so (helped);
+    // a set run in board mode sends nothing, like config.board
+    const shown = S.shown.filter(i => i < total).length;
+    if (!board && !S.boardUsed && !S.reported) { S.reported = true; call(() => B().gameOver && B().gameOver({ won: S.right === total - shown && total > shown, score: S.right, ...(shown ? { helped: true } : {}) })); }
     sfx('win'); call(() => { if (S.right && !reduced() && B().fx && B().fx.confetti) B().fx.confetti(); });
     el.main.hidden = true; card.hidden = true; band.hidden = true;
     el.end.hidden = false; el.end.textContent = '';

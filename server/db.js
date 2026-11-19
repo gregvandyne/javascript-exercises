@@ -1062,6 +1062,9 @@ export const MIGRATIONS = [
   // Crossword (seed-games/crossword.json, docs/decisions.md "Crossword") is a Learn game: its own shelf step, as each new
   // Learn game gets (0062 is never edited).
   ['0089_crossword_shelf', "UPDATE games SET shelf='learn' WHERE source='seed' AND slug='crossword';"],
+  // A game step's best score that came from a set where the teacher showed an answer (Oomba Canvas 1.3.0's Show answer:
+  // those problems are not in the score). Shown to the class's staff only, beside that score (routes/progress.js).
+  ['0090_step_progress_helped', 'ALTER TABLE step_progress ADD COLUMN helped INTEGER NOT NULL DEFAULT 0;'],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

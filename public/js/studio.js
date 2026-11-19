@@ -31,7 +31,7 @@ const when = at => { const d = new Date(at); return d.toLocaleDateString(INTL, {
 const safetyChip = s => ({ pass: `<span class="stchip good">✅ ${esc(t('js.studio.safety.chipPass'))}</span>`, flag: `<span class="stchip warn">⚠️ ${esc(t('js.studio.safety.chipFlag'))}</span>`, fail: `<span class="stchip bad">⛔ ${esc(t('js.studio.safety.chipFail'))}</span>` }[s] || '<span class="stchip">…</span>');
 
 // ---------------------------------------------------------------- state + top
-function applyState(st) { if (st) { S = { ...S, ...st }; renderTop(); renderLive(); renderSafety(); renderTurns(); } }
+function applyState(st) { if (st) { S = { ...S, ...st }; renderTop(); renderLive(); renderSafety(); renderTurns(); syncPanel(); } }
 /** A request to share with everyone is waiting for the Oomba team (every public game is checked by a person first). */
 const teamWait = () => !!(S.pending && (S.pending.visibility || 'public') === 'public');
 const teamNote = () => `<p class="note info st-teamcheck">🛡️ ${E('js.studio.live.teamCheck')}</p>`;
@@ -233,7 +233,35 @@ function renderCanvasLine() {
   if (!L) { if (box) box.remove(); return; }
   if (!box) { box = document.createElement('div'); box.id = 'st-canvasline'; box.className = 'st-liveclass st-canvasline'; $('#st-safety').after(box); }
   box.dataset.kind = L.kind;
-  box.innerHTML = `<span class="stchip${L.kind === 'activity' ? ' good' : ''}"><span aria-hidden="true">${L.kind === 'activity' ? '🧮' : '🎮'}</span> ${esc(L.label)}</span> <button class="btn btn-sm" type="button" data-act="canvas-switch">${L.kind === 'activity' ? '🎮' : '🧮'} ${esc(L.button)}</button>`;
+  box.innerHTML = `${S.activity ? `<button class="btn btn-sm btn-primary st-editact" type="button" data-act="edit-activity">🧮 ${E('js.studio.activityEdit')}</button> ` : ''}<span class="stchip${L.kind === 'activity' ? ' good' : ''}"><span aria-hidden="true">${L.kind === 'activity' ? '🧮' : '🎮'}</span> ${esc(L.label)}</span> <button class="btn btn-sm" type="button" data-act="canvas-switch">${L.kind === 'activity' ? '🎮' : '🧮'} ${esc(L.button)}</button>`;
+}
+// ---------------------------------------------------------------- the Activity panel (public/js/activity-panel/)
+// A classroom activity's owner edits its problems and settings without a Builder message (S.activity: the server sends
+// it to editors of an Oomba Canvas activity only). Loaded when there is one; it follows every new state.
+let panel = null, panelLoading = null;
+const panelHooks = { state: () => S, applyState, showVersion: st => { if (st.current) { asStudent(false); setPreview(st.preview, st.current.id); if (st.current.id === shownVersion) reloadPreview(); } } };
+function syncPanel() {
+  renderStudentBtn();
+  if (panel) { if (!panel.update(S)) panel = null; return; }
+  if (!S.activity || panelLoading) return;
+  panelLoading = import('/js/activity-panel/index.js').then(m => m.mountPanel(S, panelHooks)).then(p => { panel = p; }).catch(() => { /* the Builder still works */ }).finally(() => { panelLoading = null; });
+}
+// "As a student" (an activity): the preview exactly as a student gets it: no teacher controls, no answer key.
+let student = false;
+function asStudent(on) {
+  student = !!on && !!S.activity;
+  const b = $('#st-student'); if (b) b.setAttribute('aria-pressed', String(student));
+  // (the frame only: S.preview stays the maker's own preview)
+  if (S.activity && S.preview) { stopLoud(); frame.src = student ? S.activity.studentPreview : S.preview; }
+}
+function renderStudentBtn() {
+  let b = $('#st-student');
+  if (!S.activity) { if (b) b.remove(); student = false; return; }
+  if (b) return;
+  b = document.createElement('button'); b.type = 'button'; b.id = 'st-student'; b.className = 'btn btn-sm'; b.setAttribute('aria-pressed', 'false');
+  b.textContent = `🧑‍🎓 ${t('js.studio.asStudent')}`;
+  b.addEventListener('click', () => asStudent(!student));
+  $('.st-prev-tools').prepend(b);
 }
 /** "Make it live": a fixed Builder message, or, where this game cannot be live yet, why not (nothing is sent). */
 function makeLive(btn) {
@@ -244,7 +272,7 @@ function makeLive(btn) {
 }
 /** After each new version: read the live line again (the check runs on the saved version). */
 async function refreshLiveLine() {
-  try { const st = await api(`/api/studio/${ID}`, { background: true }); S.liveClass = st.liveClass; S.canvasLine = st.canvasLine; renderLiveClass(); renderCanvasLine(); } catch { /* the next resync redraws it */ }
+  try { const st = await api(`/api/studio/${ID}`, { background: true }); S.liveClass = st.liveClass; S.canvasLine = st.canvasLine; S.activity = st.activity; S.versions = st.versions; renderLiveClass(); renderCanvasLine(); syncPanel(); } catch { /* the next resync redraws it */ }
 }
 function renderSafety() {
   renderLiveClass(); renderCanvasLine();
@@ -1337,7 +1365,7 @@ async function resync() {
 function applyResync(st) {
   S = { ...S, ...st };
   if (live) live.remove(); endBubble();
-  renderTop(); renderLive(); renderSafety(); renderTurns(); renderLog();
+  renderTop(); renderLive(); renderSafety(); renderTurns(); renderLog(); syncPanel();
   if (S.current && S.preview && S.current.id !== shownVersion) setPreview(S.preview, S.current.id);
   const carry = LIVE.carry; LIVE.carry = null;
   if (carry) { bubble('err', carry.err); if (carry.text && !input.value.trim()) { input.value = carry.text; autosize(); } }
@@ -1384,6 +1412,8 @@ async function send(text, { continueOf = null } = {}) {
   text = String(text || '').trim();
   const ups = pending.filter(u => u.id);
   if (LIVE.stopped === 'gone') return;
+  // The Activity panel holds changes that are not saved: the Builder would build on the version without them.
+  if (panel && panel.dirty() && text) { toast(t('js.studio.activitySaveFirst'), { bad: true }); return; }
   // A build is running (or this tab's message is on its way to start one): this message adds to it.
   if (S.turn || LIVE.pendingCid || LIVE.check) return sendFollowUp(text);
   if (outOfMessages()) { const h = $(`#${LIMIT_WHY}`); if (h) h.scrollIntoView({ block: 'nearest' }); return; }   // the card says why
@@ -1449,6 +1479,7 @@ document.addEventListener('click', e => {
   else if (a.dataset.act === 'ask-grownup') askGrownup(a);
   else if (a.dataset.act === 'make-live' && S.liveClass) makeLive(a);
   else if (a.dataset.act === 'canvas-switch' && S.canvasLine) send(S.canvasLine.ask);
+  else if (a.dataset.act === 'edit-activity' && panel) panel.openSheet();
   else if (a.dataset.act === 'fix-live' && S.liveClass && S.liveClass.fixAsk) send(S.liveClass.fixAsk);
   else if (a.dataset.act === 'live-publish') $('#st-publish').click();
   else if (a.dataset.act === 'continue' && S.lastTurn) send(t('js.studio.continueMessage'), { continueOf: S.lastTurn.id });
@@ -1963,7 +1994,7 @@ $('#st-publish').addEventListener('click', () => {
   if (canUpdate) updateLive(); else shareSheet('publish');
 });
 
-renderTop(); renderLive(); renderSafety(); renderTurns(); renderLog();
+renderTop(); renderLive(); renderSafety(); renderTurns(); renderLog(); syncPanel();
 // A build running now (also one started in another tab or on another device): its message and a "still working" row
 // at once (no greeting), then the live stream replays what it did so far.
 if (S.turn) startTurnUI(S.turn, { waiting: true });

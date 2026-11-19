@@ -1,0 +1,11 @@
+{
+  "name": "oomba-canvas",
+  "version": "1.3.0",
+  "files": {
+    "oomba-canvas.js": "sha384-Y9ODTlYNiRPfeIC7I1iKqhk8Eu55RJ8/xuCQGDe/Px6xCVU0+oT1yYiOyntno79+",
+    "oomba-canvas.css": "sha384-hoANp0ldx6/1d372Hn3NU6hz66PL9+p0OpttEfHhp1KJOzsDVnlivWPZgyjuiPO/",
+    "fonts/bricolage-latin.woff2": "sha384-X/jaeJ4W5GX6njFPEfUBZdJHzn5fubPkE+9LDSLSmoJRUtrBMlRU1+5BAHszUiNB",
+    "fonts/bricolage-latin-ext.woff2": "sha384-Ot7IlVGIs2pRGgA5YgE5tJccM1wkGm5cs2e1qkPHXBwCUMF/C0NVXdFYEsrbfv9x",
+    "fonts/OFL.txt": "sha384-JA+iC+Ed3rNRZpoSVhqXkEYWz/2PvbVwINTmNcnUvukL6sqylA/l3Z7FoBpydUJd"
+  }
+}

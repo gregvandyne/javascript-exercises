@@ -398,6 +398,14 @@ export function addVersion(gameId, html, { notes = '', createdBy = null, safetyS
   if (safetyStatus !== 'fail') queueShot(id);   // its cover picture, in the background (skips launch games)
   return getVersion(id);
 }
+/** The Studio's Activity panel (routes/activity-panel.js) only: a save within a minute of the same person's last one joins
+ *  that version, while it is the version being edited and is neither live nor waiting for a check (the route checks). */
+export function replaceVersion(versionId, html, { notes = '', safetyStatus = 'unchecked', safetyReport = {} } = {}) {
+  q.run('UPDATE game_versions SET html=?, notes=?, safety_status=?, safety_report=?, created_at=? WHERE id=?', html, String(notes).slice(0, 500), safetyStatus, JSON.stringify(safetyReport), now(), versionId);
+  q.run('UPDATE games SET updated_at=? WHERE id=(SELECT game_id FROM game_versions WHERE id=?)', now(), versionId);
+  if (safetyStatus !== 'fail') queueShot(versionId);
+  return getVersion(versionId);
+}
 /** Restore = copy an old version forward as a new version (history is never rewritten). */
 export function restoreVersion(gameId, versionId, userId) {
   const v = getVersion(versionId); if (!v || v.game_id !== gameId) return null;

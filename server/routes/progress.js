@@ -66,15 +66,15 @@ const no = (req, res) => (req.path.startsWith('/api/') ? res.status(404).json({ 
 // ================================================================ student actions
 router.post('/api/progress/:clid/:sid/done', requireUser, rateLimit('progress', 240, 60e3), (req, res) => send(req, res, P.markDone(req.user, req.params.clid, req.params.sid, b(req).done !== false && b(req).done !== '0')));
 router.post('/api/progress/:clid/:sid/answer', requireUser, rateLimit('progress', 240, 60e3), (req, res) => send(req, res, P.answer(req.user, req.params.clid, req.params.sid, b(req).answer)));
-/** From the play page: { event: 'start' | 'time' | 'score' | 'end', seconds, score, label }. Never for a hosted-live
+/** From the play page: { event: 'start' | 'time' | 'score' | 'end', seconds, score, label, helped }. Never for a hosted-live
  *  step (Quest Race, Would You Rather Live…): only the teacher's live run writes that cell (services/progress.js). */
 router.post('/api/progress/:clid/:sid/game', requireUser, rateLimit('progress', 240, 60e3), (req, res) => {
-  const { event, seconds, score, label } = b(req);
+  const { event, seconds, score, label } = b(req), helped = b(req).helped === true;
   const u = req.user, { clid, sid } = req.params;
   const c = P.context(u, clid, sid);
   if (!c.ok || hostedLive(c.step)) return no(req, res);
   const r = event === 'start' ? P.gameStarted(u, clid, sid) : event === 'time' ? P.gameTime(u, clid, sid, seconds)
-    : event === 'score' ? P.gameScore(u, clid, sid, score, label) : event === 'end' ? P.gameScore(u, clid, sid, Number.isFinite(+score) && score !== null ? score : null) : { ok: false, code: 'notFound' };
+    : event === 'score' ? P.gameScore(u, clid, sid, score, label, helped) : event === 'end' ? P.gameScore(u, clid, sid, Number.isFinite(+score) && score !== null ? score : null, '', helped) : { ok: false, code: 'notFound' };
   send(req, res, r);
 });
 /** Hand in a build step: the game is shared with the lesson's class (so the teacher and the class can play it) and the
@@ -300,7 +300,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
     // A quiz the site checked: how many were right and the % (the same figure the student saw).
     const qz = s.kind === L.QUIZ_KIND ? P.quizResult(x) : null;
     const extra = qz ? html`<span class="st-score st-quiz" title="${t('progress.lesson.quizScore', qz)}"><span dir="ltr" aria-hidden="true">${qz.right}/${qz.total} · ${qz.pct}%</span><span class="sr-only">${t('progress.lesson.quizScore', qz)}</span></span>`
-      : s.kind === 'game' && x.score !== null ? html`<span class="st-score" dir="ltr">${f.int(x.score)}${x.label ? ` ${x.label}` : ''}</span>`
+      : s.kind === 'game' && x.score !== null ? html`<span class="st-score" dir="ltr">${f.int(x.score)}${x.label ? ` ${x.label}` : ''}</span>${x.helped ? html`<span class="st-helped" title="${t('progress.lesson.helped')}"><span aria-hidden="true">👀</span><span class="sr-only">${t('progress.lesson.helped')}</span></span>` : ''}`
       : s.kind === 'question' && x.answer ? html`<span class="${x.reviewed_at ? 'st-read' : 'chip-s warn'}" title="${reviewed}"><span aria-hidden="true">${x.reviewed_at ? '✔️' : '✍️'}</span><span class="sr-only">${reviewed}</span></span>` : '';
     const marks = x.marks && rubricOf(s).length ? html`<span class="st-marks" title="${t('cs.review.marksTitle', { marks: marksText(x.marks) })}" dir="ltr">${marksText(x.marks)}</span>` : '';
     // A game step ticked "I've played it" with no play recorded here (no time, no score): ☑️ "marked done", never the
@@ -312,6 +312,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
     return html`<span class="${isDone ? 'st-done' : 'st-started'}" title="${isDone ? t('progress.status.done') : t('progress.status.started')}">${isDone ? '✅' : '◐'}</span><span class="sr-only">${isDone ? t('progress.status.done') : t('progress.status.started')}</span>${extra}${played}${marks}${sc ? html`<span class="st-marks" dir="ltr">${R.pointsText(sc.points, sc.max_points)}</span>` : ''}`;
   };
   const hasGame = lp.steps.some(s => s.kind === 'game' && !P.hostedLive(s));
+  const anyHelped = lp.students.some(p => p.cells.some(x => x && x.helped));
   const games_ = new Map(lp.steps.filter(s => s.kind === 'build').flatMap(s => lp.students.map(p => p.cells[lp.steps.indexOf(s)])).filter(x => x && x.game_id).map(x => [x.game_id, games.getGame(x.game_id)]));
   const questions = lp.steps.map((s, i) => ({ s, i })).filter(({ s }) => s.kind === 'question');
   const fullSteps = L.steps(l.id);
@@ -392,7 +393,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
           return html`<td><span class="st">${icon(s, x)}${lateStep(x) ? html`<span class="st-late" title="${t('gradebook.stepLate')}"><span aria-hidden="true">⏰</span><span class="sr-only">${t('gradebook.stepLate')}</span></span>` : ''}</span>${g && g.status === 'published' && games.canView(req.user, g) ? html`<a class="small" href="/g/${g.slug}">${t('progress.lesson.openGame')}</a>` : ''}${s.kind === 'question' && x && x.answer ? html`<a class="small" href="#a-${s.id}-${p.id}">${t('progress.lesson.readAnswer')}</a>` : ''}</td>`; })}
         <td class="gb-all gb-scorecell">${scoreCell(t, p.score, `${studentHref(c, p)}#score`)}</td>
         <td class="small muted">${p.last ? f.ago(p.last) : '–'}</td></tr>`)}</tbody></table></div>
-      <p class="small muted gb-key"><span>✅ ${t('progress.key.done')}</span><span>◐ ${t('progress.status.started')}</span>${lp.lateFrom !== null ? html`<span>⏰ ${t('gradebook.stepLate')}</span>` : ''}${hasGame ? html`<span id="key-self">☑️ ${t('progress.lesson.selfMarked')}</span>` : ''}</p></section>`}
+      <p class="small muted gb-key"><span>✅ ${t('progress.key.done')}</span><span>◐ ${t('progress.status.started')}</span>${lp.lateFrom !== null ? html`<span>⏰ ${t('gradebook.stepLate')}</span>` : ''}${hasGame ? html`<span id="key-self">☑️ ${t('progress.lesson.selfMarked')}</span>` : ''}${anyHelped ? html`<span>👀 ${t('progress.lesson.helped')}</span>` : ''}</p></section>`}
   ${questions.length || builds.length ? html`<div id="answers">${answers}${builds}</div>` : ''}
   ${whole}`;
   page(req, res, { title: `${l.title} · ${c.name}`, active: 'classes', body, head: CSS, scripts: ['/js/schools.js'], back: `/class/${c.id}/progress`, backLabel: t('progress.gradebook.title') });

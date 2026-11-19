@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'canvas/src');
-const ORDER = ['expr', 'logic', 'words', 'sheet', 'style', 'ui', 'index'];
+const ORDER = ['expr', 'logic', 'words', 'sheet', 'style', 'teach', 'ui', 'index'];
 const FONTS = { from: path.join(ROOT, 'public/vendor/oomba-kit/1.1.6/fonts'), files: ['bricolage-latin.woff2', 'bricolage-latin-ext.woff2', 'OFL.txt'] };
 export const sri = buf => `sha384-${crypto.createHash('sha384').update(buf).digest('base64')}`;
 

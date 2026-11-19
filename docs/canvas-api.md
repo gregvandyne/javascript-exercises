@@ -1,4 +1,4 @@
-# Oomba Canvas API (1.2.0)
+# Oomba Canvas API (1.3.0)
 
 Oomba Canvas is the kit for **classroom activities**: a hands-on canvas where each student drags, builds and checks,
 one problem at a time, with steps and hints. It is separate from the Oomba Kit (`kit/`, arcade games) and Kit 2
@@ -20,7 +20,7 @@ An activity is one small page: the kit's pinned tag, an `oc-app` element, the ac
 
 ```html
 <title>Equivalent fractions</title>
-<script src="/vendor/oomba-canvas/1.2.0/oomba-canvas.js" integrity="sha384-…" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-canvas/1.3.0/oomba-canvas.js" integrity="sha384-…" crossorigin="anonymous"></script>
 <div id="oc-app"></div>
 <script type="application/json" id="oc-activity">
 { "config": { "lang": "en", "support": "count", "supports": ["count", "guided"], "count": 5, "fresh": true, "board": false },
@@ -72,6 +72,7 @@ Each problem names a `tool`. The kit owns each tool's maths, in the dashboard's 
 CANVAS RULES (Oomba Canvas: this build is a classroom activity, or the builder asked for one). Every rule above still applies, except the KIT RULES: an activity is not an Oomba Kit game.
 - What it is: a hands-on canvas where each student builds and checks one problem at a time, with steps and hints, on their own device. It is calm and education first: never add lives, timers, enemies, a title screen with Play, scores that go up by themselves, or the Oomba Kit.
 - Start: start_from_template "canvas" (the classroom activity starter; it is allowed even though the tool list names only the arcade starters). Then make it theirs with edit_game on the oc-activity JSON block only: it must stay valid JSON (double quotes, no comments, no trailing commas). Change the <title> to match task.title.
+- Keep it editable in the Studio's Activity panel: the teacher changes the problems, the help, the set size and what it is for there, and the panel rewrites only the oc-activity JSON block. So everything the activity is lives in that one block: never a second copy of the problems in code, never problems made by a script, and the page calls exactly Oc.activity(JSON.parse(document.getElementById('oc-activity').textContent)). New activities use Oomba Canvas 1.3.0, the starter's tag: keep that tag exactly as it is.
 - The data: config { lang: the language the builder writes in, supports: the help modes the activity offers, a list of "watch" | "count" | "guided" | "own" in that order (exactly the ones the builder chose; with more than one, students switch between them), support: where it starts (the first of supports), count: problems in a set (1 to 12), fresh: true (a new set per student from gen), board: true only when it is played on the board together, purpose: what it is for, exactly the setup's choice, a list of "screen" (practice on screen) | "worksheet" (a printable worksheet) | "generator" (a question generator) (leave it out for practice on screen only) }; task { title (short), say (one short sentence read aloud) }; problems: a list, or gen: one generator for a fresh set per student (use gen whenever the topic suits one); steps / hints: only to replace the kit's own lines for a tool, { "<tool>": ["line", ...] } (up to 6 steps, 1 to 3 hints, short, in the builder's language). The kit writes each problem's own line, question, steps and hints in every language: leave steps and hints empty unless they asked for something special.
 - Tools (values: whole numbers, or fractions as [n, d]):
   fractions.equiv { from: [n, d], to: D } make n/d out of 1/D pieces (D must be a multiple of d); tray: [other piece sizes] optional. gen { dens: [2, 3, 4], mult: [2, 3] }
@@ -137,7 +138,44 @@ a version that could be shared or published, and the automatic playtest (`server
 - **1.2.0**: `config.purpose` (practice on screen, a printable worksheet, a question generator: the setup's "What is it
   for?"), the print panel, and figure questions (`figure.number`, `figure.choice`, drawn by Oomba Figures,
   `docs/figures-api.md`). 1.0.0 and 1.1.0 stay byte for byte as they shipped; the scanner admits all three tags.
+- **1.3.0**: the teacher's controls inside an activity (below) and a worked answer's own lines on screen (a figure
+  question's `work`, after a second try or Show answer). 1.0.0 to 1.2.0 stay byte for byte as they shipped; the scanner
+  admits all four tags. An older activity moves to 1.3.0 only when it is saved from the Activity panel.
 - Read-aloud speaks the fixed `task.say` line only.
+
+## Teacher controls (1.3.0)
+
+Only where the page says the viewer may have them: `BRB.canTeach`, from the server's `INIT.teach`, by the same rule as
+the answer key (the activity's maker, school staff). Never for a student, and never in the Studio's "As a student"
+preview. At 561 px and wider they are a bar under the top strip ("students don't see this bar"); narrower, one 🧑‍🏫
+Teacher button opens them as a bottom sheet. They change this screen only; nothing goes to the server.
+
+- **👀 Show answer**: the worked answer of the problem on screen (its steps, or a figure question's `work` lines). That
+  problem is marked "Answer shown by the teacher. This one is not counted." and counts neither right nor wrong.
+- **📽 Board mode**: about 1.5× type, Back / n of N / Next, no ✓ ✗ chips and no keypad, "Board mode · no scores sent".
+- **Help on this screen**: any of the four help modes, for this screen only (not saved). Students still pick only from
+  `config.supports`.
+- **🎲 New set**: a fresh set from the generator (off, with a note, when the activity has none).
+
+Results: a set run in board mode sends nothing. After Show answer the set's result is still sent, as
+`BRB.gameOver({ won, score, helped: true })`: the score counts only the problems the student answered, and `won` means
+every one of those was right (docs/sdk.md). A Classroom lesson stores it with the step's best score
+(`step_progress.helped`), and the class's lesson progress page marks that score 👀 "Teacher showed an answer" (staff only).
+
+## The Activity panel (Studio)
+
+A classroom activity's owner changes it without a Builder message: the problems (edit, reorder by dragging or with the
+handle with a mouse or a finger, the arrow keys, Up/Down; add, copy, delete), "The same list for everyone" or "New ones for each
+student" (a pattern made from one problem of any kind (`public/js/activity-panel/patterns.js`): the tool's own generator
+from its numbers, or for a figure question the figure's numbers as ranges with the answer and worked lines as formulas;
+not a sort into the Builder's own word groups, a figure question with choices, or a figure whose answer is not one of its
+numbers or two of them put together), with three examples and a check of 30 made-up problems), how much help, problems in a set, and what
+it is for. `public/js/activity-panel/` draws it; `POST /api/studio/:id/activity` (`server/routes/activity-panel.js`)
+saves it: only the `oc-activity` block changes (`server/builder/activity-data.js`, problems cleaned by the kit's own
+1.3.0 file), any text the teacher typed (a question, worked steps) is screened exactly like a Builder message (no
+markup, no students' names, then the Builder's screening), and the kit's self-test and the scanner run before a new
+version is saved ("Activity panel: problem 3 moved up"). Saves by the same person within a minute join into one version.
+It refuses while a Builder turn runs for the game, and when the version changed since the panel loaded.
 
 ## Printing (1.2.0)
 
@@ -159,5 +197,4 @@ frame cannot print it.
 
 ## Not yet (later phases)
 
-The Studio's Activity panel (edit problems without a Builder message), more teacher controls inside an activity (show
-answer, board mode), skeletal structures on printed sheets, live canvas runs, class codes and "Assign" for Builder activities, and a bounded score in the gradebook.
+Skeletal structures on printed sheets, live canvas runs, class codes and "Assign" for Builder activities, and a bounded score in the gradebook.

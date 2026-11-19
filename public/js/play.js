@@ -110,7 +110,7 @@ const TYPES = {
   'brb:ready': m => true,
   'brb:save': m => m.data && typeof m.data === 'object' && !Array.isArray(m.data) && Object.values(m.data).every(v => typeof v === 'string') && JSON.stringify(m.data).length < 500000,
   'brb:score': m => Number.isFinite(m.score) && m.score >= 0 && m.score <= 1e9 && (m.label === undefined || typeof m.label === 'string'),
-  'brb:gameover': m => typeof m.won === 'boolean' && (m.score === null || Number.isFinite(m.score)),
+  'brb:gameover': m => typeof m.won === 'boolean' && (m.score === null || Number.isFinite(m.score)) && (m.helped === undefined || m.helped === true),
   'brb:fullscreen': m => typeof m.on === 'boolean',
   'brb:orientation': m => typeof m.value === 'string' && m.value.length < 40,
   'brb:retry': m => true,
@@ -149,6 +149,7 @@ export function validMessage(e, frameWin) {
   try { return check(m) ? m : null; } catch { return null; }
 }
 let saveTimer = null, pendingSave = null, lastScoreAt = 0, saveRetry = 0;
+let helpedScore = false;   // the last brb:gameover said helped (Oomba Canvas 1.3.0): the score after it is the same set's
 // A save that does not reach the server (the connection dropped) is kept and sent again — after 5 s, then less
 // often, and at once when the browser is back online — unless a newer save has replaced it. The player hears once.
 async function flushSave() {
@@ -187,13 +188,15 @@ addEventListener('message', e => {
     case 'brb:online': if (d.online && !d.match && tappedJustNow()) openLobby(d); break;
     case 'brb:save': if (!d.canSave) return; pendingSave = m.data; if (!saveTimer) saveTimer = setTimeout(flushSave, 1500); break;
     case 'brb:score': {
+      const helped = helpedScore; helpedScore = false;
       if (!d.canSave || Date.now() - lastScoreAt < 2000) return; lastScoreAt = Date.now();
       api(`/api/games/${d.gameId}/score`, { method: 'POST', body: { score: m.score, label: m.label || '' }, active: playing() }).then(r => { if (r.improved && r.best > 0) toast(t('js.play.newBest', { score: r.best }), { ms: 2200 }); }).catch(() => {});
-      lessonEvent({ event: 'score', score: m.score, label: m.label || '' });
+      lessonEvent({ event: 'score', score: m.score, label: m.label || '', ...(helped ? { helped: true } : {}) });
       break;
     }
     case 'brb:gameover': {
-      lessonEvent({ event: 'end', score: m.score });
+      lessonEvent({ event: 'end', score: m.score, ...(m.helped === true ? { helped: true } : {}) });
+      helpedScore = m.helped === true;   // the SDK sends this set's score next: it goes with the same mark
       // The game ended without the assigned part won (Sum Racer reports every race's end; only 1st place
       // is a win): say so on the page, with the way back — the game's own results screen celebrates any
       // finish, so without this the student cannot tell a counted finish from an uncounted one.

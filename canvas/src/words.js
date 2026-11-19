@@ -524,6 +524,46 @@ const WORDS_120 = {
   },
 };
 for (const l of Object.keys(WORDS_120)) Object.assign(WORDS[l], WORDS_120[l]);
+// 1.3.0: the teacher's controls (teach.js) and the worked answer's heading (merged into the tables above).
+const WORDS_130 = {
+  en: {
+    teacher: "Teacher", teacherOnly: "students don't see this bar", teacherNote: "Only you see this. Students never do.", showAnswer: "Show answer", showAnswerD: "The worked steps for this problem. It won't count.", boardMode: "Board mode", boardModeD: "Big type for the board. You drive, no score is sent.", leaveBoard: "Leave board mode", boardChip: "Board mode · no scores sent", helpHere: "Help on this screen", newSetT: "New set", newProblems: "New problems", newProblemsD: "Start a fresh set from the generator.", newSetNone: "This activity has no question generator.", shownByTeacher: "Answer shown by the teacher. This one is not counted.", workedAnswer: "Worked answer", nOfN: "{n} of {total}",
+  },
+  es: {
+    teacher: "Docente", teacherOnly: "el alumnado no ve esta barra", teacherNote: "Solo lo ves tú. Los estudiantes nunca.", showAnswer: "Mostrar respuesta", showAnswerD: "Los pasos resueltos de este problema. No contará.", boardMode: "Modo pizarra", boardModeD: "Letra grande para la pizarra. Tú decides; no se envía ninguna nota.", leaveBoard: "Salir del modo pizarra", boardChip: "Modo pizarra · no se envían notas", helpHere: "Ayuda en esta pantalla", newSetT: "Serie nueva", newProblems: "Problemas nuevos", newProblemsD: "Empieza una serie nueva con el generador.", newSetNone: "Esta actividad no tiene generador de preguntas.", shownByTeacher: "Respuesta mostrada por el docente. Esta no cuenta.", workedAnswer: "Respuesta resuelta", nOfN: "{n} de {total}",
+  },
+  fr: {
+    teacher: "Enseignant", teacherOnly: "les élèves ne voient pas cette barre", teacherNote: "Vous seul voyez ceci. Les élèves jamais.", showAnswer: "Montrer la réponse", showAnswerD: "Les étapes résolues de ce problème. Il ne comptera pas.", boardMode: "Mode tableau", boardModeD: "Gros caractères pour le tableau. Vous menez, aucune note n'est envoyée.", leaveBoard: "Quitter le mode tableau", boardChip: "Mode tableau · aucune note envoyée", helpHere: "Aide sur cet écran", newSetT: "Nouvelle série", newProblems: "Nouveaux problèmes", newProblemsD: "Commencer une nouvelle série avec le générateur.", newSetNone: "Cette activité n'a pas de générateur de questions.", shownByTeacher: "Réponse montrée par l'enseignant. Celle-ci ne compte pas.", workedAnswer: "Réponse résolue", nOfN: "{n} sur {total}",
+  },
+  de: {
+    teacher: "Lehrkraft", teacherOnly: "Schüler sehen diese Leiste nicht", teacherNote: "Nur Sie sehen das. Schüler nie.", showAnswer: "Antwort zeigen", showAnswerD: "Die gelösten Schritte dieser Aufgabe. Sie zählt nicht.", boardMode: "Tafelmodus", boardModeD: "Große Schrift für die Tafel. Sie steuern, es wird kein Ergebnis gesendet.", leaveBoard: "Tafelmodus beenden", boardChip: "Tafelmodus · keine Ergebnisse gesendet", helpHere: "Hilfe auf diesem Bildschirm", newSetT: "Neue Runde", newProblems: "Neue Aufgaben", newProblemsD: "Eine neue Runde aus dem Generator starten.", newSetNone: "Diese Aktivität hat keinen Aufgabengenerator.", shownByTeacher: "Antwort von der Lehrkraft gezeigt. Diese Aufgabe zählt nicht.", workedAnswer: "Gelöste Antwort", nOfN: "{n} von {total}",
+  },
+  it: {
+    teacher: "Insegnante", teacherOnly: "gli studenti non vedono questa barra", teacherNote: "Lo vede solo lei. Gli studenti mai.", showAnswer: "Mostra la risposta", showAnswerD: "I passaggi risolti di questo problema. Non conterà.", boardMode: "Modalità lavagna", boardModeD: "Testo grande per la lavagna. Guida lei, nessun punteggio viene inviato.", leaveBoard: "Esci dalla modalità lavagna", boardChip: "Modalità lavagna · nessun punteggio inviato", helpHere: "Aiuto su questa schermata", newSetT: "Nuova serie", newProblems: "Nuovi problemi", newProblemsD: "Inizia una nuova serie dal generatore.", newSetNone: "Questa attività non ha un generatore di domande.", shownByTeacher: "Risposta mostrata dall'insegnante. Questa non conta.", workedAnswer: "Risposta svolta", nOfN: "{n} di {total}",
+  },
+  pt: {
+    teacher: "Professor", teacherOnly: "os alunos não veem esta barra", teacherNote: "Só você vê isto. Os alunos nunca.", showAnswer: "Mostrar resposta", showAnswerD: "Os passos resolvidos deste problema. Não vai contar.", boardMode: "Modo quadro", boardModeD: "Letra grande para o quadro. Você conduz, nenhuma nota é enviada.", leaveBoard: "Sair do modo quadro", boardChip: "Modo quadro · nenhuma nota enviada", helpHere: "Ajuda nesta tela", newSetT: "Nova série", newProblems: "Novos problemas", newProblemsD: "Comece uma nova série a partir do gerador.", newSetNone: "Esta atividade não tem gerador de perguntas.", shownByTeacher: "Resposta mostrada pelo professor. Esta não conta.", workedAnswer: "Resposta resolvida", nOfN: "{n} de {total}",
+  },
+  nl: {
+    teacher: "Leraar", teacherOnly: "leerlingen zien deze balk niet", teacherNote: "Alleen u ziet dit. Leerlingen nooit.", showAnswer: "Antwoord tonen", showAnswerD: "De uitgewerkte stappen van deze opgave. Die telt niet mee.", boardMode: "Bordmodus", boardModeD: "Grote letters voor het bord. U stuurt, er wordt geen score verstuurd.", leaveBoard: "Bordmodus verlaten", boardChip: "Bordmodus · er worden geen scores verstuurd", helpHere: "Hulp op dit scherm", newSetT: "Nieuwe reeks", newProblems: "Nieuwe opgaven", newProblemsD: "Begin een nieuwe reeks uit de generator.", newSetNone: "Deze activiteit heeft geen vragengenerator.", shownByTeacher: "Antwoord getoond door de leraar. Deze telt niet mee.", workedAnswer: "Uitgewerkt antwoord", nOfN: "{n} van {total}",
+  },
+  ru: {
+    teacher: "Учитель", teacherOnly: "ученики не видят эту панель", teacherNote: "Это видите только вы. Ученики — никогда.", showAnswer: "Показать ответ", showAnswerD: "Решение этой задачи по шагам. Она не будет засчитана.", boardMode: "Режим доски", boardModeD: "Крупный шрифт для доски. Ведёте вы, результаты не отправляются.", leaveBoard: "Выйти из режима доски", boardChip: "Режим доски · результаты не отправляются", helpHere: "Помощь на этом экране", newSetT: "Новый набор", newProblems: "Новые задачи", newProblemsD: "Начать новый набор из генератора.", newSetNone: "В этом задании нет генератора вопросов.", shownByTeacher: "Ответ показал учитель. Эта задача не засчитывается.", workedAnswer: "Решение", nOfN: "{n} из {total}",
+  },
+  ja: {
+    teacher: "先生", teacherOnly: "生徒にはこのバーは表示されません", teacherNote: "これはあなただけに表示されます。生徒には表示されません。", showAnswer: "答えを見せる", showAnswerD: "この問題の解き方の手順です。採点されません。", boardMode: "黒板モード", boardModeD: "黒板用の大きな文字。先生が進め、点数は送信されません。", leaveBoard: "黒板モードを終わる", boardChip: "黒板モード・点数は送信されません", helpHere: "この画面のヘルプ", newSetT: "新しいセット", newProblems: "新しい問題", newProblemsD: "問題ジェネレーターで新しいセットを始めます。", newSetNone: "このアクティビティには問題ジェネレーターがありません。", shownByTeacher: "先生が答えを見せました。この問題は数えません。", workedAnswer: "解き方", nOfN: "{n} / {total}",
+  },
+  'zh-Hant': {
+    teacher: "老師", teacherOnly: "學生看不到這一列", teacherNote: "只有你看得到，學生永遠看不到。", showAnswer: "顯示答案", showAnswerD: "這一題的解題步驟。這一題不計分。", boardMode: "黑板模式", boardModeD: "黑板用的大字。由你操作，不會送出分數。", leaveBoard: "離開黑板模式", boardChip: "黑板模式 · 不送出分數", helpHere: "這個畫面的協助", newSetT: "新的一組", newProblems: "新的題目", newProblemsD: "用題目產生器開始新的一組。", newSetNone: "這個活動沒有題目產生器。", shownByTeacher: "答案由老師顯示。這一題不計分。", workedAnswer: "解題過程", nOfN: "{n} / {total}",
+  },
+  ar: {
+    teacher: "المعلم", teacherOnly: "لا يرى الطلاب هذا الشريط", teacherNote: "أنت وحدك ترى هذا. الطلاب لا يرونه أبدًا.", showAnswer: "اعرض الإجابة", showAnswerD: "خطوات حل هذه المسألة. لن تُحتسب.", boardMode: "وضع السبورة", boardModeD: "خط كبير للسبورة. أنت تقود، ولا تُرسل أي نتيجة.", leaveBoard: "اخرج من وضع السبورة", boardChip: "وضع السبورة · لا تُرسل نتائج", helpHere: "المساعدة في هذه الشاشة", newSetT: "مجموعة جديدة", newProblems: "مسائل جديدة", newProblemsD: "ابدأ مجموعة جديدة من المولّد.", newSetNone: "لا يوجد في هذا النشاط مولّد أسئلة.", shownByTeacher: "عرض المعلم الإجابة. هذه المسألة لا تُحتسب.", workedAnswer: "الإجابة المحلولة", nOfN: "{n} من {total}",
+  },
+  he: {
+    teacher: "מורה", teacherOnly: "תלמידים לא רואים את הסרגל הזה", teacherNote: "רק אתם רואים את זה. תלמידים אף פעם לא.", showAnswer: "הצגת התשובה", showAnswerD: "שלבי הפתרון של התרגיל הזה. הוא לא ייספר.", boardMode: "מצב לוח", boardModeD: "אותיות גדולות ללוח. אתם מובילים, ולא נשלח ציון.", leaveBoard: "יציאה ממצב לוח", boardChip: "מצב לוח · לא נשלחים ציונים", helpHere: "עזרה במסך הזה", newSetT: "סדרה חדשה", newProblems: "תרגילים חדשים", newProblemsD: "להתחיל סדרה חדשה מהמחולל.", newSetNone: "בפעילות הזאת אין מחולל שאלות.", shownByTeacher: "המורה הציג את התשובה. התרגיל הזה לא נספר.", workedAnswer: "הפתרון", nOfN: "{n} מתוך {total}",
+  },
+};
+for (const l of Object.keys(WORDS_130)) Object.assign(WORDS[l], WORDS_130[l]);
 export const WORD_LANGS = Object.keys(WORDS);
 /** The table for a site language: the language, its base ('en-GB' -> 'en'), then English, key by key. */
 export function wordsFor(lang) {

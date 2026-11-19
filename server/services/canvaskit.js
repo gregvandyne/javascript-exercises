@@ -22,8 +22,13 @@ export const CANVAS_VERSIONS = Object.freeze({
   // the page and server/services/canvas-print.js make the printable sheet from the activity's own data, sheet.js), and
   // figure questions (figure.number, figure.choice) drawn by Oomba Figures. 1.0.0 and 1.1.0 stay as they are.
   '1.2.0': 'sha384-ioyClGMBQEaIiIDCGa+zeMkl4MbfUZrKcUewnP9QCsxMCeVxYZxbaEtli6AH3UKD',
+  // 1.3.0: the teacher's controls inside an activity (Show answer, Board mode, Help on this screen, New set) for its
+  // maker and school staff only (BRB.canTeach, from INIT.teach), a worked answer's own lines on screen, and a result
+  // marked helped when the teacher showed an answer. Older activities move to it only when saved from the Studio's
+  // Activity panel (server/builder/activity-data.js), never on their own.
+  '1.3.0': 'sha384-Y9ODTlYNiRPfeIC7I1iKqhk8Eu55RJ8/xuCQGDe/Px6xCVU0+oT1yYiOyntno79+',
 });
-export const CANVAS_LATEST = '1.2.0';
+export const CANVAS_LATEST = '1.3.0';
 export const canvasSrc = (v = CANVAS_LATEST) => `${CANVAS_PATH}${v}/oomba-canvas.js`;
 const PUBLIC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
 

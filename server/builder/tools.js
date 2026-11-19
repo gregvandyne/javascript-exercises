@@ -30,7 +30,8 @@ const STARTERS = [...BUILDER_TEMPLATE_KEYS, ...CANVAS_TEMPLATE_KEYS];
 
 const CATS = games.CATEGORY_KEYS;
 /** A Studio preview link (signed, short-lived). lang: the builder's language, passed to the game as BRB.user.lang. */
-export const previewUrl = (version, game, userId, lang = null) => `/frame/${signToken({ v: version.id, g: game.id, u: userId, p: 1, ...(lang ? { l: lang } : {}) })}`;
+// student: the Studio's "As a student" preview of a classroom activity (no teacher controls, no answer key: routes/games.js).
+export const previewUrl = (version, game, userId, lang = null, student = false) => `/frame/${signToken({ v: version.id, g: game.id, u: userId, p: 1, ...(lang ? { l: lang } : {}), ...(student ? { st: 1 } : {}) })}`;
 const plainIssues = report => (report.issues || []).map(i => `${i.level === 'fail' ? 'Must fix' : 'Check'}: ${i.message}`);
 /** The same, with the scan's model-only details (e.g. which word matched): only ever in the model's tool result. */
 const modelIssues = report => (report.issues || []).map(i => `${i.level === 'fail' ? 'Must fix' : 'Check'}: ${i.message}${i.detail ? ' ' + i.detail : ''}`);

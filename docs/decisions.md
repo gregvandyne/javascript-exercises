@@ -8880,6 +8880,21 @@ The first screen of /build/new offers Classroom lesson (the canvas activity), Cl
 
 A game dragged out of one of my folders onto another asks first, in a small pop-up beside the folder (folder-drop.js askMove): Move here (saves it there, then takes it out of the folder it came from, and the right side shows that folder again) or Keep in both; Cancel, Escape or a tap outside does nothing. Dropped on the folder it is already in: nothing. From All my games, Find Oomba games or a shared folder there is nothing to move out of, so it is just saved. The words come from the server (a <template id="drop-ask"> in the left column).
 
+## Builder part 2: the Activity panel and teacher controls (Oomba Canvas 1.3.0)
+
+A classroom activity's owner changes its problems, help, set size and purpose in the Studio's Activity panel without a
+Builder message (desktop: Builder | Activity at the top of the left column; phones: 🧮 Edit activity opens a sheet).
+The save route rewrites only the `oc-activity` JSON, screens any typed text exactly like a Builder message (text only,
+no students' names, then the Builder's screening), runs the kit's self-test and the scanner, and saves a version
+labelled with what changed. Saves by the same person within a minute join one version (kept in memory: a restart only
+means one more version). It refuses while a Builder turn runs and when the version changed since the panel loaded.
+Older activities move to the new kit only when saved from the panel. Advanced fields sit behind "More options".
+Oomba Canvas 1.3.0 adds the teacher's controls (Show answer, Board mode, Help on this screen, New set) behind
+`INIT.teach` / `BRB.canTeach` (the answer key's rule; never a student, never "As a student"): a bar at 561 px and wider,
+one Teacher button and a sheet below. Board mode sends no score; after Show answer the result is sent with `helped: true`
+and the shown problems out of the score; a lesson stores it with the best score (migration 0090) and the staff's lesson
+progress page marks it. "New ones for each student" works from any problem the kit can vary; rows drag with pointer
+events (touch too); board mode's Back/Next follow the reading direction.
 ## Folders: one drag for games (19 Nov 2026)
 
 Greg reported two things in the folder sidebar. Games in a folder "sometimes all disappeared while dragging", and dragging felt different in a folder with one game than in one with several.

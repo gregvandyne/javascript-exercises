@@ -161,7 +161,7 @@ test('the mock Builder: a figure topic with a worksheet purpose builds a figure 
   assert.ok([200, 202].includes(sent.status), sent.text);
   await runner.idle(g.json.id);
   const game = games.getGame(g.json.id), v = games.getVersion(game.current_version_id);
-  assert.equal(canvasVersion(v.html), '1.2.0'); assert.equal(scanVersion(v.html).status, 'pass', JSON.stringify(scanVersion(v.html).issues));
+  assert.equal(canvasVersion(v.html), '1.3.0', 'new activities pin the newest kit'); assert.equal(scanVersion(v.html).status, 'pass', JSON.stringify(scanVersion(v.html).issues));
   assert.ok(v.html.indexOf(figTag('oomba-figures')) >= 0 && v.html.indexOf(figTag('oomba-figures')) < v.html.indexOf(canvasTag()), 'Oomba Figures first, then the kit');
   const d = activityData(v.html).data;
   assert.deepEqual(d.config.purpose, ['screen', 'worksheet']); assert.ok(d.problems.every(p => p.tool.startsWith('figure.') && p.fig));
@@ -183,7 +183,7 @@ test('the mock Builder: a figure topic with a worksheet purpose builds a figure 
   const playPage = pageData((await kid.c(`/play/${games.getGame(game.id).slug}`)).text);
   assert.equal(playPage.print, true, 'the play page prints for the frame');
   const games_ = fs.readFileSync(path.join(ROOT, 'server/routes/games.js'), 'utf8');
-  assert.match(games_, /canvasPrintable\(v\.html\) \? \{ print: true, \.\.\.\(canvasKeyFor\(u, g\) \? \{ printKey: true \} : \{\}\) \}/, 'INIT.printKey only for the maker and staff');
+  assert.match(games_, /canvasPrintable\(v\.html\) \? \{ print: true, \.\.\.\(!tok\.st && canvasKeyFor\(u, g\) \? \{ printKey: true \} : \{\}\) \}/, 'INIT.printKey only for the maker and staff (and never under \"As a student\")');
   const sdk = fs.readFileSync(path.join(ROOT, 'public/sdk/brb-sdk.js'), 'utf8');
   assert.match(sdk, /canPrintKey: INIT\.print === true && INIT\.printKey === true/);
 });
