@@ -261,6 +261,15 @@
 	.new-wrap .menu {
 		min-width: 17rem;
 	}
+	@media (max-width: 40rem) {
+		/* The header wraps, so New activity sits at the left: open the menu to the right of it, within the screen. */
+		.new-wrap .menu {
+			right: auto;
+			left: 0;
+			min-width: 0;
+			width: min(20rem, calc(100vw - 2.5rem));
+		}
+	}
 	.menu button[role='menuitem'] {
 		padding: 0.5rem 0.65rem;
 		border: 0;
