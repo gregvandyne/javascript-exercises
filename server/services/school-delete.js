@@ -38,7 +38,7 @@ export const BY_SCHOOL = ['school_members', 'staff_invites', 'staff_email_invite
 /** Rows removed by its classes' ids. */
 export const BY_CLASS = ['class_members', 'join_requests', 'class_units', 'game_classes', 'gc_posts', 'gc_links', 'gc_syncs', 'gc_roster',
   'live_class_teams', 'live_class_team_cfg', 'live_support', 'dash_layouts', 'dash_class', 'dash_students', 'dash_links', 'dash_pushes',
-  'dash_help', 'dash_checks', 'dash_passes', 'dash_points', 'dash_moods', 'dash_pictures', 'dash_builds', 'dash_feeds', 'live_runs', 'class_lessons'];
+  'dash_help', 'dash_checks', 'dash_passes', 'dash_points', 'dash_moods', 'dash_pictures', 'dash_builds', 'dash_feeds', 'live_runs', 'manip_sessions', 'class_lessons'];
 /** Rows removed by its classes' assigned lessons. */
 export const BY_CLASS_LESSON = ['step_progress', 'rubric_scores', 'gc_grades', 'lessons_retired'];
 /** Rows kept, with why (handled apart or history). */
