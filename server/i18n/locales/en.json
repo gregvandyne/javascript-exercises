@@ -3362,7 +3362,9 @@
         "start": "Start the session",
         "who": "Only the students of the class you pick can join, signed in with their own accounts. The join code alone lets nobody else in.",
         "noClasses": "You don't teach a class yet, so there is no class to run a session for.",
-        "mine": "Your sessions"
+        "mine": "Your sessions",
+        "board": "Start from a saved board (its tool and steps)",
+        "noBoard": "An empty board"
       },
       "boards": {
         "title": "Your saved boards",
@@ -3490,6 +3492,10 @@
         "live": "Live",
         "ended": "Ended",
         "joined": "{n, plural, one {# student joined} other {# students joined}}"
+      },
+      "steps": {
+        "title": "Steps",
+        "text": "The exercise, one step at a time: in a live session students see the current step at the top of their square, never the ones after it. Drag or use ↑ ↓ to reorder."
       }
     },
     "manip-room": {
@@ -3523,18 +3529,14 @@
       "map": "Map of the room. Tap a place to go there.",
       "live": "Live",
       "ended": "Ended",
-      "code": "join code",
-      "people": "{n, plural, one {# student here} other {# students here}}",
       "bring": "Bring everyone to me",
       "broughtAll": "Everyone is looking at your view now.",
       "brought": "Your teacher brought you here",
       "broughtText": "Look where your teacher is working. You can move around any time.",
       "push": "Push a board",
       "pdf": "PDF",
-      "end": "End",
+      "end": "End session",
       "endedMsg": "The session has ended.",
-      "studentHint": "Your square saves for your teacher as you work. Classmates see your pieces, not your notes.",
-      "sent": "Your teacher sent you a board",
       "loadPush": "Load it into my square",
       "keep": "Keep mine",
       "loadedPush": "Your teacher's board is in your square now. Undo brings yours back.",
@@ -3545,7 +3547,7 @@
       "pushed": "Pushed to every student.",
       "close": "Close",
       "gone": "This session isn't here.",
-      "back": "← Back",
+      "back": "Back",
       "teacherAreaNote": "everyone can see this",
       "instructions": "Instructions",
       "more": "More",
@@ -3553,7 +3555,6 @@
       "raiseHand": "Raise hand",
       "lowerHand": "Lower hand",
       "handUp": "Hand raised",
-      "handsUp": "Hands up ({n})",
       "handsTitle": "Hands up",
       "lowerAll": "Lower all",
       "lower": "Lower",
@@ -3561,9 +3562,26 @@
       "noHands": "No hands up right now.",
       "hideWork": "Hide students' work",
       "hiddenWork": "Hidden for now",
-      "studentHintHidden": "Your square saves for your teacher as you work. Classmates can't see your work.",
       "workShown": "Everyone can see each other's work now.",
-      "workHidden": "Students' work is hidden again."
+      "workHidden": "Students' work is hidden again.",
+      "stepOf": "Step {n} of {total}",
+      "next": "Next",
+      "earlier": "Earlier steps ({n})",
+      "paceSum": "Step {step}: {n}",
+      "menu": "More options",
+      "pace": "Students go at their own pace",
+      "handsUpN": "Hands up · {n}",
+      "handsUpNone": "Hands up",
+      "steps": "Steps",
+      "stepsText": "The exercise, one step at a time: students see the current step at the top of their square, never the ones after it. Drag or use ↑ ↓ to reorder.",
+      "stepN": "Step {n}",
+      "stepPh": "What should students do in this step?",
+      "stepUp": "Move step {n} up",
+      "stepDown": "Move step {n} down",
+      "stepDelete": "Delete step {n}",
+      "noSteps": "No steps yet.",
+      "addStep": "Add a step",
+      "code": "Join code"
     }
   },
   "favorites": {

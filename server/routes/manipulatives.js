@@ -19,6 +19,9 @@
 //   POST /api/manipulatives/live/:id/area/:key  save one area (key 't' the teacher's area, or a student's id): the teacher
 //                                               any, a student only their own square
 //   POST /api/manipulatives/live/:id/bring      the teacher: "Bring everyone to me" (their current view)
+//   POST /api/manipulatives/live/:id/step       the deck: the teacher moves it ({ dir } or { to }); a student moves their
+//                                               own step only while the teacher lets them go at their own pace
+//   POST /api/manipulatives/live/:id/pace       the teacher: "Students go at their own pace" ({ on })
 //   POST /api/manipulatives/live/:id/show       the teacher: show students' work to the class ({ show: true }), or hide it
 //   POST /api/manipulatives/live/:id/hand       a student raises or lowers their own hand; the teacher lowers one ({ key })
 //                                               or all ({ key: 'all' }) (memory only)
@@ -99,6 +102,8 @@ router.get('/api/manipulatives/live/:id/room', (req, res) => {
 });
 router.post('/api/manipulatives/live/:id/area/:key', rateLimit('manip-area', 1800, 3600e3), (req, res) => send(req, res, M.saveArea(req.user, req.params.id, req.params.key, body(req).state)));
 router.post('/api/manipulatives/live/:id/bring', hostOnly, rateLimit('manip-bring', 120, 3600e3), (req, res) => send(req, res, M.bring(req.user, req.params.id, body(req).view || {})));
+router.post('/api/manipulatives/live/:id/step', rateLimit('manip-step', 600, 3600e3), (req, res) => send(req, res, M.step(req.user, req.params.id, { dir: body(req).dir, to: body(req).to ?? null })));
+router.post('/api/manipulatives/live/:id/pace', hostOnly, (req, res) => send(req, res, M.pace(req.user, req.params.id, !!body(req).on)));
 router.post('/api/manipulatives/live/:id/show', hostOnly, (req, res) => send(req, res, M.showWork(req.user, req.params.id, !!body(req).show)));
 router.post('/api/manipulatives/live/:id/hand', (req, res) => send(req, res, M.hand(req.user, req.params.id, { up: !!body(req).up, key: typeof body(req).key === 'string' ? body(req).key : null })));
 router.post('/api/manipulatives/live/:id/cursor', rateLimit('manip-cursor', 3600, 3600e3), (req, res) => send(req, res, M.moveCursor(req.user, req.params.id, body(req))));

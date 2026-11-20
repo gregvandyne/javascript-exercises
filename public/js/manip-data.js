@@ -139,3 +139,11 @@ export function stripFullHeight(texts, sq) {
   const per = Math.max(16, Math.floor((sq.w - 44) / STRIP.char));
   return texts.length ? STRIP.head + texts.reduce((s, x) => s + Math.max(1, Math.ceil((x.length + 4) / per)), 0) * STRIP.line + STRIP.pad : 0;
 }
+
+// ---------------------------------------------------------------- a deck of steps (the teacher's exercise, step by step)
+/** The steps a board carries (its __steps), cleaned for reading. */
+export const stepsOf = st => (st && Array.isArray(st.__steps) ? st.__steps : []).filter(x => x && String(x.text || '').trim()).map(x => ({ id: String(x.id || ''), text: String(x.text).trim() }));
+/** What a square's strip shows in step mode, as lines for its height: the step, and a line for earlier steps. */
+export const stepStripTexts = (steps, i, total = steps.length) => (total ? [`Step ${i + 1} of ${total}: ${steps[i] ? steps[i].text : ''}`, ...(i > 0 ? [`Earlier steps (${i})`] : [])] : []);
+/** The teacher's area keeps the current step big at its top: this much of it (room pixels) in step mode. */
+export const TEACHER_STEP_H = 110;

@@ -9425,3 +9425,22 @@ everything and has a "Hide students' work" switch in the room's top bar (on by d
 migration 0094) for when the class should compare; switching it reaches every student at once (the socket says "read
 the room again"). Sticky-note text stays private either way. Cursors, hands, "Bring everyone to me" and the teacher's
 area are unaffected.
+
+## Virtual math manipulatives: steps, and a calmer room (20 Nov 2026)
+
+- **A deck of steps.** A teacher builds the exercise as ordered steps in the tool (📋 Steps: add, edit, delete, drag or
+  ↑ ↓ to reorder). The steps save with the board (__steps), so saved boards, share codes and pushes carry them, and
+  "Draft with AI" fills them (the model's notes, in order, through the same cleaning). A session can start from a saved
+  board (its tool and steps), and pushing a board with steps makes them the session's deck, from step 1.
+- **In a session** there is one current step: the teacher's "◀ Back · Step 2 of 5 · Next ▶" (only with 2+ steps), the
+  step big at the top of the teacher's area, and as the Instructions strip in every square, with earlier steps folded
+  into "Earlier steps (n)". A student is sent only the steps up to their own: a future step never leaves the server.
+  Students can't move it, unless the teacher turns on "Students go at their own pace": then each student has ◀ ▶ in
+  their own strip (never past the last step) and the teacher sees "Step 3: 6 · Step 4: 2"; turning it off brings
+  everyone back to the teacher's step. A step change glows briefly on the strip (no sound; reduced motion stops it).
+  The step position is live and kept in memory (services/manip-live.js); the deck itself is saved.
+- **A calmer room** (the owner: "it must not get busy"). The teacher's bar holds only the step bar (2+ steps), "✋
+  Hands up" (a count only when someone has a hand up; nothing opens when nobody does), "Bring everyone to me" and one
+  "⋯" menu for the rest: Hide students' work, Students go at their own pace, Push a board, PDF, End session. Students
+  get their pieces tray, the strip, Raise hand and My square; no step buttons unless pace is on. No mini-map on phones;
+  "Your teacher brought you here" goes after five seconds while "Back to my square" stays.

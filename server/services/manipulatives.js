@@ -24,14 +24,14 @@ import * as S from './schools.js';
 import { anthropic } from '../builder/anthropic.js';
 import * as aiBudget from './ai-budget.js';
 import { hasProfanity, personalInfo } from './textfilter.js';
-import { TOOLS, toolOf, pieceDefs, roomLayout, ROOM_COLORS, instructionNotes, stripHeight } from '../../public/js/manip-data.js';
+import { TOOLS, toolOf, pieceDefs, roomLayout, ROOM_COLORS, instructionNotes, stripHeight, stepsOf, stepStripTexts, TEACHER_STEP_H } from '../../public/js/manip-data.js';
 import * as LIVE from './manip-live.js';
 import { allow } from './ratelimit.js';
 import { TASKS } from '../../public/js/manip-tasks.js';
 
 export { TOOLS, TASKS };
 export const STATE_MAX = 200000;
-export const LIMITS = { boards: 500, notes: 12, noteChars: 300, strokes: 80, points: 600, pieces: 400, titleChars: 80, briefChars: 1000 };
+export const LIMITS = { steps: 20, boards: 500, notes: 12, noteChars: 300, strokes: 80, points: 600, pieces: 400, titleChars: 80, briefChars: 1000 };
 /** A session ends on its own this long after it starts; ended sessions (and their work) go after KEEP_DAYS. */
 export const SESSION_HOURS = 12;
 export const KEEP_DAYS = 30;
@@ -65,6 +65,7 @@ export function canHostClass(u, c) {
 }
 /** Lazy upkeep: sessions past SESSION_HOURS end; ended ones older than KEEP_DAYS go (their work with them). */
 export function prune(t = now()) {
+  for (const r of q.all("SELECT id FROM manip_sessions WHERE status='active' AND created_at<?", t - SESSION_HOURS * HOUR)) LIVE.forget(r.id);
   q.run("UPDATE manip_sessions SET status='ended', ended_at=? WHERE status='active' AND created_at<?", t, t - SESSION_HOURS * HOUR);
   q.run("DELETE FROM manip_sessions WHERE status='ended' AND ended_at<?", t - KEEP_DAYS * DAY);
 }
@@ -125,8 +126,12 @@ export function cleanState(raw, bounds = null) {
       ...(ann.size && typeof ann.size === 'object' ? { size: { w: Math.round(num(ann.size.w, 100, 4000, 800)), h: Math.round(num(ann.size.h, 100, 4000, 430)) } } : {}),
     };
   }
+  // A deck of steps (the teacher's exercise): at most LIMITS.steps, each a short text.
+  if (Array.isArray(st.__steps)) st.__steps = st.__steps.filter(x => x && typeof x === 'object' && String(x.text || '').trim()).slice(0, LIMITS.steps)
+    .map((x, i) => ({ id: clipStr(x.id || `s${i}`, 40), text: clipStr(x.text, LIMITS.noteChars).trim() }));
+  else delete st.__steps;
   // Typed text: sticky notes and bar labels are read with the word rules; every other string must at least be clean.
-  const typed = [...(st.__ann ? st.__ann.notes.map(n => n.text) : []),
+  const typed = [...(st.__steps || []).map(x => x.text), ...(st.__ann ? st.__ann.notes.map(n => n.text) : []),
     ...(Array.isArray(st.bars) ? st.bars.flatMap(b => [b && b.name, ...((b && Array.isArray(b.segs)) ? b.segs.map(x => x && x.label) : [])]) : [])];
   for (const s of typed) { const p = textProblem(s); if (p) return fail(p); }
   if (strings(st).some(s => hasProfanity(s))) return fail('words');
@@ -180,15 +185,19 @@ export function hostClasses(u) {
   return [...mine, ...admin].filter(c => !seen.has(c.id) && seen.add(c.id) && canHostClass(u, c)).map(c => ({ id: c.id, name: c.name, school: c.school_name, students: c.students }));
 }
 export const getSession = id => q.get('SELECT * FROM manip_sessions WHERE id=?', String(id || '')) || null;
-export function createSession(u, { classId, tool, title } = {}) {
+export function createSession(u, { classId, tool, title, boardId = null } = {}) {
   const c = S.getClass(classId);
   if (!canHostClass(u, c)) return fail('notFound');
-  const tl = toolOf(tool); if (!tl) return fail('badTool');
+  // Started from one of the host's saved boards: its tool, and the board (its steps too) in the teacher's area.
+  const b = boardId ? ownBoard(u, boardId) : null;
+  if (boardId && !b) return fail('noBoard');
+  const tl = toolOf(b ? b.tool : tool); if (!tl) return fail('badTool');
   prune();
   // One running session per class: a new one ends the one before it.
   q.run("UPDATE manip_sessions SET status='ended', ended_at=? WHERE class_id=? AND status='active'", now(), c.id);
   const id = uid(12), code = newCode();
-  q.run('INSERT INTO manip_sessions(id, code, host_id, class_id, tool, title, created_at) VALUES (?,?,?,?,?,?,?)', id, code, u.id, c.id, tl.slug, cleanTitle(title, `${tl.name} session`), now());
+  q.run('INSERT INTO manip_sessions(id, code, host_id, class_id, tool, title, created_at, room, room_at) VALUES (?,?,?,?,?,?,?,?,?)', id, code, u.id, c.id, tl.slug,
+    cleanTitle(title, b ? b.title : `${tl.name} session`), now(), b ? b.state : '{}', b ? now() : 0);
   audit(u.id, 'manip.session', id, { class: c.id });
   return ok({ session: { id, code } });
 }
@@ -254,7 +263,11 @@ export function push(u, id, boardId) {
   const b = ownBoard(u, boardId); if (!b) return fail('noBoard');
   if (b.tool !== s.tool) return fail('otherTool');
   const c = cleanState(b.state); if (!c.ok) return c;
-  q.run('UPDATE manip_sessions SET pushed_state=?, pushed_at=? WHERE id=?', JSON.stringify({ tool: b.tool, code: b.code, state: c.state }), now(), s.id);
+  // The board's steps become the session's deck (the teacher's area), from the first step; students get the board
+  // without its steps (the deck reaches them one step at a time).
+  const o = JSON.parse(c.state), steps = o.__steps; delete o.__steps;
+  if (steps && steps.length) { const room = json(s.room || '{}', {}) || {}; q.run('UPDATE manip_sessions SET room=?, room_at=? WHERE id=?', JSON.stringify({ ...room, __steps: steps }), now(), s.id); LIVE.setStep(s.id, 0); }
+  q.run('UPDATE manip_sessions SET pushed_state=?, pushed_at=? WHERE id=?', JSON.stringify({ tool: b.tool, code: b.code, state: JSON.stringify(o) }), now(), s.id);
   LIVE.publish(s.id, { t: 'dirty' });
   return ok();
 }
@@ -298,10 +311,59 @@ export function roomFor(u, id) {
       // A classmate's work while the teacher hides it: nothing of it is sent (no pieces, marks, notes or when it changed).
       ...(who.role === 'teacher' || mine ? { state: w.state } : s.show_work ? { state: forClassmates(w.state) } : { state: '{}', updatedAt: 0, hidden: true }) };
   });
+  // The deck: the teacher gets every step and where each student is; a student only the steps up to their own (a
+  // future step is never sent), and the teacher's area without its steps.
+  const tState = json(s.room || '{}', {}) || {}, deck = deckFor(s, tState, who);
+  if (who.role !== 'teacher' && tState.__steps) delete tState.__steps;
   return { role: who.role, me: who.key, id: s.id, code: who.role === 'teacher' ? s.code : undefined, tool: s.tool, title: s.title, status: s.status,
-    className: c ? c.name : '', teacher: { state: s.room || '{}', updatedAt: s.room_at || 0 }, areas, showWork: !!s.show_work,
+    className: c ? c.name : '', teacher: { state: who.role === 'teacher' ? s.room || '{}' : JSON.stringify(tState), updatedAt: s.room_at || 0 }, areas, showWork: !!s.show_work, deck,
     pushed: who.role === 'student' ? s.pushed_state || null : !!s.pushed_state, pushedAt: s.pushed_at || 0,
     bring: LIVE.bringOf(s.id), cursors: LIVE.cursorsOf(s.id), hands: LIVE.handsOf(s.id) };
+}
+/** Where the deck is: the teacher's step, and a student's own while they go at their own pace (clamped to the deck). */
+export function stepIndex(s, steps, key) {
+  const pos = LIVE.stepOf(s.id), last = Math.max(0, steps.length - 1);
+  const i = pos.pace && key !== 't' && pos.mine.has(String(key)) ? pos.mine.get(String(key)) : pos.cur;
+  return Math.min(Math.max(0, i), last);
+}
+function deckFor(s, tState, who) {
+  const steps = stepsOf(tState), pos = LIVE.stepOf(s.id);
+  if (!steps.length) return { total: 0, cur: 0, pace: pos.pace, list: [] };
+  if (who.role === 'teacher') {
+    const mine = {}; for (const w of q.all('SELECT user_id FROM manip_work WHERE session_id=?', s.id)) mine[w.user_id] = stepIndex(s, steps, w.user_id);
+    return { total: steps.length, cur: stepIndex(s, steps, 't'), pace: pos.pace, list: steps, mine };
+  }
+  const i = stepIndex(s, steps, who.key);
+  return { total: steps.length, cur: i, pace: pos.pace, list: steps.slice(0, i + 1) };
+}
+/** A square's work space under its strip: the deck's step lines, else the teacher's notes. */
+function squareBounds(s, L, key, tState) {
+  const steps = stepsOf(tState);
+  const texts = steps.length ? stepStripTexts(steps, stepIndex(s, steps, key)) : instructionNotes((tState.__ann || {}).notes);
+  return { w: L.sq.w, h: L.sq.h - stripHeight(texts, L.sq) };
+}
+/** Move the deck. The teacher: to a step ({ to }) or one along ({ dir }). A student: their own step, only while the
+ *  teacher lets students go at their own pace, never past the last step. */
+export const STEP_LIMIT = 60;
+export function step(u, id, { dir = 0, to = null } = {}) {
+  const s = getSession(id), who = roomRole(u, s);
+  if (!who) return fail('notFound');
+  if (s.status !== 'active') return fail('ended');
+  const steps = stepsOf(json(s.room || '{}', {}) || {}); if (!steps.length) return fail('notFound');
+  const now0 = stepIndex(s, steps, who.key), last = steps.length - 1;
+  const next = Math.min(last, Math.max(0, to !== null && Number.isFinite(+to) ? Math.round(+to) : now0 + Math.sign(+dir || 0)));
+  if (who.role === 'teacher') { LIVE.setStep(s.id, next); return ok({ cur: next }); }
+  if (!LIVE.stepOf(s.id).pace) return fail('notFound');
+  if (!allow(`mstep:${s.id}:${who.key}`, STEP_LIMIT, 60e3)) return fail('slow');
+  LIVE.setMine(s.id, who.key, next);
+  return ok({ cur: next });
+}
+/** "Students go at their own pace": the teacher only. Off snaps everyone back to the teacher's step. */
+export function pace(u, id, on) {
+  const s = getSession(id), who = roomRole(u, s);
+  if (!who || who.role !== 'teacher') return fail('notFound');
+  LIVE.setPace(s.id, !!on);
+  return ok();
 }
 /** Save one area: key 't' (the teacher's area) or a student's id. The teacher may save any; a student only their own.
  *  Note authors are kept here, not taken from the browser: a note the teacher adds is the teacher's (everyone reads it);
@@ -311,8 +373,9 @@ export function saveArea(u, id, key, state) {
   if (!who || (who.role === 'student' && key !== who.key)) return fail('notFound');
   if (s.status !== 'active') return fail('ended');
   // A student's square: its work space starts under the teacher's "Instructions" strip (the teacher's area's notes).
-  const L = roomLayout(s.tool), strip = stripHeight(instructionNotes((json(s.room || '{}', {}).__ann || {}).notes), L.sq);
-  const bounds = key === 't' ? { w: L.teacher.w, h: L.teacher.h } : { w: L.sq.w, h: L.sq.h - strip };
+  const L = roomLayout(s.tool), tState = json(s.room || '{}', {}) || {};
+  const nextSteps = key === 't' ? stepsOf(typeof state === 'string' ? json(state, {}) : state) : [];
+  const bounds = key === 't' ? { w: L.teacher.w, h: L.teacher.h - (nextSteps.length ? TEACHER_STEP_H : 0) } : squareBounds(s, L, key, tState);
   const row = key === 't' ? { state: s.room || '{}' } : q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, String(key));
   if (!row) return fail('notFound');
   const c = cleanState(state, bounds); if (!c.ok) return c;
@@ -469,7 +532,7 @@ export function sanitizeDraft(d, vocab) {
   const kinds = new Set(vocab.map(v => v.kind));
   const o = d && typeof d === 'object' ? d : {};
   const title = clipStr(o.board_title, 120).trim();
-  return {
+  const out = {
     board_title: title && !textProblem(title) ? title : 'AI lesson draft',
     pieces: (Array.isArray(o.pieces) ? o.pieces : []).filter(p => p && kinds.has(p.kind)).slice(0, 30).map(p => ({ kind: p.kind, x: clamp01(p.x), y: clamp01(p.y) })),
     notes: (Array.isArray(o.notes) ? o.notes : []).map(n => ({ text: clipStr(n && n.text, LIMITS.noteChars).trim(), x: clamp01(n && n.x), y: clamp01(n && n.y) }))
@@ -479,6 +542,9 @@ export function sanitizeDraft(d, vocab) {
       points: (s && Array.isArray(s.points) ? s.points : []).slice(0, 40).map(p => ({ x: clamp01(p && p.x), y: clamp01(p && p.y) })),
     })).filter(s => s.points.length > 1),
   };
+  // The notes, in the order the model wrote them, are the exercise's steps (the page builds its deck from them).
+  out.steps = out.notes.map(n => n.text);
+  return out;
 }
 /** Does the brief carry the name of one of the host's students? (Names never go to the AI.) */
 export function namesIn(u, brief) {

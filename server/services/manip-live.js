@@ -1,5 +1,5 @@
 // The moving parts of a manipulatives live room that are never stored (docs/decisions.md "Virtual math manipulatives:
-// the shared room"): everyone's cursor, raised hands, the teacher's last "Bring everyone to me", and who is listening.
+// the shared room"): everyone's cursor, raised hands, the deck's current step, the teacher's last "Bring everyone to me", and who is listening.
 // Memory only: nothing here is written to the database or to a log line. A cursor goes when its socket closes, after
 // IDLE_MS without a move, or when the session ends (forget); the whole room goes with its last listener.
 export const IDLE_MS = 10e3;
@@ -9,7 +9,7 @@ const LO = -2000, HI = 20000;
 const rooms = new Map();   // session id -> { cursors: Map(key -> { x, y, touch, at }), bring: { seq, view }, subs: Set(fn), changed, timer }
 const roomOf = sid => {
   let r = rooms.get(sid);
-  if (!r) { r = { cursors: new Map(), hands: new Map(), conns: new Map(), bring: { seq: 0, view: null }, subs: new Set(), changed: false, timer: null }; rooms.set(sid, r); }
+  if (!r) { r = { cursors: new Map(), hands: new Map(), conns: new Map(), step: { cur: 0, pace: false, mine: new Map() }, bring: { seq: 0, view: null }, subs: new Set(), changed: false, timer: null }; rooms.set(sid, r); }
   return r;
 };
 const n = v => Math.min(HI, Math.max(LO, Math.round(Number(v) || 0)));
@@ -46,6 +46,12 @@ export function connected(sid, key, delta) {
   r.conns.delete(k); dropCursor(sid, k);
   if (r.hands.has(k)) { r.hands.delete(k); publish(sid, { t: 'hands', list: handsOf(sid) }); }
 }
+/** The deck's position (live, never stored): the teacher's step, whether students go at their own pace, and each
+ *  student's own step while they do. */
+export const stepOf = sid => { const r = rooms.get(sid); return r ? r.step : { cur: 0, pace: false, mine: new Map() }; };
+export function setStep(sid, cur) { const r = roomOf(sid); r.step.cur = cur; if (!r.step.pace) r.step.mine.clear(); publish(sid, { t: 'step' }); }
+export function setPace(sid, on) { const r = roomOf(sid); r.step.pace = !!on; r.step.mine.clear(); publish(sid, { t: 'step' }); }
+export function setMine(sid, key, i) { const r = roomOf(sid); r.step.mine.set(String(key), i); publish(sid, { t: 'step' }); }
 /** The teacher's "Bring everyone to me": the view (a room rectangle) and a number that grows each time. */
 export function setBring(sid, view) { const r = roomOf(sid); r.bring = { seq: r.bring.seq + 1, view }; publish(sid, { t: 'bring', ...r.bring }); return r.bring.seq; }
 export const bringOf = sid => (rooms.get(sid) || { bring: { seq: 0, view: null } }).bring;
@@ -64,7 +70,7 @@ export function subscribe(sid, fn) {
   }
   return () => {
     r.subs.delete(fn);
-    if (!r.subs.size) { clearInterval(r.timer); r.timer = null; if (!r.cursors.size && !r.hands.size) rooms.delete(sid); }
+    if (!r.subs.size) { clearInterval(r.timer); r.timer = null; if (!r.cursors.size && !r.hands.size && !r.step.cur && !r.step.pace) rooms.delete(sid); }
   };
 }
 /** The session ended (or was deleted): everything about it goes. */

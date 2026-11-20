@@ -279,6 +279,8 @@ test('the AI drafter: hosts only, through the site\'s AI client with the configu
     assert.equal(d.pieces.length, 30); assert.ok(d.pieces.every(p => ['rod', 'flat'].includes(p.kind) && p.x >= 0 && p.x <= 1 && p.y === 0));
     assert.deepEqual(d.notes.map(n => n.text).slice(0, 2), ['What stays the same?', 'Question 0']);
     assert.equal(d.notes.length, 6); assert.equal(d.notes[0].x, 1);
+    assert.deepEqual(d.steps, d.notes.map(n => n.text), 'the notes, in order, are the exercise\'s steps');
+    assert.deepEqual(d.steps.slice(0, 3), ['What stays the same?', 'Question 0', 'Question 1']);
     assert.equal(d.strokes.length, 3, 'at most 4 strokes, a one-point stroke dropped'); assert.equal(d.strokes[0].color, '#FF6B4A'); assert.deepEqual(d.strokes[0].points[0], { x: 0, y: 0.5 });
     // A student's name in the brief never reaches the AI.
     const n = calls.length;
@@ -292,7 +294,7 @@ test('the AI drafter: hosts only, through the site\'s AI client with the configu
   // No key (or the budget is resting): a plain starting board, no AI call.
   const plain = await M.draftLesson(boss, { tool: 'money', brief: 'make 75 cents two ways' });
   assert.equal(plain.ai, false); assert.equal(plain.draft.notes[0].text, 'make 75 cents two ways');
-  assert.deepEqual(M.sanitizeDraft(null, pieceDefs('money')), { board_title: 'AI lesson draft', pieces: [], notes: [], strokes: [] });
+  assert.deepEqual(M.sanitizeDraft(null, pieceDefs('money')), { board_title: 'AI lesson draft', pieces: [], notes: [], strokes: [], steps: [] });
 });
 
 test('the PDF: the teacher\'s export of the students\' work, with the names the teacher already sees', async () => {
@@ -577,5 +579,63 @@ test('hidden work: by default a student gets nothing of a classmate\'s square bu
     // Hidden again: gone from the next read.
     M.showWork(boss, s.id, false);
     assert.doesNotMatch((await as(w.a2)(`/api/manipulatives/live/${s.id}/room`)).text, /kind\W{0,6}rod|pts/);
+  } finally { ws.terminate(); server.off('upgrade', listener); }
+});
+
+test('the deck of steps: saved with the board, through share codes, push and sessions; only the teacher moves it unless students go at their own pace', async () => {
+  const { WebSocket } = await import('ws');
+  const { attachUpgrades } = await import('../../server/services/upgrade.js');
+  const SOCK = await import('../../server/services/manip-socket.js');
+  const listener = attachUpgrades(server, [SOCK.route]);
+  const w = world();
+  const deck = { pieces: [], __steps: [{ id: 'a', text: 'First: build 23' }, { id: 'b', text: 'Second: trade a ten' }, { id: 'c', text: 'Third secret: build 1,000' }] };
+  // Saved with the board; a share code opens it with its steps.
+  const b = M.saveBoard(boss, { tool: 'base-ten-blocks', title: 'Three steps', state: deck }).board;
+  assert.deepEqual(JSON.parse(M.openCode(boss, b.code).board.state).__steps.map(x => x.text), deck.__steps.map(x => x.text));
+  assert.equal(M.saveBoard(boss, { tool: 'clock', state: { __steps: [{ id: 'x', text: 'shit' }] } }).code, 'words', 'steps go through the word rules');
+  // A session started from it: the deck is the teacher's.
+  const s = M.createSession(boss, { classId: w.A.id, boardId: b.id }).session;
+  M.join(w.a1, { code: s.code }); M.join(w.a2, { code: s.code });
+  const raw = [];
+  const ws = new WebSocket(`${base.replace('http', 'ws')}/api/manipulatives/ws?s=${s.id}`, { headers: { cookie: cookieFor(w.a1.id), origin: base } });
+  ws.on('message', d => raw.push(String(d)));
+  await new Promise(r => ws.on('open', r));
+  const room = who => as(who)(`/api/manipulatives/live/${s.id}/room`);
+  const step = (who, body) => as(who)(`/api/manipulatives/live/${s.id}/step`, { method: 'POST', body });
+  try {
+    let tr = (await room(boss)).json.room;
+    assert.equal(tr.deck.total, 3); assert.equal(tr.deck.list.length, 3);
+    // A student: the current step only, never a later one (not even in the teacher's area state).
+    let sr = await room(w.a1);
+    assert.deepEqual(sr.json.room.deck, { total: 3, cur: 0, pace: false, list: [{ id: 'a', text: 'First: build 23' }] });
+    assert.doesNotMatch(sr.text, /Second|Third secret/);
+    // Students can't move it.
+    assert.equal((await step(w.a1, { dir: 1 })).status, 404);
+    assert.equal((await step(boss, { dir: 1 })).status, 200);
+    sr = await room(w.a1);
+    assert.equal(sr.json.room.deck.cur, 1); assert.match(sr.text, /Second/); assert.doesNotMatch(sr.text, /Third secret/);
+    // Their own pace: the teacher only; then each student moves their own step, never past the last.
+    assert.equal((await as(w.a1)(`/api/manipulatives/live/${s.id}/pace`, { method: 'POST', body: { on: true } })).status, 404);
+    assert.equal((await as(boss)(`/api/manipulatives/live/${s.id}/pace`, { method: 'POST', body: { on: true } })).status, 200);
+    for (let i = 0; i < 5; i++) await step(w.a1, { dir: 1 });
+    assert.equal((await room(w.a1)).json.room.deck.cur, 2, 'stops at the last step');
+    assert.equal((await room(w.a2)).json.room.deck.cur, 1, 'others stay where they are');
+    assert.doesNotMatch((await room(w.a2)).text, /Third secret/);
+    tr = (await room(boss)).json.room;
+    assert.deepEqual([tr.deck.mine[w.a1.id], tr.deck.mine[w.a2.id]], [2, 1], 'the teacher sees each student\'s step');
+    // Off: everyone snaps back to the teacher's step.
+    await as(boss)(`/api/manipulatives/live/${s.id}/pace`, { method: 'POST', body: { on: false } });
+    assert.equal((await room(w.a1)).json.room.deck.cur, 1);
+    assert.equal((await step(w.a1, { dir: 1 })).status, 404);
+    // The socket only ever says "a step changed": never a step's text.
+    await new Promise(r => setTimeout(r, 100));
+    assert.ok(raw.some(m => JSON.parse(m).t === 'step'));
+    assert.ok(raw.every(m => !/First|Second|Third/.test(m)), raw.join('\n'));
+    // Push carries a board's steps into the deck (from its first step); students get the board without them.
+    const b2 = M.saveBoard(boss, { tool: 'base-ten-blocks', state: { pieces: [], __steps: [{ id: 'p', text: 'Pushed one' }, { id: 'q', text: 'Pushed two' }] } }).board;
+    assert.equal(M.push(boss, s.id, b2.id).ok, true);
+    sr = (await room(w.a1)).json.room;
+    assert.deepEqual([sr.deck.total, sr.deck.cur, sr.deck.list.map(x => x.text)], [2, 0, ['Pushed one']]);
+    assert.doesNotMatch(sr.pushed, /Pushed two|__steps/);
   } finally { ws.terminate(); server.off('upgrade', listener); }
 });

@@ -9,7 +9,7 @@
 // falls back to short requests.
 // The tools' own code (boards, palettes, taps) comes from public/js/manip.js through open()'s deps.
 import { t, api, toast, esc } from '/js/app.js';
-import { toolOf, roomLayout, freeSpot, BREAKS, instructionNotes, stripHeight, stripFullHeight, STRIP } from '/js/manip-data.js';
+import { toolOf, roomLayout, freeSpot, BREAKS, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H } from '/js/manip-data.js';
 
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
 const NOTE_MAX = 12, Z_MIN = 0.12, Z_MAX = 2.5;
@@ -44,7 +44,7 @@ export async function open(root, id, deps) {
     <div class="rm-world" id="rm-world"></div><div class="rm-cursors" id="rm-cursors" aria-hidden="true"></div>
     <div class="rm-bar" id="rm-bar"></div><aside class="mp-side rm-pal" id="rm-pal" aria-label="${esc(t('js.manip-room.palette'))}"></aside>
     <div class="rm-float rm-zoomdesk" id="rm-zoom"></div><div class="rm-float rm-minifloat" id="rm-mini"></div>
-    <div id="rm-handlist"></div><div id="rm-banner"></div>${btn('btn btn-primary btn-big rm-back', `id="rm-back" data-rtool="mine" hidden`, `🏠 ${esc(t('js.manip-room.backMine'))}`)}</div>`;
+    <div id="rm-handlist"></div><div id="rm-menu"></div><div id="rm-banner"></div>${btn('btn btn-primary btn-big rm-back', `id="rm-back" data-rtool="mine" hidden`, `🏠 ${esc(t('js.manip-room.backMine'))}`)}</div>`;
   document.querySelector('main#main')?.classList.add('rm-main');
   renderWorld(); renderBar(); renderPal();
   requestAnimationFrame(() => { if (R.role === 'teacher') fitAll(); else goMine(); });
@@ -56,13 +56,13 @@ export async function open(root, id, deps) {
 
 // ---------------------------------------------------------------- areas
 function stateOf(text) {
-  const o = parse(text, {}) || {}, ann = o.__ann || {};
-  const rest = { ...o }; delete rest.__ann;
+  const o = parse(text, {}) || {}, ann = o.__ann || {}, steps = stepsOf(o);
+  const rest = { ...o }; delete rest.__ann; delete rest.__steps;
   const base = R.impl.init();
   const st = R.impl.load ? R.impl.load(rest) : { ...base, ...rest };
   for (const k of Object.keys(base)) if (Array.isArray(base[k]) && !Array.isArray(st[k])) st[k] = base[k];
   if (R.impl.pieces) st.pieces = st.pieces.filter(p => p && typeof p === 'object').map(p => ({ ...p, id: String(p.id || R.deps.newId()), x: +p.x || 0, y: +p.y || 0, w: +p.w || 50, h: +p.h || 50 }));
-  return { st, ann: { notes: Array.isArray(ann.notes) ? ann.notes.slice(0, NOTE_MAX) : [], strokes: Array.isArray(ann.strokes) ? ann.strokes : [] } };
+  return { st, steps, ann: { notes: Array.isArray(ann.notes) ? ann.notes.slice(0, NOTE_MAX) : [], strokes: Array.isArray(ann.strokes) ? ann.strokes : [] } };
 }
 /** The server's room into R.areas, keeping any area this page is still changing. -> true when squares came or went. */
 function syncAreas(room) {
@@ -114,7 +114,7 @@ function renderHandButtons() {
   const mine = handUp(R.me);
   for (const b of document.querySelectorAll('[data-rtool="hand"]')) { b.classList.toggle('on', mine); b.setAttribute('aria-pressed', String(mine)); b.querySelector('.rm-handt').textContent = mine ? t('js.manip-room.lowerHand') : t('js.manip-room.raiseHand'); }
   const tb = document.getElementById('rm-hands');
-  if (tb) { tb.querySelector('.rm-handt').textContent = t('js.manip-room.handsUp', { n: R.hands.length }); tb.classList.toggle('on', R.hands.length > 0); }
+  if (tb) { tb.querySelector('.rm-handt').textContent = handsLabel(); tb.classList.toggle('on', R.hands.length > 0); }
   renderHandList();
 }
 /** The teacher's list of raised hands, in the order they went up (roster names). */
@@ -126,24 +126,45 @@ function renderHandList() {
     ${list.length ? `<ol>${list.map(({ A }) => `<li><span class="rm-dot" style="background:${esc(A.color)}"></span>${btn('rm-hgo', `data-hgo="${esc(A.key)}"`, esc(A.name))}${btn('btn btn-sm', `data-hlow="${esc(A.key)}" aria-label="${esc(t('js.manip-room.lowerOne', { name: A.name }))}"`, esc(t('js.manip-room.lower')))}</li>`).join('')}</ol>` : `<p class="small muted">${esc(t('js.manip-room.noHands'))}</p>`}</div>`;
 }
 /** The teacher's "Instructions" strip at the top of every student square: the teacher's area's notes, numbered. */
-function strip() {
+const deck = () => R.room.deck || { total: 0, cur: 0, list: [] };
+/** A square's strip: in step mode, the step this viewer may see (a student: their own; the teacher: that student's);
+ *  otherwise the teacher's notes. -> { mode, texts (for its height), h, full, i, text, earlier } */
+function strip(A) {
+  const d = deck();
+  if (d.total) {
+    const i = R.role === 'teacher' && A && d.mine && A.key in d.mine ? d.mine[A.key] : d.cur;
+    const texts = stepStripTexts(d.list, i, d.total), cur = d.list[i];
+    return { mode: 'step', texts, h: stripHeight(texts, R.L.sq), full: stripFullHeight([cur ? cur.text : '', ...d.list.slice(0, i).map(x => x.text)], R.L.sq), i, text: cur ? cur.text : '', earlier: d.list.slice(0, i) };
+  }
   const T = R.areas.get('t'), texts = instructionNotes(T ? T.ann.notes : []);
-  return { texts, h: stripHeight(texts, R.L.sq), full: stripFullHeight(texts, R.L.sq) };
+  return { mode: 'notes', texts, h: stripHeight(texts, R.L.sq), full: stripFullHeight(texts, R.L.sq) };
 }
-/** A square's work space: its size under the strip (the teacher's area has none). */
-const workSize = A => (A.key === 't' ? { w: A.rect.w, h: A.rect.h } : { w: A.rect.w, h: A.rect.h - strip().h });
+/** A square's work space: its size under the strip; the teacher's area under its big step card in step mode. */
+const workSize = A => (A.key === 't' ? { w: A.rect.w, h: A.rect.h - (deck().total ? TEACHER_STEP_H : 0) } : { w: A.rect.w, h: A.rect.h - strip(A).h });
+const topOf = A => (A.key === 't' ? (deck().total ? TEACHER_STEP_H : 0) : strip(A).h);
 function stripHtml(A) {
-  const sp = strip(); if (A.key === 't' || !sp.h) return '';
-  const open = R.stripOpen.has(A.key), more = sp.full > sp.h;
-  return `<div class="rm-strip${open ? ' open' : ''}" style="height:${open ? sp.full : sp.h}px" role="note" aria-label="${esc(t('js.manip-room.instructions'))}">
-    <div class="rm-striphead"><b>📌 ${esc(t('js.manip-room.instructions'))}</b>${more ? btn(open ? 'rm-more' : 'rm-more low', `data-strip="${esc(A.key)}" aria-expanded="${open}"`, esc(open ? t('js.manip-room.less') : t('js.manip-room.more'))) : ''}</div>
-    <ol style="max-height:${open ? 'none' : `${sp.h - STRIP.head - STRIP.pad}px`}">${sp.texts.map(x => `<li>${esc(x)}</li>`).join('')}</ol>${more && !open ? '<span class="rm-fade" aria-hidden="true"></span>' : ''}</div>`;
+  if (A.key === 't') {
+    const d = deck(); if (!d.total) return '';
+    const cur = d.list[d.cur];
+    return `<div class="rm-tstep" style="height:${TEACHER_STEP_H}px"><span class="rm-stepno">${esc(t('js.manip-room.stepOf', { n: d.cur + 1, total: d.total }))}</span><p>${esc(cur ? cur.text : '')}</p></div>`;
+  }
+  const sp = strip(A); if (!sp.h) return '';
+  const open = R.stripOpen.has(A.key), more = sp.full > sp.h || (sp.mode === 'step' && sp.earlier.length);
+  const own = R.role === 'student' && A.key === R.me, paceBtns = sp.mode === 'step' && own && deck().pace && R.room.status === 'active'
+    ? `${btn('rm-stepbtn', `data-mystep="-1"${sp.i ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.back'))}"`, '◀')}${btn('rm-stepbtn', `data-mystep="1"${sp.i + 1 < deck().total ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.next'))}"`, '▶')}` : '';
+  const head = sp.mode === 'step' ? `📌 ${esc(t('js.manip-room.stepOf', { n: sp.i + 1, total: deck().total }))}` : `📌 ${esc(t('js.manip-room.instructions'))}`;
+  const body = sp.mode === 'step'
+    ? `${open && sp.earlier.length ? `<ol class="rm-earlierlist">${sp.earlier.map(x => `<li>${esc(x.text)}</li>`).join('')}</ol>` : ''}<p class="rm-steptext">${esc(sp.text)}</p>`
+    : `<ol style="max-height:${open ? 'none' : `${sp.h - STRIP.head - STRIP.pad}px`}">${sp.texts.map(x => `<li>${esc(x)}</li>`).join('')}</ol>`;
+  const toggle = more ? btn(open ? 'rm-more' : 'rm-more low', `data-strip="${esc(A.key)}" aria-expanded="${open}"`, esc(open ? t('js.manip-room.less') : sp.mode === 'step' && sp.earlier.length ? t('js.manip-room.earlier', { n: sp.earlier.length }) : t('js.manip-room.more'))) : '';
+  return `<div class="rm-strip${open ? ' open' : ''}" data-stripkey="${esc(A.key)}" style="${open ? 'min-height' : 'height'}:${sp.h}px" role="note" aria-label="${esc(t('js.manip-room.instructions'))}">
+    <div class="rm-striphead"><b>${head}</b>${paceBtns}${open ? toggle : ''}</div>${body}${more && !open ? `<span class="rm-fade" aria-hidden="true"></span>${toggle}` : ''}</div>`;
 }
 function areaInner(A) {
   // A classmate's square while the teacher hides work: the server sent nothing of it; a frosted panel drawn from nothing.
-  if (A.hidden) return `<div class="rm-body">${stripHtml(A)}<div class="rm-in rm-frost" style="top:${strip().h}px"><span>🔒 ${esc(t('js.manip-room.hiddenWork'))}</span></div></div>`;
+  if (A.hidden) return `<div class="rm-body">${stripHtml(A)}<div class="rm-in rm-frost" style="top:${topOf(A)}px"><span>🔒 ${esc(t('js.manip-room.hiddenWork'))}</span></div></div>`;
   const sel = R.sel && R.sel.key === A.key ? R.sel.id : null;
-  return `<div class="rm-body">${stripHtml(A)}<div class="rm-in" style="top:${A.key === 't' ? 0 : strip().h}px"><div class="mp-content${R.impl.pieces ? ' mp-abs' : ''}">${R.impl.board(A.st, { sel, readOnly: !A.editable || R.room.status !== 'active' })}</div>
+  return `<div class="rm-body">${stripHtml(A)}<div class="rm-in" style="top:${topOf(A)}px"><div class="mp-content${R.impl.pieces ? ' mp-abs' : ''}">${R.impl.board(A.st, { sel, readOnly: !A.editable || R.room.status !== 'active' })}</div>
     <svg class="mp-ink" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true">${A.ann.strokes.map(s => `<polyline fill="none" stroke="${esc(s.c)}" stroke-width="4" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" points="${(s.pts || []).map(p => `${+p.x},${+p.y}`).join(' ')}"/>`).join('')}</svg>
     <div class="mp-notes">${A.ann.notes.map((n, i) => noteHtml(A, n, i)).join('')}</div></div></div>`;
 }
@@ -194,7 +215,7 @@ async function saveNow(key) {
   const A = R && R.areas.get(key); if (!A) return;
   A.saveTimer = null; A.saving = true;
   try {
-    await api(`/api/manipulatives/live/${R.id}/area/${encodeURIComponent(key)}`, { method: 'POST', body: { state: { ...A.st, __ann: { notes: A.ann.notes, strokes: A.ann.strokes } } } });
+    await api(`/api/manipulatives/live/${R.id}/area/${encodeURIComponent(key)}`, { method: 'POST', body: { state: { ...A.st, ...(A.key === 't' ? { __steps: A.steps || [] } : {}), __ann: { notes: A.ann.notes, strokes: A.ann.strokes } } } });
     A.updatedAt = -1;   // read it back on the next refresh (the server may have kept a teacher's note)
   } catch (e) { toast(e.message, { bad: true }); A.updatedAt = -1; }
   finally { A.saving = false; }
@@ -207,6 +228,12 @@ async function refresh() {
   if (syncAreas(room)) renderWorld();
   if (!R.wsOk) { R.cursors = room.cursors || []; renderCursors(); setHands(room.hands || []); }
   if (room.bring && room.bring.seq > R.seenBring) onBring(room.bring);
+  if (JSON.stringify(was.deck) !== JSON.stringify(room.deck)) {
+    renderWorld(); renderBar(); renderPal();
+    // A student's step changed: a short, gentle highlight on the strip (none with reduced motion: app.css).
+    const old = was.deck || {}, now = room.deck || {};
+    if (R.role === 'student' && (old.cur !== now.cur || old.total !== now.total)) for (const el of document.querySelectorAll('.rm-strip')) el.classList.add('flash');
+  }
   if (was.status !== room.status || was.pushedAt !== room.pushedAt || was.areas.length !== room.areas.length || was.showWork !== room.showWork) { renderBar(); if (was.status !== room.status) { renderWorld(); renderPal(); } }
 }
 let stripTimer = null;
@@ -230,7 +257,7 @@ function connect() {
     let m; try { m = JSON.parse(ev.data); } catch { return; }
     if (m.t === 'cur' || m.t === 'hi') { R.cursors = m.t === 'cur' ? m.list : m.cur || []; renderCursors(); }
     if (m.t === 'hands' || m.t === 'hi') setHands(m.t === 'hands' ? m.list : m.hands || []);
-    if (m.t === 'dirty') refreshLater();
+    if (m.t === 'dirty' || m.t === 'step') refreshLater();
     if (m.t === 'bring' && m.seq > R.seenBring) onBring(m);
     if (m.t === 'end') refresh();
   };
@@ -310,6 +337,8 @@ function onBring(b) {
   // A wide classroom screen squeezed onto a phone would be too small to read: never below 40%, around the same middle.
   if (R.view.z < 0.4) { const s = size(), cx = b.view.x + b.view.w / 2, cy = b.view.y + b.view.h / 2; R.view = { z: 0.4, x: s.w / 2 - cx * 0.4, y: s.h * 0.42 - cy * 0.4 }; applyView(); }
   R.brought = true; renderBanner();
+  // The banner goes after a few seconds; "Back to my square" stays until they use it.
+  clearTimeout(R.bannerTimer); R.bannerTimer = setTimeout(() => { if (!R || !R.brought) return; const el = document.getElementById('rm-banner'); if (el) el.innerHTML = ''; }, 5000);
 }
 function renderBanner() {
   const el = document.getElementById('rm-banner'), back = document.getElementById('rm-back'); if (!el) return;
@@ -332,25 +361,40 @@ function zoomHtml(cls) {
   return `<div class="rm-zoom ${cls}" role="group" aria-label="${esc(t('js.manip-room.zoom'))}">${btn('chip', `data-rtool="zout" aria-label="${esc(t('js.manip-room.zoomOut'))}"`, '−')}<span class="rm-pct">${Math.round(R.view.z * 100)}%</span>${btn('chip', `data-rtool="zin" aria-label="${esc(t('js.manip-room.zoomIn'))}"`, '+')}${btn('chip', 'data-rtool="fit"', `⤢ ${esc(t('js.manip-room.fit'))}`)}</div>`;
 }
 function renderBar() {
-  const el = document.getElementById('rm-bar'), room = R.room, live = room.status === 'active';
-  const people = room.areas.slice(0, 12).map(a => `<span style="background:${esc(a.color)}" title="${esc(a.name)}">${esc(initials(a.name))}</span>`).join('');
+  const el = document.getElementById('rm-bar'), room = R.room, live = room.status === 'active', d = deck();
   const state = live ? `<span class="rm-live">${esc(t('js.manip-room.live'))}</span>` : `<span class="mp-tag bad">${esc(t('js.manip-room.ended'))}</span>`;
   const pushed = R.role === 'student' && live && room.pushed && room.pushedAt > R.seenPush;
-  el.innerHTML = R.role === 'teacher'
-    ? `${state}<h1>${esc(room.title)}</h1><span class="muted small rm-hidephone">${esc(room.className)} · ${esc(t('js.manip-room.code'))}</span><b class="rm-code">${esc(room.code || '')}</b>
-      <span class="rm-people rm-hidephone" aria-label="${esc(t('js.manip-room.people', { n: room.areas.length }))}">${people}</span><span class="rm-grow"></span>
-      ${btn('btn btn-sm rm-switch', `role="switch" aria-checked="${!room.showWork}" data-rtool="showwork"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.hideWork'))}`)}
-      ${live ? btn(`btn rm-handsbtn${R.hands.length ? ' on' : ''}`, 'id="rm-hands" data-rtool="hands"', `✋ <span class="rm-handt">${esc(t('js.manip-room.handsUp', { n: R.hands.length }))}</span>`) : ''}
-      ${live ? btn('btn btn-hot', 'data-rtool="bring"', `📍 ${esc(t('js.manip-room.bring'))}`) : ''}
-      ${live ? btn('btn btn-sm', 'data-rtool="push"', esc(t('js.manip-room.push'))) : ''}<a class="btn btn-sm" href="/api/manipulatives/live/${esc(R.id)}/export.pdf" download>${esc(t('js.manip-room.pdf'))}</a>
-      ${live ? btn('btn btn-sm btn-danger', 'data-rtool="end"', esc(t('js.manip-room.end'))) : ''}`
-    : `${state}<h1>${esc(room.title)}</h1><span class="muted small rm-hidephone">${esc(room.showWork ? t('js.manip-room.studentHint') : t('js.manip-room.studentHintHidden'))}</span><span class="rm-grow"></span>
-      ${pushed ? `<span class="mp-tag hot">${esc(t('js.manip-room.sent'))}</span>${btn('btn btn-sm btn-primary', 'data-rtool="loadpush"', esc(t('js.manip-room.loadPush')))}${btn('btn btn-sm', 'data-rtool="keeppush"', esc(t('js.manip-room.keep')))}` : ''}
+  if (R.role === 'teacher') {
+    // At most: the step bar (2+ steps), Hands up, Bring everyone to me and one ⋯ menu for the rest.
+    const counts = d.pace && d.mine ? Object.values(d.mine).reduce((m, i) => { m[i] = (m[i] || 0) + 1; return m; }, {}) : null;
+    const steps = live && d.total > 1 ? `<span class="rm-steps">${btn('btn btn-sm', `data-rtool="prev"${d.cur ? '' : ' disabled'}`, `◀ ${esc(t('js.manip-room.back'))}`)}<b class="rm-stepnow">${esc(t('js.manip-room.stepOf', { n: d.cur + 1, total: d.total }))}</b>${btn('btn btn-sm btn-primary', `data-rtool="next"${d.cur + 1 < d.total ? '' : ' disabled'}`, `${esc(t('js.manip-room.next'))} ▶`)}
+      ${counts ? `<span class="small muted rm-pacesum">${Object.entries(counts).sort((x, y) => x[0] - y[0]).map(([i, n]) => esc(t('js.manip-room.paceSum', { step: +i + 1, n }))).join(' · ')}</span>` : ''}</span>` : '';
+    el.innerHTML = `${state}<h1>${esc(room.title)}</h1><b class="rm-code" title="${esc(t('js.manip-room.code'))}">${esc(room.code || '')}</b><span class="rm-grow"></span>${steps}
+      ${live ? btn(`btn rm-handsbtn${R.hands.length ? ' on' : ''}`, 'id="rm-hands" data-rtool="hands"', `✋<span class="rm-handt">${esc(handsLabel())}</span>`) : ''}
+      ${live ? btn('btn btn-hot', 'data-rtool="bring"', `📍<span class="rm-hidephone"> ${esc(t('js.manip-room.bring'))}</span>`) : ''}
+      ${btn('btn rm-menubtn', `data-rtool="menu" aria-expanded="${!!R.menuOpen}" aria-label="${esc(t('js.manip-room.menu'))}"`, '⋯')}`;
+  } else {
+    el.innerHTML = `${state}<h1>${esc(room.title)}</h1><span class="rm-grow"></span>
+      ${pushed ? `${btn('btn btn-sm btn-primary', 'data-rtool="loadpush"', esc(t('js.manip-room.loadPush')))}${btn('btn btn-sm', 'data-rtool="keeppush"', esc(t('js.manip-room.keep')))}` : ''}
       ${live ? handBtn('btn rm-hidephone') : ''}${btn('btn btn-primary rm-minebar', 'data-rtool="mine"', `🏠 ${esc(t('js.manip-room.mySquareBtn'))}`)}`;
-  renderHandList();
+  }
+  renderHandList(); renderMenu();
   document.getElementById('rm-zoom').innerHTML = zoomHtml('');
   // The palette, banners and lists sit under the bar, however many lines it takes.
   requestAnimationFrame(() => { const rm = document.getElementById('rm'); if (rm && el) rm.style.setProperty('--rm-bar-h', `${el.offsetHeight}px`); });
+}
+const handsLabel = () => (R.hands.length ? ` ${t('js.manip-room.handsUpN', { n: R.hands.length })}` : ` ${t('js.manip-room.handsUpNone')}`);
+/** The teacher's ⋯ menu: everything that isn't needed every minute. */
+function renderMenu() {
+  const el = document.getElementById('rm-menu'); if (!el) return;
+  if (R.role !== 'teacher' || !R.menuOpen) { el.innerHTML = ''; return; }
+  const room = R.room, live = room.status === 'active', d = deck();
+  el.innerHTML = `<div class="rm-menu panel" role="menu">
+    ${btn('rm-mi rm-switch', `role="switch" aria-checked="${!room.showWork}" data-rtool="showwork"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.hideWork'))}`)}
+    ${d.total > 1 && live ? btn('rm-mi rm-switch', `role="switch" aria-checked="${!!d.pace}" data-rtool="pace"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.pace'))}`) : ''}
+    ${live ? btn('rm-mi', 'data-rtool="push"', `📤 ${esc(t('js.manip-room.push'))}`) : ''}
+    <a class="rm-mi" href="/api/manipulatives/live/${esc(R.id)}/export.pdf" download>📄 ${esc(t('js.manip-room.pdf'))}</a>
+    ${live ? btn('rm-mi bad', 'data-rtool="end"', `⏹ ${esc(t('js.manip-room.end'))}`) : ''}</div>`;
 }
 const handBtn = cls => btn(`${cls} rm-hand${handUp(R.me) ? ' on' : ''}`, `data-rtool="hand" aria-pressed="${handUp(R.me)}" aria-label="${esc(t('js.manip-room.raiseHand'))}"`, `✋ <span class="rm-handt">${esc(handUp(R.me) ? t('js.manip-room.lowerHand') : t('js.manip-room.raiseHand'))}</span>`);
 const initials = name => String(name).split(/\s+/).map(w => [...w][0] || '').join('').slice(0, 2).toUpperCase() || '?';
@@ -382,7 +426,8 @@ function renderPal() {
       ${btn(`mp-tbtn${R.annotate ? ' on' : ''}`, `data-rtool="pen" aria-pressed="${R.annotate}" aria-label="${esc(t('js.manip-room.pen'))}"`, `✎<span class="rm-hidephone"> ${esc(t('js.manip-room.pen'))}</span>`)}
       ${btn('mp-tbtn', `data-rtool="undo"${R.hist.length ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.undo'))}"`, `↩<span class="rm-hidephone"> ${esc(t('js.manip-room.undo'))}</span>`)}
       ${btn('mp-tbtn rm-phoneonly', `data-rtool="zout" aria-label="${esc(t('js.manip-room.zoomOut'))}"`, '−')}${btn('mp-tbtn rm-phoneonly', `data-rtool="zin" aria-label="${esc(t('js.manip-room.zoomIn'))}"`, '+')}
-      ${R.role === 'student' ? `${handBtn('mp-tbtn rm-phoneonly')}${btn('mp-tbtn rm-mine rm-hidephone', 'data-rtool="mine"', `🏠 ${esc(t('js.manip-room.mySquareBtn'))}`)}` : ''}</div>
+      ${R.role === 'teacher' && A.key === 't' ? btn('mp-tbtn rm-hidephone', 'data-rtool="steps"', `📋 ${esc(t('js.manip-room.steps'))}`) : ''}
+      ${R.role === 'student' ? `${handBtn('mp-tbtn rm-phoneonly')}` : ''}</div>
     ${R.annotate ? `<div class="row rm-pens">${PEN_COLORS.map(c => btn(`mp-pen${R.pen === c ? ' on' : ''}`, `data-rpen="${c}" style="background:${c}" aria-label="${esc(t('js.manip-room.penColor', { color: c }))}"`, '')).join('')}${btn('chip', 'data-rtool="clearpen"', esc(t('js.manip-room.clearPen')))}</div>` : ''}
     ${R.impl.settings ? `<div class="rm-settings">${R.impl.settings(A.st)}</div>` : ''}`;
 }
@@ -406,7 +451,7 @@ function bind() {
     if (e.target.classList.contains('mp-notetext') && R.editing) { const n = A.ann.notes.find(x => x.id === R.editing.id); if (n) { n.text = e.target.value.slice(0, 300); queueSave(A.key); } }
   });
 }
-const UI = 'button, a, input, select, textarea, label, .rm-bar, .rm-pal, .rm-float, .rm-banner, .rm-back, .rm-strip, .rm-handlist';
+const UI = 'button, a, input, select, textarea, label, .rm-bar, .rm-pal, .rm-float, .rm-banner, .rm-back, .rm-strip, .rm-handlist, .rm-menu, .rm-steps-sheet';
 function down(e) {
   if (!R) return;
   const rm = document.getElementById('rm');
@@ -515,6 +560,8 @@ function click(e) {
   if (hgo) { const A = R.areas.get(hgo.dataset.hgo); if (A) fitRect({ x: A.rect.x, y: A.rect.y - 36, w: A.rect.w, h: A.rect.h + 36 }, 12); return; }
   const hlow = e.target.closest('[data-hlow]');
   if (hlow) { api(`/api/manipulatives/live/${R.id}/hand`, { method: 'POST', body: { up: false, key: hlow.dataset.hlow } }).then(() => { if (!R.wsOk) refresh(); }).catch(err => toast(err.message, { bad: true })); return; }
+  const my = e.target.closest('[data-mystep]');
+  if (my) { api(`/api/manipulatives/live/${R.id}/step`, { method: 'POST', body: { dir: +my.dataset.mystep } }).then(refresh).catch(err => toast(err.message, { bad: true })); return; }
   const more = e.target.closest('[data-strip]');
   if (more) { const k = more.dataset.strip; if (R.stripOpen.has(k)) R.stripOpen.delete(k); else R.stripOpen.add(k); renderArea(k); return; }
   const pen = e.target.closest('[data-rpen]');
@@ -555,11 +602,22 @@ async function toolButton(k) {
   if (k === 'zout') return zoomAt(0.8, s.w / 2, s.h / 2);
   if (k === 'fit') return fitAll();
   if (k === 'mine') return goMine();
+  if (k === 'menu') { R.menuOpen = !R.menuOpen; R.handsOpen = false; renderBar(); return; }
+  if (k === 'prev' || k === 'next' || k === 'pace') {
+    try {
+      if (k === 'pace') await api(`/api/manipulatives/live/${R.id}/pace`, { method: 'POST', body: { on: !deck().pace } });
+      else await api(`/api/manipulatives/live/${R.id}/step`, { method: 'POST', body: { dir: k === 'next' ? 1 : -1 } });
+      await refresh();
+    } catch (e) { toast(e.message, { bad: true }); }
+    return;
+  }
+  if (k === 'steps') return stepsSheet();
   if (k === 'showwork') {
     try { await api(`/api/manipulatives/live/${R.id}/show`, { method: 'POST', body: { show: !R.room.showWork } }); await refresh(); toast(R.room.showWork ? t('js.manip-room.workShown') : t('js.manip-room.workHidden')); } catch (e) { toast(e.message, { bad: true }); }
     return;
   }
-  if (k === 'hands') { R.handsOpen = !R.handsOpen; return renderHandList(); }
+  if (k === 'hands' && !R.hands.length && !R.handsOpen) { toast(t('js.manip-room.noHands')); return; }
+  if (k === 'hands') { R.handsOpen = !R.handsOpen; R.menuOpen = false; renderMenu(); return renderHandList(); }
   if (k === 'hand') {
     const up = !handUp(R.me);
     if (R.ws && R.wsOk) { try { R.ws.send(JSON.stringify({ t: 'h', up })); } catch { /* reconnecting */ } return; }
@@ -614,4 +672,41 @@ function pushSheet() {
     const b = e.target.closest('[data-push]'); if (!b) return;
     try { await api(`/api/manipulatives/live/${R.id}/push`, { method: 'POST', body: { boardId: b.dataset.push } }); toast(t('js.manip-room.pushed')); box.remove(); } catch (err) { toast(err.message, { bad: true }); }
   });
+}
+
+// ---------------------------------------------------------------- the steps editor (the room and the tool on its own)
+/** A deck of steps to build: reorder (drag, or ↑ ↓), add, edit, delete. Mounts in box; onChange(steps) after each change. */
+export function stepsEditor(box, steps, onChange) {
+  let list = (steps || []).map((x, i) => ({ id: x.id || `s${Date.now().toString(36)}${i}`, text: x.text || '' }));
+  let from = null;
+  const changed = () => onChange(list.map(x => ({ ...x })));
+  const draw = () => {
+    box.innerHTML = `${list.length ? `<ol class="rm-stepsed">${list.map((x, i) => `<li draggable="true" data-i="${i}"><span class="rm-grip" aria-hidden="true">⠿</span>
+      <label class="sr-only" for="st-${i}">${esc(t('js.manip-room.stepN', { n: i + 1 }))}</label><textarea id="st-${i}" class="input" rows="2" maxlength="300" data-si="${i}" placeholder="${esc(t('js.manip-room.stepPh'))}">${esc(x.text)}</textarea>
+      <span class="rm-stepops">${btn('btn btn-sm', `data-sup="${i}"${i ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.stepUp', { n: i + 1 }))}"`, '↑')}${btn('btn btn-sm', `data-sdown="${i}"${i + 1 < list.length ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.stepDown', { n: i + 1 }))}"`, '↓')}${btn('btn btn-sm btn-danger', `data-sdel="${i}" aria-label="${esc(t('js.manip-room.stepDelete', { n: i + 1 }))}"`, '✕')}</span></li>`).join('')}</ol>`
+      : `<p class="small muted">${esc(t('js.manip-room.noSteps'))}</p>`}${list.length < 20 ? btn('btn btn-sm', 'data-sadd', `+ ${esc(t('js.manip-room.addStep'))}`) : ''}`;
+  };
+  const move = (i, j) => { if (j < 0 || j >= list.length || i === j) return; const [x] = list.splice(i, 1); list.splice(j, 0, x); draw(); changed(); };
+  box.oninput = e => { const ta = e.target.closest('[data-si]'); if (!ta) return; list[+ta.dataset.si].text = ta.value.slice(0, 300); changed(); };
+  box.onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.sup) move(+b.dataset.sup, +b.dataset.sup - 1);
+    else if (b.dataset.sdown) move(+b.dataset.sdown, +b.dataset.sdown + 1);
+    else if (b.dataset.sdel) { list.splice(+b.dataset.sdel, 1); draw(); changed(); }
+    else if (b.hasAttribute('data-sadd')) { list.push({ id: `s${Date.now().toString(36)}`, text: '' }); draw(); changed(); box.querySelector(`#st-${list.length - 1}`)?.focus(); }
+  };
+  box.ondragstart = e => { const li = e.target.closest('li[data-i]'); if (li) { from = +li.dataset.i; e.dataTransfer.effectAllowed = 'move'; } };
+  box.ondragover = e => { if (from !== null) e.preventDefault(); };
+  box.ondrop = e => { const li = e.target.closest('li[data-i]'); if (li && from !== null) { e.preventDefault(); move(from, +li.dataset.i); } from = null; };
+  draw();
+}
+function stepsSheet() {
+  const A = R.areas.get('t'); if (!A) return;
+  const box = document.createElement('div');
+  box.className = 'mp-viewer rm-steps-sheet'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', t('js.manip-room.steps'));
+  box.innerHTML = `<div class="mp-viewbox panel"><div class="row"><h2>📋 ${esc(t('js.manip-room.steps'))}</h2>${btn('btn btn-sm', 'data-close', esc(t('js.manip-room.done')))}</div>
+    <p class="small muted">${esc(t('js.manip-room.stepsText'))}</p><div id="rm-stepsed"></div></div>`;
+  R.root.appendChild(box);
+  stepsEditor(box.querySelector('#rm-stepsed'), A.steps, list => { A.steps = list.filter(x => x.text.trim()); queueSave('t'); });
+  box.addEventListener('click', e => { if (e.target === box || e.target.closest('[data-close]')) box.remove(); });
 }
