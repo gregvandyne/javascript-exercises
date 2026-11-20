@@ -18,7 +18,7 @@ const S = await import('../../server/services/schools.js');
 const M = await import('../../server/services/manipulatives.js');
 const { deleteAccount } = await import('../../server/services/account-delete.js');
 const { createApp } = await import('../../server/app.js');
-const { TOOLS, pieceDefs, hexValue, freeSpot, HEX_SIXTHS, roomLayout, instructionNotes, stripHeight } = await import('../../public/js/manip-data.js');
+const { TOOLS, pieceDefs, hexValue, freeSpot, HEX_SIXTHS, roomLayout, instructionNotes, stripHeight, STRIP } = await import('../../public/js/manip-data.js');
 const { TASKS } = await import('../../public/js/manip-tasks.js');
 
 let server, base;
@@ -487,7 +487,8 @@ test('the Instructions strip: the teacher\'s area notes reach every square for e
   M.saveArea(boss, s.id, 't', teacherNotes(long));
   assert.equal(instructionNotes(JSON.parse(M.roomFor(w.a2, s.id).teacher.state).__ann.notes).length, 6);
   const capped = stripHeight(long, sq);
-  assert.equal(capped, Math.floor(sq.h / 3));
+  assert.ok(capped <= sq.h / 3 && capped > sq.h / 3 - STRIP.line, 'about a third of the square');
+  assert.equal((capped - STRIP.head - STRIP.pad) % STRIP.line, 0, 'whole lines only, never a line cut in half');
   // Students can't change it.
   assert.equal(M.saveArea(w.a1, s.id, 't', teacherNotes(['mine now'])).code, 'notFound');
   assert.equal((await as(w.a1)(`/api/manipulatives/live/${s.id}/area/t`, { method: 'POST', body: { state: teacherNotes(['x']) } })).status, 404);
