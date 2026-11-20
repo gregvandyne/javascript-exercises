@@ -201,3 +201,6 @@
 .lb-assign-book>div{min-width:0;flex:1 1 180px}
 .lb-assign-book .lb-lvl,.lb-book-info .lb-lvl{white-space:normal}
 @media (max-width:520px){.lb-assign-book img{width:120px}}
+
+/* Swiping turns the page (public/js/library.js): the browser keeps up-and-down scrolling, the reader takes sideways. */
+.rd-stage{touch-action:pan-y pinch-zoom}

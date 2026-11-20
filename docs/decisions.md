@@ -9691,3 +9691,13 @@ side by side as an open book (approved mockup). Pages must fit half a 1280 x 720
   by the server's first paint and the reader). Books of 24 pages or fewer show every dot, as before. 8 books slide
   today (6 Classics, 2 Bloom). Tests: `library-classics.test.js` (the window and the server markup) and
   `library-classics-browser.test.js` (one line at 1280 x 720, the window follows Next, a short book unchanged).
+
+## Story Library: swiping turns the page, with the page following the finger (20 Nov 2026)
+
+- Owner asked for swipe to turn the page. A touch swipe already turned it (since the library shipped) but gave no
+  feedback, and laptops had no swipe. Now a finger or pen drags the page along (the picture and words, or both pages
+  of a spread) and letting go past 60px, or a quick flick past 30px, turns it with a short slide; a shorter drag
+  springs back, an up-and-down drag still scrolls (`touch-action: pan-y`), and nothing moves past page 1. A laptop's
+  two-finger sideways trackpad swipe turns once per swipe (momentum ignored). Swiping left goes forward (the words are
+  English, as in a paper book). Turning goes through the Back/Next buttons, so spreads, the questions and progress
+  work as before. Reduced motion: no sliding, the page just turns. Test: `library-classics-browser.test.js`.

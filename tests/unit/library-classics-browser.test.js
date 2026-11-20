@@ -224,3 +224,51 @@ test('a long book\'s page dots slide on one line; a short book keeps every dot',
   assert.deepEqual(errors, []);
   await ctx.close();
 });
+
+test('swiping turns the page: a finger drags the page and turns it, a short drag springs back, a trackpad swipe turns it', { skip }, async () => {
+  const touch = async (page, pts) => {
+    const c = await page.context().newCDPSession(page);
+    await c.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [pts[0]] });
+    for (const p of pts.slice(1)) await c.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [p] });
+    await c.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await page.waitForTimeout(350);
+  };
+  const line = (x1, x2, y, steps = 8, dy = 0) => Array.from({ length: steps + 1 }, (_, i) => ({ x: x1 + (x2 - x1) * i / steps, y: y + dy * i / steps }));
+  const count = page => page.$eval('#rd-count', e => e.textContent);
+  // A phone, a picture book and a classic.
+  for (const book of ['sw-0001', 'cl-whale']) {
+    const { ctx, page, errors } = await open(null, `/library/${book}/read`, { ...devices['iPhone 13'] });
+    await page.waitForTimeout(300);
+    const b = await page.$eval('#rd-stage', e => { const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + Math.min(r.height / 2, 250) }; });
+    await touch(page, line(b.x + 120, b.x - 120, b.y)); assert.match(await count(page), /^Page 2 of/, `${book}: swipe left goes forward`);
+    await touch(page, line(b.x - 120, b.x + 120, b.y)); assert.match(await count(page), /^Page 1 of/, `${book}: swipe right goes back`);
+    await touch(page, line(b.x - 120, b.x + 120, b.y)); assert.match(await count(page), /^Page 1 of/, `${book}: nothing before page 1`);
+    await touch(page, line(b.x + 12, b.x - 13, b.y, 8)); assert.match(await count(page), /^Page 1 of/, `${book}: a short drag springs back`);
+    await touch(page, line(b.x, b.x - 30, b.y, 8, 200)); assert.match(await count(page), /^Page 1 of/, `${book}: scrolling down is not a turn`);
+    // Mid-drag the page follows the finger; let go short and it comes back.
+    const c = await page.context().newCDPSession(page);
+    await c.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: b.x, y: b.y }] });
+    for (const p of line(b.x, b.x - 50, b.y, 5).slice(1)) await c.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [p] });
+    const mid = await page.$eval('#rd-stage > :not(.rd-nav):not([hidden])', e => e.style.transform); assert.match(mid, /translateX\(-/, `${book}: the page follows the finger`);
+    await c.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] }); await page.waitForTimeout(300);
+    assert.equal(await page.$eval('#rd-stage > :not(.rd-nav):not([hidden])', e => e.style.transform), '', `${book}: back in place`);
+    await touch(page, line(b.x + 120, b.x - 120, b.y)); await page.waitForTimeout(300);
+    assert.equal(await page.$eval('#rd-stage > :not(.rd-nav):not([hidden])', e => e.style.transform), '', `${book}: no transform left after a turn`);
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  }
+  // A laptop: a sideways two-finger trackpad swipe turns the spread once, its momentum doesn't turn it again.
+  const { ctx, page, errors } = await open(null, '/library/cl-whale/read');
+  const b = await page.$eval('#rd-stage', e => { const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + 200 }; });
+  await page.mouse.move(b.x, b.y);
+  for (let i = 0; i < 12; i++) { await page.mouse.wheel(30, 0); await page.waitForTimeout(16); }
+  await page.waitForTimeout(400);
+  assert.equal(await count(page), 'Pages 3-4 of 14', 'one turn per swipe');
+  for (let i = 0; i < 6; i++) { await page.mouse.wheel(-30, 0); await page.waitForTimeout(16); }
+  await page.waitForTimeout(400);
+  assert.equal(await count(page), 'Pages 1-2 of 14');
+  await page.mouse.wheel(0, 300); await page.waitForTimeout(300);
+  assert.equal(await count(page), 'Pages 1-2 of 14', 'scrolling down is not a turn');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
