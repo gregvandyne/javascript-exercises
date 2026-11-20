@@ -8947,7 +8947,8 @@ to only select the right ones". Built to the approved mockups (library grid, rea
   picture the image bank lacks. Nothing is guessed. Of 395 English books: 58 in the launch set; the report with every
   book and its reason is `docs/story-library-sources.md` (written by the importer; never edited by hand).
 - **The words are never changed** (whitespace and conversion leftovers only), so books with mistakes in their own text
-  were left out rather than corrected. Picture-book English titles keep their own spelling ("Colours").
+  were left out rather than corrected. Picture-book English titles keep their own spelling ("Colours"). (Changed by the
+  owner on 20 Nov 2026: typos are now corrected as listed data; see "Story Library: typos corrected".)
 - **Choosing the launch set.** Every candidate was read in full for ages 4 to 10: no violence beyond mild peril,
   nothing scary, no romance, no religious instruction or religion-centred plots (festivals mentioned in passing are
   kept), no stereotypes or labels on children, nothing likely to upset parents (e.g. a child crossing a busy road, a
@@ -9249,3 +9250,79 @@ data in public/js/manip-data.js and the 300 tasks in public/js/manip-tasks.js, s
 - **Privacy page before launch:** it should say that students' boards in a session (pieces, sticky notes, pen marks) are
   kept for the teacher for up to 30 days after the session, and that teachers' lesson descriptions go to the AI. Not
   changed while hidden (no LEGAL_UPDATED bump).
+
+## Story Library: typos corrected in StoryWeaver books (20 Nov 2026)
+
+Owner: "Just fix the typos" for the StoryWeaver books that were left out only for mistakes in their own text. CC BY 4.0
+allows adaptations as long as the changes are indicated.
+
+- **Corrections are data, not edited sources.** A pick in `seed-library/storyweaver.json` may have `fixes`, a list of
+  `{ page, from, to }` (page 1..N a text page, page 0 the title). The importer (`applyFixes` in
+  `server/library/import-lib.js`, called first in `evaluate`) replaces each `from` with `to` in order, as an exact
+  substring, and throws when a `from` is not on its page exactly once, so a correction that no longer matches its
+  source stops the import instead of being skipped. The grade, measures, scanners and questions all see the corrected
+  text. Every correction is listed in `docs/story-library-sources.md` ("Text corrected by Oomba").
+- **What a fix may change:** spelling ("dinosuar", "cusine", "lightening"), punctuation and spacing (spaces before
+  commas and periods, quotation marks, "did'nt"), capitalization, words run together or split ("wholetown",
+  "henarrated"), line breaks from a print layout inside a sentence, a repeated passage (Marching to Freedom's last
+  page said the same lines twice), and small grammar slips (a/an, "a lot of", "who I am?", a clearly dropped word
+  such as "A frog on his seat"). Never the style, the vocabulary, the meaning or correct Indian English
+  ("kheer", "Amma", "then only", "lakh"); the book's own British/Indian spelling stays ("colour", "favourite").
+- **The change notice.** A corrected book's credits (book page and every reader page) start their note with "Oomba
+  corrected spelling and punctuation." (`library.credits.corrected`, 13 languages; en-GB uses the English), before
+  "Oomba resized the pictures and shows the book one page at a time." The number of fixes is in the manifest
+  (`credits.corrections`); a book with none has no count and no sentence. The only change outside the StoryWeaver
+  importer is that sentence in `credits()` (`server/routes/library.js`) and its locale strings.
+- **Revisited: 118 books**, every StoryWeaver book left out for its text alone, the borderline ones whose other reason
+  was text-like (an author's note, an unclear plot), and the one-page books. Each was read again in full with the
+  unchanged content rules. **63 added** (317 corrections; the most: It's bath time! 26, The puppy that did not bark 24,
+  The Princess and the Veggy Lion 21, all spaces before punctuation) with 3 questions each in the usual format and
+  glossary notes. **55 still left out**, each with a new reason starting "Revisited for typos": text so broken that
+  fixing it would mean rewriting (about 25), one page or a few lines with too little for 3 questions (about 15), or a
+  content reason found or kept on rereading (a child gives chocolate to a dog, a small child ironing or cooking alone,
+  a teacher's robot camera following a pupil, a man asking the boy to "come and meet me later", children slipping off
+  without telling anyone, a TV cartoon's characters, wrong facts about toothpaste, fireflies choosing mates, "I hate my
+  life"). Books with a content reason as well as typos were not revisited: those rules are unchanged. "Too thin" and
+  picture-mismatch skips were looked at again and none was trivially fixable.
+- **Judgment calls for the owner's review:** Under My Bed keeps "Oh my God!" (as Annual Haircut Day keeps "Oh God,
+  help me!"); Raza Meets the King describes Akbar's "large, slightly slanted eyes" (a portrait of a real king, not a
+  label on a child); Marching to Freedom is history of the Dandi March (Gandhiji, the salt tax, arrests) and its fact
+  page says the arrest "sparked off the Non-cooperation Movement" (it was the Civil Disobedience Movement; facts are
+  not ours to change); Starry and the land of the unknown has Zeus giving a boon (mythology, not religious practice);
+  How Do Aeroplanes Fly? has some loose physics ("the engine ... acts like the brain of the plane"). The scanner
+  flagged four new books, all false alarms reviewed and listed (`scanReviewed`): "BooBoo" (profanity), "cocked his
+  ears" (profanity), "rum-pa-pum-pa-pum" (drugs) and Gandhiji (real people).
+- **Totals: StoryWeaver 147 books** (Pre-K/K 9, Grade 1 46, Grade 2 59, Grade 3 22, Grades 4-5 11; added: Grade 1 11,
+  Grade 2 31, Grade 3 15, Grades 4-5 6), **257 in the library** with Bloom's 110. Pictures: 33.9 MB for StoryWeaver,
+  about 61 MB for all of `public/img/library`, under the 80 MB budget, so no quality change (pages stay WebP 50).
+- **License re-check.** An independent script (its own parser, not `licenseOf`) read the text license and every row of
+  the image metadata for all 147 StoryWeaver books in the manifest: 1,470 picture rows, all CC BY 4.0 or Public
+  Domain; the only odd row is a trailing period after one CC BY link (sw-0359, picture 08), still CC BY 4.0.
+- Tests: `tests/unit/library.test.js` (fixes applied in order and to the title; a `from` that is missing, appears
+  twice or is out of range stops the import; the corrected text is what is measured and shown; the report lists the
+  corrections; the corrections sentence appears in English and French only on corrected books; every shipped book's
+  count matches its fixes).
+
+## Story Library: a history fact corrected in Marching to Freedom (20 Nov 2026)
+
+- The owner asked to fix a factual error in sw-0093 (the Dandi March). Its "Fun facts of History" page said the arrest at
+  Dandi "sparked off the Non-cooperation Movement" (that was 1920-22). It now says the march sparked the Civil
+  Disobedience Movement, that people broke the salt law and boycotted British goods, and that Gandhi was arrested a few
+  weeks later (5 May 1930, not at Dandi on the day). "The year 2005 marks the 75th anniversary" became "In 2005, India
+  marked the 75th anniversary".
+- How: two `fixes` with `kind: "fact"` in `seed-library/storyweaver.json`, applied by the same `applyFixes`. The manifest
+  counts them apart (`credits.factCorrections`; `credits.corrections` stays typos only), and the credits add "Oomba
+  corrected a history fact." (`library.credits.factCorrected`, 13 languages). Fact fixes are made only when the owner
+  asks; typo fixes stay limited to real typos.
+
+## Story Library: words and picture on one screen in the reader (20 Nov 2026)
+
+- The owner had to scroll away from the picture to read long pages. Now:
+  - Each page's text gets a length band from its word count (`data-len`: s up to 20 words, m up to 50, l up to 100, xl
+    beyond), set by the server and by `public/js/library.js` on every page turn; longer bands use smaller type.
+  - Wide, landscape screens (at least 900 px wide and wider than tall): picture left, words right, both within the
+    screen's height; a very long page scrolls inside the words column while the picture stays.
+  - Portrait (phones, tablets upright): the picture is shorter, and on long pages (l, xl) it stays pinned under the top
+    bar while the words scroll beneath it; Back / Next stay pinned above the tab bar as before.
+- Test: `library-browser.test.js` checks the library's longest page at 1280x720 (side by side, both on screen) and on an
+  iPhone 13 (the picture stays on screen after scrolling).

@@ -442,7 +442,7 @@ test('o. contrast and labels: dark ink on the yellow "Just Play", a name for the
   const prev = process.env.LANDING_AT_ROOT; process.env.LANDING_AT_ROOT = '1';
   try {
     const home = await req(null, '/');
-    assert.match(home.text, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/trial" data-cta="trial" aria-label="Start free trial"><span class="lp-long">Start free trial<\/span><span class="lp-short" aria-hidden="true">/);
+    assert.match(home.text, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/signup\?trial=1" data-cta="trial" aria-label="Start free trial"><span class="lp-long">Start free trial<\/span><span class="lp-short" aria-hidden="true">/);
     assert.doesNotMatch(home.text.replace(/<script[\s\S]*?<\/script>/g, ''), /\$\d/, 'and still no price on "/"');
   } finally { process.env.LANDING_AT_ROOT = prev; }
 });

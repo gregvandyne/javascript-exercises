@@ -43,7 +43,31 @@ export function licenseOf(raw) {
 }
 export const isAllowed = code => Object.prototype.hasOwnProperty.call(ALLOWED, code);
 
-/** Whitespace and conversion leftovers only: the story's words are never changed. */
+/**
+ * Oomba's corrections of mistakes in a book's own text (docs/decisions.md "Story Library: typos corrected"): a list of
+ * { page, from, to } written by a person in seed-library/storyweaver.json (`fixes` on a pick), page 1..N a text page
+ * and page 0 the title. Each `from` is replaced by `to` as an exact substring, in order, and must be found exactly once
+ * on that page when it is applied: anything else throws, so a correction that no longer matches its source (or would
+ * change the wrong place) stops the import instead of being skipped. -> { title, pages, count }
+ */
+export function applyFixes(title, pages, fixes, label = 'book') {
+  const out = [...pages];
+  let t = title;
+  for (const [i, f] of (fixes || []).entries()) {
+    const where = `${label} fix ${i + 1}`;
+    if (!f || !Number.isInteger(f.page) || f.page < 0 || f.page > out.length) throw new Error(`${where}: page must be 0 (the title) or 1..${out.length}`);
+    if (typeof f.from !== 'string' || !f.from || typeof f.to !== 'string' || f.from === f.to) throw new Error(`${where}: needs a "from" and a different "to"`);
+    const text = f.page ? out[f.page - 1] : t;
+    const at = text.indexOf(f.from);
+    if (at < 0) throw new Error(`${where}: "${f.from}" is not on page ${f.page}`);
+    if (text.indexOf(f.from, at + 1) >= 0) throw new Error(`${where}: "${f.from}" is on page ${f.page} more than once`);
+    const fixed = text.slice(0, at) + f.to + text.slice(at + f.from.length);
+    if (f.page) out[f.page - 1] = fixed; else t = fixed;
+  }
+  return { title: t, pages: out, count: (fixes || []).length };
+}
+
+/** Whitespace and conversion leftovers only: the story's words are changed only by a person's listed fixes (applyFixes). */
 export function tidyText(s) {
   return String(s || '')
     .replace(/\r\n?/g, '\n')

@@ -220,3 +220,30 @@ test('the questions are read with the AI voice when it is on (not the device voi
     await ctx.close();
   } finally { config.ttsEnabled = false; config.ttsProvider = 'openai'; }
 });
+
+test('opening "About the grade level" does not move the cover picture', { skip }, async () => {
+  const { ctx, page, errors } = await open(null, '/library/sw-0001');
+  const top = () => page.$eval('.lb-book-cover', e => Math.round(e.getBoundingClientRect().top));
+  const before = await top();
+  await page.click('.lb-measures summary'); await page.waitForTimeout(150);
+  assert.equal(await top(), before, 'the cover stays at the top of its column');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('the reader keeps the words and the picture on one screen (wide: side by side; phone: picture pinned)', { skip }, async () => {
+  // The longest page in the library.
+  let at = null; for (const b of LIB.books()) b.pages.forEach((p, i) => { if (!at || p.words > at.w) at = { id: b.id, p: i + 1, w: p.words }; });
+  const wide = await open(null, `/library/${at.id}/read?p=${at.p}`, { viewport: { width: 1280, height: 720 } });
+  const w = await wide.page.evaluate(() => { const r = s => document.querySelector(s).getBoundingClientRect(); return { vh: innerHeight, img: r('#rd-img'), text: r('#rd-text'), len: document.querySelector('#rd-text').dataset.len }; });
+  assert.equal(w.len, 'xl');
+  assert.ok(w.img.bottom <= w.vh && w.text.bottom <= w.vh, 'picture and words both inside the screen');
+  assert.ok(w.text.left >= w.img.right, 'side by side');
+  await wide.ctx.close();
+  const phone = await open(null, `/library/${at.id}/read?p=${at.p}`, devices['iPhone 13']);
+  await phone.page.evaluate(() => window.scrollBy(0, 500)); await phone.page.waitForTimeout(150);
+  const p = await phone.page.evaluate(() => { const r = document.querySelector('#rd-img').getBoundingClientRect(); return { top: r.top, bottom: r.bottom, vh: innerHeight }; });
+  assert.ok(p.top >= 0 && p.bottom <= p.vh, 'the picture stays on screen while the words scroll');
+  assert.deepEqual([...wide.errors, ...phone.errors], []);
+  await phone.ctx.close();
+});

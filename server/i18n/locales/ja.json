@@ -11668,6 +11668,8 @@
       "illustration": "絵：{names}",
       "translation": "ほんやく：{names}",
       "changes": "Oombaは絵の大きさを変え、本を1ページずつ見せています。Pratham BooksがOombaを推薦しているわけではありません。",
+      "corrected": "Oombaはつづりと句読点を直しました。",
+      "factCorrected": "Oombaは歴史の事実を一つ直しました。",
       "original": "もとの本を見る。",
       "from": "もとの本：{name}",
       "changesBloom": "Oombaは絵の大きさを変え、本を1ページずつ見せています。Bloom Library、SIL Global、本の出版社がOombaを推薦しているわけではありません。",
