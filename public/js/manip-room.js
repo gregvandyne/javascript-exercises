@@ -9,7 +9,7 @@
 // falls back to short requests.
 // The tools' own code (boards, palettes, taps) comes from public/js/manip.js through open()'s deps.
 import { t, api, toast, esc } from '/js/app.js';
-import { toolOf, roomLayout, freeSpot, BREAKS, instructionNotes, stripHeight, stripFullHeight } from '/js/manip-data.js';
+import { toolOf, roomLayout, freeSpot, BREAKS, instructionNotes, stripHeight, stripFullHeight, STRIP } from '/js/manip-data.js';
 
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
 const NOTE_MAX = 12, Z_MIN = 0.12, Z_MAX = 2.5;
@@ -136,8 +136,8 @@ function stripHtml(A) {
   const sp = strip(); if (A.key === 't' || !sp.h) return '';
   const open = R.stripOpen.has(A.key), more = sp.full > sp.h;
   return `<div class="rm-strip${open ? ' open' : ''}" style="height:${open ? sp.full : sp.h}px" role="note" aria-label="${esc(t('js.manip-room.instructions'))}">
-    <div class="rm-striphead"><b>📌 ${esc(t('js.manip-room.instructions'))}</b>${more ? btn('rm-more', `data-strip="${esc(A.key)}" aria-expanded="${open}"`, esc(open ? t('js.manip-room.less') : t('js.manip-room.more'))) : ''}</div>
-    <ol>${sp.texts.map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>`;
+    <div class="rm-striphead"><b>📌 ${esc(t('js.manip-room.instructions'))}</b>${more ? btn(open ? 'rm-more' : 'rm-more low', `data-strip="${esc(A.key)}" aria-expanded="${open}"`, esc(open ? t('js.manip-room.less') : t('js.manip-room.more'))) : ''}</div>
+    <ol style="max-height:${open ? 'none' : `${sp.h - STRIP.head - STRIP.pad}px`}">${sp.texts.map(x => `<li>${esc(x)}</li>`).join('')}</ol>${more && !open ? '<span class="rm-fade" aria-hidden="true"></span>' : ''}</div>`;
 }
 function areaInner(A) {
   const sel = R.sel && R.sel.key === A.key ? R.sel.id : null;

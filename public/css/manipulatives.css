@@ -274,11 +274,13 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
 /* the teacher's "Instructions" strip at the top of every student square */
 .rm-body{position:absolute;inset:0}
 .rm-strip{position:absolute;left:0;right:0;top:0;z-index:30;overflow:hidden;background:color-mix(in srgb,var(--spark) 22%,var(--card));border-bottom:2px solid var(--spark-press);border-radius:var(--r) var(--r) 0 0;padding:4px 12px 6px;font-size:13px;line-height:18px;color:var(--text);cursor:default}
-.rm-strip.open{z-index:45;box-shadow:var(--shadow-lg);border-radius:var(--r)}
+.rm-strip.open{z-index:45;box-shadow:0 14px 28px rgba(0,0,0,.28),0 2px 6px rgba(0,0,0,.18);border-radius:var(--r);border-bottom-width:3px}
 .rm-striphead{display:flex;align-items:center;gap:8px;height:24px;font-size:12px;letter-spacing:.02em}
 .rm-more{margin-inline-start:auto;min-height:24px;padding:0 10px;border-radius:999px;border:0;background:var(--current);color:var(--on-current);font:800 12px var(--font);cursor:pointer}
 .rm-strip ol{margin:0;padding-inline-start:20px;font-weight:700;overflow-wrap:anywhere}
-.rm-strip:not(.open)::after{content:'';position:absolute;left:0;right:0;bottom:0;height:12px;background:linear-gradient(transparent,color-mix(in srgb,var(--spark) 22%,var(--card)))}
+.rm-strip ol{overflow:hidden}
+.rm-fade{position:absolute;left:0;right:0;bottom:0;height:34px;pointer-events:none;background:linear-gradient(transparent,color-mix(in srgb,var(--spark) 22%,var(--card)) 70%);border-radius:0 0 var(--r) var(--r)}
+.rm-more.low{position:absolute;right:10px;bottom:6px;z-index:1}
 .rm-area.teach .rm-label{top:8px;left:auto;right:14px}
 /* raised hands */
 .rm-handbadge{margin-inline-start:6px;font-size:1.1em}

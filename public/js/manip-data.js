@@ -130,7 +130,9 @@ export function stripHeight(texts, sq) {
   if (!texts.length) return 0;
   const per = Math.max(16, Math.floor((sq.w - 44) / STRIP.char));
   const lines = texts.reduce((s, x) => s + Math.max(1, Math.ceil((x.length + 4) / per)), 0);
-  return Math.min(Math.floor(sq.h / 3), STRIP.head + lines * STRIP.line + STRIP.pad);
+  // Capped at a third of the square, and always a whole number of lines (never a line cut in half).
+  const fit = Math.max(1, Math.min(lines, Math.floor((Math.floor(sq.h / 3) - STRIP.head - STRIP.pad) / STRIP.line)));
+  return STRIP.head + fit * STRIP.line + STRIP.pad;
 }
 /** The strip's full height (what "More" opens to). */
 export function stripFullHeight(texts, sq) {
