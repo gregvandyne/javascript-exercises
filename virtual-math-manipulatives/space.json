@@ -1,0 +1,8 @@
+{
+  "runtime": "typescript",
+  "platformVersion": 29,
+  "entry": "client/dist/index.html",
+  "name": "Oomba Virtual Math Manipulatives",
+  "slug": "virtual-math-manipulatives",
+  "managedCronJobs": []
+}

@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+@import "tailwindcss";
+@import "tailwindcss-safe-area";
+
+@theme {
+  --text-xs: 12px; --text-xs--line-height: 16px;
+  --text-sm: 14px; --text-sm--line-height: 20px;
+  --text-base: 16px; --text-base--line-height: 24px;
+  --text-lg: 18px; --text-lg--line-height: 28px;
+  --text-xl: 20px; --text-xl--line-height: 28px;
+  --text-2xl: 24px; --text-2xl--line-height: 32px;
+  --text-3xl: 30px; --text-3xl--line-height: 36px;
+  --font-display: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Oomba Academy design system, taken from the site's own stylesheet
+   (public/css/app.css in gregvandyne/javascript-exercises, main):
+   Bricolage Grotesque, the brand palette, surface/text/accent tokens,
+   pill buttons with a pressed edge, 20px card corners, 1240px wrap,
+   64px top bar, and the matching dark palette. Legacy token names used
+   across App.tsx (--surface, --surface2, --dim, --border, --accent,
+   --mint, --leaf, --ink, --cream) are kept as aliases onto these. */
+:root {
+  color-scheme: light;
+  /* Brand palette from the logo board, the same in both themes. */
+  --brand-ink: #141414; --brand-cream: #FFFDF2; --brand-mint: #66C792; --brand-leaf: #1F9D63; --brand-spark: #FFD23F;
+  /* Surfaces: page, cards, soft surfaces and fields, bars, hover fills, hairlines, field edges. */
+  --bg: #F4F1E6; --card: #FFFDF2; --card-2: #F9F6EB; --bar: #FFFDF2; --hover: #EFEBDC; --line: #E2DDCB; --edge: #8A8573;
+  /* Text: main, secondary, hints and captions. */
+  --text: #141414; --text-2: #3B3A35; --muted: #5B584F;
+  /* Accent: Mint buttons with Ink text and a Leaf pressed edge. Links use a deeper Leaf. */
+  --accent: #66C792; --accent-hover: #58BC86; --accent-press: #1F9D63; --on-accent: #141414;
+  --accent-soft: #E1F1E1; --accent-ink: #0F5A37; --accent-line: #1F9D63; --link: #14744A;
+  /* The current nav item, pressed chips and segments. */
+  --current: #141414; --on-current: #FFFDF2;
+  /* Spark: badges, stars, the "go" button, with a gold pressed edge. */
+  --spark: #FFD23F; --spark-hover: #FFDB66; --spark-press: #C99A00; --spark-edge: #141414; --spark-soft: #FFF3C4;
+  --logo-sub: #14744A; --focus: #141414;
+  /* Status colours. */
+  --ok: #14744A; --ok-bg: #E1F1E1; --danger: #BE3329; --on-danger: #FFFDF2; --bad-bg: #F9E3DC; --bad-ink: #A12A20;
+  --warn-bg: #FFF0B8; --warn-ink: #6B4C00;
+  --shadow: 0 1px 0 rgba(20,20,20,.04), 0 4px 16px rgba(20,20,20,.06);
+  --shadow-lg: 0 12px 32px rgba(20,20,20,.14);
+  /* Shapes: cards, small controls, big panels. */
+  --r: 20px; --r-sm: 12px; --r-lg: 32px; --radius: 20px;
+  --top: 64px;
+  --font: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Legacy aliases used by App.tsx class strings. */
+  --surface: var(--card);
+  --surface2: var(--card-2);
+  --dim: var(--muted);
+  --border: var(--line);
+  --accent2: #FF6B4A;
+  --mint: var(--brand-mint);
+  --leaf: var(--brand-leaf);
+  --ink: var(--brand-ink);
+  --cream: var(--brand-cream);
+  --space-surface: var(--card);
+  --space-surface-alt: var(--card-2);
+  --space-muted: var(--muted);
+  --space-border: var(--line);
+  --space-accent: var(--accent);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #141414; --card: #1E1E1B; --card-2: #262622; --bar: #141414; --hover: #2C2C27; --line: #36352F; --edge: #7E796C;
+    --text: #FFFDF2; --text-2: #E3DED0; --muted: #B8B3A1;
+    --accent-hover: #7DD2A4; --accent-soft: #1E3326; --accent-ink: #9EDDBA; --accent-line: #66C792; --link: #66C792;
+    --current: #66C792; --on-current: #141414;
+    --spark-edge: transparent; --spark-soft: #352E14; --logo-sub: #66C792; --focus: #FFD23F;
+    --ok: #7BD3A3; --ok-bg: #1E3326; --danger: #FF8A7A; --on-danger: #141414; --bad-bg: #3B201C; --bad-ink: #FFA294;
+    --warn-bg: #3A3113; --warn-ink: #FFD23F;
+    --accent2: #FF8A6B;
+    --shadow: 0 1px 0 rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.32);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,.55);
+  }
+}
+@layer base {
+  body { font-family: var(--font-body); font-weight: 450; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+  h1, h2, h3 { font-weight: 800; letter-spacing: -.01em; }
+  button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) { min-height: 2.25rem; }
+  .font-display { font-family: var(--font-display); }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 8px; }
+  ::selection { background: color-mix(in srgb, var(--accent) 45%, transparent); color: var(--text); }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+}
+
+/* ---------- Oomba layout: 64px top bar, 1240px wrap, footer ---------- */
+.oomba-topbar {
+  position: sticky; top: 0; z-index: 40;
+  height: calc(var(--top) + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top);
+  display: flex; align-items: center; gap: 12px;
+  padding-inline: max(16px, env(safe-area-inset-left));
+  background: color-mix(in srgb, var(--bar) 94%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.oomba-shellbar {
+  position: sticky; top: 0; z-index: 30;
+  min-height: calc(var(--top) + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  padding-inline: 12px;
+  background: color-mix(in srgb, var(--bar) 94%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.oomba-navlink {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px;
+  border-radius: 999px; color: var(--text-2); font-weight: 700; text-decoration: none; white-space: nowrap;
+}
+.oomba-navlink:hover { background: var(--hover); text-decoration: none; }
+.oomba-navlink[aria-current="page"] { background: var(--current); color: var(--on-current); }
+.oomba-wrap { max-width: 1240px; margin: 0 auto; padding: 20px 16px 48px; width: 100%; }
+.oomba-panel { background: var(--card); border-radius: var(--r); box-shadow: var(--shadow); }
+.oomba-foot {
+  max-width: 1240px; margin: 0 auto; padding: 12px 16px 32px; color: var(--muted); font-size: .9rem;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0 20px; border-top: 1px solid var(--line);
+}
+.oomba-foot a { color: var(--muted); font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; gap: 6px; padding-inline: 8px; margin-inline: -8px; text-decoration: none; }
+.oomba-foot a:hover { text-decoration: underline; }
+
+/* ---------- Oomba buttons: pill, Mint primary on a Leaf edge, Spark "go" on a gold edge ---------- */
+.btn-primary {
+  background: var(--accent); color: var(--on-accent); box-shadow: 0 4px 0 var(--accent-press);
+  transition: transform .08s, background .15s;
+}
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-primary:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--accent-press); }
+.btn-primary:disabled { opacity: .55; transform: none; }
+.btn-hot {
+  background: var(--spark); color: var(--on-accent); box-shadow: 0 4px 0 var(--spark-press);
+  transition: transform .08s, background .15s;
+}
+.btn-hot:hover { background: var(--spark-hover); }
+.btn-hot:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--spark-press); }
+.btn-hot:disabled { opacity: .55; transform: none; }
+.btn-danger { background: var(--danger); color: var(--on-danger); }
+.btn-current { background: var(--current); color: var(--on-current); }
+
+/* Cards and panels carry the system's soft shadow (the site styles cards
+   with shadow rather than a border): every 20px-radius panel in App.tsx. */
+[class*="rounded-[var(--radius)]"] { box-shadow: var(--shadow); }
+
+.canvas-grid {
+  background-image: radial-gradient(circle, rgba(31,157,99,0.16) 1.2px, transparent 1.2px);
+  background-size: 22px 22px;
+}
+@media (prefers-color-scheme: dark) {
+  .canvas-grid { background-image: radial-gradient(circle, rgba(102,199,146,0.18) 1.2px, transparent 1.2px); }
+}
+.oomba-spark { color: var(--spark); filter: drop-shadow(0 0 .6px var(--spark-edge)) drop-shadow(0 0 .6px var(--spark-edge)); }
+.piece-shadow { box-shadow: 0 3px 0 rgba(0,0,0,0.18), 0 8px 18px rgba(0,0,0,0.12); }
+.no-select { user-select: none; -webkit-user-select: none; touch-action: none; }
