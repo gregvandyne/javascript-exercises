@@ -2210,88 +2210,12 @@
   "0378": "A list of vehicles, not a story.",
   "0383": "Mistakes in the source text (\"the bird's play\", \"Day at Garden\").",
   "0425": "Four words in all (too little text for 3 questions).",
-  "0002": "Held back for the owner to decide: the jokes poke fun at body size (\"fat king\").",
-  "0167": "Held back for the owner to decide: children live by a garbage dump and do not go to school."
+  "0002": "Left out by the owner (20 Nov 2026): the jokes poke fun at body size (\"fat king\").",
+  "0167": "Left out by the owner (20 Nov 2026): children live by a garbage dump and do not go to school."
  },
  "scanReviewed": {
   "0073": "The scanner's violence rule matches \"blood\": it is a science question (\"Why is blood red? There is iron in the blood\"). Reviewed: fine.",
   "0096": "The scanner's chat rule matches \"don't talk to any strangers\": a mother's safety advice. Reviewed: fine.",
   "0103": "The scanner's private-person rule matches \"my sister\": the narrator's sister in the story, not a real person. Reviewed: fine."
- },
- "held": {
-  "0002": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "What did the dog run after?",
-     "right": "A bird",
-     "wrong": [
-      "A cat",
-      "A ball"
-     ],
-     "page": 3,
-     "kind": "literal"
-    },
-    {
-     "q": "How long did the king and the dog run?",
-     "right": "For many days",
-     "wrong": [
-      "For one hour",
-      "For one minute"
-     ],
-     "page": 5,
-     "kind": "literal"
-    },
-    {
-     "q": "Why is the king thin at the end?",
-     "right": "He ran so much chasing his dog",
-     "wrong": [
-      "He stopped eating",
-      "He was sick"
-     ],
-     "page": 7,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0167": {
-   "glossary": {
-    "Didi": "big sister",
-    "also a kind name for a young woma": "also a kind name for a young woman",
-    "dupatta": "a long scarf"
-   },
-   "questions": [
-    {
-     "q": "What did Didi have in her bag?",
-     "right": "Colorful storybooks",
-     "wrong": [
-      "Toys",
-      "Food"
-     ],
-     "page": 4,
-     "kind": "literal"
-    },
-    {
-     "q": "How did the children find Didi's house?",
-     "right": "They saw her red dupatta in a window",
-     "wrong": [
-      "A doctor showed them",
-      "They followed a dog"
-     ],
-     "page": 9,
-     "kind": "literal"
-    },
-    {
-     "q": "What helped Didi feel better?",
-     "right": "The children reading to her",
-     "wrong": [
-      "A new bag",
-      "A long sleep"
-     ],
-     "page": 11,
-     "kind": "inference"
-    }
-   ]
-  }
  }
 }

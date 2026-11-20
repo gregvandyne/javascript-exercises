@@ -131,6 +131,7 @@ router.get('/library/:id/read', (req, res) => {
   const bk = bookOr404(req, res); if (!bk) return;
   const t = req.t, u = req.user;
   const ctx = LIB.assignmentCtx(u, bk, req.query.cl, req.query.step);
+  LIB.freshForAssignment(u, bk, ctx);
   const rd = u ? LIB.readOf(u.id, bk.id) : null;
   const n = bk.pages.length;
   const p0 = Math.max(1, Math.min(n + 1, Math.floor(+req.query.p || 1)));
