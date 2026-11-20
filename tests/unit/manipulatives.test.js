@@ -814,3 +814,51 @@ test('text on the board (T): cleaned and checked, saved with the board; a studen
     assert.match(M.summarize(JSON.stringify(withText([{ id: 'q', text: 'Label me', x: 0, y: 0 }]))).join('\n'), /Text: Label me/, 'the PDF summary lists it');
   } finally { ws.terminate(); server.off('upgrade', listener); }
 });
+
+test('"Check my answers": only when the teacher allows it; answers in, right / not yet out, never the answers (HTTP and socket); 5 a minute; results to the teacher only', async () => {
+  const { WebSocket } = await import('ws');
+  const { attachUpgrades } = await import('../../server/services/upgrade.js');
+  const SOCK = await import('../../server/services/manip-socket.js');
+  const { buildPractice } = await import('../../public/js/manip-practice.js');
+  const listener = attachUpgrades(server, [SOCK.route]);
+  const w = world();
+  const times = ['3:00', '7:30', '9:15', '11:45', '12:10', '6:05', '1:55', '4:40'];
+  const r = buildPractice('clock', { title: 'Clocks', steps: ['Write the time under each clock.'], items: times.map(time => ({ time, box: 'answer' })) });
+  const saved = M.saveBoard(boss, { tool: 'clock', title: 'Clocks', state: r.board });
+  const s = M.createSession(boss, { classId: w.A.id, tool: 'clock' }).session;
+  M.join(w.a1, { id: s.id }); M.join(w.a2, { id: s.id });
+  assert.ok(M.push(boss, s.id, saved.board.id).ok);
+  const boxes = r.board.objects.filter(o => o.k === 'answer');
+  // Ada: 6 right in other forms, one wrong, one blank.
+  const typed = ['3 o\'clock', 'half past 7', '9.15', 'quarter to 12', '12:10', '6:05', '2:00', ''];
+  const answers = Object.fromEntries(boxes.map((o, i) => [o.id, typed[i]]));
+  const check = (who, body = { answers }) => as(who)(`/api/manipulatives/live/${s.id}/check`, { method: 'POST', body });
+  const open = who => new Promise(res => { const ws = new WebSocket(`${base.replace('http', 'ws')}/api/manipulatives/ws?s=${s.id}`, { headers: { cookie: cookieFor(who.id), origin: base } }); const got = []; ws.on('message', d => got.push(String(d))); ws.on('open', () => res({ ws, got })); });
+  const A = await open(w.a1), B = await open(w.a2), T = await open(boss);
+  try {
+    assert.equal((await check(w.a1)).status, 404, 'off by default (the teacher\'s switch)');
+    const room = JSON.parse(q.get('SELECT room FROM manip_sessions WHERE id=?', s.id).room);
+    assert.equal((await as(boss)(`/api/manipulatives/live/${s.id}/area/t`, { method: 'POST', body: { state: { ...room, checks: true } } })).status, 200);
+    assert.equal(JSON.parse(q.get('SELECT room FROM manip_sessions WHERE id=?', s.id).room).checks, true);
+    const res = await check(w.a1);
+    assert.equal(res.status, 200);
+    assert.equal(res.json.right, 6); assert.equal(res.json.total, 8);
+    assert.deepEqual(Object.values(res.json.results), [true, true, true, true, true, true, false, false]);
+    assert.deepEqual(Object.keys(res.json).sort(), ['ok', 'results', 'right', 'total'], 'right / not yet only');
+    // The right answers never reach a student: not the reply, not the room, not a socket (theirs or a classmate's).
+    for (const t of ['1:55', '4:40', '9:15', '11:45', '"key"']) assert.ok(!res.text.includes(t), `reply: ${t}`);
+    await new Promise(x => setTimeout(x, 200));
+    for (const who of [w.a1, w.a2]) { const txt = (await as(who)(`/api/manipulatives/live/${s.id}/room`)).text; assert.doesNotMatch(txt, /\\"key\\"|"checks"/, 'no answers, no results'); assert.ok(!txt.includes('4:40')); }
+    for (const sock of [A, B]) for (const m of sock.got) { assert.ok(!/key|4:40|1:55|"right"|"checks"/.test(m), m); }
+    // The teacher: each student's last result, on the room and nowhere else.
+    const tr = (await as(boss)(`/api/manipulatives/live/${s.id}/room`)).json.room;
+    assert.deepEqual(tr.checks[w.a1.id] && [tr.checks[w.a1.id].right, tr.checks[w.a1.id].total], [6, 8]);
+    assert.ok(T.got.some(m => /"dirty"/.test(m)), 'the teacher is told to read the room again');
+    // 5 checks a minute: not a guessing machine.
+    for (let i = 0; i < 4; i++) assert.equal((await check(w.a1)).status, 200);
+    const slow = await check(w.a1); assert.equal(slow.status, 429); assert.equal(slow.json.code, 'checkSlow');
+    // Only students check; the teacher (or a stranger) gets the normal 404. Results are memory only.
+    assert.equal((await check(boss)).status, 404); assert.equal((await check(w.b1)).status, 404);
+    assert.doesNotMatch(JSON.stringify(q.all('SELECT * FROM manip_work WHERE session_id=?', s.id)), /"right"|checks/);
+  } finally { A.ws.terminate(); B.ws.terminate(); T.ws.terminate(); server.off('upgrade', listener); }
+});

@@ -10,6 +10,7 @@
 import { t, api, toast, esc, pageData } from '/js/app.js';
 import { TOOLS, CATS, toolOf, pieceDefs, allPieceDefs, BREAKS, FRACTION_DENS, fracLabel, hexValue, paletteName } from '/js/manip-data.js';
 import { TASKS } from '/js/manip-tasks.js';
+import { answerMatches } from '/js/manip-practice.js';
 import * as ROOM from '/js/manip-room.js';
 import { stepsOf } from '/js/manip-data.js';
 import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSector, addMinutes, migrate, newBoard, boxesOf, bbox, spotIn, placeObject,
@@ -560,7 +561,10 @@ function matHtml(o, view = {}) {
   return '<div class="mp-matin"></div>';
 }
 /** An answer box: "?" to type into (the student's own answer: private like their text). */
-const answerHtml = (o, view) => `<div class="mp-ansbox"><input class="mp-answer" data-oid="${esc(o.id)}" maxlength="40" placeholder="?" autocomplete="off" enterkeyhint="done" value="${esc(o.st.ans || '')}" aria-label="${esc(t('js.manip.obj.answer'))}"${view.readOnly ? ' readonly tabindex="-1"' : ''}></div>`;
+const answerHtml = (o, view) => `<div class="mp-ansbox${checkCls(o, view)}"><input class="mp-answer" data-oid="${esc(o.id)}" maxlength="40" placeholder="?" autocomplete="off" enterkeyhint="done" value="${esc(o.st.ans || '')}" aria-label="${esc(t('js.manip.obj.answer'))}"${view.readOnly ? ' readonly tabindex="-1"' : ''}>${checkMark(o, view)}</div>`;
+/** After "Check my answers": ✓ (green) or "Try again" (soft orange) on a box. Never the right answer. */
+const checkCls = (o, view) => (view.checked && o.id in view.checked ? (view.checked[o.id] ? ' ok' : ' again') : '');
+const checkMark = (o, view) => (view.checked && o.id in view.checked ? `<span class="mp-checkmark" role="status">${view.checked[o.id] ? `✓<span class="sr-only"> ${esc(t('js.manip.check.right'))}</span>` : esc(t('js.manip.check.again'))}</span>` : '');
 /** A fraction equation: the question, its operands as tiles (or circles), an empty bar to build the answer on, and an
  *  answer box. */
 function fracEqHtml(o, view) {
@@ -578,7 +582,7 @@ function fracEqHtml(o, view) {
   const body = st.shape === 'circles' ? `<div class="mp-eqcirc">${circle(a)}<b class="mp-eqsym">${sym}</b>${st.op === '=' || bWhole ? `<div>${bSide}</div>` : circle(b)}</div>`
     : `<div class="mp-eqbars"><div class="mp-eqline"><span class="mp-eqsym"></span><div>${bar(a)}</div></div><div class="mp-eqline"><span class="mp-eqsym">${sym}</span><div>${bSide}</div></div>
       ${st.op === 'compare' || st.op === '=' ? '' : `<div class="mp-eqline"><span class="mp-eqsym">=</span><div class="mp-eqbuild" style="width:${EQ_BAR}px">${esc(t('js.manip.obj.buildHere'))}</div></div>`}</div>`;
-  return `<div class="mp-eq"><p class="mp-eqtext">${esc(st.text || '')}</p>${body}<div class="mp-ansbox">${esc(t('js.manip.obj.answerIs'))} <input class="mp-answer" data-oid="${esc(o.id)}" maxlength="20" placeholder="?" autocomplete="off" value="${esc(st.ans || '')}" aria-label="${esc(t('js.manip.obj.answer'))}"${view.readOnly ? ' readonly tabindex="-1"' : ''}></div></div>`;
+  return `<div class="mp-eq"><p class="mp-eqtext">${esc(st.text || '')}</p>${body}<div class="mp-ansbox${checkCls(o, view)}">${esc(t('js.manip.obj.answerIs'))} <input class="mp-answer" data-oid="${esc(o.id)}" maxlength="20" placeholder="?" autocomplete="off" value="${esc(st.ans || '')}" aria-label="${esc(t('js.manip.obj.answer'))}"${view.readOnly ? ' readonly tabindex="-1"' : ''}>${checkMark(o, view)}</div></div>`;
 }
 /** An object on the board: its handle bar (drag it, or the object's empty parts, to move it), its own board, and when
  *  selected: Duplicate, Delete and a corner to resize it (always in proportion). */
@@ -624,6 +628,7 @@ function renderChrome() {
     HOST ? btn(`mp-tbtn${V.stepsOpen ? ' on' : ''}`, 'data-tool="steps"', `📋 ${esc(t('js.manip.steps.title'))}${V.steps && V.steps.length ? ` (${V.steps.length})` : ''}`) : '',
     HOST ? btn(`mp-tbtn${V.draftOpen ? ' on' : ''}`, 'data-tool="draft"', `✨ ${esc(t('js.manip.side.draft'))}`) : '',
     HOST && V.st.objects.some(o => o.st && o.st.key) ? btn(`mp-tbtn${V.showKeys ? ' on' : ''}`, `data-tool="keys" aria-pressed="${!!V.showKeys}"`, `✓ ${esc(t('js.manip.side.showAnswers'))}`) : '',
+    V.st.objects.some(o => o.st && o.st.key) ? btn('mp-tbtn', 'data-tool="check"', `☑ ${esc(t('js.manip.check.button'))}`) : '',
     btn('mp-tbtn', 'data-tool="reset"', esc(t('js.manip.side.reset'))),
   ].join('');
   const set = document.getElementById('mp-settings');
@@ -649,7 +654,7 @@ function renderBoard() {
   board.classList.toggle('texting', !!V.textMode);
   const content = document.getElementById('mp-content');
   const slug = V.tool.slug;
-  content.innerHTML = boardHtml(slug, V.impl, V.st, { sel: V.sel, osel: V.osel, readOnly: false, snapped: V.snapped, showKeys: V.showKeys, totals: V.totals !== false, fresh: V.fresh });
+  content.innerHTML = boardHtml(slug, V.impl, V.st, { sel: V.sel, osel: V.osel, readOnly: false, snapped: V.snapped, showKeys: V.showKeys, totals: V.totals !== false, fresh: V.fresh, checked: V.checked });
   V.fresh = null;
   // The hint only on a truly empty board, in the middle of the window (never on top of anything).
   const empty = !V.st.objects.length && !(V.st.pieces || []).length && !V.ann.notes.length && !V.ann.texts.length && !V.ann.strokes.length;
@@ -875,7 +880,9 @@ function bindBoard() {
     if (e.target.classList.contains('mp-answer')) {
       const o = V.st.objects.find(x => x.id === e.target.dataset.oid); if (!o) return;
       if (!V.typing) { pushHistory(JSON.stringify(V.st)); V.typing = true; }
-      o.st.ans = e.target.value.slice(0, 40); return;
+      o.st.ans = e.target.value.slice(0, 40);
+      if (V.checked && o.id in V.checked) { delete V.checked[o.id]; const box = e.target.closest('.mp-ansbox'); box.classList.remove('ok', 'again'); box.querySelector('.mp-checkmark')?.remove(); }
+      return;
     }
     if (e.target.classList.contains('mp-notetext')) { const n = V.ann.notes.find(x => x.id === V.editing); if (n) { n.text = e.target.value.slice(0, 300); } }
   });
@@ -927,6 +934,12 @@ function toolButton(k) {
   }
   if (k === 'steps') { V.stepsOpen = !V.stepsOpen; renderChrome(); return; }
   if (k === 'keys') { V.showKeys = !V.showKeys; renderChrome(); renderBoard(); return; }
+  if (k === 'check') {
+    // On the teacher's own board the answers are here already: checked in the page, with the same rules as the server.
+    V.checked = {}; let right = 0, total = 0;
+    for (const o of V.st.objects) if (o.st && o.st.key) { total++; const okay = answerMatches(o.st.key, o.st.ans, { simplest: !!o.st.simplest, over: o.k === 'frac-eq' && o.st.op === '=' ? +o.st.b || 0 : 0 }); V.checked[o.id] = okay; if (okay) right++; }
+    renderBoard(); setStatus(t('js.manip.check.result', { right, total })); toast(t('js.manip.check.result', { right, total })); return;
+  }
   if (k === 'draft') { V.draftOpen = !V.draftOpen; renderChrome(); if (V.draftOpen) document.getElementById('mp-brief')?.focus(); return; }
   if (k === 'reset') { change(st => { const settings = {}; for (const key of ['decimal', 'mode', 'unit']) if (key in st) settings[key] = st[key]; const fresh = normalize(V.tool.slug, V.impl, newBoard(V.tool.slug, WORLD, settings)); for (const key of Object.keys(st)) delete st[key]; Object.assign(st, fresh); V.sel = null; V.osel = null; }); fit(); }
 }

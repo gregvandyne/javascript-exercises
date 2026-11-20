@@ -1109,6 +1109,11 @@
         "li5": "Prima di creare l'account, l'adulto legge un avviso su cosa conserviamo e spunta le caselle che dicono che l'ha letto e che è il genitore o il tutore legale del bambino o della bambina. Ne conserviamo una registrazione: quando, e quale versione dell'avviso. Questa non è una verifica del consenso dei genitori ai sensi delle leggi sulla privacy dei minori, e non la trattiamo come tale. Nemmeno pagare un piano lo è.",
         "li9": "L'adulto può vedere questi numeri ed eliminare l'account dalla pagina della propria famiglia: tutto quello che il bambino o la bambina ha creato, scritto e caricato sparisce subito. Conserviamo una breve registrazione che l'account è esistito e di chi l'ha creato, il vecchio nome utente resta bloccato per 90 giorni perché nessun altro possa prenderlo, e una classe di cui il bambino o la bambina faceva parte conserva i propri dati. Se il bambino o la bambina è ora in una classe scolastica, prima l'insegnante lo deve rimuovere dalla classe.",
         "li7": "Per quanto tempo: finché l'account esiste. Per ora non ci sono tempi di cancellazione automatica."
+      },
+      "manip": {
+        "h": "Materiali di matematica in classe",
+        "p1": "<b>Lezioni dal vivo:</b> quando un insegnante guida una lezione dal vivo con i materiali di matematica, la lavagna di ogni studente (i suoi pezzi, i foglietti, i testi e le risposte) viene conservata per l'insegnante e cancellata 30 giorni dopo la fine della lezione. Dove puntano gli studenti (il loro cursore) e le mani alzate non vengono salvati.",
+        "p2": "<b>Preparare una lavagna con l'IA:</b> un insegnante può descrivere una lezione e chiedere all'IA di prepararne la lavagna. Inviamo al nostro fornitore di IA, Anthropic, solo la descrizione dell'insegnante. Il lavoro e i nomi degli studenti non vengono mai inviati."
       }
     }
   },

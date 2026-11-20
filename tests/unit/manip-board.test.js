@@ -251,3 +251,21 @@ test('practice questions give nothing away: marked read-only (no digital time, n
     assert.ok(x.board.objects.filter(o => o.k !== 'answer').every(o => o.st.q), slug);
   }
 });
+
+test('checking an answer accepts sensible equivalent forms and never needs the answer shown', async () => {
+  const { answerMatches, timeOf, valueOf, centsOf } = await import('../../public/js/manip-practice.js');
+  const yes = (k, a, o) => assert.equal(answerMatches(k, a, o), true, `${k} <- ${a}`), no = (k, a, o) => assert.equal(answerMatches(k, a, o), false, `${k} <- ${a}`);
+  for (const a of ['7:30', '7.30', '07:30', 'half past 7', 'half past seven', ' 7:30 ']) yes('7:30', a);
+  yes('7:45', 'quarter to 8'); yes('3:15', 'quarter past 3'); yes('3:00', "3 o'clock"); yes('12:10', '12.10'); no('7:30', '7:35'); no('7:30', '19:30');
+  for (const a of ['5/6', '10/12', '15/18']) yes('5/6', a);
+  no('5/6', '10/12', { simplest: true }); yes('5/6', '5/6', { simplest: true }); yes('1 1/4', '5/4'); yes('1 1/4', '1.25'); yes('1 1/4', '5/4', { simplest: true }); no('1 1/4', '10/8', { simplest: true });
+  yes('4/8', '4', { over: 8 }); yes('4/8', '4/8', { over: 8 }); no('4/8', '1/2', { over: 8 });
+  for (const a of ['1032', '1,032', ' 1032']) yes('1032', a);
+  yes('-2', '−2'); yes('0.3', '.3'); yes('0.3', '3/10'); no('346', '364');
+  for (const a of ['$1.35', '1.35', '135¢', '135 cents', '$1.35 ']) yes('$1.35', a);
+  no('$1.35', '$1.53'); yes('$2.00', '200¢'); yes('$2.00', '$2');
+  yes('<', '<'); no('<', '>'); yes('(3,-2)', '( 3, −2 )'); no('(3,-2)', '(-2,3)');
+  yes('6 square units', '6'); yes('6 square units', '6 sq units'); yes('1 1/2', '3/2');
+  yes('1x² + 3x + 2', 'x^2 + 3x + 2'); yes('2x² − 1', '2x²-1'); no('x', '');
+  assert.equal(timeOf('quarter to 1'), timeOf('12:45')); assert.deepEqual(valueOf('1,032'), { n: 1032, d: 1 }); assert.equal(centsOf('2.5'), 250);
+});

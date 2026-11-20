@@ -27,7 +27,7 @@ import { hasProfanity, personalInfo } from './textfilter.js';
 import { STRIP, layoutOf, TOOLS, toolOf, pieceDefs, roomLayout, ROOM_COLORS, instructionNotes, stripHeight, stepsOf, stepStripTexts, TEACHER_STEP_H } from '../../public/js/manip-data.js';
 import * as LIVE from './manip-live.js';
 import { WORLD, OBJECTS, OBJ_MAX, OBJ_MAX_SQUARE, S_FLOOR, S_MAX, kindOf, objSize, migrate, fitInto, newBoard } from '../../public/js/manip-board.js';
-import { buildPractice, PRACTICE_TABLE, PRACTICE_HELP, PRACTICE_MAX, STEPS_MAX } from '../../public/js/manip-practice.js';
+import { buildPractice, PRACTICE_TABLE, PRACTICE_HELP, PRACTICE_MAX, STEPS_MAX, answerMatches } from '../../public/js/manip-practice.js';
 import { allow } from './ratelimit.js';
 import { TASKS } from '../../public/js/manip-tasks.js';
 
@@ -384,7 +384,7 @@ export function roomFor(u, id) {
   return { role: who.role, me: who.key, id: s.id, code: who.role === 'teacher' ? s.code : undefined, tool: s.tool, title: s.title, status: s.status,
     className: c ? c.name : '', teacher: { state: who.role === 'teacher' ? s.room || '{}' : JSON.stringify(tState), updatedAt: s.room_at || 0 }, areas, showWork: !!s.show_work, deck,
     pushed: who.role === 'student' ? s.pushed_state || null : !!s.pushed_state, pushedAt: s.pushed_at || 0,
-    bring: LIVE.bringOf(s.id), cursors: LIVE.cursorsOf(s.id), hands: handsFor(s.id, who) };
+    bring: LIVE.bringOf(s.id), cursors: LIVE.cursorsOf(s.id), hands: handsFor(s.id, who), ...(who.role === 'teacher' ? { checks: LIVE.checksOf(s.id) } : {}) };
 }
 /** Where the deck is: the teacher's step, and a student's own while they go at their own pace (clamped to the deck). */
 export function stepIndex(s, steps, key) {
@@ -483,6 +483,38 @@ export function bring(u, id, view = {}) {
   if (s.status !== 'active') return fail('ended');
   const v = { x: Math.round(num(view.x, -2000, 20000)), y: Math.round(num(view.y, -2000, 20000)), w: Math.round(num(view.w, 50, 20000, 800)), h: Math.round(num(view.h, 50, 20000, 600)) };
   return ok({ seq: LIVE.setBring(s.id, v) });
+}
+/**
+ * "Check my answers" (docs/decisions.md "Check my answers"). Only while the teacher allows it (the teacher's area's
+ * `checks`). The page sends only the student's typed answers ({ object id: text }); the right answers come from the
+ * teacher's board that was pushed (looked up by its code, the session host's own board) and never leave the server:
+ * the reply is right / not yet per box and a count. At most CHECK_LIMIT checks a minute, so it isn't a guessing machine.
+ * The result is memory only; the teacher sees each student's last one. -> { ok, results, right, total } | fail
+ */
+export const CHECK_LIMIT = 5;
+function answerKeys(s) {
+  const p = json(s.pushed_state || 'null', null); if (!p || !p.code) return null;
+  const b = q.get('SELECT state FROM manip_boards WHERE code=? AND owner_id=?', normCode(p.code), s.host_id); if (!b) return null;
+  const o = json(b.state, {}) || {}, keys = new Map();
+  for (const x of Array.isArray(o.objects) ? o.objects : []) if (x && x.st && typeof x.st.key === 'string' && x.st.key) keys.set(String(x.id), { key: x.st.key, simplest: !!x.st.simplest, over: x.k === 'frac-eq' && x.st.op === '=' ? +x.st.b || 0 : 0 });
+  return keys.size ? keys : null;
+}
+export function checkAnswers(u, id, answers = {}) {
+  const s = getSession(id), who = roomRole(u, s);
+  if (!who || who.role !== 'student') return fail('notFound');
+  if (s.status !== 'active') return fail('ended');
+  if ((json(s.room || '{}', {}) || {}).checks !== true) return fail('notFound');
+  const keys = answerKeys(s); if (!keys) return fail('noAnswers');
+  if (!allow(`mcheck:${s.id}:${who.key}`, CHECK_LIMIT, 60e3)) return fail('checkSlow');
+  const given = answers && typeof answers === 'object' && !Array.isArray(answers) ? answers : {};
+  const results = {}; let right = 0;
+  for (const [oid, k] of keys) {
+    const a = typeof given[oid] === 'string' ? clipStr(given[oid], 40) : '';
+    const okay = answerMatches(k.key, a, k);
+    results[oid] = okay; if (okay) right++;
+  }
+  LIVE.setCheck(s.id, who.key, { right, total: keys.size });
+  return ok({ results, right, total: keys.size });
 }
 /** Raised hands (memory only, services/manip-live.js): a student raises or lowers their own, at most HAND_LIMIT changes
  *  a minute; the teacher lowers anyone's, or all. */

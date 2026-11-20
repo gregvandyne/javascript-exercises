@@ -64,7 +64,7 @@ for (const slug of ['linking-cubes', 'color-tiles', 'number-rods', 'fraction-til
 const FRAC_EQ = { k: 'frac-eq', name: 'Fraction equation', add: 'Add a fraction equation', init: () => ({ a: '1/2', op: '+', b: '1/4', text: '1/2 + 1/4 = ?', ans: '' }), size: st => fracEqSize(st) };
 OBJECTS['fraction-tiles'].unshift(FRAC_EQ); OBJECTS['fraction-circles'].push({ ...FRAC_EQ, init: () => ({ ...FRAC_EQ.init(), shape: 'circles' }) });
 // An answer box, on every tool: "?" to type into (the student's, private like their text), sized for its answer.
-export const ANSWER = { k: 'answer', name: 'Answer', add: 'Add an answer box', init: () => ({ ans: '', size: 'M' }), size: st => ({ w: { S: 130, M: 190, L: 280 }[st && st.size] || 190, h: OBJ_HEAD + 58 }) };
+export const ANSWER = { k: 'answer', name: 'Answer', add: 'Add an answer box', init: () => ({ ans: '', size: 'M' }), size: st => ({ w: { S: 170, M: 220, L: 300 }[st && st.size] || 220, h: OBJ_HEAD + 58 }) };
 for (const slug of Object.keys(OBJECTS)) OBJECTS[slug].push(ANSWER);
 export const PV_COL = { w: 136, gap: 6, pad: 10, h: 236 };
 function matSize(st) { return { w: clamp(num(st && st.w, 440), 160, 1600), h: OBJ_HEAD + clamp(num(st && st.h, 290), 80, 1200) }; }

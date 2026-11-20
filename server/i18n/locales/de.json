@@ -1109,6 +1109,11 @@
         "li5": "Bevor der Erwachsene das Konto erstellt, liest er einen Hinweis dazu, was wir speichern, und bestätigt per Häkchen, dass er ihn gelesen hat und Elternteil oder erziehungsberechtigt ist. Davon speichern wir einen Nachweis: wann und welche Version des Hinweises. Das ist keine Prüfung der elterlichen Einwilligung im Sinne von Datenschutzgesetzen für Kinder, und wir behandeln es auch nicht so. Das Bezahlen eines Abos ist ebenfalls keine.",
         "li9": "Der Erwachsene kann diese Zahlen sehen und das Konto auf seiner Familienseite löschen: Alles, was das Kind gemacht, geschrieben und hochgeladen hat, wird sofort gelöscht. Wir behalten einen kurzen Nachweis, dass es das Konto gab und wer es erstellt hat, der alte Benutzername wird 90 Tage lang zurückgehalten, damit ihn niemand sonst nehmen kann, und eine Klasse, in der das Kind früher war, behält ihre eigenen Unterlagen. Ist das Kind gerade in einer Schulklasse, entfernt die Lehrkraft es zuerst aus der Klasse.",
         "li7": "Wie lange: solange es das Konto gibt. Automatische Löschfristen gibt es noch nicht."
+      },
+      "manip": {
+        "h": "Mathe-Materialien im Unterricht",
+        "p1": "<b>Live-Unterrichtsstunden:</b> Wenn eine Lehrkraft eine Live-Stunde mit den Mathe-Materialien leitet, wird das Brett jedes Schülers darin (Teile, Haftnotizen, Text und Antworten) für die Lehrkraft aufbewahrt und 30 Tage nach dem Ende der Stunde gelöscht. Wohin Schüler zeigen (ihr Mauszeiger) und gemeldete Hände werden nicht gespeichert.",
+        "p2": "<b>Ein Brett mit KI entwerfen:</b> Eine Lehrkraft kann eine Stunde beschreiben und die KI ein Brett dafür entwerfen lassen. Nur die Beschreibung der Lehrkraft wird an unseren KI-Anbieter Anthropic gesendet. Arbeiten und Namen von Schülern werden nie gesendet."
       }
     }
   },

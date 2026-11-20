@@ -319,7 +319,10 @@ export function buildPractice(slug, raw, { clean = s => s } = {}) {
   let steps = (Array.isArray(raw && raw.steps) ? raw.steps : []).map(x => clean(String(x || '').trim().slice(0, 140))).filter(Boolean).slice(0, STEPS_MAX);
   if (!steps.length) steps = [list.some(x => x.box === 'answer') ? 'Write your answer under each one.' : 'Work on each one.'];
   if (capped) steps[steps.length - 1] = `${steps[steps.length - 1]} (${PRACTICE_MAX} problems: the most on one board.)`.slice(0, 200);
-  return { title, steps, board: layout(slug, T, list, title), n: list.length, asked, capped, dropped };
+  const board = layout(slug, T, list, title);
+  // "Write it in simplest form": then a right answer must be in lowest terms (Check my answers).
+  if (/simplest|lowest terms/i.test(`${title} ${steps.join(' ')}`)) for (const o of board.objects) if (o.st && typeof o.st.key === 'string' && /^\d+( \d+)?\/\d+$/.test(o.st.key)) o.st.simplest = true;
+  return { title, steps, board, n: list.length, asked, capped, dropped };
 }
 /** An item's checked settings back into the model's words (to check a varied item the same way). */
 function denorm(slug, n) {
@@ -369,3 +372,62 @@ function layout(slug, T, list, title) {
 }
 export const practiceKinds = () => Object.keys(TOOLS);
 export { OBJECTS };
+
+// ---------------------------------------------------------------- checking a student's answer (never shows the answer)
+const WORDS = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
+const hourOf = s => { const v = String(s).trim().toLowerCase(); return WORDS[v] || (/^\d{1,2}$/.test(v) ? +v : null); };
+/** A time as minutes on a 12-hour face, from "7:30", "7.30", "07:30", "half past 7", "quarter past 7", "quarter to 8",
+ *  "7 o'clock", "7". null when it isn't a time. */
+export function timeOf(s) {
+  const v = String(s || '').trim().toLowerCase().replace(/\s+/g, ' ').replace(/[’']/g, "'");
+  let m = v.match(/^(\d{1,2})\s*[:.]\s*(\d{2})(?:\s*(am|pm|a\.m\.|p\.m\.))?$/); if (m) return +m[1] >= 1 && +m[1] <= 12 && +m[2] < 60 ? ((+m[1] % 12) * 60 + +m[2]) : null;
+  m = v.match(/^(half|quarter) past (\w+)$/); if (m && hourOf(m[2])) return ((hourOf(m[2]) % 12) * 60 + (m[1] === 'half' ? 30 : 15));
+  m = v.match(/^quarter to (\w+)$/); if (m && hourOf(m[1])) return ((((hourOf(m[1]) - 1) % 12) + 12) % 12) * 60 + 45;
+  m = v.match(/^(\w+)(?: o'?clock)?$/); if (m && hourOf(m[1])) return (hourOf(m[1]) % 12) * 60;
+  return null;
+}
+/** A number or fraction as an exact { n, d } (d > 0), from "346", "1,032", "-2", "0.3", "5/6", "1 1/4", "10/12". */
+export function valueOf(s) {
+  const v = String(s || '').trim().replace(/[−–]/g, '-').replace(/(\d),(?=\d{3}\b)/g, '$1').replace(/\s+/g, ' ');
+  let m = v.match(/^(-?)(\d+) (\d+)\/(\d+)$/); if (m && +m[4]) { const n = +m[2] * +m[4] + +m[3]; return { n: m[1] ? -n : n, d: +m[4] }; }
+  m = v.match(/^(-?\d+)\/(\d+)$/); if (m && +m[2]) return { n: +m[1], d: +m[2] };
+  m = v.match(/^(-?)(\d*)\.(\d+)$/); if (m) { const d = 10 ** m[3].length, n = (+(m[2] || 0)) * d + +m[3]; return { n: m[1] ? -n : n, d }; }
+  m = v.match(/^-?\d+$/); if (m) return { n: +v, d: 1 };
+  return null;
+}
+const sameValue = (a, b) => !!a && !!b && a.n * b.d === b.n * a.d;
+const lowest = f => gcd(Math.abs(f.n), f.d) === 1;
+/** Money in cents from "$1.25", "1.25", "125¢", "125 cents", "1.25 dollars". */
+export function centsOf(s) {
+  const v = String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
+  let m = v.match(/^(\d+)\s*(¢|c|cents?)$/); if (m) return +m[1];
+  m = v.match(/^\$?\s*(\d+)(?:\.(\d{1,2}))?\s*(\$|dollars?)?$/); if (m) return +m[1] * 100 + (m[2] ? +(m[2].padEnd(2, '0')) : 0);
+  return null;
+}
+const norm = s => String(s || '').toLowerCase().replace(/\s+/g, '').replace(/\^2/g, '²').replace(/[−–]/g, '-').replace(/(^|[+-])1(?=[xy])/g, '$1');
+/**
+ * Is a student's answer right? The kind of answer comes from the key: a time ("7:30": also "7.30", "half past 7"), money
+ * ("$1.25": also "1.25", "125¢"), a comparison sign, ordered pairs, an area ("6 square units": the number is enough), an
+ * expression (spaces, x^2 and a leading 1 don't matter), or a number or fraction (commas and any equivalent form, unless
+ * simplest form is asked for). An equivalence "?/8" takes the numerator alone too.
+ */
+export function answerMatches(key, ans, { simplest = false, over = 0 } = {}) {
+  const k = String(key || '').trim(), a = String(ans || '').trim();
+  if (!k || !a) return false;
+  // "1/2 = ?/8": the numerator (or the whole fraction) over that denominator, not any equal fraction.
+  if (over) { const want = valueOf(k), m = a.replace(/\s+/g, '').match(/^(\d+)(?:\/(\d+))?$/); return !!want && !!m && (!m[2] || +m[2] === over) && +m[1] * want.d === want.n * over; }
+  if (/^\d{1,2}:\d{2}$/.test(k)) { const t = timeOf(a); return t !== null && t === timeOf(k); }
+  if (/^\$/.test(k)) { const c = centsOf(a); return c !== null && c === centsOf(k); }
+  if (/^[<>=]$/.test(k)) return a === k;
+  if (/^\(/.test(k)) return a.replace(/\s+/g, '').replace(/[−–]/g, '-') === k.replace(/\s+/g, '');
+  const area = k.match(/^(\S+) square units$/);
+  if (area) { const v = valueOf(a.replace(/\s*(square units?|sq\.? units?|units?)$/i, '')); return sameValue(v, valueOf(area[1])); }
+  const kv = valueOf(k);
+  if (kv) {
+    const av = valueOf(a);
+    if (!av) return false;
+    if (!sameValue(av, kv)) return false;
+    return !simplest || lowest(av);
+  }
+  return norm(a) === norm(k);
+}
