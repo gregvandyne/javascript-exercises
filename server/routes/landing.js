@@ -114,10 +114,9 @@ export function renderLanding(req, res) {
   if (req.method === 'GET' && countable(req)) funnel.bump('landing.view');
 
   // The page's sections, in the order of the story (docs/decisions.md "Landing: the whole class day"). wide: also in
-  // the bar on wide screens (kept short: how it works, pricing, FAQ); every one is in the menu (phones and narrower
-  // screens).
-  const NAV = [['#how', 'how', true], ['#dashboards', 'dashboards', false], ['#builder', 'builder', false], ...(live ? [['#live', 'live', false]] : []),
-    ['#kids', 'kids', false], ['#courses', 'courses', false], ['#pricing', 'pricing', true], ['#faq', 'faq', true]];
+  // the bar on wide screens; every one is in the menu (phones and narrower screens, where the bar has no room).
+  const NAV = [['#how', 'how', false], ['#dashboards', 'dashboards', true], ['#builder', 'builder', true], ...(live ? [['#live', 'live', true]] : []),
+    ['#kids', 'kids', false], ['#courses', 'courses', true], ['#pricing', 'pricing', true], ['#faq', 'faq', true]];
   const NAV_CTA = { '#how': 'how', '#pricing': 'pricing' };
   const navLink = (href, key) => html`<a href="${href}"${NAV_CTA[href] ? raw(` data-cta="${NAV_CTA[href]}"`) : ''}${fb(`landing.nav.${key}`)}>${t(`landing.nav.${key}`)}</a>`;
   const header = html`<a class="lp-skip" href="#lp-main">${t('landing.nav.skip')}</a>
@@ -128,6 +127,7 @@ export function renderLanding(req, res) {
   </nav>
   <div class="lp-actions">
     <a class="lp-signin" href="/login">${t('landing.nav.signIn')}</a>
+    <a class="lp-btn lp-btn-ghost lp-btn-sm lp-justplay" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')} ${ARROW}</a>
     <a class="lp-btn lp-btn-primary lp-btn-sm" href="${TRIAL_URL}" data-cta="trial" aria-label="${t('landing.nav.trial')}"><span class="lp-long">${t('landing.nav.trial')}</span><span class="lp-short" aria-hidden="true">${t('landing.nav.trialShort')}</span></a>
   </div>
   <details class="lp-menu" id="lp-menu">
@@ -379,10 +379,18 @@ export function renderLanding(req, res) {
   </div>
 </section>`;
 
+  // Under the questions: a box each for the parents' and the teachers' pages, in their own words (their kicker, heading,
+  // description and three badges, so every language has them), the whole box a link.
+  const door = (path, k, badges) => html`<a class="lp-card lp-door rv" href="${lp(path)}"${fb(`${k}.h1`)}>
+      <span class="lp-eyebrow">${t(`${k}.kicker`)}</span><h3>${t(`${k}.h1`)}</h3><p>${t(`${k}.description`)}</p>
+      <ul class="lp-door-badges">${badges.map(b => html`<li><span aria-hidden="true">✓</span> ${t(`${k}.badges.${b}`)}</li>`)}</ul>
+      <span class="lp-door-go" aria-hidden="true">${ARROW}</span></a>`;
+  const doors = [door('/parents', 'parents', ['free', 'ads', 'strangers']), door('/teachers', 'teachers', ['free', 'browser', 'google'])];
   const faqSec = html`<section class="lp-sec" id="faq" aria-labelledby="faq-h">
   <div class="lp-wrap lp-narrow">
     <header class="lp-sec-head"><h2 id="faq-h">${t('landing.faq.h')}</h2></header>
     <div class="lp-faq">${faq.map(([q, a], i) => html`<details class="lp-card"${i === 0 ? raw(' open') : ''}><summary><h3>${q}</h3><span class="lp-plus" aria-hidden="true"></span></summary><p>${a}</p></details>`)}</div>
+    <div class="lp-doors">${doors}</div>
   </div>
 </section>`;
 

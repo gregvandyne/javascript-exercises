@@ -254,7 +254,7 @@ function staffMenu(req, { name, badge, active, unread }) {
   </details>`;
 }
 
-export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, mid = false, i18n = [], seo = null, keyboard = false } = {}) {
+export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, mid = false, i18n = [], seo = null, keyboard = false, signinPage = false } = {}) {
   const t = tReq(req);
   const locale = req.locale || DEFAULT_LOCALE; const info = localeInfo(locale);
   const u = req.user;
@@ -285,6 +285,9 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   // shows on wide screens only, and phones get the big door on the home page.
   const joinNow = !staff && shell.role !== 'admin' && liveOn() ? html`<a class="btn joinnow${out ? ' joinnow-out' : ''}" href="/join" aria-label="${t('live.entry.join')}"><span aria-hidden="true">🎟️</span><span class="joinnow-t" aria-hidden="true">${t('live.entry.join')}</span></a>` : '';
   const act = currentTab(shell, active);
+  // The sign-in page, signed out: no Play, Learn, Build, Parents, Teachers or Sign in in the top bar (it is the page
+  // they would lead away from); the logo, search, language and Play now stay.
+  const quiet = signinPage && out;
   const signIn = t('layout.signIn');
   const cur = k => (k === act || (k === 'grownups' && GROWNUP_PAGES.includes(act)) ? raw('aria-current="page"') : '');
   const label = k => { const key = tabKey(t, k); return { key, attr: t.own(key) ? '' : raw(' lang="en"') }; };
@@ -305,11 +308,11 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
       <input id="topq" name="q" type="search" placeholder="${t('layout.search.placeholder')}" data-short="${t('nav.search')}" autocomplete="off" value="${active === 'search' ? (req.query.q || '') : ''}">
     </form>
     <a class="topsearch-btn" href="/search" aria-label="${t('layout.search.label')}"><span aria-hidden="true">🔎</span></a>
-    <nav class="topnav" aria-label="${t('layout.mainNav')}">
+    ${quiet ? '' : html`<nav class="topnav" aria-label="${t('layout.mainNav')}">
       ${shell.top.map(([k, href, emo]) => { const l = label(k); return html`<a class="navlink" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${emo}</span>${t(l.key)}${badge(k)}</a>`; })}
-    </nav>
+    </nav>`}
     ${langPicker(req)}
-    ${u && !out ? accountMenu(req, { shell, name: myName, badge, active: !!cur(grownup ? 'account' : 'me'), unread: badges.me || 0 }) : html`<a class="me-btn" href="${meHref}" ${cur('me')} aria-label="${u ? t('layout.meLabel', { name: myName }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? myName : signIn}</span>${badge('me')}</a>`}
+    ${quiet ? '' : u && !out ? accountMenu(req, { shell, name: myName, badge, active: !!cur(grownup ? 'account' : 'me'), unread: badges.me || 0 }) : html`<a class="me-btn" href="${meHref}" ${cur('me')} aria-label="${u ? t('layout.meLabel', { name: myName }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? myName : signIn}</span>${badge('me')}</a>`}
     ${joinNow}${playNow}
   </header>
   <nav class="tabbar" aria-label="${t('layout.mainNav')}">

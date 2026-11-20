@@ -106,7 +106,7 @@ function loginPage(req, res) {
       <p class="center small" style="margin-top:16px">${t('auth.page.newHere')} <a href="/signup${wantedNext(req.query.next) ? `?next=${encodeURIComponent(next)}` : ''}">${t('auth.page.signupLink')}</a></p>
       ${loginJoinLink(req)}
     </div></div>`;
-  page(req, res, { title: t('auth.page.titleLogin'), active: 'me', body });
+  page(req, res, { title: t('auth.page.titleLogin'), active: 'me', body, signinPage: true });
 }
 router.get('/login', loginPage);
 // A "Who's this for?" choice: counted (people's browsers only: no robots, link previews or scripts; one daily total per
