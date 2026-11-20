@@ -1109,6 +1109,11 @@
         "li5": "Before making the account, the grown-up reads a notice about what we keep and ticks that they have read it and that they are the child's parent or legal guardian. We keep a record of that: when, and which version of the notice. This is not a parental consent check under children's privacy laws, and we don't treat it as one. Paying for a plan isn't one either.",
         "li9": "The grown-up can see these counts and delete the account from their family page: everything the child made, wrote and uploaded goes straight away. We keep a short record that the account existed and who made it, the old username is held back for 90 days so nobody else can take it, and a class the child used to be in keeps its own records. If the child is in a school class now, the teacher removes them from the class first.",
         "li7": "How long: as long as the account exists. We have no automatic deletion timers yet."
+      },
+      "manip": {
+        "h": "Math manipulatives in class",
+        "p1": "<b>Live class sessions:</b> when a teacher runs a live math manipulatives session, each student's board in it (their pieces, sticky notes, text and answers) is kept for their teacher and deleted 30 days after the session ends. Where students point (their cursors) and raised hands are not stored.",
+        "p2": "<b>Drafting a board with AI:</b> a teacher can describe a lesson and have the AI draft a board for it. Only the teacher's description is sent to our AI provider, Anthropic. Student work and names are never sent."
       }
     }
   },
@@ -3528,6 +3533,12 @@
         "fit": "Fit",
         "totalsOn": "Totals: on",
         "totalsOff": "Totals: off"
+      },
+      "check": {
+        "button": "Check answers",
+        "right": "right",
+        "again": "Try again",
+        "result": "{right} of {total} right."
       }
     },
     "manip-room": {
@@ -3620,7 +3631,13 @@
       "textLabel": "Text on the board",
       "textPh": "Type here…",
       "textDelete": "Delete this text",
-      "totals": "Students see totals"
+      "totals": "Students see totals",
+      "check": "Check my answers",
+      "checkResult": "{right} of {total} right. Try again on the others.",
+      "checkScore": "{right}/{total} ✓",
+      "checksSwitch": "Students can check answers",
+      "checksTitle": "Answers checked",
+      "checkShort": "Check"
     }
   },
   "favorites": {
@@ -12485,7 +12502,9 @@
       "brief": "Describe the lesson in a few words first.",
       "names": "Leave students' names out of the description: names never go to the AI.",
       "aiFailed": "The AI couldn't draft that lesson just now. Try again in a moment.",
-      "slow": "That's a lot of hands. Wait a moment and try again."
+      "slow": "That's a lot of hands. Wait a moment and try again.",
+      "checkSlow": "You've checked a lot. Wait a minute, look again, then check.",
+      "noAnswers": "There are no answers to check on this board."
     }
   }
 }

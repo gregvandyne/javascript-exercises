@@ -1108,6 +1108,11 @@
         "li5": "Antes de crear la cuenta, el adulto lee un aviso sobre lo que guardamos y marca que lo leyó y que es la madre, el padre o el tutor legal del niño. Guardamos un registro de eso: cuándo y qué versión del aviso. Esto no es una verificación de consentimiento parental según las leyes de privacidad infantil, y no lo tratamos como tal. Pagar un plan tampoco lo es.",
         "li9": "El adulto puede ver estas cantidades y borrar la cuenta desde su página familiar: todo lo que el niño creó, escribió y subió se borra de inmediato. Guardamos un registro breve de que la cuenta existió y de quién la creó, el nombre de usuario anterior queda reservado durante 90 días para que nadie más pueda usarlo, y una clase en la que estuvo el niño conserva sus propios registros. Si el niño está ahora en una clase de una escuela, primero el docente lo quita de la clase.",
         "li7": "Cuánto tiempo: mientras exista la cuenta. Todavía no tenemos plazos de borrado automático."
+      },
+      "manip": {
+        "h": "Materiales manipulativos de matemáticas en clase",
+        "p1": "<b>Sesiones de clase en directo:</b> cuando un docente dirige una sesión en directo con los materiales de matemáticas, el tablero de cada estudiante (sus piezas, notas adhesivas, texto y respuestas) se guarda para su docente y se borra 30 días después de que termine la sesión. No guardamos hacia dónde señalan los estudiantes (sus cursores) ni las manos levantadas.",
+        "p2": "<b>Preparar un tablero con IA:</b> un docente puede describir una clase y pedir a la IA que prepare un tablero. Solo enviamos la descripción del docente a nuestro proveedor de IA, Anthropic. Nunca enviamos el trabajo ni los nombres de los estudiantes."
       }
     }
   },

@@ -3,7 +3,7 @@
 /terms, /refunds and /privacy (server/routes/info.js, text in `info.terms.*`, `info.refunds.*`, `info.privacy.*` and the
 reused `info.parents.*` sections) are on the site for everyone, also before `BILLING_PUBLIC`. They were made from the
 drafts terms.md, refunds.md and privacy-payments.md. The public text has no drafting markers; every marker from the
-drafts is listed here with what the page says today. **Last updated: 2026-11-11** (`LEGAL_UPDATED` in
+drafts is listed here with what the page says today. **Last updated: 2026-11-20** (`LEGAL_UPDATED` in
 server/routes/info.js; change it with every change to the text).
 
 ## Sign-off (2026-11-09)
@@ -16,6 +16,26 @@ server/routes/info.js; change it with every change to the text).
 - The checklist below is kept as the record of what was asked. Any later change to the text needs a new sign-off here.
 - Owner steps that remain: Stripe Dashboard → Settings → Business → Public details, Terms of service URL
   `https://oomba.ai/terms`; then Render `TERMS_PUBLISHED=1`.
+
+### After the sign-off: math manipulatives in class on /privacy (2026-11-20, owner request, lawyer review pending)
+
+- **Owner: yes, 2026-11-20 · Lawyer: not yet.** A new /privacy section, `info.privacy.manip` (after "How long we keep
+  it", for every reader), for the math manipulatives (still hidden: admins and a named list of hosts):
+  - h: "Math manipulatives in class"
+  - p1: "**Live class sessions:** when a teacher runs a live math manipulatives session, each student's board in it
+    (their pieces, sticky notes, text and answers) is kept for their teacher and deleted 30 days after the session
+    ends. Where students point (their cursors) and raised hands are not stored."
+  - p2: "**Drafting a board with AI:** a teacher can describe a lesson and have the AI draft a board for it. Only the
+    teacher's description is sent to our AI provider, Anthropic. Student work and names are never sent."
+- What the code does (services/manipulatives.js): a session ends by itself after 12 hours; `prune` deletes ended
+  sessions 30 days after they end, and their students' boards with them (manip_work, ON DELETE CASCADE). Cursors, raised
+  hands, the current step and "Check my answers" results live in memory only (services/manip-live.js). The drafter
+  refuses a description with a student's name in it and sends nothing else. A host's own saved boards are kept with
+  their account like other account data.
+- 12 languages (en-GB has no privacy text of its own and reads the English). `LEGAL_UPDATED` moved to 2026-11-20 (also
+  the notice version new parent acknowledgements carry).
+- For the lawyer: is "kept for their teacher and deleted 30 days after the session ends" enough for school accounts
+  (the school directs this data), and should the 30 days appear in the school DPA template's retention schedule?
 
 ### After the sign-off: grown-ups and teachers sign up with Google (2026-11-11, owner decision, lawyer review pending)
 

@@ -1109,6 +1109,11 @@
         "li5": "Antes de criar a conta, o adulto lê um aviso sobre o que guardamos e marca que leu o aviso e que é pai, mãe ou responsável legal da criança. Guardamos um registro disso: quando, e qual versão do aviso. Isso não é uma verificação de consentimento dos pais segundo as leis de privacidade infantil, e não o tratamos como tal. Pagar por um plano também não é.",
         "li9": "O adulto pode ver esses números e excluir a conta na página da família: tudo o que a criança criou, escreveu e enviou é apagado na hora. Guardamos um registro curto de que a conta existiu e de quem a criou, o nome de usuário antigo fica reservado por 90 dias para que ninguém mais possa usá-lo, e uma turma da qual a criança fez parte mantém os próprios registros. Se a criança estiver agora em uma turma da escola, o professor a remove da turma antes.",
         "li7": "Por quanto tempo: enquanto a conta existir. Ainda não temos prazos de exclusão automática."
+      },
+      "manip": {
+        "h": "Materiais manipuláveis de matemática na aula",
+        "p1": "<b>Aulas ao vivo:</b> quando um professor conduz uma aula ao vivo com os materiais de matemática, o quadro de cada aluno (as peças, notas adesivas, textos e respostas) fica guardado para o professor e é apagado 30 dias depois do fim da aula. Para onde os alunos apontam (o cursor) e as mãos levantadas não são guardados.",
+        "p2": "<b>Preparar um quadro com IA:</b> um professor pode descrever uma aula e pedir à IA que prepare um quadro. Só a descrição do professor é enviada ao nosso fornecedor de IA, a Anthropic. O trabalho e os nomes dos alunos nunca são enviados."
       }
     }
   },
