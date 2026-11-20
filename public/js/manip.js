@@ -65,7 +65,7 @@ const ROUND = new Set(['pos', 'neg', 'blue', 'green', 'm', 'hth', 'tth', 'th', '
 function pieceHtml(p, view) {
   const on = !view.readOnly && view.sel === p.id;
   const shape = SHAPES[p.kind] ? `clip-path:${SHAPES[p.kind]};` : ROUND.has(p.kind) && !/^b\d/.test(p.kind) ? 'border-radius:50%;' : '';
-  const face = `<div class="mp-face" style="${shape}background:${p.filled ? esc(p.color) : 'transparent'};color:${p.filled ? '#fff' : 'var(--text)'};font-size:${Math.min(20, Math.max(11, p.w / 3))}px"><span>${esc(p.label)}</span></div>`;
+  const face = `<div class="mp-face" style="${shape}background:${p.filled ? esc(p.color) : 'transparent'};color:${p.filled ? '#fff' : 'var(--text)'};font-size:${Math.min(20, Math.max(11, p.w / 3))}px">${SHAPES[p.kind] ? '' : `<span>${esc(p.label)}</span>`}</div>`;
   const bar = on ? `<div class="mp-pbar${p.y < 52 ? ' below' : ''}${p.x > 260 ? ' right' : ''}" role="toolbar" aria-label="${esc(t('js.manip.piece.actions', { label: p.label }))}">
     ${[['copy', t('js.manip.piece.copy')], ['flip', t('js.manip.piece.flip')], ['rotate', t('js.manip.piece.rotate')], ['fill', t('js.manip.piece.fill')], ['lock', p.locked ? t('js.manip.piece.unlock') : t('js.manip.piece.lock')], ['delete', t('js.manip.piece.delete')]]
     .map(([a, l]) => btn(`mp-pbtn${a === 'delete' ? ' bad' : ''}`, `data-pact="${a}" data-pid="${p.id}"`, esc(l))).join('')}</div>` : '';

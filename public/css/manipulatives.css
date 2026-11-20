@@ -186,4 +186,4 @@
 .mp-toolgrid>.panel,.mp-taskgrid>.panel,.mp-cards>.panel{margin-top:0}
 .mp-redeem+p{margin-top:12px}
 .mp-main>div:empty,#mp-livebar:empty{display:none}
-@media (max-width:899px){.mp-livebar{padding:8px 12px;margin-bottom:8px}.mp-livebar .small{display:none}}
+@media (max-width:899px){.mp-livebar{padding:8px 12px;margin-bottom:8px}}
