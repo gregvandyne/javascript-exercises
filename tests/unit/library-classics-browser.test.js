@@ -224,3 +224,88 @@ test('a long book\'s page dots slide on one line; a short book keeps every dot',
   assert.deepEqual(errors, []);
   await ctx.close();
 });
+
+test('swiping turns the page: a finger drags the page and turns it, a short drag springs back, a trackpad swipe turns it', { skip }, async () => {
+  const touch = async (page, pts) => {
+    const c = await page.context().newCDPSession(page);
+    await c.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [pts[0]] });
+    for (const p of pts.slice(1)) await c.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [p] });
+    await c.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await page.waitForTimeout(350);
+  };
+  const line = (x1, x2, y, steps = 8, dy = 0) => Array.from({ length: steps + 1 }, (_, i) => ({ x: x1 + (x2 - x1) * i / steps, y: y + dy * i / steps }));
+  const count = page => page.$eval('#rd-count', e => e.textContent);
+  // A phone, a picture book and a classic.
+  for (const book of ['sw-0001', 'cl-whale']) {
+    const { ctx, page, errors } = await open(null, `/library/${book}/read`, { ...devices['iPhone 13'] });
+    await page.waitForTimeout(300);
+    // On the words (a short page's middle could be the Back/Next row, where a swipe is a tap).
+    const b = await page.$eval('#rd-text', e => { const r = e.getBoundingClientRect(); return { x: innerWidth / 2, y: r.y + 30 }; });
+    await touch(page, line(b.x + 120, b.x - 120, b.y)); assert.match(await count(page), /^Page 2 of/, `${book}: swipe left goes forward`);
+    await touch(page, line(b.x - 120, b.x + 120, b.y)); assert.match(await count(page), /^Page 1 of/, `${book}: swipe right goes back`);
+    await touch(page, line(b.x - 120, b.x + 120, b.y)); assert.match(await count(page), /^Page 1 of/, `${book}: nothing before page 1`);
+    // Two quick swipes in a row turn two pages (the second finishes the first one's slide at once).
+    const q = async (x1, x2) => { const c = await page.context().newCDPSession(page); await c.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: x1, y: b.y }] });
+      for (const p of line(x1, x2, b.y, 4).slice(1)) await c.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [p] });
+      await c.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); };
+    await q(b.x + 100, b.x - 100); await page.waitForTimeout(60); await q(b.x + 100, b.x - 100); await page.waitForTimeout(500);
+    assert.match(await count(page), /^Page 3 of/, `${book}: two quick swipes, two pages`);
+    await q(b.x - 100, b.x + 100); await page.waitForTimeout(60); await q(b.x - 100, b.x + 100); await page.waitForTimeout(500);
+    assert.match(await count(page), /^Page 1 of/, `${book}: and back`);
+    // A quick flick of 40px turns the page.
+    await q(b.x + 20, b.x - 20); await page.waitForTimeout(500); assert.match(await count(page), /^Page 2 of/, `${book}: a flick turns`);
+    await q(b.x - 20, b.x + 20); await page.waitForTimeout(500); assert.match(await count(page), /^Page 1 of/, `${book}: a flick back`);
+    await touch(page, line(b.x + 6, b.x - 6, b.y, 8)); assert.match(await count(page), /^Page 1 of/, `${book}: a short drag springs back`);
+    await touch(page, line(b.x, b.x - 30, b.y, 8, 200)); assert.match(await count(page), /^Page 1 of/, `${book}: scrolling down is not a turn`);
+    // Mid-drag the page follows the finger; let go short and it comes back.
+    const c = await page.context().newCDPSession(page);
+    await c.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: b.x, y: b.y }] });
+    for (const p of line(b.x, b.x - 50, b.y, 5).slice(1)) await c.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [p] });
+    await page.waitForTimeout(60);
+    const mid = await page.$eval('#rd-stage > :not(.rd-nav):not([hidden])', e => e.style.transform); assert.match(mid, /translate3d\(-50px/, `${book}: the page follows the finger one-to-one`);
+    await c.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] }); await page.waitForTimeout(300);
+    assert.equal(await page.$eval('#rd-stage > :not(.rd-nav):not([hidden])', e => e.style.transform), '', `${book}: back in place`);
+    await touch(page, line(b.x + 120, b.x - 120, b.y)); await page.waitForTimeout(300);
+    assert.equal(await page.$eval('#rd-stage > :not(.rd-nav):not([hidden])', e => e.style.transform), '', `${book}: no transform left after a turn`);
+    // iPhone Safari: once a finger moves sideways the reader stops the browser moving the site (touchmove is
+    // cancelled); an up-and-down move is left alone (it scrolls); a touch at the screen's edge is Safari's back swipe.
+    await page.evaluate(() => { window.__tm = []; document.addEventListener('touchmove', e => window.__tm.push(e.defaultPrevented), { passive: true }); });
+    await touch(page, line(b.x + 40, b.x - 40, b.y, 8));
+    assert.ok((await page.evaluate(() => window.__tm)).slice(-4).every(Boolean), `${book}: a sideways move is the reader's`);
+    await touch(page, line(b.x + 40, b.x + 40, b.y, 8));                       // (wait for the turn to finish)
+    await page.evaluate(() => { window.__tm = []; });
+    await touch(page, line(b.x, b.x + 4, b.y, 8, 120));
+    assert.ok(!(await page.evaluate(() => window.__tm)).some(Boolean), `${book}: scrolling is the browser's`);
+    const at = await count(page);
+    await page.evaluate(() => { window.__tm = []; });
+    await touch(page, line(8, 200, b.y, 8));
+    assert.ok(!(await page.evaluate(() => window.__tm)).some(Boolean), `${book}: the edge swipe is Safari's`);
+    assert.equal(await count(page), at, `${book}: an edge swipe doesn't turn`);
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  }
+  // A laptop: a sideways two-finger trackpad swipe turns the spread once, its momentum doesn't turn it again.
+  const { ctx, page, errors } = await open(null, '/library/cl-whale/read');
+  const b = await page.$eval('#rd-stage', e => { const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + 200 }; });
+  await page.mouse.move(b.x, b.y);
+  for (let i = 0; i < 12; i++) { await page.mouse.wheel(30, 0); await page.waitForTimeout(16); }
+  await page.waitForTimeout(400);
+  assert.equal(await count(page), 'Pages 3-4 of 14', 'one turn per swipe');
+  for (let i = 0; i < 6; i++) { await page.mouse.wheel(-30, 0); await page.waitForTimeout(16); }
+  await page.waitForTimeout(400);
+  assert.equal(await count(page), 'Pages 1-2 of 14');
+  // A sideways swipe beside the book (the page's margin) turns it too, and the browser is told not to use sideways
+  // swipes for back and forward on this page.
+  await page.mouse.move(20, 400);
+  for (let i = 0; i < 6; i++) { await page.mouse.wheel(30, 0); await page.waitForTimeout(16); }
+  await page.waitForTimeout(400);
+  assert.equal(await count(page), 'Pages 3-4 of 14', 'a swipe beside the book');
+  assert.deepEqual(await page.evaluate(() => [getComputedStyle(document.documentElement).overscrollBehaviorX, getComputedStyle(document.body).overscrollBehaviorX]), ['none', 'none']);
+  for (let i = 0; i < 6; i++) { await page.mouse.wheel(-30, 0); await page.waitForTimeout(16); }
+  await page.waitForTimeout(400);
+  await page.mouse.move(b.x, b.y);
+  await page.mouse.wheel(0, 300); await page.waitForTimeout(300);
+  assert.equal(await count(page), 'Pages 1-2 of 14', 'scrolling down is not a turn');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});

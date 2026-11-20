@@ -131,15 +131,100 @@ function start() {
     if (e.key === (rtl ? 'ArrowLeft' : 'ArrowRight')) { e.preventDefault(); next.click(); }
     if (e.key === (rtl ? 'ArrowRight' : 'ArrowLeft')) { e.preventDefault(); prev.click(); }
   });
-  // A swipe across the picture turns the page.
-  let sx = null, sy = null;
-  stage.addEventListener('touchstart', e => { const p = e.changedTouches[0]; sx = p.clientX; sy = p.clientY; }, { passive: true });
-  stage.addEventListener('touchend', e => {
-    if (sx === null) return; const p = e.changedTouches[0], dx = p.clientX - sx, dy = p.clientY - sy; sx = null;
-    if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.7 || e.target.closest('a, button')) return;
-    const fwd = (dx < 0) !== (document.documentElement.dir === 'rtl');
-    (fwd ? next : prev).click();
+  // ---- Swiping turns the page (owner, 20 Nov 2026; made snappier the same day: "not quite reactive enough"). The page
+  // sticks to the finger one-to-one from the first few pixels; letting go past about a sixth of the width, or with a
+  // flick, slides it off and the next page slides in, else it springs back. A laptop's sideways two-finger trackpad
+  // swipe moves the page the same way and turns once per swipe. The words are English, so a swipe to the left goes
+  // forward, as in a paper book. Buttons and links still just tap. Turning goes through Back/Next (spreads, the
+  // questions and progress work as before).
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  const leaves = () => [...stage.children].filter(el => !el.classList.contains('rd-nav') && !el.hidden);
+  const EASE = 'cubic-bezier(.2,.75,.25,1)';
+  const slide = (dx, ms = 0) => leaves().forEach(el => {
+    el.style.transition = ms ? `transform ${ms}ms ${EASE}, opacity ${ms}ms ${EASE}` : 'none';
+    el.style.transform = dx ? `translate3d(${dx}px,0,0)` : ''; el.style.opacity = dx ? String(Math.max(0.55, 1 - Math.abs(dx) / 900)) : '';
+  });
+  const width = () => stage.getBoundingClientRect().width || innerWidth;
+  const canTurn = fwd => fwd || page > 1;
+  let anim = null;   // a running turn: { done() } finishes it at once
+  /** Slide the page off (from where the finger left it), turn by the buttons, slide the new page in. */
+  function turn(fwd, from = 0) {
+    if (anim) anim.done();
+    const before = page;
+    if (still.matches) { (fwd ? next : prev).click(); slide(0); return; }
+    const w = width(), out = fwd ? -w : w, outMs = Math.round(Math.max(90, Math.min(180, 180 * (1 - Math.abs(from) / w))));
+    slide(out, outMs);
+    let t1 = 0, t2 = 0, raf = 0, me = null;
+    const done = () => { clearTimeout(t1); t1 = 0; clearTimeout(t2); cancelAnimationFrame(raf); if (anim === me) anim = null; };
+    const swap = () => {
+      t1 = 0;
+      (fwd ? next : prev).click();
+      if (page === before || stage.hidden) { slide(0); done(); return; }
+      slide(-out * 0.3);
+      raf = requestAnimationFrame(() => { raf = requestAnimationFrame(() => { slide(0, 220); t2 = setTimeout(done, 230); }); });
+    };
+    t1 = setTimeout(swap, outMs);
+    anim = me = { done: () => { if (t1) { clearTimeout(t1); swap(); } slide(0); done(); } };
+  }
+  // Touch events, not pointer events: iPhone Safari starts panning the whole site on a sideways move before a pointer
+  // listener can stop it, but a touchmove listener that isn't passive can (owner on iPhone Safari, 20 Nov 2026). Once a
+  // finger is moving sideways the reader owns the gesture (preventDefault), up and down it is a scroll, two fingers are
+  // a pinch. A touch that starts at the very edge of the screen is left to Safari's own back/forward swipe.
+  let drag = null;
+  const EDGE = 20;
+  const xy = e => e.changedTouches[0];
+  stage.addEventListener('touchstart', e => {
+    if (e.touches.length > 1) { if (drag && drag.on) slide(0, 180); drag = null; return; }
+    const p = xy(e);
+    if (e.target.closest('a, button, input') || p.clientX < EDGE || p.clientX > innerWidth - EDGE) { drag = null; return; }
+    if (anim) anim.done();
+    drag = { id: p.identifier, x: p.clientX, y: p.clientY, dx: 0, on: false, hist: [[e.timeStamp, p.clientX]] };
   }, { passive: true });
+  stage.addEventListener('touchmove', e => {
+    if (!drag) return;
+    if (e.touches.length > 1) { if (drag.on) slide(0, 180); drag = null; return; }
+    const p = [...e.changedTouches].find(t => t.identifier === drag.id); if (!p) return;
+    const dx = p.clientX - drag.x, dy = p.clientY - drag.y;
+    if (!drag.on) {
+      if (Math.abs(dy) > 8 && Math.abs(dy) > Math.abs(dx)) { drag = null; return; }   // scrolling the page
+      if (Math.abs(dx) < 6) return;
+      drag.on = true; stage.classList.add('is-dragging');
+    }
+    if (e.cancelable) e.preventDefault();                                                  // Safari: don't move the site
+    drag.dx = dx;
+    drag.hist.push([e.timeStamp, p.clientX]); if (drag.hist.length > 6) drag.hist.shift();
+    if (!still.matches) slide(canTurn(dx < 0) ? dx : dx / 3);                             // nothing before page 1
+  }, { passive: false });
+  const endDrag = e => {
+    if (!drag) return;
+    const p = [...e.changedTouches].find(t => t.identifier === drag.id); if (!p) return;
+    const { dx, on, hist } = drag; drag = null;
+    stage.classList.remove('is-dragging');
+    if (!on) return;
+    const [t0, x0] = hist[0], v = (p.clientX - x0) / Math.max(1, e.timeStamp - t0);   // px/ms over the last moves
+    const far = Math.abs(dx) >= Math.min(80, width() / 6), flick = Math.abs(v) > 0.3 && Math.sign(v) === Math.sign(dx) && Math.abs(dx) > 15;
+    if (e.type === 'touchend' && (far || flick) && canTurn(dx < 0)) turn(dx < 0, dx);
+    else slide(0, 180);
+  };
+  stage.addEventListener('touchend', endDrag);
+  stage.addEventListener('touchcancel', endDrag);
+  // A trackpad's sideways two-finger swipe: the page follows it, turns once past 90px (its momentum is ignored until the
+  // fingers stop), or springs back if the swipe stops short.
+  let wx = 0, wLock = false, wIdle = 0;
+  // On the whole reading page, not just the book: a sideways trackpad swipe anywhere on it would otherwise be the
+  // browser's own "back a page" swipe, which slides the whole site away (owner, 20 Nov 2026).
+  document.addEventListener('wheel', e => {
+    if (stage.hidden || Math.abs(e.deltaX) <= Math.abs(e.deltaY) || e.ctrlKey) return;
+    if (e.target instanceof Element && e.target.closest('input, textarea, select, [contenteditable], .rd-dots')) return;
+    e.preventDefault();
+    clearTimeout(wIdle);
+    wIdle = setTimeout(() => { if (!wLock && wx) slide(0, 180); wx = 0; wLock = false; }, 140);
+    if (wLock) return;
+    wx += e.deltaX;
+    const fwd = wx > 0;
+    if (Math.abs(wx) >= 90 && canTurn(fwd)) { wLock = true; const from = -wx; wx = 0; turn(fwd, from); return; }
+    if (!still.matches) slide(canTurn(fwd) ? -wx : -wx / 3);
+  }, { passive: false });
 
   // ---- Read to me
   let seq = 0, audio = null;
