@@ -19,7 +19,7 @@ import { THEMES, THEME_ICONS, BAR_COLORS } from '../theme.js';
 import { notices, markNotified } from '../builder/turns.js';
 import { familiesOn } from '../services/family.js';
 import { madeCard, pwResetNote } from './family-made.js';
-import { seoHead, localeUrl, clip } from '../seo.js';
+import { seoHead, localeUrl, localizable, clip } from '../seo.js';
 import { liveOn } from '../services/classlive-sessions.js';
 
 const NAV = [
@@ -278,7 +278,14 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   if (u && u.role === 'admin' && badges.review) badges.me = (badges.me || 0) + badges.review;
   const badge = k => (badges[k] ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: badges[k] })}">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');
   const playKey = t.own('nav.playNow') ? 'nav.playNow' : 'home.hero.play';
-  const playNow = out ? html`<a class="btn btn-hot playnow" href="${(req.pathLocale ? localeUrl('/', req.pathLocale) : '/') + '#play'}" data-count="/go/play"${t.own(playKey) ? '' : raw(' lang="en"')}><span aria-hidden="true">▶</span> <span class="playnow-t">${t(playKey)}</span></a>` : '';
+  // Straight to the games: where '/' is the landing (signed out), that is the Play tab's own address, so the landing
+  // never flashes on the way; else the home page's game rows.
+  const playTab = (shell.top.find(([k]) => k === 'play') || [])[1] || '/';
+  const playHref = playTab === '/' ? (req.pathLocale ? localeUrl('/', req.pathLocale) : '/') + '#play' : (req.pathLocale && localizable(playTab) ? localeUrl(playTab, req.pathLocale) : playTab);
+  // The Play pages (/play and search), signed out, where the games have their own page (the landing is at '/'): the bar
+  // is just Play, Build and Sign in, with no Play now. A games home at '/' is also the front door and keeps every link.
+  const playPage = out && playTab !== '/' && currentTab(shell, active) === 'play';
+  const playNow = out && !playPage ? html`<a class="btn btn-hot playnow" href="${playHref}" data-count="/go/play"${t.own(playKey) ? '' : raw(' lang="en"')}><span aria-hidden="true">▶</span> <span class="playnow-t">${t(playKey)}</span></a>` : '';
   // Oomba Live: "Join a game" on every page for anyone who might be given a code (not school staff or the platform admin,
   // who host). Signed in
   // it is a round 🎟️ button on narrow bars and grows its words on wide ones; signed out (the bar also has "Play now") it
@@ -309,7 +316,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     </form>
     <a class="topsearch-btn" href="/search" aria-label="${t('layout.search.label')}"><span aria-hidden="true">🔎</span></a>
     ${quiet ? '' : html`<nav class="topnav" aria-label="${t('layout.mainNav')}">
-      ${shell.top.map(([k, href, emo]) => { const l = label(k); return html`<a class="navlink" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${emo}</span>${t(l.key)}${badge(k)}</a>`; })}
+      ${shell.top.filter(([k]) => !playPage || k === 'play' || k === 'build').map(([k, href, emo]) => { const l = label(k); return html`<a class="navlink" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${emo}</span>${t(l.key)}${badge(k)}</a>`; })}
     </nav>`}
     ${langPicker(req)}
     ${quiet ? '' : u && !out ? accountMenu(req, { shell, name: myName, badge, active: !!cur(grownup ? 'account' : 'me'), unread: badges.me || 0 }) : html`<a class="me-btn" href="${meHref}" ${cur('me')} aria-label="${u ? t('layout.meLabel', { name: myName }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? myName : signIn}</span>${badge('me')}</a>`}
