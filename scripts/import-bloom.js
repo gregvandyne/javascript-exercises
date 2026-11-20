@@ -219,7 +219,7 @@ async function writeImages(rows, { list, cache, keepCache, fresh }) {
   for (const r of rows.filter(x => x.status === 'included')) {
     const b = r.book;
     const outDir = path.join(PATHS.images, b.id);
-    const want = [b.cover.file, ...b.pages.map(p => p.image.file)].join('\n');
+    const want = [`webp ${IMAGE.page.q}/${IMAGE.cover.q}`, b.cover.file, ...b.pages.map(p => p.image.file)].join('\n');   // a new quality converts again
     const stamp = path.join(cache, b.sourceId, 'converted.txt');   // what was converted, kept in the cache (outside the repo)
     const done = !fresh && fs.existsSync(stamp) && fs.readFileSync(stamp, 'utf8') === want && fs.existsSync(path.join(outDir, 'cover.webp')) && b.pages.every(p => fs.existsSync(path.join(ROOT, 'public', p.image.src)));
     if (done) {

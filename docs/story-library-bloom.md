@@ -22,12 +22,12 @@ Every candidate that passed the rule was read in full by a person for ages 4 to 
 
 - English books on Bloom: 13396; with an allowed license in meta.json: 3962
 - Candidates checked: 1771
-- Included: **162** (Pre-K/K: 31, Grade 1: 50, Grade 2: 55, Grade 3: 22, Grades 4-5: 4)
-- By license: CC BY 4.0: 138, CC BY-SA 4.0: 23, CC0 1.0: 1
-- Pictures: 1965 with their own license, 26 inherited from the book (same copyright holder; 6 books), 9 with no license or copyright that take the book's license (at most 2 a book; 7 books)
-- Text corrected by Oomba: 49 books, 177 corrections (listed below)
-- Left out: 1609
-  - read and left out: 474
+- Included: **184** (Pre-K/K: 38, Grade 1: 64, Grade 2: 56, Grade 3: 22, Grades 4-5: 4)
+- By license: CC BY 4.0: 159, CC BY-SA 4.0: 24, CC0 1.0: 1
+- Pictures: 2222 with their own license, 26 inherited from the book (same copyright holder; 6 books), 9 with no license or copyright that take the book's license (at most 2 a book; 7 books)
+- Text corrected by Oomba: 71 books, 238 corrections (listed below)
+- Left out: 1587
+  - read and left out: 452
   - page N has no picture: 357
   - a picture's license is missing, unclear or stricter: 272
   - N pictures have no license or copyright: 167
@@ -42,7 +42,7 @@ Every candidate that passed the rule was read in full by a person for ages 4 to 
   - page N is an activity, quiz or video page: 2
   - picture /bloom/bookEdit/img/cogGrey.svg is not in the book's folder: 1
   - picture b - cover (cubierta is not in the book's folder: 1
-- Bloom pictures on the site: 41.7 MB (WebP, pages at most 720 px, covers 440 px)
+- Bloom pictures on the site: 41.6 MB (WebP, pages at most 720 px, covers 440 px)
 
 ## Included
 
@@ -63,24 +63,33 @@ Pictures: own license / inherited from the book's copyright holder / no license 
 | bl-L1FIUWglad | I Like to Read | Pre-K/K | -0.07 | 45 | 8 | Letta Machoga | Wiehan de Jager | – | African Storybook Initiative | CC BY 4.0 | 9/0/0 | – | – |
 | bl-xbtUczudzv | I Want to Hide | Pre-K/K | -0.11 | 29 | 6 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | 7/0/0 | – | tpi |
 | bl-NiYrkUxLOO | In the Park | Pre-K/K | 0 | 40 | 8 | Rituparna Ghosh | Archana Sreenivasan, Deepa Balsavar, Deval Maniar, Preeti Krishnamurthy, Sanjay Sarkar, Sukhada Rahalkar, Suvidha Mistry | – | Rituparna Ghosh | CC BY 4.0 | 9/0/0 | – | – |
+| bl-fwtVoatYaB | Jojo and Cow | Pre-K/K | 0.43 | 68 | 12 | Isiira Patrick | Rob Owen, Catherine Groenewald | – | Isiira Patrick | CC BY 4.0 | 13/0/0 | 5 | – |
+| bl-fw7y12Xeeh | Joy goes to school | Pre-K/K | 0.06 | 59 | 11 | Augustine Napagi | Vusi Malindi | – | Augustine Napagi | CC BY 4.0 | 12/0/0 | 3 | – |
 | bl-jGyaRvVUml | Let’s Count Legs | Pre-K/K | -0.15 | 36 | 8 | Komar Rien Komar Cheh | Meas SovannaraI | Sule Yakubu for GILLBT | GILLBT | CC BY 4.0 | 9/0/0 | – | maw |
 | bl-wGdrG089au | Maria's Family | Pre-K/K | -0.38 | 43 | 11 | – | Magriet Brink, Leo Daly | – | Little Zebra Books | CC BY 4.0 | 0/12/0 | – | pt |
+| bl-IvLCVoinPQ | My daughter Polar | Pre-K/K | 0.12 | 47 | 8 | Cissy Namugerwa | Vusi Malindi | – | Cissy Namugerwa | CC BY 4.0 | 9/0/0 | 2 | – |
 | bl-MiVg4YRgRi | My red ball | Pre-K/K | -0.18 | 72 | 16 | Marion Drew | Marion Drew | Khothatso Ranoosi, Marion Drew | Artwork: African Storybook Initiative; Text: Khothatso Ranoosi ?and Marion Drew | CC BY 4.0 | 17/0/0 | – | – |
 | bl-6ryYW1p7iD | Nina and Peter | Pre-K/K | 0.22 | 97 | 14 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | 15/0/0 | – | tpi |
 | bl-Y2olGWKQyY | Our day at the zoo | Pre-K/K | 0.04 | 70 | 12 | Zimbili Dlamini, Hlengiwe Zondi | Melany Pietersen | – | African Storybook Initiative and Molteno Institute | CC BY 4.0 | 13/0/0 | – | – |
 | bl-OJoRsE9eav | Our Values | Pre-K/K | 0.13 | 57 | 6 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | 7/0/0 | – | tpi |
 | bl-q4nSDcCPoG | Pendo our cow | Pre-K/K | 0.09 | 58 | 12 | Ruth Odondi | Rob Owen | – | African Storybook Initiative and Molteno Institute | CC BY 4.0 | 13/0/0 | – | – |
+| bl-1rVUeUXCcR | Rain | Pre-K/K | 0.03 | 45 | 8 | Letta Machoga | Marleen Visser | Lorato Trok | African Storybook Initiative and Molteno Institute | CC BY 4.0 | 9/0/0 | 1 | – |
+| bl-ji70TGCZCd | Sane in the market | Pre-K/K | -0.22 | 41 | 10 | Alice Kapolondo | Cathy Feek, Wiehan de Jager, Catherine Groenewald, Felicity Bell, Melany Pietersen, Melany Pieterse | – | Alice Kapalondo | CC BY 4.0 | 11/0/0 | 2 | – |
 | bl-idPZs7o3gn | Shongololo's Shoes | Pre-K/K | 0.24 | 89 | 11 | Jacqui L’Ange | Megan Lötter | – | Book Dash | CC BY 4.0 | 12/0/0 | – | – |
 | bl-IHMaoTmVrw | Sport | Pre-K/K | 0.05 | 77 | 16 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | 17/0/0 | – | tpi |
 | bl-KWFeqXHHge | Teeth | Pre-K/K | 0.4 | 64 | 8 | Zanele Buthelezi, Thembani Dladla, Clare Verbeek | Rob Owen, Development | – | SIL International | CC BY 4.0 | 9/0/0 | – | tnn |
+| bl-KBfvyWdDvs | The Noisy Farm Animals | Pre-K/K | 0.39 | 86 | 8 | – | Sandy Campbell | Sule Yakubu for GILLBT | GILLBT | CC BY-SA 4.0 | 9/0/0 | 4 | maw |
 | bl-bw69H3aL6F | The Visitors | Pre-K/K | 0.21 | 66 | 10 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | 11/0/0 | – | tpi |
 | bl-bLA0AsOuuS | Transport | Pre-K/K | 0.27 | 94 | 14 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | 15/0/0 | – | tpi |
 | bl-atsG5ppVC1 | Trees | Pre-K/K | 0.47 | 82 | 11 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | 12/0/0 | – | tpi |
+| bl-drNBDRZLmm | Tumi Goes to the Park | Pre-K/K | 0.45 | 118 | 17 | Paballo Rampa | Nyambura Kariuki | – | Paballo Rampa, Nyambura Kariuki, Hannah Shone, Karen Hurt, and BookDash.org | CC BY 4.0 | 18/0/0 | 8 | – |
 | bl-oP7kQamjXU | What Animals Can You See? | Pre-K/K | 0.14 | 93 | 18 | – | Michael John | – | SIL PNG | CC BY 4.0 | 19/0/0 | – | adz, tpi |
 | bl-I81XFHux5t | What Is It? | Pre-K/K | 0.17 | 85 | 12 | Kate Sidley | Robyn Penn | – | Robyn Penn, Kate Sidley, Ann Roberts, and BookDash.org | CC BY 4.0 | 13/0/0 | – | oks |
 | bl-LqZJkdOKv7 | When Mama Is Away | Pre-K/K | 0.23 | 68 | 9 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | 10/0/0 | – | tpi |
 | bl-aeo3n5ry6J | Whose foot is this? | Pre-K/K | -0.34 | 48 | 12 | – | Proyecto “Arte para la Alfabetización en México" | – | Instituto Lingüístico de Verano, A.C | CC BY-SA 4.0 | 13/0/0 | – | es, jmx, jmx-x-coi, jmx-x-smp |
 | bl-DzR6jBUVP0 | Yellow | Pre-K/K | 0.15 | 59 | 11 | Reviva Schermbrucker | Sue Kramer | – | Reviva Schermbrucker, Sue Kramer and PRAESA | CC BY 4.0 | 12/0/0 | – | – |
+| bl-PIAheZZLBq | A Beautiful Day | Grade 1 | 0.69 | 119 | 11 | Elana Bregin | Lindy Pelzl | – | Book Dash | CC BY 4.0 | 12/0/0 | 2 | lou |
+| bl-8AMIZkWZ0V | A dog | Grade 1 | 0.86 | 61 | 7 | Ritah Katetemera | Catherine Groenewald, Wiehan de Jager, Jean | Ritah Katetemera, Cissy Namugerwa | Ritah Katetemera and Cissy Namugerwa | CC BY 4.0 | 8/0/0 | 3 | – |
 | bl-7x6RogP4Ou | A House for Mouse | Grade 1 | 0.81 | 98 | 12 | Michele Fry | Amy Uzzell, Jennifer Jacobs | – | NTC Literacy team | CC BY 4.0 | 13/0/0 | – | nst |
 | bl-EEjyHGIyGp | A Surprise for the Football Team | Grade 1 | 1.25 | 92 | 7 | Letta Machoga, Elizabeth Carlson | Vusi Malindi, Catherine Groenewald, Molteno Institute. CC BY 4.0 | – | SIL International | CC BY 4.0 | 8/0/0 | – | tnn |
 | bl-5EDlLhFmlN | A very tall man | Grade 1 | 0.53 | 79 | 11 | Cornelius Gulere | Catherine Groenewald | – | Text: Ugandan Community Libraries Association; Illustration: African Storybook Initiative | CC BY 4.0 | 12/0/0 | – | – |
@@ -88,12 +97,16 @@ Pictures: own license / inherited from the book's copyright holder / no license 
 | bl-eg9aLLFlV0 | Agama Lizard | Grade 1 | 0.52 | 65 | 5 | – | Gordon Martin | Nfonkwa Samuel Kilese, Soka Sylverius Dosi | SIL Cameroon | CC BY 4.0 | 0/6/0 | – | ncr |
 | bl-hPzSEW4Gsi | An Ant Named Mari | Grade 1 | 1.21 | 194 | 9 | Kanchan Bannerjee, Elizabeth Carlson | Deepa Balsavar | – | SIL International | CC BY 4.0 | 10/0/0 | – | tnn |
 | bl-FnQCTrCX1y | And Also! | Grade 1 | 1.35 | 162 | 13 | – | Anja Ventor | – | SIL-PNG Education for Life | CC BY-SA 4.0 | 14/0/0 | – | tpi |
+| bl-d3RqOjKoAv | Annoying Mosquito | Grade 1 | 1.14 | 136 | 12 | Ursula Nafula | Magriet Brink | – | African Storybook Initiative | CC BY 4.0 | 13/0/0 | 1 | – |
 | bl-Ivaw5VLWgv | Azizi the doll | Grade 1 | 0.82 | 109 | 12 | Lawrence A. Konjuro | Natalie Propa | – | African Storybook Initiative | CC BY 4.0 | 13/0/0 | – | fr, ht |
 | bl-z5EDZ4xIgf | Bed-Time Stories | Grade 1 | 1.13 | 78 | 7 | – | Harshvardhan Gantha | – | Pratham Books | CC BY 4.0 | 8/0/0 | – | – |
+| bl-zhUxJz9Lp2 | Colours of a Rainbow | Grade 1 | 1.01 | 115 | 16 | Caren Echesa | Jesse Breytenbach | Caren Echesa | African Storybook Initiative | CC BY 4.0 | 17/0/0 | 1 | – |
 | bl-rYVSK51hu5 | Counting | Grade 1 | 0.8 | 66 | 8 | Clare Verbeek, Thembani Dladla, Zanele Buthelezi | Gay Galsworthy | – | africanstorybook | CC BY 4.0 | 9/0/0 | – | maw |
 | bl-7Mn8ROiBog | Dance, Mihlali! | Grade 1 | 1.09 | 150 | 16 | Matona Fatman | Aimee Ayres | – | Book Dash | CC BY 4.0 | 17/0/0 | – | – |
 | bl-gmR8JZOR9Y | Dembe the shopkeeper | Grade 1 | 1.41 | 122 | 9 | Annet Ssebaggala | Zablon Alex Nguku | Annet Ssebaggala | African Storybook Initiative | CC BY 4.0 | 10/0/0 | – | – |
+| bl-scx88aqCVs | Get Down, Rocky! | Grade 1 | 1.36 | 171 | 11 | Annie Besant | Sandhya Prabhat | – | Pratham Books | CC BY 4.0 | 12/0/0 | 5 | – |
 | bl-o2qHFb5zbs | Girl called Norah | Grade 1 | 1 | 119 | 8 | Annet Ssebaggala | Melany Pietersen | Annet Ssebaggala | African Storybook Initiative | CC BY 4.0 | 9/0/0 | – | – |
+| bl-ckChDyvXdS | Goat, Dog, and Cow with TV | Grade 1 | 1.07 | 104 | 8 | Fabian Wakholi, Khothatso Ranoosi, Marion Drew | Marleen Visser | – | African Storybook Initiative | CC BY 4.0 | 9/0/0 | 1 | – |
 | bl-oyjnKnB2WG | How to Tame a Monster | Grade 1 | 1.35 | 128 | 13 | – | Anja Venter | – | SIL - Education for Life | CC BY 4.0 | 12/0/2 | – | – |
 | bl-W9BZOhXDw9 | I can do this! | Grade 1 | 1.24 | 143 | 9 | World education | Silva Afonso | Isabelle Duston | World Education Inc | CC BY 4.0 | 9/0/1 | 1 | – |
 | bl-thk2O2wNEG | I Colour In | Grade 1 | 1.39 | 79 | 9 | – | World Education, Inc. | – | SIL-PNG Education for Life | CC BY-SA 4.0 | 10/0/0 | – | tpi |
@@ -102,22 +115,29 @@ Pictures: own license / inherited from the book's copyright holder / no license 
 | bl-M2mgINIpLR | Jobs | Grade 1 | 0.71 | 102 | 9 | – | Michael Mape | Nfonkwa Samuel Kilese, Soka Sylverius Dosi | SIL Cameroon | CC BY 4.0 | 10/0/0 | – | ncr |
 | bl-sNIVfFbhiB | Kabali and Kateera | Grade 1 | 0.81 | 90 | 8 | Milly Kasule | Franz Phooko | – | African Storybook Initiative | CC BY 4.0 | 9/0/0 | – | – |
 | bl-PmkkQa8tI7 | Little Caterpillar | Grade 1 | 0.94 | 109 | 8 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | 9/0/0 | – | tpi |
+| bl-h1cxhK0aQi | Little Dog | Grade 1 | 1.42 | 191 | 9 | Val Morris | Heslia Schon | – | SIL International | CC BY 4.0 | 10/0/0 | 1 | tnn |
 | bl-dw0b0u21Hs | Maggy and Doris the cat | Grade 1 | 0.65 | 68 | 6 | Amos Metui Karia | Marleen Visser | – | Amos Metui Karia | CC BY 4.0 | 7/0/0 | – | – |
+| bl-NHaLGjW022 | Mina and the Birthday Dress | Grade 1 | 1.06 | 130 | 11 | Ndidi Chiazor-Enenmor | Nicci Nathanson | – | Book Dash | CC BY 4.0 | 12/0/0 | 1 | – |
 | bl-ldaG8moDne | My teacher | Grade 1 | 0.91 | 73 | 8 | Zimbili Dlamini, Hlengiwe Zondi | Jesse Pietersen | Zimbili Dlamini, Hlengiwe Zondi | African Storybook Initiative and Molteno Institute | CC BY 4.0 | 9/0/0 | – | – |
 | bl-WjEB24Dti4 | Namukuru’s bicycle | Grade 1 | 1.08 | 86 | 8 | Munanga ASb teachers | Wiehan de Jager | Munanga ASb teachers | African Storybook Initiative | CC BY 4.0 | 9/0/0 | – | – |
+| bl-NBi4wrGiYG | Nanu's Taxi | Grade 1 | 1.27 | 299 | 16 | Marion Drew | Marion Drew | – | Marion Drew | CC BY 4.0 | 17/0/0 | 1 | – |
 | bl-bKz6msEr9K | Nema Buys Thread | Grade 1 | 1.39 | 190 | 12 | – | Mirjam Gyger, Marleen Visser | – | Little Zebra Books | CC BY-SA 4.0 | 13/0/0 | – | – |
 | bl-uYwJas8xs3 | Neo finds her pig | Grade 1 | 0.89 | 95 | 8 | Sehlopa sa Malea-lea ASP | Marion Drew | Khothatso Ranoosi, Marion Drew | African Storybook Initiative | CC BY 4.0 | 9/0/0 | – | – |
 | bl-NnhnuZmTS0 | Nigie Goes to School | Grade 1 | 1.01 | 83 | 8 | – | – | – | SIL-PNG Education for Life | CC BY-SA 4.0 | 9/0/0 | – | bpe-x-pou, tpi |
 | bl-Yt2R2HoU1F | Open the Door | Grade 1 | 1.28 | 201 | 13 | – | Gabriella Jardine | – | SIL Education for Life | CC BY 4.0 | 14/0/0 | – | – |
 | bl-Kepva7B4x5 | Palm Tree | Grade 1 | 1.09 | 69 | 8 | Simon Ipoo | Rob Owen | Simon Ipoo | African Storybook Initiative | CC BY 4.0 | 9/0/0 | – | – |
 | bl-zhpmHjWPbm | Poki Pig | Grade 1 | 0.98 | 161 | 10 | – | Michael John | – | SIL-PNG Education for Life | CC BY 4.0 | 11/0/0 | – | tpi |
+| bl-NOyPFYqLsT | Rainbow visits the village | Grade 1 | 1.45 | 158 | 12 | Ursula Nafula | Wiehan de Jager | Ursula Nafula | African Storybook Initiative | CC BY 4.0 | 13/0/0 | 1 | – |
 | bl-VGcHIVygjT | Red | Grade 1 | 0.58 | 72 | 11 | Reviva Schermbrucker | Sue Kramer | – | Reviva Schermbrucker, Sue Kramer and PRAESA | CC BY 4.0 | 12/0/0 | – | – |
 | bl-hxE0zqYVh3 | Scared Tumi | Grade 1 | 1.49 | 128 | 11 | Mohale Mashigo | Nicola Anne Smith | – | Nicola Anne Smith, Mohale Mashigo, Nontobeko Kunene, Ester Levinrad and Bookdash.org | CC BY 4.0 | 12/0/0 | – | – |
+| bl-ylpCY9rZWO | Sleepy Mr. Sloth | Grade 1 | 1.1 | 222 | 12 | Paul Kennedy | Graham Paterson | – | Paul Kennedy, Graham Peterson, Nick Mulgrew, and bookdash.org | CC BY 4.0 | 13/0/0 | 2 | – |
+| bl-saxmmWDVVs | Soccer Game is Good | Grade 1 | 0.98 | 79 | 8 | Letta Machoga, Hasahya Joan, Hasahya joan | Vusi Malindi, Catherine Groenewald, Wiehan de Jager | – | African Storybook Initiative and Molteno Institute | CC BY 4.0 | 9/0/0 | 3 | – |
 | bl-SkbPuCPZd0 | The day the Sun went away | Grade 1 | 1.41 | 190 | 12 | Khothatso Ranoosi, Marion Drew | Jesse Breytenbach | – | African Storybook Initiative | CC BY 4.0 | 11/0/2 | 3 | – |
 | bl-PCA1hFVmG4 | The Fox and the Grapes | Grade 1 | 1.34 | 114 | 10 | – | Stuart Westcott, Dibujado por Stuart Westscott | – | Stuart Westcott | CC BY-SA 4.0 | 11/0/0 | – | es, jmx-x-EnAm, jmx-x-coi |
 | bl-LKE0zR5qKe | The Sea | Grade 1 | 1.17 | 177 | 9 | Nicola Rijsdijk | Lauren Nel, Julie Smith-Belton | – | Nicola Rijsdijk, Lauren Nel and Julie Smith-Belton, Ester Levinrad, and BookDash.org | CC BY 4.0 | 10/0/0 | – | – |
 | bl-7YWHmKnmy5 | The Three Little Kittens | Grade 1 | 0.66 | 109 | 13 | Chou Chinith | Youm Kosal | Magdalena Cooper | Room to Read | CC BY 4.0 | 14/0/0 | – | oks |
 | bl-w1XWYHXhyn | The Wood Carver | Grade 1 | 1.28 | 114 | 9 | – | Michael John | – | SIL-PNG Education for Life | CC BY 4.0 | 10/0/0 | – | tpi |
+| bl-HR29rbSUlL | Too Big! Too Small! | Grade 1 | 1.17 | 178 | 12 | Lavanya Karthik | Lavanya Karthik | – | Pratham Books | CC BY 4.0 | 13/0/0 | 3 | – |
 | bl-FbURyCuoid | Unathi and the Dirty, Smelly Beast | Grade 1 | 0.77 | 122 | 12 | Jon Keevy | Jess Jardim-Wedepohl | – | Jon Keevy, Jess Jardim-Wedepohl, Thokozani Mkhize, Bongani Kona, and BookDash.org | CC BY 4.0 | 13/0/0 | – | – |
 | bl-2Bis5QlQwQ | Water is Coming. | Grade 1 | 1.48 | 205 | 11 | – | Joanna Smith | – | Joanna Smith | CC BY 4.0 | 12/0/0 | 10 | hi |
 | bl-Fm8bG2VRDX | We like to Play Many Games | Grade 1 | 0.96 | 104 | 6 | – | – | – | SIL-PNG Education for Life | CC BY-SA 4.0 | 7/0/0 | – | bpe-x-barupu, tpi |
@@ -129,6 +149,7 @@ Pictures: own license / inherited from the book's copyright holder / no license 
 | bl-ZRQug5puZx | Where Is Thabo? | Grade 1 | 0.61 | 102 | 12 | Melissa Fagan | Ndumiso Nyoni | – | Ndumiso Nyoni, Melissa Fagan, Fathima Kathrada, Bongani Kona, and BookDash.org | CC BY 4.0 | 13/0/0 | – | – |
 | bl-sDW77HauCs | Who is Big? | Grade 1 | 0.6 | 108 | 7 | Sara Saunders | Wiehan de Jager, Karen Lilje, blackmoondev.com | – | Sara Saunders | CC BY 4.0 | 8/0/0 | – | – |
 | bl-yAzknqBbas | Who Will Help Me? | Grade 1 | 0.73 | 143 | 8 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | 9/0/0 | – | tpi |
+| bl-ogYKTt7rBB | Yes you can! | Grade 1 | 1.4 | 236 | 12 | Xolile Sepuru | Subi Bosa | – | Book Dash | CC BY 4.0 | 13/0/0 | 5 | – |
 | bl-6umwhq0WvV | Zama is great! | Grade 1 | 1.22 | 127 | 12 | Nina Orange | Vusi Malindi | – | Text: Uganda Community Libraries Association (UgCLA; Illustrations: African Storybook Initiative | CC BY 4.0 | 13/0/0 | – | – |
 | bl-U4W4NFvz2l | Zibu & Zizo | Grade 1 | 0.89 | 113 | 12 | Refilwe Nsibande | Josephine Versfeld | – | Book Dash | CC BY 4.0 | 12/0/1 | 1 | – |
 | bl-Bra5VpKEm8 | A Street, or a Zoo? | Grade 2 | 1.79 | 173 | 11 | Mala Kumar, Manisha Chaudhry | Priya Kuriyan | – | Pratham Books | CC BY 4.0 | 12/0/0 | – | – |
@@ -137,6 +158,7 @@ Pictures: own license / inherited from the book's copyright holder / no license 
 | bl-MISNo6Z1OP | Amazing Daisy | Grade 2 | 1.88 | 332 | 19 | – | Siya Masuku | – | Nozizwe Herero, Siya Masuku, Leona Ingram and BookDash.org | CC BY 4.0 | 20/0/0 | 4 | – |
 | bl-ilT4d1OEUU | Andiswa Soccer Star | Grade 2 | 1.88 | 183 | 8 | Eden Daniels | Eden Daniels | – | African Storybook Initiative | CC BY 4.0 | 9/0/0 | 3 | fr, ht |
 | bl-CHLB3IYhFE | Anna is a Big Girl | Grade 2 | 1.51 | 176 | 12 | Uganda Community Libraries Association | Vusi Malindi | – | SIL International | CC BY 4.0 | 13/0/0 | 2 | tnn |
+| bl-bZEpSuEHkb | Arrogant Bird Learned a Lesson | Grade 2 | 1.57 | 65 | 4 | Shahul H | Deepa Balsavar, Padmanabh, Rijuta Ghate, Tessa Welch | – | Shahul H | CC BY 4.0 | 5/0/0 | 5 | – |
 | bl-U6Ym2v9aZX | Clever Cat | Grade 2 | 1.51 | 138 | 12 | Ursula Nafula | Catherine Groenewald | Ursula Nafula | African Storybook Initiative | CC BY 4.0 | 13/0/0 | 1 | – |
 | bl-DhU02tDwAo | Curious baby elephant | Grade 2 | 1.71 | 308 | 21 | Judith Baker et Lorato Trok | Wiehan de Jager | – | SIL Mali | CC BY 4.0 | 22/0/0 | – | fr, lgg, nso, swh, tn, zu |
 | bl-TcM4yYeFkq | Deepa's Resolution | Grade 2 | 2.27 | 112 | 6 | Usha Ayyar | Henu, Ketan Raut, Priya Kuriyan, Sonal Goyal, Sumit Sakhuja, Sunaina Coelho, Suvidha Mistry, Yulianto Qin | – | Usha Ayyar | CC BY 4.0 | 7/0/0 | 2 | – |
@@ -192,7 +214,7 @@ Pictures: own license / inherited from the book's copyright holder / no license 
 | bl-R3YJdUYpQn | Full of Light | Grade 3 | 2.72 | 759 | 18 | Mathangi Subramanian | Proiti Roy | – | Pratham Books | CC BY 4.0 | 19/0/0 | 4 | – |
 | bl-IDzZLFhQ66 | Grandma’s bananas | Grade 3 | 3.03 | 528 | 10 | Ursula Nafula | Catherine Groenwald | – | African StoryBook Initiative | CC BY 4.0 | 11/0/0 | – | – |
 | bl-6rvW9OSAe9 | Grandpa Fish and the Radio | Grade 3 | 3.25 | 543 | 20 | – | Srikrishna Kedilaya | – | Pratham Books | CC BY 4.0 | 21/0/0 | 2 | – |
-| bl-UKTKWVO4tI | Icecream in Spiti | Grade 3 | 2.79 | 611 | 13 | – | Joanna Smith | – | Joanna Smith | CC BY 4.0 | 14/0/0 | 14 | – |
+| bl-UKTKWVO4tI | Ice Cream in Spiti | Grade 3 | 2.79 | 611 | 13 | – | Joanna Smith | – | Joanna Smith | CC BY 4.0 | 14/0/0 | 15 | – |
 | bl-5u99Uj7X4H | Ira's Monsoon Feast | Grade 3 | 2.86 | 325 | 12 | Mukta Patil | Kavita Singh Kale | – | Pratham Books | CC BY 4.0 | 12/1/0 | 1 | – |
 | bl-lWtxIe8FLk | Mangalyaan: A Journey to Mars | Grade 3 | 2.88 | 901 | 26 | Nikhil Gulati | Nikhil Gulati | – | SIL International | CC BY 4.0 | 27/0/0 | 6 | – |
 | bl-NqhZ26F97f | Moon Pizza | Grade 3 | 2.65 | 507 | 13 | Anurag Minus Verma | Pankaj Saikia | Rahul Soni | Pratham Books | CC BY 4.0 | 14/0/0 | – | – |
@@ -251,11 +273,13 @@ Pages after the story that are not part of it, named by a person; the story page
 Each correction as `seed-library/bloom.json` records it (page: from → to; page 0 is the title). The importer stops if a correction no longer matches the book exactly once.
 
 - bl-0msgQEILAb Naughty Cow: p1 ""Come on girl!”" → "“Come on, girl!”"; p2 "animals –sheep, goats, cows and yaks –up" → "animals – sheep, goats, cows and yaks – up"; p4 ""Where is our cow?”" → "“Where is our cow?”"; p6 "“Ask them."" → "“Ask them.”"
+- bl-1rVUeUXCcR Rain: p8 "fixing my hair.." → "fixing my hair."
 - bl-2Bis5QlQwQ Water is Coming.: p1 "water pump will work” answered" → "water pump will work,” answered"; p2 "Come” called Padma" → "Come,” called Padma"; p2 "coming.” ​" → "coming.”"; p4 "called Padma “Water" → "called Padma. “Water"; p5 "called Padma “Water is coming."" → "called Padma. “Water is coming.”"; p6 "Padma called, “Water is coming”." → "Padma called. “Water is coming.”"; p8 "Padam called “Water" → "Padma called. “Water"; p9 "Come.” She called “Water" → "Come,” she called. “Water"; p10 "Cousin is making monos. "Achi, Achi. Come," said Padma, "Water is coming."" → "Cousin is making momos. “Achi, Achi. Come,” said Padma. “Water is coming.”"; p11 ""Now everyone will get water," said Padma happily. "Yes, we will all get water!" Dechen smiled." → "“Now everyone will get water,” said Padma happily. “Yes, we will all get water!” Dechen smiled."
 - bl-2YIynlyAt7 Smart Sona Helps Her Mother: p12 "waist.Chun-chanan-chan" → "waist. Chun-chanan-chan"; p13 "laughed Sona.“Silence" → "laughed Sona. “Silence"
 - bl-3NpGshx2Po Who Stole Bhaiya's Smile?: p0 "Who Stole Bahaiya's Smile" → "Who Stole Bhaiya's Smile?"; p3 "want to," Bhaiya says. "I am" → "want to,” Bhaiya says. “I am"; p12 "pretty?" Chiru says. “They are okay, Chiru.” Bhaiya says." → "pretty?” Chiru says. “They are okay, Chiru,” Bhaiya says."
 - bl-5u99Uj7X4H Ira's Monsoon Feast: p4 "take one,when our hands are full,‌we are done" → "take one, when our hands are full, we are done"
 - bl-6rvW9OSAe9 Grandpa Fish and the Radio: p11 "take them away!They could be coming to your river very soon!"" → "take them away! They could be coming to your river very soon!”"; p14 ""Please tell your father to come and see me immediately,"" → "“Please tell your father to come and see me immediately,”"
+- bl-8AMIZkWZ0V A dog: p1 "a man with his one dog" → "a man and his dog"; p3 "It was hard working" → "It was hard-working"; p5 "every thing" → "everything"
 - bl-8XHMoltHcI Will we get there in time?: p1 "doesn’t make to Attara" → "doesn’t make it to Attara"; p2 "“Let’s go, Mum,” She said." → "“Let’s go, Mum,” she said."; p3 "as driver kept trying" → "as the driver kept trying"; p5 "thought Zompa “We" → "thought Zompa. “We"; p6 "thought Zompa “We" → "thought Zompa. “We"; p6 "the Conductor and" → "the conductor and"; p7 "the Driver yelled" → "the driver yelled"; p12 "other side of river" → "other side of the river"; p12 "in time,” She cried." → "in time,” she cried."; p13 "“Oh, no.” cried everyone on the bus as they lent out" → "“Oh, no!” cried everyone on the bus as they leant out"; p13 "see us and stop,” thought Zompa, as she held her breath.Yes." → "see us and stop?” thought Zompa, as she held her breath. Yes."; p16 "said Zomba to the driver, “You are" → "said Zompa to the driver. “You are"
 - bl-AlIhhm6Df3 A wise crow: p1 "in search for water for drinking" → "in search of water to drink"; p2 "tried to fly back. To the tree" → "tried to fly back to the tree"; p6 "The crow put his mouth and drunk the water droplets." → "The crow put his mouth in and drank the water droplets."; p7 "satisfied.." → "satisfied."
 - bl-CHLB3IYhFE Anna is a Big Girl: p4 "remind me mama." → "remind me, Mama."; p8 "“I’m big now Mama,”" → ""I'm big now, Mama,""
@@ -264,41 +288,61 @@ Each correction as `seed-library/bloom.json` records it (page: from → to; page
 - bl-FBrulNVj3h Mr Mkhize's quarters: p12 "give you your money back. " → "give you your money back.” "; p13 "atchaar" → "atchar"
 - bl-FIUpYo1KL7 Rathna and the Ring of Fire: p1 "Today is a day like no other" → "Today is a day like no other."
 - bl-FewlLlor3n The Fox and the Crow: p3 ""My Miss Crow," → ""My, Miss Crow,"; p5 "Begged the fox." → "begged the fox."; p9 "A Pity about" → "A pity about"
+- bl-HR29rbSUlL Too Big! Too Small!: p2 ""You can't walk to School alone, Shanu!" says ABBU. "You are too small"" → ""You can't walk to school alone, Shanu!" says Abbu. "You are too small!""; p6 "at the stove" → "at the stove."; p9 "for e to carry you" → "for me to carry you"
+- bl-IvLCVoinPQ My daughter Polar: p1 "This my daughter Polar." → "This is my daughter Polar."; p8 "and all became happy" → "and everyone was happy"
 - bl-JTp5wxctcI Miss Tiny Chef: p2 "ming- ling stick" → "mingling stick"; p4 "loud- ly" → "loudly"
+- bl-KBfvyWdDvs The Noisy Farm Animals: p1 "Everyday they make" → "Every day they make"; p2 "What does cow say?" → "What does the cow say?"; p6 "Cluck,cluck!" → "Cluck, cluck!"; p8 "What does the he say?" → "What does he say?"
 - bl-MISNo6Z1OP Amazing Daisy: p3 "sky," Daisy said." → "sky," Daisy said."; p8 "chick- ens" → "chickens"; p13 "flap- ped" → "flapped"; p14 "BAM !" → "BAM!"
 - bl-MJt3XUbsiU Forgetful Dida: p7 "forgetmy" → "forget my"
 - bl-MozyTFFFRR Tortoise Finds his House: p4 "whizzed away.“But" → "whizzed away. “But"
 - bl-N2O83BGUNs Kaushik, the Kind Detective: p4 "for a first time detective" → "for a first-time detective"; p6 "a brave voice,"Who" → "a brave voice, "Who"; p8 "for few minutes" → "for a few minutes"
+- bl-NBi4wrGiYG Nanu's Taxi: p2 "Nanu and me!" → "Nanu and me!”"
+- bl-NHaLGjW022 Mina and the Birthday Dress: p8 "Idon't" → "I don't"
+- bl-NOyPFYqLsT Rainbow visits the village: p6 "from the sky.” Neno said." → "from the sky,” Neno said."
 - bl-Npv1Gjw0SC Goplu's Train Ride: p5 "vegetables.They" → "vegetables. They"; p13 "Sunil uncle’s gift" → "Sunil Uncle’s gift"
 - bl-OtPErgGATN Yapo Saves the Day: p7 "pep talk, ‘Play together and pass the ball to whoever is free!' 'Yapo," → "pep talk. ‘Play together and pass the ball to whoever is free!’ ‘Yapo,"; p9 "back into the game, ‘The score" → "back into the game. ‘The score"; p11 "‘GOAL!’ cried Coach Tazi." → "‘GOAL!’ cried Coach Tazi."; p12 "Congratulations for a mighty comeback" → "Congratulations on a mighty comeback"
+- bl-PIAheZZLBq A Beautiful Day: p1 "Wake up Nicholas." → "Wake up, Nicholas."; p3 "too!”says Dog" → "too!” says Dog"
 - bl-R3YJdUYpQn Full of Light: p6 "poop,” Shakthi said." → "poop,” Shakthi said."; p7 "“It’s a peacock!” The girl said" → "“It’s a peacock!” the girl said"; p13 ""Yes, Amma,”" → "“Yes, Amma,”"; p15 ""I am a champion at cutting straight lines."" → "“I am a champion at cutting straight lines.”"
 - bl-S2R4QNezp3 The Lion and the Mouse: p2 "said the Mouse.“Now" → "said the Mouse. “Now"
 - bl-SkbPuCPZd0 The day the Sun went away: p7 "Meanwhile,on" → "Meanwhile, on"; p11 "Lotsof" → "Lots of"; p12 "back,”she beamed" → "back,” she beamed"
 - bl-TcM4yYeFkq Deepa's Resolution: p3 "asked "Grandpa, if you plant a tree now, when will the tree grow and when will you get fruits? "" → "asked, "Grandpa, if you plant a tree now, when will the tree grow and when will you get fruits?""; p4 "answered "The" → "answered, "The"
 - bl-U4W4NFvz2l Zibu & Zizo: p12 "'We look the same, but we are different and like different things and that's okay.'" → "‘We look the same, but we are different and like different things and that’s okay.’"
 - bl-U6Ym2v9aZX Clever Cat: p10 "“Purr! Purr! Purr!" → "“Purr! Purr! Purr!”"
-- bl-UKTKWVO4tI Icecream in Spiti: p2 "Wangmo, “We boarders" → "Wangmo, “We boarders"; p2 "in the holidays."" → "in the holidays.”"; p5 "she saidas she" → "she said as she"; p6 "come? they asked." → "come?” they asked."; p6 "said Dolkar, “There are so many different favours" → "said Dolkar. “There are so many different flavours"; p6 "I wish I can try one" → "I wish I could try one"; p6 "hide them in your bag." → "hide them in your bag.”"; p10 "herself, “What has" → "herself, “What has"; p10 "seewhat" → "see what"; p11 "said Dolkar, “But something" → "said Dolkar, “but something"; p12 "said Dolkar, “They didn’t stayfrozen!”“Ice cream need" → "said Dolkar. “They didn’t stay frozen!” “Ice cream needs"; p12 "frozen!”laughed Pema.“We" → "frozen!” laughed Pema. “We"; p12 "Wangmo,as" → "Wangmo, as"; p13 "said Dolkar, “when you come to KazaI will" → "said Dolkar. “When you come to Kaza I will"
+- bl-UKTKWVO4tI Ice Cream in Spiti: p0 "Icecream in Spiti" → "Ice Cream in Spiti"; p2 "Wangmo, “We boarders" → "Wangmo, “We boarders"; p2 "in the holidays."" → "in the holidays.”"; p5 "she saidas she" → "she said as she"; p6 "come? they asked." → "come?” they asked."; p6 "said Dolkar, “There are so many different favours" → "said Dolkar. “There are so many different flavours"; p6 "I wish I can try one" → "I wish I could try one"; p6 "hide them in your bag." → "hide them in your bag.”"; p10 "herself, “What has" → "herself, “What has"; p10 "seewhat" → "see what"; p11 "said Dolkar, “But something" → "said Dolkar, “but something"; p12 "said Dolkar, “They didn’t stayfrozen!”“Ice cream need" → "said Dolkar. “They didn’t stay frozen!” “Ice cream needs"; p12 "frozen!”laughed Pema.“We" → "frozen!” laughed Pema. “We"; p12 "Wangmo,as" → "Wangmo, as"; p13 "said Dolkar, “when you come to KazaI will" → "said Dolkar. “When you come to Kaza I will"
 - bl-W1xCSDTuft My Juggling Granny: p4 "Spoiltsports" → "Spoilsports"
 - bl-W9BZOhXDw9 I can do this!: p9 "classroom.”Amelia" → "classroom.” Amelia"
 - bl-WDAU6pRXg5 Mini's house: p1 "her Mom and dad" → "her mom and dad"; p2 "Mini likes Keer" → "Mini likes Kheer"
 - bl-XtaBVLbUsM Tick-tock, tick-tock...: p2 "I do not want to be tailor." → "I do not want to be a tailor."
 - bl-YfFjdYu19T Sunday at the park: p3 "play on the see saw. I wonder which one of us is heaviest?" → "play on the seesaw. I wonder which one of us is heavier?"
+- bl-bZEpSuEHkb Arrogant Bird Learned a Lesson: p0 "Arrogant Bird Learned Lesson" → "Arrogant Bird Learned a Lesson"; p1 "One Day, Arrogant bird built nest" → "One day, Arrogant Bird built a nest"; p2 "A crow advised, Its danger! Its not wise to build nest at the tip of the branch. But Arrogant bird" → "A crow advised, "It's dangerous! It's not wise to build a nest at the tip of the branch." But Arrogant Bird"; p3 "and nest collapsed" → "and the nest collapsed"; p4 "Now Arrogant bird learned lesson that "I will obey wise advises from others"." → "Now Arrogant Bird learned a lesson: "I will listen to wise advice from others.""
+- bl-ckChDyvXdS Goat, Dog, and Cow with TV: p1 "taxi.They" → "taxi. They"
+- bl-d3RqOjKoAv Annoying Mosquito: p7 "more shill than before" → "more shrill than before"
+- bl-drNBDRZLmm Tumi Goes to the Park: p5 "like a MONKEY!" → "like a MONKEY!"; p6 "past you TEN TIMES" → "past you TEN TIMES"; p9 "asks Tumi." → "asks Tumi."; p12 "SANDCASTLE!" says Tumi." → "SANDCASTLE!" says Tumi."; p14 "Gogo," says Mama." → "Gogo," says Mama."; p15 "now, Tumi,"" → "now, Tumi,""; p16 "BYE,TUMI!" → "BYE, TUMI!"; p17 "bring- ing" → "bringing"
 - bl-edobKpbCK5 Rabbit under the tree: p6 "about what she heard. She started" → "about what he heard. He started"; p8 "The horse starts to run" → "The horse started to run"; p9 "asked,“Why" → "asked, “Why"; p10 "So Donkey starts running too." → "So Donkey started running too."; p12 "The cow is worried and starts to run as well." → "The cow was worried and started to run as well."; p15 "running?’’" → "running?”"
 - bl-foadKZ4Asb Ou Ou Wants to Have Friends: p1 "Ou Ou, the little porcupine likes" → "Ou Ou, the little porcupine, likes"; p7 ""What quills?”" → "“What quills?”"; p9 "my prickly friend, ” the little mouse says. “ I have" → "my prickly friend,” the little mouse says. “I have"; p12 ""We're sorry, Ou Ou," they say." → "“We’re sorry, Ou Ou,” they say."
+- bl-fw7y12Xeeh Joy goes to school: p1 "played all the day" → "played all day"; p3 "tooth brush" → "toothbrush"; p4 "put water in basin" → "put water in a basin"
+- bl-fwtVoatYaB Jojo and Cow: p2 "Jojo living with" → "Jojo lives with"; p7 "gives the cow the water" → "gives the cow water"; p9 "Jojo enjoys food." → "Jojo enjoys the food."; p10 "Jojo plays the ball" → "Jojo plays ball"; p12 "and go to bed to sleep." → "and goes to bed."
 - bl-gsN0mazwsF Samira's Awful Lunch: p3 "“Oh, yes ! They" → "“Oh, yes! They"; p10 "halfeaten" → "half-eaten"; p13 "noodles,” and ran" → "noodles,” and ran"; p17 "up. ‘How nice my parathas and brinjal curry are,’ she thought and quickly ate them up." → "up."
+- bl-h1cxhK0aQi Little Dog: p5 "to play with."" → "to play with.”"
 - bl-hePTMk0ymw The Big Juicy Mango: p3 "spreading it's branches" → "spreading its branches"; p5 "First comes the flowers" → "First come the flowers"
 - bl-i2CfCbcKyG Searching for the spirit of spring: p9 "as she a passed" → "as she passed"; p10 "needed.With" → "needed. With"
 - bl-i57MwJlCEv Dudu's Hat: p4 ""OK," says Dudu. "I'll count to three."" → "“OK,” says Dudu. “I'll count to three.”"; p4 ""One . . . " says Dudu slowly. "two" . . . "THREE!"" → "“One . . .” says Dudu slowly. “Two . . .” “THREE!”"; p6 "laugh so hard, Dudu has to hold her tummy. she says. "AGAIN!"" → "laugh so hard, Dudu has to hold her tummy. “AGAIN!” she says."; p7 "counts, ​“One" → "counts, “One"; p8 ""Again!" says Dumisani." → "“Again!” says Dumisani."; p9 "“Ah, please, Dudu?” says Dumisani." → "“Ah, please, Dudu?” says Dumisani."; p11 "shout,lifting their arms in victory. "Yes!"" → "shout, lifting their arms in victory. “Yes!”"; p13 ""Teacher!" Dudu shouts" → "“Teacher!” Dudu shouts"
 - bl-ilT4d1OEUU Andiswa Soccer Star: p0 "Andiswa Soccer" → "Andiswa Soccer Star"; p1 "if she can practise with them" → "if she could practise with them"; p5 "let her to play" → "let her play"
+- bl-ji70TGCZCd Sane in the market: p8 "But where is mother mother?" → "But where is Mother?"; p10 "Thank you mum!" → "Thank you, Mum!"
 - bl-lWtxIe8FLk Mangalyaan: A Journey to Mars: p2 "And yet it, is so far away" → "And yet it is so far away"; p7 "Research Organisation (ISRO) launched" → "Research Organisation (ISRO) launched"; p17 "Mission Control" → "Mission Control"; p23 "It is called Gaganyaan." → "It is called Gaganyaan."; p24 "Sun and Earth." → "Sun and Earth."; p26 "(oval) in shape. ​" → "(oval) in shape."
 - bl-mScXjHSaTx Juliana Wants a Pet: p1 "name him Swimmer" → "name him Swimmer."; p3 "name it Fluffy" → "name it Fluffy."; p4 "following her around" → "following her around."; p5 "She named the puppy Happy" → "She named the puppy Happy."
+- bl-ogYKTt7rBB Yes you can!: p3 "I love helping my mom" → "“I love helping my mom"; p7 "can Phathu be a nurse?" → "can Sthelo be a nurse?"; p8 "pretty pictures,’’ says" → "pretty pictures,” says"; p9 "replies teacher Langa" → "replies Teacher Langa"; p11 "booms,“Yes" → "booms, “Yes"
 - bl-qELPLaz9lr Papa's Shamba: p2 "planted.The" → "planted. The"; p4 "one of the giant pumpkin." → "one of the giant pumpkins."; p5 "This are neighbor's cows feeding on papa's" → "These are the neighbor's cows feeding on Papa's"
 - bl-sQ5PBtPOBk Mbone and Akinyi: p1 "sisters.They" → "sisters. They"; p3 "a ride on his car" → "a ride in his car"; p4 "their grandparent's home" → "their grandparents' home"; p6 "their grandparent's cattle" → "their grandparents' cattle"; p6 "The animals were peacefully as they played." → "The animals grazed peacefully as they played."; p8 "their grandparent's home" → "their grandparents' home"; p8 " The End..." → ""
+- bl-saxmmWDVVs Soccer Game is Good: p4 "the best payer" → "the best player"; p5 "After the game, coach told us" → "After the game, the coach told us"; p8 "Maloki has" → "Maliki has"
 - bl-scfTyZM5tr Piu...Piu...Piu: p2 "squeal, "Piu…piu." The chickens cluck, "Couck... couck."" → "squeal, “Piu… piu.” The chickens cluck, “Couck… couck.”"; p3 ""Curru...curru,"" → "“Curru… curru,”"; p4 ""Now let's go see the goats," says Maria. "They eat grass!" says Carlos. "We should pull up some grass to feed the goats." "No," answers Maria, "The goats can feed themselves."" → "“Now let's go see the goats,” says Maria. “They eat grass!” says Carlos. “We should pull up some grass to feed the goats.” “No,” answers Maria. “The goats can feed themselves.”"; p5 ""Meee... meee."" → "“Meee… meee.”"; p5 "“ Do you know" → "“Do you know"; p7 "has not eaten,”says Carlos" → "has not eaten,” says Carlos"; p7 ""Whaf..whaf." He seems to be saying, "I'm hungry."" → "“Whaf… whaf.” He seems to be saying, “I'm hungry.”"; p8 ""Whaf..whaf," barks" → "“Whaf… whaf,” barks"; p9 "Mary replies" → "Maria replies"
+- bl-scx88aqCVs Get Down, Rocky!: p1 "“Who let that goat out?” Ramesh, the coconut seller shouted." → ""Who let that goat out?" Ramesh, the coconut seller, shouted."; p2 "yelled. ​​"Baaaaaa!Silly humans", Rocky bleated. ​How could they expect him to jump down from the roof of a Church? He wasn't supergoat!‌" → "yelled. "Baaaaaa! Silly humans," Rocky bleated. How could they expect him to jump down from the roof of a church? He wasn't supergoat!"; p3 "“How did he get up there?” asked Appa. “He was trying to eat that hen,” Rose said." → ""How did he get up there?" asked Appa. "He was trying to eat that hen," Rose said."; p9 "slid down the ramp" → "slid down the ramp!"; p11 "Rocy" → "Rocky"
 - bl-v8o0OxKOr6 Paper Play: p1 ""Oh, this looks horrible! she said." → "“Oh, this looks horrible!” she said."; p5 "Bittus hands" → "Bittu’s hands"
 - bl-xNeM7BMoKZ The Royal Toothache: p2 "toothache since two days" → "toothache for two days"; p8 "teeth everyday" → "teeth every day"; p10 ""Alright," laughed" → "“Alright,” laughed"
+- bl-ylpCY9rZWO Sleepy Mr. Sloth: p11 "Try climb one more branch" → "Try climbing one more branch"; p12 "Mr. Sloth" → "Mr. Sloth"
 - bl-z1IlL1iI4k Sam Uncle: p1 "lives in Saket area of new Delhi." → "lives in the Saket area of New Delhi."; p2 "drops me everyday to my school" → "drops me every day at my school"; p2 "Mehrauli,New Delhi" → "Mehrauli, New Delhi"; p2 "at 7 AM." → "at 7 AM."; p2 "always follow the traffic rules" → "always follows the traffic rules"
 - bl-z1odsw2Oe7 Mary: p4 "brother.Tom" → "brother. Tom"; p9 "my grandparents home" → "my grandparents' home"; p10 "my grandparents home" → "my grandparents' home"; p10 "eat and say stories" → "eat and tell stories"; p11 "my grandparents home" → "my grandparents' home"; p11 "I always love opening of school" → "I always love the opening of school"; p11 "good morals which helps us" → "good morals which help us"
+- bl-zhUxJz9Lp2 Colours of a Rainbow: p15 "Vilolet is" → "Violet is"
 
 ### Pictures with no license or copyright: other limits
 
@@ -306,6 +350,8 @@ Books left out only because more than 2 of their pictures carry no license and n
 
 ### Scanner flags reviewed by a person
 
+- bl-PIAheZZLBq A Beautiful Day: The scanner read "my friend Jacob" (a story character) as a real person; a person read it: fine.
+- bl-NBi4wrGiYG Nanu's Taxi: The scanner read "my friend Tumi" (a story character) as a real person; a person read it: fine.
 - bl-LKE0zR5qKe The Sea: The contact-details check matched "They run up to meet me" (waves on a beach); a person read it: no personal details.
 - bl-DhU02tDwAo Curious baby elephant: The contact-details check matched a line on page 14 (Crow's warning to Baby Elephant); a person read it: no personal details.
 - bl-tL6sbfQUTf How Ant Saved Dove: The scanner read "had not drunk water" (an ant that is thirsty) as a drug word; a person read it: fine.
@@ -1428,7 +1474,6 @@ Books left out only because more than 2 of their pictures carry no license and n
 | bl-VmRHQYf6Jr | The Hours and Minutes in Ismail’s Day | read and left out: A maths workbook (time questions to the reader), not a story. |
 | bl-DF8YkOHTMW | Abike's day | read and left out: A maths workbook story with questions to the reader, and a child lost alone in the bush. |
 | bl-7aSvMcDc0V | Asha's Voice | read and left out: A meeting with the village's Member of Parliament and the protest song "We shall overcome": political. |
-| bl-NBi4wrGiYG | Nanu's Taxi | read and left out: A missing closing quotation mark on page 2. |
 | bl-vX0StFUnPe | Ketty the naughty girl | read and left out: A monster that eats children at night. |
 | bl-erDmu9qEcb | Narrow escape | read and left out: A mother shoots at the cat with a gun over blood-stained sheets; a snake is killed (violence and scary). |
 | bl-GhVVC9CI4k | Byantaka and the Dead Pot | read and left out: A neighbor borrows a pot and claims it died: a trick and a quarrel over a death. |
@@ -1501,7 +1546,6 @@ Books left out only because more than 2 of their pictures carry no license and n
 | bl-3JqPj2GfcJ | Animals, Animals | read and left out: Another upload of Animals, Animals (bride price). |
 | bl-cHx5T3fBYH | Anna is a Big Girl | read and left out: Another upload of Anna is a Big Girl (bl-CHLB3IYhFE). |
 | bl-BZ8452OPVK | Annoying Mosquito | read and left out: Another upload of Annoying Mosquito (bl-d3RqOjKoAv). |
-| bl-d3RqOjKoAv | Annoying Mosquito | read and left out: Another upload of Annoying Mosquito with the same mistake ("shill"). |
 | bl-aV0BfOCRdO | Arrogant Bird Learned Lesson | read and left out: Another upload of Arrogant Bird Learned a Lesson (bl-bZEpSuEHkb). |
 | bl-MqA4FHdqWj | Asha's Voice | read and left out: Another upload of Asha's Voice (bl-7aSvMcDc0V): political. |
 | bl-frNI9wk7Ys | Counting | read and left out: Another upload of Counting (bl-rYVSK51hu5). |
@@ -1531,7 +1575,6 @@ Books left out only because more than 2 of their pictures carry no license and n
 | bl-sNSmcjEdU5 | Lights in the Water | read and left out: Another upload of Lights in the Water (unsafe: a child alone in the sea at night). |
 | bl-k9yqs0sbCY | Lion Gets Sick | read and left out: Another upload of Lion Gets Sick: the cure is an ointment from a hyena's heart. |
 | bl-5jHn8p4tcE | Little Dog | read and left out: Another upload of Little Dog (bl-h1cxhK0aQi), with line breaks from the print layout. |
-| bl-h1cxhK0aQi | Little Dog | read and left out: Another upload of Little Dog (uneven quotation marks). |
 | bl-8ecZoU3nAa | Luwo's House | read and left out: Another upload of Luwo's House (a small boy walks the road alone). |
 | bl-ewM2pu21BP | Maria's Family | read and left out: Another upload of Maria's Family (bl-wGdrG089au). |
 | bl-b7DcmuVPzF | Mosquito | read and left out: Another upload of Mosquito ("Mosquito!!!!"). |
@@ -1682,7 +1725,6 @@ Books left out only because more than 2 of their pictures carry no license and n
 | bl-vgJxulAYdH | A Monkey called Manki | read and left out: People throw stones at the monkeys and a boy rushes at them with a stick (beyond mild peril for animals); several text mistakes. |
 | bl-Ha363FZ1PJ | Up, Up, Up in the Sky | read and left out: Punctuation and grammar mistakes all through ("lab!", I called", "if I had took", long runs of dots) that would need rewriting. |
 | bl-XUgWYJvjdn | The boy who would not listen | read and left out: Punctuation and grammar mistakes all through ("What type of fruit." Asked Eissa", "Let me get this strait") and the brothers laugh at him; fixing it would mean rewriting it. |
-| bl-NOyPFYqLsT | Rainbow visits the village | read and left out: Punctuation mistake ("from the sky.” Neno said."). |
 | bl-IcQi5InOSP | Under the sea | read and left out: Punctuation mistakes ("whale -watching.....") and a child drifts away from his mother while snorkeling. |
 | bl-l4wFLYfSit | Why Hippos have no hair | read and left out: Rabbit has Fire burn Hippo for revenge. |
 | bl-pTr1nSyh0n | The Honeyguide's Revenge | read and left out: Revenge in the title and plot: the honeyguide leads a man to a lion. |
@@ -1716,7 +1758,6 @@ Books left out only because more than 2 of their pictures carry no license and n
 | bl-GQxm7TW199 | Tingi and the Cows | read and left out: Soldiers take the cows and hunt the boy and his grandmother. |
 | bl-gn74HjkBWQ | THE INVISIBLE WAVE | read and left out: Spaces before colons and a grown-up legend of a king and a wave; 880 words. |
 | bl-HwTcDj4fgx | Of Karuvadams and summer vacations | read and left out: Spaces before punctuation ("70's ,", "pregnancy .") and a grown-up memoir; 860 words. |
-| bl-zhUxJz9Lp2 | Colours of a Rainbow | read and left out: Spelling mistake: "Vilolet". |
 | bl-DLWDvgyB4u | THE FLAMES OF TOAFA | read and left out: Spelling mistakes ("sneack", "ennemies", "enought") and curses; 1,720 words. |
 | bl-hJVJM87XtG | A Trip to Zanzibar | read and left out: Swahili names left unexplained and unclear lines ("watching at an angle"). |
 | bl-VZKQ1FahB4 | Setina and her Dog | read and left out: Teaches grabbing a dog's nose to punish it, and "I am much smarter than my dog". |
@@ -1731,38 +1772,21 @@ Books left out only because more than 2 of their pictures carry no license and n
 | bl-zMeZotjBmb | The Day the Vegetables Came to School | read and left out: Text mistake ("really you?\" The que..." lowercase after a question) and a queen of vegetables plot with little sense. |
 | bl-JkiOMnC0J4 | Whose button is this? | read and left out: Text mistake (a missing opening quote) and the hero plays on a busy road. |
 | bl-qUSZD2rHZV | Mogau's Gift | read and left out: Text mistake from the print layout ("happi- ness"); calls the village "a dull African village". |
-| bl-NHaLGjW022 | Mina and the Birthday Dress | read and left out: Text mistake: "Idon't". |
-| bl-IvLCVoinPQ | My daughter Polar | read and left out: Text mistake: "This my daughter Polar." |
-| bl-ylpCY9rZWO | Sleepy Mr. Sloth | read and left out: Text mistake: "Try climb one more branch". |
-| bl-ji70TGCZCd | Sane in the market | read and left out: Text mistake: "where is mother mother?" |
-| bl-1rVUeUXCcR | Rain | read and left out: Text mistake: a double full stop ("hair.."). |
-| bl-ogYKTt7rBB | Yes you can! | read and left out: Text mistake: a missing opening quote on page 3. |
 | bl-LVDGHlHIt4 | Wait for Us! | read and left out: Text mistake: a missing space ("breath.Yes"). |
-| bl-KBfvyWdDvs | The Noisy Farm Animals | read and left out: Text mistake: a missing space ("Cluck,cluck!"). |
-| bl-ckChDyvXdS | Goat, Dog, and Cow with TV | read and left out: Text mistake: a missing space ("taxi.They"). |
-| bl-PIAheZZLBq | A Beautiful Day | read and left out: Text mistake: a missing space ("too!”says Dog"). |
 | bl-oLgY9LaYL7 | There must be a rainbow | read and left out: Text mistake: the quotation marks on page 8 do not match; a storm destroys the village's homes. |
 | bl-tjCDkHJa8h | The Smell Thief | read and left out: Text mistakes ("‘ Good morning,’", a missing quotation mark on page 13) and a baker drags a homeless woman to court. |
-| bl-8AMIZkWZ0V | A dog | read and left out: Text mistakes ("a man with his one dog", "every thing", unfinished sentences). |
 | bl-YZhnEdQIui | The Girl who Played | read and left out: Text mistakes ("an old man with her wife", "Some one", "Kollo") and a punishment. |
 | bl-hMYzQppNc6 | Palesa Can Walk! | read and left out: Text mistakes ("And, with one big heave, pushes herself up" has no subject; "A Sandile?"). |
 | bl-x67Ccxbr6L | King Kayanja and his daughter | read and left out: Text mistakes ("andhis" in the title, "said,“Let’s") and a bride price plot. |
-| bl-scx88aqCVs | Get Down, Rocky! | read and left out: Text mistakes ("Baaaaaa!Silly humans", "Rocy"). |
 | bl-Jr3hahgB8L | Importance of trees | read and left out: Text mistakes ("Everyday", "Everytime Clouds") and a prayer for rain. |
-| bl-HR29rbSUlL | Too Big! Too Small! | read and left out: Text mistakes ("for e to carry you", a missing exclamation mark, "ABBU"). |
 | bl-y3DH7Gy0o4 | Foxy Joxy Plays a Trick | read and left out: Text mistakes ("Fox Joxy", "water- melon") and the animals stuff the fox in a melon and kick it. |
 | bl-ZE7f1Dqa9p | A careless man | read and left out: Text mistakes ("He did not mind of storing food") and hungry children crying. |
-| bl-fwtVoatYaB | Jojo and Cow | read and left out: Text mistakes ("Jojo living with his mother", "go to bed"). |
 | bl-5FVHiOrFJq | The Playful Toto | read and left out: Text mistakes ("Mr.Tito", "towars") and church on Sunday as part of the plot of a day. |
 | bl-BWTAQQObNi | Swimming | read and left out: Text mistakes ("On day", "I don't know to swim") and a drowning with mouth-to-mouth rescue. |
 | bl-8tfdxOAZ5E | The Giraffe | read and left out: Text mistakes ("please! please! help..", "up to date") and unclear opening. |
-| bl-fw7y12Xeeh | Joy goes to school | read and left out: Text mistakes ("put water in basin", "played all the day"). |
 | bl-MKUG1Muct0 | True friends | read and left out: Text mistakes ("sitting in an umbrella", "fishes") and a dog falls in a river. |
-| bl-saxmmWDVVs | Soccer Game is Good | read and left out: Text mistakes ("the best payer", "Maloki"). |
 | bl-LN5OrJI9qn | My Friend | read and left out: Text mistakes ("wrapped around his Friend", mixed tenses) and a child with no name living alone in a field. |
 | bl-yD8WKiPzI4 | Say No | read and left out: Text mistakes and body-safety advice ending with a girl slapping boys. |
-| bl-drNBDRZLmm | Tumi Goes to the Park | read and left out: Text mistakes from the print layout ("bring- ing", "BYE,TUMI!"). |
-| bl-bZEpSuEHkb | Arrogant Bird Learned Lesson | read and left out: Text mistakes in the title alone ("Arrogant Bird Learned Lesson"). |
 | bl-XGGWm1gER0 | Clever Goats | read and left out: Text mistakes, and a man spears his own goat. |
 | bl-XBLO7p8oF2 | The busy big mango tree | read and left out: Text mistakes, politicians, a drinking place and prayers. |
 | bl-sEnQoSQGoa | Thandi misses her school bus | read and left out: Thandi walks to school with a stranger, shown as fine (unsafe); punctuation missing all through. |

@@ -9255,3 +9255,47 @@ allows adaptations as long as the changes are indicated.
   twice or is out of range stops the import; the corrected text is what is measured and shown; the report lists the
   corrections; the corrections sentence appears in English and French only on corrected books; every shipped book's
   count matches its fixes).
+
+## Story Library: more Bloom books, a couple of unlabeled pictures and corrected typos (20 Nov 2026)
+
+Owner, two decisions: "If there is a book with just a couple of missing licenses, then just add it" and, for books
+left out only for text mistakes, "just fix the typos".
+
+- **Unlabeled pictures** (`checkBloomPictures`, `MAX_UNLABELED = 2` in `server/library/bloom-lib.js`). A picture with
+  no license and no copyright at all now takes the book's own license (CC BY, CC BY-SA or CC0) when the book has at
+  most 2 such pictures and they are not most of its pictures. Everything else stays strict: a picture with a license
+  of its own that is stricter (NC, ND, custom, all rights reserved), one with another copyright holder, and one whose
+  creator, copyright or file name names a stock or clip-art source (Microsoft, Pixabay, Google, Freepik and the like)
+  still keep the book out. A picture labeled in one of its two places (the data div's cover and the front cover) counts
+  as labeled. Each book records `credits.pictureRules.unlabeled`; the report shows own / inherited / unlabeled per book.
+  Result: 7 books use 9 such pictures. For the owner to decide later, the report counts the books left out only for
+  this that pass every other automatic check (not read for content): at a limit of 3: 0 more; 5: 1; any number while
+  not most of the pictures: 1; any number even when most or all pictures are unlabeled: 169. So raising the limit gains
+  almost nothing; only dropping the "not most of the pictures" rule would open many books.
+- **Corrections as data.** A pick's `fixes` (`[{ page, from, to }]`, page 0 is the title) in `seed-library/bloom.json`
+  are applied by the importer with the same exact-once rule as the StoryWeaver importer (`applyFixes` in
+  `server/library/import-lib.js`, merged from the StoryWeaver typo work): a `from` that is missing or found twice keeps
+  the book out. Fixed are only real errors (spelling, punctuation and spacing, capitalization, quotation marks,
+  print-layout hyphens and line breaks, obvious grammar slips such as "This my daughter" or "for e to carry you");
+  the book's own British spelling and style are kept. Grades are estimated on the corrected text. Corrected books carry
+  `credits.corrections` and show the shared note `library.credits.corrected` ("Oomba corrected spelling and
+  punctuation.") before the Bloom change note, so for a CC BY-SA book the share-alike sentence that follows covers the
+  corrected pages. The report lists every correction. Books whose mistakes run all through (fixing would mean
+  rewriting) stay out, with that reason.
+- **What was read.** 169 candidates in full: every book skipped for text mistakes alone or alongside a small issue,
+  and every book the new picture rule lets through. 74 added (Pre-K/K 7, Grade 1 19, Grade 2 34, Grade 3 12, Grades 4-5
+  2; CC BY 4.0 68, CC BY-SA 4.0 6), 71 of them with 237 corrections in all; 98 left out with reasons (duplicates of
+  other uploads or of books already in the library, content: violence, animals killed or eaten, religion, unsafe
+  behavior, labels on children, smoking; mistakes all through; unclear credits). Pages after a story that are not part
+  of it (notes, coloring pages, questions) are left out with `dropEnd`.
+- **Result: 184 Bloom books, 331 in the library** (Pre-K/K 47, Grade 1 110, Grade 2 115, Grade 3 44, Grades 4-5 15).
+- **Pictures.** The whole of `public/img/library` passed the 80 MB budget (about 84 MB with the StoryWeaver typo
+  books), so pages went from WebP quality 50 to 40 for the whole library (`IMAGE` in `scripts/import-stories.js`, used
+  by both importers; covers stay at 55). The Bloom importer's conversion stamp now includes the quality, so a change
+  converts again. Now 71.2 MB in all (StoryWeaver 29.5 MB, Bloom 41.6 MB).
+- An independent re-check of every Bloom book in the manifest against freshly fetched live files (meta.json, the
+  book's HTML, the picture attributes, with the new rule) is kept outside the repository.
+- Tests: `tests/unit/library-bloom.test.js` (0, 1, 2 and 3 unlabeled pictures, most of them, the cover, a stock-credited
+  or stock-named unlabeled picture, an explicit NC picture, another holder, "all rights reserved"; corrections applied,
+  missing or doubled; the report's list; every shipped book's unlabeled count and corrections; the correction note
+  over HTTP before the share-alike note, and not on uncorrected books).
