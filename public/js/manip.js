@@ -321,6 +321,7 @@ const IMPL = {
     note: 'Add more clocks from the palette (each keeps its own time). The time tracker adds 15 minutes to the selected clock.',
     board: (st, view) => {
       const e = clockSector(st), oid = view.oid || '';
+      if (st.q) return `<div class="mp-clockwrap q">${clockSvg(st, oid, true)}</div>`;   // a clock to read: its face only
       return `<div class="mp-clockwrap">${clockSvg(st, oid, view.readOnly)}<p class="mp-barname">${st.label ? `${esc(st.label)}${st.q ? '' : ' · '}` : ''}${st.q && !view.showKeys ? '&nbsp;' : hm(st)}</p>
         <p class="small mp-elapsed">${st.start && !(st.q && !view.showKeys) ? `Start ${hm(st.start)} · Elapsed <b>${e ? Math.floor(e.elapsed / 60) : 0} h ${e ? e.part : 0} min</b>` : '&nbsp;'}</p>
         ${view.readOnly ? '' : `<div class="row mp-chips">${btn('chip', 'data-act="hour" aria-label="One hour later"', 'Hour +')}${btn('chip', 'data-act="min5" aria-label="Five minutes later"', 'Min +5')}</div>`}</div>`;

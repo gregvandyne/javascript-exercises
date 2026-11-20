@@ -8,6 +8,8 @@
 import { pieceDefs, allPieceDefs, FRACTION_DENS, hexValue } from './manip-data.js';
 import { WORLD, OBJECTS, OBJ_HEAD, kindOf, addMinutes, parseFrac, fracRows, EQ_BAR, ANSWER } from './manip-board.js';
 
+const ANS_GAP = 4;
+const objSizeOf = (slug, o) => { const K = kindOf(slug, o.k); return K ? K.size(o.st).h : 0; };
 /** At most this many items in a set (the step says so when the teacher asked for more). */
 export const PRACTICE_MAX = 12;
 export const STEPS_MAX = 4;
@@ -342,7 +344,9 @@ function layout(slug, T, list, title) {
     const az = ans ? ANSWER.size(ans.st) : null;
     // A question gives nothing away: its object is marked (q) so the page shows no total and a clock no digital time.
     if (box === 'answer') for (const o of c.objects) o.st = { ...o.st, q: true };
-    return { c, ans, az, label, w: Math.max(c.w, az ? az.w : 0), h: c.h + (az ? az.h + 12 : 0) };
+    // Each card is sized to its content, its answer box right under it.
+    const c2 = { ...c, h: c.objects.length === 1 && !c.pieces.length ? objSizeOf(slug, c.objects[0]) : c.h };
+    return { c: c2, ans, az, label, w: Math.max(c2.w, az ? az.w : 0), h: c2.h + (az ? az.h + ANS_GAP : 0) };
   });
   const cols = cells.length <= 4 ? cells.length : cells.length <= 6 ? 3 : 4, LABEL = cells.some(c => c.label) ? 34 : 0, GX = 40, GY = 48, TITLE = 72;
   const cw = Math.max(0, ...cells.map(c => c.w)), ch = Math.max(0, ...cells.map(c => c.h)) + LABEL, rows = Math.ceil(cells.length / Math.max(1, cols));
@@ -358,7 +362,7 @@ function layout(slug, T, list, title) {
     const ox = cx + Math.round((cw - cell.c.w) / 2), oy = cy + LABEL;
     for (const o of cell.c.objects) board.objects.push({ id: id('o'), k: o.k, x: ox + o.x, y: oy + o.y, s: 1, st: { ...o.st, cell: i } });
     for (const p of cell.c.pieces) { const d = defs.find(x => x.kind === p.kind); if (d) board.pieces.push({ id: id('p'), kind: d.kind, x: Math.round(ox + p.x), y: Math.round(oy + p.y), rot: 0, flipped: false, filled: true, locked: false, color: d.color, label: d.label, value: d.value, w: d.w, h: d.h, cell: i, ...(p.g ? { g: p.g } : {}) }); }
-    if (cell.ans) board.objects.push({ id: id('o'), k: 'answer', x: cx + Math.round((cw - cell.az.w) / 2), y: oy + cell.c.h + 12, s: 1, st: { ...cell.ans.st, cell: i } });
+    if (cell.ans) board.objects.push({ id: id('o'), k: 'answer', x: cx + Math.round((cw - cell.az.w) / 2), y: oy + cell.c.h + ANS_GAP, s: 1, st: { ...cell.ans.st, cell: i } });
   });
   if (!defs.length) delete board.pieces;
   return board;

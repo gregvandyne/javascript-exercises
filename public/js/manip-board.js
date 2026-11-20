@@ -45,7 +45,8 @@ export const OBJECTS = {
   geoboard: [{ k: 'geoboard', name: 'Geoboard', add: 'Add a geoboard', start: true, init: () => ({ board: 'square', band: [], bands: [], color: '#E53935', fill: true }),
     size: () => ({ w: 432, h: OBJ_HEAD + 462 }) }],
   clock: [{ k: 'clock', name: 'Clock', add: 'Add a clock', start: true, init: () => ({ h: 9, m: 15, start: null, label: '' }),
-    size: () => ({ w: 252, h: OBJ_HEAD + 352 }) }],
+    // A practice clock (q) is only its face: no time line, tracker line or buttons (the answer box sits right under it).
+    size: st => (st && st.q ? { w: 252, h: OBJ_HEAD + 238 } : { w: 252, h: OBJ_HEAD + 352 }) }],
   'base-ten-blocks': [{ k: 'pv-chart', name: 'Place-value chart', add: 'Add a place-value chart', start: true, init: () => ({ cols: PV10 }), size: st => pvSize(st) },
     { k: 'mat', name: 'Work mat', add: 'Add a work mat', init: () => ({}), size: () => MAT }],
   'place-value-disks': [{ k: 'pv-chart', name: 'Place-value chart', add: 'Add a place-value chart', init: () => ({ cols: PVD }), size: st => pvSize(st) },
