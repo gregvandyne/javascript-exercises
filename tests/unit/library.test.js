@@ -250,9 +250,19 @@ test('reading, answering and the class: progress, first-try marks, done, the Sco
   assert.equal(x.done, true); assert.equal(x.marks, '101');
   const row = P.get(cl.id, stepId, ava.id);
   assert.deepEqual([row.status, row.marks, row.score, row.label], ['done', '101', 67, 'aloud']);
-  // Leo read it on his own before it was assigned: opening it from the class counts it, as he did it the first time.
+  // Leo read it on his own before it was assigned: that does not count. Opening it from the class starts him again
+  // from page 1 (his old reading is cleared), and the questions wait for the last page.
   for (const i of [0, 1, 2]) { if (i === 0) await call('/api/library/sw-0001/progress', { method: 'POST', user: leo, body: { page: n } }); await call('/api/library/sw-0001/answer', { method: 'POST', user: leo, body: { i, c: right(i) } }); }
+  assert.ok(LIB.readOf(leo.id, 'sw-0001').quiz_at, 'Leo finished it on his own');
+  const opened = await call(`/library/sw-0001/read?cl=${cl.id}&step=${stepId}`, { user: leo });
+  assert.equal(opened.status, 200);
+  assert.equal(LIB.readOf(leo.id, 'sw-0001'), null, 'his earlier reading is cleared');
+  assert.equal((await call('/api/library/sw-0001/answer', { method: 'POST', user: leo, body: { i: 0, c: right(0), ...ctx } })).json.code, 'readFirst');
   await call('/api/library/sw-0001/progress', { method: 'POST', user: leo, body: { page: 1, ...ctx } });
+  assert.equal(P.get(cl.id, stepId, leo.id).status === 'done', false, 'not done until he reads it again');
+  assert.equal(LIB.readOf(leo.id, 'sw-0001').page, 1, 'reading carries on from where he is now, not cleared again');
+  await call('/api/library/sw-0001/progress', { method: 'POST', user: leo, body: { page: n, ...ctx } });
+  for (const i of [0, 1, 2]) await call('/api/library/sw-0001/answer', { method: 'POST', user: leo, body: { i, c: right(i), ...ctx } });
   assert.deepEqual([P.get(cl.id, stepId, leo.id).status, P.get(cl.id, stepId, leo.id).marks, P.get(cl.id, stepId, leo.id).label], ['done', '111', 'own']);
   // Someone else's assignment (an outsider sending the class's ids) is not counted for the class.
   await call('/api/library/sw-0001/progress', { method: 'POST', user: s.outsider, body: { page: 3, ...ctx } });

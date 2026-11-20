@@ -111,7 +111,7 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 
 | Id | Title | Reason |
 | --- | --- | --- |
-| sw-0002 | Fat King Thin Dog | read and left out: Held back for the owner to decide: the jokes poke fun at body size ("fat king"). |
+| sw-0002 | Fat King Thin Dog | read and left out: Left out by the owner (20 Nov 2026): the jokes poke fun at body size ("fat king"). |
 | sw-0004 | Chuskit Goes to School! | pictures do not line up with pages (23 images for 21 pages) |
 | sw-0006 | Counting on Moru | picture 25.jpg is in the metadata but not in the image bank |
 | sw-0007 | Listen to My Body | read and left out: A mistake in the source text ("mothers kitchen"). |
@@ -217,7 +217,7 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0164 | The Horrible Crocobots | too long for the launch set (1552 words) |
 | sw-0165 | The Story-Pooping Cat | licensed, not picked for the launch set (not read yet) |
 | sw-0166 | Have You Seen These Birds? | read and left out: A list of bird names, not a story (too little text for 3 questions). |
-| sw-0167 | Didi and the Colourful Treasure | read and left out: Held back for the owner to decide: children live by a garbage dump and do not go to school. |
+| sw-0167 | Didi and the Colourful Treasure | read and left out: Left out by the owner (20 Nov 2026): children live by a garbage dump and do not go to school. |
 | sw-0168 | My Anti Litter Poem | licensed, not picked for the launch set (not read yet) |
 | sw-0169 | Eat and Share | licensed, not picked for the launch set (not read yet) |
 | sw-0170 | What Makes You Special? | read and left out: A mistake in the source text ("What's makes you special?"). |

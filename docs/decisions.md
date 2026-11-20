@@ -8954,9 +8954,8 @@ to only select the right ones". Built to the approved mockups (library grid, rea
   pet snake eating a mouse, hunters with guns). The site's text scanners (profanity, personal info, the Builder's
   prefilter and mock classifier) run on every page; three false alarms ("blood" in a science question, "don't talk to
   strangers", "my sister") were reviewed by a person and are listed in the report. Reasons for each book read and left
-  out are in `seed-library/storyweaver.json` (`skipped`). **Held back until the owner decides** (picks kept under `held` in that file): "Fat King Thin Dog"
-  (from the approved mockup; the jokes poke fun at body size) and "Didi and the Colourful Treasure" (children who live
-  by a garbage dump and do not go to school, until a young woman brings books). Move a pick back and re-run the importer.
+  out are in `seed-library/storyweaver.json` (`skipped`). **Left out by the owner** (20 Nov 2026): "Fat King Thin Dog" (the jokes poke fun at body size) and "Didi and
+  the Colourful Treasure" (children who live by a garbage dump and do not go to school).
 - **Levels**, from words per text page and words in all: Level 1 Just starting (≤ 12 a page on average, no page over
   20, ≤ 150 in all), Level 2 Learning to read (≤ 30 a page, ≤ 450 in all), Level 3 Reading on my own (up to 1,200;
   longer books are left out). The launch set: 19 / 25 / 16.
@@ -8979,7 +8978,9 @@ to only select the right ones". Built to the approved mockups (library grid, rea
   their own, the score with ✓/✗ per question, where they stopped, last active, and the hardest question.
 - **Progress.** `story_reads` keeps each reader's own furthest page, Read to me used, and first-try marks; the
   assignment's `step_progress` row is started when the book is opened from the class and done when its questions are
-  finished. A book the child had already finished before it was assigned counts when they open it from the class.
+  finished. An assigned book is read again from the start (the owner's decision, 20 Nov 2026): the first time the child opens it
+  from the class, their earlier reading of that book is cleared (`freshForAssignment`), so a book finished before it was
+  assigned does not count; after that, reading carries on where they stopped.
   Visitors can read and answer with nothing saved. The questions need the last page reached (signed in). Account delete
   removes `story_reads`.
 - **Read to me** uses the site's voice stack: the device voice per sentence with `speechSynthesis` word boundaries

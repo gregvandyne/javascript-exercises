@@ -77,6 +77,14 @@ export function assignmentCtx(u, b, clId, stepId) {
   const c = P.context(u, String(clId), String(stepId));
   return c.ok && c.step.kind === 'story' && c.step.story_id === b.id ? { clId: c.cl.id, stepId: c.step.id } : null;
 }
+/** An assigned book is read again from the start (the owner's rule): the first time the student opens it from the
+ *  assignment (no class row yet), their own earlier reading of that book is cleared, so a book finished before it was
+ *  assigned does not count. Once the class row exists, reading carries on where they stopped. */
+export function freshForAssignment(u, b, ctx) {
+  if (!u || !ctx) return;
+  if (q.get('SELECT 1 FROM step_progress WHERE class_lesson_id=? AND step_id=? AND user_id=?', ctx.clId, ctx.stepId, u.id)) return;
+  q.run('DELETE FROM story_reads WHERE user_id=? AND book_id=?', u.id, b.id);
+}
 
 function upsertRead(u, b, fields) {
   const old = readOf(u.id, b.id), t = now();
@@ -94,6 +102,7 @@ export function progress(u, bookId, { page, aloud = false } = {}, ctx = null) {
   const b = getBook(bookId); if (!b) return fail('notFound');
   if (!u) return ok({ read: null });
   const n = Math.max(0, Math.min(b.pages.length, Math.floor(+page || 0)));
+  freshForAssignment(u, b, ctx);
   const old = readOf(u.id, b.id);
   const r = upsertRead(u, b, { page: Math.max(n, old ? old.page : 0), aloud: aloud || (old && old.aloud) ? 1 : 0,
     finished_at: (old && old.finished_at) || (n >= b.pages.length ? now() : null) });
@@ -115,6 +124,7 @@ export function answer(u, bookId, i, c, ctx = null) {
   const right = c === qs[i].answer;
   const reply = { right, page: right ? null : qs[i].page };
   if (!u) return ok({ ...reply, solved: null, done: false });
+  freshForAssignment(u, b, ctx);
   const old = readOf(u.id, b.id);
   if (!old || old.page < b.pages.length) return fail('readFirst');
   const pad = s => String(s || '').padEnd(qs.length, '-').slice(0, qs.length);
