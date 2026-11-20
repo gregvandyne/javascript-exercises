@@ -134,7 +134,7 @@ export function imageLicenseFamily(raw) {
 
 /** Words that say a book is not free to share, whatever its license token says. Checked in its license notes,
  *  copyright, credits and the book's own credits pages. */
-export const RESTRICTION_RE = /not\s+for\s+(?:re-?)?(?:distribution|sale|resale|commercial)|all\s+rights\s+reserved|without\s+(?:the\s+)?(?:written\s+|prior\s+|express\s+)*permission|permission\s+(?:is\s+)?(?:required|needed|of\s+the|from\s+the)|ask\s+(?:for\s+)?permission|do\s+not\s+(?:copy|distribute|share|reproduce|sell|upload|modify|translate|adapt|print)|may\s+not\s+be\s+(?:copied|distributed|reproduced|sold|modified|used)|no\s+part\s+of\s+this|non-?commercial|noncommercial|\bby-nc\b|\bnc-(?:sa|nd)\b|no\s+derivatives|restricted|confidential|draft\s+only|for\s+(?:internal|review|testing)\s+(?:use\s+)?only|\btest\s+book\b/i;
+export const RESTRICTION_RE = /not\s+for\s+(?:re-?)?(?:distribution|sale|resale|commercial)|all\s+rights\s+reserved|\bpermission\b|do\s+not\s+(?:copy|distribute|share|reproduce|sell|upload|modify|translate|adapt|print)|may\s+not\s+be\s+(?:copied|distributed|reproduced|sold|modified|used)|no\s+part\s+of\s+this|non-?commercial|noncommercial|\bby-nc\b|\bnc-(?:sa|nd)\b|no\s+derivatives|restricted|confidential|draft\s+only|for\s+(?:internal|review|testing)\s+(?:use\s+)?only|\btest\s+book\b/i;
 /** Picture sources whose terms are not an open license whatever a book says (stock and clip-art libraries): a picture
  *  credited to one of them is treated as unclear and keeps the book out. */
 export const NOT_OPEN_SOURCE_RE = /microsoft|clip\s*-?art|getty|shutterstock|istock|dreamstime|123rf|adobe\s*stock|freepik|pixabay|unsplash|pexels|pinterest|google|disney|canva|openai|midjourney|dall-?e/i;

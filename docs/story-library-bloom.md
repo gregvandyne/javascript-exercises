@@ -21,30 +21,31 @@ Every candidate that passed the rule was read in full by a person for ages 4 to 
 ## Totals
 
 - English books on Bloom: 13396; with an allowed license in meta.json: 3962
-- Candidates checked: 1452
-- Included: **102** (Pre-K/K: 28, Grade 1: 44, Grade 2: 21, Grade 3: 7, Grades 4-5: 2)
-- By license: CC BY 4.0: 89, CC BY-SA 4.0: 13
-- Pictures: 1237 with their own license, 22 inherited from the book (same copyright holder; 4 books)
-- Left out: 1350
-  - a picture's license is missing, unclear or stricter: 409
-  - read and left out: 402
-  - page N has no picture: 321
-  - a page has several pictures: 119
-  - English missing on page N: 66
-  - the book's notes say: 17
+- Candidates checked: 1664
+- Included: **108** (Pre-K/K: 30, Grade 1: 45, Grade 2: 21, Grade 3: 10, Grades 4-5: 2)
+- By license: CC BY 4.0: 90, CC BY-SA 4.0: 17, CC0 1.0: 1
+- Pictures: 1299 with their own license, 22 inherited from the book (same copyright holder; 4 books)
+- Left out: 1556
+  - read and left out: 499
+  - a picture's license is missing, unclear or stricter: 416
+  - page N has no picture: 334
+  - a page has several pictures: 123
+  - the book's notes say: 100
+  - English missing on page N: 67
   - no cover picture: 5
   - book HTML missing: 4
   - no story pages: 3
   - page N is an activity, quiz or video page: 2
+  - book license: no clear version: 2
   - picture b - cover (cubierta is not in the book's folder: 1
-  - book license: no clear version: 1
-- Bloom pictures on the site: 25.9 MB (WebP, pages at most 720 px, covers 440 px)
+- Bloom pictures on the site: 26.9 MB (WebP, pages at most 720 px, covers 440 px)
 
 ## Included
 
 | Id | Title | Grade | Score | Words | Pages | Text | Illustration | Translation | Publisher | License | Other languages |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | bl-ILj5QS0v0J | At the Market | Pre-K/K | 0.09 | 58 | 14 | Robyn Nottingham | Robyn Nottingham | – | Robyn Nottingham | CC BY-SA 4.0 | km, tpi |
+| bl-oh0S2OsR5l | Caterpillar Lives in Our Garden | Pre-K/K | -0.07 | 35 | 6 | Tandi Jackson | Michael John | Sidam Jamuna Ramesh | CBase Solutions Private Limited | CC BY 4.0 | tpi, wsg |
 | bl-FUKSMHZKGV | Clever Pig | Pre-K/K | -0.12 | 68 | 12 | Nathalie Koenig | Joshua Morgan | – | Joshua Morgan, Nathalie Koenig, Lee- Ann Knowles, Carol Kagezi, BookDash.org | CC BY 4.0 | – |
 | bl-DZw4pSaygC | Come Back, Cat! | Pre-K/K | -0.06 | 60 | 10 | Nicola Rijsdijk | Karen Lilje | – | Karen Lilje, Nicola Rijsdijk, Sam Scarborough, and BookDash.org | CC BY 4.0 | – |
 | bl-zlWZv5fGOe | Fire's story | Pre-K/K | 0.43 | 62 | 8 | Deborah Namugosa, Beatres Nabune, Alison Tukei, Rose Sabano, Nina Orange | Rob Owen | – | African Storybook Initiative | CC BY 4.0 | es |
@@ -71,6 +72,7 @@ Every candidate that passed the rule was read in full by a person for ages 4 to 
 | bl-atsG5ppVC1 | Trees | Pre-K/K | 0.47 | 82 | 11 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | tpi |
 | bl-I81XFHux5t | What Is It? | Pre-K/K | 0.17 | 85 | 12 | Kate Sidley | Robyn Penn | – | Robyn Penn, Kate Sidley, Ann Roberts, and BookDash.org | CC BY 4.0 | oks |
 | bl-LqZJkdOKv7 | When Mama Is Away | Pre-K/K | 0.23 | 68 | 9 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | tpi |
+| bl-aeo3n5ry6J | Whose foot is this? | Pre-K/K | -0.34 | 48 | 12 | – | Proyecto “Arte para la Alfabetización en México" | – | Instituto Lingüístico de Verano, A.C | CC BY-SA 4.0 | es, jmx, jmx-x-coi, jmx-x-smp |
 | bl-DzR6jBUVP0 | Yellow | Pre-K/K | 0.15 | 59 | 11 | Reviva Schermbrucker | Sue Kramer | – | Reviva Schermbrucker, Sue Kramer and PRAESA | CC BY 4.0 | – |
 | bl-7x6RogP4Ou | A House for Mouse | Grade 1 | 0.81 | 98 | 12 | Michele Fry | Amy Uzzell, Jennifer Jacobs | – | NTC Literacy team | CC BY 4.0 | nst |
 | bl-EEjyHGIyGp | A Surprise for the Football Team | Grade 1 | 1.25 | 92 | 7 | Letta Machoga, Elizabeth Carlson | Vusi Malindi, Catherine Groenewald, Molteno Institute. CC BY 4.0 | – | SIL International | CC BY 4.0 | tnn |
@@ -102,6 +104,7 @@ Every candidate that passed the rule was read in full by a person for ages 4 to 
 | bl-zhpmHjWPbm | Poki Pig | Grade 1 | 0.98 | 161 | 10 | – | Michael John | – | SIL-PNG Education for Life | CC BY 4.0 | tpi |
 | bl-VGcHIVygjT | Red | Grade 1 | 0.58 | 72 | 11 | Reviva Schermbrucker | Sue Kramer | – | Reviva Schermbrucker, Sue Kramer and PRAESA | CC BY 4.0 | – |
 | bl-hxE0zqYVh3 | Scared Tumi | Grade 1 | 1.49 | 128 | 11 | Mohale Mashigo | Nicola Anne Smith | – | Nicola Anne Smith, Mohale Mashigo, Nontobeko Kunene, Ester Levinrad and Bookdash.org | CC BY 4.0 | – |
+| bl-PCA1hFVmG4 | The Fox and the Grapes | Grade 1 | 1.34 | 114 | 10 | – | Stuart Westcott, Dibujado por Stuart Westscott | – | Stuart Westcott | CC BY-SA 4.0 | es, jmx-x-EnAm, jmx-x-coi |
 | bl-LKE0zR5qKe | The Sea | Grade 1 | 1.17 | 177 | 9 | Nicola Rijsdijk | Lauren Nel, Julie Smith-Belton | – | Nicola Rijsdijk, Lauren Nel and Julie Smith-Belton, Ester Levinrad, and BookDash.org | CC BY 4.0 | – |
 | bl-7YWHmKnmy5 | The Three Little Kittens | Grade 1 | 0.66 | 109 | 13 | Chou Chinith | Youm Kosal | Magdalena Cooper | Room to Read | CC BY 4.0 | oks |
 | bl-w1XWYHXhyn | The Wood Carver | Grade 1 | 1.28 | 114 | 9 | – | Michael John | – | SIL-PNG Education for Life | CC BY 4.0 | tpi |
@@ -143,6 +146,9 @@ Every candidate that passed the rule was read in full by a person for ages 4 to 
 | bl-NqhZ26F97f | Moon Pizza | Grade 3 | 2.65 | 507 | 13 | Anurag Minus Verma | Pankaj Saikia | Rahul Soni | Pratham Books | CC BY 4.0 | – |
 | bl-bZMuyGtMhQ | Mother Works on a Hill | Grade 3 | 2.86 | 604 | 12 | Hansda Sowvendra Shekhar | Mohith O | – | Pratham Books | CC BY 4.0 | – |
 | bl-BA6cZZVUjt | Our Library | Grade 3 | 3.17 | 321 | 9 | Raviraj Shetty | Deepa Balsavar | – | Pratham Books | CC BY 4.0 | – |
+| bl-sSr1HWLVCY | Our Very Own Star: The Sun | Grade 3 | 2.89 | 473 | 9 | – | Daniel Vong | – | NASA - National Aeronautics and Space Administration | CC0 1.0 | – |
+| bl-3xdzTkHClw | The Fox and the Crane | Grade 3 | 3.41 | 234 | 9 | – | Andrew Westcott | – | Andrew Westcott | CC BY-SA 4.0 | es, jmx-x-EnAm, jmx-x-coi |
+| bl-oegxW8pPUn | The Fox and the Goat | Grade 3 | 2.57 | 214 | 10 | – | Andrew Westcott | – | Andrew Westcott | CC BY-SA 4.0 | es, jmx-x-EnAm, jmx-x-coi |
 | bl-kxS1WhIY3v | Zanele Situ: My Story | Grade 3 | 3.11 | 486 | 13 | Liz Sparg | Jesse Breytenbach | – | Liz Sparg, Jesse Breytenbach, Andy Thesen, and bookdash.org | CC BY 4.0 | – |
 | bl-BpsFSHbUOY | The Hare & the Tortoise (Again!) | Grades 4-5 | 3.62 | 465 | 12 | Venkatramana Gowda | Padmanabh | Divaspathy Hegde | Pratham Books | CC BY 4.0 | – |
 | bl-k9sHUvZcbD | Why Can't We Glow Like Fireflies? | Grades 4-5 | 3.65 | 561 | 11 | – | Samidha Gunjal | – | SIL-PNG Education for Life | CC BY-SA 4.0 | – |
@@ -151,6 +157,7 @@ Every candidate that passed the rule was read in full by a person for ages 4 to 
 
 Pages after the story that are not part of it, named by a person; the story pages are all kept.
 
+- bl-oh0S2OsR5l Caterpillar Lives in Our Garden: 2 page(s): The last two pages are comprehension questions and a drawing activity for the class, not part of the book.
 - bl-pkep1Xedfa Helping Others: 2 page(s): The last two pages are comprehension questions and a drawing activity for the class, not part of the story.
 - bl-pHiPGbsKde Homes: 2 page(s): The last two pages are comprehension questions and a drawing activity for the class, not part of the book.
 - bl-xbtUczudzv I Want to Hide: 2 page(s): The last two pages are comprehension questions and a drawing activity for the class, not part of the story.
@@ -189,8 +196,10 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-uiRajtIZsU | How Little Ant Thanked White Bird | book HTML missing |
 | bl-bWJ8ag8AJT | Samuel Tells Time | book HTML missing |
 | bl-2JzFJHIh4m | Veggie Veggies  | book HTML missing |
+| bl-h978JlTJDs | (2-3) Who will Help Me? | book license: no clear version (cc-by) |
 | bl-ZH2ooKZVMe | Ada' Beauty | book license: no clear version (cc-by) |
 | bl-q9HtK4ppUI | (16) What are You Doing? | cover picture has no license and another copyright holder |
+| bl-5asC5j8MKM | A Class Trip | cover picture has no license and another copyright holder |
 | bl-cNO74jgvHi | A5-How do you Sleep? | cover picture has no license and another copyright holder |
 | bl-R06kiDXSLQ | Baby Goats | cover picture has no license and another copyright holder |
 | bl-qZDONexRyk | Baby Goats | cover picture has no license and another copyright holder |
@@ -204,6 +213,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-mHzDv4Oja2 | How do you Sleep? | cover picture has no license and another copyright holder |
 | bl-PM78AmeVj4 | How Does It Work | cover picture has no license and another copyright holder |
 | bl-YMtL3fzKPA | I Want to Fly | cover picture has no license and another copyright holder |
+| bl-wRkOGAOMu8 | If I didn't believe... | cover picture has no license and another copyright holder |
 | bl-grS3mPPrz6 | Kálugúran Friends | cover picture has no license and another copyright holder |
 | bl-lvC98rp9oL | Let's be Friends! | cover picture has no license and another copyright holder |
 | bl-o14Q3BCOfl | Let's be Friends! | cover picture has no license and another copyright holder |
@@ -226,6 +236,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-UCBNR9PTnC | The Yellow Bucket | cover picture has no license and another copyright holder |
 | bl-7JwWyuv0XC | Where the Pet Sat? | cover picture has no license and another copyright holder |
 | bl-bo1ijOBU3c | Where the Pet Sat? | cover picture has no license and another copyright holder |
+| bl-KBJ3cV8cgf | (3-5) Spider, Spider | cover picture has no license or copyright |
 | bl-W4kWd8VcQR | 19 - Friends | cover picture has no license or copyright |
 | bl-iVA8hiF8eZ | 19 - Friends | cover picture has no license or copyright |
 | bl-mmA9KbSJhv | 20 - About Birds | cover picture has no license or copyright |
@@ -434,10 +445,12 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-Gw1EiwAONr | Common Objects Phase 1, Unit 4, Game 4 Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
 | bl-hGeAFGfpGl | Furnishings 1 Phase 1, Unit 02, Game 01 Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
 | bl-9LoN9DmWs8 | Hold and Touch Phase 1, Unit 3, Game 6 Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
+| bl-qDw6RtKk67 | Hold and Touch Phase 1, Unit 3, Game 6 Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
 | bl-uQAmW6W8oG | Human Body 2 Phase 1, Unit 5, Game 3 Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
 | bl-dvIdeY2Dsc | Human Body 2 Phase 1, Unit 6, Game 4 Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
 | bl-eFq5qqG95z | Look around the room Phase 1, Unit 03, Game 01 Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
 | bl-ggfaMZKaos | Lots of Places Phase 1, Unit 04, Game 05 Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
+| bl-ByEnXdfdD0 | Meet More Family. Phase 1, Unit 5, Game 5B Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
 | bl-e4MsZuT6j6 | Meet More Family. Phase 1, Unit 5, Game 5B Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
 | bl-TRf7cMtbtW | Meet the Family Phase 1, Unit 5, Game 5 Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
 | bl-sZOlgfC7lo | Object Positions 1 Phase 1, Unit 02, Game 03a Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
@@ -453,9 +466,11 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-gh8UnzwCnu | Touch Commands 1 Phase 1, Unit 02, Game 03c Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
 | bl-hHuBozXoUI | Us in Action Phase 1, Unit 4, Game 02 Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
 | bl-3Ozjs6kgxr | Useful Phrases 02 Phase 1, Unit 02 05 Mvskoke Growing Bilingual Community | cover picture is credited to Canva, whose terms are not an open license |
+| bl-BFzbZCtHuD | Yi n-fom sɨ nà gâmtì à! | cover picture is credited to Clipart, whose terms are not an open license |
 | bl-4EoRdA3ov4 | Little Bird Learns Her Lesson | cover picture is credited to Microsoft, whose terms are not an open license |
 | bl-vxHjzmS3vn | Our Home | cover picture is credited to pexels, whose terms are not an open license |
 | bl-1ZHOX307N8 | Anna’s Adventure | cover picture is credited to Pixabay, whose terms are not an open license |
+| bl-QucCht6uLC | Water Moves | cover picture is credited to Unsplash, whose terms are not an open license |
 | bl-OFuGIcBRtp | My Cat | cover picture license: CUSTOM |
 | bl-Kv9S3bhVp3 | Sniffles | cover picture license: CUSTOM |
 | bl-C36GhkQmYK | The Sad Frog | cover picture license: CUSTOM |
@@ -605,6 +620,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-QoBR6I9XgX | Shiro's Friends Save the Day | English missing on page 1 |
 | bl-bUkkfwIq7i | So Many Leaves | English missing on page 1 |
 | bl-zZhXUMJHEh | Sonth Is Here | English missing on page 1 |
+| bl-x0Z38AzQX5 | The Ideal Pupil | English missing on page 1 |
 | bl-AKKIZehPH3 | The Right Tools | English missing on page 1 |
 | bl-SMxObCl3RM | Tony the Turkey | English missing on page 1 |
 | bl-ZwFKY2OZxG | Weeding & Fertilizer Application in Maize | English missing on page 1 |
@@ -649,11 +665,12 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-t3e5JZjKk0 | Peter's Peanuts | page 1 has 2 pictures |
 | bl-BD04KcLC1y | Thato's Birthday Surprise | page 1 has 2 pictures |
 | bl-w5Qk3CBaTl | Thato's Birthday Surprise | page 1 has 2 pictures |
-| bl-EL4L7zeqle | The farmer and the soothsayer | page 1 has 2 pictures |
 | bl-5tnAOLAMj8 | The path from corn to tortillas | page 1 has 2 pictures |
 | bl-XfM2CcOFrF | The path from corn to tortillas | page 1 has 2 pictures |
+| bl-jacuRzV6Ee | Water Changes | page 1 has 2 pictures |
 | bl-nRh4j6pyiZ | Why People are Polygamists | page 1 has 2 pictures |
 | bl-raE5eoZSEA | ¿Quién es nuestro amigo? | page 1 has 3 pictures |
+| bl-5040nkns0h | 02 - Cat and Dog: Words | page 1 has 3 pictures |
 | bl-ku64ZcdBm7 | My Favorite Color | page 1 has 3 pictures |
 | bl-5qvG1y3R9d | Opposites | page 1 has 3 pictures |
 | bl-MbebdFYCbl | Who is our friend? | page 1 has 3 pictures |
@@ -674,6 +691,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-Cl7tKaJiNj | Binta and her Assistant | page 1 has no picture |
 | bl-ofXSQQVBs8 | Binta and her Assistant | page 1 has no picture |
 | bl-UoqhTqBDWl | Bintu and Bingo | page 1 has no picture |
+| bl-7bGW9sB7sx | Children's Hand Hygiene Role Play | page 1 has no picture |
 | bl-MOLRvOqQdk | Coming to the United States | page 1 has no picture |
 | bl-mFrjSOYsdZ | Demane and Demazane | page 1 has no picture |
 | bl-tWcE5ufEYE | ​Diligent Teacher Jocelyn | page 1 has no picture |
@@ -682,6 +700,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-TWAWbs9XCp | Fatima Can Count | page 1 has no picture |
 | bl-2sDFXvd1fS | Goso the Teacher | page 1 has no picture |
 | bl-SK3ZG6KuKK | Hazaragi Traditional Folk Songs | page 1 has no picture |
+| bl-8yX11iNI7o | How to Build a Tippy Tap Handwashing Station | page 1 has no picture |
 | bl-5XLcs6CckE | I Listen to My Body | page 1 has no picture |
 | bl-d2K6E5OlmU | Jummai’s Three Wishes | page 1 has no picture |
 | bl-hp3Wvel09h | Jummai’s Three Wishes | page 1 has no picture |
@@ -723,6 +742,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-i8Ph3qBBpM | The Flight of A Lifetime | page 1 has no picture |
 | bl-AQ7UeIRIai | The Football Fans of Zama | page 1 has no picture |
 | bl-TGlYSoOYeb | The Football Fans of Zama | page 1 has no picture |
+| bl-LXoTqWMZUY | THE LIFE OF A RUBBER TAPPER | page 1 has no picture |
 | bl-h3SP119ZAX | The Little Boy who Loved Newroz | page 1 has no picture |
 | bl-xLAz2Amv7X | The Promise | page 1 has no picture |
 | bl-B1TARUtW3P | The Secret Kingdom | page 1 has no picture |
@@ -732,6 +752,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-1cqQrmiqnx | The Story of the Fruits | page 1 has no picture |
 | bl-FKcQu91U3J | The Sun and the Moon | page 1 has no picture |
 | bl-Z9wZeXOIwi | The Sun and the Moon | page 1 has no picture |
+| bl-QCjfXyjASD | The Tale of Busyawan Falls | page 1 has no picture |
 | bl-CIJlYvA4fW | The Thousand Bags of Grain | page 1 has no picture |
 | bl-5ZXO144H7V | The Wise Old Woman and the Foolish Servant | page 1 has no picture |
 | bl-mcH1GYDSKA | The Wise Old Woman and the Foolish Servant | page 1 has no picture |
@@ -762,6 +783,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-LniyOiJdF3 | Amra and a River | page 10 has 2 pictures |
 | bl-dGB6ziCBcO | Katiiti's Song | page 10 has 2 pictures |
 | bl-TU1hzrl8wT | Turtle Dove | page 10 has 4 pictures |
+| bl-KMr0q6Q9pA | 05 - Baby Who Cried | page 10 has no picture |
 | bl-xtcmUzjprE | A5-Little and Big | page 10 has no picture |
 | bl-onkFfAms2A | Baby Who Cried | page 10 has no picture |
 | bl-mfygMTy2d0 | Friends become enemies | page 10 has no picture |
@@ -817,6 +839,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-J2N49XNAjb | Whoop, Goes the Pufferfish | page 12 has no picture |
 | bl-A86aoyAfQ3 | A5-Chicken and Millipede | page 13 has no picture |
 | bl-Vx4ZRbhXvt | A5-Who is our Friend? | page 13 has no picture |
+| bl-WrMHvjnAcr | At Least I'm Okay! | page 13 has no picture |
 | bl-302x4rFFIH | Get that Fox! | page 13 has no picture |
 | bl-J2Rw7m2RXp | Get that Fox! | page 13 has no picture |
 | bl-9mBJdOMp0Z | Literacy International: How Do We Get There? | page 13 has no picture |
@@ -828,6 +851,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-sE7EpZMixu | Aminata and the Red Spiky Ball | page 14 has no picture |
 | bl-EExiz7QQVw | Fishing in My Village | page 14 has no picture |
 | bl-6KoXGfMHZ0 | Papa's Cough | page 14 has no picture |
+| bl-qJL7M3GyXT | Riu's Busy Day | page 14 has no picture |
 | bl-gdUeBrjnNd | The Three Little Kittens | page 14 has no picture |
 | bl-WDIsqtgCvH | Ammachi's Amazing Machines | page 15 has no picture |
 | bl-jOHUEJfVM1 | Ammachi's Amazing Machines | page 15 has no picture |
@@ -887,6 +911,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-5m3oid7x6W | Batuk Papa | page 2 has no picture |
 | bl-sXRZ5P55Fd | Brave Bora | page 2 has no picture |
 | bl-5Eu5dLiPlX | Dance contest | page 2 has no picture |
+| bl-Tlwk3OIIMH | Dangerous Disrespect | page 2 has no picture |
 | bl-bevAELHDal | First Day of School | page 2 has no picture |
 | bl-1D9Ae29skn | Hermit Crabs | page 2 has no picture |
 | bl-5xzKp5nivV | Holiday Time | page 2 has no picture |
@@ -941,6 +966,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-CTuMSSSyqu | Small Bird's BIG Adventure | page 3 has 2 pictures |
 | bl-y86dDIZUQm | The Lazy Cheptoo | page 3 has 2 pictures |
 | bl-lGGrQ4ASbo | The White Men Who Live in Our Village | page 3 has 2 pictures |
+| bl-fy9KApvqcM | Where does water come from? Exploring the water cycle | page 3 has 2 pictures |
 | bl-xJHoJFlcU3 | Why Must I Wash My Hands? | page 3 has 2 pictures |
 | bl-tEnEALbgJL | Zanele Sees Numbers | page 3 has 2 pictures |
 | bl-uu4oB5zALA | Zanele Sees Numbers | page 3 has 2 pictures |
@@ -959,6 +985,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-ZAE2OFEyJa | Basketball | page 3 has no picture |
 | bl-N7FFJze1PA | Chinza is Polite | page 3 has no picture |
 | bl-WogbtL0C1D | Chuskit Goes to School! | page 3 has no picture |
+| bl-vSKLnaz3DQ | Clean Hands, Healthy Village | page 3 has no picture |
 | bl-PxVxvuIC3T | COLOR WITH US DOM GYPSIES | page 3 has no picture |
 | bl-zRwuzYcT24 | Guro | page 3 has no picture |
 | bl-0kGxNP7GNF | Iboboro beats his problem! | page 3 has no picture |
@@ -1007,6 +1034,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-ncPttQCEM0 | Life in Bangco | page 5 has no picture |
 | bl-N7MUAns1he | Literacy International: Seasons Around the World | page 5 has no picture |
 | bl-gH48knI7At | My Pen | page 5 has no picture |
+| bl-tLJXBk4d9c | Sannah: The Mute | page 5 has no picture |
 | bl-ktZ8zoW8JH | Semmbinndu e Doombel | page 5 has no picture |
 | bl-sV3NM8lVQ1 | Square-The Ocean Dream | page 5 has no picture |
 | bl-MxA1lVw5bt | Teacher Mulongo | page 5 has no picture |
@@ -1030,6 +1058,8 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-54UEqmuepw | Anna and Don | page 6 has no picture |
 | bl-0QIyr83MOH | Refiloe and the washed chickens | page 6 has no picture |
 | bl-ATfELAESKt | Wailers Three - A Folktale From China | page 6 has no picture |
+| bl-DzJ2qo9zHF | No Naughty Fingers, No Weird Websites | page 7 has 2 pictures |
+| bl-nPE43HPjVu | No Naughty Fingers, No Weird Websites | page 7 has 2 pictures |
 | bl-r16R0kCU9t | Princess Naldy and Her Pool Party | page 7 has 2 pictures |
 | bl-T32rL2TdeO | The Philippine Flag | page 7 has 2 pictures |
 | bl-cWcnT7odHT | Who Did It? *for mature readers only* | page 7 has 2 pictures |
@@ -1064,9 +1094,11 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-SELvIkiN2r | The Unused Ball | page 8 has 2 pictures |
 | bl-aOCRhSfqrC | Lizard and Her Friends | page 8 has 5 pictures |
 | bl-nh8fXkLhyF | "Oh, Moses!" | page 8 has no picture |
+| bl-M9MXavnPB6 | (11) It's OK to be Different | page 8 has no picture |
 | bl-9gMPu9dSTs | Days of the week | page 8 has no picture |
 | bl-Id7vt08GWg | Don likes Bats and Frogs | page 8 has no picture |
 | bl-KEBZFGcgji | It's OK to be Different | page 8 has no picture |
+| bl-ZMf3zdIYl1 | Kids Let's Wash Our Hands | page 8 has no picture |
 | bl-TEZmDYYz2c | Lion that wanted friendship | page 8 has no picture |
 | bl-ac45iNPS4O | My Diwali Book | page 8 has no picture |
 | bl-YRxGF2FVs6 | My Pet | page 8 has no picture |
@@ -1092,6 +1124,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-sPXKbCNLB4 | Erenro, the Farmer | page 9 has 6 pictures |
 | bl-GTAE4coAoW | Uwa, the Farmer | page 9 has 6 pictures |
 | bl-euaQktTSAa | सुदाकर इनना कास्‍तकर मनकल | page 9 has 6 pictures |
+| bl-FQGTmEBisq | (07) Look at the Animals | page 9 has no picture |
 | bl-tjL95yPZcb | A Special Surprise | page 9 has no picture |
 | bl-D0YuUuu1BT | Awesome Volcanos | page 9 has no picture |
 | bl-5IKQZWVPde | Don likes bananas | page 9 has no picture |
@@ -1116,12 +1149,14 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-uZ5vapsz7T | Which Animals Do You Like? | page 9 has no picture |
 | bl-U4W4NFvz2l | Zibu & Zizo | page 9 picture has no license or copyright |
 | bl-AUXLh4H70V | The Fox and the Crane | picture b - cover (cubierta is not in the book's folder |
+| bl-GWKKsjbf46 | Story 3: The Lion and the Mosquito | read and left out: "bleed a lot!“I surren...": a missing space, and a mosquito makes a lion bleed. |
 | bl-KORoDVb5RP | Animals, Animals | read and left out: "Cows and goats are paid as bride price"; a list with little story. |
 | bl-7xtDpyhrGo | The Rat in the Cat | read and left out: "Fat cat. No rat." with the title The Rat in the Cat: the cat eats the rat. |
 | bl-FQ9UIh7c09 | Sbu's Special Shoes | read and left out: "I can race cars!" in big brother's shoes reads as racing in traffic. |
 | bl-2AvYlhy3La | I Cannot Find It | read and left out: "I cannot find my Bible": a religious item in a short list book. |
 | bl-9Cd0tZNXKU | I Can Do | read and left out: "I pray." in a short list book. |
 | bl-grkDAsWE3O | If I were ... | read and left out: "I would treat people with slaps!", hunting, and a priest taking people to heaven. |
+| bl-prT8FpN0T6 | Look! There! | read and left out: "There is a Bible." in a short list book. |
 | bl-gEzthTvl3G | Sakima's song | read and left out: "You are only a blind boy" and a boy found beaten up by the road. |
 | bl-k8LIoIu30X | Mbóó, a̱jma̱, ajsú. | read and left out: 10 words, mostly in another language. |
 | bl-q0dFChGuOA | All about Opposites! | read and left out: 10 words: too little for 3 questions. |
@@ -1132,37 +1167,53 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-iuBvRydn2x | Parts of the Body | read and left out: 10 words: too little for 3 questions. |
 | bl-M3t9Q8YgbU | Parts of the Face | read and left out: 10 words: too little for 3 questions. |
 | bl-yWuroqWWbE | Animales de la granja | read and left out: 11 words, in Spanish. |
+| bl-M7CkE5cFW9 | Animals | read and left out: 11 words: too little for 3 questions. |
 | bl-OBRSjogPno | Farm Animals | read and left out: 11 words: too little for 3 questions. |
+| bl-exRjqWKbME | Farm Animals | read and left out: 11 words: too little for 3 questions. |
 | bl-rMH2wzIQlW | Everyone is Different | read and left out: 13 words: too little for 3 questions. |
 | bl-Hba4fXWXbh | Things we can do | read and left out: 16 words: too little for 3 questions. |
+| bl-kiuTyxwQNn | Barit bad baheh | read and left out: 20 words in another language. |
+| bl-GRIqvzhRD0 | Big and little | read and left out: 20 words, half the pages without words: too little for 3 questions. |
+| bl-vFQ1FdViJj | Big and little | read and left out: 20 words, half the pages without words: too little for 3 questions. |
 | bl-LAISEayJPp | Little and big | read and left out: 20 words, half the pages without words: too little for 3 questions. |
 | bl-ikA4WU4vpw | Little and big | read and left out: 20 words, half the pages without words: too little for 3 questions. |
 | bl-Ej3t0qDIlh | Egg | read and left out: 25 words: too little for 3 questions (another upload of Egg). |
 | bl-n9NNqs3nwz | Egg | read and left out: 25 words: too little for 3 questions. |
 | bl-8Cjf91iCZo | Everyone is Different | read and left out: 26 words: too little for 3 questions. |
+| bl-HzuVljQAa9 | The Island | read and left out: 4 words: too little for 3 questions. |
+| bl-7GSFcsZ839 | I Feel | read and left out: 6 words: too little for 3 questions. |
+| bl-dJYimFfFlb | I Feel | read and left out: 6 words: too little for 3 questions. |
 | bl-1BIlQfo6H5 | Shapes | read and left out: 7 words: too little for 3 questions. |
 | bl-8LsjfzZJ3N | Dangerous Objects | read and left out: 9 words: too little for 3 questions. |
 | bl-RkaHz9P7Ua | The Zoo | read and left out: A "blood curdling scream", remarks on a man's potbelly, and the president's speech on salaries. |
 | bl-ZVkahSZ6mf | What is wrong child? | read and left out: A baby cries and nobody knows why: no story to answer; the title needs a comma. |
+| bl-n6wm8KedPC | The Blacksmith's Dilemma | read and left out: A chief demands a man who bleeds real human blood, and every villager's head is shaved. |
 | bl-SGFa1kxBNS | Monu was Lost and Found! | read and left out: A child gets lost (the title's "Lost and Found"). |
 | bl-LEZDrxFl2s | Day I left home for the city | read and left out: A child travels alone to the city and worries whether his mother is safe: too sad for ages 4 to 10. |
+| bl-3Mfp79lS3v | Father's friends | read and left out: A click letter (ǃ) typed in place of "!", and "Ant ... favorite food is wood". |
 | bl-5sRF2IS4XO | Goodnight, Eben! | read and left out: A copy of Goodnight, Tinku! (sw-0056), already in the library. |
+| bl-UhcxbS1LKM | A House | read and left out: A copy of Houses (bl-bSwdvrAr3j). |
 | bl-DJ0K4RgQch | What Type of Teeth? | read and left out: A copy of Teeth (bl-KWFeqXHHge), the African Storybook original, which is used. |
 | bl-STzNrpbJuE | Who is Big? | read and left out: A copy of Who is Big? (bl-sDW77HauCs). |
 | bl-FIUpYo1KL7 | Rathna and the Ring of Fire | read and left out: A diary written as dated entries with a missing space ("2021:Rathna"). |
 | bl-l01ThqIzx3 | Gracas Dream | read and left out: A father dying, a plane crash and the politics of Mozambique: too grown-up. |
 | bl-ScNfQFrnAq | Cow with one horn | read and left out: A fighting cow people are afraid of; little story. |
+| bl-KCPE3nj7A8 | Forest of snakes | read and left out: A forest of snakes that eat goats, and Swahili lines left unexplained. |
+| bl-nPya9Q3DWX | Tselane and the Giant | read and left out: A giant kidnaps a girl. |
 | bl-DJEPB3EfVz | The Talking Bag | read and left out: A giant leads a little girl away from her parents. |
 | bl-1rlDTtAVFC | Goat, Dog and Cow | read and left out: A goat runs off without paying and a cow takes her time crossing the road: unsafe road habits as the moral. |
 | bl-7x2ikQbFaz | Old Rooster | read and left out: A horse kicks a man to death. |
 | bl-Rh3vylONeC | The man who lived alone | read and left out: A hyena devours the man's wife. |
 | bl-3wRBNqz5Il | Kalabushe, the talkative | read and left out: A hyena swallows the girl and her aunt. |
 | bl-lRXHy1WUBk | Ajay of Agumbe and the Signal Snake | read and left out: A king cobra swallows a snake, leeches feed on Ajay, and the notes describe putting a radio inside a snake. |
+| bl-PcdsgJqi2s | Animals (44 pictures) | read and left out: A list of 44 animal pictures with names, nothing to ask about. |
+| bl-JSs1TNZx8d | Food (54 pictures) | read and left out: A list of 54 food pictures with names, nothing to ask about. |
 | bl-1t4sDoGN8J | Domestic animals | read and left out: A list of animal names with nothing to ask about. |
 | bl-HxtDoEU3mn | Domestic animals | read and left out: A list of animal names with nothing to ask about. |
 | bl-QqCDQAgcXj | Wild Animals | read and left out: A list of animal names with nothing to ask about. |
 | bl-b9LEDelBFg | Wild Animals | read and left out: A list of animal names, with spelling mistakes ("Rhinocerous", "Guinnea"). |
 | bl-6aaJyCcu7b | Let's Eat! | read and left out: A list of food names with nothing to ask about. |
+| bl-ZjjFQWaQaC | What we eat | read and left out: A list of food names, nothing to ask about. |
 | bl-S7Tbg2odYA | My first trip to Kampala | read and left out: A list of Kampala sights with odd lines ("A shower in Nakivuubo"). |
 | bl-Fc7uAZq9OY | Our School | read and left out: A list of labels with uneven quotation marks. |
 | bl-eSlpt84E3W | एकटा नीक दिन A Beautiful Day (Maithili-English) | read and left out: A Maithili-English upload of A Beautiful Day, which has a text mistake ("too!”says Dog"). |
@@ -1170,6 +1221,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-vRLFbTXUot | The Man and the Lion | read and left out: A man is nearly eaten by a hungry lion. |
 | bl-761LoeoB5F | Nakehi and the Beans | read and left out: A man kicks over his wife's cooking and his loincloth falls off as a joke. |
 | bl-7XRKU4XUJP | Noakawir and the Beans | read and left out: A man kicks over his wife's cooking in anger and his cloth falls off as a joke. |
+| bl-4Iw0jmBWkF | The tree wife | read and left out: A man makes himself a wife from a tree. |
 | bl-VmRHQYf6Jr | The Hours and Minutes in Ismail’s Day | read and left out: A maths workbook (time questions to the reader), not a story. |
 | bl-DF8YkOHTMW | Abike's day | read and left out: A maths workbook story with questions to the reader, and a child lost alone in the bush. |
 | bl-7aSvMcDc0V | Asha's Voice | read and left out: A meeting with the village's Member of Parliament and the protest song "We shall overcome": political. |
@@ -1177,8 +1229,11 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-NBi4wrGiYG | Nanu's Taxi | read and left out: A missing closing quotation mark on page 2. |
 | bl-ZIG1K9TOsk | My family and I | read and left out: A missing full stop and unclear lines ("My dinosaur and I", "monkey balls from clay"). |
 | bl-vX0StFUnPe | Ketty the naughty girl | read and left out: A monster that eats children at night. |
+| bl-GhVVC9CI4k | Byantaka and the Dead Pot | read and left out: A neighbor borrows a pot and claims it died: a trick and a quarrel over a death. |
+| bl-M4IveGvDbX | Visual Phonics A to Z | read and left out: A phonics letter chart, not a story. |
 | bl-kHmrqewQC2 | Pickpocketer | read and left out: A pickpocket story with a missing space ("came.Mmamontsh..."). |
 | bl-tSVDNqY9J7 | The Teen pilot. | read and left out: A plane catches fire and a pilot falls unconscious ("unconcious"). |
+| bl-GmqmjaTpZJ | Malasile and Wetsakhulya | read and left out: A pot of rotting blood. |
 | bl-elcs9cW7Cb | Picnic | read and left out: A rewrite of A Beautiful Day with made-up baby words and Dad and Papa mixed up. |
 | bl-HFy8iyDhpP | Zanele Situ: My Story | read and left out: A rewrite of bl-kxS1WhIY3v with mistakes ("Some Some") and the word "lame". |
 | bl-OQFiwlEpQZ | Remo's Shoes | read and left out: A rewrite of Sbu's Special Shoes: "I can race cars!" reads as racing in traffic. |
@@ -1186,12 +1241,23 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-fUkt4Of8WG | Adventures with the words and phrases | read and left out: A set of unrelated phrases for language practice, not a story. |
 | bl-FbiJNg0w0b | In the Land Where Beetles Rule | read and left out: A short abstract poem with little to ask about. |
 | bl-1jWVbi8azo | Luwo's House | read and left out: A small boy leaves church alone and walks the road looking for his house. |
+| bl-EWEifcKWKh | Neymar's visit to Africa | read and left out: A soccer star's real-life visit: little story, and how-to kicking notes. |
 | bl-cca6qGUK9k | Adie and Adhoch | read and left out: A stepmother drowns a girl, and her sister drowns too. |
 | bl-K5VnNiI7Rs | The Market Cows | read and left out: A stray page number ("2") in the text. |
+| bl-JX1x45tTRz | Magozwe | read and left out: A street child ("school.What" missing space); too sad for ages 4 to 10. |
+| bl-LoAAj8WDI6 | Timonjero the thief | read and left out: A thief, and missing spaces ("hut.They"). |
 | bl-Jun1P3IRmM | Wind | read and left out: A tornado swallows up the child: scary. |
+| bl-JirhMSeGO0 | Lion is Sick | read and left out: A version of Lion Gets Sick: the cure is from a hyena's heart. |
 | bl-XQw3wiEdq2 | Lion is Sick | read and left out: A version of Lion Gets Sick: the cure is from a hyena's heart. |
 | bl-erQMwme1Ui | Itiyogben's House | read and left out: A version of Luwo's House (a small boy walks the road alone). |
 | bl-XVV0nINFcT | Itiyoʼs House | read and left out: A version of Luwo's House (a small boy walks the road alone). |
+| bl-XN5xO7GNHS | ANGEL | read and left out: A version of The Moon and The Cap (sw-0053), already in the library. |
+| bl-BD32lipLnk | Biboy's Cap | read and left out: A version of The Moon and The Cap (sw-0053), already in the library. |
+| bl-7q8PWKiicd | Dar må pittar barìtt | read and left out: A version of The Moon and The Cap (sw-0053), already in the library. |
+| bl-FQ4B4fojhX | JUSTIN'S CAP | read and left out: A version of The Moon and The Cap (sw-0053), already in the library. |
+| bl-jCuaXOj7wh | The Moon and My Cap | read and left out: A version of The Moon and The Cap (sw-0053), already in the library. |
+| bl-4G1oic2h21 | The Moon and the Hat | read and left out: A version of The Moon and The Cap (sw-0053), already in the library. |
+| bl-eRJv2BBzoK | The Moon and the Hat | read and left out: A version of The Moon and The Cap (sw-0053), already in the library. |
 | bl-wtUk6KTh3Z | Leela Learns to Ride! | read and left out: A word split over two lines ("Ding-/Ding!") on every page. |
 | bl-X2EO48lOC6 | Bathtub Safari | read and left out: A young child is left alone in the bath. |
 | bl-G7zglg8AQY | Mrs Penguin's Perfect Palace | read and left out: An adaptation of bl-wMmKgKXlQo (Mrs. Penguin's Perfect Palace); the original is used. |
@@ -1201,36 +1267,53 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-x8ENWVqT2I | This Is How I Draw | read and left out: An artist's sketchbook with notes ("Medium:Watercolo..."), not a story; 1,348 words. |
 | bl-e3d3GMwtCd | My mother planted | read and left out: An odd ending ("sacks of flowers") with little to ask about. |
 | bl-PKwuWrHpUp | Ms Phone | read and left out: An odd portrait (five phones, one for people who owe her) with little story. |
+| bl-CbLxQuAzT2 | Mulongo and the ogre | read and left out: An ogre lures children. |
 | bl-N4IDXrMl9q | Mwari and the ogre | read and left out: An ogre, and uneven quotation marks. |
+| bl-xeQrTpIjNL | Simbegwire | read and left out: An orphan's grief and a cruel aunt: too sad for ages 4 to 10. |
 | bl-qBW4NPZOGb | Tintu's Day at the Garden | read and left out: An unclear story (a beetle asks for soup) with little to ask about. |
 | bl-JB95tU8uB5 | The Fish Story | read and left out: An unclear story in which a magician's bear tries to eat the fish. |
 | bl-IS9pTKrvoF | My baby boy. | read and left out: An unfortunate line about a rooster (scanner flag), and odd sentences. |
 | bl-4Vzevt7B3Z | Goat, the false king | read and left out: Animals tie up the goat and drag him off; dreams of relatives dying. |
 | bl-wTvu6fCn7T | The Little Red Hen | read and left out: Another telling of The Little Red Hen (bl-4yn12xdsaX), from the same pictures. |
 | bl-bcArLsQyBf | Where is my Dolly? | read and left out: Another telling of the Norah story (bl-o2qHFb5zbs) with uneven quotation marks. |
+| bl-xdYmZ6F7c0 | A careless man | read and left out: Another upload of A careless man (text mistakes). |
+| bl-R1oRAKq4S4 | A dog | read and left out: Another upload of A dog (text mistakes). |
+| bl-ESEAkdX87i | A Monkey called Manki | read and left out: Another upload of A Monkey called Manki ("anywhere- nearby"). |
 | bl-l8nm9TJlTA | A Street, or a Zoo? | read and left out: Another upload of A Street, or a Zoo? (bl-Bra5VpKEm8). |
 | bl-hU2A1vftYE | A Surprise for the Football Team | read and left out: Another upload of A Surprise for the Football Team (bl-EEjyHGIyGp). |
 | bl-YbmRu9UGMR | A Very Tall Man | read and left out: Another upload of A very tall man (bl-5EDlLhFmlN). |
 | bl-vtbWVFf5j6 | Abike's day | read and left out: Another upload of Abike's day (bl-DF8YkOHTMW). |
 | bl-xxjc2t4xMX | Adie and Adhoch | read and left out: Another upload of Adie and Adhoch (drownings). |
+| bl-TtD8oHxbWx | Akoro and the banana business | read and left out: Another upload of Akoro and the banana business (unexplained words). |
 | bl-l6HdGCaj0C | An Ant Named Mari | read and left out: Another upload of An Ant Named Mari (bl-hPzSEW4Gsi). |
 | bl-EaKaVBRbK7 | Anansi and Turtle | read and left out: Another upload of Anansi and Turtle with the same missing full stop. |
 | bl-HIf0xwaSvl | Anansi and Turtle Anansi et la Tortue | read and left out: Another upload of Anansi and Turtle, with the same missing full stop. |
+| bl-RMRRHuIIRM | Anansi and Vulture | read and left out: Another upload of Anansi and Vulture (Anansi steals). |
+| bl-3JqPj2GfcJ | Animals, Animals | read and left out: Another upload of Animals, Animals (bride price). |
 | bl-cHx5T3fBYH | Anna is a Big Girl | read and left out: Another upload of Anna is a Big Girl with the same small mistakes. |
 | bl-d3RqOjKoAv | Annoying Mosquito | read and left out: Another upload of Annoying Mosquito with the same mistake ("shill"). |
+| bl-aV0BfOCRdO | Arrogant Bird Learned Lesson | read and left out: Another upload of Arrogant Bird Learned Lesson (mistakes in the title alone). |
 | bl-MqA4FHdqWj | Asha's Voice | read and left out: Another upload of Asha's Voice (bl-7aSvMcDc0V): political. |
 | bl-frNI9wk7Ys | Counting | read and left out: Another upload of Counting (bl-rYVSK51hu5). |
 | bl-u2pcSPFmxx | Curious baby elephant | read and left out: Another upload of Curious baby elephant (bl-DhU02tDwAo). |
+| bl-JKRtPnVf0T | Deepa's Resolution | read and left out: Another upload of Deepa's Resolution (a space before "?"). |
 | bl-YfipsN30eU | Disability is not inability | read and left out: Another upload of Disability is not inability (left out under the rule on labels). |
 | bl-jEjUmuaUT6 | Friends | read and left out: Another upload of Friends (bl-PDE01EHFGv). |
 | bl-wDOtxBJ0TG | Get Down, Rocky! | read and left out: Another upload of Get Down, Rocky! with the same mistakes. |
+| bl-i0zhidpNHe | Goat and the hyena’s knife | read and left out: Another upload of Goat and the hyena's knife (Hyena will eat Goat). |
 | bl-jTX2bVSUBE | Goat, Dog and Cow | read and left out: Another upload of Goat, Dog and Cow (unsafe road habits as the moral). |
+| bl-OggNtShfme | Grandpa Fish and the Radio | read and left out: Another upload of Grandpa Fish and the Radio ("away!They"). |
 | bl-fSBEPYPbAe | Houses | read and left out: Another upload of Houses (bl-bSwdvrAr3j). |
+| bl-W9hfCLHtTP | How Do You Use These Things? | read and left out: Another upload of How Do You Use These Things? (answers only in the pictures). |
+| bl-Szbcvc1gXJ | I Cannot Find It | read and left out: Another upload of I Cannot Find It ("my Bible"). |
 | bl-xWmPDeLdxs | I know how to play the teacher! | read and left out: Another upload of I know how to play the teacher! (hymns). |
 | bl-objovd5cCz | I Like to Draw | read and left out: Another upload of I Like to Draw (bl-cg0dKM2jy5). |
 | bl-72Q7XhntPC | Menga daraxtlar yoqadi | read and left out: Another upload of I like trees (bl-RfilkjDYNU), under an Uzbek title. |
+| bl-IgeCDLF1YD | Jobs | read and left out: Another upload of Jobs (bl-M2mgINIpLR). |
 | bl-xp7Bcefcyw | Joy goes to school | read and left out: Another upload of Joy goes to school with the same mistakes. |
 | bl-pUvqihNhwQ | Kaukare and Kasik Went Fishing | read and left out: Another upload of Kaukare and Kasik Went Fishing (uneven quotation marks). |
+| bl-CFyrOiuLAn | Let’s Count Legs | read and left out: Another upload of Let's Count Legs (bl-jGyaRvVUml). |
+| bl-QGACDHsMEf | Life in my village | read and left out: Another upload of Life in my village (drinking blood from the cow). |
 | bl-sNSmcjEdU5 | Lights in the Water | read and left out: Another upload of Lights in the Water (uneven quotation marks). |
 | bl-k9yqs0sbCY | Lion Gets Sick | read and left out: Another upload of Lion Gets Sick: the cure is an ointment from a hyena's heart. |
 | bl-h1cxhK0aQi | Little Dog | read and left out: Another upload of Little Dog (uneven quotation marks). |
@@ -1246,22 +1329,30 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-fOo7rKEpOU | Picnic | read and left out: Another upload of Picnic (bl-elcs9cW7Cb), with a spelling mistake ("undertand"). |
 | bl-ZXslwaW3zz | Rain | read and left out: Another upload of Rain with the same mistake ("hair.."). |
 | bl-PGXLPpB9s7 | Remo's Shoes | read and left out: Another upload of Remo's Shoes: "I can race cars!" reads as racing in traffic. |
+| bl-BT8Qdy3EQE | School Clothes | read and left out: Another upload of School Clothes (unfinished lines). |
 | bl-w2yPebKbQP | Setina and her Dog | read and left out: Another upload of Setina and her Dog ("soemthing"). |
 | bl-OhoAqHAkfW | Silly Meta | read and left out: Another upload of Silly Meta with the same mistake. |
 | bl-TfPPnnkjph | Teeth | read and left out: Another upload of Teeth (bl-KWFeqXHHge). |
 | bl-36gVZsZdqm | What type of teeth? | read and left out: Another upload of Teeth (bl-KWFeqXHHge). |
+| bl-1KMcnatH3e | The Hare & the Tortoise (Again!) | read and left out: Another upload of The Hare & the Tortoise (Again!) (bl-BpsFSHbUOY). |
 | bl-kKrylBr7wI | The Noisy Farm Animals | read and left out: Another upload of The Noisy Farm Animals ("Cluck,cluck!"). |
+| bl-zuI0iU36mQ | The Teen pilot. | read and left out: Another upload of The Teen pilot. (a plane catches fire). |
 | bl-Y97gQFMHpN | They Can Do Many Things | read and left out: Another upload of They Can Do Many Things (left out under the rule on labels). |
 | bl-xhOFhFddNX | Too Big! Too Small! | read and left out: Another upload of Too Big! Too Small! with the same mistakes ("for e to carry you"). |
 | bl-nWmMZmARIz | Tortoise Finds his House | read and left out: Another upload of Tortoise Finds his House with the same missing space ("away.“But"). |
+| bl-8ByJNBbzCF | True friends | read and left out: Another upload of True friends (text mistakes, a dog falls in a river). |
 | bl-auDlJVaBSp | We made a decision | read and left out: Another upload of We made a decision (theft, child labor). |
+| bl-rL7Ja3G8eC | We the nature lovers | read and left out: Another upload of We the nature lovers ("father,Priya"). |
 | bl-eapbARoRRV | What Are They Doing? | read and left out: Another upload of What Are They Doing? (bl-gEHeFP9GIj). |
 | bl-eaGwEaGRNQ | What is this I hear? | read and left out: Another upload of What is this I hear? (unclear lines). |
+| bl-E28W620BBn | Where is it? | read and left out: Another upload of Where is it? (answers only in the pictures). |
 | bl-rT6AQA5rdE | Where is my bat? | read and left out: Another upload of Where is my bat? (bl-XO5qBMpyjZ). |
 | bl-d5XwwfKql7 | Where is my Dolly? | read and left out: Another upload of Where is my Dolly? (uneven quotation marks). |
 | bl-jsGrv9V0Av | Who Stole Bahaiya's Smile | read and left out: Another upload of Who Stole Bahaiya's Smile (uneven quotation marks). |
 | bl-kebSNrBnkK | Whose tail is this? | read and left out: Another upload of Whose tail is this? (bl-apJRbLv3xS). |
 | bl-tdkXEEcPIP | Work and Play | read and left out: Another upload of Work and Play (Ken shoots a bird). |
+| bl-dhm9mGLO2H | Иллюcтрации Вуси Малинди автор Нина Оранже адаптация Карлыгач Байгазиевой | read and left out: Another upload of Zama is great! (bl-6umwhq0WvV), under a Russian title. |
+| bl-qTeahwk6lG | Zama aqlli! | read and left out: Another upload of Zama is great! (bl-6umwhq0WvV), under an Uzbek title. |
 | bl-AxFg88mBsU | Иллюcтрации Вуси Малинди автор Нина Оранже адаптация Карлыгач Байгазиевой | read and left out: Another upload of Zama is great! (bl-6umwhq0WvV). |
 | bl-qpHpz7Dce6 | Grandma's Bananas | read and left out: Another version of Grandma's bananas (bl-IDzZLFhQ66) with uneven quotation marks. |
 | bl-eQiJnmpJz4 | Keke's swing | read and left out: Another version of Keke's Swing (a fall with a head injury). |
@@ -1270,6 +1361,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-J7ddOEeuHQ | Uncle's farm | read and left out: Awkward sentences ("the pigeon with black and white") and a scanner flag on a word for a rooster. |
 | bl-chXkktC40c | Walking Together | read and left out: Awkward, broken lines ("like that good hat I'll keep your face dry", "be brave, why cry?"). |
 | bl-SPF5lsAviM | An Egg for Bride Wealth | read and left out: Bride wealth, and a missing space ("cried,“Ei"). |
+| bl-Bk6RP9bFYU | I am a Big Fish | read and left out: Calls a seahorse and a reef fish "a big fish": a mistake for a fact book. |
 | bl-AUpqs2FhgD | Chicken and Millipede | read and left out: Chicken swallows Millipede. |
 | bl-CMB5Jr2TFs | Chicken and Millipede | read and left out: Chicken swallows Millipede. |
 | bl-cTjlL79vAk | Chicken and Millipede | read and left out: Chicken swallows Millipede. |
@@ -1279,13 +1371,16 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-vTjoiEHOzC | Can and Cannot | read and left out: Close to sw-0026 (Can and Can't), already in the library. |
 | bl-Hg5lCLehuI | Cat | read and left out: Close to sw-0127 (Clean Cat), already in the library. |
 | bl-TeQOEOxh1W | Cat | read and left out: Close to sw-0127 (Clean Cat), already in the library. |
+| bl-0m01BEtrHj | Daddy's Moustache | read and left out: Close to sw-0432 already in the library (shares most of its text). |
 | bl-GrkHJqFHri | Daddy's Moustache | read and left out: Close to sw-0432 already in the library (shares most of its text). |
 | bl-eRxZfUeW73 | Bean and Coal | read and left out: Coal falls into the river and Bean laughs until he splits. |
 | bl-apJRbLv3xS | Whose tail is this? | read and left out: Credits unclear: the copyright holder is a person not named as the author or illustrator, and the text has no named author. |
 | bl-OHX0AqhJdl | Crocodile and Baboon | read and left out: Crocodile plans to eat his best friend. |
 | bl-iyhIbzmBOC | Crocodile and Baboon | read and left out: Crocodile plans to eat his best friend. |
+| bl-CVnCSLXJPR | Anansi, the crows, and the crocodiles | read and left out: Crocodiles trick and eat crows. |
 | bl-iOw9BR5SmW | Anansi, the crows, and the crocodiles | read and left out: Crocodiles trick and eat crows. |
 | bl-W5FPNr6QMR | Ruhang'i | read and left out: Describes a friend by his skin color ("He is brown."). |
+| bl-nrepmpqnHZ | Owl Nighter Owen | read and left out: Double exclamation marks ("Hahahaha!!", "sorry!!"). |
 | bl-nDhAdlNpPK | Life in my village | read and left out: Drinking blood from the cow, a bull that frightens children, and drought. |
 | bl-KoCqUQyjRP | The Little Fish | read and left out: Ends "We should be thankful to God for the way He has made us" and "May be". |
 | bl-D1JGssxt3W | Locusts | read and left out: Ends with the farms destroyed and the villagers asking what they will eat this year. |
@@ -1301,8 +1396,11 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-PwxmCIbIyR | Kumbana's Child | read and left out: Grown-up themes: pregnancy, boyfriends, and a stepfather who beats the girl. |
 | bl-SAbuXLPfAD | Whose shoe is this? | read and left out: Half the pages have no words and the rest repeat one question; a rewrite with uneven quotation marks. |
 | bl-7xwHBWhGqf | Hare tricks Elephant again | read and left out: Hare tells Elephant to put his legs in a fire. |
+| bl-AAuWUXBMky | Ways To Avoid The Spread Of COVID-19 | read and left out: Health advice about COVID-19 beyond basic hygiene, and "etc". |
 | bl-vUJAY7QZAk | Milk is good | read and left out: Health claims about milk ("breast milk") and "alot". |
 | bl-JVZOpAZI8K | Goat and the hyena’s knife | read and left out: Hyena says he will eat Goat and her young. |
+| bl-kGUb5nAp9S | Mulongo and the hyenas | read and left out: Hyenas take children into the forest. |
+| bl-InXagbnVld | Nchînɨ̀ ì jùŋ | read and left out: In another language. |
 | bl-qqgs5VJU1w | El juego de mirar sin parpadear | read and left out: In Spanish. |
 | bl-oHKCXdUYNC | Sly Jackal Tricks the Silly Donkey | read and left out: Jackal tricks Donkey into a well and leaves him trapped. |
 | bl-hlwZV2K7w6 | Singing the Truth: The Story of Miriam Makeba | read and left out: Jail, apartheid laws and selling beer: too political and grown-up for ages 4 to 10. |
@@ -1317,12 +1415,16 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-baRzAazpor | Moses and the tyre | read and left out: Mark puts something on fire and Moses shoots at a bird. |
 | bl-il7uNSsnCD | A Family Learns about Immunisations | read and left out: Medical advice about immunizations (beyond basic hygiene) and uneven quotation marks. |
 | bl-P0eaZmMCH4 | Monkey and the hunter’s wife | read and left out: Missing spaces ("Kwi!Kwi!", "up!Throw") and a hunter's wife and a monkey. |
+| bl-qmJXoHSMtk | The Humble Girl | read and left out: Missing spaces ("morning.We", "Nakuru,for", "waiting,a"). |
 | bl-DYYUGijbHJ | His Fishy Friends | read and left out: Mixed tenses ("the rains start pouring", "as fast as he can") and a boy falls into a flooding river. |
+| bl-y4oX0fIWQR | Five Little Monkeys | read and left out: Monkeys bonk their heads again and again, and "Now I can lay down". |
 | bl-Hza9CLjQzB | Anni yaw? | read and left out: Mostly in another language (Adi), with English only in places. |
+| bl-TaST0LirOh | Si Bantay anna Si Mingming | read and left out: Mostly in another language. |
 | bl-0MhyyoMWGB | Greetings | read and left out: Nine pages of "Good morning", "Good afternoon" and "Good night": too little for 3 questions. |
 | bl-6A9bGIyj45 | Things I know | read and left out: Odd claims ("Mice are dangerous animals"), and a scanner flag on a word for a rooster. |
 | bl-AGYMgaFJCk | Rafiki’s Style | read and left out: Older kids tease Rafiki about his teeth, skin and hair (mocking bodies). |
 | bl-3Tt769gYGU | Our Friend John | read and left out: Opens "In our class John is different. John cannot walk like us.": a label on a disability. |
+| bl-fJOHV3RvQY | Story 1: In Search of a Name | read and left out: Opens with "Did God tell you my name". |
 | bl-U63n8nbDAH | How Night Came to Opio’s Village | read and left out: Opio is given beer to drink. |
 | bl-zW3jaA0F6M | The New Boy | read and left out: Owner's call: children laugh at a disabled new boy ("He walks in a different way, too!") before he is welcomed; left out under the rule on mocking. |
 | bl-SHYqRu95HB | Disability is not inability | read and left out: Owner's call: Disability is not inability names each child's disability; left out under the rule on labels. |
@@ -1335,6 +1437,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-Ha363FZ1PJ | Up, Up, Up in the Sky | read and left out: Punctuation mistakes ("lab!", I", "said," Shakti"). |
 | bl-IcQi5InOSP | Under the sea | read and left out: Punctuation mistakes ("whale -watching.....") and a child drifts away from his mother while snorkeling. |
 | bl-l4wFLYfSit | Why Hippos have no hair | read and left out: Rabbit has Fire burn Hippo for revenge. |
+| bl-pTr1nSyh0n | The Honeyguide's Revenge | read and left out: Revenge in the title and plot: the honeyguide leads a man to a lion. |
 | bl-O0ADNFGGJu | How about you? | read and left out: Rhyming nonsense with little to ask about; "eurgghhh... aargh!". |
 | bl-4xjrLSlS2c | Fox and Rooster | read and left out: Rooster lies to be king, and it ends "foxes eat roosters and their families". |
 | bl-AHAnUQOVTy | Rooster and Hare | read and left out: Rooster tells Hare his family chops off their heads at night, and Hare's family tries it. |
@@ -1345,8 +1448,12 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-meM0Qs7aLB | The Sea | read and left out: Same book as bl-LKE0zR5qKe (The Sea), a translation upload; the original is used. |
 | bl-Mi84BPF3ol | A Tiny Seed: The Story of Wangari Maathai | read and left out: Same book as bl-xtDFOOj29m (A Tiny Seed), a translation upload; the original is used. |
 | bl-cUsWBh5pAi | Open the Door | read and left out: Same book as bl-Yt2R2HoU1F (Open the Door), another upload. |
+| bl-ChdSnQmk7g | Men va do‘stim Ziyrakvoy | read and left out: Same book as sw-0030 (Timmy and Pepe), already in the library, under an Uzbek title. |
 | bl-Nvk51ioVlv | Xayrli tun, Kumayik! | read and left out: Same book as sw-0056 (Goodnight, Tinku!), already in the library, under an Uzbek title. |
+| bl-O8geoZJCBv | Qizil plash | read and left out: Same book as sw-0069 (The Red Raincoat), already in the library, under an Uzbek title. |
+| bl-DQL2q1zEwE | Happy and Sad | read and left out: Same book as sw-0072 (Happy and Sad), already in the library. |
 | bl-nKnm6sJqpO | Happy and Sad | read and left out: Same book as sw-0072 (Happy and Sad), already in the library. |
+| bl-dAgjdRNK1z | Colours | read and left out: Same book as sw-0073 (Colours), already in the library. |
 | bl-iB8hlHkYfU | Colours | read and left out: Same book as sw-0073 (Colours), already in the library. |
 | bl-ZDGql37k6i | Tell me...now! Colours | read and left out: Same book as sw-0073 (Colours), already in the library. |
 | bl-oJk3FNj3uC | Yuksak parvoz | read and left out: Same book as sw-0101 (Flying High), already in the library, under an Uzbek title. |
@@ -1367,6 +1474,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-KaMAHu4hUk | Dina's Magical Garden Adventure | read and left out: Spelling mistake ("flutterring"). |
 | bl-YzK22r3G0I | Pip Visits the Planets | read and left out: Spelling mistake ("nigt"). |
 | bl-sEnQoSQGoa | Thandi misses her school bus | read and left out: Spelling mistake: "askes". |
+| bl-TDrTnLlDry | The wisdom of the Oak Tree | read and left out: Spelling mistake: "faile". |
 | bl-WDAU6pRXg5 | Mini's house | read and left out: Spelling mistake: "Keer" for kheer. |
 | bl-f8VXS1hYBN | So the clock came to be... | read and left out: Spelling mistake: "monring". |
 | bl-VZKQ1FahB4 | Setina and her Dog | read and left out: Spelling mistake: "soemthing". |
@@ -1379,27 +1487,35 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-vGownOuWfz | Where Is It? | read and left out: Ten "Where is the ...?" questions answered only in the pictures. |
 | bl-xNeM7BMoKZ | The Royal Toothache | read and left out: Text mistake ("\"Alright,\" laughed" with a straight quote mixed into curly quotes). |
 | bl-edobKpbCK5 | Rabbit under the tree | read and left out: Text mistake ("asked,“Why") and uneven quotation marks. |
+| bl-FewlLlor3n | The Fox and the Crow | read and left out: Text mistake ("Begged" with a capital after a quotation). |
 | bl-Ln8tMyChJD | Do not scare the snakes! | read and left out: Text mistake ("Close the mango tree" for close to) and the girls fall out of a tree. |
+| bl-0RlyptyxJg | The Wise Man | read and left out: Text mistake ("father- in-law") and a story about wives. |
 | bl-OVqXEhfI3e | How Do Actions Change Me? | read and left out: Text mistake ("loking") and "... like girls" teasing. |
+| bl-vANqdOrxA4 | My first day at the market | read and left out: Text mistake ("meaway") and "my big round aunt". |
 | bl-BZ8452OPVK | Annoying Mosquito | read and left out: Text mistake ("more shill" for shrill). |
 | bl-N7Wo1cR3Vu | Keke's Swing | read and left out: Text mistake ("Next time I help you") and a fall from a swing with a head injury. |
 | bl-kQdi49O0sB | Thimba to the rescue! | read and left out: Text mistake ("peddling" for pedaling) and maths questions to the reader. |
 | bl-zMeZotjBmb | The Day the Vegetables Came to School | read and left out: Text mistake ("really you?\" The que..." lowercase after a question) and a queen of vegetables plot with little sense. |
+| bl-erDmu9qEcb | Narrow escape | read and left out: Text mistake ("to know avail"). |
 | bl-JkiOMnC0J4 | Whose button is this? | read and left out: Text mistake (a missing opening quote) and the hero plays on a busy road. |
 | bl-Ktv79MHYmy | Silly Meta | read and left out: Text mistake (a space after a quotation mark, "“ Ok.") and "silly" as a label on a boy. |
 | bl-qUSZD2rHZV | Mogau's Gift | read and left out: Text mistake from the print layout ("happi- ness"); calls the village "a dull African village". |
 | bl-ykF0eajzmu | Football game Chiefs and Aces | read and left out: Text mistake in the title ("Football gameChiefs and Aces"). |
+| bl-uawk3oqpOz | My mom and I | read and left out: Text mistake: "balancethe". |
 | bl-MJt3XUbsiU | Forgetful Dida | read and left out: Text mistake: "forgetmy". |
 | bl-XtaBVLbUsM | Tick-tock, tick-tock... | read and left out: Text mistake: "I do not want to be tailor." |
 | bl-NHaLGjW022 | Mina and the Birthday Dress | read and left out: Text mistake: "Idon't". |
 | bl-5kONReRZ3K | Zibu & Zizo | read and left out: Text mistake: "Mama buys same clothes." |
+| bl-eLyXMgnI5h | Child Listens and Helps Mother | read and left out: Text mistake: "So he went along" for a girl, and "went along with their plot". |
 | bl-hePTMk0ymw | The Big Juicy Mango | read and left out: Text mistake: "spreading it's branches". |
+| bl-28wOjGEY5X | The Boy who Cried Wolf | read and left out: Text mistake: "There was Shepherd's Boy". |
 | bl-IvLCVoinPQ | My daughter Polar | read and left out: Text mistake: "This my daughter Polar." |
 | bl-ylpCY9rZWO | Sleepy Mr. Sloth | read and left out: Text mistake: "Try climb one more branch". |
 | bl-C4lpkMqmOa | Hare and Hyena | read and left out: Text mistake: "wastoo". |
 | bl-ji70TGCZCd | Sane in the market | read and left out: Text mistake: "where is mother mother?" |
 | bl-1rVUeUXCcR | Rain | read and left out: Text mistake: a double full stop ("hair.."). |
 | bl-TIGQsI8RuH | Amazing Daisy | read and left out: Text mistake: a missing closing quotation mark on page 10. |
+| bl-6XP6jzvDGK | 02 - Cat and Dog and the Ball | read and left out: Text mistake: a missing full stop at the end ("Bye-bye Elephant"). |
 | bl-ogYKTt7rBB | Yes you can! | read and left out: Text mistake: a missing opening quote on page 3. |
 | bl-6rvW9OSAe9 | Grandpa Fish and the Radio | read and left out: Text mistake: a missing space ("away!They"). |
 | bl-MozyTFFFRR | Tortoise Finds his House | read and left out: Text mistake: a missing space ("away.“But"). |
@@ -1411,6 +1527,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-7uGXMMgk02 | We the nature lovers | read and left out: Text mistake: a missing space ("father,Priya"). |
 | bl-Y970PQJ7aT | Our Classroom | read and left out: Text mistake: a missing space ("groups.We"). |
 | bl-z1IlL1iI4k | Sam Uncle | read and left out: Text mistake: a missing space ("Mehrauli,New Delhi"). |
+| bl-S2R4QNezp3 | Story 2: The Lion and the Mouse | read and left out: Text mistake: a missing space ("Mouse.“Now you"). |
 | bl-qELPLaz9lr | Papa's Shamba | read and left out: Text mistake: a missing space ("planted.The"). |
 | bl-pZaeZ3B7G2 | Njeri | read and left out: Text mistake: a missing space ("potatoes,Teacher"). |
 | bl-rJbC50SZ2V | How tortoise’s nose became crooked | read and left out: Text mistake: a missing space ("responded,“You"). |
@@ -1428,10 +1545,12 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-lWtxIe8FLk | Mangalyaan: A Journey to Mars | read and left out: Text mistake: a stray comma ("And yet it, is so far away"). |
 | bl-OtPErgGATN | Yapo Saves the Day | read and left out: Text mistake: a stray quotation mark on page 8. |
 | bl-oLgY9LaYL7 | There must be a rainbow | read and left out: Text mistake: the quotation marks on page 8 do not match; a storm destroys the village's homes. |
+| bl-tjCDkHJa8h | The Smell Thief | read and left out: Text mistakes ("‘ Good morning,’", a missing quotation mark on page 13) and a baker drags a homeless woman to court. |
 | bl-8AMIZkWZ0V | A dog | read and left out: Text mistakes ("a man with his one dog", "every thing", unfinished sentences). |
 | bl-YZhnEdQIui | The Girl who Played | read and left out: Text mistakes ("an old man with her wife", "Some one", "Kollo") and a punishment. |
 | bl-QkYmmS1pfX | The Noisy Hare | read and left out: Text mistakes ("anad", "Ever night", "A thieves days"). |
 | bl-hMYzQppNc6 | Palesa Can Walk! | read and left out: Text mistakes ("And, with one big heave, pushes herself up" has no subject; "A Sandile?"). |
+| bl-x67Ccxbr6L | King Kayanja and his daughter | read and left out: Text mistakes ("andhis" in the title, "said,“Let’s") and a bride price plot. |
 | bl-vgJxulAYdH | A Monkey called Manki | read and left out: Text mistakes ("anywhere- nearby", "etc"). |
 | bl-i2CfCbcKyG | Searching for the spirit of spring | read and left out: Text mistakes ("as she a passed", "needed.With"). |
 | bl-FBrulNVj3h | Mr Mkhize's quarters | read and left out: Text mistakes ("atchar" and "atchaar"; a missing closing quotation mark on page 12). |
@@ -1457,6 +1576,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-BdD4DsTW8J | My Holiday | read and left out: Text mistakes ("school.We", "Mimo .I", "goodnews"). |
 | bl-MKUG1Muct0 | True friends | read and left out: Text mistakes ("sitting in an umbrella", "fishes") and a dog falls in a river. |
 | bl-digk5MYidm | My first birthday party | read and left out: Text mistakes ("so poor that" missing, "organize for him his first birthday party", "There after"). |
+| bl-wfklczxtJ7 | Mr. Kigode and his family | read and left out: Text mistakes ("specious room", "The are", "with is his children"). |
 | bl-saxmmWDVVs | Soccer Game is Good | read and left out: Text mistakes ("the best payer", "Maloki"). |
 | bl-CfBFcdGtnG | Mother's phone gets lost | read and left out: Text mistakes ("to go to get ready", a stray quotation mark). |
 | bl-LN5OrJI9qn | My Friend | read and left out: Text mistakes ("wrapped around his Friend", mixed tenses) and a child with no name living alone in a field. |
@@ -1472,6 +1592,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-bZEpSuEHkb | Arrogant Bird Learned Lesson | read and left out: Text mistakes in the title alone ("Arrogant Bird Learned Lesson"). |
 | bl-XGGWm1gER0 | Clever Goats | read and left out: Text mistakes, and a man spears his own goat. |
 | bl-XBLO7p8oF2 | The busy big mango tree | read and left out: Text mistakes, politicians, a drinking place and prayers. |
+| bl-mScXjHSaTx | Juliana Wants a Pet | read and left out: Text mistakes: missing full stops at the end of three pages. |
 | bl-FHbAbw1D7W | When I Grow Up, I'll Have a House | read and left out: Text mistakes: missing spaces ("collection.It's", "house.You"). |
 | bl-5FjEw8IVnP | Arọn Buys Thread | read and left out: Text mistakes: missing spaces ("Nema.Nema", "tomatoes.She"). |
 | bl-o60O3pyaCN | Otoyo | read and left out: Text mistakes: missing spaces ("Otoyo.He", "boy.Who"). |
@@ -1492,8 +1613,11 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-6XGmUp7Fyf | Rat and Frog | read and left out: The snake blames "bad spirits". |
 | bl-YOA5fMo826 | I know how to play the teacher! | read and left out: The teacher "sings hymns in order": religious practice in a school book. |
 | bl-AYIcSiYgTh | Our Happy Family | read and left out: The text marked as English is in another language. |
+| bl-omRW9MZgTg | My fish! No, it's my fish! | read and left out: The text marked as English is in Spanish. |
 | bl-mghRS1Yic3 | Lion and Zebra Look for water | read and left out: The text marked as English is mostly isiXhosa. |
 | bl-tJj2ODGfJa | SIN0THANDO AND HER DOG MVELO: FINDING THE LOST BALL | read and left out: The text marked as English is mostly isiZulu. |
+| bl-6jFUJ8jeEv | Si Melay at Ang Gulayan | read and left out: The title and text are in Filipino. |
+| bl-DZACnzNEy6 | Ang Pamilya | read and left out: The title is in Filipino (Ang Pamilya); a family list book. |
 | bl-T8hSbtdx8Z | Sigir, It va Echki | read and left out: The title is in Uzbek; a copy of Goat, Dog and Cow (unsafe road habits as the moral). |
 | bl-OTf1DeL0VB | Thembi's Family | read and left out: The title says Thembi but the girl says "I am Maria". |
 | bl-MqriPgkQvI | Mod the Toad | read and left out: The toad is burned by a bush fire and blistered. |
@@ -1506,8 +1630,11 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-LOuEqFvCub | Naughty Cow | read and left out: Uneven quotation marks (another upload of Naughty Cow). |
 | bl-2xpizIZV5Z | Everything is possible! | read and left out: Uneven quotation marks and "..No Rita NO!". |
 | bl-fvG2rsLnqF | Picnic and Pine Needles | read and left out: Uneven quotation marks and "Shooo !!….niii". |
+| bl-bZ8LS1FgD5 | Silly Sizwe | read and left out: Uneven quotation marks and "silly" as a label on a boy. |
+| bl-IoojSP5JGq | Papa and the Snake | read and left out: Uneven quotation marks and a snake scare. |
 | bl-5jHn8p4tcE | Little Dog | read and left out: Uneven quotation marks on page 5. |
 | bl-3NpGshx2Po | Who Stole Bahaiya's Smile | read and left out: Uneven quotation marks; "Bahaiya" and "Bhaiya" both used. |
+| bl-F60EkJQWif | Anansi and Vulture | read and left out: Uneven quotation marks; Anansi steals from Vulture. |
 | bl-R3YJdUYpQn | Full of Light | read and left out: Uneven quotation marks. |
 | bl-FkaMWn1nqP | Kaukare and Kasik Went Fishing | read and left out: Uneven quotation marks. |
 | bl-Ck8ZoY71QY | Khalai talks to plants | read and left out: Uneven quotation marks. |
@@ -1516,15 +1643,25 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-foadKZ4Asb | Ou Ou Wants to Have Friends | read and left out: Uneven quotation marks. |
 | bl-v8o0OxKOr6 | Paper Play | read and left out: Uneven quotation marks. |
 | bl-2Bis5QlQwQ | Water is Coming. | read and left out: Uneven quotation marks. |
+| bl-NuNqpoT4PX | Young Palinyang’ | read and left out: Unexplained words and a grown-up tale of a herd and a curse. |
+| bl-wTv8qxo1e0 | Akoro and the banana business | read and left out: Unexplained words and grammar slips ("do such job"). |
+| bl-BVrO2mRF2m | Old grandmother | read and left out: Unexplained words in another language and "Old grandmother" teased. |
 | bl-J5nMMddog0 | School Clothes | read and left out: Unfinished lines ("This belt is...") with little to ask about. |
 | bl-BvTpxksEY0 | Saxiy qarg‘a | read and left out: Uzbek title; a copy of another book. |
-| bl-o3aNsSbJoh | Count Animals | the book's notes say "All rights reserved" |
-| bl-YLd4g2ESlN | How Family Planning Methods Work | the book's notes say "All rights reserved" |
+| bl-AGLeXxuGlK | Chicken Care Book 1 Introduction and Preparation | the book's notes say "BY-NC" |
+| bl-ZBxarq22ty | Chicken Care Book 2 Daily Care | the book's notes say "BY-NC" |
+| bl-Wuvgzs0pUc | Chicken Care Book 3 Increasing the Number of Chickens | the book's notes say "BY-NC" |
+| bl-tRPvXie0dc | Chicken Care Book 4 Common Sicknesses | the book's notes say "BY-NC" |
 | bl-2OY4EEdFhZ | I Got Shoes | the book's notes say "BY-NC" |
 | bl-5mubDU9lw9 | I Got Shoes | the book's notes say "BY-NC" |
 | bl-imrQXp2mgY | I have Ten Fingers | the book's notes say "BY-NC" |
 | bl-OCq7b2B58h | I Have Ten Fingers | the book's notes say "BY-NC" |
+| bl-7i09ABAft3 | Making Compost in a Steel Drum | the book's notes say "BY-NC" |
 | bl-td21oJzQZo | Malaria | the book's notes say "BY-NC" |
+| bl-0kM9ok9Tej | Rice Paddy Book 1 How to Plant Rice | the book's notes say "BY-NC" |
+| bl-N4RDLyis3C | Rice Paddy Book 2 Problems with Poor Soil | the book's notes say "BY-NC" |
+| bl-9HI10OqZN7 | Rice Paddy Book 3 Problems with Pests | the book's notes say "BY-NC" |
+| bl-Z2r2LTGX5a | Rice Paddy Book 4 Problems with Diseases | the book's notes say "BY-NC" |
 | bl-2sXxyESV6r | The Bird and the Turtle | the book's notes say "BY-NC" |
 | bl-4zMlgMiWBf | The Bird and the Turtle | the book's notes say "BY-NC" |
 | bl-25cHHebJwE | Tiki Stole | the book's notes say "BY-NC" |
@@ -1535,3 +1672,79 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-lKi3zDXuJp | Who is the Best? | the book's notes say "BY-NC" |
 | bl-e86FoR7IZC | Fight the Virus! | the book's notes say "may not be used" |
 | bl-dg9oRGt2Sv | Fox and Rooster | the book's notes say "NonCommercial" |
+| bl-4URRIxzahX | A Family’s Experience with COVID-19 at Home | the book's notes say "permission" |
+| bl-KiLv8gjpnp | A Family’s Experience with COVID-19 at Home | the book's notes say "permission" |
+| bl-rzSAYulG9Z | A Sustainable Future? The Effects of Climate Change | the book's notes say "permission" |
+| bl-o3aNsSbJoh | Count Animals | the book's notes say "permission" |
+| bl-TmOQiBBUTY | From Arid Lands to Well-Watered Fields | the book's notes say "permission" |
+| bl-5Fk5CrhVzR | Gardening for Better Nutrition | the book's notes say "permission" |
+| bl-YLd4g2ESlN | How Family Planning Methods Work | the book's notes say "permission" |
+| bl-w5MXUKN9es | How to Build an Outside Toilet (Basic Latrine Design) | the book's notes say "permission" |
+| bl-1a4tDc16sX | Let's go | the book's notes say "permission" |
+| bl-oNkLP7wUqe | Let's go | the book's notes say "permission" |
+| bl-W2RV57N3Yb | Magnificent Mangroves Protecting coasts, fostering fish and storing carbon | the book's notes say "permission" |
+| bl-XPFxmCoZHq | Restoring a Mangrove Forest The View from Mexico​ | the book's notes say "permission" |
+| bl-W3mfjQHSXf | Restoring a Tropical Forest: The View from Sabah | the book's notes say "permission" |
+| bl-CF0MuzOlRW | Safe Drinking Water​ | the book's notes say "permission" |
+| bl-ylNb5L6GFN | The Book of Hygiene | the book's notes say "permission" |
+| bl-AeZPk0iQ4f | The Book of Water | the book's notes say "permission" |
+| bl-EL4L7zeqle | The farmer and the soothsayer | the book's notes say "permission" |
+| bl-nSht9yB3Kf | The Problem with Plastic | the book's notes say "permission" |
+| bl-2BHeM9renh | Vaccinations | the book's notes say "permission" |
+| bl-ynnPworJ8Z | Vaccinations | the book's notes say "permission" |
+| bl-utrFZzPOmI | Washing Your Hands A Handbook for Children | the book's notes say "permission" |
+| bl-W4LAE0hD3W | Waste Management Household Rubbish Pits and a Community Waste Collection Service | the book's notes say "permission" |
+| bl-X6NNTtljKP | Waste Management Reduce, Reuse, Recycle | the book's notes say "permission" |
+| bl-jmQsbWECzM | A Simple Chicken Feeder | the book's notes say "Permission" |
+| bl-uwst8Emaqj | An Easy Way to Water Seeds (and Tree Seedlings) | the book's notes say "Permission" |
+| bl-nbeCY5j3Wu | BiocharA‌ special form of charcoal‌ | the book's notes say "Permission" |
+| bl-5jW5JoPhQS | Bokashi for Better SoilImproving fertility without fertiliser‌ | the book's notes say "Permission" |
+| bl-ymQIH6X5Sd | Cattle Care | the book's notes say "Permission" |
+| bl-DaNATZZD46 | Collecting and Keeping Seeds | the book's notes say "Permission" |
+| bl-HVxliYE9Wi | Coping with Climate Change Tips for Farmers | the book's notes say "Permission" |
+| bl-GQnK02TyeN | Crickets - the New Cattle? | the book's notes say "Permission" |
+| bl-wwcAEYrxdP | Cultivating Eru | the book's notes say "Permission" |
+| bl-r0no9SzRGy | Early Maize Seedlings | the book's notes say "Permission" |
+| bl-lV6J7yLeEA | Eelgrass - Environmental Gains and Edible Grains | the book's notes say "Permission" |
+| bl-AMqDlEnOD9 | Farming with Disabilities | the book's notes say "Permission" |
+| bl-6QraUGs7qz | Fattening Cattle in Your Backyard | the book's notes say "Permission" |
+| bl-ETAxGhqzEU | Food and Farming An overview of relevant Shell Books | the book's notes say "Permission" |
+| bl-NdMwn7X6ba | From Arid Lands to Well-Watered Fields | the book's notes say "Permission" |
+| bl-mtSsdD4nFm | Gardening in Small Spaces | the book's notes say "Permission" |
+| bl-TsdesbASg8 | Good Granary Design | the book's notes say "Permission" |
+| bl-CeZRdgoffG | Growing Bamboo | the book's notes say "Permission" |
+| bl-uYOaTWi8ij | Growing Mushrooms | the book's notes say "Permission" |
+| bl-VMB30sBByP | Growing Vegetables in Bags | the book's notes say "Permission" |
+| bl-xt4PP51QnE | Harvesting Fruit the Easy Way | the book's notes say "Permission" |
+| bl-LWmjBJDEqC | How to Extract Quality Honey | the book's notes say "Permission" |
+| bl-PotjRpI9nr | How to Make and Use a Donkey Plough | the book's notes say "Permission" |
+| bl-YBJnr7Q2Gz | How to Make and Wear a Bee-Keeper's Veil | the book's notes say "Permission" |
+| bl-MOlt8yKulx | How to Manage Bees | the book's notes say "Permission" |
+| bl-WnGNfl8OFd | How to Manage Bees | the book's notes say "Permission" |
+| bl-p4izcX5f8M | How to Store Grain Effectively | the book's notes say "Permission" |
+| bl-GjSySIRN88 | How to Treat Coccidiosis in Chickens | the book's notes say "Permission" |
+| bl-llfGlNOSGo | Hydroponics Growing Crops without Soil | the book's notes say "Permission" |
+| bl-LIM2f5sNsI | Increase Chicken Production | the book's notes say "Permission" |
+| bl-wqNPR8lHvQ | Keeping Fish and Ducks | the book's notes say "Permission" |
+| bl-WbllPy7VME | Lining a Fishpond | the book's notes say "Permission" |
+| bl-qjjemAC7tD | Making a Beehive | the book's notes say "Permission" |
+| bl-740inRDzei | Making Compost in a Pit or Box | the book's notes say "Permission" |
+| bl-NBVs3hv0bf | Natural Pesticides Helpful Weeds | the book's notes say "Permission" |
+| bl-GZZhkf5QUX | Natural Pesticides Red Chilli Peppers | the book's notes say "Permission" |
+| bl-TJDGoa1Ifi | Natural Pesticides Wood and Rice Husk Ash | the book's notes say "Permission" |
+| bl-fzgGpoXNtG | Natural Regeneration A bonus for farmers | the book's notes say "Permission" |
+| bl-Lj0FUaVElr | Pig Farming Raising and Caring for Pigs | the book's notes say "Permission" |
+| bl-QKTZYsbbaP | Raising Fish | the book's notes say "Permission" |
+| bl-ztGRGx76ID | Raising Goats | the book's notes say "Permission" |
+| bl-EbNBthu6Z5 | Small Livestock Farming Grasscutters (Cane Rats) | the book's notes say "Permission" |
+| bl-hOFNJeZFkL | Small Livestock Farming Guinea Pigs | the book's notes say "Permission" |
+| bl-DUNZpBeHr6 | Small Livestock Farming Rabbits | the book's notes say "Permission" |
+| bl-6CWM8excRY | Starting a Tree Nursery | the book's notes say "Permission" |
+| bl-GloDgPOSkO | Sterilising Seed Beds | the book's notes say "Permission" |
+| bl-Rm88FqmkRw | Two Farmers Talking about Conservation Agriculture | the book's notes say "Permission" |
+| bl-yZeWDXSo65 | Two Productive Gardens: The Midi and the Mini | the book's notes say "Permission" |
+| bl-axqdL9Hrzv | Using a Sandbar to Grow Pumpkins | the book's notes say "Permission" |
+| bl-Oxd996qNzs | Vermicompost: Improving soil with the aid of worms | the book's notes say "Permission" |
+| bl-jgk42RW57A | Versatile Vetiver A Grass of Many Virtues | the book's notes say "Permission" |
+| bl-NWgOSJTLtc | Who would eat a false banana? | the book's notes say "Permission" |
+| bl-J2KBpBbZLh | Willow for Healthier Lambs A Natural Tonic for Sheep | the book's notes say "Permission" |
