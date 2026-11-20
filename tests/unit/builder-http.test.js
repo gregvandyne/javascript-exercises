@@ -16,6 +16,7 @@ const { createApp } = await import('../../server/app.js');
 const games = await import('../../server/services/games.js');
 const { loadChat } = await import('../../server/builder/chat.js');
 const { q } = await import('../../server/db.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 const server = createApp().listen(0);
 await new Promise(r => server.once('listening', r));
@@ -32,7 +33,7 @@ function client() {
     const sc = res.headers.getSetCookie ? res.headers.getSetCookie() : [];
     for (const c of sc) { const kv = c.split(';')[0]; if (kv.startsWith('brb_session=')) cookie = kv; }
     if (raw) return res;
-    const text = await res.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
+    const src = await res.text(), text = deicon(src); let json = null; try { json = JSON.parse(src, (k, v) => typeof v === 'string' ? deicon(v) : v); } catch { /* html */ }
     return { status: res.status, headers: res.headers, text, json };
   };
   c.cookie = () => cookie;
