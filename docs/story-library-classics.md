@@ -27,7 +27,7 @@ Each story is cut into pages that fit half of a 1280 x 720 screen in the reader'
 
 ## Totals
 
-- Books: **21** (Pre-K/K: 0, Grade 1: 0, Grade 2: 0, Grade 3: 2, Grades 4-5: 19); left out: 2
+- Books: **21** (Pre-K/K: 0, Grade 1: 0, Grade 2: 0, Grade 3: 2, Grades 4-5: 19); left out: 28
 - Pictures: 4.4 MB (WebP; pages at most 720 px, quality 40; covers 440 px, quality 55)
 - The grade rule is the library's (`gradeOf`), with the length cap raised to 4,000 words for this source.
 
@@ -77,3 +77,29 @@ Each story is cut into pages that fit half of a 1280 x 720 screen in the reader'
 | --- | --- | --- |
 | 14848 | The Story of Miss Moppet | read and left out: Its first sentence calls the kitten "a Pussy" (the old word for a cat); today the word reads as rude to many parents and the site's word filter flags it, and the author's words are not ours to change. |
 | 15137 | The Tale of Mrs. Tiggy-Winkle | read and left out: Several old names and words read as rude today and the site's word filter flags them ("Cock Robin" twice, "little dicky shirt-fronts", "Tom Titmouse"), and the author's words are not ours to change; the copy that was transcribed is also a 1986 printing. |
+| 32488 | How the Rhinoceros Got His Skin | read and left out: Calls the Parsee man's hat "more-than-oriental splendour" three times (exotic labels on a real people), and the Rhinoceros's greeting "How!" reads as a mock Native American word. |
+| 32488 | How the Leopard Got His Spots | read and left out: Uses a racial slur and describes a man by his skin color. |
+| 32488 | The Elephant's Child | read and left out: The child is spanked by every relative all through the story, and spanks them back at the end: hitting children as a running joke. |
+| 32488 | How the First Letter Was Written | read and left out: Taffy's name means "ought to be spanked" and "she was not spanked half as much as was good for her"; the tribe attacks a stranger. |
+| 32488 | How the Alphabet Was Made | read and left out: Follows on from the First Letter story (left out) and depends on about 20 small drawings set inside its sentences, which a page with one picture cannot show. |
+| 32488 | The Crab That Played with the Sea | read and left out: "They shall be called the Malazy, the lazy people": a slur on Malay people. |
+| 32488 | The Cat That Walked by Himself | read and left out: Ends by saying proper men "will always throw things at a Cat" and dogs chase him up a tree: cruelty to animals shown as right. |
+| 32488 | The Butterfly That Stamped | read and left out: A king with 999 quarrelsome wives: plural marriage and wives mocked as a group. |
+| 32488 | The poems between the stories | read and left out: Not part of the stories; left out (some mention ship lines and places only a grown-up would know). |
+| 14407 | The Tale of Benjamin Bunny | read and left out: Old Mr. Bunny whips his son with a switch and smokes a pipe; he kicks the cat. |
+| 14837 | The Tale of Tom Kitten | read and left out: The mother smacks the kittens and tells her friends a lie. |
+| 14872 | The Tale of Squirrel Nutkin | read and left out: The owl holds Nutkin "intending to skin him" and his tail breaks off; dead mice and a mole are brought as presents. |
+| 14814 | The Tale of Jemima Puddle-Duck | read and left out: A fight offstage ends the fox ("nothing more was ever seen"), the dogs are hurt and the puppies eat the eggs. |
+| 15284 | The Tale of Johnny Town-Mouse | read and left out: "The cat had killed the canary", and the cook calls for a poker to kill the mouse. |
+| 15234 | The Tale of the Pie and the Patty-Pan | read and left out: Built around a pie made of mice, and a cat who "died of a thimble". |
+| 14220 | The Tale of the Flopsy Bunnies | read and left out: "I shall skin them and cut off their heads"; a bunny is hit by a thrown marrow. |
+| 14868 | The Tailor of Gloucester | read and left out: The cat traps mice under teacups to eat them; a Christmas Eve plot with cathedral bells. |
+| 15575 | The Tale of Samuel Whiskers | read and left out: Rats roll a kitten in dough to bake him in a pudding: too frightening. |
+| 17860 | The Nightingale | read and left out: Death sits on the dying Emperor's chest: too frightening. |
+| 17860 | The Snow Queen, The Mermaid, The Real Princess and the other tales | read and left out: Long and sad or frightening (the Mermaid dies), or a plot about marrying. |
+| 18190 | Raggedy Ann Stories | read and left out: An "Indian doll" is one of the regular characters (a stereotype), and a story has a bedtime prayer. |
+| 15661 | The Story of the Three Bears | read and left out: Goldenlocks escapes by jumping out of an upstairs window: unsafe behavior shown without comment. |
+| 18732 | Fables where an animal is killed or eaten | read and left out: Left out by the content rule (The Wolf and the Lamb, The Cat and the Cock, The Lion and the Three Bulls, The Shepherd's Boy and the Wolf and many more; about 120 of the 240 fables). |
+| 18732 | Fables with words that read as rude today | read and left out: Titles or morals with "Ass", "Cock" or "faggot" (a bundle of sticks), which we may not change: The Ass in the Lion's Skin, The Cock and the Jewel, The Father and his Sons and others. |
+| 18732 | Fables that mock bodies or hurt children | read and left out: The Quack Frog ("lame gait and wrinkled skin"), The Bald Knight, The Hares and the Frogs (they mean to end their lives), The Thief and His Mother (a hanging). |
+| 19994 | The Aesop for Children | read and left out: Not public domain everywhere: Milo Winter died in 1956 (the rule needs before 1956). |
