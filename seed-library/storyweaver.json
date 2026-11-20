@@ -2063,44 +2063,6 @@
     }
    ]
   },
-  "0106": {
-   "glossary": {
-    "dosas": "thin, crispy pancakes made from rice and lentils",
-    "Amma": "Mom"
-   },
-   "questions": [
-    {
-     "q": "What is Amma making while Shyam brushes his teeth?",
-     "right": "Dosas",
-     "wrong": [
-      "Idlis",
-      "Rotis"
-     ],
-     "page": 2,
-     "kind": "literal"
-    },
-    {
-     "q": "What if Shyam's legs were as tall as trees?",
-     "right": "His school would only come up to his knees",
-     "wrong": [
-      "He could touch the moon",
-      "He would fall into the river"
-     ],
-     "page": 4,
-     "kind": "literal"
-    },
-    {
-     "q": "Why is Shyam still holding his toothbrush at the end?",
-     "right": "He was daydreaming instead of brushing",
-     "wrong": [
-      "His toothbrush broke",
-      "He was waiting for his sister"
-     ],
-     "page": 10,
-     "kind": "inference"
-    }
-   ]
-  },
   "0112": {
    "glossary": {
     "chappals": "sandals",
@@ -3413,7 +3375,8 @@
   "0426": "Mistakes in the source text (\"pinks and yellows ,\", \"Who would that be? who would sneak up\", missing commas before the speaker), and \"I hate my life\".",
   "0427": "Animals steal a woodcutter's food and are praised for never being caught; a mistake in the source text (\"an woodcutter\").",
   "0428": "Mistakes in the source text (\"favouite\", \"moneylender ,\", \"Give the carpenter\" capitalized mid-sentence).",
-  "0429": "A king swallows a bird twice and soldiers swing swords to chop off its head (they cut off the king's nose)."
+  "0429": "A king swallows a bird twice and soldiers swing swords to chop off its head (they cut off the king's nose).",
+  "0106": "Left out by the owner (20 Nov 2026): the boy calls himself \"a little skinny\"."
  },
  "scanReviewed": {
   "0073": "The scanner's violence rule matches \"blood\": it is a science question (\"Why is blood red? There is iron in the blood\"). Reviewed: fine.",
