@@ -36,15 +36,15 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 ## Totals
 
 - Books in the source: 395
-- Included: **75** (Pre-K/K: 9, Grade 1: 33, Grade 2: 26, Grade 3: 5, Grades 4-5: 2)
-- Left out: 320
-  - licensed, not read yet: 132
-  - read and left out: 126
+- Included: **80** (Pre-K/K: 9, Grade 1: 33, Grade 2: 29, Grade 3: 6, Grades 4-5: 3)
+- Left out: 315
+  - read and left out: 201
+  - licensed, not read yet: 52
   - pictures do not line up with pages: 51
   - an image license: unreadable: 6
   - too long for the library: 3
   - picture N.jpg is in the metadata but not in the image bank: 2
-- Pictures on the site: 18.2 MB (WebP, pages at most 720 px, covers 440 px)
+- Pictures on the site: 18.8 MB (WebP, pages at most 720 px, covers 440 px)
 
 ## Included
 
@@ -103,11 +103,13 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0124 | Grandma's Glasses | Grade 2 | 1.89 | 296 | 10 | Rohini Nilekani | Tanaya Vyas | – | CC BY 4.0 |
 | sw-0075 | Gulli's Box of Things | Grade 2 | 2.3 | 324 | 11 | Anupama Ajinkya Apte | Anupama Ajinkya Apte | – | CC BY 4.0 |
 | sw-0014 | I Want That One! | Grade 2 | 1.53 | 292 | 11 | Mala Kumar | Soumya Menon | – | CC BY 4.0 |
+| sw-0276 | King of Birds | Grade 2 | 2.08 | 465 | 14 | African Storybook Initiative | Wiehan de Jager | – | CC BY 4.0 |
 | sw-0061 | Lassi, Ice-cream or Falooda? | Grade 2 | 2.33 | 299 | 7 | Mala Kumar, Manisha Chaudhry | Priya Kuriyan | – | CC BY 4.0 |
 | sw-0105 | Mouse in the House | Grade 2 | 1.76 | 260 | 11 | Sowmya Rajendran | Tanaya Vyas | – | CC BY 4.0 |
 | sw-0038 | My Balwadi | Grade 2 | 1.55 | 287 | 9 | Rukmini Banerji | Sheetal Thapa | Madhav Chavan | CC BY 4.0 |
 | sw-0024 | No Smiles Today | Grade 2 | 1.86 | 243 | 6 | Cheryl Rao | Saurabh Pandey | – | CC BY 4.0 |
 | sw-0005 | Not Now, Not Now! | Grade 2 | 1.66 | 177 | 7 | Rohini Nilekani | Ruchi Shah | – | CC BY 4.0 |
+| sw-0332 | Oh the Way We Ran, in the Fish Rain | Grade 2 | 2.34 | 285 | 6 | Yamini | Manjari Chakravarti | – | CC BY 4.0 |
 | sw-0119 | Pehelwaan ji Plays Cricket | Grade 2 | 1.8 | 276 | 15 | Sanjiv Jaiswal 'Sanjay' | Ajit Narayan | Manisha Chaudhry | CC BY 4.0 |
 | sw-0112 | Phani's Funny Chappals | Grade 2 | 2 | 260 | 12 | Sridala Swami | Sanjay Sarkar | – | CC BY 4.0 |
 | sw-0044 | Ramya's Stars | Grade 2 | 2.34 | 242 | 9 | Mala Ashok | Helga Parekh | – | CC BY 4.0 |
@@ -117,12 +119,15 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0091 | The Boat Ride | Grade 2 | 2.46 | 358 | 8 | Herminder Ohri | Herminder Ohri | – | CC BY 4.0 |
 | sw-0035 | The Scarecrows on Parade | Grade 2 | 2.37 | 514 | 13 | Shamim Padamsee | Tanaya Vyas | – | CC BY 4.0 |
 | sw-0106 | What If? | Grade 2 | 1.68 | 210 | 10 | Hari Kumar Nair | Hari Kumar Nair | – | CC BY 4.0 |
+| sw-0244 | When the Wind Blew Today... | Grade 2 | 2.3 | 71 | 5 | Vinayak Varma | Vinayak Varma | – | CC BY 4.0 |
 | sw-0149 | Where is Gogo? | Grade 2 | 2 | 200 | 7 | Mala Kumar, Manisha Chaudhry | Soumya Menon | Mala Kumar, Manisha Chaudhry | CC BY 4.0 |
+| sw-0319 | A Brighter Day | Grade 3 | 2.77 | 109 | 1 | Aditi | Anjora Noronha | – | CC BY 4.0 |
 | sw-0120 | Anaya's Thumb | Grade 3 | 2.53 | 445 | 9 | Natasha Sharma | Ruchi Shah | – | CC BY 4.0 |
 | sw-0140 | It's All the Cat's Fault! | Grade 3 | 2.71 | 190 | 9 | Anushka Ravishankar | Priya Kuriyan | – | CC BY 4.0 |
 | sw-0017 | Peacocks and Pakodas! | Grade 3 | 2.91 | 361 | 7 | Mala Kumar, Manisha Chaudhry | Priya Kuriyan | – | CC BY 4.0 |
 | sw-0096 | Samira Goes Shopping | Grade 3 | 3.1 | 629 | 13 | Bharati Jagannathan | Preeti Krishnamurthy | – | CC BY 4.0 |
 | sw-0034 | Veeru Goes to the Circus | Grade 3 | 2.55 | 294 | 9 | Richa Ingle Deo | Reshma Barve | – | CC BY 4.0 |
+| sw-0322 | The Carpenter's last job | Grades 4-5 | 3.6 | 244 | 3 | Rupa Prakash | Rupa Prakash | – | CC BY 4.0 |
 | sw-0089 | The Magic Powder - A Folktale from Myanmar | Grades 4-5 | 3.87 | 1141 | 7 | Greystroke | P.G. Dinesh | – | CC BY 4.0 |
 | sw-0051 | The Timid Train | Grades 4-5 | 3.75 | 619 | 11 | Bharati Jagannathan | Preeti Krishnamurthy | – | CC BY 4.0 |
 
@@ -288,105 +293,100 @@ These books have more pictures than pages. A person matched each page to a pictu
 | sw-0224 | Hoggy and Ramu | read and left out: One page with mistakes in the source text ("mokey", ""what are you doing here?"."). |
 | sw-0225 | Naughty Children | read and left out: One page of 42 words with mistakes in the source text ("One of the student writing"), and labels the children "naughty". |
 | sw-0226 | Diwali | read and left out: A Lakshmi Pooja and firecrackers are central; mistakes in the source text ("lightning diyas", "its holiday"). |
-| sw-0227 | The dog | licensed, not read yet |
+| sw-0227 | The dog | read and left out: Written for adults: "damn dog", a soldier deploying to Iraq who may not come back. |
 | sw-0228 | Granny and her Bird Friend | pictures do not line up with pages (1 images for 1 pages); reviewed: The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once. |
-| sw-0229 | Manya's perfect dress | licensed, not read yet |
-| sw-0230 | Didi's knowledge | licensed, not read yet |
-| sw-0231 | Shruti's secret to winning | licensed, not read yet |
+| sw-0229 | Manya's perfect dress | read and left out: Mistakes in the source text ("did'nt" three times, "her eyes falling in her chudidhar"). |
+| sw-0230 | Didi's knowledge | read and left out: A mistake in the source text ("There was an earthquack"); children left to set up a house alone after an earthquake. |
+| sw-0231 | Shruti's secret to winning | read and left out: Mistakes in the source text (""Where is she", they ask?", "says, Miss Shalini"). |
 | sw-0232 | My best friend | read and left out: Mistakes in the source text ("Me and my friend") and a near copy of My Best Friend (0125), which is included. |
-| sw-0233 | Follow Your Dreams | licensed, not read yet |
+| sw-0233 | Follow Your Dreams | read and left out: One page with mistakes in the source text ("he grew up and became 6 years", "he told a speech"). |
 | sw-0234 | Tita | read and left out: Mistakes in the source text ("did'nt"). |
-| sw-0235 | Shambu and the little man | licensed, not read yet |
-| sw-0236 | Amma's stories | licensed, not read yet |
-| sw-0237 | The missing cat | licensed, not read yet |
+| sw-0235 | Shambu and the little man | read and left out: Mistakes in the source text ("unti it was dark", "Oh no!I think"). |
+| sw-0236 | Amma's stories | read and left out: Many mistakes in the source text ("did'nt", "confusedat", "gotn", "jelabi's") and conversion leftovers ("###"). |
+| sw-0237 | The missing cat | read and left out: Mistakes in the source text ("the wholetown", "she saw Reena running towards."). |
 | sw-0238 | Holiday in Hathipur | pictures do not line up with pages (6 images for 3 pages); reviewed: No story text in the source, only pictures. |
 | sw-0240 | The Day It Rained Fish | read and left out: A mistake in the source text ("there was was"). |
-| sw-0241 | Rachel and Big Ben | licensed, not read yet |
-| sw-0242 | Cute Rat | licensed, not read yet |
-| sw-0243 | Where is my Home? | licensed, not read yet |
-| sw-0244 | When the Wind Blew Today... | licensed, not read yet |
+| sw-0241 | Rachel and Big Ben | read and left out: A mistake in the source text ("He had become old, little faded"); a girl pulled away by a river in a dream. |
+| sw-0242 | Cute Rat | read and left out: One page of 51 words, not a story; a mistake in the source text ("Bits of papers ... is a bad deed"). |
+| sw-0243 | Where is my Home? | read and left out: One page with mistakes in the source text ("thought to had a urgent meeting"); calls people "MEAN HUMANS". |
 | sw-0246 | Crumbled Tear Laden Walls | pictures do not line up with pages (1 images for 1 pages); reviewed: The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once. |
-| sw-0247 | It's bath time! | licensed, not read yet |
+| sw-0247 | It's bath time! | read and left out: Mistakes in the source text (spaces before punctuation throughout: "Nandu , Chinku , come here ."). |
 | sw-0248 | Ham and Lily | pictures do not line up with pages (4 images for 4 pages); reviewed: As many pictures as pages: the descriptions do not show which picture is the cover or which page would go without one. |
 | sw-0249 | Maya - Story of Us | pictures do not line up with pages (64 images for 32 pages); reviewed: No story text in the source (64 pictures, no words). |
-| sw-0250 | The Angry Shopkeeper | licensed, not read yet |
-| sw-0251 | Windy's adventure | licensed, not read yet |
-| sw-0252 | The book of poems | licensed, not read yet |
-| sw-0253 | Dia's favourite festivals | licensed, not read yet |
-| sw-0254 | The Magical Jackal | licensed, not read yet |
-| sw-0255 | The love of art | licensed, not read yet |
-| sw-0256 | My Juggling Grandma | licensed, not read yet |
-| sw-0257 | Nina Plays With the Butterflies | licensed, not read yet |
-| sw-0258 | Gargi and Soapy | licensed, not read yet |
-| sw-0259 | Treasure of Deeds | licensed, not read yet |
-| sw-0260 | Guess this place? Ghost Town! | licensed, not read yet |
-| sw-0261 | Aditi's Trip To Moon | licensed, not read yet |
+| sw-0250 | The Angry Shopkeeper | read and left out: A mistake in the source text ("amd set off for work"); a shopkeeper screams at a crowd; a man is labeled "a beggar in rags". |
+| sw-0251 | Windy's adventure | read and left out: Mistakes in the source text ("did'nt", "could'nt", "suprised", "they were loud noises"). |
+| sw-0252 | The book of poems | read and left out: Old poems by other writers collected together, a rabbit crying in a snare, and mistakes ("Our habits weather right or wrong", missing spaces after commas). |
+| sw-0253 | Dia's favourite festivals | read and left out: Mistakes in the source text ("ethenic", "synthitic", "diya's", "Me and my family enjoy"); religious festivals are the whole book. |
+| sw-0254 | The Magical Jackal | read and left out: Mistakes in the source text ("1'o' clock", "Saturday .", "the the"); a child sneaks out of her dormitory into a dark forest at night. |
+| sw-0255 | The love of art | read and left out: A mistake in the source text ("They had to first clean they house"). |
+| sw-0256 | My Juggling Grandma | read and left out: A mistake in the source text ("got hundred rupees", "with a!!SPLAT!!"). |
+| sw-0257 | Nina Plays With the Butterflies | read and left out: Mistakes in the source text ("After awhile", "I saw a lot of butterflies come and take a look at it, mother."). |
+| sw-0258 | Gargi and Soapy | read and left out: Germs "kick and punch" a sick girl and a "war"; mistakes in the source text ("magnificient", "boat ,"). |
+| sw-0259 | Treasure of Deeds | read and left out: Written for older readers: drunk men eye a young woman on an empty night bus; mistakes in the source text ("strench"). |
+| sw-0260 | Guess this place? Ghost Town! | read and left out: A Ramayana story (Lord Rama, Ravana, a prayer to Lord Shiva) is the plot. |
+| sw-0261 | Aditi's Trip To Moon | read and left out: Mistakes in the source text ("" How I wish I go to moon."", a page starting "she wanted", "Oh! ."). |
 | sw-0263 | Hacking Is Life Part 2 - The Kid Can't Be Kidnapped | pictures do not line up with pages (1 images for 1 pages); reviewed: The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once. |
-| sw-0264 | The perfect project | licensed, not read yet |
-| sw-0265 | Mittai Lals' Sweet Dream | licensed, not read yet |
-| sw-0266 | Intelligent Friends | licensed, not read yet |
-| sw-0267 | The little girl and Teddy | licensed, not read yet |
-| sw-0268 | The Girl and the Bear | licensed, not read yet |
-| sw-0269 | Hooray!!! It's Sunday- Time for Leisure Shower and Fun time | licensed, not read yet |
-| sw-0270 | Viva.., the curious girl | licensed, not read yet |
-| sw-0271 | Best Friends Forever | licensed, not read yet |
-| sw-0272 | Life's Lighter Moments | licensed, not read yet |
-| sw-0273 | App-ily ever after | licensed, not read yet |
-| sw-0274 | Wonders of Martina's Adventure | licensed, not read yet |
-| sw-0275 | Cinderella | licensed, not read yet |
-| sw-0276 | King of Birds | licensed, not read yet |
+| sw-0264 | The perfect project | read and left out: Mistakes in the source text ("did'nt", "Peacok", "Desert's", "the the birds"). |
+| sw-0265 | Mittai Lals' Sweet Dream | read and left out: Labels a man by body size ("fat and round like a laddu") and ends with him breaking his arm. |
+| sw-0266 | Intelligent Friends | read and left out: Many mistakes in the source text ("Ramu's best friend name is rabbit", "Tortise", lowercase names). |
+| sw-0267 | The little girl and Teddy | read and left out: The source text is cut off and garbled at the end, with mistakes ("throwed"). |
+| sw-0268 | The Girl and the Bear | read and left out: Mistakes in the source text ("she didn't had anything", "fishes have started raining"). |
+| sw-0269 | Hooray!!! It's Sunday- Time for Leisure Shower and Fun time | read and left out: Mistakes in the source text (stray spaces inside quotes, "lets Chinnu and Puttu to run"). |
+| sw-0270 | Viva.., the curious girl | read and left out: Mistakes in the source text ("This experiences make her", "All the other pupils takes her"). |
+| sw-0271 | Best Friends Forever | read and left out: Mistakes in the source text ("the two of them's houses", "They two cried"). |
+| sw-0272 | Life's Lighter Moments | read and left out: Mistakes in the source text ("in the age of10", "how really hated", "asusual"); a boy's hand stuck in a hole in a busy road. |
+| sw-0273 | App-ily ever after | read and left out: Mistakes in the source text ("All in day's job"); the plot is an advert for a made-up map app. |
+| sw-0274 | Wonders of Martina's Adventure | read and left out: Mistakes in the source text ("any where", "co- operated", "the pacific ocean"). |
+| sw-0275 | Cinderella | read and left out: Mistakes in the source text ("she is a sweet girl" without a capital, "did not allowed"); a contest for the most beautiful girl to marry a prince. |
 | sw-0277 | The brave boy! | pictures do not line up with pages (1 images for 1 pages); reviewed: The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once. |
-| sw-0278 | Queen's Village | licensed, not read yet |
-| sw-0279 | Croaky the Frog | licensed, not read yet |
+| sw-0278 | Queen's Village | read and left out: A queen dies and people die of disease; mistakes in the source text ("ther was no rains", "Atlast"). |
+| sw-0279 | Croaky the Frog | read and left out: Mistakes in the source text ("humans taking like that", a quote never closed, "google"). |
 | sw-0280 | The day of an owl | read and left out: Mistakes in the source text and an unclear plot (a falling bird, a vulture). |
-| sw-0281 | Abhinav and the Cat | licensed, not read yet |
-| sw-0282 | The Avengers and the age of powerful mach Green Goblin | licensed, not read yet |
-| sw-0283 | Food makes everything better! | licensed, not read yet |
+| sw-0281 | Abhinav and the Cat | read and left out: Mistakes in the source text ("He left the milk in a sauce and soon the cat drank way", "catoon"). |
+| sw-0282 | The Avengers and the age of powerful mach Green Goblin | read and left out: Uses Marvel characters (the Avengers, the Green Goblin) we have no rights to; fighting; mistakes (lowercase names). |
+| sw-0283 | Food makes everything better! | read and left out: Calls a girl "weak in studies" and a bear "greedy"; mistakes in the source text ("Thutankan", "Thepla's", "contended"). |
 | sw-0284 | Our earth is precious | read and left out: Unclear text ("Ladies when they pray", monsters) and mistakes. |
-| sw-0285 | Zara | licensed, not read yet |
-| sw-0286 | The Clever Tortoise and the Foolish Fox | licensed, not read yet |
-| sw-0287 | My family | licensed, not read yet |
-| sw-0288 | Adventures of Anna | licensed, not read yet |
-| sw-0290 | Sheema and King Kenrykoof | licensed, not read yet |
-| sw-0291 | Akash's sweet lesson to brush | licensed, not read yet |
-| sw-0292 | God | licensed, not read yet |
-| sw-0294 | Truth Alone Triumphs | licensed, not read yet |
-| sw-0295 | Silly & Billy Meet the Ministry of Petrol Pumps | licensed, not read yet |
-| sw-0296 | Rizwan and his friends having fun in the snow | licensed, not read yet |
-| sw-0297 | Holiday Fun | licensed, not read yet |
-| sw-0298 | Inhabitants of the Sea | licensed, not read yet |
+| sw-0285 | Zara | read and left out: Both of a girl's parents die in the first two pages. |
+| sw-0286 | The Clever Tortoise and the Foolish Fox | read and left out: Mistakes in the source text (run-on sentences, the tortoise becomes a turtle mid-story, no final period); a fox tries to eat the tortoise. |
+| sw-0287 | My family | read and left out: One page with mistakes in the source text ("studing", "restaurent", "the father give"). |
+| sw-0288 | Adventures of Anna | read and left out: One page with mistakes in the source text ("She like to take risks", "heavely", "stromy"); a girl lost alone in a jungle at night. |
+| sw-0290 | Sheema and King Kenrykoof | read and left out: Mistakes in the source text ("Her mother" capitalized mid-sentence, lowercase "king kenrykoof"); a fight with an army. |
+| sw-0291 | Akash's sweet lesson to brush | read and left out: Mistakes in the source text ("mommy and daddy has warned him", "a cake awaiting for him"); a monster threatens to eat a child's teeth. |
+| sw-0292 | God | read and left out: Religious: God comes to earth as Lord Krishna; mistakes in the source text ("donot"). |
+| sw-0294 | Truth Alone Triumphs | read and left out: A boy sneaks out while his parents nap and expects to be beaten; a mistake in the source text ("sitting in is house"). |
+| sw-0295 | Silly & Billy Meet the Ministry of Petrol Pumps | read and left out: Mistakes in the source text ("6;00 am", "television .", "subway-sick ."). |
+| sw-0296 | Rizwan and his friends having fun in the snow | read and left out: Mistakes in the source text ("Like him this Saturday morning, the parents finally allowed", "shared the pictures to all their cousins"). |
+| sw-0297 | Holiday Fun | read and left out: Warriors fighting, then unrelated lines; mistakes in the source text ("One day there are 3 warriors", "we love beach"). |
+| sw-0298 | Inhabitants of the Sea | read and left out: A list of sea animals, not a story, with a mistake in the source text (a missing period after "Marine Turtle)"). |
 | sw-0299 | How Does the Toothpaste Get into the Tube? | pictures do not line up with pages (13 images for 11 pages); reviewed: More pictures than pages, and the descriptions do not show which pictures go with which page. |
-| sw-0300 | Toothpaste trouble!! | licensed, not read yet |
+| sw-0300 | Toothpaste trouble!! | read and left out: Mistakes in the source text ("did'nt", "Granny's teeth had rot"). |
 | sw-0301 | And this is how the earth got colour. | read and left out: Mistakes in the source text ("a artist"). |
-| sw-0302 | Oliver beats his problem! | licensed, not read yet |
-| sw-0303 | My brother | licensed, not read yet |
+| sw-0302 | Oliver beats his problem! | read and left out: A boy is called "very fat" and teased at school; the story is about losing weight. |
+| sw-0303 | My brother | read and left out: A mother dies and her small son does child labor; many mistakes in the source text ("amoun", "fall ill"). |
 | sw-0304 | Why Do Bees Buzz? | pictures do not line up with pages (13 images for 11 pages); reviewed: More pictures than pages, and the descriptions do not show which pictures go with which page. |
-| sw-0305 | The Cloud Dragon | licensed, not read yet |
-| sw-0306 | Our easy escape | licensed, not read yet |
-| sw-0307 | Hyena and Raven | licensed, not read yet |
-| sw-0308 | Starry and the land of the unknown | licensed, not read yet |
-| sw-0309 | A Kind Boy. | licensed, not read yet |
-| sw-0310 | The Moon and the Stars | licensed, not read yet |
-| sw-0311 | The huge beauty | licensed, not read yet |
-| sw-0312 | The bizarre island | licensed, not read yet |
+| sw-0305 | The Cloud Dragon | read and left out: Lord Indra and a war in heaven are the plot; mistakes in the source text ("didn't breath fire", "on wards"). |
+| sw-0306 | Our easy escape | read and left out: A haunted house and a ghost; a boy goes into a stranger's house against his mother's advice. |
+| sw-0307 | Hyena and Raven | read and left out: The hyena falls from the sky and is badly hurt ("howling in pain, with a broken leg and dark scars"). |
+| sw-0308 | Starry and the land of the unknown | read and left out: Mistakes in the source text ("haeven", "was'nt", "on a drought"). |
+| sw-0309 | A Kind Boy. | read and left out: Mistakes in the source text ("henarrated", "thatRaj's", "The Most Kindest Person"). |
+| sw-0310 | The Moon and the Stars | read and left out: Mistakes in the source text ("it's cool golden beam", "among-st", "the all the glitter"). |
+| sw-0311 | The huge beauty | read and left out: Mistakes in the source text ("she reach exactly when", "in all the veggie competition which were"). |
+| sw-0312 | The bizarre island | read and left out: Mistakes in the source text ("Once in a sunny day", "several dwarf came", "shining with all its might ."). |
 | sw-0313 | Long Live Friendship! A Humorous Play for Children | too long for the library (too long (2964 words)) |
-| sw-0314 | Loving Family | licensed, not read yet |
-| sw-0315 | Chottu - The Little Boy | licensed, not read yet |
-| sw-0316 | “Everything happens for the good” | licensed, not read yet |
+| sw-0314 | Loving Family | read and left out: Mistakes in the source text ("Little yo came running", "less marks", a missing period); a child terrified of her parents' reaction. |
+| sw-0315 | Chottu - The Little Boy | read and left out: A boy is teased about his height and attacks another child wrestling-style ("Charlie's neck twisted"); brand names (Manchester United, WWE, Complan). |
+| sw-0316 | “Everything happens for the good” | read and left out: A hunting accident takes a man's thumb, cannibals capture a king, and a friend is put in prison. |
 | sw-0318 | Why Does A Poori Puff Up? | pictures do not line up with pages (15 images for 12 pages); reviewed: More pictures than pages, and the descriptions do not show which pictures go with which page. |
-| sw-0319 | A Brighter Day | licensed, not read yet |
-| sw-0320 | The Rabbit's Kite Tales | licensed, not read yet |
-| sw-0321 | Drigo lost in Space | licensed, not read yet |
-| sw-0322 | The Carpenter's last job | licensed, not read yet |
-| sw-0323 | Chhoti and Bade | licensed, not read yet |
-| sw-0324 | Why Can't We Glow Like Fireflies? | licensed, not read yet |
-| sw-0325 | Trip to the Dragon Land | licensed, not read yet |
-| sw-0328 | Little Blue Alien | licensed, not read yet |
+| sw-0320 | The Rabbit's Kite Tales | read and left out: Mistakes in the source text (the rabbit is Balloo and Ballu, "Ballus kite"); an unclear ending ("It was the last time Ballu had seen Appu"). |
+| sw-0321 | Drigo lost in Space | read and left out: Mistakes in the source text ("he lost in space", "spiting fire", rows of dots). |
+| sw-0323 | Chhoti and Bade | read and left out: Mistakes in the source text ("Bade- the elephant", a missing period after "kind eyes before"). |
+| sw-0324 | Why Can't We Glow Like Fireflies? | read and left out: A mistake in the source text ("Fireflies maybe tiny"); a section about choosing mates. |
+| sw-0325 | Trip to the Dragon Land | read and left out: Mistakes in the source text ("As Varun was dreaming of a dragon in the form of a train, a lighthouse and a bridge." is not a sentence; tenses change mid-story). |
+| sw-0328 | Little Blue Alien | read and left out: A mistake in the source text ("told the Astronaut / That how he is stuck alone and lost"). |
 | sw-0329 | The Change | pictures do not line up with pages (8 images for 8 pages); reviewed: As many pictures as pages and two are "Rocket flying over green hills"; the text also has mistakes ("eyery one"). |
 | sw-0330 | Eldorado | pictures do not line up with pages (1 images for 1 pages); reviewed: The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once. |
-| sw-0331 | Everyone needs a friend | licensed, not read yet |
-| sw-0332 | Oh the Way We Ran, in the Fish Rain | licensed, not read yet |
-| sw-0333 | The Indigo Fairy and the Lizard | licensed, not read yet |
+| sw-0331 | Everyone needs a friend | read and left out: Lions plan to "share the kill" of a giraffe; mistakes in the source text ("asked." It's", "life."" Everyone"). |
+| sw-0333 | The Indigo Fairy and the Lizard | read and left out: A lizard calls a little girl "a sweet little dope"; a mistake in the source text ("Well It would seem"). |
 | sw-0334 | Kardi | licensed, not read yet |
 | sw-0337 | Jack and Anny go to space | licensed, not read yet |
 | sw-0338 | The Birthday Party | image 07.jpg license: unreadable |

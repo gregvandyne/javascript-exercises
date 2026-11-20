@@ -2685,6 +2685,43 @@
     }
    ]
   },
+  "0244": {
+   "glossary": {
+    "gnat": "a tiny flying insect"
+   },
+   "questions": [
+    {
+     "q": "What was the feather flying?",
+     "right": "An ant",
+     "wrong": [
+      "A frog",
+      "A rat"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What was the rat flying?",
+     "right": "A balloon",
+     "wrong": [
+      "A kite",
+      "A feather"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "What made all these things fly?",
+     "right": "The wind",
+     "wrong": [
+      "The rain",
+      "A magic spell"
+     ],
+     "page": 5,
+     "kind": "inference"
+    }
+   ]
+  },
   "0262": {
    "glossary": {
     "halwa": "a soft, sweet pudding"
@@ -2722,6 +2759,44 @@
     }
    ]
   },
+  "0276": {
+   "glossary": {
+    "Neddicky": "a small brown bird from southern Africa",
+    "Ncede": "the Neddicky's name"
+   },
+   "questions": [
+    {
+     "q": "How did the birds decide who would be king?",
+     "right": "The bird that flew the highest would be king",
+     "wrong": [
+      "The biggest bird would be king",
+      "The best singer would be king"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Where did the little bird hide from the angry birds?",
+     "right": "In an empty snake hole",
+     "wrong": [
+      "Under Owl's wing",
+      "On top of a mountain"
+     ],
+     "page": 11,
+     "kind": "literal"
+    },
+    {
+     "q": "Did the little bird fly higher than Vulture all by himself?",
+     "right": "No, he held on to Vulture and got a ride",
+     "wrong": [
+      "Yes, he flew for four whole days",
+      "Yes, he is the strongest flier"
+     ],
+     "page": 7,
+     "kind": "inference"
+    }
+   ]
+  },
   "0317": {
    "glossary": {},
    "questions": [
@@ -2753,6 +2828,113 @@
       "It was raining"
      ],
      "page": 1,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0319": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "Why couldn't the cactus fix the light?",
+     "right": "Her rope ladder could not reach the ceiling lamp",
+     "wrong": [
+      "She did not have a spare bulb",
+      "She was scared of the rain"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did the cactus hand to the bear?",
+     "right": "A spare bulb",
+     "wrong": [
+      "A rope ladder",
+      "An umbrella"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "How does the cactus feel at the end?",
+     "right": "Happy and thankful",
+     "wrong": [
+      "Angry with the bear",
+      "Worried about the rain"
+     ],
+     "page": 1,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0322": {
+   "glossary": {
+    "retire": "to stop working, usually when you are older"
+   },
+   "questions": [
+    {
+     "q": "Why did the carpenter want to stop working?",
+     "right": "He had grown old and wanted to retire",
+     "wrong": [
+      "He was tired of his family",
+      "He wanted to become a farmer"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "How did the carpenter build the last house?",
+     "right": "With poor work and cheap materials",
+     "wrong": [
+      "Faster than ever before",
+      "With the best wood he could find"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Why would the carpenter have built the house better if he had known?",
+     "right": "It was going to be his own home",
+     "wrong": [
+      "He wanted to be paid more",
+      "His employer was watching him"
+     ],
+     "page": 3,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0332": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What fell from the sky instead of rain?",
+     "right": "Fish",
+     "wrong": [
+      "Frogs",
+      "Flowers"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What were the people at the market doing?",
+     "right": "Holding up baskets to catch the fish",
+     "wrong": [
+      "Hiding under umbrellas",
+      "Running home"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Akira keep running all the way?",
+     "right": "She did not want to be late for school",
+     "wrong": [
+      "She was scared of the fish",
+      "She wanted to buy fish"
+     ],
+     "page": 6,
      "kind": "inference"
     }
    ]
@@ -2910,12 +3092,88 @@
   "0224": "One page with mistakes in the source text (\"mokey\", \"\"what are you doing here?\".\").",
   "0225": "One page of 42 words with mistakes in the source text (\"One of the student writing\"), and labels the children \"naughty\".",
   "0226": "A Lakshmi Pooja and firecrackers are central; mistakes in the source text (\"lightning diyas\", \"its holiday\").",
+  "0227": "Written for adults: \"damn dog\", a soldier deploying to Iraq who may not come back.",
+  "0229": "Mistakes in the source text (\"did'nt\" three times, \"her eyes falling in her chudidhar\").",
+  "0230": "A mistake in the source text (\"There was an earthquack\"); children left to set up a house alone after an earthquake.",
+  "0231": "Mistakes in the source text (\"\"Where is she\", they ask?\", \"says, Miss Shalini\").",
   "0232": "Mistakes in the source text (\"Me and my friend\") and a near copy of My Best Friend (0125), which is included.",
+  "0233": "One page with mistakes in the source text (\"he grew up and became 6 years\", \"he told a speech\").",
   "0234": "Mistakes in the source text (\"did'nt\").",
+  "0235": "Mistakes in the source text (\"unti it was dark\", \"Oh no!I think\").",
+  "0236": "Many mistakes in the source text (\"did'nt\", \"confusedat\", \"gotn\", \"jelabi's\") and conversion leftovers (\"###\").",
+  "0237": "Mistakes in the source text (\"the wholetown\", \"she saw Reena running towards.\").",
   "0240": "A mistake in the source text (\"there was was\").",
+  "0241": "A mistake in the source text (\"He had become old, little faded\"); a girl pulled away by a river in a dream.",
+  "0242": "One page of 51 words, not a story; a mistake in the source text (\"Bits of papers ... is a bad deed\").",
+  "0243": "One page with mistakes in the source text (\"thought to had a urgent meeting\"); calls people \"MEAN HUMANS\".",
+  "0247": "Mistakes in the source text (spaces before punctuation throughout: \"Nandu , Chinku , come here .\").",
+  "0250": "A mistake in the source text (\"amd set off for work\"); a shopkeeper screams at a crowd; a man is labeled \"a beggar in rags\".",
+  "0251": "Mistakes in the source text (\"did'nt\", \"could'nt\", \"suprised\", \"they were loud noises\").",
+  "0252": "Old poems by other writers collected together, a rabbit crying in a snare, and mistakes (\"Our habits weather right or wrong\", missing spaces after commas).",
+  "0253": "Mistakes in the source text (\"ethenic\", \"synthitic\", \"diya's\", \"Me and my family enjoy\"); religious festivals are the whole book.",
+  "0254": "Mistakes in the source text (\"1'o' clock\", \"Saturday .\", \"the the\"); a child sneaks out of her dormitory into a dark forest at night.",
+  "0255": "A mistake in the source text (\"They had to first clean they house\").",
+  "0256": "A mistake in the source text (\"got hundred rupees\", \"with a!!SPLAT!!\").",
+  "0257": "Mistakes in the source text (\"After awhile\", \"I saw a lot of butterflies come and take a look at it, mother.\").",
+  "0258": "Germs \"kick and punch\" a sick girl and a \"war\"; mistakes in the source text (\"magnificient\", \"boat ,\").",
+  "0259": "Written for older readers: drunk men eye a young woman on an empty night bus; mistakes in the source text (\"strench\").",
+  "0260": "A Ramayana story (Lord Rama, Ravana, a prayer to Lord Shiva) is the plot.",
+  "0261": "Mistakes in the source text (\"\" How I wish I go to moon.\"\", a page starting \"she wanted\", \"Oh! .\").",
+  "0264": "Mistakes in the source text (\"did'nt\", \"Peacok\", \"Desert's\", \"the the birds\").",
+  "0265": "Labels a man by body size (\"fat and round like a laddu\") and ends with him breaking his arm.",
+  "0266": "Many mistakes in the source text (\"Ramu's best friend name is rabbit\", \"Tortise\", lowercase names).",
+  "0267": "The source text is cut off and garbled at the end, with mistakes (\"throwed\").",
+  "0268": "Mistakes in the source text (\"she didn't had anything\", \"fishes have started raining\").",
+  "0269": "Mistakes in the source text (stray spaces inside quotes, \"lets Chinnu and Puttu to run\").",
+  "0270": "Mistakes in the source text (\"This experiences make her\", \"All the other pupils takes her\").",
+  "0271": "Mistakes in the source text (\"the two of them's houses\", \"They two cried\").",
+  "0272": "Mistakes in the source text (\"in the age of10\", \"how really hated\", \"asusual\"); a boy's hand stuck in a hole in a busy road.",
+  "0273": "Mistakes in the source text (\"All in day's job\"); the plot is an advert for a made-up map app.",
+  "0274": "Mistakes in the source text (\"any where\", \"co- operated\", \"the pacific ocean\").",
+  "0275": "Mistakes in the source text (\"she is a sweet girl\" without a capital, \"did not allowed\"); a contest for the most beautiful girl to marry a prince.",
+  "0278": "A queen dies and people die of disease; mistakes in the source text (\"ther was no rains\", \"Atlast\").",
+  "0279": "Mistakes in the source text (\"humans taking like that\", a quote never closed, \"google\").",
   "0280": "Mistakes in the source text and an unclear plot (a falling bird, a vulture).",
+  "0281": "Mistakes in the source text (\"He left the milk in a sauce and soon the cat drank way\", \"catoon\").",
+  "0282": "Uses Marvel characters (the Avengers, the Green Goblin) we have no rights to; fighting; mistakes (lowercase names).",
+  "0283": "Calls a girl \"weak in studies\" and a bear \"greedy\"; mistakes in the source text (\"Thutankan\", \"Thepla's\", \"contended\").",
   "0284": "Unclear text (\"Ladies when they pray\", monsters) and mistakes.",
+  "0285": "Both of a girl's parents die in the first two pages.",
+  "0286": "Mistakes in the source text (run-on sentences, the tortoise becomes a turtle mid-story, no final period); a fox tries to eat the tortoise.",
+  "0287": "One page with mistakes in the source text (\"studing\", \"restaurent\", \"the father give\").",
+  "0288": "One page with mistakes in the source text (\"She like to take risks\", \"heavely\", \"stromy\"); a girl lost alone in a jungle at night.",
+  "0290": "Mistakes in the source text (\"Her mother\" capitalized mid-sentence, lowercase \"king kenrykoof\"); a fight with an army.",
+  "0291": "Mistakes in the source text (\"mommy and daddy has warned him\", \"a cake awaiting for him\"); a monster threatens to eat a child's teeth.",
+  "0292": "Religious: God comes to earth as Lord Krishna; mistakes in the source text (\"donot\").",
+  "0294": "A boy sneaks out while his parents nap and expects to be beaten; a mistake in the source text (\"sitting in is house\").",
+  "0295": "Mistakes in the source text (\"6;00 am\", \"television .\", \"subway-sick .\").",
+  "0296": "Mistakes in the source text (\"Like him this Saturday morning, the parents finally allowed\", \"shared the pictures to all their cousins\").",
+  "0297": "Warriors fighting, then unrelated lines; mistakes in the source text (\"One day there are 3 warriors\", \"we love beach\").",
+  "0298": "A list of sea animals, not a story, with a mistake in the source text (a missing period after \"Marine Turtle)\").",
+  "0300": "Mistakes in the source text (\"did'nt\", \"Granny's teeth had rot\").",
   "0301": "Mistakes in the source text (\"a artist\").",
+  "0302": "A boy is called \"very fat\" and teased at school; the story is about losing weight.",
+  "0303": "A mother dies and her small son does child labor; many mistakes in the source text (\"amoun\", \"fall ill\").",
+  "0305": "Lord Indra and a war in heaven are the plot; mistakes in the source text (\"didn't breath fire\", \"on wards\").",
+  "0306": "A haunted house and a ghost; a boy goes into a stranger's house against his mother's advice.",
+  "0307": "The hyena falls from the sky and is badly hurt (\"howling in pain, with a broken leg and dark scars\").",
+  "0308": "Mistakes in the source text (\"haeven\", \"was'nt\", \"on a drought\").",
+  "0309": "Mistakes in the source text (\"henarrated\", \"thatRaj's\", \"The Most Kindest Person\").",
+  "0310": "Mistakes in the source text (\"it's cool golden beam\", \"among-st\", \"the all the glitter\").",
+  "0311": "Mistakes in the source text (\"she reach exactly when\", \"in all the veggie competition which were\").",
+  "0312": "Mistakes in the source text (\"Once in a sunny day\", \"several dwarf came\", \"shining with all its might .\").",
+  "0314": "Mistakes in the source text (\"Little yo came running\", \"less marks\", a missing period); a child terrified of her parents' reaction.",
+  "0315": "A boy is teased about his height and attacks another child wrestling-style (\"Charlie's neck twisted\"); brand names (Manchester United, WWE, Complan).",
+  "0316": "A hunting accident takes a man's thumb, cannibals capture a king, and a friend is put in prison.",
+  "0320": "Mistakes in the source text (the rabbit is Balloo and Ballu, \"Ballus kite\"); an unclear ending (\"It was the last time Ballu had seen Appu\").",
+  "0321": "Mistakes in the source text (\"he lost in space\", \"spiting fire\", rows of dots).",
+  "0323": "Mistakes in the source text (\"Bade- the elephant\", a missing period after \"kind eyes before\").",
+  "0324": "A mistake in the source text (\"Fireflies maybe tiny\"); a section about choosing mates.",
+  "0325": "Mistakes in the source text (\"As Varun was dreaming of a dragon in the form of a train, a lighthouse and a bridge.\" is not a sentence; tenses change mid-story).",
+  "0328": "A mistake in the source text (\"told the Astronaut / That how he is stuck alone and lost\").",
+  "0329": "Pictures: 8 pictures for 8 pages and the descriptions do not show which goes with which; the text also has mistakes (\"eyery one\", \"and and\").",
+  "0331": "Lions plan to \"share the kill\" of a giraffe; mistakes in the source text (\"asked.\" It's\", \"life.\"\" Everyone\").",
+  "0333": "A lizard calls a little girl \"a sweet little dope\"; a mistake in the source text (\"Well It would seem\").",
   "0349": "Only 3 pages; the story stops before it ends.",
   "0374": "Compares children to monkeys, which can read as a slur; left out to be safe.",
   "0378": "A list of vehicles, not a story.",
