@@ -11719,6 +11719,19 @@
       "answer": "Réponse : {answer}",
       "page": "page {page}",
       "missed": "{count} se sont trompés la première fois"
+    },
+    "wish": {
+      "label": "Qu’as-tu envie de lire aujourd’hui ?",
+      "placeholder": "des dinosaures, une histoire drôle, l’espace...",
+      "go": "Trouver des livres",
+      "busy": "Je cherche...",
+      "heading": "Des livres pour toi",
+      "back": "Tous les livres",
+      "tryOther": "Essayons d’autres mots. De quoi aimerais-tu que l’histoire parle ?",
+      "none": "Nous n’avons pas encore de livre sur ce sujet. Voici des livres que beaucoup de lecteurs aiment.",
+      "found": "Nous avons trouvé {count, plural, one {# livre} other {# livres}} pour toi.",
+      "empty": "Écris ce que tu as envie de lire.",
+      "error": "Un problème est survenu. Réessaie."
     }
   }
 }
