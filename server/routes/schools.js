@@ -39,6 +39,7 @@ import { LOOP_CSS } from './teach-loop.js';
 import * as DASH from '../services/dash.js';
 import { emailInvitesPanel } from './staff-invites.js';
 import { openCount as openEmailInvites } from '../services/staff-email-invites.js';
+import { classBanner as manipBanner } from './manipulatives.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -1076,6 +1077,7 @@ function studentClass(req, res, c) {
   <div class="pagehead"><div><span class="small muted">${s.name}</span><h1>${c.name}</h1>
     <p class="muted">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</p></div>${DASH.isStudent(req.user, c) ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">🖥️ ${t('dash.entry.student')}</a>` : ''}${studentNotYou(req, S.classMember(c.id, req.user.id)?.role === 'student')}</div>
   ${classLiveBanner(req, c)}
+  ${manipBanner(req, c)}
   ${studentLessonsPanel(req, c)}
   ${studentGamesPanel(req, c, teachers)}
   <div class="cols2"><section class="panel"><h2>🍎 ${t('school.class.teachers')}</h2><ul class="plain chips-list">${teachers.map(p => html`<li class="pp">${avatar(p, 28)} ${nameOf(p)}</li>`)}</ul></section>

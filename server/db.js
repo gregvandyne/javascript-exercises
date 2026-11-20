@@ -1075,6 +1075,26 @@ export const MIGRATIONS = [
       finished_at INTEGER, quiz_at INTEGER, started_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (user_id, book_id));
     CREATE INDEX IF NOT EXISTS story_reads_user ON story_reads(user_id, updated_at);
     ALTER TABLE lesson_steps ADD COLUMN story_id TEXT;`],
+  // Virtual math manipulatives (docs/decisions.md "Virtual math manipulatives"; services/manipulatives.js), hidden while
+  // it is tested. (0091 is also taken on an unmerged branch, so this starts at 0092; migrations run by name, a gap is fine.)
+  // manip_boards: a grown-up's saved boards, each with its own share code (owner only lists and deletes them).
+  // manip_sessions: a live session, owned by its teacher (host_id) and for one of their classes; its join code works
+  // only for that class's students. manip_work: each joined student's own board in a session (state: the board as JSON,
+  // their sticky notes included), seen by that student and the session's teacher only.
+  ['0092_manipulatives', `
+    CREATE TABLE IF NOT EXISTS manip_boards (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      code TEXT NOT NULL UNIQUE, tool TEXT NOT NULL, title TEXT NOT NULL, state TEXT NOT NULL, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_manip_boards_owner ON manip_boards(owner_id, created_at);
+    CREATE TABLE IF NOT EXISTS manip_sessions (id TEXT PRIMARY KEY, code TEXT NOT NULL UNIQUE,
+      host_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE,
+      tool TEXT NOT NULL, title TEXT NOT NULL, pushed_state TEXT, pushed_at INTEGER, status TEXT NOT NULL DEFAULT 'active',
+      created_at INTEGER NOT NULL, ended_at INTEGER);
+    CREATE INDEX IF NOT EXISTS idx_manip_sessions_class ON manip_sessions(class_id, status);
+    CREATE INDEX IF NOT EXISTS idx_manip_sessions_host ON manip_sessions(host_id, created_at);
+    CREATE TABLE IF NOT EXISTS manip_work (session_id TEXT NOT NULL REFERENCES manip_sessions(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, state TEXT NOT NULL DEFAULT '{}', joined_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL, PRIMARY KEY (session_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_manip_work_user ON manip_work(user_id);`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by
