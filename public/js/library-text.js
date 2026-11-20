@@ -34,3 +34,16 @@ export function tokens(text) {
   const s = String(text || '');
   return Array.from(s.matchAll(/\s+|[^\s]+/g), m => ({ text: m[0], start: m.index, word: !/^\s/.test(m[0]) }));
 }
+
+/**
+ * The reader's page dots for a long book (owner's choice, 20 Nov 2026): a book of more than `limit` pages shows a
+ * window of `size` dots that slides with the reader, "…" on a side with more pages, so the dots stay on one line (the
+ * 50-page Velveteen Rabbit wrapped onto two). Shorter books show every dot. `last` is the furthest page on screen
+ * (the right-hand page of a spread). Returns the dots to show, from (inclusive) to (exclusive), 0-based.
+ */
+export const DOTS = Object.freeze({ limit: 24, size: 13 });
+export function dotWindow(n, last, { limit = DOTS.limit, size = DOTS.size } = {}) {
+  if (n <= limit) return { from: 0, to: n, sliding: false };
+  const from = Math.max(0, Math.min(n - size, Math.min(last, n) - 1 - Math.floor(size / 2)));
+  return { from, to: from + size, sliding: true };
+}

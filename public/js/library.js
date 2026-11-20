@@ -12,7 +12,7 @@
 import { api, pageData, toast } from '/js/app.js';
 import { t } from '/js/i18n.js';
 import { aiOn, ttsBlob, deviceVoice, unlockAudio, stopReading } from '/js/tts.js';
-import { sentences, tokens } from '/js/library-text.js';
+import { sentences, tokens, dotWindow } from '/js/library-text.js';
 
 const D = pageData();
 const root = document.getElementById('reader');
@@ -94,7 +94,9 @@ function start() {
         }
       }
       drawText(pg);
-      [...dots.children].forEach((d, i) => d.classList.toggle('on', i < last));
+      const win = dotWindow(n, last);
+      dots.classList.toggle('sliding', win.sliding); dots.classList.toggle('more-l', win.from > 0); dots.classList.toggle('more-r', win.to < n);
+      [...dots.children].forEach((d, i) => { d.classList.toggle('on', i < last); d.classList.toggle('cur', win.sliding && i === Math.min(last, n) - 1); d.hidden = i < win.from || i >= win.to; });
       count.textContent = view[1] ? t('js.library.pagesOf', { from: page, to: view[1], pages: n }) : t('js.library.pageOf', { page, pages: n });
       prev.setAttribute('aria-disabled', page <= 1 ? 'true' : 'false'); prev.tabIndex = page <= 1 ? -1 : 0;
       prev.href = `?p=${Math.max(1, page - 1)}`; next.href = `?p=${last + 1}`;

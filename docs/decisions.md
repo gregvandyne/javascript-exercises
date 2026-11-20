@@ -9682,3 +9682,12 @@ side by side as an open book (approved mockup). Pages must fit half a 1280 x 720
   speech). A fix with `kind: "cut"` leaves out a line; it is counted in `credits.cuts`, not as a spelling correction, and
   the book's notes say "Oomba ... left out one line" (`library.credits.changesClassicCut`, 12 languages; en-GB uses en).
 - Owner: the books left out for old words a filter flags ("Pussy", "cock", "Ass") stay out.
+
+## Story Library: sliding page dots for long books (20 Nov 2026)
+
+- Owner chose "sliding dots" (option B of three mocked: a progress bar, sliding dots, parts) after the 50-page Velveteen
+  Rabbit's dots wrapped onto two lines. A book of more than 24 pages shows 13 dots that slide with the reader, the
+  current page as the larger dot and "…" on a side with more pages (`dotWindow` in `public/js/library-text.js`, used
+  by the server's first paint and the reader). Books of 24 pages or fewer show every dot, as before. 8 books slide
+  today (6 Classics, 2 Bloom). Tests: `library-classics.test.js` (the window and the server markup) and
+  `library-classics-browser.test.js` (one line at 1280 x 720, the window follows Next, a short book unchanged).

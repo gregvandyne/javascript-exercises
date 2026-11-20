@@ -257,3 +257,15 @@ test('progress and answers work by page number on a classic (the furthest page i
   // Assigning a classic works like any book.
   assert.equal(LIB.assignStory(s.teacher, s.cls.id, 'cl-camel').ok, true);
 });
+
+test('dotWindow: every dot up to 24 pages, then 13 that slide with the reader and stop at either end', async () => {
+  const { dotWindow, DOTS } = await import('../../public/js/library-text.js');
+  assert.deepEqual(dotWindow(24, 5), { from: 0, to: 24, sliding: false });
+  assert.deepEqual(dotWindow(50, 1), { from: 0, to: DOTS.size, sliding: true });
+  assert.deepEqual(dotWindow(50, 24), { from: 17, to: 30, sliding: true });
+  assert.deepEqual(dotWindow(50, 50), { from: 37, to: 50, sliding: true });
+  assert.deepEqual(dotWindow(50, 51), { from: 37, to: 50, sliding: true }, 'the questions page');
+  const page = await call('/library/cl-velveteen-rabbit/read?p=24');
+  assert.equal((page.text.match(/<i class="[^"]*" hidden><\/i>/g) || []).length, 37, 'the server hides the same dots');
+  assert.match(page.text, /class="rd-dots sliding more-l more-r"/);
+});
