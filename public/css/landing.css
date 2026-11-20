@@ -92,10 +92,10 @@ main{position:relative;z-index:1}
 .lp-nav{display:none;gap:4px;margin-inline:auto}
 .lp-nav a{color:var(--text-2);text-decoration:none;font-weight:600;font-size:15px;padding:8px 12px;border-radius:999px;white-space:nowrap}
 .lp-nav a:hover{color:var(--text);background:rgba(184,179,161,.14)}
-@media (min-width:1024px){.lp-nav{display:flex}}
+@media (min-width:1366px){.lp-nav{display:flex}}
 
 .lp-actions{display:flex;align-items:center;gap:8px;margin-inline-start:auto}
-@media (min-width:1024px){.lp-actions{margin-inline-start:0}}
+@media (min-width:1120px){.lp-actions{margin-inline-start:0}}
 .lp-signin{display:none;color:var(--text);font-weight:600;font-size:15px;text-decoration:none;padding:8px 10px;border-radius:999px}
 .lp-signin:hover{text-decoration:underline}
 @media (min-width:780px){.lp-signin{display:inline-block}}
@@ -465,7 +465,7 @@ main{position:relative;z-index:1}
 .is-tour .lp-dt-dots li.on{opacity:1;transform:scale(1.12);border-color:var(--mint)}
 
 /* ---- the menu (#lp-menu): every section, for phones and any screen where the bar has no room for the links (below
-   1024px, where the longest languages fit). A <details>, so it opens without script; landing.js closes it on a choice. */
+   1366px, where the longest languages fit). A <details>, so it opens without script; landing.js closes it on a choice. */
 .lp-menu{position:relative;flex:none}
 .lp-menu-btn{list-style:none;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:999px;cursor:pointer;
   background:var(--card-solid);box-shadow:inset 0 0 0 2px var(--line-2);font-weight:700;font-size:15px;color:var(--text);user-select:none}
@@ -484,7 +484,7 @@ main{position:relative;z-index:1}
 .lp-menu-panel li a:hover,.lp-menu-panel li a:focus-visible{background:var(--hover)}
 .lp-menu-foot{display:grid;gap:8px;margin-top:8px;padding-top:10px;border-top:1px solid var(--line)}
 .lp-menu-foot .lp-btn{justify-content:center}
-@media (min-width:1024px){.lp-menu{display:none}}
+@media (min-width:1366px){.lp-menu{display:none}}
 @media (max-width:479px){.lp-menu-word{display:none}.lp-menu-btn{padding:0 11px}}
 @media (prefers-reduced-motion:reduce){.lp-menu-panel{animation:none}.lp-burger i{transition:none}}
 
