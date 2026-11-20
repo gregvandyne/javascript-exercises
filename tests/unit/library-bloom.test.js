@@ -1,6 +1,8 @@
-// Story Library, Bloom Library books (docs/decisions.md "Story Library: Bloom Library books"; docs/story-library-bloom.md):
-// the license rule for the book and every picture (fixtures for each case: CC BY, CC BY-SA, CC0, NC, ND, custom, a ported
-// or missing version, a picture with no license of its own, a stricter picture, restrictions in the notes), reading
+// Story Library, Bloom Library books (docs/decisions.md "Story Library: Bloom Library books" and "Story Library: more
+// Bloom books"; docs/story-library-bloom.md): the license rule for the book and every picture (fixtures for each case:
+// CC BY, CC BY-SA, CC0, NC, ND, custom, a ported or missing version, a picture with no license of its own, 0 to 3
+// pictures with no license or copyright at all, a stricter or stock picture, restrictions in the notes), a person's
+// text corrections (applied exactly once, credited), reading
 // Bloom's HTML (front and back matter, template and other-language blocks, image descriptions, placeholders), the
 // credits (no contact details), and privacy: no storage link or email address anywhere in what is shipped.
 import './_setup.js';
@@ -139,7 +141,7 @@ test('evaluateBloom: a CC BY book with its own picture licenses comes in, credit
   assert.equal(b.credits.platform, 'Bloom Library'); assert.equal(b.credits.publisher, 'Good Books');
   assert.equal(b.credits.sourceUrl, 'https://bloomlibrary.org/book/AbCdEf1234');
   assert.deepEqual(b.credits.text, ['Sam Writer']); assert.deepEqual(b.credits.illustration, ['Ann Artist']); assert.deepEqual(b.credits.translation, ['Tia Translator']);
-  assert.deepEqual(b.credits.pictureRules, { own: 4, inherited: 0 });
+  assert.deepEqual(b.credits.pictureRules, { own: 4, inherited: 0, unlabeled: 0 });
   assert.equal(b.questions.filter(x => x.kind === 'inference').length, 1);
   for (const [i, x] of b.questions.entries()) assert.equal(x.choices[x.answer], qs[i].right);
   assert.ok(['k', '1'].includes(b.grade));
@@ -171,14 +173,13 @@ test('evaluateBloom: one picture that is not free enough, or not clearly the boo
   assert.match(ev({ h: withPic(img('x.jpg', { license: 'gpl-3' })) }).reason, /page 2 picture license: unreadable/);
   assert.match(ev({ h: withPic(img('x.jpg', { license: 'cc-by-sa' })) }).reason, /page 2 picture is BY-SA, stricter than the book's CC BY 4\.0/);
   assert.match(ev({ h: withPic(img('x.jpg', { license: '', copyright: '© 2019 Someone Else' })) }).reason, /page 2 picture has no license and another copyright holder/);
-  assert.match(ev({ h: withPic(img('x.jpg', { license: null, copyright: '' })) }).reason, /page 2 picture has no license or copyright/);
   assert.match(ev({ h: withPic(img('x.jpg', { copyright: 'Used with permission of the artist' })) }).reason, /page 2 picture says/);
   assert.match(ev({ h: withPic(img('x.jpg', { copyright: 'Copyright © 2008, Microsoft Clip Art' })) }).reason, /credited to Microsoft, whose terms are not an open license/);
   assert.match(ev({ h: withPic(img('x.jpg', { creator: 'Pixabay' })) }).reason, /credited to Pixabay/);
   // No license of its own, but the book's own copyright holder: it inherits the book's license, and that is recorded.
   const inh = ev({ h: withPic(img('x.jpg', { license: '', copyright: 'Copyright © 2020, Good Books' })) });
   assert.equal(inh.status, 'included', inh.reason);
-  assert.deepEqual(inh.book.credits.pictureRules, { own: 3, inherited: 1 });
+  assert.deepEqual(inh.book.credits.pictureRules, { own: 3, inherited: 1, unlabeled: 0 });
   // A CC0 picture in a CC BY book is fine (freer than the book).
   assert.equal(ev({ h: withPic(img('x.jpg', { license: 'cc0' })) }).status, 'included');
   // A BY-SA picture in a BY-SA book is fine.
@@ -188,6 +189,63 @@ test('evaluateBloom: one picture that is not free enough, or not clearly the boo
   assert.match(ev({ names: ['one.jpg', 'two.jpg', 'cover.jpg'] }).reason, /three\.jpg is not in the book's folder/);
   // An SVG is not converted.
   assert.match(ev({ h: withPic(img('x.svg')) }).reason, /not a bitmap/);
+});
+
+test('evaluateBloom: at most 2 pictures with no license and no copyright at all take the book\'s license (owner\'s rule)', () => {
+  // Six story pages and a cover (7 pictures); `bare` of them carry no license and no copyright.
+  const bareImg = f => img(f, { license: null, copyright: '', creator: '' });
+  const book = (bare, { pic = bareImg, cover = img('cover.jpg') } = {}) => ({ cover, pages: [1, 2, 3, 4, 5, 6].map(n => page({ texts: { en: `Page ${n}: the cat ran and sat.` }, pics: [n <= bare ? pic(`${n}.jpg`) : img(`${n}.jpg`)] })) });
+  const q6 = { picks: { AbCdEf1234: { questions: qs } } };
+  for (const n of [0, 1, 2]) {
+    const r = ev({ h: book(n), c: q6 });
+    assert.equal(r.status, 'included', `${n} unlabeled: ${r.reason}`);
+    assert.deepEqual(r.book.credits.pictureRules, { own: 7 - n, inherited: 0, unlabeled: n }, `${n} unlabeled are counted`);
+  }
+  const three = ev({ h: book(3), c: q6 });
+  assert.equal(three.status, 'excluded');
+  assert.match(three.reason, /^3 pictures have no license or copyright \(at most 2 may take the book's license\)/);
+  assert.equal(B.MAX_UNLABELED, 2);
+  // A higher limit is only for the report's survey; the majority rule still holds unless asked.
+  assert.equal(IMP.evaluateBloom({ entry: entry(), meta: meta(), html: bloomHtml(book(3)), curation: cur(q6), maxUnlabeled: 3 }).status, 'included');
+  const most = IMP.evaluateBloom({ entry: entry(), meta: meta(), html: bloomHtml(book(6)), curation: cur(q6), maxUnlabeled: Infinity });
+  assert.match(most.reason, /most pictures have no license or copyright \(6 of 7\)/);
+  assert.equal(IMP.evaluateBloom({ entry: entry(), meta: meta(), html: bloomHtml(book(6)), curation: cur(q6), maxUnlabeled: Infinity, allowMostUnlabeled: true }).status, 'included');
+  // A small book: 2 unlabeled of 3 pictures is most of them.
+  const small = ev({ h: { pages: [page({ pics: [bareImg('one.jpg')] }), page({ texts: { en: 'The cat saw a ball.' }, pics: [bareImg('two.jpg')] })] }, c: { picks: { AbCdEf1234: { questions: qs.map(x => ({ ...x, page: Math.min(x.page, 2) })) } } } });
+  assert.match(small.reason, /most pictures have no license or copyright \(2 of 3\)/);
+  // Unlabeled but credited to a stock or clip-art source, or named after one: still out.
+  assert.match(ev({ h: book(1, { pic: f => img(f, { license: null, copyright: '', creator: 'Pixabay' }) }), c: q6 }).reason, /page 1 picture is credited to Pixabay/);
+  assert.match(ev({ h: book(1, { pic: f => img(f, { license: '', copyright: '', creator: 'Microsoft Clip Art' }) }), c: q6 }).reason, /credited to Microsoft/);
+  assert.match(ev({ h: book(1, { pic: f => img(`freepik-${f}`, { license: null, copyright: '', creator: '' }) }), c: q6 }).reason, /credited to freepik/);
+  // An explicit stricter license, or another holder, is not "unlabeled": still out.
+  assert.match(ev({ h: book(1, { pic: f => img(f, { license: 'cc-by-nc', copyright: '', creator: '' }) }), c: q6 }).reason, /page 1 picture license: NC/);
+  assert.match(ev({ h: book(1, { pic: f => img(f, { license: '', copyright: 'All rights reserved', creator: '' }) }), c: q6 }).reason, /page 1 picture says "All rights reserved"/);
+  assert.match(ev({ h: book(1, { pic: f => img(f, { license: '', copyright: '© 2019 Someone Else', creator: '' }) }), c: q6 }).reason, /page 1 picture has no license and another copyright holder/);
+  // The cover counts too, and a picture labeled in one of its two places is labeled.
+  const cov = B.parseBloomHtml(bloomHtml(book(2)));
+  cov.cover = { file: 'cover.jpg', license: '', copyright: '', creator: '' };
+  assert.match(B.checkBloomPictures(cov, 'cc-by-4.0', '© 2020 Good Books').reason, /^3 pictures have no license or copyright/);
+  const parsed = B.parseBloomHtml(bloomHtml(book(0)));
+  parsed.cover.also = { file: 'cover.jpg', license: '', copyright: '', creator: '' };
+  assert.deepEqual(B.checkBloomPictures(parsed, 'cc-by-4.0', '© 2020 Good Books').rules, { own: 7, inherited: 0, unlabeled: 0 });
+});
+
+test('evaluateBloom: a person\'s text corrections are applied exactly, change the grade\'s text, and are credited', () => {
+  const fixes = [{ page: 2, from: 'big red ball', to: 'big, red ball' }, { page: 0, from: 'The Cat & the Ball', to: 'The Cat and the Ball' }];
+  const r = ev({ c: { picks: { AbCdEf1234: { questions: qs, fixes } } } });
+  assert.equal(r.status, 'included', r.reason);
+  assert.equal(r.book.pages[1].text, 'The cat saw a big, red ball.');
+  assert.equal(r.book.title, 'The Cat and the Ball');
+  assert.equal(r.book.credits.corrections, 2);
+  assert.ok(!('corrections' in ev().book.credits), 'no corrections, no note');
+  // A correction that does not match exactly once keeps the book out (so a changed book is noticed).
+  assert.match(ev({ c: { picks: { AbCdEf1234: { questions: qs, fixes: [{ page: 2, from: 'blue ball', to: 'red ball' }] } } } }).reason, /text corrections: bl-AbCdEf1234 fix 1: "blue ball" is not on page 2/);
+  assert.match(ev({ c: { picks: { AbCdEf1234: { questions: qs, fixes: [{ page: 3, from: 'ran', to: 'run' }] } } } }).reason, /"ran" is on page 3 more than once/);
+  assert.match(ev({ c: { picks: { AbCdEf1234: { questions: qs, fixes: [{ page: 9, from: 'a', to: 'b' }] } } } }).reason, /fix 1: page must be 0/);
+  // The report lists every correction.
+  const md = IMP.reportMarkdown([r], { generated: '2026-01-01' });
+  assert.match(md, /Text corrected by Oomba: 1 books, 2 corrections/);
+  assert.match(md, /bl-AbCdEf1234 The Cat and the Ball: p2 "big red ball" → "big, red ball"; p0 "The Cat & the Ball" → "The Cat and the Ball"/);
 });
 
 test('evaluateBloom: English on every page, one picture a page, nothing restricting it, finished books only', () => {
@@ -253,7 +311,12 @@ test('shipped: Bloom books in the manifest pass the rule, were picked by a perso
     assert.equal(b.credits.shareAlike, B.BLOOM_ALLOWED[b.credits.license].family === 'by-sa');
     assert.equal(b.credits.platform, 'Bloom Library'); assert.ok(b.credits.publisher);
     assert.equal(b.credits.sourceUrl, `https://bloomlibrary.org/book/${b.sourceId}`);
-    assert.ok(b.credits.pictureRules.own + b.credits.pictureRules.inherited === b.pages.length + 1, `${b.id}: every picture checked`);
+    const pr = b.credits.pictureRules;
+    assert.ok(pr.own + pr.inherited + pr.unlabeled === b.pages.length + 1, `${b.id}: every picture checked`);
+    assert.ok(pr.unlabeled <= B.MAX_UNLABELED && pr.unlabeled * 2 <= b.pages.length + 1, `${b.id}: at most ${B.MAX_UNLABELED} unlabeled pictures, never most`);
+    const fixes = curation.picks[b.sourceId].fixes || [];
+    assert.equal(b.credits.corrections || 0, fixes.length, `${b.id}: the corrections are counted`);
+    for (const f of fixes) assert.ok(f.page >= 0 && f.page <= b.pages.length && f.from !== f.to && (f.page === 0 ? b.title : b.pages[f.page - 1].text).includes(f.to), `${b.id}: correction on page ${f.page} is in the text`);
     assert.ok(Array.isArray(b.otherLangs));
     assert.deepEqual(I.checkQuestions(b.questions, b.pages.length), [], b.id);
     assert.equal(b.questions.filter(x => x.kind === 'inference').length, 1, `${b.id}: one inference question`);
@@ -298,6 +361,15 @@ test('pages: a Bloom book shows Bloom Library, its own license and deed, and the
         assert.match(t, new RegExp(esc(sa.credits.licenseUrl)));
       }
     }
+    // A book whose mistakes Oomba corrected says so, before the share-alike note that covers the corrected pages.
+    const fixed = bloom.find(b => b.credits.corrections && !b.credits.shareAlike), fixedSA = bloom.find(b => b.credits.corrections && b.credits.shareAlike);
+    for (const b of [fixed, fixedSA].filter(Boolean)) {
+      for (const t of [(await get(`/library/${b.id}`)).text, (await get(`/library/${b.id}/read`)).text]) {
+        assert.match(t, b.credits.shareAlike ? /Oomba corrected spelling and punctuation\. Oomba resized the pictures and shows the book one page at a time; these adapted pages are shared under the same license/ : /Oomba corrected spelling and punctuation\. Oomba resized the pictures/, b.id);
+      }
+    }
+    const plain = bloom.find(b => !b.credits.corrections);
+    assert.ok(!/Oomba corrected spelling/.test((await get(`/library/${plain.id}`)).text), 'no correction note on an uncorrected book');
     const swPage = await get(`/library/${sw.id}`);
     assert.match(swPage.text, /Pratham Books, StoryWeaver/); assert.match(swPage.text, /Pratham Books does not endorse Oomba/);
     // Search finds Bloom books by their words and by "bloom".

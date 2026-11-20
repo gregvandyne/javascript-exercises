@@ -28,7 +28,9 @@ export const PATHS = {
   report: path.join(ROOT, 'docs/story-library-sources.md'),
 };
 /** Pictures: at most this wide/high (CSS pixels on a big screen are about 640 wide in the reader), WebP quality. */
-export const IMAGE = { page: { max: 720, q: 50 }, cover: { max: 440, q: 55 } };
+// Pages went from WebP quality 50 to 40 when the whole library passed its 80 MB budget (docs/decisions.md "Story
+// Library: more Bloom books"); covers stay at 55.
+export const IMAGE = { page: { max: 720, q: 40 }, cover: { max: 440, q: 55 } };
 const SIZE = 'large';
 
 /** The site's text scanners on one page of text -> the first rule it trips, or null. */

@@ -43,7 +43,7 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
   - an image license: unreadable: 6
   - too long for the library: 3
   - picture N.jpg is in the metadata but not in the image bank: 2
-- Pictures on the site: 33.9 MB (WebP, pages at most 720 px, covers 440 px)
+- Pictures on the site: 29.5 MB (WebP, pages at most 720 px, covers 440 px)
 
 ## Included
 
