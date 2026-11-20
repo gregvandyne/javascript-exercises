@@ -128,7 +128,7 @@ test('evaluate: the fixtures are included or left out for the right reason', () 
   // Not picked: licensed but left out, with the curator's reason when there is one.
   const none = IMP.evaluate({ storiesDir: path.join(FIX, 'pb-source/en'), metadataDir: path.join(FIX, 'pb-imagebank/metadata'), curation: { picks: {}, skipped: { '0001': 'Too scary.' }, scanReviewed: {} } });
   assert.match(none.find(r => r.sourceId === '0001').reason, /read and left out: Too scary/);
-  assert.match(none.find(r => r.sourceId === '0005').reason, /not picked/);
+  assert.match(none.find(r => r.sourceId === '0005').reason, /not read yet/);
   // A picture listed in the metadata but missing from the image bank.
   const gone = IMP.evaluate({ storiesDir: path.join(FIX, 'pb-source/en'), metadataDir: path.join(FIX, 'pb-imagebank/metadata'), curation: { picks, skipped: {}, scanReviewed: {} }, hasImage: (id, f) => f !== '04.jpg' });
   assert.match(gone.find(r => r.sourceId === '0001').reason, /04\.jpg is in the metadata but not in the image bank/);

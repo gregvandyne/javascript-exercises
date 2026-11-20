@@ -231,6 +231,23 @@ export function mapImages(pageCount, images) {
 }
 
 /**
+ * A picture order written by a person (seed-library/storyweaver.json "pictureMap") for a book whose pictures do not
+ * line up one-to-one: used only when the image metadata's descriptions make it unambiguous, and recorded with why. It
+ * must name a cover and exactly one picture per page, each listed in the metadata, none twice. Pictures it leaves out
+ * are not used. -> { ok, cover, pages, why } | { ok: false, reason }
+ */
+export function checkPictureMap(m, pageCount, images) {
+  const files = new Set(images.map(i => i.file));
+  if (!m || typeof m.why !== 'string' || !m.why.trim()) return { ok: false, reason: 'a hand-made picture order needs a reason' };
+  if (!Array.isArray(m.pages) || m.pages.length !== pageCount) return { ok: false, reason: `the hand-made picture order has ${Array.isArray(m.pages) ? m.pages.length : 0} pictures for ${pageCount} pages` };
+  const used = [m.cover, ...m.pages];
+  const missing = used.find(f => !files.has(f));
+  if (missing) return { ok: false, reason: `the hand-made picture order names ${missing}, which is not in the metadata` };
+  if (new Set(used).size !== used.length) return { ok: false, reason: 'the hand-made picture order uses a picture twice' };
+  return { ok: true, cover: m.cover, pages: [...m.pages], why: m.why.trim() };
+}
+
+/**
  * The license check for one book: the story text and every image it would use must be CC BY 4.0 or Public Domain.
  * -> { ok, textLicense, imageLicenses: Set, reason? }
  */

@@ -37,614 +37,6 @@
     }
    ]
   },
-  "0010": {
-   "glossary": {
-    "Pehelwaan": "a strong wrestler. \"Ji\" is added to a name to show respect",
-    "roti": "a round, flat bread"
-   },
-   "questions": [
-    {
-     "q": "How many rotis does Pehelwaan ji eat?",
-     "right": "Fifty",
-     "wrong": [
-      "Five",
-      "Five hundred"
-     ],
-     "page": 3,
-     "kind": "literal"
-    },
-    {
-     "q": "What did Gappu do when they wrestled?",
-     "right": "He tickled him",
-     "wrong": [
-      "He pushed him",
-      "He sang to him"
-     ],
-     "page": 11,
-     "kind": "literal"
-    },
-    {
-     "q": "Why are the kids not scared of Pehelwaan ji any more?",
-     "right": "They know he is very ticklish",
-     "wrong": [
-      "He moved far away",
-      "He became very small"
-     ],
-     "page": 15,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0026": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "Which animals can't fly in the story?",
-     "right": "Pigs",
-     "wrong": [
-      "Crows",
-      "Birds"
-     ],
-     "page": 2,
-     "kind": "literal"
-    },
-    {
-     "q": "What CAN monkeys do?",
-     "right": "Swing",
-     "wrong": [
-      "Cook",
-      "Read"
-     ],
-     "page": 5,
-     "kind": "literal"
-    },
-    {
-     "q": "What is the story telling us?",
-     "right": "Everyone can do some things and not others",
-     "wrong": [
-      "Nobody can do anything",
-      "Pigs can fly"
-     ],
-     "page": 7,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0041": {
-   "glossary": {
-    "halwa": "a soft, sweet pudding",
-    "sugarcane": "a tall, sweet plant you can chew"
-   },
-   "questions": [
-    {
-     "q": "What does the girl use to draw?",
-     "right": "Her hands",
-     "wrong": [
-      "Her feet",
-      "Her nose"
-     ],
-     "page": 4,
-     "kind": "literal"
-    },
-    {
-     "q": "What is Ma making that the boy can smell?",
-     "right": "Halwa",
-     "wrong": [
-      "Soup",
-      "Bread"
-     ],
-     "page": 7,
-     "kind": "literal"
-    },
-    {
-     "q": "How do we know the girl's teeth are strong?",
-     "right": "She can bite tough sugarcane",
-     "wrong": [
-      "She brushes them every day",
-      "She has new teeth"
-     ],
-     "page": 8,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0048": {
-   "glossary": {
-    "chappals": "sandals",
-    "sari": "a long piece of cloth worn wrapped as a dress"
-   },
-   "questions": [
-    {
-     "q": "Where does Grandfather keep his stick?",
-     "right": "In the corner",
-     "wrong": [
-      "Under the bed",
-      "In the kitchen"
-     ],
-     "page": 6,
-     "kind": "literal"
-    },
-    {
-     "q": "What does the family bring out when it is cold?",
-     "right": "Quilts",
-     "wrong": [
-      "Fans",
-      "Chairs"
-     ],
-     "page": 12,
-     "kind": "literal"
-    },
-    {
-     "q": "How does the girl feel about her home?",
-     "right": "She likes it and wants you to visit",
-     "wrong": [
-      "She wants to move away",
-      "She thinks it is too small"
-     ],
-     "page": 15,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0055": {
-   "glossary": {
-    "chakli": "a crunchy, curly snack"
-   },
-   "questions": [
-    {
-     "q": "What snack does the girl love?",
-     "right": "Chakli",
-     "wrong": [
-      "Popcorn",
-      "Cookies"
-     ],
-     "page": 11,
-     "kind": "literal"
-    },
-    {
-     "q": "What kind of lines does she always draw?",
-     "right": "Curly lines",
-     "wrong": [
-      "Straight lines",
-      "Dotted lines"
-     ],
-     "page": 9,
-     "kind": "literal"
-    },
-    {
-     "q": "Why does she say \"who cares\" at the end?",
-     "right": "She likes chakli both ways",
-     "wrong": [
-      "She is angry",
-      "She is tired of chakli"
-     ],
-     "page": 13,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0064": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "What else does the boy say are his friends?",
-     "right": "Books",
-     "wrong": [
-      "Shoes",
-      "Clouds"
-     ],
-     "page": 9,
-     "kind": "literal"
-    },
-    {
-     "q": "Who is the boy's best friend?",
-     "right": "His mother",
-     "wrong": [
-      "His teacher",
-      "His dog"
-     ],
-     "page": 11,
-     "kind": "literal"
-    },
-    {
-     "q": "How do we know some of his friends are animals?",
-     "right": "Some of them have tails",
-     "wrong": [
-      "Some of them read books",
-      "Some of them play cricket"
-     ],
-     "page": 6,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0072": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "Why is the baby crying?",
-     "right": "She is hungry",
-     "wrong": [
-      "She is cold",
-      "She lost a toy"
-     ],
-     "page": 2,
-     "kind": "literal"
-    },
-    {
-     "q": "Why is the old man laughing?",
-     "right": "He read a good joke",
-     "wrong": [
-      "He saw a funny dog",
-      "He won a game"
-     ],
-     "page": 8,
-     "kind": "literal"
-    },
-    {
-     "q": "What is this book mostly about?",
-     "right": "How people feel and why",
-     "wrong": [
-      "How to cook",
-      "How to count"
-     ],
-     "page": 11,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0073": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "What color are raw bananas?",
-     "right": "Green",
-     "wrong": [
-      "Yellow",
-      "Red"
-     ],
-     "page": 6,
-     "kind": "literal"
-    },
-    {
-     "q": "What makes blood red?",
-     "right": "Iron",
-     "wrong": [
-      "Salt",
-      "Sugar"
-     ],
-     "page": 10,
-     "kind": "literal"
-    },
-    {
-     "q": "The story says not all umbrellas are black. What does that mean?",
-     "right": "Umbrellas can be other colors too",
-     "wrong": [
-      "Umbrellas are always black",
-      "Nobody uses umbrellas"
-     ],
-     "page": 8,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0087": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "What did the peacock say it would do if the cloud rained?",
-     "right": "Dance",
-     "wrong": [
-      "Sing",
-      "Fly away"
-     ],
-     "page": 2,
-     "kind": "literal"
-    },
-    {
-     "q": "What did Raju want to sail?",
-     "right": "Paper boats",
-     "wrong": [
-      "A big ship",
-      "A toy duck"
-     ],
-     "page": 5,
-     "kind": "literal"
-    },
-    {
-     "q": "Why was everybody happy after the rain?",
-     "right": "The rain gave each of them what they needed",
-     "wrong": [
-      "The cloud went away forever",
-      "It was a holiday"
-     ],
-     "page": 11,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0100": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "What can't Sonu do at first?",
-     "right": "Climb down",
-     "wrong": [
-      "Climb up the steps",
-      "Climb on a chair"
-     ],
-     "page": 3,
-     "kind": "literal"
-    },
-    {
-     "q": "Who laughed and said \"learn to climb down\"?",
-     "right": "Papa",
-     "wrong": [
-      "Grandma",
-      "His teacher"
-     ],
-     "page": 8,
-     "kind": "literal"
-    },
-    {
-     "q": "How does Sonu feel at the end?",
-     "right": "Proud that he learned something new",
-     "wrong": [
-      "Scared of chairs forever",
-      "Angry at Papa"
-     ],
-     "page": 11,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0103": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "Who sits still when the boy draws her?",
-     "right": "His mother",
-     "wrong": [
-      "His sister",
-      "The cat"
-     ],
-     "page": 2,
-     "kind": "literal"
-    },
-    {
-     "q": "Where is the boy told not to draw?",
-     "right": "On the wall",
-     "wrong": [
-      "On paper",
-      "On the floor"
-     ],
-     "page": 5,
-     "kind": "literal"
-    },
-    {
-     "q": "Why is it hard to draw his sister?",
-     "right": "She does not sit still",
-     "wrong": [
-      "She is too small",
-      "She is asleep"
-     ],
-     "page": 3,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0114": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "What was the big dark thing outside?",
-     "right": "The well",
-     "wrong": [
-      "A big rock",
-      "A tree"
-     ],
-     "page": 5,
-     "kind": "literal"
-    },
-    {
-     "q": "What made the creak creak sound?",
-     "right": "Her sister drawing water from the well",
-     "wrong": [
-      "The wind",
-      "Her father's bicycle"
-     ],
-     "page": 7,
-     "kind": "literal"
-    },
-    {
-     "q": "Why was there nothing to be afraid of?",
-     "right": "Every sound came from something she knew",
-     "wrong": [
-      "She stayed inside the house",
-      "The sun came up"
-     ],
-     "page": 9,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0118": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "What do the children use to tie the balloon?",
-     "right": "Thread",
-     "wrong": [
-      "Tape",
-      "A shoelace"
-     ],
-     "page": 10,
-     "kind": "literal"
-    },
-    {
-     "q": "What happened to the air in the balloon?",
-     "right": "It was all gone",
-     "wrong": [
-      "It turned blue",
-      "It got hot"
-     ],
-     "page": 7,
-     "kind": "literal"
-    },
-    {
-     "q": "Why are the child's cheeks puffed up and hot?",
-     "right": "The child is blowing up a balloon",
-     "wrong": [
-      "The child is sick",
-      "The child is sad"
-     ],
-     "page": 4,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0125": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "Where does the girl's friend live?",
-     "right": "Inside the mirror",
-     "wrong": [
-      "Next door",
-      "At school"
-     ],
-     "page": 4,
-     "kind": "literal"
-    },
-    {
-     "q": "When does the friend come out to play?",
-     "right": "When the girl is asleep and dreaming",
-     "wrong": [
-      "After lunch",
-      "On Sundays"
-     ],
-     "page": 7,
-     "kind": "literal"
-    },
-    {
-     "q": "Who is the friend in the mirror, really?",
-     "right": "The girl herself",
-     "wrong": [
-      "Her sister",
-      "Her goat"
-     ],
-     "page": 2,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0262": {
-   "glossary": {
-    "halwa": "a soft, sweet pudding"
-   },
-   "questions": [
-    {
-     "q": "Where does the man get his bananas?",
-     "right": "From a tree",
-     "wrong": [
-      "From a shop",
-      "From a friend"
-     ],
-     "page": 2,
-     "kind": "literal"
-    },
-    {
-     "q": "What will he make with the bananas?",
-     "right": "Banana halwa",
-     "wrong": [
-      "Banana bread",
-      "Banana juice"
-     ],
-     "page": 7,
-     "kind": "literal"
-    },
-    {
-     "q": "Why does he need to do something with the bananas?",
-     "right": "He has too many to eat",
-     "wrong": [
-      "He does not like bananas",
-      "His friend asked him to"
-     ],
-     "page": 5,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0317": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "Who was Lalu's best friend?",
-     "right": "Sweety, the peacock",
-     "wrong": [
-      "A crow",
-      "A parrot"
-     ],
-     "page": 2,
-     "kind": "literal"
-    },
-    {
-     "q": "What did the birds give Lalu at the party?",
-     "right": "A crown of feathers",
-     "wrong": [
-      "A cake",
-      "A book"
-     ],
-     "page": 4,
-     "kind": "literal"
-    },
-    {
-     "q": "Why did all the birds come to Lalu's party?",
-     "right": "Lalu was friendly to everyone",
-     "wrong": [
-      "They were lost",
-      "It was raining"
-     ],
-     "page": 1,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0382": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "Why was Crocky sad?",
-     "right": "He had no friends to play with",
-     "wrong": [
-      "He was hungry",
-      "He lost a tooth"
-     ],
-     "page": 2,
-     "kind": "literal"
-    },
-    {
-     "q": "Who said \"I will play with you\" first?",
-     "right": "Babloo, the butterfly",
-     "wrong": [
-      "Fred, the frog",
-      "Susie, the snake"
-     ],
-     "page": 3,
-     "kind": "literal"
-    },
-    {
-     "q": "How did the other animals help Crocky?",
-     "right": "They became his friends",
-     "wrong": [
-      "They gave him food",
-      "They sang him to sleep"
-     ],
-     "page": 7,
-     "kind": "inference"
-    }
-   ]
-  },
   "0003": {
    "glossary": {
     "Vayu": "a name for the wind in Hindi and Sanskrit",
@@ -798,6 +190,83 @@
     }
    ]
   },
+  "0010": {
+   "glossary": {
+    "Pehelwaan": "a strong wrestler. \"Ji\" is added to a name to show respect",
+    "roti": "a round, flat bread"
+   },
+   "questions": [
+    {
+     "q": "How many rotis does Pehelwaan ji eat?",
+     "right": "Fifty",
+     "wrong": [
+      "Five",
+      "Five hundred"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Gappu do when they wrestled?",
+     "right": "He tickled him",
+     "wrong": [
+      "He pushed him",
+      "He sang to him"
+     ],
+     "page": 11,
+     "kind": "literal"
+    },
+    {
+     "q": "Why are the kids not scared of Pehelwaan ji any more?",
+     "right": "They know he is very ticklish",
+     "wrong": [
+      "He moved far away",
+      "He became very small"
+     ],
+     "page": 15,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0013": {
+   "glossary": {
+    "Aai": "Mom (in Marathi)",
+    "Baba": "Dad",
+    "nappy": "a diaper"
+   },
+   "questions": [
+    {
+     "q": "Why did Anu get ready so fast?",
+     "right": "To see Aunty Jui's baby",
+     "wrong": [
+      "To go to school",
+      "To play with friends"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Anu try to lie down in?",
+     "right": "The baby's cradle",
+     "wrong": [
+      "A box",
+      "A wagon"
+     ],
+     "page": 16,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Anu decide to give her baby things away?",
+     "right": "She felt proud to be a big sister",
+     "wrong": [
+      "She did not like them",
+      "Aai made her"
+     ],
+     "page": 17,
+     "kind": "inference"
+    }
+   ]
+  },
   "0014": {
    "glossary": {
     "Amma": "Mom",
@@ -832,6 +301,86 @@
       "He fell asleep"
      ],
      "page": 11,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0015": {
+   "glossary": {
+    "groundnuts": "peanuts",
+    "jaggery": "a brown sugar made from sugarcane",
+    "naan": "a soft flatbread",
+    "shawl": "a big warm scarf"
+   },
+   "questions": [
+    {
+     "q": "Where did Amma take the children?",
+     "right": "To the Groundnut Fair",
+     "wrong": [
+      "To the beach",
+      "To the zoo"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Where does Rajni live?",
+     "right": "Shimla",
+     "wrong": [
+      "Delhi",
+      "Jaisalmer"
+     ],
+     "page": 6,
+     "kind": "literal"
+    },
+    {
+     "q": "Why will the girl's tree never be covered with snow?",
+     "right": "It does not snow where she lives",
+     "wrong": [
+      "The tree is too tall",
+      "She covers it with a rug"
+     ],
+     "page": 13,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0017": {
+   "glossary": {
+    "monsoon": "the rainy season",
+    "pakodas": "crispy fried snacks made with vegetables and chickpea flour",
+    "puris": "puffy fried breads",
+    "dupatta": "a long scarf"
+   },
+   "questions": [
+    {
+     "q": "Which season is this story about?",
+     "right": "The rainy season",
+     "wrong": [
+      "Winter",
+      "Spring"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What is being fried in the kitchen?",
+     "right": "Pakodas",
+     "wrong": [
+      "Eggs",
+      "Pancakes"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why doesn't she have to water her mango tree?",
+     "right": "The rain waters it",
+     "wrong": [
+      "Her uncle waters it",
+      "The tree does not need water"
+     ],
+     "page": 7,
      "kind": "inference"
     }
    ]
@@ -950,6 +499,78 @@
     }
    ]
   },
+  "0024": {
+   "glossary": {
+    "Sona Miss": "the children's teacher"
+   },
+   "questions": [
+    {
+     "q": "Who were good friends?",
+     "right": "Shanti and Arun",
+     "wrong": [
+      "Shanti and Rohan",
+      "Arun and Sona Miss"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Arun want to show Shanti?",
+     "right": "A big rubber frog",
+     "wrong": [
+      "A puppy",
+      "A cake"
+     ],
+     "page": 6,
+     "kind": "literal"
+    },
+    {
+     "q": "Why didn't Shanti smile or talk all day?",
+     "right": "She did not want anyone to see her missing teeth",
+     "wrong": [
+      "She had a fever",
+      "She was angry with Arun"
+     ],
+     "page": 6,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0026": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "Which animals can't fly in the story?",
+     "right": "Pigs",
+     "wrong": [
+      "Crows",
+      "Birds"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What CAN monkeys do?",
+     "right": "Swing",
+     "wrong": [
+      "Cook",
+      "Read"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "What is the story telling us?",
+     "right": "Everyone can do some things and not others",
+     "wrong": [
+      "Nobody can do anything",
+      "Pigs can fly"
+     ],
+     "page": 7,
+     "kind": "inference"
+    }
+   ]
+  },
   "0030": {
    "glossary": {},
    "questions": [
@@ -1022,6 +643,79 @@
     }
    ]
   },
+  "0034": {
+   "glossary": {
+    "laddoo": "a round, sweet treat",
+    "ringmaster": "the person in charge of a circus show"
+   },
+   "questions": [
+    {
+     "q": "Who took Veeru to the circus?",
+     "right": "Grandma and Grandpa",
+     "wrong": [
+      "His teacher",
+      "Mummy and Daddy"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Veeru juggle?",
+     "right": "One big laddoo",
+     "wrong": [
+      "Six balls",
+      "Three apples"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Veeru change each of his tricks?",
+     "right": "His family told him the tricks were unsafe",
+     "wrong": [
+      "He got tired",
+      "The lion was hungry"
+     ],
+     "page": 2,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0035": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What did Gauri want the scarecrow to wear?",
+     "right": "Her new red frock",
+     "wrong": [
+      "A big hat",
+      "A blanket"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What did the birds do while the scarecrows paraded?",
+     "right": "Ate the grain",
+     "wrong": [
+      "Sang songs",
+      "Went to sleep"
+     ],
+     "page": 9,
+     "kind": "literal"
+    },
+    {
+     "q": "Was the scarecrow parade real?",
+     "right": "No, it was Gauri's dream",
+     "wrong": [
+      "Yes, it really happened",
+      "The birds made it up"
+     ],
+     "page": 11,
+     "kind": "inference"
+    }
+   ]
+  },
   "0036": {
    "glossary": {},
    "questions": [
@@ -1053,6 +747,82 @@
       "Singing"
      ],
      "page": 3,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0038": {
+   "glossary": {
+    "balwadi": "a small school for young children in India, like a preschool",
+    "tiffin boxes": "lunch boxes"
+   },
+   "questions": [
+    {
+     "q": "Where do the children leave their shoes and slippers?",
+     "right": "By the door, in a line",
+     "wrong": [
+      "Under their desks",
+      "In their school bags"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "What does the teacher use to tell stories?",
+     "right": "Puppets",
+     "wrong": [
+      "A big TV",
+      "A drum"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why does Mannu complain when their mother comes at four o'clock?",
+     "right": "She hugs his sister first",
+     "wrong": [
+      "He wants to stay at school",
+      "He lost his tiffin box"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0041": {
+   "glossary": {
+    "halwa": "a soft, sweet pudding",
+    "sugarcane": "a tall, sweet plant you can chew"
+   },
+   "questions": [
+    {
+     "q": "What does the girl use to draw?",
+     "right": "Her hands",
+     "wrong": [
+      "Her feet",
+      "Her nose"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "What is Ma making that the boy can smell?",
+     "right": "Halwa",
+     "wrong": [
+      "Soup",
+      "Bread"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "How do we know the girl's teeth are strong?",
+     "right": "She can bite tough sugarcane",
+     "wrong": [
+      "She brushes them every day",
+      "She has new teeth"
+     ],
+     "page": 8,
      "kind": "inference"
     }
    ]
@@ -1207,6 +977,81 @@
     }
    ]
   },
+  "0048": {
+   "glossary": {
+    "chappals": "sandals",
+    "sari": "a long piece of cloth worn wrapped as a dress"
+   },
+   "questions": [
+    {
+     "q": "Where does Grandfather keep his stick?",
+     "right": "In the corner",
+     "wrong": [
+      "Under the bed",
+      "In the kitchen"
+     ],
+     "page": 6,
+     "kind": "literal"
+    },
+    {
+     "q": "What does the family bring out when it is cold?",
+     "right": "Quilts",
+     "wrong": [
+      "Fans",
+      "Chairs"
+     ],
+     "page": 12,
+     "kind": "literal"
+    },
+    {
+     "q": "How does the girl feel about her home?",
+     "right": "She likes it and wants you to visit",
+     "wrong": [
+      "She wants to move away",
+      "She thinks it is too small"
+     ],
+     "page": 15,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0051": {
+   "glossary": {
+    "maiden journey": "a first trip"
+   },
+   "questions": [
+    {
+     "q": "What is the new train's name?",
+     "right": "Loco",
+     "wrong": [
+      "Babu",
+      "Chuggy"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "Who was the engine driver?",
+     "right": "Babu",
+     "wrong": [
+      "Ramesh",
+      "Loco"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the birds and dogs run away from Loco?",
+     "right": "They were scared of its loud whistle",
+     "wrong": [
+      "Loco was chasing them",
+      "It started to rain"
+     ],
+     "page": 6,
+     "kind": "inference"
+    }
+   ]
+  },
   "0052": {
    "glossary": {},
    "questions": [
@@ -1280,484 +1125,76 @@
     }
    ]
   },
-  "0063": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "What did Chhotu the rabbit look like?",
-     "right": "A ball of cotton",
-     "wrong": [
-      "A drum",
-      "A coconut"
-     ],
-     "page": 1,
-     "kind": "literal"
-    },
-    {
-     "q": "What fell on Golu's head?",
-     "right": "Coconuts",
-     "wrong": [
-      "Apples",
-      "Raindrops"
-     ],
-     "page": 7,
-     "kind": "literal"
-    },
-    {
-     "q": "Why was Chhotu glad that only a coconut fell on him?",
-     "right": "It was better than an elephant landing on him",
-     "wrong": [
-      "He likes coconuts",
-      "He wanted a snack"
-     ],
-     "page": 10,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0067": {
+  "0054": {
    "glossary": {
-    "cot": "a small bed"
+    "idlis": "soft steamed cakes made from rice and lentils, a breakfast in South India"
    },
    "questions": [
     {
-     "q": "What was the child looking for?",
-     "right": "A yo-yo",
+     "q": "What does the child not want to eat for breakfast at first?",
+     "right": "Idlis",
      "wrong": [
-      "A shoe",
-      "A book"
+      "Pancakes",
+      "Bananas"
      ],
-     "page": 9,
+     "page": 3,
      "kind": "literal"
     },
     {
-     "q": "Who found it?",
-     "right": "Granny",
+     "q": "Why does the child want to go to school after all?",
+     "right": "It is the class picnic at the zoo",
      "wrong": [
-      "The child's sister",
-      "The dog"
-     ],
-     "page": 7,
-     "kind": "literal"
-    },
-    {
-     "q": "Why didn't the child get to play with the toy that day?",
-     "right": "Granny loved it and played with it all day",
-     "wrong": [
-      "It was broken",
-      "It was lost again"
-     ],
-     "page": 11,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0069": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "When did Manu get his red raincoat?",
-     "right": "On Sunday",
-     "wrong": [
-      "On Monday",
-      "On his birthday"
-     ],
-     "page": 1,
-     "kind": "literal"
-    },
-    {
-     "q": "On which day did the thunder come?",
-     "right": "Saturday",
-     "wrong": [
-      "Friday",
-      "Wednesday"
-     ],
-     "page": 7,
-     "kind": "literal"
-    },
-    {
-     "q": "What is funny about the end of the story?",
-     "right": "Manu forgot his raincoat when it finally rained",
-     "wrong": [
-      "Manu's raincoat was blue",
-      "It never rained"
-     ],
-     "page": 9,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0101": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "What was Chandu doing in his dream?",
-     "right": "Flying",
-     "wrong": [
-      "Swimming",
-      "Running"
-     ],
-     "page": 1,
-     "kind": "literal"
-    },
-    {
-     "q": "What did Chandu meet after the eagle?",
-     "right": "An aeroplane",
-     "wrong": [
-      "A sparrow",
-      "A kite"
+      "A new friend is coming",
+      "It is a holiday"
      ],
      "page": 5,
      "kind": "literal"
     },
     {
-     "q": "Why did the stars seem to wobble and shake?",
-     "right": "Mother was shaking Chandu awake",
+     "q": "Why does the child run \"like a rocket\" at the end?",
+     "right": "They need the toilet right now",
      "wrong": [
-      "There was a storm",
-      "A rocket hit them"
+      "They are late for the bus",
+      "They want to see a rocket"
      ],
-     "page": 8,
+     "page": 7,
      "kind": "inference"
     }
    ]
   },
-  "0105": {
-   "glossary": {},
+  "0055": {
+   "glossary": {
+    "chakli": "a crunchy, curly snack"
+   },
    "questions": [
     {
-     "q": "Who saw the mouse first?",
-     "right": "Grandma",
+     "q": "What snack does the girl love?",
+     "right": "Chakli",
      "wrong": [
-      "Pa",
-      "Baby"
+      "Popcorn",
+      "Cookies"
      ],
-     "page": 1,
+     "page": 11,
      "kind": "literal"
     },
     {
-     "q": "What did the cat do when it saw the mouse?",
-     "right": "It ran under the bed",
+     "q": "What kind of lines does she always draw?",
+     "right": "Curly lines",
      "wrong": [
-      "It caught the mouse",
-      "It went to sleep"
-     ],
-     "page": 3,
-     "kind": "literal"
-    },
-    {
-     "q": "What is funny about this story?",
-     "right": "The grown-ups were scared but the baby was not",
-     "wrong": [
-      "The mouse was a toy",
-      "The cat was the bravest"
+      "Straight lines",
+      "Dotted lines"
      ],
      "page": 9,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0124": {
-   "glossary": {
-    "Nani": "Grandma (your mother's mother)",
-    "Masi": "Aunt (your mother's sister)",
-    "laddoo": "a round, sweet treat"
-   },
-   "questions": [
-    {
-     "q": "Where are Nani's glasses sometimes?",
-     "right": "On her head",
-     "wrong": [
-      "In the fridge",
-      "In the garden"
-     ],
-     "page": 3,
      "kind": "literal"
     },
     {
-     "q": "Where were the glasses this time?",
-     "right": "Wrapped in wool on her desk",
+     "q": "Why does she say \"who cares\" at the end?",
+     "right": "She likes chakli both ways",
      "wrong": [
-      "Under the sofa",
-      "In the bathroom"
-     ],
-     "page": 10,
-     "kind": "literal"
-    },
-    {
-     "q": "How did Richa find the glasses?",
-     "right": "She found out what Nani did all day, like a detective",
-     "wrong": [
-      "She asked the cat",
-      "She bought new ones"
-     ],
-     "page": 6,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0013": {
-   "glossary": {
-    "Aai": "Mom (in Marathi)",
-    "Baba": "Dad",
-    "nappy": "a diaper"
-   },
-   "questions": [
-    {
-     "q": "Why did Anu get ready so fast?",
-     "right": "To see Aunty Jui's baby",
-     "wrong": [
-      "To go to school",
-      "To play with friends"
-     ],
-     "page": 2,
-     "kind": "literal"
-    },
-    {
-     "q": "What did Anu try to lie down in?",
-     "right": "The baby's cradle",
-     "wrong": [
-      "A box",
-      "A wagon"
-     ],
-     "page": 16,
-     "kind": "literal"
-    },
-    {
-     "q": "Why did Anu decide to give her baby things away?",
-     "right": "She felt proud to be a big sister",
-     "wrong": [
-      "She did not like them",
-      "Aai made her"
-     ],
-     "page": 17,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0015": {
-   "glossary": {
-    "groundnuts": "peanuts",
-    "jaggery": "a brown sugar made from sugarcane",
-    "naan": "a soft flatbread",
-    "shawl": "a big warm scarf"
-   },
-   "questions": [
-    {
-     "q": "Where did Amma take the children?",
-     "right": "To the Groundnut Fair",
-     "wrong": [
-      "To the beach",
-      "To the zoo"
-     ],
-     "page": 2,
-     "kind": "literal"
-    },
-    {
-     "q": "Where does Rajni live?",
-     "right": "Shimla",
-     "wrong": [
-      "Delhi",
-      "Jaisalmer"
-     ],
-     "page": 6,
-     "kind": "literal"
-    },
-    {
-     "q": "Why will the girl's tree never be covered with snow?",
-     "right": "It does not snow where she lives",
-     "wrong": [
-      "The tree is too tall",
-      "She covers it with a rug"
+      "She is angry",
+      "She is tired of chakli"
      ],
      "page": 13,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0017": {
-   "glossary": {
-    "monsoon": "the rainy season",
-    "pakodas": "crispy fried snacks made with vegetables and chickpea flour",
-    "puris": "puffy fried breads",
-    "dupatta": "a long scarf"
-   },
-   "questions": [
-    {
-     "q": "Which season is this story about?",
-     "right": "The rainy season",
-     "wrong": [
-      "Winter",
-      "Spring"
-     ],
-     "page": 1,
-     "kind": "literal"
-    },
-    {
-     "q": "What is being fried in the kitchen?",
-     "right": "Pakodas",
-     "wrong": [
-      "Eggs",
-      "Pancakes"
-     ],
-     "page": 5,
-     "kind": "literal"
-    },
-    {
-     "q": "Why doesn't she have to water her mango tree?",
-     "right": "The rain waters it",
-     "wrong": [
-      "Her uncle waters it",
-      "The tree does not need water"
-     ],
-     "page": 7,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0024": {
-   "glossary": {
-    "Sona Miss": "the children's teacher"
-   },
-   "questions": [
-    {
-     "q": "Who were good friends?",
-     "right": "Shanti and Arun",
-     "wrong": [
-      "Shanti and Rohan",
-      "Arun and Sona Miss"
-     ],
-     "page": 1,
-     "kind": "literal"
-    },
-    {
-     "q": "What did Arun want to show Shanti?",
-     "right": "A big rubber frog",
-     "wrong": [
-      "A puppy",
-      "A cake"
-     ],
-     "page": 6,
-     "kind": "literal"
-    },
-    {
-     "q": "Why didn't Shanti smile or talk all day?",
-     "right": "She did not want anyone to see her missing teeth",
-     "wrong": [
-      "She had a fever",
-      "She was angry with Arun"
-     ],
-     "page": 6,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0034": {
-   "glossary": {
-    "laddoo": "a round, sweet treat",
-    "ringmaster": "the person in charge of a circus show"
-   },
-   "questions": [
-    {
-     "q": "Who took Veeru to the circus?",
-     "right": "Grandma and Grandpa",
-     "wrong": [
-      "His teacher",
-      "Mummy and Daddy"
-     ],
-     "page": 1,
-     "kind": "literal"
-    },
-    {
-     "q": "What did Veeru juggle?",
-     "right": "One big laddoo",
-     "wrong": [
-      "Six balls",
-      "Three apples"
-     ],
-     "page": 5,
-     "kind": "literal"
-    },
-    {
-     "q": "Why did Veeru change each of his tricks?",
-     "right": "His family told him the tricks were unsafe",
-     "wrong": [
-      "He got tired",
-      "The lion was hungry"
-     ],
-     "page": 2,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0035": {
-   "glossary": {},
-   "questions": [
-    {
-     "q": "What did Gauri want the scarecrow to wear?",
-     "right": "Her new red frock",
-     "wrong": [
-      "A big hat",
-      "A blanket"
-     ],
-     "page": 2,
-     "kind": "literal"
-    },
-    {
-     "q": "What did the birds do while the scarecrows paraded?",
-     "right": "Ate the grain",
-     "wrong": [
-      "Sang songs",
-      "Went to sleep"
-     ],
-     "page": 9,
-     "kind": "literal"
-    },
-    {
-     "q": "Was the scarecrow parade real?",
-     "right": "No, it was Gauri's dream",
-     "wrong": [
-      "Yes, it really happened",
-      "The birds made it up"
-     ],
-     "page": 11,
-     "kind": "inference"
-    }
-   ]
-  },
-  "0051": {
-   "glossary": {
-    "maiden journey": "a first trip"
-   },
-   "questions": [
-    {
-     "q": "What is the new train's name?",
-     "right": "Loco",
-     "wrong": [
-      "Babu",
-      "Chuggy"
-     ],
-     "page": 1,
-     "kind": "literal"
-    },
-    {
-     "q": "Who was the engine driver?",
-     "right": "Babu",
-     "wrong": [
-      "Ramesh",
-      "Loco"
-     ],
-     "page": 4,
-     "kind": "literal"
-    },
-    {
-     "q": "Why did the birds and dogs run away from Loco?",
-     "right": "They were scared of its loud whistle",
-     "wrong": [
-      "Loco was chasing them",
-      "It started to rain"
-     ],
-     "page": 6,
      "kind": "inference"
     }
    ]
@@ -1830,6 +1267,76 @@
       "Grandpa wrote them"
      ],
      "page": 10,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0059": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What does Bekku do when she sees a mouse?",
+     "right": "She runs after it",
+     "wrong": [
+      "She runs away from it",
+      "She goes to sleep"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "What do the child and Bekku both love?",
+     "right": "Milk",
+     "wrong": [
+      "Fish",
+      "Cake"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "What kind of animal is Bekku most likely?",
+     "right": "A cat",
+     "wrong": [
+      "A fish",
+      "A bird"
+     ],
+     "page": 3,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0060": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "Where did Sringeri Srinivas go first to get his hair cut?",
+     "right": "To the local barber",
+     "wrong": [
+      "To his friend the tailor",
+      "To the carpenter"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What woke up the tiger in the cave?",
+     "right": "Sringeri Srinivas crying loudly",
+     "wrong": [
+      "A loud drum",
+      "Rain falling on the cave"
+     ],
+     "page": 14,
+     "kind": "literal"
+    },
+    {
+     "q": "Why will Sringeri Srinivas not need a haircut for a long time?",
+     "right": "All his hair fell off when he got scared",
+     "wrong": [
+      "The tiger cut his hair",
+      "His wife cut it very short"
+     ],
+     "page": 17,
      "kind": "inference"
     }
    ]
@@ -1908,6 +1415,397 @@
       "It bit him"
      ],
      "page": 6,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0063": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What did Chhotu the rabbit look like?",
+     "right": "A ball of cotton",
+     "wrong": [
+      "A drum",
+      "A coconut"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What fell on Golu's head?",
+     "right": "Coconuts",
+     "wrong": [
+      "Apples",
+      "Raindrops"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why was Chhotu glad that only a coconut fell on him?",
+     "right": "It was better than an elephant landing on him",
+     "wrong": [
+      "He likes coconuts",
+      "He wanted a snack"
+     ],
+     "page": 10,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0064": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What else does the boy say are his friends?",
+     "right": "Books",
+     "wrong": [
+      "Shoes",
+      "Clouds"
+     ],
+     "page": 9,
+     "kind": "literal"
+    },
+    {
+     "q": "Who is the boy's best friend?",
+     "right": "His mother",
+     "wrong": [
+      "His teacher",
+      "His dog"
+     ],
+     "page": 11,
+     "kind": "literal"
+    },
+    {
+     "q": "How do we know some of his friends are animals?",
+     "right": "Some of them have tails",
+     "wrong": [
+      "Some of them read books",
+      "Some of them play cricket"
+     ],
+     "page": 6,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0067": {
+   "glossary": {
+    "cot": "a small bed"
+   },
+   "questions": [
+    {
+     "q": "What was the child looking for?",
+     "right": "A yo-yo",
+     "wrong": [
+      "A shoe",
+      "A book"
+     ],
+     "page": 9,
+     "kind": "literal"
+    },
+    {
+     "q": "Who found it?",
+     "right": "Granny",
+     "wrong": [
+      "The child's sister",
+      "The dog"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why didn't the child get to play with the toy that day?",
+     "right": "Granny loved it and played with it all day",
+     "wrong": [
+      "It was broken",
+      "It was lost again"
+     ],
+     "page": 11,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0069": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "When did Manu get his red raincoat?",
+     "right": "On Sunday",
+     "wrong": [
+      "On Monday",
+      "On his birthday"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "On which day did the thunder come?",
+     "right": "Saturday",
+     "wrong": [
+      "Friday",
+      "Wednesday"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "What is funny about the end of the story?",
+     "right": "Manu forgot his raincoat when it finally rained",
+     "wrong": [
+      "Manu's raincoat was blue",
+      "It never rained"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0071": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What color is the butterfly?",
+     "right": "Blue",
+     "wrong": [
+      "Yellow",
+      "Red"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What is the green grasshopper doing?",
+     "right": "Reading a newspaper",
+     "wrong": [
+      "Eating a slice of cake",
+      "Sailing in a boat"
+     ],
+     "page": 10,
+     "kind": "literal"
+    },
+    {
+     "q": "Which animal is dressed up like a person?",
+     "right": "The fox in purple socks",
+     "wrong": [
+      "The red fish in a dish",
+      "The tiger in the water"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0072": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "Why is the baby crying?",
+     "right": "She is hungry",
+     "wrong": [
+      "She is cold",
+      "She lost a toy"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Why is the old man laughing?",
+     "right": "He read a good joke",
+     "wrong": [
+      "He saw a funny dog",
+      "He won a game"
+     ],
+     "page": 8,
+     "kind": "literal"
+    },
+    {
+     "q": "What is this book mostly about?",
+     "right": "How people feel and why",
+     "wrong": [
+      "How to cook",
+      "How to count"
+     ],
+     "page": 11,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0073": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What color are raw bananas?",
+     "right": "Green",
+     "wrong": [
+      "Yellow",
+      "Red"
+     ],
+     "page": 6,
+     "kind": "literal"
+    },
+    {
+     "q": "What makes blood red?",
+     "right": "Iron",
+     "wrong": [
+      "Salt",
+      "Sugar"
+     ],
+     "page": 10,
+     "kind": "literal"
+    },
+    {
+     "q": "The story says not all umbrellas are black. What does that mean?",
+     "right": "Umbrellas can be other colors too",
+     "wrong": [
+      "Umbrellas are always black",
+      "Nobody uses umbrellas"
+     ],
+     "page": 8,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0075": {
+   "glossary": {
+    "Chacha": "uncle (a father's younger brother) in Hindi"
+   },
+   "questions": [
+    {
+     "q": "Why can't Grandpa read the newspaper?",
+     "right": "He broke his reading glasses",
+     "wrong": [
+      "It is too dark",
+      "The newspaper is wet"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What does Gulli give Mangal Chacha to pour the oil?",
+     "right": "A funnel",
+     "wrong": [
+      "A magnet",
+      "A magnifying glass"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "What kind of boy is Gulli?",
+     "right": "Helpful",
+     "wrong": [
+      "Lazy",
+      "Grumpy"
+     ],
+     "page": 11,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0078": {
+   "glossary": {
+    "kabadiwala": "a person who buys old newspapers, bottles and other things so they can be used again"
+   },
+   "questions": [
+    {
+     "q": "What does Cheenu's father do?",
+     "right": "He collects old paper and bottles",
+     "wrong": [
+      "He drives a school bus",
+      "He sells ice cream"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "How did Cheenu and his father get to the fifth floor?",
+     "right": "In a lift",
+     "wrong": [
+      "On a ladder",
+      "Up the stairs"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Cheenu's father give him the book?",
+     "right": "He saw how much Cheenu liked it",
+     "wrong": [
+      "It was Cheenu's birthday",
+      "The teacher asked him to"
+     ],
+     "page": 11,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0087": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What did the peacock say it would do if the cloud rained?",
+     "right": "Dance",
+     "wrong": [
+      "Sing",
+      "Fly away"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Raju want to sail?",
+     "right": "Paper boats",
+     "wrong": [
+      "A big ship",
+      "A toy duck"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why was everybody happy after the rain?",
+     "right": "The rain gave each of them what they needed",
+     "wrong": [
+      "The cloud went away forever",
+      "It was a holiday"
+     ],
+     "page": 11,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0089": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What did Theingi want to turn into gold?",
+     "right": "Dirt",
+     "wrong": [
+      "Bananas",
+      "Silver"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "Where did Thet say the secret silver powder was found?",
+     "right": "On banana leaves",
+     "wrong": [
+      "In river sand",
+      "Inside gold coins"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "How did Theingi really turn dirt into gold?",
+     "right": "He worked hard growing bananas, and Thuza sold them",
+     "wrong": [
+      "He chanted a magic spell",
+      "He found gold buried in the field"
+     ],
+     "page": 4,
      "kind": "inference"
     }
    ]
@@ -2025,6 +1923,368 @@
     }
    ]
   },
+  "0100": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What can't Sonu do at first?",
+     "right": "Climb down",
+     "wrong": [
+      "Climb up the steps",
+      "Climb on a chair"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "Who laughed and said \"learn to climb down\"?",
+     "right": "Papa",
+     "wrong": [
+      "Grandma",
+      "His teacher"
+     ],
+     "page": 8,
+     "kind": "literal"
+    },
+    {
+     "q": "How does Sonu feel at the end?",
+     "right": "Proud that he learned something new",
+     "wrong": [
+      "Scared of chairs forever",
+      "Angry at Papa"
+     ],
+     "page": 11,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0101": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What was Chandu doing in his dream?",
+     "right": "Flying",
+     "wrong": [
+      "Swimming",
+      "Running"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Chandu meet after the eagle?",
+     "right": "An aeroplane",
+     "wrong": [
+      "A sparrow",
+      "A kite"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the stars seem to wobble and shake?",
+     "right": "Mother was shaking Chandu awake",
+     "wrong": [
+      "There was a storm",
+      "A rocket hit them"
+     ],
+     "page": 8,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0103": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "Who sits still when the boy draws her?",
+     "right": "His mother",
+     "wrong": [
+      "His sister",
+      "The cat"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Where is the boy told not to draw?",
+     "right": "On the wall",
+     "wrong": [
+      "On paper",
+      "On the floor"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why is it hard to draw his sister?",
+     "right": "She does not sit still",
+     "wrong": [
+      "She is too small",
+      "She is asleep"
+     ],
+     "page": 3,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0105": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "Who saw the mouse first?",
+     "right": "Grandma",
+     "wrong": [
+      "Pa",
+      "Baby"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did the cat do when it saw the mouse?",
+     "right": "It ran under the bed",
+     "wrong": [
+      "It caught the mouse",
+      "It went to sleep"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "What is funny about this story?",
+     "right": "The grown-ups were scared but the baby was not",
+     "wrong": [
+      "The mouse was a toy",
+      "The cat was the bravest"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0106": {
+   "glossary": {
+    "dosas": "thin, crispy pancakes made from rice and lentils",
+    "Amma": "Mom"
+   },
+   "questions": [
+    {
+     "q": "What is Amma making while Shyam brushes his teeth?",
+     "right": "Dosas",
+     "wrong": [
+      "Idlis",
+      "Rotis"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What if Shyam's legs were as tall as trees?",
+     "right": "His school would only come up to his knees",
+     "wrong": [
+      "He could touch the moon",
+      "He would fall into the river"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why is Shyam still holding his toothbrush at the end?",
+     "right": "He was daydreaming instead of brushing",
+     "wrong": [
+      "His toothbrush broke",
+      "He was waiting for his sister"
+     ],
+     "page": 10,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0112": {
+   "glossary": {
+    "chappals": "sandals",
+    "Baba": "Dad",
+    "a pile of seven stones": "a game where players knock down a stack of flat stones with a ball and build it up again"
+   },
+   "questions": [
+    {
+     "q": "What does Phani say makes him late?",
+     "right": "His chappals",
+     "wrong": [
+      "His sister",
+      "The TV"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Where do the chappals take Phani when his feet are sweating?",
+     "right": "Near a clear, cool pond",
+     "wrong": [
+      "To the market",
+      "To the post office"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why doesn't Phani look happy about his new chappals?",
+     "right": "He can't blame his old chappals anymore",
+     "wrong": [
+      "They are the wrong color",
+      "They are too small"
+     ],
+     "page": 12,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0113": {
+   "glossary": {
+    "dal": "a soup made from lentils"
+   },
+   "questions": [
+    {
+     "q": "Where had the cot climbed?",
+     "right": "Right up the wall",
+     "wrong": [
+      "Under the table",
+      "Out of the window"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "What has the fan turned into?",
+     "right": "A big octopus",
+     "wrong": [
+      "A bird",
+      "A clock"
+     ],
+     "page": 6,
+     "kind": "literal"
+    },
+    {
+     "q": "How does the child feel when they see the mixed-up room?",
+     "right": "Scared and upset",
+     "wrong": [
+      "Bored",
+      "Sleepy and calm"
+     ],
+     "page": 8,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0114": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What was the big dark thing outside?",
+     "right": "The well",
+     "wrong": [
+      "A big rock",
+      "A tree"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "What made the creak creak sound?",
+     "right": "Her sister drawing water from the well",
+     "wrong": [
+      "The wind",
+      "Her father's bicycle"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why was there nothing to be afraid of?",
+     "right": "Every sound came from something she knew",
+     "wrong": [
+      "She stayed inside the house",
+      "The sun came up"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0118": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What do the children use to tie the balloon?",
+     "right": "Thread",
+     "wrong": [
+      "Tape",
+      "A shoelace"
+     ],
+     "page": 10,
+     "kind": "literal"
+    },
+    {
+     "q": "What happened to the air in the balloon?",
+     "right": "It was all gone",
+     "wrong": [
+      "It turned blue",
+      "It got hot"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why are the child's cheeks puffed up and hot?",
+     "right": "The child is blowing up a balloon",
+     "wrong": [
+      "The child is sick",
+      "The child is sad"
+     ],
+     "page": 4,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0119": {
+   "glossary": {
+    "Pehelwaan": "a strong wrestler. \"Ji\" is added to a name to show respect",
+    "wicket-keeper": "the cricket player who stands behind the batter to catch the ball"
+   },
+   "questions": [
+    {
+     "q": "Why couldn't the children say no to Pehelwaan ji?",
+     "right": "They were scared of him",
+     "wrong": [
+      "He was their teacher",
+      "He had the only ball"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What happened when Pehelwaan ji jumped high to bowl?",
+     "right": "He lost his balance and fell down",
+     "wrong": [
+      "He hit the ball very far",
+      "He broke the bat"
+     ],
+     "page": 10,
+     "kind": "literal"
+    },
+    {
+     "q": "Why could everyone play peacefully at the end?",
+     "right": "Pehelwaan ji had stopped playing",
+     "wrong": [
+      "It started to rain",
+      "They got a new bat"
+     ],
+     "page": 15,
+     "kind": "inference"
+    }
+   ]
+  },
   "0120": {
    "glossary": {},
    "questions": [
@@ -2098,37 +2358,76 @@
     }
    ]
   },
-  "0059": {
-   "glossary": {},
+  "0124": {
+   "glossary": {
+    "Nani": "Grandma (your mother's mother)",
+    "Masi": "Aunt (your mother's sister)",
+    "laddoo": "a round, sweet treat"
+   },
    "questions": [
     {
-     "q": "What does Bekku do when she sees a mouse?",
-     "right": "She runs after it",
+     "q": "Where are Nani's glasses sometimes?",
+     "right": "On her head",
      "wrong": [
-      "She runs away from it",
-      "She goes to sleep"
+      "In the fridge",
+      "In the garden"
      ],
      "page": 3,
      "kind": "literal"
     },
     {
-     "q": "What do the child and Bekku both love?",
-     "right": "Milk",
+     "q": "Where were the glasses this time?",
+     "right": "Wrapped in wool on her desk",
      "wrong": [
-      "Fish",
-      "Cake"
+      "Under the sofa",
+      "In the bathroom"
+     ],
+     "page": 10,
+     "kind": "literal"
+    },
+    {
+     "q": "How did Richa find the glasses?",
+     "right": "She found out what Nani did all day, like a detective",
+     "wrong": [
+      "She asked the cat",
+      "She bought new ones"
+     ],
+     "page": 6,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0125": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "Where does the girl's friend live?",
+     "right": "Inside the mirror",
+     "wrong": [
+      "Next door",
+      "At school"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "When does the friend come out to play?",
+     "right": "When the girl is asleep and dreaming",
+     "wrong": [
+      "After lunch",
+      "On Sundays"
      ],
      "page": 7,
      "kind": "literal"
     },
     {
-     "q": "What kind of animal is Bekku most likely?",
-     "right": "A cat",
+     "q": "Who is the friend in the mirror, really?",
+     "right": "The girl herself",
      "wrong": [
-      "A fish",
-      "A bird"
+      "Her sister",
+      "Her goat"
      ],
-     "page": 3,
+     "page": 2,
      "kind": "inference"
     }
    ]
@@ -2169,33 +2468,269 @@
      "kind": "inference"
     }
    ]
+  },
+  "0127": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "Who is the cat's best friend?",
+     "right": "Cheena",
+     "wrong": [
+      "Sanju",
+      "Tommy"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "How is the cat different from Tommy?",
+     "right": "It does not need a bath",
+     "wrong": [
+      "It cannot climb trees",
+      "It goes to school"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why does the cat want Sanju to know that tigers are in the cat family?",
+     "right": "So Sanju will stop teasing it",
+     "wrong": [
+      "So Sanju will bring it food",
+      "So Sanju will take it to the zoo"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0128": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "Where does the crow live?",
+     "right": "In the mango tree",
+     "wrong": [
+      "On a rooftop",
+      "By the river"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What does the crow do when it finds a feast?",
+     "right": "It caws to call its friends to share",
+     "wrong": [
+      "It hides the food",
+      "It flies away alone"
+     ],
+     "page": 8,
+     "kind": "literal"
+    },
+    {
+     "q": "Why must the crow be on guard when its babies are in the nest?",
+     "right": "To keep its babies safe",
+     "wrong": [
+      "To count the mangoes",
+      "To watch the planes"
+     ],
+     "page": 2,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0129": {
+   "glossary": {
+    "papads": "thin, crispy wafers made from lentils, dried in the sun"
+   },
+   "questions": [
+    {
+     "q": "What does the dog keep away from the papads?",
+     "right": "The crows",
+     "wrong": [
+      "The cats",
+      "Chinku"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Who will be the dog's teacher today?",
+     "right": "Chinku",
+     "wrong": [
+      "Ma",
+      "A crow"
+     ],
+     "page": 8,
+     "kind": "literal"
+    },
+    {
+     "q": "Why does the dog say they even share Ma's scolding?",
+     "right": "The dog and Chinku get into trouble together",
+     "wrong": [
+      "Ma is angry with the crows",
+      "The dog is scared of Ma"
+     ],
+     "page": 6,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0262": {
+   "glossary": {
+    "halwa": "a soft, sweet pudding"
+   },
+   "questions": [
+    {
+     "q": "Where does the man get his bananas?",
+     "right": "From a tree",
+     "wrong": [
+      "From a shop",
+      "From a friend"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What will he make with the bananas?",
+     "right": "Banana halwa",
+     "wrong": [
+      "Banana bread",
+      "Banana juice"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why does he need to do something with the bananas?",
+     "right": "He has too many to eat",
+     "wrong": [
+      "He does not like bananas",
+      "His friend asked him to"
+     ],
+     "page": 5,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0317": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "Who was Lalu's best friend?",
+     "right": "Sweety, the peacock",
+     "wrong": [
+      "A crow",
+      "A parrot"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What did the birds give Lalu at the party?",
+     "right": "A crown of feathers",
+     "wrong": [
+      "A cake",
+      "A book"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did all the birds come to Lalu's party?",
+     "right": "Lalu was friendly to everyone",
+     "wrong": [
+      "They were lost",
+      "It was raining"
+     ],
+     "page": 1,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0382": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "Why was Crocky sad?",
+     "right": "He had no friends to play with",
+     "wrong": [
+      "He was hungry",
+      "He lost a tooth"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Who said \"I will play with you\" first?",
+     "right": "Babloo, the butterfly",
+     "wrong": [
+      "Fred, the frog",
+      "Susie, the snake"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "How did the other animals help Crocky?",
+     "right": "They became his friends",
+     "wrong": [
+      "They gave him food",
+      "They sang him to sleep"
+     ],
+     "page": 7,
+     "kind": "inference"
+    }
+   ]
   }
  },
  "skipped": {
+  "0002": "Left out by the owner (20 Nov 2026): the jokes poke fun at body size (\"fat king\").",
+  "0006": "A teacher slaps and hits children with a stick, and the boy shoots pellets at people passing by.",
   "0007": "A mistake in the source text (\"mothers kitchen\").",
-  "0029": "A child runs across a busy road through traffic; a page is repeated in the source text.",
-  "0066": "Children ride a toy car after being told not to, and one loses a tooth.",
+  "0011": "A mistake in the source text (\"That's were I think\"); a demon eats the sun and the sky is \"stained red with his blood\".",
   "0012": "Religious practice is central (praying to a goddess, the Holika bonfire).",
   "0016": "Several religious festivals are central (Navaratri dolls, Deepavali firecrackers).",
+  "0019": "A mistake in the source text (\"come trueHope\"); a prayer to God; a tribesman described by his face \"painted black\".",
   "0023": "Violence: boiling water is thrown at a wolf, and the wolves threaten to \"tear you to pieces\".",
   "0025": "An old man is described by his hunchback and the joke is at his expense.",
+  "0028": "Labels a grown-up by body size (\"My fat aunt ... her thin husband\").",
+  "0029": "A child runs across a busy road through traffic; a page is repeated in the source text.",
   "0033": "A page is repeated in the source text, and a child is called \"a fat boy\".",
   "0037": "Lines are repeated in the source text and the ending is unclear.",
+  "0040": "A child says his mother would have spanked him, and the story leans on a mythological demon (Kumbhakarna).",
+  "0042": "A joke that a stain \"drives the old woman insane\"; left out to be safe.",
+  "0043": "A curse, a mother praying to her gods and a greedy demon under the earth are three of the answers.",
+  "0049": "The animals plan again and again to kill a deer, and the crow burns its tail in a furnace.",
   "0050": "A religious ceremony (a pooja with a priest and offerings to the gods) is central to the plot.",
+  "0058": "Describes foreign sailors by their skin and \"narrow tilted eyes\", and a soldier calls a girl \"you silly girl\" (the scanner flagged it too).",
+  "0066": "Children ride a toy car after being told not to, and one loses a tooth.",
+  "0068": "A child selling water between cars in busy traffic, called \"a grubby boy\".",
+  "0070": "A mistake in the source text (\"May be sing in your sleep\").",
   "0074": "Labels children as \"a bad boy\" and \"a naughty girl\".",
+  "0076": "A giant threatens bandits with swords (\"I'll rip each and every limb from your bodies and chew them up\").",
+  "0079": "Name-calling (\"you idiot\"), a teacher's harsh punishments, and the boy says he will kill his siblings and break his brother's other leg.",
   "0081": "Romance joke (\"Are you getting married soon?\").",
   "0084": "A man threatens a dog (\"I am going to teach you a lesson\") and catches it.",
   "0085": "A pet snake eats a pet mouse, then chases the class.",
+  "0088": "A page is repeated in the source text, and children throw rocks at a cradle while the baby's father is away.",
+  "0090": "A mistake in the source text (\"Mughlai cusine\").",
   "0092": "A boy is beaten and a cow is whipped.",
+  "0093": "A passage is repeated in the source text (the last page says the same lines twice).",
+  "0095": "A child sends ants up in a basket tied to a balloon and teases a monkey; conversion leftovers (\"###\") are in the text.",
   "0097": "Hunters with guns come to kill crocodiles for their skins.",
+  "0102": "A lost toddler lifts up every woman's sari to find her grandmother, and crying is called \"silly baby-like\".",
   "0111": "An angry grown-up calls a tiger \"stupid\" and glares at his wife.",
+  "0117": "A mistake in the source text (\"he bought Pasupati the zoo-keeper\" for brought); the king calls his guards idiots and wants to cut a cow in two.",
   "0122": "A tiger has killed an animal and the body is described.",
+  "0123": "A mistake in the source text (\"dear?Did you call me?\"), and \"Oh my God!\" as an exclamation.",
   "0134": "A deep wound and dead tissue are described; the animal's life is in danger.",
   "0135": "A spelling mistake in the source text (\"dinosuar\"); we do not change a story's words.",
   "0136": "Reads as a child travelling alone and being asked if she has run away.",
   "0138": "A baby alone with a wild bear; the fact page says bears kill goats.",
   "0141": "Religious (\"Who made this world? God knows!\").",
   "0166": "A list of bird names, not a story (too little text for 3 questions).",
+  "0167": "Left out by the owner (20 Nov 2026): children live by a garbage dump and do not go to school.",
   "0170": "A mistake in the source text (\"What's makes you special?\").",
   "0193": "Mistakes in the source text (\"touch it's nose\") and a thin story.",
   "0194": "Mistakes in the source text, including the title (\"specatal\").",
@@ -2209,13 +2744,81 @@
   "0374": "Compares children to monkeys, which can read as a slur; left out to be safe.",
   "0378": "A list of vehicles, not a story.",
   "0383": "Mistakes in the source text (\"the bird's play\", \"Day at Garden\").",
-  "0425": "Four words in all (too little text for 3 questions).",
-  "0002": "Left out by the owner (20 Nov 2026): the jokes poke fun at body size (\"fat king\").",
-  "0167": "Left out by the owner (20 Nov 2026): children live by a garbage dump and do not go to school."
+  "0425": "Four words in all (too little text for 3 questions)."
  },
  "scanReviewed": {
   "0073": "The scanner's violence rule matches \"blood\": it is a science question (\"Why is blood red? There is iron in the blood\"). Reviewed: fine.",
+  "0089": "The scanner's rules check matches \"repeat the above step\": a step in the banana activity. Reviewed: fine.",
   "0096": "The scanner's chat rule matches \"don't talk to any strangers\": a mother's safety advice. Reviewed: fine.",
   "0103": "The scanner's private-person rule matches \"my sister\": the narrator's sister in the story, not a real person. Reviewed: fine."
+ },
+ "pictureMap": {
+  "0038": {
+   "cover": "01.jpg",
+   "pages": [
+    "02.jpg",
+    "03.jpg",
+    "04.jpg",
+    "05.jpg",
+    "06.jpg",
+    "07.jpg",
+    "08.jpg",
+    "09.jpg",
+    "10.jpg"
+   ],
+   "why": "11 pictures for 9 pages. The descriptions match page by page: 01 happy children (cover); 02 children going to school (page 1, this is my school), 03 a boy and a girl (page 2, my brother Mannu and I), 04 entering a room (page 3, shoes by the door), 05 tiffin boxes on the wall (page 4), 06 children and toys (page 5, counting and blocks), 07 teacher and children learning (page 6, letters), 08 teacher with a puppet (page 7), 09 surprised children (page 8, my friends are surprised), 10 children playing with a tub (page 9, a tub of play dough). 11 is a second picture of the tub and is not used."
+  }
+ },
+ "pictureReview": {
+  "0004": "More pictures than pages (23 for 21): three pictures of faces (15, 16, 17) look like one page, and nothing says which page each goes with.",
+  "0032": "More pictures than pages, and the descriptions do not show which pictures go with which page.",
+  "0080": "Two pages are coloring pages (\"Use your imagination and colour this picture\") and there are 17 pictures for 15 pages; the extra pictures cannot be placed.",
+  "0082": "Craft pages (how to make a raft) at the end, with two raft pictures for them; which picture goes with which craft page is not clear.",
+  "0083": "As many pictures as pages: the descriptions do not show which picture is the cover or which page would go without one.",
+  "0098": "The last two pages are coloring pages and there are 16 pictures for 14 pages; the story pictures cannot be placed one to one.",
+  "0099": "Fewer pictures than pages, so some pages would have no picture.",
+  "0104": "The descriptions map pictures 02-08 to pages 1-7, but the last picture (the girl with the bat) is the ending, which has no text page: the story would stop before the bat is found.",
+  "0108": "The descriptions show 01 is the cover and 02-11 go with pages 1-10, so page 11 would have no picture.",
+  "0109": "As many pictures as pages: the descriptions do not show which picture is the cover or which page would go without one.",
+  "0116": "Craft pages (a paper lantern) at the end, with three craft pictures for two pages; not clear which goes where.",
+  "0130": "As many pictures as pages: the descriptions do not show which picture is the cover or which page would go without one.",
+  "0133": "As many pictures as pages: the descriptions do not show which picture is the cover or which page would go without one.",
+  "0139": "Nine pictures for seven pages and the last is described only as \"6framestory\"; not clear which pictures go where.",
+  "0143": "The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once.",
+  "0146": "More pictures than pages (22 for 18), and a Diwali book with a puja (left out anyway).",
+  "0153": "The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once.",
+  "0158": "The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once.",
+  "0186": "No story text in the source, only pictures.",
+  "0190": "More pictures than pages, and the descriptions do not show which pictures go with which page.",
+  "0206": "The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once.",
+  "0210": "No story text in the source, only pictures.",
+  "0228": "The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once.",
+  "0238": "No story text in the source, only pictures.",
+  "0246": "The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once.",
+  "0248": "As many pictures as pages: the descriptions do not show which picture is the cover or which page would go without one.",
+  "0249": "No story text in the source (64 pictures, no words).",
+  "0263": "The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once.",
+  "0277": "The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once.",
+  "0299": "More pictures than pages, and the descriptions do not show which pictures go with which page.",
+  "0304": "More pictures than pages, and the descriptions do not show which pictures go with which page.",
+  "0318": "More pictures than pages, and the descriptions do not show which pictures go with which page.",
+  "0329": "As many pictures as pages and two are \"Rocket flying over green hills\"; the text also has mistakes (\"eyery one\").",
+  "0330": "The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once.",
+  "0357": "Fewer pictures than pages, so some pages would have no picture.",
+  "0360": "Fewer pictures than pages, so some pages would have no picture.",
+  "0368": "The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once.",
+  "0377": "More pictures than pages, and the descriptions do not show which pictures go with which page.",
+  "0380": "More pictures than pages (19 for 17); 11 and 12 have the same description and 19 shows two men at a computer, which matches no page.",
+  "0386": "As many pictures as pages: the descriptions do not show which picture is the cover or which page would go without one.",
+  "0388": "Fewer pictures than pages, so some pages would have no picture.",
+  "0391": "More pictures than pages (24 for 22) and several have the same description (16 and 17, 10 and 22); not clear which goes where.",
+  "0392": "The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once.",
+  "0395": "More pictures than pages, and the descriptions do not show which pictures go with which page.",
+  "0407": "Fewer pictures than pages, so some pages would have no picture.",
+  "0410": "Fewer pictures than pages, so some pages would have no picture.",
+  "0417": "As many pictures as pages: the descriptions do not show which picture is the cover or which page would go without one.",
+  "0418": "As many pictures as pages: the descriptions do not show which picture is the cover or which page would go without one.",
+  "0420": "The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once.",
+  "0421": "More pictures than pages, and the descriptions do not show which pictures go with which page."
  }
 }
