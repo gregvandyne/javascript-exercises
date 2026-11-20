@@ -91,6 +91,19 @@ test('under the questions: a box each for /parents and /teachers, in their own w
   assert.ok(faq.indexOf('lp-faq') < faq.indexOf('lp-doors'), 'after the questions');
 });
 
+test('the Play pages, signed out: the bar is Play, Build and Sign in, no Play now; elsewhere Play now goes straight to /play', async () => {
+  const bar = h => /<header class="topbar">[\s\S]*?<\/header>/.exec(h)[0];
+  for (const p of ['/play', '/search']) {
+    const b = bar((await call(null, p)).text);
+    assert.deepEqual([...b.matchAll(/class="navlink" href="([^"]+)"/g)].map(m => m[1]), ['/play', '/build'], p);
+    assert.match(b, /class="me-btn" href="\/login"/, p);
+    assert.doesNotMatch(b, /playnow/, p);
+  }
+  const learn = bar((await call(null, '/learn')).text);
+  assert.match(learn, /class="navlink" href="\/teachers"/, 'other pages keep every link');
+  assert.match(learn, /class="btn btn-hot playnow" href="\/play"/, 'Play now goes to /play, not through the landing');
+});
+
 test('honest page: no prices on "/" (LANDING_SHOW_PRICE off), no ratings, reviews, testimonials or user counts', async () => {
   assert.equal(L.LANDING_SHOW_PRICE, false);
   const s = (await call(null, '/')).text;

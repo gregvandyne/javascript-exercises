@@ -321,17 +321,27 @@ export function parseBloomHtml(html) {
   return { title: title.replace(/\s*\n\s*/g, ' ').trim(), pages, cover, data, problems, otherLangs: [...langsAll].sort(), xmatterText };
 }
 
+/** How many pictures in one book may carry no license and no copyright at all and still be used under the book's own
+ *  license (the owner's rule, docs/decisions.md "Story Library: more Bloom books"): "a couple". A book with more, or
+ *  where most pictures are unlabeled, stays out. */
+export const MAX_UNLABELED = 2;
+
 /**
  * Which picture goes with which page, and is each one free to use? Every story page needs exactly one picture (a page
  * with only a picture and no words in any language is kept as a wordless page); every picture used must carry an
- * allowed license of its own that is no stricter than the book's, or (no license on the picture at all) the same
- * copyright holder as the book, in which case it inherits the book's license. Anything else leaves the book out.
- * -> { ok, rules: { own: n, inherited: n }, reason? }
+ * allowed license of its own that is no stricter than the book's, or (no license on the picture) the same copyright
+ * holder as the book, in which case it inherits the book's license ("inherited"). A picture with no license AND no
+ * copyright at all ("unlabeled") inherits the book's license only when the book has at most maxUnlabeled of them, they
+ * are not most of its pictures, and nothing about the picture (its creator or file name) names a stock or clip-art
+ * source. Anything else leaves the book out.
+ * -> { ok, rules: { own: n, inherited: n, unlabeled: n }, reason? } (on a failure for too many unlabeled pictures,
+ *    rules.unlabeled is the full count; maxUnlabeled and allowMostUnlabeled let the report tell how many books another
+ *    limit would let in, for the owner to decide)
  */
-export function checkBloomPictures(book, bookCode, bookCopyright) {
+export function checkBloomPictures(book, bookCode, bookCopyright, { maxUnlabeled = MAX_UNLABELED, allowMostUnlabeled = false } = {}) {
   const fam = BLOOM_ALLOWED[bookCode].family;
   const holder = normHolder(bookCopyright);
-  const rules = { own: 0, inherited: 0 };
+  const rules = { own: 0, inherited: 0, unlabeled: 0 };
   const used = [];
   if (!book.cover) return { ok: false, rules, reason: 'no cover picture' };
   used.push(['cover', book.cover]);
@@ -342,13 +352,19 @@ export function checkBloomPictures(book, bookCode, bookCopyright) {
     used.push([`page ${p.n}`, p.picture]);
   }
   for (const [where, picture] of used) {
-    let rule = 'own';
+    let rule = 'own', labeled = false;
     for (const pic of [picture, ...(picture.also ? [picture.also] : [])]) {
       const f = imageLicenseFamily(pic.license);
+      if (f !== null) labeled = true;
       if (f === null) {
         const h = normHolder(pic.copyright);
-        if (holder && h && h === holder) { rule = 'inherited'; continue; }
-        return { ok: false, rules, reason: `${where} picture has no license${pic.copyright ? ' and another copyright holder' : ' or copyright'}` };
+        const restr = restrictionIn(pic.copyright, pic.creator);
+        if (restr) return { ok: false, rules, reason: `${where} picture says "${restr}"` };
+        const src = NOT_OPEN_SOURCE_RE.exec(`${pic.copyright} ${pic.creator} ${pic.file}`);
+        if (src) return { ok: false, rules, reason: `${where} picture is credited to ${src[0]}, whose terms are not an open license` };
+        if (holder && h && h === holder) { if (rule !== 'unlabeled') rule = 'inherited'; continue; }
+        if (!String(pic.copyright || '').trim()) { rule = 'unlabeled'; continue; }
+        return { ok: false, rules, reason: `${where} picture has no license and another copyright holder` };
       }
       if (!(f in FREEDOM)) return { ok: false, rules, reason: `${where} picture license: ${f === 'unknown' ? `unreadable ("${String(pic.license).slice(0, 30)}")` : f.toUpperCase()}` };
       if (FREEDOM[f] < FREEDOM[fam]) return { ok: false, rules, reason: `${where} picture is ${f.toUpperCase()}, stricter than the book's ${BLOOM_ALLOWED[bookCode].name}` };
@@ -357,8 +373,11 @@ export function checkBloomPictures(book, bookCode, bookCopyright) {
       const src = NOT_OPEN_SOURCE_RE.exec(`${pic.copyright} ${pic.creator}`);
       if (src) return { ok: false, rules, reason: `${where} picture is credited to ${src[0]}, whose terms are not an open license` };
     }
+    if (rule === 'unlabeled' && labeled) rule = 'own';   // the same picture carries its license in the other place
     rules[rule]++; picture.rule = rule;
   }
+  if (rules.unlabeled > maxUnlabeled) return { ok: false, rules, reason: `${rules.unlabeled} pictures have no license or copyright (at most ${maxUnlabeled} may take the book's license)` };
+  if (!allowMostUnlabeled && rules.unlabeled && rules.unlabeled * 2 > used.length) return { ok: false, rules, reason: `most pictures have no license or copyright (${rules.unlabeled} of ${used.length})` };
   return { ok: true, rules };
 }
 
@@ -380,3 +399,4 @@ export const otherLangsOf = book => [...new Set(book.pages.flatMap(p => p.otherL
 /** A Bloom id as a manifest id and back ("DebbCmK8ZW" <-> "bl-DebbCmK8ZW"). Bloom ids are 10 letters and digits. */
 export const BLOOM_ID_RE = /^[A-Za-z0-9]{10}$/;
 export const bloomBookUrl = id => `https://bloomlibrary.org/book/${id}`;
+
