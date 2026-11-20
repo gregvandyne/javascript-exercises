@@ -229,3 +229,25 @@ test('tap to add: the next piece goes right of the last one added (centers lined
   // Nothing added before: the region's first free spot.
   assert.deepEqual(nextPieceSpot('money', { pieces: [] }, pieceDefs('money')[0], { x: 100, y: 50, w: 400, h: 300 }, null), { x: 116, y: 66, runX: 116 });
 });
+
+test('every string the manipulatives pages ask for exists (no raw "js.manip..." key can reach the screen)', async () => {
+  const fs = await import('node:fs');
+  const en = JSON.parse(fs.readFileSync(new URL('../../server/i18n/locales/en.json', import.meta.url)));
+  const get = k => k.split('.').reduce((o, p) => (o && typeof o === 'object' ? o[p] : undefined), en);
+  for (const f of ['manip.js', 'manip-room.js']) {
+    const src = fs.readFileSync(new URL(`../../public/js/${f}`, import.meta.url), 'utf8');
+    const keys = [...src.matchAll(/t\('((?:js)\.manip(?:-room)?\.[a-zA-Z.]+)'/g)].map(m => m[1]);
+    assert.ok(keys.length > 50, f);
+    for (const k of keys) assert.equal(typeof get(k), 'string', `${f}: ${k}`);
+  }
+});
+
+test('practice questions give nothing away: marked read-only (no digital time, no totals), "build" items stay settable', () => {
+  const r = buildPractice('clock', { items: [{ time: '3:00', box: 'answer' }, { time: '4:20', box: 'build' }] });
+  const [q, b] = r.board.objects.filter(o => o.k === 'clock');
+  assert.equal(q.st.q, true); assert.equal(b.st.q, undefined);
+  for (const slug of ['number-lines', 'base-ten-blocks', 'money', 'geoboard']) {
+    const x = buildPractice(slug, { items: [{ number: 1, value: 14, min: 0, max: 20, step: 2, pegs: [{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: 2, y: 2 }] }] });
+    assert.ok(x.board.objects.filter(o => o.k !== 'answer').every(o => o.st.q), slug);
+  }
+});

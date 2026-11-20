@@ -424,3 +424,12 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
 @media (min-width:900px){.mp-palette .mp-pal.piece,.mp-palette .mp-pal.add{touch-action:pan-y}}
 .mp-oname{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .mp-otot,.mp-key{flex:none}
+/* Phones: the zoom bar at the top of the board (the site's tab bar covers the bottom of the screen); the steps editor
+   gives each step the full width, its buttons in a row under it. */
+@media (max-width:899px){
+  .mp-zoom{bottom:auto;top:8px;inset-inline-start:auto;inset-inline-end:8px}
+  .mp-zoom .chip{min-height:34px;padding:4px 10px}
+  .rm-stepsed li{flex-wrap:wrap;gap:6px}
+  .rm-stepsed li textarea{flex:1 1 calc(100% - 3.2em);min-width:0}
+  .rm-stepops{flex:1 1 100%;justify-content:flex-end}
+}

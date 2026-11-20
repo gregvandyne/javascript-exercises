@@ -455,7 +455,7 @@ function renderPal() {
       ${R.role === 'teacher' && A.key === 't' ? btn('mp-tbtn rm-hidephone', 'data-rtool="steps"', `📋 ${esc(t('js.manip-room.steps'))}`) : ''}
       ${R.role === 'student' ? `${handBtn('mp-tbtn rm-phoneonly')}` : ''}</div>
     ${R.annotate ? `<div class="row rm-pens">${PEN_COLORS.map(c => btn(`mp-pen${R.pen === c ? ' on' : ''}`, `data-rpen="${c}" style="background:${c}" aria-label="${esc(t('js.manip-room.penColor', { color: c }))}"`, '')).join('')}${btn('chip', 'data-rtool="clearpen"', esc(t('js.manip-room.clearPen')))}</div>` : ''}
-    ${R.impl.settings && (!objectTool(R.room.tool) || o) ? `<div class="rm-settings">${R.impl.settings(objectTool(R.room.tool) ? o.st : A.st)}</div>` : ''}`;
+    ${R.impl.settings && (!objectTool(R.room.tool) || (o && !o.st.q)) ? `<div class="rm-settings">${R.impl.settings(objectTool(R.room.tool) ? o.st : A.st)}</div>` : ''}`;
 }
 
 // ---------------------------------------------------------------- input
@@ -697,8 +697,8 @@ function click(e) {
   if (oa) { const ws = workSize(A); edit(A.key, (st, v) => R.deps.objectAction(R.room.tool, st, oa.dataset.oact, oa.dataset.oid, v, { x: 0, y: 0, w: ws.w, h: ws.h }, ws, objMax(A))); return; }
   const objEl = e.target.closest('.mp-content .mp-obj');
   const act = e.target.closest('.mp-content [data-act]');
-  if (act && objEl) { edit(A.key, (st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o) return false; v.osel = o.id; return R.impl.act(o.st, act.dataset, e); }); return; }
-  if (R.impl.boardTap && objEl && e.target.closest('svg.mp-nl, svg.mp-grid')) edit(A.key, (st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o) return false; v.osel = o.id; return R.impl.act(o.st, {}, e); });
+  if (act && objEl) { edit(A.key, (st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; return R.impl.act(o.st, act.dataset, e); }); return; }
+  if (R.impl.boardTap && objEl && e.target.closest('svg.mp-nl, svg.mp-grid')) edit(A.key, (st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; return R.impl.act(o.st, {}, e); });
 }
 /** Finish the text being written: kept with its words, gone if empty; saved. */
 function commitText() {
@@ -782,7 +782,7 @@ async function toolButton(k) {
       // The teacher's board was made on the big solo board: it comes into the square, made smaller if it must be.
       R.hist.push([A.key, JSON.stringify({ st: A.st, ann: A.ann })]);
       const ws = workSize(A), o = stateOf(JSON.stringify(reframe(R.room.tool, migrate(R.room.tool, parse(p.state, {}) || {}), WORLD, ws)), ws);
-      A.st = o.st; A.ann = o.ann; renderArea(A.key); queueSave(A.key); goMine(); toast(t('js.manip-room.loadedPush'));
+      A.st = o.st; A.ann = o.ann; R.osel = null; renderArea(A.key); renderPal(); queueSave(A.key); goMine(); toast(t('js.manip-room.loadedPush'));
     }
     renderBar();
   }

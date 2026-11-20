@@ -9556,3 +9556,11 @@ it, and from anything a student saves. A "Check my answers" for students is a fo
   note), the not-endorsed line and the link to the original fold under "Author & publisher notes"
   (`library.credits.notes`, 13 languages). It is all still in the page, one tap away, so CC BY / BY-SA attribution
   ("reasonable to the medium") is kept: the creators are named on every page and the license is linked beside them.
+
+Follow-up (20 Nov 2026): a practice question is read-only for everyone (a clock to read has no Hour+/Min+5 and its
+hands don't move; a number line, grid or rekenrek can't be changed), shows no digital time, total or tracker line
+(the teacher sees the time only with "Show answers" on), and a practice board has no header total. "Build" items stay
+settable. On phones the board's zoom bar sits at the top of the board (the site's tab bar covers the bottom of the
+screen) and a step in the steps editor takes the full width, its ↑ ↓ × under it. Playwright scans every tool's page
+(solo at three widths, the room as teacher and student) for a raw "js.manip..." key, and a unit test checks every key
+the two pages ask for exists.

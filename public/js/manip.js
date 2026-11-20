@@ -321,8 +321,8 @@ const IMPL = {
     note: 'Add more clocks from the palette (each keeps its own time). The time tracker adds 15 minutes to the selected clock.',
     board: (st, view) => {
       const e = clockSector(st), oid = view.oid || '';
-      return `<div class="mp-clockwrap">${clockSvg(st, oid, view.readOnly)}<p class="mp-barname">${st.label ? `${esc(st.label)}${st.q ? '' : ' · '}` : ''}${st.q ? '&nbsp;' : hm(st)}</p>
-        <p class="small mp-elapsed">${st.start ? `Start ${hm(st.start)} · Elapsed <b>${e ? Math.floor(e.elapsed / 60) : 0} h ${e ? e.part : 0} min</b>` : '&nbsp;'}</p>
+      return `<div class="mp-clockwrap">${clockSvg(st, oid, view.readOnly)}<p class="mp-barname">${st.label ? `${esc(st.label)}${st.q ? '' : ' · '}` : ''}${st.q && !view.showKeys ? '&nbsp;' : hm(st)}</p>
+        <p class="small mp-elapsed">${st.start && !(st.q && !view.showKeys) ? `Start ${hm(st.start)} · Elapsed <b>${e ? Math.floor(e.elapsed / 60) : 0} h ${e ? e.part : 0} min</b>` : '&nbsp;'}</p>
         ${view.readOnly ? '' : `<div class="row mp-chips">${btn('chip', 'data-act="hour" aria-label="One hour later"', 'Hour +')}${btn('chip', 'data-act="min5" aria-label="Five minutes later"', 'Min +5')}</div>`}</div>`;
     },
     act: (st, d) => {
@@ -482,7 +482,7 @@ function paletteFor(slug, impl, st, ctx) {
   } }));
   if (objectTool(slug)) {
     const o = target(slug, st, ctx.osel);
-    if (o) for (const p of impl.palette(o.st)) out.push({ group: 'obj', label: p.label, color: p.color, pressed: p.pressed, run: s => { const x = (s.objects || []).find(q => q.id === o.id); return x ? p.run(x.st) : false; } });
+    if (o && !o.st.q) for (const p of impl.palette(o.st)) out.push({ group: 'obj', label: p.label, color: p.color, pressed: p.pressed, run: s => { const x = (s.objects || []).find(q => q.id === o.id); return x ? p.run(x.st) : false; } });
   } else {
     for (const d of impl.defs(st)) { const nm = paletteName(slug, d); out.push({ group: 'piece', label: nm.aria, face: nm.face, text: nm.text, mini: d, color: d.color, run: (s, v) => { const p = ctx.place(d); s.pieces.push(p); v.fresh = p.id; } }); }
     if (BREAKS[slug]) out.push({ group: 'piece', label: 'Break ×10', hot: true, run: (s, v) => breakPiece(s, v, slug) }, { group: 'piece', label: 'Regroup 10 → 1', run: (s, v) => regroup(s, v, slug) });
@@ -592,7 +592,8 @@ function objTotal(slug, impl, o, st) {
 function objHtml(slug, impl, o, view, st = {}) {
   const K = kindOf(slug, o.k); if (!K) return '';
   const z = K.size(o.st), s = +o.s || 1, on = !view.readOnly && view.osel === o.id;
-  const inner = o.k === slug ? impl.board(o.st, { ...view, oid: o.id }) : matHtml(o, view);
+  // A practice question is read-only (a clock to read is not a clock to set): its own controls are off for everyone.
+  const inner = o.k === slug ? impl.board(o.st, { ...view, oid: o.id, readOnly: view.readOnly || !!o.st.q }) : matHtml(o, view);
   const name = o.k === 'mat' && o.st.label ? o.st.label : `${K.name}${o.st && o.st.label ? ` · ${o.st.label}` : ''}`;
   const key = view.showKeys && o.st && o.st.key ? `<span class="mp-key">✓ ${esc(o.st.key)}</span>` : '';
   const tot = view.totals ? objTotal(slug, impl, o, st) : '';
@@ -625,7 +626,7 @@ function renderChrome() {
     btn('mp-tbtn', 'data-tool="reset"', esc(t('js.manip.side.reset'))),
   ].join('');
   const set = document.getElementById('mp-settings');
-  const settings = objectTool(slug) ? (o && V.impl.settings ? V.impl.settings(o.st) : '') : V.impl.settings ? V.impl.settings(V.st) : '';
+  const settings = objectTool(slug) ? (o && !o.st.q && V.impl.settings ? V.impl.settings(o.st) : '') : V.impl.settings ? V.impl.settings(V.st) : '';
   set.innerHTML = `${settings}${btn('chip', `data-view="totals" aria-pressed="${V.totals !== false}"`, esc(V.totals !== false ? t('js.manip.view.totalsOn') : t('js.manip.view.totalsOff')))}<p class="small muted mp-hint">${esc(V.impl.hint || '')}${V.impl.pieces ? ` ${esc(t('js.manip.board.pieceHint'))}` : ''}</p>`;
   renderAnnBar(); renderDraft(); renderSteps();
 }
@@ -635,7 +636,8 @@ function renderTotal() {
   // A board-wide total only where it means something: a piece tool with its pieces loose (money: with one mat at most).
   // Objects show their own totals.
   const mats = V.st.objects.filter(x => UNDER.has(x.k)).length;
-  el.textContent = !objectTool(slug) && (mats === 0 || (slug === 'money' && mats <= 1)) ? V.impl.total(V.st) : '';
+  const practice = V.st.objects.some(x => x.st && (x.st.q || x.st.key));   // a practice board: no total gives an answer away
+  el.textContent = !practice && !objectTool(slug) && (mats === 0 || (slug === 'money' && mats <= 1)) ? V.impl.total(V.st) : '';
   el.hidden = !el.textContent;
 }
 /** The clocks' (and any tool's) own pointer work, on the solo board. */
@@ -851,8 +853,8 @@ function bindBoard() {
     if (pa) return pieceButton(pa.dataset.pact, pa.dataset.pid);
     const objEl = e.target.closest('#mp-content .mp-obj');
     const act = e.target.closest('#mp-content [data-act]');
-    if (act && objEl) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o) return false; v.osel = o.id; return V.impl.act(o.st, act.dataset, e); }); return; }
-    if (V.impl.boardTap && objEl && e.target.closest('svg.mp-nl, svg.mp-grid')) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o) return false; v.osel = o.id; return V.impl.act(o.st, {}, e); }); return; }
+    if (act && objEl) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; return V.impl.act(o.st, act.dataset, e); }); return; }
+    if (V.impl.boardTap && objEl && e.target.closest('svg.mp-nl, svg.mp-grid')) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; return V.impl.act(o.st, {}, e); }); return; }
   });
   root.addEventListener('change', e => {
     const s = e.target.closest('[data-set]'); if (!s) return;
