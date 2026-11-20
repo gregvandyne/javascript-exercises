@@ -4,6 +4,7 @@
 // to Google Classroom"). These replace the teacher's lesson library: see docs/decisions.md "Games, not lessons".
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound, VERSION } from '../views/layout.js';
 import { requireUser, requireBuilder } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
@@ -64,18 +65,18 @@ router.get('/build/save', requireUser, (req, res) => {
   if (!g || g.status === 'deleted' || !games.canView(u, g)) return notFound(req, res);
   const gl = g.source === 'seed' ? games.localizeGame(g) : g;
   const list = F.foldersOf(u.id), have = F.foldersWith(u.id, g.id);
-  const body = html`<div class="pagehead"><h1>📁 ${t('folders.saveTitle', { game: gl.title })}</h1></div>
+  const body = html`<div class="pagehead"><h1>${ico('📁', { size: 36 })} ${t('folders.saveTitle', { game: gl.title })}</h1></div>
   <section class="panel gfo-save" aria-labelledby="gs-h"><h2 id="gs-h" class="sr-only">${t('folders.title')}</h2>
     ${list.length ? html`<ul class="plain gfo-pick">${list.map(f => html`<li class="${have.has(f.id) ? 'is-in' : ''}">
-      <span class="gfo-fname"><b dir="auto">📁 ${f.name}</b><span class="small muted">${have.has(f.id) ? `✅ ${t('folders.saved')} · ` : ''}${t('folders.gamesN', { count: f.games })}</span></span>
+      <span class="gfo-fname"><b dir="auto">${ico('📁', { size: 18 })} ${f.name}</b><span class="small muted">${have.has(f.id) ? `✅ ${t('folders.saved')} · ` : ''}${t('folders.gamesN', { count: f.games })}</span></span>
       ${have.has(f.id) ? html`<form class="gfo-fact" data-api="/api/game-folders/${f.id}/games/${g.id}/delete" data-reload><button class="btn btn-sm" type="submit">${t('folders.removeGame')}</button></form>`
-        : html`<form class="gfo-fact" data-api="/api/game-folders/${f.id}/games" data-reload><input type="hidden" name="gameId" value="${g.id}"><button class="btn btn-sm btn-primary" type="submit">📁 ${t('folders.addHere')}</button></form>`}</li>`)}</ul>`
+        : html`<form class="gfo-fact" data-api="/api/game-folders/${f.id}/games" data-reload><input type="hidden" name="gameId" value="${g.id}"><button class="btn btn-sm btn-primary" type="submit">${ico('📁', { size: 18 })} ${t('folders.addHere')}</button></form>`}</li>`)}</ul>`
       : html`<p class="muted">${t('folders.none')}</p>`}
     <form class="gfo-newsave" data-api="/api/game-folders" data-reload novalidate><input type="hidden" name="gameId" value="${g.id}">
-      <label for="gs-name">➕ ${t('folders.new')}</label>
+      <label for="gs-name">${ico('➕', { size: 18 })} ${t('folders.new')}</label>
       <div class="row"><input class="input grow" id="gs-name" name="name" maxlength="60" placeholder="${t('folders.namePlaceholder')}" required>
       <button class="btn" type="submit">${t('folders.newWithGame')}</button></div></form>
-    <p class="row"><a class="btn btn-ghost" href="${playHref(u, g)}">▶ ${t('game.play')}</a><a class="btn btn-ghost" href="/build">🛠️ ${t('nav.build')}</a></p>
+    <p class="row"><a class="btn btn-ghost" href="${playHref(u, g)}">▶ ${t('game.play')}</a><a class="btn btn-ghost" href="/build">${ico('🛠️', { size: 18 })} ${t('nav.build')}</a></p>
   </section>`;
   page(req, res, { title: t('folders.saveTitle', { game: gl.title }), active: 'build', back: '/build', backLabel: t('nav.build'), body, head: CSS });
 });
@@ -129,21 +130,21 @@ router.get('/teach/assign', requireUser, (req, res) => {
   // Algebra Builder: what students open (from the game's Assign button), or a note to choose it in the game first (the
   // class would otherwise land on the teacher's gallery).
   const sa = setAssign(t, g0, req.query.opts);
-  const body = html`<div class="pagehead"><h1>📌 ${t('teach.assign.title', { game: g.title })}</h1></div>
+  const body = html`<div class="pagehead"><h1>${ico('📌', { size: 36 })} ${t('teach.assign.title', { game: g.title })}</h1></div>
   <section class="panel assign-game" aria-labelledby="ag-h">
     <h2 id="ag-h" class="sr-only">${t('teach.assign.pickClass')}</h2>
     ${sa && sa.what ? html`<p class="lead">${t('teach.assign.opens', { what: sa.label })}</p>` : ''}
     ${sa && !sa.what ? html`<p class="notice">${t('teach.assign.pickFirst')}</p><p><a class="btn btn-primary" href="/play/${g0.slug}">▶ ${t('teach.assign.openGame')}</a></p>`
-      : liveOnly ? html`<p class="notice">${t('teach.assign.liveOnly')}</p>${liveOn() && liveCanHost(u) ? html`<p><a class="btn btn-primary" href="/live?mode=${lg.mode}">📡 ${t('live.entry.hostLive')}</a></p>` : ''}`
-      : draft ? html`<p class="notice">${t('folders.errors.publishFirst')}</p><p><a class="btn btn-primary" href="/studio/${g0.id}">✏️ ${t('game.edit')}</a></p>`
+      : liveOnly ? html`<p class="notice">${t('teach.assign.liveOnly')}</p>${liveOn() && liveCanHost(u) ? html`<p><a class="btn btn-primary" href="/live?mode=${lg.mode}">${ico('📡', { size: 18 })} ${t('live.entry.hostLive')}</a></p>` : ''}`
+      : draft ? html`<p class="notice">${t('folders.errors.publishFirst')}</p><p><a class="btn btn-primary" href="/studio/${g0.id}">${ico('✏️', { size: 18 })} ${t('game.edit')}</a></p>`
       : classes.length ? html`<form class="formgrid assigngrid" data-api="/api/teach/assign-game" novalidate><input type="hidden" name="gameId" value="${g0.id}">${sa && sa.opts ? html`<input type="hidden" name="opts" value="${sa.opts}">` : ''}
       <div class="field"><label for="ag-c">${t('teach.assign.pickClass')}</label><select class="input" id="ag-c" name="classId">${classes.map(c => html`<option value="${c.id}"${c.id === pre ? raw(' selected') : ''}>${c.name}</option>`)}</select></div>
       <div class="field"><label for="ag-d">${t('lessons.assign.due')}</label><input class="input" id="ag-d" name="dueAt" type="date"></div>
       ${gc}
-      <div class="field end"><button class="btn btn-primary" type="submit" id="ag-go">📌 ${t('teach.assign.submit')}</button></div>
+      <div class="field end"><button class="btn btn-primary" type="submit" id="ag-go">${ico('📌', { size: 18 })} ${t('teach.assign.submit')}</button></div>
       <p class="small muted wide">${t('folders.assignNote')}</p>${gc ? html`<p class="small muted wide">🎓 ${t('teach.assign.gcGrades')}</p>` : ''}${classes[0] ? html`<p class="small muted wide">${zoneNote(t, classes[0].school_id, u)}</p>` : ''}<p class="form-err err wide" role="alert"></p></form>`
       : html`<p class="muted">${t('teach.assign.none')}</p><p><a class="btn" href="/teach">${t('nav.classroom')}</a></p>`}
-    <p class="row"><a class="btn" href="${playHref(u, g0)}">▶ ${t('learn.tab.try')}</a><a class="btn btn-ghost" href="/build/save?id=${g0.id}">📁 ${t('folders.save')}</a></p>
+    <p class="row"><a class="btn" href="${playHref(u, g0)}">▶ ${t('learn.tab.try')}</a><a class="btn btn-ghost" href="/build/save?id=${g0.id}">${ico('📁', { size: 18 })} ${t('folders.save')}</a></p>
   </section>`;
   page(req, res, { title: t('teach.assign.title', { game: g.title }), active: 'teach', back: pre ? `/class/${pre}` : '/build', backLabel: pre ? t('nav.classroom') : t('nav.build'), body, head: CSS });
 });

@@ -48,10 +48,10 @@
       "schools": "Para escolas"
     },
     "build": {
-      "ready": "✨ Seu jogo “{title}” está pronto! <a href=\"{href}\">Abra o jogo</a>",
-      "question": "💬 O Construtor tem uma pergunta sobre “{title}”. <a href=\"{href}\">Abra o jogo</a>",
-      "stopped": "⚠️ “{title}” parou antes de terminar. <a href=\"{href}\">Abra para continuar</a>",
-      "many": "✨ Alguns dos seus jogos têm novidades do Construtor. <a href=\"{href}\">Ver Meus jogos</a>"
+      "ready": "Seu jogo “{title}” está pronto! <a href=\"{href}\">Abra o jogo</a>",
+      "question": "O Construtor tem uma pergunta sobre “{title}”. <a href=\"{href}\">Abra o jogo</a>",
+      "stopped": "“{title}” parou antes de terminar. <a href=\"{href}\">Abra para continuar</a>",
+      "many": "Alguns dos seus jogos têm novidades do Construtor. <a href=\"{href}\">Ver Meus jogos</a>"
     },
     "shortPasswordGrownup": "A senha tem menos de {min} caracteres. Por favor, <a href=\"{href}\">escolha uma senha mais longa</a>."
   },
@@ -1486,10 +1486,10 @@
     "rename": "Renomear",
     "delete": "Apagar",
     "status": {
-      "building": "🛠️ Criando…",
-      "ready": "✨ Pronto",
-      "question": "💬 Tem uma dúvida",
-      "stopped": "⚠️ Parou"
+      "building": "Criando…",
+      "ready": "Pronto",
+      "question": "Tem uma dúvida",
+      "stopped": "Parou"
     }
   },
   "studio": {

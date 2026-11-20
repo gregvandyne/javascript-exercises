@@ -47,10 +47,10 @@
       "schools": "学校の方へ"
     },
     "build": {
-      "ready": "✨ ゲーム「{title}」ができました！ <a href=\"{href}\">ひらく</a>",
-      "question": "💬 ビルダーから「{title}」についてしつもんがあります。<a href=\"{href}\">ひらく</a>",
-      "stopped": "⚠️ 「{title}」はできあがる前に止まりました。<a href=\"{href}\">ひらいて、つづきをつくる</a>",
-      "many": "✨ ビルダーから、いくつかのゲームについてお知らせがあります。<a href=\"{href}\">マイゲームを見る</a>"
+      "ready": "ゲーム「{title}」ができました！ <a href=\"{href}\">ひらく</a>",
+      "question": "ビルダーから「{title}」についてしつもんがあります。<a href=\"{href}\">ひらく</a>",
+      "stopped": "「{title}」はできあがる前に止まりました。<a href=\"{href}\">ひらいて、つづきをつくる</a>",
+      "many": "ビルダーから、いくつかのゲームについてお知らせがあります。<a href=\"{href}\">マイゲームを見る</a>"
     },
     "shortPasswordGrownup": "パスワードが{min}文字より短くなっています。<a href=\"{href}\">より長いパスワードに変更</a>してください。"
   },
@@ -1485,10 +1485,10 @@
     "rename": "なまえをかえる",
     "delete": "けす",
     "status": {
-      "building": "🛠️ つくっています…",
-      "ready": "✨ できあがり",
-      "question": "💬 しつもんあり",
-      "stopped": "⚠️ 止まりました"
+      "building": "つくっています…",
+      "ready": "できあがり",
+      "question": "しつもんあり",
+      "stopped": "止まりました"
     }
   },
   "studio": {

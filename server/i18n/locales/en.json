@@ -48,10 +48,10 @@
       "schools": "For schools"
     },
     "build": {
-      "ready": "✨ Your game “{title}” is ready! <a href=\"{href}\">Open it</a>",
-      "question": "💬 The Builder has a question about “{title}”. <a href=\"{href}\">Open it</a>",
-      "stopped": "⚠️ “{title}” stopped before it was finished. <a href=\"{href}\">Open it to carry on</a>",
-      "many": "✨ Some of your games have news from the Builder. <a href=\"{href}\">See My games</a>"
+      "ready": "Your game “{title}” is ready! <a href=\"{href}\">Open it</a>",
+      "question": "The Builder has a question about “{title}”. <a href=\"{href}\">Open it</a>",
+      "stopped": "“{title}” stopped before it was finished. <a href=\"{href}\">Open it to carry on</a>",
+      "many": "Some of your games have news from the Builder. <a href=\"{href}\">See My games</a>"
     },
     "shortPasswordGrownup": "Your password is shorter than {min} characters. Please <a href=\"{href}\">choose a longer one</a>."
   },
@@ -1486,10 +1486,10 @@
     "rename": "Rename",
     "delete": "Delete",
     "status": {
-      "building": "🛠️ Building…",
-      "ready": "✨ Ready",
-      "question": "💬 Has a question",
-      "stopped": "⚠️ Stopped"
+      "building": "Building…",
+      "ready": "Ready",
+      "question": "Has a question",
+      "stopped": "Stopped"
     }
   },
   "studio": {

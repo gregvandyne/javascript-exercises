@@ -1,6 +1,7 @@
 // Home rails, search (games + builders), live counts.
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, parentsKey, signedOut, notFound, landingFor } from '../views/layout.js';
 import { rail, cardGrid, emptyState, avatar, coverArt, categoryLabel } from '../views/components.js';
 import * as games from '../services/games.js';
@@ -25,13 +26,13 @@ function classStrip(req) {
   const mine = classesOf(u.id, 'student'); if (!mine.length) return '';
   for (const c of mine) {
     const s = liveOn() ? openForClass(c.id) : null;
-    if (s && s.phase !== 'ended') return html`<section class="notice good home-class" id="home-class" aria-label="${t('home.class.h')}"><b>📡 ${t('classes.live.title')}</b> <span>${s.title}</span> <a class="btn btn-primary" href="/join#${s.code}">${t('classes.live.join')}</a></section>`;
+    if (s && s.phase !== 'ended') return html`<section class="notice good home-class" id="home-class" aria-label="${t('home.class.h')}"><b>${ico('📡', { size: 18 })} ${t('classes.live.title')}</b> <span>${s.title}</span> <a class="btn btn-primary" href="/join#${s.code}">${t('classes.live.join')}</a></section>`;
   }
   for (const c of mine) {
     const todo = toDoFor(c.id, u.id); if (!todo.length) continue;
     const n = todo[0];
-    return html`<section class="panel home-class" id="home-class" aria-labelledby="home-class-h"><h2 id="home-class-h">🏫 ${t('home.class.h')} <span class="small muted">${c.name}</span></h2>
-      <p><b dir="auto">${n.title}</b>${n.due_at ? html` · <span class="chip-s">📅 ${t('lessons.class.dueOn', { date: f.day(n.due_at) })}</span>` : ''} <span class="small muted">${t('home.class.todo', { count: todo.length })}</span></p>
+    return html`<section class="panel home-class" id="home-class" aria-labelledby="home-class-h"><h2 id="home-class-h">${ico('🏫', { size: 28 })} ${t('home.class.h')} <span class="small muted">${c.name}</span></h2>
+      <p><b dir="auto">${n.title}</b>${n.due_at ? html` · <span class="chip-s">${ico('📅', { size: 18 })} ${t('lessons.class.dueOn', { date: f.day(n.due_at) })}</span>` : ''} <span class="small muted">${t('home.class.todo', { count: todo.length })}</span></p>
       <a class="btn btn-primary" href="/class/${c.id}/lessons/${n.id}">▶ ${t('home.class.continue')}</a> <a class="btn" href="/class/${c.id}">${t('home.class.open')}</a></section>`;
   }
   return '';
@@ -54,7 +55,7 @@ function buildBanner(req) {
 router.get('/favorites', requireUser, (req, res) => {
   const t = req.t;
   const favs = games.favorites(req.user, req.user.id, 200);
-  const body = html`<div class="pagehead"><h1>❤️ ${t('favorites.title')}</h1></div>
+  const body = html`<div class="pagehead"><h1>${ico('❤️', { size: 36 })} ${t('favorites.title')}</h1></div>
   ${favs.length ? cardGrid(favs, {}) : emptyState({ emoji: '🤍', title: t('favorites.emptyTitle'), text: t('favorites.emptyText'), action: { href: '/', label: t('favorites.emptyAction') } })}`;
   page(req, res, { title: t('favorites.title'), active: 'me', body, back: '/me', backLabel: t('nav.me') });
 });
@@ -113,7 +114,7 @@ function playPage(req, res, { landing }) {
   // Text still in English on this language's page is marked so (screen readers, right-to-left pages).
   const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   // "Join a game" (Oomba Live): a code on the class's big screen. Signed out it sits under the doors.
-  const joinDoor = liveOn() ? html`<div class="home-join"><a class="door door-join" href="/join" id="home-join"><span class="door-e" aria-hidden="true">🎟️</span><span class="door-t"><span class="door-h"${fb('live.entry.join')}>${t('live.entry.join')}</span><span class="door-s"${fb('live.entry.joinShort')}>${t('live.entry.joinShort')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : '';
+  const joinDoor = liveOn() ? html`<div class="home-join"><a class="door door-join" href="/join" id="home-join"><span class="door-e">${ico('🎟️', { size: 40 })}</span><span class="door-t"><span class="door-h"${fb('live.entry.join')}>${t('live.entry.join')}</span><span class="door-s"${fb('live.entry.joinShort')}>${t('live.entry.joinShort')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : '';
   // Signed in, Join is the 🎟️ button in the top bar (and the door on Learn): Play opens straight on its featured game.
   const intro = !signedOut(u) ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>${classStrip(req)}`
     : !landing ? html`<h1 class="sr-only">${t('nav.play')}</h1>`
@@ -125,7 +126,7 @@ function playPage(req, res, { landing }) {
   <div id="play" class="home-play">
   ${hero ? html`<section class="hero cover-${hero.cover}" aria-label="${t('home.hero.label')}">
     <div>
-      <span class="hero-kicker"><span class="emo" aria-hidden="true">⭐</span> ${t('home.hero.kicker')}</span>
+      <span class="hero-kicker"><span class="emo">${ico('⭐', { size: 20 })}</span> ${t('home.hero.kicker')}</span>
       <h2 class="hero-title">${hero.title}</h2>
       <p>${firstSentence(hero.description)}</p>
       <div class="row">

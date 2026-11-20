@@ -48,10 +48,10 @@
       "schools": "Voor scholen"
     },
     "build": {
-      "ready": "✨ Je game “{title}” is klaar! <a href=\"{href}\">Open hem</a>",
-      "question": "💬 De Bouwer heeft een vraag over “{title}”. <a href=\"{href}\">Open hem</a>",
-      "stopped": "⚠️ “{title}” is gestopt voordat hij af was. <a href=\"{href}\">Open hem om verder te gaan</a>",
-      "many": "✨ De Bouwer heeft nieuws over een paar van je games. <a href=\"{href}\">Bekijk Mijn games</a>"
+      "ready": "Je game “{title}” is klaar! <a href=\"{href}\">Open hem</a>",
+      "question": "De Bouwer heeft een vraag over “{title}”. <a href=\"{href}\">Open hem</a>",
+      "stopped": "“{title}” is gestopt voordat hij af was. <a href=\"{href}\">Open hem om verder te gaan</a>",
+      "many": "De Bouwer heeft nieuws over een paar van je games. <a href=\"{href}\">Bekijk Mijn games</a>"
     },
     "shortPasswordGrownup": "Het wachtwoord is korter dan {min} tekens. <a href=\"{href}\">Kies een langer wachtwoord</a>."
   },
@@ -1486,10 +1486,10 @@
     "rename": "Naam wijzigen",
     "delete": "Verwijderen",
     "status": {
-      "building": "🛠️ Bouwen…",
-      "ready": "✨ Klaar",
-      "question": "💬 Heeft een vraag",
-      "stopped": "⚠️ Gestopt"
+      "building": "Bouwen…",
+      "ready": "Klaar",
+      "question": "Heeft een vraag",
+      "stopped": "Gestopt"
     }
   },
   "studio": {

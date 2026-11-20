@@ -9,6 +9,7 @@
 // falls back to short requests.
 // The tools' own code (boards, palettes, taps) comes from public/js/manip.js through open()'s deps.
 import { t, api, toast, esc, copyText } from '/js/app.js';
+import { iconHtml } from '/js/icons.js';
 import { toolOf, roomLayout, layoutOf, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H } from '/js/manip-data.js';
 import { WORLD, migrate, fitInto, newBoard, objectTool, kindOf, objSize, objRect, boxesOf, bbox, spotIn, slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, OBJ_MAX, OBJ_MAX_SQUARE, S_MIN, S_MAX } from '/js/manip-board.js';
 
@@ -45,7 +46,7 @@ export async function open(root, id, deps) {
     <div class="rm-world" id="rm-world"></div><div class="rm-cursors" id="rm-cursors" aria-hidden="true"></div>
     <div class="rm-bar" id="rm-bar"></div><aside class="mp-side rm-pal" id="rm-pal" aria-label="${esc(t('js.manip-room.palette'))}"></aside>
     <div class="rm-float rm-zoomdesk" id="rm-zoom"></div><div class="rm-float rm-minifloat" id="rm-mini"></div>
-    <div id="rm-handlist"></div><div id="rm-menu"></div><div id="rm-banner"></div>${btn('btn btn-primary btn-big rm-back', `id="rm-back" data-rtool="mine" hidden`, `🏠 ${esc(t('js.manip-room.backMine'))}`)}</div>`;
+    <div id="rm-handlist"></div><div id="rm-menu"></div><div id="rm-banner"></div>${btn('btn btn-primary btn-big rm-back', `id="rm-back" data-rtool="mine" hidden`, `${iconHtml('🏠', { size: 18 })} ${esc(t('js.manip-room.backMine'))}`)}</div>`;
   document.querySelector('main#main')?.classList.add('rm-main');
   renderWorld(); renderBar(); renderPal();
   requestAnimationFrame(() => { if (R.role === 'teacher') fitAll(); else goMine(); });
@@ -140,7 +141,7 @@ function renderHandList() {
   const el = document.getElementById('rm-handlist'); if (!el) return;
   if (R.role !== 'teacher' || !R.handsOpen) { el.innerHTML = ''; return; }
   const list = R.hands.map(h => ({ h, A: R.areas.get(h.k) })).filter(x => x.A);
-  el.innerHTML = `<div class="rm-handlist panel" role="dialog" aria-label="${esc(t('js.manip-room.handsTitle'))}"><div class="row"><b>✋ ${esc(t('js.manip-room.handsTitle'))}</b><span class="rm-grow"></span>${list.length ? btn('btn btn-sm', 'data-hlow="all"', esc(t('js.manip-room.lowerAll'))) : ''}${btn('btn btn-sm btn-ghost', 'data-rtool="hands"', '✕')}</div>
+  el.innerHTML = `<div class="rm-handlist panel" role="dialog" aria-label="${esc(t('js.manip-room.handsTitle'))}"><div class="row"><b>${iconHtml('✋', { size: 18 })} ${esc(t('js.manip-room.handsTitle'))}</b><span class="rm-grow"></span>${list.length ? btn('btn btn-sm', 'data-hlow="all"', esc(t('js.manip-room.lowerAll'))) : ''}${btn('btn btn-sm btn-ghost', 'data-rtool="hands"', '✕')}</div>
     ${list.length ? `<ol>${list.map(({ A }) => `<li><span class="rm-dot" style="background:${esc(A.color)}"></span>${btn('rm-hgo', `data-hgo="${esc(A.key)}"`, esc(A.name))}${btn('btn btn-sm', `data-hlow="${esc(A.key)}" aria-label="${esc(t('js.manip-room.lowerOne', { name: A.name }))}"`, esc(t('js.manip-room.lower')))}</li>`).join('')}</ol>` : `<p class="small muted">${esc(t('js.manip-room.noHands'))}</p>`}</div>`;
 }
 /** The teacher's "Instructions" strip at the top of every student square: the teacher's area's notes, numbered. */
@@ -170,7 +171,7 @@ function stripHtml(A) {
   const open = R.stripOpen.has(A.key), more = sp.full > sp.h || (sp.mode === 'step' && sp.earlier.length);
   const own = R.role === 'student' && A.key === R.me, paceBtns = sp.mode === 'step' && own && deck().pace && R.room.status === 'active'
     ? `${btn('rm-stepbtn', `data-mystep="-1"${sp.i ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.back'))}"`, '◀')}${btn('rm-stepbtn', `data-mystep="1"${sp.i + 1 < deck().total ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.next'))}"`, '▶')}` : '';
-  const head = sp.mode === 'step' ? `📌 ${esc(t('js.manip-room.stepOf', { n: sp.i + 1, total: deck().total }))}` : `📌 ${esc(t('js.manip-room.instructions'))}`;
+  const head = sp.mode === 'step' ? `${iconHtml('📌', { size: 18 })} ${esc(t('js.manip-room.stepOf', { n: sp.i + 1, total: deck().total }))}` : `${iconHtml('📌', { size: 18 })} ${esc(t('js.manip-room.instructions'))}`;
   const body = sp.mode === 'step'
     ? `${open && sp.earlier.length ? `<ol class="rm-earlierlist">${sp.earlier.map(x => `<li>${esc(x.text)}</li>`).join('')}</ol>` : ''}<p class="rm-steptext">${esc(sp.text)}</p>`
     : `<ol style="max-height:${open ? 'none' : `${sp.h - STRIP.head - STRIP.pad}px`}">${sp.texts.map(x => `<li>${esc(x)}</li>`).join('')}</ol>`;
@@ -180,7 +181,7 @@ function stripHtml(A) {
 }
 function areaInner(A) {
   // A classmate's square while the teacher hides work: the server sent nothing of it; a frosted panel drawn from nothing.
-  if (A.hidden) return `<div class="rm-body">${stripHtml(A)}<div class="rm-in rm-frost" style="top:${topOf(A)}px"><span>🔒 ${esc(t('js.manip-room.hiddenWork'))}</span></div></div>`;
+  if (A.hidden) return `<div class="rm-body">${stripHtml(A)}<div class="rm-in rm-frost" style="top:${topOf(A)}px"><span>${iconHtml('🔒', { size: 18 })} ${esc(t('js.manip-room.hiddenWork'))}</span></div></div>`;
   const sel = R.sel && R.sel.key === A.key ? R.sel.id : null, osel = R.osel && R.osel.key === A.key ? R.osel.id : null, ws = workSize(A);
   return `<div class="rm-body">${stripHtml(A)}<div class="rm-in" style="top:${topOf(A)}px"><div class="mp-content mp-abs">${R.deps.boardHtml(R.room.tool, R.impl, A.st, { sel, osel, readOnly: !A.editable || R.room.status !== 'active', snapped: R.snapped, fresh: R.fresh, totals: totalsOn(), checked: A.key === R.me ? R.checked : null })}</div>
     <svg class="mp-ink" viewBox="0 0 ${ws.w} ${ws.h}" aria-hidden="true">${inkOf(A)}</svg>
@@ -203,7 +204,7 @@ function noteHtml(A, n, i) {
       <div class="row">${btn('mp-nbtn', `data-nact="done" data-id="${id}"`, esc(t('js.manip-room.done')))}${btn('mp-nbtn bad', `data-nact="delete" data-id="${id}"`, esc(t('js.manip-room.delete')))}</div></div>`;
   }
   return `<div class="mp-sticky${n.by === 't' ? ' rm-tnote' : ''}" data-note="${id}" role="group" aria-label="${esc(t('js.manip-room.noteN', { n: i + 1 }))}" style="${pos}">${n.by === 't' && A.key !== 't' ? `<span class="rm-from">✦ ${esc(t('js.manip-room.teacher'))}</span>` : ''}<p>${n.text ? esc(n.text) : `<span class="mp-ph">${esc(t('js.manip-room.noteTap'))}</span>`}</p>
-    ${edit ? `<div class="row">${btn('mp-nbtn', `data-nact="edit" data-id="${id}"`, `✎ ${esc(t('js.manip-room.edit'))}`)}${btn('mp-nbtn bad', `data-nact="delete" data-id="${id}"`, esc(t('js.manip-room.delete')))}</div>` : ''}</div>`;
+    ${edit ? `<div class="row">${btn('mp-nbtn', `data-nact="edit" data-id="${id}"`, `${iconHtml('✎', { size: 18 })} ${esc(t('js.manip-room.edit'))}`)}${btn('mp-nbtn bad', `data-nact="delete" data-id="${id}"`, esc(t('js.manip-room.delete')))}</div>` : ''}</div>`;
 }
 /** Totals on objects: the teacher always; students unless the teacher turned them off (the teacher's area's
  *  `totals`; a practice board starts with them off). */
@@ -378,7 +379,7 @@ function onBring(b) {
 }
 function renderBanner() {
   const el = document.getElementById('rm-banner'), back = document.getElementById('rm-back'); if (!el) return;
-  el.innerHTML = R.brought ? `<div class="rm-banner" role="status">📍 ${esc(t('js.manip-room.brought'))}<span class="small">${esc(t('js.manip-room.broughtText'))}</span>${btn('btn btn-sm rm-x', 'data-rtool="unbanner"', '✕')}</div>` : '';
+  el.innerHTML = R.brought ? `<div class="rm-banner" role="status">${iconHtml('📍', { size: 18 })} ${esc(t('js.manip-room.brought'))}<span class="small">${esc(t('js.manip-room.broughtText'))}</span>${btn('btn btn-sm rm-x', 'data-rtool="unbanner"', '✕')}</div>` : '';
   back.hidden = !R.brought;
 }
 function renderMini() {
@@ -395,7 +396,7 @@ function renderMini() {
 
 // ---------------------------------------------------------------- the bar and the palette
 function zoomHtml(cls) {
-  if (R.role === 'student') return `<div class="rm-zoom ${cls}" role="group" aria-label="${esc(t('js.manip-room.zoom'))}">${btn('chip', 'data-rtool="fit"', `⤢ ${esc(t('js.manip-room.fit'))}`)}${btn('chip', 'data-rtool="mine"', `🏠 ${esc(t('js.manip-room.mySquareBtn'))}`)}</div>`;
+  if (R.role === 'student') return `<div class="rm-zoom ${cls}" role="group" aria-label="${esc(t('js.manip-room.zoom'))}">${btn('chip', 'data-rtool="fit"', `⤢ ${esc(t('js.manip-room.fit'))}`)}${btn('chip', 'data-rtool="mine"', `${iconHtml('🏠', { size: 18 })} ${esc(t('js.manip-room.mySquareBtn'))}`)}</div>`;
   return `<div class="rm-zoom ${cls}" role="group" aria-label="${esc(t('js.manip-room.zoom'))}">${btn('chip', `data-rtool="zout" aria-label="${esc(t('js.manip-room.zoomOut'))}"`, '−')}<span class="rm-pct">${Math.round(R.view.z * 100)}%</span>${btn('chip', `data-rtool="zin" aria-label="${esc(t('js.manip-room.zoomIn'))}"`, '+')}${btn('chip', 'data-rtool="fit"', `⤢ ${esc(t('js.manip-room.fit'))}`)}</div>`;
 }
 function renderBar() {
@@ -408,14 +409,14 @@ function renderBar() {
     const steps = live && d.total > 1 ? `<span class="rm-steps">${btn('btn btn-sm', `data-rtool="prev"${d.cur ? '' : ' disabled'}`, `◀ ${esc(t('js.manip-room.back'))}`)}<b class="rm-stepnow">${esc(t('js.manip-room.stepOf', { n: d.cur + 1, total: d.total }))}</b>${btn('btn btn-sm btn-primary', `data-rtool="next"${d.cur + 1 < d.total ? '' : ' disabled'}`, `${esc(t('js.manip-room.next'))} ▶`)}
       ${counts ? `<span class="small muted rm-pacesum">${Object.entries(counts).sort((x, y) => x[0] - y[0]).map(([i, n]) => esc(t('js.manip-room.paceSum', { step: +i + 1, n }))).join(' · ')}</span>` : ''}</span>` : '';
     el.innerHTML = `${state}<h1>${esc(room.title)}</h1><span class="rm-grow"></span>${steps}
-      ${live ? btn(`btn rm-handsbtn${R.hands.length ? ' on' : ''}`, 'id="rm-hands" data-rtool="hands"', `✋<span class="rm-handt">${esc(handsLabel())}</span>`) : ''}
-      ${live ? btn('btn btn-hot', 'data-rtool="bring"', `📍<span class="rm-hidephone"> ${esc(t('js.manip-room.bring'))}</span>`) : ''}
+      ${live ? btn(`btn rm-handsbtn${R.hands.length ? ' on' : ''}`, 'id="rm-hands" data-rtool="hands"', `${iconHtml('✋', { size: 18 })}<span class="rm-handt">${esc(handsLabel())}</span>`) : ''}
+      ${live ? btn('btn btn-hot', 'data-rtool="bring"', `${iconHtml('📍', { size: 18 })}<span class="rm-hidephone"> ${esc(t('js.manip-room.bring'))}</span>`) : ''}
       ${btn('btn rm-menubtn', `data-rtool="menu" aria-expanded="${!!R.menuOpen}" aria-label="${esc(t('js.manip-room.menu'))}"`, '⋯')}`;
   } else {
     el.innerHTML = `${state}<h1>${esc(room.title)}</h1><span class="rm-grow"></span>
       ${pushed ? `${btn('btn btn-sm btn-primary', 'data-rtool="loadpush"', esc(t('js.manip-room.loadPush')))}${btn('btn btn-sm', 'data-rtool="keeppush"', esc(t('js.manip-room.keep')))}` : ''}
-      ${live && checksOn() && myBoxes().length ? btn('btn btn-hot rm-check', `data-rtool="check" aria-label="${esc(t('js.manip-room.check'))}"`, `☑<span class="rm-hidephone"> ${esc(t('js.manip-room.check'))}</span><span class="rm-phoneonly"> ${esc(t('js.manip-room.checkShort'))}</span>`) : ''}
-      ${live ? handBtn('btn rm-hidephone') : ''}${btn('btn btn-primary rm-minebar', 'data-rtool="mine"', `🏠 ${esc(t('js.manip-room.mySquareBtn'))}`)}`;
+      ${live && checksOn() && myBoxes().length ? btn('btn btn-hot rm-check', `data-rtool="check" aria-label="${esc(t('js.manip-room.check'))}"`, `${iconHtml('☑', { size: 18 })}<span class="rm-hidephone"> ${esc(t('js.manip-room.check'))}</span><span class="rm-phoneonly"> ${esc(t('js.manip-room.checkShort'))}</span>`) : ''}
+      ${live ? handBtn('btn rm-hidephone') : ''}${btn('btn btn-primary rm-minebar', 'data-rtool="mine"', `${iconHtml('🏠', { size: 18 })} ${esc(t('js.manip-room.mySquareBtn'))}`)}`;
   }
   renderHandList(); renderMenu();
   document.getElementById('rm-zoom').innerHTML = zoomHtml('');
@@ -435,11 +436,11 @@ function renderMenu() {
     ${Object.keys(R.room.checks || {}).length ? `<div class="rm-mi rm-checklist"><b>${esc(t('js.manip-room.checksTitle'))}</b><ul>${Object.entries(R.room.checks).map(([k, c]) => { const A = R.areas.get(k); return A ? `<li><span class="rm-dot" style="background:${esc(A.color)}"></span>${esc(A.name)} <b>${esc(t('js.manip-room.checkScore', { right: c.right, total: c.total }))}</b></li>` : ''; }).join('')}</ul></div>` : ''}
     ${live ? btn('rm-mi rm-switch', `role="switch" aria-checked="${(R.areas.get('t') || { st: {} }).st.totals !== false}" data-rtool="totals"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.totals'))}`) : ''}
     ${d.total > 1 && live ? btn('rm-mi rm-switch', `role="switch" aria-checked="${!!d.pace}" data-rtool="pace"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.pace'))}`) : ''}
-    ${live ? btn('rm-mi', 'data-rtool="push"', `📤 ${esc(t('js.manip-room.push'))}`) : ''}
-    <a class="rm-mi" href="/api/manipulatives/live/${esc(R.id)}/export.pdf" download>📄 ${esc(t('js.manip-room.pdf'))}</a>
-    ${live ? btn('rm-mi bad', 'data-rtool="end"', `⏹ ${esc(t('js.manip-room.end'))}`) : ''}</div>`;
+    ${live ? btn('rm-mi', 'data-rtool="push"', `${iconHtml('📤', { size: 18 })} ${esc(t('js.manip-room.push'))}`) : ''}
+    <a class="rm-mi" href="/api/manipulatives/live/${esc(R.id)}/export.pdf" download>${iconHtml('📄', { size: 18 })} ${esc(t('js.manip-room.pdf'))}</a>
+    ${live ? btn('rm-mi bad', 'data-rtool="end"', `${iconHtml('⏹', { size: 18 })} ${esc(t('js.manip-room.end'))}`) : ''}</div>`;
 }
-const handBtn = cls => btn(`${cls} rm-hand${handUp(R.me) ? ' on' : ''}`, `data-rtool="hand" aria-pressed="${handUp(R.me)}" aria-label="${esc(t('js.manip-room.raiseHand'))}"`, `✋ <span class="rm-handt">${esc(handUp(R.me) ? t('js.manip-room.lowerHand') : t('js.manip-room.raiseHand'))}</span>`);
+const handBtn = cls => btn(`${cls} rm-hand${handUp(R.me) ? ' on' : ''}`, `data-rtool="hand" aria-pressed="${handUp(R.me)}" aria-label="${esc(t('js.manip-room.raiseHand'))}"`, `${iconHtml('✋', { size: 18 })} <span class="rm-handt">${esc(handUp(R.me) ? t('js.manip-room.lowerHand') : t('js.manip-room.raiseHand'))}</span>`);
 const initials = name => String(name).split(/\s+/).map(w => [...w][0] || '').join('').slice(0, 2).toUpperCase() || '?';
 /** What the palette offers for an area (public/js/manip.js paletteFor): new objects inside it (a student's: only
  *  inside their own square; at most OBJ_MAX_SQUARE there), the selected object's actions, pieces. */
@@ -461,17 +462,17 @@ const settingsOf = (A, st) => (objectTool(R.room.tool) ? (R.deps.target(R.room.t
 function renderPal() {
   const el = document.getElementById('rm-pal'); if (!el) return;
   const A = R.areas.get(R.active), live = R.room.status === 'active';
-  if (!A || !A.editable || !live) { el.innerHTML = R.role === 'student' ? `<div class="mp-toolsrow">${btn('mp-tbtn', 'data-rtool="mine"', `🏠 ${esc(t('js.manip-room.mySquareBtn'))}`)}${btn('mp-tbtn rm-phoneonly', 'data-rtool="zout"', '−')}${btn('mp-tbtn rm-phoneonly', 'data-rtool="zin"', '+')}</div>` : ''; return; }
+  if (!A || !A.editable || !live) { el.innerHTML = R.role === 'student' ? `<div class="mp-toolsrow">${btn('mp-tbtn', 'data-rtool="mine"', `${iconHtml('🏠', { size: 18 })} ${esc(t('js.manip-room.mySquareBtn'))}`)}${btn('mp-tbtn rm-phoneonly', 'data-rtool="zout"', '−')}${btn('mp-tbtn rm-phoneonly', 'data-rtool="zin"', '+')}</div>` : ''; return; }
   const items = palette(A), o = objectTool(R.room.tool) ? tgt(A) : null, K = o && kindOf(R.room.tool, o.k);
   const where = R.role === 'teacher' ? t('js.manip-room.addTo', { name: A.name }) : t('js.manip-room.addMine');
   const group = (g, cap) => { const l = items.map((p, i) => ({ p, i })).filter(x => x.p.group === g); return l.length ? `${cap ? `<p class="mp-cap">${esc(cap)}</p>` : ''}<div class="mp-palette">${l.map(({ p, i }) => R.deps.palButton(p, i, p.plus ? p.label : t('js.manip-room.add', { label: p.label }))).join('')}</div>` : ''; };
   el.innerHTML = `<p class="mp-cap">${esc(where)}</p>${group('add', '')}${group('obj', K ? `${K.name}${o.st.label ? ` · ${o.st.label}` : ''}` : '')}${group('piece', '')}
-    <div class="mp-toolsrow">${btn('mp-tbtn', `data-rtool="note" aria-label="${esc(t('js.manip-room.note'))}"${A.ann.notes.length >= NOTE_MAX ? ' disabled' : ''}`, `🗒️<span class="rm-hidephone"> ${esc(t('js.manip-room.note'))}</span>`)}
+    <div class="mp-toolsrow">${btn('mp-tbtn', `data-rtool="note" aria-label="${esc(t('js.manip-room.note'))}"${A.ann.notes.length >= NOTE_MAX ? ' disabled' : ''}`, `${iconHtml('🗒️', { size: 18 })}<span class="rm-hidephone"> ${esc(t('js.manip-room.note'))}</span>`)}
       ${btn(`mp-tbtn${R.textMode ? ' on' : ''}`, `data-rtool="text" aria-pressed="${!!R.textMode}" aria-label="${esc(t('js.manip-room.text'))}"`, `<b class="mp-tglyph">T</b><span class="rm-hidephone"> ${esc(t('js.manip-room.text'))}</span>`)}
-      ${btn(`mp-tbtn${R.annotate ? ' on' : ''}`, `data-rtool="pen" aria-pressed="${R.annotate}" aria-label="${esc(t('js.manip-room.pen'))}"`, `✎<span class="rm-hidephone"> ${esc(t('js.manip-room.pen'))}</span>`)}
-      ${btn('mp-tbtn', `data-rtool="undo"${R.hist.length ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.undo'))}"`, `↩<span class="rm-hidephone"> ${esc(t('js.manip-room.undo'))}</span>`)}
+      ${btn(`mp-tbtn${R.annotate ? ' on' : ''}`, `data-rtool="pen" aria-pressed="${R.annotate}" aria-label="${esc(t('js.manip-room.pen'))}"`, `${iconHtml('✎', { size: 18 })}<span class="rm-hidephone"> ${esc(t('js.manip-room.pen'))}</span>`)}
+      ${btn('mp-tbtn', `data-rtool="undo"${R.hist.length ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.undo'))}"`, `${iconHtml('↩', { size: 18 })}<span class="rm-hidephone"> ${esc(t('js.manip-room.undo'))}</span>`)}
       ${R.role === 'teacher' ? `${btn('mp-tbtn rm-phoneonly', `data-rtool="zout" aria-label="${esc(t('js.manip-room.zoomOut'))}"`, '−')}${btn('mp-tbtn rm-phoneonly', `data-rtool="zin" aria-label="${esc(t('js.manip-room.zoomIn'))}"`, '+')}` : ''}
-      ${R.role === 'teacher' && A.key === 't' ? btn('mp-tbtn rm-hidephone', 'data-rtool="steps"', `📋 ${esc(t('js.manip-room.steps'))}`) : ''}
+      ${R.role === 'teacher' && A.key === 't' ? btn('mp-tbtn rm-hidephone', 'data-rtool="steps"', `${iconHtml('📋', { size: 18 })} ${esc(t('js.manip-room.steps'))}`) : ''}
       ${R.role === 'student' ? `${handBtn('mp-tbtn rm-phoneonly')}` : ''}</div>
     ${R.annotate ? `<div class="row rm-pens">${PEN_COLORS.map(c => btn(`mp-pen${R.pen === c ? ' on' : ''}`, `data-rpen="${c}" style="background:${c}" aria-label="${esc(t('js.manip-room.penColor', { color: c }))}"`, '')).join('')}${btn('chip', 'data-rtool="clearpen"', esc(t('js.manip-room.clearPen')))}</div>` : ''}
     ${R.impl.settings && (!objectTool(R.room.tool) || (o && !o.st.q)) ? `<div class="rm-settings">${R.impl.settings(objectTool(R.room.tool) ? o.st : A.st)}</div>` : ''}`;
@@ -853,7 +854,7 @@ function stepsSheet() {
   const A = R.areas.get('t'); if (!A) return;
   const box = document.createElement('div');
   box.className = 'mp-viewer rm-steps-sheet'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', t('js.manip-room.steps'));
-  box.innerHTML = `<div class="mp-viewbox panel"><div class="row"><h2>📋 ${esc(t('js.manip-room.steps'))}</h2>${btn('btn btn-sm', 'data-close', esc(t('js.manip-room.done')))}</div>
+  box.innerHTML = `<div class="mp-viewbox panel"><div class="row"><h2>${iconHtml('📋', { size: 28 })} ${esc(t('js.manip-room.steps'))}</h2>${btn('btn btn-sm', 'data-close', esc(t('js.manip-room.done')))}</div>
     <p class="small muted">${esc(t('js.manip-room.stepsText'))}</p><div id="rm-stepsed"></div></div>`;
   R.root.appendChild(box);
   stepsEditor(box.querySelector('#rm-stepsed'), A.steps, list => { A.steps = list.filter(x => x.text.trim()); queueSave('t'); });

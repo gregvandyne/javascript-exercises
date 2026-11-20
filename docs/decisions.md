@@ -9683,6 +9683,34 @@ side by side as an open book (approved mockup). Pages must fit half a 1280 x 720
   the book's notes say "Oomba ... left out one line" (`library.credits.changesClassicCut`, 12 languages; en-GB uses en).
 - Owner: the books left out for old words a filter flags ("Pussy", "cock", "Ass") stay out.
 
+## Icons: Fluent Emoji 3D (20 Nov 2026)
+
+The owner chose Microsoft's Fluent Emoji (MIT) in its 3D style over flat line icons. Emoji used as interface icons
+become pictures; emoji that are people's or games' own (avatars, game covers and titles, anything someone wrote,
+lesson text, games and seed games) stay as they are.
+- **One map, one helper.** `public/js/icons.js` maps each emoji the code used to its files and draws it
+  (`iconHtml(emoji, { size, label, lazy })`); `server/views/icon.js` (`ico`) is the same for server pages. An emoji with
+  no icon comes back as itself, so a helper call can never turn someone's content into something else.
+- **Sizes.** 28 px and up: the 3D picture as WebP (64 px, and 128 px for 2x screens). Smaller: Fluent's Flat SVG, from
+  the same family (3D goes muddy small). Nav and tab bar icons are 28 to 30 px, tiles 32 to 40, empty states 56; inline
+  buttons, menus and chips 16 to 20. The `<img>` carries its width and height, alt="" and aria-hidden (the text next to
+  it says what it is); `label` names one that stands alone.
+- **Live.** Fluent's satellite antenna is pale grey: it gets a soft sky-blue disc behind it.
+- **Classroom** keeps the apple (Fluent has no chalkboard).
+- **The 18 manipulatives** use our drawn soft-3D icons (Fluent's abacus, mantelpiece clock and coin for rekenreks,
+  clock and money) on a soft tile of each tool's color.
+- **Strings.** The build notes and status chips (`layout.build.*`, `build.status.*`) started with an emoji: it moved
+  into the markup, in all 12 languages; the words are unchanged.
+- **Files.** `public/icons/fluent/` (built by `scripts/icons/build_fluent.py` from a clone of Microsoft's repo, with its
+  LICENSE.txt), `public/icons/tools/`; credits in docs/media-credits.md. A page loads only the icons it shows.
+- **Left as emoji, for later:** emoji inside other pages' own sentences and client widgets (the class dashboard tools,
+  the Builder's Studio script, Number Quest and CS Quest, the course pages, toasts), select options and aria labels
+  (text only), and the files another session owns (routes/auth.js, routes/google.js, services/google.js, the teacher
+  plan /trial page, teachers.js setupBlock, family onboarding, the /teach home, gclassroom).
+- **Tests.** `tests/unit/icons.test.js` checks the map's files, the helper, the size budget, the license and that the
+  shared chrome has no emoji left as icons. Older tests that checked an emoji's place byte for byte read the page through
+  `tests/support/deicon.js`, which turns each icon back into its emoji, so they still check which icon sits where.
+
 ## Story Library: sliding page dots for long books (20 Nov 2026)
 
 - Owner chose "sliding dots" (option B of three mocked: a progress bar, sliding dots, parts) after the 50-page Velveteen

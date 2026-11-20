@@ -4,6 +4,7 @@
 // to anyone (no profiles, no messages). Element ids and data attributes are the page scripts' hooks
 // (docs/live-protocol.md "Page hooks").
 import { html, raw, jsonData } from './html.js';
+import { ico } from './icon.js';
 import { appMark, wordmark, BRAND } from './brand.js';
 import { qrSvg } from '../services/qr.js';
 import { EMOTES, HOST_ACTIONS, SAY_MAX, BONUS_REASONS, ADD_SECS, EXTRA_TIME } from '../services/classlive-protocol.js';
@@ -172,7 +173,7 @@ export function joinBody(req, { googleOn = false, bad = false, nicks = [] } = {}
     <div class="lv-portrait" id="lv-avatar" aria-hidden="true"></div>
     <p class="lv-nick" id="lv-nick" aria-live="polite"></p>
     <p class="small muted">${t('live.join.cardHint')}</p>
-    <button class="btn btn-block" type="button" id="lv-reroll">🎲 ${t('live.join.reroll')}</button>
+    <button class="btn btn-block" type="button" id="lv-reroll">${ico('🎲', { size: 18 })} ${t('live.join.reroll')}</button>
     <button class="btn btn-primary btn-block btn-big" type="button" id="lv-go">${t('live.join.ready')}</button>
     <p class="err lv-err" id="lv-card-err" role="alert"></p>
   </section>
@@ -189,7 +190,7 @@ export function playBody(req, { sid, title, nicks, open = true } = {}) {
     <span class="lv-me" id="lv-me"><span class="lv-me-avatar" id="lv-me-avatar" aria-hidden="true"></span><span id="lv-me-name"></span></span>
     <span class="lv-me-team" id="lv-me-team" hidden><svg class="lv-shape" aria-hidden="true"><use href=""/></svg><span class="lv-me-team-name"></span><span class="lv-me-team-rank"></span></span>
     <button class="btn btn-sm" type="button" id="lv-simple" aria-pressed="false">${t('live.play.simpleView')}</button>
-    <button class="btn btn-sm" type="button" id="lv-report-open" aria-haspopup="dialog">🚩 ${t('live.play.report')}</button>
+    <button class="btn btn-sm" type="button" id="lv-report-open" aria-haspopup="dialog">${ico('🚩', { size: 18 })} ${t('live.play.report')}</button>
     <button class="btn btn-sm" type="button" id="lv-leave" data-confirm="${t('live.play.leaveConfirm')}">${t('live.play.leave')}</button>
   </header>
   <p class="lv-phase" id="lv-phase" role="status" aria-live="polite">${open ? t('live.play.waiting') : t('live.play.gone')}</p>
@@ -200,7 +201,7 @@ export function playBody(req, { sid, title, nicks, open = true } = {}) {
     <h2 class="lv-h2" id="lv-team-pick-h">${t('live.play.pickTeam')}</h2>
     <div class="lv-team-pick-list" id="lv-team-pick-list" role="group" aria-labelledby="lv-team-pick-h"></div>
   </section>
-  <button class="btn lv-read" type="button" id="lv-read" hidden>🔊 ${t('live.play.read')}</button>
+  <button class="btn lv-read" type="button" id="lv-read" hidden>${ico('🔊', { size: 18 })} ${t('live.play.read')}</button>
   <p class="small muted lv-read-ai" id="lv-read-ai" hidden>${t('live.play.aiVoice', { provider: TTS_COMPANY })}</p>
   <div class="lv-stage" id="lv-stage" dir="ltr"></div>
   <div class="lv-eyes" id="lv-eyes" hidden><p class="lv-eyes-icon" aria-hidden="true">👀</p><p class="lv-eyes-text" role="alert">${t('live.eyes.cover')}</p><p class="small">${t('live.eyes.coverHint')}</p></div>
@@ -255,8 +256,8 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
       ${classSignIn ? html`<p class="lv-joinat small">${t('live.host.signInFirst')}</p>` : ''}
       <p class="lv-count" id="lv-count" aria-live="polite">${t('live.host.count', { count: 0, max: s.settings.maxPlayers })}</p>
       <button class="btn btn-sm" type="button" id="lv-hide-code" aria-pressed="false">${t('live.host.hideCode')}</button>
-      <span class="lv-joinlinks"><button class="btn btn-sm" type="button" id="lv-copy-link" data-url="${joinUrl}">🔗 ${t('live.host.copyLink')}</button>
-      ${s.audience === 'class' ? '' : html`<a class="btn btn-sm" id="lv-play-too" href="${joinUrl}" target="_blank" rel="noopener">🎮 ${t('live.host.playToo')}</a>`}
+      <span class="lv-joinlinks"><button class="btn btn-sm" type="button" id="lv-copy-link" data-url="${joinUrl}">${ico('🔗', { size: 18 })} ${t('live.host.copyLink')}</button>
+      ${s.audience === 'class' ? '' : html`<a class="btn btn-sm" id="lv-play-too" href="${joinUrl}" target="_blank" rel="noopener">${ico('🎮', { size: 18 })} ${t('live.host.playToo')}</a>`}
       ${gcAnnounce ? html`<a class="btn btn-sm" id="lv-gc-announce" href="${gcAnnounce}" target="_blank" rel="noopener">📣 ${t('gclassroom.announce.fromLive')}</a>` : ''}</span>
       <p class="small muted" id="lv-copied" role="status" hidden>${t('live.host.copied')}</p>
       ${s.doodle ? html`<p class="small muted" id="lv-need-two" hidden>${t('live.api.needTwo')}</p><p class="small lv-hid" id="lv-hid" role="status" hidden></p>` : ''}
@@ -268,19 +269,19 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
     ${s.quiz ? html`<div class="lv-time" id="lv-time" hidden>${ADD_SECS.map(x => html`<button class="btn btn-sm" type="button" data-lv-time="${x}">${t('live.time.add', { s: x })}</button>`)}</div>` : ''}
     <div class="lv-ctl-grid">
       ${['lock', 'unlock'].map(control)}
-      <button class="btn lv-act lv-act-eyes" type="button" data-lv-act="eyes" aria-pressed="false" aria-keyshortcuts="Y">👀 ${t('live.host.eyes')}</button>
-      <button class="btn lv-act" type="button" data-lv-act="settings" aria-haspopup="dialog">⚙️ ${t('live.settings.open')}</button>
+      <button class="btn lv-act lv-act-eyes" type="button" data-lv-act="eyes" aria-pressed="false" aria-keyshortcuts="Y">${ico('👀', { size: 18 })} ${t('live.host.eyes')}</button>
+      <button class="btn lv-act" type="button" data-lv-act="settings" aria-haspopup="dialog">${ico('⚙️', { size: 18 })} ${t('live.settings.open')}</button>
       <button class="btn lv-act" type="button" data-lv-act="sound" aria-pressed="${st.sound ? 'true' : 'false'}">${t(st.sound ? 'live.host.soundOn' : 'live.host.soundOff')}</button>
-      <button class="btn lv-act" type="button" data-lv-act="dash" aria-haspopup="dialog">📱 ${t('live.host.teacherView')}</button>
-      ${me.cohosts ? html`<button class="btn lv-act" type="button" data-lv-act="cohosts" aria-haspopup="dialog">👥 ${t('live.cohost.open')}</button>` : ''}
-      ${s.quiz ? html`<button class="btn lv-act" type="button" id="lv-host-read" hidden>🔊 ${t('live.host.read')}</button>` : ''}
+      <button class="btn lv-act" type="button" data-lv-act="dash" aria-haspopup="dialog">${ico('📱', { size: 18 })} ${t('live.host.teacherView')}</button>
+      ${me.cohosts ? html`<button class="btn lv-act" type="button" data-lv-act="cohosts" aria-haspopup="dialog">${ico('👥', { size: 18 })} ${t('live.cohost.open')}</button>` : ''}
+      ${s.quiz ? html`<button class="btn lv-act" type="button" id="lv-host-read" hidden>${ico('🔊', { size: 18 })} ${t('live.host.read')}</button>` : ''}
     </div>
     ${s.quiz ? html`<p class="small muted lv-host-read-ai" id="lv-host-read-ai" hidden>${t('live.play.aiVoice', { provider: TTS_COMPANY })}</p>` : ''}
     ${messageBox(t, 'lv-msg')}
     ${me.role === 'cohost' ? html`<p class="small lv-cohost-me" id="lv-cohost-me">${t('live.cohost.youCohostShort')}</p>` : ''}
     <p class="small muted" id="lv-autolock"${s.settings.autoLock ? '' : raw(' hidden')}>${t('live.host.autoLock')}</p>
   </section>
-  <p class="lv-eyes-banner" id="lv-eyes-banner" role="status" hidden>👀 ${t('live.eyes.banner')}</p>
+  <p class="lv-eyes-banner" id="lv-eyes-banner" role="status" hidden>${ico('👀', { size: 18 })} ${t('live.eyes.banner')}</p>
   <p class="lv-say-banner lv-say-big" id="lv-say-banner" role="status" dir="auto" hidden></p>
   <p class="lv-toast" id="lv-bonus-toast" role="status" hidden></p>
   ${teamsOn && !s.doodle ? html`<section class="lv-teamsbox" id="lv-teamsbox" aria-labelledby="lv-teams-h">
@@ -294,8 +295,8 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
   <dialog class="lv-dialog lv-teams-sheet" id="lv-teams-sheet" aria-labelledby="lv-teams-sheet-h">
     <div class="lv-sheet-head"><h2 id="lv-teams-sheet-h">${t('live.team.heading')}</h2><button class="btn btn-primary" type="button" id="lv-teams-done">${t('live.team.done')}</button></div>
     <div class="lv-sheet-tools" role="toolbar" aria-label="${t('live.team.heading')}">
-      <button class="btn" type="button" data-lv-tm="balance">⚖️ ${t('live.team.balance')}</button>
-      <button class="btn" type="button" data-lv-tm="shuffle">🔀 ${t('live.team.shuffle')}</button>
+      <button class="btn" type="button" data-lv-tm="balance">${ico('⚖️', { size: 18 })} ${t('live.team.balance')}</button>
+      <button class="btn" type="button" data-lv-tm="shuffle">${ico('🔀', { size: 18 })} ${t('live.team.shuffle')}</button>
       ${hasLast && !s.tug ? html`<button class="btn" type="button" data-lv-tm="last">${t('live.team.useLast')}</button>` : ''}
       <details class="lv-teams-more" id="lv-teams-more"><summary class="btn">${t('live.team.more')}</summary>
         <div id="lv-teams-presets" class="lv-teams-presets"${s.tug ? raw(' hidden') : ''}></div>
@@ -303,7 +304,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
           <label class="lv-radio"><input type="radio" name="lv-scoring" value="avg" checked> ${t('live.team.scoringAvg')}</label> <span class="small muted">${t('live.team.scoringAvgHint')}</span>
           <label class="lv-radio"><input type="radio" name="lv-scoring" value="sum"> ${t('live.team.scoringSum')}</label></fieldset>
         <span${s.tug ? raw(' hidden') : ''}><label class="lv-check"><input type="checkbox" id="lv-teams-choose"> ${t('live.team.choose')}</label> <span class="small muted">${t('live.team.chooseHint')}</span></span>
-        <p><button class="btn btn-sm" type="button" data-lv-tm="lock">🔒 ${t('live.team.lock')}</button> <button class="btn btn-sm" type="button" data-lv-tm="unlock" hidden>${t('live.team.unlock')}</button></p>
+        <p><button class="btn btn-sm" type="button" data-lv-tm="lock">${ico('🔒', { size: 18 })} ${t('live.team.lock')}</button> <button class="btn btn-sm" type="button" data-lv-tm="unlock" hidden>${t('live.team.unlock')}</button></p>
       </details>
     </div>
     <p class="notice warn" id="lv-teams-warn" role="status" hidden></p>
@@ -328,7 +329,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
       <div class="lv-qr">${raw(qrSvg(dashUrl, { title: t('live.dash.qrTitle') }))}</div>
       <p class="small" dir="ltr"><a href="/live/host/${s.id}/dash" target="_blank" rel="noopener">${dashUrl.replace(/^https?:\/\//, '')}</a></p>
       <p class="small muted">${t('live.dash.qrHint')}</p>
-      <a class="btn" id="lv-dash-window" href="/live/host/${s.id}/dash" target="_blank" rel="noopener">🖥️ ${t('live.dash.openWindow')}</a>
+      <a class="btn" id="lv-dash-window" href="/live/host/${s.id}/dash" target="_blank" rel="noopener">${ico('🖥️', { size: 18 })} ${t('live.dash.openWindow')}</a>
       <p class="small muted">${t('live.dash.openWindowHint')}</p>
       <button class="btn" type="submit">${t('live.play.cancel')}</button>
     </form>
@@ -339,13 +340,13 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
       <div class="stack" id="lv-cohosts-gate">
         <p class="notice warn">${t('live.cohost.gate')}</p>
         <button class="btn btn-primary" type="button" id="lv-cohosts-show">${t('live.cohost.show')}</button>
-        <button class="btn" type="button" id="lv-cohosts-phone">📱 ${t('live.cohost.usePhone')}</button>
+        <button class="btn" type="button" id="lv-cohosts-phone">${ico('📱', { size: 18 })} ${t('live.cohost.usePhone')}</button>
       </div>
       <div id="lv-cohosts-body" hidden>${cohostPanel(t, { s, id: 'lv-cohosts', role: me.role, origin })}</div>
       <form method="dialog"><button class="btn" type="submit">${t('live.cohost.close')}</button></form>
     </div>
   </dialog>` : ''}
-  <section class="notice warn lv-proj-busy" id="lv-proj-busy" role="alert" hidden><p id="lv-proj-busy-text"></p><a class="btn" href="/live/host/${s.id}/dash">📱 ${t('live.cohost.openDash')}</a></section>
+  <section class="notice warn lv-proj-busy" id="lv-proj-busy" role="alert" hidden><p id="lv-proj-busy-text"></p><a class="btn" href="/live/host/${s.id}/dash">${ico('📱', { size: 18 })} ${t('live.cohost.openDash')}</a></section>
   <section class="notice warn lv-cohost-off" id="lv-cohost-off" role="alert" hidden><p id="lv-cohost-off-text"></p><a class="btn" href="/live">${t('live.cohost.backToLive')}</a></section>
   <section class="lv-panel lv-podium-hold" id="lv-podium-hold" hidden><button class="btn btn-primary" type="button" id="lv-see-results">${t('live.host.seeResultsNow')}</button></section>
   <section class="lv-rosterbox" aria-labelledby="lv-roster-h">
@@ -473,7 +474,7 @@ export function landingBody(req, { forClass = null, modes, groups, sets, starter
   const radio = (name, value, checked) => raw(`<input type="radio" name="${name}" value="${value}"${checked ? ' checked' : ''}>`);
   // Each game card says how many players it is made for (classlive-access.js CAPACITY, docs/live-capacity.md); data-max
   // lets the page clamp "Most players" to the picked game.
-  const players = cap => (cap ? html`<span class="small lv-pick-players">👥 ${t('live.landing.best', { min: cap.best[0], max: cap.best[1] })}${cap.teamsAbove && teamsOn ? html` · ${t('live.landing.teamsAbove', { n: cap.teamsAbove })}` : ''}</span>` : '');
+  const players = cap => (cap ? html`<span class="small lv-pick-players">${ico('👥', { size: 18 })} ${t('live.landing.best', { min: cap.best[0], max: cap.best[1] })}${cap.teamsAbove && teamsOn ? html` · ${t('live.landing.teamsAbove', { n: cap.teamsAbove })}` : ''}</span>` : '');
   // A game card in the Builder setup's look (build-setup.css .su-card): its emoji in a picture box, the name, a line or
   // two, who it is for, and a tick when picked. It is a real radio inside a label, so it works without the script.
   const tick = raw('<span class="su-tick" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>');
@@ -535,7 +536,7 @@ export function landingBody(req, { forClass = null, modes, groups, sets, starter
   return html`<div class="lv lv-landing lv-wiz" data-lv-page="landing">
   <noscript><style>.lv-wiz .lv-wstep{display:flex!important}.lv-wiz .lv-nav,.lv-wiz .su-progress,.lv-wiz .lv-tabs,.lv-wiz .lv-review,.lv-wiz [data-go]{display:none!important}.lv-wiz .lv-pgroup{display:grid!important}</style></noscript>
   <div class="su-top"><h1 class="su-brand">${t('live.landing.heading')}</h1></div>
-  ${forClass ? html`<p class="lv-for"><b>🍎 ${t('live.entry.forClass', { name: forClass.name })}</b></p>` : ''}
+  ${forClass ? html`<p class="lv-for"><b>${ico('🍎', { size: 18 })} ${t('live.entry.forClass', { name: forClass.name })}</b></p>` : ''}
   ${ch.invites.map(x => html`<p class="notice good lv-cohost-invite" data-lv-cohost-invite="${x.sid}">${t('live.cohost.landingInvite', { name: x.from, title: x.title })} <a class="btn btn-sm btn-primary" href="/live/cohost/${x.sid}">${t('live.cohost.openInvite')}</a></p>`)}
   ${ch.on.map(x => html`<p class="notice lv-cohost-on" data-lv-cohost-on="${x.sid}">${t('live.cohost.landingOn', { title: x.title })} <a class="btn btn-sm" href="/live/host/${x.sid}/dash">${t('live.cohost.openDash')}</a></p>`)}
   <form class="lv-steps" id="lv-new" data-api="/api/live/sessions" data-first="${firstStep}" novalidate>
@@ -627,7 +628,7 @@ export function landingBody(req, { forClass = null, modes, groups, sets, starter
     ${teamsOn ? html`<div class="lv-group" id="lv-teams-landing">${teamsRow(t, { n: prefs && prefs.teams && prefs.teams.on ? prefs.teams.n : 0, scoring: prefs && prefs.teams ? prefs.teams.scoring : 'avg' })}</div>` : ''}`)}
     ${step('open', 3, html`
     <dl class="su-rows panel lv-review" id="lv-review">${ROWS.map(k => html`<div class="su-row" data-row="${k}"><dt>${t(`live.wiz.row.${k}`)}</dt><dd data-val="${k}"></dd><button type="button" class="btn btn-sm su-change" data-change="${k === 'game' ? 'play' : k === 'teams' ? 'who' : k}">${t('live.wiz.change')}<span class="sr-only">: ${t(`live.wiz.row.${k}`)}</span></button></div>`)}</dl>
-    <details class="lv-group lv-settings-landing panel" id="lv-settings-landing"><summary>⚙️ ${t('live.settings.title')}</summary>
+    <details class="lv-group lv-settings-landing panel" id="lv-settings-landing"><summary>${ico('⚙️', { size: 18 })} ${t('live.settings.title')}</summary>
       ${settingsFields(t, { values, quiz: true, accounts: classes.length > 0, idp: 'lv-ls' })}
       <p class="small muted">${t('live.settings.remembered')}${prefs ? html` <button class="btn btn-sm" type="button" id="lv-prefs-reset" data-href="/api/live/prefs">${t('live.settings.reset')}</button>` : ''}</p>
     </details>
@@ -682,7 +683,7 @@ export function resultsBody(req, { id = '', title, mode = '', players = [], item
   <p class="muted">${t('live.results.playersCount', { count: playerCount ?? players.length })}</p>
   ${gradebook ? html`<p class="notice good">${t('live.results.gradebook')}</p>` : ''}
   ${guestRun ? html`<div class="notice lv-guest-note" id="lv-guest-note" role="note"><p><b>${t('quickLive.results.h')}</b> ${t(saved ? 'quickLive.results.saved' : 'quickLive.results.now')}</p>
-    ${keepScores ? html`<p class="lv-guest-act"><a class="btn btn-primary btn-wrap" id="lv-keep-scores" href="/teach/keep-scores">🪪 ${t('quickLive.results.keep')}</a> <span class="small">${t('quickLive.results.keepHint')}</span></p>` : ''}</div>` : ''}
+    ${keepScores ? html`<p class="lv-guest-act"><a class="btn btn-primary btn-wrap" id="lv-keep-scores" href="/teach/keep-scores">${ico('🪪', { size: 18 })} ${t('quickLive.results.keep')}</a> <span class="small">${t('quickLive.results.keepHint')}</span></p>` : ''}</div>` : ''}
   ${teams.length ? html`<section class="lv-group lv-results-teams" aria-labelledby="lv-rt-h">
     <h2 id="lv-rt-h">${t('live.team.podium')}</h2>
     <ol class="lv-team-podium" id="lv-team-podium">${podium.map(x => html`<li class="lv-step lv-step-${x.rank}" style="--team:${presets[x.p].color};--team-ink:${presets[x.p].ink}"><span class="lv-step-rank">${x.rank}</span>${teamChip(presets, x)}<span class="lv-step-score">${x.score}</span></li>`)}</ol>
@@ -694,7 +695,7 @@ export function resultsBody(req, { id = '', title, mode = '', players = [], item
   ${items.length ? html`<section class="lv-group" aria-labelledby="lv-review-h"><h2 id="lv-review-h">${quiz ? t('live.results.review') : t('live.results.questions')}</h2>
     <ol class="lv-items lv-review" id="lv-review">${items.map(it => html`<li class="lv-review-item">${it.q ? html`<p class="lv-review-q">${it.q}</p>` : ''}
       <p class="small">${tally(it)}${!vote && (it.topWrong || it.top_wrong) ? html` · <span class="muted">${t('live.results.topWrong', { answer: it.topWrong || it.top_wrong })}</span>` : ''}</p>
-      ${Array.isArray(it.choices) ? html`<div class="lv-bars" role="list">${it.choices.map((c, i) => html`<div role="listitem" class="lv-bar${i === it.answer ? ' lv-bar-right' : ''}"><span class="lv-bar-label">${L(i)}${c}${i === it.answer ? html` <span class="lv-bar-ok">✓ ${t('live.results.markRight')}</span>` : ''}</span><span class="lv-bar-fill" style="--w:${pctOf((it.counts || [])[i] || 0, it.answered)}%"></span><span class="lv-bar-n">${(it.counts || [])[i] || 0} (${pctOf((it.counts || [])[i] || 0, it.answered)}%)</span></div>`)}</div>` : ''}
+      ${Array.isArray(it.choices) ? html`<div class="lv-bars" role="list">${it.choices.map((c, i) => html`<div role="listitem" class="lv-bar${i === it.answer ? ' lv-bar-right' : ''}"><span class="lv-bar-label">${L(i)}${c}${i === it.answer ? html` <span class="lv-bar-ok">${ico('✓', { size: 18 })} ${t('live.results.markRight')}</span>` : ''}</span><span class="lv-bar-fill" style="--w:${pctOf((it.counts || [])[i] || 0, it.answered)}%"></span><span class="lv-bar-n">${(it.counts || [])[i] || 0} (${pctOf((it.counts || [])[i] || 0, it.answered)}%)</span></div>`)}</div>` : ''}
     </li>`)}</ol></section>` : ''}
   ${guests ? html`<p class="muted">${t('live.results.guests', { count: guests })}</p>` : ''}
   <div class="lv-results-acts" id="lv-results-acts">
@@ -704,7 +705,7 @@ export function resultsBody(req, { id = '', title, mode = '', players = [], item
     <a class="btn" href="/live">${t('live.results.newGame')}</a>
     <button class="btn" type="button" id="lv-print" data-print>${t('live.results.print')}</button>
   </div>
-  ${homework && hostActs && setId && quiz && classes.length ? html`<details class="lv-group lv-homework" id="lv-homework"><summary class="btn">📚 ${t('live.results.homework')}</summary>
+  ${homework && hostActs && setId && quiz && classes.length ? html`<details class="lv-group lv-homework" id="lv-homework"><summary class="btn">${ico('📚', { size: 18 })} ${t('live.results.homework')}</summary>
     <form class="stack" data-api="/api/live/sets/${setId}/homework" novalidate>
       <p class="small muted">${t('live.homework.hint')}</p>
       <div class="field"><label for="lv-hw-class">${t('live.landing.classPick')}</label><select class="input" id="lv-hw-class" name="classId">${classes.map(c => html`<option value="${c.id}">${c.name}</option>`)}</select></div>
@@ -732,7 +733,7 @@ export function setsBody(req, { sets }) {
   const t = req.t;
   return html`<div class="lv lv-sets" data-lv-page="sets">
   <h1>${t('live.sets.heading')}</h1>
-  <p class="row"><button class="btn btn-primary" type="button" id="lv-set-new">${t('live.sets.new')}</button><a class="btn" href="/teach/make" id="lv-set-make">✨ ${t('live.sets.fromLesson')}</a></p>
+  <p class="row"><button class="btn btn-primary" type="button" id="lv-set-new">${t('live.sets.new')}</button><a class="btn" href="/teach/make" id="lv-set-make">${ico('✨', { size: 18 })} ${t('live.sets.fromLesson')}</a></p>
   ${sets.mine.length ? html`<ul class="lv-setlist" id="lv-setlist">${sets.mine.map(s => html`<li data-set="${s.id}"><span class="lv-set-title">${s.title}</span> <span class="small muted">${t('live.sets.items', { count: s.count })}${s.ready ? '' : ` · ${t('live.sets.draft')}`}</span></li>`)}</ul>` : html`<p class="muted" id="lv-setlist-empty">${t('live.sets.empty')}</p>`}
   ${sets.school.length ? html`<h2 class="lv-h2">${t('live.sets.school')}</h2><p class="small muted">${t('live.sets.schoolHint')}</p>
   <ul class="lv-setlist">${sets.school.map(s => html`<li><span class="lv-set-title">${s.title}</span> <span class="small muted">${t('live.sets.items', { count: s.count })}</span> <button class="btn btn-sm" type="button" data-copy-set="${s.id}">${t('live.sets.copy')}</button></li>`)}</ul>` : ''}
@@ -744,7 +745,7 @@ export function setsBody(req, { sets }) {
 export function makeBody(req, { classes = [], limits }) {
   const t = req.t;
   return html`<div class="lv lv-make" data-lv-page="make">
-  <h1>✨ ${t('live.make.heading')}</h1>
+  <h1>${ico('✨', { size: 36 })} ${t('live.make.heading')}</h1>
   <p class="muted">${t('live.make.lead')}</p>
   <ol class="mk-steps" id="mk-steps" aria-label="${t('live.make.stepsLabel')}">
     <li aria-current="step">${t('live.make.step1')}</li><li>${t('live.make.step2')}</li><li>${t('live.make.step3')}</li></ol>
@@ -759,23 +760,23 @@ export function makeBody(req, { classes = [], limits }) {
         <div class="field"><label for="mk-level">${t('live.make.levelLabel')}</label><input class="input" id="mk-level" maxlength="60" placeholder="${t('live.make.levelHint')}"></div>
         <div class="field"><label for="mk-count">${t('live.make.countLabel')}</label><select class="input" id="mk-count">${limits.counts.map(n => html`<option${n === 10 ? raw(' selected') : ''}>${n}</option>`)}</select></div>
       </div>
-      <p class="small muted" id="mk-privacy">🔒 ${t('live.make.privacy')}</p>
+      <p class="small muted" id="mk-privacy">${ico('🔒', { size: 18 })} ${t('live.make.privacy')}</p>
       <p class="err form-err" id="mk-err" role="alert"></p>
-      <div class="lv-controls"><button class="btn btn-primary" type="submit" id="mk-go">✨ ${t('live.make.go')}</button></div>
+      <div class="lv-controls"><button class="btn btn-primary" type="submit" id="mk-go">${ico('✨', { size: 18 })} ${t('live.make.go')}</button></div>
       <p class="small muted" id="mk-wait" role="status" hidden>${t('live.make.wait')}</p>
     </form>
   </section>
   <section class="mk-check stack" id="mk-2" hidden aria-labelledby="mk-2-h">
-    <div class="lv-panel mk-panel mk-note"><h2 class="lv-h2" id="mk-2-h" tabindex="-1">✅ ${t('live.make.checkHeading')}</h2>
+    <div class="lv-panel mk-panel mk-note"><h2 class="lv-h2" id="mk-2-h" tabindex="-1">${ico('✅', { size: 28 })} ${t('live.make.checkHeading')}</h2>
       <p>${t('live.make.checkText')}</p>
       <p class="row"><button class="btn btn-sm" type="button" id="mk-back">← ${t('live.make.back')}</button></p></div>
     <section class="lv-panel mk-panel" id="lv-set-editor" hidden></section>
   </section>
   <section class="lv-panel mk-panel" id="mk-3" hidden aria-labelledby="mk-3-h">
-    <h2 class="lv-h2" id="mk-3-h" tabindex="-1">🎉 ${t('live.make.doneHeading')}</h2>
+    <h2 class="lv-h2" id="mk-3-h" tabindex="-1">${ico('🎉', { size: 28 })} ${t('live.make.doneHeading')}</h2>
     <p>${t('live.make.doneText')}</p>
-    <div class="lv-controls"><a class="btn btn-primary" id="mk-host" href="/live">📡 ${t('live.make.host')}</a></div>
-    ${classes.length ? html`<form class="stack mk-assign" id="mk-assign" novalidate><h3 class="mk-h3">📚 ${t('live.make.assignHeading')}</h3>
+    <div class="lv-controls"><a class="btn btn-primary" id="mk-host" href="/live">${ico('📡', { size: 18 })} ${t('live.make.host')}</a></div>
+    ${classes.length ? html`<form class="stack mk-assign" id="mk-assign" novalidate><h3 class="mk-h3">${ico('📚', { size: 22 })} ${t('live.make.assignHeading')}</h3>
       <p class="small muted">${t('live.make.assignText')}</p>
       <div class="lv-set-meta">
         <div class="field"><label for="mk-class">${t('live.make.classLabel')}</label><select class="input" id="mk-class">${classes.map(c => html`<option value="${c.id}">${c.name}</option>`)}</select></div>

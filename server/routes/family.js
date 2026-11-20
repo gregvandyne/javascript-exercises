@@ -15,6 +15,7 @@
 // the same families gate, the billing tester rule while the key is a test key, and the password typed again.
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound, tabKey as navLabel } from '../views/layout.js';
 import { avatar, notYou } from '../views/components.js';
 import * as auth from '../auth.js';
@@ -366,9 +367,9 @@ router.get('/family', grownupOnly, async (req, res) => {
   // Families off (billing off): no children, links or plans, but the grown-up can still change their language and
   // password and sign out.
   if (!F.familiesOn(req)) {
-    const body = html`<div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>${teamLink(req)}
+    const body = html`<div class="pagehead"><h1>${ico('👪', { size: 36 })} ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>${teamLink(req)}
     <section class="panel"><p class="muted"${en('family.page.offAccount')}>${t('family.page.offAccount')}</p>
-      <p style="margin-bottom:0"><a class="btn" href="/family/account">⚙️ ${t(navLabel(t, 'account'))}</a></p></section>`;
+      <p style="margin-bottom:0"><a class="btn" href="/family/account">${ico('⚙️', { size: 18 })} ${t(navLabel(t, 'account'))}</a></p></section>`;
     return page(req, res, { title: t('family.page.title'), active: 'family', body, scripts: ['/js/family.js'] });
   }
   const fam = F.ensureFamily(u);
@@ -423,25 +424,25 @@ router.get('/family', grownupOnly, async (req, res) => {
   const mineAll = games.myGames(u.id, 6), mine = mineAll.slice(0, 5);
   const waiting = friends.incoming(u.id).length;
   const own = F.ownerUsage(fam.id, u.id);
-  const yourGames = html`<section class="panel famgames" aria-labelledby="famgames-h" id="your-games"><h2 id="famgames-h"${en('familyGames.heading')}>🛠️ ${t('familyGames.heading')}</h2>
+  const yourGames = html`<section class="panel famgames" aria-labelledby="famgames-h" id="your-games"><h2 id="famgames-h"${en('familyGames.heading')}>${ico('🛠️', { size: 28 })} ${t('familyGames.heading')}</h2>
     ${mine.length ? html`<ul class="famgames-list">${mine.map(g => html`<li class="famgame"><a class="famgame-cover" href="/studio/${g.id}" tabindex="-1" aria-hidden="true">${coverArt(g, '', { draft: true })}</a>
       <div class="famgame-main"><a href="/studio/${g.id}"><b>${g.title}</b></a><div class="small muted">${statusLabel(g, t)}</div></div></li>`)}</ul>`
     : html`<p class="muted"${en('familyGames.empty')}>${t('familyGames.empty')}</p>`}
-    <div class="row"><a class="btn btn-primary" href="/build"${en('familyGames.build')}>✨ ${t('familyGames.build')}</a>${mineAll.length > 5 ? html`<a class="btn" href="/build"${en('familyGames.seeAll')}>${t('familyGames.seeAll')}</a>` : ''}
-      <a class="btn" href="/family/connections"${en('familyGames.connections')}>🤝 ${t('familyGames.connections', { count: waiting })}</a></div>
+    <div class="row"><a class="btn btn-primary" href="/build"${en('familyGames.build')}>${ico('✨', { size: 18 })} ${t('familyGames.build')}</a>${mineAll.length > 5 ? html`<a class="btn" href="/build"${en('familyGames.seeAll')}>${t('familyGames.seeAll')}</a>` : ''}
+      <a class="btn" href="/family/connections"${en('familyGames.connections')}>${ico('🤝', { size: 18 })} ${t('familyGames.connections', { count: waiting })}</a></div>
     <p class="small muted famgames-use"><b${en('familyGames.usage')}>${t('familyGames.usage')}</b> <span${en('familyGames.usageLine')}>${t('familyGames.usageLine', { yesterday: own.yesterday, month: own.month })}</span></p>
   </section>`;
   // A plan picked on /plans (and not paid yet) comes first: that is what the grown-up came here to do.
   const planFirst = (chosen && !plan.entitled) || (typeof req.query.checkout === 'string' && !plan.entitled);
   const body = html`
-  <div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>${teamLink(req)}
+  <div class="pagehead"><h1>${ico('👪', { size: 36 })} ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>${teamLink(req)}
   ${familyChecklist(req, { fam, kids, plan, max, sale: await familyOnSale(u) })}
   ${asksBox}
   ${planFirst ? html`${planBox}${kidsBox}` : html`${kidsBox}${planBox}`}
   ${sparksBox}
   ${yourGames}
-  ${liveOn() ? html`<section class="panel" aria-labelledby="famlive-h" id="family-live"><h2 id="famlive-h">📡 ${t('live.entry.family')}</h2>
-    <p class="muted">${t('live.entry.familyText')}</p><div class="row"><a class="btn btn-primary" href="/live">📡 ${t('live.entry.host')}</a></div></section>` : ''}
+  ${liveOn() ? html`<section class="panel" aria-labelledby="famlive-h" id="family-live"><h2 id="famlive-h">${ico('📡', { size: 28 })} ${t('live.entry.family')}</h2>
+    <p class="muted">${t('live.entry.familyText')}</p><div class="row"><a class="btn btn-primary" href="/live">${ico('📡', { size: 18 })} ${t('live.entry.host')}</a></div></section>` : ''}
   ${config.contactEmail ? html`<section class="panel" aria-labelledby="help-h"><h2 id="help-h">${t('family.page.helpHeading')}</h2>
     <p>${tHtml(t, 'family.page.help', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : ''}`;
   page(req, res, { title: t('family.page.title'), active: 'family', body, scripts: ['/js/family.js'] });

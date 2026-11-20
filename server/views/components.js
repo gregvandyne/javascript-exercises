@@ -3,6 +3,7 @@
 //    app.js (it replaces the element's whole text, so never put data-live on anything else)
 // Text comes from the request's language via current() (server/i18n); outside a request it is English.
 import { html, raw, esc } from './html.js';
+import { ico } from './icon.js';
 import { current, tHtml } from '../i18n/index.js';
 import { urlFor } from '../services/shots.js';
 import { photoUrl } from '../services/photos.js';
@@ -95,7 +96,7 @@ export function gameCard(g, { showVis = false, classPill = true, byName = null, 
   const liveMode = !showVis && liveGameOf(g);
   const aria = [label, pill ? t('cards.classOnly') : '', liveMode ? t('live.entry.badgeLong') : ''].filter(Boolean).join(' · ');
   return html`<a class="gcard${liveMode ? ' gcard-live' : ''}" href="/g/${g.slug}" aria-label="${aria}">
-    <div style="position:relative">${coverArt(g)}${livePill(g)}${liveMode ? html`<span class="live-badge" aria-hidden="true">📡 ${t('live.entry.badge')}</span>` : ''}${showVis ? html`<span class="vis-pill">${statusLabel(g)}</span>` : pill ? html`<span class="vis-pill vis-class">🎒 ${t('cards.classOnly')}</span>` : ''}</div>
+    <div style="position:relative">${coverArt(g)}${livePill(g)}${liveMode ? html`<span class="live-badge" aria-hidden="true">${ico('📡', { size: 14 })} ${t('live.entry.badge')}</span>` : ''}${showVis ? html`<span class="vis-pill">${statusLabel(g)}</span>` : pill ? html`<span class="vis-pill vis-class">${ico('🎒', { size: 18 })} ${t('cards.classOnly')}</span>` : ''}</div>
     <div class="t">${g.title}</div>
     ${meta ? html`<div class="by gmeta">${meta}</div>` : ''}
     ${by ? html`<div class="by">${t('cards.by', { name: by })}</div>` : ''}
@@ -118,7 +119,7 @@ export function rail({ title, games, more = null, id = null, emoji = '', moreLab
   const rid = id || `rail${++railN}`;
   const cards = games.map(g => gameCard(g));
   return html`<section class="rail" aria-labelledby="${rid}-h">
-    <div class="rail-head"><h2 id="${rid}-h">${emoji ? emoji + ' ' : ''}${title}</h2>
+    <div class="rail-head"><h2 id="${rid}-h">${emoji ? html`${ico(emoji, { size: 28, lazy: true })} ` : ''}${title}</h2>
       ${more ? html`<a class="more" href="${more}"${more.startsWith('/search') ? raw(' rel="nofollow"') : ''}>${moreLabel || t('cards.seeAll')}</a>` : ''}
       <div class="rail-arrows"><button type="button" data-rail="${rid}" data-dir="-1" aria-label="${t('cards.scrollBack', { title })}"><span class="flip" aria-hidden="true">←</span></button><button type="button" data-rail="${rid}" data-dir="1" aria-label="${t('cards.scrollForward', { title })}"><span class="flip" aria-hidden="true">→</span></button></div>
     </div>
@@ -130,14 +131,14 @@ export function cardGrid(games, { showVis = false, classPill = true, byName = nu
   return html`<div class="cardgrid">${cards}</div>`;
 }
 export function emptyState({ emoji = '🌈', title, text = '', action = null }) {
-  return html`<div class="empty"><div class="emo" aria-hidden="true">${emoji}</div><h3>${title}</h3>${text ? html`<p>${text}</p>` : ''}${action ? html`<a class="btn btn-primary" href="${action.href}">${action.label}</a>` : ''}</div>`;
+  return html`<div class="empty"><div class="emo">${ico(emoji, { size: 56 })}</div><h3>${title}</h3>${text ? html`<p>${text}</p>` : ''}${action ? html`<a class="btn btn-primary" href="${action.href}">${action.label}</a>` : ''}</div>`;
 }
 export function personRow(u, { href = null, sub = '', right = '' } = {}) {
   return html`<a class="person" href="${href || '/u/' + u.username}">${avatar(u, 44)}<span style="flex:1;min-width:0"><span class="nm">${u.display_name || u.displayName || u.username}</span><br><span class="sub">${sub || html`<bdi>@${u.username}</bdi>`}</span></span>${right}</a>`;
 }
 
 /** "🛠️ Make a game" (the Builder): school staff have no Build tab, so My classes and Me keep it one tap away. */
-export const makeGameBtn = t => html`<a class="btn" href="/build"${t.own('school.teach.makeGame') ? '' : raw(' lang="en" dir="ltr"')}>🛠️ ${t('school.teach.makeGame')}</a>`;
+export const makeGameBtn = t => html`<a class="btn" href="/build"${t.own('school.teach.makeGame') ? '' : raw(' lang="en" dir="ltr"')}>${ico('🛠️', { size: 20 })} ${t('school.teach.makeGame')}</a>`;
 
 /** "Jump to" chips for a long school or teacher page: [[id, label, count?]] (styles: .ajump in public/css/app.css, the
  *  same chips as the admin pages). A count shows only above 0. */

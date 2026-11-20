@@ -8,6 +8,7 @@
 //   seo: { index: true, path, langs, image, imageAlt, type, jsonld } to let search engines index the page (server/seo.js).
 //        Without it a page is noindex: new pages stay out of search results until they opt in.
 import { html, raw, esc, jsonData } from './html.js';
+import { ico } from './icon.js';
 import { avatar, BRAND, wordmark, appMark } from './components.js';
 import { accountKind, STAFF_PASSWORD_MIN, isGrownup, longPasswordKind } from '../auth.js';
 import { config } from '../config.js';
@@ -162,7 +163,7 @@ export function langPicker(req) {
   const langs = availableLocales();
   if (langs.length < 2) return '';   // nothing to choose yet
   return html`<details class="langpick" data-langpick>
-    <summary class="lang-btn" aria-label="${t('layout.lang.button', { language: info.name })}" title="${t('layout.lang.title')}"><span class="globe" aria-hidden="true">🌐</span><span class="lang-code" aria-hidden="true">${cur.split('-')[0].toUpperCase()}</span></summary>
+    <summary class="lang-btn" aria-label="${t('layout.lang.button', { language: info.name })}" title="${t('layout.lang.title')}"><span class="globe" aria-hidden="true">${ico('🌐', { size: 20 })}</span><span class="lang-code" aria-hidden="true">${cur.split('-')[0].toUpperCase()}</span></summary>
     <div class="lang-menu">
       <p class="lang-head" id="lang-head">${t('layout.lang.title')}</p>
       <ul class="lang-list" aria-labelledby="lang-head">${langs.map(l => html`<li><a href="${langHref(req, l.code)}" hreflang="${l.code}" rel="nofollow" ${l.code === cur ? raw('aria-current="true"') : ''}><span class="lang-check" aria-hidden="true">${l.code === cur ? '✓' : ''}</span><span class="lang-name" lang="${l.code}" dir="${l.dir}">${l.name}</span></a></li>`)}</ul>
@@ -176,7 +177,7 @@ export function langPicker(req) {
 export function themeLinks(req, { cls = 'theme-list', labelledby = '' } = {}) {
   const t = tReq(req); const cur = THEMES.includes(req.theme) ? req.theme : 'system';
   const label = th => t('layout.theme.button', { theme: t(`layout.theme.${th}`) });
-  return html`<ul class="${cls}"${labelledby ? raw(` aria-labelledby="${labelledby}"`) : ''}>${THEMES.map(th => html`<li><a href="${choiceHref(req, 'theme', th)}" rel="nofollow" data-theme-choice="${th}" data-label="${label(th)}" ${th === cur ? raw('aria-current="true"') : ''}><span class="lang-check" aria-hidden="true">${th === cur ? '✓' : ''}</span><span class="theme-ico" aria-hidden="true">${THEME_ICONS[th]}</span><span>${t(`layout.theme.${th}`)}</span></a></li>`)}</ul>`;
+  return html`<ul class="${cls}"${labelledby ? raw(` aria-labelledby="${labelledby}"`) : ''}>${THEMES.map(th => html`<li><a href="${choiceHref(req, 'theme', th)}" rel="nofollow" data-theme-choice="${th}" data-label="${label(th)}" ${th === cur ? raw('aria-current="true"') : ''}><span class="lang-check" aria-hidden="true">${th === cur ? ico('✓', { size: 16 }) : ''}</span><span class="theme-ico" aria-hidden="true">${ico(THEME_ICONS[th], { size: 20 })}</span><span>${t(`layout.theme.${th}`)}</span></a></li>`)}</ul>`;
 }
 
 /** Who sees Plans in the account menu and on the settings page: grown-ups, school staff and the platform admin (the
@@ -200,12 +201,13 @@ export function accountMenu(req, { shell, name, badge, active, unread = 0 }) {
   const plansKey = tabKey(t, 'plans');
   const school = !grownup && adminSchools(u).length > 0;
   // on: the page being shown is this item's (aria-current, as in the bars).
-  const item = (href, emo, label, { on = req.path === href, attr = '', extra = '' } = {}) => html`<li><a href="${href}" ${on ? raw('aria-current="page"') : ''}${attr}><span class="theme-ico" aria-hidden="true">${emo}</span><span>${label}</span>${extra}</a></li>`;
+  // emo: an icon's emoji (drawn as the icon); avatar: the person's own avatar, kept as it is.
+  const item = (href, emo, label, { on = req.path === href, attr = '', extra = '', avatar: own = false } = {}) => html`<li><a href="${href}" ${on ? raw('aria-current="page"') : ''}${attr}><span class="theme-ico" aria-hidden="true">${own ? emo : ico(emo, { size: 20 })}</span><span>${label}</span>${extra}</a></li>`;
   return html`<details class="acctpick" data-acctpick>
     <summary class="me-btn${active ? ' is-current' : ''}" aria-label="${t('layout.meLabel', { name })}">${avatar(u, 38)}<span class="name">${name}</span>${badge('me')}</summary>
     <div class="acct-menu">
       ${grownup ? '' : html`<ul class="acct-list">
-        ${item('/me', u.photo_at ? '🙂' : u.avatar, t('nav.me'), { extra: badge('me') })}
+        ${item('/me', u.photo_at ? '🙂' : u.avatar, t('nav.me'), { extra: badge('me'), avatar: !u.photo_at })}
         ${school ? item('/school', '🏛️', t('me.tiles.school'), { on: req.path === '/school' || req.path.startsWith('/school/') }) : ''}
       </ul>`}
       <p class="lang-head" id="acct-set-head">${t('me.settings.title')}</p>
@@ -232,24 +234,24 @@ function staffMenu(req, { name, badge, active, unread }) {
   const admin = adminSchools(u).length > 0;
   const plansKey = tabKey(t, 'plans'), playKey = tabKey(t, 'play'), learnKey = tabKey(t, 'learn');
   const here = href => req.path === href || req.path.startsWith(`${href}/`);
-  const item = (href, emo, label, { on = here(href), attr = '' } = {}) => html`<li><a href="${href}" ${on ? raw('aria-current="page"') : ''}${attr}><span class="theme-ico" aria-hidden="true">${emo}</span><span>${label}</span></a></li>`;
+  const item = (href, emo, label, { on = here(href), attr = '' } = {}) => html`<li><a href="${href}" ${on ? raw('aria-current="page"') : ''}${attr}><span class="theme-ico" aria-hidden="true">${ico(emo, { size: 20 })}</span><span>${label}</span></a></li>`;
   const cur = THEMES.includes(req.theme) ? req.theme : 'system';
   const short = th => t(th === 'system' ? 'layout.acct.themeAuto' : `layout.theme.${th}`);
   return html`<details class="acctpick" data-acctpick>
     <summary class="me-btn${active ? ' is-current' : ''}" aria-label="${t('layout.meLabel', { name })}">${avatar(u, 38)}<span class="name">${name}</span>${badge('me')}</summary>
     <div class="acct-menu acct-staff">
-      <a class="acct-card" href="/me" ${req.path === '/me' ? raw('aria-current="page"') : ''}>${avatar(u, 48)}<span class="acct-card-t"><b dir="auto">${name}</b>${school ? html`<small dir="auto">${school}</small>` : ''}${unread ? html`<span class="acct-card-msg">💬 ${t('layout.acct.newMessages', { count: unread })} ›</span>` : ''}</span></a>
+      <a class="acct-card" href="/me" ${req.path === '/me' ? raw('aria-current="page"') : ''}>${avatar(u, 48)}<span class="acct-card-t"><b dir="auto">${name}</b>${school ? html`<small dir="auto">${school}</small>` : ''}${unread ? html`<span class="acct-card-msg" aria-hidden="true">${ico('💬', { size: 16 })} ${t('layout.acct.newMessages', { count: unread })} ›</span>` : ''}</span></a>
       <div class="acct-tiles">
-        <a href="/play" ${here('/play') ? raw('aria-current="page"') : ''}${en(playKey)}><span class="acct-tile-e" aria-hidden="true">🎮</span>${t(playKey)}</a>
-        <a href="/learn" ${here('/learn') ? raw('aria-current="page"') : ''}${en(learnKey)}><span class="acct-tile-e" aria-hidden="true">📚</span>${t(learnKey)}</a>
+        <a href="/play" ${here('/play') ? raw('aria-current="page"') : ''}${en(playKey)}><span class="acct-tile-e" aria-hidden="true">${ico('🎮', { size: 32 })}</span>${t(playKey)}</a>
+        <a href="/learn" ${here('/learn') ? raw('aria-current="page"') : ''}${en(learnKey)}><span class="acct-tile-e" aria-hidden="true">${ico('📚', { size: 32 })}</span>${t(learnKey)}</a>
       </div>
       <ul class="acct-list acct-links">
         ${admin ? item('/school', '🏛️', t('me.tiles.school')) : ''}
         ${plansInMenu(u, req) ? item('/plans', '⭐', t(plansKey), { attr: en(plansKey) }) : ''}
         ${item('/me/settings', '⚙️', t('me.settings.title'))}
-        <li><form data-api="/api/auth/logout" data-next="/"><button type="submit" class="acct-out"><span class="theme-ico" aria-hidden="true">🚪</span><span>${t('me.signOut.button')}</span></button></form></li>
+        <li><form data-api="/api/auth/logout" data-next="/"><button type="submit" class="acct-out"><span class="theme-ico" aria-hidden="true">${ico('🚪', { size: 20 })}</span><span>${t('me.signOut.button')}</span></button></form></li>
       </ul>
-      <ul class="acct-themeseg" aria-label="${t('layout.theme.title')}">${THEMES.map(th => html`<li><a href="${choiceHref(req, 'theme', th)}" rel="nofollow" data-theme-choice="${th}" data-label="${t('layout.theme.button', { theme: t(`layout.theme.${th}`) })}" title="${t(`layout.theme.${th}`)}" ${th === cur ? raw('aria-current="true"') : ''}><span aria-hidden="true">${THEME_ICONS[th]}</span> ${short(th)}</a></li>`)}</ul>
+      <ul class="acct-themeseg" aria-label="${t('layout.theme.title')}">${THEMES.map(th => html`<li><a href="${choiceHref(req, 'theme', th)}" rel="nofollow" data-theme-choice="${th}" data-label="${t('layout.theme.button', { theme: t(`layout.theme.${th}`) })}" title="${t(`layout.theme.${th}`)}" ${th === cur ? raw('aria-current="true"') : ''}>${ico(THEME_ICONS[th], { size: 16 })} ${short(th)}</a></li>`)}</ul>
     </div>
   </details>`;
 }
@@ -290,7 +292,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   // who host). Signed in
   // it is a round 🎟️ button on narrow bars and grows its words on wide ones; signed out (the bar also has "Play now") it
   // shows on wide screens only, and phones get the big door on the home page.
-  const joinNow = !staff && shell.role !== 'admin' && liveOn() ? html`<a class="btn joinnow${out ? ' joinnow-out' : ''}" href="/join" aria-label="${t('live.entry.join')}"><span aria-hidden="true">🎟️</span><span class="joinnow-t" aria-hidden="true">${t('live.entry.join')}</span></a>` : '';
+  const joinNow = !staff && shell.role !== 'admin' && liveOn() ? html`<a class="btn joinnow${out ? ' joinnow-out' : ''}" href="/join" aria-label="${t('live.entry.join')}">${ico('🎟️', { size: 22 })}<span class="joinnow-t" aria-hidden="true">${t('live.entry.join')}</span></a>` : '';
   const act = currentTab(shell, active);
   // The sign-in page, signed out: no Play, Learn, Build, Parents, Teachers or Sign in in the top bar (it is the page
   // they would lead away from); the logo, search, language and Play now stay.
@@ -300,23 +302,23 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const label = k => { const key = tabKey(t, k); return { key, attr: t.own(key) ? '' : raw(' lang="en"') }; };
   const tab = ([k, href, emo]) => {
     // The signed-out "Sign in" tab is current on the sign-in and sign-up pages, never on a guest's own Me page.
-    if (k === 'signin') return html`<a class="tab" href="${href}" ${req.path === '/me' ? '' : cur('me')}><span class="emo" aria-hidden="true">${emo}</span><span class="tab-t">${signIn}</span></a>`;
+    if (k === 'signin') return html`<a class="tab" href="${href}" ${req.path === '/me' ? '' : cur('me')}><span class="emo" aria-hidden="true">${ico(emo, { size: 30 })}</span><span class="tab-t">${signIn}</span></a>`;
     if (k === 'me') return html`<a class="tab" href="${href}" ${cur('me')}>${u.photo_at ? html`<span class="emo">${avatar(u, 28)}</span>` : html`<span class="emo" aria-hidden="true">${u.avatar}</span>`}<span class="tab-t">${t('nav.me')}</span>${badge('me')}</a>`;
     const l = label(k);
-    return html`<a class="tab" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${emo}</span><span class="tab-t">${t(l.key)}</span>${badge(k)}</a>`;
+    return html`<a class="tab" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${ico(emo, { size: 30 })}</span><span class="tab-t">${t(l.key)}</span>${badge(k)}</a>`;
   };
   const nav = bare ? '' : html`
   <a class="skip" href="#main">${t('layout.skip')}</a>
   <header class="topbar">
     <a class="logo" href="/" aria-label="${BRAND}">${appMark()}<span class="logo-lockup" dir="ltr" aria-hidden="true">${wordmark()}<span class="logo-sub">Academy</span></span></a>
     <form class="topsearch" role="search" action="/search" method="get">
-      <span class="ico" aria-hidden="true">🔎</span>
+      <span class="ico" aria-hidden="true">${ico('🔎', { size: 18 })}</span>
       <label class="sr-only" for="topq">${t('layout.search.label')}</label>
       <input id="topq" name="q" type="search" placeholder="${t('layout.search.placeholder')}" data-short="${t('nav.search')}" autocomplete="off" value="${active === 'search' ? (req.query.q || '') : ''}">
     </form>
-    <a class="topsearch-btn" href="/search" aria-label="${t('layout.search.label')}"><span aria-hidden="true">🔎</span></a>
+    <a class="topsearch-btn" href="/search" aria-label="${t('layout.search.label')}">${ico('🔎', { size: 22 })}</a>
     ${quiet ? '' : html`<nav class="topnav" aria-label="${t('layout.mainNav')}">
-      ${shell.top.filter(([k]) => !playPage || ['play', 'learn', 'build'].includes(k)).map(([k, href, emo]) => { const l = label(k); return html`<a class="navlink" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${emo}</span>${t(l.key)}${badge(k)}</a>`; })}
+      ${shell.top.filter(([k]) => !playPage || ['play', 'learn', 'build'].includes(k)).map(([k, href, emo]) => { const l = label(k); return html`<a class="navlink" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${ico(emo, { size: 28 })}</span>${t(l.key)}${badge(k)}</a>`; })}
     </nav>`}
     ${langPicker(req)}
     ${quiet ? '' : u && !out ? accountMenu(req, { shell, name: myName, badge, active: !!cur(grownup ? 'account' : 'me'), unread: badges.me || 0 }) : html`<a class="me-btn" href="${meHref}" ${cur('me')} aria-label="${u ? t('layout.meLabel', { name: myName }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? myName : signIn}</span>${badge('me')}</a>`}
@@ -328,7 +330,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   </nav>`;
   // A footer word still in English on this language's page reads left to right.
   const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents"${fb('layout.footer.parents')}>${t('layout.footer.parents')}</a>${out || staff ? html`<a href="/teachers"${fb('layout.footer.teachers')}>${t('layout.footer.teachers')}</a>` : ''}${out ? html`<a href="/teachers#start"${fb('layout.footer.schools')}>${t('layout.footer.schools')}</a>` : ''}${out || staff ? html`<a href="/research"${fb('research.footer')}>${t('research.footer')}</a><a href="/compliance"${fb('compliance.footer')}>${t('compliance.footer')}</a>` : ''}${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk/">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a>${out && familiesOn(req) ? html`<a href="/plans"${fb(tabKey(t, 'plans'))}>${t(tabKey(t, 'plans'))}</a>` : ''}<a href="${grownup ? '/family/account#language' : '/me/settings#language'}" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a>${out ? html`<div class="foot-theme"><span id="foot-theme-head">${t('layout.theme.title')}:</span>${themeLinks(req, { cls: 'foot-themes', labelledby: 'foot-theme-head' })}</div>` : ''}</footer>`;
+  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents"${fb('layout.footer.parents')}>${t('layout.footer.parents')}</a>${out || staff ? html`<a href="/teachers"${fb('layout.footer.teachers')}>${t('layout.footer.teachers')}</a>` : ''}${out ? html`<a href="/teachers#start"${fb('layout.footer.schools')}>${t('layout.footer.schools')}</a>` : ''}${out || staff ? html`<a href="/research"${fb('research.footer')}>${t('research.footer')}</a><a href="/compliance"${fb('compliance.footer')}>${t('compliance.footer')}</a>` : ''}${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk/">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a>${out && familiesOn(req) ? html`<a href="/plans"${fb(tabKey(t, 'plans'))}>${t(tabKey(t, 'plans'))}</a>` : ''}<a href="${grownup ? '/family/account#language' : '/me/settings#language'}" class="foot-lang">${ico('🌐', { size: 16 })} ${info.name}</a>${out ? html`<div class="foot-theme"><span id="foot-theme-head">${t('layout.theme.title')}:</span>${themeLinks(req, { cls: 'foot-themes', labelledby: 'foot-theme-head' })}</div>` : ''}</footer>`;
   const backHtml = back ? html`<a class="backlink" href="${back}"><span class="flip" aria-hidden="true">←</span> ${backLabel || t('layout.back')}</a>` : '';
   // A sign-in that just ended (timed out, or ended on another device) is mentioned once, on whatever page comes next; the
   // sign-in page says it itself.
@@ -387,10 +389,11 @@ function buildNews(t, u) {
   markNotified(list.map(n => n.id));
   const one = list.length === 1 ? list[0] : null;
   const msg = one ? tHtml(t, `layout.build.${one.kind}`, { title: `\u2068${one.title}\u2069`, href: `/studio/${one.gameId}` }) : tHtml(t, 'layout.build.many', { href: '/build' });
-  return html`<p class="notice ${one && one.kind === 'stopped' ? 'warn' : 'good'} pagenote" role="status">${msg}</p>`;
+  const emo = { ready: '✨', question: '💬', stopped: '⚠️' }[one ? one.kind : 'ready'] || '✨';
+  return html`<p class="notice ${one && one.kind === 'stopped' ? 'warn' : 'good'} pagenote" role="status">${ico(emo, { size: 20 })} ${msg}</p>`;
 }
 export const page = (req, res, opts, status = 200) => res.status(status).type('html').send(layout(req, opts));
 export function notFound(req, res, msg = null) {
   const t = tReq(req);
-  return page(req, res, { title: t('errors.notFound.title'), body: html`<div class="empty"><div class="emo">🧭</div><h1>${t('errors.notFound.heading')}</h1><p>${msg || t('errors.notFound.text')}</p><a class="btn btn-primary" href="/">${t('errors.goHome')}</a></div>` }, 404);
+  return page(req, res, { title: t('errors.notFound.title'), body: html`<div class="empty"><div class="emo">${ico('🧭', { size: 64 })}</div><h1>${t('errors.notFound.heading')}</h1><p>${msg || t('errors.notFound.text')}</p><a class="btn btn-primary" href="/">${t('errors.goHome')}</a></div>` }, 404);
 }

@@ -29,6 +29,7 @@ const aiBudget = await import('../../server/services/ai-budget.js');
 const { grownupMay } = await import('../../server/routes/family.js');
 const { viewerOf } = await import('../../server/routes/plans.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 const PW = 'a-long-password-1';
 let server, base;
@@ -49,7 +50,7 @@ function signIn(u) {
 async function call(who, path, { method = 'GET', body, redirect = 'manual' } = {}) {
   const h = {}; if (who) h.cookie = who.cookie; if (body !== undefined) h['content-type'] = 'application/json';
   const r = await fetch(base + path, { method, headers: h, body: body !== undefined ? JSON.stringify(body) : undefined, redirect });
-  const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
+  const raw = await r.text(), text = deicon(raw); let json = null; try { json = JSON.parse(raw, (k, v) => typeof v === 'string' ? deicon(v) : v); } catch { /* html */ }
   return { status: r.status, text, json, location: r.headers.get('location') };
 }
 let n = 0;

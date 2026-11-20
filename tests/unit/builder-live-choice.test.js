@@ -30,6 +30,7 @@ const { toolbox } = await import('../../server/builder/tools.js');
 const { saveChat } = await import('../../server/builder/chat.js');
 const { loadTemplate } = await import('../../server/builder/templates/index.js');
 const { CODES, tFor } = await import('../../server/i18n/index.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 // The live pack is not in kit/SHIPPED.json yet: the tests pin a hash for it, as tests/unit/_live.js does.
 const PACK_HASH = 'sha384-live-pack-test-hash';
@@ -175,7 +176,7 @@ function client() {
     if (body !== undefined) h['content-type'] = 'application/json';
     const res = await fetch(BASE + p, { method, headers: h, body: body !== undefined ? JSON.stringify(body) : undefined, redirect: 'manual' });
     for (const k of res.headers.getSetCookie ? res.headers.getSetCookie() : []) { const kv = k.split(';')[0]; if (kv.startsWith('brb_session=')) cookie = kv; }
-    const text = await res.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
+    const raw = await res.text(), text = deicon(raw); let json = null; try { json = JSON.parse(raw, (k, v) => typeof v === 'string' ? deicon(v) : v); } catch { /* html */ }
     return { status: res.status, text, json };
   };
   c.cookie = () => cookie;

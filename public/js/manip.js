@@ -8,6 +8,7 @@
 // own square in a session's room. Chrome strings are i18n keys (js.manip.*); tool names, tool help and the task library are
 // English data (public/js/manip-data.js, public/js/manip-tasks.js).
 import { t, api, toast, esc, pageData } from '/js/app.js';
+import { iconHtml, toolIconHtml } from '/js/icons.js';
 import { TOOLS, CATS, toolOf, pieceDefs, allPieceDefs, BREAKS, FRACTION_DENS, fracLabel, hexValue, paletteName } from '/js/manip-data.js';
 import { TASKS } from '/js/manip-tasks.js';
 import { answerMatches } from '/js/manip-practice.js';
@@ -435,7 +436,7 @@ function openTool(slug, { restore = null } = {}) {
   loadState(restore || newBoard(slug));
   ROOT.innerHTML = `<div class="mp-tool">
     <div class="mp-head"><a class="btn btn-sm" href="#">${esc(t('js.manip.nav.allTools'))}</a>
-      <div class="mp-title"><h1>${tool.emoji} ${esc(tool.name)}</h1><p class="small muted">${esc(CATS[tool.cat])} · ${esc(t('js.manip.grades', { grades: tool.grades }))}</p></div>
+      <div class="mp-title"><h1>${toolIconHtml(tool.slug, { size: 40 })} ${esc(tool.name)}</h1><p class="small muted">${esc(CATS[tool.cat])} · ${esc(t('js.manip.grades', { grades: tool.grades }))}</p></div>
       <div class="mp-total" id="mp-total" aria-live="polite"></div></div>
     <div class="mp-work">
       <aside class="mp-side" aria-label="${esc(t('js.manip.side.label'))}">
@@ -564,7 +565,7 @@ function matHtml(o, view = {}) {
 const answerHtml = (o, view) => `<div class="mp-ansbox${checkCls(o, view)}"><input class="mp-answer" data-oid="${esc(o.id)}" maxlength="40" placeholder="?" autocomplete="off" enterkeyhint="done" value="${esc(o.st.ans || '')}" aria-label="${esc(t('js.manip.obj.answer'))}"${view.readOnly ? ' readonly tabindex="-1"' : ''}>${checkMark(o, view)}</div>`;
 /** After "Check my answers": ✓ (green) or "Try again" (soft orange) on a box. Never the right answer. */
 const checkCls = (o, view) => (view.checked && o.id in view.checked ? (view.checked[o.id] ? ' ok' : ' again') : '');
-const checkMark = (o, view) => (view.checked && o.id in view.checked ? `<span class="mp-checkmark" role="status">${view.checked[o.id] ? `✓<span class="sr-only"> ${esc(t('js.manip.check.right'))}</span>` : esc(t('js.manip.check.again'))}</span>` : '');
+const checkMark = (o, view) => (view.checked && o.id in view.checked ? `<span class="mp-checkmark" role="status">${view.checked[o.id] ? `${iconHtml('✓', { size: 18 })}<span class="sr-only"> ${esc(t('js.manip.check.right'))}</span>` : esc(t('js.manip.check.again'))}</span>` : '');
 /** A fraction equation: the question, its operands as tiles (or circles), an empty bar to build the answer on, and an
  *  answer box. */
 function fracEqHtml(o, view) {
@@ -600,7 +601,7 @@ function objHtml(slug, impl, o, view, st = {}) {
   // A practice question is read-only (a clock to read is not a clock to set): its own controls are off for everyone.
   const inner = o.k === slug ? impl.board(o.st, { ...view, oid: o.id, readOnly: view.readOnly || !!o.st.q }) : matHtml(o, view);
   const name = o.k === 'mat' && o.st.label ? o.st.label : `${K.name}${o.st && o.st.label ? ` · ${o.st.label}` : ''}`;
-  const key = view.showKeys && o.st && o.st.key ? `<span class="mp-key">✓ ${esc(o.st.key)}</span>` : '';
+  const key = view.showKeys && o.st && o.st.key ? `<span class="mp-key">${iconHtml('✓', { size: 18 })} ${esc(o.st.key)}</span>` : '';
   const tot = view.totals ? objTotal(slug, impl, o, st) : '';
   const bar = on ? `<div class="mp-obar" role="toolbar" aria-label="${esc(t('js.manip.obj.actions', { name }))}">${btn('mp-pbtn', `data-oact="copy" data-oid="${esc(o.id)}"`, esc(t('js.manip.obj.copy')))}${btn('mp-pbtn bad', `data-oact="delete" data-oid="${esc(o.id)}"`, esc(t('js.manip.obj.delete')))}</div>
     <span class="mp-oresize" data-oresize="${esc(o.id)}" role="img" aria-label="${esc(t('js.manip.obj.resize'))}"></span>` : '';
@@ -621,14 +622,14 @@ function renderChrome() {
   const group = (g, cap) => { const l = items.map((p, i) => ({ p, i })).filter(x => x.p.group === g); return l.length ? `${cap ? `<p class="mp-cap">${esc(cap)}</p>` : ''}<div class="mp-palette">${l.map(({ p, i }) => palButton(p, i, p.plus ? p.label : t('js.manip.side.add', { label: p.label }))).join('')}</div>` : ''; };
   document.getElementById('mp-palette').innerHTML = group('add', t('js.manip.side.addCap')) + group('obj', K ? t('js.manip.side.forObj', { name: `${K.name}${o.st.label ? ` · ${o.st.label}` : ''}` }) : '') + group('piece', t('js.manip.side.objects'));
   document.getElementById('mp-toolsrow').innerHTML = [
-    btn('mp-tbtn', `data-tool="undo"${V.hist.length ? '' : ' disabled'}`, `↩ ${esc(t('js.manip.side.undo'))}`),
-    btn(`mp-tbtn${V.annotate ? ' on' : ''}`, `data-tool="annotate" aria-pressed="${V.annotate}"`, `✎ ${esc(t('js.manip.side.annotate'))}`),
-    btn('mp-tbtn', `data-tool="note"${V.ann.notes.length >= NOTE_MAX ? ' disabled' : ''}`, `🗒️ ${esc(t('js.manip.side.note'))}`),
+    btn('mp-tbtn', `data-tool="undo"${V.hist.length ? '' : ' disabled'}`, `${iconHtml('↩', { size: 18 })} ${esc(t('js.manip.side.undo'))}`),
+    btn(`mp-tbtn${V.annotate ? ' on' : ''}`, `data-tool="annotate" aria-pressed="${V.annotate}"`, `${iconHtml('✎', { size: 18 })} ${esc(t('js.manip.side.annotate'))}`),
+    btn('mp-tbtn', `data-tool="note"${V.ann.notes.length >= NOTE_MAX ? ' disabled' : ''}`, `${iconHtml('🗒️', { size: 18 })} ${esc(t('js.manip.side.note'))}`),
     btn(`mp-tbtn${V.textMode ? ' on' : ''}`, `data-tool="text" aria-pressed="${!!V.textMode}"`, `<b class="mp-tglyph">T</b> ${esc(t('js.manip.side.text'))}`),
-    HOST ? btn(`mp-tbtn${V.stepsOpen ? ' on' : ''}`, 'data-tool="steps"', `📋 ${esc(t('js.manip.steps.title'))}${V.steps && V.steps.length ? ` (${V.steps.length})` : ''}`) : '',
-    HOST ? btn(`mp-tbtn${V.draftOpen ? ' on' : ''}`, 'data-tool="draft"', `✨ ${esc(t('js.manip.side.draft'))}`) : '',
-    HOST && V.st.objects.some(o => o.st && o.st.key) ? btn(`mp-tbtn${V.showKeys ? ' on' : ''}`, `data-tool="keys" aria-pressed="${!!V.showKeys}"`, `✓ ${esc(t('js.manip.side.showAnswers'))}`) : '',
-    V.st.objects.some(o => o.st && o.st.key) ? btn('mp-tbtn', 'data-tool="check"', `☑ ${esc(t('js.manip.check.button'))}`) : '',
+    HOST ? btn(`mp-tbtn${V.stepsOpen ? ' on' : ''}`, 'data-tool="steps"', `${iconHtml('📋', { size: 18 })} ${esc(t('js.manip.steps.title'))}${V.steps && V.steps.length ? ` (${V.steps.length})` : ''}`) : '',
+    HOST ? btn(`mp-tbtn${V.draftOpen ? ' on' : ''}`, 'data-tool="draft"', `${iconHtml('✨', { size: 18 })} ${esc(t('js.manip.side.draft'))}`) : '',
+    HOST && V.st.objects.some(o => o.st && o.st.key) ? btn(`mp-tbtn${V.showKeys ? ' on' : ''}`, `data-tool="keys" aria-pressed="${!!V.showKeys}"`, `${iconHtml('✓', { size: 18 })} ${esc(t('js.manip.side.showAnswers'))}`) : '',
+    V.st.objects.some(o => o.st && o.st.key) ? btn('mp-tbtn', 'data-tool="check"', `${iconHtml('☑', { size: 18 })} ${esc(t('js.manip.check.button'))}`) : '',
     btn('mp-tbtn', 'data-tool="reset"', esc(t('js.manip.side.reset'))),
   ].join('');
   const set = document.getElementById('mp-settings');
@@ -731,7 +732,7 @@ function noteHtml(n, i, readOnly) {
       <div class="row">${btn('mp-nbtn', `data-nact="done" data-id="${esc(n.id)}"`, esc(t('js.manip.note.done')))}${btn('mp-nbtn bad', `data-nact="delete" data-id="${esc(n.id)}" aria-label="${esc(t('js.manip.note.deleteN', { n: i + 1 }))}"`, esc(t('js.manip.note.delete')))}</div></div>`;
   }
   return `<div class="mp-sticky" data-note="${esc(n.id)}" role="group" aria-label="${esc(t('js.manip.note.label', { n: i + 1 }))}" style="left:${n.x * 100}%;top:${n.y * 100}%"><p>${n.text ? esc(n.text) : `<span class="mp-ph">${esc(t('js.manip.note.tap'))}</span>`}</p>
-    ${readOnly ? '' : `<div class="row">${btn('mp-nbtn', `data-nact="edit" data-id="${esc(n.id)}" aria-label="${esc(t('js.manip.note.editN', { n: i + 1 }))}"`, `✎ ${esc(t('js.manip.note.edit'))}`)}${btn('mp-nbtn bad', `data-nact="delete" data-id="${esc(n.id)}" aria-label="${esc(t('js.manip.note.deleteN', { n: i + 1 }))}"`, esc(t('js.manip.note.delete')))}</div>`}</div>`;
+    ${readOnly ? '' : `<div class="row">${btn('mp-nbtn', `data-nact="edit" data-id="${esc(n.id)}" aria-label="${esc(t('js.manip.note.editN', { n: i + 1 }))}"`, `${iconHtml('✎', { size: 18 })} ${esc(t('js.manip.note.edit'))}`)}${btn('mp-nbtn bad', `data-nact="delete" data-id="${esc(n.id)}" aria-label="${esc(t('js.manip.note.deleteN', { n: i + 1 }))}"`, esc(t('js.manip.note.delete')))}</div>`}</div>`;
 }
 function renderNotes() {
   const box = document.getElementById('mp-notes');
@@ -797,10 +798,10 @@ function bindTexts() {
 function renderAnnBar() {
   const el = document.getElementById('mp-annbar');
   el.innerHTML = V.annotate ? `<div class="mp-annbar" role="toolbar" aria-label="${esc(t('js.manip.ann.toolbar'))}">
-    ${btn(`chip${V.annMode === 'pen' ? ' on' : ''}`, 'data-ann="pen"', `✎ ${esc(t('js.manip.ann.pen'))}`)}
+    ${btn(`chip${V.annMode === 'pen' ? ' on' : ''}`, 'data-ann="pen"', `${iconHtml('✎', { size: 18 })} ${esc(t('js.manip.ann.pen'))}`)}
     ${PEN_COLORS.map(c => btn(`mp-pen${V.pen === c && V.annMode === 'pen' ? ' on' : ''}`, `data-ann="color" data-c="${c}" style="background:${c}" aria-label="${esc(t('js.manip.ann.color', { color: c }))}"`, '')).join('')}
     ${btn(`chip${V.annMode === 'erase' ? ' on' : ''}`, 'data-ann="erase"', `⌫ ${esc(t('js.manip.ann.eraser'))}`)}
-    ${btn('chip', `data-ann="undo"${V.annHist.length ? '' : ' disabled'}`, `↩ ${esc(t('js.manip.side.undo'))}`)}
+    ${btn('chip', `data-ann="undo"${V.annHist.length ? '' : ' disabled'}`, `${iconHtml('↩', { size: 18 })} ${esc(t('js.manip.side.undo'))}`)}
     ${btn('chip', 'data-ann="clear"', esc(t('js.manip.ann.clear')))}
     ${btn('btn btn-primary btn-sm', 'data-ann="done"', esc(t('js.manip.ann.done')))}
     <span class="small muted">${esc(V.annMode === 'pen' ? t('js.manip.ann.penHint') : t('js.manip.ann.eraseHint'))}</span></div>` : '';
@@ -1129,7 +1130,7 @@ function renderShare() {
       <input id="mp-redeem-in" class="input input-sm mp-codein" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${esc(t('js.manip.share.codePh'))}">
       <button class="btn btn-sm" type="submit">${esc(t('js.manip.share.go'))}</button></form>
     <span class="small" id="mp-status" role="status"></span></div>
-    ${HOST ? STATE.sessions.filter(x => x.status === 'active' && x.tool === V.tool.slug).map(x => `<p class="small"><a href="#live/${esc(x.id)}">📡 ${esc(t('js.manip.share.backToSession', { title: x.title }))}</a></p>`).join('') : ''}
+    ${HOST ? STATE.sessions.filter(x => x.status === 'active' && x.tool === V.tool.slug).map(x => `<p class="small"><a href="#live/${esc(x.id)}">${iconHtml('📡', { size: 18 })} ${esc(t('js.manip.share.backToSession', { title: x.title }))}</a></p>`).join('') : ''}
     ${mine.length ? `<div class="row mp-chips" aria-label="${esc(t('js.manip.share.saved'))}">${mine.slice(0, 12).map(b => btn('chip', `data-load="${esc(b.id)}" aria-label="${esc(t('js.manip.share.loadSaved', { code: b.code }))}"`, `${esc(b.code)} · ${esc(new Date(b.created_at).toLocaleDateString())}`)).join('')}</div>` : ''}`;
   const save = document.getElementById('mp-save');
   if (save) save.onclick = async () => {
@@ -1168,7 +1169,7 @@ function renderSteps() {
   const el = document.getElementById('mp-steps'); if (!el) return;
   if (!HOST || !V.stepsOpen) { el.innerHTML = ''; return; }
   if (el.firstChild && el.contains(document.activeElement)) return;   // typing in it: the editor keeps its own place
-  el.innerHTML = `<section class="panel mp-drafter" aria-label="${esc(t('js.manip.steps.title'))}"><div class="row"><h2>📋 ${esc(t('js.manip.steps.title'))}</h2>${btn('btn btn-sm btn-ghost', 'data-tool="steps"', `✕ ${esc(t('js.manip.draft.close'))}`)}</div>
+  el.innerHTML = `<section class="panel mp-drafter" aria-label="${esc(t('js.manip.steps.title'))}"><div class="row"><h2>${iconHtml('📋', { size: 28 })} ${esc(t('js.manip.steps.title'))}</h2>${btn('btn btn-sm btn-ghost', 'data-tool="steps"', `✕ ${esc(t('js.manip.draft.close'))}`)}</div>
     <p class="small muted">${esc(t('js.manip.steps.text'))}</p><div id="mp-stepsed"></div></section>`;
   ROOM.stepsEditor(document.getElementById('mp-stepsed'), V.steps || [], list => { V.steps = list.filter(x => x.text.trim()); });
 }
@@ -1176,13 +1177,13 @@ function renderDraft() {
   const el = document.getElementById('mp-draft');
   if (!HOST || !V.draftOpen) { el.innerHTML = ''; return; }
   const tasks = TASKS[V.tool.slug] || [];
-  el.innerHTML = `<section class="panel mp-drafter" aria-label="${esc(t('js.manip.draft.title'))}"><div class="row"><h2>✨ ${esc(t('js.manip.draft.title'))}</h2>${btn('btn btn-sm btn-ghost', 'data-tool="draft"', `✕ ${esc(t('js.manip.draft.close'))}`)}</div>
+  el.innerHTML = `<section class="panel mp-drafter" aria-label="${esc(t('js.manip.draft.title'))}"><div class="row"><h2>${iconHtml('✨', { size: 28 })} ${esc(t('js.manip.draft.title'))}</h2>${btn('btn btn-sm btn-ghost', 'data-tool="draft"', `✕ ${esc(t('js.manip.draft.close'))}`)}</div>
     <p class="small muted">${esc(t('js.manip.draft.text'))}</p>
     <div class="mp-draftrow"><label class="mp-set grow"><span>${esc(t('js.manip.draft.task'))}</span><select class="input input-sm" id="mp-dtask"><option value="">${esc(t('js.manip.draft.ownLesson'))}</option>${tasks.map(x => `<option value="${esc(`${x.title}: ${x.prompt}`)}" data-grade="${esc(x.grade)}">${esc(x.title)} · ${esc(t('js.manip.grade', { grade: x.grade }))}</option>`).join('')}</select></label>
       <label class="mp-set"><span>${esc(t('js.manip.draft.grade'))}</span><select class="input input-sm" id="mp-dgrade"><option value="">${esc(t('js.manip.draft.any'))}</option>${['K', '1', '2', '3', '4', '5', '6', '7', '8'].map(g => `<option value="${g}">${esc(t('js.manip.grade', { grade: g }))}</option>`).join('')}</select></label></div>
     <label class="mp-set mp-block"><span>${esc(t('js.manip.draft.brief'))}</span><textarea class="input" id="mp-brief" rows="3" maxlength="1000" placeholder="${esc(t('js.manip.draft.briefPh'))}"></textarea></label>
     <p class="small muted">${esc(t('js.manip.draft.private'))}</p>
-    <div class="row">${btn('btn btn-primary', 'id="mp-dgo"', `✨ ${esc(t('js.manip.draft.go'))}`)}<span class="small muted">${esc(t('js.manip.draft.hint'))}</span></div>
+    <div class="row">${btn('btn btn-primary', 'id="mp-dgo"', `${iconHtml('✨', { size: 18 })} ${esc(t('js.manip.draft.go'))}`)}<span class="small muted">${esc(t('js.manip.draft.hint'))}</span></div>
     <p class="small" id="mp-dmsg" role="status"></p></section>`;
   const task = document.getElementById('mp-dtask'), brief = document.getElementById('mp-brief');
   task.onchange = () => { if (task.value) { brief.value = task.value; document.getElementById('mp-dgrade').value = task.selectedOptions[0].dataset.grade || ''; } };
@@ -1228,10 +1229,10 @@ async function liveRoom(id, joinFirst) {
 function home() {
   clear(); V = null;
   if (!HOST) return studentHome();
-  ROOT.innerHTML = `<div class="pagehead"><h1>🧮 ${esc(t('js.manip.home.title'))}</h1><span class="mp-tag">${esc(t('js.manip.home.testing'))}</span></div>
+  ROOT.innerHTML = `<div class="pagehead"><h1>${iconHtml('🧮', { size: 36 })} ${esc(t('js.manip.home.title'))}</h1><span class="mp-tag">${esc(t('js.manip.home.testing'))}</span></div>
     <p class="mp-lead">${esc(t('js.manip.home.lead', { n: Object.values(TASKS).reduce((s, l) => s + l.length, 0) }))}</p>
     <div class="mp-homegrid">
-      <section class="panel"><h2>📡 ${esc(t('js.manip.host.title'))}</h2>
+      <section class="panel"><h2>${iconHtml('📡', { size: 28 })} ${esc(t('js.manip.host.title'))}</h2>
         ${STATE.classes.length ? `<form id="mp-host" class="mp-form"><label class="mp-set mp-block"><span>${esc(t('js.manip.host.klass'))}</span><select class="input" name="classId" required>${STATE.classes.map(c => `<option value="${esc(c.id)}">${esc(c.name)} · ${esc(c.school)}</option>`).join('')}</select></label>
           <label class="mp-set mp-block"><span>${esc(t('js.manip.host.tool'))}</span><select class="input" name="tool">${TOOLS.map(x => `<option value="${x.slug}">${esc(x.name)}</option>`).join('')}</select></label>
           <label class="mp-set mp-block"><span>${esc(t('js.manip.host.name'))}</span><input class="input" name="title" maxlength="80" placeholder="${esc(t('js.manip.host.namePh'))}"></label>
@@ -1240,9 +1241,9 @@ function home() {
     : `<p class="small muted">${esc(t('js.manip.host.noClasses'))}</p>`}
         ${STATE.sessions.length ? `<h3>${esc(t('js.manip.host.mine'))}</h3><ul class="plain mp-list">${STATE.sessions.slice(0, 8).map(s => `<li><a href="#live/${esc(s.id)}">${esc(s.title)}</a> <span class="small muted">${esc(s.class_name)} · ${esc(s.status === 'active' ? t('js.manip.dash.live') : t('js.manip.dash.ended'))} · ${esc(t('js.manip.dash.joined', { n: s.joined }))}</span></li>`).join('')}</ul>` : ''}
         </section>
-      <section class="panel"><h2>🎟️ ${esc(t('js.manip.share.haveCode'))}</h2><p class="small muted">${esc(t('js.manip.share.haveCodeText'))}</p>
+      <section class="panel"><h2>${iconHtml('🎟️', { size: 28 })} ${esc(t('js.manip.share.haveCode'))}</h2><p class="small muted">${esc(t('js.manip.share.haveCodeText'))}</p>
         <form class="row mp-redeem" id="mp-homeredeem"><label class="sr-only" for="mp-home-code">${esc(t('js.manip.share.codeLabel'))}</label><input id="mp-home-code" class="input mp-codein" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${esc(t('js.manip.share.codePh'))}"><button class="btn btn-primary" type="submit">${esc(t('js.manip.share.go'))}</button></form>
-        <p><a class="btn btn-block" href="#tasks">📚 ${esc(t('js.manip.tasks.library'))}</a></p></section>
+        <p><a class="btn btn-block" href="#tasks">${iconHtml('📚', { size: 18 })} ${esc(t('js.manip.tasks.library'))}</a></p></section>
     </div>
     <div class="mp-filter"><label class="sr-only" for="mp-q">${esc(t('js.manip.home.search'))}</label><input id="mp-q" class="input" type="search" placeholder="${esc(t('js.manip.home.search'))}">
       <label class="sr-only" for="mp-cat">${esc(t('js.manip.home.cat'))}</label><select id="mp-cat" class="input"><option value="">${esc(t('js.manip.home.allCats'))}</option>${CATS.map((c, i) => `<option value="${i}">${esc(c)}</option>`).join('')}</select></div>
@@ -1259,7 +1260,7 @@ function home() {
   const drawCat = () => {
     const needle = q.value.trim().toLowerCase();
     const list = TOOLS.filter(x => (cat.value === '' || String(x.cat) === cat.value) && (!needle || `${x.name} ${x.desc} ${CATS[x.cat]}`.toLowerCase().includes(needle)));
-    document.getElementById('mp-catalog').innerHTML = CATS.map((c, i) => { const l = list.filter(x => x.cat === i); return l.length ? `<section class="mp-cat"><h2>${esc(c)}</h2><div class="mp-toolgrid">${l.map(x => `<a class="panel mp-toolcard" href="#${x.slug}"><span class="mp-ico" style="background:${x.color}" aria-hidden="true">${x.emoji}</span><span><b>${esc(x.name)}</b><span class="small muted">${esc(t('js.manip.grades', { grades: x.grades }))}</span><span class="small">${esc(x.desc)}</span></span></a>`).join('')}</div></section>` : ''; }).join('')
+    document.getElementById('mp-catalog').innerHTML = CATS.map((c, i) => { const l = list.filter(x => x.cat === i); return l.length ? `<section class="mp-cat"><h2>${esc(c)}</h2><div class="mp-toolgrid">${l.map(x => `<a class="panel mp-toolcard" href="#${x.slug}"><span class="mp-ico" style="--tc:${x.color}">${toolIconHtml(x.slug, { size: 40 })}</span><span><b>${esc(x.name)}</b><span class="small muted">${esc(t('js.manip.grades', { grades: x.grades }))}</span><span class="small">${esc(x.desc)}</span></span></a>`).join('')}</div></section>` : ''; }).join('')
       || `<p class="muted">${esc(t('js.manip.home.none'))}</p>`;
   };
   q.oninput = drawCat; cat.onchange = drawCat; drawCat();
@@ -1278,7 +1279,7 @@ function drawBoards() {
 }
 function studentHome() {
   const list = STATE.sessions;
-  ROOT.innerHTML = `<div class="pagehead"><h1>🧮 ${esc(t('js.manip.student.title'))}</h1></div>
+  ROOT.innerHTML = `<div class="pagehead"><h1>${iconHtml('🧮', { size: 36 })} ${esc(t('js.manip.student.title'))}</h1></div>
     <section class="panel"><h2>${esc(t('js.manip.student.yours'))}</h2>${list.length ? `<ul class="plain mp-list">${list.map(s => { const x = toolOf(s.tool); return `<li class="mp-boardrow"><span>${x ? x.emoji : ''} <b>${esc(s.title)}</b></span> <span class="small muted">${esc(s.className)}</span>
       ${s.status === 'active' ? `<a class="btn btn-primary btn-sm" href="#${s.joined ? 'live' : 'join'}/${esc(s.id)}">${esc(s.joined ? t('js.manip.student.back') : t('js.manip.student.join'))}</a>` : `<span class="mp-tag bad">${esc(t('js.manip.live.ended'))}</span>`}</li>`; }).join('')}</ul>` : `<p class="muted">${esc(t('js.manip.student.none'))}</p>`}</section>
     <section class="panel"><h2>${esc(t('js.manip.student.codeTitle'))}</h2><form class="row mp-redeem" id="mp-join"><label class="sr-only" for="mp-join-code">${esc(t('js.manip.student.codeLabel'))}</label><input id="mp-join-code" class="input mp-codein" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${esc(t('js.manip.share.codePh'))}"><button class="btn btn-primary" type="submit">${esc(t('js.manip.student.join'))}</button></form><p class="small" id="mp-joinmsg" role="status"></p></section>`;
@@ -1292,7 +1293,7 @@ function tasksView() {
   clear(); V = null;
   const all = TOOLS.flatMap(x => (TASKS[x.slug] || []).map(task => ({ tool: x, task })));
   const grades = [...new Set(all.map(x => x.task.grade))].sort((a, b) => (a === 'K' ? -1 : b === 'K' ? 1 : +a - +b));
-  ROOT.innerHTML = `<div class="pagehead"><h1>📚 ${esc(t('js.manip.tasks.library'))}</h1><a class="btn btn-sm" href="#">${esc(t('js.manip.nav.allTools'))}</a></div>
+  ROOT.innerHTML = `<div class="pagehead"><h1>${iconHtml('📚', { size: 36 })} ${esc(t('js.manip.tasks.library'))}</h1><a class="btn btn-sm" href="#">${esc(t('js.manip.nav.allTools'))}</a></div>
     <p class="mp-lead">${esc(t('js.manip.tasks.lead', { n: all.length }))}</p>
     <div class="mp-filter"><label class="sr-only" for="mp-tq">${esc(t('js.manip.tasks.search'))}</label><input id="mp-tq" class="input" type="search" placeholder="${esc(t('js.manip.tasks.search'))}">
       <label class="sr-only" for="mp-ttool">${esc(t('js.manip.tasks.byTool'))}</label><select id="mp-ttool" class="input"><option value="">${esc(t('js.manip.tasks.allTools'))}</option>${TOOLS.map(x => `<option value="${x.slug}">${esc(x.name)}</option>`).join('')}</select>
@@ -1303,7 +1304,7 @@ function tasksView() {
     const n = q.value.trim().toLowerCase();
     const list = all.filter(({ tool: x, task }) => (!tool.value || x.slug === tool.value) && (!grade.value || task.grade === grade.value) && (!n || `${x.name} ${task.title} ${task.prompt} ${task.ccss}`.toLowerCase().includes(n)));
     document.getElementById('mp-tcount').textContent = t('js.manip.tasks.count', { n: list.length });
-    document.getElementById('mp-tlist').innerHTML = list.slice(0, 300).map(({ tool: x, task }) => `<article class="panel mp-taskcard"><p class="row"><span class="mp-ico sm" style="background:${x.color}" aria-hidden="true">${x.emoji}</span><b class="small">${esc(x.name)}</b><span class="mp-tag">${esc(task.ccss)}</span></p>
+    document.getElementById('mp-tlist').innerHTML = list.slice(0, 300).map(({ tool: x, task }) => `<article class="panel mp-taskcard"><p class="row"><span class="mp-ico sm" style="--tc:${x.color}">${toolIconHtml(x.slug, { size: 28, lazy: true })}</span><b class="small">${esc(x.name)}</b><span class="mp-tag">${esc(task.ccss)}</span></p>
       <h2>${esc(task.title)}</h2><p class="small">${esc(task.prompt)}</p><p class="small muted"><b>${esc(t('js.manip.tasks.teacherNote'))}</b> ${esc(task.notes)}</p><p class="small muted">${esc(t('js.manip.grade', { grade: task.grade }))} · ${esc(task.ccss)}</p>
       <a class="btn btn-primary btn-sm" href="#${x.slug}">${esc(t('js.manip.tasks.open'))}</a></article>`).join('') || `<p class="muted">${esc(t('js.manip.tasks.none'))}</p>`;
   };
