@@ -2554,6 +2554,48 @@
     }
    ]
   },
+  "0123": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "Why does the child wake up at night?",
+     "right": "They feel thirsty",
+     "wrong": [
+      "A loud noise",
+      "A bad dream"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What was the \"tiger\" under the bed?",
+     "right": "A thick yellow and black sweater",
+     "wrong": [
+      "A toy tiger",
+      "The family cat"
+     ],
+     "page": 9,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the child think the sweater was a tiger?",
+     "right": "It was yellow and black, and its buttons shone like eyes",
+     "wrong": [
+      "It roared",
+      "Ma said it was a tiger"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 7,
+     "from": "“What happened dear?Did you call me?”",
+     "to": "“What happened, dear? Did you call me?”"
+    }
+   ]
+  },
   "0124": {
    "glossary": {
     "Nani": "Grandma (your mother's mother)",
@@ -4233,6 +4275,48 @@
     }
    ]
   },
+  "0193": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What did Timmi want her whole life?",
+     "right": "A dog",
+     "wrong": [
+      "A cat",
+      "A bike"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What was the first thing Timmi taught her dog?",
+     "right": "How to stand",
+     "wrong": [
+      "How to be funny",
+      "How to touch its nose"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "What was Timmi's dream that came true?",
+     "right": "Having a dog of her own",
+     "wrong": [
+      "Being a teacher",
+      "Flying"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 8,
+     "from": "she taught it how to touch it's nose.",
+     "to": "She taught it how to touch its nose."
+    }
+   ]
+  },
   "0195": {
    "glossary": {
     "sidekick": "a friend who goes along with you and helps you"
@@ -4419,6 +4503,70 @@
      "page": 6,
      "from": " ,",
      "to": ","
+    }
+   ]
+  },
+  "0214": {
+   "glossary": {
+    "chameleon": "a small lizard that can change the color of its skin"
+   },
+   "questions": [
+    {
+     "q": "Why did the chameleon get scared?",
+     "right": "A snake came onto the same tree",
+     "wrong": [
+      "It started to rain",
+      "A bird sang loudly"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did the chameleon see on the way to the pond?",
+     "right": "Crocodiles",
+     "wrong": [
+      "A snake",
+      "A frog"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "How does changing color help the chameleon?",
+     "right": "It can hide from animals that might hurt it",
+     "wrong": [
+      "It makes the chameleon faster",
+      "It helps it find water"
+     ],
+     "page": 2,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 1,
+     "from": "A Chameleon is color changing animal",
+     "to": "A Chameleon is a color changing animal"
+    },
+    {
+     "page": 1,
+     "from": "On day, Chameleon sleeping",
+     "to": "One day, Chameleon was sleeping"
+    },
+    {
+     "page": 1,
+     "from": "got scared on started changing its color, It has changed color",
+     "to": "got scared and started changing its color. It changed color"
+    },
+    {
+     "page": 2,
+     "from": "he wants to drink",
+     "to": "he wanted to drink"
+    },
+    {
+     "page": 3,
+     "from": "changed color of bushes",
+     "to": "changed to the color of the bushes"
     }
    ]
   },
@@ -4672,6 +4820,173 @@
      ],
      "page": 5,
      "kind": "inference"
+    }
+   ]
+  },
+  "0247": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What toy did Nandu and Chinku bring to the bath?",
+     "right": "A toy elephant",
+     "wrong": [
+      "A toy boat",
+      "A rubber duck"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What color were Nandu's pajamas?",
+     "right": "Green",
+     "wrong": [
+      "Blue",
+      "Red"
+     ],
+     "page": 6,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did mummy say \"Let's have dinner\"?",
+     "right": "The children's tummies were rumbling",
+     "wrong": [
+      "It was morning",
+      "Grandpa was hungry"
+     ],
+     "page": 7,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 1,
+     "from": "your bath \", mummy called.",
+     "to": "your bath,\" mummy called."
+    },
+    {
+     "page": 1,
+     "from": "Whooosh!!! whoosh!!!",
+     "to": "Whooosh!!! Whoosh!!!"
+    },
+    {
+     "page": 2,
+     "from": "\"Ooh , Ooh \" squealed",
+     "to": "\"Ooh, Ooh,\" squealed"
+    },
+    {
+     "page": 3,
+     "from": "Rub , Rub , Rub Mummy",
+     "to": "Rub, Rub, Rub, Mummy"
+    },
+    {
+     "page": 4,
+     "from": "“Stop stop ,“ cried mummy, “ you are wet .”",
+     "to": "“Stop, stop,” cried mummy, “you are wet.”"
+    },
+    {
+     "page": 7,
+     "from": "Chinku 's tummy",
+     "to": "Chinku's tummy"
+    },
+    {
+     "page": 7,
+     "from": "\"Oh, You are hungry \" said",
+     "to": "\"Oh, you are hungry,\" said"
+    },
+    {
+     "page": 8,
+     "from": "grandpa' s lap",
+     "to": "grandpa's lap"
+    },
+    {
+     "page": 1,
+     "from": "\"Nandu ,",
+     "to": "\"Nandu,"
+    },
+    {
+     "page": 1,
+     "from": " ,",
+     "to": ","
+    },
+    {
+     "page": 2,
+     "from": " splash , splish",
+     "to": " splash, splish"
+    },
+    {
+     "page": 2,
+     "from": " ,",
+     "to": ","
+    },
+    {
+     "page": 5,
+     "from": " ,",
+     "to": ","
+    },
+    {
+     "page": 1,
+     "from": "here .",
+     "to": "here."
+    },
+    {
+     "page": 1,
+     "from": "elephant .",
+     "to": "elephant."
+    },
+    {
+     "page": 1,
+     "from": " .",
+     "to": "."
+    },
+    {
+     "page": 2,
+     "from": "water .",
+     "to": "water."
+    },
+    {
+     "page": 2,
+     "from": " .",
+     "to": "."
+    },
+    {
+     "page": 3,
+     "from": " .",
+     "to": "."
+    },
+    {
+     "page": 5,
+     "from": "Chinku .",
+     "to": "Chinku."
+    },
+    {
+     "page": 5,
+     "from": " .",
+     "to": "."
+    },
+    {
+     "page": 6,
+     "from": "pajamas .",
+     "to": "pajamas."
+    },
+    {
+     "page": 6,
+     "from": "Chinku .",
+     "to": "Chinku."
+    },
+    {
+     "page": 6,
+     "from": " .",
+     "to": "."
+    },
+    {
+     "page": 7,
+     "from": " .",
+     "to": "."
+    },
+    {
+     "page": 8,
+     "from": " .",
+     "to": "."
     }
    ]
   },
@@ -5021,6 +5336,68 @@
     }
    ]
   },
+  "0274": {
+   "glossary": {
+    "flora and fauna": "plants and animals",
+    "aerial roots": "roots that grow from a tree's branches down through the air",
+    "insectivorous": "eating insects",
+    "rookery": "a group of seals, or of birds, that breed in one place"
+   },
+   "questions": [
+    {
+     "q": "What did Martina find in the bottle on the beach?",
+     "right": "A map of an island",
+     "wrong": [
+      "A letter from a friend",
+      "A shiny shell"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What woke Martina up the next day?",
+     "right": "A flock of loud seagulls",
+     "wrong": [
+      "Dolphins splashing",
+      "Sam's ship horn"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "What do the cave paintings and stone tools tell the friends?",
+     "right": "People lived on the island long ago",
+     "wrong": [
+      "Someone was hiding in the caves",
+      "The island was new"
+     ],
+     "page": 4,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 1,
+     "from": "within the pacific ocean",
+     "to": "within the Pacific Ocean"
+    },
+    {
+     "page": 2,
+     "from": "travel any where",
+     "to": "travel anywhere"
+    },
+    {
+     "page": 3,
+     "from": "co- operated",
+     "to": "co-operated"
+    },
+    {
+     "page": 3,
+     "from": "of the pacific ocean",
+     "to": "of the Pacific Ocean"
+    }
+   ]
+  },
   "0276": {
    "glossary": {
     "Neddicky": "a small brown bird from southern Africa",
@@ -5056,6 +5433,239 @@
      ],
      "page": 7,
      "kind": "inference"
+    }
+   ]
+  },
+  "0301": {
+   "glossary": {
+    "destiny": "what someone is meant to do in life"
+   },
+   "questions": [
+    {
+     "q": "What was the world like before the artist?",
+     "right": "Colourless",
+     "wrong": [
+      "Full of colour",
+      "All blue"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What colours did he paint the starfish?",
+     "right": "Red and white",
+     "wrong": [
+      "Grey and white",
+      "Green and brown"
+     ],
+     "page": 6,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the artist wonder who painted the sky?",
+     "right": "He had not painted it himself",
+     "wrong": [
+      "He forgot his paints",
+      "The sky was colourless"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 1,
+     "from": "There was a artist",
+     "to": "There was an artist"
+    },
+    {
+     "page": 9,
+     "from": "He wondered who painted the sky?",
+     "to": "He wondered who painted the sky."
+    }
+   ]
+  },
+  "0308": {
+   "glossary": {
+    "drought": "a long time with no rain, when the land dries up",
+    "heir": "the one who will take over and look after something",
+    "boon": "a special gift or wish granted"
+   },
+   "questions": [
+    {
+     "q": "What could Starry breathe instead of fire?",
+     "right": "Clouds",
+     "wrong": [
+      "Ice",
+      "Water"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "Who invited the dragons to a party?",
+     "right": "Zeus",
+     "wrong": [
+      "The fire dragons",
+      "The people of the land"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "How did Starry most likely bring life back to the dry land?",
+     "right": "He breathed clouds that brought rain",
+     "wrong": [
+      "He breathed fire on it",
+      "He carried water in a bucket"
+     ],
+     "page": 4,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 1,
+     "from": "in cloud haeven. He was'nt a normal dragon who could breathe fire, he could",
+     "to": "in cloud heaven. He wasn't a normal dragon who could breathe fire; he could"
+    },
+    {
+     "page": 2,
+     "from": "of cloud haeven",
+     "to": "of cloud heaven"
+    },
+    {
+     "page": 3,
+     "from": "was on a drought",
+     "to": "was in a drought"
+    },
+    {
+     "page": 5,
+     "from": "went to king Zeus",
+     "to": "went to King Zeus"
+    }
+   ]
+  },
+  "0310": {
+   "glossary": {
+    "celestial": "of the sky",
+    "wee hours": "the very early hours of the morning, while it is still dark",
+    "neglected": "left out and not cared for"
+   },
+   "questions": [
+    {
+     "q": "Why did Mr. Moon stay in one night?",
+     "right": "He was feeling tired",
+     "wrong": [
+      "He was sick",
+      "The sun told him to"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "Who told Mr. Moon to say sorry?",
+     "right": "Mr. Sun",
+     "wrong": [
+      "The children",
+      "The biggest star"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the stars stay away for many days?",
+     "right": "Mr. Moon's harsh words had hurt them",
+     "wrong": [
+      "It was cloudy",
+      "They went to visit the sun"
+     ],
+     "page": 3,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 2,
+     "from": "with it's cool",
+     "to": "with its cool"
+    },
+    {
+     "page": 3,
+     "from": "catch and cook\" But",
+     "to": "catch and cook.\" But"
+    },
+    {
+     "page": 3,
+     "from": "among-st",
+     "to": "amongst"
+    },
+    {
+     "page": 4,
+     "from": "said \" My dear",
+     "to": "said, \"My dear"
+    },
+    {
+     "page": 4,
+     "from": "calling out to them\".",
+     "to": "calling out to them.\""
+    },
+    {
+     "page": 5,
+     "from": "and the all the glitter",
+     "to": "and all the glitter"
+    }
+   ]
+  },
+  "0311": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What did Mavis grow in her garden?",
+     "right": "Tomatoes, flowers and potatoes",
+     "wrong": [
+      "Only roses",
+      "Apples and pears"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What was the poster about?",
+     "right": "A competition of amazing fruits, veggies and flowers",
+     "wrong": [
+      "A school play",
+      "A lost dog"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Mavis win so many prizes?",
+     "right": "Her tomato had grown extremely large",
+     "wrong": [
+      "She brought the most flowers",
+      "She was the first to arrive"
+     ],
+     "page": 4,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 4,
+     "from": "large or over grown tomato",
+     "to": "large or overgrown tomato"
+    },
+    {
+     "page": 5,
+     "from": "she reach exactly when",
+     "to": "She reached just when"
+    },
+    {
+     "page": 5,
+     "from": "all the veggie competition which were",
+     "to": "all the veggie competitions, which were"
     }
    ]
   },
@@ -5166,6 +5776,106 @@
     }
    ]
   },
+  "0323": {
+   "glossary": {
+    "Chhoti": "\"little one\" in Hindi",
+    "Bade": "\"big one\" in Hindi"
+   },
+   "questions": [
+    {
+     "q": "What did Chhoti see on the ground in the forest?",
+     "right": "A huge footprint",
+     "wrong": [
+      "A lost shoe",
+      "A bird's nest"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "How did Bade say hello?",
+     "right": "He nudged Chhoti with his trunk",
+     "wrong": [
+      "He roared loudly",
+      "He waved his tail"
+     ],
+     "page": 6,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Chhoti stop being scared?",
+     "right": "The footprint was Bade's, and he was kind",
+     "wrong": [
+      "She ran home",
+      "It started to rain"
+     ],
+     "page": 6,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 1,
+     "from": "Everyday she",
+     "to": "Every day she"
+    },
+    {
+     "page": 5,
+     "from": "Bade- the elephant",
+     "to": "Bade, the elephant"
+    },
+    {
+     "page": 6,
+     "from": "kind eyes before",
+     "to": "kind eyes before."
+    }
+   ]
+  },
+  "0328": {
+   "glossary": {
+    "companion": "a friend to be with",
+    "embrace": "to hold close in your arms"
+   },
+   "questions": [
+    {
+     "q": "What was the little blue alien left with?",
+     "right": "A magic wand",
+     "wrong": [
+      "A speedy jet",
+      "A map"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What could the alien make with his wand?",
+     "right": "Only stars",
+     "wrong": [
+      "Trees and flowers",
+      "Green grass"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the alien want to go to Earth?",
+     "right": "He wanted to see trees, grass and flowers",
+     "wrong": [
+      "He wanted to be an astronaut",
+      "His planet was too cold"
+     ],
+     "page": 5,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 5,
+     "from": "That how he is stuck alone and lost",
+     "to": "That he was stuck alone and lost"
+    }
+   ]
+  },
   "0332": {
    "glossary": {},
    "questions": [
@@ -5198,6 +5908,951 @@
      ],
      "page": 6,
      "kind": "inference"
+    }
+   ]
+  },
+  "0341": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "Who came to the pond and surprised everyone?",
+     "right": "Tutu, the turtle",
+     "wrong": [
+      "Goldie, the goldfish",
+      "A big frog"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What was the big yellow box in the water?",
+     "right": "A radio",
+     "wrong": [
+      "A boat",
+      "A lunch box"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did they have a \"fishy party\"?",
+     "right": "Goldie turned up the radio's music and they all danced",
+     "wrong": [
+      "It was Fonky's birthday",
+      "They found lots of food"
+     ],
+     "page": 5,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 2,
+     "from": "for you.. Come",
+     "to": "for you. Come"
+    },
+    {
+     "page": 3,
+     "from": "he said,\" Let's",
+     "to": "he said, \"Let's"
+    },
+    {
+     "page": 4,
+     "from": "from it.\" Oh! It is a Radio!\", said Fonky.",
+     "to": "from it. \"Oh! It is a radio!\" said Fonky."
+    },
+    {
+     "page": 5,
+     "from": "the new Radio",
+     "to": "the new radio"
+    },
+    {
+     "page": 6,
+     "from": "waiting for me\".",
+     "to": "waiting for me.\""
+    }
+   ]
+  },
+  "0343": {
+   "glossary": {
+    "breathtaking": "so beautiful it almost takes your breath away",
+    "amiss": "not quite right",
+    "cherish": "to love and keep close"
+   },
+   "questions": [
+    {
+     "q": "What does the bear set up at the start?",
+     "right": "A camera",
+     "wrong": [
+      "A tent",
+      "A picnic"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did the bear catch in the camera on page 2?",
+     "right": "The warm glow of the sun",
+     "wrong": [
+      "A flying bird",
+      "A rainbow"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Why does the bear put the camera away?",
+     "right": "He wants to enjoy the view with his own eyes and remember it",
+     "wrong": [
+      "The camera broke",
+      "It started to rain"
+     ],
+     "page": 5,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 1,
+     "from": "tra-la-la-la",
+     "to": "Tra-la-la-la"
+    },
+    {
+     "page": 5,
+     "from": "in all it's glory",
+     "to": "in all its glory"
+    }
+   ]
+  },
+  "0348": {
+   "glossary": {
+    "airborne": "up in the air, flying",
+    "cockpit": "the place at the front of a plane where the pilots sit",
+    "runways": "long, flat roads where planes take off and land",
+    "den": "the player who calls out, like \"it\" in a game of tag"
+   },
+   "questions": [
+    {
+     "q": "What was Sarla watching out of the window in science class?",
+     "right": "An eagle gliding in the sky",
+     "wrong": [
+      "A plane landing",
+      "Rain clouds"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What are the long roads where planes take off and land called?",
+     "right": "Runways",
+     "wrong": [
+      "Cockpits",
+      "Highways"
+     ],
+     "page": 8,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the teacher tell Sarla to spend time in the library?",
+     "right": "Sarla wanted to know about flying, and books there could teach her",
+     "wrong": [
+      "Sarla was not paying attention, as a punishment",
+      "The library had a plane in it"
+     ],
+     "page": 2,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 2,
+     "from": "the first Indian women pilot",
+     "to": "the first Indian woman pilot"
+    },
+    {
+     "page": 7,
+     "from": "change direction.\n\nٴ",
+     "to": "change direction."
+    }
+   ]
+  },
+  "0351": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What kind of animal was Moti?",
+     "right": "A rat",
+     "wrong": [
+      "An elephant",
+      "A cat"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What happened to Mohan one day?",
+     "right": "He got trapped in a net",
+     "wrong": [
+      "He fell in a river",
+      "He lost his way"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "How could a small rat save a big elephant?",
+     "right": "His sharp teeth could cut the net",
+     "wrong": [
+      "He was very strong",
+      "He called a hunter"
+     ],
+     "page": 1,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 1,
+     "from": "They eat and play together.",
+     "to": "They ate and played together."
+    }
+   ]
+  },
+  "0352": {
+   "glossary": {
+    "burrs": "prickly seed cases that stick to clothes and fur",
+    "tamarind": "a tree with sour, sticky fruit in brown pods",
+    "gulmohar": "a tree with bright red flowers",
+    "dal": "a thick soup of lentils",
+    "bhaji": "a dish of cooked vegetables"
+   },
+   "questions": [
+    {
+     "q": "What is Tooka and Poi's favourite thing to collect?",
+     "right": "Seeds",
+     "wrong": [
+      "Pebbles",
+      "Buttons"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Who is Pacha?",
+     "right": "The tamarind tree",
+     "wrong": [
+      "A friendly dog",
+      "Poi's teacher"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why does Pacha call seeds \"tree babies\"?",
+     "right": "Each seed has a little plant inside that can grow into a tree",
+     "wrong": [
+      "Seeds are very small like babies",
+      "Baby birds eat seeds"
+     ],
+     "page": 10,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 1,
+     "from": "five o' clock",
+     "to": "five o'clock"
+    },
+    {
+     "page": 2,
+     "from": "Their favourite thing to collect are seeds",
+     "to": "Their favourite things to collect are seeds"
+    },
+    {
+     "page": 3,
+     "from": "shake it about",
+     "to": "shake them about"
+    },
+    {
+     "page": 6,
+     "from": "“Hellllooooo.\"",
+     "to": "“Hellllooooo.”"
+    },
+    {
+     "page": 11,
+     "from": "grow into apple trees”",
+     "to": "grow into apple trees.”"
+    },
+    {
+     "page": 12,
+     "from": "all shapes and sizes”, Pacha",
+     "to": "all shapes and sizes,” Pacha"
+    },
+    {
+     "page": 16,
+     "from": "Capsicum annum",
+     "to": "Capsicum annuum"
+    },
+    {
+     "page": 16,
+     "from": "Coffeea Arabica",
+     "to": "Coffea arabica"
+    },
+    {
+     "page": 17,
+     "from": "Cocos Nucifera",
+     "to": "Cocos nucifera"
+    },
+    {
+     "page": 18,
+     "from": "Common name: Ricea",
+     "to": "Common name: Rice"
+    }
+   ]
+  },
+  "0356": {
+   "glossary": {
+    "harmony": "living together peacefully",
+    "patience": "being able to wait calmly"
+   },
+   "questions": [
+    {
+     "q": "Who brought Mansha up?",
+     "right": "Her granny",
+     "wrong": [
+      "Her aunt",
+      "Her teacher"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Mansha want to become a bird?",
+     "right": "To fly high up and touch the sky",
+     "wrong": [
+      "To sing in the morning",
+      "To build a nest"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Where did Mansha's dreams come from?",
+     "right": "Granny's stories and the nature around her",
+     "wrong": [
+      "Books at school",
+      "Television"
+     ],
+     "page": 2,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 3,
+     "from": "granny, \" I dream",
+     "to": "granny, \"I dream"
+    },
+    {
+     "page": 6,
+     "from": "to make to dream come true",
+     "to": "to make your dream come true"
+    }
+   ]
+  },
+  "0359": {
+   "glossary": {
+    "meddlesome": "poking into other people's business",
+    "ironic": "funny or odd because it is the opposite of what you expect"
+   },
+   "questions": [
+    {
+     "q": "What did Natasha pick up at school?",
+     "right": "Rohan's personal diary",
+     "wrong": [
+      "A lost lunch box",
+      "Her friend's pencil"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "What had Rohan called her in his diary?",
+     "right": "Nosy Natasha",
+     "wrong": [
+      "Nice Natasha",
+      "Noisy Natasha"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why was it ironic that Natasha was upset?",
+     "right": "She was being nosy by reading his diary",
+     "wrong": [
+      "Rohan was not her friend",
+      "She could not read"
+     ],
+     "page": 5,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 4,
+     "from": "call me that?\", she cried",
+     "to": "call me that?\" she cried"
+    },
+    {
+     "page": 4,
+     "from": "\"I thought we were friends\".",
+     "to": "\"I thought we were friends.\""
+    },
+    {
+     "page": 5,
+     "from": "so untrue\" cried",
+     "to": "so untrue,\" cried"
+    },
+    {
+     "page": 6,
+     "from": "\"Oh I get it now\", she replied",
+     "to": "\"Oh, I get it now,\" she replied"
+    },
+    {
+     "page": 7,
+     "from": "what 'irony\" meant",
+     "to": "what \"irony\" meant"
+    }
+   ]
+  },
+  "0362": {
+   "glossary": {
+    "amma": "Mom",
+    "appa": "Dad",
+    "glee": "great happiness"
+   },
+   "questions": [
+    {
+     "q": "What did Shriya's dad bring her?",
+     "right": "A pet parrot",
+     "wrong": [
+      "A puppy",
+      "A new toy"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Why was Piyali sad?",
+     "right": "She missed her family and friends",
+     "wrong": [
+      "She was hungry",
+      "She did not like Shriya"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Shriya set Piyali free?",
+     "right": "She knew she would also miss her own amma and appa",
+     "wrong": [
+      "Piyali was too noisy",
+      "Her dad told her to"
+     ],
+     "page": 6,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 3,
+     "from": "as much time with her parrot",
+     "to": "as much time as she could with her parrot"
+    },
+    {
+     "page": 5,
+     "from": "\"Don't you not like our home?\"",
+     "to": "\"Don't you like our home?\""
+    },
+    {
+     "page": 5,
+     "from": "my friends/\"",
+     "to": "my friends.\""
+    },
+    {
+     "page": 5,
+     "from": "\"Definitely No\".",
+     "to": "\"Definitely not.\""
+    },
+    {
+     "page": 5,
+     "from": "I can't too.",
+     "to": "I can't either."
+    },
+    {
+     "page": 8,
+     "from": "inthe sky",
+     "to": "in the sky"
+    },
+    {
+     "page": 9,
+     "from": "needed to be go to the park",
+     "to": "needed to go to the park"
+    }
+   ]
+  },
+  "0363": {
+   "glossary": {
+    "ecstatic": "very, very happy",
+    "vigorously": "hard and fast"
+   },
+   "questions": [
+    {
+     "q": "Why did Lilly's father buy her a parrot?",
+     "right": "It was her birthday",
+     "wrong": [
+      "She did well at school",
+      "The parrot was lost"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "Why was Yuri bored?",
+     "right": "He was never taken outside in the fresh air",
+     "wrong": [
+      "He had no food",
+      "Lilly sang too loudly"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Lilly learn by playing with her friends at school?",
+     "right": "That Yuri was lonely without his friends too",
+     "wrong": [
+      "That she did not like parrots",
+      "That school was boring"
+     ],
+     "page": 4,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 2,
+     "from": "One day when Lilly was feeding Yuri. Yuri suddenly",
+     "to": "One day, when Lilly was feeding Yuri, Yuri suddenly"
+    },
+    {
+     "page": 3,
+     "from": "asked Yuri, \"what is the matter, Yuri?\". The reply in return was \"since you are not taking me outside in the fresh air , I feel",
+     "to": "asked Yuri, \"What is the matter, Yuri?\" The reply in return was, \"Since you are not taking me outside in the fresh air, I feel"
+    },
+    {
+     "page": 3,
+     "from": "right now\" says, Lilly",
+     "to": "right now,\" says Lilly"
+    },
+    {
+     "page": 4,
+     "from": "having so much, Yuri is lonely",
+     "to": "having so much fun, while Yuri is lonely"
+    },
+    {
+     "page": 5,
+     "from": "embarassed",
+     "to": "embarrassed"
+    }
+   ]
+  },
+  "0364": {
+   "glossary": {
+    "imli": "tamarind, a sour fruit (in Hindi)",
+    "dal": "a thick soup of lentils",
+    "appreciate": "to enjoy and be thankful for"
+   },
+   "questions": [
+    {
+     "q": "What were Gini and Jojo complaining about?",
+     "right": "The food they got at school",
+     "wrong": [
+      "Their homework",
+      "Their dog Tommy"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "How did the imli taste?",
+     "right": "Sour",
+     "wrong": [
+      "Sweet",
+      "Bitter"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the tree give them different foods to taste?",
+     "right": "To teach them that every food has its own taste to enjoy",
+     "wrong": [
+      "Because they were very hungry",
+      "To make them sleepy"
+     ],
+     "page": 6,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 7,
+     "from": "thier mom",
+     "to": "their mom"
+    },
+    {
+     "page": 1,
+     "from": "friends ,",
+     "to": "friends,"
+    },
+    {
+     "page": 1,
+     "from": "doggie ,",
+     "to": "doggie,"
+    },
+    {
+     "page": 1,
+     "from": " ,",
+     "to": ","
+    },
+    {
+     "page": 2,
+     "from": " ,",
+     "to": ","
+    },
+    {
+     "page": 4,
+     "from": " ,",
+     "to": ","
+    },
+    {
+     "page": 6,
+     "from": " ,",
+     "to": ","
+    },
+    {
+     "page": 1,
+     "from": "usual .",
+     "to": "usual."
+    },
+    {
+     "page": 1,
+     "from": " .",
+     "to": "."
+    },
+    {
+     "page": 2,
+     "from": "tree .",
+     "to": "tree."
+    },
+    {
+     "page": 2,
+     "from": "town .",
+     "to": "town."
+    },
+    {
+     "page": 2,
+     "from": " .",
+     "to": "."
+    },
+    {
+     "page": 3,
+     "from": " .",
+     "to": "."
+    },
+    {
+     "page": 4,
+     "from": "'refreshing' .",
+     "to": "'refreshing'."
+    },
+    {
+     "page": 4,
+     "from": " .",
+     "to": "."
+    },
+    {
+     "page": 5,
+     "from": "'coffee' .",
+     "to": "'coffee'."
+    },
+    {
+     "page": 5,
+     "from": "energizing .",
+     "to": "energizing."
+    },
+    {
+     "page": 5,
+     "from": " .",
+     "to": "."
+    },
+    {
+     "page": 6,
+     "from": " .",
+     "to": "."
+    },
+    {
+     "page": 7,
+     "from": " .",
+     "to": "."
+    }
+   ]
+  },
+  "0370": {
+   "glossary": {
+    "palpable": "so strong you can almost touch it",
+    "apple of their parents' eyes": "loved very much by their parents",
+    "whimpering": "making small, sad crying sounds"
+   },
+   "questions": [
+    {
+     "q": "Where do the three siblings live?",
+     "right": "In Kashmir",
+     "wrong": [
+      "In Goa",
+      "In Delhi"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Vidya not like ILU at first?",
+     "right": "She felt ILU had divided the love between the siblings",
+     "wrong": [
+      "ILU bit her",
+      "She was scared of dogs"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Vidya learn when ILU cuddled into her lap?",
+     "right": "That ILU loved her even after she pushed him away",
+     "wrong": [
+      "That ILU was hungry",
+      "That ILU wanted to go outside"
+     ],
+     "page": 5,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 1,
+     "from": "their parents eyes. Thou they",
+     "to": "their parents' eyes. Though they"
+    },
+    {
+     "page": 1,
+     "from": "palbable",
+     "to": "palpable"
+    },
+    {
+     "page": 2,
+     "from": "thou Vidya",
+     "to": "though Vidya"
+    },
+    {
+     "page": 3,
+     "from": "as his sibling had gone",
+     "to": "as her siblings had gone"
+    },
+    {
+     "page": 3,
+     "from": "went away immediately",
+     "to": "went away immediately."
+    },
+    {
+     "page": 5,
+     "from": "Adtiya",
+     "to": "Aditya"
+    },
+    {
+     "page": 5,
+     "from": "in Vidya Mummy and daddy",
+     "to": "in Vidya, Mummy and Daddy"
+    }
+   ]
+  },
+  "0372": {
+   "glossary": {
+    "tango": "a lively dance for two"
+   },
+   "questions": [
+    {
+     "q": "Where did Nayana and Zia plant the mango seed?",
+     "right": "Behind their school",
+     "wrong": [
+      "In a pot at home",
+      "By the river"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Mr. Sniffy the squirrel lay over the seed?",
+     "right": "Dry leaves",
+     "wrong": [
+      "A blanket",
+      "Some water"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did a mango fall on their heads at the end?",
+     "right": "Their seed had grown into a big mango tree",
+     "wrong": [
+      "A monkey threw it",
+      "Pappa dropped it"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 1,
+     "from": "\"Yummy, yummy\" said",
+     "to": "\"Yummy, yummy,\" said"
+    },
+    {
+     "page": 1,
+     "from": "\"Let's plant this seed\" Nayana said",
+     "to": "\"Let's plant this seed,\" Nayana said"
+    },
+    {
+     "page": 1,
+     "from": "big mango tree\" Zia",
+     "to": "big mango tree,\" Zia"
+    },
+    {
+     "page": 4,
+     "from": "\"sniff sniff\" he sniffed",
+     "to": "\"Sniff sniff,\" he sniffed"
+    },
+    {
+     "page": 4,
+     "from": "Oh ho! will it",
+     "to": "Oh ho! Will it"
+    },
+    {
+     "page": 4,
+     "from": "laid it over",
+     "to": "laid them over"
+    },
+    {
+     "page": 6,
+     "from": "Oh ho! will the hen",
+     "to": "Oh ho! Will the hen"
+    },
+    {
+     "page": 9,
+     "from": "Golden and yellow ,",
+     "to": "Golden and yellow,"
+    }
+   ]
+  },
+  "0379": {
+   "glossary": {
+    "entertainer": "someone who sings, dances or tells jokes to make others happy"
+   },
+   "questions": [
+    {
+     "q": "Who was Lalu's best friend?",
+     "right": "Rainbow, the peacock",
+     "wrong": [
+      "A parrot",
+      "A crow"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Lalu's friends give him?",
+     "right": "A crown of feathers",
+     "wrong": [
+      "A cake",
+      "A book"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why was Lalu happy again at the end?",
+     "right": "Rainbow came to his party",
+     "wrong": [
+      "He got another crown",
+      "The party ended"
+     ],
+     "page": 7,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 5,
+     "from": "But Lalu was said.",
+     "to": "But Lalu was sad."
+    }
+   ]
+  },
+  "0381": {
+   "glossary": {
+    "Sa Re Ga Ma": "the first notes of the Indian music scale, like \"do re mi\""
+   },
+   "questions": [
+    {
+     "q": "Why can Bhola not play cricket today?",
+     "right": "His friends have not come to play",
+     "wrong": [
+      "It is raining",
+      "His bat is broken"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What sound does Rani the goat make?",
+     "right": "Baa Baa",
+     "wrong": [
+      "Meow Meow",
+      "Squeak Squeak"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "What does Bhola learn by the end?",
+     "right": "There are many nice things to do even alone",
+     "wrong": [
+      "He should stay inside",
+      "He needs a new friend to have fun"
+     ],
+     "page": 5,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 2,
+     "from": "Parrots with red beak",
+     "to": "Parrots with red beaks"
+    },
+    {
+     "page": 3,
+     "from": "My books, let me be anyone who I want to be. It also takes me",
+     "to": "My books let me be anyone who I want to be. They also take me"
     }
    ]
   },
@@ -5309,6 +6964,119 @@
      ],
      "page": 13,
      "kind": "inference"
+    }
+   ]
+  },
+  "0400": {
+   "glossary": {
+    "oil spill": "oil that has leaked from a ship into the water, where it harms animals",
+    "horizon": "the line far away where the sky seems to meet the sea or land",
+    "anchored": "held in one place by a heavy anchor"
+   },
+   "questions": [
+    {
+     "q": "Where did Nanni go on her adventure?",
+     "right": "To a big ship anchored close by",
+     "wrong": [
+      "To the mountains",
+      "To a forest"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Why could Nanni not fly up into the sky?",
+     "right": "Her wings were coated with oil",
+     "wrong": [
+      "She was too tired",
+      "Her wing was hurt"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Nanni's parents give her a bit of a scolding?",
+     "right": "She went off without telling anyone and did not look before diving",
+     "wrong": [
+      "She came home late for dinner",
+      "She broke the ship"
+     ],
+     "page": 4,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 1,
+     "from": "She hardly every listened",
+     "to": "She hardly ever listened"
+    },
+    {
+     "page": 1,
+     "from": "seen in the horizon",
+     "to": "seen on the horizon"
+    },
+    {
+     "page": 1,
+     "from": "decided to go an adventure",
+     "to": "decided to go on an adventure"
+    },
+    {
+     "page": 4,
+     "from": "told her, that had she",
+     "to": "told her that had she"
+    }
+   ]
+  },
+  "0415": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What movie did the children go to watch?",
+     "right": "Jungle Raja",
+     "wrong": [
+      "Frogiee Raja",
+      "A cartoon about cats"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did they hear instead of the tiger's roar?",
+     "right": "A frog croaking",
+     "wrong": [
+      "A dog barking",
+      "A baby crying"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Sharma uncle jump off his seat screaming?",
+     "right": "A frog was on his seat",
+     "wrong": [
+      "The tiger on screen scared him",
+      "He spilled his drink"
+     ],
+     "page": 2,
+     "kind": "inference"
+    }
+   ],
+   "fixes": [
+    {
+     "page": 2,
+     "from": "a frogs's croaking",
+     "to": "a frog's croaking"
+    },
+    {
+     "page": 2,
+     "from": "They were curios. And suddenly they see",
+     "to": "They were curious. And suddenly they saw"
+    },
+    {
+     "page": 2,
+     "from": "And alas, what they see? A on his seat.",
+     "to": "And what did they see? A frog on his seat."
     }
    ]
   },
@@ -5460,20 +7228,19 @@
   "0111": "An angry grown-up calls a tiger \"stupid\" and glares at his wife.",
   "0117": "A mistake in the source text (\"he bought Pasupati the zoo-keeper\" for brought); the king calls his guards idiots and wants to cut a cow in two.",
   "0122": "A tiger has killed an animal and the body is described.",
-  "0123": "A mistake in the source text (\"dear?Did you call me?\"), and \"Oh my God!\" as an exclamation.",
   "0131": "Villagers with knives and spears set out to kill the bird, other children mock a girl's limp, and she walks alone through the jungle at night.",
   "0132": "A child's brother is called \"definitely an animal\" because he is wild; the same reason as 0374.",
   "0134": "A deep wound and dead tissue are described; the animal's life is in danger.",
   "0136": "Reads as a child travelling alone and being asked if she has run away.",
   "0138": "A baby alone with a wild bear; the fact page says bears kill goats.",
   "0141": "Religious (\"Who made this world? God knows!\").",
-  "0144": "One page of 31 words with mistakes in the source text; not a story.",
-  "0145": "Mistakes in the source text (missing punctuation, \"grandmom\") and \"OMG\".",
-  "0147": "Mistakes in the source text (an unclosed quote, \"diya's\", \"mithai's\").",
+  "0144": "Revisited for typos (20 Nov 2026): one page of 31 words (\"That's all.\"), not a story.",
+  "0145": "Revisited for typos (20 Nov 2026): too many mistakes to fix without rewriting (speech with no quotation marks throughout, \"OMG\", \"She asked to his great grandmom\").",
+  "0147": "Revisited for typos (20 Nov 2026): the mistakes run through every sentence (\"they had decided that this time it will not be the cakes\", \"Anna (older brother) got ready with the decorations of putting a new toran\", \"best Indian dressed child\"); fixing it would mean rewriting.",
   "0152": "Children use a spell to call a demon; mistakes in the source text (\"wont\", \"cant\").",
   "0155": "One page with a mistake in the source text (\"One-day ants decided\"); ants are hurt \"endlessly\".",
   "0161": "Many mistakes in the source text (\"a tiger who live in a cave\", \"a elephant\"); a tiger traps its prey.",
-  "0162": "One page with mistakes in the source text (\"Its time\", \"shop!Then\").",
+  "0162": "Revisited for typos (20 Nov 2026): a one-page poem of 81 words, too little for 3 questions, with mistakes (\"Its time\", \"shop!Then\") and a threat to \"pop\".",
   "0163": "A six-line poem on one page about a kite that fights other kites; too little for 3 questions.",
   "0164": "Mistakes in the source text (\"like we where\", \"helped my fix myself\"); threats to dismantle a robot, and a factory set on fire.",
   "0165": "The jokes are about a cat pooping stories, and a child calls another \"that annoying boy in Grade Four\".",
@@ -5489,28 +7256,26 @@
   "0188": "Many mistakes in the source text (lowercase \"i\", \"run run\", \"papered out of nowhere\"); a bird carries off the turtle's sister.",
   "0189": "Mistakes in the source text (\"Tina cold hear\", \"so hey went\"), and villagers set out to kill the animal.",
   "0192": "Mistakes in the source text (\"near a mushroom (fungi) .\", \"went more close\"); a cat burnt by acid in the plot.",
-  "0193": "Mistakes in the source text (\"touch it's nose\") and a thin story.",
   "0194": "Revisited for typos (20 Nov 2026): page 8 repeats page 7 word for word, and the joke is a child hiding her grandmother's glasses; fixing it would mean rewriting.",
-  "0196": "A one-page note with mistakes in the source text (\"vaction\") and conversion leftovers (\"###\").",
+  "0196": "Revisited for typos (20 Nov 2026): a one-page note of 48 words with conversion headings (\"### Before\"); too little for 3 questions.",
   "0197": "Revisited for typos (20 Nov 2026): too broken to fix without rewriting (a sentence that stops, \"etc participated\", a runner who appears only in the results).",
-  "0199": "One page with mistakes in the source text (\"here was a magical jungle\", \"One day , there was\").",
+  "0199": "Revisited for typos (20 Nov 2026): one page of 79 words ending in a moral, with mistakes in most sentences (\"here was a magical jungle\", \"but one an elephant\", \"telling him a slow poke\").",
   "0201": "Parents go missing in a war and a plane crashes and burns; a mistake in the source text (\"He father was\").",
   "0202": "Mistakes in the source text (\"sliently\", the illustrators' names inside the story text); a child left alone and lost in a forest at dark.",
   "0204": "A \"Singing Sardarji\" as a stock comic character can read as a stereotype of Sikh men; left out to be safe (the scanner flagged it too).",
   "0205": "Mistakes in the source text (\"promised her to take her back home\", a missing period); a child lost in a jungle.",
   "0207": "The plot is a boy wondering whether God is tricking him; mistakes in the source text (\"tried to makes sense\", \"murukku's\").",
-  "0208": "One page with mistakes in the source text (\"Small kitten was playing\", \"climbed and tree\").",
-  "0209": "One page with mistakes in the source text (\"One Day man went to forest\", \"are started listening\").",
-  "0212": "One page with mistakes in the source text (\"a untidy place\", \"din't\").",
+  "0208": "Revisited for typos (20 Nov 2026): one page, the kitten is \"she\" and \"it\" by turns and most sentences need fixing (\"Small kitten was playing\", \"climbed and tree\"); fixing it would mean rewriting.",
+  "0209": "Revisited for typos (20 Nov 2026): one page whose sentences all need rewriting (\"One Day man went to forest and to see the forest, Practice the music over there\").",
+  "0212": "Revisited for typos (20 Nov 2026): one page ending in a moral, with mistakes in most sentences (\"a untidy place\", \"din't\", \"barking on them\").",
   "0213": "A teacher says \"i will beat you\"; mistakes in the source text (lowercase \"i\", \"The cat torn my testpaper\").",
-  "0214": "Mistakes in the source text (\"On day, Chameleon sleeping\", \"got scared on started\").",
-  "0216": "One page with mistakes in the source text (\"One boy is going back\", \"run away\").",
+  "0216": "Revisited for typos (20 Nov 2026): one page of 58 words, a dog grabs a frightened boy's book and he runs away; mistakes in every sentence.",
   "0217": "Mistakes in the source text (\"a king who like music\", \"he born as a common man\"); the king dies.",
-  "0218": "One page with mistakes in the source text (\"\"did you eat the mangoes? \" .\").",
-  "0219": "One page with mistakes in the source text (\"I can do many things than others\", \"Curator also came as participant\").",
-  "0220": "One page with mistakes in the source text (lowercase start, \"so that money doesn't come again\").",
-  "0221": "One page of 33 words with mistakes in the source text (\"I am not there in home\").",
-  "0222": "One page with mistakes in the source text (\"Group of Bees also followed her\"); not a story.",
+  "0218": "Revisited for typos (20 Nov 2026): one page of 64 words with mistakes in several sentences (\"\"did you eat the mangoes? \" .\", \"it is not her child who ate\"); too little for 3 questions.",
+  "0219": "Revisited for typos (20 Nov 2026): one page whose sentences need rewriting (\"I can do many things than others\", \"Curator also came as participant\").",
+  "0220": "Revisited for typos (20 Nov 2026): one page with mistakes in most sentences, a monkey scares a woman and a crying child, and a stick is kept to keep the \"money\" (monkey) away.",
+  "0221": "Revisited for typos (20 Nov 2026): one sentence of 33 words (\"I am not there in home\"), too little for 3 questions.",
+  "0222": "Revisited for typos (20 Nov 2026): one page of 50 words, not a story.",
   "0223": "One page; a monkey breaks into a kitchen and frightens people; nothing to ask 3 questions about.",
   "0224": "One page with mistakes in the source text (\"mokey\", \"\"what are you doing here?\".\").",
   "0225": "One page of 42 words with mistakes in the source text (\"One of the student writing\"), and labels the children \"naughty\".",
@@ -5518,14 +7283,13 @@
   "0227": "Written for adults: \"damn dog\", a soldier deploying to Iraq who may not come back.",
   "0230": "A mistake in the source text (\"There was an earthquack\"); children left to set up a house alone after an earthquake.",
   "0231": "Revisited for typos (20 Nov 2026): a teacher stays at a pupil's home and has a robot camera follow her everywhere; left out to be safe.",
-  "0232": "Mistakes in the source text (\"Me and my friend\") and a near copy of My Best Friend (0125), which is included.",
-  "0233": "One page with mistakes in the source text (\"he grew up and became 6 years\", \"he told a speech\").",
+  "0232": "Revisited for typos (20 Nov 2026): still left out: a near copy of My Best Friend (0125), which is included.",
+  "0233": "Revisited for typos (20 Nov 2026): one page with mistakes in many sentences (\"he grew up and became 6 years\", \"he told a speech\", quotes not closed).",
   "0234": "Revisited for typos (20 Nov 2026): 40 words, unclear who does what, and a small child ironing all the clothes (unsafe).",
   "0236": "Revisited for typos (20 Nov 2026): eight very short stories with many mistakes (\"confusedat\", \"gotn\", \"selfcontroled\") and conversion headings (\"###\"); fixing it would mean rewriting.",
   "0241": "A mistake in the source text (\"He had become old, little faded\"); a girl pulled away by a river in a dream.",
   "0242": "One page of 51 words, not a story; a mistake in the source text (\"Bits of papers ... is a bad deed\").",
   "0243": "One page with mistakes in the source text (\"thought to had a urgent meeting\"); calls people \"MEAN HUMANS\".",
-  "0247": "Mistakes in the source text (spaces before punctuation throughout: \"Nandu , Chinku , come here .\").",
   "0250": "A mistake in the source text (\"amd set off for work\"); a shopkeeper screams at a crowd; a man is labeled \"a beggar in rags\".",
   "0251": "Revisited for typos (20 Nov 2026): the children slip out of their village with a new friend without telling anyone, and many mistakes (\"under where her town\", \"they were loud noises\", \"their festival which they give\").",
   "0252": "Old poems by other writers collected together, a rabbit crying in a snare, and mistakes (\"Our habits weather right or wrong\", missing spaces after commas).",
@@ -5536,95 +7300,73 @@
   "0260": "A Ramayana story (Lord Rama, Ravana, a prayer to Lord Shiva) is the plot.",
   "0265": "Labels a man by body size (\"fat and round like a laddu\") and ends with him breaking his arm.",
   "0266": "Revisited for typos (20 Nov 2026): too many mistakes to fix without rewriting (most sentences), and a lion threatens to eat the friends.",
-  "0267": "The source text is cut off and garbled at the end, with mistakes (\"throwed\").",
+  "0267": "Revisited for typos (20 Nov 2026): still left out: one page, cut off and garbled at the end, with mistakes throughout (\"throwed\", \"my mother told you can\").",
   "0268": "Revisited for typos (20 Nov 2026): too many mistakes to fix without rewriting (\"didn't had\", \"fishes have started raining\"), and a girl alone in a flooded forest.",
-  "0269": "Mistakes in the source text (stray spaces inside quotes, \"lets Chinnu and Puttu to run\").",
-  "0270": "Mistakes in the source text (\"This experiences make her\", \"All the other pupils takes her\").",
-  "0271": "Mistakes in the source text (\"the two of them's houses\", \"They two cried\").",
+  "0269": "Revisited for typos (20 Nov 2026): awkward throughout (\"their sleep mood\", \"a fun filled bathing playing activity\") with little story; fixing it would mean rewriting.",
+  "0270": "Revisited for typos (20 Nov 2026): sentence fragments and grammar slips on every page (\"This experiences make her the \\\"The active pupil\\\"\"), and little story for 3 questions.",
+  "0271": "Revisited for typos (20 Nov 2026): too many mistakes to fix without rewriting (\"They two cried\", \"the two of them's houses\", \"They lived in the hut areas\").",
   "0272": "Mistakes in the source text (\"in the age of10\", \"how really hated\", \"asusual\"); a boy's hand stuck in a hole in a busy road.",
   "0273": "Mistakes in the source text (\"All in day's job\"); the plot is an advert for a made-up map app.",
-  "0274": "Mistakes in the source text (\"any where\", \"co- operated\", \"the pacific ocean\").",
   "0275": "Mistakes in the source text (\"she is a sweet girl\" without a capital, \"did not allowed\"); a contest for the most beautiful girl to marry a prince.",
   "0278": "A queen dies and people die of disease; mistakes in the source text (\"ther was no rains\", \"Atlast\").",
-  "0279": "Mistakes in the source text (\"humans taking like that\", a quote never closed, \"google\").",
-  "0280": "Mistakes in the source text and an unclear plot (a falling bird, a vulture).",
-  "0281": "Mistakes in the source text (\"He left the milk in a sauce and soon the cat drank way\", \"catoon\").",
+  "0279": "Revisited for typos (20 Nov 2026): sentences run across three page breaks, the man is also called a boy, \"taking\" for talking, and the answer is \"asking Google\"; fixing it would mean rewriting.",
+  "0280": "Revisited for typos (20 Nov 2026): the plot is unclear (a bird is \"falling on the ground\" while a vulture circles, then is helped back up), with sentences split across pages; fixing it would mean rewriting.",
+  "0281": "Revisited for typos (20 Nov 2026): the plot leans on a TV cartoon's characters (Oggy and the Cockroaches) we have no rights to, and many mistakes (\"in a sauce\", \"catoon\", \"became as one\").",
   "0282": "Uses Marvel characters (the Avengers, the Green Goblin) we have no rights to; fighting; mistakes (lowercase names).",
   "0283": "Calls a girl \"weak in studies\" and a bear \"greedy\"; mistakes in the source text (\"Thutankan\", \"Thepla's\", \"contended\").",
   "0284": "Unclear text (\"Ladies when they pray\", monsters) and mistakes.",
   "0285": "Both of a girl's parents die in the first two pages.",
   "0286": "Mistakes in the source text (run-on sentences, the tortoise becomes a turtle mid-story, no final period); a fox tries to eat the tortoise.",
-  "0287": "One page with mistakes in the source text (\"studing\", \"restaurent\", \"the father give\").",
+  "0287": "Revisited for typos (20 Nov 2026): one page describing a family (a bank, films, restaurants) with mistakes in most sentences; not a story.",
   "0288": "One page with mistakes in the source text (\"She like to take risks\", \"heavely\", \"stromy\"); a girl lost alone in a jungle at night.",
   "0290": "Mistakes in the source text (\"Her mother\" capitalized mid-sentence, lowercase \"king kenrykoof\"); a fight with an army.",
   "0291": "Mistakes in the source text (\"mommy and daddy has warned him\", \"a cake awaiting for him\"); a monster threatens to eat a child's teeth.",
   "0292": "Religious: God comes to earth as Lord Krishna; mistakes in the source text (\"donot\").",
   "0294": "A boy sneaks out while his parents nap and expects to be beaten; a mistake in the source text (\"sitting in is house\").",
-  "0295": "Mistakes in the source text (\"6;00 am\", \"television .\", \"subway-sick .\").",
-  "0296": "Mistakes in the source text (\"Like him this Saturday morning, the parents finally allowed\", \"shared the pictures to all their cousins\").",
+  "0295": "Revisited for typos (20 Nov 2026): a sentence runs across a page break (\"wagging their / tails\"), and the plot (two animals off to meet \"the ministry of petrol pumps\") does not hold together; fixing it would mean rewriting.",
+  "0296": "Revisited for typos (20 Nov 2026): garbled sentences (\"Like him this Saturday morning, the parents finally allowed\", \"shared the pictures to all their cousins ... to come\"); fixing it would mean rewriting.",
   "0297": "Warriors fighting, then unrelated lines; mistakes in the source text (\"One day there are 3 warriors\", \"we love beach\").",
-  "0298": "A list of sea animals, not a story, with a mistake in the source text (a missing period after \"Marine Turtle)\").",
-  "0300": "Mistakes in the source text (\"did'nt\", \"Granny's teeth had rot\").",
-  "0301": "Mistakes in the source text (\"a artist\").",
+  "0298": "Revisited for typos (20 Nov 2026): still left out: a list of sea animals and where they live, not a story (the missing period is easy to fix, the thinness is not).",
+  "0300": "Revisited for typos (20 Nov 2026): wrong facts children could learn (toothpaste invented in the 1960s, made with sugar and wood), as well as the mistakes (\"did'nt\", \"had rot\").",
   "0302": "A boy is called \"very fat\" and teased at school; the story is about losing weight.",
   "0303": "A mother dies and her small son does child labor; many mistakes in the source text (\"amoun\", \"fall ill\").",
   "0305": "Lord Indra and a war in heaven are the plot; mistakes in the source text (\"didn't breath fire\", \"on wards\").",
   "0306": "A haunted house and a ghost; a boy goes into a stranger's house against his mother's advice.",
   "0307": "The hyena falls from the sky and is badly hurt (\"howling in pain, with a broken leg and dark scars\").",
-  "0308": "Mistakes in the source text (\"haeven\", \"was'nt\", \"on a drought\").",
-  "0309": "Mistakes in the source text (\"henarrated\", \"thatRaj's\", \"The Most Kindest Person\").",
-  "0310": "Mistakes in the source text (\"it's cool golden beam\", \"among-st\", \"the all the glitter\").",
-  "0311": "Mistakes in the source text (\"she reach exactly when\", \"in all the veggie competition which were\").",
-  "0312": "Mistakes in the source text (\"Once in a sunny day\", \"several dwarf came\", \"shining with all its might .\").",
+  "0309": "Revisited for typos (20 Nov 2026): fixable, but a man the boy helped once tells him \"I would also like to help you with anything you need. Please come and meet me later\" (the scanner flags it too); left out to be safe.",
+  "0312": "Revisited for typos (20 Nov 2026): too many mistakes to fix without rewriting (\"several dwarf came\", \"ascending towards them by the smell\"), hands pull two children into a portal and a dinosaur is said to be coming to eat them.",
   "0314": "Mistakes in the source text (\"Little yo came running\", \"less marks\", a missing period); a child terrified of her parents' reaction.",
   "0315": "A boy is teased about his height and attacks another child wrestling-style (\"Charlie's neck twisted\"); brand names (Manchester United, WWE, Complan).",
   "0316": "A hunting accident takes a man's thumb, cannibals capture a king, and a friend is put in prison.",
-  "0320": "Mistakes in the source text (the rabbit is Balloo and Ballu, \"Ballus kite\"); an unclear ending (\"It was the last time Ballu had seen Appu\").",
-  "0321": "Mistakes in the source text (\"he lost in space\", \"spiting fire\", rows of dots).",
-  "0323": "Mistakes in the source text (\"Bade- the elephant\", a missing period after \"kind eyes before\").",
-  "0324": "A mistake in the source text (\"Fireflies maybe tiny\"); a section about choosing mates.",
-  "0325": "Mistakes in the source text (\"As Varun was dreaming of a dragon in the form of a train, a lighthouse and a bridge.\" is not a sentence; tenses change mid-story).",
-  "0328": "A mistake in the source text (\"told the Astronaut / That how he is stuck alone and lost\").",
-  "0329": "Pictures: 8 pictures for 8 pages and the descriptions do not show which goes with which; the text also has mistakes (\"eyery one\", \"and and\").",
+  "0320": "Revisited for typos (20 Nov 2026): the rabbit is Balloo and Ballu, and the ending (\"It was the last time Ballu had seen Appu...\") reads as if the elephant is gone for good; fixing it would mean rewriting.",
+  "0321": "Revisited for typos (20 Nov 2026): the dragon eats aliens he takes for chillies, and the text is mostly runs of dots and fragments; fixing it would mean rewriting.",
+  "0324": "Revisited for typos (20 Nov 2026): the one mistake (\"Fireflies maybe tiny\") is easy to fix, but the page about fireflies choosing mates (\"female fireflies prefer flashy males\") stays a reason to leave it out.",
+  "0325": "Revisited for typos (20 Nov 2026): the tense changes from page to page and the last page starts with a part sentence; the dream and the trip do not hold together without rewriting.",
+  "0329": "Revisited for typos (20 Nov 2026): still left out: the text is too broken to fix without rewriting (one long run-on last page, \"eyery one\", \"and and\"), and 8 pictures for 8 pages with no clear match.",
   "0331": "Lions plan to \"share the kill\" of a giraffe; mistakes in the source text (\"asked.\" It's\", \"life.\"\" Everyone\").",
   "0333": "A lizard calls a little girl \"a sweet little dope\"; a mistake in the source text (\"Well It would seem\").",
   "0334": "Mistakes in the source text (\"immediately drawn his attention\", \"soo happy\", \"He was surprise\"); calls the goat \"very fat\".",
-  "0337": "Mistakes in the source text (\"asked their mother if we could go\", \"All the pictures they took was attached\").",
+  "0337": "Revisited for typos (20 Nov 2026): reported speech is mixed up on every page (\"asked their mother if we could go\") and the last line (\"they would quarrel about being a scientist back again\") is unclear; fixing it would mean rewriting.",
   "0339": "The plot is a breathing meditation (\"The breath moves in...the breath moves out\"), close to spiritual instruction; an unclear line (\"Off went the calf with the teeth\").",
   "0340": "Meditation and trances are the plot, close to spiritual instruction; a mistake in the source text (\"a flower , a very special flower\").",
-  "0341": "Mistakes in the source text (\"waiting for you..\", \"he said,\" Let's go\", \"water.\" Oh!\").",
-  "0342": "Many mistakes in the source text (\"THen\", \"it's branches\", lowercase \"i\", \"full of people's\").",
-  "0343": "Mistakes in the source text (a lowercase first word, \"in all it's glory\").",
+  "0342": "Revisited for typos (20 Nov 2026): too many mistakes to fix without rewriting (run-on sentences, \"THen\", \"full of people's\", lowercase \"i\"), and the bear's prayer (\"Oh god! thank you\") ends the story.",
   "0344": "The other animals mock the crocodile as a baby, his friends trick him by pretending a snail is drowning, and a mistake (\"anwhere\").",
-  "0348": "Mistakes in the source text (\"the first Indian women pilot\", a stray Arabic character on page 7).",
   "0349": "Only 3 pages; the story stops before it ends.",
-  "0351": "One page with a mistake in the source text (\"They eat and play together\" in a past-tense story).",
-  "0352": "Mistakes in the source text (\"Common name: Ricea\", \"Capsicum annum\", \"Coffeea Arabica\", \"Their favourite thing to collect are seeds\").",
-  "0356": "A mistake in the source text (\"to make to dream come true\").",
   "0358": "The jokes are about an uncle's bald head; mistakes in the source text (\"noded\", \"headfull\", \"Everyone in the house were\").",
-  "0359": "Mistakes in the source text (\"I just did an IRONY!\", \"what 'irony\" meant\").",
   "0361": "Velociraptors attack and bite the mother dinosaur; mistakes in the source text (\"knocked their breaths of\", \"It's body\").",
-  "0362": "Mistakes in the source text (\"I miss my friends/\", \"inthe sky\", \"needed to be go to the park\").",
-  "0363": "Mistakes in the source text (\"One day when Lilly was feeding Yuri.\", \"having so much,\", \"embarassed\", \"fresh air ,\").",
-  "0364": "Mistakes in the source text (spaces before punctuation throughout, \"thier mom\").",
   "0365": "One page of 45 words about bursting firecrackers; nothing to ask 3 questions about.",
-  "0366": "An author's note says nouns are in bold and italics, which the text does not have; a mistake (\"clouds.\" I want to fly\").",
+  "0366": "Revisited for typos (20 Nov 2026): the last page is an author's note saying nouns are in bold and italics, which the text does not have; taking it out and fixing the speech punctuation on every page (\"in my dream.\" replied Madhu) is more than a typo fix.",
   "0367": "Many mistakes in the source text (sentences starting lowercase, \"1 O\" clock\", \"dont\"); a child hides to make the family miss the train.",
-  "0369": "Half the book is an author's note to parents; a mistake in the source text (\"listen to her in attention\").",
-  "0370": "Mistakes in the source text (\"thou\" for though, \"palbable\", \"Adtiya\", \"his sibling\" for a girl).",
-  "0372": "Mistakes in the source text (\"Oh ho! will it eat\", \"Golden and yellow ,\", \"laid it over the seed\").",
+  "0369": "Revisited for typos (20 Nov 2026): half the book is an author's note to parents (reading tips), not the story; the mistake (\"listen to her in attention\") is small, but the note stays a reason.",
   "0374": "Compares children to monkeys, which can read as a slur; left out to be safe.",
   "0378": "A list of vehicles, not a story.",
-  "0379": "A mistake in the source text (\"But Lalu was said.\" for sad).",
-  "0381": "Mistakes in the source text (\"Green chirpy Parrots with red beak\", \"My books, let me be anyone who I want to be. It also takes me\").",
-  "0383": "Mistakes in the source text (\"the bird's play\", \"Day at Garden\").",
+  "0383": "Revisited for typos (20 Nov 2026): 52 words, a sentence split across two pages, and a child cooks soup on his own.",
   "0384": "Children cook on the gas burner alone while their grandmother sleeps; tenses mixed in the source text (\"Ammamma is sleeping. Tilly and Kyle were\").",
-  "0389": "Mistakes in the source text (\"Chit- Chat\", \"play instrument\", \"we took some rest. and all\").",
+  "0389": "Revisited for typos (20 Nov 2026): the story skips from a walk to \"she remembered it was my birthday\" with nothing between, with broken sentences (\"Oh I said.. we took some rest. and all\"); fixing it would mean rewriting.",
   "0390": "Boys throw stones at a horse; mistakes in the source text (\"There he saw , many\", \"jumping into the fire from the frying pan\").",
   "0394": "A coach is called \"Fatty Patty\", the children are given an energy drink, and mistakes (\"Its\", \"thats\", \"lets\").",
-  "0399": "Two lines (28 words) with a mistake in the source text (\"falling from the sky like a rain\").",
-  "0400": "A mistake in the source text (\"She hardly every listened to her parents\").",
-  "0401": "Mistakes in the source text (a quote never closed, \"he indeed is\" after an exclamation, \"the next min\").",
+  "0399": "Revisited for typos (20 Nov 2026): two lines (28 words), too little for 3 questions.",
+  "0401": "Revisited for typos (20 Nov 2026): a long story told inside the mother's speech, with the crane's and the baby's words unmarked and quotation marks missing throughout; fixing it would mean rewriting.",
   "0403": "Mistakes in the source text (\"brought you hear\", \"a huge anthill in sitting\"); a gun and Toy Story characters are mentioned.",
   "0404": "Mistakes in the source text (\"who's hearing and eyesight was not to good\"); \"Oh My God!\" and \"box Pa's ears\"; a feared uncle yells at a driver.",
   "0409": "An 11-year-old alone at home in the evening; mistakes in the source text (\"and and city lights\", \"He remembered on his good friend\").",
@@ -5632,14 +7374,13 @@
   "0412": "A girl is mocked for her looks (\"a nose as big as a mango\", \"You look like a circus clown!\"); the story is about her appearance.",
   "0413": "An orphan girl is described as \"fair, tall and thin\"; a pooja; mistakes in the source text (\"'I am feeling guilty, said Mummy\").",
   "0414": "One page of 67 words; the story stops before anything happens.",
-  "0415": "Mistakes in the source text (\"frogs's\", \"curios\", \"A on his seat\").",
   "0422": "Describes people as \"fat and thin, beautiful and ugly\"; mistakes in the source text (\"shouts.\" Am I\", \"lets go\", \"was was\").",
   "0423": "A holy man's mantras shrink a dragon, and a cat bites off its tail; mistakes in the source text (\"sunbath\").",
   "0424": "A wicked sea-beast named Moron tricks a girl, drags her into the sea and locks her up.",
   "0425": "Four words in all (too little text for 3 questions).",
-  "0426": "Mistakes in the source text (\"pinks and yellows ,\", \"Who would that be? who would sneak up\", missing commas before the speaker), and \"I hate my life\".",
+  "0426": "Revisited for typos (20 Nov 2026): the typos are easy to fix, but \"I hate my life\" and children who live under a bridge stay reasons to leave it out.",
   "0427": "Animals steal a woodcutter's food and are praised for never being caught; a mistake in the source text (\"an woodcutter\").",
-  "0428": "Mistakes in the source text (\"favouite\", \"moneylender ,\", \"Give the carpenter\" capitalized mid-sentence).",
+  "0428": "Revisited for typos (20 Nov 2026): pages 3 to 7 are a few words and dots each, and the story ends by warning readers they \"will suffer like Shyamlal Babu\".",
   "0429": "A king swallows a bird twice and soldiers swing swords to chop off its head (they cut off the king's nose)."
  },
  "scanReviewed": {
@@ -5649,7 +7390,8 @@
   "0096": "The scanner's chat rule matches \"don't talk to any strangers\": a mother's safety advice. Reviewed: fine.",
   "0103": "The scanner's private-person rule matches \"my sister\": the narrator's sister in the story, not a real person. Reviewed: fine.",
   "0148": "The scanner's profanity rule matches \"BooBoo\", the bear's name. Reviewed: fine.",
-  "0159": "The scanner's profanity rule matches \"cocked his ears\": the puppy listening. Reviewed: fine."
+  "0159": "The scanner's profanity rule matches \"cocked his ears\": the puppy listening. Reviewed: fine.",
+  "0343": "The scanner's drugs rule matches \"rum-pa-pum-pa-pum\": the bear humming. Reviewed: fine."
  },
  "pictureMap": {
   "0038": {
