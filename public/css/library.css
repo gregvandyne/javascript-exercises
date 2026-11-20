@@ -208,3 +208,6 @@
    the whole site (a Mac trackpad, Chrome and Edge on touch screens, iOS rubber-banding). */
 html:has(#rd-stage:not([hidden])),html:has(#rd-stage:not([hidden])) body{overscroll-behavior-x:none;overflow-x:clip}
 .rd-stage>:not(.rd-nav){will-change:transform}
+/* No picture-save menu or text selection getting in the way of a swipe (iPhone Safari). */
+.rd-stage img{-webkit-touch-callout:none;-webkit-user-drag:none;user-select:none}
+.rd-stage.is-dragging{-webkit-user-select:none;user-select:none}

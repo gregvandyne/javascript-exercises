@@ -9713,3 +9713,9 @@ side by side as an open book (approved mockup). Pages must fit half a 1280 x 720
   is open `html` and `body` have `overscroll-behavior-x: none` (no browser back/forward swipe, no sideways rubber-band)
   and `overflow-x: clip`. Not reachable from a web page: iPhone Safari's back swipe from the very left edge of the
   screen.
+- Follow-up (20 Nov 2026), owner on iPhone Safari: "better but still not perfect". The finger swipe now uses touch
+  events with a non-passive `touchmove` that cancels the browser's own move as soon as a finger goes sideways (pointer
+  events can't stop iPhone Safari from panning the site first); up and down stays a scroll, two fingers a pinch. A
+  touch starting within 20px of the screen's left or right edge is left to Safari's back/forward swipe (a web page
+  can't turn that off, and doing both at once looked broken). Pictures have no save menu or drag ghost in the reader,
+  and words aren't selected mid-swipe.
