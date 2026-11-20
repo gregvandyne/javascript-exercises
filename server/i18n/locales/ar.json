@@ -3317,7 +3317,8 @@
       "tryAgain": "حاول مرة أخرى! انظر في الصفحة {page}.",
       "lookAt": "انظر في الصفحة {page}",
       "doneMsg": "أحسنت! {right} من {total} صحيحة من المحاولة الأولى. قراءة رائعة!",
-      "doneShort": "أحسنت! قراءة رائعة!"
+      "doneShort": "أحسنت! قراءة رائعة!",
+      "pagesOf": "الصفحات {from}-{to} من {pages}"
     }
   },
   "favorites": {
@@ -11676,7 +11677,10 @@
       "from": "مأخوذ عن كتاب لـ {name}",
       "changesBloom": "غيّرت Oomba حجم الصور وتعرض الكتاب صفحةً صفحة. لا تؤيد Bloom Library ولا SIL Global ولا ناشر الكتاب منصة Oomba.",
       "changesBloomSA": "غيّرت Oomba حجم الصور وتعرض الكتاب صفحةً صفحة؛ وهذه الصفحات المعدّلة متاحة بالترخيص نفسه، {license}. لا تؤيد Bloom Library ولا SIL Global ولا ناشر الكتاب منصة Oomba.",
-      "originalBloom": "الكتاب الأصلي على Bloom Library."
+      "originalBloom": "الكتاب الأصلي على Bloom Library.",
+      "publicDomain": "ملك عام",
+      "firstPublished": "نُشر أول مرة عام {year} ({edition}).",
+      "changesClassic": "قسّمت Oomba القصة إلى صفحات وغيّرت حجم الصور. الكلمات هي كلمات المؤلف."
     },
     "readToMe": "اقرأ لي",
     "pagesLabel": "الصفحات",
@@ -11742,6 +11746,10 @@
       "found": "{count, plural, zero {لم نجد كتبًا لك.} one {وجدنا كتابًا واحدًا لك.} two {وجدنا كتابين لك.} few {وجدنا # كتب لك.} many {وجدنا # كتابًا لك.} other {وجدنا # كتاب لك.}}",
       "empty": "اكتب عمّا تحب أن تقرأ.",
       "error": "حدث خطأ ما. حاول مرة أخرى."
-    }
+    },
+    "sources": {
+      "classics": "الكلاسيكيات"
+    },
+    "footClassics": "الكلاسيكيات: كتب قديمة في الملك العام، مع رسومها الأصلية."
   }
 }

@@ -48,6 +48,7 @@ const ext = (href, text) => html`<a href="${href}" rel="noopener noreferrer" tar
  *  the link to the original book). */
 export function credits(t, bk, { full = false } = {}) {
   const c = bk.credits;
+  if (bk.source === 'classics') return classicCredits(t, bk);
   const parts = [
     c.text.length ? t('library.credits.text', { names: listOf(t, c.text) }) : '',
     c.illustration.length ? t('library.credits.illustration', { names: listOf(t, c.illustration) }) : '',
@@ -69,9 +70,28 @@ export function credits(t, bk, { full = false } = {}) {
       <p><span>${(makers.length ? parts.slice(makers.length) : parts).join(' · ')} · ${lic}</span></p>
       <p class="lb-credit-note">${note}${full && c.sourceUrl ? html` ${ext(c.sourceUrl, bk.source === 'bloom' ? t('library.credits.originalBloom') : t('library.credits.original'))}` : ''}</p></details></div>`;
 }
+/** A Classics book's credits (docs/decisions.md "Story Library: a Classics shelf"): the author and illustrator with the
+ *  year the book first came out, in view; folded under the notes: "Public domain", the first edition, and what Oomba
+ *  changed (split into pages, resized pictures, any corrections). The digitized copy it was read from is named only in
+ *  docs/story-library-classics.md, never on the site. */
+function classicCredits(t, bk) {
+  const c = bk.credits;
+  const by = [
+    c.text.length ? t('library.credits.text', { names: listOf(t, c.text) }) : '',
+    c.illustration.length ? `${t('library.credits.illustration', { names: listOf(t, c.illustration) })} (${c.published})` : '',
+    c.translation.length ? t('library.credits.translation', { names: listOf(t, c.translation) }) : '',
+  ].filter(Boolean);
+  const note = [t('library.credits.changesClassic'), c.corrections ? t('library.credits.corrected') : ''].filter(Boolean).join(' ');
+  return html`<div class="lb-credit small muted" dir="auto">
+    <p class="lb-credit-by">${by.join(' · ')}</p>
+    <details class="lb-credit-more"><summary>${t('library.credits.notes')}</summary>
+      <p><span>${t('library.credits.publicDomain')} · ${t('library.credits.firstPublished', { year: c.published, edition: c.edition })}</span></p>
+      <p class="lb-credit-note">${note}</p></details></div>`;
+}
 const meta = (t, bk) => t('library.meta', { pages: bk.pages.length, questions: bk.questions.length });
-/** Where a book comes from, on its card and its page: "StoryWeaver" or "Bloom Library". */
-const sourceName = bk => html`<span class="lb-src" dir="ltr">${bk.credits.platform}</span>`;
+/** Where a book comes from, on its card and its page: "StoryWeaver", "Bloom Library" or "Classics" (translated: it is
+ *  a shelf, not a publisher). */
+const sourceName = (t, bk) => (bk.source === 'classics' ? html`<span class="lb-src">${t('library.sources.classics')}</span>` : html`<span class="lb-src" dir="ltr">${bk.credits.platform}</span>`);
 
 /** The staff's class for Assign (?class=): one they may assign to. */
 function classParam(req) {
@@ -95,7 +115,7 @@ export function bookCard(t, bk, { read = null, staff = false, forClass = null } 
     <a class="lb-cover" href="/library/${bk.id}" tabindex="-1" aria-hidden="true"><img src="${bk.cover.src}" alt="" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}" loading="lazy" decoding="async"></a>
     <div class="lb-body">${gradeChip(t, bk.grade)}
       <h2 class="lb-title"><a href="/library/${bk.id}" dir="auto">${bk.title}</a></h2>
-      <p class="lb-meta small muted">${meta(t, bk)} · ${sourceName(bk)}</p>${status()}
+      <p class="lb-meta small muted">${meta(t, bk)} · ${sourceName(t, bk)}</p>${status()}
       <div class="lb-acts"><a class="btn btn-primary btn-sm" href="/library/${bk.id}/read">📖 ${t('library.read')}</a>${staff ? html`<a class="btn btn-sm" href="${assignHref(bk, forClass)}">📌 ${t('library.assign')}</a>` : ''}</div></div></li>`;
 }
 
@@ -131,7 +151,7 @@ router.get('/library', (req, res) => {
     </form>
     ${list.length ? html`<p class="sr-only" role="status">${t('library.found', { count: list.length })}</p><ul class="lb-grid" id="lb-grid">${list.map(card)}</ul>`
       : html`<section class="panel">${emptyState({ emoji: '🔎', title: t('library.none'), text: t('library.noneText'), action: html`<a class="btn" href="/library">${t('library.allGrades')}</a>` })}</section>`}
-    <p class="small muted lb-foot">${t('library.footSources')} · ${t('library.footQuestions')}</p>
+    <p class="small muted lb-foot">${t('library.footSources')} ${t('library.footClassics')} · ${t('library.footQuestions')}</p>
   </div>`;
   page(req, res, { title: t('library.title'), active: 'learn', body, head: raw(`${CSS}${WISH_CSS}`), scripts: ['/js/library-suggest.js'], description: t('library.lead', { count: LIB.books().length }) });
 });
@@ -148,7 +168,7 @@ router.get('/library/:id', (req, res) => {
       <img class="lb-book-cover" src="${bk.cover.src}" alt="" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}">
       <div class="lb-book-info">${gradeChip(t, bk.grade)}
         <h1 dir="auto">${bk.title}</h1>
-        <p class="muted">${meta(t, bk)} · ${t('library.words', { count: bk.words })} · ${sourceName(bk)}</p>
+        <p class="muted">${meta(t, bk)} · ${t('library.words', { count: bk.words })} · ${sourceName(t, bk)}</p>
         <div class="row"><a class="btn btn-primary btn-big" href="/library/${bk.id}/read${st.state === 'reading' ? `?p=${st.page}` : ''}">📖 ${go}</a>${isStaff(u) ? html`<a class="btn" href="${assignHref(bk, forClass)}">📌 ${t('library.assign')}</a>` : ''}</div>
         ${gradeDetails(t, bk)}
         ${st.state === 'done' ? html`<p class="lb-state is-done">✅ ${t('library.state.done', { right: st.right, total: st.total })}</p>` : ''}
@@ -164,6 +184,10 @@ router.get('/library/:id', (req, res) => {
 // ---------------------------------------------------------------- the reader
 /** A page's text length band (s/m/l/xl): its type size, so the words and the picture fit on one screen (library.css). */
 const lenOf = words => (words <= 20 ? 's' : words <= 50 ? 'm' : words <= 100 ? 'l' : 'xl');
+/** A book with any page that has no picture: the Classics (docs/decisions.md "Story Library: a Classics shelf"). */
+export const hasTextPages = bk => bk.pages.some(p => !p.image);
+/** A Classics page's words with their paragraphs (a blank line) and line breaks (a poem), as public/js/library.js draws them. */
+const pageText = text => String(text).split('\n\n').map((para, i) => html`${i ? raw('<span class="rd-para"></span>') : ''}${para.split('\n').map((line, k) => html`${k ? raw('<br>') : ''}${line}`)}`);
 router.get('/library/:id/read', (req, res) => {
   const bk = bookOr404(req, res); if (!bk) return;
   const t = req.t, u = req.user;
@@ -175,15 +199,23 @@ router.get('/library/:id/read', (req, res) => {
   const cls = ctx ? S.getClass(L.getClassLesson(ctx.clId).class_id) : null;
   const back = cls ? { href: `/class/${cls.id}`, label: cls.name } : { href: `/library/${bk.id}`, label: t('library.title') };
   const pg = bk.pages[Math.min(p0, n) - 1];
+  // A book with pages that have no picture (the Classics) gets the book layout: on a wide, landscape screen two such
+  // pages side by side as an open book (public/js/library.js draws the spreads); its words keep their paragraphs.
+  const classic = hasTextPages(bk);
+  const pic = pg.image ? html`<figure class="rd-pic"><img id="rd-img" src="${pg.image.src}" alt="${pg.image.alt}" width="${pg.image.w || 720}" height="${pg.image.h || 400}"></figure>`
+    : html`<figure class="rd-pic" hidden><img id="rd-img" alt=""></figure>`;
   // The first page is drawn by the server (it works without JavaScript: Back/Next are links); public/js/library.js takes
   // over, turns pages in place and runs Read to me and the questions.
-  const body = html`<div class="rd" id="reader" data-book="${bk.id}">
+  const body = html`<div class="rd${classic ? ' rd-classic' : ''}" id="reader" data-book="${bk.id}">
     <div class="rd-top"><a class="rd-back" href="${back.href}"><span class="flip" aria-hidden="true">←</span> <span dir="auto">${back.label}</span></a>
       <h1 class="rd-title" dir="auto">${bk.title}</h1>
       <button class="btn btn-primary rd-aloud" type="button" id="rd-aloud" aria-pressed="false" hidden>🔊 <span>${t('library.readToMe')}</span></button></div>
-    <div class="rd-stage" id="rd-stage"${p0 > n ? raw(' hidden') : ''}>
-      <figure class="rd-pic"><img id="rd-img" src="${pg.image.src}" alt="${pg.image.alt}" width="${pg.image.w || 720}" height="${pg.image.h || 400}"></figure>
-      <p class="rd-text" id="rd-text" lang="en" dir="ltr" aria-live="polite" data-len="${lenOf(pg.words)}">${pg.text}</p>
+    <div class="rd-stage${classic ? ` is-classic${pg.image ? '' : ' is-text'}` : ''}" id="rd-stage"${p0 > n ? raw(' hidden') : ''}>
+      ${classic ? html`${pic}
+      <div class="rd-leaf rd-leaf-l"><p class="rd-text" id="rd-text" lang="en" dir="ltr" aria-live="polite" data-len="${lenOf(pg.words)}">${pageText(pg.text)}</p><span class="rd-folio" id="rd-folio" aria-hidden="true">${Math.min(p0, n)}</span></div>
+      <div class="rd-leaf rd-leaf-r" id="rd-leaf-r" hidden><p class="rd-text" id="rd-text2" lang="en" dir="ltr" aria-live="polite"></p><span class="rd-folio" id="rd-folio2" aria-hidden="true"></span></div>`
+    : html`<figure class="rd-pic"><img id="rd-img" src="${pg.image.src}" alt="${pg.image.alt}" width="${pg.image.w || 720}" height="${pg.image.h || 400}"></figure>
+      <p class="rd-text" id="rd-text" lang="en" dir="ltr" aria-live="polite" data-len="${lenOf(pg.words)}">${pg.text}</p>`}
       <nav class="rd-nav" aria-label="${t('library.pagesLabel')}">
         <a class="btn rd-prev" id="rd-prev" href="?p=${Math.max(1, p0 - 1)}"${p0 <= 1 ? raw(' aria-disabled="true" tabindex="-1"') : ''}><span class="flip" aria-hidden="true">◀</span> ${t('library.back')}</a>
         <span class="rd-dots" id="rd-dots" aria-hidden="true">${bk.pages.map((_, i) => html`<i class="${i < p0 ? 'on' : ''}"></i>`)}</span>

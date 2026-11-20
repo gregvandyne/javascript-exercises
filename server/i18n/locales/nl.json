@@ -3317,7 +3317,8 @@
       "tryAgain": "Probeer het nog eens! Kijk op bladzijde {page}.",
       "lookAt": "Kijk op bladzijde {page}",
       "doneMsg": "Klaar! {right} van {total} in één keer goed. Goed gelezen!",
-      "doneShort": "Klaar! Goed gelezen!"
+      "doneShort": "Klaar! Goed gelezen!",
+      "pagesOf": "Pagina’s {from}-{to} van {pages}"
     }
   },
   "favorites": {
@@ -11676,7 +11677,10 @@
       "from": "Gebaseerd op een boek van {name}",
       "changesBloom": "Oomba heeft de plaatjes kleiner gemaakt en laat het boek pagina voor pagina zien. Bloom Library, SIL Global en de uitgever van het boek steunen Oomba niet officieel.",
       "changesBloomSA": "Oomba heeft de plaatjes kleiner gemaakt en laat het boek pagina voor pagina zien; deze bewerkte pagina’s worden gedeeld onder dezelfde licentie, {license}. Bloom Library, SIL Global en de uitgever van het boek steunen Oomba niet officieel.",
-      "originalBloom": "Bekijk het originele boek op Bloom Library."
+      "originalBloom": "Bekijk het originele boek op Bloom Library.",
+      "publicDomain": "Publiek domein",
+      "firstPublished": "Voor het eerst verschenen in {year} ({edition}).",
+      "changesClassic": "Oomba heeft het verhaal in pagina’s verdeeld en de plaatjes verkleind. De woorden zijn van de schrijver."
     },
     "readToMe": "Lees voor",
     "pagesLabel": "Bladzijden",
@@ -11742,6 +11746,10 @@
       "found": "We hebben {count, plural, one {# boek} other {# boeken}} voor je gevonden.",
       "empty": "Schrijf waarover je wilt lezen.",
       "error": "Er ging iets mis. Probeer het nog eens."
-    }
+    },
+    "sources": {
+      "classics": "Klassiekers"
+    },
+    "footClassics": "Klassiekers: oude boeken uit het publieke domein, met hun oorspronkelijke tekeningen."
   }
 }

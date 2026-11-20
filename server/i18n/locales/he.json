@@ -3317,7 +3317,8 @@
       "tryAgain": "נסו שוב! הסתכלו בעמוד {page}.",
       "lookAt": "לעמוד {page}",
       "doneMsg": "סיימת! {right} מתוך {total} נכונות בניסיון הראשון. קריאה נהדרת!",
-      "doneShort": "סיימת! קריאה נהדרת!"
+      "doneShort": "סיימת! קריאה נהדרת!",
+      "pagesOf": "עמודים {from}-{to} מתוך {pages}"
     }
   },
   "favorites": {
@@ -11677,7 +11678,10 @@
       "from": "על פי ספר של {name}",
       "changesBloom": "Oomba שינתה את גודל התמונות ומציגה את הספר עמוד אחר עמוד. Bloom Library,‏ SIL Global וההוצאה של הספר לא ממליצים על Oomba.",
       "changesBloomSA": "Oomba שינתה את גודל התמונות ומציגה את הספר עמוד אחר עמוד; העמודים המעובדים משותפים באותו רישיון, {license}. Bloom Library,‏ SIL Global וההוצאה של הספר לא ממליצים על Oomba.",
-      "originalBloom": "לספר המקורי ב-Bloom Library."
+      "originalBloom": "לספר המקורי ב-Bloom Library.",
+      "publicDomain": "נחלת הכלל",
+      "firstPublished": "יצא לאור לראשונה ב-{year} ({edition}).",
+      "changesClassic": "Oomba חילקה את הסיפור לעמודים ושינתה את גודל התמונות. המילים הן של המחבר."
     },
     "readToMe": "הקרא לי",
     "pagesLabel": "עמודים",
@@ -11743,6 +11747,10 @@
       "found": "{count, plural, one {מצאנו ספר אחד בשבילך.} other {מצאנו # ספרים בשבילך.}}",
       "empty": "כתבו על מה תרצו לקרוא.",
       "error": "משהו השתבש. נסו שוב."
-    }
+    },
+    "sources": {
+      "classics": "קלאסיקות"
+    },
+    "footClassics": "קלאסיקות: ספרים ישנים שנמצאים בנחלת הכלל, עם האיורים המקוריים שלהם."
   }
 }

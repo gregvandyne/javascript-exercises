@@ -3335,7 +3335,8 @@
       "tryAgain": "Try again! Look at page {page}.",
       "lookAt": "Look at page {page}",
       "doneMsg": "All done! {right} of {total} right on the first try. Great reading!",
-      "doneShort": "All done! Great reading!"
+      "doneShort": "All done! Great reading!",
+      "pagesOf": "Pages {from}-{to} of {pages}"
     },
     "manip": {
       "loadingShort": "Loading…",
@@ -12286,7 +12287,10 @@
       "from": "Based on a book by {name}",
       "changesBloom": "Oomba resized the pictures and shows the book one page at a time. Bloom Library, SIL Global and the book's publisher do not endorse Oomba.",
       "changesBloomSA": "Oomba resized the pictures and shows the book one page at a time; these adapted pages are shared under the same license, {license}. Bloom Library, SIL Global and the book's publisher do not endorse Oomba.",
-      "originalBloom": "See the original book on Bloom Library."
+      "originalBloom": "See the original book on Bloom Library.",
+      "publicDomain": "Public domain",
+      "firstPublished": "First published in {year} ({edition}).",
+      "changesClassic": "Oomba split the story into pages and resized the pictures. The words are the author's own."
     },
     "readToMe": "Read to me",
     "pagesLabel": "Pages",
@@ -12352,7 +12356,11 @@
       "found": "We found {count, plural, one {# book} other {# books}} for you.",
       "empty": "Type what you would like to read about.",
       "error": "Something went wrong. Please try again."
-    }
+    },
+    "sources": {
+      "classics": "Classics"
+    },
+    "footClassics": "Classics: old books in the public domain, with their original pictures."
   },
   "manip": {
     "title": "Math manipulatives",

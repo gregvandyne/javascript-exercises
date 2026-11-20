@@ -3317,7 +3317,8 @@
       "tryAgain": "Versuch es noch mal! Schau auf Seite {page}.",
       "lookAt": "Seite {page} ansehen",
       "doneMsg": "Fertig! {right} von {total} beim ersten Versuch richtig. Toll gelesen!",
-      "doneShort": "Fertig! Toll gelesen!"
+      "doneShort": "Fertig! Toll gelesen!",
+      "pagesOf": "Seiten {from}-{to} von {pages}"
     }
   },
   "favorites": {
@@ -11676,7 +11677,10 @@
       "from": "Nach einem Buch von {name}",
       "changesBloom": "Oomba hat die Bilder verkleinert und zeigt das Buch Seite für Seite. Bloom Library, SIL Global und der Verlag des Buches unterstützen Oomba nicht offiziell.",
       "changesBloomSA": "Oomba hat die Bilder verkleinert und zeigt das Buch Seite für Seite; diese bearbeiteten Seiten stehen unter derselben Lizenz, {license}. Bloom Library, SIL Global und der Verlag des Buches unterstützen Oomba nicht offiziell.",
-      "originalBloom": "Zum Originalbuch auf Bloom Library."
+      "originalBloom": "Zum Originalbuch auf Bloom Library.",
+      "publicDomain": "Gemeinfrei",
+      "firstPublished": "Erstmals erschienen {year} ({edition}).",
+      "changesClassic": "Oomba hat die Geschichte in Seiten geteilt und die Bilder verkleinert. Der Text ist der des Autors."
     },
     "readToMe": "Vorlesen",
     "pagesLabel": "Seiten",
@@ -11742,6 +11746,10 @@
       "found": "Wir haben {count, plural, one {# Buch} other {# Bücher}} für dich gefunden.",
       "empty": "Schreib, worüber du lesen möchtest.",
       "error": "Etwas ist schiefgegangen. Versuch es noch einmal."
-    }
+    },
+    "sources": {
+      "classics": "Klassiker"
+    },
+    "footClassics": "Klassiker: alte, gemeinfreie Bücher mit ihren Originalbildern."
   }
 }
