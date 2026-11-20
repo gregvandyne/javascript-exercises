@@ -11669,6 +11669,7 @@
       "translation": "Traducción: {names}",
       "changes": "Oomba cambió el tamaño de las imágenes y muestra el libro página por página. Pratham Books no respalda a Oomba.",
       "corrected": "Oomba corrigió la ortografía y la puntuación.",
+      "factCorrected": "Oomba corrigió un dato histórico.",
       "original": "Ver el libro original.",
       "from": "Basado en un libro de {name}",
       "changesBloom": "Oomba cambió el tamaño de las imágenes y muestra el libro página por página. Bloom Library, SIL Global y la editorial del libro no respaldan a Oomba.",

@@ -182,7 +182,8 @@ test('fixes: Oomba\'s corrections of a book\'s typos are applied exactly, or the
   // The shipped books: every corrected StoryWeaver book shows the note and its count matches its fixes.
   const curation = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-library/storyweaver.json'), 'utf8'));
   const shipped = LIB.books().filter(b => b.source === 'storyweaver');
-  for (const b of shipped) assert.equal(b.credits.corrections, (curation.picks[b.sourceId].fixes || []).length || undefined, `${b.id} corrections`);
+  const typoFixes = b => (curation.picks[b.sourceId].fixes || []).filter(f => f.kind !== 'fact');
+  for (const b of shipped) assert.equal(b.credits.corrections, typoFixes(b).length || undefined, `${b.id} corrections`);
   assert.ok(shipped.some(b => b.credits.corrections), 'some shipped books were corrected');
   for (const b of shipped) assert.equal(out(b).includes('Oomba corrected spelling'), !!b.credits.corrections, b.id);
 });
@@ -397,4 +398,16 @@ test('account delete removes the reader\'s own progress', async () => {
   const r = del.deleteAccount(s.outsider.id, s.boss, { by: 'admin', parentMade: false });
   assert.ok(r.ok, JSON.stringify(r));
   assert.equal(q.get('SELECT COUNT(*) n FROM story_reads WHERE user_id=?', s.outsider.id).n, 0);
+});
+
+test('a corrected history fact is applied and noted in the credits (Marching to Freedom, sw-0093)', async () => {
+  const b = LIB.getBook('sw-0093');
+  const text = b.pages.map(p => p.text).join('\n');
+  assert.doesNotMatch(text, /Non-cooperation/);
+  assert.match(text, /Civil Disobedience Movement/);
+  assert.equal(b.credits.factCorrections, 2);
+  const page = await call('/library/sw-0093');
+  assert.match(page.text, /Oomba corrected a history fact\./);
+  assert.match(page.text, /Oomba corrected spelling and punctuation\./);
+  assert.doesNotMatch((await call('/library/sw-0001')).text, /history fact/, 'only on books with a fact correction');
 });

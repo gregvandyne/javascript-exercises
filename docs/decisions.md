@@ -9255,3 +9255,15 @@ allows adaptations as long as the changes are indicated.
   twice or is out of range stops the import; the corrected text is what is measured and shown; the report lists the
   corrections; the corrections sentence appears in English and French only on corrected books; every shipped book's
   count matches its fixes).
+
+## Story Library: a history fact corrected in Marching to Freedom (20 Nov 2026)
+
+- The owner asked to fix a factual error in sw-0093 (the Dandi March). Its "Fun facts of History" page said the arrest at
+  Dandi "sparked off the Non-cooperation Movement" (that was 1920-22). It now says the march sparked the Civil
+  Disobedience Movement, that people broke the salt law and boycotted British goods, and that Gandhi was arrested a few
+  weeks later (5 May 1930, not at Dandi on the day). "The year 2005 marks the 75th anniversary" became "In 2005, India
+  marked the 75th anniversary".
+- How: two `fixes` with `kind: "fact"` in `seed-library/storyweaver.json`, applied by the same `applyFixes`. The manifest
+  counts them apart (`credits.factCorrections`; `credits.corrections` stays typos only), and the credits add "Oomba
+  corrected a history fact." (`library.credits.factCorrected`, 13 languages). Fact fixes are made only when the owner
+  asks; typo fixes stay limited to real typos.

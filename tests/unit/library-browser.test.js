@@ -220,3 +220,13 @@ test('the questions are read with the AI voice when it is on (not the device voi
     await ctx.close();
   } finally { config.ttsEnabled = false; config.ttsProvider = 'openai'; }
 });
+
+test('opening "About the grade level" does not move the cover picture', { skip }, async () => {
+  const { ctx, page, errors } = await open(null, '/library/sw-0001');
+  const top = () => page.$eval('.lb-book-cover', e => Math.round(e.getBoundingClientRect().top));
+  const before = await top();
+  await page.click('.lb-measures summary'); await page.waitForTimeout(150);
+  assert.equal(await top(), before, 'the cover stays at the top of its column');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});

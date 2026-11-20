@@ -11670,6 +11670,7 @@
       "translation": "الترجمة: {names}",
       "changes": "غيّرت Oomba حجم الصور وتعرض الكتاب صفحةً صفحة. لا تؤيد Pratham Books منصة Oomba.",
       "corrected": "صحّحت Oomba الإملاء وعلامات الترقيم.",
+      "factCorrected": "صحّحت Oomba معلومة تاريخية.",
       "original": "الكتاب الأصلي.",
       "from": "مأخوذ عن كتاب لـ {name}",
       "changesBloom": "غيّرت Oomba حجم الصور وتعرض الكتاب صفحةً صفحة. لا تؤيد Bloom Library ولا SIL Global ولا ناشر الكتاب منصة Oomba.",

@@ -45,7 +45,7 @@
 
 /* ---- one book */
 .lb-book{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
-.lb-book-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:center}
+.lb-book-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:start}
 .lb-book-cover{width:100%;height:auto;border-radius:var(--r-sm);background:var(--card-2)}
 .lb-book-info{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
 .lb-book-info h1{margin:0}
