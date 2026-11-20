@@ -131,15 +131,59 @@ function start() {
     if (e.key === (rtl ? 'ArrowLeft' : 'ArrowRight')) { e.preventDefault(); next.click(); }
     if (e.key === (rtl ? 'ArrowRight' : 'ArrowLeft')) { e.preventDefault(); prev.click(); }
   });
-  // A swipe across the picture turns the page.
-  let sx = null, sy = null;
-  stage.addEventListener('touchstart', e => { const p = e.changedTouches[0]; sx = p.clientX; sy = p.clientY; }, { passive: true });
-  stage.addEventListener('touchend', e => {
-    if (sx === null) return; const p = e.changedTouches[0], dx = p.clientX - sx, dy = p.clientY - sy; sx = null;
-    if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.7 || e.target.closest('a, button')) return;
-    const fwd = (dx < 0) !== (document.documentElement.dir === 'rtl');
+  // ---- Swiping turns the page (owner, 20 Nov 2026). A finger or pen drags the page along with it and lets go to turn
+  // (past 60px, or a quick flick), else the page springs back; a laptop's two-finger trackpad swipe turns it too. The
+  // words are English, so a swipe to the left goes forward, as in a paper book. Buttons and links still just tap.
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  const leaves = () => [...stage.children].filter(el => !el.classList.contains('rd-nav') && !el.hidden);
+  const slide = (dx, ease = false) => leaves().forEach(el => {
+    el.style.transition = ease ? 'transform .18s ease-out, opacity .18s ease-out' : 'none';
+    el.style.transform = dx ? `translateX(${dx}px)` : ''; el.style.opacity = dx ? String(Math.max(0.35, 1 - Math.abs(dx) / 600)) : '';
+  });
+  /** Turn forward or back by the buttons (they know about spreads, the questions and the last page), with a slide. */
+  function turn(fwd) {
+    const before = page;
     (fwd ? next : prev).click();
-  }, { passive: true });
+    if (still.matches || page === before || stage.hidden) { slide(0); return; }
+    slide(fwd ? 48 : -48); requestAnimationFrame(() => requestAnimationFrame(() => slide(0, true)));
+  }
+  let drag = null;
+  stage.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' || !e.isPrimary || e.target.closest('a, button, input')) return;
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, t: e.timeStamp, dx: 0, on: false };
+  });
+  stage.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.on) {
+      if (Math.abs(dy) > 12 && Math.abs(dy) > Math.abs(dx)) { drag = null; return; }   // scrolling the page
+      if (Math.abs(dx) < 12) return;
+      drag.on = true; try { stage.setPointerCapture(e.pointerId); } catch {}
+    }
+    drag.dx = dx;
+    const atEdge = (dx > 0 && page <= 1);                                                 // nothing before page 1
+    if (!still.matches) slide(atEdge ? dx / 4 : dx * 0.6);
+  });
+  const endDrag = e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const { dx, on, t } = drag; drag = null;
+    if (!on) return;
+    const quick = Math.abs(dx) > 30 && e.timeStamp - t < 250;
+    if (e.type === 'pointerup' && (Math.abs(dx) >= 60 || quick) && !(dx > 0 && page <= 1)) turn(dx < 0);
+    else slide(0, true);
+  };
+  stage.addEventListener('pointerup', endDrag);
+  stage.addEventListener('pointercancel', endDrag);
+  // A trackpad's sideways two-finger swipe: one turn per swipe (its momentum is ignored until it stops).
+  let wx = 0, wLock = 0, wIdle = 0;
+  stage.addEventListener('wheel', e => {
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || e.ctrlKey) return;
+    e.preventDefault();
+    clearTimeout(wIdle); wIdle = setTimeout(() => { wx = 0; wLock = 0; }, 180);
+    if (wLock) return;
+    wx += e.deltaX;
+    if (Math.abs(wx) >= 80) { wLock = 1; const fwd = wx > 0; wx = 0; if (fwd || page > 1) turn(fwd); }
+  }, { passive: false });
 
   // ---- Read to me
   let seq = 0, audio = null;
