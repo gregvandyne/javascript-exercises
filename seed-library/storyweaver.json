@@ -2973,6 +2973,193 @@
      "kind": "inference"
     }
    ]
+  },
+  "0385": {
+   "glossary": {
+    "acorn": "a small nut that grows on an oak tree"
+   },
+   "questions": [
+    {
+     "q": "What did Jiril find on the ground?",
+     "right": "An acorn to eat",
+     "wrong": [
+      "His friends",
+      "A lost ball"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Jiril take a nap?",
+     "right": "He was tired",
+     "wrong": [
+      "It was night",
+      "His friends were sleeping"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why do you think Jiril rolled down the tree?",
+     "right": "He was too sleepy to hold on",
+     "wrong": [
+      "He wanted to slide down for fun",
+      "A friend pushed him"
+     ],
+     "page": 5,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0397": {
+   "glossary": {
+    "Brahmaputra": "a big river that flows through India",
+    "gulmohar": "a tree with bright red flowers",
+    "Arjun, ejar, koroi, moj and himolu": "trees that grow in Assam, in India"
+   },
+   "questions": [
+    {
+     "q": "What did Jadav find on the empty, hot sand?",
+     "right": "Snakes dying from the heat",
+     "wrong": [
+      "Birds with broken wings",
+      "Fish washed up by the river"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Jadav plant bamboo first?",
+     "right": "It is strong and can grow in hot sand",
+     "wrong": [
+      "It gives sweet fruit",
+      "It grows the prettiest flowers"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the snakes come back to the forest at the end?",
+     "right": "The trees gave them cool shade",
+     "wrong": [
+      "Jadav brought them food",
+      "A flood carried them there"
+     ],
+     "page": 13,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0416": {
+   "glossary": {
+    "nudibranch": "a small, brightly colored sea slug",
+    "dugong": "a large, gentle sea animal that eats sea grass, also called a sea cow"
+   },
+   "questions": [
+    {
+     "q": "What greeted the divers as soon as they were underwater?",
+     "right": "A school of yellowback fusiliers",
+     "wrong": [
+      "A manta ray",
+      "A dugong"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the divers keep away from the lionfish?",
+     "right": "The spines on its back can be poisonous",
+     "wrong": [
+      "It bites anyone who comes near",
+      "It was guarding its eggs"
+     ],
+     "page": 6,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the trumpetfish change its color?",
+     "right": "To hide by looking like the fish around it",
+     "wrong": [
+      "Because it was angry",
+      "To scare the divers away"
+     ],
+     "page": 5,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0432": {
+   "glossary": {
+    "Mo": "short for moustache (mustache)",
+    "pakodas": "crispy fried snacks made with vegetables and chickpea flour"
+   },
+   "questions": [
+    {
+     "q": "What does Anu like most of all about Daddy?",
+     "right": "His moustache",
+     "wrong": [
+      "His paper lanterns",
+      "His onion pakodas"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What does Grandpa's moustache look like?",
+     "right": "A big white cloud",
+     "wrong": [
+      "A thin pencil line",
+      "A black hat"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "How does Anu feel while Daddy trims his moustache?",
+     "right": "Worried he will make it too small",
+     "wrong": [
+      "Bored and sleepy",
+      "Happy it will be short"
+     ],
+     "page": 2,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0433": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What covers the tree's roots?",
+     "right": "Soil",
+     "wrong": [
+      "Grass",
+      "Leaves"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "What grows from the flowers?",
+     "right": "Fruits",
+     "wrong": [
+      "Roots",
+      "Branches"
+     ],
+     "page": 8,
+     "kind": "literal"
+    },
+    {
+     "q": "Which comes first on the tree, flowers or fruits?",
+     "right": "Flowers",
+     "wrong": [
+      "Fruits",
+      "They come at the same time"
+     ],
+     "page": 8,
+     "kind": "inference"
+    }
+   ]
   }
  },
  "skipped": {
@@ -3174,11 +3361,59 @@
   "0329": "Pictures: 8 pictures for 8 pages and the descriptions do not show which goes with which; the text also has mistakes (\"eyery one\", \"and and\").",
   "0331": "Lions plan to \"share the kill\" of a giraffe; mistakes in the source text (\"asked.\" It's\", \"life.\"\" Everyone\").",
   "0333": "A lizard calls a little girl \"a sweet little dope\"; a mistake in the source text (\"Well It would seem\").",
+  "0334": "Mistakes in the source text (\"immediately drawn his attention\", \"soo happy\", \"He was surprise\"); calls the goat \"very fat\".",
+  "0337": "Mistakes in the source text (\"asked their mother if we could go\", \"All the pictures they took was attached\").",
+  "0339": "The plot is a breathing meditation (\"The breath moves in...the breath moves out\"), close to spiritual instruction; an unclear line (\"Off went the calf with the teeth\").",
+  "0340": "Meditation and trances are the plot, close to spiritual instruction; a mistake in the source text (\"a flower , a very special flower\").",
+  "0341": "Mistakes in the source text (\"waiting for you..\", \"he said,\" Let's go\", \"water.\" Oh!\").",
+  "0342": "Many mistakes in the source text (\"THen\", \"it's branches\", lowercase \"i\", \"full of people's\").",
+  "0343": "Mistakes in the source text (a lowercase first word, \"in all it's glory\").",
+  "0344": "The other animals mock the crocodile as a baby, his friends trick him by pretending a snail is drowning, and a mistake (\"anwhere\").",
+  "0348": "Mistakes in the source text (\"the first Indian women pilot\", a stray Arabic character on page 7).",
   "0349": "Only 3 pages; the story stops before it ends.",
+  "0351": "One page with a mistake in the source text (\"They eat and play together\" in a past-tense story).",
+  "0352": "Mistakes in the source text (\"Common name: Ricea\", \"Capsicum annum\", \"Coffeea Arabica\", \"Their favourite thing to collect are seeds\").",
+  "0356": "A mistake in the source text (\"to make to dream come true\").",
+  "0358": "The jokes are about an uncle's bald head; mistakes in the source text (\"noded\", \"headfull\", \"Everyone in the house were\").",
+  "0359": "Mistakes in the source text (\"I just did an IRONY!\", \"what 'irony\" meant\").",
+  "0361": "Velociraptors attack and bite the mother dinosaur; mistakes in the source text (\"knocked their breaths of\", \"It's body\").",
+  "0362": "Mistakes in the source text (\"I miss my friends/\", \"inthe sky\", \"needed to be go to the park\").",
+  "0363": "Mistakes in the source text (\"One day when Lilly was feeding Yuri.\", \"having so much,\", \"embarassed\", \"fresh air ,\").",
+  "0364": "Mistakes in the source text (spaces before punctuation throughout, \"thier mom\").",
+  "0365": "One page of 45 words about bursting firecrackers; nothing to ask 3 questions about.",
+  "0366": "An author's note says nouns are in bold and italics, which the text does not have; a mistake (\"clouds.\" I want to fly\").",
+  "0367": "Many mistakes in the source text (sentences starting lowercase, \"1 O\" clock\", \"dont\"); a child hides to make the family miss the train.",
+  "0369": "Half the book is an author's note to parents; a mistake in the source text (\"listen to her in attention\").",
+  "0370": "Mistakes in the source text (\"thou\" for though, \"palbable\", \"Adtiya\", \"his sibling\" for a girl).",
+  "0372": "Mistakes in the source text (\"Oh ho! will it eat\", \"Golden and yellow ,\", \"laid it over the seed\").",
   "0374": "Compares children to monkeys, which can read as a slur; left out to be safe.",
   "0378": "A list of vehicles, not a story.",
+  "0379": "A mistake in the source text (\"But Lalu was said.\" for sad).",
+  "0381": "Mistakes in the source text (\"Green chirpy Parrots with red beak\", \"My books, let me be anyone who I want to be. It also takes me\").",
   "0383": "Mistakes in the source text (\"the bird's play\", \"Day at Garden\").",
-  "0425": "Four words in all (too little text for 3 questions)."
+  "0384": "Children cook on the gas burner alone while their grandmother sleeps; tenses mixed in the source text (\"Ammamma is sleeping. Tilly and Kyle were\").",
+  "0389": "Mistakes in the source text (\"Chit- Chat\", \"play instrument\", \"we took some rest. and all\").",
+  "0390": "Boys throw stones at a horse; mistakes in the source text (\"There he saw , many\", \"jumping into the fire from the frying pan\").",
+  "0394": "A coach is called \"Fatty Patty\", the children are given an energy drink, and mistakes (\"Its\", \"thats\", \"lets\").",
+  "0399": "Two lines (28 words) with a mistake in the source text (\"falling from the sky like a rain\").",
+  "0400": "A mistake in the source text (\"She hardly every listened to her parents\").",
+  "0401": "Mistakes in the source text (a quote never closed, \"he indeed is\" after an exclamation, \"the next min\").",
+  "0403": "Mistakes in the source text (\"brought you hear\", \"a huge anthill in sitting\"); a gun and Toy Story characters are mentioned.",
+  "0404": "Mistakes in the source text (\"who's hearing and eyesight was not to good\"); \"Oh My God!\" and \"box Pa's ears\"; a feared uncle yells at a driver.",
+  "0409": "An 11-year-old alone at home in the evening; mistakes in the source text (\"and and city lights\", \"He remembered on his good friend\").",
+  "0411": "A girl snatches a skirt from a shop in her dream and is chased; mistakes in the source text (\"“Nilofar”!!!\", \"Ever so Slowly\").",
+  "0412": "A girl is mocked for her looks (\"a nose as big as a mango\", \"You look like a circus clown!\"); the story is about her appearance.",
+  "0413": "An orphan girl is described as \"fair, tall and thin\"; a pooja; mistakes in the source text (\"'I am feeling guilty, said Mummy\").",
+  "0414": "One page of 67 words; the story stops before anything happens.",
+  "0415": "Mistakes in the source text (\"frogs's\", \"curios\", \"A on his seat\").",
+  "0422": "Describes people as \"fat and thin, beautiful and ugly\"; mistakes in the source text (\"shouts.\" Am I\", \"lets go\", \"was was\").",
+  "0423": "A holy man's mantras shrink a dragon, and a cat bites off its tail; mistakes in the source text (\"sunbath\").",
+  "0424": "A wicked sea-beast named Moron tricks a girl, drags her into the sea and locks her up.",
+  "0425": "Four words in all (too little text for 3 questions).",
+  "0426": "Mistakes in the source text (\"pinks and yellows ,\", \"Who would that be? who would sneak up\", missing commas before the speaker), and \"I hate my life\".",
+  "0427": "Animals steal a woodcutter's food and are praised for never being caught; a mistake in the source text (\"an woodcutter\").",
+  "0428": "Mistakes in the source text (\"favouite\", \"moneylender ,\", \"Give the carpenter\" capitalized mid-sentence).",
+  "0429": "A king swallows a bird twice and soldiers swing swords to chop off its head (they cut off the king's nose)."
  },
  "scanReviewed": {
   "0073": "The scanner's violence rule matches \"blood\": it is a science question (\"Why is blood red? There is iron in the blood\"). Reviewed: fine.",
@@ -3201,6 +3436,23 @@
     "10.jpg"
    ],
    "why": "11 pictures for 9 pages. The descriptions match page by page: 01 happy children (cover); 02 children going to school (page 1, this is my school), 03 a boy and a girl (page 2, my brother Mannu and I), 04 entering a room (page 3, shoes by the door), 05 tiffin boxes on the wall (page 4), 06 children and toys (page 5, counting and blocks), 07 teacher and children learning (page 6, letters), 08 teacher with a puppet (page 7), 09 surprised children (page 8, my friends are surprised), 10 children playing with a tub (page 9, a tub of play dough). 11 is a second picture of the tub and is not used."
+  },
+  "0433": {
+   "cover": "01.jpg",
+   "pages": [
+    "02.jpg",
+    "03.jpg",
+    "04.jpg",
+    "05.jpg",
+    "06.jpg",
+    "07.jpg",
+    "08.jpg",
+    "09.jpg",
+    "10.jpg",
+    "11.jpg",
+    "12.jpg"
+   ],
+   "why": "13 pictures for 11 pages. The descriptions match page by page: 01 the tree and its stages (cover); 02 a tree (page 1), 03 roots (page 2, roots), 04 roots and soil (page 3, soil covers the roots), 05 trunk (page 4), 06 a fully grown tree (page 5, branches), 07 leaves (page 6), 08 leaves and flowers (page 7), 09 fruits (page 8), 10 seeds (page 9), 11 little plants (page 10, a tiny plant from the seed), 12 the tree's stages of growth (page 11, the wordless last page). 13 \"a happy tree in black and white\" is a coloring page and is not used."
   }
  },
  "pictureReview": {

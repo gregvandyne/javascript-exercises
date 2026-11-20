@@ -36,15 +36,14 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 ## Totals
 
 - Books in the source: 395
-- Included: **80** (Pre-K/K: 9, Grade 1: 33, Grade 2: 29, Grade 3: 6, Grades 4-5: 3)
-- Left out: 315
-  - read and left out: 201
-  - licensed, not read yet: 52
-  - pictures do not line up with pages: 51
+- Included: **85** (Pre-K/K: 9, Grade 1: 35, Grade 2: 29, Grade 3: 7, Grades 4-5: 5)
+- Left out: 310
+  - read and left out: 249
+  - pictures do not line up with pages: 50
   - an image license: unreadable: 6
   - too long for the library: 3
   - picture N.jpg is in the metadata but not in the image bank: 2
-- Pictures on the site: 18.8 MB (WebP, pages at most 720 px, covers 440 px)
+- Pictures on the site: 20.8 MB (WebP, pages at most 720 px, covers 440 px)
 
 ## Included
 
@@ -84,8 +83,10 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0020 | Rani's First Day at School | Grade 1 | 1.28 | 179 | 6 | Cheryl Rao | Mayur Mistry | – | CC BY 4.0 |
 | sw-0001 | Smile Please! | Grade 1 | 0.88 | 102 | 11 | Sanjiv Jaiswal 'Sanjay' | Ajit Narayan | Manisha Chaudhry | CC BY 4.0 |
 | sw-0137 | Spot and Spike | Grade 1 | 1.13 | 122 | 6 | Natasha Sharma | Archana Sreenivasan | – | CC BY 4.0 |
+| sw-0385 | The Many Tails of Jiril the Squirrel | Grade 1 | 1.45 | 109 | 6 | Jill Keeler | Sanjay Sarkar | – | CC BY 4.0 |
 | sw-0053 | The Moon and The Cap | Grade 1 | 1.19 | 143 | 11 | Rohini Nilekani | Angie & Upesh | – | CC BY 4.0 |
 | sw-0069 | The Red Raincoat | Grade 1 | 1.38 | 231 | 9 | Kiran Kasturia | Zainab Tambawalla | – | CC BY 4.0 |
+| sw-0433 | The Tree | Grade 1 | 1.13 | 408 | 11 | Usha Rane | Ketan Raut | Madhav Chavan | CC BY 4.0 |
 | sw-0059 | This and That | Grade 1 | 1.31 | 101 | 7 | Radha HS | Ruchi Shah | – | CC BY 4.0 |
 | sw-0030 | Timmy and Pepe | Grade 1 | 0.73 | 175 | 11 | Madhav Chavan | Santosh Pujari | – | CC BY 4.0 |
 | sw-0113 | Topsy Turvy | Grade 1 | 1.47 | 201 | 11 | Rohini Nilekani | Angie & Upesh | Rohini Nilekani | CC BY 4.0 |
@@ -123,10 +124,13 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0149 | Where is Gogo? | Grade 2 | 2 | 200 | 7 | Mala Kumar, Manisha Chaudhry | Soumya Menon | Mala Kumar, Manisha Chaudhry | CC BY 4.0 |
 | sw-0319 | A Brighter Day | Grade 3 | 2.77 | 109 | 1 | Aditi | Anjora Noronha | – | CC BY 4.0 |
 | sw-0120 | Anaya's Thumb | Grade 3 | 2.53 | 445 | 9 | Natasha Sharma | Ruchi Shah | – | CC BY 4.0 |
+| sw-0432 | Daddy's Mo | Grade 3 | 2.99 | 427 | 8 | Madhuri Purandare | Madhuri Purandare | Sai Keskar | CC BY 4.0 |
 | sw-0140 | It's All the Cat's Fault! | Grade 3 | 2.71 | 190 | 9 | Anushka Ravishankar | Priya Kuriyan | – | CC BY 4.0 |
 | sw-0017 | Peacocks and Pakodas! | Grade 3 | 2.91 | 361 | 7 | Mala Kumar, Manisha Chaudhry | Priya Kuriyan | – | CC BY 4.0 |
 | sw-0096 | Samira Goes Shopping | Grade 3 | 3.1 | 629 | 13 | Bharati Jagannathan | Preeti Krishnamurthy | – | CC BY 4.0 |
 | sw-0034 | Veeru Goes to the Circus | Grade 3 | 2.55 | 294 | 9 | Richa Ingle Deo | Reshma Barve | – | CC BY 4.0 |
+| sw-0416 | Dive! | Grades 4-5 | 3.95 | 736 | 19 | Rajiv Eipe | Rajiv Eipe | – | CC BY 4.0 |
+| sw-0397 | Jadav and the Tree-Place | Grades 4-5 | 3.66 | 1485 | 19 | Vinayak Varma | Vinayak Varma | – | CC BY 4.0 |
 | sw-0322 | The Carpenter's last job | Grades 4-5 | 3.6 | 244 | 3 | Rupa Prakash | Rupa Prakash | – | CC BY 4.0 |
 | sw-0089 | The Magic Powder - A Folktale from Myanmar | Grades 4-5 | 3.87 | 1141 | 7 | Greystroke | P.G. Dinesh | – | CC BY 4.0 |
 | sw-0051 | The Timid Train | Grades 4-5 | 3.75 | 619 | 11 | Bharati Jagannathan | Preeti Krishnamurthy | – | CC BY 4.0 |
@@ -135,6 +139,7 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 
 These books have more pictures than pages. A person matched each page to a picture from the metadata descriptions, and only where the match is unambiguous; pictures left over are not used.
 
+- sw-0433 The Tree: 13 pictures for 11 pages. The descriptions match page by page: 01 the tree and its stages (cover); 02 a tree (page 1), 03 roots (page 2, roots), 04 roots and soil (page 3, soil covers the roots), 05 trunk (page 4), 06 a fully grown tree (page 5, branches), 07 leaves (page 6), 08 leaves and flowers (page 7), 09 fruits (page 8), 10 seeds (page 9), 11 little plants (page 10, a tiny plant from the seed), 12 the tree's stages of growth (page 11, the wordless last page). 13 "a happy tree in black and white" is a coloring page and is not used.
 - sw-0038 My Balwadi: 11 pictures for 9 pages. The descriptions match page by page: 01 happy children (cover); 02 children going to school (page 1, this is my school), 03 a boy and a girl (page 2, my brother Mannu and I), 04 entering a room (page 3, shoes by the door), 05 tiffin boxes on the wall (page 4), 06 children and toys (page 5, counting and blocks), 07 teacher and children learning (page 6, letters), 08 teacher with a puppet (page 7), 09 surprised children (page 8, my friends are surprised), 10 children playing with a tub (page 9, a tub of play dough). 11 is a second picture of the tub and is not used.
 
 ### Scanner flags reviewed by a person
@@ -387,79 +392,74 @@ These books have more pictures than pages. A person matched each page to a pictu
 | sw-0330 | Eldorado | pictures do not line up with pages (1 images for 1 pages); reviewed: The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once. |
 | sw-0331 | Everyone needs a friend | read and left out: Lions plan to "share the kill" of a giraffe; mistakes in the source text ("asked." It's", "life."" Everyone"). |
 | sw-0333 | The Indigo Fairy and the Lizard | read and left out: A lizard calls a little girl "a sweet little dope"; a mistake in the source text ("Well It would seem"). |
-| sw-0334 | Kardi | licensed, not read yet |
-| sw-0337 | Jack and Anny go to space | licensed, not read yet |
+| sw-0334 | Kardi | read and left out: Mistakes in the source text ("immediately drawn his attention", "soo happy", "He was surprise"); calls the goat "very fat". |
+| sw-0337 | Jack and Anny go to space | read and left out: Mistakes in the source text ("asked their mother if we could go", "All the pictures they took was attached"). |
 | sw-0338 | The Birthday Party | image 07.jpg license: unreadable |
-| sw-0339 | The Indigo Fairy and the Water Buffaloes | licensed, not read yet |
-| sw-0340 | The Indigo Fairy and the Frogs | licensed, not read yet |
-| sw-0341 | Fonky's Fishy Party | licensed, not read yet |
-| sw-0342 | Unbreakable Friendship | licensed, not read yet |
-| sw-0343 | A bear makes lasting memories | licensed, not read yet |
-| sw-0344 | Gabbar Is Back | licensed, not read yet |
-| sw-0348 | How Do Aeroplanes Fly? | licensed, not read yet |
+| sw-0339 | The Indigo Fairy and the Water Buffaloes | read and left out: The plot is a breathing meditation ("The breath moves in...the breath moves out"), close to spiritual instruction; an unclear line ("Off went the calf with the teeth"). |
+| sw-0340 | The Indigo Fairy and the Frogs | read and left out: Meditation and trances are the plot, close to spiritual instruction; a mistake in the source text ("a flower , a very special flower"). |
+| sw-0341 | Fonky's Fishy Party | read and left out: Mistakes in the source text ("waiting for you..", "he said," Let's go", "water." Oh!"). |
+| sw-0342 | Unbreakable Friendship | read and left out: Many mistakes in the source text ("THen", "it's branches", lowercase "i", "full of people's"). |
+| sw-0343 | A bear makes lasting memories | read and left out: Mistakes in the source text (a lowercase first word, "in all it's glory"). |
+| sw-0344 | Gabbar Is Back | read and left out: The other animals mock the crocodile as a baby, his friends trick him by pretending a snail is drowning, and a mistake ("anwhere"). |
+| sw-0348 | How Do Aeroplanes Fly? | read and left out: Mistakes in the source text ("the first Indian women pilot", a stray Arabic character on page 7). |
 | sw-0349 | Chulli and the cows | read and left out: Only 3 pages; the story stops before it ends. |
-| sw-0351 | Moti and Mohan | licensed, not read yet |
-| sw-0352 | Let's Go Seed Collecting! | licensed, not read yet |
-| sw-0356 | Life full of dreams | licensed, not read yet |
+| sw-0351 | Moti and Mohan | read and left out: One page with a mistake in the source text ("They eat and play together" in a past-tense story). |
+| sw-0352 | Let's Go Seed Collecting! | read and left out: Mistakes in the source text ("Common name: Ricea", "Capsicum annum", "Coffeea Arabica", "Their favourite thing to collect are seeds"). |
+| sw-0356 | Life full of dreams | read and left out: A mistake in the source text ("to make to dream come true"). |
 | sw-0357 | Sam the Dragon | pictures do not line up with pages (11 images for 12 pages); reviewed: Fewer pictures than pages, so some pages would have no picture. |
-| sw-0358 | Nanni's Birthday Gift | licensed, not read yet |
-| sw-0359 | Nosy Natasha takes a Note | licensed, not read yet |
+| sw-0358 | Nanni's Birthday Gift | read and left out: The jokes are about an uncle's bald head; mistakes in the source text ("noded", "headfull", "Everyone in the house were"). |
+| sw-0359 | Nosy Natasha takes a Note | read and left out: Mistakes in the source text ("I just did an IRONY!", "what 'irony" meant"). |
 | sw-0360 | Reeti and Mithu | pictures do not line up with pages (11 images for 19 pages); reviewed: Fewer pictures than pages, so some pages would have no picture. |
-| sw-0361 | Journey to many lands | licensed, not read yet |
-| sw-0362 | Shriya and her Piyali | licensed, not read yet |
-| sw-0363 | Pet Respect | licensed, not read yet |
-| sw-0364 | Talking Tree of Alpha Town | licensed, not read yet |
-| sw-0365 | Ananya's first story | licensed, not read yet |
-| sw-0366 | Little Madhu's Dream | licensed, not read yet |
-| sw-0367 | Rupa's Vacation...!! | licensed, not read yet |
+| sw-0361 | Journey to many lands | read and left out: Velociraptors attack and bite the mother dinosaur; mistakes in the source text ("knocked their breaths of", "It's body"). |
+| sw-0362 | Shriya and her Piyali | read and left out: Mistakes in the source text ("I miss my friends/", "inthe sky", "needed to be go to the park"). |
+| sw-0363 | Pet Respect | read and left out: Mistakes in the source text ("One day when Lilly was feeding Yuri.", "having so much,", "embarassed", "fresh air ,"). |
+| sw-0364 | Talking Tree of Alpha Town | read and left out: Mistakes in the source text (spaces before punctuation throughout, "thier mom"). |
+| sw-0365 | Ananya's first story | read and left out: One page of 45 words about bursting firecrackers; nothing to ask 3 questions about. |
+| sw-0366 | Little Madhu's Dream | read and left out: An author's note says nouns are in bold and italics, which the text does not have; a mistake ("clouds." I want to fly"). |
+| sw-0367 | Rupa's Vacation...!! | read and left out: Many mistakes in the source text (sentences starting lowercase, "1 O" clock", "dont"); a child hides to make the family miss the train. |
 | sw-0368 | Anty's Team | pictures do not line up with pages (1 images for 1 pages); reviewed: The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once. |
-| sw-0369 | Karthik loves to read | licensed, not read yet |
-| sw-0370 | Terrific Trio | licensed, not read yet |
-| sw-0372 | Mango Tango | licensed, not read yet |
+| sw-0369 | Karthik loves to read | read and left out: Half the book is an author's note to parents; a mistake in the source text ("listen to her in attention"). |
+| sw-0370 | Terrific Trio | read and left out: Mistakes in the source text ("thou" for though, "palbable", "Adtiya", "his sibling" for a girl). |
+| sw-0372 | Mango Tango | read and left out: Mistakes in the source text ("Oh ho! will it eat", "Golden and yellow ,", "laid it over the seed"). |
 | sw-0374 | The Monkey in You | read and left out: Compares children to monkeys, which can read as a slur; left out to be safe. |
 | sw-0377 | Dum Dum-a-Dum Biryani! | pictures do not line up with pages (20 images for 12 pages); reviewed: More pictures than pages, and the descriptions do not show which pictures go with which page. |
 | sw-0378 | Have You Ever Travelled By? | read and left out: A list of vehicles, not a story. |
-| sw-0379 | Lalu the Owl | licensed, not read yet |
+| sw-0379 | Lalu the Owl | read and left out: A mistake in the source text ("But Lalu was said." for sad). |
 | sw-0380 | Bonda and Devi | pictures do not line up with pages (19 images for 17 pages); reviewed: More pictures than pages (19 for 17); 11 and 12 have the same description and 19 shows two men at a computer, which matches no page. |
-| sw-0381 | Am I Alone? | licensed, not read yet |
+| sw-0381 | Am I Alone? | read and left out: Mistakes in the source text ("Green chirpy Parrots with red beak", "My books, let me be anyone who I want to be. It also takes me"). |
 | sw-0383 | Tintu's Day at Garden | read and left out: Mistakes in the source text ("the bird's play", "Day at Garden"). |
-| sw-0384 | Tilly and Kyle make Vegetable Curry | licensed, not read yet |
-| sw-0385 | The Many Tails of Jiril the Squirrel | licensed, not read yet |
+| sw-0384 | Tilly and Kyle make Vegetable Curry | read and left out: Children cook on the gas burner alone while their grandmother sleeps; tenses mixed in the source text ("Ammamma is sleeping. Tilly and Kyle were"). |
 | sw-0386 | Danny The Dragon | pictures do not line up with pages (11 images for 11 pages); reviewed: As many pictures as pages: the descriptions do not show which picture is the cover or which page would go without one. |
 | sw-0388 | Where Did Your Dimples Go? | pictures do not line up with pages (11 images for 14 pages); reviewed: Fewer pictures than pages, so some pages would have no picture. |
-| sw-0389 | My best friend and I | licensed, not read yet |
-| sw-0390 | Browny The Horse | licensed, not read yet |
+| sw-0389 | My best friend and I | read and left out: Mistakes in the source text ("Chit- Chat", "play instrument", "we took some rest. and all"). |
+| sw-0390 | Browny The Horse | read and left out: Boys throw stones at a horse; mistakes in the source text ("There he saw , many", "jumping into the fire from the frying pan"). |
 | sw-0391 | Up World, Down World | pictures do not line up with pages (24 images for 22 pages); reviewed: More pictures than pages (24 for 22) and several have the same description (16 and 17, 10 and 22); not clear which goes where. |
 | sw-0392 | We Don't Pick Up Dog Family | pictures do not line up with pages (1 images for 1 pages); reviewed: The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once. |
-| sw-0394 | The Big Game | licensed, not read yet |
+| sw-0394 | The Big Game | read and left out: A coach is called "Fatty Patty", the children are given an energy drink, and mistakes ("Its", "thats", "lets"). |
 | sw-0395 | Manikantan Has Enough | pictures do not line up with pages (21 images for 17 pages); reviewed: More pictures than pages, and the descriptions do not show which pictures go with which page. |
-| sw-0397 | Jadav and the Tree-Place | licensed, not read yet |
-| sw-0399 | Cat Dreams | licensed, not read yet |
-| sw-0400 | Nanni and the Oil Spill | licensed, not read yet |
-| sw-0401 | Baby in the clouds | licensed, not read yet |
-| sw-0403 | The Messy Desk | licensed, not read yet |
-| sw-0404 | The Mango Pickle | licensed, not read yet |
+| sw-0399 | Cat Dreams | read and left out: Two lines (28 words) with a mistake in the source text ("falling from the sky like a rain"). |
+| sw-0400 | Nanni and the Oil Spill | read and left out: A mistake in the source text ("She hardly every listened to her parents"). |
+| sw-0401 | Baby in the clouds | read and left out: Mistakes in the source text (a quote never closed, "he indeed is" after an exclamation, "the next min"). |
+| sw-0403 | The Messy Desk | read and left out: Mistakes in the source text ("brought you hear", "a huge anthill in sitting"); a gun and Toy Story characters are mentioned. |
+| sw-0404 | The Mango Pickle | read and left out: Mistakes in the source text ("who's hearing and eyesight was not to good"); "Oh My God!" and "box Pa's ears"; a feared uncle yells at a driver. |
 | sw-0406 | A Helping Hand | image 01.jpg license: unreadable |
 | sw-0407 | Jamun Has Her Wish | pictures do not line up with pages (11 images for 13 pages); reviewed: Fewer pictures than pages, so some pages would have no picture. |
-| sw-0409 | The wait | licensed, not read yet |
+| sw-0409 | The wait | read and left out: An 11-year-old alone at home in the evening; mistakes in the source text ("and and city lights", "He remembered on his good friend"). |
 | sw-0410 | Inside the World Wide Web | pictures do not line up with pages (11 images for 16 pages); reviewed: Fewer pictures than pages, so some pages would have no picture. |
-| sw-0411 | Nilofar | licensed, not read yet |
-| sw-0412 | The Magic Pond | licensed, not read yet |
-| sw-0413 | Chimni | licensed, not read yet |
-| sw-0414 | The Mango Tree | licensed, not read yet |
-| sw-0415 | Frog in the Movie | licensed, not read yet |
-| sw-0416 | Dive! | licensed, not read yet |
+| sw-0411 | Nilofar | read and left out: A girl snatches a skirt from a shop in her dream and is chased; mistakes in the source text ("“Nilofar”!!!", "Ever so Slowly"). |
+| sw-0412 | The Magic Pond | read and left out: A girl is mocked for her looks ("a nose as big as a mango", "You look like a circus clown!"); the story is about her appearance. |
+| sw-0413 | Chimni | read and left out: An orphan girl is described as "fair, tall and thin"; a pooja; mistakes in the source text ("'I am feeling guilty, said Mummy"). |
+| sw-0414 | The Mango Tree | read and left out: One page of 67 words; the story stops before anything happens. |
+| sw-0415 | Frog in the Movie | read and left out: Mistakes in the source text ("frogs's", "curios", "A on his seat"). |
 | sw-0417 | River and Sun | pictures do not line up with pages (11 images for 11 pages); reviewed: As many pictures as pages: the descriptions do not show which picture is the cover or which page would go without one. |
 | sw-0418 | Can you smile when you snore? | pictures do not line up with pages (11 images for 11 pages); reviewed: As many pictures as pages: the descriptions do not show which picture is the cover or which page would go without one. |
 | sw-0420 | Amit and his Football | pictures do not line up with pages (1 images for 1 pages); reviewed: The whole story is one page of text with one picture: no separate cover, and the reader would show it all at once. |
 | sw-0421 | Under the sea | pictures do not line up with pages (13 images for 11 pages); reviewed: More pictures than pages, and the descriptions do not show which pictures go with which page. |
-| sw-0422 | Happy Holi! | licensed, not read yet |
-| sw-0423 | The mouse+dragon | licensed, not read yet |
-| sw-0424 | The Moon and Daisy | licensed, not read yet |
+| sw-0422 | Happy Holi! | read and left out: Describes people as "fat and thin, beautiful and ugly"; mistakes in the source text ("shouts." Am I", "lets go", "was was"). |
+| sw-0423 | The mouse+dragon | read and left out: A holy man's mantras shrink a dragon, and a cat bites off its tail; mistakes in the source text ("sunbath"). |
+| sw-0424 | The Moon and Daisy | read and left out: A wicked sea-beast named Moron tricks a girl, drags her into the sea and locks her up. |
 | sw-0425 | Seasons | read and left out: Four words in all (too little text for 3 questions). |
-| sw-0426 | Zara and the butterfly | licensed, not read yet |
-| sw-0427 | Food Thieves | licensed, not read yet |
-| sw-0428 | Shyamlal, your work! | licensed, not read yet |
-| sw-0429 | The Nose-less King | licensed, not read yet |
-| sw-0432 | Daddy's Mo | licensed, not read yet |
-| sw-0433 | The Tree | pictures do not line up with pages (13 images for 11 pages) |
+| sw-0426 | Zara and the butterfly | read and left out: Mistakes in the source text ("pinks and yellows ,", "Who would that be? who would sneak up", missing commas before the speaker), and "I hate my life". |
+| sw-0427 | Food Thieves | read and left out: Animals steal a woodcutter's food and are praised for never being caught; a mistake in the source text ("an woodcutter"). |
+| sw-0428 | Shyamlal, your work! | read and left out: Mistakes in the source text ("favouite", "moneylender ,", "Give the carpenter" capitalized mid-sentence). |
+| sw-0429 | The Nose-less King | read and left out: A king swallows a bird twice and soldiers swing swords to chop off its head (they cut off the king's nose). |
