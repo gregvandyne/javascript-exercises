@@ -169,7 +169,7 @@ export function reportMarkdown(rows, curation, { totalBytes = null, generated = 
   const inc = rows.filter(r => r.status === 'included'), exc = rows.filter(r => r.status === 'excluded');
   const esc = s => String(s).replace(/\|/g, '\\|').replace(/\n/g, ' ');
   const src = curation.sources;
-  const makers = s => s.makers.map(m => `${m.name} (${m.role}, ${m.anonymous ? 'not named' : `died ${m.died}`})`).join('; ');
+  const makers = s => s.makers.map(m => `${m.name} (${m.role}, ${m.anonymous ? 'not named' : m.died < 0 ? `lived about ${-m.died} BC` : `died ${m.died}`})`).join('; ');
   return [
     '# Story Library: the Classics shelf',
     '',

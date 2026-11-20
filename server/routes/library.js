@@ -85,7 +85,7 @@ function classicCredits(t, bk) {
   return html`<div class="lb-credit small muted" dir="auto">
     <p class="lb-credit-by">${by.join(' · ')}</p>
     <details class="lb-credit-more"><summary>${t('library.credits.notes')}</summary>
-      <p><span>${t('library.credits.publicDomain')} · ${t('library.credits.firstPublished', { year: c.published, edition: c.edition })}</span></p>
+      <p><span>${t('library.credits.publicDomain')} · ${t('library.credits.firstPublished', { year: String(c.published), edition: c.edition })}</span></p>
       <p class="lb-credit-note">${note}</p></details></div>`;
 }
 const meta = (t, bk) => t('library.meta', { pages: bk.pages.length, questions: bk.questions.length });

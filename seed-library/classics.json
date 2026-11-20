@@ -4,7 +4,7 @@
     "justso": {
       "ebook": "32488",
       "title": "Just So Stories",
-      "edition": "Doubleday, Page & Company, New York, 1912",
+      "edition": "Doubleday, Page & Company, New York",
       "published": 1912,
       "html": "32488-h/32488-h.htm",
       "makers": [
@@ -23,7 +23,7 @@
     "aesop": {
       "ebook": "18732",
       "title": "Aesop's Fables: A New Revised Version From Original Sources",
-      "edition": "Frank F. Lovell & Company, New York, 1884",
+      "edition": "Frank F. Lovell & Company, New York",
       "published": 1884,
       "html": "18732-h/18732-h.htm",
       "makers": [
@@ -57,7 +57,7 @@
     "aesopWinter": {
       "ebook": "19994",
       "title": "The Aesop for Children",
-      "edition": "Rand McNally & Company, Chicago, 1919",
+      "edition": "Rand McNally & Company, Chicago",
       "published": 1919,
       "html": "19994-h/19994-h.htm",
       "makers": [
@@ -76,7 +76,7 @@
     "peter": {
       "ebook": "14838",
       "title": "The Tale of Peter Rabbit",
-      "edition": "Frederick Warne & Co., 1902",
+      "edition": "Frederick Warne & Co.",
       "published": 1902,
       "html": "14838-h/14838-h.htm",
       "makers": [
@@ -95,7 +95,7 @@
     "jeremy": {
       "ebook": "15077",
       "title": "The Tale of Mr. Jeremy Fisher",
-      "edition": "Frederick Warne & Co., New York, 1906",
+      "edition": "Frederick Warne & Co., New York",
       "published": 1906,
       "html": "15077-h/15077-h.htm",
       "makers": [
@@ -114,7 +114,7 @@
     "mice": {
       "ebook": "45264",
       "title": "The Tale of Two Bad Mice",
-      "edition": "Frederick Warne & Co., London, 1904",
+      "edition": "Frederick Warne & Co., London",
       "published": 1904,
       "html": "45264-h/45264-h.htm",
       "makers": [
@@ -133,7 +133,7 @@
     "tittlemouse": {
       "ebook": "17089",
       "title": "The Tale of Mrs. Tittlemouse",
-      "edition": "Frederick Warne & Co., 1910",
+      "edition": "Frederick Warne & Co.",
       "published": 1910,
       "html": "17089-h/17089-h.htm",
       "makers": [
@@ -152,7 +152,7 @@
     "ginger": {
       "ebook": "14877",
       "title": "The Tale of Ginger and Pickles",
-      "edition": "Frederick Warne & Co., 1909",
+      "edition": "Frederick Warne & Co.",
       "published": 1909,
       "html": "14877-h/14877-h.htm",
       "makers": [
@@ -171,7 +171,7 @@
     "velveteen": {
       "ebook": "11757",
       "title": "The Velveteen Rabbit",
-      "edition": "Doubleday & Company, Garden City, New York, 1922",
+      "edition": "Doubleday & Company, Garden City, New York",
       "published": 1922,
       "html": "11757-h/11757-h.htm",
       "makers": [
@@ -190,7 +190,7 @@
     "andersen": {
       "ebook": "17860",
       "title": "Stories from Hans Andersen",
-      "edition": "Hodder & Stoughton, London, 1911",
+      "edition": "Hodder & Stoughton, London",
       "published": 1911,
       "html": "17860-h/17860-h.htm",
       "makers": [

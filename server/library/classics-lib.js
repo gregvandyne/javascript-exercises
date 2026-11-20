@@ -208,7 +208,7 @@ export const SMALLCAP_NAMES = new Set(['Tom', 'Thumb', 'Hunca', 'Munca', 'Lucind
 // ---------------------------------------------------------------- pages that fit
 /** Abbreviations a sentence never ends at ("Mr. McGregor"): the reader's cut (library-text.js) splits there, so the
  *  page cut joins them back and never breaks a page after one. */
-const ABBR = /(?:^|\s)(?:Mr|Mrs|Dr|St|Mt|Messrs|Jr|Sr)\.$/;
+const ABBR = /(?:^|[\s'"“‘(])(?:Mr|Mrs|Dr|St|Mt|Messrs|Jr|Sr)\.$/;
 /** A paragraph's sentences for cutting pages: library-text.js sentences(), joined after an abbreviation. Each piece
  *  keeps the space or line break after it, so the pieces joined are the paragraph again. -> [text] */
 export function cutSentences(text) {
@@ -295,7 +295,7 @@ export function paginate(story, { fit = PAGE_FIT, pictureStartsPage = false } = 
   // when they fit there, so no page holds only a line or two.
   for (let k = 1; k < pages.length; k++) {
     const A = pages[k - 1], B = pages[k];
-    if (B.items[0].brk) continue;
+    if (B.items[0].brk || B.items[0].pic) continue;
     while (linesOf(textOf(B.items), fit) < 3) {
       let j = A.items.length - 1;
       while (j > 0 && !breakable(A.items[j - 1], A.items[j])) j--;

@@ -10,16 +10,16 @@ Illustrated editions that are in the public domain, read from Project Gutenberg'
 
 | Ebook | Edition | Published | Makers | Used |
 | --- | --- | --- | --- | --- |
-| 32488 | Just So Stories, Doubleday, Page & Company, New York, 1912 | 1912 | Rudyard Kipling (author, died 1936); Joseph M. Gleeson (illustrator, died 1917) | yes |
-| 18732 | Aesop's Fables: A New Revised Version From Original Sources, Frank F. Lovell & Company, New York, 1884 | 1884 | Aesop (author, died -564); the translator (not named in the book) (translator, not named); Harrison Weir (illustrator, died 1906); John Tenniel (illustrator, died 1914); Ernest Griset (illustrator, died 1907) | yes |
-| 19994 | The Aesop for Children, Rand McNally & Company, Chicago, 1919 | 1919 | Aesop (author, died -564); Milo Winter (illustrator, died 1956) | no: illustrator Milo Winter died in 1956, not before 1956 (still in copyright in life-plus-70 countries) |
-| 14838 | The Tale of Peter Rabbit, Frederick Warne & Co., 1902 | 1902 | Beatrix Potter (author, died 1943); Beatrix Potter (illustrator, died 1943) | yes |
-| 15077 | The Tale of Mr. Jeremy Fisher, Frederick Warne & Co., New York, 1906 | 1906 | Beatrix Potter (author, died 1943); Beatrix Potter (illustrator, died 1943) | yes |
-| 45264 | The Tale of Two Bad Mice, Frederick Warne & Co., London, 1904 | 1904 | Beatrix Potter (author, died 1943); Beatrix Potter (illustrator, died 1943) | yes |
-| 17089 | The Tale of Mrs. Tittlemouse, Frederick Warne & Co., 1910 | 1910 | Beatrix Potter (author, died 1943); Beatrix Potter (illustrator, died 1943) | yes |
-| 14877 | The Tale of Ginger and Pickles, Frederick Warne & Co., 1909 | 1909 | Beatrix Potter (author, died 1943); Beatrix Potter (illustrator, died 1943) | yes |
-| 11757 | The Velveteen Rabbit, Doubleday & Company, Garden City, New York, 1922 | 1922 | Margery Williams (author, died 1944); William Nicholson (illustrator, died 1949) | yes |
-| 17860 | Stories from Hans Andersen, Hodder & Stoughton, London, 1911 | 1911 | Hans Christian Andersen (author, died 1875); the translator (not named in the book) (translator, not named); Edmund Dulac (illustrator, died 1953) | yes |
+| 32488 | Just So Stories, Doubleday, Page & Company, New York | 1912 | Rudyard Kipling (author, died 1936); Joseph M. Gleeson (illustrator, died 1917) | yes |
+| 18732 | Aesop's Fables: A New Revised Version From Original Sources, Frank F. Lovell & Company, New York | 1884 | Aesop (author, lived about 564 BC); the translator (not named in the book) (translator, not named); Harrison Weir (illustrator, died 1906); John Tenniel (illustrator, died 1914); Ernest Griset (illustrator, died 1907) | yes |
+| 19994 | The Aesop for Children, Rand McNally & Company, Chicago | 1919 | Aesop (author, lived about 564 BC); Milo Winter (illustrator, died 1956) | no: illustrator Milo Winter died in 1956, not before 1956 (still in copyright in life-plus-70 countries) |
+| 14838 | The Tale of Peter Rabbit, Frederick Warne & Co. | 1902 | Beatrix Potter (author, died 1943); Beatrix Potter (illustrator, died 1943) | yes |
+| 15077 | The Tale of Mr. Jeremy Fisher, Frederick Warne & Co., New York | 1906 | Beatrix Potter (author, died 1943); Beatrix Potter (illustrator, died 1943) | yes |
+| 45264 | The Tale of Two Bad Mice, Frederick Warne & Co., London | 1904 | Beatrix Potter (author, died 1943); Beatrix Potter (illustrator, died 1943) | yes |
+| 17089 | The Tale of Mrs. Tittlemouse, Frederick Warne & Co. | 1910 | Beatrix Potter (author, died 1943); Beatrix Potter (illustrator, died 1943) | yes |
+| 14877 | The Tale of Ginger and Pickles, Frederick Warne & Co. | 1909 | Beatrix Potter (author, died 1943); Beatrix Potter (illustrator, died 1943) | yes |
+| 11757 | The Velveteen Rabbit, Doubleday & Company, Garden City, New York | 1922 | Margery Williams (author, died 1944); William Nicholson (illustrator, died 1949) | yes |
+| 17860 | Stories from Hans Andersen, Hodder & Stoughton, London | 1911 | Hans Christian Andersen (author, died 1875); the translator (not named in the book) (translator, not named); Edmund Dulac (illustrator, died 1953) | yes |
 
 ## Pages
 
