@@ -340,7 +340,9 @@ function layout(slug, T, list, title) {
     const c = T.cell(n, box, slug), key = T.key(n);
     const ans = box === 'answer' && !(n.eq) ? { k: 'answer', st: { ans: '', size: key.length > 9 ? 'L' : key.length > 4 ? 'M' : 'S', key } } : null;
     const az = ans ? ANSWER.size(ans.st) : null;
-    return { c, ans, az, label: label || (box === 'answer' ? T.ask(n) : ''), w: Math.max(c.w, az ? az.w : 0), h: c.h + (az ? az.h + 12 : 0) };
+    // A question gives nothing away: its object is marked (q) so the page shows no total and a clock no digital time.
+    if (box === 'answer') for (const o of c.objects) o.st = { ...o.st, q: true };
+    return { c, ans, az, label, w: Math.max(c.w, az ? az.w : 0), h: c.h + (az ? az.h + 12 : 0) };
   });
   const cols = cells.length <= 4 ? cells.length : cells.length <= 6 ? 3 : 4, LABEL = cells.some(c => c.label) ? 30 : 0, GX = 40, GY = 48, TITLE = 56;
   const cw = Math.max(0, ...cells.map(c => c.w)), ch = Math.max(0, ...cells.map(c => c.h)) + LABEL, rows = Math.ceil(cells.length / Math.max(1, cols));

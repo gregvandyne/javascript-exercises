@@ -9463,3 +9463,88 @@ Server side it is cleaned like notes (max 30 texts, 200 characters, word list an
 board (share code, push, PDF summary). A student's text reaches only them and the teacher: classmates get nothing for it
 (no shape, no blank box) whether work is shown or hidden; teacher text is visible to everyone and is never a step
 (steps stay sticky notes). The AI draft keeps using notes and steps for labels.
+
+## Virtual math manipulatives: one big board (20 Nov 2026)
+
+Every tool, solo or live, is now the same big plane as the room (public/js/manip-board.js): drag empty space to pan,
+pinch or − + to zoom, Fit to see everything. What used to be each tool's one fixed layout is an **object** you add as
+many times as you like ("+ Add a clock", "+ Add a geoboard", a place-value chart, ten-frames, a double ten-frame, a
+part-part-whole mat, a work mat, a fraction equation, an answer box), each with its own state, moved by its bar or empty
+parts, resized in proportion by its corner, duplicated or deleted from its buttons. Pieces stay free pieces on the plane.
+A new board starts with one object of the tool in the middle (tools that had no drawn mat start empty, as before).
+- **Format 2** (`v: 2`): `objects [{ id, k, x, y, s, st }]`, `pieces`, a piece tool's settings, `__ann`, `__steps`. Notes,
+  texts and pen marks are fractions of the plane (solo: 4000 x 2400) or of the square. Boards saved before (#465 on
+  production) are migrated when they are read: one object of the tool (a two-clock board: two clocks, the end clock
+  tracking from the start) plus their pieces, notes where they were. The server stores what it is sent; it does not
+  rewrite old rows.
+- **Server**: known kinds of the tool only, at most 40 objects on a board and 30 in a square (a 12-problem practice set
+  is 24 or more), an object's own state at most 20 KB, its scale 0.35 to 3, kept inside the board or the square (under
+  its strip). A student writes only their own square (unchanged). **Room squares stay the same size**: a new object is
+  made smaller to fit a free spot, and can be resized; growing squares would reshuffle everyone's grid.
+- **The clock's yellow** (the owner's photo): one minute-hand sector from the start minute to the current minute,
+  clockwise, a light full ring with "+1 h" for each full hour, nothing when not tracking or at zero (clockSector). The
+  old drawing filled between the two hands, so 9:10 looked like a half-disc.
+- **The pen flash**: a mark was drawn from its first point; a one-point polyline with round caps inside a stretched
+  `0 0 1 1` viewBox (vector-effect non-scaling-stroke) is drawn by some browsers (Safari) as a dot as wide as the whole
+  board, in the pen's color, until the second point arrives. Marks are now drawn in plane pixels and only once they
+  have two different points. A Playwright check samples pixels around the pen on pointerdown and on the first move
+  (mouse and touch): unchanged. Headless Chromium never showed the flash and WebKit isn't installed here, so the
+  check guards the fix rather than reproducing the bug.
+- **Magnetic drops**: a piece dropped within 14 screen pixels of another snaps flush to its side, end, top or bottom,
+  lined up with its top, middle or bottom when that is close too (coins and counters by their middles); else into a
+  frame's cell (centered) or a place-value column (centered across it). A soft dashed preview shows while dragging and
+  a short settle plays on the drop (none with reduced motion). Snapped pieces form a group that drags as one; "Separate"
+  in a piece's buttons (and Rotate) takes one out. In the room a square's pieces only ever snap to that square's own
+  pieces and slots, and a snap that would leave the square or go under its strip doesn't happen.
+- **Adding**: a new piece or object appears unselected with a short highlight; its buttons open only on a tap (never
+  after a drag, a duplicate, a draft, a push). Tap-to-add puts the next piece right of the last piece added from the
+  palette (centers lined up, a 6 px gap), steps past anything in the way, wraps under the start of the run, and fills
+  the next free cell or column space of the object the last piece went into. Pieces and objects can also be dragged
+  from the palette (on phones a press, or a drag toward the board; a swipe along the tray still scrolls it); off the
+  board, or outside your own square, a drop does nothing.
+- **Totals**: each object shows its own (a frame's value and zero pairs, a chart's number, a geoboard's area); the clock
+  shows its time itself. The header keeps a board-wide total only for a piece tool with no mats (money with one at
+  most). Solo: "Totals" on or off. Room: the teacher's ⋯ "Students see totals" (off for a session started from a
+  practice board). Practice questions never show a total or a clock's digital time.
+- **Palette**: a mini piece with its value inside ("+1" in the yellow counter, "10" in the rod, "25¢" in the quarter),
+  a name beside it only where it adds something ("Rod", "Quarter", "Blue counter"); the counters' "•" is gone from the
+  palette and the counters. Object kinds come first ("+ Add a ..."), then the selected object's actions, then pieces.
+  The empty-board hint shows only on a truly empty board, centered in the window, and goes once anything is added.
+  Piece and object buttons stay inside the visible board, on one row.
+
+## Virtual math manipulatives: practice sets drafted with AI (20 Nov 2026)
+
+The owner: drafts were "sticky notes that look random". Now the model only says WHAT (public/js/manip-practice.js): a
+title, 1 to 4 short steps, and items with each one's settings and whether it gets an answer box, a "build it here"
+space, or nothing. No coordinates, sticky notes or pen marks are asked for or accepted (AI pen marks are dropped
+entirely: they crossed the clocks). The code checks every setting against the tool (valid times, ranges on the steps,
+denominators the tools have, results the tiles can show, values the pieces can make), replaces repeats with distinct
+items, caps the set at 12 (the step says so when more were asked for), computes each answer, and lays the board out by
+one recipe: a grid up to 4 across, equal cells, each item centered with its answer box under it, the title above, the
+whole centered so one Fit shows it. "Create 8 different clocks..." gives 8 clocks at 8 times, 8 answer boxes, one step.
+
+Answer boxes are objects ("?", sized for the answer); what a student types is theirs like their text (a classmate gets
+it blank, hidden work sends nothing). The teacher's answers (`key`) live only on the teacher's board: "Show answers" is
+hers alone; keys are stripped from share codes a student opens, from pushes, from the teacher's area as students get
+it, and from anything a student saves. A "Check my answers" for students is a follow-up.
+
+| Tool | A practice item |
+| --- | --- |
+| Clock | a clock at a time (answer: the time; build: a clock at 12:00 to set to the time) |
+| Number Lines | a number line (from, to, step) with one point marked "?" (answer: the number) |
+| Hundred Board | a hundred board with one number covered (answer: the number) |
+| Rekenreks | a rekenrek showing a number of beads (answer: how many) |
+| Fraction Circles | a fraction set showing fractions, or a fraction equation drawn with circles |
+| Fraction Tiles | a fraction equation (+, −, × by a whole number or a fraction, ÷ by a whole number, equivalence "1/2 = ?/8", compare) drawn with tiles, an empty bar to build on and an answer box; or a row of tiles to add up |
+| Base Ten Blocks | blocks showing a number (answer: the number; build: an empty place-value chart "Build 346") |
+| Place Value Disks | disks showing a number (answer: the number; build: an empty place-value chart) |
+| Two-Color Counters | a ten-frame with counters, or yellow and red counters (answer: how many, or the value) |
+| Linking Cubes | a stick of cubes (answer: how many; build: "Make a stick of 7") |
+| Color Tiles | a rectangle of tiles (answer: the area; build: "Build an area of 12") |
+| Number rods | a train of rods (answer: its length) |
+| Money | coins and bills for an amount (answer: the amount; build: "Make $1.35") |
+| Algebra Tiles | a set of tiles (answer: the expression) |
+| Pattern Blocks | a set of blocks (answer: their value in hexagons) |
+| XY Coordinate Board | a grid with points plotted, labels and table hidden (answer: the ordered pairs; build: points to plot) |
+| Geoboard | a band around pegs (answer: the area; build: "Make an area of 6") |
+| Bar Models | a part-part-whole bar with one value "?" (answer: the missing value) |

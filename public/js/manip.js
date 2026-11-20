@@ -321,7 +321,7 @@ const IMPL = {
     note: 'Add more clocks from the palette (each keeps its own time). The time tracker adds 15 minutes to the selected clock.',
     board: (st, view) => {
       const e = clockSector(st), oid = view.oid || '';
-      return `<div class="mp-clockwrap">${clockSvg(st, oid, view.readOnly)}<p class="mp-barname">${st.label ? `${esc(st.label)} · ` : ''}${hm(st)}</p>
+      return `<div class="mp-clockwrap">${clockSvg(st, oid, view.readOnly)}<p class="mp-barname">${st.label ? `${esc(st.label)}${st.q ? '' : ' · '}` : ''}${st.q ? '&nbsp;' : hm(st)}</p>
         <p class="small mp-elapsed">${st.start ? `Start ${hm(st.start)} · Elapsed <b>${e ? Math.floor(e.elapsed / 60) : 0} h ${e ? e.part : 0} min</b>` : '&nbsp;'}</p>
         ${view.readOnly ? '' : `<div class="row mp-chips">${btn('chip', 'data-act="hour" aria-label="One hour later"', 'Hour +')}${btn('chip', 'data-act="min5" aria-label="Five minutes later"', 'Min +5')}</div>`}</div>`;
     },
@@ -331,6 +331,7 @@ const IMPL = {
       return true;
     },
     bind: (el, ctx) => bindClocks(el, ctx),
+    ownTotal: true,
   },
 };
 const hm = c => `${((Math.round(+c.h || 0) + 11) % 12) + 1}:${String(Math.round(+c.m || 0)).padStart(2, '0')}`;
@@ -353,7 +354,7 @@ function clockSvg(c, oid, readOnly) {
   const ring = e && e.turns ? `<circle class="mp-cring" cx="${cx}" cy="${cy}" r="80" fill="#FFC91F" fill-opacity=".16"/><text x="${cx}" y="${cy + 44}" text-anchor="middle" font-size="15" font-weight="800" fill="var(--text)">+${e.turns} h</text>` : '';
   const a0 = e ? (e.from * Math.PI) / 180 - Math.PI / 2 : 0, a1 = e ? a0 + (e.sweep * Math.PI) / 180 : 0;
   const wedge = e && e.part ? `<path class="mp-csector" d="${pie(cx, cy, 80, a0, a1)}" fill="#FFC91F" fill-opacity=".45"/>` : '';
-  return `<svg class="mp-clock" ${readOnly ? '' : `data-clock="${esc(oid)}"`} width="220" height="220" viewBox="0 0 220 220" role="img" aria-label="Clock showing ${hm(c)}${e ? `, ${e.elapsed} minutes since ${hm(c.start)}` : ''}">
+  return `<svg class="mp-clock" ${readOnly ? '' : `data-clock="${esc(oid)}"`} width="220" height="220" viewBox="0 0 220 220" role="img" aria-label="${c.q ? 'Clock: what time is it?' : `Clock showing ${hm(c)}`}${e ? `, ${e.elapsed} minutes since ${hm(c.start)}` : ''}">
     <circle cx="${cx}" cy="${cy}" r="100" fill="var(--card)" stroke="var(--text)" stroke-width="3"/>${ring}${wedge}
     ${ticks}${nums}<line x1="${cx}" y1="${cy}" x2="${cx + 56 * Math.cos(ha)}" y2="${cy + 56 * Math.sin(ha)}" stroke="#E53935" stroke-width="8" stroke-linecap="round"/>
     <line x1="${cx}" y1="${cy}" x2="${cx + 84 * Math.cos(ma)}" y2="${cy + 84 * Math.sin(ma)}" stroke="#1E88E5" stroke-width="5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="7" fill="var(--text)"/></svg>`;
@@ -583,7 +584,7 @@ function fracEqHtml(o, view) {
 /** An object's own total (each clock its time, each frame or chart the pieces on it), never on a practice question. */
 function objTotal(slug, impl, o, st) {
   if (!o.st || o.st.q || o.k === 'answer' || o.k === 'frac-eq') return '';
-  if (o.k === slug) return impl.total(o.st);
+  if (o.k === slug) return impl.ownTotal ? '' : impl.total(o.st);   // a clock shows its time and elapsed time itself
   if (!UNDER.has(o.k) || !Array.isArray(st.pieces)) return '';
   const r = objRect(slug, o), on = st.pieces.filter(p => { const cx = p.x + p.w / 2, cy = p.y + p.h / 2; return cx >= r.x && cx <= r.x + r.w && cy >= r.y && cy <= r.y + r.h; });
   return on.length ? impl.total({ ...st, pieces: on }) : '';
@@ -598,7 +599,7 @@ function objHtml(slug, impl, o, view, st = {}) {
   const bar = on ? `<div class="mp-obar" role="toolbar" aria-label="${esc(t('js.manip.obj.actions', { name }))}">${btn('mp-pbtn', `data-oact="copy" data-oid="${esc(o.id)}"`, esc(t('js.manip.obj.copy')))}${btn('mp-pbtn bad', `data-oact="delete" data-oid="${esc(o.id)}"`, esc(t('js.manip.obj.delete')))}</div>
     <span class="mp-oresize" data-oresize="${esc(o.id)}" role="img" aria-label="${esc(t('js.manip.obj.resize'))}"></span>` : '';
   return `<div class="mp-obj${on ? ' on' : ''}${UNDER.has(o.k) ? ' mp-mat' : ''}${view.fresh === o.id ? ' fresh' : ''} k-${esc(o.k)}" data-oid="${esc(o.id)}" style="left:${+o.x}px;top:${+o.y}px;width:${Math.round(z.w * s)}px;height:${Math.round(z.h * s)}px">
-    <div class="mp-objin" style="width:${z.w}px;height:${z.h}px;transform:scale(${s})"><div class="mp-ohead" aria-label="${esc(t('js.manip.obj.move', { name }))}">⠿ ${esc(name)}${tot ? `<span class="mp-otot">${esc(tot)}</span>` : ''}${key}</div><div class="mp-obody">${inner}</div></div>${bar}</div>`;
+    <div class="mp-objin" style="width:${z.w}px;height:${z.h}px;transform:scale(${s})"><div class="mp-ohead" aria-label="${esc(t('js.manip.obj.move', { name }))}"><span class="mp-oname">⠿ ${esc(name)}</span>${tot ? `<span class="mp-otot">${esc(tot)}</span>` : ''}${key}</div><div class="mp-obody">${inner}</div></div>${bar}</div>`;
 }
 /** Everything on a board: objects (mats under the rest), then pieces. view: { sel, osel, readOnly }. */
 function boardHtml(slug, impl, st, view) {

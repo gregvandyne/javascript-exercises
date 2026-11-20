@@ -12,8 +12,8 @@
 import { allPieceDefs, pieceDefs, freeSpot, FRACTION_DENS } from './manip-data.js';
 
 export const WORLD = { w: 4000, h: 2400 };
-/** At most this many objects on a board, and in one room square. */
-export const OBJ_MAX = 12, OBJ_MAX_SQUARE = 6;
+/** At most this many objects on a board, and in one room square (a practice set of 12 problems is 24 or more). */
+export const OBJ_MAX = 40, OBJ_MAX_SQUARE = 30;
 /** An object's size limits (its scale), and the height of its handle bar. */
 export const S_MIN = 0.35, S_MAX = 3, OBJ_HEAD = 30;
 const clamp = (v, lo, hi) => Math.min(Math.max(lo, v), Math.max(lo, hi));

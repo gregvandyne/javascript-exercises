@@ -294,15 +294,15 @@ test('the AI drafter: hosts only, through the site\'s AI client with the configu
   assert.equal(plain.ai, false); assert.deepEqual(plain.draft.steps, ['make 75 cents two ways']); assert.equal(plain.draft.n, 0);
   assert.equal(M.sanitizeDraft(null, 'money').n, 0);
 });
-test('objects in the room: a student adds them only inside their own square (kept inside it, under its strip); at most 6 there, 12 on a board; unknown kinds dropped', async () => {
+test('objects in the room: a student adds them only inside their own square (kept inside it, under its strip); at most 30 there, 40 on a board; unknown kinds dropped', async () => {
   const w = world();
   const s = M.createSession(boss, { classId: w.A.id, tool: 'clock' }).session;
   M.join(w.a1, { id: s.id });
   const clock = (x, y, sc = 1, extra = {}) => ({ id: `c${x}${y}`, k: 'clock', x, y, s: sc, st: { h: 3, m: 0, start: null, label: '' }, ...extra });
-  const many = Array.from({ length: 9 }, (_, i) => clock(i * 10, 5000));
+  const many = Array.from({ length: 33 }, (_, i) => clock(i * 10, 5000, 0.35));
   assert.ok(M.saveArea(w.a1, s.id, w.a1.id, { v: 2, objects: [...many, { id: 'x', k: 'dragon', x: 0, y: 0, s: 1, st: {} }, { id: 'y', k: 'clock', x: 0, y: 0, s: 1, st: 'nope' }] }).ok);
   const mine = JSON.parse(q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, w.a1.id).state).objects;
-  assert.equal(mine.length, 6, 'at most 6 objects in a square'); assert.ok(mine.every(o => o.k === 'clock'));
+  assert.equal(mine.length, 30, 'at most 30 objects in a square'); assert.ok(mine.every(o => o.k === 'clock'));
   const sq = roomLayout('clock').sq;
   for (const o of mine) { assert.ok(o.x >= 0 && o.y >= 0 && o.x + 252 * o.s <= sq.w + 1 && o.y + 382 * o.s <= sq.h + 1, 'inside the square'); }
   // Never in a classmate's square, never in the teacher's area.
@@ -311,11 +311,11 @@ test('objects in the room: a student adds them only inside their own square (kep
   assert.ok(M.saveArea(w.a1, s.id, w.a1.id, { v: 2, objects: [clock(0, 0, 40)] }).ok);
   const big = JSON.parse(q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, w.a1.id).state).objects[0];
   assert.ok(big.s <= sq.h / 382 + 0.001);
-  // The teacher's area takes up to 12; a saved board up to 12 too.
-  assert.ok(M.saveArea(boss, s.id, 't', { v: 2, objects: Array.from({ length: 15 }, (_, i) => clock(i * 30, 0, 0.35)) }).ok);
-  assert.equal(JSON.parse(q.get('SELECT room FROM manip_sessions WHERE id=?', s.id).room).objects.length, 12);
-  const c = JSON.parse(M.cleanState({ v: 2, objects: Array.from({ length: 20 }, (_, i) => clock(i * 300, 100)) }, null, 'clock').state);
-  assert.equal(c.objects.length, 12); assert.ok(c.objects.every(o => o.x + 252 * o.s <= 4000 && o.y >= 0));
+  // The teacher's area takes up to 40; a saved board up to 40 too.
+  assert.ok(M.saveArea(boss, s.id, 't', { v: 2, objects: Array.from({ length: 45 }, (_, i) => clock(i * 30, 0, 0.35)) }).ok);
+  assert.equal(JSON.parse(q.get('SELECT room FROM manip_sessions WHERE id=?', s.id).room).objects.length, 40);
+  const c = JSON.parse(M.cleanState({ v: 2, objects: Array.from({ length: 50 }, (_, i) => clock(i * 300, 100)) }, null, 'clock').state);
+  assert.equal(c.objects.length, 40); assert.ok(c.objects.every(o => o.x + 252 * o.s <= 4000 && o.y >= 0));
   // Each object keeps its own state through a save and a share code.
   const saved = M.saveBoard(boss, { tool: 'clock', title: 'Three', state: { v: 2, objects: [clock(0, 0, 1), { ...clock(300, 0), st: { h: 7, m: 45, start: { h: 7, m: 0 }, label: '' } }, { ...clock(600, 0), st: { h: 11, m: 5, start: null, label: 'End' } }] } });
   const code = q.get('SELECT code FROM manip_boards WHERE id=?', saved.board.id).code;

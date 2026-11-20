@@ -422,3 +422,5 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
 .mp-trayghost.obj{background:color-mix(in srgb,var(--card) 85%,transparent);border:2px dashed var(--accent);color:var(--text);text-shadow:none}
 .mp-palette .mp-pal.piece,.mp-palette .mp-pal.add{touch-action:pan-x}
 @media (min-width:900px){.mp-palette .mp-pal.piece,.mp-palette .mp-pal.add{touch-action:pan-y}}
+.mp-oname{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.mp-otot,.mp-key{flex:none}
