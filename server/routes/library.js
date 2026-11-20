@@ -20,6 +20,7 @@ import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as L from '../services/lessons.js';
 import * as LIB from '../services/library.js';
+import { dotWindow } from '../../public/js/library-text.js';
 import { onLocales as ttsOnLocales } from '../services/tts.js';
 import { classHeader } from './schools.js';
 import { zoneNote, dueChip } from './lessons.js';
@@ -183,6 +184,12 @@ router.get('/library/:id', (req, res) => {
 
 // ---------------------------------------------------------------- the reader
 /** A page's text length band (s/m/l/xl): its type size, so the words and the picture fit on one screen (library.css). */
+/** The page dots (a sliding window of them for a long book: dotWindow in public/js/library-text.js). */
+const dotsOf = (n, p0) => {
+  const w = dotWindow(n, p0);
+  const cls = ['rd-dots', w.sliding ? 'sliding' : '', w.from > 0 ? 'more-l' : '', w.to < n ? 'more-r' : ''].filter(Boolean).join(' ');
+  return html`<span class="${cls}" id="rd-dots" aria-hidden="true">${Array.from({ length: n }, (_, i) => html`<i class="${[i < p0 ? 'on' : '', w.sliding && i === Math.min(p0, n) - 1 ? 'cur' : ''].filter(Boolean).join(' ')}"${i < w.from || i >= w.to ? raw(' hidden') : ''}></i>`)}</span>`;
+};
 const lenOf = words => (words <= 20 ? 's' : words <= 50 ? 'm' : words <= 100 ? 'l' : 'xl');
 /** A book with any page that has no picture: the Classics (docs/decisions.md "Story Library: a Classics shelf"). */
 export const hasTextPages = bk => bk.pages.some(p => !p.image);
@@ -218,7 +225,7 @@ router.get('/library/:id/read', (req, res) => {
       <p class="rd-text" id="rd-text" lang="en" dir="ltr" aria-live="polite" data-len="${lenOf(pg.words)}">${pg.text}</p>`}
       <nav class="rd-nav" aria-label="${t('library.pagesLabel')}">
         <a class="btn rd-prev" id="rd-prev" href="?p=${Math.max(1, p0 - 1)}"${p0 <= 1 ? raw(' aria-disabled="true" tabindex="-1"') : ''}><span class="flip" aria-hidden="true">◀</span> ${t('library.back')}</a>
-        <span class="rd-dots" id="rd-dots" aria-hidden="true">${bk.pages.map((_, i) => html`<i class="${i < p0 ? 'on' : ''}"></i>`)}</span>
+        ${dotsOf(n, p0)}
         <span class="rd-count small muted" id="rd-count">${t('library.pageOf', { page: Math.min(p0, n), pages: n })}</span>
         <a class="btn btn-primary rd-next" id="rd-next" href="?p=${p0 + 1}">${p0 >= n ? t('library.toQuestions') : t('library.next')} <span class="flip" aria-hidden="true">▶</span></a>
       </nav></div>
