@@ -11685,7 +11685,8 @@
       "originalBloom": "Bekijk het originele boek op Bloom Library.",
       "publicDomain": "Publiek domein",
       "firstPublished": "Voor het eerst verschenen in {year} ({edition}).",
-      "changesClassic": "Oomba heeft het verhaal in pagina’s verdeeld en de plaatjes verkleind. De woorden zijn van de schrijver."
+      "changesClassic": "Oomba heeft het verhaal in pagina’s verdeeld en de plaatjes verkleind. De woorden zijn van de schrijver.",
+      "changesClassicCut": "Oomba heeft het verhaal in pagina's verdeeld, de plaatjes kleiner gemaakt en één regel weggelaten. Alle andere woorden zijn van de schrijver."
     },
     "readToMe": "Lees voor",
     "pagesLabel": "Bladzijden",

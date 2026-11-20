@@ -11684,7 +11684,8 @@
       "originalBloom": "Bloom Libraryでもとの本を見る。",
       "publicDomain": "パブリックドメイン",
       "firstPublished": "{year}年に初めて出版（{edition}）。",
-      "changesClassic": "Oombaはおはなしをページに分け、絵の大きさを変えました。文章は作者のものです。"
+      "changesClassic": "Oombaはおはなしをページに分け、絵の大きさを変えました。文章は作者のものです。",
+      "changesClassicCut": "Oombaはお話をページに分け、絵の大きさを変え、1行を省きました。ほかの言葉はすべて作者のものです。"
     },
     "readToMe": "読んで",
     "pagesLabel": "ページ",

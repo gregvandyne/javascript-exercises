@@ -11684,7 +11684,8 @@
       "originalBloom": "在 Bloom Library 上看原書。",
       "publicDomain": "公有領域",
       "firstPublished": "{year} 年首次出版（{edition}）。",
-      "changesClassic": "Oomba 把故事分成頁面，並調整了圖片大小。文字都是作者的原文。"
+      "changesClassic": "Oomba 把故事分成頁面，並調整了圖片大小。文字都是作者的原文。",
+      "changesClassicCut": "Oomba 將故事分成多頁、調整了圖片大小，並刪去一行。其餘文字都是作者的原文。"
     },
     "readToMe": "讀給我聽",
     "pagesLabel": "頁面",

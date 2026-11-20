@@ -27,16 +27,20 @@ Each story is cut into pages that fit half of a 1280 x 720 screen in the reader'
 
 ## Totals
 
-- Books: **21** (Pre-K/K: 0, Grade 1: 0, Grade 2: 0, Grade 3: 2, Grades 4-5: 19); left out: 28
+- Books: **21** (Pre-K/K: 0, Grade 1: 0, Grade 2: 0, Grade 3: 5, Grades 4-5: 16); left out: 28
 - Pictures: 4.4 MB (WebP; pages at most 720 px, quality 40; covers 440 px, quality 55)
 - The grade rule is the library's (`gradeOf`), with the length cap raised to 4,000 words for this source.
+- Grades set by hand (owner's decision): cl-peter-rabbit Grade 3 (the rule gives Grades 4-5); cl-jeremy-fisher Grade 3 (the rule gives Grade 3); cl-two-bad-mice Grade 3 (the rule gives Grades 4-5); cl-tittlemouse Grade 3 (the rule gives Grade 3); cl-ginger-and-pickles Grade 3 (the rule gives Grades 4-5).
 
 ## Included
 
 | Id | Title | Grade | Score | Words | Pages | With a picture | Ebook | Author | Pictures |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| cl-ginger-and-pickles | The Tale of Ginger and Pickles | Grade 3 | 3.81 | 1141 | 29 | 23 | 14877 | Beatrix Potter | Beatrix Potter (1909) |
 | cl-jeremy-fisher | The Tale of Mr. Jeremy Fisher | Grade 3 | 3.41 | 810 | 22 | 22 | 15077 | Beatrix Potter | Beatrix Potter (1906) |
 | cl-tittlemouse | The Tale of Mrs. Tittlemouse | Grade 3 | 3.13 | 1155 | 28 | 25 | 17089 | Beatrix Potter | Beatrix Potter (1910) |
+| cl-peter-rabbit | The Tale of Peter Rabbit | Grade 3 | 3.54 | 971 | 26 | 26 | 14838 | Beatrix Potter | Beatrix Potter (1902) |
+| cl-two-bad-mice | The Tale of Two Bad Mice | Grade 3 | 3.83 | 923 | 26 | 26 | 45264 | Beatrix Potter | Beatrix Potter (1904) |
 | cl-aesop-animal-wisdom | Aesop's Fables: Animal Wisdom | Grades 4-5 | 3.8 | 629 | 9 | 6 | 18732 | Aesop | Harrison Weir, John Tenniel, Ernest Griset (1884) |
 | cl-aesop-clever-thinking | Aesop's Fables: Clever Thinking | Grades 4-5 | 3.83 | 890 | 15 | 6 | 18732 | Aesop | Harrison Weir, John Tenniel, Ernest Griset (1884) |
 | cl-aesop-friends | Aesop's Fables: Friends and Helpers | Grades 4-5 | 3.96 | 1073 | 15 | 6 | 18732 | Aesop | Harrison Weir, John Tenniel, Ernest Griset (1884) |
@@ -48,27 +52,25 @@ Each story is cut into pages that fit half of a 1280 x 720 screen in the reader'
 | cl-aesop-wanting-more | Aesop's Fables: Wanting More | Grades 4-5 | 3.78 | 612 | 10 | 5 | 18732 | Aesop | Harrison Weir, John Tenniel, Ernest Griset (1884) |
 | cl-aesop-work-and-fair-play | Aesop's Fables: Work and Fair Play | Grades 4-5 | 3.88 | 674 | 10 | 1 | 18732 | Aesop | Harrison Weir, John Tenniel, Ernest Griset (1884) |
 | cl-camel | How the Camel Got His Hump | Grades 4-5 | 3.65 | 881 | 13 | 2 | 32488 | Rudyard Kipling | Joseph M. Gleeson (1912) |
-| cl-whale | How the Whale Got His Throat | Grades 4-5 | 4.1 | 999 | 14 | 2 | 32488 | Rudyard Kipling | Joseph M. Gleeson (1912) |
+| cl-whale | How the Whale Got His Throat | Grades 4-5 | 4.09 | 988 | 14 | 2 | 32488 | Rudyard Kipling | Joseph M. Gleeson (1912) |
 | cl-armadillos | The Beginning of the Armadillos | Grades 4-5 | 4.28 | 2579 | 36 | 2 | 32488 | Rudyard Kipling | Joseph M. Gleeson (1912) |
 | cl-emperors-new-clothes | The Emperor's New Clothes | Grades 4-5 | 4.27 | 1683 | 23 | 2 | 17860 | Hans Christian Andersen | Edmund Dulac (1911) |
 | cl-kangaroo | The Sing-Song of Old Man Kangaroo | Grades 4-5 | 3.97 | 994 | 15 | 2 | 32488 | Rudyard Kipling | Joseph M. Gleeson (1912) |
-| cl-ginger-and-pickles | The Tale of Ginger and Pickles | Grades 4-5 | 3.81 | 1141 | 29 | 23 | 14877 | Beatrix Potter | Beatrix Potter (1909) |
-| cl-peter-rabbit | The Tale of Peter Rabbit | Grades 4-5 | 3.54 | 971 | 26 | 26 | 14838 | Beatrix Potter | Beatrix Potter (1902) |
-| cl-two-bad-mice | The Tale of Two Bad Mice | Grades 4-5 | 3.83 | 923 | 26 | 26 | 45264 | Beatrix Potter | Beatrix Potter (1904) |
 | cl-velveteen-rabbit | The Velveteen Rabbit | Grades 4-5 | 4.5 | 3898 | 50 | 7 | 11757 | Margery Williams | William Nicholson (1922) |
 
 ### Text corrected by Oomba
 
 - cl-tittlemouse The Tale of Mrs. Tittlemouse: "Mrs. tittlemouse was a most" → "Mrs. Tittlemouse was a most" (capital letter); "Mrs. tittlemouse went on her way" → "Mrs. Tittlemouse went on her way" (capital letter); "Mrs. tittlemouse began to pull" → "Mrs. Tittlemouse began to pull" (capital letter); "Mrs. tittlemouse decided" → "Mrs. Tittlemouse decided" (capital letter)
+- cl-whale How the Whale Got His Throat: left out "For the Mariner he was also an Hi-ber-ni-an." (a joke about Irish speech; owner's decision 20 Nov 2026)
 
 ### Scanner flags reviewed by a person
 
 - cl-jeremy-fisher The Tale of Mr. Jeremy Fisher: Read by a person: "it seized Mr. Jeremy with a snap" is a trout catching the frog (he is spat out at once), not personal information; nothing to change.
+- cl-two-bad-mice The Tale of Two Bad Mice: Read by a person: "The knife crumpled up and hurt him" (a doll's tin knife bends and a mouse sucks his finger) is mild; nothing to change.
 - cl-aesop-friends Aesop's Fables: Friends and Helpers: Read by a person: the Lion "was about to kill" the Mouse but lets him go (mild peril; nobody is hurt); nothing to change.
 - cl-aesop-wanting-more Aesop's Fables: Wanting More: Read by a person: "A Woman possessed a Hen" means owned; nothing to change.
 - cl-armadillos The Beginning of the Armadillos: Read by a person: "the prickles hurt him" (a jaguar's sore paw), "those directions" and "This is a mess!" are ordinary words; nothing to change.
 - cl-emperors-new-clothes The Emperor's New Clothes: Read by a person: "how stupid his neighbour was" is the story's point about vanity, not a label on a child; nothing to change.
-- cl-two-bad-mice The Tale of Two Bad Mice: Read by a person: "The knife crumpled up and hurt him" (a doll's tin knife bends and a mouse sucks his finger) is mild; nothing to change.
 - cl-velveteen-rabbit The Velveteen Rabbit: Read by a person: "made all in one piece" (the toy rabbit's body) is not the name of a cartoon; nothing to change.
 
 ## Left out

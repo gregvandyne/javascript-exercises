@@ -9671,3 +9671,14 @@ side by side as an open book (approved mockup). Pages must fit half a 1280 x 720
   credits and markup over HTTP, progress and answers) and `tests/unit/library-classics-browser.test.js` (spreads at
   1280 x 720 and 1440 x 900, Next and Back, the picture page, the lone page, Read to me with both voices, reading to
   the end, phones, a StoryWeaver book unchanged); `library.test.js` allows pages without a picture for this source only.
+
+## Story Library Classics: Potter at Grade 3, one line cut from the Whale (20 Nov 2026)
+
+- Owner, asked to use best judgment on Beatrix Potter's grade: the shared rule scores her Grade 3 to Grades 4-5 because
+  of her old words and long sentences, but US schools read her aloud in K-2 and children read her alone around Grade 3.
+  All five Potter books are set to Grade 3 by hand (`grade` plus `gradeWhy` in `seed-library/classics.json`); the
+  importer records the rule's grade beside it in `docs/story-library-classics.md`.
+- Owner: cut "For the Mariner he was also an Hi-ber-ni-an." from How the Whale Got His Throat (a joke about Irish
+  speech). A fix with `kind: "cut"` leaves out a line; it is counted in `credits.cuts`, not as a spelling correction, and
+  the book's notes say "Oomba ... left out one line" (`library.credits.changesClassicCut`, 12 languages; en-GB uses en).
+- Owner: the books left out for old words a filter flags ("Pussy", "cock", "Ass") stay out.

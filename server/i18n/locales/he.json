@@ -11686,7 +11686,8 @@
       "originalBloom": "לספר המקורי ב-Bloom Library.",
       "publicDomain": "נחלת הכלל",
       "firstPublished": "יצא לאור לראשונה ב-{year} ({edition}).",
-      "changesClassic": "Oomba חילקה את הסיפור לעמודים ושינתה את גודל התמונות. המילים הן של המחבר."
+      "changesClassic": "Oomba חילקה את הסיפור לעמודים ושינתה את גודל התמונות. המילים הן של המחבר.",
+      "changesClassicCut": "Oomba חילקה את הסיפור לעמודים, הקטינה את התמונות והשמיטה שורה אחת. כל שאר המילים הן של המחבר."
     },
     "readToMe": "הקרא לי",
     "pagesLabel": "עמודים",

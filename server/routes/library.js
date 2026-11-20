@@ -81,7 +81,7 @@ function classicCredits(t, bk) {
     c.illustration.length ? `${t('library.credits.illustration', { names: listOf(t, c.illustration) })} (${c.published})` : '',
     c.translation.length ? t('library.credits.translation', { names: listOf(t, c.translation) }) : '',
   ].filter(Boolean);
-  const note = [t('library.credits.changesClassic'), c.corrections ? t('library.credits.corrected') : ''].filter(Boolean).join(' ');
+  const note = [t(c.cuts ? 'library.credits.changesClassicCut' : 'library.credits.changesClassic'), c.corrections ? t('library.credits.corrected') : ''].filter(Boolean).join(' ');
   return html`<div class="lb-credit small muted" dir="auto">
     <p class="lb-credit-by">${by.join(' · ')}</p>
     <details class="lb-credit-more"><summary>${t('library.credits.notes')}</summary>

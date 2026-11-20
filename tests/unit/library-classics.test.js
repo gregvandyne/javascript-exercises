@@ -144,12 +144,20 @@ test('the shipped Classics: public domain, pages that fit, pictures on disk, gra
     assert.deepEqual(I.checkQuestions(b.questions, b.pages.length), [], b.id);
     assert.equal(b.questions.filter(x => x.kind === 'inference').length, 1, `${b.id}: one inference question`);
     const m = I.measure(b.pages.map(p => p.text));
-    assert.equal(I.gradeOf(m, { maxWords: IMP.CLASSICS_MAX_WORDS }).grade, b.grade, `${b.id}: the grade is the rule's`);
+    // The rule's grade, unless the owner set one by hand with a reason (Beatrix Potter: Grade 3).
+    if (pick.grade) assert.ok(pick.gradeWhy && pick.grade === b.grade, `${b.id}: a hand-set grade`);
+    else assert.equal(I.gradeOf(m, { maxWords: IMP.CLASSICS_MAX_WORDS }).grade, b.grade, `${b.id}: the grade is the rule's`);
     assert.ok(b.words <= IMP.CLASSICS_MAX_WORDS);
     for (const src of [b.cover.src, ...b.pages.filter(p => p.image).map(p => p.image.src)]) assert.ok(fs.existsSync(path.join(ROOT, 'public', src)), src);
     assert.ok(b.pages.filter(p => p.image).every(p => p.image.w > 0 && p.image.h > 0), `${b.id}: picture sizes`);
     assert.ok(new Set(b.pages.filter(p => p.image).map(p => p.image.file)).size === b.pages.filter(p => p.image).length, `${b.id}: a picture once`);
   }
+  // Beatrix Potter reads at Grade 3 (owner's decision, 20 Nov 2026).
+  for (const b of books.filter(x => x.credits.text.includes('Beatrix Potter'))) assert.equal(b.grade, '3', b.id);
+  // The Whale leaves out the line about the Mariner being Irish (owner's decision, 20 Nov 2026).
+  const whale = books.find(b => b.id === 'cl-whale');
+  assert.ok(!/Hi-ber-ni-an|Hibernian/.test(whale.pages.map(p => p.text).join(' ')));
+  assert.equal(whale.credits.cuts, 1); assert.ok(!whale.credits.corrections, 'a cut is not a spelling fix');
   // The shelf adds books for older readers, where the library was thin.
   assert.ok(books.filter(b => b.grade === '4-5').length >= 10);
   // Grades 4-5 is the shelf's usual grade; a long book is allowed only for this source.
@@ -189,7 +197,8 @@ test('cards, book page and credits: "Classics", author and illustrator with the 
   const page = await call('/library/cl-whale');
   assert.match(page.text, /Story: Rudyard Kipling · Pictures: Joseph M\. Gleeson \(1912\)/);
   assert.match(page.text, /Public domain · First published in 1912 \(Doubleday, Page &amp; Company, New York\)\./);
-  assert.match(page.text, /Oomba split the story into pages and resized the pictures\. The words are the author&#39;s own\./);
+  assert.match(page.text, /Oomba split the story into pages, resized the pictures and left out one line\. All the other words are the author&#39;s own\./);
+  assert.match((await call('/library/cl-camel')).text, /Oomba split the story into pages and resized the pictures\. The words are the author&#39;s own\./);
   assert.match(page.text, /Words to know/); assert.match(page.text, /&#39;Stute|'Stute/);
   assert.ok(!/creativecommons/.test(page.text.split('lb-credit')[1] || ''), 'no license deed for a public-domain book');
   // A corrected book says so; one with an unnamed translator names nobody.

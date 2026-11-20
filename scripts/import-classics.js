@@ -67,6 +67,12 @@ export function evaluateClassic(key, pick, source, html, { draft = false } = {})
   if (problems.length) return fail(`pages: ${problems[0]}`);
   const texts = pages.map(p => p.text);
   const m = I.measure(texts), g = I.gradeOf(m, { maxWords: CLASSICS_MAX_WORDS });
+  // An owner-approved grade set by hand (pick.grade with pick.gradeWhy), e.g. Beatrix Potter, whose old words and long
+  // sentences score Grades 4-5 though US schools read her in K-2 and children read her alone around Grade 3.
+  if (g.grade && pick.grade) {
+    if (!I.GRADES.includes(pick.grade) || !pick.gradeWhy) return fail('grade: a hand-set grade needs a known grade and gradeWhy');
+    row.ruleGrade = g.grade; g.grade = pick.grade;
+  }
   Object.assign(row, { grade: g.grade, score: g.score, words: m.words, measures: m, pages: pages.length, pictures: story.pictures.length });
   if (!g.grade) return fail(`${g.why}`);
   if (C.SOURCE_NAME_RE.test([pick.title, ...texts].join('\n'))) return fail('the text names the digitizer');
@@ -106,7 +112,8 @@ export function evaluateClassic(key, pick, source, html, { draft = false } = {})
       translation: source.makers.filter(x => x.role === 'translator' && !x.anonymous).map(x => x.name),
       publisher: '', platform: 'Classics', published: source.published, edition: source.edition,
       license: 'public-domain', licenseName: 'Public domain', licenseUrl: '',
-      ...(row.fixes.length ? { corrections: row.fixes.length } : {}),
+      ...(row.fixes.some(f => f.kind !== 'cut') ? { corrections: row.fixes.filter(f => f.kind !== 'cut').length } : {}),
+      ...(row.fixes.some(f => f.kind === 'cut') ? { cuts: row.fixes.filter(f => f.kind === 'cut').length } : {}),
     },
     glossary: Object.entries(pick.glossary || {}).map(([word, note]) => ({ word, note })),
     questions: qs.map((x, i) => ({ q: x.q, ...placeAnswer(id, i, x.right, x.wrong), page: x.page, kind: x.kind === 'inference' ? 'inference' : 'literal' })),
@@ -194,6 +201,7 @@ export function reportMarkdown(rows, curation, { totalBytes = null, generated = 
     `- Books: **${inc.length}** (${I.GRADES.map(g => `${GRADE_NAMES[g]}: ${inc.filter(r => r.grade === g).length}`).join(', ')}); left out: ${exc.length + Object.keys(curation.skipped || {}).length}`,
     ...(totalBytes !== null ? [`- Pictures: ${(totalBytes / 1048576).toFixed(1)} MB (WebP; pages at most ${IMAGE.page.max} px, quality ${IMAGE.page.q}; covers ${IMAGE.cover.max} px, quality ${IMAGE.cover.q})`] : []),
     `- The grade rule is the library's (\`gradeOf\`), with the length cap raised to ${CLASSICS_MAX_WORDS.toLocaleString('en-US')} words for this source.`,
+    ...(inc.some(r => r.ruleGrade) ? [`- Grades set by hand (owner's decision): ${inc.filter(r => r.ruleGrade).map(r => `${r.book.id} ${GRADE_NAMES[r.grade]} (the rule gives ${GRADE_NAMES[r.ruleGrade]})`).join('; ')}.`] : []),
     '',
     '## Included',
     '',
@@ -201,7 +209,7 @@ export function reportMarkdown(rows, curation, { totalBytes = null, generated = 
     '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
     ...inc.sort((a, b) => gradeRank(a.grade) - gradeRank(b.grade) || a.title.localeCompare(b.title)).map(r => `| ${r.book.id} | ${esc(r.title)} | ${GRADE_NAMES[r.grade]} | ${r.score} | ${r.words} | ${r.pages} | ${r.book.pages.filter(p => p.image).length} | ${r.sourceId} | ${esc(r.book.credits.text.join(', '))} | ${esc(r.book.credits.illustration.join(', '))} (${r.book.credits.published}) |`),
     '',
-    ...(inc.some(r => r.fixes.length) ? ['### Text corrected by Oomba', '', ...inc.filter(r => r.fixes.length).map(r => `- ${r.book.id} ${esc(r.title)}: ${r.fixes.map(f => `"${esc(f.from)}" → "${esc(f.to)}"${f.why ? ` (${esc(f.why)})` : ''}`).join('; ')}`), ''] : []),
+    ...(inc.some(r => r.fixes.length) ? ['### Text corrected by Oomba', '', ...inc.filter(r => r.fixes.length).map(r => `- ${r.book.id} ${esc(r.title)}: ${r.fixes.map(f => f.kind === 'cut' ? `left out "${esc(f.from.trim())}"${f.why ? ` (${esc(f.why)})` : ''}` : `"${esc(f.from)}" → "${esc(f.to)}"${f.why ? ` (${esc(f.why)})` : ''}`).join('; ')}`), ''] : []),
     ...(inc.some(r => r.book.scanNote) ? ['### Scanner flags reviewed by a person', '', ...inc.filter(r => r.book.scanNote).map(r => `- ${r.book.id} ${esc(r.title)}: ${esc(r.book.scanNote)}`), ''] : []),
     '## Left out',
     '',
