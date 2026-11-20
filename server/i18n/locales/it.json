@@ -11724,6 +11724,7 @@
       "page": "pagina {page}",
       "missed": "{count} hanno sbagliato la prima volta"
     },
-    "footSources": "Storie e illustrazioni: Pratham Books (StoryWeaver) e gli autori e gli editori di Bloom Library, ogni libro con la sua licenza aperta, indicata insieme al libro."
+    "footSources": "Storie e illustrazioni: Pratham Books (StoryWeaver) e gli autori e gli editori di Bloom Library, ogni libro con la sua licenza aperta, indicata insieme al libro.",
+    "glossaryNoteAll": "Note di Oomba per capire parole che i bambini forse non conoscono."
   }
 }

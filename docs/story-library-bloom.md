@@ -21,30 +21,30 @@ Every candidate that passed the rule was read in full by a person for ages 4 to 
 ## Totals
 
 - English books on Bloom: 13396; with an allowed license in meta.json: 3962
-- Candidates checked: 1664
-- Included: **108** (Pre-K/K: 30, Grade 1: 45, Grade 2: 21, Grade 3: 10, Grades 4-5: 2)
-- By license: CC BY 4.0: 90, CC BY-SA 4.0: 17, CC0 1.0: 1
-- Pictures: 1299 with their own license, 22 inherited from the book (same copyright holder; 4 books)
-- Left out: 1556
-  - read and left out: 499
-  - a picture's license is missing, unclear or stricter: 416
-  - page N has no picture: 334
-  - a page has several pictures: 123
-  - the book's notes say: 100
-  - English missing on page N: 67
+- Candidates checked: 1771
+- Included: **110** (Pre-K/K: 31, Grade 1: 45, Grade 2: 22, Grade 3: 10, Grades 4-5: 2)
+- By license: CC BY 4.0: 91, CC BY-SA 4.0: 18, CC0 1.0: 1
+- Pictures: 1333 with their own license, 22 inherited from the book (same copyright holder; 4 books)
+- Left out: 1661
+  - read and left out: 504
+  - a picture's license is missing, unclear or stricter: 464
+  - page N has no picture: 357
+  - a page has several pictures: 138
+  - the book's notes say: 109
+  - English missing on page N: 70
   - no cover picture: 5
   - book HTML missing: 4
+  - book license: no clear version: 4
   - no story pages: 3
   - page N is an activity, quiz or video page: 2
-  - book license: no clear version: 2
   - picture b - cover (cubierta is not in the book's folder: 1
-- Bloom pictures on the site: 26.9 MB (WebP, pages at most 720 px, covers 440 px)
+- Bloom pictures on the site: 27.3 MB (WebP, pages at most 720 px, covers 440 px)
 
 ## Included
 
 | Id | Title | Grade | Score | Words | Pages | Text | Illustration | Translation | Publisher | License | Other languages |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bl-ILj5QS0v0J | At the Market | Pre-K/K | 0.09 | 58 | 14 | Robyn Nottingham | Robyn Nottingham | – | Robyn Nottingham | CC BY-SA 4.0 | km, tpi |
+| bl-ILj5QS0v0J | At the Market | Pre-K/K | 0.09 | 58 | 14 | Robyn Nottingham | Robyn Nottingham | – | SIL-PNG Education for Life | CC BY-SA 4.0 | km, tpi |
 | bl-oh0S2OsR5l | Caterpillar Lives in Our Garden | Pre-K/K | -0.07 | 35 | 6 | Tandi Jackson | Michael John | Sidam Jamuna Ramesh | CBase Solutions Private Limited | CC BY 4.0 | tpi, wsg |
 | bl-FUKSMHZKGV | Clever Pig | Pre-K/K | -0.12 | 68 | 12 | Nathalie Koenig | Joshua Morgan | – | Joshua Morgan, Nathalie Koenig, Lee- Ann Knowles, Carol Kagezi, BookDash.org | CC BY 4.0 | – |
 | bl-DZw4pSaygC | Come Back, Cat! | Pre-K/K | -0.06 | 60 | 10 | Nicola Rijsdijk | Karen Lilje | – | Karen Lilje, Nicola Rijsdijk, Sam Scarborough, and BookDash.org | CC BY 4.0 | – |
@@ -70,6 +70,7 @@ Every candidate that passed the rule was read in full by a person for ages 4 to 
 | bl-bw69H3aL6F | The Visitors | Pre-K/K | 0.21 | 66 | 10 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | tpi |
 | bl-bLA0AsOuuS | Transport | Pre-K/K | 0.27 | 94 | 14 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | tpi |
 | bl-atsG5ppVC1 | Trees | Pre-K/K | 0.47 | 82 | 11 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | tpi |
+| bl-oP7kQamjXU | What Animals Can You See? | Pre-K/K | 0.14 | 93 | 18 | – | Michael John | – | SIL PNG | CC BY 4.0 | adz, tpi |
 | bl-I81XFHux5t | What Is It? | Pre-K/K | 0.17 | 85 | 12 | Kate Sidley | Robyn Penn | – | Robyn Penn, Kate Sidley, Ann Roberts, and BookDash.org | CC BY 4.0 | oks |
 | bl-LqZJkdOKv7 | When Mama Is Away | Pre-K/K | 0.23 | 68 | 9 | – | Michael Mape | – | SIL-PNG Education for Life | CC BY 4.0 | tpi |
 | bl-aeo3n5ry6J | Whose foot is this? | Pre-K/K | -0.34 | 48 | 12 | – | Proyecto “Arte para la Alfabetización en México" | – | Instituto Lingüístico de Verano, A.C | CC BY-SA 4.0 | es, jmx, jmx-x-coi, jmx-x-smp |
@@ -139,6 +140,7 @@ Every candidate that passed the rule was read in full by a person for ages 4 to 
 | bl-0Nd19U6Opf | The elephant in the room | Grade 2 | 2.09 | 377 | 12 | Sam Wilson | Michael Tymbios | – | Book Dash | CC BY 4.0 | – |
 | bl-4yn12xdsaX | The Little Red Hen | Grade 2 | 2.17 | 366 | 18 | – | ARCODI | – | Instituto Lingüístico de Verano, A. C | CC BY-SA 4.0 | es |
 | bl-G37Uu0elWo | The Plant Whisperer | Grade 2 | 2.28 | 637 | 22 | Sayantan Datta | Bhavya Kumar | – | Pratham Books | CC BY 4.0 | – |
+| bl-U81TOWfdQ7 | When I Grow Up | Grade 2 | 2.29 | 175 | 14 | – | Simóne van der Spuy | – | SIL-PNG | CC BY-SA 4.0 | tpi |
 | bl-5LGuN9YHRf | When the Clouds Came Home | Grade 2 | 1.62 | 388 | 13 | Ramesh Hengadi | Ramesh Hengadi | Shinibali Saigal | Pratham Books | CC BY 4.0 | – |
 | bl-xtDFOOj29m | A Tiny Seed: The Story of Wangari Maathai | Grade 3 | 2.57 | 412 | 12 | Nicola Rijsdijk | Maya Marshak, Onesmus Kakungi | – | Nicola Rijsdijk, Maya Marshak, Tarryn-Anne Anderson, Bookdash.org and African Storybook Initiative | CC BY 4.0 | – |
 | bl-aSBzr5Sznf | Chik-chik Girl | Grade 3 | 2.62 | 624 | 13 | Komilla Raote | Shubhshree Mathur | – | Pratham Books | CC BY 4.0 | – |
@@ -167,6 +169,7 @@ Pages after the story that are not part of it, named by a person; the story page
 - bl-bw69H3aL6F The Visitors: 1 page(s): The last page is comprehension questions for the class, not part of the book.
 - bl-bLA0AsOuuS Transport: 2 page(s): The last two pages are comprehension questions and a drawing activity for the class, not part of the book.
 - bl-atsG5ppVC1 Trees: 2 page(s): The last two pages are comprehension questions and a drawing activity for the class, not part of the book.
+- bl-oP7kQamjXU What Animals Can You See?: 2 page(s): The last two pages are comprehension questions and a drawing activity for the class, not part of the book.
 - bl-LqZJkdOKv7 When Mama Is Away: 2 page(s): The last two pages are comprehension questions and a drawing activity for the class, not part of the book.
 - bl-thk2O2wNEG I Colour In: 1 page(s): Page 10 is a note about the meaning of the Mozambique flag (independence struggle), after the book ends.
 - bl-PmkkQa8tI7 Little Caterpillar: 3 page(s): The last three pages are a life-cycle fact page, comprehension questions and a drawing activity, after the story ends.
@@ -176,6 +179,7 @@ Pages after the story that are not part of it, named by a person; the story page
 - bl-a5QYD93dfs About Birds: 2 page(s): The last two pages are comprehension questions and a drawing activity for the class, not part of the book.
 - bl-ZYIJu9ZuAK Satya, Watch Out!: 3 page(s): Pages 18 to 20 are a fact section about how animals move, after the story ends.
 - bl-G37Uu0elWo The Plant Whisperer: 1 page(s): Page 23 is a note for grown-ups about the scientist's research, after the story ends.
+- bl-U81TOWfdQ7 When I Grow Up: 2 page(s): The last two pages are a page without words and discussion questions for the class, after the book ends.
 - bl-5LGuN9YHRf When the Clouds Came Home: 1 page(s): Page 14 is a note for grown-ups about the artist's village (development, climate, and nature revered as gods), not part of the story.
 - bl-BpsFSHbUOY The Hare & the Tortoise (Again!): 3 page(s): The last two pages are coloring pages ("colour this picture"), not part of the story; a wordless page before them is then left out too.
 - bl-k9sHUvZcbD Why Can't We Glow Like Fireflies?: 2 page(s): The last two pages are do-it-yourself activities ("Make a firefly with a plastic bottle and a glow stick"), after the book ends.
@@ -198,44 +202,57 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-2JzFJHIh4m | Veggie Veggies  | book HTML missing |
 | bl-h978JlTJDs | (2-3) Who will Help Me? | book license: no clear version (cc-by) |
 | bl-ZH2ooKZVMe | Ada' Beauty | book license: no clear version (cc-by) |
+| bl-319zmKzsOE | Edible Plants | book license: no clear version (cc-by) |
+| bl-NFFj1HRFCF | Edible Plants | book license: no clear version (cc-by) |
 | bl-q9HtK4ppUI | (16) What are You Doing? | cover picture has no license and another copyright holder |
 | bl-5asC5j8MKM | A Class Trip | cover picture has no license and another copyright holder |
 | bl-cNO74jgvHi | A5-How do you Sleep? | cover picture has no license and another copyright holder |
 | bl-R06kiDXSLQ | Baby Goats | cover picture has no license and another copyright holder |
 | bl-qZDONexRyk | Baby Goats | cover picture has no license and another copyright holder |
+| bl-6TyhWQfcXP | Big Blue Bus | cover picture has no license and another copyright holder |
 | bl-JvBzFXdtE2 | Big Blue Bus | cover picture has no license and another copyright holder |
+| bl-Uev3g1l0aT | Big Blue Bus | cover picture has no license and another copyright holder |
 | bl-obpMg3wezJ | Big Blue Bus | cover picture has no license and another copyright holder |
+| bl-yDwIbHxsZQ | Big Blue Bus | cover picture has no license and another copyright holder |
 | bl-mUNAZUbF8z | Chameleon Races Rabbit | cover picture has no license and another copyright holder |
 | bl-xGPW8wwY2i | Chameleon Races Rabbit | cover picture has no license and another copyright holder |
 | bl-oFZfXOKj0R | Dog's Day | cover picture has no license and another copyright holder |
 | bl-vpBHfINGuc | El burro flojo | cover picture has no license and another copyright holder |
 | bl-4B0IIahHE0 | How do you Sleep? | cover picture has no license and another copyright holder |
+| bl-4xxnIxtj2s | How do you Sleep? | cover picture has no license and another copyright holder |
 | bl-mHzDv4Oja2 | How do you Sleep? | cover picture has no license and another copyright holder |
+| bl-nGloCTbWEq | How do you Sleep? | cover picture has no license and another copyright holder |
 | bl-PM78AmeVj4 | How Does It Work | cover picture has no license and another copyright holder |
 | bl-YMtL3fzKPA | I Want to Fly | cover picture has no license and another copyright holder |
+| bl-tWHJpq4RAv | I Want to Fly | cover picture has no license and another copyright holder |
 | bl-wRkOGAOMu8 | If I didn't believe... | cover picture has no license and another copyright holder |
 | bl-grS3mPPrz6 | Kálugúran Friends | cover picture has no license and another copyright holder |
 | bl-lvC98rp9oL | Let's be Friends! | cover picture has no license and another copyright holder |
 | bl-o14Q3BCOfl | Let's be Friends! | cover picture has no license and another copyright holder |
+| bl-tMq6qoCvE7 | Let's be Friends! | cover picture has no license and another copyright holder |
 | bl-Pnsz9WtI2h | Let's Eat! | cover picture has no license and another copyright holder |
 | bl-B1YGzcJTML | Meera and Ameera | cover picture has no license and another copyright holder |
 | bl-uIR3b2RSSk | Meera and Ameera | cover picture has no license and another copyright holder |
 | bl-hpC7zh0UC8 | Metung, Adwa, Atlu One Two Three | cover picture has no license and another copyright holder |
 | bl-xTmMj12K5M | My Cat | cover picture has no license and another copyright holder |
 | bl-LEZQZpgBd1 | My Food Garden | cover picture has no license and another copyright holder |
+| bl-ZDjP4WXfHI | My Food Garden | cover picture has no license and another copyright holder |
 | bl-15k9Mnq5Hc | Parts of the face | cover picture has no license and another copyright holder |
 | bl-Uale8s5Bcn | Sara’s Canoe | cover picture has no license and another copyright holder |
 | bl-MNnndjQQeU | Sendi and Lins | cover picture has no license and another copyright holder |
 | bl-xtXGiE8y6D | Square-How Do You Sleep? | cover picture has no license and another copyright holder |
 | bl-2TmUvE03X3 | The Brave Children and the Jackal | cover picture has no license and another copyright holder |
 | bl-SuEBxRnKI9 | The hyena and the mintor lizard | cover picture has no license and another copyright holder |
+| bl-6aWweGnlGe | The Lazy Little Donkey | cover picture has no license and another copyright holder |
 | bl-JirdzGcera | The Lazy Little Donkey | cover picture has no license and another copyright holder |
 | bl-POVk4CufLB | The Lazy Little Donkey | cover picture has no license and another copyright holder |
+| bl-8ir3HIdVb5 | The Lion and the Mosquito. | cover picture has no license and another copyright holder |
 | bl-lISu2PVGQW | The Lion and the Mosquito. | cover picture has no license and another copyright holder |
 | bl-laVgIQsrnI | The Lion and the Mosquito. | cover picture has no license and another copyright holder |
 | bl-UCBNR9PTnC | The Yellow Bucket | cover picture has no license and another copyright holder |
 | bl-7JwWyuv0XC | Where the Pet Sat? | cover picture has no license and another copyright holder |
 | bl-bo1ijOBU3c | Where the Pet Sat? | cover picture has no license and another copyright holder |
+| bl-FMnmQKyvvb | ఉంది రండు మూంద్ | cover picture has no license and another copyright holder |
 | bl-KBJ3cV8cgf | (3-5) Spider, Spider | cover picture has no license or copyright |
 | bl-W4kWd8VcQR | 19 - Friends | cover picture has no license or copyright |
 | bl-iVA8hiF8eZ | 19 - Friends | cover picture has no license or copyright |
@@ -303,26 +320,40 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-ZW105k5ebY | 32 - Trees | cover picture has no license or copyright |
 | bl-RGJ4MtR1Hp | 33 - What Animals Can You See? | cover picture has no license or copyright |
 | bl-dgASTA1bVU | 33 - What Animals Can You See? | cover picture has no license or copyright |
+| bl-E5Vzj3MXy4 | A home for Curly | cover picture has no license or copyright |
 | bl-Ehn3iOGJE3 | A home for Curly | cover picture has no license or copyright |
 | bl-Szg3tGpGaE | A home for Curly | cover picture has no license or copyright |
+| bl-fyT7TZtCF7 | A home for Curly | cover picture has no license or copyright |
+| bl-rPrO8DtP03 | A home for Curly | cover picture has no license or copyright |
 | bl-AlIhhm6Df3 | A wise crow | cover picture has no license or copyright |
 | bl-Rxbu9ZaIcQ | About Birds | cover picture has no license or copyright |
 | bl-CPXoeThE3p | All About the Great Barrier Reef | cover picture has no license or copyright |
 | bl-0H8QFHV6Xl | Back to School | cover picture has no license or copyright |
 | bl-0ZBddHmFKx | Bat and his friends | cover picture has no license or copyright |
+| bl-EDwPii1qzf | Bat and his friends | cover picture has no license or copyright |
 | bl-UF2zMjM0gk | Bat and his friends | cover picture has no license or copyright |
+| bl-clKST4qn0x | Bat and his friends | cover picture has no license or copyright |
+| bl-jmyCqvQwA5 | Bat and his friends | cover picture has no license or copyright |
 | bl-hwIO6OkyGs | Caterpillar Lives in Our Garden | cover picture has no license or copyright |
 | bl-mSjeQyVSqx | Christmas in PNG | cover picture has no license or copyright |
 | bl-R4GVmH676W | Clouds | cover picture has no license or copyright |
 | bl-rYTyg5bOi5 | Clouds | cover picture has no license or copyright |
+| bl-wmBMtIUNAM | Clouds | cover picture has no license or copyright |
+| bl-xmdFLR6W2D | Clouds | cover picture has no license or copyright |
 | bl-tjXogB9tvr | Coco's Adventures | cover picture has no license or copyright |
 | bl-ALb450KJ6n | Colors | cover picture has no license or copyright |
 | bl-s7SzWz1rDP | Colours of a Rainbow | cover picture has no license or copyright |
 | bl-36eOiU847M | Cow in the Room | cover picture has no license or copyright |
 | bl-1qayT8KSo7 | Daddy goes to work | cover picture has no license or copyright |
+| bl-KAd0Pb7l7R | Daddy goes to work | cover picture has no license or copyright |
+| bl-MALcvHseMZ | Daddy goes to work | cover picture has no license or copyright |
+| bl-UTljneJLfy | Daddy goes to work | cover picture has no license or copyright |
 | bl-KxJHNzW2qo | Dancing | cover picture has no license or copyright |
+| bl-2MR0E1NwPY | Day and Night | cover picture has no license or copyright |
 | bl-QaH0HbpZoE | Day and Night | cover picture has no license or copyright |
 | bl-c5LxP5M7uo | Day and Night | cover picture has no license or copyright |
+| bl-cPsZu2Tomc | Day and Night | cover picture has no license or copyright |
+| bl-wz5fqr1FUM | Day and Night | cover picture has no license or copyright |
 | bl-tFAzmHFAmU | Dina's Magical Garden Adventure | cover picture has no license or copyright |
 | bl-pAz5JqsVX1 | Greetings | cover picture has no license or copyright |
 | bl-XdXvn6DKLe | Helping Others | cover picture has no license or copyright |
@@ -340,6 +371,8 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-HG24iSUYUf | Look! There! | cover picture has no license or copyright |
 | bl-0Isxb3EsEH | Market | cover picture has no license or copyright |
 | bl-nDwtsoBiH4 | Market | cover picture has no license or copyright |
+| bl-sBM7XnLIHA | Market | cover picture has no license or copyright |
+| bl-x8hFwgJO1f | Market | cover picture has no license or copyright |
 | bl-SMlAOnTOl4 | Men or Women | cover picture has no license or copyright |
 | bl-osWJ1pLePv | Moses and the Very Good Farm | cover picture has no license or copyright |
 | bl-xtdpHJIAXs | My Body | cover picture has no license or copyright |
@@ -359,6 +392,9 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-WdRuZPxhtZ | Porridge | cover picture has no license or copyright |
 | bl-GM2d8zzvqA | Rat and Frog | cover picture has no license or copyright |
 | bl-6BbJdtQhZj | Sam and Max | cover picture has no license or copyright |
+| bl-EZQwFKDYYX | Sam and Max | cover picture has no license or copyright |
+| bl-VuqIp7h2Md | Sam and Max | cover picture has no license or copyright |
+| bl-juSlWu134O | Sam and Max | cover picture has no license or copyright |
 | bl-rjHhHqFDFJ | Sam and Max | cover picture has no license or copyright |
 | bl-5ZmvATEDnj | Sesona's Spring Surprise | cover picture has no license or copyright |
 | bl-cjc8mPZjmP | Sport | cover picture has no license or copyright |
@@ -389,6 +425,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-GEASuFJmzy | Trees | cover picture has no license or copyright |
 | bl-HbMXExUscg | What Animals Can You See? | cover picture has no license or copyright |
 | bl-dAZkyd4LBQ | What Animals Can You See? | cover picture has no license or copyright |
+| bl-9IRQ9v5Naw | What's happening? | cover picture has no license or copyright |
 | bl-XcX1kY5S7R | What's happening? | cover picture has no license or copyright |
 | bl-bYPaGAWHnW | What's happening? | cover picture has no license or copyright |
 | bl-F20eUIT4fE | When Mama Is Away | cover picture has no license or copyright |
@@ -424,6 +461,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-eX40kysRK8 | Sam and the Big Fish The consonants: s, m, b, f, k, p, d, g | cover picture is BY-SA, stricter than the book's CC BY 4.0 |
 | bl-T53xjAVDKZ | The Comb of Pipay | cover picture is BY-SA, stricter than the book's CC BY 4.0 |
 | bl-vuY9gSIy6W | The Comb of Pipay | cover picture is BY-SA, stricter than the book's CC BY 4.0 |
+| bl-CfK0V9f8CM | The Family | cover picture is BY-SA, stricter than the book's CC BY 4.0 |
 | bl-P5nz6lUBHD | The Family | cover picture is BY-SA, stricter than the book's CC BY 4.0 |
 | bl-l8FLaHrPoD | The Family | cover picture is BY-SA, stricter than the book's CC BY 4.0 |
 | bl-G6hgCAJ8qI | The Model Boy | cover picture is BY-SA, stricter than the book's CC BY 4.0 |
@@ -437,7 +475,10 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-J1OGBeC148 | Nanpat lui ကိန်းများ(1-10) | cover picture is BY, stricter than the book's CC0 1.0 |
 | bl-xjORHVhfUG | Nanpat lui ကိန်းများ(1-10) | cover picture is BY, stricter than the book's CC0 1.0 |
 | bl-dPvaqP6AbL | Numbers | cover picture is BY, stricter than the book's CC0 1.0 |
+| bl-gdl9gOW0X1 | Numbers | cover picture is BY, stricter than the book's CC0 1.0 |
 | bl-gwhY9nS8V4 | Numbers | cover picture is BY, stricter than the book's CC0 1.0 |
+| bl-qGP8RcKuqN | Numbers | cover picture is BY, stricter than the book's CC0 1.0 |
+| bl-usYSo1DeuC | Numbers | cover picture is BY, stricter than the book's CC0 1.0 |
 | bl-IQebf8X2oK | The Cat and the Rat | cover picture is BY, stricter than the book's CC0 1.0 |
 | bl-dAzC0Fubt7 | की अहाँ ऐ चिड़ै सभकेँ देखने छी?Have You Seen These Birds? (Maithili-English) | cover picture is BY, stricter than the book's CC0 1.0 |
 | bl-b2l5wesxCp | घर सभ Houses (Maithili-English) | cover picture is BY, stricter than the book's CC0 1.0 |
@@ -476,6 +517,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-C36GhkQmYK | The Sad Frog | cover picture license: CUSTOM |
 | bl-ZpGwNuhr5j | The Sad Frog | cover picture license: CUSTOM |
 | bl-1VJPr0SVcu | The Stubborn Chick | cover picture license: CUSTOM |
+| bl-OBKHjtiOGv | The Stubborn Chick | cover picture license: CUSTOM |
 | bl-SMq6sDiAbM | The Stubborn Chick | cover picture license: CUSTOM |
 | bl-jSqtHWZuIJ | The Wolf and the Crane | cover picture license: CUSTOM |
 | bl-9kvmLZpEmz | (2-3a) Who will Help Me? | cover picture license: NC |
@@ -503,8 +545,10 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-fvgGBFFmAm | Baraka's School Schedule | cover picture license: NC |
 | bl-m30IoV9tw8 | Before the Festival Ends | cover picture license: NC |
 | bl-mFon4dixi4 | Can you find these things? | cover picture license: NC |
+| bl-3o75YZgNBE | Child As a Peacemaker | cover picture license: NC |
 | bl-RC92M1f7rs | Child As a Peacemaker | cover picture license: NC |
 | bl-eKxOYgpA2o | Child As a Peacemaker | cover picture license: NC |
+| bl-v4Ju7nAbZl | Child As a Peacemaker | cover picture license: NC |
 | bl-v49gOnoAod | Crocodile Daydreams | cover picture license: NC |
 | bl-PJ13TsmIno | Crushed Louse | cover picture license: NC |
 | bl-4PB5HUoSDY | Daddy goes to work | cover picture license: NC |
@@ -531,6 +575,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-cbf032tL44 | Literacy International: The Universal Declaration of Human Rights | cover picture license: NC |
 | bl-ShL0un2KCv | little KarOsi | cover picture license: NC |
 | bl-qT27zTriHY | Maguru gives out legs | cover picture license: NC |
+| bl-9YT8QA0bds | Market | cover picture license: NC |
 | bl-0yNj6HHY0K | Mondli and Mbali Visit Grandmother | cover picture license: NC |
 | bl-vCYksr4857 | MUD! | cover picture license: NC |
 | bl-GyNkc8i0D1 | My Dog | cover picture license: NC |
@@ -550,7 +595,9 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-6ufNSVs25w | Square-The Big Book of Nature | cover picture license: NC |
 | bl-uAjjot18Fr | Stone Soup | cover picture license: NC |
 | bl-iolH6e0yD0 | Swimmy | cover picture license: NC |
+| bl-5vFrFbOGqq | The Big Book of Nature | cover picture license: NC |
 | bl-EOFhCdB4kf | The Big Book of Nature | cover picture license: NC |
+| bl-gcmINJ8NAz | The Big Book of Nature | cover picture license: NC |
 | bl-otNXMt1eIJ | The Big Book of Nature | cover picture license: NC |
 | bl-zflSBFz4SL | The boy who lied | cover picture license: NC |
 | bl-Zav7izR3LW | The Dancing Goat | cover picture license: NC |
@@ -561,6 +608,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-GgaQhLMUDS | This Person is Happy | cover picture license: NC |
 | bl-tMW5QDHBUe | Wa ghɨ wul ta ghɨ kàʼ a ghɨ samsɨ | cover picture license: NC |
 | bl-4fg5c4ADmc | Wewak Boy | cover picture license: NC |
+| bl-VR618WqfRz | What are You Doing? | cover picture license: NC |
 | bl-dNE23l54Ji | What Colors Do You Like? | cover picture license: NC |
 | bl-negmpcfkGT | What Do You Feed a Pig? | cover picture license: NC |
 | bl-eWuHCJrTqS | Who Can Fly Without Wings? | cover picture license: NC |
@@ -627,10 +675,13 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-Ofg3yomEeM | What I Want | English missing on page 1 |
 | bl-noHDazBJ4Y | What Would You Like to Drink? | English missing on page 1 |
 | bl-1FdS4iG1JE | Where Do the Groceries Go? | English missing on page 1 |
+| bl-aydkVWwBRV | ଗୋଟେ ମାଗଣା କୁଲଫି! | English missing on page 1 |
+| bl-xchp1sCENs | ତାତ୍ୟାଙ୍କ ପାଇଁ ଆଲେପାକ | English missing on page 1 |
 | bl-Nf7edrImx4 | Beauty Is Missing | English missing on page 2 |
 | bl-U8klXn0IFQ | Bintu and Bingo | English missing on page 2 |
 | bl-NYTzu6mA7L | I am still a kid but I can help | English missing on page 2 |
 | bl-Pdps9E7Bgf | Ndeelu | English missing on page 2 |
+| bl-5AvF2zzLKD | The Animals Dig a Well | English missing on page 2 |
 | bl-9bVczvY0PA | The Animals Dig a Well | English missing on page 2 |
 | bl-64Fz3EAxyK | The Young Child | English missing on page 2 |
 | bl-rTqow9nrUP | The Young Child | English missing on page 2 |
@@ -667,6 +718,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-w5Qk3CBaTl | Thato's Birthday Surprise | page 1 has 2 pictures |
 | bl-5tnAOLAMj8 | The path from corn to tortillas | page 1 has 2 pictures |
 | bl-XfM2CcOFrF | The path from corn to tortillas | page 1 has 2 pictures |
+| bl-nHNBO6CS6q | The path from corn to tortillas | page 1 has 2 pictures |
 | bl-jacuRzV6Ee | Water Changes | page 1 has 2 pictures |
 | bl-nRh4j6pyiZ | Why People are Polygamists | page 1 has 2 pictures |
 | bl-raE5eoZSEA | ¿Quién es nuestro amigo? | page 1 has 3 pictures |
@@ -675,6 +727,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-5qvG1y3R9d | Opposites | page 1 has 3 pictures |
 | bl-MbebdFYCbl | Who is our friend? | page 1 has 3 pictures |
 | bl-AdYwMFHdjG | Literacy International: What Can We Do With a Palm Tree? (and other useful plants) | page 1 has 4 pictures |
+| bl-o4QMFcFPND | Literacy International: What Can We Do With a Palm Tree? (and other useful plants) | page 1 has 4 pictures |
 | bl-JDJ2ojt3KA | Who is our friend? | page 1 has 4 pictures |
 | bl-XNnYIgHqEP | Cats and Kittens | page 1 has 5 pictures |
 | bl-it70QEb65y | Cats and Kittens | page 1 has 5 pictures |
@@ -682,6 +735,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-FtUZrEfcaN | Living Animals | page 1 has 6 pictures |
 | bl-ay1sSfD1nG | The Mënub̒ù Language | page 1 has 6 pictures |
 | bl-jfM6Yk3S90 | 3j Have You Seen My Family? | page 1 has no picture |
+| bl-uwMUVEguuA | A Family’s Experience with COVID-19 at Home | page 1 has no picture |
 | bl-FOpOv5tVdA | A Lesson | page 1 has no picture |
 | bl-KcrxRYabEz | All about opposites! | page 1 has no picture |
 | bl-cFRwWwLMmq | Autumn's In The Air | page 1 has no picture |
@@ -691,6 +745,8 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-Cl7tKaJiNj | Binta and her Assistant | page 1 has no picture |
 | bl-ofXSQQVBs8 | Binta and her Assistant | page 1 has no picture |
 | bl-UoqhTqBDWl | Bintu and Bingo | page 1 has no picture |
+| bl-aXKWFiDBjT | Bintu and Bingo | page 1 has no picture |
+| bl-ri9kBPVGDB | Bintu and Bingo | page 1 has no picture |
 | bl-7bGW9sB7sx | Children's Hand Hygiene Role Play | page 1 has no picture |
 | bl-MOLRvOqQdk | Coming to the United States | page 1 has no picture |
 | bl-mFrjSOYsdZ | Demane and Demazane | page 1 has no picture |
@@ -707,6 +763,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-Gp0E7KcjET | Ken omopalewihkeh Istaktototl iwan  Askatzintli | page 1 has no picture |
 | bl-tiXLpcyLGn | Lara the Yellow Ladybird | page 1 has no picture |
 | bl-314vKKdzXS | Learning at Home | page 1 has no picture |
+| bl-a3SE0LfQFF | Learning at Home | page 1 has no picture |
 | bl-fEzgmIckjp | Learning at Home | page 1 has no picture |
 | bl-dR5Ju8tPRm | Let's Count with Robin the Rabbit | page 1 has no picture |
 | bl-dAKvyRjVop | Literacy International: Animal Stories | page 1 has no picture |
@@ -720,12 +777,14 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-VTtLM4PCTu | Monkey Business on Stage Kallu's World 2 | page 1 has no picture |
 | bl-sp3J6DB1U9 | Name That Fruit | page 1 has no picture |
 | bl-6uKDPpnivk | NT Greek Discourse Features | page 1 has no picture |
+| bl-3w8Zxe7ryv | Opposites and Differences 1 | page 1 has no picture |
 | bl-iQEp9mUKFN | Opposites and Differences 2 | page 1 has no picture |
 | bl-oSp2aerZwC | Opposites and Differences 2 | page 1 has no picture |
 | bl-pFKAamHkt3 | Paulo Freire Reading the Word and the World | page 1 has no picture |
 | bl-Ukry2F86bq | River and Sun | page 1 has no picture |
 | bl-sVwItI4U8a | Sebuah Kejutan Spesial | page 1 has no picture |
 | bl-Ec0EAXKzFf | SHADOWS IN THE SILENCE | page 1 has no picture |
+| bl-jN0YUcvJH8 | Spider and the Many Legs | page 1 has no picture |
 | bl-pW1JPSW8g7 | Spider and the Many Legs | page 1 has no picture |
 | bl-q2NfBC2gAw | Spider and the Many Legs | page 1 has no picture |
 | bl-GHl5pbGWBC | Square-Egg | page 1 has no picture |
@@ -776,6 +835,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-uPCIzNMlcE | 48 Animals | page 1 picture is BY-SA, stricter than the book's CC BY 4.0 |
 | bl-UKzKwJHkUn | Don't Cry, My Child | page 1 picture is BY-SA, stricter than the book's CC BY 4.0 |
 | bl-lwpB7FjDuO | Don't Cry, My Child | page 1 picture is BY-SA, stricter than the book's CC BY 4.0 |
+| bl-oio92dZiu0 | Aminata and the red spiky ball | page 1 picture license: NC |
 | bl-EfhU2vlExA | Lion and Warthog | page 1 picture license: NC |
 | bl-ePF4YSoJCN | Mother Crab | page 1 picture license: NC |
 | bl-vZ1Cp2YJ8x | The Drought | page 1 picture license: NC |
@@ -802,6 +862,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-6xNGFzfSUw | Off to Explore | page 11 has 2 pictures |
 | bl-iNN7nv8RCT | Off to Explore | page 11 has 2 pictures |
 | bl-BXqhUDCWsv | Let's Count Birds | page 11 has 6 pictures |
+| bl-oN6lDAbqP8 | Let's Count Birds | page 11 has 6 pictures |
 | bl-zjP9HGwbla | 'M'e Maneo's pumpkin | page 11 has no picture |
 | bl-U2TTN9wbV4 | Bad Mrs Chicken | page 11 has no picture |
 | bl-DMb39J2rZ3 | Independence Day | page 11 has no picture |
@@ -830,11 +891,16 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-SKGar92oHj | Namorutunga | page 12 has no picture |
 | bl-XH0E2GQlLR | Round and Round (Tell me now series) | page 12 has no picture |
 | bl-9Xgg1B0Osi | Sweet and Sour (Tell me now series) | page 12 has no picture |
+| bl-El855hIdIY | Sweet and Sour (Tell me now series) | page 12 has no picture |
 | bl-Nh1t5Si688 | Sweet and Sour (Tell me now series) | page 12 has no picture |
+| bl-oYsZLV6jll | Sweet and Sour (Tell me now series) | page 12 has no picture |
+| bl-qmntRoE4hY | Sweet and Sour (Tell me now series) | page 12 has no picture |
 | bl-gUsmf4LGfQ | Tell me now! - 'Good For You' | page 12 has no picture |
 | bl-irguGSupmp | Tell me now! - 'Good For You' | page 12 has no picture |
+| bl-oo0a0Zwfz5 | Tell me now! - 'Good For You' | page 12 has no picture |
 | bl-F0JuNhtJ96 | The Solar System | page 12 has no picture |
 | bl-e1tXgoQBiK | Water is Coming. | page 12 has no picture |
+| bl-C3fpivVJbl | When I Grow Up | page 12 has no picture |
 | bl-c4e5VPOTmc | When I Grow Up | page 12 has no picture |
 | bl-J2N49XNAjb | Whoop, Goes the Pufferfish | page 12 has no picture |
 | bl-A86aoyAfQ3 | A5-Chicken and Millipede | page 13 has no picture |
@@ -851,6 +917,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-sE7EpZMixu | Aminata and the Red Spiky Ball | page 14 has no picture |
 | bl-EExiz7QQVw | Fishing in My Village | page 14 has no picture |
 | bl-6KoXGfMHZ0 | Papa's Cough | page 14 has no picture |
+| bl-kUuTHAAGaC | Papa's Cough | page 14 has no picture |
 | bl-qJL7M3GyXT | Riu's Busy Day | page 14 has no picture |
 | bl-gdUeBrjnNd | The Three Little Kittens | page 14 has no picture |
 | bl-WDIsqtgCvH | Ammachi's Amazing Machines | page 15 has no picture |
@@ -877,10 +944,14 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-mf2wyupELr | Slip and Slide | page 18 has no picture |
 | bl-AoQkHXQbIk | A Butterfly Smile | page 19 has no picture |
 | bl-Zp9SFyRoI0 | Little Ant's Big Plan | page 19 has no picture |
+| bl-B7kBENM7Wy | Six Principles of Life-Giving Agriculture for Farming and Gardening | page 19 has no picture |
+| bl-EGo0RTXUB7 | Six Principles of Life-Giving Agriculture for Farming and Gardening | page 19 has no picture |
 | bl-KRfsDkux1d | Six Principles of Life-Giving Agriculture for Farming and Gardening | page 19 has no picture |
+| bl-aJZYiz8COt | Six Principles of Life-Giving Agriculture for Farming and Gardening | page 19 has no picture |
 | bl-5V06qpaDvx | The Magic Block | page 19 has no picture |
 | bl-gbWiBvCISd | Burns - What to do | page 2 has 2 pictures |
 | bl-3aUfBkLzHa | Count to Ten | page 2 has 2 pictures |
+| bl-C3A4GLZ3Hn | Count to Ten | page 2 has 2 pictures |
 | bl-X1eDbD4x6b | Count to Ten | page 2 has 2 pictures |
 | bl-IyF5CcMmMm | Cuenta hasta diez | page 2 has 2 pictures |
 | bl-jgGupUpUkp | Depression | page 2 has 2 pictures |
@@ -890,6 +961,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-5efbiJygia | Nomvundla and the Chilli-Eating Contest | page 2 has 2 pictures |
 | bl-T7RAGyf5Vs | Oedipus the King | page 2 has 2 pictures |
 | bl-mdfuQNb76U | The best thing ever | page 2 has 2 pictures |
+| bl-ubgjlton8k | The best thing ever | page 2 has 2 pictures |
 | bl-yU3KOF7Da1 | The best thing ever | page 2 has 2 pictures |
 | bl-CUnvITxR8v | The Little Sock and the Tiny Creatures | page 2 has 2 pictures |
 | bl-9SImFk9BVB | The Wolf and the Crane | page 2 has 2 pictures |
@@ -933,6 +1005,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-ADuT7Y6vc5 | Literacy International: You Decide | page 2 has no picture |
 | bl-dS5sDYz1kP | Manikantan Has Enough | page 2 has no picture |
 | bl-gtOxfc8pD7 | Mr and Mrs Snake | page 2 has no picture |
+| bl-q05afEA4wB | Papa's Cough | page 2 has no picture |
 | bl-rgsxDu7eaZ | Papa's Cough | page 2 has no picture |
 | bl-fVaQhBnWof | The Competition of the Monkey and the Winds | page 2 has no picture |
 | bl-0EoH2fugWY | The Fascinating Fibonaccis | page 2 has no picture |
@@ -941,6 +1014,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-nDVijbu6im | The Slow Tortoise Wins the Race | page 2 has no picture |
 | bl-4nClqVMjIJ | The Thousand Bags of Grain | page 2 has no picture |
 | bl-0SyRDUItfC | THE WHISPERS OF BLUE FOG | page 2 has no picture |
+| bl-BfbBHuGGvw | My Body | page 2 picture has no license and another copyright holder |
 | bl-R7uVR0E8Kr | My Body | page 2 picture has no license and another copyright holder |
 | bl-E99qyOROmD | The Ocean | page 2 picture has no license or copyright |
 | bl-PtptU9KDJZ | The Ocean | page 2 picture has no license or copyright |
@@ -954,6 +1028,8 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-35QtbjBenW | Welcome to the Forest | page 21 has no picture |
 | bl-Fcgy3mkeUv | The Girl Who Could Not Stop Laughing | page 22 has no picture |
 | bl-OcyzZa0b0W | The Girl Who Could Not Stop Laughing | page 22 has no picture |
+| bl-EgjXGVYOxm | There's a Hole in my Galaxy | page 22 has no picture |
+| bl-FSmmpaJmsl | There's a Hole in my Galaxy | page 22 has no picture |
 | bl-gTuGNOGTp2 | There's a Hole in my Galaxy | page 22 has no picture |
 | bl-kGtBckgnxN | There's a Hole in my Galaxy | page 22 has no picture |
 | bl-hJRzAejX1r | Nakehi and the beans | page 25 has no picture |
@@ -962,14 +1038,19 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-hcmrdDwAqP | Apples for the Teacher | page 3 has 2 pictures |
 | bl-m7cfABbnc4 | Apples for the Teacher | page 3 has 2 pictures |
 | bl-KByfVNAVRJ | Literacy International: The Six Blind Men and the Elephant | page 3 has 2 pictures |
+| bl-6D1Mqt1JjG | Small Bird's BIG Adventure | page 3 has 2 pictures |
 | bl-C2ZAxzunvM | Small Bird's BIG Adventure | page 3 has 2 pictures |
 | bl-CTuMSSSyqu | Small Bird's BIG Adventure | page 3 has 2 pictures |
+| bl-qoC09hgEJG | Small Bird's BIG Adventure | page 3 has 2 pictures |
 | bl-y86dDIZUQm | The Lazy Cheptoo | page 3 has 2 pictures |
 | bl-lGGrQ4ASbo | The White Men Who Live in Our Village | page 3 has 2 pictures |
 | bl-fy9KApvqcM | Where does water come from? Exploring the water cycle | page 3 has 2 pictures |
 | bl-xJHoJFlcU3 | Why Must I Wash My Hands? | page 3 has 2 pictures |
+| bl-6s3UrD5X3c | Zanele Sees Numbers | page 3 has 2 pictures |
 | bl-tEnEALbgJL | Zanele Sees Numbers | page 3 has 2 pictures |
 | bl-uu4oB5zALA | Zanele Sees Numbers | page 3 has 2 pictures |
+| bl-wB5R5pKg3K | Zanele Sees Numbers | page 3 has 2 pictures |
+| bl-1AgCV2u5hL | Papaya | page 3 has 3 pictures |
 | bl-ELdk1p6RIU | Papaya | page 3 has 3 pictures |
 | bl-GKGG6cunEz | Papaya | page 3 has 3 pictures |
 | bl-EYQbsMnhYd | Strong Bones | page 3 has 3 pictures |
@@ -1016,6 +1097,8 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-1IBhDEhzkU | Mga Maikling Kuwento, Tula, at Sanaysay sa Pelikulang Dekada '70 | page 4 has no picture |
 | bl-cOwWgSa5TR | Syonzola and his lies | page 4 has no picture |
 | bl-6j7rLeAwEJ | The Tortoise and The Weaverbird | page 4 has no picture |
+| bl-ky5rZAnOPS | My Mother's Grocery | page 4 picture has no license or copyright |
+| bl-QJeeR8tW1v | The Day the Sun Went Away | page 4 picture has no license or copyright |
 | bl-TqDqEnzTAP | The Day the Sun Went Away | page 4 picture has no license or copyright |
 | bl-0UZ8gYMgXf | Buboy's Go Bag | page 5 has 2 pictures |
 | bl-6pwvY2EsgJ | Buboy's Go Bag | page 5 has 2 pictures |
@@ -1025,6 +1108,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-5g5kiyaozX | Proverbs | page 5 has 2 pictures |
 | bl-HG73v5370l | Safe from Worms | page 5 has 2 pictures |
 | bl-csT1U0PaQL | Useful Phrases 3 Phase 1, Unit 3 , Game 5 Mvskoke Growing Bilingual Community | page 5 has 2 pictures |
+| bl-dc7CtcKuIv | Bats | page 5 has 3 pictures |
 | bl-rm237p41KN | Bats | page 5 has 3 pictures |
 | bl-wwqU8AGd3P | Bats | page 5 has 3 pictures |
 | bl-AimTaRMCJa | Blind and Deaf | page 5 has no picture |
@@ -1044,12 +1128,16 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-NNqmgpkAPo | The friend I miss | page 5 has no picture |
 | bl-Brzctxwav6 | Wagi the Happy Huli | page 5 has no picture |
 | bl-UDyRK6crqp | Where Did Your Dimples Go? | page 5 has no picture |
+| bl-GimG59np8t | The day the Sun went away | page 5 picture has no license or copyright |
 | bl-SkbPuCPZd0 | The day the Sun went away | page 5 picture has no license or copyright |
+| bl-fZAufUS6kA | The day the Sun went away | page 5 picture has no license or copyright |
 | bl-MBIks0Ai67 | A Man Who Built a House | page 6 has 2 pictures |
+| bl-apfmFOoeUJ | A Man Who Built a House | page 6 has 2 pictures |
 | bl-y1g3oNMm23 | A Man Who Built a House | page 6 has 2 pictures |
 | bl-4GvF1JHlfN | Skeeter the Seagull | page 6 has 2 pictures |
 | bl-yqCqHcTF7i | The generous rich man | page 6 has 2 pictures |
 | bl-r575liB9hD | The Lion Who Wouldn't Try | page 6 has 2 pictures |
+| bl-reyaLJtC4Z | The Wolf and the Crane | page 6 has 2 pictures |
 | bl-1jky7BQvID | Why is Nita Upside Down? | page 6 has 2 pictures |
 | bl-pfEjahtTC0 | Why is Nita Upside Down? | page 6 has 2 pictures |
 | bl-J6W9b6WUlg | Why is Tiniya Upside Down? | page 6 has 2 pictures |
@@ -1080,7 +1168,10 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-EHEwgCWsHp | The Animals Dig a Well | page 7 has no picture |
 | bl-vU5qiN8dKO | The bleeding apple | page 7 has no picture |
 | bl-tQJFNdut3h | The Sick Hyena | page 7 has no picture |
+| bl-FQMtTMm1sf | Wet Day | page 7 has no picture |
+| bl-ZtqbAWoV6Z | Wet Day | page 7 has no picture |
 | bl-ikl8ByJphV | Wet Day | page 7 has no picture |
+| bl-pbOnvP5cAt | Wet Day | page 7 has no picture |
 | bl-rssAezE8Cm | Wet Day | page 7 has no picture |
 | bl-iqFNjHPMoQ | Windy Day (AI Experiment) | page 7 has no picture |
 | bl-yqPtM9r9R3 | Birds (40 pictures) | page 7 picture has no license or copyright |
@@ -1092,6 +1183,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-5adaPG9qmQ | Is There Anyone Like Me? | page 8 has 2 pictures |
 | bl-eYJRy256kH | Kim menga  o‘xshaydi? | page 8 has 2 pictures |
 | bl-SELvIkiN2r | The Unused Ball | page 8 has 2 pictures |
+| bl-LzfJar6zIN | Lizard and Her Friends | page 8 has 5 pictures |
 | bl-aOCRhSfqrC | Lizard and Her Friends | page 8 has 5 pictures |
 | bl-nh8fXkLhyF | "Oh, Moses!" | page 8 has no picture |
 | bl-M9MXavnPB6 | (11) It's OK to be Different | page 8 has no picture |
@@ -1107,10 +1199,12 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-TQXwSECsWd | Sizwe’s Smile | page 8 has no picture |
 | bl-9UbXjAxLFT | The Dream | page 8 has no picture |
 | bl-iHRBu0oBlj | The Sad King | page 8 has no picture |
+| bl-UD1PxmoNLV | The Seventh Sun | page 8 has no picture |
 | bl-lYUY2lI808 | Tone's Big Drop | page 8 has no picture |
 | bl-5u4lo3L89c | Up World, Down World | page 8 has no picture |
 | bl-MvN81OREsZ | Watch Out! The Tiger is Here! | page 8 has no picture |
 | bl-RfacET0APl | What are you doing? | page 8 has no picture |
+| bl-CehR5VWWhj | What Are You Doing? | page 8 has no picture |
 | bl-GKAFLMjULn | What Are You Doing? | page 8 has no picture |
 | bl-62WpI7JuTG | What's In the Pot? | page 8 has no picture |
 | bl-sUnEuou2Gz | Why Do Bees Buzz? | page 8 has no picture |
@@ -1123,6 +1217,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-xwHtDQFl6T | Walk, Fly, Swim | page 9 has 2 pictures |
 | bl-sPXKbCNLB4 | Erenro, the Farmer | page 9 has 6 pictures |
 | bl-GTAE4coAoW | Uwa, the Farmer | page 9 has 6 pictures |
+| bl-OZflvhbK9V | Uwa, the Farmer | page 9 has 6 pictures |
 | bl-euaQktTSAa | सुदाकर इनना कास्‍तकर मनकल | page 9 has 6 pictures |
 | bl-FQGTmEBisq | (07) Look at the Animals | page 9 has no picture |
 | bl-tjL95yPZcb | A Special Surprise | page 9 has no picture |
@@ -1171,6 +1266,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-OBRSjogPno | Farm Animals | read and left out: 11 words: too little for 3 questions. |
 | bl-exRjqWKbME | Farm Animals | read and left out: 11 words: too little for 3 questions. |
 | bl-rMH2wzIQlW | Everyone is Different | read and left out: 13 words: too little for 3 questions. |
+| bl-3eZO6GkpMa | The Big Book of Nature | read and left out: 14 words: too little for 3 questions. |
 | bl-Hba4fXWXbh | Things we can do | read and left out: 16 words: too little for 3 questions. |
 | bl-kiuTyxwQNn | Barit bad baheh | read and left out: 20 words in another language. |
 | bl-GRIqvzhRD0 | Big and little | read and left out: 20 words, half the pages without words: too little for 3 questions. |
@@ -1206,6 +1302,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-Rh3vylONeC | The man who lived alone | read and left out: A hyena devours the man's wife. |
 | bl-3wRBNqz5Il | Kalabushe, the talkative | read and left out: A hyena swallows the girl and her aunt. |
 | bl-lRXHy1WUBk | Ajay of Agumbe and the Signal Snake | read and left out: A king cobra swallows a snake, leeches feed on Ajay, and the notes describe putting a radio inside a snake. |
+| bl-1r8Faw5czf | Back to School | read and left out: A list of 41 school words, nothing to ask about. |
 | bl-PcdsgJqi2s | Animals (44 pictures) | read and left out: A list of 44 animal pictures with names, nothing to ask about. |
 | bl-JSs1TNZx8d | Food (54 pictures) | read and left out: A list of 54 food pictures with names, nothing to ask about. |
 | bl-1t4sDoGN8J | Domestic animals | read and left out: A list of animal names with nothing to ask about. |
@@ -1295,6 +1392,8 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-aV0BfOCRdO | Arrogant Bird Learned Lesson | read and left out: Another upload of Arrogant Bird Learned Lesson (mistakes in the title alone). |
 | bl-MqA4FHdqWj | Asha's Voice | read and left out: Another upload of Asha's Voice (bl-7aSvMcDc0V): political. |
 | bl-frNI9wk7Ys | Counting | read and left out: Another upload of Counting (bl-rYVSK51hu5). |
+| bl-3KaImaiPpd | Crocodile daydreams | read and left out: Another upload of Crocodile daydreams (wants to eat a dog). |
+| bl-Z425A5Nr2G | Crocodile daydreams | read and left out: Another upload of Crocodile daydreams (wants to eat a dog). |
 | bl-u2pcSPFmxx | Curious baby elephant | read and left out: Another upload of Curious baby elephant (bl-DhU02tDwAo). |
 | bl-JKRtPnVf0T | Deepa's Resolution | read and left out: Another upload of Deepa's Resolution (a space before "?"). |
 | bl-YfipsN30eU | Disability is not inability | read and left out: Another upload of Disability is not inability (left out under the rule on labels). |
@@ -1604,6 +1703,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-XO5qBMpyjZ | Where is my bat? | read and left out: The bat is never found: a list of places with no story to ask about. |
 | bl-zzl8agh72I | One hot Saturday afternoon | read and left out: The children disobey, swim in the river alone and are spanked. |
 | bl-qrcQWH9ber | The Biscuit Jar Must Fall | read and left out: The children try one unsafe way after another to reach a high shelf (chairs, shoulders, a rope). |
+| bl-aTPEugcFIT | Crocodile daydreams | read and left out: The crocodile wants to eat a dog ("Dogs are good to eat too"). |
 | bl-CZl6R3lk9g | Lion Gets Sick | read and left out: The cure is an ointment from a hyena's heart. |
 | bl-BVZZB5BHx2 | Children of wax | read and left out: The English text pages carry web addresses and Kyrgyz credit lines. |
 | bl-2Xcb4Sie3M | Ox and Donkey | read and left out: The farmer whips the donkey and plans to kill and eat the ox. |
@@ -1656,6 +1756,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-5mubDU9lw9 | I Got Shoes | the book's notes say "BY-NC" |
 | bl-imrQXp2mgY | I have Ten Fingers | the book's notes say "BY-NC" |
 | bl-OCq7b2B58h | I Have Ten Fingers | the book's notes say "BY-NC" |
+| bl-WwAa2y5GHB | I Have Ten Fingers | the book's notes say "BY-NC" |
 | bl-7i09ABAft3 | Making Compost in a Steel Drum | the book's notes say "BY-NC" |
 | bl-td21oJzQZo | Malaria | the book's notes say "BY-NC" |
 | bl-0kM9ok9Tej | Rice Paddy Book 1 How to Plant Rice | the book's notes say "BY-NC" |
@@ -1674,11 +1775,18 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-dg9oRGt2Sv | Fox and Rooster | the book's notes say "NonCommercial" |
 | bl-4URRIxzahX | A Family’s Experience with COVID-19 at Home | the book's notes say "permission" |
 | bl-KiLv8gjpnp | A Family’s Experience with COVID-19 at Home | the book's notes say "permission" |
+| bl-We8PQUrUCL | A Family’s Experience with COVID-19 at Home | the book's notes say "permission" |
+| bl-oRt5FP3nMx | A Family’s Experience with COVID-19 at Home | the book's notes say "permission" |
 | bl-rzSAYulG9Z | A Sustainable Future? The Effects of Climate Change | the book's notes say "permission" |
+| bl-xF9DI3HEyn | Cats and Kittens | the book's notes say "permission" |
+| bl-V6t8SW66eC | Count Animals | the book's notes say "permission" |
 | bl-o3aNsSbJoh | Count Animals | the book's notes say "permission" |
+| bl-2zVALiSeOR | Count to Ten | the book's notes say "permission" |
+| bl-q3mew1VxIU | Count to Ten | the book's notes say "permission" |
 | bl-TmOQiBBUTY | From Arid Lands to Well-Watered Fields | the book's notes say "permission" |
 | bl-5Fk5CrhVzR | Gardening for Better Nutrition | the book's notes say "permission" |
 | bl-YLd4g2ESlN | How Family Planning Methods Work | the book's notes say "permission" |
+| bl-cL21fI1zdX | How Family Planning Methods Work | the book's notes say "permission" |
 | bl-w5MXUKN9es | How to Build an Outside Toilet (Basic Latrine Design) | the book's notes say "permission" |
 | bl-1a4tDc16sX | Let's go | the book's notes say "permission" |
 | bl-oNkLP7wUqe | Let's go | the book's notes say "permission" |
@@ -1741,6 +1849,7 @@ Pages after the story that are not part of it, named by a person; the story page
 | bl-DUNZpBeHr6 | Small Livestock Farming Rabbits | the book's notes say "Permission" |
 | bl-6CWM8excRY | Starting a Tree Nursery | the book's notes say "Permission" |
 | bl-GloDgPOSkO | Sterilising Seed Beds | the book's notes say "Permission" |
+| bl-X8IwBCXcKS | The Lizard and the Hyena | the book's notes say "Permission" |
 | bl-Rm88FqmkRw | Two Farmers Talking about Conservation Agriculture | the book's notes say "Permission" |
 | bl-yZeWDXSo65 | Two Productive Gardens: The Midi and the Mini | the book's notes say "Permission" |
 | bl-axqdL9Hrzv | Using a Sandbar to Grow Pumpkins | the book's notes say "Permission" |

@@ -11724,6 +11724,7 @@
       "page": "Seite {page}",
       "missed": "{count} lagen beim ersten Mal falsch"
     },
-    "footSources": "Geschichten und Bilder: Pratham Books (StoryWeaver) und die Autorinnen, Autoren und Verlage auf Bloom Library, jedes Buch unter seiner eigenen freien Lizenz, die beim Buch steht."
+    "footSources": "Geschichten und Bilder: Pratham Books (StoryWeaver) und die Autorinnen, Autoren und Verlage auf Bloom Library, jedes Buch unter seiner eigenen freien Lizenz, die beim Buch steht.",
+    "glossaryNoteAll": "Hinweise von Oomba zu Wörtern, die Kinder vielleicht nicht kennen."
   }
 }

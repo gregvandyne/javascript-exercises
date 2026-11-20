@@ -137,7 +137,7 @@ router.get('/library/:id', (req, res) => {
         ${st.state === 'done' ? html`<p class="lb-state is-done">✅ ${t('library.state.done', { right: st.right, total: st.total })}</p>` : ''}
       </div></div>
     ${bk.glossary.length ? html`<section class="lb-gloss" aria-labelledby="gl-h"><h2 id="gl-h">💬 ${t('library.glossary')}</h2>
-      <dl>${bk.glossary.map(g => html`<div><dt dir="auto">${g.word}</dt><dd>${g.note}</dd></div>`)}</dl><p class="small muted">${t('library.glossaryNote')}</p></section>` : ''}
+      <dl>${bk.glossary.map(g => html`<div><dt dir="auto">${g.word}</dt><dd>${g.note}</dd></div>`)}</dl><p class="small muted">${t(bk.source === 'storyweaver' ? 'library.glossaryNote' : 'library.glossaryNoteAll')}</p></section>` : ''}
     <section class="lb-about" aria-labelledby="ab-h"><h2 id="ab-h">📝 ${t('library.aboutTitle')}</h2><p class="small">${t('library.aboutQuestions')}</p>
       ${credits(t, bk, { full: true })}</section>
   </article>`;

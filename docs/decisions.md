@@ -9108,7 +9108,8 @@ storage link or the uploader.
   BY book out, so the license shown is true of every part); a picture with no license of its own is used only when its
   copyright holder is the book's own (it then inherits the book's license; counted in the report); a picture credited
   to a stock or clip-art source (Microsoft, Pixabay, Getty and the like) is treated as unclear. One picture that fails
-  leaves the book out: 409 candidates failed on a picture (157 because the cover has no license or copyright at all).
+  leaves the book out: 464 candidates failed on a picture, 203 of them because a picture carries no license and no
+  copyright at all.
 - **What is taken.** Story pages are Bloom's pages that are not front or back matter; on each, the English in its
   translation groups (template `z` and `*` blocks, image descriptions and other languages are not text; the other
   languages are recorded per book in `otherLangs` for a later Spanish or Portuguese library). A page without English,
@@ -9117,7 +9118,7 @@ storage link or the uploader.
   grown-ups, a coloring page) in the pick's `dropEnd`, with why; the report lists them. Line breaks Bloom places only
   for the printed layout inside a sentence become spaces; the words are never changed. Pictures use the StoryWeaver
   settings (pages 720 px, covers 440 px, WebP), and the grade uses the same `gradeOf` rule.
-- **Choosing.** About 1,550 English candidates were taken from the 3,962 books with an allowed license (shells,
+- **Choosing.** 1,771 English candidates were taken from the 3,962 books with an allowed license (shells,
   religious collections and Bible series left out by tag and title first; at most two versions of a title; titles of
   StoryWeaver books already in the library or read and left out skipped). Every one that passed the license rule was
   read in full with the StoryWeaver rules, applied strictly: no religious instruction or religion-centered plots
@@ -9133,6 +9134,23 @@ storage link or the uploader.
   time, that Bloom Library, SIL Global and the book's publisher do not endorse Oomba, and for CC BY-SA books that these
   adapted pages are shared under the same license. The book page links the original on Bloom Library. Cards and book
   pages name the source (StoryWeaver or Bloom Library), search also matches the publisher and source, and the
-  library's footer names both sources (`library.footSources` replaces `library.footCredit`). No source filter.
+  library's footer names both sources (`library.footSources` replaces `library.footCredit`). The glossary note under
+  a Bloom book says the notes help with words children may not know (`library.glossaryNoteAll`; StoryWeaver's says
+  words from India). No source filter.
+- **Result: 110 Bloom books** (Pre-K/K 31, Grade 1 45, Grade 2 22, Grade 3 10, Grades 4-5 2; CC BY 4.0 91, CC BY-SA
+  4.0 18, CC0 1.0 1), 504 read and left out, the rest left out by the rule; the library has 194 books. Fewer than the
+  150 to 200 asked for, and fewer at Grades 2 to 5 than hoped: most longer Bloom books in English fail the picture rule
+  or have mistakes in their text, and the strict reading leaves out most traditional tales (animals eaten, burned or
+  tricked to death). **Open for the owner:** 193 more books pass every automatic check except that some pictures carry
+  no license and no copyright at all (the book's own license would then have to be read as covering them); treating
+  that as allowed would let a person read those for perhaps 50 more books. Pictures: 27.3 MB for the Bloom books, 48 MB
+  for the whole library, under the 80 MB budget at the StoryWeaver settings; at 200 Bloom books it would be about 70 MB,
+  and the page quality could go from WebP 50 to 40 if it ever passes 80 MB.
 - **Shared manifest.** Both importers write `server/library/manifest.json` and keep the other source's books; each
   removes only its own picture folders (`sw-` or `bl-`).
+- Tests: `tests/unit/library-bloom.test.js` (the license rule with Bloom-shaped fixtures for CC BY, CC BY-SA, CC0, NC,
+  ND, custom, ported and missing versions, a stricter or unlabeled or stock picture, notes that restrict, shells and
+  quizzes; reading the HTML; credits without contact details; the shared manifest; the shipped books, with no `@` or
+  storage host in the manifest, curation file or report; the pages over HTTP: source, license, deed link and the
+  share-alike note), `library.test.js` (both sources in the manifest), `library-browser.test.js` (search across both
+  sources, the source on each card).

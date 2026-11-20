@@ -11724,6 +11724,7 @@
       "page": "الصفحة {page}",
       "missed": "أخطأ في المرة الأولى: {count}"
     },
-    "footSources": "القصص والرسوم: Pratham Books (StoryWeaver) والمؤلفون والناشرون على Bloom Library، ولكل كتاب ترخيصه المفتوح الخاص المذكور معه."
+    "footSources": "القصص والرسوم: Pratham Books (StoryWeaver) والمؤلفون والناشرون على Bloom Library، ولكل كتاب ترخيصه المفتوح الخاص المذكور معه.",
+    "glossaryNoteAll": "ملاحظات من Oomba لشرح كلمات قد لا يعرفها الأطفال."
   }
 }

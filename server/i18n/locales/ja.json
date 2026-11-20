@@ -11723,6 +11723,7 @@
       "page": "{page}ページ",
       "missed": "1回目にまちがえた人：{count}"
     },
-    "footSources": "おはなしと絵：Pratham Books（StoryWeaver）と、Bloom Libraryの作者や出版社。どの本も、本ごとのオープンライセンスで、本といっしょにのせています。"
+    "footSources": "おはなしと絵：Pratham Books（StoryWeaver）と、Bloom Libraryの作者や出版社。どの本も、本ごとのオープンライセンスで、本といっしょにのせています。",
+    "glossaryNoteAll": "子どもが知らないかもしれないことばについてのOombaのメモです。"
   }
 }

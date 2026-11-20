@@ -11725,6 +11725,7 @@
       "page": "עמוד {page}",
       "missed": "טעו בפעם הראשונה: {count}"
     },
-    "footSources": "סיפורים ואיורים: Pratham Books (StoryWeaver) והכותבים וההוצאות ב-Bloom Library, כל ספר ברישיון פתוח משלו, שמופיע ליד הספר."
+    "footSources": "סיפורים ואיורים: Pratham Books (StoryWeaver) והכותבים וההוצאות ב-Bloom Library, כל ספר ברישיון פתוח משלו, שמופיע ליד הספר.",
+    "glossaryNoteAll": "הסברים של Oomba למילים שילדים אולי לא מכירים."
   }
 }

@@ -11723,6 +11723,7 @@
       "page": "page {page}",
       "missed": "{count} se sont trompés la première fois"
     },
-    "footSources": "Histoires et illustrations : Pratham Books (StoryWeaver) et les auteurs et éditeurs de Bloom Library, chaque livre sous sa propre licence libre, indiquée avec le livre."
+    "footSources": "Histoires et illustrations : Pratham Books (StoryWeaver) et les auteurs et éditeurs de Bloom Library, chaque livre sous sa propre licence libre, indiquée avec le livre.",
+    "glossaryNoteAll": "Notes d’Oomba pour comprendre des mots que les enfants ne connaissent peut-être pas."
   }
 }

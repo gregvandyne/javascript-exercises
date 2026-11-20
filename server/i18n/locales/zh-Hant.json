@@ -11723,6 +11723,7 @@
       "page": "第{page}頁",
       "missed": "第一次答錯：{count}人"
     },
-    "footSources": "故事與插圖：Pratham Books（StoryWeaver），以及 Bloom Library 上的作者和出版者；每本書都有自己的開放授權，標示在書旁。"
+    "footSources": "故事與插圖：Pratham Books（StoryWeaver），以及 Bloom Library 上的作者和出版者；每本書都有自己的開放授權，標示在書旁。",
+    "glossaryNoteAll": "Oomba為孩子可能不認識的字詞寫的說明。"
   }
 }

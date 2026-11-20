@@ -12150,6 +12150,7 @@
       "page": "page {page}",
       "missed": "{count} missed it the first time"
     },
-    "footSources": "Stories and pictures: Pratham Books (StoryWeaver) and the authors and publishers on Bloom Library, each book under its own open license, shown with the book."
+    "footSources": "Stories and pictures: Pratham Books (StoryWeaver) and the authors and publishers on Bloom Library, each book under its own open license, shown with the book.",
+    "glossaryNoteAll": "Notes by Oomba to help with words children may not know."
   }
 }

@@ -11724,6 +11724,7 @@
       "page": "bladzijde {page}",
       "missed": "{count} hadden het de eerste keer fout"
     },
-    "footSources": "Verhalen en plaatjes: Pratham Books (StoryWeaver) en de schrijvers en uitgevers op Bloom Library, elk boek onder een eigen open licentie, die bij het boek staat."
+    "footSources": "Verhalen en plaatjes: Pratham Books (StoryWeaver) en de schrijvers en uitgevers op Bloom Library, elk boek onder een eigen open licentie, die bij het boek staat.",
+    "glossaryNoteAll": "Uitleg van Oomba bij woorden die kinderen misschien niet kennen."
   }
 }
