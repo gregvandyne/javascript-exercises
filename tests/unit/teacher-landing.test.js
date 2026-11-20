@@ -91,11 +91,11 @@ test('under the questions: a box each for /parents and /teachers, in their own w
   assert.ok(faq.indexOf('lp-faq') < faq.indexOf('lp-doors'), 'after the questions');
 });
 
-test('the Play pages, signed out: the bar is Play, Build and Sign in, no Play now; elsewhere Play now goes straight to /play', async () => {
+test('the Play pages, signed out: the bar is Play, Learn, Build and Sign in, no Play now; elsewhere Play now goes straight to /play', async () => {
   const bar = h => /<header class="topbar">[\s\S]*?<\/header>/.exec(h)[0];
   for (const p of ['/play', '/search']) {
     const b = bar((await call(null, p)).text);
-    assert.deepEqual([...b.matchAll(/class="navlink" href="([^"]+)"/g)].map(m => m[1]), ['/play', '/build'], p);
+    assert.deepEqual([...b.matchAll(/class="navlink" href="([^"]+)"/g)].map(m => m[1]), ['/play', '/learn', '/build'], p);
     assert.match(b, /class="me-btn" href="\/login"/, p);
     assert.doesNotMatch(b, /playnow/, p);
   }
