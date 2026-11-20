@@ -11659,7 +11659,6 @@
     "found": "{count, plural, zero {لا قصص} one {قصة واحدة} two {قصتان} few {# قصص} many {# قصة} other {# قصة}}",
     "none": "لم نجد قصصًا",
     "noneText": "جرّب كلمات أخرى أو انظر في كل الصفوف.",
-    "footCredit": "القصص والرسوم: Pratham Books وStoryWeaver. الترخيص:",
     "footQuestions": "يذكر كل كتاب مؤلفه ورسّامه ومترجمه. الأسئلة في النهاية كتبتها Oomba وليست جزءًا من الكتب.",
     "glossary": "كلمات مفيدة",
     "glossaryNote": "ملاحظات من Oomba لشرح كلمات من الهند.",
@@ -11670,7 +11669,11 @@
       "illustration": "الرسوم: {names}",
       "translation": "الترجمة: {names}",
       "changes": "غيّرت Oomba حجم الصور وتعرض الكتاب صفحةً صفحة. لا تؤيد Pratham Books منصة Oomba.",
-      "original": "الكتاب الأصلي."
+      "original": "الكتاب الأصلي.",
+      "from": "مأخوذ عن كتاب لـ {name}",
+      "changesBloom": "غيّرت Oomba حجم الصور وتعرض الكتاب صفحةً صفحة. لا تؤيد Bloom Library ولا SIL Global ولا ناشر الكتاب منصة Oomba.",
+      "changesBloomSA": "غيّرت Oomba حجم الصور وتعرض الكتاب صفحةً صفحة؛ وهذه الصفحات المعدّلة متاحة بالترخيص نفسه، {license}. لا تؤيد Bloom Library ولا SIL Global ولا ناشر الكتاب منصة Oomba.",
+      "originalBloom": "الكتاب الأصلي على Bloom Library."
     },
     "readToMe": "اقرأ لي",
     "pagesLabel": "الصفحات",
@@ -11720,6 +11723,7 @@
       "answer": "الإجابة: {answer}",
       "page": "الصفحة {page}",
       "missed": "أخطأ في المرة الأولى: {count}"
-    }
+    },
+    "footSources": "القصص والرسوم: Pratham Books (StoryWeaver) والمؤلفون والناشرون على Bloom Library، ولكل كتاب ترخيصه المفتوح الخاص المذكور معه."
   }
 }

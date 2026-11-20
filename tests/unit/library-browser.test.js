@@ -57,7 +57,10 @@ test('the library: grade chips and search narrow the books', { skip }, async () 
   assert.ok(await page.locator('.lb-card .lb-g2').count() === grades.length, 'each card shows its grade');
   await page.click('.lb-levels a:has-text("All grades")');
   await page.fill('#lb-q', 'giraffe'); await Promise.all([page.waitForURL(/q=giraffe/), page.press('#lb-q', 'Enter')]);
-  assert.deepEqual(await page.$$eval('.lb-title', els => els.map(e => e.textContent.trim())), ['Saboo and Jojo']);
+  assert.deepEqual(await page.$$eval('.lb-title', els => els.map(e => e.textContent.trim()).sort()), LIB.search({ q: 'giraffe' }).map(b => b.title).sort());
+  assert.ok((await page.$$eval('.lb-title', els => els.map(e => e.textContent.trim()))).includes('Saboo and Jojo'), 'a StoryWeaver book with a giraffe');
+  // Each card names where the book comes from (StoryWeaver or Bloom Library).
+  assert.deepEqual((await page.$$eval('.lb-card .lb-src', els => els.map(e => e.textContent.trim()))).sort(), LIB.search({ q: 'giraffe' }).map(b => b.credits.platform).sort());
   assert.deepEqual(errors, []);
   await ctx.close();
 });

@@ -12085,7 +12085,6 @@
     "found": "{count, plural, one {# story} other {# stories}}",
     "none": "No stories found",
     "noneText": "Try other words, or look at every grade.",
-    "footCredit": "Stories and pictures: Pratham Books, StoryWeaver. License:",
     "footQuestions": "Each book lists its author, illustrator and translator. The questions at the end are written by Oomba, not part of the books.",
     "glossary": "Words to know",
     "glossaryNote": "Notes by Oomba to help with words from India.",
@@ -12096,7 +12095,11 @@
       "illustration": "Pictures: {names}",
       "translation": "Translation: {names}",
       "changes": "Oomba resized the pictures and shows the book one page at a time. Pratham Books does not endorse Oomba.",
-      "original": "See the original book."
+      "original": "See the original book.",
+      "from": "Based on a book by {name}",
+      "changesBloom": "Oomba resized the pictures and shows the book one page at a time. Bloom Library, SIL Global and the book's publisher do not endorse Oomba.",
+      "changesBloomSA": "Oomba resized the pictures and shows the book one page at a time; these adapted pages are shared under the same license, {license}. Bloom Library, SIL Global and the book's publisher do not endorse Oomba.",
+      "originalBloom": "See the original book on Bloom Library."
     },
     "readToMe": "Read to me",
     "pagesLabel": "Pages",
@@ -12146,6 +12149,7 @@
       "answer": "Answer: {answer}",
       "page": "page {page}",
       "missed": "{count} missed it the first time"
-    }
+    },
+    "footSources": "Stories and pictures: Pratham Books (StoryWeaver) and the authors and publishers on Bloom Library, each book under its own open license, shown with the book."
   }
 }

@@ -41,21 +41,27 @@ const gradeDetails = (t, bk) => { const m = bk.measures || {}; return html`<deta
 const listOf = (t, names) => names.join(', ');
 const ext = (href, text) => html`<a href="${href}" rel="noopener noreferrer" target="_blank">${text}</a>`;
 
-/** The credits under every page: author, illustrator, translator, Pratham Books / StoryWeaver, the license (linked to its
- *  deed) and what Oomba changed. full: the book page's longer version (with the link to the book on StoryWeaver). */
+/** The credits under every page: author, illustrator, translator, the publisher and where the book comes from (Pratham
+ *  Books, StoryWeaver; or the publisher, Bloom Library), the license (linked to its deed) and what Oomba changed (for a
+ *  CC BY-SA book, that the adapted pages are shared under the same license). full: the book page's longer version (with
+ *  the link to the original book). */
 export function credits(t, bk, { full = false } = {}) {
   const c = bk.credits;
   const parts = [
     c.text.length ? t('library.credits.text', { names: listOf(t, c.text) }) : '',
     c.illustration.length ? t('library.credits.illustration', { names: listOf(t, c.illustration) }) : '',
     c.translation.length ? t('library.credits.translation', { names: listOf(t, c.translation) }) : '',
-    `${c.publisher}, ${c.platform}`,
+    c.original ? t('library.credits.from', { name: c.original }) : '',
+    c.publisher && c.publisher !== c.platform ? `${c.publisher}, ${c.platform}` : c.platform,
   ].filter(Boolean);
   const lic = c.licenseUrl ? ext(c.licenseUrl, c.licenseName) : c.licenseName;
+  const note = bk.source === 'bloom' ? (c.shareAlike ? t('library.credits.changesBloomSA', { license: c.licenseName }) : t('library.credits.changesBloom')) : t('library.credits.changes');
   return html`<p class="lb-credit small muted" dir="auto"><span>${parts.join(' · ')} · ${lic}</span>
-    <span class="lb-credit-note">${t('library.credits.changes')}${full && c.sourceUrl ? html` ${ext(c.sourceUrl, t('library.credits.original'))}` : ''}</span></p>`;
+    <span class="lb-credit-note">${note}${full && c.sourceUrl ? html` ${ext(c.sourceUrl, bk.source === 'bloom' ? t('library.credits.originalBloom') : t('library.credits.original'))}` : ''}</span></p>`;
 }
 const meta = (t, bk) => t('library.meta', { pages: bk.pages.length, questions: bk.questions.length });
+/** Where a book comes from, on its card and its page: "StoryWeaver" or "Bloom Library". */
+const sourceName = bk => html`<span class="lb-src" dir="ltr">${bk.credits.platform}</span>`;
 
 /** The staff's class for Assign (?class=): one they may assign to. */
 function classParam(req) {
@@ -91,7 +97,7 @@ router.get('/library', (req, res) => {
     <a class="lb-cover" href="/library/${bk.id}" tabindex="-1" aria-hidden="true"><img src="${bk.cover.src}" alt="" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}" loading="lazy" decoding="async"></a>
     <div class="lb-body">${gradeChip(t, bk.grade)}
       <h2 class="lb-title"><a href="/library/${bk.id}" dir="auto">${bk.title}</a></h2>
-      <p class="lb-meta small muted">${meta(t, bk)}</p>${status(bk)}
+      <p class="lb-meta small muted">${meta(t, bk)} · ${sourceName(bk)}</p>${status(bk)}
       <div class="lb-acts"><a class="btn btn-primary btn-sm" href="/library/${bk.id}/read">📖 ${t('library.read')}</a>${staff ? html`<a class="btn btn-sm" href="${assignHref(bk, forClass)}">📌 ${t('library.assign')}</a>` : ''}</div></div></li>`;
   const body = html`<div class="slib">
     <div class="pagehead lb-head"><div><h1><span aria-hidden="true">📚</span> ${t('library.title')}</h1><p class="muted">${t('library.lead', { count: LIB.books().length })}</p></div></div>
@@ -108,7 +114,7 @@ router.get('/library', (req, res) => {
     </form>
     ${list.length ? html`<p class="sr-only" role="status">${t('library.found', { count: list.length })}</p><ul class="lb-grid" id="lb-grid">${list.map(card)}</ul>`
       : html`<section class="panel">${emptyState({ emoji: '🔎', title: t('library.none'), text: t('library.noneText'), action: html`<a class="btn" href="/library">${t('library.allGrades')}</a>` })}</section>`}
-    <p class="small muted lb-foot">${t('library.footCredit')} ${ext('https://creativecommons.org/licenses/by/4.0/', 'CC BY 4.0')} · ${t('library.footQuestions')}</p>
+    <p class="small muted lb-foot">${t('library.footSources')} · ${t('library.footQuestions')}</p>
   </div>`;
   page(req, res, { title: t('library.title'), active: 'learn', body, head: CSS, description: t('library.lead', { count: LIB.books().length }) });
 });
@@ -125,7 +131,7 @@ router.get('/library/:id', (req, res) => {
       <img class="lb-book-cover" src="${bk.cover.src}" alt="" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}">
       <div class="lb-book-info">${gradeChip(t, bk.grade)}
         <h1 dir="auto">${bk.title}</h1>
-        <p class="muted">${meta(t, bk)} · ${t('library.words', { count: bk.words })}</p>
+        <p class="muted">${meta(t, bk)} · ${t('library.words', { count: bk.words })} · ${sourceName(bk)}</p>
         <div class="row"><a class="btn btn-primary btn-big" href="/library/${bk.id}/read${st.state === 'reading' ? `?p=${st.page}` : ''}">📖 ${go}</a>${isStaff(u) ? html`<a class="btn" href="${assignHref(bk, forClass)}">📌 ${t('library.assign')}</a>` : ''}</div>
         ${gradeDetails(t, bk)}
         ${st.state === 'done' ? html`<p class="lb-state is-done">✅ ${t('library.state.done', { right: st.right, total: st.total })}</p>` : ''}

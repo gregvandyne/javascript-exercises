@@ -9080,3 +9080,59 @@ documented measures; and "keep adding more books from the original source".
 - Tests: `tests/unit/library.test.js` (the measures and bands, sight words with endings, hand-placed pictures accepted
   only when valid, every licensed story read, grades and measures in the manifest, old level links), and
   `library-browser.test.js` (grade chips).
+
+## Story Library: Bloom Library books (20 Nov 2026)
+
+Owner: add Bloom Library books licensed CC BY, CC BY-SA or CC0 (never NC, ND, custom, "ask" or anything unclear), about
+150 to 200 good ones, biased toward Grades 2 to 5; read Bloom's files from the public storage link its book list gives
+(Bloom's own file server sits behind a bot check, which is not to be defeated); keep only Bloom's book id, never the
+storage link or the uploader.
+
+- **Source and privacy.** `scripts/import-bloom.js` (pure parts in `server/library/bloom-lib.js`) takes a saved copy
+  of Bloom's public English book list (`GET https://api.bloomlibrary.org/v1/books?lang=en`) and, for each candidate in
+  `seed-library/bloom.json`, reads the book's `meta.json`, its HTML and the pictures it uses from the storage folder the
+  list names, about 4 requests a second with a User-Agent naming the importer and retries with backoff. Those folder
+  links can contain the uploader's email address, so they are used only at import time and never written anywhere: the
+  manifest, the curation file and the report hold only Bloom's id (`bl-<id>`) and the book's page
+  (`https://bloomlibrary.org/book/<id>`); credits come from the book's own credits and copyright text with email
+  addresses and phone numbers removed, and where a book's copyright holder is a private person who is not its author
+  the book is left out or credited to the original publisher. Tests check that no `@` or storage host appears in the
+  manifest, the curation file or the report.
+- **License rule, in code** (`bloomLicense`, `checkBloomPictures`): the book's `meta.json` license must be `cc-by`,
+  `cc-by-sa` or `cc0` and agree with the book's own license link, which gives the version (CC BY 2.0 to 4.0, CC BY-SA
+  2.0 to 4.0, CC0 1.0; a ported country version is left out); its license notes, copyright, credits and
+  acknowledgments must not say "not for distribution", "all rights reserved", "permission", "do not copy" and the
+  like; Bloom must have finished processing it, and it must not be a draft, a shell, a template, a test, an
+  incoming or problem book, or have quiz, activity, widget or video pages. **Every picture used** (the cover and one
+  per page) must carry its own CC BY, CC BY-SA or CC0 license, no stricter than the book's (a BY-SA picture keeps a CC
+  BY book out, so the license shown is true of every part); a picture with no license of its own is used only when its
+  copyright holder is the book's own (it then inherits the book's license; counted in the report); a picture credited
+  to a stock or clip-art source (Microsoft, Pixabay, Getty and the like) is treated as unclear. One picture that fails
+  leaves the book out: 409 candidates failed on a picture (157 because the cover has no license or copyright at all).
+- **What is taken.** Story pages are Bloom's pages that are not front or back matter; on each, the English in its
+  translation groups (template `z` and `*` blocks, image descriptions and other languages are not text; the other
+  languages are recorded per book in `otherLangs` for a later Spanish or Portuguese library). A page without English,
+  without a picture or with several pictures keeps the book out. Wordless pages at the end are not used, and a person
+  may name pages after the story that are not part of it (comprehension questions, a drawing activity, notes for
+  grown-ups, a coloring page) in the pick's `dropEnd`, with why; the report lists them. Line breaks Bloom places only
+  for the printed layout inside a sentence become spaces; the words are never changed. Pictures use the StoryWeaver
+  settings (pages 720 px, covers 440 px, WebP), and the grade uses the same `gradeOf` rule.
+- **Choosing.** About 1,550 English candidates were taken from the 3,962 books with an allowed license (shells,
+  religious collections and Bible series left out by tag and title first; at most two versions of a title; titles of
+  StoryWeaver books already in the library or read and left out skipped). Every one that passed the license rule was
+  read in full with the StoryWeaver rules, applied strictly: no religious instruction or religion-centered plots
+  (prayers, church, Bible, "thankful to God"), no labels on bodies or disabilities, no stereotypes, no unsafe behavior
+  shown as fine (children alone in rivers or on roads), no violence beyond mild peril (folk tales where animals are
+  eaten, burned or killed were left out), nothing political, and no mistakes in the text (missing spaces, uneven
+  quotation marks, split words from the print layout, wrong words). Copies, translations and adaptations of the same
+  story were compared and the best English version kept. Every skip has a reason in `seed-library/bloom.json`
+  (`skipped`); the importer writes `docs/story-library-bloom.md` with every candidate and why it is in or out.
+- **Credits and license on the site.** The book page and every reader page show the author, illustrator(s),
+  translator(s), "Based on a book by ..." for adaptations, the publisher or copyright holder with "Bloom Library", and
+  the book's license linked to its deed; the note says Oomba resized the pictures and shows the book one page at a
+  time, that Bloom Library, SIL Global and the book's publisher do not endorse Oomba, and for CC BY-SA books that these
+  adapted pages are shared under the same license. The book page links the original on Bloom Library. Cards and book
+  pages name the source (StoryWeaver or Bloom Library), search also matches the publisher and source, and the
+  library's footer names both sources (`library.footSources` replaces `library.footCredit`). No source filter.
+- **Shared manifest.** Both importers write `server/library/manifest.json` and keep the other source's books; each
+  removes only its own picture folders (`sw-` or `bl-`).

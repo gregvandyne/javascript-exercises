@@ -11658,7 +11658,6 @@
     "found": "{count, plural, one {# cuento} other {# cuentos}}",
     "none": "No encontramos cuentos",
     "noneText": "Prueba con otras palabras o mira todos los grados.",
-    "footCredit": "Cuentos e ilustraciones: Pratham Books, StoryWeaver. Licencia:",
     "footQuestions": "Cada libro indica su autor, ilustrador y traductor. Las preguntas del final las escribe Oomba y no forman parte de los libros.",
     "glossary": "Palabras para saber",
     "glossaryNote": "Notas de Oomba para entender palabras de la India.",
@@ -11669,7 +11668,11 @@
       "illustration": "Ilustraciones: {names}",
       "translation": "Traducción: {names}",
       "changes": "Oomba cambió el tamaño de las imágenes y muestra el libro página por página. Pratham Books no respalda a Oomba.",
-      "original": "Ver el libro original."
+      "original": "Ver el libro original.",
+      "from": "Basado en un libro de {name}",
+      "changesBloom": "Oomba cambió el tamaño de las imágenes y muestra el libro página por página. Bloom Library, SIL Global y la editorial del libro no respaldan a Oomba.",
+      "changesBloomSA": "Oomba cambió el tamaño de las imágenes y muestra el libro página por página; estas páginas adaptadas se comparten con la misma licencia, {license}. Bloom Library, SIL Global y la editorial del libro no respaldan a Oomba.",
+      "originalBloom": "Ver el libro original en Bloom Library."
     },
     "readToMe": "Léemelo",
     "pagesLabel": "Páginas",
@@ -11719,6 +11722,7 @@
       "answer": "Respuesta: {answer}",
       "page": "página {page}",
       "missed": "{count} fallaron la primera vez"
-    }
+    },
+    "footSources": "Cuentos e ilustraciones: Pratham Books (StoryWeaver) y los autores y editoriales de Bloom Library, cada libro con su propia licencia abierta, indicada junto al libro."
   }
 }

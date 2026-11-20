@@ -11659,7 +11659,6 @@
     "found": "{count, plural, one {# verhaal} other {# verhalen}}",
     "none": "Geen verhalen gevonden",
     "noneText": "Probeer andere woorden of kijk bij alle leerjaren.",
-    "footCredit": "Verhalen en tekeningen: Pratham Books, StoryWeaver. Licentie:",
     "footQuestions": "Bij elk boek staan de schrijver, tekenaar en vertaler. De vragen aan het eind zijn van Oomba en horen niet bij de boeken.",
     "glossary": "Woorden om te kennen",
     "glossaryNote": "Uitleg van Oomba bij woorden uit India.",
@@ -11670,7 +11669,11 @@
       "illustration": "Tekeningen: {names}",
       "translation": "Vertaling: {names}",
       "changes": "Oomba heeft de plaatjes kleiner gemaakt en toont het boek bladzijde voor bladzijde. Pratham Books staat niet achter Oomba.",
-      "original": "Bekijk het originele boek."
+      "original": "Bekijk het originele boek.",
+      "from": "Gebaseerd op een boek van {name}",
+      "changesBloom": "Oomba heeft de plaatjes kleiner gemaakt en laat het boek pagina voor pagina zien. Bloom Library, SIL Global en de uitgever van het boek steunen Oomba niet officieel.",
+      "changesBloomSA": "Oomba heeft de plaatjes kleiner gemaakt en laat het boek pagina voor pagina zien; deze bewerkte pagina’s worden gedeeld onder dezelfde licentie, {license}. Bloom Library, SIL Global en de uitgever van het boek steunen Oomba niet officieel.",
+      "originalBloom": "Bekijk het originele boek op Bloom Library."
     },
     "readToMe": "Lees voor",
     "pagesLabel": "Bladzijden",
@@ -11720,6 +11723,7 @@
       "answer": "Antwoord: {answer}",
       "page": "bladzijde {page}",
       "missed": "{count} hadden het de eerste keer fout"
-    }
+    },
+    "footSources": "Verhalen en plaatjes: Pratham Books (StoryWeaver) en de schrijvers en uitgevers op Bloom Library, elk boek onder een eigen open licentie, die bij het boek staat."
   }
 }

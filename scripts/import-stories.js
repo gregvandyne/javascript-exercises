@@ -130,8 +130,9 @@ function writeImages(rows, { imagebank, fetch }) {
     const c = one(b.cover.file, 'cover.webp', IMAGE.cover); b.cover.w = c.w; b.cover.h = c.h;
     for (const p of b.pages) { const r = one(p.image.file, path.basename(p.image.src), IMAGE.page); p.image.w = r.w; p.image.h = r.h; }
   }
-  // Folders of books no longer included are removed, so the set never keeps stale pictures.
-  if (fs.existsSync(PATHS.images)) for (const d of fs.readdirSync(PATHS.images)) if (!books.some(b => b.id === d)) fs.rmSync(path.join(PATHS.images, d), { recursive: true, force: true });
+  // Folders of books no longer included are removed, so the set never keeps stale pictures (StoryWeaver's only: the
+  // Bloom books' folders belong to scripts/import-bloom.js).
+  if (fs.existsSync(PATHS.images)) for (const d of fs.readdirSync(PATHS.images)) if (d.startsWith('sw-') && !books.some(b => b.id === d)) fs.rmSync(path.join(PATHS.images, d), { recursive: true, force: true });
   return bytes;
 }
 
@@ -201,8 +202,10 @@ export function reportMarkdown(rows, { totalBytes = null, generated = new Date()
   ].join('\n');
 }
 
-export function manifestOf(rows, { generated = new Date().toISOString().slice(0, 10) } = {}) {
-  const books = rows.filter(r => r.status === 'included').map(r => r.book).sort((a, b) => gradeRank(a.grade) - gradeRank(b.grade) || a.title.localeCompare(b.title));
+/** The manifest: these StoryWeaver books, plus the other sources' books already in `old` (kept as they are). */
+export function manifestOf(rows, { generated = new Date().toISOString().slice(0, 10), old = null } = {}) {
+  const others = ((old && old.books) || []).filter(b => b.source !== 'storyweaver');
+  const books = [...rows.filter(r => r.status === 'included').map(r => r.book), ...others].sort((a, b) => gradeRank(a.grade) - gradeRank(b.grade) || a.title.localeCompare(b.title));
   return { version: 2, generated, gradeRule: I.GRADE_RULE, books };
 }
 
@@ -219,9 +222,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const rows = evaluate({ storiesDir: path.join(src, 'en'), metadataDir: path.join(bank, 'metadata'), curation, hasImage });
   for (const id of Object.keys(curation.picks)) { const r = rows.find(x => x.sourceId === id); if (!r || r.status !== 'included') console.warn(`picked ${id} is left out: ${r ? r.reason : 'not in the source'}`); }
   const bytes = args.includes('--no-images') ? null : writeImages(rows, { imagebank: bank, fetch: args.includes('--fetch') });
-  const m = manifestOf(rows);
+  const m = manifestOf(rows, { old: fs.existsSync(PATHS.manifest) ? JSON.parse(fs.readFileSync(PATHS.manifest, 'utf8')) : null });
   fs.mkdirSync(path.dirname(PATHS.manifest), { recursive: true });
   fs.writeFileSync(PATHS.manifest, JSON.stringify(m) + '\n');
   fs.writeFileSync(PATHS.report, reportMarkdown(rows, { totalBytes: bytes }));
-  console.log(`${m.books.length} books included of ${rows.length}${bytes !== null ? `; pictures ${(bytes / 1048576).toFixed(1)} MB` : ''}`);
+  console.log(`${m.books.filter(b => b.source === 'storyweaver').length} StoryWeaver books included of ${rows.length}${bytes !== null ? `; pictures ${(bytes / 1048576).toFixed(1)} MB` : ''}`);
 }
