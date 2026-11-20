@@ -119,3 +119,21 @@ export function roomLayout(tool) {
 }
 /** The cursor and square colors, by slot. */
 export const ROOM_COLORS = ['#E53935', '#1E88E5', '#8E24AA', '#00897B', '#F57C00', '#C2185B', '#3949AB', '#2E7D32', '#6D4C41', '#00838F', '#AD1457', '#5E35B1'];
+/** The teacher's notes as every square's "Instructions" strip: the teacher's area's notes with text, top to bottom. */
+export const instructionNotes = notes => (Array.isArray(notes) ? notes : []).filter(n => n && n.by === 't' && String(n.text || '').trim())
+  .slice().sort((a, b) => (+a.y || 0) - (+b.y || 0) || (+a.x || 0) - (+b.x || 0)).map(n => String(n.text).trim());
+/** How tall the strip is in a square (room pixels): a heading line and the notes' lines at 13 px text on 18 px lines,
+ *  wrapped at about 7.6 px a character, never more than a third of the square (then "More" shows the rest to that
+ *  viewer only). 0 without notes. The page and the server both use this, so pieces always start below it. */
+export const STRIP = { head: 28, line: 18, pad: 10, char: 7.6 };
+export function stripHeight(texts, sq) {
+  if (!texts.length) return 0;
+  const per = Math.max(16, Math.floor((sq.w - 44) / STRIP.char));
+  const lines = texts.reduce((s, x) => s + Math.max(1, Math.ceil((x.length + 4) / per)), 0);
+  return Math.min(Math.floor(sq.h / 3), STRIP.head + lines * STRIP.line + STRIP.pad);
+}
+/** The strip's full height (what "More" opens to). */
+export function stripFullHeight(texts, sq) {
+  const per = Math.max(16, Math.floor((sq.w - 44) / STRIP.char));
+  return texts.length ? STRIP.head + texts.reduce((s, x) => s + Math.max(1, Math.ceil((x.length + 4) / per)), 0) * STRIP.line + STRIP.pad : 0;
+}

@@ -1,5 +1,5 @@
 // The moving parts of a manipulatives live room that are never stored (docs/decisions.md "Virtual math manipulatives:
-// the shared room"): everyone's cursor, the teacher's last "Bring everyone to me", and who is listening for changes.
+// the shared room"): everyone's cursor, raised hands, the teacher's last "Bring everyone to me", and who is listening.
 // Memory only: nothing here is written to the database or to a log line. A cursor goes when its socket closes, after
 // IDLE_MS without a move, or when the session ends (forget); the whole room goes with its last listener.
 export const IDLE_MS = 10e3;
@@ -9,7 +9,7 @@ const LO = -2000, HI = 20000;
 const rooms = new Map();   // session id -> { cursors: Map(key -> { x, y, touch, at }), bring: { seq, view }, subs: Set(fn), changed, timer }
 const roomOf = sid => {
   let r = rooms.get(sid);
-  if (!r) { r = { cursors: new Map(), bring: { seq: 0, view: null }, subs: new Set(), changed: false, timer: null }; rooms.set(sid, r); }
+  if (!r) { r = { cursors: new Map(), hands: new Map(), conns: new Map(), bring: { seq: 0, view: null }, subs: new Set(), changed: false, timer: null }; rooms.set(sid, r); }
   return r;
 };
 const n = v => Math.min(HI, Math.max(LO, Math.round(Number(v) || 0)));
@@ -26,6 +26,25 @@ export function cursorsOf(sid) {
   const t = Date.now();
   for (const [k, c] of r.cursors) if (t - c.at > IDLE_MS) { r.cursors.delete(k); r.changed = true; }
   return [...r.cursors].map(([k, c]) => ({ k, x: c.x, y: c.y, touch: c.touch }));
+}
+/** Raised hands, in the order they went up: [{ k, at }]. */
+export const handsOf = sid => [...((rooms.get(sid) || {}).hands || new Map())].map(([k, at]) => ({ k, at }));
+/** A hand goes up or down (key: a student's id). -> whether anything changed; everyone is told. */
+export function setHand(sid, key, up) {
+  const r = roomOf(sid), k = String(key), had = r.hands.has(k);
+  if (up && !had) r.hands.set(k, Date.now()); else if (!up && had) r.hands.delete(k); else return false;
+  publish(sid, { t: 'hands', list: handsOf(sid) });
+  return true;
+}
+/** The teacher lowers every hand. */
+export function clearHands(sid) { const r = rooms.get(sid); if (r && r.hands.size) { r.hands.clear(); publish(sid, { t: 'hands', list: [] }); } }
+/** A socket of key opened or closed: when someone's last socket closes, their cursor and their hand go. */
+export function connected(sid, key, delta) {
+  const r = delta > 0 ? roomOf(sid) : rooms.get(sid); if (!r) return;   // a room already forgotten stays forgotten
+  const k = String(key), n = (r.conns.get(k) || 0) + delta;
+  if (n > 0) { r.conns.set(k, n); return; }
+  r.conns.delete(k); dropCursor(sid, k);
+  if (r.hands.has(k)) { r.hands.delete(k); publish(sid, { t: 'hands', list: handsOf(sid) }); }
 }
 /** The teacher's "Bring everyone to me": the view (a room rectangle) and a number that grows each time. */
 export function setBring(sid, view) { const r = roomOf(sid); r.bring = { seq: r.bring.seq + 1, view }; publish(sid, { t: 'bring', ...r.bring }); return r.bring.seq; }
@@ -45,7 +64,7 @@ export function subscribe(sid, fn) {
   }
   return () => {
     r.subs.delete(fn);
-    if (!r.subs.size) { clearInterval(r.timer); r.timer = null; if (!r.cursors.size) rooms.delete(sid); }
+    if (!r.subs.size) { clearInterval(r.timer); r.timer = null; if (!r.cursors.size && !r.hands.size) rooms.delete(sid); }
   };
 }
 /** The session ended (or was deleted): everything about it goes. */

@@ -18,7 +18,7 @@ const S = await import('../../server/services/schools.js');
 const M = await import('../../server/services/manipulatives.js');
 const { deleteAccount } = await import('../../server/services/account-delete.js');
 const { createApp } = await import('../../server/app.js');
-const { TOOLS, pieceDefs, hexValue, freeSpot, HEX_SIXTHS, roomLayout } = await import('../../public/js/manip-data.js');
+const { TOOLS, pieceDefs, hexValue, freeSpot, HEX_SIXTHS, roomLayout, instructionNotes, stripHeight } = await import('../../public/js/manip-data.js');
 const { TASKS } = await import('../../public/js/manip-tasks.js');
 
 let server, base;
@@ -466,4 +466,69 @@ test('cursors without a socket, and idle cursors, stay in memory only and expire
   assert.deepEqual((await as(boss)(`/api/manipulatives/live/${s.id}/room`)).json.room.cursors, [{ k: w.a1.id, x: 1, y: 2, touch: false }]);
   LIVE._rooms.get(s.id).cursors.get(w.a1.id).at -= LIVE.IDLE_MS + 1;
   assert.deepEqual(LIVE.cursorsOf(s.id), [], 'gone after 10 s idle');
+});
+
+test('the Instructions strip: the teacher\'s area notes reach every square for every viewer, live; students can\'t change it; work starts under it', async () => {
+  const w = world();
+  const s = M.createSession(boss, { classId: w.A.id, tool: 'base-ten-blocks' }).session;
+  M.join(w.a1, { code: s.code }); M.join(w.a2, { code: s.code });
+  const sq = roomLayout('base-ten-blocks').sq;
+  const teacherNotes = texts => ({ pieces: [], __ann: { notes: texts.map((text, i) => ({ id: `t${i}`, text, x: 0.1, y: i / 10 })), strokes: [] } });
+  assert.equal(stripHeight(instructionNotes([]), sq), 0, 'no notes, no strip');
+  assert.equal(M.saveArea(boss, s.id, 't', teacherNotes(['Build 232 two ways.'])).ok, true);
+  for (const who of [boss, w.a1, w.a2]) {
+    const room = M.roomFor(who, s.id);
+    assert.deepEqual(instructionNotes(JSON.parse(room.teacher.state).__ann.notes), ['Build 232 two ways.'], who.username);
+  }
+  const one = stripHeight(['Build 232 two ways.'], sq);
+  assert.ok(one > 0 && one < sq.h / 3);
+  // The teacher edits: everyone reads the new text; a long set is capped at a third of the square (More shows the rest).
+  const long = Array.from({ length: 6 }, (_, i) => `Step ${i + 1}: ${'build it again and explain what stays the same '.repeat(2)}`);
+  M.saveArea(boss, s.id, 't', teacherNotes(long));
+  assert.equal(instructionNotes(JSON.parse(M.roomFor(w.a2, s.id).teacher.state).__ann.notes).length, 6);
+  const capped = stripHeight(long, sq);
+  assert.equal(capped, Math.floor(sq.h / 3));
+  // Students can't change it.
+  assert.equal(M.saveArea(w.a1, s.id, 't', teacherNotes(['mine now'])).code, 'notFound');
+  assert.equal((await as(w.a1)(`/api/manipulatives/live/${s.id}/area/t`, { method: 'POST', body: { state: teacherNotes(['x']) } })).status, 404);
+  // A student's work space is the square under the strip: a piece dragged down is kept inside it.
+  M.saveArea(w.a1, s.id, w.a1.id, { pieces: [{ id: 'p', kind: 'rod', x: 0, y: 9999, w: 30, h: 150, label: '10', value: 10 }] });
+  const p = JSON.parse(q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, w.a1.id).state).pieces[0];
+  assert.equal(p.y, sq.h - capped - 150, 'the bottom of the work space under the strip');
+  // Teacher notes inside a student's own square stay in that square only; a student's own notes stay private.
+  M.saveArea(boss, s.id, w.a1.id, { pieces: [], __ann: { notes: [{ id: 'only', text: 'Just for Ada', x: 0.2, y: 0.2 }], strokes: [] } });
+  assert.doesNotMatch(M.roomFor(w.a2, s.id).teacher.state, /Just for Ada/);
+});
+
+test('raised hands: a student raises only their own; the teacher lowers any or all; classmates can\'t; rate limited; memory only', async () => {
+  const LIVE = await import('../../server/services/manip-live.js');
+  const w = world();
+  const s = M.createSession(boss, { classId: w.A.id, tool: 'money' }).session;
+  M.join(w.a1, { code: s.code }); M.join(w.a2, { code: s.code });
+  const before = JSON.stringify(q.all('SELECT * FROM manip_work WHERE session_id=?', s.id)) + JSON.stringify(q.get('SELECT * FROM manip_sessions WHERE id=?', s.id));
+  const hand = (who, body) => as(who)(`/api/manipulatives/live/${s.id}/hand`, { method: 'POST', body });
+  assert.equal((await hand(w.a1, { up: true })).status, 200);
+  assert.equal((await hand(w.a2, { up: true })).status, 200);
+  assert.deepEqual(LIVE.handsOf(s.id).map(h => h.k), [w.a1.id, w.a2.id], 'in the order raised');
+  assert.deepEqual(M.roomFor(w.a2, s.id).hands.map(h => h.k), [w.a1.id, w.a2.id], 'classmates see who is waiting (squares show display names)');
+  assert.equal((await hand(w.a2, { up: false, key: w.a1.id })).status, 404, 'a classmate can\'t lower another\'s hand');
+  assert.equal((await hand(w.b1, { up: true })).status, 404, 'outside the class');
+  assert.equal((await hand(boss, { up: true })).status, 404, 'the teacher has no hand to raise');
+  assert.equal((await hand(boss, { up: false, key: w.a1.id })).status, 200);
+  assert.deepEqual(LIVE.handsOf(s.id).map(h => h.k), [w.a2.id]);
+  assert.equal((await hand(boss, { up: false, key: 'all' })).status, 200);
+  assert.deepEqual(LIVE.handsOf(s.id), []);
+  // A hand can't be waved up and down all lesson: a few changes a minute.
+  let last; for (let i = 0; i < M.HAND_LIMIT + 2; i++) last = await hand(w.a2, { up: i % 2 === 0 });
+  assert.equal(last.status, 429);
+  // Cleared when the student's last socket closes, and when the session ends; never stored.
+  LIVE.connected(s.id, w.a1.id, 1); M.handFor(s.id, w.a1.id, true);
+  assert.ok(LIVE.handsOf(s.id).some(h => h.k === w.a1.id));
+  LIVE.connected(s.id, w.a1.id, -1);
+  assert.ok(!LIVE.handsOf(s.id).some(h => h.k === w.a1.id), 'gone when they leave');
+  LIVE.setHand(s.id, w.a2.id, true);
+  const after = JSON.stringify(q.all('SELECT * FROM manip_work WHERE session_id=?', s.id)) + JSON.stringify(q.get('SELECT * FROM manip_sessions WHERE id=?', s.id));
+  assert.equal(after, before, 'nothing written to the database');
+  M.end(boss, s.id);
+  assert.deepEqual(LIVE.handsOf(s.id), [], 'gone when the session ends');
 });

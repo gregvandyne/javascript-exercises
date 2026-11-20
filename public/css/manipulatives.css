@@ -271,3 +271,26 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
   .rm-back{bottom:136px}
 }
 .rm .mp-empty{display:none}
+/* the teacher's "Instructions" strip at the top of every student square */
+.rm-body{position:absolute;inset:0}
+.rm-strip{position:absolute;left:0;right:0;top:0;z-index:30;overflow:hidden;background:color-mix(in srgb,var(--spark) 22%,var(--card));border-bottom:2px solid var(--spark-press);border-radius:var(--r) var(--r) 0 0;padding:4px 12px 6px;font-size:13px;line-height:18px;color:var(--text);cursor:default}
+.rm-strip.open{z-index:45;box-shadow:var(--shadow-lg);border-radius:var(--r)}
+.rm-striphead{display:flex;align-items:center;gap:8px;height:24px;font-size:12px;letter-spacing:.02em}
+.rm-more{margin-inline-start:auto;min-height:24px;padding:0 10px;border-radius:999px;border:0;background:var(--current);color:var(--on-current);font:800 12px var(--font);cursor:pointer}
+.rm-strip ol{margin:0;padding-inline-start:20px;font-weight:700;overflow-wrap:anywhere}
+.rm-strip:not(.open)::after{content:'';position:absolute;left:0;right:0;bottom:0;height:12px;background:linear-gradient(transparent,color-mix(in srgb,var(--spark) 22%,var(--card)))}
+.rm-area.teach .rm-label{top:8px;left:auto;right:14px}
+/* raised hands */
+.rm-handbadge{margin-inline-start:6px;font-size:1.1em}
+.rm-hand.on{background:var(--spark)!important;color:var(--on-accent)!important;border-color:var(--spark-press)!important}
+.rm-handsbtn.on{background:var(--spark);box-shadow:0 4px 0 var(--spark-press)}
+.rm-handsbtn.flash{animation:rm-flash 1.2s ease-out 2}
+@keyframes rm-flash{0%{transform:scale(1)}20%{transform:scale(1.08)}40%{transform:scale(1)}}
+.rm-handlist{position:absolute;z-index:75;right:16px;top:84px;width:min(360px,calc(100% - 24px));max-height:60%;overflow:auto;cursor:default}
+.rm-handlist ol{margin:8px 0 0;padding-inline-start:22px}
+.rm-handlist li{display:flex;align-items:center;gap:8px;padding:4px 0}
+.rm-hgo{flex:1;text-align:start;background:none;border:0;font:800 1rem var(--font);color:var(--link);cursor:pointer;padding:6px 0}
+@media (max-width:1600px){.rm-teacher .rm-people{display:none}}
+@media (max-width:899px){.rm-pal .rm-hand .rm-handt{display:none}}
+@media (min-width:900px) and (max-width:1300px){.rm-teacher .rm-bar .muted{display:none}}
+@media (max-width:899px){.rm-minebar{flex:none;min-height:40px;padding:0 12px;font-size:.9rem;white-space:nowrap}.rm-bar h1{font-size:1rem}}

@@ -3546,7 +3546,19 @@
       "close": "Close",
       "gone": "This session isn't here.",
       "back": "← Back",
-      "teacherAreaNote": "everyone can see this"
+      "teacherAreaNote": "everyone can see this",
+      "instructions": "Instructions",
+      "more": "More",
+      "less": "Less",
+      "raiseHand": "Raise hand",
+      "lowerHand": "Lower hand",
+      "handUp": "Hand raised",
+      "handsUp": "Hands up ({n})",
+      "handsTitle": "Hands up",
+      "lowerAll": "Lower all",
+      "lower": "Lower",
+      "lowerOne": "Lower {name}'s hand",
+      "noHands": "No hands up right now."
     }
   },
   "favorites": {
@@ -12401,7 +12413,8 @@
       "otherTool": "That board is for another tool. Push a board made with this session's tool.",
       "brief": "Describe the lesson in a few words first.",
       "names": "Leave students' names out of the description: names never go to the AI.",
-      "aiFailed": "The AI couldn't draft that lesson just now. Try again in a moment."
+      "aiFailed": "The AI couldn't draft that lesson just now. Try again in a moment.",
+      "slow": "That's a lot of hands. Wait a moment and try again."
     }
   }
 }

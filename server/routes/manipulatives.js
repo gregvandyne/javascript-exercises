@@ -19,6 +19,8 @@
 //   POST /api/manipulatives/live/:id/area/:key  save one area (key 't' the teacher's area, or a student's id): the teacher
 //                                               any, a student only their own square
 //   POST /api/manipulatives/live/:id/bring      the teacher: "Bring everyone to me" (their current view)
+//   POST /api/manipulatives/live/:id/hand       a student raises or lowers their own hand; the teacher lowers one ({ key })
+//                                               or all ({ key: 'all' }) (memory only)
 //   POST /api/manipulatives/live/:id/cursor     a cursor without a socket (memory only); the socket is
 //                                               /api/manipulatives/ws?s=<id> (services/manip-socket.js)
 //   POST /api/manipulatives/draft               a host asks the AI to draft a lesson board
@@ -29,7 +31,7 @@ import { rateLimit } from '../services/ratelimit.js';
 import * as M from '../services/manipulatives.js';
 
 export const router = Router();
-const STATUS = { notFound: 404, ended: 409, aiFailed: 503, tooBig: 413 };
+const STATUS = { notFound: 404, ended: 409, aiFailed: 503, tooBig: 413, slow: 429 };
 const fail = (req, res, code) => res.status(STATUS[code] || 400).json({ error: req.t(`manip.errors.${code}`), code });
 const send = (req, res, r) => (r.ok ? res.json(r) : fail(req, res, r.code));
 const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
@@ -96,6 +98,7 @@ router.get('/api/manipulatives/live/:id/room', (req, res) => {
 });
 router.post('/api/manipulatives/live/:id/area/:key', rateLimit('manip-area', 1800, 3600e3), (req, res) => send(req, res, M.saveArea(req.user, req.params.id, req.params.key, body(req).state)));
 router.post('/api/manipulatives/live/:id/bring', hostOnly, rateLimit('manip-bring', 120, 3600e3), (req, res) => send(req, res, M.bring(req.user, req.params.id, body(req).view || {})));
+router.post('/api/manipulatives/live/:id/hand', (req, res) => send(req, res, M.hand(req.user, req.params.id, { up: !!body(req).up, key: typeof body(req).key === 'string' ? body(req).key : null })));
 router.post('/api/manipulatives/live/:id/cursor', rateLimit('manip-cursor', 3600, 3600e3), (req, res) => send(req, res, M.moveCursor(req.user, req.params.id, body(req))));
 
 // ---- the AI lesson drafter

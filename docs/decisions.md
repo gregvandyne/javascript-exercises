@@ -9355,3 +9355,19 @@ The owner approved mockups for live sessions as one shared board (hidden like th
 - **Saving** stays on the cleaned path: an area that changed is sent half a second later and checked like every board;
   the socket only says "something changed" so the others read the room again.
 - **Database:** migration 0093_manipulatives_room (manip_sessions.room and room_at for the teacher's area, manip_work.slot).
+
+## Virtual math manipulatives: Instructions strip and raised hands (20 Nov 2026)
+
+- **Instructions strip:** every sticky note the teacher writes in the teacher's area also shows, read-only and numbered,
+  in a strip pinned to the top of every student's square (the same for everyone, live as the teacher adds, edits or
+  deletes notes). It is at most a third of the square; longer sets show the first lines and a "More" that opens for
+  that viewer only. A square's work space starts under the strip: new pieces and notes are placed below it, dragged
+  pieces stay below it, and the server clamps a student's square to the same space (manip-data.js stripHeight, used by
+  the page and services/manipulatives.js saveArea). Teacher notes put inside one student's square stay in that square.
+- **Raised hands:** a student's "Raise hand" / "Lower hand" (no text, no message). The teacher gets "Hands up (N)": the
+  hands in the order raised, by roster name; tapping one goes to that square; "Lower" one or "Lower all"; the button
+  flashes when a hand goes up (no sound; the site's reduced-motion rule stops the flash). Squares and cursor tags show
+  ✋, and classmates see it too (display names only, like the squares), so everyone knows who is waiting, as the
+  dashboard's help queue does with "You're number n in line". Hands live in memory like cursors (manip-live.js): never
+  stored, gone when the student's last socket closes or the session ends; a student changes their own hand at most 8
+  times a minute (the socket's { t:'h', up } or POST .../hand); only the teacher lowers someone else's.

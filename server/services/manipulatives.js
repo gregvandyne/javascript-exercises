@@ -24,8 +24,9 @@ import * as S from './schools.js';
 import { anthropic } from '../builder/anthropic.js';
 import * as aiBudget from './ai-budget.js';
 import { hasProfanity, personalInfo } from './textfilter.js';
-import { TOOLS, toolOf, pieceDefs, roomLayout, ROOM_COLORS } from '../../public/js/manip-data.js';
+import { TOOLS, toolOf, pieceDefs, roomLayout, ROOM_COLORS, instructionNotes, stripHeight } from '../../public/js/manip-data.js';
 import * as LIVE from './manip-live.js';
+import { allow } from './ratelimit.js';
 import { TASKS } from '../../public/js/manip-tasks.js';
 
 export { TOOLS, TASKS };
@@ -299,7 +300,7 @@ export function roomFor(u, id) {
   return { role: who.role, me: who.key, id: s.id, code: who.role === 'teacher' ? s.code : undefined, tool: s.tool, title: s.title, status: s.status,
     className: c ? c.name : '', teacher: { state: s.room || '{}', updatedAt: s.room_at || 0 }, areas,
     pushed: who.role === 'student' ? s.pushed_state || null : !!s.pushed_state, pushedAt: s.pushed_at || 0,
-    bring: LIVE.bringOf(s.id), cursors: LIVE.cursorsOf(s.id) };
+    bring: LIVE.bringOf(s.id), cursors: LIVE.cursorsOf(s.id), hands: LIVE.handsOf(s.id) };
 }
 /** Save one area: key 't' (the teacher's area) or a student's id. The teacher may save any; a student only their own.
  *  Note authors are kept here, not taken from the browser: a note the teacher adds is the teacher's (everyone reads it);
@@ -308,7 +309,9 @@ export function saveArea(u, id, key, state) {
   const s = getSession(id), who = roomRole(u, s);
   if (!who || (who.role === 'student' && key !== who.key)) return fail('notFound');
   if (s.status !== 'active') return fail('ended');
-  const L = roomLayout(s.tool), bounds = key === 't' ? { w: L.teacher.w, h: L.teacher.h } : L.sq;
+  // A student's square: its work space starts under the teacher's "Instructions" strip (the teacher's area's notes).
+  const L = roomLayout(s.tool), strip = stripHeight(instructionNotes((json(s.room || '{}', {}).__ann || {}).notes), L.sq);
+  const bounds = key === 't' ? { w: L.teacher.w, h: L.teacher.h } : { w: L.sq.w, h: L.sq.h - strip };
   const row = key === 't' ? { state: s.room || '{}' } : q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, String(key));
   if (!row) return fail('notFound');
   const c = cleanState(state, bounds); if (!c.ok) return c;
@@ -335,6 +338,23 @@ export function bring(u, id, view = {}) {
   if (s.status !== 'active') return fail('ended');
   const v = { x: Math.round(num(view.x, -2000, 20000)), y: Math.round(num(view.y, -2000, 20000)), w: Math.round(num(view.w, 50, 20000, 800)), h: Math.round(num(view.h, 50, 20000, 600)) };
   return ok({ seq: LIVE.setBring(s.id, v) });
+}
+/** Raised hands (memory only, services/manip-live.js): a student raises or lowers their own, at most HAND_LIMIT changes
+ *  a minute; the teacher lowers anyone's, or all. */
+export const HAND_LIMIT = 8;
+export function handFor(sid, key, up) {
+  if (!allow(`mhand:${sid}:${key}`, HAND_LIMIT, 60e3)) return fail('slow');
+  LIVE.setHand(sid, key, up);
+  return ok();
+}
+export function hand(u, id, { up = true, key = null } = {}) {
+  const s = getSession(id), who = roomRole(u, s);
+  if (!who) return fail('notFound');
+  if (s.status !== 'active') return fail('ended');
+  if (who.role === 'student') return key && key !== who.key ? fail('notFound') : handFor(s.id, who.key, !!up);
+  if (up) return fail('notFound');   // a teacher has no hand of their own to raise
+  if (key === 'all') LIVE.clearHands(s.id); else LIVE.setHand(s.id, String(key || ''), false);
+  return ok();
 }
 /** A cursor through plain requests (when a socket can't connect). Memory only. */
 export function moveCursor(u, id, { x, y, touch } = {}) {
