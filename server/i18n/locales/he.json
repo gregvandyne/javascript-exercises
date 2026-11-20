@@ -11660,7 +11660,6 @@
     "found": "{count, plural, one {סיפור אחד} other {# סיפורים}}",
     "none": "לא נמצאו סיפורים",
     "noneText": "נסו מילים אחרות או הסתכלו בכל הכיתות.",
-    "footCredit": "סיפורים ואיורים: Pratham Books, StoryWeaver. רישיון:",
     "footQuestions": "בכל ספר מופיעים הכותב, המאייר והמתרגם. את השאלות בסוף כתבה Oomba, והן לא חלק מהספרים.",
     "glossary": "מילים שכדאי להכיר",
     "glossaryNote": "הסברים של Oomba למילים מהודו.",
@@ -11671,7 +11670,11 @@
       "illustration": "איורים: {names}",
       "translation": "תרגום: {names}",
       "changes": "Oomba שינתה את גודל התמונות ומציגה את הספר עמוד אחר עמוד. Pratham Books לא ממליצה על Oomba.",
-      "original": "לספר המקורי."
+      "original": "לספר המקורי.",
+      "from": "על פי ספר של {name}",
+      "changesBloom": "Oomba שינתה את גודל התמונות ומציגה את הספר עמוד אחר עמוד. Bloom Library,‏ SIL Global וההוצאה של הספר לא ממליצים על Oomba.",
+      "changesBloomSA": "Oomba שינתה את גודל התמונות ומציגה את הספר עמוד אחר עמוד; העמודים המעובדים משותפים באותו רישיון, {license}. Bloom Library,‏ SIL Global וההוצאה של הספר לא ממליצים על Oomba.",
+      "originalBloom": "לספר המקורי ב-Bloom Library."
     },
     "readToMe": "הקרא לי",
     "pagesLabel": "עמודים",
@@ -11722,6 +11725,9 @@
       "page": "עמוד {page}",
       "missed": "טעו בפעם הראשונה: {count}"
     },
+    "footSources": "סיפורים ואיורים: Pratham Books (StoryWeaver) והכותבים וההוצאות ב-Bloom Library, כל ספר ברישיון פתוח משלו, שמופיע ליד הספר.",
+    "glossaryNoteAll": "הסברים של Oomba למילים שילדים אולי לא מכירים.",
+    "footCredit": "סיפורים ואיורים: Pratham Books, StoryWeaver. רישיון:",
     "wish": {
       "label": "מה בא לך לקרוא היום?",
       "placeholder": "דינוזאורים, סיפור מצחיק, משהו על החלל...",

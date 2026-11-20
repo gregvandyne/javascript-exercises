@@ -29,6 +29,7 @@
 .lb-title a{color:var(--text);text-decoration:none}
 .lb-title a:hover{text-decoration:underline}
 .lb-meta{margin:0}
+.lb-src{white-space:nowrap}
 .lb-state{font-size:.85rem;font-weight:700;color:var(--text-2)}
 .lb-state.is-done{color:var(--ok)}
 .lb-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:6px}

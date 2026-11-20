@@ -1,10 +1,10 @@
 // Story Library importer: the pure parts (no database, no files written), shared by scripts/import-stories.js and the
 // unit tests (docs/story-library-sources.md, docs/decisions.md "Story Library").
 //
-// A source is anything that can list books as { sourceId, title, pages: [text], textLicense, credits, images: [{ file,
-// license, illustrator, description }] }. Today there is one (StoryWeaver / Pratham Books, from the global-asp
-// pb-source and pb-imagebank repositories); a second one (Bloom Library) only needs its own parser that returns the
-// same shape, and the manifest's `source` field tells them apart. Nothing here fetches anything.
+// Two sources share the manifest: StoryWeaver / Pratham Books (from the global-asp pb-source and pb-imagebank
+// repositories, scripts/import-stories.js) and Bloom Library (scripts/import-bloom.js, its own parser and license rule in
+// bloom-lib.js; the grade rule here is shared). The manifest's `source` field tells them apart. Nothing here fetches
+// anything.
 import fs from 'node:fs';
 import { sentences } from '../../public/js/library-text.js';
 
@@ -284,6 +284,6 @@ export function checkQuestions(qs, pageCount) {
 /** A book's id in the manifest: source prefix + the source's own id ("sw-0001"). */
 export const SOURCES = Object.freeze({
   storyweaver: { prefix: 'sw', publisher: 'Pratham Books', platform: 'StoryWeaver' },
-  // bloom: { prefix: 'bl', publisher: '', platform: 'Bloom Library' }  (not imported yet: needs an API key)
+  bloom: { prefix: 'bl', publisher: '', platform: 'Bloom Library' },   // the publisher is each book's own
 });
 export const bookId = (source, sourceId) => `${SOURCES[source].prefix}-${sourceId}`;
