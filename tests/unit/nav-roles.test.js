@@ -22,6 +22,7 @@ const SC = await import('../../server/services/schools.js');
 const { shellFor, currentTab } = await import('../../server/views/layout.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
 const { withoutKeys } = await import('../support/i18n-gaps.js');
+const { deicon } = await import('../support/deicon.js');
 
 let server, base;
 test.before(async () => { server = createApp().listen(0); server.keepAliveTimeout = 0; await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
@@ -32,7 +33,9 @@ const cookieFor = id => { let c = ''; auth.startSession({ append: (k, v) => { c 
 async function get(u, path, { lang } = {}) {
   const cookie = [u ? cookieFor(u.id) : '', lang ? `lang=${lang}` : ''].filter(Boolean).join('; ');
   const r = await fetch(base + path, { headers: cookie ? { cookie } : {}, redirect: 'manual' });
-  return { status: r.status, text: await r.text(), location: r.headers.get('location') };
+  const raw = await r.text();
+  // Icons are pictures now (docs/decisions.md "Icons: Fluent Emoji 3D"); read each one as the emoji it stands for.
+  return { status: r.status, text: deicon(raw), raw, location: r.headers.get('location') };
 }
 const tabbar = s => (/<nav class="tabbar"[\s\S]*?<\/nav>/.exec(s) || [''])[0];
 const topnav = s => (/<nav class="topnav"[\s\S]*?<\/nav>/.exec(s) || [''])[0];
@@ -126,9 +129,13 @@ test('the kid\'s tab bar and top bar, byte for byte (Play · Learn · Build · F
   assert.deepEqual(unread.map(m => m.from_id), [official.id], 'the team\'s welcome is the kid\'s only unread message');
   assert.match(tabbar((await get(kid, '/')).text), /<span class="tab-t">Friends<\/span><span class="badge" aria-label="1 new">1<\/span>/);
   q.run('UPDATE chat_messages SET read_at=? WHERE to_id=? AND read_at IS NULL', Date.now(), kid.id);
-  const page = (await get(kid, '/')).text;
+  const got = await get(kid, '/'), page = got.text;
   assert.equal(tabbar(page), KID_TAB);
   assert.equal(topnav(page), KID_TOP);
+  // As drawn: Fluent 3D pictures (30 px in the tab bar, 28 in the top bar), the kid's own avatar still an emoji.
+  assert.match(tabbar(got.raw), /<span class="emo" aria-hidden="true"><img class="fx fx-3d" src="\/icons\/fluent\/3d\/video-game-64\.webp" srcset="[^"]+ 1x, [^"]+video-game-128\.webp 2x" width="30" height="30" alt="" aria-hidden="true"/);
+  assert.match(topnav(got.raw), /<img class="fx fx-3d" src="\/icons\/fluent\/3d\/books-64\.webp"[^>]* width="28" height="28"/);
+  assert.match(tabbar(got.raw), /href="\/me" ><span class="emo" aria-hidden="true">🦊<\/span>/);
 });
 
 test('\'/\' per role: Play for the signed out, guests, kids and the platform admin; everyone else to their first tab, never cached; /play is Play for all', async () => {
@@ -364,7 +371,7 @@ test('a quieter top bar: no theme menu, School or Plans in any role\'s bars; the
   const dark = await fetch(base + '/play', { headers: { cookie: `${cookieFor(teacher.id)}; theme=dark` } });
   assert.match(menu(await dark.text()), /data-theme-choice="dark" data-label="Theme: Dark" title="Dark" aria-current="true">/, 'a teacher: Dark is on in the switch');
   const darkMum = await fetch(base + '/play', { headers: { cookie: `${cookieFor(mum.id)}; theme=dark` } });
-  assert.match(menu(await darkMum.text()), /data-theme-choice="dark" data-label="Theme: Dark" aria-current="true"><span class="lang-check" aria-hidden="true">✓<\/span>/, 'a grown-up: Dark is ticked');
+  assert.match(menu(deicon(await darkMum.text())), /data-theme-choice="dark" data-label="Theme: Dark" aria-current="true"><span class="lang-check" aria-hidden="true">✓<\/span>/, 'a grown-up: Dark is ticked');
   // Paid-plan pages off: no Plans anywhere, the theme stays.
   config.stripeApiKey = '';
   for (const u of [mum, head, teacher, boss]) {

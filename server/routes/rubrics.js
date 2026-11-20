@@ -4,6 +4,7 @@
 // Permissions come from services/rubrics.js: staff of the school only; anyone else gets 404.
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound, VERSION } from '../views/layout.js';
 import { emptyState } from '../views/components.js';
 import { requireUser } from '../auth.js';
@@ -31,7 +32,7 @@ const pts = (t, p) => t('rubrics.pointsN', { count: +(+p).toFixed(1) });
 export function libraryTabs(t, schoolId, current) {
   const q = `?school=${schoolId}`;
   const cur = k => (k === current ? raw('aria-current="page"') : '');
-  return html`<nav class="tabs" aria-label="${t('lessons.library.title')}"><a href="/teach/lessons${q}" ${cur('mine')}>${t('lessons.library.mine')}</a><a href="/teach/lessons${q}&tab=shared" ${cur('shared')}>${t('lessons.library.shared')}</a><a href="/teach/rubrics${q}" ${cur('rubrics')}>📏 ${t('rubrics.title')}</a></nav>`;
+  return html`<nav class="tabs" aria-label="${t('lessons.library.title')}"><a href="/teach/lessons${q}" ${cur('mine')}>${t('lessons.library.mine')}</a><a href="/teach/lessons${q}&tab=shared" ${cur('shared')}>${t('lessons.library.shared')}</a><a href="/teach/rubrics${q}" ${cur('rubrics')}>${ico('📏', { size: 18 })} ${t('rubrics.title')}</a></nav>`;
 }
 const meta = (t, r) => [t('rubrics.criteriaN', { count: r.criteria.length }), t('rubrics.levelsN', { count: r.levels.length }), t('rubrics.maxPoints', { points: pts(t, R.maxPoints(r)) })];
 const metaLine = parts => parts.filter(Boolean).map((x, i) => html`${i ? ' · ' : ''}<span class="nw">${x}</span>`);
@@ -47,26 +48,26 @@ router.get('/teach/rubrics', requireUser, (req, res) => {
   const q = extra => `/teach/rubrics?school=${school.id}${extra || ''}`;
   const row = (r, own) => html`<li class="panel lessonrow rb-row">
     <a class="lr-main" href="/teach/rubrics/${r.id}"><b dir="auto">${r.title}</b><span class="small muted">${metaLine([own ? '' : r.owner_name, ...meta(t, r)])}</span>
-      <span class="lr-chips">${r.shared ? html`<span class="chip-s">🏫 ${t('lessons.lesson.sharedChip')}</span>` : ''}${r.uses ? html`<span class="chip-s">📌 ${t('rubrics.usedN', { count: r.uses })}</span>` : ''}${r.source.startsWith('csq:') ? html`<span class="chip-s">💻 ${t('cs.program.title')}</span>` : ''}</span></a>
+      <span class="lr-chips">${r.shared ? html`<span class="chip-s">${ico('🏫', { size: 18 })} ${t('lessons.lesson.sharedChip')}</span>` : ''}${r.uses ? html`<span class="chip-s">${ico('📌', { size: 18 })} ${t('rubrics.usedN', { count: r.uses })}</span>` : ''}${r.source.startsWith('csq:') ? html`<span class="chip-s">${ico('💻', { size: 18 })} ${t('cs.program.title')}</span>` : ''}</span></a>
     <span class="acts">${own ? html`<details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: r.title })}">⋯</summary><div class="menu">
-        <a class="btn btn-sm" href="/teach/rubrics/${r.id}/print">🖨️ ${t('rubrics.print')}</a>
-        <form data-api="/api/rubrics/${r.id}/copy"><button class="btn btn-sm" type="submit">📄 ${t('rubrics.copy')}</button></form>
+        <a class="btn btn-sm" href="/teach/rubrics/${r.id}/print">${ico('🖨️', { size: 18 })} ${t('rubrics.print')}</a>
+        <form data-api="/api/rubrics/${r.id}/copy"><button class="btn btn-sm" type="submit">${ico('📄', { size: 18 })} ${t('rubrics.copy')}</button></form>
         ${shareForm(t, r)}
         ${deleteForm(t, r)}
-      </div></details>` : html`<form data-api="/api/rubrics/${r.id}/copy"><button class="btn btn-sm btn-primary" type="submit">📄 ${t('rubrics.copyMine')}</button></form>`}</span></li>`;
+      </div></details>` : html`<form data-api="/api/rubrics/${r.id}/copy"><button class="btn btn-sm btn-primary" type="submit">${ico('📄', { size: 18 })} ${t('rubrics.copyMine')}</button></form>`}</span></li>`;
   let content;
   if (tab === 'mine') {
     const list = R.rubricsOf(u.id, school.id);
     content = html`<div class="libtools">
       <form class="row grow" data-api="/api/rubrics" novalidate><input type="hidden" name="schoolId" value="${school.id}">
         <label class="sr-only" for="nr-t">${t('rubrics.editor.title')}</label><input class="input grow" id="nr-t" name="title" maxlength="${R.LIMITS.title}" placeholder="${t('rubrics.newPlaceholder')}" required>
-        <button class="btn btn-primary" type="submit">➕ ${t('rubrics.new')}</button></form>
-      <details class="libdrop aidraft" ${open === 'ai' ? raw('open') : ''}><summary class="btn">✨ ${t('rubrics.ai.button')}</summary>
+        <button class="btn btn-primary" type="submit">${ico('➕', { size: 18 })} ${t('rubrics.new')}</button></form>
+      <details class="libdrop aidraft" ${open === 'ai' ? raw('open') : ''}><summary class="btn">${ico('✨', { size: 18 })} ${t('rubrics.ai.button')}</summary>
         <form class="formgrid aiform" data-api="/api/rubrics/draft" novalidate><input type="hidden" name="schoolId" value="${school.id}">
           <div class="field wide"><label for="rai-t">${t('rubrics.ai.task')}</label><input class="input" id="rai-t" name="task" maxlength="300" required placeholder="${t('rubrics.ai.taskPlaceholder')}"><span class="err" id="rai-t-err"></span></div>
           <div class="field"><label for="rai-g">${optional(t, t('school.class.grade'))}</label><input class="input" id="rai-g" name="grade" maxlength="12"></div>
           <div class="field"><label for="rai-l">${t('rubrics.ai.levels')}</label><select class="input" id="rai-l" name="levels">${[3, 4, 5].map(n => html`<option value="${n}" ${n === 4 ? raw('selected') : ''}>${n}</option>`)}</select></div>
-          <div class="formacts wide"><button class="btn btn-primary" type="submit">✨ ${t('rubrics.ai.make')}</button><p class="small muted">${t('rubrics.ai.note')}</p></div>
+          <div class="formacts wide"><button class="btn btn-primary" type="submit">${ico('✨', { size: 18 })} ${t('rubrics.ai.make')}</button><p class="small muted">${t('rubrics.ai.note')}</p></div>
         </form></details>
     </div>
     ${list.length ? html`<ul class="plain lessonlist" id="rubric-list">${list.map(r => row(r, true))}</ul>`
@@ -78,16 +79,16 @@ router.get('/teach/rubrics', requireUser, (req, res) => {
     const list = R.starters();
     const bands = [...new Set(list.map(s => s.band))];
     content = html`<p class="muted">${t('rubrics.starters.intro')}</p>
-      ${bands.map(band => html`<section class="panel rb-starters"><h2>💻 ${t('cs.program.title')} · ${t(BAND_KEY[band] || 'cs.band.label')}</h2>
+      ${bands.map(band => html`<section class="panel rb-starters"><h2>${ico('💻', { size: 28 })} ${t('cs.program.title')} · ${t(BAND_KEY[band] || 'cs.band.label')}</h2>
         <ul class="plain rb-starter-list">${list.filter(s => s.band === band).map(s => html`<li class="rb-starter"><span class="rb-st-name"><b lang="en" dir="ltr">${s.title}</b><span class="small muted">${t('rubrics.criteriaN', { count: s.lines })}</span></span>
-          <form data-api="/api/rubrics/import" novalidate><input type="hidden" name="schoolId" value="${school.id}"><input type="hidden" name="key" value="${s.key}"><button class="btn btn-sm" type="submit" aria-label="${t('rubrics.starters.addFor', { title: s.title })}">➕ ${t('rubrics.starters.add')}</button></form></li>`)}</ul></section>`)}`;
+          <form data-api="/api/rubrics/import" novalidate><input type="hidden" name="schoolId" value="${school.id}"><input type="hidden" name="key" value="${s.key}"><button class="btn btn-sm" type="submit" aria-label="${t('rubrics.starters.addFor', { title: s.title })}">${ico('➕', { size: 18 })} ${t('rubrics.starters.add')}</button></form></li>`)}</ul></section>`)}`;
   }
   const body = html`
-  <div class="pagehead"><h1>📏 ${t('rubrics.title')}</h1></div>
+  <div class="pagehead"><h1>${ico('📏', { size: 36 })} ${t('rubrics.title')}</h1></div>
   ${schools.length > 1 ? html`<nav class="seg schoolpick" aria-label="${t('school.class.school')}">${schools.map(s => html`<a class="btn btn-sm ${s.id === school.id ? 'btn-primary' : ''}" href="/teach/rubrics?school=${s.id}">${s.name}</a>`)}</nav>` : ''}
   ${libraryTabs(t, school.id, 'rubrics')}
   <p class="muted rb-intro">${t('rubrics.intro')}</p>
-  <nav class="chips rb-subtabs" aria-label="${t('rubrics.title')}"><a class="chip" href="${q()}" ${tab === 'mine' ? raw('aria-current="page"') : ''}>${t('rubrics.mine')}</a><a class="chip" href="${q('&tab=shared')}" ${tab === 'shared' ? raw('aria-current="page"') : ''}>${t('rubrics.shared')}</a><a class="chip" href="${q('&tab=starters')}" ${tab === 'starters' ? raw('aria-current="page"') : ''}>💻 ${t('rubrics.starters.title')}</a></nav>
+  <nav class="chips rb-subtabs" aria-label="${t('rubrics.title')}"><a class="chip" href="${q()}" ${tab === 'mine' ? raw('aria-current="page"') : ''}>${t('rubrics.mine')}</a><a class="chip" href="${q('&tab=shared')}" ${tab === 'shared' ? raw('aria-current="page"') : ''}>${t('rubrics.shared')}</a><a class="chip" href="${q('&tab=starters')}" ${tab === 'starters' ? raw('aria-current="page"') : ''}>${ico('💻', { size: 18 })} ${t('rubrics.starters.title')}</a></nav>
   ${content}`;
   page(req, res, { title: t('rubrics.title'), active: 'classes', mid: true, body, head: CSS, scripts: ['/js/schools.js'], back: `/teach/lessons?school=${school.id}`, backLabel: t('lessons.library.title') });
 });
@@ -114,39 +115,39 @@ router.get('/teach/rubrics/:id', requireUser, (req, res) => {
   const school = S.getSchool(r.school_id);
   const uses = R.usage(r.id);
   const notice = req.query.drafted ? html`<p class="notice ${req.query.drafted === 'ai' ? '' : 'warn'}">${req.query.drafted === 'ai' ? `✨ ${t('rubrics.ai.done')}` : t('rubrics.ai.template')}</p>`
-    : req.query.copied ? html`<p class="notice good">📄 ${t('rubrics.copiedNotice')}</p>` : req.query.imported ? html`<p class="notice good">💻 ${t('rubrics.starters.added')}</p>` : '';
-  const usedIn = uses.length ? html`<section class="panel"><h2>📌 ${t('rubrics.usedIn')}</h2><ul class="plain assignedlist">${uses.map(x => html`<li><a href="/teach/lessons/${x.lessonId}" dir="auto">${x.title}</a> <span class="small muted">${[x.whole ? t('rubrics.wholeLesson') : '', x.steps ? t('rubrics.stepsN', { count: x.steps }) : ''].filter(Boolean).join(' · ')}</span></li>`)}</ul></section>`
+    : req.query.copied ? html`<p class="notice good">${ico('📄', { size: 18 })} ${t('rubrics.copiedNotice')}</p>` : req.query.imported ? html`<p class="notice good">${ico('💻', { size: 18 })} ${t('rubrics.starters.added')}</p>` : '';
+  const usedIn = uses.length ? html`<section class="panel"><h2>${ico('📌', { size: 28 })} ${t('rubrics.usedIn')}</h2><ul class="plain assignedlist">${uses.map(x => html`<li><a href="/teach/lessons/${x.lessonId}" dir="auto">${x.title}</a> <span class="small muted">${[x.whole ? t('rubrics.wholeLesson') : '', x.steps ? t('rubrics.stepsN', { count: x.steps }) : ''].filter(Boolean).join(' · ')}</span></li>`)}</ul></section>`
     : edit ? html`<p class="small muted">${t('rubrics.notUsed')}</p>` : '';
   const editor = () => html`<form class="panel rb-editor" data-api="/api/rubrics/${r.id}" data-reload data-toast="${t('school.settings.saved')}" novalidate>
     <div class="formgrid">
       <div class="field wide"><label for="re-t">${t('rubrics.editor.title')}</label><input class="input" id="re-t" name="title" value="${r.title}" maxlength="${R.LIMITS.title}" required dir="auto"><span class="err" id="re-t-err"></span></div>
       <div class="field wide"><label for="re-d">${optional(t, t('rubrics.editor.description'))}</label><textarea class="input" id="re-d" name="description" rows="2" maxlength="${R.LIMITS.description}" dir="auto">${r.description}</textarea></div>
     </div>
-    <h2 class="rb-h" id="levels">🪜 ${t('rubrics.editor.levels')}</h2><p class="small muted">${t('rubrics.editor.levelsHint')}</p>
+    <h2 class="rb-h" id="levels">${ico('🪜', { size: 28 })} ${t('rubrics.editor.levels')}</h2><p class="small muted">${t('rubrics.editor.levelsHint')}</p>
     <ol class="plain rb-lvlist">${r.levels.map((l, j) => html`<li class="rb-lvrow">
       <div class="field"><label for="re-l${j}">${t('rubrics.editor.levelLabel', { n: j + 1 })}</label><input class="input" id="re-l${j}" name="lv-${j}-label" value="${l.label}" maxlength="${R.LIMITS.label}" required dir="auto"><span class="err" id="re-l${j}-err"></span></div>
       <div class="field rb-ptsf"><label for="re-p${j}">${t('rubrics.editor.points')}</label><input class="input" id="re-p${j}" name="lv-${j}-points" type="number" min="0" max="${R.LIMITS.points}" step="0.5" value="${l.points}" required inputmode="decimal"><span class="err" id="re-p${j}-err"></span></div>
       ${r.levels.length > R.LIMITS.levels[0] ? html`<button class="btn btn-sm rb-x" type="submit" name="op" value="dropLevel:${j}" aria-label="${t('rubrics.editor.removeLevel', { name: l.label })}">✕</button>` : ''}</li>`)}</ol>
-    ${r.levels.length < R.LIMITS.levels[1] ? html`<button class="btn btn-sm" type="submit" name="op" value="addLevel">➕ ${t('rubrics.editor.addLevel')}</button>` : ''}
-    <h2 class="rb-h">📋 ${t('rubrics.editor.criteria')}</h2><p class="small muted">${t('rubrics.editor.criteriaHint')}</p>
+    ${r.levels.length < R.LIMITS.levels[1] ? html`<button class="btn btn-sm" type="submit" name="op" value="addLevel">${ico('➕', { size: 18 })} ${t('rubrics.editor.addLevel')}</button>` : ''}
+    <h2 class="rb-h">${ico('📋', { size: 28 })} ${t('rubrics.editor.criteria')}</h2><p class="small muted">${t('rubrics.editor.criteriaHint')}</p>
     <ol class="plain rb-crlist">${r.criteria.map((c, i) => html`<li class="rb-crrow" id="crit-${i}">
       <div class="rb-crhead"><div class="field grow"><label for="re-c${i}">${t('rubrics.editor.criterionN', { n: i + 1 })}</label><input class="input" id="re-c${i}" name="cr-${i}-name" value="${c.name}" maxlength="${R.LIMITS.name}" required dir="auto"><span class="err" id="re-c${i}-err"></span></div>
         <span class="acts">${i ? html`<button class="btn btn-sm" type="submit" name="op" value="up:${i}" aria-label="${t('lessons.up')}">↑</button>` : ''}${i < r.criteria.length - 1 ? html`<button class="btn btn-sm" type="submit" name="op" value="down:${i}" aria-label="${t('lessons.down')}">↓</button>` : ''}${r.criteria.length > 1 ? html`<button class="btn btn-sm rb-x" type="submit" name="op" value="dropCriterion:${i}" aria-label="${t('rubrics.editor.removeCriterion', { name: c.name })}">✕</button>` : ''}</span></div>
       <div class="rb-descs">${r.levels.map((l, j) => html`<div class="field"><label for="re-c${i}d${j}"><span dir="auto">${l.label}</span> <span class="muted">${pts(t, l.points)}</span></label><textarea class="input" id="re-c${i}d${j}" name="cr-${i}-d-${j}" rows="3" maxlength="${R.LIMITS.desc}" dir="auto" placeholder="${t('rubrics.editor.descPlaceholder')}">${c.descs[j] || ''}</textarea></div>`)}</div>
     </li>`)}</ol>
-    ${r.criteria.length < R.LIMITS.criteria[1] ? html`<button class="btn btn-sm" type="submit" name="op" value="addCriterion">➕ ${t('rubrics.editor.addCriterion')}</button>` : ''}
+    ${r.criteria.length < R.LIMITS.criteria[1] ? html`<button class="btn btn-sm" type="submit" name="op" value="addCriterion">${ico('➕', { size: 18 })} ${t('rubrics.editor.addCriterion')}</button>` : ''}
     <div class="formacts rb-save"><button class="btn btn-primary" type="submit">${t('school.save')}</button><span class="small muted">${t('rubrics.maxPoints', { points: pts(t, R.maxPoints(r)) })}</span></div>
   </form>`;
   const body = html`
-  <div class="pagehead"><div><span class="small muted">${school ? school.name : ''}</span><h1 dir="auto">📏 ${r.title}</h1>
+  <div class="pagehead"><div><span class="small muted">${school ? school.name : ''}</span><h1 dir="auto">${ico('📏', { size: 36 })} ${r.title}</h1>
     <p class="muted">${metaLine([...meta(t, r), r.shared ? `🏫 ${t('rubrics.sharedStatus')}` : ''])}</p></div>
-    <div class="row edacts"><a class="btn" href="/teach/rubrics/${r.id}/print">🖨️ ${t('rubrics.print')}</a>
-      ${edit ? html`<button class="btn" type="submit" form="rc-${r.id}">📄 ${t('rubrics.copy')}</button><button class="btn" type="submit" form="rsh-${r.id}">${r.shared ? t('rubrics.unshare') : `🏫 ${t('rubrics.share')}`}</button>`
-        : html`<button class="btn btn-primary" type="submit" form="rc-${r.id}">📄 ${t('rubrics.copyMine')}</button>`}</div></div>
+    <div class="row edacts"><a class="btn" href="/teach/rubrics/${r.id}/print">${ico('🖨️', { size: 18 })} ${t('rubrics.print')}</a>
+      ${edit ? html`<button class="btn" type="submit" form="rc-${r.id}">${ico('📄', { size: 18 })} ${t('rubrics.copy')}</button><button class="btn" type="submit" form="rsh-${r.id}">${r.shared ? t('rubrics.unshare') : `🏫 ${t('rubrics.share')}`}</button>`
+        : html`<button class="btn btn-primary" type="submit" form="rc-${r.id}">${ico('📄', { size: 18 })} ${t('rubrics.copyMine')}</button>`}</div></div>
   ${notice}
   ${r.description && !edit ? html`<p dir="auto">${r.description}</p>` : ''}
   ${edit ? editor() : html`<section class="panel">${rubricGrid(t, r)}</section>`}
-  ${edit ? html`<details class="panel rb-preview"><summary>👀 ${t('rubrics.preview')}</summary>${rubricGrid(t, r)}</details>` : ''}
+  ${edit ? html`<details class="panel rb-preview"><summary>${ico('👀', { size: 18 })} ${t('rubrics.preview')}</summary>${rubricGrid(t, r)}</details>` : ''}
   ${usedIn}
   <form id="rc-${r.id}" hidden data-api="/api/rubrics/${r.id}/copy"></form>
   ${edit ? html`${shareForm(t, r, `rsh-${r.id}`)}<div class="row rb-danger"><button class="btn btn-danger" type="submit" form="rdel-${r.id}">${t('rubrics.delete')}</button></div>${deleteForm(t, { ...r, uses: uses.length }, `rdel-${r.id}`)}` : ''}`;
@@ -157,7 +158,7 @@ router.get('/teach/rubrics/:id', requireUser, (req, res) => {
 router.get('/teach/rubrics/:id/print', requireUser, (req, res) => {
   const t = req.t, r = R.getRubric(req.params.id);
   if (!R.canSeeRubric(req.user, r)) return no(req, res);
-  const body = html`<div class="printdoc rb-print"><div class="printbar row noprint"><a class="btn" href="/teach/rubrics/${r.id}">← ${t('rubrics.backToRubric')}</a><button class="btn btn-primary" type="button" data-print>🖨️ ${t('rubrics.print')}</button></div>
+  const body = html`<div class="printdoc rb-print"><div class="printbar row noprint"><a class="btn" href="/teach/rubrics/${r.id}">← ${t('rubrics.backToRubric')}</a><button class="btn btn-primary" type="button" data-print>${ico('🖨️', { size: 18 })} ${t('rubrics.print')}</button></div>
     <h1 dir="auto">${r.title}</h1>${r.description ? html`<p dir="auto">${r.description}</p>` : ''}
     <p class="rb-print-lines"><span>${t('rubrics.printName')} ____________________</span><span>${t('rubrics.printPoints', { max: +R.maxPoints(r).toFixed(1) })}</span></p>
     ${rubricGrid(t, r)}</div>`;

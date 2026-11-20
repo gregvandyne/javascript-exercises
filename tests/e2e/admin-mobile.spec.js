@@ -109,7 +109,7 @@ test('admin pages keep every item: shortcuts, all tabs, filters, CSV, forms and 
     await expect(page.locator('.uacts a', { hasText: 'View profile' })).toBeVisible();
     await expect(page.locator('.uacts [data-act="ban"]')).toBeVisible();
     for (const th of ['Account type', 'Site role', 'Schools', 'Family', 'Created', 'Last seen', 'Games', 'Friends', 'Chat', 'Reports']) await has(`.afacts th:text-is("${th}")`);
-    await text('📈 Activity', 'Plays per day', 'AI Builder messages per day', 'Days active', 'Games they play most', 'Courses', 'Recent activity');
+    await text('Activity', 'Plays per day', 'AI Builder messages per day', 'Days active', 'Games they play most', 'Courses', 'Recent activity');
 
     // Team inbox: conversations first, then announcements, then the three welcome messages.
     await page.goto('/admin?tab=messages');
@@ -165,7 +165,8 @@ test('/admin/billing: "Ready to go live?" lists every check with what to do, by 
     const page = await ctx.newPage();
     await page.goto('/admin/billing');
     const panel = page.locator('section#ready');
-    await expect(panel.locator('h2')).toHaveText('🚦 Ready to go live?');
+    await expect(panel.locator('h2')).toHaveText('Ready to go live?');
+  await expect(panel.locator('h2 img.fx[src*="traffic-light"]')).toHaveCount(1);
     // It is the first section, and the jump chips lead to it.
     const top = s => page.locator(s).evaluate(e => e.getBoundingClientRect().top);
     expect(await top('#ready')).toBeLessThan(await top('#requests'));

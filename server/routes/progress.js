@@ -3,6 +3,7 @@
 // Permissions come from services/progress.js (students: only their own steps) and services/schools.js (teachers).
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound, VERSION } from '../views/layout.js';
 import { avatar, emptyState, jumpNav, nameFilter, staffStudentName } from '../views/components.js';
 import { requireUser } from '../auth.js';
@@ -117,10 +118,10 @@ const SHORT = { month: 'short', day: 'numeric' };
 function dateChips(t, f, cl, { late = false, short = false } = {}) {
   const open = L.isOpen(cl), due = L.dueState(cl);
   return [
-    !open ? html`<span class="chip-s">🔒 ${t('lessons.class.opensOn', { date: f.day(cl.opens_at, SHORT) })}</span>` : '',
-    open && due === 'today' ? html`<span class="chip-s warn">📅 ${t('lessons.class.dueToday')}</span>`
-      : cl.due_at ? html`<span class="nw">📅 ${short ? f.day(cl.due_at, SHORT) : t('lessons.class.dueOn', { date: f.day(cl.due_at) })}</span>` : '',
-    late ? html`<span class="chip-s bad">⏰ ${t('lessons.class.late')}</span>` : '',
+    !open ? html`<span class="chip-s">${ico('🔒', { size: 18 })} ${t('lessons.class.opensOn', { date: f.day(cl.opens_at, SHORT) })}</span>` : '',
+    open && due === 'today' ? html`<span class="chip-s warn">${ico('📅', { size: 18 })} ${t('lessons.class.dueToday')}</span>`
+      : cl.due_at ? html`<span class="nw">${ico('📅', { size: 18 })} ${short ? f.day(cl.due_at, SHORT) : t('lessons.class.dueOn', { date: f.day(cl.due_at) })}</span>` : '',
+    late ? html`<span class="chip-s bad">${ico('⏰', { size: 18 })} ${t('lessons.class.late')}</span>` : '',
   ].filter(Boolean);
 }
 /** Overall for a gradebook row: '–' while none of the class's lessons has opened (nothing to count yet). */
@@ -169,19 +170,19 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
           const first = x.toRead ? firstNew[`${p.id}:${l.id}`] : null;
           return html`<td class="${full ? 'gb-done' : x.late ? 'gb-late' : ''}"><a class="gb-cell" href="/class/${c.id}/progress/${l.id}#${first ? `a-${first}-${p.id}` : `s-${p.id}`}">
           <span class="gb-num">${full ? '✅' : `${x.done}/${x.total}`}</span>${bar(x.done, x.total)}
-          ${x.toRead ? html`<span class="chip-s warn">✍️ ${x.toRead}</span>` : ''}${x.late ? html`<span class="sr-only">${t('lessons.class.late')}</span>` : ''}${x.lateDone ? html`<span class="chip-s bad gb-latedone">⏰ ${t('gradebook.doneLate')}</span>` : ''}
-          ${x.quiz !== null ? html`<span class="gb-pts gb-quiz" title="${t('progress.gradebook.quizTitle', { pct: x.quiz, count: x.quizzes })}">🧩 <span dir="ltr">${x.quiz}%</span><span class="sr-only"> ${t('progress.gradebook.quizTitle', { pct: x.quiz, count: x.quizzes })}</span></span>` : ''}
-          ${x.maxPoints > 0 ? html`<span class="gb-pts" title="${t('rubrics.gradebook.cellTitle', { points: R.pointsText(x.points, x.maxPoints), pct: R.percent(x.points, x.maxPoints) })}">📏 ${R.pointsText(x.points, x.maxPoints)} <span class="muted">${R.percent(x.points, x.maxPoints)}%</span></span>${x.scored < x.criteria ? html`<span class="gb-part small muted">${t('rubrics.score.partial', { n: x.scored, total: x.criteria })}</span>` : ''}` : ''}</a></td>`;
+          ${x.toRead ? html`<span class="chip-s warn">${ico('✍️', { size: 18 })} ${x.toRead}</span>` : ''}${x.late ? html`<span class="sr-only">${t('lessons.class.late')}</span>` : ''}${x.lateDone ? html`<span class="chip-s bad gb-latedone">${ico('⏰', { size: 18 })} ${t('gradebook.doneLate')}</span>` : ''}
+          ${x.quiz !== null ? html`<span class="gb-pts gb-quiz" title="${t('progress.gradebook.quizTitle', { pct: x.quiz, count: x.quizzes })}">${ico('🧩', { size: 18 })} <span dir="ltr">${x.quiz}%</span><span class="sr-only"> ${t('progress.gradebook.quizTitle', { pct: x.quiz, count: x.quizzes })}</span></span>` : ''}
+          ${x.maxPoints > 0 ? html`<span class="gb-pts" title="${t('rubrics.gradebook.cellTitle', { points: R.pointsText(x.points, x.maxPoints), pct: R.percent(x.points, x.maxPoints) })}">${ico('📏', { size: 18 })} ${R.pointsText(x.points, x.maxPoints)} <span class="muted">${R.percent(x.points, x.maxPoints)}%</span></span>${x.scored < x.criteria ? html`<span class="gb-part small muted">${t('rubrics.score.partial', { n: x.scored, total: x.criteria })}</span>` : ''}` : ''}</a></td>`;
         })}
-        <td class="gb-all">${all ? html`<b>${all}</b>` : html`<span class="muted">–</span>`}${p.lateCount ? html`<span class="gb-pts gb-latecount">⏰ ${t('gradebook.lateN', { count: p.lateCount })}</span>` : ''}</td>
-        <td class="gb-all gb-scorecell">${scoreCell(t, p.score, `${studentHref(c, p)}#score`)}${p.quiz !== null ? html`<span class="gb-pts gb-quiz" title="${t('progress.gradebook.quizOverall', { pct: p.quiz })}">🧩 <span dir="ltr">${p.quiz}%</span></span>` : ''}${p.rubric ? html`<span class="gb-pts">📏 ${p.rubric.pct}%</span>` : ''}</td></tr>`;
+        <td class="gb-all">${all ? html`<b>${all}</b>` : html`<span class="muted">–</span>`}${p.lateCount ? html`<span class="gb-pts gb-latecount">${ico('⏰', { size: 18 })} ${t('gradebook.lateN', { count: p.lateCount })}</span>` : ''}</td>
+        <td class="gb-all gb-scorecell">${scoreCell(t, p.score, `${studentHref(c, p)}#score`)}${p.quiz !== null ? html`<span class="gb-pts gb-quiz" title="${t('progress.gradebook.quizOverall', { pct: p.quiz })}">${ico('🧩', { size: 18 })} <span dir="ltr">${p.quiz}%</span></span>` : ''}${p.rubric ? html`<span class="gb-pts">${ico('📏', { size: 18 })} ${p.rubric.pct}%</span>` : ''}</td></tr>`;
     })}</tbody></table></div>`;
   const body = html`
-  ${gb.lessons.length && gb.students.length ? html`<div class="row gb-tools" id="gb"><details class="gbhelp" data-open-wide><summary>ⓘ ${t('cs.standards.legend.h')}</summary><div class="small muted gbhelp-text"><p>${t('progress.gradebook.text')}</p><p><b>${t('gradebook.workDone')}:</b> ${t('gradebook.help.workDone')}</p><p><b>${t('gradebook.score')}:</b> ${t('gradebook.help.score')}</p><p><b>⏰ ${t('lessons.class.late')}:</b> ${t('gradebook.help.late')} ${zoneNote(t, c.school_id)}</p><p>${t('gradebook.help.names')}</p></div></details><a class="btn btn-sm" href="/class/${c.id}/progress.csv" download>⬇️ ${t('progress.gradebook.csv')}</a></div>` : ''}
-  ${toReview.length ? html`<p class="notice gb-review" id="to-review">✍️ <b>${t('progress.gradebook.toReviewList')}</b> ${toReview.map((r, i) => html`${i ? ' · ' : ''}<a href="/class/${c.id}/progress/${r.cl}#answers" dir="auto">${t('progress.gradebook.reviewLink', { title: r.title, count: r.n })}</a>`)}</p>` : ''}
+  ${gb.lessons.length && gb.students.length ? html`<div class="row gb-tools" id="gb"><details class="gbhelp" data-open-wide><summary>ⓘ ${t('cs.standards.legend.h')}</summary><div class="small muted gbhelp-text"><p>${t('progress.gradebook.text')}</p><p><b>${t('gradebook.workDone')}:</b> ${t('gradebook.help.workDone')}</p><p><b>${t('gradebook.score')}:</b> ${t('gradebook.help.score')}</p><p><b>${ico('⏰', { size: 18 })} ${t('lessons.class.late')}:</b> ${t('gradebook.help.late')} ${zoneNote(t, c.school_id)}</p><p>${t('gradebook.help.names')}</p></div></details><a class="btn btn-sm" href="/class/${c.id}/progress.csv" download>${ico('⬇️', { size: 18 })} ${t('progress.gradebook.csv')}</a></div>` : ''}
+  ${toReview.length ? html`<p class="notice gb-review" id="to-review">${ico('✍️', { size: 18 })} <b>${t('progress.gradebook.toReviewList')}</b> ${toReview.map((r, i) => html`${i ? ' · ' : ''}<a href="/class/${c.id}/progress/${r.cl}#answers" dir="auto">${t('progress.gradebook.reviewLink', { title: r.title, count: r.n })}</a>`)}</p>` : ''}
   ${!gb.lessons.length ? html`<section class="panel">${emptyState({ emoji: '🎮', title: t('folders.classEmpty'), text: t('folders.progressEmptyText') })}</section>`
     : !gb.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
-    : html`<section class="panel">${gb.students.length > 8 ? nameFilter(t, 'gb-lessons') : ''}${table}<p class="small muted gb-key"><span>✅ ${t('progress.key.done')}</span><span><span class="pbar"><span style="width:60%"></span></span> ${t('progress.key.steps')}</span><span class="gb-late-key">⏰ ${t('progress.key.late')}</span><span>🎯 ${t('gradebook.key.score')}</span><span>✍️ ${t('progress.key.toRead')}</span>${gb.anyRubric ? html`<span>📏 ${t('rubrics.gradebook.key')}</span>` : ''}</p></section>`}`;
+    : html`<section class="panel">${gb.students.length > 8 ? nameFilter(t, 'gb-lessons') : ''}${table}<p class="small muted gb-key"><span>${ico('✅', { size: 18 })} ${t('progress.key.done')}</span><span><span class="pbar"><span style="width:60%"></span></span> ${t('progress.key.steps')}</span><span class="gb-late-key">${ico('⏰', { size: 18 })} ${t('progress.key.late')}</span><span>${ico('🎯', { size: 18 })} ${t('gradebook.key.score')}</span><span>${ico('✍️', { size: 18 })} ${t('progress.key.toRead')}</span>${gb.anyRubric ? html`<span>${ico('📏', { size: 18 })} ${t('rubrics.gradebook.key')}</span>` : ''}</p></section>`}`;
   // Courses: per-student completion status, step progress and recorded check scores for every registered
   // course, for this class's students only (the same roster the gradebook above is built from, and the
   // route's own class gate decides who may look). One panel per course in the shared registry, so a
@@ -195,7 +196,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
     const bandOf = b => { try { return bandName(t, b); } catch { return String(b); } };
     const bandStatus = r => (r.bands && r.bands.length ? html`${r.bands.map((b, i) => html`${i ? html`<br>` : ''}${statusChip(b)} <span class="small">· ${bandOf(b.band)}</span>`)}` : statusChip(r));
     const bandCounts = r => (r.bands && r.bands.length ? html`${r.bands.map(b => html`<span class="small muted cp-band">${t('courses.band.stepsDone', { band: bandOf(b.band), n: b.done, total: b.total })}</span>`)}` : '');
-    const statusChip = r => (r.status === 'completed' ? html`<span class="chip-s">✅ ${t('progress.courses.completed')}</span>` : r.status === 'in-progress' ? html`<span class="chip-s warn">${t('progress.courses.inProgress')}</span>` : html`<span class="muted">${t('progress.status.none')}</span>`);
+    const statusChip = r => (r.status === 'completed' ? html`<span class="chip-s">${ico('✅', { size: 18 })} ${t('progress.courses.completed')}</span>` : r.status === 'in-progress' ? html`<span class="chip-s warn">${t('progress.courses.inProgress')}</span>` : html`<span class="muted">${t('progress.status.none')}</span>`);
     return html`<details class="panel coursepanel" id="course-${course.slug}" ${started ? raw('open') : ''}><summary><h2>${course.emoji} ${t(`${course.key}.title`)}</h2><span class="small muted">${t('progress.courses.started', { started, total: rows.length })}</span></summary>
     <div class="gbwrap" tabindex="0" role="region" aria-label="${t(`${course.key}.title`)}"><table class="tbl gradebook cptable">
       <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th><th scope="col">${t('progress.courses.status')}</th><th scope="col">${t('progress.courses.steps')}</th><th scope="col">${t('progress.courses.checks')}</th><th scope="col">${t('progress.courses.perStep')}</th></tr></thead>
@@ -216,16 +217,16 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
     <div class="gbwrap" tabindex="0" role="region" aria-labelledby="gb-live-h"><table class="tbl gradebook gb-livetbl" id="gb-live">
     <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>${live.runs.map(r => html`<th scope="col"><a href="/live/results/${r.id}" dir="auto">${r.title || t('live.results.title')}</a><span class="gb-dates"><span class="nw">${f.day(r.ended_at, SHORT)}</span>${r.linked ? html`<span class="chip-s" title="${t('gradebook.live.linked')}">📚<span class="sr-only"> ${t('gradebook.live.linked')}</span></span>` : ''}</span></th>`)}</tr></thead>
     <tbody>${gb.students.map(p => html`<tr><th scope="row" class="gb-name"><span class="pp">${avatar(p, 28)}${staffStudentName(p, { href: studentHref(c, p) })}</span></th>${live.runs.map(r => html`<td>${liveCell(t, live.by, r, p)}</td>`)}</tr>`)}</tbody></table></div>
-    <p class="small muted gb-key"><span><b dir="ltr">7/10</b> ${t('gradebook.live.keyRight')}</span><span>✓ ${t('gradebook.live.keyPlayed')}</span><span>– ${t('gradebook.live.keyAbsent')}</span><span>📚 ${t('gradebook.live.linked')}</span></p>` : '';
+    <p class="small muted gb-key"><span><b dir="ltr">7/10</b> ${t('gradebook.live.keyRight')}</span><span>${ico('✓', { size: 18 })} ${t('gradebook.live.keyPlayed')}</span><span>– ${t('gradebook.live.keyAbsent')}</span><span>${ico('📚', { size: 18 })} ${t('gradebook.live.linked')}</span></p>` : '';
   // Live games history (owner, 18 Nov 2026): the class's past live games, their results table and saved support data.
   // The teams editor is on the Students tab (classTeamsSection).
   const presets = runs.some(r => r.teams) ? presetsFor(t) : [];
   const runTeams = r => { try { const x = r.teams ? JSON.parse(r.teams) : null; return x && Array.isArray(x.list) ? x.list : []; } catch { return []; } };
   const teacher = S.teaches(req.user, c.id);
   const sup = teacher ? liveSupport(c.id) : [];
-  const livePanel = runs.length || sup.length || (teacher && liveOn()) ? html`<section class="panel" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">📡 ${t('folders.liveHistory')}</h2>
+  const livePanel = runs.length || sup.length || (teacher && liveOn()) ? html`<section class="panel" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">${ico('📡', { size: 28 })} ${t('folders.liveHistory')}</h2>
     ${runs.length ? html`<ul class="plain">${runs.map(r => html`<li><a href="/live/results/${r.id}" dir="auto">${r.title || t('live.results.title')}</a> <span class="small muted">${f.day(r.ended_at)} · ${t('live.results.playersCount', { count: r.players })}</span>${runTeams(r).length ? html` <span class="lv-run-teams" aria-label="${t('live.team.heading')}">${runTeams(r).sort((a, b) => (a.rank || 99) - (b.rank || 99)).map(x => presets[x.p] ? html`<span class="lv-team-chip lv-team-chip-sm" style="--team:${presets[x.p].color};--team-ink:${presets[x.p].ink}" title="${presets[x.p].name}"><span aria-hidden="true">${presets[x.p].icon}</span><span class="sr-only">${presets[x.p].name}</span></span>` : '')}</span>` : ''}</li>`)}</ul>`
-      : html`<p class="muted">${t('folders.liveHistoryNone')}</p>${liveOn() && liveCanHost(req.user) && !c.archived_at ? html`<p><a class="btn" href="/live?class=${c.id}">📡 ${t('live.entry.host')}</a></p>` : ''}`}
+      : html`<p class="muted">${t('folders.liveHistoryNone')}</p>${liveOn() && liveCanHost(req.user) && !c.archived_at ? html`<p><a class="btn" href="/live?class=${c.id}">${ico('📡', { size: 18 })} ${t('live.entry.host')}</a></p>` : ''}`}
     ${liveTable}
     ${sup.length ? html`<section class="lv-class-support" id="lv-class-support"><h3>${t('live.dash.support')}</h3><p class="small">${t('live.support.count', { count: sup.length })}</p>
       <form class="lv-inline" data-api="/api/live/classes/${c.id}/support" data-method="DELETE" data-reload data-confirm="${t('live.support.clearConfirm')}"><button class="btn btn-sm" type="submit">${t('live.support.clear')}</button><p class="err form-err" aria-live="polite"></p></form></section>` : ''}
@@ -299,8 +300,8 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   const scoreOf = (p, stepId) => scores.get(`${p.id}:${stepId}`) || null;
   // A score shows its points only while it counts (the step still has the rubric it was given with) and has a level picked.
   const shown = (sc, stepOrNull) => (sc && R.scoreCounts(sc, R.rubricIdFor(l, stepOrNull)) && R.scoredOf(sc).n ? sc : null);
-  const pointsChip = (sc, stepOrNull = null) => { const x = shown(sc, stepOrNull); return x ? html`<span class="chip-s st-pts" dir="ltr" title="${totalText(t, x)}">📏 ${R.pointsText(x.points, x.max_points)}</span>` : ''; };
-  const marksChip = x => html`<span class="chip-s st-marks" title="${t('cs.review.marksTitle', { marks: marksText(x.marks) })}" dir="ltr">📏 ${marksText(x.marks)}</span>`;
+  const pointsChip = (sc, stepOrNull = null) => { const x = shown(sc, stepOrNull); return x ? html`<span class="chip-s st-pts" dir="ltr" title="${totalText(t, x)}">${ico('📏', { size: 18 })} ${R.pointsText(x.points, x.max_points)}</span>` : ''; };
+  const marksChip = x => html`<span class="chip-s st-marks" title="${t('cs.review.marksTitle', { marks: marksText(x.marks) })}" dir="ltr">${ico('📏', { size: 18 })} ${marksText(x.marks)}</span>`;
   const icon = (s, x) => {
     if (!x) return html`<span class="st-none" title="${t('progress.status.none')}">–</span><span class="sr-only">${t('progress.status.none')}</span>`;
     const isDone = x.status === 'done';
@@ -335,7 +336,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
       ${rub.map((line, i) => { const cur = (x && x.marks && x.marks[i]) || '-'; return html`<fieldset class="rubric-line"><legend><b dir="auto">${line.line}</b>${line.ids && line.ids.length ? html` <span class="small muted" lang="en" dir="ltr">${line.ids.join(', ')}</span>` : ''}</legend>
         <div class="rubric-opts">${['-', '0', '1', '2', '3'].map(v => html`<label class="${cur === v ? 'on' : ''}" title="${v === '-' ? t('cs.review.notMarked') : (line.levels && line.levels[+v]) || v}"><input type="radio" name="mark-${i}" value="${v}" ${cur === v ? raw('checked') : ''}><span>${v === '-' ? '–' : v}</span></label>`)}</div>
         ${line.levels && line.levels.length ? html`<p class="small muted rubric-levels" dir="auto">${line.levels.map((d, k) => html`${k ? ' · ' : ''}<b>${k}</b> ${d}`)}</p>` : ''}</fieldset>`; })}
-      ${mates.length ? html`<details class="rubric-also"><summary class="small">👥 ${t('cs.review.alsoMark')}</summary><p class="small muted">${t('cs.review.alsoMarkHint')}</p>
+      ${mates.length ? html`<details class="rubric-also"><summary class="small">${ico('👥', { size: 18 })} ${t('cs.review.alsoMark')}</summary><p class="small muted">${t('cs.review.alsoMarkHint')}</p>
         <div class="rubric-mates">${mates.map(o => html`<label class="chk"><input type="checkbox" name="alsoMark" value="${o.id}"> ${nameOf(o)}</label>`)}</div></details>` : ''}</div>`;
   };
   // A library rubric's scoring fields fold away per card (a class of 30 × criteria × levels is very long on a phone): open
@@ -343,7 +344,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   const stepScore = (s, p, open) => {
     const rb = stepRubric(s); if (!rb) return '';
     const sc = scoreOf(p, s.id), stale = sc && !R.sameRubric(sc, rb);
-    return html`<details class="rb-fold" ${open || stale ? raw('open') : ''}><summary class="small"><b>📏 ${t('rubrics.score.label', { title: rb.title })}</b>${R.sameRubric(sc, rb) ? html` <span class="chip-s">${totalText(t, sc)}</span>` : ''}</summary>
+    return html`<details class="rb-fold" ${open || stale ? raw('open') : ''}><summary class="small"><b>${ico('📏', { size: 18 })} ${t('rubrics.score.label', { title: rb.title })}</b>${R.sameRubric(sc, rb) ? html` <span class="chip-s">${totalText(t, sc)}</span>` : ''}</summary>
       ${scoreFields(t, rb, sc, `rs-${s.id}-${p.id}`)}</details>`;
   };
   const reviewForm = (s, x, p, open = false) => html`<form class="ac-form" data-api="/api/progress/${lp.cl.id}/${s.id}/${p.id}/review" data-reload novalidate>
@@ -356,10 +357,10 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   const answers = questions.map(({ s, i }) => {
     const list = lp.students.map(p => ({ p, x: p.cells[i] })).filter(({ x }) => x && x.answer).sort(byReview);
     const q = fullSteps.find(x => x.id === s.id);
-    return html`<section class="panel answers" aria-labelledby="q-${s.id}"><h2 id="q-${s.id}">✍️ ${t('progress.lesson.question', { n: i + 1 })}</h2>
+    return html`<section class="panel answers" aria-labelledby="q-${s.id}"><h2 id="q-${s.id}">${ico('✍️', { size: 28 })} ${t('progress.lesson.question', { n: i + 1 })}</h2>
       <p class="q-text" dir="auto">${q ? q.body : ''}</p>
       ${list.length ? html`<ul class="plain answerlist">${list.map(({ p, x }) => html`<li class="answercard ${x.reviewed_at ? 'is-read' : ''}" id="a-${s.id}-${p.id}">
-        <div class="ac-head"><span class="pp">${avatar(p, 28)}${staffStudentName(p)}</span><span class="small muted">${f.ago(x.updated_at)}</span>${x.reviewed_at ? html`<span class="chip-s">✔️ ${t('progress.lesson.read')}</span>` : html`<span class="chip-s warn">✍️ ${t('progress.lesson.new')}</span>`}${x.marks && rubricOf(s).length ? marksChip(x) : ''}${pointsChip(stepRubric(s) && scoreOf(p, s.id), s)}</div>
+        <div class="ac-head"><span class="pp">${avatar(p, 28)}${staffStudentName(p)}</span><span class="small muted">${f.ago(x.updated_at)}</span>${x.reviewed_at ? html`<span class="chip-s">${ico('✔️', { size: 18 })} ${t('progress.lesson.read')}</span>` : html`<span class="chip-s warn">${ico('✍️', { size: 18 })} ${t('progress.lesson.new')}</span>`}${x.marks && rubricOf(s).length ? marksChip(x) : ''}${pointsChip(stepRubric(s) && scoreOf(p, s.id), s)}</div>
         <p class="ac-answer" dir="auto">${x.answer}</p>
         ${reviewForm(s, x, p, firstOpen(list, p))}</li>`)}</ul>` : html`<p class="muted">${t('progress.lesson.noAnswers')}</p>`}
     </section>`;
@@ -367,19 +368,19 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   // Build steps with a rubric (the capstone): every student with a row (started, handed in, or marked as a teammate).
   const builds = lp.steps.map((s, i) => ({ s, i })).filter(({ s }) => s.kind === 'build' && (rubricOf(s).length || stepRubric(s))).map(({ s, i }) => {
     const list = lp.students.map(p => ({ p, x: p.cells[i] })).filter(({ x }) => x).sort(byReview);
-    return html`<section class="panel answers" aria-labelledby="b-${s.id}"><h2 id="b-${s.id}">🛠️ ${s.title || t('lessons.kinds.build')}</h2>
+    return html`<section class="panel answers" aria-labelledby="b-${s.id}"><h2 id="b-${s.id}">${ico('🛠️', { size: 28 })} ${s.title || t('lessons.kinds.build')}</h2>
       ${list.length ? html`<ul class="plain answerlist">${list.map(({ p, x }) => { const g = x.game_id ? games_.get(x.game_id) : null; return html`<li class="answercard ${x.reviewed_at ? 'is-read' : ''}" id="a-${s.id}-${p.id}">
-        <div class="ac-head"><span class="pp">${avatar(p, 28)}${staffStudentName(p)}</span>${x.updated_at ? html`<span class="small muted">${f.ago(x.updated_at)}</span>` : ''}${x.status === 'done' ? html`<span class="chip-s">📤 ${t('progress.student.handedInText')}</span>` : ''}${x.marks ? marksChip(x) : ''}${pointsChip(stepRubric(s) && scoreOf(p, s.id), s)}</div>
-        ${g && g.status === 'published' && games.canView(req.user, g) ? html`<p><a href="/g/${g.slug}">🎮 ${t('progress.lesson.openGame')}</a></p>` : ''}
+        <div class="ac-head"><span class="pp">${avatar(p, 28)}${staffStudentName(p)}</span>${x.updated_at ? html`<span class="small muted">${f.ago(x.updated_at)}</span>` : ''}${x.status === 'done' ? html`<span class="chip-s">${ico('📤', { size: 18 })} ${t('progress.student.handedInText')}</span>` : ''}${x.marks ? marksChip(x) : ''}${pointsChip(stepRubric(s) && scoreOf(p, s.id), s)}</div>
+        ${g && g.status === 'published' && games.canView(req.user, g) ? html`<p><a href="/g/${g.slug}">${ico('🎮', { size: 18 })} ${t('progress.lesson.openGame')}</a></p>` : ''}
         ${reviewForm(s, x, p, firstOpen(list, p))}</li>`; })}</ul>` : html`<p class="muted">${t('cs.review.noHandIns')}</p>`}
     </section>`;
   });
   // The whole lesson's rubric: one card per student, scored with the levels, a comment per criterion and feedback.
   const lessonRb = libRubric(l.rubric_id);
-  const whole = lessonRb && lp.students.length ? html`<section class="panel answers" id="lesson-rubric" aria-labelledby="lr-h"><h2 id="lr-h">📏 ${t('rubrics.attach.lessonTitle')}</h2>
+  const whole = lessonRb && lp.students.length ? html`<section class="panel answers" id="lesson-rubric" aria-labelledby="lr-h"><h2 id="lr-h">${ico('📏', { size: 28 })} ${t('rubrics.attach.lessonTitle')}</h2>
     <p class="small muted">${t('rubrics.score.lessonHint')}</p>
     <ul class="plain answerlist">${lp.students.map(p => { const sc = scoreOf(p, ''); return html`<li class="answercard ${sc ? 'is-read' : ''}" id="lr-${p.id}"><details class="lr-det">
-      <summary class="ac-head"><span class="pp">${avatar(p, 28)}${staffStudentName(p)}</span><span class="small muted">${t('progress.student.doneOf', { done: p.done, total: p.total })}</span>${sc ? html`<span class="chip-s">✔️ ${t('rubrics.score.scored')}</span>` : ''}${pointsChip(sc, null)}</summary>
+      <summary class="ac-head"><span class="pp">${avatar(p, 28)}${staffStudentName(p)}</span><span class="small muted">${t('progress.student.doneOf', { done: p.done, total: p.total })}</span>${sc ? html`<span class="chip-s">${ico('✔️', { size: 18 })} ${t('rubrics.score.scored')}</span>` : ''}${pointsChip(sc, null)}</summary>
       <form class="ac-form" data-api="/api/rubric-scores/${lp.cl.id}/${p.id}" data-reload novalidate>
         ${scoreFields(t, lessonRb, sc, `lr-${p.id}`)}
         <label class="sr-only" for="lrf-${p.id}">${t('progress.lesson.feedback')}</label>
@@ -390,18 +391,18 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   const body = html`${classHeader(req, c, 'progress')}
   <div class="lphead"><div><h2 dir="auto">${l.title}</h2>
     <p class="muted lp-meta"><span>${t('progress.lesson.finished', { done: doneN, total: lp.students.length })}</span>${dateChips(t, f, lp.cl, { late: lateN > 0 })}</p></div>
-    <div class="row"><a class="btn" href="/class/${c.id}/lessons/${lp.cl.id}">👀 ${t('progress.lesson.studentView')}</a>${L.canEditLesson(req.user, l) ? html`<a class="btn" href="/teach/lessons/${l.id}?from=${c.id}">✏️ ${t('lessons.class.editLesson')}</a>` : ''}</div></div>
-  ${toRead ? html`<p class="notice" id="to-review">✍️ ${t('progress.gradebook.toRead', { count: toRead })} · <a href="#answers">${t('progress.lesson.jump')}</a></p>` : ''}
+    <div class="row"><a class="btn" href="/class/${c.id}/lessons/${lp.cl.id}">${ico('👀', { size: 18 })} ${t('progress.lesson.studentView')}</a>${L.canEditLesson(req.user, l) ? html`<a class="btn" href="/teach/lessons/${l.id}?from=${c.id}">${ico('✏️', { size: 18 })} ${t('lessons.class.editLesson')}</a>` : ''}</div></div>
+  ${toRead ? html`<p class="notice" id="to-review">${ico('✍️', { size: 18 })} ${t('progress.gradebook.toRead', { count: toRead })} · <a href="#answers">${t('progress.lesson.jump')}</a></p>` : ''}
   ${!lp.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
     : !lp.steps.length ? html`<section class="panel"><p class="muted">${t('lessons.lesson.noSteps')}</p></section>`
-    : html`<section class="panel"><div class="row gb-sort" id="needs-attention" hidden><button class="chip" type="button" aria-pressed="false" data-sort="lp-steps">⚠️ ${t('progress.lesson.attention')}</button></div><p class="small muted gb-swipe" aria-hidden="true">${t('progress.lesson.swipe')} →</p><div class="gbwrap" tabindex="0" role="region" aria-label="${l.title}"><table class="tbl gradebook steps" id="lp-steps">
+    : html`<section class="panel"><div class="row gb-sort" id="needs-attention" hidden><button class="chip" type="button" aria-pressed="false" data-sort="lp-steps">${ico('⚠️', { size: 18 })} ${t('progress.lesson.attention')}</button></div><p class="small muted gb-swipe" aria-hidden="true">${t('progress.lesson.swipe')} →</p><div class="gbwrap" tabindex="0" role="region" aria-label="${l.title}"><table class="tbl gradebook steps" id="lp-steps">
       <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>${lp.steps.map((s, i) => html`<th scope="col" title="${s.title || t(`lessons.kinds.${s.kind}`)}"><span aria-hidden="true">${KIND_ICON[s.kind]}</span> ${i + 1}<span class="gb-step">${s.title || t(`lessons.kinds.${s.kind}`)}</span></th>`)}<th scope="col">${t('gradebook.score')}</th><th scope="col">${t('progress.lesson.lastActive')}</th></tr></thead>
-      <tbody>${lp.students.map(p => html`<tr id="s-${p.id}" data-attn="${(p.toRead ? 4 : 0) + (lateFor(p) ? 2 : 0) + (p.done && p.done < p.total ? 1 : 0)}"><th scope="row" class="gb-name"><span class="pp">${avatar(p, 28)}${staffStudentName(p, { href: studentHref(c, p) })}</span><span class="small muted gb-sub"><span>${p.done}/${p.total}</span>${doneLate(p) ? html`<span class="chip-s bad gb-latedone">⏰ ${t('gradebook.doneLate')}</span>` : ''}${lateFor(p) ? html`<span class="gb-late-mark" title="${t('lessons.class.late')}"><span aria-hidden="true">⏰</span><span class="sr-only">${t('lessons.class.late')}</span></span>` : ''}${p.toRead && p.firstNew ? html`<a class="chip-s warn" href="#a-${p.firstNew}-${p.id}" title="${t('progress.gradebook.toRead', { count: p.toRead })}">✍️ ${p.toRead}<span class="sr-only"> ${t('progress.gradebook.toRead', { count: p.toRead })}</span></a>` : ''}</span></th>
+      <tbody>${lp.students.map(p => html`<tr id="s-${p.id}" data-attn="${(p.toRead ? 4 : 0) + (lateFor(p) ? 2 : 0) + (p.done && p.done < p.total ? 1 : 0)}"><th scope="row" class="gb-name"><span class="pp">${avatar(p, 28)}${staffStudentName(p, { href: studentHref(c, p) })}</span><span class="small muted gb-sub"><span>${p.done}/${p.total}</span>${doneLate(p) ? html`<span class="chip-s bad gb-latedone">${ico('⏰', { size: 18 })} ${t('gradebook.doneLate')}</span>` : ''}${lateFor(p) ? html`<span class="gb-late-mark" title="${t('lessons.class.late')}"><span aria-hidden="true">⏰</span><span class="sr-only">${t('lessons.class.late')}</span></span>` : ''}${p.toRead && p.firstNew ? html`<a class="chip-s warn" href="#a-${p.firstNew}-${p.id}" title="${t('progress.gradebook.toRead', { count: p.toRead })}">${ico('✍️', { size: 18 })} ${p.toRead}<span class="sr-only"> ${t('progress.gradebook.toRead', { count: p.toRead })}</span></a>` : ''}</span></th>
         ${lp.steps.map((s, i) => { const x = p.cells[i]; const g = s.kind === 'build' && x && x.game_id ? games_.get(x.game_id) : null;
           return html`<td><span class="st">${icon(s, x)}${lateStep(x) ? html`<span class="st-late" title="${t('gradebook.stepLate')}"><span aria-hidden="true">⏰</span><span class="sr-only">${t('gradebook.stepLate')}</span></span>` : ''}</span>${g && g.status === 'published' && games.canView(req.user, g) ? html`<a class="small" href="/g/${g.slug}">${t('progress.lesson.openGame')}</a>` : ''}${s.kind === 'question' && x && x.answer ? html`<a class="small" href="#a-${s.id}-${p.id}">${t('progress.lesson.readAnswer')}</a>` : ''}</td>`; })}
         <td class="gb-all gb-scorecell">${scoreCell(t, p.score, `${studentHref(c, p)}#score`)}</td>
         <td class="small muted">${p.last ? f.ago(p.last) : '–'}</td></tr>`)}</tbody></table></div>
-      <p class="small muted gb-key"><span>✅ ${t('progress.key.done')}</span><span>◐ ${t('progress.status.started')}</span>${lp.lateFrom !== null ? html`<span>⏰ ${t('gradebook.stepLate')}</span>` : ''}${hasGame ? html`<span id="key-self">☑️ ${t('progress.lesson.selfMarked')}</span>` : ''}${anyHelped ? html`<span>👀 ${t('progress.lesson.helped')}</span>` : ''}</p></section>`}
+      <p class="small muted gb-key"><span>${ico('✅', { size: 18 })} ${t('progress.key.done')}</span><span>◐ ${t('progress.status.started')}</span>${lp.lateFrom !== null ? html`<span>${ico('⏰', { size: 18 })} ${t('gradebook.stepLate')}</span>` : ''}${hasGame ? html`<span id="key-self">${ico('☑️', { size: 18 })} ${t('progress.lesson.selfMarked')}</span>` : ''}${anyHelped ? html`<span>${ico('👀', { size: 18 })} ${t('progress.lesson.helped')}</span>` : ''}</p></section>`}
   ${questions.length || builds.length ? html`<div id="answers">${answers}${builds}</div>` : ''}
   ${whole}`;
   page(req, res, { title: `${l.title} · ${c.name}`, active: 'classes', body, head: CSS, scripts: ['/js/schools.js'], back: `/class/${c.id}/progress`, backLabel: t('progress.gradebook.title') });
@@ -466,40 +467,40 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   const fromTeacher = (s, x, { feedback, none = '' }) => {
     const sc = myScores[s.id] || null;
     if (!sc) return feedback;
-    return html`<div class="feedback fromteacher"><b>💬 ${t('progress.student.feedback')}</b>${x && x.reviewed_at && x.feedback ? html`<p dir="auto">${x.feedback}</p>` : none}${resultView(t, sc)}</div>`;
+    return html`<div class="feedback fromteacher"><b>${ico('💬', { size: 18 })} ${t('progress.student.feedback')}</b>${x && x.reviewed_at && x.feedback ? html`<p dir="auto">${x.feedback}</p>` : none}${resultView(t, sc)}</div>`;
   };
   const doneN = st.filter(s => mine[s.id] && mine[s.id].status === 'done').length;
   const api = s => `/api/progress/${cl.id}/${s.id}`;
-  const status = x => (!x ? '' : x.status === 'done' ? html`<span class="stepstate is-done">✅ ${t('progress.status.done')}</span>` : html`<span class="stepstate">◐ ${t('progress.status.started')}</span>`);
+  const status = x => (!x ? '' : x.status === 'done' ? html`<span class="stepstate is-done">${ico('✅', { size: 18 })} ${t('progress.status.done')}</span>` : html`<span class="stepstate">◐ ${t('progress.status.started')}</span>`);
   const actions = (s, x) => {
     if (!student) return '';
     const isDone = x && x.status === 'done';
     if (s.kind === 'text') return isDone
       ? html`<form data-api="${api(s)}/done" data-reload><input type="hidden" name="done" value="0"><button class="btn btn-sm btn-ghost" type="submit">↩️ ${t('progress.student.undo')}</button></form>`
-      : html`<form data-api="${api(s)}/done" data-reload><input type="hidden" name="done" value="1"><button class="btn btn-primary" type="submit">✅ ${t('progress.student.markDone')}</button></form>`;
+      : html`<form data-api="${api(s)}/done" data-reload><input type="hidden" name="done" value="1"><button class="btn btn-primary" type="submit">${ico('✅', { size: 18 })} ${t('progress.student.markDone')}</button></form>`;
     if (s.kind === 'game') {
       if (!L.playableBy(s, c.school_id, c.id)) return html`<p class="notice warn">${t('lessons.view.notReady')}</p>`;
       // A live-only game (Quest Race, Would You Rather Live…): the teacher hosts it; the live run writes the score here.
-      if (hostedLive(s)) return html`<p class="notice sc-hosted">📡 ${t('cs.step.hostedLive')}</p>
-        ${x && x.score !== null ? html`<p class="sc-score">🏆 ${t('progress.student.best', { score: f.int(x.score) })}</p>` : ''}`;
+      if (hostedLive(s)) return html`<p class="notice sc-hosted">${ico('📡', { size: 18 })} ${t('cs.step.hostedLive')}</p>
+        ${x && x.score !== null ? html`<p class="sc-score">${ico('🏆', { size: 18 })} ${t('progress.student.best', { score: f.int(x.score) })}</p>` : ''}`;
       return html`<div class="row"><a class="btn btn-primary btn-big" href="${playHref(s, cl)}">▶ ${t('lessons.view.play', { title: s.game_title })}</a></div>
-        ${x && x.score !== null ? html`<p class="sc-score">🏆 ${t('progress.student.best', { score: f.int(x.score) })}</p>` : ''}
-        ${isDone ? '' : html`<p class="small muted">${t('progress.student.gameHint')}</p><form data-api="${api(s)}/done" data-reload><input type="hidden" name="done" value="1"><button class="btn btn-sm" type="submit">✅ ${t('progress.student.played')}</button></form>`}`;
+        ${x && x.score !== null ? html`<p class="sc-score">${ico('🏆', { size: 18 })} ${t('progress.student.best', { score: f.int(x.score) })}</p>` : ''}
+        ${isDone ? '' : html`<p class="small muted">${t('progress.student.gameHint')}</p><form data-api="${api(s)}/done" data-reload><input type="hidden" name="done" value="1"><button class="btn btn-sm" type="submit">${ico('✅', { size: 18 })} ${t('progress.student.played')}</button></form>`}`;
     }
     if (s.kind === 'build') {
       const g = x && x.game_id ? games.getGame(x.game_id) : null;
-      if (!g || g.status === 'deleted') return html`<form data-api="${api(s)}/build"><button class="btn btn-primary btn-big" type="submit">🛠️ ${t('lessons.view.build')}</button></form>`;
+      if (!g || g.status === 'deleted') return html`<form data-api="${api(s)}/build"><button class="btn btn-primary btn-big" type="submit">${ico('🛠️', { size: 18 })} ${t('lessons.view.build')}</button></form>`;
       // The teacher's written feedback on the build (the rubric marks themselves stay with the teacher).
-      const fb = fromTeacher(s, x, { feedback: x.reviewed_at && x.feedback ? html`<div class="feedback"><b>💬 ${t('progress.student.feedback')}</b><p dir="auto">${x.feedback}</p></div>` : '' });
-      if (isDone) return html`<p class="sc-score">📤 ${t('progress.student.handedInText')}</p><div class="row">${g.status === 'published' ? html`<a class="btn" href="/g/${g.slug}">🎮 ${t('progress.student.seeGame')}</a>` : ''}<a class="btn" href="/studio/${g.id}">🛠️ ${t('progress.student.keepBuilding')}</a></div>${fb}`;
-      return html`<div class="row"><a class="btn btn-primary" href="/studio/${g.id}">🛠️ ${t('progress.student.keepBuilding')}</a>
-        <form data-api="${api(s)}/hand-in" data-reload data-confirm="${t('progress.student.handInConfirm')}"><button class="btn" type="submit">📤 ${t('progress.student.handIn')}</button></form></div>
+      const fb = fromTeacher(s, x, { feedback: x.reviewed_at && x.feedback ? html`<div class="feedback"><b>${ico('💬', { size: 18 })} ${t('progress.student.feedback')}</b><p dir="auto">${x.feedback}</p></div>` : '' });
+      if (isDone) return html`<p class="sc-score">${ico('📤', { size: 18 })} ${t('progress.student.handedInText')}</p><div class="row">${g.status === 'published' ? html`<a class="btn" href="/g/${g.slug}">${ico('🎮', { size: 18 })} ${t('progress.student.seeGame')}</a>` : ''}<a class="btn" href="/studio/${g.id}">${ico('🛠️', { size: 18 })} ${t('progress.student.keepBuilding')}</a></div>${fb}`;
+      return html`<div class="row"><a class="btn btn-primary" href="/studio/${g.id}">${ico('🛠️', { size: 18 })} ${t('progress.student.keepBuilding')}</a>
+        <form data-api="${api(s)}/hand-in" data-reload data-confirm="${t('progress.student.handInConfirm')}"><button class="btn" type="submit">${ico('📤', { size: 18 })} ${t('progress.student.handIn')}</button></form></div>
         <p class="small muted">${t('progress.student.handInHint')}</p>${fb}`;
     }
     // A quiz step (an exit ticket, or homework from a live question set): one question at a time, big buttons with
     // shapes, Read aloud, no timer; the server checks each answer once (public/js/live-quiz-step.js; QUIZ_STEPS).
     if (s.kind === 'quiz') return html`<section class="lv-qstep" data-api="/api/progress/${cl.id}/${s.id}/quiz" data-cl="${cl.id}" data-step="${s.id}" data-lang="${req.locale}" data-tts="${ttsOnLocales().join(',')}" aria-live="polite">
-      ${isDone ? html`<p class="sc-score">🏆 ${t('lessons.quiz.done', { score: x.score ?? 0 })}</p>` : html`<button class="btn btn-primary btn-big lv-qstep-go" type="button">▶ ${t('lessons.quiz.start')}</button>`}
+      ${isDone ? html`<p class="sc-score">${ico('🏆', { size: 18 })} ${t('lessons.quiz.done', { score: x.score ?? 0 })}</p>` : html`<button class="btn btn-primary btn-big lv-qstep-go" type="button">▶ ${t('lessons.quiz.start')}</button>`}
       ${jsonData(`lv-qstep-${s.id}`, { right: t('lessons.quiz.right'), wrong: t('lessons.quiz.wrong'), next: t('lessons.quiz.next'), of: t('lessons.quiz.of'), done: t('lessons.quiz.done'), read: t('live.play.read'), aiVoice: t('live.play.aiVoice', { provider: 'OpenAI' }) })}
     </section>`;
     if (s.kind === 'question') return html`
@@ -508,7 +509,7 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
         <textarea class="input" id="ans-${s.id}" name="answer" rows="4" maxlength="3000" placeholder="${t('progress.student.answerPlaceholder')}" required>${x ? x.answer : ''}</textarea><span class="err" id="ans-${s.id}-err"></span>
         <div class="row"><button class="btn btn-primary" type="submit">${x && x.answer ? `✏️ ${t('progress.student.updateAnswer')}` : `📨 ${t('progress.student.sendAnswer')}`}</button>${x && x.answer ? html`<span class="small muted">${t('progress.student.sentAgo', { when: f.ago(x.updated_at) })}</span>` : ''}</div>
       </form>
-      ${fromTeacher(s, x, { feedback: x && x.answer && x.reviewed_at ? html`<div class="feedback"><b>💬 ${t('progress.student.feedback')}</b>${x.feedback ? html`<p dir="auto">${x.feedback}</p>` : html`<p class="muted">${t('progress.student.readNoFeedback')}</p>`}</div>` : '' })}`;
+      ${fromTeacher(s, x, { feedback: x && x.answer && x.reviewed_at ? html`<div class="feedback"><b>${ico('💬', { size: 18 })} ${t('progress.student.feedback')}</b>${x.feedback ? html`<p dir="auto">${x.feedback}</p>` : html`<p class="muted">${t('progress.student.readNoFeedback')}</p>`}</div>` : '' })}`;
     return '';
   };
   // Teachers see the lesson as students do, with nothing that saves work; a game step gets a plain Play link (no lesson
@@ -520,29 +521,29 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
     if (!s.game_id || !liveHostOk(u)) return '';
     const g = games.getGame(s.game_id), lg = liveGameOf(g);
     if (!lg && !gameLiveReady(g)) return '';
-    return html`<a class="btn" href="/live?cl=${cl.id}&step=${s.id}&${lg ? `mode=${lg.mode}` : `game=${s.game_id}`}">📡 ${t('live.entry.hostLive')}</a>`;
+    return html`<a class="btn" href="/live?cl=${cl.id}&step=${s.id}&${lg ? `mode=${lg.mode}` : `game=${s.game_id}`}">${ico('📡', { size: 18 })} ${t('live.entry.hostLive')}</a>`;
   };
   const preview = s => (s.kind !== 'game' ? '' : !L.playableBy(s, c.school_id, c.id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>`
     : s.game_slug ? html`<div class="row"><a class="btn" href="${playHref(s, null)}">▶ ${t('lessons.view.play', { title: s.game_title })}</a>${hostLive(s)}</div>` : '');
   const quizLive = teacher && liveHostOk(u) && st.some(s => s.kind === 'question')
-    ? html`<form data-api="/api/live/sets/from-lesson/${l.id}"><button class="btn" type="submit">📡 ${t('live.entry.quizLesson')}</button></form>` : '';
+    ? html`<form data-api="/api/live/sets/from-lesson/${l.id}"><button class="btn" type="submit">${ico('📡', { size: 18 })} ${t('live.entry.quizLesson')}</button></form>` : '';
   const late = student && L.isOpen(cl) && L.dueState(cl) === 'late' && doneN < st.length;
   const body = html`
   <div class="pagehead"><div><h1 dir="auto">${l.title}</h1>
     <p class="muted lp-meta"><span>${t('lessons.stepsN', { count: st.length })}</span>${dateChips(t, f, cl, { late })}</p></div>
     ${student ? studentNotYou(req, true) : ''}
-    ${teacher ? html`<div class="row">${quizLive}<a class="btn" href="/class/${c.id}/progress/${cl.id}">📊 ${t('progress.lesson.seeProgress')}</a>${L.canEditLesson(u, l) ? html`<a class="btn" href="/teach/lessons/${l.id}?from=${c.id}">✏️ ${t('lessons.class.editLesson')}</a>` : ''}</div>` : ''}</div>
-  ${teacher ? html`<p class="notice">👀 ${t('lessons.view.teacherPreview')}</p>` : ''}
+    ${teacher ? html`<div class="row">${quizLive}<a class="btn" href="/class/${c.id}/progress/${cl.id}">${ico('📊', { size: 18 })} ${t('progress.lesson.seeProgress')}</a>${L.canEditLesson(u, l) ? html`<a class="btn" href="/teach/lessons/${l.id}?from=${c.id}">${ico('✏️', { size: 18 })} ${t('lessons.class.editLesson')}</a>` : ''}</div>` : ''}</div>
+  ${teacher ? html`<p class="notice">${ico('👀', { size: 18 })} ${t('lessons.view.teacherPreview')}</p>` : ''}
   ${student && st.length ? html`<div class="lessonprogress ${doneN >= st.length ? 'all' : ''}" role="status"><span>${doneN >= st.length ? `🎉 ${t('progress.student.allDone')}` : t('progress.student.doneOf', { done: doneN, total: st.length })}</span>${bar(doneN, st.length)}</div>` : ''}
-  ${l.summary ? html`<div class="panel">${student ? html`<h2 class="lp-about">📝 ${t('progress.student.about')}</h2>` : ''}${paras(l.summary)}</div>` : ''}
+  ${l.summary ? html`<div class="panel">${student ? html`<h2 class="lp-about">${ico('📝', { size: 28 })} ${t('progress.student.about')}</h2>` : ''}${paras(l.summary)}</div>` : ''}
   <ol class="plain steplist">${st.map((s, i) => { const x = mine[s.id]; return html`<li class="panel stepcard ${x && x.status === 'done' ? 'is-done' : ''}" id="step-${s.id}">
     <div class="sc-head"><span class="sc-num">${x && x.status === 'done' ? '✓' : i + 1}</span><span class="sc-kind" aria-hidden="true">${KIND_ICON[s.kind]}</span>
       <div class="sc-title"><b dir="auto">${s.title || t(`lessons.kinds.${s.kind}`)}</b>${s.minutes ? html`<span class="small muted">${t('lessons.minutesN', { count: s.minutes })}</span>` : ''}</div>${status(x)}
-      ${student && s.body ? html`<button class="btn btn-sm sc-read" type="button" data-read-step="step-${s.id}" hidden>🔊 ${t('progress.student.readToMe')}</button>` : ''}</div>
-    ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">💬 “${s.body}”</p>` : s.kind === 'question' ? html`<div class="sc-body q-text">${paras(s.body)}</div>` : s.body ? html`<div class="sc-body">${paras(s.body)}</div>` : ''}
+      ${student && s.body ? html`<button class="btn btn-sm sc-read" type="button" data-read-step="step-${s.id}" hidden>${ico('🔊', { size: 18 })} ${t('progress.student.readToMe')}</button>` : ''}</div>
+    ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">${ico('💬', { size: 18 })} “${s.body}”</p>` : s.kind === 'question' ? html`<div class="sc-body q-text">${paras(s.body)}</div>` : s.body ? html`<div class="sc-body">${paras(s.body)}</div>` : ''}
     ${student ? actions(s, x) : teacher ? preview(s) : s.kind === 'game' && !L.playableBy(s, c.school_id, c.id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>` : ''}
   </li>`; })}</ol>
-  ${myScores[R.LESSON] ? html`<section class="panel" id="from-teacher"><h2>💬 ${t('rubrics.student.fromTeacherLesson')}</h2>${myScores[R.LESSON].feedback ? html`<div class="feedback"><p dir="auto">${myScores[R.LESSON].feedback}</p></div>` : ''}${resultView(t, myScores[R.LESSON])}</section>` : ''}`;
+  ${myScores[R.LESSON] ? html`<section class="panel" id="from-teacher"><h2>${ico('💬', { size: 28 })} ${t('rubrics.student.fromTeacherLesson')}</h2>${myScores[R.LESSON].feedback ? html`<div class="feedback"><p dir="auto">${myScores[R.LESSON].feedback}</p></div>` : ''}${resultView(t, myScores[R.LESSON])}</section>` : ''}`;
   page(req, res, { title: l.title, active: 'classes', mid: true, body, head: CSS, back: `/class/${c.id}`, backLabel: c.name, ...(student ? { scripts: ['/js/lesson-read.js', ...(st.some(s => s.kind === 'quiz') ? ['/js/live-quiz-step.js'] : [])] } : {}) });
 });
 /** A quiz step's questions for the student (never the answers) and their marks so far; one answer at a time, checked
@@ -595,7 +596,7 @@ export function classTeamsSection(req, c) {
   if (on) {
     const saved = loadClassTeams(c.id);
     return { scripts: CLASS_TEAMS_JS ? ['/js/live-class-teams.js'] : [], html: html`<section class="panel lv-class-teams" id="lv-class-teams" aria-labelledby="lv-class-teams-h" data-api="/api/live/classes/${c.id}/teams">
-      <h2 id="lv-class-teams-h">👥 ${t('live.team.editor')}</h2>
+      <h2 id="lv-class-teams-h">${ico('👥', { size: 28 })} ${t('live.team.editor')}</h2>
       <p class="small muted">${t('live.team.editorHint')}</p>
       <p class="small" id="lv-class-teams-state">${saved ? t('live.team.savedCount', { count: saved.plan.size }) : t('live.team.notSaved')}</p>
       <button class="btn" type="button" id="lv-class-teams-open">${t('live.team.edit')}</button>
@@ -605,6 +606,6 @@ export function classTeamsSection(req, c) {
     </section>` };
   }
   const savedOff = loadClassTeams(c.id);
-  return { scripts: [], html: savedOff ? html`<section class="panel lv-class-teams" id="lv-class-teams-off"><h2>👥 ${t('live.team.heading')}</h2><p class="small">${t('live.team.savedCount', { count: savedOff.plan.size })}</p>
+  return { scripts: [], html: savedOff ? html`<section class="panel lv-class-teams" id="lv-class-teams-off"><h2>${ico('👥', { size: 28 })} ${t('live.team.heading')}</h2><p class="small">${t('live.team.savedCount', { count: savedOff.plan.size })}</p>
     <form class="lv-inline" data-api="/api/live/classes/${c.id}/teams" data-method="DELETE" data-reload data-confirm="${t('live.team.forgetConfirm')}"><button class="btn btn-sm" type="submit">${t('live.team.forgetLast')}</button><p class="err form-err" aria-live="polite"></p></form></section>` : '' };
 }

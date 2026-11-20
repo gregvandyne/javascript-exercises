@@ -47,10 +47,10 @@
       "schools": "給學校"
     },
     "build": {
-      "ready": "✨ 你的遊戲「{title}」做好了！<a href=\"{href}\">打開看看</a>",
-      "question": "💬 小幫手有個關於「{title}」的問題。<a href=\"{href}\">打開看看</a>",
-      "stopped": "⚠️「{title}」還沒做完就停下來了。<a href=\"{href}\">打開來繼續做</a>",
-      "many": "✨ 你有幾個遊戲收到小幫手的新消息。<a href=\"{href}\">看看我的遊戲</a>"
+      "ready": "你的遊戲「{title}」做好了！<a href=\"{href}\">打開看看</a>",
+      "question": "小幫手有個關於「{title}」的問題。<a href=\"{href}\">打開看看</a>",
+      "stopped": "「{title}」還沒做完就停下來了。<a href=\"{href}\">打開來繼續做</a>",
+      "many": "你有幾個遊戲收到小幫手的新消息。<a href=\"{href}\">看看我的遊戲</a>"
     },
     "shortPasswordGrownup": "密碼少於 {min} 個字元。請<a href=\"{href}\">改用較長的密碼</a>。"
   },
@@ -1485,10 +1485,10 @@
     "rename": "改名",
     "delete": "刪除",
     "status": {
-      "building": "🛠️ 製作中…",
-      "ready": "✨ 做好了",
-      "question": "💬 有問題要問",
-      "stopped": "⚠️ 停下來了"
+      "building": "製作中…",
+      "ready": "做好了",
+      "question": "有問題要問",
+      "stopped": "停下來了"
     }
   },
   "studio": {

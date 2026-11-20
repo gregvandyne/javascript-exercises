@@ -32,6 +32,7 @@
 //   POST /api/manipulatives/draft               a host asks the AI to draft a lesson board
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, VERSION } from '../views/layout.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as M from '../services/manipulatives.js';
@@ -122,6 +123,6 @@ export function classBanner(req, c) {
   const s = M.studentSessions(req.user).find(x => x.class_id === c.id && x.status === 'active');
   if (!s) return '';
   const t = req.t;
-  return html`<div class="notice good manip-class" role="status"><b>🧮 ${t('manip.class.banner')}</b> <span>${s.title}</span>
+  return html`<div class="notice good manip-class" role="status"><b>${ico('🧮', { size: 18 })} ${t('manip.class.banner')}</b> <span>${s.title}</span>
     <a class="btn btn-primary btn-sm" href="/manipulatives#join/${s.id}">${t('manip.class.join')}</a></div>`;
 }

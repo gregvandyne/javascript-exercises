@@ -2193,3 +2193,11 @@ body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;curs
 .oomba-live{color:var(--accent-ink);font-weight:700}
 .lib-oomba .shelf-head{padding:4px 0 12px;border-bottom:0}
 .lib-oomba .oomba-bar,.lib-oomba .oomba-subjects{margin:0 0 12px}
+
+/* Icons (public/js/icons.js, server/views/icon.js): Fluent Emoji 3D (28 px and up) and Flat (smaller), and the
+   manipulatives' drawn icons. The <img> carries its size; it sits on the text's middle like the emoji it replaced. */
+img.fx{display:inline-block;vertical-align:middle;flex:none;max-width:none;height:auto;object-fit:contain}
+img.fx-flat{vertical-align:-.2em}
+.emo img.fx,.classtile-e img.fx,.acct-tile-e img.fx,.door-e img.fx{vertical-align:middle}
+/* Live: the antenna is pale grey; a soft sky backing makes it read on light and dark bars. */
+img.fx[src*="satellite-antenna"]{background:radial-gradient(circle at 50% 52%,#BFE3FF 0 54%,transparent 56%);border-radius:50%}

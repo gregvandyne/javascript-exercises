@@ -13,6 +13,7 @@
 // question) are its page under the class's Progress: storyResults(), called by routes/progress.js.
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound, VERSION } from '../views/layout.js';
 import { avatar, emptyState, staffStudentName } from '../views/components.js';
 import { requireUser } from '../auth.js';
@@ -106,9 +107,9 @@ const assignHref = (bk, c) => `/library/${bk.id}/assign${c ? `?class=${c.id}` : 
 export function bookCard(t, bk, { read = null, staff = false, forClass = null } = {}) {
   const status = () => {
     const s = LIB.stateOf(read, bk);
-    if (s.state === 'done') return html`<span class="lb-state is-done">✅ ${t('library.state.done', { right: s.right, total: s.total })}</span>`;
-    if (s.state === 'quiz') return html`<span class="lb-state">📝 ${t('library.state.quiz')}</span>`;
-    if (s.state === 'reading') return html`<span class="lb-state">📖 ${t('library.state.reading', { page: s.page, pages: s.pages })}</span>`;
+    if (s.state === 'done') return html`<span class="lb-state is-done">${ico('✅', { size: 18 })} ${t('library.state.done', { right: s.right, total: s.total })}</span>`;
+    if (s.state === 'quiz') return html`<span class="lb-state">${ico('📝', { size: 18 })} ${t('library.state.quiz')}</span>`;
+    if (s.state === 'reading') return html`<span class="lb-state">${ico('📖', { size: 18 })} ${t('library.state.reading', { page: s.page, pages: s.pages })}</span>`;
     return '';
   };
   return html`<li class="lb-card" data-grade="${bk.grade}">
@@ -116,7 +117,7 @@ export function bookCard(t, bk, { read = null, staff = false, forClass = null } 
     <div class="lb-body">${gradeChip(t, bk.grade)}
       <h2 class="lb-title"><a href="/library/${bk.id}" dir="auto">${bk.title}</a></h2>
       <p class="lb-meta small muted">${meta(t, bk)} · ${sourceName(t, bk)}</p>${status()}
-      <div class="lb-acts"><a class="btn btn-primary btn-sm" href="/library/${bk.id}/read">📖 ${t('library.read')}</a>${staff ? html`<a class="btn btn-sm" href="${assignHref(bk, forClass)}">📌 ${t('library.assign')}</a>` : ''}</div></div></li>`;
+      <div class="lb-acts"><a class="btn btn-primary btn-sm" href="/library/${bk.id}/read">${ico('📖', { size: 18 })} ${t('library.read')}</a>${staff ? html`<a class="btn btn-sm" href="${assignHref(bk, forClass)}">${ico('📌', { size: 18 })} ${t('library.assign')}</a>` : ''}</div></div></li>`;
 }
 
 // ---------------------------------------------------------------- the library
@@ -137,7 +138,7 @@ router.get('/library', (req, res) => {
   const card = bk => bookCard(t, bk, { read: reads.get(bk.id), staff, forClass });
   const body = html`<div class="slib">
     <div class="pagehead lb-head"><div><h1><span aria-hidden="true">📚</span> ${t('library.title')}</h1><p class="muted">${t('library.lead', { count: LIB.books().length })}</p></div></div>
-    ${forClass ? html`<p class="notice lb-forclass">📌 ${t('library.forClass', { class: forClass.name })} <a href="/class/${forClass.id}">${t('library.backToClass')}</a></p>` : ''}
+    ${forClass ? html`<p class="notice lb-forclass">${ico('📌', { size: 18 })} ${t('library.forClass', { class: forClass.name })} <a href="/class/${forClass.id}">${t('library.backToClass')}</a></p>` : ''}
     ${wishBox(t, grade, forClass)}
     <form class="lb-tools" method="get" action="/library" role="search" aria-label="${t('library.searchLabel')}">
       <div class="chips scroll lb-levels" role="group" aria-label="${t('library.gradesLabel')}">
@@ -169,13 +170,13 @@ router.get('/library/:id', (req, res) => {
       <div class="lb-book-info">${gradeChip(t, bk.grade)}
         <h1 dir="auto">${bk.title}</h1>
         <p class="muted">${meta(t, bk)} · ${t('library.words', { count: bk.words })} · ${sourceName(t, bk)}</p>
-        <div class="row"><a class="btn btn-primary btn-big" href="/library/${bk.id}/read${st.state === 'reading' ? `?p=${st.page}` : ''}">📖 ${go}</a>${isStaff(u) ? html`<a class="btn" href="${assignHref(bk, forClass)}">📌 ${t('library.assign')}</a>` : ''}</div>
+        <div class="row"><a class="btn btn-primary btn-big" href="/library/${bk.id}/read${st.state === 'reading' ? `?p=${st.page}` : ''}">${ico('📖', { size: 18 })} ${go}</a>${isStaff(u) ? html`<a class="btn" href="${assignHref(bk, forClass)}">${ico('📌', { size: 18 })} ${t('library.assign')}</a>` : ''}</div>
         ${gradeDetails(t, bk)}
-        ${st.state === 'done' ? html`<p class="lb-state is-done">✅ ${t('library.state.done', { right: st.right, total: st.total })}</p>` : ''}
+        ${st.state === 'done' ? html`<p class="lb-state is-done">${ico('✅', { size: 18 })} ${t('library.state.done', { right: st.right, total: st.total })}</p>` : ''}
       </div></div>
-    ${bk.glossary.length ? html`<section class="lb-gloss" aria-labelledby="gl-h"><h2 id="gl-h">💬 ${t('library.glossary')}</h2>
+    ${bk.glossary.length ? html`<section class="lb-gloss" aria-labelledby="gl-h"><h2 id="gl-h">${ico('💬', { size: 28 })} ${t('library.glossary')}</h2>
       <dl>${bk.glossary.map(g => html`<div><dt dir="auto">${g.word}</dt><dd>${g.note}</dd></div>`)}</dl><p class="small muted">${t(bk.source === 'storyweaver' ? 'library.glossaryNote' : 'library.glossaryNoteAll')}</p></section>` : ''}
-    <section class="lb-about" aria-labelledby="ab-h"><h2 id="ab-h">📝 ${t('library.aboutTitle')}</h2><p class="small">${t('library.aboutQuestions')}</p>
+    <section class="lb-about" aria-labelledby="ab-h"><h2 id="ab-h">${ico('📝', { size: 28 })} ${t('library.aboutTitle')}</h2><p class="small">${t('library.aboutQuestions')}</p>
       ${credits(t, bk, { full: true })}</section>
   </article>`;
   page(req, res, { title: bk.title, active: 'learn', body, head: CSS, back: forClass ? `/library?class=${forClass.id}` : '/library', backLabel: t('library.title') });
@@ -209,7 +210,7 @@ router.get('/library/:id/read', (req, res) => {
   const body = html`<div class="rd${classic ? ' rd-classic' : ''}" id="reader" data-book="${bk.id}">
     <div class="rd-top"><a class="rd-back" href="${back.href}"><span class="flip" aria-hidden="true">←</span> <span dir="auto">${back.label}</span></a>
       <h1 class="rd-title" dir="auto">${bk.title}</h1>
-      <button class="btn btn-primary rd-aloud" type="button" id="rd-aloud" aria-pressed="false" hidden>🔊 <span>${t('library.readToMe')}</span></button></div>
+      <button class="btn btn-primary rd-aloud" type="button" id="rd-aloud" aria-pressed="false" hidden>${ico('🔊', { size: 18 })} <span>${t('library.readToMe')}</span></button></div>
     <div class="rd-stage${classic ? ` is-classic${pg.image ? '' : ' is-text'}` : ''}" id="rd-stage"${p0 > n ? raw(' hidden') : ''}>
       ${classic ? html`${pic}
       <div class="rd-leaf rd-leaf-l"><p class="rd-text" id="rd-text" lang="en" dir="ltr" aria-live="polite" data-len="${lenOf(pg.words)}">${pageText(pg.text)}</p><span class="rd-folio" id="rd-folio" aria-hidden="true">${Math.min(p0, n)}</span></div>
@@ -224,13 +225,13 @@ router.get('/library/:id/read', (req, res) => {
       </nav></div>
     <section class="rd-end" id="rd-end"${p0 > n ? '' : raw(' hidden')} aria-labelledby="rd-end-h">
       <div class="rd-end-head"><img src="${bk.cover.src}" alt="" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}">
-        <h2 id="rd-end-h" tabindex="-1">⭐ ${t('library.finished', { title: bk.title })}</h2>
+        <h2 id="rd-end-h" tabindex="-1">${ico('⭐', { size: 28 })} ${t('library.finished', { title: bk.title })}</h2>
         <p class="muted">${t('library.questionsLead', { count: bk.questions.length })}</p></div>
       <ol class="rd-qs" id="rd-qs">${bk.questions.map((x, i) => html`<li class="rd-q" data-i="${i}"><h3 dir="auto">${i + 1}. ${x.q}</h3>
         <div class="rd-opts">${x.choices.map((c, k) => html`<button class="rd-opt" type="button" data-c="${k}" disabled>${c}</button>`)}</div>
         <p class="rd-hint" role="status"></p></li>`)}</ol>
       <div class="rd-done" id="rd-done" hidden><p class="rd-done-msg" role="status"></p>
-        <div class="row"><a class="btn" href="?p=1">🔁 ${t('library.readAgain')}</a><a class="btn btn-primary" href="${cls ? back.href : '/library'}">${cls ? t('library.backTo', { name: cls.name }) : t('library.moreBooks')}</a></div></div>
+        <div class="row"><a class="btn" href="?p=1">${ico('🔁', { size: 18 })} ${t('library.readAgain')}</a><a class="btn btn-primary" href="${cls ? back.href : '/library'}">${cls ? t('library.backTo', { name: cls.name }) : t('library.moreBooks')}</a></div></div>
       <noscript><p class="notice">${t('library.needJs')}</p></noscript>
     </section>
     ${credits(t, bk)}
@@ -261,7 +262,7 @@ router.get('/library/:id/assign', requireUser, (req, res) => {
   const bk = bookOr404(req, res); if (!bk) return;
   const classes = LIB.assignClasses(u), pre = String(req.query.class || '');
   const gc = classes.map(c => gcAssignField(req, c)).find(Boolean) || '';
-  const body = html`<div class="pagehead"><h1>📌 ${t('library.assignTitle', { title: bk.title })}</h1></div>
+  const body = html`<div class="pagehead"><h1>${ico('📌', { size: 36 })} ${t('library.assignTitle', { title: bk.title })}</h1></div>
   <section class="panel assign-game lb-assign" aria-labelledby="as-h">
     <div class="lb-assign-book"><img src="${bk.cover.src}" alt="" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}"><div>${gradeChip(t, bk.grade)}<p class="small muted">${meta(t, bk)} · ${t('library.words', { count: bk.words })}</p></div></div>
     <h2 id="as-h" class="sr-only">${t('teach.assign.pickClass')}</h2>
@@ -269,10 +270,10 @@ router.get('/library/:id/assign', requireUser, (req, res) => {
       <div class="field"><label for="as-c">${t('teach.assign.pickClass')}</label><select class="input" id="as-c" name="classId">${classes.map(c => html`<option value="${c.id}"${c.id === pre ? raw(' selected') : ''}>${c.name}</option>`)}</select></div>
       <div class="field"><label for="as-d">${t('lessons.assign.due')}</label><input class="input" id="as-d" name="dueAt" type="date"></div>
       ${gc}
-      <div class="field end"><button class="btn btn-primary" type="submit" id="as-go">📌 ${t('teach.assign.submit')}</button></div>
+      <div class="field end"><button class="btn btn-primary" type="submit" id="as-go">${ico('📌', { size: 18 })} ${t('teach.assign.submit')}</button></div>
       <p class="small muted wide">${t('library.assignNote')}</p>${classes[0] ? html`<p class="small muted wide">${zoneNote(t, classes[0].school_id, u)}</p>` : ''}<p class="form-err err wide" role="alert"></p></form>`
       : html`<p class="muted">${t('teach.assign.none')}</p><p><a class="btn" href="/teach">${t('nav.classroom')}</a></p>`}
-    <p class="row"><a class="btn" href="/library/${bk.id}/read">📖 ${t('library.preview')}</a></p>
+    <p class="row"><a class="btn" href="/library/${bk.id}/read">${ico('📖', { size: 18 })} ${t('library.preview')}</a></p>
   </section>`;
   page(req, res, { title: t('library.assignTitle', { title: bk.title }), active: 'teach', body, head: raw(`${CSS}`), back: pre ? `/library?class=${encodeURIComponent(pre)}` : '/library', backLabel: t('library.title') });
 });
@@ -297,17 +298,17 @@ export function storyResults(req, res, c, cl, l) {
   if (!r) return notFound(req, res);
   const bk = r.book;
   const readCell = p => {
-    if (p.state === 'done') return html`<span class="lr-read is-done">✅ ${p.aloud ? t('library.results.withAloud') : t('library.results.onOwn')}</span>`;
-    if (p.state === 'quiz') return html`<span class="lr-read">📝 ${t('library.results.questionsLeft')}</span>`;
-    if (p.state === 'reading') return html`<span class="lr-read">📖 ${t('library.results.pageOf', { page: p.page, pages: p.pages })}</span>${p.aloud ? html` <span class="chip-s" title="${t('library.results.usedAloud')}">🔊</span>` : ''}`;
-    return html`<span class="lr-read muted">⏳ ${t('library.results.notStarted')}</span>`;
+    if (p.state === 'done') return html`<span class="lr-read is-done">${ico('✅', { size: 18 })} ${p.aloud ? t('library.results.withAloud') : t('library.results.onOwn')}</span>`;
+    if (p.state === 'quiz') return html`<span class="lr-read">${ico('📝', { size: 18 })} ${t('library.results.questionsLeft')}</span>`;
+    if (p.state === 'reading') return html`<span class="lr-read">${ico('📖', { size: 18 })} ${t('library.results.pageOf', { page: p.page, pages: p.pages })}</span>${p.aloud ? html` <span class="chip-s" title="${t('library.results.usedAloud')}">🔊</span>` : ''}`;
+    return html`<span class="lr-read muted">${ico('⏳', { size: 18 })} ${t('library.results.notStarted')}</span>`;
   };
   const marks = p => html`<span class="lr-marks" aria-hidden="true">${[...p.marks].map((m, i) => html`<span class="${m === '1' ? 'ok' : 'no'}" title="${t('library.results.qN', { n: i + 1 })}">${m === '1' ? '✓' : '✗'}</span>`)}</span>`;
   const body = html`${classHeader(req, c, 'progress')}
-  <div class="lphead"><div><h2 dir="auto">📖 ${bk.title}</h2>
+  <div class="lphead"><div><h2 dir="auto">${ico('📖', { size: 28 })} ${bk.title}</h2>
     <p class="lr-grade">${gradeChip(t, bk.grade)}</p>
     <p class="muted lp-meta"><span>${t('library.results.summary', { started: r.started, finished: r.finished, total: r.students.length })}</span>${dueChip(t, f, cl, { done: r.students.length > 0 && r.finished >= r.students.length })}</p></div>
-    <div class="row"><a class="btn" href="/library/${bk.id}/read">🖥️ ${t('library.results.readTogether')}</a><a class="btn btn-primary" href="/library?class=${c.id}">📌 ${t('library.results.assignAnother')}</a></div></div>
+    <div class="row"><a class="btn" href="/library/${bk.id}/read">${ico('🖥️', { size: 18 })} ${t('library.results.readTogether')}</a><a class="btn btn-primary" href="/library?class=${c.id}">${ico('📌', { size: 18 })} ${t('library.results.assignAnother')}</a></div></div>
   ${!r.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
     : html`<section class="panel"><div class="gbwrap" tabindex="0" role="region" aria-label="${bk.title}"><table class="tbl lr-table" id="lr-table">
       <thead><tr><th scope="col">${t('school.people.name')}</th><th scope="col">${t('library.results.read')}</th><th scope="col">${t('library.results.questions')}</th><th scope="col">${t('progress.lesson.lastActive')}</th></tr></thead>
@@ -316,7 +317,7 @@ export function storyResults(req, res, c, cl, l) {
         <td>${p.right === null ? html`<span class="muted">–</span>` : html`<b dir="ltr">${t('library.results.rightOf', { right: p.right, total: p.total })}</b> ${marks(p)}<span class="sr-only">${t('library.results.firstTry')}</span>`}</td>
         <td class="small muted">${p.last ? f.ago(p.last) : '–'}</td></tr>`)}</tbody></table></div>
       <p class="small muted gb-key">${t('library.results.key')}</p></section>
-    <section class="panel lr-qs" aria-labelledby="lr-qh"><h2 id="lr-qh">🧩 ${t('library.results.byQuestion')}</h2>
+    <section class="panel lr-qs" aria-labelledby="lr-qh"><h2 id="lr-qh">${ico('🧩', { size: 28 })} ${t('library.results.byQuestion')}</h2>
       ${r.hardest !== null ? html`<p class="notice">${t('library.results.hardest', { n: r.hardest + 1 })}</p>` : ''}
       <ol class="lr-qlist">${bk.questions.map((x, i) => html`<li><b dir="auto">${x.q}</b> <span class="small muted">${t('library.results.answer', { answer: x.choices[x.answer] })} · ${t('library.results.page', { page: x.page })} · ${t('library.results.missed', { count: r.misses[i] })}</span></li>`)}</ol>
       <p class="small muted">${t('library.aboutQuestions')}</p></section>`}`;

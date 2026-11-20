@@ -21,6 +21,7 @@ const TF = await import('../../server/services/textfilter.js');
 const { avatar } = await import('../../server/views/components.js');
 const { HUBS, AGES } = await import('../../server/learn.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 seed({ quiet: true });
 let server, base;
@@ -32,8 +33,8 @@ const cookieFor = id => { let c = ''; auth.startSession({ append: (k, v) => { c 
 async function call(cookie, path, { method = 'GET', body } = {}) {
   const h = cookie ? { cookie } : {}; if (body !== undefined) h['content-type'] = 'application/json';
   const r = await fetch(base + path, { method, headers: h, body: body !== undefined ? JSON.stringify(body) : undefined, redirect: 'manual' });
-  const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
-  return { status: r.status, text, json, location: r.headers.get('location') };
+  const raw = await r.text(), text = deicon(raw); let json = null; try { json = JSON.parse(raw, (k, v) => typeof v === 'string' ? deicon(v) : v); } catch { /* html */ }
+  return { status: r.status, text, raw, json, location: r.headers.get('location') };
 }
 const as = u => (path, opts) => call(u ? cookieFor(u.id) : null, path, opts);
 let n = 0;
@@ -52,7 +53,8 @@ test('signed out and guests get the same doors: Grown-ups tab, no Friends, Paren
     assert.deepEqual(order, ['/', '/learn', '/build', '/parents', '/login'], `${who}: Play · Learn · Build · Grown-ups · Sign in`);
     assert.match(footer(home.text), /href="\/plans"/, `${who}: Plans in the footer (not in the bars)`);
     assert.match(tabs, /🎮<\/span><span class="tab-t">Play<\/span>/, who); assert.match(tabs, /📚<\/span><span class="tab-t">Learn<\/span>/, who);
-    assert.match(tabs, /👪<\/span><span class="tab-t">Grown-ups<\/span>/, who);
+    // 👪 is drawn as Fluent's people hugging (Fluent has no family emoji), the same picture as Friends' 👫.
+    assert.match(tabbar(home.raw), /people-hugging-64\.webp[^>]*><\/span><span class="tab-t">Grown-ups<\/span>/, who);
     assert.doesNotMatch(tabs, /href="\/search"/, `${who}: search is the top bar's field, not a tab`);
     assert.doesNotMatch(tabs + topnav(home.text), /href="\/friends"/, `${who}: no Friends before an account`);
     assert.match(topnav(home.text), /href="\/parents"/, who); assert.match(topnav(home.text), /href="\/teachers"/, who);

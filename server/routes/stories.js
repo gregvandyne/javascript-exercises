@@ -19,6 +19,7 @@ import { Router } from 'express';
 import { requireBuilder } from '../auth.js';
 import { config } from '../config.js';
 import { html, raw, jsonData } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound } from '../views/layout.js';
 import { rateLimit, allow } from '../services/ratelimit.js';
 import * as aiBudget from '../services/ai-budget.js';
@@ -92,12 +93,12 @@ router.get('/stories', requireBuilder, (req, res) => {
   const left = Math.max(0, J.dailyLimit(u) - J.usedToday(u));
   const body = html`
   <div class="sb-hero"><h1>${t('stories.h')}</h1><p class="lead">${t('stories.sub')}</p>
-    <p class="row">${left ? html`<a class="btn btn-primary btn-big" href="/stories/new">✨ ${t('stories.new')}</a>` : html`<span class="notice">${t('stories.form.none')}</span>`}</p></div>
+    <p class="row">${left ? html`<a class="btn btn-primary btn-big" href="/stories/new">${ico('✨', { size: 18 })} ${t('stories.new')}</a>` : html`<span class="notice">${t('stories.form.none')}</span>`}</p></div>
   ${waiting.length ? html`<section class="panel"><h2>${t('stories.waitingH')}</h2><p class="muted">${t('stories.waitingP')}</p>
     <div class="sb-grid">${waiting.map(s => card(req, s))}</div></section>` : ''}
   <section class="panel"><h2>${t('stories.mine')}</h2>
     ${mine.length ? html`<div class="sb-grid">${mine.map(s => card(req, s))}</div>`
-    : html`<div class="empty"><span class="emo" aria-hidden="true">🌙</span><h3>${t('stories.empty')}</h3></div>`}
+    : html`<div class="empty"><span class="emo">${ico('🌙', { size: 20 })}</span><h3>${t('stories.empty')}</h3></div>`}
   </section>`;
   page(req, res, { active: 'stories', title: t('stories.title'), body, head: CSS, description: t('stories.sub') });
 });
@@ -137,7 +138,7 @@ router.get('/stories/new', requireBuilder, (req, res) => {
       </details>
       <p class="small muted">${t('stories.form.safety')}</p>
       <p class="small muted">${left ? t('stories.form.left', { count: left }) : t('stories.form.none')}</p>
-      <button class="btn btn-primary btn-big" type="submit" id="sb-go"${left ? '' : raw(' disabled')}>✨ ${t('stories.form.make')}</button>
+      <button class="btn btn-primary btn-big" type="submit" id="sb-go"${left ? '' : raw(' disabled')}>${ico('✨', { size: 18 })} ${t('stories.form.make')}</button>
     </form>
     ${jsonData('page-data', { musicFor: Object.fromEntries(Object.keys(STYLES).map(k => [k, musicFor(k)])) })}
   </div>`;
@@ -197,7 +198,7 @@ router.get('/stories/:id', (req, res) => {
   }
   const canEdit = owner && s.status === 'done' && !J.remaking(s) && !!script;
   const shareBox = s.status !== 'done' ? '' : owner ? html`<section class="panel sb-share"><p id="sb-share-state">${t(`stories.share.${s.share}`)}</p>
-      <p class="row">${canEdit ? html`<a class="btn btn-primary" href="/stories/${s.id}/edit">✏️ ${t('stories.edit.btn')}</a>` : ''}
+      <p class="row">${canEdit ? html`<a class="btn btn-primary" href="/stories/${s.id}/edit">${ico('✏️', { size: 18 })} ${t('stories.edit.btn')}</a>` : ''}
       ${s.share === 'private' ? html`<button class="btn ${canEdit ? 'btn-ghost' : 'btn-primary'}" type="button" data-act="share">${J.adultOwner(u) ? t('stories.share.btnAdult') : t('stories.share.btnKid')}</button>` : ''}
       ${s.share !== 'private' ? html`<button class="btn btn-ghost" type="button" data-act="unshare">${t('stories.share.stop')}</button>` : ''}
       ${s.share === 'shared' ? html`<button class="btn btn-ghost" type="button" data-act="copy">${t('stories.share.copy')}</button>` : ''}

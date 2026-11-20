@@ -47,10 +47,10 @@
       "schools": "Pour les écoles"
     },
     "build": {
-      "ready": "✨ Ton jeu « {title} » est prêt ! <a href=\"{href}\">Ouvre-le</a>",
-      "question": "💬 Le Constructeur a une question sur « {title} ». <a href=\"{href}\">Ouvre-le</a>",
-      "stopped": "⚠️ « {title} » s’est arrêté avant la fin. <a href=\"{href}\">Ouvre-le pour continuer</a>",
-      "many": "✨ Certains de tes jeux ont des nouvelles du Constructeur. <a href=\"{href}\">Voir Mes jeux</a>"
+      "ready": "Ton jeu « {title} » est prêt ! <a href=\"{href}\">Ouvre-le</a>",
+      "question": "Le Constructeur a une question sur « {title} ». <a href=\"{href}\">Ouvre-le</a>",
+      "stopped": "« {title} » s’est arrêté avant la fin. <a href=\"{href}\">Ouvre-le pour continuer</a>",
+      "many": "Certains de tes jeux ont des nouvelles du Constructeur. <a href=\"{href}\">Voir Mes jeux</a>"
     },
     "shortPasswordGrownup": "Votre mot de passe fait moins de {min} caractères. Merci d’<a href=\"{href}\">en choisir un plus long</a>."
   },
@@ -1485,10 +1485,10 @@
     "rename": "Renommer",
     "delete": "Supprimer",
     "status": {
-      "building": "🛠️ En cours…",
-      "ready": "✨ Prêt",
-      "question": "💬 Une question",
-      "stopped": "⚠️ Arrêté"
+      "building": "En cours…",
+      "ready": "Prêt",
+      "question": "Une question",
+      "stopped": "Arrêté"
     }
   },
   "studio": {

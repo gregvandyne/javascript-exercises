@@ -13,6 +13,7 @@ const auth = await import('../../server/auth.js');
 const SC = await import('../../server/services/schools.js');
 const LS = await import('../../server/services/classlive-sessions.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 seed({ quiet: true });
 let server, base;
@@ -21,7 +22,7 @@ test.after(() => server.close());
 test.beforeEach(() => resetLimits());
 const cookieFor = id => { let c = ''; auth.startSession({ append: (k, v) => { c = v.split(';')[0]; } }, id); return c; };
 const H = { accept: 'text/html', 'user-agent': 'Mozilla/5.0 Chrome/141.0' };
-const get = async (path, u) => { const r = await fetch(base + path, { headers: { ...H, cookie: cookieFor(u.id) }, redirect: 'manual' }); return { status: r.status, text: await r.text(), location: r.headers.get('location') }; };
+const get = async (path, u) => { const r = await fetch(base + path, { headers: { ...H, cookie: cookieFor(u.id) }, redirect: 'manual' }); return { status: r.status, text: deicon(await r.text()), location: r.headers.get('location') }; };
 const post = async (path, u, body) => {
   const r = await fetch(base + path, { method: 'POST', redirect: 'manual', headers: { ...H, 'sec-fetch-site': 'same-origin', 'content-type': 'application/json', cookie: cookieFor(u.id) }, body: JSON.stringify(body) });
   return { status: r.status, json: await r.json().catch(() => null) };

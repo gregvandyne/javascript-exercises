@@ -4,6 +4,7 @@
 import * as LIB from '../services/library.js';
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound, VERSION } from '../views/layout.js';
 import { emptyState, gradeLabel, nameFilter, jumpNav, coverArt } from '../views/components.js';
 import { tHtml } from '../i18n/index.js';
@@ -87,9 +88,9 @@ function listOf(t, items, render) {
 export function dueChip(t, f, cl, { done = false } = {}) {
   const st = L.dueState(cl);
   if (!st) return '';
-  if (st === 'late' && !done) return html`<span class="chip-s bad">⏰ ${t('lessons.class.late')}</span>`;
-  if (st === 'today') return html`<span class="chip-s warn">📅 ${t('lessons.class.dueToday')}</span>`;
-  return html`<span class="chip-s">📅 ${t('lessons.class.dueOn', { date: f.day(cl.due_at) })}</span>`;
+  if (st === 'late' && !done) return html`<span class="chip-s bad">${ico('⏰', { size: 18 })} ${t('lessons.class.late')}</span>`;
+  if (st === 'today') return html`<span class="chip-s warn">${ico('📅', { size: 18 })} ${t('lessons.class.dueToday')}</span>`;
+  return html`<span class="chip-s">${ico('📅', { size: 18 })} ${t('lessons.class.dueOn', { date: f.day(cl.due_at) })}</span>`;
 }
 /** One line telling teachers when days begin and end: at midnight in the school's time zone, or (none set) in UTC with
  *  the 36-hour grace. Shown wherever dates are set or lateness is read (assign forms, the gradebook). */
@@ -196,7 +197,7 @@ function stepFields(t, pick, s = {}, idp, { newGameLink = false, rubrics = [] } 
       ${pick.school.length ? html`<optgroup label="${t('lessons.step.schoolGames')}">${pick.school.map(opt)}</optgroup>` : ''}
       ${pick.classes && pick.classes.length ? html`<optgroup label="${t('lessons.step.classGames')}">${pick.classes.map(opt)}</optgroup>` : ''}
       ${siteGroups(t, pick.site).map(gr => html`<optgroup label="${gr.label}">${gr.games.map(opt)}</optgroup>`)}</select><span class="err" id="${idp}-g-err"></span>
-      ${newGameLink ? html`<a class="small f-glink" href="#ng-i">➕ ${t('lessons.step.newGameLink')}</a>` : ''}</div>
+      ${newGameLink ? html`<a class="small f-glink" href="#ng-i">${ico('➕', { size: 18 })} ${t('lessons.step.newGameLink')}</a>` : ''}</div>
     <div class="field f-m"><label for="${idp}-m">${t('lessons.step.minutes')}</label><input class="input" id="${idp}-m" name="minutes" type="number" min="0" max="240" value="${s.minutes || ''}"></div>
     <div class="field f-b"><label for="${idp}-b">${KIND_ORDER.map(k => html`<span data-for-kind="${k}" ${forKind(k)}>${t(BODY_LABEL[k])}</span>`)}</label><textarea class="input" id="${idp}-b" name="body" rows="3" maxlength="4000">${s.body || ''}</textarea><span class="hint" data-for-kind="build" ${forKind('build')}>${t('lessons.step.buildHint')}</span><span class="err" id="${idp}-b-err"></span>
       ${rubricField(t, rubrics, s.rubric_id || null, idp, R.STEP_KINDS, R.STEP_KINDS.includes(kind) ? '' : raw('hidden'))}</div>`;
@@ -218,7 +219,7 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   // Rubrics (services/rubrics.js): the ones this teacher can attach, and the whole lesson's.
   const rubrics = edit ? R.attachable(u, l.school_id) : [];
   const lessonRubric = l.rubric_id ? R.getRubric(l.rubric_id) : null;
-  const rubricChip = id => { const rb = id && R.getRubric(id); if (!rb) return ''; return html`<p class="sc-rubric">📏 ${R.canSeeRubric(u, rb) ? html`<a href="/teach/rubrics/${rb.id}" dir="auto">${rb.title}</a>` : html`<span dir="auto">${rb.title}</span>`} <span class="small muted">${t('rubrics.maxPoints', { points: t('rubrics.pointsN', { count: R.maxPoints(rb) }) })}</span></p>`; };
+  const rubricChip = id => { const rb = id && R.getRubric(id); if (!rb) return ''; return html`<p class="sc-rubric">${ico('📏', { size: 18 })} ${R.canSeeRubric(u, rb) ? html`<a href="/teach/rubrics/${rb.id}" dir="auto">${rb.title}</a>` : html`<span dir="auto">${rb.title}</span>`} <span class="small muted">${t('rubrics.maxPoints', { points: t('rubrics.pointsN', { count: R.maxPoints(rb) }) })}</span></p>`; };
   // Where the lesson is now (live classes the viewer manages: one line each), and the classes it can still go to.
   const assigned = edit ? L.assignedClasses(l.id).filter(a => !a.archived_at && S.canManageClass(u, S.getClass(a.class_id))) : [];
   const justAssigned = req.query.assigned ? assigned.find(a => a.id === String(req.query.assigned)) || null : null;
@@ -249,13 +250,13 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
         <div class="sc-title"><b dir="auto">${s.title || t(`lessons.kinds.${s.kind}`)}</b><span class="small muted">${t(`lessons.kinds.${s.kind}`)}${s.minutes ? ` · ${t('lessons.minutesN', { count: s.minutes })}` : ''}</span></div>
         ${edit ? html`<span class="acts">${i ? html`<form data-api="/api/lesson-steps/${s.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${i < st.length - 1 ? html`<form data-api="/api/lesson-steps/${s.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}</span>` : ''}</div>
       ${s.kind === 'game' ? html`<p class="sc-game">${hidden ? html`🔒 <span class="muted">${t('lessons.step.hiddenGame')}</span>`
-          : html`${s.game_icon} <a href="/g/${s.game_slug}">${s.game_title}</a>${classOnly ? html` <span class="chip-s">🎒 ${t('lessons.step.classOnly')}</span>` : playable ? '' : html` <span class="chip-s warn">⚠️ ${t('lessons.step.notShared')}</span>`}`}</p>
-        ${!playable && !classOnly && edit && s.game_owner === u.id ? html`<form data-api="/api/lesson-steps/${s.id}/share-game" data-reload><button class="btn btn-sm" type="submit">🏫 ${t('lessons.step.shareGame')}</button></form>` : ''}
+          : html`${s.game_icon} <a href="/g/${s.game_slug}">${s.game_title}</a>${classOnly ? html` <span class="chip-s">${ico('🎒', { size: 18 })} ${t('lessons.step.classOnly')}</span>` : playable ? '' : html` <span class="chip-s warn">${ico('⚠️', { size: 18 })} ${t('lessons.step.notShared')}</span>`}`}</p>
+        ${!playable && !classOnly && edit && s.game_owner === u.id ? html`<form data-api="/api/lesson-steps/${s.id}/share-game" data-reload><button class="btn btn-sm" type="submit">${ico('🏫', { size: 18 })} ${t('lessons.step.shareGame')}</button></form>` : ''}
         ${!playable && !classOnly && s.game_owner === u.id ? html`<p class="small muted">${t('lessons.step.notSharedHint')} <a href="/studio/${s.game_id}">${t('lessons.step.openStudio')}</a></p>` : ''}` : ''}
       ${ccOf(s.id).length || gameOf(s).length || needsGrade(s) ? html`<div class="std-stepcodes">${ccChips(ccOf(s.id))}${gameOf(s).map(([fw, codes]) => codeChips(t, fw, codes, { label: t('standards.lesson.gameCodes', { framework: fwName(t, fw) }) }))}${needsGrade(s) ? html`<p class="small muted">${t('standards.lesson.gameNeedsGrade')}</p>` : ''}</div>` : ''}
-      ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">💬 “${s.body}”</p>` : s.body ? html`<div class="sc-body ${s.kind === 'question' ? 'q-text' : ''}">${paras(s.body)}</div>` : ''}
+      ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">${ico('💬', { size: 18 })} “${s.body}”</p>` : s.body ? html`<div class="sc-body ${s.kind === 'question' ? 'q-text' : ''}">${paras(s.body)}</div>` : ''}
       ${R.STEP_KINDS.includes(s.kind) ? rubricChip(s.rubric_id) : ''}
-      ${edit ? html`<details><summary class="small">✏️ ${t('lessons.step.edit')}</summary>
+      ${edit ? html`<details><summary class="small">${ico('✏️', { size: 18 })} ${t('lessons.step.edit')}</summary>
         <form class="formgrid stepgrid" data-kind="${s.kind}" data-api="/api/lesson-steps/${s.id}" data-reload novalidate>${stepFields(t, pick, s, `s${s.id}`, { rubrics })}
           <div class="formacts"><button class="btn btn-primary" type="submit">${t('school.save')}</button><button class="btn btn-danger" type="submit" form="sd-${s.id}">${t('lessons.step.delete')}</button></div></form>
         <form id="sd-${s.id}" hidden data-api="/api/lesson-steps/${s.id}/delete" data-reload data-confirm="${work ? t('lessons.step.deleteWorkConfirm', { n: work }) : t('lessons.step.deleteConfirm')}"></form></details>` : ''}
@@ -266,14 +267,14 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   const body = html`
   <div class="pagehead"><div><span class="small muted">${school.name}</span><h1 dir="auto">${l.title}</h1>
     <p class="muted">${[l.subject, gradeLabel(t, l.grade), t('lessons.stepsN', { count: st.length }), total ? t('lessons.minutesN', { count: total }) : '', l.shared ? `🏫 ${t('lessons.lesson.sharedStatus')}` : ''].filter(Boolean).join(' · ')}</p></div>
-    ${edit ? html`<div class="row edacts"><a class="btn btn-primary" href="#assign">📌 ${t('lessons.assign.button')}</a><button class="btn" type="submit" form="lc-${l.id}">📄 ${t('lessons.lesson.duplicate')}</button><button class="btn" type="submit" form="lsh-${l.id}">${l.shared ? t('lessons.lesson.unshare') : `🏫 ${t('lessons.lesson.share')}`}</button>${liveOn() && liveCanHost(req.user) && st.some(s => s.kind === 'question') ? html`<button class="btn" type="submit" form="lv-q-${l.id}">📡 ${t('live.entry.fromLesson')}</button>` : ''}</div>
+    ${edit ? html`<div class="row edacts"><a class="btn btn-primary" href="#assign">${ico('📌', { size: 18 })} ${t('lessons.assign.button')}</a><button class="btn" type="submit" form="lc-${l.id}">${ico('📄', { size: 18 })} ${t('lessons.lesson.duplicate')}</button><button class="btn" type="submit" form="lsh-${l.id}">${l.shared ? t('lessons.lesson.unshare') : `🏫 ${t('lessons.lesson.share')}`}</button>${liveOn() && liveCanHost(req.user) && st.some(s => s.kind === 'question') ? html`<button class="btn" type="submit" form="lv-q-${l.id}">${ico('📡', { size: 18 })} ${t('live.entry.fromLesson')}</button>` : ''}</div>
       <form id="lv-q-${l.id}" hidden data-api="/api/live/sets/from-lesson/${l.id}"></form>`
-      : html`<form data-api="/api/lessons/${l.id}/copy"><button class="btn btn-primary" type="submit">📄 ${t('lessons.shared.copy')}</button></form>`}</div>
-  ${edit && req.query.copied ? html`<p class="notice good">📄 ${t('lessons.lesson.copiedNotice')}</p>` : ''}
+      : html`<form data-api="/api/lessons/${l.id}/copy"><button class="btn btn-primary" type="submit">${ico('📄', { size: 18 })} ${t('lessons.shared.copy')}</button></form>`}</div>
+  ${edit && req.query.copied ? html`<p class="notice good">${ico('📄', { size: 18 })} ${t('lessons.lesson.copiedNotice')}</p>` : ''}
   ${l.template_key && T.getTemplate(l.template_key) ? editorBanner(req, l, T.getTemplate(l.template_key), { edit }) : ''}
   ${drafted ? html`<p class="notice ${drafted === 'ai' ? '' : 'warn'}">${drafted === 'ai' ? `✨ ${t('lessons.ai.done')}` : t('lessons.ai.template')}</p>` : ''}
-  ${assigned.length ? html`<p class="notice livenote">📌 ${tHtml(t, 'lessons.editor.live', { classes: progressLinks, count: started })}</p>` : ''}
-  ${edit ? html`<details class="panel lessondetails"><summary>✏️ ${t('lessons.lesson.editDetails')}</summary>
+  ${assigned.length ? html`<p class="notice livenote">${ico('📌', { size: 18 })} ${tHtml(t, 'lessons.editor.live', { classes: progressLinks, count: started })}</p>` : ''}
+  ${edit ? html`<details class="panel lessondetails"><summary>${ico('✏️', { size: 18 })} ${t('lessons.lesson.editDetails')}</summary>
     <form class="formgrid" data-api="/api/lessons/${l.id}" data-reload data-toast="${t('school.settings.saved')}" novalidate>
       <div class="field wide"><label for="ld-t">${t('lessons.lesson.title')}</label><input class="input" id="ld-t" name="title" value="${l.title}" maxlength="100" required><span class="err" id="ld-t-err"></span></div>
       <div class="field"><label for="ld-s">${optional(t, t('school.class.subject'))}</label><input class="input" id="ld-s" name="subject" value="${l.subject}" maxlength="40"></div>
@@ -284,35 +285,35 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
       <div class="formacts wide"><button class="btn btn-primary" type="submit">${t('school.save')}</button><button class="btn btn-danger" type="submit" form="ldel-${l.id}">${t('lessons.lesson.delete')}</button></div>
     </form></details>` : ''}
   ${l.summary ? html`<div class="panel">${paras(l.summary)}</div>` : ''}
-  ${lessonRubric ? html`<section class="panel lessonrubric"><h2>📏 ${t('rubrics.attach.lessonTitle')}</h2>${rubricChip(lessonRubric.id)}</section>` : ''}
-  ${l.objectives ? html`<section class="panel"><h2>🎯 ${t('lessons.lesson.objectives')}</h2><ul>${l.objectives.split('\n').filter(Boolean).map(o => html`<li>${o.replace(/^[-•*]\s*/, '')}</li>`)}</ul></section>` : ''}
-  <section class="panel std-lessonpanel" id="standards" aria-labelledby="std-h"><div class="std-lessonhead"><h2 id="std-h">🎯 ${t('standards.lesson.title')}</h2>
+  ${lessonRubric ? html`<section class="panel lessonrubric"><h2>${ico('📏', { size: 28 })} ${t('rubrics.attach.lessonTitle')}</h2>${rubricChip(lessonRubric.id)}</section>` : ''}
+  ${l.objectives ? html`<section class="panel"><h2>${ico('🎯', { size: 28 })} ${t('lessons.lesson.objectives')}</h2><ul>${l.objectives.split('\n').filter(Boolean).map(o => html`<li>${o.replace(/^[-•*]\s*/, '')}</li>`)}</ul></section>` : ''}
+  <section class="panel std-lessonpanel" id="standards" aria-labelledby="std-h"><div class="std-lessonhead"><h2 id="std-h">${ico('🎯', { size: 28 })} ${t('standards.lesson.title')}</h2>
     <a class="btn btn-sm" href="/teach/lessons/${l.id}/standards">${edit ? `+ ${t('standards.lesson.open')}` : t('standards.lesson.view')}</a></div>
     ${ccOf('').length ? ccChips(ccOf('')) : html`<p class="small muted">${ccTags.length ? t('standards.lesson.onSteps', { count: ccTags.length }) : t('standards.lesson.editorNone')}</p>`}</section>
   ${edit && st.length > 2 ? jumpNav(t, [['steps', `🪜 ${t('lessons.lesson.steps')}`, st.length], ['add-step', `➕ ${t('lessons.step.add')}`], ['assign', `📌 ${t('lessons.assign.title')}`]]) : ''}
-  <h2 class="sec-h" id="steps">🪜 ${t('lessons.lesson.steps')}</h2>
+  <h2 class="sec-h" id="steps">${ico('🪜', { size: 28 })} ${t('lessons.lesson.steps')}</h2>
   ${st.length ? html`<ol class="plain steplist">${st.map(stepView)}</ol>` : html`<p class="muted">${t('lessons.lesson.noSteps')}</p>`}
   ${edit ? html`
-  <section class="panel" id="add-step"><h2>➕ ${t('lessons.step.add')}</h2>
+  <section class="panel" id="add-step"><h2>${ico('➕', { size: 28 })} ${t('lessons.step.add')}</h2>
     <form class="formgrid stepgrid" data-kind="text" data-api="/api/lessons/${l.id}/steps" data-reload novalidate>${stepFields(t, pick, {}, 'ns', { newGameLink: true, rubrics })}
-      <div class="formacts"><button class="btn btn-primary" type="submit">➕ ${t('lessons.step.addButton')}</button></div></form>
-    <details class="newgame" id="new-game"><summary class="small">➕ ${t('lessons.step.newGameLink')}</summary>
+      <div class="formacts"><button class="btn btn-primary" type="submit">${ico('➕', { size: 18 })} ${t('lessons.step.addButton')}</button></div></form>
+    <details class="newgame" id="new-game"><summary class="small">${ico('➕', { size: 18 })} ${t('lessons.step.newGameLink')}</summary>
       <form class="formgrid" data-api="/api/lessons/${l.id}/new-game" novalidate>
         <div class="field"><label for="ng-i">${t('lessons.step.newGameIdea')}</label><input class="input" id="ng-i" name="idea" maxlength="300" required placeholder="${t('lessons.step.newGamePlaceholder')}"><span class="err" id="ng-i-err"></span></div>
-        <div class="field end"><button class="btn" type="submit">🛠️ ${t('lessons.step.newGameButton')}</button></div>
+        <div class="field end"><button class="btn" type="submit">${ico('🛠️', { size: 18 })} ${t('lessons.step.newGameButton')}</button></div>
         <p class="small muted wide">${t('lessons.step.newGameNote')}</p></form></details>
   </section>
-  <section class="panel" id="assign"><h2>📌 ${t('lessons.assign.title')}</h2>
+  <section class="panel" id="assign"><h2>${ico('📌', { size: 28 })} ${t('lessons.assign.title')}</h2>
     ${assigned.length ? html`<ul class="plain assignedlist">${assigned.map(a => html`<li><b dir="auto">${a.name}</b>${a.opens_at ? html` · <span class="nw">${t('lessons.class.opensOn', { date: f.day(a.opens_at) })}</span>` : ''}${a.due_at ? html` · <span class="nw">${t('lessons.class.dueOn', { date: f.day(a.due_at) })}</span>` : ''} · <a class="nw" href="/class/${a.class_id}#cl-${a.id}">${t('lessons.assign.changeDates')}</a></li>`)}</ul>` : ''}
     ${justAssigned ? (L.isOpen(justAssigned)
-      ? html`<p class="notice good" id="assigned-now" role="status">✅ ${t('lessons.assign.doneHere', { class: justAssigned.name })} <a href="/class/${justAssigned.class_id}/progress/${justAssigned.id}">${t('lessons.assign.seeStarted')}</a></p>`
+      ? html`<p class="notice good" id="assigned-now" role="status">${ico('✅', { size: 18 })} ${t('lessons.assign.doneHere', { class: justAssigned.name })} <a href="/class/${justAssigned.class_id}/progress/${justAssigned.id}">${t('lessons.assign.seeStarted')}</a></p>`
       // It opens later: students do not see it yet, so say when they will (never "Students see it now").
-      : html`<p class="notice good" id="assigned-now" data-opens-later role="status">✅ ${t('lessons.assign.doneLater', { class: justAssigned.name, date: f.day(justAssigned.opens_at) })} <a class="nw" href="/class/${justAssigned.class_id}#cl-${justAssigned.id}">${t('lessons.assign.changeDates')}</a></p>`) : ''}
+      : html`<p class="notice good" id="assigned-now" data-opens-later role="status">${ico('✅', { size: 18 })} ${t('lessons.assign.doneLater', { class: justAssigned.name, date: f.day(justAssigned.opens_at) })} <a class="nw" href="/class/${justAssigned.class_id}#cl-${justAssigned.id}">${t('lessons.assign.changeDates')}</a></p>`) : ''}
     ${assignable.length ? html`<form class="formgrid assigngrid" data-api="/api/lessons/${l.id}/assign" data-reload novalidate><input type="hidden" name="from" value="lesson">
       <div class="field"><label for="as-c">${t('lessons.assign.class')}</label><select class="input" id="as-c" name="classId">${assignable.map(c => html`<option value="${c.id}" ${c.id === preselect ? raw('selected') : ''}>${c.name}</option>`)}</select></div>
       <div class="field"><label for="as-o">${t('lessons.assign.opens')}</label><input class="input" id="as-o" name="opensAt" type="date"></div>
       <div class="field"><label for="as-d">${t('lessons.assign.due')}</label><input class="input" id="as-d" name="dueAt" type="date"></div>
-      <div class="field end"><button class="btn btn-primary" type="submit">📌 ${t('lessons.assign.button')}</button></div>
+      <div class="field end"><button class="btn btn-primary" type="submit">${ico('📌', { size: 18 })} ${t('lessons.assign.button')}</button></div>
       <p class="small muted wide">${t('lessons.assign.note')} ${zoneNote(t, l.school_id, req.user)}</p></form>` : html`<p class="muted">${assigned.length ? t('lessons.assign.allClasses') : t('lessons.assign.noClasses')}</p>`}
   </section>
   <form id="lc-${l.id}" hidden data-api="/api/lessons/${l.id}/copy"></form>
@@ -398,26 +399,26 @@ export function assignedPane(req, c, { tools = '' } = {}) {
     const lessonRow = (cl, i, n) => {
       const sm = sums[cl.id] || { done: 0, students: 0, toRead: 0 };
       return html`<li class="cl-row" id="cl-${cl.id}">
-      <a class="cl-main" href="/class/${c.id}/progress/${cl.id}"><b dir="auto"><span aria-hidden="true">${icon(cl)}</span> ${cl.title}</b><span class="small muted cl-meta">${cl.kind === 'game' ? html`<span>🎮 ${t('folders.kindGame')}</span>` : cl.kind === 'story' ? html`<span>📖 ${t('library.kindStory')}</span>` : html`<span>${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}</span>`}
-        ${cl.opens_at && !L.isOpen(cl) ? html`<span class="chip-s">🔒 ${t('lessons.class.opensOn', { date: f.day(cl.opens_at) })}</span>` : ''}${dueChip(t, f, cl, { done: !sm.students || sm.done >= sm.students })}</span>
-        ${sm.students ? html`<span class="small cl-stats"><span>${t('lessons.class.doneOf', { done: sm.done, students: sm.students })}</span>${sm.toRead ? html`<span class="chip-s warn">✍️ ${t('lessons.class.toReview', { count: sm.toRead })}</span>` : ''}</span>` : ''}</a>
+      <a class="cl-main" href="/class/${c.id}/progress/${cl.id}"><b dir="auto"><span aria-hidden="true">${icon(cl)}</span> ${cl.title}</b><span class="small muted cl-meta">${cl.kind === 'game' ? html`<span>${ico('🎮', { size: 18 })} ${t('folders.kindGame')}</span>` : cl.kind === 'story' ? html`<span>${ico('📖', { size: 18 })} ${t('library.kindStory')}</span>` : html`<span>${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}</span>`}
+        ${cl.opens_at && !L.isOpen(cl) ? html`<span class="chip-s">${ico('🔒', { size: 18 })} ${t('lessons.class.opensOn', { date: f.day(cl.opens_at) })}</span>` : ''}${dueChip(t, f, cl, { done: !sm.students || sm.done >= sm.students })}</span>
+        ${sm.students ? html`<span class="small cl-stats"><span>${t('lessons.class.doneOf', { done: sm.done, students: sm.students })}</span>${sm.toRead ? html`<span class="chip-s warn">${ico('✍️', { size: 18 })} ${t('lessons.class.toReview', { count: sm.toRead })}</span>` : ''}</span>` : ''}</a>
       <span class="acts">${i ? html`<form data-api="/api/class-lessons/${cl.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${i < n - 1 ? html`<form data-api="/api/class-lessons/${cl.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
         <details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: cl.title })}">⋯</summary><div class="menu">
           <form class="formgrid" data-api="/api/class-lessons/${cl.id}" data-reload data-toast="${t('school.settings.saved')}" novalidate>
             <div class="field"><label for="o-${cl.id}">${t('lessons.assign.opens')}</label><input class="input input-sm" id="o-${cl.id}" name="opensAt" type="date" value="${isoDay(cl.opens_at)}"></div>
             <div class="field"><label for="d-${cl.id}">${t('lessons.assign.due')}</label><input class="input input-sm" id="d-${cl.id}" name="dueAt" type="date" value="${isoDay(cl.due_at)}"></div>
             <div class="field end"><button class="btn btn-sm" type="submit">${t('school.save')}</button></div></form>
-          <a class="btn btn-sm" href="/class/${c.id}/progress/${cl.id}">📊 ${t('folders.scores')}</a>
-          <a class="btn btn-sm" href="/class/${c.id}/lessons/${cl.id}">👀 ${t('progress.lesson.studentView')}</a>
-          ${cl.kind === 'course' && L.canEditLesson(u, L.getLesson(cl.lesson_id)) ? html`<a class="btn btn-sm" href="/teach/lessons/${cl.lesson_id}?from=${c.id}">✏️ ${t('lessons.class.editLesson')}</a>` : ''}
-          ${cl.kind === 'game' && cl.first_game ? html`<a class="btn btn-sm" href="/build/save?id=${cl.first_game}">📁 ${t('folders.save')}</a>` : ''}
+          <a class="btn btn-sm" href="/class/${c.id}/progress/${cl.id}">${ico('📊', { size: 18 })} ${t('folders.scores')}</a>
+          <a class="btn btn-sm" href="/class/${c.id}/lessons/${cl.id}">${ico('👀', { size: 18 })} ${t('progress.lesson.studentView')}</a>
+          ${cl.kind === 'course' && L.canEditLesson(u, L.getLesson(cl.lesson_id)) ? html`<a class="btn btn-sm" href="/teach/lessons/${cl.lesson_id}?from=${c.id}">${ico('✏️', { size: 18 })} ${t('lessons.class.editLesson')}</a>` : ''}
+          ${cl.kind === 'game' && cl.first_game ? html`<a class="btn btn-sm" href="/build/save?id=${cl.first_game}">${ico('📁', { size: 18 })} ${t('folders.save')}</a>` : ''}
           <form data-api="/api/class-lessons/${cl.id}/delete" data-reload data-confirm="${t('lessons.class.unassignConfirm', { name: cl.title })}"><button class="btn btn-sm btn-danger" type="submit">${t('lessons.class.unassign')}</button></form>
         </div></details></span></li>`;
     };
     return html`<div class="shelf-head"><div class="shelf-title"><h2 id="shelf-h" tabindex="-1" dir="auto">${t('folders.assignedTo', { class: c.name })}</h2><p class="small muted">${t('folders.gamesN', { count })}</p></div>${tools ? html`<div class="shelf-tools shelf-phone-tools">${tools}</div>` : ''}</div>
-      ${count ? '' : html`<div class="cl-none"><span class="emo" aria-hidden="true">🎮</span><div><b>${t('folders.classEmpty')}</b>${staff ? html`<p class="small muted">${t('folders.classEmptyText')}</p>` : ''}</div></div>`}
+      ${count ? '' : html`<div class="cl-none"><span class="emo">${ico('🎮', { size: 20 })}</span><div><b>${t('folders.classEmpty')}</b>${staff ? html`<p class="small muted">${t('folders.classEmptyText')}</p>` : ''}</div></div>`}
       ${plan.map((g, gi) => g.unit || g.lessons.length ? html`<div class="unit">
-        ${g.unit ? html`<div class="unit-head"><h3>🗂️ ${g.unit.name}</h3><span class="acts">
+        ${g.unit ? html`<div class="unit-head"><h3>${ico('🗂️', { size: 22 })} ${g.unit.name}</h3><span class="acts">
           ${gi > 1 ? html`<form data-api="/api/class-units/${g.unit.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${gi < plan.length - 1 ? html`<form data-api="/api/class-units/${g.unit.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
           <details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: g.unit.name })}">⋯</summary><div class="menu">
             <form class="row" data-api="/api/class-units/${g.unit.id}" data-reload><input class="input input-sm grow" name="name" value="${g.unit.name}" maxlength="60" aria-label="${t('lessons.class.unitName')}"><button class="btn btn-sm" type="submit">${t('school.save')}</button></form>
@@ -433,10 +434,10 @@ export function assignedPane(req, c, { tools = '' } = {}) {
     const n = count, canMove = staff && n > 1;
     const due = cl => {
       const st = L.dueState(cl);
-      if (!st) return html`<span class="lib-due is-none">📅 ${t('folders.phone.noDue')}</span>`;
-      if (st === 'late') return html`<span class="lib-due is-late">⏰ ${t('lessons.class.late')}</span>`;
-      if (st === 'today') return html`<span class="lib-due is-soon">📅 ${t('lessons.class.dueToday')}</span>`;
-      return html`<span class="lib-due is-soon">📅 ${t('lessons.class.dueOn', { date: f.day(cl.due_at, { weekday: 'short', day: 'numeric', month: 'short' }) })}</span>`;
+      if (!st) return html`<span class="lib-due is-none">${ico('📅', { size: 18 })} ${t('folders.phone.noDue')}</span>`;
+      if (st === 'late') return html`<span class="lib-due is-late">${ico('⏰', { size: 18 })} ${t('lessons.class.late')}</span>`;
+      if (st === 'today') return html`<span class="lib-due is-soon">${ico('📅', { size: 18 })} ${t('lessons.class.dueToday')}</span>`;
+      return html`<span class="lib-due is-soon">${ico('📅', { size: 18 })} ${t('lessons.class.dueOn', { date: f.day(cl.due_at, { weekday: 'short', day: 'numeric', month: 'short' }) })}</span>`;
     };
     const row = (cl, i, len) => {
       const sm = sums[cl.id] || { done: 0, students: 0 };
@@ -452,11 +453,11 @@ export function assignedPane(req, c, { tools = '' } = {}) {
             <div class="field"><label for="lib-o-${cl.id}">${t('lessons.assign.opens')}</label><input class="input input-sm" id="lib-o-${cl.id}" name="opensAt" type="date" value="${isoDay(cl.opens_at)}"></div>
             <div class="field"><label for="lib-d-${cl.id}">${t('lessons.assign.due')}</label><input class="input input-sm" id="lib-d-${cl.id}" name="dueAt" type="date" value="${isoDay(cl.due_at)}"></div>
             <div class="field end"><button class="btn" type="submit">${t('school.save')}</button></div></form>
-          <a class="btn" href="/class/${c.id}/progress/${cl.id}">📊 ${t('folders.scores')}</a>
-          <a class="btn" href="/class/${c.id}/lessons/${cl.id}">👀 ${t('progress.lesson.studentView')}</a>
+          <a class="btn" href="/class/${c.id}/progress/${cl.id}">${ico('📊', { size: 18 })} ${t('folders.scores')}</a>
+          <a class="btn" href="/class/${c.id}/lessons/${cl.id}">${ico('👀', { size: 18 })} ${t('progress.lesson.studentView')}</a>
           ${play ? html`<a class="btn" href="${play}">▶ ${t('game.play')}</a>` : ''}
-          ${cl.kind === 'course' && L.canEditLesson(u, L.getLesson(cl.lesson_id)) ? html`<a class="btn" href="/teach/lessons/${cl.lesson_id}?from=${c.id}">✏️ ${t('lessons.class.editLesson')}</a>` : ''}
-          ${cl.kind === 'game' && cl.first_game ? html`<a class="btn" href="/build/save?id=${cl.first_game}">📁 ${t('folders.save')}</a>` : ''}
+          ${cl.kind === 'course' && L.canEditLesson(u, L.getLesson(cl.lesson_id)) ? html`<a class="btn" href="/teach/lessons/${cl.lesson_id}?from=${c.id}">${ico('✏️', { size: 18 })} ${t('lessons.class.editLesson')}</a>` : ''}
+          ${cl.kind === 'game' && cl.first_game ? html`<a class="btn" href="/build/save?id=${cl.first_game}">${ico('📁', { size: 18 })} ${t('folders.save')}</a>` : ''}
           ${i ? html`<form data-api="/api/class-lessons/${cl.id}/up" data-reload><button class="btn" type="submit">↑ ${t('folders.moveUp')}</button></form>` : ''}
           ${i < len - 1 ? html`<form data-api="/api/class-lessons/${cl.id}/down" data-reload><button class="btn" type="submit">↓ ${t('folders.moveDown')}</button></form>` : ''}
           <form data-api="/api/class-lessons/${cl.id}/delete" data-reload data-confirm="${t('lessons.class.unassignConfirm', { name: cl.title })}"><button class="btn btn-danger" type="submit">${t('lessons.class.unassign')}</button></form>
@@ -464,17 +465,17 @@ export function assignedPane(req, c, { tools = '' } = {}) {
       return html`<li class="lib-row${reorder && canMove ? ' is-moving' : ''}" data-id="${cl.id}">
         <a class="lib-cover" href="/class/${c.id}/progress/${cl.id}" tabindex="-1" aria-hidden="true">${thumb}</a>
         <div class="lib-body"><a class="lib-name" href="/class/${c.id}/progress/${cl.id}" dir="auto">${cl.title}</a>
-          <span class="lib-meta">${cl.opens_at && !L.isOpen(cl) ? html`<span class="lib-due is-none">🔒 ${t('lessons.class.opensOn', { date: f.day(cl.opens_at, { day: 'numeric', month: 'short' }) })}</span>` : ''}${due(cl)}</span>
+          <span class="lib-meta">${cl.opens_at && !L.isOpen(cl) ? html`<span class="lib-due is-none">${ico('🔒', { size: 18 })} ${t('lessons.class.opensOn', { date: f.day(cl.opens_at, { day: 'numeric', month: 'short' }) })}</span>` : ''}${due(cl)}</span>
           ${sm.students ? html`<span class="lib-done"><progress max="${sm.students}" value="${sm.done}" aria-hidden="true"></progress><span>${t('lessons.class.doneOf', { done: sm.done, students: sm.students })}</span></span>` : ''}</div>
         ${staff ? acts : ''}</li>`;
     };
     const head = html`<div class="lib-head"><div class="lib-title"><h2 id="lib-h" dir="auto">${t('folders.assignedTo', { class: c.name })}</h2><p>${t('folders.phone.assignedSub', { count: n })}</p></div>
       ${staff ? html`<div class="lib-tools">${reorder && canMove
-        ? html`<a class="btn btn-primary lib-tool" href="${base}?view=assigned">✓ ${t('folders.phone.done')}</a>`
+        ? html`<a class="btn btn-primary lib-tool" href="${base}?view=assigned">${ico('✓', { size: 18 })} ${t('folders.phone.done')}</a>`
         : html`<a class="btn btn-primary lib-tool" href="${base}?view=library">+ ${t('folders.phone.addFromLibrary')}</a>${canMove ? html`<a class="btn lib-tool" href="${base}?view=assigned&amp;reorder=1">↕ ${t('folders.phone.reorder')}</a>` : ''}`}</div>` : ''}</div>`;
     return html`${head}
-      ${count ? '' : html`<div class="cl-none lib-none"><span class="emo" aria-hidden="true">🎮</span><div><b>${t('folders.classEmpty')}</b>${staff ? html`<p class="small muted">${t('folders.classEmptyText')}</p>` : ''}</div></div>`}
-      ${plan.map(g => (g.lessons.length ? html`${g.unit ? html`<h3 class="lib-unit" dir="auto">🗂️ ${g.unit.name}</h3>` : ''}<ol class="lib-list">${g.lessons.map((cl, i) => row(cl, i, g.lessons.length))}</ol>` : ''))}
+      ${count ? '' : html`<div class="cl-none lib-none"><span class="emo">${ico('🎮', { size: 20 })}</span><div><b>${t('folders.classEmpty')}</b>${staff ? html`<p class="small muted">${t('folders.classEmptyText')}</p>` : ''}</div></div>`}
+      ${plan.map(g => (g.lessons.length ? html`${g.unit ? html`<h3 class="lib-unit" dir="auto">${ico('🗂️', { size: 22 })} ${g.unit.name}</h3>` : ''}<ol class="lib-list">${g.lessons.map((cl, i) => row(cl, i, g.lessons.length))}</ol>` : ''))}
       ${tools ? html`<div class="lib-foot">${tools}</div>` : ''}`;
   };
   return { count, pane, phone };
@@ -485,10 +486,10 @@ export function studentLessonsPanel(req, c) {
   const plan = L.classPlan(c.id, { openOnly: true });
   const done = P.studentSummary(c.id, req.user.id);
   const doneN = cl => Math.min(done[cl.id] || 0, cl.steps);
-  const state = cl => { const d = doneN(cl); return cl.steps && d >= cl.steps ? html`<span class="stepstate is-done">✅ ${t('progress.status.done')}</span>` : d ? html`<span class="stepstate">${t('progress.student.doneOf', { done: d, total: cl.steps })}</span>` : ''; };
+  const state = cl => { const d = doneN(cl); return cl.steps && d >= cl.steps ? html`<span class="stepstate is-done">${ico('✅', { size: 18 })} ${t('progress.status.done')}</span>` : d ? html`<span class="stepstate">${t('progress.student.doneOf', { done: d, total: cl.steps })}</span>` : ''; };
   if (!plan.length) return html`<section class="panel">${emptyState({ emoji: '🎮', title: t('folders.classEmpty'), text: t('folders.studentEmptyText') })}</section>`;
-  return html`<section class="panel" aria-labelledby="sl-h"><h2 id="sl-h">📌 ${t('folders.assigned')}</h2>${plan.map(g => html`<div class="unit">
-    ${g.unit ? html`<h3>🗂️ ${g.unit.name}</h3>` : ''}
+  return html`<section class="panel" aria-labelledby="sl-h"><h2 id="sl-h">${ico('📌', { size: 28 })} ${t('folders.assigned')}</h2>${plan.map(g => html`<div class="unit">
+    ${g.unit ? html`<h3>${ico('🗂️', { size: 22 })} ${g.unit.name}</h3>` : ''}
     <ol class="plain cl-list">${g.lessons.map(cl => html`<li class="cl-row"><a class="cl-main" href="/class/${c.id}/lessons/${cl.id}"><b dir="auto">${cl.title}</b>
       <span class="small muted cl-meta"><span>${cl.kind === 'game' ? `🎮 ${t('folders.kindGame')}` : cl.kind === 'story' ? `📖 ${t('library.kindStory')}` : html`${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}`}</span>${dueChip(t, f, cl, { done: !!cl.steps && doneN(cl) >= cl.steps })}</span></a>${state(cl)}</li>`)}</ol></div>`)}</section>`;
 }

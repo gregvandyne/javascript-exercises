@@ -473,7 +473,7 @@ function signIn(u) { let c = ''; auth.startSession({ append: (k, v) => { c = v.s
 async function call(base, cookie, p, { method = 'GET', body, headers = {} } = {}) {
   const h = { ...headers }; if (cookie) h.cookie = cookie; if (body !== undefined) h['content-type'] = 'application/json';
   const r = await fetch(base + p, { method, headers: h, body: body !== undefined ? JSON.stringify(body) : undefined, redirect: 'manual' });
-  const buf = Buffer.from(await r.arrayBuffer()); const text = buf.toString('utf8'); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
+  const buf = Buffer.from(await r.arrayBuffer()); const text = deicon(buf.toString('utf8')); let json = null; try { json = JSON.parse(buf.toString('utf8'), (k, v) => typeof v === 'string' ? deicon(v) : v); } catch { /* html */ }
   return { status: r.status, text, json, buf, headers: r.headers };
 }
 
@@ -591,6 +591,7 @@ const O = await import('../../server/services/story-options.js');
 const RM = await import('../../server/stories/remake.js');
 const P = await import('../../server/stories/pipeline.js');
 const TV = await import('../../server/services/tts-voices.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 test('choices: closed lists with defaults; anything else falls back; the short texts are tidied and cut', () => {
   assert.deepEqual(O.choiceFields({}), { style: 'bedtime', tone: 'cozy', voice: 'auto', music: 'lullaby' });

@@ -17,6 +17,7 @@
 import fs from 'node:fs';
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound, parentsLabel } from '../views/layout.js';
 import { coverArt } from '../views/components.js';
 import { tHtml, availableLocales, fmt, localeInfo, DEFAULT_LOCALE, keepLang } from '../i18n/index.js';
@@ -177,7 +178,7 @@ router.get('/parents', async (req, res) => {
   <div class="lp-cols">
     <section class="panel" id="make" aria-labelledby="make-h">
       ${folded(el(t, 'h2', 'parents.make.h', {}, ' id="make-h"'), html`${el(t, 'p', 'parents.make.p1')}${el(t, 'p', 'parents.make.p2')}
-      <p class="row"><a class="btn" href="${lp(req, '/learn/make-a-game')}">🛠️ ${t('parents.make.link')}</a><a class="btn" href="${lp(req, '/parents/ai-builder-safety')}">🤖 ${t('parents.make.safe')}</a></p>`)}
+      <p class="row"><a class="btn" href="${lp(req, '/learn/make-a-game')}">${ico('🛠️', { size: 18 })} ${t('parents.make.link')}</a><a class="btn" href="${lp(req, '/parents/ai-builder-safety')}">${ico('🤖', { size: 18 })} ${t('parents.make.safe')}</a></p>`)}
     </section>
     <section class="panel" id="home" aria-labelledby="home-h">
       ${folded(el(t, 'h2', 'parents.home.h', {}, ' id="home-h"'), html`${el(t, 'p', 'parents.home.p')}
@@ -309,7 +310,7 @@ router.get('/learn/:slug', (req, res, next) => {
       </div></article>`;
   };
   const make = html`<section class="panel lp-make" id="make" aria-labelledby="make-h">${el(t, 'h2', 'learn.ages.make.h', {}, ' id="make-h"')}${el(t, 'p', `${k}.make.p`)}
-    <div class="row"><a class="btn btn-primary" href="/build">🛠️ ${t('learn.hubs.makeAGame.cta')}</a><a class="btn" href="${lp(req, '/learn/make-a-game')}">${t('learn.ages.make.link')}</a></div></section>`;
+    <div class="row"><a class="btn btn-primary" href="/build">${ico('🛠️', { size: 18 })} ${t('learn.hubs.makeAGame.cta')}</a><a class="btn" href="${lp(req, '/learn/make-a-game')}">${t('learn.ages.make.link')}</a></div></section>`;
   // Subject pages that have some of this age's games, with those games' names.
   const skills = HUBS.filter(h => h.slug !== 'brain-break-games').map(h => [h, list.filter(g => h.games.includes(g.slug))]).filter(([h, gs]) => gs.length || (h.slug === 'make-a-game' && age.make));
   const faq = faqBlock(req, [['learn.ages.faq.q1', 'learn.ages.faq.a1'], ...Array.from({ length: age.faq - 1 }, (_, i) => [`${k}.faq.q${i + 2}`, `${k}.faq.a${i + 2}`])], 'parents.faq.h', { ai: lp(req, '/parents/ai-builder-safety') });

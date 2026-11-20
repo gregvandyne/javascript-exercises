@@ -52,6 +52,7 @@ import { Router } from 'express';
 import express from 'express';
 import fs from 'node:fs';
 import { html, raw, jsonData } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound, VERSION } from '../views/layout.js';
 import { wordmark } from '../views/brand.js';
 import { avatar } from '../views/components.js';
@@ -85,7 +86,7 @@ function bgBar(t) {
   return html`<section class="dash-bgbar" aria-labelledby="dash-bg-h"><h2 class="dash-h3" id="dash-bg-h">${t('dash.bg.heading')}</h2>
     <div class="dash-sws" role="group" aria-label="${t('dash.bg.colors')}">${D.BG_COLORS.map(id => sw('color', id))}</div>
     <div class="dash-sws" role="group" aria-label="${t('dash.bg.art')}">${D.BG_ART.map(id => sw('art', id))}</div>
-    <button class="btn btn-sm" type="button" data-bg-upload>🖼️ ${t('dash.bg.upload')}</button>
+    <button class="btn btn-sm" type="button" data-bg-upload>${ico('🖼️', { size: 18 })} ${t('dash.bg.upload')}</button>
     <input type="file" accept="image/*" id="dash-bg-file" hidden>
     <p class="small muted dash-bgnote">${t('dash.bg.note')}</p></section>`;
 }
@@ -125,7 +126,7 @@ function dashPage(req, res, c, role) {
       <span class="dash-grow"></span>
       <span class="dash-now" id="dash-now" aria-hidden="true"></span>
       <button class="btn btn-sm" type="button" id="dash-projector" aria-pressed="false">📽️ ${t('dash.top.projector')}</button>
-      <button class="btn btn-sm" type="button" id="dash-edit">✏️ ${t('dash.top.edit')}</button>
+      <button class="btn btn-sm" type="button" id="dash-edit">${ico('✏️', { size: 18 })} ${t('dash.top.edit')}</button>
     </header>
     <header class="dash-top dash-edithead" id="dash-edithead" hidden>
       ${editTitle(t, cur.name)}
@@ -142,8 +143,8 @@ function dashPage(req, res, c, role) {
         <button class="btn btn-sm" type="button" id="dash-layout-more" aria-label="${t('dash.layouts.manage')}">⋯</button>
       </div>
       <span class="dash-grow"></span>
-      <button class="btn btn-sm" type="button" id="dash-eyes-btn" aria-pressed="false">👀 ${t('dash.foot.eyes')}</button>
-      <button class="btn btn-primary btn-sm" type="button" id="dash-push">📤 ${t('dash.foot.push')} <span class="dash-count" id="dash-push-n" hidden></span></button>
+      <button class="btn btn-sm" type="button" id="dash-eyes-btn" aria-pressed="false">${ico('👀', { size: 18 })} ${t('dash.foot.eyes')}</button>
+      <button class="btn btn-primary btn-sm" type="button" id="dash-push">${ico('📤', { size: 18 })} ${t('dash.foot.push')} <span class="dash-count" id="dash-push-n" hidden></span></button>
     </footer>`;
   } else {
     const st = D.studentState(c.id, u.id);
@@ -156,7 +157,7 @@ function dashPage(req, res, c, role) {
       <button class="btn btn-sm dash-traybtn" type="button" id="dash-tray-btn" aria-expanded="false" aria-controls="dash-tray">📥 ${t('dash.tray.button')} <span class="dash-count" id="dash-tray-n">0</span></button>
       <span class="dash-now" id="dash-now" aria-hidden="true"></span>
       <span class="dash-me">${avatar(u, 36)}<span class="dash-myname">${u.display_name}</span></span>
-      <button class="btn btn-sm" type="button" id="dash-edit">✏️ ${t('dash.top.editMine')}</button>
+      <button class="btn btn-sm" type="button" id="dash-edit">${ico('✏️', { size: 18 })} ${t('dash.top.editMine')}</button>
     </header>
     <header class="dash-top dash-edithead" id="dash-edithead" hidden>
       <h1 class="dash-class">${t('dash.top.editingMine')}</h1>
@@ -208,7 +209,7 @@ router.get('/dashboard', requireUser, (req, res) => {
   const mine = S.classesOf(req.user.id, 'student').filter(c => D.isStudent(req.user, S.getClass(c.id)));
   if (mine.length === 1) return res.redirect(`/class/${mine[0].id}/dashboard`);
   if (!mine.length) return res.redirect(S.isSchoolStaff(req.user) ? '/teach' : '/classes');
-  page(req, res, { title: t('dash.pick.title'), active: 'classes', head: CSS, body: html`<div class="pagehead"><h1>🖥️ ${t('dash.pick.title')}</h1></div>
+  page(req, res, { title: t('dash.pick.title'), active: 'classes', head: CSS, body: html`<div class="pagehead"><h1>${ico('🖥️', { size: 36 })} ${t('dash.pick.title')}</h1></div>
     <ul class="plain dash-pick">${mine.map(c => html`<li><a class="panel dash-pickcard" href="/class/${c.id}/dashboard"><b>${c.name}</b><span class="small muted">${c.school_name}</span></a></li>`)}</ul>` });
 });
 

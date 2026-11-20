@@ -6,6 +6,7 @@
 import { Router } from 'express';
 import { googleEnabled } from '../oidc.js';
 import { html, raw } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, legalReader } from '../views/layout.js';
 import { tHtml, dictionary, DEFAULT_LOCALE, fmt } from '../i18n/index.js';
 import { config } from '../config.js';
@@ -119,7 +120,7 @@ export const parentSections = () => ['what', 'stored', 'never', 'ai', 'keep', 'f
 router.get('/sdk', (req, res) => {
   const t = req.t;
   // The SDK names (BRB.storage.get...) are code and stay as they are in every language.
-  const body = html`<div class="wrap narrow" style="padding:0"><h1>🧰 ${t('info.sdk.heading')}</h1>
+  const body = html`<div class="wrap narrow" style="padding:0"><h1>${ico('🧰', { size: 36 })} ${t('info.sdk.heading')}</h1>
     <section class="panel"><h2 dir="ltr">window.BRB</h2>
       <p>${tHtml(t, 'info.sdk.brb.p1', { get: codeBlock('BRB.storage.get(key)'), set: codeBlock('BRB.storage.set(key, value)') })}</p>
       <p>${tHtml(t, 'info.sdk.brb.p2', { submit: codeBlock('BRB.score.submit(score)'), over: codeBlock('BRB.gameOver({won, score})') })}</p>

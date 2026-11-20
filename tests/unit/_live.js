@@ -27,6 +27,7 @@ export const UP = await import('../../server/services/upgrade.js');
 const stt = await import('../../server/services/stt-live.js');
 const { KIT_VERSIONS } = await import('../../server/services/kit.js');
 const { createApp } = await import('../../server/app.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 export const PACK_HASH = 'sha384-live-pack-test-hash';
 C.hooks.packHash = v => (v === '1.1.0' ? PACK_HASH : undefined);
@@ -85,7 +86,7 @@ export async function call(path, { method = 'GET', body, user = null, cookie = n
   if (body !== undefined) h['content-type'] = 'application/json';
   const t0 = Date.now();
   const r = await fetch(ctx.base + path, { method, headers: h, body: body !== undefined ? JSON.stringify(body) : undefined, redirect: 'manual' });
-  const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
+  const raw = await r.text(), text = deicon(raw); let json = null; try { json = JSON.parse(raw, (k, v) => typeof v === 'string' ? deicon(v) : v); } catch { /* html */ }
   return { status: r.status, text, json, headers: r.headers, ms: Date.now() - t0 };
 }
 

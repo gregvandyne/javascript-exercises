@@ -27,8 +27,10 @@
 .mp-toolcard{display:flex;gap:12px;align-items:flex-start;color:var(--text);padding:16px}
 .mp-toolcard:hover{text-decoration:none;box-shadow:inset 0 0 0 2px var(--accent-line),var(--shadow)}
 .mp-toolcard>span:last-child{display:flex;flex-direction:column;gap:2px;min-width:0}
-.mp-ico{flex:none;display:grid;place-items:center;width:48px;height:48px;border-radius:var(--r-sm);font-size:1.5rem;box-shadow:0 3px 0 rgba(0,0,0,.18)}
-.mp-ico.sm{width:32px;height:32px;font-size:1rem}
+.mp-ico{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:var(--r-sm);font-size:1.5rem;background:color-mix(in srgb,var(--tc,#888) 16%,var(--card));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tc,#888) 22%,transparent)}
+.mp-ico.sm{width:34px;height:34px;font-size:1rem}
+:root[data-theme="dark"] .mp-ico{background:color-mix(in srgb,var(--tc,#888) 26%,var(--card))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mp-ico{background:color-mix(in srgb,var(--tc,#888) 26%,var(--card))}}
 .mp-boards{margin-top:24px}
 .mp-taskcard h2{font-size:1.1rem;margin:6px 0}
 .mp-taskcard .row{gap:8px}

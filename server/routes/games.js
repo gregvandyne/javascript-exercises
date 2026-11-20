@@ -1,6 +1,7 @@
 // Game page, play page, the sandboxed frame, and the game APIs the SDK talks to (via the parent page).
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound, landingFor, signedOut } from '../views/layout.js';
 import { inClassLine } from './teachers.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
@@ -105,9 +106,9 @@ router.get('/g/:slug', (req, res) => {
       <div class="gh-cover" style="position:relative">${coverArt(d, '', { eager: true })}</div>
       <div>
         <h1>${g.title}</h1>
-        ${byGrownup ? html`<span class="person ownerchip ownerchip-grownup">${avatar(owner, 32)}<span class="nm"><bdi>${owner.display_name}</bdi></span><span class="gu-tag"${fbl('game.grownupBuilder')}>🧑 ${t('game.grownupBuilder')}</span></span>`
+        ${byGrownup ? html`<span class="person ownerchip ownerchip-grownup">${avatar(owner, 32)}<span class="nm"><bdi>${owner.display_name}</bdi></span><span class="gu-tag"${fbl('game.grownupBuilder')}>${ico('🧑', { size: 18 })} ${t('game.grownupBuilder')}</span></span>`
           : grownup ? html`<span class="person ownerchip">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></span>` : html`<a class="person ownerchip" href="/u/${owner.username}">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></a>`}
-        ${shared && shared.names.length ? html`<div class="sharedwith small"><span>🎒 ${t('game.sharedWith')}</span> <ul class="chips-inline">${shared.names.map(n => html`<li dir="auto">${n}</li>`)}</ul>${shared.others ? html` <span class="muted">${t('game.sharedWithMore', { count: shared.others })}</span>` : ''}</div>` : ''}
+        ${shared && shared.names.length ? html`<div class="sharedwith small"><span>${ico('🎒', { size: 18 })} ${t('game.sharedWith')}</span> <ul class="chips-inline">${shared.names.map(n => html`<li dir="auto">${n}</li>`)}</ul>${shared.others ? html` <span class="muted">${t('game.sharedWithMore', { count: shared.others })}</span>` : ''}</div>` : ''}
         <div class="statrow">
           <div class="stat"><b>${d.rating_count ? d.rating.toFixed(1) + ' ★' : t('cards.new')}</b>${d.rating_count ? t('game.stats.ratings', { count: d.rating_count, n: f.num(d.rating_count) }) : t('game.stats.noRatings')}</div>
           <div class="stat"><b data-live="${g.id}" data-live-format="number">${d.playing}</b>${t('game.stats.playingNow')}</div>
@@ -116,17 +117,17 @@ router.get('/g/:slug', (req, res) => {
         </div>
         ${liveEntry && playable ? '' : html`<div class="row actions">
           ${playable ? html`<a class="btn btn-primary btn-big playbig" href="${keepLang(req, `/play/${g.slug}`)}" id="playbtn">▶ ${t('game.play')}</a>` : html`<span class="notice">${t('game.notReady')}</span>`}
-          ${playable && liveOn() && liveCanHost(req.user) && gameLiveReady(g) ? html`<a class="btn btn-big" href="/live?game=${g.id}" id="hostlive">📡 ${t('live.entry.hostLive')}</a>` : ''}
+          ${playable && liveOn() && liveCanHost(req.user) && gameLiveReady(g) ? html`<a class="btn btn-big" href="/live?game=${g.id}" id="hostlive">${ico('📡', { size: 18 })} ${t('live.entry.hostLive')}</a>` : ''}
         </div>`}
         ${isOwner ? html`<p class="small muted" style="margin-top:8px">${statusLabel(g, t, shared ? shared.names.length : 1, byGrownup)}${g.pending_version_id ? ` · ${t('game.updateWaiting')}` : ''}${g.review_note ? html` · ${t('game.reviewer', { note: g.review_note })}` : ''}</p>` : ''}
       </div>
       ${liveEntry && playable ? livePanel(req, g, liveEntry) : ''}
       <div class="quietacts">
           ${grownup ? '' : html`<button class="qact" type="button" id="likebtn" aria-pressed="${String(!!liked)}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>`}
-          <button class="qact" type="button" id="sharebtn"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
-          ${isOwner ? html`<a class="qact" href="/studio/${g.id}"><span class="emo" aria-hidden="true">🛠️</span>${t('game.edit')}</a>` : ''}
-          ${u && isSchoolStaff(u) ? html`<a class="qact" href="/build/save?id=${g.id}"><span class="emo" aria-hidden="true">📁</span>${t('folders.save')}</a>${playable && !g.course_only ? html`<a class="qact" href="/teach/assign?id=${g.id}"><span class="emo" aria-hidden="true">📌</span>${t('folders.assign')}</a>` : ''}` : ''}
-          ${isOwner || !t.own('game.makeLike') ? '' : html`<a class="qact" href="/build" id="makelike"><span class="emo" aria-hidden="true">🛠️</span>${t.own('game.makeLikeShort') ? t('game.makeLikeShort') : t('game.makeLike')}</a>`}
+          <button class="qact" type="button" id="sharebtn"><span class="emo">${ico('🔗', { size: 20 })}</span>${t('game.share')}</button>
+          ${isOwner ? html`<a class="qact" href="/studio/${g.id}"><span class="emo">${ico('🛠️', { size: 20 })}</span>${t('game.edit')}</a>` : ''}
+          ${u && isSchoolStaff(u) ? html`<a class="qact" href="/build/save?id=${g.id}"><span class="emo">${ico('📁', { size: 20 })}</span>${t('folders.save')}</a>${playable && !g.course_only ? html`<a class="qact" href="/teach/assign?id=${g.id}"><span class="emo">${ico('📌', { size: 20 })}</span>${t('folders.assign')}</a>` : ''}` : ''}
+          ${isOwner || !t.own('game.makeLike') ? '' : html`<a class="qact" href="/build" id="makelike"><span class="emo">${ico('🛠️', { size: 20 })}</span>${t.own('game.makeLikeShort') ? t('game.makeLikeShort') : t('game.makeLike')}</a>`}
         </div>
     </div>
     <div class="grid2">
@@ -144,7 +145,7 @@ router.get('/g/:slug', (req, res) => {
             <p class="small muted" id="ratemsg">${myStars ? t('game.rate.thanks') : t('game.rate.tap')}</p>`
           : html`<p><button class="btn" type="button" data-guest-play="">${t('game.rate.guest')}</button></p>`}
         </section>`}
-        <section class="panel" aria-labelledby="lb-h"><h2 id="lb-h">🏆 ${t('game.leaderboard.heading')}</h2>
+        <section class="panel" aria-labelledby="lb-h"><h2 id="lb-h">${ico('🏆', { size: 28 })} ${t('game.leaderboard.heading')}</h2>
           ${lb.length ? html`<ol class="lb">${lb.map(r => html`<li>${avatar(r, 30)}<span>${u ? r.display_name : ''}</span><span class="sc" dir="ltr">${f.int(r.score)}${r.label ? ' ' + r.label : ''}</span></li>`)}</ol>
             ${u ? '' : html`<p class="small muted" style="margin:10px 0 0"${fbl('game.leaderboard.signIn')}>${t('game.leaderboard.signIn')}</p>`}` : html`<p class="muted">${t('game.leaderboard.empty')}</p>`}
         </section>
@@ -153,7 +154,7 @@ router.get('/g/:slug', (req, res) => {
         ${more.length ? html`<section><h2>${t('game.more.heading')}</h2>${cardGrid(more, {})}</section>` : ''}
       </aside>
     </div>
-    ${isOwner ? '' : html`<p class="reportline"><button class="linkbtn" type="button" id="reportbtn"><span class="emo" aria-hidden="true">🚩</span> ${t('game.report.button')}</button></p>`}
+    ${isOwner ? '' : html`<p class="reportline"><button class="linkbtn" type="button" id="reportbtn"><span class="emo">${ico('🚩', { size: 20 })}</span> ${t('game.report.button')}</button></p>`}
   </article>
   ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, visibility: g.visibility, shareText: t(`game.shareText.${g.visibility === 'friends' && byGrownup ? 'connections' : g.visibility}`), reasons: reportReasons(t), signedIn: !!u })}`;
   if (!official) res.set('X-Robots-Tag', 'noindex, nofollow');
@@ -173,15 +174,15 @@ router.get('/g/:slug', (req, res) => {
 function livePanel(req, g, entry) {
   const t = req.t, u = req.user;
   const out = !u || u.is_guest;
-  const host = !out && liveCanHost(u) ? html`<a class="btn btn-big" href="/live?mode=${entry.mode}" id="hostlive">📡 ${t('live.entry.host')}</a>`
-    : out ? html`<a class="btn" href="${lp(req, '/teachers/live')}" id="hostlive">📡 ${t('live.entry.teacherHost')}</a>` : '';
+  const host = !out && liveCanHost(u) ? html`<a class="btn btn-big" href="/live?mode=${entry.mode}" id="hostlive">${ico('📡', { size: 18 })} ${t('live.entry.host')}</a>`
+    : out ? html`<a class="btn" href="${lp(req, '/teachers/live')}" id="hostlive">${ico('📡', { size: 18 })} ${t('live.entry.teacherHost')}</a>` : '';
   return html`<section class="livepanel" aria-labelledby="livepanel-h">
     <p class="livepanel-tag" id="livepanel-h"><span aria-hidden="true">📡</span> ${t('live.entry.badgeLong')}</p>
     <p class="livepanel-how">${t('live.entry.howJoin')}</p>
     <form class="livepanel-join" method="get" action="/join" novalidate><input type="hidden" name="go" value="1">
       <label class="sr-only" for="lpjc">${t('live.join.codeLabel')}</label>
       <input class="input lv-code-input" id="lpjc" name="code" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="9" dir="ltr" placeholder="123 4567" required>
-      <button class="btn btn-primary btn-big" type="submit" id="lpjoin">🎟️ ${t('live.entry.joinGo')}</button>
+      <button class="btn btn-primary btn-big" type="submit" id="lpjoin">${ico('🎟️', { size: 18 })} ${t('live.entry.joinGo')}</button>
     </form>
     <div class="row actions">${host}<a class="btn" href="${keepLang(req, `/play/${entry.solo}`)}" id="playbtn">▶ ${t(entry.play ? entry.playKey || 'live.entry.play' : 'live.entry.solo')}</a></div>
   </section>`;
@@ -189,9 +190,9 @@ function livePanel(req, g, entry) {
 
 function adminVoices(u, g) {
   if (!u || u.role !== 'admin') return '';
-  if (ttsListed(g)) return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr"><h2>🔊 AI voices for this game</h2><p>On: an official game listed for AI voices. Languages: <a href="/admin/voices">AI voices</a>.</p>${ttsGames.silentWhy() ? html`<p id="admin-voices-note"><b>Nothing plays yet.</b> ${ttsGames.silentWhy()}</p>` : ''}</section>`;
+  if (ttsListed(g)) return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr"><h2>${ico('🔊', { size: 28 })} AI voices for this game</h2><p>On: an official game listed for AI voices. Languages: <a href="/admin/voices">AI voices</a>.</p>${ttsGames.silentWhy() ? html`<p id="admin-voices-note"><b>Nothing plays yet.</b> ${ttsGames.silentWhy()}</p>` : ''}</section>`;
   const x = ttsGames.info(g);
-  return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr" data-game="${g.id}"><h2>🔊 AI voices for this game</h2>
+  return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr" data-game="${g.id}"><h2>${ico('🔊', { size: 28 })} AI voices for this game</h2>
     <p class="muted">Admin only. Reads this game's own words (from its published version) with AI voices in the languages switched on at <a href="/admin/voices">AI voices</a>; never what a player types. ${x.on && !x.live ? 'It starts once the game is published and not hidden.' : ''}</p>
     <p id="admin-voices-default"><b>By default:</b> ${ttsBuilt(g) ? 'on. Only the exact lines fixed in the published version (it passed the safety check) are read, in one friendly voice.' : 'off for this game now. A Builder game gets AI voices once it is published, not hidden, and its published version passed the safety check (and TTS_BUILT_GAMES is not 0).'} The switch below goes further for this one game: lines with changing numbers, the game's own names and a few of its sentences read as one.</p>
     ${x.ok || x.on ? html`<label class="row" style="gap:8px"><input type="checkbox" id="admin-voices-on" ${x.on ? raw('checked') : ''}> AI voices for this game</label>` : ''}
@@ -331,18 +332,18 @@ router.get('/play/:slug', (req, res) => {
   const body = html`
   <header class="playbar">
     <a class="iconbtn" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
-    <h1 class="ptitle">${g.icon} ${g.title}${inCourse ? html` <a class="pcourse" href="/courses/${inCourse.course.slug}">📚 ${t('courses.step', { course: t(`${inCourse.course.key}.title`), n: inCourse.n, total: inCourse.total })}</a>` : ''}</h1>
+    <h1 class="ptitle">${g.icon} ${g.title}${inCourse ? html` <a class="pcourse" href="/courses/${inCourse.course.slug}">${ico('📚', { size: 18 })} ${t('courses.step', { course: t(`${inCourse.course.key}.title`), n: inCourse.n, total: inCourse.total })}</a>` : ''}</h1>
     <span class="livecount" data-live="${g.id}" data-live-format="bar"></span>
     ${grownup ? '' : html`<button class="iconbtn" type="button" id="p-like" aria-pressed="${String(!!liked)}" aria-label="${t('game.like')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span><span class="lbl">${t('game.like')}</span></button>
-    <button class="iconbtn" type="button" id="p-rate" aria-label="${t('play.rate')}"><span class="emo" aria-hidden="true">⭐</span><span class="lbl">${t('play.rate')}</span></button>`}
-    ${ttsData ? html`<button class="iconbtn" type="button" id="p-voices" aria-haspopup="dialog" aria-label="${t('play.voices')}"><span class="emo" aria-hidden="true">🔊</span><span class="lbl">${t('play.voices')}</span></button>` : ''}
+    <button class="iconbtn" type="button" id="p-rate" aria-label="${t('play.rate')}"><span class="emo">${ico('⭐', { size: 20 })}</span><span class="lbl">${t('play.rate')}</span></button>`}
+    ${ttsData ? html`<button class="iconbtn" type="button" id="p-voices" aria-haspopup="dialog" aria-label="${t('play.voices')}"><span class="emo">${ico('🔊', { size: 20 })}</span><span class="lbl">${t('play.voices')}</span></button>` : ''}
     <button class="iconbtn" type="button" id="p-full" aria-label="${t('play.fullScreen')}"><span class="emo" aria-hidden="true">⛶</span><span class="lbl">${t('play.fullScreen')}</span></button>
   </header>
   <div class="stage" id="stage" dir="ltr">
     <a class="fsback" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}${frameQ}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
-  <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo" aria-hidden="true">📱</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
+  <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo">${ico('📱', { size: 56 })}</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
   ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}) })}`;
   // (keyboard: Doodle Hoot's guess box; an on-screen keyboard shrinks the page, so the box and the drawing stay in view)
   page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'], i18n: mic ? ['js.match', 'js.loudness'] : ['js.match'] });

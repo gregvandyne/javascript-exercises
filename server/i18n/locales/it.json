@@ -48,10 +48,10 @@
       "schools": "Per le scuole"
     },
     "build": {
-      "ready": "✨ Il tuo gioco “{title}” è pronto! <a href=\"{href}\">Aprilo</a>",
-      "question": "💬 Il Costruttore ha una domanda su “{title}”. <a href=\"{href}\">Aprilo</a>",
-      "stopped": "⚠️ “{title}” si è fermato prima di essere finito. <a href=\"{href}\">Aprilo per continuare</a>",
-      "many": "✨ Il Costruttore ha novità su alcuni dei tuoi giochi. <a href=\"{href}\">Vai a I miei giochi</a>"
+      "ready": "Il tuo gioco “{title}” è pronto! <a href=\"{href}\">Aprilo</a>",
+      "question": "Il Costruttore ha una domanda su “{title}”. <a href=\"{href}\">Aprilo</a>",
+      "stopped": "“{title}” si è fermato prima di essere finito. <a href=\"{href}\">Aprilo per continuare</a>",
+      "many": "Il Costruttore ha novità su alcuni dei tuoi giochi. <a href=\"{href}\">Vai a I miei giochi</a>"
     },
     "shortPasswordGrownup": "La password ha meno di {min} caratteri. È meglio <a href=\"{href}\">sceglierne una più lunga</a>."
   },
@@ -1486,10 +1486,10 @@
     "rename": "Rinomina",
     "delete": "Elimina",
     "status": {
-      "building": "🛠️ Costruisce…",
-      "ready": "✨ Pronto",
-      "question": "💬 Ha una domanda",
-      "stopped": "⚠️ Fermato"
+      "building": "Costruisce…",
+      "ready": "Pronto",
+      "question": "Ha una domanda",
+      "stopped": "Fermato"
     }
   },
   "studio": {
