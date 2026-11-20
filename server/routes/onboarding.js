@@ -102,10 +102,12 @@ router.get('/signup', (req, res) => {
   if (req.query.for === 'teacher') return res.redirect(302, '/signup/teacher');
   // A guest keeping their progress is a kid already playing; so is a kid on their way to a page.
   if ((u && u.is_guest) || (next && !GROWNUP_NEXT.test(next))) return res.redirect(302, `/signup/kid${nq}`);
+  // ?trial=1 (the landing's "Start free trial"): the teacher's door keeps it, so their steps end at /trial.
+  const tq = carry(trialOf(req.query));
   const body = html`<div class="doors whofor ob-doors" role="group" aria-labelledby="ob-h">
       ${choice({ href: `/signup/for/kid${nq}`, emoji: '🧒', title: t('onboard.who.kid'), sub: t('onboard.who.kidSub'), cls: 'door-kid', attrs: ' rel="nofollow"' })}
       ${choice({ href: `/signup/for/grownup${nq}`, emoji: '👪', title: t('onboard.who.parent'), sub: t('onboard.who.parentSub'), cls: 'door-grownup', attrs: ' rel="nofollow"' })}
-      ${choice({ href: '/signup/for/teacher', emoji: '🍎', title: t('onboard.who.teacher'), sub: t('onboard.who.teacherSub'), cls: 'door-teacher', attrs: ' rel="nofollow"' })}
+      ${choice({ href: `/signup/for/teacher${tq}`, emoji: '🍎', title: t('onboard.who.teacher'), sub: t('onboard.who.teacherSub'), cls: 'door-teacher', attrs: ' rel="nofollow"' })}
     </div>
     ${haveAccount(req, next)}
     <p class="center small ob-guest"><button class="btn btn-sm btn-link" type="button" data-guest-play="${next || '/'}">${t('auth.page.playAsGuest')}</button></p>`;

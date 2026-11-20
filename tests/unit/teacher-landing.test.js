@@ -63,16 +63,21 @@ test('no session (a first visit or a search engine): "/" is the teacher landing 
   }
 });
 
-test('the top bar: Just Play (JUST_PLAY_URL) and Start free trial; every trial button goes to /trial; pricing to /plans', async () => {
+test('the top bar: three links, Sign in and Start free trial; every trial button asks who\'s signing up; pricing to /plans', async () => {
   const s = (await call(null, '/')).text;
   const bar = /<header class="lp-bar"[\s\S]*?<\/header>/.exec(s)[0];
   assert.equal(L.JUST_PLAY_URL, '/play');
-  assert.match(bar, /<a class="lp-btn lp-btn-ghost lp-btn-sm lp-justplay" href="\/play" data-cta="play">Just Play /);
+  assert.equal(L.TRIAL_URL, '/signup?trial=1');
+  const wide = /<nav class="lp-nav"[^>]*>([\s\S]*?)<\/nav>/.exec(bar)[1];
+  assert.deepEqual([...wide.matchAll(/href="([^"]+)"/g)].map(m => m[1]), ['#how', '#pricing', '#faq'], 'a short bar');
+  const actions = /<div class="lp-actions">([\s\S]*?)<\/div>/.exec(bar)[1];
+  assert.doesNotMatch(actions, /lp-justplay/, 'Just Play is in the menu and down the page, not the bar');
+  assert.match(actions, /<a class="lp-signin" href="\/login">Sign in<\/a>/);
   // The link has a name of its own: on a phone only its short, aria-hidden words show.
-  assert.match(bar, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/trial" data-cta="trial" aria-label="Start free trial"><span class="lp-long">Start free trial<\/span>/);
-  assert.ok(bar.indexOf('lp-justplay') < bar.indexOf('href="/trial"'), 'Just Play, then the trial, at the right');
+  assert.match(actions, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/signup\?trial=1" data-cta="trial" aria-label="Start free trial"><span class="lp-long">Start free trial<\/span>/);
+  assert.match(bar, /<nav class="lp-menu-panel"[\s\S]*?href="\/play" data-cta="play">Just Play/, 'Just Play stays in the menu');
   const trials = [...s.matchAll(/<a [^>]*data-cta="trial"[^>]*>/g)].map(m => /href="([^"]+)"/.exec(m[0])[1]);
-  assert.ok(trials.length >= 5); assert.ok(trials.every(h => h === '/trial'), trials.join());
+  assert.ok(trials.length >= 5); assert.ok(trials.every(h => h === '/signup?trial=1'), trials.join());
   assert.match(s, /href="\/plans" data-cta="pricing"/);
   assert.match(s, /No card needed[\s\S]*Cancel anytime[\s\S]*Unlimited students/, 'the trust line');
   assert.match(s, /href="mailto:Greg@oomba\.ai\?subject=/, 'schools: talk to us');
@@ -183,12 +188,11 @@ test('the page works without JavaScript and loads nothing from elsewhere', async
   assert.match(s, /<figure class="lp-demo" data-stage="done"/, 'the hero shows the whole lesson → game picture before any script');
 });
 
-test('class dashboards: a section with the real screenshots, in every language, linked from the wide top bar', async () => {
+test('class dashboards: a section with the real screenshots, in every language, linked from the menu', async () => {
   const fs = await import('node:fs');
   const s = (await call(null, '/')).text;
   assert.match(s, /<section class="lp-sec lp-split lp-split-rev" id="dashboards" aria-labelledby="dash-h">/);
-  assert.match(s, /<nav class="lp-nav"[^>]*>\s*<a href="#dashboards">Dashboards<\/a>/, 'first in the top bar');
-  assert.match(s, /<nav class="lp-menu-panel"[\s\S]*?<a href="#dashboards">Dashboards<\/a>/, 'and in the menu (phones)');
+  assert.match(s, /<nav class="lp-menu-panel"[\s\S]*?<a href="#dashboards">Dashboards<\/a>/, 'in the menu');
   for (const f of ['dash-teacher-d-1024', 'dash-teacher-d-2048', 'dash-student-p-390', 'dash-student-p-780']) {
     assert.ok(s.includes(`/img/how/${f}.webp`), f);
     assert.ok(fs.existsSync(new URL(`../../public/img/how/${f}.webp`, import.meta.url)), `${f}.webp is in the repo`);
