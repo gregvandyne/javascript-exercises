@@ -25,6 +25,7 @@ import { classHeader } from './schools.js';
 import { zoneNote, dueChip } from './lessons.js';
 import { gcAssignField, gcAfterAssign } from './gclassroom.js';
 import { studentHref } from './student-report.js';
+import { wishBox, WISH_CSS } from './library-suggest.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/library.css?v=${VERSION}">`);
@@ -65,6 +66,24 @@ function classParam(req) {
 }
 const assignHref = (bk, c) => `/library/${bk.id}/assign${c ? `?class=${c.id}` : ''}`;
 
+/** One book's card in the library grid (and in the suggestion box's "Books for you", routes/library-suggest.js): the
+ *  cover, grade, title, pages, this reader's progress (read: their story_reads row), Read, and Assign for staff. */
+export function bookCard(t, bk, { read = null, staff = false, forClass = null } = {}) {
+  const status = () => {
+    const s = LIB.stateOf(read, bk);
+    if (s.state === 'done') return html`<span class="lb-state is-done">✅ ${t('library.state.done', { right: s.right, total: s.total })}</span>`;
+    if (s.state === 'quiz') return html`<span class="lb-state">📝 ${t('library.state.quiz')}</span>`;
+    if (s.state === 'reading') return html`<span class="lb-state">📖 ${t('library.state.reading', { page: s.page, pages: s.pages })}</span>`;
+    return '';
+  };
+  return html`<li class="lb-card" data-grade="${bk.grade}">
+    <a class="lb-cover" href="/library/${bk.id}" tabindex="-1" aria-hidden="true"><img src="${bk.cover.src}" alt="" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}" loading="lazy" decoding="async"></a>
+    <div class="lb-body">${gradeChip(t, bk.grade)}
+      <h2 class="lb-title"><a href="/library/${bk.id}" dir="auto">${bk.title}</a></h2>
+      <p class="lb-meta small muted">${meta(t, bk)}</p>${status()}
+      <div class="lb-acts"><a class="btn btn-primary btn-sm" href="/library/${bk.id}/read">📖 ${t('library.read')}</a>${staff ? html`<a class="btn btn-sm" href="${assignHref(bk, forClass)}">📌 ${t('library.assign')}</a>` : ''}</div></div></li>`;
+}
+
 // ---------------------------------------------------------------- the library
 router.get('/library', (req, res) => {
   const t = req.t, u = req.user;
@@ -80,22 +99,11 @@ router.get('/library', (req, res) => {
   const reads = u ? new Map(LIB.myReads(u.id, 500).map(x => [x.book.id, x.read])) : new Map();
   const qs = over => { const p = new URLSearchParams(Object.entries({ grade: grade || '', q: words, class: forClass ? forClass.id : '', ...over }).filter(([, v]) => v)).toString(); return `/library${p ? `?${p}` : ''}`; };
   const chip = (on, href, label) => html`<a class="chip${on ? ' on' : ''}" href="${href}"${on ? raw(' aria-current="true"') : ''}>${label}</a>`;
-  const status = bk => {
-    const s = LIB.stateOf(reads.get(bk.id), bk);
-    if (s.state === 'done') return html`<span class="lb-state is-done">✅ ${t('library.state.done', { right: s.right, total: s.total })}</span>`;
-    if (s.state === 'quiz') return html`<span class="lb-state">📝 ${t('library.state.quiz')}</span>`;
-    if (s.state === 'reading') return html`<span class="lb-state">📖 ${t('library.state.reading', { page: s.page, pages: s.pages })}</span>`;
-    return '';
-  };
-  const card = bk => html`<li class="lb-card" data-grade="${bk.grade}">
-    <a class="lb-cover" href="/library/${bk.id}" tabindex="-1" aria-hidden="true"><img src="${bk.cover.src}" alt="" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}" loading="lazy" decoding="async"></a>
-    <div class="lb-body">${gradeChip(t, bk.grade)}
-      <h2 class="lb-title"><a href="/library/${bk.id}" dir="auto">${bk.title}</a></h2>
-      <p class="lb-meta small muted">${meta(t, bk)}</p>${status(bk)}
-      <div class="lb-acts"><a class="btn btn-primary btn-sm" href="/library/${bk.id}/read">📖 ${t('library.read')}</a>${staff ? html`<a class="btn btn-sm" href="${assignHref(bk, forClass)}">📌 ${t('library.assign')}</a>` : ''}</div></div></li>`;
+  const card = bk => bookCard(t, bk, { read: reads.get(bk.id), staff, forClass });
   const body = html`<div class="slib">
     <div class="pagehead lb-head"><div><h1><span aria-hidden="true">📚</span> ${t('library.title')}</h1><p class="muted">${t('library.lead', { count: LIB.books().length })}</p></div></div>
     ${forClass ? html`<p class="notice lb-forclass">📌 ${t('library.forClass', { class: forClass.name })} <a href="/class/${forClass.id}">${t('library.backToClass')}</a></p>` : ''}
+    ${wishBox(t, grade, forClass)}
     <form class="lb-tools" method="get" action="/library" role="search" aria-label="${t('library.searchLabel')}">
       <div class="chips scroll lb-levels" role="group" aria-label="${t('library.gradesLabel')}">
         ${chip(!grade, qs({ grade: '' }), t('library.allGrades'))}
@@ -110,7 +118,7 @@ router.get('/library', (req, res) => {
       : html`<section class="panel">${emptyState({ emoji: '🔎', title: t('library.none'), text: t('library.noneText'), action: html`<a class="btn" href="/library">${t('library.allGrades')}</a>` })}</section>`}
     <p class="small muted lb-foot">${t('library.footCredit')} ${ext('https://creativecommons.org/licenses/by/4.0/', 'CC BY 4.0')} · ${t('library.footQuestions')}</p>
   </div>`;
-  page(req, res, { title: t('library.title'), active: 'learn', body, head: CSS, description: t('library.lead', { count: LIB.books().length }) });
+  page(req, res, { title: t('library.title'), active: 'learn', body, head: raw(`${CSS}${WISH_CSS}`), scripts: ['/js/library-suggest.js'], description: t('library.lead', { count: LIB.books().length }) });
 });
 
 // ---------------------------------------------------------------- one book

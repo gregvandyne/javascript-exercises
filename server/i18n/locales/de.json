@@ -11720,6 +11720,19 @@
       "answer": "Antwort: {answer}",
       "page": "Seite {page}",
       "missed": "{count} lagen beim ersten Mal falsch"
+    },
+    "wish": {
+      "label": "Was möchtest du heute lesen?",
+      "placeholder": "Dinosaurier, eine lustige Geschichte, etwas über den Weltraum...",
+      "go": "Bücher finden",
+      "busy": "Ich suche...",
+      "heading": "Bücher für dich",
+      "back": "Alle Bücher",
+      "tryOther": "Versuchen wir es mit anderen Wörtern. Worum soll die Geschichte gehen?",
+      "none": "Dazu haben wir noch kein Buch gefunden. Hier sind Bücher, die viele gern lesen.",
+      "found": "Wir haben {count, plural, one {# Buch} other {# Bücher}} für dich gefunden.",
+      "empty": "Schreib, worüber du lesen möchtest.",
+      "error": "Etwas ist schiefgegangen. Versuch es noch einmal."
     }
   }
 }

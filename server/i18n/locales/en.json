@@ -12146,6 +12146,19 @@
       "answer": "Answer: {answer}",
       "page": "page {page}",
       "missed": "{count} missed it the first time"
+    },
+    "wish": {
+      "label": "What would you like to read today?",
+      "placeholder": "dinosaurs, a funny story, something about space...",
+      "go": "Find books",
+      "busy": "Looking...",
+      "heading": "Books for you",
+      "back": "All books",
+      "tryOther": "Let's try different words. What would you like a story to be about?",
+      "none": "We could not find a book about that yet. Here are some books lots of readers enjoy.",
+      "found": "We found {count, plural, one {# book} other {# books}} for you.",
+      "empty": "Type what you would like to read about.",
+      "error": "Something went wrong. Please try again."
     }
   }
 }

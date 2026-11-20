@@ -11720,6 +11720,19 @@
       "answer": "Risposta: {answer}",
       "page": "pagina {page}",
       "missed": "{count} hanno sbagliato la prima volta"
+    },
+    "wish": {
+      "label": "Cosa ti va di leggere oggi?",
+      "placeholder": "dinosauri, una storia divertente, qualcosa sullo spazio...",
+      "go": "Trova libri",
+      "busy": "Cerco...",
+      "heading": "Libri per te",
+      "back": "Tutti i libri",
+      "tryOther": "Proviamo con altre parole. Di cosa vorresti che parlasse la storia?",
+      "none": "Non abbiamo ancora trovato un libro su questo. Ecco alcuni libri che piacciono a tanti lettori.",
+      "found": "Abbiamo trovato {count, plural, one {# libro} other {# libri}} per te.",
+      "empty": "Scrivi cosa ti piacerebbe leggere.",
+      "error": "Qualcosa è andato storto. Riprova."
     }
   }
 }

@@ -9080,3 +9080,51 @@ documented measures; and "keep adding more books from the original source".
 - Tests: `tests/unit/library.test.js` (the measures and bands, sight words with endings, hand-placed pictures accepted
   only when valid, every licensed story read, grades and measures in the manifest, old level links), and
   `library-browser.test.js` (grade chips).
+
+## Story Library: book suggestions, "What would you like to read today?" (20 Nov 2026)
+
+Owner: a friendly box at the top of the Story Library where a reader types what they want to read and gets up to 5
+books from our library, chosen by a cheap Claude model.
+
+- **The model only chooses.** It gets the catalog (one line a book: id | title | grade | the first 18 words of its first
+  two text pages and what its first pictures show) and answers with book ids in a JSON schema (`{ ids: string[] }`,
+  structured outputs). Ids are checked against the library (`getBook`): unknown ones dropped, no repeats, at most 5. The
+  page shows the library's own cards for them (`bookCard` in `routes/library.js`, shared with the grid) under "Books
+  for you", with "All books" to go back. Every word on screen is ours, in all languages; nothing the model writes is
+  shown. Books are read only through `books()` / `getBook()`, so a second source (Bloom) joins the catalog by itself.
+- **The model and the call** (`server/services/library-suggest.js`): `claude-haiku-5-5` (`LIBRARY_SUGGEST_MODEL` to
+  change it) through the shared client `anthropic('free')` (no key or the AI budget spent: no call), `output_config`
+  `effort: 'low'` and the schema, no `thinking` setting (a disabled one returns a 400 on some models; low effort keeps
+  it short), `max_tokens` 300, 8 s timeout and no retries. The catalog is in the system prompt with
+  `cache_control: ephemeral` and is byte-identical for every reader (the grade preference goes in the user turn), so
+  repeated calls read it from the cache. The wish is in `<request>` tags with the rule that it is a reader's wish, never
+  instructions. Usage is recorded with `aiBudget.recordUsage`.
+- **Cost per query** (84 books; the catalog and rules are about 4,800 tokens): a cache read is 4,800 × $0.01/M =
+  $0.00005, plus about 60 uncached input tokens ($0.000006) and 30 to 150 output tokens ($0.00002 to $0.00008): **about
+  $0.0001 a query** while the cache is warm (5 minutes), **about $0.0007** for the first one after it cools (a cache
+  write at 1.25 × $0.10/M = $0.0006). The kid-safety model check before it (below) adds about $0.00005 to $0.0001. With
+  the 1-hour answer cache, a class asking for "dinosaurs" pays once. Bloom books make the catalog longer at about 58
+  tokens a book (500 books: about 29,000 tokens, $0.0003 a warm query).
+- **Safety and privacy.** The wish is at most 120 characters; emails, phone numbers and links are taken out first. Then
+  the Builder's own screening runs (`screenInput`: the word rules, and the model classifier when a key is set); a wish
+  it stops gets "Let's try different words..." and no suggestion call. The wish is never stored or logged: no table
+  holds it (a test reads every table), the request log writes only the method and path, and the answer cache keys are
+  SHA-256 hashes of the normalized wish and grade (at most 300, one hour, least recently used out first). The endpoint
+  is rate limited (40 a minute per reader or address).
+- **Always works.** No client, an error, a refusal, a cut-off answer or a timeout: a local keyword match on titles (3
+  points), page text and picture descriptions (1), with a few related words ("funny" finds "laugh", "space" finds
+  "moon") and grade words ("easy" Grade 1, "grade 3", "chapter book" Grades 4-5). Local answers are not cached, so the
+  model is asked again next time. When nothing fits (the model's empty list, or no local match): "We could not find a
+  book about that yet" and 4 books: the most read, then the easiest at or near the reader's grade.
+- **The reader's grade** is a preference, not a filter: the grade chip they are on, else a signed-in student's grade
+  from their school (`school_members.grade`, "3rd" or "K" read as a band). The model is told to prefer books at or near
+  it; the local match sorts by it after the topic.
+- **Where it lives.** `routes/library-suggest.js` (`POST /api/library/suggest`, the box markup), 
+  `public/js/library-suggest.js` (the box is hidden until the script runs, so it never shows without JavaScript),
+  `public/css/library-suggest.css`. The only edits to the library page: the box above the grade chips, its script and
+  stylesheet, and the card moved into `bookCard`. Strings: `library.wish.*` in every language (en-GB uses the English).
+- Tests: `tests/unit/library-suggest.test.js` (a stand-in model: ids checked, the request shape and cache marker, a
+  screened wish never reaches the model, the local match on no client / error / refusal / bad JSON / timeout, the
+  cache, the length cap and cleaning, no table holds the wish, the grade preference, the rate limit, the API's cards)
+  and `tests/unit/library-suggest-browser.test.js` (Chromium: a wish shows the cards, All books brings the grid back, a
+  screened wish, phones with no sideways scroll). No real API call was made while building it (no key in the sandbox).

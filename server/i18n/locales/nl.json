@@ -11720,6 +11720,19 @@
       "answer": "Antwoord: {answer}",
       "page": "bladzijde {page}",
       "missed": "{count} hadden het de eerste keer fout"
+    },
+    "wish": {
+      "label": "Wat wil je vandaag lezen?",
+      "placeholder": "dinosaurussen, een grappig verhaal, iets over de ruimte...",
+      "go": "Boeken zoeken",
+      "busy": "Even zoeken...",
+      "heading": "Boeken voor jou",
+      "back": "Alle boeken",
+      "tryOther": "Laten we andere woorden proberen. Waar wil je dat het verhaal over gaat?",
+      "none": "We hebben daar nog geen boek over gevonden. Hier zijn boeken die veel lezers leuk vinden.",
+      "found": "We hebben {count, plural, one {# boek} other {# boeken}} voor je gevonden.",
+      "empty": "Schrijf waarover je wilt lezen.",
+      "error": "Er ging iets mis. Probeer het nog eens."
     }
   }
 }
