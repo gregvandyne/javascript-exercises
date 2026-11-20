@@ -56,7 +56,9 @@ export function credits(t, bk, { full = false } = {}) {
     c.publisher && c.publisher !== c.platform ? `${c.publisher}, ${c.platform}` : c.platform,
   ].filter(Boolean);
   const lic = c.licenseUrl ? ext(c.licenseUrl, c.licenseName) : c.licenseName;
-  const note = bk.source === 'bloom' ? (c.shareAlike ? t('library.credits.changesBloomSA', { license: c.licenseName }) : t('library.credits.changesBloom')) : t('library.credits.changes');
+  // A Bloom book whose text mistakes Oomba corrected (seed-library/bloom.json picks.<id>.fixes) says so first, so the
+  // share-alike note that follows covers the corrected text too.
+  const note = bk.source === 'bloom' ? `${c.corrected ? `${t('library.credits.correctedBloom')} ` : ''}${c.shareAlike ? t('library.credits.changesBloomSA', { license: c.licenseName }) : t('library.credits.changesBloom')}` : t('library.credits.changes');
   return html`<p class="lb-credit small muted" dir="auto"><span>${parts.join(' · ')} · ${lic}</span>
     <span class="lb-credit-note">${note}${full && c.sourceUrl ? html` ${ext(c.sourceUrl, bk.source === 'bloom' ? t('library.credits.originalBloom') : t('library.credits.original'))}` : ''}</span></p>`;
 }

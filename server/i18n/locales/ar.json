@@ -11673,6 +11673,7 @@
       "from": "مأخوذ عن كتاب لـ {name}",
       "changesBloom": "غيّرت Oomba حجم الصور وتعرض الكتاب صفحةً صفحة. لا تؤيد Bloom Library ولا SIL Global ولا ناشر الكتاب منصة Oomba.",
       "changesBloomSA": "غيّرت Oomba حجم الصور وتعرض الكتاب صفحةً صفحة؛ وهذه الصفحات المعدّلة متاحة بالترخيص نفسه، {license}. لا تؤيد Bloom Library ولا SIL Global ولا ناشر الكتاب منصة Oomba.",
+      "correctedBloom": "صحّحت Oomba الإملاء وعلامات الترقيم.",
       "originalBloom": "الكتاب الأصلي على Bloom Library."
     },
     "readToMe": "اقرأ لي",

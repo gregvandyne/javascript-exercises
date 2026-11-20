@@ -1812,6 +1812,275 @@
     }
    ]
   },
+  "0msgQEILAb": {
+   "credits": {
+    "text": [
+     "Joanna Smith"
+    ]
+   },
+   "fixes": [
+    {
+     "page": 1,
+     "from": "\"Come on girl!”",
+     "to": "“Come on, girl!”"
+    },
+    {
+     "page": 2,
+     "from": "animals –sheep, goats, cows and yaks –up",
+     "to": "animals – sheep, goats, cows and yaks – up"
+    },
+    {
+     "page": 4,
+     "from": "\"Where is our cow?”",
+     "to": "“Where is our cow?”"
+    },
+    {
+     "page": 6,
+     "from": "“Ask them.\"",
+     "to": "“Ask them.”"
+    }
+   ],
+   "questions": [
+    {
+     "q": "Whose turn was it to take the animals up to the hills?",
+     "right": "Nawang's",
+     "wrong": [
+      "Padma's",
+      "Aunty's"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Where did Padma ask first after Nawang?",
+     "right": "At the water pipe",
+     "wrong": [
+      "At the school",
+      "At the shop"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why is the cow called naughty?",
+     "right": "She went into the garden and ruined the vegetables",
+     "wrong": [
+      "She ran up the hill alone",
+      "She broke the water pipe"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "graze": "To eat grass in a field.",
+    "yaks": "Big, hairy cattle that live in cold mountains."
+   }
+  },
+  "2Bis5QlQwQ": {
+   "fixes": [
+    {
+     "page": 1,
+     "from": "water pump will work” answered",
+     "to": "water pump will work,” answered"
+    },
+    {
+     "page": 2,
+     "from": "Come” called Padma",
+     "to": "Come,” called Padma"
+    },
+    {
+     "page": 2,
+     "from": "coming.”\n​",
+     "to": "coming.”"
+    },
+    {
+     "page": 4,
+     "from": "called Padma “Water",
+     "to": "called Padma. “Water"
+    },
+    {
+     "page": 5,
+     "from": "called Padma “Water is coming.\"",
+     "to": "called Padma. “Water is coming.”"
+    },
+    {
+     "page": 6,
+     "from": "Padma called, “Water is coming”.",
+     "to": "Padma called. “Water is coming.”"
+    },
+    {
+     "page": 8,
+     "from": "Padam called “Water",
+     "to": "Padma called. “Water"
+    },
+    {
+     "page": 9,
+     "from": "Come.” She called “Water",
+     "to": "Come,” she called. “Water"
+    },
+    {
+     "page": 10,
+     "from": "Cousin is making monos.\n\"Achi, Achi. Come,\" said Padma, \"Water is coming.\"",
+     "to": "Cousin is making momos.\n“Achi, Achi. Come,” said Padma. “Water is coming.”"
+    },
+    {
+     "page": 11,
+     "from": "\"Now everyone will get water,\" said Padma happily.\n\"Yes, we will all get water!\" Dechen smiled.",
+     "to": "“Now everyone will get water,” said Padma happily.\n“Yes, we will all get water!” Dechen smiled."
+    }
+   ],
+   "questions": [
+    {
+     "q": "What did the water pump need to work?",
+     "right": "Electricity",
+     "wrong": [
+      "Snow",
+      "Wood"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What was Padma's sister doing?",
+     "right": "Milking the cow",
+     "wrong": [
+      "Cutting wood",
+      "Washing clothes"
+     ],
+     "page": 6,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Padma run to call everyone?",
+     "right": "So everyone could get water while it was coming",
+     "wrong": [
+      "To play a game in the snow",
+      "To ask for help with the cow"
+     ],
+     "page": 3,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "momos": "Small steamed dumplings.",
+    "Aama": "Mother."
+   }
+  },
+  "2YIynlyAt7": {
+   "fixes": [
+    {
+     "page": 12,
+     "from": "waist.Chun-chanan-chan",
+     "to": "waist. Chun-chanan-chan"
+    },
+    {
+     "page": 13,
+     "from": "laughed Sona.“Silence",
+     "to": "laughed Sona. “Silence"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What was Sona's mother printing on?",
+     "right": "A sari",
+     "wrong": [
+      "A paper",
+      "A wall"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What could Ma not find?",
+     "right": "Her keys",
+     "wrong": [
+      "Her colors",
+      "Her block"
+     ],
+     "page": 9,
+     "kind": "literal"
+    },
+    {
+     "q": "How did Sona know where the keys were?",
+     "right": "She heard them jingle on Ma's odhni",
+     "wrong": [
+      "She saw Ma hide them",
+      "The keys were on the table"
+     ],
+     "page": 13,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "block": "A carved piece of wood used to stamp patterns on cloth.",
+    "odhni": "A long piece of cloth worn like a shawl."
+   }
+  },
+  "3NpGshx2Po": {
+   "credits": {
+    "text": [
+     "Sanjana Kapur"
+    ],
+    "illustration": [
+     "Sunaina Coelho"
+    ]
+   },
+   "fixes": [
+    {
+     "page": 0,
+     "from": "Who Stole Bahaiya's Smile",
+     "to": "Who Stole Bhaiya's Smile?"
+    },
+    {
+     "page": 3,
+     "from": "want to,\" Bhaiya says. \"I am",
+     "to": "want to,” Bhaiya says. “I am"
+    },
+    {
+     "page": 12,
+     "from": "pretty?\" Chiru says.\n“They are okay, Chiru.” Bhaiya says.",
+     "to": "pretty?” Chiru says.\n“They are okay, Chiru,” Bhaiya says."
+    }
+   ],
+   "questions": [
+    {
+     "q": "What does Chiru name the monster?",
+     "right": "Dukduk",
+     "wrong": [
+      "Mangasura",
+      "Bhaiya"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Chiru bake for Bhaiya's birthday?",
+     "right": "A cake",
+     "wrong": [
+      "Bread",
+      "Cookies"
+     ],
+     "page": 15,
+     "kind": "literal"
+    },
+    {
+     "q": "What helped Bhaiya smile his old smile?",
+     "right": "Chiru said they could play whenever he felt like it",
+     "wrong": [
+      "Papa told him to eat well",
+      "Nani said he was tough"
+     ],
+     "page": 18,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "Bhaiya": "Big brother, in Hindi.",
+    "Nani and Nana": "Grandmother and grandfather (mother's parents).",
+    "depression": "An illness that makes a person feel very sad for a long time."
+   }
+  },
   "3xdzTkHClw": {
    "questions": [
     {
@@ -1994,6 +2263,121 @@
    "dropEnd": {
     "pages": 1,
     "why": "Page 14 is a note for grown-ups about the artist's village (development, climate, and nature revered as gods), not part of the story."
+   }
+  },
+  "5u99Uj7X4H": {
+   "dropEnd": {
+    "pages": 2,
+    "why": "Notes after the story about eating seasonally (Eating Seasonally), not part of the story."
+   },
+   "fixes": [
+    {
+     "page": 4,
+     "from": "take one,when our hands are full,‌we are done",
+     "to": "take one, when our hands are full, we are done"
+    }
+   ],
+   "questions": [
+    {
+     "q": "Where do the alambi mushrooms grow?",
+     "right": "On termite hills",
+     "wrong": [
+      "On rice plants",
+      "Under the house"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "What do the children draw on the tubers and gourds?",
+     "right": "Eyes and noses, brows and ears",
+     "wrong": [
+      "Flowers and stars",
+      "Numbers and letters"
+     ],
+     "page": 9,
+     "kind": "literal"
+    },
+    {
+     "q": "Why do they sing \"Save one, take one\" as they pick?",
+     "right": "So they leave some mushrooms to grow again",
+     "wrong": [
+      "So the mushrooms grow faster",
+      "So the rain stops"
+     ],
+     "page": 4,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "monsoon": "The season of heavy rain in India.",
+    "Aai": "Mother, in Marathi.",
+    "Baba": "Father.",
+    "Maushi": "Mother's sister, an aunt.",
+    "Ajji": "Grandmother.",
+    "Ajoba": "Grandfather.",
+    "nachni": "Finger millet, a grain.",
+    "alambi": "Small white wild mushrooms.",
+    "phodshi": "Long, thin wild greens eaten in the monsoon.",
+    "bhakri": "A round, flat bread.",
+    "tubers": "Fat roots or stems that grow underground, like potatoes and yams.",
+    "gourds": "Vegetables with hard skins, like pumpkins.",
+    "dudhi halwa": "A sweet dish made from bottle gourd."
+   }
+  },
+  "6rvW9OSAe9": {
+   "dropEnd": {
+    "pages": 2,
+    "why": "Two coloring pages after the story (\"Use your imagination and colour this picture\")."
+   },
+   "fixes": [
+    {
+     "page": 11,
+     "from": "take them away!They could be coming to your river very soon!\"",
+     "to": "take them away! They could be coming to your river very soon!”"
+    },
+    {
+     "page": 14,
+     "from": "\"Please tell your father to come and see me immediately,\"",
+     "to": "“Please tell your father to come and see me immediately,”"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What did the young fish, frogs and tortoises love to hear on the radio?",
+     "right": "Film music",
+     "wrong": [
+      "The news",
+      "Stories"
+     ],
+     "page": 8,
+     "kind": "literal"
+    },
+    {
+     "q": "Who did Grandpa Fish ask to come and see him?",
+     "right": "The village headman",
+     "wrong": [
+      "The newscaster",
+      "The fishermen"
+     ],
+     "page": 14,
+     "kind": "literal"
+    },
+    {
+     "q": "Why were the young ones ashamed at the end?",
+     "right": "They never let Grandpa Fish hear the news, and the news saved them",
+     "wrong": [
+      "They broke the radio",
+      "They were rude to the headman"
+     ],
+     "page": 20,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "newscaster": "The person who reads the news on the radio or TV.",
+    "headman": "The leader of a village.",
+    "relayed": "Passed a message on to others."
    }
   },
   "6ryYW1p7iD": {
@@ -2216,6 +2600,165 @@
     }
    ]
   },
+  "8XHMoltHcI": {
+   "fixes": [
+    {
+     "page": 1,
+     "from": "doesn’t make to Attara",
+     "to": "doesn’t make it to Attara"
+    },
+    {
+     "page": 2,
+     "from": "“Let’s go, Mum,” She said.",
+     "to": "“Let’s go, Mum,” she said."
+    },
+    {
+     "page": 3,
+     "from": "as driver kept trying",
+     "to": "as the driver kept trying"
+    },
+    {
+     "page": 5,
+     "from": "thought Zompa “We",
+     "to": "thought Zompa. “We"
+    },
+    {
+     "page": 6,
+     "from": "thought Zompa “We",
+     "to": "thought Zompa. “We"
+    },
+    {
+     "page": 6,
+     "from": "the Conductor and",
+     "to": "the conductor and"
+    },
+    {
+     "page": 7,
+     "from": "the Driver yelled",
+     "to": "the driver yelled"
+    },
+    {
+     "page": 12,
+     "from": "other side of river",
+     "to": "other side of the river"
+    },
+    {
+     "page": 12,
+     "from": "in time,” She cried.",
+     "to": "in time,” she cried."
+    },
+    {
+     "page": 13,
+     "from": "“Oh, no.” cried everyone on the bus as they lent out",
+     "to": "“Oh, no!” cried everyone on the bus as they leant out"
+    },
+    {
+     "page": 13,
+     "from": "see us and stop,” thought Zompa, as she held her breath.Yes.",
+     "to": "see us and stop?” thought Zompa, as she held her breath. Yes."
+    },
+    {
+     "page": 16,
+     "from": "said Zomba to the driver, “You are",
+     "to": "said Zompa to the driver. “You are"
+    }
+   ],
+   "questions": [
+    {
+     "q": "Who were Zompa and her mother going to visit?",
+     "right": "Her grandparents",
+     "wrong": [
+      "Her teacher",
+      "Her cousins in school"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What had fallen onto the road at Mikam?",
+     "right": "Some rocks",
+     "wrong": [
+      "A tree",
+      "Five huge bags"
+     ],
+     "page": 6,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did everyone on the bus wave and yell out of the windows?",
+     "right": "So the Reckong Peo bus would see them and stop",
+     "wrong": [
+      "To say hello to the animals",
+      "Because the bus was stuck"
+     ],
+     "page": 13,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "conductor": "The person on a bus who sells tickets and helps the passengers.",
+    "reversing": "Driving backward."
+   }
+  },
+  "AlIhhm6Df3": {
+   "fixes": [
+    {
+     "page": 1,
+     "from": "in search for water for drinking",
+     "to": "in search of water to drink"
+    },
+    {
+     "page": 2,
+     "from": "tried to fly back. To the tree",
+     "to": "tried to fly back to the tree"
+    },
+    {
+     "page": 6,
+     "from": "The crow put his mouth and drunk the water droplets.",
+     "to": "The crow put his mouth in and drank the water droplets."
+    },
+    {
+     "page": 7,
+     "from": "satisfied..",
+     "to": "satisfied."
+    }
+   ],
+   "questions": [
+    {
+     "q": "What was the crow looking for?",
+     "right": "Water to drink",
+     "wrong": [
+      "Food for his babies",
+      "A new tree"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did the crow drop into the pot?",
+     "right": "Small stones",
+     "wrong": [
+      "Leaves",
+      "Seeds"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the stones help the crow drink?",
+     "right": "They made the water come up higher",
+     "wrong": [
+      "They made the water sweeter",
+      "They broke the pot"
+     ],
+     "page": 5,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "compound": "The yard around a house, often with a fence."
+   }
+  },
   "BA6cZZVUjt": {
    "questions": [
     {
@@ -2332,6 +2875,125 @@
    ],
    "glossary": {
     "pakoda": "A crispy fried snack (also pakora)."
+   }
+  },
+  "CHLB3IYhFE": {
+   "credits": {
+    "text": [
+     "Uganda Community Libraries Association"
+    ],
+    "illustration": [
+     "Vusi Malindi"
+    ],
+    "original": "African Storybook Initiative"
+   },
+   "fixes": [
+    {
+     "page": 4,
+     "from": "remind me mama.",
+     "to": "remind me, Mama."
+    },
+    {
+     "page": 8,
+     "from": "“I’m big now Mama,”",
+     "to": "\"I'm big now, Mama,\""
+    }
+   ],
+   "questions": [
+    {
+     "q": "Who opens the window to let the sun in?",
+     "right": "Anna",
+     "wrong": [
+      "Her little brother",
+      "Mama"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Who does Anna greet after bathing?",
+     "right": "Grandpa and Auntie",
+     "wrong": [
+      "Her teacher",
+      "The neighbors"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why does Anna do so many things by herself?",
+     "right": "She feels she is a big girl now",
+     "wrong": [
+      "Mama is away",
+      "Her brother is sick"
+     ],
+     "page": 1,
+     "kind": "inference"
+    }
+   ]
+  },
+  "Ck8ZoY71QY": {
+   "fixes": [
+    {
+     "page": 2,
+     "from": "ripe oranges.\"",
+     "to": "ripe oranges.”"
+    },
+    {
+     "page": 3,
+     "from": "don’t dry up.\"",
+     "to": "don’t dry up.”"
+    },
+    {
+     "page": 4,
+     "from": "in my hair.\"",
+     "to": "in my hair.”"
+    },
+    {
+     "page": 5,
+     "from": "under your shade.\"",
+     "to": "under your shade.”"
+    },
+    {
+     "page": 6,
+     "from": "from bad people.\"",
+     "to": "from bad people.”"
+    }
+   ],
+   "questions": [
+    {
+     "q": "How old is Khalai?",
+     "right": "Seven",
+     "wrong": [
+      "Five",
+      "Ten"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What does Khalai ask the flowers to do?",
+     "right": "Keep blooming",
+     "wrong": [
+      "Grow taller",
+      "Give oranges"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why does Khalai sigh at the end?",
+     "right": "The oranges are still green",
+     "wrong": [
+      "The grass dried up",
+      "She is late for school"
+     ],
+     "page": 8,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "hedge": "A row of bushes growing close together, like a fence."
    }
   },
   "DZw4pSaygC": {
@@ -2470,6 +3132,162 @@
     }
    ]
   },
+  "ERMHxDymEF": {
+   "credits": {
+    "publisher": "African Storybook Initiative"
+   },
+   "fixes": [
+    {
+     "page": 5,
+     "from": "hungrier and hungrier",
+     "to": "hungrier and hungrier."
+    },
+    {
+     "page": 6,
+     "from": "And\nTurtle dived",
+     "to": "And Turtle dived"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What did Anansi cook?",
+     "right": "Yams",
+     "wrong": [
+      "Fish",
+      "Rice"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Anansi put in his coat pockets?",
+     "right": "Stones",
+     "wrong": [
+      "Yams",
+      "Leaves"
+     ],
+     "page": 8,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Turtle ask Anansi to take off his coat?",
+     "right": "To pay Anansi back for his trick",
+     "wrong": [
+      "Because the coat was wet",
+      "Because Turtle wanted the coat"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "yams": "Large roots, a bit like potatoes, that people cook and eat.",
+    "return the favour": "Do something kind back for someone."
+   }
+  },
+  "FBrulNVj3h": {
+   "fixes": [
+    {
+     "page": 12,
+     "from": "give you your money back.\n",
+     "to": "give you your money back.”\n"
+    },
+    {
+     "page": 13,
+     "from": "atchaar",
+     "to": "atchar"
+    }
+   ],
+   "questions": [
+    {
+     "q": "How many pieces does Mr Mkhize cut each loaf into?",
+     "right": "Five",
+     "wrong": [
+      "Four",
+      "Two"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "What does Zodwa say a kota must be?",
+     "right": "A quarter of a loaf",
+     "wrong": [
+      "Half a loaf",
+      "A whole loaf"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did more children start buying from Mr Mkhize at the end?",
+     "right": "He cut fair quarters and added more chips and atchar",
+     "wrong": [
+      "Mr Motaung closed his shop",
+      "He gave the kotas away free"
+     ],
+     "page": 13,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "spaza shop": "A small shop, often at a home or a school, in South Africa.",
+    "kota": "A quarter of a loaf of bread filled with food such as chips.",
+    "atchar": "A spicy pickle made from fruit or vegetables.",
+    "polony": "A kind of soft sausage, sliced.",
+    "accusations": "Saying that someone has done something wrong."
+   }
+  },
+  "FIUpYo1KL7": {
+   "dropEnd": {
+    "pages": 1,
+    "why": "A timeline of Rathnasree Nandivada's life for grown-ups, after the story."
+   },
+   "fixes": [
+    {
+     "page": 1,
+     "from": "Today is a day like no other",
+     "to": "Today is a day like no other."
+    }
+   ],
+   "questions": [
+    {
+     "q": "What will happen to the sun today?",
+     "right": "It will disappear behind the moon",
+     "wrong": [
+      "It will turn blue",
+      "It will set at noon"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What must people wear to look at the ring of fire?",
+     "right": "Eclipse glasses",
+     "wrong": [
+      "Sun hats",
+      "Swimming goggles"
+     ],
+     "page": 6,
+     "kind": "literal"
+    },
+    {
+     "q": "Why is the room with the domed roof called the sky theatre?",
+     "right": "Its roof shows the night sky",
+     "wrong": [
+      "It has no roof at all",
+      "Plays about birds are shown there"
+     ],
+     "page": 7,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "astronomer": "A scientist who studies the stars, planets and space.",
+    "planetarium": "A building where people learn about the sky and space, often with a domed roof.",
+    "eclipse": "When the moon passes in front of the sun and hides it."
+   }
+  },
   "FUKSMHZKGV": {
    "questions": [
     {
@@ -2537,6 +3355,69 @@
      "kind": "inference"
     }
    ]
+  },
+  "FewlLlor3n": {
+   "credits": {
+    "text": [
+     "Gordon Westcott, from a fable by Aesop"
+    ],
+    "illustration": [
+     "Gordon Westcott"
+    ]
+   },
+   "fixes": [
+    {
+     "page": 3,
+     "from": "\"My Miss Crow,",
+     "to": "\"My, Miss Crow,"
+    },
+    {
+     "page": 5,
+     "from": "Begged the fox.",
+     "to": "begged the fox."
+    },
+    {
+     "page": 9,
+     "from": "A Pity about",
+     "to": "A pity about"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What did the crow have?",
+     "right": "Some cheese",
+     "wrong": [
+      "A worm",
+      "Some bread"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What did the fox ask the crow to do?",
+     "right": "Sing for him",
+     "wrong": [
+      "Fly away",
+      "Share the cheese"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the fox say such kind words to the crow?",
+     "right": "He wanted her to drop the cheese",
+     "wrong": [
+      "He wanted to be her friend",
+      "He liked her singing"
+     ],
+     "page": 8,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "tantalising": "Looking so good that you really want it.",
+    "wits": "Being clever and quick to understand."
+   }
   },
   "Fm8bG2VRDX": {
    "questions": [
@@ -2901,6 +3782,57 @@
     }
    ]
   },
+  "JTp5wxctcI": {
+   "fixes": [
+    {
+     "page": 2,
+     "from": "ming- ling stick",
+     "to": "mingling stick"
+    },
+    {
+     "page": 4,
+     "from": "loud- ly",
+     "to": "loudly"
+    }
+   ],
+   "questions": [
+    {
+     "q": "How old is Kasini?",
+     "right": "Eight",
+     "wrong": [
+      "Five",
+      "Ten"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What does Kasini sleep with every night?",
+     "right": "A wooden mingling stick",
+     "wrong": [
+      "A cook book",
+      "A chef's hat"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the stick turn red?",
+     "right": "It was angry that Kasini did not listen to it",
+     "wrong": [
+      "It was too close to the fire",
+      "Kasini painted it"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "mingling stick": "A wooden stick for stirring food in a pot.",
+    "ugali": "A thick porridge made from maize flour.",
+    "stubborn": "Not willing to change your mind."
+   }
+  },
   "KN9QkPKliG": {
    "questions": [
     {
@@ -3157,6 +4089,111 @@
     "Aid Post": "A small health center in a village in Papua New Guinea."
    }
   },
+  "MISNo6Z1OP": {
+   "fixes": [
+    {
+     "page": 3,
+     "from": "sky,\"\nDaisy said.",
+     "to": "sky,\" Daisy said."
+    },
+    {
+     "page": 8,
+     "from": "chick- ens",
+     "to": "chickens"
+    },
+    {
+     "page": 13,
+     "from": "flap- ped",
+     "to": "flapped"
+    },
+    {
+     "page": 14,
+     "from": "BAM !",
+     "to": "BAM!"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What does Daisy want to do when she grows up?",
+     "right": "Fly high into the sky",
+     "wrong": [
+      "Lay the most eggs",
+      "Sing like a sparrow"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "Where did Daisy climb the second time?",
+     "right": "To the top of the rondavel",
+     "wrong": [
+      "Up a tall tree",
+      "Onto the farmer's car"
+     ],
+     "page": 16,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Daisy keep trying after she fell?",
+     "right": "She wanted to fly and Mama believed in her",
+     "wrong": [
+      "The other chickens helped her",
+      "She was scared of the farm"
+     ],
+     "page": 12,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "rondavel": "A round house with a pointed roof, in southern Africa.",
+    "chicken coop": "A small house where chickens sleep."
+   }
+  },
+  "MJt3XUbsiU": {
+   "fixes": [
+    {
+     "page": 7,
+     "from": "forgetmy",
+     "to": "forget my"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What did Dida ask the shopkeeper for?",
+     "right": "A blue Maruti car",
+     "wrong": [
+      "Bananas and bread",
+      "A red sandal"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "What happened when Dida opened the book?",
+     "right": "She said \"La la la\" because she had forgotten how to read",
+     "wrong": [
+      "She read it all aloud",
+      "She fell asleep"
+     ],
+     "page": 10,
+     "kind": "literal"
+    },
+    {
+     "q": "What does the child promise at the end?",
+     "right": "They will never forget Dida",
+     "wrong": [
+      "They will buy Dida a car",
+      "They will teach Dida to drive"
+     ],
+     "page": 13,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "Dida": "Grandmother, in Bengali.",
+    "raining cats and dogs": "Raining very hard."
+   }
+  },
   "MiVg4YRgRi": {
    "questions": [
     {
@@ -3190,6 +4227,116 @@
      "kind": "inference"
     }
    ]
+  },
+  "MozyTFFFRR": {
+   "credits": {
+    "text": [
+     "Maya Fowler"
+    ],
+    "illustration": [
+     "Katrien Coetzer"
+    ]
+   },
+   "fixes": [
+    {
+     "page": 4,
+     "from": "whizzed away.“But",
+     "to": "whizzed away. “But"
+    }
+   ],
+   "questions": [
+    {
+     "q": "Who climbed onto Tortoise's shell first?",
+     "right": "Snail",
+     "wrong": [
+      "Mouse",
+      "Sparrow"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What was Mouse making?",
+     "right": "A garland of daisies",
+     "wrong": [
+      "A nest",
+      "A cake"
+     ],
+     "page": 8,
+     "kind": "literal"
+    },
+    {
+     "q": "Where was Tortoise's house all along?",
+     "right": "His own shell",
+     "wrong": [
+      "Under a tree",
+      "In the hills"
+     ],
+     "page": 13,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "veld": "Open, grassy land in southern Africa.",
+    "garland": "Flowers joined together in a ring or a chain.",
+    "hail": "Small balls of ice that fall from the sky."
+   }
+  },
+  "N2O83BGUNs": {
+   "fixes": [
+    {
+     "page": 4,
+     "from": "for a first time detective",
+     "to": "for a first-time detective"
+    },
+    {
+     "page": 6,
+     "from": "a brave voice,\"Who",
+     "to": "a brave voice, \"Who"
+    },
+    {
+     "page": 8,
+     "from": "for few minutes",
+     "to": "for a few minutes"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What did Kaushik get from the local store?",
+     "right": "A torch and a magnifying glass",
+     "wrong": [
+      "A hat and an umbrella",
+      "A map and a compass"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What is the tiny girl's name?",
+     "right": "Lalitha",
+     "wrong": [
+      "Megha",
+      "Kaushik"
+     ],
+     "page": 9,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the tiny people use umbrellas?",
+     "right": "They did not know how to build houses",
+     "wrong": [
+      "They liked the color red",
+      "It was always sunny"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "detective": "A person who looks for clues to solve mysteries.",
+    "magnifying glass": "A glass that makes small things look bigger.",
+    "architect": "A person who designs buildings."
+   }
   },
   "NWmuplJDVr": {
    "questions": [
@@ -3292,6 +4439,57 @@
      "kind": "inference"
     }
    ]
+  },
+  "Npv1Gjw0SC": {
+   "fixes": [
+    {
+     "page": 5,
+     "from": "vegetables.They",
+     "to": "vegetables. They"
+    },
+    {
+     "page": 13,
+     "from": "Sunil uncle’s gift",
+     "to": "Sunil Uncle’s gift"
+    }
+   ],
+   "questions": [
+    {
+     "q": "Which day does Thammi pick Goplu up from school?",
+     "right": "Wednesday",
+     "wrong": [
+      "Monday",
+      "Friday"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What does the little girl give Goplu?",
+     "right": "One tiny chip",
+     "wrong": [
+      "A toffee",
+      "A luchi-jam roll"
+     ],
+     "page": 11,
+     "kind": "literal"
+    },
+    {
+     "q": "Why could Thammi not pass the luchi-jam roll to the girl?",
+     "right": "It was too big to go through the grille",
+     "wrong": [
+      "The girl did not like jam",
+      "The train was too fast"
+     ],
+     "page": 12,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "Thammi": "Grandmother, in Bengali.",
+    "grille": "A metal screen with small square holes.",
+    "luchi": "A puffy fried bread."
+   }
   },
   "NqhZ26F97f": {
    "questions": [
@@ -3408,6 +4606,67 @@
     "paediatrician": "A children's doctor (US spelling: pediatrician)."
    }
   },
+  "OtPErgGATN": {
+   "fixes": [
+    {
+     "page": 7,
+     "from": "pep talk, ‘Play together and pass the ball to whoever is free!'\n'Yapo,",
+     "to": "pep talk. ‘Play together and pass the ball to whoever is free!’\n‘Yapo,"
+    },
+    {
+     "page": 9,
+     "from": "back into the game, ‘The score",
+     "to": "back into the game. ‘The score"
+    },
+    {
+     "page": 11,
+     "from": "‘GOAL!’\ncried Coach Tazi.",
+     "to": "‘GOAL!’ cried Coach Tazi."
+    },
+    {
+     "page": 12,
+     "from": "Congratulations for a mighty comeback",
+     "to": "Congratulations on a mighty comeback"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What does Yapo not like to do?",
+     "right": "Pass the ball",
+     "wrong": [
+      "Score goals",
+      "Practice with his dad"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Who scored the winning goal?",
+     "right": "Lindi",
+     "wrong": [
+      "Yapo",
+      "Nat"
+     ],
+     "page": 10,
+     "kind": "literal"
+    },
+    {
+     "q": "How did Yapo save the day?",
+     "right": "He passed the ball to Lindi so she could score",
+     "wrong": [
+      "He scored three goals",
+      "He stopped the other team's shot"
+     ],
+     "page": 12,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "dribbling": "Moving the ball along with little kicks.",
+    "nimble": "Quick and light on your feet.",
+    "pep talk": "A short talk to cheer a team on."
+   }
+  },
   "PCA1hFVmG4": {
    "questions": [
     {
@@ -3517,6 +4776,360 @@
     "why": "The last three pages are a life-cycle fact page, comprehension questions and a drawing activity, after the story ends."
    }
   },
+  "R3YJdUYpQn": {
+   "fixes": [
+    {
+     "page": 6,
+     "from": "poop,”\nShakthi said.",
+     "to": "poop,” Shakthi said."
+    },
+    {
+     "page": 7,
+     "from": "“It’s a peacock!” The girl said",
+     "to": "“It’s a peacock!” the girl said"
+    },
+    {
+     "page": 13,
+     "from": "\"Yes, Amma,”",
+     "to": "“Yes, Amma,”"
+    },
+    {
+     "page": 15,
+     "from": "\"I am a champion at cutting straight lines.\"",
+     "to": "“I am a champion at cutting straight lines.”"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What did Shakthi win at school?",
+     "right": "The art competition",
+     "wrong": [
+      "A running race",
+      "A spelling test"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What was Tejas's kolam meant to be?",
+     "right": "A peacock",
+     "wrong": [
+      "A mermaid",
+      "A heron"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Shakthi feel full of light at the end?",
+     "right": "She named the good things about herself, as Tejas taught her",
+     "wrong": [
+      "Amma lit every lamp in the house",
+      "She won another medal"
+     ],
+     "page": 17,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "kolam": "A pattern drawn on the ground with colored powder, in South India.",
+    "kozhukatta": "A sweet rice dumpling.",
+    "camphor": "A white substance with a strong, fresh smell.",
+    "sari": "A long cloth wrapped and pleated to make a dress."
+   }
+  },
+  "S2R4QNezp3": {
+   "title": "The Lion and the Mouse",
+   "credits": {
+    "publisher": "Bloom Library"
+   },
+   "fixes": [
+    {
+     "page": 2,
+     "from": "said the Mouse.“Now",
+     "to": "said the Mouse. “Now"
+    }
+   ],
+   "questions": [
+    {
+     "q": "How did the Mouse wake the Lion?",
+     "right": "She ran across his nose",
+     "wrong": [
+      "She bit his tail",
+      "She squeaked in his ear"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What trapped the Lion?",
+     "right": "A hunter's net",
+     "wrong": [
+      "A deep hole",
+      "A fallen tree"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What does the story show about small friends?",
+     "right": "Even a small friend can be a big help",
+     "wrong": [
+      "Small animals should stay away from lions",
+      "Lions never need help"
+     ],
+     "page": 2,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "timid": "Shy and easily scared.",
+    "roused": "Woken up.",
+    "gnawed": "Bit again and again to wear something away."
+   }
+  },
+  "SWCNOVTQ6F": {
+   "credits": {
+    "text": [
+     "Students at Universidade Pedagógica, Maxixe (a Mozambican folktale)"
+    ],
+    "illustration": [
+     "Hélder de Paz Alexandre"
+    ]
+   },
+   "questions": [
+    {
+     "q": "Which animals was the party for?",
+     "right": "Animals with horns",
+     "wrong": [
+      "Animals with long tails",
+      "Every animal"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What fell off while Rabbit was sleeping?",
+     "right": "His horns",
+     "wrong": [
+      "His hat",
+      "His ears"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Rabbit put on horns?",
+     "right": "So he could go to the party",
+     "wrong": [
+      "To keep the sun off",
+      "To scare the other animals"
+     ],
+     "page": 3,
+     "kind": "inference"
+    }
+   ]
+  },
+  "SkbPuCPZd0": {
+   "fixes": [
+    {
+     "page": 7,
+     "from": "Meanwhile,on",
+     "to": "Meanwhile, on"
+    },
+    {
+     "page": 11,
+     "from": "Lotsof",
+     "to": "Lots of"
+    },
+    {
+     "page": 12,
+     "from": "back,”she beamed",
+     "to": "back,” she beamed"
+    }
+   ],
+   "questions": [
+    {
+     "q": "Who did Mother Sun go to visit?",
+     "right": "Her sister, the Moon",
+     "wrong": [
+      "The clouds",
+      "The mountains"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did the angry trees throw everywhere?",
+     "right": "Their leaves",
+     "wrong": [
+      "Their fruit",
+      "Stones"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the sky turn bright blue?",
+     "right": "Sky was happy that Sun came home",
+     "wrong": [
+      "The clouds painted it",
+      "The wind blew it clean"
+     ],
+     "page": 8,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "grumble": "To make a low, cross sound."
+   }
+  },
+  "TcM4yYeFkq": {
+   "fixes": [
+    {
+     "page": 3,
+     "from": "asked \"Grandpa, if you plant a tree now, when will the tree grow and when will you get fruits? \"",
+     "to": "asked, \"Grandpa, if you plant a tree now, when will the tree grow and when will you get fruits?\""
+    },
+    {
+     "page": 4,
+     "from": "answered \"The",
+     "to": "answered, \"The"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What did Ramnath decide to plant?",
+     "right": "A tree",
+     "wrong": [
+      "Flowers",
+      "Rice"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "When did Deepa decide to plant a tree each year?",
+     "right": "On her birthday",
+     "wrong": [
+      "At New Year",
+      "On the first day of school"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why was Grandpa planting a tree he might not eat from?",
+     "right": "So that children after him could eat the fruit",
+     "wrong": [
+      "He wanted shade for his house",
+      "He wanted to sell the wood"
+     ],
+     "page": 4,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "resolution": "A promise you make to yourself to do something.",
+    "ancestors": "Family members who lived long ago.",
+    "greenery": "Green plants and trees."
+   }
+  },
+  "U4W4NFvz2l": {
+   "credits": {
+    "text": [
+     "Refilwe Nsibande"
+    ],
+    "illustration": [
+     "Josephine Versfeld"
+    ],
+    "publisher": "Book Dash"
+   },
+   "fixes": [
+    {
+     "page": 12,
+     "from": "'We look the same, but we are different and like different things and that's okay.'",
+     "to": "‘We look the same, but we are different and like different things and that’s okay.’"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What do Zibu and Zizo both like to eat?",
+     "right": "Banana bread",
+     "wrong": [
+      "Rice",
+      "Apples"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "What does Zizo want to do when he grows up?",
+     "right": "Write books",
+     "wrong": [
+      "Play soccer",
+      "Count money"
+     ],
+     "page": 10,
+     "kind": "literal"
+    },
+    {
+     "q": "What do the twins teach the children at school?",
+     "right": "You can look the same and still like different things",
+     "wrong": [
+      "Twins always like the same things",
+      "Soccer is better than drawing"
+     ],
+     "page": 12,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "twin": "One of two children born to the same mother at the same time.",
+    "accountant": "A person whose job is to work with numbers and money."
+   }
+  },
+  "U6Ym2v9aZX": {
+   "fixes": [
+    {
+     "page": 10,
+     "from": "“Purr! Purr! Purr!",
+     "to": "“Purr! Purr! Purr!”"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What is the cat's name?",
+     "right": "Safi",
+     "wrong": [
+      "Kiio",
+      "Spot"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What does Safi do when the neighbour's dog comes close?",
+     "right": "Stares at him and shows her nails",
+     "wrong": [
+      "Runs inside",
+      "Purrs at him"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why is the cat called clever?",
+     "right": "She guards the house and opens and closes the door herself",
+     "wrong": [
+      "She can cook her own food",
+      "She can count"
+     ],
+     "page": 8,
+     "kind": "inference"
+    }
+   ]
+  },
   "U81TOWfdQ7": {
    "questions": [
     {
@@ -3558,6 +5171,164 @@
     "why": "The last two pages are a page without words and discussion questions for the class, after the book ends."
    }
   },
+  "UKTKWVO4tI": {
+   "fixes": [
+    {
+     "page": 2,
+     "from": "Wangmo,\n“We boarders",
+     "to": "Wangmo, “We boarders"
+    },
+    {
+     "page": 2,
+     "from": "in the holidays.\"",
+     "to": "in the holidays.”"
+    },
+    {
+     "page": 5,
+     "from": "she saidas she",
+     "to": "she said as she"
+    },
+    {
+     "page": 6,
+     "from": "come? they asked.",
+     "to": "come?” they asked."
+    },
+    {
+     "page": 6,
+     "from": "said Dolkar, “There are so many different favours",
+     "to": "said Dolkar. “There are so many different flavours"
+    },
+    {
+     "page": 6,
+     "from": "I wish I can try one",
+     "to": "I wish I could try one"
+    },
+    {
+     "page": 6,
+     "from": "hide them in your bag.",
+     "to": "hide them in your bag.”"
+    },
+    {
+     "page": 10,
+     "from": "herself,\n“What has",
+     "to": "herself, “What has"
+    },
+    {
+     "page": 10,
+     "from": "seewhat",
+     "to": "see what"
+    },
+    {
+     "page": 11,
+     "from": "said Dolkar, “But something",
+     "to": "said Dolkar, “but something"
+    },
+    {
+     "page": 12,
+     "from": "said Dolkar, “They didn’t stayfrozen!”“Ice cream need",
+     "to": "said Dolkar. “They didn’t stay frozen!”\n“Ice cream needs"
+    },
+    {
+     "page": 12,
+     "from": "frozen!”laughed Pema.“We",
+     "to": "frozen!” laughed Pema. “We"
+    },
+    {
+     "page": 12,
+     "from": "Wangmo,as",
+     "to": "Wangmo, as"
+    },
+    {
+     "page": 13,
+     "from": "said Dolkar, “when you come to KazaI will",
+     "to": "said Dolkar. “When you come to Kaza I will"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What was coming to Kaza?",
+     "right": "Ice creams",
+     "wrong": [
+      "A new school bus",
+      "A circus"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "Where did Dolkar hide the ice creams for her friends?",
+     "right": "In her bag",
+     "wrong": [
+      "In a freezer",
+      "In her desk"
+     ],
+     "page": 8,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the ice creams melt?",
+     "right": "They were not kept in a freezer",
+     "wrong": [
+      "Dolkar sat on them",
+      "The shop sold old ones"
+     ],
+     "page": 12,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "boarders": "Children who live at their school during the term.",
+    "refrigerated": "Kept cold, like the inside of a fridge."
+   }
+  },
+  "Ucyxs3J2iQ": {
+   "credits": {
+    "text": [
+     "Rohini Nilekani"
+    ],
+    "illustration": [
+     "Angie & Upesh"
+    ],
+    "original": "Pratham Books"
+   },
+   "questions": [
+    {
+     "q": "What did Sringeri Srinivas grow?",
+     "right": "Bananas",
+     "wrong": [
+      "Mangoes",
+      "Rice"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did he slip on?",
+     "right": "A banana peel",
+     "wrong": [
+      "A wet leaf",
+      "A stone"
+     ],
+     "page": 11,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Sringeri Srinivas begin to laugh?",
+     "right": "He saw how funny he looked, covered in mud",
+     "wrong": [
+      "The monkey told him a joke",
+      "His bananas were all safe"
+     ],
+     "page": 15,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "halwa": "A soft, sweet dish.",
+    "chappals": "Sandals.",
+    "chortle": "To laugh in a happy, gurgling way."
+   }
+  },
   "VGcHIVygjT": {
    "questions": [
     {
@@ -3592,6 +5363,148 @@
     }
    ]
   },
+  "W1xCSDTuft": {
+   "dropEnd": {
+    "pages": 1,
+    "why": "\"Dear Reader\" questions after the story."
+   },
+   "fixes": [
+    {
+     "page": 4,
+     "from": "Spoiltsports",
+     "to": "Spoilsports"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What can the granny do?",
+     "right": "Juggle",
+     "wrong": [
+      "Sing",
+      "Swim"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What gift does Grandfather bring?",
+     "right": "Colored balls",
+     "wrong": [
+      "An umbrella",
+      "Juicy mangoes"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why do people around Granny get a fright?",
+     "right": "She tosses everything she sees into the air",
+     "wrong": [
+      "She shouts very loudly",
+      "She drives very fast"
+     ],
+     "page": 2,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "juggles": "Throws several things up in the air and catches them, again and again.",
+    "spoilsports": "People who spoil other people's fun.",
+    "gnash": "Grind your teeth together, when cross."
+   }
+  },
+  "W9BZOhXDw9": {
+   "fixes": [
+    {
+     "page": 9,
+     "from": "classroom.”Amelia",
+     "to": "classroom.” Amelia"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What day is it for Amelia?",
+     "right": "Her first day of school",
+     "wrong": [
+      "Her birthday",
+      "A holiday"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What does Carlos tell Amelia to put on?",
+     "right": "Her uniform",
+     "wrong": [
+      "Her shoes",
+      "Her hat"
+     ],
+     "page": 6,
+     "kind": "literal"
+    },
+    {
+     "q": "What does Amelia keep showing Carlos?",
+     "right": "That she can do each thing herself",
+     "wrong": [
+      "That she wants to stay home",
+      "That she is hungry"
+     ],
+     "page": 7,
+     "kind": "inference"
+    }
+   ]
+  },
+  "WDAU6pRXg5": {
+   "fixes": [
+    {
+     "page": 1,
+     "from": "her Mom and dad",
+     "to": "her mom and dad"
+    },
+    {
+     "page": 2,
+     "from": "Mini likes Keer",
+     "to": "Mini likes Kheer"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What is the name of Mini's dog?",
+     "right": "Peelu",
+     "wrong": [
+      "Kheer",
+      "Moti"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What does Mini's mother add to the kheer?",
+     "right": "Cashews and almonds",
+     "wrong": [
+      "Mango and salt",
+      "Rice and lemon"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "How do we know Mini cares about Peelu?",
+     "right": "She keeps some kheer and food for him",
+     "wrong": [
+      "She takes him to school",
+      "She gives him a bath every day"
+     ],
+     "page": 5,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "kheer": "A sweet pudding made with rice and milk.",
+    "relish": "Enjoy very much.",
+    "loyal": "Always on your side."
+   }
+  },
   "WjEB24Dti4": {
    "questions": [
     {
@@ -3625,6 +5538,51 @@
      "kind": "inference"
     }
    ]
+  },
+  "XtaBVLbUsM": {
+   "fixes": [
+    {
+     "page": 2,
+     "from": "I do not want to be tailor.",
+     "to": "I do not want to be a tailor."
+    }
+   ],
+   "questions": [
+    {
+     "q": "What sound does the sewing machine make?",
+     "right": "Tick-tock, tick-tock",
+     "wrong": [
+      "Ding-dong",
+      "Buzz-buzz"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "Where is John's classroom?",
+     "right": "Under a large cashew tree",
+     "wrong": [
+      "In the village hall",
+      "In father's shop"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why does father say John is a good teacher?",
+     "right": "John taught David to sew so they could make the uniforms",
+     "wrong": [
+      "John broke father's finger",
+      "John drew a picture of a teacher"
+     ],
+     "page": 8,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "tailor": "A person who makes and mends clothes.",
+    "professions": "Kinds of work people do."
+   }
   },
   "Y2olGWKQyY": {
    "questions": [
@@ -3693,6 +5651,51 @@
      "kind": "inference"
     }
    ]
+  },
+  "YfFjdYu19T": {
+   "fixes": [
+    {
+     "page": 3,
+     "from": "play on the see saw. I wonder which one of us is heaviest?",
+     "to": "play on the seesaw. I wonder which one of us is heavier?"
+    }
+   ],
+   "questions": [
+    {
+     "q": "Where is the park?",
+     "right": "Next to the sea",
+     "wrong": [
+      "In the mountains",
+      "Behind the school"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What are the white horses at the park?",
+     "right": "Statues",
+     "wrong": [
+      "Real horses",
+      "Clouds"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why are lighthouses important?",
+     "right": "They warn ships about rocks at night and in fog",
+     "wrong": [
+      "They are places to swim",
+      "They sell tickets for the bus"
+     ],
+     "page": 8,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "seesaw": "A long board that goes up and down with a child on each end.",
+    "lighthouse": "A tall tower with a bright light that guides ships."
+   }
   },
   "Yt2R2HoU1F": {
    "questions": [
@@ -4246,6 +6249,72 @@
     }
    ]
   },
+  "edobKpbCK5": {
+   "fixes": [
+    {
+     "page": 6,
+     "from": "about what she heard. She started",
+     "to": "about what he heard. He started"
+    },
+    {
+     "page": 8,
+     "from": "The horse starts to run",
+     "to": "The horse started to run"
+    },
+    {
+     "page": 9,
+     "from": "asked,“Why",
+     "to": "asked, “Why"
+    },
+    {
+     "page": 10,
+     "from": "So Donkey starts running too.",
+     "to": "So Donkey started running too."
+    },
+    {
+     "page": 12,
+     "from": "The cow is worried and starts to run as well.",
+     "to": "The cow was worried and started to run as well."
+    },
+    {
+     "page": 15,
+     "from": "running?’’",
+     "to": "running?”"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What fell from the tree?",
+     "right": "An apple",
+     "wrong": [
+      "A branch",
+      "A bird's nest"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "Which animal did Rabbit meet first?",
+     "right": "A chicken",
+     "wrong": [
+      "A dog",
+      "A cat"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "Why were all the animals running?",
+     "right": "They heard others were running, but nobody knew why",
+     "wrong": [
+      "A lion was chasing them",
+      "There was a race"
+     ],
+     "page": 15,
+     "kind": "inference"
+    }
+   ]
+  },
   "eg9aLLFlV0": {
    "questions": [
     {
@@ -4279,6 +6348,67 @@
      "kind": "inference"
     }
    ]
+  },
+  "foadKZ4Asb": {
+   "fixes": [
+    {
+     "page": 1,
+     "from": "Ou Ou, the little porcupine likes",
+     "to": "Ou Ou, the little porcupine, likes"
+    },
+    {
+     "page": 7,
+     "from": "\"What quills?”",
+     "to": "“What quills?”"
+    },
+    {
+     "page": 9,
+     "from": "my prickly friend, ” the little mouse says. “ I have",
+     "to": "my prickly friend,” the little mouse says. “I have"
+    },
+    {
+     "page": 12,
+     "from": "\"We're sorry, Ou Ou,\" they say.",
+     "to": "“We’re sorry, Ou Ou,” they say."
+    }
+   ],
+   "questions": [
+    {
+     "q": "What are the sharp spines on Ou Ou called?",
+     "right": "Quills",
+     "wrong": [
+      "Feathers",
+      "Claws"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What did the little mouse make for Ou Ou first?",
+     "right": "A special shirt",
+     "wrong": [
+      "A hat",
+      "A tent"
+     ],
+     "page": 6,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the animals stop being scared of Ou Ou?",
+     "right": "His colorful quills looked friendly, not scary",
+     "wrong": [
+      "He lost all his quills",
+      "He gave them presents"
+     ],
+     "page": 12,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "porcupine": "An animal covered in long, sharp spines.",
+    "quills": "The long, sharp spines on a porcupine.",
+    "pierced": "Poked a hole through."
+   }
   },
   "gEHeFP9GIj": {
    "questions": [
@@ -4348,6 +6478,71 @@
     }
    ]
   },
+  "gsN0mazwsF": {
+   "fixes": [
+    {
+     "page": 3,
+     "from": "“Oh, yes ! They",
+     "to": "“Oh, yes! They"
+    },
+    {
+     "page": 10,
+     "from": "halfeaten",
+     "to": "half-eaten"
+    },
+    {
+     "page": 13,
+     "from": "noodles,”\nand ran",
+     "to": "noodles,” and ran"
+    },
+    {
+     "page": 17,
+     "from": "up.\n‘How nice my parathas and brinjal curry are,’ she thought and quickly ate them up.",
+     "to": "up."
+    }
+   ],
+   "questions": [
+    {
+     "q": "What was in Samira's tiffin box?",
+     "right": "Parathas and brinjal curry",
+     "wrong": [
+      "Noodles",
+      "Idlis"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did the crow drop for Samira?",
+     "right": "A half-eaten mouse",
+     "wrong": [
+      "A worm",
+      "A grain of barley"
+     ],
+     "page": 10,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Samira's lunch seem nice at the end?",
+     "right": "The animals' food was much worse",
+     "wrong": [
+      "Amma brought her noodles",
+      "The cow shared its grass"
+     ],
+     "page": 17,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "tiffin box": "A lunch box.",
+    "parathas": "Flat, layered breads.",
+    "brinjal": "Eggplant.",
+    "upma": "A thick, warm dish made from semolina.",
+    "idlis": "Soft, steamed rice cakes.",
+    "nectar": "The sweet juice inside flowers.",
+    "chewing cud": "Chewing food again that a cow has swallowed once."
+   }
+  },
   "hPzSEW4Gsi": {
    "questions": [
     {
@@ -4381,6 +6576,56 @@
      "kind": "inference"
     }
    ]
+  },
+  "hePTMk0ymw": {
+   "fixes": [
+    {
+     "page": 3,
+     "from": "spreading it's branches",
+     "to": "spreading its branches"
+    },
+    {
+     "page": 5,
+     "from": "First comes the flowers",
+     "to": "First come the flowers"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What comes after the flowers?",
+     "right": "The bees",
+     "wrong": [
+      "The rain",
+      "The birds"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "What color is the mango inside the skin?",
+     "right": "Bright yellow",
+     "wrong": [
+      "Green",
+      "Red"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why will the child get another mango?",
+     "right": "The first one tasted so good",
+     "wrong": [
+      "The first one was rotten",
+      "A friend asked for one"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "shoot": "A new young plant just coming up.",
+    "sturdy": "Strong and not easy to break."
+   }
   },
   "htefPgQyFq": {
    "questions": [
@@ -4450,6 +6695,137 @@
     }
    ]
   },
+  "i2CfCbcKyG": {
+   "fixes": [
+    {
+     "page": 9,
+     "from": "as she a passed",
+     "to": "as she passed"
+    },
+    {
+     "page": 10,
+     "from": "needed.With",
+     "to": "needed. With"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What did the elders say the village had lost?",
+     "right": "Its spirit of celebration",
+     "wrong": [
+      "Its cows",
+      "Its river"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What did the chief of the Bhubezi give Nkanyezi?",
+     "right": "A special drum",
+     "wrong": [
+      "Paint",
+      "A bag of spices"
+     ],
+     "page": 8,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the villagers find the spirit of celebration again?",
+     "right": "Nkanyezi brought back gifts of color, music and food",
+     "wrong": [
+      "The winter came back",
+      "The elders stopped talking"
+     ],
+     "page": 11,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "slumber": "Sleep.",
+    "aroma": "A smell, often a nice one from food.",
+    "restored": "Brought back."
+   }
+  },
+  "i57MwJlCEv": {
+   "fixes": [
+    {
+     "page": 4,
+     "from": "\"OK,\" says Dudu.\n\"I'll count to three.\"",
+     "to": "“OK,” says Dudu. “I'll count to three.”"
+    },
+    {
+     "page": 4,
+     "from": "\"One . . . \" says Dudu slowly.\n\"two\" . . .\n\"THREE!\"",
+     "to": "“One . . .” says Dudu slowly.\n“Two . . .”\n“THREE!”"
+    },
+    {
+     "page": 6,
+     "from": "laugh so hard,\nDudu has to hold her tummy.\nshe says.\n\"AGAIN!\"",
+     "to": "laugh so hard, Dudu has to hold her tummy.\n“AGAIN!” she says."
+    },
+    {
+     "page": 7,
+     "from": "counts, ​“One",
+     "to": "counts, “One"
+    },
+    {
+     "page": 8,
+     "from": "\"Again!\"\nsays Dumisani.",
+     "to": "“Again!” says Dumisani."
+    },
+    {
+     "page": 9,
+     "from": "“Ah, please, Dudu?”\nsays Dumisani.",
+     "to": "“Ah, please, Dudu?” says Dumisani."
+    },
+    {
+     "page": 11,
+     "from": "shout,lifting their arms in victory.\n\"Yes!\"",
+     "to": "shout, lifting their arms in victory.\n“Yes!”"
+    },
+    {
+     "page": 13,
+     "from": "\"Teacher!\"\nDudu shouts",
+     "to": "“Teacher!” Dudu shouts"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What does Dumisani bet Dudu she can't do?",
+     "right": "Throw her hat through the window",
+     "wrong": [
+      "Climb the wall",
+      "Run to the swings first"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Where does Dumisani's hat land the first time?",
+     "right": "On the head of the stuffed rhino",
+     "wrong": [
+      "On the shelf",
+      "Outside the window"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "How did Dumisani help Dudu throw her hat through the window?",
+     "right": "He showed her how to aim and throw",
+     "wrong": [
+      "He threw it for her",
+      "He lifted her up"
+     ],
+     "page": 10,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "windowsill": "The ledge at the bottom of a window.",
+    "rebounds": "Bounces back."
+   }
+  },
   "idPZs7o3gn": {
    "questions": [
     {
@@ -4483,6 +6859,61 @@
      "kind": "inference"
     }
    ]
+  },
+  "ilT4d1OEUU": {
+   "fixes": [
+    {
+     "page": 0,
+     "from": "Andiswa Soccer",
+     "to": "Andiswa Soccer Star"
+    },
+    {
+     "page": 1,
+     "from": "if she can practise with them",
+     "to": "if she could practise with them"
+    },
+    {
+     "page": 5,
+     "from": "let her to play",
+     "to": "let her play"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What did the boys tell Andiswa to play?",
+     "right": "Netball",
+     "wrong": [
+      "Tennis",
+      "Cricket"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "Why was the coach worried on the day of the match?",
+     "right": "His best player was sick",
+     "wrong": [
+      "It was raining",
+      "The ball was lost"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "Why were girls allowed to play soccer after that day?",
+     "right": "Andiswa showed she could play well and score",
+     "wrong": [
+      "The boys were tired",
+      "The coach left the school"
+     ],
+     "page": 8,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "netball": "A ball game a bit like basketball.",
+    "practise": "To do something again and again to get better at it."
+   }
   },
   "jGyaRvVUml": {
    "questions": [
@@ -4625,6 +7056,86 @@
     }
    ]
   },
+  "lWtxIe8FLk": {
+   "credits": {
+    "text": [
+     "Nikhil Gulati"
+    ],
+    "illustration": [
+     "Nikhil Gulati"
+    ],
+    "original": "Pratham Books"
+   },
+   "fixes": [
+    {
+     "page": 2,
+     "from": "And yet it, is so far away",
+     "to": "And yet it is so far away"
+    },
+    {
+     "page": 7,
+     "from": "Research\nOrganisation (ISRO)\nlaunched",
+     "to": "Research Organisation (ISRO) launched"
+    },
+    {
+     "page": 17,
+     "from": "Mission\nControl",
+     "to": "Mission Control"
+    },
+    {
+     "page": 23,
+     "from": "It is called\nGaganyaan.",
+     "to": "It is called Gaganyaan."
+    },
+    {
+     "page": 24,
+     "from": "Sun and\nEarth.",
+     "to": "Sun and Earth."
+    },
+    {
+     "page": 26,
+     "from": "(oval) in shape. ​",
+     "to": "(oval) in shape."
+    }
+   ],
+   "questions": [
+    {
+     "q": "What did Mangalyaan carry instead of people?",
+     "right": "Four instruments, including a camera",
+     "wrong": [
+      "Three astronauts",
+      "Plants and animals"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "How many days did Mangalyaan travel to reach Mars?",
+     "right": "300",
+     "wrong": [
+      "30",
+      "1,200"
+     ],
+     "page": 16,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the scientists aim far ahead of Mars?",
+     "right": "Mars keeps moving around the Sun",
+     "wrong": [
+      "Mars is very small",
+      "The camera could not see Mars"
+     ],
+     "page": 14,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "orbit": "The path one thing takes around another in space, like the Moon around Earth.",
+    "gravity": "The pull that draws things toward each other, like a ball back to the ground.",
+    "ISRO": "The Indian Space Research Organisation, India's space agency."
+   }
+  },
   "ldaG8moDne": {
    "questions": [
     {
@@ -4655,6 +7166,62 @@
       "A singer"
      ],
      "page": 8,
+     "kind": "inference"
+    }
+   ]
+  },
+  "mScXjHSaTx": {
+   "fixes": [
+    {
+     "page": 1,
+     "from": "name him Swimmer",
+     "to": "name him Swimmer."
+    },
+    {
+     "page": 3,
+     "from": "name it Fluffy",
+     "to": "name it Fluffy."
+    },
+    {
+     "page": 4,
+     "from": "following her around",
+     "to": "following her around."
+    },
+    {
+     "page": 5,
+     "from": "She named the puppy Happy",
+     "to": "She named the puppy Happy."
+    }
+   ],
+   "questions": [
+    {
+     "q": "What pet did Juliana's brother Juan have?",
+     "right": "A fish",
+     "wrong": [
+      "A cat",
+      "A bunny"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What would Juliana name a cat?",
+     "right": "Snowball",
+     "wrong": [
+      "Fluffy",
+      "Swimmer"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Juliana's aunt let her keep the puppy?",
+     "right": "The puppy loved Juliana and followed her around",
+     "wrong": [
+      "The puppy was too noisy",
+      "Juliana paid for it"
+     ],
+     "page": 4,
      "kind": "inference"
     }
    ]
@@ -4847,6 +7414,47 @@
     "why": "The last two pages are comprehension questions and a drawing activity for the class, not part of the book."
    }
   },
+  "oyjnKnB2WG": {
+   "credits": {
+    "original": "Book Dash"
+   },
+   "questions": [
+    {
+     "q": "What is the name of Lwando's little sister?",
+     "right": "Oyiso",
+     "wrong": [
+      "Lwando",
+      "Monday"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "On Monday, why did the monster look angry?",
+     "right": "She was hungry",
+     "wrong": [
+      "She was tired",
+      "She was sad"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "How does Dad tame the monsters?",
+     "right": "By helping them feel safe",
+     "wrong": [
+      "By shouting louder",
+      "By sending them to bed"
+     ],
+     "page": 13,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "tame": "To calm down.",
+    "furious": "Very, very angry."
+   }
+  },
   "pFdwOIAZXn": {
    "questions": [
     {
@@ -4994,6 +7602,67 @@
     }
    ]
   },
+  "qELPLaz9lr": {
+   "credits": {
+    "text": [
+     "Judith Twala"
+    ],
+    "publisher": "Judith Twala"
+   },
+   "fixes": [
+    {
+     "page": 2,
+     "from": "planted.The",
+     "to": "planted. The"
+    },
+    {
+     "page": 4,
+     "from": "one of the giant pumpkin.",
+     "to": "one of the giant pumpkins."
+    },
+    {
+     "page": 5,
+     "from": "This are neighbor's cows feeding on papa's",
+     "to": "These are the neighbor's cows feeding on Papa's"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What do Mama and the child get from the shamba for roasting?",
+     "right": "Maize",
+     "wrong": [
+      "Mangoes",
+      "Sugarcane"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "Whose cows ate Papa's sweet potato vines?",
+     "right": "The neighbor's",
+     "wrong": [
+      "Grandma's",
+      "Papa's own"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why does the child like playing in the sugarcane?",
+     "right": "It is a good place to hide",
+     "wrong": [
+      "It is sweet to sleep on",
+      "It keeps the cows away"
+     ],
+     "page": 6,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "shamba": "A farm or garden, in Swahili.",
+    "salivate": "When your mouth fills with water because food looks good."
+   }
+  },
   "rShBHrHYV6": {
    "questions": [
     {
@@ -5130,6 +7799,83 @@
     }
    ]
   },
+  "sQ5PBtPOBk": {
+   "credits": {
+    "text": [
+     "Esther Mutheu"
+    ],
+    "publisher": "Esther Mutheu"
+   },
+   "fixes": [
+    {
+     "page": 1,
+     "from": "sisters.They",
+     "to": "sisters. They"
+    },
+    {
+     "page": 3,
+     "from": "a ride on his car",
+     "to": "a ride in his car"
+    },
+    {
+     "page": 4,
+     "from": "their grandparent's home",
+     "to": "their grandparents' home"
+    },
+    {
+     "page": 6,
+     "from": "their grandparent's cattle",
+     "to": "their grandparents' cattle"
+    },
+    {
+     "page": 6,
+     "from": "The animals were peacefully as they played.",
+     "to": "The animals grazed peacefully as they played."
+    },
+    {
+     "page": 8,
+     "from": "their grandparent's home",
+     "to": "their grandparents' home"
+    },
+    {
+     "page": 8,
+     "from": "\nThe End...",
+     "to": ""
+    }
+   ],
+   "questions": [
+    {
+     "q": "Who did the sisters visit in the holiday?",
+     "right": "Their grandparents",
+     "wrong": [
+      "Their teacher",
+      "Their aunt in town"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What did the girls do in granny's flower garden?",
+     "right": "Picked flowers and tossed them around",
+     "wrong": [
+      "Watered the flowers",
+      "Planted new seeds"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did Mbone's father run to their cousin?",
+     "right": "A cow was chasing him",
+     "wrong": [
+      "He was hungry",
+      "He got lost"
+     ],
+     "page": 7,
+     "kind": "inference"
+    }
+   ]
+  },
   "sSr1HWLVCY": {
    "questions": [
     {
@@ -5165,6 +7911,93 @@
    ],
    "glossary": {
     "aurora": "Colored lights that move across the night sky near the North and South Poles."
+   }
+  },
+  "scfTyZM5tr": {
+   "fixes": [
+    {
+     "page": 2,
+     "from": "squeal, \"Piu…piu.\"\nThe chickens cluck, \"Couck... couck.\"",
+     "to": "squeal, “Piu… piu.”\nThe chickens cluck, “Couck… couck.”"
+    },
+    {
+     "page": 3,
+     "from": "\"Curru...curru,\"",
+     "to": "“Curru… curru,”"
+    },
+    {
+     "page": 4,
+     "from": "\"Now let's go see the goats,\" says Maria.\n\"They eat grass!\" says Carlos. \"We should pull up some grass to feed the goats.\"\n\"No,\" answers Maria, \"The goats can feed themselves.\"",
+     "to": "“Now let's go see the goats,” says Maria.\n“They eat grass!” says Carlos. “We should pull up some grass to feed the goats.”\n“No,” answers Maria. “The goats can feed themselves.”"
+    },
+    {
+     "page": 5,
+     "from": "\"Meee... meee.\"",
+     "to": "“Meee… meee.”"
+    },
+    {
+     "page": 5,
+     "from": "“ Do you know",
+     "to": "“Do you know"
+    },
+    {
+     "page": 7,
+     "from": "has not eaten,”says Carlos",
+     "to": "has not eaten,” says Carlos"
+    },
+    {
+     "page": 7,
+     "from": "\"Whaf..whaf.\" He seems to be saying, \"I'm hungry.\"",
+     "to": "“Whaf… whaf.” He seems to be saying, “I'm hungry.”"
+    },
+    {
+     "page": 8,
+     "from": "\"Whaf..whaf,\" barks",
+     "to": "“Whaf… whaf,” barks"
+    },
+    {
+     "page": 9,
+     "from": "Mary replies",
+     "to": "Maria replies"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What does Carlos throw to the chickens?",
+     "right": "Corn",
+     "wrong": [
+      "Grass",
+      "Carrots"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What do the pigeons eat?",
+     "right": "Sorghum",
+     "wrong": [
+      "Peanuts",
+      "Bones"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the rats run out of the pantry?",
+     "right": "They had been eating the peanuts there",
+     "wrong": [
+      "They wanted to play with the dog",
+      "The goats chased them"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "poultry": "Birds kept on a farm, like chickens and ducks.",
+    "sorghum": "A grain, a bit like corn.",
+    "pantry": "A small room or cupboard where food is kept.",
+    "gnawed": "Bit again and again."
    }
   },
   "tL6sbfQUTf": {
@@ -5272,6 +8105,56 @@
      "kind": "inference"
     }
    ]
+  },
+  "v8o0OxKOr6": {
+   "fixes": [
+    {
+     "page": 1,
+     "from": "\"Oh, this looks horrible! she said.",
+     "to": "“Oh, this looks horrible!” she said."
+    },
+    {
+     "page": 5,
+     "from": "Bittus hands",
+     "to": "Bittu’s hands"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What did Manju try to draw first?",
+     "right": "The sun",
+     "wrong": [
+      "A boat",
+      "A donkey"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Syeda make with the paper and a pencil?",
+     "right": "A lollipop",
+     "wrong": [
+      "A camera",
+      "A ball"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the donkey have a strange look on his face?",
+     "right": "He ate the paper sun too fast",
+     "wrong": [
+      "He was scared of the camera",
+      "He wanted to sing"
+     ],
+     "page": 10,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "crumpled": "Squashed into a ball.",
+    "smoothened": "Made flat and smooth again."
+   }
   },
   "vjjpa4c82g": {
    "questions": [
@@ -5458,6 +8341,63 @@
     ]
    }
   },
+  "xNeM7BMoKZ": {
+   "fixes": [
+    {
+     "page": 2,
+     "from": "toothache since two days",
+     "to": "toothache for two days"
+    },
+    {
+     "page": 8,
+     "from": "teeth everyday",
+     "to": "teeth every day"
+    },
+    {
+     "page": 10,
+     "from": "\"Alright,\" laughed",
+     "to": "“Alright,” laughed"
+    }
+   ],
+   "questions": [
+    {
+     "q": "Who was the jungle physician?",
+     "right": "The monkey",
+     "wrong": [
+      "The mouse",
+      "The bear"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "How did the mouse clean the lion's teeth?",
+     "right": "With his sharp teeth",
+     "wrong": [
+      "With a stick",
+      "With water from the river"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the lion not want anyone to know?",
+     "right": "They would say their king does not keep clean",
+     "wrong": [
+      "He wanted to keep the mouse as a pet",
+      "The mouse had hurt him"
+     ],
+     "page": 9,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "Maharaj": "Great king, a way to speak to a king.",
+    "extracted": "Pulled out.",
+    "physician": "A doctor.",
+    "peevishly": "In a cross, grumpy way."
+   }
+  },
   "xbtUczudzv": {
    "questions": [
     {
@@ -5609,6 +8549,155 @@
     "why": "The last two pages are comprehension questions and a drawing activity for the class, not part of the book."
    }
   },
+  "z1IlL1iI4k": {
+   "credits": {
+    "publisher": "Abhishek Khanna"
+   },
+   "fixes": [
+    {
+     "page": 1,
+     "from": "lives in Saket area of new Delhi.",
+     "to": "lives in the Saket area of New Delhi."
+    },
+    {
+     "page": 2,
+     "from": "drops me everyday to my school",
+     "to": "drops me every day at my school"
+    },
+    {
+     "page": 2,
+     "from": "Mehrauli,New Delhi",
+     "to": "Mehrauli, New Delhi"
+    },
+    {
+     "page": 2,
+     "from": "at 7\nAM.",
+     "to": "at 7 AM."
+    },
+    {
+     "page": 2,
+     "from": "always follow the traffic rules",
+     "to": "always follows the traffic rules"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What does Sam Uncle drive?",
+     "right": "An auto",
+     "wrong": [
+      "A bus",
+      "A train"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What time does Sam Uncle come to the child's home?",
+     "right": "7 AM",
+     "wrong": [
+      "9 AM",
+      "Noon"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "Why do the child's parents rely on Sam Uncle?",
+     "right": "He is kind, drives safely and takes good care of the child",
+     "wrong": [
+      "He is the child's teacher",
+      "He lives in their house"
+     ],
+     "page": 3,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "auto": "An auto rickshaw, a small three-wheeled taxi.",
+    "generous": "Happy to give and share."
+   }
+  },
+  "z1odsw2Oe7": {
+   "credits": {
+    "text": [
+     "Cynthia Birgen"
+    ],
+    "publisher": "Cynthia Birgen"
+   },
+   "fixes": [
+    {
+     "page": 4,
+     "from": "brother.Tom",
+     "to": "brother. Tom"
+    },
+    {
+     "page": 9,
+     "from": "my grandparents home",
+     "to": "my grandparents' home"
+    },
+    {
+     "page": 10,
+     "from": "my grandparents home",
+     "to": "my grandparents' home"
+    },
+    {
+     "page": 10,
+     "from": "eat and say stories",
+     "to": "eat and tell stories"
+    },
+    {
+     "page": 11,
+     "from": "my grandparents home",
+     "to": "my grandparents' home"
+    },
+    {
+     "page": 11,
+     "from": "I always love opening of school",
+     "to": "I always love the opening of school"
+    },
+    {
+     "page": 11,
+     "from": "good morals which helps us",
+     "to": "good morals which help us"
+    }
+   ],
+   "questions": [
+    {
+     "q": "What is the name of Mary's pet?",
+     "right": "Tom",
+     "wrong": [
+      "Kimura",
+      "Spot"
+     ],
+     "page": 4,
+     "kind": "literal"
+    },
+    {
+     "q": "What is Mary's hobby?",
+     "right": "Drawing",
+     "wrong": [
+      "Singing",
+      "Swimming"
+     ],
+     "page": 7,
+     "kind": "literal"
+    },
+    {
+     "q": "Why does Mary love the start of school?",
+     "right": "She gets to see her friends again",
+     "wrong": [
+      "She gets presents",
+      "She can feed the chickens"
+     ],
+     "page": 11,
+     "kind": "inference"
+    }
+   ],
+   "glossary": {
+    "reunion": "When family or friends meet again after time apart.",
+    "morals": "Ideas about how to behave well."
+   }
+  },
   "z5EDZ4xIgf": {
    "questions": [
     {
@@ -5756,10 +8845,10 @@
  "skipped": {
   "0MhyyoMWGB": "Nine pages of \"Good morning\", \"Good afternoon\" and \"Good night\": too little for 3 questions.",
   "0RlyptyxJg": "Text mistake (\"father- in-law\") and a story about wives.",
+  "0TZK4PH7ug": "A version of The Timid Train (sw-0051), already in the library.",
   "0m01BEtrHj": "Close to sw-0432 already in the library (shares most of its text).",
-  "0msgQEILAb": "Uneven quotation marks.",
   "0qEZ7WpiV5": "A rewrite of Walking Together that ends with a prayer.",
-  "0t8lGGRdV6": "Text mistake: a missing space (\"you?You\").",
+  "0t8lGGRdV6": "A friend presses him to \"smoke a zol\" (a drug) and the tree says it will die: not for ages 4 to 10.",
   "1BIlQfo6H5": "7 words: too little for 3 questions.",
   "1KMcnatH3e": "Another upload of The Hare & the Tortoise (Again!) (bl-BpsFSHbUOY).",
   "1ZHOX307N8": "The cover picture is credited to Pixabay, whose terms are not an open license (the importer leaves it out).",
@@ -5770,18 +8859,15 @@
   "1rVUeUXCcR": "Text mistake: a double full stop (\"hair..\").",
   "1rlDTtAVFC": "A goat runs off without paying and a cow takes her time crossing the road: unsafe road habits as the moral.",
   "1t4sDoGN8J": "A list of animal names with nothing to ask about.",
-  "28wOjGEY5X": "Text mistake: \"There was Shepherd's Boy\".",
+  "28wOjGEY5X": "The wolf eats the whole flock (as with the other tales where animals are eaten).",
   "2AvYlhy3La": "\"I cannot find my Bible\": a religious item in a short list book.",
-  "2Bis5QlQwQ": "Uneven quotation marks.",
-  "2VjV9Xc9bb": "Text mistakes (\"once they reach at the party\", \"When Time for lunch came\").",
+  "2VjV9Xc9bb": "Tortoise tricks Rabbit out of all the food; grammar mistakes all through that would need rewriting (\"once they reach at the party\", \"rabbit then moved out running\").",
   "2Xcb4Sie3M": "The farmer whips the donkey and plans to kill and eat the ox.",
-  "2YIynlyAt7": "Text mistake: a missing space (\"waist.Chun-chan\").",
-  "2xpizIZV5Z": "Uneven quotation marks and \"..No Rita NO!\".",
+  "2xpizIZV5Z": "Rita stands on her window edge and swings up onto the terrace at night (unsafe); punctuation mistakes all through that would need rewriting.",
   "36gVZsZdqm": "Another upload of Teeth (bl-KWFeqXHHge).",
   "3JqPj2GfcJ": "Another upload of Animals, Animals (bride price).",
   "3KaImaiPpd": "Another upload of Crocodile daydreams (wants to eat a dog).",
   "3Mfp79lS3v": "A click letter (ǃ) typed in place of \"!\", and \"Ant ... favorite food is wood\".",
-  "3NpGshx2Po": "Uneven quotation marks; \"Bahaiya\" and \"Bhaiya\" both used.",
   "3Ozjs6kgxr": "A Mvskoke language-learning phrase card set, not a story.",
   "3PZLoKkUh3": "Sewing instructions for grown-ups, not a children's book.",
   "3Tt769gYGU": "Opens \"In our class John is different. John cannot walk like us.\": a label on a disability.",
@@ -5793,20 +8879,18 @@
   "4Vzevt7B3Z": "Animals tie up the goat and drag him off; dreams of relatives dying.",
   "4xjrLSlS2c": "Rooster lies to be king, and it ends \"foxes eat roosters and their families\".",
   "5FVHiOrFJq": "Text mistakes (\"Mr.Tito\", \"towars\") and church on Sunday as part of the plot of a day.",
-  "5FjEw8IVnP": "Text mistakes: missing spaces (\"Nema.Nema\", \"tomatoes.She\").",
+  "5FjEw8IVnP": "Every page's text is printed twice, the title names Arọn but the story is about Nema, and a private person holds the copyright of a book first published by Mercy Air and JOCUM.",
   "5GddumzuBp": "10 words: too little for 3 questions.",
   "5J9mFjqYgU": "Same book as bl-0qEZ7WpiV5 (We are Going to the Clinic), which ends with a prayer.",
   "5Qv2xYm1XM": "The life story of a beauty-pageant winner and TV star: not for ages 4 to 10.",
-  "5jHn8p4tcE": "Uneven quotation marks on page 5.",
-  "5kONReRZ3K": "Text mistake: \"Mama buys same clothes.\"",
+  "5jHn8p4tcE": "Another upload of Little Dog (bl-h1cxhK0aQi), with line breaks from the print layout.",
+  "5kONReRZ3K": "Another version of Zibu & Zizo (bl-U4W4NFvz2l), with a mistake that one corrects (\"Mama buys same clothes\").",
   "5sRF2IS4XO": "A copy of Goodnight, Tinku! (sw-0056), already in the library.",
-  "5u99Uj7X4H": "Text mistake: a missing space (\"take one,when\").",
   "6A9bGIyj45": "Odd claims (\"Mice are dangerous animals\"), and a scanner flag on a word for a rooster.",
   "6XGmUp7Fyf": "The snake blames \"bad spirits\".",
-  "6XP6jzvDGK": "Text mistake: a missing full stop at the end (\"Bye-bye Elephant\").",
+  "6XP6jzvDGK": "The copyright line is only a license note in Kyrgyz and names no author or publisher; the title carries a series number (\"02 -\").",
   "6aaJyCcu7b": "A list of food names with nothing to ask about.",
   "6jFUJ8jeEv": "The title and text are in Filipino.",
-  "6rvW9OSAe9": "Text mistake: a missing space (\"away!They\").",
   "72Q7XhntPC": "Another upload of I like trees (bl-RfilkjDYNU), under an Uzbek title.",
   "761LoeoB5F": "A man kicks over his wife's cooking and his loincloth falls off as a joke.",
   "79BRtGCUST": "Close to sw-0026 (Can and Can't), already in the library.",
@@ -5815,7 +8899,7 @@
   "7XRKU4XUJP": "A man kicks over his wife's cooking in anger and his cloth falls off as a joke.",
   "7aSvMcDc0V": "A meeting with the village's Member of Parliament and the protest song \"We shall overcome\": political.",
   "7q8PWKiicd": "A version of The Moon and The Cap (sw-0053), already in the library.",
-  "7uGXMMgk02": "Text mistake: a missing space (\"father,Priya\").",
+  "7uGXMMgk02": "Grammar mistakes all through (\"Priya was 10 years old girl\", \"explained her that plants gives us oxygen by which we breath\"): fixing them would mean rewriting it.",
   "7x2ikQbFaz": "A horse kicks a man to death.",
   "7xtDpyhrGo": "\"Fat cat. No rat.\" with the title The Rat in the Cat: the cat eats the rat.",
   "7xwHBWhGqf": "Hare tells Elephant to put his legs in a fire.",
@@ -5828,36 +8912,38 @@
   "9Cd0tZNXKU": "\"I pray.\" in a short list book.",
   "9HcCP1YxO2": "Frog throws himself into boiling water and calls himself ugly.",
   "9LoN9DmWs8": "A Mvskoke language-learning game card set, not a story.",
-  "9nU1AtWBAB": "Text mistakes: words run together (\"friendlyshopkeeper\", \"herfriend\").",
+  "9nU1AtWBAB": "Another upload of Icecream in Spiti (bl-UKTKWVO4tI) with many more words run together.",
+  "AArip9iyUP": "Medical advice about immunizations, beyond basic hygiene (\"childhood sicknesses that can kill them\"), as with bl-il7uNSsnCD.",
   "AAuWUXBMky": "Health advice about COVID-19 beyond basic hygiene, and \"etc\".",
   "ADTHZo4SnB": "Another upload of My Juggling Granny (\"Spoiltsports\").",
   "AGYMgaFJCk": "Older kids tease Rafiki about his teeth, skin and hair (mocking bodies).",
   "AHAnUQOVTy": "Rooster tells Hare his family chops off their heads at night, and Hare's family tries it.",
+  "ALb450KJ6n": "Nine color words, one a page: too little for 3 questions.",
   "AUpqs2FhgD": "Chicken swallows Millipede.",
   "AYIcSiYgTh": "The text marked as English is in another language.",
   "AxFg88mBsU": "Another upload of Zama is great! (bl-6umwhq0WvV).",
   "BD32lipLnk": "A version of The Moon and The Cap (sw-0053), already in the library.",
   "BFzbZCtHuD": "In another language.",
   "BT8Qdy3EQE": "Another upload of School Clothes (unfinished lines).",
+  "BTE9jcrPaj": "The adaptation adds a young-Earth claim (\"as young as 7,000 years\", \"dispelling many long-age theories\") to the Pratham science book: a religious claim in a science book.",
   "BVZZB5BHx2": "The English text pages carry web addresses and Kyrgyz credit lines.",
   "BVrO2mRF2m": "Unexplained words in another language and \"Old grandmother\" teased.",
   "BWTAQQObNi": "Text mistakes (\"On day\", \"I don't know to swim\") and a drowning with mouth-to-mouth rescue.",
-  "BZ8452OPVK": "Text mistake (\"more shill\" for shrill).",
-  "BdD4DsTW8J": "Text mistakes (\"school.We\", \"Mimo .I\", \"goodnews\").",
+  "BZ8452OPVK": "Another upload of Annoying Mosquito (bl-d3RqOjKoAv).",
+  "BdD4DsTW8J": "Grammar mistakes all through (\"I had become the first position\", \"Our walked together as we story tell\") that would need rewriting.",
   "Bk6RP9bFYU": "Calls a seahorse and a reef fish \"a big fish\": a mistake for a fact book.",
   "BvTpxksEY0": "Uzbek title; a copy of another book.",
   "ByEnXdfdD0": "A Mvskoke language-learning game card set, not a story.",
-  "C4lpkMqmOa": "Text mistake: \"wastoo\".",
+  "C4lpkMqmOa": "Hyena threatens to eat Hare, and it ends with Hare stealing food; grammar mistakes all through (\"Once a upon a time\", \"worked so good\", \"who's farm\").",
   "CFyrOiuLAn": "Another upload of Let's Count Legs (bl-jGyaRvVUml).",
   "CG7Y1Brt1x": "Theft, child labor and people cut by broken glass: too grown-up.",
-  "CHLB3IYhFE": "Small text mistakes (\"remind me mama\", tenses mixed).",
   "CMB5Jr2TFs": "Chicken swallows Millipede.",
+  "CPXoeThE3p": "The pictures are credited to \"AI\" and the copyright names Google: not clearly open.",
   "CVnCSLXJPR": "Crocodiles trick and eat crows.",
   "CZl6R3lk9g": "The cure is an ointment from a hyena's heart.",
   "CbLxQuAzT2": "An ogre lures children.",
-  "CfBFcdGtnG": "Text mistakes (\"to go to get ready\", a stray quotation mark).",
+  "CfBFcdGtnG": "The story skips how the phone was found, and mistakes (\"to go to get ready\", a stray quotation mark).",
   "ChdSnQmk7g": "Same book as sw-0030 (Timmy and Pepe), already in the library, under an Uzbek title.",
-  "Ck8ZoY71QY": "Uneven quotation marks.",
   "D1JGssxt3W": "Ends with the farms destroyed and the villagers asking what they will eat this year.",
   "DF8YkOHTMW": "A maths workbook story with questions to the reader, and a child lost alone in the bush.",
   "DJ0K4RgQch": "A copy of Teeth (bl-KWFeqXHHge), the African Storybook original, which is used.",
@@ -5867,23 +8953,19 @@
   "DYYUGijbHJ": "Mixed tenses (\"the rains start pouring\", \"as fast as he can\") and a boy falls into a flooding river.",
   "DZACnzNEy6": "The title is in Filipino (Ang Pamilya); a family list book.",
   "E28W620BBn": "Another upload of Where is it? (answers only in the pictures).",
-  "E7TaceudNm": "Same mistake as the original (\"too!”says Dog\") and each page's text is printed twice.",
-  "ERMHxDymEF": "Text mistake: a sentence on page 5 has no full stop.",
+  "E7TaceudNm": "Another upload of A Beautiful Day (bl-PIAheZZLBq), with each page's text printed twice.",
   "ESEAkdX87i": "Another upload of A Monkey called Manki (\"anywhere- nearby\").",
   "EWEifcKWKh": "A soccer star's real-life visit: little story, and how-to kicking notes.",
-  "EaKaVBRbK7": "Another upload of Anansi and Turtle with the same missing full stop.",
+  "EaKaVBRbK7": "Another upload of Anansi and Turtle (bl-ERMHxDymEF).",
   "Ej3t0qDIlh": "25 words: too little for 3 questions (another upload of Egg).",
   "EphQJsW8bI": "Page 7 repeats page 6 word for word.",
   "F60EkJQWif": "Uneven quotation marks; Anansi steals from Vulture.",
-  "FBrulNVj3h": "Text mistakes (\"atchar\" and \"atchaar\"; a missing closing quotation mark on page 12).",
-  "FHbAbw1D7W": "Text mistakes: missing spaces (\"collection.It's\", \"house.You\").",
-  "FIUpYo1KL7": "A diary written as dated entries with a missing space (\"2021:Rathna\").",
+  "FHbAbw1D7W": "A \"doom room\" where you \"sleep in a grave\", a funeral band, and a bodyguard who shows people out: too dark in places for ages 4 to 10.",
   "FQ4B4fojhX": "A version of The Moon and The Cap (sw-0053), already in the library.",
   "FQ9UIh7c09": "\"I can race cars!\" in big brother's shoes reads as racing in traffic.",
   "FbiJNg0w0b": "A short abstract poem with little to ask about.",
   "Fc7uAZq9OY": "A list of labels with uneven quotation marks.",
-  "FewlLlor3n": "Text mistake (\"Begged\" with a capital after a quotation).",
-  "FkaMWn1nqP": "Uneven quotation marks.",
+  "FkaMWn1nqP": "Two boys go fishing alone on a reef rock; one hits his head and the other falls into the ocean, played for fun (unsafe).",
   "FrEyFzA22d": "Jokes about a lion eating the brother and a python suffocating the girl.",
   "G7zglg8AQY": "An adaptation of bl-wMmKgKXlQo (Mrs. Penguin's Perfect Palace); the original is used.",
   "GGvbqacp3n": "An adaptation with a mistake added (\"Pandanus (Banyan) leaves\"); the Pratham original is checked separately.",
@@ -5891,15 +8973,17 @@
   "GRIqvzhRD0": "20 words, half the pages without words: too little for 3 questions.",
   "GWKKsjbf46": "\"bleed a lot!“I surren...\": a missing space, and a mosquito makes a lion bleed.",
   "GhVVC9CI4k": "A neighbor borrows a pot and claims it died: a trick and a quarrel over a death.",
+  "GimG59np8t": "Another upload of The day the Sun went away (bl-SkbPuCPZd0); its copyright line is only a license note in Kyrgyz.",
   "GmqmjaTpZJ": "A pot of rotting blood.",
   "GrkHJqFHri": "Close to sw-0432 already in the library (shares most of its text).",
-  "GviWDllqYe": "Text mistakes (\"morning.My\", \"Mr.Wabora\").",
+  "GviWDllqYe": "Church on Sunday as part of the plot, children caned for being late, and mistakes all through (\"head architecture\", \"Today is on Sunday\").",
   "Gw1EiwAONr": "A Mvskoke language-learning game card set, not a story.",
-  "HBCQLPEsD3": "Spaces before commas (\"shops , factory\") and missing spaces (\"pictures,paintings\").",
+  "HBCQLPEsD3": "Grammar mistakes all through (\"very useful article\", \"Now a days\", \"help out the environment it makes better place\"): fixing them would mean rewriting it.",
   "HFy8iyDhpP": "A rewrite of bl-kxS1WhIY3v with mistakes (\"Some Some\") and the word \"lame\".",
-  "HIf0xwaSvl": "Another upload of Anansi and Turtle, with the same missing full stop.",
+  "HG24iSUYUf": "\"There is a Bible\" (religion) in a list with nothing to ask about.",
+  "HIf0xwaSvl": "Another telling of Anansi and Turtle (bl-ERMHxDymEF), with a mistake (\"Anansi was sand\") and no copyright.",
   "HR29rbSUlL": "Text mistakes (\"for e to carry you\", a missing exclamation mark, \"ABBU\").",
-  "Ha363FZ1PJ": "Punctuation mistakes (\"lab!\", I\", \"said,\" Shakti\").",
+  "Ha363FZ1PJ": "Punctuation and grammar mistakes all through (\"lab!\", I called\", \"if I had took\", long runs of dots) that would need rewriting.",
   "Hba4fXWXbh": "16 words: too little for 3 questions.",
   "Hg5lCLehuI": "Close to sw-0127 (Clean Cat), already in the library.",
   "HwTcDj4fgx": "Spaces before punctuation (\"70's ,\", \"pregnancy .\") and a grown-up memoir; 860 words.",
@@ -5918,7 +9002,6 @@
   "JKRtPnVf0T": "Another upload of Deepa's Resolution (a space before \"?\").",
   "JQLyaC43WI": "Says carrots will help the shark see better: a health myth.",
   "JSs1TNZx8d": "A list of 54 food pictures with names, nothing to ask about.",
-  "JTp5wxctcI": "Text mistakes from the print layout (\"ming- ling\", \"loud- ly\").",
   "JVZOpAZI8K": "Hyena says he will eat Goat and her young.",
   "JX1x45tTRz": "A street child (\"school.What\" missing space); too sad for ages 4 to 10.",
   "JirhMSeGO0": "A version of Lion Gets Sick: the cure is from a hyena's heart.",
@@ -5929,15 +9012,15 @@
   "KBfvyWdDvs": "Text mistake: a missing space (\"Cluck,cluck!\").",
   "KCPE3nj7A8": "A forest of snakes that eat goats, and Swahili lines left unexplained.",
   "KORoDVb5RP": "\"Cows and goats are paid as bride price\"; a list with little story.",
-  "KaMAHu4hUk": "Spelling mistake (\"flutterring\").",
+  "KaMAHu4hUk": "Names no author or illustrator, and the pictures carry no creator.",
   "KcdhC2sTx0": "Owner's call: each page names a person's disability (\"He is blind\", \"has no hands\") to show what they can do; left out under the rule on labels.",
   "KoCqUQyjRP": "Ends \"We should be thankful to God for the way He has made us\" and \"May be\".",
-  "Ktv79MHYmy": "Text mistake (a space after a quotation mark, \"“ Ok.\") and \"silly\" as a label on a boy.",
+  "Ktv79MHYmy": "Everyone calls him \"Silly Meta\" and his mother calls him silly again and again: a label on a child (the same story as Silly Sizwe).",
   "LAISEayJPp": "20 words, half the pages without words: too little for 3 questions.",
   "LEZDrxFl2s": "A child travels alone to the city and worries whether his mother is safe: too sad for ages 4 to 10.",
-  "LH13rCbq1t": "Text mistakes: missing spaces (\"Sometimes,Tommy\", \"Tommy.Tommy\").",
+  "LH13rCbq1t": "Page 8 repeats page 7, it is unclear who Papa is (\"before going to school\"), and the dog barks at cars on the road.",
   "LN5OrJI9qn": "Text mistakes (\"wrapped around his Friend\", mixed tenses) and a child with no name living alone in a field.",
-  "LOuEqFvCub": "Uneven quotation marks (another upload of Naughty Cow).",
+  "LOuEqFvCub": "Another upload of Naughty Cow (bl-0msgQEILAb).",
   "LPYs8bgXkE": "Labels children as \"a bad boy\" and \"a naughty girl\".",
   "LVDGHlHIt4": "Text mistake: a missing space (\"breath.Yes\").",
   "Ln8tMyChJD": "Text mistake (\"Close the mango tree\" for close to) and the girls fall out of a tree.",
@@ -5946,49 +9029,43 @@
   "M4IveGvDbX": "A phonics letter chart, not a story.",
   "M7CkE5cFW9": "11 words: too little for 3 questions.",
   "MAcXrhbszy": "Four short pages with little to ask about.",
-  "MCpYre700D": "Text mistakes (\"Mosquito!!!!\") and unclear dialogue.",
+  "MCpYre700D": "Ends \"I am going to kill you Mosquito!!!!\" (a threat to kill).",
   "ME1hyDsxyQ": "A list of body-part labels with a heading page, nothing to ask about.",
-  "MISNo6Z1OP": "Text mistakes from the print layout (\"chick- ens\", \"flap- ped\").",
-  "MJt3XUbsiU": "Text mistake: \"forgetmy\".",
   "MKUG1Muct0": "Text mistakes (\"sitting in an umbrella\", \"fishes\") and a dog falls in a river.",
   "MgTp0mn0yl": "Grammar slip (\"keen in studies\") and little to ask about.",
   "Mi84BPF3ol": "Same book as bl-xtDFOOj29m (A Tiny Seed), a translation upload; the original is used.",
-  "MozyTFFFRR": "Text mistake: a missing space (\"away.“But\").",
   "MqA4FHdqWj": "Another upload of Asha's Voice (bl-7aSvMcDc0V): political.",
   "MqriPgkQvI": "The toad is burned by a bush fire and blistered.",
-  "N2O83BGUNs": "Text mistake: a missing space (\"voice,\\\"Who\").",
   "N4IDXrMl9q": "An ogre, and uneven quotation marks.",
   "N7Wo1cR3Vu": "Text mistake (\"Next time I help you\") and a fall from a swing with a head injury.",
   "NBi4wrGiYG": "A missing closing quotation mark on page 2.",
   "NHaLGjW022": "Text mistake: \"Idon't\".",
   "NOyPFYqLsT": "Punctuation mistake (\"from the sky.” Neno said.\").",
-  "Npv1Gjw0SC": "Text mistake: a missing space (\"vegetables.They\").",
   "NuNqpoT4PX": "Unexplained words and a grown-up tale of a herd and a curse.",
   "Nvk51ioVlv": "Same book as sw-0056 (Goodnight, Tinku!), already in the library, under an Uzbek title.",
   "O0ADNFGGJu": "Rhyming nonsense with little to ask about; \"eurgghhh... aargh!\".",
   "O8geoZJCBv": "Same book as sw-0069 (The Red Raincoat), already in the library, under an Uzbek title.",
   "OBRSjogPno": "11 words: too little for 3 questions.",
   "OHX0AqhJdl": "Crocodile plans to eat his best friend.",
-  "OKyJx6Lf1s": "Spelling mistakes (\"suprised\") and uneven quotation marks.",
+  "OKyJx6Lf1s": "The cover credits \"Grade 1 Students\" while a private person holds the copyright; and mistakes all through (\"she ask to see it\", a missing quotation mark, \"suprised\").",
   "OQFiwlEpQZ": "A rewrite of Sbu's Special Shoes: \"I can race cars!\" reads as racing in traffic.",
   "OTf1DeL0VB": "The title says Thembi but the girl says \"I am Maria\".",
   "OVqXEhfI3e": "Text mistake (\"loking\") and \"... like girls\" teasing.",
   "OggNtShfme": "Another upload of Grandpa Fish and the Radio (\"away!They\").",
-  "OhoAqHAkfW": "Another upload of Silly Meta with the same mistake.",
+  "OhoAqHAkfW": "Another upload of Silly Meta (a label on a child).",
   "OtKxUbVY9P": "A Mvskoke language-learning game card set, not a story.",
-  "OtPErgGATN": "Text mistake: a stray quotation mark on page 8.",
   "P0eaZmMCH4": "Missing spaces (\"Kwi!Kwi!\", \"up!Throw\") and a hunter's wife and a monkey.",
   "PGXLPpB9s7": "Another upload of Remo's Shoes: \"I can race cars!\" reads as racing in traffic.",
   "PIAheZZLBq": "Text mistake: a missing space (\"too!”says Dog\").",
   "PKwuWrHpUp": "An odd portrait (five phones, one for people who owe her) with little story.",
   "PcdsgJqi2s": "A list of 44 animal pictures with names, nothing to ask about.",
   "PwxmCIbIyR": "Grown-up themes: pregnancy, boyfriends, and a stepfather who beats the girl.",
-  "PynSHZrDvx": "Text mistakes (\"I use it for reading even for looking\").",
+  "PynSHZrDvx": "The text does not hold together (\"I use it for reading even for looking at things that are beautiful to look at around\", page 2 repeats page 1): fixing it would mean rewriting it.",
   "QGACDHsMEf": "Another upload of Life in my village (drinking blood from the cow).",
-  "QkYmmS1pfX": "Text mistakes (\"anad\", \"Ever night\", \"A thieves days\").",
+  "QJeeR8tW1v": "A shorter version of The day the Sun went away (bl-SkbPuCPZd0).",
+  "QkYmmS1pfX": "A thief caught in a trap and \"had to pay\"; mistakes all through (\"anad\", \"Ever night\", \"A thieves days\") that would need rewriting.",
   "QqCDQAgcXj": "A list of animal names with nothing to ask about.",
-  "R1oRAKq4S4": "Another upload of A dog (text mistakes).",
-  "R3YJdUYpQn": "Uneven quotation marks.",
+  "R1oRAKq4S4": "Another upload of A dog (bl-8AMIZkWZ0V).",
   "R6b2equUsP": "The villagers chase away their headman: politics as the plot.",
   "RMRRHuIIRM": "Another upload of Anansi and Vulture (Anansi steals).",
   "RfilkjDYNU": "Small text mistakes (\"farmer grandfather\", \"can not\") and \"people starve\".",
@@ -5996,8 +9073,7 @@
   "RgtxzxxvVF": "Page 11 repeats page 10 word for word.",
   "Rh3vylONeC": "A hyena devours the man's wife.",
   "RkaHz9P7Ua": "A \"blood curdling scream\", remarks on a man's potbelly, and the president's speech on salaries.",
-  "RqStjNHg1a": "Text mistake: a missing space (\"camels.They\").",
-  "S2R4QNezp3": "Text mistake: a missing space (\"Mouse.“Now you\").",
+  "RqStjNHg1a": "The eagle begins eating the hen's chicks (violence).",
   "S7Tbg2odYA": "A list of Kampala sights with odd lines (\"A shower in Nakivuubo\").",
   "SAbuXLPfAD": "Half the pages have no words and the rest repeat one question; a rewrite with uneven quotation marks.",
   "SGFa1kxBNS": "A child gets lost (the title's \"Lost and Found\").",
@@ -6008,31 +9084,27 @@
   "Se8c3eTgxn": "Many words in another language left unexplained.",
   "Szbcvc1gXJ": "Another upload of I Cannot Find It (\"my Bible\").",
   "T8hSbtdx8Z": "The title is in Uzbek; a copy of Goat, Dog and Cow (unsafe road habits as the moral).",
-  "TDrTnLlDry": "Spelling mistake: \"faile\".",
-  "TIGQsI8RuH": "Text mistake: a missing closing quotation mark on page 10.",
+  "TDrTnLlDry": "A script with the speakers' names missing on most pages, so it is unclear who says what; fixing it would mean rewriting it.",
+  "TIGQsI8RuH": "An adaptation of Amazing Daisy (bl-MISNo6Z1OP, the Book Dash original) with a missing closing quotation mark.",
   "TRf7cMtbtW": "A Mvskoke language-learning game card set, not a story.",
   "TaST0LirOh": "Mostly in another language.",
-  "TcM4yYeFkq": "Text mistakes (a space before \"?\", missing commas before the quotes).",
   "TeQOEOxh1W": "Close to sw-0127 (Clean Cat), already in the library.",
   "TfPPnnkjph": "Another upload of Teeth (bl-KWFeqXHHge).",
-  "TqmHS9hbpr": "Text mistakes (\"Long time a go\", \"felled\", \"scull\").",
+  "TqDqEnzTAP": "A shorter version of The day the Sun went away (bl-SkbPuCPZd0).",
+  "TqmHS9hbpr": "Grammar mistakes all through (\"felled down\", \"more higher\", \"forgive each other\") that would need rewriting; the tortoise falls onto rocks and cracks his shell.",
   "TtD8oHxbWx": "Another upload of Akoro and the banana business (unexplained words).",
   "U03jdRtWkT": "Another upload of My red ball (bl-MiVg4YRgRi).",
   "U1AzmbUyxE": "Run-on sentences, and two boys bathe in a river alone.",
-  "U3nyb8mUfQ": "Text mistake: a missing space (\"branches.A\").",
+  "U3nyb8mUfQ": "A child shoots a hornbill with a catapult and it is eaten (hunting, violence to an animal).",
   "U63n8nbDAH": "Opio is given beer to drink.",
-  "U6Ym2v9aZX": "A missing closing quotation mark (\"Purr! Purr! Purr!\").",
-  "UKTKWVO4tI": "Text mistakes: words run together (\"saidas\", \"seewhat\") and uneven quotation marks.",
   "UU6JPfqQ9C": "The pig is thrown down from the sky and lands on his nose.",
   "UhcxbS1LKM": "A copy of Houses (bl-bSwdvrAr3j).",
   "V6zwe08yUu": "Same book as bl-DZw4pSaygC (Come Back, Cat!), another upload.",
-  "VZKQ1FahB4": "Spelling mistake: \"soemthing\".",
+  "VZKQ1FahB4": "Teaches grabbing a dog's nose to punish it, and \"I am much smarter than my dog\".",
   "VmRHQYf6Jr": "A maths workbook (time questions to the reader), not a story.",
   "Vp76b8DxIv": "Another upload of My Friend (bl-LN5OrJI9qn).",
-  "W1xCSDTuft": "Spelling mistake: \"Spoiltsports\".",
   "W5FPNr6QMR": "Describes a friend by his skin color (\"He is brown.\").",
   "W9hfCLHtTP": "Another upload of How Do You Use These Things? (answers only in the pictures).",
-  "WDAU6pRXg5": "Spelling mistake: \"Keer\" for kheer.",
   "WaGuyuIHTQ": "Unclear lines (\"do you hear all these things, or no?\").",
   "WquvspbNEL": "Same story as bl-hxE0zqYVh3 (Scared Tumi), a shorter translation upload; the original is used.",
   "X2EO48lOC6": "A young child is left alone in the bath.",
@@ -6043,85 +9115,85 @@
   "XO5qBMpyjZ": "The bat is never found: a list of places with no story to ask about.",
   "XQw3wiEdq2": "A version of Lion Gets Sick: the cure is from a hyena's heart.",
   "XSEUUAbFA5": "Grandmother shouts and Vusi runs to the toilet: little story beyond the stomachache.",
-  "XUgWYJvjdn": "Text mistake: a missing space (\"song,\\\"Never\").",
+  "XUgWYJvjdn": "Punctuation and grammar mistakes all through (\"What type of fruit.\" Asked Eissa\", \"Let me get this strait\") and the brothers laugh at him; fixing it would mean rewriting it.",
   "XVV0nINFcT": "A version of Luwo's House (a small boy walks the road alone).",
   "Xe7kcAcOkj": "Five short lines: too little for 3 questions.",
-  "XtaBVLbUsM": "Text mistake: \"I do not want to be tailor.\"",
   "Y1c1xTAEU1": "Same book as bl-I81XFHux5t (What Is It?), another upload.",
   "Y2QFOxHOfJ": "Ken shoots a bird.",
   "Y3CaSJFuDU": "Letters split from words (\"s lu n w bu\") in the text.",
-  "Y970PQJ7aT": "Text mistake: a missing space (\"groups.We\").",
+  "Y970PQJ7aT": "Grammar mistakes (\"They very noise in class\", \"chalks\") and an unclear copyright holder (\"onyinkwa.service to all\").",
   "Y97gQFMHpN": "Another upload of They Can Do Many Things (left out under the rule on labels).",
-  "YBwGzN81zm": "Text mistakes (\"everyday\" for every day, \"tells her mother\"; Ankita and Anku mixed).",
+  "YBwGzN81zm": "The same girl is called Ankita and Anku, and it is not clear who is whose sister: fixing it would mean guessing.",
   "YOA5fMo826": "The teacher \"sings hymns in order\": religious practice in a school book.",
   "YZhnEdQIui": "Text mistakes (\"an old man with her wife\", \"Some one\", \"Kollo\") and a punishment.",
   "YbmRu9UGMR": "Another upload of A very tall man (bl-5EDlLhFmlN).",
-  "YfFjdYu19T": "Small grammar mistake (\"which one of us is heaviest\" of two).",
   "YfipsN30eU": "Another upload of Disability is not inability (left out under the rule on labels).",
-  "YzK22r3G0I": "Spelling mistake (\"nigt\").",
+  "YzK22r3G0I": "Names no author or illustrator, and the pictures carry no creator.",
   "Z425A5Nr2G": "Another upload of Crocodile daydreams (wants to eat a dog).",
   "ZDGql37k6i": "Same book as sw-0073 (Colours), already in the library.",
   "ZE7f1Dqa9p": "Text mistakes (\"He did not mind of storing food\") and hungry children crying.",
-  "ZIG1K9TOsk": "A missing full stop and unclear lines (\"My dinosaur and I\", \"monkey balls from clay\").",
+  "ZIG1K9TOsk": "The lines do not make sense together (\"My dinosaur and I\", \"make monkey balls from clay\").",
   "ZVkahSZ6mf": "A baby cries and nobody knows why: no story to answer; the title needs a comma.",
-  "ZXslwaW3zz": "Another upload of Rain with the same mistake (\"hair..\").",
-  "Zcjq49XcpI": "Text mistakes (\"plan flowers\", \"because.............\").",
+  "ZXslwaW3zz": "Another upload of Rain (bl-1rVUeUXCcR).",
+  "Zcjq49XcpI": "A girl goes alone to fetch water from a river, churches as part of the list, and an unfinished sentence (\"because.............\").",
   "ZjjFQWaQaC": "A list of food names, nothing to ask about.",
   "aTPEugcFIT": "The crocodile wants to eat a dog (\"Dogs are good to eat too\").",
-  "aV0BfOCRdO": "Another upload of Arrogant Bird Learned Lesson (mistakes in the title alone).",
+  "aV0BfOCRdO": "Another upload of Arrogant Bird Learned a Lesson (bl-bZEpSuEHkb).",
   "apJRbLv3xS": "Credits unclear: the copyright holder is a person not named as the author or illustrator, and the text has no named author.",
   "auDlJVaBSp": "Another upload of We made a decision (theft, child labor).",
   "b7DcmuVPzF": "Another upload of Mosquito (\"Mosquito!!!!\").",
-  "b9LEDelBFg": "A list of animal names, with spelling mistakes (\"Rhinocerous\", \"Guinnea\").",
-  "bZ8LS1FgD5": "Uneven quotation marks and \"silly\" as a label on a boy.",
+  "b9LEDelBFg": "A list of animal names, one a page, printed twice: nothing to ask about.",
+  "bZ8LS1FgD5": "Everyone calls him \"Silly Sizwe\" and his mother calls him \"stupid\": labels on a child.",
   "bZEpSuEHkb": "Text mistakes in the title alone (\"Arrogant Bird Learned Lesson\").",
   "baRzAazpor": "Mark puts something on fire and Moses shoots at a bird.",
   "bcArLsQyBf": "Another telling of the Norah story (bl-o2qHFb5zbs) with uneven quotation marks.",
-  "cHx5T3fBYH": "Another upload of Anna is a Big Girl with the same small mistakes.",
+  "cHx5T3fBYH": "Another upload of Anna is a Big Girl (bl-CHLB3IYhFE).",
   "cTjlL79vAk": "Chicken swallows Millipede.",
   "cUsWBh5pAi": "Same book as bl-Yt2R2HoU1F (Open the Door), another upload.",
   "cca6qGUK9k": "A stepmother drowns a girl, and her sister drowns too.",
   "chXkktC40c": "Awkward, broken lines (\"like that good hat I'll keep your face dry\", \"be brave, why cry?\").",
   "ckChDyvXdS": "Text mistake: a missing space (\"taxi.They\").",
-  "cspfN0LpaK": "Text mistakes (the title \"Why the library was built?\", \"muuuuuuuuch!!\").",
+  "cspfN0LpaK": "Every page starts with a run of dots and is a fragment (\"..... a lot of story books\"): it does not hold together as a book.",
   "d3RqOjKoAv": "Another upload of Annoying Mosquito with the same mistake (\"shill\").",
-  "d5XwwfKql7": "Another upload of Where is my Dolly? (uneven quotation marks).",
+  "d5XwwfKql7": "Another telling of the Norah story (bl-o2qHFb5zbs), already in the library.",
+  "dAZkyd4LBQ": "Another version of What Animals Can You See? (bl-oP7kQamjXU), already in the library.",
   "dAgjdRNK1z": "Same book as sw-0073 (Colours), already in the library.",
   "dJYimFfFlb": "6 words: too little for 3 questions.",
   "dhm9mGLO2H": "Another upload of Zama is great! (bl-6umwhq0WvV), under a Russian title.",
-  "digk5MYidm": "Text mistakes (\"so poor that\" missing, \"organize for him his first birthday party\", \"There after\").",
+  "digk5MYidm": "The text does not hold together (\"promised to organize for him his first birthday party\", \"after twenty five years\"): fixing it would mean rewriting it.",
+  "dixSkyR4oP": "Another version of Dembe the shopkeeper (bl-gmR8JZOR9Y), already in the library.",
   "drNBDRZLmm": "Text mistakes from the print layout (\"bring- ing\", \"BYE,TUMI!\").",
   "dvIdeY2Dsc": "A Mvskoke language-learning game card set, not a story.",
   "e3d3GMwtCd": "An odd ending (\"sacks of flowers\") with little to ask about.",
   "e4MsZuT6j6": "A Mvskoke language-learning game card set, not a story.",
+  "e8MeGx4VAe": "Another adaptation of How to Tame a Monster (bl-oyjnKnB2WG) with the pages out of order (it starts \"That's okay\").",
   "eAbg5Y2SRN": "10 words: too little for 3 questions.",
   "eFq5qqG95z": "A Mvskoke language-learning game card set, not a story.",
-  "eLyXMgnI5h": "Text mistake: \"So he went along\" for a girl, and \"went along with their plot\".",
+  "eLyXMgnI5h": "Tense and grammar mistakes all through (\"told Melay that they will visit\", \"So he went along with their plot\") and no author named.",
   "eQiJnmpJz4": "Another version of Keke's Swing (a fall with a head injury).",
   "eRJv2BBzoK": "A version of The Moon and The Cap (sw-0053), already in the library.",
   "eRxZfUeW73": "Coal falls into the river and Bean laughs until he splits.",
   "eSEa1A6LYa": "A Mvskoke language-learning game card set, not a story.",
-  "eSlpt84E3W": "A Maithili-English upload of A Beautiful Day, which has a text mistake (\"too!”says Dog\").",
+  "eSlpt84E3W": "A Maithili-English upload of A Beautiful Day (bl-PIAheZZLBq).",
   "eWEvXM9hAH": "Most pages have no words; the last pages are notes for grown-ups.",
   "eaGwEaGRNQ": "Another upload of What is this I hear? (unclear lines).",
   "eapbARoRRV": "Another upload of What Are They Doing? (bl-gEHeFP9GIj).",
-  "edobKpbCK5": "Text mistake (\"asked,“Why\") and uneven quotation marks.",
   "elcs9cW7Cb": "A rewrite of A Beautiful Day with made-up baby words and Dad and Papa mixed up.",
-  "erDmu9qEcb": "Text mistake (\"to know avail\").",
+  "erDmu9qEcb": "A mother shoots at the cat with a gun over blood-stained sheets; a snake is killed (violence and scary).",
   "erQMwme1Ui": "A version of Luwo's House (a small boy walks the road alone).",
   "ewM2pu21BP": "Another upload of Maria's Family (bl-wGdrG089au).",
   "exRjqWKbME": "11 words: too little for 3 questions.",
-  "f19pSdhGMo": "A Maithili-English upload of A Beautiful Day, which has a text mistake (\"too!”says Dog\").",
-  "f8VXS1hYBN": "Spelling mistake: \"monring\".",
+  "f19pSdhGMo": "A Maithili-English upload of A Beautiful Day (bl-PIAheZZLBq).",
+  "f8VXS1hYBN": "The Earth prays to God for help (religion), and grammar mistakes (\"The talked and talked\").",
   "fJOHV3RvQY": "Opens with \"Did God tell you my name\".",
-  "fOo7rKEpOU": "Another upload of Picnic (bl-elcs9cW7Cb), with a spelling mistake (\"undertand\").",
+  "fOo7rKEpOU": "Another upload of Picnic (bl-elcs9cW7Cb), already in the library.",
   "fSBEPYPbAe": "Another upload of Houses (bl-bSwdvrAr3j).",
   "fUkt4Of8WG": "A set of unrelated phrases for language practice, not a story.",
   "fWPnqvLy10": "A Mvskoke language-learning game card set, not a story.",
-  "foadKZ4Asb": "Uneven quotation marks.",
+  "fZAufUS6kA": "Another upload of The day the Sun went away (bl-SkbPuCPZd0); its copyright line is only a license note in Russian.",
   "frNI9wk7Ys": "Another upload of Counting (bl-rYVSK51hu5).",
   "fvCOlUJ0rs": "Another upload of Ox and Donkey (a whipping, and a plan to kill the ox).",
-  "fvG2rsLnqF": "Uneven quotation marks and \"Shooo !!….niii\".",
+  "fvG2rsLnqF": "Pa smokes a pipe in the first line, and quotation marks and spacing are wrong all through (\"Shooo !!….niii\").",
   "fw7y12Xeeh": "Text mistakes (\"put water in basin\", \"played all the day\").",
   "fwtVoatYaB": "Text mistakes (\"Jojo living with his mother\", \"go to bed\").",
   "gEzthTvl3G": "\"You are only a blind boy\" and a boy found beaten up by the road.",
@@ -6130,8 +9202,7 @@
   "gh8UnzwCnu": "A Mvskoke language-learning game card set, not a story.",
   "gn74HjkBWQ": "Spaces before colons and a grown-up legend of a king and a wave; 880 words.",
   "grkDAsWE3O": "\"I would treat people with slaps!\", hunting, and a priest taking people to heaven.",
-  "grtFCzi2hl": "Text mistake: a missing space (\"taxi.They\").",
-  "gsN0mazwsF": "Text mistakes (\"Oh, yes !\", \"halfeaten\").",
+  "grtFCzi2hl": "Another upload of Goat, Dog, and Cow with TV (bl-ckChDyvXdS).",
   "h1cxhK0aQi": "Another upload of Little Dog (uneven quotation marks).",
   "hGBOxjGSOQ": "A Mvskoke language-learning game card set, not a story.",
   "hGeAFGfpGl": "A Mvskoke language-learning game card set, not a story.",
@@ -6139,25 +9210,22 @@
   "hJVJM87XtG": "Swahili names left unexplained and unclear lines (\"watching at an angle\").",
   "hMYzQppNc6": "Text mistakes (\"And, with one big heave, pushes herself up\" has no subject; \"A Sandile?\").",
   "hU2A1vftYE": "Another upload of A Surprise for the Football Team (bl-EEjyHGIyGp).",
-  "hWHuDfFTaA": "Uneven quotation marks.",
-  "hePTMk0ymw": "Text mistake: \"spreading it's branches\".",
+  "hWHuDfFTaA": "Maisha slips out alone at night while her parents sleep and swims under the sea (unsafe behavior shown as fine).",
   "hlwZV2K7w6": "Jail, apartheid laws and selling beer: too political and grown-up for ages 4 to 10.",
   "i0zhidpNHe": "Another upload of Goat and the hyena's knife (Hyena will eat Goat).",
-  "i2CfCbcKyG": "Text mistakes (\"as she a passed\", \"needed.With\").",
-  "i57MwJlCEv": "Text mistakes (a stray \"she says.\", \"shout,lifting\").",
   "iB8hlHkYfU": "Same book as sw-0073 (Colours), already in the library.",
   "iOw9BR5SmW": "Crocodiles trick and eat crows.",
   "ikA4WU4vpw": "20 words, half the pages without words: too little for 3 questions.",
   "il7uNSsnCD": "Medical advice about immunizations (beyond basic hygiene) and uneven quotation marks.",
-  "ilT4d1OEUU": "Grammar mistakes (\"if she can practise\", \"let her to play\").",
   "iuBvRydn2x": "10 words: too little for 3 questions.",
   "iyhIbzmBOC": "Crocodile plans to eat his best friend.",
   "jCuaXOj7wh": "A version of The Moon and The Cap (sw-0053), already in the library.",
   "jEjUmuaUT6": "Another upload of Friends (bl-PDE01EHFGv).",
-  "jJ1h4BFt08": "Text mistakes (mixed tenses, \"She had a sewing machine here\", \"tops skirts\").",
+  "jJ1h4BFt08": "Tense and grammar mistakes all through (\"She had a sewing machine here\", \"She makes ... She can make tops skirts\") that would need rewriting.",
   "jTX2bVSUBE": "Another upload of Goat, Dog and Cow (unsafe road habits as the moral).",
   "ji70TGCZCd": "Text mistake: \"where is mother mother?\"",
-  "jsGrv9V0Av": "Another upload of Who Stole Bahaiya's Smile (uneven quotation marks).",
+  "jnVNNoC3Yj": "Another version of Dembe the shopkeeper (bl-gmR8JZOR9Y), already in the library.",
+  "jsGrv9V0Av": "Another upload of Who Stole Bhaiya's Smile? (bl-3NpGshx2Po).",
   "k80qQYmwG1": "Graves, giving birth and reaching the creator: not for ages 4 to 10.",
   "k8LIoIu30X": "10 words, mostly in another language.",
   "k9yqs0sbCY": "Another upload of Lion Gets Sick: the cure is an ointment from a hyena's heart.",
@@ -6172,9 +9240,7 @@
   "l6HdGCaj0C": "Another upload of An Ant Named Mari (bl-hPzSEW4Gsi).",
   "l8nm9TJlTA": "Another upload of A Street, or a Zoo? (bl-Bra5VpKEm8).",
   "lRXHy1WUBk": "A king cobra swallows a snake, leeches feed on Ajay, and the notes describe putting a radio inside a snake.",
-  "lWtxIe8FLk": "Text mistake: a stray comma (\"And yet it, is so far away\").",
   "m0AMojo4oJ": "Children push a boy's doll's head in a toilet, his father is angry about a dress, and a bleeding head injury.",
-  "mScXjHSaTx": "Text mistakes: missing full stops at the end of three pages.",
   "meM0Qs7aLB": "Same book as bl-LKE0zR5qKe (The Sea), a translation upload; the original is used.",
   "mghRS1Yic3": "The text marked as English is mostly isiXhosa.",
   "mlkTQP8DuU": "The father shoots a wild pig.",
@@ -6183,53 +9249,51 @@
   "nDhAdlNpPK": "Drinking blood from the cow, a bull that frightens children, and drought.",
   "nKnm6sJqpO": "Same book as sw-0072 (Happy and Sad), already in the library.",
   "nPya9Q3DWX": "A giant kidnaps a girl.",
-  "nWmMZmARIz": "Another upload of Tortoise Finds his House with the same missing space (\"away.“But\").",
+  "nWmMZmARIz": "Another upload of Tortoise Finds his House (bl-MozyTFFFRR).",
   "nYXLKqGfzx": "Long runs of letters (\"zzzzzzzzzzzzzz\", \"hoinkkkkkhoinkkkk\") a reader cannot read aloud.",
   "niIT2IC0ug": "10 words: too little for 3 questions.",
   "nrH55HGvdl": "Another upload of Noakawir and the Beans (bl-7XRKU4XUJP).",
   "nrepmpqnHZ": "Double exclamation marks (\"Hahahaha!!\", \"sorry!!\").",
   "o2ElIwSVHF": "Long isiXhosa lines left unexplained and an unclear line (\"Oh no, me!\").",
-  "o60O3pyaCN": "Text mistakes: missing spaces (\"Otoyo.He\", \"boy.Who\").",
+  "o60O3pyaCN": "Church on Sunday as part of the plot, and \"Who would not wish to be like him?\".",
   "oHKCXdUYNC": "Jackal tricks Donkey into a well and leaves him trapped.",
   "oJk3FNj3uC": "Same book as sw-0101 (Flying High), already in the library, under an Uzbek title.",
   "oLgY9LaYL7": "Text mistake: the quotation marks on page 8 do not match; a storm destroys the village's homes.",
   "oNkLP7wUqe": "\"The text and the photographs are reprinted here with permission of Little Hands Trust\": not clearly open.",
+  "oODb5dF7V9": "Another version of Dembe the shopkeeper (bl-gmR8JZOR9Y), already in the library.",
   "objovd5cCz": "Another upload of I Like to Draw (bl-cg0dKM2jy5).",
   "ogYKTt7rBB": "Text mistake: a missing opening quote on page 3.",
   "omRW9MZgTg": "The text marked as English is in Spanish.",
   "pLbfZJ6hrL": "Another upload of Nema Buys Thread (bl-bKz6msEr9K).",
   "pTr1nSyh0n": "Revenge in the title and plot: the honeyguide leads a man to a lion.",
-  "pUvqihNhwQ": "Another upload of Kaukare and Kasik Went Fishing (uneven quotation marks).",
-  "pZaeZ3B7G2": "Text mistake: a missing space (\"potatoes,Teacher\").",
+  "pUvqihNhwQ": "Another upload of Kaukare and Kasik Went Fishing (unsafe: the boys fall on the rocks and into the ocean).",
+  "pZaeZ3B7G2": "Names in capitals and line breaks from the print layout all through (\"UZALENDO primary school\", \"we go back to home\") that would need rewriting, and a list with no story.",
   "prT8FpN0T6": "\"There is a Bible.\" in a short list book.",
   "q0dFChGuOA": "10 words: too little for 3 questions.",
   "qBW4NPZOGb": "An unclear story (a beetle asks for soup) with little to ask about.",
   "qCNjPXIpQh": "Page 4 repeats page 3, a spelling mistake (\"to small\"), and the dog leaves home alone through a scary forest and a deep river.",
   "qDw6RtKk67": "A Mvskoke language-learning game card set, not a story.",
-  "qELPLaz9lr": "Text mistake: a missing space (\"planted.The\").",
   "qTeahwk6lG": "Another upload of Zama is great! (bl-6umwhq0WvV), under an Uzbek title.",
   "qUSZD2rHZV": "Text mistake from the print layout (\"happi- ness\"); calls the village \"a dull African village\".",
-  "qmJXoHSMtk": "Missing spaces (\"morning.We\", \"Nakuru,for\", \"waiting,a\").",
+  "qmJXoHSMtk": "Grammar mistakes all through (\"was was going for work yet she was very late\", \"arrived to the school that I was going to be admitted\") that would need rewriting; a moral about being favored.",
   "qpHpz7Dce6": "Another version of Grandma's bananas (bl-IDzZLFhQ66) with uneven quotation marks.",
   "qqgs5VJU1w": "In Spanish.",
   "qrcQWH9ber": "The children try one unsafe way after another to reach a high shelf (chairs, shoulders, a rope).",
   "r7uga0HaMe": "The word the text uses for a cat trips the profanity filter on every page.",
-  "rEjGrXklld": "Text mistakes (\"big- big build\", \"etc\").",
-  "rJbC50SZ2V": "Text mistake: a missing space (\"responded,“You\").",
+  "rEjGrXklld": "Written as a script with mistakes all through (\"Ones upon a time\", \"Men 's selfishness\", \"big- big buildings\") that would need rewriting.",
+  "rJbC50SZ2V": "Tortoise beats Mole with a big stick and Mole bites his nose until it bleeds (violence).",
   "rL7Ja3G8eC": "Another upload of We the nature lovers (\"father,Priya\").",
   "rMH2wzIQlW": "13 words: too little for 3 questions.",
   "rT6AQA5rdE": "Another upload of Where is my bat? (bl-XO5qBMpyjZ).",
   "ripeVC0HxF": "A Mvskoke language-learning game card set, not a story.",
-  "rkbv82OyQ5": "Text mistakes (spaces before \"!\", missing spaces after colons).",
+  "rkbv82OyQ5": "Melam sneaks out alone at night against his mother's wishes, shown as heroic, and trained geese leave the bully with painful wounds.",
   "rtWm1zrBDC": "The animals pull Rabbit's ears as a punishment.",
   "ruxeODdJFU": "A Mvskoke language-learning game card set, not a story.",
-  "sEnQoSQGoa": "Spelling mistake: \"askes\".",
-  "sNSmcjEdU5": "Another upload of Lights in the Water (uneven quotation marks).",
-  "sQ5PBtPOBk": "Text mistake: a missing space (\"sisters.They\").",
+  "sEnQoSQGoa": "Thandi walks to school with a stranger, shown as fine (unsafe); punctuation missing all through.",
+  "sNSmcjEdU5": "Another upload of Lights in the Water (unsafe: a child alone in the sea at night).",
   "sR5HrZ153W": "Unclear free verse (\"She wipes away the dejected faces of other adults\", \"tries hard to fix himself\").",
   "sZOlgfC7lo": "A Mvskoke language-learning game card set, not a story.",
   "saxmmWDVVs": "Text mistakes (\"the best payer\", \"Maloki\").",
-  "scfTyZM5tr": "Spelling mistakes (\"couck\", \"whaf\").",
   "scx88aqCVs": "Text mistakes (\"Baaaaaa!Silly humans\", \"Rocy\").",
   "tFMiyh1hZx": "An adaptation with mistakes added (\"lean on poles and climb up poles\", \"seagrass are rooted\").",
   "tJj2ODGfJa": "The text marked as English is mostly isiZulu.",
@@ -6240,10 +9304,9 @@
   "u76U34jBdS": "Grammar slip (\"a shirt like that boy\").",
   "uLFuoA3cCe": "Same story as bl-SAbuXLPfAD (Whose shoe is this?).",
   "uQAmW6W8oG": "A Mvskoke language-learning game card set, not a story.",
-  "uawk3oqpOz": "Text mistake: \"balancethe\".",
+  "uawk3oqpOz": "Ends with the mother praying for her (religion); grammar mistakes all through (\"my my takes me\", \"On bed time\").",
   "v0kRQVoPnc": "Awkward rhymes and the ants carry a burger off from a restaurant; the author's name is spelled two ways in the credits.",
-  "v8o0OxKOr6": "Uneven quotation marks.",
-  "vANqdOrxA4": "Text mistake (\"meaway\") and \"my big round aunt\".",
+  "vANqdOrxA4": "\"My big round aunt\" (a label on a body), and a lost child fears children are sold at the market (too frightening).",
   "vFQ1FdViJj": "20 words, half the pages without words: too little for 3 questions.",
   "vGownOuWfz": "Ten \"Where is the ...?\" questions answered only in the pictures.",
   "vHEI0dNlXk": "A Mvskoke language-learning game card set, not a story.",
@@ -6251,39 +9314,37 @@
   "vTjoiEHOzC": "Close to sw-0026 (Can and Can't), already in the library.",
   "vUJAY7QZAk": "Health claims about milk (\"breast milk\") and \"alot\".",
   "vX0StFUnPe": "A monster that eats children at night.",
-  "vgJxulAYdH": "Text mistakes (\"anywhere- nearby\", \"etc\").",
+  "vgJxulAYdH": "People throw stones at the monkeys and a boy rushes at them with a stick (beyond mild peril for animals); several text mistakes.",
   "vhZxie5DEy": "The answers are only in the pictures: nothing to ask about the words.",
   "vk2MLNYeYy": "Unclear sentences (\"They went out for more lessons.\").",
   "vtbWVFf5j6": "Another upload of Abike's day (bl-DF8YkOHTMW).",
   "w2yPebKbQP": "Another upload of Setina and her Dog (\"soemthing\").",
-  "wDOtxBJ0TG": "Another upload of Get Down, Rocky! with the same mistakes.",
+  "wDOtxBJ0TG": "Another upload of Get Down, Rocky! (bl-scx88aqCVs).",
   "wMw7Emx61r": "Another upload of I like trees (bl-RfilkjDYNU).",
   "wTv8qxo1e0": "Unexplained words and grammar slips (\"do such job\").",
   "wTvu6fCn7T": "Another telling of The Little Red Hen (bl-4yn12xdsaX), from the same pictures.",
   "wbvUwmv1v1": "A Mvskoke language-learning game card set, not a story.",
   "wclHKITUTq": "Apartheid and unhappy work as a cleaner; a blessing to the ancestors: too grown-up and partly religious.",
-  "wfklczxtJ7": "Text mistakes (\"specious room\", \"The are\", \"with is his children\").",
+  "wfklczxtJ7": "Mistakes all through (\"Mr kigode\", \"specious room\", \"The are\", \"with is his children\"), a lecture (\"We are advised to have bathrooms like Mr. Kigode's\"), and the copyright holder is unclear (\"children tales\").",
   "wsquE6Kpw3": "10 words: too little for 3 questions.",
   "wtFE3bkhVF": "Six short lines: too little for 3 questions.",
   "wtUk6KTh3Z": "A word split over two lines (\"Ding-/Ding!\") on every page.",
   "x67Ccxbr6L": "Text mistakes (\"andhis\" in the title, \"said,“Let’s\") and a bride price plot.",
   "x8ENWVqT2I": "An artist's sketchbook with notes (\"Medium:Watercolo...\"), not a story; 1,348 words.",
   "xJaIwCNJ45": "An argument about men against women.",
-  "xNeM7BMoKZ": "Text mistake (\"\\\"Alright,\\\" laughed\" with a straight quote mixed into curly quotes).",
   "xWmPDeLdxs": "Another upload of I know how to play the teacher! (hymns).",
-  "xdYmZ6F7c0": "Another upload of A careless man (text mistakes).",
+  "xdYmZ6F7c0": "Children scramble for the little food left and their mother lies down crying (too sad), and mistakes (\"did not mind of storing food\").",
   "xeQrTpIjNL": "An orphan's grief and a cruel aunt: too sad for ages 4 to 10.",
-  "xhOFhFddNX": "Another upload of Too Big! Too Small! with the same mistakes (\"for e to carry you\").",
-  "xp7Bcefcyw": "Another upload of Joy goes to school with the same mistakes.",
+  "xhOFhFddNX": "Another upload of Too Big! Too Small! (bl-HR29rbSUlL), with page 10 printed twice.",
+  "xp7Bcefcyw": "Another upload of Joy goes to school (bl-fw7y12Xeeh).",
   "xxjc2t4xMX": "Another upload of Adie and Adhoch (drownings).",
   "y3DH7Gy0o4": "Text mistakes (\"Fox Joxy\", \"water- melon\") and the animals stuff the fox in a melon and kick it.",
   "y4oX0fIWQR": "Monkeys bonk their heads again and again, and \"Now I can lay down\".",
   "yD8WKiPzI4": "Text mistakes and body-safety advice ending with a girl slapping boys.",
   "yWuroqWWbE": "11 words, in Spanish.",
-  "ykF0eajzmu": "Text mistake in the title (\"Football gameChiefs and Aces\").",
+  "ykF0eajzmu": "Names no author or illustrator to credit (only a disclaimer asking for credit), and the title runs words together.",
   "ylpCY9rZWO": "Text mistake: \"Try climb one more branch\".",
-  "z1IlL1iI4k": "Text mistake: a missing space (\"Mehrauli,New Delhi\").",
-  "z1odsw2Oe7": "Text mistake: a missing space (\"brother.Tom\").",
+  "ytjFpHhRFB": "The elephant kills all the frogs and is put in prison (violence).",
   "zMeZotjBmb": "Text mistake (\"really you?\\\" The que...\" lowercase after a question) and a queen of vegetables plot with little sense.",
   "zW3jaA0F6M": "Owner's call: children laugh at a disabled new boy (\"He walks in a different way, too!\") before he is welcomed; left out under the rule on mocking.",
   "zhUxJz9Lp2": "Spelling mistake: \"Vilolet\".",
@@ -6291,9 +9352,12 @@
   "zzl8agh72I": "The children disobey, swim in the river alone and are spanked."
  },
  "scanReviewed": {
+  "3NpGshx2Po": "The contact-details check matched page 11 (\"It's all in your head ... everyone says.\"); a person read it: no personal details.",
   "DhU02tDwAo": "The contact-details check matched a line on page 14 (Crow's warning to Baby Elephant); a person read it: no personal details.",
   "LKE0zR5qKe": "The contact-details check matched \"They run up to meet me\" (waves on a beach); a person read it: no personal details.",
   "NqhZ26F97f": "The scanner flagged brand names said in passing (YouTube, a Natraj eraser); a person read it: nothing to change.",
+  "S2R4QNezp3": "The scanner flagged \"to kill her\" (the Lion's paw on the Mouse in Aesop's fable, which he lets go); a person read it: mild peril, fine.",
+  "Ucyxs3J2iQ": "The scanner flagged \"the scariest frown in the world\" (a grumpy farmer's frown); a person read it: a funny story, fine.",
   "bZMuyGtMhQ": "The scanner flagged \"blood pressure\", \"blood sugar\" and children \"jabbed\" with vaccines (a nurse at work); a person read it: fine.",
   "tL6sbfQUTf": "The scanner read \"had not drunk water\" (an ant that is thirsty) as a drug word; a person read it: fine."
  }

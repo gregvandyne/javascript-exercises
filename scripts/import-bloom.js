@@ -112,7 +112,7 @@ const safeName = f => f.replace(/[^\w.-]+/g, '_');
  * One candidate, checked. entry: the Bloom list row; meta: its meta.json; html: its book HTML; names: the files in its
  * folder (null when unknown); curation: seed-library/bloom.json. -> { sourceId, title, status, reason, grade, ... , book }
  */
-export function evaluateBloom({ entry, meta, html, names = null, curation }) {
+export function evaluateBloom({ entry, meta, html, names = null, curation, maxUnlabeled = B.MAX_UNLABELED, allowMostUnlabeled = false }) {
   const sourceId = entry && entry.id;
   const row = { sourceId, title: (entry && entry.title) || '', status: 'excluded', reason: '' };
   const fail = reason => { row.reason = reason; return row; };
@@ -142,13 +142,18 @@ export function evaluateBloom({ entry, meta, html, names = null, curation }) {
   if (!bk.pages.length) return fail('no story pages');
   const missingEn = bk.pages.find(p => !p.text && !p.wordless);
   if (missingEn) return fail(`English missing on page ${missingEn.n}`);
-  const pic = B.checkBloomPictures(bk, code, meta.copyright || bk.data.copyright || '');
+  const pic = B.checkBloomPictures(bk, code, meta.copyright || bk.data.copyright || '', { maxUnlabeled, allowMostUnlabeled });
+  row.pictureRules = pic.rules;
   if (!pic.ok) return fail(pic.reason);
   const usedFiles = [bk.cover.file, ...bk.pages.map(p => p.picture.file)];
   if (names) { const absent = usedFiles.find(f => !names.includes(f)); if (absent) return fail(`picture ${absent} is not in the book's folder`); }
   const bad = usedFiles.find(f => !/\.(jpe?g|png|webp|gif|bmp|tiff?)$/i.test(f));
   if (bad) return fail(`picture ${bad} is not a bitmap the importer converts`);
-  const texts = bk.pages.map(p => B.joinSoftBreaks(I.tidyText(p.text)));
+  // A person's corrections of real text mistakes (picks.<id>.fixes), applied before the grade is estimated.
+  const pickF = (curation.picks || {})[sourceId];
+  const fixed = B.applyFixes(pickF && pickF.title ? pickF.title : row.title, bk.pages.map(p => B.joinSoftBreaks(I.tidyText(p.text))), pickF && pickF.fixes);
+  if (fixed.problems.length) return fail(`text corrections: ${fixed.problems[0]}`);
+  const texts = fixed.texts;
   const m = I.measure(texts), g = I.gradeOf(m);
   Object.assign(row, { grade: g.grade, score: g.score, words: m.words, measures: m, otherLangs: B.otherLangsOf(bk), pictureRules: pic.rules, parsed: bk });
   if (!g.grade) return fail(g.why === 'no text' ? 'no text' : `${g.why.startsWith('too long') ? 'too long' : 'too hard'} for the library (${g.why})`);
@@ -161,6 +166,8 @@ export function evaluateBloom({ entry, meta, html, names = null, curation }) {
   // A title Bloom stores with a layout word after it ("... Landscape") is given as the book's cover shows it (a person
   // writes it in the pick, with nothing changed but that).
   if (pick.title) row.title = pick.title;
+  const fixCount = (pick.fixes || []).length;
+  if (fixCount) { row.title = fixed.title; row.fixes = pick.fixes; }
   const id = `bl-${sourceId}`;
   const lic = B.BLOOM_ALLOWED[code];
   const people = B.creditPeople(meta.credits, bk.data.originalAcknowledgments, bk.data.versionAcknowledgments, bk.data.smallCoverCredits, meta.author ? `Author: ${meta.author}` : '');
@@ -183,6 +190,7 @@ export function evaluateBloom({ entry, meta, html, names = null, curation }) {
       ...(original && original !== (over.publisher || holder) ? { original } : {}),
       license: code, licenseName: lic.name, licenseUrl: lic.url, shareAlike: lic.family === 'by-sa',
       sourceUrl: B.bloomBookUrl(sourceId), pictureRules: pic.rules,
+      ...(fixCount ? { corrected: fixCount } : {}),
     },
     otherLangs: row.otherLangs,
     ...(dropped ? { endPagesLeftOut: dropped } : {}),
@@ -235,6 +243,8 @@ async function writeImages(rows, { list, cache, keepCache, fresh }) {
 const dirBytes = d => (fs.existsSync(d) ? fs.readdirSync(d).reduce((s, f) => s + fs.statSync(path.join(d, f)).size, 0) : 0);
 
 // ---------------------------------------------------------------- the manifest and the report
+/** The reasons checkBloomPictures gives for too many pictures with no license or copyright. */
+export const UNLABELED_FAIL = /pictures have no license or copyright/;
 const gradeRank = g => I.GRADES.indexOf(g);
 /** The shared manifest with this source's books replaced (the other sources' books are kept as they are). */
 export function mergeManifest(old, bloomBooks, { generated = new Date().toISOString().slice(0, 10) } = {}) {
@@ -250,6 +260,11 @@ export function reportMarkdown(rows, { totalBytes = null, pool = null, generated
   const esc = s => String(s).replace(/\|/g, '\\|').replace(/\n/g, ' ').replace(/\u2014/g, '-');
   const byLic = {}; for (const r of inc) byLic[r.book.credits.licenseName] = (byLic[r.book.credits.licenseName] || 0) + 1;
   const inherited = inc.filter(r => r.book.credits.pictureRules.inherited);
+  const unlabeled = inc.filter(r => r.book.credits.pictureRules.unlabeled);
+  const corrected = inc.filter(r => r.book.credits.corrected);
+  const survey = exc.filter(r => r.unlabeledSurvey);
+  const atLimit = n => survey.filter(r => r.unlabeledSurvey.passesAny && r.unlabeledSurvey.unlabeled <= n).length;
+  const pics = r => { const p = r.book.credits.pictureRules; return `${p.own}/${p.inherited}/${p.unlabeled || 0}`; };
   return [
     '# Story Library: Bloom Library books',
     '',
@@ -263,9 +278,9 @@ export function reportMarkdown(rows, { totalBytes = null, pool = null, generated
     '',
     '- The book must be CC BY, CC BY-SA or CC0 (version from the book\'s own license link; a ported or unclear version is left out), Bloom must be done processing it and have it in circulation, and it must not be tagged as a shell, template, draft, test, incoming or problem book or have activity, quiz or video pages.',
     '- Its license notes, copyright, credits and acknowledgments must not restrict it ("not for distribution", "all rights reserved", "permission", "do not copy" and the like).',
-    '- Every picture it uses (the cover and one per page) must carry its own CC BY, CC BY-SA or CC0 license, no stricter than the book\'s (no BY-SA picture in a CC BY book). A picture with no license of its own is used only when its copyright holder is the book\'s own; it then inherits the book\'s license (counted as "inherited" below). One picture that fails leaves the whole book out.',
+    '- Every picture it uses (the cover and one per page) must carry its own CC BY, CC BY-SA or CC0 license, no stricter than the book\'s (no BY-SA picture in a CC BY book). A picture with no license of its own is used when its copyright holder is the book\'s own; it then inherits the book\'s license (counted as "inherited" below). A picture with no license and no copyright at all ("unlabeled") also takes the book\'s license, but only when the book has at most ' + B.MAX_UNLABELED + ' of them, they are not most of its pictures, and nothing about the picture names a stock or clip-art source (the owner\'s rule: "if there is a book with just a couple of missing licenses, then just add it"). A picture with a stricter license of its own (NC, ND, all rights reserved, custom) or credited to a stock or clip-art source (Microsoft, Pixabay, Google and the like) leaves the whole book out, as does any other picture that fails.',
     '- Every story page must have English text (a page with a picture and no words in any language is kept as a wordless page) and exactly one picture. The reader shows the English only; the book\'s other languages are recorded for later (`otherLangs`).',
-    '- Every book page and reader page credits the author, illustrator(s), translator(s), the publisher or copyright holder, "Bloom Library", the license linked to its deed, and what Oomba changed; for CC BY-SA books, that Oomba\'s adapted pages are shared under the same license. The story words are never changed.',
+    '- Every book page and reader page credits the author, illustrator(s), translator(s), the publisher or copyright holder, "Bloom Library", the license linked to its deed, and what Oomba changed; for CC BY-SA books, that Oomba\'s adapted pages are shared under the same license. The story words are changed only to correct real mistakes (spelling, punctuation, spacing, capitalization, obvious grammar slips), each one written down in `seed-library/bloom.json` (`fixes`) and listed below; those books also say "Oomba corrected spelling and punctuation."',
     '',
     '## Choosing the books',
     '',
@@ -277,18 +292,23 @@ export function reportMarkdown(rows, { totalBytes = null, pool = null, generated
     `- Candidates checked: ${rows.length}`,
     `- Included: **${inc.length}** (${I.GRADES.map(g => `${GRADE_NAMES[g]}: ${inc.filter(r => r.grade === g).length}`).join(', ')})`,
     `- By license: ${Object.entries(byLic).sort().map(([k, n]) => `${k}: ${n}`).join(', ') || 'none'}`,
-    `- Pictures: ${inc.reduce((s, r) => s + r.book.credits.pictureRules.own, 0)} with their own license, ${inc.reduce((s, r) => s + r.book.credits.pictureRules.inherited, 0)} inherited from the book (same copyright holder; ${inherited.length} books)`,
+    `- Pictures: ${inc.reduce((s, r) => s + r.book.credits.pictureRules.own, 0)} with their own license, ${inc.reduce((s, r) => s + r.book.credits.pictureRules.inherited, 0)} inherited from the book (same copyright holder; ${inherited.length} books), ${inc.reduce((s, r) => s + (r.book.credits.pictureRules.unlabeled || 0), 0)} with no license or copyright that take the book's license (at most ${B.MAX_UNLABELED} a book; ${unlabeled.length} books)`,
+    `- Text corrected by Oomba: ${corrected.length} books, ${corrected.reduce((s, r) => s + r.book.credits.corrected, 0)} corrections (listed below)`,
     `- Left out: ${exc.length}`,
     ...Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([k, n]) => `  - ${k}: ${n}`),
     ...(totalBytes !== null ? [`- Bloom pictures on the site: ${(totalBytes / 1048576).toFixed(1)} MB (WebP, pages at most ${IMAGE.page.max} px, covers ${IMAGE.cover.max} px)`] : []),
     '',
     '## Included',
     '',
-    '| Id | Title | Grade | Score | Words | Pages | Text | Illustration | Translation | Publisher | License | Other languages |',
-    '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
-    ...inc.sort((a, b) => gradeRank(a.grade) - gradeRank(b.grade) || a.title.localeCompare(b.title)).map(r => { const c = r.book.credits; return `| ${r.book.id} | ${esc(r.title)} | ${GRADE_NAMES[r.grade]} | ${r.score} | ${r.words} | ${r.book.pageCount} | ${esc(c.text.join(', ') || '–')} | ${esc(c.illustration.join(', ') || '–')} | ${esc(c.translation.join(', ') || '–')} | ${esc(c.publisher)} | ${c.licenseName} | ${r.book.otherLangs.join(', ') || '–'} |`; }),
+    'Pictures: own license / inherited from the book\'s copyright holder / no license or copyright (takes the book\'s license). Fixes: text corrections.',
+    '',
+    '| Id | Title | Grade | Score | Words | Pages | Text | Illustration | Translation | Publisher | License | Pictures | Fixes | Other languages |',
+    '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
+    ...inc.sort((a, b) => gradeRank(a.grade) - gradeRank(b.grade) || a.title.localeCompare(b.title)).map(r => { const c = r.book.credits; return `| ${r.book.id} | ${esc(r.title)} | ${GRADE_NAMES[r.grade]} | ${r.score} | ${r.words} | ${r.book.pageCount} | ${esc(c.text.join(', ') || '–')} | ${esc(c.illustration.join(', ') || '–')} | ${esc(c.translation.join(', ') || '–')} | ${esc(c.publisher)} | ${c.licenseName} | ${pics(r)} | ${c.corrected || '–'} | ${r.book.otherLangs.join(', ') || '–'} |`; }),
     '',
     ...(inc.some(r => r.book.endNote) ? ['### Pages left out at the end', '', 'Pages after the story that are not part of it, named by a person; the story pages are all kept.', '', ...inc.filter(r => r.book.endNote).map(r => `- ${r.book.id} ${esc(r.title)}: ${r.book.endPagesLeftOut} page(s): ${esc(r.book.endNote)}`), ''] : []),
+    ...(corrected.length ? ['### Text corrections', '', 'Each correction as `seed-library/bloom.json` records it (page: from → to; page 0 is the title). The importer stops if a correction no longer matches the book exactly once.', '', ...corrected.map(r => `- ${r.book.id} ${esc(r.title)}: ${(r.fixes || []).map(f => `p${f.page} "${esc(f.from)}" → "${esc(f.to)}"`).join('; ')}`), ''] : []),
+    ...(survey.length ? ['### Pictures with no license or copyright: other limits', '', `Books left out only because more than ${B.MAX_UNLABELED} of their pictures carry no license and no copyright, that would pass every other automatic check (not yet read for content) at a higher limit: at most 3: ${atLimit(3)}; at most 5: ${atLimit(5)}; any number (still not most of the pictures): ${atLimit(Infinity)}; any number, even when most or all pictures are unlabeled: ${survey.filter(r => r.unlabeledSurvey.passesMost).length}.`, ''] : []),
     ...(inc.some(r => r.book.scanNote) ? ['### Scanner flags reviewed by a person', '', ...inc.filter(r => r.book.scanNote).map(r => `- ${r.book.id} ${esc(r.title)}: ${r.book.scanNote}`), ''] : []),
     '## Left out',
     '',
@@ -337,6 +357,14 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
         const pre = B.notABook(entry);
         const f = pre ? { meta: {}, html: '', names: null } : await fetchBook(entry, cache);
         r = evaluateBloom({ entry, meta: f.meta, html: f.html, names: f.names, curation });
+        // Left out only for pictures with no license or copyright: would another limit let it through the automatic
+        // checks? (The report counts these for the owner; nobody has read them for content.)
+        if (UNLABELED_FAIL.test(r.reason)) {
+          const passes = x => x.status === 'included' || /^licensed, not read yet|^read and left out/.test(x.reason);
+          const any = evaluateBloom({ entry, meta: f.meta, html: f.html, names: f.names, curation, maxUnlabeled: Infinity });
+          const most = evaluateBloom({ entry, meta: f.meta, html: f.html, names: f.names, curation, maxUnlabeled: Infinity, allowMostUnlabeled: true });
+          r.unlabeledSurvey = { unlabeled: r.pictureRules.unlabeled, passesAny: passes(any), passesMost: passes(most) };
+        }
         if (review && r.parsed && r.grade) fs.writeFileSync(path.join(review, `${id}.txt`), reviewText(r, f.meta));
       }
     } catch (e) { r = { sourceId: id, title: entry ? entry.title : '', status: 'excluded', reason: `could not read it (${e.message})` }; }

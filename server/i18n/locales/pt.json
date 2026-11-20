@@ -11674,6 +11674,7 @@
       "from": "Baseado em um livro de {name}",
       "changesBloom": "A Oomba mudou o tamanho das imagens e mostra o livro uma página de cada vez. Bloom Library, SIL Global e a editora do livro não endossam a Oomba.",
       "changesBloomSA": "A Oomba mudou o tamanho das imagens e mostra o livro uma página de cada vez; estas páginas adaptadas são compartilhadas com a mesma licença, {license}. Bloom Library, SIL Global e a editora do livro não endossam a Oomba.",
+      "correctedBloom": "A Oomba corrigiu a ortografia e a pontuação.",
       "originalBloom": "Ver o livro original na Bloom Library."
     },
     "readToMe": "Leia para mim",

@@ -12099,6 +12099,7 @@
       "from": "Based on a book by {name}",
       "changesBloom": "Oomba resized the pictures and shows the book one page at a time. Bloom Library, SIL Global and the book's publisher do not endorse Oomba.",
       "changesBloomSA": "Oomba resized the pictures and shows the book one page at a time; these adapted pages are shared under the same license, {license}. Bloom Library, SIL Global and the book's publisher do not endorse Oomba.",
+      "correctedBloom": "Oomba corrected spelling and punctuation.",
       "originalBloom": "See the original book on Bloom Library."
     },
     "readToMe": "Read to me",

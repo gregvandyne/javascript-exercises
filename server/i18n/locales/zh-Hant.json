@@ -11672,6 +11672,7 @@
       "from": "改編自 {name} 的書",
       "changesBloom": "Oomba 調整了圖片大小，並一次顯示一頁。Bloom Library、SIL Global 和這本書的出版者並未為 Oomba 背書。",
       "changesBloomSA": "Oomba 調整了圖片大小，並一次顯示一頁；這些改編過的頁面以相同的授權 {license} 分享。Bloom Library、SIL Global 和這本書的出版者並未為 Oomba 背書。",
+      "correctedBloom": "Oomba 修正了拼字和標點符號。",
       "originalBloom": "在 Bloom Library 上看原書。"
     },
     "readToMe": "讀給我聽",
