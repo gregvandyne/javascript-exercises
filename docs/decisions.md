@@ -9710,3 +9710,12 @@ lesson text, games and seed games) stay as they are.
 - **Tests.** `tests/unit/icons.test.js` checks the map's files, the helper, the size budget, the license and that the
   shared chrome has no emoji left as icons. Older tests that checked an emoji's place byte for byte read the page through
   `tests/support/deicon.js`, which turns each icon back into its emoji, so they still check which icon sits where.
+
+## Story Library: sliding page dots for long books (20 Nov 2026)
+
+- Owner chose "sliding dots" (option B of three mocked: a progress bar, sliding dots, parts) after the 50-page Velveteen
+  Rabbit's dots wrapped onto two lines. A book of more than 24 pages shows 13 dots that slide with the reader, the
+  current page as the larger dot and "…" on a side with more pages (`dotWindow` in `public/js/library-text.js`, used
+  by the server's first paint and the reader). Books of 24 pages or fewer show every dot, as before. 8 books slide
+  today (6 Classics, 2 Bloom). Tests: `library-classics.test.js` (the window and the server markup) and
+  `library-classics-browser.test.js` (one line at 1280 x 720, the window follows Next, a short book unchanged).

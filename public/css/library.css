@@ -85,6 +85,11 @@
 .rd-dots{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;grid-column:2;grid-row:1}
 .rd-dots i{width:10px;height:10px;border-radius:50%;background:var(--line);display:block}
 .rd-dots i.on{background:var(--accent-press)}
+/* A long book's dots slide with the reader on one line (dotWindow in library-text.js), "…" where more pages are. */
+.rd-dots.sliding{flex-wrap:nowrap;align-items:center}
+.rd-dots i[hidden]{display:none}
+.rd-dots.more-l::before,.rd-dots.more-r::after{content:'…';color:var(--muted);font-weight:700;line-height:1}
+.rd-dots.sliding i.cur{width:14px;height:14px;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent-press) 30%,transparent)}
 .rd-count{grid-column:2;grid-row:1;text-align:center;align-self:end;transform:translateY(22px)}
 .rd .lb-credit{margin-top:24px}
 @media (max-width:640px){

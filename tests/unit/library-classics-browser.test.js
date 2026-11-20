@@ -200,3 +200,27 @@ test('phones show one page at a time; a StoryWeaver picture book is unchanged on
   await shot(lib.page, 'classics-library');
   await lib.ctx.close();
 });
+
+test('a long book\'s page dots slide on one line; a short book keeps every dot', { skip }, async () => {
+  const dots = page => page.evaluate(() => { const d = document.getElementById('rd-dots'); const shown = [...d.children].filter(i => !i.hidden);
+    return { cls: d.className, shown: shown.length, all: d.children.length, h: d.getBoundingClientRect().height, on: shown.filter(i => i.classList.contains('on')).length, cur: [...d.children].findIndex(i => i.classList.contains('cur')) }; });
+  const { ctx, page, errors } = await open(null, '/library/cl-velveteen-rabbit/read');
+  let d = await dots(page);
+  assert.equal(d.all, 50); assert.equal(d.shown, 13); assert.match(d.cls, /sliding/); assert.match(d.cls, /more-r/); assert.doesNotMatch(d.cls, /more-l/);
+  assert.ok(d.h < 20, `one line of dots (${d.h}px)`);
+  await page.goto(`${BASE}/library/cl-velveteen-rabbit/read?p=30`);
+  d = await dots(page);
+  assert.match(d.cls, /more-l/); assert.match(d.cls, /more-r/); assert.equal(d.shown, 13); assert.ok(d.h < 20);
+  const last = +(await view(page)).count.match(/(\d+) of 50/)[1];
+  assert.equal(d.cur, last - 1, 'the current page is the big dot'); assert.equal(d.on, 7, 'the dots before it are filled, centered');
+  await page.click('#rd-next'); await page.waitForTimeout(150);
+  const d2 = await dots(page); assert.ok(d2.cur > d.cur, 'the window follows Next');
+  await shot(page, 'classics-long-dots-1280');
+  await page.goto(`${BASE}/library/cl-velveteen-rabbit/read?p=50`);
+  d = await dots(page); assert.match(d.cls, /more-l/); assert.doesNotMatch(d.cls, /more-r/); assert.equal(d.shown, 13);
+  // A 14-page classic shows all its dots, as before.
+  await page.goto(`${BASE}/library/cl-whale/read`);
+  d = await dots(page); assert.equal(d.shown, d.all); assert.doesNotMatch(d.cls, /sliding/); assert.equal(d.cur, -1);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
