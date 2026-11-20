@@ -58,7 +58,8 @@ export function credits(t, bk, { full = false } = {}) {
   const lic = c.licenseUrl ? ext(c.licenseUrl, c.licenseName) : c.licenseName;
   const changes = bk.source === 'bloom' ? (c.shareAlike ? t('library.credits.changesBloomSA', { license: c.licenseName }) : t('library.credits.changesBloom')) : t('library.credits.changes');
   // A book whose typos Oomba corrected (credits.corrections, the number of fixes) says so too: the CC BY change notice.
-  const note = c.corrections ? `${t('library.credits.corrected')} ${changes}` : changes;
+  // A history fact Oomba corrected (credits.factCorrections, owner's decision 20 Nov 2026) says so as well.
+  const note = [c.corrections ? t('library.credits.corrected') : '', c.factCorrections ? t('library.credits.factCorrected') : '', changes].filter(Boolean).join(' ');
   return html`<p class="lb-credit small muted" dir="auto"><span>${parts.join(' · ')} · ${lic}</span>
     <span class="lb-credit-note">${note}${full && c.sourceUrl ? html` ${ext(c.sourceUrl, bk.source === 'bloom' ? t('library.credits.originalBloom') : t('library.credits.original'))}` : ''}</span></p>`;
 }
