@@ -222,7 +222,7 @@ function onLine(x, anchors, log) {
   return g0 + ((X - f(v0)) / (f(v1) - f(v0))) * (g1 - g0);
 }
 /** -> { grade: 'k' | '1' | '2' | '3' | '4-5' | null (too long, too hard or no text), score, votes, why? } */
-export function gradeOf(m) {
+export function gradeOf(m, { maxWords = GRADE_RULE.maxWords } = {}) {
   const R = GRADE_RULE;
   if (!m.words) return { grade: null, score: null, votes: {}, why: 'no text' };
   const clamp = v => Math.max(-0.5, Math.min(5.5, v));
@@ -235,7 +235,7 @@ export function gradeOf(m) {
   let sum = 0, tot = 0;
   for (const k of Object.keys(votes)) { votes[k] = r1(clamp(votes[k])); sum += w[k] * votes[k]; tot += w[k]; }
   const score = r2(sum / tot);
-  if (m.words > R.maxWords) return { grade: null, score, votes, why: `too long (${m.words} words)` };
+  if (m.words > maxWords) return { grade: null, score, votes, why: `too long (${m.words} words)` };
   const band = R.bands.find(([lim]) => score < lim);
   return band ? { grade: band[1], score, votes } : { grade: null, score, votes, why: `past Grade 5 (score ${score})` };
 }
@@ -309,5 +309,6 @@ export function checkQuestions(qs, pageCount) {
 export const SOURCES = Object.freeze({
   storyweaver: { prefix: 'sw', publisher: 'Pratham Books', platform: 'StoryWeaver' },
   bloom: { prefix: 'bl', publisher: '', platform: 'Bloom Library' },   // the publisher is each book's own
+  classics: { prefix: 'cl', publisher: '', platform: 'Classics' },     // public domain (server/library/classics-lib.js)
 });
 export const bookId = (source, sourceId) => `${SOURCES[source].prefix}-${sourceId}`;

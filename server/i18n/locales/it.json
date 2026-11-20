@@ -3322,7 +3322,8 @@
       "tryAgain": "Riprova! Guarda la pagina {page}.",
       "lookAt": "Guarda la pagina {page}",
       "doneMsg": "Finito! {right} su {total} giuste al primo tentativo. Bravissimo!",
-      "doneShort": "Finito! Bravissimo!"
+      "doneShort": "Finito! Bravissimo!",
+      "pagesOf": "Pagine {from}-{to} di {pages}"
     }
   },
   "favorites": {
@@ -11681,7 +11682,10 @@
       "from": "Tratto da un libro di {name}",
       "changesBloom": "Oomba ha ridimensionato le immagini e mostra il libro una pagina alla volta. Bloom Library, SIL Global e l’editore del libro non sostengono Oomba.",
       "changesBloomSA": "Oomba ha ridimensionato le immagini e mostra il libro una pagina alla volta; queste pagine adattate sono condivise con la stessa licenza, {license}. Bloom Library, SIL Global e l’editore del libro non sostengono Oomba.",
-      "originalBloom": "Vedi il libro originale su Bloom Library."
+      "originalBloom": "Vedi il libro originale su Bloom Library.",
+      "publicDomain": "Pubblico dominio",
+      "firstPublished": "Pubblicato per la prima volta nel {year} ({edition}).",
+      "changesClassic": "Oomba ha diviso la storia in pagine e ridimensionato le immagini. Le parole sono dell’autore."
     },
     "readToMe": "Leggimelo",
     "pagesLabel": "Pagine",
@@ -11747,6 +11751,10 @@
       "found": "Abbiamo trovato {count, plural, one {# libro} other {# libri}} per te.",
       "empty": "Scrivi cosa ti piacerebbe leggere.",
       "error": "Qualcosa è andato storto. Riprova."
-    }
+    },
+    "sources": {
+      "classics": "Classici"
+    },
+    "footClassics": "Classici: libri antichi di pubblico dominio, con le loro illustrazioni originali."
   }
 }

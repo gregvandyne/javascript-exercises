@@ -3321,7 +3321,8 @@
       "tryAgain": "もういちど！{page}ページを見てみよう。",
       "lookAt": "{page}ページを見る",
       "doneMsg": "できた！1回目で{total}問中{right}問せいかい。よく読めたね！",
-      "doneShort": "できた！よく読めたね！"
+      "doneShort": "できた！よく読めたね！",
+      "pagesOf": "{pages}ページ中{from}～{to}ページ"
     }
   },
   "favorites": {
@@ -11680,7 +11681,10 @@
       "from": "もとの本：{name}",
       "changesBloom": "Oombaは絵の大きさを変え、本を1ページずつ見せています。Bloom Library、SIL Global、本の出版社がOombaを推薦しているわけではありません。",
       "changesBloomSA": "Oombaは絵の大きさを変え、本を1ページずつ見せています。このように変えたページは、同じライセンス（{license}）で公開しています。Bloom Library、SIL Global、本の出版社がOombaを推薦しているわけではありません。",
-      "originalBloom": "Bloom Libraryでもとの本を見る。"
+      "originalBloom": "Bloom Libraryでもとの本を見る。",
+      "publicDomain": "パブリックドメイン",
+      "firstPublished": "{year}年に初めて出版（{edition}）。",
+      "changesClassic": "Oombaはおはなしをページに分け、絵の大きさを変えました。文章は作者のものです。"
     },
     "readToMe": "読んで",
     "pagesLabel": "ページ",
@@ -11746,6 +11750,10 @@
       "found": "あなたに {count}さつ 見つかりました。",
       "empty": "よみたい ことを 書いてね。",
       "error": "うまく いきませんでした。もういちど ためしてね。"
-    }
+    },
+    "sources": {
+      "classics": "名作"
+    },
+    "footClassics": "名作：パブリックドメインになった昔の本を、もとの絵といっしょにのせています。"
   }
 }

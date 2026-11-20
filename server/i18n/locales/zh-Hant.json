@@ -3321,7 +3321,8 @@
       "tryAgain": "再試一次！看看第{page}頁。",
       "lookAt": "看第{page}頁",
       "doneMsg": "完成了！第一次就答對{total}題中的{right}題。讀得真好！",
-      "doneShort": "完成了！讀得真好！"
+      "doneShort": "完成了！讀得真好！",
+      "pagesOf": "第 {from}-{to} 頁，共 {pages} 頁"
     }
   },
   "favorites": {
@@ -11680,7 +11681,10 @@
       "from": "改編自 {name} 的書",
       "changesBloom": "Oomba 調整了圖片大小，並一次顯示一頁。Bloom Library、SIL Global 和這本書的出版者並未為 Oomba 背書。",
       "changesBloomSA": "Oomba 調整了圖片大小，並一次顯示一頁；這些改編過的頁面以相同的授權 {license} 分享。Bloom Library、SIL Global 和這本書的出版者並未為 Oomba 背書。",
-      "originalBloom": "在 Bloom Library 上看原書。"
+      "originalBloom": "在 Bloom Library 上看原書。",
+      "publicDomain": "公有領域",
+      "firstPublished": "{year} 年首次出版（{edition}）。",
+      "changesClassic": "Oomba 把故事分成頁面，並調整了圖片大小。文字都是作者的原文。"
     },
     "readToMe": "讀給我聽",
     "pagesLabel": "頁面",
@@ -11746,6 +11750,10 @@
       "found": "幫你找到 {count} 本書。",
       "empty": "寫下你想讀的內容。",
       "error": "出了點問題，請再試一次。"
-    }
+    },
+    "sources": {
+      "classics": "經典"
+    },
+    "footClassics": "經典：已進入公有領域的舊書，附上原本的插圖。"
   }
 }

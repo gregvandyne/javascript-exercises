@@ -9556,7 +9556,6 @@ it, and from anything a student saves. A "Check my answers" for students is a fo
   note), the not-endorsed line and the link to the original fold under "Author & publisher notes"
   (`library.credits.notes`, 13 languages). It is all still in the page, one tap away, so CC BY / BY-SA attribution
   ("reasonable to the medium") is kept: the creators are named on every page and the license is linked beside them.
-
 Follow-up (20 Nov 2026): a practice question is read-only for everyone (a clock to read has no Hour+/Min+5 and its
 hands don't move; a number line, grid or rekenrek can't be changed), shows no digital time, total or tracker line
 (the teacher sees the time only with "Show answers" on), and a practice board has no header total. "Build" items stay
@@ -9593,3 +9592,82 @@ unless the board asks for simplest form (its title or steps say "simplest form" 
 items want that denominator; money "$1.25", "1.25", "125¢", "125 cents"; areas with or without "square units"; ordered
 pairs and expressions without regard to spaces, "x^2" and a leading 1. On the teacher's own solo board the same rules
 run in the page (she has the answers already). The privacy page says these results are not stored.
+## Story Library: a Classics shelf, and an open-book reader for text pages (20 Nov 2026)
+
+Owner: a Classics shelf of public-domain illustrated stories for older readers (the library was thin at Grade 3 and
+Grades 4-5), and a reader layout for books where many pages have no picture: on wide landscape screens, text-only pages
+side by side as an open book (approved mockup). Pages must fit half a 1280 x 720 screen without scrolling.
+
+- **Rights rule, in code** (`checkPublicDomain` in `server/library/classics-lib.js`): published before 1931 (public
+  domain in the US) and every author, illustrator and translator died before 1956 (so it is free in "life plus 70"
+  countries too); a death year that is not known keeps the book out; a translator the book does not name counts as
+  anonymous (an anonymous pre-1931 work is free everywhere). Each source's edition, year and makers' death years are in
+  `seed-library/classics.json`; the report `docs/story-library-classics.md` (written by `scripts/import-classics.js`)
+  lists them. **The Aesop for Children (1919) is out:** Milo Winter died in 1956, not before; the Aesop books use the
+  1884 edition illustrated by Harrison Weir (d. 1906), John Tenniel (d. 1914) and Ernest Griset (d. 1907) instead. A
+  test refuses the Winter edition. The 1911 Andersen (Edmund Dulac, d. 1953) names no translator.
+- **Sources and the Project Gutenberg trademark.** Read from Project Gutenberg's HTML editions, saved from the
+  GITenberg mirror on GitHub (www.gutenberg.org was down). Only the public-domain words and pictures are used: no
+  header, footer, license text or the name on the site (a test checks the manifest and the pages); the ebook numbers
+  are in the curation file and the report only.
+- **Content.** Every story was read in full with the library's rules, applied strictly. **In (21):** Kipling: How the
+  Whale Got His Throat, How the Camel Got His Hump, The Sing-Song of Old Man Kangaroo, The Beginning of the
+  Armadillos; Beatrix Potter: Peter Rabbit (Mr. McGregor's pie judged mild and period, as asked), Mr. Jeremy Fisher,
+  Two Bad Mice, Mrs. Tittlemouse, Ginger and Pickles; The Velveteen Rabbit; The Emperor's New Clothes; 10 Aesop books
+  of 6 to 9 fables each, grouped by theme ("Clever Thinking", "Friends and Helpers"...). **Out, with reasons in the
+  curation file and the report:** Leopard (a racial slur), Crab ("the Malazy, the lazy people", a slur on Malay
+  people), Rhinoceros ("more-than-oriental splendour" about a Parsee man, three times), Elephant's Child (relatives
+  spank the child all through), First Letter (Taffy "ought to be spanked"; a mob attacks a stranger), Alphabet (needs
+  the earlier story and some 20 small inline drawings), Cat that Walked (people "always throw things at a Cat"),
+  Butterfly (999 quarrelsome wives); Potter's Benjamin Bunny (a child whipped; a pipe), Tom Kitten (smacked), Squirrel
+  Nutkin (an owl about to skin him), Jemima Puddle-Duck (the fox's end offstage, injuries, eggs eaten), Johnny
+  Town-Mouse (the cat killed the canary), Pie and the Patty-Pan (mouse pie; a death), Flopsy Bunnies ("skin them and
+  cut off their heads"), Tailor of Gloucester, Samuel Whiskers; Miss Moppet ("a Pussy") and Mrs. Tiggy-Winkle ("Cock
+  Robin", "dicky shirt-fronts"): words that read as rude today and that the site's filter flags, which we may not
+  change; Andersen's Nightingale (Death at the bedside) and others; Raggedy Ann (a recurring "Indian doll"; a prayer);
+  The Three Bears (Goldenlocks jumps from an upstairs window); Aesop fables where an animal is killed or eaten,
+  fables whose title or moral uses "Ass", "cock" or "faggot", and ones that mock a body. Poems between Kipling's
+  stories and captions printed as paragraphs are not used. **For the owner:** the Whale keeps "For the Mariner he was
+  also an Hi-ber-ni-an" (a joke about Irish speech; the owner approved this story in the mockup).
+- **Pages that fit** (`paginate`, `PAGE_FIT`): at most 13 lines of about 42 characters (a paragraph gap is half a
+  line) and 105 words, measured against the reader's Classics type; a page ends only where a sentence ends (never
+  inside one, never between lines of a list or poem that is one sentence, never after "Mr.", never before a small
+  letter as in "ker-pflop! with a splash"), prefers a paragraph end, never ends right after a fable's title, and a
+  scrap of under three lines is joined to the sentences before it. Every page of every classic is checked in the
+  browser at 1280 x 720 and 1440 x 900: both pages of a spread fully visible, no scrolling. A browser check found the
+  first estimate (44 characters a line, 110 words) overflowed 5 of 312 views; it was tightened and the page padding
+  narrowed.
+- **Pictures on the page they illustrate.** Kipling's follow their words (the sentence before, or one a person names
+  from the caption with `at`); Potter's come first (the words after them; a run of two shares out the sentences; where
+  there were more pictures than sentences a person dropped one); each fable's main picture goes with that fable (the
+  small head- and tail-pieces are not used). Big first letters printed as pictures are put back ("N the sea" -> "In
+  the sea"), and a first word in small capitals is set in normal type ("ONCE upon" -> "Once upon"). Weak alt texts
+  from the transcription ("Jeremy") are left empty; poor ones are rewritten in the curation file.
+- **The reader** (`public/js/library.js`, `public/css/library.css`, `server/routes/library.js`). A book with any page
+  without a picture gets the book layout (`.rd-stage.is-classic`): one type size for the whole book, paragraphs kept.
+  On a wide landscape screen (the existing >= 900 px and landscape rule) a run of text-only pages pairs up 1-2, 3-4...;
+  a lone one gets a spread with a blank right page; the spread is two paper pages with a soft fold shadow and page
+  numbers; Next and Back turn both; the counter says "Pages 3-4 of 12" (`js.library.pagesOf`). A picture page is laid
+  out as today. Phones and portrait screens show one page at a time. Read to me reads the left page and then the right
+  with the same highlighting (the AI voice still asks by book, page and sentence number). The progress saved is the
+  right-hand page (a spread of 1-2 counts as page 2), so assigning, results and questions ("Look at page N" opens the
+  spread with page N) are unchanged. Books with a picture on every page (all StoryWeaver and Bloom books, and Peter
+  Rabbit, Jeremy Fisher and Two Bad Mice) get exactly the markup and behavior they had.
+- **Grades.** The shared `gradeOf`, with the length cap raised from 2,500 to 4,000 words for this source only
+  (Armadillos 2,579, The Velveteen Rabbit 3,898). Result: Grade 3: 2, Grades 4-5: 19 (the library now has 46 at Grade 3
+  and 34 at Grades 4-5). Potter's books land at Grade 3 to 4-5 (Peter Rabbit 3.54, just over the line): long
+  sentences and old words ("soporific", "camomile"). They are read aloud in K-2, but the estimate is for reading alone,
+  so it is left as the rule gives it.
+- **Credits** (`library.credits.publicDomain`, `firstPublished`, `changesClassic`; 13 languages): in view "Story:
+  Rudyard Kipling · Pictures: Joseph M. Gleeson (1912)"; under "Author & publisher notes": "Public domain · First
+  published in 1912 (Doubleday, Page & Company, New York)." and "Oomba split the story into pages and resized the
+  pictures. The words are the author's own." (with "Oomba corrected spelling and punctuation." on Mrs. Tittlemouse,
+  whose transcription had "Mrs. tittlemouse" four times). Cards and book pages say "Classics" (`library.sources.classics`),
+  the footer adds a line (`library.footClassics`); search and the suggestion box find the shelf by itself (`books()`).
+- **Pictures:** the shared settings (pages WebP q40 at most 720 px, covers q55 at 440 px; color plates as covers):
+  4.4 MB for the Classics, 76 MB for the whole library, under the 80 MB budget.
+- Tests: `tests/unit/library-classics.test.js` (the rule with a too-recent illustrator, reading an edition, page cuts
+  never inside a sentence and within the budget, picture placement, the shipped books, no digitizer's name anywhere,
+  credits and markup over HTTP, progress and answers) and `tests/unit/library-classics-browser.test.js` (spreads at
+  1280 x 720 and 1440 x 900, Next and Back, the picture page, the lone page, Read to me with both voices, reading to
+  the end, phones, a StoryWeaver book unchanged); `library.test.js` allows pages without a picture for this source only.
