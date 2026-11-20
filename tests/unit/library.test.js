@@ -330,7 +330,7 @@ test('reading, answering and the class: progress, first-try marks, done, the Sco
   assert.equal(P.markDone(ava, cl.id, stepId).ok, false, 'a story step is done by reading, never by a tick');
 });
 
-test('Read to me with the AI voice: ctx story reads sentence s of page p by its numbers only', async () => {
+test('Read to me with the AI voice: ctx story reads sentence s of page p, or question q, by its numbers only', async () => {
   const { config, TTS_ALL_LOCALES } = await import('../../server/config.js');
   const V = await import('../../server/services/tts-voices.js');
   config.ttsEnabled = true; config.ttsProvider = 'mock'; config.ttsApiKey = ''; config.ttsLocales = [...TTS_ALL_LOCALES]; config.ttsMaxChars = 600;
@@ -342,6 +342,11 @@ test('Read to me with the AI voice: ctx story reads sentence s of page p by its 
     assert.equal((await say({ book: 'sw-0001', page: 99, s: 0 })).status, 404);
     assert.equal((await say({ book: 'nope', page: 1, s: 0 })).status, 404);
     assert.equal((await say({ book: 'sw-0001', page: '1', s: 0 })).status, 404, 'numbers only');
+    // The questions after the book are read with the AI voice too, by number: question q and its choices.
+    assert.equal((await say({ book: 'sw-0001', q: 0 })).json.ok, true);
+    assert.equal((await say({ book: 'sw-0001', q: 2 })).json.ok, true);
+    assert.equal((await say({ book: 'sw-0001', q: 3 })).status, 404);
+    assert.equal((await say({ book: 'sw-0001', q: '0' })).status, 404, 'numbers only');
   } finally { config.ttsEnabled = false; config.ttsProvider = 'openai'; }
 });
 

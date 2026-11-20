@@ -188,3 +188,32 @@ test('phones: no sideways scroll; Back and Next stay above the tab bar; the libr
     await rd.ctx.close();
   }
 });
+
+test('the questions are read with the AI voice when it is on (not the device voice)', { skip }, async () => {
+  const { config, TTS_ALL_LOCALES } = await import('../../server/config.js');
+  const V = await import('../../server/services/tts-voices.js');
+  config.ttsEnabled = true; config.ttsProvider = 'mock'; config.ttsApiKey = ''; config.ttsLocales = [...TTS_ALL_LOCALES]; config.ttsMaxChars = 600;
+  V.save(null, { locales: Object.fromEntries(TTS_ALL_LOCALES.map(l => [l, { on: l === 'en' }])) });
+  try {
+    const n = LIB.getBook('sw-0001').pages.length;
+    const { ctx, page, errors } = await open(null, `/library/sw-0001/read?p=${n + 1}`);
+    // This test's checkout sits under a hidden folder, which the static file server refuses, so serve the clip here.
+    await page.route('**/tts/*.mp3', r => r.fulfill({ status: 200, contentType: 'audio/mpeg', body: Buffer.alloc(64) }));
+    // Count device-voice use, and stand in for the audio player (this test only checks which voice is asked for).
+    await page.evaluate(() => {
+      window.__deviceSpoke = 0; window.__played = 0;
+      const ss = window.speechSynthesis; if (ss) ss.speak = u => { if (String(u.text || "").trim()) window.__deviceSpoke++; };
+      window.Audio = class { play() { window.__played++; setTimeout(() => this.onended && this.onended(), 10); return Promise.resolve(); } pause() {} removeAttribute() {} };
+    });
+    const btn = page.locator('.rd-q').first().locator('.rd-qread');
+    await btn.waitFor();
+    const [req] = await Promise.all([page.waitForRequest(r => r.url().endsWith('/api/tts') && r.method() === 'POST'), btn.click()]);
+    const body = JSON.parse(req.postData());
+    assert.deepEqual([body.ctx, body.book, body.q], ['story', 'sw-0001', 0]);
+    await page.waitForTimeout(500);
+    assert.equal(await page.evaluate(() => window.__played), 1, 'the AI voice played');
+    assert.equal(await page.evaluate(() => window.__deviceSpoke), 0, 'the device voice is not used when the AI voice works');
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  } finally { config.ttsEnabled = false; config.ttsProvider = 'openai'; }
+});
