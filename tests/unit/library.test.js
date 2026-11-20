@@ -150,6 +150,44 @@ test('evaluate: the fixtures are included or left out for the right reason', () 
   assert.equal(IMP.manifestOf(rows).books.length, 2);
 });
 
+test('fixes: Oomba\'s corrections of a book\'s typos are applied exactly, or the import stops', async () => {
+  const r = I.applyFixes('Sunny  cat', ['A cat sat in the sun .', 'The cat saw a red ball.'], [{ page: 1, from: ' .', to: '.' }, { page: 0, from: 'Sunny  cat', to: 'Sunny Cat' }, { page: 2, from: 'red', to: 'blue' }]);
+  assert.deepEqual(r, { title: 'Sunny Cat', pages: ['A cat sat in the sun.', 'The cat saw a blue ball.'], count: 3 });
+  assert.throws(() => I.applyFixes('T', ['A cat.'], [{ page: 1, from: 'dog', to: 'cat' }], 'sw-0001'), /sw-0001 fix 1: "dog" is not on page 1/);
+  assert.throws(() => I.applyFixes('T', ['A cat and a cat.'], [{ page: 1, from: 'cat', to: 'dog' }]), /more than once/, 'an ambiguous fix');
+  assert.throws(() => I.applyFixes('T', ['A cat.'], [{ page: 2, from: 'cat', to: 'dog' }]), /page must be/);
+  assert.throws(() => I.applyFixes('T', ['A cat.'], [{ page: 1, from: 'cat', to: 'cat' }]), /different "to"/);
+  assert.throws(() => I.applyFixes('T', ['A cat.'], [{ page: 1, from: 'cat', to: 'dog' }, { page: 1, from: 'cat', to: 'cow' }]), /fix 2: "cat" is not on page 1/, 'fixes apply in order');
+  // In the importer: the fixed text is what is measured, shown and counted; a fix that does not match stops the import.
+  const qs = [{ q: 'Who sat?', right: 'A cat', wrong: ['A dog', 'A cow'], page: 1, kind: 'literal' },
+    { q: 'What did it see?', right: 'A ball', wrong: ['A bat', 'A box'], page: 2, kind: 'literal' },
+    { q: 'Was it fun?', right: 'Yes', wrong: ['No', 'Maybe'], page: 3, kind: 'inference' }];
+  const ev = picks => IMP.evaluate({ storiesDir: path.join(FIX, 'pb-source/en'), metadataDir: path.join(FIX, 'pb-imagebank/metadata'), curation: { picks, skipped: {}, scanReviewed: {} } });
+  const rows = ev({ '0001': { questions: qs, fixes: [{ page: 2, from: 'a red ball', to: 'a big red ball' }] }, '0005': { questions: qs } });
+  const fixed = rows.find(x => x.sourceId === '0001').book, plain = rows.find(x => x.sourceId === '0005').book;
+  assert.equal(fixed.pages[1].text, 'The cat saw a big red ball.'); assert.equal(fixed.pages[1].words, 7);
+  assert.equal(fixed.words, 21); assert.equal(fixed.credits.corrections, 1);
+  assert.equal(plain.credits.corrections, undefined, 'a book with no fixes has no corrections count');
+  assert.match(IMP.reportMarkdown(rows, { generated: '2026-01-01' }), /### Text corrected by Oomba[\s\S]*sw-0001 Sunny Cat: p2 "a red ball" → "a big red ball"/);
+  assert.throws(() => ev({ '0001': { questions: qs, fixes: [{ page: 2, from: 'a green ball', to: 'a ball' }] } }), /sw-0001 fix 1: "a green ball" is not on page 2/);
+  assert.throws(() => ev({ '0001': { questions: qs, fixes: [{ page: 3, from: 'a', to: 'the' }] } }), /more than once/);
+  // The credits: "Oomba corrected spelling and punctuation." only on a corrected book, with the usual change note.
+  const { credits } = await import('../../server/routes/library.js');
+  const { makeT } = await import('../../server/i18n/index.js');
+  const t = makeT('en');
+  const out = bk => String(credits(t, bk));
+  assert.match(out(fixed), /Oomba corrected spelling and punctuation\. Oomba resized the pictures and shows the book one page at a time\. Pratham Books does not endorse Oomba\./);
+  assert.ok(!out(plain).includes('corrected'));
+  assert.match(String(credits(makeT('fr'), fixed)), /Oomba a corrigé l(&#39;|')orthographe/);
+  // The shipped books: every corrected StoryWeaver book shows the note and its count matches its fixes.
+  const curation = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-library/storyweaver.json'), 'utf8'));
+  const shipped = LIB.books().filter(b => b.source === 'storyweaver');
+  const typoFixes = b => (curation.picks[b.sourceId].fixes || []).filter(f => f.kind !== 'fact');
+  for (const b of shipped) assert.equal(b.credits.corrections, typoFixes(b).length || undefined, `${b.id} corrections`);
+  assert.ok(shipped.some(b => b.credits.corrections), 'some shipped books were corrected');
+  for (const b of shipped) assert.equal(out(b).includes('Oomba corrected spelling'), !!b.credits.corrections, b.id);
+});
+
 test('checkQuestions: exactly 3, each with 3 different choices, one answer and a page in the book', () => {
   const ok = { q: 'Q?', choices: ['a', 'b', 'c'], answer: 1, page: 2 };
   assert.deepEqual(I.checkQuestions([ok, ok, ok], 3), []);
@@ -360,4 +398,16 @@ test('account delete removes the reader\'s own progress', async () => {
   const r = del.deleteAccount(s.outsider.id, s.boss, { by: 'admin', parentMade: false });
   assert.ok(r.ok, JSON.stringify(r));
   assert.equal(q.get('SELECT COUNT(*) n FROM story_reads WHERE user_id=?', s.outsider.id).n, 0);
+});
+
+test('a corrected history fact is applied and noted in the credits (Marching to Freedom, sw-0093)', async () => {
+  const b = LIB.getBook('sw-0093');
+  const text = b.pages.map(p => p.text).join('\n');
+  assert.doesNotMatch(text, /Non-cooperation/);
+  assert.match(text, /Civil Disobedience Movement/);
+  assert.equal(b.credits.factCorrections, 2);
+  const page = await call('/library/sw-0093');
+  assert.match(page.text, /Oomba corrected a history fact\./);
+  assert.match(page.text, /Oomba corrected spelling and punctuation\./);
+  assert.doesNotMatch((await call('/library/sw-0001')).text, /history fact/, 'only on books with a fact correction');
 });

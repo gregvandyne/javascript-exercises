@@ -42,8 +42,9 @@ import { LAYOUT_TEMPLATES, WIDGETS } from '../services/dash.js';
 
 /** Where "Just Play" goes: the games for kids, no sign-up. */
 export const JUST_PLAY_URL = '/play';
-/** Every "Start free trial" (the Teacher plan's 14-day trial, no card). */
-export const TRIAL_URL = '/trial';
+/** Every "Start free trial" (the Teacher plan's 14-day trial, no card): "Who's signing up?" first (the landing is for
+ *  signed-out visitors only); "I'm a teacher" there keeps ?trial=1 through the teacher's steps, which end at /trial. */
+export const TRIAL_URL = '/signup?trial=1';
 /** "Host a live game now": the three-field teacher sign-up, then the Quick game chooser (routes/quick-live.js). */
 export const HOST_NOW_URL = '/teachers/host';
 /** Schools: invoices, purchase orders, more than a few teachers. */
@@ -378,10 +379,18 @@ export function renderLanding(req, res) {
   </div>
 </section>`;
 
+  // Under the questions: a box each for the parents' and the teachers' pages, in their own words (their kicker, heading,
+  // description and three badges, so every language has them), the whole box a link.
+  const door = (path, k, badges) => html`<a class="lp-card lp-door rv" href="${lp(path)}"${fb(`${k}.h1`)}>
+      <span class="lp-eyebrow">${t(`${k}.kicker`)}</span><h3>${t(`${k}.h1`)}</h3><p>${t(`${k}.description`)}</p>
+      <ul class="lp-door-badges">${badges.map(b => html`<li><span aria-hidden="true">✓</span> ${t(`${k}.badges.${b}`)}</li>`)}</ul>
+      <span class="lp-door-go" aria-hidden="true">${ARROW}</span></a>`;
+  const doors = [door('/parents', 'parents', ['free', 'ads', 'strangers']), door('/teachers', 'teachers', ['free', 'browser', 'google'])];
   const faqSec = html`<section class="lp-sec" id="faq" aria-labelledby="faq-h">
   <div class="lp-wrap lp-narrow">
     <header class="lp-sec-head"><h2 id="faq-h">${t('landing.faq.h')}</h2></header>
     <div class="lp-faq">${faq.map(([q, a], i) => html`<details class="lp-card"${i === 0 ? raw(' open') : ''}><summary><h3>${q}</h3><span class="lp-plus" aria-hidden="true"></span></summary><p>${a}</p></details>`)}</div>
+    <div class="lp-doors">${doors}</div>
   </div>
 </section>`;
 

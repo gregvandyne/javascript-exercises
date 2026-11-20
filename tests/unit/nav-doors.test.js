@@ -126,6 +126,19 @@ test('/login is one sign-in for kids, parents and teachers; /signup asks who is 
   assert.doesNotMatch((await call(null, '/login')).text, /Parents sign in here/);
 });
 
+test('the sign-in page, signed out: no Play, Learn, Build, Parents, Teachers or Sign in in the top bar; other pages keep them', async () => {
+  const bar = h => /<header class="topbar">[\s\S]*?<\/header>/.exec(h)[0];
+  for (const who of [null, auth.createGuest()]) {
+    const li = bar((await as(who)('/login')).text);
+    assert.doesNotMatch(li, /class="topnav"|class="navlink"|class="me-btn"/, 'no links and no Sign in button');
+    assert.match(li, /class="logo"/); assert.match(li, /class="topsearch"/); assert.match(li, /class="lang-/); assert.match(li, /class="btn btn-hot playnow"/);
+  }
+  for (const p of ['/play', '/signup', '/parents']) {
+    const b = bar((await call(null, p)).text);
+    assert.match(b, /<nav class="topnav"/, p); assert.match(b, /class="me-btn" href="\/login"/, p);
+  }
+});
+
 test('/build is the Builder for a grown-up too (docs/decisions.md "Grown-ups can build"); for anyone else it is unchanged', async () => {
   const g = grownup();
   const r = await as(g)('/build');

@@ -11670,6 +11670,8 @@
       "illustration": "Ilustrações: {names}",
       "translation": "Tradução: {names}",
       "changes": "A Oomba mudou o tamanho das imagens e mostra o livro uma página por vez. A Pratham Books não endossa a Oomba.",
+      "corrected": "A Oomba corrigiu a ortografia e a pontuação.",
+      "factCorrected": "A Oomba corrigiu um fato histórico.",
       "original": "Ver o livro original.",
       "from": "Baseado em um livro de {name}",
       "changesBloom": "A Oomba mudou o tamanho das imagens e mostra o livro uma página de cada vez. Bloom Library, SIL Global e a editora do livro não endossam a Oomba.",

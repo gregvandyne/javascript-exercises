@@ -158,7 +158,7 @@ test('the landing at "/": one teaching-loop section after the students build, wi
   assert.ok(!sec.includes('Standards tab'), 'no Standards tab');
   assert.ok(!/Lesson library|Draft with AI/.test(sec), 'games, not lessons');
   assert.doesNotMatch(sec, /href="\/(?:class|teach)\//, 'no links into teacher-only pages for signed-out visitors');
-  assert.match(sec, /href="\/trial" data-cta="trial"/);
+  assert.match(sec, /href="\/signup\?trial=1" data-cta="trial"/);
   for (const [name] of V.SHOTS) {
     const img = new RegExp(`<img src="/img/teach-loop/${name}\\.webp\\?v=\\d+" width="1280" height="800" [^>]*alt="([^"]{30,})" loading="lazy"`).exec(sec);
     assert.ok(img, name);

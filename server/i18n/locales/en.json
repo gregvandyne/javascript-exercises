@@ -12279,6 +12279,8 @@
       "illustration": "Pictures: {names}",
       "translation": "Translation: {names}",
       "changes": "Oomba resized the pictures and shows the book one page at a time. Pratham Books does not endorse Oomba.",
+      "corrected": "Oomba corrected spelling and punctuation.",
+      "factCorrected": "Oomba corrected a history fact.",
       "original": "See the original book.",
       "from": "Based on a book by {name}",
       "changesBloom": "Oomba resized the pictures and shows the book one page at a time. Bloom Library, SIL Global and the book's publisher do not endorse Oomba.",

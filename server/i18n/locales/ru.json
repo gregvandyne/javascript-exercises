@@ -11668,6 +11668,8 @@
       "illustration": "Иллюстрации: {names}",
       "translation": "Перевод: {names}",
       "changes": "Oomba изменила размер картинок и показывает книгу по одной странице. Pratham Books не одобряет Oomba официально.",
+      "corrected": "Oomba исправила орфографию и пунктуацию.",
+      "factCorrected": "Oomba исправила исторический факт.",
       "original": "Оригинальная книга.",
       "from": "По книге: {name}",
       "changesBloom": "Oomba изменила размер картинок и показывает книгу по одной странице. Bloom Library, SIL Global и издатель книги не являются партнёрами Oomba.",
