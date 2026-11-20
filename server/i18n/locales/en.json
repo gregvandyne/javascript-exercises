@@ -3398,11 +3398,14 @@
         "note": "Sticky note",
         "draft": "Draft with AI",
         "reset": "Clear the board",
-        "text": "Text"
+        "text": "Text",
+        "addCap": "Add",
+        "forObj": "{name}",
+        "showAnswers": "Show answers"
       },
       "board": {
         "label": "{tool} board",
-        "emptyPieces": "Tap a piece to put it on the board, then drag it. Tap a piece on the board for copy, flip, rotate, fill, lock and delete.",
+        "emptyPieces": "Tap something in the palette to put it on the board, then drag it. Drag the empty board to move around.",
         "pieceHint": "Tap a piece on the board for its buttons. Sticky notes can be dragged anywhere; tap one to type."
       },
       "piece": {
@@ -3416,7 +3419,8 @@
         "unlock": "Unlock",
         "delete": "Delete",
         "pickBreak": "Tap a piece that can be broken into ten first.",
-        "pickRegroup": "Tap one of ten pieces of the same kind first."
+        "pickRegroup": "Tap one of ten pieces of the same kind first.",
+        "separate": "Separate"
       },
       "note": {
         "label": "Sticky note {n}",
@@ -3443,21 +3447,21 @@
       "draft": {
         "title": "Draft a lesson with AI",
         "close": "Close",
-        "text": "Describe a lesson and the AI sets up this board: pieces placed, sticky notes with the instructions and questions, and pen marks. It replaces what is on the board; Undo brings it back.",
+        "text": "Describe a practice set and the AI builds it: the objects for each problem in a tidy grid, an answer box under each one, and the steps for students. It replaces what is on the board; Undo brings it back.",
         "task": "Start from a task",
         "ownLesson": "My own lesson",
         "grade": "Grade",
         "any": "Any",
         "brief": "What should the lesson do?",
-        "briefPh": "For example: Grade 3, build 346, then break a hundred into tens. Ask what stays the same.",
+        "briefPh": "For example: 8 clocks with different times for my students to read. Or: 6 fraction additions with unlike denominators, grade 5.",
         "private": "Only your description goes to the AI: never students' names or work.",
         "go": "Draft my board",
-        "withPieces": "The AI can place this tool's pieces.",
-        "noPieces": "This tool has no pieces to place, so the draft comes as sticky notes and pen marks.",
         "needBrief": "Describe the lesson first.",
         "working": "Drafting your board…",
-        "done": "\"{title}\" is on the board: {pieces} pieces, {notes} sticky notes, {marks} pen marks. Move anything you like, then save it or push it to a class.",
-        "noAi": "(The AI is resting, so this is a simple starting board.)"
+        "noAi": "(The AI is resting, so this is a simple starting board.)",
+        "doneSet": "\"{title}\" is on the board: {n} problems and {steps} steps.",
+        "capped": "At most {max} problems fit on one board, so it has {max}.",
+        "hint": "You choose what and how many (up to 12). The app checks every problem and lays the board out."
       },
       "tasks": {
         "boxTitle": "Try this: ready-made tasks",
@@ -3502,6 +3506,27 @@
         "label": "Text on the board",
         "ph": "Type here…",
         "delete": "Delete this text"
+      },
+      "obj": {
+        "actions": "{name}: actions",
+        "copy": "Duplicate",
+        "delete": "Delete",
+        "resize": "Drag to resize",
+        "move": "{name}: drag to move",
+        "full": "At most {n} objects on a board.",
+        "answer": "Your answer",
+        "answerIs": "Answer:",
+        "buildHere": "Build the answer here",
+        "whole": "Whole",
+        "part": "Part"
+      },
+      "view": {
+        "zoom": "Zoom",
+        "in": "Zoom in",
+        "out": "Zoom out",
+        "fit": "Fit",
+        "totalsOn": "Totals: on",
+        "totalsOff": "Totals: off"
       }
     },
     "manip-room": {
@@ -3593,7 +3618,8 @@
       "text": "Text",
       "textLabel": "Text on the board",
       "textPh": "Type here…",
-      "textDelete": "Delete this text"
+      "textDelete": "Delete this text",
+      "totals": "Students see totals"
     }
   },
   "favorites": {

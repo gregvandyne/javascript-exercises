@@ -254,49 +254,109 @@ test('sticky notes and labels go through the site\'s word rules; boards are rebu
   assert.equal(st.__ann.notes.length, 12); assert.deepEqual([st.__ann.notes[0].x, st.__ann.notes[0].y], [1, 0]); assert.equal(st.__ann.strokes[0].c, '#FF6B4A');
 });
 
-test('the AI drafter: hosts only, through the site\'s AI client with the configured model; no names in, everything sanitized out', async () => {
+test('the AI drafter: hosts only, through the site\'s AI client with the configured model; no names in; the model says what, the code checks it and lays it out', async () => {
   const w = world();
   const calls = [];
-  M.hooks.create = async params => {
-    calls.push(params);
-    return { model: params.model, usage: { input_tokens: 10, output_tokens: 10 }, content: [{ type: 'text', text: JSON.stringify({
-      board_title: 'Build 346 '.repeat(20),
-      pieces: [...Array.from({ length: 40 }, (_, i) => ({ kind: i % 2 ? 'rod' : 'flat', x: i / 10, y: -3 })), { kind: 'dragon', x: 0.5, y: 0.5 }],
-      notes: [{ text: 'What stays the same?', x: 2, y: 0.5 }, { text: 'damn shit', x: 0.1, y: 0.1 }, { text: 'Visit www.example.com', x: 0, y: 0 }, { text: '   ', x: 0, y: 0 },
-        ...Array.from({ length: 8 }, (_, i) => ({ text: `Question ${i}`, x: 0.1, y: 0.1 }))],
-      strokes: [{ color: '#123456', points: [{ x: -1, y: 0.5 }, { x: 0.5, y: 4 }] }, { color: '#1e88e5', points: [{ x: 0.1, y: 0.1 }] }, ...Array.from({ length: 6 }, () => ({ color: '#141414', points: [{ x: 0, y: 0 }, { x: 1, y: 1 }] }))],
-    }) }] };
-  };
+  let reply = null;
+  M.hooks.create = async params => { calls.push(params); return { model: params.model, usage: { input_tokens: 10, output_tokens: 10 }, content: [{ type: 'text', text: JSON.stringify(reply) }] }; };
   try {
-    const r = await as(boss)('/api/manipulatives/draft', { method: 'POST', body: { tool: 'base-ten-blocks', brief: 'Grade 2: build 346 and break a hundred', grade: '2', task: 'not a real task' } });
-    assert.equal(r.status, 200); const d = r.json.draft;
-    assert.equal(r.json.ai, true);
+    // The owner's example: 8 clocks with different times (the model repeats one and sends a bad one).
+    const times = ['3:00', '7:30', '9:15', '11:45', '3:00', '12:10', '6:05', '25:99'];
+    reply = { title: 'What time is it? '.repeat(10), steps: ['Write the time under each clock.', 'damn shit', 'Visit www.example.com'], items: times.map(t => ({ time: t, box: 'answer', x: 0.5, y: 0.5 })) };
+    const r = await as(boss)('/api/manipulatives/draft', { method: 'POST', body: { tool: 'clock', brief: 'Create 8 different clocks with different times for my students to determine the time of each', task: 'not a real task' } });
+    assert.equal(r.status, 200); assert.equal(r.json.ai, true);
     assert.equal(calls[0].model, config.builderModel, 'the model comes from config');
     const prompt = calls[0].messages[0].content;
-    assert.doesNotMatch(prompt, /miro/i); assert.doesNotMatch(prompt, /not a real task/, 'only library tasks are passed on');
-    assert.match(prompt, /kind "rod"/); assert.doesNotMatch(prompt, /Ada|Apple|Abe|Bea/);
-    assert.ok(d.board_title.length <= 120);
-    assert.equal(d.pieces.length, 30); assert.ok(d.pieces.every(p => ['rod', 'flat'].includes(p.kind) && p.x >= 0 && p.x <= 1 && p.y === 0));
-    assert.deepEqual(d.notes.map(n => n.text).slice(0, 2), ['What stays the same?', 'Question 0']);
-    assert.equal(d.notes.length, 6); assert.equal(d.notes[0].x, 1);
-    assert.deepEqual(d.steps, d.notes.map(n => n.text), 'the notes, in order, are the exercise\'s steps');
-    assert.deepEqual(d.steps.slice(0, 3), ['What stays the same?', 'Question 0', 'Question 1']);
-    assert.equal(d.strokes.length, 3, 'at most 4 strokes, a one-point stroke dropped'); assert.equal(d.strokes[0].color, '#FF6B4A'); assert.deepEqual(d.strokes[0].points[0], { x: 0, y: 0.5 });
+    assert.doesNotMatch(prompt, /miro|muse/i); assert.doesNotMatch(prompt, /not a real task/, 'only library tasks are passed on'); assert.doesNotMatch(prompt, /Ada|Apple|Abe|Bea/);
+    assert.match(prompt, /exactly as many items as the teacher asks for/); assert.doesNotMatch(prompt, /coordinates|fractions of the board/i, 'no places from the model');
+    assert.doesNotMatch(JSON.stringify(calls[0].output_config.format.schema), /"x":\{"type":"number"\}|notes|strokes/, 'no coordinates, notes or pen marks in the schema');
+    const d = r.json.draft, clocks = d.board.objects.filter(o => o.k === 'clock'), boxes = d.board.objects.filter(o => o.k === 'answer');
+    assert.equal(d.n, 7, 'the invalid time is dropped'); assert.equal(clocks.length, 7); assert.equal(boxes.length, 7);
+    assert.equal(new Set(clocks.map(o => `${o.st.h}:${o.st.m}`)).size, 7, 'every clock a different time (a repeat became a new time)');
+    assert.deepEqual(d.steps, ['Write the time under each clock.'], 'steps that fail the word rules are dropped; no sticky notes');
+    assert.equal(d.board.__ann.notes.length, 0); assert.equal(d.board.__ann.strokes.length, 0);
+    assert.ok(d.title.length <= 80);
+    // Answers: computed by the code, stored on the teacher's board only.
+    assert.deepEqual(boxes.map(o => o.st.key).slice(0, 2), ['3:00', '7:30']);
     // A student's name in the brief never reaches the AI.
     const n = calls.length;
     const named = await as(boss)('/api/manipulatives/draft', { method: 'POST', body: { tool: 'clock', brief: 'A clock lesson for Ada and her friends' } });
     assert.equal(named.status, 400); assert.equal(named.json.code, 'names'); assert.equal(calls.length, n);
     assert.equal((await as(boss)('/api/manipulatives/draft', { method: 'POST', body: { tool: 'clock', brief: 'shit' } })).json.code, 'words');
-    // A tool with no pieces: no pieces come back, whatever the model says.
-    assert.equal((await M.draftLesson(boss, { tool: 'clock', brief: 'read the time to five minutes' })).draft.pieces.length, 0);
+    // More than 12 asked for: 12, and the step says so.
+    reply = { title: 'Lots', steps: ['Read each clock.'], items: Array.from({ length: 20 }, (_, i) => ({ time: `${(i % 12) + 1}:${String((i * 5) % 60).padStart(2, '0')}`, box: 'answer' })) };
+    const big = (await M.draftLesson(boss, { tool: 'clock', brief: 'twenty clocks please' })).draft;
+    assert.equal(big.n, 12); assert.equal(big.capped, true); assert.match(big.steps[0], /12 problems/);
     assert.equal((await as(w.a1)('/api/manipulatives/draft', { method: 'POST', body: { tool: 'clock', brief: 'tell time' } })).status, 404);
   } finally { M.hooks.create = null; }
-  // No key (or the budget is resting): a plain starting board, no AI call.
+  // No key (or the budget is resting): the tool's usual board, the brief as its step, no AI call.
   const plain = await M.draftLesson(boss, { tool: 'money', brief: 'make 75 cents two ways' });
-  assert.equal(plain.ai, false); assert.equal(plain.draft.notes[0].text, 'make 75 cents two ways');
-  assert.deepEqual(M.sanitizeDraft(null, pieceDefs('money')), { board_title: 'AI lesson draft', pieces: [], notes: [], strokes: [], steps: [] });
+  assert.equal(plain.ai, false); assert.deepEqual(plain.draft.steps, ['make 75 cents two ways']); assert.equal(plain.draft.n, 0);
+  assert.equal(M.sanitizeDraft(null, 'money').n, 0);
 });
-
+test('objects in the room: a student adds them only inside their own square (kept inside it, under its strip); at most 6 there, 12 on a board; unknown kinds dropped', async () => {
+  const w = world();
+  const s = M.createSession(boss, { classId: w.A.id, tool: 'clock' }).session;
+  M.join(w.a1, { id: s.id });
+  const clock = (x, y, sc = 1, extra = {}) => ({ id: `c${x}${y}`, k: 'clock', x, y, s: sc, st: { h: 3, m: 0, start: null, label: '' }, ...extra });
+  const many = Array.from({ length: 9 }, (_, i) => clock(i * 10, 5000));
+  assert.ok(M.saveArea(w.a1, s.id, w.a1.id, { v: 2, objects: [...many, { id: 'x', k: 'dragon', x: 0, y: 0, s: 1, st: {} }, { id: 'y', k: 'clock', x: 0, y: 0, s: 1, st: 'nope' }] }).ok);
+  const mine = JSON.parse(q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, w.a1.id).state).objects;
+  assert.equal(mine.length, 6, 'at most 6 objects in a square'); assert.ok(mine.every(o => o.k === 'clock'));
+  const sq = roomLayout('clock').sq;
+  for (const o of mine) { assert.ok(o.x >= 0 && o.y >= 0 && o.x + 252 * o.s <= sq.w + 1 && o.y + 382 * o.s <= sq.h + 1, 'inside the square'); }
+  // Never in a classmate's square, never in the teacher's area.
+  assert.equal(M.saveArea(w.a1, s.id, 't', { v: 2, objects: [clock(0, 0)] }).ok, false);
+  // A huge object is made to fit; a scale out of range is brought back.
+  assert.ok(M.saveArea(w.a1, s.id, w.a1.id, { v: 2, objects: [clock(0, 0, 40)] }).ok);
+  const big = JSON.parse(q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, w.a1.id).state).objects[0];
+  assert.ok(big.s <= sq.h / 382 + 0.001);
+  // The teacher's area takes up to 12; a saved board up to 12 too.
+  assert.ok(M.saveArea(boss, s.id, 't', { v: 2, objects: Array.from({ length: 15 }, (_, i) => clock(i * 30, 0, 0.35)) }).ok);
+  assert.equal(JSON.parse(q.get('SELECT room FROM manip_sessions WHERE id=?', s.id).room).objects.length, 12);
+  const c = JSON.parse(M.cleanState({ v: 2, objects: Array.from({ length: 20 }, (_, i) => clock(i * 300, 100)) }, null, 'clock').state);
+  assert.equal(c.objects.length, 12); assert.ok(c.objects.every(o => o.x + 252 * o.s <= 4000 && o.y >= 0));
+  // Each object keeps its own state through a save and a share code.
+  const saved = M.saveBoard(boss, { tool: 'clock', title: 'Three', state: { v: 2, objects: [clock(0, 0, 1), { ...clock(300, 0), st: { h: 7, m: 45, start: { h: 7, m: 0 }, label: '' } }, { ...clock(600, 0), st: { h: 11, m: 5, start: null, label: 'End' } }] } });
+  const code = q.get('SELECT code FROM manip_boards WHERE id=?', saved.board.id).code;
+  const back = JSON.parse(M.openCode(boss, code).board.state).objects.map(o => [o.st.h, o.st.m, o.st.label, !!o.st.start]);
+  assert.deepEqual(back, [[3, 0, '', false], [7, 45, '', true], [11, 5, 'End', false]]);
+  // An old saved board (the first release's format) still opens and is saved as it was until it is changed.
+  const old = M.saveBoard(boss, { tool: 'clock', title: 'Old', state: { c1: { h: 9, m: 10 }, c2: { h: 10, m: 40 }, two: true, tracker: 0 } });
+  assert.ok(old.ok); assert.match(M.ownBoard(boss, old.board.id).state, /"c1"/);
+  assert.match(M.summarize(JSON.stringify({ v: 2, objects: [{ k: 'clock', st: { h: 7, m: 45, start: { h: 7, m: 0 } } }] })).join(' '), /Clock: 7:45 \(tracking from 7:00\)/);
+});
+test('practice answers are the teacher\'s alone: never in a share code a student opens, a push, the teacher\'s area for students, or a classmate\'s square', async () => {
+  const w = world();
+  M.hooks.create = async params => ({ model: params.model, usage: {}, content: [{ type: 'text', text: JSON.stringify({ title: 'Fractions', steps: ['Solve each one.'],
+    items: [{ op: '+', a: '1/2', b: '1/3' }, { op: '-', a: '3/4', b: '1/8' }, { op: 'x', a: '1/4', b: '3' }, { op: '/', a: '1/2', b: '3' }, { op: '=', a: '1/2', b: '8' }, { op: 'compare', a: '2/3', b: '3/4' }].map(x => ({ ...x, box: 'answer' })) }) }] });
+  try {
+    const d = (await M.draftLesson(boss, { tool: 'fraction-tiles', brief: 'Make 6 fraction addition problems with unlike denominators for grade 5' })).draft;
+    const eqs = d.board.objects.filter(o => o.k === 'frac-eq');
+    assert.equal(eqs.length, 6); assert.deepEqual(eqs.map(o => o.st.key), ['5/6', '5/8', '3/4', '1/6', '4/8', '<']);
+    const saved = M.saveBoard(boss, { tool: 'fraction-tiles', title: 'F', state: { ...d.board, __steps: d.steps.map((text, i) => ({ id: `s${i}`, text })) } });
+    assert.ok(saved.ok);
+    // The owner reopens it with the answers; a student who opens the code does not get them.
+    const code = q.get('SELECT code FROM manip_boards WHERE id=?', saved.board.id).code;
+    assert.match((await as(boss)(`/api/manipulatives/code/${code}`)).text, /5\/6/);
+    const sOpen = await as(w.a1)(`/api/manipulatives/code/${code}`);
+    if (sOpen.status === 200) assert.doesNotMatch(sOpen.text, /"key"/);
+    // A session from the board: the teacher's area has the answers for the teacher, not for students; a push neither.
+    const s = M.createSession(boss, { classId: w.A.id, tool: 'fraction-tiles', boardId: saved.board.id }).session;
+    M.join(w.a1, { id: s.id }); M.join(w.a2, { id: s.id });
+    assert.match(JSON.stringify(M.roomFor(boss, s.id).teacher), /key/);
+    assert.doesNotMatch(JSON.stringify(M.roomFor(w.a1, s.id)), /\\"key\\"|5\/6/);
+    assert.ok(M.push(boss, s.id, saved.board.id).ok);
+    assert.doesNotMatch(JSON.stringify(M.roomFor(w.a1, s.id)), /\\"key\\"|5\/6/, 'the push reaches students without answers');
+    // A student can't plant answers, and a classmate never sees a typed answer (work shown).
+    const eq = JSON.parse(JSON.stringify(eqs[0])); eq.st.ans = '5/6'; eq.st.key = 'cheat';
+    assert.ok(M.saveArea(w.a1, s.id, w.a1.id, { v: 2, objects: [eq], pieces: [] }).ok);
+    assert.doesNotMatch(q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, w.a1.id).state, /cheat/);
+    M.showWork(boss, s.id, true);
+    const mate = M.roomFor(w.a2, s.id).areas.find(a => a.key === w.a1.id);
+    assert.doesNotMatch(mate.state, /5\/6"|"ans":"5/); assert.match(M.roomFor(boss, s.id).areas.find(a => a.key === w.a1.id).state, /"ans":"5\/6"/, 'the teacher sees the answer');
+  } finally { M.hooks.create = null; }
+});
 test('the PDF: the teacher\'s export of the students\' work, with the names the teacher already sees', async () => {
   const w = world();
   const s = M.createSession(boss, { classId: w.A.id, tool: 'base-ten-blocks', title: 'PDF test' }).session;

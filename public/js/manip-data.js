@@ -33,7 +33,7 @@ const BASE10_DEC = [pd('one', '#FB8C00', '1', 1, 52, 52), pd('tenth', '#FFA726',
 const DISKS = [pd('m', '#7B1FA2', '1,000,000', 1e6, 74, 74), pd('hth', '#8E24AA', '100,000', 1e5, 70, 70), pd('tth', '#3949AB', '10,000', 1e4, 66, 66), pd('th', '#1E88E5', '1,000', 1000, 62, 62),
   pd('h', '#00ACC1', '100', 100, 58, 58), pd('t', '#43A047', '10', 10, 54, 54), pd('o', '#F9A825', '1', 1, 50, 50), pd('tenth', '#FB8C00', '0.1', 0.1, 50, 50),
   pd('hund', '#FF7043', '0.01', 0.01, 50, 50), pd('thou', '#E53935', '0.001', 0.001, 50, 50)];
-const COUNTERS = [pd('pos', '#FFD23F', '+1', 1, 48, 48), pd('neg', '#E53935', '−1', -1, 48, 48), pd('blue', '#1E88E5', '•', 0, 48, 48), pd('green', '#43A047', '•', 0, 48, 48)];
+const COUNTERS = [pd('pos', '#FFD23F', '+1', 1, 48, 48), pd('neg', '#E53935', '−1', -1, 48, 48), pd('blue', '#1E88E5', '', 0, 48, 48), pd('green', '#43A047', '', 0, 48, 48)];
 const CUBES = ['#E53935', '#FB8C00', '#FFD23F', '#43A047', '#00ACC1', '#1E88E5', '#8E24AA', '#EC407A', '#795548', '#000000'].map((c, i) => pd(`c${i}`, c, '1', 1, 40, 40));
 const TILES = ['#E53935', '#FB8C00', '#FFD23F', '#43A047', '#1E88E5', '#8E24AA'].map((c, i) => pd(`t${i}`, c, '1', 1, 52, 52));
 const RODS = [['#FFFFFF', '1 white'], ['#E53935', '2 red'], ['#AED581', '3 light green'], ['#BA68C8', '4 purple'], ['#FFD23F', '5 yellow'], ['#2E7D32', '6 dark green'], ['#212121', '7 black'], ['#8D6E63', '8 brown'], ['#1E88E5', '9 blue'], ['#FB8C00', '10 orange']]
@@ -71,6 +71,28 @@ export function pieceDefs(slug, opts = {}) {
     case 'money': return MONEY;
     default: return [];
   }
+}
+/** What the palette calls a piece: its face label is often just a number or a dot ("1", "•"), so the palette says what
+ *  it is ("Red cube", "Blue counter", "Rod (10)"). */
+const CUBE_NAMES = ['Red', 'Orange', 'Yellow', 'Green', 'Teal', 'Blue', 'Purple', 'Pink', 'Brown', 'Black'];
+const TILE_NAMES = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple'];
+/** How the palette shows a piece: a mini piece (its color and shape) with its value inside (face), a short name beside
+ *  it only where the name adds something (text), and a full name for screen readers (aria). */
+const ROD_NAMES = ['white', 'red', 'light green', 'purple', 'yellow', 'dark green', 'black', 'brown', 'blue', 'orange'];
+export function paletteName(slug, d) {
+  const k = d.kind, L = d.label;
+  const r = (face, text, aria) => ({ face, text, aria: aria || [text, face].filter(Boolean).join(', ') });
+  if (slug === 'linking-cubes') return r('', `${CUBE_NAMES[+k.slice(1)] || ''} cube`.trim());
+  if (slug === 'color-tiles') return r('', `${TILE_NAMES[+k.slice(1)] || ''} tile`.trim());
+  if (slug === 'two-color-counters') return { pos: r('+1', 'Yellow counter', 'Yellow counter, plus 1'), neg: r('−1', 'Red counter', 'Red counter, minus 1'), blue: r('', 'Blue counter'), green: r('', 'Green counter') }[k] || r(L, '');
+  if (slug === 'base-ten-blocks') return r(L, { unit: 'Unit', rod: 'Rod', flat: 'Flat', cube: 'Cube', one: 'One', tenth: 'Tenth', hundredth: 'Hundredth', thousandth: 'Thousandth' }[k] || '');
+  if (slug === 'place-value-disks') return r(L, '', `${L} disk`);
+  if (slug === 'algebra-tiles') return r(L, '', `${L} tile`);
+  if (slug === 'fraction-tiles') return r(L, '', `${L} tile`);
+  if (slug === 'number-rods') return r(String(d.value), ROD_NAMES[d.value - 1] || '', `Rod ${d.value}, ${ROD_NAMES[d.value - 1] || ''}`);
+  if (slug === 'money') return r(L, { penny: 'Penny', nickel: 'Nickel', dime: 'Dime', quarter: 'Quarter' }[k] || 'Bill');
+  if (slug === 'pattern-blocks') return r('', L);
+  return r(L, '');
 }
 /** Every piece a tool can ever hold, in any of its settings (to look a saved piece up by its kind). */
 export const allPieceDefs = slug => (slug === 'base-ten-blocks' ? [...BASE10, ...BASE10_DEC] : pieceDefs(slug));
