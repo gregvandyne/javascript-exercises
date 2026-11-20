@@ -9707,3 +9707,9 @@ side by side as an open book (approved mockup). Pages must fit half a 1280 x 720
   (about 0.4s in all; was a jump plus a 48px nudge); a swipe during a slide finishes it at once, so quick swipes turn
   quick pages. The trackpad swipe moves the page as the fingers move, turns past 90px, and springs back if it stops
   short. The stage clips sideways (`overflow-x: clip`) so a page sliding off doesn't widen the screen.
+- Follow-up (20 Nov 2026), owner: "it moves the whole browser page instead of turning the page". A sideways
+  two-finger trackpad swipe outside the book went to the browser, whose own back/forward swipe slides the whole site
+  away. The reader now takes sideways wheel swipes anywhere on the reading page (not in a text box), and while a book
+  is open `html` and `body` have `overscroll-behavior-x: none` (no browser back/forward swipe, no sideways rubber-band)
+  and `overflow-x: clip`. Not reachable from a web page: iPhone Safari's back swipe from the very left edge of the
+  screen.

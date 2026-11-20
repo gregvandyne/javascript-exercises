@@ -204,4 +204,7 @@
 
 /* Swiping turns the page (public/js/library.js): the browser keeps up-and-down scrolling, the reader takes sideways. */
 .rd-stage{touch-action:pan-y pinch-zoom;overflow-x:clip}
+/* While reading, a sideways swipe turns the book's page: never the browser's back/forward swipe or a sideways shift of
+   the whole site (a Mac trackpad, Chrome and Edge on touch screens, iOS rubber-banding). */
+html:has(#rd-stage:not([hidden])),html:has(#rd-stage:not([hidden])) body{overscroll-behavior-x:none;overflow-x:clip}
 .rd-stage>:not(.rd-nav){will-change:transform}

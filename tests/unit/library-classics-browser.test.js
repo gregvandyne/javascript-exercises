@@ -280,6 +280,16 @@ test('swiping turns the page: a finger drags the page and turns it, a short drag
   for (let i = 0; i < 6; i++) { await page.mouse.wheel(-30, 0); await page.waitForTimeout(16); }
   await page.waitForTimeout(400);
   assert.equal(await count(page), 'Pages 1-2 of 14');
+  // A sideways swipe beside the book (the page's margin) turns it too, and the browser is told not to use sideways
+  // swipes for back and forward on this page.
+  await page.mouse.move(20, 400);
+  for (let i = 0; i < 6; i++) { await page.mouse.wheel(30, 0); await page.waitForTimeout(16); }
+  await page.waitForTimeout(400);
+  assert.equal(await count(page), 'Pages 3-4 of 14', 'a swipe beside the book');
+  assert.deepEqual(await page.evaluate(() => [getComputedStyle(document.documentElement).overscrollBehaviorX, getComputedStyle(document.body).overscrollBehaviorX]), ['none', 'none']);
+  for (let i = 0; i < 6; i++) { await page.mouse.wheel(-30, 0); await page.waitForTimeout(16); }
+  await page.waitForTimeout(400);
+  await page.mouse.move(b.x, b.y);
   await page.mouse.wheel(0, 300); await page.waitForTimeout(300);
   assert.equal(await count(page), 'Pages 1-2 of 14', 'scrolling down is not a turn');
   assert.deepEqual(errors, []);
