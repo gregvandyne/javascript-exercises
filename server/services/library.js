@@ -1,8 +1,9 @@
 // Story Library (docs/decisions.md "Story Library"; docs/story-library-sources.md). Open-licensed picture books that
 // kids read one page at a time, with 3 questions at the end, and that teachers assign to a class like a game.
 //
-// The books come from server/library/manifest.json (written by scripts/import-stories.js; never edited by hand). A book
-// has a `source` ('storyweaver' today) so a second source can join without any change here or in the database.
+// The books come from server/library/manifest.json (written by scripts/import-stories.js and scripts/import-bloom.js;
+// never edited by hand). A book has a `source` ('storyweaver' or 'bloom'); nothing here or in the database depends on
+// which.
 //
 // Progress:
 //   story_reads   each reader's own progress on a book: furthest page, Read to me used, the questions (first try marks,
@@ -55,7 +56,7 @@ export function search({ grade = null, q: words = '' } = {}) {
 const hay = new WeakMap();
 function haystack(b) {
   let h = hay.get(b);
-  if (!h) { h = ` ${fold([b.title, ...b.credits.text, ...b.credits.illustration, ...b.pages.map(p => p.text)].join(' '))} `; hay.set(b, h); }
+  if (!h) { h = ` ${fold([b.title, ...b.credits.text, ...b.credits.illustration, b.credits.publisher, b.credits.platform, ...b.pages.map(p => p.text)].join(' '))} `; hay.set(b, h); }
   return h;
 }
 

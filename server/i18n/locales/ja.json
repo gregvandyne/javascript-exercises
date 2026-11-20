@@ -11658,7 +11658,6 @@
     "found": "{count}さつ",
     "none": "おはなしが見つかりません",
     "noneText": "ほかのことばでさがすか、すべての学年を見てね。",
-    "footCredit": "おはなしと絵：Pratham Books、StoryWeaver。ライセンス：",
     "footQuestions": "どの本にも作者、絵、ほんやくの人の名前があります。さいごの質問はOombaが書いたもので、本の一部ではありません。",
     "glossary": "知っておきたいことば",
     "glossaryNote": "インドのことばについてのOombaのメモです。",
@@ -11669,7 +11668,11 @@
       "illustration": "絵：{names}",
       "translation": "ほんやく：{names}",
       "changes": "Oombaは絵の大きさを変え、本を1ページずつ見せています。Pratham BooksがOombaを推薦しているわけではありません。",
-      "original": "もとの本を見る。"
+      "original": "もとの本を見る。",
+      "from": "もとの本：{name}",
+      "changesBloom": "Oombaは絵の大きさを変え、本を1ページずつ見せています。Bloom Library、SIL Global、本の出版社がOombaを推薦しているわけではありません。",
+      "changesBloomSA": "Oombaは絵の大きさを変え、本を1ページずつ見せています。このように変えたページは、同じライセンス（{license}）で公開しています。Bloom Library、SIL Global、本の出版社がOombaを推薦しているわけではありません。",
+      "originalBloom": "Bloom Libraryでもとの本を見る。"
     },
     "readToMe": "読んで",
     "pagesLabel": "ページ",
@@ -11720,6 +11723,9 @@
       "page": "{page}ページ",
       "missed": "1回目にまちがえた人：{count}"
     },
+    "footSources": "おはなしと絵：Pratham Books（StoryWeaver）と、Bloom Libraryの作者や出版社。どの本も、本ごとのオープンライセンスで、本といっしょにのせています。",
+    "glossaryNoteAll": "子どもが知らないかもしれないことばについてのOombaのメモです。",
+    "footCredit": "おはなしと絵：Pratham Books、StoryWeaver。ライセンス：",
     "wish": {
       "label": "きょうは どんな本を よみたい？",
       "placeholder": "きょうりゅう、おもしろい おはなし、うちゅうの こと...",

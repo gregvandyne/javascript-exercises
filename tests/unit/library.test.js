@@ -160,7 +160,7 @@ test('checkQuestions: exactly 3, each with 3 different choices, one answer and a
 });
 
 // ------------------------------------------------------------------ the shipped manifest
-test('the manifest: checked books over the US grades, every picture on disk, credits and 3 questions each, under 90 MB', () => {
+test('the manifest: checked books over the US grades, every picture on disk, credits and 3 questions each, under 90 MB in all', () => {
   const books = LIB.books();
   assert.ok(books.length >= 55, `${books.length} books`);
   for (const g of I.GRADES) assert.ok(books.filter(b => b.grade === g).length >= 1, `grade ${g}`);
@@ -169,7 +169,12 @@ test('the manifest: checked books over the US grades, every picture on disk, cre
   const ids = new Set();
   for (const b of books) {
     assert.ok(!ids.has(b.id)); ids.add(b.id);
-    assert.equal(b.source, 'storyweaver'); assert.match(b.id, /^sw-\d{4}$/);
+    for (const src of [b.cover.src, ...b.pages.map(p => p.image.src)]) {
+      const f = path.join(ROOT, 'public', src); assert.ok(fs.existsSync(f), src); bytes += fs.statSync(f).size;
+    }
+    assert.ok(['storyweaver', 'bloom'].includes(b.source), `${b.id} source`);
+    if (b.source !== 'storyweaver') continue;   // Bloom books: tests/unit/library-bloom.test.js
+    assert.match(b.id, /^sw-\d{4}$/);
     assert.ok(curation.picks[b.sourceId], `${b.id} was picked by a person`);
     assert.ok(['cc-by-4.0', 'public-domain'].includes(b.credits.license));
     assert.ok(b.credits.textLicense && b.credits.imageLicenses.every(I.isAllowed));
@@ -177,9 +182,6 @@ test('the manifest: checked books over the US grades, every picture on disk, cre
     assert.equal(b.credits.publisher, 'Pratham Books');
     assert.deepEqual(I.checkQuestions(b.questions, b.pages.length), [], b.id);
     assert.equal(b.questions.filter(x => x.kind === 'inference').length, 1, `${b.id}: one inference question`);
-    for (const src of [b.cover.src, ...b.pages.map(p => p.image.src)]) {
-      const f = path.join(ROOT, 'public', src); assert.ok(fs.existsSync(f), src); bytes += fs.statSync(f).size;
-    }
     assert.ok(b.pages.every(p => p.image.w > 0 && p.image.h > 0), `${b.id}: picture sizes for layout`);
     const m = I.measure(b.pages.map(p => p.text));
     assert.equal(I.gradeOf(m).grade, b.grade, `${b.id}: the grade is the rule's`);

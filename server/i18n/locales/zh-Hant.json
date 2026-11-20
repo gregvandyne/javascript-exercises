@@ -11658,7 +11658,6 @@
     "found": "{count}個故事",
     "none": "找不到故事",
     "noneText": "試試別的字，或看看所有年級。",
-    "footCredit": "故事與插圖：Pratham Books、StoryWeaver。授權：",
     "footQuestions": "每本書都列出作者、插畫家和譯者。最後的問題由Oomba撰寫，不是書的一部分。",
     "glossary": "要知道的字詞",
     "glossaryNote": "Oomba為來自印度的字詞寫的說明。",
@@ -11669,7 +11668,11 @@
       "illustration": "插圖：{names}",
       "translation": "翻譯：{names}",
       "changes": "Oomba調整了圖片大小，並一次顯示一頁。Pratham Books並未為Oomba背書。",
-      "original": "查看原書。"
+      "original": "查看原書。",
+      "from": "改編自 {name} 的書",
+      "changesBloom": "Oomba 調整了圖片大小，並一次顯示一頁。Bloom Library、SIL Global 和這本書的出版者並未為 Oomba 背書。",
+      "changesBloomSA": "Oomba 調整了圖片大小，並一次顯示一頁；這些改編過的頁面以相同的授權 {license} 分享。Bloom Library、SIL Global 和這本書的出版者並未為 Oomba 背書。",
+      "originalBloom": "在 Bloom Library 上看原書。"
     },
     "readToMe": "讀給我聽",
     "pagesLabel": "頁面",
@@ -11720,6 +11723,9 @@
       "page": "第{page}頁",
       "missed": "第一次答錯：{count}人"
     },
+    "footSources": "故事與插圖：Pratham Books（StoryWeaver），以及 Bloom Library 上的作者和出版者；每本書都有自己的開放授權，標示在書旁。",
+    "glossaryNoteAll": "Oomba為孩子可能不認識的字詞寫的說明。",
+    "footCredit": "故事與插圖：Pratham Books、StoryWeaver。授權：",
     "wish": {
       "label": "今天想讀什麼呢？",
       "placeholder": "恐龍、好笑的故事、關於太空的書...",
