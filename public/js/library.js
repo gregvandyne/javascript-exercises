@@ -140,7 +140,7 @@ function start() {
       if (!canDevice) return done();
       const u = new SpeechSynthesisUtterance(sen.text);
       u.lang = 'en-US'; const v = deviceVoice('en-US') || deviceVoice('en'); if (v) u.voice = v;
-      u.rate = bk.level === 1 ? 0.85 : 0.92;
+      u.rate = bk.grade === 'k' ? 0.85 : 0.92;
       let bounded = false;
       u.onstart = () => { if (my === seq && !bounded) hlSentence(sen); };
       u.onboundary = e => { if (my !== seq || (e.name && e.name !== 'word')) return; bounded = true; hlWord(sen.start + (e.charIndex || 0)); };

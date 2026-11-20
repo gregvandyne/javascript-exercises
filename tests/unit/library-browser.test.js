@@ -1,4 +1,4 @@
-// Story Library in a real browser (docs/decisions.md "Story Library"): the level filter and search, reading a book to
+// Story Library in a real browser (docs/decisions.md "Story Library"): the US grade filter and search, reading a book to
 // the end with Back / Next, Read to me lighting up each word as it is spoken (a stand-in speechSynthesis that fires word
 // boundaries), the questions (a wrong answer says "Try again! Look at page N" and opens that page; then the right
 // one), a teacher assigning a book and seeing the class's results, and the phone layout (no sideways scroll, Next in
@@ -44,16 +44,18 @@ const noSideways = page => page.evaluate(() => document.documentElement.scrollWi
 const shot = async (page, name, fullPage = true) => { if (!SHOTS) return; if (fullPage) { await page.evaluate(() => window.scrollTo(0, 0)); await page.waitForTimeout(400); } await page.screenshot({ path: `${SHOTS}/${name}.png`, fullPage }); };
 const pageNo = page => page.textContent('#rd-count').then(t => +/Page (\d+)/.exec(t)[1]);
 
-test('the library: level chips and search narrow the books', { skip }, async () => {
+test('the library: grade chips and search narrow the books', { skip }, async () => {
   const { ctx, page, errors } = await open(ava, '/library');
   const all = await page.locator('.lb-card').count();
   assert.equal(all, LIB.books().length);
-  await page.click('.lb-levels a:has-text("Level 2")');
-  await page.waitForURL(/level=2/);
-  const levels = await page.$$eval('.lb-card', els => els.map(e => e.dataset.level));
-  assert.ok(levels.length > 5 && levels.every(l => l === '2'), levels.join());
-  assert.equal(await page.getAttribute('.lb-levels a.on', 'href'), '/library?level=2');
-  await page.click('.lb-levels a:has-text("All levels")');
+  assert.deepEqual(await page.$$eval('.lb-levels a', els => els.map(e => e.textContent.trim())), ['All grades', '🌱 Pre-K/K', '🌿 Grade 1', '🪴 Grade 2', '🌳 Grade 3', '🌲 Grades 4-5']);
+  await page.click('.lb-levels a:has-text("Grade 2")');
+  await page.waitForURL(/grade=2/);
+  const grades = await page.$$eval('.lb-card', els => els.map(e => e.dataset.grade));
+  assert.ok(grades.length > 5 && grades.every(l => l === '2'), grades.join());
+  assert.equal(await page.getAttribute('.lb-levels a.on', 'href'), '/library?grade=2');
+  assert.ok(await page.locator('.lb-card .lb-g2').count() === grades.length, 'each card shows its grade');
+  await page.click('.lb-levels a:has-text("All grades")');
   await page.fill('#lb-q', 'giraffe'); await Promise.all([page.waitForURL(/q=giraffe/), page.press('#lb-q', 'Enter')]);
   assert.deepEqual(await page.$$eval('.lb-title', els => els.map(e => e.textContent.trim())), ['Saboo and Jojo']);
   assert.deepEqual(errors, []);

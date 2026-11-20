@@ -1,6 +1,6 @@
 # Story Library: sources and the launch set
 
-Written by `scripts/import-stories.js` (2026-11-19). Do not edit by hand: change `seed-library/storyweaver.json` or the importer and run it again.
+Written by `scripts/import-stories.js` (2026-11-20). Do not edit by hand: change `seed-library/storyweaver.json` or the importer and run it again.
 
 ## Source
 
@@ -13,13 +13,21 @@ StoryWeaver picture books by Pratham Books, from the community mirrors `global-a
 - Pictures are used only when there is exactly one more picture than text pages (picture 01 is the cover, picture N+1 goes with page N). Anything else is left out rather than guessed.
 - Every book page and every reader page credits the title, author, illustrator(s), translator(s), "Pratham Books, StoryWeaver", the license with a link to its deed, and says Oomba resized the pictures and shows one page at a time. The story words are not changed (whitespace and conversion leftovers only).
 
-## Reading levels
+## Reading levels: US grades (Oomba's estimate)
 
-From the words on each page that has text, and the words in the whole book:
+Each book gets the US school grade it suits best, estimated by Oomba from public, documented measures of its text. These are not Lexile, Guided Reading or Fountas & Pinnell levels. The rule is in `server/library/import-lib.js` (`measure`, `gradeOf`); docs/decisions.md "Story Library: US grade levels" explains it with worked examples.
 
-- **Level 1 (Just starting)**: at most 12 words a page on average, no page over 20, at most 150 words in all.
-- **Level 2 (Learning to read)**: at most 30 words a page on average and 450 words in all.
-- **Level 3 (Reading on my own)**: longer, up to 1200 words. Longer books are left out of the launch set.
+- Measures: words in all, words a page, words a sentence, syllables a word, the Flesch-Kincaid grade, and the share of words outside the Dolch and Fry sight-word lists (`server/library/sight-words.json`).
+- Each measure becomes a grade number between anchor points; the weighted mean is the score (Flesch-Kincaid and the sight-word share count for less under 300 words, as they are unreliable on very short texts).
+- Bands: Pre-K/K below 0.5, Grade 1 below 1.5, Grade 2 below 2.5, Grade 3 below 3.5, Grades 4-5 below 5. Over 2,500 words, or a score of 5 or more, is left out.
+
+| Measure | Pre-K/K | Grade 1 | Grade 2 | Grade 3 | Grades 4-5 | Weight |
+| --- | --- | --- | --- | --- | --- | --- |
+| Words in all | 60 | 150 | 400 | 900 | 2000 | 0.25 |
+| Words a page | 6 | 12 | 25 | 50 | 100 | 0.25 |
+| Words a sentence | 4.5 | 6 | 7.5 | 9.5 | 12 | 0.2 |
+| % not sight words | 8 | 12 | 16 | 20 | 25 | 0.05 to 0.15 |
+| Flesch-Kincaid grade | (its own value) | | | | | 0 to 0.15 |
 
 ## Choosing the launch set
 
@@ -28,78 +36,78 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 ## Totals
 
 - Books in the source: 395
-- Included: **58** (level 1: 18, level 2: 25, level 3: 15)
+- Included: **58** (Pre-K/K: 9, Grade 1: 26, Grade 2: 18, Grade 3: 4, Grades 4-5: 1)
 - Left out: 337
-  - licensed, not picked for the launch set: 222
+  - licensed, not picked for the launch set: 234
   - pictures do not line up with pages: 52
   - read and left out: 40
-  - too long for the launch set: 15
   - an image license: unreadable: 6
+  - too long for the library: 3
   - picture N.jpg is in the metadata but not in the image bank: 2
 - Pictures on the site: 14.1 MB (WebP, pages at most 720 px, covers 440 px)
 
 ## Included
 
-| Id | Title | Level | Words | Pages | Text | Illustration | Translation | License |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| sw-0026 | Can and Can't | 1 | 50 | 7 | Radha HS | Ruchi Shah | – | CC BY 4.0 |
-| sw-0073 | Colours (Tell me now series) | 1 | 65 | 11 | Madhav Chavan | Rijuta Ghate | – | CC BY 4.0 |
-| sw-0382 | Crocky and friends | 1 | 74 | 7 | Khushboo Awasthi | Herminder Ohri, Bulbul Sharma | – | CC BY 4.0 |
-| sw-0055 | Curly and Straight | 1 | 73 | 13 | Radha HS | Ruchi Shah | – | CC BY 4.0 |
-| sw-0072 | Happy and Sad (Tell me now series) | 1 | 64 | 11 | Madhav Chavan | Rijuta Ghate | – | CC BY 4.0 |
-| sw-0114 | I Am Not Afraid! | 1 | 106 | 11 | Mini Shrinivasan | Rayika Sen | – | CC BY 4.0 |
-| sw-0100 | I Can Climb! | 1 | 89 | 11 | Mini Shrinivasan | Deval Maniar | – | CC BY 4.0 |
-| sw-0103 | I Can Make Things! | 1 | 91 | 11 | Mini Shrinivasan | Tanvee Nabar | – | CC BY 4.0 |
-| sw-0317 | Lalu the owl | 1 | 58 | 5 | Payoshni Saraf | Wiehan de Jager | – | CC BY 4.0 |
-| sw-0041 | Look At Me | 1 | 120 | 11 | Pankaj Chaturvedi | Ajit Narayan | Manisha Chaudhry | CC BY 4.0 |
-| sw-0262 | Many Bananas | 1 | 68 | 8 | Smruthi K | Angie & Upesh | – | CC BY 4.0 |
-| sw-0125 | My Best Friend | 1 | 111 | 11 | Anupa Lal | Suvidha Mistry | – | CC BY 4.0 |
-| sw-0064 | My Friends | 1 | 69 | 11 | Rukmini Banerji | Rajeev Verma 'Banjara' | Manisha Chaudhry | CC BY 4.0 |
-| sw-0048 | My Home | 1 | 114 | 15 | Rukmini Banerji | Rajeev Verma 'Banjara' | Manisha Chaudhry | CC BY 4.0 |
-| sw-0010 | Pehelwaan Ji | 1 | 108 | 15 | Sanjiv Jaiswal 'Sanjay' | Ajit Narayan | Manisha Chaudhry | CC BY 4.0 |
-| sw-0087 | Rain, Rain | 1 | 109 | 11 | Sanjiv Jaiswal 'Sanjay' | Ajit Narayan | Manisha Chaudhry | CC BY 4.0 |
-| sw-0001 | Smile Please! | 1 | 102 | 11 | Sanjiv Jaiswal 'Sanjay' | Ajit Narayan | Manisha Chaudhry | CC BY 4.0 |
-| sw-0118 | Why, Oh Why! | 1 | 54 | 11 | Richa Bhaskar | Shailja Jain Chougule | – | CC BY 4.0 |
-| sw-0008 | "My fish!" "No, my fish!" | 2 | 185 | 11 | Suraj J Menon | Soumya Menon | – | CC BY 4.0 |
-| sw-0046 | Aaloo-Maaloo-Kaaloo | 2 | 141 | 7 | Vinita Krishna | Suvidha Mistry | Ritu Singh | CC BY 4.0 |
-| sw-0047 | Bunty and Bubbly | 2 | 120 | 11 | Sorit Gupto | Sorit Gupto | – | CC BY 4.0 |
-| sw-0126 | Busy Ants | 2 | 192 | 11 | Kanchan Bannerjee | Deepa Balsavar | – | CC BY 4.0 |
-| sw-0031 | Cheep Cheep Drip Drip | 2 | 127 | 11 | Lubaina Bandukwala | Zainab Tambawalla | – | CC BY 4.0 |
-| sw-0021 | Chhuk-Chhuk-Chhak | 2 | 124 | 7 | Vinita Krishna | Suvidha Mistry | Ritu Singh | CC BY 4.0 |
-| sw-0101 | Flying High | 2 | 235 | 8 | Vidya Tiware | Rijuta Ghate | Rohini Nilekani | CC BY 4.0 |
-| sw-0018 | Goloo the Circle | 2 | 174 | 8 | Jagdish Joshi | Jagdish Joshi | – | CC BY 4.0 |
-| sw-0124 | Grandma's Glasses | 2 | 296 | 10 | Rohini Nilekani | Tanaya Vyas | – | CC BY 4.0 |
-| sw-0014 | I Want That One! | 2 | 292 | 11 | Mala Kumar | Soumya Menon | – | CC BY 4.0 |
-| sw-0052 | Little Painters | 2 | 199 | 11 | Cheryl Rao | Tanvi Choudhury | – | CC BY 4.0 |
-| sw-0067 | Lost and Found | 2 | 153 | 11 | Sukhada Rahalkar | Sukhada Rahalkar | – | CC BY 4.0 |
-| sw-0105 | Mouse in the House | 2 | 260 | 11 | Sowmya Rajendran | Tanaya Vyas | – | CC BY 4.0 |
-| sw-0005 | Not Now, Not Now! | 2 | 177 | 7 | Rohini Nilekani | Ruchi Shah | – | CC BY 4.0 |
-| sw-0063 | Playtime | 2 | 138 | 10 | Sanjiv Jaiswal 'Sanjay' | Ajit Narayan | Manisha Chaudhry | CC BY 4.0 |
-| sw-0044 | Ramya's Stars | 2 | 242 | 9 | Mala Ashok | Helga Parekh | – | CC BY 4.0 |
-| sw-0020 | Rani's First Day at School | 2 | 179 | 6 | Cheryl Rao | Mayur Mistry | – | CC BY 4.0 |
-| sw-0009 | Susheela's Kolams | 2 | 210 | 9 | Sridala Swami | Priya Kuriyan | – | CC BY 4.0 |
-| sw-0053 | The Moon and The Cap | 2 | 143 | 11 | Rohini Nilekani | Angie & Upesh | – | CC BY 4.0 |
-| sw-0069 | The Red Raincoat | 2 | 231 | 9 | Kiran Kasturia | Zainab Tambawalla | – | CC BY 4.0 |
-| sw-0059 | This and That | 2 | 101 | 7 | Radha HS | Ruchi Shah | – | CC BY 4.0 |
-| sw-0030 | Timmy and Pepe | 2 | 175 | 11 | Madhav Chavan | Santosh Pujari | – | CC BY 4.0 |
-| sw-0003 | Vayu, the Wind | 2 | 194 | 10 | Madhuri Pai | Rijuta Ghate | Rohini Nilekani | CC BY 4.0 |
-| sw-0036 | What Does Anu See? | 2 | 181 | 11 | Lavanya Karthik | Lavanya Karthik | – | CC BY 4.0 |
-| sw-0045 | What Shall I Wear Today? | 2 | 136 | 9 | Natasha Sharma | Tanvi Choudhury | – | CC BY 4.0 |
-| sw-0120 | Anaya's Thumb | 3 | 445 | 9 | Natasha Sharma | Ruchi Shah | – | CC BY 4.0 |
-| sw-0013 | Aunty Jui's Baby | 3 | 682 | 17 | Madhuri Purandare | Madhuri Purandare | Pratham Books Team | CC BY 4.0 |
-| sw-0062 | Bheema, the Sleepyhead | 3 | 281 | 7 | Kiran Kasturia | Shweta Mohapatra | Rajesh Khar | CC BY 4.0 |
-| sw-0094 | Going to Buy a Book | 3 | 278 | 9 | Rukmini Banerji | Santosh Pujari | – | CC BY 4.0 |
-| sw-0056 | Goodnight, Tinku! | 3 | 421 | 11 | Preethi Nambiar | Sonal Goyal, Sumit Sakhuja | – | CC BY 4.0 |
-| sw-0061 | Lassi, Ice-cream or Falooda? | 3 | 299 | 7 | Mala Kumar, Manisha Chaudhry | Priya Kuriyan | – | CC BY 4.0 |
-| sw-0024 | No Smiles Today | 3 | 243 | 6 | Cheryl Rao | Saurabh Pandey | – | CC BY 4.0 |
-| sw-0017 | Peacocks and Pakodas! | 3 | 361 | 7 | Mala Kumar, Manisha Chaudhry | Priya Kuriyan | – | CC BY 4.0 |
-| sw-0057 | Ritu's Letter Gets Longer! | 3 | 597 | 14 | Mala Kumar | Henu | – | CC BY 4.0 |
-| sw-0121 | Saboo and Jojo | 3 | 285 | 8 | Herminder Ohri | Herminder Ohri | – | CC BY 4.0 |
-| sw-0096 | Samira Goes Shopping | 3 | 629 | 13 | Bharati Jagannathan | Preeti Krishnamurthy | – | CC BY 4.0 |
-| sw-0091 | The Boat Ride | 3 | 358 | 8 | Herminder Ohri | Herminder Ohri | – | CC BY 4.0 |
-| sw-0035 | The Scarecrows on Parade | 3 | 514 | 13 | Shamim Padamsee | Tanaya Vyas | – | CC BY 4.0 |
-| sw-0051 | The Timid Train | 3 | 619 | 11 | Bharati Jagannathan | Preeti Krishnamurthy | – | CC BY 4.0 |
-| sw-0034 | Veeru Goes to the Circus | 3 | 294 | 9 | Richa Ingle Deo | Reshma Barve | – | CC BY 4.0 |
+| Id | Title | Grade | Score | Words | Pages | Text | Illustration | Translation | License |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| sw-0026 | Can and Can't | Pre-K/K | 0.45 | 50 | 7 | Radha HS | Ruchi Shah | – | CC BY 4.0 |
+| sw-0073 | Colours (Tell me now series) | Pre-K/K | 0 | 65 | 11 | Madhav Chavan | Rijuta Ghate | – | CC BY 4.0 |
+| sw-0055 | Curly and Straight | Pre-K/K | 0.18 | 73 | 13 | Radha HS | Ruchi Shah | – | CC BY 4.0 |
+| sw-0072 | Happy and Sad (Tell me now series) | Pre-K/K | 0.14 | 64 | 11 | Madhav Chavan | Rijuta Ghate | – | CC BY 4.0 |
+| sw-0114 | I Am Not Afraid! | Pre-K/K | 0.45 | 106 | 11 | Mini Shrinivasan | Rayika Sen | – | CC BY 4.0 |
+| sw-0100 | I Can Climb! | Pre-K/K | 0.42 | 89 | 11 | Mini Shrinivasan | Deval Maniar | – | CC BY 4.0 |
+| sw-0262 | Many Bananas | Pre-K/K | 0.45 | 68 | 8 | Smruthi K | Angie & Upesh | – | CC BY 4.0 |
+| sw-0064 | My Friends | Pre-K/K | 0.04 | 69 | 11 | Rukmini Banerji | Rajeev Verma 'Banjara' | Manisha Chaudhry | CC BY 4.0 |
+| sw-0118 | Why, Oh Why! | Pre-K/K | -0.15 | 54 | 11 | Richa Bhaskar | Shailja Jain Chougule | – | CC BY 4.0 |
+| sw-0047 | Bunty and Bubbly | Grade 1 | 1.1 | 120 | 11 | Sorit Gupto | Sorit Gupto | – | CC BY 4.0 |
+| sw-0126 | Busy Ants | Grade 1 | 1.3 | 192 | 11 | Kanchan Bannerjee | Deepa Balsavar | – | CC BY 4.0 |
+| sw-0031 | Cheep Cheep Drip Drip | Grade 1 | 0.87 | 127 | 11 | Lubaina Bandukwala | Zainab Tambawalla | – | CC BY 4.0 |
+| sw-0382 | Crocky and friends | Grade 1 | 0.89 | 74 | 7 | Khushboo Awasthi | Herminder Ohri, Bulbul Sharma | – | CC BY 4.0 |
+| sw-0101 | Flying High | Grade 1 | 1.45 | 235 | 8 | Vidya Tiware | Rijuta Ghate | Rohini Nilekani | CC BY 4.0 |
+| sw-0094 | Going to Buy a Book | Grade 1 | 1.25 | 278 | 9 | Rukmini Banerji | Santosh Pujari | – | CC BY 4.0 |
+| sw-0018 | Goloo the Circle | Grade 1 | 1.43 | 174 | 8 | Jagdish Joshi | Jagdish Joshi | – | CC BY 4.0 |
+| sw-0103 | I Can Make Things! | Grade 1 | 0.59 | 91 | 11 | Mini Shrinivasan | Tanvee Nabar | – | CC BY 4.0 |
+| sw-0317 | Lalu the owl | Grade 1 | 1.41 | 58 | 5 | Payoshni Saraf | Wiehan de Jager | – | CC BY 4.0 |
+| sw-0052 | Little Painters | Grade 1 | 1.43 | 199 | 11 | Cheryl Rao | Tanvi Choudhury | – | CC BY 4.0 |
+| sw-0041 | Look At Me | Grade 1 | 0.68 | 120 | 11 | Pankaj Chaturvedi | Ajit Narayan | Manisha Chaudhry | CC BY 4.0 |
+| sw-0067 | Lost and Found | Grade 1 | 1.03 | 153 | 11 | Sukhada Rahalkar | Sukhada Rahalkar | – | CC BY 4.0 |
+| sw-0125 | My Best Friend | Grade 1 | 0.8 | 111 | 11 | Anupa Lal | Suvidha Mistry | – | CC BY 4.0 |
+| sw-0048 | My Home | Grade 1 | 0.94 | 114 | 15 | Rukmini Banerji | Rajeev Verma 'Banjara' | Manisha Chaudhry | CC BY 4.0 |
+| sw-0010 | Pehelwaan Ji | Grade 1 | 0.87 | 108 | 15 | Sanjiv Jaiswal 'Sanjay' | Ajit Narayan | Manisha Chaudhry | CC BY 4.0 |
+| sw-0063 | Playtime | Grade 1 | 0.94 | 138 | 10 | Sanjiv Jaiswal 'Sanjay' | Ajit Narayan | Manisha Chaudhry | CC BY 4.0 |
+| sw-0087 | Rain, Rain | Grade 1 | 0.78 | 109 | 11 | Sanjiv Jaiswal 'Sanjay' | Ajit Narayan | Manisha Chaudhry | CC BY 4.0 |
+| sw-0020 | Rani's First Day at School | Grade 1 | 1.28 | 179 | 6 | Cheryl Rao | Mayur Mistry | – | CC BY 4.0 |
+| sw-0001 | Smile Please! | Grade 1 | 0.88 | 102 | 11 | Sanjiv Jaiswal 'Sanjay' | Ajit Narayan | Manisha Chaudhry | CC BY 4.0 |
+| sw-0053 | The Moon and The Cap | Grade 1 | 1.19 | 143 | 11 | Rohini Nilekani | Angie & Upesh | – | CC BY 4.0 |
+| sw-0069 | The Red Raincoat | Grade 1 | 1.38 | 231 | 9 | Kiran Kasturia | Zainab Tambawalla | – | CC BY 4.0 |
+| sw-0059 | This and That | Grade 1 | 1.31 | 101 | 7 | Radha HS | Ruchi Shah | – | CC BY 4.0 |
+| sw-0030 | Timmy and Pepe | Grade 1 | 0.73 | 175 | 11 | Madhav Chavan | Santosh Pujari | – | CC BY 4.0 |
+| sw-0003 | Vayu, the Wind | Grade 1 | 1.21 | 194 | 10 | Madhuri Pai | Rijuta Ghate | Rohini Nilekani | CC BY 4.0 |
+| sw-0036 | What Does Anu See? | Grade 1 | 0.89 | 181 | 11 | Lavanya Karthik | Lavanya Karthik | – | CC BY 4.0 |
+| sw-0045 | What Shall I Wear Today? | Grade 1 | 1.35 | 136 | 9 | Natasha Sharma | Tanvi Choudhury | – | CC BY 4.0 |
+| sw-0008 | "My fish!" "No, my fish!" | Grade 2 | 1.53 | 185 | 11 | Suraj J Menon | Soumya Menon | – | CC BY 4.0 |
+| sw-0046 | Aaloo-Maaloo-Kaaloo | Grade 2 | 1.68 | 141 | 7 | Vinita Krishna | Suvidha Mistry | Ritu Singh | CC BY 4.0 |
+| sw-0013 | Aunty Jui's Baby | Grade 2 | 2.1 | 682 | 17 | Madhuri Purandare | Madhuri Purandare | Pratham Books Team | CC BY 4.0 |
+| sw-0062 | Bheema, the Sleepyhead | Grade 2 | 2.31 | 281 | 7 | Kiran Kasturia | Shweta Mohapatra | Rajesh Khar | CC BY 4.0 |
+| sw-0021 | Chhuk-Chhuk-Chhak | Grade 2 | 1.69 | 124 | 7 | Vinita Krishna | Suvidha Mistry | Ritu Singh | CC BY 4.0 |
+| sw-0056 | Goodnight, Tinku! | Grade 2 | 1.57 | 421 | 11 | Preethi Nambiar | Sonal Goyal, Sumit Sakhuja | – | CC BY 4.0 |
+| sw-0124 | Grandma's Glasses | Grade 2 | 1.89 | 296 | 10 | Rohini Nilekani | Tanaya Vyas | – | CC BY 4.0 |
+| sw-0014 | I Want That One! | Grade 2 | 1.53 | 292 | 11 | Mala Kumar | Soumya Menon | – | CC BY 4.0 |
+| sw-0061 | Lassi, Ice-cream or Falooda? | Grade 2 | 2.33 | 299 | 7 | Mala Kumar, Manisha Chaudhry | Priya Kuriyan | – | CC BY 4.0 |
+| sw-0105 | Mouse in the House | Grade 2 | 1.76 | 260 | 11 | Sowmya Rajendran | Tanaya Vyas | – | CC BY 4.0 |
+| sw-0024 | No Smiles Today | Grade 2 | 1.86 | 243 | 6 | Cheryl Rao | Saurabh Pandey | – | CC BY 4.0 |
+| sw-0005 | Not Now, Not Now! | Grade 2 | 1.66 | 177 | 7 | Rohini Nilekani | Ruchi Shah | – | CC BY 4.0 |
+| sw-0044 | Ramya's Stars | Grade 2 | 2.34 | 242 | 9 | Mala Ashok | Helga Parekh | – | CC BY 4.0 |
+| sw-0057 | Ritu's Letter Gets Longer! | Grade 2 | 2.48 | 597 | 14 | Mala Kumar | Henu | – | CC BY 4.0 |
+| sw-0121 | Saboo and Jojo | Grade 2 | 2.09 | 285 | 8 | Herminder Ohri | Herminder Ohri | – | CC BY 4.0 |
+| sw-0009 | Susheela's Kolams | Grade 2 | 2.48 | 210 | 9 | Sridala Swami | Priya Kuriyan | – | CC BY 4.0 |
+| sw-0091 | The Boat Ride | Grade 2 | 2.46 | 358 | 8 | Herminder Ohri | Herminder Ohri | – | CC BY 4.0 |
+| sw-0035 | The Scarecrows on Parade | Grade 2 | 2.37 | 514 | 13 | Shamim Padamsee | Tanaya Vyas | – | CC BY 4.0 |
+| sw-0120 | Anaya's Thumb | Grade 3 | 2.53 | 445 | 9 | Natasha Sharma | Ruchi Shah | – | CC BY 4.0 |
+| sw-0017 | Peacocks and Pakodas! | Grade 3 | 2.91 | 361 | 7 | Mala Kumar, Manisha Chaudhry | Priya Kuriyan | – | CC BY 4.0 |
+| sw-0096 | Samira Goes Shopping | Grade 3 | 3.1 | 629 | 13 | Bharati Jagannathan | Preeti Krishnamurthy | – | CC BY 4.0 |
+| sw-0034 | Veeru Goes to the Circus | Grade 3 | 2.55 | 294 | 9 | Richa Ingle Deo | Reshma Barve | – | CC BY 4.0 |
+| sw-0051 | The Timid Train | Grades 4-5 | 3.75 | 619 | 11 | Bharati Jagannathan | Preeti Krishnamurthy | – | CC BY 4.0 |
 
 ### Scanner flags reviewed by a person
 
@@ -119,24 +127,24 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0012 | Everything looks new! | read and left out: Religious practice is central (praying to a goddess, the Holika bonfire). |
 | sw-0015 | Hot Tea and Warm Rugs | picture 15.jpg is in the metadata but not in the image bank |
 | sw-0016 | Kheer on a Full Moon Night | read and left out: Several religious festivals are central (Navaratri dolls, Deepavali firecrackers). |
-| sw-0019 | The Cat in the Ghat! | too long for the launch set (1221 words) |
+| sw-0019 | The Cat in the Ghat! | licensed, not picked for the launch set (not read yet) |
 | sw-0023 | Little by Little | read and left out: Violence: boiling water is thrown at a wolf, and the wolves threaten to "tear you to pieces". |
 | sw-0025 | The Missing Bat | read and left out: An old man is described by his hunchback and the joke is at his expense. |
-| sw-0027 | Jungle Brew | too long for the launch set (3029 words) |
+| sw-0027 | Jungle Brew | too long for the library (too long (3029 words)) |
 | sw-0028 | Going to a Wedding | licensed, not picked for the launch set (not read yet) |
 | sw-0029 | Going Home | read and left out: A child runs across a busy road through traffic; a page is repeated in the source text. |
 | sw-0032 | Paper Play | pictures do not line up with pages (12 images for 10 pages) |
 | sw-0033 | Suraj and Sher Singh | read and left out: A page is repeated in the source text, and a child is called "a fat boy". |
 | sw-0037 | The Jungle School | read and left out: Lines are repeated in the source text and the ending is unclear. |
 | sw-0038 | My Balwadi | pictures do not line up with pages (11 images for 9 pages) |
-| sw-0039 | A Walk Among Trees | too long for the launch set (3808 words) |
+| sw-0039 | A Walk Among Trees | too long for the library (too long (3808 words)) |
 | sw-0040 | Sister, Sister, Where Does Thunder Come From? | licensed, not picked for the launch set (not read yet) |
 | sw-0042 | Sister, Sister Why is the Sky So Blue? | licensed, not picked for the launch set (not read yet) |
 | sw-0043 | Sister, Sister, Why Don't Things Fall Up? | licensed, not picked for the launch set (not read yet) |
 | sw-0049 | Kaka and Munni: A Folktale from Punjab | licensed, not picked for the launch set (not read yet) |
 | sw-0050 | Too Many Bananas | read and left out: A religious ceremony (a pooja with a priest and offerings to the gods) is central to the plot. |
 | sw-0054 | Do and Don't | licensed, not picked for the launch set (not read yet) |
-| sw-0058 | Sailing Home | too long for the launch set (1385 words) |
+| sw-0058 | Sailing Home | licensed, not picked for the launch set (not read yet) |
 | sw-0060 | Annual Haircut Day | licensed, not picked for the launch set (not read yet) |
 | sw-0066 | My Car | read and left out: Children ride a toy car after being told not to, and one loses a tooth. |
 | sw-0068 | The Auto That Flew | licensed, not picked for the launch set (not read yet) |
@@ -144,9 +152,9 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0071 | Colours of Nature | licensed, not picked for the launch set (not read yet) |
 | sw-0074 | Naughty or Not (Tell me now series) | read and left out: Labels children as "a bad boy" and "a naughty girl". |
 | sw-0075 | Gulli's Box of Things | licensed, not picked for the launch set (not read yet) |
-| sw-0076 | Paplu, the Giant | too long for the launch set (1213 words) |
+| sw-0076 | Paplu, the Giant | licensed, not picked for the launch set (not read yet) |
 | sw-0078 | Cheenu's Gift | licensed, not picked for the launch set (not read yet) |
-| sw-0079 | Kallu's World 1 - In Big Trouble Again! | too long for the launch set (1989 words) |
+| sw-0079 | Kallu's World 1 - In Big Trouble Again! | licensed, not picked for the launch set (not read yet) |
 | sw-0080 | The Day the Vegetables Came to School | pictures do not line up with pages (17 images for 15 pages) |
 | sw-0081 | The Generous Crow | read and left out: Romance joke ("Are you getting married soon?"). |
 | sw-0082 | The Woodcutter of Gura - A Folktale from Ethiopia | pictures do not line up with pages (11 images for 9 pages) |
@@ -156,9 +164,9 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0086 | Grandpa Fish and the Radio | image 07.jpg license: unreadable |
 | sw-0088 | The Flyaway Cradle | licensed, not picked for the launch set (not read yet) |
 | sw-0089 | The Magic Powder - A Folktale from Myanmar | licensed, not picked for the launch set (not read yet) |
-| sw-0090 | Raza Meets the King | too long for the launch set (1250 words) |
+| sw-0090 | Raza Meets the King | licensed, not picked for the launch set (not read yet) |
 | sw-0092 | The Sparrow and The Fruit | read and left out: A boy is beaten and a cow is whipped. |
-| sw-0093 | Marching to Freedom | too long for the launch set (1401 words) |
+| sw-0093 | Marching to Freedom | licensed, not picked for the launch set (not read yet) |
 | sw-0095 | Shobhini and Nani | licensed, not picked for the launch set (not read yet) |
 | sw-0097 | Sniffles, the Crocodile and Punch, the Butterfly | read and left out: Hunters with guns come to kill crocodiles for their skins. |
 | sw-0098 | The Hare & the Tortoise (Again!) | pictures do not line up with pages (16 images for 14 pages) |
@@ -183,7 +191,7 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0128 | Noisy Crows | licensed, not picked for the launch set (not read yet) |
 | sw-0129 | Naughty Dog | licensed, not picked for the launch set (not read yet) |
 | sw-0130 | The Boy and the Drum | pictures do not line up with pages (13 images for 13 pages) |
-| sw-0131 | The Elephant Bird | too long for the launch set (1447 words) |
+| sw-0131 | The Elephant Bird | licensed, not picked for the launch set (not read yet) |
 | sw-0132 | We Are All Animals | licensed, not picked for the launch set (not read yet) |
 | sw-0133 | The Boy and the Drum (A Shorter Version) | pictures do not line up with pages (11 images for 11 pages) |
 | sw-0134 | Pishi Caught in a Storm | read and left out: A deep wound and dead tissue are described; the animal's life is in danger. |
@@ -214,7 +222,7 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0161 | The Cave Party | licensed, not picked for the launch set (not read yet) |
 | sw-0162 | Climb and Hop | licensed, not picked for the launch set (not read yet) |
 | sw-0163 | Me and my Strong Kite | licensed, not picked for the launch set (not read yet) |
-| sw-0164 | The Horrible Crocobots | too long for the launch set (1552 words) |
+| sw-0164 | The Horrible Crocobots | licensed, not picked for the launch set (not read yet) |
 | sw-0165 | The Story-Pooping Cat | licensed, not picked for the launch set (not read yet) |
 | sw-0166 | Have You Seen These Birds? | read and left out: A list of bird names, not a story (too little text for 3 questions). |
 | sw-0167 | Didi and the Colourful Treasure | read and left out: Left out by the owner (20 Nov 2026): children live by a garbage dump and do not go to school. |
@@ -273,7 +281,7 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0224 | Hoggy and Ramu | licensed, not picked for the launch set (not read yet) |
 | sw-0225 | Naughty Children | licensed, not picked for the launch set (not read yet) |
 | sw-0226 | Diwali | licensed, not picked for the launch set (not read yet) |
-| sw-0227 | The dog | too long for the launch set (1634 words) |
+| sw-0227 | The dog | licensed, not picked for the launch set (not read yet) |
 | sw-0228 | Granny and her Bird Friend | pictures do not line up with pages (1 images for 1 pages) |
 | sw-0229 | Manya's perfect dress | licensed, not picked for the launch set (not read yet) |
 | sw-0230 | Didi's knowledge | licensed, not picked for the launch set (not read yet) |
@@ -354,7 +362,7 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0310 | The Moon and the Stars | licensed, not picked for the launch set (not read yet) |
 | sw-0311 | The huge beauty | licensed, not picked for the launch set (not read yet) |
 | sw-0312 | The bizarre island | licensed, not picked for the launch set (not read yet) |
-| sw-0313 | Long Live Friendship! A Humorous Play for Children | too long for the launch set (2964 words) |
+| sw-0313 | Long Live Friendship! A Humorous Play for Children | too long for the library (too long (2964 words)) |
 | sw-0314 | Loving Family | licensed, not picked for the launch set (not read yet) |
 | sw-0315 | Chottu - The Little Boy | licensed, not picked for the launch set (not read yet) |
 | sw-0316 | “Everything happens for the good” | licensed, not picked for the launch set (not read yet) |
@@ -384,7 +392,7 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0348 | How Do Aeroplanes Fly? | licensed, not picked for the launch set (not read yet) |
 | sw-0349 | Chulli and the cows | read and left out: Only 3 pages; the story stops before it ends. |
 | sw-0351 | Moti and Mohan | licensed, not picked for the launch set (not read yet) |
-| sw-0352 | Let's Go Seed Collecting! | too long for the launch set (1307 words) |
+| sw-0352 | Let's Go Seed Collecting! | licensed, not picked for the launch set (not read yet) |
 | sw-0356 | Life full of dreams | licensed, not picked for the launch set (not read yet) |
 | sw-0357 | Sam the Dragon | pictures do not line up with pages (11 images for 12 pages) |
 | sw-0358 | Nanni's Birthday Gift | licensed, not picked for the launch set (not read yet) |
@@ -418,11 +426,11 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0392 | We Don't Pick Up Dog Family | pictures do not line up with pages (1 images for 1 pages) |
 | sw-0394 | The Big Game | licensed, not picked for the launch set (not read yet) |
 | sw-0395 | Manikantan Has Enough | pictures do not line up with pages (21 images for 17 pages) |
-| sw-0397 | Jadav and the Tree-Place | too long for the launch set (1485 words) |
+| sw-0397 | Jadav and the Tree-Place | licensed, not picked for the launch set (not read yet) |
 | sw-0399 | Cat Dreams | licensed, not picked for the launch set (not read yet) |
 | sw-0400 | Nanni and the Oil Spill | licensed, not picked for the launch set (not read yet) |
 | sw-0401 | Baby in the clouds | licensed, not picked for the launch set (not read yet) |
-| sw-0403 | The Messy Desk | too long for the launch set (1369 words) |
+| sw-0403 | The Messy Desk | licensed, not picked for the launch set (not read yet) |
 | sw-0404 | The Mango Pickle | licensed, not picked for the launch set (not read yet) |
 | sw-0406 | A Helping Hand | image 01.jpg license: unreadable |
 | sw-0407 | Jamun Has Her Wish | pictures do not line up with pages (11 images for 13 pages) |

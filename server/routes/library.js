@@ -1,7 +1,8 @@
 // Story Library (services/library.js; docs/decisions.md "Story Library"). Open-licensed picture books, read one page at
 // a time with Read to me, then 3 questions written by Oomba.
-//   GET  /library                  the books: level chips, search, Read (and Assign for school staff); ?class= keeps a
-//                                  teacher's class for Assign
+//   GET  /library                  the books: US grade chips (?grade=k|1|2|3|4-5; an old ?level=1-3 link redirects to
+//                                  a grade), search, Read (and Assign for school staff); ?class= keeps a teacher's
+//                                  class for Assign
 //   GET  /library/:id              one book: cover, credits, words to know, Read / Continue, Assign
 //   GET  /library/:id/read         the reader (?p= a page; ?cl=&step= an assignment, so the class sees the progress)
 //   GET  /library/:id/assign       Assign to a class (a class, a due day; Google Classroom when the class is linked)
@@ -29,9 +30,14 @@ export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/library.css?v=${VERSION}">`);
 const SCHOOL_CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
 const b = req => req.body || {};
-const LEVEL_ICON = { 1: '🌱', 2: '🌿', 3: '🌳' };
+const GRADE_ICON = { k: '🌱', 1: '🌿', 2: '🪴', 3: '🌳', '4-5': '🌲' };
+const gradeKey = g => `library.grades.g${String(g).replace('-', '')}`;
+const gradeName = (t, g) => t(gradeKey(g));
 const isStaff = u => !!u && !u.is_guest && S.isSchoolStaff(u);
-const levelChip = (t, lv, { long = false } = {}) => html`<span class="lb-lvl lb-l${lv}"><span aria-hidden="true">${LEVEL_ICON[lv]}</span> ${long ? t('library.levelLong', { n: lv, name: t(`library.levels.l${lv}`) }) : t('library.level', { n: lv })}</span>`;
+const gradeChip = (t, g) => html`<span class="lb-lvl lb-g${String(g).replace('-', '')}"><span aria-hidden="true">${GRADE_ICON[g]}</span> ${gradeName(t, g)}</span>`;
+/** For teachers, under the grade on the book page: that it is Oomba's estimate, and the measures it comes from. */
+const gradeDetails = (t, bk) => { const m = bk.measures || {}; return html`<details class="lb-measures small muted"><summary>${t('library.gradeWhy')}</summary>
+  <p>${t('library.gradeNote')}</p><p>${t('library.measures', { words: bk.words, perPage: m.perPage, perSentence: m.perSentence, syllables: m.syllablesPerWord, fk: m.fk, notSight: m.notSight })}</p></details>`; };
 const listOf = (t, names) => names.join(', ');
 const ext = (href, text) => html`<a href="${href}" rel="noopener noreferrer" target="_blank">${text}</a>`;
 
@@ -62,12 +68,17 @@ const assignHref = (bk, c) => `/library/${bk.id}/assign${c ? `?class=${c.id}` : 
 // ---------------------------------------------------------------- the library
 router.get('/library', (req, res) => {
   const t = req.t, u = req.user;
-  const level = LIB.LEVELS.includes(+req.query.level) ? +req.query.level : null;
+  const grade = LIB.gradeParam(req.query.grade, req.query.level);
+  // An old ?level=N link (before US grades) goes to the grade most of that level's books now have.
+  if (req.query.level && !req.query.grade) {
+    const p = new URLSearchParams(Object.entries({ grade: grade || '', q: String(req.query.q || ''), class: String(req.query.class || '') }).filter(([, v]) => v)).toString();
+    return res.redirect(301, `/library${p ? `?${p}` : ''}`);
+  }
   const words = String(req.query.q || '').slice(0, 60).trim();
-  const list = LIB.search({ level, q: words });
+  const list = LIB.search({ grade, q: words });
   const staff = isStaff(u), forClass = classParam(req);
   const reads = u ? new Map(LIB.myReads(u.id, 500).map(x => [x.book.id, x.read])) : new Map();
-  const qs = over => { const p = new URLSearchParams(Object.entries({ level: level || '', q: words, class: forClass ? forClass.id : '', ...over }).filter(([, v]) => v)).toString(); return `/library${p ? `?${p}` : ''}`; };
+  const qs = over => { const p = new URLSearchParams(Object.entries({ grade: grade || '', q: words, class: forClass ? forClass.id : '', ...over }).filter(([, v]) => v)).toString(); return `/library${p ? `?${p}` : ''}`; };
   const chip = (on, href, label) => html`<a class="chip${on ? ' on' : ''}" href="${href}"${on ? raw(' aria-current="true"') : ''}>${label}</a>`;
   const status = bk => {
     const s = LIB.stateOf(reads.get(bk.id), bk);
@@ -76,9 +87,9 @@ router.get('/library', (req, res) => {
     if (s.state === 'reading') return html`<span class="lb-state">📖 ${t('library.state.reading', { page: s.page, pages: s.pages })}</span>`;
     return '';
   };
-  const card = bk => html`<li class="lb-card" data-level="${bk.level}">
+  const card = bk => html`<li class="lb-card" data-grade="${bk.grade}">
     <a class="lb-cover" href="/library/${bk.id}" tabindex="-1" aria-hidden="true"><img src="${bk.cover.src}" alt="" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}" loading="lazy" decoding="async"></a>
-    <div class="lb-body">${levelChip(t, bk.level)}
+    <div class="lb-body">${gradeChip(t, bk.grade)}
       <h2 class="lb-title"><a href="/library/${bk.id}" dir="auto">${bk.title}</a></h2>
       <p class="lb-meta small muted">${meta(t, bk)}</p>${status(bk)}
       <div class="lb-acts"><a class="btn btn-primary btn-sm" href="/library/${bk.id}/read">📖 ${t('library.read')}</a>${staff ? html`<a class="btn btn-sm" href="${assignHref(bk, forClass)}">📌 ${t('library.assign')}</a>` : ''}</div></div></li>`;
@@ -86,17 +97,17 @@ router.get('/library', (req, res) => {
     <div class="pagehead lb-head"><div><h1><span aria-hidden="true">📚</span> ${t('library.title')}</h1><p class="muted">${t('library.lead', { count: LIB.books().length })}</p></div></div>
     ${forClass ? html`<p class="notice lb-forclass">📌 ${t('library.forClass', { class: forClass.name })} <a href="/class/${forClass.id}">${t('library.backToClass')}</a></p>` : ''}
     <form class="lb-tools" method="get" action="/library" role="search" aria-label="${t('library.searchLabel')}">
-      <div class="chips scroll lb-levels" role="group" aria-label="${t('library.levelsLabel')}">
-        ${chip(!level, qs({ level: '' }), t('library.allLevels'))}
-        ${LIB.LEVELS.map(lv => chip(level === lv, qs({ level: lv }), html`<span aria-hidden="true">${LEVEL_ICON[lv]}</span> ${t('library.levelLong', { n: lv, name: t(`library.levels.l${lv}`) })}`))}
+      <div class="chips scroll lb-levels" role="group" aria-label="${t('library.gradesLabel')}">
+        ${chip(!grade, qs({ grade: '' }), t('library.allGrades'))}
+        ${LIB.GRADES.map(g => chip(grade === g, qs({ grade: g }), html`<span aria-hidden="true">${GRADE_ICON[g]}</span> ${gradeName(t, g)}`))}
       </div>
-      <div class="lb-search">${level ? html`<input type="hidden" name="level" value="${level}">` : ''}${forClass ? html`<input type="hidden" name="class" value="${forClass.id}">` : ''}
+      <div class="lb-search">${grade ? html`<input type="hidden" name="grade" value="${grade}">` : ''}${forClass ? html`<input type="hidden" name="class" value="${forClass.id}">` : ''}
         <label class="sr-only" for="lb-q">${t('library.searchLabel')}</label>
         <input class="input" id="lb-q" name="q" type="search" value="${words}" maxlength="60" placeholder="🔎 ${t('library.searchPlaceholder')}" autocomplete="off">
         <button class="btn" type="submit">${t('library.searchGo')}</button></div>
     </form>
     ${list.length ? html`<p class="sr-only" role="status">${t('library.found', { count: list.length })}</p><ul class="lb-grid" id="lb-grid">${list.map(card)}</ul>`
-      : html`<section class="panel">${emptyState({ emoji: '🔎', title: t('library.none'), text: t('library.noneText'), action: html`<a class="btn" href="/library">${t('library.allLevels')}</a>` })}</section>`}
+      : html`<section class="panel">${emptyState({ emoji: '🔎', title: t('library.none'), text: t('library.noneText'), action: html`<a class="btn" href="/library">${t('library.allGrades')}</a>` })}</section>`}
     <p class="small muted lb-foot">${t('library.footCredit')} ${ext('https://creativecommons.org/licenses/by/4.0/', 'CC BY 4.0')} · ${t('library.footQuestions')}</p>
   </div>`;
   page(req, res, { title: t('library.title'), active: 'learn', body, head: CSS, description: t('library.lead', { count: LIB.books().length }) });
@@ -112,10 +123,11 @@ router.get('/library/:id', (req, res) => {
   const body = html`<article class="lb-book panel">
     <div class="lb-book-top">
       <img class="lb-book-cover" src="${bk.cover.src}" alt="" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}">
-      <div class="lb-book-info">${levelChip(t, bk.level, { long: true })}
+      <div class="lb-book-info">${gradeChip(t, bk.grade)}
         <h1 dir="auto">${bk.title}</h1>
         <p class="muted">${meta(t, bk)} · ${t('library.words', { count: bk.words })}</p>
         <div class="row"><a class="btn btn-primary btn-big" href="/library/${bk.id}/read${st.state === 'reading' ? `?p=${st.page}` : ''}">📖 ${go}</a>${isStaff(u) ? html`<a class="btn" href="${assignHref(bk, forClass)}">📌 ${t('library.assign')}</a>` : ''}</div>
+        ${gradeDetails(t, bk)}
         ${st.state === 'done' ? html`<p class="lb-state is-done">✅ ${t('library.state.done', { right: st.right, total: st.total })}</p>` : ''}
       </div></div>
     ${bk.glossary.length ? html`<section class="lb-gloss" aria-labelledby="gl-h"><h2 id="gl-h">💬 ${t('library.glossary')}</h2>
@@ -194,7 +206,7 @@ router.get('/library/:id/assign', requireUser, (req, res) => {
   const gc = classes.map(c => gcAssignField(req, c)).find(Boolean) || '';
   const body = html`<div class="pagehead"><h1>📌 ${t('library.assignTitle', { title: bk.title })}</h1></div>
   <section class="panel assign-game lb-assign" aria-labelledby="as-h">
-    <div class="lb-assign-book"><img src="${bk.cover.src}" alt="" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}"><div>${levelChip(t, bk.level, { long: true })}<p class="small muted">${meta(t, bk)}</p></div></div>
+    <div class="lb-assign-book"><img src="${bk.cover.src}" alt="" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}"><div>${gradeChip(t, bk.grade)}<p class="small muted">${meta(t, bk)} · ${t('library.words', { count: bk.words })}</p></div></div>
     <h2 id="as-h" class="sr-only">${t('teach.assign.pickClass')}</h2>
     ${classes.length ? html`<form class="formgrid assigngrid" data-api="/api/library/assign" novalidate><input type="hidden" name="bookId" value="${bk.id}">
       <div class="field"><label for="as-c">${t('teach.assign.pickClass')}</label><select class="input" id="as-c" name="classId">${classes.map(c => html`<option value="${c.id}"${c.id === pre ? raw(' selected') : ''}>${c.name}</option>`)}</select></div>
@@ -236,6 +248,7 @@ export function storyResults(req, res, c, cl, l) {
   const marks = p => html`<span class="lr-marks" aria-hidden="true">${[...p.marks].map((m, i) => html`<span class="${m === '1' ? 'ok' : 'no'}" title="${t('library.results.qN', { n: i + 1 })}">${m === '1' ? '✓' : '✗'}</span>`)}</span>`;
   const body = html`${classHeader(req, c, 'progress')}
   <div class="lphead"><div><h2 dir="auto">📖 ${bk.title}</h2>
+    <p class="lr-grade">${gradeChip(t, bk.grade)}</p>
     <p class="muted lp-meta"><span>${t('library.results.summary', { started: r.started, finished: r.finished, total: r.students.length })}</span>${dueChip(t, f, cl, { done: r.students.length > 0 && r.finished >= r.students.length })}</p></div>
     <div class="row"><a class="btn" href="/library/${bk.id}/read">🖥️ ${t('library.results.readTogether')}</a><a class="btn btn-primary" href="/library?class=${c.id}">📌 ${t('library.results.assignAnother')}</a></div></div>
   ${!r.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
