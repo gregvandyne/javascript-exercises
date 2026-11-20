@@ -239,17 +239,30 @@ test('swiping turns the page: a finger drags the page and turns it, a short drag
   for (const book of ['sw-0001', 'cl-whale']) {
     const { ctx, page, errors } = await open(null, `/library/${book}/read`, { ...devices['iPhone 13'] });
     await page.waitForTimeout(300);
-    const b = await page.$eval('#rd-stage', e => { const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + Math.min(r.height / 2, 250) }; });
+    // On the words (a short page's middle could be the Back/Next row, where a swipe is a tap).
+    const b = await page.$eval('#rd-text', e => { const r = e.getBoundingClientRect(); return { x: innerWidth / 2, y: r.y + 30 }; });
     await touch(page, line(b.x + 120, b.x - 120, b.y)); assert.match(await count(page), /^Page 2 of/, `${book}: swipe left goes forward`);
     await touch(page, line(b.x - 120, b.x + 120, b.y)); assert.match(await count(page), /^Page 1 of/, `${book}: swipe right goes back`);
     await touch(page, line(b.x - 120, b.x + 120, b.y)); assert.match(await count(page), /^Page 1 of/, `${book}: nothing before page 1`);
-    await touch(page, line(b.x + 12, b.x - 13, b.y, 8)); assert.match(await count(page), /^Page 1 of/, `${book}: a short drag springs back`);
+    // Two quick swipes in a row turn two pages (the second finishes the first one's slide at once).
+    const q = async (x1, x2) => { const c = await page.context().newCDPSession(page); await c.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: x1, y: b.y }] });
+      for (const p of line(x1, x2, b.y, 4).slice(1)) await c.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [p] });
+      await c.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); };
+    await q(b.x + 100, b.x - 100); await page.waitForTimeout(60); await q(b.x + 100, b.x - 100); await page.waitForTimeout(500);
+    assert.match(await count(page), /^Page 3 of/, `${book}: two quick swipes, two pages`);
+    await q(b.x - 100, b.x + 100); await page.waitForTimeout(60); await q(b.x - 100, b.x + 100); await page.waitForTimeout(500);
+    assert.match(await count(page), /^Page 1 of/, `${book}: and back`);
+    // A quick flick of 40px turns the page.
+    await q(b.x + 20, b.x - 20); await page.waitForTimeout(500); assert.match(await count(page), /^Page 2 of/, `${book}: a flick turns`);
+    await q(b.x - 20, b.x + 20); await page.waitForTimeout(500); assert.match(await count(page), /^Page 1 of/, `${book}: a flick back`);
+    await touch(page, line(b.x + 6, b.x - 6, b.y, 8)); assert.match(await count(page), /^Page 1 of/, `${book}: a short drag springs back`);
     await touch(page, line(b.x, b.x - 30, b.y, 8, 200)); assert.match(await count(page), /^Page 1 of/, `${book}: scrolling down is not a turn`);
     // Mid-drag the page follows the finger; let go short and it comes back.
     const c = await page.context().newCDPSession(page);
     await c.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: b.x, y: b.y }] });
     for (const p of line(b.x, b.x - 50, b.y, 5).slice(1)) await c.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [p] });
-    const mid = await page.$eval('#rd-stage > :not(.rd-nav):not([hidden])', e => e.style.transform); assert.match(mid, /translateX\(-/, `${book}: the page follows the finger`);
+    await page.waitForTimeout(60);
+    const mid = await page.$eval('#rd-stage > :not(.rd-nav):not([hidden])', e => e.style.transform); assert.match(mid, /translate3d\(-50px/, `${book}: the page follows the finger one-to-one`);
     await c.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] }); await page.waitForTimeout(300);
     assert.equal(await page.$eval('#rd-stage > :not(.rd-nav):not([hidden])', e => e.style.transform), '', `${book}: back in place`);
     await touch(page, line(b.x + 120, b.x - 120, b.y)); await page.waitForTimeout(300);

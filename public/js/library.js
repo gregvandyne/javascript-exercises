@@ -131,58 +131,83 @@ function start() {
     if (e.key === (rtl ? 'ArrowLeft' : 'ArrowRight')) { e.preventDefault(); next.click(); }
     if (e.key === (rtl ? 'ArrowRight' : 'ArrowLeft')) { e.preventDefault(); prev.click(); }
   });
-  // ---- Swiping turns the page (owner, 20 Nov 2026). A finger or pen drags the page along with it and lets go to turn
-  // (past 60px, or a quick flick), else the page springs back; a laptop's two-finger trackpad swipe turns it too. The
-  // words are English, so a swipe to the left goes forward, as in a paper book. Buttons and links still just tap.
+  // ---- Swiping turns the page (owner, 20 Nov 2026; made snappier the same day: "not quite reactive enough"). The page
+  // sticks to the finger one-to-one from the first few pixels; letting go past about a sixth of the width, or with a
+  // flick, slides it off and the next page slides in, else it springs back. A laptop's sideways two-finger trackpad
+  // swipe moves the page the same way and turns once per swipe. The words are English, so a swipe to the left goes
+  // forward, as in a paper book. Buttons and links still just tap. Turning goes through Back/Next (spreads, the
+  // questions and progress work as before).
   const still = matchMedia('(prefers-reduced-motion: reduce)');
   const leaves = () => [...stage.children].filter(el => !el.classList.contains('rd-nav') && !el.hidden);
-  const slide = (dx, ease = false) => leaves().forEach(el => {
-    el.style.transition = ease ? 'transform .18s ease-out, opacity .18s ease-out' : 'none';
-    el.style.transform = dx ? `translateX(${dx}px)` : ''; el.style.opacity = dx ? String(Math.max(0.35, 1 - Math.abs(dx) / 600)) : '';
+  const EASE = 'cubic-bezier(.2,.75,.25,1)';
+  const slide = (dx, ms = 0) => leaves().forEach(el => {
+    el.style.transition = ms ? `transform ${ms}ms ${EASE}, opacity ${ms}ms ${EASE}` : 'none';
+    el.style.transform = dx ? `translate3d(${dx}px,0,0)` : ''; el.style.opacity = dx ? String(Math.max(0.55, 1 - Math.abs(dx) / 900)) : '';
   });
-  /** Turn forward or back by the buttons (they know about spreads, the questions and the last page), with a slide. */
-  function turn(fwd) {
+  const width = () => stage.getBoundingClientRect().width || innerWidth;
+  const canTurn = fwd => fwd || page > 1;
+  let anim = null;   // a running turn: { done() } finishes it at once
+  /** Slide the page off (from where the finger left it), turn by the buttons, slide the new page in. */
+  function turn(fwd, from = 0) {
+    if (anim) anim.done();
     const before = page;
-    (fwd ? next : prev).click();
-    if (still.matches || page === before || stage.hidden) { slide(0); return; }
-    slide(fwd ? 48 : -48); requestAnimationFrame(() => requestAnimationFrame(() => slide(0, true)));
+    if (still.matches) { (fwd ? next : prev).click(); slide(0); return; }
+    const w = width(), out = fwd ? -w : w, outMs = Math.round(Math.max(90, Math.min(180, 180 * (1 - Math.abs(from) / w))));
+    slide(out, outMs);
+    let t1 = 0, t2 = 0, raf = 0, me = null;
+    const done = () => { clearTimeout(t1); t1 = 0; clearTimeout(t2); cancelAnimationFrame(raf); if (anim === me) anim = null; };
+    const swap = () => {
+      t1 = 0;
+      (fwd ? next : prev).click();
+      if (page === before || stage.hidden) { slide(0); done(); return; }
+      slide(-out * 0.3);
+      raf = requestAnimationFrame(() => { raf = requestAnimationFrame(() => { slide(0, 220); t2 = setTimeout(done, 230); }); });
+    };
+    t1 = setTimeout(swap, outMs);
+    anim = me = { done: () => { if (t1) { clearTimeout(t1); swap(); } slide(0); done(); } };
   }
   let drag = null;
   stage.addEventListener('pointerdown', e => {
     if (e.pointerType === 'mouse' || !e.isPrimary || e.target.closest('a, button, input')) return;
-    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, t: e.timeStamp, dx: 0, on: false };
+    if (anim) anim.done();
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, on: false, hist: [[e.timeStamp, e.clientX]] };
   });
   stage.addEventListener('pointermove', e => {
     if (!drag || e.pointerId !== drag.id) return;
     const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
     if (!drag.on) {
-      if (Math.abs(dy) > 12 && Math.abs(dy) > Math.abs(dx)) { drag = null; return; }   // scrolling the page
-      if (Math.abs(dx) < 12) return;
+      if (Math.abs(dy) > 8 && Math.abs(dy) > Math.abs(dx)) { drag = null; return; }   // scrolling the page
+      if (Math.abs(dx) < 6) return;
       drag.on = true; try { stage.setPointerCapture(e.pointerId); } catch {}
     }
     drag.dx = dx;
-    const atEdge = (dx > 0 && page <= 1);                                                 // nothing before page 1
-    if (!still.matches) slide(atEdge ? dx / 4 : dx * 0.6);
+    drag.hist.push([e.timeStamp, e.clientX]); if (drag.hist.length > 6) drag.hist.shift();
+    if (!still.matches) slide(canTurn(dx < 0) ? dx : dx / 3);                             // nothing before page 1
   });
   const endDrag = e => {
     if (!drag || e.pointerId !== drag.id) return;
-    const { dx, on, t } = drag; drag = null;
+    const { dx, on, hist } = drag; drag = null;
     if (!on) return;
-    const quick = Math.abs(dx) > 30 && e.timeStamp - t < 250;
-    if (e.type === 'pointerup' && (Math.abs(dx) >= 60 || quick) && !(dx > 0 && page <= 1)) turn(dx < 0);
-    else slide(0, true);
+    const [t0, x0] = hist[0], v = (e.clientX - x0) / Math.max(1, e.timeStamp - t0);   // px/ms over the last moves
+    const far = Math.abs(dx) >= Math.min(80, width() / 6), flick = Math.abs(v) > 0.3 && Math.sign(v) === Math.sign(dx) && Math.abs(dx) > 15;
+    if (e.type === 'pointerup' && (far || flick) && canTurn(dx < 0)) turn(dx < 0, dx);
+    else slide(0, 180);
   };
   stage.addEventListener('pointerup', endDrag);
   stage.addEventListener('pointercancel', endDrag);
-  // A trackpad's sideways two-finger swipe: one turn per swipe (its momentum is ignored until it stops).
-  let wx = 0, wLock = 0, wIdle = 0;
+  // A trackpad's sideways two-finger swipe: the page follows it, turns once past 90px (its momentum is ignored until the
+  // fingers stop), or springs back if the swipe stops short.
+  let wx = 0, wLock = false, wIdle = 0;
   stage.addEventListener('wheel', e => {
     if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || e.ctrlKey) return;
     e.preventDefault();
-    clearTimeout(wIdle); wIdle = setTimeout(() => { wx = 0; wLock = 0; }, 180);
+    clearTimeout(wIdle);
+    wIdle = setTimeout(() => { if (!wLock && wx) slide(0, 180); wx = 0; wLock = false; }, 140);
     if (wLock) return;
     wx += e.deltaX;
-    if (Math.abs(wx) >= 80) { wLock = 1; const fwd = wx > 0; wx = 0; if (fwd || page > 1) turn(fwd); }
+    const fwd = wx > 0;
+    if (Math.abs(wx) >= 90 && canTurn(fwd)) { wLock = true; const from = -wx; wx = 0; turn(fwd, from); return; }
+    if (!still.matches) slide(canTurn(fwd) ? -wx : -wx / 3);
   }, { passive: false });
 
   // ---- Read to me
