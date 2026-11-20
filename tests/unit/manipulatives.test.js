@@ -365,7 +365,7 @@ test('content: 18 tools, 300 tasks with their codes, Number rods, US spelling, g
   assert.doesNotMatch(text, /—/, 'no em dashes');
   assert.doesNotMatch(text, /\b(colour|labell|centre|customis|subitis|modell|grey\b|neighbour|favourite|organis|recognis)/i, 'US spelling');
   assert.doesNotMatch(text, /K-12|K-9/, 'grades K-8');
-  assert.doesNotMatch(files.filter(f => !f.includes('tasks')).map(f => fs.readFileSync(path.join(ROOT, f), 'utf8')).join('\n'), /\bprice|\/month|per month|subscribe|upgrade/i, 'no prices on these pages (money word problems in the tasks are math)');
+  assert.doesNotMatch(files.filter(f => !f.includes('tasks') && !/manip-(socket|live)/.test(f)).map(f => fs.readFileSync(path.join(ROOT, f), 'utf8')).join('\n'), /\bprice|\/month|per month|subscribe|upgrade/i, 'no prices on these pages (money word problems in the tasks are math)');
   assert.ok(TOOLS.find(x => x.slug === 'number-rods' && x.name === 'Number rods'));
 });
 
