@@ -36,14 +36,14 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 ## Totals
 
 - Books in the source: 395
-- Included: **85** (Pre-K/K: 9, Grade 1: 35, Grade 2: 29, Grade 3: 7, Grades 4-5: 5)
-- Left out: 310
-  - read and left out: 249
+- Included: **84** (Pre-K/K: 9, Grade 1: 35, Grade 2: 28, Grade 3: 7, Grades 4-5: 5)
+- Left out: 311
+  - read and left out: 250
   - pictures do not line up with pages: 50
   - an image license: unreadable: 6
   - too long for the library: 3
   - picture N.jpg is in the metadata but not in the image bank: 2
-- Pictures on the site: 20.8 MB (WebP, pages at most 720 px, covers 440 px)
+- Pictures on the site: 20.7 MB (WebP, pages at most 720 px, covers 440 px)
 
 ## Included
 
@@ -119,7 +119,6 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0009 | Susheela's Kolams | Grade 2 | 2.48 | 210 | 9 | Sridala Swami | Priya Kuriyan | – | CC BY 4.0 |
 | sw-0091 | The Boat Ride | Grade 2 | 2.46 | 358 | 8 | Herminder Ohri | Herminder Ohri | – | CC BY 4.0 |
 | sw-0035 | The Scarecrows on Parade | Grade 2 | 2.37 | 514 | 13 | Shamim Padamsee | Tanaya Vyas | – | CC BY 4.0 |
-| sw-0106 | What If? | Grade 2 | 1.68 | 210 | 10 | Hari Kumar Nair | Hari Kumar Nair | – | CC BY 4.0 |
 | sw-0244 | When the Wind Blew Today... | Grade 2 | 2.3 | 71 | 5 | Vinayak Varma | Vinayak Varma | – | CC BY 4.0 |
 | sw-0149 | Where is Gogo? | Grade 2 | 2 | 200 | 7 | Mala Kumar, Manisha Chaudhry | Soumya Menon | Mala Kumar, Manisha Chaudhry | CC BY 4.0 |
 | sw-0319 | A Brighter Day | Grade 3 | 2.77 | 109 | 1 | Aditi | Anjora Noronha | – | CC BY 4.0 |
@@ -200,6 +199,7 @@ These books have more pictures than pages. A person matched each page to a pictu
 | sw-0099 | Here Comes the Camel and Other Poems | pictures do not line up with pages (18 images for 19 pages); reviewed: Fewer pictures than pages, so some pages would have no picture. |
 | sw-0102 | Rumniya | read and left out: A lost toddler lifts up every woman's sari to find her grandmother, and crying is called "silly baby-like". |
 | sw-0104 | I lost my bat! I found my bat! | pictures do not line up with pages (9 images for 7 pages); reviewed: The descriptions map pictures 02-08 to pages 1-7, but the last picture (the girl with the bat) is the ending, which has no text page: the story would stop before the bat is found. |
+| sw-0106 | What If? | read and left out: Left out by the owner (20 Nov 2026): the boy calls himself "a little skinny". |
 | sw-0107 | Samira's Awful Lunch | image 07.jpg license: unreadable |
 | sw-0108 | The Royal Toothache | pictures do not line up with pages (11 images for 11 pages); reviewed: The descriptions show 01 is the cover and 02-11 go with pages 1-10, so page 11 would have no picture. |
 | sw-0109 | Monkey Business on Stage - Kallu's World 2 | pictures do not line up with pages (5 images for 5 pages); reviewed: As many pictures as pages: the descriptions do not show which picture is the cover or which page would go without one. |

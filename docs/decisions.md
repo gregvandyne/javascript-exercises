@@ -9073,10 +9073,10 @@ documented measures; and "keep adding more books from the original source".
 - **Totals: 85 books** (58 + 27): Pre-K/K 9, Grade 1 35, Grade 2 29, Grade 3 7, Grades 4-5 5 (new: Grade 1 9, Grade 2
   11, Grade 3 3, Grades 4-5 4). Pictures: 20.8 MB at the same settings (pages 720 px, WebP q50), far under the 80 MB
   budget, so no quality change. The longest new page (409 words, Jadav) scrolls under the sticky Back / Next on a phone.
-- **For the owner:** a few kept books have a judgment call: Do and Don't (a toilet joke, "the big job"), Annual Haircut
-  Day ("Oh God, help me!" said by a worried man), What If? (the boy calls himself "a little skinny"), The Carpenter's
-  last job (a grown-up parable for Grades 4-5), Dive! (a line refers to bold lettering the reader does not show, and the
-  divers swim closer to sleeping reef sharks "pretty harmless"). Each is easy to drop in `storyweaver.json`.
+- **Owner's review (20 Nov 2026):** kept Do and Don't (a toilet joke, "the big job"), Annual Haircut Day ("Oh God, help
+  me!" said by a worried man), The Carpenter's last job (a grown-up parable for Grades 4-5) and Dive! (a line refers to
+  bold lettering the reader does not show; the divers swim near sleeping reef sharks, "pretty harmless"). Left out What
+  If? (the boy calls himself "a little skinny"). 84 books.
 - Tests: `tests/unit/library.test.js` (the measures and bands, sight words with endings, hand-placed pictures accepted
   only when valid, every licensed story read, grades and measures in the manifest, old level links), and
   `library-browser.test.js` (grade chips).
