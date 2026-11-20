@@ -26,7 +26,8 @@
 //                  English with Tally's voice (Fraction Factory's registered role). The page never sends text.
 //     ctx 'lesson' { clId, stepId, i }  a lesson quiz step's question i, behind the same access as its quiz API, in the
 //                  page's language.
-//     ctx 'story'  { book, page, s }  sentence s of page `page` (1-based) of a Story Library book, by its numbers only: the
+//     ctx 'story'  { book, page, s }  sentence s of page `page` (1-based) of a Story Library book, by its numbers only
+//                  (or { book, q }: question q after the book, with its choices); the
 //                  server reads the book's own words from the manifest (services/library.js; cut into sentences by
 //                  public/js/library-text.js, the same cut the reader highlights). English, narrator role. No account
 //                  needed: the words are a published book's, never typed by anyone.
@@ -192,6 +193,14 @@ function resolve(req, b) {
   }
   if (b.ctx === 'story') {
     const bk = LIB.getBook(String(b.book || ''));
+    // Question q (0-based) after the book, with its choices: Oomba's own words, read like a lesson quiz question.
+    if (bk && b.page === undefined && Number.isInteger(b.q)) {
+      const it = bk.questions[b.q];
+      if (!it) return { error: [404, 'off'] };
+      // The same words the reader shows, in order (no A/B/C: the buttons have no letters).
+      const text = [it.q, ...it.choices].map(x => String(x || '').trim()).filter(Boolean).map(x => (/[.!?]$/.test(x) ? x : x + '.')).join(' ');
+      return { text, locale: 'en', role: 'narrator', rate: 'normal' };
+    }
     const pg = bk && Number.isInteger(b.page) ? bk.pages[b.page - 1] : null;
     const sen = pg && Number.isInteger(b.s) ? storySentences(pg.text)[b.s] : null;
     if (!sen) return { error: [404, 'off'] };

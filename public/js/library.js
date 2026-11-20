@@ -166,13 +166,28 @@ function start() {
     const opts = [...li.querySelectorAll('.rd-opt')], hint = li.querySelector('.rd-hint');
     if (solvedFrom[i] === '1') { li.classList.add('is-solved'); hint.textContent = `✓ ${t('js.library.answered')}`; return; }
     opts.forEach(b => { b.disabled = false; });
-    // Read the question and its answers to me (the device's voice: these are Oomba's words, not the book's).
-    if (canDevice) {
+    // Read the question and its answers to me: the AI voice when it is on (the server reads question i by its number),
+    // else, or if that fails, the device's voice.
+    if (canDevice || canAi) {
       const say = document.createElement('button'); say.type = 'button'; say.className = 'btn btn-sm rd-qread'; say.textContent = `🔊 ${t('js.library.readQuestion')}`;
-      say.addEventListener('click', () => {
-        stopVoice();
+      const device = my => {
+        if (my !== seq || !canDevice) return;
         const u = new SpeechSynthesisUtterance([li.querySelector('h3').textContent, ...opts.map(o => o.textContent)].join('. '));
         u.lang = 'en-US'; const v = deviceVoice('en-US'); if (v) u.voice = v; u.rate = 0.9; ss.speak(u);
+      };
+      say.addEventListener('click', () => {
+        stopVoice(); unlockAudio();
+        const my = seq;
+        if (!canAi) return device(my);
+        ttsBlob({ ctx: 'story', book: bk.id, q: i }).then(blob => {
+          if (my !== seq) return;
+          const url = URL.createObjectURL(blob);
+          if (!audio) audio = new Audio();
+          audio.onended = () => URL.revokeObjectURL(url);
+          audio.onerror = () => { URL.revokeObjectURL(url); device(my); };
+          audio.src = url;
+          return audio.play();
+        }).catch(() => device(my));
       });
       li.querySelector('h3').after(say);
     }
