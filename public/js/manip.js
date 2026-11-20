@@ -1,22 +1,22 @@
 // Virtual math manipulatives (docs/decisions.md "Virtual math manipulatives"; server: services/manipulatives.js). One
-// page, views by #hash: '' home, 'tasks' the task library, '<tool>' a tool's board, 'live/<id>' a teacher's session
-// dashboard, 'join/<id>' and 'session/<id>' a student's board in a session.
+// page, views by #hash: '' home, 'tasks' the task library, '<tool>' a tool's board on your own, 'live/<id>' a live
+// session's shared room (public/js/manip-room.js; 'join/<id>' joins first).
 // A board is one JSON object: the tool's own state, plus __ann { notes, strokes } (sticky notes and pen marks, their
 // places as fractions of the board so they land in the same spot on any screen). Every change goes through change(),
-// which keeps the undo history and (in a session) sends the student's board to their teacher a moment later.
+// which keeps the undo history and draws the board again.
 // Hosts (teachers testing it) save boards with share codes, run sessions and draft with AI; students only see their
-// own board in a session. Chrome strings are i18n keys (js.manip.*); tool names, tool help and the task library are
+// own square in a session's room. Chrome strings are i18n keys (js.manip.*); tool names, tool help and the task library are
 // English data (public/js/manip-data.js, public/js/manip-tasks.js).
 import { t, api, toast, esc, pageData } from '/js/app.js';
 import { TOOLS, CATS, toolOf, pieceDefs, allPieceDefs, BREAKS, FRACTION_DENS, fracLabel, hexValue, freeSpot } from '/js/manip-data.js';
 import { TASKS } from '/js/manip-tasks.js';
+import * as ROOM from '/js/manip-room.js';
 
 const ROOT = document.getElementById('manip');
 const ROLE = pageData().role === 'host' ? 'host' : 'student';
 const HOST = ROLE === 'host';
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
 const NOTE_MAX = 12, NOTE_W = 176, NOTE_H = 118;
-const POLL_MS = 3500;
 let STATE = { boards: [], classes: [], sessions: [] };
 let V = null;          // the open board (tool view)
 let timers = [];       // intervals and timeouts of the current view
@@ -24,7 +24,6 @@ const clear = () => { for (const x of timers) { clearInterval(x); clearTimeout(x
 const clamp = (v, lo, hi) => Math.min(Math.max(lo, v), Math.max(lo, hi));
 const round3 = n => Math.round(n * 1000) / 1000;
 const parse = (s, d) => { try { return typeof s === 'string' ? JSON.parse(s) : s; } catch { return d; } };
-const when = ms => new Date(ms).toLocaleString();
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
 
 // ================================================================ tools
@@ -382,7 +381,7 @@ function bindClocks(el) {
     };
     svg.addEventListener('pointerdown', e => { if (V.annotate) return; before = JSON.stringify(V.st); hand = at(e).dist < 58 ? 'h' : 'm'; svg.setPointerCapture(e.pointerId); set(e); });
     svg.addEventListener('pointermove', e => { if (hand) set(e); });
-    const up = () => { if (!hand) return; hand = null; pushHistory(before); renderBoard(); renderChrome(); changed(); };
+    const up = () => { if (!hand) return; hand = null; pushHistory(before); renderBoard(); renderChrome(); };
     svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
   }
 }
@@ -412,30 +411,19 @@ function change(fn) {
   const r = fn(V.st, V);
   if (r === false) return;
   pushHistory(before);
-  renderBoard(); renderChrome(); changed();
-}
-function changed() {
-  if (!V.session || V.session.status !== 'active') return;
-  clearTimeout(V.sendTimer);
-  V.sendTimer = setTimeout(sendWork, 1200);
-}
-async function sendWork() {
-  if (!V || !V.session) return;
-  try { await api(`/api/manipulatives/live/${V.session.id}/work`, { method: 'POST', body: { state: boardState() }, background: true }); setStatus(''); }
-  catch (e) { if (e.status === 409) { V.session.status = 'ended'; renderLiveBar(); } else setStatus(e.message, true); }
+  renderBoard(); renderChrome();
 }
 function setStatus(msg, bad = false) { const el = document.getElementById('mp-status'); if (el) { el.textContent = msg; el.classList.toggle('bad', !!bad); } }
 
-function openTool(slug, { session = null, restore = null } = {}) {
+function openTool(slug, { restore = null } = {}) {
   clear();
   const tool = toolOf(slug); if (!tool) return home();
-  V = { tool, impl: IMPL[slug], st: null, ann: { notes: [], strokes: [] }, hist: [], annHist: [], sel: null, annotate: false, annMode: 'pen', pen: PEN_COLORS[0], editing: null, draftOpen: false, tasksOpen: false, session, seenPush: 0 };
+  V = { tool, impl: IMPL[slug], st: null, ann: { notes: [], strokes: [] }, hist: [], annHist: [], sel: null, annotate: false, annMode: 'pen', pen: PEN_COLORS[0], editing: null, draftOpen: false, tasksOpen: false };
   loadState(restore || {});
   ROOT.innerHTML = `<div class="mp-tool">
-    <div class="mp-head"><a class="btn btn-sm" href="#">${esc(session ? t('js.manip.nav.back') : t('js.manip.nav.allTools'))}</a>
+    <div class="mp-head"><a class="btn btn-sm" href="#">${esc(t('js.manip.nav.allTools'))}</a>
       <div class="mp-title"><h1>${tool.emoji} ${esc(tool.name)}</h1><p class="small muted">${esc(CATS[tool.cat])} · ${esc(t('js.manip.grades', { grades: tool.grades }))}</p></div>
       <div class="mp-total" id="mp-total" aria-live="polite"></div></div>
-    <div id="mp-livebar"></div>
     <div class="mp-work">
       <aside class="mp-side" aria-label="${esc(t('js.manip.side.label'))}">
         <p class="mp-cap">${esc(t('js.manip.side.objects'))}</p><div class="mp-palette" id="mp-palette"></div>
@@ -455,9 +443,8 @@ function openTool(slug, { session = null, restore = null } = {}) {
       </div>
     </div></div>`;
   bindBoard();
-  renderChrome(); renderBoard(); renderShare(); renderTasksBox(); renderLiveBar();
+  renderChrome(); renderBoard(); renderShare(); renderTasksBox();
   window.scrollTo(0, 0);
-  if (session) startStudentPoll();
 }
 
 function renderChrome() {
@@ -550,7 +537,7 @@ function bindDraw(layer) {
     if (mode === 'pen') { const s = V.ann.strokes[V.ann.strokes.length - 1]; if (s && s.pts.length < 600) s.pts.push(p); } else erase(p);
     renderInk();
   });
-  const up = () => { if (!mode) return; mode = null; V.ann.strokes = V.ann.strokes.filter(s => s.pts.length > 1); renderInk(); renderAnnBar(); changed(); };
+  const up = () => { if (!mode) return; mode = null; V.ann.strokes = V.ann.strokes.filter(s => s.pts.length > 1); renderInk(); renderAnnBar(); };
   layer.addEventListener('pointerup', up); layer.addEventListener('pointercancel', up);
 }
 
@@ -586,19 +573,19 @@ function bindBoard() {
   root.addEventListener('input', e => {
     if (e.target.classList.contains('mp-seglabel') && V.impl.input) {
       if (!V.typing) { pushHistory(JSON.stringify(V.st)); V.typing = true; }
-      V.impl.input(V.st, e.target); changed(); return;
+      V.impl.input(V.st, e.target); return;
     }
-    if (e.target.classList.contains('mp-notetext')) { const n = V.ann.notes.find(x => x.id === V.editing); if (n) { n.text = e.target.value.slice(0, 300); changed(); } }
+    if (e.target.classList.contains('mp-notetext')) { const n = V.ann.notes.find(x => x.id === V.editing); if (n) { n.text = e.target.value.slice(0, 300); } }
   });
   root.addEventListener('focusout', e => { if (e.target.classList.contains('mp-seglabel')) V.typing = false; });
   bindPieceDrag(); bindNoteDrag();
 }
 function toolButton(k) {
-  if (k === 'undo') { const prev = V.hist.pop(); if (prev) { V.st = JSON.parse(prev); V.sel = null; renderBoard(); renderChrome(); changed(); } return; }
+  if (k === 'undo') { const prev = V.hist.pop(); if (prev) { V.st = JSON.parse(prev); V.sel = null; renderBoard(); renderChrome(); } return; }
   if (k === 'annotate') { V.annotate = !V.annotate; V.annMode = 'pen'; renderChrome(); renderBoard(); return; }
   if (k === 'note') {
     if (V.ann.notes.length >= NOTE_MAX) return;
-    const n = { id: `note-${newId()}`, text: '', ...noteSpot() }; V.ann.notes.push(n); V.editing = n.id; renderNotes(); renderChrome(); changed(); return;
+    const n = { id: `note-${newId()}`, text: '', ...noteSpot() }; V.ann.notes.push(n); V.editing = n.id; renderNotes(); renderChrome(); return;
   }
   if (k === 'draft') { V.draftOpen = !V.draftOpen; renderChrome(); if (V.draftOpen) document.getElementById('mp-brief')?.focus(); return; }
   if (k === 'reset') change(st => { const fresh = V.impl.init(); for (const key of Object.keys(st)) delete st[key]; Object.assign(st, fresh); V.sel = null; });
@@ -607,15 +594,15 @@ function annButton(k, c) {
   if (k === 'pen') V.annMode = 'pen';
   else if (k === 'color') { V.pen = c; V.annMode = 'pen'; }
   else if (k === 'erase') V.annMode = 'erase';
-  else if (k === 'undo') { const prev = V.annHist.pop(); if (prev) { V.ann.strokes = JSON.parse(prev); renderInk(); changed(); } }
-  else if (k === 'clear') { V.annHist.push(JSON.stringify(V.ann.strokes)); V.ann.strokes = []; renderInk(); changed(); }
+  else if (k === 'undo') { const prev = V.annHist.pop(); if (prev) { V.ann.strokes = JSON.parse(prev); renderInk(); } }
+  else if (k === 'clear') { V.annHist.push(JSON.stringify(V.ann.strokes)); V.ann.strokes = []; renderInk(); }
   else if (k === 'done') { V.annotate = false; renderChrome(); renderBoard(); return; }
   renderAnnBar();
 }
 function noteButton(k, id) {
   if (k === 'edit') V.editing = id;
   else if (k === 'done') V.editing = null;
-  else if (k === 'delete') { V.ann.notes = V.ann.notes.filter(n => n.id !== id); if (V.editing === id) V.editing = null; changed(); renderChrome(); }
+  else if (k === 'delete') { V.ann.notes = V.ann.notes.filter(n => n.id !== id); if (V.editing === id) V.editing = null; renderChrome(); }
   renderNotes();
 }
 function pieceButton(k, id) {
@@ -679,7 +666,7 @@ function bindNoteDrag() {
     d.n.y = clamp((e.clientY - r.top) / r.height - d.dy, 0, 1 - d.el.offsetHeight / r.height);
     d.el.style.left = `${d.n.x * 100}%`; d.el.style.top = `${d.n.y * 100}%`;
   });
-  const up = () => { if (!d) return; const x = d; d = null; if (x.moved) changed(); else if (!x.el.classList.contains('editing')) { V.editing = x.n.id; renderNotes(); } };
+  const up = () => { if (!d) return; const x = d; d = null; if (!x.moved && !x.el.classList.contains('editing')) { V.editing = x.n.id; renderNotes(); } };
   box.addEventListener('pointerup', up); box.addEventListener('pointercancel', () => { d = null; });
 }
 
@@ -715,7 +702,7 @@ function renderShare() {
 function restoreInto(state) {
   const before = JSON.stringify(V.st);
   loadState(state); pushHistory(before);
-  renderChrome(); renderBoard(); changed();
+  renderChrome(); renderBoard();
 }
 let pendingRestore = null;
 async function redeem(raw) {
@@ -724,7 +711,6 @@ async function redeem(raw) {
   try {
     const r = await api(`/api/manipulatives/code/${encodeURIComponent(code)}`);
     if (V && r.board.tool === V.tool.slug) { restoreInto(r.board.state); setStatus(t('js.manip.share.loaded', { code: r.board.code })); return; }
-    if (V && V.session) { setStatus(t('js.manip.share.otherTool'), true); return; }
     pendingRestore = r.board.state; location.hash = r.board.tool;
   } catch (e) { if (V) setStatus(e.message, true); else toast(e.message, { bad: true }); }
 }
@@ -776,120 +762,13 @@ function renderTasksBox() {
   document.getElementById('mp-tasksmore').onclick = () => { V.tasksOpen = !V.tasksOpen; renderTasksBox(); };
 }
 
-// ---------------------------------------------------------------- a student's session
-function renderLiveBar() {
-  const el = document.getElementById('mp-livebar'); if (!el) return;
-  const s = V.session;
-  if (!s) { el.innerHTML = ''; return; }
-  const pushed = s.status === 'active' && s.pushedAt && s.pushedAt > V.seenPush ? parse(s.pushed, null) : null;
-  el.innerHTML = `<div class="mp-livebar" role="status"><b>● ${esc(t('js.manip.live.on', { title: s.title }))}</b><span class="small">${esc(t('js.manip.live.saves'))}</span>
-    ${s.status !== 'active' ? `<span class="mp-tag bad">${esc(t('js.manip.live.ended'))}</span>` : ''}
-    ${pushed ? `<span class="mp-tag hot">${esc(t('js.manip.live.sent'))}</span>${btn('btn btn-sm btn-primary', 'id="mp-loadpush"', esc(t('js.manip.live.load')))}${btn('btn btn-sm', 'id="mp-keep"', esc(t('js.manip.live.keep')))}` : ''}</div>`;
-  if (pushed) {
-    document.getElementById('mp-loadpush').onclick = () => { V.seenPush = s.pushedAt; restoreInto(pushed.state); renderLiveBar(); setStatus(t('js.manip.live.loaded')); };
-    document.getElementById('mp-keep').onclick = () => { V.seenPush = s.pushedAt; renderLiveBar(); };
-  }
-}
-function startStudentPoll() {
-  const poll = async () => {
-    if (document.hidden || !V || !V.session) return;
-    try {
-      const r = await api(`/api/manipulatives/live/${V.session.id}`, { background: true });
-      const was = V.session; V.session = { ...was, ...r.session };
-      if (was.status !== V.session.status || was.pushedAt !== V.session.pushedAt) renderLiveBar();
-    } catch (e) { if (e.status === 404) { clear(); ROOT.innerHTML = `<div class="empty"><h1>${esc(t('js.manip.live.gone'))}</h1></div>`; } }
-  };
-  timers.push(setInterval(poll, POLL_MS));
-}
-async function studentSession(id, joinFirst) {
-  clear();
-  ROOT.innerHTML = `<p class="muted">${esc(t('js.manip.loadingShort'))}</p>`;
-  try {
-    if (joinFirst) await api('/api/manipulatives/live/join', { method: 'POST', body: { id } });
-    const r = await api(`/api/manipulatives/live/${encodeURIComponent(id)}`);
-    if (r.role !== 'student') { location.hash = `live/${id}`; return; }
-    if (joinFirst) { history.replaceState(null, '', `#session/${id}`); }
-    openTool(r.session.tool, { session: r.session, restore: r.session.mine });
-    V.seenPush = 0;
-    renderLiveBar();
-  } catch (e) { ROOT.innerHTML = `<div class="empty"><h1>${esc(e.status === 409 ? t('js.manip.live.ended') : t('js.manip.live.gone'))}</h1><p><a href="#">${esc(t('js.manip.nav.back'))}</a></p></div>`; }
-}
-
-// ================================================================ the teacher's dashboard
-async function teacherLive(id) {
+// ---------------------------------------------------------------- a live session: the shared room (public/js/manip-room.js)
+async function liveRoom(id, joinFirst) {
   clear(); V = null;
-  ROOT.innerHTML = `<p class="muted">${esc(t('js.manip.loadingShort'))}</p>`;
-  let s;
-  const draw = () => {
-    const tool = toolOf(s.tool), mine = STATE.boards.filter(b => b.tool === s.tool);
-    ROOT.innerHTML = `<div class="pagehead"><h1>📡 ${esc(t('js.manip.dash.title'))}</h1><span class="mp-tag ${s.status === 'active' ? 'good' : 'bad'}">${esc(s.status === 'active' ? t('js.manip.dash.live') : t('js.manip.dash.ended'))}</span><a class="btn btn-sm" href="#">${esc(t('js.manip.nav.allTools'))}</a></div>
-      <section class="panel mp-dashtop"><p class="small">${esc(t('js.manip.dash.codeFor', { klass: s.className }))}</p><p class="mp-bigcode" aria-label="${esc(t('js.manip.dash.codeLabel'))}">${esc(s.code)}</p>
-        <p><b>${esc(s.title)}</b> · ${tool ? `${tool.emoji} ${esc(tool.name)}` : ''}</p><p class="small muted">${esc(t('js.manip.dash.joined', { n: s.students.length }))}</p>
-        <div class="row"><a class="btn" href="#${esc(s.tool)}">${esc(t('js.manip.dash.build', { tool: tool ? tool.name : '' }))}</a>
-          <a class="btn btn-hot" href="/api/manipulatives/live/${esc(s.id)}/export.pdf" download id="mp-pdf">${esc(t('js.manip.dash.pdf'))}</a>
-          ${s.status === 'active' ? btn('btn btn-danger', 'id="mp-end"', esc(t('js.manip.dash.end'))) : ''}</div>
-        <p class="small" id="mp-dashmsg" role="status"></p></section>
-      <section class="panel"><h2>${esc(t('js.manip.dash.pushTitle'))}</h2><p class="small muted">${esc(t('js.manip.dash.pushText'))}</p>
-        ${mine.length ? `<div class="row">${mine.map(b => btn('btn btn-primary btn-sm', `data-push="${esc(b.id)}" aria-label="${esc(t('js.manip.dash.pushOne', { code: b.code }))}"`, esc(t('js.manip.dash.pushOne', { code: b.code })))).join('')}</div>` : `<p class="small"><b>${esc(t('js.manip.dash.noBoards'))}</b></p>`}
-        ${s.pushed ? `<p class="small">${esc(t('js.manip.dash.pushedAt', { when: when(s.pushedAt) }))}</p>` : ''}</section>
-      <section class="mp-workgrid" aria-label="${esc(t('js.manip.dash.work'))}"><h2>${esc(t('js.manip.dash.work'))}</h2>
-        ${s.students.length ? `<div class="mp-cards">${s.students.map(w => `<article class="panel mp-workcard" aria-label="${esc(t('js.manip.dash.workOf', { name: w.name }))}"><h3>${esc(w.name)}</h3><p class="small muted">${esc(t('js.manip.dash.lastSaved', { when: when(w.updatedAt) }))}</p>
-          <ul class="small">${summarize(w.state).map(l => `<li>${esc(l)}</li>`).join('')}</ul>${btn('btn btn-sm', `data-view="${esc(w.id)}"`, esc(t('js.manip.dash.view')))}</article>`).join('')}</div>` : `<p class="muted">${esc(t('js.manip.dash.noStudents'))}</p>`}</section>`;
-    const msg = m => { const el = document.getElementById('mp-dashmsg'); if (el) el.textContent = m; };
-    const end = document.getElementById('mp-end');
-    if (end) end.onclick = async () => { try { await api(`/api/manipulatives/live/${s.id}/end`, { method: 'POST', body: {} }); toast(t('js.manip.dash.endedMsg')); await refresh(); } catch (e) { msg(e.message); } };
-    for (const b of ROOT.querySelectorAll('[data-push]')) b.onclick = async () => { try { await api(`/api/manipulatives/live/${s.id}/push`, { method: 'POST', body: { boardId: b.dataset.push } }); toast(t('js.manip.dash.pushed')); await refresh(); } catch (e) { msg(e.message); } };
-    for (const b of ROOT.querySelectorAll('[data-view]')) b.onclick = () => { const w = s.students.find(x => x.id === b.dataset.view); if (w) viewWork(s.tool, w); };
-  };
-  const refresh = async () => {
-    try {
-      const r = await api(`/api/manipulatives/live/${encodeURIComponent(id)}`, { background: true });
-      if (r.role !== 'teacher') { location.hash = `session/${id}`; return; }
-      const sig = JSON.stringify(r.session);
-      if (sig !== JSON.stringify(s)) { s = r.session; if (!document.querySelector('.mp-viewer')) draw(); }
-    } catch (e) { clear(); ROOT.innerHTML = `<div class="empty"><h1>${esc(t('js.manip.live.gone'))}</h1><p>${esc(e.message)}</p></div>`; }
-  };
-  await refresh();
-  timers.push(setInterval(() => { if (!document.hidden) refresh(); }, POLL_MS));
-}
-/** A student's board, read-only, in a sheet over the dashboard. */
-function viewWork(slug, w) {
-  const impl = IMPL[slug], o = parse(w.state, {}) || {}, ann = o.__ann || {};
-  const st = { ...impl.init(), ...o };
-  if (impl.pieces) st.pieces = (Array.isArray(st.pieces) ? st.pieces : []).filter(p => p && typeof p === 'object');
-  // The board at the size the student had it (sent with their work), so pieces and notes sit where they put them; then
-  // scaled down to fit this screen.
-  const size = ann.size && +ann.size.w > 0 ? ann.size : {};
-  const reach = (impl.pieces ? st.pieces : []).reduce((m, p) => ({ w: Math.max(m.w, (+p.x || 0) + (+p.w || 50) + 12), h: Math.max(m.h, (+p.y || 0) + (+p.h || 50) + 12) }), { w: 0, h: 0 });
-  const W = clamp(Math.max(+size.w || 800, reach.w), 280, 2400), H = clamp(Math.max(+size.h || 430, reach.h), 280, 2400);
-  const box = document.createElement('div');
-  box.className = 'mp-viewer'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', t('js.manip.dash.workOf', { name: w.name }));
-  box.innerHTML = `<div class="mp-viewbox panel"><div class="row"><h2>${esc(w.name)}</h2>${btn('btn btn-sm', 'id="mp-viewclose"', esc(t('js.manip.dash.close')))}</div>
-    <p class="small muted">${esc(impl.total(st))}</p>
-    <div class="mp-scalewrap"><div class="mp-board mp-readonly mp-scaled" style="width:${W}px;height:${H}px;--mp-board-min:${H}px"><div class="mp-content${impl.pieces ? ' mp-abs' : ''}">${impl.board(st, { readOnly: true })}</div>
-      <svg class="mp-ink" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true">${(Array.isArray(ann.strokes) ? ann.strokes : []).map(x => `<polyline fill="none" stroke="${esc(x.c)}" stroke-width="4" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" points="${(x.pts || []).map(p => `${+p.x},${+p.y}`).join(' ')}"/>`).join('')}</svg>
-      <div class="mp-notes">${(Array.isArray(ann.notes) ? ann.notes : []).map((n, i) => noteHtml({ id: String(n.id), text: String(n.text || ''), x: +n.x || 0, y: +n.y || 0 }, i, true)).join('')}</div></div></div></div>`;
-  ROOT.appendChild(box);
-  const wrap = box.querySelector('.mp-scalewrap'), inner = box.querySelector('.mp-scaled');
-  const fit = () => { const k = Math.min(1, wrap.clientWidth / W, (window.innerHeight - 180) / H); inner.style.transform = `scale(${k})`; inner.style.marginInlineStart = `${Math.max(0, (wrap.clientWidth - W * k) / 2)}px`; wrap.style.height = `${Math.ceil(H * k)}px`; };
-  fit(); window.addEventListener('resize', fit);
-  const close = () => { box.remove(); document.removeEventListener('keydown', esc1); window.removeEventListener('resize', fit); };
-  const esc1 = e => { if (e.key === 'Escape') close(); };
-  document.addEventListener('keydown', esc1);
-  box.addEventListener('click', e => { if (e.target === box) close(); });
-  document.getElementById('mp-viewclose').onclick = close;
-  document.getElementById('mp-viewclose').focus();
-}
-/** The teacher's lines for a board (the same as the server's summary, services/manipulatives.js summarize). */
-function summarize(text) {
-  const o = parse(text, null); if (!o) return [t('js.manip.dash.unreadable')];
-  const out = [];
-  if (Array.isArray(o.pieces)) {
-    const c = new Map(); for (const p of o.pieces) c.set(p.label, (c.get(p.label) || 0) + 1);
-    out.push(o.pieces.length ? `${o.pieces.length} pieces: ${[...c].map(([l, n]) => `${n} x ${l}`).join(', ')}. Value ${round3(sum(o.pieces))}.` : t('js.manip.dash.empty'));
-  } else out.push(...Object.entries(o).filter(([k]) => !k.startsWith('__')).slice(0, 4).map(([k, v]) => `${k}: ${String(JSON.stringify(v)).slice(0, 80)}`));
-  for (const n of ((o.__ann && o.__ann.notes) || [])) if (String(n.text || '').trim()) out.push(`🗒️ ${n.text}`);
-  return out;
+  try {
+    if (joinFirst) { await api('/api/manipulatives/live/join', { method: 'POST', body: { id } }); history.replaceState(null, '', `#live/${id}`); }
+    await ROOM.open(ROOT, id, { IMPL, mkPiece, breakPiece, regroup, newId, boards: STATE.boards });
+  } catch (e) { ROOT.innerHTML = `<div class="empty"><h1>${esc(e.status === 409 ? t('js.manip.live.ended') : t('js.manip.live.gone'))}</h1><p><a href="#">${esc(t('js.manip.nav.back'))}</a></p></div>`; }
 }
 
 // ================================================================ home, tasks
@@ -947,11 +826,11 @@ function studentHome() {
   const list = STATE.sessions;
   ROOT.innerHTML = `<div class="pagehead"><h1>🧮 ${esc(t('js.manip.student.title'))}</h1></div>
     <section class="panel"><h2>${esc(t('js.manip.student.yours'))}</h2>${list.length ? `<ul class="plain mp-list">${list.map(s => { const x = toolOf(s.tool); return `<li class="mp-boardrow"><span>${x ? x.emoji : ''} <b>${esc(s.title)}</b></span> <span class="small muted">${esc(s.className)}</span>
-      ${s.status === 'active' ? `<a class="btn btn-primary btn-sm" href="#${s.joined ? 'session' : 'join'}/${esc(s.id)}">${esc(s.joined ? t('js.manip.student.back') : t('js.manip.student.join'))}</a>` : `<span class="mp-tag bad">${esc(t('js.manip.live.ended'))}</span>`}</li>`; }).join('')}</ul>` : `<p class="muted">${esc(t('js.manip.student.none'))}</p>`}</section>
+      ${s.status === 'active' ? `<a class="btn btn-primary btn-sm" href="#${s.joined ? 'live' : 'join'}/${esc(s.id)}">${esc(s.joined ? t('js.manip.student.back') : t('js.manip.student.join'))}</a>` : `<span class="mp-tag bad">${esc(t('js.manip.live.ended'))}</span>`}</li>`; }).join('')}</ul>` : `<p class="muted">${esc(t('js.manip.student.none'))}</p>`}</section>
     <section class="panel"><h2>${esc(t('js.manip.student.codeTitle'))}</h2><form class="row mp-redeem" id="mp-join"><label class="sr-only" for="mp-join-code">${esc(t('js.manip.student.codeLabel'))}</label><input id="mp-join-code" class="input mp-codein" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${esc(t('js.manip.share.codePh'))}"><button class="btn btn-primary" type="submit">${esc(t('js.manip.student.join'))}</button></form><p class="small" id="mp-joinmsg" role="status"></p></section>`;
   document.getElementById('mp-join').onsubmit = async e => {
     e.preventDefault();
-    try { const r = await api('/api/manipulatives/live/join', { method: 'POST', body: { code: document.getElementById('mp-join-code').value } }); location.hash = `session/${r.session.id}`; }
+    try { const r = await api('/api/manipulatives/live/join', { method: 'POST', body: { code: document.getElementById('mp-join-code').value } }); location.hash = `live/${r.session.id}`; }
     catch (err) { document.getElementById('mp-joinmsg').textContent = err.message; }
   };
 }
@@ -981,10 +860,9 @@ function tasksView() {
 async function loadState2() { try { STATE = { boards: [], classes: [], sessions: [], ...(await api('/api/manipulatives/state')) }; } catch { /* keep what we have */ } }
 async function route() {
   const h = decodeURIComponent(location.hash.replace(/^#/, ''));
-  if (V && V.session && V.sendTimer) { clearTimeout(V.sendTimer); await sendWork(); }
-  if (h.startsWith('join/')) return studentSession(h.slice(5), true);
-  if (h.startsWith('session/')) return studentSession(h.slice(8), false);
-  if (h.startsWith('live/') && HOST) return teacherLive(h.slice(5));
+  ROOM.close();
+  if (h.startsWith('join/')) return liveRoom(h.slice(5), true);
+  if (h.startsWith('live/') || h.startsWith('session/')) return liveRoom(h.slice(h.indexOf('/') + 1), false);
   if (h === 'tasks' && HOST) return tasksView();
   if (HOST && toolOf(h)) { const r = pendingRestore; pendingRestore = null; return openTool(h, { restore: r }); }
   if (!h || !HOST) { await loadState2(); return home(); }

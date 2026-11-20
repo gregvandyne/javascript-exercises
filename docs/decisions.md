@@ -9326,3 +9326,32 @@ allows adaptations as long as the changes are indicated.
     bar while the words scroll beneath it; Back / Next stay pinned above the tab bar as before.
 - Test: `library-browser.test.js` checks the library's longest page at 1280x720 (side by side, both on screen) and on an
   iPhone 13 (the picture stays on screen after scrolling).
+
+## Virtual math manipulatives: the shared room (20 Nov 2026)
+
+The owner approved mockups for live sessions as one shared board (hidden like the rest of the feature).
+
+- **One board per session**, panned and zoomed like a whiteboard: drag empty space or two fingers to pan, the wheel or a
+  pinch to zoom, a "− % + Fit" control (on phones in the bottom tray, so it never covers a classmate's name) and a mini-map
+  (tap a place to go there). The teacher's area runs across the top; below it, one square per student in a grid
+  (manip_work.slot, given at join). Square sizes per tool are in public/js/manip-data.js (roomLayout).
+- **Who writes where:** a student adds and moves things only in their own square; the teacher anywhere. The server
+  enforces it: POST /api/manipulatives/live/:id/area/:key accepts a student only for their own key, and every saved
+  square's pieces are clamped inside it.
+- **Names:** classmates see each other by display name; the teacher sees roster names (the class page's rule).
+- **Typed text:** a student's sticky notes and bar labels reach only that student and the teacher. Classmates get the
+  note's shape with no text, removed on the server (services/manipulatives.js forClassmates), never sent. The teacher's
+  notes (in their area or in a student's square) are read by everyone; note authors are kept on the server, so a student
+  can't change, remove or imitate a teacher's note.
+- **Cursors** (an arrow and a name tag in a color per person; on touch screens the last touch point; a distinct "Teacher"
+  cursor) travel on a new route of the shared upgrade listener, /api/manipulatives/ws?s=<id> (services/manip-socket.js):
+  Oomba Live's origin check and per-address limit, a per-socket limit (20 a second), the hidden gate and the room's
+  membership rules, looked up again every few seconds. Batches go out every 100 ms. Without a socket the page falls back
+  to POST .../cursor and reading the room. Cursors live in memory only (services/manip-live.js): never in the database or
+  a log line; a cursor goes when its socket closes, after 10 seconds without a move, or when the session ends.
+- **"Bring everyone to me"**: the teacher's current view goes once to every student (memory only, like cursors); their
+  screen jumps there (on a phone never below 40% zoom), says "Your teacher brought you here" and shows a big "Back to my
+  square" button. "My square" is always one tap away on phones and computers. Students stay free to move.
+- **Saving** stays on the cleaned path: an area that changed is sent half a second later and checked like every board;
+  the socket only says "something changed" so the others read the room again.
+- **Database:** migration 0093_manipulatives_room (manip_sessions.room and room_at for the teacher's area, manip_work.slot).

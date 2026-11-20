@@ -359,7 +359,7 @@ test('content: 18 tools, 300 tasks with their codes, Number rods, US spelling, g
   assert.ok(all.every(x => x.title && x.prompt && x.notes && /^(K|[1-8]|HS)[.A-Z-]/.test(x.ccss) && /^(K|[1-8])$/.test(x.grade)), 'grades K-8, a code on every task');
   assert.equal(all.filter(x => x.ccss.startsWith('HS')).length, 6, 'the high-school codes are kept');
   assert.ok(TOOLS.every(x => /^(K|\d)-\d$/.test(x.grades) && +x.grades.split('-')[1] <= 8));
-  const files = ['public/js/manip.js', 'public/js/manip-data.js', 'public/js/manip-tasks.js', 'public/css/manipulatives.css', 'server/services/manipulatives.js', 'server/routes/manipulatives.js'];
+  const files = ['public/js/manip.js', 'public/js/manip-room.js', 'server/services/manip-socket.js', 'server/services/manip-live.js', 'public/js/manip-data.js', 'public/js/manip-tasks.js', 'public/css/manipulatives.css', 'server/services/manipulatives.js', 'server/routes/manipulatives.js'];
   const text = files.map(f => fs.readFileSync(path.join(ROOT, f), 'utf8')).join('\n');
   assert.doesNotMatch(text, /cuisenaire|miro\b|polypad|mathigon|didax|hand2mind/i);
   assert.doesNotMatch(text, /—/, 'no em dashes');

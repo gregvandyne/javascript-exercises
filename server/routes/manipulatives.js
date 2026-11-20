@@ -48,7 +48,7 @@ const CSS = raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION
 router.get('/manipulatives', (req, res) => {
   const t = req.t;
   page(req, res, {
-    title: t('manip.title'), active: null, head: CSS, scripts: ['/js/manip.js'], bodyClass: 'manip-page',
+    title: t('manip.title'), active: null, head: CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room'], bodyClass: 'manip-page',
     body: html`${jsonData('page-data', { role: req.manipRole })}
       <div id="manip" class="manip" data-role="${req.manipRole}"><p class="muted">${t('manip.loading')}</p></div>`,
   });
