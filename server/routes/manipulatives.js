@@ -14,6 +14,19 @@
 //   POST /api/manipulatives/live/:id/push       the teacher pushes one of their saved boards to every student
 //   POST /api/manipulatives/live/:id/end        the teacher ends the session
 //   GET  /api/manipulatives/live/:id/export.pdf the teacher's PDF of the students' work
+//   GET  /api/manipulatives/live/:id/room       the shared room: the teacher's area and every square (classmates' typed
+//                                               text removed), cursors, the last "Bring everyone to me"
+//   POST /api/manipulatives/live/:id/area/:key  save one area (key 't' the teacher's area, or a student's id): the teacher
+//                                               any, a student only their own square
+//   POST /api/manipulatives/live/:id/bring      the teacher: "Bring everyone to me" (their current view)
+//   POST /api/manipulatives/live/:id/step       the deck: the teacher moves it ({ dir } or { to }); a student moves their
+//                                               own step only while the teacher lets them go at their own pace
+//   POST /api/manipulatives/live/:id/pace       the teacher: "Students go at their own pace" ({ on })
+//   POST /api/manipulatives/live/:id/show       the teacher: show students' work to the class ({ show: true }), or hide it
+//   POST /api/manipulatives/live/:id/hand       a student raises or lowers their own hand; the teacher lowers one ({ key })
+//                                               or all ({ key: 'all' }) (memory only)
+//   POST /api/manipulatives/live/:id/cursor     a cursor without a socket (memory only); the socket is
+//                                               /api/manipulatives/ws?s=<id> (services/manip-socket.js)
 //   POST /api/manipulatives/draft               a host asks the AI to draft a lesson board
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
@@ -22,7 +35,7 @@ import { rateLimit } from '../services/ratelimit.js';
 import * as M from '../services/manipulatives.js';
 
 export const router = Router();
-const STATUS = { notFound: 404, ended: 409, aiFailed: 503, tooBig: 413 };
+const STATUS = { notFound: 404, ended: 409, aiFailed: 503, tooBig: 413, slow: 429 };
 const fail = (req, res, code) => res.status(STATUS[code] || 400).json({ error: req.t(`manip.errors.${code}`), code });
 const send = (req, res, r) => (r.ok ? res.json(r) : fail(req, res, r.code));
 const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
@@ -41,7 +54,7 @@ const CSS = raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION
 router.get('/manipulatives', (req, res) => {
   const t = req.t;
   page(req, res, {
-    title: t('manip.title'), active: null, head: CSS, scripts: ['/js/manip.js'], bodyClass: 'manip-page',
+    title: t('manip.title'), active: null, head: CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room'], bodyClass: 'manip-page',
     body: html`${jsonData('page-data', { role: req.manipRole })}
       <div id="manip" class="manip" data-role="${req.manipRole}"><p class="muted">${t('manip.loading')}</p></div>`,
   });
@@ -82,6 +95,18 @@ router.get('/api/manipulatives/live/:id/export.pdf', hostOnly, rateLimit('manip-
   if (!r.ok) return fail(req, res, r.code);
   res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename="${r.filename}"` }).send(r.pdf);
 });
+
+router.get('/api/manipulatives/live/:id/room', (req, res) => {
+  const r = M.roomFor(req.user, req.params.id);
+  return r ? res.json({ ok: true, room: r }) : fail(req, res, 'notFound');
+});
+router.post('/api/manipulatives/live/:id/area/:key', rateLimit('manip-area', 1800, 3600e3), (req, res) => send(req, res, M.saveArea(req.user, req.params.id, req.params.key, body(req).state)));
+router.post('/api/manipulatives/live/:id/bring', hostOnly, rateLimit('manip-bring', 120, 3600e3), (req, res) => send(req, res, M.bring(req.user, req.params.id, body(req).view || {})));
+router.post('/api/manipulatives/live/:id/step', rateLimit('manip-step', 600, 3600e3), (req, res) => send(req, res, M.step(req.user, req.params.id, { dir: body(req).dir, to: body(req).to ?? null })));
+router.post('/api/manipulatives/live/:id/pace', hostOnly, (req, res) => send(req, res, M.pace(req.user, req.params.id, !!body(req).on)));
+router.post('/api/manipulatives/live/:id/show', hostOnly, (req, res) => send(req, res, M.showWork(req.user, req.params.id, !!body(req).show)));
+router.post('/api/manipulatives/live/:id/hand', (req, res) => send(req, res, M.hand(req.user, req.params.id, { up: !!body(req).up, key: typeof body(req).key === 'string' ? body(req).key : null })));
+router.post('/api/manipulatives/live/:id/cursor', rateLimit('manip-cursor', 3600, 3600e3), (req, res) => send(req, res, M.moveCursor(req.user, req.params.id, body(req))));
 
 // ---- the AI lesson drafter
 router.post('/api/manipulatives/draft', hostOnly, rateLimit('manip-ai', 30, 3600e3), async (req, res) => {

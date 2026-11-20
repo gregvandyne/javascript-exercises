@@ -1095,6 +1095,16 @@ export const MIGRATIONS = [
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, state TEXT NOT NULL DEFAULT '{}', joined_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL, PRIMARY KEY (session_id, user_id));
     CREATE INDEX IF NOT EXISTS idx_manip_work_user ON manip_work(user_id);`],
+  // Manipulatives live sessions as one shared room (docs/decisions.md "Virtual math manipulatives: the shared room"):
+  // the teacher's own area on the room's board (room, as JSON, and when it last changed) and each student's square in
+  // the room's grid (slot). Cursors and "Bring everyone to me" are never stored (services/manip-live.js).
+  ['0093_manipulatives_room', `
+    ALTER TABLE manip_sessions ADD COLUMN room TEXT NOT NULL DEFAULT '{}';
+    ALTER TABLE manip_sessions ADD COLUMN room_at INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE manip_work ADD COLUMN slot INTEGER NOT NULL DEFAULT 0;`],
+  // A live room's "Hide students' work" (docs/decisions.md "Virtual math manipulatives: hidden work"): 0, the default,
+  // sends a student nothing of a classmate's square but its frame, name and hand; 1 when the teacher shows the work.
+  ['0094_manipulatives_show_work', 'ALTER TABLE manip_sessions ADD COLUMN show_work INTEGER NOT NULL DEFAULT 0;'],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

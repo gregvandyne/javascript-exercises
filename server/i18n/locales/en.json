@@ -3338,7 +3338,6 @@
       "doneShort": "All done! Great reading!"
     },
     "manip": {
-      "loadingShort": "Loading…",
       "grades": "Grades {grades}",
       "grade": "Grade {grade}",
       "nav": {
@@ -3363,7 +3362,9 @@
         "start": "Start the session",
         "who": "Only the students of the class you pick can join, signed in with their own accounts. The join code alone lets nobody else in.",
         "noClasses": "You don't teach a class yet, so there is no class to run a session for.",
-        "mine": "Your sessions"
+        "mine": "Your sessions",
+        "board": "Start from a saved board (its tool and steps)",
+        "noBoard": "An empty board"
       },
       "boards": {
         "title": "Your saved boards",
@@ -3381,7 +3382,6 @@
         "go": "Go",
         "needCode": "Type a share code first.",
         "loaded": "Board {code} is on your board now.",
-        "otherTool": "That code is for another tool.",
         "saved": "Your saved boards for this tool",
         "loadSaved": "Load saved board {code}",
         "haveCode": "Have a share code?",
@@ -3397,11 +3397,15 @@
         "annotate": "Pen",
         "note": "Sticky note",
         "draft": "Draft with AI",
-        "reset": "Clear the board"
+        "reset": "Clear the board",
+        "text": "Text",
+        "addCap": "Add",
+        "forObj": "{name}",
+        "showAnswers": "Show answers"
       },
       "board": {
         "label": "{tool} board",
-        "emptyPieces": "Tap a piece to put it on the board, then drag it. Tap a piece on the board for copy, flip, rotate, fill, lock and delete.",
+        "emptyPieces": "Tap something in the palette to put it on the board, then drag it. Drag the empty board to move around.",
         "pieceHint": "Tap a piece on the board for its buttons. Sticky notes can be dragged anywhere; tap one to type."
       },
       "piece": {
@@ -3415,7 +3419,8 @@
         "unlock": "Unlock",
         "delete": "Delete",
         "pickBreak": "Tap a piece that can be broken into ten first.",
-        "pickRegroup": "Tap one of ten pieces of the same kind first."
+        "pickRegroup": "Tap one of ten pieces of the same kind first.",
+        "separate": "Separate"
       },
       "note": {
         "label": "Sticky note {n}",
@@ -3442,21 +3447,21 @@
       "draft": {
         "title": "Draft a lesson with AI",
         "close": "Close",
-        "text": "Describe a lesson and the AI sets up this board: pieces placed, sticky notes with the instructions and questions, and pen marks. It replaces what is on the board; Undo brings it back.",
+        "text": "Describe a practice set and the AI builds it: the objects for each problem in a tidy grid, an answer box under each one, and the steps for students. It replaces what is on the board; Undo brings it back.",
         "task": "Start from a task",
         "ownLesson": "My own lesson",
         "grade": "Grade",
         "any": "Any",
         "brief": "What should the lesson do?",
-        "briefPh": "For example: Grade 3, build 346, then break a hundred into tens. Ask what stays the same.",
+        "briefPh": "For example: 8 clocks with different times for my students to read. Or: 6 fraction additions with unlike denominators, grade 5.",
         "private": "Only your description goes to the AI: never students' names or work.",
         "go": "Draft my board",
-        "withPieces": "The AI can place this tool's pieces.",
-        "noPieces": "This tool has no pieces to place, so the draft comes as sticky notes and pen marks.",
         "needBrief": "Describe the lesson first.",
         "working": "Drafting your board…",
-        "done": "\"{title}\" is on the board: {pieces} pieces, {notes} sticky notes, {marks} pen marks. Move anything you like, then save it or push it to a class.",
-        "noAi": "(The AI is resting, so this is a simple starting board.)"
+        "noAi": "(The AI is resting, so this is a simple starting board.)",
+        "doneSet": "\"{title}\" is on the board: {n} problems and {steps} steps.",
+        "capped": "At most {max} problems fit on one board, so it has {max}.",
+        "hint": "You choose what and how many (up to 12). The app checks every problem and lays the board out."
       },
       "tasks": {
         "boxTitle": "Try this: ready-made tasks",
@@ -3476,40 +3481,8 @@
         "open": "Open the tool"
       },
       "live": {
-        "on": "Live: {title}",
-        "saves": "Your board goes to your teacher as you work.",
         "ended": "This session has ended.",
-        "sent": "Your teacher sent you a board",
-        "load": "Load it",
-        "keep": "Keep mine",
-        "loaded": "Your teacher's board is on your board now. Undo brings yours back.",
         "gone": "This session isn't here."
-      },
-      "dash": {
-        "title": "Live session",
-        "live": "Live",
-        "ended": "Ended",
-        "codeFor": "Students in {klass} join with this code (or from their class page):",
-        "codeLabel": "Join code",
-        "joined": "{n, plural, one {# student joined} other {# students joined}}",
-        "build": "Open {tool} to build",
-        "pdf": "Export student work (PDF)",
-        "end": "End the session",
-        "endedMsg": "The session has ended.",
-        "pushTitle": "Push a board to every student",
-        "pushText": "Build a board in the tool and save it, then push it here. Students choose to load it; their own work stays until they do.",
-        "pushOne": "Push {code}",
-        "noBoards": "No saved board for this tool yet. Open the tool, build, and save one.",
-        "pushedAt": "Last pushed {when}.",
-        "pushed": "Pushed to every student.",
-        "work": "Student work",
-        "workOf": "Work from {name}",
-        "lastSaved": "Last saved {when}",
-        "view": "See the board",
-        "close": "Close",
-        "noStudents": "No students yet. Their work shows up here as they build.",
-        "unreadable": "This board couldn't be read.",
-        "empty": "No pieces yet."
       },
       "student": {
         "title": "Math boards",
@@ -3519,7 +3492,134 @@
         "back": "Go back in",
         "codeTitle": "Have a join code?",
         "codeLabel": "Join code"
+      },
+      "dash": {
+        "live": "Live",
+        "ended": "Ended",
+        "joined": "{n, plural, one {# student joined} other {# students joined}}"
+      },
+      "steps": {
+        "title": "Steps",
+        "text": "The exercise, one step at a time: in a live session students see the current step at the top of their square, never the ones after it. Drag or use ↑ ↓ to reorder."
+      },
+      "text": {
+        "label": "Text on the board",
+        "ph": "Type here…",
+        "delete": "Delete this text"
+      },
+      "obj": {
+        "actions": "{name}: actions",
+        "copy": "Duplicate",
+        "delete": "Delete",
+        "resize": "Drag to resize",
+        "move": "{name}: drag to move",
+        "full": "At most {n} objects on a board.",
+        "answer": "Your answer",
+        "answerIs": "Answer:",
+        "buildHere": "Build the answer here",
+        "whole": "Whole",
+        "part": "Part"
+      },
+      "view": {
+        "zoom": "Zoom",
+        "in": "Zoom in",
+        "out": "Zoom out",
+        "fit": "Fit",
+        "totalsOn": "Totals: on",
+        "totalsOff": "Totals: off"
       }
+    },
+    "manip-room": {
+      "loading": "Opening the room…",
+      "palette": "Pieces and tools",
+      "add": "Add {label}",
+      "addMine": "Tap to add (your square)",
+      "addTo": "Tap to add to: {name}",
+      "teacherArea": "Teacher's area",
+      "teacher": "Teacher",
+      "mySquare": "My square",
+      "mySquareBtn": "My square",
+      "backMine": "Back to my square",
+      "classmateNote": "A classmate's note",
+      "noteN": "Sticky note {n}",
+      "noteText": "Text of sticky note {n}",
+      "notePh": "Type a label or a question…",
+      "noteTap": "Tap to write…",
+      "edit": "Edit",
+      "done": "Done",
+      "delete": "Delete",
+      "note": "Sticky note",
+      "pen": "Pen",
+      "undo": "Undo",
+      "penColor": "Pen color {color}",
+      "clearPen": "Clear the pen",
+      "zoom": "Zoom",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "fit": "Fit",
+      "map": "Map of the room. Tap a place to go there.",
+      "live": "Live",
+      "ended": "Ended",
+      "bring": "Bring everyone to me",
+      "broughtAll": "Everyone is looking at your view now.",
+      "brought": "Your teacher brought you here",
+      "broughtText": "Look where your teacher is working. You can move around any time.",
+      "push": "Push a board",
+      "pdf": "PDF",
+      "end": "End session",
+      "endedMsg": "The session has ended.",
+      "loadPush": "Load it into my square",
+      "keep": "Keep mine",
+      "loadedPush": "Your teacher's board is in your square now. Undo brings yours back.",
+      "pushTitle": "Push a board to every student",
+      "pushText": "Each student can load it into their own square; their work stays until they do.",
+      "pushOne": "Push {code}",
+      "noBoards": "No saved board for this tool yet. Build one in the tool on its own and save it.",
+      "pushed": "Pushed to every student.",
+      "close": "Close",
+      "gone": "This session isn't here.",
+      "back": "Back",
+      "teacherAreaNote": "everyone can see this",
+      "instructions": "Instructions",
+      "more": "More",
+      "less": "Less",
+      "raiseHand": "Raise hand",
+      "lowerHand": "Lower hand",
+      "handUp": "Hand raised",
+      "handsTitle": "Hands up",
+      "lowerAll": "Lower all",
+      "lower": "Lower",
+      "lowerOne": "Lower {name}'s hand",
+      "noHands": "No hands up right now.",
+      "hideWork": "Hide students' work",
+      "hiddenWork": "Hidden for now",
+      "workShown": "Everyone can see each other's work now.",
+      "workHidden": "Students' work is hidden again.",
+      "stepOf": "Step {n} of {total}",
+      "next": "Next",
+      "earlier": "Earlier steps ({n})",
+      "paceSum": "Step {step}: {n}",
+      "menu": "More options",
+      "pace": "Students go at their own pace",
+      "handsUpN": "Hands up · {n}",
+      "handsUpNone": "Hands up",
+      "steps": "Steps",
+      "stepsText": "The exercise, one step at a time: students see the current step at the top of their square, never the ones after it. Drag or use ↑ ↓ to reorder.",
+      "stepN": "Step {n}",
+      "stepPh": "What should students do in this step?",
+      "stepUp": "Move step {n} up",
+      "stepDown": "Move step {n} down",
+      "stepDelete": "Delete step {n}",
+      "noSteps": "No steps yet.",
+      "addStep": "Add a step",
+      "joinCode": "Join code: {code}",
+      "copy": "Copy",
+      "copied": "Join code copied.",
+      "text": "Text",
+      "textLabel": "Text on the board",
+      "textPh": "Type here…",
+      "textDelete": "Delete this text",
+      "totals": "Students see totals"
     }
   },
   "favorites": {
@@ -12375,7 +12475,8 @@
       "otherTool": "That board is for another tool. Push a board made with this session's tool.",
       "brief": "Describe the lesson in a few words first.",
       "names": "Leave students' names out of the description: names never go to the AI.",
-      "aiFailed": "The AI couldn't draft that lesson just now. Try again in a moment."
+      "aiFailed": "The AI couldn't draft that lesson just now. Try again in a moment.",
+      "slow": "That's a lot of hands. Wait a moment and try again."
     }
   }
 }

@@ -12,7 +12,7 @@ try {
     ...(await import('./app.js')), ...(await import('./db.js')), ...(await import('./auth.js')), ...(await import('./services/jobs.js')),
     ...(await import('./services/shots.js')), ...(await import('./services/snapshot.js')), ...(await import('./builder/runner.js')), ...(await import('./shutdown.js')),
     ...(await import('./domain.js')), ...(await import('./site.js')), ...(await import('./oidc.js')), ...(await import('./services/stt-live.js')),
-    attachUpgrades: (await import('./services/upgrade.js')).attachUpgrades, classLive: await import('./services/classlive-socket.js'),
+    attachUpgrades: (await import('./services/upgrade.js')).attachUpgrades, classLive: await import('./services/classlive-socket.js'), manipSocket: await import('./services/manip-socket.js'),
     billingMode: (await import('./services/stripe.js')).billingMode, checkTax: (await import('./services/billing.js')).checkTax, checkPrices: (await import('./services/billing.js')).checkPrices,
   };
 } catch (e) {
@@ -20,7 +20,7 @@ try {
   log('error', 'startup failed', { error: e.message });
   process.exit(1);
 }
-const { createApp, trustProxySetting, db, JOURNAL_MODE, secretSource, startJobs, startSweeper, stopSweeper, closeBrowser, busyCount, makeShutdown, recover, startRunner, drain, handOff, startHostCheck, stopHostCheck, legacyHosts, googleEnabled, billingMode, checkTax, checkPrices, route: sttRoute, drainLive, attachUpgrades, classLive } = mods;
+const { createApp, trustProxySetting, db, JOURNAL_MODE, secretSource, startJobs, startSweeper, stopSweeper, closeBrowser, busyCount, makeShutdown, recover, startRunner, drain, handOff, startHostCheck, stopHostCheck, legacyHosts, googleEnabled, billingMode, checkTax, checkPrices, route: sttRoute, drainLive, attachUpgrades, classLive, manipSocket } = mods;
 
 if (secretSource !== 'env' && config.env === 'production') {
   log('warn', 'SESSION_SECRET is not set: sessions are signed with a secret stored in the database. Set SESSION_SECRET (scripts/export-session-secret.js copies the current one, so nobody is signed out) and REQUIRE_SESSION_SECRET=1.', { secretSource });
@@ -45,8 +45,9 @@ const server = app.listen(config.port, () => {
 server.keepAliveTimeout = config.keepAliveTimeoutMs;
 server.headersTimeout = config.keepAliveTimeoutMs + 1000;
 // WebSockets (services/upgrade.js: one upgrade listener, routed by path): the Studio's live mic
-// (services/stt-live.js, /api/studio/:id/listen) and Oomba Live (services/classlive-socket.js, /api/live/ws).
-attachUpgrades(server, [sttRoute, classLive.route]);
+// (services/stt-live.js, /api/studio/:id/listen), Oomba Live (services/classlive-socket.js, /api/live/ws) and the
+// manipulatives live room (services/manip-socket.js, /api/manipulatives/ws).
+attachUpgrades(server, [sttRoute, classLive.route, manipSocket.route]);
 // Half-done Google setup: a warning, not a failed deploy.
 if (!!config.googleClientId !== !!config.googleClientSecret) log('warn', 'Google sign-in stays off: set both GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET');
 else if (config.googleClientId && config.env === 'production' && !config.publicUrl) log('warn', 'Google sign-in stays off until PUBLIC_URL is set (its redirect address is PUBLIC_URL/auth/google/callback)');

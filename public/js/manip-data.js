@@ -33,7 +33,7 @@ const BASE10_DEC = [pd('one', '#FB8C00', '1', 1, 52, 52), pd('tenth', '#FFA726',
 const DISKS = [pd('m', '#7B1FA2', '1,000,000', 1e6, 74, 74), pd('hth', '#8E24AA', '100,000', 1e5, 70, 70), pd('tth', '#3949AB', '10,000', 1e4, 66, 66), pd('th', '#1E88E5', '1,000', 1000, 62, 62),
   pd('h', '#00ACC1', '100', 100, 58, 58), pd('t', '#43A047', '10', 10, 54, 54), pd('o', '#F9A825', '1', 1, 50, 50), pd('tenth', '#FB8C00', '0.1', 0.1, 50, 50),
   pd('hund', '#FF7043', '0.01', 0.01, 50, 50), pd('thou', '#E53935', '0.001', 0.001, 50, 50)];
-const COUNTERS = [pd('pos', '#FFD23F', '+1', 1, 48, 48), pd('neg', '#E53935', '−1', -1, 48, 48), pd('blue', '#1E88E5', '•', 0, 48, 48), pd('green', '#43A047', '•', 0, 48, 48)];
+const COUNTERS = [pd('pos', '#FFD23F', '+1', 1, 48, 48), pd('neg', '#E53935', '−1', -1, 48, 48), pd('blue', '#1E88E5', '', 0, 48, 48), pd('green', '#43A047', '', 0, 48, 48)];
 const CUBES = ['#E53935', '#FB8C00', '#FFD23F', '#43A047', '#00ACC1', '#1E88E5', '#8E24AA', '#EC407A', '#795548', '#000000'].map((c, i) => pd(`c${i}`, c, '1', 1, 40, 40));
 const TILES = ['#E53935', '#FB8C00', '#FFD23F', '#43A047', '#1E88E5', '#8E24AA'].map((c, i) => pd(`t${i}`, c, '1', 1, 52, 52));
 const RODS = [['#FFFFFF', '1 white'], ['#E53935', '2 red'], ['#AED581', '3 light green'], ['#BA68C8', '4 purple'], ['#FFD23F', '5 yellow'], ['#2E7D32', '6 dark green'], ['#212121', '7 black'], ['#8D6E63', '8 brown'], ['#1E88E5', '9 blue'], ['#FB8C00', '10 orange']]
@@ -72,6 +72,28 @@ export function pieceDefs(slug, opts = {}) {
     default: return [];
   }
 }
+/** What the palette calls a piece: its face label is often just a number or a dot ("1", "•"), so the palette says what
+ *  it is ("Red cube", "Blue counter", "Rod (10)"). */
+const CUBE_NAMES = ['Red', 'Orange', 'Yellow', 'Green', 'Teal', 'Blue', 'Purple', 'Pink', 'Brown', 'Black'];
+const TILE_NAMES = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple'];
+/** How the palette shows a piece: a mini piece (its color and shape) with its value inside (face), a short name beside
+ *  it only where the name adds something (text), and a full name for screen readers (aria). */
+const ROD_NAMES = ['white', 'red', 'light green', 'purple', 'yellow', 'dark green', 'black', 'brown', 'blue', 'orange'];
+export function paletteName(slug, d) {
+  const k = d.kind, L = d.label;
+  const r = (face, text, aria) => ({ face, text, aria: aria || [text, face].filter(Boolean).join(', ') });
+  if (slug === 'linking-cubes') return r('', `${CUBE_NAMES[+k.slice(1)] || ''} cube`.trim());
+  if (slug === 'color-tiles') return r('', `${TILE_NAMES[+k.slice(1)] || ''} tile`.trim());
+  if (slug === 'two-color-counters') return { pos: r('+1', 'Yellow counter', 'Yellow counter, plus 1'), neg: r('−1', 'Red counter', 'Red counter, minus 1'), blue: r('', 'Blue counter'), green: r('', 'Green counter') }[k] || r(L, '');
+  if (slug === 'base-ten-blocks') return r(L, { unit: 'Unit', rod: 'Rod', flat: 'Flat', cube: 'Cube', one: 'One', tenth: 'Tenth', hundredth: 'Hundredth', thousandth: 'Thousandth' }[k] || '');
+  if (slug === 'place-value-disks') return r(L, '', `${L} disk`);
+  if (slug === 'algebra-tiles') return r(L, '', `${L} tile`);
+  if (slug === 'fraction-tiles') return r(L, '', `${L} tile`);
+  if (slug === 'number-rods') return r(String(d.value), ROD_NAMES[d.value - 1] || '', `Rod ${d.value}, ${ROD_NAMES[d.value - 1] || ''}`);
+  if (slug === 'money') return r(L, { penny: 'Penny', nickel: 'Nickel', dime: 'Dime', quarter: 'Quarter' }[k] || 'Bill');
+  if (slug === 'pattern-blocks') return r('', L);
+  return r(L, '');
+}
 /** Every piece a tool can ever hold, in any of its settings (to look a saved piece up by its kind). */
 export const allPieceDefs = slug => (slug === 'base-ten-blocks' ? [...BASE10, ...BASE10_DEC] : pieceDefs(slug));
 /** Break one piece into ten of the next size down (and Regroup ten back into one). */
@@ -101,3 +123,49 @@ export function freeSpot(obstacles, w, h, W, H, { margin = 12, gap = 6, step = 8
   const last = obstacles[obstacles.length - 1];
   return last ? { x: Math.min(maxX, last.x + 24), y: Math.min(maxY, last.y + 24) } : { x: margin, y: margin };
 }
+
+// ---------------------------------------------------------------- the shared room of a live session
+/** A square's size in a live room, per tool (room pixels): big enough for the tool's own board. */
+export const AREA_SIZE = { 'number-lines': [900, 300], 'xy-coordinate-board': [760, 480], clock: [820, 360], 'hundred-board': [600, 620], rekenreks: [600, 340],
+  'fraction-circles': [620, 420], 'bar-models': [680, 420], geoboard: [440, 500] };
+export const areaSize = tool => { const [w, h] = AREA_SIZE[tool] || [480, 360]; return { w, h }; };
+/** One room: the teacher's area across the top, then one square per student in a grid (slot 0, 1, 2...), each with its
+ *  name above it. -> { sq, cols, gap, teacher: rect, slot(i): rect, world(n): { w, h } } (rects: { x, y, w, h }). */
+export function roomLayout(tool) {
+  const sq = areaSize(tool), gap = 56, label = 36, cols = sq.w <= 620 ? 4 : 2;
+  const width = cols * sq.w + (cols - 1) * gap;
+  const teacher = { x: 0, y: label, w: width, h: sq.h };
+  const slot = i => ({ x: (i % cols) * (sq.w + gap), y: teacher.y + teacher.h + gap + label + Math.floor(i / cols) * (sq.h + gap + label), w: sq.w, h: sq.h });
+  const world = n => { const last = slot(Math.max(0, n - 1)); return { w: width, h: (n ? last.y + last.h : teacher.y + teacher.h) + 24 }; };
+  return { sq, cols, gap, teacher, slot, world };
+}
+/** The cursor and square colors, by slot. */
+export const ROOM_COLORS = ['#E53935', '#1E88E5', '#8E24AA', '#00897B', '#F57C00', '#C2185B', '#3949AB', '#2E7D32', '#6D4C41', '#00838F', '#AD1457', '#5E35B1'];
+/** The teacher's notes as every square's "Instructions" strip: the teacher's area's notes with text, top to bottom. */
+export const instructionNotes = notes => (Array.isArray(notes) ? notes : []).filter(n => n && n.by === 't' && String(n.text || '').trim())
+  .slice().sort((a, b) => (+a.y || 0) - (+b.y || 0) || (+a.x || 0) - (+b.x || 0)).map(n => String(n.text).trim());
+/** How tall the strip is in a square (room pixels): a heading line and the notes' lines at 13 px text on 18 px lines,
+ *  wrapped at about 7.6 px a character, never more than a third of the square (then "More" shows the rest to that
+ *  viewer only). 0 without notes. The page and the server both use this, so pieces always start below it. */
+export const STRIP = { head: 28, line: 18, pad: 10, char: 7.6 };
+export function stripHeight(texts, sq) {
+  if (!texts.length) return 0;
+  const per = Math.max(16, Math.floor((sq.w - 44) / STRIP.char));
+  const lines = texts.reduce((s, x) => s + Math.max(1, Math.ceil((x.length + 4) / per)), 0);
+  // Capped at a third of the square, and always a whole number of lines (never a line cut in half).
+  const fit = Math.max(1, Math.min(lines, Math.floor((Math.floor(sq.h / 3) - STRIP.head - STRIP.pad) / STRIP.line)));
+  return STRIP.head + fit * STRIP.line + STRIP.pad;
+}
+/** The strip's full height (what "More" opens to). */
+export function stripFullHeight(texts, sq) {
+  const per = Math.max(16, Math.floor((sq.w - 44) / STRIP.char));
+  return texts.length ? STRIP.head + texts.reduce((s, x) => s + Math.max(1, Math.ceil((x.length + 4) / per)), 0) * STRIP.line + STRIP.pad : 0;
+}
+
+// ---------------------------------------------------------------- a deck of steps (the teacher's exercise, step by step)
+/** The steps a board carries (its __steps), cleaned for reading. */
+export const stepsOf = st => (st && Array.isArray(st.__steps) ? st.__steps : []).filter(x => x && String(x.text || '').trim()).map(x => ({ id: String(x.id || ''), text: String(x.text).trim() }));
+/** What a square's strip shows in step mode, as lines for its height: the step, and a line for earlier steps. */
+export const stepStripTexts = (steps, i, total = steps.length) => (total ? [`Step ${i + 1} of ${total}: ${steps[i] ? steps[i].text : ''}`, ...(i > 0 ? [`Earlier steps (${i})`] : [])] : []);
+/** The teacher's area keeps the current step big at its top: this much of it (room pixels) in step mode. */
+export const TEACHER_STEP_H = 110;
