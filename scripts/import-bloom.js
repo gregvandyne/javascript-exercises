@@ -151,9 +151,10 @@ export function evaluateBloom({ entry, meta, html, names = null, curation, maxUn
   if (bad) return fail(`picture ${bad} is not a bitmap the importer converts`);
   // A person's corrections of real text mistakes (picks.<id>.fixes), applied before the grade is estimated.
   const pickF = (curation.picks || {})[sourceId];
-  const fixed = B.applyFixes(pickF && pickF.title ? pickF.title : row.title, bk.pages.map(p => B.joinSoftBreaks(I.tidyText(p.text))), pickF && pickF.fixes);
-  if (fixed.problems.length) return fail(`text corrections: ${fixed.problems[0]}`);
-  const texts = fixed.texts;
+  // The same exact-once rule as the StoryWeaver importer (server/library/import-lib.js applyFixes; page 0 is the title).
+  let fixed;
+  try { fixed = I.applyFixes(pickF && pickF.title ? pickF.title : row.title, bk.pages.map(p => B.joinSoftBreaks(I.tidyText(p.text))), pickF && pickF.fixes, `bl-${sourceId}`); } catch (e) { return fail(`text corrections: ${e.message}`); }
+  const texts = fixed.pages;
   const m = I.measure(texts), g = I.gradeOf(m);
   Object.assign(row, { grade: g.grade, score: g.score, words: m.words, measures: m, otherLangs: B.otherLangsOf(bk), pictureRules: pic.rules, parsed: bk });
   if (!g.grade) return fail(g.why === 'no text' ? 'no text' : `${g.why.startsWith('too long') ? 'too long' : 'too hard'} for the library (${g.why})`);
@@ -190,7 +191,7 @@ export function evaluateBloom({ entry, meta, html, names = null, curation, maxUn
       ...(original && original !== (over.publisher || holder) ? { original } : {}),
       license: code, licenseName: lic.name, licenseUrl: lic.url, shareAlike: lic.family === 'by-sa',
       sourceUrl: B.bloomBookUrl(sourceId), pictureRules: pic.rules,
-      ...(fixCount ? { corrected: fixCount } : {}),
+      ...(fixCount ? { corrections: fixCount } : {}),
     },
     otherLangs: row.otherLangs,
     ...(dropped ? { endPagesLeftOut: dropped } : {}),
@@ -261,7 +262,7 @@ export function reportMarkdown(rows, { totalBytes = null, pool = null, generated
   const byLic = {}; for (const r of inc) byLic[r.book.credits.licenseName] = (byLic[r.book.credits.licenseName] || 0) + 1;
   const inherited = inc.filter(r => r.book.credits.pictureRules.inherited);
   const unlabeled = inc.filter(r => r.book.credits.pictureRules.unlabeled);
-  const corrected = inc.filter(r => r.book.credits.corrected);
+  const corrected = inc.filter(r => r.book.credits.corrections);
   const survey = exc.filter(r => r.unlabeledSurvey);
   const atLimit = n => survey.filter(r => r.unlabeledSurvey.passesAny && r.unlabeledSurvey.unlabeled <= n).length;
   const pics = r => { const p = r.book.credits.pictureRules; return `${p.own}/${p.inherited}/${p.unlabeled || 0}`; };
@@ -293,7 +294,7 @@ export function reportMarkdown(rows, { totalBytes = null, pool = null, generated
     `- Included: **${inc.length}** (${I.GRADES.map(g => `${GRADE_NAMES[g]}: ${inc.filter(r => r.grade === g).length}`).join(', ')})`,
     `- By license: ${Object.entries(byLic).sort().map(([k, n]) => `${k}: ${n}`).join(', ') || 'none'}`,
     `- Pictures: ${inc.reduce((s, r) => s + r.book.credits.pictureRules.own, 0)} with their own license, ${inc.reduce((s, r) => s + r.book.credits.pictureRules.inherited, 0)} inherited from the book (same copyright holder; ${inherited.length} books), ${inc.reduce((s, r) => s + (r.book.credits.pictureRules.unlabeled || 0), 0)} with no license or copyright that take the book's license (at most ${B.MAX_UNLABELED} a book; ${unlabeled.length} books)`,
-    `- Text corrected by Oomba: ${corrected.length} books, ${corrected.reduce((s, r) => s + r.book.credits.corrected, 0)} corrections (listed below)`,
+    `- Text corrected by Oomba: ${corrected.length} books, ${corrected.reduce((s, r) => s + r.book.credits.corrections, 0)} corrections (listed below)`,
     `- Left out: ${exc.length}`,
     ...Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([k, n]) => `  - ${k}: ${n}`),
     ...(totalBytes !== null ? [`- Bloom pictures on the site: ${(totalBytes / 1048576).toFixed(1)} MB (WebP, pages at most ${IMAGE.page.max} px, covers ${IMAGE.cover.max} px)`] : []),
@@ -304,7 +305,7 @@ export function reportMarkdown(rows, { totalBytes = null, pool = null, generated
     '',
     '| Id | Title | Grade | Score | Words | Pages | Text | Illustration | Translation | Publisher | License | Pictures | Fixes | Other languages |',
     '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
-    ...inc.sort((a, b) => gradeRank(a.grade) - gradeRank(b.grade) || a.title.localeCompare(b.title)).map(r => { const c = r.book.credits; return `| ${r.book.id} | ${esc(r.title)} | ${GRADE_NAMES[r.grade]} | ${r.score} | ${r.words} | ${r.book.pageCount} | ${esc(c.text.join(', ') || '–')} | ${esc(c.illustration.join(', ') || '–')} | ${esc(c.translation.join(', ') || '–')} | ${esc(c.publisher)} | ${c.licenseName} | ${pics(r)} | ${c.corrected || '–'} | ${r.book.otherLangs.join(', ') || '–'} |`; }),
+    ...inc.sort((a, b) => gradeRank(a.grade) - gradeRank(b.grade) || a.title.localeCompare(b.title)).map(r => { const c = r.book.credits; return `| ${r.book.id} | ${esc(r.title)} | ${GRADE_NAMES[r.grade]} | ${r.score} | ${r.words} | ${r.book.pageCount} | ${esc(c.text.join(', ') || '–')} | ${esc(c.illustration.join(', ') || '–')} | ${esc(c.translation.join(', ') || '–')} | ${esc(c.publisher)} | ${c.licenseName} | ${pics(r)} | ${c.corrections || '–'} | ${r.book.otherLangs.join(', ') || '–'} |`; }),
     '',
     ...(inc.some(r => r.book.endNote) ? ['### Pages left out at the end', '', 'Pages after the story that are not part of it, named by a person; the story pages are all kept.', '', ...inc.filter(r => r.book.endNote).map(r => `- ${r.book.id} ${esc(r.title)}: ${r.book.endPagesLeftOut} page(s): ${esc(r.book.endNote)}`), ''] : []),
     ...(corrected.length ? ['### Text corrections', '', 'Each correction as `seed-library/bloom.json` records it (page: from → to; page 0 is the title). The importer stops if a correction no longer matches the book exactly once.', '', ...corrected.map(r => `- ${r.book.id} ${esc(r.title)}: ${(r.fixes || []).map(f => `p${f.page} "${esc(f.from)}" → "${esc(f.to)}"`).join('; ')}`), ''] : []),

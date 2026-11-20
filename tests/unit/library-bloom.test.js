@@ -236,13 +236,12 @@ test('evaluateBloom: a person\'s text corrections are applied exactly, change th
   assert.equal(r.status, 'included', r.reason);
   assert.equal(r.book.pages[1].text, 'The cat saw a big, red ball.');
   assert.equal(r.book.title, 'The Cat and the Ball');
-  assert.equal(r.book.credits.corrected, 2);
-  assert.ok(!('corrected' in ev().book.credits), 'no corrections, no note');
+  assert.equal(r.book.credits.corrections, 2);
+  assert.ok(!('corrections' in ev().book.credits), 'no corrections, no note');
   // A correction that does not match exactly once keeps the book out (so a changed book is noticed).
-  assert.match(ev({ c: { picks: { AbCdEf1234: { questions: qs, fixes: [{ page: 2, from: 'blue ball', to: 'red ball' }] } } } }).reason, /text corrections: fix 1: "blue ball" is not on page 2/);
+  assert.match(ev({ c: { picks: { AbCdEf1234: { questions: qs, fixes: [{ page: 2, from: 'blue ball', to: 'red ball' }] } } } }).reason, /text corrections: bl-AbCdEf1234 fix 1: "blue ball" is not on page 2/);
   assert.match(ev({ c: { picks: { AbCdEf1234: { questions: qs, fixes: [{ page: 3, from: 'ran', to: 'run' }] } } } }).reason, /"ran" is on page 3 more than once/);
-  assert.match(ev({ c: { picks: { AbCdEf1234: { questions: qs, fixes: [{ page: 9, from: 'a', to: 'b' }] } } } }).reason, /fix 1 is not \{ page, from, to \}/);
-  assert.deepEqual(B.applyFixes('T', ['one two', 'three'], [{ page: 1, from: 'two', to: '2' }, { page: 2, from: 'three', to: '3' }]), { title: 'T', texts: ['one 2', '3'], problems: [] });
+  assert.match(ev({ c: { picks: { AbCdEf1234: { questions: qs, fixes: [{ page: 9, from: 'a', to: 'b' }] } } } }).reason, /fix 1: page must be 0/);
   // The report lists every correction.
   const md = IMP.reportMarkdown([r], { generated: '2026-01-01' });
   assert.match(md, /Text corrected by Oomba: 1 books, 2 corrections/);
@@ -316,7 +315,7 @@ test('shipped: Bloom books in the manifest pass the rule, were picked by a perso
     assert.ok(pr.own + pr.inherited + pr.unlabeled === b.pages.length + 1, `${b.id}: every picture checked`);
     assert.ok(pr.unlabeled <= B.MAX_UNLABELED && pr.unlabeled * 2 <= b.pages.length + 1, `${b.id}: at most ${B.MAX_UNLABELED} unlabeled pictures, never most`);
     const fixes = curation.picks[b.sourceId].fixes || [];
-    assert.equal(b.credits.corrected || 0, fixes.length, `${b.id}: the corrections are counted`);
+    assert.equal(b.credits.corrections || 0, fixes.length, `${b.id}: the corrections are counted`);
     for (const f of fixes) assert.ok(f.page >= 0 && f.page <= b.pages.length && f.from !== f.to && (f.page === 0 ? b.title : b.pages[f.page - 1].text).includes(f.to), `${b.id}: correction on page ${f.page} is in the text`);
     assert.ok(Array.isArray(b.otherLangs));
     assert.deepEqual(I.checkQuestions(b.questions, b.pages.length), [], b.id);
@@ -363,13 +362,13 @@ test('pages: a Bloom book shows Bloom Library, its own license and deed, and the
       }
     }
     // A book whose mistakes Oomba corrected says so, before the share-alike note that covers the corrected pages.
-    const fixed = bloom.find(b => b.credits.corrected && !b.credits.shareAlike), fixedSA = bloom.find(b => b.credits.corrected && b.credits.shareAlike);
+    const fixed = bloom.find(b => b.credits.corrections && !b.credits.shareAlike), fixedSA = bloom.find(b => b.credits.corrections && b.credits.shareAlike);
     for (const b of [fixed, fixedSA].filter(Boolean)) {
       for (const t of [(await get(`/library/${b.id}`)).text, (await get(`/library/${b.id}/read`)).text]) {
         assert.match(t, b.credits.shareAlike ? /Oomba corrected spelling and punctuation\. Oomba resized the pictures and shows the book one page at a time; these adapted pages are shared under the same license/ : /Oomba corrected spelling and punctuation\. Oomba resized the pictures/, b.id);
       }
     }
-    const plain = bloom.find(b => !b.credits.corrected);
+    const plain = bloom.find(b => !b.credits.corrections);
     assert.ok(!/Oomba corrected spelling/.test((await get(`/library/${plain.id}`)).text), 'no correction note on an uncorrected book');
     const swPage = await get(`/library/${sw.id}`);
     assert.match(swPage.text, /Pratham Books, StoryWeaver/); assert.match(swPage.text, /Pratham Books does not endorse Oomba/);

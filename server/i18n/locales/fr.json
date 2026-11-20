@@ -11668,11 +11668,11 @@
       "illustration": "Illustrations : {names}",
       "translation": "Traduction : {names}",
       "changes": "Oomba a redimensionné les images et montre le livre une page à la fois. Pratham Books ne cautionne pas Oomba.",
+      "corrected": "Oomba a corrigé l'orthographe et la ponctuation.",
       "original": "Voir le livre original.",
       "from": "D’après un livre de {name}",
       "changesBloom": "Oomba a redimensionné les images et montre le livre une page à la fois. Bloom Library, SIL Global et l’éditeur du livre ne cautionnent pas Oomba.",
       "changesBloomSA": "Oomba a redimensionné les images et montre le livre une page à la fois ; ces pages adaptées sont partagées sous la même licence, {license}. Bloom Library, SIL Global et l’éditeur du livre ne cautionnent pas Oomba.",
-      "correctedBloom": "Oomba a corrigé l’orthographe et la ponctuation.",
       "originalBloom": "Voir le livre original sur Bloom Library."
     },
     "readToMe": "Lis-le-moi",

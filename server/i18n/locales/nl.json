@@ -11669,11 +11669,11 @@
       "illustration": "Tekeningen: {names}",
       "translation": "Vertaling: {names}",
       "changes": "Oomba heeft de plaatjes kleiner gemaakt en toont het boek bladzijde voor bladzijde. Pratham Books staat niet achter Oomba.",
+      "corrected": "Oomba heeft de spelling en leestekens verbeterd.",
       "original": "Bekijk het originele boek.",
       "from": "Gebaseerd op een boek van {name}",
       "changesBloom": "Oomba heeft de plaatjes kleiner gemaakt en laat het boek pagina voor pagina zien. Bloom Library, SIL Global en de uitgever van het boek steunen Oomba niet officieel.",
       "changesBloomSA": "Oomba heeft de plaatjes kleiner gemaakt en laat het boek pagina voor pagina zien; deze bewerkte pagina’s worden gedeeld onder dezelfde licentie, {license}. Bloom Library, SIL Global en de uitgever van het boek steunen Oomba niet officieel.",
-      "correctedBloom": "Oomba heeft spelling en interpunctie verbeterd.",
       "originalBloom": "Bekijk het originele boek op Bloom Library."
     },
     "readToMe": "Lees voor",

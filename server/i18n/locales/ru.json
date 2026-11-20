@@ -11668,11 +11668,11 @@
       "illustration": "Иллюстрации: {names}",
       "translation": "Перевод: {names}",
       "changes": "Oomba изменила размер картинок и показывает книгу по одной странице. Pratham Books не одобряет Oomba официально.",
+      "corrected": "Oomba исправила орфографию и пунктуацию.",
       "original": "Оригинальная книга.",
       "from": "По книге: {name}",
       "changesBloom": "Oomba изменила размер картинок и показывает книгу по одной странице. Bloom Library, SIL Global и издатель книги не являются партнёрами Oomba.",
       "changesBloomSA": "Oomba изменила размер картинок и показывает книгу по одной странице; эти изменённые страницы распространяются по той же лицензии, {license}. Bloom Library, SIL Global и издатель книги не являются партнёрами Oomba.",
-      "correctedBloom": "Oomba исправила орфографию и пунктуацию.",
       "originalBloom": "Оригинал книги на Bloom Library."
     },
     "readToMe": "Прочитай мне",

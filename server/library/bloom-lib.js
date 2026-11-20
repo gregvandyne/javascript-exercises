@@ -400,24 +400,3 @@ export const otherLangsOf = book => [...new Set(book.pages.flatMap(p => p.otherL
 export const BLOOM_ID_RE = /^[A-Za-z0-9]{10}$/;
 export const bloomBookUrl = id => `https://bloomlibrary.org/book/${id}`;
 
-/**
- * A person's corrections of real text mistakes in a book (seed-library/bloom.json picks.<id>.fixes: [{ page, from, to }],
- * page = the story page as the reader numbers it, 1 first, or 0 for the title): each `from` must be found exactly once
- * on its page and is replaced by `to`. Only spelling, punctuation, spacing, capitalization and obvious grammar slips are
- * corrected (the owner's rule, docs/decisions.md "Story Library: more Bloom books"); the book's own consistent spelling
- * is kept. -> { title, texts, problems: [] } (any problem keeps the book out, so a fix that no longer matches is noticed)
- */
-export function applyFixes(title, texts, fixes) {
-  const out = [String(title || ''), ...texts], problems = [];
-  for (const [i, f] of (fixes || []).entries()) {
-    const n = f && f.page;
-    if (!f || !Number.isInteger(n) || n < 0 || n >= out.length || typeof f.from !== 'string' || !f.from || typeof f.to !== 'string' || f.from === f.to) { problems.push(`fix ${i + 1} is not { page, from, to }`); continue; }
-    const t = out[n];
-    const at = t.indexOf(f.from);
-    const where = n ? `page ${n}` : 'the title';
-    if (at < 0) { problems.push(`fix ${i + 1}: "${f.from}" is not on ${where}`); continue; }
-    if (t.indexOf(f.from, at + 1) >= 0) { problems.push(`fix ${i + 1}: "${f.from}" is on ${where} more than once`); continue; }
-    out[n] = t.slice(0, at) + f.to + t.slice(at + f.from.length);
-  }
-  return { title: out[0], texts: out.slice(1), problems };
-}

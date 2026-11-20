@@ -11668,11 +11668,11 @@
       "illustration": "絵：{names}",
       "translation": "ほんやく：{names}",
       "changes": "Oombaは絵の大きさを変え、本を1ページずつ見せています。Pratham BooksがOombaを推薦しているわけではありません。",
+      "corrected": "Oombaはつづりと句読点を直しました。",
       "original": "もとの本を見る。",
       "from": "もとの本：{name}",
       "changesBloom": "Oombaは絵の大きさを変え、本を1ページずつ見せています。Bloom Library、SIL Global、本の出版社がOombaを推薦しているわけではありません。",
       "changesBloomSA": "Oombaは絵の大きさを変え、本を1ページずつ見せています。このように変えたページは、同じライセンス（{license}）で公開しています。Bloom Library、SIL Global、本の出版社がOombaを推薦しているわけではありません。",
-      "correctedBloom": "Oombaがつづりと句読点を直しました。",
       "originalBloom": "Bloom Libraryでもとの本を見る。"
     },
     "readToMe": "読んで",

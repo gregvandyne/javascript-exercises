@@ -44,7 +44,7 @@ const ext = (href, text) => html`<a href="${href}" rel="noopener noreferrer" tar
 
 /** The credits under every page: author, illustrator, translator, the publisher and where the book comes from (Pratham
  *  Books, StoryWeaver; or the publisher, Bloom Library), the license (linked to its deed) and what Oomba changed (for a
- *  CC BY-SA book, that the adapted pages are shared under the same license). full: the book page's longer version (with
+ *  CC BY-SA book, that the adapted pages are shared under the same license; for a book with corrected typos, that too). full: the book page's longer version (with
  *  the link to the original book). */
 export function credits(t, bk, { full = false } = {}) {
   const c = bk.credits;
@@ -56,9 +56,9 @@ export function credits(t, bk, { full = false } = {}) {
     c.publisher && c.publisher !== c.platform ? `${c.publisher}, ${c.platform}` : c.platform,
   ].filter(Boolean);
   const lic = c.licenseUrl ? ext(c.licenseUrl, c.licenseName) : c.licenseName;
-  // A Bloom book whose text mistakes Oomba corrected (seed-library/bloom.json picks.<id>.fixes) says so first, so the
-  // share-alike note that follows covers the corrected text too.
-  const note = bk.source === 'bloom' ? `${c.corrected ? `${t('library.credits.correctedBloom')} ` : ''}${c.shareAlike ? t('library.credits.changesBloomSA', { license: c.licenseName }) : t('library.credits.changesBloom')}` : t('library.credits.changes');
+  const changes = bk.source === 'bloom' ? (c.shareAlike ? t('library.credits.changesBloomSA', { license: c.licenseName }) : t('library.credits.changesBloom')) : t('library.credits.changes');
+  // A book whose typos Oomba corrected (credits.corrections, the number of fixes) says so too: the CC BY change notice.
+  const note = c.corrections ? `${t('library.credits.corrected')} ${changes}` : changes;
   return html`<p class="lb-credit small muted" dir="auto"><span>${parts.join(' · ')} · ${lic}</span>
     <span class="lb-credit-note">${note}${full && c.sourceUrl ? html` ${ext(c.sourceUrl, bk.source === 'bloom' ? t('library.credits.originalBloom') : t('library.credits.original'))}` : ''}</span></p>`;
 }
