@@ -16,6 +16,9 @@ export const WORLD = { w: 4000, h: 2400 };
 export const OBJ_MAX = 40, OBJ_MAX_SQUARE = 30;
 /** An object's size limits (its scale), and the height of its handle bar. */
 export const S_MIN = 0.35, S_MAX = 3, OBJ_HEAD = 30;
+/** Smallest scale a board may be shown at when it is fitted into a room area (a clock about 100 px wide); below it the
+ *  layout is reflowed or the area grows instead. S_FLOOR: the smallest scale an object may be stored at (a fitted group). */
+export const KMIN = 0.4, S_FLOOR = 0.1;
 const clamp = (v, lo, hi) => Math.min(Math.max(lo, v), Math.max(lo, hi));
 const num = (v, d = 0) => (Number.isFinite(+v) ? +v : d);
 
@@ -247,26 +250,57 @@ export function placeObject(slug, b, k, region, space) {
   return newObject(slug, k, clamp(at.x, 0, space.w - z.w * s), clamp(at.y, 0, space.h - z.h * s), Math.round(s * 1000) / 1000);
 }
 /**
- * A board made in one space shown in another (a solo board pushed into a room square, or a session started from a
- * saved board): everything moved to the top left of the new space and made smaller, all together, if it would not fit.
- * Notes, texts and marks stay fractions, of the new space. -> a new board
+ * A board made in one space put into another (a session started from a saved board: the teacher's area; a pushed board:
+ * a student's square). Everything is scaled by ONE factor, places and sizes alike (no object keeps a minimum size inside
+ * the group, so nothing overlaps), and moved to the top left. A practice board (it carries its `grid`) is laid out
+ * again in as many columns as fit at a readable size (KMIN at least), keeping its gaps. grow: the space may get taller
+ * (then only the width limits the scale). -> { board, w, h } (h: the height it needs, padding included)
  */
-export function reframe(slug, b, from, to, pad = 12) {
-  const out = JSON.parse(JSON.stringify(b)); const ann = out.__ann || null;
-  const marks = ann ? (ann.strokes || []).flatMap(s => (s.pts || []).map(p => ({ x: num(p.x) * from.w, y: num(p.y) * from.h, w: 1, h: 1 }))) : [];
-  const box = bbox([...boxesOf(slug, out, from), ...marks]);
-  const k = box ? Math.min(1, (to.w - pad * 2) / Math.max(1, box.w), (to.h - pad * 2) / Math.max(1, box.h)) : 1;
-  const mx = x => (box ? (x - box.x) * k + pad : x), my = y => (box ? (y - box.y) * k + pad : y);
-  for (const o of out.objects || []) { o.x = Math.round(mx(num(o.x))); o.y = Math.round(my(num(o.y))); o.s = Math.round(Math.max(S_MIN, num(o.s, 1) * k) * 1000) / 1000; }
-  for (const p of out.pieces || []) { p.x = Math.round(mx(num(p.x))); p.y = Math.round(my(num(p.y))); if (k < 1) { p.w = Math.max(8, Math.round(num(p.w, 40) * k)); p.h = Math.max(8, Math.round(num(p.h, 40) * k)); } }
+export function fitInto(slug, b, from, to, { grow = false, pad = 12 } = {}) {
+  const src = JSON.parse(JSON.stringify(b)), g = src.grid;
+  const W = to.w - pad * 2, H = to.h - pad * 2;
+  let place = null, bw, bh;   // place(x, y, cell) -> the point in the grid's new layout (unscaled), origin at 0, 0
+  if (g && g.n && g.cw && g.ch) {
+    const size = c => { const rows = Math.ceil(g.n / c); return { w: c * g.cw + (c - 1) * g.gx, h: g.title + rows * g.ch + (rows - 1) * g.gy }; };
+    const kOf = c => { const z = size(c); return Math.min(1, W / z.w, grow ? Infinity : H / z.h); };
+    // The most columns that keep a readable size; if none does, the one with the biggest scale.
+    let cols = 0;
+    for (let c = Math.min(g.cols, g.n); c >= 1; c--) if (kOf(c) >= KMIN) { cols = c; break; }
+    if (!cols) { cols = 1; for (let c = 1; c <= Math.min(g.cols, g.n); c++) if (kOf(c) > kOf(cols)) cols = c; }
+    const z = size(cols); bw = z.w; bh = z.h;
+    place = (x, y, cell) => {
+      if (!(cell >= 0)) return { x: x - g.x0, y: y - g.y0 };
+      const oc = cell % g.cols, or = Math.floor(cell / g.cols), nc = cell % cols, nr = Math.floor(cell / cols);
+      return { x: x - g.x0 - oc * (g.cw + g.gx) + nc * (g.cw + g.gx), y: y - g.y0 - or * (g.ch + g.gy) + nr * (g.ch + g.gy) };
+    };
+    src.grid = { ...g, cols, x0: pad, y0: pad, fitted: true };
+  } else {
+    const ann0 = src.__ann || {};
+    const marks = (ann0.strokes || []).flatMap(s => (s.pts || []).map(p => ({ x: num(p.x) * from.w, y: num(p.y) * from.h, w: 1, h: 1 })));
+    const box = bbox([...boxesOf(slug, src, from), ...marks]) || { x: 0, y: 0, w: 1, h: 1 };
+    bw = box.w; bh = box.h; place = (x, y) => ({ x: x - box.x, y: y - box.y });
+  }
+  const k = Math.min(1, W / Math.max(1, bw), grow ? Infinity : H / Math.max(1, bh));
+  const map = (x, y, cell) => { const p = place(x, y, cell); return { x: pad + p.x * k, y: pad + p.y * k }; };
+  const cellOf = st => (st && Number.isInteger(st.cell) ? st.cell : -1);
+  for (const o of src.objects || []) { const p = map(num(o.x), num(o.y), cellOf(o.st)); o.x = Math.round(p.x * 10) / 10; o.y = Math.round(p.y * 10) / 10; o.s = Math.round(Math.max(S_FLOOR, num(o.s, 1) * k) * 1000) / 1000; }
+  for (const p of src.pieces || []) { const q = map(num(p.x), num(p.y), Number.isInteger(p.cell) ? p.cell : -1); p.x = Math.round(q.x * 10) / 10; p.y = Math.round(q.y * 10) / 10; p.w = Math.max(4, Math.round(num(p.w, 40) * k)); p.h = Math.max(4, Math.round(num(p.h, 40) * k)); }
+  const outH = grow ? Math.ceil(pad * 2 + bh * k) : to.h, out = { w: to.w, h: Math.max(outH, 1) };
+  const ann = src.__ann;
   if (ann) {
-    const f = n => ({ ...n, x: clamp(mx(num(n.x) * from.w) / to.w, 0, 1), y: clamp(my(num(n.y) * from.h) / to.h, 0, 1) });
+    const f = n => { const p = map(num(n.x) * from.w, num(n.y) * from.h, Number.isInteger(n.cell) ? n.cell : -1); return { ...n, x: Math.min(1, Math.max(0, p.x / out.w)), y: Math.min(1, Math.max(0, p.y / out.h)) }; };
     ann.notes = (ann.notes || []).map(f); ann.texts = (ann.texts || []).map(f);
     ann.strokes = (ann.strokes || []).map(s => ({ ...s, pts: (s.pts || []).map(f) }));
     delete ann.size;
   }
-  return out;
+  return { board: src, w: out.w, h: out.h, k };
 }
+/**
+ * A board made in one space shown in another (a solo board pushed into a room square, or a session started from a
+ * saved board): everything moved to the top left of the new space and made smaller, all together, if it would not fit.
+ * Notes, texts and marks stay fractions, of the new space. -> a new board
+ */
+export function reframe(slug, b, from, to, pad = 12) { return fitInto(slug, b, from, to, { pad }).board; }
 
 // ---------------------------------------------------------------- magnetic drops (pieces snap together and into slots)
 /** How close (screen pixels) a dropped piece must be to snap. The plane's distance is this over the zoom. */

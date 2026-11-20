@@ -9,8 +9,8 @@
 // falls back to short requests.
 // The tools' own code (boards, palettes, taps) comes from public/js/manip.js through open()'s deps.
 import { t, api, toast, esc, copyText } from '/js/app.js';
-import { toolOf, roomLayout, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H } from '/js/manip-data.js';
-import { WORLD, migrate, reframe, newBoard, objectTool, kindOf, objSize, objRect, boxesOf, bbox, spotIn, slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, OBJ_MAX, OBJ_MAX_SQUARE, S_MIN, S_MAX } from '/js/manip-board.js';
+import { toolOf, roomLayout, layoutOf, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H } from '/js/manip-data.js';
+import { WORLD, migrate, fitInto, newBoard, objectTool, kindOf, objSize, objRect, boxesOf, bbox, spotIn, slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, OBJ_MAX, OBJ_MAX_SQUARE, S_MIN, S_MAX } from '/js/manip-board.js';
 
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
 const NOTE_MAX = 12, Z_MIN = 0.12, Z_MAX = 2.5;
@@ -70,6 +70,9 @@ function stateOf(text, space) {
 function syncAreas(room) {
   const keys = new Set(['t', ...room.areas.map(a => a.key)]);
   let changed = false;
+  // The room's sizes: grown when a board placed in it needed more room (the teacher's area's `layout`).
+  const lay = JSON.stringify(layoutOf(parse(room.teacher && room.teacher.state, {}) || {}));
+  if (lay !== R.layKey) { R.layKey = lay; R.L = roomLayout(room.tool, JSON.parse(lay)); changed = true; }
   for (const k of [...R.areas.keys()]) if (!keys.has(k)) { R.areas.delete(k); changed = true; }
   const put = (key, src, meta) => {
     const A = R.areas.get(key);
@@ -781,7 +784,8 @@ async function toolButton(k) {
     if (k === 'loadpush' && A && p) {
       // The teacher's board was made on the big solo board: it comes into the square, made smaller if it must be.
       R.hist.push([A.key, JSON.stringify({ st: A.st, ann: A.ann })]);
-      const ws = workSize(A), o = stateOf(JSON.stringify(reframe(R.room.tool, migrate(R.room.tool, parse(p.state, {}) || {}), WORLD, ws)), ws);
+      // One scale for everything (the server made every square tall enough to read it: layout.sh).
+      const ws = workSize(A), o = stateOf(JSON.stringify(fitInto(R.room.tool, migrate(R.room.tool, parse(p.state, {}) || {}), WORLD, ws).board), ws);
       A.st = o.st; A.ann = o.ann; R.osel = null; renderArea(A.key); renderPal(); queueSave(A.key); goMine(); toast(t('js.manip-room.loadedPush'));
     }
     renderBar();

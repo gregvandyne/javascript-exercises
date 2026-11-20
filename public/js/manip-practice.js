@@ -344,19 +344,21 @@ function layout(slug, T, list, title) {
     if (box === 'answer') for (const o of c.objects) o.st = { ...o.st, q: true };
     return { c, ans, az, label, w: Math.max(c.w, az ? az.w : 0), h: c.h + (az ? az.h + 12 : 0) };
   });
-  const cols = cells.length <= 4 ? cells.length : cells.length <= 6 ? 3 : 4, LABEL = cells.some(c => c.label) ? 30 : 0, GX = 40, GY = 48, TITLE = 56;
+  const cols = cells.length <= 4 ? cells.length : cells.length <= 6 ? 3 : 4, LABEL = cells.some(c => c.label) ? 34 : 0, GX = 40, GY = 48, TITLE = 72;
   const cw = Math.max(0, ...cells.map(c => c.w)), ch = Math.max(0, ...cells.map(c => c.h)) + LABEL, rows = Math.ceil(cells.length / Math.max(1, cols));
   const W = cols * cw + (cols - 1) * GX, H = TITLE + rows * ch + (rows - 1) * GY;
   const x0 = Math.round((WORLD.w - W) / 2), y0 = Math.round(Math.max(16, (WORLD.h - H) / 2));
   const defs = allPieceDefs(slug);
-  const board = { v: 2, objects: [], pieces: [], __ann: { notes: [], strokes: [], texts: [{ id: id('t'), text: title, x: x0 / WORLD.w, y: y0 / WORLD.h, by: 't' }] } };
+  // The grid travels with the board (and each thing its cell), so a smaller space can lay it out again in fewer
+  // columns instead of shrinking it past reading (manip-board.js fitInto).
+  const board = { v: 2, grid: { n: cells.length, cols, cw, ch, gx: GX, gy: GY, title: TITLE, x0, y0 }, objects: [], pieces: [], __ann: { notes: [], strokes: [], texts: [{ id: id('t'), text: title, x: x0 / WORLD.w, y: y0 / WORLD.h, by: 't', cell: -1 }] } };
   cells.forEach((cell, i) => {
     const cx = x0 + (i % cols) * (cw + GX), cy = y0 + TITLE + Math.floor(i / cols) * (ch + GY);
-    if (cell.label) board.__ann.texts.push({ id: id('t'), text: cell.label, x: cx / WORLD.w, y: cy / WORLD.h, by: 't' });
+    if (cell.label) board.__ann.texts.push({ id: id('t'), text: cell.label, x: cx / WORLD.w, y: cy / WORLD.h, by: 't', cell: i });
     const ox = cx + Math.round((cw - cell.c.w) / 2), oy = cy + LABEL;
-    for (const o of cell.c.objects) board.objects.push({ id: id('o'), k: o.k, x: ox + o.x, y: oy + o.y, s: 1, st: o.st });
-    for (const p of cell.c.pieces) { const d = defs.find(x => x.kind === p.kind); if (d) board.pieces.push({ id: id('p'), kind: d.kind, x: Math.round(ox + p.x), y: Math.round(oy + p.y), rot: 0, flipped: false, filled: true, locked: false, color: d.color, label: d.label, value: d.value, w: d.w, h: d.h, ...(p.g ? { g: p.g } : {}) }); }
-    if (cell.ans) board.objects.push({ id: id('o'), k: 'answer', x: cx + Math.round((cw - cell.az.w) / 2), y: oy + cell.c.h + 12, s: 1, st: cell.ans.st });
+    for (const o of cell.c.objects) board.objects.push({ id: id('o'), k: o.k, x: ox + o.x, y: oy + o.y, s: 1, st: { ...o.st, cell: i } });
+    for (const p of cell.c.pieces) { const d = defs.find(x => x.kind === p.kind); if (d) board.pieces.push({ id: id('p'), kind: d.kind, x: Math.round(ox + p.x), y: Math.round(oy + p.y), rot: 0, flipped: false, filled: true, locked: false, color: d.color, label: d.label, value: d.value, w: d.w, h: d.h, cell: i, ...(p.g ? { g: p.g } : {}) }); }
+    if (cell.ans) board.objects.push({ id: id('o'), k: 'answer', x: cx + Math.round((cw - cell.az.w) / 2), y: oy + cell.c.h + 12, s: 1, st: { ...cell.ans.st, cell: i } });
   });
   if (!defs.length) delete board.pieces;
   return board;

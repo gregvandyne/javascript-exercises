@@ -24,9 +24,9 @@ import * as S from './schools.js';
 import { anthropic } from '../builder/anthropic.js';
 import * as aiBudget from './ai-budget.js';
 import { hasProfanity, personalInfo } from './textfilter.js';
-import { TOOLS, toolOf, pieceDefs, roomLayout, ROOM_COLORS, instructionNotes, stripHeight, stepsOf, stepStripTexts, TEACHER_STEP_H } from '../../public/js/manip-data.js';
+import { STRIP, layoutOf, TOOLS, toolOf, pieceDefs, roomLayout, ROOM_COLORS, instructionNotes, stripHeight, stepsOf, stepStripTexts, TEACHER_STEP_H } from '../../public/js/manip-data.js';
 import * as LIVE from './manip-live.js';
-import { WORLD, OBJECTS, OBJ_MAX, OBJ_MAX_SQUARE, S_MIN, S_MAX, kindOf, objSize, migrate, reframe, newBoard } from '../../public/js/manip-board.js';
+import { WORLD, OBJECTS, OBJ_MAX, OBJ_MAX_SQUARE, S_FLOOR, S_MAX, kindOf, objSize, migrate, fitInto, newBoard } from '../../public/js/manip-board.js';
 import { buildPractice, PRACTICE_TABLE, PRACTICE_HELP, PRACTICE_MAX, STEPS_MAX } from '../../public/js/manip-practice.js';
 import { allow } from './ratelimit.js';
 import { TASKS } from '../../public/js/manip-tasks.js';
@@ -119,7 +119,7 @@ function cleanObjects(list, tool, space, max) {
   return (Array.isArray(list) ? list : []).filter(o => o && typeof o === 'object' && ok1(o.k) && o.st && typeof o.st === 'object' && !Array.isArray(o.st) && JSON.stringify(o.st).length <= OBJ_STATE_MAX)
     .slice(0, max).map((o, i) => {
       const z = tool ? objSize(tool, o) : { w: 100, h: 100 };
-      const s = Math.round(num(o.s, S_MIN, Math.max(S_MIN, Math.min(S_MAX, space.w / z.w, space.h / z.h)), 1) * 1000) / 1000;
+      const s = Math.round(num(o.s, S_FLOOR, Math.max(S_FLOOR, Math.min(S_MAX, space.w / z.w, space.h / z.h)), 1) * 1000) / 1000;
       return { id: clipStr(o.id || `o${i}`, 40), k: String(o.k), x: Math.round(num(o.x, 0, Math.max(0, space.w - z.w * s))), y: Math.round(num(o.y, 0, Math.max(0, space.h - z.h * s))), s, st: o.st };
     });
 }
@@ -151,7 +151,7 @@ export function cleanState(raw, bounds = null, tool = null) {
     st.__ann = {
       // Text typed straight on the board (the T tool): plain words at a place, no card.
       texts: (Array.isArray(ann.texts) ? ann.texts : []).filter(n => n && typeof n === 'object' && String(n.text || '').trim()).slice(0, LIMITS.texts)
-        .map((n, i) => ({ id: clipStr(n.id || `t${i}`, 40), text: clipStr(n.text, LIMITS.textChars), x: num(n.x, 0, 1), y: num(n.y, 0, 1), ...(n.by === 't' ? { by: 't' } : {}) })),
+        .map((n, i) => ({ id: clipStr(n.id || `t${i}`, 40), text: clipStr(n.text, LIMITS.textChars), x: num(n.x, 0, 1), y: num(n.y, 0, 1), ...(n.by === 't' ? { by: 't' } : {}), ...(Number.isInteger(n.cell) && n.cell >= -1 && n.cell < 100 ? { cell: n.cell } : {}) })),
       notes: (Array.isArray(ann.notes) ? ann.notes : []).filter(n => n && typeof n === 'object').slice(0, LIMITS.notes)
         .map((n, i) => ({ id: clipStr(n.id || `n${i}`, 40), text: clipStr(n.text, LIMITS.noteChars), x: num(n.x, 0, 1), y: num(n.y, 0, 1), ...(n.by === 't' ? { by: 't' } : {}) })),
       strokes: (Array.isArray(ann.strokes) ? ann.strokes : []).filter(s => s && Array.isArray(s.pts)).slice(0, LIMITS.strokes)
@@ -232,9 +232,9 @@ export function createSession(u, { classId, tool, title, boardId = null } = {}) 
   q.run("UPDATE manip_sessions SET status='ended', ended_at=? WHERE class_id=? AND status='active'", now(), c.id);
   const id = uid(12), code = newCode();
   // A saved board was made on the big solo board: it goes into the teacher's area, made smaller if it must be.
-  const L = roomLayout(tl.slug), area = { w: L.teacher.w, h: L.teacher.h - TEACHER_STEP_H };
-  // A practice board (it has answers): students don't see totals on objects until the teacher turns them on.
-  const fromBoard = b ? reframe(tl.slug, migrate(tl.slug, json(b.state, {}) || {}), WORLD, area) : null;
+  // The board is fitted into the teacher's area at one scale; if that would be too small to read, the area grows
+  // taller (the session's `layout.th`) and the board is laid out again in fewer columns where it is a practice set.
+  const fromBoard = b ? fitTeacherArea(tl.slug, migrate(tl.slug, json(b.state, {}) || {})) : null;
   if (fromBoard && (fromBoard.objects || []).some(o => o && o.st && o.st.key)) fromBoard.totals = false;
   const room = fromBoard ? JSON.stringify(fromBoard) : '{}';
   q.run('INSERT INTO manip_sessions(id, code, host_id, class_id, tool, title, created_at, room, room_at) VALUES (?,?,?,?,?,?,?,?,?)', id, code, u.id, c.id, tl.slug,
@@ -297,6 +297,20 @@ export function teacherView(u, id) {
     classId: fresh.class_id, pushed: !!fresh.pushed_state, pushedAt: fresh.pushed_at || 0, students: work };
 }
 /** Push one of the host's own saved boards to every student in the session. */
+/** A board fitted into a session's teacher's area (growing the area when it must). -> the board, with its `layout`. */
+function fitTeacherArea(tool, board, lay = {}) {
+  const L = roomLayout(tool, lay), steps = (board.__steps || []).length ? TEACHER_STEP_H : 0;
+  const first = fitInto(tool, board, WORLD, { w: L.teacher.w, h: L.teacher.h - steps }, { grow: true });
+  const th = Math.max(L.teacher.h, first.h + steps), out = fitInto(tool, board, WORLD, { w: L.teacher.w, h: th - steps }).board;
+  out.layout = { ...lay, th };
+  return out;
+}
+/** How tall every square must be for a pushed board to be readable (its strip on top). */
+export const STRIP_RESERVE = STRIP.head + STRIP.pad + 3 * STRIP.line;
+function squareHeightFor(tool, board, lay = {}) {
+  const L = roomLayout(tool, lay), f = fitInto(tool, board, WORLD, { w: L.sq.w, h: L.sq.h }, { grow: true });
+  return Math.max(L.sq.h, f.h + STRIP_RESERVE);
+}
 export function push(u, id, boardId) {
   const s = getSession(id);
   if (!isSessionHost(u, s)) return fail('notFound');
@@ -307,7 +321,12 @@ export function push(u, id, boardId) {
   // The board's steps become the session's deck (the teacher's area), from the first step; students get the board
   // without its steps (the deck reaches them one step at a time).
   const o = JSON.parse(c.state), steps = o.__steps; delete o.__steps;
-  if (steps && steps.length) { const room = json(s.room || '{}', {}) || {}; q.run('UPDATE manip_sessions SET room=?, room_at=? WHERE id=?', JSON.stringify({ ...room, __steps: steps }), now(), s.id); LIVE.setStep(s.id, 0); }
+  // Every square grows as tall as the board needs to stay readable (the session's `layout.sh`); students then fit it
+  // into their square at one scale (public/js/manip-room.js).
+  const room = json(s.room || '{}', {}) || {}, lay = layoutOf(room), sh = squareHeightFor(s.tool, migrate(s.tool, o), lay);
+  const next = { ...room, layout: { ...lay, sh: Math.max(lay.sh || 0, sh) }, ...(steps && steps.length ? { __steps: steps } : {}) };
+  q.run('UPDATE manip_sessions SET room=?, room_at=? WHERE id=?', JSON.stringify(next), now(), s.id);
+  if (steps && steps.length) LIVE.setStep(s.id, 0);
   // Students get it without the teacher's answers (never sent to a student).
   q.run('UPDATE manip_sessions SET pushed_state=?, pushed_at=? WHERE id=?', JSON.stringify({ tool: b.tool, code: b.code, state: withoutKeys(JSON.stringify(o)) }), now(), s.id);
   LIVE.publish(s.id, { t: 'dirty' });
@@ -431,7 +450,7 @@ export function saveArea(u, id, key, state) {
   if (!who || (who.role === 'student' && key !== who.key)) return fail('notFound');
   if (s.status !== 'active') return fail('ended');
   // A student's square: its work space starts under the teacher's "Instructions" strip (the teacher's area's notes).
-  const L = roomLayout(s.tool), tState = json(s.room || '{}', {}) || {};
+  const L = roomLayout(s.tool, layoutOf(json(s.room || '{}', {}) || {})), tState = json(s.room || '{}', {}) || {};
   const nextSteps = key === 't' ? stepsOf(typeof state === 'string' ? json(state, {}) : state) : [];
   const bounds = key === 't' ? { w: L.teacher.w, h: L.teacher.h - (nextSteps.length ? TEACHER_STEP_H : 0) } : squareBounds(s, L, key, tState);
   const row = key === 't' ? { state: s.room || '{}' } : q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, String(key));
@@ -441,6 +460,8 @@ export function saveArea(u, id, key, state) {
   const next = JSON.parse(key === 't' ? c.state : withoutKeys(c.state)), prev = json(row.state, {}) || {};
   // Notes and board text alike: who wrote each is kept here (see authored).
   next.__ann = { ...(next.__ann || { strokes: [] }), notes: authored(prev, next, 'notes', key, who, LIMITS.notes), texts: authored(prev, next, 'texts', key, who, LIMITS.texts) };
+  // The room's grown sizes are the server's to set (a session from a board, a push): never from a page.
+  if (key === 't') { if (prev.layout) next.layout = prev.layout; else delete next.layout; } else delete next.layout;
   const text = JSON.stringify(next);
   if (key === 't') q.run('UPDATE manip_sessions SET room=?, room_at=? WHERE id=?', text, now(), s.id);
   else q.run('UPDATE manip_work SET state=?, updated_at=? WHERE session_id=? AND user_id=?', text, now(), s.id, String(key));

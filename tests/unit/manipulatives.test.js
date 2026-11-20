@@ -326,6 +326,47 @@ test('objects in the room: a student adds them only inside their own square (kep
   assert.ok(old.ok); assert.match(M.ownBoard(boss, old.board.id).state, /"c1"/);
   assert.match(M.summarize(JSON.stringify({ v: 2, objects: [{ k: 'clock', st: { h: 7, m: 45, start: { h: 7, m: 0 } } }] })).join(' '), /Clock: 7:45 \(tracking from 7:00\)/);
 });
+test('a practice set placed in the room: one scale for places and sizes, nothing overlapping, everything inside its area, readable (8 clocks, 12 fraction equations, 6 number lines)', async () => {
+  const { buildPractice } = await import('../../public/js/manip-practice.js');
+  const B = await import('../../public/js/manip-board.js');
+  const D = await import('../../public/js/manip-data.js');
+  const sets = {
+    clock: { items: ['3:00', '7:30', '9:15', '11:45', '12:10', '6:05', '1:55', '4:40'].map(time => ({ time, box: 'answer' })) },
+    'fraction-tiles': { items: [['1/2', '1/3'], ['1/4', '1/3'], ['2/3', '1/4'], ['1/2', '1/5'], ['3/8', '1/4'], ['1/6', '1/2'], ['1/2', '1/4'], ['3/4', '1/8'], ['2/5', '1/2'], ['1/3', '1/6'], ['5/6', '1/12'], ['1/10', '1/2']].map(([a, b]) => ({ op: '+', a, b, box: 'answer' })) },
+    'number-lines': { items: [[0, 10, 1, 7], [0, 20, 2, 14], [0, 1, 0.1, 0.3], [-5, 5, 1, -2], [0, 100, 10, 60], [0, 2, 0.25, 1.75]].map(([min, max, step, value]) => ({ min, max, step, value, box: 'answer' })) },
+  };
+  const check = (tool, board, space, where) => {
+    const rects = (board.objects || []).map(o => ({ ...B.objRect(tool, o), k: o.k, s: o.s }));
+    const texts = ((board.__ann || {}).texts || []).map(n => ({ x: n.x * space.w, y: n.y * space.h, w: 12, h: 18, k: 'text' }));
+    for (const r of rects) assert.ok(r.x >= -0.5 && r.y >= -0.5 && r.x + r.w <= space.w + 0.5 && r.y + r.h <= space.h + 0.5, `${tool} ${where}: ${r.k} inside (${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.w)}x${Math.round(r.h)} in ${space.w}x${space.h})`);
+    const all = [...rects, ...texts];
+    for (let i = 0; i < all.length; i++) for (let j = i + 1; j < all.length; j++) {
+      const a = all[i], b = all[j];
+      assert.ok(!(a.x < b.x + b.w - 0.5 && b.x < a.x + a.w - 0.5 && a.y < b.y + b.h - 0.5 && b.y < a.y + a.h - 0.5), `${tool} ${where}: ${a.k} and ${b.k} overlap`);
+    }
+    const scales = new Set(rects.map(r => r.s)); assert.equal(scales.size, 1, `${tool} ${where}: one scale for everything`);
+    assert.ok([...scales][0] >= B.KMIN - 1e-6, `${tool} ${where}: readable (scale ${[...scales][0]})`);
+  };
+  for (const [tool, reply] of Object.entries(sets)) {
+    const w = world(), r = buildPractice(tool, reply);
+    const saved = M.saveBoard(boss, { tool, title: 'Set', state: { ...r.board, __steps: [{ id: 's0', text: 'Solve each one.' }] } });
+    const s = M.createSession(boss, { classId: w.A.id, tool, boardId: saved.board.id }).session;
+    // The teacher's area: the board fitted (the area grows taller when it must).
+    const room = JSON.parse(q.get('SELECT room FROM manip_sessions WHERE id=?', s.id).room), L = D.roomLayout(tool, D.layoutOf(room));
+    check(tool, room, { w: L.teacher.w, h: L.teacher.h - D.TEACHER_STEP_H }, 'teacher area');
+    // A push: every square grows tall enough; the student's page fits it into their square; the server keeps it as is.
+    M.join(w.a1, { id: s.id }); assert.ok(M.push(boss, s.id, saved.board.id).ok);
+    const room2 = JSON.parse(q.get('SELECT room FROM manip_sessions WHERE id=?', s.id).room), L2 = D.roomLayout(tool, D.layoutOf(room2));
+    const pushed = JSON.parse(JSON.parse(q.get('SELECT pushed_state FROM manip_sessions WHERE id=?', s.id).pushed_state).state);
+    const ws = { w: L2.sq.w, h: L2.sq.h - M.STRIP_RESERVE };
+    const fitted = B.fitInto(tool, B.migrate(tool, pushed), B.WORLD, ws).board;
+    assert.ok(M.saveArea(w.a1, s.id, w.a1.id, fitted).ok);
+    const stored = JSON.parse(q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, w.a1.id).state);
+    check(tool, stored, ws, 'student square');
+    // Laid out for the room as the room is (a narrower square: fewer columns).
+    assert.ok(L2.sq.h >= D.areaSize(tool).h);
+  }
+});
 test('practice answers are the teacher\'s alone: never in a share code a student opens, a push, the teacher\'s area for students, or a classmate\'s square', async () => {
   const w = world();
   M.hooks.create = async params => ({ model: params.model, usage: {}, content: [{ type: 'text', text: JSON.stringify({ title: 'Fractions', steps: ['Solve each one.'],

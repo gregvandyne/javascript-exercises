@@ -13,7 +13,7 @@ import { TASKS } from '/js/manip-tasks.js';
 import * as ROOM from '/js/manip-room.js';
 import { stepsOf } from '/js/manip-data.js';
 import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSector, addMinutes, migrate, newBoard, boxesOf, bbox, spotIn, placeObject,
-  slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, S_MIN, S_MAX, OBJ_MAX, OBJ_HEAD, UNDER, parseFrac, EQ_BAR } from '/js/manip-board.js';
+  slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, S_MIN, S_FLOOR, S_MAX, OBJ_MAX, OBJ_HEAD, UNDER, parseFrac, EQ_BAR } from '/js/manip-board.js';
 
 const ROOT = document.getElementById('manip');
 const ROLE = pageData().role === 'host' ? 'host' : 'student';
@@ -394,7 +394,7 @@ function normalize(slug, impl, st) {
     const K = kindOf(slug, o.k), base = K.init(), raw = o.st && typeof o.st === 'object' ? o.st : {};
     const s2 = o.k === slug && impl.load ? impl.load(raw) : { ...base, ...raw };
     for (const k of Object.keys(base)) if (Array.isArray(base[k]) && !Array.isArray(s2[k])) s2[k] = base[k];
-    return { id: String(o.id || newId()), k: o.k, x: +o.x || 0, y: +o.y || 0, s: clamp(+o.s || 1, S_MIN, S_MAX), st: s2 };
+    return { id: String(o.id || newId()), k: o.k, x: +o.x || 0, y: +o.y || 0, s: clamp(+o.s || 1, S_FLOOR, S_MAX), st: s2 };
   });
   if (objectTool(slug)) delete out.pieces;
   else {
