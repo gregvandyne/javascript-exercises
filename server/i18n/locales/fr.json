@@ -11724,6 +11724,20 @@
       "missed": "{count} se sont trompés la première fois"
     },
     "footSources": "Histoires et illustrations : Pratham Books (StoryWeaver) et les auteurs et éditeurs de Bloom Library, chaque livre sous sa propre licence libre, indiquée avec le livre.",
-    "glossaryNoteAll": "Notes d’Oomba pour comprendre des mots que les enfants ne connaissent peut-être pas."
+    "glossaryNoteAll": "Notes d’Oomba pour comprendre des mots que les enfants ne connaissent peut-être pas.",
+    "footCredit": "Histoires et illustrations : Pratham Books, StoryWeaver. Licence :",
+    "wish": {
+      "label": "Qu’as-tu envie de lire aujourd’hui ?",
+      "placeholder": "des dinosaures, une histoire drôle, l’espace...",
+      "go": "Trouver des livres",
+      "busy": "Je cherche...",
+      "heading": "Des livres pour toi",
+      "back": "Tous les livres",
+      "tryOther": "Essayons d’autres mots. De quoi aimerais-tu que l’histoire parle ?",
+      "none": "Nous n’avons pas encore de livre sur ce sujet. Voici des livres que beaucoup de lecteurs aiment.",
+      "found": "Nous avons trouvé {count, plural, one {# livre} other {# livres}} pour toi.",
+      "empty": "Écris ce que tu as envie de lire.",
+      "error": "Un problème est survenu. Réessaie."
+    }
   }
 }

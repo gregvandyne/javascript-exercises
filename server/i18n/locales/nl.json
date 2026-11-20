@@ -11725,6 +11725,20 @@
       "missed": "{count} hadden het de eerste keer fout"
     },
     "footSources": "Verhalen en plaatjes: Pratham Books (StoryWeaver) en de schrijvers en uitgevers op Bloom Library, elk boek onder een eigen open licentie, die bij het boek staat.",
-    "glossaryNoteAll": "Uitleg van Oomba bij woorden die kinderen misschien niet kennen."
+    "glossaryNoteAll": "Uitleg van Oomba bij woorden die kinderen misschien niet kennen.",
+    "footCredit": "Verhalen en tekeningen: Pratham Books, StoryWeaver. Licentie:",
+    "wish": {
+      "label": "Wat wil je vandaag lezen?",
+      "placeholder": "dinosaurussen, een grappig verhaal, iets over de ruimte...",
+      "go": "Boeken zoeken",
+      "busy": "Even zoeken...",
+      "heading": "Boeken voor jou",
+      "back": "Alle boeken",
+      "tryOther": "Laten we andere woorden proberen. Waar wil je dat het verhaal over gaat?",
+      "none": "We hebben daar nog geen boek over gevonden. Hier zijn boeken die veel lezers leuk vinden.",
+      "found": "We hebben {count, plural, one {# boek} other {# boeken}} voor je gevonden.",
+      "empty": "Schrijf waarover je wilt lezen.",
+      "error": "Er ging iets mis. Probeer het nog eens."
+    }
   }
 }

@@ -12151,6 +12151,20 @@
       "missed": "{count} missed it the first time"
     },
     "footSources": "Stories and pictures: Pratham Books (StoryWeaver) and the authors and publishers on Bloom Library, each book under its own open license, shown with the book.",
-    "glossaryNoteAll": "Notes by Oomba to help with words children may not know."
+    "glossaryNoteAll": "Notes by Oomba to help with words children may not know.",
+    "footCredit": "Stories and pictures: Pratham Books, StoryWeaver. License:",
+    "wish": {
+      "label": "What would you like to read today?",
+      "placeholder": "dinosaurs, a funny story, something about space...",
+      "go": "Find books",
+      "busy": "Looking...",
+      "heading": "Books for you",
+      "back": "All books",
+      "tryOther": "Let's try different words. What would you like a story to be about?",
+      "none": "We could not find a book about that yet. Here are some books lots of readers enjoy.",
+      "found": "We found {count, plural, one {# book} other {# books}} for you.",
+      "empty": "Type what you would like to read about.",
+      "error": "Something went wrong. Please try again."
+    }
   }
 }
