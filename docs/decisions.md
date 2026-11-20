@@ -9369,3 +9369,12 @@ left out only for text mistakes, "just fix the typos".
     bar while the words scroll beneath it; Back / Next stay pinned above the tab bar as before.
 - Test: `library-browser.test.js` checks the library's longest page at 1280x720 (side by side, both on screen) and on an
   iPhone 13 (the picture stays on screen after scrolling).
+
+## Story Library: credits folded under "Author & publisher notes" (20 Nov 2026)
+
+- The owner found the credits block under every page too heavy. Now the creators stay in view on one short line
+  ("Story: … · Pictures: …", plus translator and "Based on a book by" when present), and the publisher, the license with
+  its deed link, Oomba's change notes (resized pictures, corrected spelling or a history fact, the CC BY-SA same-license
+  note), the not-endorsed line and the link to the original fold under "Author & publisher notes"
+  (`library.credits.notes`, 13 languages). It is all still in the page, one tap away, so CC BY / BY-SA attribution
+  ("reasonable to the medium") is kept: the creators are named on every page and the license is linked beside them.

@@ -11669,6 +11669,7 @@
       "translation": "翻譯：{names}",
       "changes": "Oomba調整了圖片大小，並一次顯示一頁。Pratham Books並未為Oomba背書。",
       "corrected": "Oomba修正了拼字和標點符號。",
+      "notes": "作者與出版者說明",
       "factCorrected": "Oomba修正了一項歷史事實。",
       "original": "查看原書。",
       "from": "改編自 {name} 的書",

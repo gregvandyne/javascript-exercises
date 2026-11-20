@@ -12280,6 +12280,7 @@
       "translation": "Translation: {names}",
       "changes": "Oomba resized the pictures and shows the book one page at a time. Pratham Books does not endorse Oomba.",
       "corrected": "Oomba corrected spelling and punctuation.",
+      "notes": "Author & publisher notes",
       "factCorrected": "Oomba corrected a history fact.",
       "original": "See the original book.",
       "from": "Based on a book by {name}",

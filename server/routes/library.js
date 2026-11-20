@@ -60,8 +60,14 @@ export function credits(t, bk, { full = false } = {}) {
   // A book whose typos Oomba corrected (credits.corrections, the number of fixes) says so too: the CC BY change notice.
   // A history fact Oomba corrected (credits.factCorrections, owner's decision 20 Nov 2026) says so as well.
   const note = [c.corrections ? t('library.credits.corrected') : '', c.factCorrections ? t('library.credits.factCorrected') : '', changes].filter(Boolean).join(' ');
-  return html`<p class="lb-credit small muted" dir="auto"><span>${parts.join(' · ')} · ${lic}</span>
-    <span class="lb-credit-note">${note}${full && c.sourceUrl ? html` ${ext(c.sourceUrl, bk.source === 'bloom' ? t('library.credits.originalBloom') : t('library.credits.original'))}` : ''}</span></p>`;
+  // Who made the book stays in view; the rest (publisher, license, what Oomba changed, the original) folds away under
+  // "Author & publisher notes" (owner, 20 Nov 2026). The visible line credits the creators, as CC BY asks.
+  const makers = parts.slice(0, parts.length - 1).filter(Boolean);
+  return html`<div class="lb-credit small muted" dir="auto">
+    <p class="lb-credit-by">${makers.length ? makers.join(' · ') : parts[parts.length - 1]}</p>
+    <details class="lb-credit-more"><summary>${t('library.credits.notes')}</summary>
+      <p><span>${(makers.length ? parts.slice(makers.length) : parts).join(' · ')} · ${lic}</span></p>
+      <p class="lb-credit-note">${note}${full && c.sourceUrl ? html` ${ext(c.sourceUrl, bk.source === 'bloom' ? t('library.credits.originalBloom') : t('library.credits.original'))}` : ''}</p></details></div>`;
 }
 const meta = (t, bk) => t('library.meta', { pages: bk.pages.length, questions: bk.questions.length });
 /** Where a book comes from, on its card and its page: "StoryWeaver" or "Bloom Library". */
