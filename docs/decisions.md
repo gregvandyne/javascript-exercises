@@ -8986,8 +8986,10 @@ to only select the right ones". Built to the approved mockups (library grid, rea
 - **Read to me** uses the site's voice stack: the device voice per sentence with `speechSynthesis` word boundaries
   lighting each word (sentence highlight where boundaries never fire), or, when AI voices are on for English, the AI
   voice by sentence (`/api/tts` ctx `story`: book, page and sentence by number only; the server reads the manifest; the
-  sentence cut is `public/js/library-text.js`, shared by both), falling back to the device voice on any failure. Stories
-  are English only for now (no language picker in the reader, unlike the mockup).
+  sentence cut is `public/js/library-text.js`, shared by both), falling back to the device voice on any failure. The
+  questions' "Read it to me" uses the AI voice the same way when it is on (ctx `story` with `q`, the question number:
+  the question and its choices as shown, no letters), else the device voice (fixed 20 Nov 2026: it was always the
+  device voice). Stories are English only for now (no language picker in the reader, unlike the mockup).
 - **Where it lives.** `/library` (Learn: a "Story Library" door at the top of the Learn tab; the tab stays highlighted),
   `/library/:id`, `/library/:id/read`, `/library/:id/assign`. Teachers: Assign on every card and book page, "Story
   Library" in the class page's sidebar (`/library?class=` keeps the class), "Assign another story" and "Read it
