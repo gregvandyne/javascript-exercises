@@ -506,7 +506,7 @@ test('the Instructions strip: the teacher\'s area notes reach every square for e
   assert.doesNotMatch(M.roomFor(w.a2, s.id).teacher.state, /Just for Ada/);
 });
 
-test('raised hands: a student raises only their own; the teacher lowers any or all; classmates can\'t; rate limited; memory only', async () => {
+test('raised hands: the teacher\'s to see; a student raises only their own; the teacher lowers any or all; classmates can\'t; rate limited; memory only', async () => {
   const LIVE = await import('../../server/services/manip-live.js');
   const w = world();
   const s = M.createSession(boss, { classId: w.A.id, tool: 'money' }).session;
@@ -516,7 +516,8 @@ test('raised hands: a student raises only their own; the teacher lowers any or a
   assert.equal((await hand(w.a1, { up: true })).status, 200);
   assert.equal((await hand(w.a2, { up: true })).status, 200);
   assert.deepEqual(LIVE.handsOf(s.id).map(h => h.k), [w.a1.id, w.a2.id], 'in the order raised');
-  assert.deepEqual(M.roomFor(w.a2, s.id).hands.map(h => h.k), [w.a1.id, w.a2.id], 'classmates see who is waiting (squares show display names)');
+  assert.deepEqual(M.roomFor(w.a2, s.id).hands.map(h => h.k), [w.a2.id], 'a student knows only their own hand');
+  assert.deepEqual(M.roomFor(boss, s.id).hands.map(h => h.k), [w.a1.id, w.a2.id], 'the teacher sees every hand');
   assert.equal((await hand(w.a2, { up: false, key: w.a1.id })).status, 404, 'a classmate can\'t lower another\'s hand');
   assert.equal((await hand(w.b1, { up: true })).status, 404, 'outside the class');
   assert.equal((await hand(boss, { up: true })).status, 404, 'the teacher has no hand to raise');
@@ -638,4 +639,27 @@ test('the deck of steps: saved with the board, through share codes, push and ses
     assert.deepEqual([sr.deck.total, sr.deck.cur, sr.deck.list.map(x => x.text)], [2, 0, ['Pushed one']]);
     assert.doesNotMatch(sr.pushed, /Pushed two|__steps/);
   } finally { ws.terminate(); server.off('upgrade', listener); }
+});
+
+test('raised hands never reach classmates\' sockets: a student\'s socket carries their own hand only', async () => {
+  const { WebSocket } = await import('ws');
+  const { attachUpgrades } = await import('../../server/services/upgrade.js');
+  const SOCK = await import('../../server/services/manip-socket.js');
+  const listener = attachUpgrades(server, [SOCK.route]);
+  const w = world();
+  const s = M.createSession(boss, { classId: w.A.id, tool: 'money' }).session;
+  M.join(w.a1, { code: s.code }); M.join(w.a2, { code: s.code });
+  const open = who => new Promise(r => { const ws = new WebSocket(`${base.replace('http', 'ws')}/api/manipulatives/ws?s=${s.id}`, { headers: { cookie: cookieFor(who.id), origin: base } }); const got = []; ws.on('message', d => got.push(String(d))); ws.on('open', () => r({ ws, got })); });
+  const T = await open(boss), B = await open(w.a2);
+  try {
+    assert.equal((await as(w.a1)(`/api/manipulatives/live/${s.id}/hand`, { method: 'POST', body: { up: true } })).status, 200);
+    B.ws.send(JSON.stringify({ t: 'h', up: true }));
+    await new Promise(r => setTimeout(r, 200));
+    const hb = B.got.map(m => JSON.parse(m)).filter(m => m.t === 'hands' || m.t === 'hi');
+    assert.ok(hb.length && B.got.every(m => !m.includes(w.a1.id)), B.got.join('\n'));
+    assert.deepEqual(hb.at(-1).list.map(h => h.k), [w.a2.id], 'their own hand only');
+    const ht = T.got.map(m => JSON.parse(m)).filter(m => m.t === 'hands').at(-1);
+    assert.deepEqual(ht.list.map(h => h.k), [w.a1.id, w.a2.id], 'the teacher gets every hand');
+    assert.doesNotMatch((await as(w.a2)(`/api/manipulatives/live/${s.id}/room`)).text, new RegExp(w.a1.id + '"?,"at'), 'nor the plain room request');
+  } finally { T.ws.terminate(); B.ws.terminate(); server.off('upgrade', listener); }
 });

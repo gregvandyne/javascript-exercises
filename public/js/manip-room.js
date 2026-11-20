@@ -8,7 +8,7 @@
 // the others are told to read the room again. Cursors travel on the socket (memory only); without a socket the page
 // falls back to short requests.
 // The tools' own code (boards, palettes, taps) comes from public/js/manip.js through open()'s deps.
-import { t, api, toast, esc } from '/js/app.js';
+import { t, api, toast, esc, copyText } from '/js/app.js';
 import { toolOf, roomLayout, freeSpot, BREAKS, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H } from '/js/manip-data.js';
 
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
@@ -347,6 +347,7 @@ function renderBanner() {
 }
 function renderMini() {
   const el = document.getElementById('rm-mini'); if (!el || !R) return;
+  if (R.role === 'student') { el.innerHTML = ''; return; }   // students: Fit and My square instead
   const wd = world(), mw = phone() ? 96 : 150, k = mw / wd.w, s = size(), v = R.view;
   const r = (a, cls, style = '') => `<i class="${cls}" style="left:${a.x * k}px;top:${a.y * k}px;width:${Math.max(2, a.w * k)}px;height:${Math.max(2, a.h * k)}px;${style}"></i>`;
   const view = { x: -v.x / v.z, y: -v.y / v.z, w: s.w / v.z, h: s.h / v.z };
@@ -358,6 +359,7 @@ function renderMini() {
 
 // ---------------------------------------------------------------- the bar and the palette
 function zoomHtml(cls) {
+  if (R.role === 'student') return `<div class="rm-zoom ${cls}" role="group" aria-label="${esc(t('js.manip-room.zoom'))}">${btn('chip', 'data-rtool="fit"', `⤢ ${esc(t('js.manip-room.fit'))}`)}${btn('chip', 'data-rtool="mine"', `🏠 ${esc(t('js.manip-room.mySquareBtn'))}`)}</div>`;
   return `<div class="rm-zoom ${cls}" role="group" aria-label="${esc(t('js.manip-room.zoom'))}">${btn('chip', `data-rtool="zout" aria-label="${esc(t('js.manip-room.zoomOut'))}"`, '−')}<span class="rm-pct">${Math.round(R.view.z * 100)}%</span>${btn('chip', `data-rtool="zin" aria-label="${esc(t('js.manip-room.zoomIn'))}"`, '+')}${btn('chip', 'data-rtool="fit"', `⤢ ${esc(t('js.manip-room.fit'))}`)}</div>`;
 }
 function renderBar() {
@@ -369,7 +371,7 @@ function renderBar() {
     const counts = d.pace && d.mine ? Object.values(d.mine).reduce((m, i) => { m[i] = (m[i] || 0) + 1; return m; }, {}) : null;
     const steps = live && d.total > 1 ? `<span class="rm-steps">${btn('btn btn-sm', `data-rtool="prev"${d.cur ? '' : ' disabled'}`, `◀ ${esc(t('js.manip-room.back'))}`)}<b class="rm-stepnow">${esc(t('js.manip-room.stepOf', { n: d.cur + 1, total: d.total }))}</b>${btn('btn btn-sm btn-primary', `data-rtool="next"${d.cur + 1 < d.total ? '' : ' disabled'}`, `${esc(t('js.manip-room.next'))} ▶`)}
       ${counts ? `<span class="small muted rm-pacesum">${Object.entries(counts).sort((x, y) => x[0] - y[0]).map(([i, n]) => esc(t('js.manip-room.paceSum', { step: +i + 1, n }))).join(' · ')}</span>` : ''}</span>` : '';
-    el.innerHTML = `${state}<h1>${esc(room.title)}</h1><b class="rm-code" title="${esc(t('js.manip-room.code'))}">${esc(room.code || '')}</b><span class="rm-grow"></span>${steps}
+    el.innerHTML = `${state}<h1>${esc(room.title)}</h1><span class="rm-grow"></span>${steps}
       ${live ? btn(`btn rm-handsbtn${R.hands.length ? ' on' : ''}`, 'id="rm-hands" data-rtool="hands"', `✋<span class="rm-handt">${esc(handsLabel())}</span>`) : ''}
       ${live ? btn('btn btn-hot', 'data-rtool="bring"', `📍<span class="rm-hidephone"> ${esc(t('js.manip-room.bring'))}</span>`) : ''}
       ${btn('btn rm-menubtn', `data-rtool="menu" aria-expanded="${!!R.menuOpen}" aria-label="${esc(t('js.manip-room.menu'))}"`, '⋯')}`;
@@ -390,6 +392,7 @@ function renderMenu() {
   if (R.role !== 'teacher' || !R.menuOpen) { el.innerHTML = ''; return; }
   const room = R.room, live = room.status === 'active', d = deck();
   el.innerHTML = `<div class="rm-menu panel" role="menu">
+    <div class="rm-mi rm-codeline">${esc(t('js.manip-room.joinCode', { code: room.code || '' }))}${btn('btn btn-sm', 'data-rtool="copycode"', esc(t('js.manip-room.copy')))}</div>
     ${btn('rm-mi rm-switch', `role="switch" aria-checked="${!room.showWork}" data-rtool="showwork"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.hideWork'))}`)}
     ${d.total > 1 && live ? btn('rm-mi rm-switch', `role="switch" aria-checked="${!!d.pace}" data-rtool="pace"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.pace'))}`) : ''}
     ${live ? btn('rm-mi', 'data-rtool="push"', `📤 ${esc(t('js.manip-room.push'))}`) : ''}
@@ -425,7 +428,7 @@ function renderPal() {
     <div class="mp-toolsrow">${btn('mp-tbtn', `data-rtool="note" aria-label="${esc(t('js.manip-room.note'))}"${A.ann.notes.length >= NOTE_MAX ? ' disabled' : ''}`, `🗒️<span class="rm-hidephone"> ${esc(t('js.manip-room.note'))}</span>`)}
       ${btn(`mp-tbtn${R.annotate ? ' on' : ''}`, `data-rtool="pen" aria-pressed="${R.annotate}" aria-label="${esc(t('js.manip-room.pen'))}"`, `✎<span class="rm-hidephone"> ${esc(t('js.manip-room.pen'))}</span>`)}
       ${btn('mp-tbtn', `data-rtool="undo"${R.hist.length ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.undo'))}"`, `↩<span class="rm-hidephone"> ${esc(t('js.manip-room.undo'))}</span>`)}
-      ${btn('mp-tbtn rm-phoneonly', `data-rtool="zout" aria-label="${esc(t('js.manip-room.zoomOut'))}"`, '−')}${btn('mp-tbtn rm-phoneonly', `data-rtool="zin" aria-label="${esc(t('js.manip-room.zoomIn'))}"`, '+')}
+      ${R.role === 'teacher' ? `${btn('mp-tbtn rm-phoneonly', `data-rtool="zout" aria-label="${esc(t('js.manip-room.zoomOut'))}"`, '−')}${btn('mp-tbtn rm-phoneonly', `data-rtool="zin" aria-label="${esc(t('js.manip-room.zoomIn'))}"`, '+')}` : ''}
       ${R.role === 'teacher' && A.key === 't' ? btn('mp-tbtn rm-hidephone', 'data-rtool="steps"', `📋 ${esc(t('js.manip-room.steps'))}`) : ''}
       ${R.role === 'student' ? `${handBtn('mp-tbtn rm-phoneonly')}` : ''}</div>
     ${R.annotate ? `<div class="row rm-pens">${PEN_COLORS.map(c => btn(`mp-pen${R.pen === c ? ' on' : ''}`, `data-rpen="${c}" style="background:${c}" aria-label="${esc(t('js.manip-room.penColor', { color: c }))}"`, '')).join('')}${btn('chip', 'data-rtool="clearpen"', esc(t('js.manip-room.clearPen')))}</div>` : ''}
@@ -602,6 +605,7 @@ async function toolButton(k) {
   if (k === 'zout') return zoomAt(0.8, s.w / 2, s.h / 2);
   if (k === 'fit') return fitAll();
   if (k === 'mine') return goMine();
+  if (k === 'copycode') { try { await copyText(R.room.code || ''); toast(t('js.manip-room.copied')); } catch { toast(R.room.code || ''); } return; }
   if (k === 'menu') { R.menuOpen = !R.menuOpen; R.handsOpen = false; renderBar(); return; }
   if (k === 'prev' || k === 'next' || k === 'pace') {
     try {

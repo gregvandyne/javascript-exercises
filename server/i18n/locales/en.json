@@ -3581,7 +3581,9 @@
       "stepDelete": "Delete step {n}",
       "noSteps": "No steps yet.",
       "addStep": "Add a step",
-      "code": "Join code"
+      "joinCode": "Join code: {code}",
+      "copy": "Copy",
+      "copied": "Join code copied."
     }
   },
   "favorites": {

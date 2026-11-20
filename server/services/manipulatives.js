@@ -318,7 +318,7 @@ export function roomFor(u, id) {
   return { role: who.role, me: who.key, id: s.id, code: who.role === 'teacher' ? s.code : undefined, tool: s.tool, title: s.title, status: s.status,
     className: c ? c.name : '', teacher: { state: who.role === 'teacher' ? s.room || '{}' : JSON.stringify(tState), updatedAt: s.room_at || 0 }, areas, showWork: !!s.show_work, deck,
     pushed: who.role === 'student' ? s.pushed_state || null : !!s.pushed_state, pushedAt: s.pushed_at || 0,
-    bring: LIVE.bringOf(s.id), cursors: LIVE.cursorsOf(s.id), hands: LIVE.handsOf(s.id) };
+    bring: LIVE.bringOf(s.id), cursors: LIVE.cursorsOf(s.id), hands: handsFor(s.id, who) };
 }
 /** Where the deck is: the teacher's step, and a student's own while they go at their own pace (clamped to the deck). */
 export function stepIndex(s, steps, key) {
@@ -414,6 +414,8 @@ export function bring(u, id, view = {}) {
 /** Raised hands (memory only, services/manip-live.js): a student raises or lowers their own, at most HAND_LIMIT changes
  *  a minute; the teacher lowers anyone's, or all. */
 export const HAND_LIMIT = 8;
+/** Raised hands as a viewer may know them: the teacher every hand (in order); a student only their own. */
+export const handsFor = (sid, who) => (who.role === 'teacher' ? LIVE.handsOf(sid) : LIVE.handsOf(sid).filter(h => h.k === who.key));
 export function handFor(sid, key, up) {
   if (!allow(`mhand:${sid}:${key}`, HAND_LIMIT, 60e3)) return fail('slow');
   LIVE.setHand(sid, key, up);

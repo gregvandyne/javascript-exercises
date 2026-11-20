@@ -50,9 +50,11 @@ function connection(ws, { s, who, u }) {
   const sid = s.id, key = who.key;
   let alive = true, checked = Date.now();
   const send = msg => { try { if (ws.readyState === 1) ws.send(JSON.stringify(msg)); } catch { /* gone */ } };
-  const off = LIVE.subscribe(sid, msg => { send(msg); if (msg.t === 'end') try { ws.close(4000); } catch { /* gone */ } });
+  // Raised hands are the teacher's to see: a student's socket only ever carries their own hand.
+  const forMe = msg => (msg.t === 'hands' && who.role !== 'teacher' ? { t: 'hands', list: msg.list.filter(h => h.k === key) } : msg);
+  const off = LIVE.subscribe(sid, msg => { send(forMe(msg)); if (msg.t === 'end') try { ws.close(4000); } catch { /* gone */ } });
   LIVE.connected(sid, key, 1);
-  send({ t: 'hi', me: key, cur: LIVE.cursorsOf(sid), bring: LIVE.bringOf(sid), hands: LIVE.handsOf(sid) });
+  send({ t: 'hi', me: key, cur: LIVE.cursorsOf(sid), bring: LIVE.bringOf(sid), hands: M.handsFor(sid, who) });
   // Still allowed? (removed from the class, the session ended, the feature turned off): looked up again every few seconds.
   const still = () => { const fresh = M.getSession(sid); return M.on() && fresh && fresh.status === 'active' && !!M.roomRole(u, fresh); };
   const ping = setInterval(() => {

@@ -330,3 +330,6 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
 .rm-grip{cursor:grab;color:var(--muted);font-size:1.2rem}
 .rm-stepops{display:flex;gap:4px}
 @media (max-width:899px){.rm-minifloat{display:none}.rm-menu{right:8px}.rm-steps .btn{padding:0 10px}}
+.rm-codeline{justify-content:space-between;cursor:default}
+.rm-codeline:hover{background:transparent}
+@media (min-width:900px){.rm-minebar{display:none}}

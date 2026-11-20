@@ -9444,3 +9444,10 @@ area are unaffected.
   "⋯" menu for the rest: Hide students' work, Students go at their own pace, Push a board, PDF, End session. Students
   get their pieces tray, the strip, Raise hand and My square; no step buttons unless pace is on. No mini-map on phones;
   "Your teacher brought you here" goes after five seconds while "Back to my square" stays.
+
+## Virtual math manipulatives: tucked away (20 Nov 2026)
+
+The owner's three tuck-aways: raised hands are the teacher's alone (a student's room request and socket carry only
+their own hand, never a classmate's: services/manipulatives.js handsFor, services/manip-socket.js); students get "Fit"
+and "My square" instead of the zoom control and mini-map (wheel and pinch still zoom; on phones "My square" is in the
+bar); the join code moves from the teacher's bar into the ⋯ menu ("Join code: …" with Copy).
