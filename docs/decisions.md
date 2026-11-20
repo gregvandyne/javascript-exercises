@@ -9267,3 +9267,15 @@ allows adaptations as long as the changes are indicated.
   counts them apart (`credits.factCorrections`; `credits.corrections` stays typos only), and the credits add "Oomba
   corrected a history fact." (`library.credits.factCorrected`, 13 languages). Fact fixes are made only when the owner
   asks; typo fixes stay limited to real typos.
+
+## Story Library: words and picture on one screen in the reader (20 Nov 2026)
+
+- The owner had to scroll away from the picture to read long pages. Now:
+  - Each page's text gets a length band from its word count (`data-len`: s up to 20 words, m up to 50, l up to 100, xl
+    beyond), set by the server and by `public/js/library.js` on every page turn; longer bands use smaller type.
+  - Wide, landscape screens (at least 900 px wide and wider than tall): picture left, words right, both within the
+    screen's height; a very long page scrolls inside the words column while the picture stays.
+  - Portrait (phones, tablets upright): the picture is shorter, and on long pages (l, xl) it stays pinned under the top
+    bar while the words scroll beneath it; Back / Next stay pinned above the tab bar as before.
+- Test: `library-browser.test.js` checks the library's longest page at 1280x720 (side by side, both on screen) and on an
+  iPhone 13 (the picture stays on screen after scrolling).

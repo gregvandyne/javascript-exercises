@@ -31,7 +31,10 @@ function start() {
   };
 
   // ---- drawing a page
+  // How much text the page has sets its type size (CSS .rd-text[data-len]), so the words and the picture fit on one screen.
+  const lenOf = words => (words <= 20 ? 's' : words <= 50 ? 'm' : words <= 100 ? 'l' : 'xl');
   function drawText(p) {
+    text.dataset.len = lenOf(p.words || String(p.text).split(/\s+/).filter(Boolean).length);
     text.textContent = '';
     for (const tk of tokens(p.text)) {
       if (!tk.word) { text.append(tk.text.includes('\n') ? document.createElement('br') : document.createTextNode(' ')); continue; }

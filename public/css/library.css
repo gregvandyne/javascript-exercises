@@ -96,6 +96,27 @@
   .rd-count{transform:none;align-self:center}
 }
 @media (min-width:641px) and (max-width:1024px){.rd-pic img{max-height:44vh}}
+/* The words and the picture on one screen (owner, 20 Nov 2026). Longer pages get smaller type (data-len, set from the
+   page's word count), the picture shares the screen's height, and on wide screens they sit side by side. */
+.rd-text[data-len="m"]{font-size:clamp(1.3rem,1rem + 1vw,1.75rem)}
+.rd-text[data-len="l"]{font-size:clamp(1.12rem,.95rem + .6vw,1.4rem);line-height:1.45}
+.rd-text[data-len="xl"]{font-size:clamp(1rem,.9rem + .35vw,1.18rem);line-height:1.45;text-align:start}
+@media (min-width:900px) and (min-aspect-ratio:1/1){
+  .rd{max-width:1200px}
+  .rd-stage:not([hidden]){display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-areas:"pic text" "nav nav";gap:8px 28px;align-items:center}
+  .rd-pic{grid-area:pic;align-self:stretch;align-items:center}
+  .rd-pic img{max-height:calc(100vh - 260px);max-height:calc(100dvh - 260px)}
+  .rd-text{grid-area:text;margin:0;max-height:calc(100vh - 260px);max-height:calc(100dvh - 260px);overflow-y:auto;text-align:start}
+  .rd-text[data-len="s"]{text-align:center}
+  .rd-nav{grid-area:nav;margin-top:8px}
+}
+@media (max-width:899px), (max-aspect-ratio:1/1){
+  .rd-pic img{max-height:min(34vh,420px)}
+  .rd-text[data-len="l"],.rd-text[data-len="xl"]{margin-top:10px}
+  /* Portrait, long pages: the picture stays pinned under the top bar while the words scroll beneath it. */
+  .rd-stage:has(.rd-text[data-len="l"]) .rd-pic,.rd-stage:has(.rd-text[data-len="xl"]) .rd-pic{position:sticky;top:var(--top,64px);z-index:4;box-shadow:0 6px 10px -8px rgba(0,0,0,.35)}
+  .rd-stage:has(.rd-text[data-len="l"]) .rd-pic img,.rd-stage:has(.rd-text[data-len="xl"]) .rd-pic img{max-height:min(28vh,340px)}
+}
 
 /* ---- after the last page: the questions */
 .rd-end-head{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:12px}
