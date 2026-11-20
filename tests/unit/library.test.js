@@ -1,7 +1,7 @@
 // Story Library (docs/decisions.md "Story Library"; docs/story-library-sources.md): the importer's license filter
 // (fixtures with CC BY, NC, SA, ND, Public Domain, mixed picture licenses, missing and unreadable metadata), parsing,
-// picture mapping, the US grade rule, the shipped manifest, the sentence cut shared with the TTS route, and the
-// reader / assign / results APIs over HTTP, with the gradebook's Score.
+// picture mapping (and pictures placed by a person), the US grade rule, the shipped manifest, the sentence cut shared
+// with the TTS route, and the reader / assign / results APIs over HTTP, with the gradebook's Score.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -100,7 +100,8 @@ test('evaluate: the fixtures are included or left out for the right reason', () 
   const qs = [{ q: 'Who sat?', right: 'A cat', wrong: ['A dog', 'A cow'], page: 1, kind: 'literal' },
     { q: 'What did it see?', right: 'A ball', wrong: ['A bat', 'A box'], page: 2, kind: 'literal' },
     { q: 'Was it fun?', right: 'Yes', wrong: ['No', 'Maybe'], page: 3, kind: 'inference' }];
-  const picks = Object.fromEntries(['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012'].map(id => [id, { glossary: { kheer: 'rice pudding' }, questions: qs }]));
+  const picks = Object.fromEntries(['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013'].map(id => [id, { glossary: { kheer: 'rice pudding' }, questions: qs }]));
+  picks['0013'] = { glossary: {}, questions: qs.map(x => ({ ...x, page: Math.min(x.page, 2) })) };   // a two-page book
   const rows = IMP.evaluate({ storiesDir: path.join(FIX, 'pb-source/en'), metadataDir: path.join(FIX, 'pb-imagebank/metadata'), curation: { picks, skipped: {}, scanReviewed: {} } });
   const why = Object.fromEntries(rows.map(r => [r.sourceId, r.status === 'included' ? 'included' : r.reason]));
   assert.equal(why['0001'], 'included');
@@ -132,6 +133,18 @@ test('evaluate: the fixtures are included or left out for the right reason', () 
   // A picture listed in the metadata but missing from the image bank.
   const gone = IMP.evaluate({ storiesDir: path.join(FIX, 'pb-source/en'), metadataDir: path.join(FIX, 'pb-imagebank/metadata'), curation: { picks, skipped: {}, scanReviewed: {} }, hasImage: (id, f) => f !== '04.jpg' });
   assert.match(gone.find(r => r.sourceId === '0001').reason, /04\.jpg is in the metadata but not in the image bank/);
+  // More pictures than pages: left out, unless a person placed them from the descriptions (and then only a valid order).
+  assert.match(why['0013'], /pictures do not line up with pages \(4 images for 2 pages\)/);
+  const ev = cur => IMP.evaluate({ storiesDir: path.join(FIX, 'pb-source/en'), metadataDir: path.join(FIX, 'pb-imagebank/metadata'), curation: { picks, skipped: {}, scanReviewed: {}, ...cur } }).find(r => r.sourceId === '0013');
+  const placed = ev({ pictureMap: { '0013': { cover: '01.jpg', pages: ['02.jpg', '03.jpg'], why: 'Descriptions match page by page; 04 is a coloring page.' } } });
+  assert.equal(placed.status, 'included');
+  assert.deepEqual([placed.book.cover.file, ...placed.book.pages.map(p => p.image.file)], ['01.jpg', '02.jpg', '03.jpg']);
+  assert.match(placed.book.pictureNote, /coloring page/);
+  assert.match(ev({ pictureMap: { '0013': { cover: '01.jpg', pages: ['02.jpg', '02.jpg'], why: 'x' } } }).reason, /uses a picture twice/);
+  assert.match(ev({ pictureMap: { '0013': { cover: '01.jpg', pages: ['02.jpg', '09.jpg'], why: 'x' } } }).reason, /09\.jpg, which is not in the metadata/);
+  assert.match(ev({ pictureMap: { '0013': { cover: '01.jpg', pages: ['02.jpg'], why: 'x' } } }).reason, /1 pictures for 2 pages/);
+  assert.match(ev({ pictureMap: { '0013': { cover: '01.jpg', pages: ['02.jpg', '03.jpg'] } } }).reason, /needs a reason/);
+  assert.match(ev({ pictureReview: { '0013': 'Not clear which goes where.' } }).reason, /; reviewed: Not clear which goes where\./);
   const md = IMP.reportMarkdown(rows, { totalBytes: 1048576, generated: '2026-01-01' });
   assert.match(md, /Included: \*\*2\*\*/); assert.match(md, /\| sw-0002 \| NC Book \| text license: NC \|/);
   assert.equal(IMP.manifestOf(rows).books.length, 2);
@@ -172,7 +185,9 @@ test('the manifest: checked books over the US grades, every picture on disk, cre
     assert.equal(I.gradeOf(m).grade, b.grade, `${b.id}: the grade is the rule's`);
     assert.deepEqual(b.measures, { perPage: m.perPage, perSentence: m.perSentence, syllablesPerWord: m.syllablesPerWord, fk: m.fk, notSight: m.notSight });
     assert.ok(b.words <= 2500);
+    if (b.pictureNote) assert.ok(curation.pictureMap[b.sourceId], `${b.id}: pictures placed by a person are in the curation file`);
   }
+  assert.ok(!fs.readFileSync(path.join(ROOT, 'docs/story-library-sources.md'), 'utf8').includes('not read yet'), 'every licensed English story has been read');
   assert.ok(bytes < 90 * 1048576, `${(bytes / 1048576).toFixed(1)} MB`);
   // Answers are spread over the three places.
   const at = [0, 1, 2].map(k => books.flatMap(b => b.questions).filter(x => x.answer === k).length);

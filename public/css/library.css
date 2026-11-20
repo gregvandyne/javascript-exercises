@@ -9,7 +9,7 @@
 .lb-g3{background:color-mix(in srgb,var(--gb3) 18%,var(--card))}
 .lb-g45{background:color-mix(in srgb,var(--gb4) 18%,var(--card))}
 .lb-measures{max-width:52ch}
-.lb-measures summary{cursor:pointer;font-weight:700;min-height:32px;display:flex;align-items:center}
+.lb-measures summary{cursor:pointer;font-weight:700;padding:6px 0}
 .lb-measures p{margin:4px 0 0}
 .lr-grade{margin:4px 0 0}
 
