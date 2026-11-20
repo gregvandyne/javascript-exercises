@@ -433,3 +433,16 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
   .rm-stepsed li textarea{flex:1 1 calc(100% - 3.2em);min-width:0}
   .rm-stepops{flex:1 1 100%;justify-content:flex-end}
 }
+/* "Check my answers": a calm mark on each box, never the answer */
+.mp-ansbox{position:relative}
+.mp-ansbox.ok .mp-answer{border-color:#1F9D63;border-style:solid;background:color-mix(in srgb,#1F9D63 12%,var(--card-2))}
+.mp-ansbox.again .mp-answer{border-color:#F0A35E;border-style:solid;background:color-mix(in srgb,#F0A35E 14%,var(--card-2))}
+.mp-checkmark{flex:none;font:900 .85rem var(--font);border-radius:999px;padding:2px 8px}
+.mp-ansbox.ok .mp-checkmark{background:#1F9D63;color:#fff;font-size:1rem}
+.mp-ansbox.again .mp-checkmark{background:#FCE3CC;color:#7A3E0A}
+.rm-checkbadge{margin-inline-start:6px;background:var(--hover);border-radius:999px;padding:0 6px;font-size:.8em}
+.rm-checkbadge.all{background:#1F9D63;color:#fff}
+.rm-checklist ul{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:2px;font-weight:600}
+.rm-checklist li{display:flex;align-items:center;gap:6px}
+.mp-ansbox .mp-checkmark{position:absolute;top:-27px;inset-inline-end:6px}
+.mp-eq .mp-ansbox .mp-checkmark{position:static}

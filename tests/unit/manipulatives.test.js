@@ -326,6 +326,47 @@ test('objects in the room: a student adds them only inside their own square (kep
   assert.ok(old.ok); assert.match(M.ownBoard(boss, old.board.id).state, /"c1"/);
   assert.match(M.summarize(JSON.stringify({ v: 2, objects: [{ k: 'clock', st: { h: 7, m: 45, start: { h: 7, m: 0 } } }] })).join(' '), /Clock: 7:45 \(tracking from 7:00\)/);
 });
+test('a practice set placed in the room: one scale for places and sizes, nothing overlapping, everything inside its area, readable (8 clocks, 12 fraction equations, 6 number lines)', async () => {
+  const { buildPractice } = await import('../../public/js/manip-practice.js');
+  const B = await import('../../public/js/manip-board.js');
+  const D = await import('../../public/js/manip-data.js');
+  const sets = {
+    clock: { items: ['3:00', '7:30', '9:15', '11:45', '12:10', '6:05', '1:55', '4:40'].map(time => ({ time, box: 'answer' })) },
+    'fraction-tiles': { items: [['1/2', '1/3'], ['1/4', '1/3'], ['2/3', '1/4'], ['1/2', '1/5'], ['3/8', '1/4'], ['1/6', '1/2'], ['1/2', '1/4'], ['3/4', '1/8'], ['2/5', '1/2'], ['1/3', '1/6'], ['5/6', '1/12'], ['1/10', '1/2']].map(([a, b]) => ({ op: '+', a, b, box: 'answer' })) },
+    'number-lines': { items: [[0, 10, 1, 7], [0, 20, 2, 14], [0, 1, 0.1, 0.3], [-5, 5, 1, -2], [0, 100, 10, 60], [0, 2, 0.25, 1.75]].map(([min, max, step, value]) => ({ min, max, step, value, box: 'answer' })) },
+  };
+  const check = (tool, board, space, where) => {
+    const rects = (board.objects || []).map(o => ({ ...B.objRect(tool, o), k: o.k, s: o.s }));
+    const texts = ((board.__ann || {}).texts || []).map(n => ({ x: n.x * space.w, y: n.y * space.h, w: 12, h: 18, k: 'text' }));
+    for (const r of rects) assert.ok(r.x >= -0.5 && r.y >= -0.5 && r.x + r.w <= space.w + 0.5 && r.y + r.h <= space.h + 0.5, `${tool} ${where}: ${r.k} inside (${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.w)}x${Math.round(r.h)} in ${space.w}x${space.h})`);
+    const all = [...rects, ...texts];
+    for (let i = 0; i < all.length; i++) for (let j = i + 1; j < all.length; j++) {
+      const a = all[i], b = all[j];
+      assert.ok(!(a.x < b.x + b.w - 0.5 && b.x < a.x + a.w - 0.5 && a.y < b.y + b.h - 0.5 && b.y < a.y + a.h - 0.5), `${tool} ${where}: ${a.k} and ${b.k} overlap`);
+    }
+    const scales = new Set(rects.map(r => r.s)); assert.equal(scales.size, 1, `${tool} ${where}: one scale for everything`);
+    assert.ok([...scales][0] >= B.KMIN - 1e-6, `${tool} ${where}: readable (scale ${[...scales][0]})`);
+  };
+  for (const [tool, reply] of Object.entries(sets)) {
+    const w = world(), r = buildPractice(tool, reply);
+    const saved = M.saveBoard(boss, { tool, title: 'Set', state: { ...r.board, __steps: [{ id: 's0', text: 'Solve each one.' }] } });
+    const s = M.createSession(boss, { classId: w.A.id, tool, boardId: saved.board.id }).session;
+    // The teacher's area: the board fitted (the area grows taller when it must).
+    const room = JSON.parse(q.get('SELECT room FROM manip_sessions WHERE id=?', s.id).room), L = D.roomLayout(tool, D.layoutOf(room));
+    check(tool, room, { w: L.teacher.w, h: L.teacher.h - D.TEACHER_STEP_H }, 'teacher area');
+    // A push: every square grows tall enough; the student's page fits it into their square; the server keeps it as is.
+    M.join(w.a1, { id: s.id }); assert.ok(M.push(boss, s.id, saved.board.id).ok);
+    const room2 = JSON.parse(q.get('SELECT room FROM manip_sessions WHERE id=?', s.id).room), L2 = D.roomLayout(tool, D.layoutOf(room2));
+    const pushed = JSON.parse(JSON.parse(q.get('SELECT pushed_state FROM manip_sessions WHERE id=?', s.id).pushed_state).state);
+    const ws = { w: L2.sq.w, h: L2.sq.h - M.STRIP_RESERVE };
+    const fitted = B.fitInto(tool, B.migrate(tool, pushed), B.WORLD, ws).board;
+    assert.ok(M.saveArea(w.a1, s.id, w.a1.id, fitted).ok);
+    const stored = JSON.parse(q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, w.a1.id).state);
+    check(tool, stored, ws, 'student square');
+    // Laid out for the room as the room is (a narrower square: fewer columns).
+    assert.ok(L2.sq.h >= D.areaSize(tool).h);
+  }
+});
 test('practice answers are the teacher\'s alone: never in a share code a student opens, a push, the teacher\'s area for students, or a classmate\'s square', async () => {
   const w = world();
   M.hooks.create = async params => ({ model: params.model, usage: {}, content: [{ type: 'text', text: JSON.stringify({ title: 'Fractions', steps: ['Solve each one.'],
@@ -772,4 +813,52 @@ test('text on the board (T): cleaned and checked, saved with the board; a studen
     assert.ok(raw.every(m => !/Ada answer|Nice regrouping|Ones on the right/.test(m)), 'the socket never carries text');
     assert.match(M.summarize(JSON.stringify(withText([{ id: 'q', text: 'Label me', x: 0, y: 0 }]))).join('\n'), /Text: Label me/, 'the PDF summary lists it');
   } finally { ws.terminate(); server.off('upgrade', listener); }
+});
+
+test('"Check my answers": only when the teacher allows it; answers in, right / not yet out, never the answers (HTTP and socket); 5 a minute; results to the teacher only', async () => {
+  const { WebSocket } = await import('ws');
+  const { attachUpgrades } = await import('../../server/services/upgrade.js');
+  const SOCK = await import('../../server/services/manip-socket.js');
+  const { buildPractice } = await import('../../public/js/manip-practice.js');
+  const listener = attachUpgrades(server, [SOCK.route]);
+  const w = world();
+  const times = ['3:00', '7:30', '9:15', '11:45', '12:10', '6:05', '1:55', '4:40'];
+  const r = buildPractice('clock', { title: 'Clocks', steps: ['Write the time under each clock.'], items: times.map(time => ({ time, box: 'answer' })) });
+  const saved = M.saveBoard(boss, { tool: 'clock', title: 'Clocks', state: r.board });
+  const s = M.createSession(boss, { classId: w.A.id, tool: 'clock' }).session;
+  M.join(w.a1, { id: s.id }); M.join(w.a2, { id: s.id });
+  assert.ok(M.push(boss, s.id, saved.board.id).ok);
+  const boxes = r.board.objects.filter(o => o.k === 'answer');
+  // Ada: 6 right in other forms, one wrong, one blank.
+  const typed = ['3 o\'clock', 'half past 7', '9.15', 'quarter to 12', '12:10', '6:05', '2:00', ''];
+  const answers = Object.fromEntries(boxes.map((o, i) => [o.id, typed[i]]));
+  const check = (who, body = { answers }) => as(who)(`/api/manipulatives/live/${s.id}/check`, { method: 'POST', body });
+  const open = who => new Promise(res => { const ws = new WebSocket(`${base.replace('http', 'ws')}/api/manipulatives/ws?s=${s.id}`, { headers: { cookie: cookieFor(who.id), origin: base } }); const got = []; ws.on('message', d => got.push(String(d))); ws.on('open', () => res({ ws, got })); });
+  const A = await open(w.a1), B = await open(w.a2), T = await open(boss);
+  try {
+    assert.equal((await check(w.a1)).status, 404, 'off by default (the teacher\'s switch)');
+    const room = JSON.parse(q.get('SELECT room FROM manip_sessions WHERE id=?', s.id).room);
+    assert.equal((await as(boss)(`/api/manipulatives/live/${s.id}/area/t`, { method: 'POST', body: { state: { ...room, checks: true } } })).status, 200);
+    assert.equal(JSON.parse(q.get('SELECT room FROM manip_sessions WHERE id=?', s.id).room).checks, true);
+    const res = await check(w.a1);
+    assert.equal(res.status, 200);
+    assert.equal(res.json.right, 6); assert.equal(res.json.total, 8);
+    assert.deepEqual(Object.values(res.json.results), [true, true, true, true, true, true, false, false]);
+    assert.deepEqual(Object.keys(res.json).sort(), ['ok', 'results', 'right', 'total'], 'right / not yet only');
+    // The right answers never reach a student: not the reply, not the room, not a socket (theirs or a classmate's).
+    for (const t of ['1:55', '4:40', '9:15', '11:45', '"key"']) assert.ok(!res.text.includes(t), `reply: ${t}`);
+    await new Promise(x => setTimeout(x, 200));
+    for (const who of [w.a1, w.a2]) { const txt = (await as(who)(`/api/manipulatives/live/${s.id}/room`)).text; assert.doesNotMatch(txt, /\\"key\\"|"checks"/, 'no answers, no results'); assert.ok(!txt.includes('4:40')); }
+    for (const sock of [A, B]) for (const m of sock.got) { assert.ok(!/key|4:40|1:55|"right"|"checks"/.test(m), m); }
+    // The teacher: each student's last result, on the room and nowhere else.
+    const tr = (await as(boss)(`/api/manipulatives/live/${s.id}/room`)).json.room;
+    assert.deepEqual(tr.checks[w.a1.id] && [tr.checks[w.a1.id].right, tr.checks[w.a1.id].total], [6, 8]);
+    assert.ok(T.got.some(m => /"dirty"/.test(m)), 'the teacher is told to read the room again');
+    // 5 checks a minute: not a guessing machine.
+    for (let i = 0; i < 4; i++) assert.equal((await check(w.a1)).status, 200);
+    const slow = await check(w.a1); assert.equal(slow.status, 429); assert.equal(slow.json.code, 'checkSlow');
+    // Only students check; the teacher (or a stranger) gets the normal 404. Results are memory only.
+    assert.equal((await check(boss)).status, 404); assert.equal((await check(w.b1)).status, 404);
+    assert.doesNotMatch(JSON.stringify(q.all('SELECT * FROM manip_work WHERE session_id=?', s.id)), /"right"|checks/);
+  } finally { A.ws.terminate(); B.ws.terminate(); T.ws.terminate(); server.off('upgrade', listener); }
 });

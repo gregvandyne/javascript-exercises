@@ -1108,6 +1108,11 @@
         "li5": "Avant de créer le compte, l’adulte lit une information sur ce que nous conservons et coche qu’il l’a lue et qu’il est le parent ou le tuteur légal de l’enfant. Nous en gardons une trace : quand, et quelle version de l’information. Ce n’est pas une vérification du consentement parental au sens des lois sur la protection de la vie privée des enfants, et nous ne la traitons pas comme telle. Payer un abonnement n’en est pas une non plus.",
         "li9": "L’adulte peut voir ces chiffres et supprimer le compte depuis sa page famille : tout ce que l’enfant a créé, écrit et envoyé disparaît aussitôt. Nous gardons une courte trace indiquant que le compte a existé et qui l’a créé, l’ancien nom d’utilisateur est réservé pendant 90 jours pour que personne d’autre ne puisse le prendre, et une classe dont l’enfant faisait partie garde ses propres données. Si l’enfant est actuellement dans une classe d’école, l’enseignant le retire d’abord de la classe.",
         "li7": "Durée : tant que le compte existe. Nous n’avons pas encore de suppression automatique au bout d’un certain temps."
+      },
+      "manip": {
+        "h": "Le matériel de manipulation en maths, en classe",
+        "p1": "<b>Séances en direct :</b> quand un enseignant mène une séance en direct avec le matériel de manipulation, le plateau de chaque élève (ses pièces, notes, textes et réponses) est conservé pour son enseignant et supprimé 30 jours après la fin de la séance. L'endroit où pointent les élèves (leur curseur) et les mains levées ne sont pas enregistrés.",
+        "p2": "<b>Préparer un plateau avec l'IA :</b> un enseignant peut décrire une leçon et demander à l'IA d'en préparer le plateau. Seule la description de l'enseignant est envoyée à notre fournisseur d'IA, Anthropic. Le travail et les noms des élèves ne sont jamais envoyés."
       }
     }
   },

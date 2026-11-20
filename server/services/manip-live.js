@@ -9,7 +9,7 @@ const LO = -2000, HI = 20000;
 const rooms = new Map();   // session id -> { cursors: Map(key -> { x, y, touch, at }), bring: { seq, view }, subs: Set(fn), changed, timer }
 const roomOf = sid => {
   let r = rooms.get(sid);
-  if (!r) { r = { cursors: new Map(), hands: new Map(), conns: new Map(), step: { cur: 0, pace: false, mine: new Map() }, bring: { seq: 0, view: null }, subs: new Set(), changed: false, timer: null }; rooms.set(sid, r); }
+  if (!r) { r = { cursors: new Map(), hands: new Map(), conns: new Map(), step: { cur: 0, pace: false, mine: new Map() }, checks: new Map(), bring: { seq: 0, view: null }, subs: new Set(), changed: false, timer: null }; rooms.set(sid, r); }
   return r;
 };
 const n = v => Math.min(HI, Math.max(LO, Math.round(Number(v) || 0)));
@@ -56,6 +56,9 @@ export function setMine(sid, key, i) { const r = roomOf(sid); r.step.mine.set(St
 export function setBring(sid, view) { const r = roomOf(sid); r.bring = { seq: r.bring.seq + 1, view }; publish(sid, { t: 'bring', ...r.bring }); return r.bring.seq; }
 export const bringOf = sid => (rooms.get(sid) || { bring: { seq: 0, view: null } }).bring;
 /** Tell every listener of a room (its sockets). */
+/** "Check my answers": a student's last result (how many right of how many), memory only; the teacher sees them. */
+export function setCheck(sid, key, res) { const r = roomOf(sid); r.checks.set(String(key), { right: res.right, total: res.total, at: Date.now() }); publish(sid, { t: 'dirty' }); }
+export function checksOf(sid) { const r = rooms.get(sid); return r ? Object.fromEntries(r.checks) : {}; }
 export function publish(sid, msg) { const r = rooms.get(sid); if (r) for (const fn of r.subs) { try { fn(msg); } catch { /* a closed socket */ } } }
 /** A socket listens to a room; cursor batches go out every TICK_MS while something moved. -> unsubscribe */
 export function subscribe(sid, fn) {

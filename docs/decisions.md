@@ -9564,6 +9564,34 @@ screen) and a step in the steps editor takes the full width, its ↑ ↓ × unde
 (solo at three widths, the room as teacher and student) for a raw "js.manip..." key, and a unit test checks every key
 the two pages ask for exists.
 
+## Virtual math manipulatives: a board placed in the room keeps its shape (20 Nov 2026)
+
+Production showed the 8-clock practice board overlapping in the room: when a board was fitted into the teacher's area
+or a student's square, places were scaled down but every object kept a minimum size (0.35), so cards ran into each
+other and off the right edge. Now a fitted board uses ONE factor for places and sizes (public/js/manip-board.js
+fitInto; objects may be stored as small as 0.1 inside a fitted group). Below a readable size (0.4: a clock about 100 px
+wide) it doesn't shrink further: a practice board (it carries its grid) is laid out again in fewer columns, keeping
+its gaps, and the area grows taller instead. The teacher's area grows when a session starts from a board; every
+square grows when a board is pushed (the teacher's area's `layout` { th, sh }, set only by the server). I chose taller
+squares over scrolling inside a square: the room is already panned and zoomed, and a scrolling square inside it would
+be a second, hidden scroll. A unit test places 8 clocks, 12 fraction equations and 6 number lines into the teacher's
+area and a student's square: one scale, nothing intersecting, everything inside, readable.
+
+## Virtual math manipulatives: Check my answers (20 Nov 2026)
+
+On a practice board with answer boxes, students get one "Check my answers" button (live room, while the teacher's ⋯
+switch "Students can check answers" is on; off by default). The page sends only the student's typed answers; the
+server takes the right answers from the teacher's pushed board (its own copy, found by the board's code, owned by the
+session's host) and replies right / not yet per box and a count, never an answer, not even after checking. Each box
+shows ✓ (green) or "Try again" (soft orange); typing in a box clears its mark. At most 5 checks a minute per student
+(then "wait a minute"), so it isn't a guessing machine. Results are memory only (services/manip-live.js): the teacher
+sees each student's last "6/8 ✓" on their square and in a short list in the ⋯ menu; students never see anyone's.
+Accepted forms (public/js/manip-practice.js answerMatches): times "7:30", "7.30", "half past 7", "quarter to 8",
+"7 o'clock"; numbers with or without commas; fractions in any equal form ("10/12" for 5/6, "5/4" or "1.25" for 1 1/4)
+unless the board asks for simplest form (its title or steps say "simplest form" or "lowest terms"); "?/8" equivalence
+items want that denominator; money "$1.25", "1.25", "125¢", "125 cents"; areas with or without "square units"; ordered
+pairs and expressions without regard to spaces, "x^2" and a leading 1. On the teacher's own solo board the same rules
+run in the page (she has the answers already). The privacy page says these results are not stored.
 ## Story Library: a Classics shelf, and an open-book reader for text pages (20 Nov 2026)
 
 Owner: a Classics shelf of public-domain illustrated stories for older readers (the library was thin at Grade 3 and

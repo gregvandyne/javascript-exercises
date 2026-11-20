@@ -1109,6 +1109,11 @@
         "li5": "Voordat de volwassene het account maakt, leest die een melding over wat we bewaren en vinkt die aan dat die de melding heeft gelezen en de ouder of wettelijke voogd van het kind is. Daarvan houden we een registratie bij: wanneer, en welke versie van de melding. Dit is geen controle van ouderlijke toestemming volgens privacywetten voor kinderen, en we behandelen het ook niet zo. Betalen voor een abonnement is dat evenmin.",
         "li9": "De volwassene kan deze aantallen zien en het account verwijderen op de gezinspagina: alles wat het kind heeft gemaakt, geschreven en geüpload, verdwijnt meteen. We bewaren een korte registratie dat het account heeft bestaan en wie het heeft gemaakt, de oude gebruikersnaam wordt 90 dagen vastgehouden zodat niemand anders hem kan nemen, en een klas waarin het kind vroeger zat, houdt haar eigen gegevens. Zit het kind nu in een schoolklas, dan haalt de leerkracht het kind eerst uit de klas.",
         "li7": "Hoe lang: zolang het account bestaat. We hebben nog geen automatische verwijdertermijnen."
+      },
+      "manip": {
+        "h": "Rekenmaterialen in de klas",
+        "p1": "<b>Live lessen:</b> als een leraar een live les met de rekenmaterialen geeft, wordt het bord van elke leerling (blokjes, plakbriefjes, tekst en antwoorden) voor de leraar bewaard en 30 dagen na het einde van de les verwijderd. Waar leerlingen wijzen (hun cursor) en opgestoken handen worden niet bewaard.",
+        "p2": "<b>Een bord laten maken door AI:</b> een leraar kan een les beschrijven en de AI er een bord voor laten maken. Alleen de beschrijving van de leraar gaat naar onze AI-leverancier, Anthropic. Werk en namen van leerlingen worden nooit verstuurd."
       }
     }
   },

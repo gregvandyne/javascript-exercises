@@ -131,14 +131,19 @@ export const AREA_SIZE = { 'number-lines': [900, 300], 'xy-coordinate-board': [7
 export const areaSize = tool => { const [w, h] = AREA_SIZE[tool] || [480, 360]; return { w, h }; };
 /** One room: the teacher's area across the top, then one square per student in a grid (slot 0, 1, 2...), each with its
  *  name above it. -> { sq, cols, gap, teacher: rect, slot(i): rect, world(n): { w, h } } (rects: { x, y, w, h }). */
-export function roomLayout(tool) {
-  const sq = areaSize(tool), gap = 56, label = 36, cols = sq.w <= 620 ? 4 : 2;
+export function roomLayout(tool, lay = {}) {
+  // lay: the session's grown sizes (the teacher's area's `layout` { th, sh }): a board placed in the room that would be
+  // too small to read makes the teacher's area (th) or every square (sh) taller instead (manip-board.js fitInto).
+  const base = areaSize(tool), gap = 56, label = 36, cols = base.w <= 620 ? 4 : 2;
+  const sq = { w: base.w, h: Math.max(base.h, Math.min(3000, Math.round(+(lay && lay.sh) || 0))) };
   const width = cols * sq.w + (cols - 1) * gap;
-  const teacher = { x: 0, y: label, w: width, h: sq.h };
+  const teacher = { x: 0, y: label, w: width, h: Math.max(sq.h, Math.min(4000, Math.round(+(lay && lay.th) || 0))) };
   const slot = i => ({ x: (i % cols) * (sq.w + gap), y: teacher.y + teacher.h + gap + label + Math.floor(i / cols) * (sq.h + gap + label), w: sq.w, h: sq.h });
   const world = n => { const last = slot(Math.max(0, n - 1)); return { w: width, h: (n ? last.y + last.h : teacher.y + teacher.h) + 24 }; };
   return { sq, cols, gap, teacher, slot, world };
 }
+/** A session's grown sizes, from its teacher's area's state. */
+export const layoutOf = tState => (tState && tState.layout && typeof tState.layout === 'object' ? { th: +tState.layout.th || 0, sh: +tState.layout.sh || 0 } : {});
 /** The cursor and square colors, by slot. */
 export const ROOM_COLORS = ['#E53935', '#1E88E5', '#8E24AA', '#00897B', '#F57C00', '#C2185B', '#3949AB', '#2E7D32', '#6D4C41', '#00838F', '#AD1457', '#5E35B1'];
 /** The teacher's notes as every square's "Instructions" strip: the teacher's area's notes with text, top to bottom. */
