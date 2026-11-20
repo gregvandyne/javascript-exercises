@@ -9415,3 +9415,13 @@ The owner approved mockups for live sessions as one shared board (hidden like th
   dashboard's help queue does with "You're number n in line". Hands live in memory like cursors (manip-live.js): never
   stored, gone when the student's last socket closes or the session ends; a student changes their own hand at most 8
   times a minute (the socket's { t:'h', up } or POST .../hand); only the teacher lowers someone else's.
+
+## Virtual math manipulatives: hidden work (20 Nov 2026)
+
+So students don't copy each other: by default a student sees only their own square's work. A classmate's square is a
+frosted frame with its display name, ✋ and the Instructions strip; the server sends nothing else of it (no pieces, pen
+marks, note shapes, totals or when it changed), so there is nothing to reveal in the browser. The teacher always sees
+everything and has a "Hide students' work" switch in the room's top bar (on by default; manip_sessions.show_work,
+migration 0094) for when the class should compare; switching it reaches every student at once (the socket says "read
+the room again"). Sticky-note text stays private either way. Cursors, hands, "Bring everyone to me" and the teacher's
+area are unaffected.

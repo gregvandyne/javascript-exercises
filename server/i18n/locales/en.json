@@ -3558,7 +3558,12 @@
       "lowerAll": "Lower all",
       "lower": "Lower",
       "lowerOne": "Lower {name}'s hand",
-      "noHands": "No hands up right now."
+      "noHands": "No hands up right now.",
+      "hideWork": "Hide students' work",
+      "hiddenWork": "Hidden for now",
+      "studentHintHidden": "Your square saves for your teacher as you work. Classmates can't see your work.",
+      "workShown": "Everyone can see each other's work now.",
+      "workHidden": "Students' work is hidden again."
     }
   },
   "favorites": {

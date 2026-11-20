@@ -53,6 +53,7 @@ const withFlags = async (flags, fn) => { const old = { m: config.manipulatives, 
 test('migrations 0092 and 0093: there once, in order, their tables and columns exist, a session takes its work with it', () => {
   const names = MIGRATIONS.map(m => m[0]);
   assert.equal(names.indexOf('0093_manipulatives_room'), names.indexOf('0092_manipulatives') + 1);
+  assert.equal(names.indexOf('0094_manipulatives_show_work'), names.indexOf('0093_manipulatives_room') + 1);
   assert.ok(q.all('PRAGMA table_info(manip_sessions)').some(c => c.name === 'room')); assert.ok(q.all('PRAGMA table_info(manip_work)').some(c => c.name === 'slot'));
   assert.equal(names.filter(n => n.startsWith('0092')).length, 1);
   assert.ok(names.indexOf('0092_manipulatives') > names.indexOf('0091_story_library'));
@@ -149,13 +150,14 @@ test('only the session\'s teacher (or the admin) opens the dashboard, pushes, ex
   });
 });
 
-test('the shared room: everyone sees every square, but a student\'s typed text reaches only them and the teacher', async () => {
+test('the shared room, when the teacher shows work: everyone sees every square, but typed text reaches only its writer and the teacher', async () => {
   const w = world();
   const s = M.createSession(boss, { classId: w.A.id, tool: 'base-ten-blocks' }).session;
   M.join(w.a1, { code: s.code }); M.join(w.a2, { code: s.code });
   const ada = board({ __ann: { notes: [{ id: 'x', text: 'Ada secret plan 42', x: 0.5, y: 0.5 }], strokes: [] } });
   assert.equal((await as(w.a1)(`/api/manipulatives/live/${s.id}/area/${w.a1.id}`, { method: 'POST', body: { state: ada } })).status, 200);
   assert.equal(M.submitWork(w.a2, s.id, { bars: [{ name: 'Abe bar', segs: [{ label: 'Abe label', value: 2 }] }] }).ok, true, 'the old autosave address still saves their own square');
+  assert.equal((await as(boss)(`/api/manipulatives/live/${s.id}/show`, { method: 'POST', body: { show: true } })).status, 200);
   // Abe (a classmate) sees Ada's square and pieces, by her display name, with no note text and no roster names at all.
   const abe = await as(w.a2)(`/api/manipulatives/live/${s.id}/room`);
   assert.equal(abe.status, 200); assert.equal(abe.json.room.role, 'student');
@@ -194,6 +196,7 @@ test('the shared room: a student writes only inside their own square; the teache
   // The teacher writes in Ada's square and in their own area; their notes keep their text for everyone.
   assert.equal(M.saveArea(boss, s.id, w.a1.id, { pieces: [], __ann: { notes: [{ id: 'tn', text: 'Try fewer pieces', x: 0.1, y: 0.1 }], strokes: [] } }).ok, true);
   assert.equal(M.saveArea(boss, s.id, 't', { pieces: [], __ann: { notes: [{ id: 'big', text: 'Build 232', x: 0.1, y: 0.1, by: 's' }], strokes: [] } }).ok, true);
+  M.showWork(boss, s.id, true);   // (classmates see squares only while the teacher shows work)
   const abe = M.roomFor(w.a2, s.id);
   assert.match(abe.areas.find(x => x.key === w.a1.id).state, /Try fewer pieces/, 'a teacher note in a square is read by all');
   assert.equal(JSON.parse(abe.teacher.state).__ann.notes[0].text, 'Build 232');
@@ -532,4 +535,47 @@ test('raised hands: a student raises only their own; the teacher lowers any or a
   assert.equal(after, before, 'nothing written to the database');
   M.end(boss, s.id);
   assert.deepEqual(LIVE.handsOf(s.id), [], 'gone when the session ends');
+});
+
+test('hidden work: by default a student gets nothing of a classmate\'s square but its frame, name and hand; the teacher gets everything', async () => {
+  const { WebSocket } = await import('ws');
+  const { attachUpgrades } = await import('../../server/services/upgrade.js');
+  const SOCK = await import('../../server/services/manip-socket.js');
+  const listener = attachUpgrades(server, [SOCK.route]);
+  const w = world();
+  const s = M.createSession(boss, { classId: w.A.id, tool: 'base-ten-blocks' }).session;
+  M.join(w.a1, { code: s.code }); M.join(w.a2, { code: s.code });
+  const raw = [];
+  const ws = new WebSocket(`${base.replace('http', 'ws')}/api/manipulatives/ws?s=${s.id}`, { headers: { cookie: cookieFor(w.a2.id), origin: base } });
+  ws.on('message', d => raw.push(String(d)));
+  await new Promise(r => ws.on('open', r));
+  try {
+    const ada = { decimal: false, pieces: [{ id: 'p1', kind: 'rod', x: 10, y: 10, w: 30, h: 150, label: '10', value: 10 }], __ann: { notes: [{ id: 'n', text: 'Ada answer 32', x: 0.5, y: 0.5 }], strokes: [{ c: '#141414', pts: [{ x: 0.1, y: 0.1 }, { x: 0.4, y: 0.4 }] }] } };
+    assert.equal(M.saveArea(w.a1, s.id, w.a1.id, ada).ok, true);
+    await new Promise(r => setTimeout(r, 150));
+    // The HTTP read (also the socket-less fallback): Ada's square is a frame, a name and nothing else.
+    const r1 = await as(w.a2)(`/api/manipulatives/live/${s.id}/room`);
+    assert.equal(r1.json.room.showWork, false, 'hidden by default');
+    const sq = r1.json.room.areas.find(a => a.key === w.a1.id);
+    assert.deepEqual({ state: sq.state, hidden: sq.hidden, updatedAt: sq.updatedAt, name: sq.name }, { state: '{}', hidden: true, updatedAt: 0, name: w.a1.display_name });
+    assert.doesNotMatch(r1.text, /kind\W{0,6}rod|Ada answer|pts|#141414|blank/, 'no pieces, marks, notes or note shapes');
+    // The socket never carries work at all, hidden or not.
+    assert.ok(raw.length && raw.every(m => !/pieces|kind\W{0,6}rod|Ada answer|pts/.test(m)), raw.join('\n'));
+    // The teacher gets everything.
+    const tr = await as(boss)(`/api/manipulatives/live/${s.id}/room`);
+    assert.match(tr.text, /kind\W{0,6}rod/); assert.match(tr.text, /Ada answer 32/);
+    // Only the teacher toggles.
+    assert.equal((await as(w.a2)(`/api/manipulatives/live/${s.id}/show`, { method: 'POST', body: { show: true } })).status, 404);
+    assert.equal(M.showWork(w.a1, s.id, true).code, 'notFound');
+    // Shown: the pieces arrive (live: the socket says to read again); note text stays private.
+    const n0 = raw.length;
+    assert.equal((await as(boss)(`/api/manipulatives/live/${s.id}/show`, { method: 'POST', body: { show: true } })).status, 200);
+    await new Promise(r => setTimeout(r, 100));
+    assert.ok(raw.slice(n0).some(m => JSON.parse(m).t === 'dirty'), 'students told at once');
+    const r2 = await as(w.a2)(`/api/manipulatives/live/${s.id}/room`);
+    assert.match(r2.text, /kind\W{0,6}rod/); assert.doesNotMatch(r2.text, /Ada answer/);
+    // Hidden again: gone from the next read.
+    M.showWork(boss, s.id, false);
+    assert.doesNotMatch((await as(w.a2)(`/api/manipulatives/live/${s.id}/room`)).text, /kind\W{0,6}rod|pts/);
+  } finally { ws.terminate(); server.off('upgrade', listener); }
 });

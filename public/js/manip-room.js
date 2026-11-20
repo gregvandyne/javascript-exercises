@@ -72,12 +72,12 @@ function syncAreas(room) {
   const put = (key, src, meta) => {
     const A = R.areas.get(key);
     if (A && (A.saveTimer || A.saving || (R.gesture && R.gesture.key === key) || (R.editing && R.editing.key === key))) { Object.assign(A, meta); return; }
-    if (A && A.updatedAt === src.updatedAt) { Object.assign(A, meta); return; }
+    if (A && A.updatedAt === src.updatedAt && !!A.hidden === !!meta.hidden) { Object.assign(A, meta); return; }
     R.areas.set(key, { key, ...stateOf(src.state), updatedAt: src.updatedAt, ...meta });
     if (!A) changed = true; else if (key === 't') changed = true; else if (R.world) renderArea(key);
   };
-  put('t', room.teacher, { name: t('js.manip-room.teacherArea'), color: '#FFD23F', rect: R.L.teacher, editable: R.role === 'teacher', mine: false });
-  for (const a of room.areas) put(a.key, a, { name: a.name, color: a.color, rect: R.L.slot(a.slot), editable: R.role === 'teacher' || a.mine, mine: !!a.mine, slot: a.slot });
+  put('t', room.teacher, { name: t('js.manip-room.teacherArea'), color: '#FFD23F', rect: R.L.teacher, editable: R.role === 'teacher', mine: false, hidden: false });
+  for (const a of room.areas) put(a.key, a, { name: a.name, color: a.color, rect: R.L.slot(a.slot), editable: R.role === 'teacher' || a.mine, mine: !!a.mine, slot: a.slot, hidden: !!a.hidden });
   return changed;
 }
 const world = () => R.L.world(Math.max(1, ...[...R.areas.values()].map(a => (a.slot ?? -1) + 1)));
@@ -140,6 +140,8 @@ function stripHtml(A) {
     <ol style="max-height:${open ? 'none' : `${sp.h - STRIP.head - STRIP.pad}px`}">${sp.texts.map(x => `<li>${esc(x)}</li>`).join('')}</ol>${more && !open ? '<span class="rm-fade" aria-hidden="true"></span>' : ''}</div>`;
 }
 function areaInner(A) {
+  // A classmate's square while the teacher hides work: the server sent nothing of it; a frosted panel drawn from nothing.
+  if (A.hidden) return `<div class="rm-body">${stripHtml(A)}<div class="rm-in rm-frost" style="top:${strip().h}px"><span>🔒 ${esc(t('js.manip-room.hiddenWork'))}</span></div></div>`;
   const sel = R.sel && R.sel.key === A.key ? R.sel.id : null;
   return `<div class="rm-body">${stripHtml(A)}<div class="rm-in" style="top:${A.key === 't' ? 0 : strip().h}px"><div class="mp-content${R.impl.pieces ? ' mp-abs' : ''}">${R.impl.board(A.st, { sel, readOnly: !A.editable || R.room.status !== 'active' })}</div>
     <svg class="mp-ink" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true">${A.ann.strokes.map(s => `<polyline fill="none" stroke="${esc(s.c)}" stroke-width="4" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" points="${(s.pts || []).map(p => `${+p.x},${+p.y}`).join(' ')}"/>`).join('')}</svg>
@@ -205,7 +207,7 @@ async function refresh() {
   if (syncAreas(room)) renderWorld();
   if (!R.wsOk) { R.cursors = room.cursors || []; renderCursors(); setHands(room.hands || []); }
   if (room.bring && room.bring.seq > R.seenBring) onBring(room.bring);
-  if (was.status !== room.status || was.pushedAt !== room.pushedAt || was.areas.length !== room.areas.length) { renderBar(); if (was.status !== room.status) { renderWorld(); renderPal(); } }
+  if (was.status !== room.status || was.pushedAt !== room.pushedAt || was.areas.length !== room.areas.length || was.showWork !== room.showWork) { renderBar(); if (was.status !== room.status) { renderWorld(); renderPal(); } }
 }
 let stripTimer = null;
 /** The teacher changed their area: every square's strip (and work space) follows, a moment after the last change. */
@@ -280,7 +282,7 @@ function zoomAt(f, sx, sy) {
 }
 /** Show a room rectangle, as big as fits between the bars. */
 function fitRect(rect, pad = 24) {
-  const s = size(), top = phone() ? 64 : 84, left = !phone() ? (document.getElementById('rm-pal')?.offsetWidth || 0) + 32 : 8;
+  const s = size(), top = (document.getElementById('rm-bar')?.offsetHeight || 60) + 24, left = !phone() ? (document.getElementById('rm-pal')?.offsetWidth || 0) + 32 : 8;
   const bottom = phone() ? (document.getElementById('rm-pal')?.offsetHeight || 0) + 16 : 16;
   const w = Math.max(100, s.w - left - 16), h = Math.max(100, s.h - top - bottom);
   const z = clamp(Math.min(w / (rect.w + pad * 2), h / (rect.h + pad * 2)), Z_MIN, Z_MAX);
@@ -337,15 +339,18 @@ function renderBar() {
   el.innerHTML = R.role === 'teacher'
     ? `${state}<h1>${esc(room.title)}</h1><span class="muted small rm-hidephone">${esc(room.className)} · ${esc(t('js.manip-room.code'))}</span><b class="rm-code">${esc(room.code || '')}</b>
       <span class="rm-people rm-hidephone" aria-label="${esc(t('js.manip-room.people', { n: room.areas.length }))}">${people}</span><span class="rm-grow"></span>
+      ${btn('btn btn-sm rm-switch', `role="switch" aria-checked="${!room.showWork}" data-rtool="showwork"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.hideWork'))}`)}
       ${live ? btn(`btn rm-handsbtn${R.hands.length ? ' on' : ''}`, 'id="rm-hands" data-rtool="hands"', `✋ <span class="rm-handt">${esc(t('js.manip-room.handsUp', { n: R.hands.length }))}</span>`) : ''}
       ${live ? btn('btn btn-hot', 'data-rtool="bring"', `📍 ${esc(t('js.manip-room.bring'))}`) : ''}
       ${live ? btn('btn btn-sm', 'data-rtool="push"', esc(t('js.manip-room.push'))) : ''}<a class="btn btn-sm" href="/api/manipulatives/live/${esc(R.id)}/export.pdf" download>${esc(t('js.manip-room.pdf'))}</a>
       ${live ? btn('btn btn-sm btn-danger', 'data-rtool="end"', esc(t('js.manip-room.end'))) : ''}`
-    : `${state}<h1>${esc(room.title)}</h1><span class="muted small rm-hidephone">${esc(t('js.manip-room.studentHint'))}</span><span class="rm-grow"></span>
+    : `${state}<h1>${esc(room.title)}</h1><span class="muted small rm-hidephone">${esc(room.showWork ? t('js.manip-room.studentHint') : t('js.manip-room.studentHintHidden'))}</span><span class="rm-grow"></span>
       ${pushed ? `<span class="mp-tag hot">${esc(t('js.manip-room.sent'))}</span>${btn('btn btn-sm btn-primary', 'data-rtool="loadpush"', esc(t('js.manip-room.loadPush')))}${btn('btn btn-sm', 'data-rtool="keeppush"', esc(t('js.manip-room.keep')))}` : ''}
       ${live ? handBtn('btn rm-hidephone') : ''}${btn('btn btn-primary rm-minebar', 'data-rtool="mine"', `🏠 ${esc(t('js.manip-room.mySquareBtn'))}`)}`;
   renderHandList();
   document.getElementById('rm-zoom').innerHTML = zoomHtml('');
+  // The palette, banners and lists sit under the bar, however many lines it takes.
+  requestAnimationFrame(() => { const rm = document.getElementById('rm'); if (rm && el) rm.style.setProperty('--rm-bar-h', `${el.offsetHeight}px`); });
 }
 const handBtn = cls => btn(`${cls} rm-hand${handUp(R.me) ? ' on' : ''}`, `data-rtool="hand" aria-pressed="${handUp(R.me)}" aria-label="${esc(t('js.manip-room.raiseHand'))}"`, `✋ <span class="rm-handt">${esc(handUp(R.me) ? t('js.manip-room.lowerHand') : t('js.manip-room.raiseHand'))}</span>`);
 const initials = name => String(name).split(/\s+/).map(w => [...w][0] || '').join('').slice(0, 2).toUpperCase() || '?';
@@ -550,6 +555,10 @@ async function toolButton(k) {
   if (k === 'zout') return zoomAt(0.8, s.w / 2, s.h / 2);
   if (k === 'fit') return fitAll();
   if (k === 'mine') return goMine();
+  if (k === 'showwork') {
+    try { await api(`/api/manipulatives/live/${R.id}/show`, { method: 'POST', body: { show: !R.room.showWork } }); await refresh(); toast(R.room.showWork ? t('js.manip-room.workShown') : t('js.manip-room.workHidden')); } catch (e) { toast(e.message, { bad: true }); }
+    return;
+  }
   if (k === 'hands') { R.handsOpen = !R.handsOpen; return renderHandList(); }
   if (k === 'hand') {
     const up = !handUp(R.me);

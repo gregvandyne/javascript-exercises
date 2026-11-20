@@ -295,10 +295,11 @@ export function roomFor(u, id) {
     const p = roster.get(w.user_id), mine = w.user_id === who.key;
     return { key: w.user_id, slot: w.slot, color: ROOM_COLORS[w.slot % ROOM_COLORS.length], updatedAt: w.updated_at, mine,
       name: who.role === 'teacher' ? (p.roster_name || p.display_name) : p.display_name,
-      state: who.role === 'teacher' || mine ? w.state : forClassmates(w.state) };
+      // A classmate's work while the teacher hides it: nothing of it is sent (no pieces, marks, notes or when it changed).
+      ...(who.role === 'teacher' || mine ? { state: w.state } : s.show_work ? { state: forClassmates(w.state) } : { state: '{}', updatedAt: 0, hidden: true }) };
   });
   return { role: who.role, me: who.key, id: s.id, code: who.role === 'teacher' ? s.code : undefined, tool: s.tool, title: s.title, status: s.status,
-    className: c ? c.name : '', teacher: { state: s.room || '{}', updatedAt: s.room_at || 0 }, areas,
+    className: c ? c.name : '', teacher: { state: s.room || '{}', updatedAt: s.room_at || 0 }, areas, showWork: !!s.show_work,
     pushed: who.role === 'student' ? s.pushed_state || null : !!s.pushed_state, pushedAt: s.pushed_at || 0,
     bring: LIVE.bringOf(s.id), cursors: LIVE.cursorsOf(s.id), hands: LIVE.handsOf(s.id) };
 }
@@ -330,6 +331,14 @@ export function saveArea(u, id, key, state) {
   else q.run('UPDATE manip_work SET state=?, updated_at=? WHERE session_id=? AND user_id=?', text, now(), s.id, String(key));
   LIVE.publish(s.id, { t: 'dirty', k: key });
   return ok();
+}
+/** The teacher's "Hide students' work": hidden (the default) or shown to the class. Everyone reads the room again. */
+export function showWork(u, id, show) {
+  const s = getSession(id), who = roomRole(u, s);
+  if (!who || who.role !== 'teacher') return fail('notFound');
+  q.run('UPDATE manip_sessions SET show_work=? WHERE id=?', show ? 1 : 0, s.id);
+  LIVE.publish(s.id, { t: 'dirty' });
+  return ok({ showWork: !!show });
 }
 /** "Bring everyone to me": the teacher's view (a room rectangle), once, to every student. */
 export function bring(u, id, view = {}) {

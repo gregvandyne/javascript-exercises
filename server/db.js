@@ -1102,6 +1102,9 @@ export const MIGRATIONS = [
     ALTER TABLE manip_sessions ADD COLUMN room TEXT NOT NULL DEFAULT '{}';
     ALTER TABLE manip_sessions ADD COLUMN room_at INTEGER NOT NULL DEFAULT 0;
     ALTER TABLE manip_work ADD COLUMN slot INTEGER NOT NULL DEFAULT 0;`],
+  // A live room's "Hide students' work" (docs/decisions.md "Virtual math manipulatives: hidden work"): 0, the default,
+  // sends a student nothing of a classmate's square but its frame, name and hand; 1 when the teacher shows the work.
+  ['0094_manipulatives_show_work', 'ALTER TABLE manip_sessions ADD COLUMN show_work INTEGER NOT NULL DEFAULT 0;'],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by
