@@ -2576,6 +2576,115 @@
     }
    ]
   },
+  "0137": {
+   "glossary": {},
+   "questions": [
+    {
+     "q": "What did Spike call Spot?",
+     "right": "A boring, ordinary circle",
+     "wrong": [
+      "A scary shark",
+      "A spiky star"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Spot pull out when Spike looked at the sea?",
+     "right": "Her red gel tube",
+     "wrong": [
+      "A shark's tooth",
+      "A piece of cake"
+     ],
+     "page": 3,
+     "kind": "literal"
+    },
+    {
+     "q": "What did Spot do with the red gel?",
+     "right": "She made spots that scared Spike",
+     "wrong": [
+      "She painted the shark red",
+      "She ate it with the cake"
+     ],
+     "page": 5,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0140": {
+   "glossary": {
+    "rotis": "round, flat breads"
+   },
+   "questions": [
+    {
+     "q": "Why did the child take the ladder?",
+     "right": "To get the cat down from the tree",
+     "wrong": [
+      "To fix the roof",
+      "To pick mangoes"
+     ],
+     "page": 2,
+     "kind": "literal"
+    },
+    {
+     "q": "What did the monkey do in the kitchen?",
+     "right": "It ate up all the food",
+     "wrong": [
+      "It woke up the baby",
+      "It took the homework"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why did the dog follow the father home?",
+     "right": "It smelled the chicken curry",
+     "wrong": [
+      "It wanted to play ball",
+      "It was looking for the cat"
+     ],
+     "page": 6,
+     "kind": "inference"
+    }
+   ]
+  },
+  "0149": {
+   "glossary": {
+    "field glasses": "binoculars"
+   },
+   "questions": [
+    {
+     "q": "Who is Gogo?",
+     "right": "A gorilla from the zoo",
+     "wrong": [
+      "Toto's dog",
+      "A lion in the jungle"
+     ],
+     "page": 1,
+     "kind": "literal"
+    },
+    {
+     "q": "Who helped Toto find Gogo?",
+     "right": "Moti the dog",
+     "wrong": [
+      "A parrot",
+      "The other zoo keepers"
+     ],
+     "page": 5,
+     "kind": "literal"
+    },
+    {
+     "q": "Why do you think Gogo went into the store?",
+     "right": "He wanted to eat the bananas",
+     "wrong": [
+      "He was scared of the river",
+      "He was looking for Toto"
+     ],
+     "page": 6,
+     "kind": "inference"
+    }
+   ]
+  },
   "0262": {
    "glossary": {
     "halwa": "a soft, sweet pudding"
@@ -2724,16 +2833,83 @@
   "0117": "A mistake in the source text (\"he bought Pasupati the zoo-keeper\" for brought); the king calls his guards idiots and wants to cut a cow in two.",
   "0122": "A tiger has killed an animal and the body is described.",
   "0123": "A mistake in the source text (\"dear?Did you call me?\"), and \"Oh my God!\" as an exclamation.",
+  "0131": "Villagers with knives and spears set out to kill the bird, other children mock a girl's limp, and she walks alone through the jungle at night.",
+  "0132": "A child's brother is called \"definitely an animal\" because he is wild; the same reason as 0374.",
   "0134": "A deep wound and dead tissue are described; the animal's life is in danger.",
   "0135": "A spelling mistake in the source text (\"dinosuar\"); we do not change a story's words.",
   "0136": "Reads as a child travelling alone and being asked if she has run away.",
   "0138": "A baby alone with a wild bear; the fact page says bears kill goats.",
   "0141": "Religious (\"Who made this world? God knows!\").",
+  "0144": "One page of 31 words with mistakes in the source text; not a story.",
+  "0145": "Mistakes in the source text (missing punctuation, \"grandmom\") and \"OMG\".",
+  "0147": "Mistakes in the source text (an unclosed quote, \"diya's\", \"mithai's\").",
+  "0148": "A mistake in the source text (\"Dont cry cry\").",
+  "0151": "Mistakes in the source text (stray quotation marks: \"for her.\" We'll see,\" and \"He's brown.'\").",
+  "0152": "Children use a spell to call a demon; mistakes in the source text (\"wont\", \"cant\").",
+  "0154": "Mistakes in the source text (spaces before punctuation throughout, \"Help Help \").",
+  "0155": "One page with a mistake in the source text (\"One-day ants decided\"); ants are hurt \"endlessly\".",
+  "0156": "Mistakes in the source text (the girl's name is spelled two ways, Subami and Subaami; \"mother- Swetha\").",
+  "0157": "Mistakes in the source text (\"My Dida said\" Savitri\", \"sleep .\").",
+  "0159": "Mistakes in the source text (spaces before punctuation throughout: \"a pup .\", \"father ,\").",
+  "0160": "Mistakes in the source text (the teacher's name is spelled Preetha and Preeta; \"say\" Welcome\").",
+  "0161": "Many mistakes in the source text (\"a tiger who live in a cave\", \"a elephant\"); a tiger traps its prey.",
+  "0162": "One page with mistakes in the source text (\"Its time\", \"shop!Then\").",
+  "0163": "A six-line poem on one page about a kite that fights other kites; too little for 3 questions.",
+  "0164": "Mistakes in the source text (\"like we where\", \"helped my fix myself\"); threats to dismantle a robot, and a factory set on fire.",
+  "0165": "The jokes are about a cat pooping stories, and a child calls another \"that annoying boy in Grade Four\".",
   "0166": "A list of bird names, not a story (too little text for 3 questions).",
   "0167": "Left out by the owner (20 Nov 2026): children live by a garbage dump and do not go to school.",
+  "0168": "A one-page poem about disease, malaria and sea animals dying; not a story.",
+  "0169": "A one-page poem that labels \"beggar children\"; not a story.",
   "0170": "A mistake in the source text (\"What's makes you special?\").",
+  "0171": "Mistakes in the source text (\"favourite subject- Math\", \"Most of the days I fall back to sleep\").",
+  "0172": "Mistakes in the source text (missing periods, \"stock\" for stalk).",
+  "0173": "A mistake in the source text (\"Balloon grew very big.\").",
+  "0174": "Mistakes in the source text (\"with my dad's help\" without a capital, \"a long breadth\").",
+  "0175": "Mistakes in the source text (\"set of early\", \"you will loose respect\").",
+  "0176": "Thieves are about to \"cut\" a stolen horse; mistakes in the source text (\"stitch very good\").",
+  "0177": "Mistakes in the source text (\"some sweets and few pieces fell down\", tenses mixed in one sentence).",
+  "0178": "Mistakes in the source text (\"I have lot of water\", \"Did you guess who am I?\").",
+  "0179": "A mistake in the source text (\"Finally , Stripey\"); the honey recipe tells bees to \"throw up\".",
+  "0180": "Mistakes in the source text (\"u\" for you, \"Voilet\", stray spaces before quotes); a puja is part of the plot.",
+  "0181": "Mistakes in the source text (double periods on every page, \"where sand is lots\").",
+  "0182": "A farmer throws stones at birds; mistakes in the source text (missing periods).",
+  "0184": "Mistakes in the source text (\"Joshua was a carrot .\", a quote with no quotation marks).",
+  "0185": "Mistakes in the source text (run-on sentences, \"merry -go -round\").",
+  "0187": "Mistakes in the source text (stray spaces inside quotes, \"saying a goodbye\", a stray closing quote).",
+  "0188": "Many mistakes in the source text (lowercase \"i\", \"run run\", \"papered out of nowhere\"); a bird carries off the turtle's sister.",
+  "0189": "Mistakes in the source text (\"Tina cold hear\", \"so hey went\"), and villagers set out to kill the animal.",
+  "0191": "Mistakes in the source text (long run-on sentences, missing periods).",
+  "0192": "Mistakes in the source text (\"near a mushroom (fungi) .\", \"went more close\"); a cat burnt by acid in the plot.",
   "0193": "Mistakes in the source text (\"touch it's nose\") and a thin story.",
   "0194": "Mistakes in the source text, including the title (\"specatal\").",
+  "0195": "Mistakes in the source text (\"prises\", \"resturant\", \"On the way. they saw\").",
+  "0196": "A one-page note with mistakes in the source text (\"vaction\") and conversion leftovers (\"###\").",
+  "0197": "Mistakes in the source text (\"two animals talking about.\", \"etc participated\").",
+  "0199": "One page with mistakes in the source text (\"here was a magical jungle\", \"One day , there was\").",
+  "0200": "A mistake in the source text (\"clouds gathered with lightening\").",
+  "0201": "Parents go missing in a war and a plane crashes and burns; a mistake in the source text (\"He father was\").",
+  "0202": "Mistakes in the source text (\"sliently\", the illustrators' names inside the story text); a child left alone and lost in a forest at dark.",
+  "0203": "Mistakes in the source text (spaces before commas throughout, missing periods).",
+  "0204": "A \"Singing Sardarji\" as a stock comic character can read as a stereotype of Sikh men; left out to be safe (the scanner flagged it too).",
+  "0205": "Mistakes in the source text (\"promised her to take her back home\", a missing period); a child lost in a jungle.",
+  "0207": "The plot is a boy wondering whether God is tricking him; mistakes in the source text (\"tried to makes sense\", \"murukku's\").",
+  "0208": "One page with mistakes in the source text (\"Small kitten was playing\", \"climbed and tree\").",
+  "0209": "One page with mistakes in the source text (\"One Day man went to forest\", \"are started listening\").",
+  "0212": "One page with mistakes in the source text (\"a untidy place\", \"din't\").",
+  "0213": "A teacher says \"i will beat you\"; mistakes in the source text (lowercase \"i\", \"The cat torn my testpaper\").",
+  "0214": "Mistakes in the source text (\"On day, Chameleon sleeping\", \"got scared on started\").",
+  "0216": "One page with mistakes in the source text (\"One boy is going back\", \"run away\").",
+  "0217": "Mistakes in the source text (\"a king who like music\", \"he born as a common man\"); the king dies.",
+  "0218": "One page with mistakes in the source text (\"\"did you eat the mangoes? \" .\").",
+  "0219": "One page with mistakes in the source text (\"I can do many things than others\", \"Curator also came as participant\").",
+  "0220": "One page with mistakes in the source text (lowercase start, \"so that money doesn't come again\").",
+  "0221": "One page of 33 words with mistakes in the source text (\"I am not there in home\").",
+  "0222": "One page with mistakes in the source text (\"Group of Bees also followed her\"); not a story.",
+  "0223": "One page; a monkey breaks into a kitchen and frightens people; nothing to ask 3 questions about.",
+  "0224": "One page with mistakes in the source text (\"mokey\", \"\"what are you doing here?\".\").",
+  "0225": "One page of 42 words with mistakes in the source text (\"One of the student writing\"), and labels the children \"naughty\".",
+  "0226": "A Lakshmi Pooja and firecrackers are central; mistakes in the source text (\"lightning diyas\", \"its holiday\").",
   "0232": "Mistakes in the source text (\"Me and my friend\") and a near copy of My Best Friend (0125), which is included.",
   "0234": "Mistakes in the source text (\"did'nt\").",
   "0240": "A mistake in the source text (\"there was was\").",
