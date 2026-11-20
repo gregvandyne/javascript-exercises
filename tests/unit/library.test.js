@@ -204,6 +204,7 @@ test('pages: the library, a book, the reader and its credits for everyone; Assig
   assert.match(book.text, /Pratham Books does not endorse Oomba/); assert.match(book.text, /Bharati Jagannathan/);
   const rd = await call('/library/sw-0001/read');
   assert.equal(rd.status, 200); assert.match(rd.text, /A fawn was racing in the forest\./); assert.match(rd.text, /Translation: Manisha Chaudhry/);
+  assert.match(rd.text, /<a class="btn btn-primary" href="\/library">[^<]*More stories/, 'More stories goes back to the whole library');
   const data = JSON.parse(/<script type="application\/json" id="page-data">([^<]*)<\/script>/.exec(rd.text)[1]);
   assert.ok(!JSON.stringify(data).includes('"answer"'), 'no answers on the page');
   assert.equal((await call('/library/sw-9999')).status, 404);

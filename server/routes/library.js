@@ -161,7 +161,7 @@ router.get('/library/:id/read', (req, res) => {
         <div class="rd-opts">${x.choices.map((c, k) => html`<button class="rd-opt" type="button" data-c="${k}" disabled>${c}</button>`)}</div>
         <p class="rd-hint" role="status"></p></li>`)}</ol>
       <div class="rd-done" id="rd-done" hidden><p class="rd-done-msg" role="status"></p>
-        <div class="row"><a class="btn" href="?p=1">🔁 ${t('library.readAgain')}</a><a class="btn btn-primary" href="${back.href}">${cls ? t('library.backTo', { name: cls.name }) : t('library.moreBooks')}</a></div></div>
+        <div class="row"><a class="btn" href="?p=1">🔁 ${t('library.readAgain')}</a><a class="btn btn-primary" href="${cls ? back.href : '/library'}">${cls ? t('library.backTo', { name: cls.name }) : t('library.moreBooks')}</a></div></div>
       <noscript><p class="notice">${t('library.needJs')}</p></noscript>
     </section>
     ${credits(t, bk)}
