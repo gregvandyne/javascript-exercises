@@ -1,7 +1,7 @@
 // Story Library (docs/decisions.md "Story Library"; docs/story-library-sources.md): the importer's license filter
 // (fixtures with CC BY, NC, SA, ND, Public Domain, mixed picture licenses, missing and unreadable metadata), parsing,
-// picture mapping, the leveling rule, the shipped manifest, the sentence cut shared with the TTS route, and the
-// reader / assign / results APIs over HTTP, with the gradebook's Score.
+// picture mapping (and pictures placed by a person), the US grade rule, the shipped manifest, the sentence cut shared
+// with the TTS route, and the reader / assign / results APIs over HTTP, with the gradebook's Score.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -70,25 +70,38 @@ test('parsing: a story file, the image metadata table, picture mapping, whitespa
   assert.deepEqual(I.people('Mala Kumar, Manisha Chaudhry'), ['Mala Kumar', 'Manisha Chaudhry']);
 });
 
-test('levelOf: words a page and words in all set the level; very long books are left out', () => {
-  assert.equal(I.levelOf(['A cat.', 'A dog ran fast.']).level, 1);
-  assert.equal(I.levelOf(['one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty twentyone']).level, 2, 'a page over 20 words is not level 1');
-  const pageOf = n => Array.from({ length: n }, (_, i) => `w${i}`).join(' ');
-  assert.equal(I.levelOf(Array(13).fill(pageOf(12))).level, 2, '156 words in all is past level 1');
-  assert.equal(I.levelOf(Array(10).fill(pageOf(30))).level, 2);
-  assert.equal(I.levelOf(Array(10).fill(pageOf(31))).level, 3);
-  assert.equal(I.levelOf(Array(20).fill(pageOf(25))).level, 3, '500 words is past level 2');
-  assert.equal(I.levelOf(Array(20).fill(pageOf(61))).level, 0, 'over 1,200 words');
-  assert.equal(I.levelOf(['', '']).level, 0);
-  const l = I.levelOf(['A cat sat.', '', 'Don\'t go!']);
-  assert.deepEqual([l.words, l.pages, l.perPage], [5, 2, 2.5], 'pages with no words are not counted, "don\'t" is one word');
+test('measure and gradeOf: the measures of a text and the US grade they point to', () => {
+  const m = I.measure(['A cat sat.', '', 'Don\'t go!']);
+  assert.deepEqual([m.words, m.pages, m.perPage, m.maxPage, m.sentences, m.perSentence], [5, 2, 2.5, 3, 2, 2.5], 'pages with no words are not counted, "don\'t" is one word');
+  assert.deepEqual(I.measure(['', '']).words, 0);
+  assert.equal(I.gradeOf(I.measure(['', ''])).grade, null);
+  // Sight words (Dolch and Fry), with endings; names inside a sentence and numbers are not counted.
+  for (const w of ['the', 'jumped', 'running', 'babies', 'mother\'s', 'bigger', 'happily', 'Trees']) assert.ok(I.isSightWord(w), w);
+  assert.ok(!I.isSightWord('boulder') && !I.isSightWord('massaged'));
+  assert.equal(I.measure(['Then Ravi ran to the big tree.']).notSight, 0, 'a name is not a hard word');
+  assert.equal(I.measure(['The boulder crumbled.']).notSight, 66.7);
+  assert.deepEqual(['cat', 'table', 'jumped', 'elephant', 'tomato', 'the'].map(I.syllables), [1, 2, 1, 3, 3, 1]);
+  const fk = I.measure(['The cat sat on the mat.']);
+  assert.equal(fk.fk, Math.round((0.39 * 6 + 11.8 * 1 - 15.59) * 10) / 10, 'Flesch-Kincaid: 0.39 words a sentence + 11.8 syllables a word - 15.59');
+  // Bands: a few short, plain pages are Pre-K/K; longer pages, sentences and words climb the grades.
+  const pageOf = (n, w = 'cat') => Array.from({ length: n }, (_, i) => (i % 6 === 5 ? `${w}.` : w)).join(' ');
+  assert.equal(I.gradeOf(I.measure(['I can run.', 'I can jump.', 'I can see a cat.', 'Look at me!', 'We play.', 'I can go up.', 'I like my dog.'])).grade, 'k');
+  assert.equal(I.gradeOf(I.measure(Array(11).fill('The fawn leapt over the stream. He stumbled on a rock.'))).grade, '1');
+  assert.equal(I.gradeOf(I.measure(Array(12).fill('The old train shuddered and thundered through the tunnel, while the frightened mynahs scattered from the wires above the platform.'))).grade, '3');
+  const long = I.gradeOf(I.measure(Array(30).fill(pageOf(90, 'remarkable'))));
+  assert.equal(long.grade, null); assert.match(long.why, /too long \(2700 words\)/, 'over 2,500 words is left out');
+  const order = ['k', '1', '2', '3', '4-5'];
+  let last = -1;
+  for (const n of [40, 150, 400, 900, 1800]) { const g = I.gradeOf(I.measure(Array(10).fill(pageOf(n / 10, 'garden')))); assert.ok(order.indexOf(g.grade) >= last, `${n} words: ${g.grade}`); last = order.indexOf(g.grade); }
+  assert.deepEqual(I.GRADES, order);
 });
 
 test('evaluate: the fixtures are included or left out for the right reason', () => {
   const qs = [{ q: 'Who sat?', right: 'A cat', wrong: ['A dog', 'A cow'], page: 1, kind: 'literal' },
     { q: 'What did it see?', right: 'A ball', wrong: ['A bat', 'A box'], page: 2, kind: 'literal' },
     { q: 'Was it fun?', right: 'Yes', wrong: ['No', 'Maybe'], page: 3, kind: 'inference' }];
-  const picks = Object.fromEntries(['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012'].map(id => [id, { glossary: { kheer: 'rice pudding' }, questions: qs }]));
+  const picks = Object.fromEntries(['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013'].map(id => [id, { glossary: { kheer: 'rice pudding' }, questions: qs }]));
+  picks['0013'] = { glossary: {}, questions: qs.map(x => ({ ...x, page: Math.min(x.page, 2) })) };   // a two-page book
   const rows = IMP.evaluate({ storiesDir: path.join(FIX, 'pb-source/en'), metadataDir: path.join(FIX, 'pb-imagebank/metadata'), curation: { picks, skipped: {}, scanReviewed: {} } });
   const why = Object.fromEntries(rows.map(r => [r.sourceId, r.status === 'included' ? 'included' : r.reason]));
   assert.equal(why['0001'], 'included');
@@ -116,10 +129,22 @@ test('evaluate: the fixtures are included or left out for the right reason', () 
   // Not picked: licensed but left out, with the curator's reason when there is one.
   const none = IMP.evaluate({ storiesDir: path.join(FIX, 'pb-source/en'), metadataDir: path.join(FIX, 'pb-imagebank/metadata'), curation: { picks: {}, skipped: { '0001': 'Too scary.' }, scanReviewed: {} } });
   assert.match(none.find(r => r.sourceId === '0001').reason, /read and left out: Too scary/);
-  assert.match(none.find(r => r.sourceId === '0005').reason, /not picked/);
+  assert.match(none.find(r => r.sourceId === '0005').reason, /not read yet/);
   // A picture listed in the metadata but missing from the image bank.
   const gone = IMP.evaluate({ storiesDir: path.join(FIX, 'pb-source/en'), metadataDir: path.join(FIX, 'pb-imagebank/metadata'), curation: { picks, skipped: {}, scanReviewed: {} }, hasImage: (id, f) => f !== '04.jpg' });
   assert.match(gone.find(r => r.sourceId === '0001').reason, /04\.jpg is in the metadata but not in the image bank/);
+  // More pictures than pages: left out, unless a person placed them from the descriptions (and then only a valid order).
+  assert.match(why['0013'], /pictures do not line up with pages \(4 images for 2 pages\)/);
+  const ev = cur => IMP.evaluate({ storiesDir: path.join(FIX, 'pb-source/en'), metadataDir: path.join(FIX, 'pb-imagebank/metadata'), curation: { picks, skipped: {}, scanReviewed: {}, ...cur } }).find(r => r.sourceId === '0013');
+  const placed = ev({ pictureMap: { '0013': { cover: '01.jpg', pages: ['02.jpg', '03.jpg'], why: 'Descriptions match page by page; 04 is a coloring page.' } } });
+  assert.equal(placed.status, 'included');
+  assert.deepEqual([placed.book.cover.file, ...placed.book.pages.map(p => p.image.file)], ['01.jpg', '02.jpg', '03.jpg']);
+  assert.match(placed.book.pictureNote, /coloring page/);
+  assert.match(ev({ pictureMap: { '0013': { cover: '01.jpg', pages: ['02.jpg', '02.jpg'], why: 'x' } } }).reason, /uses a picture twice/);
+  assert.match(ev({ pictureMap: { '0013': { cover: '01.jpg', pages: ['02.jpg', '09.jpg'], why: 'x' } } }).reason, /09\.jpg, which is not in the metadata/);
+  assert.match(ev({ pictureMap: { '0013': { cover: '01.jpg', pages: ['02.jpg'], why: 'x' } } }).reason, /1 pictures for 2 pages/);
+  assert.match(ev({ pictureMap: { '0013': { cover: '01.jpg', pages: ['02.jpg', '03.jpg'] } } }).reason, /needs a reason/);
+  assert.match(ev({ pictureReview: { '0013': 'Not clear which goes where.' } }).reason, /; reviewed: Not clear which goes where\./);
   const md = IMP.reportMarkdown(rows, { totalBytes: 1048576, generated: '2026-01-01' });
   assert.match(md, /Included: \*\*2\*\*/); assert.match(md, /\| sw-0002 \| NC Book \| text license: NC \|/);
   assert.equal(IMP.manifestOf(rows).books.length, 2);
@@ -135,10 +160,10 @@ test('checkQuestions: exactly 3, each with 3 different choices, one answer and a
 });
 
 // ------------------------------------------------------------------ the shipped manifest
-test('the manifest: about 60 checked books over 3 levels, every picture on disk, credits and 3 questions each, under 40 MB', () => {
+test('the manifest: checked books over the US grades, every picture on disk, credits and 3 questions each, under 90 MB', () => {
   const books = LIB.books();
-  assert.ok(books.length >= 55 && books.length <= 65, `${books.length} books`);
-  for (const lv of [1, 2, 3]) assert.ok(books.filter(b => b.level === lv).length >= 12, `level ${lv}`);
+  assert.ok(books.length >= 55, `${books.length} books`);
+  for (const g of I.GRADES) assert.ok(books.filter(b => b.grade === g).length >= 1, `grade ${g}`);
   const curation = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-library/storyweaver.json'), 'utf8'));
   let bytes = 0;
   const ids = new Set();
@@ -156,15 +181,22 @@ test('the manifest: about 60 checked books over 3 levels, every picture on disk,
       const f = path.join(ROOT, 'public', src); assert.ok(fs.existsSync(f), src); bytes += fs.statSync(f).size;
     }
     assert.ok(b.pages.every(p => p.image.w > 0 && p.image.h > 0), `${b.id}: picture sizes for layout`);
-    assert.equal(I.levelOf(b.pages.map(p => p.text)).level, b.level);
+    const m = I.measure(b.pages.map(p => p.text));
+    assert.equal(I.gradeOf(m).grade, b.grade, `${b.id}: the grade is the rule's`);
+    assert.deepEqual(b.measures, { perPage: m.perPage, perSentence: m.perSentence, syllablesPerWord: m.syllablesPerWord, fk: m.fk, notSight: m.notSight });
+    assert.ok(b.words <= 2500);
+    if (b.pictureNote) assert.ok(curation.pictureMap[b.sourceId], `${b.id}: pictures placed by a person are in the curation file`);
   }
-  assert.ok(bytes < 40 * 1048576, `${(bytes / 1048576).toFixed(1)} MB`);
+  assert.ok(!fs.readFileSync(path.join(ROOT, 'docs/story-library-sources.md'), 'utf8').includes('not read yet'), 'every licensed English story has been read');
+  assert.ok(bytes < 90 * 1048576, `${(bytes / 1048576).toFixed(1)} MB`);
   // Answers are spread over the three places.
   const at = [0, 1, 2].map(k => books.flatMap(b => b.questions).filter(x => x.answer === k).length);
   assert.ok(Math.min(...at) > 30, `answers at ${at}`);
   // The reader page never gets the answers.
   assert.ok(!JSON.stringify(LIB.forReader(books[0])).includes('"answer"'));
-  assert.equal(LIB.search({ level: 1 }).every(b => b.level === 1), true);
+  assert.ok(LIB.search({ grade: '2' }).length && LIB.search({ grade: '2' }).every(b => b.grade === '2'));
+  assert.equal(LIB.search({ grade: 'nope' }).length, books.length, 'an unknown grade is all books');
+  assert.deepEqual([LIB.gradeParam('4-5'), LIB.gradeParam('K'), LIB.gradeParam('', '1'), LIB.gradeParam('', '2'), LIB.gradeParam('', '3'), LIB.gradeParam('x', '9')], ['4-5', 'k', 'k', '1', '2', null]);
   assert.ok(LIB.search({ q: 'fawn' }).some(b => b.id === 'sw-0001'));
   assert.deepEqual(LIB.search({ q: 'zzzzqqq' }), []);
 });
@@ -196,10 +228,16 @@ test('pages: the library, a book, the reader and its credits for everyone; Assig
   const lib = await call('/library');
   assert.equal(lib.status, 200); assert.equal((lib.text.match(/class="lb-card"/g) || []).length, LIB.books().length);
   assert.ok(!lib.text.includes('/assign'), 'no Assign for a visitor');
-  assert.equal((await call('/library?level=2')).text.match(/class="lb-card"/g).length, LIB.search({ level: 2 }).length);
+  assert.equal((await call('/library?grade=2')).text.match(/class="lb-card"/g).length, LIB.search({ grade: '2' }).length);
+  assert.match((await call('/library?grade=4-5')).text, /class="chip on" href="\/library\?grade=4-5" aria-current="true">[^<]*<span aria-hidden="true">[^<]*<\/span> Grades 4-5/);
+  const old = await call('/library?level=3&q=boat');
+  assert.equal(old.status, 301, 'an old Level link'); assert.equal(old.headers.get('location'), '/library?grade=2&q=boat');
   assert.ok((await call('/library', { user: s.teacher })).text.includes('/library/sw-0001/assign'));
   assert.ok(!(await call('/library', { user: s.kids[0] })).text.includes('/assign'));
   const book = await call('/library/sw-0096');
+  assert.match(book.text, new RegExp(`lb-g${LIB.getBook('sw-0096').grade.replace('-', '')}`));
+  assert.match(book.text, /About the grade level/); assert.match(book.text, /Oomba&#39;s estimate of the US school grade|Oomba's estimate of the US school grade/);
+  assert.match(book.text, /Flesch-Kincaid grade: [\d.-]+/); assert.ok(!/Lexile level|Guided Reading level/.test(book.text.replace(/It is not a Lexile, Guided Reading or Fountas &amp; Pinnell level\./, '')));
   assert.match(book.text, /Words to know/); assert.match(book.text, /kheer/); assert.match(book.text, /creativecommons\.org\/licenses\/by\/4\.0/);
   assert.match(book.text, /Pratham Books does not endorse Oomba/); assert.match(book.text, /Bharati Jagannathan/);
   const rd = await call('/library/sw-0001/read');

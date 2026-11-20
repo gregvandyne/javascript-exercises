@@ -1,11 +1,17 @@
 /* Story Library (server/routes/library.js, public/js/library.js). Colours are the site's tokens only (app.css holds
    every light and dark value). */
 
-/* ---- level chips */
+/* ---- US grade chips (Pre-K/K to Grades 4-5) */
 .lb-lvl{display:inline-flex;align-items:center;gap:4px;align-self:flex-start;padding:2px 10px;border-radius:999px;font-size:.8rem;font-weight:800;color:var(--text);white-space:nowrap}
-.lb-l1{background:var(--accent-soft);color:var(--accent-ink)}
-.lb-l2{background:color-mix(in srgb,var(--gb0) 16%,var(--card))}
-.lb-l3{background:color-mix(in srgb,var(--gb3) 18%,var(--card))}
+.lb-gk{background:var(--accent-soft);color:var(--accent-ink)}
+.lb-g1{background:color-mix(in srgb,var(--gb5) 16%,var(--card))}
+.lb-g2{background:color-mix(in srgb,var(--gb0) 16%,var(--card))}
+.lb-g3{background:color-mix(in srgb,var(--gb3) 18%,var(--card))}
+.lb-g45{background:color-mix(in srgb,var(--gb4) 18%,var(--card))}
+.lb-measures{max-width:52ch}
+.lb-measures summary{cursor:pointer;font-weight:700;padding:6px 0}
+.lb-measures p{margin:4px 0 0}
+.lr-grade{margin:4px 0 0}
 
 /* ---- the library */
 .lb-head h1{display:flex;align-items:center;gap:10px}

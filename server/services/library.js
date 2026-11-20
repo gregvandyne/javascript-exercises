@@ -21,7 +21,17 @@ import * as P from './progress.js';
 const MANIFEST = fileURLToPath(new URL('../library/manifest.json', import.meta.url));
 const ok = (extra = {}) => ({ ok: true, ...extra });
 const fail = code => ({ ok: false, code });
-export const LEVELS = [1, 2, 3];
+/** US grade bands, easiest first (server/library/import-lib.js gradeOf: Oomba's estimate, not a Lexile or Guided
+ *  Reading level). */
+export const GRADES = ['k', '1', '2', '3', '4-5'];
+/** The old Level 1-3 filter (links from the launch week: ?level=N) -> the grade most of that level's books now have. */
+export const LEVEL_TO_GRADE = { 1: 'k', 2: '1', 3: '2' };
+/** A ?grade= value (or an old ?level=) -> a grade, or null for all. */
+export function gradeParam(grade, level) {
+  const g = String(grade || '').toLowerCase();
+  if (GRADES.includes(g)) return g;
+  return LEVEL_TO_GRADE[String(level || '')] || null;
+}
 
 let data = null;
 /** The manifest ({ books }), read once. Tests may swap it (_setManifest). */
@@ -36,11 +46,11 @@ export const books = () => manifest().books || [];
 export const getBook = id => (manifest(), byId.get(String(id || '')) || null);
 
 const fold = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
-/** Books for the library grid: level 1-3 (or all) and words to search for in the title, credits and story. */
-export function search({ level = null, q: words = '' } = {}) {
-  const lv = LEVELS.includes(+level) ? +level : null;
+/** Books for the library grid: one grade (or all) and words to search for in the title, credits and story. */
+export function search({ grade = null, q: words = '' } = {}) {
+  const gr = GRADES.includes(grade) ? grade : null;
   const terms = fold(words).split(' ').filter(Boolean).slice(0, 6);
-  return books().filter(b => (!lv || b.level === lv) && (!terms.length || terms.every(t => haystack(b).includes(t))));
+  return books().filter(b => (!gr || b.grade === gr) && (!terms.length || terms.every(t => haystack(b).includes(t))));
 }
 const hay = new WeakMap();
 function haystack(b) {
@@ -51,7 +61,7 @@ function haystack(b) {
 
 /** What the reader page gets: everything but the right answers. */
 export const forReader = b => ({
-  id: b.id, title: b.title, level: b.level, pages: b.pages.map(p => ({ text: p.text, image: p.image })),
+  id: b.id, title: b.title, grade: b.grade, pages: b.pages.map(p => ({ text: p.text, image: p.image })),
   questions: b.questions.map(x => ({ q: x.q, choices: x.choices })),
 });
 

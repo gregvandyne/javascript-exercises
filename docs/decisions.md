@@ -8958,7 +8958,7 @@ to only select the right ones". Built to the approved mockups (library grid, rea
   the Colourful Treasure" (children who live by a garbage dump and do not go to school).
 - **Levels**, from words per text page and words in all: Level 1 Just starting (≤ 12 a page on average, no page over
   20, ≤ 150 in all), Level 2 Learning to read (≤ 30 a page, ≤ 450 in all), Level 3 Reading on my own (up to 1,200;
-  longer books are left out). The launch set: 19 / 25 / 16.
+  longer books are left out). The launch set: 19 / 25 / 16. Replaced on 20 Nov 2026 by US grades (next section).
 - **Questions and glossary are Oomba's** (`seed-library/storyweaver.json`): 3 multiple-choice questions a book (3
   choices, two about what the text says and one small inference, each pointing at the page that answers it) and short
   notes for words from India (kheer, pakodas, sooji...). Both are labelled as written by Oomba, not part of the book.
@@ -9003,3 +9003,80 @@ to only select the right ones". Built to the approved mockups (library grid, rea
   progress, answers, results, Score; the TTS ctx; account delete), `tests/unit/library-browser.test.js` (Chromium:
   filter and search, reading to the end with Read to me highlighting, wrong then right answer with "Look at page N",
   a teacher's assign and results, phones and a tablet).
+
+## Story Library: US grade levels, and every remaining StoryWeaver story read (20 Nov 2026)
+
+Owner: replace Level 1/2/3 with US grade levels (Pre-K/K, Grade 1, Grade 2, Grade 3, Grades 4-5), computed from public,
+documented measures; and "keep adding more books from the original source".
+
+- **The grade is Oomba's estimate, not a branded level.** Nothing is labeled Lexile, Guided Reading or Fountas & Pinnell
+  (proprietary). The book page has a small "About the grade level" fold for teachers: "The grade is Oomba's estimate of
+  the US school grade this book suits, worked out from its text. It is not a Lexile, Guided Reading or Fountas & Pinnell
+  level." and the measures (words, words a page, words a sentence, syllables a word, Flesch-Kincaid grade, share not on
+  the Dolch or Fry lists). Grade chips replace level chips on the library, cards, book page, assign page and results.
+- **The measures** (`server/library/import-lib.js` `measure`): words in all; words a text page; words a sentence
+  (sentences cut exactly as the reader cuts them, at . ! ? and every line break, so a poem's lines count as sentences);
+  syllables a word (the usual vowel-group estimate); the Flesch-Kincaid grade (0.39 × words a sentence + 11.8 ×
+  syllables a word − 15.59); and the share of words not on the Dolch (220 service words and 95 nouns) or Fry 1,000
+  lists, allowing common endings (-s, -es, -ed, -ing, -ly, -er, -est, -'s), with names inside a sentence and numbers
+  not counted. The lists are in `server/library/sight-words.json` with a source note (Dolch 1948; Fry 1980, transcribed
+  from the qdapDictionaries R package, one duplicate removed; lists of common words are facts).
+- **The rule** (`gradeOf`, `GRADE_RULE`, printed in `docs/story-library-sources.md`): each measure becomes a grade
+  number (Pre-K/K 0, Grade 1 = 1 ... Grades 4-5 = 4.5) on straight lines between anchor points, clamped to −0.5..5.5:
+
+  | Measure | K (0) | Gr 1 | Gr 2 | Gr 3 | Gr 4-5 (4.5) | Weight |
+  | --- | --- | --- | --- | --- | --- | --- |
+  | Words in all (log scale) | 60 | 150 | 400 | 900 | 2,000 | 0.25 |
+  | Words a page (log scale) | 6 | 12 | 25 | 50 | 100 | 0.25 |
+  | Words a sentence | 4.5 | 6 | 7.5 | 9.5 | 12 | 0.20 |
+  | % not Dolch/Fry | 8 | 12 | 16 | 20 | 25 | 0.05 → 0.15 |
+  | Flesch-Kincaid | its own value | | | | | 0 → 0.15 |
+
+  The score is the weighted mean. Flesch-Kincaid and the sight-word share are unreliable on very short texts (a 50-word
+  patterned book with "knit" and "blink" is 40% "hard words"), so their weights rise from 0.05 and 0 at 100 words to
+  0.15 at 300 words. Bands: score < 0.5 Pre-K/K, < 1.5 Grade 1, < 2.5 Grade 2, < 3.5 Grade 3, < 5 Grades 4-5. Over 2,500
+  words (the old cap was 1,200) or a score of 5 or more is left out.
+- **Calibration.** Tuned by reading the 58 launch books and checking each estimate by hand, then the long ones. The
+  patterned, sight-word books land in Pre-K/K, the short stories with words like "boulder" and "stumbled" in Grade 1,
+  the 200-450-word stories in Grade 1-2, and the long, idiom-rich ones (The Timid Train: "bellowed", "maiden journey",
+  14 words a sentence) in Grades 4-5. The data did not argue for other bands: picture books cluster in K-2, so Grade 3
+  and Grades 4-5 hold the longer books. Worked examples:
+  - Can and Can't (50 words, 7.1 a page, 5 a sentence, FK −1.4, 40% not sight words): votes −0.2, 0.2, 0.3, 5.5, −0.5;
+    at 50 words only the sight-word share counts a little (weight 0.05) and FK not at all → 0.45, **Pre-K/K**.
+  - Smile Please! (102 words, 9.3 a page, 6 a sentence, FK 0.9, 20.6%): votes 0.6, 0.6, 1.0, 3.2, 0.9 → 0.88,
+    **Grade 1**.
+  - Grandma's Glasses (296 words, 29.6 a page, 6.9 a sentence, FK 2.2, 15.1%): 1.7, 2.2, 1.6, 1.8, 2.2 → 1.89,
+    **Grade 2**.
+  - The Timid Train (619 words, 56.3 a page, 14.4 a sentence, FK 5.2, 19.4%): 2.5, 3.3, 5.5, 2.8, 5.2 → 3.75,
+    **Grades 4-5**.
+  - Jadav and the Tree-Place (1,485 words, 78.2 a page, 11.3 a sentence, FK 3.8, 16%): 3.9, 4.0, 4.1, 2.0, 3.8 → 3.66,
+    **Grades 4-5**.
+  The 58 launch books: Pre-K/K 9, Grade 1 26, Grade 2 18, Grade 3 4, Grades 4-5 1. **Old links:** `/library?level=N`
+  redirects (301) to the grade most of that level's books now have: Level 1 → Pre-K/K (9 of 18 K, the rest Grade 1),
+  Level 2 → Grade 1 (16 of 25), Level 3 → Grade 2 (9 of 15). The reader reads a little slower for Pre-K/K (was Level 1).
+- **Every remaining English story read.** All 235 licensed books not in the launch set (the 222 not yet read and the
+  12 that were only too long) were read in full with the same rules as before; 25 added. The other 210 each have a
+  reason in `seed-library/storyweaver.json` `skipped`: most of the later StoryWeaver uploads are written by children or
+  first-time authors and have mistakes we may not correct (about 170: "did'nt", "May be sing", spaces before
+  punctuation, "Mughlai cusine"); the rest for content (a teacher slapping a child, demons and curses, prayers or a
+  religious plot, labels on bodies such as "My fat aunt", hunting or killing animals, children alone at night, Marvel
+  characters) or for being one page with too little for 3 questions. The scanner flagged one new book, The Magic Powder
+  ("repeat the above step" in a craft page): reviewed, fine (`scanReviewed`).
+- **Pictures that do not line up.** All 52 were checked against their image descriptions. Two are placed by hand
+  (`pictureMap`, with the page-by-page match written down and shown in the report): My Balwadi (11 pictures for 9 pages;
+  the last is a second picture of the play-dough tub) and The Tree (13 for 11; the last is a coloring page; page 11 is
+  wordless in the source, as in the book). The other 50 stay out with a reason (`pictureReview`): no text, the whole
+  book on one page with no cover, as many pictures as pages (which page goes without is not clear), fewer pictures than
+  pages, duplicate descriptions, coloring or craft pages, or (I lost my bat!) a last picture that is the ending with no
+  text. The license rule is unchanged: the text and every picture in the metadata (not only the used ones) must be CC BY
+  4.0 or Public Domain; the owner's two exclusions (sw-0002, sw-0167) stay out.
+- **Totals: 85 books** (58 + 27): Pre-K/K 9, Grade 1 35, Grade 2 29, Grade 3 7, Grades 4-5 5 (new: Grade 1 9, Grade 2
+  11, Grade 3 3, Grades 4-5 4). Pictures: 20.8 MB at the same settings (pages 720 px, WebP q50), far under the 80 MB
+  budget, so no quality change. The longest new page (409 words, Jadav) scrolls under the sticky Back / Next on a phone.
+- **For the owner:** a few kept books have a judgment call: Do and Don't (a toilet joke, "the big job"), Annual Haircut
+  Day ("Oh God, help me!" said by a worried man), What If? (the boy calls himself "a little skinny"), The Carpenter's
+  last job (a grown-up parable for Grades 4-5), Dive! (a line refers to bold lettering the reader does not show, and the
+  divers swim closer to sleeping reef sharks "pretty harmless"). Each is easy to drop in `storyweaver.json`.
+- Tests: `tests/unit/library.test.js` (the measures and bands, sight words with endings, hand-placed pictures accepted
+  only when valid, every licensed story read, grades and measures in the manifest, old level links), and
+  `library-browser.test.js` (grade chips).

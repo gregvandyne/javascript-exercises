@@ -5,6 +5,8 @@
 // license, illustrator, description }] }. Today there is one (StoryWeaver / Pratham Books, from the global-asp
 // pb-source and pb-imagebank repositories); a second one (Bloom Library) only needs its own parser that returns the
 // same shape, and the manifest's `source` field tells them apart. Nothing here fetches anything.
+import fs from 'node:fs';
+import { sentences } from '../../public/js/library-text.js';
 
 /** Licenses a book may carry to be included. Everything else (NC, ND, SA, "all rights reserved", missing, unreadable)
  *  is left out. Keys are what licenseOf() returns. */
@@ -104,25 +106,114 @@ export function parseImageMetadata(md) {
 /** Words in a page (letters or digits; "don't" is one word). */
 export const wordCount = s => (String(s || '').match(/[\p{L}\p{N}]+(?:['’][\p{L}]+)*/gu) || []).length;
 
+// ---------------------------------------------------------------- US grade levels
+// Oomba's estimate of the US school grade a book suits (docs/decisions.md "Story Library: US grade levels"), from
+// public, documented measures of its text. Not a Lexile, Guided Reading or Fountas & Pinnell level (those are other
+// people's systems); teachers are told it is an estimate.
+const SIGHT_SRC = JSON.parse(fs.readFileSync(new URL('./sight-words.json', import.meta.url), 'utf8'));
+/** The Dolch (220 service words and 95 nouns) and Fry 1,000 sight words, lowercase. */
+export const SIGHT_WORDS = new Set([...Object.values(SIGHT_SRC.dolch).flat(), ...SIGHT_SRC.fry].map(w => w.toLowerCase()));
+const undouble = s => (/([^aeiou])\1$/.test(s) ? s.slice(0, -1) : s);
+/** A word (lowercase) is a sight word, or one with an ending added: -s, -es, -ies, -'s, -ed, -ied, -ing, -ly, -ily, -er, -est. */
+export function isSightWord(w) {
+  w = String(w || '').toLowerCase().replace(/’/g, "'");
+  if (SIGHT_WORDS.has(w)) return true;
+  const t = [];
+  if (/'s$/.test(w)) t.push(w.slice(0, -2));
+  if (/ies$/.test(w)) t.push(`${w.slice(0, -3)}y`);
+  if (/es$/.test(w)) t.push(w.slice(0, -2));
+  if (/s$/.test(w)) t.push(w.slice(0, -1));
+  if (/ied$/.test(w)) t.push(`${w.slice(0, -3)}y`);
+  if (/ed$/.test(w)) t.push(w.slice(0, -2), w.slice(0, -1), undouble(w.slice(0, -2)));
+  if (/ing$/.test(w)) t.push(w.slice(0, -3), `${w.slice(0, -3)}e`, undouble(w.slice(0, -3)));
+  if (/ly$/.test(w)) t.push(w.slice(0, -2));
+  if (/ily$/.test(w)) t.push(`${w.slice(0, -3)}y`);
+  if (/(er|est)$/.test(w)) { const b = w.replace(/(er|est)$/, ''); t.push(b, `${b}e`, undouble(b), b.replace(/i$/, 'y')); }
+  return t.some(x => SIGHT_WORDS.has(x));
+}
+/** Syllables in an English word, by vowel groups (the usual readability-formula estimate: a silent final e, -es and -ed
+ *  are not counted; at least one). */
+export function syllables(word) {
+  let w = String(word || '').toLowerCase().replace(/[^a-z]/g, '');
+  if (w.length <= 3) return 1;
+  w = w.replace(/(?:[^laeiouy]es|[^laeiouy]ed|[^laeiouy]e)$/, '').replace(/^y/, '');
+  return Math.max(1, (w.match(/[aeiouy]{1,2}/g) || []).length);
+}
+const WORD_RE = /[\p{L}\p{N}]+(?:['’][\p{L}]+)*/gu;
+const r1 = x => Math.round(x * 10) / 10, r2 = x => Math.round(x * 100) / 100;
 /**
- * The leveling rule (docs/story-library-sources.md "Reading levels"), from words per text page and words in all:
- *   Level 1 (Just starting)       at most 12 words a page on average, at most 20 on any page, and 150 words in all
- *   Level 2 (Learning to read)    at most 30 words a page on average, and 450 words in all
- *   Level 3 (Reading on my own)   anything longer, up to 1,200 words (longer books are left out of the launch set)
- * -> { level: 1 | 2 | 3 | 0 (too long), words, pages, perPage, maxPage }
+ * The measures of a book's text (pages with text only). Sentences are cut as the reader cuts them (library-text.js: at
+ * . ! ? and every line break). The sight-word share leaves out names (a capital letter inside a sentence) and numbers.
+ * -> { words, pages, perPage, maxPage, sentences, perSentence, syllablesPerWord, fk (Flesch-Kincaid grade), notSight (% of
+ *      words outside the Dolch and Fry lists) }
  */
-export const LEVEL_RULE = Object.freeze({ l1: { avg: 12, max: 20, total: 150 }, l2: { avg: 30, total: 450 }, l3: { total: 1200 } });
-export function levelOf(pages) {
-  const counts = pages.map(wordCount).filter(n => n > 0);
-  const words = counts.reduce((a, n) => a + n, 0);
-  const perPage = counts.length ? words / counts.length : 0;
-  const maxPage = counts.length ? Math.max(...counts) : 0;
-  const R = LEVEL_RULE;
-  const level = !words ? 0
-    : perPage <= R.l1.avg && maxPage <= R.l1.max && words <= R.l1.total ? 1
-    : perPage <= R.l2.avg && words <= R.l2.total ? 2
-    : words <= R.l3.total ? 3 : 0;
-  return { level, words, pages: counts.length, perPage: Math.round(perPage * 10) / 10, maxPage };
+export function measure(pages) {
+  let words = 0, syl = 0, sents = 0, counted = 0, hard = 0;
+  const per = [];
+  for (const p of pages) {
+    const n = wordCount(p); if (!n) continue;
+    per.push(n); words += n;
+    for (const s of sentences(p)) {
+      const ws = s.text.match(WORD_RE) || []; if (!ws.length) continue;
+      sents++;
+      ws.forEach((w, i) => {
+        syl += syllables(w);
+        if (/^\d/.test(w) || (i > 0 && /^\p{Lu}/u.test(w) && !SIGHT_WORDS.has(w.toLowerCase()))) return;
+        counted++; if (!isSightWord(w)) hard++;
+      });
+    }
+  }
+  if (!words) return { words: 0, pages: 0, perPage: 0, maxPage: 0, sentences: 0, perSentence: 0, syllablesPerWord: 0, fk: 0, notSight: 0 };
+  const perSentence = words / Math.max(1, sents), spw = syl / words;
+  return { words, pages: per.length, perPage: r1(words / per.length), maxPage: Math.max(...per), sentences: sents,
+    perSentence: r1(perSentence), syllablesPerWord: r2(spw), fk: r1(0.39 * perSentence + 11.8 * spw - 15.59),
+    notSight: r1(counted ? (100 * hard) / counted : 0) };
+}
+
+/**
+ * The grade rule. Each measure is turned into a grade number (Pre-K/K = 0, Grade 1 = 1, ... Grades 4-5 = 4.5) by
+ * straight lines between the anchor points below (words in all and words a page on a log scale), clamped to -0.5..5.5.
+ * The book's score is their weighted mean. Flesch-Kincaid and the sight-word share mean little on a very short text, so
+ * they count for less below 300 words (FK not at all at 100 words or fewer). The score picks the band; a book over
+ * 2,500 words or scoring 5 or more (past Grade 5) is left out.
+ */
+export const GRADES = Object.freeze(['k', '1', '2', '3', '4-5']);
+export const GRADE_RULE = Object.freeze({
+  anchors: {
+    words: [[0, 60], [1, 150], [2, 400], [3, 900], [4.5, 2000]],
+    perPage: [[0, 6], [1, 12], [2, 25], [3, 50], [4.5, 100]],
+    perSentence: [[0, 4.5], [1, 6], [2, 7.5], [3, 9.5], [4.5, 12]],
+    notSight: [[0, 8], [1, 12], [2, 16], [3, 20], [4.5, 25]],
+  },
+  weights: { words: 0.25, perPage: 0.25, perSentence: 0.2, notSight: [0.05, 0.15], fk: [0, 0.15] },
+  shortText: [100, 300],
+  bands: [[0.5, 'k'], [1.5, '1'], [2.5, '2'], [3.5, '3'], [5, '4-5']],
+  maxWords: 2500,
+});
+function onLine(x, anchors, log) {
+  const f = v => (log ? Math.log(Math.max(v, 1e-6)) : v), X = f(x);
+  let i = anchors.findIndex(([, v]) => X <= f(v));
+  if (i === 0) i = 1; else if (i < 0) i = anchors.length - 1;
+  const [g0, v0] = anchors[i - 1], [g1, v1] = anchors[i];
+  return g0 + ((X - f(v0)) / (f(v1) - f(v0))) * (g1 - g0);
+}
+/** -> { grade: 'k' | '1' | '2' | '3' | '4-5' | null (too long, too hard or no text), score, votes, why? } */
+export function gradeOf(m) {
+  const R = GRADE_RULE;
+  if (!m.words) return { grade: null, score: null, votes: {}, why: 'no text' };
+  const clamp = v => Math.max(-0.5, Math.min(5.5, v));
+  const votes = {
+    words: onLine(m.words, R.anchors.words, true), perPage: onLine(m.perPage, R.anchors.perPage, true),
+    perSentence: onLine(m.perSentence, R.anchors.perSentence), notSight: onLine(m.notSight, R.anchors.notSight), fk: m.fk,
+  };
+  const ramp = Math.min(1, Math.max(0, (m.words - R.shortText[0]) / (R.shortText[1] - R.shortText[0])));
+  const w = Object.fromEntries(Object.entries(R.weights).map(([k, v]) => [k, Array.isArray(v) ? v[0] + (v[1] - v[0]) * ramp : v]));
+  let sum = 0, tot = 0;
+  for (const k of Object.keys(votes)) { votes[k] = r1(clamp(votes[k])); sum += w[k] * votes[k]; tot += w[k]; }
+  const score = r2(sum / tot);
+  if (m.words > R.maxWords) return { grade: null, score, votes, why: `too long (${m.words} words)` };
+  const band = R.bands.find(([lim]) => score < lim);
+  return band ? { grade: band[1], score, votes } : { grade: null, score, votes, why: `past Grade 5 (score ${score})` };
 }
 
 /**
@@ -137,6 +228,23 @@ export function mapImages(pageCount, images) {
   if (!seq) return { ok: false, reason: 'images not numbered 01..N' };
   if (files.length === pageCount + 1) return { ok: true, cover: files[0], pages: files.slice(1) };
   return { ok: false, reason: `${files.length} images for ${pageCount} pages` };
+}
+
+/**
+ * A picture order written by a person (seed-library/storyweaver.json "pictureMap") for a book whose pictures do not
+ * line up one-to-one: used only when the image metadata's descriptions make it unambiguous, and recorded with why. It
+ * must name a cover and exactly one picture per page, each listed in the metadata, none twice. Pictures it leaves out
+ * are not used. -> { ok, cover, pages, why } | { ok: false, reason }
+ */
+export function checkPictureMap(m, pageCount, images) {
+  const files = new Set(images.map(i => i.file));
+  if (!m || typeof m.why !== 'string' || !m.why.trim()) return { ok: false, reason: 'a hand-made picture order needs a reason' };
+  if (!Array.isArray(m.pages) || m.pages.length !== pageCount) return { ok: false, reason: `the hand-made picture order has ${Array.isArray(m.pages) ? m.pages.length : 0} pictures for ${pageCount} pages` };
+  const used = [m.cover, ...m.pages];
+  const missing = used.find(f => !files.has(f));
+  if (missing) return { ok: false, reason: `the hand-made picture order names ${missing}, which is not in the metadata` };
+  if (new Set(used).size !== used.length) return { ok: false, reason: 'the hand-made picture order uses a picture twice' };
+  return { ok: true, cover: m.cover, pages: [...m.pages], why: m.why.trim() };
 }
 
 /**
