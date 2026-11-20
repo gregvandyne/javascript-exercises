@@ -207,10 +207,12 @@ test('the manifest: checked books over the US grades, every picture on disk, cre
   const ids = new Set();
   for (const b of books) {
     assert.ok(!ids.has(b.id)); ids.add(b.id);
-    for (const src of [b.cover.src, ...b.pages.map(p => p.image.src)]) {
+    // A Classics page may have no picture (tests/unit/library-classics.test.js); every other book has one on every page.
+    for (const src of [b.cover.src, ...b.pages.filter(p => p.image).map(p => p.image.src)]) {
       const f = path.join(ROOT, 'public', src); assert.ok(fs.existsSync(f), src); bytes += fs.statSync(f).size;
     }
-    assert.ok(['storyweaver', 'bloom'].includes(b.source), `${b.id} source`);
+    assert.ok(['storyweaver', 'bloom', 'classics'].includes(b.source), `${b.id} source`);
+    if (b.source !== 'classics') assert.ok(b.pages.every(p => p.image), `${b.id}: a picture on every page`);
     if (b.source !== 'storyweaver') continue;   // Bloom books: tests/unit/library-bloom.test.js
     assert.match(b.id, /^sw-\d{4}$/);
     assert.ok(curation.picks[b.sourceId], `${b.id} was picked by a person`);

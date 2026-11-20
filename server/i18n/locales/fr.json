@@ -3316,7 +3316,8 @@
       "tryAgain": "Essaie encore ! Regarde la page {page}.",
       "lookAt": "Voir la page {page}",
       "doneMsg": "Bravo ! {right} sur {total} justes du premier coup. Super lecture !",
-      "doneShort": "Bravo ! Super lecture !"
+      "doneShort": "Bravo ! Super lecture !",
+      "pagesOf": "Pages {from}-{to} sur {pages}"
     }
   },
   "favorites": {
@@ -11675,7 +11676,10 @@
       "from": "D’après un livre de {name}",
       "changesBloom": "Oomba a redimensionné les images et montre le livre une page à la fois. Bloom Library, SIL Global et l’éditeur du livre ne cautionnent pas Oomba.",
       "changesBloomSA": "Oomba a redimensionné les images et montre le livre une page à la fois ; ces pages adaptées sont partagées sous la même licence, {license}. Bloom Library, SIL Global et l’éditeur du livre ne cautionnent pas Oomba.",
-      "originalBloom": "Voir le livre original sur Bloom Library."
+      "originalBloom": "Voir le livre original sur Bloom Library.",
+      "publicDomain": "Domaine public",
+      "firstPublished": "Première publication en {year} ({edition}).",
+      "changesClassic": "Oomba a découpé l’histoire en pages et redimensionné les images. Les mots sont ceux de l’auteur."
     },
     "readToMe": "Lis-le-moi",
     "pagesLabel": "Pages",
@@ -11741,6 +11745,10 @@
       "found": "Nous avons trouvé {count, plural, one {# livre} other {# livres}} pour toi.",
       "empty": "Écris ce que tu as envie de lire.",
       "error": "Un problème est survenu. Réessaie."
-    }
+    },
+    "sources": {
+      "classics": "Classiques"
+    },
+    "footClassics": "Classiques : des livres anciens du domaine public, avec leurs illustrations d’origine."
   }
 }
