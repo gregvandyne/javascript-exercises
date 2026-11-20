@@ -8947,7 +8947,8 @@ to only select the right ones". Built to the approved mockups (library grid, rea
   picture the image bank lacks. Nothing is guessed. Of 395 English books: 58 in the launch set; the report with every
   book and its reason is `docs/story-library-sources.md` (written by the importer; never edited by hand).
 - **The words are never changed** (whitespace and conversion leftovers only), so books with mistakes in their own text
-  were left out rather than corrected. Picture-book English titles keep their own spelling ("Colours").
+  were left out rather than corrected. Picture-book English titles keep their own spelling ("Colours"). (Changed by the
+  owner on 20 Nov 2026: typos are now corrected as listed data; see "Story Library: typos corrected".)
 - **Choosing the launch set.** Every candidate was read in full for ages 4 to 10: no violence beyond mild peril,
   nothing scary, no romance, no religious instruction or religion-centred plots (festivals mentioned in passing are
   kept), no stereotypes or labels on children, nothing likely to upset parents (e.g. a child crossing a busy road, a
