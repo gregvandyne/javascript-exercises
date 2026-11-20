@@ -12390,7 +12390,8 @@
       "originalBloom": "See the original book on Bloom Library.",
       "publicDomain": "Public domain",
       "firstPublished": "First published in {year} ({edition}).",
-      "changesClassic": "Oomba split the story into pages and resized the pictures. The words are the author's own."
+      "changesClassic": "Oomba split the story into pages and resized the pictures. The words are the author's own.",
+      "changesClassicCut": "Oomba split the story into pages, resized the pictures and left out one line. All the other words are the author's own."
     },
     "readToMe": "Read to me",
     "pagesLabel": "Pages",

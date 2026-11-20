@@ -11681,7 +11681,8 @@
       "originalBloom": "Ver o livro original na Bloom Library.",
       "publicDomain": "Domínio público",
       "firstPublished": "Publicado pela primeira vez em {year} ({edition}).",
-      "changesClassic": "A Oomba dividiu a história em páginas e mudou o tamanho das imagens. As palavras são do autor."
+      "changesClassic": "A Oomba dividiu a história em páginas e mudou o tamanho das imagens. As palavras são do autor.",
+      "changesClassicCut": "A Oomba dividiu a história em páginas, redimensionou as imagens e retirou uma linha. Todas as outras palavras são do autor."
     },
     "readToMe": "Leia para mim",
     "pagesLabel": "Páginas",

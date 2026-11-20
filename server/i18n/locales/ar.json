@@ -11680,7 +11680,8 @@
       "originalBloom": "الكتاب الأصلي على Bloom Library.",
       "publicDomain": "ملك عام",
       "firstPublished": "نُشر أول مرة عام {year} ({edition}).",
-      "changesClassic": "قسّمت Oomba القصة إلى صفحات وغيّرت حجم الصور. الكلمات هي كلمات المؤلف."
+      "changesClassic": "قسّمت Oomba القصة إلى صفحات وغيّرت حجم الصور. الكلمات هي كلمات المؤلف.",
+      "changesClassicCut": "قسّمت Oomba القصة إلى صفحات، وغيّرت حجم الصور، وحذفت سطرًا واحدًا. أما باقي الكلمات فهي كلمات المؤلف."
     },
     "readToMe": "اقرأ لي",
     "pagesLabel": "الصفحات",

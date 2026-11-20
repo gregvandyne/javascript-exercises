@@ -1,5 +1,5 @@
 {
-  "about": "The Story Library's Classics shelf (docs/decisions.md \"Story Library: a Classics shelf\"; docs/story-library-classics.md, written by scripts/import-classics.js). Public-domain illustrated editions, read in full by a person for ages 4 to 10 with the library's content rules. Each source records the edition, its first publication year and every maker's death year (the public-domain rule: published before 1931 and every maker dead before 1956). Questions point at a phrase on the page that answers them (the importer works out the page). Fixes correct clear typos only, each found exactly once.",
+  "about": "The Story Library's Classics shelf (docs/decisions.md \"Story Library: a Classics shelf\"; docs/story-library-classics.md, written by scripts/import-classics.js). Public-domain illustrated editions, read in full by a person for ages 4 to 10 with the library's content rules. Each source records the edition, its first publication year and every maker's death year (the public-domain rule: published before 1931 and every maker dead before 1956). Questions point at a phrase on the page that answers them (the importer works out the page). Fixes correct clear typos, each found exactly once; a fix with kind \"cut\" leaves out a line the owner asked to remove, and the book's notes say a line was left out. A book's grade may be set by hand (grade plus gradeWhy) when the owner decides.",
   "sources": {
     "justso": {
       "ebook": "32488",
@@ -271,7 +271,15 @@
         "hiccough": "An old spelling of hiccup.",
         "grating": "A frame of crossed bars.",
         "shingle": "A beach of small round pebbles."
-      }
+      },
+      "fixes": [
+        {
+          "from": "For the Mariner he was also an Hi-ber-ni-an. ",
+          "to": "",
+          "kind": "cut",
+          "why": "a joke about Irish speech; owner's decision 20 Nov 2026"
+        }
+      ]
     },
     "camel": {
       "source": "justso",
@@ -563,7 +571,9 @@
         "gooseberry net": "A net over gooseberry bushes to keep the birds off.",
         "sieve": "A bowl with lots of tiny holes.",
         "fortnight": "Two weeks."
-      }
+      },
+      "grade": "3",
+      "gradeWhy": "Owner asked for best judgment (20 Nov 2026): US schools read Potter aloud in K-2 and children read her alone around Grade 3; her old words and long sentences push the shared rule to Grades 4-5."
     },
     "jeremy-fisher": {
       "source": "jeremy",
@@ -649,7 +659,9 @@
         "stickleback": "A small fish with sharp spines on its back.",
         "disconsolately": "Very sadly.",
         "Alderman": "A member of a town council."
-      }
+      },
+      "grade": "3",
+      "gradeWhy": "Owner asked for best judgment (20 Nov 2026): US schools read Potter aloud in K-2 and children read her alone around Grade 3; her old words and long sentences push the shared rule to Grades 4-5."
     },
     "two-bad-mice": {
       "source": "mice",
@@ -744,7 +756,9 @@
         "frugal": "Careful not to waste anything.",
         "bolster": "A long, round pillow.",
         "sixpence": "An old British coin."
-      }
+      },
+      "grade": "3",
+      "gradeWhy": "Owner asked for best judgment (20 Nov 2026): US schools read Potter aloud in K-2 and children read her alone around Grade 3; her old words and long sentences push the shared rule to Grades 4-5."
     },
     "tittlemouse": {
       "source": "tittlemouse",
@@ -841,7 +855,9 @@
         "lodgings": "Rooms that people pay to stay in.",
         "distracted": "Very upset and confused.",
         "fortnight": "Two weeks."
-      }
+      },
+      "grade": "3",
+      "gradeWhy": "Owner asked for best judgment (20 Nov 2026): US schools read Potter aloud in K-2 and children read her alone around Grade 3; her old words and long sentences push the shared rule to Grades 4-5."
     },
     "ginger-and-pickles": {
       "source": "ginger",
@@ -933,7 +949,9 @@
         "rates and taxes": "Money people pay to the town and the government.",
         "summons": "An order to go to court.",
         "gamekeeper": "A person who looks after the wild birds and animals on a big piece of land."
-      }
+      },
+      "grade": "3",
+      "gradeWhy": "Owner asked for best judgment (20 Nov 2026): US schools read Potter aloud in K-2 and children read her alone around Grade 3; her old words and long sentences push the shared rule to Grades 4-5."
     },
     "velveteen-rabbit": {
       "source": "velveteen",

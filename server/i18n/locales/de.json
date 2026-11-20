@@ -11680,7 +11680,8 @@
       "originalBloom": "Zum Originalbuch auf Bloom Library.",
       "publicDomain": "Gemeinfrei",
       "firstPublished": "Erstmals erschienen {year} ({edition}).",
-      "changesClassic": "Oomba hat die Geschichte in Seiten geteilt und die Bilder verkleinert. Der Text ist der des Autors."
+      "changesClassic": "Oomba hat die Geschichte in Seiten geteilt und die Bilder verkleinert. Der Text ist der des Autors.",
+      "changesClassicCut": "Oomba hat die Geschichte in Seiten aufgeteilt, die Bilder verkleinert und eine Zeile weggelassen. Alle anderen Wörter stammen vom Autor."
     },
     "readToMe": "Vorlesen",
     "pagesLabel": "Seiten",
