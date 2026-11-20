@@ -166,35 +166,48 @@ function start() {
     t1 = setTimeout(swap, outMs);
     anim = me = { done: () => { if (t1) { clearTimeout(t1); swap(); } slide(0); done(); } };
   }
+  // Touch events, not pointer events: iPhone Safari starts panning the whole site on a sideways move before a pointer
+  // listener can stop it, but a touchmove listener that isn't passive can (owner on iPhone Safari, 20 Nov 2026). Once a
+  // finger is moving sideways the reader owns the gesture (preventDefault), up and down it is a scroll, two fingers are
+  // a pinch. A touch that starts at the very edge of the screen is left to Safari's own back/forward swipe.
   let drag = null;
-  stage.addEventListener('pointerdown', e => {
-    if (e.pointerType === 'mouse' || !e.isPrimary || e.target.closest('a, button, input')) return;
+  const EDGE = 20;
+  const xy = e => e.changedTouches[0];
+  stage.addEventListener('touchstart', e => {
+    if (e.touches.length > 1) { if (drag && drag.on) slide(0, 180); drag = null; return; }
+    const p = xy(e);
+    if (e.target.closest('a, button, input') || p.clientX < EDGE || p.clientX > innerWidth - EDGE) { drag = null; return; }
     if (anim) anim.done();
-    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, on: false, hist: [[e.timeStamp, e.clientX]] };
-  });
-  stage.addEventListener('pointermove', e => {
-    if (!drag || e.pointerId !== drag.id) return;
-    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    drag = { id: p.identifier, x: p.clientX, y: p.clientY, dx: 0, on: false, hist: [[e.timeStamp, p.clientX]] };
+  }, { passive: true });
+  stage.addEventListener('touchmove', e => {
+    if (!drag) return;
+    if (e.touches.length > 1) { if (drag.on) slide(0, 180); drag = null; return; }
+    const p = [...e.changedTouches].find(t => t.identifier === drag.id); if (!p) return;
+    const dx = p.clientX - drag.x, dy = p.clientY - drag.y;
     if (!drag.on) {
       if (Math.abs(dy) > 8 && Math.abs(dy) > Math.abs(dx)) { drag = null; return; }   // scrolling the page
       if (Math.abs(dx) < 6) return;
-      drag.on = true; try { stage.setPointerCapture(e.pointerId); } catch {}
+      drag.on = true; stage.classList.add('is-dragging');
     }
+    if (e.cancelable) e.preventDefault();                                                  // Safari: don't move the site
     drag.dx = dx;
-    drag.hist.push([e.timeStamp, e.clientX]); if (drag.hist.length > 6) drag.hist.shift();
+    drag.hist.push([e.timeStamp, p.clientX]); if (drag.hist.length > 6) drag.hist.shift();
     if (!still.matches) slide(canTurn(dx < 0) ? dx : dx / 3);                             // nothing before page 1
-  });
+  }, { passive: false });
   const endDrag = e => {
-    if (!drag || e.pointerId !== drag.id) return;
+    if (!drag) return;
+    const p = [...e.changedTouches].find(t => t.identifier === drag.id); if (!p) return;
     const { dx, on, hist } = drag; drag = null;
+    stage.classList.remove('is-dragging');
     if (!on) return;
-    const [t0, x0] = hist[0], v = (e.clientX - x0) / Math.max(1, e.timeStamp - t0);   // px/ms over the last moves
+    const [t0, x0] = hist[0], v = (p.clientX - x0) / Math.max(1, e.timeStamp - t0);   // px/ms over the last moves
     const far = Math.abs(dx) >= Math.min(80, width() / 6), flick = Math.abs(v) > 0.3 && Math.sign(v) === Math.sign(dx) && Math.abs(dx) > 15;
-    if (e.type === 'pointerup' && (far || flick) && canTurn(dx < 0)) turn(dx < 0, dx);
+    if (e.type === 'touchend' && (far || flick) && canTurn(dx < 0)) turn(dx < 0, dx);
     else slide(0, 180);
   };
-  stage.addEventListener('pointerup', endDrag);
-  stage.addEventListener('pointercancel', endDrag);
+  stage.addEventListener('touchend', endDrag);
+  stage.addEventListener('touchcancel', endDrag);
   // A trackpad's sideways two-finger swipe: the page follows it, turns once past 90px (its momentum is ignored until the
   // fingers stop), or springs back if the swipe stops short.
   let wx = 0, wLock = false, wIdle = 0;

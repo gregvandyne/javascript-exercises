@@ -267,6 +267,20 @@ test('swiping turns the page: a finger drags the page and turns it, a short drag
     assert.equal(await page.$eval('#rd-stage > :not(.rd-nav):not([hidden])', e => e.style.transform), '', `${book}: back in place`);
     await touch(page, line(b.x + 120, b.x - 120, b.y)); await page.waitForTimeout(300);
     assert.equal(await page.$eval('#rd-stage > :not(.rd-nav):not([hidden])', e => e.style.transform), '', `${book}: no transform left after a turn`);
+    // iPhone Safari: once a finger moves sideways the reader stops the browser moving the site (touchmove is
+    // cancelled); an up-and-down move is left alone (it scrolls); a touch at the screen's edge is Safari's back swipe.
+    await page.evaluate(() => { window.__tm = []; document.addEventListener('touchmove', e => window.__tm.push(e.defaultPrevented), { passive: true }); });
+    await touch(page, line(b.x + 40, b.x - 40, b.y, 8));
+    assert.ok((await page.evaluate(() => window.__tm)).slice(-4).every(Boolean), `${book}: a sideways move is the reader's`);
+    await touch(page, line(b.x + 40, b.x + 40, b.y, 8));                       // (wait for the turn to finish)
+    await page.evaluate(() => { window.__tm = []; });
+    await touch(page, line(b.x, b.x + 4, b.y, 8, 120));
+    assert.ok(!(await page.evaluate(() => window.__tm)).some(Boolean), `${book}: scrolling is the browser's`);
+    const at = await count(page);
+    await page.evaluate(() => { window.__tm = []; });
+    await touch(page, line(8, 200, b.y, 8));
+    assert.ok(!(await page.evaluate(() => window.__tm)).some(Boolean), `${book}: the edge swipe is Safari's`);
+    assert.equal(await count(page), at, `${book}: an edge swipe doesn't turn`);
     assert.deepEqual(errors, []);
     await ctx.close();
   }
