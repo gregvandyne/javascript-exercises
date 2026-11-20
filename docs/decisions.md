@@ -9204,6 +9204,52 @@ books from our library, chosen by a cheap Claude model.
   and `tests/unit/library-suggest-browser.test.js` (Chromium: a wish shows the cards, All books brings the grid back, a
   screened wish, phones with no sideways scroll). No real API call was made while building it (no key in the sandbox).
 
+## Virtual math manipulatives, hidden while it is tested (20 Nov 2026)
+
+The Muse-hosted "Virtual Math Manipulatives" app (branch virtual-manipulatives) is rebuilt inside the site, on the site's
+accounts, classes, database, AI client, theme and i18n. Nothing of Muse, Bun or React is kept: the site has no React
+and no bundle step for pages, so the UI is a plain ES module like the classroom dashboard (public/js/manip.js, with its
+data in public/js/manip-data.js and the 300 tasks in public/js/manip-tasks.js, shared with the server).
+
+- **Hidden.** /manipulatives and /api/manipulatives/* answer only the platform admin, school staff whose usernames are in
+  MANIPULATIVES_USERS, and the students of a class one of them is running a session for (routes/manipulatives.js gate;
+  everyone else falls through to the normal 404). MANIPULATIVES=0 turns it off for everyone. No menu, sitemap or search
+  links it; the page is noindex and sends X-Robots-Tag. The only other place it shows is a "Join" notice on a student's
+  own class page while their teacher runs a session.
+- **Turning it on for teachers later:** add their usernames to MANIPULATIVES_USERS (one teacher at a time), or, for
+  everyone, change canHost in services/manipulatives.js to S.isSchoolStaff(u) and add a link from the class page or the
+  Teach menu; then add it to the privacy page (below) and translate the js.manip.* strings.
+- **Identity.** No typed names and no anonymous joins. A session belongs to its teacher and one class they teach (or
+  that their school admin membership covers); its join code only finds it: a student outside the class gets the same
+  404 as a wrong code. One running session per class; a session ends by itself after 12 hours and is deleted (with the
+  students' work) 30 days after it ends.
+- **Who sees what.** Saved boards (manip_boards) are their owner's: only the owner lists, opens by id or deletes them.
+  Only hosts save boards and so make share codes; opening a code copies the board into the opener's own board. A
+  student's work (manip_work) is seen by that student and the session's teacher (and the platform admin): students get
+  their own board and the pushed board, never the class list or another student's board. The teacher sees students by
+  the name the class roster shows (roster name, else display name) on the dashboard and its PDF. Only the teacher (or
+  the platform admin) reads the dashboard, pushes, exports or ends.
+- **Text.** Every board that is saved, sent or pushed is rebuilt on the server (cleanState): sticky notes and bar labels
+  go through the site's word lists and personal-information rules (textfilter.js); any other string on the board must be
+  clean too. The family link-code shape is not checked here ("Build 246 with blocks" looks like one, and a note only
+  reaches its writer and their teacher).
+- **AI.** "Draft with AI" is for hosts only, through builder/anthropic.js (the AI budget, config.builderModel), 30 an
+  hour. It gets the teacher's description, the tool and its piece list, and a task from the tool's own library: never
+  students' work or names (a description with the name of one of the teacher's students is refused). The answer is
+  sanitized as the original was (piece kinds from the tool's palette only, at most 30, coordinates clamped, 2 to 6 notes
+  that pass the word rules, at most 4 pen marks in the pen colors). No key or a resting budget: a plain starting board.
+- **Live updates** poll every few seconds, like the classroom dashboard (Oomba Live's socket is for its games).
+- **PDF export** is made on the server (a text summary per student), for the session's teacher only.
+- **Content.** "Cuisenaire Rods" became "Number rods" (slug number-rods); "Miro" is gone; US spelling; grades K-8 (the six
+  grade-9 algebra tasks are labeled grade 8 and keep their high-school codes); every task and its code is kept.
+- **Database:** migration 0092_manipulatives (0091 is taken on an unmerged branch; migrations run by name). Account
+  deletion removes a person's boards, work and sessions; leaving a class removes their work in its sessions; deleting a
+  class or school removes its sessions (school-delete.js BY_CLASS, and ON DELETE CASCADE).
+- **Not translated yet:** tool names, descriptions, help lines and palette labels (manip-data.js and the tool code) and
+  the whole task library are English only; the page's own words are js.manip.* / manip.* keys in en.json.
+- **Privacy page before launch:** it should say that students' boards in a session (pieces, sticky notes, pen marks) are
+  kept for the teacher for up to 30 days after the session, and that teachers' lesson descriptions go to the AI. Not
+  changed while hidden (no LEGAL_UPDATED bump).
 ## Story Library: typos corrected in StoryWeaver books (20 Nov 2026)
 
 Owner: "Just fix the typos" for the StoryWeaver books that were left out only for mistakes in their own text. CC BY 4.0
@@ -9299,3 +9345,27 @@ left out only for text mistakes, "just fix the typos".
   or stock-named unlabeled picture, an explicit NC picture, another holder, "all rights reserved"; corrections applied,
   missing or doubled; the report's list; every shipped book's unlabeled count and corrections; the correction note
   over HTTP before the share-alike note, and not on uncorrected books).
+
+## Story Library: a history fact corrected in Marching to Freedom (20 Nov 2026)
+
+- The owner asked to fix a factual error in sw-0093 (the Dandi March). Its "Fun facts of History" page said the arrest at
+  Dandi "sparked off the Non-cooperation Movement" (that was 1920-22). It now says the march sparked the Civil
+  Disobedience Movement, that people broke the salt law and boycotted British goods, and that Gandhi was arrested a few
+  weeks later (5 May 1930, not at Dandi on the day). "The year 2005 marks the 75th anniversary" became "In 2005, India
+  marked the 75th anniversary".
+- How: two `fixes` with `kind: "fact"` in `seed-library/storyweaver.json`, applied by the same `applyFixes`. The manifest
+  counts them apart (`credits.factCorrections`; `credits.corrections` stays typos only), and the credits add "Oomba
+  corrected a history fact." (`library.credits.factCorrected`, 13 languages). Fact fixes are made only when the owner
+  asks; typo fixes stay limited to real typos.
+
+## Story Library: words and picture on one screen in the reader (20 Nov 2026)
+
+- The owner had to scroll away from the picture to read long pages. Now:
+  - Each page's text gets a length band from its word count (`data-len`: s up to 20 words, m up to 50, l up to 100, xl
+    beyond), set by the server and by `public/js/library.js` on every page turn; longer bands use smaller type.
+  - Wide, landscape screens (at least 900 px wide and wider than tall): picture left, words right, both within the
+    screen's height; a very long page scrolls inside the words column while the picture stays.
+  - Portrait (phones, tablets upright): the picture is shorter, and on long pages (l, xl) it stays pinned under the top
+    bar while the words scroll beneath it; Back / Next stay pinned above the tab bar as before.
+- Test: `library-browser.test.js` checks the library's longest page at 1280x720 (side by side, both on screen) and on an
+  iPhone 13 (the picture stays on screen after scrolling).

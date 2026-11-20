@@ -337,6 +337,18 @@ main{position:relative;z-index:1}
 .lp-faq details{padding:0}
 .lp-faq summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;cursor:pointer;border-radius:var(--r)}
 .lp-faq summary::-webkit-details-marker{display:none}
+.lp-doors{display:grid;gap:16px;margin-top:40px}
+@media (min-width:720px){.lp-doors{grid-template-columns:1fr 1fr}}
+.lp-door{position:relative;display:flex;flex-direction:column;color:var(--text);text-decoration:none;transition:transform .2s,border-color .2s}
+.lp-door:hover{transform:translateY(-3px);border-color:var(--mint)}
+.lp-door:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+.lp-door .lp-eyebrow{margin-bottom:10px}
+.lp-door h3{font-size:1.25rem;line-height:1.25;margin:0 0 10px;letter-spacing:-.01em;text-wrap:balance}
+.lp-door p{color:var(--text-2);margin:0 0 14px;line-height:1.55}
+.lp-door-badges{list-style:none;padding:0;margin:0 0 8px;display:grid;gap:6px;font-weight:600;font-size:15px}
+.lp-door-badges span{color:var(--accent-text)}
+.lp-door-go{margin-top:auto;align-self:flex-end;font-size:1.4rem;font-weight:800;color:var(--accent-text)}
+@media (prefers-reduced-motion:reduce){.lp-door,.lp-door:hover{transition:none;transform:none}}
 .lp-faq summary h3{font-size:1.1rem;margin:0;font-weight:700;line-height:1.35;letter-spacing:-.01em}
 .lp-faq details p{padding:0 24px 22px}
 .lp-plus{position:relative;width:20px;height:20px;flex:none}

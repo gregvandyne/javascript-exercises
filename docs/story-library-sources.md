@@ -190,7 +190,7 @@ Every candidate below was read in full by a person and checked for ages 4 to 10:
 | sw-0348 | How Do Aeroplanes Fly? | Grades 4-5 | 3.58 | 907 | 12 | Aditi Sarawagi | Lavanya Karthik | – | CC BY 4.0 |
 | sw-0397 | Jadav and the Tree-Place | Grades 4-5 | 3.66 | 1485 | 19 | Vinayak Varma | Vinayak Varma | – | CC BY 4.0 |
 | sw-0352 | Let's Go Seed Collecting! | Grades 4-5 | 3.55 | 1306 | 18 | Neha Sumitran | Archana Sreenivasan | – | CC BY 4.0 |
-| sw-0093 | Marching to Freedom | Grades 4-5 | 3.85 | 1346 | 6 | Subhadra Sen Gupta | Tapas Guha | – | CC BY 4.0 |
+| sw-0093 | Marching to Freedom | Grades 4-5 | 3.82 | 1358 | 6 | Subhadra Sen Gupta | Tapas Guha | – | CC BY 4.0 |
 | sw-0090 | Raza Meets the King | Grades 4-5 | 4.22 | 1250 | 7 | Subhadra Sen Gupta | Tapas Guha | – | CC BY 4.0 |
 | sw-0322 | The Carpenter's last job | Grades 4-5 | 3.6 | 244 | 3 | Rupa Prakash | Rupa Prakash | – | CC BY 4.0 |
 | sw-0089 | The Magic Powder - A Folktale from Myanmar | Grades 4-5 | 3.87 | 1141 | 7 | Greystroke | P.G. Dinesh | – | CC BY 4.0 |
@@ -206,12 +206,12 @@ These books have more pictures than pages. A person matched each page to a pictu
 
 ### Text corrected by Oomba
 
-63 books, 317 corrections. Page 0 is the title; a line break is shown as ⏎.
+63 books, 319 corrections. Page 0 is the title; a line break is shown as ⏎.
 
 - sw-0007 Listen to My Body: p19 "mothers kitchen" → "mother's kitchen"; p21 "mothers wonderful" → "mother's wonderful"
 - sw-0070 Bani: p6 "May be sing" → "Maybe sing"; p10 "Oh! those" → "Oh! Those"
 - sw-0090 Raza Meets the King: p7 "Mughlai cusine" → "Mughlai cuisine"
-- sw-0093 Marching to Freedom: p6 "waiting for you.”⏎⏎“Hmm, you're right, G … nd Binni and I will be waiting for you.”" → "waiting for you.”"; p3 "quiet,⏎Dhani went looking for his father. He found⏎him" → "quiet, Dhani went looking for his father. He found him"; p3 "walk so much.⏎Only" → "walk so much. Only"; p4 "you can!”⏎Dhani replied stubbornly. “You can't stop me⏎from" → "you can!” Dhani replied stubbornly. “You can't stop me from"; p4 "explained⏎patiently, “Only the people who have been⏎chosen" → "explained patiently, “Only the people who have been chosen"; p5 "following⏎me" → "following me"; p5 "began⏎nervously" → "began nervously"; p5 "Dandi⏎is 385" → "Dandi is 385"
+- sw-0093 Marching to Freedom: p6 "waiting for you.”⏎⏎“Hmm, you're right, G … nd Binni and I will be waiting for you.”" → "waiting for you.”"; p3 "quiet,⏎Dhani went looking for his father. He found⏎him" → "quiet, Dhani went looking for his father. He found him"; p3 "walk so much.⏎Only" → "walk so much. Only"; p4 "you can!”⏎Dhani replied stubbornly. “You can't stop me⏎from" → "you can!” Dhani replied stubbornly. “You can't stop me from"; p4 "explained⏎patiently, “Only the people who have been⏎chosen" → "explained patiently, “Only the people who have been chosen"; p5 "following⏎me" → "following me"; p5 "began⏎nervously" → "began nervously"; p5 "Dandi⏎is 385" → "Dandi is 385"; p6 "At Dandi, Gandhi and his followers colle … boycotted schools, colleges and offices." → "At Dandi, Gandhi and his followers made  … . Gandhi was arrested a few weeks later."; p6 "5. The year 2005 marks the 75th anniversary of the Dandi March." → "5. In 2005, India marked the 75th anniversary of the Dandi March."
 - sw-0123 Under My Bed: p7 "“What happened dear?Did you call me?”" → "“What happened, dear? Did you call me?”"
 - sw-0135 Singing in the Rain: p3 "dinosuar" → "dinosaur"
 - sw-0148 BooBoo sings for Vihaan: p3 "look!,"" → "look!""; p8 "Vihaan!,"" → "Vihaan!""; p8 "SONG!,"" → "SONG!""; p9 "Dont cry" → "Don't cry"; p10 "HIHIHI!,'" → "HIHIHI!'"

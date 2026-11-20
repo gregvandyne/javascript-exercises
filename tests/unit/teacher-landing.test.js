@@ -63,21 +63,32 @@ test('no session (a first visit or a search engine): "/" is the teacher landing 
   }
 });
 
-test('the top bar: Just Play (JUST_PLAY_URL) and Start free trial; every trial button goes to /trial; pricing to /plans', async () => {
+test('the top bar: Just Play (JUST_PLAY_URL) and Start free trial; every trial button asks who\'s signing up; pricing to /plans', async () => {
   const s = (await call(null, '/')).text;
   const bar = /<header class="lp-bar"[\s\S]*?<\/header>/.exec(s)[0];
   assert.equal(L.JUST_PLAY_URL, '/play');
+  assert.equal(L.TRIAL_URL, '/signup?trial=1');
   assert.match(bar, /<a class="lp-btn lp-btn-ghost lp-btn-sm lp-justplay" href="\/play" data-cta="play">Just Play /);
   // The link has a name of its own: on a phone only its short, aria-hidden words show.
-  assert.match(bar, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/trial" data-cta="trial" aria-label="Start free trial"><span class="lp-long">Start free trial<\/span>/);
-  assert.ok(bar.indexOf('lp-justplay') < bar.indexOf('href="/trial"'), 'Just Play, then the trial, at the right');
+  assert.match(bar, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/signup\?trial=1" data-cta="trial" aria-label="Start free trial"><span class="lp-long">Start free trial<\/span>/);
+  assert.ok(bar.indexOf('lp-justplay') < bar.indexOf('href="/signup?trial=1"'), 'Just Play, then the trial, at the right');
   const trials = [...s.matchAll(/<a [^>]*data-cta="trial"[^>]*>/g)].map(m => /href="([^"]+)"/.exec(m[0])[1]);
-  assert.ok(trials.length >= 5); assert.ok(trials.every(h => h === '/trial'), trials.join());
+  assert.ok(trials.length >= 5); assert.ok(trials.every(h => h === '/signup?trial=1'), trials.join());
   assert.match(s, /href="\/plans" data-cta="pricing"/);
   assert.match(s, /No card needed[\s\S]*Cancel anytime[\s\S]*Unlimited students/, 'the trust line');
   assert.match(s, /href="mailto:Greg@oomba\.ai\?subject=/, 'schools: talk to us');
   assert.match(s, /<section class="lp-play" id="play"[\s\S]*?href="\/play"/, 'old "/#play" links land on a way to the games');
   for (const p of ['/teachers', '/teachers/cs-quest', '/teachers/number-quest', '/teachers/cyber-defenders', '/parents', '/learn', '/privacy', '/terms']) assert.ok(s.includes(`href="${p}"`), `links ${p}`);
+});
+
+test('under the questions: a box each for /parents and /teachers, in their own words, the whole box a link', async () => {
+  const s = (await call(null, '/')).text;
+  const faq = /<section class="lp-sec" id="faq"[\s\S]*?<\/section>/.exec(s)[0];
+  const doors = [...faq.matchAll(/<a class="lp-card lp-door rv" href="([^"]+)">([\s\S]*?)<\/a>/g)];
+  assert.deepEqual(doors.map(m => m[1]), ['/parents', '/teachers']);
+  assert.match(doors[0][2], /For parents[\s\S]*<h3>Fun learning games for kids 5–14, safe by design<\/h3>[\s\S]*No chat with strangers/);
+  assert.match(doors[1][2], /For teachers[\s\S]*<h3>Fun, interactive learning games your class will ask for<\/h3>[\s\S]*Sign in with Google/);
+  assert.ok(faq.indexOf('lp-faq') < faq.indexOf('lp-doors'), 'after the questions');
 });
 
 test('honest page: no prices on "/" (LANDING_SHOW_PRICE off), no ratings, reviews, testimonials or user counts', async () => {

@@ -3336,6 +3336,190 @@
       "lookAt": "Look at page {page}",
       "doneMsg": "All done! {right} of {total} right on the first try. Great reading!",
       "doneShort": "All done! Great reading!"
+    },
+    "manip": {
+      "loadingShort": "Loading…",
+      "grades": "Grades {grades}",
+      "grade": "Grade {grade}",
+      "nav": {
+        "allTools": "← All tools",
+        "back": "← Back"
+      },
+      "home": {
+        "title": "Math manipulatives",
+        "testing": "Testing: only you can see this",
+        "lead": "18 virtual manipulatives on one board, with sticky notes, a pen, saved boards with share codes, live class sessions and {n} ready-made tasks for grades K-8.",
+        "search": "Search the tools",
+        "cat": "Category",
+        "allCats": "All categories",
+        "none": "No tool matches. Try a shorter word, like fraction or clock."
+      },
+      "host": {
+        "title": "Run a live session",
+        "klass": "Class",
+        "tool": "Tool",
+        "name": "Session name",
+        "namePh": "For example: Fractions warm-up",
+        "start": "Start the session",
+        "who": "Only the students of the class you pick can join, signed in with their own accounts. The join code alone lets nobody else in.",
+        "noClasses": "You don't teach a class yet, so there is no class to run a session for.",
+        "mine": "Your sessions"
+      },
+      "boards": {
+        "title": "Your saved boards",
+        "none": "Save a board from any tool and it shows up here with its share code.",
+        "open": "Open",
+        "delete": "Delete",
+        "deleteOne": "Delete board {code}"
+      },
+      "share": {
+        "save": "Save and get a code",
+        "saved1": "Saved. Share code {code}",
+        "open": "Open a code",
+        "codePh": "ABCD2345",
+        "codeLabel": "Share code",
+        "go": "Go",
+        "needCode": "Type a share code first.",
+        "loaded": "Board {code} is on your board now.",
+        "otherTool": "That code is for another tool.",
+        "saved": "Your saved boards for this tool",
+        "loadSaved": "Load saved board {code}",
+        "haveCode": "Have a share code?",
+        "haveCodeText": "Type it to open a copy of that board. The saved board never changes.",
+        "backToSession": "Back to {title}"
+      },
+      "side": {
+        "label": "Pieces and tools",
+        "objects": "Tap to add",
+        "tools": "Tools",
+        "add": "Add {label}",
+        "undo": "Undo",
+        "annotate": "Pen",
+        "note": "Sticky note",
+        "draft": "Draft with AI",
+        "reset": "Clear the board"
+      },
+      "board": {
+        "label": "{tool} board",
+        "emptyPieces": "Tap a piece to put it on the board, then drag it. Tap a piece on the board for copy, flip, rotate, fill, lock and delete.",
+        "pieceHint": "Tap a piece on the board for its buttons. Sticky notes can be dragged anywhere; tap one to type."
+      },
+      "piece": {
+        "label": "Piece {label}",
+        "actions": "Buttons for {label}",
+        "copy": "Copy",
+        "flip": "Flip",
+        "rotate": "Rotate",
+        "fill": "Fill",
+        "lock": "Lock",
+        "unlock": "Unlock",
+        "delete": "Delete",
+        "pickBreak": "Tap a piece that can be broken into ten first.",
+        "pickRegroup": "Tap one of ten pieces of the same kind first."
+      },
+      "note": {
+        "label": "Sticky note {n}",
+        "text": "Text of sticky note {n}",
+        "placeholder": "Type a label or a question…",
+        "tap": "Tap to write…",
+        "edit": "Edit",
+        "editN": "Edit sticky note {n}",
+        "done": "Done",
+        "delete": "Delete",
+        "deleteN": "Delete sticky note {n}"
+      },
+      "ann": {
+        "toolbar": "Pen tools",
+        "surface": "Drawing area. Draw with a finger, pen or mouse.",
+        "pen": "Pen",
+        "color": "Pen color {color}",
+        "eraser": "Eraser",
+        "clear": "Clear the pen",
+        "done": "Done",
+        "penHint": "Draw on the board with a finger or the mouse.",
+        "eraseHint": "Rub over a drawing to erase it."
+      },
+      "draft": {
+        "title": "Draft a lesson with AI",
+        "close": "Close",
+        "text": "Describe a lesson and the AI sets up this board: pieces placed, sticky notes with the instructions and questions, and pen marks. It replaces what is on the board; Undo brings it back.",
+        "task": "Start from a task",
+        "ownLesson": "My own lesson",
+        "grade": "Grade",
+        "any": "Any",
+        "brief": "What should the lesson do?",
+        "briefPh": "For example: Grade 3, build 346, then break a hundred into tens. Ask what stays the same.",
+        "private": "Only your description goes to the AI: never students' names or work.",
+        "go": "Draft my board",
+        "withPieces": "The AI can place this tool's pieces.",
+        "noPieces": "This tool has no pieces to place, so the draft comes as sticky notes and pen marks.",
+        "needBrief": "Describe the lesson first.",
+        "working": "Drafting your board…",
+        "done": "\"{title}\" is on the board: {pieces} pieces, {notes} sticky notes, {marks} pen marks. Move anything you like, then save it or push it to a class.",
+        "noAi": "(The AI is resting, so this is a simple starting board.)"
+      },
+      "tasks": {
+        "boxTitle": "Try this: ready-made tasks",
+        "boxLabel": "Tasks for this tool",
+        "teacherNote": "Teacher note:",
+        "all": "All {n} tasks for this tool",
+        "less": "Show fewer",
+        "library": "Task library",
+        "lead": "{n} original tasks for the 18 tools, grades K-8, each with teacher notes and its Common Core code.",
+        "search": "Search tasks, tools or codes",
+        "byTool": "Filter by tool",
+        "allTools": "All 18 tools",
+        "byGrade": "Filter by grade",
+        "allGrades": "All grades",
+        "count": "{n, plural, one {# task} other {# tasks}}",
+        "none": "No task matches. Try a tool name like Clock, or a code like 3.NF.",
+        "open": "Open the tool"
+      },
+      "live": {
+        "on": "Live: {title}",
+        "saves": "Your board goes to your teacher as you work.",
+        "ended": "This session has ended.",
+        "sent": "Your teacher sent you a board",
+        "load": "Load it",
+        "keep": "Keep mine",
+        "loaded": "Your teacher's board is on your board now. Undo brings yours back.",
+        "gone": "This session isn't here."
+      },
+      "dash": {
+        "title": "Live session",
+        "live": "Live",
+        "ended": "Ended",
+        "codeFor": "Students in {klass} join with this code (or from their class page):",
+        "codeLabel": "Join code",
+        "joined": "{n, plural, one {# student joined} other {# students joined}}",
+        "build": "Open {tool} to build",
+        "pdf": "Export student work (PDF)",
+        "end": "End the session",
+        "endedMsg": "The session has ended.",
+        "pushTitle": "Push a board to every student",
+        "pushText": "Build a board in the tool and save it, then push it here. Students choose to load it; their own work stays until they do.",
+        "pushOne": "Push {code}",
+        "noBoards": "No saved board for this tool yet. Open the tool, build, and save one.",
+        "pushedAt": "Last pushed {when}.",
+        "pushed": "Pushed to every student.",
+        "work": "Student work",
+        "workOf": "Work from {name}",
+        "lastSaved": "Last saved {when}",
+        "view": "See the board",
+        "close": "Close",
+        "noStudents": "No students yet. Their work shows up here as they build.",
+        "unreadable": "This board couldn't be read.",
+        "empty": "No pieces yet."
+      },
+      "student": {
+        "title": "Math boards",
+        "yours": "Your class sessions",
+        "none": "There is no session for your class right now.",
+        "join": "Join",
+        "back": "Go back in",
+        "codeTitle": "Have a join code?",
+        "codeLabel": "Join code"
+      }
     }
   },
   "favorites": {
@@ -12096,6 +12280,7 @@
       "translation": "Translation: {names}",
       "changes": "Oomba resized the pictures and shows the book one page at a time. Pratham Books does not endorse Oomba.",
       "corrected": "Oomba corrected spelling and punctuation.",
+      "factCorrected": "Oomba corrected a history fact.",
       "original": "See the original book.",
       "from": "Based on a book by {name}",
       "changesBloom": "Oomba resized the pictures and shows the book one page at a time. Bloom Library, SIL Global and the book's publisher do not endorse Oomba.",
@@ -12166,6 +12351,30 @@
       "found": "We found {count, plural, one {# book} other {# books}} for you.",
       "empty": "Type what you would like to read about.",
       "error": "Something went wrong. Please try again."
+    }
+  },
+  "manip": {
+    "title": "Math manipulatives",
+    "loading": "Loading the math manipulatives…",
+    "class": {
+      "banner": "Your teacher started a math board:",
+      "join": "Join"
+    },
+    "errors": {
+      "notFound": "That isn't here.",
+      "badTool": "That tool isn't one of the manipulatives.",
+      "badState": "That board couldn't be read.",
+      "tooBig": "That board is too big to save.",
+      "words": "Some words on the board aren't allowed. Change them and try again.",
+      "personal": "Leave out phone numbers, emails, links and codes, then try again.",
+      "tooMany": "You have a lot of saved boards. Delete some first.",
+      "noCode": "No board has that code. Check it and try again.",
+      "ended": "This session has ended.",
+      "noBoard": "Pick one of your saved boards.",
+      "otherTool": "That board is for another tool. Push a board made with this session's tool.",
+      "brief": "Describe the lesson in a few words first.",
+      "names": "Leave students' names out of the description: names never go to the AI.",
+      "aiFailed": "The AI couldn't draft that lesson just now. Try again in a moment."
     }
   }
 }

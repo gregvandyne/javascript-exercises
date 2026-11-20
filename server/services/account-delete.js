@@ -38,6 +38,7 @@ import { storyDir } from './story-jobs.js';
 import { forgetUser as forgetClassroom } from './gclassroom.js';
 import { forgetUser as forgetDash } from './dash.js';
 import { forgetUser as forgetGameSets } from './game-sets.js';
+import { forgetUser as forgetManipulatives } from './manipulatives.js';
 
 const DAY = 86400e3;
 /** How long a deleted child's old username can't be taken. */
@@ -121,6 +122,8 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     q.run('INSERT INTO reserved_names(name, until) VALUES (?,?) ON CONFLICT(name) DO UPDATE SET until=excluded.until', u.username, t + RESERVE_DAYS * DAY);
     // 11b. question sets they kept in official games (their links stop opening a set)
     forgetGameSets(u.id);
+    // 11c. virtual math manipulatives: their saved boards, their work in sessions, the sessions they ran
+    forgetManipulatives(u.id);
     // 12. the audit (ids only, never the old name)
     audit(actor ? actor.id : null, 'user.delete', u.id, { by: actor ? actor.id : null, kind: by, ...(parentMade ? { parentMade: true } : {}) });
   });

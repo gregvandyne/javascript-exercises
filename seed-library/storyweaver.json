@@ -2078,6 +2078,18 @@
      "page": 5,
      "from": "Dandi\nis 385",
      "to": "Dandi is 385"
+    },
+    {
+     "page": 6,
+     "from": "At Dandi, Gandhi and his followers collected salt from the seashore and were arrested. The arrest sparked off the Non-cooperation Movement, and people all over India boycotted schools, colleges and offices.",
+     "to": "At Dandi, Gandhi and his followers made salt from the seashore, breaking the British salt law. The march sparked off the Civil Disobedience Movement, and people all over India broke the salt law and boycotted British goods. Gandhi was arrested a few weeks later.",
+     "kind": "fact"
+    },
+    {
+     "page": 6,
+     "from": "5. The year 2005 marks the 75th anniversary of the Dandi March.",
+     "to": "5. In 2005, India marked the 75th anniversary of the Dandi March.",
+     "kind": "fact"
     }
    ]
   },

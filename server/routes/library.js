@@ -58,7 +58,8 @@ export function credits(t, bk, { full = false } = {}) {
   const lic = c.licenseUrl ? ext(c.licenseUrl, c.licenseName) : c.licenseName;
   const changes = bk.source === 'bloom' ? (c.shareAlike ? t('library.credits.changesBloomSA', { license: c.licenseName }) : t('library.credits.changesBloom')) : t('library.credits.changes');
   // A book whose typos Oomba corrected (credits.corrections, the number of fixes) says so too: the CC BY change notice.
-  const note = c.corrections ? `${t('library.credits.corrected')} ${changes}` : changes;
+  // A history fact Oomba corrected (credits.factCorrections, owner's decision 20 Nov 2026) says so as well.
+  const note = [c.corrections ? t('library.credits.corrected') : '', c.factCorrections ? t('library.credits.factCorrected') : '', changes].filter(Boolean).join(' ');
   return html`<p class="lb-credit small muted" dir="auto"><span>${parts.join(' · ')} · ${lic}</span>
     <span class="lb-credit-note">${note}${full && c.sourceUrl ? html` ${ext(c.sourceUrl, bk.source === 'bloom' ? t('library.credits.originalBloom') : t('library.credits.original'))}` : ''}</span></p>`;
 }
@@ -155,6 +156,8 @@ router.get('/library/:id', (req, res) => {
 });
 
 // ---------------------------------------------------------------- the reader
+/** A page's text length band (s/m/l/xl): its type size, so the words and the picture fit on one screen (library.css). */
+const lenOf = words => (words <= 20 ? 's' : words <= 50 ? 'm' : words <= 100 ? 'l' : 'xl');
 router.get('/library/:id/read', (req, res) => {
   const bk = bookOr404(req, res); if (!bk) return;
   const t = req.t, u = req.user;
@@ -174,7 +177,7 @@ router.get('/library/:id/read', (req, res) => {
       <button class="btn btn-primary rd-aloud" type="button" id="rd-aloud" aria-pressed="false" hidden>🔊 <span>${t('library.readToMe')}</span></button></div>
     <div class="rd-stage" id="rd-stage"${p0 > n ? raw(' hidden') : ''}>
       <figure class="rd-pic"><img id="rd-img" src="${pg.image.src}" alt="${pg.image.alt}" width="${pg.image.w || 720}" height="${pg.image.h || 400}"></figure>
-      <p class="rd-text" id="rd-text" lang="en" dir="ltr" aria-live="polite">${pg.text}</p>
+      <p class="rd-text" id="rd-text" lang="en" dir="ltr" aria-live="polite" data-len="${lenOf(pg.words)}">${pg.text}</p>
       <nav class="rd-nav" aria-label="${t('library.pagesLabel')}">
         <a class="btn rd-prev" id="rd-prev" href="?p=${Math.max(1, p0 - 1)}"${p0 <= 1 ? raw(' aria-disabled="true" tabindex="-1"') : ''}><span class="flip" aria-hidden="true">◀</span> ${t('library.back')}</a>
         <span class="rd-dots" id="rd-dots" aria-hidden="true">${bk.pages.map((_, i) => html`<i class="${i < p0 ? 'on' : ''}"></i>`)}</span>
