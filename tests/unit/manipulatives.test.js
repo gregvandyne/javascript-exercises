@@ -18,7 +18,7 @@ const S = await import('../../server/services/schools.js');
 const M = await import('../../server/services/manipulatives.js');
 const { deleteAccount } = await import('../../server/services/account-delete.js');
 const { createApp } = await import('../../server/app.js');
-const { TOOLS, pieceDefs } = await import('../../public/js/manip-data.js');
+const { TOOLS, pieceDefs, hexValue, freeSpot, HEX_SIXTHS } = await import('../../public/js/manip-data.js');
 const { TASKS } = await import('../../public/js/manip-tasks.js');
 
 let server, base;
@@ -326,4 +326,31 @@ test('content: 18 tools, 300 tasks with their codes, Number rods, US spelling, g
   assert.doesNotMatch(text, /K-12|K-9/, 'grades K-8');
   assert.doesNotMatch(files.filter(f => !f.includes('tasks')).map(f => fs.readFileSync(path.join(ROOT, f), 'utf8')).join('\n'), /\bprice|\/month|per month|subscribe|upgrade/i, 'no prices on these pages (money word problems in the tasks are math)');
   assert.ok(TOOLS.find(x => x.slug === 'number-rods' && x.name === 'Number rods'));
+});
+
+test('pattern blocks: the hexagon value in sixths, squares and thin rhombuses left out', () => {
+  const b = (...kinds) => kinds.map(kind => ({ kind }));
+  assert.deepEqual(hexValue(b('hex', 'trap', 'tri', 'sq')), { text: '1 2/3', sixths: 10, left: 1 });
+  assert.equal(hexValue(b('trap')).text, '1/2'); assert.equal(hexValue(b('para', 'para', 'para')).text, '1');
+  assert.equal(hexValue(b('tri', 'tri')).text, '1/3'); assert.equal(hexValue([]).text, '0');
+  assert.deepEqual(hexValue(b('rhom', 'sq')), { text: '0', sixths: 0, left: 2 });
+  const defs = pieceDefs('pattern-blocks');
+  for (const d of defs) assert.equal(d.value, (HEX_SIXTHS[d.kind] || 0) / 6, `${d.kind}: its value is its share of the hexagon`);
+});
+
+test('new pieces land in the next free spot: never on a piece or a note; a full board steps on from the last piece', () => {
+  const obs = [];
+  for (let i = 0; i < 12; i++) {
+    const at = freeSpot(obs, 96, 84, 800, 430);
+    assert.ok(!obs.some(o => at.x < o.x + o.w && at.x + 96 > o.x && at.y < o.y + o.h && at.y + 84 > o.y), `piece ${i} overlaps nothing`);
+    assert.ok(at.x >= 0 && at.x + 96 <= 800 && at.y >= 0 && at.y + 84 <= 430);
+    obs.push({ ...at, w: 96, h: 84 });
+  }
+  const note = { x: 12, y: 12, w: 176, h: 118 };
+  const first = freeSpot([note], 40, 40, 800, 430);
+  assert.ok(first.x >= note.x + note.w, 'not under a sticky note');
+  const full = [{ x: 0, y: 0, w: 800, h: 430 }];
+  assert.deepEqual(freeSpot(full, 40, 40, 800, 430), { x: 24, y: 24 }, 'full: a small offset');
+  // The board's size travels with it for the teacher's view, cleaned.
+  assert.deepEqual(JSON.parse(M.cleanState({ __ann: { notes: [], strokes: [], size: { w: 390.6, h: 'x' } } }).state).__ann.size, { w: 391, h: 430 });
 });

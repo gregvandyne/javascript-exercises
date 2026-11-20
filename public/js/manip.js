@@ -8,7 +8,7 @@
 // own board in a session. Chrome strings are i18n keys (js.manip.*); tool names, tool help and the task library are
 // English data (public/js/manip-data.js, public/js/manip-tasks.js).
 import { t, api, toast, esc, pageData } from '/js/app.js';
-import { TOOLS, CATS, toolOf, pieceDefs, allPieceDefs, BREAKS, FRACTION_DENS, fracLabel } from '/js/manip-data.js';
+import { TOOLS, CATS, toolOf, pieceDefs, allPieceDefs, BREAKS, FRACTION_DENS, fracLabel, hexValue, freeSpot } from '/js/manip-data.js';
 import { TASKS } from '/js/manip-tasks.js';
 
 const ROOT = document.getElementById('manip');
@@ -33,7 +33,7 @@ const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs
 // element (true when the board changed); bind(el) pointer work of its own; pieces: true for the drag-and-drop tools.
 let pid = 1;
 const newId = () => `${Date.now().toString(36)}${(pid++).toString(36)}`;
-function mkPiece(d, x = 24 + Math.random() * 130, y = 24 + Math.random() * 110) {
+function mkPiece(d, x, y) {
   return { id: newId(), kind: d.kind, x, y, rot: 0, flipped: false, filled: true, locked: false, color: d.color, label: d.label, value: d.value, w: d.w, h: d.h };
 }
 const sel = (key, opts, val, label) => `<label class="mp-set"><span>${esc(label)}</span><select class="input input-sm" data-set="${key}">${opts.map(([v, l]) => `<option value="${esc(v)}"${String(v) === String(val) ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select></label>`;
@@ -51,7 +51,7 @@ function piecesTool({ slug, opts = () => ({}), init = {}, total, settings = () =
     defs: defsOf,
     total,
     palette: st => [
-      ...defsOf(st).map(d => ({ label: d.label, color: d.color, run: s => { s.pieces.push(mkPiece(d)); } })),
+      ...defsOf(st).map(d => ({ label: d.label, color: d.color, run: s => { s.pieces.push(placePiece(s, d)); } })),
       ...(breaks ? [{ label: 'Break ×10', hot: true, run: (s, v) => breakPiece(s, v, slug) }, { label: 'Regroup 10 → 1', run: (s, v) => regroup(s, v, slug) }] : []),
     ],
     settings, extra,
@@ -62,15 +62,26 @@ function piecesTool({ slug, opts = () => ({}), init = {}, total, settings = () =
 const SHAPES = { hex: 'polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)', trap: 'polygon(25% 0,75% 0,100% 100%,0 100%)', tri: 'polygon(50% 0,100% 100%,0 100%)',
   para: 'polygon(25% 0,100% 0,75% 100%,0 100%)', rhom: 'polygon(12% 0,100% 0,88% 100%,0 100%)' };
 const ROUND = new Set(['pos', 'neg', 'blue', 'green', 'm', 'hth', 'tth', 'th', 'h', 't', 'o', 'tenth', 'hund', 'thou', 'penny', 'nickel', 'dime', 'quarter']);
+/** A label size that fits the piece: never wider than the piece, never taller than half of it, 9 to 20 pixels. */
+const pieceFont = p => Math.round(Math.min(20, Math.max(9, Math.min(p.w / 3, (p.w - 8) / (Math.max(1, [...String(p.label)].length) * 0.62), p.h * 0.55))));
 function pieceHtml(p, view) {
   const on = !view.readOnly && view.sel === p.id;
   const shape = SHAPES[p.kind] ? `clip-path:${SHAPES[p.kind]};` : ROUND.has(p.kind) && !/^b\d/.test(p.kind) ? 'border-radius:50%;' : '';
-  const face = `<div class="mp-face" style="${shape}background:${p.filled ? esc(p.color) : 'transparent'};color:${p.filled ? '#fff' : 'var(--text)'};font-size:${Math.min(20, Math.max(11, p.w / 3))}px">${SHAPES[p.kind] ? '' : `<span>${esc(p.label)}</span>`}</div>`;
+  const face = `<div class="mp-face" style="${shape}background:${p.filled ? esc(p.color) : 'transparent'};color:${p.filled ? '#fff' : 'var(--text)'};font-size:${pieceFont(p)}px">${SHAPES[p.kind] || p.kind === 'sq' ? '' : `<span>${esc(p.label)}</span>`}</div>`;
   const bar = on ? `<div class="mp-pbar${p.y < 52 ? ' below' : ''}${p.x > 260 ? ' right' : ''}" role="toolbar" aria-label="${esc(t('js.manip.piece.actions', { label: p.label }))}">
     ${[['copy', t('js.manip.piece.copy')], ['flip', t('js.manip.piece.flip')], ['rotate', t('js.manip.piece.rotate')], ['fill', t('js.manip.piece.fill')], ['lock', p.locked ? t('js.manip.piece.unlock') : t('js.manip.piece.lock')], ['delete', t('js.manip.piece.delete')]]
     .map(([a, l]) => btn(`mp-pbtn${a === 'delete' ? ' bad' : ''}`, `data-pact="${a}" data-pid="${p.id}"`, esc(l))).join('')}</div>` : '';
   return `<div class="mp-piece${on ? ' on' : ''}${p.locked ? ' locked' : ''}" data-pid="${p.id}" role="button" tabindex="0" aria-label="${esc(t('js.manip.piece.label', { label: p.label }))}"
     style="left:${p.x}px;top:${p.y}px;width:${p.w}px;height:${p.h}px;transform:rotate(${p.rot}deg) scaleX(${p.flipped ? -1 : 1})">${face}${bar}</div>`;
+}
+/** A new piece in the next free spot on the board: never on a piece or a sticky note already there. */
+function placePiece(st, d) {
+  const board = document.getElementById('mp-board');
+  const W = board ? board.clientWidth : 800, H = board ? board.clientHeight : 430;
+  const obs = st.pieces.map(p => ({ x: p.x, y: p.y, w: p.w, h: p.h }));
+  for (const n of V.ann.notes) { const el = board && board.querySelector(`.mp-sticky[data-note="${CSS.escape(n.id)}"]`); obs.push({ x: n.x * W, y: n.y * H, w: el ? el.offsetWidth : NOTE_W, h: el ? el.offsetHeight : NOTE_H }); }
+  const at = freeSpot(obs, d.w, d.h, W, H);
+  return mkPiece(d, at.x, at.y);
 }
 function breakPiece(st, v, slug) {
   const p = st.pieces.find(x => x.id === v.sel); const to = p && BREAKS[slug][p.kind];
@@ -132,8 +143,8 @@ const IMPL = {
     },
     hint: 'A tile and its opposite make a zero pair. Build area models like (x + 3)(x + 2).',
     note: 'The area of each tile is its value: 1, x, x², y, y² and xy, with their opposites.' }),
-  'pattern-blocks': piecesTool({ slug: 'pattern-blocks', total: st => `Blocks ${st.pieces.length} · Hexagon value ${sum(st.pieces).toFixed(2)}`,
-    hint: 'Rotate turns a block 30 degrees. If the hexagon is 1 whole, what is each block worth?',
+  'pattern-blocks': piecesTool({ slug: 'pattern-blocks', total: st => { const v = hexValue(st.pieces); return `Blocks ${st.pieces.length} · Hexagons ${v.text}${v.left ? ` · ${v.left} not counted` : ''}`; },
+    hint: 'Rotate turns a block 30 degrees. If the hexagon is 1 whole, the trapezoid is 1/2, the blue parallelogram 1/3 and the triangle 1/6. The square and the thin rhombus are not counted.',
     note: 'Hexagon, trapezoid, triangle, parallelogram, rhombus and square.' }),
   money: piecesTool({ slug: 'money', total: st => `Total $${(sum(st.pieces) / 100).toFixed(2)}`,
     hint: 'To trade, delete ten $1 bills and add a $10 bill, or trade ten 1¢ coins for a 10¢ coin.',
@@ -378,7 +389,7 @@ function bindClocks(el) {
 
 // ================================================================ the board (shell)
 /** The board as one JSON object (the tool's state, its sticky notes and pen marks). */
-const boardState = () => ({ ...V.st, __ann: { notes: V.ann.notes, strokes: V.ann.strokes } });
+const boardState = () => { const b = document.getElementById('mp-board'); return { ...V.st, __ann: { notes: V.ann.notes, strokes: V.ann.strokes, size: b ? { w: b.clientWidth, h: b.clientHeight } : undefined } }; };
 function loadState(obj) {
   const o = parse(obj, {}) || {};
   const ann = o.__ann || {};
@@ -845,15 +856,24 @@ async function teacherLive(id) {
 function viewWork(slug, w) {
   const impl = IMPL[slug], o = parse(w.state, {}) || {}, ann = o.__ann || {};
   const st = { ...impl.init(), ...o };
+  if (impl.pieces) st.pieces = (Array.isArray(st.pieces) ? st.pieces : []).filter(p => p && typeof p === 'object');
+  // The board at the size the student had it (sent with their work), so pieces and notes sit where they put them; then
+  // scaled down to fit this screen.
+  const size = ann.size && +ann.size.w > 0 ? ann.size : {};
+  const reach = (impl.pieces ? st.pieces : []).reduce((m, p) => ({ w: Math.max(m.w, (+p.x || 0) + (+p.w || 50) + 12), h: Math.max(m.h, (+p.y || 0) + (+p.h || 50) + 12) }), { w: 0, h: 0 });
+  const W = clamp(Math.max(+size.w || 800, reach.w), 280, 2400), H = clamp(Math.max(+size.h || 430, reach.h), 280, 2400);
   const box = document.createElement('div');
   box.className = 'mp-viewer'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', t('js.manip.dash.workOf', { name: w.name }));
   box.innerHTML = `<div class="mp-viewbox panel"><div class="row"><h2>${esc(w.name)}</h2>${btn('btn btn-sm', 'id="mp-viewclose"', esc(t('js.manip.dash.close')))}</div>
-    <div class="mp-board mp-readonly"><div class="mp-content${impl.pieces ? ' mp-abs' : ''}">${impl.board(st, { readOnly: true })}</div>
-      <svg class="mp-ink" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true">${(Array.isArray(ann.strokes) ? ann.strokes : []).map(s => `<polyline fill="none" stroke="${esc(s.c)}" stroke-width="4" vector-effect="non-scaling-stroke" points="${(s.pts || []).map(p => `${+p.x},${+p.y}`).join(' ')}"/>`).join('')}</svg>
-      <div class="mp-notes">${(Array.isArray(ann.notes) ? ann.notes : []).map((n, i) => noteHtml({ id: String(n.id), text: String(n.text || ''), x: +n.x || 0, y: +n.y || 0 }, i, true)).join('')}</div></div>
-    <p class="small muted">${esc(impl.total(st))}</p></div>`;
-  document.body.appendChild(box);
-  const close = () => { box.remove(); document.removeEventListener('keydown', esc1); };
+    <p class="small muted">${esc(impl.total(st))}</p>
+    <div class="mp-scalewrap"><div class="mp-board mp-readonly mp-scaled" style="width:${W}px;height:${H}px;--mp-board-min:${H}px"><div class="mp-content${impl.pieces ? ' mp-abs' : ''}">${impl.board(st, { readOnly: true })}</div>
+      <svg class="mp-ink" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true">${(Array.isArray(ann.strokes) ? ann.strokes : []).map(x => `<polyline fill="none" stroke="${esc(x.c)}" stroke-width="4" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" points="${(x.pts || []).map(p => `${+p.x},${+p.y}`).join(' ')}"/>`).join('')}</svg>
+      <div class="mp-notes">${(Array.isArray(ann.notes) ? ann.notes : []).map((n, i) => noteHtml({ id: String(n.id), text: String(n.text || ''), x: +n.x || 0, y: +n.y || 0 }, i, true)).join('')}</div></div></div></div>`;
+  ROOT.appendChild(box);
+  const wrap = box.querySelector('.mp-scalewrap'), inner = box.querySelector('.mp-scaled');
+  const fit = () => { const k = Math.min(1, wrap.clientWidth / W, (window.innerHeight - 180) / H); inner.style.transform = `scale(${k})`; inner.style.marginInlineStart = `${Math.max(0, (wrap.clientWidth - W * k) / 2)}px`; wrap.style.height = `${Math.ceil(H * k)}px`; };
+  fit(); window.addEventListener('resize', fit);
+  const close = () => { box.remove(); document.removeEventListener('keydown', esc1); window.removeEventListener('resize', fit); };
   const esc1 = e => { if (e.key === 'Escape') close(); };
   document.addEventListener('keydown', esc1);
   box.addEventListener('click', e => { if (e.target === box) close(); });

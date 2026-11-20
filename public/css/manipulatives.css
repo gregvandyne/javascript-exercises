@@ -161,7 +161,7 @@
 .mp-viewer{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px}
 .mp-viewbox{width:min(980px,100%);max-height:calc(100vh - 32px);overflow:auto}
 .mp-viewbox .row{justify-content:space-between}
-.mp-readonly{pointer-events:none}
+.mp-readonly{pointer-events:none;user-select:none;-webkit-user-select:none}
 .manip-class .btn{margin-inline-start:8px}
 
 /* Wide screens: the palette in a side column next to the board. */
@@ -187,3 +187,6 @@
 .mp-redeem+p{margin-top:12px}
 .mp-main>div:empty,#mp-livebar:empty{display:none}
 @media (max-width:899px){.mp-livebar{padding:8px 12px;margin-bottom:8px}}
+.mp-scalewrap{width:100%;overflow:hidden}
+.mp-scaled{transform-origin:0 0;flex:none}
+.mp-scaled .mp-sticky{max-width:none}

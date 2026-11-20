@@ -117,6 +117,8 @@ export function cleanState(raw) {
         .map((n, i) => ({ id: clipStr(n.id || `n${i}`, 40), text: clipStr(n.text, LIMITS.noteChars), x: num(n.x, 0, 1), y: num(n.y, 0, 1) })),
       strokes: (Array.isArray(ann.strokes) ? ann.strokes : []).filter(s => s && Array.isArray(s.pts)).slice(0, LIMITS.strokes)
         .map(s => ({ c: HEX.test(s.c) ? s.c : '#FF6B4A', pts: s.pts.slice(0, LIMITS.points).map(p => ({ x: num(p && p.x, 0, 1), y: num(p && p.y, 0, 1) })) })),
+      // The board's size on the screen it was made on (the teacher's view draws it at that size, scaled to fit).
+      ...(ann.size && typeof ann.size === 'object' ? { size: { w: Math.round(num(ann.size.w, 100, 4000, 800)), h: Math.round(num(ann.size.h, 100, 4000, 430)) } } : {}),
     };
   }
   // Typed text: sticky notes and bar labels are read with the word rules; every other string must at least be clean.

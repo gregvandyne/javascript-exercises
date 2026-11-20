@@ -49,7 +49,10 @@ const ALGEBRA = [pd('one', '#FFD23F', '1', 1, 34, 34), pd('mone', '#EF9A9A', '�
   pd('x2', '#1E88E5', 'x²', 0, 92, 92), pd('mx2', '#90CAF9', '−x²', 0, 92, 92), pd('y', '#FB8C00', 'y', 0, 92, 34), pd('my', '#FFCC80', '−y', 0, 92, 34),
   pd('xy', '#8E24AA', 'xy', 0, 92, 62), pd('y2', '#5E35B1', 'y²', 0, 62, 62)];
 const PATTERN = [pd('hex', '#FFD23F', 'Hexagon', 1, 96, 84), pd('trap', '#E53935', 'Trapezoid', 0.5, 96, 44), pd('tri', '#43A047', 'Triangle', 1 / 6, 52, 44),
-  pd('para', '#1E88E5', 'Parallelogram', 1 / 3, 84, 44), pd('rhom', '#D7CCC8', 'Rhombus', 1 / 3, 84, 44), pd('sq', '#FB8C00', 'Square', 0.25, 48, 48)];
+  pd('para', '#1E88E5', 'Parallelogram', 1 / 3, 84, 44), pd('rhom', '#D7CCC8', 'Rhombus', 0, 84, 44), pd('sq', '#FB8C00', 'Square', 0, 48, 48)];
+/** Pattern blocks worth a fraction of the hexagon, in sixths. The square and the thin rhombus are not (their areas are
+ *  not a whole number of triangles), so they count 0 and the total says they are left out. */
+export const HEX_SIXTHS = { hex: 6, trap: 3, para: 2, tri: 1 };
 const MONEY = [pd('penny', '#B87333', '1¢', 1, 40, 40), pd('nickel', '#9E9E9E', '5¢', 5, 44, 44), pd('dime', '#BDBDBD', '10¢', 10, 36, 36), pd('quarter', '#90A4AE', '25¢', 25, 48, 48),
   pd('b1', '#A5D6A7', '$1', 100, 110, 48), pd('b5', '#81C784', '$5', 500, 110, 48), pd('b10', '#66BB6A', '$10', 1000, 110, 48), pd('b20', '#43A047', '$20', 2000, 110, 48)];
 
@@ -76,3 +79,25 @@ export const BREAKS = {
   'base-ten-blocks': { cube: 'flat', flat: 'rod', rod: 'unit' },
   'place-value-disks': { th: 'h', h: 't', t: 'o', o: 'tenth', tenth: 'hund', hund: 'thou' },
 };
+
+/** The pattern blocks' value in hexagons, as a whole number and sixths in lowest terms ("1 2/3", "1/2", "0"), and how
+ *  many blocks are not counted (squares and thin rhombuses). */
+export function hexValue(pieces) {
+  let sixths = 0, left = 0;
+  for (const p of pieces || []) { if (HEX_SIXTHS[p.kind] !== undefined) sixths += HEX_SIXTHS[p.kind]; else left++; }
+  const whole = Math.floor(sixths / 6), rest = sixths % 6, g = rest ? gcd(rest, 6) : 1;
+  const frac = rest ? `${rest / g}/${6 / g}` : '';
+  return { text: whole && frac ? `${whole} ${frac}` : frac || String(whole), sixths, left };
+}
+const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+
+/** The next free spot for a new w x h piece on a W x H board: the first place, row by row from the top left, that
+ *  overlaps no obstacle ({ x, y, w, h }: the pieces and sticky notes already there, with a small gap). A full board:
+ *  a small step on from the last piece. -> { x, y } */
+export function freeSpot(obstacles, w, h, W, H, { margin = 12, gap = 6, step = 8 } = {}) {
+  const maxX = Math.max(margin, W - w - margin), maxY = Math.max(margin, H - h - margin);
+  const hits = (x, y) => obstacles.some(o => x < o.x + o.w + gap && x + w + gap > o.x && y < o.y + o.h + gap && y + h + gap > o.y);
+  for (let y = margin; y <= maxY; y += step) for (let x = margin; x <= maxX; x += step) if (!hits(x, y)) return { x, y };
+  const last = obstacles[obstacles.length - 1];
+  return last ? { x: Math.min(maxX, last.x + 24), y: Math.min(maxY, last.y + 24) } : { x: margin, y: margin };
+}
