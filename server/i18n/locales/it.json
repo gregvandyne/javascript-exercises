@@ -11669,6 +11669,7 @@
       "illustration": "Illustrazioni: {names}",
       "translation": "Traduzione: {names}",
       "changes": "Oomba ha ridimensionato le immagini e mostra il libro una pagina alla volta. Pratham Books non sostiene Oomba.",
+      "corrected": "Oomba ha corretto l'ortografia e la punteggiatura.",
       "original": "Vedi il libro originale.",
       "from": "Tratto da un libro di {name}",
       "changesBloom": "Oomba ha ridimensionato le immagini e mostra il libro una pagina alla volta. Bloom Library, SIL Global e l’editore del libro non sostengono Oomba.",
