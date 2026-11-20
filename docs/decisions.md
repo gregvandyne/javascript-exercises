@@ -9250,6 +9250,7 @@ data in public/js/manip-data.js and the 300 tasks in public/js/manip-tasks.js, s
 - **Privacy page before launch:** it should say that students' boards in a session (pieces, sticky notes, pen marks) are
   kept for the teacher for up to 30 days after the session, and that teachers' lesson descriptions go to the AI. Not
   changed while hidden (no LEGAL_UPDATED bump).
+
 ## Story Library: typos corrected in StoryWeaver books (20 Nov 2026)
 
 Owner: "Just fix the typos" for the StoryWeaver books that were left out only for mistakes in their own text. CC BY 4.0
@@ -9370,6 +9371,183 @@ left out only for text mistakes, "just fix the typos".
 - Test: `library-browser.test.js` checks the library's longest page at 1280x720 (side by side, both on screen) and on an
   iPhone 13 (the picture stays on screen after scrolling).
 
+## Virtual math manipulatives: the shared room (20 Nov 2026)
+
+The owner approved mockups for live sessions as one shared board (hidden like the rest of the feature).
+
+- **One board per session**, panned and zoomed like a whiteboard: drag empty space or two fingers to pan, the wheel or a
+  pinch to zoom, a "− % + Fit" control (on phones in the bottom tray, so it never covers a classmate's name) and a mini-map
+  (tap a place to go there). The teacher's area runs across the top; below it, one square per student in a grid
+  (manip_work.slot, given at join). Square sizes per tool are in public/js/manip-data.js (roomLayout).
+- **Who writes where:** a student adds and moves things only in their own square; the teacher anywhere. The server
+  enforces it: POST /api/manipulatives/live/:id/area/:key accepts a student only for their own key, and every saved
+  square's pieces are clamped inside it.
+- **Names:** classmates see each other by display name; the teacher sees roster names (the class page's rule).
+- **Typed text:** a student's sticky notes and bar labels reach only that student and the teacher. Classmates get the
+  note's shape with no text, removed on the server (services/manipulatives.js forClassmates), never sent. The teacher's
+  notes (in their area or in a student's square) are read by everyone; note authors are kept on the server, so a student
+  can't change, remove or imitate a teacher's note.
+- **Cursors** (an arrow and a name tag in a color per person; on touch screens the last touch point; a distinct "Teacher"
+  cursor) travel on a new route of the shared upgrade listener, /api/manipulatives/ws?s=<id> (services/manip-socket.js):
+  Oomba Live's origin check and per-address limit, a per-socket limit (20 a second), the hidden gate and the room's
+  membership rules, looked up again every few seconds. Batches go out every 100 ms. Without a socket the page falls back
+  to POST .../cursor and reading the room. Cursors live in memory only (services/manip-live.js): never in the database or
+  a log line; a cursor goes when its socket closes, after 10 seconds without a move, or when the session ends.
+- **"Bring everyone to me"**: the teacher's current view goes once to every student (memory only, like cursors); their
+  screen jumps there (on a phone never below 40% zoom), says "Your teacher brought you here" and shows a big "Back to my
+  square" button. "My square" is always one tap away on phones and computers. Students stay free to move.
+- **Saving** stays on the cleaned path: an area that changed is sent half a second later and checked like every board;
+  the socket only says "something changed" so the others read the room again.
+- **Database:** migration 0093_manipulatives_room (manip_sessions.room and room_at for the teacher's area, manip_work.slot).
+
+## Virtual math manipulatives: Instructions strip and raised hands (20 Nov 2026)
+
+- **Instructions strip:** every sticky note the teacher writes in the teacher's area also shows, read-only and numbered,
+  in a strip pinned to the top of every student's square (the same for everyone, live as the teacher adds, edits or
+  deletes notes). It is at most a third of the square; longer sets show the first lines and a "More" that opens for
+  that viewer only. A square's work space starts under the strip: new pieces and notes are placed below it, dragged
+  pieces stay below it, and the server clamps a student's square to the same space (manip-data.js stripHeight, used by
+  the page and services/manipulatives.js saveArea). Teacher notes put inside one student's square stay in that square.
+- **Raised hands:** a student's "Raise hand" / "Lower hand" (no text, no message). The teacher gets "Hands up (N)": the
+  hands in the order raised, by roster name; tapping one goes to that square; "Lower" one or "Lower all"; the button
+  flashes when a hand goes up (no sound; the site's reduced-motion rule stops the flash). Squares and cursor tags show
+  ✋, and classmates see it too (display names only, like the squares), so everyone knows who is waiting, as the
+  dashboard's help queue does with "You're number n in line". Hands live in memory like cursors (manip-live.js): never
+  stored, gone when the student's last socket closes or the session ends; a student changes their own hand at most 8
+  times a minute (the socket's { t:'h', up } or POST .../hand); only the teacher lowers someone else's.
+
+## Virtual math manipulatives: hidden work (20 Nov 2026)
+
+So students don't copy each other: by default a student sees only their own square's work. A classmate's square is a
+frosted frame with its display name, ✋ and the Instructions strip; the server sends nothing else of it (no pieces, pen
+marks, note shapes, totals or when it changed), so there is nothing to reveal in the browser. The teacher always sees
+everything and has a "Hide students' work" switch in the room's top bar (on by default; manip_sessions.show_work,
+migration 0094) for when the class should compare; switching it reaches every student at once (the socket says "read
+the room again"). Sticky-note text stays private either way. Cursors, hands, "Bring everyone to me" and the teacher's
+area are unaffected.
+
+## Virtual math manipulatives: steps, and a calmer room (20 Nov 2026)
+
+- **A deck of steps.** A teacher builds the exercise as ordered steps in the tool (📋 Steps: add, edit, delete, drag or
+  ↑ ↓ to reorder). The steps save with the board (__steps), so saved boards, share codes and pushes carry them, and
+  "Draft with AI" fills them (the model's notes, in order, through the same cleaning). A session can start from a saved
+  board (its tool and steps), and pushing a board with steps makes them the session's deck, from step 1.
+- **In a session** there is one current step: the teacher's "◀ Back · Step 2 of 5 · Next ▶" (only with 2+ steps), the
+  step big at the top of the teacher's area, and as the Instructions strip in every square, with earlier steps folded
+  into "Earlier steps (n)". A student is sent only the steps up to their own: a future step never leaves the server.
+  Students can't move it, unless the teacher turns on "Students go at their own pace": then each student has ◀ ▶ in
+  their own strip (never past the last step) and the teacher sees "Step 3: 6 · Step 4: 2"; turning it off brings
+  everyone back to the teacher's step. A step change glows briefly on the strip (no sound; reduced motion stops it).
+  The step position is live and kept in memory (services/manip-live.js); the deck itself is saved.
+- **A calmer room** (the owner: "it must not get busy"). The teacher's bar holds only the step bar (2+ steps), "✋
+  Hands up" (a count only when someone has a hand up; nothing opens when nobody does), "Bring everyone to me" and one
+  "⋯" menu for the rest: Hide students' work, Students go at their own pace, Push a board, PDF, End session. Students
+  get their pieces tray, the strip, Raise hand and My square; no step buttons unless pace is on. No mini-map on phones;
+  "Your teacher brought you here" goes after five seconds while "Back to my square" stays.
+
+## Virtual math manipulatives: tucked away (20 Nov 2026)
+
+The owner's three tuck-aways: raised hands are the teacher's alone (a student's room request and socket carry only
+their own hand, never a classmate's: services/manipulatives.js handsFor, services/manip-socket.js); students get "Fit"
+and "My square" instead of the zoom control and mini-map (wheel and pinch still zoom; on phones "My square" is in the
+bar); the join code moves from the teacher's bar into the ⋯ menu ("Join code: …" with Copy).
+
+## Virtual math manipulatives: text on the board (20 Nov 2026)
+
+"T Text" sits next to the sticky note, in the solo tool and in the room: tap T, tap the board (a student only inside
+their own square, the teacher anywhere), type; Enter, Esc or tapping away finishes. Tap text to edit it, drag to move
+it, × to delete it; Undo covers all of it. Plain text in the theme's ink color, no card, one size (18 board px, so it
+scales with zoom in the room); S/M/L was left out to keep the tray calm. The student phone tray still fits one row
+(Note, T, Pen, Undo, Hand), so no "Write" chooser was needed.
+Server side it is cleaned like notes (max 30 texts, 200 characters, word list and personal-info check), saved with the
+board (share code, push, PDF summary). A student's text reaches only them and the teacher: classmates get nothing for it
+(no shape, no blank box) whether work is shown or hidden; teacher text is visible to everyone and is never a step
+(steps stay sticky notes). The AI draft keeps using notes and steps for labels.
+
+## Virtual math manipulatives: one big board (20 Nov 2026)
+
+Every tool, solo or live, is now the same big plane as the room (public/js/manip-board.js): drag empty space to pan,
+pinch or − + to zoom, Fit to see everything. What used to be each tool's one fixed layout is an **object** you add as
+many times as you like ("+ Add a clock", "+ Add a geoboard", a place-value chart, ten-frames, a double ten-frame, a
+part-part-whole mat, a work mat, a fraction equation, an answer box), each with its own state, moved by its bar or empty
+parts, resized in proportion by its corner, duplicated or deleted from its buttons. Pieces stay free pieces on the plane.
+A new board starts with one object of the tool in the middle (tools that had no drawn mat start empty, as before).
+- **Format 2** (`v: 2`): `objects [{ id, k, x, y, s, st }]`, `pieces`, a piece tool's settings, `__ann`, `__steps`. Notes,
+  texts and pen marks are fractions of the plane (solo: 4000 x 2400) or of the square. Boards saved before (#465 on
+  production) are migrated when they are read: one object of the tool (a two-clock board: two clocks, the end clock
+  tracking from the start) plus their pieces, notes where they were. The server stores what it is sent; it does not
+  rewrite old rows.
+- **Server**: known kinds of the tool only, at most 40 objects on a board and 30 in a square (a 12-problem practice set
+  is 24 or more), an object's own state at most 20 KB, its scale 0.35 to 3, kept inside the board or the square (under
+  its strip). A student writes only their own square (unchanged). **Room squares stay the same size**: a new object is
+  made smaller to fit a free spot, and can be resized; growing squares would reshuffle everyone's grid.
+- **The clock's yellow** (the owner's photo): one minute-hand sector from the start minute to the current minute,
+  clockwise, a light full ring with "+1 h" for each full hour, nothing when not tracking or at zero (clockSector). The
+  old drawing filled between the two hands, so 9:10 looked like a half-disc.
+- **The pen flash**: a mark was drawn from its first point; a one-point polyline with round caps inside a stretched
+  `0 0 1 1` viewBox (vector-effect non-scaling-stroke) is drawn by some browsers (Safari) as a dot as wide as the whole
+  board, in the pen's color, until the second point arrives. Marks are now drawn in plane pixels and only once they
+  have two different points. A Playwright check samples pixels around the pen on pointerdown and on the first move
+  (mouse and touch): unchanged. Headless Chromium never showed the flash and WebKit isn't installed here, so the
+  check guards the fix rather than reproducing the bug.
+- **Magnetic drops**: a piece dropped within 14 screen pixels of another snaps flush to its side, end, top or bottom,
+  lined up with its top, middle or bottom when that is close too (coins and counters by their middles); else into a
+  frame's cell (centered) or a place-value column (centered across it). A soft dashed preview shows while dragging and
+  a short settle plays on the drop (none with reduced motion). Snapped pieces form a group that drags as one; "Separate"
+  in a piece's buttons (and Rotate) takes one out. In the room a square's pieces only ever snap to that square's own
+  pieces and slots, and a snap that would leave the square or go under its strip doesn't happen.
+- **Adding**: a new piece or object appears unselected with a short highlight; its buttons open only on a tap (never
+  after a drag, a duplicate, a draft, a push). Tap-to-add puts the next piece right of the last piece added from the
+  palette (centers lined up, a 6 px gap), steps past anything in the way, wraps under the start of the run, and fills
+  the next free cell or column space of the object the last piece went into. Pieces and objects can also be dragged
+  from the palette (on phones a press, or a drag toward the board; a swipe along the tray still scrolls it); off the
+  board, or outside your own square, a drop does nothing.
+- **Totals**: each object shows its own (a frame's value and zero pairs, a chart's number, a geoboard's area); the clock
+  shows its time itself. The header keeps a board-wide total only for a piece tool with no mats (money with one at
+  most). Solo: "Totals" on or off. Room: the teacher's ⋯ "Students see totals" (off for a session started from a
+  practice board). Practice questions never show a total or a clock's digital time.
+- **Palette**: a mini piece with its value inside ("+1" in the yellow counter, "10" in the rod, "25¢" in the quarter),
+  a name beside it only where it adds something ("Rod", "Quarter", "Blue counter"); the counters' "•" is gone from the
+  palette and the counters. Object kinds come first ("+ Add a ..."), then the selected object's actions, then pieces.
+  The empty-board hint shows only on a truly empty board, centered in the window, and goes once anything is added.
+  Piece and object buttons stay inside the visible board, on one row.
+
+## Virtual math manipulatives: practice sets drafted with AI (20 Nov 2026)
+
+The owner: drafts were "sticky notes that look random". Now the model only says WHAT (public/js/manip-practice.js): a
+title, 1 to 4 short steps, and items with each one's settings and whether it gets an answer box, a "build it here"
+space, or nothing. No coordinates, sticky notes or pen marks are asked for or accepted (AI pen marks are dropped
+entirely: they crossed the clocks). The code checks every setting against the tool (valid times, ranges on the steps,
+denominators the tools have, results the tiles can show, values the pieces can make), replaces repeats with distinct
+items, caps the set at 12 (the step says so when more were asked for), computes each answer, and lays the board out by
+one recipe: a grid up to 4 across, equal cells, each item centered with its answer box under it, the title above, the
+whole centered so one Fit shows it. "Create 8 different clocks..." gives 8 clocks at 8 times, 8 answer boxes, one step.
+
+Answer boxes are objects ("?", sized for the answer); what a student types is theirs like their text (a classmate gets
+it blank, hidden work sends nothing). The teacher's answers (`key`) live only on the teacher's board: "Show answers" is
+hers alone; keys are stripped from share codes a student opens, from pushes, from the teacher's area as students get
+it, and from anything a student saves. A "Check my answers" for students is a follow-up.
+
+| Tool | A practice item |
+| --- | --- |
+| Clock | a clock at a time (answer: the time; build: a clock at 12:00 to set to the time) |
+| Number Lines | a number line (from, to, step) with one point marked "?" (answer: the number) |
+| Hundred Board | a hundred board with one number covered (answer: the number) |
+| Rekenreks | a rekenrek showing a number of beads (answer: how many) |
+| Fraction Circles | a fraction set showing fractions, or a fraction equation drawn with circles |
+| Fraction Tiles | a fraction equation (+, −, × by a whole number or a fraction, ÷ by a whole number, equivalence "1/2 = ?/8", compare) drawn with tiles, an empty bar to build on and an answer box; or a row of tiles to add up |
+| Base Ten Blocks | blocks showing a number (answer: the number; build: an empty place-value chart "Build 346") |
+| Place Value Disks | disks showing a number (answer: the number; build: an empty place-value chart) |
+| Two-Color Counters | a ten-frame with counters, or yellow and red counters (answer: how many, or the value) |
+| Linking Cubes | a stick of cubes (answer: how many; build: "Make a stick of 7") |
+| Color Tiles | a rectangle of tiles (answer: the area; build: "Build an area of 12") |
+| Number rods | a train of rods (answer: its length) |
+| Money | coins and bills for an amount (answer: the amount; build: "Make $1.35") |
+| Algebra Tiles | a set of tiles (answer: the expression) |
+| Pattern Blocks | a set of blocks (answer: their value in hexagons) |
+| XY Coordinate Board | a grid with points plotted, labels and table hidden (answer: the ordered pairs; build: points to plot) |
+| Geoboard | a band around pegs (answer: the area; build: "Make an area of 6") |
+| Bar Models | a part-part-whole bar with one value "?" (answer: the missing value) |
 ## Story Library: credits folded under "Author & publisher notes" (20 Nov 2026)
 
 - The owner found the credits block under every page too heavy. Now the creators stay in view on one short line
@@ -9378,6 +9556,13 @@ left out only for text mistakes, "just fix the typos".
   note), the not-endorsed line and the link to the original fold under "Author & publisher notes"
   (`library.credits.notes`, 13 languages). It is all still in the page, one tap away, so CC BY / BY-SA attribution
   ("reasonable to the medium") is kept: the creators are named on every page and the license is linked beside them.
+Follow-up (20 Nov 2026): a practice question is read-only for everyone (a clock to read has no Hour+/Min+5 and its
+hands don't move; a number line, grid or rekenrek can't be changed), shows no digital time, total or tracker line
+(the teacher sees the time only with "Show answers" on), and a practice board has no header total. "Build" items stay
+settable. On phones the board's zoom bar sits at the top of the board (the site's tab bar covers the bottom of the
+screen) and a step in the steps editor takes the full width, its ↑ ↓ × under it. Playwright scans every tool's page
+(solo at three widths, the room as teacher and student) for a raw "js.manip..." key, and a unit test checks every key
+the two pages ask for exists.
 
 ## Story Library: a Classics shelf, and an open-book reader for text pages (20 Nov 2026)
 
