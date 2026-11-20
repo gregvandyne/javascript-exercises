@@ -663,3 +663,53 @@ test('raised hands never reach classmates\' sockets: a student\'s socket carries
     assert.doesNotMatch((await as(w.a2)(`/api/manipulatives/live/${s.id}/room`)).text, new RegExp(w.a1.id + '"?,"at'), 'nor the plain room request');
   } finally { T.ws.terminate(); B.ws.terminate(); server.off('upgrade', listener); }
 });
+
+test('text on the board (T): cleaned and checked, saved with the board; a student\'s text reaches only them and the teacher', async () => {
+  const { WebSocket } = await import('ws');
+  const { attachUpgrades } = await import('../../server/services/upgrade.js');
+  const SOCK = await import('../../server/services/manip-socket.js');
+  const listener = attachUpgrades(server, [SOCK.route]);
+  const w = world();
+  const withText = (texts, extra = {}) => ({ pieces: [], ...extra, __ann: { notes: [], strokes: [], texts } });
+  // Cleaned: at most 30, 200 characters, places inside the board, empty ones dropped; the word rules apply.
+  const c = JSON.parse(M.cleanState(withText([{ id: 'a', text: 'Tens', x: 4, y: -1 }, { id: 'b', text: '   ' }, ...Array.from({ length: 40 }, (_, i) => ({ id: `k${i}`, text: 'x'.repeat(300), x: 0.5, y: 0.5 }))])).state).__ann.texts;
+  assert.equal(c.length, 30); assert.deepEqual([c[0].x, c[0].y], [1, 0]); assert.equal(c[1].text.length, 200);
+  assert.equal(M.cleanState(withText([{ id: 'a', text: 'you shit', x: 0, y: 0 }])).code, 'words');
+  assert.equal(M.cleanState(withText([{ id: 'a', text: 'text me 555 123 4567', x: 0, y: 0 }])).code, 'personal');
+  // Saved with the board: share code and push carry it; the PDF summary lists it.
+  const b = M.saveBoard(boss, { tool: 'base-ten-blocks', state: withText([{ id: 'l', text: 'Hundreds go here', x: 0.1, y: 0.1 }]) }).board;
+  assert.match(M.openCode(boss, b.code).board.state, /Hundreds go here/);
+  const s = M.createSession(boss, { classId: w.A.id, tool: 'base-ten-blocks' }).session;
+  M.join(w.a1, { code: s.code }); M.join(w.a2, { code: s.code });
+  assert.equal(M.push(boss, s.id, b.id).ok, true);
+  assert.match(M.roomFor(w.a1, s.id).pushed, /Hundreds go here/);
+  // A student's text: their own square only (another square is the same 404), and nobody else gets it, not even its place.
+  assert.equal((await as(w.a1)(`/api/manipulatives/live/${s.id}/area/${w.a2.id}`, { method: 'POST', body: { state: withText([{ id: 'z', text: 'in your square', x: 0.5, y: 0.5 }]) } })).status, 404);
+  assert.equal(M.saveArea(w.a1, s.id, w.a1.id, withText([{ id: 'm', text: 'Ada answer is 32', x: 0.3, y: 0.3 }])).ok, true);
+  assert.match(M.roomFor(w.a1, s.id).areas.find(a => a.key === w.a1.id).state, /Ada answer is 32/);
+  assert.match(M.roomFor(boss, s.id).areas.find(a => a.key === w.a1.id).state, /Ada answer is 32/);
+  const raw = [];
+  const ws = new WebSocket(`${base.replace('http', 'ws')}/api/manipulatives/ws?s=${s.id}`, { headers: { cookie: cookieFor(w.a2.id), origin: base } });
+  ws.on('message', d => raw.push(String(d)));
+  await new Promise(r => ws.on('open', r));
+  try {
+    for (const show of [false, true]) {
+      M.showWork(boss, s.id, show);
+      const r = await as(w.a2)(`/api/manipulatives/live/${s.id}/room`);
+      assert.doesNotMatch(r.text, /Ada answer/, `work ${show ? 'shown' : 'hidden'}: no text`);
+      const st = JSON.parse(r.json.room.areas.find(a => a.key === w.a1.id).state);
+      assert.deepEqual((st.__ann || {}).texts || [], [], 'not even its place');
+    }
+    // The teacher's text, in a square or in their area: everyone reads it; it is not a step.
+    M.saveArea(boss, s.id, w.a1.id, withText([{ id: 'm', text: 'Ada answer is 32', x: 0.3, y: 0.3 }, { id: 'tt', text: 'Nice regrouping', x: 0.6, y: 0.1 }]));
+    M.saveArea(boss, s.id, 't', withText([{ id: 'big', text: 'Ones on the right', x: 0.1, y: 0.1 }]));
+    const r2 = await as(w.a2)(`/api/manipulatives/live/${s.id}/room`);
+    assert.match(r2.text, /Nice regrouping/); assert.match(r2.text, /Ones on the right/); assert.doesNotMatch(r2.text, /Ada answer/);
+    assert.equal(r2.json.room.deck.total, 0, 'board text never becomes a step');
+    // Ada can't change or remove the teacher's text in her square.
+    M.saveArea(w.a1, s.id, w.a1.id, withText([{ id: 'tt', text: 'changed', x: 0, y: 0, by: 't' }]));
+    assert.match(M.roomFor(w.a2, s.id).areas.find(a => a.key === w.a1.id).state, /Nice regrouping/);
+    assert.ok(raw.every(m => !/Ada answer|Nice regrouping|Ones on the right/.test(m)), 'the socket never carries text');
+    assert.match(M.summarize(JSON.stringify(withText([{ id: 'q', text: 'Label me', x: 0, y: 0 }]))).join('\n'), /Text: Label me/, 'the PDF summary lists it');
+  } finally { ws.terminate(); server.off('upgrade', listener); }
+});

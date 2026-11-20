@@ -333,3 +333,13 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
 .rm-codeline{justify-content:space-between;cursor:default}
 .rm-codeline:hover{background:transparent}
 @media (min-width:900px){.rm-minebar{display:none}}
+/* text typed straight on the board (T): the theme's ink, no card */
+.mp-texts{position:absolute;inset:0;pointer-events:none;z-index:27}
+.mp-text{position:absolute;pointer-events:auto;font:800 18px/1.25 var(--font);color:var(--text);white-space:pre;padding:2px 4px;border-radius:6px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.mp-text:hover{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent-line) 50%,transparent)}
+.mp-text.ro{cursor:default}.mp-text.ro:hover{box-shadow:none}
+.mp-text.editing{display:flex;align-items:center;gap:4px;padding:0;cursor:text}
+.mp-textin{font:inherit;color:inherit;background:color-mix(in srgb,var(--card) 70%,transparent);border:0;border-radius:6px;outline:2px solid var(--focus);padding:2px 6px;min-width:9em;width:auto;user-select:text;-webkit-user-select:text}
+.mp-textx{width:26px;height:26px;border-radius:50%;border:0;background:var(--danger);color:var(--on-danger);font:800 15px var(--font);line-height:1;cursor:pointer;flex:none}
+.mp-tglyph{font-family:Georgia,serif;font-size:1.05em}
+.texting .rm-area.editable .rm-in,.mp-board.texting{cursor:text}

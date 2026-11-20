@@ -389,12 +389,13 @@ function bindClocks(el) {
 
 // ================================================================ the board (shell)
 /** The board as one JSON object (the tool's state, its sticky notes and pen marks). */
-const boardState = () => { const b = document.getElementById('mp-board'); return { ...V.st, ...(V.steps && V.steps.length ? { __steps: V.steps } : {}), __ann: { notes: V.ann.notes, strokes: V.ann.strokes, size: b ? { w: b.clientWidth, h: b.clientHeight } : undefined } }; };
+const boardState = () => { const b = document.getElementById('mp-board'); return { ...V.st, ...(V.steps && V.steps.length ? { __steps: V.steps } : {}), __ann: { notes: V.ann.notes, strokes: V.ann.strokes, texts: V.ann.texts.filter(x => x.text.trim()), size: b ? { w: b.clientWidth, h: b.clientHeight } : undefined } }; };
 function loadState(obj) {
   const o = parse(obj, {}) || {};
   const ann = o.__ann || {};
   V.ann = { notes: Array.isArray(ann.notes) ? ann.notes.slice(0, NOTE_MAX).map((n, i) => ({ id: String(n.id || `n${i}`), text: String(n.text || ''), x: +n.x || 0, y: +n.y || 0 })) : [],
-    strokes: Array.isArray(ann.strokes) ? ann.strokes : [] };
+    strokes: Array.isArray(ann.strokes) ? ann.strokes : [],
+    texts: Array.isArray(ann.texts) ? ann.texts.slice(0, 30).map((n, i) => ({ id: String(n.id || `t${i}`), text: String(n.text || ''), x: +n.x || 0, y: +n.y || 0 })) : [] };
   V.steps = stepsOf(o);   // the exercise's steps travel with the board (saves, share codes, pushes)
   const rest = { ...o }; delete rest.__ann; delete rest.__steps;
   const base = V.impl.init();
@@ -404,7 +405,7 @@ function loadState(obj) {
     const defs = allPieceDefs(V.tool.slug);
     V.st.pieces = V.st.pieces.filter(p => p && typeof p === 'object').map(p => { const d = defs.find(x => x.kind === p.kind) || { w: 50, h: 50 }; return { ...p, id: String(p.id || newId()), w: +p.w || d.w, h: +p.h || d.h, x: +p.x || 0, y: +p.y || 0 }; });
   }
-  V.sel = null; V.editing = null; V.hist = []; V.annHist = [];
+  V.sel = null; V.editing = null; V.hist = []; V.annHist = []; V.textEdit = null;
 }
 function pushHistory(snapshot) { V.hist.push(snapshot); if (V.hist.length > 40) V.hist.shift(); }
 /** Every change to the tool's state: undo history, the board drawn again, the session told. */
@@ -436,7 +437,7 @@ function openTool(slug, { restore = null } = {}) {
         <div class="mp-board" id="mp-board" aria-label="${esc(t('js.manip.board.label', { tool: tool.name }))}">
           <div class="mp-content" id="mp-content"></div>
           <svg class="mp-ink" id="mp-ink" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true"></svg>
-          <div class="mp-notes" id="mp-notes"></div><div id="mp-draw"></div>
+          <div class="mp-texts" id="mp-texts"></div><div class="mp-notes" id="mp-notes"></div><div id="mp-draw"></div>
         </div>
         <div class="mp-settings" id="mp-settings"></div>
         <div class="mp-share" id="mp-share"></div>
@@ -457,6 +458,7 @@ function renderChrome() {
     btn('mp-tbtn', `data-tool="undo"${V.hist.length ? '' : ' disabled'}`, `↩ ${esc(t('js.manip.side.undo'))}`),
     btn(`mp-tbtn${V.annotate ? ' on' : ''}`, `data-tool="annotate" aria-pressed="${V.annotate}"`, `✎ ${esc(t('js.manip.side.annotate'))}`),
     btn('mp-tbtn', `data-tool="note"${V.ann.notes.length >= NOTE_MAX ? ' disabled' : ''}`, `🗒️ ${esc(t('js.manip.side.note'))}`),
+    btn(`mp-tbtn${V.textMode ? ' on' : ''}`, `data-tool="text" aria-pressed="${!!V.textMode}"`, `<b class="mp-tglyph">T</b> ${esc(t('js.manip.side.text'))}`),
     HOST ? btn(`mp-tbtn${V.stepsOpen ? ' on' : ''}`, 'data-tool="steps"', `📋 ${esc(t('js.manip.steps.title'))}${V.steps && V.steps.length ? ` (${V.steps.length})` : ''}`) : '',
     HOST ? btn(`mp-tbtn${V.draftOpen ? ' on' : ''}`, 'data-tool="draft"', `✨ ${esc(t('js.manip.side.draft'))}`) : '',
     btn('mp-tbtn', 'data-tool="reset"', esc(t('js.manip.side.reset'))),
@@ -468,11 +470,12 @@ function renderChrome() {
 function renderTotal() { const el = document.getElementById('mp-total'); if (el) el.textContent = V.impl.total(V.st); }
 
 function renderBoard() {
+  document.getElementById('mp-board')?.classList.toggle('texting', !!V.textMode);
   const content = document.getElementById('mp-content'); if (!content) return;
   content.classList.toggle('mp-abs', !!V.impl.pieces);
   content.innerHTML = V.impl.board(V.st, { sel: V.sel, readOnly: false });
   if (V.impl.bind) V.impl.bind(content);
-  renderInk(); renderNotes();
+  renderInk(); renderTexts(); renderNotes();
   const draw = document.getElementById('mp-draw');
   draw.innerHTML = V.annotate ? `<div class="mp-drawlayer" role="application" aria-label="${esc(t('js.manip.ann.surface'))}"></div>` : '';
   if (V.annotate) bindDraw(draw.firstChild);
@@ -514,6 +517,58 @@ function noteSpot() {
   }
   return best;
 }
+// ---------------------------------------------------------------- text typed straight on the board (T)
+/** Before a text change: the texts as they were, for Undo. */
+function textHist() { pushHistory({ texts: JSON.stringify(V.ann.texts) }); }
+function renderTexts() {
+  const box = document.getElementById('mp-texts'); if (!box) return;
+  box.innerHTML = V.ann.texts.map(x => textHtml(x, V.textEdit === x.id)).join('');
+  const inp = box.querySelector('input'); if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+}
+/** One text: the words in the theme's ink, or, while it is being written, a field in the same place with its ×. */
+function textHtml(x, editing, readOnly = false) {
+  const pos = `left:${(+x.x || 0) * 100}%;top:${(+x.y || 0) * 100}%`;
+  if (editing && !readOnly) return `<div class="mp-text editing" data-text="${esc(x.id)}" style="${pos}"><label class="sr-only" for="tx-${esc(x.id)}">${esc(t('js.manip.text.label'))}</label><input id="tx-${esc(x.id)}" class="mp-textin" maxlength="200" value="${esc(x.text)}" placeholder="${esc(t('js.manip.text.ph'))}" autocomplete="off" enterkeyhint="done">${btn('mp-textx', `data-tx="${esc(x.id)}" aria-label="${esc(t('js.manip.text.delete'))}"`, '×')}</div>`;
+  return `<div class="mp-text${readOnly ? ' ro' : ''}" data-text="${esc(x.id)}" style="${pos}">${esc(x.text)}</div>`;
+}
+function placeText(e) {
+  const r = document.getElementById('mp-board').getBoundingClientRect();
+  if (V.textEdit) { commitText(); return; }
+  textHist();
+  const x = { id: `t${newId()}`, text: '', x: clamp((e.clientX - r.left) / r.width, 0, 0.95), y: clamp((e.clientY - r.top - 12) / r.height, 0, 0.95) };
+  V.ann.texts.push(x); V.textEdit = x.id; renderTexts();
+}
+function commitText() {
+  const inp = document.querySelector('#mp-texts input'); const x = V.ann.texts.find(n => n.id === V.textEdit);
+  if (x && inp) x.text = inp.value.slice(0, 200);
+  V.ann.texts = V.ann.texts.filter(n => n.text.trim());
+  V.textEdit = null; renderTexts();
+}
+/** Texts move with mouse or finger; a tap opens one to edit. */
+function bindTexts() {
+  const box = document.getElementById('mp-texts'), board = document.getElementById('mp-board');
+  let d = null;
+  box.addEventListener('pointerdown', e => {
+    const el = e.target.closest('.mp-text'); if (!el || el.classList.contains('editing')) return;
+    const x = V.ann.texts.find(n => n.id === el.dataset.text); if (!x) return;
+    const r = board.getBoundingClientRect();
+    d = { el, x, sx: e.clientX, sy: e.clientY, x0: x.x, y0: x.y, r, moved: false };
+    el.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  box.addEventListener('pointermove', e => {
+    if (!d) return;
+    if (!d.moved && Math.abs(e.clientX - d.sx) + Math.abs(e.clientY - d.sy) < 6) return;
+    if (!d.moved) textHist();
+    d.moved = true;
+    d.x.x = clamp(d.x0 + (e.clientX - d.sx) / d.r.width, 0, 0.98); d.x.y = clamp(d.y0 + (e.clientY - d.sy) / d.r.height, 0, 0.97);
+    d.el.style.left = `${d.x.x * 100}%`; d.el.style.top = `${d.x.y * 100}%`;
+  });
+  const up = () => { if (!d) return; const x = d; d = null; if (!x.moved) { if (V.textEdit) commitText(); V.textEdit = x.x.id; renderTexts(); } };
+  box.addEventListener('pointerup', up); box.addEventListener('pointercancel', () => { d = null; });
+  box.addEventListener('keydown', e => { if (e.target.matches('.mp-textin') && (e.key === 'Enter' || e.key === 'Escape')) { e.preventDefault(); commitText(); } });
+  box.addEventListener('focusout', e => { if (e.target.matches('.mp-textin')) setTimeout(() => { if (V && V.textEdit && !box.contains(document.activeElement)) commitText(); }, 0); });
+  box.addEventListener('input', e => { if (e.target.matches('.mp-textin')) { const x = V.ann.texts.find(n => n.id === V.textEdit); if (x) x.text = e.target.value.slice(0, 200); } });
+}
 function renderAnnBar() {
   const el = document.getElementById('mp-annbar');
   el.innerHTML = V.annotate ? `<div class="mp-annbar" role="toolbar" aria-label="${esc(t('js.manip.ann.toolbar'))}">
@@ -548,6 +603,9 @@ function bindDraw(layer) {
 function bindBoard() {
   const root = ROOT.querySelector('.mp-tool');
   root.addEventListener('click', e => {
+    if (V.textMode && e.target.closest('#mp-board') && !e.target.closest('.mp-text, .mp-sticky, .mp-pbar, button, input, select, textarea')) { placeText(e); return; }
+    const tx = e.target.closest('[data-tx]');
+    if (tx) { textHist(); V.ann.texts = V.ann.texts.filter(x => x.id !== tx.dataset.tx); V.textEdit = null; renderTexts(); return; }
     const pal = e.target.closest('[data-pal]');
     if (pal) { const p = V.impl.palette(V.st)[+pal.dataset.pal]; if (p) change((st, v) => p.run(st, v)); return; }
     const tl = e.target.closest('[data-tool]');
@@ -581,10 +639,15 @@ function bindBoard() {
     if (e.target.classList.contains('mp-notetext')) { const n = V.ann.notes.find(x => x.id === V.editing); if (n) { n.text = e.target.value.slice(0, 300); } }
   });
   root.addEventListener('focusout', e => { if (e.target.classList.contains('mp-seglabel')) V.typing = false; });
-  bindPieceDrag(); bindNoteDrag();
+  bindPieceDrag(); bindNoteDrag(); bindTexts();
 }
 function toolButton(k) {
-  if (k === 'undo') { const prev = V.hist.pop(); if (prev) { V.st = JSON.parse(prev); V.sel = null; renderBoard(); renderChrome(); } return; }
+  if (k === 'undo') {
+    const prev = V.hist.pop(); if (!prev) return;
+    if (typeof prev === 'object') V.ann.texts = JSON.parse(prev.texts); else { V.st = JSON.parse(prev); V.sel = null; }
+    V.textEdit = null; renderBoard(); renderChrome(); return;
+  }
+  if (k === 'text') { V.textMode = !V.textMode; if (V.textMode) { V.annotate = false; } renderChrome(); renderBoard(); return; }
   if (k === 'annotate') { V.annotate = !V.annotate; V.annMode = 'pen'; renderChrome(); renderBoard(); return; }
   if (k === 'note') {
     if (V.ann.notes.length >= NOTE_MAX) return;
@@ -626,7 +689,7 @@ function bindPieceDrag() {
   const board = document.getElementById('mp-board');
   let drag = null;
   board.addEventListener('pointerdown', e => {
-    if (!V.impl.pieces || V.annotate || e.target.closest('.mp-pbar')) return;
+    if (!V.impl.pieces || V.annotate || V.textMode || e.target.closest('.mp-pbar')) return;
     const el = e.target.closest('.mp-piece'); if (!el) return;
     const p = V.st.pieces.find(x => x.id === el.dataset.pid); if (!p) return;
     const r = board.getBoundingClientRect();

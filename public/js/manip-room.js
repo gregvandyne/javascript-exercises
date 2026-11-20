@@ -62,7 +62,7 @@ function stateOf(text) {
   const st = R.impl.load ? R.impl.load(rest) : { ...base, ...rest };
   for (const k of Object.keys(base)) if (Array.isArray(base[k]) && !Array.isArray(st[k])) st[k] = base[k];
   if (R.impl.pieces) st.pieces = st.pieces.filter(p => p && typeof p === 'object').map(p => ({ ...p, id: String(p.id || R.deps.newId()), x: +p.x || 0, y: +p.y || 0, w: +p.w || 50, h: +p.h || 50 }));
-  return { st, steps, ann: { notes: Array.isArray(ann.notes) ? ann.notes.slice(0, NOTE_MAX) : [], strokes: Array.isArray(ann.strokes) ? ann.strokes : [] } };
+  return { st, steps, ann: { notes: Array.isArray(ann.notes) ? ann.notes.slice(0, NOTE_MAX) : [], strokes: Array.isArray(ann.strokes) ? ann.strokes : [], texts: Array.isArray(ann.texts) ? ann.texts.slice(0, 30) : [] } };
 }
 /** The server's room into R.areas, keeping any area this page is still changing. -> true when squares came or went. */
 function syncAreas(room) {
@@ -71,7 +71,7 @@ function syncAreas(room) {
   for (const k of [...R.areas.keys()]) if (!keys.has(k)) { R.areas.delete(k); changed = true; }
   const put = (key, src, meta) => {
     const A = R.areas.get(key);
-    if (A && (A.saveTimer || A.saving || (R.gesture && R.gesture.key === key) || (R.editing && R.editing.key === key))) { Object.assign(A, meta); return; }
+    if (A && (A.saveTimer || A.saving || (R.gesture && R.gesture.key === key) || (R.editing && R.editing.key === key) || (R.textEdit && R.textEdit.key === key))) { Object.assign(A, meta); return; }
     if (A && A.updatedAt === src.updatedAt && !!A.hidden === !!meta.hidden) { Object.assign(A, meta); return; }
     R.areas.set(key, { key, ...stateOf(src.state), updatedAt: src.updatedAt, ...meta });
     if (!A) changed = true; else if (key === 't') changed = true; else if (R.world) renderArea(key);
@@ -166,7 +166,13 @@ function areaInner(A) {
   const sel = R.sel && R.sel.key === A.key ? R.sel.id : null;
   return `<div class="rm-body">${stripHtml(A)}<div class="rm-in" style="top:${topOf(A)}px"><div class="mp-content${R.impl.pieces ? ' mp-abs' : ''}">${R.impl.board(A.st, { sel, readOnly: !A.editable || R.room.status !== 'active' })}</div>
     <svg class="mp-ink" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true">${A.ann.strokes.map(s => `<polyline fill="none" stroke="${esc(s.c)}" stroke-width="4" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" points="${(s.pts || []).map(p => `${+p.x},${+p.y}`).join(' ')}"/>`).join('')}</svg>
-    <div class="mp-notes">${A.ann.notes.map((n, i) => noteHtml(A, n, i)).join('')}</div></div></div>`;
+    <div class="mp-texts">${A.ann.texts.map(x => textHtml(A, x)).join('')}</div><div class="mp-notes">${A.ann.notes.map((n, i) => noteHtml(A, n, i)).join('')}</div></div></div>`;
+}
+/** Board text (T): plain words in the theme's ink; while being written, a field with its ×. */
+function textHtml(A, x) {
+  const pos = `left:${(+x.x || 0) * 100}%;top:${(+x.y || 0) * 100}%`, id = esc(x.id);
+  if (R.textEdit && R.textEdit.key === A.key && R.textEdit.id === x.id && canEditNote(A, x)) return `<div class="mp-text editing" data-text="${id}" style="${pos}"><label class="sr-only" for="rt-${id}">${esc(t('js.manip-room.textLabel'))}</label><input id="rt-${id}" class="mp-textin" maxlength="200" value="${esc(x.text)}" placeholder="${esc(t('js.manip-room.textPh'))}" autocomplete="off" enterkeyhint="done">${btn('mp-textx', `data-rtx="${id}" aria-label="${esc(t('js.manip-room.textDelete'))}"`, '×')}</div>`;
+  return `<div class="mp-text${canEditNote(A, x) ? '' : ' ro'}" data-text="${id}" style="${pos}">${esc(x.text)}</div>`;
 }
 const canEditNote = (A, n) => A.editable && R.room.status === 'active' && (R.role === 'teacher' || n.by !== 't');
 function noteHtml(A, n, i) {
@@ -187,7 +193,7 @@ function renderArea(key) {
   el.classList.toggle('active', R.role === 'teacher' && R.active === key);
   el.querySelector('.rm-body').outerHTML = areaInner(A);
   bindArea(key);
-  const ta = el.querySelector('textarea.mp-notetext'); if (ta) ta.focus({ preventScroll: true });
+  const ta = el.querySelector('textarea.mp-notetext, input.mp-textin'); if (ta) ta.focus({ preventScroll: true });
 }
 function bindArea(key) {
   const A = R.areas.get(key), el = R.world.querySelector(`.rm-area[data-key="${CSS.escape(key)}"]`);
@@ -215,7 +221,7 @@ async function saveNow(key) {
   const A = R && R.areas.get(key); if (!A) return;
   A.saveTimer = null; A.saving = true;
   try {
-    await api(`/api/manipulatives/live/${R.id}/area/${encodeURIComponent(key)}`, { method: 'POST', body: { state: { ...A.st, ...(A.key === 't' ? { __steps: A.steps || [] } : {}), __ann: { notes: A.ann.notes, strokes: A.ann.strokes } } } });
+    await api(`/api/manipulatives/live/${R.id}/area/${encodeURIComponent(key)}`, { method: 'POST', body: { state: { ...A.st, ...(A.key === 't' ? { __steps: A.steps || [] } : {}), __ann: { notes: A.ann.notes, strokes: A.ann.strokes, texts: A.ann.texts.filter(x => String(x.text || '').trim()) } } } });
     A.updatedAt = -1;   // read it back on the next refresh (the server may have kept a teacher's note)
   } catch (e) { toast(e.message, { bad: true }); A.updatedAt = -1; }
   finally { A.saving = false; }
@@ -426,6 +432,7 @@ function renderPal() {
   const where = R.role === 'teacher' ? t('js.manip-room.addTo', { name: A.name }) : t('js.manip-room.addMine');
   el.innerHTML = `<p class="mp-cap">${esc(where)}</p><div class="mp-palette">${items.map((p, i) => btn(`mp-pal${p.hot ? ' hot' : ''}`, `data-pal="${i}"${p.pressed ? ' aria-pressed="true"' : ''} aria-label="${esc(t('js.manip-room.add', { label: p.label }))}"`, `${p.color ? `<span class="mp-sw" style="background:${esc(p.color)}"></span>` : ''}<span>${esc(p.label)}</span>`)).join('')}</div>
     <div class="mp-toolsrow">${btn('mp-tbtn', `data-rtool="note" aria-label="${esc(t('js.manip-room.note'))}"${A.ann.notes.length >= NOTE_MAX ? ' disabled' : ''}`, `🗒️<span class="rm-hidephone"> ${esc(t('js.manip-room.note'))}</span>`)}
+      ${btn(`mp-tbtn${R.textMode ? ' on' : ''}`, `data-rtool="text" aria-pressed="${!!R.textMode}" aria-label="${esc(t('js.manip-room.text'))}"`, `<b class="mp-tglyph">T</b><span class="rm-hidephone"> ${esc(t('js.manip-room.text'))}</span>`)}
       ${btn(`mp-tbtn${R.annotate ? ' on' : ''}`, `data-rtool="pen" aria-pressed="${R.annotate}" aria-label="${esc(t('js.manip-room.pen'))}"`, `✎<span class="rm-hidephone"> ${esc(t('js.manip-room.pen'))}</span>`)}
       ${btn('mp-tbtn', `data-rtool="undo"${R.hist.length ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.undo'))}"`, `↩<span class="rm-hidephone"> ${esc(t('js.manip-room.undo'))}</span>`)}
       ${R.role === 'teacher' ? `${btn('mp-tbtn rm-phoneonly', `data-rtool="zout" aria-label="${esc(t('js.manip-room.zoomOut'))}"`, '−')}${btn('mp-tbtn rm-phoneonly', `data-rtool="zin" aria-label="${esc(t('js.manip-room.zoomIn'))}"`, '+')}` : ''}
@@ -448,9 +455,12 @@ function bind() {
     const k = s.dataset.set, v = s.value;
     edit(R.active, st => { st[k] = typeof st[k] === 'boolean' ? !!v : typeof st[k] === 'number' ? (Number.isFinite(+v) ? +v : st[k]) : v; if (R.impl.onSet) R.impl.onSet(st, k); });
   });
+  el.addEventListener('keydown', e => { if (e.target.matches('.mp-textin') && (e.key === 'Enter' || e.key === 'Escape')) { e.preventDefault(); commitText(); } });
+  el.addEventListener('focusout', e => { if (e.target.matches('.mp-textin')) setTimeout(() => { const box = e.target.closest('.mp-text'); if (R && R.textEdit && !(box && box.contains(document.activeElement))) commitText(); }, 0); });
   el.addEventListener('input', e => {
     const area = e.target.closest('.rm-area'), A = area && R.areas.get(area.dataset.key); if (!A || !A.editable) return;
     if (e.target.classList.contains('mp-seglabel') && R.impl.input) { R.impl.input(A.st, e.target); queueSave(A.key); }
+    if (e.target.classList.contains('mp-textin') && R.textEdit) { const x = A.ann.texts.find(n => n.id === R.textEdit.id); if (x) x.text = e.target.value.slice(0, 200); }
     if (e.target.classList.contains('mp-notetext') && R.editing) { const n = A.ann.notes.find(x => x.id === R.editing.id); if (n) { n.text = e.target.value.slice(0, 300); queueSave(A.key); } }
   });
 }
@@ -484,6 +494,17 @@ function down(e) {
       const p = A.st.pieces.find(x => x.id === pieceEl.dataset.pid);
       if (p) { R.gesture = { kind: 'piece', key: A.key, p, el: pieceEl, sx: e.clientX, sy: e.clientY, x0: p.x, y0: p.y, moved: false }; rm.setPointerCapture(e.pointerId); e.preventDefault(); return; }
     }
+    const textEl = e.target.closest('.mp-text[data-text]');
+    if (textEl && !textEl.classList.contains('editing')) {
+      const x = A.ann.texts.find(n => n.id === textEl.dataset.text);
+      if (x && canEditNote(A, x)) { R.gesture = { kind: 'text', key: A.key, n: x, el: textEl, sx: e.clientX, sy: e.clientY, x0: +x.x || 0, y0: +x.y || 0, inner, moved: false }; rm.setPointerCapture(e.pointerId); e.preventDefault(); return; }
+    }
+    if (R.textMode && e.target.closest('.rm-in') && !e.target.closest('.mp-sticky, .mp-text, button, input')) {
+      if (R.textEdit) { commitText(); R.justPanned = true; return; }
+      R.hist.push([A.key, JSON.stringify({ st: A.st, ann: A.ann })]);
+      const x = { id: `x-${R.deps.newId()}`, text: '', x: clamp((e.clientX - inner.left) / inner.width, 0, 0.95), y: clamp((e.clientY - inner.top - 10 * R.view.z) / inner.height, 0, 0.96), ...(R.role === 'teacher' ? { by: 't' } : {}) };
+      A.ann.texts.push(x); R.textEdit = { key: A.key, id: x.id }; renderArea(A.key); R.justPanned = true; e.preventDefault(); return;
+    }
     const noteEl = e.target.closest('.mp-sticky[data-note]');
     if (noteEl && !noteEl.classList.contains('editing')) {
       const n = A.ann.notes.find(x => x.id === noteEl.dataset.note);
@@ -516,14 +537,14 @@ function move(e) {
     return;
   }
   if (!g.moved && Math.abs(dx) + Math.abs(dy) < 5) return;
-  if (!g.moved && g.kind === 'note') { const A0 = R.areas.get(g.key); R.hist.push([g.key, JSON.stringify({ st: A0.st, ann: A0.ann })]); }
+  if (!g.moved && (g.kind === 'note' || g.kind === 'text')) { const A0 = R.areas.get(g.key); R.hist.push([g.key, JSON.stringify({ st: A0.st, ann: A0.ann })]); }
   g.moved = true;
   const A = R.areas.get(g.key);
   if (g.kind === 'piece' && !g.p.locked) {
     const ws = workSize(A); g.x = clamp(g.x0 + dx / R.view.z, 0, ws.w - g.p.w); g.y = clamp(g.y0 + dy / R.view.z, 0, ws.h - g.p.h);
     g.el.style.left = `${g.x}px`; g.el.style.top = `${g.y}px`; g.el.classList.add('dragging');
   }
-  if (g.kind === 'note') {
+  if (g.kind === 'note' || g.kind === 'text') {
     g.n.x = clamp(g.x0 + dx / g.inner.width, 0, 1 - g.el.offsetWidth * R.view.z / g.inner.width); g.n.y = clamp(g.y0 + dy / g.inner.height, 0, 1 - g.el.offsetHeight * R.view.z / g.inner.height);
     g.el.style.left = `${g.n.x * 100}%`; g.el.style.top = `${g.n.y * 100}%`;
   }
@@ -539,6 +560,11 @@ function up(e) {
   if (g.kind === 'piece') {
     if (g.moved && !g.p.locked) { const x = Math.round(g.x), y = Math.round(g.y); edit(g.key, st => { const p = st.pieces.find(q => q.id === g.p.id); if (!p) return false; p.x = x; p.y = y; }); R.sel = { key: g.key, id: g.p.id }; renderArea(g.key); }
     else { R.sel = { key: g.key, id: g.p.id }; renderArea(g.key); }
+    R.justPanned = true; return;
+  }
+  if (g.kind === 'text') {
+    if (g.moved) { renderPal(); queueSave(g.key); }
+    else { if (R.textEdit) commitText(); R.textEdit = { key: g.key, id: g.n.id }; renderArea(g.key); }
     R.justPanned = true; return;
   }
   if (g.kind === 'note') {
@@ -563,6 +589,8 @@ function click(e) {
   if (hgo) { const A = R.areas.get(hgo.dataset.hgo); if (A) fitRect({ x: A.rect.x, y: A.rect.y - 36, w: A.rect.w, h: A.rect.h + 36 }, 12); return; }
   const hlow = e.target.closest('[data-hlow]');
   if (hlow) { api(`/api/manipulatives/live/${R.id}/hand`, { method: 'POST', body: { up: false, key: hlow.dataset.hlow } }).then(() => { if (!R.wsOk) refresh(); }).catch(err => toast(err.message, { bad: true })); return; }
+  const rtx = e.target.closest('[data-rtx]');
+  if (rtx && R.textEdit) { const A = R.areas.get(R.textEdit.key); if (A) { R.hist.push([A.key, JSON.stringify({ st: A.st, ann: A.ann })]); A.ann.texts = A.ann.texts.filter(n => n.id !== rtx.dataset.rtx); R.textEdit = null; renderArea(A.key); queueSave(A.key); } return; }
   const my = e.target.closest('[data-mystep]');
   if (my) { api(`/api/manipulatives/live/${R.id}/step`, { method: 'POST', body: { dir: +my.dataset.mystep } }).then(refresh).catch(err => toast(err.message, { bad: true })); return; }
   const more = e.target.closest('[data-strip]');
@@ -580,6 +608,15 @@ function click(e) {
   const act = e.target.closest('.mp-content [data-act]');
   if (act) { edit(A.key, st => R.impl.act(st, act.dataset, e)); return; }
   if (R.impl.boardTap && e.target.closest('.mp-content svg')) edit(A.key, st => R.impl.act(st, {}, e));
+}
+/** Finish the text being written: kept with its words, gone if empty; saved. */
+function commitText() {
+  const te = R.textEdit; if (!te) return;
+  const A = R.areas.get(te.key); R.textEdit = null; if (!A) return;
+  const inp = R.world.querySelector(`.rm-area[data-key="${CSS.escape(te.key)}"] .mp-textin`), x = A.ann.texts.find(n => n.id === te.id);
+  if (x && inp) x.text = inp.value.slice(0, 200);
+  A.ann.texts = A.ann.texts.filter(n => String(n.text || '').trim());
+  renderArea(te.key); renderPal(); queueSave(te.key);
 }
 function noteButton(A, k, id) {
   const n = A.ann.notes.find(x => x.id === id); if (!n || !canEditNote(A, n)) return;
@@ -636,6 +673,7 @@ async function toolButton(k) {
   }
   if (k === 'pen') { R.annotate = !R.annotate; renderPal(); document.getElementById('rm').classList.toggle('inking', R.annotate); return; }
   if (k === 'clearpen') { const A = R.areas.get(R.active); if (A) { R.hist.push([A.key, JSON.stringify({ st: A.st, ann: A.ann })]); A.ann.strokes = []; renderArea(A.key); queueSave(A.key); } return; }
+  if (k === 'text') { R.textMode = !R.textMode; if (R.textMode) { R.annotate = false; document.getElementById('rm').classList.remove('inking'); } else commitText(); document.getElementById('rm').classList.toggle('texting', R.textMode); renderPal(); return; }
   if (k === 'note') {
     const A = R.areas.get(R.active); if (!A || !A.editable || A.ann.notes.length >= NOTE_MAX) return;
     const obs = (A.st.pieces || []).map(p => ({ x: p.x, y: p.y, w: p.w, h: p.h }));

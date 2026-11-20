@@ -9451,3 +9451,15 @@ The owner's three tuck-aways: raised hands are the teacher's alone (a student's 
 their own hand, never a classmate's: services/manipulatives.js handsFor, services/manip-socket.js); students get "Fit"
 and "My square" instead of the zoom control and mini-map (wheel and pinch still zoom; on phones "My square" is in the
 bar); the join code moves from the teacher's bar into the ⋯ menu ("Join code: …" with Copy).
+
+## Virtual math manipulatives: text on the board (20 Nov 2026)
+
+"T Text" sits next to the sticky note, in the solo tool and in the room: tap T, tap the board (a student only inside
+their own square, the teacher anywhere), type; Enter, Esc or tapping away finishes. Tap text to edit it, drag to move
+it, × to delete it; Undo covers all of it. Plain text in the theme's ink color, no card, one size (18 board px, so it
+scales with zoom in the room); S/M/L was left out to keep the tray calm. The student phone tray still fits one row
+(Note, T, Pen, Undo, Hand), so no "Write" chooser was needed.
+Server side it is cleaned like notes (max 30 texts, 200 characters, word list and personal-info check), saved with the
+board (share code, push, PDF summary). A student's text reaches only them and the teacher: classmates get nothing for it
+(no shape, no blank box) whether work is shown or hidden; teacher text is visible to everyone and is never a step
+(steps stay sticky notes). The AI draft keeps using notes and steps for labels.

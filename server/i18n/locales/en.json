@@ -3397,7 +3397,8 @@
         "annotate": "Pen",
         "note": "Sticky note",
         "draft": "Draft with AI",
-        "reset": "Clear the board"
+        "reset": "Clear the board",
+        "text": "Text"
       },
       "board": {
         "label": "{tool} board",
@@ -3496,6 +3497,11 @@
       "steps": {
         "title": "Steps",
         "text": "The exercise, one step at a time: in a live session students see the current step at the top of their square, never the ones after it. Drag or use ↑ ↓ to reorder."
+      },
+      "text": {
+        "label": "Text on the board",
+        "ph": "Type here…",
+        "delete": "Delete this text"
       }
     },
     "manip-room": {
@@ -3583,7 +3589,11 @@
       "addStep": "Add a step",
       "joinCode": "Join code: {code}",
       "copy": "Copy",
-      "copied": "Join code copied."
+      "copied": "Join code copied.",
+      "text": "Text",
+      "textLabel": "Text on the board",
+      "textPh": "Type here…",
+      "textDelete": "Delete this text"
     }
   },
   "favorites": {

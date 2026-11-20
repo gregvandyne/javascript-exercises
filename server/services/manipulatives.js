@@ -31,7 +31,7 @@ import { TASKS } from '../../public/js/manip-tasks.js';
 
 export { TOOLS, TASKS };
 export const STATE_MAX = 200000;
-export const LIMITS = { steps: 20, boards: 500, notes: 12, noteChars: 300, strokes: 80, points: 600, pieces: 400, titleChars: 80, briefChars: 1000 };
+export const LIMITS = { texts: 30, textChars: 200, steps: 20, boards: 500, notes: 12, noteChars: 300, strokes: 80, points: 600, pieces: 400, titleChars: 80, briefChars: 1000 };
 /** A session ends on its own this long after it starts; ended sessions (and their work) go after KEEP_DAYS. */
 export const SESSION_HOURS = 12;
 export const KEEP_DAYS = 30;
@@ -118,6 +118,9 @@ export function cleanState(raw, bounds = null) {
   const ann = st.__ann && typeof st.__ann === 'object' ? st.__ann : null;
   if (ann) {
     st.__ann = {
+      // Text typed straight on the board (the T tool): plain words at a place, no card.
+      texts: (Array.isArray(ann.texts) ? ann.texts : []).filter(n => n && typeof n === 'object' && String(n.text || '').trim()).slice(0, LIMITS.texts)
+        .map((n, i) => ({ id: clipStr(n.id || `t${i}`, 40), text: clipStr(n.text, LIMITS.textChars), x: num(n.x, 0, 1), y: num(n.y, 0, 1), ...(n.by === 't' ? { by: 't' } : {}) })),
       notes: (Array.isArray(ann.notes) ? ann.notes : []).filter(n => n && typeof n === 'object').slice(0, LIMITS.notes)
         .map((n, i) => ({ id: clipStr(n.id || `n${i}`, 40), text: clipStr(n.text, LIMITS.noteChars), x: num(n.x, 0, 1), y: num(n.y, 0, 1), ...(n.by === 't' ? { by: 't' } : {}) })),
       strokes: (Array.isArray(ann.strokes) ? ann.strokes : []).filter(s => s && Array.isArray(s.pts)).slice(0, LIMITS.strokes)
@@ -131,7 +134,7 @@ export function cleanState(raw, bounds = null) {
     .map((x, i) => ({ id: clipStr(x.id || `s${i}`, 40), text: clipStr(x.text, LIMITS.noteChars).trim() }));
   else delete st.__steps;
   // Typed text: sticky notes and bar labels are read with the word rules; every other string must at least be clean.
-  const typed = [...(st.__steps || []).map(x => x.text), ...(st.__ann ? st.__ann.notes.map(n => n.text) : []),
+  const typed = [...(st.__steps || []).map(x => x.text), ...(st.__ann ? [...st.__ann.notes, ...st.__ann.texts].map(n => n.text) : []),
     ...(Array.isArray(st.bars) ? st.bars.flatMap(b => [b && b.name, ...((b && Array.isArray(b.segs)) ? b.segs.map(x => x && x.label) : [])]) : [])];
   for (const s of typed) { const p = textProblem(s); if (p) return fail(p); }
   if (strings(st).some(s => hasProfanity(s))) return fail('words');
@@ -295,6 +298,8 @@ export function roomRole(u, s) {
 export function forClassmates(stateText) {
   const o = json(stateText, {}) || {};
   if (o.__ann && Array.isArray(o.__ann.notes)) o.__ann.notes = o.__ann.notes.map(n => (n.by === 't' ? n : { id: n.id, x: n.x, y: n.y, text: '', blank: true }));
+  // A student's board text: nothing at all for classmates (not even its place); the teacher's stays.
+  if (o.__ann && Array.isArray(o.__ann.texts)) o.__ann.texts = o.__ann.texts.filter(n => n.by === 't');
   if (Array.isArray(o.bars)) o.bars = o.bars.map(b => ({ ...b, name: '', segs: (b.segs || []).map(x => ({ ...x, label: '' })) }));
   return JSON.stringify(o);
 }
@@ -365,6 +370,17 @@ export function pace(u, id, on) {
   LIVE.setPace(s.id, !!on);
   return ok();
 }
+/** A square's notes or texts with their authors decided here: in the teacher's area all are the teacher's; the teacher
+ *  adding to a student's square makes the new ones the teacher's; a student keeps the teacher's ones as they were (they
+ *  can't change, remove or imitate them) and theirs carry no author. */
+function authored(prev, next, field, key, who, max) {
+  const before = new Map(((prev.__ann && prev.__ann[field]) || []).map(n => [n.id, n]));
+  const list = (next.__ann && next.__ann[field]) || [];
+  if (key === 't') return list.map(n => ({ ...n, by: 't' }));
+  if (who.role === 'teacher') return list.map(n => ({ ...n, by: before.has(n.id) ? before.get(n.id).by : 't' }));
+  const theirs = list.filter(n => !(before.get(n.id) && before.get(n.id).by === 't')).map(n => { const m = { ...n }; delete m.by; return m; });
+  return [...[...before.values()].filter(n => n.by === 't'), ...theirs].slice(0, max);
+}
 /** Save one area: key 't' (the teacher's area) or a student's id. The teacher may save any; a student only their own.
  *  Note authors are kept here, not taken from the browser: a note the teacher adds is the teacher's (everyone reads it);
  *  a student can't change or remove the teacher's notes in their square. */
@@ -380,15 +396,8 @@ export function saveArea(u, id, key, state) {
   if (!row) return fail('notFound');
   const c = cleanState(state, bounds); if (!c.ok) return c;
   const next = JSON.parse(c.state), prev = json(row.state, {}) || {};
-  const before = new Map(((prev.__ann && prev.__ann.notes) || []).map(n => [n.id, n]));
-  let notes = (next.__ann && next.__ann.notes) || [];
-  if (key === 't') notes = notes.map(n => ({ ...n, by: 't' }));
-  else if (who.role === 'teacher') notes = notes.map(n => ({ ...n, by: before.has(n.id) ? before.get(n.id).by : 't' }));
-  else {
-    const theirs = notes.filter(n => !(before.get(n.id) && before.get(n.id).by === 't')).map(n => { const m = { ...n }; delete m.by; return m; });
-    notes = [...[...before.values()].filter(n => n.by === 't'), ...theirs].slice(0, LIMITS.notes);
-  }
-  next.__ann = { ...(next.__ann || { strokes: [] }), notes };
+  // Notes and board text alike: who wrote each is kept here (see authored).
+  next.__ann = { ...(next.__ann || { strokes: [] }), notes: authored(prev, next, 'notes', key, who, LIMITS.notes), texts: authored(prev, next, 'texts', key, who, LIMITS.texts) };
   const text = JSON.stringify(next);
   if (key === 't') q.run('UPDATE manip_sessions SET room=?, room_at=? WHERE id=?', text, now(), s.id);
   else q.run('UPDATE manip_work SET state=?, updated_at=? WHERE session_id=? AND user_id=?', text, now(), s.id, String(key));
@@ -458,6 +467,7 @@ export function summarize(stateText) {
   const ann = o.__ann || {};
   const notes = (Array.isArray(ann.notes) ? ann.notes : []).map(n => String(n.text || '').trim()).filter(Boolean);
   for (const n of notes) lines.push(`Note: ${n}`);
+  for (const n of (Array.isArray(ann.texts) ? ann.texts : []).map(x => String(x.text || '').trim()).filter(Boolean)) lines.push(`Text: ${n}`);
   if (Array.isArray(ann.strokes) && ann.strokes.length) lines.push(`Pen marks: ${ann.strokes.length}.`);
   return lines;
 }
