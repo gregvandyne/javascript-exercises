@@ -59,6 +59,12 @@
 
 /* ---- credits (every page) */
 .lb-credit{margin:16px 0 0;padding-top:10px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:2px;line-height:1.4}
+.lb-credit p{margin:0}
+.lb-credit-more summary{cursor:pointer;font-weight:700;color:var(--text-2);list-style:none;display:inline-flex;align-items:center;gap:6px;min-height:32px}
+.lb-credit-more summary::-webkit-details-marker{display:none}
+.lb-credit-more summary::before{content:"▸";display:inline-block;transition:transform .15s}
+.lb-credit-more[open] summary::before{transform:rotate(90deg)}
+.lb-credit-more p{margin:4px 0 0}
 
 /* ---- the reader */
 .rd{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:16px 20px 18px;max-width:980px;margin:0 auto}

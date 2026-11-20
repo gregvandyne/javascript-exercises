@@ -11670,6 +11670,7 @@
       "translation": "Traduzione: {names}",
       "changes": "Oomba ha ridimensionato le immagini e mostra il libro una pagina alla volta. Pratham Books non sostiene Oomba.",
       "corrected": "Oomba ha corretto l'ortografia e la punteggiatura.",
+      "notes": "Note su autore ed editore",
       "factCorrected": "Oomba ha corretto un dato storico.",
       "original": "Vedi il libro originale.",
       "from": "Tratto da un libro di {name}",

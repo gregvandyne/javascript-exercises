@@ -11669,6 +11669,7 @@
       "translation": "ほんやく：{names}",
       "changes": "Oombaは絵の大きさを変え、本を1ページずつ見せています。Pratham BooksがOombaを推薦しているわけではありません。",
       "corrected": "Oombaはつづりと句読点を直しました。",
+      "notes": "作者と出版社について",
       "factCorrected": "Oombaは歴史の事実を一つ直しました。",
       "original": "もとの本を見る。",
       "from": "もとの本：{name}",

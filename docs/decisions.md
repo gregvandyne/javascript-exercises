@@ -9548,3 +9548,11 @@ it, and from anything a student saves. A "Check my answers" for students is a fo
 | XY Coordinate Board | a grid with points plotted, labels and table hidden (answer: the ordered pairs; build: points to plot) |
 | Geoboard | a band around pegs (answer: the area; build: "Make an area of 6") |
 | Bar Models | a part-part-whole bar with one value "?" (answer: the missing value) |
+## Story Library: credits folded under "Author & publisher notes" (20 Nov 2026)
+
+- The owner found the credits block under every page too heavy. Now the creators stay in view on one short line
+  ("Story: … · Pictures: …", plus translator and "Based on a book by" when present), and the publisher, the license with
+  its deed link, Oomba's change notes (resized pictures, corrected spelling or a history fact, the CC BY-SA same-license
+  note), the not-endorsed line and the link to the original fold under "Author & publisher notes"
+  (`library.credits.notes`, 13 languages). It is all still in the page, one tap away, so CC BY / BY-SA attribution
+  ("reasonable to the medium") is kept: the creators are named on every page and the license is linked beside them.
