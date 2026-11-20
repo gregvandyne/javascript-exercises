@@ -203,4 +203,5 @@
 @media (max-width:520px){.lb-assign-book img{width:120px}}
 
 /* Swiping turns the page (public/js/library.js): the browser keeps up-and-down scrolling, the reader takes sideways. */
-.rd-stage{touch-action:pan-y pinch-zoom}
+.rd-stage{touch-action:pan-y pinch-zoom;overflow-x:clip}
+.rd-stage>:not(.rd-nav){will-change:transform}

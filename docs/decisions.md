@@ -9701,3 +9701,9 @@ side by side as an open book (approved mockup). Pages must fit half a 1280 x 720
   two-finger sideways trackpad swipe turns once per swipe (momentum ignored). Swiping left goes forward (the words are
   English, as in a paper book). Turning goes through the Back/Next buttons, so spreads, the questions and progress
   work as before. Reduced motion: no sliding, the page just turns. Test: `library-classics-browser.test.js`.
+- Follow-up (20 Nov 2026), owner: "not quite reactive enough". The page now sticks to the finger one-to-one after 6px
+  (was 60% of the finger's travel after 12px); letting go past a sixth of the width (at most 80px) or with a flick
+  (faster than 0.3px/ms, over 15px) slides the page off from where the finger left it and slides the next one in
+  (about 0.4s in all; was a jump plus a 48px nudge); a swipe during a slide finishes it at once, so quick swipes turn
+  quick pages. The trackpad swipe moves the page as the fingers move, turns past 90px, and springs back if it stops
+  short. The stage clips sideways (`overflow-x: clip`) so a page sliding off doesn't widen the screen.
