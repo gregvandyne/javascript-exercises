@@ -12,6 +12,7 @@ import { LIMITS as SET_LIMITS } from '../services/classlive-sets.js';
 import express, { Router } from 'express';
 import fs from 'node:fs';
 import { html, raw } from '../views/html.js';
+import { folded } from './info.js';
 import { page, notFound, parentsLabel, signedOut, VERSION } from '../views/layout.js';
 import { coverArt, gameCard, rail } from '../views/components.js';
 import { courseRow } from '../views/courses.js';
@@ -77,11 +78,13 @@ export function launchGame(slug) {
   return games.localizeGame(g);
 }
 /** FAQ pairs [question key, answer key] -> markup, plus the plain text for FAQPage structured data. */
-export function faqBlock(req, pairs, headingKey, vars = {}) {
+export function faqBlock(req, pairs, headingKey, vars = {}, { fold = false } = {}) {
   const t = req.t;
+  // fold: each answer folds away under its question (the /parents and /teachers pages, kept short; the answers are still
+  // on the page and in the FAQ structured data).
   return {
     markup: html`<section class="panel faq lp-faq" id="faq" aria-labelledby="faq-h">${el(t, 'h2', headingKey, {}, ' id="faq-h"')}
-      ${pairs.map(([qk, ak]) => html`${el(t, 'h3', qk)}${el(t, 'p', ak, vars)}`)}</section>`,
+      ${pairs.map(([qk, ak]) => (fold ? folded(el(t, 'h3', qk), el(t, 'p', ak, vars)) : html`${el(t, 'h3', qk)}${el(t, 'p', ak, vars)}`))}</section>`,
     ld: seo.faqLd(pairs.map(([qk, ak]) => [t(qk), seo.plainText(t(ak, vars))])),
   };
 }
@@ -293,7 +296,7 @@ router.get('/teachers', (req, res) => {
   // on /plans); off, the plain "yes, it's free" stays.
   const paidFaq = familiesOn(req);
   const faqPairs = Array.from({ length: TEACHER_FAQ }, (_, i) => [`teachers.faq.q${i + 1}${i === 0 && paidFaq ? 'paid' : ''}`, `teachers.faq.a${i + 1}${(i === 3 || i === 5) && google ? 'google' : ''}${i === 0 && paidFaq ? 'paid' : ''}`]);
-  const faq = faqBlock(req, faqPairs, 'teachers.faq.h', { href: '/privacy', count: langCount, host: siteHost(req) });
+  const faq = faqBlock(req, faqPairs, 'teachers.faq.h', { href: '/privacy', count: langCount, host: siteHost(req) }, { fold: true });
   const plans = familiesOn(req);
   // ?sent=1: the thank-you after the form (nothing it said is shown back); ?failed=1: a form sent without JavaScript
   // that needs fixing (the JavaScript form shows each field's own message instead).
@@ -334,13 +337,12 @@ router.get('/teachers', (req, res) => {
   </section>
 
   <section class="lp-sec" id="brain-breaks" aria-labelledby="bb-h">
-    ${el(t, 'h2', 'move.teachersH', {}, ' id="bb-h"')}${el(t, 'p', 'move.teachersP')}
-    <p><a class="btn btn-primary" href="${lp(req, '/move')}">${t('move.title')}</a></p>
+    ${folded(el(t, 'h2', 'move.teachersH', {}, ' id="bb-h"'), html`${el(t, 'p', 'move.teachersP')}
+    <p><a class="btn btn-primary" href="${lp(req, '/move')}">${t('move.title')}</a></p>`)}
   </section>
 
   <section class="lp-sec" id="subjects" aria-labelledby="subj-h">
-    ${el(t, 'h2', 'teachers.subjects.h', {}, ' id="subj-h"')}
-    <ul class="lp-hubs">${HUBS.map(h => html`<li><a class="lp-hub panel" href="${lp(req, `/learn/${h.slug}`)}"><span class="lp-hub-e" aria-hidden="true">${h.emoji}</span><span>${el(t, 'span', `learn.hubs.${h.key}.name`, {}, ' class="lp-hub-t"')}${el(t, 'span', `learn.hubs.${h.key}.short`, {}, ' class="lp-hub-d"')}</span></a></li>`)}</ul>
+    ${folded(el(t, 'h2', 'teachers.subjects.h', {}, ' id="subj-h"'), html`<ul class="lp-hubs">${HUBS.map(h => html`<li><a class="lp-hub panel" href="${lp(req, `/learn/${h.slug}`)}"><span class="lp-hub-e" aria-hidden="true">${h.emoji}</span><span>${el(t, 'span', `learn.hubs.${h.key}.name`, {}, ' class="lp-hub-t"')}${el(t, 'span', `learn.hubs.${h.key}.short`, {}, ' class="lp-hub-d"')}</span></a></li>`)}</ul>`)}
   </section>
 
   ${teacherLoop(t, { variant: 'page', cls: 'lp-sec', links: isSchoolStaff(req.user) ? loopLinks(req.user) : null, live: liveOn() })}
@@ -348,27 +350,25 @@ router.get('/teachers', (req, res) => {
 
   <div class="lp-cols">
     <section class="panel" id="build" aria-labelledby="build-h">
-      ${el(t, 'h2', 'teachers.build.h', {}, ' id="build-h"')}${el(t, 'p', 'teachers.build.p1')}${el(t, 'p', 'teachers.build.p2')}
-      <p><a href="${lp(req, '/learn/make-a-game')}">${t('teachers.build.link')}</a></p>
+      ${folded(el(t, 'h2', 'teachers.build.h', {}, ' id="build-h"'), html`${el(t, 'p', 'teachers.build.p1')}${el(t, 'p', 'teachers.build.p2')}
+      <p><a href="${lp(req, '/learn/make-a-game')}">${t('teachers.build.link')}</a></p>`)}
     </section>
     <section class="panel" id="class" aria-labelledby="class-h">
-      ${el(t, 'h2', 'teachers.class.h', {}, ' id="class-h"')}
-      <ul class="lp-list">${classItems.map(k => el(t, 'li', `teachers.class.${k}`))}</ul>
+      ${folded(el(t, 'h2', 'teachers.class.h', {}, ' id="class-h"'), html`<ul class="lp-list">${classItems.map(k => el(t, 'li', `teachers.class.${k}`))}</ul>`)}
     </section>
     <section class="panel" id="safe" aria-labelledby="safe-h">
-      ${el(t, 'h2', 'teachers.safe.h', {}, ' id="safe-h"')}
-      <ul class="lp-list">${['li1', google ? 'li2google' : 'li2', 'li3', 'li4'].map(k => el(t, 'li', `teachers.safe.${k}`))}</ul>
-      <p>${tHtml(t, 'teachers.safe.links', { safety: lp(req, '/safety'), privacy: '/privacy' })}</p>
+      ${folded(el(t, 'h2', 'teachers.safe.h', {}, ' id="safe-h"'), html`<ul class="lp-list">${['li1', google ? 'li2google' : 'li2', 'li3', 'li4'].map(k => el(t, 'li', `teachers.safe.${k}`))}</ul>
+      <p>${tHtml(t, 'teachers.safe.links', { safety: lp(req, '/safety'), privacy: '/privacy' })}</p>`)}
     </section>
     ${liveOn() ? html`<section class="panel" id="live" aria-labelledby="live-h">
-      ${el(t, 'h2', 'teachers.live.h', {}, ' id="live-h"')}${el(t, 'p', 'teachers.live.p1')}
+      ${folded(el(t, 'h2', 'teachers.live.h', {}, ' id="live-h"'), html`${el(t, 'p', 'teachers.live.p1')}
       <ul class="lp-list">${['li1', 'li2', 'li3'].map(k => el(t, 'li', `teachers.live.${k}`))}</ul>
-      <p><a class="btn" href="${lp(req, '/teachers/live')}">${t('teachers.live.more')}</a></p>
+      <p><a class="btn" href="${lp(req, '/teachers/live')}">${t('teachers.live.more')}</a></p>`)}
     </section>` : ''}
     <section class="panel" id="uses" aria-labelledby="uses-h">
-      ${el(t, 'h2', 'teachers.uses.h', {}, ' id="uses-h"')}${el(t, 'p', 'teachers.uses.p')}
+      ${folded(el(t, 'h2', 'teachers.uses.h', {}, ' id="uses-h"'), html`${el(t, 'p', 'teachers.uses.p')}
       <ul class="lp-tags">${['li1', 'li2', 'li3', 'li4', 'li5', 'li6', 'li7'].map(k => el(t, 'li', `teachers.uses.${k}`))}</ul>
-      ${el(t, 'h2', 'teachers.languages.h', {}, ' class="lp-sub"')}${el(t, 'p', 'teachers.languages.p', { count: langCount })}
+      ${el(t, 'h2', 'teachers.languages.h', {}, ' class="lp-sub"')}${el(t, 'p', 'teachers.languages.p', { count: langCount })}`)}
     </section>
   </div>
 

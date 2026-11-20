@@ -364,3 +364,19 @@ test('a translated /parents with paid plans on stays in its language: no new Eng
     assert.doesNotMatch(sec, /A plan adds extra Builder messages/, `${p}: the new sentence waits for its translation`);
   }
 });
+
+test('/parents and /teachers are short: the extra sections and every FAQ answer fold under their headings, still on the page', async () => {
+  const folds = (h, id) => new RegExp(`id="${id}"[^>]*>\\s*<details class="lp-fold"><summary><h2`).test(h);
+  const p = (await get('/parents')).text;
+  for (const id of ['ages', 'subjects', 'make', 'home', 'guides', 'private']) assert.ok(folds(p, id), `/parents #${id}`);
+  for (const id of ['safe', 'play']) assert.ok(!folds(p, id), `/parents #${id} stays open`);
+  const t = (await get('/teachers')).text;
+  for (const id of ['brain-breaks', 'subjects', 'build', 'class', 'safe', 'uses']) assert.ok(folds(t, id), `/teachers #${id}`);
+  assert.ok(!folds(t, 'play'), '/teachers #play stays open');
+  for (const h of [p, t]) {
+    const faq = /<section class="panel faq lp-faq" id="faq"[\s\S]*?<\/section>/.exec(h)[0];
+    const qs = (faq.match(/<h3/g) || []).length;
+    assert.ok(qs >= 5); assert.equal((faq.match(/<details class="lp-fold"><summary><h3/g) || []).length, qs, 'every answer folds');
+    assert.match(h, /"@type":"FAQPage"/, 'the answers are still in the structured data');
+  }
+});
