@@ -198,8 +198,11 @@ function start() {
   // A trackpad's sideways two-finger swipe: the page follows it, turns once past 90px (its momentum is ignored until the
   // fingers stop), or springs back if the swipe stops short.
   let wx = 0, wLock = false, wIdle = 0;
-  stage.addEventListener('wheel', e => {
-    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || e.ctrlKey) return;
+  // On the whole reading page, not just the book: a sideways trackpad swipe anywhere on it would otherwise be the
+  // browser's own "back a page" swipe, which slides the whole site away (owner, 20 Nov 2026).
+  document.addEventListener('wheel', e => {
+    if (stage.hidden || Math.abs(e.deltaX) <= Math.abs(e.deltaY) || e.ctrlKey) return;
+    if (e.target instanceof Element && e.target.closest('input, textarea, select, [contenteditable], .rd-dots')) return;
     e.preventDefault();
     clearTimeout(wIdle);
     wIdle = setTimeout(() => { if (!wLock && wx) slide(0, 180); wx = 0; wLock = false; }, 140);
