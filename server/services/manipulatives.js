@@ -24,7 +24,8 @@ import * as S from './schools.js';
 import { anthropic } from '../builder/anthropic.js';
 import * as aiBudget from './ai-budget.js';
 import { hasProfanity, personalInfo } from './textfilter.js';
-import { TOOLS, toolOf, pieceDefs } from '../../public/js/manip-data.js';
+import { TOOLS, toolOf, pieceDefs, roomLayout, ROOM_COLORS } from '../../public/js/manip-data.js';
+import * as LIVE from './manip-live.js';
 import { TASKS } from '../../public/js/manip-tasks.js';
 
 export { TOOLS, TASKS };
@@ -105,16 +106,18 @@ export function textProblem(s) {
   return pi && pi !== 'handle' ? 'personal' : null;
 }
 /** A board as it may be stored: { ok, state (JSON text) } | { ok:false, code: 'badState'|'tooBig'|'words'|'personal' }. */
-export function cleanState(raw) {
+export function cleanState(raw, bounds = null) {
   const o = typeof raw === 'string' ? (raw.length > STATE_MAX ? null : json(raw, null)) : raw;
   if (!o || typeof o !== 'object' || Array.isArray(o)) return fail('badState');
   const st = { ...o };
   if (Array.isArray(st.pieces)) st.pieces = st.pieces.slice(0, LIMITS.pieces).filter(p => p && typeof p === 'object');
+  // In a live room a square's pieces stay inside it: their places are clamped to the square (bounds: its size).
+  if (bounds && Array.isArray(st.pieces)) st.pieces = st.pieces.map(p => { const w = num(p.w, 4, bounds.w, 50), h = num(p.h, 4, bounds.h, 50); return { ...p, w, h, x: num(p.x, 0, bounds.w - w), y: num(p.y, 0, bounds.h - h) }; });
   const ann = st.__ann && typeof st.__ann === 'object' ? st.__ann : null;
   if (ann) {
     st.__ann = {
       notes: (Array.isArray(ann.notes) ? ann.notes : []).filter(n => n && typeof n === 'object').slice(0, LIMITS.notes)
-        .map((n, i) => ({ id: clipStr(n.id || `n${i}`, 40), text: clipStr(n.text, LIMITS.noteChars), x: num(n.x, 0, 1), y: num(n.y, 0, 1) })),
+        .map((n, i) => ({ id: clipStr(n.id || `n${i}`, 40), text: clipStr(n.text, LIMITS.noteChars), x: num(n.x, 0, 1), y: num(n.y, 0, 1), ...(n.by === 't' ? { by: 't' } : {}) })),
       strokes: (Array.isArray(ann.strokes) ? ann.strokes : []).filter(s => s && Array.isArray(s.pts)).slice(0, LIMITS.strokes)
         .map(s => ({ c: HEX.test(s.c) ? s.c : '#FF6B4A', pts: s.pts.slice(0, LIMITS.points).map(p => ({ x: num(p && p.x, 0, 1), y: num(p && p.y, 0, 1) })) })),
       // The board's size on the screen it was made on (the teacher's view draws it at that size, scaled to fit).
@@ -211,7 +214,13 @@ export function join(u, { code, id } = {}) {
   if (!s || !studentSession(u, s.id)) return fail('notFound');
   if (s.status !== 'active') return fail('ended');
   const t = now();
-  q.run("INSERT OR IGNORE INTO manip_work(session_id, user_id, state, joined_at, updated_at) VALUES (?,?,'{}',?,?)", s.id, u.id, t, t);
+  if (!q.get('SELECT 1 FROM manip_work WHERE session_id=? AND user_id=?', s.id, u.id)) {
+    // Their square in the room: the first free slot of the grid.
+    const used = new Set(q.all('SELECT slot FROM manip_work WHERE session_id=?', s.id).map(r => r.slot));
+    let slot = 0; while (used.has(slot)) slot++;
+    q.run("INSERT INTO manip_work(session_id, user_id, state, joined_at, updated_at, slot) VALUES (?,?,'{}',?,?,?)", s.id, u.id, t, t, slot);
+    LIVE.publish(s.id, { t: 'dirty' });
+  }
   return ok({ session: { id: s.id, tool: s.tool } });
 }
 /** What a student's page reads: the session, the board their teacher pushed, their own board. Never anyone else's. */
@@ -221,14 +230,7 @@ export function studentView(u, id) {
   if (!w) return null;
   return { id: s.id, code: s.code, tool: s.tool, title: s.title, status: s.status, pushed: s.pushed_state || null, pushedAt: s.pushed_at || 0, mine: w.state };
 }
-export function submitWork(u, id, state) {
-  const s = studentSession(u, id);
-  if (!s || !q.get('SELECT 1 FROM manip_work WHERE session_id=? AND user_id=?', s.id, u.id)) return fail('notFound');
-  if (s.status !== 'active') return fail('ended');
-  const c = cleanState(state); if (!c.ok) return c;
-  q.run('UPDATE manip_work SET state=?, updated_at=? WHERE session_id=? AND user_id=?', c.state, now(), s.id, u.id);
-  return ok();
-}
+export function submitWork(u, id, state) { return saveArea(u, id, u ? u.id : '', state); }
 /** The roster name the class page shows its teachers (roster name, else display name). */
 const rosterNames = classId => new Map(S.roster(classId).map(p => [p.id, p.roster_name || p.display_name]));
 /** The teacher's dashboard: the session and each joined student's board. Host (or platform admin) only. */
@@ -252,12 +254,93 @@ export function push(u, id, boardId) {
   if (b.tool !== s.tool) return fail('otherTool');
   const c = cleanState(b.state); if (!c.ok) return c;
   q.run('UPDATE manip_sessions SET pushed_state=?, pushed_at=? WHERE id=?', JSON.stringify({ tool: b.tool, code: b.code, state: c.state }), now(), s.id);
+  LIVE.publish(s.id, { t: 'dirty' });
   return ok();
 }
 export function end(u, id) {
   const s = getSession(id);
   if (!isSessionHost(u, s)) return fail('notFound');
   if (s.status === 'active') q.run("UPDATE manip_sessions SET status='ended', ended_at=? WHERE id=?", now(), s.id);
+  LIVE.forget(s.id);
+  return ok();
+}
+
+
+// ---------------------------------------------------------------- the shared room (docs/decisions.md "the shared room")
+// One board per session: the teacher's area (manip_sessions.room) and one square per joined student (manip_work.state,
+// at manip_work.slot in the grid). Everyone in the session sees every square; each square's pieces stay inside it.
+// A student writes only their own square, the teacher writes any. Sticky-note text and bar labels a student typed reach
+// only that student and the teacher: everyone else gets the note's shape with no text, removed here, never sent.
+/** Who is in the room: { role: 'teacher', key: 't' } | { role: 'student', key: their id } | null (the normal 404). */
+export function roomRole(u, s) {
+  if (!s) return null;
+  if (isSessionHost(u, s)) return { role: 'teacher', key: 't' };
+  return studentSession(u, s.id) && q.get('SELECT 1 FROM manip_work WHERE session_id=? AND user_id=?', s.id, u.id) ? { role: 'student', key: u.id } : null;
+}
+/** A board as a classmate may see it: typed text gone (notes keep their shape and place; the teacher's notes stay). */
+export function forClassmates(stateText) {
+  const o = json(stateText, {}) || {};
+  if (o.__ann && Array.isArray(o.__ann.notes)) o.__ann.notes = o.__ann.notes.map(n => (n.by === 't' ? n : { id: n.id, x: n.x, y: n.y, text: '', blank: true }));
+  if (Array.isArray(o.bars)) o.bars = o.bars.map(b => ({ ...b, name: '', segs: (b.segs || []).map(x => ({ ...x, label: '' })) }));
+  return JSON.stringify(o);
+}
+/** Everything the room page draws. Names: roster names for the teacher, display names for classmates (the class page's rule). */
+export function roomFor(u, id) {
+  prune();
+  const s = getSession(id), who = roomRole(u, s); if (!who) return null;
+  const c = S.getClass(s.class_id), roster = new Map(S.roster(s.class_id).map(p => [p.id, p]));
+  const rows = q.all('SELECT user_id, state, slot, updated_at FROM manip_work WHERE session_id=? ORDER BY slot', s.id).filter(w => roster.has(w.user_id));
+  const areas = rows.map(w => {
+    const p = roster.get(w.user_id), mine = w.user_id === who.key;
+    return { key: w.user_id, slot: w.slot, color: ROOM_COLORS[w.slot % ROOM_COLORS.length], updatedAt: w.updated_at, mine,
+      name: who.role === 'teacher' ? (p.roster_name || p.display_name) : p.display_name,
+      state: who.role === 'teacher' || mine ? w.state : forClassmates(w.state) };
+  });
+  return { role: who.role, me: who.key, id: s.id, code: who.role === 'teacher' ? s.code : undefined, tool: s.tool, title: s.title, status: s.status,
+    className: c ? c.name : '', teacher: { state: s.room || '{}', updatedAt: s.room_at || 0 }, areas,
+    pushed: who.role === 'student' ? s.pushed_state || null : !!s.pushed_state, pushedAt: s.pushed_at || 0,
+    bring: LIVE.bringOf(s.id), cursors: LIVE.cursorsOf(s.id) };
+}
+/** Save one area: key 't' (the teacher's area) or a student's id. The teacher may save any; a student only their own.
+ *  Note authors are kept here, not taken from the browser: a note the teacher adds is the teacher's (everyone reads it);
+ *  a student can't change or remove the teacher's notes in their square. */
+export function saveArea(u, id, key, state) {
+  const s = getSession(id), who = roomRole(u, s);
+  if (!who || (who.role === 'student' && key !== who.key)) return fail('notFound');
+  if (s.status !== 'active') return fail('ended');
+  const L = roomLayout(s.tool), bounds = key === 't' ? { w: L.teacher.w, h: L.teacher.h } : L.sq;
+  const row = key === 't' ? { state: s.room || '{}' } : q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, String(key));
+  if (!row) return fail('notFound');
+  const c = cleanState(state, bounds); if (!c.ok) return c;
+  const next = JSON.parse(c.state), prev = json(row.state, {}) || {};
+  const before = new Map(((prev.__ann && prev.__ann.notes) || []).map(n => [n.id, n]));
+  let notes = (next.__ann && next.__ann.notes) || [];
+  if (key === 't') notes = notes.map(n => ({ ...n, by: 't' }));
+  else if (who.role === 'teacher') notes = notes.map(n => ({ ...n, by: before.has(n.id) ? before.get(n.id).by : 't' }));
+  else {
+    const theirs = notes.filter(n => !(before.get(n.id) && before.get(n.id).by === 't')).map(n => { const m = { ...n }; delete m.by; return m; });
+    notes = [...[...before.values()].filter(n => n.by === 't'), ...theirs].slice(0, LIMITS.notes);
+  }
+  next.__ann = { ...(next.__ann || { strokes: [] }), notes };
+  const text = JSON.stringify(next);
+  if (key === 't') q.run('UPDATE manip_sessions SET room=?, room_at=? WHERE id=?', text, now(), s.id);
+  else q.run('UPDATE manip_work SET state=?, updated_at=? WHERE session_id=? AND user_id=?', text, now(), s.id, String(key));
+  LIVE.publish(s.id, { t: 'dirty', k: key });
+  return ok();
+}
+/** "Bring everyone to me": the teacher's view (a room rectangle), once, to every student. */
+export function bring(u, id, view = {}) {
+  const s = getSession(id), who = roomRole(u, s);
+  if (!who || who.role !== 'teacher') return fail('notFound');
+  if (s.status !== 'active') return fail('ended');
+  const v = { x: Math.round(num(view.x, -2000, 20000)), y: Math.round(num(view.y, -2000, 20000)), w: Math.round(num(view.w, 50, 20000, 800)), h: Math.round(num(view.h, 50, 20000, 600)) };
+  return ok({ seq: LIVE.setBring(s.id, v) });
+}
+/** A cursor through plain requests (when a socket can't connect). Memory only. */
+export function moveCursor(u, id, { x, y, touch } = {}) {
+  const s = getSession(id), who = roomRole(u, s);
+  if (!who) return fail('notFound');
+  if (s.status === 'active') LIVE.setCursor(s.id, who.key, { x, y, touch });
   return ok();
 }
 

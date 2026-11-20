@@ -101,3 +101,21 @@ export function freeSpot(obstacles, w, h, W, H, { margin = 12, gap = 6, step = 8
   const last = obstacles[obstacles.length - 1];
   return last ? { x: Math.min(maxX, last.x + 24), y: Math.min(maxY, last.y + 24) } : { x: margin, y: margin };
 }
+
+// ---------------------------------------------------------------- the shared room of a live session
+/** A square's size in a live room, per tool (room pixels): big enough for the tool's own board. */
+export const AREA_SIZE = { 'number-lines': [900, 300], 'xy-coordinate-board': [760, 480], clock: [820, 360], 'hundred-board': [600, 620], rekenreks: [600, 340],
+  'fraction-circles': [620, 420], 'bar-models': [680, 420], geoboard: [440, 500] };
+export const areaSize = tool => { const [w, h] = AREA_SIZE[tool] || [480, 360]; return { w, h }; };
+/** One room: the teacher's area across the top, then one square per student in a grid (slot 0, 1, 2...), each with its
+ *  name above it. -> { sq, cols, gap, teacher: rect, slot(i): rect, world(n): { w, h } } (rects: { x, y, w, h }). */
+export function roomLayout(tool) {
+  const sq = areaSize(tool), gap = 56, label = 36, cols = sq.w <= 620 ? 4 : 2;
+  const width = cols * sq.w + (cols - 1) * gap;
+  const teacher = { x: 0, y: label, w: width, h: sq.h };
+  const slot = i => ({ x: (i % cols) * (sq.w + gap), y: teacher.y + teacher.h + gap + label + Math.floor(i / cols) * (sq.h + gap + label), w: sq.w, h: sq.h });
+  const world = n => { const last = slot(Math.max(0, n - 1)); return { w: width, h: (n ? last.y + last.h : teacher.y + teacher.h) + 24 }; };
+  return { sq, cols, gap, teacher, slot, world };
+}
+/** The cursor and square colors, by slot. */
+export const ROOM_COLORS = ['#E53935', '#1E88E5', '#8E24AA', '#00897B', '#F57C00', '#C2185B', '#3949AB', '#2E7D32', '#6D4C41', '#00838F', '#AD1457', '#5E35B1'];

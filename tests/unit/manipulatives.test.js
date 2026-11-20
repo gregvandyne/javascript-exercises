@@ -18,7 +18,7 @@ const S = await import('../../server/services/schools.js');
 const M = await import('../../server/services/manipulatives.js');
 const { deleteAccount } = await import('../../server/services/account-delete.js');
 const { createApp } = await import('../../server/app.js');
-const { TOOLS, pieceDefs, hexValue, freeSpot, HEX_SIXTHS } = await import('../../public/js/manip-data.js');
+const { TOOLS, pieceDefs, hexValue, freeSpot, HEX_SIXTHS, roomLayout } = await import('../../public/js/manip-data.js');
 const { TASKS } = await import('../../public/js/manip-tasks.js');
 
 let server, base;
@@ -50,8 +50,10 @@ function world() {
 const board = (extra = {}) => ({ pieces: [{ id: 'p1', kind: 'unit', x: 10, y: 10, label: '1', value: 1, color: '#FFD23F', w: 30, h: 30 }], __ann: { notes: [{ id: 'n1', text: 'Count the units', x: 0.1, y: 0.1 }], strokes: [] }, ...extra });
 const withFlags = async (flags, fn) => { const old = { m: config.manipulatives, u: config.manipulativesUsers }; Object.assign(config, flags); try { await fn(); } finally { config.manipulatives = old.m; config.manipulativesUsers = old.u; } };
 
-test('migration 0092: there once, after 0091, its tables exist, a session takes its work with it', () => {
+test('migrations 0092 and 0093: there once, in order, their tables and columns exist, a session takes its work with it', () => {
   const names = MIGRATIONS.map(m => m[0]);
+  assert.equal(names.indexOf('0093_manipulatives_room'), names.indexOf('0092_manipulatives') + 1);
+  assert.ok(q.all('PRAGMA table_info(manip_sessions)').some(c => c.name === 'room')); assert.ok(q.all('PRAGMA table_info(manip_work)').some(c => c.name === 'slot'));
   assert.equal(names.filter(n => n.startsWith('0092')).length, 1);
   assert.ok(names.indexOf('0092_manipulatives') > names.indexOf('0091_story_library'));
   assert.ok(names.slice(names.indexOf('0092_manipulatives') + 1).every(n => n > '0092_manipulatives'), 'numbered in order');
@@ -147,23 +149,62 @@ test('only the session\'s teacher (or the admin) opens the dashboard, pushes, ex
   });
 });
 
-test('students never see another student\'s work, and their work reaches only their teacher', async () => {
+test('the shared room: everyone sees every square, but a student\'s typed text reaches only them and the teacher', async () => {
   const w = world();
   const s = M.createSession(boss, { classId: w.A.id, tool: 'base-ten-blocks' }).session;
   M.join(w.a1, { code: s.code }); M.join(w.a2, { code: s.code });
-  assert.equal((await as(w.a1)(`/api/manipulatives/live/${s.id}/work`, { method: 'POST', body: { state: board({ __ann: { notes: [{ id: 'x', text: 'Ada secret plan 42', x: 0, y: 0 }], strokes: [] } }) } })).status, 200);
-  const a2 = await as(w.a2)(`/api/manipulatives/live/${s.id}`);
-  assert.doesNotMatch(a2.text, /secret plan|Ada|Apple/, 'nothing of Ada\'s reaches Abe');
-  const a1 = await as(w.a1)(`/api/manipulatives/live/${s.id}`);
-  assert.match(a1.json.session.mine, /secret plan/, 'Ada sees her own');
-  const dash = await as(boss)(`/api/manipulatives/live/${s.id}`);
-  const ada = dash.json.session.students.find(x => x.id === w.a1.id);
-  assert.equal(ada.name, 'Ada Apple', 'the teacher sees the roster name the class page shows');
-  assert.match(ada.state, /secret plan/);
-  // Students can't save boards or make share codes.
+  const ada = board({ __ann: { notes: [{ id: 'x', text: 'Ada secret plan 42', x: 0.5, y: 0.5 }], strokes: [] } });
+  assert.equal((await as(w.a1)(`/api/manipulatives/live/${s.id}/area/${w.a1.id}`, { method: 'POST', body: { state: ada } })).status, 200);
+  assert.equal(M.submitWork(w.a2, s.id, { bars: [{ name: 'Abe bar', segs: [{ label: 'Abe label', value: 2 }] }] }).ok, true, 'the old autosave address still saves their own square');
+  // Abe (a classmate) sees Ada's square and pieces, by her display name, with no note text and no roster names at all.
+  const abe = await as(w.a2)(`/api/manipulatives/live/${s.id}/room`);
+  assert.equal(abe.status, 200); assert.equal(abe.json.room.role, 'student');
+  const adaSq = abe.json.room.areas.find(x => x.key === w.a1.id);
+  assert.equal(adaSq.name, w.a1.display_name); assert.match(adaSq.state, /"kind":"unit"/, 'pieces are shared');
+  assert.doesNotMatch(abe.text, /secret plan|Ada Apple|Abe Acorn/, 'never the text, never roster names');
+  assert.equal(JSON.parse(adaSq.state).__ann.notes[0].blank, true, 'the note\'s shape only');
+  assert.equal(abe.json.room.code, undefined, 'the join code is the teacher\'s');
+  // Ada (as a classmate of Abe) gets his bar labels blanked.
+  const adaView = await as(w.a1)(`/api/manipulatives/live/${s.id}/room`);
+  assert.doesNotMatch(adaView.text, /Abe bar|Abe label/); assert.match(adaView.text, /secret plan/, 'Ada sees her own note');
+  // The teacher sees everything, by roster name.
+  const t = (await as(boss)(`/api/manipulatives/live/${s.id}/room`)).json.room;
+  assert.equal(t.role, 'teacher'); assert.equal(t.areas.find(x => x.key === w.a1.id).name, 'Ada Apple');
+  assert.match(JSON.stringify(t), /secret plan/); assert.match(JSON.stringify(t), /Abe bar/);
+  // Students can't save boards, make share codes or draft with AI.
   assert.equal((await as(w.a1)('/api/manipulatives/boards', { method: 'POST', body: { tool: 'clock', state: {} } })).status, 404);
   assert.equal(M.saveBoard(w.a1, { tool: 'clock', state: {} }).ok, false);
   assert.equal((await as(w.a1)('/api/manipulatives/draft', { method: 'POST', body: { tool: 'clock', brief: 'tell time' } })).status, 404);
+});
+
+test('the shared room: a student writes only inside their own square; the teacher writes anywhere; teacher notes are everyone\'s', async () => {
+  const w = world();
+  const s = M.createSession(boss, { classId: w.A.id, tool: 'base-ten-blocks' }).session;
+  M.join(w.a1, { code: s.code }); M.join(w.a2, { code: s.code });
+  const slots = q.all('SELECT user_id, slot FROM manip_work WHERE session_id=? ORDER BY slot', s.id).map(r => r.slot);
+  assert.deepEqual(slots, [0, 1], 'one square each, in the grid');
+  // Into a classmate's square, or the teacher's area: the same 404 as a wrong address.
+  for (const key of [w.a2.id, 't', 'nobody']) assert.equal((await as(w.a1)(`/api/manipulatives/live/${s.id}/area/${key}`, { method: 'POST', body: { state: board() } })).status, 404, key);
+  assert.equal(M.saveArea(w.b1, s.id, w.b1.id, board()).code, 'notFound', 'not in the class');
+  // A piece dragged out of the square is put back inside it (its size: services/manip-data roomLayout).
+  M.saveArea(w.a1, s.id, w.a1.id, { pieces: [{ id: 'p', kind: 'rod', x: 5000, y: -300, w: 30, h: 150, label: '10', value: 10 }] });
+  const p = JSON.parse(q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, w.a1.id).state).pieces[0];
+  const sq = roomLayout('base-ten-blocks').sq;
+  assert.deepEqual([p.x, p.y], [sq.w - 30, 0]);
+  // The teacher writes in Ada's square and in their own area; their notes keep their text for everyone.
+  assert.equal(M.saveArea(boss, s.id, w.a1.id, { pieces: [], __ann: { notes: [{ id: 'tn', text: 'Try fewer pieces', x: 0.1, y: 0.1 }], strokes: [] } }).ok, true);
+  assert.equal(M.saveArea(boss, s.id, 't', { pieces: [], __ann: { notes: [{ id: 'big', text: 'Build 232', x: 0.1, y: 0.1, by: 's' }], strokes: [] } }).ok, true);
+  const abe = M.roomFor(w.a2, s.id);
+  assert.match(abe.areas.find(x => x.key === w.a1.id).state, /Try fewer pieces/, 'a teacher note in a square is read by all');
+  assert.equal(JSON.parse(abe.teacher.state).__ann.notes[0].text, 'Build 232');
+  // Ada can't change or remove the teacher's note, and can't make her own note look like the teacher's.
+  M.saveArea(w.a1, s.id, w.a1.id, { pieces: [], __ann: { notes: [{ id: 'tn', text: 'changed', x: 0, y: 0, by: 't' }, { id: 'mine', text: 'my words', x: 0.5, y: 0.5, by: 't' }], strokes: [] } });
+  const notes = JSON.parse(q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, w.a1.id).state).__ann.notes;
+  assert.deepEqual(notes.map(n => [n.id, n.text, n.by]), [['tn', 'Try fewer pieces', 't'], ['mine', 'my words', undefined]]);
+  assert.doesNotMatch(M.roomFor(w.a2, s.id).areas.find(x => x.key === w.a1.id).state, /my words/);
+  // After the end: nobody writes.
+  M.end(boss, s.id);
+  assert.equal(M.saveArea(boss, s.id, 't', {}).code, 'ended');
 });
 
 test('saved boards are owned: the list is your own, only the owner deletes, a share code opens a copy', async () => {
@@ -353,4 +394,76 @@ test('new pieces land in the next free spot: never on a piece or a note; a full 
   assert.deepEqual(freeSpot(full, 40, 40, 800, 430), { x: 24, y: 24 }, 'full: a small offset');
   // The board's size travels with it for the teacher's view, cleaned.
   assert.deepEqual(JSON.parse(M.cleanState({ __ann: { notes: [], strokes: [], size: { w: 390.6, h: 'x' } } }).state).__ann.size, { w: 391, h: 430 });
+});
+
+test('the room\'s socket: only the session\'s teacher and joined students connect; cursors relay and are never stored', async () => {
+  const { WebSocket } = await import('ws');
+  const { attachUpgrades } = await import('../../server/services/upgrade.js');
+  const SOCK = await import('../../server/services/manip-socket.js');
+  const LIVE = await import('../../server/services/manip-live.js');
+  const listener = attachUpgrades(server, [SOCK.route]);
+  const w = world();
+  const s = M.createSession(boss, { classId: w.A.id, tool: 'base-ten-blocks' }).session;
+  M.join(w.a1, { code: s.code }); M.join(w.a2, { code: s.code });
+  const wsBase = base.replace('http', 'ws');
+  const open = (who, { sid = s.id, origin = base } = {}) => new Promise(resolve => {
+    const ws = new WebSocket(`${wsBase}/api/manipulatives/ws?s=${sid}`, { headers: { ...(who ? { cookie: cookieFor(who.id) } : {}), ...(origin ? { origin } : {}) } });
+    const got = [];
+    ws.on('message', d => got.push(JSON.parse(String(d))));
+    ws.on('open', () => { opened.push(ws); resolve({ ws, got, ok: true }); });
+    ws.on('unexpected-response', (req, res) => resolve({ ok: false, status: res.statusCode }));
+    ws.on('error', () => resolve({ ok: false, status: 0 }));
+  });
+  const dbBefore = JSON.stringify(q.all('SELECT * FROM manip_work WHERE session_id=?', s.id)) + JSON.stringify(q.get('SELECT * FROM manip_sessions WHERE id=?', s.id));
+  let auditBefore = 0; const opened = [];
+  try {
+    // Refused: signed out, a student of another class, a non-host teacher, a student who never joined, a foreign Origin.
+    assert.equal((await open(null)).status, 404);
+    assert.equal((await open(w.b1)).status, 404, 'outside the class');
+    assert.equal((await open(w.T)).status, 404, 'a teacher who is not the host (and not allowed)');
+    const a3 = getUser(S.createSchoolAccount(boss, w.oak.id, { rosterName: 'Al Ash' }).user.id); S.addToClass(boss, w.A.id, a3.id);
+    assert.equal((await open(a3)).status, 404, 'in the class but not joined');
+    assert.equal((await open(w.a1, { origin: 'https://evil.example' })).status, 403);
+    await withFlags({ manipulatives: false }, async () => assert.equal((await open(boss)).status, 404, 'the hidden gate'));
+    // Allowed: the teacher and the joined students. A cursor reaches the others within a tick or two.
+    auditBefore = q.get('SELECT COUNT(*) n FROM audit_log').n;
+    const T = await open(boss), A = await open(w.a1), B = await open(w.a2);
+    assert.ok(T.ok && A.ok && B.ok);
+    A.ws.send(JSON.stringify({ t: 'c', x: 120, y: 340 }));
+    T.ws.send(JSON.stringify({ t: 'c', x: 900, y: 40, touch: true }));
+    await new Promise(r => setTimeout(r, 350));
+    const last = B.got.filter(m => m.t === 'cur').pop();
+    assert.ok(last, 'a cursor batch arrived');
+    assert.deepEqual(last.list.map(c => c.k).sort(), [w.a1.id, 't'].sort());
+    assert.deepEqual(last.list.find(c => c.k === w.a1.id), { k: w.a1.id, x: 120, y: 340, touch: false });
+    // Bring everyone to me: one message to everyone.
+    assert.equal((await as(boss)(`/api/manipulatives/live/${s.id}/bring`, { method: 'POST', body: { view: { x: 10, y: 20, w: 900, h: 500 } } })).status, 200);
+    assert.equal((await as(w.a1)(`/api/manipulatives/live/${s.id}/bring`, { method: 'POST', body: { view: {} } })).status, 404, 'students can\'t');
+    await new Promise(r => setTimeout(r, 50));
+    assert.deepEqual(A.got.find(m => m.t === 'bring'), { t: 'bring', seq: 1, view: { x: 10, y: 20, w: 900, h: 500 } });
+    // Nothing of the cursors is in the database, the audit log or the room's saved state.
+    const dbAfter = JSON.stringify(q.all('SELECT * FROM manip_work WHERE session_id=?', s.id)) + JSON.stringify(q.get('SELECT * FROM manip_sessions WHERE id=?', s.id));
+    assert.equal(dbAfter, dbBefore);
+    const newAudit = q.all('SELECT action, details FROM audit_log ORDER BY rowid DESC LIMIT ?', q.get('SELECT COUNT(*) n FROM audit_log').n - auditBefore);
+    assert.deepEqual(newAudit.filter(r => /manip|cursor|bring/.test(r.action) || /"x"|120|340/.test(r.details)), [], JSON.stringify(newAudit));
+    for (const { name } of q.all("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'manip%'")) assert.doesNotMatch(JSON.stringify(q.all(`SELECT * FROM ${name}`)), /"x":120,"y":340|"x":900,"y":40/);
+    // A closed socket's cursor goes at once; the end tells everyone and forgets the room.
+    A.ws.close(); await new Promise(r => setTimeout(r, 100));
+    assert.ok(!LIVE.cursorsOf(s.id).some(c => c.k === w.a1.id));
+    M.end(boss, s.id); await new Promise(r => setTimeout(r, 100));
+    assert.ok(B.got.some(m => m.t === 'end')); assert.equal(LIVE._rooms.has(s.id), false);
+    assert.equal((await open(w.a2)).status, 404, 'no socket to an ended session');
+    T.ws.close(); B.ws.close();
+  } finally { for (const ws of opened) ws.terminate(); server.off('upgrade', listener); }
+});
+
+test('cursors without a socket, and idle cursors, stay in memory only and expire', async () => {
+  const LIVE = await import('../../server/services/manip-live.js');
+  const w = world();
+  const s = M.createSession(boss, { classId: w.A.id, tool: 'money' }).session; M.join(w.a1, { code: s.code });
+  assert.equal((await as(w.b1)(`/api/manipulatives/live/${s.id}/cursor`, { method: 'POST', body: { x: 1, y: 2 } })).status, 404);
+  assert.equal((await as(w.a1)(`/api/manipulatives/live/${s.id}/cursor`, { method: 'POST', body: { x: 1, y: 2 } })).status, 200);
+  assert.deepEqual((await as(boss)(`/api/manipulatives/live/${s.id}/room`)).json.room.cursors, [{ k: w.a1.id, x: 1, y: 2, touch: false }]);
+  LIVE._rooms.get(s.id).cursors.get(w.a1.id).at -= LIVE.IDLE_MS + 1;
+  assert.deepEqual(LIVE.cursorsOf(s.id), [], 'gone after 10 s idle');
 });
