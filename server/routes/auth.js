@@ -58,7 +58,8 @@ export function whoTarget(req, who) {
   const next = wantedNext(req.query.next);
   const q = next ? `?next=${encodeURIComponent(next)}` : '';
   if (who === 'grownup' || who === 'parent') return `/signup/parent${q}`;
-  if (who === 'teacher') return '/signup/teacher';
+  // A trial (?trial=1, ?seats=N) from "Who's signing up?" goes on with the teacher's steps.
+  if (who === 'teacher') return `/signup/teacher${req.query.trial === '1' ? `?trial=1${/^[1-9]\d{0,3}$/.test(String(req.query.seats || '')) ? `&seats=${req.query.seats}` : ''}` : ''}`;
   return `/signup/kid${q}`;
 }
 /** The sign-in page: Sign in with Google (when it is on here), or a username and password; "Forgot your password?"

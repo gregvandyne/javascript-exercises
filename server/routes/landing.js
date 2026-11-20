@@ -42,8 +42,9 @@ import { LAYOUT_TEMPLATES, WIDGETS } from '../services/dash.js';
 
 /** Where "Just Play" goes: the games for kids, no sign-up. */
 export const JUST_PLAY_URL = '/play';
-/** Every "Start free trial" (the Teacher plan's 14-day trial, no card). */
-export const TRIAL_URL = '/trial';
+/** Every "Start free trial" (the Teacher plan's 14-day trial, no card): "Who's signing up?" first (the landing is for
+ *  signed-out visitors only); "I'm a teacher" there keeps ?trial=1 through the teacher's steps, which end at /trial. */
+export const TRIAL_URL = '/signup?trial=1';
 /** "Host a live game now": the three-field teacher sign-up, then the Quick game chooser (routes/quick-live.js). */
 export const HOST_NOW_URL = '/teachers/host';
 /** Schools: invoices, purchase orders, more than a few teachers. */
@@ -113,9 +114,10 @@ export function renderLanding(req, res) {
   if (req.method === 'GET' && countable(req)) funnel.bump('landing.view');
 
   // The page's sections, in the order of the story (docs/decisions.md "Landing: the whole class day"). wide: also in
-  // the bar on wide screens; every one is in the menu (phones and narrower screens, where the bar has no room).
-  const NAV = [['#how', 'how', false], ['#dashboards', 'dashboards', true], ['#builder', 'builder', true], ...(live ? [['#live', 'live', true]] : []),
-    ['#kids', 'kids', false], ['#courses', 'courses', true], ['#pricing', 'pricing', true], ['#faq', 'faq', true]];
+  // the bar on wide screens (kept short: how it works, pricing, FAQ); every one is in the menu (phones and narrower
+  // screens).
+  const NAV = [['#how', 'how', true], ['#dashboards', 'dashboards', false], ['#builder', 'builder', false], ...(live ? [['#live', 'live', false]] : []),
+    ['#kids', 'kids', false], ['#courses', 'courses', false], ['#pricing', 'pricing', true], ['#faq', 'faq', true]];
   const NAV_CTA = { '#how': 'how', '#pricing': 'pricing' };
   const navLink = (href, key) => html`<a href="${href}"${NAV_CTA[href] ? raw(` data-cta="${NAV_CTA[href]}"`) : ''}${fb(`landing.nav.${key}`)}>${t(`landing.nav.${key}`)}</a>`;
   const header = html`<a class="lp-skip" href="#lp-main">${t('landing.nav.skip')}</a>
@@ -126,7 +128,6 @@ export function renderLanding(req, res) {
   </nav>
   <div class="lp-actions">
     <a class="lp-signin" href="/login">${t('landing.nav.signIn')}</a>
-    <a class="lp-btn lp-btn-ghost lp-btn-sm lp-justplay" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')} ${ARROW}</a>
     <a class="lp-btn lp-btn-primary lp-btn-sm" href="${TRIAL_URL}" data-cta="trial" aria-label="${t('landing.nav.trial')}"><span class="lp-long">${t('landing.nav.trial')}</span><span class="lp-short" aria-hidden="true">${t('landing.nav.trialShort')}</span></a>
   </div>
   <details class="lp-menu" id="lp-menu">
