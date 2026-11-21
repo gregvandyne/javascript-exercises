@@ -3490,6 +3490,92 @@
         "electrons": "De elektronen",
         "values": "De waarden",
         "reading": "De aflezing"
+      },
+      "draw": {
+        "modeLabel": "Hoe je de figuur maakt",
+        "type": "Maten typen",
+        "draw": "Tekenen",
+        "title": "Teken het op het puntenrooster",
+        "size": "Grootte van het rooster",
+        "sizeOpt": "{n} bij {n}",
+        "clear": "Wissen",
+        "help": {
+          "triangle": "Tik op drie punten om een driehoek te maken. Sleep een hoekpunt om het te verplaatsen.",
+          "quad": "Tik op volgorde rond de vorm op vier punten. Sleep een hoekpunt om het te verplaatsen.",
+          "grid": "Tik op volgorde rond de vorm op de punten, tot 10 hoekpunten. Sleep een hoekpunt om het te verplaatsen."
+        },
+        "keys": "Met het toetsenbord: de pijltjestoetsen bewegen, Enter zet een hoekpunt neer of pakt het op, en dan verschuiven de pijltjestoetsen het.",
+        "board": "Puntenrooster, {n} bij {n}",
+        "corner": "Hoekpunt {name} op ({x}, {y})",
+        "placed": "{name} neergezet op ({x}, {y})",
+        "moved": "{name} verplaatst naar ({x}, {y})",
+        "picked": "{name} opgepakt. Verplaats het met de pijltjestoetsen en zet het neer met Enter.",
+        "removed": "{name} weggehaald",
+        "corners": "Hoekpunten",
+        "sides": "Zijden",
+        "angles": "Hoeken",
+        "kind": "Soort",
+        "perimeter": "Omtrek",
+        "area": "Oppervlakte",
+        "sqUnits": "{area} vierkante eenheden",
+        "more": "{count, plural, one {Tik nog op # punt.} other {Tik nog op # punten.}}",
+        "filled": "Ingevuld vanuit je tekening.",
+        "keep": "De figuur hieronder houdt je laatste goede vorm.",
+        "same": "Twee hoekpunten staan op hetzelfde punt. Sleep er een naar een ander punt.",
+        "line": "Drie hoekpunten liggen op een rechte lijn, dus ze maken geen vorm. Zet er een van de lijn af.",
+        "cross": "Twee zijden kruisen elkaar. Verplaats een hoekpunt zodat de zijden elkaar alleen in de hoekpunten raken.",
+        "cannot": "Oomba Figures kan deze niet tekenen. Verplaats eens een hoekpunt.",
+        "isNot": "Die vorm is {is} en niet {want}.",
+        "special": "Die vorm is {is}, en Oomba Figures tekent die met een eigen editor.",
+        "open": {
+          "rectangle": "Openen in de editor Rechthoek",
+          "parallelogram": "Openen in de editor Parallellogram",
+          "trapezoid": "Openen in de editor Trapezium",
+          "kite": "Openen in de editor Vlieger",
+          "grid": "Uitzetten in een assenstelsel"
+        },
+        "a": {
+          "square": "een vierkant",
+          "rectangle": "een rechthoek",
+          "rhombus": "een ruit",
+          "parallelogram": "een parallellogram",
+          "trapezoid": "een trapezium",
+          "kite": "een vlieger",
+          "quad": "een vierhoek zonder speciale naam",
+          "concave": "een concave vierhoek"
+        },
+        "t": {
+          "square": "Vierkant",
+          "rectangle": "Rechthoek",
+          "rhombus": "Ruit",
+          "parallelogram": "Parallellogram",
+          "trapezoid": "Trapezium",
+          "isoTrapezoid": "Gelijkbenig trapezium",
+          "rightTrapezoid": "Rechthoekig trapezium",
+          "kite": "Vlieger",
+          "quad": "Vierhoek",
+          "concave": "Concave vierhoek",
+          "polygon": "{count, plural, one {Veelhoek met # zijde} other {Veelhoek met # zijden}}"
+        },
+        "tri": {
+          "right": "Rechthoekig",
+          "acute": "Scherphoekig",
+          "obtuse": "Stomphoekig",
+          "scalene": "Ongelijkzijdig",
+          "isosceles": "Gelijkbenig",
+          "equilateral": "Gelijkzijdig"
+        },
+        "ex": {
+          "right": "Rechthoekige driehoek",
+          "isosceles": "Gelijkbenige driehoek",
+          "obtuse": "Stomphoekige driehoek",
+          "pentagon": "Vijfhoek"
+        },
+        "examples": "Getekend op het puntenrooster",
+        "gridOut": "Ook in een assenstelsel laten zien",
+        "gridTitle": "In een assenstelsel",
+        "addGrid": "De figuur in het assenstelsel aan een werkblad toevoegen",
+        "drawInstead": "In plaats daarvan op een rooster tekenen"
       }
     },
     "figures-sheet": {
