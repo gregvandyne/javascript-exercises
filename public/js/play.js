@@ -128,6 +128,9 @@ const TYPES = {
   'brb:copy': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && (typeof m.text === 'string' || (typeof Blob === 'function' && m.png instanceof Blob)),
   'brb:set-save': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.items) && m.items.length <= 20 && JSON.stringify(m.items).length <= 20000 && (m.set === null || m.set === undefined || typeof m.set === 'string'),
   'brb:assign': m => typeof m.opts === 'string',
+  // BRB.mySets and friends ("My worksheets"): the teacher's own sets (the server checks whose they are).
+  'brb:sets': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && ['list', 'delete', 'rename', 'duplicate'].includes(m.op)
+    && (m.op === 'list' || (typeof m.set === 'string' && /^s-[a-z0-9]{10}$/.test(m.set))) && (m.op !== 'rename' || (typeof m.title === 'string' && m.title.length <= 200)),
   // BRB.findQuestionSet: a class code a student typed (the server reads it).
   'brb:set-find': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.code === 'string' && m.code.length <= 40,
   // BRB.wordsFromDoc (Crossword): a PDF or Word file of at most 2 MB, for AI words (the server checks who may ask).
@@ -249,6 +252,7 @@ addEventListener('message', e => {
     // BRB.saveQuestionSet (an official game that keeps question sets): the page saves it for the signed-in teacher.
     case 'brb:set-save': saveSetForGame(m); break;
     case 'brb:set-find': findSetForGame(m); break;
+    case 'brb:sets': mySetsForGame(m); break;
     case 'brb:clues': cluesForGame(m); break;
     case 'brb:doc': docForGame(m); break;
     // BRB.print (Crossword): the frame can't print, so the page does, only right after a tap.
@@ -349,6 +353,24 @@ async function findSetForGame(m) {
     catch (e) { out = { error: e.status === 404 ? 'none' : 'offline' }; }
   }
   toFrame({ type: 'brb:set-found', id: m.id, ...out });
+}
+/** "My worksheets" (BRB.mySets, deleteQuestionSet, renameQuestionSet, duplicateQuestionSet): the signed-in teacher's own
+ *  sets in this game. The answer goes back as brb:sets-done { id, sets } / { id, ok, title? } / { id, set, view } or
+ *  { id, error } ('notAllowed', 'none', 'title', 'full', 'offline'). */
+async function mySetsForGame(m) {
+  const done = out => toFrame({ type: 'brb:sets-done', id: m.id, ...out });
+  if (!d.signedIn) return done({ error: 'notAllowed' });
+  const base = `/api/games/${d.gameId}/sets`, one = m.set ? `${base}/${encodeURIComponent(m.set)}` : '';
+  try {
+    if (m.op === 'list') { const r = await api(base); return done({ sets: Array.isArray(r.sets) ? r.sets : [] }); }
+    if (m.op === 'delete') { await api(one, { method: 'DELETE' }); return done({ ok: true }); }
+    if (m.op === 'rename') { const r = await api(`${one}/rename`, { method: 'POST', body: { title: m.title } }); return done({ ok: true, title: String(r.title ?? '') }); }
+    const r = await api(`${one}/duplicate`, { method: 'POST', body: {} });
+    return done({ set: r.id, view: r.set || null });
+  } catch (e) {
+    const code = e && e.data && e.data.code;
+    done({ error: e && e.status === 404 ? 'none' : code === 'title' || code === 'full' ? code : e && e.status === 403 ? 'notAllowed' : 'offline' });
+  }
 }
 async function docForGame(m) {
   let out;

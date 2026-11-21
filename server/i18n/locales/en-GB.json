@@ -71,6 +71,9 @@
     "like": "Favourite",
     "stats": {
       "likes": "{count, plural, one {favourite} other {favourites}}"
+    },
+    "sets": {
+      "copyOf": "Copy of {title}"
     }
   },
   "friends": {

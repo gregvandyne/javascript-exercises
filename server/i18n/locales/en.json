@@ -1192,7 +1192,10 @@
     },
     "makeLike": "Make a game like this",
     "makeLikeShort": "Make one like this",
-    "grownupBuilder": "Grown-up builder"
+    "grownupBuilder": "Grown-up builder",
+    "sets": {
+      "copyOf": "Copy of {title}"
+    }
   },
   "play": {
     "backTo": "Back to {title}",

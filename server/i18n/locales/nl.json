@@ -1192,7 +1192,10 @@
     },
     "makeLike": "Maak zelf zo'n game",
     "makeLikeShort": "Maak er zo een",
-    "grownupBuilder": "Volwassen bouwer"
+    "grownupBuilder": "Volwassen bouwer",
+    "sets": {
+      "copyOf": "Kopie van {title}"
+    }
   },
   "play": {
     "backTo": "Terug naar {title}",

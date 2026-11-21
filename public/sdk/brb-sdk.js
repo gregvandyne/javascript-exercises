@@ -1018,6 +1018,42 @@
     var w = setWait[m.id]; if (!w) return;
     w(typeof m.set === 'string' && /^s-[a-z0-9]{10}$/.test(m.set) ? { id: m.set } : { error: typeof m.error === 'string' ? m.error : 'offline' });
   });
+  // "My worksheets" (docs/sdk.md "Question sets"): the signed-in teacher's own sets in this game (BRB.canListSets: school
+  // staff, not in a preview). BRB.mySets() -> a Promise of { sets: [{ id, code, title, label, n, updated, items }] }
+  // (newest first; items in the game's own shape), BRB.deleteQuestionSet(id) -> { ok: true }, BRB.renameQuestionSet(id,
+  // title) -> { ok: true, title }, BRB.duplicateQuestionSet(id) -> { id, set }; or { error } ('notAllowed', 'none' (not
+  // theirs, or gone), 'title' (a name the text filter refuses), 'full', 'offline'). The page asks the server.
+  var mineWait = {}, mineSeq = 0;
+  var SET_RE = /^s-[a-z0-9]{10}$/;
+  function setsAsk(op, set, title) {
+    if (typeof Promise !== 'function') return null;
+    return new Promise(function (res) {
+      if (INIT.mySets !== true) return res({ error: 'notAllowed' });
+      if (op !== 'list' && (typeof set !== 'string' || !SET_RE.test(set))) return res({ error: 'none' });
+      if (op === 'rename' && (typeof title !== 'string' || title.length > 200)) return res({ error: 'title' });
+      var n = ++mineSeq, timer = setTimeout(function () { delete mineWait[n]; res({ error: 'offline' }); }, 10000);
+      mineWait[n] = function (r) { clearTimeout(timer); delete mineWait[n]; res(r); };
+      var msg = { id: n, op: op };
+      if (op !== 'list') msg.set = set;
+      if (op === 'rename') msg.title = title;
+      send('brb:sets', msg);
+    });
+  }
+  var cleanMine = function (x) {
+    if (!x || typeof x !== 'object' || typeof x.id !== 'string' || !SET_RE.test(x.id) || !Array.isArray(x.items)) return null;
+    return { id: x.id, code: typeof x.code === 'string' ? x.code : '', title: typeof x.title === 'string' ? x.title : '', label: typeof x.label === 'string' ? x.label : '',
+      n: typeof x.n === 'number' ? x.n : 0, updated: typeof x.updated === 'number' ? x.updated : 0, items: JSON.parse(JSON.stringify(x.items)) };
+  };
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:sets-done' || typeof m.id !== 'number') return;
+    var w = mineWait[m.id]; if (!w) return;
+    if (typeof m.error === 'string') return w({ error: m.error });
+    if (Array.isArray(m.sets)) return w({ sets: m.sets.map(cleanMine).filter(Boolean) });
+    if (typeof m.set === 'string' && SET_RE.test(m.set)) return w({ id: m.set, set: cleanMine(m.view) });
+    if (m.ok === true) return w(typeof m.title === 'string' ? { ok: true, title: m.title } : { ok: true });
+    w({ error: 'offline' });
+  });
   var questionSet = (function (s) {
     if (!s || typeof s !== 'object' || typeof s.id !== 'string') return null;
     if (s.missing) return Object.freeze({ id: s.id, missing: true });
@@ -1338,6 +1374,12 @@
     // Whether this viewer may save a set / look up a class code (false: the server would refuse it, so hide it).
     canSaveSet: INIT.setSave !== false,
     canFindSet: INIT.setFind !== false,
+    // "My worksheets": the teacher's own saved sets (school staff only; false: hide the button).
+    canListSets: INIT.mySets === true,
+    mySets: function () { return setsAsk('list'); },
+    deleteQuestionSet: function (id) { return setsAsk('delete', id); },
+    renameQuestionSet: function (id, title) { return setsAsk('rename', id, title); },
+    duplicateQuestionSet: function (id) { return setsAsk('duplicate', id); },
     canAssign: INIT.canAssign === true,
     canWriteClues: INIT.clues === true,
     writeClues: writeClues,

@@ -1192,7 +1192,10 @@
     },
     "makeLike": "לבנות משחק כזה",
     "makeLikeShort": "בנו אחד כזה",
-    "grownupBuilder": "בונה מבוגר"
+    "grownupBuilder": "בונה מבוגר",
+    "sets": {
+      "copyOf": "עותק של {title}"
+    }
   },
   "play": {
     "backTo": "חזרה אל {title}",

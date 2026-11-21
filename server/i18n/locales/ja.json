@@ -1191,7 +1191,10 @@
     },
     "makeLike": "こんなゲームをつくる",
     "makeLikeShort": "にた ゲームを つくる",
-    "grownupBuilder": "大人のビルダー"
+    "grownupBuilder": "大人のビルダー",
+    "sets": {
+      "copyOf": "{title} のコピー"
+    }
   },
   "play": {
     "backTo": "{title}にもどる",

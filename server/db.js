@@ -1127,6 +1127,10 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS idx_figure_presets_owner ON figure_presets(owner_id, kind, created_at);
     CREATE TABLE IF NOT EXISTS figure_prefs (user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
       ai INTEGER NOT NULL DEFAULT 1, updated_at INTEGER NOT NULL);`],
+  // An official game's question sets get a name of their own (docs/decisions.md "My worksheets in Crossword, The Big
+  // Divide and Algebra Builder"): what the teacher calls it in their list. '' until they name it (the list then shows a
+  // label made from the set). Only its owner ever sees it; it passes the site's text filter.
+  ['0096_game_sets_title', "ALTER TABLE game_sets ADD COLUMN title TEXT NOT NULL DEFAULT '';"],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by
