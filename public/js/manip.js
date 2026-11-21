@@ -15,7 +15,9 @@ import { answerMatches } from '/js/manip-practice.js';
 import * as ROOM from '/js/manip-room.js';
 import { stepsOf } from '/js/manip-data.js';
 import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSector, addMinutes, migrate, newBoard, boxesOf, bbox, spotIn, placeObject,
-  slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, S_MIN, S_FLOOR, S_MAX, OBJ_MAX, OBJ_HEAD, UNDER, parseFrac, EQ_BAR } from '/js/manip-board.js';
+  slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, S_MIN, S_FLOOR, S_MAX, OBJ_MAX, OBJ_HEAD, UNDER, parseFrac, EQ_BAR,
+  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot } from '/js/manip-board.js';
+import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP } from '/js/manip-wheel.js';
 
 const ROOT = document.getElementById('manip');
 const ROLE = pageData().role === 'host' ? 'host' : 'student';
@@ -56,7 +58,7 @@ function piecesTool({ slug, opts = () => ({}), init = {}, total, settings = () =
     total,
     palette: st => [
       ...defsOf(st).map(d => ({ label: d.label, color: d.color, run: s => { s.pieces.push(placePiece(s, d)); } })),
-      ...(breaks ? [{ label: 'Break ×10', hot: true, run: (s, v) => breakPiece(s, v, slug) }, { label: 'Regroup 10 → 1', run: (s, v) => regroup(s, v, slug) }] : []),
+      ...(breaks ? [{ label: 'Regroup 10 → 1', run: (s, v) => regroup(s, v, slug) }] : []),
     ],
     settings,
   };
@@ -66,15 +68,20 @@ const SHAPES = { hex: 'polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)', t
 const ROUND = new Set(['pos', 'neg', 'blue', 'green', 'm', 'hth', 'tth', 'th', 'h', 't', 'o', 'tenth', 'hund', 'thou', 'penny', 'nickel', 'dime', 'quarter']);
 /** A label size that fits the piece: never wider than the piece, never taller than half of it, 9 to 20 pixels. */
 const pieceFont = p => Math.round(Math.min(20, Math.max(9, Math.min(p.w / 3, (p.w - 8) / (Math.max(1, [...String(p.label)].length) * 0.62), p.h * 0.55))));
+/** The parallelogram turned over (the one pattern block that is not its own mirror image): its outline drawn the other
+ *  way, never the piece mirrored. */
+const SHAPES_FLIPPED = { para: 'polygon(0 0,75% 0,100% 100%,25% 100%)' };
+/** A piece. Its buttons are on the hold-to-edit wheel (manip-wheel.js), which lives outside the piece, so nothing on it
+ *  is ever turned or mirrored with it; a piece is never mirrored at all (Flip turns it over: manip.js flipPiece). */
 function pieceHtml(p, view) {
   const on = !view.readOnly && view.sel === p.id;
-  const shape = SHAPES[p.kind] ? `clip-path:${SHAPES[p.kind]};` : ROUND.has(p.kind) && !/^b\d/.test(p.kind) ? 'border-radius:50%;' : '';
-  const face = `<div class="mp-face" style="${shape}background:${p.filled ? esc(p.color) : 'transparent'};color:${p.filled ? '#fff' : 'var(--text)'};font-size:${pieceFont(p)}px">${SHAPES[p.kind] || p.kind === 'sq' || !p.label || p.label === '•' ? '' : `<span>${esc(p.label)}</span>`}</div>`;
-  const bar = on ? `<div class="mp-pbar" role="toolbar" aria-label="${esc(t('js.manip.piece.actions', { label: p.label }))}">
-    ${[['copy', t('js.manip.piece.copy')], ...(p.g ? [['separate', t('js.manip.piece.separate')]] : []), ['flip', t('js.manip.piece.flip')], ['rotate', t('js.manip.piece.rotate')], ['fill', t('js.manip.piece.fill')], ['lock', p.locked ? t('js.manip.piece.unlock') : t('js.manip.piece.lock')], ['delete', t('js.manip.piece.delete')]]
-    .map(([a, l]) => btn(`mp-pbtn${a === 'delete' ? ' bad' : ''}`, `data-pact="${a}" data-pid="${p.id}"`, esc(l))).join('')}</div>` : '';
-  return `<div class="mp-piece${on ? ' on' : ''}${p.locked ? ' locked' : ''}${p.g ? ' grouped' : ''}${view.snapped && view.snapped.has(p.id) ? ' snapped' : ''}${view.fresh === p.id ? ' fresh' : ''}" data-pid="${p.id}" role="button" tabindex="0" aria-label="${esc(t('js.manip.piece.label', { label: p.label }))}"
-    style="left:${p.x}px;top:${p.y}px;width:${p.w}px;height:${p.h}px;transform:rotate(${p.rot}deg) scaleX(${p.flipped ? -1 : 1})">${face}${bar}</div>`;
+  const clip = (p.flipped && SHAPES_FLIPPED[p.kind]) || SHAPES[p.kind];
+  const shape = clip ? `clip-path:${clip};` : ROUND.has(p.kind) && !/^b\d/.test(p.kind) ? 'border-radius:50%;' : '';
+  const face = `<div class="mp-face" style="${shape}background:${p.filled ? esc(p.color) : 'transparent'};color:${p.filled ? '#fff' : 'var(--text)'};font-size:${pieceFont(p)}px">${SHAPES[p.kind] || p.kind === 'sq' || !p.label || p.label === '•' ? '' : `<span class="mp-lab">${esc(p.label)}</span>`}</div>`;
+  const lock = p.locked ? `<span class="mp-lockb" aria-hidden="true" style="rotate:${-(+p.rot || 0)}deg">${icon('lock')}</span>` : '';
+  const lifted = view.lifted === p.id, flipIn = view.flipIn === p.id;
+  return `<div class="mp-piece${on ? ' on' : ''}${p.locked ? ' locked' : ''}${p.g ? ' grouped' : ''}${lifted ? ' lifted' : ''}${flipIn ? ' flipin' : ''}${view.snapped && view.snapped.has(p.id) ? ' snapped' : ''}${view.fresh === p.id ? ' fresh' : ''}" data-pid="${esc(p.id)}" role="button" tabindex="${view.readOnly ? -1 : 0}" aria-haspopup="menu" aria-label="${esc(p.locked ? t('js.manip.wheel.pieceLocked', { label: p.label }) : t('js.manip.piece.label', { label: p.label }))}"
+    style="left:${p.x}px;top:${p.y}px;width:${p.w}px;height:${p.h}px;transform:rotate(${+p.rot || 0}deg)">${face}${lock}</div>`;
 }
 function breakPiece(st, v, slug) {
   const p = st.pieces.find(x => x.id === v.sel); const to = p && BREAKS[slug][p.kind];
@@ -100,15 +107,15 @@ const IMPL = {
   'base-ten-blocks': piecesTool({ slug: 'base-ten-blocks', init: { decimal: false }, opts: st => ({ decimal: st.decimal }),
     total: st => `Total ${fmtTotal(sum(st.pieces))}`,
     settings: st => sel('decimal', [['', 'Whole numbers'], ['1', 'Decimals']], st.decimal ? '1' : '', 'Number set'),
-    hint: 'Select a piece, then Break splits it into ten of the next size and Regroup joins ten back into one. The total stays the same.',
+    hint: 'Hold a block and pick Break to split it into ten of the next size. Tap one of ten blocks, then Regroup joins them back into one. The total stays the same.',
     note: 'Drop blocks into the place-value chart\'s columns to build, compare and regroup numbers. Add more charts or a work mat from the palette.' }),
   'place-value-disks': piecesTool({ slug: 'place-value-disks', total: st => `Total ${fmtTotal(sum(st.pieces))}`,
-    hint: 'Select a disk, then Break it into ten disks of the next place, or Regroup ten disks into one.',
+    hint: 'Hold a disk and pick Break to make ten disks of the next place. Tap one of ten disks, then Regroup makes them one.',
     note: 'Disks from 1,000,000 down to 0.001. Their size does not show their value: the label does.' }),
   'two-color-counters': piecesTool({ slug: 'two-color-counters',
     total: st => { const pos = count(st.pieces, 'pos'), neg = count(st.pieces, 'neg'); return `Value ${pos - neg} · Zero pairs ${Math.min(pos, neg)}`; },
-    hint: 'Yellow is +1 and red is -1. Put one of each together to make a zero pair.',
-    note: 'Counters drop into the ten-frame\'s cells. Add five-frames and ten-frames from the palette, and Flip to turn a counter over.' }),
+    hint: 'Yellow is +1 and red is -1. Put one of each together to make a zero pair. Hold a counter and pick Flip to turn it over.',
+    note: 'Counters drop into a frame\'s empty cells and stay just where you drop them anywhere else. Hold a frame to lock it in place.' }),
   'linking-cubes': piecesTool({ slug: 'linking-cubes', total: st => `Cubes ${st.pieces.length}`,
     hint: 'Drag cubes edge to edge to make sticks. Copy a cube to make more of the same color.',
     note: 'Ten colors for making numbers, arrays, patterns and bar graphs.' }),
@@ -118,12 +125,12 @@ const IMPL = {
   'number-rods': piecesTool({ slug: 'number-rods', init: { unit: '1' },
     total: st => `Length value ${round3(sum(st.pieces) * (+st.unit || 1))}`,
     settings: st => sel('unit', [['1', '1 (whole numbers)'], ['0.1', '0.1 (decimals)'], ['0.5', '1/2 (fractions)']], st.unit, 'Value of the white rod'),
-    hint: 'Give the white rod a value and every other rod takes its value by length. Rotate a rod to stand it up.',
+    hint: 'Give the white rod a value and every other rod takes its value by length. Hold a rod and Rotate it to stand it up.',
     note: 'Ten rods in ten colors, each one unit longer than the last.' }),
   'fraction-tiles': piecesTool({ slug: 'fraction-tiles', init: { mode: 'frac' }, opts: st => ({ mode: st.mode }),
     total: st => `Total ${round3(sum(st.pieces))} wholes`,
     settings: st => sel('mode', [['frac', 'Fraction'], ['pct', 'Percent'], ['dec', 'Decimal']], st.mode, 'Labels'),
-    hint: 'Stack rows by denominator to build a fraction wall. Use Fill to make a tile an outline.',
+    hint: 'Stack rows by denominator to build a fraction wall. Hold a tile to pull it out of a row, or pick Fill to make it an outline.',
     note: 'Wholes, halves, thirds, fourths, fifths, sixths, eighths, tenths and twelfths. Line them up to show equivalence.' }),
   'algebra-tiles': piecesTool({ slug: 'algebra-tiles',
     total: st => {
@@ -131,10 +138,10 @@ const IMPL = {
       const parts = [[c('x2') - c('mx2'), 'x²'], [c('y2'), 'y²'], [c('xy'), 'xy'], [c('x') - c('mx'), 'x'], [c('y') - c('my'), 'y'], [c('one') - c('mone'), '']].filter(([n]) => n).map(([n, v]) => `${n}${v}`);
       return `Expression ${parts.length ? parts.join(' + ').replace(/\+ -/g, '− ') : '0'} · Zero pairs ${Math.min(c('one'), c('mone')) + Math.min(c('x'), c('mx'))}`;
     },
-    hint: 'A tile and its opposite make a zero pair. Build area models like (x + 3)(x + 2).',
+    hint: 'A tile and its opposite make a zero pair. Hold a tile and pick Flip to turn it into its opposite. Build area models like (x + 3)(x + 2).',
     note: 'The area of each tile is its value: 1, x, x², y, y² and xy, with their opposites.' }),
   'pattern-blocks': piecesTool({ slug: 'pattern-blocks', total: st => { const v = hexValue(st.pieces); return `Blocks ${st.pieces.length} · Hexagons ${v.text}${v.left ? ` · ${v.left} not counted` : ''}`; },
-    hint: 'Rotate turns a block 30 degrees. If the hexagon is 1 whole, the trapezoid is 1/2, the blue parallelogram 1/3 and the triangle 1/6. The square and the thin rhombus are not counted.',
+    hint: 'Hold a block: Rotate turns it 30 degrees, and the parallelogram can Flip. If the hexagon is 1 whole, the trapezoid is 1/2, the blue parallelogram 1/3 and the triangle 1/6. The square and the thin rhombus are not counted.',
     note: 'Hexagon, trapezoid, triangle, parallelogram, rhombus and square.' }),
   money: piecesTool({ slug: 'money', total: st => `Total $${(sum(st.pieces) / 100).toFixed(2)}`,
     hint: 'To trade, delete ten $1 bills and add a $10 bill, or trade ten 1¢ coins for a 10¢ coin.',
@@ -397,7 +404,7 @@ function normalize(slug, impl, st) {
     const K = kindOf(slug, o.k), base = K.init(), raw = o.st && typeof o.st === 'object' ? o.st : {};
     const s2 = o.k === slug && impl.load ? impl.load(raw) : { ...base, ...raw };
     for (const k of Object.keys(base)) if (Array.isArray(base[k]) && !Array.isArray(s2[k])) s2[k] = base[k];
-    return { id: String(o.id || newId()), k: o.k, x: +o.x || 0, y: +o.y || 0, s: clamp(+o.s || 1, S_FLOOR, S_MAX), st: s2 };
+    return { id: String(o.id || newId()), k: o.k, x: +o.x || 0, y: +o.y || 0, s: clamp(+o.s || 1, S_FLOOR, S_MAX), st: s2, ...(o.locked ? { locked: true, ...(o.lockBy === 't' ? { lockBy: 't' } : {}) } : {}) };
   });
   if (objectTool(slug)) delete out.pieces;
   else {
@@ -488,7 +495,8 @@ function paletteFor(slug, impl, st, ctx) {
     if (o && !o.st.q) for (const p of impl.palette(o.st)) out.push({ group: 'obj', label: p.label, color: p.color, pressed: p.pressed, run: s => { const x = (s.objects || []).find(q => q.id === o.id); return x ? p.run(x.st) : false; } });
   } else {
     for (const d of impl.defs(st)) { const nm = paletteName(slug, d); out.push({ group: 'piece', label: nm.aria, face: nm.face, text: nm.text, mini: d, color: d.color, run: (s, v) => { const p = ctx.place(d); s.pieces.push(p); v.fresh = p.id; } }); }
-    if (BREAKS[slug]) out.push({ group: 'piece', label: 'Break ×10', hot: true, run: (s, v) => breakPiece(s, v, slug) }, { group: 'piece', label: 'Regroup 10 → 1', run: (s, v) => regroup(s, v, slug) });
+    // Break is on a piece's wheel (hold it); Regroup, which takes ten pieces, stays here.
+    if (BREAKS[slug]) out.push({ group: 'piece', label: 'Regroup 10 → 1', run: (s, v) => regroup(s, v, slug) });
   }
   return out;
 }
@@ -585,8 +593,9 @@ function fracEqHtml(o, view) {
       ${st.op === 'compare' || st.op === '=' ? '' : `<div class="mp-eqline"><span class="mp-eqsym">=</span><div class="mp-eqbuild" style="width:${EQ_BAR}px">${esc(t('js.manip.obj.buildHere'))}</div></div>`}</div>`;
   return `<div class="mp-eq"><p class="mp-eqtext">${esc(st.text || '')}</p>${body}<div class="mp-ansbox${checkCls(o, view)}">${esc(t('js.manip.obj.answerIs'))} <input class="mp-answer" data-oid="${esc(o.id)}" maxlength="20" placeholder="?" autocomplete="off" value="${esc(st.ans || '')}" aria-label="${esc(t('js.manip.obj.answer'))}"${view.readOnly ? ' readonly tabindex="-1"' : ''}>${checkMark(o, view)}</div></div>`;
 }
-/** An object on the board: its handle bar (drag it, or the object's empty parts, to move it), its own board, and when
- *  selected: Duplicate, Delete and a corner to resize it (always in proportion). */
+/** An object on the board: its handle bar (drag it, or the object's empty parts, to move it; hold it for its wheel:
+ *  Lock or Unlock, Copy, Delete), its own board, a lock badge when locked, and when selected (and not locked) a corner
+ *  to resize it (always in proportion). */
 /** An object's own total (each clock its time, each frame or chart the pieces on it), never on a practice question. */
 function objTotal(slug, impl, o, st) {
   if (!o.st || o.st.q || o.k === 'answer' || o.k === 'frac-eq') return '';
@@ -595,18 +604,21 @@ function objTotal(slug, impl, o, st) {
   const r = objRect(slug, o), on = st.pieces.filter(p => { const cx = p.x + p.w / 2, cy = p.y + p.h / 2; return cx >= r.x && cx <= r.x + r.w && cy >= r.y && cy <= r.y + r.h; });
   return on.length ? impl.total({ ...st, pieces: on }) : '';
 }
+/** An object's name on its handle (a work mat: its label). */
+function objName(slug, o) { const K = kindOf(slug, o.k); return o.k === 'mat' && o.st && o.st.label ? o.st.label : `${K ? K.name : ''}${o.st && o.st.label ? ` · ${o.st.label}` : ''}`; }
 function objHtml(slug, impl, o, view, st = {}) {
   const K = kindOf(slug, o.k); if (!K) return '';
   const z = K.size(o.st), s = +o.s || 1, on = !view.readOnly && view.osel === o.id;
   // A practice question is read-only (a clock to read is not a clock to set): its own controls are off for everyone.
   const inner = o.k === slug ? impl.board(o.st, { ...view, oid: o.id, readOnly: view.readOnly || !!o.st.q }) : matHtml(o, view);
-  const name = o.k === 'mat' && o.st.label ? o.st.label : `${K.name}${o.st && o.st.label ? ` · ${o.st.label}` : ''}`;
+  const name = objName(slug, o);
   const key = view.showKeys && o.st && o.st.key ? `<span class="mp-key">${iconHtml('✓', { size: 18 })} ${esc(o.st.key)}</span>` : '';
   const tot = view.totals ? objTotal(slug, impl, o, st) : '';
-  const bar = on ? `<div class="mp-obar" role="toolbar" aria-label="${esc(t('js.manip.obj.actions', { name }))}">${btn('mp-pbtn', `data-oact="copy" data-oid="${esc(o.id)}"`, esc(t('js.manip.obj.copy')))}${btn('mp-pbtn bad', `data-oact="delete" data-oid="${esc(o.id)}"`, esc(t('js.manip.obj.delete')))}</div>
-    <span class="mp-oresize" data-oresize="${esc(o.id)}" role="img" aria-label="${esc(t('js.manip.obj.resize'))}"></span>` : '';
-  return `<div class="mp-obj${on ? ' on' : ''}${UNDER.has(o.k) ? ' mp-mat' : ''}${view.fresh === o.id ? ' fresh' : ''} k-${esc(o.k)}" data-oid="${esc(o.id)}" style="left:${+o.x}px;top:${+o.y}px;width:${Math.round(z.w * s)}px;height:${Math.round(z.h * s)}px">
-    <div class="mp-objin" style="width:${z.w}px;height:${z.h}px;transform:scale(${s})"><div class="mp-ohead" aria-label="${esc(t('js.manip.obj.move', { name }))}"><span class="mp-oname">⠿ ${esc(name)}</span>${tot ? `<span class="mp-otot">${esc(tot)}</span>` : ''}${key}</div><div class="mp-obody">${inner}</div></div>${bar}</div>`;
+  const bar = on && !o.locked ? `<span class="mp-oresize" data-oresize="${esc(o.id)}" role="img" aria-label="${esc(t('js.manip.obj.resize'))}"></span>` : '';
+  const lock = o.locked ? `<span class="mp-olock" aria-hidden="true">${icon('lock')}</span>` : '';
+  const head = o.locked ? t('js.manip.wheel.objLocked', { name }) : t('js.manip.obj.move', { name });
+  return `<div class="mp-obj${on ? ' on' : ''}${o.locked ? ' locked' : ''}${UNDER.has(o.k) ? ' mp-mat' : ''}${view.fresh === o.id ? ' fresh' : ''} k-${esc(o.k)}" data-oid="${esc(o.id)}" style="left:${+o.x}px;top:${+o.y}px;width:${Math.round(z.w * s)}px;height:${Math.round(z.h * s)}px">
+    <div class="mp-objin" style="width:${z.w}px;height:${z.h}px;transform:scale(${s})"><div class="mp-ohead"${view.readOnly ? '' : ' role="button" tabindex="0" aria-haspopup="menu"'} aria-label="${esc(head)}">${lock}<span class="mp-oname">⠿ ${esc(name)}</span>${tot ? `<span class="mp-otot">${esc(tot)}</span>` : ''}${key}</div><div class="mp-obody">${inner}</div></div>${bar}</div>`;
 }
 /** Everything on a board: objects (mats under the rest), then pieces. view: { sel, osel, readOnly }. */
 function boardHtml(slug, impl, st, view) {
@@ -655,7 +667,7 @@ function renderBoard() {
   board.classList.toggle('texting', !!V.textMode);
   const content = document.getElementById('mp-content');
   const slug = V.tool.slug;
-  content.innerHTML = boardHtml(slug, V.impl, V.st, { sel: V.sel, osel: V.osel, readOnly: false, snapped: V.snapped, showKeys: V.showKeys, totals: V.totals !== false, fresh: V.fresh, checked: V.checked });
+  content.innerHTML = boardHtml(slug, V.impl, V.st, { sel: V.sel, osel: V.osel, readOnly: false, snapped: V.snapped, showKeys: V.showKeys, totals: V.totals !== false, fresh: V.fresh, checked: V.checked, lifted: V.lifted, flipIn: V.flipIn });
   V.fresh = null;
   // The hint only on a truly empty board, in the middle of the window (never on top of anything).
   const empty = !V.st.objects.length && !(V.st.pieces || []).length && !V.ann.notes.length && !V.ann.texts.length && !V.ann.strokes.length;
@@ -668,20 +680,6 @@ function renderBoard() {
   draw.innerHTML = V.annotate ? `<div class="mp-drawlayer" role="application" aria-label="${esc(t('js.manip.ann.surface'))}"></div>` : '';
   if (V.annotate) bindDraw(draw.firstChild);
   applyView();
-}
-/** A piece's or object's buttons stay inside the visible board: under it when there is no room above, moved left near
- *  the right edge, moved right near the left edge (frame: the visible box; z: the zoom). Solo and room. */
-function keepBarsInside(root, frame, z) {
-  for (const bar of root.querySelectorAll('.mp-pbar, .mp-obar')) {
-    bar.style.translate = ''; bar.classList.remove('below');
-    let r = bar.getBoundingClientRect();
-    if (r.top < frame.top + 4) { bar.classList.add('below'); r = bar.getBoundingClientRect(); if (r.bottom > frame.bottom - 4) { bar.classList.remove('below'); r = bar.getBoundingClientRect(); } }
-    let dx = 0, dy = 0;
-    if (r.right > frame.right - 6) dx = frame.right - 6 - r.right;
-    if (r.left + dx < frame.left + 6) dx = frame.left + 6 - r.left;
-    if (r.top < frame.top + 4) dy = frame.top + 4 - r.top;
-    if (dx || dy) bar.style.translate = `${dx / z}px ${dy / z}px`;
-  }
 }
 /** Pen marks in plane pixels. A mark is drawn once it has two different points: a single point (the moment the pen
  *  touches down) drew, in some browsers, a "dot" as wide as the whole board in the pen's color (a zero-length line
@@ -704,7 +702,6 @@ function applyView() {
   w.style.transform = `translate(${V.view.x}px,${V.view.y}px) scale(${V.view.z})`; w.style.setProperty('--iz', String(Math.min(2.5, 1 / V.view.z)));
   const b = document.getElementById('mp-board'); b.style.backgroundPosition = `${V.view.x}px ${V.view.y}px`; b.style.backgroundSize = `${24 * V.view.z}px ${24 * V.view.z}px`;
   const p = document.querySelector('#mp-zoom .mp-pct'); if (p) p.textContent = `${Math.round(V.view.z * 100)}%`;
-  keepBarsInside(w, b.getBoundingClientRect(), V.view.z);
 }
 function zoomAt(f, sx, sy) { const z = clamp(V.view.z * f, Z_MIN, Z_MAX), k = z / V.view.z; V.view = { x: sx - (sx - V.view.x) * k, y: sy - (sy - V.view.y) * k, z }; applyView(); }
 /** Everything on the board in view (never bigger than life): the objects, pieces, notes, texts and marks. */
@@ -834,7 +831,7 @@ function bindBoard() {
     const vw = e.target.closest('[data-view]');
     if (vw && vw.dataset.view === 'totals') { V.totals = V.totals === false; renderBoard(); renderChrome(); return; }
     if (vw) { const s = vpSize(); if (vw.dataset.view === 'fit') fit(); else zoomAt(vw.dataset.view === 'in' ? 1.25 : 0.8, s.w / 2, s.h / 2); return; }
-    if (V.textMode && e.target.closest('#mp-board') && !e.target.closest('.mp-text, .mp-sticky, .mp-pbar, .mp-obar, .mp-zoom, button, input, select, textarea')) { placeText(e); return; }
+    if (V.textMode && e.target.closest('#mp-board') && !e.target.closest('.mp-text, .mp-sticky, .mp-zoom, button, input, select, textarea')) { placeText(e); return; }
     const tx = e.target.closest('[data-tx]');
     if (tx) { textHist(); V.ann.texts = V.ann.texts.filter(x => x.id !== tx.dataset.tx); V.textEdit = null; renderTexts(); return; }
     const pal = e.target.closest('[data-pal]');
@@ -846,8 +843,6 @@ function bindBoard() {
       if (V.st.objects.length > n) { const r = objRect(V.tool.slug, V.st.objects[V.st.objects.length - 1]), vr = viewRegion(); if (r.x < vr.x || r.y < vr.y || r.x + r.w > vr.x + vr.w || r.y + r.h > vr.y + vr.h) fit(); }
       return;
     }
-    const oa = e.target.closest('[data-oact]');
-    if (oa) return objButton(oa.dataset.oact, oa.dataset.oid);
     const tl = e.target.closest('[data-tool]');
     if (tl) return toolButton(tl.dataset.tool);
     const tg = e.target.closest('[data-toggle]');
@@ -856,8 +851,6 @@ function bindBoard() {
     if (an) return annButton(an.dataset.ann, an.dataset.c);
     const nb = e.target.closest('[data-nact]');
     if (nb) return noteButton(nb.dataset.nact, nb.dataset.id);
-    const pa = e.target.closest('[data-pact]');
-    if (pa) return pieceButton(pa.dataset.pact, pa.dataset.pid);
     const objEl = e.target.closest('#mp-content .mp-obj');
     const act = e.target.closest('#mp-content [data-act]');
     if (act && objEl) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; return V.impl.act(o.st, act.dataset, e); }); return; }
@@ -904,7 +897,7 @@ function soloDrop(cx, cy, item) {
 function dropAt(slug, st, v, item, p, space, max, snapT) {
   if (item.mini) {
     const d = item.mini, q = mkPiece(d, Math.round(clamp(p.x - d.w / 2, 0, space.w - d.w)), Math.round(clamp(p.y - d.h / 2, 0, space.h - d.h)));
-    const s = snapFor([q], st.pieces, (st.objects || []).flatMap(o => slotsOf(slug, o)), snapT);
+    const s = snapFor([q], st.pieces, (st.objects || []).flatMap(o => slotsOf(slug, o)), snapT, snapOpts(slug));
     if (s && q.x + s.dx >= 0 && q.y + s.dy >= 0 && q.x + q.w + s.dx <= space.w && q.y + q.h + s.dy <= space.h) { q.x = Math.round(q.x + s.dx); q.y = Math.round(q.y + s.dy); }
     st.pieces.push(q);
     if (s && s.to) joinGroup(st.pieces, q, st.pieces.find(x => x.id === s.to));
@@ -959,16 +952,79 @@ function noteButton(k, id) {
   else if (k === 'delete') { V.ann.notes = V.ann.notes.filter(n => n.id !== id); if (V.editing === id) V.editing = null; renderChrome(); }
   renderNotes();
 }
-/** A piece's toolbar (shared with the room: st, the piece's id, the selection holder v, a free spot for copies). */
-function pieceAction(st, k, id, v, place) {
+// ---------------------------------------------------------------- the hold-to-edit wheel (public/js/manip-wheel.js)
+/** Each piece tool's wheel, in ring order from the top (owner, 21 Nov 2026). Break shows only on a piece that breaks,
+ *  Flip only on a piece with another side (an algebra tile's opposite, a +1/−1 counter) or the parallelogram. Tools not
+ *  listed have no pieces. Locked: Unlock alone. */
+const WHEEL = {
+  'fraction-tiles': ['copy', 'fill', 'rotate', 'lock', 'delete'],
+  'linking-cubes': ['copy', 'fill', 'rotate', 'lock', 'delete'],
+  'pattern-blocks': ['copy', 'fill', 'flip', 'rotate', 'lock', 'delete'],
+  'color-tiles': ['copy', 'fill', 'lock', 'delete'],
+  'number-rods': ['copy', 'rotate', 'lock', 'delete'],
+  'base-ten-blocks': ['break', 'copy', 'rotate', 'lock', 'delete'],
+  'place-value-disks': ['break', 'copy', 'lock', 'delete'],
+  'algebra-tiles': ['flip', 'rotate', 'copy', 'lock', 'delete'],
+  money: ['copy', 'lock', 'delete'],
+  'two-color-counters': ['flip', 'copy', 'lock', 'delete'],
+};
+/** How far Rotate turns: pattern blocks 30 degrees, every other piece a quarter turn (snapping keeps working). */
+const TURN = { 'pattern-blocks': 30 };
+/** A piece's other side: an algebra tile and its opposite, the yellow +1 and red −1 counter (the same size each). */
+const OPPOSITE = { 'algebra-tiles': { one: 'mone', x: 'mx', x2: 'mx2', y: 'my' }, 'two-color-counters': { pos: 'neg' } };
+const oppositeKind = (slug, kind) => { const m = OPPOSITE[slug]; return m ? m[kind] || Object.keys(m).find(k => m[k] === kind) || null : null; };
+const canFlip = (slug, p) => (slug === 'pattern-blocks' ? p.kind === 'para' : !!oppositeKind(slug, p.kind));
+/** Rotate and Flip keep the wheel open (turn again, flip back); every other action closes it. */
+const KEEP_OPEN = new Set(['rotate', 'flip']);
+/** The wheel's buttons for a piece. mayUnlock: false for a student holding a piece their teacher locked. */
+function pieceWheel(slug, p, { mayUnlock = true } = {}) {
+  if (p.locked) return mayUnlock ? ['unlock'] : [];
+  return (WHEEL[slug] || []).filter(k => (k !== 'break' || !!(BREAKS[slug] && BREAKS[slug][p.kind])) && (k !== 'flip' || canFlip(slug, p)));
+}
+/** An object's wheel (frames, mats, charts, clocks, boards...): Lock, Copy, Delete; locked: Unlock alone. */
+const objWheel = (o, { mayUnlock = true } = {}) => (o.locked ? (mayUnlock ? ['unlock'] : []) : ['lock', 'copy', 'delete']);
+const WLABEL = { copy: () => t('js.manip.wheel.copy'), fill: () => t('js.manip.wheel.fill'), rotate: () => t('js.manip.wheel.rotate'), flip: () => t('js.manip.wheel.flip'),
+  break: () => t('js.manip.wheel.break'), lock: () => t('js.manip.wheel.lock'), unlock: () => t('js.manip.wheel.unlock'), delete: () => t('js.manip.wheel.delete') };
+const wheelItems = ks => ks.map(k => ({ k, label: WLABEL[k](), bad: k === 'delete' }));
+/** Turn a piece over: an algebra tile becomes its opposite and a counter its other color (kind, color, label and value
+ *  change; nothing is mirrored); the parallelogram's outline is drawn the other way. */
+function flipPiece(slug, p) {
+  if (slug === 'pattern-blocks') { if (p.kind !== 'para') return false; p.flipped = !p.flipped; return true; }
+  const to = oppositeKind(slug, p.kind), d = to && allPieceDefs(slug).find(x => x.kind === to); if (!d) return false;
+  Object.assign(p, { kind: d.kind, color: d.color, label: d.label, value: d.value });
+  delete p.flipped;
+  return true;
+}
+/** Holding a piece lifts it out of its snapped group: it leaves the group and moves about 8 px away from the rest (inside
+ *  space). Locked pieces stay. -> false when there was nothing to lift */
+function liftPiece(st, p, space) {
+  const g = p.g; if (!g || p.locked) return false;
+  const mates = st.pieces.filter(q => q.g === g && q !== p);
+  separate(st, p);
+  if (!mates.length) return true;
+  const mid = q => { const b = pieceBox(q) || q; return { x: b.x + b.w / 2, y: b.y + b.h / 2 }; };
+  const a = mid(p), cx = mates.reduce((s2, q) => s2 + mid(q).x, 0) / mates.length, cy = mates.reduce((s2, q) => s2 + mid(q).y, 0) / mates.length;
+  let dx = a.x - cx, dy = a.y - cy; const n = Math.hypot(dx, dy) || 1;
+  dx = Math.round((dx / n) * 8); dy = Math.round((dy / n) * 8) || (dx ? 0 : 8);
+  p.x = Math.round(clamp(p.x + dx, 0, space.w - p.w)); p.y = Math.round(clamp(p.y + dy, 0, space.h - p.h));
+  return true;
+}
+/** A piece's actions (the wheel's; shared with the room): st, the action, the piece's id, the selection holder v, a spot
+ *  for copies (place(p) -> { x, y }), the tool and the space pieces stay inside. -> false when nothing changed */
+function pieceAction(st, k, id, v, place, slug = V && V.tool.slug, space = WORLD) {
   const p = st.pieces.find(x => x.id === id); if (!p) return false;
-  if (k === 'copy') { const c = place ? place(p) : { x: p.x + 24, y: p.y + 24 }; const q = { ...p, id: newId(), x: c.x, y: c.y, locked: false }; delete q.g; st.pieces.push(q); v.fresh = q.id; v.sel = null; }
-  else if (k === 'flip') p.flipped = !p.flipped;
-  else if (k === 'rotate') { p.rot = ((p.rot || 0) + 30) % 360; separate(st, p); }
+  if (p.locked && k !== 'unlock') return false;
+  if (k === 'copy') { const c = place ? place(p) : { x: p.x + 24, y: p.y + 24 }; const q = { ...p, id: newId(), x: c.x, y: c.y, locked: false }; delete q.g; delete q.lockBy; st.pieces.push(q); v.fresh = q.id; v.sel = null; }
+  else if (k === 'flip') return flipPiece(slug, p);
+  else if (k === 'rotate') { p.rot = ((+p.rot || 0) + (TURN[slug] || 90)) % 360; separate(st, p); }
   else if (k === 'fill') p.filled = !p.filled;
-  else if (k === 'lock') p.locked = !p.locked;
+  else if (k === 'lock') p.locked = true;
+  else if (k === 'unlock') { p.locked = false; delete p.lockBy; }
+  else if (k === 'lift') return liftPiece(st, p, space);
+  else if (k === 'break') { v.sel = id; return breakPiece(st, v, slug); }
   else if (k === 'separate') separate(st, p);
   else if (k === 'delete') { st.pieces = st.pieces.filter(x => x.id !== id); separate(st, p); v.sel = null; }
+  else return false;
   return true;
 }
 /** A piece leaves its snapped group (a group of one is no group). */
@@ -976,71 +1032,157 @@ function separate(st, p) {
   const g = p.g; if (!g) return; delete p.g;
   const left = st.pieces.filter(x => x.g === g); if (left.length < 2) for (const x of left) delete x.g;
 }
-function pieceButton(k, id) { change((st, v) => pieceAction(st, k, id, v, p => spotIn(boxesOf(V.tool.slug, { ...st, __ann: V.ann }, WORLD), p.w, p.h, viewRegion()))); }
-/** An object's toolbar: Duplicate (in the next free spot nearby) or Delete. Shared with the room. */
+/** An object's actions (its wheel; shared with the room): Lock, Unlock, Copy (in the next free spot nearby, unlocked),
+ *  Delete (never a locked one). -> false when nothing changed */
 function objectAction(slug, st, k, id, v, region, space, max) {
   const o = (st.objects || []).find(x => x.id === id); if (!o) return false;
+  if (k === 'unlock') { if (!o.locked) return false; delete o.locked; delete o.lockBy; return true; }
+  if (o.locked) return false;
+  if (k === 'lock') { o.locked = true; if (v.osel === id) v.osel = null; return true; }
   if (k === 'delete') { st.objects = st.objects.filter(x => x.id !== id); v.osel = null; return true; }
   if (k === 'copy') {
     if (st.objects.length >= max) { toast(t('js.manip.obj.full', { n: max })); return false; }
     const r = objRect(slug, o), at = spotIn(boxesOf(slug, st, space), r.w, r.h, region);
     const c = { ...JSON.parse(JSON.stringify(o)), id: newId(), x: clamp(at.x, 0, space.w - r.w), y: clamp(at.y, 0, space.h - r.h) };
+    delete c.locked; delete c.lockBy;
     st.objects.push(c); v.fresh = c.id; return true;
   }
   return false;
 }
-function objButton(k, id) { change((st, v) => objectAction(V.tool.slug, st, k, id, v, viewRegion(), WORLD, OBJ_MAX)); }
+/** Run a wheel action that animates or can be undone, the same way on the solo board and in the room.
+ *  ctx: { slug, id, k, el() the piece's element now, apply(fn) a change, label, undo(), mark() } */
+function wheelRun(ctx) {
+  const { k } = ctx;
+  if (k === 'flip' && ctx.slug !== 'pattern-blocks') {
+    // The counter (or tile) squeezes to nothing, turns over, and opens out again: its label is never mirrored.
+    const face = ctx.el() && ctx.el().querySelector('.mp-face');
+    if (face) face.classList.add('flipout');
+    setTimeout(() => ctx.apply(true), face ? 140 : 0);
+    return;
+  }
+  ctx.apply(false);
+  if (k === 'delete') { const m = ctx.mark(); undoToast(t('js.manip.wheel.deleted', { label: ctx.label }), t('js.manip.wheel.undo'), () => { if (ctx.mark() === m) ctx.undo(); }); }
+  if (k === 'lock') toast(t('js.manip.wheel.lockedHint'));
+  if (!KEEP_OPEN.has(k)) closeWheel({ focus: k !== 'delete' && k !== 'break' });
+}
+const pieceElOf = id => document.querySelector(`#mp-content .mp-piece[data-pid="${CSS.escape(id)}"]`);
+const objElOf = id => document.querySelector(`#mp-content .mp-obj[data-oid="${CSS.escape(id)}"]`);
+/** Open a piece's wheel on the solo board at a screen point: the piece lifts out of its group first (holding always
+ *  separates; drag it back to rejoin). */
+function soloPieceMenu(id, x, y, keyboard = false) {
+  const slug = V.tool.slug;
+  if (!V.st.pieces.some(q => q.id === id)) return;
+  change((st, v) => pieceAction(st, 'lift', id, v, null, slug, WORLD));
+  const p = V.st.pieces.find(q => q.id === id);
+  V.sel = id; V.osel = null; V.lifted = p.locked ? null : id;
+  renderBoard(); renderChrome();
+  openWheel({ x, y, keyboard, items: wheelItems(pieceWheel(slug, p)), label: t('js.manip.wheel.menu', { label: p.label }), focusBack: () => pieceElOf(id),
+    onClose: () => { if (V && V.lifted === id) { V.lifted = null; pieceElOf(id)?.classList.remove('lifted'); } },
+    onPick: k => {
+      const q = V.st.pieces.find(x => x.id === id); if (!q) return closeWheel();
+      wheelRun({ k, slug, label: q.label, el: () => pieceElOf(id), mark: () => V.hist.length, undo: () => toolButton('undo'),
+        apply: flip => { if (flip) V.flipIn = id; change((st, v) => pieceAction(st, k, id, v, pp => nearSpot(boxesOf(slug, { ...st, __ann: V.ann }, WORLD), pp, viewRegion()), slug, WORLD)); V.flipIn = null; } });
+    } });
+}
+/** Open an object's wheel on the solo board. */
+function soloObjMenu(id, x, y, keyboard = false) {
+  const slug = V.tool.slug, o = V.st.objects.find(q => q.id === id); if (!o) return;
+  V.osel = o.locked ? null : id; V.sel = null; renderBoard(); renderChrome();
+  openWheel({ x, y, keyboard, items: wheelItems(objWheel(o)), label: t('js.manip.wheel.menu', { label: objName(slug, o) }), focusBack: () => objElOf(id)?.querySelector('.mp-ohead'),
+    onPick: k => wheelRun({ k, slug, label: objName(slug, o), el: () => null, mark: () => V.hist.length, undo: () => toolButton('undo'),
+      apply: () => change((st, v) => objectAction(slug, st, k, id, v, viewRegion(), WORLD, OBJ_MAX)) }) });
+}
+/** What opens a wheel from the keyboard on a focused piece or object handle: Shift+F10, the ContextMenu key, Enter. */
+const wheelKey = e => e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey) || (e.key === 'Enter' && !e.altKey && !e.ctrlKey && !e.metaKey);
 
 /** The plane's pointer work: pan (empty space), pinch, moving and resizing objects, dragging pieces (with their
- *  snapped group, a snap preview, and the snap on release). */
+ *  snapped group, a snap preview, and the snap on release). On a piece or an object: a tap selects it; a drag of 10 px
+ *  moves it (a piece with its group; a frame with the counters in its cells); a hold opens its wheel (a piece lifted out
+ *  of its group first; sliding on after that drags just that piece); right-click opens the wheel at once. Locked: no
+ *  drag (a small shake). */
 function bindPlane() {
   const board = document.getElementById('mp-board'), pointers = new Map();
   let g = null;
   const ghost = () => document.getElementById('mp-ghost');
+  board.addEventListener('contextmenu', e => { if (e.target.closest('.mp-piece, .mp-obj')) e.preventDefault(); });
+  board.addEventListener('keydown', e => {
+    if (!wheelKey(e)) return;
+    const pe = e.target.closest('.mp-piece'), oh = !pe && e.target.closest('.mp-ohead'); if (!pe && !oh) return;
+    e.preventDefault();
+    const r = (pe || oh).getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+    if (pe) soloPieceMenu(pe.dataset.pid, x, y, true); else soloObjMenu(oh.closest('.mp-obj').dataset.oid, x, y, true);
+  });
   board.addEventListener('pointerdown', e => {
     pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pointers.size === 2) {
       if (g && g.kind !== 'pan') { cancel(); }
       const [a, b] = [...pointers.values()]; g = { kind: 'pinch', d: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 }; return;
     }
-    if (e.target.closest('.mp-zoom, .mp-drawlayer, .mp-sticky, .mp-text, .mp-pbar, .mp-obar, button, input, select, textarea, a')) return;
+    if (e.target.closest('.mp-zoom, .mp-drawlayer, .mp-sticky, .mp-text, button, input, select, textarea, a')) return;
     if (V.textMode) return;
     const rz = e.target.closest('[data-oresize]');
-    if (rz) { const o = V.st.objects.find(x => x.id === rz.dataset.oresize); if (o) { const z = objSize(V.tool.slug, o); g = { kind: 'resize', o, nat: z, s0: o.s, sx: e.clientX, sy: e.clientY, before: JSON.stringify(V.st), el: rz.closest('.mp-obj') }; board.setPointerCapture(e.pointerId); e.preventDefault(); } return; }
+    if (rz) { const o = V.st.objects.find(x => x.id === rz.dataset.oresize); if (o && !o.locked) { const z = objSize(V.tool.slug, o); g = { kind: 'resize', o, nat: z, s0: o.s, sx: e.clientX, sy: e.clientY, before: JSON.stringify(V.st), el: rz.closest('.mp-obj') }; board.setPointerCapture(e.pointerId); e.preventDefault(); } return; }
     const pieceEl = e.target.closest('.mp-piece');
     if (pieceEl) {
       const p = V.st.pieces.find(x => x.id === pieceEl.dataset.pid); if (!p) return;
-      const members = p.locked ? [p] : groupOf(V.st.pieces, p);
-      g = { kind: 'piece', p, members: members.map(m => ({ m, x0: m.x, y0: m.y, el: board.querySelector(`.mp-piece[data-pid="${CSS.escape(m.id)}"]`) })), sx: e.clientX, sy: e.clientY, moved: false, before: JSON.stringify(V.st) };
-      board.setPointerCapture(e.pointerId); e.preventDefault(); return;
+      e.preventDefault();
+      if (e.button === 2) { soloPieceMenu(p.id, e.clientX, e.clientY); return; }
+      if (e.button > 0) return;
+      const gg = g = { kind: 'piece', p, el: pieceEl, sx: e.clientX, sy: e.clientY, moved: false, held: false, before: JSON.stringify(V.st) };
+      gg.hold = startHold(e.clientX, e.clientY, () => { if (g !== gg || gg.moved) return; gg.held = true; soloPieceMenu(p.id, gg.sx, gg.sy); });
+      board.setPointerCapture(e.pointerId); return;
     }
     const objEl = e.target.closest('.mp-obj');
     if (objEl) {
       if (e.target.closest('[data-act], svg.mp-nl, svg.mp-grid, svg[data-clock], .mp-peg, .mp-seglabel, .mp-bead, .mp-cell, .mp-answer')) return;   // the object's own work
       const o = V.st.objects.find(x => x.id === objEl.dataset.oid); if (!o) return;
-      g = { kind: 'obj', o, el: objEl, x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, before: JSON.stringify(V.st) };
-      board.setPointerCapture(e.pointerId); e.preventDefault(); return;
+      e.preventDefault();
+      if (e.button === 2) { soloObjMenu(o.id, e.clientX, e.clientY); return; }
+      if (e.button > 0) return;
+      const gg = g = { kind: 'obj', o, el: objEl, x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before: JSON.stringify(V.st) };
+      gg.hold = startHold(e.clientX, e.clientY, () => { if (g !== gg || gg.moved) return; gg.held = true; soloObjMenu(o.id, gg.sx, gg.sy); });
+      board.setPointerCapture(e.pointerId); return;
     }
     g = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: V.view.x, y0: V.view.y, moved: false };
     board.setPointerCapture(e.pointerId);
   });
   board.addEventListener('pointermove', e => {
     if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (!g) return;
+    if (!g || g.kind === 'dead') return;
     if (g.kind === 'pinch') {
       if (pointers.size < 2) return;
       const [a, b] = [...pointers.values()], d = Math.hypot(a.x - b.x, a.y - b.y), cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2, r = board.getBoundingClientRect();
       V.view.x += cx - g.cx; V.view.y += cy - g.cy; zoomAt(d / (g.d || d), cx - r.left, cy - r.top); Object.assign(g, { d, cx, cy }); return;
     }
     const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
+    const slug = V.tool.slug;
+    if ((g.kind === 'piece' || g.kind === 'obj') && !g.moved) {
+      // A piece or object starts to move after 10 px; before that it may still become a hold.
+      if (Math.hypot(dx, dy) < SLOP) return;
+      g.hold.cancel();
+      if (g.kind === 'piece' ? g.p.locked : g.o.locked) { if (!g.held) shake(g.kind === 'piece' ? pieceElOf(g.p.id) : objElOf(g.o.id)); g = { kind: 'dead' }; return; }
+      if (g.held) { closeWheel({ focus: false }); g.before = JSON.stringify(V.st); }
+      if (g.kind === 'piece') {
+        // Held first (it is out of its group now), or counters (they never link): just this piece.
+        const members = g.held || !linksPieces(slug) ? [g.p] : groupOf(V.st.pieces, g.p);
+        g.members = members.map(m => ({ m, x0: m.x, y0: m.y, el: pieceElOf(m.id) }));
+      } else {
+        g.el = objElOf(g.o.id) || g.el; g.x0 = g.o.x; g.y0 = g.o.y;
+        // An unlocked frame takes the counters seated in its cells along (owner, 21 Nov 2026).
+        g.carry = FRAMES.has(g.o.k) ? seatedIn(slug, g.o, V.st.pieces).map(m => ({ m, x0: m.x, y0: m.y, el: pieceElOf(m.id) })) : [];
+      }
+      g.moved = true;
+    }
     if (!g.moved && Math.abs(dx) + Math.abs(dy) < 5) return;
     g.moved = true;
     const z = V.view.z;
     if (g.kind === 'pan') { V.view.x = g.x0 + dx; V.view.y = g.y0 + dy; applyView(); return; }
     if (g.kind === 'obj') {
-      const r = objRect(V.tool.slug, g.o);
+      const r = objRect(slug, g.o);
       g.o.x = Math.round(clamp(g.x0 + dx / z, 0, WORLD.w - r.w)); g.o.y = Math.round(clamp(g.y0 + dy / z, 0, WORLD.h - r.h));
-      g.el.style.left = `${g.o.x}px`; g.el.style.top = `${g.o.y}px`; return;
+      g.el.style.left = `${g.o.x}px`; g.el.style.top = `${g.o.y}px`;
+      for (const c of g.carry) { c.m.x = c.x0 + g.o.x - g.x0; c.m.y = c.y0 + g.o.y - g.y0; if (c.el) { c.el.style.left = `${c.m.x}px`; c.el.style.top = `${c.m.y}px`; } }
+      return;
     }
     if (g.kind === 'resize') {
       g.o.s = Math.round(clamp((g.nat.w * g.s0 + dx / z) / g.nat.w, S_MIN, Math.min(S_MAX, (WORLD.w - g.o.x) / g.nat.w, (WORLD.h - g.o.y) / g.nat.h)) * 1000) / 1000;
@@ -1055,19 +1197,23 @@ function bindPlane() {
       if (g.snap) { const b = pieceBox(g.p); gh.hidden = false; Object.assign(gh.style, { left: `${b.x + g.snap.dx}px`, top: `${b.y + g.snap.dy}px`, width: `${b.w}px`, height: `${b.h}px` }); } else gh.hidden = true;
     }
   });
-  const snapNow = gg => { const ids = new Set(gg.members.map(x => x.m.id)); return snapFor([gg.p, ...gg.members.map(x => x.m).filter(m => m !== gg.p)], V.st.pieces.filter(q => !ids.has(q.id)), V.st.objects.flatMap(o => slotsOf(V.tool.slug, o)), SNAP_PX / V.view.z); };
-  const cancel = () => { if (g && g.before && g.moved) { V.st = JSON.parse(g.before); renderBoard(); } g = null; ghost().hidden = true; };
+  const snapNow = gg => { const ids = new Set(gg.members.map(x => x.m.id)); return snapFor([gg.p, ...gg.members.map(x => x.m).filter(m => m !== gg.p)], V.st.pieces.filter(q => !ids.has(q.id)), V.st.objects.flatMap(o => slotsOf(V.tool.slug, o)), SNAP_PX / V.view.z, snapOpts(V.tool.slug)); };
+  const cancel = () => { if (g && g.hold) g.hold.cancel(); if (g && g.before && g.moved) { V.st = JSON.parse(g.before); renderBoard(); } g = null; ghost().hidden = true; };
   const up = e => {
     pointers.delete(e.pointerId);
     if (!g) return;
     if (g.kind === 'pinch') { if (pointers.size < 2) g = null; return; }
     const x = g; g = null; ghost().hidden = true;
+    if (x.hold) x.hold.cancel();
+    if (x.kind === 'dead') { V.justMoved = true; return; }
     if (x.moved) V.justMoved = true;
     if (x.kind === 'pan') { if (!x.moved && (V.sel || V.osel) && !V.textMode) { V.sel = null; V.osel = null; renderBoard(); renderChrome(); } return; }
     if (x.kind === 'resize') { if (x.o.s !== x.s0) { pushHistory(x.before); renderBoard(); renderChrome(); } return; }
+    // Held: the wheel stays open after the finger lifts.
+    if ((x.kind === 'obj' || x.kind === 'piece') && !x.moved && (x.held || e.type === 'pointercancel')) { V.justMoved = true; return; }
     if (x.kind === 'obj') {
-      // A tap selects (its buttons open); a drag only moves it.
-      if (x.moved) pushHistory(x.before); else { V.osel = x.o.id; V.sel = null; }
+      // A tap selects it (a corner to resize it); a drag only moves it.
+      if (x.moved) pushHistory(x.before); else { V.osel = x.o.locked ? null : x.o.id; V.sel = null; }
       renderBoard(); renderChrome(); return;
     }
     if (x.kind === 'piece') {
@@ -1084,6 +1230,7 @@ function bindPlane() {
         }
         pushHistory(x.before);
       }
+      // A tap selects the piece (a green outline, no buttons).
       if (!x.moved) { V.sel = x.p.id; V.osel = null; } else if (V.sel && V.sel !== x.p.id) V.sel = null;
       renderBoard(); renderChrome(); V.snapped = null;
     }
@@ -1221,7 +1368,7 @@ async function liveRoom(id, joinFirst) {
   clear(); V = null;
   try {
     if (joinFirst) { await api('/api/manipulatives/live/join', { method: 'POST', body: { id } }); history.replaceState(null, '', `#live/${id}`); }
-    await ROOM.open(ROOT, id, { palButton, bindTrayDrag, dropAt, IMPL, mkPiece, breakPiece, regroup, newId, boards: STATE.boards, normalize, boardHtml, paletteFor, pieceAction, objectAction, joinGroup, target, inkLine, keepBarsInside });
+    await ROOM.open(ROOT, id, { palButton, bindTrayDrag, dropAt, IMPL, mkPiece, breakPiece, regroup, newId, boards: STATE.boards, normalize, boardHtml, paletteFor, pieceAction, objectAction, joinGroup, target, inkLine, pieceWheel, objWheel, wheelItems, wheelRun, wheelKey, objName });
   } catch (e) { ROOT.innerHTML = `<div class="empty"><h1>${esc(e.status === 409 ? t('js.manip.live.ended') : t('js.manip.live.gone'))}</h1><p><a href="#">${esc(t('js.manip.nav.back'))}</a></p></div>`; }
 }
 
