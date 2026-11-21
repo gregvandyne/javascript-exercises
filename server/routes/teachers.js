@@ -324,7 +324,7 @@ router.get('/teachers', (req, res) => {
     ${el(t, 'p', plans ? 'teachers.free.line' : 'teachers.free.lineOff', { daily: req.fmt.int(config.teacherDailyMessages), plans: '/plans' }, ' class="lp-freeline"')}
     <div class="row lp-cta">
       <a class="btn btn-primary btn-big" href="#start">${t('teachers.cta.start')}</a>
-      ${liveOn() && !(req.user && !req.user.is_guest && !canHost(req.user)) ? html`<a class="btn btn-hot btn-big" href="${canHost(req.user) ? '/live/quick' : '/teachers/host'}" id="host-now">${ico('📡', { size: 18 })} ${el(t, 'span', 'quickLive.cta')}</a>` : ''}
+      ${liveOn() && !(req.user && !req.user.is_guest && !canHost(req.user)) ? html`<a class="btn btn-hot btn-big" href="${canHost(req.user) ? '/live/quick' : '/teachers/host'}" id="host-now">${ico('📡', { size: 28 })} ${el(t, 'span', 'quickLive.cta')}</a>` : ''}
       ${list[0] ? html`<a class="btn btn-big" href="${keepLang(req, `/play/${list[0].slug}`)}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
     </div>
     ${howArt(req, 'teachers')}

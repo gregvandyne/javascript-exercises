@@ -152,7 +152,7 @@ export function renderLanding(req, res) {
       <p class="lp-lead"${fb('landing.hero.lead')}>${t('landing.hero.lead')}</p>
       <div class="lp-ctas">
         ${cta(TRIAL_URL, t('landing.hero.cta'), { big: true })}
-        ${live ? html`<a class="lp-btn lp-btn-spark lp-btn-big" href="${HOST_NOW_URL}" data-cta="host" id="lp-host-now"${fb('quickLive.cta')}>${ico('📡', { size: 18 })} ${t('quickLive.cta')}</a>` : ''}
+        ${live ? html`<a class="lp-btn lp-btn-spark lp-btn-big" href="${HOST_NOW_URL}" data-cta="host" id="lp-host-now"${fb('quickLive.cta')}>${ico('📡', { size: 28 })} ${t('quickLive.cta')}</a>` : ''}
         <a class="lp-btn lp-btn-ghost lp-btn-big" href="#how" data-cta="how">${t('landing.hero.how')} <span aria-hidden="true">↓</span></a>
       </div>
       <ul class="lp-trust">
@@ -307,7 +307,7 @@ export function renderLanding(req, res) {
       <p class="lp-eyebrow">${t('landing.live.kicker')}</p><h2 id="live-h">${t('landing.live.h')}</h2><p>${t('landing.live.lead')}</p>
       <ul class="lp-list">${[1, 2, 3, 4].map(i => html`<li>${check}<span>${t(`landing.live.li${i}`)}</span></li>`)}</ul>
       <div class="lp-ctas lp-live-ctas">
-        <a class="lp-btn lp-btn-spark" href="${HOST_NOW_URL}" data-cta="host"${fb('quickLive.cta')}>${ico('📡', { size: 18 })} ${t('quickLive.cta')}</a>
+        <a class="lp-btn lp-btn-spark" href="${HOST_NOW_URL}" data-cta="host"${fb('quickLive.cta')}>${ico('📡', { size: 28 })} ${t('quickLive.cta')}</a>
         <a class="lp-btn lp-btn-ghost" href="/join" id="lp-join"${fb('quickLive.haveCode')}>${t('quickLive.haveCode')}</a>
       </div>
       ${el(fb, t, 'quickLive.ctaNote')}

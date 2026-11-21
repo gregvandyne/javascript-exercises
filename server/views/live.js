@@ -775,7 +775,7 @@ export function makeBody(req, { classes = [], limits }) {
   <section class="lv-panel mk-panel" id="mk-3" hidden aria-labelledby="mk-3-h">
     <h2 class="lv-h2" id="mk-3-h" tabindex="-1">${ico('🎉', { size: 28 })} ${t('live.make.doneHeading')}</h2>
     <p>${t('live.make.doneText')}</p>
-    <div class="lv-controls"><a class="btn btn-primary" id="mk-host" href="/live">${ico('📡', { size: 18 })} ${t('live.make.host')}</a></div>
+    <div class="lv-controls"><a class="btn btn-primary" id="mk-host" href="/live">${ico('📡', { size: 28 })} ${t('live.make.host')}</a></div>
     ${classes.length ? html`<form class="stack mk-assign" id="mk-assign" novalidate><h3 class="mk-h3">${ico('📚', { size: 22 })} ${t('live.make.assignHeading')}</h3>
       <p class="small muted">${t('live.make.assignText')}</p>
       <div class="lv-set-meta">
