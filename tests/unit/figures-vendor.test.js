@@ -13,23 +13,24 @@ import { fileURLToPath } from 'node:url';
 const { FIG_LOCK, FIG_VERSIONS, FIG_LATEST, FIG_SCRIPTS, figTag, figTags, checkFigures, figureLibs, figureFile, usesFigures } = await import('../../server/services/figlibs.js');
 const { scanVersion } = await import('../../server/services/scanner.js');
 const { frameCsp } = await import('../../server/services/frame.js');
-const { lockText } = await import('../../scripts/build-figures.js');
+const { lockText, filesIn } = await import('../../scripts/build-figures.js');
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const sha256 = b => crypto.createHash('sha256').update(b).digest('hex');
 const sri = b => `sha384-${crypto.createHash('sha384').update(b).digest('base64')}`;
 
 test('every vendored file matches its manifest and figures/SHIPPED.json, and nothing else is in the folders', () => {
-  assert.deepEqual(FIG_LATEST, { jsxgraph: '1.14.3', 'smiles-drawer': '2.4.2', 'oomba-figures': '1.0.0' });
-  for (const [lib, v] of Object.entries(FIG_LATEST)) {
+  assert.deepEqual(FIG_LATEST, { jsxgraph: '1.14.3', 'smiles-drawer': '2.4.2', 'oomba-figures': '1.1.0' });
+  assert.deepEqual(Object.keys(FIG_VERSIONS['oomba-figures']), ['1.0.0', '1.1.0'], 'Oomba Figures 1.0.0 stays (saved games pin it)');
+  for (const [lib, v] of Object.entries(FIG_VERSIONS).flatMap(([l, vs]) => Object.keys(vs).map(x => [l, x]))) {
     const dir = path.join(ROOT, 'public/vendor', lib, v), m = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.json'), 'utf8'));
     assert.equal(m.name, lib); assert.equal(m.version, v);
-    assert.deepEqual(fs.readdirSync(dir).sort(), ['manifest.json', ...Object.keys(m.files)].sort(), `${lib}: only the files the manifest names`);
+    assert.deepEqual(filesIn(dir), ['manifest.json', ...Object.keys(m.files)].sort(), `${lib}: only the files the manifest names`);
     for (const [f, h] of Object.entries(m.files)) {
       const b = fs.readFileSync(path.join(dir, f));
       assert.equal(sha256(b), h.sha256, `${lib}/${f} sha256`); assert.equal(sri(b), h.sri, `${lib}/${f} sri`);
     }
-    for (const f of fs.readdirSync(dir)) assert.equal(FIG_LOCK.files[`${lib}/${v}/${f}`].sha256, sha256(fs.readFileSync(path.join(dir, f))), `${lib}/${f} is locked`);
+    for (const f of filesIn(dir)) assert.equal(FIG_LOCK.files[`${lib}/${v}/${f}`].sha256, sha256(fs.readFileSync(path.join(dir, f))), `${lib}/${f} is locked`);
   }
   assert.equal(fs.readFileSync(path.join(ROOT, 'figures/SHIPPED.json'), 'utf8'), lockText(), 'the lock lists exactly what is on disk');
 });
@@ -40,6 +41,12 @@ test('licences: each folder carries its package\'s own LICENSE file, MIT, and no
     assert.doesNotMatch(lic(lib), /GNU (Lesser )?General Public License/, `${lib}: the MIT text, not the (L)GPL`);
   }
   assert.match(lic('jsxgraph'), /Matthias Ehmann/); assert.match(lic('smiles-drawer'), /Reymond Research Group/);
+  // Oomba Figures 1.1.0 carries ported code under the Apache License 2.0: its text, verbatim, after our MIT text
+  const ported = fs.readFileSync(path.join(ROOT, 'figures/src/ported/LICENSE.txt'), 'utf8');
+  assert.match(ported, /^\s*Apache License\s+Version 2\.0, January 2004/); assert.match(ported, /END OF TERMS AND CONDITIONS/);
+  assert.ok(lic('oomba-figures').startsWith('Oomba Figures\nCopyright (c) 2026 Oomba Academy') && lic('oomba-figures').endsWith(ported), 'MIT first, then the Apache text verbatim');
+  assert.doesNotMatch(fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-figures/1.0.0/LICENSE'), 'utf8'), /Apache/, '1.0.0 unchanged: MIT only');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-figures/1.1.0/manifest.json'), 'utf8')).license, 'MIT AND Apache-2.0');
   const jm = JSON.parse(fs.readFileSync(path.join(ROOT, 'public/vendor/jsxgraph', FIG_LATEST.jsxgraph, 'manifest.json'), 'utf8'));
   assert.equal(jm.license, '(MIT OR LGPL-3.0-or-later)'); assert.equal(jm.usedUnder, 'MIT', 'JSXGraph is used under MIT');
   const notice = fs.readFileSync(path.join(ROOT, 'docs/third-party.md'), 'utf8');
@@ -65,7 +72,7 @@ test('the scanner refuses altered or unpinned tags, and any other mention of the
   const bad = [
     t.replace(h, `sha384-${'A'.repeat(64)}`),                                             // another hash
     t.replace(h, FIG_VERSIONS.jsxgraph[FIG_LATEST.jsxgraph]),                            // another file's hash
-    t.replace('/1.0.0/', '/9.9.9/'),                                                      // a version we do not have
+    t.replace(`/${FIG_LATEST['oomba-figures']}/`, '/9.9.9/'),                             // a version we do not have
     t.replace(' crossorigin="anonymous"', ''),                                            // no crossorigin
     t.replace('></script>', ' defer></script>'),                                          // anything extra
     t.replace('></script>', '>alert(1)</script>'),                                        // code inside the tag
@@ -87,9 +94,9 @@ test('the frame CSP names exactly the pinned files, never their folders; the scr
     assert.ok(!script.some(s => s === `https://oomba.example/vendor/${lib}/` || s === `https://oomba.example/vendor/${lib}/${FIG_LATEST[lib]}/`), `${lib}: no folder`);
     assert.ok(!/(img|font|connect|media|style)-src[^;]*\/vendor\/(jsxgraph|smiles-drawer|oomba-figures)/.test(csp), `${lib}: scripts only`);
   }
-  assert.equal(FIG_SCRIPTS.length, 3);
+  assert.equal(FIG_SCRIPTS.length, 9, 'JSXGraph, SmilesDrawer, Oomba Figures 1.0.0, and 1.1.0 with its five packs');
   for (const f of FIG_SCRIPTS) assert.ok(figureFile(f), f);
-  for (const f of ['/vendor/oomba-figures/1.0.0/manifest.json', '/vendor/oomba-figures/1.0.0/LICENSE', '/vendor/jsxgraph/1.14.3/../1.14.3/jsxgraphcore.js', '/vendor/jsxgraph/9.9.9/jsxgraphcore.js']) assert.equal(figureFile(f), null, f);
+  for (const f of ['/vendor/oomba-figures/1.0.0/manifest.json', '/vendor/oomba-figures/1.0.0/LICENSE', '/vendor/oomba-figures/1.1.0/LICENSE', '/vendor/jsxgraph/1.14.3/../1.14.3/jsxgraphcore.js', '/vendor/jsxgraph/9.9.9/jsxgraphcore.js']) assert.equal(figureFile(f), null, f);
   const snap = fs.readFileSync(path.join(ROOT, 'server/services/snapshot.js'), 'utf8');
   assert.match(snap, /figureFile\(new URL\(u\)\.pathname\)/, 'the worker asks figureFile');
 });

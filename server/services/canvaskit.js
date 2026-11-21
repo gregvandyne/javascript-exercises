@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
-import { figureLibs, figuresKit } from './figlibs.js';
+import { figureLibs, figuresKit, missingFigurePacks } from './figlibs.js';
 
 export const CANVAS_PATH = '/vendor/oomba-canvas/';
 // version -> sha384 of oomba-canvas.js (tests/unit/canvas-kit.test.js checks these against the files on disk).
@@ -123,7 +123,9 @@ export function selfTestHtml(html) {
 /**
  * 1.2.0: the activity's figures. Every problem with a "fig" (the fixed ones, and three sets from a generator) needs the
  * pinned Oomba Figures tag on the page, and its data must pass that version's own check() (an element it knows, a ray
- * diagram with an image, a reading on its scale, electrons that add up...): a wrong figure is never saved.
+ * diagram with an image, a reading on its scale, electrons that add up...): a wrong figure is never saved. From Oomba
+ * Figures 1.1.0 a kind lives in a subject pack: the page must load the pinned tag of each pack its figures use (the
+ * server's copy has every pack, so the data check alone would not see a missing tag).
  */
 export function figureProblems(v, data, html) {
   const kit = canvasKit(v); if (!kit || !kit.logic || typeof kit.sheet !== 'function') return [];
@@ -135,6 +137,8 @@ export function figureProblems(v, data, html) {
   const fv = figureLibs(html)['oomba-figures'];
   if (!fv) return [{ at: 'figures', why: 'the activity draws figures but the page does not load Oomba Figures: add its pinned tag (the FIGURE RULES) before the kit\'s' }];
   const F = figuresKit(fv);
+  for (const m of missingFigurePacks(html, [...new Set(withFig.map(([, p]) => p.fig.kind))])) out.push({ at: 'figures', why: `its figures (${m.kinds.slice(0, 4).join(', ')}) need the Oomba Figures ${m.pack} pack: add its pinned tag right after the Oomba Figures tag: ${m.tag}` });
+  if (out.length) return out;
   for (const [at, p] of withFig) {
     const { kind, hide, ...rest } = p.fig, why = F.check(kind, { kind, ...rest });
     const key = `${at}:${why.join(';')}`;

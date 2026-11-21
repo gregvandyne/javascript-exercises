@@ -1105,6 +1105,28 @@ export const MIGRATIONS = [
   // A live room's "Hide students' work" (docs/decisions.md "Virtual math manipulatives: hidden work"): 0, the default,
   // sends a student nothing of a classmate's square but its frame, name and hand; 1 when the teacher shows the work.
   ['0094_manipulatives_show_work', 'ALTER TABLE manip_sessions ADD COLUMN show_work INTEGER NOT NULL DEFAULT 0;'],
+  // Figures, the standalone product (docs/decisions.md "Figures, the standalone product"; services/figures.js), hidden
+  // while it is tested. One question-set model that a Figures worksheet uses now (purpose 'worksheet') and a test or a
+  // lesson's Figure step can use later ('test', 'lesson'). question_sets: owned by its teacher (only the owner lists,
+  // opens, prints or deletes it), of_version pins the Oomba Figures version its figures were checked with.
+  // question_set_items: one figure question each, in order (pos): the kind, its data (JSON that passed OF.check), the
+  // generator it came from (gen, with its seed: "regenerate numbers"), hide (what the student's copy leaves out), the
+  // question text, answer_key (the OF.solve value the answer is), and the answer and worked lines worked out on the
+  // server. figure_presets: a teacher's own saved figures per kind. figure_prefs: the teacher's "Power with AI" switch.
+  ['0095_figures_question_sets', `
+    CREATE TABLE IF NOT EXISTS question_sets (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      title TEXT NOT NULL, grade TEXT NOT NULL DEFAULT '', subject TEXT NOT NULL DEFAULT '', purpose TEXT NOT NULL DEFAULT 'worksheet',
+      of_version TEXT NOT NULL, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_question_sets_owner ON question_sets(owner_id, purpose, updated_at);
+    CREATE TABLE IF NOT EXISTS question_set_items (id TEXT PRIMARY KEY, set_id TEXT NOT NULL REFERENCES question_sets(id) ON DELETE CASCADE,
+      pos INTEGER NOT NULL, kind TEXT NOT NULL, data TEXT NOT NULL, gen TEXT, seed INTEGER, hide TEXT, question TEXT NOT NULL DEFAULT '',
+      answer_key TEXT, answer TEXT NOT NULL DEFAULT '', work TEXT NOT NULL DEFAULT '[]', points INTEGER NOT NULL DEFAULT 1);
+    CREATE INDEX IF NOT EXISTS idx_question_set_items_set ON question_set_items(set_id, pos);
+    CREATE TABLE IF NOT EXISTS figure_presets (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      kind TEXT NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_figure_presets_owner ON figure_presets(owner_id, kind, created_at);
+    CREATE TABLE IF NOT EXISTS figure_prefs (user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+      ai INTEGER NOT NULL DEFAULT 1, updated_at INTEGER NOT NULL);`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

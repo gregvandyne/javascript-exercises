@@ -4,6 +4,7 @@
 // English (the Builder's model reads it); draw(d, o) assumes the data passed check.
 import { node, label, subLabel, arrow, line, path, poly, frame, palette, seriesColour, fmt, angleOf, unitOf, isNum, text, hides, gridLines, r2 } from './svg.js';
 import { figWords } from './words.js';
+import { networkCheck, networkSolve, networkDraw } from './network.js';
 
 /** The box around some points, plus a margin. */
 function bounds(pts, m = 0) {
@@ -288,7 +289,7 @@ export const pulley = {
 };
 
 // ---------------------------------------------------------------- ray diagrams
-const RAY_TYPES = ['convex-lens', 'concave-lens', 'concave-mirror', 'convex-mirror'];
+const RAY_TYPES = ['convex-lens', 'concave-lens', 'concave-mirror', 'convex-mirror', 'plane-mirror'];
 /**
  * { type: 'convex-lens' (converging) | 'concave-lens' (diverging) | 'concave-mirror' | 'convex-mirror', f: focal length
  * (> 0, cm), u: object distance (> 0), h?: object height (default f / 2), rays?: [1, 2, 3] (which principal rays),
@@ -300,6 +301,7 @@ const RAY_TYPES = ['convex-lens', 'concave-lens', 'concave-mirror', 'convex-mirr
  */
 export const rays = {
   check(d) {
+    if (d && d.type === 'plane-mirror') return planeCheck(d);
     const out = [];
     if (!d || !RAY_TYPES.includes(d.type)) out.push(`"type" must be one of ${RAY_TYPES.join(', ')}`);
     if (!d || !isNum(d.f, 0.1, 1000)) out.push('"f" must be the focal length, a number above 0');
@@ -317,12 +319,14 @@ export const rays = {
   /** -> { v (image distance, real positive), m (magnification), hi (image height), real, x (the image's x: right of
    *  the lens is +, in front of a mirror is −) } or null (object at F). */
   solve(d) {
+    if (d.type === 'plane-mirror') { const h = d.h ?? d.u / 2; return { f: Infinity, v: -d.u, m: 1, hi: h, h, real: false, mirror: true, plane: true, x: d.u }; }
     const sign = d.type === 'convex-lens' || d.type === 'concave-mirror' ? 1 : -1, f = sign * d.f, u = d.u, h = d.h ?? d.f / 2;
     if (Math.abs(u - f) < 1e-9) return null;
     const v = (u * f) / (u - f), m = -v / u, mirror = /mirror/.test(d.type);
     return { f, v, m, hi: m * h, h, real: v > 0, mirror, x: mirror ? -v : v };
   },
   draw(d, o) {
+    if (d.type === 'plane-mirror') return planeDraw(d, o);
     const P = palette(o), lang = o.lang, W = figWords(lang), s = rays.solve(d), unit = text(d.unit, 6) || 'cm';
     const mirror = s.mirror, out = mirror ? -1 : 1, u = d.u, h = s.h, f = Math.abs(s.f);
     const noRays = hides(o, 'rays') || o.hide === true, noImage = noRays || hides(o, 'image');
@@ -380,6 +384,49 @@ export const rays = {
     return frame(Wd, Ht, parts, { ...o, kind: 'rays' }, o.title || 'Ray diagram');
   },
 };
+// ---------------------------------------------------------------- the plane mirror (1.1.0)
+// { type: "plane-mirror", u: the object's distance in front of the mirror, h?: its height (u / 2), rays?: [1, 2] (ray 1
+// to the mirror at half the object's height, ray 2 to the foot of the mirror), unit?, labels?, normals?: true }. The
+// image is as far behind the mirror as the object is in front, upright, the same size and virtual. Drawn to one scale
+// across and up, so each ray leaves the mirror at the angle it arrived at (the law of reflection, shown by the normals),
+// and its dashed back-extension runs to the image. hide: true or "rays" (the object and mirror only), "image".
+const PLANE_KEYS = ['kind', 'hide', 'type', 'u', 'h', 'rays', 'unit', 'labels', 'normals', 'scale'];
+function planeCheck(d) {
+  const out = [];
+  for (const k of Object.keys(d)) if (!PLANE_KEYS.includes(k)) out.push(k === 'f' ? 'a plane mirror has no focal length: leave out "f"' : `"${k}" is not used by a plane mirror`);
+  if (!isNum(d.u, 0.1, 5000)) out.push('"u" must be the object distance, a number above 0');
+  if (d.h !== undefined && !isNum(d.h, 0.01, 1000)) out.push('"h" must be the object height, a number above 0');
+  else if (isNum(d.u, 0.1) && d.h !== undefined && (d.h < 0.15 * d.u || d.h > 2 * d.u)) out.push('a plane mirror is drawn to one scale: give a height "h" from 0.15 to 2 times "u"');
+  if (d.rays !== undefined && (!Array.isArray(d.rays) || !d.rays.length || d.rays.some(r => ![1, 2].includes(r)))) out.push('"rays" lists 1 and/or 2 for a plane mirror');
+  if (d.normals !== undefined && typeof d.normals !== 'boolean') out.push('"normals" must be true or false');
+  return out;
+}
+function planeDraw(d, o) {
+  const P = palette(o), lang = o.lang, W = figWords(lang), s = rays.solve(d), u = d.u, h = s.h, unit = text(d.unit, 6) || 'cm';
+  const noRays = hides(o, 'rays') || o.hide === true, noImage = noRays || hides(o, 'image');
+  const k = Math.min(520 / (2.6 * u), 260 / (2.4 * h)), x0 = -1.3 * u, ytop = 1.4 * h, M = 30;
+  const X = x => M + (x - x0) * k, Y = y => M + (ytop - y) * k, Wd = 2 * M + 2.6 * u * k, Ht = 2 * M + 2.4 * h * k;
+  const parts = [line(X(x0), Y(0), X(1.3 * u), Y(0), P.muted, 1.5)];
+  // the mirror: a line with its back hatched (behind it, the image side)
+  const mt = Y(1.25 * h), mb = Y(-0.9 * h), lx = X(0);
+  parts.push(line(lx, mt, lx, mb, P.blue, 3.5));
+  for (let y = mt + 6; y < mb - 4; y += 12) parts.push(line(lx + 2, y, lx + 11, y - 8, P.blue, 1.4));
+  parts.push(arrow(X(-u), Y(0), X(-u), Y(h), { colour: P.green, width: 3.5 }), label(X(-u), Y(h) - 14, (d.labels && text(d.labels.object, 20)) || W('object'), { anchor: 'middle', size: 13, colour: P.green }));
+  if (!noRays) {
+    const hits = { 1: h / 2, 2: 0 };
+    for (const r of (Array.isArray(d.rays) ? d.rays : [1, 2])) {
+      const hy = hits[r], c = seriesColour(o, r + 1), dx = u, dy = hy - h;
+      parts.push(arrowOn(X(-u), Y(h), X(0), Y(hy), c, 2.2));
+      // the law of reflection: back the way it came across, the same way up or down
+      const t = x0 / -dx, ex = x0, ey = hy + dy * t, clip = clipY(0, hy, ex, ey, -1.1 * h, 1.35 * h);
+      parts.push(arrowOn(X(0), Y(hy), X(clip[0]), Y(clip[1]), c, 2.2), line(X(0), Y(hy), X(u), Y(h), c, 1.6, { 'stroke-dasharray': '6 5', class: 'of-extension' }));
+      if (d.normals !== false) parts.push(line(X(-0.32 * u), Y(hy), X(0.12 * u), Y(hy), P.muted, 1.2, { 'stroke-dasharray': '2 4', class: 'of-normal' }));
+    }
+  }
+  if (!noImage) parts.push(arrow(X(u), Y(0), X(u), Y(h), { colour: P.red, width: 3.2, dash: '6 4' }), label(X(u), Y(h) - 14, (d.labels && text(d.labels.image, 20)) || W('image'), { anchor: 'middle', size: 13, colour: P.red }));
+  if (d.scale !== false) parts.push(label(6, Ht - 10, `u = ${unitText(u, unit, lang, 1)}`, { size: 11, weight: 600, colour: P.muted }));
+  return frame(Wd, Ht, parts, { ...o, kind: 'rays' }, o.title || 'Ray diagram');
+}
 /** A line with a small arrowhead half way (a ray's direction). */
 function arrowOn(x1, y1, x2, y2, c, w) {
   const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, len = Math.hypot(x2 - x1, y2 - y1) || 1, ux = (x2 - x1) / len, uy = (y2 - y1) / len;
@@ -404,12 +451,13 @@ const PARTS = ['cell', 'battery', 'bulb', 'resistor', 'switch', 'ammeter', 'volt
  */
 export const circuit = {
   check(d) {
+    if (d && d.layout === 'network') return networkCheck(d);
     const out = [], okPart = (x, where) => {
       if (!x || !PARTS.includes(x.type)) out.push(`${where}: "type" must be one of ${PARTS.join(', ')}`);
       else if (x.type === 'voltmeter' && x.across === undefined && where.startsWith('part')) out.push(`${where}: put a voltmeter in "meters" with "across" (it goes across a part, not in the loop)`);
       if (x && x.value !== undefined && !text(x.value, 14)) out.push(`${where}: "value" must be short text like "6 V"`);
     };
-    if (!d || !['series', 'parallel'].includes(d.layout)) out.push('"layout" must be "series" or "parallel"');
+    if (!d || !['series', 'parallel'].includes(d.layout)) out.push('"layout" must be "series", "parallel" or "network" (series and parallel groups nested in a loop)');
     const parts = d && Array.isArray(d.parts) ? d.parts : [];
     parts.forEach((x, i) => okPart(x, `part ${i + 1}`));
     if (parts.length > 6) out.push('at most 6 parts in the main loop');
@@ -424,7 +472,11 @@ export const circuit = {
     }
     return out;
   },
+  /** A network (1.1.0): the equivalent resistance, the current from the source, and each part's current and voltage
+   *  (networkSolve). The flat layouts give no numbers (their values are the labels given): null. */
+  solve(d) { return d && d.layout === 'network' && !networkCheck(d).length ? networkSolve(d) : null; },
   draw(d, o) {
+    if (d.layout === 'network') return networkDraw(d, o, palette(o), (w, h, kids) => frame(w, h, kids, { ...o, kind: 'circuit' }, o.title || 'Circuit diagram'));
     const P = palette(o), parts = [], CW = 64;
     const hideM = o.hide === true || hides(o, 'meters');
     const valueOf = x => (x.type === 'ammeter' || x.type === 'voltmeter') && hideM ? `? ${x.type === 'ammeter' ? 'A' : 'V'}` : text(x.value, 14);
@@ -501,7 +553,7 @@ export const circuit = {
   },
 };
 /** One symbol along +x from (0, 0) to (w, 0). */
-function symbol(x, P, w, ang = 0) {
+export function symbol(x, P, w, ang = 0) {
   const c = P.ink, L = (x1, x2) => line(x1, 0, x2, 0, c, 2.5), m = w / 2;
   const meter = t => node('g', {}, L(0, m - 15), L(m + 15, w), node('circle', { cx: m, cy: 0, r: 15, fill: P.paper, stroke: c, 'stroke-width': 2.5 }), node('text', { x: m, y: 1, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': 16, 'font-weight': 800, fill: c, transform: ang ? `rotate(${-ang} ${m} 0)` : null }, t));
   switch (x.type) {

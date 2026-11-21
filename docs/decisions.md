@@ -8784,6 +8784,11 @@ such figures with open-source libraries under suitable licences, and a classroom
   its LICENSE file. `figures/SHIPPED.json` locks every file. No GPL code: no CircuitJS, no PhET; Ketcher is too big;
   matter-js is not needed because Phaser 3.90 (already vendored) carries Matter physics. None of the owner's example
   sites' code (their figures are CC0, their code is not open) was copied or looked at.
+  **Correction (21 Nov 2026):** by the evidence, those example sites were the source project (see
+  docs/third-party.md): the same figure kinds, several sister sites, CC0 figures. Its code was open: Apache 2.0 since
+  its first commit (24 Sep 2026). With the owner's confirmed permission, Oomba Figures 1.1.0 ports its number line under
+  that license (the record, the license copy and the changes are in docs/third-party.md). The rule stands for every
+  other site: code without an open license is never copied or consulted.
 - **Allowed exactly like the kits.** `server/services/figlibs.js` makes the one tag per library (pinned URL, SRI hash,
   `crossorigin="anonymous"`); the scanner admits exactly those (`checkFigures`) and fails anything else naming their
   folders; the frame CSP lists the three pinned files **file by file** (never a folder, scripts only); the screenshot
@@ -9911,3 +9916,82 @@ message), `public/js/manip.js` (each tool's wheel, the actions, the solo board),
 - Tests: `tests/unit/manip-wheel-browser.test.js` (iPhone 13 with real touch, the laptop, the room),
   `tests/unit/manip-board.test.js` (the counters' snap rule, the wheel's layout), `tests/unit/manipulatives.test.js`
   (lock storage and the room's lock rule).
+
+## Oomba Figures 1.1.0 split by subject; the physics port (21 Nov 2026)
+
+- **1.1.0 ships split.** It has not shipped yet, so the first 1.1.0 teachers get is already split: a core
+  (`oomba-figures.js`: the drawing core, words, math labels, the formula language, the notice, the registry and the
+  coordinate grid) and five packs in the same version folder (`packs/math.js`, `data.js`, `physics.js`, `chem.js`,
+  `measure.js`), each a classic script registering its kinds into the core (docs/figures-api.md "The core and its
+  packs"). `reading` and `protractor` are their own measure pack because reading an instrument is taught in math,
+  physics, chemistry and biology. Each file has its own pinned tag, SRI and lock entry; the scanner admits a pack tag only
+  after its core tag; the CSP and the screenshot worker list each pack file; the server's copy runs them all; the
+  self-tests name a missing pack's exact tag. 1.0.0 stays one file, byte for byte.
+- **How a page gets its packs.** `figTag("oomba-figures", v, { kinds })` adds exactly the packs those kinds need (the
+  mock Builder uses it); the model's FIGURE RULES list every kind with its pack and every pack tag, and the activity
+  self-test and the playtest fail a page that draws a kind whose pack tag is missing, naming the tag. Rewriting the
+  model's saved page to add tags was not done: the save path belongs to the Builder's agent.
+- **The physics port.** Projectile motion, waves and motion maps are new kinds; `motionGraph` (segments,
+  acceleration-time, stacked graphs), `rays` (plane mirror), `circuit` (`layout: "network"`, closing the "compound
+  circuits" Not-yet item) and `reading` (caliper, micrometer, spring scale masses and zero error) are extended, their
+  old data drawing exactly as in 1.0.0. Only the physics and math logic is ported (docs/third-party.md); coil and
+  magnet is not ported (off on the live site), and vectors are not ported twice.
+
+## Figures, the standalone product, hidden while it is tested (21 Nov 2026)
+
+- **What it is.** `/figures` (server/routes/figures.js, services/figures.js, public/js/figures*.js): a menu of every
+  Oomba Figures kind (cards with thumbnails drawn on the server from each kind's example and cached), one editor for
+  every kind (`/figures/:kind`), and worksheets of figure questions with a printable student sheet and answer key. It
+  follows the approved mockup (proposal of 21 Nov), without the mockup banner or its mock data.
+- **Shipped like the Manipulatives.** A `FIGURES` flag, on unless set to 0, read from the environment (no Render
+  change). The gate copies `services/manipulatives.js` `canHost` exactly: never a guest, a banned or a grown-up account;
+  the platform admin, or school staff whose username is in `MANIPULATIVES_USERS`. One tester list for both (no new
+  variable). Everyone else gets the site's normal 404 (noindex) on every page and API; testers get `X-Robots-Tag:
+  noindex, nofollow` and `Cache-Control: no-store`. No menu, sitemap or search link. A "Teaching tools: Manipulatives ·
+  Figures" switcher shows on both pages only to someone who can open both.
+- **Subjects.** Math, Data and statistics, Physics and Chemistry open (all 50 kinds of Oomba Figures 1.1.0, the measure
+  pack's `reading` under Physics and `protractor` under Math). Biology and Economics show as "Coming soon", not
+  clickable.
+- **One editor, made from the data.** `public/js/figures-catalog.js` lists each kind's subject, grade bands, presets
+  (the docs' examples), the fields whose values are a fixed list, the measures it takes that its example may leave out,
+  what "Hide answer for students" can hide, and whether it takes `notToScale`. Numbers become number boxes, true/false a
+  switch, listed values a select, words a text box; lists and objects are edited in "Advanced (data)", a JSON box
+  checked as it is typed. No kind has a hand-built form yet (the triangle's dedicated layout in the mockup is later).
+  The page loads the core and only that kind's pack with `figTag(..., { kinds })` (pinned, SRI, the site CSP).
+- **Cannot draw.** OF.check's first reason is matched to a plain-words panel (triangle inequality, angles past 180,
+  a side too short, disagreeing measures, not drawn to scale, ranges), with OF.check's own words under it, Undo my last
+  change and Back to the example; export and Add to worksheet are off until it draws.
+- **Answers come from OF.solve.** The editor's "The answer is" lists the figure's OF.solve numbers; a worksheet
+  question stores which one (`answer_key`) and the server works the answer out (with the figure's unit, squared or
+  cubed). A question from a generator keeps the generator's question and worked lines while its figure is exactly what
+  that generator makes for its seed; its answer is the OF.solve value the generator names (`key`), checked against the
+  generator's own formula by the tests. Kinds without an OF.solve keep their generator's formula. The browser never
+  sends an answer the server keeps.
+- **Generators.** The docs' figure question generators are the catalog's (the tests compare them); seven more were
+  written for kinds the docs had none for (freeBody, vectors, inclinedPlane, pulley, halfLife, bohr, the thermometer).
+  orbitals, lewis and titration have none: Randomize picks another preset. Generator questions are in English (the
+  teacher edits them); the product's own words are in every site language.
+- **Export.** Download SVG is `OF.withNotice`; Download PNG and Copy image are drawn in the browser and carry the same
+  notice as a PNG tEXt "Copyright" chunk and an XMP iTXt chunk (public/js/figures-export.js), with the wording of plan
+  rule 3. The tests check the bytes. Copy link puts the figure's data in `?d=`.
+- **One question-set model.** `question_sets` / `question_set_items` (migration 0095) with a `purpose` ('worksheet'
+  now; 'test' and 'lesson' later) and `of_version` (the Oomba Figures version the figures were checked with), so a
+  later lesson Figure step and "Build a test with AI" reuse them. A worksheet is its owner's only: anyone else, the
+  platform admin included, gets the same 404 for it, its print page and its answer key. `figure_presets` (a teacher's
+  own presets, per kind) and `figure_prefs` (the "Power with AI" switch, remembered per teacher) are in the same
+  migration. Account deletion removes all of it.
+- **Power with AI.** `draftWorksheet` follows `lesson-ai.js`: `anthropic()` (null without a key or while the AI budget
+  is resting), `config.builderModel`, structured JSON output, usage recorded in the AI budget, rate limited (30 an
+  hour). Claude sees only the catalog (kinds with a generator: id, a line, the example data, the OF.solve values it may
+  name) and writes question text, data (JSON text) and an answerKey. Every item is checked on the server: an unknown kind
+  is dropped; data that fails OF.check, an answerKey that is not an OF.solve value, or words that are not allowed: the
+  item is replaced by a fresh question from that kind's generator. Every repair is logged (the kind and why, never the
+  brief) and counted in the audit log. Without a key, while the budget rests or when the call fails, a starter set is
+  built from the generators the brief's words point at, within its grade band. A brief that names one of the teacher's
+  students is refused before anything is sent.
+- **Assign is next.** Assigning a worksheet to a class with open and due dates, and the student view with answer
+  blanks, are not built: delivering a worksheet through the lessons flow needs a new lesson step kind (snapshotting the
+  questions like the quiz step, rendering figures and answer blanks on the student lesson page, saving answers in
+  step_progress, the gradebook, and the rule that answers show after the due date only when the teacher allows it).
+  That touches the student lesson page, progress and the gradebook, so it is its own change. The builder shows "Assign
+  to class" disabled with "Coming next". Print and Save work now.

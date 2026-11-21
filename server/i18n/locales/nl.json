@@ -3349,6 +3349,191 @@
     "manip-room": {
       "actionsFor": "Acties voor {label}",
       "teacherLock": "Je leraar heeft dit vastgezet."
+    },
+    "figures-editor": {
+      "undo": "Ongedaan maken",
+      "redo": "Opnieuw",
+      "presets": "Voorinstellingen…",
+      "examples": "Voorbeelden",
+      "mine": "Mijn voorinstellingen",
+      "randomize": "Willekeurig",
+      "controls": "Instellingen van de figuur",
+      "measures": "Maten",
+      "leaveEmpty": "Vul de maten in die je weet. Laat de rest leeg.",
+      "options": "Opties",
+      "show": "Tonen",
+      "default": "(standaard)",
+      "advanced": "Geavanceerd (gegevens)",
+      "advancedHelp": "Alle gegevens van de figuur als JSON. Lijsten en groepen bewerk je hier.",
+      "jsonObject": "De gegevens moeten één { ... }-object zijn.",
+      "jsonBad": "Dat is nog geen geldige JSON: {why}",
+      "display": "Weergave",
+      "print": "Printmodus (zwart op wit)",
+      "nts": "\"Niet op schaal\" vermelden",
+      "figure": "De figuur",
+      "answers": "Vraag en antwoorden",
+      "question": "Vraag",
+      "questionHint": "Schrijf de vraag die leerlingen over deze figuur beantwoorden.",
+      "worked": "Uitgewerkte antwoorden (OF.solve)",
+      "answerIs": "Het antwoord is",
+      "pickAnswer": "Kies het antwoord…",
+      "noAnswers": "Geen uitgewerkte antwoorden voor deze figuur",
+      "facts": "Alles erover",
+      "answersWait": "De antwoorden verschijnen zodra de figuur getekend kan worden. Oomba tekent nooit een verkeerde figuur.",
+      "pickHelp": "Kies welk getal je vraag beantwoordt, of tik op Willekeurig voor een kant-en-klare vraag.",
+      "noSolve": "Deze figuur heeft geen berekende getallen om uit te kiezen.",
+      "hide": "Antwoord verbergen voor leerlingen",
+      "hideWhat": "Wat verbergen",
+      "hideAll": "Alle maten",
+      "ofSays": "Oomba Figures zegt: {reason}",
+      "undoLast": "Mijn laatste wijziging ongedaan maken",
+      "backToExample": "Terug naar het voorbeeld",
+      "add": "Aan werkblad toevoegen",
+      "newSheet": "Een nieuw werkblad",
+      "qs": "{count, plural, one {# vraag} other {# vragen}}",
+      "added": "Toegevoegd aan {title}.",
+      "openSheet": "Werkblad openen",
+      "saveBack": "Opslaan in {title}",
+      "svg": "SVG downloaden",
+      "png": "PNG downloaden",
+      "copy": "Afbeelding kopiëren",
+      "link": "Link kopiëren",
+      "savePreset": "Opslaan als mijn voorinstelling",
+      "presetName": "Geef je voorinstelling een naam",
+      "presetSaved": "Voorinstelling opgeslagen.",
+      "notice": "Downloads vermelden dat wat Oomba Academy toevoegt in het publieke domein is (CC0); wat jij zelf origineel toevoegt, is van jou.",
+      "noGen": "Nog geen generator voor deze figuur: hier is een ander voorbeeld.",
+      "pngFailed": "De PNG kon niet worden gemaakt. Probeer SVG downloaden.",
+      "copied": "Afbeelding gekopieerd.",
+      "copiedSvg": "Gekopieerd als SVG-tekst.",
+      "copyFailed": "Kopiëren lukte niet. Probeer te downloaden.",
+      "linkCopied": "Link gekopieerd.",
+      "why": {
+        "triangle": {
+          "t": "Deze zijden vormen geen driehoek",
+          "p": "Twee zijden van een driehoek moeten samen langer zijn dan de derde, anders raken de uiteinden elkaar nooit."
+        },
+        "angles": {
+          "t": "Deze hoeken passen niet",
+          "p": "De hoeken van een driehoek zijn samen precies 180°. Controleer de hoeken die je gaf."
+        },
+        "short": {
+          "t": "Een zijde is te kort",
+          "p": "Met deze getallen bereikt een zijde nooit het andere uiteinde. Maak hem langer of verander een hoek."
+        },
+        "agree": {
+          "t": "Deze maten zijn het niet eens",
+          "p": "Je gaf meer maten dan de figuur nodig heeft, en ze kloppen niet samen. Laat er één weg."
+        },
+        "drawAs": {
+          "t": "Controleer \"Niet op schaal\"",
+          "p": "Andere tekenverhoudingen werken alleen met \"Niet op schaal\" aan, en de markeringen moeten in beide kloppen."
+        },
+        "positive": {
+          "t": "Een getal moet groter dan nul zijn",
+          "p": "Lengtes, maten en aantallen zijn groter dan nul."
+        },
+        "range": {
+          "t": "Een getal valt buiten het bereik",
+          "p": "Een van de getallen is te groot of te klein voor deze figuur."
+        },
+        "extra": {
+          "t": "Te veel maten",
+          "p": "Deze figuur neemt maar een paar van deze maten samen. Laat er één weg."
+        },
+        "data": {
+          "t": "De gegevens kunnen niet gelezen worden",
+          "p": "Controleer het vak Geavanceerd (gegevens)."
+        },
+        "generic": {
+          "t": "Deze figuur kan niet getekend worden",
+          "p": "Oomba tekent nooit een verkeerde figuur. Verander de getallen zodat ze bij elkaar passen."
+        }
+      },
+      "f": {
+        "unit": "Eenheid",
+        "round": "Decimalen",
+        "mass": "Massa",
+        "angle": "Hoek",
+        "speed": "Snelheid",
+        "height": "Hoogte",
+        "width": "Breedte",
+        "length": "Lengte",
+        "radius": "Straal",
+        "value": "Waarde",
+        "min": "Laagste",
+        "max": "Hoogste",
+        "step": "Stap",
+        "type": "Soort",
+        "element": "Element"
+      },
+      "k": {
+        "area": "Oppervlakte",
+        "perimeter": "Omtrek",
+        "volume": "Inhoud",
+        "surfaceArea": "Totale oppervlakte",
+        "angles": "Hoek",
+        "sides": "Zijde",
+        "total": "Totaal",
+        "mean": "Gemiddelde",
+        "median": "Mediaan",
+        "range": "Spreidingsbreedte",
+        "interior": "Binnenhoek",
+        "value": "Waarde"
+      },
+      "hp": {
+        "sides": "De zijden",
+        "angles": "De hoeken",
+        "heights": "De hoogtes",
+        "value": "De waarde",
+        "image": "Het beeld",
+        "electrons": "De elektronen",
+        "values": "De waarden",
+        "reading": "De aflezing"
+      }
+    },
+    "figures-sheet": {
+      "title": "Titel van het werkblad",
+      "grade": "Groep",
+      "anyGrade": "Elke groep",
+      "gradeN": "Groep {grade}",
+      "powerAi": "Met AI",
+      "briefLabel": "Onderwerp, groep, hoeveel vragen",
+      "briefHint": "Groep 7, oppervlakte van rechthoeken en trapezia, plus één boxplot.",
+      "howMany": "Vragen",
+      "draft": "Opstellen",
+      "budget": "Gebruikt het AI-budget. Als het pauzeert, krijg je een startset.",
+      "drafting": "Je vragen worden opgesteld…",
+      "briefFirst": "Beschrijf het werkblad eerst in een paar woorden.",
+      "drafted": "{count, plural, one {# vraag opgesteld.} other {# vragen opgesteld.}} Oomba Figures controleerde elke figuur en rekende elk antwoord uit.",
+      "resting": "De AI pauzeert, hier is een startset ({count, plural, one {# vraag} other {# vragen}}).",
+      "repaired": "{count, plural, one {# figuur kon niet getekend worden en is vervangen.} other {# figuren konden niet getekend worden en zijn vervangen.}}",
+      "dropped": "{count, plural, one {# vraag is weggelaten.} other {# vragen zijn weggelaten.}}",
+      "addLabel": "Een vraag met figuur toevoegen",
+      "add": "Toevoegen",
+      "empty": "Nog geen vragen. Voeg een vraag met figuur toe, of laat AI er een paar opstellen.",
+      "questionN": "Vraag {n}",
+      "questionHint": "Schrijf de vraag…",
+      "answer": "Antwoord:",
+      "noAnswer": "Nog geen antwoord gekozen: open hem in de editor.",
+      "up": "Omhoog",
+      "down": "Omlaag",
+      "regen": "Nieuwe getallen",
+      "edit": "Figuur bewerken",
+      "delete": "Verwijderen",
+      "deleteQ": "Deze vraag verwijderen?",
+      "remove": "Werkblad verwijderen",
+      "removeQ": "Dit werkblad verwijderen?",
+      "removeText": "De vragen gaan ook weg. Dit kan niet ongedaan worden.",
+      "preview": "Afdrukvoorbeeld",
+      "paper": "Letter, zwart op wit",
+      "studentSheet": "Leerlingblad",
+      "answerKey": "Antwoorden",
+      "previewEmpty": "Het printbare blad verschijnt hier zodra er een vraag is.",
+      "print": "Printen",
+      "printKey": "Printen met antwoorden",
+      "assign": "Aan een klas toewijzen",
+      "assignNext": "Binnenkort: een werkblad aan een klas toewijzen met start- en inleverdatum."
     }
   },
   "favorites": {
@@ -11895,5 +12080,289 @@
       "classics": "Klassiekers"
     },
     "footClassics": "Klassiekers: oude boeken uit het publieke domein, met hun oorspronkelijke tekeningen."
+  },
+  "figures": {
+    "title": "Figuren",
+    "loading": "Figuren laden…",
+    "crumbs": "Je bent hier",
+    "tools": {
+      "label": "Lesmiddelen",
+      "manipulatives": "Manipulatieven",
+      "figures": "Figuren"
+    },
+    "subjects": {
+      "math": "Wiskunde",
+      "data": "Data en statistiek",
+      "physics": "Natuurkunde",
+      "chem": "Scheikunde",
+      "biology": "Biologie",
+      "economics": "Economie"
+    },
+    "grades": {
+      "K-2": "K-2",
+      "3-5": "Groep 3-5",
+      "6-8": "Groep 6-8",
+      "9-12": "Groep 9-12"
+    },
+    "menu": {
+      "testing": "In test: alleen jij ziet dit",
+      "pitch": "Exacte figuren op schaal voor werkbladen, toetsen en dia's. Klaar om te printen, met uitgewerkte antwoorden.",
+      "buildTitle": "Een werkblad maken",
+      "buildText": "Kies figuren zelf, of beschrijf wat je nodig hebt en laat AI de vragen opstellen. Elk getal wordt gecontroleerd, zodat elke figuur echt getekend kan worden.",
+      "draftAi": "Opstellen met AI",
+      "scratch": "Helemaal opnieuw",
+      "mine": "Mijn werkbladen",
+      "noSheets": "Nog geen werkbladen. De werkbladen die je maakt, staan hier.",
+      "questions": "{count, plural, one {# V} other {# V}}",
+      "gradeOf": "Groep {grade}",
+      "edited": "bewerkt op {date}",
+      "subjects": "Vakken",
+      "all": "Alle figuren",
+      "soon": "Binnenkort",
+      "grades": "Groepen",
+      "search": "Figuren zoeken",
+      "searchHint": "Figuren zoeken, zoals cilinder of boxplot",
+      "count": "{count, plural, one {# figuur} other {# figuren}}",
+      "nothing": "Geen figuren gevonden. Probeer een ander woord of een andere groep."
+    },
+    "sheet": {
+      "newTitle": "Nieuw werkblad",
+      "crumb": "Werkbladmaker",
+      "untitled": "Werkblad zonder titel"
+    },
+    "editor": {
+      "example": "Voorbeeld {n}"
+    },
+    "print": {
+      "figure": "Figuur bij vraag {n}",
+      "keyTag": "Antwoorden",
+      "keyTitle": "{title}: antwoorden",
+      "name": "Naam",
+      "date": "Datum",
+      "made": "Gemaakt met Oomba Academy",
+      "noQuestion": "Kijk naar de figuur.",
+      "noAnswer": "Nog geen antwoord gekozen",
+      "crumb": "Printen",
+      "sheetOnly": "Leerlingblad",
+      "withKey": "Met de antwoorden",
+      "print": "Printen"
+    },
+    "errors": {
+      "notFound": "Dat is hier niet.",
+      "badKind": "Dat is geen van de figuren.",
+      "badData": "De gegevens van die figuur konden niet worden gelezen.",
+      "tooBig": "Die figuur is te groot om op te slaan.",
+      "words": "Sommige woorden zijn niet toegestaan. Verander ze en probeer het opnieuw.",
+      "personal": "Laat telefoonnummers, e-mails, links en codes weg en probeer het opnieuw.",
+      "cannotDraw": "Deze figuur kan met deze getallen niet getekend worden. Verander ze en probeer het opnieuw.",
+      "tooMany": "Je hebt al veel opgeslagen. Verwijder eerst iets.",
+      "fullSheet": "Dit werkblad is vol. Begin een nieuw.",
+      "noGen": "Deze figuur heeft nog geen vragengenerator.",
+      "name": "Geef het eerst een naam.",
+      "brief": "Beschrijf het werkblad eerst in een paar woorden.",
+      "names": "Laat namen van leerlingen uit de beschrijving: namen gaan nooit naar de AI."
+    },
+    "kinds": {
+      "numberLine": {
+        "name": "Getallenlijn",
+        "desc": "Getallen, intervallen en punten op een lijn"
+      },
+      "triangle": {
+        "name": "Driehoek",
+        "desc": "Elke driehoek uit drie maten"
+      },
+      "rectangle": {
+        "name": "Rechthoek",
+        "desc": "Rechthoeken en vierkanten"
+      },
+      "parallelogram": {
+        "name": "Parallellogram",
+        "desc": "Parallellogrammen en ruiten, met hoogtes"
+      },
+      "trapezoid": {
+        "name": "Trapezium",
+        "desc": "Trapezia: willekeurig, gelijkbenig of rechthoekig"
+      },
+      "kite": {
+        "name": "Vlieger",
+        "desc": "Vliegers met hun gelijke zijden gemarkeerd"
+      },
+      "regularPolygon": {
+        "name": "Regelmatige veelhoek",
+        "desc": "Regelmatige veelhoeken met apothema en straal"
+      },
+      "angles": {
+        "name": "Hoeken",
+        "desc": "Hoeken tussen halve lijnen"
+      },
+      "parallelLines": {
+        "name": "Evenwijdige lijnen en een snijlijn",
+        "desc": "Evenwijdige lijnen gesneden door een transversaal"
+      },
+      "segmentAddition": {
+        "name": "Lijnstukken optellen",
+        "desc": "Lijnstukken optellen met algebra"
+      },
+      "circle": {
+        "name": "Cirkel",
+        "desc": "Cirkels met koorden, raaklijnen en hoeken"
+      },
+      "compositeShape": {
+        "name": "Samengestelde figuur",
+        "desc": "Figuren gemaakt van eenvoudigere figuren"
+      },
+      "grid": {
+        "name": "Assenstelsel",
+        "desc": "Punten, lijnen en transformaties in een assenstelsel"
+      },
+      "protractor": {
+        "name": "Gradenboog",
+        "desc": "Een hoek aflezen op een gradenboog"
+      },
+      "prism": {
+        "name": "Prisma",
+        "desc": "Prisma's en kubussen in 3D"
+      },
+      "cylinder": {
+        "name": "Cilinder",
+        "desc": "Cilinders in 3D"
+      },
+      "pyramid": {
+        "name": "Piramide",
+        "desc": "Piramides in 3D"
+      },
+      "cone": {
+        "name": "Kegel",
+        "desc": "Kegels in 3D"
+      },
+      "sphere": {
+        "name": "Bol",
+        "desc": "Bollen en halve bollen"
+      },
+      "net": {
+        "name": "Uitslag",
+        "desc": "Uitslagen die tot ruimtefiguren vouwen"
+      },
+      "mappingDiagram": {
+        "name": "Pijlendiagram",
+        "desc": "Invoer gekoppeld aan uitvoer"
+      },
+      "barGraph": {
+        "name": "Staafdiagram",
+        "desc": "Staafdiagrammen, dubbel en gestapeld"
+      },
+      "dotPlot": {
+        "name": "Stippendiagram",
+        "desc": "Stippendiagrammen van een dataset"
+      },
+      "histogram": {
+        "name": "Histogram",
+        "desc": "Histogrammen met gelijke of ongelijke klassen"
+      },
+      "boxPlot": {
+        "name": "Boxplot",
+        "desc": "Boxplots met kwartielen"
+      },
+      "scatterPlot": {
+        "name": "Spreidingsdiagram",
+        "desc": "Spreidingsdiagrammen met een trendlijn"
+      },
+      "stemAndLeaf": {
+        "name": "Stam-en-bladdiagram",
+        "desc": "Stam-en-bladdiagrammen"
+      },
+      "pieChart": {
+        "name": "Cirkeldiagram",
+        "desc": "Cirkeldiagrammen met hoeken en procenten"
+      },
+      "cumulativeFrequency": {
+        "name": "Cumulatieve frequentie",
+        "desc": "Grafieken van cumulatieve frequentie"
+      },
+      "normalCurve": {
+        "name": "Normale verdeling",
+        "desc": "Normale krommen met gearceerde gebieden"
+      },
+      "treeDiagram": {
+        "name": "Boomdiagram",
+        "desc": "Kansbomen"
+      },
+      "vennDiagram": {
+        "name": "Venndiagram",
+        "desc": "Venndiagrammen met twee of drie verzamelingen"
+      },
+      "twoWayTable": {
+        "name": "Kruistabel",
+        "desc": "Kruistabellen met totalen"
+      },
+      "tableOfValues": {
+        "name": "Tabel met waarden",
+        "desc": "Tabellen van waarden uit een regel"
+      },
+      "freeBody": {
+        "name": "Krachtendiagram",
+        "desc": "De krachten op een voorwerp"
+      },
+      "vectors": {
+        "name": "Vectoren",
+        "desc": "Vectoren en hun resultante"
+      },
+      "inclinedPlane": {
+        "name": "Hellend vlak",
+        "desc": "Een blok op een helling, met zijn krachten"
+      },
+      "pulley": {
+        "name": "Katrollen",
+        "desc": "Katrollen en hangende massa's"
+      },
+      "rays": {
+        "name": "Stralengang",
+        "desc": "Stralengangen voor lenzen en spiegels"
+      },
+      "circuit": {
+        "name": "Schakelschema",
+        "desc": "Stroomkringen in serie en parallel"
+      },
+      "motionGraph": {
+        "name": "Bewegingsgrafiek",
+        "desc": "Grafieken van afstand, snelheid en versnelling"
+      },
+      "motionMap": {
+        "name": "Bewegingsdiagram",
+        "desc": "Bewegingskaarten met stippen en pijlen"
+      },
+      "projectile": {
+        "name": "Kogelbaan",
+        "desc": "De baan van een projectiel, op schaal"
+      },
+      "waves": {
+        "name": "Golven",
+        "desc": "Transversale en longitudinale golven"
+      },
+      "reading": {
+        "name": "Een schaal aflezen",
+        "desc": "Thermometers, maatcilinders, linialen en schuifmaten"
+      },
+      "bohr": {
+        "name": "Bohrmodel",
+        "desc": "Bohrmodellen van atomen en ionen"
+      },
+      "orbitals": {
+        "name": "Orbitaaldiagram",
+        "desc": "Orbitaaldiagrammen met hokjes"
+      },
+      "lewis": {
+        "name": "Lewisstructuur",
+        "desc": "Lewisstructuren van moleculen"
+      },
+      "halfLife": {
+        "name": "Halveringstijd",
+        "desc": "Krommen van radioactief verval"
+      },
+      "titration": {
+        "name": "Titratiekromme",
+        "desc": "Titratiekrommen"
+      }
+    }
   }
 }
