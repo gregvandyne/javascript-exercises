@@ -285,7 +285,7 @@ const MM_NAMES = { money: { supply: 'MS', demand: 'MD', rate: 'i' }, funds: { su
 function mmModel(d) {
   const g = d.graph || 'money', R = MM_RESERVES[d.regime || 'ample'], reserves = g === 'reserves', upDown = reserves && (d.regime || 'ample') === 'ample', sh = d.shift || {};
   const size = EC_SHIFT_SHARE[sh.size || 'medium'], span = MM_SPAN[reserves ? d.regime || 'ample' : g], q1 = reserves ? R.supply : 5, upright = g !== 'funds';
-  const by = k => (sh[k] === undefined ? 0 : (sh[k] === 'increase' ? 1 : -1) * size * span);
+  const by = k => (sh[k] === undefined ? 0 : (sh[k] === 'increase' || sh[k] === 1 ? 1 : -1) * size * span);
   const sdx = upright && sh.supply !== undefined ? Math.max(MM_UPRIGHT.min, Math.min(MM_UPRIGHT.max, q1 + by('supply'))) - q1 : by('supply');
   const ddx = upDown ? 0 : by('demand'), ddy = upDown ? Math.min(by('demand'), MM_RESERVES_TOP - R.high) : 0;
   const s1 = upright ? [{ x: q1, y: -MK_FAR }, { x: q1, y: MK_FAR }] : mmStraight(MM_STRAIGHT.funds.supply.slope), s2 = ecShifted(s1, sdx, 0);
@@ -296,7 +296,7 @@ function mmModel(d) {
 }
 /**
  * { graph: "money" | "funds" | "reserves", regime: "ample" | "limited" (reserves), shift: { supply, demand: "increase"
- * | "decrease", size }, guides, star, from, labels: { supply, demand, rate, Q, E }, xtitle, ytitle, heading }. On the
+ * | "decrease" (or 1, -1), size }, guides, star, from, labels: { supply, demand, rate, Q, E }, xtitle, ytitle, heading }. On the
  * hidden 0-to-10 grid (shape only, no numbers). hide: "values", "after", "names", true.
  */
 export const moneyMarket = {
@@ -308,7 +308,7 @@ export const moneyMarket = {
     if (d.shift !== undefined) {
       const s = d.shift;
       if (!s || typeof s !== 'object' || Object.keys(s).some(k => !['supply', 'demand', 'size'].includes(k))) out.push('"shift" is { supply, demand, size }');
-      else { for (const k of ['supply', 'demand']) if (s[k] !== undefined && !MK_SIDES.includes(s[k])) out.push(`"shift.${k}" is "increase" or "decrease"`); out.push(...ecSize(s.size, 'shift.size')); }
+      else { for (const k of ['supply', 'demand']) if (s[k] !== undefined && !MK_SIDES.includes(s[k]) && s[k] !== 1 && s[k] !== -1) out.push(`"shift.${k}" is "increase" or "decrease" (or 1 or -1, so a generator can deal one)`); out.push(...ecSize(s.size, 'shift.size')); }
     }
     out.push(...ecBool(d, ['guides', 'star']), ...ecLabelsCheck(d, ['supply', 'demand', 'rate', 'Q', 'E']));
     if (d.from !== undefined && d.from !== 0 && d.from !== 1) out.push('"from" is 1 or 0');
@@ -323,7 +323,8 @@ export const moneyMarket = {
     if (moneyMarket.check(d).length) return null;
     const m = mmModel(d), sign = v => (Math.abs(v) < 1e-6 ? 0 : Math.sign(v));
     const out = { graph: m.g, rate: m.e1.y, quantity: m.e1.x };
-    if (m.shifted) Object.assign(out, { after: { rate: m.e2.y, quantity: m.e2.x }, rateChange: sign(m.e2.y - m.e1.y), quantityChange: sign(m.e2.x - m.e1.x) });
+    // the moves also as 1 (up), 2 (the same) or 3 (down), so a question can ask for one (its keypad has no minus sign)
+    if (m.shifted) { const r = sign(m.e2.y - m.e1.y), q = sign(m.e2.x - m.e1.x); Object.assign(out, { after: { rate: m.e2.y, quantity: m.e2.x }, rateChange: r, quantityChange: q, rateMove: 2 - r, quantityMove: 2 - q }); }
     return out;
   },
   draw(d, o) {

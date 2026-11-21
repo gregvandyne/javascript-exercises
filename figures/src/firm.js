@@ -227,7 +227,7 @@ const ppCountry = c => ({ name: c.name, x: c.x, y: c.y, costX: c.y / c.x, costY:
  * "side" }. Both: goods: [x-axis good, y-axis good], name (the curve's name, "PPC"), heading. hide: "captions",
  * "costs" (the steps' numbers), "after" (the shifted curve), "names" (the points' names), true.
  */
-export const productionPossibilities = {
+export const possibilitiesCurve = {
   check(d) {
     const out = ecOdd(d, PP_KEYS, 'a production possibilities graph');
     if (out.length) return out;
@@ -278,7 +278,7 @@ export const productionPossibilities = {
   },
   /** Each point's amounts and whether it is efficient (on the curve), inefficient (inside) or unattainable (outside); each step's gain, what is given up and the opportunity cost; two countries' opportunity costs and who has the comparative advantage in each good. */
   solve(d) {
-    if (productionPossibilities.check(d).length) return null;
+    if (possibilitiesCurve.check(d).length) return null;
     if (d.countries) {
       const [a, b] = d.countries.map(ppCountry);
       return { countryA: a, countryB: b, advantageX: a.costX < b.costX ? a.name : b.name, advantageY: a.costY < b.costY ? a.name : b.name, absoluteX: a.x === b.x ? null : a.x > b.x ? a.name : b.name, absoluteY: a.y === b.y ? null : a.y > b.y ? a.name : b.name };
@@ -308,9 +308,9 @@ export const productionPossibilities = {
         for (const y of ys) kids.push(ecMark(A, 'y', y.v, y.name, o, P, { hidden: hides(o, 'values') }));
         return { A, g: node('g', { transform: dx ? `translate(${r2(dx)} 0)` : null }, kids) };
       };
-      if (!side) { const { A, g } = plot([[a, P.blue, null], [b, P.red, '10 6']]); return frame(A.w, A.h, [g, ecHeading(d, A.w, P)], { ...o, kind: 'productionPossibilities' }, o.title || W('ppc')); }
+      if (!side) { const { A, g } = plot([[a, P.blue, null], [b, P.red, '10 6']]); return frame(A.w, A.h, [g, ecHeading(d, A.w, P)], { ...o, kind: 'possibilitiesCurve' }, o.title || W('ppc')); }
       const one = plot([[a, P.blue, null]]), two = plot([[b, P.red, null]], one.A.w + 10);
-      return frame(one.A.w * 2 + 10, one.A.h, [one.g, two.g, ecHeading(d, one.A.w * 2 + 10, P)], { ...o, kind: 'productionPossibilities' }, o.title || W('ppc'));
+      return frame(one.A.w * 2 + 10, one.A.h, [one.g, two.g, ecHeading(d, one.A.w * 2 + 10, P)], { ...o, kind: 'possibilitiesCurve' }, o.title || W('ppc'));
     }
     const numbered = ppNumbered(d), c = ppCurves(d), places = ppPlaces(d, c), shifted = !fiNearly(c.X1, c.X2) || !fiNearly(c.Y1, c.Y2);
     const top = Math.max(c.X1, c.X2, ...places.map(p => p.x)), topY = Math.max(c.Y1, c.Y2, ...places.map(p => p.y));
@@ -351,7 +351,7 @@ export const productionPossibilities = {
       for (const y of ym) kids.push(ecMark(A, 'y', y.v, '', o, P, { hidden: hides(o, 'values') }));
     }
     kids.push(ecHeading(d, A.w, P));
-    return frame(A.w, A.h, kids, { ...o, kind: 'productionPossibilities' }, o.title || W('ppc'));
+    return frame(A.w, A.h, kids, { ...o, kind: 'possibilitiesCurve' }, o.title || W('ppc'));
   },
 };
-export const FIRM_KINDS = { costCurves, productionPossibilities };
+export const FIRM_KINDS = { costCurves, possibilitiesCurve };

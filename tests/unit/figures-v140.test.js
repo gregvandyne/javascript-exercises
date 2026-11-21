@@ -46,7 +46,7 @@ test('new builds pin 1.4.0: the latest version, the Builder\'s tags, the Figures
   assert.equal(F.OF_VERSION, '1.4.0'); assert.equal(L.figuresKit().version, '1.4.0');
   assert.deepEqual(Object.keys(L.FIG_PACKS['1.4.0']), ['math', 'data', 'physics', 'chem', 'bio', 'econ', 'measure']);
   assert.deepEqual(Object.keys(L.FIG_PACKS['1.3.0']), ['math', 'data', 'physics', 'chem', 'bio', 'measure'], '1.3.0 keeps its six');
-  const econ = ['supplyDemand', 'moneyMarket', 'businessCycle', 'phillipsCurve', 'productionPossibilities', 'adAs', 'costCurves'];
+  const econ = ['supplyDemand', 'moneyMarket', 'businessCycle', 'phillipsCurve', 'possibilitiesCurve', 'adAs', 'costCurves'];
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-figures/1.4.0/manifest.json'), 'utf8')).packs.econ.kinds, econ);
   assert.deepEqual(L.figPacksFor(['adAs', 'reading']), ['econ', 'measure']);
   const t = L.figTag('oomba-figures', undefined, { kinds: ['supplyDemand'] });

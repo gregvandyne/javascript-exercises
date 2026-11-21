@@ -71,7 +71,7 @@ const SAMPLES = {
   proteinSynthesis: { coding: 'ATGGCCTAA' }, gel: { lanes: [{ ladder: '100bp' }, { bands: [450] }] }, osmosis: { scene: 'plant', solutes: [{ inside: 0.3, outside: 0.6 }] },
   // 1.4.0 economics (tests/unit/figures-econ-*.test.js)
   supplyDemand: { shift: { demand: 'increase' } }, moneyMarket: { shift: { supply: 'increase' } }, businessCycle: { cycles: 2 }, phillipsCurve: { movement: 'along' },
-  productionPossibilities: { points: [{ name: 'A', at: 0.5 }] }, adAs: { start: 'recession' }, costCurves: { market: 'perfect' },
+  possibilitiesCurve: { points: [{ name: 'A', at: 0.5 }] }, adAs: { start: 'recession' }, costCurves: { market: 'perfect' },
 };
 
 test('every kind: plain data in, one accessible <svg> out, no problems for good data', () => {

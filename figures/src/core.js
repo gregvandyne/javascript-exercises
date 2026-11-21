@@ -31,7 +31,7 @@ export const KIND_PACKS = Object.freeze({
   motionMap: 'physics', projectile: 'physics', waves: 'physics',
   massSpectrum: 'chem', heatingCurve: 'chem', energyProfile: 'chem', nuclide: 'chem', lineSpectrum: 'chem', photoelectron: 'chem', particles: 'chem', dotCross: 'chem',
   populationGrowth: 'bio', predatorPrey: 'bio', enzymeActivity: 'bio', photosynthesis: 'bio', punnett: 'bio', pedigree: 'bio', proteinSynthesis: 'bio', gel: 'bio', osmosis: 'bio',
-  supplyDemand: 'econ', moneyMarket: 'econ', businessCycle: 'econ', phillipsCurve: 'econ', productionPossibilities: 'econ', adAs: 'econ', costCurves: 'econ',
+  supplyDemand: 'econ', moneyMarket: 'econ', businessCycle: 'econ', phillipsCurve: 'econ', possibilitiesCurve: 'econ', adAs: 'econ', costCurves: 'econ',
 });
 /** The packs, in the order a page loads their tags (after the core's). */
 export const PACK_NAMES = Object.freeze(['math', 'data', 'physics', 'chem', 'bio', 'econ', 'measure']);

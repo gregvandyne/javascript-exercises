@@ -88,17 +88,19 @@ test('hidden: signed out, guests, grown-ups, students and teachers off the list 
   assert.equal(F.canMake(grown), false);
 });
 
-test('the menu: every catalog kind as a card with a server-drawn thumbnail; Math, Data, Physics, Chemistry and Biology open (1.3.0), Economics coming soon', async () => {
+test('the menu: every catalog kind as a card with a server-drawn thumbnail; every subject open, Economics since 1.4.0, and nothing Coming soon', async () => {
   const r = await as(boss)('/figures');
   assert.equal((r.text.match(/class="fg-card"/g) || []).length, CAT.KINDS.length + CAT.KINDS.reduce((n, K) => n + (K.also || []).length, 0));
   // The readings are physics, chemistry and biology: listed under each tab, once under All (the other cards are data-also).
   assert.match(r.text, /<section class="fg-sec" data-subject="chem"[\s\S]*?href="\/figures\/reading" data-subject="chem" data-also/);
   assert.match(r.text, /<section class="fg-sec" data-subject="biology"[\s\S]*?href="\/figures\/reading" data-subject="biology" data-also/);
   assert.match(r.text, /href="\/figures\/reading" data-subject="physics" data-grades/);
-  for (const s of ['math', 'data', 'physics', 'chem', 'biology']) assert.match(r.text, new RegExp(`data-tab="${s}"`));
+  for (const s of ['math', 'data', 'physics', 'chem', 'biology', 'economics']) assert.match(r.text, new RegExp(`data-tab="${s}"`));
   for (const k of ['populationGrowth', 'predatorPrey', 'enzymeActivity', 'photosynthesis', 'punnett', 'pedigree', 'proteinSynthesis', 'gel', 'osmosis']) assert.match(r.text, new RegExp(`href="/figures/${k}" data-subject="biology"`), k);
-  assert.doesNotMatch(r.text, /Biology <span class="fg-soontag">/);
-  assert.match(r.text, /Economics <span class="fg-soontag">Coming soon<\/span>/);
+  for (const k of ['supplyDemand', 'moneyMarket', 'businessCycle', 'phillipsCurve', 'possibilitiesCurve', 'adAs', 'costCurves']) assert.match(r.text, new RegExp(`href="/figures/${k}" data-subject="economics"`), k);
+  assert.deepEqual([...CAT.SOON], [], 'no subject is Coming soon');
+  assert.doesNotMatch(r.text, /fg-soon|Coming soon/, 'and the menu shows no Coming soon chip');
+  assert.match(r.text, /<section class="fg-sec" data-subject="economics"/);
   assert.match(r.text, /Build a worksheet[\s\S]*Draft with AI[\s\S]*Start from scratch[\s\S]*My worksheets/);
   const th = await as(boss)('/figures/thumb/boxPlot.svg');
   assert.equal(th.status, 200);

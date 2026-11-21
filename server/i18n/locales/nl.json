@@ -12539,6 +12539,34 @@
       "osmosis": {
         "name": "Osmose",
         "desc": "Cellen, U-buizen en zakjes in oplossingen"
+      },
+      "supplyDemand": {
+        "name": "Vraag en aanbod",
+        "desc": "Verschuivingen, prijsregulering, belastingen en surplus"
+      },
+      "moneyMarket": {
+        "name": "Geldmarkten",
+        "desc": "Geld, uitleenbare middelen en reserves"
+      },
+      "businessCycle": {
+        "name": "Conjunctuurcyclus",
+        "desc": "Pieken, dalen en fasen rond een trend"
+      },
+      "phillipsCurve": {
+        "name": "Phillipscurve",
+        "desc": "Korte en lange termijn, verschuivingen en verwachtingen"
+      },
+      "possibilitiesCurve": {
+        "name": "Productiemogelijkheden",
+        "desc": "Afwegingen, groei en comparatief voordeel"
+      },
+      "adAs": {
+        "name": "AD-AS-model",
+        "desc": "Productiekloven, schokken en beleid"
+      },
+      "costCurves": {
+        "name": "Kosten- en opbrengstcurven",
+        "desc": "MK, GTK, winst en marktvormen"
       }
     },
     "step": {

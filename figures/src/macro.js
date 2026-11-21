@@ -142,7 +142,7 @@ export const adAs = {
   solve(d) {
     if (adAs.check(d).length) return null;
     const m = aaModel(d), span = m.box.x1 - m.box.x0, kind = g => (maNearly(g, 0, span * 1000) || Math.abs(g) < span * 1e-4 ? 'none' : g < 0 ? 'recessionary' : 'inflationary');
-    const out = { numbered: m.numbered, start: { gdp: m.e1.x, priceLevel: m.e1.y }, potential: m.yf1, gap: m.e1.x - m.yf1, gapType: kind(m.e1.x - m.yf1) };
+    const out = { numbered: m.numbered, start: { gdp: m.e1.x, priceLevel: m.e1.y }, potential: m.yf1, gap: m.e1.x - m.yf1, gapSize: Math.abs(m.e1.x - m.yf1), gapType: kind(m.e1.x - m.yf1) };
     if (m.shifted || m.lrasMoves) Object.assign(out, { end: { gdp: m.e2.x, priceLevel: m.e2.y }, potentialAfter: m.yf2, gapAfter: m.e2.x - m.yf2, gapTypeAfter: kind(m.e2.x - m.yf2), priceLevelChange: m.e2.y - m.e1.y, gdpChange: m.e2.x - m.e1.x });
     return out;
   },

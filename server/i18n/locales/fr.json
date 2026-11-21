@@ -12538,6 +12538,34 @@
       "osmosis": {
         "name": "Osmose",
         "desc": "Cellules, tubes en U et sacs dans des solutions"
+      },
+      "supplyDemand": {
+        "name": "Offre et demande",
+        "desc": "Déplacements, contrôle des prix, taxes et surplus"
+      },
+      "moneyMarket": {
+        "name": "Marchés monétaires",
+        "desc": "Monnaie, fonds prêtables et réserves"
+      },
+      "businessCycle": {
+        "name": "Cycle économique",
+        "desc": "Pics, creux et phases autour d'une tendance"
+      },
+      "phillipsCurve": {
+        "name": "Courbe de Phillips",
+        "desc": "Court et long terme, déplacements et anticipations"
+      },
+      "possibilitiesCurve": {
+        "name": "Possibilités de production",
+        "desc": "Arbitrages, croissance et avantage comparatif"
+      },
+      "adAs": {
+        "name": "Modèle OG-DG",
+        "desc": "Écarts de production, chocs et politiques"
+      },
+      "costCurves": {
+        "name": "Courbes de coûts et de recettes",
+        "desc": "Cm, CM, profit et structures de marché"
       }
     },
     "step": {
