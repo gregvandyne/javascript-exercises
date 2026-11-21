@@ -201,8 +201,9 @@ on(document, 'submit', async e => {
   e.preventDefault();
   // A chosen <option data-confirm> (e.g. merging accounts) asks its own question, read at submit time.
   // The main button says what the form's button says ("Remove from class"); data-confirm-ok gives other words.
-  const q = (f.querySelector('select option:checked[data-confirm]') || {}).dataset?.confirm || f.dataset.confirm;
+  // A submit button with its own data-confirm (Hand in, beside Save) asks only when it is the one pressed.
   const btn = e.submitter || f.querySelector('[type=submit]');
+  const q = (f.querySelector('select option:checked[data-confirm]') || {}).dataset?.confirm || (e.submitter && e.submitter.dataset.confirm) || f.dataset.confirm;
   if (q) {
     if (f.dataset.asking) return;   // the question is already open
     f.dataset.asking = '1';

@@ -67,7 +67,7 @@ test('FIGURE_RULES: made from docs/figures-api.md, with the pinned tags, the API
   assert.match(prompt.FIGURE_RULES, /^FIGURE RULES/);
   assert.ok(prompt.FIGURE_RULES.includes(figTags()), 'the three pinned tags');
   assert.match(prompt.FIGURE_RULES, /Correct to scale/); assert.match(prompt.FIGURE_RULES, /Never draw one by hand/); assert.match(prompt.FIGURE_RULES, /never load another library/);
-  for (const k of ['freeBody', 'rays', 'circuit', 'bohr', 'orbitals', 'lewis', 'reading', 'titration', 'halfLife', 'motionGraph', 'grid', 'vectors', 'inclinedPlane', 'pulley']) assert.match(prompt.FIGURE_RULES, new RegExp(`\\b${k}\\b`), k);
+  for (const k of ['freeBody', 'rays', 'circuit', 'bohr', 'orbitals', 'lewis', 'reading', 'titration', 'halfLife', 'motionGraph', 'grid', 'vectors', 'inclinedPlane', 'pulley', 'numberLine', 'triangle', 'rectangle', 'parallelogram', 'trapezoid', 'kite', 'regularPolygon', 'angles', 'parallelLines', 'segmentAddition', 'circle', 'compositeShape', 'prism', 'cylinder', 'pyramid', 'cone', 'sphere', 'net', 'mappingDiagram']) assert.match(prompt.FIGURE_RULES, new RegExp(`\\b${k}\\b`), k);
   assert.match(prompt.CANVAS_RULES, /FIGURE RULES/); assert.match(prompt.CANVAS_RULES, /config\.purpose|purpose: what it is for/);
   const claude = fs.readFileSync(path.join(ROOT, 'server/builder/claude.js'), 'utf8');
   assert.match(claude, /wantsFigures\(st, ctx\.text, cur, ctx\.plan\) \? \[\{ type: 'text', text: FIGURE_RULES \}\]/, 'one block, no cache point of its own, only when wantsFigures');
@@ -75,8 +75,14 @@ test('FIGURE_RULES: made from docs/figures-api.md, with the pinned tags, the API
 test('FIGURE_RULES are sent only for figure builds, in every site language', () => {
   const yes = ['Make a free-body diagram quiz', 'ray diagrams for converging lenses', 'Bohr models of the first 20 elements', 'reading a measuring cylinder', 'titration curves',
     'diagramme des forces sur un plan incliné', 'Kräfte und Vektoren', 'circuito en serie con resistencias', 'grafico distanza-tempo', 'Modelo atómico de Bohr', 'stroomkring met weerstand',
-    'сила тяжести и вектор', '光の屈折とレンズ', '電路與電阻', 'مخطط القوى على مستوى مائل', 'מעגל חשמלי עם נגד חשמלי'];
-  const no = ['make a runner game with coins', 'a quiz about capital cities', 'spelling words for week 3', 'un juego de carreras', 'Это лучше всего', 'a paragraph about cats'];
+    'сила тяжести и вектор', '光の屈折とレンズ', '電路與電阻', 'مخطط القوى على مستوى مائل', 'מעגל חשמלי עם נגד חשמלי',
+    'graph inequalities on a number line', 'Brüche am Zahlenstrahl', 'fracciones en la recta numérica', 'droite graduée', '数直線', '數線上的分數', 'числовая прямая', 'خط الأعداد', 'ציר המספרים',
+    'area of a triangle', 'Pythagorean theorem practice', 'regular hexagon apothem', 'área del triángulo rectángulo', 'aire du parallélogramme', 'Fläche von Dreieck und Trapez', 'area del rettangolo',
+    'perímetro do retângulo', 'omtrek van een rechthoek', 'площадь треугольника', '三角形の面積', '平行四邊形的面積', 'مساحة المثلث', 'שטח של משולש',
+    'vertical angles worksheet', 'parallel lines cut by a transversal', 'segment addition postulate', 'inscribed angles in a circle', 'area of a composite shape', 'graph a system of inequalities',
+    'ángulos complementarios', 'droites parallèles et sécante', 'Kreis und Tangente', 'angoli alla circonferenza', 'ângulo inscrito', 'evenwijdige lijnen en een snijlijn', 'вписанный угол', '円周角', '圓周角', 'زاوية محيطية', 'זווית היקפית',
+    'volume of a rectangular prism', 'slant height of a square pyramid', 'net of a cube', 'mapping diagrams and functions', 'measure with a ruler to the nearest centimeter', 'volumen del cilindro', 'patron du cube', 'Volumen des Zylinders', 'sviluppo piano del cubo', 'planificação do cubo', 'uitslag van een kubus', 'развёртка куба', '円柱の体積', '圓柱的體積', 'حجم الأسطوانة', 'פריסת קובייה'];
+  const no = ['make a runner game with coins', 'a quiz about capital cities', 'spelling words for week 3', 'un juego de carreras', 'Это лучше всего', 'a paragraph about cats', 'the pyramids of Egypt', 'the northern hemisphere', 'solids, liquids and gases', 'the ruler of England', 'net income for the year', 'pine cones in autumn', '北半球の気候', 'die Pyramiden von Gizeh', 'Kugelschreiber kaufen', 'uitslag van de verkiezingen', 'полушарие мозга', 'финансовая пирамида', 'כדורגל בהפסקה', 'הגליל העליון', 'منشور على فيسبوك', 'el Cono Sur', 'סרגל כלים'];
   for (const t of yes) assert.equal(prompt.wantsFigures({}, t, null, null), true, t);
   for (const t of no) assert.equal(prompt.wantsFigures({}, t, null, null), false, t);
   const st = {}; prompt.wantsFigures(st, 'add a Bohr model', null, null); assert.equal(st.figures, true, 'remembered for later turns');
@@ -219,8 +225,11 @@ test('the mock Builder: a figure topic with a worksheet purpose builds a figure 
   assert.ok([200, 202].includes(sent.status), sent.text);
   await runner.idle(g.json.id);
   const game = games.getGame(g.json.id), v = games.getVersion(game.current_version_id);
-  assert.equal(canvasVersion(v.html), '1.3.0', 'new activities pin the newest kit'); assert.equal(scanVersion(v.html).status, 'pass', JSON.stringify(scanVersion(v.html).issues));
-  assert.ok(v.html.indexOf(figTag('oomba-figures')) >= 0 && v.html.indexOf(figTag('oomba-figures')) < v.html.indexOf(canvasTag()), 'Oomba Figures first, then the kit');
+  assert.equal(canvasVersion(v.html), '1.4.0', 'new activities pin the newest kit'); assert.equal(scanVersion(v.html).status, 'pass', JSON.stringify(scanVersion(v.html).issues));
+  // the core's tag and exactly the packs its figures need (figTag picks them from the kinds), then the kit
+  const kindsUsed = [...new Set(activityData(v.html).data.problems.map(p => p.fig.kind))], figTagUsed = figTag('oomba-figures', undefined, { kinds: kindsUsed });
+  assert.ok(v.html.indexOf(figTagUsed) >= 0 && v.html.indexOf(figTagUsed) < v.html.indexOf(canvasTag()), 'Oomba Figures (and its packs) first, then the kit');
+  assert.notEqual(figTagUsed, figTag('oomba-figures', undefined, { packs: [] }), 'with its packs');
   const d = activityData(v.html).data;
   assert.deepEqual(d.config.purpose, ['screen', 'worksheet']); assert.ok(d.problems.every(p => p.tool.startsWith('figure.') && p.fig));
   assert.deepEqual(autotest.canvasSelfTest(v.html), { ok: true, problems: [] });
@@ -253,4 +262,17 @@ test('the playtest: a build with figures loads them only from the pinned tags an
   const altered = html.replace(FIG_LATEST['oomba-figures'], '0.9.0');
   assert.ok(autotest.buildReport(raw(1), { html: altered }).issues.some(i => i.key === 'figures' && /pinned tags/.test(i.text)));
   assert.ok(!autotest.buildReport(raw(0), { html: '<p>plain</p><script>1</script>' }).issues.some(i => i.key === 'figures'));
+});
+
+test('a Canvas activity whose topic a kit tool covers stays a Canvas build; other figure topics still get the FIGURE RULES', async () => {
+  const plan = await import('../../server/builder/plan.js');
+  const act = t => plan.normalisePlan({ kind: 'activity', topic: { text: t }, help: ['own'], grade: '4' });
+  // "fractions on a number line" is numberline.point: the new number-line words must not turn it into a figure build
+  assert.ok(!act('Fractions on a number line').figures);
+  assert.ok(!act('Number line jumps').figures);
+  // a topic no kit tool covers still calls for figures
+  assert.equal(act('Area of a trapezoid').figures, true);
+  assert.equal(act('Box plots and quartiles').figures, true);
+  // the lesson can still ask for figures on a kit topic
+  assert.equal(plan.normalisePlan({ kind: 'activity', topic: { text: 'Fractions on a number line' }, help: ['own'], lesson: { goal: 'read a box plot' } }).figures, true);
 });

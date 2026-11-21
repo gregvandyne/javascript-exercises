@@ -1191,7 +1191,10 @@
     },
     "makeLike": "こんなゲームをつくる",
     "makeLikeShort": "にた ゲームを つくる",
-    "grownupBuilder": "大人のビルダー"
+    "grownupBuilder": "大人のビルダー",
+    "sets": {
+      "copyOf": "{title} のコピー"
+    }
   },
   "play": {
     "backTo": "{title}にもどる",
@@ -3354,6 +3357,290 @@
     "manip-room": {
       "actionsFor": "{label} の操作",
       "teacherLock": "先生がロックしています。"
+    },
+    "figures-editor": {
+      "undo": "元に戻す",
+      "redo": "やり直す",
+      "presets": "プリセット…",
+      "examples": "例",
+      "mine": "マイプリセット",
+      "randomize": "ランダム",
+      "controls": "図形の設定",
+      "measures": "寸法",
+      "leaveEmpty": "わかっている寸法を入れてください。ほかは空欄のままで大丈夫です。",
+      "options": "オプション",
+      "show": "表示",
+      "default": "(既定)",
+      "advanced": "詳細 (データ)",
+      "advancedHelp": "図形のデータ全体を JSON で表示します。リストやグループはここで編集します。",
+      "jsonObject": "データは { ... } のオブジェクト 1 つにしてください。",
+      "jsonBad": "まだ正しい JSON ではありません: {why}",
+      "display": "表示設定",
+      "print": "印刷モード (白地に黒)",
+      "nts": "「縮尺どおりではありません」と表示",
+      "figure": "図形",
+      "answers": "問題と答え",
+      "question": "問題",
+      "questionHint": "この図形について生徒が答える問題を書いてください。",
+      "worked": "答えの解き方 (OF.solve)",
+      "answerIs": "答え",
+      "pickAnswer": "答えを選ぶ…",
+      "noAnswers": "この図形には解き方がありません",
+      "facts": "この図形のすべて",
+      "answersWait": "図形が描けるようになると答えが表示されます。Oomba は間違った図形を描きません。",
+      "pickHelp": "問題の答えになる数値を選ぶか、ランダムを押して用意された問題を使いましょう。",
+      "noSolve": "この図形には選べる計算値がありません。",
+      "hide": "生徒には答えを隠す",
+      "hideWhat": "隠すもの",
+      "hideAll": "すべての寸法",
+      "ofSays": "Oomba Figures より: {reason}",
+      "undoLast": "最後の変更を元に戻す",
+      "backToExample": "例に戻す",
+      "add": "ワークシートに追加",
+      "newSheet": "新しいワークシート",
+      "qs": "{count, plural, other {#問}}",
+      "added": "{title} に追加しました。",
+      "openSheet": "ワークシートを開く",
+      "saveBack": "{title} に保存",
+      "svg": "SVG をダウンロード",
+      "png": "PNG をダウンロード",
+      "copy": "画像をコピー",
+      "link": "リンクをコピー",
+      "savePreset": "マイプリセットとして保存",
+      "presetName": "プリセットの名前",
+      "presetSaved": "プリセットを保存しました。",
+      "notice": "ダウンロードしたファイルには、Oomba Academy が加えた部分はパブリックドメイン (CC0) で、あなたが加えたオリジナルの部分はあなたのものだという注記が入ります。",
+      "noGen": "この図形にはまだジェネレーターがありません: 別の例をどうぞ。",
+      "pngFailed": "PNG を作れませんでした。SVG をダウンロードしてください。",
+      "copied": "画像をコピーしました。",
+      "copiedSvg": "SVG テキストとしてコピーしました。",
+      "copyFailed": "コピーできませんでした。ダウンロードしてください。",
+      "linkCopied": "リンクをコピーしました。",
+      "why": {
+        "triangle": {
+          "t": "この 3 辺では三角形になりません",
+          "p": "三角形のどの 2 辺の和も、残りの 1 辺より長くなければなりません。そうでないと端がつながりません。"
+        },
+        "angles": {
+          "t": "この角度は合いません",
+          "p": "三角形の角の和はちょうど 180° です。入れた角度を確かめてください。"
+        },
+        "short": {
+          "t": "辺が短すぎます",
+          "p": "この数値では、ある辺がもう一方の端に届きません。長くするか、角度を変えてください。"
+        },
+        "agree": {
+          "t": "寸法が食い違っています",
+          "p": "図形に必要な数より多くの寸法があり、それらが合っていません。1 つ外してください。"
+        },
+        "drawAs": {
+          "t": "「縮尺どおりではありません」を確認",
+          "p": "別の比率で描くのは「縮尺どおりではありません」がオンのときだけで、印はどちらでも正しくなければなりません。"
+        },
+        "positive": {
+          "t": "数値は 0 より大きくしてください",
+          "p": "長さ、大きさ、個数は 0 より大きい値です。"
+        },
+        "range": {
+          "t": "数値が範囲外です",
+          "p": "この図形には大きすぎるか小さすぎる数値があります。"
+        },
+        "extra": {
+          "t": "寸法が多すぎます",
+          "p": "この図形はこれらの寸法を一部しか同時に受け付けません。1 つ外してください。"
+        },
+        "data": {
+          "t": "データを読み取れません",
+          "p": "「詳細 (データ)」の欄を確かめてください。"
+        },
+        "generic": {
+          "t": "この図形は描けません",
+          "p": "Oomba は間違った図形を描きません。数値が合うように変えてください。"
+        }
+      },
+      "f": {
+        "unit": "単位",
+        "round": "小数点以下の桁数",
+        "mass": "質量",
+        "angle": "角度",
+        "speed": "速さ",
+        "height": "高さ",
+        "width": "幅",
+        "length": "長さ",
+        "radius": "半径",
+        "value": "値",
+        "min": "最小",
+        "max": "最大",
+        "step": "目盛り間隔",
+        "type": "種類",
+        "element": "元素"
+      },
+      "k": {
+        "area": "面積",
+        "perimeter": "周の長さ",
+        "volume": "体積",
+        "surfaceArea": "表面積",
+        "angles": "角",
+        "sides": "辺",
+        "total": "合計",
+        "mean": "平均",
+        "median": "中央値",
+        "range": "範囲",
+        "interior": "内角",
+        "value": "値"
+      },
+      "hp": {
+        "sides": "辺",
+        "angles": "角",
+        "heights": "高さ",
+        "value": "値",
+        "image": "像",
+        "electrons": "電子",
+        "values": "値",
+        "reading": "読み"
+      },
+      "draw": {
+        "modeLabel": "図形の作り方",
+        "type": "長さを入力",
+        "draw": "描く",
+        "title": "点のグリッドに描く",
+        "size": "グリッドの大きさ",
+        "sizeOpt": "{n} × {n}",
+        "clear": "消す",
+        "help": {
+          "triangle": "3つの点をタップすると三角形になります。頂点をドラッグすると動かせます。",
+          "quad": "図形のまわりの順に4つの点をタップします。頂点をドラッグすると動かせます。",
+          "grid": "図形のまわりの順に点をタップします（頂点は10個まで）。頂点をドラッグすると動かせます。"
+        },
+        "keys": "キーボードでは、矢印キーで動かし、Enterで頂点を置くか持ち上げ、そのあと矢印キーで動かします。",
+        "board": "点のグリッド、{n} × {n}",
+        "corner": "頂点{name}は({x}, {y})",
+        "placed": "{name}を({x}, {y})に置きました",
+        "moved": "{name}を({x}, {y})に動かしました",
+        "picked": "{name}を持ち上げました。矢印キーで動かし、Enterで置きます。",
+        "removed": "{name}を消しました",
+        "corners": "頂点",
+        "sides": "辺",
+        "angles": "角",
+        "kind": "種類",
+        "perimeter": "周の長さ",
+        "area": "面積",
+        "sqUnits": "{area} 平方単位",
+        "more": "{count, plural, other {あと#個の点をタップしてください。}}",
+        "filled": "描いた図形から入力しました。",
+        "keep": "下の図は、最後の正しい図形のままです。",
+        "same": "2つの頂点が同じ点にあります。どちらかを別の点にドラッグしてください。",
+        "line": "3つの頂点が一直線に並んでいるので、図形になりません。どれかを線からずらしてください。",
+        "cross": "2つの辺が交わっています。辺が頂点でだけ出会うように、頂点を動かしてください。",
+        "cannot": "Oomba Figuresはこの図形を描けません。頂点を動かしてみてください。",
+        "isNot": "この図形は{is}で、{want}ではありません。",
+        "special": "この図形は{is}で、Oomba Figuresでは専用のエディターで描きます。",
+        "open": {
+          "rectangle": "長方形のエディターで開く",
+          "parallelogram": "平行四辺形のエディターで開く",
+          "trapezoid": "台形のエディターで開く",
+          "kite": "たこ形のエディターで開く",
+          "grid": "座標平面にかく"
+        },
+        "a": {
+          "square": "正方形",
+          "rectangle": "長方形",
+          "rhombus": "ひし形",
+          "parallelogram": "平行四辺形",
+          "trapezoid": "台形",
+          "kite": "たこ形",
+          "quad": "特別な名前のない四角形",
+          "concave": "へこみのある四角形"
+        },
+        "t": {
+          "square": "正方形",
+          "rectangle": "長方形",
+          "rhombus": "ひし形",
+          "parallelogram": "平行四辺形",
+          "trapezoid": "台形",
+          "isoTrapezoid": "等脚台形",
+          "rightTrapezoid": "直角台形",
+          "kite": "たこ形",
+          "quad": "四角形",
+          "concave": "へこみのある四角形",
+          "polygon": "{count, plural, other {#角形}}"
+        },
+        "tri": {
+          "right": "直角",
+          "acute": "鋭角",
+          "obtuse": "鈍角",
+          "scalene": "不等辺",
+          "isosceles": "二等辺",
+          "equilateral": "正三角形"
+        },
+        "ex": {
+          "right": "直角三角形",
+          "isosceles": "二等辺三角形",
+          "obtuse": "鈍角三角形",
+          "pentagon": "五角形"
+        },
+        "examples": "点のグリッドに描いた例",
+        "gridOut": "座標平面にも表示する",
+        "gridTitle": "座標平面",
+        "addGrid": "座標平面の図をワークシートに追加",
+        "drawInstead": "かわりにグリッドに描く"
+      }
+    },
+    "figures-sheet": {
+      "title": "ワークシートの題名",
+      "grade": "学年",
+      "anyGrade": "すべての学年",
+      "gradeN": "{grade}年生",
+      "powerAi": "AI を使う",
+      "briefLabel": "テーマ、学年、問題数",
+      "briefHint": "7年生、長方形と台形の面積、それに箱ひげ図を 1 つ。",
+      "howMany": "問題数",
+      "draft": "下書き",
+      "budget": "AI の予算を使います。休止中は、スターターセットになります。",
+      "drafting": "問題を下書きしています…",
+      "briefFirst": "先にワークシートの内容を短く書いてください。",
+      "drafted": "{count, plural, other {#問を下書きしました。}} Oomba Figures がすべての図形を確かめ、すべての答えを計算しました。",
+      "resting": "AI は休止中です。スターターセットをどうぞ ({count, plural, other {#問}})。",
+      "repaired": "{count, plural, other {#個の図形が描けなかったので入れ替えました。}}",
+      "dropped": "{count, plural, other {#問を外しました。}}",
+      "addLabel": "図形の問題を追加",
+      "add": "追加",
+      "empty": "まだ問題がありません。図形の問題を追加するか、AI に下書きさせましょう。",
+      "questionN": "問題 {n}",
+      "questionHint": "問題を書いてください…",
+      "answer": "答え:",
+      "noAnswer": "答えがまだ選ばれていません: エディターで開いてください。",
+      "up": "上へ",
+      "down": "下へ",
+      "regen": "新しい数値",
+      "edit": "図形を編集",
+      "delete": "削除",
+      "deleteQ": "この問題を削除しますか?",
+      "remove": "ワークシートを削除",
+      "removeQ": "このワークシートを削除しますか?",
+      "removeText": "問題もすべて削除されます。元に戻せません。",
+      "preview": "印刷プレビュー",
+      "paper": "レター判、白地に黒",
+      "studentSheet": "生徒用シート",
+      "answerKey": "解答",
+      "previewEmpty": "問題を追加すると、ここに印刷用シートが表示されます。",
+      "print": "印刷",
+      "printKey": "解答つきで印刷",
+      "assign": "クラスに配布",
+      "assignTitle": "クラスに配布",
+      "assignClass": "クラス",
+      "assignOpens": "開始日（任意）",
+      "assignDue": "締め切り（任意）",
+      "assignShow": "締め切りのあとにこたえを表示",
+      "assignShowHint": "初めはオフ。オン: 締め切りのあと、提出した生徒にこたえと解き方が表示されます。",
+      "assignSnapshot": "生徒には今の状態のワークシートが配られます。あとで変更しても配布したものは変わりません。",
+      "assignGo": "配布",
+      "assignCancel": "キャンセル",
+      "assignEmpty": "先に問題を追加してから配布してください。",
+      "assignNoClasses": "担当のクラスがまだありません。先にクラスを作ってから配布してください。",
+      "assignDone": "{class}に配布しました。",
+      "assignSee": "生徒の画面で見る",
+      "assignProgress": "進み具合を見る"
     }
   },
   "favorites": {
@@ -3981,7 +4268,8 @@
       "build": "ゲームをつくる",
       "text": "よむ・やってみる",
       "question": "しつもんにこたえる",
-      "quiz": "クイズにこたえる"
+      "quiz": "クイズにこたえる",
+      "figures": "図の問題にこたえる"
     },
     "library": {
       "title": "レッスンライブラリ",
@@ -11900,5 +12188,366 @@
       "classics": "名作"
     },
     "footClassics": "名作：パブリックドメインになった昔の本を、もとの絵といっしょにのせています。"
+  },
+  "figures": {
+    "title": "図形",
+    "loading": "図形を読み込み中…",
+    "crumbs": "現在地",
+    "tools": {
+      "label": "授業ツール",
+      "manipulatives": "操作教材",
+      "figures": "図形"
+    },
+    "subjects": {
+      "math": "算数・数学",
+      "data": "データと統計",
+      "physics": "物理",
+      "chem": "化学",
+      "biology": "生物",
+      "economics": "経済"
+    },
+    "grades": {
+      "K-2": "K-2",
+      "3-5": "3-5年生",
+      "6-8": "6-8年生",
+      "9-12": "9-12年生"
+    },
+    "menu": {
+      "testing": "テスト中: あなただけに表示されています",
+      "pitch": "ワークシート、テスト、スライド用の正確な縮尺の図形。印刷にそのまま使え、答えの解き方つき。",
+      "buildTitle": "ワークシートを作る",
+      "buildText": "図形を自分で選ぶか、必要な内容を書いて AI に問題を下書きさせましょう。どの数値もチェックされ、すべての図形が本当に描けることを確かめます。",
+      "draftAi": "AI で下書き",
+      "scratch": "白紙から作る",
+      "mine": "マイワークシート",
+      "noSheets": "まだワークシートがありません。作ったものがここに表示されます。",
+      "questions": "{count, plural, other {#問}}",
+      "gradeOf": "{grade}年生",
+      "edited": "{date} に編集",
+      "subjects": "教科",
+      "all": "すべての図形",
+      "soon": "近日公開",
+      "grades": "学年",
+      "search": "図形を検索",
+      "searchHint": "図形を検索 (例: 円柱、箱ひげ図)",
+      "count": "{count, plural, other {#種類の図形}}",
+      "nothing": "一致する図形がありません。別の言葉や学年を試してください。"
+    },
+    "sheet": {
+      "newTitle": "新しいワークシート",
+      "crumb": "ワークシート作成",
+      "untitled": "無題のワークシート"
+    },
+    "editor": {
+      "example": "例 {n}"
+    },
+    "print": {
+      "figure": "問題 {n} の図",
+      "keyTag": "解答",
+      "keyTitle": "{title}: 解答",
+      "name": "名前",
+      "date": "日付",
+      "made": "Oomba Academy で作成",
+      "noQuestion": "図を見てください。",
+      "noAnswer": "答えがまだ選ばれていません",
+      "crumb": "印刷",
+      "sheetOnly": "生徒用シート",
+      "withKey": "解答つき",
+      "print": "印刷"
+    },
+    "errors": {
+      "notFound": "ここにはありません。",
+      "badKind": "それは図形の種類ではありません。",
+      "badData": "その図形のデータを読み取れませんでした。",
+      "tooBig": "その図形は大きすぎて保存できません。",
+      "words": "使えない言葉があります。変えてからもう一度試してください。",
+      "personal": "電話番号、メールアドレス、リンク、コードを外してから、もう一度試してください。",
+      "cannotDraw": "この数値ではこの図形は描けません。変えてからもう一度試してください。",
+      "tooMany": "すでにたくさん保存されています。先にいくつか削除してください。",
+      "fullSheet": "このワークシートはいっぱいです。新しく作ってください。",
+      "noGen": "この図形にはまだ問題ジェネレーターがありません。",
+      "name": "先に名前をつけてください。",
+      "brief": "先にワークシートの内容を短く書いてください。",
+      "names": "説明に生徒の名前を書かないでください: 名前が AI に送られることはありません。"
+    },
+    "kinds": {
+      "numberLine": {
+        "name": "数直線",
+        "desc": "数直線上の数、区間、点"
+      },
+      "triangle": {
+        "name": "三角形",
+        "desc": "3 つの寸法から描く三角形"
+      },
+      "rectangle": {
+        "name": "長方形",
+        "desc": "長方形と正方形"
+      },
+      "parallelogram": {
+        "name": "平行四辺形",
+        "desc": "平行四辺形とひし形、高さつき"
+      },
+      "trapezoid": {
+        "name": "台形",
+        "desc": "台形: 一般、等脚、直角"
+      },
+      "kite": {
+        "name": "たこ形",
+        "desc": "等しい辺に印をつけたたこ形"
+      },
+      "regularPolygon": {
+        "name": "正多角形",
+        "desc": "辺心距離と半径つきの正多角形"
+      },
+      "angles": {
+        "name": "角",
+        "desc": "半直線のあいだの角"
+      },
+      "parallelLines": {
+        "name": "平行線と横断線",
+        "desc": "横断線で切られた平行線"
+      },
+      "segmentAddition": {
+        "name": "線分の和",
+        "desc": "代数を使った線分の和"
+      },
+      "circle": {
+        "name": "円",
+        "desc": "弦、接線、角のある円"
+      },
+      "compositeShape": {
+        "name": "複合図形",
+        "desc": "簡単な図形を組み合わせた図形"
+      },
+      "grid": {
+        "name": "座標平面",
+        "desc": "座標平面上の点、直線、変換"
+      },
+      "protractor": {
+        "name": "分度器",
+        "desc": "分度器で角度を読む"
+      },
+      "prism": {
+        "name": "角柱",
+        "desc": "3D の角柱と立方体"
+      },
+      "cylinder": {
+        "name": "円柱",
+        "desc": "3D の円柱"
+      },
+      "pyramid": {
+        "name": "角錐",
+        "desc": "3D の角錐"
+      },
+      "cone": {
+        "name": "円錐",
+        "desc": "3D の円錐"
+      },
+      "sphere": {
+        "name": "球",
+        "desc": "球と半球"
+      },
+      "net": {
+        "name": "展開図",
+        "desc": "立体に組み立てる展開図"
+      },
+      "mappingDiagram": {
+        "name": "対応図",
+        "desc": "入力と出力の対応"
+      },
+      "barGraph": {
+        "name": "棒グラフ",
+        "desc": "棒グラフ、2 本並びと積み上げ"
+      },
+      "dotPlot": {
+        "name": "ドットプロット",
+        "desc": "データのドットプロット"
+      },
+      "histogram": {
+        "name": "ヒストグラム",
+        "desc": "階級幅が等しい、または異なるヒストグラム"
+      },
+      "boxPlot": {
+        "name": "箱ひげ図",
+        "desc": "四分位数つきの箱ひげ図"
+      },
+      "scatterPlot": {
+        "name": "散布図",
+        "desc": "近似直線つきの散布図"
+      },
+      "stemAndLeaf": {
+        "name": "幹葉図",
+        "desc": "幹葉図"
+      },
+      "pieChart": {
+        "name": "円グラフ",
+        "desc": "角度と割合つきの円グラフ"
+      },
+      "cumulativeFrequency": {
+        "name": "累積度数",
+        "desc": "累積度数のグラフ"
+      },
+      "normalCurve": {
+        "name": "正規分布曲線",
+        "desc": "塗りつぶした範囲つきの正規分布曲線"
+      },
+      "treeDiagram": {
+        "name": "樹形図",
+        "desc": "確率の樹形図"
+      },
+      "vennDiagram": {
+        "name": "ベン図",
+        "desc": "2 つまたは 3 つの集合のベン図"
+      },
+      "twoWayTable": {
+        "name": "二元表",
+        "desc": "合計つきの二元表"
+      },
+      "tableOfValues": {
+        "name": "値の表",
+        "desc": "規則から作る値の表"
+      },
+      "freeBody": {
+        "name": "力の図",
+        "desc": "物体にはたらく力"
+      },
+      "vectors": {
+        "name": "ベクトル",
+        "desc": "ベクトルとその合力"
+      },
+      "inclinedPlane": {
+        "name": "斜面",
+        "desc": "斜面上の物体とその力"
+      },
+      "pulley": {
+        "name": "滑車",
+        "desc": "滑車とつるしたおもり"
+      },
+      "rays": {
+        "name": "光線図",
+        "desc": "レンズと鏡の光線図"
+      },
+      "circuit": {
+        "name": "回路図",
+        "desc": "直列と並列の回路"
+      },
+      "motionGraph": {
+        "name": "運動のグラフ",
+        "desc": "距離、速度、加速度のグラフ"
+      },
+      "motionMap": {
+        "name": "運動図",
+        "desc": "点と矢印の運動マップ"
+      },
+      "projectile": {
+        "name": "放物運動",
+        "desc": "放物運動の軌跡、縮尺どおり"
+      },
+      "waves": {
+        "name": "波",
+        "desc": "横波と縦波"
+      },
+      "reading": {
+        "name": "目盛りの読み取り",
+        "desc": "温度計、メスシリンダー、定規、ノギス"
+      },
+      "bohr": {
+        "name": "ボーアモデル",
+        "desc": "原子とイオンのボーアモデル"
+      },
+      "orbitals": {
+        "name": "軌道図",
+        "desc": "軌道の箱図"
+      },
+      "lewis": {
+        "name": "ルイス構造",
+        "desc": "分子のルイス構造"
+      },
+      "halfLife": {
+        "name": "半減期",
+        "desc": "放射性崩壊の曲線"
+      },
+      "titration": {
+        "name": "滴定曲線",
+        "desc": "滴定曲線"
+      },
+      "massSpectrum": {
+        "name": "質量スペクトル",
+        "desc": "同位体のピークと相対原子質量"
+      },
+      "heatingCurve": {
+        "name": "加熱・冷却曲線",
+        "desc": "熱の出入りによる温度の変化（縮尺どおり）"
+      },
+      "energyProfile": {
+        "name": "反応のエネルギー図",
+        "desc": "活性化エネルギーと ΔH を示す反応のエネルギー図"
+      },
+      "nuclide": {
+        "name": "核種の表記",
+        "desc": "同位体・イオン・粒子の記号"
+      },
+      "lineSpectrum": {
+        "name": "線スペクトル",
+        "desc": "元素の発光線と吸収線"
+      },
+      "photoelectron": {
+        "name": "光電子スペクトル",
+        "desc": "副殻ごとに1本のピーク（H から Xe）"
+      },
+      "particles": {
+        "name": "粒子のモデル図",
+        "desc": "箱や結晶格子の中の原子・イオン・分子"
+      },
+      "dotCross": {
+        "name": "点と×の電子配置図",
+        "desc": "電子殻で共有・移動する電子"
+      }
+    },
+    "step": {
+      "answerLabel": "問題 {n} のこたえ",
+      "right": "正解",
+      "notRight": "不正解",
+      "answer": "こたえ:",
+      "teacherAnswer": "解答:",
+      "score": "{total}問中{right}問正解（{pct}%）。",
+      "answersLater": "先生は締め切りのあとにこたえを見せます。",
+      "noAnswers": "こたえは先生が持っています。クラスでいっしょに確認するかもしれません。",
+      "teacherNote": "生徒にはこのように見えます。各問題の下にあなた用の解答があります。",
+      "showOnNote": "締め切りのあと、生徒にこたえが表示されます。",
+      "showOffNote": "生徒にこたえは表示されません。",
+      "handInHint": "とちゅうで保存しよう。提出すると採点され、こたえは変えられません。",
+      "answersReady": "こたえが公開されています。提出すると見られます。",
+      "save": "保存",
+      "handIn": "提出",
+      "handInConfirm": "こたえを提出しますか？ あとから変えられません。",
+      "saved": "保存しました",
+      "handedIn": "提出しました",
+      "showIsOn": "締め切りのあとにこたえを表示します",
+      "showIsOff": "生徒にこたえは表示されません",
+      "errors": {
+        "handedIn": "もう提出しています。",
+        "empty": "まず一つはこたえを書いてください。"
+      },
+      "showAnswers": "締め切りのあとにこたえを表示",
+      "showAnswersHint": "初めはオフ。オン: 締め切りのあと、提出した生徒にこたえと解き方が表示されます。",
+      "showNeedsDue": "こたえをあとで表示するには、このレッスンに締め切りを設定してください。",
+      "handedInCount": "提出: {total}人中{done}人",
+      "questionN": "問題 {n}",
+      "rightOf": "{total}人中{right}人が正解",
+      "answersTable": "生徒ごとのこたえ",
+      "noneYet": "まだだれも提出していません。",
+      "questions": "{count, plural, other {図の問題 #問}}"
+    },
+    "assign": {
+      "errors": {
+        "empty": "このワークシートを配布する前に問題を追加してください。",
+        "noAnswer": "配布する前に、すべての問題にこたえが必要です。エディターで問題 {list} のこたえを選んでください。",
+        "noClass": "担当のクラスを選んでください。",
+        "badDate": "その日付は正しくないようです。",
+        "dueBeforeOpen": "締め切りが開始日より前です。",
+        "needsDue": "こたえを締め切りのあとに表示するには、締め切りを設定してください。"
+      }
+    }
   }
 }

@@ -8,6 +8,7 @@ export type View =
 	| { name: 'start' }
 	| { name: 'student' }
 	| { name: 'home' }
+	| { name: 'sheets' }
 	| { name: 'edit'; id: string }
 	| { name: 'play'; activity: Playable; title: string; from: 'link' | 'editor' | 'code' | 'practice'; practice?: { kind: Kind; hard: 'easy' | 'medium' | 'hard'; numbers?: Numbers; method?: Method }; id?: string; setId?: string; mine?: boolean; item?: unknown }
 	| { name: 'invalid' }

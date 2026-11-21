@@ -14,6 +14,7 @@ export type View =
 	| { name: 'setup'; activity: Activity; text?: string; start?: Start; live?: boolean; forSet?: number }
 	| { name: 'play'; type: Activity; p: string; start: Start; live: boolean; from: 'link' | 'setup' }
 	| { name: 'set' }
+	| { name: 'my-sets' }
 	| {
 			name: 'set-play';
 			items: Item[];

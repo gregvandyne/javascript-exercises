@@ -8784,6 +8784,11 @@ such figures with open-source libraries under suitable licences, and a classroom
   its LICENSE file. `figures/SHIPPED.json` locks every file. No GPL code: no CircuitJS, no PhET; Ketcher is too big;
   matter-js is not needed because Phaser 3.90 (already vendored) carries Matter physics. None of the owner's example
   sites' code (their figures are CC0, their code is not open) was copied or looked at.
+  **Correction (21 Nov 2026):** by the evidence, those example sites were the source project (see
+  docs/third-party.md): the same figure kinds, several sister sites, CC0 figures. Its code was open: Apache 2.0 since
+  its first commit (24 Sep 2026). With the owner's confirmed permission, Oomba Figures 1.1.0 ports its number line under
+  that license (the record, the license copy and the changes are in docs/third-party.md). The rule stands for every
+  other site: code without an open license is never copied or consulted.
 - **Allowed exactly like the kits.** `server/services/figlibs.js` makes the one tag per library (pinned URL, SRI hash,
   `crossorigin="anonymous"`); the scanner admits exactly those (`checkFigures`) and fails anything else naming their
   folders; the frame CSP lists the three pinned files **file by file** (never a folder, scripts only); the screenshot
@@ -9941,3 +9946,218 @@ boxes could not be resized, made bigger or (reliably) moved; and the coordinate 
   equations or slope readouts, per-line labels, point naming; possible later if teachers ask.
 - Tests: `tests/unit/manip-text-graph-browser.test.js` (laptop and iPhone 13 with real touch, solo and the room),
   `tests/unit/manip-board.test.js` (sizes, snapping, the line math), `tests/unit/manipulatives.test.js` (storage limits).
+## Oomba Figures 1.1.0 split by subject; the physics port (21 Nov 2026)
+
+- **1.1.0 ships split.** It has not shipped yet, so the first 1.1.0 teachers get is already split: a core
+  (`oomba-figures.js`: the drawing core, words, math labels, the formula language, the notice, the registry and the
+  coordinate grid) and five packs in the same version folder (`packs/math.js`, `data.js`, `physics.js`, `chem.js`,
+  `measure.js`), each a classic script registering its kinds into the core (docs/figures-api.md "The core and its
+  packs"). `reading` and `protractor` are their own measure pack because reading an instrument is taught in math,
+  physics, chemistry and biology. Each file has its own pinned tag, SRI and lock entry; the scanner admits a pack tag only
+  after its core tag; the CSP and the screenshot worker list each pack file; the server's copy runs them all; the
+  self-tests name a missing pack's exact tag. 1.0.0 stays one file, byte for byte.
+- **How a page gets its packs.** `figTag("oomba-figures", v, { kinds })` adds exactly the packs those kinds need (the
+  mock Builder uses it); the model's FIGURE RULES list every kind with its pack and every pack tag, and the activity
+  self-test and the playtest fail a page that draws a kind whose pack tag is missing, naming the tag. Rewriting the
+  model's saved page to add tags was not done: the save path belongs to the Builder's agent.
+- **The physics port.** Projectile motion, waves and motion maps are new kinds; `motionGraph` (segments,
+  acceleration-time, stacked graphs), `rays` (plane mirror), `circuit` (`layout: "network"`, closing the "compound
+  circuits" Not-yet item) and `reading` (caliper, micrometer, spring scale masses and zero error) are extended, their
+  old data drawing exactly as in 1.0.0. Only the physics and math logic is ported (docs/third-party.md); coil and
+  magnet is not ported (off on the live site), and vectors are not ported twice.
+
+## Figures, the standalone product, hidden while it is tested (21 Nov 2026)
+
+- **What it is.** `/figures` (server/routes/figures.js, services/figures.js, public/js/figures*.js): a menu of every
+  Oomba Figures kind (cards with thumbnails drawn on the server from each kind's example and cached), one editor for
+  every kind (`/figures/:kind`), and worksheets of figure questions with a printable student sheet and answer key. It
+  follows the approved mockup (proposal of 21 Nov), without the mockup banner or its mock data.
+- **Shipped like the Manipulatives.** A `FIGURES` flag, on unless set to 0, read from the environment (no Render
+  change). The gate copies `services/manipulatives.js` `canHost` exactly: never a guest, a banned or a grown-up account;
+  the platform admin, or school staff whose username is in `MANIPULATIVES_USERS`. One tester list for both (no new
+  variable). Everyone else gets the site's normal 404 (noindex) on every page and API; testers get `X-Robots-Tag:
+  noindex, nofollow` and `Cache-Control: no-store`. No menu, sitemap or search link. A "Teaching tools: Manipulatives ·
+  Figures" switcher shows on both pages only to someone who can open both.
+- **Subjects.** Math, Data and statistics, Physics and Chemistry open (all 50 kinds of Oomba Figures 1.1.0, the measure
+  pack's `reading` under Physics and `protractor` under Math). Biology and Economics show as "Coming soon", not
+  clickable.
+- **One editor, made from the data.** `public/js/figures-catalog.js` lists each kind's subject, grade bands, presets
+  (the docs' examples), the fields whose values are a fixed list, the measures it takes that its example may leave out,
+  what "Hide answer for students" can hide, and whether it takes `notToScale`. Numbers become number boxes, true/false a
+  switch, listed values a select, words a text box; lists and objects are edited in "Advanced (data)", a JSON box
+  checked as it is typed. No kind has a hand-built form yet (the triangle's dedicated layout in the mockup is later).
+  The page loads the core and only that kind's pack with `figTag(..., { kinds })` (pinned, SRI, the site CSP).
+- **Cannot draw.** OF.check's first reason is matched to a plain-words panel (triangle inequality, angles past 180,
+  a side too short, disagreeing measures, not drawn to scale, ranges), with OF.check's own words under it, Undo my last
+  change and Back to the example; export and Add to worksheet are off until it draws.
+- **Answers come from OF.solve.** The editor's "The answer is" lists the figure's OF.solve numbers; a worksheet
+  question stores which one (`answer_key`) and the server works the answer out (with the figure's unit, squared or
+  cubed). A question from a generator keeps the generator's question and worked lines while its figure is exactly what
+  that generator makes for its seed; its answer is the OF.solve value the generator names (`key`), checked against the
+  generator's own formula by the tests. Kinds without an OF.solve keep their generator's formula. The browser never
+  sends an answer the server keeps.
+- **Generators.** The docs' figure question generators are the catalog's (the tests compare them); seven more were
+  written for kinds the docs had none for (freeBody, vectors, inclinedPlane, pulley, halfLife, bohr, the thermometer).
+  orbitals, lewis and titration have none: Randomize picks another preset. Generator questions are in English (the
+  teacher edits them); the product's own words are in every site language.
+- **Export.** Download SVG is `OF.withNotice`; Download PNG and Copy image are drawn in the browser and carry the same
+  notice as a PNG tEXt "Copyright" chunk and an XMP iTXt chunk (public/js/figures-export.js), with the wording of plan
+  rule 3. The tests check the bytes. Copy link puts the figure's data in `?d=`.
+- **One question-set model.** `question_sets` / `question_set_items` (migration 0095) with a `purpose` ('worksheet'
+  now; 'test' and 'lesson' later) and `of_version` (the Oomba Figures version the figures were checked with), so a
+  later lesson Figure step and "Build a test with AI" reuse them. A worksheet is its owner's only: anyone else, the
+  platform admin included, gets the same 404 for it, its print page and its answer key. `figure_presets` (a teacher's
+  own presets, per kind) and `figure_prefs` (the "Power with AI" switch, remembered per teacher) are in the same
+  migration. Account deletion removes all of it.
+- **Power with AI.** `draftWorksheet` follows `lesson-ai.js`: `anthropic()` (null without a key or while the AI budget
+  is resting), `config.builderModel`, structured JSON output, usage recorded in the AI budget, rate limited (30 an
+  hour). Claude sees only the catalog (kinds with a generator: id, a line, the example data, the OF.solve values it may
+  name) and writes question text, data (JSON text) and an answerKey. Every item is checked on the server: an unknown kind
+  is dropped; data that fails OF.check, an answerKey that is not an OF.solve value, or words that are not allowed: the
+  item is replaced by a fresh question from that kind's generator. Every repair is logged (the kind and why, never the
+  brief) and counted in the audit log. Without a key, while the budget rests or when the call fails, a starter set is
+  built from the generators the brief's words point at, within its grade band. A brief that names one of the teacher's
+  students is refused before anything is sent.
+- **Assign to class.** Shipped: see "Figures: Assign to class" below (a lesson step of kind `figures`, snapshotting the
+  worksheet; answers after the due date only when the teacher allows it).
+
+## Figures: Assign to class (21 Nov 2026)
+
+- **What it is.** "Assign to class" in the worksheet builder (`/figures/worksheets/:id`, public/js/figures-sheet.js) is
+  real: a form under the print preview with one of the tester's classes, an open date and a due date (both optional),
+  and "Show answers after the due date" (off by default). `POST /api/figures/worksheets/:id/assign`
+  (services/figures-steps.js `assignWorksheet`) does what "Set as homework" does for a live question set: a lesson of
+  kind `figures` named after the worksheet in the teacher's library, with one lesson step of kind `figures`, assigned to
+  the class with `lessons.assign` (dates, units, removal and the gradebook all work as for any assigned lesson). Each
+  assign makes a new lesson, so the switch is per assignment.
+- **A snapshot, like the quiz step.** Migration 0096 adds `lesson_steps.of_version` and `lesson_steps.show_answers`.
+  The step's `items` holds every question as it was assigned: kind, figure data, hide, question, the answer as the key
+  shows it, unit, the number (`value`), its decimal places (`dp`) and the worked lines; `set_id` names the worksheet
+  (never read back). Editing, regenerating or deleting the worksheet later changes nothing a class was given, and a
+  lesson copy keeps the snapshot. `value` and `dp` are worked out at assign time: the OF.solve value of the question's
+  answerKey (2 places, as the key shows it), else the generator's value and dp while the figure is still exactly what
+  its generator makes. A worksheet with a question that has no answer cannot be assigned (the error names the question
+  numbers).
+- **Students.** The lesson page draws each figure on the server with the step's pinned Oomba Figures version
+  (`figuresKit(of_version)`), the parts the teacher hid left out, and a blank with the unit under its question. Save
+  keeps what they typed (`step_progress.answer`, a JSON list); Hand in (it asks first) marks every question once
+  (`marks` '1'/'0', `score` = % right, label `figures`) and the step is done; nothing changes after. A typed answer is
+  right when it is within half a unit in the last of the stored dp (dp 1: within 0.05), read in many spellings ("5 cm",
+  "x = 5", "2,5", "3/4", Arabic and full-width digits). After handing in each question says Right or Not right, and the
+  score shows. The student side is not behind the tester list: the step only exists because a tester assigned it.
+- **Answers are never sent early.** A student gets the answers and worked lines only when all three hold: the teacher
+  turned on "Show answers after the due date", the due date is over (the school's time zone: `lessons.lateFrom`), and
+  that student has handed in (so a late student cannot read the answers and then hand in). Until then the server leaves
+  out answer, value and worked lines from the page and from `GET /api/progress/:cl/:step/figures`, and never sends the
+  figure's data. Judgment call: the student page draws the figures on the server instead of loading Oomba Figures with
+  `figTag` in the browser, because for many kinds the figure's data is the answer (a ruler's or caliper's reading, a
+  protractor's angle, a mapping diagram's outputs), and Oomba Figures keeps values in `data-*` attributes of its SVG, so
+  those are stripped too (only `data-of` stays). Once answers are allowed the full figure is drawn. The tests check the
+  answers, worked lines and answer fields are absent from the student HTML and JSON in every other case.
+- **Teachers.** The class's lesson page (the teacher's preview) shows the answer key under each question. The lesson's
+  progress page shows the step's score in its cell (right/total and %, like a quiz), a panel with how many handed in,
+  how many got each question right (counts only), each student's answers in roster order (never ranked), and the "Show
+  answers after the due date" switch (it needs a due date; the class's teachers and school admins can change it). The
+  gradebook and the Score count a handed-in worksheet like a quiz step (one point per question).
+- **Not in the step editor.** `figures` is not in `STEP_KINDS`, so the lesson editor never offers it (a "Figure" step
+  there is Phase 3); a figures step cannot be added by hand or changed into another kind, and the editor shows how many
+  questions it has instead of an edit form.
+- **Gate.** Assigning stays behind the Figures gate (`FIGURES` and the Manipulatives tester list): anyone else gets the
+  same 404 on the assign API as on every `/figures` page. A tester can assign only their own worksheet, only to a class
+  they teach.
+
+- **Assign is next.** Assigning a worksheet to a class with open and due dates, and the student view with answer
+  blanks, are not built: delivering a worksheet through the lessons flow needs a new lesson step kind (snapshotting the
+  questions like the quiz step, rendering figures and answer blanks on the student lesson page, saving answers in
+  step_progress, the gradebook, and the rule that answers show after the due date only when the teacher allows it).
+  That touches the student lesson page, progress and the gradebook, so it is its own change. The builder shows "Assign
+  to class" disabled with "Coming next". Print and Save work now.
+
+## My worksheets in Crossword, The Big Divide and Algebra Builder (21 Nov 2026)
+Owner: "I also love the feature for saving worksheets in figures and manipulatives. Can you do the same for crossword
+puzzles, the big divide, and the algebra course." The three games already saved a teacher's set on Oomba under a class
+code (`game_sets`, docs/sdk.md "Question sets"), but a teacher could only find one again through the game's own list in
+their game save, which holds drafts and only remembers the last few. Now each game has a list of everything saved on
+Oomba, like Figures' "My worksheets" and the manipulatives' saved boards.
+- **Who sees it.** School staff and the platform admin (`INIT.mySets`, `BRB.canListSets`), in the published game, not in
+  a preview. Students, children, guests and family grown-ups never see the button (the grown-up fence refuses the routes
+  as well). The routes themselves answer any signed-in, non-guest owner for their own sets, so a set a child saved
+  before this is still theirs to delete through the API; nothing in the games offers it to them.
+- **The server** (`server/services/game-sets.js` `listMine`, `oneMine`, `remove`, `rename`, `duplicate`, `labelOf`,
+  `sizeOf`, `codeOf`; `server/routes/games.js`): `GET /api/games/:id/sets` (newest first, each with its class code, name,
+  an English label, its size, when it changed and its items, so Open needs no second call), `DELETE
+  /api/games/:id/sets/:set`, `POST .../rename` `{ title }` and `POST .../duplicate`. Owner only: anyone else's set, a bad
+  id and another game's set are all the same 404. Guests get 403, signed out 401. 60 calls a minute per account, as
+  saving. A copy counts toward the 200 sets a teacher may keep in a game.
+- **Names.** Migration `0097_game_sets_title` gives `game_sets` a `title` ('' until named; only its owner sees it). A name
+  goes through the site's text filter (`cleanText`: rude words, personal details, links), at most 60 characters. A name
+  sent with a save that the filter refuses is left out and the set still saves. Crossword's name is its puzzle's title,
+  so renaming a crossword changes the title students see, and saving it from the game names it after its title. The Big
+  Divide now sends its activity's title when it saves (`BRB.saveQuestionSet(items, id, { title })`), so the list shows
+  the names teachers already gave their activities; before, sets held no free text at all for these two math games, and
+  the name is still kept out of the set's items. Algebra Builder sets have no name until renamed: the list shows "3
+  questions" and what kinds. A copy is named "Copy of ..." in the teacher's language (`game.sets.copyOf`, all 13 locales).
+- **In each game** the list has Open (into the game's own editor: Crossword's builder, The Big Divide's activity editor,
+  Algebra Builder's question set page; saving there keeps the same class code and link), Print and the answer key
+  (Crossword and The Big Divide, the existing print; the key only for school staff, as before), Copy link, Duplicate,
+  Rename (inline, Enter saves, Escape cancels) and Delete with a confirm that says the class code and link stop working.
+  An empty list points to making one. Crossword's list is a widget card like its other screens (not the Oomba Kit), with
+  its own words in its 13 languages; The Big Divide's matches its activities page, in its 12 word tables; Algebra Builder
+  is English only, like the rest of it, and calls them question sets ("My question sets"), its own word.
+- **Deleting** a worksheet also takes its copies out of the game's own list (Crossword's "Your crosswords", The Big
+  Divide's activities, Algebra Builder's recent sets), so it does not linger there as a draft without a code. Renaming
+  updates those copies' titles. The printed instructions a teacher wrote stay in the game save with the activity they
+  belong to, and are used when printing from the list.
+- **Not built.** Algebra Builder's committed page (`seed-games/algebra-builder.html`) was not rebuilt in this change:
+  the vendored math field's built files (`tools/algebra-builder/vendor/mathfield-*/dist`) are ignored by git and were not
+  in the checkout, so `build.mjs` (and `--check`) cannot run there. The sources carry the feature; run
+  `npm run build:algebra-builder` where those files are, and the browser test (tests/unit/game-my-sets-browser.test.js)
+  runs once the page has it.
+- **Tests.** tests/unit/game-my-sets.test.js (the routes: owner only, 404 for others, guests and the fence refused,
+  delete, rename through the filter, duplicate and the 200 limit, the rate limit, who the frame offers it to, the SDK and
+  the page's message checks) and tests/unit/game-my-sets-browser.test.js (each game in Chromium: the list, Open and save
+  under the same code, Print, Copy link, Rename, Duplicate, Delete with its confirm, the empty list, and no button for a
+  student).
+
+## My worksheets in Builder classroom activities (Oomba Canvas 1.4.0) (21 Nov 2026)
+Owner, after My worksheets in Crossword and The Big Divide: "make sure the builder knows to do this for teachers who
+build lessons", and "The worksheet buttons are way too busy, can we make this look a bit more simple".
+- **Built into the platform, not left to the model.** Oomba Canvas 1.4.0 (new files; 1.0.0 to 1.3.0 byte for byte as
+  they shipped) draws My worksheets itself (`canvas/src/sets.js`), the server keeps them as game sets of a new kind
+  (`game-sets.js CANVAS_KIND`, `cleanCanvasItems`; `routes/games.js canvasSetVersion` / `setKind`), and the Builder's
+  CANVAS RULES (generated from docs/canvas-api.md) only say that every lesson activity keeps worksheets by itself:
+  keep the questions as data, keep the setup's "worksheet" or "generator" so they print, and never build saving, class
+  codes, links, a list or a print button of their own. New activities start on 1.4.0 (the starter's tag); an older
+  activity moves to it only when saved from the Activity panel, as with 1.3.0. No migration: `game_sets` (with 0097's
+  title) holds them, owner-scoped per game id.
+- **Which activities.** Every Builder classroom activity on 1.4.0, whatever it is for (an activity for a worksheet or a
+  generator also prints them). Gating on the purpose alone would have left out the fixed-list, screen-only activities
+  the setup still makes when no generator fits.
+- **Who.** School staff and the platform admin (`INIT.mySets`), in the published activity, never in a preview or under
+  "As a student". Saving is refused (403) to anyone else, so a student's or a child's account never owns a set; the
+  list, rename, duplicate and delete are the owner's only (anyone else's is the same 404 as one that isn't there).
+- **What a worksheet holds.** The questions on screen (at most 20, the play page's limit for a set), each cleaned by the
+  activity's own pinned kit file (only the fields the kit reads), every piece of text in them through the site's text
+  filter (like Crossword's words), and the set must pass the kit's self-test and Oomba Figures' check for that
+  activity. Nothing a student did.
+- **The simple list** (the design the owner asked for): one row each, the name in bold, one quiet line ("5 questions ·
+  Nov 21") with the class code as a small chip, the whole row opens it; at the end only 🖨 Print and ⋯ More (Answer
+  key, Copy link, Duplicate, Rename, Delete last in red with a question). The menu takes the arrow keys, Home, End,
+  Escape and a click outside, and gives focus back to ⋯. 44 px targets; it fits at 375 px (in the Teacher menu there).
+  "💾 Save as worksheet" sits at the top of the card. The teacher bar stays one line at 1024 and 1280 px: its button
+  reads "📄 Worksheets" (the icon alone under 1180 px; "My worksheets" to screen readers and as a tooltip), and "students
+  don't see this bar" shows only from 1440 px (a tooltip on "Teacher" below). A worksheet opened from the list replaces the set on that screen
+  (a line under the teacher's controls says which; New set leaves it); its link plays exactly its questions for
+  everyone, and a link to a deleted one plays the activity's own questions and says so.
+- **Printing** a worksheet sends its code (`{ k: 'canvas', set, n, paper, key }`); the server prints the saved questions
+  with the version's kit file, with the class code and link in the footer. The answer key stays the maker's and school
+  staff's.
+- **The one text box** in the kit is the teacher's rename box (staff only); students still type digits only. The kit
+  test checks there is exactly one, in sets.js.
+- **Words** in the kit's 12 languages (`WORDS_140`); the server's strings were already there.
+- **Not built.** Assign to a class from the list (the official games' Assign stays theirs); a set game's class code
+  box for students in the activity (a link or QR is how students get there).
+- **Tests.** tests/unit/canvas-worksheets.test.js (the cleaner, who may save, owner-only routes, the frame's flags, the
+  link, printing by code), tests/unit/canvas-worksheets-browser.test.js (Chromium, in the production frame: save, the
+  row, Print, the More menu by keyboard, Copy link, Duplicate, Rename, Delete with its question, Open, 375 px, a
+  student, a deleted worksheet), the CANVAS RULES line in builder-canvas.test.js, and the 1.4.0 lock in canvas-kit.

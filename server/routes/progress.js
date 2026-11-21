@@ -39,6 +39,8 @@ import * as SC from '../services/scores.js';
 import { router as studentRoutes, studentHref } from './student-report.js';
 import { storyResults } from './library.js';
 import * as LIB from '../services/library.js';
+import * as FS from '../services/figures-steps.js';
+import { figuresStepHtml } from '../views/figures-step.js';
 /** The class teams editor's script (Oomba Live part 3; the page shows the saved state without it). */
 const CLASS_TEAMS_JS = fs.existsSync(fileURLToPath(new URL('../../public/js/live-class-teams.js', import.meta.url)));
 const liveHostOk = u => liveOn() && liveCanHost(u);
@@ -48,7 +50,7 @@ router.use(studentRoutes);   // /class/:id/student/:uid: one student's page for 
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
 const b = req => req.body || {};
 const nameOf = r => r.roster_name || r.display_name;
-const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩', story: '📚' };
+const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩', story: '📚', figures: '📐' };
 /** Official games a class plays only when the teacher hosts them live (the Oomba Live built-in modes, Would You Rather
  *  Live among them): a lesson step on one of them shows "Your teacher hosts this live" instead of Play and "I played it",
  *  and the server refuses the student's own progress calls on it: the live run writes that cell (CS Quest P5;
@@ -307,7 +309,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
     const isDone = x.status === 'done';
     const reviewed = x.reviewed_at ? t('progress.lesson.read') : t('progress.lesson.new');
     // A quiz the site checked: how many were right and the % (the same figure the student saw).
-    const qz = s.kind === L.QUIZ_KIND ? P.quizResult(x) : null;
+    const qz = s.kind === L.QUIZ_KIND || s.kind === L.FIGURES_KIND ? P.quizResult(x) : null;
     const extra = qz ? html`<span class="st-score st-quiz" title="${t('progress.lesson.quizScore', qz)}"><span dir="ltr" aria-hidden="true">${qz.right}/${qz.total} · ${qz.pct}%</span><span class="sr-only">${t('progress.lesson.quizScore', qz)}</span></span>`
       : s.kind === 'game' && x.score !== null ? html`<span class="st-score" dir="ltr">${f.int(x.score)}${x.label ? ` ${x.label}` : ''}</span>${x.helped ? html`<span class="st-helped" title="${t('progress.lesson.helped')}">${ico('👀', { size: 18 })}<span class="sr-only">${t('progress.lesson.helped')}</span></span>` : ''}`
       : s.kind === 'question' && x.answer ? html`<span class="${x.reviewed_at ? 'st-read' : 'chip-s warn'}" title="${reviewed}"><span aria-hidden="true">${x.reviewed_at ? '✔️' : '✍️'}</span><span class="sr-only">${reviewed}</span></span>` : '';
@@ -375,6 +377,27 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
         ${reviewForm(s, x, p, firstOpen(list, p))}</li>`; })}</ul>` : html`<p class="muted">${t('cs.review.noHandIns')}</p>`}
     </section>`;
   });
+  // Figures worksheets (services/figures-steps.js): how many got each question right (counts, never a ranking), each
+  // student's answers in roster order, and "Show answers after the due date".
+  const figs = lp.steps.map((s, i) => ({ s, i })).filter(({ s }) => s.kind === L.FIGURES_KIND).map(({ s, i }) => {
+    const full = fullSteps.find(x => x.id === s.id) || s;
+    const items = FS.itemsOf(full), rows = lp.students.map(p => p.cells[i]).filter(Boolean);
+    const totals = FS.questionTotals(full, rows), handed = rows.filter(FS.handedIn).length;
+    const cell = (p, k) => { const x = p.cells[i]; if (!FS.handedIn(x)) return html`<td><span class="muted" aria-hidden="true">–</span><span class="sr-only">${t('progress.status.none')}</span></td>`;
+      const a = FS.answersOf(x, items.length)[k], right = x.marks[k] === '1';
+      return html`<td class="${right ? 'fs-ok' : 'fs-bad'}"><span aria-hidden="true">${right ? '✓' : '✗'}</span><span class="sr-only">${right ? t('figures.step.right') : t('figures.step.notRight')}</span> <span dir="ltr">${a || '–'}</span></td>`; };
+    return html`<section class="panel answers fs-results" id="fr-${s.id}" aria-labelledby="fr-h-${s.id}"><h2 id="fr-h-${s.id}">${ico('📐', { size: 28 })} ${s.title || t('lessons.kinds.figures')}</h2>
+      <form class="fs-show" data-api="/api/progress/${lp.cl.id}/${s.id}/show-answers" data-reload novalidate>
+        <label class="chk"><input type="checkbox" name="on" value="1" ${full.show_answers ? raw('checked') : ''} ${lp.cl.due_at ? '' : raw('disabled')}> <b>${t('figures.step.showAnswers')}</b></label>
+        <p class="small muted">${lp.cl.due_at ? t('figures.step.showAnswersHint') : t('figures.step.showNeedsDue')}</p>
+        ${lp.cl.due_at ? html`<div class="row"><button class="btn btn-sm" type="submit">${t('school.save')}</button></div>` : ''}<p class="err form-err" aria-live="polite"></p></form>
+      <p class="small muted">${t('figures.step.handedInCount', { done: handed, total: lp.students.length })}</p>
+      ${handed ? html`<ul class="plain fs-totals">${totals.map((x, k) => html`<li><b>${t('figures.step.questionN', { n: k + 1 })}</b> <span>${t('figures.step.rightOf', { right: x.right, total: x.handedIn })}</span> <span class="small muted" dir="auto">${items[k] ? items[k].answer : ''}</span></li>`)}</ul>
+        <div class="gbwrap" tabindex="0" role="region" aria-label="${t('figures.step.answersTable')}"><table class="tbl gradebook fs-table"><thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>${items.map((_, k) => html`<th scope="col">${k + 1}</th>`)}<th scope="col">${t('gradebook.score')}</th></tr></thead>
+        <tbody>${lp.students.map(p => html`<tr><th scope="row" class="gb-name"><span class="pp">${avatar(p, 28)}${staffStudentName(p)}</span></th>${items.map((_, k) => cell(p, k))}<td>${FS.handedIn(p.cells[i]) ? html`<b dir="ltr">${p.cells[i].score}%</b>` : html`<span class="muted">–</span>`}</td></tr>`)}</tbody></table></div>`
+        : html`<p class="muted">${t('figures.step.noneYet')}</p>`}
+    </section>`;
+  });
   // The whole lesson's rubric: one card per student, scored with the levels, a comment per criterion and feedback.
   const lessonRb = libRubric(l.rubric_id);
   const whole = lessonRb && lp.students.length ? html`<section class="panel answers" id="lesson-rubric" aria-labelledby="lr-h"><h2 id="lr-h">${ico('📏', { size: 28 })} ${t('rubrics.attach.lessonTitle')}</h2>
@@ -404,6 +427,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
         <td class="small muted">${p.last ? f.ago(p.last) : '–'}</td></tr>`)}</tbody></table></div>
       <p class="small muted gb-key"><span>${ico('✅', { size: 18 })} ${t('progress.key.done')}</span><span>◐ ${t('progress.status.started')}</span>${lp.lateFrom !== null ? html`<span>${ico('⏰', { size: 18 })} ${t('gradebook.stepLate')}</span>` : ''}${hasGame ? html`<span id="key-self">${ico('☑️', { size: 18 })} ${t('progress.lesson.selfMarked')}</span>` : ''}${anyHelped ? html`<span>${ico('👀', { size: 18 })} ${t('progress.lesson.helped')}</span>` : ''}</p></section>`}
   ${questions.length || builds.length ? html`<div id="answers">${answers}${builds}</div>` : ''}
+  ${figs}
   ${whole}`;
   page(req, res, { title: `${l.title} · ${c.name}`, active: 'classes', body, head: CSS, scripts: ['/js/schools.js'], back: `/class/${c.id}/progress`, backLabel: t('progress.gradebook.title') });
 });
@@ -503,6 +527,8 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
       ${isDone ? html`<p class="sc-score">${ico('🏆', { size: 18 })} ${t('lessons.quiz.done', { score: x.score ?? 0 })}</p>` : html`<button class="btn btn-primary btn-big lv-qstep-go" type="button">▶ ${t('lessons.quiz.start')}</button>`}
       ${jsonData(`lv-qstep-${s.id}`, { right: t('lessons.quiz.right'), wrong: t('lessons.quiz.wrong'), next: t('lessons.quiz.next'), of: t('lessons.quiz.of'), done: t('lessons.quiz.done'), read: t('live.play.read'), aiVoice: t('live.play.aiVoice', { provider: 'OpenAI' }) })}
     </section>`;
+    // A Figures worksheet (services/figures-steps.js): the figures drawn here, a blank under each, Save and Hand in.
+    if (s.kind === L.FIGURES_KIND) return figuresStepHtml(t, FS.viewFor(s, cl, x, { lang: req.locale || 'en' }), { student: { api: `${api(s)}/figures` }, stepId: s.id, showAnswers: !!s.show_answers, dueSet: !!cl.due_at, dueOver: FS.dueOver(cl) });
     if (s.kind === 'question') return html`
       <form class="answerform" data-api="${api(s)}/answer" data-reload novalidate>
         <label class="sr-only" for="ans-${s.id}">${t('progress.student.yourAnswer')}</label>
@@ -523,7 +549,8 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
     if (!lg && !gameLiveReady(g)) return '';
     return html`<a class="btn" href="/live?cl=${cl.id}&step=${s.id}&${lg ? `mode=${lg.mode}` : `game=${s.game_id}`}">${ico('📡', { size: 18 })} ${t('live.entry.hostLive')}</a>`;
   };
-  const preview = s => (s.kind !== 'game' ? '' : !L.playableBy(s, c.school_id, c.id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>`
+  const preview = s => (s.kind === L.FIGURES_KIND ? figuresStepHtml(t, FS.viewFor(s, cl, null, { lang: req.locale || 'en', teacher: true }), { stepId: s.id, showAnswers: !!s.show_answers, dueSet: !!cl.due_at })
+    : s.kind !== 'game' ? '' : !L.playableBy(s, c.school_id, c.id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>`
     : s.game_slug ? html`<div class="row"><a class="btn" href="${playHref(s, null)}">▶ ${t('lessons.view.play', { title: s.game_title })}</a>${hostLive(s)}</div>` : '');
   const quizLive = teacher && liveHostOk(u) && st.some(s => s.kind === 'question')
     ? html`<form data-api="/api/live/sets/from-lesson/${l.id}"><button class="btn" type="submit">${ico('📡', { size: 18 })} ${t('live.entry.quizLesson')}</button></form>` : '';
@@ -560,6 +587,34 @@ router.post('/api/progress/:clid/:sid/quiz', requireUser, quizStepsOn, rateLimit
   const r = P.quizAnswer(req.user, req.params.clid, req.params.sid, whole(b(req).i), whole(b(req).c));
   if (!r.ok) return r.code === 'notFound' ? no(req, res) : res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
   res.json({ ok: r.right, answer: r.answer, next: r.next, score: r.score });
+});
+/** A figures step for the student as JSON: questions, units, figures (SVG) and what they typed; never the answers or the
+ *  worked lines before they are allowed (services/figures-steps.js reveals). */
+router.get('/api/progress/:clid/:sid/figures', requireUser, (req, res) => {
+  const r = P.figuresFor(req.user, req.params.clid, req.params.sid, { lang: req.locale || 'en' });
+  if (!r.ok) return no(req, res);
+  res.set('Cache-Control', 'no-store');
+  res.json(r.view);
+});
+/** Save or hand in a figures step: { answers: ['5', ...], handIn } or the page's form (a0, a1, ..., hand '0' | '1'). */
+router.post('/api/progress/:clid/:sid/figures', requireUser, rateLimit('progress', 240, 60e3), (req, res) => {
+  const body = b(req);
+  let answers = Array.isArray(body.answers) ? body.answers : null;
+  if (!answers) {
+    const idx = Object.keys(body).map(k => /^a(\d{1,2})$/.exec(k)).filter(Boolean).map(m => +m[1]);
+    answers = idx.length ? Array.from({ length: Math.max(...idx) + 1 }, (_, i) => (typeof body[`a${i}`] === 'string' ? body[`a${i}`] : '')) : [];
+  }
+  const handIn = body.handIn === true || body.hand === '1' || body.hand === 1;
+  const r = P.figuresAnswer(req.user, req.params.clid, req.params.sid, answers, { handIn });
+  if (!r.ok) return r.code === 'notFound' ? no(req, res) : res.status(400).json({ error: req.t(r.code === 'handedIn' ? 'figures.step.errors.handedIn' : r.code === 'answerEmpty' ? 'figures.step.errors.empty' : 'errors.api.badRequest'), code: r.code });
+  res.json({ ok: true, handedIn: r.handedIn, score: r.score, toast: req.t(r.handedIn ? 'figures.step.handedIn' : 'figures.step.saved') });
+});
+/** "Show answers after the due date" for one assigned worksheet (the class's teachers and school admins): { on }. */
+router.post('/api/progress/:clid/:sid/show-answers', requireUser, (req, res) => {
+  const on = b(req).on === true || b(req).on === '1' || b(req).on === 'on';
+  const r = FS.setShowAnswers(req.user, req.params.clid, req.params.sid, on);
+  if (!r.ok) return r.code === 'notFound' ? no(req, res) : res.status(400).json({ error: req.t('figures.assign.errors.needsDue'), code: r.code });
+  res.json({ ok: true, on: r.on, toast: req.t(r.on ? 'figures.step.showIsOn' : 'figures.step.showIsOff') });
 });
 /** A build step: the student's own Studio game for it (made the first time, reopened after), with the teacher's idea in
  *  the Builder box. A step with a Studio template (lesson_steps.template, e.g. the capstone's Quiz Show) starts from that

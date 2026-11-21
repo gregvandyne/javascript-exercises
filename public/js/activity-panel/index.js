@@ -20,7 +20,8 @@ const narrow = matchMedia('(max-width: 960px)');
 
 export async function mountPanel(S0, H) {
   const A0 = S0.activity;
-  await Promise.all([loadScript(A0.kitSrc), loadScript(A0.figures)]);
+  // Oomba Figures from 1.1.0: its subject packs load after the core file (each registers its kinds into it)
+  await Promise.all([loadScript(A0.kitSrc), loadScript(A0.figures).then(() => Promise.all((A0.figurePacks || []).map(loadScript)))]);
   const chat = $('.st-chat');
   const M = { sel: 0, genSeed: 7, genFrom: null, genRange: null, genKeep: null, genMore: false, helpMore: false, lastSave: null };
   function load(A, S) {

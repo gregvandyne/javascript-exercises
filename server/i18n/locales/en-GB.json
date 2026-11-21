@@ -1002,5 +1002,10 @@
       "changesBloomSA": "Oomba resized the pictures and shows the book one page at a time; these adapted pages are shared under the same licence, {license}. Bloom Library, SIL Global and the book's publisher do not endorse Oomba."
     },
     "footSources": "Stories and pictures: Pratham Books (StoryWeaver) and the authors and publishers on Bloom Library, each book under its own open licence, shown with the book."
+  },
+  "figures": {
+    "subjects": {
+      "math": "Maths"
+    }
   }
 }

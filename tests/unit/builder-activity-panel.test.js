@@ -66,7 +66,7 @@ const owner = await signup('PanelTeacher');
 const stranger = await signup('PanelStranger');
 
 // ---------------------------------------------------------------- the pure part
-test('activity-data: only the data block changes, problems are cleaned by the kit, the kit tag moves to 1.3.0 only here', () => {
+test('activity-data: only the data block changes, problems are cleaned by the kit, the kit tag moves to the newest kit (1.4.0) only here', () => {
   const html = page('1.2.0');
   assert.equal(AD.panelOf(html).kit, '1.2.0');
   const c = AD.cleanPanel(DATA, { config: { supports: ['guided', 'own'], support: 'own', count: 2, purpose: ['screen'] }, problems: [{ ...DATA.problems[1], extra: 'x' }, DATA.problems[0]], gen: null });
@@ -78,7 +78,7 @@ test('activity-data: only the data block changes, problems are cleaned by the ki
   assert.equal(AD.cleanPanel(DATA, { problems: DATA.problems, gen: { tool: 'nope' } }).code, 'gen');
   assert.equal(AD.cleanPanel(DATA, { config: { count: 40 }, problems: DATA.problems }).code, 'config');
   const out = AD.applyPanel(html, c.data);
-  assert.equal(canvasVersion(out), '1.3.0', 'saved from the panel: the newest kit');
+  assert.equal(canvasVersion(out), '1.4.0', 'saved from the panel: the newest kit');
   assert.equal(out.replace(/<script\b[^>]*oomba-canvas[^>]*><\/script>/, '').replace(/<script type="application\/json" id="oc-activity">[\s\S]*?<\/script>/, ''),
     html.replace(/<script\b[^>]*oomba-canvas[^>]*><\/script>/, '').replace(/<script type="application\/json" id="oc-activity">[\s\S]*?<\/script>/, ''), 'nothing else in the page changes');
   assert.deepEqual(AD.newTexts(DATA, { ...DATA, problems: [{ ...DATA.problems[0], q: 'How warm is it?' }] }), ['How warm is it?'], 'only what the teacher typed is screened');
@@ -151,14 +151,14 @@ test('a failing self-test saves nothing and names the problem', async () => {
   assert.match(r.json.problems[0].at, /problem 1/); assert.match(r.json.problems[0].why, /must end on the answer/);
   assert.equal(games.getGame(g.id).current_version_id, ver.id);
 });
-test('an activity on an older kit keeps its pin until it is saved from the panel, then pins 1.3.0', async () => {
+test('an activity on an older kit keeps its pin until it is saved from the panel, then pins the newest kit (1.4.0)', async () => {
   const { g, ver } = activityGame(owner, '1.2.0');
   const st = await owner(`/api/studio/${g.id}`);
-  assert.equal(st.json.activity.kit, '1.2.0'); assert.equal(st.json.activity.latest, '1.3.0');
+  assert.equal(st.json.activity.kit, '1.2.0'); assert.equal(st.json.activity.latest, '1.4.0');
   assert.equal(canvasVersion(games.getVersion(games.getGame(g.id).current_version_id).html), '1.2.0', 'opening the Studio moves nothing');
   const r = await owner(`/api/studio/${g.id}/activity`, { method: 'POST', body: body(ver.id, DATA, [{ k: 'help' }]) });
   assert.equal(r.status, 200, r.text);
-  assert.equal(canvasVersion(games.getVersion(r.json.version.id).html), '1.3.0');
+  assert.equal(canvasVersion(games.getVersion(r.json.version.id).html), '1.4.0');
   assert.equal(canvasVersion(games.getVersion(ver.id).html), '1.2.0', 'the old version stays as it was');
   const arcade = games.createGame(owner.user.id, { title: 'Arcade' }); games.addVersion(arcade.id, '<title>A</title><p>arcade</p>', { createdBy: owner.user.id });
   const a = await owner(`/api/studio/${arcade.id}`); assert.equal(a.json.activity, null, 'no panel for an arcade game');
