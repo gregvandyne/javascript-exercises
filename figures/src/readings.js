@@ -7,9 +7,11 @@
 import { node, label, line, path, frame, palette, fmt, isNum, text, r2 } from './svg.js';
 import { figWords } from './words.js';
 import { ruTicks, ruTickHeight, ruPerUnit, ruText } from './ported/ruler.js';
+import { isLab, labCheck, labSolve, labDraw, LAB_TYPES } from './labware.js';
+import { lwDisplaced } from './ported/labware.js';
 import { GA_CALIPER, GA_CALIPER_RANGE, GA_CALIPER_MAX_ZERO, gaCaliper, gaCaliperRead, gaSlideMarks, GA_MICROMETER_RANGE, GA_MICROMETER_MAX_ZERO, gaMicrometerRead, gaThimbleMarks, gaCorrected } from './ported/gauges.js';
 
-const TYPES = ['thermometer', 'cylinder', 'spring', 'ruler', 'caliper', 'micrometer'];
+const TYPES = ['thermometer', 'cylinder', 'spring', 'ruler', 'caliper', 'micrometer', ...LAB_TYPES, 'displacement'];
 const UNITS = { thermometer: '°C', cylinder: 'mL', spring: 'N' };
 const near = (x, s) => Math.abs(x / s - Math.round(x / s)) < 1e-6;
 /**
@@ -21,6 +23,8 @@ export const reading = {
   check(d) {
     const out = [];
     if (!d || !TYPES.includes(d.type)) return [`"type" must be one of ${TYPES.join(', ')}`];
+    if (isLab(d)) return labCheck(d);
+    if (d.type === 'displacement') return dispCheck(d);
     if (d.type === 'ruler') return rulerCheck(d);
     if (d.type === 'caliper' || d.type === 'micrometer') return gaugeCheck(d);
     if (!isNum(d.min) || !isNum(d.max) || d.max <= d.min) out.push('"min" and "max" must be numbers with min below max');
@@ -40,6 +44,8 @@ export const reading = {
    *  ruler reads it ("3 3/8"); null when the data cannot be drawn. */
   solve(d) {
     if (reading.check(d).length) return null;
+    if (isLab(d)) return labSolve(d);
+    if (d.type === 'displacement') return dispSolve(d);
     if (d.type === 'caliper' || d.type === 'micrometer') return gaugeSolve(d);
     if (springExtras(d)) return springSolve(d);
     if (d.type !== 'ruler') return { type: d.type, value: d.value, unit: text(d.unit, 6) || UNITS[d.type] };
@@ -47,6 +53,8 @@ export const reading = {
     return { type: 'ruler', value: r.value, length: r.value, start: r.start, end: r.end, unit: r.unit, text: rulerText(r, 'en') };
   },
   draw(d, o) {
+    if (isLab(d)) return labDraw(d, o);
+    if (d.type === 'displacement') return dispDraw(d, o);
     if (d.type === 'ruler') return rulerDraw(d, o);
     if (d.type === 'caliper') return caliperDraw(d, o);
     if (d.type === 'micrometer') return micrometerDraw(d, o);
@@ -294,6 +302,57 @@ function micrometerDraw(d, o) {
   const Ht = y + 120;
   kids.push(label(w / 2, Ht - 18, gaWords(d, o), { anchor: 'middle', size: 17, weight: 800, colour: P.ink, cls: 'of-value' }));
   return frame(w, Ht, kids, { ...o, kind: 'reading' }, o.title || figWords(lang)('micrometer'));
+}
+
+// ---------------------------------------------------------------- volume by displacement (1.2.0)
+// { type: "displacement", before, after (the water's level without and with the object in, mL), min?: 0, max, step,
+// major?, unit?: "mL", object?: "rock" | "marbles", count?: 1 to 5 marbles }. Two measuring cylinders as the cylinder
+// reading draws them, side by side; each reading on a mark or half way between two, after above before. The object
+// lies under the water in the second, its drawn area exactly the area of the water it pushed up (the rise across the
+// tube), so it must fit under the surface (refused otherwise: start with more water). OF.solve gives the object's
+// volume, after less before.
+const DISP_KEYS = ['kind', 'hide', 'type', 'before', 'after', 'min', 'max', 'step', 'major', 'unit', 'object', 'count'];
+/** The cylinder's scale for these readings (as the cylinder reading draws it) and where the object goes in it. */
+function dispGeom(d) {
+  const min = d.min ?? 0, steps = Math.round((d.max - min) / d.step), H = Math.max(240, Math.min(420, steps * 7)), bot = 30 + H, x0 = 60, cw = 70;
+  const Y = v => bot - ((v - min) / (d.max - min)) * H, rise = Y(d.before) - Y(d.after), area = cw * rise, floor = bot + 2, room = floor - (Y(d.after) + 4);
+  if ((d.object || 'rock') === 'rock') { const w = 0.72 * cw, h = area / ((Math.PI / 4) * w); return { Y, x0, cw, bot, kind: 'rock', w, h, fits: h <= room, floor }; }
+  const n = d.count ?? 2, r = Math.sqrt(area / (n * Math.PI)), per = Math.max(1, Math.floor((cw - 4) / (2 * r + 1))), rows = Math.ceil(n / per);
+  return { Y, x0, cw, bot, kind: 'marbles', n, r, per, fits: 2 * r <= cw - 4 && rows * 2 * r <= room, floor };
+}
+function dispCheck(d) {
+  const odd = Object.keys(d).filter(k => !DISP_KEYS.includes(k));
+  if (odd.length) return [`a displacement reading does not take "${odd[0]}" (it takes before, after, min, max, step, major, unit, object, count)`];
+  if (d.object !== undefined && !['rock', 'marbles'].includes(d.object)) return ['"object" must be "rock" or "marbles"'];
+  if (d.count !== undefined && (d.object !== 'marbles' || !Number.isInteger(d.count) || d.count < 1 || d.count > 5)) return ['"count" is the marbles, 1 to 5 (with "object": "marbles")'];
+  const out = [], cyl = v => reading.check({ type: 'cylinder', value: v, min: d.min ?? 0, max: d.max, step: d.step, major: d.major }).map(m => m.replace('"value"', '').trim());
+  for (const k of ['before', 'after']) for (const m of cyl(d[k])) out.push(`"${k}": ${m}`);
+  if (out.length) return out;
+  if (d.after <= d.before) return ['"after" (with the object in) must be above "before"'];
+  if (!dispGeom(d).fits) out.push('the object would stick out of the water (its volume is the rise, so it is too tall for the water below the surface): start with more water');
+  return out;
+}
+function dispSolve(d) {
+  const dp = Math.max(dec(d.step), dec(d.step / 2));
+  return { type: 'displacement', before: d.before, after: d.after, volume: lwDisplaced(d.before, d.after, dp), value: lwDisplaced(d.before, d.after, dp), unit: text(d.unit, 6) || 'mL' };
+}
+function dispDraw(d, o) {
+  const P = palette(o), lang = o.lang, W = figWords(lang), g = dispGeom(d), unit = text(d.unit, 6) || 'mL', blank = o.hide === true || o.hide === 'value';
+  const base = { type: 'cylinder', min: d.min ?? 0, max: d.max, step: d.step, major: d.major };
+  const inner = v => { const f = reading.draw({ ...base, value: v }, o); return f.kids.slice(2).filter(k => !(k.attrs && k.attrs.class === 'of-value')); };
+  const dp = Math.max(dec(d.step), dec(d.step / 2)), say = v => (blank ? `______ ${unit}` : `${fmt(v, dp, lang)} ${unit}`);
+  const right = inner(d.after), obj = [];
+  if (g.kind === 'rock') obj.push(node('ellipse', { cx: r2(g.x0 + g.cw / 2), cy: r2(g.floor - g.h / 2), rx: r2(g.w / 2), ry: r2(g.h / 2), fill: o.print ? '#999999' : '#8A7F6E', stroke: P.ink, 'stroke-width': 1.6, class: 'of-object' }));
+  else for (let i = 0; i < g.n; i++) {
+    const row = Math.floor(i / g.per), inRow = Math.min(g.per, g.n - row * g.per), col = i % g.per, left = g.x0 + (g.cw - inRow * (2 * g.r + 1)) / 2;
+    obj.push(node('circle', { cx: r2(left + g.r + 0.5 + col * (2 * g.r + 1)), cy: r2(g.floor - g.r - row * 2 * g.r), r: r2(g.r), fill: o.print ? '#CCCCCC' : P.fill, stroke: P.ink, 'stroke-width': 1.4, class: 'of-object' }));
+  }
+  right.splice(2, 0, ...obj);
+  const Ht = g.bot + 96, kids = [node('g', { class: 'of-before' }, inner(d.before)), node('g', { class: 'of-after', transform: 'translate(200 0)' }, right),
+    label(95, 12, W('before'), { anchor: 'middle', size: 14, colour: P.ink2 }), label(295, 12, W('after'), { anchor: 'middle', size: 14, colour: P.ink2 }),
+    label(95, g.bot + 40, say(d.before), { anchor: 'middle', size: 15, weight: 700, colour: P.ink, cls: 'of-value' }), label(295, g.bot + 40, say(d.after), { anchor: 'middle', size: 15, weight: 700, colour: P.ink, cls: 'of-value' }),
+    label(195, Ht - 18, `${W('objectVolume')} = ${say(d.after - d.before)}`, { anchor: 'middle', size: 16, weight: 800, colour: P.ink, cls: 'of-value' })];
+  return frame(390, Ht, kids, { ...o, kind: 'reading' }, o.title || W('dispReading'));
 }
 
 export const READINGS = { reading };

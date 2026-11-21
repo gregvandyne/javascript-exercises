@@ -74,16 +74,16 @@
    "sri": "sha384-GVE87+94tY+GH6kPj/5F4mVZ3fUo64AudYGl24gX1sN2WeTkyxTEScA3xssYqkY2"
   },
   "oomba-figures/1.2.0/manifest.json": {
-   "sha256": "599d0a4ce5513989a1cb3482ce40a86a6ea55da30181b969c8929347b4a4b88e",
-   "sri": "sha384-az5L2q1hE3ZKI29b0mYX5q2BpBQ6J6np6Pw7QZB7TssTGG0pHusweq0L9Xr3NMcU"
+   "sha256": "8e65c2af7ed507dd4208557ffecd844d2b75831ab74ef88419cf03381b70590c",
+   "sri": "sha384-gE0bJpAbgtzepFb8Anp6qJLBVSu7gmYUf3isQfYDqr0nyAAAsxfSLwo5Zc5F/1/7"
   },
   "oomba-figures/1.2.0/oomba-figures.js": {
-   "sha256": "277746920f077fe5ffaec418b32b7385055075b5d37e9c531e29d1f3e81e46ee",
-   "sri": "sha384-hQhGzZRkyXBjBNjoOtjkhDDEcdLJIaZQ3BcX7ntXibPEtmBciTR+satwuMci+dJ/"
+   "sha256": "a63841c8b841eea4194d91fb45359342cc7a6256685c722169016cad82c7425d",
+   "sri": "sha384-QiA+fBa6+ol7RRW3HMmk4dfoJEBymzOKJrFyNx3ublKJ/nMnDrLzgu9/tt54bJ62"
   },
   "oomba-figures/1.2.0/packs/chem.js": {
-   "sha256": "5b774313bc7c78be34bc2086c8423885c1c151f8add6c43ca4d46b33f92ea948",
-   "sri": "sha384-xpf24Z6gOSaHrTa3vj7PTGPg1e+uOHyGskaqOJHPoejzBMjW3SHFDnS0BndB/NP7"
+   "sha256": "3d5143364efa310b1121109eb66b2d094ab25a783276f2c31f3d6a47e692dae0",
+   "sri": "sha384-D8EgO/qaeJ2iKpcMcoLfN0E4q5OlECOjEKGouo6AVx5tv252zM8mtTteHfFkrMKJ"
   },
   "oomba-figures/1.2.0/packs/data.js": {
    "sha256": "c80162d7a32fc4469e5ec9045c7b5c7427004251e1483cc49189fb0a66a3f740",
@@ -94,8 +94,8 @@
    "sri": "sha384-0t36oGzESEnImbh1C+ZnbxMk/AJm738RoZZBNWNhjoDCwb0pZRp638V9d/8zF3IE"
   },
   "oomba-figures/1.2.0/packs/measure.js": {
-   "sha256": "686bc40a9dac68cb4784fe291bb924dfb3d5d9e35a04b2edd14fbd1e1d8042af",
-   "sri": "sha384-Veyne0qGMAY6RJF/H4ixrRzYf2VwMNOYEQabzfP7jg94uBb3RJtk7xWSSKJzxCQl"
+   "sha256": "38ca2244bee54fa7bd4dd2d22aa50b35a297239a92f0c882693b5480005aa207",
+   "sri": "sha384-/0mWQTJIpgQmqXGYdXvRJ+olb89+IhnqNr29RKfsvkSAnT9lrGDLNTIBydAByCdC"
   },
   "oomba-figures/1.2.0/packs/physics.js": {
    "sha256": "71a8df338572c5f249c1c4246e4785dc0de7029a72c8d030183665d6527713c9",

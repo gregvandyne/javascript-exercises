@@ -62,6 +62,9 @@ const SAMPLES = {
   net: { solid: 'cube', side: 4 }, mappingDiagram: { inputs: [1, 2], outputs: [3, 4], arrows: [[1, 3], [2, 4]] },
   // 1.1.0 physics (tests/unit/figures-motion, -projectile, -waves)
   motionMap: { segments: [{ kind: 'forward', speed: 2, duration: 4 }], dt: 1 }, projectile: { speed: 20, angle: 45 }, waves: { amplitude: 3, wavelength: 4, cycles: 2 },
+  // 1.2.0 chemistry (tests/unit/figures-chem-spectra, -chem-energy, -chem-atoms, -labware)
+  massSpectrum: { element: 'Cl' }, heatingCurve: { substance: 'water' }, energyProfile: { levels: [50, 150, 20] }, nuclide: { element: 'C', mass: 14 },
+  lineSpectrum: { strips: [{ element: 'H' }] }, photoelectron: { element: 'Na' }, particles: { particles: [{ count: 6, look: { size: 'm', shade: 'gray' } }] },
 };
 
 test('every kind: plain data in, one accessible <svg> out, no problems for good data', () => {

@@ -74,7 +74,14 @@
         "titration",
         "bohr",
         "orbitals",
-        "lewis"
+        "lewis",
+        "massSpectrum",
+        "heatingCurve",
+        "energyProfile",
+        "nuclide",
+        "lineSpectrum",
+        "photoelectron",
+        "particles"
       ]
     },
     "measure": {
@@ -87,8 +94,8 @@
   },
   "files": {
     "oomba-figures.js": {
-      "sha256": "277746920f077fe5ffaec418b32b7385055075b5d37e9c531e29d1f3e81e46ee",
-      "sri": "sha384-hQhGzZRkyXBjBNjoOtjkhDDEcdLJIaZQ3BcX7ntXibPEtmBciTR+satwuMci+dJ/"
+      "sha256": "a63841c8b841eea4194d91fb45359342cc7a6256685c722169016cad82c7425d",
+      "sri": "sha384-QiA+fBa6+ol7RRW3HMmk4dfoJEBymzOKJrFyNx3ublKJ/nMnDrLzgu9/tt54bJ62"
     },
     "packs/math.js": {
       "sha256": "c92cc70a3cade1729f62bfe6c9c44939b749efa30d571b32b7fb81df9060dca1",
@@ -103,12 +110,12 @@
       "sri": "sha384-Udm03LvcH/l655tAYyny8aaEElf1qXQKwUKnv8GjhMrHrVbYXWJn0TJDSj6DNCCW"
     },
     "packs/chem.js": {
-      "sha256": "5b774313bc7c78be34bc2086c8423885c1c151f8add6c43ca4d46b33f92ea948",
-      "sri": "sha384-xpf24Z6gOSaHrTa3vj7PTGPg1e+uOHyGskaqOJHPoejzBMjW3SHFDnS0BndB/NP7"
+      "sha256": "3d5143364efa310b1121109eb66b2d094ab25a783276f2c31f3d6a47e692dae0",
+      "sri": "sha384-D8EgO/qaeJ2iKpcMcoLfN0E4q5OlECOjEKGouo6AVx5tv252zM8mtTteHfFkrMKJ"
     },
     "packs/measure.js": {
-      "sha256": "686bc40a9dac68cb4784fe291bb924dfb3d5d9e35a04b2edd14fbd1e1d8042af",
-      "sri": "sha384-Veyne0qGMAY6RJF/H4ixrRzYf2VwMNOYEQabzfP7jg94uBb3RJtk7xWSSKJzxCQl"
+      "sha256": "38ca2244bee54fa7bd4dd2d22aa50b35a297239a92f0c882693b5480005aa207",
+      "sri": "sha384-/0mWQTJIpgQmqXGYdXvRJ+olb89+IhnqNr29RKfsvkSAnT9lrGDLNTIBydAByCdC"
     },
     "LICENSE": {
       "sha256": "a222c2b3e67474e441a6f0e41413985087c96b45488fe32b49a586cdc777dd6f",
