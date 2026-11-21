@@ -272,9 +272,9 @@ router.get('/parents/:guide', (req, res) => {
     ${ctaEnd(req)}
     <section class="lp-sec" aria-labelledby="more-h">${el(t, 'h2', 'parents.guides.h', {}, ' id="more-h"')}
       ${guideCards(req, guide)}
-      <ul class="chips lp-more"><li><a class="chip" href="${lp(req, '/parents')}"><span aria-hidden="true">👪</span>${t('learn.parentsLink')}</a></li>
-        <li><a class="chip" href="${lp(req, '/learn/make-a-game')}"><span aria-hidden="true">🛠️</span>${t('learn.hubs.makeAGame.name')}</a></li>
-        <li><a class="chip" href="${lp(req, '/safety')}"><span aria-hidden="true">🛡️</span>${t('learn.safetyLink')}</a></li></ul>
+      <ul class="chips lp-more"><li><a class="chip" href="${lp(req, '/parents')}">${ico('👪', { size: 18 })}${t('learn.parentsLink')}</a></li>
+        <li><a class="chip" href="${lp(req, '/learn/make-a-game')}">${ico('🛠️', { size: 18 })}${t('learn.hubs.makeAGame.name')}</a></li>
+        <li><a class="chip" href="${lp(req, '/safety')}">${ico('🛡️', { size: 18 })}${t('learn.safetyLink')}</a></li></ul>
     </section>
   </div>`;
   page(req, res, {
@@ -321,7 +321,7 @@ router.get('/learn/:slug', (req, res, next) => {
       ${raw(`<h1 id="lp-h1"${fb(t, `${k}.h1`)}><span aria-hidden="true">${age.emoji}</span> ${tHtml(t, `${k}.h1`)}</h1>`)}
       ${el(t, 'p', `${k}.lead`, {}, ' class="lead"')}
       ${age.key === 'a10' ? el(t, 'p', `${k}.abcya`, {}, ' class="lp-aside"') : ''}
-      <p class="lp-grades"><span aria-hidden="true">🎒</span> ${el(t, 'span', 'learn.ages.line', range)}</p>
+      <p class="lp-grades">${ico('🎒', { size: 18 })} ${el(t, 'span', 'learn.ages.line', range)}</p>
       ${ctaRow(req, { game: list[0] || tryGame() })}
     </section>
     ${age.make === 'first' ? make : ''}
@@ -337,7 +337,7 @@ router.get('/learn/:slug', (req, res, next) => {
     ${inClassLine(req)}
     <section class="lp-sec" aria-labelledby="more-h">${el(t, 'h2', 'learn.ages.moreHeading', {}, ' id="more-h"')}
       <ul class="chips lp-more">${AGES.filter(a => a !== age).map(a => html`<li><a class="chip" href="${lp(req, `/learn/${a.slug}`)}"><span aria-hidden="true">${a.emoji}</span>${t(`learn.ages.${a.key}.name`)}</a></li>`)}
-        <li><a class="chip" href="${lp(req, '/parents')}"><span aria-hidden="true">👪</span>${t('learn.parentsLink')}</a></li></ul>
+        <li><a class="chip" href="${lp(req, '/parents')}">${ico('👪', { size: 18 })}${t('learn.parentsLink')}</a></li></ul>
     </section>
   </div>`;
   const image = `/og/ages-${age.min}-${age.max}.jpg`;

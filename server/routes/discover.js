@@ -45,7 +45,7 @@ function buildBanner(req) {
   const t = req.t; const u = req.user;
   const mine = u && !u.is_guest;
   return html`<section class="buildbanner" aria-labelledby="bb-h">
-    <div class="bb-art" aria-hidden="true">🛠️</div>
+    <div class="bb-art" aria-hidden="true">${ico('🛠️', { size: 36 })}</div>
     <div class="bb-text"><h2 id="bb-h">${t('home.build.title')}</h2><p>${t('home.build.text')}</p></div>
     <a class="btn btn-hot" href="/build">${mine ? t('home.build.openStudio') : t('home.build.start')}</a>
   </section>`;
@@ -138,7 +138,7 @@ function playPage(req, res, { landing }) {
   </section>` : ''}
   <div class="chips scroll" role="list" aria-label="${t('home.categories')}" style="margin-bottom:18px">
     ${PLAY_CATEGORIES.map(([k, e]) => html`<a class="chip" role="listitem" href="/search?cat=${k}" rel="nofollow"><span aria-hidden="true">${e}</span>${categoryLabel(k, t)}</a>`)}
-    <a class="chip" role="listitem" href="#two"><span aria-hidden="true">👥</span>${t('home.chips.two')}</a>
+    <a class="chip" role="listitem" href="#two">${ico('👥', { size: 18 })}${t('home.chips.two')}</a>
   </div>
   ${rails.some(r => r) ? rails : emptyState({ emoji: '🎮', title: t('home.empty.title'), text: t('home.empty.text'), action: { href: '/build', label: t('home.empty.action') } })}
   </div>`;

@@ -2480,8 +2480,8 @@
           "learn": "Na elke bouwbeurt speelt de app het spel zo’n 20 seconden zelf: toetsen, tikken, vegen, en kijkt of de score verandert en niets kapotgaat."
         }
       },
-      "resumed": "🔄 De server is opnieuw opgestart, dus de Bouwer ging verder waar hij was.",
-      "resumedV": "🔄 De server is opnieuw opgestart, dus de Bouwer ging verder vanaf versie {v}.",
+      "resumed": "De server is opnieuw opgestart, dus de Bouwer ging verder waar hij was.",
+      "resumedV": "De server is opnieuw opgestart, dus de Bouwer ging verder vanaf versie {v}.",
       "stopped": {
         "restart": "De Bouwer stopte toen onze server opnieuw opstartte. Alles wat hij gemaakt heeft, is bewaard.",
         "ai": "De Bouwer stopte toen onze server opnieuw opstartte, en de AI-Bouwer rust nu even uit. Alles wat hij gemaakt heeft, is bewaard."
@@ -2538,7 +2538,7 @@
       },
       "stillWorking": "Even geduld, de Bouwer is nog bezig!",
       "resting": {
-        "text": "😴 De AI-Bouwer rust nu even uit. Hij is {when} terug. Je game en je berichten aan de Bouwer zijn bewaard, dus kom dan terug!",
+        "text": "De AI-Bouwer rust nu even uit. Hij is {when} terug. Je game en je berichten aan de Bouwer zijn bewaard, dus kom dan terug!",
         "today": "vandaag om {time}",
         "tomorrow": "morgen om {time}",
         "date": "op {date} om {time}"
@@ -3228,7 +3228,7 @@
       "editN": "Opgave {n} bewerken",
       "add": "Opgave toevoegen",
       "copyN": "Opgave {n} kopiëren",
-      "editTitle": "✏️ Opgave {n} van {total}",
+      "editTitle": "Opgave {n} van {total}",
       "kind": {
         "reading": "Een schaal aflezen",
         "thermometer": "thermometer",

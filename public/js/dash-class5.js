@@ -8,12 +8,13 @@
 //   list of names would say something private (requests, points, faces).
 // - Text a person typed is rendered with textContent only.
 import { videoSrc, watchUrl } from './dash-video.js';
+import { setIcon, setLabel } from './icons.js';
 
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 const typed = (tag, cls, text) => { const e = el(tag, cls, text); e.dir = 'auto'; return e; };
-const btn = (label, cls = 'btn btn-sm', aria) => { const b = el('button', cls, label); b.type = 'button'; if (aria) b.setAttribute('aria-label', aria); return b; };
+const btn = (label, cls = 'btn btn-sm', aria) => { const b = setLabel(el('button', cls), label); b.type = 'button'; if (aria) b.setAttribute('aria-label', aria); return b; };
 const fill = (s, vars = {}) => String(s || '').replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
-const icon = (t, cls = 'dw5-ic') => { const e = el('span', cls, t); e.setAttribute('aria-hidden', 'true'); return e; };
+const icon = (t, cls = 'dw5-ic') => { const e = setIcon(el('span', cls), t, cls === 'dw5-bigic' ? 128 : 18); e.setAttribute('aria-hidden', 'true'); return e; };
 /** An icon and its words on one button (stage 4: every icon button shows its words). */
 const ibtn = (ic, words, cls = 'btn btn-sm', aria) => { const b = btn('', cls, aria); b.append(icon(ic), el('span', 'dw5-bt', words)); return b; };
 /** ms -> "4:05" (whole seconds). */
@@ -167,8 +168,8 @@ function hallpass(body, s, ctx) {
     const s2 = JSON.stringify(items); if (s2 === sig) return; sig = s2;
     const asking = items.filter(x => x.state === 'asked'), out = items.filter(x => x.state === 'out');
     counts.textContent = '';
-    counts.append(el('span', 'dw5-count', `🙋 ${fill(W.asking, { n: asking.length })}`), el('span', 'dw5-count', `🚶 ${fill(W.outNow, { n: out.length })}`));
-    if (s.oneOut) counts.appendChild(el('span', 'dw5-count dw5-muted', `☝️ ${W.oneOut}`));
+    counts.append(setLabel(el('span', 'dw5-count'), `🙋 ${fill(W.asking, { n: asking.length })}`), setLabel(el('span', 'dw5-count'), `🚶 ${fill(W.outNow, { n: out.length })}`));
+    if (s.oneOut) counts.appendChild(setLabel(el('span', 'dw5-count dw5-muted'), `☝️ ${W.oneOut}`));
     list.textContent = ''; timers.clear();
     if (!items.length) list.appendChild(el('li', 'dw-empty', W.nobody));
     for (const x of [...out, ...asking]) {

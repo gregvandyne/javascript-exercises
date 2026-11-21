@@ -177,7 +177,7 @@ function livePanel(req, g, entry) {
   const host = !out && liveCanHost(u) ? html`<a class="btn btn-big" href="/live?mode=${entry.mode}" id="hostlive">${ico('📡', { size: 18 })} ${t('live.entry.host')}</a>`
     : out ? html`<a class="btn" href="${lp(req, '/teachers/live')}" id="hostlive">${ico('📡', { size: 18 })} ${t('live.entry.teacherHost')}</a>` : '';
   return html`<section class="livepanel" aria-labelledby="livepanel-h">
-    <p class="livepanel-tag" id="livepanel-h"><span aria-hidden="true">📡</span> ${t('live.entry.badgeLong')}</p>
+    <p class="livepanel-tag" id="livepanel-h">${ico('📡', { size: 18 })} ${t('live.entry.badgeLong')}</p>
     <p class="livepanel-how">${t('live.entry.howJoin')}</p>
     <form class="livepanel-join" method="get" action="/join" novalidate><input type="hidden" name="go" value="1">
       <label class="sr-only" for="lpjc">${t('live.join.codeLabel')}</label>

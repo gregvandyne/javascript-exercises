@@ -14,6 +14,7 @@ import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
 import { q } from '../db.js';
 import { tEn, tHtml } from '../i18n/index.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 export const COMMUNITY_CSS = raw('<link rel="stylesheet" href="/css/community.css">');
@@ -52,11 +53,11 @@ router.get('/friends', (req, res) => {
   const playing = playingFor(u, mine.map(fr => fr.id));
   const shared = Object.fromEntries(mine.map(fr => [fr.id, games.listVisible(u, { ownerId: fr.id, limit: 8, order: 'new' })]));
   const body = html`
-  <div class="pagehead"><h1>${t('friends.title')}</h1><a class="btn" href="/chat"><span aria-hidden="true">💬</span> ${t('friends.chat')}</a></div>
+  <div class="pagehead"><h1>${t('friends.title')}</h1><a class="btn" href="/chat">${ico('💬', { size: 18 })} ${t('friends.chat')}</a></div>
   <div class="friends-top">
     <section class="panel" aria-labelledby="code-h">
       <h2 id="code-h">${t('friends.code.heading')}</h2>
-      <div class="row"><span class="bigcode" id="mycode" dir="ltr">${myCode}</span><button class="btn btn-primary" type="button" id="copycode" data-code="${myCode}"><span aria-hidden="true">📋</span> ${t('friends.code.copy')}</button></div>
+      <div class="row"><span class="bigcode" id="mycode" dir="ltr">${myCode}</span><button class="btn btn-primary" type="button" id="copycode" data-code="${myCode}">${ico('📋', { size: 18 })} ${t('friends.code.copy')}</button></div>
       <p class="muted small" style="margin:12px 0 0">${t('friends.code.hint')}</p>
     </section>
     <section class="panel" aria-labelledby="add-h">
@@ -83,7 +84,7 @@ router.get('/friends', (req, res) => {
         <a href="/u/${fr.username}" class="fc-who">${avatar(fr, 52)}<span class="who"><span class="nm">${fr.display_name}</span><span class="sub">${at(fr)}</span></span></a>
       </div>
       <div class="fc-playing" data-playing="${fr.id}">${playingLine(t, playing[fr.id])}</div>
-      <div class="fc-acts"><a class="btn btn-primary" href="/chat/${fr.username}"><span aria-hidden="true">💬</span> ${t('friends.chat')}</a><a class="btn" href="/u/${fr.username}">${t('friends.list.profile')}</a>
+      <div class="fc-acts"><a class="btn btn-primary" href="/chat/${fr.username}">${ico('💬', { size: 18 })} ${t('friends.chat')}</a><a class="btn" href="/u/${fr.username}">${t('friends.list.profile')}</a>
         <button class="btn btn-ghost" type="button" data-act="remove" data-id="${fr.id}" data-name="${fr.display_name}">${t('friends.list.remove')}</button></div>
       ${shared[fr.id].length ? html`<div class="fc-games"><h3 class="small muted">${t('friends.list.shared', { name: fr.display_name })}</h3><div class="minigames">${shared[fr.id].map(miniGame)}</div></div>` : ''}
     </article>`)}</div>`
@@ -178,9 +179,9 @@ router.get('/u/:username', (req, res) => {
       ${badges.length ? html`<ul class="badgelist" aria-label="${t('profile.badgesLabel')}">${badges.map(b => html`<li class="pbadge" title="${b.why}"><span aria-hidden="true">${b.emoji}</span> ${b.label}<span class="sr-only">: ${b.why}</span></li>`)}</ul>` : ''}
     </div>
     <div class="ph-acts">
-      ${isMe ? html`<a class="btn" href="/me">✏️ ${t('profile.changeLook')}</a>` : ''}
-      <button class="btn" type="button" id="shareprofile" data-url="/u/${p.username}"><span aria-hidden="true">🔗</span> ${t('game.share')}</button>
-      ${rel === 'friends' ? (can.ok ? html`<a class="btn btn-primary" href="/chat/${p.username}"><span aria-hidden="true">💬</span> ${t('friends.chat')}</a>` : html`<span class="small muted">${can.reason}</span>`) : ''}
+      ${isMe ? html`<a class="btn" href="/me">${ico('✏️', { size: 18 })} ${t('profile.changeLook')}</a>` : ''}
+      <button class="btn" type="button" id="shareprofile" data-url="/u/${p.username}">${ico('🔗', { size: 18 })} ${t('game.share')}</button>
+      ${rel === 'friends' ? (can.ok ? html`<a class="btn btn-primary" href="/chat/${p.username}">${ico('💬', { size: 18 })} ${t('friends.chat')}</a>` : html`<span class="small muted">${can.reason}</span>`) : ''}
       ${rel === 'received' ? html`<a class="btn btn-primary" href="/friends">${t('profile.answerRequest')}</a>` : ''}
       ${rel === 'sent' ? html`<span class="small muted">${t('profile.requestSent')}</span>` : ''}
     </div>
@@ -191,10 +192,10 @@ router.get('/u/:username', (req, res) => {
     <div class="stat"><b>${f.num(stats.plays)}</b>${t('game.stats.plays', { count: stats.plays })}</div>
     <div class="stat"><b>${f.num(stats.likes)}</b>${t('game.stats.likes', { count: stats.likes })}</div>
   </div>
-  <section aria-labelledby="built-h"><h2 id="built-h">🛠️ ${t('profile.gamesBy', { name: p.display_name })}</h2>
+  <section aria-labelledby="built-h"><h2 id="built-h">${ico('🛠️', { size: 28 })} ${t('profile.gamesBy', { name: p.display_name })}</h2>
     ${built.length ? cardGrid(built, {}) : emptyState({ emoji: '🧱', title: t('profile.noGames'), text: isMe ? t('profile.noGamesMe') : '', action: isMe ? { href: '/build', label: t('home.empty.action') } : null })}
   </section>
-  <section aria-labelledby="fav-h" style="margin-top:28px"><h2 id="fav-h">❤️ ${t('profile.favorites')}</h2>
+  <section aria-labelledby="fav-h" style="margin-top:28px"><h2 id="fav-h">${ico('❤️', { size: 28 })} ${t('profile.favorites')}</h2>
     ${favs.length ? cardGrid(favs, {}) : html`<p class="muted">${t('profile.noFavorites')}</p>`}
   </section>
   ${!isMe && viewer && !viewer.is_guest && rel === 'none' && !noFriendsAccount(viewer) && !noFriendsAccount(p) ? html`<p class="small muted" style="margin-top:24px">${tHtml(t, 'profile.beFriends', { link: html`<a href="/friends">${t('nav.friends')}</a>` })}</p>` : ''}`;

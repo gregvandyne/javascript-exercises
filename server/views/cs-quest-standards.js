@@ -3,6 +3,7 @@
 // Data from server/services/standards.js; words under cs.standards.*.
 import { html } from './html.js';
 import { emptyState, jumpNav } from './components.js';
+import { ico } from './icon.js';
 
 const SHORT = { month: 'short', day: 'numeric' };
 const groupBy = rows => { const m = new Map(); for (const r of rows) { if (!m.has(r.concept)) m.set(r.concept, []); m.get(r.concept).push(r); } return [...m]; };
@@ -31,13 +32,13 @@ export function classBody(req, { c, data, all, student = null }) {
       <select class="input input-sm" id="std-student" name="student"><option value="">${t('cs.standards.everyone')}</option>${data.students.map(p => html`<option value="${p.id}" ${student && student.id === p.id ? 'selected' : ''}>${p.name}${p.alias ? ` (${p.alias})` : ''}</option>`)}</select>
       <button class="btn btn-sm" type="submit">${t('cs.standards.show')}</button></form>
     <a class="btn btn-sm" href="${qs({ all: !all })}">${all ? t('cs.standards.levelsClass') : t('cs.standards.levelsAll')}</a>
-    <a class="btn btn-sm" href="${base}.csv${all ? '?all=1' : ''}" download>⬇️ ${t('cs.standards.csv')}</a>
-    <a class="btn btn-sm" href="${base}?report=1">🏫 ${t('cs.standards.report')}</a></div>`;
+    <a class="btn btn-sm" href="${base}.csv${all ? '?all=1' : ''}" download>${ico('⬇️', { size: 18 })} ${t('cs.standards.csv')}</a>
+    <a class="btn btn-sm" href="${base}?report=1">${ico('🏫', { size: 18 })} ${t('cs.standards.report')}</a></div>`;
   if (!data.lessons.length && !data.rows.some(r => r.practiced || r.answered || r.marksN)) {
     return html`<section class="panel">${emptyState({ emoji: '🧭', title: t('cs.standards.empty.title'), text: t('cs.standards.empty.text') })}</section>${legend(t)}`;
   }
   const lessonLinks = r => (r.lessons.length ? r.lessons.map((id, i) => { const x = cl.get(id); if (!x) return '';
-    return html`${i ? ' · ' : ''}<a href="/class/${c.id}/progress/${x.id}" dir="auto">${x.title}</a>${x.opens_at && x.opens_at > Date.now() ? html` <span class="chip-s">🔒 ${f.day(x.opens_at, SHORT)}</span>` : x.due_at ? html` <span class="nw small muted">📅 ${f.day(x.due_at, SHORT)}</span>` : ''}`; }) : dash);
+    return html`${i ? ' · ' : ''}<a href="/class/${c.id}/progress/${x.id}" dir="auto">${x.title}</a>${x.opens_at && x.opens_at > Date.now() ? html` <span class="chip-s">${ico('🔒', { size: 18 })} ${f.day(x.opens_at, SHORT)}</span>` : x.due_at ? html` <span class="nw small muted">${ico('📅', { size: 18 })} ${f.day(x.due_at, SHORT)}</span>` : ''}`; }) : dash);
   const stdCell = r => html`<th scope="row" class="csq-std-id"><b>${r.id}</b><span class="small muted">${r.statement}</span></th>`;
   const chip = s => html`<span class="csq-std-status st-${s}">${t(`cs.standards.status.${s}`)}</span>`;
   const m = data.students.length;
@@ -85,7 +86,7 @@ export function classCsv(t, data) {
 /** The principal's coverage report (aggregate only, no student names). */
 export function reportBody(req, { school, rep, backHref }) {
   const t = req.t, f = req.fmt;
-  return html`<div class="printbar row noprint"><a class="btn" href="${backHref}">← ${t('cs.print.back')}</a><button class="btn btn-primary" type="button" data-print>🖨️ ${t('cs.print.print')}</button></div>
+  return html`<div class="printbar row noprint"><a class="btn" href="${backHref}">← ${t('cs.print.back')}</a><button class="btn btn-primary" type="button" data-print>${ico('🖨️', { size: 18 })} ${t('cs.print.print')}</button></div>
   <h1>${t('cs.standards.reportH.title')}</h1><p>${t('cs.standards.reportH.lead', { school: school.name })}</p>
   <p class="small">${t('cs.standards.reportH.classes')}: ${rep.classes.map((c, i) => html`${i ? ' · ' : ''}<span dir="auto">${c.name}</span>`)}</p>
   <table class="tbl csq-std csq-std-report"><thead><tr>${['standard', 'classes', 'lessons', 'items', 'accuracy', 'rubric', 'meets'].map(k => html`<th scope="col">${t(`cs.standards.reportH.cols.${k}`)}</th>`)}</tr></thead>

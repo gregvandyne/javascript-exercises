@@ -16,6 +16,7 @@ import * as G from './dash-math4.js';
 import { parts } from './dash-tools.js';
 import { format } from './i18n-format.js';
 import { tip } from './dash-tip.js';
+import { setIcon } from './icons.js';
 
 const { shell, el, svg, btn, ltr, svgPoint, iso, clone } = parts;
 const projecting = () => document.body.classList.contains('dash-projector');
@@ -33,7 +34,7 @@ const BOARD_ICON = { square: '▦', iso: '◬', circle: '◯' };
 /** A toolbar button: an icon and its words (the words hide on a compact bar; the button keeps its name and tooltip). */
 function tbtn(icon, text, cls = '') {
   const b = tip(btn('', `btn btn-sm gb-btn ${cls}`.trim(), text), text);
-  const i = el('span', 'gb-ic', icon), l = el('span', 'gb-lbl', text);
+  const i = setIcon(el('span', 'gb-ic'), icon), l = el('span', 'gb-lbl', text);
   i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
   b.append(i, l); return b;
 }

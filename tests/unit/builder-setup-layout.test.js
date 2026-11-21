@@ -10,6 +10,7 @@ process.env.BRB_DATA_DIR = (await import('node:os')).tmpdir() + '/brb-setup-layo
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { deicon } from '../support/deicon.js';   // icons read back as the emoji they stand for
 
 const { config } = await import('../../server/config.js');
 config.builderFullForAll = false; config.anthropicKey = '';
@@ -473,7 +474,7 @@ test('390 wide: "Your lesson" (a PDF read, Remove, a wrong file said), help as c
   assert.match(sentence, /Students use it on their own devices and on paper\. Help: Watch and Count up\. .*Make a fresh set of questions whenever possible\./);
   assert.equal(await page.isVisible('#su-told'), false); assert.equal(await page.isVisible('#su-told-reset'), false, 'nothing to reset yet');
   // what the Builder gets from the lesson: one line saying the file goes with the message (all of it read); no preview
-  assert.equal(await page.textContent('#su-lline'), '📄 Plus your lesson file: lesson.pdf, 3 pages. The Builder reads all of it.');
+  assert.equal(deicon(await page.innerHTML('#su-lline')).replace(/<[^>]+>/g, ''), '📄 Plus your lesson file: lesson.pdf, 3 pages. The Builder reads all of it.');
   assert.equal(await page.locator('#su-lsum, details.su-lsum').count(), 0, 'no "Show what the Builder reads" preview');
   assert.deepEqual(await measure(page).then(x => x.small), [], 'every target is at least 44 px');
   const pw = await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);

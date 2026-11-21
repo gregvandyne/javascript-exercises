@@ -29,6 +29,7 @@ import * as funnel from '../services/funnel.js';
 import { cleanText } from '../services/textfilter.js';
 import { rateLimit, allow, count, ipOf, SIGNUP } from '../services/ratelimit.js';
 import { pickerFor, SUBJECTS, LEVELS } from '../live/bank/index.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 export const HOST_URL = '/teachers/host';
@@ -75,12 +76,12 @@ router.get(HOST_URL, on, (req, res) => {
   const show = body => page(req, res, { title: t('quickLive.host.title'), description: t('quickLive.host.lead'), head: HEAD, body: html`<div class="ql">${body}</div>`, seo: { index: false, path: HOST_URL } });
   // A child's account (or a school student): kids never host. They join with the code.
   if (!signedOut(u)) {
-    return show(html`<section class="panel" role="status"><h1>📡 ${el(t, 'span', 'quickLive.kid.h')}</h1>${el(t, 'p', 'quickLive.kid.p')}
+    return show(html`<section class="panel" role="status"><h1>${ico('📡', { size: 36 })} ${el(t, 'span', 'quickLive.kid.h')}</h1>${el(t, 'p', 'quickLive.kid.p')}
       <p class="ql-last"><a class="btn btn-primary btn-big" href="/join">${t('quickLive.join')}</a></p></section>`);
   }
   if (req.method === 'GET') funnel.bump('quick.view');
   const errs = id => raw(`<span class="err" id="${id}-err" aria-live="polite"></span>`);
-  show(html`<h1>📡 ${el(t, 'span', 'quickLive.host.h')}</h1>${el(t, 'p', 'quickLive.host.lead', {}, ' class="lead"')}
+  show(html`<h1>${ico('📡', { size: 36 })} ${el(t, 'span', 'quickLive.host.h')}</h1>${el(t, 'p', 'quickLive.host.lead', {}, ' class="lead"')}
   <ol class="ql-steps">${[1, 2, 3].map(n => el(t, 'li', `quickLive.host.step${n}`))}</ol>
   <section class="panel" aria-labelledby="ql-su-h"><h2 id="ql-su-h">${el(t, 'span', 'quickLive.signup.h')}</h2>
     <form data-api="/api/teachers/host-signup" id="ql-signup" novalidate>
@@ -156,7 +157,7 @@ router.get(QUICK_URL, on, hostOnly, (req, res) => {
   res.set('Cache-Control', 'no-store');
   page(req, res, { title: t('quickLive.quick.title'), active: 'live', head: HEAD, ...(c ? { back: `/class/${c.id}`, backLabel: c.name } : {}),
     body: html`<div class="ql">
-  <h1>⚡ ${el(t, 'span', 'quickLive.quick.h')}</h1>
+  <h1>${ico('⚡', { size: 36 })} ${el(t, 'span', 'quickLive.quick.h')}</h1>
   ${c ? el(t, 'p', 'quickLive.quick.forClass', { name: c.name }, ' class="lead" id="ql-for"') : el(t, 'p', 'quickLive.quick.open', {}, ' class="lead" id="ql-for"')}
   ${openRoom ? html`<p class="notice" id="ql-open-room" role="status">${el(t, 'span', 'quickLive.quick.hasOpen', { title: openRoom.title })} <a class="btn btn-sm" href="/live/host/${openRoom.id}">${t('teach.home.openLive')}</a></p>` : ''}
   <form class="panel ql-form" data-api="/api/live/quick" id="ql-quick" novalidate>

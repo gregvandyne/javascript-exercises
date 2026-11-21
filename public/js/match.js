@@ -4,6 +4,9 @@
 //   (long-poll for the other player's events, POST for ours), and shows the waiting card until they join.
 // Game events are numbers and booleans only; this page checks them again before sending (the server checks a third time).
 import { api, toast, sheet, $, t, esc } from '/js/app.js';
+import { iconHtml } from '/js/icons.js';
+/** A Fluent icon for an emoji (decorative; public/js/icons.js). */
+const ico = (e, size = 18) => iconHtml(e, { size });
 
 const DATA_KEY = /^[a-z]{1,2}$/;
 function cleanData(d) {
@@ -29,7 +32,7 @@ export async function openLobby(d) {
       : `<p class="muted small">${esc(guest ? t('js.match.guestNoFriends') : t('js.match.noFriends'))}${guest ? '' : ` <a href="/friends">${esc(t('js.match.friendsPage'))}</a>`}</p>`}
     <h3 class="mt-h">${esc(t('js.match.codeHeading'))}</h3>
     <p class="muted small">${esc(t('js.match.codeHint'))}</p>
-    <div class="mt-code-row"><button class="btn" type="button" id="mt-make"><span aria-hidden="true">🔑</span> ${esc(t('js.match.makeCode'))}</button></div>
+    <div class="mt-code-row"><button class="btn" type="button" id="mt-make">${ico('🔑')} ${esc(t('js.match.makeCode'))}</button></div>
     <form class="mt-code-row" id="mt-join" novalidate>
       <label class="sr-only" for="mt-code">${esc(t('js.match.enterCode'))}</label>
       <input class="input codeinput" id="mt-code" dir="ltr" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="9" placeholder="${esc(t('js.match.codePlaceholder'))}">

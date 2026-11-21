@@ -22,6 +22,9 @@ import * as B from '/js/dash-build.js';
 import * as AG from '/js/agenda.js';
 import { format } from '/js/i18n-format.js';
 import { withMode, modeState } from '/js/dash-modes.js';
+import { iconHtml, setIcon, setLabel } from '/js/icons.js';
+/** A Fluent icon for an emoji (decorative; public/js/icons.js). */
+const ico = (e, size = 18) => iconHtml(e, { size });
 
 const D = pageData();
 const root = document.getElementById('dash');
@@ -256,11 +259,11 @@ function start() {
     if (type && type.group) c.dataset.group = type.group;
     // One header for every widget: an icon chip in the group's colour, the title, and the pin as a quiet chip.
     const head = document.createElement('div'); head.className = 'dash-wh';
-    const icon = document.createElement('span'); icon.className = 'dash-wicon'; icon.setAttribute('aria-hidden', 'true'); icon.textContent = (type && type.icon) || '▫️';
+    const icon = document.createElement('span'); icon.className = 'dash-wicon'; icon.setAttribute('aria-hidden', 'true'); setIcon(icon, (type && type.icon) || '▫️', 22);
     const title = document.createElement('h2'); title.className = 'dash-wt'; title.id = `dw-${w.id}`; title.textContent = nameOf(w);
     head.append(icon, title);
     const pinText = w.pinned ? t('js.dash.pinnedBy') : TEACHER && w.pin ? t('js.dash.onStudents') : '';
-    if (pinText) { const pin = document.createElement('span'); pin.className = 'dash-pin'; pin.title = pinText; pin.innerHTML = `<span aria-hidden="true">📌</span> <span class="dash-pintext"></span>`; pin.lastChild.textContent = pinText; head.appendChild(pin); }
+    if (pinText) { const pin = document.createElement('span'); pin.className = 'dash-pin'; pin.title = pinText; pin.innerHTML = `${ico('📌')} <span class="dash-pintext"></span>`; pin.lastChild.textContent = pinText; head.appendChild(pin); }
     c.appendChild(head);
     c.setAttribute('aria-labelledby', title.id);
     const body = document.createElement('div'); body.className = 'dash-wb';
@@ -392,7 +395,7 @@ function start() {
         const r = await api(`/api/dash/${CID}/me`, { method: 'POST', body: { widgets: S.widgets.filter(x => !x.pinned).map(strip), pins, bg: S.bg } });
         S.mine = r.state;
       }
-      if (board && board.status && !saveTimer) board.status.textContent = `✓ ${t('js.dash.side.saved')}`;
+      if (board && board.status && !saveTimer) setLabel(board.status, `✓ ${t('js.dash.side.saved')}`);
       return true;
     } catch (err) { toast(err.message, { bad: true }); return false; }
   }
@@ -501,7 +504,7 @@ function start() {
     const found = D.registry.types.filter(x => x.add && (!group || x.group === group) && (!q || `${x.name} ${x.desc} ${(x.words || {}).find || ''} ${(x.modes || []).map(m => `${m.name} ${(m.words || {}).find || ''}`).join(' ')}`.toLowerCase().includes(q)));
     for (const x of found) {
       const li = document.createElement('li'); li.className = 'dash-libitem';
-      li.innerHTML = `<span class="dash-libmark" aria-hidden="true">${esc(x.icon || '▫️')}</span><span class="dash-libtext"><b>${esc(x.name)}</b><span class="small muted">${esc(x.desc)}</span></span><button class="btn btn-sm" type="button" aria-label="${esc(t('js.dash.addName', { name: x.name }))}">${esc(t('js.dash.add'))}</button>`;
+      li.innerHTML = `<span class="dash-libmark" aria-hidden="true">${ico(x.icon || '▫️', 24)}</span><span class="dash-libtext"><b>${esc(x.name)}</b><span class="small muted">${esc(x.desc)}</span></span><button class="btn btn-sm" type="button" aria-label="${esc(t('js.dash.addName', { name: x.name }))}">${esc(t('js.dash.add'))}</button>`;
       li.querySelector('button').addEventListener('click', () => add(x));
       list.appendChild(li);
     }
@@ -625,7 +628,7 @@ function start() {
       inp.addEventListener('change', () => {
         const x = inp.value.trim(); if (!x) { show(); return; }
         const v = parseVideo(x);
-        if (!v) { msg.textContent = `✖ ${W.bad}`; msg.classList.add('err'); return; }
+        if (!v) { setLabel(msg, `✖ ${W.bad}`); msg.classList.add('err'); return; }
         w.s[f.key] = { p: v.p, id: v.id, ...(v.h ? { h: v.h } : {}) };
         if (v.t && !w.s.start) w.s.start = v.t;
         inp.value = ''; commit(); redraw(); renderSideSoon(); announce(W.ok);
@@ -638,7 +641,7 @@ function start() {
       inp.value = w.s[f.key] ? secsText(w.s[f.key]) : '';
       inp.addEventListener('change', () => {
         const n = secsOf(inp.value);
-        if (n === null) { msg.textContent = `✖ ${W.secsBad}`; msg.classList.add('err'); msg.setAttribute('role', 'alert'); return; }
+        if (n === null) { setLabel(msg, `✖ ${W.secsBad}`); msg.classList.add('err'); msg.setAttribute('role', 'alert'); return; }
         msg.textContent = f.key === 'end' ? `${W.secsHint} ${W.endNote}` : W.secsHint; msg.classList.remove('err'); msg.removeAttribute('role');
         w.s[f.key] = n; inp.value = n ? secsText(n) : ''; commit(); redraw();
       });
@@ -650,7 +653,7 @@ function start() {
       inp.value = w.s[f.key] || '';
       inp.addEventListener('change', () => {
         const x = inp.value.trim(), ok = siteUrl(x);
-        if (x && !ok) { msg.textContent = `✖ ${W.bad}`; msg.classList.add('err'); return; }
+        if (x && !ok) { setLabel(msg, `✖ ${W.bad}`); msg.classList.add('err'); return; }
         msg.textContent = ''; msg.classList.remove('err');
         w.s[f.key] = x ? ok : ''; commit(); redraw();
       });
@@ -675,7 +678,7 @@ function start() {
     pic(field, f, w, id, type, { commit, redraw }) {
       const W = type.words;
       field.className = 'field dash-picedit';
-      field.innerHTML = `<span class="dash-lab" id="${id}-l">${esc(f.label)}</span><div class="dash-picprev"></div><button class="btn btn-sm" type="button" id="${id}" aria-describedby="${id}-l">🖼️ ${esc(w.s[f.key] ? W.replace : W.upload)}</button><input type="file" accept="image/*" hidden>`;
+      field.innerHTML = `<span class="dash-lab" id="${id}-l">${esc(f.label)}</span><div class="dash-picprev"></div><button class="btn btn-sm" type="button" id="${id}" aria-describedby="${id}-l">${ico('🖼️')} ${esc(w.s[f.key] ? W.replace : W.upload)}</button><input type="file" accept="image/*" hidden>`;
       const prev = field.querySelector('.dash-picprev'), b = field.querySelector('button'), file = field.querySelector('input');
       const show = () => { prev.innerHTML = w.s[f.key] ? `<img src="/dash/pictures/${encodeURIComponent(w.s[f.key])}" alt="" width="120" height="80">` : ''; };
       show();
@@ -685,7 +688,7 @@ function start() {
         b.disabled = true; b.textContent = W.uploading;
         try { const r = await uploadShow(x); w.s[f.key] = r.id; commit(); redraw(); show(); announce(W.replace); }
         catch (err) { toast(err.message, { bad: true, ms: 5000 }); }
-        finally { b.disabled = false; b.textContent = `🖼️ ${w.s[f.key] ? W.replace : W.upload}`; }
+        finally { b.disabled = false; setLabel(b, `🖼️ ${w.s[f.key] ? W.replace : W.upload}`); }
       });
     },
     date(field, f, w, id, type, { commit, redraw }) {
@@ -705,9 +708,9 @@ function start() {
         const list = w.s[f.key] || (w.s[f.key] = []);
         field.innerHTML = `<span class="dash-lab" id="${id}-l">${esc(f.label)}</span><ol class="plain dash-prows" aria-labelledby="${id}-l">${list.map((m, i) => `<li class="dash-perrow" data-i="${i}">
           <label class="sr-only" for="${id}-t${i}">${esc(W.label)} ${i + 1}</label><input class="input dash-pername" id="${id}-t${i}" data-k="label" maxlength="40" dir="auto" value="${esc(m.label)}" placeholder="${esc(W.label)}">
-          <button class="btn btn-sm dash-perrm" type="button" data-rm="${i}" aria-label="${esc(W.remove)} ${i + 1}">✖</button>
+          <button class="btn btn-sm dash-perrm" type="button" data-rm="${i}" aria-label="${esc(W.remove)} ${i + 1}">${ico('✖')}</button>
           <span class="dash-pertimes"><span class="dash-pertime"><label for="${id}-d${i}">${esc(W.day)}</label><input class="input" id="${id}-d${i}" data-k="date" type="date" value="${esc(m.date)}"></span></span></li>`).join('')}</ol>
-          <button class="btn btn-sm" type="button" data-addp>➕ ${esc(W.addMark)}</button>`;
+          <button class="btn btn-sm" type="button" data-addp>${ico('➕')} ${esc(W.addMark)}</button>`;
       };
       draw();
       field.addEventListener('input', e => { const li = e.target.closest('[data-i]'); if (!li || !e.target.dataset.k) return; w.s[f.key][+li.dataset.i][e.target.dataset.k] = e.target.value; redraw(); });
@@ -731,10 +734,10 @@ function start() {
         const list = w.s[f.key] || (w.s[f.key] = []);
         field.innerHTML = `<span class="dash-lab" id="${id}-l">${esc(f.label)}</span><ol class="plain dash-prows" aria-labelledby="${id}-l">${list.map((e, i) => `<li class="dash-perrow" data-i="${i}" role="group" aria-label="${esc(fill(W.event, { n: i + 1 }))}">
           <label class="sr-only" for="${id}-t${i}">${esc(W.label)} ${i + 1}</label><input class="input dash-pername" id="${id}-t${i}" data-k="label" maxlength="60" dir="auto" value="${esc(e.label)}" placeholder="${esc(W.label)}">
-          <button class="btn btn-sm dash-perrm" type="button" data-rm="${i}" aria-label="${esc(W.remove)}: ${esc(e.label || fill(W.event, { n: i + 1 }))}">✖</button>
+          <button class="btn btn-sm dash-perrm" type="button" data-rm="${i}" aria-label="${esc(W.remove)}: ${esc(e.label || fill(W.event, { n: i + 1 }))}">${ico('✖')}</button>
           <span class="dash-pertimes"><span class="dash-pertime"><label for="${id}-d${i}">${esc(W.day)}</label><input class="input" id="${id}-d${i}" data-k="date" type="date" min="2000-01-01" max="2100-12-31" value="${esc(e.date)}"></span>
           <span class="dash-pertime"><label for="${id}-h${i}">${esc(W.time)}</label><input class="input" id="${id}-h${i}" data-k="time" type="time" value="${esc(e.time)}"></span></span></li>`).join('')}</ol>
-          ${list.length < MAX ? `<button class="btn btn-sm" type="button" data-addp>➕ ${esc(W.addEvent)}</button>` : `<p class="small muted" data-full>${esc(fill(W.full, { n: MAX }))}</p>`}`;
+          ${list.length < MAX ? `<button class="btn btn-sm" type="button" data-addp>${ico('➕')} ${esc(W.addEvent)}</button>` : `<p class="small muted" data-full>${esc(fill(W.full, { n: MAX }))}</p>`}`;
       };
       draw();
       field.addEventListener('input', e => { const li = e.target.closest('[data-i]'); if (!li || !e.target.dataset.k) return; w.s[f.key][+li.dataset.i][e.target.dataset.k] = e.target.value; redraw(); });
@@ -775,20 +778,20 @@ function start() {
       const list = () => (day ? (own(day) ? w.s.week[day] : null) : (w.s[f.key] || (w.s[f.key] = [])));
       const rowsHtml = l => `<ol class="plain dash-prows" aria-labelledby="${id}-l">${l.map((p, i) => `<li class="dash-perrow" data-i="${i}">
           <label class="sr-only" for="${id}-n${i}">${esc(W.period)} ${i + 1}</label><input class="input dash-pername" id="${id}-n${i}" data-k="name" maxlength="40" dir="auto" value="${esc(p.name)}" placeholder="${esc(W.period)} ${i + 1}">
-          <button class="btn btn-sm dash-perrm" type="button" data-rm="${i}" aria-label="${esc(W.remove)} ${i + 1}">✖</button>
+          <button class="btn btn-sm dash-perrm" type="button" data-rm="${i}" aria-label="${esc(W.remove)} ${i + 1}">${ico('✖')}</button>
           <span class="dash-pertimes"><span class="dash-pertime"><label for="${id}-s${i}">${esc(W.from)}</label><input class="input" id="${id}-s${i}" data-k="start" type="time" value="${esc(p.start)}"></span>
           <span class="dash-pertime"><label for="${id}-e${i}">${esc(W.to)}</label><input class="input" id="${id}-e${i}" data-k="end" type="time" value="${esc(p.end)}"></span></span></li>`).join('')}</ol>
-          <button class="btn btn-sm" type="button" data-addp>➕ ${esc(W.addPeriod)}</button>`;
+          <button class="btn btn-sm" type="button" data-addp>${ico('➕')} ${esc(W.addPeriod)}</button>`;
       const draw = () => {
         const l = list();
         const chips = weekly ? `<div class="dash-days" role="group" aria-label="${esc(f.label)}">${[0, 1, 2, 3, 4, 5, 6, 7].map(d => `<button type="button" class="chip dash-day${d && own(d) ? ' has-own' : ''}" data-day="${d}" aria-pressed="${d === day}"${d ? ` aria-label="${esc(dayName(d, true))}"` : ''}>${esc(d ? dayName(d) : W.everyDay)}</button>`).join('')}</div>` : '';
-        const body = l ? rowsHtml(l) + (day ? ` <button class="btn btn-sm btn-ghost" type="button" data-back>↩ ${esc(W.backToEvery)}</button>` : '')
-          : `<p class="small muted dash-sameas">${esc(fill(W.sameAsEvery, { day: dayName(day, true) }))}</p><button class="btn btn-sm" type="button" data-own>✏️ ${esc(fill(W.ownDay, { day: dayName(day, true) }))}</button>`;
+        const body = l ? rowsHtml(l) + (day ? ` <button class="btn btn-sm btn-ghost" type="button" data-back>${ico('↩')} ${esc(W.backToEvery)}</button>` : '')
+          : `<p class="small muted dash-sameas">${esc(fill(W.sameAsEvery, { day: dayName(day, true) }))}</p><button class="btn btn-sm" type="button" data-own>${ico('✏️')} ${esc(fill(W.ownDay, { day: dayName(day, true) }))}</button>`;
         // The agenda import: a card at the top (after the connected calendar's), its instructions folded away. On a weekday
         // it shows only once that day has its own schedule ("Give Monday its own schedule"), and imports into that day.
-        const tools = weekly && (!day || l) ? `<section class="dash-mod dash-agtools" aria-labelledby="${id}-agh"><h3 class="dash-modh" id="${id}-agh"><span aria-hidden="true">📄</span> ${esc(W.agendaLabel)}</h3>
-          <div class="dash-modrow"><label class="btn btn-sm dash-upload">📤 ${esc(W.upload)}<input type="file" accept=".ics,.ical,.csv,.txt,text/calendar,text/csv,text/plain" data-file hidden></label>
-          <details class="dash-paste"><summary class="btn btn-sm">📋 ${esc(W.paste)}</summary><label class="sr-only" for="${id}-pt">${esc(W.paste)}</label><textarea class="input" id="${id}-pt" rows="5" maxlength="6000" dir="auto" placeholder="${esc(W.pasteHint)}"></textarea><button class="btn btn-sm" type="button" data-pastego>${esc(W.pasteGo)}</button></details></div>
+        const tools = weekly && (!day || l) ? `<section class="dash-mod dash-agtools" aria-labelledby="${id}-agh"><h3 class="dash-modh" id="${id}-agh">${ico('📄')} ${esc(W.agendaLabel)}</h3>
+          <div class="dash-modrow"><label class="btn btn-sm dash-upload">${ico('📤')} ${esc(W.upload)}<input type="file" accept=".ics,.ical,.csv,.txt,text/calendar,text/csv,text/plain" data-file hidden></label>
+          <details class="dash-paste"><summary class="btn btn-sm">${ico('📋')} ${esc(W.paste)}</summary><label class="sr-only" for="${id}-pt">${esc(W.paste)}</label><textarea class="input" id="${id}-pt" rows="5" maxlength="6000" dir="auto" placeholder="${esc(W.pasteHint)}"></textarea><button class="btn btn-sm" type="button" data-pastego>${esc(W.pasteGo)}</button></details></div>
           ${howTo(W.instructions, W.uploadHint, `${id}-agi`)}</section>` : '';
         field.innerHTML = `${tools}<span class="dash-lab" id="${id}-l">${esc(day ? dayName(day, true) : f.label)}</span>${chips}${body}`;
         // The connected calendar (the field above) fills every day, so it belongs to Every day: hidden on a weekday.
@@ -850,8 +853,8 @@ function start() {
       const draw = () => {
         const cur = w.s[f.key];
         field.innerHTML = cur
-          ? `<span class="dash-modh"><span aria-hidden="true">📅</span> ${esc(W.calLabel)}</span><p class="dash-cur" dir="auto">✅ ${esc(fill(W.calOn, { name: cur.name || '…' }))}</p><p class="small muted">${esc(W.calToday)}</p><button class="btn btn-sm" type="button" data-calrm>✖ ${esc(W.calRemove)}</button>`
-          : `<label class="dash-modh" for="${id}"><span aria-hidden="true">📅</span> ${esc(W.calLabel)}</label><div class="row dash-findrow"><input class="input grow" id="${id}" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="500" dir="ltr" placeholder="${esc(W.calHint)}" aria-describedby="${id}-m ${id}-n"><button class="btn btn-sm" type="button" data-calgo>🔗 ${esc(W.calConnect)}</button></div>
+          ? `<span class="dash-modh">${ico('📅')} ${esc(W.calLabel)}</span><p class="dash-cur" dir="auto">${ico('✅')} ${esc(fill(W.calOn, { name: cur.name || '…' }))}</p><p class="small muted">${esc(W.calToday)}</p><button class="btn btn-sm" type="button" data-calrm>${ico('✖')} ${esc(W.calRemove)}</button>`
+          : `<label class="dash-modh" for="${id}">${ico('📅')} ${esc(W.calLabel)}</label><div class="row dash-findrow"><input class="input grow" id="${id}" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="500" dir="ltr" placeholder="${esc(W.calHint)}" aria-describedby="${id}-m ${id}-n"><button class="btn btn-sm" type="button" data-calgo>${ico('🔗')} ${esc(W.calConnect)}</button></div>
              <p class="small dash-fieldmsg" id="${id}-m" role="status"></p>${howTo(W.instructions, W.calNote, `${id}-n`)}`;
       };
       draw();
@@ -863,7 +866,7 @@ function start() {
           const r = await api(`/api/dash/${CID}/feeds`, { method: 'POST', body: { url: inp.value.trim() } });
           w.s[f.key] = r.feed; commit(); redraw(); draw(); field.querySelector('[data-calrm]')?.focus();
           announce(fill(W.calOn, { name: r.feed.name }));
-        } catch (err) { msg.textContent = `✖ ${err.message}`; msg.classList.add('err'); btn.disabled = false; }
+        } catch (err) { setLabel(msg, `✖ ${err.message}`); msg.classList.add('err'); btn.disabled = false; }
       };
       field.addEventListener('click', async e => {
         if (e.target.closest('[data-calgo]')) go();
@@ -878,10 +881,10 @@ function start() {
     place(field, f, w, id, type, { commit, redraw }) {
       const W = type.words;
       field.innerHTML = `<span class="dash-lab">${esc(f.label)}</span><p class="dash-cur" dir="auto"></p>
-        <div class="row dash-findrow"><label class="sr-only" for="${id}">${esc(W.search)}</label><input class="input grow" id="${id}" type="search" maxlength="60" autocomplete="off" placeholder="${esc(W.searchHint)}"><button class="btn btn-sm" type="button">🔎 ${esc(W.find)}</button></div>
+        <div class="row dash-findrow"><label class="sr-only" for="${id}">${esc(W.search)}</label><input class="input grow" id="${id}" type="search" maxlength="60" autocomplete="off" placeholder="${esc(W.searchHint)}"><button class="btn btn-sm" type="button">${ico('🔎')} ${esc(W.find)}</button></div>
         <ul class="plain dash-found" aria-live="polite"></ul><p class="small muted">${esc(t('js.dash.side.placeNote'))}</p>`;
       const cur = field.querySelector('.dash-cur'), inp = field.querySelector('input'), found = field.querySelector('.dash-found');
-      const showCur = () => { cur.textContent = w.s[f.key] ? `📍 ${w.s[f.key].name}` : W.none; };
+      const showCur = () => { setLabel(cur, w.s[f.key] ? `📍 ${w.s[f.key].name}` : W.none); };
       showCur();
       const find = async () => {
         const q = inp.value.trim(); if (q.length < 2) return;
@@ -901,7 +904,7 @@ function start() {
         <div class="stack dash-qrweb" hidden><label for="${id}-u">${esc(t('js.dash.qrWeb.url'))}</label><input class="input" id="${id}-u" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="500" placeholder="example.org" dir="ltr" aria-describedby="${id}-m ${id}-n">
         <p class="small dash-fieldmsg" id="${id}-m" role="status"></p>
         <label for="${id}-t">${esc(t('js.dash.qrWeb.name'))}</label><input class="input" id="${id}-t" type="text" maxlength="60" autocomplete="off" dir="auto">
-        <button class="btn btn-sm" type="button" data-qrweb>🔳 ${esc(t('js.dash.qrWeb.save'))}</button><p class="small muted" id="${id}-n">${esc(t('js.dash.qrWeb.note'))}</p></div>`;
+        <button class="btn btn-sm" type="button" data-qrweb>${ico('🔳')} ${esc(t('js.dash.qrWeb.save'))}</button><p class="small muted" id="${id}-n">${esc(t('js.dash.qrWeb.note'))}</p></div>`;
       const sel = field.querySelector('select'), box = field.querySelector('.dash-qrweb'), url = box.querySelector(`#${CSS.escape(id)}-u`), name = box.querySelector(`#${CSS.escape(id)}-t`), msg = box.querySelector('.dash-fieldmsg'), go = box.querySelector('[data-qrweb]');
       const curKey = w.s[f.key] ? `${w.s[f.key].kind}:${w.s[f.key].ref}` : '';
       pushOpts().then(o => {
@@ -929,7 +932,7 @@ function start() {
           w.s[f.key] = r.target; commit(); redraw();
           announce(t('js.dash.qrWeb.saved', { name: r.link.title }));
           setTimeout(() => { const b = sideBox(); if (b) { b.dataset.for = ''; document.activeElement?.blur?.(); renderSide(); $(`#${CSS.escape(id)}`)?.focus(); } }, 0);
-        } catch (e) { msg.textContent = `✖ ${e.message}`; msg.classList.add('err'); go.disabled = false; }
+        } catch (e) { setLabel(msg, `✖ ${e.message}`); msg.classList.add('err'); go.disabled = false; }
       };
       go.addEventListener('click', save);
       for (const i of [url, name]) i.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); save(); } });
@@ -944,12 +947,12 @@ function start() {
       const W = type.words;
       field.className = 'field dash-tilesed';
       field.innerHTML = `<span class="dash-lab">${esc(f.label)}</span><ul class="plain dash-plist dash-tilecur"></ul>
-        <label for="${id}">${esc(W.add)}</label><div class="row"><select class="input grow" id="${id}"></select><button class="btn btn-sm" type="button" data-addt>➕ ${esc(W.add)}</button></div>`;
+        <label for="${id}">${esc(W.add)}</label><div class="row"><select class="input grow" id="${id}"></select><button class="btn btn-sm" type="button" data-addt>${ico('➕')} ${esc(W.add)}</button></div>`;
       const cur = field.querySelector('.dash-tilecur'), sel = field.querySelector('select');
       let names = new Map();
       const showCur = () => {
         const list = w.s[f.key] || [];
-        cur.innerHTML = list.map((x, i) => `<li class="dash-prow"><span class="grow" dir="auto">${esc(names.get(`${x.kind}:${x.ref}`) || '…')}</span><button class="btn btn-sm" type="button" data-rmt="${i}" aria-label="${esc(W.remove)}: ${esc(names.get(`${x.kind}:${x.ref}`) || '')}">✖</button></li>`).join('') || `<li class="small muted">${esc(W.empty)}</li>`;
+        cur.innerHTML = list.map((x, i) => `<li class="dash-prow"><span class="grow" dir="auto">${esc(names.get(`${x.kind}:${x.ref}`) || '…')}</span><button class="btn btn-sm" type="button" data-rmt="${i}" aria-label="${esc(W.remove)}: ${esc(names.get(`${x.kind}:${x.ref}`) || '')}">${ico('✖')}</button></li>`).join('') || `<li class="small muted">${esc(W.empty)}</li>`;
       };
       pushOpts().then(o => {
         for (const g of o.games) names.set(`game:${g.id}`, `${g.icon || '🎮'} ${g.title}`);
@@ -1135,7 +1138,7 @@ function start() {
   }
   function newSheet() {
     const tpls = D.templates || [];
-    const card = (id, icon, name, desc, on) => `<label class="dash-tpl"><input type="radio" name="dash-tpl" value="${esc(id)}"${on ? ' checked' : ''}><span class="dash-tpl-icon" aria-hidden="true">${esc(icon)}</span><span class="dash-tpl-text"><b>${esc(name)}</b><span class="small muted">${esc(desc)}</span></span></label>`;
+    const card = (id, icon, name, desc, on) => `<label class="dash-tpl"><input type="radio" name="dash-tpl" value="${esc(id)}"${on ? ' checked' : ''}><span class="dash-tpl-icon" aria-hidden="true">${ico(icon, 28)}</span><span class="dash-tpl-text"><b>${esc(name)}</b><span class="small muted">${esc(desc)}</span></span></label>`;
     const sh = sheet({ title: t('js.dash.layouts.newTitle'), content: `<form class="stack" id="dash-name-form" novalidate>
       ${tpls.length ? `<fieldset class="dash-tpls"><legend class="dash-h3">${esc(t('js.dash.tpl.heading'))}</legend>${tpls.map(x => card(x.id, x.icon, x.name, x.desc, false)).join('')}
       <p class="dash-h3 dash-tpl-or">${esc(t('js.dash.tpl.own'))}</p>${card('', '✏️', t('js.dash.tpl.ownName'), t('js.dash.tpl.ownDesc'), true)}</fieldset>` : ''}
@@ -1193,7 +1196,7 @@ function start() {
   nameIn?.addEventListener('input', () => { if (nameErr.textContent) nameError(''); });
   $('#dash-layout-more')?.addEventListener('click', () => {
     const l = S.layouts.find(x => x.id === S.layoutId);
-    const sh = sheet({ title: t('js.dash.layouts.manageTitle', { name: l.name }), content: `<div class="stack"><button class="btn" type="button" id="dash-rename">✏️ ${esc(t('js.dash.layouts.rename'))}</button><button class="btn btn-danger" type="button" id="dash-del"${S.layouts.length < 2 ? ' disabled' : ''}>🗑️ ${esc(t('js.dash.layouts.del'))}</button>${S.layouts.length < 2 ? `<p class="small muted">${esc(t('js.dash.layouts.keepOne'))}</p>` : ''}</div>` });
+    const sh = sheet({ title: t('js.dash.layouts.manageTitle', { name: l.name }), content: `<div class="stack"><button class="btn" type="button" id="dash-rename">${ico('✏️')} ${esc(t('js.dash.layouts.rename'))}</button><button class="btn btn-danger" type="button" id="dash-del"${S.layouts.length < 2 ? ' disabled' : ''}>${ico('🗑️')} ${esc(t('js.dash.layouts.del'))}</button>${S.layouts.length < 2 ? `<p class="small muted">${esc(t('js.dash.layouts.keepOne'))}</p>` : ''}</div>` });
     $('#dash-rename', sh.el).addEventListener('click', () => { sh.close(); nameSheet(t('js.dash.layouts.rename'), l.name, false, async name => {
       const r = await api(`/api/dash/${CID}/layouts/${l.id}`, { method: 'POST', body: { name } }); l.name = r.layout.name; renderLayouts(); resetName(); }); });
     $('#dash-del', sh.el).addEventListener('click', async () => {
@@ -1230,19 +1233,19 @@ function start() {
     const row = (icon, title, sub, btn) => `<li class="dash-prow"><span aria-hidden="true">${icon}</span><span class="grow"><b>${esc(title)}</b>${sub ? `<span class="small muted">${esc(sub)}</span>` : ''}</span>${btn}</li>`;
     const sendBtn = (kind, ref, title) => `<button class="btn btn-sm btn-primary" type="button" data-send="${kind}" data-ref="${esc(ref)}" aria-label="${esc(t('js.dash.push.sendName', { title }))}">${esc(t('js.dash.push.send'))}</button>`;
     const panel = {
-      game: `<form class="row" id="dash-gq-form" role="search"><label class="sr-only" for="dash-gq">${esc(t('js.dash.push.search'))}</label><input class="input grow" id="dash-gq" type="search" value="${esc(q)}" placeholder="${esc(t('js.dash.push.search'))}"><button class="btn btn-sm" type="submit">🔎</button></form>
+      game: `<form class="row" id="dash-gq-form" role="search"><label class="sr-only" for="dash-gq">${esc(t('js.dash.push.search'))}</label><input class="input grow" id="dash-gq" type="search" value="${esc(q)}" placeholder="${esc(t('js.dash.push.search'))}"><button class="btn btn-sm" type="submit">${ico('🔎')}</button></form>
         <ul class="plain dash-plist">${opts.games.map(g => row(esc(g.icon || '🎮'), g.title, '', sendBtn('game', g.id, g.title))).join('') || `<li class="small muted">${esc(t('js.dash.push.gamesNone'))}</li>`}</ul>`,
-      live: opts.live ? `<ul class="plain dash-plist">${row('📡', opts.live.title, t('js.dash.push.liveOpen'), sendBtn('live', '', opts.live.title))}</ul>`
-        : `<p class="small muted">${esc(t('js.dash.push.liveNone'))}</p><a class="btn btn-sm" href="/live?class=${encodeURIComponent(CID)}">📡 ${esc(t('js.dash.push.liveStart'))}</a>`,
-      lesson: `<ul class="plain dash-plist">${opts.lessons.map(l => row('📚', l.title, '', sendBtn('lesson', l.id, l.title))).join('') || `<li class="small muted">${esc(t('js.dash.push.lessonsNone'))}</li>`}</ul>`,
+      live: opts.live ? `<ul class="plain dash-plist">${row(ico('📡'), opts.live.title, t('js.dash.push.liveOpen'), sendBtn('live', '', opts.live.title))}</ul>`
+        : `<p class="small muted">${esc(t('js.dash.push.liveNone'))}</p><a class="btn btn-sm" href="/live?class=${encodeURIComponent(CID)}">${ico('📡')} ${esc(t('js.dash.push.liveStart'))}</a>`,
+      lesson: `<ul class="plain dash-plist">${opts.lessons.map(l => row(ico('📚'), l.title, '', sendBtn('lesson', l.id, l.title))).join('') || `<li class="small muted">${esc(t('js.dash.push.lessonsNone'))}</li>`}</ul>`,
       link: `<p class="small muted">${esc(t('js.dash.push.linksNote'))}</p>
-        <ul class="plain dash-plist">${opts.links.map(l => row('🔗', l.title, l.url, `${sendBtn('link', l.id, l.title)}<button class="btn btn-sm" type="button" data-unlink="${esc(l.id)}" aria-label="${esc(t('js.dash.push.linkRemoveName', { title: l.title }))}">✖</button>`)).join('') || `<li class="small muted">${esc(t('js.dash.push.linksNone'))}</li>`}</ul>
+        <ul class="plain dash-plist">${opts.links.map(l => row(ico('🔗'), l.title, l.url, `${sendBtn('link', l.id, l.title)}<button class="btn btn-sm" type="button" data-unlink="${esc(l.id)}" aria-label="${esc(t('js.dash.push.linkRemoveName', { title: l.title }))}">${ico('✖')}</button>`)).join('') || `<li class="small muted">${esc(t('js.dash.push.linksNone'))}</li>`}</ul>
         <form class="stack dash-linkform" id="dash-link-form" novalidate><div class="field"><label for="dash-ln">${esc(t('js.dash.push.linkName'))}</label><input class="input" id="dash-ln" maxlength="60"></div>
           <div class="field"><label for="dash-lu">${esc(t('js.dash.push.linkUrl'))}</label><input class="input" id="dash-lu" type="url" inputmode="url" maxlength="500" placeholder="https://" dir="ltr" required></div>
-          <p class="err form-err" role="alert"></p><div class="row"><button class="btn" type="submit">✅ ${esc(t('js.dash.push.linkAdd'))}</button></div></form>`,
+          <p class="err form-err" role="alert"></p><div class="row"><button class="btn" type="submit">${ico('✅')} ${esc(t('js.dash.push.linkAdd'))}</button></div></form>`,
     };
     const content = `<section class="dash-sent"><h3 class="dash-h3">${esc(t('js.dash.push.sentToday'))}</h3>
-      <ul class="plain dash-plist">${sent.map(p => row(KIND_ICON[p.kind] || '📤', titleOf(p), `${t(`js.dash.kind.${p.kind}`)} · ${timeOf(p.at)}`, `${p.kind === 'build' ? `<button class="btn btn-sm" type="button" data-progress="${esc(p.id)}" aria-label="${esc(t('js.dash.build.progressName', { title: titleOf(p) }))}">📋 ${esc(t('js.dash.build.progress'))}</button>` : ''}<button class="btn btn-sm" type="button" data-end="${esc(p.id)}" aria-label="${esc(t('js.dash.push.endName', { title: titleOf(p) }))}">${esc(t('js.dash.push.end'))}</button>`)).join('') || `<li class="small muted">${esc(t('js.dash.push.noneYet'))}</li>`}</ul></section>
+      <ul class="plain dash-plist">${sent.map(p => row(ico(KIND_ICON[p.kind] || '📤'), titleOf(p), `${t(`js.dash.kind.${p.kind}`)} · ${timeOf(p.at)}`, `${p.kind === 'build' ? `<button class="btn btn-sm" type="button" data-progress="${esc(p.id)}" aria-label="${esc(t('js.dash.build.progressName', { title: titleOf(p) }))}">${ico('📋')} ${esc(t('js.dash.build.progress'))}</button>` : ''}<button class="btn btn-sm" type="button" data-end="${esc(p.id)}" aria-label="${esc(t('js.dash.push.endName', { title: titleOf(p) }))}">${esc(t('js.dash.push.end'))}</button>`)).join('') || `<li class="small muted">${esc(t('js.dash.push.noneYet'))}</li>`}</ul></section>
       <div class="chips dash-ptabs" role="tablist" aria-label="${esc(t('js.dash.push.what'))}">${tabs.map(k => `<button class="chip" type="button" role="tab" id="dash-ptab-${k}" aria-controls="dash-ppanel" aria-selected="${k === pushTab}" tabindex="${k === pushTab ? 0 : -1}" data-ptab="${k}">${KIND_ICON[k]} ${esc(t(`js.dash.push.tab.${k}`))}</button>`).join('')}</div>
       <div class="dash-ppanel" id="dash-ppanel" role="tabpanel" aria-labelledby="dash-ptab-${pushTab}">${panel[pushTab]}</div>`;
     if (pushSheet) { $('.sheet-body', pushSheet.el).innerHTML = content; } else { pushSheet = sheet({ title: t('js.dash.push.title'), content, onClose: () => { pushSheet = null; } }); wirePush(); }
@@ -1285,7 +1288,7 @@ function start() {
     const live = S.live || { pushes: [] };
     if (TEACHER) {
       const n = $('#dash-push-n'); if (n) { n.hidden = !live.pushes.length; n.textContent = live.pushes.length; }
-      if (eyesBtn) { eyesBtn.setAttribute('aria-pressed', String(!!live.eyes)); eyesBtn.innerHTML = `👀 ${esc(live.eyes ? t('js.dash.eyesEnd') : t('js.dash.eyes'))}`; eyesBtn.classList.toggle('btn-hot', !!live.eyes); }
+      if (eyesBtn) { eyesBtn.setAttribute('aria-pressed', String(!!live.eyes)); eyesBtn.innerHTML = `${ico('👀')} ${esc(live.eyes ? t('js.dash.eyesEnd') : t('js.dash.eyes'))}`; eyesBtn.classList.toggle('btn-hot', !!live.eyes); }
       return;
     }
     // A student: the newest push is the banner (or the dashed "Bring it back" line); all of today's are in the tray.
@@ -1294,7 +1297,7 @@ function start() {
     if (slot.dataset.key !== key) {
       slot.dataset.key = key; slot.textContent = '';
       if (top && !top.hidden) {
-        slot.innerHTML = `<div class="dash-banner"><span class="dash-bicon" aria-hidden="true">📣</span><span class="dash-btext"><span class="dash-bfrom">${esc(t('js.dash.banner.from', { when: timeOf(top.at) }))}</span><b dir="auto">${esc(titleOf(top))}</b></span>
+        slot.innerHTML = `<div class="dash-banner"><span class="dash-bicon" aria-hidden="true">${ico('📣')}</span><span class="dash-btext"><span class="dash-bfrom">${esc(t('js.dash.banner.from', { when: timeOf(top.at) }))}</span><b dir="auto">${esc(titleOf(top))}</b></span>
           <a class="btn btn-hot" href="${esc(top.href)}"${openAttrs(top)}>${esc(t(`js.dash.act.${ACT[top.kind]}`))}</a><button class="btn dash-hide" type="button" data-hide="${esc(top.id)}">${esc(t('js.dash.banner.hide'))}</button></div>`;
       } else if (top) {
         slot.innerHTML = `<div class="dash-hidden"><span class="grow">${t('js.dash.banner.hidden', { title: `<b dir="auto">${esc(titleOf(top))}</b>` })}</span><button class="btn btn-sm" type="button" data-unhide="${esc(top.id)}">${esc(t('js.dash.banner.back'))}</button></div>`;
@@ -1312,7 +1315,7 @@ function start() {
       const btn = isTop && !p.hidden ? `<span class="chip-s">${esc(t('js.dash.tray.showing'))}</span>`
         : isTop ? `<button class="btn btn-sm btn-hot" type="button" data-unhide="${esc(p.id)}">${esc(t('js.dash.tray.show'))}</button>`
           : `<a class="btn btn-sm" href="${esc(p.href)}"${openAttrs(p)}>${esc(t(`js.dash.act.${ACT[p.kind]}`))}</a>`;
-      li.innerHTML = `<span aria-hidden="true">${KIND_ICON[p.kind] || '📤'}</span><span class="grow"><b dir="auto">${esc(titleOf(p))}</b><span class="small muted">${esc(t(`js.dash.kind.${p.kind}`))} · ${esc(timeOf(p.at))}</span></span>${btn}`;
+      li.innerHTML = `<span aria-hidden="true">${ico(KIND_ICON[p.kind] || '📤')}</span><span class="grow"><b dir="auto">${esc(titleOf(p))}</b><span class="small muted">${esc(t(`js.dash.kind.${p.kind}`))} · ${esc(timeOf(p.at))}</span></span>${btn}`;
       list.appendChild(li);
     }
     showCheck(live);
@@ -1329,7 +1332,7 @@ function start() {
     if (!ch) return;
     const W = (types.get('check') || { words: {} }).words;
     const choices = checkChoices(ch, W);
-    box.innerHTML = `<h2 id="dash-check-h"><span aria-hidden="true">✅</span> ${esc(t('js.dash.check.title'))}</h2>${ch.q ? `<p class="dash-checkq" dir="auto">${esc(ch.q)}</p>` : ''}
+    box.innerHTML = `<h2 id="dash-check-h">${ico('✅', 28)} ${esc(t('js.dash.check.title'))}</h2>${ch.q ? `<p class="dash-checkq" dir="auto">${esc(ch.q)}</p>` : ''}
       <div class="dash-answers dash-answers-${esc(ch.kind)}" role="group" aria-labelledby="dash-check-h">${choices.map((c, i) => `<button class="dash-ans" type="button" data-answer="${i}" aria-pressed="${ch.mine === i}">${c.icon ? `<span class="dash-ansicon${c.rot ? ' dw-rot' : ''}" aria-hidden="true">${esc(c.icon)}</span>` : ''}<span class="dash-anslab"${c.typed ? ' dir="auto"' : ''}>${esc(c.label)}</span></button>`).join('')}</div>
       <p class="small dash-checknote" role="status">${esc(ch.mine == null ? t('js.dash.check.tap') : t('js.dash.check.thanks'))}</p>`;
     if (had != null) box.querySelector(`[data-answer="${had}"]`)?.focus();
@@ -1387,7 +1390,7 @@ function start() {
     if (!type || !RENDER[type.id]) return;
     const C = D.registry.common || {};
     const mode = (type.modes || []).find(x => x.id === ((p.tool.state && p.tool.state.tab) || type.id));
-    const sh = sheet({ title: `${(mode && mode.icon) || type.icon} ${toolName(p.tool)}`, content: `<p class="small muted">${esc(C.yourCopy)}</p><section class="dash-w dash-wcopy" data-group="${esc(type.group)}"><div class="dash-wb"></div></section><div class="row dash-copyacts"><button class="btn btn-primary" type="button" data-pincopy>📌 ${esc(C.pin)}</button></div>` });
+    const sh = sheet({ title: `${(mode && mode.icon) || type.icon} ${toolName(p.tool)}`, content: `<p class="small muted">${esc(C.yourCopy)}</p><section class="dash-w dash-wcopy" data-group="${esc(type.group)}"><div class="dash-wb"></div></section><div class="row dash-copyacts"><button class="btn btn-primary" type="button" data-pincopy>${ico('📌')} ${esc(C.pin)}</button></div>` });
     sh.el.querySelector('.sheet').classList.add('dash-copysheet');
     const body = sh.el.querySelector('.dash-wcopy .dash-wb');
     const w = { id: `copy-${pid}`, type: type.id, s: { state: copies.get(pid) || p.tool.state } };
@@ -1440,7 +1443,7 @@ function start() {
       <div class="field" id="dash-bi-opsf" hidden><label for="dash-bi-ops">${esc(t('js.dash.build.ops'))}</label><select class="input" id="dash-bi-ops">${B.EQ_SETS.map(k => opt(k, t(`js.dash.build.opsList.${k}`), k === 'add')).join('')}</select></div>` : ''}
       <div class="field"><label for="dash-bi-say">${esc(t('js.dash.build.say'))}</label><input class="input" id="dash-bi-say" maxlength="120" dir="auto" autocomplete="off" value="${esc(sayDefOf(mode, false))}"></div>
       <fieldset class="dash-biq"><legend id="dash-bi-qh">${esc(t('js.dash.build.questions'))}</legend>
-        <div class="dash-bipick" role="group" aria-labelledby="dash-bi-pickt"><span class="dash-bipickt" id="dash-bi-pickt"><span aria-hidden="true">🎲</span> ${esc(t('js.dash.build.pick'))}</span>
+        <div class="dash-bipick" role="group" aria-labelledby="dash-bi-pickt"><span class="dash-bipickt" id="dash-bi-pickt">${ico('🎲')} ${esc(t('js.dash.build.pick'))}</span>
           <div class="dash-bipickrow"><select class="input" id="dash-bi-gen" aria-label="${esc(t('js.dash.build.gen'))}"></select>
             <select class="input" id="dash-bi-n" aria-label="${esc(t('js.dash.build.howMany'))}">${B.COUNTS.map(n => opt(n, String(n), n === B.DEFAULT_COUNT)).join('')}</select>
             <button class="btn" type="button" id="dash-bi-make">${esc(t('js.dash.build.make'))}</button></div></div>
@@ -1448,7 +1451,7 @@ function start() {
         <p class="small muted" id="dash-bi-eg"></p></fieldset>
       <div class="dash-bipreview" id="dash-bi-preview" aria-live="polite"></div>
       <p class="err form-err" role="alert"></p>
-      <div class="row"><button class="btn btn-primary" type="submit">📤 ${esc(t('js.dash.build.send'))}</button></div></form>` });
+      <div class="row"><button class="btn btn-primary" type="submit">${ico('📤')} ${esc(t('js.dash.build.send'))}</button></div></form>` });
     sh.el.querySelector('.sheet').classList.add('dash-bisheet');
     const f = sh.el.querySelector('form'), list = $('#dash-bi-list', f), prev = $('#dash-bi-preview', f), err = $('.form-err', f);
     const say = $('#dash-bi-say', f), gen = $('#dash-bi-gen', f), task = $('#dash-bi-task', f), ops = $('#dash-bi-ops', f);
@@ -1519,7 +1522,7 @@ function start() {
       box.innerHTML = `<p class="dash-bsayt" dir="auto"><b>${esc(info.name)}</b>${data.say ? ` · ${esc(data.say)}` : ''}</p>
         <section><h3 class="dash-h3">${esc(t('js.dash.build.targetsH'))}</h3><ol class="plain dash-btlist">${data.targets.map((x, i) => `<li><b class="dash-btt" dir="ltr">${esc(tText(data.mode, x, data.base))}</b>
           <span class="small muted grow">${esc(t('js.dash.build.rightOf', { right: data.items[i].right, tried: data.items[i].tried }))}</span>
-          ${B.BUILD[data.mode].solve ? `<button class="btn btn-sm" type="button" data-board="${i}" aria-label="${esc(t('js.dash.build.onBoardName', { target: tText(data.mode, x, data.base) }))}">👀 ${esc(t('js.dash.build.onBoard'))}</button>` : ''}</li>`).join('')}</ol></section>
+          ${B.BUILD[data.mode].solve ? `<button class="btn btn-sm" type="button" data-board="${i}" aria-label="${esc(t('js.dash.build.onBoardName', { target: tText(data.mode, x, data.base) }))}">${ico('👀')} ${esc(t('js.dash.build.onBoard'))}</button>` : ''}</li>`).join('')}</ol></section>
         <section><h3 class="dash-h3">${esc(t('js.dash.build.studentsH'))}</h3>${!names ? `<p class="small muted">${esc(t('js.dash.build.projector'))}</p>`
           : !started.length ? `<p class="small muted">${esc(t('js.dash.build.nobody'))}</p>`
             : `<ul class="plain dash-bslist">${data.students.map(x => `<li><b dir="auto">${esc(x.name)}</b><span class="small">${esc(t('js.dash.build.doneOf', { done: x.done, n, right: x.right }))}</span>${x.wrong.length ? `<span class="small dash-bwrong">${esc(t('js.dash.build.notYetList', { list: x.wrong.map(i => tText(data.mode, data.targets[i], data.base)).join(', ') }))}</span>` : ''}</li>`).join('')}</ul>`}</section>`;
@@ -1575,7 +1578,7 @@ function start() {
       if (live && live.destroy) live.destroy(); live = null;
       const right = b.targets.filter((x, i) => mem.results[i] && mem.results[i].right).length;
       const again = b.targets.map((x, i) => [x, i]).filter(([, i]) => !(mem.results[i] && mem.results[i].right));
-      box.innerHTML = `<div class="dash-bdone"><p class="dash-bdonebig">🎉 ${esc(t('js.dash.build.allDone'))}</p><p class="dash-bdonen">${esc(t('js.dash.build.gotRight', { right, n }))}</p>
+      box.innerHTML = `<div class="dash-bdone"><p class="dash-bdonebig">${ico('🎉')} ${esc(t('js.dash.build.allDone'))}</p><p class="dash-bdonen">${esc(t('js.dash.build.gotRight', { right, n }))}</p>
         ${again.length ? `<p>${esc(t('js.dash.build.again'))}</p><ul class="plain dash-bagain">${again.map(([x, i]) => `<li><button class="btn" type="button" data-bgo="${i}" dir="ltr">${esc(tText(b.mode, x, b.base))}</button></li>`).join('')}</ul>` : ''}
         <p class="small muted">${esc(t('js.dash.build.private'))}</p>
         <div class="row dash-bacts"><button class="btn btn-primary" type="button" data-bclose>${esc(t('js.dash.build.close'))}</button></div></div>`;
@@ -1593,7 +1596,7 @@ function start() {
         <section class="dash-w dash-wcopy dash-wbuild" data-group="${esc(info.ty.group)}" aria-label="${esc(info.name)}"><div class="dash-wb"></div></section>
         <div class="dash-bacts"><p class="dash-bfb${was && was.right ? ' is-right' : ''}" role="status">${was && was.right ? `✔ ${esc(t('js.dash.build.yes'))}` : ''}</p>
           <button class="btn" type="button" data-bnext>${esc(t(i + 1 < n ? 'js.dash.build.next' : 'js.dash.build.finish'))} →</button>
-          <button class="btn btn-primary" type="button" data-bcheck>✔ ${esc(t('js.dash.build.check'))}</button></div>`;
+          <button class="btn btn-primary" type="button" data-bcheck>${ico('✔')} ${esc(t('js.dash.build.check'))}</button></div>`;
       const body = box.querySelector('.dash-wb');
       const w = { id: `build-${pid}-${i}`, type: b.mode, s: { state: mem.states[i] || B.startState(b.mode, b.base, x) } };
       const ctx = { ...ctxFor(w, info.sub), own: true, copy: true, build: { target: x }, send: null, upload: null, checks: null, ask: null, buildIt: null,
@@ -1610,7 +1613,7 @@ function start() {
       const r = B.checkBuild(b.mode, st, x, b.base, INTL), fb = box.querySelector('.dash-bfb');
       fb.className = `dash-bfb ${r.ok ? 'is-right' : 'is-no'}`;
       // Right: "Yes!" (and, for an equation, one line of why); not yet: one gentle hint.
-      fb.textContent = r.ok ? `🎉 ${t('js.dash.build.yes')} ${hintText(r.hint, W)}`.trim() : `${t('js.dash.build.notYet')} ${hintText(r.hint, W)}`.trim();
+      setLabel(fb, r.ok ? `🎉 ${t('js.dash.build.yes')} ${hintText(r.hint, W)}`.trim() : `${t('js.dash.build.notYet')} ${hintText(r.hint, W)}`.trim());
       mem.results[i] = { right: r.ok || !!(mem.results[i] && mem.results[i].right) };
       if (r.ok) { const nx = box.querySelector('[data-bnext]'); nx.classList.add('btn-primary'); chk.classList.remove('btn-primary'); nx.focus(); }
       chk.disabled = true; setTimeout(() => { if (chk.isConnected) chk.disabled = false; }, 600);

@@ -2480,8 +2480,8 @@
           "learn": "Dopo ogni costruzione, l’app gioca da sola per circa 20 secondi: tasti, tocchi, trascinamenti, e controlla che il punteggio cambi e che niente si rompa."
         }
       },
-      "resumed": "🔄 Il server si è riavviato, quindi il Costruttore ha continuato da dove era rimasto.",
-      "resumedV": "🔄 Il server si è riavviato, quindi il Costruttore ha continuato dalla versione {v}.",
+      "resumed": "Il server si è riavviato, quindi il Costruttore ha continuato da dove era rimasto.",
+      "resumedV": "Il server si è riavviato, quindi il Costruttore ha continuato dalla versione {v}.",
       "stopped": {
         "restart": "Il Costruttore si è fermato quando il nostro server si è riavviato. Tutto quello che ha creato è salvato.",
         "ai": "Il Costruttore si è fermato quando il nostro server si è riavviato, e il Costruttore IA adesso si riposa. Tutto quello che ha creato è salvato."
@@ -2538,7 +2538,7 @@
       },
       "stillWorking": "Un attimo, il Costruttore sta ancora lavorando!",
       "resting": {
-        "text": "😴 Il Costruttore IA si sta riposando. Tornerà {when}. Il tuo gioco e i tuoi messaggi al Costruttore sono salvati, torna allora!",
+        "text": "Il Costruttore IA si sta riposando. Tornerà {when}. Il tuo gioco e i tuoi messaggi al Costruttore sono salvati, torna allora!",
         "today": "oggi alle {time}",
         "tomorrow": "domani alle {time}",
         "date": "{date} alle {time}"
@@ -3228,7 +3228,7 @@
       "editN": "Modifica il problema {n}",
       "add": "Aggiungi un problema",
       "copyN": "Copia il problema {n}",
-      "editTitle": "✏️ Problema {n} di {total}",
+      "editTitle": "Problema {n} di {total}",
       "kind": {
         "reading": "Leggere una scala",
         "thermometer": "termometro",

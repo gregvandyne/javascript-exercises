@@ -339,7 +339,9 @@ for (const [label, opts] of VIEWS) {
       const { ctx, page, errors } = await pageFor(c, opts);
       const line = async id => {
         await page.goto(`${BASE}/studio/${id}`); await page.waitForSelector('#st-liveclass');
-        return page.$eval('#st-liveclass', el => ({ line: el.dataset.line, text: el.textContent.replace(/\s+/g, ' ').trim(), host: !!el.querySelector('[data-act="host-live"]'), btns: [...el.querySelectorAll('button')].map(b => b.dataset.act) }));
+        const r = await page.$eval('#st-liveclass', el => ({ line: el.dataset.line, html: el.innerHTML, host: !!el.querySelector('[data-act="host-live"]'), btns: [...el.querySelectorAll('button')].map(b => b.dataset.act) }));
+        // The line's icon is a Fluent picture now: read it back as the emoji it stands for (tests/support/deicon.js).
+        return { ...r, text: deicon(r.html).replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim() };
       };
       const host = await line(G.host.id);
       if (who === 'teacher') { assert.deepEqual([host.line, host.text, host.host], ['host', '📡 Ready to host live Host live', true]); }

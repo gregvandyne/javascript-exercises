@@ -7,6 +7,7 @@ import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { deicon } from '../support/deicon.js';   // icons read back as the emoji they stand for
 
 const { createApp } = await import('../../server/app.js');
 const { seed } = await import('../../scripts/seed.js');
@@ -54,14 +55,14 @@ const shot = async (page, name) => { if (!SHOTS) return; await page.waitForTimeo
 test('a wish shows the chosen books as library cards; All books brings the grid back', { skip }, async () => {
   const { ctx, page, errors } = await open(ava, '/library');
   await page.waitForSelector('#lb-wish:not([hidden])');
-  assert.equal(await page.textContent('.lb-wish-label').then(t => t.trim()), '✨ What would you like to read today?');
+  assert.equal(await page.innerHTML('.lb-wish-label').then(h => deicon(h).replace(/<[^>]+>/g, '').trim()), '✨ What would you like to read today?');
   assert.equal(await page.getAttribute('#lb-wish-q', 'placeholder'), 'dinosaurs, a funny story, something about space...');
   await shot(page, 'wish-box-desktop');
   await page.fill('#lb-wish-q', 'a funny story about animals');
   await page.click('#lb-wish-go');
   await page.waitForSelector('#lb-wish-out:not([hidden]) .lb-card');
   assert.match(asked.at(-1), /<request>\na funny story about animals\n<\/request>/);
-  assert.equal(await page.textContent('#lb-wish-h').then(t => t.trim()), '🎁 Books for you');
+  assert.equal(await page.innerHTML('#lb-wish-h').then(h => deicon(h).replace(/<[^>]+>/g, '').trim()), '🎁 Books for you');
   assert.deepEqual(await page.$$eval('#lb-wish-grid .lb-title', els => els.map(e => e.textContent.trim())), PICKS.map(id => LIB.getBook(id).title));
   assert.equal(await page.textContent('#lb-wish-note'), 'We found 3 books for you.');
   assert.equal(await page.isVisible('#lb-grid'), false, 'the full grid steps aside');

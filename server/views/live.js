@@ -204,7 +204,7 @@ export function playBody(req, { sid, title, nicks, open = true } = {}) {
   <button class="btn lv-read" type="button" id="lv-read" hidden>${ico('🔊', { size: 18 })} ${t('live.play.read')}</button>
   <p class="small muted lv-read-ai" id="lv-read-ai" hidden>${t('live.play.aiVoice', { provider: TTS_COMPANY })}</p>
   <div class="lv-stage" id="lv-stage" dir="ltr"></div>
-  <div class="lv-eyes" id="lv-eyes" hidden><p class="lv-eyes-icon" aria-hidden="true">👀</p><p class="lv-eyes-text" role="alert">${t('live.eyes.cover')}</p><p class="small">${t('live.eyes.coverHint')}</p></div>
+  <div class="lv-eyes" id="lv-eyes" hidden><p class="lv-eyes-icon" aria-hidden="true">${ico('👀', { size: 128 })}</p><p class="lv-eyes-text" role="alert">${t('live.eyes.cover')}</p><p class="small">${t('live.eyes.coverHint')}</p></div>
   <canvas class="lv-watch" id="lv-watch" hidden aria-label="${t('live.play.watchHint')}"></canvas>
   <div class="lv-emotes" id="lv-emotes" role="group" aria-label="${t('live.play.emotes')}">
     ${EMOTES.map((e, i) => html`<button class="btn btn-sm lv-emote" type="button" data-emote="${i}">${t(`live.emote.${e}`)}</button>`)}
@@ -258,7 +258,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
       <button class="btn btn-sm" type="button" id="lv-hide-code" aria-pressed="false">${t('live.host.hideCode')}</button>
       <span class="lv-joinlinks"><button class="btn btn-sm" type="button" id="lv-copy-link" data-url="${joinUrl}">${ico('🔗', { size: 18 })} ${t('live.host.copyLink')}</button>
       ${s.audience === 'class' ? '' : html`<a class="btn btn-sm" id="lv-play-too" href="${joinUrl}" target="_blank" rel="noopener">${ico('🎮', { size: 18 })} ${t('live.host.playToo')}</a>`}
-      ${gcAnnounce ? html`<a class="btn btn-sm" id="lv-gc-announce" href="${gcAnnounce}" target="_blank" rel="noopener">📣 ${t('gclassroom.announce.fromLive')}</a>` : ''}</span>
+      ${gcAnnounce ? html`<a class="btn btn-sm" id="lv-gc-announce" href="${gcAnnounce}" target="_blank" rel="noopener">${ico('📣', { size: 18 })} ${t('gclassroom.announce.fromLive')}</a>` : ''}</span>
       <p class="small muted" id="lv-copied" role="status" hidden>${t('live.host.copied')}</p>
       ${s.doodle ? html`<p class="small muted" id="lv-need-two" hidden>${t('live.api.needTwo')}</p><p class="small lv-hid" id="lv-hid" role="status" hidden></p>` : ''}
     </div>

@@ -30,6 +30,7 @@ import * as F from '../services/email-frame.js';
 import { allow, clear, ipOf, loginLockKey } from '../services/ratelimit.js';
 import { log } from '../services/log.js';
 import { contactEmail } from './teachers.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 export const RESET_MINUTES = 30;
@@ -94,8 +95,8 @@ const contactLine = (t, key) => html`<p class="small muted">${tHtml(t, key, { em
 router.get('/forgot', (req, res) => {
   const t = req.t;
   if (req.user && !req.user.is_guest) return res.redirect(302, auth.isGrownup(req.user) ? '/family/account#password' : '/me/settings#password');
-  const top = html`<div class="center" style="font-size:3rem" aria-hidden="true">🔑</div><h1 class="center">${t('auth.reset.title')}</h1>`;
-  const kids = html`<p class="small"><span aria-hidden="true">🙂</span> ${t('auth.reset.kids')}</p>`;
+  const top = html`<div class="center" style="font-size:3rem" aria-hidden="true">${ico('🔑', { size: 48 })}</div><h1 class="center">${t('auth.reset.title')}</h1>`;
+  const kids = html`<p class="small">${ico('🙂', { size: 18 })} ${t('auth.reset.kids')}</p>`;
   const back = html`<p class="center" style="margin:16px 0 0"><a class="btn btn-block" href="/login">${t('auth.reset.backToSignIn')}</a></p>`;
   if (!E.sendingOn()) return box(req, res, t('auth.reset.title'), html`${top}${contactLine(t, 'auth.reset.off')}${kids}${back}`);
   if (req.query.sent === '1') {

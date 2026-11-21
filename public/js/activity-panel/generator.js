@@ -5,6 +5,9 @@
 import { esc } from '/js/app.js';
 import { P, E, clone, valText, kit, figures, kindName } from './shared.js';
 import { patternFor } from './patterns.js';
+import { iconHtml } from '../icons.js';
+/** A Fluent icon for an emoji (decorative; public/js/icons.js). */
+const ico = (e, size = 18) => iconHtml(e, { size });
 
 const numText = x => String(Math.round(x * 1000) / 1000);
 
@@ -44,7 +47,7 @@ export function renderGenerator(M, box) {
   box.innerHTML = `<div class="field"><label for="ap-like">${E('genMake')}</label><select class="input" id="ap-like">${opts}</select></div>
     ${from !== null && R ? `<button type="button" class="btn btn-sm ap-more" data-g="more" aria-expanded="${!!M.genMore}">${E(M.genMore ? 'lessOptions' : 'moreOptions')}</button>
       <div class="ap-more-box"${M.genMore ? '' : ' hidden'}>${Object.keys(R).map(name => `${R[name].x !== undefined ? `<p class="small ap-gvar">${E('gVar', { x: numText(R[name].x) })}</p>` : ''}<div class="ap-three">${K_[name].map(k => field(name, k)).join('')}</div>`).join('')}</div>` : ''}
-    <p class="ap-ex"><span>${E('genExamples')}</span> <span class="ap-chips"></span> <button type="button" class="btn btn-sm" data-g="try">🎲 ${E('genTry')}</button></p>
+    <p class="ap-ex"><span>${E('genExamples')}</span> <span class="ap-chips"></span> <button type="button" class="btn btn-sm" data-g="try">${ico('🎲')} ${E('genTry')}</button></p>
     <p class="ap-check" role="status" aria-live="polite"></p>`;
   const gen = M.data.gen;
   const chips = box.querySelector('.ap-chips');

@@ -8,6 +8,9 @@
 // Builder" make an empty game and open the Studio, exactly as "New game" always did.
 import { api, toast, sheet, esc, $, $$, t } from '/js/app.js';
 import { LANG } from '/js/i18n.js';
+import { iconHtml } from '/js/icons.js';
+/** A Fluent icon for an emoji (decorative; public/js/icons.js). */
+const ico = (e, size = 18) => iconHtml(e, { size });
 
 // "What are you making?" comes first: a Classroom activity (four steps in all: what it is, on the start screen; your
 // lesson; how students will use it; how much help) or an Arcade game (the steps below, unchanged). D.canvas.kind is the
@@ -406,7 +409,7 @@ function renderLessonSum(r) {
   const say1 = !d ? t('js.buildsetup.lesson.lineNotes')
     : cut ? t('js.buildsetup.lesson.lineCut', { name: d.name })
       : d.pages ? t('js.buildsetup.lesson.linePages', { name: d.name, count: d.pages }) : t('js.buildsetup.lesson.lineAll', { name: d.name });
-  line.hidden = false; line.innerHTML = `<span aria-hidden="true">📄</span> <span dir="auto">${esc(say1)}</span>`;
+  line.hidden = false; line.innerHTML = `${ico('📄')} <span dir="auto">${esc(say1)}</span>`;
 }
 
 // ---------------------------------------------------------------- files (worksheets and notes; the Studio's own upload)

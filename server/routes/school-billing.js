@@ -31,6 +31,7 @@ import * as PA from '../services/plan-asks.js';
 import * as TP from '../services/teacher-plan.js';
 import { stepUp, passwordField, stripeTrouble } from './family.js';
 import { q } from '../db.js';
+import { ico } from '../views/icon.js';
 
 /** The two-letter country of a school's "Set up my school" request ("United Kingdom" -> 'GB'), for the invoice form;
  *  '' when there is no request or the name isn't one we recognise. */
@@ -156,8 +157,8 @@ export function askPanel(req, s) {
   const mine = PA.myOpenAsk(u, s.id);
   let inner;
   if (PA.planOn(s.id)) inner = html`<p style="margin:0">${t('school.asks.hasPlan')}</p>`;
-  else if (mine) inner = html`<p style="margin:0">✅ ${t('school.asks.askedOn', { date: f.date(mine.created_at) })}</p>`;
-  else inner = html`<p>${t('school.asks.text')}</p><form data-api="/api/schools/${s.id}/ask-plan" data-reload><button class="btn" type="submit">✋ ${t('school.asks.button')}</button></form>`;
+  else if (mine) inner = html`<p style="margin:0">${ico('✅', { size: 18 })} ${t('school.asks.askedOn', { date: f.date(mine.created_at) })}</p>`;
+  else inner = html`<p>${t('school.asks.text')}</p><form data-api="/api/schools/${s.id}/ask-plan" data-reload><button class="btn" type="submit">${ico('✋', { size: 18 })} ${t('school.asks.button')}</button></form>`;
   const out = html`<section class="panel askplan" aria-labelledby="ap-${s.id}"><h2 id="ap-${s.id}">${t('school.teach.plan.heading', { school: s.name })}</h2>${inner}</section>`;
   return t.own('school.asks.text') ? out : html`<div lang="en" dir="ltr" style="display:contents">${out}</div>`;
 }
@@ -192,11 +193,11 @@ async function teacherSeatsTab(req, s, v) {
   if (checkoutId && !plan.entitled) {
     return html`<section class="panel" aria-labelledby="bill-h" id="plan"><h2 id="bill-h">${t('school.billing.heading')}</h2>
       <div class="notice" role="status" data-checkout-wait="${checkoutId}" data-status-url="${api}/status" data-back="${tabUrl(s)}" data-done="${t('school.billing.welcome')}">
-        <p style="margin:0"><span aria-hidden="true">⏳</span> ${t('school.billing.waiting')}</p>
+        <p style="margin:0">${ico('⏳', { size: 18 })} ${t('school.billing.waiting')}</p>
         <div data-slow hidden><p class="small" style="margin:.5em 0 0">${t('school.billing.slow')}</p>
           <p class="small" style="margin:.5em 0 0"><a href="${tabUrl(s)}">${t('school.billing.back')}</a></p></div></div></section>`;
   }
-  if (checkoutId && plan.entitled) parts.push(html`<p class="notice good" role="status"><span aria-hidden="true">🎉</span> ${t('school.billing.welcome')}</p>`);
+  if (checkoutId && plan.entitled) parts.push(html`<p class="notice good" role="status">${ico('🎉', { size: 18 })} ${t('school.billing.welcome')}</p>`);
   const seatsPaid = v.seats.seats;
   if (plan.entitled) {
     let state;
@@ -256,8 +257,8 @@ async function teacherSeatsTab(req, s, v) {
           ${passwordField(req, 'pw-seats')}${err}
           <button class="btn btn-primary" type="submit">${t('school.billing.tp.change.button')}</button></form></section>`);
     } else if (!v.unsettled && price) {
-      actions.push(html`<div class="cols2 billing-free" id="free-vs-plan"><div class="panel"><h3>✅ ${t('school.billing.freeH')}</h3><p class="small">${t('school.billing.free', { free: config.builderDailyTurns })}</p></div>
-        <div class="panel"><h3>✨ ${t('school.billing.addsH')}</h3>${E('p', 'school.billing.tp.adds', { daily }, ' class="small"')}</div></div>`);
+      actions.push(html`<div class="cols2 billing-free" id="free-vs-plan"><div class="panel"><h3>${ico('✅', { size: 18 })} ${t('school.billing.freeH')}</h3><p class="small">${t('school.billing.free', { free: config.builderDailyTurns })}</p></div>
+        <div class="panel"><h3>${ico('✨', { size: 18 })} ${t('school.billing.addsH')}</h3>${E('p', 'school.billing.tp.adds', { daily }, ' class="small"')}</div></div>`);
       actions.push(html`<section class="panel" aria-labelledby="pay-h" id="pay"><h3 id="pay-h">${t('school.billing.tp.pay.heading')}</h3>
         <form data-api="${api}/checkout" class="planform" novalidate>
           ${seatsField('seats-pay', Math.max(1, v.teachers), t('school.billing.tp.seatsHint', { teachers: teachersNow }))}
@@ -330,8 +331,8 @@ async function legacySchoolTab(req, s, v) {
     <input class="input" id="${id}" name="seats" type="number" inputmode="numeric" min="${config.schoolMinSeats}" max="${SB.MAX_SEATS}" step="1" value="${value}" required dir="ltr" aria-describedby="${id}-hint ${id}-total"${price ? raw(` data-unit="${+price.unitAmount || 0}" data-total-tpl="${esc(t('school.billing.total', { seats: '{seats}', price: '{price}', total: '{total}' }))}" data-lang="${f.intl}"`) : ''}>
     <span class="hint" id="${id}-hint">${hint} ${t('school.billing.seatsWho')}</span>${price ? html`<b class="seat-total" id="${id}-total" aria-live="polite">${t('school.billing.total', { seats: f.int(value), price: f.money(price.unitAmount), total: f.money(price.unitAmount * value) })}</b>` : ''}<span class="err" id="${id}-err" aria-live="polite"></span></div>`;
   // What every school gets free, and what a School plan adds: one answer for the head teacher.
-  const freeVsPaid = html`<div class="cols2 billing-free" id="free-vs-plan"><div class="panel"><h3>✅ ${t('school.billing.freeH')}</h3><p class="small">${t('school.billing.free', { free: config.builderDailyTurns })}</p></div>
-    <div class="panel"><h3>✨ ${t('school.billing.addsH')}</h3><p class="small">${t('school.billing.adds', { perSeat: config.schoolTurnsPerSeat })}</p></div></div>`;
+  const freeVsPaid = html`<div class="cols2 billing-free" id="free-vs-plan"><div class="panel"><h3>${ico('✅', { size: 18 })} ${t('school.billing.freeH')}</h3><p class="small">${t('school.billing.free', { free: config.builderDailyTurns })}</p></div>
+    <div class="panel"><h3>${ico('✨', { size: 18 })} ${t('school.billing.addsH')}</h3><p class="small">${t('school.billing.adds', { perSeat: config.schoolTurnsPerSeat })}</p></div></div>`;
   const studentsNow = plural(t, 'school.billing.studentsN', v.students);
   const parts = [];
 
@@ -339,11 +340,11 @@ async function legacySchoolTab(req, s, v) {
   if (checkoutId && !plan.entitled) {
     return html`<section class="panel" aria-labelledby="bill-h" id="plan"><h2 id="bill-h">${t('school.billing.heading')}</h2>
       <div class="notice" role="status" data-checkout-wait="${checkoutId}" data-status-url="${api}/status" data-back="${tabUrl(s)}" data-done="${t('school.billing.welcome')}">
-        <p style="margin:0"${t.own('school.billing.waiting') ? '' : raw(' lang="en" dir="ltr"')}><span aria-hidden="true">⏳</span> ${t('school.billing.waiting')}</p>
+        <p style="margin:0"${t.own('school.billing.waiting') ? '' : raw(' lang="en" dir="ltr"')}>${ico('⏳', { size: 18 })} ${t('school.billing.waiting')}</p>
         <div data-slow hidden><p class="small" style="margin:.5em 0 0">${t('school.billing.slow')}</p>
           <p class="small" style="margin:.5em 0 0"><a href="${tabUrl(s)}">${t('school.billing.back')}</a></p></div></div></section>`;
   }
-  if (checkoutId && plan.entitled) parts.push(html`<p class="notice good" role="status"><span aria-hidden="true">🎉</span> ${t('school.billing.welcome')}</p>`);
+  if (checkoutId && plan.entitled) parts.push(html`<p class="notice good" role="status">${ico('🎉', { size: 18 })} ${t('school.billing.welcome')}</p>`);
 
   // ---- the plan's state
   parts.push(raw(`<p class="notice"${t.own('school.billing.tp.legacy') ? '' : ' lang="en" dir="ltr"'}><b>${esc(t('school.billing.tp.legacyH'))}</b> ${esc(t('school.billing.tp.legacy'))}</p>`));

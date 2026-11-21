@@ -18,6 +18,7 @@ import { isPlatformAdmin } from '../services/schools.js';
 import { googleEnabled } from '../oidc.js';
 import * as seo from '../seo.js';
 import { el, fb, lp, contactEmail } from './teachers.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 
@@ -97,8 +98,8 @@ router.get('/research', (req, res) => {
       <ol class="trust-cites" lang="en" dir="ltr">${RESEARCH.map(r => html`<li>${raw(r.cite)} <a href="https://doi.org/${r.doi}" rel="noopener">https://doi.org/${r.doi}</a></li>`)}</ol>
     </section>
     <ul class="chips lp-more">
-      <li><a class="chip" href="${lp(req, '/teachers')}"><span aria-hidden="true">🍎</span>${t('research.links.teachers')}</a></li>
-      <li><a class="chip" href="${lp(req, '/compliance')}"><span aria-hidden="true">🔒</span>${t('compliance.name')}</a></li>
+      <li><a class="chip" href="${lp(req, '/teachers')}">${ico('🍎', { size: 18 })}${t('research.links.teachers')}</a></li>
+      <li><a class="chip" href="${lp(req, '/compliance')}">${ico('🔒', { size: 18 })}${t('compliance.name')}</a></li>
     </ul>
   </div>`;
   page(req, res, {
@@ -146,10 +147,10 @@ router.get('/compliance', (req, res) => {
     </div>
     <section class="panel" id="contact" aria-labelledby="contact-h">${el(t, 'h2', 'compliance.contact.h', {}, ' id="contact-h"')}${el(t, 'p', 'compliance.contact.p', vars)}</section>
     <ul class="chips lp-more">
-      <li><a class="chip" href="/privacy"><span aria-hidden="true">🔒</span>${t('layout.footer.privacy')}</a></li>
-      <li><a class="chip" href="${lp(req, '/safety')}"><span aria-hidden="true">🛡️</span>${t('layout.footer.safety')}</a></li>
-      <li><a class="chip" href="${lp(req, '/teachers')}"><span aria-hidden="true">🍎</span>${t('research.links.teachers')}</a></li>
-      <li><a class="chip" href="${lp(req, '/research')}"><span aria-hidden="true">📚</span>${t('research.name')}</a></li>
+      <li><a class="chip" href="/privacy">${ico('🔒', { size: 18 })}${t('layout.footer.privacy')}</a></li>
+      <li><a class="chip" href="${lp(req, '/safety')}">${ico('🛡️', { size: 18 })}${t('layout.footer.safety')}</a></li>
+      <li><a class="chip" href="${lp(req, '/teachers')}">${ico('🍎', { size: 18 })}${t('research.links.teachers')}</a></li>
+      <li><a class="chip" href="${lp(req, '/research')}">${ico('📚', { size: 18 })}${t('research.name')}</a></li>
     </ul>
   </div>`;
   page(req, res, {
