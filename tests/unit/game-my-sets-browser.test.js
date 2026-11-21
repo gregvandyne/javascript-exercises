@@ -280,3 +280,51 @@ test('The Big Divide: a student\'s frame (no BRB.canListSets) has no My workshee
     assert.equal(await g.page.locator('#bb-ws').count(), 0);
   } finally { await g.ctx.close(); }
 });
+
+// Algebra Builder's page is built from tools/algebra-builder (npm run build:algebra-builder). Until the committed page
+// carries My question sets (a checkout without the vendored math field's built files can't build it), this test waits.
+const AB_BUILT = fs.readFileSync(path.join(ROOT, 'seed-games/algebra-builder.html'), 'utf8').includes('My question sets');
+test('Algebra Builder: My question sets lists the saved sets; open one and save it under its code; rename, duplicate, copy, delete', { skip: skip || (!AB_BUILT && 'seed-games/algebra-builder.html is not rebuilt yet'), timeout: 180_000 }, async () => {
+  const A = 's-solveabc23', B = 's-factorab23';
+  const g = await openBuilt('algebra-builder.html', 'algebra-builder', { sets: [
+    row('algebra-builder', A, [{ a: 'solve', p: '2x+3=7', s: 'all', l: true }, { a: 'factor', p: 'x^2+3x+2', s: 'none', l: true }], 'Unit 2 warm-up'),
+    row('algebra-builder', B, [{ a: 'multiply', p: '(x+2)(x+1)', s: 'all', l: false }], '', 86400e3),
+  ] });
+  const { page } = g;
+  try {
+    await page.getByRole('button', { name: /I’m a teacher/ }).click();
+    await page.locator('#ab-my-sets').click();
+    await page.locator('[data-set]').first().waitFor();
+    assert.equal(await page.locator('[data-set]').count(), 2);
+    assert.match(await page.locator(`[data-set="${A}"]`).textContent(), /Unit 2 warm-up[\s\S]*2 questions · Solve, Factor/);
+    assert.match(await page.locator(`[data-set="${B}"] .title`).textContent(), /1 question/);
+    if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'algebra-builder-my-question-sets.png') });
+    await page.locator(`[data-ws-copy="${A}"]`).click();
+    assert.equal((await g.log('copy')).at(-1).what, `http://game.test/play/algebra-builder?chapter=${A}&lock=1`);
+    await page.locator(`[data-ws-rename="${B}"]`).click();
+    await page.locator(`#ab-rename-${B}`).fill('Multiplying binomials');
+    await page.locator('#ab-rename-ok').click();
+    await page.locator(`[data-set="${B}"] .title`, { hasText: 'Multiplying binomials' }).waitFor();
+    await page.locator(`[data-ws-dup="${A}"]`).click();
+    await page.waitForFunction(() => document.querySelectorAll('[data-set]').length === 3);
+    assert.match(await page.locator('[data-set]').first().textContent(), /Copy of Unit 2 warm-up/);
+    // Open: the question set page with its questions; a change saves under the same code
+    await page.locator(`[data-ws-open="${A}"]`).click();
+    await page.getByRole('heading', { name: 'Question set' }).waitFor();
+    assert.equal(await page.locator('.item').count(), 2);
+    await page.getByRole('button', { name: 'Remove question 2' }).click();
+    await page.getByRole('button', { name: 'Save changes' }).click();
+    await page.waitForFunction(() => window.__log.some(x => x.op === 'save'));
+    const sv = (await g.log('save')).at(-1);
+    assert.equal(sv.id, A); assert.equal(sv.items.length, 1);
+    await page.getByRole('button', { name: '← Back' }).click();
+    await page.locator(`[data-ws-del="${A}"]`).click();
+    assert.match(await page.locator('.ask').textContent(), /Delete “Unit 2 warm-up”\?/);
+    await page.locator('#ab-my-delno').click();
+    await page.locator(`[data-ws-del="${A}"]`).click(); await page.locator('#ab-my-delyes').click();
+    await page.waitForFunction(id => !document.querySelector(`[data-set="${id}"]`), A);
+    for (const id of (await g.store()).map(s => s.id)) { await page.locator(`[data-ws-del="${id}"]`).click(); await page.locator('#ab-my-delyes').click(); await page.waitForFunction(i => !document.querySelector(`[data-set="${i}"]`), id); }
+    await page.locator('#ab-my-empty').waitFor();
+    assert.deepEqual(g.errors, []);
+  } finally { await g.ctx.close(); }
+});

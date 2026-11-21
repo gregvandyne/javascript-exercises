@@ -15,11 +15,13 @@
 	import Footer from '$lib/Footer.svelte';
 	import Logo from '$lib/Logo.svelte';
 	import { go, goBack, nav, sets } from '$lib/nav.svelte';
-	import { mySets, type MySet } from '$lib/oomba';
-	import { ListPlus } from '@lucide/svelte';
+	import { canListSets, mySets, type MySet } from '$lib/oomba';
+	import { FolderOpen, ListPlus } from '@lucide/svelte';
 
 	// Oomba: question sets. The teacher's saved sets (kept in their game save), newest first.
 	const saved: MySet[] = mySets().slice(0, 6);
+	/** My question sets: every set saved on Oomba (school staff only). */
+	const listable = canListSets();
 	const KIND = { solve: 'Solve', multiply: 'Multiply', factor: 'Factor' } as const;
 	const kinds = (s: MySet) => [...new Set(s.items.map((i) => KIND[i.a]))].join(', ');
 	function newSet() {
@@ -172,7 +174,12 @@
 		<section class="sets" aria-labelledby="sets-title">
 			<div class="sets-head">
 				<h2 id="sets-title">Question sets</h2>
-				<button type="button" class="setup small" onclick={newSet}><ListPlus size={18} /> Make a question set</button>
+				<span class="sets-buttons">
+					{#if listable}
+						<button type="button" class="mine small" id="ab-my-sets" onclick={() => go({ name: 'my-sets' })}><FolderOpen size={18} /> My question sets</button>
+					{/if}
+					<button type="button" class="setup small" onclick={newSet}><ListPlus size={18} /> Make a question set</button>
+				</span>
 			</div>
 			<p class="sets-about">Up to 20 questions from any activity, on one link. Students answer them in order.</p>
 			{#if saved.length}
@@ -361,6 +368,27 @@
 	.sets-about {
 		margin-top: 0.3rem;
 		color: var(--muted);
+	}
+	.sets-buttons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	.mine.small {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.6rem 1.1rem;
+		border: 2px solid var(--line-strong);
+		border-radius: 999px;
+		background: var(--paper);
+		color: var(--ink);
+		font-size: 0.95rem;
+		font-weight: 800;
+		cursor: pointer;
+	}
+	.mine.small:hover {
+		border-color: var(--ink);
 	}
 	.setup.small {
 		display: inline-flex;

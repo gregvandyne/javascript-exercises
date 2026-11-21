@@ -20,6 +20,11 @@ type Brb = {
 	params?: Record<string, string | number | undefined>;
 	questionSet?: SavedSet | null;
 	saveQuestionSet?: (items: Item[], id?: string | null) => Promise<{ id?: string; error?: string }> | null;
+	canListSets?: boolean;
+	mySets?: () => Promise<{ sets?: SavedOnOomba[]; error?: string }> | null;
+	deleteQuestionSet?: (id: string) => Promise<{ ok?: boolean; error?: string }> | null;
+	renameQuestionSet?: (id: string, title: string) => Promise<{ ok?: boolean; title?: string; error?: string }> | null;
+	duplicateQuestionSet?: (id: string) => Promise<{ id?: string; set?: SavedOnOomba | null; error?: string }> | null;
 	findQuestionSet?: (code: string) => Promise<{ id?: string; items?: readonly Item[]; error?: string }> | null;
 	storage?: { get: (k: string) => unknown; set: (k: string, v: unknown) => void };
 	user?: { isGuest?: boolean };
@@ -169,6 +174,26 @@ export function forgetMySet(id: string) {
 		/* fine */
 	}
 }
+
+// --- My question sets: every set this teacher saved on Oomba (school staff: BRB.canListSets) ---
+
+/** One saved set as the server lists it: its id and class code, its name ('' when it has none), the server's label,
+ *  how many questions, when it last changed, and its questions. */
+export type SavedOnOomba = { id: string; code: string; title: string; label: string; n: number; updated: number; items: Item[] };
+export const canListSets = () => brb()?.canListSets === true && typeof brb()?.mySets === 'function' && !!brb()?.gameUrl;
+async function ask<T extends { error?: string }>(fn: () => Promise<T> | null | undefined): Promise<T | { error: string }> {
+	try {
+		const p = fn();
+		if (!p) return { error: 'offline' };
+		return (await p) ?? { error: 'offline' };
+	} catch {
+		return { error: 'offline' };
+	}
+}
+export const listSets = () => ask(() => brb()?.mySets?.());
+export const deleteSet = (id: string) => ask(() => brb()?.deleteQuestionSet?.(id));
+export const renameSet = (id: string, title: string) => ask(() => brb()?.renameQuestionSet?.(id, title));
+export const duplicateSet = (id: string) => ask(() => brb()?.duplicateQuestionSet?.(id));
 
 // --- assigning to a class (teachers): Oomba's Assign page, with "Also post to Google Classroom" ---
 
