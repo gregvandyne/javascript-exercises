@@ -5,13 +5,17 @@
 //   Board mode    big type for the board, Back / n of N / Next, no ✓ ✗, no keypad, and no score is sent
 //   Help          the help mode for this screen (any of the four); it is not saved
 //   New set       a fresh set from the generator (off, with a note, when the activity has none)
+//   My worksheets (1.4.0) the teacher's saved worksheets (sets.js): only where the page offers the list
+//                 (BRB.canListSets: school staff, the published activity, never a preview); saving and the list are
+//                 the only controls that reach the server, through the page
 // Two layouts of the same controls, switched by CSS (style.js): a bar under the top strip at 561 px and wider, and one
 // "Teacher" button that opens a menu (a bottom sheet) on narrower screens.
 // ui.js passes its element helper (h) and its words (T): the modules share one scope in the bundle, but stay separate
 // ES modules for the tests, so nothing is imported from ui.js.
 
 /**
- * o: { h, T, supports (the four help modes), gen (the activity has a generator), on: { show, board, help, newSet } }
+ * o: { h, T, supports (the four help modes), gen (the activity has a generator), sets (1.4.0: offer My worksheets),
+ *      on: { show, board, help, newSet, sets } }
  * -> { bar, button, menu, scrim, paint({ support, board, shown, done }), close() }
  */
 export function teachControls(o) {
@@ -25,9 +29,10 @@ export function teachControls(o) {
   els.show = h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-pressed': 'false', onclick: () => on.show() }, h('span', { 'aria-hidden': 'true' }, '👀'), ' ', T('showAnswer'));
   els.board = h('button', { type: 'button', class: 'oc-btn oc-sm oc-tb-board', 'aria-pressed': 'false', onclick: () => on.board(!o.state().board) });
   els.newSet = h('button', { type: 'button', class: 'oc-btn oc-sm', disabled: !o.gen, title: o.gen ? null : T('newSetNone'), onclick: () => on.newSet() }, h('span', { 'aria-hidden': 'true' }, '🎲'), ' ', T('newSetT'));
+  els.sets = o.sets ? h('button', { type: 'button', class: 'oc-btn oc-sm oc-tb-ws', 'aria-expanded': 'false', 'aria-controls': 'oc-ws', onclick: () => on.sets() }, h('span', { 'aria-hidden': 'true' }, '📄'), ' ', T('wsTitle')) : null;
   const bar = h('div', { class: 'oc-tb', role: 'toolbar', 'aria-label': T('teacher') },
     h('span', { class: 'oc-tb-lab' }, h('span', { 'aria-hidden': 'true' }, '🧑‍🏫'), ' ', T('teacher'), h('small', {}, ' · ', T('teacherOnly'))),
-    els.show, els.board, helpGroup(els.help, 'oc-tb-help', true), els.newSet);
+    els.show, els.board, helpGroup(els.help, 'oc-tb-help', true), els.newSet, els.sets);
 
   // ---- B: one Teacher button and its menu (narrower than 561 px)
   const button = h('button', { type: 'button', class: 'oc-btn oc-sm oc-tbtn', 'aria-expanded': 'false', 'aria-controls': 'oc-tmenu', 'aria-label': T('teacher'), onclick: () => open(!isOpen()) },
@@ -37,13 +42,14 @@ export function teachControls(o) {
   els.mShow = item('👀', T('showAnswer'), T('showAnswerD'), () => on.show());
   els.mBoard = item('📽', T('boardMode'), T('boardModeD'), () => on.board(!o.state().board));
   els.mNew = item('🎲', T('newProblems'), o.gen ? T('newProblemsD') : T('newSetNone'), () => on.newSet(), { disabled: !o.gen });
+  els.mSets = o.sets ? item('📄', T('wsTitle'), T('wsMenuD'), () => on.sets()) : null;
   const menu = h('div', { class: 'oc-tmenu', id: 'oc-tmenu', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'oc-tmenu-h', hidden: true },
     h('div', { class: 'oc-tgrab', 'aria-hidden': 'true' }),
     h('h2', { id: 'oc-tmenu-h', tabindex: '-1' }, h('span', { 'aria-hidden': 'true' }, '🧑‍🏫 '), T('teacher')),
     h('p', { class: 'oc-tnote' }, T('teacherNote')),
     els.mShow, els.mBoard,
     h('div', { class: 'oc-tmh' }, h('b', {}, h('span', { 'aria-hidden': 'true' }, '🪜 '), T('helpHere')), helpGroup(els.menuHelp, 'oc-tm4', true)),
-    els.mNew);
+    els.mNew, els.mSets);
   const scrim = h('div', { class: 'oc-tscrim', hidden: true, onclick: () => open(false) });
   const isOpen = () => !menu.hidden;
   function open(want) {
@@ -62,5 +68,5 @@ export function teachControls(o) {
     for (const b of [...els.help, ...els.menuHelp]) pressed(b, b.dataset.mode === s.support);
     bar.classList.toggle('oc-tb-on', !!s.board);
   }
-  return { bar, button, menu, scrim, paint, close: () => open(false) };
+  return { bar, button, menu, scrim, paint, close: () => open(false), setsButton: els.sets, menuButton: button };
 }

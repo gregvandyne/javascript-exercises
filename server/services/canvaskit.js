@@ -27,8 +27,13 @@ export const CANVAS_VERSIONS = Object.freeze({
   // marked helped when the teacher showed an answer. Older activities move to it only when saved from the Studio's
   // Activity panel (server/builder/activity-data.js), never on their own.
   '1.3.0': 'sha384-Y9ODTlYNiRPfeIC7I1iKqhk8Eu55RJ8/xuCQGDe/Px6xCVU0+oT1yYiOyntno79+',
+  // 1.4.0: worksheets (canvas/src/sets.js). A link with a teacher's saved worksheet (BRB.questionSet) plays exactly its
+  // questions; school staff get "My worksheets" in the teacher's controls (BRB.canListSets) to save the questions on
+  // screen under a class code and open, print, share, copy, rename and delete them (routes/games.js, game-sets.js
+  // cleanCanvasItems). 1.0.0 to 1.3.0 stay as they are.
+  '1.4.0': 'sha384-0pmFMEUuEB8z+JP0VXcmPQ1MSYkjDc70jAImMNsRkmwZad1jdc6G8/H6metewMU+',
 });
-export const CANVAS_LATEST = '1.3.0';
+export const CANVAS_LATEST = '1.4.0';
 export const canvasSrc = (v = CANVAS_LATEST) => `${CANVAS_PATH}${v}/oomba-canvas.js`;
 const PUBLIC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
 
