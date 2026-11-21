@@ -156,6 +156,18 @@ test('Crossword: My worksheets lists the saved puzzles; open one, save it again 
   } finally { await g.ctx.close(); }
 });
 
+test('Crossword: My worksheets on a phone, with no sideways scroll', { skip, timeout: 120_000 }, async () => {
+  const g = await openCrossword({ width: 390, sets: [row('crossword', 's-habitat234', cwItems('A rather long unit name for habitats and homes', [['habitat', 'where an animal lives'], ['predator', 'it hunts'], ['prey', 'it is hunted']]), 'A rather long unit name for habitats and homes')] });
+  try {
+    await g.until(() => window.__brbTest.cwState().screen === 'home');
+    await g.frame.click('#cw-ws');
+    await g.until(() => window.__brbTest.cwState().sheets === 1);
+    await g.frame.click('[data-ws-del="s-habitat234"]');
+    assert.ok(await g.frame.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1 && [...document.querySelectorAll('.cw-card')].every(c => c.scrollWidth <= c.clientWidth + 1)));
+    if (SHOTS) await g.p.screenshot({ path: path.join(SHOTS, 'crossword-my-worksheets-phone.png') });
+  } finally { await g.ctx.close(); }
+});
+
 test('Crossword: a student (no BRB.canListSets) never sees My worksheets', { skip, timeout: 120_000 }, async () => {
   const g = await openCrossword({ mySets: false });
   try {
