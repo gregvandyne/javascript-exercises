@@ -12391,6 +12391,10 @@
       "particles": {
         "name": "Diagrama de partículas",
         "desc": "Átomos, íons e moléculas numa caixa ou num retículo"
+      },
+      "dotCross": {
+        "name": "Diagrama de pontos e cruzes",
+        "desc": "Elétrons compartilhados e transferidos nas camadas"
       }
     }
   }

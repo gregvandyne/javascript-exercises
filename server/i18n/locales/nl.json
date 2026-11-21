@@ -12390,6 +12390,10 @@
       "particles": {
         "name": "Deeltjesmodel",
         "desc": "Atomen, ionen en moleculen in een vak of rooster"
+      },
+      "dotCross": {
+        "name": "Stip-kruisdiagram",
+        "desc": "Gedeelde en overgedragen elektronen in schillen"
       }
     }
   }

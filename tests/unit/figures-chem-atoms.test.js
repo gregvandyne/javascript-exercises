@@ -72,13 +72,31 @@ test('Bohr ion marks, half-life curves, a titration from measured pH, more Lewis
   for (const m of ['H2S', 'PH3', 'PCl3', 'NF3', 'OF2', 'SiH4', 'CF4', 'CH3Cl', 'H2O2', 'C2H6', 'HOCl', 'CO', 'CN', 'H3O', 'HCHO']) assert.deepEqual(OF.check('lewis', { molecule: m }), [], m);
   assert.ok(OF.data.molecules.includes('H3O'));
 });
+test('dot-and-cross: shells overlap where atoms bond, each atom\'s electrons in its own mark; ionic charges balance', () => {
+  const s = OF.svg('dotCross', { molecule: 'CH4' });
+  assert.equal(count(s, /class="of-shell"/g), 5); assert.equal(count(s, /class="of-dot"/g), 4, 'C: 4 dots'); assert.equal(count(s, /class="of-cross"/g), 4, 'H: 4 crosses');
+  const co2 = OF.svg('dotCross', { molecule: 'CO2' });
+  assert.equal(count(co2, /class="of-dot"/g) + count(co2, /class="of-cross"/g), 16, 'every outer electron: 4 + 6 + 6');
+  assert.deepEqual({ ...OF.solve.dotCross({ molecule: 'H2O' }) }, { ionic: false, bonds: 2, sharedPairs: 2, lonePairs: 2, electrons: 8 });
+  assert.equal(count(OF.svg('dotCross', { molecule: 'Cl2' }), /class="of-dot"/g), 7, 'one element: one atom dots, the other crosses');
+  // overlapping only where bonded
+  const shells = [...OF.svg('dotCross', { molecule: 'CH4' }).matchAll(/<circle cx="([\d.]+)" cy="([\d.]+)" r="([\d.]+)"[^>]*class="of-shell"/g)].map(m => m.slice(1).map(Number));
+  for (let i = 1; i < 5; i++) { assert.ok(Math.hypot(shells[0][0] - shells[i][0], shells[0][1] - shells[i][1]) < 2 * shells[0][2], 'C and H overlap'); for (let j = i + 1; j < 5; j++) assert.ok(Math.hypot(shells[i][0] - shells[j][0], shells[i][1] - shells[j][1]) >= 2 * shells[0][2] - 0.01, 'two H do not'); }
+  const mg = { ions: [{ element: 'Mg' }, { element: 'Cl', count: 2 }] };
+  assert.deepEqual(JSON.parse(JSON.stringify(OF.solve.dotCross(mg))), { ionic: true, ions: [{ symbol: 'Mg', charge: 2, count: 1 }, { symbol: 'Cl', charge: -1, count: 2 }], transferred: 2, formula: 'MgCl2' });
+  const ms = OF.svg('dotCross', mg);
+  assert.equal(count(ms, /class="of-cross"/g), 8 + 2, 'Mg²⁺ keeps 8 in its new outer shell; each Cl⁻ got one'); assert.equal(count(ms, /class="of-dot"/g), 14);
+  const bad = [[{ ions: [{ element: 'Na' }, { element: 'O' }] }, /charges do not balance/], [{ ions: [{ element: 'Na' }, { element: 'K' }] }, /one metal .* and one non-metal/], [{ molecule: 'CO' }, /dative bond/], [{ molecule: 'NH4' }, /charged molecule/], [{ molecule: 'XY' }, /unknown "molecule"/]];
+  for (const [d, re] of bad) { assert.match(OF.check('dotCross', d).join('; '), re, JSON.stringify(d)); assert.match(OF.svg('dotCross', d), /cannot be drawn/); }
+  assert.equal(count(OF.svg('dotCross', { molecule: 'CH4' }, { hide: true }), /class="of-dot"|class="of-cross"/g), 0);
+});
 test('print, languages, words and generators', async () => {
-  for (const [k, d] of [['nuclide', { element: 'Cl', mass: 37, charge: -1 }], ['orbitals', { element: 'U', core: true }], ['bohr', { element: 'Na', charge: 1, ionMarks: true }], ['halfLife', { isotopes: [{ halfLife: 5 }, { halfLife: 12 }, { halfLife: 20 }] }], ['titration', { points: [[0, 3], [10, 5], [20, 9]] }]]) {
+  for (const [k, d] of [['dotCross', { molecule: 'HCN' }], ['dotCross', { ions: [{ element: 'Al', count: 2 }, { element: 'O', count: 3 }] }], ['nuclide', { element: 'Cl', mass: 37, charge: -1 }], ['orbitals', { element: 'U', core: true }], ['bohr', { element: 'Na', charge: 1, ionMarks: true }], ['halfLife', { isotopes: [{ halfLife: 5 }, { halfLife: 12 }, { halfLife: 20 }] }], ['titration', { points: [[0, 3], [10, 5], [20, 9]] }]]) {
     assert.ok(PRINT_OK(OF.svg(k, d, { print: true })), k);
     for (const l of ['de', 'ja', 'he', 'ar']) assert.doesNotMatch(OF.svg(k, d, { lang: l }), /NaN|undefined/, `${k} ${l}`);
   }
   const p = OF.svg('particles', { particles: [{ count: 6, look: { size: 'm', shade: 'gray', charge: '+' } }] }, { print: true });
   assert.doesNotMatch(p, /#1F9D63|#2A78B0|#B0372B|#9A6B00|#6E4BB0|#FFFDF2/); assert.match(p, /fill="#FFFFFF"/);
-  await checkWords(assert, ['nuclide', 'particles', 'key']);
-  for (const g of ['nuclide', 'particles']) await checkChemGenerator(assert, g);
+  await checkWords(assert, ['nuclide', 'particles', 'key', 'dotCross']);
+  for (const g of ['nuclide', 'particles', 'dotCross']) await checkChemGenerator(assert, g);
 });

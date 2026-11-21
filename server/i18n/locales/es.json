@@ -12389,6 +12389,10 @@
       "particles": {
         "name": "Diagrama de partículas",
         "desc": "Átomos, iones y moléculas en una caja o una red"
+      },
+      "dotCross": {
+        "name": "Diagrama de puntos y cruces",
+        "desc": "Electrones compartidos y transferidos en capas"
       }
     }
   }

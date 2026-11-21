@@ -12390,6 +12390,10 @@
       "particles": {
         "name": "Modello particellare",
         "desc": "Atomi, ioni e molecole in un riquadro o un reticolo"
+      },
+      "dotCross": {
+        "name": "Diagramma a punti e croci",
+        "desc": "Elettroni condivisi e trasferiti nei gusci"
       }
     }
   }

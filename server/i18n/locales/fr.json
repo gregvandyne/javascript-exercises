@@ -12389,6 +12389,10 @@
       "particles": {
         "name": "Modèle particulaire",
         "desc": "Atomes, ions et molécules dans une boîte ou un réseau"
+      },
+      "dotCross": {
+        "name": "Schéma points-croix",
+        "desc": "Électrons partagés et transférés dans les couches"
       }
     }
   }

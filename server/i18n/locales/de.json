@@ -12390,6 +12390,10 @@
       "particles": {
         "name": "Teilchenmodell",
         "desc": "Atome, Ionen und Moleküle in einem Kasten oder Gitter"
+      },
+      "dotCross": {
+        "name": "Punkt-Kreuz-Schema",
+        "desc": "Geteilte und übertragene Elektronen in Schalen"
       }
     }
   }

@@ -13120,6 +13120,10 @@
       "particles": {
         "name": "Particle diagram",
         "desc": "Atoms, ions and molecules in a box or a lattice"
+      },
+      "dotCross": {
+        "name": "Dot-and-cross diagram",
+        "desc": "Shared and transferred electrons in shells"
       }
     }
   }

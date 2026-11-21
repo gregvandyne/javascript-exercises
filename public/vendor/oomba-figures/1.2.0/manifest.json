@@ -81,7 +81,8 @@
         "nuclide",
         "lineSpectrum",
         "photoelectron",
-        "particles"
+        "particles",
+        "dotCross"
       ]
     },
     "measure": {
@@ -94,8 +95,8 @@
   },
   "files": {
     "oomba-figures.js": {
-      "sha256": "a63841c8b841eea4194d91fb45359342cc7a6256685c722169016cad82c7425d",
-      "sri": "sha384-QiA+fBa6+ol7RRW3HMmk4dfoJEBymzOKJrFyNx3ublKJ/nMnDrLzgu9/tt54bJ62"
+      "sha256": "2fe7a79e907c1003e81baf8820e53fd51c57e2a2cfd23363dc48de22d8f0f547",
+      "sri": "sha384-Ah6yR1lRu1GHuz3qPiz2kw/H5Aw9CJ6i34Aw5RoyEXODn/VcHhEbiqEVpXZcUYWy"
     },
     "packs/math.js": {
       "sha256": "c92cc70a3cade1729f62bfe6c9c44939b749efa30d571b32b7fb81df9060dca1",
@@ -110,8 +111,8 @@
       "sri": "sha384-Udm03LvcH/l655tAYyny8aaEElf1qXQKwUKnv8GjhMrHrVbYXWJn0TJDSj6DNCCW"
     },
     "packs/chem.js": {
-      "sha256": "3d5143364efa310b1121109eb66b2d094ab25a783276f2c31f3d6a47e692dae0",
-      "sri": "sha384-D8EgO/qaeJ2iKpcMcoLfN0E4q5OlECOjEKGouo6AVx5tv252zM8mtTteHfFkrMKJ"
+      "sha256": "071783c32f6be1dfb64ba77009419f81fe6c6aa2c6873fab82a671dec38ccebf",
+      "sri": "sha384-9xaOzeMrP0f/RoGGGX2e63cg6ImROXwRBWTgK2+IXc06RzBi8SriMzSyQzrhFTNL"
     },
     "packs/measure.js": {
       "sha256": "38ca2244bee54fa7bd4dd2d22aa50b35a297239a92f0c882693b5480005aa207",

@@ -14,7 +14,7 @@ hemispheres) and their nets, mapping diagrams, and a ruler to read a length on; 
 motion, transverse and longitudinal waves, motion maps, acceleration-time and stacked motion graphs from one motion,
 the plane mirror, compound series-parallel circuits with their currents and voltages, and the vernier caliper,
 micrometer and spring scale extras); and chemistry (since 1.2.0: mass spectra, heating and cooling curves, potential
-energy diagrams, nuclide notation, line spectra, photoelectron spectra and particle diagrams, the lab readings (burets,
+energy diagrams, nuclide notation, line spectra, photoelectron spectra, particle diagrams and dot-and-cross diagrams, the lab readings (burets,
 beakers, gas syringes, digital and triple beam balances, digital thermometers, pH meters and pH paper, volume by
 displacement), orbital diagrams for all 118 elements, Bohr ion marks, several half-life curves on one graph, titration
 curves from measured pH, and more Lewis molecules). Skeletal structures come from SMILES through SmilesDrawer, and interactive boards from
@@ -36,7 +36,7 @@ JSXGraph. Classroom activities (Oomba Canvas 1.2.0, `docs/canvas-api.md`) and ar
   the longitudinal lines), `network.js` compound circuits (`ported/circuittree.js` the series/parallel tree),
   `ported/gauges.js` the caliper's and micrometer's scales; since 1.2.0 `spectra.js` the mass, line and photoelectron
   spectra (`ported/isotopes.js`, `ported/spectra.js`), `energy.js` heating curves and potential energy diagrams
-  (`ported/heating.js`, `ported/profile.js`), `atoms.js` nuclide notation, `particles.js` particle diagrams
+  (`ported/heating.js`, `ported/profile.js`), `atoms.js` nuclide notation and dot-and-cross diagrams, `particles.js` particle diagrams
   (`ported/particles.js`), `labware.js` the lab readings (`ported/labware.js`) and `ported/elements.js` the 118 elements
   and their configurations; `core.js` the global and the registry, `packs/*.js` each
   pack's registration, `index.js` everything at once for the tests), plus `canvas/src/expr.js` (the small safe formula language it shares with Oomba Canvas). `scripts/build-figures.js` bundles it into
@@ -93,6 +93,7 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
   Chemistry (1.2.0, the chem pack): massSpectrum { element: "Cl" } (its natural isotopes; or isotopes: [{ mass: 10, abundance: 20 }, { mass: 11, abundance: 80 }] adding up to 100, name; scale: "relative"; missing: 37 a peak to draw; OF.solve.massSpectrum gives mass, the relative atomic mass; hide: "values", "element")    heatingCurve { substance: "water", from: -20, to: 120, mass: 100, x: "time" } (to scale from q = m c ΔT and n ΔH: substance water, ethanol, acetone, mercury, sodiumChloride or x, or your own mp, bp, cSolid, cLiquid, cGas, fusH, vapH, molarMass; to below from is a cooling curve, supercool: 5; x: "heat" in kJ, or "time" at rate kJ/min; OF.solve gives each segment's heat and time, melt, boil; hide: "states", "points")
   energyProfile { levels: [50, 150, 20], catalyst: 100 } (kJ/mol in order: reactants, transition state, [intermediate, transition state,] products: 3, 5 or 7, each transition state a peak; catalyst: the catalyzed transition state, below the highest and above reactants and products; arrows: ["ea", "dh", "eaReverse", "catEa"]; style: "levels" (an energy level diagram); names: { reactants, products }; OF.solve gives dH, ea, eaReverse, steps, rateStep, catEa; hide: "values", "arrows")    nuclide { element: "C", mass: 14, charge: 0 } (any of the 118; or { particle: "alpha" | "beta" | "positron" | "neutron" | "proton" | "gamma" }; notation: "hyphen" | "both"; the mass number is never below Z; OF.solve gives protons, neutrons, electrons; hide: "mass", "Z", "symbol", "charge")
   lineSpectrum { strips: [{ element: "H" }, { element: "Na" }, { name: "Unknown", mix: [0, 1] }] } (elements H, He, Li, Na, K, Ca, Sr, Ba, Cu, Zn, Cd, Hg, Ne, Ar, Kr, or { name, lines: [nm] }; style: "absorption"; from, to in nm; print is black lines on white; hide: "names")    photoelectron { element: "Na", compare: "Mg" } (H to Xe; one peak per sublevel as tall as its electrons at its binding energy; unit "MJ/mol" or "eV", scale "log" or "linear", energies: true; hide: "sublevels", "element")
+  dotCross { molecule: "H2O" } (a molecule from the Lewis list without a charge: shells overlap where atoms bond, each atom's electrons its own mark) or { ions: [{ element: "Mg", count: 1 }, { element: "Cl", count: 2 }] } (a metal and a non-metal, charges balanced); OF.solve gives sharedPairs, lonePairs or the ions, transferred; hide: true (empty shells)
   particles { particles: [{ count: 8, shape: "bent", look: { size: "m", shade: "gray" }, outer: { size: "s", shade: "white" }, name: "Water" }], state: "gas" } (shapes single, pair, bent, line, triangle, cross; sizes xs to xl; shades white, light, gray, dark, black; charge "+", "-", "2+"...; state gas, liquid, solid; boxes: 2 with each kind's after count: atoms are conserved; or lattice: { pattern: "alternate", rows: 4, columns: 5, main, second }; every particle must fit; hide: "names")
   The chemistry readings are reading types (the measure pack): { type: "buret", value: 24.65, initial: 1.20, max: 50 } (reads down, to 0.05 mL; OF.solve gives the titre), { type: "beaker", value: 175, max: 250, step: 25 }, { type: "syringe", value: 43.5, max: 100, setup: true }, { type: "balance", value: 24.73, decimals: 2 }, { type: "tripleBeam", value: 347.65 } (to 0.05 g), { type: "thermometer", digital: true, value: 23.4, unit: "°C" | "K" | "°F" }, { type: "pH", meter: "digital" | "analog" | "paper", value: 4.62 } (analog to 0.1, paper whole numbers), { type: "displacement", before: 42, after: 50, max: 100, step: 1, major: 10, object: "rock" | "marbles" } (OF.solve gives the volume). Also bohr { element: "Na", charge: 1, ionMarks: true }, orbitals { element: "Ag", core: true, arrangement: "energy" } (H to Og), halfLife { isotopes: [{ halfLife: 5, name: "A" }, { halfLife: 12, name: "B" }] }, titration { points: [[0, 2.9], [5, 4.1], ...] } (measured pH), and more Lewis molecules: H2S, PH3, PCl3, NF3, OF2, SiH4, CF4, CH3Cl, H2O2, C2H6, HOCl, CO, CN, H3O, HCHO.
   numberLine { from: -5, to: 5, step: 1, every: 1, intervals: [{ from: -3, to: 4, fromClosed: false }], points: [{ at: [3, 4], label: "P" }], sequence: { expr: "1/n", from: 1, to: 5 } } (a value is a number, a fraction [n, d] or { pi: k }; leave out an interval's from or to to run off that end; ends are closed unless fromClosed or toClosed is false; every: a number at every nth tick; numbering: "decimal" | "fraction" | "pi" | "degree"; hide: true for a numbered line to graph on, "graph", "points", "values"). A line for the student to tap or jump on is the Oomba Canvas tool (numberline.point, numberline.jump), not a figure.
@@ -190,6 +191,7 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
 | `nuclide` (1.2.0) | `element` + `mass` + `charge`, or `symbol` + `Z` + `mass`, or `particle` + `symbol`; `notation` | `mass`, `Z`, `symbol`, `charge`, `true` |
 | `lineSpectrum` (1.2.0) | `strips: [{ element } \| { name, lines } \| { name, mix }]`, `style`, `from`, `to`, `strength`, `heading` | `names`, `true` |
 | `photoelectron` (1.2.0) | `element`, `compare`, `unit`, `scale`, `sublevels`, `energies`, `heading` | `sublevels`, `element`, `true` |
+| `dotCross` (1.2.0) | `molecule` (or `atoms` + `bonds`, no charge), or `ions: [{ element, count }]` (a metal and a non-metal) | `true` |
 | `particles` (1.2.0) | `particles: [{ count, shape, look, outer, name, after }]`, `state`, `seed`, `boxes`, `afterState`, `arrow`; or `lattice`; `border`, `heading` | `names`, `true` |
 
 `opts.print` draws black on white with grey fills (the printed worksheet). Colours otherwise are the site's: green,
@@ -790,11 +792,17 @@ numbers and refuses data it cannot draw truthfully:
   crosses, lost ones on a dashed shell); `halfLife` with `isotopes` (up to three curves); `titration` with measured
   `points`; and more Lewis molecules.
 
-Deferred: skeletal structures and the organic structure editor (owner decision), dot-and-cross diagrams (not the same
-figure as `lewis` or `bohr`: shells as circles with dots and crosses; next), and atomic energy levels with
+- `dotCross`: a molecule's outer shells as circles overlapping where atoms bond, each shared pair in the overlap (one
+  electron from each atom), each atom's own electrons in its own mark (dots, crosses, rings); or an ionic compound's
+  ions in brackets, the metal's electrons as crosses in the non-metal's full shell, the charges balanced. Not the same
+  figure as `lewis` (no shells) or `bohr` (one atom, every shell). A charged molecule or a dative bond (CO) is refused
+  for now (draw it with `lewis`).
+
+Deferred: skeletal structures and the organic structure editor (owner decision), and atomic energy levels with
 transitions. Builder trigger words for these figures are in every site language (`server/builder/figures.js`).
 
 ```json
+{"tool": "figure.number", "vars": {"m": [1, 3], "n": [1, 3]}, "q": "How many electrons does the metal give away in one formula unit of this compound?", "fig": {"kind": "dotCross", "ions": [{"element": "{=10 + m}", "count": "{=n/if(m - n, 1, m)}"}, {"element": "{=18 - n}", "count": "{=m/if(m - n, 1, m)}"}]}, "answer": "m*n/if(m - n, 1, m)", "dp": 0, "work": ["The metal ion is {m}+ and the non-metal ion is {n}−.", "The charges balance with {=n/if(m - n, 1, m)} metal and {=m/if(m - n, 1, m)} non-metal ions.", "Electrons given: {=n/if(m - n, 1, m)} × {m} = {=m*n/if(m - n, 1, m)}"]}
 {"tool": "figure.number", "vars": {"m": [6, 60], "a": [51, 95]}, "q": "Element X has two isotopes, shown in its mass spectrum. What is its relative atomic mass?", "fig": {"kind": "massSpectrum", "isotopes": [{"mass": "{m}", "abundance": "{a}"}, {"mass": "{=m + 2}", "abundance": "{=100 - a}"}], "name": "Element X"}, "answer": "(m*a + (m + 2)*(100 - a))/100", "dp": 2, "work": ["Weight each mass number by its abundance.", "({m} × {a} + {=m + 2} × {=100 - a}) ÷ 100", "= {=round((m*a + (m + 2)*(100 - a))/100, 2)}"]}
 {"tool": "figure.number", "vars": {"m": [50, 200, 10]}, "q": "{m} g of ice at −20 °C is heated to steam at 120 °C. How much heat melts the ice? (ΔHfus = 6.01 kJ/mol, M = 18.02 g/mol)", "fig": {"kind": "heatingCurve", "substance": "water", "mass": "{m}", "x": "heat"}, "answer": "m/18.02*6.01", "dp": 1, "unit": "kJ", "work": ["n = {m} ÷ 18.02 = {=round(m/18.02, 3)} mol", "q = n × ΔHfus = {=round(m/18.02, 3)} × 6.01", "= {=round(m/18.02*6.01, 1)} kJ"]}
 {"tool": "figure.number", "vars": {"r": [20, 80, 5], "t": [100, 200, 10], "p": [0, 90, 5]}, "where": "(t > r + 10) * (t > p + 10) * (p != r)", "q": "What is the activation energy of the forward reaction, in kJ/mol?", "fig": {"kind": "energyProfile", "levels": ["{r}", "{t}", "{p}"], "arrows": ["dh"], "hide": "values"}, "answer": "t - r", "dp": 0, "unit": "kJ/mol", "work": ["Eₐ = E(transition state) − E(reactants)", "= {t} − {r}", "= {=t - r} kJ/mol"]}
@@ -853,6 +861,6 @@ chunk (`public/js/figures-export.js`).
 
 Skeletal structures (SmilesDrawer) are drawn in the browser only, so a printed worksheet cannot show them yet (use a
 Lewis structure there). Optics with thick lenses, 3D molecules, atomic energy-level diagrams with transitions (reaction energy diagrams came
-in 1.2.0: `energyProfile`), dot-and-cross diagrams and moving physics (Phaser's
+in 1.2.0: `energyProfile`) and moving physics (Phaser's
 built-in Matter physics already serves arcade games) are later. Compound circuits beyond one level of branches came in
 1.1.0 (`circuit` with `layout: "network"`, series-parallel only: a bridge circuit, which is neither, is not drawn).
