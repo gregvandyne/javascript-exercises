@@ -3346,6 +3346,12 @@
         "lockedHint": "Bloqueado. Mantenlo pulsado para desbloquearlo.",
         "pieceLocked": "Pieza {label}, bloqueada",
         "objLocked": "{name}, bloqueado"
+      },
+      "text": {
+        "move": "Arrastra para mover este texto",
+        "resize": "Arrastra para cambiar el tamaño de este cuadro",
+        "smaller": "Texto más pequeño",
+        "bigger": "Texto más grande"
       }
     },
     "manip-room": {

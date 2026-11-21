@@ -53,7 +53,9 @@
 .mp-tbtn:disabled{opacity:.5;cursor:not-allowed}
 .mp-sw{flex:none;width:22px;height:22px;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
 .mp-main{min-width:0;display:flex;flex-direction:column;gap:12px}
-.mp-board{position:relative;height:var(--mp-board-h);min-height:var(--mp-board-min);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;border-radius:var(--r);background-color:var(--card);background-image:radial-gradient(circle,color-mix(in srgb,var(--accent) 30%,transparent) 1.2px,transparent 1.3px);background-size:24px 24px;box-shadow:var(--shadow),inset 0 0 0 1px var(--line);overflow:hidden}
+/* clip, never scroll: a caret or a focused field near the edge must not scroll the board (it shifted everything under the
+   pointer, so drags and taps landed in the wrong place) */
+.mp-board{position:relative;height:var(--mp-board-h);min-height:var(--mp-board-min);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;border-radius:var(--r);background-color:var(--card);background-image:radial-gradient(circle,color-mix(in srgb,var(--accent) 30%,transparent) 1.2px,transparent 1.3px);background-size:24px 24px;box-shadow:var(--shadow),inset 0 0 0 1px var(--line);overflow:hidden;overflow:clip}
 .mp-content{position:relative;min-height:var(--mp-board-min)}
 .mp-content.mp-abs{position:absolute;inset:0;min-height:0}
 .mp-pad{padding:16px}
@@ -191,7 +193,7 @@
 main.rm-main{max-width:none;padding:0}
 body:has(main.rm-main) .foot{display:none}
 html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavior:none}
-.rm{position:relative;height:calc(100vh - var(--top));height:calc(100dvh - var(--top));overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;outline:0;
+.rm{position:relative;height:calc(100vh - var(--top));height:calc(100dvh - var(--top));overflow:hidden;overflow:clip;touch-action:none;user-select:none;-webkit-user-select:none;outline:0;
   background-color:var(--bg);background-image:radial-gradient(circle,color-mix(in srgb,var(--accent) 28%,transparent) 1.2px,transparent 1.3px);background-size:28px 28px;cursor:grab}
 .rm.inking .rm-area.editable{cursor:crosshair}
 .rm-world{position:absolute;left:0;top:0;transform-origin:0 0}
@@ -335,9 +337,19 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
 .mp-text{position:absolute;pointer-events:auto;font:800 18px/1.25 var(--font);color:var(--text);white-space:pre;padding:2px 4px;border-radius:6px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
 .mp-text:hover{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent-line) 50%,transparent)}
 .mp-text.ro{cursor:default}.mp-text.ro:hover{box-shadow:none}
-.mp-text.editing{display:flex;align-items:center;gap:4px;padding:0;cursor:text}
-.mp-textin{font:inherit;color:inherit;background:color-mix(in srgb,var(--card) 70%,transparent);border:0;border-radius:6px;outline:2px solid var(--focus);padding:2px 6px;min-width:9em;width:auto;user-select:text;-webkit-user-select:text}
-.mp-textx{width:26px;height:26px;border-radius:50%;border:0;background:var(--danger);color:var(--on-danger);font:800 15px var(--font);line-height:1;cursor:pointer;flex:none}
+.mp-text.editing{display:flex;flex-direction:column;padding:0;cursor:text}
+/* a resized text box: its words wrap inside it; it grows taller (never clipped) when they need more room */
+.mp-text.sized{white-space:pre-wrap;overflow-wrap:anywhere;box-sizing:border-box}
+.mp-text.sized:not(.editing){box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent)}
+.mp-text.dragging{opacity:.85;cursor:grabbing}
+.mp-textin{display:block;font:inherit;color:inherit;background:color-mix(in srgb,var(--card) 70%,transparent);border:0;border-radius:6px;outline:2px solid var(--focus);padding:2px 6px;min-width:9em;max-width:24em;width:auto;field-sizing:content;resize:none;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.25;user-select:text;-webkit-user-select:text}
+.mp-text.sized .mp-textin{flex:1 1 auto;width:100%;min-width:0;max-width:none;box-sizing:border-box}
+.mp-textbar{position:absolute;bottom:100%;inset-inline-start:0;display:flex;align-items:center;gap:4px;padding-bottom:6px;font:800 15px/1 var(--font);white-space:nowrap;transform:scale(var(--iz,1));transform-origin:0 100%}
+.mp-textgrip{width:32px;height:32px;display:grid;place-items:center;border-radius:8px;background:var(--card);color:var(--muted);box-shadow:var(--shadow);cursor:grab;touch-action:none;font-size:18px}
+.mp-tsz{height:32px;min-width:38px;padding:0 6px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);font:800 13px/1 var(--font);cursor:pointer}
+.mp-tsz.big{font-size:17px}.mp-tsz:disabled{opacity:.4;cursor:default}
+.mp-textrz{position:absolute;inset-inline-end:-11px;bottom:-11px;width:22px;height:22px;border-radius:50%;background:var(--accent);border:3px solid var(--card);box-shadow:var(--shadow);cursor:nwse-resize;touch-action:none;transform:scale(var(--iz,1));transform-origin:50% 50%}
+.mp-textx{width:30px;height:30px;border-radius:50%;border:0;background:var(--danger);color:var(--on-danger);font:800 15px var(--font);line-height:1;cursor:pointer;flex:none}
 .mp-tglyph{font-family:Georgia,serif;font-size:1.05em}
 .texting .rm-area.editable .rm-in,.mp-board.texting{cursor:text}
 
@@ -383,6 +395,12 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
 .mp-answer{flex:1;min-width:0;height:44px;border:2px dashed var(--accent-line);border-radius:10px;background:var(--card-2);color:var(--text);font:800 1.25rem var(--font);text-align:center;user-select:text;-webkit-user-select:text;cursor:text}
 .mp-answer::placeholder{color:var(--muted);opacity:.8}
 .mp-answer:focus{outline:3px solid var(--focus);border-style:solid}
+/* an answer box's words wrap; the box (not the font) grows: its corner sets its width and height */
+.mp-ansbox.wrap{height:100%;box-sizing:border-box;align-items:stretch}
+.mp-answer.wrap{height:auto;resize:none;overflow-x:hidden;overflow-y:auto;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.3;padding:6px 8px;box-sizing:border-box;scrollbar-width:thin}
+.mp-xydot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-inline-end:6px;vertical-align:middle;box-shadow:0 0 0 1px rgba(0,0,0,.2)}
+.mp-xypt{cursor:grab;touch-action:none}.mp-xyline{cursor:move;touch-action:none}
+.mp-grid.dragging,.mp-grid.dragging .mp-xypt,.mp-grid.dragging .mp-xyline{cursor:grabbing}
 .mp-key{margin-inline-start:auto;background:var(--current);color:var(--on-current);border-radius:999px;padding:1px 8px;font-size:.75rem}
 .mp-eq{padding:6px 10px}
 .mp-eqtext{margin:0 0 8px;font:900 1.35rem/1.6 var(--font);text-align:center;height:38px}

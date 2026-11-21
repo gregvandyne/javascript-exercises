@@ -3346,6 +3346,12 @@
         "lockedHint": "Verrouillé. Appuie longuement pour le déverrouiller.",
         "pieceLocked": "Pièce {label}, verrouillée",
         "objLocked": "{name}, verrouillé"
+      },
+      "text": {
+        "move": "Glisse pour déplacer ce texte",
+        "resize": "Glisse pour changer la taille de ce cadre",
+        "smaller": "Texte plus petit",
+        "bigger": "Texte plus grand"
       }
     },
     "manip-room": {

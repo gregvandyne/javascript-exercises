@@ -905,3 +905,35 @@ test('locks: an object\'s lock is stored like its other state; in the room the t
   assert.match(M.roomFor(w.a1, s.id).areas.find(x => x.key === w.a1.id).state, /"locked":true/);
   M.end(boss, s.id);
 });
+
+test('answer boxes, text boxes and grids are stored within their limits; a resized box or bigger text reaches the room, a student\'s text never a classmate', async () => {
+  const w = world();
+  const clean = (tool, state) => JSON.parse(M.cleanState({ v: 2, ...state }, null, tool).state);
+  // An answer box: its typed answer (one line, at most 100 characters) and its own size, bounded; no scale games.
+  const long = 'I added 23 and 19 to get 42, then I checked it by counting back. '.repeat(3);
+  const a = clean('clock', { objects: [{ id: 'A', k: 'answer', x: 10, y: 10, s: 1, st: { ans: `${long}\nmore`, size: 'M', w: 99999, h: -5 } }] }).objects[0];
+  assert.equal(a.st.ans.length, 100); assert.doesNotMatch(a.st.ans, /\n/);
+  assert.deepEqual([a.st.w, a.st.h], [900, 58]);
+  assert.equal('w' in clean('clock', { objects: [{ id: 'A', k: 'answer', x: 10, y: 10, s: 1, st: { ans: '', w: 'wide' } }] }).objects[0].st, false, 'nonsense: dropped');
+  // Board text: its size (S, M, L, XL) and box, bounded; anything else dropped.
+  const tx = clean('clock', { __ann: { notes: [], strokes: [], texts: [{ id: 't1', text: 'Big', x: 0.1, y: 0.1, fs: 'XL', w: 5000, h: 3 }, { id: 't2', text: 'Small', x: 0.2, y: 0.2, fs: '<script>', w: 300 }] } }).__ann.texts;
+  assert.deepEqual([tx[0].fs, tx[0].w, tx[0].h], ['XL', 1200, 24]);
+  assert.deepEqual([tx[1].fs, tx[1].w, tx[1].h], [undefined, undefined, undefined]);
+  // A grid: its switches true or false, at most 60 points, whole numbers on the grid, colors only.
+  const g = clean('xy-coordinate-board', { objects: [{ id: 'G', k: 'xy-coordinate-board', x: 10, y: 10, s: 1, st: { four: 1, arrows: 'yes', table: 0, connect: true, color: 'red',
+    pts: [...Array.from({ length: 70 }, (_, i) => ({ x: (i % 21) - 10, y: 2, color: '#1E88E5' })), { x: 99.6, y: -40, color: 'javascript:' }] } }] }).objects[0].st;
+  assert.equal(g.pts.length, 60); assert.deepEqual([g.four, g.arrows, g.table, g.color], [true, true, false, '#E53935']);
+  const odd = clean('xy-coordinate-board', { objects: [{ id: 'G', k: 'xy-coordinate-board', x: 10, y: 10, s: 1, st: { pts: [{ x: 99.6, y: -40.2, color: 'javascript:' }] } }] }).objects[0].st.pts[0];
+  assert.deepEqual(odd, { x: 12, y: -10, color: '#E53935' });
+  // The live room: a student's resized answer box and big text are saved; a classmate sees the box, never the text.
+  const s = M.createSession(boss, { classId: w.A.id, tool: 'clock' }).session;
+  M.join(w.a1, { id: s.id }); M.join(w.a2, { id: s.id });
+  assert.ok(M.saveArea(w.a1, s.id, w.a1.id, { v: 2, objects: [{ id: 'A', k: 'answer', x: 10, y: 10, s: 1, st: { ans: '42', size: 'M', w: 400, h: 120 } }], __ann: { notes: [], strokes: [], texts: [{ id: 'x1', text: 'My plan', x: 0.3, y: 0.5, fs: 'L', w: 260, h: 80 }] } }).ok);
+  const mine = JSON.parse(q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, w.a1.id).state);
+  assert.deepEqual([mine.objects[0].st.w, mine.objects[0].st.h], [400, 120]);
+  assert.deepEqual([mine.__ann.texts[0].fs, mine.__ann.texts[0].w, mine.__ann.texts[0].h], ['L', 260, 80]);
+  const seen = JSON.parse(M.forClassmates(JSON.stringify(mine)));
+  assert.equal(seen.__ann.texts.length, 0, 'a classmate never gets a student\'s text');
+  assert.equal(seen.objects[0].st.w, 400, 'the box keeps its size');
+  M.end(boss, s.id);
+});

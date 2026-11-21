@@ -26,7 +26,7 @@ import * as aiBudget from './ai-budget.js';
 import { hasProfanity, personalInfo } from './textfilter.js';
 import { STRIP, layoutOf, TOOLS, toolOf, pieceDefs, roomLayout, ROOM_COLORS, instructionNotes, stripHeight, stepsOf, stepStripTexts, TEACHER_STEP_H } from '../../public/js/manip-data.js';
 import * as LIVE from './manip-live.js';
-import { WORLD, OBJECTS, OBJ_MAX, OBJ_MAX_SQUARE, S_FLOOR, S_MAX, kindOf, objSize, migrate, fitInto, newBoard } from '../../public/js/manip-board.js';
+import { WORLD, OBJECTS, OBJ_MAX, OBJ_MAX_SQUARE, S_FLOOR, S_MAX, kindOf, objSize, migrate, fitInto, newBoard, ANS, textBoxFields } from '../../public/js/manip-board.js';
 import { buildPractice, PRACTICE_TABLE, PRACTICE_HELP, PRACTICE_MAX, STEPS_MAX, answerMatches } from '../../public/js/manip-practice.js';
 import { allow } from './ratelimit.js';
 import { TASKS } from '../../public/js/manip-tasks.js';
@@ -122,9 +122,27 @@ function cleanObjects(list, tool, space, max) {
     .slice(0, max).map((o, i) => {
       const z = tool ? objSize(tool, o) : { w: 100, h: 100 };
       const s = Math.round(num(o.s, S_FLOOR, Math.max(S_FLOOR, Math.min(S_MAX, space.w / z.w, space.h / z.h)), 1) * 1000) / 1000;
-      return { id: clipStr(o.id || `o${i}`, 40), k: String(o.k), x: Math.round(num(o.x, 0, Math.max(0, space.w - z.w * s))), y: Math.round(num(o.y, 0, Math.max(0, space.h - z.h * s))), s, st: o.st,
+      return { id: clipStr(o.id || `o${i}`, 40), k: String(o.k), x: Math.round(num(o.x, 0, Math.max(0, space.w - z.w * s))), y: Math.round(num(o.y, 0, Math.max(0, space.h - z.h * s))), s, st: cleanObjState(o.k, o.st),
         ...(o.locked === true ? { locked: true, ...(o.lockBy === 't' ? { lockBy: 't' } : {}) } : {}) };
     });
+}
+/** The fields this page added to an object's own state, kept within their limits: an answer box's typed answer (at most
+ *  ANS.max characters) and its size (st.w, st.h: whole pixels within ANS, or absent); a coordinate grid's switches
+ *  (arrows, table: true or false) and its points (at most 60, whole numbers on the grid, a color). */
+const XY_MAXPTS = 60;
+function cleanObjState(k, st0) {
+  const st = { ...st0 };
+  if (k === 'answer') {
+    if ('ans' in st) st.ans = clipStr(st.ans, ANS.max).replace(/[\r\n]+/g, ' ');
+    for (const [f, lo, hi] of [['w', ANS.wMin, ANS.wMax], ['h', ANS.hMin, ANS.hMax]]) { if (f in st) { if (Number.isFinite(Number(st[f]))) st[f] = Math.round(num(st[f], lo, hi)); else delete st[f]; } }
+  }
+  if (k === 'xy-coordinate-board') {
+    for (const f of ['arrows', 'table', 'connect', 'labels', 'four']) if (f in st) st[f] = !!st[f];
+    if ('pts' in st) st.pts = (Array.isArray(st.pts) ? st.pts : []).filter(p => p && typeof p === 'object').slice(0, XY_MAXPTS)
+      .map(p => ({ x: Math.round(num(p.x, -10, 12)), y: Math.round(num(p.y, -10, 12)), color: HEX.test(p.color) ? p.color : '#E53935' }));
+    if ('color' in st && !HEX.test(st.color)) st.color = '#E53935';
+  }
+  return st;
 }
 /** Typed text inside objects: bar labels, an object's label, a student's typed answer (ans) and the teacher's answer
  *  (key). Read with the word rules like sticky notes. */
@@ -159,7 +177,7 @@ export function cleanState(raw, bounds = null, tool = null) {
     st.__ann = {
       // Text typed straight on the board (the T tool): plain words at a place, no card.
       texts: (Array.isArray(ann.texts) ? ann.texts : []).filter(n => n && typeof n === 'object' && String(n.text || '').trim()).slice(0, LIMITS.texts)
-        .map((n, i) => ({ id: clipStr(n.id || `t${i}`, 40), text: clipStr(n.text, LIMITS.textChars), x: num(n.x, 0, 1), y: num(n.y, 0, 1), ...(n.by === 't' ? { by: 't' } : {}), ...(Number.isInteger(n.cell) && n.cell >= -1 && n.cell < 100 ? { cell: n.cell } : {}) })),
+        .map((n, i) => ({ id: clipStr(n.id || `t${i}`, 40), text: clipStr(n.text, LIMITS.textChars), x: num(n.x, 0, 1), y: num(n.y, 0, 1), ...textBoxFields(n), ...(n.by === 't' ? { by: 't' } : {}), ...(Number.isInteger(n.cell) && n.cell >= -1 && n.cell < 100 ? { cell: n.cell } : {}) })),
       notes: (Array.isArray(ann.notes) ? ann.notes : []).filter(n => n && typeof n === 'object').slice(0, LIMITS.notes)
         .map((n, i) => ({ id: clipStr(n.id || `n${i}`, 40), text: clipStr(n.text, LIMITS.noteChars), x: num(n.x, 0, 1), y: num(n.y, 0, 1), ...(n.by === 't' ? { by: 't' } : {}) })),
       strokes: (Array.isArray(ann.strokes) ? ann.strokes : []).filter(s => s && Array.isArray(s.pts)).slice(0, LIMITS.strokes)
@@ -550,7 +568,7 @@ export function checkAnswers(u, id, answers = {}) {
   const given = answers && typeof answers === 'object' && !Array.isArray(answers) ? answers : {};
   const results = {}; let right = 0;
   for (const [oid, k] of keys) {
-    const a = typeof given[oid] === 'string' ? clipStr(given[oid], 40) : '';
+    const a = typeof given[oid] === 'string' ? clipStr(given[oid], ANS.max) : '';
     const okay = answerMatches(k.key, a, k);
     results[oid] = okay; if (okay) right++;
   }
