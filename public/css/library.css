@@ -160,8 +160,19 @@
 
 /* ---- after the last page: the questions */
 .rd-end-head{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:12px}
-.rd-end-head img{width:min(320px,70%);height:auto;border-radius:var(--r-sm)}
-.rd-end-head h2{margin:6px 0 0;font-size:1.5rem}
+.rd-end-head>img{width:min(320px,70%);height:auto;border-radius:var(--r-sm)}
+/* The star sits in the line (it was sized like the cover, owner's iPhone screenshot 21 Nov 2026); the heading is focused
+   by script for screen readers, so it shows no focus ring. */
+.rd-end-head h2{margin:6px 0 0;font-size:1.5rem;text-wrap:balance}
+.rd-end-head h2 img{width:1.15em;height:1.15em;vertical-align:-.18em;margin-inline-end:.15em}
+.rd-end-head h2:focus{outline:none}
+/* Phones: a small cover beside the words, so the first question is on the screen too. */
+@media (max-width:600px){
+  .rd-end-head{display:grid;grid-template-columns:112px 1fr;column-gap:14px;row-gap:2px;align-items:center;text-align:start;margin-bottom:14px}
+  .rd-end-head>img{grid-row:span 2;width:112px;height:auto;aspect-ratio:4/3;object-fit:cover}
+  .rd-end-head h2{margin:0;font-size:1.2rem;line-height:1.25;align-self:end}
+  .rd-end-head p{align-self:start;font-size:.95rem}
+}
 .rd-end-head p{margin:0}
 .rd-qs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
 .rd-q{background:var(--card-2);border-radius:var(--r);padding:16px}
