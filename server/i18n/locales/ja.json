@@ -3323,6 +3323,31 @@
       "doneMsg": "できた！1回目で{total}問中{right}問せいかい。よく読めたね！",
       "doneShort": "できた！よく読めたね！",
       "pagesOf": "{pages}ページ中{from}～{to}ページ"
+    },
+    "manip": {
+      "board": {
+        "pieceHint": "ピースをタップすると選べて、ドラッグで動かせます。長押し、右クリック、または Shift+F10 で操作が出ます。付せんはどこへでもドラッグでき、タップすると書けます。"
+      },
+      "wheel": {
+        "menu": "{label} の操作",
+        "copy": "コピー",
+        "fill": "塗りつぶし",
+        "rotate": "回す",
+        "flip": "裏返す",
+        "break": "10個に分ける",
+        "lock": "ロック",
+        "unlock": "ロック解除",
+        "delete": "削除",
+        "deleted": "{label} を削除しました",
+        "undo": "元に戻す",
+        "lockedHint": "ロックしました。長押しで解除できます。",
+        "pieceLocked": "ピース {label}（ロック中）",
+        "objLocked": "{name}（ロック中）"
+      }
+    },
+    "manip-room": {
+      "actionsFor": "{label} の操作",
+      "teacherLock": "先生がロックしています。"
     }
   },
   "favorites": {

@@ -3324,6 +3324,31 @@
       "doneMsg": "Finito! {right} su {total} giuste al primo tentativo. Bravissimo!",
       "doneShort": "Finito! Bravissimo!",
       "pagesOf": "Pagine {from}-{to} di {pages}"
+    },
+    "manip": {
+      "board": {
+        "pieceHint": "Tocca un pezzo per sceglierlo e trascinalo per spostarlo. Tienilo premuto, fai clic destro o premi Maiusc+F10 per le sue azioni. I foglietti adesivi si possono trascinare ovunque; toccane uno per scrivere."
+      },
+      "wheel": {
+        "menu": "Azioni per {label}",
+        "copy": "Copia",
+        "fill": "Riempi",
+        "rotate": "Ruota",
+        "flip": "Capovolgi",
+        "break": "Spezza in 10",
+        "lock": "Blocca",
+        "unlock": "Sblocca",
+        "delete": "Elimina",
+        "deleted": "{label} eliminato",
+        "undo": "Annulla",
+        "lockedHint": "Bloccato. Tienilo premuto per sbloccarlo.",
+        "pieceLocked": "Pezzo {label}, bloccato",
+        "objLocked": "{name}, bloccato"
+      }
+    },
+    "manip-room": {
+      "actionsFor": "Azioni per {label}",
+      "teacherLock": "Il tuo insegnante ha bloccato questo."
     }
   },
   "favorites": {

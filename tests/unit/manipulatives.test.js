@@ -862,3 +862,46 @@ test('"Check my answers": only when the teacher allows it; answers in, right / n
     assert.doesNotMatch(JSON.stringify(q.all('SELECT * FROM manip_work WHERE session_id=?', s.id)), /"right"|checks/);
   } finally { A.ws.terminate(); B.ws.terminate(); T.ws.terminate(); server.off('upgrade', listener); }
 });
+
+test('locks: an object\'s lock is stored like its other state; in the room the teacher\'s lock in a square is the teacher\'s, the student\'s own is theirs', async () => {
+  // Saved boards and share codes keep a locked object and a locked piece; a lock is true or nothing.
+  const st = { v: 2, objects: [{ id: 'F', k: 'ten-frame', x: 10, y: 10, s: 1, st: { n: 10 }, locked: true }, { id: 'G', k: 'five-frame', x: 400, y: 10, s: 1, st: { n: 5 }, locked: 'yes', lockBy: 't' }],
+    pieces: [{ id: 'p', kind: 'pos', x: 20, y: 60, w: 48, h: 48, locked: true, lockBy: 'x' }, { id: 'q', kind: 'neg', x: 90, y: 60, w: 48, h: 48, locked: false, lockBy: 't' }] };
+  const c = JSON.parse(M.cleanState(st, null, 'two-color-counters').state);
+  assert.deepEqual(c.objects.map(o => [o.id, o.locked, o.lockBy]), [['F', true, undefined], ['G', undefined, undefined]]);
+  assert.deepEqual(c.pieces.map(p => [p.id, p.locked, p.lockBy]), [['p', true, undefined], ['q', undefined, undefined]]);
+  const saved = await as(boss)('/api/manipulatives/boards', { method: 'POST', body: { tool: 'two-color-counters', state: st } });
+  assert.equal(saved.status, 200);
+  const opened = JSON.parse((await as(boss)(`/api/manipulatives/code/${saved.json.board.code}`)).json.board.state);
+  assert.equal(opened.objects[0].locked, true, 'through a share code');
+  // The live room.
+  const w = world();
+  const s = M.createSession(boss, { classId: w.A.id, tool: 'two-color-counters' }).session;
+  M.join(w.a1, { code: s.code });
+  const area = () => JSON.parse(q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, w.a1.id).state);
+  const frameAt = (x, extra = {}) => ({ id: 'TF', k: 'ten-frame', x, y: 10, s: 1, st: { n: 10 }, ...extra });
+  const ctr = (id, x, extra = {}) => ({ id, kind: 'pos', x, y: 200, w: 48, h: 48, label: '+1', value: 1, ...extra });
+  // The teacher locks a frame and a counter in Ada's square (the page sends no author: the server decides).
+  assert.ok(M.saveArea(boss, s.id, w.a1.id, { v: 2, objects: [frameAt(10, { locked: true })], pieces: [ctr('tc', 10, { locked: true }), ctr('mine', 100)] }).ok);
+  assert.deepEqual([area().objects[0].lockBy, area().pieces[0].lockBy], ['t', 't']);
+  // Ada tries to unlock, move, flip and delete them, and to forge a teacher's lock on her own counter: none of it sticks,
+  // but the frame's own state is hers (counters still go in a locked frame).
+  assert.ok(M.saveArea(w.a1, s.id, w.a1.id, { v: 2, objects: [frameAt(200, { st: { n: 10, mark: 1 } })], pieces: [ctr('mine', 100, { locked: true, lockBy: 't' })] }).ok);
+  const a = area();
+  assert.deepEqual([a.objects[0].x, a.objects[0].locked, a.objects[0].lockBy, a.objects[0].st.mark], [10, true, 't', 1]);
+  const tc = a.pieces.find(p => p.id === 'tc'); assert.deepEqual([tc.x, tc.locked, tc.lockBy, tc.kind], [10, true, 't', 'pos'], 'the teacher\'s counter is back as it was');
+  const mine = a.pieces.find(p => p.id === 'mine'); assert.deepEqual([mine.locked, mine.lockBy], [true, undefined], 'her own lock, no author');
+  // Her own lock she may undo; the teacher may unlock anything.
+  assert.ok(M.saveArea(w.a1, s.id, w.a1.id, { v: 2, objects: area().objects, pieces: area().pieces.map(p => (p.id === 'mine' ? { ...p, locked: false } : p)) }).ok);
+  assert.equal(area().pieces.find(p => p.id === 'mine').locked, undefined);
+  assert.ok(M.saveArea(boss, s.id, w.a1.id, { v: 2, objects: [frameAt(10)], pieces: area().pieces.map(p => ({ ...p, locked: false })) }).ok);
+  assert.ok(area().pieces.every(p => !p.locked && !p.lockBy) && !area().objects[0].locked);
+  // A student's own lock stays hers when the teacher saves her square (the teacher's save keeps it unauthored).
+  assert.ok(M.saveArea(w.a1, s.id, w.a1.id, { v: 2, objects: [frameAt(10, { locked: true })], pieces: [] }).ok);
+  assert.ok(M.saveArea(boss, s.id, w.a1.id, { v: 2, objects: area().objects, pieces: [] }).ok);
+  assert.deepEqual([area().objects[0].locked, area().objects[0].lockBy], [true, undefined]);
+  // Classmates (while work is shown) see the lock: it travels with the square's state.
+  M.showWork(boss, s.id, true);
+  assert.match(M.roomFor(w.a1, s.id).areas.find(x => x.key === w.a1.id).state, /"locked":true/);
+  M.end(boss, s.id);
+});

@@ -11,7 +11,9 @@
 import { t, api, toast, esc, copyText } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { toolOf, roomLayout, layoutOf, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H } from '/js/manip-data.js';
-import { WORLD, migrate, fitInto, newBoard, objectTool, kindOf, objSize, objRect, boxesOf, bbox, spotIn, slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, OBJ_MAX, OBJ_MAX_SQUARE, S_MIN, S_MAX } from '/js/manip-board.js';
+import { WORLD, migrate, fitInto, newBoard, objectTool, kindOf, objSize, objRect, boxesOf, bbox, spotIn, slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, OBJ_MAX, OBJ_MAX_SQUARE, S_MIN, S_MAX,
+  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot } from '/js/manip-board.js';
+import { openWheel, closeWheel, startHold, shake, SLOP } from '/js/manip-wheel.js';
 
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
 const NOTE_MAX = 12, Z_MIN = 0.12, Z_MAX = 2.5;
@@ -183,7 +185,8 @@ function areaInner(A) {
   // A classmate's square while the teacher hides work: the server sent nothing of it; a frosted panel drawn from nothing.
   if (A.hidden) return `<div class="rm-body">${stripHtml(A)}<div class="rm-in rm-frost" style="top:${topOf(A)}px"><span>${iconHtml('🔒', { size: 18 })} ${esc(t('js.manip-room.hiddenWork'))}</span></div></div>`;
   const sel = R.sel && R.sel.key === A.key ? R.sel.id : null, osel = R.osel && R.osel.key === A.key ? R.osel.id : null, ws = workSize(A);
-  return `<div class="rm-body">${stripHtml(A)}<div class="rm-in" style="top:${topOf(A)}px"><div class="mp-content mp-abs">${R.deps.boardHtml(R.room.tool, R.impl, A.st, { sel, osel, readOnly: !A.editable || R.room.status !== 'active', snapped: R.snapped, fresh: R.fresh, totals: totalsOn(), checked: A.key === R.me ? R.checked : null })}</div>
+  const lifted = R.lifted && R.lifted.key === A.key ? R.lifted.id : null, flipIn = R.flipIn && R.flipIn.key === A.key ? R.flipIn.id : null;
+  return `<div class="rm-body">${stripHtml(A)}<div class="rm-in" style="top:${topOf(A)}px"><div class="mp-content mp-abs">${R.deps.boardHtml(R.room.tool, R.impl, A.st, { sel, osel, readOnly: !A.editable || R.room.status !== 'active', snapped: R.snapped, fresh: R.fresh, totals: totalsOn(), checked: A.key === R.me ? R.checked : null, lifted, flipIn })}</div>
     <svg class="mp-ink" viewBox="0 0 ${ws.w} ${ws.h}" aria-hidden="true">${inkOf(A)}</svg>
     <div class="mp-texts">${A.ann.texts.map(x => textHtml(A, x)).join('')}</div><div class="mp-notes">${A.ann.notes.map((n, i) => noteHtml(A, n, i)).join('')}</div></div></div>`;
 }
@@ -217,7 +220,6 @@ function renderArea(key) {
   el.classList.toggle('active', R.role === 'teacher' && R.active === key);
   el.querySelector('.rm-body').outerHTML = areaInner(A);
   bindArea(key); R.fresh = null;
-  R.deps.keepBarsInside(el, document.getElementById('rm').getBoundingClientRect(), R.view.z);
   const ta = el.querySelector('textarea.mp-notetext, input.mp-textin'); if (ta) ta.focus({ preventScroll: true });
 }
 function bindArea(key) {
@@ -335,7 +337,6 @@ const toWorld = (cx, cy) => { const r = document.getElementById('rm').getBoundin
 function applyView() {
   if (!R || !R.world) return;
   R.world.style.transform = `translate(${R.view.x}px,${R.view.y}px) scale(${R.view.z})`; R.world.style.setProperty('--iz', String(Math.min(2.5, 1 / R.view.z)));
-  R.deps.keepBarsInside(R.world, document.getElementById('rm').getBoundingClientRect(), R.view.z);
   renderCursors(); renderMini();
   const pct = document.querySelectorAll('.rm-pct'); for (const p of pct) p.textContent = `${Math.round(R.view.z * 100)}%`;
 }
@@ -492,7 +493,16 @@ function bind() {
     const A = R.areas.get(R.active); if (!A) return;
     edit(R.active, st0 => { const st = settingsOf(A, st0); if (!st) return false; st[k] = typeof st[k] === 'boolean' ? !!v : typeof st[k] === 'number' ? (Number.isFinite(+v) ? +v : st[k]) : v; if (R.impl.onSet) R.impl.onSet(st, k); });
   });
-  el.addEventListener('keydown', e => { if (e.target.matches('.mp-textin') && (e.key === 'Enter' || e.key === 'Escape')) { e.preventDefault(); commitText(); } });
+  el.addEventListener('keydown', e => {
+    if (e.target.matches('.mp-textin') && (e.key === 'Enter' || e.key === 'Escape')) { e.preventDefault(); commitText(); return; }
+    // A focused piece or object handle: Shift+F10, the ContextMenu key or Enter opens its wheel.
+    if (!R.deps.wheelKey(e)) return;
+    const pe = e.target.closest('.rm-area .mp-piece'), oh = !pe && e.target.closest('.rm-area .mp-ohead'), area = (pe || oh) && (pe || oh).closest('.rm-area'); if (!area) return;
+    e.preventDefault();
+    const r = (pe || oh).getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+    if (pe) pieceMenu(area.dataset.key, pe.dataset.pid, x, y, true); else objMenu(area.dataset.key, oh.closest('.mp-obj').dataset.oid, x, y, true);
+  });
+  el.addEventListener('contextmenu', e => { if (e.target.closest('.rm-area .mp-piece, .rm-area .mp-obj')) e.preventDefault(); });
   el.addEventListener('focusout', e => { if (e.target.matches('.mp-textin')) setTimeout(() => { const box = e.target.closest('.mp-text'); if (R && R.textEdit && !(box && box.contains(document.activeElement))) commitText(); }, 0); });
   el.addEventListener('input', e => {
     const area = e.target.closest('.rm-area'), A = area && R.areas.get(area.dataset.key); if (!A || !A.editable) return;
@@ -529,14 +539,18 @@ function down(e) {
     }
     const before = JSON.stringify({ st: A.st, ann: A.ann });
     const rz = !R.annotate && !R.textMode && e.target.closest('[data-oresize]');
-    if (rz) { const o = A.st.objects.find(x => x.id === rz.dataset.oresize); if (o) { R.gesture = { kind: 'resize', key: A.key, o, nat: objSize(R.room.tool, o), s0: o.s, sx: e.clientX, sy: e.clientY, before, el: rz.closest('.mp-obj'), moved: false }; rm.setPointerCapture(e.pointerId); e.preventDefault(); return; } }
+    if (rz) { const o = A.st.objects.find(x => x.id === rz.dataset.oresize); if (o && !o.locked) { R.gesture = { kind: 'resize', key: A.key, o, nat: objSize(R.room.tool, o), s0: o.s, sx: e.clientX, sy: e.clientY, before, el: rz.closest('.mp-obj'), moved: false }; rm.setPointerCapture(e.pointerId); e.preventDefault(); return; } }
     const pieceEl = !R.textMode && e.target.closest('.mp-piece');
     if (pieceEl && A.st.pieces) {
       const p = A.st.pieces.find(x => x.id === pieceEl.dataset.pid);
       if (p) {
-        const members = p.locked ? [p] : groupOf(A.st.pieces, p), body = areaEl.querySelector('.mp-content');
-        R.gesture = { kind: 'piece', key: A.key, p, members: members.map(m => ({ m, x0: m.x, y0: m.y, el: body.querySelector(`.mp-piece[data-pid="${CSS.escape(m.id)}"]`) })), sx: e.clientX, sy: e.clientY, moved: false, before };
-        rm.setPointerCapture(e.pointerId); e.preventDefault(); return;
+        // A tap selects; 10 px of movement drags it (with its group); a hold opens its wheel; right-click at once.
+        e.preventDefault();
+        if (e.button === 2) { pieceMenu(A.key, p.id, e.clientX, e.clientY); return; }
+        if (e.button > 0) return;
+        const gg = R.gesture = { kind: 'piece', key: A.key, p, sx: e.clientX, sy: e.clientY, moved: false, held: false, before };
+        gg.hold = startHold(e.clientX, e.clientY, () => { if (R && R.gesture === gg && !gg.moved) { gg.held = true; pieceMenu(gg.key, p.id, gg.sx, gg.sy); } });
+        rm.setPointerCapture(e.pointerId); return;
       }
     }
     const textEl = e.target.closest('.mp-text[data-text]');
@@ -555,11 +569,18 @@ function down(e) {
       const n = A.ann.notes.find(x => x.id === noteEl.dataset.note);
       if (n && canEditNote(A, n)) { R.gesture = { kind: 'note', key: A.key, n, el: noteEl, sx: e.clientX, sy: e.clientY, x0: +n.x || 0, y0: +n.y || 0, inner, moved: false }; rm.setPointerCapture(e.pointerId); e.preventDefault(); return; }
     }
-    if (e.target.closest('[data-act], svg.mp-nl, svg.mp-grid, svg[data-clock], .mp-seglabel, .mp-obar, .mp-pbar')) return;   // a tap on the tool itself
+    if (e.target.closest('[data-act], svg.mp-nl, svg.mp-grid, svg[data-clock], .mp-seglabel')) return;   // a tap on the tool itself
     const objEl = !R.textMode && e.target.closest('.mp-obj');
     if (objEl) {
       const o = A.st.objects.find(x => x.id === objEl.dataset.oid);
-      if (o) { R.gesture = { kind: 'obj', key: A.key, o, el: objEl, x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, before }; rm.setPointerCapture(e.pointerId); e.preventDefault(); return; }
+      if (o) {
+        e.preventDefault();
+        if (e.button === 2) { objMenu(A.key, o.id, e.clientX, e.clientY); return; }
+        if (e.button > 0) return;
+        const gg = R.gesture = { kind: 'obj', key: A.key, o, el: objEl, x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before };
+        gg.hold = startHold(e.clientX, e.clientY, () => { if (R && R.gesture === gg && !gg.moved) { gg.held = true; objMenu(gg.key, o.id, gg.sx, gg.sy); } });
+        rm.setPointerCapture(e.pointerId); return;
+      }
     }
   }
   R.gesture = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: R.view.x, y0: R.view.y, moved: false };
@@ -577,7 +598,26 @@ function move(e) {
     zoomAt(d / (g.d || d), cx - r.left, cy - r.top);
     Object.assign(g, { d, cx, cy }); return;
   }
+  if (g.kind === 'dead') return;
   const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
+  if ((g.kind === 'piece' || g.kind === 'obj') && !g.moved) {
+    // A piece or object starts to move after 10 px; before that it may still become a hold.
+    if (Math.hypot(dx, dy) < SLOP) return;
+    g.hold.cancel();
+    const A0 = R.areas.get(g.key); if (!A0) { R.gesture = null; return; }
+    if (g.kind === 'piece' ? g.p.locked : g.o.locked) { if (!g.held) shake(g.kind === 'piece' ? pieceElIn(g.key, g.p.id) : objElIn(g.key, g.o.id)); R.gesture = { kind: 'dead', key: g.key }; return; }
+    if (g.held) { closeWheel({ focus: false }); g.before = JSON.stringify({ st: A0.st, ann: A0.ann }); }
+    if (g.kind === 'piece') {
+      // Held first (out of its group now), or counters (they never link): just this piece.
+      const members = g.held || !linksPieces(R.room.tool) ? [g.p] : groupOf(A0.st.pieces, g.p);
+      g.members = members.map(m => ({ m, x0: m.x, y0: m.y, el: pieceElIn(g.key, m.id) }));
+    } else {
+      g.el = objElIn(g.key, g.o.id) || g.el; g.x0 = g.o.x; g.y0 = g.o.y;
+      // An unlocked frame takes the counters seated in its cells along.
+      g.carry = FRAMES.has(g.o.k) ? seatedIn(R.room.tool, g.o, A0.st.pieces).map(m => ({ m, x0: m.x, y0: m.y, el: pieceElIn(g.key, m.id) })) : [];
+    }
+    g.moved = true;
+  }
   if (g.kind === 'pan') { if (Math.abs(dx) + Math.abs(dy) > 4) g.moved = true; R.view.x = g.x0 + dx; R.view.y = g.y0 + dy; applyView(); return; }
   if (g.kind === 'ink') {
     const A = R.areas.get(g.key), s = A.ann.strokes[A.ann.strokes.length - 1];
@@ -594,7 +634,9 @@ function move(e) {
   if (g.kind === 'obj') {
     const r = objRect(R.room.tool, g.o);
     g.o.x = Math.round(clamp(g.x0 + dx / z, 0, ws.w - r.w)); g.o.y = Math.round(clamp(g.y0 + dy / z, 0, ws.h - r.h));
-    g.el.style.left = `${g.o.x}px`; g.el.style.top = `${g.o.y}px`; return;
+    g.el.style.left = `${g.o.x}px`; g.el.style.top = `${g.o.y}px`;
+    for (const c of g.carry || []) { c.m.x = c.x0 + g.o.x - g.x0; c.m.y = c.y0 + g.o.y - g.y0; if (c.el) { c.el.style.left = `${c.m.x}px`; c.el.style.top = `${c.m.y}px`; } }
+    return;
   }
   if (g.kind === 'resize') {
     g.o.s = Math.round(clamp((g.nat.w * g.s0 + dx / z) / g.nat.w, S_MIN, Math.min(S_MAX, (ws.w - g.o.x) / g.nat.w, (ws.h - g.o.y) / g.nat.h)) * 1000) / 1000;
@@ -619,11 +661,15 @@ function up(e) {
   const g = R.gesture; if (!g) return;
   if (g.kind === 'pinch') { if (R.pointers.size < 2) R.gesture = null; return; }
   R.gesture = null;
+  if (g.hold) g.hold.cancel();
+  if (g.kind === 'dead') { R.justPanned = true; return; }
+  // Held: the wheel stays open after the finger lifts.
+  if ((g.kind === 'obj' || g.kind === 'piece') && !g.moved && (g.held || e.type === 'pointercancel')) { R.justPanned = true; return; }
   if (g.kind === 'pan') { R.justPanned = g.moved; if (!g.moved && (R.sel || R.osel)) { const k = (R.sel || R.osel).key; R.sel = null; R.osel = null; renderArea(k); renderPal(); } return; }
   if (g.kind === 'ink') { const A = R.areas.get(g.key); A.ann.strokes = A.ann.strokes.filter(s => s.pts.length > 1); renderArea(g.key); renderPal(); queueSave(g.key); return; }
   if (g.kind === 'obj' || g.kind === 'resize') {
     // A tap selects (its buttons open); a drag only moves it.
-    if (g.moved) { R.hist.push([g.key, g.before]); queueSave(g.key); } else { R.osel = { key: g.key, id: g.o.id }; R.sel = null; }
+    if (g.moved) { R.hist.push([g.key, g.before]); queueSave(g.key); } else if (g.o && !g.o.locked) { R.osel = { key: g.key, id: g.o.id }; R.sel = null; }
     renderArea(g.key); renderPal(); R.justPanned = true; return;
   }
   if (g.kind === 'piece') {
@@ -673,7 +719,7 @@ function roomDrop(cx, cy, item) {
 /** Where the held piece (and its group) would snap: only this square's own pieces and objects (never across squares). */
 function snapOf(A, g) {
   const ids = new Set(g.members.map(x => x.m.id));
-  return snapFor([g.p, ...g.members.map(x => x.m).filter(m => m !== g.p)], A.st.pieces.filter(q => !ids.has(q.id)), A.st.objects.flatMap(o => slotsOf(R.room.tool, o)), SNAP_PX / R.view.z);
+  return snapFor([g.p, ...g.members.map(x => x.m).filter(m => m !== g.p)], A.st.pieces.filter(q => !ids.has(q.id)), A.st.objects.flatMap(o => slotsOf(R.room.tool, o)), SNAP_PX / R.view.z, snapOpts(R.room.tool));
 }
 function ghostIn(A) {
   const inn = R.world && R.world.querySelector(`.rm-area[data-key="${CSS.escape(A.key)}"] .rm-in`); if (!inn) return null;
@@ -711,10 +757,6 @@ function click(e) {
   if (!A || !A.editable || R.room.status !== 'active') return;
   const nb = e.target.closest('[data-nact]');
   if (nb) return noteButton(A, nb.dataset.nact, nb.dataset.id);
-  const pa = e.target.closest('[data-pact]');
-  if (pa) return pieceButton(A, pa.dataset.pact, pa.dataset.pid);
-  const oa = e.target.closest('[data-oact]');
-  if (oa) { const ws = workSize(A); edit(A.key, (st, v) => R.deps.objectAction(R.room.tool, st, oa.dataset.oact, oa.dataset.oid, v, { x: 0, y: 0, w: ws.w, h: ws.h }, ws, objMax(A))); return; }
   const objEl = e.target.closest('.mp-content .mp-obj');
   const act = e.target.closest('.mp-content [data-act]');
   if (act && objEl) { edit(A.key, (st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; return R.impl.act(o.st, act.dataset, e); }); return; }
@@ -736,7 +778,46 @@ function noteButton(A, k, id) {
   else if (k === 'delete') { R.hist.push([A.key, JSON.stringify({ st: A.st, ann: A.ann })]); A.ann.notes = A.ann.notes.filter(x => x.id !== id); R.editing = null; queueSave(A.key); renderPal(); }
   renderArea(A.key);
 }
-function pieceButton(A, k, id) { edit(A.key, (st, v) => R.deps.pieceAction(st, k, id, v, p => place(A, p))); }
+// ---------------------------------------------------------------- the hold-to-edit wheel (public/js/manip-wheel.js)
+const pieceElIn = (key, id) => R && R.world && R.world.querySelector(`.rm-area[data-key="${CSS.escape(key)}"] .mp-content .mp-piece[data-pid="${CSS.escape(id)}"]`);
+const objElIn = (key, id) => R && R.world && R.world.querySelector(`.rm-area[data-key="${CSS.escape(key)}"] .mp-content .mp-obj[data-oid="${CSS.escape(id)}"]`);
+/** Something the teacher locked in a student's square: the student can't unlock it (the server keeps it too). */
+const teacherLocked = x => !!(x && x.locked && x.lockBy === 't' && R.role !== 'teacher');
+/** After a lock or unlock in a student's square: who locked it (the teacher's lock is the teacher's; the server decides
+ *  this again on saving: services/manipulatives.js lockedBy). */
+function markLock(key, x, k) { if (!x) return; if (k === 'lock' && R.role === 'teacher' && key !== 't') x.lockBy = 't'; if (k === 'unlock' || (k === 'lock' && R.role !== 'teacher')) delete x.lockBy; }
+/** A piece's wheel in the room: the same as on the solo board (lifted out of its group first), in that square. */
+function pieceMenu(key, id, x, y, keyboard = false) {
+  const A = R && R.areas.get(key); if (!A || !A.editable || R.room.status !== 'active' || !A.st.pieces) return;
+  const slug = R.room.tool, ws = workSize(A);
+  const p0 = A.st.pieces.find(q => q.id === id); if (!p0) return;
+  if (teacherLocked(p0)) { shake(pieceElIn(key, id)); toast(t('js.manip-room.teacherLock')); return; }
+  edit(key, (st, v) => R.deps.pieceAction(st, 'lift', id, v, null, slug, ws));
+  const p = A.st.pieces.find(q => q.id === id); if (!p) return;
+  R.sel = { key, id }; R.osel = null; R.lifted = p.locked ? null : { key, id };
+  renderArea(key); renderPal();
+  openWheel({ x, y, keyboard, items: R.deps.wheelItems(R.deps.pieceWheel(slug, p)), label: t('js.manip-room.actionsFor', { label: p.label }), focusBack: () => pieceElIn(key, id),
+    onClose: () => { if (R && R.lifted && R.lifted.key === key && R.lifted.id === id) { R.lifted = null; pieceElIn(key, id)?.classList.remove('lifted'); } },
+    onPick: k => {
+      const q = A.st.pieces.find(z => z.id === id); if (!q) return closeWheel();
+      R.deps.wheelRun({ k, slug, label: q.label, el: () => pieceElIn(key, id), mark: () => R.hist.length, undo: () => toolButton('undo'),
+        apply: flip => {
+          if (flip) R.flipIn = { key, id };
+          edit(key, (st, v) => { const r = R.deps.pieceAction(st, k, id, v, pp => nearSpot(boxesOf(slug, { ...st, __ann: A.ann }, ws), pp, { x: 0, y: 0, w: ws.w, h: ws.h }), slug, ws); if (r) markLock(key, st.pieces.find(z => z.id === id), k); return r; });
+          R.flipIn = null;
+        } });
+    } });
+}
+/** An object's wheel in the room: Lock or Unlock, Copy, Delete. */
+function objMenu(key, id, x, y, keyboard = false) {
+  const A = R && R.areas.get(key); if (!A || !A.editable || R.room.status !== 'active') return;
+  const slug = R.room.tool, ws = workSize(A), o = A.st.objects.find(q => q.id === id); if (!o) return;
+  if (teacherLocked(o)) { shake(objElIn(key, id)); toast(t('js.manip-room.teacherLock')); return; }
+  if (!o.locked) { R.osel = { key, id }; R.sel = null; renderArea(key); renderPal(); }
+  openWheel({ x, y, keyboard, items: R.deps.wheelItems(R.deps.objWheel(o)), label: t('js.manip-room.actionsFor', { label: R.deps.objName(slug, o) }), focusBack: () => objElIn(key, id)?.querySelector('.mp-ohead'),
+    onPick: k => R.deps.wheelRun({ k, slug, label: R.deps.objName(slug, o), el: () => null, mark: () => R.hist.length, undo: () => toolButton('undo'),
+      apply: () => edit(key, (st, v) => { const r = R.deps.objectAction(slug, st, k, id, v, { x: 0, y: 0, w: ws.w, h: ws.h }, ws, objMax(A)); if (r) markLock(key, st.objects.find(z => z.id === id), k); return r; }) }) });
+}
 async function toolButton(k) {
   const s = size();
   if (k === 'zin') return zoomAt(1.25, s.w / 2, s.h / 2);
