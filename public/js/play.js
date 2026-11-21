@@ -126,7 +126,8 @@ const TYPES = {
   // BRB.copy: a link to this game's own page or a small PNG (copyForGame checks which); BRB.saveQuestionSet: a set game's
   // questions (the server cleans them); BRB.assign: a set game's lesson parameters (the server cleans them).
   'brb:copy': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && (typeof m.text === 'string' || (typeof Blob === 'function' && m.png instanceof Blob)),
-  'brb:set-save': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.items) && m.items.length <= 20 && JSON.stringify(m.items).length <= 20000 && (m.set === null || m.set === undefined || typeof m.set === 'string'),
+  'brb:set-save': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.items) && m.items.length <= 20 && JSON.stringify(m.items).length <= 20000 && (m.set === null || m.set === undefined || typeof m.set === 'string')
+    && (m.title === undefined || (typeof m.title === 'string' && m.title.length <= 60)),
   'brb:assign': m => typeof m.opts === 'string',
   // BRB.mySets and friends ("My worksheets"): the teacher's own sets (the server checks whose they are).
   'brb:sets': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && ['list', 'delete', 'rename', 'duplicate'].includes(m.op)
@@ -419,7 +420,7 @@ async function saveSetForGame(m) {
   let out = { error: 'offline' };
   if (!d.signedIn) out = { error: 'guest' };
   else {
-    try { const r = await api(`/api/games/${d.gameId}/sets`, { method: 'POST', body: { items: m.items, ...(typeof m.set === 'string' ? { id: m.set } : {}) } }); out = { set: r.id }; }
+    try { const r = await api(`/api/games/${d.gameId}/sets`, { method: 'POST', body: { items: m.items, ...(typeof m.set === 'string' ? { id: m.set } : {}), ...(typeof m.title === 'string' ? { title: m.title } : {}) } }); out = { set: r.id }; }
     catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'bad' : 'offline') }; }
   }
   toFrame({ type: 'brb:set-saved', id: m.id, ...out });

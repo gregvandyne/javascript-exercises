@@ -164,3 +164,119 @@ test('Crossword: a student (no BRB.canListSets) never sees My worksheets', { ski
     assert.deepEqual(await g.msgs('brb:sets'), []);
   } finally { await g.ctx.close(); }
 });
+
+// ---------------------------------------------------------------- The Big Divide and Algebra Builder (BRB stubbed)
+/** A built Svelte game with BRB stubbed as a teacher's frame: the sets in a store (STORE_JS), save, print, copy. */
+async function openBuilt(file, slug, { sets = [], mySets = true, saved = {} } = {}) {
+  const b = await launch();
+  const html = fs.readFileSync(path.join(ROOT, 'seed-games', file), 'utf8');
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
+  const page = await ctx.newPage();
+  const errors = []; page.on('pageerror', e => errors.push(e.message));
+  await page.route('**/*', r => {
+    const u = new URL(r.request().url());
+    if (u.host !== 'game.test') return r.abort();
+    if (u.pathname.startsWith('/vendor/')) return r.fulfill({ path: path.join(ROOT, 'public', u.pathname) });
+    return r.fulfill({ contentType: 'text/html', body: html });
+  });
+  await page.addInitScript(([sets, slug, mySets, saved, store]) => {
+    window.__slug = slug; window.__store = sets; window.__log = [];
+    (0, eval)(store);
+    const kept = { ...saved };
+    // the SDK's answers (BRB.duplicateQuestionSet gives { id, set }, where the page's message has { set, view })
+    const ask = (op, set, title) => { window.__log.push({ op, set, title }); const r = window.setsReply({ op, set, title }); return Promise.resolve(typeof r.set === 'string' ? { id: r.set, set: r.view } : r); };
+    window.BRB = {
+      questionSet: null, user: { isGuest: false, lang: 'en' }, gameUrl: 'http://game.test/play/' + slug, canAssign: true, assign: q => { window.__log.push({ op: 'assign', q }); return true; },
+      storage: { get: k => kept[k] ?? null, set: (k, v) => { kept[k] = JSON.parse(JSON.stringify(v)); } },
+      saveQuestionSet: (items, id, opts) => { window.__log.push({ op: 'save', items, id, title: opts && opts.title }); const s = window.__store.find(x => x.id === id); if (s) s.items = items; return Promise.resolve({ id: id || 's-newsetabcd' }); },
+      findQuestionSet: () => Promise.resolve({ error: 'none' }),
+      copy: what => { window.__log.push({ op: 'copy', what }); return Promise.resolve(true); },
+      canPrint: true, print: doc => { window.__log.push({ op: 'print', doc }); return Promise.resolve({ ok: true }); },
+      ...(mySets ? { canListSets: true, mySets: () => ask('list'), deleteQuestionSet: id => ask('delete', id), renameQuestionSet: (id, t) => ask('rename', id, t), duplicateQuestionSet: id => ask('duplicate', id) } : {}),
+      gameOver: () => {},
+    };
+    window.__kept = kept;
+  }, [sets, slug, mySets, saved, STORE_JS + '\nwindow.setsReply = setsReply;']);
+  await page.goto('http://game.test/play');
+  const log = op => page.evaluate(o => window.__log.filter(x => x.op === o), op);
+  return { ctx, page, errors, log, store: () => page.evaluate(() => window.__store) };
+}
+
+test('The Big Divide: My worksheets lists the saved activities; open one in the editor and save it under its code; rename, duplicate, print, copy, delete', { skip, timeout: 180_000 }, async () => {
+  const A = 's-division23', B = 's-multiply23';
+  const g = await openBuilt('box-by-box.html', 'box-by-box', { sets: [
+    row('box-by-box', A, [{ k: 'divide', p: [[84, 4], [96, 3], [125, 5]], l: 'guided' }], 'Week 3 division'),
+    row('box-by-box', B, [{ k: 'multiply', p: [[23, 4], [56, 7]], l: 'onMyOwn', m: 'area' }], '', 86400e3),
+  ] });
+  const { page } = g;
+  try {
+    await page.getByRole('button', { name: /I’m a teacher/ }).click();
+    await page.locator('#bb-ws').click();
+    await page.locator('[data-set]').first().waitFor();
+    assert.equal(await page.locator('[data-set]').count(), 2);
+    const a = await page.locator(`[data-set="${A}"]`).textContent();
+    assert.match(a, /Week 3 division/); assert.match(a, /Long division · 3 problems · Guided/); assert.match(a, /DIVIS ION23/);
+    assert.match(await page.locator(`[data-set="${B}"] .title`).textContent(), /Multiplication/, 'no name: the kind');
+    if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'big-divide-my-worksheets.png') });
+    // Print and the answer key: the activity's own problems, with its code
+    await page.locator(`[data-ws-print="${A}"]`).click();
+    let pr = (await g.log('print')).at(-1).doc;
+    assert.deepEqual([pr.k, pr.p, pr.key, pr.set], ['divide', [[84, 4], [96, 3], [125, 5]], false, A]);
+    await page.locator(`[data-ws-key="${B}"]`).click();
+    pr = (await g.log('print')).at(-1).doc; assert.equal(pr.key, true); assert.equal(pr.m, 'area');
+    await page.locator(`[data-ws-copy="${A}"]`).click();
+    assert.equal((await g.log('copy')).at(-1).what, `http://game.test/play/box-by-box?chapter=${A}&lock=1`);
+    // Rename: refused, then fine
+    await page.locator(`[data-ws-rename="${B}"]`).click();
+    await page.locator(`#bb-rename-${B}`).fill('you bitch');
+    await page.locator('#bb-rename-ok').click();
+    await page.locator(`[data-set="${B}"] .problem`).waitFor();
+    assert.match(await page.locator(`[data-set="${B}"] .problem`).textContent(), /isn’t allowed/);
+    await page.locator(`#bb-rename-${B}`).fill('Area model practice');
+    await page.locator('#bb-rename-ok').click();
+    await page.locator(`[data-set="${B}"] .title`, { hasText: 'Area model practice' }).waitFor();
+    // Duplicate: a copy on top
+    await page.locator(`[data-ws-dup="${A}"]`).click();
+    await page.waitForFunction(() => document.querySelectorAll('[data-set]').length === 3);
+    assert.match(await page.locator('[data-set]').first().textContent(), /Copy of Week 3 division/);
+    // Open: the editor, with its problems and name; Save keeps the same code and sends the name
+    await page.locator(`[data-ws-open="${A}"]`).click();
+    await page.locator('input.title').waitFor();
+    assert.equal(await page.locator('input.title').inputValue(), 'Week 3 division');
+    await page.locator('input.title').fill('Week 3 long division');
+    await page.locator('button.remove').nth(2).click();
+    await page.getByRole('button', { name: /Save changes/ }).first().click();
+    await page.waitForFunction(() => window.__log.some(x => x.op === 'save'));
+    const sv = (await g.log('save')).at(-1);
+    assert.equal(sv.id, A, 'saved again under the same code'); assert.equal(sv.title, 'Week 3 long division');
+    assert.deepEqual(sv.items[0].p, [[84, 4], [96, 3]]);
+    // back to Your activities (the opened one is there now), then My worksheets again
+    await page.locator('button.back:visible, button.back-icon:visible').first().click();
+    await page.locator('.card', { hasText: 'Week 3 long division' }).waitFor();
+    await page.locator('#bb-ws').click();
+    await page.locator(`[data-set="${A}"]`).waitFor();
+    // Delete asks first; Keep keeps it; Delete deletes it (and its activity in the list)
+    await page.locator(`[data-ws-del="${A}"]`).click();
+    assert.match(await page.locator('.ask').textContent(), /Delete “Week 3 division”\? Its class code and link stop working/);
+    await page.locator('#bb-ws-delno').click();
+    assert.equal(await page.locator('.ask').count(), 0);
+    await page.locator(`[data-ws-del="${A}"]`).click(); await page.locator('#bb-ws-delyes').click();
+    await page.waitForFunction(id => !document.querySelector(`[data-set="${id}"]`), A);
+    assert.ok(!(await g.store()).some(s => s.id === A));
+    const acts = await page.evaluate(() => window.__kept['box-by-box-activities-v1'] || []);
+    assert.ok(!acts.some(x => x.setId === A), 'its activity went with it');
+    for (const id of (await g.store()).map(s => s.id)) { await page.locator(`[data-ws-del="${id}"]`).click(); await page.locator('#bb-ws-delyes').click(); await page.waitForFunction(i => !document.querySelector(`[data-set="${i}"]`), id); }
+    await page.locator('#bb-ws-empty').waitFor();
+    assert.match(await page.locator('#bb-ws-empty').textContent(), /Nothing here yet/);
+    assert.deepEqual(g.errors, []);
+  } finally { await g.ctx.close(); }
+});
+
+test('The Big Divide: a student\'s frame (no BRB.canListSets) has no My worksheets', { skip, timeout: 120_000 }, async () => {
+  const g = await openBuilt('box-by-box.html', 'box-by-box', { mySets: false });
+  try {
+    await g.page.getByRole('button', { name: /I’m a teacher/ }).click();
+    await g.page.getByRole('heading', { name: 'Your activities' }).waitFor();
+    assert.equal(await g.page.locator('#bb-ws').count(), 0);
+  } finally { await g.ctx.close(); }
+});

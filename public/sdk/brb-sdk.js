@@ -984,12 +984,16 @@
   // a teacher's set (a new one, or their own one changed): a Promise of { id } or { error } ('guest', 'bad', 'full',
   // 'notYours', 'offline').
   var setWait = {}, setSeq = 0;
-  function saveQuestionSet(items, id) {
+  // opts.title: the set's name in the teacher's own list ("My worksheets"; at most 60 characters, through the site's text
+  // filter; one it refuses is left out and the set still saves).
+  function saveQuestionSet(items, id, opts) {
     if (typeof Promise !== 'function') return null;
     return new Promise(function (res) {
       var n = ++setSeq, timer = setTimeout(function () { delete setWait[n]; res({ error: 'offline' }); }, 10000);
       setWait[n] = function (r) { clearTimeout(timer); delete setWait[n]; res(r); };
-      send('brb:set-save', { id: n, items: items, set: typeof id === 'string' ? id : null });
+      var msg = { id: n, items: items, set: typeof id === 'string' ? id : null };
+      if (opts && typeof opts.title === 'string') msg.title = opts.title.slice(0, 60);
+      send('brb:set-save', msg);
     });
   }
   // BRB.findQuestionSet(code): a class code a student typed -> a Promise of { id, items } or { error: 'none'|'offline' }.
