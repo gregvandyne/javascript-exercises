@@ -22,7 +22,7 @@ const S = {
 };
 const NEG = { en: ['a space game with particle effects', 'balance your budget', 'the autism spectrum', 'a mug of cocoa', 'keep your balance on the beam'], es: ['equilibrio en la vida', 'un vaso de agua'], fr: ['équilibre du budget', 'un verre d\'eau'], de: ['ein Becher Kaffee', 'Verdrängung ist ein Abwehrmechanismus', 'Gleichgewicht halten'], it: ['un bicchiere d\'acqua', 'equilibrio'], pt: ['um copo de água', 'equilíbrio'], nl: ['een kopje koffie', 'evenwicht'], ru: ['стакан воды', 'равновесие'], ja: ['コップ一杯の水', 'バランス'], 'zh-Hant': ['一杯水', '平衡'], ar: ['كوب ماء', 'نظير ذلك'], he: ['כוס מים', 'איזון'] };
 
-test('the chemistry figures are named in every site language', () => {
+test('the chemistry kinds are named in every site language', () => {
   assert.equal(Object.keys(S).length, 12);
   for (const [l, xs] of Object.entries(S)) for (const x of xs) { assert.ok(FIGURE_WORDS[l].test(x), `${l}: ${x}`); assert.ok(figureWords(x), x); }
 });

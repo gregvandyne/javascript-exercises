@@ -55,12 +55,15 @@ test('the menu on a laptop and a phone: subject tabs, grade chips and search fil
     const { ctx, page, errors } = await open('/figures', opts);
     await page.waitForSelector('.fg-card');
     await noSideScroll(page);
-    assert.equal((await visibleKinds(page)).length, 50);
+    assert.equal((await visibleKinds(page)).length, 57, 'every kind in the catalog (1.2.0 added seven chemistry kinds)');
     await shot(page, `menu-${label}`);
     if (label === 'laptop') await shot(page, 'menu-laptop-full', true);
     await page.click('[data-tab="physics"]');
     const phys = await visibleKinds(page);
     assert.ok(phys.length >= 10 && phys.every(k => ['freeBody', 'vectors', 'inclinedPlane', 'pulley', 'rays', 'circuit', 'motionGraph', 'motionMap', 'projectile', 'waves', 'reading'].includes(k)), phys.join());
+    await page.click('[data-tab="chem"]');
+    const chem = await visibleKinds(page);
+    for (const k of ['massSpectrum', 'heatingCurve', 'energyProfile', 'nuclide', 'lineSpectrum', 'photoelectron', 'particles']) assert.ok(chem.includes(k), `the Chemistry tab has ${k}`);
     await page.click('[data-tab="all"]');
     await page.click('[data-grade="K-2"]');
     assert.ok((await visibleKinds(page)).includes('barGraph'));
@@ -222,6 +225,19 @@ test('editors for a kind from data, physics and chemistry draw without errors', 
     else await page.selectOption('#fg-f-element', 'Mg');
     await page.waitForTimeout(150);
     await shot(page, name);
+    assert.deepEqual(errors, [], kind);
+    await ctx.close();
+  }
+});
+test('the 1.2.0 chemistry editors (each new kind, and the lab readings) draw without errors and make new questions', { skip }, async () => {
+  for (const kind of ['massSpectrum', 'heatingCurve', 'energyProfile', 'nuclide', 'lineSpectrum', 'photoelectron', 'particles', 'reading']) {
+    const { ctx, page, errors } = await open(`/figures/${kind}`);
+    await page.waitForSelector('#fg-figure svg');
+    assert.equal(await page.isHidden('#fg-cant'), true, kind);
+    await page.click('[data-act="random"]'); await page.waitForFunction(() => document.getElementById('fg-question').value.length > 5);
+    await page.waitForTimeout(150);
+    assert.equal(await page.isHidden('#fg-cant'), true, `${kind}: a new question draws`);
+    await shot(page, `editor-chem-${kind}`);
     assert.deepEqual(errors, [], kind);
     await ctx.close();
   }
