@@ -13092,6 +13092,34 @@
       "titration": {
         "name": "Titration curve",
         "desc": "Titration curves"
+      },
+      "massSpectrum": {
+        "name": "Mass spectrum",
+        "desc": "Isotope peaks and relative atomic mass"
+      },
+      "heatingCurve": {
+        "name": "Heating and cooling curve",
+        "desc": "Temperature as heat goes in or out, to scale"
+      },
+      "energyProfile": {
+        "name": "Potential energy diagram",
+        "desc": "Reaction energy profiles with Ea and ΔH"
+      },
+      "nuclide": {
+        "name": "Nuclide notation",
+        "desc": "Isotope, ion and particle symbols"
+      },
+      "lineSpectrum": {
+        "name": "Line spectrum",
+        "desc": "Emission and absorption lines of elements"
+      },
+      "photoelectron": {
+        "name": "Photoelectron spectrum",
+        "desc": "One peak per sublevel, H to Xe"
+      },
+      "particles": {
+        "name": "Particle diagram",
+        "desc": "Atoms, ions and molecules in a box or a lattice"
       }
     }
   }

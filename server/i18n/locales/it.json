@@ -12362,6 +12362,34 @@
       "titration": {
         "name": "Curva di titolazione",
         "desc": "Curve di titolazione"
+      },
+      "massSpectrum": {
+        "name": "Spettro di massa",
+        "desc": "Picchi degli isotopi e massa atomica relativa"
+      },
+      "heatingCurve": {
+        "name": "Curva di riscaldamento e raffreddamento",
+        "desc": "La temperatura mentre si dà o si toglie calore, in scala"
+      },
+      "energyProfile": {
+        "name": "Diagramma dell'energia potenziale",
+        "desc": "Profili energetici di reazione con Ea e ΔH"
+      },
+      "nuclide": {
+        "name": "Notazione dei nuclidi",
+        "desc": "Simboli di isotopi, ioni e particelle"
+      },
+      "lineSpectrum": {
+        "name": "Spettro a righe",
+        "desc": "Righe di emissione e assorbimento degli elementi"
+      },
+      "photoelectron": {
+        "name": "Spettro fotoelettronico",
+        "desc": "Un picco per sottolivello, da H a Xe"
+      },
+      "particles": {
+        "name": "Modello particellare",
+        "desc": "Atomi, ioni e molecole in un riquadro o un reticolo"
       }
     }
   }

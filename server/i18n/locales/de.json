@@ -12362,6 +12362,34 @@
       "titration": {
         "name": "Titrationskurve",
         "desc": "Titrationskurven"
+      },
+      "massSpectrum": {
+        "name": "Massenspektrum",
+        "desc": "Isotopenpeaks und relative Atommasse"
+      },
+      "heatingCurve": {
+        "name": "Erwärmungs- und Abkühlungskurve",
+        "desc": "Die Temperatur beim Erwärmen oder Abkühlen, maßstabsgetreu"
+      },
+      "energyProfile": {
+        "name": "Energiediagramm einer Reaktion",
+        "desc": "Energieverläufe mit Ea und ΔH"
+      },
+      "nuclide": {
+        "name": "Nuklidschreibweise",
+        "desc": "Symbole für Isotope, Ionen und Teilchen"
+      },
+      "lineSpectrum": {
+        "name": "Linienspektrum",
+        "desc": "Emissions- und Absorptionslinien von Elementen"
+      },
+      "photoelectron": {
+        "name": "Photoelektronenspektrum",
+        "desc": "Ein Peak pro Unterschale, H bis Xe"
+      },
+      "particles": {
+        "name": "Teilchenmodell",
+        "desc": "Atome, Ionen und Moleküle in einem Kasten oder Gitter"
       }
     }
   }

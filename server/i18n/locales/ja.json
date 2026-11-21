@@ -12361,6 +12361,34 @@
       "titration": {
         "name": "滴定曲線",
         "desc": "滴定曲線"
+      },
+      "massSpectrum": {
+        "name": "質量スペクトル",
+        "desc": "同位体のピークと相対原子質量"
+      },
+      "heatingCurve": {
+        "name": "加熱・冷却曲線",
+        "desc": "熱の出入りによる温度の変化（縮尺どおり）"
+      },
+      "energyProfile": {
+        "name": "反応のエネルギー図",
+        "desc": "活性化エネルギーと ΔH を示す反応のエネルギー図"
+      },
+      "nuclide": {
+        "name": "核種の表記",
+        "desc": "同位体・イオン・粒子の記号"
+      },
+      "lineSpectrum": {
+        "name": "線スペクトル",
+        "desc": "元素の発光線と吸収線"
+      },
+      "photoelectron": {
+        "name": "光電子スペクトル",
+        "desc": "副殻ごとに1本のピーク（H から Xe）"
+      },
+      "particles": {
+        "name": "粒子のモデル図",
+        "desc": "箱や結晶格子の中の原子・イオン・分子"
       }
     }
   }

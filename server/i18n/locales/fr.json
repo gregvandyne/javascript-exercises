@@ -12361,6 +12361,34 @@
       "titration": {
         "name": "Courbe de titrage",
         "desc": "Courbes de titrage"
+      },
+      "massSpectrum": {
+        "name": "Spectre de masse",
+        "desc": "Pics des isotopes et masse atomique relative"
+      },
+      "heatingCurve": {
+        "name": "Courbe de chauffage et de refroidissement",
+        "desc": "La température quand on chauffe ou refroidit, à l'échelle"
+      },
+      "energyProfile": {
+        "name": "Diagramme d'énergie potentielle",
+        "desc": "Profils d'énergie de réaction avec Ea et ΔH"
+      },
+      "nuclide": {
+        "name": "Notation des nucléides",
+        "desc": "Symboles d'isotopes, d'ions et de particules"
+      },
+      "lineSpectrum": {
+        "name": "Spectre de raies",
+        "desc": "Raies d'émission et d'absorption des éléments"
+      },
+      "photoelectron": {
+        "name": "Spectre photoélectronique",
+        "desc": "Un pic par sous-couche, de H à Xe"
+      },
+      "particles": {
+        "name": "Modèle particulaire",
+        "desc": "Atomes, ions et molécules dans une boîte ou un réseau"
       }
     }
   }
