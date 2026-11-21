@@ -3489,6 +3489,92 @@
         "electrons": "Los electrones",
         "values": "Los valores",
         "reading": "La lectura"
+      },
+      "draw": {
+        "modeLabel": "Cómo hacer la figura",
+        "type": "Escribir las medidas",
+        "draw": "Dibujarla",
+        "title": "Dibújala en la cuadrícula de puntos",
+        "size": "Tamaño de la cuadrícula",
+        "sizeOpt": "{n} por {n}",
+        "clear": "Borrar",
+        "help": {
+          "triangle": "Toca tres puntos para hacer un triángulo. Arrastra un vértice para moverlo.",
+          "quad": "Toca cuatro puntos en orden alrededor de la figura. Arrastra un vértice para moverlo.",
+          "grid": "Toca los puntos en orden alrededor de la figura, hasta 10 vértices. Arrastra un vértice para moverlo."
+        },
+        "keys": "Con el teclado: las flechas mueven, Intro coloca un vértice o lo toma, y luego las flechas lo mueven.",
+        "board": "Cuadrícula de puntos, {n} por {n}",
+        "corner": "Vértice {name} en ({x}, {y})",
+        "placed": "{name} colocado en ({x}, {y})",
+        "moved": "{name} movido a ({x}, {y})",
+        "picked": "{name} tomado. Muévelo con las flechas y pulsa Intro para soltarlo.",
+        "removed": "{name} quitado",
+        "corners": "Vértices",
+        "sides": "Lados",
+        "angles": "Ángulos",
+        "kind": "Tipo",
+        "perimeter": "Perímetro",
+        "area": "Área",
+        "sqUnits": "{area} unidades cuadradas",
+        "more": "{count, plural, one {Toca # punto más.} other {Toca # puntos más.}}",
+        "filled": "Completado a partir de tu dibujo.",
+        "keep": "La figura de abajo conserva tu última forma válida.",
+        "same": "Dos vértices están en el mismo punto. Arrastra uno de ellos a otro punto.",
+        "line": "Tres vértices están en línea recta, así que no forman una figura. Mueve uno de ellos fuera de la línea.",
+        "cross": "Dos lados se cruzan. Mueve un vértice para que los lados solo se toquen en los vértices.",
+        "cannot": "Oomba Figures no puede dibujar esta. Prueba a mover un vértice.",
+        "isNot": "Esa figura es {is}, no {want}.",
+        "special": "Esa figura es {is}, y Oomba Figures la dibuja con su propio editor.",
+        "open": {
+          "rectangle": "Abrirla en el editor de Rectángulo",
+          "parallelogram": "Abrirla en el editor de Paralelogramo",
+          "trapezoid": "Abrirla en el editor de Trapecio",
+          "kite": "Abrirla en el editor de Deltoide",
+          "grid": "Ubicarla en una cuadrícula de coordenadas"
+        },
+        "a": {
+          "square": "un cuadrado",
+          "rectangle": "un rectángulo",
+          "rhombus": "un rombo",
+          "parallelogram": "un paralelogramo",
+          "trapezoid": "un trapecio",
+          "kite": "un deltoide",
+          "quad": "un cuadrilátero sin nombre especial",
+          "concave": "un cuadrilátero cóncavo"
+        },
+        "t": {
+          "square": "Cuadrado",
+          "rectangle": "Rectángulo",
+          "rhombus": "Rombo",
+          "parallelogram": "Paralelogramo",
+          "trapezoid": "Trapecio",
+          "isoTrapezoid": "Trapecio isósceles",
+          "rightTrapezoid": "Trapecio rectángulo",
+          "kite": "Deltoide",
+          "quad": "Cuadrilátero",
+          "concave": "Cuadrilátero cóncavo",
+          "polygon": "{count, plural, one {Polígono de # lado} other {Polígono de # lados}}"
+        },
+        "tri": {
+          "right": "Rectángulo",
+          "acute": "Acutángulo",
+          "obtuse": "Obtusángulo",
+          "scalene": "Escaleno",
+          "isosceles": "Isósceles",
+          "equilateral": "Equilátero"
+        },
+        "ex": {
+          "right": "Triángulo rectángulo",
+          "isosceles": "Triángulo isósceles",
+          "obtuse": "Triángulo obtusángulo",
+          "pentagon": "Pentágono"
+        },
+        "examples": "Dibujadas en la cuadrícula de puntos",
+        "gridOut": "Mostrarla también en una cuadrícula de coordenadas",
+        "gridTitle": "En una cuadrícula de coordenadas",
+        "addGrid": "Añadir la figura de la cuadrícula a una ficha",
+        "drawInstead": "Dibujarla en una cuadrícula"
       }
     },
     "figures-sheet": {

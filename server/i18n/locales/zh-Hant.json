@@ -3489,6 +3489,92 @@
         "electrons": "電子",
         "values": "數值",
         "reading": "讀數"
+      },
+      "draw": {
+        "modeLabel": "如何做出圖形",
+        "type": "輸入量值",
+        "draw": "畫出來",
+        "title": "在點格上畫出來",
+        "size": "點格大小",
+        "sizeOpt": "{n} × {n}",
+        "clear": "清除",
+        "help": {
+          "triangle": "點三個點就能畫出三角形。拖曳頂點可以移動它。",
+          "quad": "沿著圖形依序點四個點。拖曳頂點可以移動它。",
+          "grid": "沿著圖形依序點各個點，最多 10 個頂點。拖曳頂點可以移動它。"
+        },
+        "keys": "使用鍵盤：方向鍵移動，Enter 放下或拿起頂點，接著用方向鍵移動它。",
+        "board": "點格，{n} × {n}",
+        "corner": "頂點 {name} 在 ({x}, {y})",
+        "placed": "{name} 放在 ({x}, {y})",
+        "moved": "{name} 移到 ({x}, {y})",
+        "picked": "已拿起 {name}。用方向鍵移動它，按 Enter 放下。",
+        "removed": "已移除 {name}",
+        "corners": "頂點",
+        "sides": "邊",
+        "angles": "角",
+        "kind": "類型",
+        "perimeter": "周長",
+        "area": "面積",
+        "sqUnits": "{area} 平方單位",
+        "more": "{count, plural, other {再點 # 個點。}}",
+        "filled": "已依照你的圖填好。",
+        "keep": "下方的圖形會保留你上一個正確的形狀。",
+        "same": "有兩個頂點在同一個點上。把其中一個拖到別的點。",
+        "line": "有三個頂點在同一條直線上，所以不能成為圖形。把其中一個移離這條線。",
+        "cross": "有兩條邊互相交叉。移動一個頂點，讓邊只在頂點相接。",
+        "cannot": "Oomba Figures 無法畫出這個圖形。試著移動一個頂點。",
+        "isNot": "這個圖形是{is}，不是{want}。",
+        "special": "這個圖形是{is}，Oomba Figures 用專屬的編輯器來畫它。",
+        "open": {
+          "rectangle": "在長方形編輯器中開啟",
+          "parallelogram": "在平行四邊形編輯器中開啟",
+          "trapezoid": "在梯形編輯器中開啟",
+          "kite": "在鳶形編輯器中開啟",
+          "grid": "畫在坐標平面上"
+        },
+        "a": {
+          "square": "正方形",
+          "rectangle": "長方形",
+          "rhombus": "菱形",
+          "parallelogram": "平行四邊形",
+          "trapezoid": "梯形",
+          "kite": "鳶形",
+          "quad": "沒有特別名稱的四邊形",
+          "concave": "凹四邊形"
+        },
+        "t": {
+          "square": "正方形",
+          "rectangle": "長方形",
+          "rhombus": "菱形",
+          "parallelogram": "平行四邊形",
+          "trapezoid": "梯形",
+          "isoTrapezoid": "等腰梯形",
+          "rightTrapezoid": "直角梯形",
+          "kite": "鳶形",
+          "quad": "四邊形",
+          "concave": "凹四邊形",
+          "polygon": "{count, plural, other {# 邊形}}"
+        },
+        "tri": {
+          "right": "直角",
+          "acute": "銳角",
+          "obtuse": "鈍角",
+          "scalene": "不等邊",
+          "isosceles": "等腰",
+          "equilateral": "正三角形"
+        },
+        "ex": {
+          "right": "直角三角形",
+          "isosceles": "等腰三角形",
+          "obtuse": "鈍角三角形",
+          "pentagon": "五邊形"
+        },
+        "examples": "畫在點格上",
+        "gridOut": "也在坐標平面上顯示",
+        "gridTitle": "坐標平面",
+        "addGrid": "把坐標平面的圖加入學習單",
+        "drawInstead": "改在點格上畫"
       }
     },
     "figures-sheet": {

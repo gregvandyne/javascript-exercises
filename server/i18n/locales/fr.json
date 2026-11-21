@@ -3489,6 +3489,92 @@
         "electrons": "Les électrons",
         "values": "Les valeurs",
         "reading": "La lecture"
+      },
+      "draw": {
+        "modeLabel": "Comment faire la figure",
+        "type": "Saisir les mesures",
+        "draw": "La dessiner",
+        "title": "La dessiner sur la grille de points",
+        "size": "Taille de la grille",
+        "sizeOpt": "{n} sur {n}",
+        "clear": "Effacer",
+        "help": {
+          "triangle": "Touchez trois points pour faire un triangle. Faites glisser un sommet pour le déplacer.",
+          "quad": "Touchez quatre points dans l'ordre, en faisant le tour de la forme. Faites glisser un sommet pour le déplacer.",
+          "grid": "Touchez les points dans l'ordre, en faisant le tour de la forme, jusqu'à 10 sommets. Faites glisser un sommet pour le déplacer."
+        },
+        "keys": "Au clavier : les flèches déplacent, Entrée place un sommet ou le prend, puis les flèches le déplacent.",
+        "board": "Grille de points, {n} sur {n}",
+        "corner": "Sommet {name} en ({x}, {y})",
+        "placed": "{name} placé en ({x}, {y})",
+        "moved": "{name} déplacé en ({x}, {y})",
+        "picked": "{name} pris. Déplacez-le avec les flèches, puis appuyez sur Entrée pour le poser.",
+        "removed": "{name} supprimé",
+        "corners": "Sommets",
+        "sides": "Côtés",
+        "angles": "Angles",
+        "kind": "Type",
+        "perimeter": "Périmètre",
+        "area": "Aire",
+        "sqUnits": "{area} unités carrées",
+        "more": "{count, plural, one {Touchez encore # point.} other {Touchez encore # points.}}",
+        "filled": "Rempli à partir de votre dessin.",
+        "keep": "La figure ci-dessous garde votre dernière forme valable.",
+        "same": "Deux sommets sont sur le même point. Faites-en glisser un vers un autre point.",
+        "line": "Trois sommets sont alignés, ils ne font donc pas une forme. Déplacez-en un hors de la ligne.",
+        "cross": "Deux côtés se croisent. Déplacez un sommet pour que les côtés ne se touchent qu'aux sommets.",
+        "cannot": "Oomba Figures ne peut pas dessiner celle-ci. Essayez de déplacer un sommet.",
+        "isNot": "Cette forme est {is}, pas {want}.",
+        "special": "Cette forme est {is}, et Oomba Figures la dessine avec son propre éditeur.",
+        "open": {
+          "rectangle": "L'ouvrir dans l'éditeur Rectangle",
+          "parallelogram": "L'ouvrir dans l'éditeur Parallélogramme",
+          "trapezoid": "L'ouvrir dans l'éditeur Trapèze",
+          "kite": "L'ouvrir dans l'éditeur Cerf-volant",
+          "grid": "La placer dans un repère"
+        },
+        "a": {
+          "square": "un carré",
+          "rectangle": "un rectangle",
+          "rhombus": "un losange",
+          "parallelogram": "un parallélogramme",
+          "trapezoid": "un trapèze",
+          "kite": "un cerf-volant",
+          "quad": "un quadrilatère sans nom particulier",
+          "concave": "un quadrilatère concave"
+        },
+        "t": {
+          "square": "Carré",
+          "rectangle": "Rectangle",
+          "rhombus": "Losange",
+          "parallelogram": "Parallélogramme",
+          "trapezoid": "Trapèze",
+          "isoTrapezoid": "Trapèze isocèle",
+          "rightTrapezoid": "Trapèze rectangle",
+          "kite": "Cerf-volant",
+          "quad": "Quadrilatère",
+          "concave": "Quadrilatère concave",
+          "polygon": "{count, plural, one {Polygone à # côté} other {Polygone à # côtés}}"
+        },
+        "tri": {
+          "right": "Rectangle",
+          "acute": "Acutangle",
+          "obtuse": "Obtusangle",
+          "scalene": "Quelconque",
+          "isosceles": "Isocèle",
+          "equilateral": "Équilatéral"
+        },
+        "ex": {
+          "right": "Triangle rectangle",
+          "isosceles": "Triangle isocèle",
+          "obtuse": "Triangle obtusangle",
+          "pentagon": "Pentagone"
+        },
+        "examples": "Dessinés sur la grille de points",
+        "gridOut": "La montrer aussi dans un repère",
+        "gridTitle": "Dans un repère",
+        "addGrid": "Ajouter la figure du repère à une fiche",
+        "drawInstead": "La dessiner plutôt sur une grille"
       }
     },
     "figures-sheet": {
