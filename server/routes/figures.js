@@ -57,15 +57,15 @@ const crumbs = (t, list) => html`<nav class="fg-crumbs" aria-label="${t('figures
 // ---------------------------------------------------------------- the menu
 router.get('/figures', (req, res) => {
   const t = req.t, u = req.user, sheets = F.listWorksheets(u);
-  const card = K => html`<a class="fg-card" href="/figures/${K.id}" data-subject="${K.subject}" data-grades="${K.grades.join(' ')}" data-search="${`${kindName(t, K.id)} ${t(`figures.kinds.${K.id}.desc`)} ${K.id}`.toLowerCase()}">
+  const card = (K, s = K.subject) => html`<a class="fg-card" href="/figures/${K.id}" data-subject="${s}"${s !== K.subject ? html` data-also` : ''} data-grades="${K.grades.join(' ')}" data-search="${`${kindName(t, K.id)} ${t(`figures.kinds.${K.id}.desc`)} ${K.id}`.toLowerCase()}">
     <span class="fg-thumb"><img src="/figures/thumb/${K.id}.svg?v=${F.OF_VERSION}&amp;l=${req.locale || 'en'}" alt="" loading="lazy" decoding="async"></span>
     <span class="fg-card-t">${kindName(t, K.id)}</span>
     <span class="fg-card-g">${K.grades.map(g => t(`figures.grades.${g}`)).join(' · ')}</span>
     <span class="fg-card-d">${t(`figures.kinds.${K.id}.desc`)}</span></a>`;
   const sections = F.SUBJECTS.map(s => {
-    const list = F.KINDS.filter(K => K.subject === s);
+    const list = F.KINDS.filter(K => K.subject === s || (K.also || []).includes(s));
     return html`<section class="fg-sec" data-subject="${s}" aria-labelledby="fg-h-${s}"><h2 id="fg-h-${s}">${subjName(t, s)} <span class="fg-count" data-count>${t('figures.menu.count', { count: list.length })}</span></h2>
-      <div class="fg-grid">${list.map(card)}</div></section>`;
+      <div class="fg-grid">${list.map(K => card(K, s))}</div></section>`;
   });
   const tab = (s, label, soon = false) => (soon
     ? html`<span class="chip fg-soon" aria-disabled="true">${label} <span class="fg-soontag">${t('figures.menu.soon')}</span></span>`

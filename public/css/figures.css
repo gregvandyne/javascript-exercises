@@ -122,6 +122,8 @@
 .fg-dsize{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.92rem}
 .fg-dsize select{min-height:44px;width:auto}
 .fg-draw-body{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;margin-top:8px}
+/* Phones: the fixed tab bar sits over the page bottom, so the grid keeps clear of it (its lowest dots stay tappable). */
+@media (max-width:820px){.fg-draw{margin-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom) + 16px);scroll-margin-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom) + 16px)}}
 .fg-board-wrap{flex:1 1 300px;min-width:0;max-width:460px}
 .fg-board{width:100%}
 .fg-board-svg{display:block;width:100%;height:auto;border-radius:var(--r);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:crosshair;box-shadow:inset 0 0 0 1px var(--line)}
