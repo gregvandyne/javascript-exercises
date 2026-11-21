@@ -3644,6 +3644,191 @@
       "checkShort": "Check",
       "actionsFor": "Actions for {label}",
       "teacherLock": "Your teacher locked this."
+    },
+    "figures-editor": {
+      "undo": "Undo",
+      "redo": "Redo",
+      "presets": "Presets…",
+      "examples": "Examples",
+      "mine": "My presets",
+      "randomize": "Randomize",
+      "controls": "Figure settings",
+      "measures": "Measures",
+      "leaveEmpty": "Give the measures you know. Leave the rest empty.",
+      "options": "Options",
+      "show": "Show",
+      "default": "(default)",
+      "advanced": "Advanced (data)",
+      "advancedHelp": "The figure's whole data as JSON. Lists and groups are edited here.",
+      "jsonObject": "The data must be one { ... } object.",
+      "jsonBad": "That isn't valid JSON yet: {why}",
+      "display": "Display",
+      "print": "Print mode (black on white)",
+      "nts": "Mark \"Not drawn to scale\"",
+      "figure": "The figure",
+      "answers": "Question and answers",
+      "question": "Question",
+      "questionHint": "Write the question students answer about this figure.",
+      "worked": "Worked answers (OF.solve)",
+      "answerIs": "The answer is",
+      "pickAnswer": "Pick the answer…",
+      "noAnswers": "No worked answers for this figure",
+      "facts": "Everything about it",
+      "answersWait": "The answers appear as soon as the figure can be drawn. Oomba never draws a wrong figure.",
+      "pickHelp": "Pick which number answers your question, or press Randomize for a ready-made question.",
+      "noSolve": "This figure has no worked numbers. Write the answer into your question's key yourself.",
+      "hide": "Hide answer for students",
+      "hideWhat": "What to hide",
+      "hideAll": "Every measure",
+      "ofSays": "Oomba Figures says: {reason}",
+      "undoLast": "Undo my last change",
+      "backToExample": "Back to the example",
+      "add": "Add to worksheet",
+      "newSheet": "A new worksheet",
+      "qs": "{count, plural, one {# question} other {# questions}}",
+      "added": "Added to {title}.",
+      "openSheet": "Open the worksheet",
+      "saveBack": "Save to {title}",
+      "svg": "Download SVG",
+      "png": "Download PNG",
+      "copy": "Copy image",
+      "link": "Copy link",
+      "savePreset": "Save as my preset",
+      "presetName": "Name your preset",
+      "presetSaved": "Preset saved.",
+      "notice": "Downloads carry the note that what Oomba Academy adds is in the public domain (CC0); anything original you add is yours.",
+      "noGen": "No question generator for this figure yet: here is another example.",
+      "pngFailed": "The PNG couldn't be made. Try Download SVG.",
+      "copied": "Image copied.",
+      "copiedSvg": "Copied as SVG text.",
+      "copyFailed": "Couldn't copy. Try a download instead.",
+      "linkCopied": "Link copied.",
+      "why": {
+        "triangle": {
+          "t": "These sides cannot make a triangle",
+          "p": "Any two sides of a triangle must add up to more than the third, or the ends never meet."
+        },
+        "angles": {
+          "t": "These angles don't fit",
+          "p": "A triangle's angles add up to exactly 180°. Check the angles you gave."
+        },
+        "short": {
+          "t": "A side is too short",
+          "p": "With these numbers one side can never reach the other end. Make it longer or change an angle."
+        },
+        "agree": {
+          "t": "These measures disagree",
+          "p": "You gave more measures than the figure needs, and they don't agree. Leave one out."
+        },
+        "drawAs": {
+          "t": "Check \"Not drawn to scale\"",
+          "p": "Other proportions to draw only work with \"Not drawn to scale\" on, and the marks must be true in both."
+        },
+        "positive": {
+          "t": "A number must be more than zero",
+          "p": "Lengths, sizes and counts are more than zero."
+        },
+        "range": {
+          "t": "A number is out of range",
+          "p": "One of the numbers is too big or too small for this figure."
+        },
+        "extra": {
+          "t": "Too many measures",
+          "p": "This figure takes only some of these measures together. Leave one out."
+        },
+        "data": {
+          "t": "The data can't be read",
+          "p": "Check the Advanced (data) box."
+        },
+        "generic": {
+          "t": "This figure cannot be drawn",
+          "p": "Oomba never draws a wrong figure. Change the numbers so they fit together."
+        }
+      },
+      "f": {
+        "unit": "Unit",
+        "round": "Decimal places",
+        "mass": "Mass",
+        "angle": "Angle",
+        "speed": "Speed",
+        "height": "Height",
+        "width": "Width",
+        "length": "Length",
+        "radius": "Radius",
+        "value": "Value",
+        "min": "Lowest",
+        "max": "Highest",
+        "step": "Step",
+        "type": "Type",
+        "element": "Element"
+      },
+      "k": {
+        "area": "Area",
+        "perimeter": "Perimeter",
+        "volume": "Volume",
+        "surfaceArea": "Surface area",
+        "angles": "Angle",
+        "sides": "Side",
+        "total": "Total",
+        "mean": "Mean",
+        "median": "Median",
+        "range": "Range",
+        "interior": "Interior angle",
+        "value": "Value"
+      },
+      "hp": {
+        "sides": "The sides",
+        "angles": "The angles",
+        "heights": "The heights",
+        "value": "The value",
+        "image": "The image",
+        "electrons": "The electrons",
+        "values": "The values",
+        "reading": "The reading"
+      }
+    },
+    "figures-sheet": {
+      "title": "Worksheet title",
+      "grade": "Grade",
+      "anyGrade": "Any grade",
+      "gradeN": "Grade {grade}",
+      "powerAi": "Power with AI",
+      "briefLabel": "Topic, grade, how many questions",
+      "briefHint": "Grade 7, area of rectangles and trapezoids, plus one box plot.",
+      "howMany": "Questions",
+      "draft": "Draft",
+      "budget": "Uses the AI budget. If it is resting, you get a starter set instead.",
+      "drafting": "Drafting your questions…",
+      "briefFirst": "Describe the worksheet in a few words first.",
+      "drafted": "{count, plural, one {# question drafted.} other {# questions drafted.}} Every figure was checked and every answer worked out by Oomba Figures.",
+      "resting": "AI is resting, here is a starter set ({count, plural, one {# question} other {# questions}}).",
+      "repaired": "{count, plural, one {# figure couldn't be drawn and was replaced.} other {# figures couldn't be drawn and were replaced.}}",
+      "dropped": "{count, plural, one {# question was left out.} other {# questions were left out.}}",
+      "addLabel": "Add a figure question",
+      "add": "Add",
+      "empty": "No questions yet. Add a figure question, or draft some with AI.",
+      "questionN": "Question {n}",
+      "questionHint": "Write the question…",
+      "answer": "Answer:",
+      "noAnswer": "No answer chosen yet: open it in the editor.",
+      "up": "Move up",
+      "down": "Move down",
+      "regen": "New numbers",
+      "edit": "Edit the figure",
+      "delete": "Delete",
+      "deleteQ": "Delete this question?",
+      "remove": "Delete worksheet",
+      "removeQ": "Delete this worksheet?",
+      "removeText": "Its questions go too. This can't be undone.",
+      "preview": "Print preview",
+      "paper": "Letter, black on white",
+      "studentSheet": "Student sheet",
+      "answerKey": "Answer key",
+      "previewEmpty": "The printable sheet shows here once there is a question.",
+      "print": "Print",
+      "printKey": "Print with answer key",
+      "assign": "Assign to class",
+      "assignNext": "Coming next: assigning a worksheet to a class with open and due dates."
     }
   },
   "favorites": {
@@ -12624,6 +12809,290 @@
       "slow": "That's a lot of hands. Wait a moment and try again.",
       "checkSlow": "You've checked a lot. Wait a minute, look again, then check.",
       "noAnswers": "There are no answers to check on this board."
+    }
+  },
+  "figures": {
+    "title": "Figures",
+    "loading": "Loading the figures…",
+    "crumbs": "You are here",
+    "tools": {
+      "label": "Teaching tools",
+      "manipulatives": "Manipulatives",
+      "figures": "Figures"
+    },
+    "subjects": {
+      "math": "Math",
+      "data": "Data and statistics",
+      "physics": "Physics",
+      "chem": "Chemistry",
+      "biology": "Biology",
+      "economics": "Economics"
+    },
+    "grades": {
+      "K-2": "K-2",
+      "3-5": "Grades 3-5",
+      "6-8": "Grades 6-8",
+      "9-12": "Grades 9-12"
+    },
+    "menu": {
+      "testing": "Testing: only you can see this",
+      "pitch": "Exact, to-scale figures for worksheets, tests and slides. Print-ready, with the answers worked out.",
+      "buildTitle": "Build a worksheet",
+      "buildText": "Pick figures by hand, or describe what you need and let AI draft the questions. Every number is checked so each figure can really be drawn.",
+      "draftAi": "Draft with AI",
+      "scratch": "Start from scratch",
+      "mine": "My worksheets",
+      "noSheets": "No worksheets yet. The ones you build show up here.",
+      "questions": "{count, plural, one {# Q} other {# Qs}}",
+      "gradeOf": "Grade {grade}",
+      "edited": "edited {date}",
+      "subjects": "Subjects",
+      "all": "All figures",
+      "soon": "Coming soon",
+      "grades": "Grades",
+      "search": "Search the figures",
+      "searchHint": "Search the figures, like cylinder or box plot",
+      "count": "{count, plural, one {# figure} other {# figures}}",
+      "nothing": "No figures match. Try another word or grade."
+    },
+    "sheet": {
+      "newTitle": "New worksheet",
+      "crumb": "Worksheet builder",
+      "untitled": "Untitled worksheet"
+    },
+    "editor": {
+      "example": "Example {n}"
+    },
+    "print": {
+      "figure": "Figure for question {n}",
+      "keyTag": "Answer key",
+      "keyTitle": "{title}: answer key",
+      "name": "Name",
+      "date": "Date",
+      "made": "Made with Oomba Academy",
+      "noQuestion": "Look at the figure.",
+      "noAnswer": "No answer chosen yet",
+      "crumb": "Print",
+      "sheetOnly": "Student sheet",
+      "withKey": "With the answer key",
+      "print": "Print"
+    },
+    "errors": {
+      "notFound": "That isn't here.",
+      "badKind": "That isn't one of the figures.",
+      "badData": "That figure's data couldn't be read.",
+      "tooBig": "That figure is too big to save.",
+      "words": "Some words aren't allowed. Change them and try again.",
+      "personal": "Leave out phone numbers, emails, links and codes, then try again.",
+      "cannotDraw": "This figure cannot be drawn with these numbers. Change them and try again.",
+      "tooMany": "You have a lot saved already. Delete some first.",
+      "fullSheet": "This worksheet is full. Start a new one.",
+      "noGen": "This figure has no question generator yet.",
+      "name": "Give it a name first.",
+      "brief": "Describe the worksheet in a few words first.",
+      "names": "Leave students' names out of the description: names never go to the AI."
+    },
+    "kinds": {
+      "numberLine": {
+        "name": "Number line",
+        "desc": "Numbers, intervals and points on a line"
+      },
+      "triangle": {
+        "name": "Triangle",
+        "desc": "Any triangle from three measures"
+      },
+      "rectangle": {
+        "name": "Rectangle",
+        "desc": "Rectangles and squares"
+      },
+      "parallelogram": {
+        "name": "Parallelogram",
+        "desc": "Parallelograms and rhombi, with heights"
+      },
+      "trapezoid": {
+        "name": "Trapezoid",
+        "desc": "Trapezoids: any, isosceles or right"
+      },
+      "kite": {
+        "name": "Kite",
+        "desc": "Kites with their equal sides marked"
+      },
+      "regularPolygon": {
+        "name": "Regular polygon",
+        "desc": "Regular polygons with apothem and radius"
+      },
+      "angles": {
+        "name": "Angles",
+        "desc": "Angles between rays"
+      },
+      "parallelLines": {
+        "name": "Parallel lines and a transversal",
+        "desc": "Parallel lines cut by a transversal"
+      },
+      "segmentAddition": {
+        "name": "Segment addition",
+        "desc": "Segment addition with algebra"
+      },
+      "circle": {
+        "name": "Circle",
+        "desc": "Circles with chords, tangents and angles"
+      },
+      "compositeShape": {
+        "name": "Composite shape",
+        "desc": "Shapes made of simpler shapes"
+      },
+      "grid": {
+        "name": "Coordinate grid",
+        "desc": "Points, lines and transformations on a grid"
+      },
+      "protractor": {
+        "name": "Protractor",
+        "desc": "Read an angle on a protractor"
+      },
+      "prism": {
+        "name": "Prism",
+        "desc": "Prisms and cubes in 3D"
+      },
+      "cylinder": {
+        "name": "Cylinder",
+        "desc": "Cylinders in 3D"
+      },
+      "pyramid": {
+        "name": "Pyramid",
+        "desc": "Pyramids in 3D"
+      },
+      "cone": {
+        "name": "Cone",
+        "desc": "Cones in 3D"
+      },
+      "sphere": {
+        "name": "Sphere",
+        "desc": "Spheres and hemispheres"
+      },
+      "net": {
+        "name": "Net",
+        "desc": "Nets that fold into solids"
+      },
+      "mappingDiagram": {
+        "name": "Mapping diagram",
+        "desc": "Inputs mapped to outputs"
+      },
+      "barGraph": {
+        "name": "Bar graph",
+        "desc": "Bar graphs, double and stacked"
+      },
+      "dotPlot": {
+        "name": "Dot plot",
+        "desc": "Dot plots of a data set"
+      },
+      "histogram": {
+        "name": "Histogram",
+        "desc": "Histograms with equal or unequal classes"
+      },
+      "boxPlot": {
+        "name": "Box plot",
+        "desc": "Box plots with quartiles"
+      },
+      "scatterPlot": {
+        "name": "Scatter plot",
+        "desc": "Scatter plots with a line of best fit"
+      },
+      "stemAndLeaf": {
+        "name": "Stem-and-leaf plot",
+        "desc": "Stem-and-leaf plots"
+      },
+      "pieChart": {
+        "name": "Pie chart",
+        "desc": "Pie charts with angles and percents"
+      },
+      "cumulativeFrequency": {
+        "name": "Cumulative frequency",
+        "desc": "Cumulative frequency graphs"
+      },
+      "normalCurve": {
+        "name": "Normal curve",
+        "desc": "Normal curves with shaded regions"
+      },
+      "treeDiagram": {
+        "name": "Tree diagram",
+        "desc": "Probability tree diagrams"
+      },
+      "vennDiagram": {
+        "name": "Venn diagram",
+        "desc": "Venn diagrams with two or three sets"
+      },
+      "twoWayTable": {
+        "name": "Two-way table",
+        "desc": "Two-way tables with totals"
+      },
+      "tableOfValues": {
+        "name": "Table of values",
+        "desc": "Tables of values from a rule"
+      },
+      "freeBody": {
+        "name": "Free-body diagram",
+        "desc": "The forces on an object"
+      },
+      "vectors": {
+        "name": "Vectors",
+        "desc": "Vectors and their resultant"
+      },
+      "inclinedPlane": {
+        "name": "Inclined plane",
+        "desc": "A block on a slope, with its forces"
+      },
+      "pulley": {
+        "name": "Pulleys",
+        "desc": "Pulleys and hanging masses"
+      },
+      "rays": {
+        "name": "Ray diagram",
+        "desc": "Ray diagrams for lenses and mirrors"
+      },
+      "circuit": {
+        "name": "Circuit diagram",
+        "desc": "Circuits in series and parallel"
+      },
+      "motionGraph": {
+        "name": "Motion graph",
+        "desc": "Distance, velocity and acceleration graphs"
+      },
+      "motionMap": {
+        "name": "Motion map",
+        "desc": "Motion maps with dots and arrows"
+      },
+      "projectile": {
+        "name": "Projectile motion",
+        "desc": "A projectile's path, to scale"
+      },
+      "waves": {
+        "name": "Waves",
+        "desc": "Transverse and longitudinal waves"
+      },
+      "reading": {
+        "name": "Reading a scale",
+        "desc": "Thermometers, cylinders, rulers and calipers"
+      },
+      "bohr": {
+        "name": "Bohr model",
+        "desc": "Bohr models of atoms and ions"
+      },
+      "orbitals": {
+        "name": "Orbital diagram",
+        "desc": "Orbital box diagrams"
+      },
+      "lewis": {
+        "name": "Lewis structure",
+        "desc": "Lewis structures of molecules"
+      },
+      "halfLife": {
+        "name": "Half-life",
+        "desc": "Radioactive decay curves"
+      },
+      "titration": {
+        "name": "Titration curve",
+        "desc": "Titration curves"
+      }
     }
   }
 }
