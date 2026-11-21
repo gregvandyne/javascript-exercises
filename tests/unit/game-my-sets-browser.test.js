@@ -49,7 +49,7 @@ const HOST = 'http://game.invalid';
 const cwItems = (t, words) => G.cleanCrossItems([{ t, w: words, r: 4, b: true, h: true }]);
 async function openCrossword({ sets = [], mySets = true, width = 1280 } = {}) {
   const b = await launch();
-  const ctx = await b.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 1 });
+  const ctx = await b.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: SHOTS ? 2 : 1 });
   const doc = frameDocument(CW_HTML, { user: { displayName: 'T', avatar: 'x', lang: 'en', dir: 'ltr' }, game: { id: 'g', title: 'Crossword', url: `${HOST}/play/crossword` }, save: {}, canSave: true, tts: { langs: [] },
     canAssign: true, print: true, ...(mySets ? { mySets: true } : {}) });
   const page = `<!doctype html><meta charset=utf-8><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>
@@ -93,10 +93,27 @@ test('Crossword: My worksheets lists the saved puzzles; open one, save it again 
     await g.until(() => window.__brbTest.cwState().sheets === 2);
     assert.equal(await g.frame.locator('.cw-sheet').count(), 2);
     const first = await g.frame.textContent(`[data-set="${A}"]`);
-    assert.match(first, /Habitats/); assert.match(first, /Words: 4/); assert.match(first, /HABIT AT234/);
+    assert.match(first, /Habitats/); assert.match(first, /Words: 4 · Nov\s20/); assert.match(first, /HABIT AT234/);
+    // a quiet row: only Print and More beside it, and the row itself opens it
+    assert.deepEqual(await g.frame.$$eval(`[data-set="${A}"] button:not([data-ws-open])`, l => l.map(b => b.getAttribute('aria-label'))), ['Print', 'More']);
+    assert.equal(await g.frame.getAttribute(`[data-set="${A}"] [data-ws-more]`, 'aria-haspopup'), 'menu');
     if (SHOTS) await g.p.screenshot({ path: path.join(SHOTS, 'crossword-my-worksheets.png') });
-    // Open: the builder with its words, and saving keeps the same code
-    await g.frame.click(`[data-ws-open="${A}"]`);
+    // More: a menu, in order; Escape closes it and the focus goes back to More; arrow keys move
+    await g.frame.click(`[data-ws-more="${B}"]`);
+    assert.deepEqual(await g.frame.$$eval('[role="menu"] [role="menuitem"]', l => l.map(b => b.textContent.trim())), ['🔑Print with answer key', '📋Copy link', '📑Duplicate', '🏷️Rename', '🗑️Delete']);
+    assert.equal(await g.frame.evaluate(() => document.activeElement.dataset.wsKey), B, 'the first item has the focus');
+    await g.p.keyboard.press('ArrowDown'); assert.equal(await g.frame.evaluate(() => document.activeElement.dataset.wsCopy), B);
+    await g.p.keyboard.press('ArrowUp'); await g.p.keyboard.press('ArrowUp'); assert.equal(await g.frame.evaluate(() => document.activeElement.dataset.wsDel), B, 'it wraps around');
+    if (SHOTS) await g.p.screenshot({ path: path.join(SHOTS, 'crossword-my-worksheets-menu.png') });
+    await g.p.keyboard.press('Escape');
+    assert.equal(await g.frame.locator('[role="menu"]').count(), 0);
+    assert.equal(await g.frame.evaluate(() => document.activeElement.dataset.wsMore), B, 'focus back on More');
+    assert.equal(await g.frame.getAttribute(`[data-ws-more="${B}"]`, 'aria-expanded'), 'false');
+    // a click outside closes it too
+    await g.frame.click(`[data-ws-more="${B}"]`); await g.frame.click('.cw-sub');
+    assert.equal(await g.frame.locator('[role="menu"]').count(), 0);
+    // Open: a click on the row (its meta line), the builder with its words, and saving keeps the same code
+    await g.frame.click(`[data-set="${A}"] .cw-wsmeta`);
     await g.until(() => window.__brbTest.cwState().screen === 'build');
     assert.equal(await g.frame.inputValue('#cw-title'), 'Habitats');
     assert.equal((await g.frame.evaluate(() => window.__brbTest.cwState())).draftSet, A);
@@ -116,30 +133,33 @@ test('Crossword: My worksheets lists the saved puzzles; open one, save it again 
     await g.frame.click(`[data-ws-print="${B}"]`);
     let pr = (await g.msgs('brb:print')).at(-1).doc;
     assert.equal(pr.set, B); assert.equal(pr.key, false); assert.equal(pr.w.length, 3); assert.equal(pr.t, 'Planets');
-    await g.frame.click(`[data-ws-key="${B}"]`);
+    await g.frame.click(`[data-ws-more="${B}"]`); await g.frame.click(`[data-ws-key="${B}"]`);
     pr = (await g.msgs('brb:print')).at(-1).doc; assert.equal(pr.key, true);
     // Copy link
-    await g.frame.click(`[data-ws-copy="${B}"]`);
+    await g.frame.click(`[data-ws-more="${B}"]`); await g.frame.click(`[data-ws-copy="${B}"]`);
+    assert.equal(await g.frame.locator('[role="menu"]').count(), 0, 'a choice closes the menu');
+    assert.equal(await g.frame.evaluate(() => document.activeElement.dataset.wsMore), B, 'and the focus is back on More');
     assert.equal((await g.msgs('brb:copy')).at(-1).text, `${HOST}/play/crossword?chapter=${B}&lock=1`);
     // Rename: a refused name says so; a good one shows
-    await g.frame.click(`[data-ws-rename="${B}"]`);
+    await g.frame.click(`[data-ws-more="${B}"]`); await g.frame.click(`[data-ws-rename="${B}"]`);
     await g.frame.fill(`#cw-rename-${B}`, 'you bitch');
     await g.frame.click('#cw-rename-ok');
     await g.until(id => /isn't allowed/.test(document.querySelector(`[data-set="${id}"] .cw-wsmsg`).textContent), B);
     await g.frame.fill(`#cw-rename-${B}`, 'Space words');
     await g.frame.click('#cw-rename-ok');
-    await g.until(id => /Space words/.test((document.querySelector(`[data-set="${id}"] .cw-name b`) || {}).textContent || ''), B);
+    await g.until(id => /Space words/.test((document.querySelector(`[data-set="${id}"] .cw-wstitle`) || {}).textContent || ''), B);
     assert.deepEqual((await g.msgs('brb:sets')).filter(m => m.op === 'rename').at(-1), { brb: 1, type: 'brb:sets', id: (await g.msgs('brb:sets')).filter(m => m.op === 'rename').at(-1).id, op: 'rename', set: B, title: 'Space words' });
     // Duplicate: a copy at the top
-    await g.frame.click(`[data-ws-dup="${A}"]`);
+    await g.frame.click(`[data-ws-more="${A}"]`); await g.frame.click(`[data-ws-dup="${A}"]`);
     await g.until(() => window.__brbTest.cwState().sheets === 3);
     assert.match(await g.frame.textContent('.cw-sheet:first-child'), /Copy of Habitats/);
     // Delete asks first; Keep keeps it, Delete deletes it
-    await g.frame.click(`[data-ws-del="${A}"]`);
+    await g.frame.click(`[data-ws-more="${A}"]`); await g.frame.click(`[data-ws-del="${A}"]`);
     assert.match(await g.frame.textContent('.cw-wsconfirm'), /Delete “Habitats”\? Its class code and link stop working/);
     await g.frame.click('#cw-ws-delno');
     assert.equal(await g.frame.locator('.cw-wsconfirm').count(), 0);
-    await g.frame.click(`[data-ws-del="${A}"]`); await g.frame.click('#cw-ws-delyes');
+    assert.equal(await g.frame.evaluate(() => document.activeElement.dataset.wsMore), A, 'Keep it: back on More');
+    await g.frame.click(`[data-ws-more="${A}"]`); await g.frame.click(`[data-ws-del="${A}"]`); await g.frame.click('#cw-ws-delyes');
     await g.until(() => window.__brbTest.cwState().sheets === 2);
     assert.equal(await g.frame.locator(`[data-set="${A}"]`).count(), 0);
     assert.ok(!(await g.store()).some(s => s.id === A), 'gone from the server');
@@ -147,7 +167,7 @@ test('Crossword: My worksheets lists the saved puzzles; open one, save it again 
     // the puzzle's copy in Your crosswords went with it
     assert.equal((await g.frame.evaluate(() => window.__brbTest.cwState())).mine, 0);
     // all gone: the empty list points to making one
-    for (const id of (await g.store()).map(s => s.id)) { await g.frame.click(`[data-ws-del="${id}"]`); await g.frame.click('#cw-ws-delyes'); await g.until(i => !document.querySelector(`[data-set="${i}"]`), id); }
+    for (const id of (await g.store()).map(s => s.id)) { await g.frame.click(`[data-ws-more="${id}"]`); await g.frame.click(`[data-ws-del="${id}"]`); await g.frame.click('#cw-ws-delyes'); await g.until(i => !document.querySelector(`[data-set="${i}"]`), id); }
     await g.until(() => document.querySelector('#cw-ws-empty'));
     assert.match(await g.frame.textContent('#cw-ws-empty'), /Nothing here yet/);
     await g.frame.click('#cw-ws-make');
@@ -157,14 +177,22 @@ test('Crossword: My worksheets lists the saved puzzles; open one, save it again 
 });
 
 test('Crossword: My worksheets on a phone, with no sideways scroll', { skip, timeout: 120_000 }, async () => {
-  const g = await openCrossword({ width: 390, sets: [row('crossword', 's-habitat234', cwItems('A rather long unit name for habitats and homes', [['habitat', 'where an animal lives'], ['predator', 'it hunts'], ['prey', 'it is hunted']]), 'A rather long unit name for habitats and homes')] });
+  const g = await openCrossword({ width: 375, sets: [row('crossword', 's-habitat234', cwItems('A rather long unit name for habitats and homes', [['habitat', 'where an animal lives'], ['predator', 'it hunts'], ['prey', 'it is hunted']]), 'A rather long unit name for habitats and homes')] });
   try {
     await g.until(() => window.__brbTest.cwState().screen === 'home');
     await g.frame.click('#cw-ws');
     await g.until(() => window.__brbTest.cwState().sheets === 1);
-    await g.frame.click('[data-ws-del="s-habitat234"]');
+    for (const sel of ['[data-ws-print="s-habitat234"]', '[data-ws-more="s-habitat234"]']) {
+      const r = await g.frame.locator(sel).boundingBox(); assert.ok(r.width >= 44 && r.height >= 44, sel + ' is a 44px target');
+    }
+    assert.equal(await g.frame.locator('[data-ws-open="s-habitat234"]').count(), 1);
     assert.ok(await g.frame.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1 && [...document.querySelectorAll('.cw-card')].every(c => c.scrollWidth <= c.clientWidth + 1)));
     if (SHOTS) await g.p.screenshot({ path: path.join(SHOTS, 'crossword-my-worksheets-phone.png') });
+    await g.frame.click('[data-ws-more="s-habitat234"]');
+    assert.ok(await g.frame.evaluate(() => { const r = document.querySelector('[role="menu"]').getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }), 'the menu stays on the screen');
+    if (SHOTS) await g.p.screenshot({ path: path.join(SHOTS, 'crossword-my-worksheets-phone-menu.png') });
+    await g.frame.click('[data-ws-del="s-habitat234"]');
+    assert.ok(await g.frame.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1 && [...document.querySelectorAll('.cw-card')].every(c => c.scrollWidth <= c.clientWidth + 1)));
   } finally { await g.ctx.close(); }
 });
 
@@ -179,10 +207,10 @@ test('Crossword: a student (no BRB.canListSets) never sees My worksheets', { ski
 
 // ---------------------------------------------------------------- The Big Divide and Algebra Builder (BRB stubbed)
 /** A built Svelte game with BRB stubbed as a teacher's frame: the sets in a store (STORE_JS), save, print, copy. */
-async function openBuilt(file, slug, { sets = [], mySets = true, saved = {} } = {}) {
+async function openBuilt(file, slug, { sets = [], mySets = true, saved = {}, width = 1280 } = {}) {
   const b = await launch();
   const html = fs.readFileSync(path.join(ROOT, 'seed-games', file), 'utf8');
-  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
+  const ctx = await b.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: SHOTS ? 2 : 1, reducedMotion: 'reduce' });
   const page = await ctx.newPage();
   const errors = []; page.on('pageerror', e => errors.push(e.message));
   await page.route('**/*', r => {
@@ -227,19 +255,37 @@ test('The Big Divide: My worksheets lists the saved activities; open one in the 
     await page.locator('[data-set]').first().waitFor();
     assert.equal(await page.locator('[data-set]').count(), 2);
     const a = await page.locator(`[data-set="${A}"]`).textContent();
-    assert.match(a, /Week 3 division/); assert.match(a, /Long division · 3 problems · Guided/); assert.match(a, /DIVIS ION23/);
+    assert.match(a, /Week 3 division/); assert.match(a, /3 problems · Long division · Nov\s20/); assert.match(a, /DIVIS ION23/);
     assert.match(await page.locator(`[data-set="${B}"] .title`).textContent(), /Multiplication/, 'no name: the kind');
+    assert.match(await page.locator(`[data-set="${B}"]`).textContent(), /2 problems · Multiplication \(Area model\) · Nov\s19/);
+    // a quiet row: only Print and More beside it
+    assert.deepEqual(await page.locator(`[data-set="${A}"] button:not([data-ws-open])`).evaluateAll(l => l.map(b => b.getAttribute('aria-label'))), ['Print worksheet: Week 3 division', 'More for Week 3 division']);
+    assert.equal(await page.locator(`[data-ws-more="${A}"]`).getAttribute('aria-haspopup'), 'menu');
     if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'big-divide-my-worksheets.png') });
+    // More: the menu in order, arrow keys move, Escape closes it with the focus back on More, a click outside too
+    await page.locator(`[data-ws-more="${A}"]`).click();
+    assert.deepEqual(await page.locator('[role="menu"] [role="menuitem"]').allTextContents().then(l => l.map(x => x.trim())), ['Print with answer key', 'Copy link', 'Duplicate', 'Rename', 'Delete']);
+    assert.equal(await page.evaluate(() => document.activeElement.dataset.wsKey), A);
+    await page.keyboard.press('ArrowUp'); assert.equal(await page.evaluate(() => document.activeElement.dataset.wsDel), A);
+    await page.keyboard.press('ArrowDown'); await page.keyboard.press('ArrowDown'); assert.equal(await page.evaluate(() => document.activeElement.dataset.wsCopy), A);
+    if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'big-divide-my-worksheets-menu.png') });
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('[role="menu"]').count(), 0);
+    assert.equal(await page.evaluate(() => document.activeElement.dataset.wsMore), A);
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator('.lede').click();
+    assert.equal(await page.locator('[role="menu"]').count(), 0);
     // Print and the answer key: the activity's own problems, with its code
     await page.locator(`[data-ws-print="${A}"]`).click();
     let pr = (await g.log('print')).at(-1).doc;
     assert.deepEqual([pr.k, pr.p, pr.key, pr.set], ['divide', [[84, 4], [96, 3], [125, 5]], false, A]);
-    await page.locator(`[data-ws-key="${B}"]`).click();
+    await page.locator(`[data-ws-more="${B}"]`).click(); await page.locator(`[data-ws-key="${B}"]`).click();
     pr = (await g.log('print')).at(-1).doc; assert.equal(pr.key, true); assert.equal(pr.m, 'area');
-    await page.locator(`[data-ws-copy="${A}"]`).click();
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-copy="${A}"]`).click();
     assert.equal((await g.log('copy')).at(-1).what, `http://game.test/play/box-by-box?chapter=${A}&lock=1`);
+    assert.equal(await page.locator('[role="menu"]').count(), 0, 'a choice closes the menu');
+    assert.equal(await page.evaluate(() => document.activeElement.dataset.wsMore), A, 'and the focus is back on More');
     // Rename: refused, then fine
-    await page.locator(`[data-ws-rename="${B}"]`).click();
+    await page.locator(`[data-ws-more="${B}"]`).click(); await page.locator(`[data-ws-rename="${B}"]`).click();
     await page.locator(`#bb-rename-${B}`).fill('you bitch');
     await page.locator('#bb-rename-ok').click();
     await page.locator(`[data-set="${B}"] .problem`).waitFor();
@@ -248,11 +294,11 @@ test('The Big Divide: My worksheets lists the saved activities; open one in the 
     await page.locator('#bb-rename-ok').click();
     await page.locator(`[data-set="${B}"] .title`, { hasText: 'Area model practice' }).waitFor();
     // Duplicate: a copy on top
-    await page.locator(`[data-ws-dup="${A}"]`).click();
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-dup="${A}"]`).click();
     await page.waitForFunction(() => document.querySelectorAll('[data-set]').length === 3);
     assert.match(await page.locator('[data-set]').first().textContent(), /Copy of Week 3 division/);
-    // Open: the editor, with its problems and name; Save keeps the same code and sends the name
-    await page.locator(`[data-ws-open="${A}"]`).click();
+    // Open: a click on the row (its meta line), the editor, with its problems and name; Save keeps the same code and sends the name
+    await page.locator(`[data-set="${A}"] .meta`).click();
     await page.locator('input.title').waitFor();
     assert.equal(await page.locator('input.title').inputValue(), 'Week 3 division');
     await page.locator('input.title').fill('Week 3 long division');
@@ -268,18 +314,39 @@ test('The Big Divide: My worksheets lists the saved activities; open one in the 
     await page.locator('#bb-ws').click();
     await page.locator(`[data-set="${A}"]`).waitFor();
     // Delete asks first; Keep keeps it; Delete deletes it (and its activity in the list)
-    await page.locator(`[data-ws-del="${A}"]`).click();
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-del="${A}"]`).click();
     assert.match(await page.locator('.ask').textContent(), /Delete “Week 3 division”\? Its class code and link stop working/);
     await page.locator('#bb-ws-delno').click();
     assert.equal(await page.locator('.ask').count(), 0);
-    await page.locator(`[data-ws-del="${A}"]`).click(); await page.locator('#bb-ws-delyes').click();
+    assert.equal(await page.evaluate(() => document.activeElement.dataset.wsMore), A, 'Keep: back on More');
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-del="${A}"]`).click(); await page.locator('#bb-ws-delyes').click();
     await page.waitForFunction(id => !document.querySelector(`[data-set="${id}"]`), A);
     assert.ok(!(await g.store()).some(s => s.id === A));
     const acts = await page.evaluate(() => window.__kept['box-by-box-activities-v1'] || []);
     assert.ok(!acts.some(x => x.setId === A), 'its activity went with it');
-    for (const id of (await g.store()).map(s => s.id)) { await page.locator(`[data-ws-del="${id}"]`).click(); await page.locator('#bb-ws-delyes').click(); await page.waitForFunction(i => !document.querySelector(`[data-set="${i}"]`), id); }
+    for (const id of (await g.store()).map(s => s.id)) { await page.locator(`[data-ws-more="${id}"]`).click(); await page.locator(`[data-ws-del="${id}"]`).click(); await page.locator('#bb-ws-delyes').click(); await page.waitForFunction(i => !document.querySelector(`[data-set="${i}"]`), id); }
     await page.locator('#bb-ws-empty').waitFor();
     assert.match(await page.locator('#bb-ws-empty').textContent(), /Nothing here yet/);
+    assert.deepEqual(g.errors, []);
+  } finally { await g.ctx.close(); }
+});
+
+test('The Big Divide: My worksheets on a phone, with no sideways scroll', { skip, timeout: 120_000 }, async () => {
+  const A = 's-division23';
+  const g = await openBuilt('box-by-box.html', 'box-by-box', { width: 375, sets: [row('box-by-box', A, [{ k: 'divide', p: [[84, 4], [96, 3], [125, 5]], l: 'guided' }], 'A rather long name for the week 3 division practice')] });
+  const { page } = g;
+  try {
+    await page.getByRole('button', { name: /I’m a teacher/ }).click();
+    await page.locator('#bb-ws').click();
+    await page.locator(`[data-set="${A}"]`).waitFor();
+    for (const sel of [`[data-ws-print="${A}"]`, `[data-ws-more="${A}"]`]) {
+      const r = await page.locator(sel).boundingBox(); assert.ok(r.width >= 44 && r.height >= 44, sel + ' is a 44px target');
+    }
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+    if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'big-divide-my-worksheets-phone.png') });
+    await page.locator(`[data-ws-more="${A}"]`).click();
+    assert.ok(await page.evaluate(() => { const r = document.querySelector('[role="menu"]').getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }), 'the menu stays on the screen');
+    if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'big-divide-my-worksheets-phone-menu.png') });
     assert.deepEqual(g.errors, []);
   } finally { await g.ctx.close(); }
 });
@@ -310,18 +377,19 @@ test('Algebra Builder: My question sets lists the saved sets; open one and save 
     assert.equal(await page.locator('[data-set]').count(), 2);
     assert.match(await page.locator(`[data-set="${A}"]`).textContent(), /Unit 2 warm-up[\s\S]*2 questions · Solve, Factor/);
     assert.match(await page.locator(`[data-set="${B}"] .title`).textContent(), /1 question/);
+    assert.deepEqual(await page.locator(`[data-set="${A}"] button:not([data-ws-open])`).evaluateAll(l => l.map(b => b.getAttribute('aria-label'))), ['More for Unit 2 warm-up']);
     if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'algebra-builder-my-question-sets.png') });
-    await page.locator(`[data-ws-copy="${A}"]`).click();
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-copy="${A}"]`).click();
     assert.equal((await g.log('copy')).at(-1).what, `http://game.test/play/algebra-builder?chapter=${A}&lock=1`);
-    await page.locator(`[data-ws-rename="${B}"]`).click();
+    await page.locator(`[data-ws-more="${B}"]`).click(); await page.locator(`[data-ws-rename="${B}"]`).click();
     await page.locator(`#ab-rename-${B}`).fill('Multiplying binomials');
     await page.locator('#ab-rename-ok').click();
     await page.locator(`[data-set="${B}"] .title`, { hasText: 'Multiplying binomials' }).waitFor();
-    await page.locator(`[data-ws-dup="${A}"]`).click();
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-dup="${A}"]`).click();
     await page.waitForFunction(() => document.querySelectorAll('[data-set]').length === 3);
     assert.match(await page.locator('[data-set]').first().textContent(), /Copy of Unit 2 warm-up/);
     // Open: the question set page with its questions; a change saves under the same code
-    await page.locator(`[data-ws-open="${A}"]`).click();
+    await page.locator(`[data-set="${A}"] .meta`).click();
     await page.getByRole('heading', { name: 'Question set' }).waitFor();
     assert.equal(await page.locator('.item').count(), 2);
     await page.getByRole('button', { name: 'Remove question 2' }).click();
@@ -330,12 +398,12 @@ test('Algebra Builder: My question sets lists the saved sets; open one and save 
     const sv = (await g.log('save')).at(-1);
     assert.equal(sv.id, A); assert.equal(sv.items.length, 1);
     await page.getByRole('button', { name: '← Back' }).click();
-    await page.locator(`[data-ws-del="${A}"]`).click();
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-del="${A}"]`).click();
     assert.match(await page.locator('.ask').textContent(), /Delete “Unit 2 warm-up”\?/);
     await page.locator('#ab-my-delno').click();
-    await page.locator(`[data-ws-del="${A}"]`).click(); await page.locator('#ab-my-delyes').click();
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-del="${A}"]`).click(); await page.locator('#ab-my-delyes').click();
     await page.waitForFunction(id => !document.querySelector(`[data-set="${id}"]`), A);
-    for (const id of (await g.store()).map(s => s.id)) { await page.locator(`[data-ws-del="${id}"]`).click(); await page.locator('#ab-my-delyes').click(); await page.waitForFunction(i => !document.querySelector(`[data-set="${i}"]`), id); }
+    for (const id of (await g.store()).map(s => s.id)) { await page.locator(`[data-ws-more="${id}"]`).click(); await page.locator(`[data-ws-del="${id}"]`).click(); await page.locator('#ab-my-delyes').click(); await page.waitForFunction(i => !document.querySelector(`[data-set="${i}"]`), id); }
     await page.locator('#ab-my-empty').waitFor();
     assert.deepEqual(g.errors, []);
   } finally { await g.ctx.close(); }
