@@ -8,6 +8,7 @@
 import crypto from 'node:crypto';
 import { q, now } from '../db.js';
 import { cleanText } from './textfilter.js';
+import { canvasVersion, canvasKit, figureProblems } from './canvaskit.js';
 
 export const MAX_ITEMS = 20;
 /** How many sets one account may keep in one game. */
@@ -190,6 +191,52 @@ export function cleanCrossItems(raw) {
   return [{ t, w: words, r, b: it.b === true, h: it.h !== false }];
 }
 
+// ---------------------------------------------------------------- Oomba Canvas: a classroom activity's worksheet
+// A Builder-made classroom activity (Oomba Canvas 1.4.0 or later, whatever it is for; routes/games.js canvasSetVersion)
+// keeps a teacher's worksheets: the questions that were on screen, under a class code, so a link opens
+// exactly those questions for every student and prints them. [problem, ...], 1 to 20 (the play page's limit for a set), each a problem of the kit's own
+// tools as the activity's OWN pinned kit file cleans it (cleanProblem: its allow-list of fields, so nothing the kit does
+// not read is kept), every piece of text in it (a figure question, its choices and worked lines, a unit, a sort's group
+// names) through the site's text filter as Crossword's words are, and the whole set must pass the kit's self-test for
+// that activity (every problem solvable by its worked answer, never right when empty, its figures drawable by the
+// pinned Oomba Figures). Problems only: nothing about who played, nothing a student typed.
+export const CANVAS_SET = { min: 1, max: 20, chars: 20000, text: 300, kit: '1.4.0' };
+export const CANVAS_KIND = 'canvas';
+const verGe = (v, w) => { const a = String(v).split('.').map(Number), b = w.split('.').map(Number); return (a[0] - b[0] || a[1] - b[1] || a[2] - b[2]) >= 0; };
+/** Is this version an activity on a kit that has worksheets (1.4.0 or later)? */
+export const canvasSetKit = html => { const v = canvasVersion(html); return v && verGe(v, CANVAS_SET.kit) ? v : null; };
+/** Every string in a problem through the text filter (the tool's name left as it is) -> the problem, or null. */
+function filterText(x, key) {
+  if (typeof x === 'string') {
+    if (key === 'tool') return x;
+    if (x.length > CANVAS_SET.text) return null;
+    const c = cleanText(x, CANVAS_SET.text);
+    return c.ok ? c.value : null;
+  }
+  if (Array.isArray(x)) { const out = []; for (const y of x) { const v = filterText(y, ''); if (v === null) return null; out.push(v); } return out; }
+  if (x && typeof x === 'object') { const out = {}; for (const [k, y] of Object.entries(x)) { const v = filterText(y, k); if (v === null) return null; out[k] = v; } return out; }
+  return x;
+}
+/** A classroom activity's worksheet, for this activity's page (html: its published version) -> the clean problems, or
+ *  null when it isn't one. */
+export function cleanCanvasItems(raw, html) {
+  const v = canvasSetKit(html);
+  if (!v || !Array.isArray(raw) || raw.length < CANVAS_SET.min || raw.length > CANVAS_SET.max) return null;
+  let size; try { size = JSON.stringify(raw).length; } catch { return null; }
+  if (size > CANVAS_SET.chars) return null;
+  const kit = canvasKit(v), out = [];
+  for (const it of raw) {
+    const c = kit.logic.cleanProblem(it); if (!c.p) return null;
+    const f = filterText(c.p, '');
+    const again = f && kit.logic.cleanProblem(f);
+    if (!again || !again.p) return null;
+    out.push(again.p);
+  }
+  const act = { problems: out };
+  if (!kit.selfTest(act).ok || figureProblems(v, act, html).length) return null;
+  return JSON.parse(JSON.stringify(out));
+}
+
 /** Official games that may keep question sets (slug -> the cleaner of their sets). */
 export const SET_GAMES = new Map([['algebra-builder', cleanItems], ['box-by-box', cleanBoxItems], ['crossword', cleanCrossItems]]);
 
@@ -227,10 +274,11 @@ export function cleanTitle(raw) {
 
 /** Save a set: a new one, or (id given) the owner's own one changed. slug: the game's (its cleaner; Algebra Builder's by
  *  default). opts.title: the set's name (left out: kept as it is; one the text filter refuses is left out the same
- *  way, so the set still saves). Crossword's name is always its puzzle's title (items[0].t).
+ *  way, so the set still saves). Crossword's name is always its puzzle's title (items[0].t). A classroom activity's
+ *  worksheet (slug CANVAS_KIND) is cleaned for its activity's page, opts.html.
  *  -> { id } | { error: 'bad'|'notYours'|'full' } */
 export function save(gameId, ownerId, rawItems, id = null, slug = 'algebra-builder', opts = {}) {
-  const clean = SET_GAMES.get(slug);
+  const clean = slug === CANVAS_KIND ? raw => cleanCanvasItems(raw, opts.html) : SET_GAMES.get(slug);
   const items = clean ? clean(rawItems) : null;
   if (!items) return { error: 'bad' };
   const t = now();
@@ -264,7 +312,7 @@ export function sizeOf(slug, items) {
   const a = items[0] || {};
   if (slug === 'crossword') return Array.isArray(a.w) ? a.w.length : 0;
   if (slug === 'box-by-box') return a.d ? (a.p.length || (a.k === 'divide' ? 16 : 12)) : a.p.length;
-  return items.length;
+  return items.length;   // Algebra Builder's questions, a classroom activity's problems
 }
 function view(r, slug) {
   let items; try { items = JSON.parse(r.items); } catch { return null; }
@@ -341,6 +389,7 @@ export function labelOf(slug, items) {
     const n = sizeOf(slug, items);
     return `${BB_KIND[a.k]}, ${n} problem${n === 1 ? '' : 's'}${a.d ? ' (different for each student)' : ''}, ${a.dec ? 'decimals, ' : ''}${BB_FORM[a.r] ? `${BB_FORM[a.r]}, ` : ''}${BB_METHOD[a.m] ? `${BB_METHOD[a.m]}, ` : ''}${BB_LEVEL[a.l]}`;
   }
+  if (slug === CANVAS_KIND) return `${items.length} question${items.length === 1 ? '' : 's'}`;
   const kinds = [...new Set(items.map(i => ACT_NAME[i.a]).filter(Boolean))].join(', ');
   return `${items.length} question${items.length === 1 ? '' : 's'}${kinds ? `: ${kinds}` : ''}`;
 }

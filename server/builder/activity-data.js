@@ -3,13 +3,13 @@
 //   panelOf(html)                    what the panel shows for a version: { data, kit } or null (not an activity)
 //   cleanPanel(base, body)           the panel's data (config, problems, gen) on top of the version's own -> { data } | { code, at?, why? }
 //   newTexts(base, data)             every piece of text in data that the version did not have (to screen)
-//   applyPanel(html, data)           the page with only its oc-activity block rewritten, on Oomba Canvas 1.3.0
+//   applyPanel(html, data)           the page with only its oc-activity block rewritten, on Oomba Canvas 1.4.0
 //   noteFor(changes, t)              the version's label: "Activity panel: problem 3 moved up, 6 in a set"
 // Only the oc-activity JSON changes; task, steps and hints stay as the Builder wrote them. Problems are cleaned by the
-// kit's own frozen 1.3.0 file (cleanProblem: its allow-list of fields), so nothing but data the kit reads is ever saved.
+// kit's own frozen 1.4.0 file (cleanProblem: its allow-list of fields), so nothing but data the kit reads is ever saved.
 import { activityData, withActivityData, canvasVersion, canvasKit, canvasTag, CANVAS_PATH } from '../services/canvaskit.js';
 
-export const PANEL_KIT = '1.3.0';
+export const PANEL_KIT = '1.4.0';
 const SUPPORTS = ['watch', 'count', 'guided', 'own'];
 const PURPOSES = ['screen', 'worksheet', 'generator'];
 const MAX_PROBLEMS = 30, MAX_COUNT = 12, MAX_JSON = 60000, MAX_TEXT = 200;
@@ -107,7 +107,7 @@ export function newTexts(base, data) {
 /** Text only: no markup in what a teacher types. */
 export const hasMarkup = list => list.some(s => /[<>]/.test(s));
 
-/** The page with its data block set to data, and its kit tag moved to 1.3.0 (an activity saved from the panel, only). */
+/** The page with its data block set to data, and its kit tag moved to 1.4.0 (an activity saved from the panel, only). */
 export function applyPanel(html, data) {
   let out = withActivityData(html, data);
   if (canvasVersion(out) !== PANEL_KIT) {
