@@ -12498,6 +12498,42 @@
       "dotCross": {
         "name": "Diagrama de pontos e cruzes",
         "desc": "Elétrons compartilhados e transferidos nas camadas"
+      },
+      "populationGrowth": {
+        "name": "Crescimento populacional",
+        "desc": "Curvas J e S, K e as fases de crescimento"
+      },
+      "predatorPrey": {
+        "name": "Predador e presa",
+        "desc": "Ciclos populacionais, os predadores um passo atrás"
+      },
+      "enzymeActivity": {
+        "name": "Atividade enzimática",
+        "desc": "Velocidade conforme a temperatura, o pH ou o substrato"
+      },
+      "photosynthesis": {
+        "name": "Taxa de fotossíntese",
+        "desc": "Luz, CO₂ e temperatura como fatores limitantes"
+      },
+      "punnett": {
+        "name": "Quadro de Punnett",
+        "desc": "Cruzamentos com as proporções calculadas"
+      },
+      "pedigree": {
+        "name": "Heredograma",
+        "desc": "Famílias que seguem um padrão de herança"
+      },
+      "proteinSynthesis": {
+        "name": "Síntese de proteínas",
+        "desc": "Do DNA ao mRNA e aos aminoácidos, com lacunas"
+      },
+      "gel": {
+        "name": "Eletroforese em gel",
+        "desc": "Bandas em escala ao lado de um marcador de DNA"
+      },
+      "osmosis": {
+        "name": "Osmose",
+        "desc": "Células, tubos em U e sacos em soluções"
       }
     },
     "step": {

@@ -35,18 +35,15 @@ test('1.0.0 and 1.1.0 are frozen: every file is what the lock says and what git 
   for (const [k, h] of Object.entries(shipped)) assert.deepEqual(L.FIG_LOCK.files[k], h, `${k}: its lock entry is unchanged`);
 });
 
-test('new builds pin 1.2.0: the latest version, the Builder\'s tags, the Figures product and the server\'s copy', () => {
-  assert.equal(version(), '1.2.0'); assert.equal(L.FIG_LATEST['oomba-figures'], '1.2.0'); assert.equal(OF.version, '1.2.0');
-  assert.match(L.figTags(), /\/vendor\/oomba-figures\/1\.2\.0\/oomba-figures\.js/);
-  assert.doesNotMatch(L.figTags(), /\/1\.1\.0\//);
-  assert.equal(F.OF_VERSION, '1.2.0');
-  assert.equal(L.figuresKit().version, '1.2.0');
+test('1.2.0 shipped and is frozen like 1.1.0: pages pinned to it keep their own files (new builds pin 1.3.0: figures-v130.test.js)', () => {
+  assert.notEqual(version(), '1.2.0'); assert.equal(L.FIG_LATEST['oomba-figures'], version());
   assert.deepEqual(Object.keys(L.FIG_PACKS['1.2.0']), ['math', 'data', 'physics', 'chem', 'measure']);
   // a page pinned to an older version is still admitted and still runs its own files
-  for (const v of ['1.0.0', '1.1.0']) {
+  for (const v of ['1.0.0', '1.1.0', '1.2.0']) {
     const t = L.figTag('oomba-figures', v), r = L.checkFigures(`<title>x</title>${t}<script>OF.draw('bohr', { element: 'Na' })</script>`);
     assert.deepEqual(r.issues, [], v); assert.equal(L.figuresKit(v).version, v);
   }
+  assert.equal(F.OF_VERSION, version());
   // canvas-print keeps its fixed 1.1.0 number line
   assert.equal(fs.readFileSync(path.join(ROOT, 'server/services/canvas-print.js'), 'utf8').match(/LINE_FIGURES = '([\d.]+)'/)[1], '1.1.0');
 });

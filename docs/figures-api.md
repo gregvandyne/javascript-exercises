@@ -1,4 +1,4 @@
-# Oomba Figures API (1.2.0)
+# Oomba Figures API (1.3.0)
 
 Oomba Figures draws the figures science, maths and graph worksheets need, as accessible SVG, from plain data: free-body
 diagrams, vectors, inclined planes, pulleys, ray diagrams, circuits, motion graphs, a coordinate grid, half-life and
@@ -17,7 +17,9 @@ micrometer and spring scale extras); and chemistry (since 1.2.0: mass spectra, h
 energy diagrams, nuclide notation, line spectra, photoelectron spectra, particle diagrams and dot-and-cross diagrams, the lab readings (burets,
 beakers, gas syringes, digital and triple beam balances, digital thermometers, pH meters and pH paper, volume by
 displacement), orbital diagrams for all 118 elements, Bohr ion marks, several half-life curves on one graph, titration
-curves from measured pH, and more Lewis molecules). Skeletal structures come from SMILES through SmilesDrawer, and interactive boards from
+curves from measured pH, and more Lewis molecules); and biology (since 1.3.0: population growth and predator-prey graphs,
+enzyme activity and photosynthesis rate graphs, Punnett squares, pedigrees, protein synthesis, gel electrophoresis and
+osmosis, and the micropipette reading). Skeletal structures come from SMILES through SmilesDrawer, and interactive boards from
 JSXGraph. Classroom activities (Oomba Canvas 1.2.0, `docs/canvas-api.md`) and arcade games can both use it.
 
 - Source: `figures/src/` (`svg.js` the drawing core and colours, `physics.js`, `graphs.js`, `chem.js`, `readings.js`,
@@ -38,15 +40,18 @@ JSXGraph. Classroom activities (Oomba Canvas 1.2.0, `docs/canvas-api.md`) and ar
   spectra (`ported/isotopes.js`, `ported/spectra.js`), `energy.js` heating curves and potential energy diagrams
   (`ported/heating.js`, `ported/profile.js`), `atoms.js` nuclide notation and dot-and-cross diagrams, `particles.js` particle diagrams
   (`ported/particles.js`), `labware.js` the lab readings (`ported/labware.js`) and `ported/elements.js` the 118 elements
-  and their configurations; `core.js` the global and the registry, `packs/*.js` each
+  and their configurations; since 1.3.0 `ecology.js` population growth and predator-prey (`ported/growth.js`,
+  `ported/lotka.js`), `rates.js` enzyme activity and photosynthesis (`ported/rates.js`), `genetics.js` Punnett squares and
+  pedigrees (`ported/punnett.js`, `ported/pedigree.js`), `molecular.js` protein synthesis and gels (`ported/dna.js`,
+  `ported/gel.js`), `osmosis.js` osmosis (`ported/osmosis.js`) and `pipette.js` the micropipette (`ported/pipette.js`); `core.js` the global and the registry, `packs/*.js` each
   pack's registration, `index.js` everything at once for the tests), plus `canvas/src/expr.js` (the small safe formula language it shares with Oomba Canvas). `scripts/build-figures.js` bundles it into
   `public/vendor/oomba-figures/<version>/oomba-figures.js` (with its LICENSE and `manifest.json`) and writes
   `figures/SHIPPED.json`, the lock for it and for the vendored libraries (1.0.0 and 1.1.0 stay byte for byte; 1.1.0 adds the
-  number line, the shapes and the notice, 1.2.0 the chemistry kinds and lab readings, and its LICENSE file carries the Apache License 2.0 after ours; 1.1.0 is minified
+  number line, the shapes and the notice, 1.2.0 the chemistry kinds and lab readings, 1.3.0 the biology pack and the micropipette, and its LICENSE file carries the Apache License 2.0 after ours; 1.1.0 is minified
   by esbuild, its legal comments kept: the header and each ported file's Apache 2.0 note) (`scripts/vendor-figures.js` copies JSXGraph
   and SmilesDrawer from npm; licences in `docs/third-party.md`).
 - Split by subject (since 1.1.0, "The core and its packs" below): `oomba-figures.js` is the core, and `packs/math.js`,
-  `packs/data.js`, `packs/physics.js`, `packs/chem.js` and `packs/measure.js` in the same version folder each add their
+  `packs/data.js`, `packs/physics.js`, `packs/chem.js`, `packs/bio.js` (1.3.0) and `packs/measure.js` in the same version folder each add their
   kinds; each file has its own pinned tag.
 - Platform: `server/services/figlibs.js` (the pinned tags, the scanner's `checkFigures`, the server's copy of the frozen
   file for printed worksheets and the activity self-test), `server/builder/figures.js` (when the FIGURE RULES are sent),
@@ -95,7 +100,12 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
   lineSpectrum { strips: [{ element: "H" }, { element: "Na" }, { name: "Unknown", mix: [0, 1] }] } (elements H, He, Li, Na, K, Ca, Sr, Ba, Cu, Zn, Cd, Hg, Ne, Ar, Kr, or { name, lines: [nm] }; style: "absorption"; from, to in nm; print is black lines on white; hide: "names")    photoelectron { element: "Na", compare: "Mg" } (H to Xe; one peak per sublevel as tall as its electrons at its binding energy; unit "MJ/mol" or "eV", scale "log" or "linear", energies: true; hide: "sublevels", "element")
   dotCross { molecule: "H2O" } (a molecule from the Lewis list without a charge: shells overlap where atoms bond, each atom's electrons its own mark) or { ions: [{ element: "Mg", count: 1 }, { element: "Cl", count: 2 }] } (a metal and a non-metal, charges balanced); OF.solve gives sharedPairs, lonePairs or the ions, transferred; hide: true (empty shells)
   particles { particles: [{ count: 8, shape: "bent", look: { size: "m", shade: "gray" }, outer: { size: "s", shade: "white" }, name: "Water" }], state: "gas" } (shapes single, pair, bent, line, triangle, cross; sizes xs to xl; shades white, light, gray, dark, black; charge "+", "-", "2+"...; state gas, liquid, solid; boxes: 2 with each kind's after count: atoms are conserved; or lattice: { pattern: "alternate", rows: 4, columns: 5, main, second }; every particle must fit; hide: "names")
+  A micropipette is a reading type too (1.3.0): { type: "micropipette", model: "P20", value: 12.5 } (models P2, P10, P20, P100, P200, P1000; a volume the model can be set to; hide: "value").
   The chemistry readings are reading types (the measure pack): { type: "buret", value: 24.65, initial: 1.20, max: 50 } (reads down, to 0.05 mL; OF.solve gives the titre), { type: "beaker", value: 175, max: 250, step: 25 }, { type: "syringe", value: 43.5, max: 100, setup: true }, { type: "balance", value: 24.73, decimals: 2 }, { type: "tripleBeam", value: 347.65 } (to 0.05 g), { type: "thermometer", digital: true, value: 23.4, unit: "°C" | "K" | "°F" }, { type: "pH", meter: "digital" | "analog" | "paper", value: 4.62 } (analog to 0.1, paper whole numbers), { type: "displacement", before: 42, after: 50, max: 100, step: 1, major: 10, object: "rock" | "marbles" } (OF.solve gives the volume). Also bohr { element: "Na", charge: 1, ionMarks: true }, orbitals { element: "Ag", core: true, arrangement: "energy" } (H to Og), halfLife { isotopes: [{ halfLife: 5, name: "A" }, { halfLife: 12, name: "B" }] }, titration { points: [[0, 2.9], [5, 4.1], ...] } (measured pH), and more Lewis molecules: H2S, PH3, PCl3, NF3, OF2, SiH4, CF4, CH3Cl, H2O2, C2H6, HOCl, CO, CN, H3O, HCHO.
+  Biology (1.3.0, the bio pack): populationGrowth { model: "logistic", n0: 20, r: 0.4, k: 500, span: 30, unit: "years", inflection: true } (model logistic, exponential, both, overshoot (lag), crash (k is the peak); graph "size" | "rate" | "perCapita", against: "size" for a rate against N; census: { every, noise, seed }; phases: true; OF.solve gives k, maxRate (rK/4), doubling, inflection, final; hide: "k")    predatorPrey { pair: "hare-lynx", names: ["Hares", "Lynx"] } (or prey: { average, start }, predators: { average, start }, period, span; scale: "two" for two axes; OF.solve gives period, lag, each one's high and low; hide: "predators")
+  enzymeActivity { graph: "temperature", curves: [{ enzyme: "human" }, { enzyme: "taq" }], axes: "numbered", marks: true } (enzymes human, taq, pepsin, amylase, trypsin, catalase, or { name, opt, width }; graph "pH"; graph "substrate" with curves [{ km: 2, inhibitor: "competitive" }]; OF.solve gives optimum, denatured, vmax, km)    photosynthesis { graph: "light", curves: [{ co2: 0.1, temp: 25 }, { co2: 0.04, temp: 25 }] } (each curve gives the two factors not on the axis: light, co2 (%), temp; graph "co2" or "temperature"; lightAxis: "distance"; net: true; OF.solve gives plateau, saturation, compensation, optimum)
+  punnett { parents: [["T", "t"], ["T", "t"]], names: { T: "tall", t: "short" } } (alleles: T, t; C^R, C^W with dominance "incomplete"; I^A, I^B, i with "codominance"; R, r, Y, y for a dihybrid; cross: "x-linked" with X^H, X^h, Y; or letters: ["T"] with parents [[1], [0]]; the ratios are worked out; OF.solve gives genotypes, phenotypes, percents, recessivePercent; hide: "cells", "gametes", "ratios")    pedigree { mode: "ar", seed: 7, generations: 3 } (a random family that fits the mode; or family: "m-F3fcMm-f2mfd", one line: sex m f u, upper case affected, c carrier, d deceased, p proband, then - and the partner and how many children; a family given with a mode must fit it; carriers, numbers, genotypes: true; OF.solve gives fits, tells, modeNumber, genotypes; hide: "genotypes", "affected")
+  proteinSynthesis { coding: "ATGGCCTTTAAAGGGTAA", rows: ["template", "mrna", "trna", "amino"] } (or template (3' to 5') or mrna; up to 36 bases; frame "aug" | "first"; codons: n; blanks: { mrna: 50 } with seed; hide: a row)    gel { lanes: [{ ladder: "1kb" }, { label: "Suspect 1", bands: [5200, 3100, 900] }], gel: "1" } (ladders 1kb, 100bp, lambda; gel 0.8, 1, 1.5, 2 %; every band at its distance for its size; values, ruler, look: "glow"; OF.solve gives each band's cm and each sample lane's total; hide: "sizes", "labels")    osmosis { scene: "blood", solutes: [{ name: "salt", inside: 0.9, outside: 3 }], view: "both" } (scenes blood, plant, beaker, utube, bag; cross: true for a solute that passes the membrane; the tonicity, the water's movement and the result are worked out; OF.solve gives tonicity, water, outcome; hide: "tonicity", "arrows", "result")
   numberLine { from: -5, to: 5, step: 1, every: 1, intervals: [{ from: -3, to: 4, fromClosed: false }], points: [{ at: [3, 4], label: "P" }], sequence: { expr: "1/n", from: 1, to: 5 } } (a value is a number, a fraction [n, d] or { pi: k }; leave out an interval's from or to to run off that end; ends are closed unless fromClosed or toClosed is false; every: a number at every nth tick; numbering: "decimal" | "fraction" | "pi" | "degree"; hide: true for a numbered line to graph on, "graph", "points", "values"). A line for the student to tap or jump on is the Oomba Canvas tool (numberline.point, numberline.jump), not a figure.
   triangle { AB: 3, BC: 4, B: 90, labels: { CA: "x" } } (any three of the angles A, B, C and the sides AB, BC, CA that make a triangle; more must agree; other: true for the second triangle of the ambiguous case)
   rectangle { AB: 12, BC: 5, unit: "cm" } (a square: { AB: 6, square: true })    parallelogram { AB: 12, DA: 10, A: 30, heights: ["D"], labels: { hD: true } } (a rhombus: { AB: 6, A: 70, rhombus: true })
@@ -192,6 +202,15 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
 | `lineSpectrum` (1.2.0) | `strips: [{ element } \| { name, lines } \| { name, mix }]`, `style`, `from`, `to`, `strength`, `heading` | `names`, `true` |
 | `photoelectron` (1.2.0) | `element`, `compare`, `unit`, `scale`, `sublevels`, `energies`, `heading` | `sublevels`, `element`, `true` |
 | `dotCross` (1.2.0) | `molecule` (or `atoms` + `bonds`, no charge), or `ions: [{ element, count }]` (a metal and a non-metal) | `true` |
+| `populationGrowth` (1.3.0) | `model`, `n0`, `r`, `k`, `lag`, `span`, `unit`, `graph`, `against`, `census`, `kLine`, `inflection`, `phases`, `names`, `heading` | `k`, `curve`, `true` |
+| `predatorPrey` (1.3.0) | `pair`, or `prey` + `predators` (`average`, `start`) + `period`; `span`, `unit`, `scale`, `names`, `peaks`, `heading` | `predators`, `true` |
+| `enzymeActivity` (1.3.0) | `graph` (`temperature`, `pH`, `substrate`), `curves` (`enzyme`, or `opt` + `width`; or `km`, `inhibitor`, `strength`), `axes`, `unit`, `marks`, `x` | `marks`, `curves`, `true` |
+| `photosynthesis` (1.3.0) | `graph` (`light`, `co2`, `temperature`), `curves` (`light`, `co2`, `temp`, `name`), `lightAxis`, `net`, `axes`, `marks`, `x` | `marks`, `curves`, `true` |
+| `punnett` (1.3.0) | `parents` (allele tokens) or `letters` + `parents` (counts); `cross`, `dominance`, `names`, `show`, `form`, `heading` | `cells`, `gametes`, `ratios`, `true` |
+| `pedigree` (1.3.0) | `family` (one line) or `seed` + `generations` + `size`; `mode`, `carriers`, `numbers`, `numerals`, `genotypes`, `letter` | `genotypes`, `affected`, `true` |
+| `proteinSynthesis` (1.3.0) | `coding`, `template` or `mrna`; `rows`, `frame`, `codons`, `names`, `blanks`, `seed` | a row's name, `true` |
+| `gel` (1.3.0) | `lanes: [{ ladder } \| { label, bands }]`, `gel`, `look`, `sizes`, `values`, `ruler`, `electrodes`, `numbers` | `sizes`, `labels`, `values`, `true` |
+| `osmosis` (1.3.0) | `scene`, `solutes: [{ name, inside, outside, cross }]`, `unit`, `view`, `particles`, `arrows`, `labels`, `burst`, `seed` | `tonicity`, `arrows`, `result`, `true` |
 | `particles` (1.2.0) | `particles: [{ count, shape, look, outer, name, after }]`, `state`, `seed`, `boxes`, `afterState`, `arrow`; or `lattice`; `border`, `heading` | `names`, `true` |
 
 `opts.print` draws black on white with grey fills (the printed worksheet). Colours otherwise are the site's: green,
@@ -636,7 +655,8 @@ core, so it loads after it:
 | `packs/data.js` | the data displays and the probability figures and tables | They share the statistics (`ported/stats.js`) and the chart helpers |
 | `packs/physics.js` | `freeBody`, `vectors`, `inclinedPlane`, `pulley`, `rays`, `circuit`, `motionGraph`, `motionMap`, `projectile`, `waves` | Mechanics, optics, electricity and waves: the motion graphs and maps share one motion model |
 | `packs/chem.js` | `bohr`, `orbitals`, `lewis`, `halfLife`, `titration` | The element table and the chemistry curves |
-| `packs/measure.js` | `reading` (thermometer, cylinder, spring scale, ruler, caliper, micrometer) and `protractor` | Reading an instrument is one skill across math, physics, chemistry and biology: a math teacher with a ruler does not load physics |
+| `packs/bio.js` (1.3.0) | `populationGrowth`, `predatorPrey`, `enzymeActivity`, `photosynthesis`, `punnett`, `pedigree`, `proteinSynthesis`, `gel`, `osmosis` | Ecology, rates, genetics and molecular biology: the rate graphs share one enzyme temperature curve |
+| `packs/measure.js` | `reading` (thermometer, cylinder, spring scale, ruler, caliper, micrometer; 1.2.0 the lab readings; 1.3.0 the micropipette) and `protractor` | Reading an instrument is one skill across math, physics, chemistry and biology: a math teacher with a ruler does not load physics |
 
 Each file has its own pinned tag (its own SRI hash, `crossorigin="anonymous"`); `figTag("oomba-figures")` in
 `server/services/figlibs.js` writes the core tag followed by every pack's, `figTag("oomba-figures", v, { kinds })`
@@ -816,6 +836,65 @@ transitions. Builder trigger words for these figures are in every site language 
 {"tool": "figure.number", "vars": {"h": [0, 5], "t": [0, 9], "f": [0, 199]}, "q": "What mass does the triple beam balance show, in g?", "fig": {"kind": "reading", "type": "tripleBeam", "value": "{=100*h + 10*t + f/20}", "hide": "value"}, "answer": "100*h + 10*t + f/20", "dp": 2, "unit": "g", "work": ["Add the three riders.", "{=100*h} + {=10*t} + {=f/20}", "= {=100*h + 10*t + f/20} g"]}
 {"tool": "figure.number", "vars": {"a": [10, 130]}, "q": "What pH does the meter show?", "fig": {"kind": "reading", "type": "pH", "meter": "analog", "value": "{=a/10}", "hide": "value"}, "answer": "a/10", "dp": 1, "work": ["The small marks are 0.2 apart.", "The needle points to {=a/10}."]}
 {"tool": "figure.number", "vars": {"b": [20, 60], "r": [4, 20]}, "q": "A rock is lowered into the water. What is its volume, in mL?", "fig": {"kind": "reading", "type": "displacement", "before": "{b}", "after": "{=b + r}", "max": 100, "step": 1, "major": 10, "hide": "value"}, "answer": "r", "dp": 0, "unit": "mL", "work": ["Before: {b} mL. After: {=b + r} mL.", "The rock pushed the water up {=b + r} − {b} = {r} mL.", "Its volume is {r} mL."]}
+```
+
+## Biology (1.3.0)
+
+The biology sites' ten live generators, ported where Oomba had none (a new `bio` pack) and the micropipette added to the
+kind Oomba had (a type of `reading`, in the measure pack). Oomba Figures 1.3.0 is a new version folder (the core and its
+six packs); 1.0.0, 1.1.0 and 1.2.0 have shipped and stay byte for byte, and every figure 1.2.0 drew draws the same bytes
+in 1.3.0 (`tests/unit/figures-v130.test.js`). New builds and the Figures product get 1.3.0. Each figure is drawn from its
+numbers and refuses data it cannot draw truthfully:
+
+- `populationGrowth`: every point from N0, r and K (dN/dt = rN, rN(K - N)/K; overshoot with a lag; boom and crash),
+  as the size, the growth rate or the per capita rate over time or against N; the inflection point at K/2 (fastest
+  growth rK/4) and the phases where the steepest tangent meets N0 and K, refused for a curve that starts above K/2; a
+  census of seeded counts; an exponential curve that would pass 10¹² is refused.
+- `predatorPrey`: the Lotka-Volterra cycles from each population's average (the balance point), its start and the
+  cycle's length, worked out numerically so every cycle closes; the predators' peaks follow the prey's. Starting at the
+  balance point is refused (nothing cycles).
+- `enzymeActivity`: rate against temperature (doubling every width degrees, then denaturing past the optimum), pH (a
+  bell either side) or substrate (Michaelis-Menten, a competitive inhibitor raising Km, a non-competitive one lowering
+  Vmax). Shape-only axes or numbered ones.
+- `photosynthesis`: rate against light (or the lamp's distance, 1/d²), CO₂ or temperature, each curve at its own values
+  of the other two, so the limiting factor shows; the plateau, where it levels off and the compensation point come from
+  the same model; `net` subtracts respiration.
+- `punnett`: gametes and cells from the parents' alleles (monohybrid, dihybrid, X-linked; complete, incomplete,
+  codominance); the genotype and phenotype ratios are computed from the cells, daughters and sons apart on an X-linked
+  cross. Alleles are tokens (`"C^R"`), not typed text.
+- `pedigree`: standard symbols (squares, circles, filled affected, a dot for a carrier, a slash, the proband's arrow); a
+  random family for a mode is built by passing real genotypes down, and only a family a student could diagnose is kept;
+  a family given with a mode must be consistent with it (genotype elimination proves it, or names who fits no genotype);
+  the genotypes written under each person are what the family proves.
+- `proteinSynthesis`: the template, coding, mRNA, tRNA and amino acid rows from one strand by base pairing and the
+  standard code; codons grouped from the start codon; whole rows or a seeded share of boxes left blank. Every base is
+  its letter: the tints on screen are extra, and print is letters on white.
+- `gel`: each band as far as its size runs (linear in log10 of the size inside the gel's range, crowding past it),
+  against a ladder (NEB 1 kb and 100 bp, lambda HindIII) and a centimeter ruler; bands too close to read as two run
+  together, and OF.solve says which.
+- `osmosis`: a red blood cell, a plant cell, a split beaker, a U-tube or a dialysis bag; tonicity, the water's
+  movement and the result are worked out from the solutes that cannot cross; the dots are to scale (dots per area as the
+  concentration), each solute its own shape; a level rises and a bag swells as far as the sides differ.
+- `reading` with `type: "micropipette"`: the wheels show exactly the digits of the volume on that model (P2 to P1000), the
+  line marks the decimal point; on screen the decimal wheels are red, in print they are gray with the line kept. A volume
+  the model cannot be set to is refused.
+
+Skipped (owner decision): the cell diagram, cell division, food web and microscope field of view generators (turned off
+on the source's live site). Not ported: the closed chamber's CO₂ and O₂ over time (photosynthesis), the three-up osmosis
+panel, the DNA figure's deliberate mistakes and the codon chart. Builder trigger words for these figures are in every
+site language (`server/builder/figures.js`).
+
+```json
+{"tool": "figure.number", "vars": {"r": {"of": [0.2,0.3,0.4,0.5,0.6,0.8]}, "k": {"of": [200,400,500,800,1000,1200]}}, "q": "This population grows logistically with r = {r} per year. What is its fastest growth rate, in individuals per year?", "fig": {"kind": "populationGrowth", "model": "logistic", "n0": 10, "r": "{r}", "k": "{k}", "span": 30, "unit": "years", "hide": "k"}, "answer": "r*k/4", "dp": 0, "unit": "individuals/year", "work": ["Read K off the graph: K = {k}.", "The fastest growth is at N = K/2: dN/dt = rK/4.", "{r} × {k} ÷ 4 = {=r*k/4}"]}
+{"tool": "figure.number", "vars": {"p": [4,12]}, "q": "How many years does one full cycle of the prey take? Read it from peak to peak.", "fig": {"kind": "predatorPrey", "prey": {"average": 50, "start": 20}, "predators": {"average": 20, "start": 12}, "period": "{p}", "span": "{=4*p}", "unit": "years"}, "answer": "p", "dp": 0, "unit": "years", "work": ["Find two prey peaks next to each other.", "Read the time at each.", "The difference is {p} years."]}
+{"tool": "figure.number", "vars": {"t": {"of": [25,30,35,40,45,50,55,60]}}, "q": "At what temperature does Enzyme X work fastest, in °C?", "fig": {"kind": "enzymeActivity", "graph": "temperature", "curves": [{"name": "Enzyme X", "opt": "{t}", "width": 10}], "axes": "numbered", "x": [0,100]}, "answer": "t", "dp": 0, "unit": "°C", "work": ["Find the top of the curve.", "Read down to the temperature axis.", "The optimum is {t} °C."]}
+{"tool": "figure.number", "vars": {"c": {"of": [0.04,0.05,0.1,0.2,0.4]}}, "q": "At {c}% CO₂ and 30 °C, what is the fastest rate of photosynthesis as the light gets brighter (arbitrary units)?", "fig": {"kind": "photosynthesis", "graph": "light", "curves": [{"co2": "{c}", "temp": 30}], "axes": "numbered", "marks": true}, "answer": "25*c/(0.1 + c)", "dp": 1, "work": ["As the light gets brighter, the rate levels off.", "Then CO₂ (or temperature), not light, is the limiting factor.", "Read the plateau: {=round(25*c/(0.1 + c), 1)}"]}
+{"tool": "figure.number", "vars": {"a": [0,2], "b": [0,2]}, "q": "Tall (T) is dominant to short (t). What percent of the offspring are short?", "fig": {"kind": "punnett", "letters": ["T"], "parents": [["{a}"],["{b}"]], "names": {"T": "tall", "t": "short"}, "hide": "ratios"}, "answer": "(2 - a)*(2 - b)*25", "dp": 0, "unit": "%", "work": ["Short plants are tt.", "Count the tt cells out of 4.", "{=(2 - a)*(2 - b)} of 4 = {=(2 - a)*(2 - b)*25}%"]}
+{"tool": "figure.number", "vars": {"m": [0,2], "s": [1,400]}, "q": "Which inheritance pattern does this family show? Write 1 for autosomal dominant, 2 for autosomal recessive or 3 for X-linked recessive.", "fig": {"kind": "pedigree", "mode": "{m}", "seed": "{s}", "generations": 3}, "answer": "m + 1", "dp": 0, "work": ["Look for affected children of unaffected parents (recessive), or the trait in every generation (dominant).", "Check whether mostly males are affected (X-linked).", "The pattern is number {=m + 1}."]}
+{"tool": "figure.number", "vars": {"s": {"of": ["GCAUGGCUUCAAAGGGCUGGACCGAAUUCCGA", "CAUGUUUGGACACGAUCCGGUAGCAAAACUG", "UCAUGCCCGGAUUACUCGAAGCUUGGCACGUC", "ACAUGAAAGUUCUCGGCCAGUUGGAUCCUAAC", "GGAUGCGAACCUUUGGGCAGCAAUCGGUGCUU"]}, "n": [3,8]}, "q": "Translation starts at the first AUG. How many amino acids does this mRNA code for?", "fig": {"kind": "proteinSynthesis", "mrna": "{s}", "rows": ["mrna"], "codons": "{n}"}, "answer": "n", "dp": 0, "work": ["Find the start codon, AUG.", "Count the codons from there: each codon is one amino acid.", "There are {n} amino acids."]}
+{"tool": "figure.number", "vars": {"a": [5,30], "b": [5,30]}, "where": "(a - b >= 4) + (b - a >= 4)", "q": "A plasmid was cut into the pieces in lane 2. How long was the plasmid, in bp?", "fig": {"kind": "gel", "gel": "1", "lanes": [{"ladder": "1kb"},{"label": "Digest", "bands": ["{=100*a}", "{=100*b}"]}], "values": true}, "answer": "100*(a + b)", "dp": 0, "unit": "bp", "work": ["The pieces add up to the whole plasmid.", "{=100*a} + {=100*b}", "= {=100*(a + b)} bp"]}
+{"tool": "figure.number", "vars": {"a": [3,30], "b": [1,20], "c": [5,30]}, "q": "Only the solutes that cannot cross the membrane count toward tonicity. What is their total concentration outside the cell, in %?", "fig": {"kind": "osmosis", "scene": "blood", "solutes": [{"name": "salt", "inside": 0.9, "outside": "{=a/10}"},{"name": "sucrose", "inside": 0, "outside": "{=b/10}"},{"name": "urea", "inside": 1, "outside": "{=c/10}", "cross": true}], "particles": false, "hide": "tonicity"}, "answer": "(a + b)/10", "dp": 1, "unit": "%", "work": ["Urea crosses the membrane, so it does not count.", "{=a/10} + {=b/10}", "= {=(a + b)/10}%"]}
+{"tool": "figure.number", "vars": {"m": [20,200]}, "q": "What volume is the micropipette set to, in µL?", "fig": {"kind": "reading", "type": "micropipette", "model": "P20", "value": "{=m/10}", "hide": "value"}, "answer": "m/10", "dp": 1, "unit": "µL", "work": ["A P20 reads tens, ones and tenths of a µL.", "The red wheel, below the line, is the tenths.", "The volume is {=m/10} µL."]}
 ```
 
 ## Radians (1.1.0)

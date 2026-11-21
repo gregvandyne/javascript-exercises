@@ -12496,6 +12496,42 @@
       "dotCross": {
         "name": "点と×の電子配置図",
         "desc": "電子殻で共有・移動する電子"
+      },
+      "populationGrowth": {
+        "name": "個体群の成長",
+        "desc": "J字とS字の曲線、Kと成長の段階"
+      },
+      "predatorPrey": {
+        "name": "捕食者と被食者",
+        "desc": "個体数の周期、捕食者は少し遅れる"
+      },
+      "enzymeActivity": {
+        "name": "酵素の活性",
+        "desc": "温度・pH・基質濃度と反応速度"
+      },
+      "photosynthesis": {
+        "name": "光合成速度",
+        "desc": "光・CO₂・温度の限定要因"
+      },
+      "punnett": {
+        "name": "パネットの方形",
+        "desc": "比が計算された交配"
+      },
+      "pedigree": {
+        "name": "家系図",
+        "desc": "遺伝の型に合う家系"
+      },
+      "proteinSynthesis": {
+        "name": "タンパク質合成",
+        "desc": "DNAからmRNA、アミノ酸へ、空欄つき"
+      },
+      "gel": {
+        "name": "ゲル電気泳動",
+        "desc": "DNAマーカーと並ぶ縮尺どおりのバンド"
+      },
+      "osmosis": {
+        "name": "浸透",
+        "desc": "溶液の中の細胞・U字管・袋"
       }
     },
     "step": {

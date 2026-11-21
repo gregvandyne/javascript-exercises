@@ -204,7 +204,7 @@ export const pedigree = {
     const best = PD_MODES.reduce((a, m) => (lik[m] > lik[a] ? m : a), PD_MODES[0]);
     const out = { family: pdFormat(root), people: all.length, affected: all.filter(p => p.affected).length, carriers: all.filter(p => p.carrier).length, generations: pdDepth(root), fits, fitting: PD_MODES.filter(m => fits[m]).length, likeliest: best };
     if (mode) {
-      out.mode = mode; out.modeIndex = PD_MODES.indexOf(mode); out.tells = pdTells(root, mode, carriers);
+      out.mode = mode; out.modeIndex = PD_MODES.indexOf(mode); out.modeNumber = out.modeIndex + 1; out.tells = pdTells(root, mode, carriers);
       const sets = pdPossible(root, mode, carriers), L = pdLayout(root, { numerals: true }), letter = d.letter || 'A';
       out.genotypes = Object.fromEntries(L.people.map(p => { const lab = pdGenotypeLabel(mode, sets.get(p.key), letter); return [p.name, lab ? lab.map(a => (a.sup ? `${a.text}^${a.sup}` : a.text)).join('') : null]; }));
     }
