@@ -9995,3 +9995,49 @@ message), `public/js/manip.js` (each tool's wheel, the actions, the solo board),
   step_progress, the gradebook, and the rule that answers show after the due date only when the teacher allows it).
   That touches the student lesson page, progress and the gradebook, so it is its own change. The builder shows "Assign
   to class" disabled with "Coming next". Print and Save work now.
+
+## My worksheets in Crossword, The Big Divide and Algebra Builder (21 Nov 2026)
+Owner: "I also love the feature for saving worksheets in figures and manipulatives. Can you do the same for crossword
+puzzles, the big divide, and the algebra course." The three games already saved a teacher's set on Oomba under a class
+code (`game_sets`, docs/sdk.md "Question sets"), but a teacher could only find one again through the game's own list in
+their game save, which holds drafts and only remembers the last few. Now each game has a list of everything saved on
+Oomba, like Figures' "My worksheets" and the manipulatives' saved boards.
+- **Who sees it.** School staff and the platform admin (`INIT.mySets`, `BRB.canListSets`), in the published game, not in
+  a preview. Students, children, guests and family grown-ups never see the button (the grown-up fence refuses the routes
+  as well). The routes themselves answer any signed-in, non-guest owner for their own sets, so a set a child saved
+  before this is still theirs to delete through the API; nothing in the games offers it to them.
+- **The server** (`server/services/game-sets.js` `listMine`, `oneMine`, `remove`, `rename`, `duplicate`, `labelOf`,
+  `sizeOf`, `codeOf`; `server/routes/games.js`): `GET /api/games/:id/sets` (newest first, each with its class code, name,
+  an English label, its size, when it changed and its items, so Open needs no second call), `DELETE
+  /api/games/:id/sets/:set`, `POST .../rename` `{ title }` and `POST .../duplicate`. Owner only: anyone else's set, a bad
+  id and another game's set are all the same 404. Guests get 403, signed out 401. 60 calls a minute per account, as
+  saving. A copy counts toward the 200 sets a teacher may keep in a game.
+- **Names.** Migration `0096_game_sets_title` gives `game_sets` a `title` ('' until named; only its owner sees it). A name
+  goes through the site's text filter (`cleanText`: rude words, personal details, links), at most 60 characters. A name
+  sent with a save that the filter refuses is left out and the set still saves. Crossword's name is its puzzle's title,
+  so renaming a crossword changes the title students see, and saving it from the game names it after its title. The Big
+  Divide now sends its activity's title when it saves (`BRB.saveQuestionSet(items, id, { title })`), so the list shows
+  the names teachers already gave their activities; before, sets held no free text at all for these two math games, and
+  the name is still kept out of the set's items. Algebra Builder sets have no name until renamed: the list shows "3
+  questions" and what kinds. A copy is named "Copy of ..." in the teacher's language (`game.sets.copyOf`, all 13 locales).
+- **In each game** the list has Open (into the game's own editor: Crossword's builder, The Big Divide's activity editor,
+  Algebra Builder's question set page; saving there keeps the same class code and link), Print and the answer key
+  (Crossword and The Big Divide, the existing print; the key only for school staff, as before), Copy link, Duplicate,
+  Rename (inline, Enter saves, Escape cancels) and Delete with a confirm that says the class code and link stop working.
+  An empty list points to making one. Crossword's list is a widget card like its other screens (not the Oomba Kit), with
+  its own words in its 13 languages; The Big Divide's matches its activities page, in its 12 word tables; Algebra Builder
+  is English only, like the rest of it, and calls them question sets ("My question sets"), its own word.
+- **Deleting** a worksheet also takes its copies out of the game's own list (Crossword's "Your crosswords", The Big
+  Divide's activities, Algebra Builder's recent sets), so it does not linger there as a draft without a code. Renaming
+  updates those copies' titles. The printed instructions a teacher wrote stay in the game save with the activity they
+  belong to, and are used when printing from the list.
+- **Not built.** Algebra Builder's committed page (`seed-games/algebra-builder.html`) was not rebuilt in this change:
+  the vendored math field's built files (`tools/algebra-builder/vendor/mathfield-*/dist`) are ignored by git and were not
+  in the checkout, so `build.mjs` (and `--check`) cannot run there. The sources carry the feature; run
+  `npm run build:algebra-builder` where those files are, and the browser test (tests/unit/game-my-sets-browser.test.js)
+  runs once the page has it.
+- **Tests.** tests/unit/game-my-sets.test.js (the routes: owner only, 404 for others, guests and the fence refused,
+  delete, rename through the filter, duplicate and the 200 limit, the rate limit, who the frame offers it to, the SDK and
+  the page's message checks) and tests/unit/game-my-sets-browser.test.js (each game in Chromium: the list, Open and save
+  under the same code, Print, Copy link, Rename, Duplicate, Delete with its confirm, the empty list, and no button for a
+  student).
