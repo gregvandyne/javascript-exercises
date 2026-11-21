@@ -696,8 +696,8 @@ function start() {
       field.className = 'field dash-pdfedit';
       field.innerHTML = `<span class="dash-lab" id="${id}-l">${esc(f.label)}</span><p class="small dash-fieldmsg" id="${id}-m" role="status"></p><p class="small muted">${esc(W.note)}</p>`;
       const msg = field.querySelector('.dash-fieldmsg');
-      const up = uploadButton(CID, W, w.s[f.key] ? W.replace : W.upload, docId => { w.s[f.key] = docId; commit(); redraw(); msg.textContent = `✔ ${W.replace}`; msg.classList.remove('err'); announce(W.replace); },
-        m => { msg.textContent = `✖ ${m}`; msg.classList.add('err'); });
+      const up = uploadButton(CID, W, w.s[f.key] ? W.replace : W.upload, docId => { w.s[f.key] = docId; commit(); redraw(); setLabel(msg, `✔ ${W.replace}`); msg.classList.remove('err'); announce(W.replace); },
+        m => { setLabel(msg, `✖ ${m}`); msg.classList.add('err'); });
       up.querySelector('button').id = id; up.querySelector('button').setAttribute('aria-describedby', `${id}-l ${id}-m`);
       field.insertBefore(up, msg);
     },
@@ -709,7 +709,7 @@ function start() {
       inp.value = w.s[f.key] || '';
       inp.addEventListener('change', () => {
         const x = inp.value.trim(), ok = linkUrl(x);
-        if (x && !ok) { msg.textContent = `✖ ${W.bad}`; msg.classList.add('err'); inp.setAttribute('aria-invalid', 'true'); return; }
+        if (x && !ok) { setLabel(msg, `✖ ${W.bad}`); msg.classList.add('err'); inp.setAttribute('aria-invalid', 'true'); return; }
         msg.textContent = ''; msg.classList.remove('err'); inp.removeAttribute('aria-invalid');
         w.s[f.key] = x ? ok : ''; inp.value = w.s[f.key]; commit(); redraw();
       });
