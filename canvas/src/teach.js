@@ -29,9 +29,11 @@ export function teachControls(o) {
   els.show = h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-pressed': 'false', onclick: () => on.show() }, h('span', { 'aria-hidden': 'true' }, '👀'), ' ', T('showAnswer'));
   els.board = h('button', { type: 'button', class: 'oc-btn oc-sm oc-tb-board', 'aria-pressed': 'false', onclick: () => on.board(!o.state().board) });
   els.newSet = h('button', { type: 'button', class: 'oc-btn oc-sm', disabled: !o.gen, title: o.gen ? null : T('newSetNone'), onclick: () => on.newSet() }, h('span', { 'aria-hidden': 'true' }, '🎲'), ' ', T('newSetT'));
-  els.sets = o.sets ? h('button', { type: 'button', class: 'oc-btn oc-sm oc-tb-ws', 'aria-expanded': 'false', 'aria-controls': 'oc-ws', onclick: () => on.sets() }, h('span', { 'aria-hidden': 'true' }, '📄'), ' ', T('wsTitle')) : null;
+  // (an icon and a short label on the bar, the icon alone under 1180 px; its full name for screen readers and as a tooltip)
+  els.sets = o.sets ? h('button', { type: 'button', class: 'oc-btn oc-sm oc-tb-ws', 'aria-label': T('wsTitle'), title: T('wsTitle'), 'aria-expanded': 'false', 'aria-controls': 'oc-ws', onclick: () => on.sets() }, h('span', { 'aria-hidden': 'true' }, '📄'), h('span', { class: 'oc-tb-wsl' }, ' ', T('wsShort'))) : null;
   const bar = h('div', { class: 'oc-tb', role: 'toolbar', 'aria-label': T('teacher') },
-    h('span', { class: 'oc-tb-lab' }, h('span', { 'aria-hidden': 'true' }, '🧑‍🏫'), ' ', T('teacher'), h('small', {}, ' · ', T('teacherOnly'))),
+    // (1.4.0: "students don't see this bar" shows from 1440 px; narrower it is the label's tooltip, so the bar stays one line)
+    h('span', { class: 'oc-tb-lab', title: T('teacherOnly') }, h('span', { 'aria-hidden': 'true' }, '🧑‍🏫'), ' ', T('teacher'), h('small', {}, ' · ', T('teacherOnly'))),
     els.show, els.board, helpGroup(els.help, 'oc-tb-help', true), els.newSet, els.sets);
 
   // ---- B: one Teacher button and its menu (narrower than 561 px)

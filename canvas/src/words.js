@@ -567,6 +567,7 @@ for (const l of Object.keys(WORDS_130)) Object.assign(WORDS[l], WORDS_130[l]);
 // 1.4.0: worksheets (sets.js): My worksheets, a worksheet a link opened, and printing one (merged into the tables above).
 const WORDS_140 = {
   en: {
+    wsShort: "Worksheets",
     wsTitle: "My worksheets", wsMenuD: "Save the questions on screen, or open, print and share one you saved.", wsUntitled: "Worksheet", wsOne: "1 question", wsMany: "{n} questions",
     wsSave: "Save as worksheet", wsSaveD: "Saves the {n} questions on screen under a class code.", wsSaving: "Saving…", wsSaved: "Saved. Class code: {code}",
     wsOnScreen: "On screen: {title}", wsLoading: "Loading your worksheets…", wsLoadFail: "Couldn't load your worksheets.", wsRetry: "Try again",
@@ -578,6 +579,7 @@ const WORDS_140 = {
     wsPrints: "Prints worksheet {code}: {n} questions, with its class code.", wsMissing: "This worksheet isn't on Oomba any more. Here are the activity's own questions.",
   },
   es: {
+    wsShort: "Fichas",
     wsTitle: "Mis fichas", wsMenuD: "Guarda las preguntas de la pantalla, o abre, imprime y comparte una ficha guardada.", wsUntitled: "Ficha", wsOne: "1 pregunta", wsMany: "{n} preguntas",
     wsSave: "Guardar como ficha", wsSaveD: "Guarda las {n} preguntas de la pantalla con un código de clase.", wsSaving: "Guardando…", wsSaved: "Guardada. Código de clase: {code}",
     wsOnScreen: "En pantalla: {title}", wsLoading: "Cargando tus fichas…", wsLoadFail: "No se pudieron cargar tus fichas.", wsRetry: "Reintentar",
@@ -589,6 +591,7 @@ const WORDS_140 = {
     wsPrints: "Imprime la ficha {code}: {n} preguntas, con su código de clase.", wsMissing: "Esta ficha ya no está en Oomba. Aquí están las preguntas de la actividad.",
   },
   fr: {
+    wsShort: "Fiches",
     wsTitle: "Mes fiches", wsMenuD: "Enregistrez les questions à l'écran, ou ouvrez, imprimez et partagez une fiche enregistrée.", wsUntitled: "Fiche", wsOne: "1 question", wsMany: "{n} questions",
     wsSave: "Enregistrer comme fiche", wsSaveD: "Enregistre les {n} questions à l'écran avec un code de classe.", wsSaving: "Enregistrement…", wsSaved: "Enregistrée. Code de classe : {code}",
     wsOnScreen: "À l'écran : {title}", wsLoading: "Chargement de vos fiches…", wsLoadFail: "Impossible de charger vos fiches.", wsRetry: "Réessayer",
@@ -600,6 +603,7 @@ const WORDS_140 = {
     wsPrints: "Imprime la fiche {code} : {n} questions, avec son code de classe.", wsMissing: "Cette fiche n'est plus sur Oomba. Voici les questions de l'activité.",
   },
   de: {
+    wsShort: "Arbeitsblätter",
     wsTitle: "Meine Arbeitsblätter", wsMenuD: "Die Aufgaben auf dem Bildschirm speichern oder ein gespeichertes Blatt öffnen, drucken und teilen.", wsUntitled: "Arbeitsblatt", wsOne: "1 Aufgabe", wsMany: "{n} Aufgaben",
     wsSave: "Als Arbeitsblatt speichern", wsSaveD: "Speichert die {n} Aufgaben auf dem Bildschirm unter einem Klassencode.", wsSaving: "Wird gespeichert…", wsSaved: "Gespeichert. Klassencode: {code}",
     wsOnScreen: "Auf dem Bildschirm: {title}", wsLoading: "Deine Arbeitsblätter werden geladen…", wsLoadFail: "Die Arbeitsblätter konnten nicht geladen werden.", wsRetry: "Erneut versuchen",
@@ -611,6 +615,7 @@ const WORDS_140 = {
     wsPrints: "Druckt Arbeitsblatt {code}: {n} Aufgaben, mit seinem Klassencode.", wsMissing: "Dieses Arbeitsblatt ist nicht mehr auf Oomba. Hier sind die Aufgaben der Aktivität.",
   },
   it: {
+    wsShort: "Schede",
     wsTitle: "Le mie schede", wsMenuD: "Salva le domande sullo schermo, oppure apri, stampa e condividi una scheda salvata.", wsUntitled: "Scheda", wsOne: "1 domanda", wsMany: "{n} domande",
     wsSave: "Salva come scheda", wsSaveD: "Salva le {n} domande sullo schermo con un codice classe.", wsSaving: "Salvataggio…", wsSaved: "Salvata. Codice classe: {code}",
     wsOnScreen: "Sullo schermo: {title}", wsLoading: "Caricamento delle tue schede…", wsLoadFail: "Impossibile caricare le tue schede.", wsRetry: "Riprova",
@@ -622,6 +627,7 @@ const WORDS_140 = {
     wsPrints: "Stampa la scheda {code}: {n} domande, con il suo codice classe.", wsMissing: "Questa scheda non è più su Oomba. Ecco le domande dell'attività.",
   },
   pt: {
+    wsShort: "Fichas",
     wsTitle: "Minhas fichas", wsMenuD: "Salve as perguntas da tela, ou abra, imprima e compartilhe uma ficha salva.", wsUntitled: "Ficha", wsOne: "1 pergunta", wsMany: "{n} perguntas",
     wsSave: "Salvar como ficha", wsSaveD: "Salva as {n} perguntas da tela com um código de turma.", wsSaving: "Salvando…", wsSaved: "Salva. Código da turma: {code}",
     wsOnScreen: "Na tela: {title}", wsLoading: "Carregando suas fichas…", wsLoadFail: "Não foi possível carregar suas fichas.", wsRetry: "Tentar de novo",
@@ -633,6 +639,7 @@ const WORDS_140 = {
     wsPrints: "Imprime a ficha {code}: {n} perguntas, com o código da turma.", wsMissing: "Esta ficha não está mais no Oomba. Aqui estão as perguntas da atividade.",
   },
   nl: {
+    wsShort: "Werkbladen",
     wsTitle: "Mijn werkbladen", wsMenuD: "Bewaar de opgaven op het scherm, of open, print en deel een bewaard werkblad.", wsUntitled: "Werkblad", wsOne: "1 opgave", wsMany: "{n} opgaven",
     wsSave: "Opslaan als werkblad", wsSaveD: "Bewaart de {n} opgaven op het scherm onder een klascode.", wsSaving: "Opslaan…", wsSaved: "Opgeslagen. Klascode: {code}",
     wsOnScreen: "Op het scherm: {title}", wsLoading: "Je werkbladen worden geladen…", wsLoadFail: "Je werkbladen konden niet worden geladen.", wsRetry: "Opnieuw proberen",
@@ -644,6 +651,7 @@ const WORDS_140 = {
     wsPrints: "Print werkblad {code}: {n} opgaven, met de klascode.", wsMissing: "Dit werkblad staat niet meer op Oomba. Hier zijn de opgaven van de activiteit.",
   },
   ru: {
+    wsShort: "Листы",
     wsTitle: "Мои рабочие листы", wsMenuD: "Сохраните задачи с экрана или откройте, распечатайте и отправьте сохранённый лист.", wsUntitled: "Рабочий лист", wsOne: "Задач: 1", wsMany: "Задач: {n}",
     wsSave: "Сохранить как рабочий лист", wsSaveD: "Сохраняет задачи с экрана ({n}) под кодом класса.", wsSaving: "Сохраняем…", wsSaved: "Сохранено. Код класса: {code}",
     wsOnScreen: "На экране: {title}", wsLoading: "Загружаем ваши рабочие листы…", wsLoadFail: "Не удалось загрузить рабочие листы.", wsRetry: "Повторить",
@@ -655,6 +663,7 @@ const WORDS_140 = {
     wsPrints: "Печатает лист {code}: задач {n}, с кодом класса.", wsMissing: "Этого листа больше нет в Oomba. Вот задачи самого задания.",
   },
   ja: {
+    wsShort: "プリント",
     wsTitle: "マイプリント", wsMenuD: "画面の問題を保存したり、保存したプリントを開いて印刷・共有したりします。", wsUntitled: "プリント", wsOne: "1問", wsMany: "{n}問",
     wsSave: "プリントとして保存", wsSaveD: "画面の{n}問をクラスコード付きで保存します。", wsSaving: "保存しています…", wsSaved: "保存しました。クラスコード：{code}",
     wsOnScreen: "表示中：{title}", wsLoading: "プリントを読み込んでいます…", wsLoadFail: "プリントを読み込めませんでした。", wsRetry: "もう一度",
@@ -666,6 +675,7 @@ const WORDS_140 = {
     wsPrints: "プリント {code} を印刷します：{n}問、クラスコード付き。", wsMissing: "このプリントはもうOombaにありません。アクティビティの問題を表示しています。",
   },
   'zh-Hant': {
+    wsShort: "學習單",
     wsTitle: "我的學習單", wsMenuD: "儲存畫面上的題目，或開啟、列印、分享已儲存的學習單。", wsUntitled: "學習單", wsOne: "1 題", wsMany: "{n} 題",
     wsSave: "儲存為學習單", wsSaveD: "把畫面上的 {n} 題存成學習單，附上班級代碼。", wsSaving: "儲存中…", wsSaved: "已儲存。班級代碼：{code}",
     wsOnScreen: "畫面上：{title}", wsLoading: "正在載入你的學習單…", wsLoadFail: "無法載入你的學習單。", wsRetry: "再試一次",
@@ -677,6 +687,7 @@ const WORDS_140 = {
     wsPrints: "列印學習單 {code}：{n} 題，附班級代碼。", wsMissing: "這份學習單已不在 Oomba 上。以下是活動本身的題目。",
   },
   ar: {
+    wsShort: "أوراق العمل",
     wsTitle: "أوراق العمل الخاصة بي", wsMenuD: "احفظ الأسئلة التي على الشاشة، أو افتح ورقة محفوظة واطبعها وشاركها.", wsUntitled: "ورقة عمل", wsOne: "سؤال واحد", wsMany: "عدد الأسئلة: {n}",
     wsSave: "احفظ كورقة عمل", wsSaveD: "يحفظ الأسئلة التي على الشاشة ({n}) برمز للصف.", wsSaving: "جارٍ الحفظ…", wsSaved: "تم الحفظ. رمز الصف: {code}",
     wsOnScreen: "على الشاشة: {title}", wsLoading: "جارٍ تحميل أوراق العمل…", wsLoadFail: "تعذّر تحميل أوراق العمل.", wsRetry: "حاول مرة أخرى",
@@ -688,6 +699,7 @@ const WORDS_140 = {
     wsPrints: "يطبع ورقة العمل {code}: عدد الأسئلة {n}، مع رمز الصف.", wsMissing: "ورقة العمل هذه لم تعد على Oomba. إليك أسئلة النشاط نفسه.",
   },
   he: {
+    wsShort: "דפי עבודה",
     wsTitle: "דפי העבודה שלי", wsMenuD: "שמרו את השאלות שעל המסך, או פתחו, הדפיסו ושתפו דף שמור.", wsUntitled: "דף עבודה", wsOne: "שאלה אחת", wsMany: "{n} שאלות",
     wsSave: "שמירה כדף עבודה", wsSaveD: "שומר את {n} השאלות שעל המסך עם קוד כיתה.", wsSaving: "שומרים…", wsSaved: "נשמר. קוד כיתה: {code}",
     wsOnScreen: "על המסך: {title}", wsLoading: "טוענים את דפי העבודה…", wsLoadFail: "לא הצלחנו לטעון את דפי העבודה.", wsRetry: "לנסות שוב",

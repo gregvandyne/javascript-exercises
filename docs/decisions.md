@@ -10115,7 +10115,9 @@ build lessons", and "The worksheet buttons are way too busy, can we make this lo
   Nov 21") with the class code as a small chip, the whole row opens it; at the end only 🖨 Print and ⋯ More (Answer
   key, Copy link, Duplicate, Rename, Delete last in red with a question). The menu takes the arrow keys, Home, End,
   Escape and a click outside, and gives focus back to ⋯. 44 px targets; it fits at 375 px (in the Teacher menu there).
-  "💾 Save as worksheet" sits at the top of the card. A worksheet opened from the list replaces the set on that screen
+  "💾 Save as worksheet" sits at the top of the card. The teacher bar stays one line at 1024 and 1280 px: its button
+  reads "📄 Worksheets" (the icon alone under 1180 px; "My worksheets" to screen readers and as a tooltip), and "students
+  don't see this bar" shows only from 1440 px (a tooltip on "Teacher" below). A worksheet opened from the list replaces the set on that screen
   (a line under the teacher's controls says which; New set leaves it); its link plays exactly its questions for
   everyone, and a link to a deleted one plays the activity's own questions and says so.
 - **Printing** a worksheet sends its code (`{ k: 'canvas', set, n, paper, key }`); the server prints the saved questions

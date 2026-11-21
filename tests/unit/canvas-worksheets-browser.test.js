@@ -94,7 +94,7 @@ test('a teacher saves the questions on screen as a worksheet, and the list is on
   try {
     const { frame, until, msgs, store } = g;
     const btn = frame.locator('.oc-tb .oc-tb-ws');
-    assert.equal(await btn.textContent(), '📄 My worksheets');
+    assert.equal(await btn.textContent(), '📄 Worksheets'); assert.equal(await btn.getAttribute('aria-label'), 'My worksheets');
     await btn.click();
     await until(() => document.querySelector('#oc-ws') && !document.querySelector('#oc-ws').hidden && /No worksheets yet/.test(document.querySelector('#oc-ws').textContent));
     assert.equal(await btn.getAttribute('aria-expanded'), 'true');
@@ -220,6 +220,22 @@ test('the first screenshot: Save as worksheet and the list, with the More menu o
     await g.until(() => !!document.querySelector('.oc-wsmenu'));
     await g.shot('canvas-worksheets-desktop.png');
   } finally { await g.ctx.close(); }
+});
+
+test('the teacher bar stays on one line at 1280 and 1024 px wide, with My worksheets in it', { skip, timeout: 120_000 }, async () => {
+  for (const width of [1280, 1024]) {
+    const g = await openActivity({ init: TEACHER, width });
+    try {
+      const r = await g.frame.evaluate(() => {
+        const bar = document.querySelector('.oc-tb'), kids = [...bar.children].filter(k => k.offsetParent);
+        window.__w = [...document.querySelector(".oc-tb").children].map(k => k.className + ":" + Math.round(k.getBoundingClientRect().width)).join(" "); const mid = k => { const b = k.getBoundingClientRect(); return (b.top + b.bottom) / 2; };
+        return { w: window.__w, tops: kids.map(mid).filter((m, i, a) => Math.abs(m - a[0]) > 4), mid: kids.map(mid), h: bar.getBoundingClientRect().height, last: kids.at(-1).className, page: document.scrollingElement.scrollWidth };
+      });
+      assert.equal(r.tops.length, 0, `${width}: one line (${JSON.stringify(r)})`);
+      assert.match(r.last, /oc-tb-ws/); assert.ok(r.page <= width, `${width}: no sideways scroll`);
+      assert.equal(await g.frame.locator('.oc-tb-ws').getAttribute('aria-label'), 'My worksheets', 'its full name for screen readers');
+    } finally { await g.ctx.close(); }
+  }
 });
 
 test('at 375 px: My worksheets is in the Teacher menu, the list fits with 44 px targets, and the menu stays on screen', { skip, timeout: 120_000 }, async () => {

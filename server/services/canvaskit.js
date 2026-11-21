@@ -31,7 +31,7 @@ export const CANVAS_VERSIONS = Object.freeze({
   // questions; school staff get "My worksheets" in the teacher's controls (BRB.canListSets) to save the questions on
   // screen under a class code and open, print, share, copy, rename and delete them (routes/games.js, game-sets.js
   // cleanCanvasItems). 1.0.0 to 1.3.0 stay as they are.
-  '1.4.0': 'sha384-0pmFMEUuEB8z+JP0VXcmPQ1MSYkjDc70jAImMNsRkmwZad1jdc6G8/H6metewMU+',
+  '1.4.0': 'sha384-Y4NDaUea8geoQMey83n3qeyjeGgNI0T+/kUIa0VOPEZkTuq4e0CYZGS1JrsOILgV',
 });
 export const CANVAS_LATEST = '1.4.0';
 export const canvasSrc = (v = CANVAS_LATEST) => `${CANVAS_PATH}${v}/oomba-canvas.js`;

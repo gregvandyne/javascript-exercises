@@ -211,7 +211,9 @@ and never build their own.
   activity only: never in the Studio's preview, never under "As a student", never a student, a child, a guest or a family
   grown-up. Only an activity pinned to 1.4.0 or later offers it (`routes/games.js canvasSetVersion`); an older one moves
   to 1.4.0 when it is saved from the Activity panel, as before.
-- **📄 My worksheets** sits in the teacher's controls (the bar at 561 px and wider; the Teacher menu on phones) and opens
+- **📄 My worksheets** sits in the teacher's controls (on the bar, "📄 Worksheets", the icon alone under 1180 px, so the
+  bar stays one line from 1024 px; "students don't see this bar" shows from 1440 px and is the label's tooltip below;
+  the Teacher menu on phones) and opens
   a card under the top strip: **💾 Save as worksheet** (the questions on screen, named after `task.title`), then one
   quiet row per worksheet: its name in bold, one line with how many questions and the date, and the class code as a
   small chip. The whole row opens the worksheet on this screen (its questions in their order; New set leaves it). At

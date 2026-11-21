@@ -192,6 +192,8 @@ button.oc-part:hover:not(:disabled):not(.oc-on){background:var(--card-2)}
 .oc-tb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:7px max(14px,env(safe-area-inset-right)) 7px max(14px,env(safe-area-inset-left));background:var(--tc-soft);border-bottom:2px solid var(--tc-line)}
 .oc-tb-lab{display:inline-flex;align-items:center;gap:4px;font-weight:800;font-size:.85rem;color:var(--tc-ink);margin-inline-end:4px}
 .oc-tb-lab small{font-weight:600;color:var(--muted);font-size:.8rem}
+@media (max-width:1439px){.oc-tb-lab small{display:none}}
+@media (max-width:1179px){.oc-tb-wsl{display:none}.oc-tb .oc-tb-ws{padding:0 10px;min-width:44px}}
 .oc-tb .oc-btn{background:var(--card);box-shadow:inset 0 0 0 2px var(--tc-line)}
 .oc-tb .oc-btn[aria-pressed="true"],.oc-tbtn{background:var(--tc);color:#fff;box-shadow:none}
 .oc-tb-help,.oc-tm4{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--tc-line)}
