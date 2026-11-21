@@ -8784,6 +8784,11 @@ such figures with open-source libraries under suitable licences, and a classroom
   its LICENSE file. `figures/SHIPPED.json` locks every file. No GPL code: no CircuitJS, no PhET; Ketcher is too big;
   matter-js is not needed because Phaser 3.90 (already vendored) carries Matter physics. None of the owner's example
   sites' code (their figures are CC0, their code is not open) was copied or looked at.
+  **Correction (21 Nov 2026):** by the evidence, those example sites were the source project (see
+  docs/third-party.md): the same figure kinds, several sister sites, CC0 figures. Its code was open: Apache 2.0 since
+  its first commit (24 Sep 2026). With the owner's confirmed permission, Oomba Figures 1.1.0 ports its number line under
+  that license (the record, the license copy and the changes are in docs/third-party.md). The rule stands for every
+  other site: code without an open license is never copied or consulted.
 - **Allowed exactly like the kits.** `server/services/figlibs.js` makes the one tag per library (pinned URL, SRI hash,
   `crossorigin="anonymous"`); the scanner admits exactly those (`checkFigures`) and fails anything else naming their
   folders; the frame CSP lists the three pinned files **file by file** (never a folder, scripts only); the screenshot
@@ -9911,3 +9916,23 @@ message), `public/js/manip.js` (each tool's wheel, the actions, the solo board),
 - Tests: `tests/unit/manip-wheel-browser.test.js` (iPhone 13 with real touch, the laptop, the room),
   `tests/unit/manip-board.test.js` (the counters' snap rule, the wheel's layout), `tests/unit/manipulatives.test.js`
   (lock storage and the room's lock rule).
+
+## Oomba Figures 1.1.0 split by subject; the physics port (21 Nov 2026)
+
+- **1.1.0 ships split.** It has not shipped yet, so the first 1.1.0 teachers get is already split: a core
+  (`oomba-figures.js`: the drawing core, words, math labels, the formula language, the notice, the registry and the
+  coordinate grid) and five packs in the same version folder (`packs/math.js`, `data.js`, `physics.js`, `chem.js`,
+  `measure.js`), each a classic script registering its kinds into the core (docs/figures-api.md "The core and its
+  packs"). `reading` and `protractor` are their own measure pack because reading an instrument is taught in math,
+  physics, chemistry and biology. Each file has its own pinned tag, SRI and lock entry; the scanner admits a pack tag only
+  after its core tag; the CSP and the screenshot worker list each pack file; the server's copy runs them all; the
+  self-tests name a missing pack's exact tag. 1.0.0 stays one file, byte for byte.
+- **How a page gets its packs.** `figTag("oomba-figures", v, { kinds })` adds exactly the packs those kinds need (the
+  mock Builder uses it); the model's FIGURE RULES list every kind with its pack and every pack tag, and the activity
+  self-test and the playtest fail a page that draws a kind whose pack tag is missing, naming the tag. Rewriting the
+  model's saved page to add tags was not done: the save path belongs to the Builder's agent.
+- **The physics port.** Projectile motion, waves and motion maps are new kinds; `motionGraph` (segments,
+  acceleration-time, stacked graphs), `rays` (plane mirror), `circuit` (`layout: "network"`, closing the "compound
+  circuits" Not-yet item) and `reading` (caliper, micrometer, spring scale masses and zero error) are extended, their
+  old data drawing exactly as in 1.0.0. Only the physics and math logic is ported (docs/third-party.md); coil and
+  magnet is not ported (off on the live site), and vectors are not ported twice.

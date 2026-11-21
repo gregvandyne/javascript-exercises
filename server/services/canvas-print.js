@@ -36,6 +36,15 @@ export function cleanCanvasPrintDoc(raw) {
 /** Pieces (strings and { frac: [n, d] }) -> HTML. */
 const pcs = list => (Array.isArray(list) ? list : []).map(x => (x && typeof x === 'object' && Array.isArray(x.frac) ? `<span class="ocp-frac" role="img" aria-label="${esc(`${x.frac[0]}/${x.frac[1]}`)}"><span>${esc(x.frac[0])}</span><span>${esc(x.frac[1])}</span></span>` : esc(x))).join('');
 const svgBox = (w, h, body, label) => `<svg class="ocp-svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${esc(label)}">${body}</svg>`;
+// The number line on a sheet is Oomba Figures' own numberLine (one way to draw a number line, docs/figures-api.md), from
+// the first version that has it, so a sheet prints the same line whichever figure version the activity pins: lo to hi,
+// each whole cut into sub parts, a number under every whole, black on white, 360 wide as before.
+export const LINE_FIGURES = '1.1.0';
+export const lineData = pic => ({ from: pic.lo, to: pic.hi, step: [1, pic.sub], every: pic.sub, values: false, size: 'large' });
+const lineFigure = (pic, lang, labelText) => {
+  const F = figuresKit(LINE_FIGURES);
+  return `<div class="ocp-svg ocp-line">${F.svg('numberLine', lineData(pic), { print: true, lang, title: labelText, width: 360 })}</div>`;
+};
 /** A plain picture of the manipulative (black lines on white): bars, a number line, columns, tiles. */
 function picture(pic, F, lang, labelText) {
   if (!pic) return '';
@@ -47,12 +56,7 @@ function picture(pic, F, lang, labelText) {
   switch (pic.pic) {
     case 'choices': return choices(pic.choices);
     case 'bars': return svgBox(320, pic.bars.length * 44, pic.bars.map(([n, d], k) => Array.from({ length: d }, (_, i) => `<rect x="${(i * 320) / d + 1}" y="${k * 44 + 4}" width="${320 / d - 2}" height="30" fill="${i < n ? '#bbb' : '#fff'}" stroke="#000" stroke-width="1.5"/>`).join('')).join(''), labelText);
-    case 'line': {
-      const ticks = (pic.hi - pic.lo) * pic.sub, W = 360, X = t => 14 + (t * (W - 28)) / ticks;
-      let b = `<line x1="6" y1="30" x2="${W - 6}" y2="30" stroke="#000" stroke-width="2"/>`;
-      for (let t = 0; t <= ticks; t++) { const whole = t % pic.sub === 0; b += `<line x1="${X(t)}" y1="${whole ? 18 : 23}" x2="${X(t)}" y2="${whole ? 42 : 37}" stroke="#000" stroke-width="${whole ? 2 : 1.2}"/>${whole ? `<text x="${X(t)}" y="58" text-anchor="middle" font-size="13">${esc(pic.lo + t / pic.sub)}</text>` : ''}`; }
-      return svgBox(W, 66, b, labelText);
-    }
+    case 'line': return lineFigure(pic, lang, labelText);
     case 'columns': {
       const S = 26, cols = pic.cols + 1, sign = { add: '+', sub: '−', mul: '×' }[pic.op] || '+', W = cols * S + 4;
       const row = (n, y) => String(n).split('').reverse().map((c, i) => `<text x="${(cols - i - 0.5) * S}" y="${y}" text-anchor="middle" font-size="18" font-family="Courier New, monospace" font-weight="700">${c}</text>`).join('');

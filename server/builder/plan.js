@@ -329,7 +329,10 @@ function activityPlan(raw) {
   };
   // the plan flag for figures (builder/figures.js): the topic, the lesson or the note calls for science, maths or graph
   // figures, in any site language; then the FIGURE RULES go with the build
-  if (figureWords(planText(plan))) plan.figures = true;
+  // A topic that one of the kit's own tools covers ("fractions on a number line": numberline.point) stays a Canvas
+  // activity: its words alone do not make it a figure build (the lesson or the note still can).
+  const kitTopic = !!(chip || topicFor(text, grade));
+  if (figureWords(planText(kitTopic ? { ...plan, topic: null } : plan))) plan.figures = true;
   return plan;
 }
 

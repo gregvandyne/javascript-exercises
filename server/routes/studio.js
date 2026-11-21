@@ -24,7 +24,7 @@ import { config } from '../config.js';
 import { audit } from '../db.js';
 import { templateHtml, templateInfo, TEMPLATE_KEYS, CANVAS_TEMPLATE_KEYS } from '../builder/catalog.js';
 import { canvasVersion, canvasSrc } from '../services/canvaskit.js';
-import { figureLibs, figSrc } from '../services/figlibs.js';
+import { figureLibs, figSrc, figPackSrc, FIG_PACKS } from '../services/figlibs.js';
 import { panelOf, PANEL_KIT } from '../builder/activity-data.js';
 import { scanVersion } from '../services/scanner.js';
 import { THEMES, ALIAS as THEME_ALIAS } from '../../kit/packs/dress.js';
@@ -198,7 +198,7 @@ export function studioState(user, gameId, t = tEn, req = null) {
 export function activityPanelState(user, g, cur, t) {
   const p = panelOf(cur.html); if (!p) return null;
   const fv = figureLibs(cur.html)['oomba-figures'];
-  return { base: cur.id, number: cur.number, kit: p.kit, latest: PANEL_KIT, data: p.data, kitSrc: canvasSrc(PANEL_KIT), figures: fv ? figSrc('oomba-figures', fv) : null, studentPreview: previewUrl(cur, g, user.id, t.locale, true) };
+  return { base: cur.id, number: cur.number, kit: p.kit, latest: PANEL_KIT, data: p.data, kitSrc: canvasSrc(PANEL_KIT), figures: fv ? figSrc('oomba-figures', fv) : null, figurePacks: fv ? Object.keys(FIG_PACKS[fv] || {}).map(p => figPackSrc(p, fv)) : [], studentPreview: previewUrl(cur, g, user.id, t.locale, true) };
 }
 /**
  * The live line: one of
