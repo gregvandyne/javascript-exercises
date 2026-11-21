@@ -3490,6 +3490,92 @@
         "electrons": "Die Elektronen",
         "values": "Die Werte",
         "reading": "Die Ablesung"
+      },
+      "draw": {
+        "modeLabel": "Wie die Figur entsteht",
+        "type": "Maße eingeben",
+        "draw": "Zeichnen",
+        "title": "Auf dem Punktraster zeichnen",
+        "size": "Rastergröße",
+        "sizeOpt": "{n} mal {n}",
+        "clear": "Leeren",
+        "help": {
+          "triangle": "Tippe auf drei Punkte, um ein Dreieck zu machen. Ziehe eine Ecke, um sie zu verschieben.",
+          "quad": "Tippe der Reihe nach rund um die Form auf vier Punkte. Ziehe eine Ecke, um sie zu verschieben.",
+          "grid": "Tippe der Reihe nach rund um die Form auf die Punkte, bis zu 10 Ecken. Ziehe eine Ecke, um sie zu verschieben."
+        },
+        "keys": "Mit der Tastatur: Die Pfeiltasten bewegen, Enter setzt eine Ecke oder nimmt sie auf, dann verschieben die Pfeiltasten sie.",
+        "board": "Punktraster, {n} mal {n}",
+        "corner": "Ecke {name} bei ({x}, {y})",
+        "placed": "{name} bei ({x}, {y}) gesetzt",
+        "moved": "{name} nach ({x}, {y}) verschoben",
+        "picked": "{name} aufgenommen. Verschiebe sie mit den Pfeiltasten und setze sie mit Enter ab.",
+        "removed": "{name} entfernt",
+        "corners": "Ecken",
+        "sides": "Seiten",
+        "angles": "Winkel",
+        "kind": "Art",
+        "perimeter": "Umfang",
+        "area": "Flächeninhalt",
+        "sqUnits": "{area} Flächeneinheiten",
+        "more": "{count, plural, one {Tippe noch auf # Punkt.} other {Tippe noch auf # Punkte.}}",
+        "filled": "Aus deiner Zeichnung ausgefüllt.",
+        "keep": "Die Figur darunter behält deine letzte gültige Form.",
+        "same": "Zwei Ecken liegen auf demselben Punkt. Ziehe eine davon auf einen anderen Punkt.",
+        "line": "Drei Ecken liegen auf einer Geraden und ergeben deshalb keine Form. Schiebe eine davon von der Geraden weg.",
+        "cross": "Zwei Seiten kreuzen sich. Verschiebe eine Ecke, sodass sich die Seiten nur an den Ecken treffen.",
+        "cannot": "Oomba Figures kann diese Form nicht zeichnen. Verschiebe eine Ecke.",
+        "isNot": "Diese Form ist {is} und nicht {want}.",
+        "special": "Diese Form ist {is}, und Oomba Figures zeichnet sie mit einem eigenen Editor.",
+        "open": {
+          "rectangle": "Im Rechteck-Editor öffnen",
+          "parallelogram": "Im Parallelogramm-Editor öffnen",
+          "trapezoid": "Im Trapez-Editor öffnen",
+          "kite": "Im Drachenviereck-Editor öffnen",
+          "grid": "Im Koordinatensystem eintragen"
+        },
+        "a": {
+          "square": "ein Quadrat",
+          "rectangle": "ein Rechteck",
+          "rhombus": "eine Raute",
+          "parallelogram": "ein Parallelogramm",
+          "trapezoid": "ein Trapez",
+          "kite": "ein Drachenviereck",
+          "quad": "ein Viereck ohne besonderen Namen",
+          "concave": "ein nicht konvexes Viereck"
+        },
+        "t": {
+          "square": "Quadrat",
+          "rectangle": "Rechteck",
+          "rhombus": "Raute",
+          "parallelogram": "Parallelogramm",
+          "trapezoid": "Trapez",
+          "isoTrapezoid": "Gleichschenkliges Trapez",
+          "rightTrapezoid": "Rechtwinkliges Trapez",
+          "kite": "Drachenviereck",
+          "quad": "Viereck",
+          "concave": "Nicht konvexes Viereck",
+          "polygon": "{count, plural, one {Vieleck mit # Seite} other {Vieleck mit # Seiten}}"
+        },
+        "tri": {
+          "right": "Rechtwinklig",
+          "acute": "Spitzwinklig",
+          "obtuse": "Stumpfwinklig",
+          "scalene": "Unregelmäßig",
+          "isosceles": "Gleichschenklig",
+          "equilateral": "Gleichseitig"
+        },
+        "ex": {
+          "right": "Rechtwinkliges Dreieck",
+          "isosceles": "Gleichschenkliges Dreieck",
+          "obtuse": "Stumpfwinkliges Dreieck",
+          "pentagon": "Fünfeck"
+        },
+        "examples": "Auf dem Punktraster gezeichnet",
+        "gridOut": "Auch im Koordinatensystem zeigen",
+        "gridTitle": "Im Koordinatensystem",
+        "addGrid": "Die Figur im Koordinatensystem zum Arbeitsblatt hinzufügen",
+        "drawInstead": "Stattdessen auf einem Raster zeichnen"
       }
     },
     "figures-sheet": {

@@ -3490,6 +3490,92 @@
         "electrons": "Os elétrons",
         "values": "Os valores",
         "reading": "A leitura"
+      },
+      "draw": {
+        "modeLabel": "Como fazer a figura",
+        "type": "Digitar as medidas",
+        "draw": "Desenhar",
+        "title": "Desenhe na malha de pontos",
+        "size": "Tamanho da malha",
+        "sizeOpt": "{n} por {n}",
+        "clear": "Limpar",
+        "help": {
+          "triangle": "Toque em três pontos para fazer um triângulo. Arraste um vértice para movê-lo.",
+          "quad": "Toque em quatro pontos em ordem, contornando a figura. Arraste um vértice para movê-lo.",
+          "grid": "Toque nos pontos em ordem, contornando a figura, até 10 vértices. Arraste um vértice para movê-lo."
+        },
+        "keys": "No teclado: as setas movem, Enter coloca um vértice ou pega um, e depois as setas o movem.",
+        "board": "Malha de pontos, {n} por {n}",
+        "corner": "Vértice {name} em ({x}, {y})",
+        "placed": "{name} colocado em ({x}, {y})",
+        "moved": "{name} movido para ({x}, {y})",
+        "picked": "{name} selecionado. Use as setas para movê-lo e Enter para soltá-lo.",
+        "removed": "{name} removido",
+        "corners": "Vértices",
+        "sides": "Lados",
+        "angles": "Ângulos",
+        "kind": "Tipo",
+        "perimeter": "Perímetro",
+        "area": "Área",
+        "sqUnits": "{area} unidades quadradas",
+        "more": "{count, plural, one {Toque em mais # ponto.} other {Toque em mais # pontos.}}",
+        "filled": "Preenchido a partir do seu desenho.",
+        "keep": "A figura abaixo mantém a sua última forma válida.",
+        "same": "Dois vértices estão no mesmo ponto. Arraste um deles para outro ponto.",
+        "line": "Três vértices estão em linha reta, então não formam uma figura. Tire um deles da linha.",
+        "cross": "Dois lados se cruzam. Mova um vértice para que os lados só se encontrem nos vértices.",
+        "cannot": "O Oomba Figures não consegue desenhar esta. Tente mover um vértice.",
+        "isNot": "Essa figura é {is}, não {want}.",
+        "special": "Essa figura é {is}, e o Oomba Figures a desenha com um editor próprio.",
+        "open": {
+          "rectangle": "Abrir no editor de Retângulo",
+          "parallelogram": "Abrir no editor de Paralelogramo",
+          "trapezoid": "Abrir no editor de Trapézio",
+          "kite": "Abrir no editor de Deltoide",
+          "grid": "Marcar no plano cartesiano"
+        },
+        "a": {
+          "square": "um quadrado",
+          "rectangle": "um retângulo",
+          "rhombus": "um losango",
+          "parallelogram": "um paralelogramo",
+          "trapezoid": "um trapézio",
+          "kite": "um deltoide",
+          "quad": "um quadrilátero sem nome especial",
+          "concave": "um quadrilátero côncavo"
+        },
+        "t": {
+          "square": "Quadrado",
+          "rectangle": "Retângulo",
+          "rhombus": "Losango",
+          "parallelogram": "Paralelogramo",
+          "trapezoid": "Trapézio",
+          "isoTrapezoid": "Trapézio isósceles",
+          "rightTrapezoid": "Trapézio retângulo",
+          "kite": "Deltoide",
+          "quad": "Quadrilátero",
+          "concave": "Quadrilátero côncavo",
+          "polygon": "{count, plural, one {Polígono de # lado} other {Polígono de # lados}}"
+        },
+        "tri": {
+          "right": "Retângulo",
+          "acute": "Acutângulo",
+          "obtuse": "Obtusângulo",
+          "scalene": "Escaleno",
+          "isosceles": "Isósceles",
+          "equilateral": "Equilátero"
+        },
+        "ex": {
+          "right": "Triângulo retângulo",
+          "isosceles": "Triângulo isósceles",
+          "obtuse": "Triângulo obtusângulo",
+          "pentagon": "Pentágono"
+        },
+        "examples": "Desenhadas na malha de pontos",
+        "gridOut": "Mostrar também no plano cartesiano",
+        "gridTitle": "No plano cartesiano",
+        "addGrid": "Adicionar a figura do plano à atividade",
+        "drawInstead": "Desenhar numa malha"
       }
     },
     "figures-sheet": {

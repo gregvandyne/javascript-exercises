@@ -3489,6 +3489,92 @@
         "electrons": "電子",
         "values": "値",
         "reading": "読み"
+      },
+      "draw": {
+        "modeLabel": "図形の作り方",
+        "type": "長さを入力",
+        "draw": "描く",
+        "title": "点のグリッドに描く",
+        "size": "グリッドの大きさ",
+        "sizeOpt": "{n} × {n}",
+        "clear": "消す",
+        "help": {
+          "triangle": "3つの点をタップすると三角形になります。頂点をドラッグすると動かせます。",
+          "quad": "図形のまわりの順に4つの点をタップします。頂点をドラッグすると動かせます。",
+          "grid": "図形のまわりの順に点をタップします（頂点は10個まで）。頂点をドラッグすると動かせます。"
+        },
+        "keys": "キーボードでは、矢印キーで動かし、Enterで頂点を置くか持ち上げ、そのあと矢印キーで動かします。",
+        "board": "点のグリッド、{n} × {n}",
+        "corner": "頂点{name}は({x}, {y})",
+        "placed": "{name}を({x}, {y})に置きました",
+        "moved": "{name}を({x}, {y})に動かしました",
+        "picked": "{name}を持ち上げました。矢印キーで動かし、Enterで置きます。",
+        "removed": "{name}を消しました",
+        "corners": "頂点",
+        "sides": "辺",
+        "angles": "角",
+        "kind": "種類",
+        "perimeter": "周の長さ",
+        "area": "面積",
+        "sqUnits": "{area} 平方単位",
+        "more": "{count, plural, other {あと#個の点をタップしてください。}}",
+        "filled": "描いた図形から入力しました。",
+        "keep": "下の図は、最後の正しい図形のままです。",
+        "same": "2つの頂点が同じ点にあります。どちらかを別の点にドラッグしてください。",
+        "line": "3つの頂点が一直線に並んでいるので、図形になりません。どれかを線からずらしてください。",
+        "cross": "2つの辺が交わっています。辺が頂点でだけ出会うように、頂点を動かしてください。",
+        "cannot": "Oomba Figuresはこの図形を描けません。頂点を動かしてみてください。",
+        "isNot": "この図形は{is}で、{want}ではありません。",
+        "special": "この図形は{is}で、Oomba Figuresでは専用のエディターで描きます。",
+        "open": {
+          "rectangle": "長方形のエディターで開く",
+          "parallelogram": "平行四辺形のエディターで開く",
+          "trapezoid": "台形のエディターで開く",
+          "kite": "たこ形のエディターで開く",
+          "grid": "座標平面にかく"
+        },
+        "a": {
+          "square": "正方形",
+          "rectangle": "長方形",
+          "rhombus": "ひし形",
+          "parallelogram": "平行四辺形",
+          "trapezoid": "台形",
+          "kite": "たこ形",
+          "quad": "特別な名前のない四角形",
+          "concave": "へこみのある四角形"
+        },
+        "t": {
+          "square": "正方形",
+          "rectangle": "長方形",
+          "rhombus": "ひし形",
+          "parallelogram": "平行四辺形",
+          "trapezoid": "台形",
+          "isoTrapezoid": "等脚台形",
+          "rightTrapezoid": "直角台形",
+          "kite": "たこ形",
+          "quad": "四角形",
+          "concave": "へこみのある四角形",
+          "polygon": "{count, plural, other {#角形}}"
+        },
+        "tri": {
+          "right": "直角",
+          "acute": "鋭角",
+          "obtuse": "鈍角",
+          "scalene": "不等辺",
+          "isosceles": "二等辺",
+          "equilateral": "正三角形"
+        },
+        "ex": {
+          "right": "直角三角形",
+          "isosceles": "二等辺三角形",
+          "obtuse": "鈍角三角形",
+          "pentagon": "五角形"
+        },
+        "examples": "点のグリッドに描いた例",
+        "gridOut": "座標平面にも表示する",
+        "gridTitle": "座標平面",
+        "addGrid": "座標平面の図をワークシートに追加",
+        "drawInstead": "かわりにグリッドに描く"
       }
     },
     "figures-sheet": {

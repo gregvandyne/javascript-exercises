@@ -5,9 +5,15 @@
 // OF.check's reason in plain words and turns export off. Worked answers come from OF.solve. Undo and redo stay in the
 // browser; a figure can be linked (?d=), downloaded as SVG or PNG with Oomba's CC0 notice in the file, copied, saved
 // as one of the teacher's presets, or added to a worksheet (where the server checks and answers it again).
+// "Draw it" (triangles, the quadrilaterals and the coordinate grid): the teacher draws the shape on a dot grid
+// (public/js/figures-draw.js) and its measures are worked out exactly (public/js/figures-draw-geom.js) and filled in as
+// the kind's real data; a drawing that is not a shape, or not this kind of shape, says so and never changes the figure.
+// The same corners can be a second figure too, plotted on a coordinate grid. Drawn shapes are in undo, redo and presets.
 import { t, api, toast, esc, pageData, askText, copyText } from '/js/app.js';
 import { flatSolve, solveOf, numText, encodeData } from '/js/figures-catalog.js';
 import { pngWithNotice } from '/js/figures-export.js';
+import { makeBoard } from '/js/figures-draw.js';
+import { NAMES, CORNERS, analyze, triangleType, quadType, toData, gridData, lengthValue, lengthLabel, ptsText, parsePts } from '/js/figures-draw-geom.js';
 
 const OF = window.OombaFigures;
 const P = pageData('fg-editor');
@@ -20,12 +26,28 @@ const tr = (prefix, k) => { const s = t(`${prefix}${k}`); return s.startsWith('j
 const fieldLabel = k => tr('js.figures-editor.f.', k);
 const keyLabel = path => path.split('.').map(p => tr('js.figures-editor.k.', p)).join(' ');
 const hideLabel = h => (h === true ? t('js.figures-editor.hideAll') : tr('js.figures-editor.hp.', h));
+const D = (k, v) => t(`js.figures-editor.draw.${k}`, v);
+
+// ---------------------------------------------------------------- "Draw it": which kinds, the grid's sizes, examples
+const DRAW = K.id in CORNERS, GRIDK = K.id === 'grid';
+const SIZES = [6, 8, 10, 12, 16, 20];
+const originFor = n => (GRIDK ? [-n / 2, -n / 2] : [0, 0]);
+const rangeOf = d => ({ x: [d.o[0], d.o[0] + d.n], y: [d.o[1], d.o[1] + d.n] });
+/** Drawn examples for each kind (corners in order, on a 10 by 10 grid unless n says). */
+const DRAW_EX = {
+  triangle: [['ex.right', [[1, 4], [1, 1], [5, 1]]], ['ex.isosceles', [[1, 1], [7, 1], [4, 6]]], ['ex.obtuse', [[2, 1], [8, 1], [1, 4]]]],
+  rectangle: [['t.rectangle', [[1, 1], [7, 1], [7, 4], [1, 4]]], ['t.square', [[3, 1], [7, 3], [5, 7], [1, 5]]]],
+  parallelogram: [['t.parallelogram', [[1, 1], [6, 1], [8, 4], [3, 4]]], ['t.rhombus', [[1, 1], [6, 1], [9, 5], [4, 5]]]],
+  trapezoid: [['t.isoTrapezoid', [[1, 1], [9, 1], [7, 5], [3, 5]]], ['t.rightTrapezoid', [[1, 1], [8, 1], [5, 5], [1, 5]]], ['t.trapezoid', [[1, 1], [9, 1], [6, 5], [2, 5]]]],
+  kite: [['t.kite', [[5, 1], [7, 3], [5, 9], [3, 3]]]],
+  grid: [['ex.pentagon', [[-3, -2], [2, -3], [4, 1], [0, 4], [-4, 2]]], ['ex.right', [[-3, 3], [-3, -1], [2, -1]]]],
+};
 
 // ---------------------------------------------------------------- state and history
-const st = { data: clone(K.presets[0]), hide: false, print: false, question: '', answerKey: null, gen: null, seed: null, genResult: null };
+const st = { data: clone(K.presets[0]), hide: false, print: false, question: '', answerKey: null, gen: null, seed: null, genResult: null, draw: { on: false, pts: [], n: 10, o: originFor(10), grid: false } };
 const S = P.start;
 if (S) Object.assign(st, { data: clone(S.data), hide: S.hide ?? false, question: S.question || '', answerKey: S.answerKey || null, gen: S.gen || null, seed: S.seed || null });
-const snap = () => JSON.stringify({ data: st.data, hide: st.hide, question: st.question, answerKey: st.answerKey, gen: st.gen, seed: st.seed, genResult: st.genResult });
+const snap = () => JSON.stringify({ data: st.data, hide: st.hide, question: st.question, answerKey: st.answerKey, gen: st.gen, seed: st.seed, genResult: st.genResult, draw: st.draw });
 const undo = [], redo = [];
 let last = snap(), timer = 0;
 function commit(now = false) {
@@ -33,7 +55,7 @@ function commit(now = false) {
   const go = () => { const s = snap(); if (s !== last) { undo.push(last); if (undo.length > 100) undo.shift(); redo.length = 0; last = s; } buttons(); };
   if (now) go(); else timer = setTimeout(go, 350);
 }
-function restore(s) { Object.assign(st, JSON.parse(s)); last = s; fields(); render(); }
+function restore(s) { Object.assign(st, JSON.parse(s)); last = s; if (DRAW) drawApply(); fields(); render(); }
 
 // ---------------------------------------------------------------- the page
 const sel = (opts, cur) => opts.map(([v, l]) => `<option value="${esc(v)}"${String(v) === String(cur) ? ' selected' : ''}>${esc(l)}</option>`).join('');
@@ -54,6 +76,18 @@ app.innerHTML = `<div class="fg-ed-head"><h1>${esc(P.name)}</h1>
     ${K.nts ? `<label class="fg-switch"><span>${esc(t('js.figures-editor.nts'))}</span><input type="checkbox" id="fg-nts"></label>` : ''}
   </section>
   <section class="fg-ed-stage" aria-label="${esc(t('js.figures-editor.figure'))}">
+    ${DRAW ? `<div class="fg-mode" role="group" aria-label="${esc(D('modeLabel'))}"><button type="button" class="fg-seg" data-act="mode" data-mode="type" aria-pressed="true">${esc(D('type'))}</button><button type="button" class="fg-seg" data-act="mode" data-mode="draw" aria-pressed="false">${esc(D('draw'))}</button></div>
+    <section class="fg-draw" id="fg-draw" aria-labelledby="fg-draw-h" hidden>
+      <div class="fg-draw-top"><h2 class="fg-h" id="fg-draw-h">${esc(D('title'))}</h2>
+        <label class="fg-dsize"><span>${esc(D('size'))}</span><select class="input" id="fg-dsize"></select></label>
+        <button class="btn" type="button" data-act="dclear">${esc(D('clear'))}</button></div>
+      <p class="muted fg-small" id="fg-dhelp">${esc(D(`help.${GRIDK ? 'grid' : K.id === 'triangle' ? 'triangle' : 'quad'}`))} ${esc(D('keys'))}</p>
+      <div class="fg-draw-body"><div class="fg-board-wrap" id="fg-board" data-describedby="fg-dhelp"></div><div class="fg-dm" id="fg-dm"></div></div>
+      <div id="fg-dmsg" role="status" aria-live="polite"></div>
+      ${GRIDK ? '' : `<label class="fg-switch"><span>${esc(D('gridOut'))}</span><input type="checkbox" id="fg-dgrid"></label>`}
+    </section>
+    ${GRIDK ? '' : `<section class="panel fg-gridout" id="fg-gridout" aria-labelledby="fg-gridout-h" hidden><h3 class="fg-h" id="fg-gridout-h">${esc(D('gridTitle'))}</h3>
+      <div class="fg-ed-figure fg-gridfig" id="fg-gridfig"></div><div class="fg-add" id="fg-gaddbox"></div><p class="notice good fg-small" id="fg-gadded" role="status" hidden></p></section>`}` : ''}
     <div class="panel fg-ed-figure" id="fg-figure" aria-live="polite"></div>
     <div class="fg-cant" id="fg-cant" role="alert" hidden></div>
     <code class="fg-code" id="fg-code" dir="ltr"></code>
@@ -84,14 +118,18 @@ const $ = id => document.getElementById(id);
 let mine = P.mine || [];
 function presets() {
   $('fg-preset').innerHTML = `<option value="">${esc(t('js.figures-editor.presets'))}</option><optgroup label="${esc(t('js.figures-editor.examples'))}">${P.presets.map((p, i) => `<option value="x${i}">${esc(p.name)}</option>`).join('')}</optgroup>`
+    + (DRAW ? `<optgroup label="${esc(D('examples'))}">${DRAW_EX[K.id].map(([k, pts], i) => `<option value="d${i}">${esc(D(k, { count: pts.length }))}</option>`).join('')}</optgroup>` : '')
     + (mine.length ? `<optgroup label="${esc(t('js.figures-editor.mine'))}">${mine.map(p => `<option value="m${esc(p.id)}">${esc(p.name)}</option>`).join('')}</optgroup>` : '');
 }
 presets();
 $('fg-preset').addEventListener('change', async e => {
   const v = e.target.value; e.target.value = '';
+  if (v[0] === 'd' && DRAW_EX[K.id] && DRAW_EX[K.id][+v.slice(1)]) { startDrawing(DRAW_EX[K.id][+v.slice(1)][1], 10); return; }
   const p = v[0] === 'x' ? P.presets[+v.slice(1)] : mine.find(m => `m${m.id}` === v);
   if (!p) return;
+  if (DRAW && p.draw && Array.isArray(p.draw.pts)) { startDrawing(p.draw.pts, p.draw.n, p.draw.o); return; }
   Object.assign(st, { data: clone(p.data), gen: null, seed: null, genResult: null, answerKey: null });
+  if (DRAW) { st.draw.on = false; drawApply(); }
   fields(); render(); commit(true);
 });
 
@@ -103,7 +141,9 @@ function fields() {
   const groups = { number: [], enum: [], bool: [], text: [] };
   for (const k of keys) { const ty = typeOf(k, st.data[k] !== undefined ? st.data[k] : ex[k]); if (groups[ty]) groups[ty].push(k); }
   const id = k => `fg-f-${k.replace(/[^\w-]/g, '_')}`;
-  const num = k => `<label class="fg-num"><span>${esc(fieldLabel(k))}</span><input class="input" type="number" step="any" inputmode="decimal" id="${id(k)}" data-f="${esc(k)}" data-ty="number" value="${typeof st.data[k] === 'number' ? esc(st.data[k]) : ''}"></label>`;
+  // A length given exactly ({ sqrt: 13 }, [7, 3]) shows its value, and its exact form under it, until it is typed over.
+  const numVal = v => (typeof v === 'number' ? v : Number.isFinite(lengthValue(v)) ? numText(lengthValue(v), 4) : '');
+  const num = k => `<label class="fg-num"><span>${esc(fieldLabel(k))}</span><input class="input" type="number" step="any" inputmode="decimal" id="${id(k)}" data-f="${esc(k)}" data-ty="number" value="${esc(numVal(st.data[k]))}">${lengthLabel(st.data[k]) ? `<small class="fg-exact" dir="ltr">= ${esc(lengthLabel(st.data[k]))}</small>` : ''}</label>`;
   const en = k => `<label class="fg-block"><span>${esc(fieldLabel(k))}</span><select class="input" id="${id(k)}" data-f="${esc(k)}" data-ty="enum">${sel([['', t('js.figures-editor.default')], ...K.options[k].filter(o => o !== '').map(o => [o, o])], st.data[k] ?? '')}</select></label>`;
   const bo = k => `<label class="fg-switch"><span>${esc(fieldLabel(k))}</span><input type="checkbox" id="${id(k)}" data-f="${esc(k)}" data-ty="bool"${st.data[k] === true ? ' checked' : ''}></label>`;
   const tx = k => `<label class="fg-block"><span>${esc(fieldLabel(k))}</span><input class="input" type="text" id="${id(k)}" data-f="${esc(k)}" data-ty="text" maxlength="80" value="${esc(typeof st.data[k] === 'string' ? st.data[k] : '')}"></label>`;
@@ -127,6 +167,7 @@ $('fg-fields').addEventListener('input', e => {
   if (ty === 'number') { if (el.value === '' || !Number.isFinite(+el.value)) delete st.data[k]; else st.data[k] = +el.value; }
   else if (ty === 'bool') { if (el.checked) st.data[k] = true; else if (inEx) st.data[k] = false; else delete st.data[k]; }
   else if (ty === 'enum' || ty === 'text') { if (el.value === '') delete st.data[k]; else st.data[k] = el.value; }
+  if (ty === 'number') typed();
   changed(); render(); commit();
   if (document.activeElement !== $('fg-json')) $('fg-json').value = JSON.stringify(st.data, null, 2);
 });
@@ -137,7 +178,7 @@ $('fg-json').addEventListener('input', () => {
   try { o = JSON.parse($('fg-json').value); if (!o || typeof o !== 'object' || Array.isArray(o)) { o = null; msg = t('js.figures-editor.jsonObject'); } } catch (e) { msg = t('js.figures-editor.jsonBad', { why: String(e.message).slice(0, 120) }); }
   $('fg-json').classList.toggle('bad', !o); $('fg-json-msg').textContent = msg; $('fg-json-msg').classList.toggle('fg-bad', !o);
   if (!o) return;
-  st.data = o; changed(); render(); commit();
+  st.data = o; typed(); changed(); render(); commit();
 });
 $('fg-json').addEventListener('blur', () => { if (!$('fg-json').classList.contains('bad')) fields(); });
 $('fg-print').addEventListener('change', () => { st.print = $('fg-print').checked; render(); });
@@ -148,6 +189,8 @@ $('fg-hidepart').addEventListener('change', () => { const v = $('fg-hidepart').v
 $('fg-key').addEventListener('change', () => { st.answerKey = $('fg-key').value || null; answers(); commit(true); });
 /** The figure is no longer exactly what its generator made: it is the teacher's own now (as the server decides too). */
 function changed() { if (st.genResult && canon(st.genResult.data) !== canon(st.data)) { st.gen = null; st.seed = null; st.genResult = null; } }
+/** A measure typed in: the figure follows what was typed, so the editor is back in Type the measures. */
+function typed() { if (DRAW && st.draw.on) { st.draw.on = false; drawShow(); } }
 
 // ---------------------------------------------------------------- drawing, the cannot-draw state and the answers
 const WHY = [[/cannot make a triangle|has to be longer than/i, 'triangle'], [/180/, 'angles'], [/too short|cannot reach|never meet/i, 'short'], [/agree|contradict/i, 'agree'],
@@ -164,7 +207,7 @@ function render() {
     const why = (WHY.find(([re]) => re.test(bad[0])) || [null, 'generic'])[1];
     cant.innerHTML = `<h3>⚠ ${esc(t(`js.figures-editor.why.${why}.t`))}</h3><p>${esc(t(`js.figures-editor.why.${why}.p`))}</p>
       <p class="fg-small">${esc(t('js.figures-editor.ofSays', { reason: bad.slice(0, 3).join('; ') }))}</p>
-      <div class="row"><button class="btn btn-primary" type="button" data-act="undo"${undo.length ? '' : ' disabled'}>${esc(t('js.figures-editor.undoLast'))}</button><button class="btn" type="button" data-act="example">${esc(t('js.figures-editor.backToExample'))}</button></div>`;
+      <div class="row"><button class="btn btn-primary" type="button" data-act="undo"${undo.length ? '' : ' disabled'}>${esc(t('js.figures-editor.undoLast'))}</button><button class="btn" type="button" data-act="example">${esc(t('js.figures-editor.backToExample'))}</button>${DRAW && !st.draw.on ? `<button class="btn btn-hot" type="button" data-act="drawit">✏️ ${esc(D('drawInstead'))}</button>` : ''}</div>`;
     cant.hidden = false;
   } else cant.hidden = true;
   for (const el of document.querySelectorAll('.fg-ed-controls .fg-num input')) el.classList.toggle('bad', bad.length > 0 && el.value !== '');
@@ -172,6 +215,7 @@ function render() {
   for (const b of document.querySelectorAll('[data-needs-ok]')) b.disabled = bad.length > 0;
   answers(bad);
   addBox(bad);
+  if (DRAW) drawShow();
   buttons();
 }
 function answers(bad = problems()) {
@@ -196,25 +240,37 @@ function buttons() {
 }
 
 // ---------------------------------------------------------------- add to a worksheet (or save back to one)
-function item() { return { kind: K.id, data: st.data, hide: st.hide, question: st.question, answerKey: st.answerKey, ...(st.gen ? { gen: st.gen, seed: st.seed } : {}) }; }
+/** What goes on a worksheet: this figure, or (out 'grid') the drawn corners plotted on a coordinate grid. */
+function item(out) {
+  if (out === 'grid') return { kind: 'grid', data: gridOut(), hide: false, question: st.question, answerKey: null };
+  return { kind: K.id, data: st.data, hide: st.hide, question: st.question, answerKey: st.answerKey, ...(st.gen ? { gen: st.gen, seed: st.seed } : {}) };
+}
+const addMenu = (bad, out = '') => `<details class="fg-addmenu${bad ? ' off' : ''}"><summary class="btn btn-primary fg-wide">+ ${esc(out ? D('addGrid') : t('js.figures-editor.add'))}</summary><div class="fg-menu" role="menu">
+    ${(P.sheets || []).slice(0, 8).map(w => `<button type="button" role="menuitem" data-act="addto" data-out="${out}" data-ws="${esc(w.id)}">${esc(w.title)} <small>${esc(t('js.figures-editor.qs', { count: w.n }))}</small></button>`).join('')}
+    <button type="button" role="menuitem" data-act="addnew" data-out="${out}">+ ${esc(t('js.figures-editor.newSheet'))}</button></div></details>`;
 function addBox(bad) {
   const box = $('fg-addbox'), off = bad.length ? ' disabled' : '';
   if (S && S.ws) { box.innerHTML = `<button class="btn btn-primary fg-wide" type="button" data-act="saveback"${off}>💾 ${esc(t('js.figures-editor.saveBack', { title: S.wsTitle }))}</button>`; return; }
   if (box.dataset.built) { const d = box.querySelector('details'); d.classList.toggle('off', !!bad.length); if (bad.length) d.open = false; box.querySelector('summary').setAttribute('aria-disabled', String(!!bad.length)); return; }
   box.dataset.built = '1';
-  box.innerHTML = `<details class="fg-addmenu${bad.length ? ' off' : ''}"><summary class="btn btn-primary fg-wide">+ ${esc(t('js.figures-editor.add'))}</summary><div class="fg-menu" role="menu">
-    ${(P.sheets || []).slice(0, 8).map(w => `<button type="button" role="menuitem" data-act="addto" data-ws="${esc(w.id)}">${esc(w.title)} <small>${esc(t('js.figures-editor.qs', { count: w.n }))}</small></button>`).join('')}
-    <button type="button" role="menuitem" data-act="addnew">+ ${esc(t('js.figures-editor.newSheet'))}</button></div></details>`;
+  box.innerHTML = addMenu(bad.length > 0);
 }
-async function addTo(ws) {
+async function addTo(ws, out = '') {
+  const it = item(out);
+  // Checked here first (the server checks it again): a figure that cannot be drawn is never sent.
+  let bad; try { bad = OF.check(it.kind, it.data); } catch (e) { bad = [String(e.message)]; }
+  if (bad.length) { toast(t('js.figures-editor.ofSays', { reason: bad.slice(0, 3).join('; ') }), { bad: true }); return; }
   try {
-    const r = ws ? await api(`/api/figures/worksheets/${encodeURIComponent(ws)}/items`, { method: 'POST', body: { item: item() } })
-      : await api('/api/figures/worksheets', { method: 'POST', body: { title: P.untitled, items: [item()] } });
+    const r = ws ? await api(`/api/figures/worksheets/${encodeURIComponent(ws)}/items`, { method: 'POST', body: { item: it } })
+      : await api('/api/figures/worksheets', { method: 'POST', body: { title: P.untitled, items: [it] } });
     const id = r.worksheet.id;
     if (!ws) P.sheets = [{ id, title: r.worksheet.title, n: r.worksheet.items.length }, ...(P.sheets || [])];
-    const box = $('fg-addbox'); delete box.dataset.built; addBox([]);
-    $('fg-added').innerHTML = `${esc(t('js.figures-editor.added', { title: r.worksheet.title }))} <a href="/figures/worksheets/${esc(id)}">${esc(t('js.figures-editor.openSheet'))}</a>`;
-    $('fg-added').hidden = false;
+    else { const w = (P.sheets || []).find(x => x.id === ws); if (w) w.n = r.worksheet.items.length; }
+    const box = $('fg-addbox'); delete box.dataset.built; addBox(problems());
+    if ($('fg-gaddbox')) $('fg-gaddbox').innerHTML = addMenu(false, 'grid');
+    const note = out === 'grid' ? $('fg-gadded') : $('fg-added');
+    note.innerHTML = `${esc(t('js.figures-editor.added', { title: r.worksheet.title }))} <a href="/figures/worksheets/${esc(id)}">${esc(t('js.figures-editor.openSheet'))}</a>`;
+    note.hidden = false;
   } catch (e) { toast(e.message, { bad: true }); }
 }
 const added = document.createElement('p'); added.id = 'fg-added'; added.className = 'notice good fg-small'; added.setAttribute('role', 'status'); added.hidden = true;
@@ -238,7 +294,7 @@ async function pngBlob(scale = 2) {
 const ACTS = {
   undo() { if (!undo.length) return; clearTimeout(timer); redo.push(snap()); restore(undo.pop()); buttons(); },
   redo() { if (!redo.length) return; undo.push(snap()); restore(redo.pop()); buttons(); },
-  example() { Object.assign(st, { data: clone(K.presets[0]), gen: null, seed: null, genResult: null, answerKey: null }); fields(); render(); commit(true); },
+  example() { Object.assign(st, { data: clone(K.presets[0]), gen: null, seed: null, genResult: null, answerKey: null }); if (DRAW) { st.draw.on = false; drawApply(); } fields(); render(); commit(true); },
   async random(btn) {
     if (!K.gens.length) {
       const list = P.presets.filter(p => canon(p.data) !== canon(st.data)); const p = list[Math.floor(Math.random() * list.length)] || P.presets[0];
@@ -262,11 +318,15 @@ const ACTS = {
   async preset() {
     const name = await askText({ title: t('js.figures-editor.savePreset'), label: t('js.figures-editor.presetName'), max: 60 });
     if (!name) return;
-    try { const r = await api('/api/figures/presets', { method: 'POST', body: { kind: K.id, name, data: st.data } }); mine = [r.preset, ...mine]; presets(); toast(t('js.figures-editor.presetSaved')); }
+    const draw = DRAW && st.draw.on && drawn && drawn.ok ? { pts: st.draw.pts, n: st.draw.n, o: st.draw.o } : undefined;
+    try { const r = await api('/api/figures/presets', { method: 'POST', body: { kind: K.id, name, data: st.data, ...(draw ? { draw } : {}) } }); mine = [r.preset, ...mine]; presets(); toast(t('js.figures-editor.presetSaved')); }
     catch (e) { toast(e.message, { bad: true }); }
   },
-  addto(btn) { btn.closest('details').open = false; addTo(btn.dataset.ws); },
-  addnew(btn) { btn.closest('details').open = false; addTo(null); },
+  addto(btn) { btn.closest('details').open = false; addTo(btn.dataset.ws, btn.dataset.out); },
+  addnew(btn) { btn.closest('details').open = false; addTo(null, btn.dataset.out); },
+  mode(btn) { const on = btn.dataset.mode === 'draw'; if (on === st.draw.on) return; st.draw.on = on; drawApply(); fields(); render(); commit(true); if (on) board.focus({ preventScroll: true }); },
+  drawit() { st.draw.on = true; drawApply(); fields(); render(); commit(true); $('fg-draw').scrollIntoView({ block: 'start', behavior: 'smooth' }); board.focus({ preventScroll: true }); },
+  dclear() { st.draw.pts = []; drawApply(); render(); commit(true); board.focus({ preventScroll: true }); },
   async saveback() {
     try { await api(`/api/figures/worksheets/${encodeURIComponent(S.ws)}/items/${encodeURIComponent(S.item)}`, { method: 'POST', body: { data: st.data, hide: st.hide, question: st.question, answerKey: st.answerKey } }); location.href = `/figures/worksheets/${encodeURIComponent(S.ws)}`; }
     catch (e) { toast(e.message, { bad: true }); }
@@ -280,6 +340,113 @@ document.addEventListener('keydown', e => {
   if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'z' || e.target.closest('input,textarea,select')) return;
   e.preventDefault(); (e.shiftKey ? ACTS.redo : ACTS.undo)();
 });
+
+// ---------------------------------------------------------------- Draw it
+let drawn = null;
+// What a new drawing keeps of the figure before it: its display options, never its measures or marks (they would be
+// about the old shape).
+const KEEP = ['unit', 'round', 'names', 'size', 'rotate', 'flip', 'rightAngles'];
+const KEEP_GRID = ['step', 'xstep', 'ystep', 'numbering', 'xnumbering', 'ynumbering', 'xtitle', 'ytitle'];
+const okData = (kind, d) => { try { return OF.check(kind, d).length === 0; } catch { return false; } };
+/** The drawing's corners in the order the data names them (A first). */
+const ordered = () => (drawn && drawn.ok ? drawn.order.map(i => st.draw.pts[i]) : st.draw.pts);
+/** The drawn corners plotted on a coordinate grid, the second output. */
+const gridOut = () => gridData(ordered(), rangeOf(st.draw));
+/** The drawing, worked out: when it is this kind's shape and Oomba Figures can draw it, it becomes the figure's data. */
+function drawApply() {
+  if (!DRAW) return;
+  drawn = st.draw.pts.length ? toData(K.id, st.draw.pts, { range: rangeOf(st.draw) }) : { ok: false, why: 'few', need: CORNERS[K.id][0] };
+  if (!st.draw.on || !drawn.ok) return;
+  const own = { ...Object.fromEntries((GRIDK ? KEEP_GRID : KEEP).filter(k => k in st.data).map(k => [k, st.data[k]])), ...drawn.data };
+  const data = okData(K.id, own) ? own : okData(K.id, drawn.data) ? drawn.data : null;
+  if (!data) { drawn = { ok: false, why: 'cannot' }; return; }
+  if (canon(data) !== canon(st.data)) { st.data = data; changed(); }
+}
+function startDrawing(pts, n = 10, o) {
+  const size = SIZES.includes(n) ? n : 10;
+  st.draw = { on: true, pts: pts.map(p => [p[0], p[1]]), n: size, o: Array.isArray(o) && o.length === 2 ? o : originFor(size), grid: st.draw.grid };
+  Object.assign(st, { gen: null, seed: null, genResult: null, answerKey: null });
+  drawApply(); fields(); render(); commit(true);
+}
+const fmt = (x, dp) => new Intl.NumberFormat(LANG, { maximumFractionDigits: dp }).format(Math.abs(x) < 1e-9 ? 0 : x);
+const xy = p => `(${p[0]}, ${p[1]})`;
+function measures() {
+  const pts = st.draw.pts;
+  if (!pts.length) return '';
+  const order = drawn && drawn.ok ? drawn.order : pts.map((p, i) => i), P = order.map(i => pts[i]);
+  const corners = `<div><dt>${esc(D('corners'))}</dt><dd dir="ltr">${P.map((p, k) => `<span class="fg-cc">${NAMES[k]}${xy(p)}</span>`).join(' ')}</dd></div>`;
+  const a = analyze(P);
+  if (!a.ok) return `<dl class="fg-dm-list">${corners}</dl>`;
+  const typeText = a.n === 3 ? (ty => `${D(`tri.${ty.byAngles}`)} · ${D(`tri.${ty.bySides}`)}`)(triangleType(a))
+    : a.n === 4 ? (q => D(`t.${q.type === 'trapezoid' && q.right ? 'rightTrapezoid' : q.type === 'trapezoid' && q.isosceles ? 'isoTrapezoid' : q.type}`))(quadType(a)) : D('t.polygon', { count: a.n });
+  const allWhole = a.sides.every(s => Number.isInteger(s.value));
+  return `<dl class="fg-dm-list">${corners}
+    <div><dt>${esc(D('sides'))}</dt><dd dir="ltr"><ul>${a.sides.map(s => `<li><b>${s.name}</b> = ${s.text}${Number.isInteger(s.value) ? '' : ` ≈ ${fmt(s.value, 2)}`}</li>`).join('')}</ul></dd></div>
+    <div><dt>${esc(D('angles'))}</dt><dd dir="ltr"><ul>${a.angles.map(g => `<li><b>∠${g.name}</b> = ${g.right ? '90° ∟' : `${fmt(Math.round(g.deg * 10) / 10, 1)}°`}</li>`).join('')}</ul></dd></div>
+    <div><dt>${esc(D('kind'))}</dt><dd class="fg-dtype">${esc(typeText)}</dd></div>
+    <div><dt>${esc(D('perimeter'))}</dt><dd dir="ltr">${allWhole ? fmt(a.perimeter, 0) : `${a.perimeterText} ≈ ${fmt(a.perimeter, 2)}`}</dd></div>
+    <div><dt>${esc(D('area'))}</dt><dd>${esc(D('sqUnits', { area: fmt(a.area, 1) }))}</dd></div></dl>`;
+}
+function message() {
+  const r = drawn;
+  if (!r || !st.draw.pts.length) return '';
+  const keep = ` ${esc(D('keep'))}`;
+  if (r.ok) return `<p class="fg-dnote good">✓ ${esc(D('filled'))}</p>`;
+  if (r.why === 'few') return `<p class="fg-dnote">${esc(D('more', { count: r.need }))}</p>`;
+  if (r.why === 'kind') {
+    const is = D(`a.${r.type}`), href = `/figures/${r.kind}?draw=${encodeURIComponent(ptsText(st.draw.pts))}&n=${st.draw.n}&o=${encodeURIComponent(st.draw.o.join(','))}`;
+    return `<div class="fg-dnote warn"><p>${esc(r.special ? D('special', { is }) : D('isNot', { is, want: D(`a.${K.id}`) }))}${keep}</p><a class="btn btn-primary" href="${esc(href)}" data-open="${esc(r.kind)}">${esc(D(`open.${r.kind}`))}</a></div>`;
+  }
+  return `<p class="fg-dnote warn">⚠ ${esc(D(r.why))}${keep}</p>`;
+}
+let board = null;
+function drawShow() {
+  if (!DRAW) return;
+  const on = st.draw.on;
+  for (const b of document.querySelectorAll('[data-act="mode"]')) b.setAttribute('aria-pressed', String((b.dataset.mode === 'draw') === on));
+  $('fg-draw').hidden = !on;
+  const names = st.draw.pts.map((p, i) => NAMES[i]);
+  if (drawn && drawn.ok) drawn.order.forEach((i, k) => { names[i] = NAMES[k]; });
+  board.set({ pts: st.draw.pts, n: st.draw.n, o: st.draw.o, names, max: CORNERS[K.id][1], bad: !!(drawn && !drawn.ok && drawn.why !== 'few') });
+  const inRange = n => { const o = GRIDK ? originFor(n) : [0, 0]; return st.draw.pts.every(p => p[0] >= o[0] && p[0] <= o[0] + n && p[1] >= o[1] && p[1] <= o[1] + n); };
+  $('fg-dsize').innerHTML = SIZES.map(n => `<option value="${n}"${n === st.draw.n ? ' selected' : ''}${inRange(n) ? '' : ' disabled'}>${esc(D('sizeOpt', { n }))}</option>`).join('');
+  $('fg-dm').innerHTML = measures();
+  const msg = message();
+  if ($('fg-dmsg').dataset.last !== msg) { $('fg-dmsg').innerHTML = msg; $('fg-dmsg').dataset.last = msg; }
+  if (GRIDK) return;
+  $('fg-dgrid').checked = st.draw.grid;
+  const g = on && st.draw.grid && drawn && drawn.ok ? gridOut() : null, show = !!(g && okData('grid', g));
+  $('fg-gridout').hidden = !show;
+  if (show) {
+    $('fg-gridfig').innerHTML = '';
+    $('fg-gridfig').appendChild(OF.draw('grid', g, { lang: LANG, print: st.print, title: D('gridTitle') }));
+    if (!$('fg-gaddbox').innerHTML) $('fg-gaddbox').innerHTML = addMenu(false, 'grid');
+  }
+}
+if (DRAW) {
+  board = makeBoard($('fg-board'), {
+    D,
+    onChange(pts, { final }) {
+      st.draw.pts = pts;
+      drawApply(); fields(); render();
+      if (final) commit(true);
+    },
+  });
+  $('fg-dsize').addEventListener('change', () => {
+    const n = +$('fg-dsize').value; if (!SIZES.includes(n)) return;
+    st.draw.n = n; if (GRIDK) st.draw.o = originFor(n);
+    drawApply(); fields(); render(); commit(true);
+  });
+  if ($('fg-dgrid')) $('fg-dgrid').addEventListener('change', () => { st.draw.grid = $('fg-dgrid').checked; render(); commit(true); });
+  // ?draw=1,1;4,1;1,3&n=10&o=0,0: corners sent here from another kind's "That shape is a ..." (or a link).
+  const qs = new URLSearchParams(location.search), pts = parsePts(qs.get('draw'));
+  if (pts && !S) {
+    const o = parsePts(qs.get('o')), n = SIZES.includes(+qs.get('n')) ? +qs.get('n') : 10;
+    st.draw = { on: true, pts: pts.slice(0, CORNERS[K.id][1]), n, o: o && o.length === 1 ? o[0] : originFor(n), grid: false };
+    drawApply();
+  } else drawApply();
+  last = snap();
+}
 
 // A worksheet question from a generator: what the generator says, so its answer and worked lines show (the server
 // works them out again when it is saved).

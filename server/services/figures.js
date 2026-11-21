@@ -288,11 +288,25 @@ export function printHtml(w, items, { t = tEn, lang = 'en', dir = 'ltr', key = f
 }
 
 // ---------------------------------------------------------------- the teacher's presets and "Power with AI" switch
+// A preset made in the editor's "Draw it" keeps its drawing too (the corners on the dot grid, its size and corner), so
+// choosing it opens the drawing again. It is kept in the same JSON as the data, under _draw (a key no figure takes), and
+// listPresets hands it back as draw beside the data.
+const DRAW_SIZES = [6, 8, 10, 12, 16, 20];
+const whole = v => Number.isInteger(v) && Math.abs(v) <= 40;
+export function cleanDraw(d) {
+  if (!d || typeof d !== 'object' || !Array.isArray(d.pts) || d.pts.length < 3 || d.pts.length > 10) return null;
+  if (!d.pts.every(p => Array.isArray(p) && p.length === 2 && p.every(whole))) return null;
+  const n = DRAW_SIZES.includes(d.n) ? d.n : 10, o = Array.isArray(d.o) && d.o.length === 2 && d.o.every(whole) ? d.o : [0, 0];
+  return { pts: d.pts.map(p => [p[0], p[1]]), n, o: [o[0], o[1]] };
+}
 export function listPresets(u, kind) {
   if (!canMake(u) || !kindOf(kind)) return [];
-  return q.all('SELECT id, name, data FROM figure_presets WHERE owner_id=? AND kind=? ORDER BY created_at DESC LIMIT ?', u.id, kind, LIMITS.presets).map(r => ({ id: r.id, name: r.name, data: json(r.data, {}) }));
+  return q.all('SELECT id, name, data FROM figure_presets WHERE owner_id=? AND kind=? ORDER BY created_at DESC LIMIT ?', u.id, kind, LIMITS.presets).map(r => {
+    const data = json(r.data, {}), draw = cleanDraw(data._draw); delete data._draw;
+    return { id: r.id, name: r.name, data, ...(draw ? { draw } : {}) };
+  });
 }
-export function savePreset(u, { kind, name, data } = {}) {
+export function savePreset(u, { kind, name, data, draw } = {}) {
   if (!canMake(u)) return fail('notFound');
   const K = kindOf(kind); if (!K) return fail('badKind');
   const nm = clipStr(name, LIMITS.nameChars).replace(/\s+/g, ' ').trim();
@@ -302,8 +316,9 @@ export function savePreset(u, { kind, name, data } = {}) {
   const problems = checkFigure(K.id, c.data); if (problems.length) return fail('cannotDraw', { problems });
   if (q.get('SELECT COUNT(*) n FROM figure_presets WHERE owner_id=? AND kind=?', u.id, K.id).n >= LIMITS.presets) return fail('tooMany');
   const id = uid(12);
-  q.run('INSERT INTO figure_presets(id, owner_id, kind, name, data, created_at) VALUES (?,?,?,?,?,?)', id, u.id, K.id, nm, JSON.stringify(c.data), now());
-  return ok({ preset: { id, name: nm, data: c.data } });
+  const dr = cleanDraw(draw);
+  q.run('INSERT INTO figure_presets(id, owner_id, kind, name, data, created_at) VALUES (?,?,?,?,?,?)', id, u.id, K.id, nm, JSON.stringify(dr ? { ...c.data, _draw: dr } : c.data), now());
+  return ok({ preset: { id, name: nm, data: c.data, ...(dr ? { draw: dr } : {}) } });
 }
 export function deletePreset(u, id) {
   if (!canMake(u)) return fail('notFound');

@@ -3490,6 +3490,92 @@
         "electrons": "Gli elettroni",
         "values": "I valori",
         "reading": "La lettura"
+      },
+      "draw": {
+        "modeLabel": "Come creare la figura",
+        "type": "Scrivi le misure",
+        "draw": "Disegnala",
+        "title": "Disegnala sulla griglia di punti",
+        "size": "Dimensione della griglia",
+        "sizeOpt": "{n} per {n}",
+        "clear": "Cancella",
+        "help": {
+          "triangle": "Tocca tre punti per fare un triangolo. Trascina un vertice per spostarlo.",
+          "quad": "Tocca quattro punti in ordine, facendo il giro della figura. Trascina un vertice per spostarlo.",
+          "grid": "Tocca i punti in ordine, facendo il giro della figura, fino a 10 vertici. Trascina un vertice per spostarlo."
+        },
+        "keys": "Con la tastiera: le frecce spostano, Invio mette un vertice o lo prende, poi le frecce lo spostano.",
+        "board": "Griglia di punti, {n} per {n}",
+        "corner": "Vertice {name} in ({x}, {y})",
+        "placed": "{name} messo in ({x}, {y})",
+        "moved": "{name} spostato in ({x}, {y})",
+        "picked": "{name} preso. Spostalo con le frecce e premi Invio per lasciarlo.",
+        "removed": "{name} tolto",
+        "corners": "Vertici",
+        "sides": "Lati",
+        "angles": "Angoli",
+        "kind": "Tipo",
+        "perimeter": "Perimetro",
+        "area": "Area",
+        "sqUnits": "{area} unità quadrate",
+        "more": "{count, plural, one {Tocca ancora # punto.} other {Tocca ancora # punti.}}",
+        "filled": "Compilato dal tuo disegno.",
+        "keep": "La figura qui sotto tiene la tua ultima forma valida.",
+        "same": "Due vertici sono sullo stesso punto. Trascinane uno su un altro punto.",
+        "line": "Tre vertici sono allineati, quindi non formano una figura. Spostane uno fuori dalla linea.",
+        "cross": "Due lati si incrociano. Sposta un vertice in modo che i lati si tocchino solo nei vertici.",
+        "cannot": "Oomba Figures non riesce a disegnare questa. Prova a spostare un vertice.",
+        "isNot": "Quella figura è {is}, non {want}.",
+        "special": "Quella figura è {is}, e Oomba Figures la disegna con un editor tutto suo.",
+        "open": {
+          "rectangle": "Aprila nell'editor Rettangolo",
+          "parallelogram": "Aprila nell'editor Parallelogramma",
+          "trapezoid": "Aprila nell'editor Trapezio",
+          "kite": "Aprila nell'editor Deltoide",
+          "grid": "Mettila su un piano cartesiano"
+        },
+        "a": {
+          "square": "un quadrato",
+          "rectangle": "un rettangolo",
+          "rhombus": "un rombo",
+          "parallelogram": "un parallelogramma",
+          "trapezoid": "un trapezio",
+          "kite": "un deltoide",
+          "quad": "un quadrilatero senza un nome particolare",
+          "concave": "un quadrilatero concavo"
+        },
+        "t": {
+          "square": "Quadrato",
+          "rectangle": "Rettangolo",
+          "rhombus": "Rombo",
+          "parallelogram": "Parallelogramma",
+          "trapezoid": "Trapezio",
+          "isoTrapezoid": "Trapezio isoscele",
+          "rightTrapezoid": "Trapezio rettangolo",
+          "kite": "Deltoide",
+          "quad": "Quadrilatero",
+          "concave": "Quadrilatero concavo",
+          "polygon": "{count, plural, one {Poligono con # lato} other {Poligono con # lati}}"
+        },
+        "tri": {
+          "right": "Rettangolo",
+          "acute": "Acutangolo",
+          "obtuse": "Ottusangolo",
+          "scalene": "Scaleno",
+          "isosceles": "Isoscele",
+          "equilateral": "Equilatero"
+        },
+        "ex": {
+          "right": "Triangolo rettangolo",
+          "isosceles": "Triangolo isoscele",
+          "obtuse": "Triangolo ottusangolo",
+          "pentagon": "Pentagono"
+        },
+        "examples": "Disegnate sulla griglia di punti",
+        "gridOut": "Mostrala anche su un piano cartesiano",
+        "gridTitle": "Su un piano cartesiano",
+        "addGrid": "Aggiungi la figura del piano a una scheda",
+        "drawInstead": "Disegnala invece su una griglia"
       }
     },
     "figures-sheet": {
