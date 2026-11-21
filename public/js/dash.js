@@ -22,6 +22,11 @@ import * as B from '/js/dash-build.js';
 import * as AG from '/js/agenda.js';
 import { format } from '/js/i18n-format.js';
 import { withMode, modeState } from '/js/dash-modes.js';
+// Class Board parity (docs/decisions.md "Class Board: PDF, link tile and stickers"): placed stickers (over the grid, not
+// on it), the PDF widget's upload and the link tile's address check.
+import { createStickers } from '/js/dash-stickers.js';
+import { uploadButton } from '/js/dash-pdf.js';
+import { linkUrl } from '/js/dash-link.js';
 
 const D = pageData();
 const root = document.getElementById('dash');
@@ -65,10 +70,19 @@ function start() {
   // widgets: what this screen shows. Teacher: the current layout's widgets. Student: the teacher's pinned widgets
   // (pinned: true, at the place this student moved them to) then their own.
   const S = { skew: D.live && D.live.now ? D.live.now - Date.now() : 0, samples: [], editing: false, selected: null, undo: [], bg: null, live: D.live || { pushes: [] }, layoutId: D.current || null, layouts: D.layouts || [], active: D.active || null, pinsAt: (D.live || {}).pinsAt || 0, pins: D.pins || [] };
-  if (TEACHER) { const l = S.layouts.find(x => x.id === S.layoutId) || S.layouts[0]; S.widgets = clone(l.widgets); S.bg = l.bg; }
+  // Placed stickers (a free type: not on the grid) are kept apart from the grid's widgets, and saved with them.
+  const isFree = w => !!(types.get(w.type) || {}).free;
+  function loadWidgets(list) { const all = clone(list || []); S.widgets = all.filter(w => !isFree(w)); S.stickers = all.filter(isFree); }
+  S.stickers = [];
+  if (TEACHER) { const l = S.layouts.find(x => x.id === S.layoutId) || S.layouts[0]; loadWidgets(l.widgets); S.bg = l.bg; }
   else { S.mine = D.me; S.widgets = mergeStudent(); S.bg = D.me.bg; }
   // The settings sheet opened from the board by a widget's gear (the teacher, not in edit mode): { id, box, h, base, undo, sh }.
   let board = null;
+  // The teacher's placed stickers and the sticker panel (public/js/dash-stickers.js). Never on a student's screen.
+  const stickerType = types.get('stickers');
+  const stickers = TEACHER && stickerType ? createStickers({ grid, words: stickerType.words, intl: INTL, list: () => S.stickers, setList: l => { S.stickers = l; },
+    snapshot, save, say: msg => announce(msg), toast, narrow: () => narrow.matches, max: D.maxStickers || 60, user: document.body.dataset.user || '' }) : null;
+  $('#dash-stickers-btn')?.addEventListener('click', () => stickers && stickers.toggle());
   function clone(x) { return JSON.parse(JSON.stringify(x)); }
   function mergeStudent() {
     const own = clone(S.mine.widgets || []).filter(w => types.get(w.type));
@@ -235,6 +249,7 @@ function start() {
     fitRows();
     const order = [...S.widgets].sort((a, b) => a.y - b.y || a.x - b.x);
     for (const w of order) grid.appendChild(card(w, order.indexOf(w)));
+    if (stickers) stickers.render();
     if (S.editing && !narrow.matches) {
       const spot = freeSpot(3, 1);
       const drop = document.createElement('div'); drop.className = 'dash-drop'; drop.setAttribute('aria-hidden', 'true');
@@ -319,7 +334,7 @@ function start() {
   // ---------------------------------------------------------------- changes (every change can be undone)
   /** One step on the undo list (the last 40). The board's settings sheet undoes only its own steps (board.base). */
   function pushUndo(x) { S.undo.push(x); if (S.undo.length > 40) { S.undo.shift(); if (board) board.base = Math.max(0, board.base - 1); } syncUndo(); }
-  function snapshot() { pushUndo(JSON.stringify({ widgets: S.widgets, bg: S.bg })); }
+  function snapshot() { pushUndo(JSON.stringify({ widgets: S.widgets, bg: S.bg, stickers: S.stickers })); }
   function syncUndo() {
     const u = $('#dash-undo'); if (u) u.disabled = !S.undo.length;
     if (board && board.undo) board.undo.disabled = S.undo.length <= board.base;
@@ -366,7 +381,7 @@ function start() {
   function undo() {
     if (board && S.undo.length <= board.base) return;
     const last = S.undo.pop(); if (!last) return;
-    const x = JSON.parse(last); S.widgets = x.widgets; S.bg = x.bg; applyBg();
+    const x = JSON.parse(last); S.widgets = x.widgets; S.bg = x.bg; if (x.stickers) S.stickers = x.stickers; applyBg();
     if (!S.widgets.some(w => w.id === S.selected)) S.selected = null;
     changed(t('js.dash.say.undone'));
     // The board's settings sheet shows the widget as it is now.
@@ -385,7 +400,7 @@ function start() {
     const strip = w => ({ id: w.id, type: w.type, x: w.x, y: w.y, w: w.w, h: w.h, s: w.s, ...(w.pin ? { pin: true } : {}) });
     try {
       if (TEACHER) {
-        const r = await api(`/api/dash/${CID}/layouts/${S.layoutId}`, { method: 'POST', body: { widgets: S.widgets.map(strip), bg: S.bg } });
+        const r = await api(`/api/dash/${CID}/layouts/${S.layoutId}`, { method: 'POST', body: { widgets: [...S.widgets.map(strip), ...S.stickers.map(w => ({ id: w.id, type: w.type, s: w.s }))], bg: S.bg } });
         const l = S.layouts.find(x => x.id === S.layoutId); if (l) { l.widgets = r.layout.widgets; l.bg = r.layout.bg; }
       } else {
         const pins = {}; for (const w of S.widgets.filter(x => x.pinned)) pins[w.id] = { x: w.x, y: w.y, w: w.w, h: w.h };
@@ -502,7 +517,8 @@ function start() {
     for (const x of found) {
       const li = document.createElement('li'); li.className = 'dash-libitem';
       li.innerHTML = `<span class="dash-libmark" aria-hidden="true">${esc(x.icon || '▫️')}</span><span class="dash-libtext"><b>${esc(x.name)}</b><span class="small muted">${esc(x.desc)}</span></span><button class="btn btn-sm" type="button" aria-label="${esc(t('js.dash.addName', { name: x.name }))}">${esc(t('js.dash.add'))}</button>`;
-      li.querySelector('button').addEventListener('click', () => add(x));
+      // Stickers open the sticker panel: each sticker is placed from there, on its own.
+      li.querySelector('button').addEventListener('click', () => (x.free ? stickers && stickers.open() : add(x)));
       list.appendChild(li);
     }
     if (!found.length) list.innerHTML = `<li class="small muted">${esc(t('js.dash.noneFound'))}</li>`;
@@ -670,6 +686,30 @@ function start() {
     jobcards(field, f, w, id, type, { commit, redraw }) {
       const label = k => (type.settings.find(x => x.key === k) || {}).label;
       jobsEditor(field, w, type.words, { id, roster: () => ((S.live && S.live.crew) || {})[w.id] || [], className: D.className || '', label: f.label, fromLabel: label('from'), namesLabel: label('names'), commit, redraw, say: announce });
+    },
+    // Class Board parity: the PDF widget's file (the class's teacher uploads a PDF; only they can open it again).
+    pdf(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words;
+      field.className = 'field dash-pdfedit';
+      field.innerHTML = `<span class="dash-lab" id="${id}-l">${esc(f.label)}</span><p class="small dash-fieldmsg" id="${id}-m" role="status"></p><p class="small muted">${esc(W.note)}</p>`;
+      const msg = field.querySelector('.dash-fieldmsg');
+      const up = uploadButton(CID, W, w.s[f.key] ? W.replace : W.upload, docId => { w.s[f.key] = docId; commit(); redraw(); msg.textContent = `✔ ${W.replace}`; msg.classList.remove('err'); announce(W.replace); },
+        m => { msg.textContent = `✖ ${m}`; msg.classList.add('err'); });
+      up.querySelector('button').id = id; up.querySelector('button').setAttribute('aria-describedby', `${id}-l ${id}-m`);
+      field.insertBefore(up, msg);
+    },
+    // Class Board parity: the link tile's address (http or https only; services/dash.js cleanLink checks it again).
+    link(field, f, w, id, type, { commit, redraw }) {
+      const W = type.words;
+      field.innerHTML = `<label for="${id}">${esc(f.label)}</label><input class="input" id="${id}" type="url" inputmode="url" autocomplete="off" spellcheck="false" maxlength="500" placeholder="https://" aria-describedby="${id}-m ${id}-n" dir="ltr"><p class="small dash-fieldmsg" id="${id}-m" role="status"></p><p class="small muted" id="${id}-n">${esc(W.note)}</p>`;
+      const inp = field.querySelector('input'), msg = field.querySelector('.dash-fieldmsg');
+      inp.value = w.s[f.key] || '';
+      inp.addEventListener('change', () => {
+        const x = inp.value.trim(), ok = linkUrl(x);
+        if (x && !ok) { msg.textContent = `✖ ${W.bad}`; msg.classList.add('err'); inp.setAttribute('aria-invalid', 'true'); return; }
+        msg.textContent = ''; msg.classList.remove('err'); inp.removeAttribute('aria-invalid');
+        w.s[f.key] = x ? ok : ''; inp.value = w.s[f.key]; commit(); redraw();
+      });
     },
     // Stage 3: the Picture widget's picture (the class's teacher uploads; the stage 1 checks).
     pic(field, f, w, id, type, { commit, redraw }) {
@@ -1114,7 +1154,7 @@ function start() {
     try {
       await api(`/api/dash/${CID}/layouts/${id}/use`, { method: 'POST', body: {} });
       const l = S.layouts.find(x => x.id === id);
-      S.layoutId = id; S.active = id; S.widgets = clone(l.widgets); S.bg = l.bg; S.undo = []; S.selected = null;
+      S.layoutId = id; S.active = id; loadWidgets(l.widgets); S.bg = l.bg; S.undo = []; S.selected = null;
       applyBg(); render(); renderLayouts(); resetName();
       announce(t('js.dash.say.layout', { name: l.name }));
     } catch (err) { toast(err.message, { bad: true }); }
@@ -1648,6 +1688,7 @@ function start() {
       if (fit >= 56) min = Math.min(72, fit);
     }
     grid.style.setProperty('--rowmin', `${min}px`);
+    stickers?.draw();
     stageMark();
     keepChip();
   }

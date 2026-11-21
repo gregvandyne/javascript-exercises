@@ -24,6 +24,10 @@ import { rods } from './dash-rods.js';
 // sticky note, checklist and points for each student are in dash-class5.js; the document camera in dash-camera.js.
 import { RENDER5, points } from './dash-class5.js';
 import { camera } from './dash-camera.js';
+// Class Board parity (docs/decisions.md "Class Board: PDF, link tile and stickers"): the PDF widget and the link tile. Placed
+// stickers are not grid widgets: public/js/dash-stickers.js draws them over the grid.
+import { pdf } from './dash-pdf.js';
+import { link } from './dash-link.js';
 import { numField } from './dash-num.js';
 import { tip } from './dash-tip.js';
 import { format } from './i18n-format.js';
@@ -1234,4 +1238,4 @@ function score(body, s, ctx) {
 }
 
 /** id -> renderer. A type the server lists but this file doesn't know yet is left out of the screen. */
-export const RENDER = { clock, text, ican, timer, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, ...withModes({ ...TOOLS, ...TOOLS4, bars, rods }), ...RENDER5, camera };
+export const RENDER = { clock, text, ican, timer, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, ...withModes({ ...TOOLS, ...TOOLS4, bars, rods }), ...RENDER5, camera, pdf, link };

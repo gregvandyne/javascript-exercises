@@ -16,6 +16,7 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { db, q, tx, now, uid, audit } from '../db.js';
 import { config } from '../config.js';
 import * as S from './schools.js';
@@ -153,7 +154,32 @@ export const POINT_REASONS = ['kind', 'helpful', 'teamwork', 'effort', 'listenin
 export const MOODS = ['great', 'good', 'okay', 'meh', 'sad'];
 /** Widgets that show something from outside Oomba (or the camera): the teacher's screen and projector only. Never
  *  pinned, never pushed, never on a student's screen. */
-export const TEACHER_ONLY = ['video', 'site', 'camera'];
+export const TEACHER_ONLY = ['video', 'site', 'camera', 'pdf', 'link', 'stickers'];
+// ---- stickers (docs/decisions.md "Class Board: PDF, link tile and stickers")
+/** The sticker panel's and a placed sticker's words (dash.w.stickers.<word>): th_<sheet> each theme, lang_<code> each
+ *  language, shape_<shape> each greeting shape. */
+export const STICKER_SHEETS = ['oomba', 'praise', 'classroom', 'animals-nature', 'maths-stem', 'seasons-holidays', 'food', 'sports-play', 'space-weather',
+  'music-arts', 'transport', 'emotions', 'letters-numbers', 'good-morning', 'praise-words', 'hello-welcome', 'goodbye', 'greetings'];
+export const STICKER_LANGS = ['English', 'Italian', 'Spanish', 'French', 'German', 'Dutch', 'Portuguese', 'Swedish', 'Turkish'];
+export const STICKER_SHAPES = ['rect', 'circle', 'bubble'];
+const STICKER_WORDS = ['open', 'heading', 'search', 'theme', 'allThemes', 'language', 'allLanguages', 'shape', 'allShapes', 'count', 'none', 'noneFilters', 'clear',
+  'recent', 'favorites', 'all', 'more', 'star', 'unstar', 'add', 'placed', 'hint', 'close', 'loading', 'failed', 'full',
+  'duplicate', 'remove', 'removed', 'resize', 'rotate', 'role', 'toolsFor', 'moved', 'sized', 'turned',
+  ...STICKER_SHEETS.map(s => `th_${s}`), ...STICKER_LANGS.map(l => `lang_${l}`), ...STICKER_SHAPES.map(s => `shape_${s}`)];
+/** At most this many stickers on one layout (they are not counted in MAX_WIDGETS: a board decorated with stickers keeps
+ *  its 24 widgets). */
+export const MAX_STICKERS = 60;
+export const STICKER_INDEX = () => fileURLToPath(new URL('../../public/img/stickers/index.json', import.meta.url));
+let stickerIds = null;
+/** The ids of the served sticker library (read once). */
+export function stickerSet() {
+  if (stickerIds) return stickerIds;
+  try { stickerIds = new Set(JSON.parse(fs.readFileSync(STICKER_INDEX(), 'utf8')).entries.map(e => String(e.id))); }
+  catch { stickerIds = new Set(); }
+  return stickerIds;
+}
+/** A sticker id from the library, or ''. */
+export const stickerKey = v => { const s = String(v ?? ''); return /^[A-Za-z0-9_-]{1,60}$/.test(s) && stickerSet().has(s) ? s : ''; };
 /** Each maths tool mode's icon (a tool's own mode has the tool's icon). */
 export const MODE_ICONS = { fractions: '🍕', fdp: '➗', placeval: '🔟', base10: '🧱', area: '🔲', times: '✖️', geoboard: '📌', angle: '📐',
   pattern: '🔷', solids: '🧊', transform: '🔄', algebra: '🟪', balance: '⚖️', chance: '🎯', graph: '📊', bars: '🍫' };
@@ -304,6 +330,28 @@ export const WIDGETS = [
     { key: 'title', type: 'text', max: 40, def: '' },
     { key: 'items', type: 'textarea', max: 600, def: '' },
     { key: 'ticks', type: 'ticks', hidden: true, def: [] }] },
+  // ---- Class Board parity, P0 (docs/decisions.md "Class Board: PDF, link tile and stickers"). The teacher's screen and
+  // projector only: never pinned, never pushed (TEACHER_ONLY).
+  // A PDF the teacher uploads (one of their own files for this class: savePdf), paged through on the board with pdf.js.
+  // The page shown is kept in the browser only; nothing but the uploaded file is stored.
+  { id: 'pdf', icon: '📄', group: 'show', who: 'teacher', pin: false, size: [6, 6], min: [4, 4], words: ['empty', 'upload', 'uploading', 'replace', 'note', 'prev', 'next', 'page', 'loading', 'bad', 'gone', 'pages', 'tooBig'], settings: [
+    { key: 'doc', type: 'pdf', def: '' },
+    { key: 'title', type: 'text', max: 60, def: '' }] },
+  // A link tile: a title and an http(s) address (cleanLink), opened in a new tab.
+  { id: 'link', icon: '🔗', group: 'show', who: 'teacher', pin: false, size: [3, 2], min: [2, 2], words: ['empty', 'opens', 'bad', 'note'], settings: [
+    { key: 'title', type: 'text', max: 60, def: '' },
+    { key: 'url', type: 'link', def: '' }] },
+  // Stickers, back (owner, 21 Nov 2026; the 16 Nov removal reversed). Each placed sticker is its own entry in the layout
+  // (free: not on the grid, not counted in MAX_WIDGETS, at most MAX_STICKERS): which sticker (k, an id from the served
+  // index, public/img/stickers/index.json), its centre in grid units (x columns, y rows), its size (the longer side, in
+  // px on a 1200 px wide board), its turn in degrees and whether it sits behind the widgets. All set on the board itself.
+  { id: 'stickers', icon: '🌟', group: 'show', who: 'teacher', pin: false, free: true, size: [1, 1], min: [1, 1], words: STICKER_WORDS, settings: [
+    { key: 'k', type: 'sticker', hidden: true, def: '' },
+    { key: 'x', type: 'float', hidden: true, min: 0, max: 12, def: 6 },
+    { key: 'y', type: 'float', hidden: true, min: 0, max: 24, def: 2 },
+    { key: 'size', type: 'number', hidden: true, min: 60, max: 600, def: 200 },
+    { key: 'r', type: 'number', hidden: true, min: 0, max: 359, def: 0 },
+    { key: 'back', type: 'bool', hidden: true, def: false }] },
 ];
 const BY_ID = new Map(WIDGETS.map(w => [w.id, w]));
 export const widgetType = id => BY_ID.get(String(id)) || null;
@@ -357,7 +405,7 @@ const word = (t, key) => { const raw = t.locale ? lookup(t.locale, key) : undefi
 /** The registry as the browser gets it: labels in the reader's language. role: 'teacher' | 'student'. */
 export function registryFor(t, role) {
   const types = WIDGETS.map(w => ({
-    id: w.id, icon: w.icon, group: w.group, who: w.who, size: w.size, min: w.min, add: canAdd(w, role), pin: canPin(w), pinDef: !!w.pinDef, send: !!w.send,
+    id: w.id, icon: w.icon, group: w.group, who: w.who, size: w.size, min: w.min, add: canAdd(w, role), pin: canPin(w), pinDef: !!w.pinDef, send: !!w.send, ...(w.free ? { free: true } : {}),
     name: t(`dash.w.${w.id}.name`), desc: t(`dash.w.${w.id}.desc`),
     words: Object.fromEntries(w.words.map(k => [k, word(t, `dash.w.${w.id}.${k}`)])),
     // A maths tool's modes: each with its name on the switch (dash.w.<tool>.m.<mode>), its icon, and, for a mode that was
@@ -511,6 +559,11 @@ export function cleanSettings(type, s = {}, role = 'teacher') {
     else if (f.type === 'places') out[f.key] = cleanPlaces(v, f.def);
     else if (f.type === 'crew') out[f.key] = cleanCrew(v);
     else if (f.type === 'ticks') out[f.key] = cleanTicks(v);
+    // Class Board parity (P0)
+    else if (f.type === 'pdf') out[f.key] = ID.test(String(v ?? '')) ? String(v) : '';
+    else if (f.type === 'link') out[f.key] = (v && cleanLink(v)) || '';
+    else if (f.type === 'sticker') out[f.key] = stickerKey(v);
+    else if (f.type === 'float') { const n = Number(v); out[f.key] = v !== undefined && v !== '' && v !== null && Number.isFinite(n) ? Math.round(Math.min(f.max, Math.max(f.min, n)) * 100) / 100 : f.def; }
     else out[f.key] = v === undefined ? f.def : cleanText(v, f.max, f.type === 'textarea');
   }
   return out;
@@ -520,16 +573,27 @@ export function cleanBox(type, b = {}) {
   const w = int(b.w, type.min[0], COLS, type.size[0]), h = int(b.h, type.min[1], MAX_H, type.size[1]);
   return { x: int(b.x, 0, COLS - w, 0), y: int(b.y, 0, MAX_ROWS - 1, 0), w, h };
 }
-/** A layout's widgets as a browser sent them -> what may be stored. role: whose screen ('teacher' may pin). */
+/** A layout's widgets as a browser sent them -> what may be stored. role: whose screen ('teacher' may pin).
+ *  Stickers (a free type) are not on the grid: no box, never pinned, at most MAX_STICKERS, and not counted in
+ *  MAX_WIDGETS; one whose sticker is not in the library (or an old stickers widget from before the removal) is dropped. */
 export function cleanWidgets(list, role) {
   const out = [], seen = new Set();
+  let grid = 0, free = 0;
   for (let raw of Array.isArray(list) ? list : []) {
-    if (out.length >= MAX_WIDGETS) break;
     if (!raw || typeof raw !== 'object') continue;
     raw = migrateWidget(raw);
     const type = widgetType(raw.type);
     if (!canAdd(type, role) || !ID.test(String(raw.id || '')) || seen.has(raw.id)) continue;
-    seen.add(raw.id);
+    if (type.free) {
+      if (free >= MAX_STICKERS) continue;
+      const s = cleanSettings(type, raw.s, role);
+      if (!s.k) continue;
+      seen.add(raw.id); free++;
+      out.push({ id: String(raw.id), type: type.id, s });
+      continue;
+    }
+    if (grid >= MAX_WIDGETS) continue;
+    seen.add(raw.id); grid++;
     out.push({ id: String(raw.id), type: type.id, ...cleanBox(type, raw), s: cleanSettings(type, raw.s, role), ...(role === 'teacher' && raw.pin && canPin(type) ? { pin: true } : {}) });
   }
   return out;
@@ -568,9 +632,10 @@ export const roleOf = (u, c) => (isTeacher(u, c) ? 'teacher' : isStudent(u, c) ?
 
 // ---------------------------------------------------------------- teacher layouts
 const LAYOUT_COLS = 'id, class_id, owner_id, name, widgets, bg, position, used_at, created_at, updated_at';
-/** Stored widgets of a type the registry no longer has (the stickers widget, removed: docs/decisions.md) are dropped
- *  when read (after old stopwatches become timers: migrateWidgets), so old layouts, pins and student screens keep loading with everything else as it was. */
-const known = list => (Array.isArray(list) ? list : []).filter(w => w && typeof w === 'object' && widgetType(w.type));
+/** Stored widgets of a type the registry no longer has are dropped when read, and so are stickers whose sticker is not in
+ *  the library: the old emoji stickers widget (removed 16 Nov 2026, the type back on 21 Nov 2026 as placed stickers:
+ *  docs/decisions.md) has none, so it is dropped as before. Read (after old stopwatches become timers: migrateWidgets), so old layouts, pins and student screens keep loading with everything else as it was. */
+const known = list => (Array.isArray(list) ? list : []).filter(w => w && typeof w === 'object' && widgetType(w.type) && (!widgetType(w.type).free || stickerKey(w.s && w.s.k)));
 /** Stored widgets as they are read: a countdown saved before it held a list ({ label, date, time }) is read as a list of
  *  one event, so the teacher's screen, the projector and pinned copies on student screens all get the same shape. */
 const upgradeWidgets = list => (Array.isArray(list) ? list : []).map(w => (w && w.type === 'countdown' && !Array.isArray(w.s && w.s.events) ? { ...w, s: cleanSettings(widgetType('countdown'), w.s) } : w));
@@ -737,6 +802,8 @@ export function createFromTemplate(u, c, id, { name, t } = {}) {
 /** A picture widget shows only one of this teacher's own pictures for this class (stage 3); any other id is dropped. */
 function ownPictures(widgets, u, c) {
   for (const w of widgets) if (w.type === 'picture' && w.s.pic && !q.get("SELECT 1 FROM dash_pictures WHERE id=? AND owner_id=? AND class_id=? AND use='show'", w.s.pic, u.id, c.id)) w.s.pic = '';
+  // A PDF widget shows only one of this teacher's own PDFs for this class (Class Board parity); any other id is dropped.
+  for (const w of widgets) if (w.type === 'pdf' && w.s.doc && !q.get("SELECT 1 FROM dash_pictures WHERE id=? AND owner_id=? AND class_id=? AND use='pdf'", w.s.doc, u.id, c.id)) w.s.doc = '';
   return widgets;
 }
 /** What students get from the teacher's layout: the pinned widgets only (a picture only once it has its description).
@@ -802,6 +869,21 @@ export function cleanUrl(v) {
   if (!/^[a-z0-9.-]+$/.test(host) || !host.includes('.') || host.startsWith('.') || host.endsWith('.') || /^[\d.]+$/.test(host)) return null;
   if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') || host.endsWith('.internal')) return null;
   return u.href;
+}
+/** A link tile's address (Class Board parity): http or https only (never javascript:, data:, file: or anything else),
+ *  no user name or password in it, a real host name, at most 500 characters, no spaces or control characters. Unlike a
+ *  site window (cleanUrl) the server never fetches it: the teacher's own browser opens it in a new tab. "example.org"
+ *  (no scheme) is read as https://example.org/. public/js/dash-link.js linkUrl is the browser's copy (tested to agree). */
+export function cleanLink(v) {
+  let s = String(v ?? '').trim();
+  if (!s || s.length > 500 || /[\u0000- \u007F-\u009F‪-‮⁦-⁩]/.test(s)) return null;
+  // A scheme is a word and a colon not followed by a digit ("javascript:", "data:"; "example.org:8080" is a port).
+  if (!/^[a-z][a-z0-9+.-]*:(?!\d)/i.test(s)) s = `https://${s.replace(/^\/+/, '')}`;
+  let u; try { u = new URL(s); } catch { return null; }
+  if (!['http:', 'https:'].includes(u.protocol) || u.username || u.password) return null;
+  const host = u.hostname.toLowerCase();
+  if (!host || !/^[a-z0-9.-]+$|^\[[0-9a-f:.]+\]$/.test(host) || host.startsWith('.') || host.startsWith('-')) return null;
+  return u.href.length > 500 ? null : u.href;
 }
 /** A website address as a teacher types it: "example.org/page" (no scheme) is read as https://example.org/page, then
  *  every cleanUrl rule applies (an address with another scheme, http: or javascript: included, stays refused).
@@ -1414,6 +1496,7 @@ export function savePicture(u, c, bytes, { use = 'bg' } = {}) {
 }
 function dropPicture(id) {
   try { fs.unlinkSync(picFile(id)); } catch { /* already gone */ }
+  try { fs.unlinkSync(pdfFile(id)); } catch { /* not a PDF, or already gone */ }
   q.run('DELETE FROM dash_pictures WHERE id=?', id);
   // A screen that used it goes back to the plain background.
   const plain = JSON.stringify(DEFAULT_BG), mine = JSON.stringify({ kind: 'pic', id });
@@ -1425,7 +1508,7 @@ function dropPicture(id) {
  *  screens right now (with its description). Nobody else: not another class's students or teacher, not a school admin,
  *  not a visitor; never a background picture to a student. */
 export function canSeePicture(viewer, pic) {
-  if (!viewer || !pic || viewer.is_guest) return false;
+  if (!viewer || !pic || viewer.is_guest || pic.use === 'pdf') return false;
   if (viewer.id === pic.owner_id) return true;
   const c = S.getClass(pic.class_id);
   if (!c) return false;
@@ -1449,6 +1532,40 @@ export function removePicture(u, c, id) {
   return { ok: true };
 }
 export { PhotoError };
+
+// ---------------------------------------------------------------- PDFs (Class Board parity: the PDF widget)
+// A PDF a teacher uploads for a PDF widget: a row in dash_pictures with use 'pdf' (so account and school deletion take
+// it with the pictures) and the file <dataDir>/dash-pictures/<id>.pdf. Only its owner, while still the class's teacher,
+// can fetch it: never another teacher (a co-teacher of the class included), never a student or a school admin. Never
+// sent to an AI or anywhere else, never shown on a student screen (the widget is TEACHER_ONLY). The page being shown
+// is not stored: nothing about a PDF is kept but the file itself.
+export const pdfFile = id => path.join(PIC_DIR(), `${String(id).replace(/[^A-Za-z0-9_-]/g, '')}.pdf`);
+export const PDF_MAX_BYTES = 10 * 1024 * 1024;
+export const PDFS_KEPT = 12;
+export class PdfError extends Error { constructor(code, status = 400) { super(code); this.code = code; this.status = status; } }
+/** Is this a PDF file? Its header ("%PDF-1.x", which may follow a few bytes of junk: at most 1024, as readers allow). */
+export const isPdf = bytes => Buffer.isBuffer(bytes) && bytes.length > 8 && bytes.subarray(0, 1024).includes(Buffer.from('%PDF-'));
+/** Store a teacher's PDF for this class (the route checks it is the class's teacher). Keeps the newest PDFS_KEPT per
+ *  teacher per class (an older one still on a widget shows "This PDF is gone"). -> { id } */
+export function savePdf(u, c, bytes) {
+  if (!Buffer.isBuffer(bytes) || !bytes.length) throw new PdfError('badType');
+  if (bytes.length > PDF_MAX_BYTES) throw new PdfError('tooBig', 413);
+  if (!isPdf(bytes)) throw new PdfError('badType');
+  const id = uid(16);
+  fs.mkdirSync(PIC_DIR(), { recursive: true });
+  fs.writeFileSync(pdfFile(id), bytes);
+  q.run("INSERT INTO dash_pictures(id, owner_id, class_id, bytes, created_at, use) VALUES (?,?,?,?,?,'pdf')", id, u.id, c.id, bytes.length, now());
+  const old = q.all("SELECT id FROM dash_pictures WHERE owner_id=? AND class_id=? AND use='pdf' ORDER BY created_at DESC, rowid DESC", u.id, c.id).slice(PDFS_KEPT);
+  for (const p of old) dropPicture(p.id);
+  audit(u.id, 'dash.pdf', c.id, { pdf: id, bytes: bytes.length });
+  return { id };
+}
+/** Who can fetch a PDF: its owner, while still the teacher of the class it was uploaded for. Nobody else. */
+export function canSeePdf(viewer, pic) {
+  if (!viewer || !pic || pic.use !== 'pdf' || viewer.is_guest || viewer.id !== pic.owner_id) return false;
+  const c = S.getClass(pic.class_id);
+  return !!c && isTeacher(viewer, c);
+}
 
 // ================================================================ stage 5 (docs/decisions.md "Classroom dashboards, stage 5")
 /** What stage 5's widgets on this screen need from the server, and nothing more: the hall pass (the teacher: today's

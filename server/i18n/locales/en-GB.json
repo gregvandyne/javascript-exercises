@@ -971,6 +971,13 @@
       "rods": {
         "desc": "Coloured rods from 1 to 20: build trains, compare lengths and model equations.",
         "typeBad": "That can't be modelled. Use + and whole numbers, one ?, and up to 20 a side."
+      },
+      "stickers": {
+        "favorites": "Favourites",
+        "star": "Add {name} to Favourites",
+        "unstar": "Remove {name} from Favourites",
+        "th_maths-stem": "Maths and STEM",
+        "th_transport": "Transport"
       }
     },
     "tools": {
