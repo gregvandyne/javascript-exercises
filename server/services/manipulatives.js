@@ -113,14 +113,17 @@ export function textProblem(s) {
 const ANY_KIND = new Set(Object.values(OBJECTS).flat().map(K => K.k));
 export const OBJ_STATE_MAX = 20000;
 /** The objects on a board (format 2), as they may be stored: known kinds of the tool, at most `max`, each one's own state
- *  a plain object of limited size, its scale within limits, and its place inside the space (a room square: bounds). */
+ *  a plain object of limited size, its scale within limits, its place inside the space (a room square: bounds), and
+ *  `locked` (a frame, mat, clock or board that can't be dragged) with `lockBy: 't'` when the teacher locked it in a
+ *  student's square (saveArea decides that, never the page). */
 function cleanObjects(list, tool, space, max) {
   const ok1 = k => (tool ? !!kindOf(tool, k) : ANY_KIND.has(k));
   return (Array.isArray(list) ? list : []).filter(o => o && typeof o === 'object' && ok1(o.k) && o.st && typeof o.st === 'object' && !Array.isArray(o.st) && JSON.stringify(o.st).length <= OBJ_STATE_MAX)
     .slice(0, max).map((o, i) => {
       const z = tool ? objSize(tool, o) : { w: 100, h: 100 };
       const s = Math.round(num(o.s, S_FLOOR, Math.max(S_FLOOR, Math.min(S_MAX, space.w / z.w, space.h / z.h)), 1) * 1000) / 1000;
-      return { id: clipStr(o.id || `o${i}`, 40), k: String(o.k), x: Math.round(num(o.x, 0, Math.max(0, space.w - z.w * s))), y: Math.round(num(o.y, 0, Math.max(0, space.h - z.h * s))), s, st: o.st };
+      return { id: clipStr(o.id || `o${i}`, 40), k: String(o.k), x: Math.round(num(o.x, 0, Math.max(0, space.w - z.w * s))), y: Math.round(num(o.y, 0, Math.max(0, space.h - z.h * s))), s, st: o.st,
+        ...(o.locked === true ? { locked: true, ...(o.lockBy === 't' ? { lockBy: 't' } : {}) } : {}) };
     });
 }
 /** Typed text inside objects: bar labels, an object's label, a student's typed answer (ans) and the teacher's answer
@@ -142,7 +145,12 @@ export function cleanState(raw, bounds = null, tool = null) {
   const v2 = st.v === 2, space = bounds || WORLD;
   if (v2) st.objects = cleanObjects(st.objects, tool, space, bounds ? (bounds.teacher ? OBJ_MAX : OBJ_MAX_SQUARE) : OBJ_MAX);
   else delete st.objects;
-  if (Array.isArray(st.pieces)) st.pieces = st.pieces.slice(0, LIMITS.pieces).filter(p => p && typeof p === 'object').map(p => (p.g === undefined ? p : { ...p, g: clipStr(p.g, 40) }));
+  if (Array.isArray(st.pieces)) st.pieces = st.pieces.slice(0, LIMITS.pieces).filter(p => p && typeof p === 'object').map(p => {
+    const q = p.g === undefined ? { ...p } : { ...p, g: clipStr(p.g, 40) };
+    // A lock is true or absent; who locked it ('t': the teacher, in a student's square) only with a lock.
+    if (q.locked !== true) { delete q.locked; delete q.lockBy; } else if (q.lockBy !== 't') delete q.lockBy;
+    return q;
+  });
   // In a live room a square's pieces stay inside it: their places are clamped to the square (bounds: its size); on a
   // format-2 board, inside the big board.
   if ((bounds || v2) && Array.isArray(st.pieces)) st.pieces = st.pieces.map(p => { const w = num(p.w, 4, space.w, 50), h = num(p.h, 4, space.h, 50); return { ...p, w, h, x: num(p.x, 0, space.w - w), y: num(p.y, 0, space.h - h) }; });
@@ -442,6 +450,38 @@ function authored(prev, next, field, key, who, max) {
   const theirs = list.filter(n => !(before.get(n.id) && before.get(n.id).by === 't')).map(n => { const m = { ...n }; delete m.by; return m; });
   return [...[...before.values()].filter(n => n.by === 't'), ...theirs].slice(0, max);
 }
+/** Locks in a student's square (docs/decisions.md "Virtual math manipulatives: hold to edit"). What the teacher locks
+ *  there is the teacher's (`lockBy: 't'`): the student can't unlock, move, change or remove it, as with the teacher's
+ *  notes. A student's own locks carry no author and the student may undo them; the teacher may unlock anything. In the
+ *  teacher's area only the teacher writes, so no author is kept. Pieces come back whole as they were; an object keeps
+ *  its place, size and lock but its own state stays the student's (counters still go into a locked ten-frame, a locked
+ *  clock can still be set). */
+function lockedBy(prev, next, key, who) {
+  for (const f of ['pieces', 'objects']) {
+    if (!Array.isArray(next[f])) continue;
+    const before = new Map((Array.isArray(prev[f]) ? prev[f] : []).filter(x => x && x.id != null).map(x => [String(x.id), x]));
+    if (key === 't') { for (const x of next[f]) if (x) delete x.lockBy; continue; }
+    if (who.role === 'teacher') {
+      for (const x of next[f]) {
+        if (!x || !x.locked) { if (x) delete x.lockBy; continue; }
+        const b = before.get(String(x.id));
+        if (b && b.locked) { if (b.lockBy === 't') x.lockBy = 't'; else delete x.lockBy; } else x.lockBy = 't';
+      }
+      continue;
+    }
+    const theirs = [...before.values()].filter(x => x.locked && x.lockBy === 't');
+    const held = new Map(theirs.map(x => [String(x.id), x]));
+    next[f] = next[f].map(x => {
+      if (!x) return x;
+      const b = held.get(String(x.id));
+      if (!b) { const m = { ...x }; delete m.lockBy; return m; }
+      held.delete(String(x.id));
+      return f === 'pieces' ? b : { ...x, x: b.x, y: b.y, s: b.s, locked: true, lockBy: 't' };
+    });
+    next[f].push(...held.values());   // removed by the student: put back
+  }
+  return next;
+}
 /** Save one area: key 't' (the teacher's area) or a student's id. The teacher may save any; a student only their own.
  *  Note authors are kept here, not taken from the browser: a note the teacher adds is the teacher's (everyone reads it);
  *  a student can't change or remove the teacher's notes in their square. */
@@ -460,6 +500,7 @@ export function saveArea(u, id, key, state) {
   const next = JSON.parse(key === 't' ? c.state : withoutKeys(c.state)), prev = json(row.state, {}) || {};
   // Notes and board text alike: who wrote each is kept here (see authored).
   next.__ann = { ...(next.__ann || { strokes: [] }), notes: authored(prev, next, 'notes', key, who, LIMITS.notes), texts: authored(prev, next, 'texts', key, who, LIMITS.texts) };
+  lockedBy(prev, next, key, who);
   // The room's grown sizes are the server's to set (a session from a board, a push): never from a page.
   if (key === 't') { if (prev.layout) next.layout = prev.layout; else delete next.layout; } else delete next.layout;
   const text = JSON.stringify(next);

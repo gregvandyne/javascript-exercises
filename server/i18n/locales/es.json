@@ -3323,6 +3323,31 @@
       "doneMsg": "¡Terminaste! {right} de {total} bien al primer intento. ¡Qué buena lectura!",
       "doneShort": "¡Terminaste! ¡Qué buena lectura!",
       "pagesOf": "Páginas {from}-{to} de {pages}"
+    },
+    "manip": {
+      "board": {
+        "pieceHint": "Toca una pieza para elegirla y arrástrala para moverla. Mantenla pulsada, haz clic derecho o pulsa Mayús+F10 para ver sus acciones. Las notas adhesivas se pueden arrastrar a cualquier sitio; toca una para escribir."
+      },
+      "wheel": {
+        "menu": "Acciones para {label}",
+        "copy": "Copiar",
+        "fill": "Relleno",
+        "rotate": "Girar",
+        "flip": "Dar la vuelta",
+        "break": "Partir en 10",
+        "lock": "Bloquear",
+        "unlock": "Desbloquear",
+        "delete": "Borrar",
+        "deleted": "Se borró {label}",
+        "undo": "Deshacer",
+        "lockedHint": "Bloqueado. Mantenlo pulsado para desbloquearlo.",
+        "pieceLocked": "Pieza {label}, bloqueada",
+        "objLocked": "{name}, bloqueado"
+      }
+    },
+    "manip-room": {
+      "actionsFor": "Acciones para {label}",
+      "teacherLock": "Tu maestro bloqueó esto."
     }
   },
   "favorites": {

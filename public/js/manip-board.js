@@ -340,12 +340,12 @@ const overlap1 = (a0, a1, b0, b1, t) => a0 < b1 + t && b0 < a1 + t;
  * close too; else into a slot (a frame's cell: centered; a chart's column: centered across it). Nothing in reach: null.
  * -> null | { dx, dy, to (the piece id snapped to) | null, slot }
  */
-export function snapFor(moving, others, slots, t) {
+export function snapFor(moving, others, slots, t, { link = true } = {}) {
   const boxes = moving.map(pieceBox); if (boxes.some(b => !b)) return null;
   const ids = new Set(moving.map(p => p.id));
   let best = null;
   const offer = (dx, dy, to, slot) => { const d = Math.hypot(dx, dy); if (!best || d < best.d) best = { dx, dy, to, slot, d }; };
-  for (const q0 of others) {
+  for (const q0 of link ? others : []) {
     if (ids.has(q0.id)) continue;
     const q = pieceBox(q0); if (!q) continue;
     for (const a of boxes) {
@@ -366,8 +366,11 @@ export function snapFor(moving, others, slots, t) {
   if (best) { const { dx, dy, to } = best; return { dx, dy, to, slot: null }; }
   // No piece in reach: a slot under the held piece's middle.
   const a = boxes[0], cx = a.x + a.w / 2, cy = a.y + a.h / 2;
+  // Pieces that never link (two-color counters): only an empty cell (no other piece's middle in it).
+  const taken = s => others.some(q => !ids.has(q.id) && num(q.x) + num(q.w, 40) / 2 >= s.x && num(q.x) + num(q.w, 40) / 2 <= s.x + s.w && num(q.y) + num(q.h, 40) / 2 >= s.y && num(q.y) + num(q.h, 40) / 2 <= s.y + s.h);
   for (const s of slots) {
     if (cx < s.x - t || cx > s.x + s.w + t || cy < s.y - t || cy > s.y + s.h + t) continue;
+    if (!link && (s.kind !== 'cell' || taken(s))) continue;
     if (s.kind === 'cell') offer(s.x + (s.w - a.w) / 2 - a.x, s.y + (s.h - a.h) / 2 - a.y, null, s);
     else offer(s.x + (s.w - a.w) / 2 - a.x, clamp(a.y, s.y, s.y + s.h - a.h) - a.y, null, s);
   }
@@ -375,6 +378,26 @@ export function snapFor(moving, others, slots, t) {
 }
 /** The pieces that move together with p: its snapped group (pieces sharing p.g), else p alone. */
 export const groupOf = (pieces, p) => (p && p.g ? pieces.filter(q => q.g === p.g) : p ? [p] : []);
+/** Do a tool's pieces link to each other? Two-color counters never do (owner, 21 Nov 2026): a counter snaps only into
+ *  an empty frame cell and stays exactly where it is dropped anywhere else, even right beside another counter. */
+export const linksPieces = slug => slug !== 'two-color-counters';
+/** The options snapFor takes for a tool. */
+export const snapOpts = slug => ({ link: linksPieces(slug) });
+/** Frames whose counters move with them when the frame is dragged. */
+export const FRAMES = new Set(['ten-frame', 'five-frame', 'double-ten-frame']);
+/** The pieces seated in an object's cells (a piece's middle inside one of its cell slots), locked pieces left out. */
+export function seatedIn(slug, o, pieces) {
+  const cells = slotsOf(slug, o).filter(s => s.kind === 'cell');
+  return (pieces || []).filter(p => !p.locked && cells.some(s => { const cx = num(p.x) + num(p.w, 40) / 2, cy = num(p.y) + num(p.h, 40) / 2; return cx >= s.x && cx <= s.x + s.w && cy >= s.y && cy <= s.y + s.h; }));
+}
+/** A copy's place: right beside the piece (under it, right of it, above, left), the first that is free and inside the
+ *  region; else the region's free-spot search. boxes: everything on the board. -> { x, y } */
+export function nearSpot(boxes, p, region) {
+  const w = num(p.w, 40), h = num(p.h, 40), x = num(p.x), y = num(p.y), G = 10;
+  const free = (ax, ay) => ax >= region.x && ay >= region.y && ax + w <= region.x + region.w && ay + h <= region.y + region.h && !boxes.some(o => ax < o.x + o.w && ax + w > o.x && ay < o.y + o.h && ay + h > o.y);
+  for (const [dx, dy] of [[0, h + G], [w + G, 0], [0, -h - G], [-w - G, 0], [w + G, h + G]]) if (free(x + dx, y + dy)) return { x: Math.round(x + dx), y: Math.round(y + dy) };
+  return spotIn(boxes, w, h, region);
+}
 
 // ---------------------------------------------------------------- the AI draft's layout (the code decides WHERE)
 /**

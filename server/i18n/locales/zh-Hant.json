@@ -3323,6 +3323,31 @@
       "doneMsg": "完成了！第一次就答對{total}題中的{right}題。讀得真好！",
       "doneShort": "完成了！讀得真好！",
       "pagesOf": "第 {from}-{to} 頁，共 {pages} 頁"
+    },
+    "manip": {
+      "board": {
+        "pieceHint": "點一下積木就能選取，拖曳就能移動。長按、按右鍵或按 Shift+F10 可以看到它的動作。便利貼可以拖到任何地方；點一下就能打字。"
+      },
+      "wheel": {
+        "menu": "{label} 的動作",
+        "copy": "複製",
+        "fill": "填滿",
+        "rotate": "旋轉",
+        "flip": "翻面",
+        "break": "拆成 10 個",
+        "lock": "鎖定",
+        "unlock": "解鎖",
+        "delete": "刪除",
+        "deleted": "已刪除 {label}",
+        "undo": "復原",
+        "lockedHint": "已鎖定。長按即可解鎖。",
+        "pieceLocked": "積木 {label}，已鎖定",
+        "objLocked": "{name}，已鎖定"
+      }
+    },
+    "manip-room": {
+      "actionsFor": "{label} 的動作",
+      "teacherLock": "老師鎖定了這個。"
     }
   },
   "favorites": {
