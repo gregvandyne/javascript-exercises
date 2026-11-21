@@ -93,7 +93,7 @@ test('Crossword: My worksheets lists the saved puzzles; open one, save it again 
     await g.until(() => window.__brbTest.cwState().sheets === 2);
     assert.equal(await g.frame.locator('.cw-sheet').count(), 2);
     const first = await g.frame.textContent(`[data-set="${A}"]`);
-    assert.match(first, /Habitats/); assert.match(first, /Words: 4 · Nov 20/); assert.match(first, /HABIT AT234/);
+    assert.match(first, /Habitats/); assert.match(first, /Words: 4 · Nov\s20/); assert.match(first, /HABIT AT234/);
     // a quiet row: only Print and More beside it, and the row itself opens it
     assert.deepEqual(await g.frame.$$eval(`[data-set="${A}"] button:not([data-ws-open])`, l => l.map(b => b.getAttribute('aria-label'))), ['Print', 'More']);
     assert.equal(await g.frame.getAttribute(`[data-set="${A}"] [data-ws-more]`, 'aria-haspopup'), 'menu');
@@ -207,10 +207,10 @@ test('Crossword: a student (no BRB.canListSets) never sees My worksheets', { ski
 
 // ---------------------------------------------------------------- The Big Divide and Algebra Builder (BRB stubbed)
 /** A built Svelte game with BRB stubbed as a teacher's frame: the sets in a store (STORE_JS), save, print, copy. */
-async function openBuilt(file, slug, { sets = [], mySets = true, saved = {} } = {}) {
+async function openBuilt(file, slug, { sets = [], mySets = true, saved = {}, width = 1280 } = {}) {
   const b = await launch();
   const html = fs.readFileSync(path.join(ROOT, 'seed-games', file), 'utf8');
-  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 }, deviceScaleFactor: SHOTS ? 2 : 1, reducedMotion: 'reduce' });
+  const ctx = await b.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: SHOTS ? 2 : 1, reducedMotion: 'reduce' });
   const page = await ctx.newPage();
   const errors = []; page.on('pageerror', e => errors.push(e.message));
   await page.route('**/*', r => {
@@ -255,19 +255,37 @@ test('The Big Divide: My worksheets lists the saved activities; open one in the 
     await page.locator('[data-set]').first().waitFor();
     assert.equal(await page.locator('[data-set]').count(), 2);
     const a = await page.locator(`[data-set="${A}"]`).textContent();
-    assert.match(a, /Week 3 division/); assert.match(a, /Long division · 3 problems · Guided/); assert.match(a, /DIVIS ION23/);
+    assert.match(a, /Week 3 division/); assert.match(a, /3 problems · Long division · Nov\s20/); assert.match(a, /DIVIS ION23/);
     assert.match(await page.locator(`[data-set="${B}"] .title`).textContent(), /Multiplication/, 'no name: the kind');
+    assert.match(await page.locator(`[data-set="${B}"]`).textContent(), /2 problems · Multiplication \(Area model\) · Nov\s19/);
+    // a quiet row: only Print and More beside it
+    assert.deepEqual(await page.locator(`[data-set="${A}"] button:not([data-ws-open])`).evaluateAll(l => l.map(b => b.getAttribute('aria-label'))), ['Print worksheet: Week 3 division', 'More for Week 3 division']);
+    assert.equal(await page.locator(`[data-ws-more="${A}"]`).getAttribute('aria-haspopup'), 'menu');
     if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'big-divide-my-worksheets.png') });
+    // More: the menu in order, arrow keys move, Escape closes it with the focus back on More, a click outside too
+    await page.locator(`[data-ws-more="${A}"]`).click();
+    assert.deepEqual(await page.locator('[role="menu"] [role="menuitem"]').allTextContents().then(l => l.map(x => x.trim())), ['Print with answer key', 'Copy link', 'Duplicate', 'Rename', 'Delete']);
+    assert.equal(await page.evaluate(() => document.activeElement.dataset.wsKey), A);
+    await page.keyboard.press('ArrowUp'); assert.equal(await page.evaluate(() => document.activeElement.dataset.wsDel), A);
+    await page.keyboard.press('ArrowDown'); await page.keyboard.press('ArrowDown'); assert.equal(await page.evaluate(() => document.activeElement.dataset.wsCopy), A);
+    if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'big-divide-my-worksheets-menu.png') });
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('[role="menu"]').count(), 0);
+    assert.equal(await page.evaluate(() => document.activeElement.dataset.wsMore), A);
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator('.lede').click();
+    assert.equal(await page.locator('[role="menu"]').count(), 0);
     // Print and the answer key: the activity's own problems, with its code
     await page.locator(`[data-ws-print="${A}"]`).click();
     let pr = (await g.log('print')).at(-1).doc;
     assert.deepEqual([pr.k, pr.p, pr.key, pr.set], ['divide', [[84, 4], [96, 3], [125, 5]], false, A]);
-    await page.locator(`[data-ws-key="${B}"]`).click();
+    await page.locator(`[data-ws-more="${B}"]`).click(); await page.locator(`[data-ws-key="${B}"]`).click();
     pr = (await g.log('print')).at(-1).doc; assert.equal(pr.key, true); assert.equal(pr.m, 'area');
-    await page.locator(`[data-ws-copy="${A}"]`).click();
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-copy="${A}"]`).click();
     assert.equal((await g.log('copy')).at(-1).what, `http://game.test/play/box-by-box?chapter=${A}&lock=1`);
+    assert.equal(await page.locator('[role="menu"]').count(), 0, 'a choice closes the menu');
+    assert.equal(await page.evaluate(() => document.activeElement.dataset.wsMore), A, 'and the focus is back on More');
     // Rename: refused, then fine
-    await page.locator(`[data-ws-rename="${B}"]`).click();
+    await page.locator(`[data-ws-more="${B}"]`).click(); await page.locator(`[data-ws-rename="${B}"]`).click();
     await page.locator(`#bb-rename-${B}`).fill('you bitch');
     await page.locator('#bb-rename-ok').click();
     await page.locator(`[data-set="${B}"] .problem`).waitFor();
@@ -276,11 +294,11 @@ test('The Big Divide: My worksheets lists the saved activities; open one in the 
     await page.locator('#bb-rename-ok').click();
     await page.locator(`[data-set="${B}"] .title`, { hasText: 'Area model practice' }).waitFor();
     // Duplicate: a copy on top
-    await page.locator(`[data-ws-dup="${A}"]`).click();
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-dup="${A}"]`).click();
     await page.waitForFunction(() => document.querySelectorAll('[data-set]').length === 3);
     assert.match(await page.locator('[data-set]').first().textContent(), /Copy of Week 3 division/);
-    // Open: the editor, with its problems and name; Save keeps the same code and sends the name
-    await page.locator(`[data-ws-open="${A}"]`).click();
+    // Open: a click on the row (its meta line), the editor, with its problems and name; Save keeps the same code and sends the name
+    await page.locator(`[data-set="${A}"] .meta`).click();
     await page.locator('input.title').waitFor();
     assert.equal(await page.locator('input.title').inputValue(), 'Week 3 division');
     await page.locator('input.title').fill('Week 3 long division');
@@ -296,18 +314,39 @@ test('The Big Divide: My worksheets lists the saved activities; open one in the 
     await page.locator('#bb-ws').click();
     await page.locator(`[data-set="${A}"]`).waitFor();
     // Delete asks first; Keep keeps it; Delete deletes it (and its activity in the list)
-    await page.locator(`[data-ws-del="${A}"]`).click();
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-del="${A}"]`).click();
     assert.match(await page.locator('.ask').textContent(), /Delete “Week 3 division”\? Its class code and link stop working/);
     await page.locator('#bb-ws-delno').click();
     assert.equal(await page.locator('.ask').count(), 0);
-    await page.locator(`[data-ws-del="${A}"]`).click(); await page.locator('#bb-ws-delyes').click();
+    assert.equal(await page.evaluate(() => document.activeElement.dataset.wsMore), A, 'Keep: back on More');
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-del="${A}"]`).click(); await page.locator('#bb-ws-delyes').click();
     await page.waitForFunction(id => !document.querySelector(`[data-set="${id}"]`), A);
     assert.ok(!(await g.store()).some(s => s.id === A));
     const acts = await page.evaluate(() => window.__kept['box-by-box-activities-v1'] || []);
     assert.ok(!acts.some(x => x.setId === A), 'its activity went with it');
-    for (const id of (await g.store()).map(s => s.id)) { await page.locator(`[data-ws-del="${id}"]`).click(); await page.locator('#bb-ws-delyes').click(); await page.waitForFunction(i => !document.querySelector(`[data-set="${i}"]`), id); }
+    for (const id of (await g.store()).map(s => s.id)) { await page.locator(`[data-ws-more="${id}"]`).click(); await page.locator(`[data-ws-del="${id}"]`).click(); await page.locator('#bb-ws-delyes').click(); await page.waitForFunction(i => !document.querySelector(`[data-set="${i}"]`), id); }
     await page.locator('#bb-ws-empty').waitFor();
     assert.match(await page.locator('#bb-ws-empty').textContent(), /Nothing here yet/);
+    assert.deepEqual(g.errors, []);
+  } finally { await g.ctx.close(); }
+});
+
+test('The Big Divide: My worksheets on a phone, with no sideways scroll', { skip, timeout: 120_000 }, async () => {
+  const A = 's-division23';
+  const g = await openBuilt('box-by-box.html', 'box-by-box', { width: 375, sets: [row('box-by-box', A, [{ k: 'divide', p: [[84, 4], [96, 3], [125, 5]], l: 'guided' }], 'A rather long name for the week 3 division practice')] });
+  const { page } = g;
+  try {
+    await page.getByRole('button', { name: /I’m a teacher/ }).click();
+    await page.locator('#bb-ws').click();
+    await page.locator(`[data-set="${A}"]`).waitFor();
+    for (const sel of [`[data-ws-print="${A}"]`, `[data-ws-more="${A}"]`]) {
+      const r = await page.locator(sel).boundingBox(); assert.ok(r.width >= 44 && r.height >= 44, sel + ' is a 44px target');
+    }
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+    if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'big-divide-my-worksheets-phone.png') });
+    await page.locator(`[data-ws-more="${A}"]`).click();
+    assert.ok(await page.evaluate(() => { const r = document.querySelector('[role="menu"]').getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }), 'the menu stays on the screen');
+    if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'big-divide-my-worksheets-phone-menu.png') });
     assert.deepEqual(g.errors, []);
   } finally { await g.ctx.close(); }
 });
