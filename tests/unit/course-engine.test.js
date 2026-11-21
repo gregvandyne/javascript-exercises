@@ -7,6 +7,7 @@ import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { deicon } from '../support/deicon.js';   // icons read back as the emoji they stand for
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -38,7 +39,7 @@ let server, base, n = 0;
 test.before(async () => { server = createApp().listen(0); server.keepAliveTimeout = 0; await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
 test.after(() => server.close());
 const cookieFor = id => { let c = ''; auth.startSession({ append: (k, v) => { c = v.split(';')[0]; } }, id); return c; };
-const get = async (p, u) => { const r = await fetch(base + p, { headers: { accept: 'text/html', 'user-agent': 'Mozilla/5.0 Chrome/141.0', cookie: cookieFor(u.id) }, redirect: 'manual' }); return { status: r.status, text: await r.text(), location: r.headers.get('location') }; };
+const get = async (p, u) => { const r = await fetch(base + p, { headers: { accept: 'text/html', 'user-agent': 'Mozilla/5.0 Chrome/141.0', cookie: cookieFor(u.id) }, redirect: 'manual' }); return { status: r.status, text: deicon(await r.text()), location: r.headers.get('location') }; };
 const newUser = (extra = {}) => auth.createUser({ username: `eng${Date.now() % 1e6}x${++n}`, password: 'correct-horse-12', displayName: 'Kid', ...extra });
 
 test('crop: a valid view passes, boxes and paths are remapped from original-picture % into the frame', () => {

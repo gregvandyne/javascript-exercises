@@ -11,6 +11,7 @@ import * as S from '../services/schools.js';
 import * as LIB from '../services/library.js';
 import * as SUG from '../services/library-suggest.js';
 import { bookCard } from './library.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 export const WISH_CSS = `<link rel="stylesheet" href="/css/library-suggest.css?v=${VERSION}">`;
@@ -19,14 +20,14 @@ export const WISH_CSS = `<link rel="stylesheet" href="/css/library-suggest.css?v
 export function wishBox(t, grade = null, forClass = null) {
   return html`<form class="lb-wish" id="lb-wish" hidden data-grade="${grade || ''}" data-class="${forClass ? forClass.id : ''}"
       data-busy="${t('library.wish.busy')}" data-error="${t('library.wish.error')}">
-    <label class="lb-wish-label" for="lb-wish-q"><span aria-hidden="true">✨</span> ${t('library.wish.label')}</label>
+    <label class="lb-wish-label" for="lb-wish-q">${ico('✨', { size: 18 })} ${t('library.wish.label')}</label>
     <div class="lb-wish-row">
       <input class="input" id="lb-wish-q" name="wish" type="text" maxlength="${SUG.WISH_MAX}" placeholder="${t('library.wish.placeholder')}" autocomplete="off" spellcheck="true" enterkeyhint="search">
       <button class="btn btn-primary" id="lb-wish-go" type="submit">${t('library.wish.go')}</button>
     </div>
   </form>
   <section class="lb-wish-out" id="lb-wish-out" hidden aria-labelledby="lb-wish-h" tabindex="-1">
-    <div class="lb-wish-head"><h2 id="lb-wish-h"><span aria-hidden="true">🎁</span> ${t('library.wish.heading')}</h2>
+    <div class="lb-wish-head"><h2 id="lb-wish-h">${ico('🎁', { size: 28 })} ${t('library.wish.heading')}</h2>
       <button class="btn btn-sm" id="lb-wish-back" type="button">${t('library.wish.back')}</button></div>
     <p class="lb-wish-note" id="lb-wish-note" role="status"></p>
     <ul class="lb-grid" id="lb-wish-grid"></ul>

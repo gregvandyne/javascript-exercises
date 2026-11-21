@@ -2479,8 +2479,8 @@
           "learn": "Après chaque construction, l’appli joue au jeu toute seule pendant environ 20 secondes : touches, tapes, glissés, et vérifie que le score change et que rien ne casse."
         }
       },
-      "resumed": "🔄 Le serveur a redémarré, alors le Constructeur a repris là où il en était.",
-      "resumedV": "🔄 Le serveur a redémarré, alors le Constructeur a repris à partir de la version {v}.",
+      "resumed": "Le serveur a redémarré, alors le Constructeur a repris là où il en était.",
+      "resumedV": "Le serveur a redémarré, alors le Constructeur a repris à partir de la version {v}.",
       "stopped": {
         "restart": "Le Constructeur s’est arrêté quand notre serveur a redémarré. Tout ce qu’il a fait est enregistré.",
         "ai": "Le Constructeur s’est arrêté quand notre serveur a redémarré, et le Constructeur IA se repose en ce moment. Tout ce qu’il a fait est enregistré."
@@ -2537,7 +2537,7 @@
       },
       "stillWorking": "Un instant, le Constructeur travaille encore !",
       "resting": {
-        "text": "😴 Le Constructeur IA se repose en ce moment. Il revient {when}. Ton jeu et tes messages pour le Constructeur sont enregistrés, alors reviens à ce moment-là !",
+        "text": "Le Constructeur IA se repose en ce moment. Il revient {when}. Ton jeu et tes messages pour le Constructeur sont enregistrés, alors reviens à ce moment-là !",
         "today": "aujourd’hui à {time}",
         "tomorrow": "demain à {time}",
         "date": "le {date} à {time}"
@@ -3227,7 +3227,7 @@
       "editN": "Modifier le problème {n}",
       "add": "Ajouter un problème",
       "copyN": "Copier le problème {n}",
-      "editTitle": "✏️ Problème {n} sur {total}",
+      "editTitle": "Problème {n} sur {total}",
       "kind": {
         "reading": "Lire une échelle",
         "thermometer": "thermomètre",

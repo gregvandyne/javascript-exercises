@@ -138,7 +138,7 @@ router.get('/library', (req, res) => {
   const chip = (on, href, label) => html`<a class="chip${on ? ' on' : ''}" href="${href}"${on ? raw(' aria-current="true"') : ''}>${label}</a>`;
   const card = bk => bookCard(t, bk, { read: reads.get(bk.id), staff, forClass });
   const body = html`<div class="slib">
-    <div class="pagehead lb-head"><div><h1><span aria-hidden="true">📚</span> ${t('library.title')}</h1><p class="muted">${t('library.lead', { count: LIB.books().length })}</p></div></div>
+    <div class="pagehead lb-head"><div><h1>${ico('📚', { size: 36 })} ${t('library.title')}</h1><p class="muted">${t('library.lead', { count: LIB.books().length })}</p></div></div>
     ${forClass ? html`<p class="notice lb-forclass">${ico('📌', { size: 18 })} ${t('library.forClass', { class: forClass.name })} <a href="/class/${forClass.id}">${t('library.backToClass')}</a></p>` : ''}
     ${wishBox(t, grade, forClass)}
     <form class="lb-tools" method="get" action="/library" role="search" aria-label="${t('library.searchLabel')}">
@@ -307,7 +307,7 @@ export function storyResults(req, res, c, cl, l) {
   const readCell = p => {
     if (p.state === 'done') return html`<span class="lr-read is-done">${ico('✅', { size: 18 })} ${p.aloud ? t('library.results.withAloud') : t('library.results.onOwn')}</span>`;
     if (p.state === 'quiz') return html`<span class="lr-read">${ico('📝', { size: 18 })} ${t('library.results.questionsLeft')}</span>`;
-    if (p.state === 'reading') return html`<span class="lr-read">${ico('📖', { size: 18 })} ${t('library.results.pageOf', { page: p.page, pages: p.pages })}</span>${p.aloud ? html` <span class="chip-s" title="${t('library.results.usedAloud')}">🔊</span>` : ''}`;
+    if (p.state === 'reading') return html`<span class="lr-read">${ico('📖', { size: 18 })} ${t('library.results.pageOf', { page: p.page, pages: p.pages })}</span>${p.aloud ? html` <span class="chip-s" title="${t('library.results.usedAloud')}">${ico('🔊', { size: 18 })}</span>` : ''}`;
     return html`<span class="lr-read muted">${ico('⏳', { size: 18 })} ${t('library.results.notStarted')}</span>`;
   };
   const marks = p => html`<span class="lr-marks" aria-hidden="true">${[...p.marks].map((m, i) => html`<span class="${m === '1' ? 'ok' : 'no'}" title="${t('library.results.qN', { n: i + 1 })}">${m === '1' ? '✓' : '✗'}</span>`)}</span>`;

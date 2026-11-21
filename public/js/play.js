@@ -208,9 +208,9 @@ addEventListener('message', e => {
         // Number Quest moments (Tally Marks, the daily goal, a lap landing) as toasts: quick, cheerful,
         // gone on their own — the game keeps the screen.
         if (r && r.nq) {
-          if (r.nq.marks && r.nq.marks.awarded) toast(t('js.play.nqMarks', { marks: r.nq.marks.marks, total: r.nq.marks.total }));
-          if (r.nq.dailyGoal && r.nq.dailyGoal.justMet) toast(t('js.play.nqGoal'));
-          if (r.nq.lap) toast(t('js.play.nqLap', { lap: r.nq.lap.lap }));
+          if (r.nq.marks && r.nq.marks.awarded) toast(`🐱 ${t('js.play.nqMarks', { marks: r.nq.marks.marks, total: r.nq.marks.total })}`);
+          if (r.nq.dailyGoal && r.nq.dailyGoal.justMet) toast(`🌱 ${t('js.play.nqGoal')}`);
+          if (r.nq.lap) toast(`🏅 ${t('js.play.nqLap', { lap: r.nq.lap.lap })}`);
         }
         showCourseBar('done');
       }).catch(e => {

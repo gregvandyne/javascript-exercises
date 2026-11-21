@@ -13,6 +13,7 @@ import { tHtml } from '../i18n/index.js';
 import { jumpNav } from './components.js';
 import * as T from '../services/lesson-templates.js';
 import * as CSTA from '../standards/csta.js';
+import { ico } from './icon.js';
 
 export const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}"><link rel="stylesheet" href="/css/cs-quest.css?v=${VERSION}">`);
 /** The four games' emoji (plan section 1) and the live games a lesson may name. */
@@ -62,7 +63,7 @@ export function builderLine(t, b) {
 }
 const lessonUrl = (key, extra = '') => `/teach/cs-quest/${key}${extra}`;
 const stateChip = (t, st) => (!st || !st.inLibrary ? html`<span class="chip-s">${t('cs.state.notAdded')}</span>`
-  : st.updateAvailable ? html`<span class="chip-s warn"><span aria-hidden="true">⬆️</span> ${t('cs.state.update')}</span>` : html`<span class="chip-s csq-chip-ok"><span aria-hidden="true">✅</span> ${t('cs.state.inLibrary')}</span>`);
+  : st.updateAvailable ? html`<span class="chip-s warn">${ico('⬆️', { size: 18 })} ${t('cs.state.update')}</span>` : html`<span class="chip-s csq-chip-ok">${ico('✅', { size: 18 })} ${t('cs.state.inLibrary')}</span>`);
 
 // ---------------------------------------------------------------- the program page (/teach/cs-quest)
 /**
@@ -76,15 +77,15 @@ export function programBody(req, d) {
   const schoolIn = html`<input type="hidden" name="schoolId" value="${school.id}">`;
   const bandIn = html`<input type="hidden" name="band" value="${band}">`;
   const missingGames = ['robo-route', 'data-detective', 'packet-post', 'inside-the-machine'].filter(s => !d.published[s]).map(s => cat.games[s]?.title || s);
-  const before = html`<section class="panel csq-before" aria-labelledby="before-h"><h2 id="before-h">📋 ${t('cs.before.h')}</h2>
+  const before = html`<section class="panel csq-before" aria-labelledby="before-h"><h2 id="before-h">${ico('📋', { size: 28 })} ${t('cs.before.h')}</h2>
     <ul class="csq-plain">
       <li><span aria-hidden="true">${missingGames.length ? '⚠️' : '✅'}</span><span>${missingGames.length ? t('cs.before.gamesMissing', { games: missingGames.join(', ') }) : t('cs.before.gamesOk')}</span></li>
       <li><span aria-hidden="true">${d.flags.live ? '✅' : 'ℹ️'}</span><span>${t(d.flags.live ? 'cs.before.liveOn' : 'cs.before.liveOff')}</span></li>
       <li><span aria-hidden="true">${d.flags.quizSteps ? '✅' : 'ℹ️'}</span><span>${t(d.flags.quizSteps ? 'cs.before.quizOn' : 'cs.before.quizOff')}</span></li>
       <li><span aria-hidden="true">${d.classes.length ? '✅' : '⚠️'}</span><span>${t('cs.before.classes', { count: d.classes.length })} ${d.classes.length ? '' : html`<a href="/teach">${t('school.teach.title')}</a>`}</span></li>
       <li><span aria-hidden="true">${d.zone ? '✅' : 'ℹ️'}</span><span>${d.zone ? t('cs.before.zone', { zone: d.zone.replace(/_/g, ' ') }) : t('cs.before.zoneNone')}</span></li>
-      <li><span aria-hidden="true">🎧</span><span>${t('cs.before.headphones')}</span></li>
-      <li><span aria-hidden="true">🛠️</span><span>${t('cs.before.unit7')}</span></li>
+      <li>${ico('🎧', { size: 18 })}<span>${t('cs.before.headphones')}</span></li>
+      <li>${ico('🛠️', { size: 18 })}<span>${t('cs.before.unit7')}</span></li>
     </ul>
     ${builderLine(t, d.builder)}</section>`;
   const pathCard = p => {
@@ -94,7 +95,7 @@ export function programBody(req, d) {
       <p class="small muted">${t('cs.paths.periods', { count: p.lessons.length })} · <span lang="en" dir="ltr">${p.lessons.join(', ')}</span></p>
       ${p.note ? en('p', p.note, ' class="small"') : ''}
       <p class="small">${miss.length ? html`${t('cs.paths.misses')} ${idChips(miss)}` : t('cs.paths.coversAll')}</p>
-      <div class="csq-pfoot"><form data-api="/api/lessons/from-template/path/${p.id}" data-reload data-toast="${t('cs.toast.many')}">${schoolIn}${bandIn}<button class="btn btn-primary" type="submit">➕ ${t('cs.add')}</button></form></div>
+      <div class="csq-pfoot"><form data-api="/api/lessons/from-template/path/${p.id}" data-reload data-toast="${t('cs.toast.many')}">${schoolIn}${bandIn}<button class="btn btn-primary" type="submit">${ico('➕', { size: 18 })} ${t('cs.add')}</button></form></div>
     </article>`;
   };
   const lessonRow = (u, l) => {
@@ -104,20 +105,20 @@ export function programBody(req, d) {
     return html`<li class="csq-lrow" id="l-${key}">
       <div class="csq-lmain"><b lang="en" dir="ltr">${l.n} · ${l.title}</b>
         <span class="small muted">${idChips(l.primary[band])}${game ? html` · <span lang="en" dir="ltr">${GAME_EMOJI[game] || '🎮'} ${cat.games[game]?.title || game}</span>` : ''}</span>
-        ${tpl ? stateChip(t, st) : html`<span class="chip-s">${t('cs.state.soon')}</span>`}${game && !pub ? html` <span class="chip-s warn"><span aria-hidden="true">⚠️</span> ${t('cs.state.gameNotYet', { game: cat.games[game]?.title || game })}</span>` : ''}</div>
+        ${tpl ? stateChip(t, st) : html`<span class="chip-s">${t('cs.state.soon')}</span>`}${game && !pub ? html` <span class="chip-s warn">${ico('⚠️', { size: 18 })} ${t('cs.state.gameNotYet', { game: cat.games[game]?.title || game })}</span>` : ''}</div>
       ${tpl ? html`<span class="acts">
-        <a class="btn btn-sm" href="${lessonUrl(key)}">📋 ${t('cs.lesson.openPlan')}</a>
+        <a class="btn btn-sm" href="${lessonUrl(key)}">${ico('📋', { size: 18 })} ${t('cs.lesson.openPlan')}</a>
         ${pub && tpl.params ? html`<a class="btn btn-sm" href="/play/${game}?${tpl.params}&mode=projector" target="_blank" rel="noopener">▶ ${t('cs.lesson.preview')}</a>` : ''}
-        ${st && st.inLibrary && !st.updateAvailable ? html`<a class="btn btn-sm" href="/teach/lessons/${st.current.id}">✅ ${t('cs.state.added')}</a>`
-          : html`<form data-api="/api/lessons/from-template/${key}" data-reload data-toast="${t('cs.toast.one')}">${schoolIn}<button class="btn btn-sm btn-primary" type="submit">➕ ${t('cs.add')}</button></form>`}
+        ${st && st.inLibrary && !st.updateAvailable ? html`<a class="btn btn-sm" href="/teach/lessons/${st.current.id}">${ico('✅', { size: 18 })} ${t('cs.state.added')}</a>`
+          : html`<form data-api="/api/lessons/from-template/${key}" data-reload data-toast="${t('cs.toast.one')}">${schoolIn}<button class="btn btn-sm btn-primary" type="submit">${ico('➕', { size: 18 })} ${t('cs.add')}</button></form>`}
       </span>` : ''}</li>`;
   };
   const unitCard = u => html`<section class="panel csq-unit" id="unit-${u.n}" aria-labelledby="unit-h-${u.n}">
     <div class="csq-unit-head"><h2 id="unit-h-${u.n}">${t('cs.unit.n', { n: u.n })} · ${en('span', u.title)}
         ${u.optional ? html` <span class="chip-s">${t('cs.unit.optional')}</span>` : ''}${u.needsSchoolPlan ? html` <span class="chip-s warn">${t('cs.unit.needsPlan')}</span>` : ''}</h2>
       <span class="acts">
-        <form data-api="/api/lessons/from-template/unit/${u.n}" data-reload data-toast="${t('cs.toast.many')}">${schoolIn}${bandIn}<button class="btn" type="submit">➕ ${t('cs.unit.add')}</button></form>
-        ${d.classes.length ? html`<a class="btn" href="${lessonUrl(u.lessons[0].keys[band], '#assign-unit')}">📅 ${t('cs.unit.assign')}</a>` : ''}
+        <form data-api="/api/lessons/from-template/unit/${u.n}" data-reload data-toast="${t('cs.toast.many')}">${schoolIn}${bandIn}<button class="btn" type="submit">${ico('➕', { size: 18 })} ${t('cs.unit.add')}</button></form>
+        ${d.classes.length ? html`<a class="btn" href="${lessonUrl(u.lessons[0].keys[band], '#assign-unit')}">${ico('📅', { size: 18 })} ${t('cs.unit.assign')}</a>` : ''}
       </span></div>
     <p class="small muted">${t('cs.unit.lessonsN', { count: u.lessons.length })} · <span lang="en" dir="ltr">${u.tool}</span></p>
     ${u.n === 7 ? builderLine(t, d.builder) : ''}
@@ -125,9 +126,9 @@ export function programBody(req, d) {
   </section>`;
   const added = [...lib.values()].filter(s => s.inLibrary && T.getTemplate(s.key).band === band).length;
   return html`
-  <div class="pagehead csq-plan-head"><div><span class="small muted">${school.name}</span><h1>💻 CS Quest ${programBadge(cat)}</h1>
+  <div class="pagehead csq-plan-head"><div><span class="small muted">${school.name}</span><h1>${ico('💻', { size: 36 })} CS Quest ${programBadge(cat)}</h1>
     <p class="muted">${t('cs.program.tagline')} · ${t('cs.program.counts', { lessons: 23, units: 7 })}</p></div>
-    <div class="row"><a class="btn" href="/teach/cs-quest/coverage">🗺️ ${t('cs.program.coverage')}</a></div></div>
+    <div class="row"><a class="btn" href="/teach/cs-quest/coverage">${ico('🗺️', { size: 18 })} ${t('cs.program.coverage')}</a></div></div>
   ${d.schools.length > 1 ? html`<nav class="seg schoolpick" aria-label="${t('school.class.school')}">${d.schools.map(s => html`<a class="btn btn-sm ${s.id === school.id ? 'btn-primary' : ''}" href="/teach/cs-quest?band=${band}&school=${s.id}">${s.name}</a>`)}</nav>` : ''}
   <div class="csq-seg"><span class="small muted">${t('cs.band.label')}</span>
     <nav class="seg" aria-label="${t('cs.band.label')}" data-band-toggle>${T.BANDS.map(bc => html`<a href="${href(bc)}" data-band="${bc}" ${bc === band ? raw('aria-current="page"') : ''}>${t(BAND_KEY[bc])} · <span lang="en" dir="ltr">${cat.bands[bc].inGame}</span></a>`)}</nav>
@@ -135,9 +136,9 @@ export function programBody(req, d) {
   <p class="small muted">${t('cs.program.lead')}</p>
   ${jumpNav(t, [['before-h', `📋 ${t('cs.before.h')}`], ['paths-h', `🧭 ${t('cs.paths.h')}`], ['units-h', `📚 ${t('cs.units.h')}`]])}
   ${before}
-  <section aria-labelledby="paths-h"><h2 id="paths-h" class="sec-h">🧭 ${t('cs.paths.h')}</h2><p class="small muted">${t('cs.paths.lead', { band: t(BAND_KEY[band]) })}</p>
+  <section aria-labelledby="paths-h"><h2 id="paths-h" class="sec-h">${ico('🧭', { size: 28 })} ${t('cs.paths.h')}</h2><p class="small muted">${t('cs.paths.lead', { band: t(BAND_KEY[band]) })}</p>
     <div class="csq-paths">${cat.paths.map(pathCard)}</div></section>
-  <h2 class="sec-h" id="units-h">📚 ${t('cs.units.h')}</h2>
+  <h2 class="sec-h" id="units-h">${ico('📚', { size: 28 })} ${t('cs.units.h')}</h2>
   ${cat.units.map(unitCard)}
   <p class="small muted">${t('teachers.cs.cstaNote')}</p>
   <p class="small muted">${t('cs.program.footer')} <a href="/teachers/cs-quest">${t('cs.program.public')}</a> · <a href="/teach/cs-quest/coverage">${t('cs.program.coverage')}</a> · <span lang="en" dir="ltr">${b.grade}: ${b.inGame}</span></p>`;
@@ -159,50 +160,50 @@ export function planBody(req, d) {
   const classField = (id, name = 'classId') => (d.classes.length ? html`<div class="field"><label for="${id}">${t('lessons.assign.class')}</label><select class="input" id="${id}" name="${name}">${classOptions(d.preselect)}</select></div>` : '');
   const liveForm = (what, label, emoji, primary = false) => html`<form class="csq-liveform" data-api="/api/cs-quest/lessons/${key}/live">${d.classes.length ? html`<input type="hidden" name="classId" value="${d.preselect || d.classes[0].id}" data-class-follow>` : ''}<input type="hidden" name="schoolId" value="${d.school.id}"><input type="hidden" name="what" value="${what}"><button class="btn ${primary ? 'btn-primary' : ''}" type="submit">${emoji} ${label}</button></form>`;
   // The two equal warm-up buttons (D2): live, or the projector; 6.1 and 6.3 start Would You Rather instead.
-  const warmupLive = !d.flags.live ? html`<p class="notice csq-notice-line">ℹ️ ${t('cs.plan.liveOff')}</p>`
+  const warmupLive = !d.flags.live ? html`<p class="notice csq-notice-line">${ico('ℹ️', { size: 18 })} ${t('cs.plan.liveOff')}</p>`
     : tpl.warmup ? liveForm('warmup', t('cs.buttons.warmup'), '📡', true) : wyr ? liveForm('wyr', t('cs.buttons.wyr'), '📡', true) : '';
-  const liveNote = d.flags.live && (tpl.warmup || wyr) && d.classes.length && !(d.assigned || []).length ? html`<p class="small muted">ℹ️ ${t('cs.plan.liveNotAssigned')}</p>` : '';
-  const projector = tpl.warmup ? html`<a class="btn btn-primary" href="${lessonUrl(key, '?projector=warmup')}" target="_blank" rel="noopener">🖥️ ${t('cs.buttons.projector')}</a>` : '';
+  const liveNote = d.flags.live && (tpl.warmup || wyr) && d.classes.length && !(d.assigned || []).length ? html`<p class="small muted">${ico('ℹ️', { size: 18 })} ${t('cs.plan.liveNotAssigned')}</p>` : '';
+  const projector = tpl.warmup ? html`<a class="btn btn-primary" href="${lessonUrl(key, '?projector=warmup')}" target="_blank" rel="noopener">${ico('🖥️', { size: 18 })} ${t('cs.buttons.projector')}</a>` : '';
   const steps = (d.copy || []).filter(Boolean);
   const printables = printablesOf(tpl);
   const sheetName = s => (t.has(`cs.sheets.${s}`) ? t(`cs.sheets.${s}`) : s.replace(/-/g, ' '));
-  const printMenu = html`<details class="csq-menu"><summary class="btn">🖨️ ${t('cs.buttons.printables')}</summary><div class="menu">
+  const printMenu = html`<details class="csq-menu"><summary class="btn">${ico('🖨️', { size: 18 })} ${t('cs.buttons.printables')}</summary><div class="menu">
     ${printables.map(s => html`<a href="${lessonUrl(key, `?sheet=${s}`)}" target="_blank" rel="noopener">${sheetName(s)}</a>`)}</div></details>`;
-  const assignForm = d.classes.length ? html`<details class="panel csq-assign" id="assign"><summary>📌 ${t('cs.buttons.assign')}</summary>
+  const assignForm = d.classes.length ? html`<details class="panel csq-assign" id="assign"><summary>${ico('📌', { size: 18 })} ${t('cs.buttons.assign')}</summary>
     <form class="formgrid" data-api="/api/cs-quest/lessons/${key}/assign" data-reload novalidate><input type="hidden" name="schoolId" value="${d.school.id}">
       ${classField('as-c')}
       <div class="field"><label for="as-o">${t('lessons.assign.opens')}</label><input class="input" id="as-o" name="opensAt" type="date"></div>
       <div class="field"><label for="as-d">${t('lessons.assign.due')}</label><input class="input" id="as-d" name="dueAt" type="date"></div>
-      <div class="field end"><button class="btn btn-primary" type="submit">📌 ${t('lessons.assign.button')}</button></div>
-      <p class="small muted wide">${t('cs.plan.assignNote')} ${d.zoneNote}</p></form></details>` : html`<p class="notice csq-notice-line" id="assign">ℹ️ ${t('lessons.assign.noClasses')}</p>`;
-  const unitForm = d.classes.length ? html`<details class="panel csq-assign csq-unitform" id="assign-unit"><summary>📅 ${t('cs.buttons.assignUnit')}</summary>
+      <div class="field end"><button class="btn btn-primary" type="submit">${ico('📌', { size: 18 })} ${t('lessons.assign.button')}</button></div>
+      <p class="small muted wide">${t('cs.plan.assignNote')} ${d.zoneNote}</p></form></details>` : html`<p class="notice csq-notice-line" id="assign">${ico('ℹ️', { size: 18 })} ${t('lessons.assign.noClasses')}</p>`;
+  const unitForm = d.classes.length ? html`<details class="panel csq-assign csq-unitform" id="assign-unit"><summary>${ico('📅', { size: 18 })} ${t('cs.buttons.assignUnit')}</summary>
     <form class="formgrid" data-api="/api/cs-quest/assign-unit" data-reload novalidate><input type="hidden" name="schoolId" value="${d.school.id}"><input type="hidden" name="band" value="${tpl.band}">
       ${classField('au-c')}
       <div class="field"><label for="au-w">${t('cs.unitForm.what')}</label><select class="input" id="au-w" name="what"><option value="unit:${tpl.unit}">${t('cs.unit.n', { n: tpl.unit })} · ${tpl.unitTitle}</option>${cat.paths.map(p => html`<option value="path:${p.id}">${p.title}</option>`)}</select></div>
       <div class="field"><label for="au-s">${t('cs.unitForm.start')}</label><input class="input" id="au-s" name="start" type="date"></div>
       <div class="field"><label for="au-cad">${t('cs.unitForm.cadence')}</label><select class="input" id="au-cad" name="cadence">${['weekdays', 'daily', 'twice-weekly', 'weekly'].map(c => html`<option value="${c}">${t(`cs.unitForm.cadences.${c.replace('-', '')}`)}</option>`)}</select></div>
       <div class="field"><label for="au-due">${t('cs.unitForm.dueDays')}</label><input class="input" id="au-due" name="dueDays" type="number" min="0" max="60" placeholder="${t('cs.unitForm.dueAuto')}"></div>
-      <div class="field end"><button class="btn btn-primary" type="submit">📅 ${t('cs.unitForm.button')}</button></div>
+      <div class="field end"><button class="btn btn-primary" type="submit">${ico('📅', { size: 18 })} ${t('cs.unitForm.button')}</button></div>
       <p class="small muted wide">${t('cs.unitForm.note')} ${d.zoneNote}</p></form></details>` : '';
   const state = html`<div class="csq-state">
     ${stateChip(t, st)}
-    ${current ? html`<a class="btn btn-sm" href="/teach/lessons/${current.id}">✏️ ${t('cs.state.open')}</a>` : html`<form data-api="/api/lessons/from-template/${key}" data-reload data-toast="${t('cs.toast.one')}"><input type="hidden" name="schoolId" value="${d.school.id}"><button class="btn btn-sm btn-primary" type="submit">➕ ${t('cs.add')}</button></form>`}
+    ${current ? html`<a class="btn btn-sm" href="/teach/lessons/${current.id}">${ico('✏️', { size: 18 })} ${t('cs.state.open')}</a>` : html`<form data-api="/api/lessons/from-template/${key}" data-reload data-toast="${t('cs.toast.one')}"><input type="hidden" name="schoolId" value="${d.school.id}"><button class="btn btn-sm btn-primary" type="submit">${ico('➕', { size: 18 })} ${t('cs.add')}</button></form>`}
     ${current && st.gamesReady ? html`<form data-api="/api/lessons/${current.id}/switch-on-games" data-reload><button class="btn btn-sm btn-primary" type="submit">▶ ${t('cs.state.switchOn')}</button></form>` : ''}
-    ${current ? html`<form data-api="/api/lessons/${current.id}/reset-template" data-reload data-toast="${t('cs.state.resetDone')}" data-confirm="${t('cs.state.resetConfirm')}"><button class="btn btn-sm" type="submit">♻️ ${t('cs.state.reset')}</button></form>` : ''}
-    ${d.assigned.map(a => html`<a class="chip-s" href="/class/${a.class_id}/progress/${a.id}">📌 ${a.name}</a>`)}
-    ${d.other ? html`<a class="btn btn-sm" href="${lessonUrl(d.other.key)}">🔁 ${t('cs.plan.switchBand', { band: t(BAND_KEY[d.other.band]) })}</a>` : ''}
+    ${current ? html`<form data-api="/api/lessons/${current.id}/reset-template" data-reload data-toast="${t('cs.state.resetDone')}" data-confirm="${t('cs.state.resetConfirm')}"><button class="btn btn-sm" type="submit">${ico('♻️', { size: 18 })} ${t('cs.state.reset')}</button></form>` : ''}
+    ${d.assigned.map(a => html`<a class="chip-s" href="/class/${a.class_id}/progress/${a.id}">${ico('📌', { size: 18 })} ${a.name}</a>`)}
+    ${d.other ? html`<a class="btn btn-sm" href="${lessonUrl(d.other.key)}">${ico('🔁', { size: 18 })} ${t('cs.plan.switchBand', { band: t(BAND_KEY[d.other.band]) })}</a>` : ''}
   </div>`;
-  const notes = html`${!d.bank ? html`<p class="notice warn">⚠️ ${t('cs.plan.bankMissing')}</p>` : ''}${game && !pub ? html`<p class="notice warn">⚠️ ${t('cs.plan.gameNotYet', { game: cat.games[game]?.title || game })} ${t('cs.plan.gameLater')}</p>` : ''}${current && st.gamesReady ? html`<p class="notice warn">⬆️ ${t('cs.plan.gamesReady', { count: st.gamesReady })}</p>` : ''}`;
+  const notes = html`${!d.bank ? html`<p class="notice warn">${ico('⚠️', { size: 18 })} ${t('cs.plan.bankMissing')}</p>` : ''}${game && !pub ? html`<p class="notice warn">${ico('⚠️', { size: 18 })} ${t('cs.plan.gameNotYet', { game: cat.games[game]?.title || game })} ${t('cs.plan.gameLater')}</p>` : ''}${current && st.gamesReady ? html`<p class="notice warn">${ico('⬆️', { size: 18 })} ${t('cs.plan.gamesReady', { count: st.gamesReady })}</p>` : ''}`;
   const buttons = html`<section class="panel" aria-labelledby="go-h"><h2 id="go-h" class="sr-only">${t('cs.plan.actions')}</h2>
     <div class="csq-two">${warmupLive}${projector}</div>${liveNote}
     <div class="acts csq-acts">
       ${game && pub && tpl.params ? html`<a class="btn" href="/play/${game}?${tpl.params}&mode=projector" target="_blank" rel="noopener">▶ ${t('cs.buttons.game')}</a>` : game && !pub ? html`<button class="btn" type="button" disabled title="${t('cs.plan.gameNotYet', { game: cat.games[game]?.title || game })}">▶ ${t('cs.buttons.gameNotYet')}</button>` : ''}
       ${d.flags.live && d.bank ? liveForm('exit', t('cs.buttons.exitLive'), '📡') : ''}
       ${d.flags.live && d.bank ? liveForm('review', t('cs.buttons.review'), '🌟') : ''}
-      <a class="btn" href="${lessonUrl(key, '?projector=exit')}" target="_blank" rel="noopener">🖥️ ${t('cs.buttons.exitProjector')}</a>
-      <a class="btn" href="${lessonUrl(key, '?print=1')}" target="_blank" rel="noopener">🖨️ ${t('cs.buttons.print')}</a>
+      <a class="btn" href="${lessonUrl(key, '?projector=exit')}" target="_blank" rel="noopener">${ico('🖥️', { size: 18 })} ${t('cs.buttons.exitProjector')}</a>
+      <a class="btn" href="${lessonUrl(key, '?print=1')}" target="_blank" rel="noopener">${ico('🖨️', { size: 18 })} ${t('cs.buttons.print')}</a>
       ${printMenu}
-      ${d.classes.length ? html`<a class="btn" href="#assign" data-open-details>📌 ${t('cs.buttons.assign')}</a><a class="btn" href="#assign-unit" data-open-details>📅 ${t('cs.buttons.assignUnit')}</a>` : ''}
+      ${d.classes.length ? html`<a class="btn" href="#assign" data-open-details>${ico('📌', { size: 18 })} ${t('cs.buttons.assign')}</a><a class="btn" href="#assign-unit" data-open-details>${ico('📅', { size: 18 })} ${t('cs.buttons.assignUnit')}</a>` : ''}
     </div>
     ${d.classes.length > 1 ? html`<p class="small muted csq-classpick"><label for="live-class">${t('cs.plan.liveClass')}</label> <select class="input input-sm" id="live-class" data-class-pick>${classOptions(d.preselect)}</select></p>` : ''}
     ${tpl.questCode ? html`<p class="csq-codeline"><b>${t('cs.plan.questCode')}</b> ${questCode(tpl.questCode)} <span class="small muted">${t('cs.plan.questCodeHint')}</span></p>` : ''}</section>`;
@@ -226,29 +227,29 @@ export function planBody(req, d) {
   return html`
   <div class="pagehead csq-plan-head"><div><span class="small muted">${t('cs.unit.n', { n: tpl.unit })} · ${en('span', tpl.unitTitle)} · ${t(BAND_KEY[tpl.band])}</span>
     <h1 lang="en" dir="ltr">${tpl.title}</h1>
-    <p class="csq-meta">${programBadge(cat)}<span>⏱️ ${t('lessons.minutesN', { count: tpl.duration })}</span>${idChips(tpl.csta.primary)}</p></div>
+    <p class="csq-meta">${programBadge(cat)}<span>${ico('⏱️', { size: 18 })} ${t('lessons.minutesN', { count: tpl.duration })}</span>${idChips(tpl.csta.primary)}</p></div>
     ${state}</div>
   ${notes}
   ${buttons}
   ${tpl.unit === 7 ? builderLine(t, d.builder) : ''}
   <div class="csq-grid">
-    <section class="panel"><h2>🎯 ${t('cs.plan.iCan')}</h2>${enList(tpl.iCan.map(s => `I can ${s}`))}
+    <section class="panel"><h2>${ico('🎯', { size: 28 })} ${t('cs.plan.iCan')}</h2>${enList(tpl.iCan.map(s => `I can ${s}`))}
       ${tpl.summary ? paras(tpl.summary, 'small') : ''}</section>
-    <section class="panel"><h2>📐 ${t('cs.plan.standards')}</h2>
+    <section class="panel"><h2>${ico('📐', { size: 28 })} ${t('cs.plan.standards')}</h2>
       <ul class="csq-plain">${tpl.csta.primary.map(id => { const s = CSTA.byId(id); return html`<li>${idChip(id)} ${s ? en('span', s.statement, ' class="small"') : ''}</li>`; })}</ul>
       ${tpl.csta.also.length ? html`<p class="small"><b>${t('cs.plan.also')}</b> ${idChips(tpl.csta.also)}</p>` : ''}
       ${tpl.csta.buildsToward.length ? html`<p class="small"><b>${t('cs.plan.toward')}</b> ${idChips(tpl.csta.buildsToward)}</p>` : ''}
       <p class="small"><b>${t('cs.plan.vocab')}</b> <span lang="en" dir="ltr">${(ex.vocab || []).join(' · ')}</span></p></section>
-    <section class="panel"><h2>🧰 ${t('cs.plan.materials')}</h2>${enList(tpl.materials, 'csq-list csq-materials')}</section>
-    <section class="panel"><h2>✏️ ${t('cs.plan.doNow')}</h2>${en('p', tpl.doNow)}</section>
-    <section class="panel wide"><h2>⏱️ ${t('cs.plan.period')}</h2>${periodTable(t, tpl.plan)}
+    <section class="panel"><h2>${ico('🧰', { size: 28 })} ${t('cs.plan.materials')}</h2>${enList(tpl.materials, 'csq-list csq-materials')}</section>
+    <section class="panel"><h2>${ico('✏️', { size: 28 })} ${t('cs.plan.doNow')}</h2>${en('p', tpl.doNow)}</section>
+    <section class="panel wide"><h2>${ico('⏱️', { size: 28 })} ${t('cs.plan.period')}</h2>${periodTable(t, tpl.plan)}
       <div class="csq-two" style="margin-top:var(--s4)">
-        <div class="csq-cut"><h3>⏳ ${t('cs.plan.short40')}</h3>${periodTable(t, tpl.shortPeriod40.table)}${en('p', tpl.shortPeriod40.keep, ' class="small"')}${tpl.shortPeriod40.discuss ? html`<p class="small"><b>${t('cs.plan.discuss')}:</b> ${en('span', tpl.shortPeriod40.discuss)}</p>` : ''}</div>
-        <div class="csq-cut"><h3>🧱 ${t('cs.plan.block')}</h3>${enList(tpl.block?.add || [])}</div></div></section>
-    ${tpl.warmup ? html`<section class="panel wide"><h2>🏁 ${t('cs.plan.warmup')}</h2>
+        <div class="csq-cut"><h3>${ico('⏳', { size: 18 })} ${t('cs.plan.short40')}</h3>${periodTable(t, tpl.shortPeriod40.table)}${en('p', tpl.shortPeriod40.keep, ' class="small"')}${tpl.shortPeriod40.discuss ? html`<p class="small"><b>${t('cs.plan.discuss')}:</b> ${en('span', tpl.shortPeriod40.discuss)}</p>` : ''}</div>
+        <div class="csq-cut"><h3>${ico('🧱', { size: 18 })} ${t('cs.plan.block')}</h3>${enList(tpl.block?.add || [])}</div></div></section>
+    ${tpl.warmup ? html`<section class="panel wide"><h2>${ico('🏁', { size: 28 })} ${t('cs.plan.warmup')}</h2>
       <p class="small muted">${t('cs.plan.warmupHow', { mode: cat.games[T.WARMUP_GAME[tpl.band]]?.title || T.WARMUP_GAME[tpl.band], secs: tpl.warmup.secs || 15 })}${tpl.warmup.why ? html` · ${en('span', tpl.warmup.why)}` : ''}</p>
       ${d.warmupItems ? html`<ol class="csq-exititems">${d.warmupItems.map((it, i) => itemView(it, { n: i + 1 }))}</ol>` : html`<p class="muted">${t('cs.plan.bankMissing')}</p>`}</section>` : ''}
-    <section class="panel wide"><h2>🖥️ ${t('cs.plan.explore')} <span class="small muted">· ${t('lessons.minutesN', { count: ex.minutes || 6 })}</span></h2>
+    <section class="panel wide"><h2>${ico('🖥️', { size: 28 })} ${t('cs.plan.explore')} <span class="small muted">· ${t('lessons.minutesN', { count: ex.minutes || 6 })}</span></h2>
       <dl class="csq-script">
         ${ex.demo ? html`<dt>${t('cs.plan.demo')}</dt><dd lang="en" dir="ltr">${ex.demo.chapter} · ${t('cs.plan.levelN', { n: ex.demo.level })}</dd>` : ''}
         <dt>${t('cs.plan.do')}</dt><dd>${enList(ex.do)}</dd>
@@ -256,19 +257,19 @@ export function planBody(req, d) {
         <dt>${t('cs.plan.ask')}</dt><dd>${enList(ex.ask)}</dd>
         ${ex.afterAsk ? html`<dt>${t('cs.plan.afterAsk')}</dt><dd>${en('p', ex.afterAsk)}</dd>` : ''}
         <dt>${t('cs.plan.bigIdea')}</dt><dd>${en('p', ex.bigIdea, ' class="csq-answer-ok"')}</dd></dl></section>
-    <section class="panel wide"><h2>🎮 ${t('cs.plan.play')} <span class="small muted">· ${t('lessons.minutesN', { count: play.minutes || 18 })}</span></h2>${playBlock()}</section>
-    <section class="panel"><h2>💬 ${t('cs.plan.discuss')}</h2>${enList(tpl.discuss)}${tpl.showMe ? html`<p class="small"><b>${t('cs.plan.showMe')}</b> ${en('span', tpl.showMe)}</p>` : ''}</section>
-    <section class="panel"><h2>🧩 ${t('cs.plan.exit')}</h2>
+    <section class="panel wide"><h2>${ico('🎮', { size: 28 })} ${t('cs.plan.play')} <span class="small muted">· ${t('lessons.minutesN', { count: play.minutes || 18 })}</span></h2>${playBlock()}</section>
+    <section class="panel"><h2>${ico('💬', { size: 28 })} ${t('cs.plan.discuss')}</h2>${enList(tpl.discuss)}${tpl.showMe ? html`<p class="small"><b>${t('cs.plan.showMe')}</b> ${en('span', tpl.showMe)}</p>` : ''}</section>
+    <section class="panel"><h2>${ico('🧩', { size: 28 })} ${t('cs.plan.exit')}</h2>
       ${d.exitItems ? html`<ol class="csq-exititems">${d.exitItems.map((it, i) => itemView(it, { n: i + 1 }))}</ol>` : html`<p class="muted">${t('cs.plan.bankMissing')}</p>`}
       <p><b>${t('cs.plan.sentence')}</b> ${en('span', tpl.exit.sentencePrompt)}<br><span class="small muted">${t('cs.plan.frame')}</span> ${en('span', tpl.exit.frame)}</p></section>
-    <section class="panel wide"><h2>📏 ${t('cs.plan.rubric')}</h2><p class="small muted">${t('cs.plan.rubricHow')}</p>${exitRubric}</section>
-    <section class="panel"><h2>🪜 ${t('cs.plan.diff')}</h2><p><b>${t('cs.plan.support')}</b></p>${enList(tpl.differentiation.support)}<p><b>${t('cs.plan.stretch')}</b></p>${enList(tpl.differentiation.stretch)}</section>
-    <section class="panel"><h2>✂️ ${t('cs.plan.unplugged')} <span class="small muted">· ${en('span', tpl.unpluggedTwin.title)} · ${t('lessons.minutesN', { count: tpl.unpluggedTwin.minutes })}</span></h2>
+    <section class="panel wide"><h2>${ico('📏', { size: 28 })} ${t('cs.plan.rubric')}</h2><p class="small muted">${t('cs.plan.rubricHow')}</p>${exitRubric}</section>
+    <section class="panel"><h2>${ico('🪜', { size: 28 })} ${t('cs.plan.diff')}</h2><p><b>${t('cs.plan.support')}</b></p>${enList(tpl.differentiation.support)}<p><b>${t('cs.plan.stretch')}</b></p>${enList(tpl.differentiation.stretch)}</section>
+    <section class="panel"><h2>${ico('✂️', { size: 28 })} ${t('cs.plan.unplugged')} <span class="small muted">· ${en('span', tpl.unpluggedTwin.title)} · ${t('lessons.minutesN', { count: tpl.unpluggedTwin.minutes })}</span></h2>
       <p class="small"><b>${t('cs.plan.materials')}</b> <span lang="en" dir="ltr">${tpl.unpluggedTwin.materials.join('; ')}</span></p>${raw(`<ol class="csq-list" lang="en" dir="ltr">${tpl.unpluggedTwin.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`)}
-      <p class="small">${tpl.unpluggedTwin.printables.map(s => html`<a href="${lessonUrl(key, `?sheet=${s}`)}" target="_blank" rel="noopener">🖨️ ${sheetName(s)}</a> `)}</p></section>
-    <section class="panel csq-box"><h2>🧑‍🏫 ${t('cs.plan.sub')}</h2>${raw(`<ol class="csq-list" lang="en" dir="ltr">${tpl.subPlan.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`)}</section>
-    ${tpl.notes?.length ? html`<section class="panel"><h2>📝 ${t('cs.plan.notes')}</h2>${enList(tpl.notes)}</section>` : ''}
-    <section class="panel wide"><h2>👩‍🎓 ${t('cs.plan.steps')}</h2><p class="small muted">${t('cs.plan.stepsNote')}</p>${stepsList}</section>
+      <p class="small">${tpl.unpluggedTwin.printables.map(s => html`<a href="${lessonUrl(key, `?sheet=${s}`)}" target="_blank" rel="noopener">${ico('🖨️', { size: 18 })} ${sheetName(s)}</a> `)}</p></section>
+    <section class="panel csq-box"><h2>${ico('🧑‍🏫', { size: 28 })} ${t('cs.plan.sub')}</h2>${raw(`<ol class="csq-list" lang="en" dir="ltr">${tpl.subPlan.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`)}</section>
+    ${tpl.notes?.length ? html`<section class="panel"><h2>${ico('📝', { size: 28 })} ${t('cs.plan.notes')}</h2>${enList(tpl.notes)}</section>` : ''}
+    <section class="panel wide"><h2>${ico('👩‍🎓', { size: 28 })} ${t('cs.plan.steps')}</h2><p class="small muted">${t('cs.plan.stepsNote')}</p>${stepsList}</section>
   </div>
   ${assignForm}${unitForm}`;
 }
@@ -296,9 +297,9 @@ export function coverageBody(req, d) {
     <tbody>${[1, 2, 3, 4, 5, 6, 7].map(p => { const cells = map.units.map(n => (map.practices[p][n] || [])); return html`<tr><th scope="row" lang="en" dir="ltr">P${p} ${PRACTICE_NAMES[p]}</th>${cells.map(c => html`<td class="${c.length ? 'on' : ''}" lang="en" dir="ltr">${c.map((id, i) => html`${i ? ', ' : ''}<span class="nw">${id}</span>`)}</td>`)}<td dir="ltr">${cells.filter(c => c.length).length}</td></tr>`; })}</tbody></table></div></section>`;
   const noPrimary = map.ids.filter(s => !s.primaryOutsideUnit7).map(s => s.id);
   return html`
-  <div class="pagehead"><div><span class="small muted">CS Quest</span><h1>🗺️ ${t('cs.coverage.title')}</h1>
+  <div class="pagehead"><div><span class="small muted">CS Quest</span><h1>${ico('🗺️', { size: 36 })} ${t('cs.coverage.title')}</h1>
     <p class="muted">${t('cs.coverage.lead', { ids: map.ids.length, lessons: map.lessons, banks: map.banks })}</p></div>
-    ${d.print ? '' : html`<div class="row"><a class="btn" href="/teach/cs-quest/coverage?print=1" target="_blank" rel="noopener">🖨️ ${t('cs.buttons.print')}</a><a class="btn" href="/teach/cs-quest">💻 CS Quest</a></div>`}</div>
+    ${d.print ? '' : html`<div class="row"><a class="btn" href="/teach/cs-quest/coverage?print=1" target="_blank" rel="noopener">${ico('🖨️', { size: 18 })} ${t('cs.buttons.print')}</a><a class="btn" href="/teach/cs-quest">${ico('💻', { size: 18 })} CS Quest</a></div>`}</div>
   ${d.print ? '' : html`<nav class="seg" aria-label="${t('cs.coverage.level', { level: '', grades: '' })}"><a href="/teach/cs-quest/coverage" ${!d.level ? raw('aria-current="page"') : ''}>${t('cs.coverage.both')}</a>${T.BANDS.map(l => html`<a href="/teach/cs-quest/coverage?level=${l}" ${d.level === l ? raw('aria-current="page"') : ''}>${t(BAND_KEY[l])}</a>`)}</nav>`}
   <section class="panel"><h2>${t('cs.coverage.legendH')}</h2>
     <ul class="csq-legend"><li><b>${t('cs.coverage.practiced')}</b> ${t('cs.coverage.practicedText')}</li><li><b>${t('cs.coverage.checked')}</b> ${t('cs.coverage.checkedText')}</li><li><b>${t('cs.coverage.applied')}</b> ${t('cs.coverage.appliedText')}</li></ul>
@@ -315,8 +316,8 @@ export function coverageBody(req, d) {
 export function editorBanner(req, l, tpl, { edit = false } = {}) {
   const t = req.t;
   const newer = tpl.version > (l.template_version || 0), ready = T.pendingGames(l, tpl).length;
-  return html`<div class="notice csq-notice-line ${newer || ready ? 'warn' : ''}"><span>💻 ${t('cs.editor.from', { n: tpl.n, version: l.template_version || tpl.version })}${newer ? ` · ${t('cs.editor.newer', { version: tpl.version })}` : ''}${ready ? ` · ${t('cs.plan.gamesReady', { count: ready })}` : ''}</span>
-    <a class="btn btn-sm" href="${lessonUrl(tpl.key)}">📋 ${t('cs.editor.plan')}</a>
+  return html`<div class="notice csq-notice-line ${newer || ready ? 'warn' : ''}"><span>${ico('💻', { size: 18 })} ${t('cs.editor.from', { n: tpl.n, version: l.template_version || tpl.version })}${newer ? ` · ${t('cs.editor.newer', { version: tpl.version })}` : ''}${ready ? ` · ${t('cs.plan.gamesReady', { count: ready })}` : ''}</span>
+    <a class="btn btn-sm" href="${lessonUrl(tpl.key)}">${ico('📋', { size: 18 })} ${t('cs.editor.plan')}</a>
     ${edit && ready ? html`<form data-api="/api/lessons/${l.id}/switch-on-games" data-reload><button class="btn btn-sm btn-primary" type="submit">▶ ${t('cs.state.switchOn')}</button></form>` : ''}
-    ${edit && newer ? html`<form data-api="/api/lessons/${l.id}/reset-template" data-reload data-toast="${t('cs.state.resetDone')}" data-confirm="${t('cs.state.resetConfirm')}"><button class="btn btn-sm" type="submit">♻️ ${t('cs.state.reset')}</button></form>` : ''}</div>`;
+    ${edit && newer ? html`<form data-api="/api/lessons/${l.id}/reset-template" data-reload data-toast="${t('cs.state.resetDone')}" data-confirm="${t('cs.state.resetConfirm')}"><button class="btn btn-sm" type="submit">${ico('♻️', { size: 18 })} ${t('cs.state.reset')}</button></form>` : ''}</div>`;
 }

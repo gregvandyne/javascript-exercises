@@ -29,6 +29,7 @@ import { classBody as standardsBody, classCsv as standardsCsv, reportBody as sta
 import { classHeader, classBack } from './schools.js';
 import { frameworkPicker } from '../views/standards.js';
 import { markCheck } from '../services/teach-loop.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 const b = req => req.body || {};
@@ -271,7 +272,7 @@ router.get('/teach/cs-quest', requireUser, staffPage, (req, res) => {
 router.get('/teach/cs-quest/coverage', requireUser, staffPage, (req, res) => {
   const t = req.t, print = req.query.print === '1';
   const body = V.coverageBody(req, { map: T.coverage(), level: bandOf(req.query.level), print });
-  if (print) return page(req, res, { title: t('cs.coverage.title'), body: html`<div class="printdoc csq-print"><div class="printbar row noprint"><a class="btn" href="/teach/cs-quest/coverage">← ${t('cs.print.back')}</a><button class="btn btn-primary" type="button" data-print>🖨️ ${t('cs.print.print')}</button></div>${body}</div>`, head: V.CSS, bare: true, bodyClass: 'printpage', scripts: ['/js/print.js'] });
+  if (print) return page(req, res, { title: t('cs.coverage.title'), body: html`<div class="printdoc csq-print"><div class="printbar row noprint"><a class="btn" href="/teach/cs-quest/coverage">← ${t('cs.print.back')}</a><button class="btn btn-primary" type="button" data-print>${ico('🖨️', { size: 18 })} ${t('cs.print.print')}</button></div>${body}</div>`, head: V.CSS, bare: true, bodyClass: 'printpage', scripts: ['/js/print.js'] });
   page(req, res, { title: t('cs.coverage.title'), active: 'classes', body, head: V.CSS, back: '/teach/cs-quest', backLabel: 'CS Quest' });
 });
 /** The plan page, its print view, its printables and its projector questions. */
@@ -339,7 +340,7 @@ router.get('/teachers/cs-quest', (req, res) => {
     ${el(t, 'p', `${k}.lead`, {}, ' class="lead"')}
     <ul class="lp-badges">${['csta', 'lessons', 'minutes', 'games', 'free'].map(x => html`<li>${el(t, 'span', `${k}.badges.${x}`)}</li>`)}</ul>
     ${el(t, 'p', `${k}.badges.note`, {}, ' class="small muted"')}
-    <div class="row lp-cta">${staff ? html`<a class="btn btn-primary btn-big" href="/teach/cs-quest">💻 ${t(`${k}.cta.open`)}</a>` : html`<a class="btn btn-primary btn-big" href="${lp(req, '/teachers')}#start">${t('teachers.cta.start')}</a><a class="btn btn-big" href="/login?next=%2Fteach%2Fcs-quest">${t('layout.signIn')}</a>`}</div>
+    <div class="row lp-cta">${staff ? html`<a class="btn btn-primary btn-big" href="/teach/cs-quest">${ico('💻', { size: 18 })} ${t(`${k}.cta.open`)}</a>` : html`<a class="btn btn-primary btn-big" href="${lp(req, '/teachers')}#start">${t('teachers.cta.start')}</a><a class="btn btn-big" href="/login?next=%2Fteach%2Fcs-quest">${t('layout.signIn')}</a>`}</div>
   </section>
   <section class="lp-sec" id="promise" aria-labelledby="promise-h">${el(t, 'h2', `${k}.promise.h`, {}, ' id="promise-h"')}
     <ul class="lp-list">${[1, 2, 3, 4, 5, 6, 7, 8].map(n => el(t, 'li', `${k}.promise.li${n}`))}</ul></section>
@@ -360,13 +361,13 @@ router.get('/teachers/cs-quest', (req, res) => {
     <section class="panel" id="standards" aria-labelledby="standards-h">${el(t, 'h2', `${k}.standards.h`, {}, ' id="standards-h"')}
       <div class="csq-stats"><div class="csq-stat"><b dir="ltr">${CSTA.ids('1B').length}</b>${el(t, 'span', `${k}.standards.b1`)}</div><div class="csq-stat"><b dir="ltr">${CSTA.ids('2').length}</b>${el(t, 'span', `${k}.standards.b2`)}</div><div class="csq-stat"><b dir="ltr">46</b>${el(t, 'span', `${k}.standards.files`)}</div></div>
       ${el(t, 'p', `${k}.standards.p`)}${el(t, 'p', `${k}.cstaNote`, {}, ' class="small muted"')}
-      ${staff ? html`<p><a href="/teach/cs-quest/coverage">🗺️ ${t('cs.program.coverage')}</a></p>` : ''}</section>
+      ${staff ? html`<p><a href="/teach/cs-quest/coverage">${ico('🗺️', { size: 18 })} ${t('cs.program.coverage')}</a></p>` : ''}</section>
     <section class="panel" id="materials" aria-labelledby="materials-h">${el(t, 'h2', `${k}.materials.h`, {}, ' id="materials-h"')}
       ${V.enList(cat.materials, 'lp-list')}${el(t, 'p', `${k}.materials.p`, {}, ' class="small muted"')}</section>
   </div>
   ${faq.markup}
   <section class="panel lp-start" id="start" aria-labelledby="start-h">${el(t, 'h2', `${k}.start.h`, {}, ' id="start-h"')}${el(t, 'p', staff ? `${k}.start.staff` : `${k}.start.p`)}
-    <div class="row">${staff ? html`<a class="btn btn-primary btn-big" href="/teach/cs-quest">💻 ${t(`${k}.cta.open`)}</a>` : html`<a class="btn btn-primary btn-big" href="${lp(req, '/teachers')}#start">${t('teachers.cta.start')}</a><a class="btn btn-big" href="/login?next=%2Fteach%2Fcs-quest">${t('layout.signIn')}</a>`}</div></section>
+    <div class="row">${staff ? html`<a class="btn btn-primary btn-big" href="/teach/cs-quest">${ico('💻', { size: 18 })} ${t(`${k}.cta.open`)}</a>` : html`<a class="btn btn-primary btn-big" href="${lp(req, '/teachers')}#start">${t('teachers.cta.start')}</a><a class="btn btn-big" href="/login?next=%2Fteach%2Fcs-quest">${t('layout.signIn')}</a>`}</div></section>
   </div>`;
   const course = {
     '@type': ['Course', 'LearningResource'], '@id': seo.abs(req, `${path}#course`), url: seo.abs(req, path), name: 'CS Quest', description: t(`${k}.description`),

@@ -14,6 +14,7 @@ import { current } from '../i18n/index.js';
 import * as NQ from '../services/number-quest-progress.js';
 import { subLine, lockedNote, bandEmoji } from './courses.js';
 import * as T from '../services/number-quest-tiers.js';
+import { ico } from './icon.js';
 
 /** Tally Marks as tally bundles (spec §6.1: five-bar gates, legible to a five-year-old): full bundles of
  *  five, then the loose marks, then the number in words for anyone counting along. */
@@ -61,7 +62,7 @@ function workshop(t, c, u, list, lap, { canPick, nextKey, testedOut, welcome }) 
         ${u.n >= 1 ? html`<p class="small muted nqp-laps">${lap && lap.rings ? `Lap${lap.rings > 1 ? 's' : ''} ${lap.completed.join(', ')} done · Laps 2 and 3 are being built` : 'Finish the unit to plant its stone and record Lap 1. Laps 2 and 3 are being built.'}</p>` : html`<p class="small muted nqp-laps">${welcome}</p>`}
       </div>
       ${u.stamp ? html`<span class="nqp-stone ${done ? 'is-planted' : ''}">${done ? '🏅' : '🪨'} <span lang="en" dir="ltr">${u.stamp}${done ? ' planted' : ''}</span></span>` : ''}
-      ${testedOut ? html`<span class="nqp-stone is-tested">⭐ Tested out</span>` : ''}
+      ${testedOut ? html`<span class="nqp-stone is-tested">${ico('⭐', { size: 18 })} Tested out</span>` : ''}
     </header>
     <ol class="nqp-nodes">${steps.map(s => node(t, c, s, { canPick, here: nextKey === s.step.key }))}</ol>
   </li>`;
@@ -183,21 +184,21 @@ export function pathPage(d) {
     <section class="panel nqp-hud" aria-labelledby="nqp-hud-h" lang="en">
       <h2 id="nqp-hud-h" class="sr-only">Your Number Quest progress</h2>
       <div class="nqp-hud-row">
-        <div class="nqp-hud-cell"><span class="nqp-hud-k">🐱 Tally Marks</span>${tallyBundles(d.marks)}</div>
-        <div class="nqp-hud-cell"><span class="nqp-hud-k">🌱 Today's goal</span>
+        <div class="nqp-hud-cell"><span class="nqp-hud-k">${ico('🐱', { size: 18 })} Tally Marks</span>${tallyBundles(d.marks)}</div>
+        <div class="nqp-hud-cell"><span class="nqp-hud-k">${ico('🌱', { size: 18 })} Today's goal</span>
           ${daily ? html`<span class="nqp-dots" aria-hidden="true">${Array.from({ length: daily.goal }, (_, i) => raw(`<span class="nqp-dot${i < daily.done ? ' is-done' : ''}"></span>`))}</span> <b>${Math.min(daily.done, daily.goal)} of ${daily.goal}</b> ${daily.met ? '· goal done! 🎉' : daily.goal === 1 ? 'activity done' : 'activities done'}
           ${d.canPick ? html`<form method="post" action="/api/number-quest/daily-goal" class="nqp-goalpick"><span class="small muted">My goal:</span>${NQ.DAILY_GOAL_CHOICES.map(g => html`<button type="submit" name="goal" value="${g}" class="nqp-goalbtn ${g === daily.goal ? 'is-on' : ''}" aria-pressed="${g === daily.goal ? 'true' : 'false'}">${g}</button>`)}<input type="hidden" name="back" value="/courses/number-quest"></form>` : ''}` : html`<span class="muted">Sign in to keep your marks and goal.</span>`}
         </div>
       </div>
-      ${placement && placement.startNode ? html`<p class="nqp-placed">📍 Tally placed your start at <b lang="en" dir="ltr">${placement.workshop || ''}</b>. Every earlier workshop stays open for games, laps and test-out. ${d.canPick ? html`<a href="/number-quest/sorting-game">Play the Sorting Game again</a>` : ''}</p>`
-        : d.canPick && !d.anyProgress ? html`<p class="nqp-placed">📍 New here? <a href="/number-quest/sorting-game"><b>Play Tally's Sorting Game</b></a> and she will find your first workshop. Skipping it is always fine: the street starts at the beginning.</p>` : ''}
+      ${placement && placement.startNode ? html`<p class="nqp-placed">${ico('📍', { size: 18 })} Tally placed your start at <b lang="en" dir="ltr">${placement.workshop || ''}</b>. Every earlier workshop stays open for games, laps and test-out. ${d.canPick ? html`<a href="/number-quest/sorting-game">Play the Sorting Game again</a>` : ''}</p>`
+        : d.canPick && !d.anyProgress ? html`<p class="nqp-placed">${ico('📍', { size: 18 })} New here? <a href="/number-quest/sorting-game"><b>Play Tally's Sorting Game</b></a> and she will find your first workshop. Skipping it is always fine: the street starts at the beginning.</p>` : ''}
       <div class="cprog" role="progressbar" aria-valuemin="0" aria-valuemax="${ov.total}" aria-valuenow="${ov.done}" aria-label="${count}"><span style="width:${Math.round(ov.done / Math.max(1, ov.total) * 100)}%"></span></div>
       <p class="cmap-count" id="nqp-count">${count}</p>
       ${ov.next && d.canPick ? html`<a class="btn btn-primary btn-big cmap-go" href="/courses/${c.slug}/${ov.next.step.key}" id="cmap-go">▶ ${ov.done ? t('courses.continue') : t('courses.start')}</a>` : ''}
     </section>
 
     ${onward ? html`<section class="panel nqp-onward" id="nqp-onward" aria-labelledby="nqp-onward-h" lang="en" dir="ltr">
-      <h2 id="nqp-onward-h">🎉 You walked the whole ${here.name} street!</h2>
+      <h2 id="nqp-onward-h">${ico('🎉', { size: 28 })} You walked the whole ${here.name} street!</h2>
       <p>Every step here is done, and it all stays open to play again. The next street is ${onward.name}, for ${gradesLine(onward.grades).toLowerCase()}.</p>
       ${d.canPick ? html`<form method="post" action="/courses/${c.slug}/band"><button class="btn btn-primary btn-big" type="submit" name="band" value="${onward.key}" id="nqp-onward-go">${bandEmoji(onward.key)} Walk on to ${onward.name} ›</button></form>`
     : html`<a class="btn" href="/courses/${c.slug}?street=${onward.key}" id="nqp-onward-go">Look at ${onward.name} ›</a>`}
@@ -206,14 +207,14 @@ export function pathPage(d) {
       ${units.map(u => workshop(t, c, u, ov.list, d.laps[u.n] || null, { canPick: d.canPick, nextKey, testedOut: d.testedOut.includes(u.n), welcome }))}
     </ol>${planned.length ? html`
     <section class="nqp-planned" id="nqp-planned" aria-labelledby="nqp-planned-h" lang="en" dir="ltr">
-      <h2 id="nqp-planned-h">🛠️ Planned for ${here.name}: ${plannedWords(planned)} not built yet</h2>
+      <h2 id="nqp-planned-h">${ico('🛠️', { size: 28 })} Planned for ${here.name}: ${plannedWords(planned)} not built yet</h2>
       <p class="small muted">Admin preview. These units are reserved in the catalogue (titles, stones, step numbers and standards) so they can be built side by side. Nothing here can be opened, and no learner sees this street until it opens.</p>
       <ol class="nqp-path" aria-label="Planned units of ${here.name}">${planned.map(plannedWorkshop)}</ol>
     </section>` : ''}
 
-    <aside class="cmap-build"><span class="cmap-build-e" aria-hidden="true">🛠️</span><div><h3>${t('courses.map.build.h')}</h3><p>${t('courses.map.build.text')}</p>
+    <aside class="cmap-build"><span class="cmap-build-e" aria-hidden="true">${ico('🛠️', { size: 18 })}</span><div><h3>${t('courses.map.build.h')}</h3><p>${t('courses.map.build.text')}</p>
       <a class="btn" href="/build">${t('courses.map.build.go')}</a></div></aside>
-    <aside class="course-teach"><h2>🍎 ${t('courses.teachers.h')}</h2><p>${t(`${c.key}.teachers`)}</p>
+    <aside class="course-teach"><h2>${ico('🍎', { size: 28 })} ${t('courses.teachers.h')}</h2><p>${t(`${c.key}.teachers`)}</p>
       <a class="btn course-teach-go" href="${c.teacherPath}">${t('courses.teachers.link')}</a></aside>
   </section>`;
 }

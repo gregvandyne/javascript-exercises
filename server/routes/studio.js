@@ -296,10 +296,10 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
     <div class="st-main">
       <section class="st-chat" aria-label="${t('studio.chat.label')}">
         <div class="st-chat-head">
-          <span class="st-bot" aria-hidden="true">🤖</span><b>${t('studio.chat.builder')}</b>
+          <span class="st-bot" aria-hidden="true">${ico('🤖', { size: 24 })}</span><b>${t('studio.chat.builder')}</b>
           <span class="st-turns" id="st-turns"${t.own('js.studio.turnsLeftToday') ? '' : html` data-class-en`}></span>
           ${trustedMaker(req.user)
-            ? html`<span class="st-pro st-pro-incl" id="st-pro-incl" title="${t(proKey)}"><span aria-hidden="true">✨</span> ${t('studio.chat.pro')} <span aria-hidden="true">✓</span><span class="sr-only">: ${t(proKey)}</span></span>`
+            ? html`<span class="st-pro st-pro-incl" id="st-pro-incl" title="${t(proKey)}">${ico('✨', { size: 18 })} ${t('studio.chat.pro')} <span aria-hidden="true">✓</span><span class="sr-only">: ${t(proKey)}</span></span>`
             : html`<button class="st-pro" type="button" id="st-pro" aria-pressed="false" title="${t('studio.chat.proTitle')}">${ico('✨', { size: 18 })} ${t('studio.chat.pro')}</button>`}
         </div>
         <div class="st-log" id="st-log" role="log" aria-live="polite"></div>
@@ -308,11 +308,11 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
           <div class="st-attach" id="st-attach" hidden></div>
           ${themePicker(t, state.theme, state.kit2, !!state.current)}
           <div class="st-row">
-            <button class="st-clip" type="button" id="st-clip" aria-label="${t('studio.chat.attach')}" title="${t('studio.chat.attach')}">📎</button>
+            <button class="st-clip" type="button" id="st-clip" aria-label="${t('studio.chat.attach')}" title="${t('studio.chat.attach')}">${ico('📎', { size: 18 })}</button>
             <input type="file" id="st-file" hidden multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,.txt,.md,.csv,.json,text/plain,text/markdown,text/csv,application/json">
             <label class="sr-only" for="st-input">${t('studio.chat.inputLabel')}</label>
             <textarea class="st-input" id="st-input" rows="1" maxlength="2000" dir="auto" placeholder="${t('studio.chat.placeholder')}" data-short="${t('studio.chat.placeholderShort')}"></textarea>
-            ${state.mic ? html`<button class="st-mic" type="button" id="st-mic" aria-pressed="false" aria-describedby="st-mic-status" aria-label="${t('studio.mic.start')}" title="${t('studio.mic.start')}" hidden><span class="st-mic-ico" aria-hidden="true">🎤</span></button>` : ''}
+            ${state.mic ? html`<button class="st-mic" type="button" id="st-mic" aria-pressed="false" aria-describedby="st-mic-status" aria-label="${t('studio.mic.start')}" title="${t('studio.mic.start')}" hidden><span class="st-mic-ico" aria-hidden="true">${ico('🎤', { size: 18 })}</span></button>` : ''}
             <button class="btn btn-primary st-send" type="submit" id="st-send">${t('chat.thread.send')}</button>
           </div>
           ${state.mic ? html`<p class="st-mic-status" id="st-mic-status" role="status" aria-live="polite"></p><p class="sr-only" id="st-mic-said" aria-live="polite" aria-atomic="true"></p>` : ''}

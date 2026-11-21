@@ -213,7 +213,8 @@ test('a kid sees the plans but can\'t buy: a calm "a grown-up buys plans" panel,
   assert.match(m, /id="plan-free"[\s\S]*<span class="plan-yours">Your plan<\/span>[\s\S]*id="plan-basic"/);
   assert.doesNotMatch(m, /id="ask"/);
   m = main(decode((await call(who, '/plans?ask=family')).text));
-  assert.match(m, /<section class="panel plan-ask" id="ask"[^>]*><h2 id="ask-h"><span aria-hidden="true">🧑‍🧒<\/span> A grown-up buys plans<\/h2>/);
+  // 🧑‍🧒 is drawn with the Grown-ups picture (house with garden), so the page reads back as 👪 there.
+  assert.match(m, /<section class="panel plan-ask" id="ask"[^>]*><h2 id="ask-h">👪 A grown-up buys plans<\/h2>/);
   assert.match(m, /They can sign up at <bdi dir="ltr"><b>127\.0\.0\.1:\d+\/plans<\/b><\/bdi>\./);
   assert.match(m, /You can keep playing and building for free\./);
   assert.doesNotMatch(m, /hurry|only \d+ left|today only|countdown|ends in/i);

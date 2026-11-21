@@ -24,6 +24,7 @@ import * as V from '../views/cs-quest.js';
 import { crewArt } from '../views/components.js';
 import { el, lp, faqBlock, launchGame } from './teachers.js';
 import * as seo from '../seo.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 const form = express.urlencoded({ extended: false, limit: '8kb', parameterLimit: 20 });
@@ -224,13 +225,13 @@ router.get('/teachers/number-quest', (req, res) => {
   const tierOf = u => NQT.tierOfUnit(u), manyTiers = cat.tiers.length > 1;
   const K = 'teachers.nq';
   if (req.query.print === '1') {
-    const body = html`<div class="printdoc csq-print"><h1 lang="en" dir="ltr">🔢 Number Quest — ${t(`${K}.print.h`)}</h1>
+    const body = html`<div class="printdoc csq-print"><h1 lang="en" dir="ltr">${ico('🔢', { size: 36 })} Number Quest — ${t(`${K}.print.h`)}</h1>
       <p class="muted" lang="en" dir="ltr">${cat.program.standards}</p>${mapAndNotes(req, cat, el)}</div>`;
     return page(req, res, { title: `${t(`${K}.title`, fv)} — ${t(`${K}.print.h`)}`, body, head: V.CSS, bare: true, bodyClass: 'printpage', scripts: ['/js/print.js'] });
   }
   const staff = !!req.user && !req.user.is_guest && S.isSchoolStaff(req.user);
   const crew = facts.games.map(c => ({ ...c, live: launchGame(c.slug) }));
-  const unitItem = u => html`<li class="panel"><b lang="en" dir="ltr">${manyTiers ? `${NQT.tierName(tierOf(u))} · ` : ''}${u.n === 0 ? u.title : `${t('cs.unit.n', { n: u.n })} · ${u.title}`}</b>${u.stamp ? html` <span class="chip-s">🏅 ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
+  const unitItem = u => html`<li class="panel"><b lang="en" dir="ltr">${manyTiers ? `${NQT.tierName(tierOf(u))} · ` : ''}${u.n === 0 ? u.title : `${t('cs.unit.n', { n: u.n })} · ${u.title}`}</b>${u.stamp ? html` <span class="chip-s">${ico('🏅', { size: 18 })} ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
     <ol class="csq-lessons" lang="en" dir="ltr">${(u.steps || []).map(s => html`<li>${s.n} ${NQT.stepTitle(tierOf(u), s)}</li>`)}</ol></li>`;
   const faqPairs = [1, 2, 3, 4, 5].map(n => [`${K}.faq.q${n}`, `${K}.faq.a${n}`]).filter(([qk, ak]) => t.own(qk) && t.own(ak));
   const faq = faqBlock(req, faqPairs, `${K}.faq.h`, { teachers: lp(req, '/teachers'), ...fv });
@@ -244,7 +245,7 @@ router.get('/teachers/number-quest', (req, res) => {
     ${el(t, 'h1', `${K}.h1`, {}, ' id="lp-h1"')}
     ${el(t, 'p', `${K}.lead`, {}, ' class="lead"')}
     <ul class="lp-badges">${['steps', 'units', 'games', 'minutes', 'free'].map(x => html`<li>${el(t, 'span', `${K}.badges.${x}`, fv)}</li>`)}</ul>
-    <div class="row lp-cta"><a class="btn btn-primary btn-big" href="${lp(req, '/courses/number-quest')}">🔢 ${t(`${K}.cta.open`)}</a><a class="btn btn-big" href="${path}?print=1" target="_blank" rel="noopener">🖨️ ${t(`${K}.print.button`)}</a></div>
+    <div class="row lp-cta"><a class="btn btn-primary btn-big" href="${lp(req, '/courses/number-quest')}">${ico('🔢', { size: 18 })} ${t(`${K}.cta.open`)}</a><a class="btn btn-big" href="${path}?print=1" target="_blank" rel="noopener">${ico('🖨️', { size: 18 })} ${t(`${K}.print.button`)}</a></div>
   </section>
   <section class="lp-sec" id="promise" aria-labelledby="promise-h">${el(t, 'h2', `${K}.promise.h`, {}, ' id="promise-h"')}
     <ul class="lp-list">${[1, 2, 3, 4, 5, 6].map(n => el(t, 'li', `${K}.promise.li${n}`))}</ul></section>
@@ -252,7 +253,7 @@ router.get('/teachers/number-quest', (req, res) => {
   <section class="lp-sec" id="crew" aria-labelledby="crew-h">${el(t, 'h2', `${K}.crew.h`, fv, ' id="crew-h"')}${el(t, 'p', `${K}.crew.p`, fv)}
     <ul class="csq-crew">${crew.map(c => html`<li class="panel">${crewArt(c.slug, c.emoji)}<h3 lang="en" dir="ltr">${c.title}</h3>
       ${el(t, 'p', `${K}.crew.${c.key}`, {}, ' class="small"')}
-      <div class="row">${c.live ? html`<a class="btn btn-primary" href="/play/${c.slug}" rel="nofollow">▶ ${t(`${K}.crew.try`)}</a>` : html`<a class="btn" href="${lp(req, '/courses/number-quest')}">🔢 ${t(`${K}.crew.inCourse`)}</a>`}</div></li>`)}</ul></section>
+      <div class="row">${c.live ? html`<a class="btn btn-primary" href="/play/${c.slug}" rel="nofollow">▶ ${t(`${K}.crew.try`)}</a>` : html`<a class="btn" href="${lp(req, '/courses/number-quest')}">${ico('🔢', { size: 18 })} ${t(`${K}.crew.inCourse`)}</a>`}</div></li>`)}</ul></section>
   <section class="lp-sec" id="units" aria-labelledby="units-h">${el(t, 'h2', `${K}.units.h`, fv, ' id="units-h"')}${el(t, 'p', `${K}.units.p`, fv)}
     <ul class="csq-public-units">${cat.units.map(unitItem)}</ul></section>
   ${mapAndNotes(req, cat, el)}
@@ -261,11 +262,11 @@ router.get('/teachers/number-quest', (req, res) => {
       <ul class="lp-list">${[1, 2, 3, 4].map(n => el(t, 'li', `${K}.safety.li${n}`))}</ul></section>
     <section class="panel" id="print" aria-labelledby="print-h">${el(t, 'h2', `${K}.print.h`, {}, ' id="print-h"')}
       ${el(t, 'p', `${K}.print.p`)}
-      <p><a class="btn" href="${path}?print=1" target="_blank" rel="noopener">🖨️ ${t(`${K}.print.button`)}</a></p></section>
+      <p><a class="btn" href="${path}?print=1" target="_blank" rel="noopener">${ico('🖨️', { size: 18 })} ${t(`${K}.print.button`)}</a></p></section>
   </div>
   ${faq.markup}
   <section class="panel lp-start" id="start" aria-labelledby="start-h">${el(t, 'h2', `${K}.start.h`, {}, ' id="start-h"')}${el(t, 'p', staff ? `${K}.start.staff` : `${K}.start.p`)}
-    <div class="row"><a class="btn btn-primary btn-big" href="${lp(req, '/courses/number-quest')}">🔢 ${t(`${K}.cta.open`)}</a></div></section>
+    <div class="row"><a class="btn btn-primary btn-big" href="${lp(req, '/courses/number-quest')}">${ico('🔢', { size: 18 })} ${t(`${K}.cta.open`)}</a></div></section>
   </div>`;
   const course = {
     '@type': ['Course', 'LearningResource'], '@id': seo.abs(req, `${path}#course`), url: seo.abs(req, path), name: 'Number Quest', description: t(`${K}.description`, fv),

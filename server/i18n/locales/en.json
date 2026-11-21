@@ -2024,9 +2024,9 @@
       "voicesDevice": "This device's voice",
       "voicesNote": "Characters in this game are voiced by a computer (AI voices from {provider}). They read only the game's own words, never anything you type and never your name.",
       "voicesSaveData": "Data Saver is on, so this device's voice is used until you pick AI voices.",
-      "nqMarks": "🐱 +{marks} Tally Marks · {total} in total",
-      "nqGoal": "🌱 Daily goal done. Nice work!",
-      "nqLap": "🏅 Lap {lap} finished for this unit!",
+      "nqMarks": "+{marks} Tally Marks · {total} in total",
+      "nqGoal": "Daily goal done. Nice work!",
+      "nqLap": "Lap {lap} finished for this unit!",
       "guestWinTitle": "You won! 🏆",
       "guestWin": "That win is yours. Guests can play every game, but a course step only counts as finished with a free account — make one and we will count this win. We kept it for you.",
       "guestWinAction": "Make my free account",
@@ -2492,8 +2492,8 @@
           "learn": "After every build, the app plays the game by itself for about 20 seconds: pressing keys, tapping, swiping and checking the score changes and nothing breaks."
         }
       },
-      "resumed": "🔄 The server restarted, so the Builder carried on from where it was.",
-      "resumedV": "🔄 The server restarted, so the Builder carried on from version {v}.",
+      "resumed": "The server restarted, so the Builder carried on from where it was.",
+      "resumedV": "The server restarted, so the Builder carried on from version {v}.",
       "stopped": {
         "restart": "The Builder stopped when our server restarted. Anything it made is saved.",
         "ai": "The Builder stopped when our server restarted, and the AI Builder is resting right now. Anything it made is saved."
@@ -2550,7 +2550,7 @@
       },
       "stillWorking": "One moment, the Builder is still working!",
       "resting": {
-        "text": "😴 The AI Builder is resting right now. It will be back {when}. Your game and your Builder messages are saved, so come back then!",
+        "text": "The AI Builder is resting right now. It will be back {when}. Your game and your Builder messages are saved, so come back then!",
         "today": "today at {time}",
         "tomorrow": "tomorrow at {time}",
         "date": "on {date} at {time}"
@@ -2731,9 +2731,9 @@
       "again": "Try again",
       "passed": "You passed! {score} of {total} right.",
       "failed": "{score} of {total} right. You need {pass} to pass. Try again!",
-      "nqMarks": "🐱 +{marks} Tally Marks · {total} in total",
-      "nqGoal": "🌱 Daily goal done. Nice work!",
-      "nqLap": "🏅 Lap {lap} finished for this unit!",
+      "nqMarks": "+{marks} Tally Marks · {total} in total",
+      "nqGoal": "Daily goal done. Nice work!",
+      "nqLap": "Lap {lap} finished for this unit!",
       "guestSave": "You finished this step! Guests can play everything, but a finished step only counts with a free account. Make one now and we will count this finish — we kept it for you.",
       "guestSaveAction": "Make my free account"
     },
@@ -3246,7 +3246,7 @@
       "editN": "Edit problem {n}",
       "add": "Add a problem",
       "copyN": "Copy problem {n}",
-      "editTitle": "✏️ Problem {n} of {total}",
+      "editTitle": "Problem {n} of {total}",
       "kind": {
         "reading": "Read a scale",
         "thermometer": "thermometer",

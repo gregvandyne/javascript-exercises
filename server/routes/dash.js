@@ -106,7 +106,7 @@ const side = t => html`<aside class="dash-side" id="dash-side" aria-labelledby="
  *  so each language keeps its own order and punctuation. */
 function editTitle(t, name) {
   const MARK = '\u0001', [pre, post = ''] = t('dash.top.editing', { name: MARK }).split(MARK);
-  return html`<h1 class="dash-class dash-edittitle" id="dash-editing"><span>${pre}</span><span class="dash-namebox"><input class="dash-namein" id="dash-edit-name" maxlength="40" value="${name}" aria-label="${t('dash.top.layoutName')}" aria-describedby="dash-edit-name-err" autocomplete="off" spellcheck="false" enterkeyhint="done"><span class="dash-namepen" aria-hidden="true">✏️</span></span><span>${post}</span></h1>
+  return html`<h1 class="dash-class dash-edittitle" id="dash-editing"><span>${pre}</span><span class="dash-namebox"><input class="dash-namein" id="dash-edit-name" maxlength="40" value="${name}" aria-label="${t('dash.top.layoutName')}" aria-describedby="dash-edit-name-err" autocomplete="off" spellcheck="false" enterkeyhint="done"><span class="dash-namepen" aria-hidden="true">${ico('✏️', { size: 18 })}</span></span><span>${post}</span></h1>
       <span class="err dash-nameerr" id="dash-edit-name-err" role="alert"></span>`;
 }
 function dashPage(req, res, c, role) {
@@ -125,7 +125,7 @@ function dashPage(req, res, c, role) {
       <span class="dash-date" id="dash-date"></span>
       <span class="dash-grow"></span>
       <span class="dash-now" id="dash-now" aria-hidden="true"></span>
-      <button class="btn btn-sm" type="button" id="dash-projector" aria-pressed="false">📽️ ${t('dash.top.projector')}</button>
+      <button class="btn btn-sm" type="button" id="dash-projector" aria-pressed="false">${ico('📽️', { size: 18 })} ${t('dash.top.projector')}</button>
       <button class="btn btn-sm" type="button" id="dash-edit">${ico('✏️', { size: 18 })} ${t('dash.top.edit')}</button>
     </header>
     <header class="dash-top dash-edithead" id="dash-edithead" hidden>
@@ -139,7 +139,7 @@ function dashPage(req, res, c, role) {
       <div class="dash-switch" id="dash-switch">
         <span class="dash-lab" id="dash-layouts-l">${t('dash.layouts.label')}</span>
         <nav class="dash-layouts" id="dash-layouts" aria-labelledby="dash-layouts-l"></nav>
-        <button class="btn btn-sm dash-lnew" type="button" id="dash-layout-new"><span><span aria-hidden="true">➕</span> <span class="dash-lnewt">${t('dash.layouts.new')}</span></span></button>
+        <button class="btn btn-sm dash-lnew" type="button" id="dash-layout-new"><span>${ico('➕', { size: 18 })} <span class="dash-lnewt">${t('dash.layouts.new')}</span></span></button>
         <button class="btn btn-sm" type="button" id="dash-layout-more" aria-label="${t('dash.layouts.manage')}">⋯</button>
       </div>
       <span class="dash-grow"></span>
@@ -154,7 +154,7 @@ function dashPage(req, res, c, role) {
       <span class="dash-sep" aria-hidden="true"></span>
       <h1 class="dash-class">${c.name}</h1>
       <span class="dash-grow"></span>
-      <button class="btn btn-sm dash-traybtn" type="button" id="dash-tray-btn" aria-expanded="false" aria-controls="dash-tray">📥 ${t('dash.tray.button')} <span class="dash-count" id="dash-tray-n">0</span></button>
+      <button class="btn btn-sm dash-traybtn" type="button" id="dash-tray-btn" aria-expanded="false" aria-controls="dash-tray">${ico('📥', { size: 18 })} ${t('dash.tray.button')} <span class="dash-count" id="dash-tray-n">0</span></button>
       <span class="dash-now" id="dash-now" aria-hidden="true"></span>
       <span class="dash-me">${avatar(u, 36)}<span class="dash-myname">${u.display_name}</span></span>
       <button class="btn btn-sm" type="button" id="dash-edit">${ico('✏️', { size: 18 })} ${t('dash.top.editMine')}</button>
@@ -186,7 +186,7 @@ function dashPage(req, res, c, role) {
       ${side(t)}
     </div>
     ${foot}
-    ${role === 'student' ? html`<div class="dash-eyes" id="dash-eyes" role="alertdialog" aria-modal="true" aria-labelledby="dash-eyes-h" hidden><div class="dash-eyescard"><div class="dash-eyesmark" aria-hidden="true">👀</div><h2 id="dash-eyes-h">${t('dash.eyes.title')}</h2><p>${t('dash.eyes.text')}</p></div></div>` : ''}
+    ${role === 'student' ? html`<div class="dash-eyes" id="dash-eyes" role="alertdialog" aria-modal="true" aria-labelledby="dash-eyes-h" hidden><div class="dash-eyescard"><div class="dash-eyesmark" aria-hidden="true">${ico('👀', { size: 128 })}</div><h2 id="dash-eyes-h">${t('dash.eyes.title')}</h2><p>${t('dash.eyes.text')}</p></div></div>` : ''}
     <p class="sr-only" id="dash-say" aria-live="polite"></p>
     <noscript><p class="notice warn">${t('dash.noscript')}</p></noscript>
     ${jsonData('page-data', { ...data, school: s ? s.name : '' })}

@@ -15,8 +15,9 @@ import { html, raw, esc } from './html.js';
 import { en, enList, paras, idChips, idChip, periodTable, questCode, itemView, programBadge, BAND_KEY, GAME_EMOJI } from './cs-quest.js';
 import * as T from '../services/lesson-templates.js';
 import * as CSTA from '../standards/csta.js';
+import { ico } from './icon.js';
 
-const bar = (t, { back, label }) => html`<div class="printbar row noprint"><a class="btn" href="${back}">← ${label || t('cs.print.back')}</a><button class="btn btn-primary" type="button" data-print>🖨️ ${t('cs.print.print')}</button></div>`;
+const bar = (t, { back, label }) => html`<div class="printbar row noprint"><a class="btn" href="${back}">← ${label || t('cs.print.back')}</a><button class="btn btn-primary" type="button" data-print>${ico('🖨️', { size: 18 })} ${t('cs.print.print')}</button></div>`;
 const head = (t, cat, tpl, sub = '') => html`<header class="csq-print-head"><p class="small">${programBadge(cat)} · ${t('cs.unit.n', { n: tpl.unit })} · ${en('span', tpl.unitTitle)} · ${t(BAND_KEY[tpl.band])} · ${t('lessons.minutesN', { count: tpl.duration })}</p>
   <h1 lang="en" dir="ltr">${tpl.title}${sub ? html` <span class="muted">· ${sub}</span>` : ''}</h1></header>`;
 
@@ -30,37 +31,37 @@ export function printBody(req, d) {
   const page1 = html`<section class="csq-page">
     ${head(t, cat, tpl)}
     <div class="csq-sheet-grid">
-      <div><h2>🎯 ${t('cs.plan.iCan')}</h2>${enList(tpl.iCan.map(s => `I can ${s}`))}</div>
-      <div><h2>📐 ${t('cs.plan.standards')}</h2>${standards}</div>
-      <div><h2>🔤 ${t('cs.plan.vocab')}</h2><p lang="en" dir="ltr">${(ex.vocab || []).join(' · ')}</p><h2>🧰 ${t('cs.plan.materials')}</h2>${enList(tpl.materials)}</div>
-      <div><h2>✏️ ${t('cs.plan.doNow')}</h2>${en('p', tpl.doNow)}${tpl.questCode ? html`<h2>🔢 ${t('cs.plan.questCode')}</h2>${questCode(tpl.questCode)}` : ''}</div>
+      <div><h2>${ico('🎯', { size: 28 })} ${t('cs.plan.iCan')}</h2>${enList(tpl.iCan.map(s => `I can ${s}`))}</div>
+      <div><h2>${ico('📐', { size: 28 })} ${t('cs.plan.standards')}</h2>${standards}</div>
+      <div><h2>${ico('🔤', { size: 28 })} ${t('cs.plan.vocab')}</h2><p lang="en" dir="ltr">${(ex.vocab || []).join(' · ')}</p><h2>${ico('🧰', { size: 28 })} ${t('cs.plan.materials')}</h2>${enList(tpl.materials)}</div>
+      <div><h2>${ico('✏️', { size: 28 })} ${t('cs.plan.doNow')}</h2>${en('p', tpl.doNow)}${tpl.questCode ? html`<h2>${ico('🔢', { size: 28 })} ${t('cs.plan.questCode')}</h2>${questCode(tpl.questCode)}` : ''}</div>
     </div>
-    <h2>⏱️ ${t('cs.plan.period')}</h2>${periodTable(t, tpl.plan)}
-    <h2>🖥️ ${t('cs.plan.explore')}</h2>
+    <h2>${ico('⏱️', { size: 28 })} ${t('cs.plan.period')}</h2>${periodTable(t, tpl.plan)}
+    <h2>${ico('🖥️', { size: 28 })} ${t('cs.plan.explore')}</h2>
     <dl class="csq-script"><dt>${t('cs.plan.say')}</dt><dd>${enList(ex.say)}</dd><dt>${t('cs.plan.do')}</dt><dd>${enList(ex.do)}</dd><dt>${t('cs.plan.ask')}</dt><dd>${enList(ex.ask)}</dd>${ex.afterAsk ? html`<dt>${t('cs.plan.afterAsk')}</dt><dd>${en('p', ex.afterAsk)}</dd>` : ''}<dt>${t('cs.plan.bigIdea')}</dt><dd>${en('p', ex.bigIdea)}</dd></dl>
-    <h2>🎮 ${t('cs.plan.play')}</h2>
+    <h2>${ico('🎮', { size: 28 })} ${t('cs.plan.play')}</h2>
     ${game ? html`<p lang="en" dir="ltr"><b>${cat.games[game]?.title || game} · ${play.chapterTitle || play.chapter}</b>${play.goal ? ` · Goal: ${play.goal}` : ''}${play.stretch ? ` · Stretch: ${play.stretch}` : ''}</p>` : ''}
     ${play.lookFors ? html`<p><b>${t('cs.plan.lookFors')}</b></p>${enList(play.lookFors)}` : ''}
     ${play.misconception ? html`<p><b>${t('cs.plan.misconception')}</b> ${en('span', play.misconception)}</p>` : ''}
-    <div class="csq-sheet-grid"><div><h2>🪜 ${t('cs.plan.support')}</h2>${enList(tpl.differentiation.support)}</div><div><h2>🚀 ${t('cs.plan.stretch')}</h2>${enList(tpl.differentiation.stretch)}</div></div>
-    <div class="csq-cut"><h3>⏳ ${t('cs.plan.short40')}</h3>${periodTable(t, tpl.shortPeriod40.table)}${en('p', tpl.shortPeriod40.keep, ' class="small"')}</div>
+    <div class="csq-sheet-grid"><div><h2>${ico('🪜', { size: 28 })} ${t('cs.plan.support')}</h2>${enList(tpl.differentiation.support)}</div><div><h2>${ico('🚀', { size: 28 })} ${t('cs.plan.stretch')}</h2>${enList(tpl.differentiation.stretch)}</div></div>
+    <div class="csq-cut"><h3>${ico('⏳', { size: 18 })} ${t('cs.plan.short40')}</h3>${periodTable(t, tpl.shortPeriod40.table)}${en('p', tpl.shortPeriod40.keep, ' class="small"')}</div>
   </section>`;
   const page2 = html`<section class="csq-page">
     ${head(t, cat, tpl, t('cs.print.page2'))}
-    <h2>✂️ ${t('cs.plan.unplugged')} · ${en('span', tpl.unpluggedTwin.title)} · ${t('lessons.minutesN', { count: tpl.unpluggedTwin.minutes })}</h2>
+    <h2>${ico('✂️', { size: 28 })} ${t('cs.plan.unplugged')} · ${en('span', tpl.unpluggedTwin.title)} · ${t('lessons.minutesN', { count: tpl.unpluggedTwin.minutes })}</h2>
     <p class="small"><b>${t('cs.plan.materials')}</b> <span lang="en" dir="ltr">${tpl.unpluggedTwin.materials.join('; ')}</span></p>
     ${raw(`<ol class="csq-list" lang="en" dir="ltr">${tpl.unpluggedTwin.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`)}
-    <div class="csq-box"><h2>🧑‍🏫 ${t('cs.plan.sub')}</h2>${raw(`<ol class="csq-list" lang="en" dir="ltr">${tpl.subPlan.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`)}</div>
-    <h2>💬 ${t('cs.plan.discuss')}</h2>${enList(tpl.discuss)}${tpl.showMe ? html`<p class="small"><b>${t('cs.plan.showMe')}</b> ${en('span', tpl.showMe)}</p>` : ''}
-    ${tpl.notes?.length ? html`<h2>📝 ${t('cs.plan.notes')}</h2>${enList(tpl.notes)}` : ''}
-    <h2>🧱 ${t('cs.plan.block')}</h2>${enList(tpl.block?.add || [])}
-    <p class="small muted">🪪 ${t('cs.print.loginCards')}</p>
+    <div class="csq-box"><h2>${ico('🧑‍🏫', { size: 28 })} ${t('cs.plan.sub')}</h2>${raw(`<ol class="csq-list" lang="en" dir="ltr">${tpl.subPlan.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`)}</div>
+    <h2>${ico('💬', { size: 28 })} ${t('cs.plan.discuss')}</h2>${enList(tpl.discuss)}${tpl.showMe ? html`<p class="small"><b>${t('cs.plan.showMe')}</b> ${en('span', tpl.showMe)}</p>` : ''}
+    ${tpl.notes?.length ? html`<h2>${ico('📝', { size: 28 })} ${t('cs.plan.notes')}</h2>${enList(tpl.notes)}` : ''}
+    <h2>${ico('🧱', { size: 28 })} ${t('cs.plan.block')}</h2>${enList(tpl.block?.add || [])}
+    <p class="small muted">${ico('🪪', { size: 18 })} ${t('cs.print.loginCards')}</p>
   </section>`;
-  const key = d.exitItems ? html`<section class="csq-page csq-key"><h2>🔑 ${t('cs.print.key')}</h2>
+  const key = d.exitItems ? html`<section class="csq-page csq-key"><h2>${ico('🔑', { size: 28 })} ${t('cs.print.key')}</h2>
     <ol class="csq-exititems">${d.exitItems.map((it, i) => itemView(it, { n: i + 1 }))}</ol>
     <p><b>${t('cs.plan.sentence')}</b> ${en('span', tpl.exit.sentencePrompt)} · <span class="small muted">${t('cs.plan.frame')}</span> ${en('span', tpl.exit.frame)}</p>
     ${rubricTable(t, tpl.exit.rubric)}
-    ${d.warmupItems ? html`<h2>🏁 ${t('cs.plan.warmup')}</h2><ol class="csq-exititems">${d.warmupItems.map((it, i) => itemView(it, { n: i + 1 }))}</ol>` : ''}</section>` : '';
+    ${d.warmupItems ? html`<h2>${ico('🏁', { size: 28 })} ${t('cs.plan.warmup')}</h2><ol class="csq-exititems">${d.warmupItems.map((it, i) => itemView(it, { n: i + 1 }))}</ol>` : ''}</section>` : '';
   return html`<div class="printdoc csq-print">${bar(t, { back: d.back })}${page1}${page2}${d.exitItems ? html`<section class="csq-page">${halfSheets(t, tpl, d.exitItems)}</section>` : ''}${key}</div>`;
 }
 
@@ -94,9 +95,9 @@ export function sheetBody(req, d) {
   let body;
   switch (sheet) {
     case 'exit-half': body = d.exitItems ? halfSheets(t, tpl, d.exitItems) : html`<p class="notice warn">${t('cs.plan.bankMissing')}</p>`; break;
-    case 'sub-plan': body = html`<div class="csq-box"><h2>🧑‍🏫 ${t('cs.plan.sub')}</h2>${raw(`<ol class="csq-list" lang="en" dir="ltr">${tpl.subPlan.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`)}
+    case 'sub-plan': body = html`<div class="csq-box"><h2>${ico('🧑‍🏫', { size: 28 })} ${t('cs.plan.sub')}</h2>${raw(`<ol class="csq-list" lang="en" dir="ltr">${tpl.subPlan.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`)}
       ${tpl.questCode ? html`<p>${t('cs.plan.questCode')}: ${questCode(tpl.questCode)}</p>` : ''}<p class="small muted">${t('cs.print.loginCards')}</p></div>
-      <h2>✏️ ${t('cs.plan.doNow')}</h2>${en('p', tpl.doNow)}<h2>💬 ${t('cs.plan.discuss')}</h2>${enList(tpl.discuss)}`; break;
+      <h2>${ico('✏️', { size: 28 })} ${t('cs.plan.doNow')}</h2>${en('p', tpl.doNow)}<h2>${ico('💬', { size: 28 })} ${t('cs.plan.discuss')}</h2>${enList(tpl.discuss)}`; break;
     case 'unplugged': body = html`<h2>${en('span', twin.title)} · ${t('lessons.minutesN', { count: twin.minutes })}</h2>
       <p><b>${t('cs.plan.materials')}</b></p>${enList(twin.materials)}<p><b>${t('cs.sheets.steps')}</b></p>${raw(`<ol class="csq-list" lang="en" dir="ltr">${twin.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`)}
       <p class="small">${t('cs.sheets.alsoPrint')} <span lang="en" dir="ltr">${twin.printables.map(humanize).join(', ')}</span></p>`; break;
@@ -151,7 +152,7 @@ export function projectorBody(req, d) {
     <p class="csq-n" dir="ltr">${t('cs.projector.of', { n: i + 1, count: items.length })}</p>
     <p class="csq-q" lang="en" dir="ltr">${it.q}</p>
     <ul class="csq-choices" lang="en" dir="ltr">${it.choices.map((c, k) => html`<li data-i="${k}"><span class="csq-letter">${'ABCD'[k]}</span>${c}</li>`)}</ul>
-    <details class="csq-reveal" data-reveal><summary>👁️ ${t('cs.projector.reveal')}</summary><p class="csq-answer" lang="en" dir="ltr">✓ ${'ABCD'[it.answer]}. ${it.choices[it.answer]}</p></details>
+    <details class="csq-reveal" data-reveal><summary>${ico('👁️', { size: 18 })} ${t('cs.projector.reveal')}</summary><p class="csq-answer" lang="en" dir="ltr">✓ ${'ABCD'[it.answer]}. ${it.choices[it.answer]}</p></details>
   </section>`;
   return html`<div class="csq-proj" data-projector>
     <div class="csq-proj-top noprint"><h1><span lang="en" dir="ltr">${tpl.title}</span> · ${t(d.which === 'exit' ? 'cs.projector.exit' : 'cs.projector.warmup')}</h1>
