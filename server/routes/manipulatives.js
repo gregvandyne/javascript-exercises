@@ -3,16 +3,22 @@
 // a class with a session running); everyone else falls through to the site's normal 404. Never linked from any menu,
 // the sitemap or search, and never indexed (X-Robots-Tag and the layout's noindex).
 //   GET  /manipulatives                         the page (tools, tasks, live): the browser's public/js/manip.js
-//   GET  /api/manipulatives/state               what the page starts from: role, own boards, classes, sessions
-//   POST /api/manipulatives/boards              a host saves a board (it gets a share code)
-//   GET  /api/manipulatives/boards/:id          one of the host's own boards;  POST .../boards/:id/delete (owner only)
-//   GET  /api/manipulatives/code/:code          a share code: a copy for the opener's own board
+//   GET  /api/manipulatives/state               what the page starts from: role, own templates and recent boards,
+//                                               classes, sessions, the AI draft (and how long drafts take)
+//   POST /api/manipulatives/boards              a host saves a template (Save as template: it gets a share code)
+//   POST /api/manipulatives/boards/autosave     a host's board, saved as they work ({ id } a recent board of theirs, or
+//                                               none: a new recent board)
+//   GET  /api/manipulatives/boards/:id          one of the host's own boards (a template comes as a fresh copy)
+//   POST .../boards/:id/delete | rename | duplicate   the owner only
+//   GET  /api/manipulatives/code/:code          a share code: a copy of a template for the opener's own board
 //   POST /api/manipulatives/live                a host starts a session for one of their classes
 //   POST /api/manipulatives/live/join           a student joins (by code, or by id from their class)
 //   GET  /api/manipulatives/live/:id            the session's teacher: every joined student's board; a student: their own
 //   POST /api/manipulatives/live/:id/work       a student sends their board (autosave)
 //   POST /api/manipulatives/live/:id/push       the teacher pushes one of their saved boards to every student
 //   POST /api/manipulatives/live/:id/end        the teacher ends the session
+//   POST /api/manipulatives/live/:id/reopen     the teacher reopens an ended room (same code, same squares)
+//   POST /api/manipulatives/live/:id/rename     the teacher renames a room;  POST .../live/:id/delete an ended room
 //   GET  /api/manipulatives/live/:id/export.pdf the teacher's PDF of the students' work
 //   GET  /api/manipulatives/live/:id/room       the shared room: the teacher's area and every square (classmates' typed
 //                                               text removed), cursors, the last "Bring everyone to me"
@@ -29,16 +35,20 @@
 //                                               (never the answers; the teacher's switch; 5 a minute; memory only)
 //   POST /api/manipulatives/live/:id/cursor     a cursor without a socket (memory only); the socket is
 //                                               /api/manipulatives/ws?s=<id> (services/manip-socket.js)
-//   POST /api/manipulatives/draft               a host asks the AI to draft a lesson board
+//   POST /api/manipulatives/draft               a host asks the AI to draft a lesson board: a server job
+//                                               (services/manip-drafts.js), one at a time; -> the job
+//   GET  /api/manipulatives/draft               the host's draft now (running, or ended and not seen yet) and the estimate
+//   POST /api/manipulatives/draft/:id/seen      the host saw how it ended
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { ico } from '../views/icon.js';
 import { page, VERSION } from '../views/layout.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as M from '../services/manipulatives.js';
+import * as D from '../services/manip-drafts.js';
 
 export const router = Router();
-const STATUS = { notFound: 404, ended: 409, aiFailed: 503, tooBig: 413, slow: 429, checkSlow: 429, noAnswers: 404 };
+const STATUS = { notFound: 404, ended: 409, notEnded: 409, aiFailed: 503, tooBig: 413, slow: 429, checkSlow: 429, noAnswers: 404 };
 const fail = (req, res, code) => res.status(STATUS[code] || 400).json({ error: req.t(`manip.errors.${code}`), code });
 const send = (req, res, r) => (r.ok ? res.json(r) : fail(req, res, r.code));
 const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
@@ -65,17 +75,20 @@ router.get('/manipulatives', (req, res) => {
 
 router.get('/api/manipulatives/state', (req, res) => {
   const u = req.user;
-  if (req.manipRole === 'host') return res.json({ role: 'host', boards: M.listBoards(u), classes: M.hostClasses(u), sessions: M.hostSessions(u) });
+  if (req.manipRole === 'host') return res.json({ role: 'host', boards: M.listBoards(u), recent: M.listRecent(u), classes: M.hostClasses(u), sessions: M.hostSessions(u), draft: D.current(u), eta: D.eta() });
   res.json({ role: 'student', sessions: M.studentSessions(u).map(s => ({ id: s.id, tool: s.tool, title: s.title, status: s.status, className: s.class_name, joined: !!s.joined })) });
 });
 
 // ---- boards
 router.post('/api/manipulatives/boards', hostOnly, rateLimit('manip-save', 120, 3600e3), (req, res) => send(req, res, M.saveBoard(req.user, body(req))));
-router.get('/api/manipulatives/boards/:id', hostOnly, (req, res) => {
-  const b = M.ownBoard(req.user, req.params.id);
-  return b ? res.json({ ok: true, board: b }) : fail(req, res, 'notFound');
+router.post('/api/manipulatives/boards/autosave', hostOnly, rateLimit('manip-autosave', 900, 3600e3), (req, res) => {
+  const { id, tool, title, state } = body(req);
+  send(req, res, M.autosave(req.user, { id: typeof id === 'string' && id ? id : null, tool, title, state }));
 });
+router.get('/api/manipulatives/boards/:id', hostOnly, (req, res) => send(req, res, M.openBoard(req.user, req.params.id)));
 router.post('/api/manipulatives/boards/:id/delete', hostOnly, (req, res) => send(req, res, M.deleteBoard(req.user, req.params.id)));
+router.post('/api/manipulatives/boards/:id/rename', hostOnly, rateLimit('manip-rename', 120, 3600e3), (req, res) => send(req, res, M.renameBoard(req.user, req.params.id, body(req).title)));
+router.post('/api/manipulatives/boards/:id/duplicate', hostOnly, rateLimit('manip-save', 120, 3600e3), (req, res) => send(req, res, M.duplicateBoard(req.user, req.params.id)));
 router.get('/api/manipulatives/code/:code', rateLimit('manip-code', 60, 600e3), (req, res) => send(req, res, M.openCode(req.user, req.params.code)));
 
 // ---- live sessions
@@ -93,6 +106,9 @@ router.get('/api/manipulatives/live/:id', (req, res) => {
 router.post('/api/manipulatives/live/:id/work', rateLimit('manip-work', 900, 3600e3), (req, res) => send(req, res, M.submitWork(req.user, req.params.id, body(req).state)));
 router.post('/api/manipulatives/live/:id/push', hostOnly, rateLimit('manip-push', 120, 3600e3), (req, res) => send(req, res, M.push(req.user, req.params.id, body(req).boardId)));
 router.post('/api/manipulatives/live/:id/end', hostOnly, (req, res) => send(req, res, M.end(req.user, req.params.id)));
+router.post('/api/manipulatives/live/:id/reopen', hostOnly, rateLimit('manip-live', 60, 3600e3), (req, res) => send(req, res, M.reopen(req.user, req.params.id)));
+router.post('/api/manipulatives/live/:id/rename', hostOnly, rateLimit('manip-rename', 120, 3600e3), (req, res) => send(req, res, M.renameSession(req.user, req.params.id, body(req).title)));
+router.post('/api/manipulatives/live/:id/delete', hostOnly, (req, res) => send(req, res, M.deleteSession(req.user, req.params.id)));
 router.get('/api/manipulatives/live/:id/export.pdf', hostOnly, rateLimit('manip-pdf', 60, 3600e3), (req, res) => {
   const r = M.exportPdf(req.user, req.params.id);
   if (!r.ok) return fail(req, res, r.code);
@@ -113,10 +129,14 @@ router.post('/api/manipulatives/live/:id/check', (req, res) => send(req, res, M.
 router.post('/api/manipulatives/live/:id/cursor', rateLimit('manip-cursor', 3600, 3600e3), (req, res) => send(req, res, M.moveCursor(req.user, req.params.id, body(req))));
 
 // ---- the AI lesson drafter
-router.post('/api/manipulatives/draft', hostOnly, rateLimit('manip-ai', 30, 3600e3), async (req, res) => {
+// A draft runs on the server (services/manip-drafts.js): the answer is the job, and the page asks how it is going.
+router.post('/api/manipulatives/draft', hostOnly, rateLimit('manip-ai', 30, 3600e3), (req, res) => {
   const { tool, brief, grade, task } = body(req);
-  send(req, res, await M.draftLesson(req.user, { tool, brief, grade, task }));
+  const r = D.start(req.user, { tool, brief, grade, task });
+  return r.ok ? res.json({ ...r, eta: D.eta() }) : fail(req, res, r.code);
 });
+router.get('/api/manipulatives/draft', hostOnly, (req, res) => res.json({ ok: true, job: D.current(req.user), eta: D.eta() }));
+router.post('/api/manipulatives/draft/:id/seen', hostOnly, (req, res) => send(req, res, D.seen(req.user, req.params.id)));
 
 /** A student's class page: "Your teacher started a math board" while a session for this class is running. */
 export function classBanner(req, c) {

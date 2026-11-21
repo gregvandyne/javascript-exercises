@@ -487,3 +487,55 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
 .mp-undo[hidden]{display:none}
 .mp-undobtn{min-height:40px;border:0;border-radius:999px;padding:6px 16px;background:#FFD23F;color:#141414;font:800 .9rem var(--font);cursor:pointer}
 @media (prefers-reduced-motion:reduce){.mp-wbtn,.mp-shake,.mp-face.flipout,.mp-piece.flipin .mp-face{animation:none}.mp-piece{transition:none}.mp-press.on circle{transition:none}}
+
+/* ---- saving and AI drafts (docs/decisions.md "Virtual math manipulatives: saving and AI drafts") */
+.mp-saved{color:var(--muted);font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.mp-saved.bad{color:var(--bad-ink)}
+.mp-tpl{margin-top:12px;max-width:520px;padding:12px 14px;border-radius:var(--r);box-shadow:inset 0 0 0 2px var(--accent-line)}
+.mp-tpl p{margin:6px 0}
+.mp-tpl input{width:100%}
+/* the drafter's progress (the Builder's live card: public/css/studio.css .stp-*) */
+.mp-dprog h2{display:flex;align-items:center;gap:8px}
+.mp-dbrief{margin:8px 0;padding:8px 12px;border-radius:var(--r-sm);background:var(--hover);color:var(--text-2);overflow-wrap:anywhere}
+.mp-deta{margin:4px 0 8px;font-size:.95rem;line-height:1.4}
+.mp-deta[data-state="longer"] b{background:var(--warn-bg);color:var(--warn-ink);border-radius:var(--r-sm);padding:2px 6px}
+.mp-dso{font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.mp-dsteps{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:2px}
+.mp-dstep{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-sm);color:var(--text-2);font-weight:600;font-size:.92rem}
+.mp-dstep.cur{background:var(--accent-soft);color:var(--text);font-weight:800}
+.mp-dmark{flex:none;width:20px;display:grid;place-items:center}
+.mp-dt{margin-inline-start:auto;color:var(--muted);font-size:.85rem;font-weight:600;font-variant-numeric:tabular-nums}
+.mp-dpulse{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--accent-line);box-shadow:0 0 0 4px var(--accent-soft);animation:mp-dpulse 1.4s ease-in-out infinite}
+.mp-dtodo{display:inline-block;width:10px;height:10px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--muted)}
+@keyframes mp-dpulse{50%{opacity:.45}}
+.mp-dleave{margin:4px 0 0;color:var(--text-2);display:flex;gap:6px;align-items:flex-start}
+.mp-busy{border-color:var(--accent-line);font-variant-numeric:tabular-nums}
+.mp-dnote{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:12px;box-shadow:var(--shadow)}
+.mp-dnote p{margin:0;flex:1 1 260px;font-weight:500}
+.mp-x{min-width:44px;min-height:44px}
+#mp-notice:empty{display:none}
+#mp-notice{margin-bottom:12px}
+#mp-notice .mp-drafter{margin-bottom:0}
+/* My boards */
+.mp-boards{margin:0 0 16px}
+.mp-boards h2{display:flex;align-items:center;gap:8px}
+.mp-group{margin:12px 0 2px;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mp-group .small{text-transform:none;letter-spacing:0;font-weight:600}
+.mp-blist{margin:0;padding:0}
+.mp-brow{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.mp-brow:last-child{border-bottom:0}
+.mp-btx{flex:1;min-width:0;display:flex;flex-direction:column}
+.mp-bname{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.mp-blink{background:none;border:0;padding:0;font:800 1rem var(--font);color:var(--text);text-align:start;cursor:pointer;min-height:32px;overflow-wrap:anywhere}
+.mp-blink:hover{text-decoration:underline}
+.mp-bmore{position:relative;flex:none}
+.mp-more{min-width:44px;min-height:44px;border-radius:var(--r-sm);border:2px solid var(--line);background:var(--card-2);font:800 1.1rem var(--font);color:var(--text);cursor:pointer}
+.mp-more[aria-expanded="true"],.mp-more:hover{border-color:var(--accent-line)}
+.mp-bmenu{position:absolute;inset-inline-end:0;top:calc(100% + 4px);z-index:20;display:flex;flex-direction:column;min-width:220px;padding:6px;box-shadow:var(--shadow),0 0 0 1px var(--line)}
+.mp-bmenu[hidden]{display:none}
+.mp-mi{text-align:start;min-height:44px;padding:0 12px;border:0;border-radius:8px;background:none;font:700 .95rem var(--font);color:var(--text);cursor:pointer}
+.mp-mi:hover,.mp-mi:focus-visible{background:var(--hover)}
+.mp-mi.bad{color:var(--bad-ink)}
+.mp-rename{flex:1}
+.mp-rename input{width:100%;max-width:420px}
+@media (prefers-reduced-motion:reduce){.mp-dpulse{animation:none}}

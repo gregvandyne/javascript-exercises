@@ -24,7 +24,7 @@ const ROLE = pageData().role === 'host' ? 'host' : 'student';
 const HOST = ROLE === 'host';
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
 const NOTE_MAX = 12, NOTE_W = 176, NOTE_H = 118;
-let STATE = { boards: [], classes: [], sessions: [] };
+let STATE = { boards: [], recent: [], classes: [], sessions: [], draft: null, eta: null };
 let V = null;          // the open board (tool view)
 let timers = [];       // intervals and timeouts of the current view
 const clear = () => { for (const x of timers) { clearInterval(x); clearTimeout(x); } timers = []; };
@@ -506,10 +506,10 @@ function change(fn) {
 }
 function setStatus(msg, bad = false) { const el = document.getElementById('mp-status'); if (el) { el.textContent = msg; el.classList.toggle('bad', !!bad); } }
 
-function openTool(slug, { restore = null } = {}) {
+function openTool(slug, { restore = null, boardId = null, title = '' } = {}) {
   clear();
   const tool = toolOf(slug); if (!tool) return home();
-  V = { tool, impl: IMPL[slug], st: null, ann: { notes: [], strokes: [], texts: [] }, hist: [], annHist: [], sel: null, osel: null, annotate: false, annMode: 'pen', pen: PEN_COLORS[0], editing: null, draftOpen: false, tasksOpen: false, view: { x: 0, y: 0, z: 1 } };
+  V = { tool, boardId, title, impl: IMPL[slug], st: null, ann: { notes: [], strokes: [], texts: [] }, hist: [], annHist: [], sel: null, osel: null, annotate: false, annMode: 'pen', pen: PEN_COLORS[0], editing: null, draftOpen: false, tasksOpen: false, view: { x: 0, y: 0, z: 1 } };
   loadState(restore || newBoard(slug));
   ROOT.innerHTML = `<div class="mp-tool">
     <div class="mp-head"><a class="btn btn-sm" href="#">${esc(t('js.manip.nav.allTools'))}</a>
@@ -538,9 +538,11 @@ function openTool(slug, { restore = null } = {}) {
       </div>
     </div></div>`;
   bindBoard();
+  if (pendingDraftOpen) { pendingDraftOpen = false; V.draftOpen = true; }
   renderChrome(); renderBoard(); renderShare(); renderTasksBox();
   fit();
   window.scrollTo(0, 0);
+  startAutosave();
 }
 
 // ---------------------------------------------------------------- objects and the palette (shared with the room)
@@ -735,7 +737,9 @@ function renderChrome() {
     btn('mp-tbtn', `data-tool="note"${V.ann.notes.length >= NOTE_MAX ? ' disabled' : ''}`, `${iconHtml('🗒️', { size: 18 })} ${esc(t('js.manip.side.note'))}`),
     btn(`mp-tbtn${V.textMode ? ' on' : ''}`, `data-tool="text" aria-pressed="${!!V.textMode}"`, `<b class="mp-tglyph">T</b> ${esc(t('js.manip.side.text'))}`),
     HOST ? btn(`mp-tbtn${V.stepsOpen ? ' on' : ''}`, 'data-tool="steps"', `${iconHtml('📋', { size: 18 })} ${esc(t('js.manip.steps.title'))}${V.steps && V.steps.length ? ` (${V.steps.length})` : ''}`) : '',
-    HOST ? btn(`mp-tbtn${V.draftOpen ? ' on' : ''}`, 'data-tool="draft"', `${iconHtml('✨', { size: 18 })} ${esc(t('js.manip.side.draft'))}`) : '',
+    // While a draft runs on the server, the same button counts its time (and shows or hides its progress).
+    HOST ? (draftLive() ? btn('mp-tbtn mp-busy', `data-tool="draft" aria-expanded="${!V.draftHidden}"`, `<span class="mp-dpulse" aria-hidden="true"></span> ${esc(t('js.manip.draft.drafting'))} <span id="mp-dtime">${mmss(draftElapsed())}</span>`)
+      : btn(`mp-tbtn${V.draftOpen ? ' on' : ''}`, 'data-tool="draft"', `${iconHtml('✨', { size: 18 })} ${esc(t('js.manip.side.draft'))}`)) : '',
     HOST && V.st.objects.some(o => o.st && o.st.key) ? btn(`mp-tbtn${V.showKeys ? ' on' : ''}`, `data-tool="keys" aria-pressed="${!!V.showKeys}"`, `${iconHtml('✓', { size: 18 })} ${esc(t('js.manip.side.showAnswers'))}`) : '',
     V.st.objects.some(o => o.st && o.st.key) ? btn('mp-tbtn', 'data-tool="check"', `${iconHtml('☑', { size: 18 })} ${esc(t('js.manip.check.button'))}`) : '',
     btn('mp-tbtn', 'data-tool="reset"', esc(t('js.manip.side.reset'))),
@@ -1129,7 +1133,11 @@ function toolButton(k) {
     for (const o of V.st.objects) if (o.st && o.st.key) { total++; const okay = answerMatches(o.st.key, o.st.ans, { simplest: !!o.st.simplest, over: o.k === 'frac-eq' && o.st.op === '=' ? +o.st.b || 0 : 0 }); V.checked[o.id] = okay; if (okay) right++; }
     renderBoard(); setStatus(t('js.manip.check.result', { right, total })); toast(t('js.manip.check.result', { right, total })); return;
   }
-  if (k === 'draft') { V.draftOpen = !V.draftOpen; renderChrome(); if (V.draftOpen) document.getElementById('mp-brief')?.focus(); return; }
+  if (k === 'draft') {
+    if (draftLive()) { V.draftHidden = !V.draftHidden; renderChrome(); return; }
+    if (DJ.notice) { DJ.notice = null; V.draftOpen = true; } else V.draftOpen = !V.draftOpen;
+    renderChrome(); if (V.draftOpen) document.getElementById('mp-brief')?.focus(); return;
+  }
   if (k === 'reset') { change(st => { const settings = {}; for (const key of ['decimal', 'mode', 'unit']) if (key in st) settings[key] = st[key]; const fresh = normalize(V.tool.slug, V.impl, newBoard(V.tool.slug, WORLD, settings)); for (const key of Object.keys(st)) delete st[key]; Object.assign(st, fresh); V.sel = null; V.osel = null; }); fit(); }
 }
 function annButton(k, c) {
@@ -1469,27 +1477,76 @@ function bindNoteDrag() {
 }
 
 // ---------------------------------------------------------------- saving, share codes, the AI drafter, tasks
+// Saving (docs/decisions.md "Virtual math manipulatives: saving and AI drafts"): a host's board saves itself a moment
+// after each change, as one of their recent boards (no button: "Saved 10:42" says it is); the address becomes
+// #board/<id>, so a refresh brings the same board back. "Save as template" (the one save button) keeps a fresh starting
+// point with a share code: opening a template always gives a copy.
+const AUTOSAVE_MS = 2000;
+const clockTime = ms => new Date(ms).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+function startAutosave() {
+  if (!HOST || !V) return;
+  V.savedJson = JSON.stringify(boardState());
+  timers.push(setInterval(() => { autosave(); }, AUTOSAVE_MS));
+}
+/** Saves the open board when it changed since the last save. keepalive: the page is going away (best effort). */
+async function autosave({ keepalive = false } = {}) {
+  const v = V;
+  if (!HOST || !v || v.saving) return;
+  const st = boardState(), s = JSON.stringify(st);
+  if (s === v.savedJson) return;
+  const body = { id: v.boardId || '', tool: v.tool.slug, title: v.title || v.tool.name, state: st };
+  if (keepalive) {
+    try { fetch('/api/manipulatives/boards/autosave', { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); v.savedJson = s; } catch { /* the page is going */ }
+    return;
+  }
+  v.saving = true;
+  try {
+    const r = await api('/api/manipulatives/boards/autosave', { method: 'POST', body, background: true });
+    v.boardId = r.board.id; v.savedJson = s; v.savedAt = r.board.at; v.saveBad = false;
+    if (V === v) { savedLine(); if (location.hash !== `#board/${r.board.id}`) history.replaceState(null, '', `#board/${r.board.id}`); }
+  } catch (e) {
+    if (e.status === 404 && v.boardId) v.boardId = null;   // gone (deleted elsewhere): the next save makes a new one
+    v.saveBad = true; if (V === v) savedLine();
+  } finally { v.saving = false; }
+}
+function savedLine() {
+  const el = document.getElementById('mp-saved'); if (!el || !V) return;
+  el.classList.toggle('bad', !!V.saveBad);
+  el.innerHTML = V.saveBad ? esc(t('js.manip.save.notYet')) : V.savedAt ? `${iconHtml('✓', { size: 16 })} ${esc(t('js.manip.save.savedAt', { time: clockTime(V.savedAt) }))}` : '';
+}
 function renderShare() {
   const el = document.getElementById('mp-share');
   const mine = HOST ? STATE.boards.filter(b => b.tool === V.tool.slug) : [];
   el.innerHTML = `<div class="row">
-    ${HOST ? `${btn('btn btn-primary', 'id="mp-save"', esc(t('js.manip.share.save')))}<span class="mp-code" id="mp-code" aria-live="polite"></span>` : ''}
+    ${HOST ? `${btn('btn btn-primary', `id="mp-save" aria-expanded="${!!V.tplOpen}"`, esc(t('js.manip.share.save')))}<span class="small mp-saved" id="mp-saved" role="status"></span><span class="mp-code" id="mp-code" aria-live="polite"></span>` : ''}
     <form class="row mp-redeem" id="mp-redeem"><label for="mp-redeem-in" class="small"><b>${esc(t('js.manip.share.open'))}</b></label>
       <input id="mp-redeem-in" class="input input-sm mp-codein" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${esc(t('js.manip.share.codePh'))}">
       <button class="btn btn-sm" type="submit">${esc(t('js.manip.share.go'))}</button></form>
     <span class="small" id="mp-status" role="status"></span></div>
+    ${HOST && V.tplOpen ? `<form class="mp-tpl" id="mp-tpl" aria-label="${esc(t('js.manip.share.save'))}"><label class="mp-set mp-block"><span>${esc(t('js.manip.save.name'))}</span><input class="input" id="mp-tplname" maxlength="80" required value="${esc(V.title || V.tool.name)}"></label>
+      <p class="small muted">${esc(t('js.manip.save.what'))}</p>
+      <div class="row"><button class="btn btn-primary btn-sm" type="submit">${esc(t('js.manip.save.go'))}</button>${btn('btn btn-sm btn-ghost', 'id="mp-tplno"', esc(t('js.manip.save.cancel')))}</div></form>` : ''}
     ${HOST ? STATE.sessions.filter(x => x.status === 'active' && x.tool === V.tool.slug).map(x => `<p class="small"><a href="#live/${esc(x.id)}">${iconHtml('📡', { size: 18 })} ${esc(t('js.manip.share.backToSession', { title: x.title }))}</a></p>`).join('') : ''}
-    ${mine.length ? `<div class="row mp-chips" aria-label="${esc(t('js.manip.share.saved'))}">${mine.slice(0, 12).map(b => btn('chip', `data-load="${esc(b.id)}" aria-label="${esc(t('js.manip.share.loadSaved', { code: b.code }))}"`, `${esc(b.code)} · ${esc(new Date(b.created_at).toLocaleDateString())}`)).join('')}</div>` : ''}`;
+    ${mine.length ? `<div class="row mp-chips" aria-label="${esc(t('js.manip.share.saved'))}">${mine.slice(0, 12).map(b => btn('chip', `data-load="${esc(b.id)}" aria-label="${esc(t('js.manip.share.loadSaved', { code: b.code }))}"`, esc(b.title))).join('')}</div>` : ''}`;
+  savedLine();
   const save = document.getElementById('mp-save');
-  if (save) save.onclick = async () => {
-    save.disabled = true;
-    try {
-      const r = await api('/api/manipulatives/boards', { method: 'POST', body: { tool: V.tool.slug, title: V.title || V.tool.name, state: boardState() } });
-      document.getElementById('mp-code').textContent = r.board.code;
-      setStatus(t('js.manip.share.saved1', { code: r.board.code }));
-      STATE.boards.unshift({ id: r.board.id, code: r.board.code, tool: V.tool.slug, title: V.tool.name, created_at: Date.now() });
-    } catch (e) { setStatus(e.message, true); } finally { save.disabled = false; }
-  };
+  if (save) save.onclick = () => { V.tplOpen = !V.tplOpen; renderShare(); if (V.tplOpen) document.getElementById('mp-tplname')?.select(); };
+  const tpl = document.getElementById('mp-tpl');
+  if (tpl) {
+    document.getElementById('mp-tplno').onclick = () => { V.tplOpen = false; renderShare(); };
+    tpl.onsubmit = async e => {
+      e.preventDefault();
+      const go = tpl.querySelector('[type="submit"]'); go.disabled = true;
+      const title = document.getElementById('mp-tplname').value;
+      try {
+        const r = await api('/api/manipulatives/boards', { method: 'POST', body: { tool: V.tool.slug, title, state: boardState() } });
+        STATE.boards.unshift({ id: r.board.id, code: r.board.code, tool: V.tool.slug, title: r.board.title, kind: 'template', created_at: Date.now() });
+        V.tplOpen = false; renderShare();
+        document.getElementById('mp-code').textContent = r.board.code;
+        setStatus(t('js.manip.save.done', { title: r.board.title, code: r.board.code }));
+      } catch (err) { go.disabled = false; setStatus(err.message, true); }
+    };
+  }
   document.getElementById('mp-redeem').onsubmit = async e => { e.preventDefault(); await redeem(document.getElementById('mp-redeem-in').value); };
   for (const b of el.querySelectorAll('[data-load]')) b.onclick = async () => {
     try { const r = await api(`/api/manipulatives/boards/${encodeURIComponent(b.dataset.load)}`); restoreInto(r.board.state); setStatus(t('js.manip.share.loaded', { code: r.board.code })); }
@@ -1521,39 +1578,149 @@ function renderSteps() {
     <p class="small muted">${esc(t('js.manip.steps.text'))}</p><div id="mp-stepsed"></div></section>`;
   ROOM.stepsEditor(document.getElementById('mp-stepsed'), V.steps || [], list => { V.steps = list.filter(x => x.text.trim()); });
 }
+// ---------------------------------------------------------------- the AI drafter: a job on the server
+// A draft runs on our server (services/manip-drafts.js), not in this page: a refresh or a closed tab changes nothing.
+// While it runs, the drafter's box shows its real steps and how long drafts usually take (the Builder's live card,
+// public/js/studio.js), and the side button counts the time. When it ends while this page watched it run on this
+// tool, it goes onto the board (Undo brings back what was there); otherwise one notice says it finished while the
+// teacher was away (the board is in My boards either way). A failed draft opens the drafter again with the words kept.
+const DRAFT_STEPS = ['check', 'ai', 'build', 'save'];
+const DJ = { job: null, eta: null, sawId: null, timer: null, ticks: 0, skew: 0, notice: null, retry: null, polling: false };
+const draftLive = () => !!DJ.job && (DJ.job.status === 'queued' || DJ.job.status === 'running');
+const mmss = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+const draftElapsed = () => (DJ.job ? Date.now() + DJ.skew - (DJ.job.startedAt || DJ.job.createdAt) : 0);
+/** The server's job (and estimate): what the page shows and does next. */
+function setJob(job, eta) {
+  if (eta) DJ.eta = eta;
+  DJ.job = job || null;
+  if (job && job.now) DJ.skew = job.now - Date.now();
+  if (draftLive()) { DJ.sawId = job.id; if (!DJ.timer) DJ.timer = setInterval(draftTick, 1000); }
+  else if (DJ.timer) { clearInterval(DJ.timer); DJ.timer = null; }
+  const j = DJ.job;
+  if (j && !j.seen && (j.status === 'done' || j.status === 'failed')) {
+    j.seen = true;
+    api(`/api/manipulatives/draft/${encodeURIComponent(j.id)}/seen`, { method: 'POST', body: {}, background: true }).catch(() => {});
+    if (j.status === 'done' && DJ.sawId === j.id && V && V.tool.slug === j.tool) { applyDone(j); return; }
+    if (j.status === 'failed' && V && V.tool.slug === j.tool) { DJ.retry = j; V.draftOpen = true; V.draftHidden = false; }
+    else DJ.notice = j;
+  }
+  drawDraftPlaces();
+}
+function drawDraftPlaces() {
+  if (V && document.getElementById('mp-draft')) renderChrome();
+  else drawNotice();
+}
+async function pollDraft() {
+  if (DJ.polling) return;
+  DJ.polling = true;
+  try { const r = await api('/api/manipulatives/draft', { background: true }); setJob(r.job, r.eta); } catch { /* try again next tick */ } finally { DJ.polling = false; }
+}
+function draftTick() {
+  if (!draftLive()) return;
+  DJ.ticks++;
+  if (DJ.ticks % 2 === 0) pollDraft();
+  const time = document.getElementById('mp-dtime'); if (time) time.textContent = mmss(draftElapsed());
+  const eta = document.getElementById('mp-deta'); if (eta) { const e = etaNow(); eta.dataset.state = e.state; eta.innerHTML = etaHtml(e); }
+  const rows = document.getElementById('mp-dsteps'); if (rows) rows.innerHTML = stepRows();
+}
+/** The estimate line: numbers from the server (manip-drafts.js eta), words here. Like the Builder's: "Usually" only
+ *  from real timed drafts, "About" from first guesses; past the usual time, "Taking a bit longer than usual". */
+function etaNow() {
+  const e = DJ.eta || { src: 'default', p50: 25e3, p75: 40e3 }, el = draftElapsed(), guess = e.src !== 'data';
+  if (el > e.p75 + Math.max(15e3, 0.15 * e.p75)) return { state: 'longer', text: t('js.manip.draft.eta.longer') };
+  if (e.p75 <= 50e3) return { state: 'on', text: t(guess ? 'js.manip.draft.eta.guessUnder' : 'js.manip.draft.eta.under') };
+  return { state: 'on', text: t(guess ? 'js.manip.draft.eta.guess' : 'js.manip.draft.eta.about', { n: Math.ceil(e.p75 / 60e3) }) };
+}
+const etaHtml = e => `<b>${esc(e.text)}</b> <span class="mp-dso">· ${esc(t('js.manip.draft.eta.soFar', { time: mmss(draftElapsed()) }))}</span>`;
+function stepRows() {
+  const j = DJ.job; if (!j) return '';
+  const at = j.steps || [], el = draftElapsed();
+  return DRAFT_STEPS.map((k, i) => {
+    const state = i < j.step ? 'done' : i === j.step ? 'cur' : 'todo';
+    const ms = state === 'done' ? (at[i + 1] ?? at[i] ?? 0) - (at[i] ?? 0) : state === 'cur' ? el - (at[i] ?? 0) : null;
+    const mark = state === 'done' ? iconHtml('✓', { size: 16 }) : state === 'cur' ? '<span class="mp-dpulse" aria-hidden="true"></span>' : '<span class="mp-dtodo" aria-hidden="true"></span>';
+    return `<li class="mp-dstep ${state}"${state === 'cur' ? ' aria-current="step"' : ''}><span class="mp-dmark">${mark}</span><span>${esc(t(`js.manip.draft.step.${k}.${state === 'done' ? 'done' : 'now'}`))}</span>${ms != null ? `<span class="mp-dt">${mmss(ms)}</span>` : ''}</li>`;
+  }).join('');
+}
+function progressHtml() {
+  const j = DJ.job, e = etaNow(), tl = toolOf(j.tool);
+  return `<section class="panel mp-drafter mp-dprog" aria-label="${esc(t('js.manip.draft.progress'))}"><div class="row"><h2>${iconHtml('✨', { size: 28 })} ${esc(t('js.manip.draft.progress'))}</h2>${tl && (!V || V.tool.slug !== j.tool) ? `<span class="mp-tag">${esc(tl.name)}</span>` : ''}</div>
+    ${j.brief ? `<p class="mp-dbrief">${esc(t('js.manip.draft.quote', { brief: j.brief }))}</p>` : ''}
+    <p class="mp-deta" id="mp-deta" data-state="${e.state}" role="status">${etaHtml(e)}</p>
+    <ol class="mp-dsteps" id="mp-dsteps">${stepRows()}</ol>
+    <p class="small mp-dleave">${iconHtml('🌙', { size: 18 })} ${esc(t('js.manip.draft.leave'))}</p></section>`;
+}
+const doneMessage = r => `${t('js.manip.draft.doneSet', { title: r.title, n: r.n, steps: r.steps })}${r.capped ? ` ${t('js.manip.draft.capped', { max: 12 })}` : ''}${r.ai ? '' : ` ${t('js.manip.draft.noAi')}`}`;
+const errorText = code => t(`js.manip.draft.err.${['aiFailed', 'restart', 'names', 'words', 'personal'].includes(code) ? code : 'other'}`);
+/** The one notice: a draft that finished (or failed) while the teacher was away. */
+function noticeHtml(j) {
+  const tl = toolOf(j.tool), r = j.result || {};
+  if (j.status === 'done') {
+    return `<div class="notice good mp-dnote" role="status">${iconHtml('✨', { size: 22 })}<p><b>${esc(t('js.manip.draft.away', { title: r.title || '' }))}</b> ${esc(r.n ? t('js.manip.draft.awayN', { n: r.n, steps: r.steps }) : '')} ${esc(t('js.manip.draft.inBoards'))}</p>
+      ${btn('btn btn-primary btn-sm', 'data-dnote="use"', esc(t('js.manip.draft.use')))}${btn('btn btn-sm btn-ghost mp-x', `data-dnote="x" aria-label="${esc(t('js.manip.draft.dismiss'))}"`, '✕')}</div>`;
+  }
+  return `<div class="notice bad mp-dnote" role="status">${iconHtml('⚠️', { size: 22 })}<p><b>${esc(t('js.manip.draft.failedAway', { tool: tl ? tl.name : '' }))}</b> ${esc(errorText(j.error))}</p>
+    ${btn('btn btn-primary btn-sm', 'data-dnote="retry"', esc(t('js.manip.draft.retry')))}${btn('btn btn-sm btn-ghost mp-x', `data-dnote="x" aria-label="${esc(t('js.manip.draft.dismiss'))}"`, '✕')}</div>`;
+}
+function bindNotice(el) {
+  for (const b of el.querySelectorAll('[data-dnote]')) b.onclick = () => {
+    const j = DJ.notice; DJ.notice = null;
+    if (!j) return;
+    if (b.dataset.dnote === 'use') applyDone(j);
+    else if (b.dataset.dnote === 'retry') { DJ.retry = j; if (V && V.tool.slug === j.tool) { V.draftOpen = true; renderChrome(); } else { pendingDraftOpen = true; location.hash = j.tool; } }
+    else drawDraftPlaces();
+  };
+}
+let pendingDraftOpen = false;
+function drawNotice() {
+  const el = document.getElementById('mp-notice'); if (!el) return;
+  el.innerHTML = draftLive() ? progressHtml() : DJ.notice ? noticeHtml(DJ.notice) : '';
+  bindNotice(el);
+}
+/** A finished draft onto the board (the open one when it is the same tool: Undo brings back what was there; the
+ *  board it was saved as is the one that goes on saving), else its own board opens. */
+async function applyDone(j) {
+  try {
+    const r = await api(`/api/manipulatives/boards/${encodeURIComponent(j.boardId)}`);
+    if (!V || V.tool.slug !== j.tool) { pendingOpen = r.board; location.hash = `board/${r.board.id}`; return; }
+    await autosave();   // what was on the board stays in its own recent board
+    restoreInto(r.board.state);
+    Object.assign(V, { boardId: r.board.id, title: r.board.title, savedJson: JSON.stringify(boardState()), savedAt: Date.now(), saveBad: false, stepsOpen: true, draftOpen: false, draftHidden: false });
+    DJ.retry = null;
+    history.replaceState(null, '', `#board/${r.board.id}`);
+    renderChrome(); renderShare(); fit();
+    const m = doneMessage(j.result || {}); setStatus(m); toast(m);
+  } catch (e) { toast(e.message, { bad: true }); }
+}
 function renderDraft() {
   const el = document.getElementById('mp-draft');
-  if (!HOST || !V.draftOpen) { el.innerHTML = ''; return; }
-  const tasks = TASKS[V.tool.slug] || [];
+  if (!HOST) { el.innerHTML = ''; return; }
+  if (draftLive() && !V.draftHidden) { el.innerHTML = progressHtml(); return; }
+  if (DJ.notice && !draftLive()) { el.innerHTML = noticeHtml(DJ.notice); bindNotice(el); return; }
+  if (!V.draftOpen) { el.innerHTML = ''; return; }
+  if (el.querySelector('#mp-brief') && el.contains(document.activeElement)) return;   // typing in it: keep it as it is
+  const tasks = TASKS[V.tool.slug] || [], re = DJ.retry && DJ.retry.tool === V.tool.slug ? DJ.retry : null;
   el.innerHTML = `<section class="panel mp-drafter" aria-label="${esc(t('js.manip.draft.title'))}"><div class="row"><h2>${iconHtml('✨', { size: 28 })} ${esc(t('js.manip.draft.title'))}</h2>${btn('btn btn-sm btn-ghost', 'data-tool="draft"', `✕ ${esc(t('js.manip.draft.close'))}`)}</div>
     <p class="small muted">${esc(t('js.manip.draft.text'))}</p>
     <div class="mp-draftrow"><label class="mp-set grow"><span>${esc(t('js.manip.draft.task'))}</span><select class="input input-sm" id="mp-dtask"><option value="">${esc(t('js.manip.draft.ownLesson'))}</option>${tasks.map(x => `<option value="${esc(`${x.title}: ${x.prompt}`)}" data-grade="${esc(x.grade)}">${esc(x.title)} · ${esc(t('js.manip.grade', { grade: x.grade }))}</option>`).join('')}</select></label>
       <label class="mp-set"><span>${esc(t('js.manip.draft.grade'))}</span><select class="input input-sm" id="mp-dgrade"><option value="">${esc(t('js.manip.draft.any'))}</option>${['K', '1', '2', '3', '4', '5', '6', '7', '8'].map(g => `<option value="${g}">${esc(t('js.manip.grade', { grade: g }))}</option>`).join('')}</select></label></div>
-    <label class="mp-set mp-block"><span>${esc(t('js.manip.draft.brief'))}</span><textarea class="input" id="mp-brief" rows="3" maxlength="1000" placeholder="${esc(t('js.manip.draft.briefPh'))}"></textarea></label>
+    <label class="mp-set mp-block"><span>${esc(t('js.manip.draft.brief'))}</span><textarea class="input" id="mp-brief" rows="3" maxlength="1000" placeholder="${esc(t('js.manip.draft.briefPh'))}">${esc(re ? re.brief : '')}</textarea></label>
     <p class="small muted">${esc(t('js.manip.draft.private'))}</p>
-    <div class="row">${btn('btn btn-primary', 'id="mp-dgo"', `${iconHtml('✨', { size: 18 })} ${esc(t('js.manip.draft.go'))}`)}<span class="small muted">${esc(t('js.manip.draft.hint'))}</span></div>
-    <p class="small" id="mp-dmsg" role="status"></p></section>`;
+    <div class="row">${btn('btn btn-primary', 'id="mp-dgo"', `${iconHtml('✨', { size: 18 })} ${esc(t(re ? 'js.manip.draft.retry' : 'js.manip.draft.go'))}`)}<span class="small muted">${esc(t('js.manip.draft.hint'))}</span></div>
+    <p class="small${re ? ' bad' : ''}" id="mp-dmsg" role="status">${re ? esc(`${t('js.manip.draft.failed')} ${errorText(re.error)}`) : ''}</p></section>`;
   const task = document.getElementById('mp-dtask'), brief = document.getElementById('mp-brief');
+  if (re) { task.value = re.task || ''; document.getElementById('mp-dgrade').value = re.grade || ''; }
   task.onchange = () => { if (task.value) { brief.value = task.value; document.getElementById('mp-dgrade').value = task.selectedOptions[0].dataset.grade || ''; } };
   document.getElementById('mp-dgo').onclick = async ev => {
     const b = ev.currentTarget, msg = document.getElementById('mp-dmsg');
     if (brief.value.trim().length < 3) { msg.textContent = t('js.manip.draft.needBrief'); return; }
-    b.disabled = true; msg.textContent = t('js.manip.draft.working');
+    b.disabled = true; msg.classList.remove('bad'); msg.textContent = t('js.manip.draft.working');
     try {
       const r = await api('/api/manipulatives/draft', { method: 'POST', body: { tool: V.tool.slug, brief: brief.value, grade: document.getElementById('mp-dgrade').value, task: task.value } });
-      applyDraft(r.draft);
-      const m = `${t('js.manip.draft.doneSet', { title: r.draft.title, n: r.draft.n, steps: r.draft.steps.length })}${r.draft.capped ? ` ${t('js.manip.draft.capped', { max: 12 })}` : ''}`;
-      document.getElementById('mp-dmsg').textContent = r.ai ? m : `${m} ${t('js.manip.draft.noAi')}`; setStatus(m);
-    } catch (e) { msg.textContent = e.message; } finally { b.disabled = false; }
+      DJ.retry = null; DJ.notice = null; V.draftHidden = false;
+      setJob(r.job, r.eta);
+    } catch (e) { msg.textContent = e.message; b.disabled = false; }
   };
-}
-/** A drafted board becomes an ordinary board: the server built it (public/js/manip-practice.js: the objects and pieces
- *  in a tidy grid, a title, answer boxes with the teacher's answers); its steps become the exercise's deck. */
-function applyDraft(d) {
-  const steps = (d.steps || []).map((text, i) => ({ id: `s${newId()}${i}`, text }));
-  V.title = d.title;
-  restoreInto({ ...d.board, __steps: steps });
-  V.stepsOpen = true; V.draftOpen = false; renderChrome(); fit();
 }
 function renderTasksBox() {
   const el = document.getElementById('mp-tasks'), tasks = TASKS[V.tool.slug] || [];
@@ -1579,6 +1746,8 @@ function home() {
   if (!HOST) return studentHome();
   ROOT.innerHTML = `<div class="pagehead"><h1>${iconHtml('🧮', { size: 36 })} ${esc(t('js.manip.home.title'))}</h1><span class="mp-tag">${esc(t('js.manip.home.testing'))}</span></div>
     <p class="mp-lead">${esc(t('js.manip.home.lead', { n: Object.values(TASKS).reduce((s, l) => s + l.length, 0) }))}</p>
+    <div id="mp-notice"></div>
+    <section class="panel mp-boards" aria-label="${esc(t('js.manip.boards.title'))}"><h2>${iconHtml('🗂️', { size: 28 })} ${esc(t('js.manip.boards.title'))}</h2><div id="mp-boardlist"></div></section>
     <div class="mp-homegrid">
       <section class="panel"><h2>${iconHtml('📡', { size: 28 })} ${esc(t('js.manip.host.title'))}</h2>
         ${STATE.classes.length ? `<form id="mp-host" class="mp-form"><label class="mp-set mp-block"><span>${esc(t('js.manip.host.klass'))}</span><select class="input" name="classId" required>${STATE.classes.map(c => `<option value="${esc(c.id)}">${esc(c.name)} · ${esc(c.school)}</option>`).join('')}</select></label>
@@ -1587,7 +1756,6 @@ function home() {
           ${STATE.boards.length ? `<label class="mp-set mp-block"><span>${esc(t('js.manip.host.board'))}</span><select class="input" name="boardId"><option value="">${esc(t('js.manip.host.noBoard'))}</option>${STATE.boards.map(b => { const x = toolOf(b.tool); return `<option value="${esc(b.id)}">${esc(b.code)} · ${esc(x ? x.name : b.tool)} · ${esc(b.title)}</option>`; }).join('')}</select></label>` : ''}
           <button class="btn btn-primary btn-block" type="submit">${esc(t('js.manip.host.start'))}</button></form><p class="small muted">${esc(t('js.manip.host.who'))}</p>`
     : `<p class="small muted">${esc(t('js.manip.host.noClasses'))}</p>`}
-        ${STATE.sessions.length ? `<h3>${esc(t('js.manip.host.mine'))}</h3><ul class="plain mp-list">${STATE.sessions.slice(0, 8).map(s => `<li><a href="#live/${esc(s.id)}">${esc(s.title)}</a> <span class="small muted">${esc(s.class_name)} · ${esc(s.status === 'active' ? t('js.manip.dash.live') : t('js.manip.dash.ended'))} · ${esc(t('js.manip.dash.joined', { n: s.joined }))}</span></li>`).join('')}</ul>` : ''}
         </section>
       <section class="panel"><h2>${iconHtml('🎟️', { size: 28 })} ${esc(t('js.manip.share.haveCode'))}</h2><p class="small muted">${esc(t('js.manip.share.haveCodeText'))}</p>
         <form class="row mp-redeem" id="mp-homeredeem"><label class="sr-only" for="mp-home-code">${esc(t('js.manip.share.codeLabel'))}</label><input id="mp-home-code" class="input mp-codein" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${esc(t('js.manip.share.codePh'))}"><button class="btn btn-primary" type="submit">${esc(t('js.manip.share.go'))}</button></form>
@@ -1595,8 +1763,7 @@ function home() {
     </div>
     <div class="mp-filter"><label class="sr-only" for="mp-q">${esc(t('js.manip.home.search'))}</label><input id="mp-q" class="input" type="search" placeholder="${esc(t('js.manip.home.search'))}">
       <label class="sr-only" for="mp-cat">${esc(t('js.manip.home.cat'))}</label><select id="mp-cat" class="input"><option value="">${esc(t('js.manip.home.allCats'))}</option>${CATS.map((c, i) => `<option value="${i}">${esc(c)}</option>`).join('')}</select></div>
-    <div id="mp-catalog"></div>
-    <section class="panel mp-boards"><h2>${esc(t('js.manip.boards.title'))}</h2><div id="mp-boardlist"></div></section>`;
+    <div id="mp-catalog"></div>`;
   const host = document.getElementById('mp-host');
   if (host) host.onsubmit = async e => {
     e.preventDefault(); const f = new FormData(host);
@@ -1612,18 +1779,107 @@ function home() {
       || `<p class="muted">${esc(t('js.manip.home.none'))}</p>`;
   };
   q.oninput = drawCat; cat.onchange = drawCat; drawCat();
-  drawBoards();
+  drawBoards(); drawNotice();
+}
+// ---------------------------------------------------------------- My boards (the home): templates and recent boards
+// Templates (fresh starting points, with share codes) and recent boards (saved as the teacher works, AI drafts and live
+// rooms among them). A row's title opens it; its one ⋯ menu has the rest: Rename, Duplicate, Delete, "Start a live
+// room with it" (templates), "Reopen room" (an ended room). Nothing else on the row.
+const whenText = ms => {
+  if (!ms) return '';
+  const d = new Date(ms), today = new Date();
+  if (d.toDateString() === today.toDateString()) return clockTime(ms);
+  return Date.now() - ms < 6 * 86400e3 ? d.toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' }) : d.toLocaleDateString();
+};
+function boardRows() {
+  const nameOf = slug => { const x = toolOf(slug); return x ? x.name : slug; };
+  const templates = STATE.boards.map(b => ({ type: 'template', id: b.id, tool: b.tool, title: b.title, sub: `${nameOf(b.tool)} · ${t('js.manip.boards.code', { code: b.code })}` }));
+  const recent = [
+    ...(STATE.recent || []).map(b => {
+      const at = Math.max(b.updated_at || 0, b.opened_at || 0, b.created_at || 0), fresh = !b.opened_at;
+      return { type: 'board', id: b.id, tool: b.tool, title: b.title, at, isNew: fresh, sub: `${nameOf(b.tool)} · ${fresh ? t('js.manip.boards.aiDraft', { when: whenText(at) }) : t('js.manip.boards.edited', { when: whenText(at) })}` };
+    }),
+    ...STATE.sessions.map(s => {
+      const live = s.status === 'active', at = live ? s.opened_at || s.created_at : s.ended_at || s.opened_at || s.created_at;
+      return { type: 'room', id: s.id, tool: s.tool, title: s.title, at, live, sub: live ? t('js.manip.boards.roomLive', { klass: s.class_name, n: s.joined }) : t('js.manip.boards.roomEnded', { klass: s.class_name, when: whenText(at), n: s.joined }) };
+    }),
+  ].sort((a, b) => b.at - a.at);
+  return { templates, recent };
+}
+function menuItems(r) {
+  const it = (act, label, cls = '') => `<button type="button" role="menuitem" class="mp-mi${cls}" data-act="${act}">${esc(label)}</button>`;
+  if (r.type === 'template') return [STATE.classes.length ? it('start', t('js.manip.boards.start')) : '', it('rename', t('js.manip.boards.rename')), it('duplicate', t('js.manip.boards.duplicate')), it('delete', t('js.manip.boards.delete'), ' bad')].join('');
+  if (r.type === 'board') return [it('rename', t('js.manip.boards.rename')), it('duplicate', t('js.manip.boards.duplicate')), it('delete', t('js.manip.boards.delete'), ' bad')].join('');
+  return [r.live ? '' : it('reopen', t('js.manip.boards.reopen')), it('rename', t('js.manip.boards.rename')), r.live ? '' : it('delete', t('js.manip.boards.delete'), ' bad')].join('');
 }
 function drawBoards() {
   const el = document.getElementById('mp-boardlist'); if (!el) return;
-  el.innerHTML = STATE.boards.length ? `<ul class="plain mp-list">${STATE.boards.map(b => { const x = toolOf(b.tool); return `<li class="mp-boardrow"><b class="mp-code">${esc(b.code)}</b> <span>${esc(x ? x.name : b.tool)}</span> <span class="small muted">${esc(new Date(b.created_at).toLocaleString())}</span>
-    <span class="row">${btn('btn btn-sm', `data-open="${esc(b.id)}"`, esc(t('js.manip.boards.open')))}${btn('btn btn-sm btn-danger', `data-del="${esc(b.id)}" aria-label="${esc(t('js.manip.boards.deleteOne', { code: b.code }))}"`, esc(t('js.manip.boards.delete')))}</span></li>`; }).join('')}</ul>`
-    : `<p class="small muted">${esc(t('js.manip.boards.none'))}</p>`;
-  for (const b of el.querySelectorAll('[data-open]')) b.onclick = async () => { const r = await api(`/api/manipulatives/boards/${encodeURIComponent(b.dataset.open)}`); pendingRestore = r.board.state; location.hash = r.board.tool; };
-  for (const b of el.querySelectorAll('[data-del]')) b.onclick = async () => {
-    try { await api(`/api/manipulatives/boards/${encodeURIComponent(b.dataset.del)}/delete`, { method: 'POST', body: {} }); STATE.boards = STATE.boards.filter(x => x.id !== b.dataset.del); drawBoards(); }
-    catch (e) { toast(e.message, { bad: true }); }
+  const { templates, recent } = boardRows(), all = [...templates, ...recent];
+  const row = (r, i) => {
+    const x = toolOf(r.tool);
+    const ico = r.type === 'room' ? `<span class="mp-ico sm">${iconHtml('📡', { size: 28 })}</span>` : `<span class="mp-ico sm" style="--tc:${x ? x.color : '#888'}">${toolIconHtml(r.tool, { size: 28, lazy: true })}</span>`;
+    const tags = `${r.live ? ` <span class="mp-tag good">${esc(t('js.manip.boards.live'))}</span>` : ''}${r.isNew ? ` <span class="mp-tag hot">${esc(t('js.manip.boards.new'))}</span>` : ''}`;
+    return `<li class="mp-brow" data-i="${i}">${ico}<span class="mp-btx"><span class="mp-bname"><button type="button" class="mp-blink" data-open="${i}">${esc(r.title)}</button>${tags}</span><span class="small muted">${esc(r.sub)}</span></span>
+      <span class="mp-bmore"><button type="button" class="mp-more" data-more="${i}" aria-haspopup="menu" aria-expanded="false" aria-label="${esc(t('js.manip.boards.more', { title: r.title }))}">⋯</button><span class="mp-bmenu panel" role="menu" hidden>${menuItems(r)}</span></span></li>`;
   };
+  let i = 0;
+  const group = (list, title, sub) => (list.length ? `<h3 class="mp-group">${esc(title)} <span class="small muted">· ${esc(sub)}</span></h3><ul class="plain mp-blist">${list.map(r => row(r, i++)).join('')}</ul>` : '');
+  el.innerHTML = all.length ? group(templates, t('js.manip.boards.templates'), t('js.manip.boards.templatesSub')) + group(recent, t('js.manip.boards.recent'), t('js.manip.boards.recentSub'))
+    : `<p class="small muted">${esc(t('js.manip.boards.none'))}</p>`;
+  const closeMenus = () => { for (const m of el.querySelectorAll('.mp-bmenu')) m.hidden = true; for (const b of el.querySelectorAll('.mp-more')) b.setAttribute('aria-expanded', 'false'); };
+  for (const b of el.querySelectorAll('[data-open]')) b.onclick = () => { const r = all[+b.dataset.open]; location.hash = r.type === 'room' ? `live/${r.id}` : `board/${r.id}`; };
+  for (const b of el.querySelectorAll('[data-more]')) b.onclick = e => {
+    e.stopPropagation();
+    const m = b.nextElementSibling, open = m.hidden; closeMenus();
+    if (open) { m.hidden = false; b.setAttribute('aria-expanded', 'true'); m.querySelector('[role="menuitem"]')?.focus(); }
+  };
+  for (const m of el.querySelectorAll('.mp-bmenu')) m.onkeydown = e => {
+    const items = [...m.querySelectorAll('[role="menuitem"]')], k = items.indexOf(document.activeElement);
+    if (e.key === 'Escape') { closeMenus(); m.previousElementSibling.focus(); }
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); items[(k + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length]?.focus(); }
+  };
+  for (const b of el.querySelectorAll('[data-act]')) b.onclick = e => { e.stopPropagation(); closeMenus(); const li = b.closest('.mp-brow'); boardAction(all[+li.dataset.i], b.dataset.act, li); };
+  if (!drawBoards.bound) { drawBoards.bound = true; document.addEventListener('click', e => { if (!e.target.closest('.mp-bmore')) for (const m of document.querySelectorAll('.mp-bmenu')) { m.hidden = true; m.previousElementSibling?.setAttribute('aria-expanded', 'false'); } }); }
+}
+async function boardAction(r, act, li) {
+  const base = r.type === 'room' ? `/api/manipulatives/live/${encodeURIComponent(r.id)}` : `/api/manipulatives/boards/${encodeURIComponent(r.id)}`;
+  try {
+    if (act === 'rename') return renameRow(r, li, base);
+    if (act === 'delete') {
+      if (!window.confirm(t(r.type === 'room' ? 'js.manip.boards.deleteRoom' : 'js.manip.boards.deleteConfirm', { title: r.title }))) return;
+      await api(`${base}/delete`, { method: 'POST', body: {} });
+    } else if (act === 'duplicate') {
+      await api(`${base}/duplicate`, { method: 'POST', body: {} });
+    } else if (act === 'reopen') {
+      await api(`${base}/reopen`, { method: 'POST', body: {} }); await loadState2(); location.hash = `live/${r.id}`; return;
+    } else if (act === 'start') {
+      if (STATE.classes.length === 1) {
+        const s = await api('/api/manipulatives/live', { method: 'POST', body: { classId: STATE.classes[0].id, boardId: r.id } });
+        await loadState2(); location.hash = `live/${s.session.id}`; return;
+      }
+      // Several classes: the room form above, with this template picked; the teacher picks the class.
+      const f = document.getElementById('mp-host'); if (!f) return;
+      f.elements.boardId.value = r.id; f.scrollIntoView({ behavior: 'smooth', block: 'center' }); f.elements.classId.focus(); toast(t('js.manip.boards.pickClass'));
+      return;
+    }
+    await loadState2(); drawBoards();
+  } catch (e) { toast(e.message, { bad: true }); }
+}
+/** Rename in place: the title becomes a text box (Enter saves, Escape puts it back). */
+function renameRow(r, li, base) {
+  const name = li.querySelector('.mp-bname');
+  name.innerHTML = `<form class="row mp-rename"><label class="sr-only" for="mp-rn">${esc(t('js.manip.boards.rename'))}</label><input id="mp-rn" class="input input-sm" maxlength="80" value="${esc(r.title)}"></form>`;
+  const f = name.querySelector('form'), input = f.querySelector('input'); input.select(); input.focus();
+  let done = false;
+  const save = async () => {
+    if (done) return; done = true;
+    const v = input.value.trim();
+    if (v && v !== r.title) { try { await api(`${base}/rename`, { method: 'POST', body: { title: v } }); await loadState2(); } catch (e) { toast(e.message, { bad: true }); } }
+    drawBoards();
+  };
+  f.onsubmit = e => { e.preventDefault(); save(); };
+  input.onblur = save;
+  input.onkeydown = e => { if (e.key === 'Escape') { done = true; drawBoards(); } };
 }
 function studentHome() {
   const list = STATE.sessions;
@@ -1660,10 +1916,27 @@ function tasksView() {
 }
 
 // ================================================================ start
-async function loadState2() { try { STATE = { boards: [], classes: [], sessions: [], ...(await api('/api/manipulatives/state')) }; } catch { /* keep what we have */ } }
+async function loadState2() {
+  try { STATE = { boards: [], recent: [], classes: [], sessions: [], draft: null, eta: null, ...(await api('/api/manipulatives/state')) }; } catch { return; /* keep what we have */ }
+  if (HOST) setJob(STATE.draft, STATE.eta);
+}
+/** A saved board by id (#board/<id>): a recent board goes on saving into itself; a template opens as a fresh copy. */
+let pendingOpen = null;
+async function openSaved(id) {
+  clear(); V = null;
+  try {
+    const b = pendingOpen && pendingOpen.id === id ? pendingOpen : (await api(`/api/manipulatives/boards/${encodeURIComponent(id)}`)).board;
+    pendingOpen = null;
+    if (!toolOf(b.tool)) return home();
+    openTool(b.tool, { restore: b.state, boardId: b.fresh ? null : b.id, title: b.title });
+    if (b.fresh) history.replaceState(null, '', `#${b.tool}`);
+  } catch (e) { toast(e.message, { bad: true }); history.replaceState(null, '', '#'); await loadState2(); home(); }
+}
 async function route() {
   const h = decodeURIComponent(location.hash.replace(/^#/, ''));
+  if (V) autosave({ keepalive: true });   // leaving a board: its last change is saved
   ROOM.close();
+  if (HOST && h.startsWith('board/')) return openSaved(h.slice(6));
   if (h.startsWith('join/')) return liveRoom(h.slice(5), true);
   if (h.startsWith('live/') || h.startsWith('session/')) return liveRoom(h.slice(h.indexOf('/') + 1), false);
   if (h === 'tasks' && HOST) return tasksView();
@@ -1672,4 +1945,5 @@ async function route() {
   home();
 }
 window.addEventListener('hashchange', route);
+window.addEventListener('pagehide', () => { if (V) autosave({ keepalive: true }); });
 loadState2().then(route);

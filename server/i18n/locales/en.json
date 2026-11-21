@@ -3373,14 +3373,31 @@
         "noBoard": "An empty board"
       },
       "boards": {
-        "title": "Your saved boards",
-        "none": "Save a board from any tool and it shows up here with its share code.",
-        "open": "Open",
+        "title": "My boards",
+        "none": "Boards you work on save themselves and show up here. Use \"Save as template\" on a board to keep a fresh starting point.",
         "delete": "Delete",
-        "deleteOne": "Delete board {code}"
+        "templates": "Templates",
+        "templatesSub": "open a fresh copy every time",
+        "recent": "Recent boards",
+        "recentSub": "saved as you work",
+        "code": "code {code}",
+        "edited": "edited {when}",
+        "aiDraft": "AI draft, finished {when}",
+        "roomLive": "Live room · {klass} · {n, plural, one {# student} other {# students}}",
+        "roomEnded": "Live room · {klass} · ended {when} · {n, plural, one {# student’s square kept} other {# students’ squares kept}}",
+        "live": "Live",
+        "new": "New",
+        "more": "More for {title}",
+        "start": "Start a live room with it",
+        "rename": "Rename",
+        "duplicate": "Duplicate",
+        "reopen": "Reopen room",
+        "deleteConfirm": "Delete \"{title}\"? This can’t be undone.",
+        "deleteRoom": "Delete the room \"{title}\" and every student’s square in it? This can’t be undone.",
+        "pickClass": "Pick the class for this room, then start it."
       },
       "share": {
-        "save": "Save and get a code",
+        "save": "Save as template",
         "saved1": "Saved. Share code {code}",
         "open": "Open a code",
         "codePh": "ABCD2345",
@@ -3458,7 +3475,53 @@
         "noAi": "(The AI is resting, so this is a simple starting board.)",
         "doneSet": "\"{title}\" is on the board: {n} problems and {steps} steps.",
         "capped": "At most {max} problems fit on one board, so it has {max}.",
-        "hint": "You choose what and how many (up to 12). The app checks every problem and lays the board out."
+        "hint": "You choose what and how many (up to 12). The app checks every problem and lays the board out.",
+        "progress": "Drafting your board",
+        "drafting": "Drafting…",
+        "quote": "“{brief}”",
+        "leave": "You can close this page or refresh. The draft keeps going on our server and will be in My boards when it’s done.",
+        "eta": {
+          "under": "Usually less than a minute",
+          "about": "{n, plural, one {Usually about a minute} other {Usually about # minutes}}",
+          "guessUnder": "Often less than a minute",
+          "guess": "{n, plural, one {About a minute} other {About # minutes}}",
+          "longer": "Taking a bit longer than usual",
+          "soFar": "{time} so far"
+        },
+        "step": {
+          "check": {
+            "now": "Checking your words for students’ names",
+            "done": "Checked your words for students’ names"
+          },
+          "ai": {
+            "now": "The AI is choosing the problems",
+            "done": "The AI chose the problems"
+          },
+          "build": {
+            "now": "Laying out the board and the steps",
+            "done": "Laid out the board and the steps"
+          },
+          "save": {
+            "now": "Saving it to My boards",
+            "done": "Saved to My boards"
+          }
+        },
+        "away": "Your AI draft “{title}” finished while you were away.",
+        "awayN": "{n, plural, one {# problem} other {# problems}} and {steps, plural, one {# step} other {# steps}}.",
+        "inBoards": "It’s saved in My boards.",
+        "use": "Put it on my board",
+        "dismiss": "Dismiss",
+        "failedAway": "Your AI draft for {tool} couldn’t be finished.",
+        "failed": "The draft couldn’t be finished.",
+        "retry": "Try again",
+        "err": {
+          "aiFailed": "The AI couldn’t draft it just now. Your words are still here: try again in a moment.",
+          "restart": "Our server restarted while it was drafting. Your words are still here: try again.",
+          "names": "Leave students’ names out of the description: names never go to the AI.",
+          "words": "Some words in the description aren’t allowed. Change them and try again.",
+          "personal": "Leave out phone numbers, emails, links and codes, then try again.",
+          "other": "Something went wrong. Try again in a moment."
+        }
       },
       "tasks": {
         "boxTitle": "Try this: ready-made tasks",
@@ -3547,6 +3610,15 @@
         "lockedHint": "Locked. Hold it to unlock.",
         "pieceLocked": "Piece {label}, locked",
         "objLocked": "{name}, locked"
+      },
+      "save": {
+        "name": "Template name",
+        "what": "A template is a fresh starting point: opening it, or starting a room with it, always gives a clean copy. This board keeps saving as you work.",
+        "go": "Save",
+        "cancel": "Cancel",
+        "done": "Saved as template \"{title}\". Share code {code}",
+        "savedAt": "Saved {time}",
+        "notYet": "Not saved yet. Trying again…"
       }
     },
     "manip-room": {
@@ -3647,7 +3719,9 @@
       "checksTitle": "Answers checked",
       "checkShort": "Check",
       "actionsFor": "Actions for {label}",
-      "teacherLock": "Your teacher locked this."
+      "teacherLock": "Your teacher locked this.",
+      "reopen": "Reopen room",
+      "reopened": "The room is open again. Students go back to their own squares."
     }
   },
   "favorites": {
@@ -12627,7 +12701,9 @@
       "aiFailed": "The AI couldn't draft that lesson just now. Try again in a moment.",
       "slow": "That's a lot of hands. Wait a moment and try again.",
       "checkSlow": "You've checked a lot. Wait a minute, look again, then check.",
-      "noAnswers": "There are no answers to check on this board."
+      "noAnswers": "There are no answers to check on this board.",
+      "noTitle": "Type a name first.",
+      "notEnded": "End the room before you delete it."
     }
   }
 }
