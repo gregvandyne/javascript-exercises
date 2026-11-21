@@ -10089,3 +10089,54 @@ Oomba, like Figures' "My worksheets" and the manipulatives' saved boards.
   the page's message checks) and tests/unit/game-my-sets-browser.test.js (each game in Chromium: the list, Open and save
   under the same code, Print, Copy link, Rename, Duplicate, Delete with its confirm, the empty list, and no button for a
   student).
+
+## Figures 1.3.0: biology (21 Nov 2026)
+
+- **A new version, like 1.2.0.** Oomba Figures 1.3.0 is a new version folder: the core and six packs, `bio` new
+  (`packs/bio.js`), the micropipette a new `reading` type in the measure pack. 1.0.0, 1.1.0 and 1.2.0 have shipped and
+  stay byte for byte (the lock, and git at the 1.2.0 release); every catalog figure 1.2.0 drew (each preset and two
+  generator figures per generator, in every mode) draws the same bytes in 1.3.0, and checks and solves the same
+  (`tests/unit/figures-v130.test.js`). New builds, the Builder's tags and the Figures product pin 1.3.0; the CSP, the
+  scanner and the screenshot worker list the seven new files. Minified with the pinned esbuild; each ported file keeps
+  its Apache 4(b) note as a legal comment.
+- **What was ported, and what is Oomba's own.** Only the models and data (`figures/src/ported/`: growth, lotka, rates,
+  punnett, pedigree, dna, gel, osmosis, pipette); reading the data, the checks with their "cannot be drawn" reasons, the
+  answers (`OF.solve`), hide, print and the drawing are Oomba's (`ecology.js`, `rates.js`, `genetics.js`,
+  `molecular.js`, `osmosis.js`, `pipette.js`). The source's math input field is not used: a Punnett parent is a list of
+  allele tokens (`["C^R", "C^W"]`), a pedigree family is its one-line form or a seed, a DNA strand is a string of bases.
+- **Print needs no color.** Every bio figure prints in grays only (a test reads every hex color in the print SVG):
+  curves are solid, dashed and dotted with a key; bases are always their letters (the screen tints are extra); pedigree
+  symbols are filled black with a dot for carriers; osmosis solutes are circles, squares and triangles; the
+  micropipette's decimal wheels are shaded gray under the decimal line.
+- **Figures product.** Biology moves from Coming soon to an open tab with its nine kinds (and the readings, listed under
+  Physics, Chemistry and Biology); Economics stays Coming soon. Each kind has presets, options, hide parts, grades and
+  one figure question generator whose answer is its OF.solve value (`tests/unit/_bio-gens.js`, the same in
+  docs/figures-api.md). Names and descriptions in all 12 site languages. The template drafter's keywords know the
+  biology words. Builder trigger words in 12 languages, checked against look-alikes; a kit topic stays a Canvas
+  activity (plan.js unchanged).
+
+| Source generator | Status | Oomba | Notes |
+| --- | --- | --- | --- |
+| Population growth | Ported | `populationGrowth` (new) | Exponential, logistic, both, overshoot, crash; size, rate or per capita over time or against N; K, inflection, phases, census. The source's fitted axes and settings are Oomba's own axes. |
+| Punnett square | Ported | `punnett` (new) | Monohybrid, dihybrid, X-linked; complete, incomplete, codominance; ratios, percents, fractions computed. Alleles as tokens, not typed text. |
+| Pedigree | Ported | `pedigree` (new) | Seeded random family for a mode (kept only when a student can tell the mode); a family given with a mode is checked by genotype elimination; proved genotypes. Hand editing and the classic families list are not ported (a classic family is a preset). |
+| Predator-prey | Ported | `predatorPrey` (new) | Lotka-Volterra from averages, start and period; one or two axes; peaks. The noisy census is not ported. |
+| Enzyme activity | Ported | `enzymeActivity` (new) | Temperature, pH, substrate with inhibitors; six named enzymes or your own. |
+| DNA / protein synthesis | Ported | `proteinSynthesis` (new) | Template, coding, mRNA, tRNA, amino rows; seeded blanks; letters always. Deliberate mistakes and the codon chart are not ported. |
+| Photosynthesis rate | Ported | `photosynthesis` (new) | Light (or lamp distance), CO₂, temperature; net rate. The closed chamber's CO₂ and O₂ over time are not ported. |
+| Osmosis | Ported | `osmosis` (new) | Blood cell, plant cell, split beaker, U-tube, dialysis bag; start, result or both; dots to scale. The shuffled three-up is not ported. |
+| Gel electrophoresis | Ported | `gel` (new) | Bands from log(size) to scale with crowding past the range; three real ladders; cm ruler; glow look on screen. |
+| Micropipette reading | Extended | `reading` type `micropipette` | P2 to P1000, digits, decimal line, parts. |
+| Cell diagram | Skipped | | Turned off on the source's live site; owner decision. |
+| Cell division | Skipped | | Turned off on the source's live site; owner decision. |
+| Food web | Skipped | | Turned off on the source's live site (and it bundles organism pictures); owner decision. |
+| Microscope field of view | Skipped | | Turned off on the source's live site; owner decision. |
+
+- **Judgment calls.** A pedigree's `mode` also takes its place in the list (0 to 4) so a generator can deal one; its
+  generator is a figure.number question ("write 1, 2 or 3") because the Figures product's worksheets store number
+  answers only. The pedigree's title never names its mode. A U-tube is drawn as a wide U, schematic but with its levels
+  to scale.
+- **Tests.** figures-v130 (frozen versions, latest pin, byte-identical 1.2.0 figures), figures-bio-rates,
+  figures-bio-genetics, figures-bio-molecular (truthful numbers, cannot-be-drawn, print, hide, languages, the
+  generators), figures-bio-words (12 languages and look-alikes), figures-scrub (the source project named only in its
+  attribution record and license copy), and the Biology tab and its editors in Chromium (figures-browser).
