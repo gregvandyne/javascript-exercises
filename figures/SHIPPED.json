@@ -136,6 +136,46 @@
   "oomba-figures/1.3.0/packs/physics.js": {
    "sha256": "003ff19f2162fb341f1b0899cb5520a930ed39bf1d347ebcd15f4c800563cce9",
    "sri": "sha384-VIk/7nWJcmoJ3dbbsk6jHZWTvHgDMfyQYq50kIUHfz1zIu06H8PBM38SBVWvJEpS"
+  },
+  "oomba-figures/1.4.0/LICENSE": {
+   "sha256": "a222c2b3e67474e441a6f0e41413985087c96b45488fe32b49a586cdc777dd6f",
+   "sri": "sha384-GVE87+94tY+GH6kPj/5F4mVZ3fUo64AudYGl24gX1sN2WeTkyxTEScA3xssYqkY2"
+  },
+  "oomba-figures/1.4.0/manifest.json": {
+   "sha256": "e70a79a32f906ea8529f5f7970364b93f35b23a9b34d093782118d40ec1f14b0",
+   "sri": "sha384-W69W4+0NKuLml2rXUsmEEJyONb6rHgEzXEc/sTJhDqOoFr6DEDuzSxKH8fI1xmi8"
+  },
+  "oomba-figures/1.4.0/oomba-figures.js": {
+   "sha256": "a3dfced598a21e60e00febb7bd0570c9f68c4b0b79f4c3483209e3859a89eccd",
+   "sri": "sha384-po/EtmRhGlZVSJPe+sUX4hc5ydM1Nmsb8KqduWcjdOEIQtWlLIUGF2O9Z0/CzA3j"
+  },
+  "oomba-figures/1.4.0/packs/bio.js": {
+   "sha256": "0a724e6c8fd19e825cc88662bb7deeabd94dbf520f759e3e10f89a687888b77a",
+   "sri": "sha384-L5KMntU3k3SSOM+PHPIi1o0IWJELIdJsoy0AynXFL6KLCXV0PzObY+WcBlfeZCFZ"
+  },
+  "oomba-figures/1.4.0/packs/chem.js": {
+   "sha256": "c291aab7b66518e6969a9f9d761852868f1b307578355f19ebd6a62b88dd135d",
+   "sri": "sha384-bodGR8nehZoI6tpayWu8pkqGftq8qghsKCfZLG2QWJhisidZiXPolvgKjU5gzvo2"
+  },
+  "oomba-figures/1.4.0/packs/data.js": {
+   "sha256": "23f1659a4d638f0d5422996aa6f38823516cda95fe635bd855a45d38892342b3",
+   "sri": "sha384-mzvK2hEmhKAbibwbOQnKVz6bRhLcMzNkAEVLfSBL4Ac4Id/zEq5AyUrkRAgde+gd"
+  },
+  "oomba-figures/1.4.0/packs/econ.js": {
+   "sha256": "cfbe2a3637f6b8d4c7489ec6f1ec46d465322d67d953e977a14553ad80bdf720",
+   "sri": "sha384-ajjAIOSvStKYwCgYyReaEl8tvSbzYDw2vXR8sFiPymzTuGpFWMP6urV03hseHnD7"
+  },
+  "oomba-figures/1.4.0/packs/math.js": {
+   "sha256": "cd67d259763c21ed21b2d2603987e58a726b86044301c6c9d05590a1dd8f3021",
+   "sri": "sha384-1jXbPnHLO0hm3KSlrrqUfu6R1mY1zt/5DJ59nLdvm3q8VKuTESI5HfYhNEgb5DLk"
+  },
+  "oomba-figures/1.4.0/packs/measure.js": {
+   "sha256": "4e26c6fcb6e21d9ba2b4967a8f09a8d5fcaef8d708f80d10cfcbbcd063dd1e43",
+   "sri": "sha384-L1EsjLf9wns/XVHRW5T0+54/XDwcbdFrz+k5FdFYUa5tXedroRvtTC2LEZFffgDp"
+  },
+  "oomba-figures/1.4.0/packs/physics.js": {
+   "sha256": "497a1caae0bbc6794b9d3cdb8a1b9f3e35751380a74d3b56a181e9f96230c758",
+   "sri": "sha384-dB0CF/lJwhLJ3bah93pnu9Ux3pV0EfXICJJf5wAmAKgpJcmvQuv8IBzMzesVmxou"
   }
  }
 }

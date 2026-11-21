@@ -1,0 +1,160 @@
+{
+  "name": "oomba-figures",
+  "version": "1.4.0",
+  "license": "MIT AND Apache-2.0",
+  "source": "figures/src (this repository; figures/src/ported is Apache-2.0, docs/third-party.md)",
+  "core": {
+    "file": "oomba-figures.js",
+    "kinds": [
+      "grid"
+    ]
+  },
+  "packs": {
+    "math": {
+      "file": "packs/math.js",
+      "kinds": [
+        "numberLine",
+        "triangle",
+        "rectangle",
+        "parallelogram",
+        "trapezoid",
+        "kite",
+        "regularPolygon",
+        "angles",
+        "parallelLines",
+        "segmentAddition",
+        "circle",
+        "compositeShape",
+        "prism",
+        "cylinder",
+        "pyramid",
+        "cone",
+        "sphere",
+        "net",
+        "mappingDiagram"
+      ]
+    },
+    "data": {
+      "file": "packs/data.js",
+      "kinds": [
+        "barGraph",
+        "dotPlot",
+        "histogram",
+        "boxPlot",
+        "scatterPlot",
+        "stemAndLeaf",
+        "pieChart",
+        "cumulativeFrequency",
+        "normalCurve",
+        "treeDiagram",
+        "vennDiagram",
+        "twoWayTable",
+        "tableOfValues"
+      ]
+    },
+    "physics": {
+      "file": "packs/physics.js",
+      "kinds": [
+        "freeBody",
+        "vectors",
+        "inclinedPlane",
+        "pulley",
+        "rays",
+        "circuit",
+        "motionGraph",
+        "motionMap",
+        "projectile",
+        "waves"
+      ]
+    },
+    "chem": {
+      "file": "packs/chem.js",
+      "kinds": [
+        "halfLife",
+        "titration",
+        "bohr",
+        "orbitals",
+        "lewis",
+        "massSpectrum",
+        "heatingCurve",
+        "energyProfile",
+        "nuclide",
+        "lineSpectrum",
+        "photoelectron",
+        "particles",
+        "dotCross"
+      ]
+    },
+    "bio": {
+      "file": "packs/bio.js",
+      "kinds": [
+        "populationGrowth",
+        "predatorPrey",
+        "enzymeActivity",
+        "photosynthesis",
+        "punnett",
+        "pedigree",
+        "proteinSynthesis",
+        "gel",
+        "osmosis"
+      ]
+    },
+    "econ": {
+      "file": "packs/econ.js",
+      "kinds": [
+        "supplyDemand",
+        "moneyMarket",
+        "businessCycle",
+        "phillipsCurve",
+        "productionPossibilities",
+        "adAs",
+        "costCurves"
+      ]
+    },
+    "measure": {
+      "file": "packs/measure.js",
+      "kinds": [
+        "reading",
+        "protractor"
+      ]
+    }
+  },
+  "files": {
+    "oomba-figures.js": {
+      "sha256": "a3dfced598a21e60e00febb7bd0570c9f68c4b0b79f4c3483209e3859a89eccd",
+      "sri": "sha384-po/EtmRhGlZVSJPe+sUX4hc5ydM1Nmsb8KqduWcjdOEIQtWlLIUGF2O9Z0/CzA3j"
+    },
+    "packs/math.js": {
+      "sha256": "cd67d259763c21ed21b2d2603987e58a726b86044301c6c9d05590a1dd8f3021",
+      "sri": "sha384-1jXbPnHLO0hm3KSlrrqUfu6R1mY1zt/5DJ59nLdvm3q8VKuTESI5HfYhNEgb5DLk"
+    },
+    "packs/data.js": {
+      "sha256": "23f1659a4d638f0d5422996aa6f38823516cda95fe635bd855a45d38892342b3",
+      "sri": "sha384-mzvK2hEmhKAbibwbOQnKVz6bRhLcMzNkAEVLfSBL4Ac4Id/zEq5AyUrkRAgde+gd"
+    },
+    "packs/physics.js": {
+      "sha256": "497a1caae0bbc6794b9d3cdb8a1b9f3e35751380a74d3b56a181e9f96230c758",
+      "sri": "sha384-dB0CF/lJwhLJ3bah93pnu9Ux3pV0EfXICJJf5wAmAKgpJcmvQuv8IBzMzesVmxou"
+    },
+    "packs/chem.js": {
+      "sha256": "c291aab7b66518e6969a9f9d761852868f1b307578355f19ebd6a62b88dd135d",
+      "sri": "sha384-bodGR8nehZoI6tpayWu8pkqGftq8qghsKCfZLG2QWJhisidZiXPolvgKjU5gzvo2"
+    },
+    "packs/bio.js": {
+      "sha256": "0a724e6c8fd19e825cc88662bb7deeabd94dbf520f759e3e10f89a687888b77a",
+      "sri": "sha384-L5KMntU3k3SSOM+PHPIi1o0IWJELIdJsoy0AynXFL6KLCXV0PzObY+WcBlfeZCFZ"
+    },
+    "packs/econ.js": {
+      "sha256": "cfbe2a3637f6b8d4c7489ec6f1ec46d465322d67d953e977a14553ad80bdf720",
+      "sri": "sha384-ajjAIOSvStKYwCgYyReaEl8tvSbzYDw2vXR8sFiPymzTuGpFWMP6urV03hseHnD7"
+    },
+    "packs/measure.js": {
+      "sha256": "4e26c6fcb6e21d9ba2b4967a8f09a8d5fcaef8d708f80d10cfcbbcd063dd1e43",
+      "sri": "sha384-L1EsjLf9wns/XVHRW5T0+54/XDwcbdFrz+k5FdFYUa5tXedroRvtTC2LEZFffgDp"
+    },
+    "LICENSE": {
+      "sha256": "a222c2b3e67474e441a6f0e41413985087c96b45488fe32b49a586cdc777dd6f",
+      "sri": "sha384-GVE87+94tY+GH6kPj/5F4mVZ3fUo64AudYGl24gX1sN2WeTkyxTEScA3xssYqkY2"
+    }
+  }
+}

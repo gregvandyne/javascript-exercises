@@ -38,21 +38,16 @@ test('1.0.0, 1.1.0 and 1.2.0 are frozen: every file is what the lock says and wh
   if (shipped) for (const [k, h] of Object.entries(shipped)) assert.deepEqual(L.FIG_LOCK.files[k], h, `${k}: its lock entry is unchanged`);
 });
 
-test('new builds pin 1.3.0: the latest version, the Builder\'s tags, the Figures product and the server\'s copy; the bio pack is its own file', () => {
-  assert.equal(version(), '1.3.0'); assert.equal(L.FIG_LATEST['oomba-figures'], '1.3.0'); assert.equal(OF.version, '1.3.0');
-  assert.match(L.figTags(), /\/vendor\/oomba-figures\/1\.3\.0\/oomba-figures\.js/);
-  assert.match(L.figTags(), /\/vendor\/oomba-figures\/1\.3\.0\/packs\/bio\.js/);
-  assert.doesNotMatch(L.figTags(), /\/1\.2\.0\//);
-  assert.equal(F.OF_VERSION, '1.3.0'); assert.equal(L.figuresKit().version, '1.3.0');
+test('1.3.0 shipped and is frozen like 1.2.0: pages pinned to it keep their own files, with the bio pack (new builds pin 1.4.0: figures-v140.test.js)', () => {
+  assert.notEqual(version(), '1.3.0'); assert.equal(L.FIG_LATEST['oomba-figures'], version()); assert.equal(F.OF_VERSION, version());
   assert.deepEqual(Object.keys(L.FIG_PACKS['1.3.0']), ['math', 'data', 'physics', 'chem', 'bio', 'measure']);
   const bio = ['populationGrowth', 'predatorPrey', 'enzymeActivity', 'photosynthesis', 'punnett', 'pedigree', 'proteinSynthesis', 'gel', 'osmosis'];
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-figures/1.3.0/manifest.json'), 'utf8')).packs.bio.kinds, bio);
-  assert.deepEqual(L.figPacksFor(['pedigree', 'reading']), ['bio', 'measure']);
-  const t = L.figTag('oomba-figures', undefined, { kinds: ['gel'] });
+  assert.deepEqual(L.figPacksFor(['pedigree', 'reading'], '1.3.0'), ['bio', 'measure']);
+  const t = L.figTag('oomba-figures', '1.3.0', { kinds: ['gel'] });
   assert.deepEqual(L.checkFigures(`<title>x</title>${t}<script>OF.draw('gel', { lanes: [{ ladder: '1kb' }, { bands: [500] }] })</script>`).issues, []);
-  // a 1.2.0 page knows nothing of biology: the kind is unknown there (no pack to add)
   assert.equal(L.figuresKit('1.2.0').kinds.includes('pedigree'), false);
-  for (const v of ['1.0.0', '1.1.0', '1.2.0']) assert.equal(L.figuresKit(v).version, v);
+  for (const v of ['1.0.0', '1.1.0', '1.2.0', '1.3.0']) assert.equal(L.figuresKit(v).version, v);
 });
 
 const OPTS = [{}, { print: true }, { hide: true }, { lang: 'de' }, { lang: 'he' }, { lang: 'ja', print: true }, { title: 'A figure', width: 300 }];
@@ -71,5 +66,5 @@ test('every figure 1.2.0 drew draws the same bytes in 1.3.0, and checks and solv
   }
   assert.ok(n > 1000, `${n} figures compared`);
   // the source and the frozen 1.3.0 file draw the same
-  for (const K of CAT.KINDS.filter(k => k.subject === 'biology')) for (const d of K.presets) assert.equal(L.figuresKit('1.3.0').svg(K.id, d, { print: true }), OF.svg(K.id, d, { print: true }), K.id);
+  for (const K of CAT.KINDS.filter(k => k.subject === 'biology')) for (const d of K.presets) assert.equal(L.figuresKit('1.3.0').svg(K.id, d, { print: true }), L.figuresKit('1.4.0').svg(K.id, d, { print: true }), K.id);
 });

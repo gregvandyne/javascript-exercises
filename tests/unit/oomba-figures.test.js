@@ -69,6 +69,9 @@ const SAMPLES = {
   populationGrowth: { model: 'logistic', n0: 20, r: 0.5, k: 1000 }, predatorPrey: { pair: 'hare-lynx' }, enzymeActivity: { graph: 'pH', curves: [{ enzyme: 'pepsin' }] },
   photosynthesis: { graph: 'co2', curves: [{ light: 60, temp: 25 }] }, punnett: { parents: [['T', 't'], ['T', 't']] }, pedigree: { mode: 'ar', seed: 7 },
   proteinSynthesis: { coding: 'ATGGCCTAA' }, gel: { lanes: [{ ladder: '100bp' }, { bands: [450] }] }, osmosis: { scene: 'plant', solutes: [{ inside: 0.3, outside: 0.6 }] },
+  // 1.4.0 economics (tests/unit/figures-econ-*.test.js)
+  supplyDemand: { shift: { demand: 'increase' } }, moneyMarket: { shift: { supply: 'increase' } }, businessCycle: { cycles: 2 }, phillipsCurve: { movement: 'along' },
+  productionPossibilities: { points: [{ name: 'A', at: 0.5 }] }, adAs: { start: 'recession' }, costCurves: { market: 'perfect' },
 };
 
 test('every kind: plain data in, one accessible <svg> out, no problems for good data', () => {
@@ -233,7 +236,7 @@ test('the shipped oomba-figures.js and its packs are a fresh build of figures/sr
   assert.equal(F.version, v);
   assert.equal(F.svg('bohr', { element: 'Na' }), OF.svg('bohr', { element: 'Na' }), 'the frozen file draws what the source draws');
 });
-test('the latest version (1.3.0; 1.1.0 was the first) is minified, the core and each pack: no comments but the legal ones (each header, and each ported file\'s Apache 2.0 note, in the file it is in), and smaller', () => {
+test('the latest version (1.4.0; 1.1.0 was the first) is minified, the core and each pack: no comments but the legal ones (each header, and each ported file\'s Apache 2.0 note, in the file it is in), and smaller', () => {
   const ported = fs.readdirSync(path.join(ROOT, 'figures/src/ported')).filter(f => f.endsWith('.js')), v = version();
   let notes = 0;
   for (const part of Object.keys(PARTS)) {
