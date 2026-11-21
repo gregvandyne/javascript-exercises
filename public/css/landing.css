@@ -117,6 +117,8 @@ main{position:relative;z-index:1}
 .lp-btn-ghost:active{transform:translateY(2px)}
 .lp-btn-spark{background:var(--spark);color:#141414;box-shadow:0 4px 0 #C99A00}
 .lp-btn-spark:hover{background:#FFDB66}
+/* Phones, where the host button is full width: the words sit in the true center and the icon hangs to their left (28px icon + 8px gap). */
+@media (max-width:520px){.lp-btn[data-cta="host"]>.fx{margin-left:-36px}}
 .lp-btn-spark:active{transform:translateY(3px);box-shadow:0 1px 0 #C99A00}
 .lp-arrow{transition:transform .2s ease}
 .lp-btn:hover .lp-arrow:not(.flip),.lp-more:hover .lp-arrow:not(.flip){transform:translateX(3px)}
