@@ -1140,6 +1140,28 @@ export const MIGRATIONS = [
   // Divide and Algebra Builder"): what the teacher calls it in their list. '' until they name it (the list then shows a
   // label made from the set). Only its owner ever sees it; it passes the site's text filter.
   ['0097_game_sets_title', "ALTER TABLE game_sets ADD COLUMN title TEXT NOT NULL DEFAULT '';"],
+  // Manipulatives saving (docs/decisions.md "Virtual math manipulatives: saving and AI drafts"). manip_drafts: an AI
+  // draft as a server job (services/manip-drafts.js, the Builder's pattern): status queued | running | interrupted |
+  // done | failed, at most one unfinished per teacher (the unique index), step (the progress card's row) and steps (when
+  // each row started, ms after the start, JSON), the request (the teacher's checked words, JSON), the result's summary
+  // (JSON) and the board it was saved as (board_id). seen_at: the teacher saw how it ended. manip_boards.kind: 'template'
+  // (a saved board with a share code: every board saved before this) or 'recent' (saved as the teacher works);
+  // updated_at and opened_at for "Recent boards" and their 60 days. manip_sessions.opened_at: when the room was started
+  // or last reopened (its 12 hours count from there).
+  ['0098_manipulatives_saving', `
+    CREATE TABLE IF NOT EXISTS manip_drafts (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      tool TEXT NOT NULL, request TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'queued', step INTEGER NOT NULL DEFAULT 0,
+      steps TEXT NOT NULL DEFAULT '[]', result TEXT, error TEXT, board_id TEXT, attempt INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL, started_at INTEGER, ended_at INTEGER, seen_at INTEGER);
+    CREATE UNIQUE INDEX IF NOT EXISTS manip_drafts_one_live ON manip_drafts(owner_id) WHERE status IN ('queued','running','interrupted');
+    CREATE INDEX IF NOT EXISTS idx_manip_drafts_owner ON manip_drafts(owner_id, created_at);
+    ALTER TABLE manip_boards ADD COLUMN kind TEXT NOT NULL DEFAULT 'template';
+    ALTER TABLE manip_boards ADD COLUMN updated_at INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE manip_boards ADD COLUMN opened_at INTEGER NOT NULL DEFAULT 0;
+    UPDATE manip_boards SET updated_at=created_at, opened_at=created_at;
+    CREATE INDEX IF NOT EXISTS idx_manip_boards_kind ON manip_boards(owner_id, kind);
+    ALTER TABLE manip_sessions ADD COLUMN opened_at INTEGER NOT NULL DEFAULT 0;
+    UPDATE manip_sessions SET opened_at=created_at;`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

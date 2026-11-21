@@ -3352,11 +3352,96 @@
         "resize": "Arrastra para cambiar el tamaño de este cuadro",
         "smaller": "Texto más pequeño",
         "bigger": "Texto más grande"
+      },
+      "boards": {
+        "title": "Mis pizarras",
+        "none": "Las pizarras en las que trabajas se guardan solas y aparecen aquí. Usa «Guardar como plantilla» para tener un punto de partida limpio.",
+        "templates": "Plantillas",
+        "templatesSub": "abre una copia nueva cada vez",
+        "recent": "Pizarras recientes",
+        "recentSub": "guardadas mientras trabajas",
+        "code": "código {code}",
+        "edited": "editada {when}",
+        "aiDraft": "Borrador de IA, listo {when}",
+        "roomLive": "Sala en vivo · {klass} · {n, plural, one {# estudiante} other {# estudiantes}}",
+        "roomEnded": "Sala en vivo · {klass} · terminó {when} · {n, plural, one {# cuadro guardado} other {# cuadros guardados}}",
+        "live": "En vivo",
+        "new": "Nuevo",
+        "more": "Más opciones para {title}",
+        "start": "Abrir una sala en vivo con ella",
+        "rename": "Cambiar nombre",
+        "duplicate": "Duplicar",
+        "reopen": "Reabrir la sala",
+        "deleteConfirm": "¿Borrar «{title}»? No se puede deshacer.",
+        "deleteRoom": "¿Borrar la sala «{title}» y el cuadro de cada estudiante? No se puede deshacer.",
+        "pickClass": "Elige la clase para esta sala y luego ábrela."
+      },
+      "share": {
+        "save": "Guardar como plantilla"
+      },
+      "draft": {
+        "progress": "Preparando tu pizarra",
+        "drafting": "Preparando…",
+        "quote": "«{brief}»",
+        "leave": "Puedes cerrar esta página o recargarla. El borrador sigue en nuestro servidor y estará en Mis pizarras cuando termine.",
+        "eta": {
+          "under": "Normalmente menos de un minuto",
+          "about": "{n, plural, one {Normalmente un minuto} other {Normalmente unos # minutos}}",
+          "guessUnder": "A menudo menos de un minuto",
+          "guess": "{n, plural, one {Un minuto, más o menos} other {Unos # minutos}}",
+          "longer": "Tarda un poco más de lo normal",
+          "soFar": "{time} hasta ahora"
+        },
+        "step": {
+          "check": {
+            "now": "Revisando que tus palabras no tengan nombres de estudiantes",
+            "done": "Revisado: sin nombres de estudiantes"
+          },
+          "ai": {
+            "now": "La IA está eligiendo los problemas",
+            "done": "La IA eligió los problemas"
+          },
+          "build": {
+            "now": "Ordenando la pizarra y los pasos",
+            "done": "Pizarra y pasos ordenados"
+          },
+          "save": {
+            "now": "Guardando en Mis pizarras",
+            "done": "Guardado en Mis pizarras"
+          }
+        },
+        "away": "Tu borrador de IA «{title}» terminó mientras no estabas.",
+        "awayN": "{n, plural, one {# problema} other {# problemas}} y {steps, plural, one {# paso} other {# pasos}}.",
+        "inBoards": "Está guardado en Mis pizarras.",
+        "use": "Ponerlo en mi pizarra",
+        "dismiss": "Cerrar",
+        "failedAway": "Tu borrador de IA para {tool} no se pudo terminar.",
+        "failed": "El borrador no se pudo terminar.",
+        "retry": "Intentar de nuevo",
+        "err": {
+          "aiFailed": "La IA no pudo prepararlo ahora. Tus palabras siguen aquí: inténtalo en un momento.",
+          "restart": "Nuestro servidor se reinició mientras preparaba el borrador. Tus palabras siguen aquí: inténtalo de nuevo.",
+          "names": "No pongas nombres de estudiantes en la descripción: los nombres nunca van a la IA.",
+          "words": "Algunas palabras de la descripción no están permitidas. Cámbialas e inténtalo de nuevo.",
+          "personal": "Quita números de teléfono, correos, enlaces y códigos, e inténtalo de nuevo.",
+          "other": "Algo salió mal. Inténtalo en un momento."
+        }
+      },
+      "save": {
+        "name": "Nombre de la plantilla",
+        "what": "Una plantilla es un punto de partida limpio: al abrirla, o al abrir una sala con ella, siempre recibes una copia nueva. Esta pizarra se sigue guardando mientras trabajas.",
+        "go": "Guardar",
+        "cancel": "Cancelar",
+        "done": "Guardada como plantilla «{title}». Código {code}",
+        "savedAt": "Guardado {time}",
+        "notYet": "Aún no se guardó. Intentando de nuevo…"
       }
     },
     "manip-room": {
       "actionsFor": "Acciones para {label}",
-      "teacherLock": "Tu maestro bloqueó esto."
+      "teacherLock": "Tu maestro bloqueó esto.",
+      "reopen": "Reabrir la sala",
+      "reopened": "La sala está abierta otra vez. Cada estudiante vuelve a su propio cuadro."
     },
     "figures-editor": {
       "undo": "Deshacer",

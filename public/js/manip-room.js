@@ -273,6 +273,7 @@ async function refresh() {
   if (JSON.stringify(was.checks || {}) !== JSON.stringify(room.checks || {})) { for (const A of R.areas.values()) { if (A.key === 't') continue; const el = R.world && R.world.querySelector(`.rm-area[data-key="${CSS.escape(A.key)}"] .rm-label`); if (el) el.innerHTML = labelHtml(A); } renderMenu(); }
   if (R.role === 'student' && R.lastChecksOn !== checksOn()) { R.lastChecksOn = checksOn(); renderBar(); }
   if (was.status !== room.status || was.pushedAt !== room.pushedAt || was.areas.length !== room.areas.length || was.showWork !== room.showWork) { renderBar(); if (was.status !== room.status) { renderWorld(); renderPal(); } }
+  if (was.status !== 'active' && room.status === 'active' && !R.ws) connect();   // the teacher reopened the room
 }
 let stripTimer = null;
 /** The teacher changed their area: every square's strip (and work space) follows, a moment after the last change. */
@@ -439,7 +440,7 @@ function renderMenu() {
     ${d.total > 1 && live ? btn('rm-mi rm-switch', `role="switch" aria-checked="${!!d.pace}" data-rtool="pace"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.pace'))}`) : ''}
     ${live ? btn('rm-mi', 'data-rtool="push"', `${iconHtml('📤', { size: 18 })} ${esc(t('js.manip-room.push'))}`) : ''}
     <a class="rm-mi" href="/api/manipulatives/live/${esc(R.id)}/export.pdf" download>${iconHtml('📄', { size: 18 })} ${esc(t('js.manip-room.pdf'))}</a>
-    ${live ? btn('rm-mi bad', 'data-rtool="end"', `${iconHtml('⏹', { size: 18 })} ${esc(t('js.manip-room.end'))}`) : ''}</div>`;
+    ${live ? btn('rm-mi bad', 'data-rtool="end"', `${iconHtml('⏹', { size: 18 })} ${esc(t('js.manip-room.end'))}`) : btn('rm-mi', 'data-rtool="reopen"', `${iconHtml('🔄', { size: 18 })} ${esc(t('js.manip-room.reopen'))}`)}</div>`;
 }
 const handBtn = cls => btn(`${cls} rm-hand${handUp(R.me) ? ' on' : ''}`, `data-rtool="hand" aria-pressed="${handUp(R.me)}" aria-label="${esc(t('js.manip-room.raiseHand'))}"`, `${iconHtml('✋', { size: 18 })} <span class="rm-handt">${esc(handUp(R.me) ? t('js.manip-room.lowerHand') : t('js.manip-room.raiseHand'))}</span>`);
 const initials = name => String(name).split(/\s+/).map(w => [...w][0] || '').join('').slice(0, 2).toUpperCase() || '?';
@@ -901,6 +902,11 @@ async function toolButton(k) {
   }
   if (k === 'end') {
     try { await api(`/api/manipulatives/live/${R.id}/end`, { method: 'POST', body: {} }); toast(t('js.manip-room.endedMsg')); await refresh(); } catch (e) { toast(e.message, { bad: true }); }
+    return;
+  }
+  // An ended room runs again: the same code, every student's square as it was (services/manipulatives.js reopen).
+  if (k === 'reopen') {
+    try { await api(`/api/manipulatives/live/${R.id}/reopen`, { method: 'POST', body: {} }); R.menuOpen = false; toast(t('js.manip-room.reopened')); await refresh(); } catch (e) { toast(e.message, { bad: true }); }
     return;
   }
   if (k === 'push') return pushSheet();

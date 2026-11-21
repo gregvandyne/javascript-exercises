@@ -3353,11 +3353,96 @@
         "resize": "Trascina per cambiare la dimensione di questo riquadro",
         "smaller": "Testo più piccolo",
         "bigger": "Testo più grande"
+      },
+      "boards": {
+        "title": "Le mie lavagne",
+        "none": "Le lavagne su cui lavori si salvano da sole e appaiono qui. Usa «Salva come modello» per tenere un punto di partenza pulito.",
+        "templates": "Modelli",
+        "templatesSub": "apre ogni volta una copia nuova",
+        "recent": "Lavagne recenti",
+        "recentSub": "salvate mentre lavori",
+        "code": "codice {code}",
+        "edited": "modificata {when}",
+        "aiDraft": "Bozza IA, pronta {when}",
+        "roomLive": "Stanza dal vivo · {klass} · {n, plural, one {# studente} other {# studenti}}",
+        "roomEnded": "Stanza dal vivo · {klass} · chiusa {when} · {n, plural, one {# riquadro conservato} other {# riquadri conservati}}",
+        "live": "Dal vivo",
+        "new": "Nuova",
+        "more": "Altro per {title}",
+        "start": "Avvia una stanza dal vivo con questo",
+        "rename": "Rinomina",
+        "duplicate": "Duplica",
+        "reopen": "Riapri la stanza",
+        "deleteConfirm": "Eliminare «{title}»? Non si può annullare.",
+        "deleteRoom": "Eliminare la stanza «{title}» e il riquadro di ogni studente? Non si può annullare.",
+        "pickClass": "Scegli la classe per questa stanza, poi avviala."
+      },
+      "share": {
+        "save": "Salva come modello"
+      },
+      "draft": {
+        "progress": "Preparo la tua lavagna",
+        "drafting": "Preparazione…",
+        "quote": "«{brief}»",
+        "leave": "Puoi chiudere questa pagina o ricaricarla. La bozza continua sul nostro server e sarà in Le mie lavagne quando è pronta.",
+        "eta": {
+          "under": "Di solito meno di un minuto",
+          "about": "{n, plural, one {Di solito circa un minuto} other {Di solito circa # minuti}}",
+          "guessUnder": "Spesso meno di un minuto",
+          "guess": "{n, plural, one {Circa un minuto} other {Circa # minuti}}",
+          "longer": "Ci vuole un po’ più del solito",
+          "soFar": "{time} finora"
+        },
+        "step": {
+          "check": {
+            "now": "Controllo che le tue parole non abbiano nomi di studenti",
+            "done": "Controllato: nessun nome di studenti"
+          },
+          "ai": {
+            "now": "L’IA sta scegliendo i problemi",
+            "done": "L’IA ha scelto i problemi"
+          },
+          "build": {
+            "now": "Sistemo la lavagna e i passaggi",
+            "done": "Lavagna e passaggi sistemati"
+          },
+          "save": {
+            "now": "Salvo in Le mie lavagne",
+            "done": "Salvata in Le mie lavagne"
+          }
+        },
+        "away": "La tua bozza IA «{title}» è stata completata mentre eri via.",
+        "awayN": "{n, plural, one {# problema} other {# problemi}} e {steps, plural, one {# passaggio} other {# passaggi}}.",
+        "inBoards": "È salvata in Le mie lavagne.",
+        "use": "Mettila sulla mia lavagna",
+        "dismiss": "Chiudi",
+        "failedAway": "La tua bozza IA per {tool} non è stata completata.",
+        "failed": "La bozza non è stata completata.",
+        "retry": "Riprova",
+        "err": {
+          "aiFailed": "L’IA non è riuscita a prepararla ora. Le tue parole sono ancora qui: riprova tra un momento.",
+          "restart": "Il nostro server si è riavviato durante la preparazione. Le tue parole sono ancora qui: riprova.",
+          "names": "Togli i nomi degli studenti dalla descrizione: i nomi non vanno mai all’IA.",
+          "words": "Alcune parole della descrizione non sono permesse. Cambiale e riprova.",
+          "personal": "Togli numeri di telefono, email, link e codici, poi riprova.",
+          "other": "Qualcosa è andato storto. Riprova tra un momento."
+        }
+      },
+      "save": {
+        "name": "Nome del modello",
+        "what": "Un modello è un punto di partenza pulito: aprendolo, o avviando una stanza con esso, ricevi sempre una copia nuova. Questa lavagna continua a salvarsi mentre lavori.",
+        "go": "Salva",
+        "cancel": "Annulla",
+        "done": "Salvato come modello «{title}». Codice {code}",
+        "savedAt": "Salvata {time}",
+        "notYet": "Non ancora salvata. Riprovo…"
       }
     },
     "manip-room": {
       "actionsFor": "Azioni per {label}",
-      "teacherLock": "Il tuo insegnante ha bloccato questo."
+      "teacherLock": "Il tuo insegnante ha bloccato questo.",
+      "reopen": "Riapri la stanza",
+      "reopened": "La stanza è di nuovo aperta. Ogni studente torna al proprio riquadro."
     },
     "figures-editor": {
       "undo": "Annulla",

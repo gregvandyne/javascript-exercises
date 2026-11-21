@@ -3353,11 +3353,96 @@
         "resize": "Arraste para mudar o tamanho desta caixa",
         "smaller": "Texto menor",
         "bigger": "Texto maior"
+      },
+      "boards": {
+        "title": "Meus quadros",
+        "none": "Os quadros em que você trabalha são salvos sozinhos e aparecem aqui. Use “Salvar como modelo” para guardar um ponto de partida limpo.",
+        "templates": "Modelos",
+        "templatesSub": "abre uma cópia nova toda vez",
+        "recent": "Quadros recentes",
+        "recentSub": "salvos enquanto você trabalha",
+        "code": "código {code}",
+        "edited": "editado {when}",
+        "aiDraft": "Rascunho de IA, pronto {when}",
+        "roomLive": "Sala ao vivo · {klass} · {n, plural, one {# estudante} other {# estudantes}}",
+        "roomEnded": "Sala ao vivo · {klass} · encerrada {when} · {n, plural, one {# quadrado guardado} other {# quadrados guardados}}",
+        "live": "Ao vivo",
+        "new": "Novo",
+        "more": "Mais para {title}",
+        "start": "Abrir uma sala ao vivo com ele",
+        "rename": "Renomear",
+        "duplicate": "Duplicar",
+        "reopen": "Reabrir a sala",
+        "deleteConfirm": "Apagar “{title}”? Não dá para desfazer.",
+        "deleteRoom": "Apagar a sala “{title}” e o quadrado de cada estudante? Não dá para desfazer.",
+        "pickClass": "Escolha a turma desta sala e depois abra."
+      },
+      "share": {
+        "save": "Salvar como modelo"
+      },
+      "draft": {
+        "progress": "Preparando seu quadro",
+        "drafting": "Preparando…",
+        "quote": "“{brief}”",
+        "leave": "Você pode fechar esta página ou recarregar. O rascunho continua no nosso servidor e vai estar em Meus quadros quando terminar.",
+        "eta": {
+          "under": "Normalmente menos de um minuto",
+          "about": "{n, plural, one {Normalmente cerca de um minuto} other {Normalmente cerca de # minutos}}",
+          "guessUnder": "Muitas vezes menos de um minuto",
+          "guess": "{n, plural, one {Cerca de um minuto} other {Cerca de # minutos}}",
+          "longer": "Está demorando um pouco mais que o normal",
+          "soFar": "{time} até agora"
+        },
+        "step": {
+          "check": {
+            "now": "Conferindo se suas palavras não têm nomes de estudantes",
+            "done": "Conferido: sem nomes de estudantes"
+          },
+          "ai": {
+            "now": "A IA está escolhendo os problemas",
+            "done": "A IA escolheu os problemas"
+          },
+          "build": {
+            "now": "Organizando o quadro e os passos",
+            "done": "Quadro e passos organizados"
+          },
+          "save": {
+            "now": "Salvando em Meus quadros",
+            "done": "Salvo em Meus quadros"
+          }
+        },
+        "away": "Seu rascunho de IA “{title}” ficou pronto enquanto você estava fora.",
+        "awayN": "{n, plural, one {# problema} other {# problemas}} e {steps, plural, one {# passo} other {# passos}}.",
+        "inBoards": "Está salvo em Meus quadros.",
+        "use": "Colocar no meu quadro",
+        "dismiss": "Fechar",
+        "failedAway": "Seu rascunho de IA para {tool} não pôde ser terminado.",
+        "failed": "O rascunho não pôde ser terminado.",
+        "retry": "Tentar de novo",
+        "err": {
+          "aiFailed": "A IA não conseguiu preparar agora. Suas palavras continuam aqui: tente de novo em instantes.",
+          "restart": "Nosso servidor reiniciou durante o rascunho. Suas palavras continuam aqui: tente de novo.",
+          "names": "Tire os nomes de estudantes da descrição: nomes nunca vão para a IA.",
+          "words": "Algumas palavras da descrição não são permitidas. Troque e tente de novo.",
+          "personal": "Tire números de telefone, e-mails, links e códigos e tente de novo.",
+          "other": "Algo deu errado. Tente de novo em instantes."
+        }
+      },
+      "save": {
+        "name": "Nome do modelo",
+        "what": "Um modelo é um ponto de partida limpo: ao abrir, ou ao abrir uma sala com ele, você sempre recebe uma cópia nova. Este quadro continua sendo salvo enquanto você trabalha.",
+        "go": "Salvar",
+        "cancel": "Cancelar",
+        "done": "Salvo como modelo “{title}”. Código {code}",
+        "savedAt": "Salvo {time}",
+        "notYet": "Ainda não salvo. Tentando de novo…"
       }
     },
     "manip-room": {
       "actionsFor": "Ações para {label}",
-      "teacherLock": "Seu professor travou isto."
+      "teacherLock": "Seu professor travou isto.",
+      "reopen": "Reabrir a sala",
+      "reopened": "A sala está aberta de novo. Cada estudante volta ao próprio quadrado."
     },
     "figures-editor": {
       "undo": "Desfazer",

@@ -3353,11 +3353,96 @@
         "resize": "Sleep om de grootte van dit vak te wijzigen",
         "smaller": "Kleinere tekst",
         "bigger": "Grotere tekst"
+      },
+      "boards": {
+        "title": "Mijn borden",
+        "none": "Borden waaraan je werkt, worden vanzelf bewaard en staan hier. Met ‘Bewaren als sjabloon’ houd je een schoon startpunt.",
+        "templates": "Sjablonen",
+        "templatesSub": "opent elke keer een nieuwe kopie",
+        "recent": "Recente borden",
+        "recentSub": "bewaard terwijl je werkt",
+        "code": "code {code}",
+        "edited": "bewerkt {when}",
+        "aiDraft": "AI-ontwerp, klaar {when}",
+        "roomLive": "Live ruimte · {klass} · {n, plural, one {# leerling} other {# leerlingen}}",
+        "roomEnded": "Live ruimte · {klass} · gestopt {when} · {n, plural, one {# vak bewaard} other {# vakken bewaard}}",
+        "live": "Live",
+        "new": "Nieuw",
+        "more": "Meer voor {title}",
+        "start": "Een live ruimte ermee starten",
+        "rename": "Naam wijzigen",
+        "duplicate": "Dupliceren",
+        "reopen": "Ruimte heropenen",
+        "deleteConfirm": "‘{title}’ verwijderen? Dit kan niet ongedaan worden.",
+        "deleteRoom": "De ruimte ‘{title}’ en het vak van elke leerling erin verwijderen? Dit kan niet ongedaan worden.",
+        "pickClass": "Kies de klas voor deze ruimte en start hem dan."
+      },
+      "share": {
+        "save": "Bewaren als sjabloon"
+      },
+      "draft": {
+        "progress": "Je bord wordt ontworpen",
+        "drafting": "Bezig…",
+        "quote": "‘{brief}’",
+        "leave": "Je kunt deze pagina sluiten of vernieuwen. Het ontwerp gaat door op onze server en staat in Mijn borden als het klaar is.",
+        "eta": {
+          "under": "Meestal minder dan een minuut",
+          "about": "{n, plural, one {Meestal ongeveer een minuut} other {Meestal ongeveer # minuten}}",
+          "guessUnder": "Vaak minder dan een minuut",
+          "guess": "{n, plural, one {Ongeveer een minuut} other {Ongeveer # minuten}}",
+          "longer": "Duurt iets langer dan normaal",
+          "soFar": "{time} tot nu toe"
+        },
+        "step": {
+          "check": {
+            "now": "Je woorden worden gecontroleerd op namen van leerlingen",
+            "done": "Je woorden gecontroleerd op namen van leerlingen"
+          },
+          "ai": {
+            "now": "De AI kiest de opgaven",
+            "done": "De AI heeft de opgaven gekozen"
+          },
+          "build": {
+            "now": "Bord en stappen worden ingedeeld",
+            "done": "Bord en stappen ingedeeld"
+          },
+          "save": {
+            "now": "Wordt bewaard in Mijn borden",
+            "done": "Bewaard in Mijn borden"
+          }
+        },
+        "away": "Je AI-ontwerp ‘{title}’ werd klaar terwijl je weg was.",
+        "awayN": "{n, plural, one {# opgave} other {# opgaven}} en {steps, plural, one {# stap} other {# stappen}}.",
+        "inBoards": "Het staat in Mijn borden.",
+        "use": "Op mijn bord zetten",
+        "dismiss": "Sluiten",
+        "failedAway": "Je AI-ontwerp voor {tool} kon niet klaar worden.",
+        "failed": "Het ontwerp kon niet klaar worden.",
+        "retry": "Opnieuw proberen",
+        "err": {
+          "aiFailed": "De AI kon het nu niet ontwerpen. Je woorden staan er nog: probeer het zo opnieuw.",
+          "restart": "Onze server is herstart tijdens het ontwerpen. Je woorden staan er nog: probeer het opnieuw.",
+          "names": "Laat namen van leerlingen uit de beschrijving: namen gaan nooit naar de AI.",
+          "words": "Sommige woorden in de beschrijving zijn niet toegestaan. Pas ze aan en probeer het opnieuw.",
+          "personal": "Laat telefoonnummers, e-mails, links en codes weg en probeer het opnieuw.",
+          "other": "Er ging iets mis. Probeer het zo opnieuw."
+        }
+      },
+      "save": {
+        "name": "Naam van het sjabloon",
+        "what": "Een sjabloon is een schoon startpunt: openen, of er een ruimte mee starten, geeft altijd een nieuwe kopie. Dit bord blijft bewaard terwijl je werkt.",
+        "go": "Bewaren",
+        "cancel": "Annuleren",
+        "done": "Bewaard als sjabloon ‘{title}’. Code {code}",
+        "savedAt": "Bewaard {time}",
+        "notYet": "Nog niet bewaard. Opnieuw proberen…"
       }
     },
     "manip-room": {
       "actionsFor": "Acties voor {label}",
-      "teacherLock": "Je leraar heeft dit vastgezet."
+      "teacherLock": "Je leraar heeft dit vastgezet.",
+      "reopen": "Ruimte heropenen",
+      "reopened": "De ruimte is weer open. Iedereen gaat terug naar het eigen vak."
     },
     "figures-editor": {
       "undo": "Ongedaan maken",

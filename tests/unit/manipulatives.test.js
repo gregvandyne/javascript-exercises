@@ -16,6 +16,7 @@ const { q, MIGRATIONS } = await import('../../server/db.js');
 const { createUser, startSession, getUser } = await import('../../server/auth.js');
 const S = await import('../../server/services/schools.js');
 const M = await import('../../server/services/manipulatives.js');
+const DR = await import('../../server/services/manip-drafts.js');
 const { deleteAccount } = await import('../../server/services/account-delete.js');
 const { createApp } = await import('../../server/app.js');
 const { TOOLS, pieceDefs, hexValue, freeSpot, HEX_SIXTHS, roomLayout, instructionNotes, stripHeight, STRIP } = await import('../../public/js/manip-data.js');
@@ -263,8 +264,18 @@ test('the AI drafter: hosts only, through the site\'s AI client with the configu
     // The owner's example: 8 clocks with different times (the model repeats one and sends a bad one).
     const times = ['3:00', '7:30', '9:15', '11:45', '3:00', '12:10', '6:05', '25:99'];
     reply = { title: 'What time is it? '.repeat(10), steps: ['Write the time under each clock.', 'damn shit', 'Visit www.example.com'], items: times.map(t => ({ time: t, box: 'answer', x: 0.5, y: 0.5 })) };
-    const r = await as(boss)('/api/manipulatives/draft', { method: 'POST', body: { tool: 'clock', brief: 'Create 8 different clocks with different times for my students to determine the time of each', task: 'not a real task' } });
-    assert.equal(r.status, 200); assert.equal(r.json.ai, true);
+    // The draft runs on the server (services/manip-drafts.js): the answer is the job; it lands as a recent board.
+    const started = await as(boss)('/api/manipulatives/draft', { method: 'POST', body: { tool: 'clock', brief: 'Create 8 different clocks with different times for my students to determine the time of each', task: 'not a real task' } });
+    assert.equal(started.status, 200); assert.ok(started.json.job.id);
+    await DR.settled(started.json.job.id);
+    const job = (await as(boss)('/api/manipulatives/draft')).json.job;
+    assert.equal(job.status, 'done'); assert.equal(job.result.ai, true); assert.equal(job.task, '', 'only library tasks are stored');
+    const saved = (await as(boss)(`/api/manipulatives/boards/${job.boardId}`)).json.board;
+    assert.equal(saved.kind, 'recent');
+    const st = JSON.parse(saved.state);
+    const r = { json: { ai: job.result.ai, draft: { ...job.result, title: saved.title, board: st, steps: (st.__steps || []).map(x => x.text) } } };
+    assert.equal(r.json.ai, true);
+    DR.seen(boss, job.id);
     assert.equal(calls[0].model, config.builderModel, 'the model comes from config');
     const prompt = calls[0].messages[0].content;
     assert.doesNotMatch(prompt, /miro|muse/i); assert.doesNotMatch(prompt, /not a real task/, 'only library tasks are passed on'); assert.doesNotMatch(prompt, /Ada|Apple|Abe|Bea/);
@@ -448,8 +459,8 @@ test('cleanup: account deletion, leaving a class, deleting a class; sessions end
   M.createSession(boss, { classId: E.id, tool: 'clock' });
   assert.equal(S.deleteClass(boss, E.id).ok, true);
   assert.equal(q.get('SELECT COUNT(*) n FROM manip_sessions WHERE class_id=?', E.id).n, 0);
-  // Sessions end by themselves after SESSION_HOURS, and go KEEP_DAYS after that.
-  q.run('UPDATE manip_sessions SET created_at=? WHERE id=?', Date.now() - (M.SESSION_HOURS + 1) * 3600e3, s.id);
+  // Sessions end by themselves SESSION_HOURS after they were started (or last reopened), and go KEEP_DAYS after that.
+  q.run('UPDATE manip_sessions SET created_at=?, opened_at=? WHERE id=?', Date.now() - (M.SESSION_HOURS + 1) * 3600e3, Date.now() - (M.SESSION_HOURS + 1) * 3600e3, s.id);
   M.prune();
   assert.equal(M.getSession(s.id).status, 'ended');
   q.run('UPDATE manip_sessions SET ended_at=? WHERE id=?', Date.now() - (M.KEEP_DAYS + 1) * 86400e3, s.id);
