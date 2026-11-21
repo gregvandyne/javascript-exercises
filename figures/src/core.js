@@ -1,7 +1,7 @@
 // Oomba Figures, the core (docs/figures-api.md "The core and its packs"): the global a page uses, window.OombaFigures
 // (alias OF), the drawing core (svg.js), the default words, the math label typesetter, the formula language, the notice
 // an exported figure carries, the coordinate grid, and the registry the subject packs add their kinds to. Each pack (a
-// classic script, loaded after the core: math, data, physics, chem, measure) registers its kinds with register() below.
+// classic script, loaded after the core: math, data, physics, chem, bio (1.3.0), measure) registers its kinds with register() below.
 //   OF.draw(kind, data, opts) -> an <svg> element        OF.svg(kind, data, opts) -> the same figure as SVG text
 //   OF.check(kind, data) -> [what is wrong] ([] = fine)   OF.kinds (the kinds loaded), OF.version, OF.colours
 //   OF.packs (the packs loaded), OF.packOf(kind) (the pack a kind is in: 'core', 'math', ...; null for no kind)
@@ -30,9 +30,10 @@ export const KIND_PACKS = Object.freeze({
   tableOfValues: 'data', protractor: 'measure', prism: 'math', cylinder: 'math', pyramid: 'math', cone: 'math', sphere: 'math', net: 'math', mappingDiagram: 'math',
   motionMap: 'physics', projectile: 'physics', waves: 'physics',
   massSpectrum: 'chem', heatingCurve: 'chem', energyProfile: 'chem', nuclide: 'chem', lineSpectrum: 'chem', photoelectron: 'chem', particles: 'chem', dotCross: 'chem',
+  populationGrowth: 'bio', predatorPrey: 'bio', enzymeActivity: 'bio', photosynthesis: 'bio', punnett: 'bio', pedigree: 'bio', proteinSynthesis: 'bio', gel: 'bio', osmosis: 'bio',
 });
 /** The packs, in the order a page loads their tags (after the core's). */
-export const PACK_NAMES = Object.freeze(['math', 'data', 'physics', 'chem', 'measure']);
+export const PACK_NAMES = Object.freeze(['math', 'data', 'physics', 'chem', 'bio', 'measure']);
 const ALL_KINDS = Object.keys(KIND_PACKS);
 const KINDS = {}, LOADED = ['core'];
 const cleanOpts = o => {

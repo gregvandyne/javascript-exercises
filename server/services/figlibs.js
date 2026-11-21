@@ -16,7 +16,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 /** lib -> the one file a page loads from each version folder. Oomba Figures from 1.1.0 also has its subject packs
  *  (FIG_LIB_FILES.packs: lib -> { pack: file }), each a script of its own loaded after the core file, with its own pinned
  *  tag. (packs is not enumerable, so Object.keys(FIG_LIB_FILES) stays the three libraries.) */
-export const FIG_PACK_NAMES = Object.freeze(['math', 'data', 'physics', 'chem', 'measure']);
+export const FIG_PACK_NAMES = Object.freeze(['math', 'data', 'physics', 'chem', 'bio', 'measure']);
 export const FIG_LIB_FILES = Object.freeze(Object.defineProperty({ jsxgraph: 'jsxgraphcore.js', 'smiles-drawer': 'smiles-drawer.min.js', 'oomba-figures': 'oomba-figures.js' }, 'packs', {
   value: Object.freeze({ 'oomba-figures': Object.freeze(Object.fromEntries(FIG_PACK_NAMES.map(p => [p, `packs/${p}.js`]))) }), enumerable: false }));
 export const FIG_LIB_NAMES = Object.freeze({ jsxgraph: 'JSXGraph', 'smiles-drawer': 'SmilesDrawer', 'oomba-figures': 'Oomba Figures' });

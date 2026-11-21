@@ -12503,6 +12503,42 @@
       "dotCross": {
         "name": "Stip-kruisdiagram",
         "desc": "Gedeelde en overgedragen elektronen in schillen"
+      },
+      "populationGrowth": {
+        "name": "Populatiegroei",
+        "desc": "J- en S-curven, K en de groeifasen"
+      },
+      "predatorPrey": {
+        "name": "Roofdier en prooi",
+        "desc": "Populatiecycli, de roofdieren een stap later"
+      },
+      "enzymeActivity": {
+        "name": "Enzymactiviteit",
+        "desc": "Snelheid tegen temperatuur, pH of substraat"
+      },
+      "photosynthesis": {
+        "name": "Fotosynthesesnelheid",
+        "desc": "Licht, CO₂ en temperatuur als beperkende factoren"
+      },
+      "punnett": {
+        "name": "Kruisingsschema",
+        "desc": "Kruisingen met de verhoudingen uitgerekend"
+      },
+      "pedigree": {
+        "name": "Stamboom",
+        "desc": "Families die bij een overervingspatroon passen"
+      },
+      "proteinSynthesis": {
+        "name": "Eiwitsynthese",
+        "desc": "Van DNA via mRNA naar aminozuren, met open vakjes"
+      },
+      "gel": {
+        "name": "Gelelektroforese",
+        "desc": "Banden op schaal naast een DNA-marker"
+      },
+      "osmosis": {
+        "name": "Osmose",
+        "desc": "Cellen, U-buizen en zakjes in oplossingen"
       }
     },
     "step": {

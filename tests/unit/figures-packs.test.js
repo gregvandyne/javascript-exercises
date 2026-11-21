@@ -1,10 +1,10 @@
 // Oomba Figures 1.1.0 is split by subject (docs/figures-api.md "The core and its packs"): the core (oomba-figures.js:
-// the drawing core, words, math labels, the formula language, the notice, the grid and the registry) and five packs
-// (packs/math.js, data.js, physics.js, chem.js, measure.js), each a classic script that registers its kinds into the
+// the drawing core, words, math labels, the formula language, the notice, the grid and the registry) and its packs
+// (packs/math.js, data.js, physics.js, chem.js, measure.js; since 1.3.0 bio.js), each a classic script that registers its kinds into the
 // core. Each file has its own pinned tag (SRI, crossorigin), the scanner admits a pack only after the core of its
 // version, the CSP and the screenshot worker name each pack file, the lock and manifest list each, the server's copy runs
 // the core and every pack, and the self-tests fail a page that draws a kind whose pack tag is missing. 1.0.0 (one file)
-// is unchanged, and so is 1.1.0 (shipped): pages pinned to either keep working. New builds get the latest (1.2.0).
+// is unchanged, and so is 1.1.0 (shipped): pages pinned to either keep working. New builds get the latest (1.3.0).
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -29,8 +29,8 @@ const sri = b => `sha384-${crypto.createHash('sha384').update(b).digest('base64'
 const sha256 = b => crypto.createHash('sha256').update(b).digest('hex');
 const run = files => { const ctx = vm.createContext({ console: { warn: () => {} } }); for (const f of files) vm.runInContext(fs.readFileSync(path.join(DIR, f), 'utf8'), ctx); return ctx.OombaFigures; };
 
-test('the packs: every kind in exactly one part, the same five names everywhere, and nothing but the core in common', () => {
-  assert.deepEqual(PACKS, ['math', 'data', 'physics', 'chem', 'measure']);
+test('the packs: every kind in exactly one part, the same six names everywhere, and nothing but the core in common', () => {
+  assert.deepEqual(PACKS, ['math', 'data', 'physics', 'chem', 'bio', 'measure']);
   assert.deepEqual([...PACK_NAMES], PACKS); assert.deepEqual([...L.FIG_PACK_NAMES], PACKS);
   assert.deepEqual(Object.keys(L.FIG_LIB_FILES), ['jsxgraph', 'smiles-drawer', 'oomba-figures'], 'the packs map is not one of the libraries');
   assert.deepEqual(L.FIG_LIB_FILES.packs['oomba-figures'], Object.fromEntries(PACKS.map(p => [p, `packs/${p}.js`])));
@@ -167,7 +167,7 @@ test('a page that draws a kind whose pack tag is missing: named, with the tag to
 
 test('1.1.0 (shipped) is frozen: its files are what the lock says, its tags are still admitted, and its frozen copy still draws', () => {
   const D = path.join(ROOT, 'public/vendor/oomba-figures/1.1.0');
-  for (const f of ['oomba-figures.js', ...PACKS.map(p => `packs/${p}.js`), 'LICENSE', 'manifest.json']) assert.equal(sha256(fs.readFileSync(path.join(D, f))), L.FIG_LOCK.files[`oomba-figures/1.1.0/${f}`].sha256, f);
+  for (const f of ['oomba-figures.js', ...PACKS.filter(p => p !== 'bio').map(p => `packs/${p}.js`), 'LICENSE', 'manifest.json']) assert.equal(sha256(fs.readFileSync(path.join(D, f))), L.FIG_LOCK.files[`oomba-figures/1.1.0/${f}`].sha256, f);
   const t = L.figTag('oomba-figures', '1.1.0', { kinds: ['bohr', 'reading'] });
   assert.match(t, /\/vendor\/oomba-figures\/1\.1\.0\/packs\/chem\.js/); assert.equal(scanVersion(page(t)).status, 'pass');
   const F = L.figuresKit('1.1.0');

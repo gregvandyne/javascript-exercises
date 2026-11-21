@@ -408,13 +408,17 @@ const KEYWORDS = [
   [/force|newton/, ['freeBody', 'inclinedPlane', 'pulley']], [/vector/, ['vectors']], [/slope|incline|ramp/, ['inclinedPlane']], [/pulley/, ['pulley']], [/lens|mirror|optic|light|ray/, ['rays']],
   [/circuit|resist|current|voltage/, ['circuit']], [/motion|speed|velocity|acceleration/, ['motionGraph', 'motionMap']], [/projectile|launch/, ['projectile']], [/wave/, ['waves']],
   [/measur|ruler|caliper|micrometer|thermometer|temperature/, ['reading']], [/atom|electron|bohr|shell/, ['bohr']], [/half-life|half life|decay|radioactiv/, ['halfLife']],
+  // biology (1.3.0)
+  [/population|carrying capacity|logistic|exponential growth/, ['populationGrowth']], [/predator|prey|lotka/, ['predatorPrey']], [/enzyme|denatur|substrate/, ['enzymeActivity']],
+  [/photosynth|limiting factor/, ['photosynthesis']], [/punnett|genotype|phenotype|allele|dominant|recessive|mendel/, ['punnett']], [/pedigree|inheritance|heredit/, ['pedigree']],
+  [/transcription|translation|codon|mrna|protein synthesis|\bdna\b/, ['proteinSynthesis']], [/electrophoresis|\bgel\b|dna fingerprint/, ['gel']], [/osmosis|tonicity|hypertonic|hypotonic|diffusion/, ['osmosis']], [/pipette/, ['reading']],
 ];
 /** A plain starter set without the AI: kinds the brief's words point at (else its subject's), within its grade band. */
 export function templateItems({ brief = '', grade = '', count = 6 } = {}) {
   const b = String(brief).toLowerCase(), band = bandOf(grade || (/\bgrade\s*(\d{1,2}|k)\b/i.exec(b) || [])[1] || '');
   let ids = [...new Set(KEYWORDS.filter(([re]) => re.test(b)).flatMap(([, ks]) => ks))];
   if (!ids.length) {
-    const subj = /physic/.test(b) ? 'physics' : /chem/.test(b) ? 'chem' : /data|statistic|probab|graph/.test(b) ? 'data' : 'math';
+    const subj = /physic/.test(b) ? 'physics' : /chem/.test(b) ? 'chem' : /biolog|life science|genetic|cell/.test(b) ? 'biology' : /data|statistic|probab|graph/.test(b) ? 'data' : 'math';
     ids = draftKinds().filter(K => K.subject === subj).map(K => K.id);
   }
   let kinds = ids.map(kindOf).filter(K => K && K.gens.length);

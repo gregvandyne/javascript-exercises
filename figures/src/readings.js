@@ -9,9 +9,10 @@ import { figWords } from './words.js';
 import { ruTicks, ruTickHeight, ruPerUnit, ruText } from './ported/ruler.js';
 import { isLab, labCheck, labSolve, labDraw, LAB_TYPES } from './labware.js';
 import { lwDisplaced } from './ported/labware.js';
+import { isPipette, pipetteCheck, pipetteSolve, pipetteDraw } from './pipette.js';
 import { GA_CALIPER, GA_CALIPER_RANGE, GA_CALIPER_MAX_ZERO, gaCaliper, gaCaliperRead, gaSlideMarks, GA_MICROMETER_RANGE, GA_MICROMETER_MAX_ZERO, gaMicrometerRead, gaThimbleMarks, gaCorrected } from './ported/gauges.js';
 
-const TYPES = ['thermometer', 'cylinder', 'spring', 'ruler', 'caliper', 'micrometer', ...LAB_TYPES, 'displacement'];
+const TYPES = ['thermometer', 'cylinder', 'spring', 'ruler', 'caliper', 'micrometer', ...LAB_TYPES, 'displacement', 'micropipette'];
 const UNITS = { thermometer: '°C', cylinder: 'mL', spring: 'N' };
 const near = (x, s) => Math.abs(x / s - Math.round(x / s)) < 1e-6;
 /**
@@ -24,6 +25,7 @@ export const reading = {
     const out = [];
     if (!d || !TYPES.includes(d.type)) return [`"type" must be one of ${TYPES.join(', ')}`];
     if (isLab(d)) return labCheck(d);
+    if (isPipette(d)) return pipetteCheck(d);
     if (d.type === 'displacement') return dispCheck(d);
     if (d.type === 'ruler') return rulerCheck(d);
     if (d.type === 'caliper' || d.type === 'micrometer') return gaugeCheck(d);
@@ -45,6 +47,7 @@ export const reading = {
   solve(d) {
     if (reading.check(d).length) return null;
     if (isLab(d)) return labSolve(d);
+    if (isPipette(d)) return pipetteSolve(d);
     if (d.type === 'displacement') return dispSolve(d);
     if (d.type === 'caliper' || d.type === 'micrometer') return gaugeSolve(d);
     if (springExtras(d)) return springSolve(d);
@@ -54,6 +57,7 @@ export const reading = {
   },
   draw(d, o) {
     if (isLab(d)) return labDraw(d, o);
+    if (isPipette(d)) return pipetteDraw(d, o);
     if (d.type === 'displacement') return dispDraw(d, o);
     if (d.type === 'ruler') return rulerDraw(d, o);
     if (d.type === 'caliper') return caliperDraw(d, o);

@@ -65,6 +65,10 @@ const SAMPLES = {
   // 1.2.0 chemistry (tests/unit/figures-chem-spectra, -chem-energy, -chem-atoms, -labware)
   massSpectrum: { element: 'Cl' }, heatingCurve: { substance: 'water' }, energyProfile: { levels: [50, 150, 20] }, nuclide: { element: 'C', mass: 14 },
   lineSpectrum: { strips: [{ element: 'H' }] }, photoelectron: { element: 'Na' }, particles: { particles: [{ count: 6, look: { size: 'm', shade: 'gray' } }] }, dotCross: { molecule: 'CH4' },
+  // 1.3.0 biology (tests/unit/figures-bio-*.test.js)
+  populationGrowth: { model: 'logistic', n0: 20, r: 0.5, k: 1000 }, predatorPrey: { pair: 'hare-lynx' }, enzymeActivity: { graph: 'pH', curves: [{ enzyme: 'pepsin' }] },
+  photosynthesis: { graph: 'co2', curves: [{ light: 60, temp: 25 }] }, punnett: { parents: [['T', 't'], ['T', 't']] }, pedigree: { mode: 'ar', seed: 7 },
+  proteinSynthesis: { coding: 'ATGGCCTAA' }, gel: { lanes: [{ ladder: '100bp' }, { bands: [450] }] }, osmosis: { scene: 'plant', solutes: [{ inside: 0.3, outside: 0.6 }] },
 };
 
 test('every kind: plain data in, one accessible <svg> out, no problems for good data', () => {
@@ -229,7 +233,7 @@ test('the shipped oomba-figures.js and its packs are a fresh build of figures/sr
   assert.equal(F.version, v);
   assert.equal(F.svg('bohr', { element: 'Na' }), OF.svg('bohr', { element: 'Na' }), 'the frozen file draws what the source draws');
 });
-test('the latest version (1.2.0; 1.1.0 was the first) is minified, the core and each pack: no comments but the legal ones (each header, and each ported file\'s Apache 2.0 note, in the file it is in), and smaller', () => {
+test('the latest version (1.3.0; 1.1.0 was the first) is minified, the core and each pack: no comments but the legal ones (each header, and each ported file\'s Apache 2.0 note, in the file it is in), and smaller', () => {
   const ported = fs.readdirSync(path.join(ROOT, 'figures/src/ported')).filter(f => f.endsWith('.js')), v = version();
   let notes = 0;
   for (const part of Object.keys(PARTS)) {
