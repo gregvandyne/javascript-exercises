@@ -5,8 +5,8 @@
 //
 // Who may use it: the platform admin, and school staff whose username is in MANIPULATIVES_USERS (the same tester list as
 // the manipulatives); never a guest, a banned account or a grown-up (family) account. Everyone else gets the normal 404,
-// on the pages and on every API. Students never open /figures (assigning a worksheet to a class is next: see the
-// decision record).
+// on the pages and on every API. Students never open /figures: a worksheet reaches a class through Assign to class
+// (services/figures-steps.js), as a lesson step on the class's own lesson page.
 // What each person sees: a worksheet is its owner's. Only the owner lists, opens, edits, prints (the student sheet and
 // the answer key) or deletes it; for anyone else it is the same 404 as a wrong id. A preset is its owner's too.
 // Every figure that is saved passed OF.check on the server with the pinned Oomba Figures version, and every answer is

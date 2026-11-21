@@ -9989,9 +9989,50 @@ message), `public/js/manip.js` (each tool's wheel, the actions, the solo board),
   brief) and counted in the audit log. Without a key, while the budget rests or when the call fails, a starter set is
   built from the generators the brief's words point at, within its grade band. A brief that names one of the teacher's
   students is refused before anything is sent.
-- **Assign is next.** Assigning a worksheet to a class with open and due dates, and the student view with answer
-  blanks, are not built: delivering a worksheet through the lessons flow needs a new lesson step kind (snapshotting the
-  questions like the quiz step, rendering figures and answer blanks on the student lesson page, saving answers in
-  step_progress, the gradebook, and the rule that answers show after the due date only when the teacher allows it).
-  That touches the student lesson page, progress and the gradebook, so it is its own change. The builder shows "Assign
-  to class" disabled with "Coming next". Print and Save work now.
+- **Assign to class.** Shipped: see "Figures: Assign to class" below (a lesson step of kind `figures`, snapshotting the
+  worksheet; answers after the due date only when the teacher allows it).
+
+## Figures: Assign to class (21 Nov 2026)
+
+- **What it is.** "Assign to class" in the worksheet builder (`/figures/worksheets/:id`, public/js/figures-sheet.js) is
+  real: a form under the print preview with one of the tester's classes, an open date and a due date (both optional),
+  and "Show answers after the due date" (off by default). `POST /api/figures/worksheets/:id/assign`
+  (services/figures-steps.js `assignWorksheet`) does what "Set as homework" does for a live question set: a lesson of
+  kind `figures` named after the worksheet in the teacher's library, with one lesson step of kind `figures`, assigned to
+  the class with `lessons.assign` (dates, units, removal and the gradebook all work as for any assigned lesson). Each
+  assign makes a new lesson, so the switch is per assignment.
+- **A snapshot, like the quiz step.** Migration 0096 adds `lesson_steps.of_version` and `lesson_steps.show_answers`.
+  The step's `items` holds every question as it was assigned: kind, figure data, hide, question, the answer as the key
+  shows it, unit, the number (`value`), its decimal places (`dp`) and the worked lines; `set_id` names the worksheet
+  (never read back). Editing, regenerating or deleting the worksheet later changes nothing a class was given, and a
+  lesson copy keeps the snapshot. `value` and `dp` are worked out at assign time: the OF.solve value of the question's
+  answerKey (2 places, as the key shows it), else the generator's value and dp while the figure is still exactly what
+  its generator makes. A worksheet with a question that has no answer cannot be assigned (the error names the question
+  numbers).
+- **Students.** The lesson page draws each figure on the server with the step's pinned Oomba Figures version
+  (`figuresKit(of_version)`), the parts the teacher hid left out, and a blank with the unit under its question. Save
+  keeps what they typed (`step_progress.answer`, a JSON list); Hand in (it asks first) marks every question once
+  (`marks` '1'/'0', `score` = % right, label `figures`) and the step is done; nothing changes after. A typed answer is
+  right when it is within half a unit in the last of the stored dp (dp 1: within 0.05), read in many spellings ("5 cm",
+  "x = 5", "2,5", "3/4", Arabic and full-width digits). After handing in each question says Right or Not right, and the
+  score shows. The student side is not behind the tester list: the step only exists because a tester assigned it.
+- **Answers are never sent early.** A student gets the answers and worked lines only when all three hold: the teacher
+  turned on "Show answers after the due date", the due date is over (the school's time zone: `lessons.lateFrom`), and
+  that student has handed in (so a late student cannot read the answers and then hand in). Until then the server leaves
+  out answer, value and worked lines from the page and from `GET /api/progress/:cl/:step/figures`, and never sends the
+  figure's data. Judgment call: the student page draws the figures on the server instead of loading Oomba Figures with
+  `figTag` in the browser, because for many kinds the figure's data is the answer (a ruler's or caliper's reading, a
+  protractor's angle, a mapping diagram's outputs), and Oomba Figures keeps values in `data-*` attributes of its SVG, so
+  those are stripped too (only `data-of` stays). Once answers are allowed the full figure is drawn. The tests check the
+  answers, worked lines and answer fields are absent from the student HTML and JSON in every other case.
+- **Teachers.** The class's lesson page (the teacher's preview) shows the answer key under each question. The lesson's
+  progress page shows the step's score in its cell (right/total and %, like a quiz), a panel with how many handed in,
+  how many got each question right (counts only), each student's answers in roster order (never ranked), and the "Show
+  answers after the due date" switch (it needs a due date; the class's teachers and school admins can change it). The
+  gradebook and the Score count a handed-in worksheet like a quiz step (one point per question).
+- **Not in the step editor.** `figures` is not in `STEP_KINDS`, so the lesson editor never offers it (a "Figure" step
+  there is Phase 3); a figures step cannot be added by hand or changed into another kind, and the editor shows how many
+  questions it has instead of an edit form.
+- **Gate.** Assigning stays behind the Figures gate (`FIGURES` and the Manipulatives tester list): anyone else gets the
+  same 404 on the assign API as on every `/figures` page. A tester can assign only their own worksheet, only to a class
+  they teach.

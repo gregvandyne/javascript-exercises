@@ -94,7 +94,7 @@ function draw(wait = false) {
 }
 function assignUi() {
   const open = document.getElementById('fg-assign-open'), form = document.getElementById('fg-assign-form'), err = document.getElementById('fg-as-err');
-  const show = v => { form.hidden = !v; open.setAttribute('aria-expanded', String(!!v)); if (v) { document.getElementById('fg-assign-done').innerHTML = ''; document.getElementById('fg-as-class').focus(); } };
+  const show = v => { form.hidden = !v; open.setAttribute('aria-expanded', String(!!v)); if (v) { document.getElementById('fg-assign-done').innerHTML = ''; form.scrollIntoView({ block: 'nearest' }); document.getElementById('fg-as-class').focus({ preventScroll: true }); } };
   open.addEventListener('click', () => show(form.hidden));
   document.getElementById('fg-as-cancel').addEventListener('click', () => { show(false); open.focus(); });
   form.addEventListener('submit', async e => {

@@ -180,7 +180,7 @@ test('the student page and JSON: figures drawn here, a blank with the unit, neve
   const tp = await as(boss)(`/class/${A.id}/lessons/${cl.id}`);
   assert.match(tp.text, /Answer key:/); assert.ok(tp.text.includes(items[0].answer));
   assert.doesNotMatch(tp.text, /name="hand"/, 'the preview saves nothing');
-  assert.doesNotMatch(page.text + tp.text, /—/, 'no em dashes');
+  assert.doesNotMatch(page.text + tp.text, /\u2014/, 'no em dashes');
 });
 
 test('save, hand in once, marked with the dp tolerance; the gradebook and the Score count it like a quiz', async () => {
