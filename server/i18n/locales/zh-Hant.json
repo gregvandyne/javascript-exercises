@@ -12447,6 +12447,38 @@
       "titration": {
         "name": "滴定曲線",
         "desc": "滴定曲線"
+      },
+      "massSpectrum": {
+        "name": "質譜",
+        "desc": "同位素的峰與相對原子質量"
+      },
+      "heatingCurve": {
+        "name": "加熱與冷卻曲線",
+        "desc": "加熱或散熱時的溫度變化（按比例）"
+      },
+      "energyProfile": {
+        "name": "反應位能圖",
+        "desc": "標出活化能與 ΔH 的反應能量圖"
+      },
+      "nuclide": {
+        "name": "核種符號",
+        "desc": "同位素、離子與粒子的符號"
+      },
+      "lineSpectrum": {
+        "name": "線光譜",
+        "desc": "元素的發射與吸收譜線"
+      },
+      "photoelectron": {
+        "name": "光電子能譜",
+        "desc": "每個副層一個峰（H 到 Xe）"
+      },
+      "particles": {
+        "name": "粒子示意圖",
+        "desc": "方框或晶格中的原子、離子與分子"
+      },
+      "dotCross": {
+        "name": "點叉圖",
+        "desc": "電子層中共用與轉移的電子"
       }
     }
   }

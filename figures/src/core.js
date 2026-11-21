@@ -29,6 +29,7 @@ export const KIND_PACKS = Object.freeze({
   stemAndLeaf: 'data', pieChart: 'data', cumulativeFrequency: 'data', normalCurve: 'data', treeDiagram: 'data', vennDiagram: 'data', twoWayTable: 'data',
   tableOfValues: 'data', protractor: 'measure', prism: 'math', cylinder: 'math', pyramid: 'math', cone: 'math', sphere: 'math', net: 'math', mappingDiagram: 'math',
   motionMap: 'physics', projectile: 'physics', waves: 'physics',
+  massSpectrum: 'chem', heatingCurve: 'chem', energyProfile: 'chem', nuclide: 'chem', lineSpectrum: 'chem', photoelectron: 'chem', particles: 'chem', dotCross: 'chem',
 });
 /** The packs, in the order a page loads their tags (after the core's). */
 export const PACK_NAMES = Object.freeze(['math', 'data', 'physics', 'chem', 'measure']);

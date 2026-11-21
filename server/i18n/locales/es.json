@@ -12447,6 +12447,38 @@
       "titration": {
         "name": "Curva de valoración",
         "desc": "Curvas de valoración"
+      },
+      "massSpectrum": {
+        "name": "Espectro de masas",
+        "desc": "Picos de isótopos y masa atómica relativa"
+      },
+      "heatingCurve": {
+        "name": "Curva de calentamiento y enfriamiento",
+        "desc": "La temperatura al dar o quitar calor, a escala"
+      },
+      "energyProfile": {
+        "name": "Diagrama de energía potencial",
+        "desc": "Perfiles de energía de reacción con Ea y ΔH"
+      },
+      "nuclide": {
+        "name": "Notación de núclidos",
+        "desc": "Símbolos de isótopos, iones y partículas"
+      },
+      "lineSpectrum": {
+        "name": "Espectro de líneas",
+        "desc": "Líneas de emisión y absorción de elementos"
+      },
+      "photoelectron": {
+        "name": "Espectro fotoelectrónico",
+        "desc": "Un pico por subnivel, de H a Xe"
+      },
+      "particles": {
+        "name": "Diagrama de partículas",
+        "desc": "Átomos, iones y moléculas en una caja o una red"
+      },
+      "dotCross": {
+        "name": "Diagrama de puntos y cruces",
+        "desc": "Electrones compartidos y transferidos en capas"
       }
     }
   }

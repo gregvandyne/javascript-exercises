@@ -12448,6 +12448,38 @@
       "titration": {
         "name": "Titratiekromme",
         "desc": "Titratiekrommen"
+      },
+      "massSpectrum": {
+        "name": "Massaspectrum",
+        "desc": "Isotooppieken en relatieve atoommassa"
+      },
+      "heatingCurve": {
+        "name": "Opwarmings- en afkoelingskromme",
+        "desc": "De temperatuur bij opwarmen of afkoelen, op schaal"
+      },
+      "energyProfile": {
+        "name": "Energiediagram van een reactie",
+        "desc": "Energieprofielen met Ea en ΔH"
+      },
+      "nuclide": {
+        "name": "Nuclidenotatie",
+        "desc": "Symbolen van isotopen, ionen en deeltjes"
+      },
+      "lineSpectrum": {
+        "name": "Lijnenspectrum",
+        "desc": "Emissie- en absorptielijnen van elementen"
+      },
+      "photoelectron": {
+        "name": "Foto-elektronenspectrum",
+        "desc": "Eén piek per subschil, H tot Xe"
+      },
+      "particles": {
+        "name": "Deeltjesmodel",
+        "desc": "Atomen, ionen en moleculen in een vak of rooster"
+      },
+      "dotCross": {
+        "name": "Stip-kruisdiagram",
+        "desc": "Gedeelde en overgedragen elektronen in schillen"
       }
     }
   }

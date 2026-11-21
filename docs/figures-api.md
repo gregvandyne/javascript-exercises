@@ -1,4 +1,4 @@
-# Oomba Figures API (1.1.0)
+# Oomba Figures API (1.2.0)
 
 Oomba Figures draws the figures science, maths and graph worksheets need, as accessible SVG, from plain data: free-body
 diagrams, vectors, inclined planes, pulleys, ray diagrams, circuits, motion graphs, a coordinate grid, half-life and
@@ -13,7 +13,11 @@ tables of values), a protractor to read an angle with, 3D solids (prisms, cylind
 hemispheres) and their nets, mapping diagrams, and a ruler to read a length on; and physics diagrams (since 1.1.0: projectile
 motion, transverse and longitudinal waves, motion maps, acceleration-time and stacked motion graphs from one motion,
 the plane mirror, compound series-parallel circuits with their currents and voltages, and the vernier caliper,
-micrometer and spring scale extras). Skeletal structures come from SMILES through SmilesDrawer, and interactive boards from
+micrometer and spring scale extras); and chemistry (since 1.2.0: mass spectra, heating and cooling curves, potential
+energy diagrams, nuclide notation, line spectra, photoelectron spectra, particle diagrams and dot-and-cross diagrams, the lab readings (burets,
+beakers, gas syringes, digital and triple beam balances, digital thermometers, pH meters and pH paper, volume by
+displacement), orbital diagrams for all 118 elements, Bohr ion marks, several half-life curves on one graph, titration
+curves from measured pH, and more Lewis molecules). Skeletal structures come from SMILES through SmilesDrawer, and interactive boards from
 JSXGraph. Classroom activities (Oomba Canvas 1.2.0, `docs/canvas-api.md`) and arcade games can both use it.
 
 - Source: `figures/src/` (`svg.js` the drawing core and colours, `physics.js`, `graphs.js`, `chem.js`, `readings.js`,
@@ -30,11 +34,15 @@ JSXGraph. Classroom activities (Oomba Canvas 1.2.0, `docs/canvas-api.md`) and ar
   motion maps (`ported/motion.js` the motion from segments), `curves.js` the half-life and titration curves,
   `projectile.js` projectile motion (`ported/projectile.js` its path), `waves.js` waves (`ported/waves.js` the axes and
   the longitudinal lines), `network.js` compound circuits (`ported/circuittree.js` the series/parallel tree),
-  `ported/gauges.js` the caliper's and micrometer's scales, `core.js` the global and the registry, `packs/*.js` each
+  `ported/gauges.js` the caliper's and micrometer's scales; since 1.2.0 `spectra.js` the mass, line and photoelectron
+  spectra (`ported/isotopes.js`, `ported/spectra.js`), `energy.js` heating curves and potential energy diagrams
+  (`ported/heating.js`, `ported/profile.js`), `atoms.js` nuclide notation and dot-and-cross diagrams, `particles.js` particle diagrams
+  (`ported/particles.js`), `labware.js` the lab readings (`ported/labware.js`) and `ported/elements.js` the 118 elements
+  and their configurations; `core.js` the global and the registry, `packs/*.js` each
   pack's registration, `index.js` everything at once for the tests), plus `canvas/src/expr.js` (the small safe formula language it shares with Oomba Canvas). `scripts/build-figures.js` bundles it into
   `public/vendor/oomba-figures/<version>/oomba-figures.js` (with its LICENSE and `manifest.json`) and writes
-  `figures/SHIPPED.json`, the lock for it and for the vendored libraries (1.0.0 stays byte for byte; 1.1.0 adds the
-  number line, the shapes and the notice, and its LICENSE file carries the Apache License 2.0 after ours; 1.1.0 is minified
+  `figures/SHIPPED.json`, the lock for it and for the vendored libraries (1.0.0 and 1.1.0 stay byte for byte; 1.1.0 adds the
+  number line, the shapes and the notice, 1.2.0 the chemistry kinds and lab readings, and its LICENSE file carries the Apache License 2.0 after ours; 1.1.0 is minified
   by esbuild, its legal comments kept: the header and each ported file's Apache 2.0 note) (`scripts/vendor-figures.js` copies JSXGraph
   and SmilesDrawer from npm; licences in `docs/third-party.md`).
 - Split by subject (since 1.1.0, "The core and its packs" below): `oomba-figures.js` is the core, and `packs/math.js`,
@@ -82,6 +90,12 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
   bohr { element: "Na", charge: 0 } (H to Ca; give shells for more)    orbitals { element: "Fe", charge: 2 } (H to Kr)
   lewis { molecule: "H2O" } (H2, F2, Cl2, O2, N2, HCl, HF, H2O, NH3, CH4, CCl4, CO2, HCN, C2H4, C2H2, NH4, OH) or { atoms: [{ el: "O", x: 0, y: 0, lone: 2 }, ...], bonds: [{ a: 0, b: 1, order: 1 }], charge: 0 }; style: "dots" draws shared pairs as dots
   reading { type: "thermometer" | "cylinder" | "spring", value: 23.5, min: -10, max: 50, step: 1, major: 10 } (the value on a tick or half way between two; read a cylinder at the bottom of the meniscus); a ruler: { type: "ruler", value: 4.3 (the object's length), start: 0, max: 15, step: 0.1, unit: "cm" } (unit "in": step [1, 8], value [27, 8]; ends on a mark, a cm length also half way; max to 30 cm or 12 in); a vernier caliper: { type: "caliper", value: 23.45 (mm, 0 to 150), leastCount: 0.1 | 0.05 | 0.02, zero: 0.3 (a zero error, drawn closed beside it) }; a micrometer: { type: "micrometer", value: 7.38 (mm, 0 to 25, to 0.01; estimate: true for 0.001), zero: -0.03 }; a spring scale's extras: masses: [100, 50] (grams hanging: the value must be their weight, with g: 9.8 or 10, plus any zero), zero: 0.5 (what it reads unloaded); OF.solve.reading gives value, zero and corrected (and main, k for a caliper; sleeve, thimble for a micrometer)
+  Chemistry (1.2.0, the chem pack): massSpectrum { element: "Cl" } (its natural isotopes; or isotopes: [{ mass: 10, abundance: 20 }, { mass: 11, abundance: 80 }] adding up to 100, name; scale: "relative"; missing: 37 a peak to draw; OF.solve.massSpectrum gives mass, the relative atomic mass; hide: "values", "element")    heatingCurve { substance: "water", from: -20, to: 120, mass: 100, x: "time" } (to scale from q = m c ΔT and n ΔH: substance water, ethanol, acetone, mercury, sodiumChloride or x, or your own mp, bp, cSolid, cLiquid, cGas, fusH, vapH, molarMass; to below from is a cooling curve, supercool: 5; x: "heat" in kJ, or "time" at rate kJ/min; OF.solve gives each segment's heat and time, melt, boil; hide: "states", "points")
+  energyProfile { levels: [50, 150, 20], catalyst: 100 } (kJ/mol in order: reactants, transition state, [intermediate, transition state,] products: 3, 5 or 7, each transition state a peak; catalyst: the catalyzed transition state, below the highest and above reactants and products; arrows: ["ea", "dh", "eaReverse", "catEa"]; style: "levels" (an energy level diagram); names: { reactants, products }; OF.solve gives dH, ea, eaReverse, steps, rateStep, catEa; hide: "values", "arrows")    nuclide { element: "C", mass: 14, charge: 0 } (any of the 118; or { particle: "alpha" | "beta" | "positron" | "neutron" | "proton" | "gamma" }; notation: "hyphen" | "both"; the mass number is never below Z; OF.solve gives protons, neutrons, electrons; hide: "mass", "Z", "symbol", "charge")
+  lineSpectrum { strips: [{ element: "H" }, { element: "Na" }, { name: "Unknown", mix: [0, 1] }] } (elements H, He, Li, Na, K, Ca, Sr, Ba, Cu, Zn, Cd, Hg, Ne, Ar, Kr, or { name, lines: [nm] }; style: "absorption"; from, to in nm; print is black lines on white; hide: "names")    photoelectron { element: "Na", compare: "Mg" } (H to Xe; one peak per sublevel as tall as its electrons at its binding energy; unit "MJ/mol" or "eV", scale "log" or "linear", energies: true; hide: "sublevels", "element")
+  dotCross { molecule: "H2O" } (a molecule from the Lewis list without a charge: shells overlap where atoms bond, each atom's electrons its own mark) or { ions: [{ element: "Mg", count: 1 }, { element: "Cl", count: 2 }] } (a metal and a non-metal, charges balanced); OF.solve gives sharedPairs, lonePairs or the ions, transferred; hide: true (empty shells)
+  particles { particles: [{ count: 8, shape: "bent", look: { size: "m", shade: "gray" }, outer: { size: "s", shade: "white" }, name: "Water" }], state: "gas" } (shapes single, pair, bent, line, triangle, cross; sizes xs to xl; shades white, light, gray, dark, black; charge "+", "-", "2+"...; state gas, liquid, solid; boxes: 2 with each kind's after count: atoms are conserved; or lattice: { pattern: "alternate", rows: 4, columns: 5, main, second }; every particle must fit; hide: "names")
+  The chemistry readings are reading types (the measure pack): { type: "buret", value: 24.65, initial: 1.20, max: 50 } (reads down, to 0.05 mL; OF.solve gives the titre), { type: "beaker", value: 175, max: 250, step: 25 }, { type: "syringe", value: 43.5, max: 100, setup: true }, { type: "balance", value: 24.73, decimals: 2 }, { type: "tripleBeam", value: 347.65 } (to 0.05 g), { type: "thermometer", digital: true, value: 23.4, unit: "°C" | "K" | "°F" }, { type: "pH", meter: "digital" | "analog" | "paper", value: 4.62 } (analog to 0.1, paper whole numbers), { type: "displacement", before: 42, after: 50, max: 100, step: 1, major: 10, object: "rock" | "marbles" } (OF.solve gives the volume). Also bohr { element: "Na", charge: 1, ionMarks: true }, orbitals { element: "Ag", core: true, arrangement: "energy" } (H to Og), halfLife { isotopes: [{ halfLife: 5, name: "A" }, { halfLife: 12, name: "B" }] }, titration { points: [[0, 2.9], [5, 4.1], ...] } (measured pH), and more Lewis molecules: H2S, PH3, PCl3, NF3, OF2, SiH4, CF4, CH3Cl, H2O2, C2H6, HOCl, CO, CN, H3O, HCHO.
   numberLine { from: -5, to: 5, step: 1, every: 1, intervals: [{ from: -3, to: 4, fromClosed: false }], points: [{ at: [3, 4], label: "P" }], sequence: { expr: "1/n", from: 1, to: 5 } } (a value is a number, a fraction [n, d] or { pi: k }; leave out an interval's from or to to run off that end; ends are closed unless fromClosed or toClosed is false; every: a number at every nth tick; numbering: "decimal" | "fraction" | "pi" | "degree"; hide: true for a numbered line to graph on, "graph", "points", "values"). A line for the student to tap or jump on is the Oomba Canvas tool (numberline.point, numberline.jump), not a figure.
   triangle { AB: 3, BC: 4, B: 90, labels: { CA: "x" } } (any three of the angles A, B, C and the sides AB, BC, CA that make a triangle; more must agree; other: true for the second triangle of the ambiguous case)
   rectangle { AB: 12, BC: 5, unit: "cm" } (a square: { AB: 6, square: true })    parallelogram { AB: 12, DA: 10, A: 30, heights: ["D"], labels: { hD: true } } (a rhombus: { AB: 6, A: 70, rhombus: true })
@@ -132,12 +146,12 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
 | `projectile` | `speed`, `angle`, `height`, `g`, `positions`, `letters`, `path`, `velocity`, `components`, `gravity`, `angleMark`, `marks`, `unit`, `heading` | `true`, `path`, `range`, `height`, `cliff` |
 | `waves` | `wave`, `axis`, `amplitude`, `wavelength` or `period`, `speed`, `cycles`, `marks`, `labels`, `xunit`, `yunit`, `heading` | `true`, `marks`, `labels` |
 | `grid` | `x`, `y`, `step`, `points`, `segments`, `fns`, `shapes`; since 1.1.0 `xstep`, `ystep`, `numbering`, `xtitle`, `ytitle`, `inequalities`, `verticals`, `asymptotes`, a function's `fromClosed`, `toClosed`, `holes`, a shape's `names` and `transform` | `labels`, `image`, `true` (a blank grid) |
-| `halfLife` | `halfLife`, `start`, `tmax`, `unit`, `yunit` | `marks` |
-| `titration` | `acid`, `base`, `flask`, `ca`, `cb`, `v0`, `vmax`, `pKa`, `pKb` | `marks` |
-| `bohr` | `element` or `Z`, `charge`, `shells` | `electrons`, `nucleus` |
-| `orbitals` | `element` or `Z`, `charge` | `arrows` |
+| `halfLife` | `halfLife`, `start`, `tmax`, `unit`, `yunit`; 1.2.0 `isotopes` (up to 3) | `marks` |
+| `titration` | `acid`, `base`, `flask`, `ca`, `cb`, `v0`, `vmax`, `pKa`, `pKb`; 1.2.0 `points` (measured) | `marks` |
+| `bohr` | `element` or `Z`, `charge`, `shells`; 1.2.0 `ionMarks` | `electrons`, `nucleus` |
+| `orbitals` | `element` or `Z`, `charge`; 1.2.0: H to Og, `core`, `arrangement` | `arrows` |
 | `lewis` | `molecule`, or `atoms` + `bonds` + `charge`; `style` | `lone`, `true` (atoms only) |
-| `reading` | `type`, `value`, `min`, `max`, `step`, `major`, `unit`; a ruler (1.1.0): `type: "ruler"`, `value`, `start`, `max`, `step`, `unit`; a caliper (1.1.0): `type: "caliper"`, `value`, `leastCount`, `zero`; a micrometer (1.1.0): `type: "micrometer"`, `value`, `estimate`, `zero`; a spring scale's `masses`, `g`, `zero` (1.1.0) | `value` |
+| `reading` | `type`, `value`, `min`, `max`, `step`, `major`, `unit`; a ruler (1.1.0): `type: "ruler"`, `value`, `start`, `max`, `step`, `unit`; a caliper (1.1.0): `type: "caliper"`, `value`, `leastCount`, `zero`; a micrometer (1.1.0): `type: "micrometer"`, `value`, `estimate`, `zero`; a spring scale's `masses`, `g`, `zero` (1.1.0); 1.2.0: `type: "buret"` (`value`, `max`, `initial`), `"beaker"`, `"syringe"` (`setup`), `"balance"` (`decimals`, `pan`), `"tripleBeam"`, `"pH"` (`meter`, `decimals`), `"displacement"` (`before`, `after`, `object`, `count`), a thermometer's `digital` and `decimals` | `value` |
 | `triangle` | any three of `A`, `B`, `C` (degrees), `AB`, `BC`, `CA` (lengths); `other`; and the shape options below | `true` (no measures), a part, `sides`, `angles`, `heights` |
 | `rectangle` | `AB`, `BC`; or `AB` with `square: true` | as for a triangle, and `diagonals` |
 | `parallelogram` | `AB`, `DA`, `A`; or `AB`, `A` with `rhombus: true` | as for a rectangle |
@@ -171,6 +185,14 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
 | `sphere` | `radius` or `diameter`, `hemisphere`, `bowl`, `labels`, `hidden`, `notToScale` | `true`, `radius`, `diameter` |
 | `net` | `solid` (`cube`, `prism`, `pyramid`, `cylinder`, `cone`); a cube's `side` with `net` (1 to 11) or `cells`; or the solid's measures; `fold`, `faces`, `shade`, `tabs`, `labels` | `true`, `areas`, a part |
 | `mappingDiagram` | `inputs`, `outputs`, `arrows: [[input, output]]`, `rule`, `shape`, `titles`, `heading` | `true` / `arrows`, `outputs` |
+| `massSpectrum` (1.2.0) | `element` or `isotopes: [{ mass, abundance }]` + `name`, `scale`, `values`, `missing`, `x`, `heading` | `values`, `element`, `true` |
+| `heatingCurve` (1.2.0) | `substance` (or `mp`, `bp`, `cSolid`, `cLiquid`, `cGas`, `fusH`, `vapH`, `molarMass`), `from`, `to`, `mass`, `x`, `rate`, `supercool`, `labels`, `marks`, `heading` | `states`, `points`, `true` |
+| `energyProfile` (1.2.0) | `levels` (3, 5 or 7), `catalyst`, `unit`, `style`, `arrows`, `names`, `heading` | `values`, `arrows`, `true` |
+| `nuclide` (1.2.0) | `element` + `mass` + `charge`, or `symbol` + `Z` + `mass`, or `particle` + `symbol`; `notation` | `mass`, `Z`, `symbol`, `charge`, `true` |
+| `lineSpectrum` (1.2.0) | `strips: [{ element } \| { name, lines } \| { name, mix }]`, `style`, `from`, `to`, `strength`, `heading` | `names`, `true` |
+| `photoelectron` (1.2.0) | `element`, `compare`, `unit`, `scale`, `sublevels`, `energies`, `heading` | `sublevels`, `element`, `true` |
+| `dotCross` (1.2.0) | `molecule` (or `atoms` + `bonds`, no charge), or `ions: [{ element, count }]` (a metal and a non-metal) | `true` |
+| `particles` (1.2.0) | `particles: [{ count, shape, look, outer, name, after }]`, `state`, `seed`, `boxes`, `afterState`, `arrow`; or `lattice`; `border`, `heading` | `names`, `true` |
 
 `opts.print` draws black on white with grey fills (the printed worksheet). Colours otherwise are the site's: green,
 blue, red, gold and purple on the cream paper.
@@ -726,11 +748,74 @@ caliper and 0.05 mm for a micrometer either way), drawn closed above it. A sprin
 reads with nothing on it, drawn unloaded beside it). `OF.solve.reading` gives the `value`, the `zero` and the
 `corrected` reading (and `main` and `k` for a caliper, `sleeve` and `thimble` for a micrometer, `mass` and `weight`
 for hanging masses). The thermometer, cylinder and spring scale without the new options draw exactly as in 1.0.0.
-Chemistry's own readings (burettes, beakers, balances, gas syringes, digital thermometers, pH) come next.
+Chemistry's own readings (burets, beakers, balances, gas syringes, digital thermometers, pH) came in 1.2.0 ("Chemistry (1.2.0)").
 
 ```json
 {"tool": "figure.number", "vars": {"m": [10, 140], "k": [0, 19]}, "q": "What does the caliper read, in mm?", "fig": {"kind": "reading", "type": "caliper", "value": "{=m + k*0.05}", "leastCount": 0.05, "hide": "value"}, "answer": "m + k*0.05", "dp": 2, "unit": "mm", "work": ["The main scale reads {m} mm before the sliding zero.", "Sliding mark {k} lines up: {k} × 0.05 = {=k*0.05} mm.", "{m} + {=k*0.05} = {=m + k*0.05} mm"]}
 {"tool": "figure.number", "vars": {"h": [2, 40], "j": [0, 49]}, "q": "What does the micrometer read, in mm?", "fig": {"kind": "reading", "type": "micrometer", "value": "{=h/2 + j/100}", "hide": "value"}, "answer": "h/2 + j/100", "dp": 2, "unit": "mm", "work": ["The sleeve shows {=h/2} mm.", "Thimble mark {j} is on the datum line: {=j/100} mm.", "{=h/2} + {=j/100} = {=h/2 + j/100} mm"]}
+```
+
+## Chemistry (1.2.0)
+
+The chemistry sites' generators, ported where Oomba had none and added to the kinds Oomba had (one way to draw each
+figure: a lab reading is a type of `reading`, an orbital diagram for heavier elements is still `orbitals`). Oomba
+Figures 1.2.0 is a new version folder (the core and its five packs); 1.0.0 and 1.1.0 have shipped and stay byte for
+byte, and every chemistry figure 1.1.0 drew draws the same bytes in 1.2.0 unless its data uses a new option
+(`tests/unit/figures-v120.test.js`). New builds and the Figures product get 1.2.0. Each figure is drawn from its
+numbers and refuses data it cannot draw truthfully:
+
+- `massSpectrum`: one peak per isotope at its mass number, as tall as its abundance (CIAAW 2024 compositions, NIST
+  masses: every element's abundances add up to 100 and average to its standard atomic weight); given isotopes must add
+  up to 100 and have different mass numbers. `OF.solve.massSpectrum(data).mass` is the relative atomic mass.
+- `heatingCurve`: every segment to scale from the substance's specific heats and enthalpies (q = m c ΔT on a slope,
+  q = n ΔH on a plateau), along heat in kJ or time at a steady rate; a cooling curve runs the other way and can be
+  supercooled.
+- `energyProfile`: the peaks and dips are exactly the levels' energies (each transition state above its neighbors);
+  Ea, the reverse Ea and ΔH are worked out from them, a catalyst lowers the transition state but not ΔH, and the
+  rate-determining step is named only when it is clear cut. `style: "levels"` is an energy level diagram (reactants,
+  products and ΔH). Atomic energy levels with transitions are not drawn yet.
+- `nuclide`: the mass number at the top left, the atomic number at the bottom left, the charge at the top right; never
+  fewer than 0 neutrons or electrons; nuclear particles with their fixed numbers.
+- `lineSpectrum`: each element's strongest visible lines (NIST) at their wavelengths, in their colors; a mixture
+  shows every line of its parts; in print, black lines on white.
+- `photoelectron`: one peak per sublevel of the real ground state, as tall as its electrons, at its binding energy
+  (H to Ca the textbook table, Sc to Xe Lotz 1970), on a log or linear axis growing to the left.
+- `particles`: every particle drawn (data that does not fit is refused), seeded so the same data draws the same
+  figure; two boxes keep every atom. The discs are grays, so they print as they show.
+- Lab readings (`reading`): a buret reads down (to 0.05 mL, with an initial reading for a titre), a beaker's flat
+  surface, a gas syringe's plunger, a digital balance's places (and what it holds), a triple beam balance's riders, a
+  digital thermometer in °C, K or °F, a pH meter (digital to its places, analog to 0.1) or pH paper (whole numbers; in
+  print its 15 swatches are grays from light to dark, which a printer may not tell apart, so print a meter instead),
+  and volume by displacement (the object, its area exactly the water it pushed up, must fit under the surface).
+- Extensions: `orbitals` for all 118 elements with `core: true` (`[Kr] 5s¹ 4d¹⁰`) and `arrangement: "energy"`, and
+  `OF.solve.orbitals` (configuration, core, unpaired electrons); `bohr` with `ionMarks: true` (gained electrons as
+  crosses, lost ones on a dashed shell); `halfLife` with `isotopes` (up to three curves); `titration` with measured
+  `points`; and more Lewis molecules.
+
+- `dotCross`: a molecule's outer shells as circles overlapping where atoms bond, each shared pair in the overlap (one
+  electron from each atom), each atom's own electrons in its own mark (dots, crosses, rings); or an ionic compound's
+  ions in brackets, the metal's electrons as crosses in the non-metal's full shell, the charges balanced. Not the same
+  figure as `lewis` (no shells) or `bohr` (one atom, every shell). A charged molecule or a dative bond (CO) is refused
+  for now (draw it with `lewis`).
+
+Deferred: skeletal structures and the organic structure editor (owner decision), and atomic energy levels with
+transitions. Builder trigger words for these figures are in every site language (`server/builder/figures.js`).
+
+```json
+{"tool": "figure.number", "vars": {"m": [1, 3], "n": [1, 3]}, "q": "How many electrons does the metal give away in one formula unit of this compound?", "fig": {"kind": "dotCross", "ions": [{"element": "{=10 + m}", "count": "{=n/if(m - n, 1, m)}"}, {"element": "{=18 - n}", "count": "{=m/if(m - n, 1, m)}"}]}, "answer": "m*n/if(m - n, 1, m)", "dp": 0, "work": ["The metal ion is {m}+ and the non-metal ion is {n}−.", "The charges balance with {=n/if(m - n, 1, m)} metal and {=m/if(m - n, 1, m)} non-metal ions.", "Electrons given: {=n/if(m - n, 1, m)} × {m} = {=m*n/if(m - n, 1, m)}"]}
+{"tool": "figure.number", "vars": {"m": [6, 60], "a": [51, 95]}, "q": "Element X has two isotopes, shown in its mass spectrum. What is its relative atomic mass?", "fig": {"kind": "massSpectrum", "isotopes": [{"mass": "{m}", "abundance": "{a}"}, {"mass": "{=m + 2}", "abundance": "{=100 - a}"}], "name": "Element X"}, "answer": "(m*a + (m + 2)*(100 - a))/100", "dp": 2, "work": ["Weight each mass number by its abundance.", "({m} × {a} + {=m + 2} × {=100 - a}) ÷ 100", "= {=round((m*a + (m + 2)*(100 - a))/100, 2)}"]}
+{"tool": "figure.number", "vars": {"m": [50, 200, 10]}, "q": "{m} g of ice at −20 °C is heated to steam at 120 °C. How much heat melts the ice? (ΔHfus = 6.01 kJ/mol, M = 18.02 g/mol)", "fig": {"kind": "heatingCurve", "substance": "water", "mass": "{m}", "x": "heat"}, "answer": "m/18.02*6.01", "dp": 1, "unit": "kJ", "work": ["n = {m} ÷ 18.02 = {=round(m/18.02, 3)} mol", "q = n × ΔHfus = {=round(m/18.02, 3)} × 6.01", "= {=round(m/18.02*6.01, 1)} kJ"]}
+{"tool": "figure.number", "vars": {"r": [20, 80, 5], "t": [100, 200, 10], "p": [0, 90, 5]}, "where": "(t > r + 10) * (t > p + 10) * (p != r)", "q": "What is the activation energy of the forward reaction, in kJ/mol?", "fig": {"kind": "energyProfile", "levels": ["{r}", "{t}", "{p}"], "arrows": ["dh"], "hide": "values"}, "answer": "t - r", "dp": 0, "unit": "kJ/mol", "work": ["Eₐ = E(transition state) − E(reactants)", "= {t} − {r}", "= {=t - r} kJ/mol"]}
+{"tool": "figure.number", "vars": {"z": [3, 30], "n": [3, 40]}, "where": "(n >= z) * (n <= 2*z)", "q": "How many neutrons does this nucleus have?", "fig": {"kind": "nuclide", "element": "{z}", "mass": "{=z + n}"}, "answer": "n", "dp": 0, "work": ["Neutrons = mass number − atomic number", "= {=z + n} − {z}", "= {n}"]}
+{"tool": "figure.number", "vars": {"a": [400, 700]}, "q": "Element X gives out one visible line. What is the frequency of this light, in units of 10¹⁴ Hz? (c = 3.00 × 10⁸ m/s)", "fig": {"kind": "lineSpectrum", "strips": [{"name": "X", "lines": ["{a}"]}]}, "answer": "3000/a", "dp": 2, "work": ["f = c ÷ λ", "= 3.00 × 10⁸ ÷ ({a} × 10⁻⁹)", "= {=round(3000/a, 2)} × 10¹⁴ Hz"]}
+{"tool": "figure.number", "vars": {"z": [3, 20]}, "q": "How many electrons does this atom have?", "fig": {"kind": "photoelectron", "element": "{z}", "hide": "element"}, "answer": "z", "dp": 0, "work": ["Each peak is as tall as the electrons in its sublevel.", "Add the heights of the peaks.", "The atom has {z} electrons."]}
+{"tool": "figure.number", "vars": {"a": [3, 10], "b": [2, 8]}, "q": "How many molecules are in the box?", "fig": {"kind": "particles", "particles": [{"count": "{a}", "shape": "pair", "look": {"size": "s", "shade": "white"}, "outer": {"size": "s", "shade": "white"}}, {"count": "{b}", "shape": "bent", "look": {"size": "m", "shade": "dark"}, "outer": {"size": "s", "shade": "white"}}]}, "answer": "a + b", "dp": 0, "work": ["Count each molecule once, whatever its atoms.", "{a} + {b}", "= {=a + b}"]}
+{"tool": "figure.number", "vars": {"i": [0, 60], "f": [300, 980]}, "q": "What volume was added from the buret, in mL?", "fig": {"kind": "reading", "type": "buret", "max": 50, "initial": "{=i/20}", "value": "{=f/20}", "hide": "value"}, "answer": "(f - i)/20", "dp": 2, "unit": "mL", "work": ["Initial reading: {=i/20} mL", "Final reading: {=f/20} mL", "Volume added = {=f/20} − {=i/20} = {=(f - i)/20} mL"]}
+{"tool": "figure.number", "vars": {"k": [2, 18]}, "q": "What volume of liquid is in the beaker, in mL?", "fig": {"kind": "reading", "type": "beaker", "value": "{=k*12.5}", "max": 250, "step": 25, "hide": "value"}, "answer": "k*12.5", "dp": 1, "unit": "mL", "work": ["The marks are 25 mL apart.", "The surface is at {=k*12.5} mL."]}
+{"tool": "figure.number", "vars": {"a": [10, 190]}, "q": "How much gas has the syringe collected, in cm³?", "fig": {"kind": "reading", "type": "syringe", "value": "{=a/2}", "max": 100, "setup": true, "hide": "value"}, "answer": "a/2", "dp": 1, "unit": "cm³", "work": ["Each small mark is 1 cm³.", "The face of the plunger is at {=a/2} cm³."]}
+{"tool": "figure.number", "vars": {"h": [0, 5], "t": [0, 9], "f": [0, 199]}, "q": "What mass does the triple beam balance show, in g?", "fig": {"kind": "reading", "type": "tripleBeam", "value": "{=100*h + 10*t + f/20}", "hide": "value"}, "answer": "100*h + 10*t + f/20", "dp": 2, "unit": "g", "work": ["Add the three riders.", "{=100*h} + {=10*t} + {=f/20}", "= {=100*h + 10*t + f/20} g"]}
+{"tool": "figure.number", "vars": {"a": [10, 130]}, "q": "What pH does the meter show?", "fig": {"kind": "reading", "type": "pH", "meter": "analog", "value": "{=a/10}", "hide": "value"}, "answer": "a/10", "dp": 1, "work": ["The small marks are 0.2 apart.", "The needle points to {=a/10}."]}
+{"tool": "figure.number", "vars": {"b": [20, 60], "r": [4, 20]}, "q": "A rock is lowered into the water. What is its volume, in mL?", "fig": {"kind": "reading", "type": "displacement", "before": "{b}", "after": "{=b + r}", "max": 100, "step": 1, "major": 10, "hide": "value"}, "answer": "r", "dp": 0, "unit": "mL", "work": ["Before: {b} mL. After: {=b + r} mL.", "The rock pushed the water up {=b + r} − {b} = {r} mL.", "Its volume is {r} mL."]}
 ```
 
 ## Radians (1.1.0)
@@ -775,6 +860,7 @@ chunk (`public/js/figures-export.js`).
 ## Not yet
 
 Skeletal structures (SmilesDrawer) are drawn in the browser only, so a printed worksheet cannot show them yet (use a
-Lewis structure there). Optics with thick lenses, 3D molecules, energy-level diagrams and moving physics (Phaser's
+Lewis structure there). Optics with thick lenses, 3D molecules, atomic energy-level diagrams with transitions (reaction energy diagrams came
+in 1.2.0: `energyProfile`) and moving physics (Phaser's
 built-in Matter physics already serves arcade games) are later. Compound circuits beyond one level of branches came in
 1.1.0 (`circuit` with `layout: "network"`, series-parallel only: a bridge circuit, which is neither, is not drawn).

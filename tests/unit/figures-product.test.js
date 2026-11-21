@@ -90,7 +90,10 @@ test('hidden: signed out, guests, grown-ups, students and teachers off the list 
 
 test('the menu: every catalog kind as a card with a server-drawn thumbnail; Math, Data, Physics and Chemistry open, Biology and Economics coming soon', async () => {
   const r = await as(boss)('/figures');
-  assert.equal((r.text.match(/class="fg-card"/g) || []).length, CAT.KINDS.length);
+  assert.equal((r.text.match(/class="fg-card"/g) || []).length, CAT.KINDS.length + CAT.KINDS.reduce((n, K) => n + (K.also || []).length, 0));
+  // The lab readings are physics and chemistry: listed under both tabs, once under All (the second card is data-also).
+  assert.match(r.text, /<section class="fg-sec" data-subject="chem"[\s\S]*?href="\/figures\/reading" data-subject="chem" data-also/);
+  assert.match(r.text, /href="\/figures\/reading" data-subject="physics" data-grades/);
   for (const s of ['math', 'data', 'physics', 'chem']) assert.match(r.text, new RegExp(`data-tab="${s}"`));
   assert.match(r.text, /Biology <span class="fg-soontag">Coming soon<\/span>/);
   assert.match(r.text, /Economics <span class="fg-soontag">Coming soon<\/span>/);

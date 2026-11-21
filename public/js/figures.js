@@ -7,7 +7,8 @@ function apply() {
   for (const sec of $$('.fg-sec')) {
     let n = 0;
     for (const c of sec.querySelectorAll('.fg-card')) {
-      const ok = (state.tab === 'all' || c.dataset.subject === state.tab)
+      // A kind listed under a second tab (data-also) shows there only, not twice under All.
+      const ok = (state.tab === 'all' ? !('also' in c.dataset) : c.dataset.subject === state.tab)
         && (!state.grades.size || c.dataset.grades.split(' ').some(g => state.grades.has(g)))
         && (!state.q || state.q.split(/\s+/).every(w => c.dataset.search.includes(w)));
       c.hidden = !ok; if (ok) n++;
