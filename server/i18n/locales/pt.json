@@ -3622,7 +3622,20 @@
       "print": "Imprimir",
       "printKey": "Imprimir com gabarito",
       "assign": "Atribuir a uma turma",
-      "assignNext": "Em breve: atribuir uma atividade a uma turma com datas de abertura e de entrega."
+      "assignTitle": "Atribuir a uma turma",
+      "assignClass": "Turma",
+      "assignOpens": "Abre (opcional)",
+      "assignDue": "Entrega (opcional)",
+      "assignShow": "Mostrar respostas depois da data de entrega",
+      "assignShowHint": "Desligado por padrão. Ligado: depois da data de entrega, quem entregou vê as respostas e os passos.",
+      "assignSnapshot": "Os alunos recebem a atividade como ela está agora. Mudanças que você fizer depois não a mudam.",
+      "assignGo": "Atribuir",
+      "assignCancel": "Cancelar",
+      "assignEmpty": "Adicione perguntas primeiro e depois atribua a atividade.",
+      "assignNoClasses": "Você ainda não tem turma. Crie uma turma primeiro e depois atribua.",
+      "assignDone": "Atribuído a {class}.",
+      "assignSee": "Ver como os alunos",
+      "assignProgress": "Ver o progresso"
     }
   },
   "favorites": {
@@ -4251,7 +4264,8 @@
       "build": "Criar um jogo",
       "text": "Ler ou fazer",
       "question": "Responder a uma pergunta",
-      "quiz": "Responder às perguntas do quiz"
+      "quiz": "Responder às perguntas do quiz",
+      "figures": "Responder perguntas de figuras"
     },
     "library": {
       "title": "Biblioteca de aulas",
@@ -12484,6 +12498,51 @@
       "dotCross": {
         "name": "Diagrama de pontos e cruzes",
         "desc": "Elétrons compartilhados e transferidos nas camadas"
+      }
+    },
+    "step": {
+      "answerLabel": "Sua resposta à pergunta {n}",
+      "right": "Certo",
+      "notRight": "Não está certo",
+      "answer": "Resposta:",
+      "teacherAnswer": "Gabarito:",
+      "score": "Você acertou {right} de {total} ({pct}%).",
+      "answersLater": "Seu professor vai mostrar as respostas depois da data de entrega.",
+      "noAnswers": "Seu professor tem as respostas e pode revisá-las com a turma.",
+      "teacherNote": "É isto que os alunos veem, com o gabarito embaixo de cada pergunta para você.",
+      "showOnNote": "As respostas aparecem para os alunos depois da data de entrega.",
+      "showOffNote": "As respostas nunca aparecem para os alunos.",
+      "handInHint": "Salve enquanto trabalha. Quando você entregar, suas respostas são corrigidas e não podem mais ser mudadas.",
+      "answersReady": "As respostas estão prontas. Entregue seu trabalho para vê-las.",
+      "save": "Salvar",
+      "handIn": "Entregar",
+      "handInConfirm": "Entregar suas respostas? Depois não dá para mudar.",
+      "saved": "Salvo",
+      "handedIn": "Entregue",
+      "showIsOn": "As respostas vão aparecer depois da data de entrega",
+      "showIsOff": "As respostas estão escondidas dos alunos",
+      "errors": {
+        "handedIn": "Você já entregou isto.",
+        "empty": "Escreva pelo menos uma resposta primeiro."
+      },
+      "showAnswers": "Mostrar respostas depois da data de entrega",
+      "showAnswersHint": "Desligado por padrão. Ligado: depois da data de entrega, cada aluno que entregou vê as respostas e os passos.",
+      "showNeedsDue": "Coloque uma data de entrega nesta aula para mostrar as respostas depois.",
+      "handedInCount": "Entregues: {done} de {total}",
+      "questionN": "Pergunta {n}",
+      "rightOf": "{right} de {total} certas",
+      "answersTable": "As respostas de cada aluno",
+      "noneYet": "Ninguém entregou ainda.",
+      "questions": "{count, plural, one {# pergunta de figura} other {# perguntas de figuras}}"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Adicione uma pergunta antes de atribuir esta atividade.",
+        "noAnswer": "Cada pergunta precisa de uma resposta antes de ser atribuída. Escolha uma para a pergunta {list} no editor.",
+        "noClass": "Escolha uma das suas turmas.",
+        "badDate": "Essa data não parece certa.",
+        "dueBeforeOpen": "A data de entrega é antes da data de abertura.",
+        "needsDue": "Defina uma data de entrega para mostrar as respostas depois."
       }
     }
   }

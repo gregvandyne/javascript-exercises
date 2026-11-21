@@ -200,7 +200,7 @@ test('the worksheet builder on a laptop: Power with AI (mocked) adds checked que
     assert.match(await page.innerHTML('#fg-paper'), /12 m²/);
     await page.click('[data-tab="sheet"]');
     assert.doesNotMatch(await page.innerHTML('#fg-paper'), /12 m²/);
-    assert.equal(await page.isDisabled('.fg-assign button'), true, 'assigning is next');
+    assert.equal(await page.isDisabled('.fg-assign button'), true, 'no class to assign to (figures-assign-browser.test.js assigns)');
     const id = page.url().split('/').pop();
     await page.goto(`${BASE}/figures/worksheets/${id}/print?key=0`);
     await page.waitForSelector('.fgp');

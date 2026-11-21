@@ -3,7 +3,8 @@
 // "Work done" (services/progress.js overall) is steps done of steps open: a child who answers everything wrong still
 // shows 100 %. The Score is points earned of points possible over the work that has a right answer or a teacher's rubric:
 //   quiz     a finished quiz step: 1 point per question, the points are the questions answered right (checked by the site)
-//            (a Story Library book's questions count the same way: right on the first try)
+//            (a Story Library book's questions count the same way: right on the first try; so does a Figures worksheet
+//            handed in: 1 point per question, marked by the site)
 //   live     a game step the teacher hosted live for the class: 1 point per question asked, the student's best run
 //   rubric   a rubric from the library, scored by the teacher: the points given of the most possible (only criteria with
 //            a level; a score from a swapped-out rubric is left out, as everywhere: rubrics.scoreCounts)
@@ -63,10 +64,10 @@ export function classItems(classId, { userId = null } = {}) {
   }
   for (const r of q.all(`SELECT p.user_id u, p.class_lesson_id cl, p.step_id sid, p.marks, p.status, s.title, s.kind, s.position pos, s.rubric FROM step_progress p
       JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
-      WHERE c.class_id=? AND p.marks!='' AND s.kind IN ('quiz','story','question','build') ${userId ? 'AND p.user_id=?' : ''}`, classId, ...who)) {
+      WHERE c.class_id=? AND p.marks!='' AND s.kind IN ('quiz','story','figures','question','build') ${userId ? 'AND p.user_id=?' : ''}`, classId, ...who)) {
     const base = { stepId: r.sid, title: r.title || '', stepKind: r.kind, pos: r.pos };
     // A Story Library book's 3 questions (services/library.js): 1 point each, right on the first try.
-    if (r.kind === L.QUIZ_KIND || r.kind === 'story') {
+    if (r.kind === L.QUIZ_KIND || r.kind === 'story' || r.kind === L.FIGURES_KIND) {
       if (r.status === 'done' && !/[^01]/.test(r.marks)) add(r.u, r.cl, { kind: 'quiz', ...base, earned: digits(r.marks, /1/), possible: r.marks.length });
       continue;
     }

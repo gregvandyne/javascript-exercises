@@ -3917,7 +3917,20 @@
       "print": "Print",
       "printKey": "Print with answer key",
       "assign": "Assign to class",
-      "assignNext": "Coming next: assigning a worksheet to a class with open and due dates."
+      "assignTitle": "Assign to a class",
+      "assignClass": "Class",
+      "assignOpens": "Opens (optional)",
+      "assignDue": "Due (optional)",
+      "assignShow": "Show answers after the due date",
+      "assignShowHint": "Off by default. On: once the due date is over, students who handed in see the answers and worked lines.",
+      "assignSnapshot": "Students get the worksheet as it is now. Changes you make later don't change it.",
+      "assignGo": "Assign",
+      "assignCancel": "Cancel",
+      "assignEmpty": "Add questions first, then assign the worksheet.",
+      "assignNoClasses": "You don't teach a class yet. Make a class first, then assign.",
+      "assignDone": "Assigned to {class}.",
+      "assignSee": "See it as students do",
+      "assignProgress": "See progress"
     }
   },
   "favorites": {
@@ -4546,7 +4559,8 @@
       "build": "Build a game",
       "text": "Read or do",
       "question": "Answer a question",
-      "quiz": "Answer quiz questions"
+      "quiz": "Answer quiz questions",
+      "figures": "Answer figure questions"
     },
     "library": {
       "title": "Lesson library",
@@ -13213,6 +13227,51 @@
       "dotCross": {
         "name": "Dot-and-cross diagram",
         "desc": "Shared and transferred electrons in shells"
+      }
+    },
+    "step": {
+      "answerLabel": "Your answer to question {n}",
+      "right": "Right",
+      "notRight": "Not right",
+      "answer": "Answer:",
+      "teacherAnswer": "Answer key:",
+      "score": "You got {right} of {total} right ({pct}%).",
+      "answersLater": "Your teacher will show the answers after the due date.",
+      "noAnswers": "Your teacher has the answers and may go over them with the class.",
+      "teacherNote": "This is what students see, with the answer key under each question for you.",
+      "showOnNote": "Answers show to students after the due date.",
+      "showOffNote": "Answers never show to students.",
+      "handInHint": "Save as you go. When you hand in, your answers are marked and can't be changed.",
+      "answersReady": "The answers are ready. Hand in your work to see them.",
+      "save": "Save",
+      "handIn": "Hand in",
+      "handInConfirm": "Hand in your answers? You can't change them after.",
+      "saved": "Saved",
+      "handedIn": "Handed in",
+      "showIsOn": "Answers will show after the due date",
+      "showIsOff": "Answers are hidden from students",
+      "errors": {
+        "handedIn": "You've already handed this in.",
+        "empty": "Write at least one answer first."
+      },
+      "showAnswers": "Show answers after the due date",
+      "showAnswersHint": "Off by default. On: once the due date is over, each student who handed in sees the answers and worked lines.",
+      "showNeedsDue": "Set a due date for this lesson to show answers after it.",
+      "handedInCount": "Handed in: {done} of {total}",
+      "questionN": "Question {n}",
+      "rightOf": "{right} of {total} right",
+      "answersTable": "Each student's answers",
+      "noneYet": "Nobody has handed in yet.",
+      "questions": "{count, plural, one {# figure question} other {# figure questions}}"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Add a question before you assign this worksheet.",
+        "noAnswer": "Every question needs an answer before you assign it. Choose one for question {list} in the editor.",
+        "noClass": "Pick one of your classes.",
+        "badDate": "That date doesn't look right.",
+        "dueBeforeOpen": "The due date is before the open date.",
+        "needsDue": "Set a due date to show the answers after it."
       }
     }
   }
