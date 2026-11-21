@@ -209,29 +209,113 @@ export function codeToId(typed) {
 /** A set of this game: { id, items, ownerId } or null. */
 export function get(gameId, id) {
   if (!SET_ID.test(String(id || ''))) return null;
-  const r = q.get('SELECT id, owner_id, items FROM game_sets WHERE id=? AND game_id=?', id, gameId);
+  const r = q.get('SELECT id, owner_id, items, title FROM game_sets WHERE id=? AND game_id=?', id, gameId);
   if (!r) return null;
-  try { return { id: r.id, ownerId: r.owner_id, items: JSON.parse(r.items) }; } catch { return null; }
+  try { return { id: r.id, ownerId: r.owner_id, items: JSON.parse(r.items), title: r.title || '' }; } catch { return null; }
+}
+
+/** The longest name a set may have (its title: what its owner calls it in their list). */
+export const TITLE_MAX = 60;
+/** A set's name as typed -> { ok: true, value } ('' is no name) or { ok: false } when the site's text filter refuses
+ *  it (rude words, personal details, links). */
+export function cleanTitle(raw) {
+  if (raw === undefined || raw === null) return { ok: true, value: '' };
+  if (typeof raw !== 'string' || raw.length > 400) return { ok: false };
+  const c = cleanText(raw.replace(/\s+/g, ' '), TITLE_MAX);
+  return c.ok ? { ok: true, value: c.value } : { ok: false };
 }
 
 /** Save a set: a new one, or (id given) the owner's own one changed. slug: the game's (its cleaner; Algebra Builder's by
- *  default). -> { id } | { error: 'bad'|'notYours'|'full' } */
-export function save(gameId, ownerId, rawItems, id = null, slug = 'algebra-builder') {
+ *  default). opts.title: the set's name (left out: kept as it is; one the text filter refuses is left out the same
+ *  way, so the set still saves). Crossword's name is always its puzzle's title (items[0].t).
+ *  -> { id } | { error: 'bad'|'notYours'|'full' } */
+export function save(gameId, ownerId, rawItems, id = null, slug = 'algebra-builder', opts = {}) {
   const clean = SET_GAMES.get(slug);
   const items = clean ? clean(rawItems) : null;
   if (!items) return { error: 'bad' };
   const t = now();
+  const named = slug === 'crossword' ? { ok: true, value: items[0].t } : opts.title === undefined ? null : cleanTitle(opts.title);
+  const title = named && named.ok ? named.value : null;
   if (id) {
     const was = get(gameId, id);
     if (!was || was.ownerId !== ownerId) return { error: 'notYours' };
-    q.run('UPDATE game_sets SET items=?, updated_at=? WHERE id=?', JSON.stringify(items), t, id);
+    if (title === null) q.run('UPDATE game_sets SET items=?, updated_at=? WHERE id=?', JSON.stringify(items), t, id);
+    else q.run('UPDATE game_sets SET items=?, title=?, updated_at=? WHERE id=?', JSON.stringify(items), title, t, id);
     return { id };
   }
+  return insert(gameId, ownerId, items, title || '', t);
+}
+function insert(gameId, ownerId, items, title, t = now()) {
   if (q.get('SELECT COUNT(*) n FROM game_sets WHERE game_id=? AND owner_id=?', gameId, ownerId).n >= MAX_PER_OWNER) return { error: 'full' };
   let nid = newId();
   while (q.get('SELECT 1 FROM game_sets WHERE id=?', nid)) nid = newId();
-  q.run('INSERT INTO game_sets(id, game_id, owner_id, items, created_at, updated_at) VALUES (?,?,?,?,?,?)', nid, gameId, ownerId, JSON.stringify(items), t, t);
+  q.run('INSERT INTO game_sets(id, game_id, owner_id, items, title, created_at, updated_at) VALUES (?,?,?,?,?,?,?)', nid, gameId, ownerId, JSON.stringify(items), title, t, t);
   return { id: nid };
+}
+
+// ---------------------------------------------------------------- the owner's own list ("My worksheets")
+// A teacher's sets in one game, to open again, print, share, copy, rename and delete (docs/sdk.md "Question sets").
+// Every call here is the owner's own: anyone else's set reads exactly as a set that isn't there.
+/** A set's class code as a teacher shows it: "C5EXP 1CM9H". */
+export const codeOf = id => { const c = String(id).replace(/^s-/, '').toUpperCase(); return `${c.slice(0, 5)} ${c.slice(5)}`; };
+/** How many questions a set holds: Crossword's words, The Big Divide's problems (a fresh set per student: how many it
+ *  makes), Algebra Builder's questions. */
+export function sizeOf(slug, items) {
+  const a = items[0] || {};
+  if (slug === 'crossword') return Array.isArray(a.w) ? a.w.length : 0;
+  if (slug === 'box-by-box') return a.d ? (a.p.length || (a.k === 'divide' ? 16 : 12)) : a.p.length;
+  return items.length;
+}
+function view(r, slug) {
+  let items; try { items = JSON.parse(r.items); } catch { return null; }
+  if (!Array.isArray(items) || !items.length) return null;
+  return { id: r.id, code: codeOf(r.id), title: r.title || '', label: labelOf(slug, items), n: sizeOf(slug, items), updated: r.updated_at, items };
+}
+/** The owner's sets in this game, newest first: [{ id, code, title, label, n, updated, items }]. */
+export function listMine(gameId, ownerId, slug = 'algebra-builder') {
+  return q.all('SELECT id, items, title, updated_at FROM game_sets WHERE game_id=? AND owner_id=? ORDER BY updated_at DESC, created_at DESC, id LIMIT ?', gameId, ownerId, MAX_PER_OWNER)
+    .map(r => view(r, slug)).filter(Boolean);
+}
+/** One of the owner's sets as the list shows it, or null. */
+export function oneMine(gameId, ownerId, id, slug = 'algebra-builder') {
+  const r = q.get('SELECT id, items, title, updated_at FROM game_sets WHERE id=? AND game_id=? AND owner_id=?', String(id || ''), gameId, ownerId);
+  return r ? view(r, slug) : null;
+}
+/** The owner's own set, or null (someone else's: null, as a set that isn't there). */
+function own(gameId, ownerId, id) {
+  const s = get(gameId, id);
+  return s && s.ownerId === ownerId ? s : null;
+}
+/** Delete the owner's set: its link and class code stop working. -> true, or false when it isn't theirs. */
+export function remove(gameId, ownerId, id) {
+  if (!own(gameId, ownerId, id)) return false;
+  q.run('DELETE FROM game_sets WHERE id=? AND owner_id=?', id, ownerId);
+  return true;
+}
+/** Rename the owner's set ('' takes the name away). Crossword's name is its puzzle's title, so that changes too.
+ *  -> { ok: true, title } | { error: 'notYours'|'title' } */
+export function rename(gameId, ownerId, id, rawTitle, slug = 'algebra-builder') {
+  const s = own(gameId, ownerId, id);
+  if (!s) return { error: 'notYours' };
+  const c = cleanTitle(rawTitle);
+  if (!c.ok) return { error: 'title' };
+  if (slug === 'crossword') {
+    const items = cleanCrossItems([{ ...s.items[0], t: c.value }]);
+    if (!items) return { error: 'title' };
+    q.run('UPDATE game_sets SET items=?, title=?, updated_at=? WHERE id=?', JSON.stringify(items), c.value, now(), id);
+  } else q.run('UPDATE game_sets SET title=?, updated_at=? WHERE id=?', c.value, now(), id);
+  return { ok: true, title: c.value };
+}
+/** A copy of the owner's set under a new code, named title (the caller's "Copy of ..."; cut to TITLE_MAX).
+ *  -> { id } | { error: 'notYours'|'full' } */
+export function duplicate(gameId, ownerId, id, title, slug = 'algebra-builder') {
+  const s = own(gameId, ownerId, id);
+  if (!s) return { error: 'notYours' };
+  const c = cleanTitle(String(title || '').slice(0, TITLE_MAX));
+  const name = c.ok ? c.value : '';
+  let items = s.items;
+  if (slug === 'crossword') items = cleanCrossItems([{ ...items[0], t: name }]) || items;
+  return insert(gameId, ownerId, items, name);
 }
 
 /** An account's sets go with it. */
@@ -248,6 +332,18 @@ const BB_KIND = { divide: 'Long division', multiply: 'Multiplication', add: 'Add
 const BB_METHOD = { ladder: 'Ladder', area: 'Area model', partial: 'Partial products' };
 const BB_FORM = { fraction: 'remainders as fractions', decimal: 'answers as decimals' };
 const BB_LEVEL = { watch: 'Watch', countUp: 'Count up', guided: 'Guided', prompted: 'Prompted', onMyOwn: 'On my own', custom: 'your own mix' };
+/** A set as it reads in a list or on the assign page (English): "Habitats: crossword, 12 words", "Long division, 12
+ *  problems, Guided", "5 questions: Solve, Factor". */
+export function labelOf(slug, items) {
+  const a = items[0];
+  if (slug === 'crossword') return `${a.t ? `${a.t}: ` : ''}crossword, ${a.w.length} words`;
+  if (slug === 'box-by-box') {
+    const n = sizeOf(slug, items);
+    return `${BB_KIND[a.k]}, ${n} problem${n === 1 ? '' : 's'}${a.d ? ' (different for each student)' : ''}, ${a.dec ? 'decimals, ' : ''}${BB_FORM[a.r] ? `${BB_FORM[a.r]}, ` : ''}${BB_METHOD[a.m] ? `${BB_METHOD[a.m]}, ` : ''}${BB_LEVEL[a.l]}`;
+  }
+  const kinds = [...new Set(items.map(i => ACT_NAME[i.a]).filter(Boolean))].join(', ');
+  return `${items.length} question${items.length === 1 ? '' : 's'}${kinds ? `: ${kinds}` : ''}`;
+}
 /** What a set game's lesson options open, for the assign page and the lesson's title: a set (its size), one problem, an
  *  activity (The Big Divide: its label), or null when they open none (the teacher's gallery). params: parseParams() of them. */
 export function describe(gameId, params, slug = 'algebra-builder') {
@@ -256,14 +352,7 @@ export function describe(gameId, params, slug = 'algebra-builder') {
   if (SET_ID.test(ch)) {
     const s = get(gameId, ch);
     if (!s) return null;
-    if (slug === 'crossword') {
-      const a = s.items[0], n = a.w.length;
-      return { kind: 'one', label: `${a.t ? `${a.t}: ` : ''}crossword, ${n} words` };
-    }
-    if (slug === 'box-by-box') {
-      const a = s.items[0], n = a.d ? (a.p.length || (a.k === 'divide' ? 16 : 12)) : a.p.length;
-      return { kind: 'one', label: `${BB_KIND[a.k]}, ${n} problem${n === 1 ? '' : 's'}${a.d ? ' (different for each student)' : ''}, ${a.dec ? 'decimals, ' : ''}${BB_FORM[a.r] ? `${BB_FORM[a.r]}, ` : ''}${BB_METHOD[a.m] ? `${BB_METHOD[a.m]}, ` : ''}${BB_LEVEL[a.l]}` };
-    }
+    if (slug === 'crossword' || slug === 'box-by-box') return { kind: 'one', label: labelOf(slug, s.items) };
     return { kind: 'set', n: s.items.length };
   }
   if (slug !== 'algebra-builder') return null;

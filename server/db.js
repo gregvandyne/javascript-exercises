@@ -1136,6 +1136,10 @@ export const MIGRATIONS = [
   ['0096_figures_steps', `
     ALTER TABLE lesson_steps ADD COLUMN of_version TEXT NOT NULL DEFAULT '';
     ALTER TABLE lesson_steps ADD COLUMN show_answers INTEGER NOT NULL DEFAULT 0;`],
+  // An official game's question sets get a name of their own (docs/decisions.md "My worksheets in Crossword, The Big
+  // Divide and Algebra Builder"): what the teacher calls it in their list. '' until they name it (the list then shows a
+  // label made from the set). Only its owner ever sees it; it passes the site's text filter.
+  ['0097_game_sets_title', "ALTER TABLE game_sets ADD COLUMN title TEXT NOT NULL DEFAULT '';"],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

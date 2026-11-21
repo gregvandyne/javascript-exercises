@@ -9,6 +9,7 @@
 	import { parseItem, kindInfo } from '$lib/logic';
 	import { adopt } from '$lib/activities.svelte';
 	import Home from './pages/Home.svelte';
+	import Sheets from './pages/Sheets.svelte';
 	import Start from './pages/Start.svelte';
 	import Student from './pages/Student.svelte';
 	import { practiceProblems } from '$lib/practice';
@@ -41,6 +42,8 @@
 	<Student />
 {:else if nav.view.name === 'home'}
 	<Home />
+{:else if nav.view.name === 'sheets'}
+	<Sheets />
 {:else if nav.view.name === 'edit'}
 	{#key nav.view.id}
 		<Editor id={nav.view.id} />

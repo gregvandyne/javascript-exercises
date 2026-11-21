@@ -1192,7 +1192,10 @@
     },
     "makeLike": "Bau ein Spiel wie dieses",
     "makeLikeShort": "Bau so eins",
-    "grownupBuilder": "Von Erwachsenen gebaut"
+    "grownupBuilder": "Von Erwachsenen gebaut",
+    "sets": {
+      "copyOf": "Kopie von {title}"
+    }
   },
   "play": {
     "backTo": "Zurück zu {title}",

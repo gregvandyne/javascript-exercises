@@ -1191,7 +1191,10 @@
     },
     "makeLike": "Сделать похожую игру",
     "makeLikeShort": "Сделай такую же",
-    "grownupBuilder": "Взрослый автор"
+    "grownupBuilder": "Взрослый автор",
+    "sets": {
+      "copyOf": "Копия: {title}"
+    }
   },
   "play": {
     "backTo": "Назад к игре «{title}»",

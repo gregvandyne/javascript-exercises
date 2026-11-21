@@ -10,7 +10,12 @@ import { t } from './i18n.ts';
 type SavedSet = { id: string; items?: readonly unknown[]; mine?: boolean; missing?: boolean };
 type Brb = {
 	questionSet?: SavedSet | null;
-	saveQuestionSet?: (items: Item[], id?: string | null) => Promise<{ id?: string; error?: string }> | null;
+	saveQuestionSet?: (items: Item[], id?: string | null, opts?: { title?: string }) => Promise<{ id?: string; error?: string }> | null;
+	canListSets?: boolean;
+	mySets?: () => Promise<{ sets?: MySet[]; error?: string }> | null;
+	deleteQuestionSet?: (id: string) => Promise<{ ok?: boolean; error?: string }> | null;
+	renameQuestionSet?: (id: string, title: string) => Promise<{ ok?: boolean; title?: string; error?: string }> | null;
+	duplicateQuestionSet?: (id: string) => Promise<{ id?: string; set?: MySet | null; error?: string }> | null;
 	findQuestionSet?: (code: string) => Promise<{ id?: string; items?: readonly unknown[]; error?: string }> | null;
 	storage?: { get: (k: string) => unknown; set: (k: string, v: unknown) => void };
 	user?: { isGuest?: boolean };
@@ -90,20 +95,42 @@ export async function findSet(code: string): Promise<{ id: string; item: unknown
 	}
 }
 export const isGuest = () => brb()?.user?.isGuest === true;
-/** Save the activity's item (a new set, or the teacher's own one again under the same id): its id, or why not. */
-export async function saveSet(item: Item, id: string | undefined): Promise<{ id?: string; error?: string }> {
+/** Save the activity's item (a new set, or the teacher's own one again under the same id) with its title (its name in
+ *  the teacher's My worksheets; '' leaves the name as it is): its id, or why not. */
+export async function saveSet(item: Item, id: string | undefined, title = ''): Promise<{ id?: string; error?: string }> {
 	try {
 		if (isPreview()) return { error: 'preview' };
 		if (isGuest()) return { error: 'guest' };
 		const f = brb()?.saveQuestionSet;
 		if (!f) return { error: 'preview' };
-		const r = await f([item], id ?? null);
+		const r = await f([item], id ?? null, title.trim() ? { title: title.trim().slice(0, 60) } : undefined);
 		return r && (r.id || r.error) ? r : { error: 'offline' };
 	} catch {
 		return { error: 'offline' };
 	}
 }
 export const SAVE_ERRORS: Record<string, string> = Object.fromEntries(['guest', 'preview', 'bad', 'full', 'notYours', 'offline'].map((k) => [k, t(`ui.save.${k}`)]));
+
+// --- My worksheets: the teacher's own saved activities on Oomba (school staff: BRB.canListSets) ---
+
+/** One saved activity as the server lists it: its id and class code, its name ('' when it has none), the server's
+ *  English label, how many problems, when it last changed, and its item. */
+export type MySet = { id: string; code: string; title: string; label: string; n: number; updated: number; items: unknown[] };
+export const canListSets = () => brb()?.canListSets === true && typeof brb()?.mySets === 'function';
+type Answer = { error?: string } & Record<string, unknown>;
+async function ask<T extends Answer>(fn: (() => Promise<T> | null | undefined) | undefined): Promise<T | { error: string }> {
+	try {
+		const p = fn?.();
+		if (!p) return { error: 'offline' };
+		return (await p) ?? { error: 'offline' };
+	} catch {
+		return { error: 'offline' };
+	}
+}
+export const listSets = () => ask(() => brb()?.mySets?.() as Promise<{ sets?: MySet[]; error?: string }> | null);
+export const deleteSet = (id: string) => ask(() => brb()?.deleteQuestionSet?.(id) as Promise<{ ok?: boolean; error?: string }> | null);
+export const renameSet = (id: string, title: string) => ask(() => brb()?.renameQuestionSet?.(id, title) as Promise<{ ok?: boolean; title?: string; error?: string }> | null);
+export const duplicateSet = (id: string) => ask(() => brb()?.duplicateQuestionSet?.(id) as Promise<{ id?: string; set?: MySet | null; error?: string }> | null);
 
 // --- assigning to a class (teachers) ---
 

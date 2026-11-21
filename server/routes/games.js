@@ -403,6 +403,10 @@ router.get('/frame/:token', (req, res) => {
     // A teacher (school staff) in a set game may assign what they made to a class (BRB.canAssign / BRB.assign: the page
     // opens /teach/assign with it, where "Also post to Google Classroom" is offered for a linked class).
     ...(!preview && setGame(g) && isSchoolStaff(u) ? { canAssign: true } : {}),
+    // "My worksheets" (BRB.canListSets / BRB.mySets): school staff and the platform admin get their own saved sets in a
+    // set game, to open again, print, share, copy, rename and delete. Never a student, a child, a guest or a family
+    // grown-up (the fence keeps them to playing), never in a preview.
+    ...(!preview && setGame(g) && u && !u.is_guest && isStaff(u) && fenceLets(u, 'GET', `/api/games/${g.id}/sets`) ? { mySets: true } : {}),
     // Crossword's "Write clues with AI" (BRB.canWriteClues / BRB.writeClues): grown-ups who may host, with a model set.
     // The fence has the last word: a family grown-up may host, but these calls are school tools (routes/family.js).
     ...(!preview && cluesGame(g) && liveCanHost(u) && hasModel() && fenceLets(u, 'POST', `/api/games/${g.id}/clues`) && fenceLets(u, 'POST', `/api/games/${g.id}/words-from-doc`) ? { clues: true } : {}),
@@ -468,9 +472,57 @@ router.post('/api/games/:id/sets', requireUser, rateLimit('game-sets', 60, 60e3)
   if (req.user.is_guest) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'guest' });
   const b = req.body || {}, id = b.id === undefined || b.id === null ? null : String(b.id);
   if (id !== null && !gameSets.SET_ID.test(id)) return res.status(400).json({ error: req.t('errors.api.badRequest') });
-  const r = gameSets.save(g.id, req.user.id, b.items, id, g.slug);
+  const r = gameSets.save(g.id, req.user.id, b.items, id, g.slug, typeof b.title === 'string' ? { title: b.title } : {});
   if (r.error) return res.status(r.error === 'notYours' ? 404 : 400).json({ error: req.t('errors.api.badRequest'), code: r.error });
   res.json({ id: r.id });
+});
+// "My worksheets" (docs/sdk.md "Question sets"; BRB.mySets and friends): the signed-in teacher's own sets in this game,
+// to open again, print, share, copy, rename and delete. Never a guest; anyone else's set answers 404, exactly as one
+// that isn't there. Slowed per account like saving.
+/** The set game and its signed-in, non-guest owner, or null (the answer already sent). */
+function mySetsGame(req, res) {
+  const g = apiGame(req, res); if (!g) return null;
+  if (!setGame(g)) { res.status(404).json({ error: req.t('game.api.notFound') }); return null; }
+  if (req.user.is_guest) { res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'guest' }); return null; }
+  return g;
+}
+const setIdOf = (req, res) => {
+  const id = String(req.params.set || '');
+  if (gameSets.SET_ID.test(id)) return id;
+  res.status(404).json({ error: req.t('game.api.notFound'), code: 'noSet' });
+  return null;
+};
+const noSet = (req, res) => res.status(404).json({ error: req.t('game.api.notFound'), code: 'noSet' });
+router.get('/api/games/:id/sets', requireUser, rateLimit('game-sets-list', 60, 60e3), (req, res) => {
+  const g = mySetsGame(req, res); if (!g) return;
+  res.json({ sets: gameSets.listMine(g.id, req.user.id, g.slug), max: gameSets.MAX_PER_OWNER });
+});
+router.delete('/api/games/:id/sets/:set', requireUser, rateLimit('game-sets', 60, 60e3), (req, res) => {
+  const g = mySetsGame(req, res); if (!g) return;
+  const id = setIdOf(req, res); if (!id) return;
+  if (!gameSets.remove(g.id, req.user.id, id)) return noSet(req, res);
+  res.json({ ok: true });
+});
+router.post('/api/games/:id/sets/:set/rename', requireUser, rateLimit('game-sets', 60, 60e3), (req, res) => {
+  const g = mySetsGame(req, res); if (!g) return;
+  const id = setIdOf(req, res); if (!id) return;
+  const title = (req.body || {}).title;
+  if (typeof title !== 'string') return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'title' });
+  const r = gameSets.rename(g.id, req.user.id, id, title, g.slug);
+  if (r.error === 'notYours') return noSet(req, res);
+  if (r.error) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.error });
+  res.json({ ok: true, title: r.title });
+});
+router.post('/api/games/:id/sets/:set/duplicate', requireUser, rateLimit('game-sets', 60, 60e3), (req, res) => {
+  const g = mySetsGame(req, res); if (!g) return;
+  const id = setIdOf(req, res); if (!id) return;
+  const was = gameSets.get(g.id, id);
+  if (!was || was.ownerId !== req.user.id) return noSet(req, res);
+  const name = req.t('game.sets.copyOf', { title: was.title || gameSets.labelOf(g.slug, was.items) });
+  const r = gameSets.duplicate(g.id, req.user.id, id, name, g.slug);
+  if (r.error === 'notYours') return noSet(req, res);
+  if (r.error) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.error });
+  res.json({ id: r.id, set: gameSets.oneMine(g.id, req.user.id, r.id, g.slug) });
 });
 // Crossword clues (services/set-ai.js draftClues): Claude writes a clue for each of the teacher's words, for the game's
 // word list only (nothing is saved here). Body { words: [string] (1-30), level }. -> { clues: [string] } | { code }.

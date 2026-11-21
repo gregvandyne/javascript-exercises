@@ -1191,7 +1191,10 @@
     },
     "makeLike": "Crea un juego como este",
     "makeLikeShort": "Haz uno así",
-    "grownupBuilder": "Creador adulto"
+    "grownupBuilder": "Creador adulto",
+    "sets": {
+      "copyOf": "Copia de {title}"
+    }
   },
   "play": {
     "backTo": "Volver a {title}",

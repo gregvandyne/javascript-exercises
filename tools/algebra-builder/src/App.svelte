@@ -12,6 +12,7 @@
 	import About from './pages/About.svelte';
 	import SetBuilder from './pages/SetBuilder.svelte';
 	import SetPlay from './pages/SetPlay.svelte';
+	import MySets from './pages/MySets.svelte';
 	import Setup from '$lib/Setup.svelte';
 
 	const set = openedSet();
@@ -39,6 +40,8 @@
 	<Play type={nav.view.type} p={nav.view.p} start={nav.view.start} live={nav.view.live} from={nav.view.from} />
 {:else if nav.view.name === 'set'}
 	<SetBuilder />
+{:else if nav.view.name === 'my-sets'}
+	<MySets />
 {:else if nav.view.name === 'set-play'}
 	{#key nav.view}
 		<SetPlay items={nav.view.items} from={nav.view.from} id={nav.view.id} mine={nav.view.mine} practice={nav.view.practice} />
