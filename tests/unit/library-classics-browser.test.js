@@ -252,9 +252,15 @@ test('swiping turns the page: a finger drags the page and turns it, a short drag
     assert.match(await count(page), /^Page 3 of/, `${book}: two quick swipes, two pages`);
     await q(b.x - 100, b.x + 100); await page.waitForTimeout(60); await q(b.x - 100, b.x + 100); await page.waitForTimeout(500);
     assert.match(await count(page), /^Page 1 of/, `${book}: and back`);
-    // A quick flick of 40px turns the page.
-    await q(b.x + 20, b.x - 20); await page.waitForTimeout(500); assert.match(await count(page), /^Page 2 of/, `${book}: a flick turns`);
-    await q(b.x - 20, b.x + 20); await page.waitForTimeout(500); assert.match(await count(page), /^Page 1 of/, `${book}: a flick back`);
+    // A quick flick of 40px turns the page (fired inside the page in one go, so its speed doesn't depend on how fast
+    // the test browser delivers touches).
+    const flick = (x1, x2) => page.evaluate(([x1, x2, y]) => {
+      const el = document.elementFromPoint(x1, y), at = x => new Touch({ identifier: 7, target: el, clientX: x, clientY: y });
+      const fire = (type, x, list) => el.dispatchEvent(new TouchEvent(type, { bubbles: true, cancelable: true, touches: list ? [at(x)] : [], changedTouches: [at(x)] }));
+      fire('touchstart', x1, true); for (let i = 1; i <= 4; i++) fire('touchmove', x1 + (x2 - x1) * i / 4, true); fire('touchend', x2, false);
+    }, [x1, x2, b.y]);
+    await flick(b.x + 20, b.x - 20); await page.waitForTimeout(500); assert.match(await count(page), /^Page 2 of/, `${book}: a flick turns`);
+    await flick(b.x - 20, b.x + 20); await page.waitForTimeout(500); assert.match(await count(page), /^Page 1 of/, `${book}: a flick back`);
     await touch(page, line(b.x + 6, b.x - 6, b.y, 8)); assert.match(await count(page), /^Page 1 of/, `${book}: a short drag springs back`);
     await touch(page, line(b.x, b.x - 30, b.y, 8, 200)); assert.match(await count(page), /^Page 1 of/, `${book}: scrolling down is not a turn`);
     // Mid-drag the page follows the finger; let go short and it comes back.
