@@ -10161,3 +10161,52 @@ build lessons", and "The worksheet buttons are way too busy, can we make this lo
   link, printing by code), tests/unit/canvas-worksheets-browser.test.js (Chromium, in the production frame: save, the
   row, Print, the More menu by keyboard, Copy link, Duplicate, Rename, Delete with its question, Open, 375 px, a
   student, a deleted worksheet), the CANVAS RULES line in builder-canvas.test.js, and the 1.4.0 lock in canvas-kit.
+
+## Virtual math manipulatives: saving and AI drafts (21 Nov 2026)
+
+A teacher drafted a worksheet with AI, refreshed, and the draft was gone: the drafter waited for the AI inside the
+browser's request, so a refresh dropped the answer (the AI call still ran and was still counted). Boards on your own
+weren't saved at all unless the teacher pressed Save, which made a new share code every time.
+
+- **AI drafts are server jobs, in the Builder's pattern** (services/manip-drafts.js, like builder/runner.js and turns.js).
+  Asking for a draft checks the words first (a host, a real tool, the word rules, no names of the teacher's students:
+  nothing is stored or sent when that fails), then stores a manip_drafts row and runs it in this process, apart from any
+  request. Its steps are real events: check, ai, build (the app checks every problem and lays the board out), save. It
+  ends as a recent board in My boards (opened_at 0: "New"). One unfinished draft per teacher (a unique partial index);
+  asking again gives back the one that runs. Shutdown marks a running draft interrupted (the hand-off); the next boot
+  runs it again once if it is under 10 minutes old, else ends it as failed ('restart'). Single instance, like the
+  Builder. Finished rows go after 7 days; the board stays.
+- **The page.** While a draft runs, the drafter's box shows its progress (the teacher's words, an estimate, the four
+  steps with their times, and "You can close this page or refresh") and the "Draft with AI" button counts the time and
+  shows or hides the box. The estimate follows the Builder's: "Usually" only from this site's own timed drafts (10 or
+  more), "Often" / "About" from first guesses, "Taking a bit longer than usual" past the usual time. A refresh shows the
+  same job again. When it ends and the page saw it run on the same tool, the draft goes onto the board (Undo brings back
+  what was there, which also stays in its own recent board); otherwise one notice says it finished while the teacher
+  was away ("Put it on my board", shown once, then marked seen). A failed draft opens the drafter with the words, grade
+  and task kept and "Try again".
+- **Two kinds of saved board** (manip_boards.kind). "Recent" boards save themselves 2 seconds after a change (no
+  button; "Saved 10:42" is text), and the address becomes #board/<id>, so a refresh brings the same board back. A
+  template is what "Save as template" keeps (the existing save button, renamed; it asks only for a name and still gives
+  a share code). Opening a template, by its row or its code, always gives a fresh copy; autosave never writes into one.
+  Boards saved before this are templates. Recent boards: the newest 30 per teacher, each for 60 days after it was last
+  opened or changed. Templates stay until deleted.
+- **My boards** replaces "Your saved boards" and moves to the top of the manipulatives home: Templates, then Recent
+  boards (solo boards, AI drafts and live rooms, newest first). A row's title opens it; its one ⋯ menu (in place of the
+  old Open and Delete buttons) holds Rename, Duplicate, Delete, "Start a live room with it" (templates, when the teacher
+  has a class) and "Reopen room" (ended rooms). The rooms list in the "Run a live session" panel went (the rooms are in
+  My boards).
+- **Rooms and recess.** No Pause button: leaving the page already keeps a room live, and each student's square
+  (manip_work.slot) comes back when they join again. An ended room can be reopened from My boards or from its own ⋯
+  menu, with the same join code and every square as it was; its 12 hours count from the reopening
+  (manip_sessions.opened_at), and, as with a new room, any other running room of that class ends. Ended rooms still go
+  30 days after they end; a room can be deleted once ended.
+- **New visible controls**, each in place of something: the progress card is the drafter's own box, the counting label
+  is the drafter's own button, "Try again" is "Draft my board" relabeled, "Save as template" is the old save button, the
+  ⋯ per row replaces Open and Delete, "Reopen room" sits in the room's existing ⋯ menu where "End session" was. The one
+  new thing is the notice for a draft that finished while the teacher was away (one action and a close), shown once.
+- **Privacy.** Only the teacher's own words go to the AI, after the name check, never student work or names. Drafts,
+  templates and recent boards are the teacher's only; students never see a draft. No prices anywhere.
+- Migration 0098_manipulatives_saving. Tests: tests/unit/manip-saving.test.js (the job's states, one at a time, the
+  hand-off and boot recovery, the estimate, autosave, templates, rename, duplicate, delete, retention, reopen) and
+  tests/unit/manip-saving-browser.test.js (Chromium: a refresh mid-draft, a draft that finished while away, autosave and
+  Save as template, My boards, a room reopened after recess).

@@ -3352,11 +3352,96 @@
         "resize": "拖曳以調整這個方框的大小",
         "smaller": "文字變小",
         "bigger": "文字變大"
+      },
+      "boards": {
+        "title": "我的白板",
+        "none": "你正在使用的白板會自動儲存並顯示在這裡。用「另存為範本」保留一個全新的起點。",
+        "templates": "範本",
+        "templatesSub": "每次都開啟新的副本",
+        "recent": "最近的白板",
+        "recentSub": "邊做邊儲存",
+        "code": "代碼 {code}",
+        "edited": "{when} 編輯",
+        "aiDraft": "AI 草稿，{when} 完成",
+        "roomLive": "即時教室 · {klass} · {n, plural, other {# 位學生}}",
+        "roomEnded": "即時教室 · {klass} · {when} 結束 · {n, plural, other {保留 # 位學生的格子}}",
+        "live": "進行中",
+        "new": "新",
+        "more": "{title} 的更多選項",
+        "start": "用它開啟即時教室",
+        "rename": "重新命名",
+        "duplicate": "複製一份",
+        "reopen": "重新開啟教室",
+        "deleteConfirm": "要刪除「{title}」嗎？刪除後無法復原。",
+        "deleteRoom": "要刪除教室「{title}」和裡面每位學生的格子嗎？刪除後無法復原。",
+        "pickClass": "請選擇這間教室的班級，然後開始。"
+      },
+      "share": {
+        "save": "另存為範本"
+      },
+      "draft": {
+        "progress": "正在準備你的白板",
+        "drafting": "準備中…",
+        "quote": "「{brief}」",
+        "leave": "你可以關閉或重新整理這個頁面。草稿會在我們的伺服器上繼續進行，完成後會出現在「我的白板」。",
+        "eta": {
+          "under": "通常不到一分鐘",
+          "about": "{n, plural, other {通常大約 # 分鐘}}",
+          "guessUnder": "常常不到一分鐘",
+          "guess": "{n, plural, other {大約 # 分鐘}}",
+          "longer": "比平常久一點",
+          "soFar": "已經 {time}"
+        },
+        "step": {
+          "check": {
+            "now": "正在檢查文字裡有沒有學生姓名",
+            "done": "已檢查：文字裡沒有學生姓名"
+          },
+          "ai": {
+            "now": "AI 正在挑選題目",
+            "done": "AI 已挑好題目"
+          },
+          "build": {
+            "now": "正在排列白板和步驟",
+            "done": "白板和步驟已排好"
+          },
+          "save": {
+            "now": "正在存到「我的白板」",
+            "done": "已存到「我的白板」"
+          }
+        },
+        "away": "你的 AI 草稿「{title}」在你離開時完成了。",
+        "awayN": "{n, plural, other {# 題}}和{steps, plural, other {# 個步驟}}。",
+        "inBoards": "已儲存在「我的白板」。",
+        "use": "放到我的白板上",
+        "dismiss": "關閉",
+        "failedAway": "{tool} 的 AI 草稿沒能完成。",
+        "failed": "草稿沒能完成。",
+        "retry": "再試一次",
+        "err": {
+          "aiFailed": "AI 現在無法完成草稿。你的文字還在：等一下再試一次。",
+          "restart": "準備草稿時伺服器重新啟動了。你的文字還在：再試一次。",
+          "names": "請不要在說明裡寫學生姓名：姓名絕不會傳給 AI。",
+          "words": "說明裡有些字不被允許。請修改後再試一次。",
+          "personal": "請拿掉電話號碼、電子郵件、連結和代碼，然後再試一次。",
+          "other": "出了點問題。等一下再試一次。"
+        }
+      },
+      "save": {
+        "name": "範本名稱",
+        "what": "範本是一個全新的起點：開啟它，或用它開啟教室，都會得到一份乾淨的副本。這個白板會邊做邊繼續儲存。",
+        "go": "儲存",
+        "cancel": "取消",
+        "done": "已另存為範本「{title}」。代碼 {code}",
+        "savedAt": "{time} 已儲存",
+        "notYet": "還沒儲存。正在重試…"
       }
     },
     "manip-room": {
       "actionsFor": "{label} 的動作",
-      "teacherLock": "老師鎖定了這個。"
+      "teacherLock": "老師鎖定了這個。",
+      "reopen": "重新開啟教室",
+      "reopened": "教室重新開啟了。每位學生都回到自己的格子。"
     },
     "figures-editor": {
       "undo": "復原",

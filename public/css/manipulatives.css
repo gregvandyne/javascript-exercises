@@ -512,7 +512,8 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
 .mp-busy{border-color:var(--accent-line);font-variant-numeric:tabular-nums}
 .mp-dnote{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:12px;box-shadow:var(--shadow)}
 .mp-dnote p{margin:0;flex:1 1 260px;font-weight:500}
-.mp-x{min-width:44px;min-height:44px}
+.mp-dx{min-width:44px;min-height:44px;border:0;border-radius:50%;background:transparent;color:var(--text-2);font:800 1.05rem var(--font);cursor:pointer}
+.mp-dx:hover{background:var(--hover);color:var(--text)}
 #mp-notice:empty{display:none}
 #mp-notice{margin-bottom:12px}
 #mp-notice .mp-drafter{margin-bottom:0}

@@ -1657,10 +1657,10 @@ function noticeHtml(j) {
   const tl = toolOf(j.tool), r = j.result || {};
   if (j.status === 'done') {
     return `<div class="notice good mp-dnote" role="status">${iconHtml('✨', { size: 22 })}<p><b>${esc(t('js.manip.draft.away', { title: r.title || '' }))}</b> ${esc(r.n ? t('js.manip.draft.awayN', { n: r.n, steps: r.steps }) : '')} ${esc(t('js.manip.draft.inBoards'))}</p>
-      ${btn('btn btn-primary btn-sm', 'data-dnote="use"', esc(t('js.manip.draft.use')))}${btn('btn btn-sm btn-ghost mp-x', `data-dnote="x" aria-label="${esc(t('js.manip.draft.dismiss'))}"`, '✕')}</div>`;
+      ${btn('btn btn-primary btn-sm', 'data-dnote="use"', esc(t('js.manip.draft.use')))}${btn('mp-dx', `data-dnote="x" aria-label="${esc(t('js.manip.draft.dismiss'))}"`, '✕')}</div>`;
   }
   return `<div class="notice bad mp-dnote" role="status">${iconHtml('⚠️', { size: 22 })}<p><b>${esc(t('js.manip.draft.failedAway', { tool: tl ? tl.name : '' }))}</b> ${esc(errorText(j.error))}</p>
-    ${btn('btn btn-primary btn-sm', 'data-dnote="retry"', esc(t('js.manip.draft.retry')))}${btn('btn btn-sm btn-ghost mp-x', `data-dnote="x" aria-label="${esc(t('js.manip.draft.dismiss'))}"`, '✕')}</div>`;
+    ${btn('btn btn-primary btn-sm', 'data-dnote="retry"', esc(t('js.manip.draft.retry')))}${btn('mp-dx', `data-dnote="x" aria-label="${esc(t('js.manip.draft.dismiss'))}"`, '✕')}</div>`;
 }
 function bindNotice(el) {
   for (const b of el.querySelectorAll('[data-dnote]')) b.onclick = () => {

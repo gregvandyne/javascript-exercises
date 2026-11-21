@@ -3353,11 +3353,96 @@
         "resize": "Ziehen, um die Größe dieses Felds zu ändern",
         "smaller": "Kleinere Schrift",
         "bigger": "Größere Schrift"
+      },
+      "boards": {
+        "title": "Meine Tafeln",
+        "none": "Tafeln, an denen du arbeitest, speichern sich selbst und erscheinen hier. Mit „Als Vorlage speichern“ behältst du einen frischen Startpunkt.",
+        "templates": "Vorlagen",
+        "templatesSub": "öffnet jedes Mal eine frische Kopie",
+        "recent": "Zuletzt benutzt",
+        "recentSub": "beim Arbeiten gespeichert",
+        "code": "Code {code}",
+        "edited": "bearbeitet {when}",
+        "aiDraft": "KI-Entwurf, fertig {when}",
+        "roomLive": "Live-Raum · {klass} · {n, plural, one {# Schüler:in} other {# Schüler:innen}}",
+        "roomEnded": "Live-Raum · {klass} · beendet {when} · {n, plural, one {# Feld behalten} other {# Felder behalten}}",
+        "live": "Live",
+        "new": "Neu",
+        "more": "Mehr für {title}",
+        "start": "Damit einen Live-Raum starten",
+        "rename": "Umbenennen",
+        "duplicate": "Duplizieren",
+        "reopen": "Raum wieder öffnen",
+        "deleteConfirm": "„{title}“ löschen? Das lässt sich nicht rückgängig machen.",
+        "deleteRoom": "Den Raum „{title}“ und alle Felder der Schüler:innen darin löschen? Das lässt sich nicht rückgängig machen.",
+        "pickClass": "Wähle die Klasse für diesen Raum und starte ihn dann."
+      },
+      "share": {
+        "save": "Als Vorlage speichern"
+      },
+      "draft": {
+        "progress": "Deine Tafel wird entworfen",
+        "drafting": "Entwurf läuft…",
+        "quote": "„{brief}“",
+        "leave": "Du kannst diese Seite schließen oder neu laden. Der Entwurf läuft auf unserem Server weiter und liegt in „Meine Tafeln“, wenn er fertig ist.",
+        "eta": {
+          "under": "Meist weniger als eine Minute",
+          "about": "{n, plural, one {Meist etwa eine Minute} other {Meist etwa # Minuten}}",
+          "guessUnder": "Oft weniger als eine Minute",
+          "guess": "{n, plural, one {Etwa eine Minute} other {Etwa # Minuten}}",
+          "longer": "Dauert etwas länger als sonst",
+          "soFar": "{time} bisher"
+        },
+        "step": {
+          "check": {
+            "now": "Deine Wörter werden auf Namen von Schüler:innen geprüft",
+            "done": "Deine Wörter auf Namen von Schüler:innen geprüft"
+          },
+          "ai": {
+            "now": "Die KI wählt die Aufgaben",
+            "done": "Die KI hat die Aufgaben gewählt"
+          },
+          "build": {
+            "now": "Tafel und Schritte werden angeordnet",
+            "done": "Tafel und Schritte angeordnet"
+          },
+          "save": {
+            "now": "Wird in „Meine Tafeln“ gespeichert",
+            "done": "In „Meine Tafeln“ gespeichert"
+          }
+        },
+        "away": "Dein KI-Entwurf „{title}“ wurde fertig, während du weg warst.",
+        "awayN": "{n, plural, one {# Aufgabe} other {# Aufgaben}} und {steps, plural, one {# Schritt} other {# Schritte}}.",
+        "inBoards": "Er ist in „Meine Tafeln“ gespeichert.",
+        "use": "Auf meine Tafel legen",
+        "dismiss": "Schließen",
+        "failedAway": "Dein KI-Entwurf für {tool} konnte nicht fertig werden.",
+        "failed": "Der Entwurf konnte nicht fertig werden.",
+        "retry": "Nochmal versuchen",
+        "err": {
+          "aiFailed": "Die KI konnte das gerade nicht entwerfen. Deine Wörter sind noch da: versuch es gleich nochmal.",
+          "restart": "Unser Server wurde während des Entwurfs neu gestartet. Deine Wörter sind noch da: versuch es nochmal.",
+          "names": "Lass Namen von Schüler:innen aus der Beschreibung weg: Namen gehen nie an die KI.",
+          "words": "Einige Wörter in der Beschreibung sind nicht erlaubt. Ändere sie und versuch es nochmal.",
+          "personal": "Lass Telefonnummern, E-Mails, Links und Codes weg und versuch es nochmal.",
+          "other": "Etwas ist schiefgegangen. Versuch es gleich nochmal."
+        }
+      },
+      "save": {
+        "name": "Name der Vorlage",
+        "what": "Eine Vorlage ist ein frischer Startpunkt: Öffnest du sie oder startest du damit einen Raum, bekommst du immer eine saubere Kopie. Diese Tafel speichert sich weiter beim Arbeiten.",
+        "go": "Speichern",
+        "cancel": "Abbrechen",
+        "done": "Als Vorlage „{title}“ gespeichert. Code {code}",
+        "savedAt": "Gespeichert {time}",
+        "notYet": "Noch nicht gespeichert. Neuer Versuch…"
       }
     },
     "manip-room": {
       "actionsFor": "Aktionen für {label}",
-      "teacherLock": "Deine Lehrkraft hat das gesperrt."
+      "teacherLock": "Deine Lehrkraft hat das gesperrt.",
+      "reopen": "Raum wieder öffnen",
+      "reopened": "Der Raum ist wieder offen. Alle kommen zurück in ihr eigenes Feld."
     },
     "figures-editor": {
       "undo": "Rückgängig",
