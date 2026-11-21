@@ -12588,6 +12588,42 @@
       "dotCross": {
         "name": "Punkt-Kreuz-Schema",
         "desc": "Geteilte und übertragene Elektronen in Schalen"
+      },
+      "populationGrowth": {
+        "name": "Populationswachstum",
+        "desc": "J- und S-Kurven, K und die Wachstumsphasen"
+      },
+      "predatorPrey": {
+        "name": "Räuber und Beute",
+        "desc": "Populationszyklen, die Räuber einen Schritt dahinter"
+      },
+      "enzymeActivity": {
+        "name": "Enzymaktivität",
+        "desc": "Geschwindigkeit nach Temperatur, pH oder Substrat"
+      },
+      "photosynthesis": {
+        "name": "Fotosyntheserate",
+        "desc": "Licht, CO₂ und Temperatur als begrenzende Faktoren"
+      },
+      "punnett": {
+        "name": "Kreuzungsschema",
+        "desc": "Kreuzungen mit berechneten Verhältnissen"
+      },
+      "pedigree": {
+        "name": "Stammbaum",
+        "desc": "Familien, die zu einem Erbgang passen"
+      },
+      "proteinSynthesis": {
+        "name": "Proteinbiosynthese",
+        "desc": "Von der DNA über die mRNA zu Aminosäuren, mit Lücken"
+      },
+      "gel": {
+        "name": "Gelelektrophorese",
+        "desc": "Banden maßstabsgetreu neben einem DNA-Marker"
+      },
+      "osmosis": {
+        "name": "Osmose",
+        "desc": "Zellen, U-Rohre und Beutel in Lösungen"
       }
     },
     "step": {

@@ -5,4 +5,5 @@ import './packs/math.js';
 import './packs/data.js';
 import './packs/physics.js';
 import './packs/chem.js';
+import './packs/bio.js';
 import './packs/measure.js';

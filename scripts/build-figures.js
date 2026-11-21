@@ -27,7 +27,8 @@ export const PARTS = {
   data: ['figures/src/ported/stats.js', 'figures/src/data.js', 'figures/src/prob.js', 'figures/src/packs/data.js'],
   physics: ['figures/src/ported/circuittree.js', 'figures/src/network.js', 'figures/src/physics.js', 'figures/src/ported/motion.js', 'figures/src/motion.js', 'figures/src/ported/projectile.js', 'figures/src/projectile.js', 'figures/src/ported/waves.js', 'figures/src/waves.js', 'figures/src/packs/physics.js'],
   chem: ['figures/src/ported/elements.js', 'figures/src/chem.js', 'figures/src/curves.js', 'figures/src/ported/isotopes.js', 'figures/src/ported/spectra.js', 'figures/src/spectra.js', 'figures/src/atoms.js', 'figures/src/ported/heating.js', 'figures/src/ported/profile.js', 'figures/src/energy.js', 'figures/src/ported/particles.js', 'figures/src/particles.js', 'figures/src/packs/chem.js'],
-  measure: ['figures/src/ported/ruler.js', 'figures/src/ported/gauges.js', 'figures/src/ported/labware.js', 'figures/src/labware.js', 'figures/src/readings.js', 'figures/src/protractor.js', 'figures/src/packs/measure.js'],
+  bio: ['figures/src/ported/growth.js', 'figures/src/ported/lotka.js', 'figures/src/ecology.js', 'figures/src/ported/rates.js', 'figures/src/rates.js', 'figures/src/ported/punnett.js', 'figures/src/ported/pedigree.js', 'figures/src/genetics.js', 'figures/src/ported/dna.js', 'figures/src/ported/gel.js', 'figures/src/molecular.js', 'figures/src/ported/osmosis.js', 'figures/src/osmosis.js', 'figures/src/packs/bio.js'],
+  measure: ['figures/src/ported/ruler.js', 'figures/src/ported/gauges.js', 'figures/src/ported/labware.js', 'figures/src/labware.js', 'figures/src/ported/pipette.js', 'figures/src/pipette.js', 'figures/src/readings.js', 'figures/src/protractor.js', 'figures/src/packs/measure.js'],
 };
 export const PACKS = Object.keys(PARTS).filter(k => k !== 'core');
 /** The file a part is published as, inside the version folder. */

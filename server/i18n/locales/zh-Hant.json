@@ -12587,6 +12587,42 @@
       "dotCross": {
         "name": "點叉圖",
         "desc": "電子層中共用與轉移的電子"
+      },
+      "populationGrowth": {
+        "name": "族群成長",
+        "desc": "J 形與 S 形曲線、K 與成長階段"
+      },
+      "predatorPrey": {
+        "name": "掠食者與獵物",
+        "desc": "族群週期，掠食者慢一步"
+      },
+      "enzymeActivity": {
+        "name": "酵素活性",
+        "desc": "反應速率對溫度、pH 或受質"
+      },
+      "photosynthesis": {
+        "name": "光合作用速率",
+        "desc": "光、CO₂ 與溫度作為限制因子"
+      },
+      "punnett": {
+        "name": "龐尼特方格",
+        "desc": "算出比例的雜交"
+      },
+      "pedigree": {
+        "name": "譜系圖",
+        "desc": "符合遺傳方式的家族"
+      },
+      "proteinSynthesis": {
+        "name": "蛋白質合成",
+        "desc": "從 DNA 到 mRNA 再到胺基酸，可留空"
+      },
+      "gel": {
+        "name": "凝膠電泳",
+        "desc": "依比例繪出的條帶與 DNA 標記"
+      },
+      "osmosis": {
+        "name": "滲透",
+        "desc": "溶液中的細胞、U 形管與袋子"
       }
     },
     "step": {

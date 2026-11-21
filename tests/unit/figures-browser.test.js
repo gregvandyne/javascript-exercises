@@ -55,7 +55,7 @@ test('the menu on a laptop and a phone: subject tabs, grade chips and search fil
     const { ctx, page, errors } = await open('/figures', opts);
     await page.waitForSelector('.fg-card');
     await noSideScroll(page);
-    assert.equal((await visibleKinds(page)).length, 58, 'every kind in the catalog (1.2.0 added eight chemistry kinds)');
+    assert.equal((await visibleKinds(page)).length, 67, 'every kind in the catalog (1.2.0 added eight chemistry kinds, 1.3.0 nine biology kinds)');
     await shot(page, `menu-${label}`);
     if (label === 'laptop') await shot(page, 'menu-laptop-full', true);
     await page.click('[data-tab="physics"]');
@@ -241,4 +241,47 @@ test('the 1.2.0 chemistry editors (each new kind, and the lab readings) draw wit
     assert.deepEqual(errors, [], kind);
     await ctx.close();
   }
+});
+
+test('the 1.3.0 Biology tab (no longer Coming soon) and its editors: each kind draws, randomizes a question, and a change that cannot be drawn shows the panel', { skip }, async () => {
+  const BIO = ['populationGrowth', 'predatorPrey', 'enzymeActivity', 'photosynthesis', 'punnett', 'pedigree', 'proteinSynthesis', 'gel', 'osmosis'];
+  for (const [label, opts] of [['laptop', LAPTOP()], ['phone', PHONE()]]) {
+    const { ctx, page, errors } = await open('/figures', opts);
+    await page.waitForSelector('.fg-card');
+    assert.equal(await page.$('.fg-soon:has-text("Biology")'), null, 'Biology is not Coming soon');
+    await page.click('[data-tab="biology"]');
+    const bio = await visibleKinds(page);
+    assert.deepEqual(bio.filter(k => k !== 'reading').sort(), [...BIO].sort()); assert.ok(bio.includes('reading'), 'the readings (the micropipette) are under Biology too');
+    await noSideScroll(page);
+    assert.ok(await page.$('.fg-soon:has-text("Economics")'), 'Economics is still Coming soon');
+    await shot(page, `menu-biology-${label}`);
+    assert.deepEqual(errors, [], label);
+    await ctx.close();
+  }
+  for (const kind of BIO) {
+    const { ctx, page, errors } = await open(`/figures/${kind}`);
+    await page.waitForSelector('#fg-figure svg');
+    assert.equal(await page.isHidden('#fg-cant'), true, kind);
+    await page.click('[data-act="random"]'); await page.waitForFunction(() => document.getElementById('fg-question').value.length > 5);
+    await page.waitForTimeout(150);
+    assert.equal(await page.isHidden('#fg-cant'), true, `${kind}: a new question draws`);
+    await shot(page, `editor-bio-${kind}`);
+    assert.deepEqual(errors, [], kind);
+    await ctx.close();
+  }
+  // the Punnett square's editor: a cross the parents cannot make shows the cannot-draw panel, and Undo brings it back
+  const { ctx, page, errors } = await open('/figures/punnett');
+  await page.waitForSelector('#fg-figure svg');
+  await page.click('#fg-adv summary');
+  await page.fill('#fg-json', JSON.stringify({ parents: [['T', 't'], ['R', 'r']] }));
+  await page.waitForSelector('#fg-cant:not([hidden])');
+  assert.equal(await page.isHidden('#fg-cant'), false, 'two different genes cannot make a monohybrid square');
+  await page.click('[data-act="undo"]');
+  await page.waitForFunction(() => document.getElementById('fg-cant').hidden);
+  const page2 = await ctx.newPage(); await page2.goto(`${BASE}/figures/reading?d=${Buffer.from(JSON.stringify({ type: 'micropipette', model: 'P20', value: 12.5 })).toString('base64url')}`);
+  await page2.waitForSelector('#fg-figure svg .of-digit');
+  assert.deepEqual(await page2.$$eval('#fg-figure .of-digit', ds => ds.map(d => d.textContent)), ['1', '2', '5']);
+  await shot(page2, 'editor-bio-micropipette');
+  assert.deepEqual(errors, []);
+  await ctx.close();
 });

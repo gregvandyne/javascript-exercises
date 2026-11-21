@@ -13307,6 +13307,42 @@
       "dotCross": {
         "name": "Dot-and-cross diagram",
         "desc": "Shared and transferred electrons in shells"
+      },
+      "populationGrowth": {
+        "name": "Population growth",
+        "desc": "J- and S-curves, K and the growth phases"
+      },
+      "predatorPrey": {
+        "name": "Predator and prey",
+        "desc": "Population cycles, the predators a step behind"
+      },
+      "enzymeActivity": {
+        "name": "Enzyme activity",
+        "desc": "Rate against temperature, pH or substrate"
+      },
+      "photosynthesis": {
+        "name": "Photosynthesis rate",
+        "desc": "Light, CO₂ and temperature as limiting factors"
+      },
+      "punnett": {
+        "name": "Punnett square",
+        "desc": "Crosses with the ratios worked out"
+      },
+      "pedigree": {
+        "name": "Pedigree",
+        "desc": "Families that fit an inheritance pattern"
+      },
+      "proteinSynthesis": {
+        "name": "Protein synthesis",
+        "desc": "DNA to mRNA to amino acids, with blanks"
+      },
+      "gel": {
+        "name": "Gel electrophoresis",
+        "desc": "Bands to scale against a DNA ladder"
+      },
+      "osmosis": {
+        "name": "Osmosis",
+        "desc": "Cells, U-tubes and bags in solutions"
       }
     },
     "step": {
