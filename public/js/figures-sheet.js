@@ -3,7 +3,8 @@
 // in the editor; "Add figure question" adds one of any kind; "Power with AI" drafts questions from a brief (the server
 // checks every figure with OF.check and works every answer out with OF.solve). The print preview (student sheet and
 // answer key, black on white) is the server's printable page. A new worksheet is saved the first time something is
-// added to it.
+// added to it. "Assign to class" picks one of the teacher's classes, open and due dates and "Show answers after the due
+// date" (off by default), and makes a lesson with the worksheet's questions as they are now (services/figures-steps.js).
 import { t, api, toast, esc, pageData, ask } from '/js/app.js';
 
 const P = pageData('fg-sheet');
@@ -44,7 +45,20 @@ function shell() {
     <div class="chips" role="group"><button class="chip" type="button" data-tab="sheet">${esc(t('js.figures-sheet.studentSheet'))}</button><button class="chip" type="button" data-tab="key">${esc(t('js.figures-sheet.answerKey'))}</button></div>
     <div class="fg-paperwrap"><div class="fg-paper" id="fg-paper"></div></div>
     <div class="fg-pv-actions" id="fg-pv-actions"></div>
-    <div class="fg-assign"><button class="btn" type="button" disabled aria-describedby="fg-assign-next">📅 ${esc(t('js.figures-sheet.assign'))}</button><p class="muted fg-small" id="fg-assign-next">${esc(t('js.figures-sheet.assignNext'))}</p></div>
+    <div class="fg-assign"><button class="btn" type="button" id="fg-assign-open" aria-expanded="false" aria-controls="fg-assign-form" aria-describedby="fg-assign-why" disabled>📅 ${esc(t('js.figures-sheet.assign'))}</button>
+      <p class="muted fg-small" id="fg-assign-why"></p>
+      <form class="fg-assignform" id="fg-assign-form" hidden novalidate aria-labelledby="fg-assign-h">
+        <h3 id="fg-assign-h">${esc(t('js.figures-sheet.assignTitle'))}</h3>
+        <label class="fg-block"><span>${esc(t('js.figures-sheet.assignClass'))}</span><select class="input" id="fg-as-class" name="classId">${(P.classes || []).map(c => `<option value="${esc(c.id)}">${esc(c.name)}${c.school && new Set((P.classes || []).map(x => x.school)).size > 1 ? ` (${esc(c.school)})` : ''}</option>`).join('')}</select></label>
+        <div class="fg-as-dates"><label class="fg-block"><span>${esc(t('js.figures-sheet.assignOpens'))}</span><input class="input" type="date" id="fg-as-opens" name="opensAt"></label>
+          <label class="fg-block"><span>${esc(t('js.figures-sheet.assignDue'))}</span><input class="input" type="date" id="fg-as-due" name="dueAt"></label></div>
+        <label class="fg-check"><input type="checkbox" id="fg-as-show" name="showAnswers"> <span>${esc(t('js.figures-sheet.assignShow'))}</span></label>
+        <p class="muted fg-small" id="fg-as-show-hint">${esc(t('js.figures-sheet.assignShowHint'))}</p>
+        <p class="muted fg-small">${esc(t('js.figures-sheet.assignSnapshot'))}</p>
+        <p class="err" id="fg-as-err" role="alert"></p>
+        <div class="row"><button class="btn btn-primary" type="submit" id="fg-as-go">${esc(t('js.figures-sheet.assignGo'))}</button><button class="btn" type="button" id="fg-as-cancel">${esc(t('js.figures-sheet.assignCancel'))}</button></div>
+      </form>
+      <div id="fg-assign-done" role="status"></div></div>
   </aside></div>`;
 }
 function draw(wait = false) {
@@ -72,6 +86,32 @@ function draw(wait = false) {
     <a class="btn" href="/figures/worksheets/${esc(W.id)}/print?key=1">${esc(t('js.figures-sheet.printKey'))}</a>
     <button class="btn fg-danger" type="button" data-act="remove">${esc(t('js.figures-sheet.remove'))}</button>` : '';
   for (const b of app.querySelectorAll('button[data-act]')) if (wait) b.setAttribute('aria-busy', 'true'); else b.removeAttribute('aria-busy');
+  // Assign to class: once the worksheet has questions, for a teacher with a class.
+  const why = !(W && items.length) ? t('js.figures-sheet.assignEmpty') : !(P.classes || []).length ? t('js.figures-sheet.assignNoClasses') : '';
+  const open = document.getElementById('fg-assign-open');
+  open.disabled = !!why; document.getElementById('fg-assign-why').textContent = why;
+  if (why) { document.getElementById('fg-assign-form').hidden = true; open.setAttribute('aria-expanded', 'false'); }
+}
+function assignUi() {
+  const open = document.getElementById('fg-assign-open'), form = document.getElementById('fg-assign-form'), err = document.getElementById('fg-as-err');
+  const show = v => { form.hidden = !v; open.setAttribute('aria-expanded', String(!!v)); if (v) { document.getElementById('fg-assign-done').innerHTML = ''; form.scrollIntoView({ block: 'nearest' }); document.getElementById('fg-as-class').focus({ preventScroll: true }); } };
+  open.addEventListener('click', () => show(form.hidden));
+  document.getElementById('fg-as-cancel').addEventListener('click', () => { show(false); open.focus(); });
+  form.addEventListener('submit', async e => {
+    e.preventDefault(); if (!W) return;
+    err.textContent = '';
+    const go = document.getElementById('fg-as-go'); go.disabled = true;
+    const sel = document.getElementById('fg-as-class');
+    const body = { classId: sel.value, opensAt: document.getElementById('fg-as-opens').value, dueAt: document.getElementById('fg-as-due').value, showAnswers: document.getElementById('fg-as-show').checked };
+    try {
+      const r = await api(`/api/figures/worksheets/${encodeURIComponent(W.id)}/assign`, { method: 'POST', body });
+      const name = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].textContent : '';
+      show(false); form.reset();
+      document.getElementById('fg-assign-done').innerHTML = `<p class="notice good fg-small">${esc(t('js.figures-sheet.assignDone', { class: name }))}</p>
+        <div class="row"><a class="btn btn-sm" href="${esc(r.view)}">${esc(t('js.figures-sheet.assignSee'))}</a><a class="btn btn-sm" href="${esc(r.progress)}">${esc(t('js.figures-sheet.assignProgress'))}</a></div>`;
+      toast(t('js.figures-sheet.assignDone', { class: name }));
+    } catch (x) { err.textContent = x.message; } finally { go.disabled = false; }
+  });
 }
 const itemId = el => el.closest('[data-id]')?.dataset.id;
 const ACTS = {
@@ -98,6 +138,7 @@ const ACTS = {
 };
 async function boot() {
   shell();
+  assignUi();
   if (P.id) { try { W = (await api(`/api/figures/worksheets/${encodeURIComponent(P.id)}`)).worksheet; } catch (e) { toast(e.message, { bad: true }); } }
   if (P.startAi && !ai) { ai = true; document.getElementById('fg-ai').checked = true; document.getElementById('fg-aibox').hidden = false; }
   draw();

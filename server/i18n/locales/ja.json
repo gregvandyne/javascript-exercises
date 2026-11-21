@@ -3618,7 +3618,20 @@
       "print": "印刷",
       "printKey": "解答つきで印刷",
       "assign": "クラスに配布",
-      "assignNext": "次に登場: 開始日と締め切りを決めてワークシートをクラスに配布できるようになります。"
+      "assignTitle": "クラスに配布",
+      "assignClass": "クラス",
+      "assignOpens": "開始日（任意）",
+      "assignDue": "締め切り（任意）",
+      "assignShow": "締め切りのあとにこたえを表示",
+      "assignShowHint": "初めはオフ。オン: 締め切りのあと、提出した生徒にこたえと解き方が表示されます。",
+      "assignSnapshot": "生徒には今の状態のワークシートが配られます。あとで変更しても配布したものは変わりません。",
+      "assignGo": "配布",
+      "assignCancel": "キャンセル",
+      "assignEmpty": "先に問題を追加してから配布してください。",
+      "assignNoClasses": "担当のクラスがまだありません。先にクラスを作ってから配布してください。",
+      "assignDone": "{class}に配布しました。",
+      "assignSee": "生徒の画面で見る",
+      "assignProgress": "進み具合を見る"
     }
   },
   "favorites": {
@@ -4246,7 +4259,8 @@
       "build": "ゲームをつくる",
       "text": "よむ・やってみる",
       "question": "しつもんにこたえる",
-      "quiz": "クイズにこたえる"
+      "quiz": "クイズにこたえる",
+      "figures": "図の問題にこたえる"
     },
     "library": {
       "title": "レッスンライブラリ",
@@ -12479,6 +12493,51 @@
       "dotCross": {
         "name": "点と×の電子配置図",
         "desc": "電子殻で共有・移動する電子"
+      }
+    },
+    "step": {
+      "answerLabel": "問題 {n} のこたえ",
+      "right": "正解",
+      "notRight": "不正解",
+      "answer": "こたえ:",
+      "teacherAnswer": "解答:",
+      "score": "{total}問中{right}問正解（{pct}%）。",
+      "answersLater": "先生は締め切りのあとにこたえを見せます。",
+      "noAnswers": "こたえは先生が持っています。クラスでいっしょに確認するかもしれません。",
+      "teacherNote": "生徒にはこのように見えます。各問題の下にあなた用の解答があります。",
+      "showOnNote": "締め切りのあと、生徒にこたえが表示されます。",
+      "showOffNote": "生徒にこたえは表示されません。",
+      "handInHint": "とちゅうで保存しよう。提出すると採点され、こたえは変えられません。",
+      "answersReady": "こたえが公開されています。提出すると見られます。",
+      "save": "保存",
+      "handIn": "提出",
+      "handInConfirm": "こたえを提出しますか？ あとから変えられません。",
+      "saved": "保存しました",
+      "handedIn": "提出しました",
+      "showIsOn": "締め切りのあとにこたえを表示します",
+      "showIsOff": "生徒にこたえは表示されません",
+      "errors": {
+        "handedIn": "もう提出しています。",
+        "empty": "まず一つはこたえを書いてください。"
+      },
+      "showAnswers": "締め切りのあとにこたえを表示",
+      "showAnswersHint": "初めはオフ。オン: 締め切りのあと、提出した生徒にこたえと解き方が表示されます。",
+      "showNeedsDue": "こたえをあとで表示するには、このレッスンに締め切りを設定してください。",
+      "handedInCount": "提出: {total}人中{done}人",
+      "questionN": "問題 {n}",
+      "rightOf": "{total}人中{right}人が正解",
+      "answersTable": "生徒ごとのこたえ",
+      "noneYet": "まだだれも提出していません。",
+      "questions": "{count, plural, other {図の問題 #問}}"
+    },
+    "assign": {
+      "errors": {
+        "empty": "このワークシートを配布する前に問題を追加してください。",
+        "noAnswer": "配布する前に、すべての問題にこたえが必要です。エディターで問題 {list} のこたえを選んでください。",
+        "noClass": "担当のクラスを選んでください。",
+        "badDate": "その日付は正しくないようです。",
+        "dueBeforeOpen": "締め切りが開始日より前です。",
+        "needsDue": "こたえを締め切りのあとに表示するには、締め切りを設定してください。"
       }
     }
   }

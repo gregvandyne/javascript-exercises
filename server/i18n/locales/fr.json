@@ -3618,7 +3618,20 @@
       "print": "Imprimer",
       "printKey": "Imprimer avec le corrigé",
       "assign": "Donner à une classe",
-      "assignNext": "Prochainement : donner une fiche à une classe avec des dates d'ouverture et de rendu."
+      "assignTitle": "Donner à une classe",
+      "assignClass": "Classe",
+      "assignOpens": "Ouverture (facultatif)",
+      "assignDue": "Rendu (facultatif)",
+      "assignShow": "Montrer les réponses après la date de rendu",
+      "assignShowHint": "Désactivé par défaut. Activé : après la date de rendu, les élèves qui ont rendu voient les réponses et les étapes.",
+      "assignSnapshot": "Les élèves reçoivent la fiche telle qu'elle est maintenant. Vos changements ultérieurs ne la changent pas.",
+      "assignGo": "Donner",
+      "assignCancel": "Annuler",
+      "assignEmpty": "Ajoutez d'abord des questions, puis donnez la fiche.",
+      "assignNoClasses": "Vous n'avez pas encore de classe. Créez d'abord une classe, puis donnez la fiche.",
+      "assignDone": "Donné à {class}.",
+      "assignSee": "Voir comme les élèves",
+      "assignProgress": "Voir la progression"
     }
   },
   "favorites": {
@@ -4246,7 +4259,8 @@
       "build": "Créer un jeu",
       "text": "Lire ou faire",
       "question": "Répondre à une question",
-      "quiz": "Répondre aux questions du quiz"
+      "quiz": "Répondre aux questions du quiz",
+      "figures": "Répondre à des questions sur des figures"
     },
     "library": {
       "title": "Bibliothèque de leçons",
@@ -12479,6 +12493,51 @@
       "dotCross": {
         "name": "Schéma points-croix",
         "desc": "Électrons partagés et transférés dans les couches"
+      }
+    },
+    "step": {
+      "answerLabel": "Ta réponse à la question {n}",
+      "right": "Juste",
+      "notRight": "Pas juste",
+      "answer": "Réponse :",
+      "teacherAnswer": "Corrigé :",
+      "score": "Tu as {right} sur {total} de juste ({pct} %).",
+      "answersLater": "Ton enseignant montrera les réponses après la date de rendu.",
+      "noAnswers": "Ton enseignant a les réponses et les reverra peut-être avec la classe.",
+      "teacherNote": "Voici ce que voient les élèves, avec le corrigé sous chaque question pour vous.",
+      "showOnNote": "Les réponses s'affichent pour les élèves après la date de rendu.",
+      "showOffNote": "Les réponses ne s'affichent jamais pour les élèves.",
+      "handInHint": "Enregistre au fur et à mesure. Quand tu rends, tes réponses sont corrigées et ne peuvent plus être changées.",
+      "answersReady": "Les réponses sont prêtes. Rends ton travail pour les voir.",
+      "save": "Enregistrer",
+      "handIn": "Rendre",
+      "handInConfirm": "Rendre tes réponses ? Tu ne pourras plus les changer.",
+      "saved": "Enregistré",
+      "handedIn": "Rendu",
+      "showIsOn": "Les réponses s'afficheront après la date de rendu",
+      "showIsOff": "Les réponses sont cachées aux élèves",
+      "errors": {
+        "handedIn": "Tu as déjà rendu ce travail.",
+        "empty": "Écris d'abord au moins une réponse."
+      },
+      "showAnswers": "Montrer les réponses après la date de rendu",
+      "showAnswersHint": "Désactivé par défaut. Activé : après la date de rendu, chaque élève qui a rendu voit les réponses et les étapes.",
+      "showNeedsDue": "Donnez une date de rendu à cette leçon pour montrer les réponses après.",
+      "handedInCount": "Rendus : {done} sur {total}",
+      "questionN": "Question {n}",
+      "rightOf": "{right} sur {total} justes",
+      "answersTable": "Les réponses de chaque élève",
+      "noneYet": "Personne n'a encore rendu.",
+      "questions": "{count, plural, one {# question sur une figure} other {# questions sur des figures}}"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Ajoutez une question avant de donner cette fiche.",
+        "noAnswer": "Chaque question doit avoir une réponse avant d'être donnée. Choisissez-en une pour la question {list} dans l'éditeur.",
+        "noClass": "Choisissez une de vos classes.",
+        "badDate": "Cette date ne semble pas correcte.",
+        "dueBeforeOpen": "La date de rendu est avant la date d'ouverture.",
+        "needsDue": "Fixez une date de rendu pour montrer les réponses après."
       }
     }
   }

@@ -3618,7 +3618,20 @@
       "print": "列印",
       "printKey": "連同解答列印",
       "assign": "指派給班級",
-      "assignNext": "即將推出：把學習單指派給班級，並設定開始與繳交日期。"
+      "assignTitle": "指派給班級",
+      "assignClass": "班級",
+      "assignOpens": "開始（選填）",
+      "assignDue": "繳交期限（選填）",
+      "assignShow": "繳交期限過後顯示答案",
+      "assignShowHint": "預設關閉。開啟時：繳交期限過後，已繳交的學生能看到答案和解題步驟。",
+      "assignSnapshot": "學生拿到的是學習單現在的樣子。你之後的修改不會改變它。",
+      "assignGo": "指派",
+      "assignCancel": "取消",
+      "assignEmpty": "請先加入題目，再指派學習單。",
+      "assignNoClasses": "你還沒有任教的班級。請先建立班級，再指派。",
+      "assignDone": "已指派給 {class}。",
+      "assignSee": "以學生的角度查看",
+      "assignProgress": "查看進度"
     }
   },
   "favorites": {
@@ -4246,7 +4259,8 @@
       "build": "做遊戲",
       "text": "讀一讀、做一做",
       "question": "回答問題",
-      "quiz": "回答測驗題目"
+      "quiz": "回答測驗題目",
+      "figures": "回答圖形題"
     },
     "library": {
       "title": "課程庫",
@@ -12479,6 +12493,51 @@
       "dotCross": {
         "name": "點叉圖",
         "desc": "電子層中共用與轉移的電子"
+      }
+    },
+    "step": {
+      "answerLabel": "你對第 {n} 題的答案",
+      "right": "正確",
+      "notRight": "不正確",
+      "answer": "答案：",
+      "teacherAnswer": "答案卷：",
+      "score": "你答對了 {total} 題中的 {right} 題（{pct}%）。",
+      "answersLater": "老師會在繳交期限之後公布答案。",
+      "noAnswers": "答案在老師那裡，老師可能會和全班一起檢討。",
+      "teacherNote": "這是學生看到的畫面，每一題下方有給你看的答案。",
+      "showOnNote": "繳交期限過後，學生會看到答案。",
+      "showOffNote": "學生永遠不會看到答案。",
+      "handInHint": "邊做邊儲存。繳交後，答案會被批改，而且不能再修改。",
+      "answersReady": "答案已經可以看了。繳交你的作業就能看到。",
+      "save": "儲存",
+      "handIn": "繳交",
+      "handInConfirm": "要繳交答案嗎？之後就不能修改了。",
+      "saved": "已儲存",
+      "handedIn": "已繳交",
+      "showIsOn": "繳交期限過後會顯示答案",
+      "showIsOff": "學生看不到答案",
+      "errors": {
+        "handedIn": "你已經繳交過了。",
+        "empty": "請先寫至少一個答案。"
+      },
+      "showAnswers": "繳交期限過後顯示答案",
+      "showAnswersHint": "預設關閉。開啟時：繳交期限過後，每位已繳交的學生都能看到答案和解題步驟。",
+      "showNeedsDue": "請為這堂課設定繳交期限，才能在之後顯示答案。",
+      "handedInCount": "已繳交：{done} / {total}",
+      "questionN": "第 {n} 題",
+      "rightOf": "{total} 人中 {right} 人答對",
+      "answersTable": "每位學生的答案",
+      "noneYet": "還沒有人繳交。",
+      "questions": "{count, plural, other {# 題圖形題}}"
+    },
+    "assign": {
+      "errors": {
+        "empty": "指派這份學習單之前，請先加入題目。",
+        "noAnswer": "每一題都要有答案才能指派。請在編輯器裡為第 {list} 題選一個答案。",
+        "noClass": "請選擇你的一個班級。",
+        "badDate": "這個日期看起來不對。",
+        "dueBeforeOpen": "繳交期限早於開始日期。",
+        "needsDue": "請設定繳交期限，才能在之後顯示答案。"
       }
     }
   }

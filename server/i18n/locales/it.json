@@ -3619,7 +3619,20 @@
       "print": "Stampa",
       "printKey": "Stampa con le soluzioni",
       "assign": "Assegna a una classe",
-      "assignNext": "Prossimamente: assegnare una scheda a una classe con date di apertura e di consegna."
+      "assignTitle": "Assegna a una classe",
+      "assignClass": "Classe",
+      "assignOpens": "Apre (facoltativo)",
+      "assignDue": "Consegna (facoltativo)",
+      "assignShow": "Mostra le risposte dopo la data di consegna",
+      "assignShowHint": "Spento di base. Acceso: dopo la data di consegna, chi ha consegnato vede le risposte e i passaggi.",
+      "assignSnapshot": "Gli studenti ricevono la scheda com'è adesso. Le modifiche che farai dopo non la cambiano.",
+      "assignGo": "Assegna",
+      "assignCancel": "Annulla",
+      "assignEmpty": "Aggiungi prima delle domande, poi assegna la scheda.",
+      "assignNoClasses": "Non insegni ancora in una classe. Crea prima una classe, poi assegna.",
+      "assignDone": "Assegnato a {class}.",
+      "assignSee": "Guarda come gli studenti",
+      "assignProgress": "Vedi i progressi"
     }
   },
   "favorites": {
@@ -4247,7 +4260,8 @@
       "build": "Crea un gioco",
       "text": "Leggi o fai",
       "question": "Rispondi a una domanda",
-      "quiz": "Rispondi alle domande del quiz"
+      "quiz": "Rispondi alle domande del quiz",
+      "figures": "Rispondere a domande sulle figure"
     },
     "library": {
       "title": "Biblioteca delle lezioni",
@@ -12480,6 +12494,51 @@
       "dotCross": {
         "name": "Diagramma a punti e croci",
         "desc": "Elettroni condivisi e trasferiti nei gusci"
+      }
+    },
+    "step": {
+      "answerLabel": "La tua risposta alla domanda {n}",
+      "right": "Giusta",
+      "notRight": "Non giusta",
+      "answer": "Risposta:",
+      "teacherAnswer": "Soluzioni:",
+      "score": "Hai {right} risposte giuste su {total} ({pct}%).",
+      "answersLater": "L'insegnante mostrerà le risposte dopo la data di consegna.",
+      "noAnswers": "L'insegnante ha le risposte e potrebbe rivederle con la classe.",
+      "teacherNote": "Ecco cosa vedono gli studenti, con la soluzione sotto ogni domanda per te.",
+      "showOnNote": "Le risposte si vedono dopo la data di consegna.",
+      "showOffNote": "Le risposte non si vedono mai.",
+      "handInHint": "Salva mentre lavori. Quando consegni, le risposte vengono corrette e non si possono più cambiare.",
+      "answersReady": "Le risposte sono pronte. Consegna il tuo lavoro per vederle.",
+      "save": "Salva",
+      "handIn": "Consegna",
+      "handInConfirm": "Consegnare le risposte? Dopo non potrai cambiarle.",
+      "saved": "Salvato",
+      "handedIn": "Consegnato",
+      "showIsOn": "Le risposte si vedranno dopo la data di consegna",
+      "showIsOff": "Le risposte sono nascoste agli studenti",
+      "errors": {
+        "handedIn": "Hai già consegnato.",
+        "empty": "Scrivi prima almeno una risposta."
+      },
+      "showAnswers": "Mostra le risposte dopo la data di consegna",
+      "showAnswersHint": "Spento di base. Acceso: dopo la data di consegna, chi ha consegnato vede le risposte e i passaggi.",
+      "showNeedsDue": "Dai una data di consegna a questa lezione per mostrare le risposte dopo.",
+      "handedInCount": "Consegnati: {done} su {total}",
+      "questionN": "Domanda {n}",
+      "rightOf": "{right} su {total} giuste",
+      "answersTable": "Le risposte di ogni studente",
+      "noneYet": "Nessuno ha ancora consegnato.",
+      "questions": "{count, plural, one {# domanda su una figura} other {# domande sulle figure}}"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Aggiungi una domanda prima di assegnare questa scheda.",
+        "noAnswer": "Ogni domanda ha bisogno di una risposta prima di assegnarla. Scegline una per la domanda {list} nell'editor.",
+        "noClass": "Scegli una delle tue classi.",
+        "badDate": "Questa data non sembra giusta.",
+        "dueBeforeOpen": "La data di consegna è prima della data di apertura.",
+        "needsDue": "Imposta una data di consegna per mostrare le risposte dopo."
       }
     }
   }
