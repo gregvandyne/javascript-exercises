@@ -9,7 +9,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import '../../figures/src/index.js';
-import { bundle, files as builtFiles, version } from '../../scripts/build-figures.js';
+import { bundle, files as builtFiles, version, PARTS, partFile, coreLib } from '../../scripts/build-figures.js';
+import zlib from 'node:zlib';
 import { figuresKit, FIG_LATEST } from '../../server/services/figlibs.js';
 import { evalExpr, exprProblem } from '../../canvas/src/expr.js';
 import { CODES } from '../../server/i18n/index.js';
@@ -37,6 +38,33 @@ const SAMPLES = {
   orbitals: { element: 'O' },
   lewis: { molecule: 'H2O' },
   reading: { type: 'thermometer', value: 23.5, min: -10, max: 50, step: 1, major: 10 },
+  numberLine: { from: -5, to: 5, intervals: [{ from: -2 }], points: [{ at: [1, 2], label: 'P' }] },   // 1.1.0 (tests/unit/figures-numberline.test.js)
+  // 1.1.0 shapes (tests/unit/figures-shapes.test.js)
+  triangle: { AB: 3, BC: 4, B: 90, labels: { CA: 'x' } },
+  rectangle: { AB: 12, BC: 5, unit: 'cm' },
+  parallelogram: { AB: 12, DA: 10, A: 30, heights: ['D'], labels: { hD: true } },
+  trapezoid: { type: 'isosceles', AB: 14, CD: 8, h: 4 },
+  kite: { AB: 6, DA: 10, B: 110 },
+  regularPolygon: { n: 6, side: 8, lines: ['apothem'] },
+  // 1.1.0 lines and angles, segment addition, the circle, composite shapes (tests/unit/figures-lines, -segments, -circle, -composite)
+  angles: { rays: [0, 60], angles: [{ from: 0, to: 1 }] },
+  parallelLines: { transversals: [{ angle: 65 }], angles: [{ number: 2, label: true }] },
+  segmentAddition: { points: ['A', 'B', 'C'], unknown: { x: 6 }, parts: [{ expr: [2, 1] }, { expr: [3, -4] }], spans: [{ from: 'A', to: 'C', label: 27 }] },
+  circle: { points: [{ name: 'A', at: 210 }, { name: 'B', at: 330 }], lines: [{ from: 'O', to: 'A' }, { from: 'O', to: 'B' }], angles: [{ at: 'O', from: 'A', to: 'B' }] },
+  compositeShape: { parts: [{ rect: [0, 0, 8, 3] }, { rect: [0, 3, 3, 4] }], sides: true },
+  barGraph: { categories: ['A', 'B'], values: [3, 5] }, dotPlot: { data: [1, 2, 2, 3] }, histogram: { bins: [[0, 10], [10, 20]], counts: [3, 5] },
+  boxPlot: { data: [1, 2, 3, 4, 5, 6, 7] }, scatterPlot: { points: [[1, 2], [2, 3], [3, 5]], fit: true }, stemAndLeaf: { data: [12, 15, 21, 34] },
+  pieChart: { slices: [{ name: 'A', value: 1 }, { name: 'B', value: 3 }] }, cumulativeFrequency: { bins: [[0, 10], [10, 20]], counts: [3, 5] }, normalCurve: { regions: [{ from: 1 }] },
+  treeDiagram: { branches: [{ name: 'H', p: [1, 2] }, { name: 'T', p: [1, 2] }], repeat: 2 }, vennDiagram: { sets: ['A', 'B'], counts: { A: 3, B: 4, AB: 2, none: 1 } },
+  twoWayTable: { columns: ['x', 'y'], rows: ['p', 'q'], counts: [[1, 2], [3, 4]] }, tableOfValues: { rule: '2*x' }, protractor: { angle: 60, reading: true },
+  // 1.1.0 solids, nets and mapping diagrams (tests/unit/figures-solids, -net, -mapping)
+  prism: { length: 8, width: 3, height: 5 }, cylinder: { radius: 4, height: 10 }, pyramid: { length: 6, width: 6, height: 4 }, cone: { radius: 5, height: 12 }, sphere: { radius: 6 },
+  net: { solid: 'cube', side: 4 }, mappingDiagram: { inputs: [1, 2], outputs: [3, 4], arrows: [[1, 3], [2, 4]] },
+  // 1.1.0 physics (tests/unit/figures-motion, -projectile, -waves)
+  motionMap: { segments: [{ kind: 'forward', speed: 2, duration: 4 }], dt: 1 }, projectile: { speed: 20, angle: 45 }, waves: { amplitude: 3, wavelength: 4, cycles: 2 },
+  // 1.2.0 chemistry (tests/unit/figures-chem-spectra, -chem-energy, -chem-atoms, -labware)
+  massSpectrum: { element: 'Cl' }, heatingCurve: { substance: 'water' }, energyProfile: { levels: [50, 150, 20] }, nuclide: { element: 'C', mass: 14 },
+  lineSpectrum: { strips: [{ element: 'H' }] }, photoelectron: { element: 'Na' }, particles: { particles: [{ count: 6, look: { size: 'm', shade: 'gray' } }] }, dotCross: { molecule: 'CH4' },
 };
 
 test('every kind: plain data in, one accessible <svg> out, no problems for good data', () => {
@@ -65,6 +93,10 @@ test('bad data is named in plain English and never drawn as a figure', () => {
     ['motionGraph', { type: 'distance-time', points: [[0, 5], [2, 3]] }, /never goes down/],
     ['circuit', { layout: 'series', parts: [{ type: 'bulb' }] }, /cell or a battery/],
     ['grid', { x: [-5, 5], y: [-5, 5], fns: [{ expr: 'window.x' }] }, /character|names/],
+    ['numberLine', { from: 0, to: 5, points: [{ at: 7 }] }, /past the end of the line/],
+    ['triangle', { AB: 3, BC: 4, CA: 10 }, /cannot make a triangle/],
+    ['angles', { rays: [0, 60], angles: [{ from: 0, to: 1, label: 50 }] }, /labeled 50 but it is 60°/],
+    ['compositeShape', { parts: [{ rect: [0, 0, 4, 4] }, { rect: [2, 2, 4, 4] }] }, /overlap/],
     ['nope', {}, /unknown figure/],
   ];
   for (const [k, d, re] of cases) { assert.match(OF.check(k, d).join('; '), re, k); assert.match(OF.svg(k, d), /cannot be drawn/, `${k}: a card, not a wrong figure`); }
@@ -189,12 +221,42 @@ test('the formula language: arithmetic, degrees, functions; nothing else (no nam
 });
 
 // ---------------------------------------------------------------- the shipped file
-test('the shipped oomba-figures.js is a fresh build of figures/src, and the server runs it with no document', () => {
+test('the shipped oomba-figures.js and its packs are a fresh build of figures/src, and the server runs them with no document', async () => {
   const v = version(), dir = path.join(ROOT, 'public/vendor/oomba-figures', v);
-  for (const [f, b] of Object.entries(builtFiles())) assert.ok(fs.readFileSync(path.join(dir, f)).equals(b), `${f} matches figures/src`);
-  const js = bundle();
-  assert.doesNotMatch(js, /\bfetch\s*\(|XMLHttpRequest|WebSocket|localStorage|\beval\s*\(|new Function|import\s*\(/, 'no network, no storage, no eval');
+  for (const [f, b] of Object.entries(await builtFiles())) assert.ok(fs.readFileSync(path.join(dir, f)).equals(b), `${f} matches figures/src`);
+  for (const part of Object.keys(PARTS)) assert.doesNotMatch(bundle(part), /\bfetch\s*\(|XMLHttpRequest|WebSocket|localStorage|\beval\s*\(|new Function|import\s*\(/, `${part}: no network, no storage, no eval`);
   const F = figuresKit(FIG_LATEST['oomba-figures']);
   assert.equal(F.version, v);
   assert.equal(F.svg('bohr', { element: 'Na' }), OF.svg('bohr', { element: 'Na' }), 'the frozen file draws what the source draws');
+});
+test('the latest version (1.2.0; 1.1.0 was the first) is minified, the core and each pack: no comments but the legal ones (each header, and each ported file\'s Apache 2.0 note, in the file it is in), and smaller', () => {
+  const ported = fs.readdirSync(path.join(ROOT, 'figures/src/ported')).filter(f => f.endsWith('.js')), v = version();
+  let notes = 0;
+  for (const part of Object.keys(PARTS)) {
+    const js = fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-figures', v, partFile(part)), 'utf8'), src = bundle(part);
+    assert.ok(js.startsWith(part === 'core' ? `/*! Oomba Figures ${v} |` : `/*! Oomba Figures ${v}, the ${part} pack |`), `${part}: the header stays`);
+    const mine = ported.filter(f => PARTS[part].includes(`figures/src/ported/${f}`));
+    for (const f of mine) {
+      const note = new RegExp(`/\\*! figures/src/ported/${f.replace('.', '\\.')}:\\n[\\s\\S]*?Ported code, used under the Apache License 2\\.0[\\s\\S]*?Changed from the original[\\s\\S]*?\\*/`);
+      assert.match(js, note, `${f}: its 4(b) note is kept in the ${part} file`);
+    }
+    notes += mine.length;
+    assert.equal((js.match(/\/\*!/g) || []).length, 1 + mine.length, `${part}: no other comments`);
+    assert.doesNotMatch(js, /\n\/\/ ---- /, 'the section markers go');
+    assert.ok(js.length < src.length * 0.75 && zlib.gzipSync(js).length < zlib.gzipSync(src).length * 0.9, `${part}: ${js.length} vs ${src.length}`);
+    assert.doesNotMatch(js, /\bfetch\s*\(|XMLHttpRequest|WebSocket|localStorage|\beval\s*\(|new Function|import\s*\(/, 'no network, no storage, no eval');
+  }
+  assert.equal(notes, ported.length, 'every ported file is in exactly one part');
+  const one = fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-figures/1.0.0/oomba-figures.js'), 'utf8');
+  assert.match(one, /\n\/\/ ---- figures\/src\/svg\.js\n/, '1.0.0 stays as it shipped, not minified');
+});
+test('each file shares one scope: no top-level name is declared twice in the core, or in a pack with the core names it takes (a second function would silently replace the first)', () => {
+  const lib = coreLib();
+  for (const part of Object.keys(PARTS)) {
+    const js = bundle(part), names = [...js.matchAll(/^(?:async )?(?:function\*? |const |let |class )([A-Za-z_$][\w$]*)/gm)].map(m => m[1]);
+    const taken = part === 'core' ? [] : /^const \{ ([^}]*) \} = __of\._core;$/m.exec(js)[1].split(', ');
+    for (const n of taken) assert.ok(lib.includes(n), `${part}: ${n} is one of the names the core hands over`);
+    const all = [...names, ...taken], twice = all.filter((n, i) => all.indexOf(n) !== i);
+    assert.deepEqual(twice, [], part);
+  }
 });

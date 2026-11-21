@@ -72,7 +72,7 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.voice(lang?)` | The `SpeechSynthesisVoice` `BRB.speak` would use for a language tag (default `BRB.user.lang`), or `null`. |
 | `BRB.gameUrl` | The game's own play page (`https://…/play/<slug>`), or `null` in a preview. A game that shares a link to itself adds lesson parameters to it (`?mode=…&chapter=…&lock=1`, see [Lesson parameters](#lesson-parameters)). |
 | `BRB.copy(textOrPng)` | Copies for the game, which can't use the clipboard itself (it is sandboxed): a link to the game's own play page (`BRB.gameUrl`, with any query, at most 400 characters) or a PNG `Blob` (at most 300 KB, such as that link's QR code). The play page copies only right after a tap. A Promise of `true` when copied, `false` when refused or after 3 s. |
-| `BRB.questionSet` / `BRB.saveQuestionSet(items, id?)` | Official games on the list only (Algebra Builder, The Big Divide, Crossword): the teacher's question set a link opened, and saving one. See [Question sets](#question-sets-brbquestionset). |
+| `BRB.questionSet` / `BRB.saveQuestionSet(items, id?)` | Official games on the list (Algebra Builder, The Big Divide, Crossword), and Builder classroom activities on Oomba Canvas 1.4.0 (the kit uses them itself: never call them from a Builder game's own code): the teacher's question set a link opened, and saving one. See [Question sets](#question-sets-brbquestionset). |
 | `BRB.wordsFromDoc(file, { kind, level })` | Crossword only, the same grown-ups as `writeClues`: a PDF (at most 5 pages) or Word (.docx) `Blob` of at most 2 MB (`kind` `'pdf'` or `'docx'`); about 5 pages of text are read (15,000 characters), the rest is cut off. A Promise of `{ title, words: [[word, clue]], cut, ai }` (`cut`: only the start was read; `ai`: the AI took the words out, `false` for a plain "word - definition" list read as it is) or `{ error }` (`notAllowed`, `aiOff`, `aiFailed`, `docBad`, `docBig`, `docType`, `docPages`, `docScan` (no text: a scanned page), `docEmpty`, `docNone`, `docLimit` (10 files a day), `offline`). The page posts `POST /api/games/:id/words-from-doc`; the file is never stored. |
 | `BRB.canWriteClues` / `BRB.writeClues(words, { level })` | Crossword only, for a grown-up who may host and whom the family fence lets through (school staff and the admin, not a family grown-up), with AI on: a Promise of `{ clues }` (one per word, `''` where none) or `{ error }` (`notAllowed`, `aiOff`, `aiFailed`, `words`, `offline`). The page posts `POST /api/games/:id/clues`; the clues are for the teacher to read and edit, nothing is saved. |
 | `BRB.afterSpeech(fn, opts?)` | Calls `fn` once nothing is being said: no line playing, queued, or still on its way from the AI voice, for `gap` ms (250). Never before `min` ms (0) nor after `max` ms (10000), so a line that never ends can't hold the game. Returns a function that cancels it. Use it wherever the game moves on to the next question, so the last line is never cut off by the next one. |
@@ -328,6 +328,9 @@ player is offline or the page is slow (5 s). Messages: `brb:poll {item, choice, 
 An official game on the list (`SET_GAMES` in `server/services/game-sets.js`: Algebra Builder, The Big Divide; each with its own
 cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, and a lesson step) opens it:
 `/play/<slug>?chapter=s-<10 letters and digits>&lock=1`.
+- A Builder classroom activity on Oomba Canvas 1.4.0 keeps sets too (a teacher's "worksheets": the kit's own problems,
+  cleaned for the activity's published version by `cleanCanvasItems`; saving is for school staff only). The kit does
+  everything itself (docs/canvas-api.md "Worksheets"); the Builder never writes code for it.
 - `BRB.questionSet`: the set the link opened, `{ id, items, mine }` (`mine`: the player saved it), or
   `{ id, missing: true }` for a code with no set; `null` without one. The items are the game's own shape, as its
   cleaner left them. Algebra Builder: 1 to 20 items `{ a, p, s, l }`: the activity (`solve`, `multiply`, `factor`), the
@@ -337,9 +340,33 @@ cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, 
   set per student and the plan `g` it is made from. No free text in either. Crossword: one item `{ t, w, r, b, h }`: a title,
   3 to 30 `[word, clue]` pairs (the teacher's own words: each word, clue and the title pass the site's text filter when
   saved), the layout's seed and the word bank and hints options.
-- `BRB.saveQuestionSet(items, id?)` → a Promise of `{ id }` or `{ error }` (`guest`, `bad`, `full`, `notYours`,
-  `offline`). The page posts it to `POST /api/games/:id/sets` for the signed-in player (not a guest): a new set, or with
-  `id` their own set changed under the same code. 1 to 20 items (Algebra Builder); 200 sets per player per game.
+- `BRB.saveQuestionSet(items, id?, { title }?)` → a Promise of `{ id }` or `{ error }` (`guest`, `bad`, `full`,
+  `notYours`, `offline`). The page posts it to `POST /api/games/:id/sets` for the signed-in player (not a guest): a new
+  set, or with `id` their own set changed under the same code. 1 to 20 items (Algebra Builder); 200 sets per player per
+  game. `title` (optional, at most 60 characters) is the set's name in its owner's list ("My worksheets", below); it
+  passes the site's text filter, and one the filter refuses is left out while the set still saves. Left out, the name
+  stays as it was. Crossword's name is always its puzzle's title (`items[0].t`). The Big Divide sends its activity's
+  title.
+- **My worksheets** (the owner's own list of their sets in this game). `BRB.canListSets`: true for school staff and the
+  platform admin (`INIT.mySets`; never a student, a child, a guest or a family grown-up, never in a preview); a game
+  shows its "My worksheets" button only then. Each call goes through the page to the server, and a set that isn't the
+  caller's reads exactly like one that isn't there:
+  - `BRB.mySets()` → `{ sets: [{ id, code, title, label, n, updated, items }] }`, newest first (`code`: the class code
+    as shown, "C5EXP 1CM9H"; `title`: '' until named; `label`: an English description from the server, "Long
+    division, 12 problems, Guided"; `n`: its words, problems or questions; `updated`: ms; `items`: the game's own
+    shape, as `BRB.questionSet` has them). `GET /api/games/:id/sets`.
+  - `BRB.deleteQuestionSet(id)` → `{ ok: true }`: the set is gone, its link and class code stop working.
+    `DELETE /api/games/:id/sets/:set`.
+  - `BRB.renameQuestionSet(id, title)` → `{ ok: true, title }` (the name as kept: spaces tidied, at most 60
+    characters; '' takes the name away) or `{ error: 'title' }` when the text filter refuses it. For Crossword the
+    puzzle's title changes too. `POST /api/games/:id/sets/:set/rename` `{ title }`.
+  - `BRB.duplicateQuestionSet(id)` → `{ id, set }`: a copy under a new code, named "Copy of ..." in the teacher's
+    language (`game.sets.copyOf`), with the list's view of it; `{ error: 'full' }` at 200.
+    `POST /api/games/:id/sets/:set/duplicate`.
+  - Errors: `notAllowed` (not offered to this viewer), `none` (not theirs, or gone), `title`, `full`, `offline`.
+  - The server: owner only (anyone else's set, a bad id or another game's set: 404 `noSet`), never a guest (403
+    `guest`), not past the grown-up fence, 60 calls a minute per account (as saving). Opening a set for editing needs no
+    call of its own: `items` are in the list, and saving with its `id` keeps its code.
 - `BRB.canAssign` / `BRB.assign(query)`: a teacher (school staff, not in a preview) may assign what they made. `query`
   is the problem's or set's lesson parameters (`chapter=s-…&lock=1`); after a tap the page opens
   `/teach/assign?game=<slug>&opts=<query>`, which says what students will open, makes a one-step lesson named after it

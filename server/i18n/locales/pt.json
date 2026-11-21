@@ -1192,7 +1192,10 @@
     },
     "makeLike": "Criar um jogo assim",
     "makeLikeShort": "Faça um assim",
-    "grownupBuilder": "Criador adulto"
+    "grownupBuilder": "Criador adulto",
+    "sets": {
+      "copyOf": "Cópia de {title}"
+    }
   },
   "play": {
     "backTo": "Voltar para {title}",
@@ -3355,6 +3358,290 @@
     "manip-room": {
       "actionsFor": "Ações para {label}",
       "teacherLock": "Seu professor travou isto."
+    },
+    "figures-editor": {
+      "undo": "Desfazer",
+      "redo": "Refazer",
+      "presets": "Predefinições…",
+      "examples": "Exemplos",
+      "mine": "Minhas predefinições",
+      "randomize": "Aleatório",
+      "controls": "Ajustes da figura",
+      "measures": "Medidas",
+      "leaveEmpty": "Informe as medidas que você sabe. Deixe as outras em branco.",
+      "options": "Opções",
+      "show": "Mostrar",
+      "default": "(padrão)",
+      "advanced": "Avançado (dados)",
+      "advancedHelp": "Todos os dados da figura em JSON. Listas e grupos são editados aqui.",
+      "jsonObject": "Os dados devem ser um único objeto { ... }.",
+      "jsonBad": "Ainda não é um JSON válido: {why}",
+      "display": "Exibição",
+      "print": "Modo de impressão (preto no branco)",
+      "nts": "Marcar \"Fora de escala\"",
+      "figure": "A figura",
+      "answers": "Pergunta e respostas",
+      "question": "Pergunta",
+      "questionHint": "Escreva a pergunta que os alunos respondem sobre esta figura.",
+      "worked": "Respostas resolvidas (OF.solve)",
+      "answerIs": "A resposta é",
+      "pickAnswer": "Escolha a resposta…",
+      "noAnswers": "Sem respostas resolvidas para esta figura",
+      "facts": "Tudo sobre ela",
+      "answersWait": "As respostas aparecem assim que a figura puder ser desenhada. A Oomba nunca desenha uma figura errada.",
+      "pickHelp": "Escolha qual número responde à sua pergunta, ou toque em Aleatório para uma pergunta pronta.",
+      "noSolve": "Esta figura não tem números calculados para escolher.",
+      "hide": "Esconder a resposta dos alunos",
+      "hideWhat": "O que esconder",
+      "hideAll": "Todas as medidas",
+      "ofSays": "Oomba Figures diz: {reason}",
+      "undoLast": "Desfazer minha última mudança",
+      "backToExample": "Voltar ao exemplo",
+      "add": "Adicionar à atividade",
+      "newSheet": "Uma nova atividade",
+      "qs": "{count, plural, one {# pergunta} other {# perguntas}}",
+      "added": "Adicionada a {title}.",
+      "openSheet": "Abrir a atividade",
+      "saveBack": "Salvar em {title}",
+      "svg": "Baixar SVG",
+      "png": "Baixar PNG",
+      "copy": "Copiar imagem",
+      "link": "Copiar link",
+      "savePreset": "Salvar como minha predefinição",
+      "presetName": "Dê um nome à predefinição",
+      "presetSaved": "Predefinição salva.",
+      "notice": "Os arquivos baixados avisam que o que a Oomba Academy acrescenta está em domínio público (CC0); o que você acrescentar de original é seu.",
+      "noGen": "Ainda não há gerador para esta figura: aqui vai outro exemplo.",
+      "pngFailed": "Não foi possível criar o PNG. Tente Baixar SVG.",
+      "copied": "Imagem copiada.",
+      "copiedSvg": "Copiada como texto SVG.",
+      "copyFailed": "Não deu para copiar. Tente baixar.",
+      "linkCopied": "Link copiado.",
+      "why": {
+        "triangle": {
+          "t": "Estes lados não formam um triângulo",
+          "p": "Dois lados quaisquer de um triângulo precisam somar mais que o terceiro, senão as pontas nunca se encontram."
+        },
+        "angles": {
+          "t": "Estes ângulos não servem",
+          "p": "Os ângulos de um triângulo somam exatamente 180°. Confira os ângulos que você deu."
+        },
+        "short": {
+          "t": "Um lado é curto demais",
+          "p": "Com esses números, um lado nunca alcança a outra ponta. Aumente-o ou mude um ângulo."
+        },
+        "agree": {
+          "t": "Estas medidas não combinam",
+          "p": "Você deu mais medidas do que a figura precisa, e elas não combinam. Tire uma."
+        },
+        "drawAs": {
+          "t": "Confira \"Fora de escala\"",
+          "p": "Outras proporções de desenho só funcionam com \"Fora de escala\" ligado, e as marcas precisam ser verdadeiras nos dois."
+        },
+        "positive": {
+          "t": "Um número precisa ser maior que zero",
+          "p": "Comprimentos, tamanhos e quantidades são maiores que zero."
+        },
+        "range": {
+          "t": "Um número está fora do intervalo",
+          "p": "Um dos números é grande ou pequeno demais para esta figura."
+        },
+        "extra": {
+          "t": "Medidas demais",
+          "p": "Esta figura aceita só algumas dessas medidas juntas. Tire uma."
+        },
+        "data": {
+          "t": "Não dá para ler os dados",
+          "p": "Confira a caixa Avançado (dados)."
+        },
+        "generic": {
+          "t": "Esta figura não pode ser desenhada",
+          "p": "A Oomba nunca desenha uma figura errada. Mude os números para que eles combinem."
+        }
+      },
+      "f": {
+        "unit": "Unidade",
+        "round": "Casas decimais",
+        "mass": "Massa",
+        "angle": "Ângulo",
+        "speed": "Velocidade",
+        "height": "Altura",
+        "width": "Largura",
+        "length": "Comprimento",
+        "radius": "Raio",
+        "value": "Valor",
+        "min": "Mínimo",
+        "max": "Máximo",
+        "step": "Passo",
+        "type": "Tipo",
+        "element": "Elemento"
+      },
+      "k": {
+        "area": "Área",
+        "perimeter": "Perímetro",
+        "volume": "Volume",
+        "surfaceArea": "Área total",
+        "angles": "Ângulo",
+        "sides": "Lado",
+        "total": "Total",
+        "mean": "Média",
+        "median": "Mediana",
+        "range": "Amplitude",
+        "interior": "Ângulo interno",
+        "value": "Valor"
+      },
+      "hp": {
+        "sides": "Os lados",
+        "angles": "Os ângulos",
+        "heights": "As alturas",
+        "value": "O valor",
+        "image": "A imagem",
+        "electrons": "Os elétrons",
+        "values": "Os valores",
+        "reading": "A leitura"
+      },
+      "draw": {
+        "modeLabel": "Como fazer a figura",
+        "type": "Digitar as medidas",
+        "draw": "Desenhar",
+        "title": "Desenhe na malha de pontos",
+        "size": "Tamanho da malha",
+        "sizeOpt": "{n} por {n}",
+        "clear": "Limpar",
+        "help": {
+          "triangle": "Toque em três pontos para fazer um triângulo. Arraste um vértice para movê-lo.",
+          "quad": "Toque em quatro pontos em ordem, contornando a figura. Arraste um vértice para movê-lo.",
+          "grid": "Toque nos pontos em ordem, contornando a figura, até 10 vértices. Arraste um vértice para movê-lo."
+        },
+        "keys": "No teclado: as setas movem, Enter coloca um vértice ou pega um, e depois as setas o movem.",
+        "board": "Malha de pontos, {n} por {n}",
+        "corner": "Vértice {name} em ({x}, {y})",
+        "placed": "{name} colocado em ({x}, {y})",
+        "moved": "{name} movido para ({x}, {y})",
+        "picked": "{name} selecionado. Use as setas para movê-lo e Enter para soltá-lo.",
+        "removed": "{name} removido",
+        "corners": "Vértices",
+        "sides": "Lados",
+        "angles": "Ângulos",
+        "kind": "Tipo",
+        "perimeter": "Perímetro",
+        "area": "Área",
+        "sqUnits": "{area} unidades quadradas",
+        "more": "{count, plural, one {Toque em mais # ponto.} other {Toque em mais # pontos.}}",
+        "filled": "Preenchido a partir do seu desenho.",
+        "keep": "A figura abaixo mantém a sua última forma válida.",
+        "same": "Dois vértices estão no mesmo ponto. Arraste um deles para outro ponto.",
+        "line": "Três vértices estão em linha reta, então não formam uma figura. Tire um deles da linha.",
+        "cross": "Dois lados se cruzam. Mova um vértice para que os lados só se encontrem nos vértices.",
+        "cannot": "O Oomba Figures não consegue desenhar esta. Tente mover um vértice.",
+        "isNot": "Essa figura é {is}, não {want}.",
+        "special": "Essa figura é {is}, e o Oomba Figures a desenha com um editor próprio.",
+        "open": {
+          "rectangle": "Abrir no editor de Retângulo",
+          "parallelogram": "Abrir no editor de Paralelogramo",
+          "trapezoid": "Abrir no editor de Trapézio",
+          "kite": "Abrir no editor de Deltoide",
+          "grid": "Marcar no plano cartesiano"
+        },
+        "a": {
+          "square": "um quadrado",
+          "rectangle": "um retângulo",
+          "rhombus": "um losango",
+          "parallelogram": "um paralelogramo",
+          "trapezoid": "um trapézio",
+          "kite": "um deltoide",
+          "quad": "um quadrilátero sem nome especial",
+          "concave": "um quadrilátero côncavo"
+        },
+        "t": {
+          "square": "Quadrado",
+          "rectangle": "Retângulo",
+          "rhombus": "Losango",
+          "parallelogram": "Paralelogramo",
+          "trapezoid": "Trapézio",
+          "isoTrapezoid": "Trapézio isósceles",
+          "rightTrapezoid": "Trapézio retângulo",
+          "kite": "Deltoide",
+          "quad": "Quadrilátero",
+          "concave": "Quadrilátero côncavo",
+          "polygon": "{count, plural, one {Polígono de # lado} other {Polígono de # lados}}"
+        },
+        "tri": {
+          "right": "Retângulo",
+          "acute": "Acutângulo",
+          "obtuse": "Obtusângulo",
+          "scalene": "Escaleno",
+          "isosceles": "Isósceles",
+          "equilateral": "Equilátero"
+        },
+        "ex": {
+          "right": "Triângulo retângulo",
+          "isosceles": "Triângulo isósceles",
+          "obtuse": "Triângulo obtusângulo",
+          "pentagon": "Pentágono"
+        },
+        "examples": "Desenhadas na malha de pontos",
+        "gridOut": "Mostrar também no plano cartesiano",
+        "gridTitle": "No plano cartesiano",
+        "addGrid": "Adicionar a figura do plano à atividade",
+        "drawInstead": "Desenhar numa malha"
+      }
+    },
+    "figures-sheet": {
+      "title": "Título da atividade",
+      "grade": "Ano",
+      "anyGrade": "Qualquer ano",
+      "gradeN": "Ano {grade}",
+      "powerAi": "Com IA",
+      "briefLabel": "Tema, ano, quantas perguntas",
+      "briefHint": "7º ano, área de retângulos e trapézios, e um diagrama de caixa.",
+      "howMany": "Perguntas",
+      "draft": "Criar rascunho",
+      "budget": "Usa o orçamento de IA. Se estiver em pausa, você recebe um conjunto inicial.",
+      "drafting": "Escrevendo suas perguntas…",
+      "briefFirst": "Descreva a atividade em poucas palavras primeiro.",
+      "drafted": "{count, plural, one {# pergunta criada.} other {# perguntas criadas.}} A Oomba Figures conferiu cada figura e resolveu cada resposta.",
+      "resting": "A IA está em pausa, aqui vai um conjunto inicial ({count, plural, one {# pergunta} other {# perguntas}}).",
+      "repaired": "{count, plural, one {# figura não podia ser desenhada e foi trocada.} other {# figuras não podiam ser desenhadas e foram trocadas.}}",
+      "dropped": "{count, plural, one {# pergunta ficou de fora.} other {# perguntas ficaram de fora.}}",
+      "addLabel": "Adicionar uma pergunta com figura",
+      "add": "Adicionar",
+      "empty": "Ainda não há perguntas. Adicione uma pergunta com figura ou peça algumas à IA.",
+      "questionN": "Pergunta {n}",
+      "questionHint": "Escreva a pergunta…",
+      "answer": "Resposta:",
+      "noAnswer": "Nenhuma resposta escolhida ainda: abra no editor.",
+      "up": "Mover para cima",
+      "down": "Mover para baixo",
+      "regen": "Novos números",
+      "edit": "Editar a figura",
+      "delete": "Apagar",
+      "deleteQ": "Apagar esta pergunta?",
+      "remove": "Apagar a atividade",
+      "removeQ": "Apagar esta atividade?",
+      "removeText": "As perguntas dela também serão apagadas. Não dá para desfazer.",
+      "preview": "Prévia de impressão",
+      "paper": "Carta, preto no branco",
+      "studentSheet": "Folha do aluno",
+      "answerKey": "Gabarito",
+      "previewEmpty": "A folha para imprimir aparece aqui quando houver uma pergunta.",
+      "print": "Imprimir",
+      "printKey": "Imprimir com gabarito",
+      "assign": "Atribuir a uma turma",
+      "assignTitle": "Atribuir a uma turma",
+      "assignClass": "Turma",
+      "assignOpens": "Abre (opcional)",
+      "assignDue": "Entrega (opcional)",
+      "assignShow": "Mostrar respostas depois da data de entrega",
+      "assignShowHint": "Desligado por padrão. Ligado: depois da data de entrega, quem entregou vê as respostas e os passos.",
+      "assignSnapshot": "Os alunos recebem a atividade como ela está agora. Mudanças que você fizer depois não a mudam.",
+      "assignGo": "Atribuir",
+      "assignCancel": "Cancelar",
+      "assignEmpty": "Adicione perguntas primeiro e depois atribua a atividade.",
+      "assignNoClasses": "Você ainda não tem turma. Crie uma turma primeiro e depois atribua.",
+      "assignDone": "Atribuído a {class}.",
+      "assignSee": "Ver como os alunos",
+      "assignProgress": "Ver o progresso"
     }
   },
   "favorites": {
@@ -3983,7 +4270,8 @@
       "build": "Criar um jogo",
       "text": "Ler ou fazer",
       "question": "Responder a uma pergunta",
-      "quiz": "Responder às perguntas do quiz"
+      "quiz": "Responder às perguntas do quiz",
+      "figures": "Responder perguntas de figuras"
     },
     "library": {
       "title": "Biblioteca de aulas",
@@ -11902,5 +12190,366 @@
       "classics": "Clássicos"
     },
     "footClassics": "Clássicos: livros antigos em domínio público, com as ilustrações originais."
+  },
+  "figures": {
+    "title": "Figuras",
+    "loading": "Carregando as figuras…",
+    "crumbs": "Você está aqui",
+    "tools": {
+      "label": "Ferramentas de ensino",
+      "manipulatives": "Materiais manipuláveis",
+      "figures": "Figuras"
+    },
+    "subjects": {
+      "math": "Matemática",
+      "data": "Dados e estatística",
+      "physics": "Física",
+      "chem": "Química",
+      "biology": "Biologia",
+      "economics": "Economia"
+    },
+    "grades": {
+      "K-2": "K-2",
+      "3-5": "Anos 3-5",
+      "6-8": "Anos 6-8",
+      "9-12": "Anos 9-12"
+    },
+    "menu": {
+      "testing": "Em teste: só você vê isto",
+      "pitch": "Figuras exatas e em escala para atividades, provas e slides. Prontas para imprimir, com as respostas resolvidas.",
+      "buildTitle": "Criar uma atividade",
+      "buildText": "Escolha as figuras você mesmo, ou descreva o que precisa e deixe a IA escrever as perguntas. Cada número é conferido para que cada figura possa mesmo ser desenhada.",
+      "draftAi": "Rascunho com IA",
+      "scratch": "Começar do zero",
+      "mine": "Minhas atividades",
+      "noSheets": "Ainda não há atividades. As que você criar aparecem aqui.",
+      "questions": "{count, plural, one {# P} other {# P}}",
+      "gradeOf": "Ano {grade}",
+      "edited": "editada em {date}",
+      "subjects": "Matérias",
+      "all": "Todas as figuras",
+      "soon": "Em breve",
+      "grades": "Anos",
+      "search": "Buscar figuras",
+      "searchHint": "Buscar figuras, como cilindro ou diagrama de caixa",
+      "count": "{count, plural, one {# figura} other {# figuras}}",
+      "nothing": "Nenhuma figura corresponde. Tente outra palavra ou outro ano."
+    },
+    "sheet": {
+      "newTitle": "Nova atividade",
+      "crumb": "Criador de atividades",
+      "untitled": "Atividade sem título"
+    },
+    "editor": {
+      "example": "Exemplo {n}"
+    },
+    "print": {
+      "figure": "Figura da pergunta {n}",
+      "keyTag": "Gabarito",
+      "keyTitle": "{title}: gabarito",
+      "name": "Nome",
+      "date": "Data",
+      "made": "Feito com Oomba Academy",
+      "noQuestion": "Observe a figura.",
+      "noAnswer": "Nenhuma resposta escolhida ainda",
+      "crumb": "Imprimir",
+      "sheetOnly": "Folha do aluno",
+      "withKey": "Com o gabarito",
+      "print": "Imprimir"
+    },
+    "errors": {
+      "notFound": "Isso não está aqui.",
+      "badKind": "Essa não é uma das figuras.",
+      "badData": "Não foi possível ler os dados dessa figura.",
+      "tooBig": "Essa figura é grande demais para salvar.",
+      "words": "Algumas palavras não são permitidas. Troque-as e tente de novo.",
+      "personal": "Tire números de telefone, e-mails, links e códigos e tente de novo.",
+      "cannotDraw": "Esta figura não pode ser desenhada com esses números. Troque-os e tente de novo.",
+      "tooMany": "Você já salvou muita coisa. Apague algumas primeiro.",
+      "fullSheet": "Esta atividade está cheia. Comece uma nova.",
+      "noGen": "Esta figura ainda não tem gerador de perguntas.",
+      "name": "Dê um nome primeiro.",
+      "brief": "Descreva a atividade em poucas palavras primeiro.",
+      "names": "Não coloque nomes de alunos na descrição: nomes nunca vão para a IA."
+    },
+    "kinds": {
+      "numberLine": {
+        "name": "Reta numérica",
+        "desc": "Números, intervalos e pontos em uma reta"
+      },
+      "triangle": {
+        "name": "Triângulo",
+        "desc": "Qualquer triângulo a partir de três medidas"
+      },
+      "rectangle": {
+        "name": "Retângulo",
+        "desc": "Retângulos e quadrados"
+      },
+      "parallelogram": {
+        "name": "Paralelogramo",
+        "desc": "Paralelogramos e losangos, com alturas"
+      },
+      "trapezoid": {
+        "name": "Trapézio",
+        "desc": "Trapézios: qualquer, isósceles ou retângulos"
+      },
+      "kite": {
+        "name": "Deltoide",
+        "desc": "Pipas com os lados iguais marcados"
+      },
+      "regularPolygon": {
+        "name": "Polígono regular",
+        "desc": "Polígonos regulares com apótema e raio"
+      },
+      "angles": {
+        "name": "Ângulos",
+        "desc": "Ângulos entre semirretas"
+      },
+      "parallelLines": {
+        "name": "Retas paralelas e uma transversal",
+        "desc": "Retas paralelas cortadas por uma transversal"
+      },
+      "segmentAddition": {
+        "name": "Adição de segmentos",
+        "desc": "Soma de segmentos com álgebra"
+      },
+      "circle": {
+        "name": "Círculo",
+        "desc": "Círculos com cordas, tangentes e ângulos"
+      },
+      "compositeShape": {
+        "name": "Figura composta",
+        "desc": "Figuras feitas de figuras mais simples"
+      },
+      "grid": {
+        "name": "Plano cartesiano",
+        "desc": "Pontos, retas e transformações no plano cartesiano"
+      },
+      "protractor": {
+        "name": "Transferidor",
+        "desc": "Ler um ângulo no transferidor"
+      },
+      "prism": {
+        "name": "Prisma",
+        "desc": "Prismas e cubos em 3D"
+      },
+      "cylinder": {
+        "name": "Cilindro",
+        "desc": "Cilindros em 3D"
+      },
+      "pyramid": {
+        "name": "Pirâmide",
+        "desc": "Pirâmides em 3D"
+      },
+      "cone": {
+        "name": "Cone",
+        "desc": "Cones em 3D"
+      },
+      "sphere": {
+        "name": "Esfera",
+        "desc": "Esferas e semiesferas"
+      },
+      "net": {
+        "name": "Planificação",
+        "desc": "Planificações que se dobram em sólidos"
+      },
+      "mappingDiagram": {
+        "name": "Diagrama de flechas",
+        "desc": "Entradas ligadas a saídas"
+      },
+      "barGraph": {
+        "name": "Gráfico de barras",
+        "desc": "Gráficos de barras, duplos e empilhados"
+      },
+      "dotPlot": {
+        "name": "Diagrama de pontos",
+        "desc": "Gráficos de pontos de um conjunto de dados"
+      },
+      "histogram": {
+        "name": "Histograma",
+        "desc": "Histogramas com classes iguais ou diferentes"
+      },
+      "boxPlot": {
+        "name": "Diagrama de caixa",
+        "desc": "Diagramas de caixa com quartis"
+      },
+      "scatterPlot": {
+        "name": "Diagrama de dispersão",
+        "desc": "Gráficos de dispersão com reta de ajuste"
+      },
+      "stemAndLeaf": {
+        "name": "Diagrama de caule e folhas",
+        "desc": "Diagramas de ramo e folhas"
+      },
+      "pieChart": {
+        "name": "Gráfico de setores",
+        "desc": "Gráficos de setores com ângulos e porcentagens"
+      },
+      "cumulativeFrequency": {
+        "name": "Frequência acumulada",
+        "desc": "Gráficos de frequência acumulada"
+      },
+      "normalCurve": {
+        "name": "Curva normal",
+        "desc": "Curvas normais com regiões sombreadas"
+      },
+      "treeDiagram": {
+        "name": "Diagrama de árvore",
+        "desc": "Diagramas de árvore de probabilidade"
+      },
+      "vennDiagram": {
+        "name": "Diagrama de Venn",
+        "desc": "Diagramas de Venn com dois ou três conjuntos"
+      },
+      "twoWayTable": {
+        "name": "Tabela de dupla entrada",
+        "desc": "Tabelas de dupla entrada com totais"
+      },
+      "tableOfValues": {
+        "name": "Tabela de valores",
+        "desc": "Tabelas de valores a partir de uma regra"
+      },
+      "freeBody": {
+        "name": "Diagrama de corpo livre",
+        "desc": "As forças sobre um objeto"
+      },
+      "vectors": {
+        "name": "Vetores",
+        "desc": "Vetores e sua resultante"
+      },
+      "inclinedPlane": {
+        "name": "Plano inclinado",
+        "desc": "Um bloco em uma rampa, com suas forças"
+      },
+      "pulley": {
+        "name": "Polias",
+        "desc": "Polias e massas penduradas"
+      },
+      "rays": {
+        "name": "Diagrama de raios",
+        "desc": "Diagramas de raios para lentes e espelhos"
+      },
+      "circuit": {
+        "name": "Diagrama de circuito",
+        "desc": "Circuitos em série e em paralelo"
+      },
+      "motionGraph": {
+        "name": "Gráfico de movimento",
+        "desc": "Gráficos de distância, velocidade e aceleração"
+      },
+      "motionMap": {
+        "name": "Diagrama de movimento",
+        "desc": "Mapas de movimento com pontos e setas"
+      },
+      "projectile": {
+        "name": "Movimento de projéteis",
+        "desc": "A trajetória de um projétil, em escala"
+      },
+      "waves": {
+        "name": "Ondas",
+        "desc": "Ondas transversais e longitudinais"
+      },
+      "reading": {
+        "name": "Leitura de escala",
+        "desc": "Termômetros, provetas, réguas e paquímetros"
+      },
+      "bohr": {
+        "name": "Modelo de Bohr",
+        "desc": "Modelos de Bohr de átomos e íons"
+      },
+      "orbitals": {
+        "name": "Diagrama de orbitais",
+        "desc": "Diagramas de orbitais em caixas"
+      },
+      "lewis": {
+        "name": "Estrutura de Lewis",
+        "desc": "Estruturas de Lewis de moléculas"
+      },
+      "halfLife": {
+        "name": "Meia-vida",
+        "desc": "Curvas de decaimento radioativo"
+      },
+      "titration": {
+        "name": "Curva de titulação",
+        "desc": "Curvas de titulação"
+      },
+      "massSpectrum": {
+        "name": "Espectro de massa",
+        "desc": "Picos de isótopos e massa atômica relativa"
+      },
+      "heatingCurve": {
+        "name": "Curva de aquecimento e resfriamento",
+        "desc": "A temperatura ao fornecer ou retirar calor, em escala"
+      },
+      "energyProfile": {
+        "name": "Diagrama de energia potencial",
+        "desc": "Perfis de energia de reação com Ea e ΔH"
+      },
+      "nuclide": {
+        "name": "Notação de nuclídeos",
+        "desc": "Símbolos de isótopos, íons e partículas"
+      },
+      "lineSpectrum": {
+        "name": "Espectro de linhas",
+        "desc": "Linhas de emissão e absorção dos elementos"
+      },
+      "photoelectron": {
+        "name": "Espectro fotoeletrônico",
+        "desc": "Um pico por subnível, de H a Xe"
+      },
+      "particles": {
+        "name": "Diagrama de partículas",
+        "desc": "Átomos, íons e moléculas numa caixa ou num retículo"
+      },
+      "dotCross": {
+        "name": "Diagrama de pontos e cruzes",
+        "desc": "Elétrons compartilhados e transferidos nas camadas"
+      }
+    },
+    "step": {
+      "answerLabel": "Sua resposta à pergunta {n}",
+      "right": "Certo",
+      "notRight": "Não está certo",
+      "answer": "Resposta:",
+      "teacherAnswer": "Gabarito:",
+      "score": "Você acertou {right} de {total} ({pct}%).",
+      "answersLater": "Seu professor vai mostrar as respostas depois da data de entrega.",
+      "noAnswers": "Seu professor tem as respostas e pode revisá-las com a turma.",
+      "teacherNote": "É isto que os alunos veem, com o gabarito embaixo de cada pergunta para você.",
+      "showOnNote": "As respostas aparecem para os alunos depois da data de entrega.",
+      "showOffNote": "As respostas nunca aparecem para os alunos.",
+      "handInHint": "Salve enquanto trabalha. Quando você entregar, suas respostas são corrigidas e não podem mais ser mudadas.",
+      "answersReady": "As respostas estão prontas. Entregue seu trabalho para vê-las.",
+      "save": "Salvar",
+      "handIn": "Entregar",
+      "handInConfirm": "Entregar suas respostas? Depois não dá para mudar.",
+      "saved": "Salvo",
+      "handedIn": "Entregue",
+      "showIsOn": "As respostas vão aparecer depois da data de entrega",
+      "showIsOff": "As respostas estão escondidas dos alunos",
+      "errors": {
+        "handedIn": "Você já entregou isto.",
+        "empty": "Escreva pelo menos uma resposta primeiro."
+      },
+      "showAnswers": "Mostrar respostas depois da data de entrega",
+      "showAnswersHint": "Desligado por padrão. Ligado: depois da data de entrega, cada aluno que entregou vê as respostas e os passos.",
+      "showNeedsDue": "Coloque uma data de entrega nesta aula para mostrar as respostas depois.",
+      "handedInCount": "Entregues: {done} de {total}",
+      "questionN": "Pergunta {n}",
+      "rightOf": "{right} de {total} certas",
+      "answersTable": "As respostas de cada aluno",
+      "noneYet": "Ninguém entregou ainda.",
+      "questions": "{count, plural, one {# pergunta de figura} other {# perguntas de figuras}}"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Adicione uma pergunta antes de atribuir esta atividade.",
+        "noAnswer": "Cada pergunta precisa de uma resposta antes de ser atribuída. Escolha uma para a pergunta {list} no editor.",
+        "noClass": "Escolha uma das suas turmas.",
+        "badDate": "Essa data não parece certa.",
+        "dueBeforeOpen": "A data de entrega é antes da data de abertura.",
+        "needsDue": "Defina uma data de entrega para mostrar as respostas depois."
+      }
+    }
   }
 }

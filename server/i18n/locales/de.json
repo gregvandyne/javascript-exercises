@@ -1192,7 +1192,10 @@
     },
     "makeLike": "Bau ein Spiel wie dieses",
     "makeLikeShort": "Bau so eins",
-    "grownupBuilder": "Von Erwachsenen gebaut"
+    "grownupBuilder": "Von Erwachsenen gebaut",
+    "sets": {
+      "copyOf": "Kopie von {title}"
+    }
   },
   "play": {
     "backTo": "Zurück zu {title}",
@@ -3355,6 +3358,290 @@
     "manip-room": {
       "actionsFor": "Aktionen für {label}",
       "teacherLock": "Deine Lehrkraft hat das gesperrt."
+    },
+    "figures-editor": {
+      "undo": "Rückgängig",
+      "redo": "Wiederholen",
+      "presets": "Vorlagen…",
+      "examples": "Beispiele",
+      "mine": "Meine Vorlagen",
+      "randomize": "Zufällig",
+      "controls": "Einstellungen der Figur",
+      "measures": "Maße",
+      "leaveEmpty": "Gib die Maße ein, die du kennst. Lass die anderen leer.",
+      "options": "Optionen",
+      "show": "Anzeigen",
+      "default": "(Standard)",
+      "advanced": "Erweitert (Daten)",
+      "advancedHelp": "Alle Daten der Figur als JSON. Listen und Gruppen werden hier bearbeitet.",
+      "jsonObject": "Die Daten müssen ein einziges { ... }-Objekt sein.",
+      "jsonBad": "Das ist noch kein gültiges JSON: {why}",
+      "display": "Darstellung",
+      "print": "Druckmodus (schwarz auf weiß)",
+      "nts": "„Nicht maßstabsgetreu“ vermerken",
+      "figure": "Die Figur",
+      "answers": "Frage und Antworten",
+      "question": "Frage",
+      "questionHint": "Schreibe die Frage, die die Klasse zu dieser Figur beantwortet.",
+      "worked": "Ausgerechnete Antworten (OF.solve)",
+      "answerIs": "Die Antwort ist",
+      "pickAnswer": "Antwort wählen…",
+      "noAnswers": "Keine ausgerechneten Antworten für diese Figur",
+      "facts": "Alles darüber",
+      "answersWait": "Die Antworten erscheinen, sobald die Figur gezeichnet werden kann. Oomba zeichnet nie eine falsche Figur.",
+      "pickHelp": "Wähle, welche Zahl deine Frage beantwortet, oder tippe auf Zufällig für eine fertige Frage.",
+      "noSolve": "Diese Figur hat keine ausgerechneten Zahlen zur Auswahl.",
+      "hide": "Antwort für die Klasse ausblenden",
+      "hideWhat": "Was ausblenden",
+      "hideAll": "Alle Maße",
+      "ofSays": "Oomba Figures sagt: {reason}",
+      "undoLast": "Meine letzte Änderung rückgängig machen",
+      "backToExample": "Zurück zum Beispiel",
+      "add": "Zum Arbeitsblatt hinzufügen",
+      "newSheet": "Ein neues Arbeitsblatt",
+      "qs": "{count, plural, one {# Frage} other {# Fragen}}",
+      "added": "Zu {title} hinzugefügt.",
+      "openSheet": "Arbeitsblatt öffnen",
+      "saveBack": "In {title} speichern",
+      "svg": "SVG herunterladen",
+      "png": "PNG herunterladen",
+      "copy": "Bild kopieren",
+      "link": "Link kopieren",
+      "savePreset": "Als meine Vorlage speichern",
+      "presetName": "Gib deiner Vorlage einen Namen",
+      "presetSaved": "Vorlage gespeichert.",
+      "notice": "Downloads tragen den Hinweis, dass alles, was Oomba Academy beiträgt, gemeinfrei ist (CC0); was du selbst Eigenes hinzufügst, gehört dir.",
+      "noGen": "Für diese Figur gibt es noch keinen Generator: hier ist ein anderes Beispiel.",
+      "pngFailed": "Das PNG konnte nicht erstellt werden. Versuche SVG herunterladen.",
+      "copied": "Bild kopiert.",
+      "copiedSvg": "Als SVG-Text kopiert.",
+      "copyFailed": "Kopieren ging nicht. Lade es stattdessen herunter.",
+      "linkCopied": "Link kopiert.",
+      "why": {
+        "triangle": {
+          "t": "Diese Seiten ergeben kein Dreieck",
+          "p": "Zwei Seiten eines Dreiecks müssen zusammen länger sein als die dritte, sonst treffen sich die Enden nie."
+        },
+        "angles": {
+          "t": "Diese Winkel passen nicht",
+          "p": "Die Winkel eines Dreiecks ergeben zusammen genau 180°. Prüfe die angegebenen Winkel."
+        },
+        "short": {
+          "t": "Eine Seite ist zu kurz",
+          "p": "Mit diesen Zahlen erreicht eine Seite nie das andere Ende. Mach sie länger oder ändere einen Winkel."
+        },
+        "agree": {
+          "t": "Diese Maße widersprechen sich",
+          "p": "Du hast mehr Maße angegeben, als die Figur braucht, und sie passen nicht zusammen. Lass eins weg."
+        },
+        "drawAs": {
+          "t": "„Nicht maßstabsgetreu“ prüfen",
+          "p": "Andere Zeichenproportionen funktionieren nur mit „Nicht maßstabsgetreu“, und die Markierungen müssen in beiden stimmen."
+        },
+        "positive": {
+          "t": "Eine Zahl muss größer als null sein",
+          "p": "Längen, Größen und Anzahlen sind größer als null."
+        },
+        "range": {
+          "t": "Eine Zahl liegt außerhalb des Bereichs",
+          "p": "Eine der Zahlen ist für diese Figur zu groß oder zu klein."
+        },
+        "extra": {
+          "t": "Zu viele Maße",
+          "p": "Diese Figur nimmt nur einige dieser Maße zusammen. Lass eins weg."
+        },
+        "data": {
+          "t": "Die Daten können nicht gelesen werden",
+          "p": "Prüfe das Feld Erweitert (Daten)."
+        },
+        "generic": {
+          "t": "Diese Figur kann nicht gezeichnet werden",
+          "p": "Oomba zeichnet nie eine falsche Figur. Ändere die Zahlen, damit sie zusammenpassen."
+        }
+      },
+      "f": {
+        "unit": "Einheit",
+        "round": "Nachkommastellen",
+        "mass": "Masse",
+        "angle": "Winkel",
+        "speed": "Geschwindigkeit",
+        "height": "Höhe",
+        "width": "Breite",
+        "length": "Länge",
+        "radius": "Radius",
+        "value": "Wert",
+        "min": "Kleinster Wert",
+        "max": "Größter Wert",
+        "step": "Schritt",
+        "type": "Art",
+        "element": "Element"
+      },
+      "k": {
+        "area": "Flächeninhalt",
+        "perimeter": "Umfang",
+        "volume": "Volumen",
+        "surfaceArea": "Oberfläche",
+        "angles": "Winkel",
+        "sides": "Seite",
+        "total": "Summe",
+        "mean": "Mittelwert",
+        "median": "Median",
+        "range": "Spannweite",
+        "interior": "Innenwinkel",
+        "value": "Wert"
+      },
+      "hp": {
+        "sides": "Die Seiten",
+        "angles": "Die Winkel",
+        "heights": "Die Höhen",
+        "value": "Der Wert",
+        "image": "Das Bild",
+        "electrons": "Die Elektronen",
+        "values": "Die Werte",
+        "reading": "Die Ablesung"
+      },
+      "draw": {
+        "modeLabel": "Wie die Figur entsteht",
+        "type": "Maße eingeben",
+        "draw": "Zeichnen",
+        "title": "Auf dem Punktraster zeichnen",
+        "size": "Rastergröße",
+        "sizeOpt": "{n} mal {n}",
+        "clear": "Leeren",
+        "help": {
+          "triangle": "Tippe auf drei Punkte, um ein Dreieck zu machen. Ziehe eine Ecke, um sie zu verschieben.",
+          "quad": "Tippe der Reihe nach rund um die Form auf vier Punkte. Ziehe eine Ecke, um sie zu verschieben.",
+          "grid": "Tippe der Reihe nach rund um die Form auf die Punkte, bis zu 10 Ecken. Ziehe eine Ecke, um sie zu verschieben."
+        },
+        "keys": "Mit der Tastatur: Die Pfeiltasten bewegen, Enter setzt eine Ecke oder nimmt sie auf, dann verschieben die Pfeiltasten sie.",
+        "board": "Punktraster, {n} mal {n}",
+        "corner": "Ecke {name} bei ({x}, {y})",
+        "placed": "{name} bei ({x}, {y}) gesetzt",
+        "moved": "{name} nach ({x}, {y}) verschoben",
+        "picked": "{name} aufgenommen. Verschiebe sie mit den Pfeiltasten und setze sie mit Enter ab.",
+        "removed": "{name} entfernt",
+        "corners": "Ecken",
+        "sides": "Seiten",
+        "angles": "Winkel",
+        "kind": "Art",
+        "perimeter": "Umfang",
+        "area": "Flächeninhalt",
+        "sqUnits": "{area} Flächeneinheiten",
+        "more": "{count, plural, one {Tippe noch auf # Punkt.} other {Tippe noch auf # Punkte.}}",
+        "filled": "Aus deiner Zeichnung ausgefüllt.",
+        "keep": "Die Figur darunter behält deine letzte gültige Form.",
+        "same": "Zwei Ecken liegen auf demselben Punkt. Ziehe eine davon auf einen anderen Punkt.",
+        "line": "Drei Ecken liegen auf einer Geraden und ergeben deshalb keine Form. Schiebe eine davon von der Geraden weg.",
+        "cross": "Zwei Seiten kreuzen sich. Verschiebe eine Ecke, sodass sich die Seiten nur an den Ecken treffen.",
+        "cannot": "Oomba Figures kann diese Form nicht zeichnen. Verschiebe eine Ecke.",
+        "isNot": "Diese Form ist {is} und nicht {want}.",
+        "special": "Diese Form ist {is}, und Oomba Figures zeichnet sie mit einem eigenen Editor.",
+        "open": {
+          "rectangle": "Im Rechteck-Editor öffnen",
+          "parallelogram": "Im Parallelogramm-Editor öffnen",
+          "trapezoid": "Im Trapez-Editor öffnen",
+          "kite": "Im Drachenviereck-Editor öffnen",
+          "grid": "Im Koordinatensystem eintragen"
+        },
+        "a": {
+          "square": "ein Quadrat",
+          "rectangle": "ein Rechteck",
+          "rhombus": "eine Raute",
+          "parallelogram": "ein Parallelogramm",
+          "trapezoid": "ein Trapez",
+          "kite": "ein Drachenviereck",
+          "quad": "ein Viereck ohne besonderen Namen",
+          "concave": "ein nicht konvexes Viereck"
+        },
+        "t": {
+          "square": "Quadrat",
+          "rectangle": "Rechteck",
+          "rhombus": "Raute",
+          "parallelogram": "Parallelogramm",
+          "trapezoid": "Trapez",
+          "isoTrapezoid": "Gleichschenkliges Trapez",
+          "rightTrapezoid": "Rechtwinkliges Trapez",
+          "kite": "Drachenviereck",
+          "quad": "Viereck",
+          "concave": "Nicht konvexes Viereck",
+          "polygon": "{count, plural, one {Vieleck mit # Seite} other {Vieleck mit # Seiten}}"
+        },
+        "tri": {
+          "right": "Rechtwinklig",
+          "acute": "Spitzwinklig",
+          "obtuse": "Stumpfwinklig",
+          "scalene": "Unregelmäßig",
+          "isosceles": "Gleichschenklig",
+          "equilateral": "Gleichseitig"
+        },
+        "ex": {
+          "right": "Rechtwinkliges Dreieck",
+          "isosceles": "Gleichschenkliges Dreieck",
+          "obtuse": "Stumpfwinkliges Dreieck",
+          "pentagon": "Fünfeck"
+        },
+        "examples": "Auf dem Punktraster gezeichnet",
+        "gridOut": "Auch im Koordinatensystem zeigen",
+        "gridTitle": "Im Koordinatensystem",
+        "addGrid": "Die Figur im Koordinatensystem zum Arbeitsblatt hinzufügen",
+        "drawInstead": "Stattdessen auf einem Raster zeichnen"
+      }
+    },
+    "figures-sheet": {
+      "title": "Titel des Arbeitsblatts",
+      "grade": "Klasse",
+      "anyGrade": "Jede Klasse",
+      "gradeN": "Klasse {grade}",
+      "powerAi": "Mit KI",
+      "briefLabel": "Thema, Klasse, wie viele Fragen",
+      "briefHint": "Klasse 7, Flächeninhalt von Rechtecken und Trapezen, dazu ein Boxplot.",
+      "howMany": "Fragen",
+      "draft": "Entwerfen",
+      "budget": "Nutzt das KI-Budget. Wenn es pausiert, bekommst du ein Startset.",
+      "drafting": "Deine Fragen werden entworfen…",
+      "briefFirst": "Beschreibe das Arbeitsblatt zuerst in ein paar Worten.",
+      "drafted": "{count, plural, one {# Frage entworfen.} other {# Fragen entworfen.}} Oomba Figures hat jede Figur geprüft und jede Antwort ausgerechnet.",
+      "resting": "Die KI macht Pause, hier ist ein Startset ({count, plural, one {# Frage} other {# Fragen}}).",
+      "repaired": "{count, plural, one {# Figur konnte nicht gezeichnet werden und wurde ersetzt.} other {# Figuren konnten nicht gezeichnet werden und wurden ersetzt.}}",
+      "dropped": "{count, plural, one {# Frage wurde weggelassen.} other {# Fragen wurden weggelassen.}}",
+      "addLabel": "Frage mit Figur hinzufügen",
+      "add": "Hinzufügen",
+      "empty": "Noch keine Fragen. Füge eine Frage mit Figur hinzu oder lass die KI welche entwerfen.",
+      "questionN": "Frage {n}",
+      "questionHint": "Schreibe die Frage…",
+      "answer": "Antwort:",
+      "noAnswer": "Noch keine Antwort gewählt: öffne sie im Editor.",
+      "up": "Nach oben",
+      "down": "Nach unten",
+      "regen": "Neue Zahlen",
+      "edit": "Figur bearbeiten",
+      "delete": "Löschen",
+      "deleteQ": "Diese Frage löschen?",
+      "remove": "Arbeitsblatt löschen",
+      "removeQ": "Dieses Arbeitsblatt löschen?",
+      "removeText": "Seine Fragen werden mit gelöscht. Das lässt sich nicht rückgängig machen.",
+      "preview": "Druckvorschau",
+      "paper": "Letter, schwarz auf weiß",
+      "studentSheet": "Schülerblatt",
+      "answerKey": "Lösungen",
+      "previewEmpty": "Das druckbare Blatt erscheint hier, sobald es eine Frage gibt.",
+      "print": "Drucken",
+      "printKey": "Mit Lösungen drucken",
+      "assign": "Einer Klasse zuweisen",
+      "assignTitle": "Einer Klasse zuweisen",
+      "assignClass": "Klasse",
+      "assignOpens": "Startet (optional)",
+      "assignDue": "Abgabe (optional)",
+      "assignShow": "Antworten nach dem Abgabedatum zeigen",
+      "assignShowHint": "Standardmäßig aus. An: Nach dem Abgabedatum sehen alle, die abgegeben haben, die Antworten und den Rechenweg.",
+      "assignSnapshot": "Die Klasse bekommt das Arbeitsblatt so, wie es jetzt ist. Spätere Änderungen ändern es nicht.",
+      "assignGo": "Zuweisen",
+      "assignCancel": "Abbrechen",
+      "assignEmpty": "Füge zuerst Fragen hinzu, dann weise das Arbeitsblatt zu.",
+      "assignNoClasses": "Du unterrichtest noch keine Klasse. Lege zuerst eine Klasse an, dann weise zu.",
+      "assignDone": "{class} zugewiesen.",
+      "assignSee": "So sehen es die Schüler",
+      "assignProgress": "Fortschritt ansehen"
     }
   },
   "favorites": {
@@ -3982,7 +4269,8 @@
       "build": "Ein Spiel bauen",
       "text": "Lesen oder mitmachen",
       "question": "Eine Frage beantworten",
-      "quiz": "Quizfragen beantworten"
+      "quiz": "Quizfragen beantworten",
+      "figures": "Fragen zu Abbildungen beantworten"
     },
     "library": {
       "title": "Lektionsbibliothek",
@@ -11901,5 +12189,366 @@
       "classics": "Klassiker"
     },
     "footClassics": "Klassiker: alte, gemeinfreie Bücher mit ihren Originalbildern."
+  },
+  "figures": {
+    "title": "Figuren",
+    "loading": "Figuren werden geladen…",
+    "crumbs": "Du bist hier",
+    "tools": {
+      "label": "Unterrichtswerkzeuge",
+      "manipulatives": "Arbeitsmittel",
+      "figures": "Figuren"
+    },
+    "subjects": {
+      "math": "Mathe",
+      "data": "Daten und Statistik",
+      "physics": "Physik",
+      "chem": "Chemie",
+      "biology": "Biologie",
+      "economics": "Wirtschaft"
+    },
+    "grades": {
+      "K-2": "K-2",
+      "3-5": "Klassen 3-5",
+      "6-8": "Klassen 6-8",
+      "9-12": "Klassen 9-12"
+    },
+    "menu": {
+      "testing": "Im Test: nur du siehst das",
+      "pitch": "Exakte, maßstabsgetreue Figuren für Arbeitsblätter, Tests und Folien. Druckfertig, mit ausgerechneten Lösungen.",
+      "buildTitle": "Arbeitsblatt erstellen",
+      "buildText": "Wähle Figuren selbst aus oder beschreibe, was du brauchst, und lass die KI die Fragen entwerfen. Jede Zahl wird geprüft, damit jede Figur wirklich gezeichnet werden kann.",
+      "draftAi": "Mit KI entwerfen",
+      "scratch": "Neu beginnen",
+      "mine": "Meine Arbeitsblätter",
+      "noSheets": "Noch keine Arbeitsblätter. Die du erstellst, erscheinen hier.",
+      "questions": "{count, plural, one {# F} other {# F}}",
+      "gradeOf": "Klasse {grade}",
+      "edited": "bearbeitet am {date}",
+      "subjects": "Fächer",
+      "all": "Alle Figuren",
+      "soon": "Demnächst",
+      "grades": "Klassen",
+      "search": "Figuren suchen",
+      "searchHint": "Figuren suchen, z. B. Zylinder oder Boxplot",
+      "count": "{count, plural, one {# Figur} other {# Figuren}}",
+      "nothing": "Keine Figur passt. Probiere ein anderes Wort oder eine andere Klasse."
+    },
+    "sheet": {
+      "newTitle": "Neues Arbeitsblatt",
+      "crumb": "Arbeitsblatt-Baukasten",
+      "untitled": "Arbeitsblatt ohne Titel"
+    },
+    "editor": {
+      "example": "Beispiel {n}"
+    },
+    "print": {
+      "figure": "Figur zu Frage {n}",
+      "keyTag": "Lösungen",
+      "keyTitle": "{title}: Lösungen",
+      "name": "Name",
+      "date": "Datum",
+      "made": "Erstellt mit Oomba Academy",
+      "noQuestion": "Sieh dir die Figur an.",
+      "noAnswer": "Noch keine Antwort gewählt",
+      "crumb": "Drucken",
+      "sheetOnly": "Schülerblatt",
+      "withKey": "Mit Lösungen",
+      "print": "Drucken"
+    },
+    "errors": {
+      "notFound": "Das gibt es hier nicht.",
+      "badKind": "Das ist keine der Figuren.",
+      "badData": "Die Daten dieser Figur konnten nicht gelesen werden.",
+      "tooBig": "Diese Figur ist zu groß zum Speichern.",
+      "words": "Einige Wörter sind nicht erlaubt. Ändere sie und versuche es noch einmal.",
+      "personal": "Lass Telefonnummern, E-Mails, Links und Codes weg und versuche es noch einmal.",
+      "cannotDraw": "Diese Figur lässt sich mit diesen Zahlen nicht zeichnen. Ändere sie und versuche es noch einmal.",
+      "tooMany": "Du hast schon viel gespeichert. Lösche zuerst etwas.",
+      "fullSheet": "Dieses Arbeitsblatt ist voll. Beginne ein neues.",
+      "noGen": "Für diese Figur gibt es noch keinen Fragengenerator.",
+      "name": "Gib ihm zuerst einen Namen.",
+      "brief": "Beschreibe das Arbeitsblatt zuerst in ein paar Worten.",
+      "names": "Lass Namen von Schülerinnen und Schülern aus der Beschreibung weg: Namen gehen nie an die KI."
+    },
+    "kinds": {
+      "numberLine": {
+        "name": "Zahlengerade",
+        "desc": "Zahlen, Intervalle und Punkte auf einer Geraden"
+      },
+      "triangle": {
+        "name": "Dreieck",
+        "desc": "Jedes Dreieck aus drei Maßen"
+      },
+      "rectangle": {
+        "name": "Rechteck",
+        "desc": "Rechtecke und Quadrate"
+      },
+      "parallelogram": {
+        "name": "Parallelogramm",
+        "desc": "Parallelogramme und Rauten, mit Höhen"
+      },
+      "trapezoid": {
+        "name": "Trapez",
+        "desc": "Trapeze: beliebig, gleichschenklig oder rechtwinklig"
+      },
+      "kite": {
+        "name": "Drachenviereck",
+        "desc": "Drachen mit markierten gleichen Seiten"
+      },
+      "regularPolygon": {
+        "name": "Regelmäßiges Vieleck",
+        "desc": "Regelmäßige Vielecke mit Inkreis- und Umkreisradius"
+      },
+      "angles": {
+        "name": "Winkel",
+        "desc": "Winkel zwischen Strahlen"
+      },
+      "parallelLines": {
+        "name": "Parallele Geraden und eine Schnittgerade",
+        "desc": "Parallelen, die eine Gerade schneidet"
+      },
+      "segmentAddition": {
+        "name": "Streckenaddition",
+        "desc": "Strecken addieren mit Algebra"
+      },
+      "circle": {
+        "name": "Kreis",
+        "desc": "Kreise mit Sehnen, Tangenten und Winkeln"
+      },
+      "compositeShape": {
+        "name": "Zusammengesetzte Figur",
+        "desc": "Figuren aus einfacheren Figuren"
+      },
+      "grid": {
+        "name": "Koordinatensystem",
+        "desc": "Punkte, Geraden und Abbildungen im Koordinatensystem"
+      },
+      "protractor": {
+        "name": "Winkelmesser",
+        "desc": "Einen Winkel am Geodreieck ablesen"
+      },
+      "prism": {
+        "name": "Prisma",
+        "desc": "Prismen und Würfel in 3D"
+      },
+      "cylinder": {
+        "name": "Zylinder",
+        "desc": "Zylinder in 3D"
+      },
+      "pyramid": {
+        "name": "Pyramide",
+        "desc": "Pyramiden in 3D"
+      },
+      "cone": {
+        "name": "Kegel",
+        "desc": "Kegel in 3D"
+      },
+      "sphere": {
+        "name": "Kugel",
+        "desc": "Kugeln und Halbkugeln"
+      },
+      "net": {
+        "name": "Netz",
+        "desc": "Netze, die sich zu Körpern falten"
+      },
+      "mappingDiagram": {
+        "name": "Pfeildiagramm",
+        "desc": "Eingaben, die Ausgaben zugeordnet sind"
+      },
+      "barGraph": {
+        "name": "Säulendiagramm",
+        "desc": "Säulendiagramme, doppelt und gestapelt"
+      },
+      "dotPlot": {
+        "name": "Punktdiagramm",
+        "desc": "Punktdiagramme einer Datenreihe"
+      },
+      "histogram": {
+        "name": "Histogramm",
+        "desc": "Histogramme mit gleichen oder ungleichen Klassen"
+      },
+      "boxPlot": {
+        "name": "Boxplot",
+        "desc": "Boxplots mit Quartilen"
+      },
+      "scatterPlot": {
+        "name": "Streudiagramm",
+        "desc": "Streudiagramme mit Ausgleichsgerade"
+      },
+      "stemAndLeaf": {
+        "name": "Stängel-Blatt-Diagramm",
+        "desc": "Stamm-Blatt-Diagramme"
+      },
+      "pieChart": {
+        "name": "Kreisdiagramm",
+        "desc": "Kreisdiagramme mit Winkeln und Prozenten"
+      },
+      "cumulativeFrequency": {
+        "name": "Kumulierte Häufigkeit",
+        "desc": "Summenhäufigkeitskurven"
+      },
+      "normalCurve": {
+        "name": "Normalverteilungskurve",
+        "desc": "Normalverteilungskurven mit Flächen"
+      },
+      "treeDiagram": {
+        "name": "Baumdiagramm",
+        "desc": "Baumdiagramme der Wahrscheinlichkeit"
+      },
+      "vennDiagram": {
+        "name": "Venn-Diagramm",
+        "desc": "Venn-Diagramme mit zwei oder drei Mengen"
+      },
+      "twoWayTable": {
+        "name": "Vierfeldertafel",
+        "desc": "Vierfeldertafeln mit Summen"
+      },
+      "tableOfValues": {
+        "name": "Wertetabelle",
+        "desc": "Wertetabellen aus einer Regel"
+      },
+      "freeBody": {
+        "name": "Kräfteplan",
+        "desc": "Die Kräfte auf einen Körper"
+      },
+      "vectors": {
+        "name": "Vektoren",
+        "desc": "Vektoren und ihre Resultierende"
+      },
+      "inclinedPlane": {
+        "name": "Schiefe Ebene",
+        "desc": "Ein Klotz auf einer schiefen Ebene, mit seinen Kräften"
+      },
+      "pulley": {
+        "name": "Rollen",
+        "desc": "Rollen und hängende Massen"
+      },
+      "rays": {
+        "name": "Strahlengang",
+        "desc": "Strahlengänge für Linsen und Spiegel"
+      },
+      "circuit": {
+        "name": "Schaltplan",
+        "desc": "Stromkreise in Reihe und parallel"
+      },
+      "motionGraph": {
+        "name": "Bewegungsdiagramm",
+        "desc": "Weg-, Geschwindigkeits- und Beschleunigungsdiagramme"
+      },
+      "motionMap": {
+        "name": "Bewegungsdiagramm",
+        "desc": "Bewegungskarten mit Punkten und Pfeilen"
+      },
+      "projectile": {
+        "name": "Wurfbewegung",
+        "desc": "Die Bahn eines Wurfs, maßstabsgetreu"
+      },
+      "waves": {
+        "name": "Wellen",
+        "desc": "Transversal- und Longitudinalwellen"
+      },
+      "reading": {
+        "name": "Skala ablesen",
+        "desc": "Thermometer, Messzylinder, Lineale und Messschieber"
+      },
+      "bohr": {
+        "name": "Bohrsches Atommodell",
+        "desc": "Bohrsche Modelle von Atomen und Ionen"
+      },
+      "orbitals": {
+        "name": "Orbitaldiagramm",
+        "desc": "Orbital-Kästchendiagramme"
+      },
+      "lewis": {
+        "name": "Lewis-Formel",
+        "desc": "Lewis-Formeln von Molekülen"
+      },
+      "halfLife": {
+        "name": "Halbwertszeit",
+        "desc": "Kurven des radioaktiven Zerfalls"
+      },
+      "titration": {
+        "name": "Titrationskurve",
+        "desc": "Titrationskurven"
+      },
+      "massSpectrum": {
+        "name": "Massenspektrum",
+        "desc": "Isotopenpeaks und relative Atommasse"
+      },
+      "heatingCurve": {
+        "name": "Erwärmungs- und Abkühlungskurve",
+        "desc": "Die Temperatur beim Erwärmen oder Abkühlen, maßstabsgetreu"
+      },
+      "energyProfile": {
+        "name": "Energiediagramm einer Reaktion",
+        "desc": "Energieverläufe mit Ea und ΔH"
+      },
+      "nuclide": {
+        "name": "Nuklidschreibweise",
+        "desc": "Symbole für Isotope, Ionen und Teilchen"
+      },
+      "lineSpectrum": {
+        "name": "Linienspektrum",
+        "desc": "Emissions- und Absorptionslinien von Elementen"
+      },
+      "photoelectron": {
+        "name": "Photoelektronenspektrum",
+        "desc": "Ein Peak pro Unterschale, H bis Xe"
+      },
+      "particles": {
+        "name": "Teilchenmodell",
+        "desc": "Atome, Ionen und Moleküle in einem Kasten oder Gitter"
+      },
+      "dotCross": {
+        "name": "Punkt-Kreuz-Schema",
+        "desc": "Geteilte und übertragene Elektronen in Schalen"
+      }
+    },
+    "step": {
+      "answerLabel": "Deine Antwort auf Frage {n}",
+      "right": "Richtig",
+      "notRight": "Nicht richtig",
+      "answer": "Antwort:",
+      "teacherAnswer": "Lösung:",
+      "score": "Du hast {right} von {total} richtig ({pct} %).",
+      "answersLater": "Deine Lehrkraft zeigt die Antworten nach dem Abgabedatum.",
+      "noAnswers": "Deine Lehrkraft hat die Antworten und bespricht sie vielleicht mit der Klasse.",
+      "teacherNote": "So sehen es die Schülerinnen und Schüler, mit der Lösung unter jeder Frage für dich.",
+      "showOnNote": "Die Antworten werden nach dem Abgabedatum gezeigt.",
+      "showOffNote": "Die Antworten werden nie gezeigt.",
+      "handInHint": "Speichere zwischendurch. Wenn du abgibst, werden deine Antworten bewertet und können nicht mehr geändert werden.",
+      "answersReady": "Die Antworten sind da. Gib deine Arbeit ab, um sie zu sehen.",
+      "save": "Speichern",
+      "handIn": "Abgeben",
+      "handInConfirm": "Antworten abgeben? Danach kannst du sie nicht mehr ändern.",
+      "saved": "Gespeichert",
+      "handedIn": "Abgegeben",
+      "showIsOn": "Antworten werden nach dem Abgabedatum gezeigt",
+      "showIsOff": "Antworten sind für Schüler verborgen",
+      "errors": {
+        "handedIn": "Du hast das schon abgegeben.",
+        "empty": "Schreib zuerst mindestens eine Antwort."
+      },
+      "showAnswers": "Antworten nach dem Abgabedatum zeigen",
+      "showAnswersHint": "Standardmäßig aus. An: Nach dem Abgabedatum sieht jeder, der abgegeben hat, die Antworten und den Rechenweg.",
+      "showNeedsDue": "Gib dieser Lektion ein Abgabedatum, um die Antworten danach zu zeigen.",
+      "handedInCount": "Abgegeben: {done} von {total}",
+      "questionN": "Frage {n}",
+      "rightOf": "{right} von {total} richtig",
+      "answersTable": "Die Antworten aller Schüler",
+      "noneYet": "Noch hat niemand abgegeben.",
+      "questions": "{count, plural, one {# Frage zu einer Abbildung} other {# Fragen zu Abbildungen}}"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Füge eine Frage hinzu, bevor du dieses Arbeitsblatt zuweist.",
+        "noAnswer": "Jede Frage braucht eine Antwort, bevor du sie zuweist. Wähle im Editor eine für Frage {list}.",
+        "noClass": "Wähle eine deiner Klassen.",
+        "badDate": "Dieses Datum sieht nicht richtig aus.",
+        "dueBeforeOpen": "Das Abgabedatum liegt vor dem Startdatum.",
+        "needsDue": "Lege ein Abgabedatum fest, um die Antworten danach zu zeigen."
+      }
+    }
   }
 }

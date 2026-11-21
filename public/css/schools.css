@@ -1102,3 +1102,29 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .cx-pill-warn{background:var(--warn-bg);color:var(--warn-ink);box-shadow:none}
 .cx-acts{display:flex;flex-wrap:wrap;gap:var(--s2)}
 .cx-row .btn-sm{min-height:40px}
+/* A Figures worksheet step (views/figures-step.js): each figure, its question and a blank with the unit. */
+.fs-list{display:grid;gap:var(--s3);margin:0;padding:0}
+.fs-q{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s2) var(--s3);align-items:start;border:1px solid var(--line);border-radius:12px;padding:var(--s3);background:var(--card)}
+.fs-n{grid-row:span 2;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--card-2);border:1px solid var(--line);font-weight:800}
+.fs-fig{min-width:0}
+.fs-fig svg{display:block;max-width:100%;height:auto;max-height:340px}
+.fs-body{grid-column:2;display:grid;gap:var(--s2);min-width:0}
+.fs-text{margin:0;font-weight:700}
+.fs-blank{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
+.fs-in{width:10em;max-width:100%;font-size:1.1rem}
+.fs-in[readonly]{background:var(--card-2)}
+.fs-unit{font-weight:700}
+.fs-mark.ok{color:var(--ok)}
+.fs-mark.bad{color:var(--bad-ink)}
+.fs-key{border-inline-start:4px solid var(--ok);padding-inline-start:var(--s2)}
+.fs-key p{margin:0}
+.fs-work{margin:4px 0 0;padding-inline-start:1.2em}
+.fs-form{display:grid;gap:var(--s3)}
+.fs-form .row{gap:var(--s3)}
+.fs-step>*+*{margin-top:var(--s3)}
+.fs-results .fs-totals{display:grid;gap:4px;padding:0;margin:var(--s2) 0}
+.fs-results .fs-totals li{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:baseline}
+.fs-table td.fs-ok{color:var(--ok)}
+.fs-table td.fs-bad{color:var(--bad-ink)}
+.fs-show .chk{display:inline-flex;gap:8px;align-items:center}
+@media (max-width:560px){.fs-q{grid-template-columns:1fr}.fs-n{grid-row:auto}.fs-body{grid-column:1}}

@@ -1191,7 +1191,10 @@
     },
     "makeLike": "Crée un jeu comme celui-ci",
     "makeLikeShort": "Fais-en un pareil",
-    "grownupBuilder": "Créateur adulte"
+    "grownupBuilder": "Créateur adulte",
+    "sets": {
+      "copyOf": "Copie de {title}"
+    }
   },
   "play": {
     "backTo": "Retour à {title}",
@@ -3354,6 +3357,290 @@
     "manip-room": {
       "actionsFor": "Actions pour {label}",
       "teacherLock": "Ton enseignant a verrouillé ceci."
+    },
+    "figures-editor": {
+      "undo": "Annuler",
+      "redo": "Rétablir",
+      "presets": "Préréglages…",
+      "examples": "Exemples",
+      "mine": "Mes préréglages",
+      "randomize": "Au hasard",
+      "controls": "Réglages de la figure",
+      "measures": "Mesures",
+      "leaveEmpty": "Indiquez les mesures connues. Laissez les autres vides.",
+      "options": "Options",
+      "show": "Afficher",
+      "default": "(par défaut)",
+      "advanced": "Avancé (données)",
+      "advancedHelp": "Toutes les données de la figure en JSON. Les listes et les groupes se modifient ici.",
+      "jsonObject": "Les données doivent être un seul objet { ... }.",
+      "jsonBad": "Ce n'est pas encore du JSON valide : {why}",
+      "display": "Affichage",
+      "print": "Mode impression (noir sur blanc)",
+      "nts": "Indiquer « Pas à l'échelle »",
+      "figure": "La figure",
+      "answers": "Question et réponses",
+      "question": "Question",
+      "questionHint": "Écrivez la question à laquelle les élèves répondent sur cette figure.",
+      "worked": "Réponses détaillées (OF.solve)",
+      "answerIs": "La réponse est",
+      "pickAnswer": "Choisir la réponse…",
+      "noAnswers": "Pas de réponses détaillées pour cette figure",
+      "facts": "Tout sur elle",
+      "answersWait": "Les réponses s'affichent dès que la figure peut être tracée. Oomba ne trace jamais une figure fausse.",
+      "pickHelp": "Choisissez le nombre qui répond à votre question, ou appuyez sur Au hasard pour une question toute prête.",
+      "noSolve": "Cette figure n'a pas de nombres calculés à choisir.",
+      "hide": "Masquer la réponse pour les élèves",
+      "hideWhat": "Que masquer",
+      "hideAll": "Toutes les mesures",
+      "ofSays": "Oomba Figures dit : {reason}",
+      "undoLast": "Annuler ma dernière modification",
+      "backToExample": "Revenir à l'exemple",
+      "add": "Ajouter à une fiche",
+      "newSheet": "Une nouvelle fiche",
+      "qs": "{count, plural, one {# question} other {# questions}}",
+      "added": "Ajoutée à {title}.",
+      "openSheet": "Ouvrir la fiche",
+      "saveBack": "Enregistrer dans {title}",
+      "svg": "Télécharger en SVG",
+      "png": "Télécharger en PNG",
+      "copy": "Copier l'image",
+      "link": "Copier le lien",
+      "savePreset": "Enregistrer comme préréglage",
+      "presetName": "Nommez votre préréglage",
+      "presetSaved": "Préréglage enregistré.",
+      "notice": "Les fichiers téléchargés indiquent que ce qu'ajoute Oomba Academy est dans le domaine public (CC0) ; ce que vous ajoutez d'original vous appartient.",
+      "noGen": "Pas encore de générateur pour cette figure : voici un autre exemple.",
+      "pngFailed": "Le PNG n'a pas pu être créé. Essayez Télécharger en SVG.",
+      "copied": "Image copiée.",
+      "copiedSvg": "Copiée sous forme de texte SVG.",
+      "copyFailed": "Copie impossible. Essayez plutôt un téléchargement.",
+      "linkCopied": "Lien copié.",
+      "why": {
+        "triangle": {
+          "t": "Ces côtés ne peuvent pas former un triangle",
+          "p": "Deux côtés d'un triangle doivent toujours mesurer ensemble plus que le troisième, sinon les extrémités ne se rejoignent jamais."
+        },
+        "angles": {
+          "t": "Ces angles ne conviennent pas",
+          "p": "La somme des angles d'un triangle vaut exactement 180°. Vérifiez les angles donnés."
+        },
+        "short": {
+          "t": "Un côté est trop court",
+          "p": "Avec ces nombres, un côté ne peut jamais atteindre l'autre extrémité. Allongez-le ou changez un angle."
+        },
+        "agree": {
+          "t": "Ces mesures ne concordent pas",
+          "p": "Vous avez donné plus de mesures que nécessaire, et elles ne concordent pas. Retirez-en une."
+        },
+        "drawAs": {
+          "t": "Vérifiez « Pas à l'échelle »",
+          "p": "D'autres proportions de tracé ne fonctionnent qu'avec « Pas à l'échelle » activé, et les marques doivent être vraies dans les deux cas."
+        },
+        "positive": {
+          "t": "Un nombre doit être supérieur à zéro",
+          "p": "Les longueurs, tailles et effectifs sont supérieurs à zéro."
+        },
+        "range": {
+          "t": "Un nombre est hors limites",
+          "p": "Un des nombres est trop grand ou trop petit pour cette figure."
+        },
+        "extra": {
+          "t": "Trop de mesures",
+          "p": "Cette figure n'accepte que certaines de ces mesures ensemble. Retirez-en une."
+        },
+        "data": {
+          "t": "Les données sont illisibles",
+          "p": "Vérifiez la zone Avancé (données)."
+        },
+        "generic": {
+          "t": "Cette figure ne peut pas être tracée",
+          "p": "Oomba ne trace jamais une figure fausse. Modifiez les nombres pour qu'ils aillent ensemble."
+        }
+      },
+      "f": {
+        "unit": "Unité",
+        "round": "Décimales",
+        "mass": "Masse",
+        "angle": "Angle",
+        "speed": "Vitesse",
+        "height": "Hauteur",
+        "width": "Largeur",
+        "length": "Longueur",
+        "radius": "Rayon",
+        "value": "Valeur",
+        "min": "Minimum",
+        "max": "Maximum",
+        "step": "Pas",
+        "type": "Type",
+        "element": "Élément"
+      },
+      "k": {
+        "area": "Aire",
+        "perimeter": "Périmètre",
+        "volume": "Volume",
+        "surfaceArea": "Aire totale",
+        "angles": "Angle",
+        "sides": "Côté",
+        "total": "Total",
+        "mean": "Moyenne",
+        "median": "Médiane",
+        "range": "Étendue",
+        "interior": "Angle intérieur",
+        "value": "Valeur"
+      },
+      "hp": {
+        "sides": "Les côtés",
+        "angles": "Les angles",
+        "heights": "Les hauteurs",
+        "value": "La valeur",
+        "image": "L'image",
+        "electrons": "Les électrons",
+        "values": "Les valeurs",
+        "reading": "La lecture"
+      },
+      "draw": {
+        "modeLabel": "Comment faire la figure",
+        "type": "Saisir les mesures",
+        "draw": "La dessiner",
+        "title": "La dessiner sur la grille de points",
+        "size": "Taille de la grille",
+        "sizeOpt": "{n} sur {n}",
+        "clear": "Effacer",
+        "help": {
+          "triangle": "Touchez trois points pour faire un triangle. Faites glisser un sommet pour le déplacer.",
+          "quad": "Touchez quatre points dans l'ordre, en faisant le tour de la forme. Faites glisser un sommet pour le déplacer.",
+          "grid": "Touchez les points dans l'ordre, en faisant le tour de la forme, jusqu'à 10 sommets. Faites glisser un sommet pour le déplacer."
+        },
+        "keys": "Au clavier : les flèches déplacent, Entrée place un sommet ou le prend, puis les flèches le déplacent.",
+        "board": "Grille de points, {n} sur {n}",
+        "corner": "Sommet {name} en ({x}, {y})",
+        "placed": "{name} placé en ({x}, {y})",
+        "moved": "{name} déplacé en ({x}, {y})",
+        "picked": "{name} pris. Déplacez-le avec les flèches, puis appuyez sur Entrée pour le poser.",
+        "removed": "{name} supprimé",
+        "corners": "Sommets",
+        "sides": "Côtés",
+        "angles": "Angles",
+        "kind": "Type",
+        "perimeter": "Périmètre",
+        "area": "Aire",
+        "sqUnits": "{area} unités carrées",
+        "more": "{count, plural, one {Touchez encore # point.} other {Touchez encore # points.}}",
+        "filled": "Rempli à partir de votre dessin.",
+        "keep": "La figure ci-dessous garde votre dernière forme valable.",
+        "same": "Deux sommets sont sur le même point. Faites-en glisser un vers un autre point.",
+        "line": "Trois sommets sont alignés, ils ne font donc pas une forme. Déplacez-en un hors de la ligne.",
+        "cross": "Deux côtés se croisent. Déplacez un sommet pour que les côtés ne se touchent qu'aux sommets.",
+        "cannot": "Oomba Figures ne peut pas dessiner celle-ci. Essayez de déplacer un sommet.",
+        "isNot": "Cette forme est {is}, pas {want}.",
+        "special": "Cette forme est {is}, et Oomba Figures la dessine avec son propre éditeur.",
+        "open": {
+          "rectangle": "L'ouvrir dans l'éditeur Rectangle",
+          "parallelogram": "L'ouvrir dans l'éditeur Parallélogramme",
+          "trapezoid": "L'ouvrir dans l'éditeur Trapèze",
+          "kite": "L'ouvrir dans l'éditeur Cerf-volant",
+          "grid": "La placer dans un repère"
+        },
+        "a": {
+          "square": "un carré",
+          "rectangle": "un rectangle",
+          "rhombus": "un losange",
+          "parallelogram": "un parallélogramme",
+          "trapezoid": "un trapèze",
+          "kite": "un cerf-volant",
+          "quad": "un quadrilatère sans nom particulier",
+          "concave": "un quadrilatère concave"
+        },
+        "t": {
+          "square": "Carré",
+          "rectangle": "Rectangle",
+          "rhombus": "Losange",
+          "parallelogram": "Parallélogramme",
+          "trapezoid": "Trapèze",
+          "isoTrapezoid": "Trapèze isocèle",
+          "rightTrapezoid": "Trapèze rectangle",
+          "kite": "Cerf-volant",
+          "quad": "Quadrilatère",
+          "concave": "Quadrilatère concave",
+          "polygon": "{count, plural, one {Polygone à # côté} other {Polygone à # côtés}}"
+        },
+        "tri": {
+          "right": "Rectangle",
+          "acute": "Acutangle",
+          "obtuse": "Obtusangle",
+          "scalene": "Quelconque",
+          "isosceles": "Isocèle",
+          "equilateral": "Équilatéral"
+        },
+        "ex": {
+          "right": "Triangle rectangle",
+          "isosceles": "Triangle isocèle",
+          "obtuse": "Triangle obtusangle",
+          "pentagon": "Pentagone"
+        },
+        "examples": "Dessinés sur la grille de points",
+        "gridOut": "La montrer aussi dans un repère",
+        "gridTitle": "Dans un repère",
+        "addGrid": "Ajouter la figure du repère à une fiche",
+        "drawInstead": "La dessiner plutôt sur une grille"
+      }
+    },
+    "figures-sheet": {
+      "title": "Titre de la fiche",
+      "grade": "Niveau",
+      "anyGrade": "Tous niveaux",
+      "gradeN": "Niveau {grade}",
+      "powerAi": "Avec l'IA",
+      "briefLabel": "Sujet, niveau, nombre de questions",
+      "briefHint": "Niveau 7, aire des rectangles et des trapèzes, plus une boîte à moustaches.",
+      "howMany": "Questions",
+      "draft": "Rédiger",
+      "budget": "Utilise le budget IA. S'il est en pause, vous obtenez une série de départ.",
+      "drafting": "Rédaction de vos questions…",
+      "briefFirst": "Décrivez d'abord la fiche en quelques mots.",
+      "drafted": "{count, plural, one {# question rédigée.} other {# questions rédigées.}} Chaque figure a été vérifiée et chaque réponse calculée par Oomba Figures.",
+      "resting": "L'IA est en pause, voici une série de départ ({count, plural, one {# question} other {# questions}}).",
+      "repaired": "{count, plural, one {# figure ne pouvait pas être tracée et a été remplacée.} other {# figures ne pouvaient pas être tracées et ont été remplacées.}}",
+      "dropped": "{count, plural, one {# question a été retirée.} other {# questions ont été retirées.}}",
+      "addLabel": "Ajouter une question avec figure",
+      "add": "Ajouter",
+      "empty": "Pas encore de question. Ajoutez une question avec figure, ou faites-en rédiger par l'IA.",
+      "questionN": "Question {n}",
+      "questionHint": "Écrivez la question…",
+      "answer": "Réponse :",
+      "noAnswer": "Pas encore de réponse choisie : ouvrez-la dans l'éditeur.",
+      "up": "Monter",
+      "down": "Descendre",
+      "regen": "Nouveaux nombres",
+      "edit": "Modifier la figure",
+      "delete": "Supprimer",
+      "deleteQ": "Supprimer cette question ?",
+      "remove": "Supprimer la fiche",
+      "removeQ": "Supprimer cette fiche ?",
+      "removeText": "Ses questions seront supprimées aussi. C'est définitif.",
+      "preview": "Aperçu avant impression",
+      "paper": "Format Letter, noir sur blanc",
+      "studentSheet": "Fiche élève",
+      "answerKey": "Corrigé",
+      "previewEmpty": "La fiche imprimable s'affiche ici dès qu'il y a une question.",
+      "print": "Imprimer",
+      "printKey": "Imprimer avec le corrigé",
+      "assign": "Donner à une classe",
+      "assignTitle": "Donner à une classe",
+      "assignClass": "Classe",
+      "assignOpens": "Ouverture (facultatif)",
+      "assignDue": "Rendu (facultatif)",
+      "assignShow": "Montrer les réponses après la date de rendu",
+      "assignShowHint": "Désactivé par défaut. Activé : après la date de rendu, les élèves qui ont rendu voient les réponses et les étapes.",
+      "assignSnapshot": "Les élèves reçoivent la fiche telle qu'elle est maintenant. Vos changements ultérieurs ne la changent pas.",
+      "assignGo": "Donner",
+      "assignCancel": "Annuler",
+      "assignEmpty": "Ajoutez d'abord des questions, puis donnez la fiche.",
+      "assignNoClasses": "Vous n'avez pas encore de classe. Créez d'abord une classe, puis donnez la fiche.",
+      "assignDone": "Donné à {class}.",
+      "assignSee": "Voir comme les élèves",
+      "assignProgress": "Voir la progression"
     }
   },
   "favorites": {
@@ -3981,7 +4268,8 @@
       "build": "Créer un jeu",
       "text": "Lire ou faire",
       "question": "Répondre à une question",
-      "quiz": "Répondre aux questions du quiz"
+      "quiz": "Répondre aux questions du quiz",
+      "figures": "Répondre à des questions sur des figures"
     },
     "library": {
       "title": "Bibliothèque de leçons",
@@ -11900,5 +12188,366 @@
       "classics": "Classiques"
     },
     "footClassics": "Classiques : des livres anciens du domaine public, avec leurs illustrations d’origine."
+  },
+  "figures": {
+    "title": "Figures",
+    "loading": "Chargement des figures…",
+    "crumbs": "Vous êtes ici",
+    "tools": {
+      "label": "Outils pédagogiques",
+      "manipulatives": "Manipulables",
+      "figures": "Figures"
+    },
+    "subjects": {
+      "math": "Maths",
+      "data": "Données et statistiques",
+      "physics": "Physique",
+      "chem": "Chimie",
+      "biology": "Biologie",
+      "economics": "Économie"
+    },
+    "grades": {
+      "K-2": "K-2",
+      "3-5": "Niveaux 3-5",
+      "6-8": "Niveaux 6-8",
+      "9-12": "Niveaux 9-12"
+    },
+    "menu": {
+      "testing": "En test : vous seul le voyez",
+      "pitch": "Des figures exactes et à l'échelle pour vos fiches, contrôles et diaporamas. Prêtes à imprimer, avec les réponses détaillées.",
+      "buildTitle": "Créer une fiche",
+      "buildText": "Choisissez les figures vous-même, ou décrivez ce qu'il vous faut et laissez l'IA rédiger les questions. Chaque nombre est vérifié pour que chaque figure puisse vraiment être tracée.",
+      "draftAi": "Rédiger avec l'IA",
+      "scratch": "Partir de zéro",
+      "mine": "Mes fiches",
+      "noSheets": "Pas encore de fiche. Celles que vous créez s'affichent ici.",
+      "questions": "{count, plural, one {# Q} other {# Q}}",
+      "gradeOf": "Niveau {grade}",
+      "edited": "modifiée le {date}",
+      "subjects": "Matières",
+      "all": "Toutes les figures",
+      "soon": "Bientôt",
+      "grades": "Niveaux",
+      "search": "Chercher une figure",
+      "searchHint": "Chercher une figure, par exemple cylindre ou boîte à moustaches",
+      "count": "{count, plural, one {# figure} other {# figures}}",
+      "nothing": "Aucune figure ne correspond. Essayez un autre mot ou un autre niveau."
+    },
+    "sheet": {
+      "newTitle": "Nouvelle fiche",
+      "crumb": "Créateur de fiches",
+      "untitled": "Fiche sans titre"
+    },
+    "editor": {
+      "example": "Exemple {n}"
+    },
+    "print": {
+      "figure": "Figure de la question {n}",
+      "keyTag": "Corrigé",
+      "keyTitle": "{title} : corrigé",
+      "name": "Nom",
+      "date": "Date",
+      "made": "Fait avec Oomba Academy",
+      "noQuestion": "Observe la figure.",
+      "noAnswer": "Pas encore de réponse choisie",
+      "crumb": "Imprimer",
+      "sheetOnly": "Fiche élève",
+      "withKey": "Avec le corrigé",
+      "print": "Imprimer"
+    },
+    "errors": {
+      "notFound": "Ce n'est pas ici.",
+      "badKind": "Ce n'est pas une des figures.",
+      "badData": "Les données de cette figure sont illisibles.",
+      "tooBig": "Cette figure est trop grande pour être enregistrée.",
+      "words": "Certains mots ne sont pas autorisés. Modifiez-les et réessayez.",
+      "personal": "Retirez les numéros de téléphone, e-mails, liens et codes, puis réessayez.",
+      "cannotDraw": "Cette figure ne peut pas être tracée avec ces nombres. Modifiez-les et réessayez.",
+      "tooMany": "Vous avez déjà beaucoup d'éléments enregistrés. Supprimez-en d'abord.",
+      "fullSheet": "Cette fiche est pleine. Commencez-en une nouvelle.",
+      "noGen": "Cette figure n'a pas encore de générateur de questions.",
+      "name": "Donnez-lui d'abord un nom.",
+      "brief": "Décrivez d'abord la fiche en quelques mots.",
+      "names": "Ne mettez pas de noms d'élèves dans la description : les noms ne sont jamais envoyés à l'IA."
+    },
+    "kinds": {
+      "numberLine": {
+        "name": "Droite graduée",
+        "desc": "Nombres, intervalles et points sur une droite"
+      },
+      "triangle": {
+        "name": "Triangle",
+        "desc": "Tout triangle à partir de trois mesures"
+      },
+      "rectangle": {
+        "name": "Rectangle",
+        "desc": "Rectangles et carrés"
+      },
+      "parallelogram": {
+        "name": "Parallélogramme",
+        "desc": "Parallélogrammes et losanges, avec hauteurs"
+      },
+      "trapezoid": {
+        "name": "Trapèze",
+        "desc": "Trapèzes : quelconques, isocèles ou rectangles"
+      },
+      "kite": {
+        "name": "Cerf-volant",
+        "desc": "Cerfs-volants avec leurs côtés égaux marqués"
+      },
+      "regularPolygon": {
+        "name": "Polygone régulier",
+        "desc": "Polygones réguliers avec apothème et rayon"
+      },
+      "angles": {
+        "name": "Angles",
+        "desc": "Angles entre des demi-droites"
+      },
+      "parallelLines": {
+        "name": "Droites parallèles et une sécante",
+        "desc": "Droites parallèles coupées par une sécante"
+      },
+      "segmentAddition": {
+        "name": "Addition de segments",
+        "desc": "Addition de segments avec de l'algèbre"
+      },
+      "circle": {
+        "name": "Cercle",
+        "desc": "Cercles avec cordes, tangentes et angles"
+      },
+      "compositeShape": {
+        "name": "Figure composée",
+        "desc": "Figures faites de figures plus simples"
+      },
+      "grid": {
+        "name": "Repère",
+        "desc": "Points, droites et transformations sur un repère"
+      },
+      "protractor": {
+        "name": "Rapporteur",
+        "desc": "Lire un angle sur un rapporteur"
+      },
+      "prism": {
+        "name": "Prisme",
+        "desc": "Prismes et cubes en 3D"
+      },
+      "cylinder": {
+        "name": "Cylindre",
+        "desc": "Cylindres en 3D"
+      },
+      "pyramid": {
+        "name": "Pyramide",
+        "desc": "Pyramides en 3D"
+      },
+      "cone": {
+        "name": "Cône",
+        "desc": "Cônes en 3D"
+      },
+      "sphere": {
+        "name": "Sphère",
+        "desc": "Sphères et demi-sphères"
+      },
+      "net": {
+        "name": "Patron",
+        "desc": "Patrons qui se plient en solides"
+      },
+      "mappingDiagram": {
+        "name": "Diagramme sagittal",
+        "desc": "Des entrées associées à des sorties"
+      },
+      "barGraph": {
+        "name": "Diagramme en barres",
+        "desc": "Diagrammes en barres, doubles et empilés"
+      },
+      "dotPlot": {
+        "name": "Diagramme à points",
+        "desc": "Diagrammes en points d'une série"
+      },
+      "histogram": {
+        "name": "Histogramme",
+        "desc": "Histogrammes à classes égales ou non"
+      },
+      "boxPlot": {
+        "name": "Diagramme en boîte",
+        "desc": "Boîtes à moustaches avec quartiles"
+      },
+      "scatterPlot": {
+        "name": "Nuage de points",
+        "desc": "Nuages de points avec droite d'ajustement"
+      },
+      "stemAndLeaf": {
+        "name": "Diagramme tige et feuilles",
+        "desc": "Diagrammes tige-feuille"
+      },
+      "pieChart": {
+        "name": "Diagramme circulaire",
+        "desc": "Diagrammes circulaires avec angles et pourcentages"
+      },
+      "cumulativeFrequency": {
+        "name": "Effectifs cumulés",
+        "desc": "Courbes des effectifs cumulés"
+      },
+      "normalCurve": {
+        "name": "Courbe normale",
+        "desc": "Courbes normales avec zones ombrées"
+      },
+      "treeDiagram": {
+        "name": "Arbre de probabilités",
+        "desc": "Arbres de probabilités"
+      },
+      "vennDiagram": {
+        "name": "Diagramme de Venn",
+        "desc": "Diagrammes de Venn à deux ou trois ensembles"
+      },
+      "twoWayTable": {
+        "name": "Tableau à double entrée",
+        "desc": "Tableaux à double entrée avec totaux"
+      },
+      "tableOfValues": {
+        "name": "Tableau de valeurs",
+        "desc": "Tableaux de valeurs d'une règle"
+      },
+      "freeBody": {
+        "name": "Diagramme des forces",
+        "desc": "Les forces sur un objet"
+      },
+      "vectors": {
+        "name": "Vecteurs",
+        "desc": "Vecteurs et leur résultante"
+      },
+      "inclinedPlane": {
+        "name": "Plan incliné",
+        "desc": "Un bloc sur une pente, avec ses forces"
+      },
+      "pulley": {
+        "name": "Poulies",
+        "desc": "Poulies et masses suspendues"
+      },
+      "rays": {
+        "name": "Tracé de rayons",
+        "desc": "Tracés de rayons pour lentilles et miroirs"
+      },
+      "circuit": {
+        "name": "Schéma électrique",
+        "desc": "Circuits en série et en parallèle"
+      },
+      "motionGraph": {
+        "name": "Graphique du mouvement",
+        "desc": "Graphiques de distance, vitesse et accélération"
+      },
+      "motionMap": {
+        "name": "Diagramme de mouvement",
+        "desc": "Cartes de mouvement avec points et flèches"
+      },
+      "projectile": {
+        "name": "Mouvement d'un projectile",
+        "desc": "La trajectoire d'un projectile, à l'échelle"
+      },
+      "waves": {
+        "name": "Ondes",
+        "desc": "Ondes transversales et longitudinales"
+      },
+      "reading": {
+        "name": "Lecture d'une échelle",
+        "desc": "Thermomètres, éprouvettes, règles et pieds à coulisse"
+      },
+      "bohr": {
+        "name": "Modèle de Bohr",
+        "desc": "Modèles de Bohr des atomes et des ions"
+      },
+      "orbitals": {
+        "name": "Diagramme des orbitales",
+        "desc": "Diagrammes des orbitales en cases"
+      },
+      "lewis": {
+        "name": "Structure de Lewis",
+        "desc": "Structures de Lewis des molécules"
+      },
+      "halfLife": {
+        "name": "Demi-vie",
+        "desc": "Courbes de désintégration radioactive"
+      },
+      "titration": {
+        "name": "Courbe de titrage",
+        "desc": "Courbes de titrage"
+      },
+      "massSpectrum": {
+        "name": "Spectre de masse",
+        "desc": "Pics des isotopes et masse atomique relative"
+      },
+      "heatingCurve": {
+        "name": "Courbe de chauffage et de refroidissement",
+        "desc": "La température quand on chauffe ou refroidit, à l'échelle"
+      },
+      "energyProfile": {
+        "name": "Diagramme d'énergie potentielle",
+        "desc": "Profils d'énergie de réaction avec Ea et ΔH"
+      },
+      "nuclide": {
+        "name": "Notation des nucléides",
+        "desc": "Symboles d'isotopes, d'ions et de particules"
+      },
+      "lineSpectrum": {
+        "name": "Spectre de raies",
+        "desc": "Raies d'émission et d'absorption des éléments"
+      },
+      "photoelectron": {
+        "name": "Spectre photoélectronique",
+        "desc": "Un pic par sous-couche, de H à Xe"
+      },
+      "particles": {
+        "name": "Modèle particulaire",
+        "desc": "Atomes, ions et molécules dans une boîte ou un réseau"
+      },
+      "dotCross": {
+        "name": "Schéma points-croix",
+        "desc": "Électrons partagés et transférés dans les couches"
+      }
+    },
+    "step": {
+      "answerLabel": "Ta réponse à la question {n}",
+      "right": "Juste",
+      "notRight": "Pas juste",
+      "answer": "Réponse :",
+      "teacherAnswer": "Corrigé :",
+      "score": "Tu as {right} sur {total} de juste ({pct} %).",
+      "answersLater": "Ton enseignant montrera les réponses après la date de rendu.",
+      "noAnswers": "Ton enseignant a les réponses et les reverra peut-être avec la classe.",
+      "teacherNote": "Voici ce que voient les élèves, avec le corrigé sous chaque question pour vous.",
+      "showOnNote": "Les réponses s'affichent pour les élèves après la date de rendu.",
+      "showOffNote": "Les réponses ne s'affichent jamais pour les élèves.",
+      "handInHint": "Enregistre au fur et à mesure. Quand tu rends, tes réponses sont corrigées et ne peuvent plus être changées.",
+      "answersReady": "Les réponses sont prêtes. Rends ton travail pour les voir.",
+      "save": "Enregistrer",
+      "handIn": "Rendre",
+      "handInConfirm": "Rendre tes réponses ? Tu ne pourras plus les changer.",
+      "saved": "Enregistré",
+      "handedIn": "Rendu",
+      "showIsOn": "Les réponses s'afficheront après la date de rendu",
+      "showIsOff": "Les réponses sont cachées aux élèves",
+      "errors": {
+        "handedIn": "Tu as déjà rendu ce travail.",
+        "empty": "Écris d'abord au moins une réponse."
+      },
+      "showAnswers": "Montrer les réponses après la date de rendu",
+      "showAnswersHint": "Désactivé par défaut. Activé : après la date de rendu, chaque élève qui a rendu voit les réponses et les étapes.",
+      "showNeedsDue": "Donnez une date de rendu à cette leçon pour montrer les réponses après.",
+      "handedInCount": "Rendus : {done} sur {total}",
+      "questionN": "Question {n}",
+      "rightOf": "{right} sur {total} justes",
+      "answersTable": "Les réponses de chaque élève",
+      "noneYet": "Personne n'a encore rendu.",
+      "questions": "{count, plural, one {# question sur une figure} other {# questions sur des figures}}"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Ajoutez une question avant de donner cette fiche.",
+        "noAnswer": "Chaque question doit avoir une réponse avant d'être donnée. Choisissez-en une pour la question {list} dans l'éditeur.",
+        "noClass": "Choisissez une de vos classes.",
+        "badDate": "Cette date ne semble pas correcte.",
+        "dueBeforeOpen": "La date de rendu est avant la date d'ouverture.",
+        "needsDue": "Fixez une date de rendu pour montrer les réponses après."
+      }
+    }
   }
 }

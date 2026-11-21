@@ -7,6 +7,7 @@
 import {
 	freshSettings,
 	kindInfo,
+	parseItem,
 	kindOr,
 	methodFor,
 	numbersOf,
@@ -171,12 +172,43 @@ export function adopt(setId: string, p: Playable, item: unknown): Activity {
 	return list.items[0];
 }
 
+/** A saved activity from My worksheets, to open in the editor: the activity for it in the list (added when it isn't
+ *  there; given the set's name when it has none of its own). null when the item isn't one this game plays. */
+export function openSaved(setId: string, item: unknown, title: string): Activity | null {
+	const p = parseItem(item);
+	if (!p) return null;
+	const a = adopt(setId, p, item);
+	if (!a.title.trim() && title.trim()) {
+		a.title = title.trim();
+		persist();
+	}
+	return a;
+}
+/** The set was renamed in My worksheets: its activities take the name. */
+export function renamedSet(setId: string, title: string) {
+	loadList();
+	let any = false;
+	for (const a of list.items) if (a.setId === setId) { a.title = title; any = true; }
+	if (any) persist();
+}
+/** The set was deleted in My worksheets: its activities go with it. */
+export function deletedSet(setId: string) {
+	loadList();
+	const left = list.items.filter((a) => a.setId !== setId);
+	if (left.length !== list.items.length) {
+		list.items = left;
+		persist();
+	}
+}
+/** The teacher's own instructions for a saved set's printed worksheet (from its activity), or ''. */
+export const printNoteFor = (setId: string) => (loadList(), list.items.find((a) => a.setId === setId)?.printNote ?? '');
+
 export const titleOf = (a: { title: string; kind: Kind }) => a.title.trim() || kindInfo(a.kind).title;
 
 /** Save the activity on Oomba (again, under the same link, when it was saved before): its set id, or a message. */
 export async function shareActivity(a: Activity): Promise<{ id?: string; error?: string }> {
 	const item = itemOf(a);
-	const r = await saveSet(item, a.setId);
+	const r = await saveSet(item, a.setId, a.title);
 	if (r.id) {
 		markShared(a.id, r.id, item);
 		return { id: r.id };

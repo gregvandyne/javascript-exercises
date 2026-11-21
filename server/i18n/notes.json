@@ -1567,5 +1567,9 @@
   "live.host.startAnyway": "Button in the box that asks 'Nobody has joined yet. Start anyway?' on the live host's projector page. Starts the game with no players.",
   "live.say.label": "Label of the text field where a teacher types a message that every player's screen shows during a live game.",
   "live.say.send": "Button that sends the teacher's typed message to every player's screen.",
-  "live.say.blocked": "Shown to the teacher when the filter refused the typed message (rude words, contact details or links)."
+  "live.say.blocked": "Shown to the teacher when the filter refused the typed message (rude words, contact details or links).",
+  "figures.assign.errors.noAnswer": "Figures worksheet builder, Assign to class: some questions have no answer yet. {list} is their numbers, e.g. \"2, 5\".",
+  "figures.step.score": "A student's Figures worksheet after handing in. {right} questions right of {total}; {pct} is the percent (a number, the % sign is in the text).",
+  "figures.step.handedInCount": "Teacher's progress page for a Figures worksheet: {done} students handed in of {total} in the class.",
+  "js.figures-sheet.assignDone": "Shown after a teacher assigns a Figures worksheet. {class} is the class name, e.g. \"Grade 7 Math\"."
 }

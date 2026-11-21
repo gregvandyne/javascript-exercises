@@ -1,0 +1,38 @@
+// A figures step on the lesson page (services/figures-steps.js viewFor; routes/progress.js): each figure drawn on the
+// server (the hidden parts left out), its question, and a blank with the unit. A student saves as they go and hands in
+// once; then each question says right or not right and the score shows. The answer and worked lines show only when
+// viewFor sent them (the teacher; a student once "Show answers after the due date" lets them). Every word is escaped.
+import { html, raw } from './html.js';
+import { ico } from './icon.js';
+
+/** v: viewFor's result. student: { api } to answer (a student of the class), or null (the teacher's preview). */
+export function figuresStepHtml(t, v, { student = null, stepId, showAnswers = false, dueSet = false, dueOver = false } = {}) {
+  const locked = !student || v.handedIn;
+  const q1 = it => html`<li class="fs-q" id="fq-${stepId}-${it.n}">
+    <span class="fs-n" aria-hidden="true">${it.n}</span>
+    <div class="fs-fig">${raw(it.svg)}</div>
+    <div class="fs-body">
+      <p class="fs-text" dir="auto">${it.question || t('figures.print.noQuestion')}</p>
+      <div class="fs-blank"><label class="sr-only" for="fa-${stepId}-${it.n}">${t('figures.step.answerLabel', { n: it.n })}</label>
+        <input class="input fs-in" id="fa-${stepId}-${it.n}" name="a${it.n - 1}" value="${it.typed}" maxlength="40" inputmode="decimal" autocomplete="off" spellcheck="false" dir="ltr" ${locked ? raw('readonly') : ''}>
+        ${it.unit ? html`<span class="fs-unit" dir="ltr">${it.unit}</span>` : ''}
+        ${it.right === true ? html`<span class="chip-s fs-mark ok">${ico('✅', { size: 18 })} ${t('figures.step.right')}</span>` : it.right === false ? html`<span class="chip-s fs-mark bad">${ico('❌', { size: 18 })} ${t('figures.step.notRight')}</span>` : ''}</div>
+      ${it.answer !== undefined ? html`<div class="fs-key"><p><b>${student ? t('figures.step.answer') : t('figures.step.teacherAnswer')}</b> <span dir="auto">${it.answer}</span></p>
+        ${it.work && it.work.length ? html`<ul class="fs-work">${it.work.map(w => html`<li dir="auto">${w}</li>`)}</ul>` : ''}</div>` : ''}
+    </div></li>`;
+  const list = html`<ol class="plain fs-list">${v.items.map(q1)}</ol>`;
+  const pct = v.total ? Math.round((100 * v.right) / v.total) : 0;
+  const after = student && v.handedIn ? html`<p class="sc-score fs-score">${ico('🏆', { size: 18 })} ${t('figures.step.score', { right: v.right, total: v.total, pct })}</p>
+    ${!v.revealed ? html`<p class="small muted">${showAnswers && dueSet ? t('figures.step.answersLater') : t('figures.step.noAnswers')}</p>` : ''}` : '';
+  if (!student) return html`<section class="fs-step" aria-label="${t('lessons.kinds.figures')}"><p class="notice small">${ico('👀', { size: 18 })} ${t('figures.step.teacherNote')} ${showAnswers ? t('figures.step.showOnNote') : t('figures.step.showOffNote')}</p>${list}</section>`;
+  if (v.handedIn) return html`<section class="fs-step" aria-label="${t('lessons.kinds.figures')}">${after}${list}</section>`;
+  return html`<section class="fs-step" aria-label="${t('lessons.kinds.figures')}">
+    <form class="fs-form" data-api="${student.api}" data-reload novalidate>
+      ${list}
+      <p class="small muted">${t('figures.step.handInHint')}</p>
+      ${showAnswers && dueOver ? html`<p class="notice small">${ico('🔑', { size: 18 })} ${t('figures.step.answersReady')}</p>` : ''}
+      <p class="err form-err" aria-live="polite"></p>
+      <div class="row"><button class="btn" type="submit" name="hand" value="0">${ico('💾', { size: 18 })} ${t('figures.step.save')}</button>
+        <button class="btn btn-primary" type="submit" name="hand" value="1" data-confirm="${t('figures.step.handInConfirm')}">${ico('📤', { size: 18 })} ${t('figures.step.handIn')}</button></div>
+    </form></section>`;
+}

@@ -36,6 +36,7 @@ import { ico } from '../views/icon.js';
 import { page, VERSION } from '../views/layout.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as M from '../services/manipulatives.js';
+import { teachingTools } from './figures.js';
 
 export const router = Router();
 const STATUS = { notFound: 404, ended: 409, aiFailed: 503, tooBig: 413, slow: 429, checkSlow: 429, noAnswers: 404 };
@@ -56,9 +57,11 @@ const hostOnly = (req, res, next) => (req.manipRole === 'host' ? next() : fail(r
 const CSS = raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}">`);
 router.get('/manipulatives', (req, res) => {
   const t = req.t;
+  // "Teaching tools: Manipulatives · Figures" for someone who can open both (routes/figures.js).
+  const tools = teachingTools(req, 'manip');
   page(req, res, {
-    title: t('manip.title'), active: null, head: CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room'], bodyClass: 'manip-page',
-    body: html`${jsonData('page-data', { role: req.manipRole })}
+    title: t('manip.title'), active: null, head: tools ? raw(`${CSS}<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`) : CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room'], bodyClass: 'manip-page',
+    body: html`${tools}${jsonData('page-data', { role: req.manipRole })}
       <div id="manip" class="manip" data-role="${req.manipRole}"><p class="muted">${t('manip.loading')}</p></div>`,
   });
 });

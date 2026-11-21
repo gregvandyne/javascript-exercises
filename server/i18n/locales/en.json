@@ -1192,7 +1192,10 @@
     },
     "makeLike": "Make a game like this",
     "makeLikeShort": "Make one like this",
-    "grownupBuilder": "Grown-up builder"
+    "grownupBuilder": "Grown-up builder",
+    "sets": {
+      "copyOf": "Copy of {title}"
+    }
   },
   "play": {
     "backTo": "Back to {title}",
@@ -3648,6 +3651,290 @@
       "checkShort": "Check",
       "actionsFor": "Actions for {label}",
       "teacherLock": "Your teacher locked this."
+    },
+    "figures-editor": {
+      "undo": "Undo",
+      "redo": "Redo",
+      "presets": "Presets…",
+      "examples": "Examples",
+      "mine": "My presets",
+      "randomize": "Randomize",
+      "controls": "Figure settings",
+      "measures": "Measures",
+      "leaveEmpty": "Give the measures you know. Leave the rest empty.",
+      "options": "Options",
+      "show": "Show",
+      "default": "(default)",
+      "advanced": "Advanced (data)",
+      "advancedHelp": "The figure's whole data as JSON. Lists and groups are edited here.",
+      "jsonObject": "The data must be one { ... } object.",
+      "jsonBad": "That isn't valid JSON yet: {why}",
+      "display": "Display",
+      "print": "Print mode (black on white)",
+      "nts": "Mark \"Not drawn to scale\"",
+      "figure": "The figure",
+      "answers": "Question and answers",
+      "question": "Question",
+      "questionHint": "Write the question students answer about this figure.",
+      "worked": "Worked answers (OF.solve)",
+      "answerIs": "The answer is",
+      "pickAnswer": "Pick the answer…",
+      "noAnswers": "No worked answers for this figure",
+      "facts": "Everything about it",
+      "answersWait": "The answers appear as soon as the figure can be drawn. Oomba never draws a wrong figure.",
+      "pickHelp": "Pick which number answers your question, or press Randomize for a ready-made question.",
+      "noSolve": "This figure has no worked numbers to pick from.",
+      "hide": "Hide answer for students",
+      "hideWhat": "What to hide",
+      "hideAll": "Every measure",
+      "ofSays": "Oomba Figures says: {reason}",
+      "undoLast": "Undo my last change",
+      "backToExample": "Back to the example",
+      "add": "Add to worksheet",
+      "newSheet": "A new worksheet",
+      "qs": "{count, plural, one {# question} other {# questions}}",
+      "added": "Added to {title}.",
+      "openSheet": "Open the worksheet",
+      "saveBack": "Save to {title}",
+      "svg": "Download SVG",
+      "png": "Download PNG",
+      "copy": "Copy image",
+      "link": "Copy link",
+      "savePreset": "Save as my preset",
+      "presetName": "Name your preset",
+      "presetSaved": "Preset saved.",
+      "notice": "Downloads carry the note that what Oomba Academy adds is in the public domain (CC0); anything original you add is yours.",
+      "noGen": "No question generator for this figure yet: here is another example.",
+      "pngFailed": "The PNG couldn't be made. Try Download SVG.",
+      "copied": "Image copied.",
+      "copiedSvg": "Copied as SVG text.",
+      "copyFailed": "Couldn't copy. Try a download instead.",
+      "linkCopied": "Link copied.",
+      "why": {
+        "triangle": {
+          "t": "These sides cannot make a triangle",
+          "p": "Any two sides of a triangle must add up to more than the third, or the ends never meet."
+        },
+        "angles": {
+          "t": "These angles don't fit",
+          "p": "A triangle's angles add up to exactly 180°. Check the angles you gave."
+        },
+        "short": {
+          "t": "A side is too short",
+          "p": "With these numbers one side can never reach the other end. Make it longer or change an angle."
+        },
+        "agree": {
+          "t": "These measures disagree",
+          "p": "You gave more measures than the figure needs, and they don't agree. Leave one out."
+        },
+        "drawAs": {
+          "t": "Check \"Not drawn to scale\"",
+          "p": "Other proportions to draw only work with \"Not drawn to scale\" on, and the marks must be true in both."
+        },
+        "positive": {
+          "t": "A number must be more than zero",
+          "p": "Lengths, sizes and counts are more than zero."
+        },
+        "range": {
+          "t": "A number is out of range",
+          "p": "One of the numbers is too big or too small for this figure."
+        },
+        "extra": {
+          "t": "Too many measures",
+          "p": "This figure takes only some of these measures together. Leave one out."
+        },
+        "data": {
+          "t": "The data can't be read",
+          "p": "Check the Advanced (data) box."
+        },
+        "generic": {
+          "t": "This figure cannot be drawn",
+          "p": "Oomba never draws a wrong figure. Change the numbers so they fit together."
+        }
+      },
+      "f": {
+        "unit": "Unit",
+        "round": "Decimal places",
+        "mass": "Mass",
+        "angle": "Angle",
+        "speed": "Speed",
+        "height": "Height",
+        "width": "Width",
+        "length": "Length",
+        "radius": "Radius",
+        "value": "Value",
+        "min": "Lowest",
+        "max": "Highest",
+        "step": "Step",
+        "type": "Type",
+        "element": "Element"
+      },
+      "k": {
+        "area": "Area",
+        "perimeter": "Perimeter",
+        "volume": "Volume",
+        "surfaceArea": "Surface area",
+        "angles": "Angle",
+        "sides": "Side",
+        "total": "Total",
+        "mean": "Mean",
+        "median": "Median",
+        "range": "Range",
+        "interior": "Interior angle",
+        "value": "Value"
+      },
+      "hp": {
+        "sides": "The sides",
+        "angles": "The angles",
+        "heights": "The heights",
+        "value": "The value",
+        "image": "The image",
+        "electrons": "The electrons",
+        "values": "The values",
+        "reading": "The reading"
+      },
+      "draw": {
+        "modeLabel": "How to make the figure",
+        "type": "Type the measures",
+        "draw": "Draw it",
+        "title": "Draw it on the dot grid",
+        "size": "Grid size",
+        "sizeOpt": "{n} by {n}",
+        "clear": "Clear",
+        "help": {
+          "triangle": "Tap three dots to make a triangle. Drag a corner to move it.",
+          "quad": "Tap four dots in order around the shape. Drag a corner to move it.",
+          "grid": "Tap the dots in order around the shape, up to 10 corners. Drag a corner to move it."
+        },
+        "keys": "With a keyboard: the arrow keys move, Enter places a corner or picks one up, and then the arrow keys nudge it.",
+        "board": "Dot grid, {n} by {n}",
+        "corner": "Corner {name} at ({x}, {y})",
+        "placed": "{name} placed at ({x}, {y})",
+        "moved": "{name} moved to ({x}, {y})",
+        "picked": "{name} picked up. Use the arrow keys to move it, and Enter to put it down.",
+        "removed": "{name} removed",
+        "corners": "Corners",
+        "sides": "Sides",
+        "angles": "Angles",
+        "kind": "Type",
+        "perimeter": "Perimeter",
+        "area": "Area",
+        "sqUnits": "{area} square units",
+        "more": "{count, plural, one {Tap # more dot.} other {Tap # more dots.}}",
+        "filled": "Filled in from your drawing.",
+        "keep": "The figure below keeps your last good shape.",
+        "same": "Two corners are on the same dot. Drag one of them to another dot.",
+        "line": "Three corners are in a straight line, so they do not make a shape. Move one of them off the line.",
+        "cross": "Two sides cross each other. Move a corner so the sides only meet at the corners.",
+        "cannot": "Oomba Figures cannot draw this one. Try moving a corner.",
+        "isNot": "That shape is {is}, not {want}.",
+        "special": "That shape is {is}, and Oomba Figures draws it with its own editor.",
+        "open": {
+          "rectangle": "Open it in the Rectangle editor",
+          "parallelogram": "Open it in the Parallelogram editor",
+          "trapezoid": "Open it in the Trapezoid editor",
+          "kite": "Open it in the Kite editor",
+          "grid": "Plot it on a coordinate grid"
+        },
+        "a": {
+          "square": "a square",
+          "rectangle": "a rectangle",
+          "rhombus": "a rhombus",
+          "parallelogram": "a parallelogram",
+          "trapezoid": "a trapezoid",
+          "kite": "a kite",
+          "quad": "a quadrilateral with no special name",
+          "concave": "a concave quadrilateral"
+        },
+        "t": {
+          "square": "Square",
+          "rectangle": "Rectangle",
+          "rhombus": "Rhombus",
+          "parallelogram": "Parallelogram",
+          "trapezoid": "Trapezoid",
+          "isoTrapezoid": "Isosceles trapezoid",
+          "rightTrapezoid": "Right trapezoid",
+          "kite": "Kite",
+          "quad": "Quadrilateral",
+          "concave": "Concave quadrilateral",
+          "polygon": "{count, plural, one {Polygon with # side} other {Polygon with # sides}}"
+        },
+        "tri": {
+          "right": "Right",
+          "acute": "Acute",
+          "obtuse": "Obtuse",
+          "scalene": "Scalene",
+          "isosceles": "Isosceles",
+          "equilateral": "Equilateral"
+        },
+        "ex": {
+          "right": "Right triangle",
+          "isosceles": "Isosceles triangle",
+          "obtuse": "Obtuse triangle",
+          "pentagon": "Pentagon"
+        },
+        "examples": "Drawn on the dot grid",
+        "gridOut": "Also show it on a coordinate grid",
+        "gridTitle": "On a coordinate grid",
+        "addGrid": "Add the grid figure to a worksheet",
+        "drawInstead": "Draw it on a grid instead"
+      }
+    },
+    "figures-sheet": {
+      "title": "Worksheet title",
+      "grade": "Grade",
+      "anyGrade": "Any grade",
+      "gradeN": "Grade {grade}",
+      "powerAi": "Power with AI",
+      "briefLabel": "Topic, grade, how many questions",
+      "briefHint": "Grade 7, area of rectangles and trapezoids, plus one box plot.",
+      "howMany": "Questions",
+      "draft": "Draft",
+      "budget": "Uses the AI budget. If it is resting, you get a starter set instead.",
+      "drafting": "Drafting your questions…",
+      "briefFirst": "Describe the worksheet in a few words first.",
+      "drafted": "{count, plural, one {# question drafted.} other {# questions drafted.}} Every figure was checked and every answer worked out by Oomba Figures.",
+      "resting": "AI is resting, here is a starter set ({count, plural, one {# question} other {# questions}}).",
+      "repaired": "{count, plural, one {# figure couldn't be drawn and was replaced.} other {# figures couldn't be drawn and were replaced.}}",
+      "dropped": "{count, plural, one {# question was left out.} other {# questions were left out.}}",
+      "addLabel": "Add a figure question",
+      "add": "Add",
+      "empty": "No questions yet. Add a figure question, or draft some with AI.",
+      "questionN": "Question {n}",
+      "questionHint": "Write the question…",
+      "answer": "Answer:",
+      "noAnswer": "No answer chosen yet: open it in the editor.",
+      "up": "Move up",
+      "down": "Move down",
+      "regen": "New numbers",
+      "edit": "Edit the figure",
+      "delete": "Delete",
+      "deleteQ": "Delete this question?",
+      "remove": "Delete worksheet",
+      "removeQ": "Delete this worksheet?",
+      "removeText": "Its questions go too. This can't be undone.",
+      "preview": "Print preview",
+      "paper": "Letter, black on white",
+      "studentSheet": "Student sheet",
+      "answerKey": "Answer key",
+      "previewEmpty": "The printable sheet shows here once there is a question.",
+      "print": "Print",
+      "printKey": "Print with answer key",
+      "assign": "Assign to class",
+      "assignTitle": "Assign to a class",
+      "assignClass": "Class",
+      "assignOpens": "Opens (optional)",
+      "assignDue": "Due (optional)",
+      "assignShow": "Show answers after the due date",
+      "assignShowHint": "Off by default. On: once the due date is over, students who handed in see the answers and worked lines.",
+      "assignSnapshot": "Students get the worksheet as it is now. Changes you make later don't change it.",
+      "assignGo": "Assign",
+      "assignCancel": "Cancel",
+      "assignEmpty": "Add questions first, then assign the worksheet.",
+      "assignNoClasses": "You don't teach a class yet. Make a class first, then assign.",
+      "assignDone": "Assigned to {class}.",
+      "assignSee": "See it as students do",
+      "assignProgress": "See progress"
     }
   },
   "favorites": {
@@ -4276,7 +4563,8 @@
       "build": "Build a game",
       "text": "Read or do",
       "question": "Answer a question",
-      "quiz": "Answer quiz questions"
+      "quiz": "Answer quiz questions",
+      "figures": "Answer figure questions"
     },
     "library": {
       "title": "Lesson library",
@@ -12628,6 +12916,367 @@
       "slow": "That's a lot of hands. Wait a moment and try again.",
       "checkSlow": "You've checked a lot. Wait a minute, look again, then check.",
       "noAnswers": "There are no answers to check on this board."
+    }
+  },
+  "figures": {
+    "title": "Figures",
+    "loading": "Loading the figures…",
+    "crumbs": "You are here",
+    "tools": {
+      "label": "Teaching tools",
+      "manipulatives": "Manipulatives",
+      "figures": "Figures"
+    },
+    "subjects": {
+      "math": "Math",
+      "data": "Data and statistics",
+      "physics": "Physics",
+      "chem": "Chemistry",
+      "biology": "Biology",
+      "economics": "Economics"
+    },
+    "grades": {
+      "K-2": "K-2",
+      "3-5": "Grades 3-5",
+      "6-8": "Grades 6-8",
+      "9-12": "Grades 9-12"
+    },
+    "menu": {
+      "testing": "Testing: only you can see this",
+      "pitch": "Exact, to-scale figures for worksheets, tests and slides. Print-ready, with the answers worked out.",
+      "buildTitle": "Build a worksheet",
+      "buildText": "Pick figures by hand, or describe what you need and let AI draft the questions. Every number is checked so each figure can really be drawn.",
+      "draftAi": "Draft with AI",
+      "scratch": "Start from scratch",
+      "mine": "My worksheets",
+      "noSheets": "No worksheets yet. The ones you build show up here.",
+      "questions": "{count, plural, one {# Q} other {# Qs}}",
+      "gradeOf": "Grade {grade}",
+      "edited": "edited {date}",
+      "subjects": "Subjects",
+      "all": "All figures",
+      "soon": "Coming soon",
+      "grades": "Grades",
+      "search": "Search the figures",
+      "searchHint": "Search the figures, like cylinder or box plot",
+      "count": "{count, plural, one {# figure} other {# figures}}",
+      "nothing": "No figures match. Try another word or grade."
+    },
+    "sheet": {
+      "newTitle": "New worksheet",
+      "crumb": "Worksheet builder",
+      "untitled": "Untitled worksheet"
+    },
+    "editor": {
+      "example": "Example {n}"
+    },
+    "print": {
+      "figure": "Figure for question {n}",
+      "keyTag": "Answer key",
+      "keyTitle": "{title}: answer key",
+      "name": "Name",
+      "date": "Date",
+      "made": "Made with Oomba Academy",
+      "noQuestion": "Look at the figure.",
+      "noAnswer": "No answer chosen yet",
+      "crumb": "Print",
+      "sheetOnly": "Student sheet",
+      "withKey": "With the answer key",
+      "print": "Print"
+    },
+    "errors": {
+      "notFound": "That isn't here.",
+      "badKind": "That isn't one of the figures.",
+      "badData": "That figure's data couldn't be read.",
+      "tooBig": "That figure is too big to save.",
+      "words": "Some words aren't allowed. Change them and try again.",
+      "personal": "Leave out phone numbers, emails, links and codes, then try again.",
+      "cannotDraw": "This figure cannot be drawn with these numbers. Change them and try again.",
+      "tooMany": "You have a lot saved already. Delete some first.",
+      "fullSheet": "This worksheet is full. Start a new one.",
+      "noGen": "This figure has no question generator yet.",
+      "name": "Give it a name first.",
+      "brief": "Describe the worksheet in a few words first.",
+      "names": "Leave students' names out of the description: names never go to the AI."
+    },
+    "kinds": {
+      "numberLine": {
+        "name": "Number line",
+        "desc": "Numbers, intervals and points on a line"
+      },
+      "triangle": {
+        "name": "Triangle",
+        "desc": "Any triangle from three measures"
+      },
+      "rectangle": {
+        "name": "Rectangle",
+        "desc": "Rectangles and squares"
+      },
+      "parallelogram": {
+        "name": "Parallelogram",
+        "desc": "Parallelograms and rhombi, with heights"
+      },
+      "trapezoid": {
+        "name": "Trapezoid",
+        "desc": "Trapezoids: any, isosceles or right"
+      },
+      "kite": {
+        "name": "Kite",
+        "desc": "Kites with their equal sides marked"
+      },
+      "regularPolygon": {
+        "name": "Regular polygon",
+        "desc": "Regular polygons with apothem and radius"
+      },
+      "angles": {
+        "name": "Angles",
+        "desc": "Angles between rays"
+      },
+      "parallelLines": {
+        "name": "Parallel lines and a transversal",
+        "desc": "Parallel lines cut by a transversal"
+      },
+      "segmentAddition": {
+        "name": "Segment addition",
+        "desc": "Segment addition with algebra"
+      },
+      "circle": {
+        "name": "Circle",
+        "desc": "Circles with chords, tangents and angles"
+      },
+      "compositeShape": {
+        "name": "Composite shape",
+        "desc": "Shapes made of simpler shapes"
+      },
+      "grid": {
+        "name": "Coordinate grid",
+        "desc": "Points, lines and transformations on a grid"
+      },
+      "protractor": {
+        "name": "Protractor",
+        "desc": "Read an angle on a protractor"
+      },
+      "prism": {
+        "name": "Prism",
+        "desc": "Prisms and cubes in 3D"
+      },
+      "cylinder": {
+        "name": "Cylinder",
+        "desc": "Cylinders in 3D"
+      },
+      "pyramid": {
+        "name": "Pyramid",
+        "desc": "Pyramids in 3D"
+      },
+      "cone": {
+        "name": "Cone",
+        "desc": "Cones in 3D"
+      },
+      "sphere": {
+        "name": "Sphere",
+        "desc": "Spheres and hemispheres"
+      },
+      "net": {
+        "name": "Net",
+        "desc": "Nets that fold into solids"
+      },
+      "mappingDiagram": {
+        "name": "Mapping diagram",
+        "desc": "Inputs mapped to outputs"
+      },
+      "barGraph": {
+        "name": "Bar graph",
+        "desc": "Bar graphs, double and stacked"
+      },
+      "dotPlot": {
+        "name": "Dot plot",
+        "desc": "Dot plots of a data set"
+      },
+      "histogram": {
+        "name": "Histogram",
+        "desc": "Histograms with equal or unequal classes"
+      },
+      "boxPlot": {
+        "name": "Box plot",
+        "desc": "Box plots with quartiles"
+      },
+      "scatterPlot": {
+        "name": "Scatter plot",
+        "desc": "Scatter plots with a line of best fit"
+      },
+      "stemAndLeaf": {
+        "name": "Stem-and-leaf plot",
+        "desc": "Stem-and-leaf plots"
+      },
+      "pieChart": {
+        "name": "Pie chart",
+        "desc": "Pie charts with angles and percents"
+      },
+      "cumulativeFrequency": {
+        "name": "Cumulative frequency",
+        "desc": "Cumulative frequency graphs"
+      },
+      "normalCurve": {
+        "name": "Normal curve",
+        "desc": "Normal curves with shaded regions"
+      },
+      "treeDiagram": {
+        "name": "Tree diagram",
+        "desc": "Probability tree diagrams"
+      },
+      "vennDiagram": {
+        "name": "Venn diagram",
+        "desc": "Venn diagrams with two or three sets"
+      },
+      "twoWayTable": {
+        "name": "Two-way table",
+        "desc": "Two-way tables with totals"
+      },
+      "tableOfValues": {
+        "name": "Table of values",
+        "desc": "Tables of values from a rule"
+      },
+      "freeBody": {
+        "name": "Free-body diagram",
+        "desc": "The forces on an object"
+      },
+      "vectors": {
+        "name": "Vectors",
+        "desc": "Vectors and their resultant"
+      },
+      "inclinedPlane": {
+        "name": "Inclined plane",
+        "desc": "A block on a slope, with its forces"
+      },
+      "pulley": {
+        "name": "Pulleys",
+        "desc": "Pulleys and hanging masses"
+      },
+      "rays": {
+        "name": "Ray diagram",
+        "desc": "Ray diagrams for lenses and mirrors"
+      },
+      "circuit": {
+        "name": "Circuit diagram",
+        "desc": "Circuits in series and parallel"
+      },
+      "motionGraph": {
+        "name": "Motion graph",
+        "desc": "Distance, velocity and acceleration graphs"
+      },
+      "motionMap": {
+        "name": "Motion map",
+        "desc": "Motion maps with dots and arrows"
+      },
+      "projectile": {
+        "name": "Projectile motion",
+        "desc": "A projectile's path, to scale"
+      },
+      "waves": {
+        "name": "Waves",
+        "desc": "Transverse and longitudinal waves"
+      },
+      "reading": {
+        "name": "Reading a scale",
+        "desc": "Thermometers, cylinders, rulers and calipers"
+      },
+      "bohr": {
+        "name": "Bohr model",
+        "desc": "Bohr models of atoms and ions"
+      },
+      "orbitals": {
+        "name": "Orbital diagram",
+        "desc": "Orbital box diagrams"
+      },
+      "lewis": {
+        "name": "Lewis structure",
+        "desc": "Lewis structures of molecules"
+      },
+      "halfLife": {
+        "name": "Half-life",
+        "desc": "Radioactive decay curves"
+      },
+      "titration": {
+        "name": "Titration curve",
+        "desc": "Titration curves"
+      },
+      "massSpectrum": {
+        "name": "Mass spectrum",
+        "desc": "Isotope peaks and relative atomic mass"
+      },
+      "heatingCurve": {
+        "name": "Heating and cooling curve",
+        "desc": "Temperature as heat goes in or out, to scale"
+      },
+      "energyProfile": {
+        "name": "Potential energy diagram",
+        "desc": "Reaction energy profiles with Ea and ΔH"
+      },
+      "nuclide": {
+        "name": "Nuclide notation",
+        "desc": "Isotope, ion and particle symbols"
+      },
+      "lineSpectrum": {
+        "name": "Line spectrum",
+        "desc": "Emission and absorption lines of elements"
+      },
+      "photoelectron": {
+        "name": "Photoelectron spectrum",
+        "desc": "One peak per sublevel, H to Xe"
+      },
+      "particles": {
+        "name": "Particle diagram",
+        "desc": "Atoms, ions and molecules in a box or a lattice"
+      },
+      "dotCross": {
+        "name": "Dot-and-cross diagram",
+        "desc": "Shared and transferred electrons in shells"
+      }
+    },
+    "step": {
+      "answerLabel": "Your answer to question {n}",
+      "right": "Right",
+      "notRight": "Not right",
+      "answer": "Answer:",
+      "teacherAnswer": "Answer key:",
+      "score": "You got {right} of {total} right ({pct}%).",
+      "answersLater": "Your teacher will show the answers after the due date.",
+      "noAnswers": "Your teacher has the answers and may go over them with the class.",
+      "teacherNote": "This is what students see, with the answer key under each question for you.",
+      "showOnNote": "Answers show to students after the due date.",
+      "showOffNote": "Answers never show to students.",
+      "handInHint": "Save as you go. When you hand in, your answers are marked and can't be changed.",
+      "answersReady": "The answers are ready. Hand in your work to see them.",
+      "save": "Save",
+      "handIn": "Hand in",
+      "handInConfirm": "Hand in your answers? You can't change them after.",
+      "saved": "Saved",
+      "handedIn": "Handed in",
+      "showIsOn": "Answers will show after the due date",
+      "showIsOff": "Answers are hidden from students",
+      "errors": {
+        "handedIn": "You've already handed this in.",
+        "empty": "Write at least one answer first."
+      },
+      "showAnswers": "Show answers after the due date",
+      "showAnswersHint": "Off by default. On: once the due date is over, each student who handed in sees the answers and worked lines.",
+      "showNeedsDue": "Set a due date for this lesson to show answers after it.",
+      "handedInCount": "Handed in: {done} of {total}",
+      "questionN": "Question {n}",
+      "rightOf": "{right} of {total} right",
+      "answersTable": "Each student's answers",
+      "noneYet": "Nobody has handed in yet.",
+      "questions": "{count, plural, one {# figure question} other {# figure questions}}"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Add a question before you assign this worksheet.",
+        "noAnswer": "Every question needs an answer before you assign it. Choose one for question {list} in the editor.",
+        "noClass": "Pick one of your classes.",
+        "badDate": "That date doesn't look right.",
+        "dueBeforeOpen": "The due date is before the open date.",
+        "needsDue": "Set a due date to show the answers after it."
+      }
     }
   }
 }

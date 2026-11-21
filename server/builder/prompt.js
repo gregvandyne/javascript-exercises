@@ -509,5 +509,5 @@ export function wantsCanvas(state, text, version) {
 // only when a build calls for science, maths or graph figures (builder/figures.js wantsFigures: the plan, the words in
 // any site language, or a version that already loads a figure library). SYSTEM_PROMPT and TOOLS never change for it.
 export const FIGURE_RULES = `${FIGURE_RULES_SOURCE}
-- The pinned tags (exactly these, in this order; leave out JSXGraph or SmilesDrawer when you do not use OF.board or OF.structure):
+- The pinned tags (exactly these, in this order; leave out JSXGraph or SmilesDrawer when you do not use OF.board or OF.structure, and each Oomba Figures pack none of your kinds is in; never a pack without the Oomba Figures tag before it):
 ${figTags()}`;

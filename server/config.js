@@ -114,6 +114,7 @@ const micGames = parseFlag(process.env.MIC_GAMES, 'MIC_GAMES', true);
 const micBuilder = parseFlag(process.env.MIC_BUILDER, 'MIC_BUILDER', true);
 const liveTeams = parseFlag(process.env.LIVE_TEAMS, 'LIVE_TEAMS', true);
 const manipulatives = parseFlag(process.env.MANIPULATIVES, 'MANIPULATIVES', true);
+const figures = parseFlag(process.env.FIGURES, 'FIGURES', true);
 const liveSaveSupport = parseFlag(process.env.LIVE_SAVE_SUPPORT, 'LIVE_SAVE_SUPPORT');
 const liveHomework = parseFlag(process.env.LIVE_HOMEWORK, 'LIVE_HOMEWORK');
 const liveCohost = parseFlag(process.env.LIVE_COHOST, 'LIVE_COHOST', true);
@@ -246,7 +247,7 @@ export const config = {
     ...email.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, sttLive.error, liveClassroom.error,
     liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error, quizSteps.error, micGames.error, micBuilder.error,
-    builderWebSearch.error, manipulatives.error,
+    builderWebSearch.error, manipulatives.error, figures.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
     ttsEnabled.error, ttsBuiltGames.error, ttsLocales.error,
@@ -313,6 +314,10 @@ export const config = {
   // gets the normal 404. MANIPULATIVES=0 turns it off for everyone.
   manipulatives: manipulatives.on,
   manipulativesUsers: String(process.env.MANIPULATIVES_USERS || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean),
+  // Figures, the standalone product (docs/decisions.md "Figures, the standalone product"; services/figures.js), hidden
+  // while it is tested exactly like the manipulatives: /figures answers only the platform admin and the school staff in
+  // MANIPULATIVES_USERS (the same tester list, no new variable). Everyone else gets the normal 404. FIGURES=0 turns it off.
+  figures: figures.on,
   liveMaxPlayers: Math.min(100, Math.max(2, Math.floor(num(process.env.LIVE_MAX_PLAYERS, 60)))),
   liveMaxSessions: Math.max(1, Math.floor(num(process.env.LIVE_MAX_SESSIONS, 60))),
   liveMaxSeats: Math.max(2, Math.floor(num(process.env.LIVE_MAX_SEATS, 2000))),
