@@ -37,6 +37,9 @@ export const LIMITS = { texts: 30, textChars: 200, steps: 20, boards: 500, notes
 /** A session ends on its own this long after it starts; ended sessions (and their work) go after KEEP_DAYS. */
 export const SESSION_HOURS = 12;
 export const KEEP_DAYS = 30;
+/** "Recent boards" (saved as a teacher works): the newest RECENT_MAX per teacher, each for RECENT_DAYS after it was
+ *  last opened or changed. Templates stay until their owner deletes them. */
+export const RECENT_MAX = 30, RECENT_DAYS = 60;
 const HOUR = 3600e3, DAY = 86400e3;
 const CODE_ABC = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 /** Test hooks: create replaces the AI client's messages.create (no network in tests). */
@@ -65,11 +68,13 @@ export function canHostClass(u, c) {
   const m = S.membership(c.school_id, u.id);
   return !!m && (S.teaches(u, c.id) || m.role === 'admin');
 }
-/** Lazy upkeep: sessions past SESSION_HOURS end; ended ones older than KEEP_DAYS go (their work with them). */
+/** Lazy upkeep: sessions past SESSION_HOURS since they were started (or last reopened) end; ended ones older than
+ *  KEEP_DAYS go (their work with them); recent boards not opened or changed for RECENT_DAYS go. */
 export function prune(t = now()) {
-  for (const r of q.all("SELECT id FROM manip_sessions WHERE status='active' AND created_at<?", t - SESSION_HOURS * HOUR)) LIVE.forget(r.id);
-  q.run("UPDATE manip_sessions SET status='ended', ended_at=? WHERE status='active' AND created_at<?", t, t - SESSION_HOURS * HOUR);
+  for (const r of q.all("SELECT id FROM manip_sessions WHERE status='active' AND opened_at<?", t - SESSION_HOURS * HOUR)) LIVE.forget(r.id);
+  q.run("UPDATE manip_sessions SET status='ended', ended_at=? WHERE status='active' AND opened_at<?", t, t - SESSION_HOURS * HOUR);
   q.run("DELETE FROM manip_sessions WHERE status='ended' AND ended_at<?", t - KEEP_DAYS * DAY);
+  q.run("DELETE FROM manip_boards WHERE kind='recent' AND MAX(created_at, updated_at, opened_at)<?", t - RECENT_DAYS * DAY);
 }
 /** The sessions a student can see now: active ones for their classes (whose teacher may still host), and ones they
  *  joined that ended in the last hours. */
@@ -78,7 +83,7 @@ export function studentSessions(u) {
   const t = now();
   const rows = q.all(`SELECT s.*, c.name class_name, (SELECT 1 FROM manip_work w WHERE w.session_id=s.id AND w.user_id=?) joined FROM manip_sessions s
     JOIN class_members m ON m.class_id=s.class_id AND m.user_id=? AND m.status='active' AND m.role='student' JOIN classrooms c ON c.id=s.class_id
-    WHERE c.archived_at IS NULL AND (s.status='active' AND s.created_at>? OR s.ended_at>?) ORDER BY s.created_at DESC`, u.id, u.id, t - SESSION_HOURS * HOUR, t - SESSION_HOURS * HOUR);
+    WHERE c.archived_at IS NULL AND (s.status='active' AND s.opened_at>? OR s.ended_at>?) ORDER BY s.created_at DESC`, u.id, u.id, t - SESSION_HOURS * HOUR, t - SESSION_HOURS * HOUR);
   return rows.filter(s => (s.status === 'active' || s.joined) && isStudentOf(u, s.class_id) && canHost(getUser(s.host_id)));
 }
 /** 'host' | 'student' | null (null: the normal 404). */
@@ -208,30 +213,93 @@ function newCode() {
 export const normCode = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
 const cleanTitle = (s, d) => { const v = clipStr(s, LIMITS.titleChars).trim(); return v && !textProblem(v) ? v : d; };
 
-/** A host saves a board: it gets its own share code. -> { ok, board: { id, code } } | fail */
+/** A host saves a template (Save as template): it gets its own share code. Opening it (or starting a room with it)
+ *  always gives a fresh copy; the template itself never changes. -> { ok, board: { id, code } } | fail */
 export function saveBoard(u, { tool, title, state } = {}) {
   if (!canHost(u)) return fail('notFound');
   const tl = toolOf(tool); if (!tl) return fail('badTool');
   const c = cleanState(state, null, tl.slug); if (!c.ok) return c;
-  if (q.get('SELECT COUNT(*) n FROM manip_boards WHERE owner_id=?', u.id).n >= LIMITS.boards) return fail('tooMany');
-  const id = uid(12), code = newCode();
-  q.run('INSERT INTO manip_boards(id, owner_id, code, tool, title, state, created_at) VALUES (?,?,?,?,?,?,?)', id, u.id, code, tl.slug, cleanTitle(title, tl.name), c.state, now());
-  return ok({ board: { id, code } });
+  if (q.get("SELECT COUNT(*) n FROM manip_boards WHERE owner_id=? AND kind='template'", u.id).n >= LIMITS.boards) return fail('tooMany');
+  const id = uid(12), code = newCode(), t = now();
+  q.run("INSERT INTO manip_boards(id, owner_id, code, tool, title, state, created_at, kind, updated_at, opened_at) VALUES (?,?,?,?,?,?,?,'template',?,?)", id, u.id, code, tl.slug, cleanTitle(title, tl.name), c.state, t, t, t);
+  return ok({ board: { id, code, title: cleanTitle(title, tl.name) } });
 }
-/** The owner's own boards, newest first (no states). */
-export const listBoards = u => (canHost(u) ? q.all('SELECT id, code, tool, title, created_at FROM manip_boards WHERE owner_id=? ORDER BY created_at DESC, rowid DESC LIMIT 100', u.id) : []);
+const BOARD_COLS = 'id, code, tool, title, kind, created_at, updated_at, opened_at';
+/** The owner's templates, newest first (no states). */
+export const listBoards = u => (canHost(u) ? q.all(`SELECT ${BOARD_COLS} FROM manip_boards WHERE owner_id=? AND kind='template' ORDER BY created_at DESC, rowid DESC LIMIT 100`, u.id) : []);
+/** The owner's recent boards, most recently used first (no states). opened_at 0: an AI draft not opened yet ("New"). */
+export const listRecent = u => (canHost(u) ? q.all(`SELECT ${BOARD_COLS} FROM manip_boards WHERE owner_id=? AND kind='recent' ORDER BY MAX(created_at, updated_at, opened_at) DESC, rowid DESC LIMIT ${RECENT_MAX}`, u.id) : []);
 /** One of the owner's boards, with its state. */
-export const ownBoard = (u, id) => (u ? q.get('SELECT id, code, tool, title, state, created_at FROM manip_boards WHERE id=? AND owner_id=?', String(id || ''), u.id) || null : null);
+export const ownBoard = (u, id) => (u ? q.get(`SELECT ${BOARD_COLS}, state FROM manip_boards WHERE id=? AND owner_id=?`, String(id || ''), u.id) || null : null);
+/** The owner opens one of their boards: a recent board is theirs to go on with (and counts as used); a template comes
+ *  as a fresh copy (fresh: true; the page saves the copy as a new recent board once it changes). */
+export function openBoard(u, id) {
+  const b = ownBoard(u, id); if (!b || !canHost(u)) return fail('notFound');
+  if (b.kind === 'recent') q.run('UPDATE manip_boards SET opened_at=? WHERE id=?', now(), b.id);
+  return ok({ board: { id: b.id, code: b.code, tool: b.tool, title: b.title, kind: b.kind, state: b.state, fresh: b.kind !== 'recent' } });
+}
 /** Only the owner deletes a board. */
 export function deleteBoard(u, id) {
   const b = ownBoard(u, id); if (!b) return fail('notFound');
   q.run('DELETE FROM manip_boards WHERE id=? AND owner_id=?', b.id, u.id);
   return ok();
 }
-/** A share code opens a copy: the tool and the board, for the opener's own board. Anyone who may use the page. */
+/** Only the owner renames a board (the same word rules as any title). */
+export function renameBoard(u, id, title) {
+  const b = ownBoard(u, id); if (!b || !canHost(u)) return fail('notFound');
+  const v = clipStr(title, LIMITS.titleChars).replace(/\s+/g, ' ').trim();
+  if (!v) return fail('noTitle');
+  const p = textProblem(v); if (p) return fail(p);
+  q.run('UPDATE manip_boards SET title=? WHERE id=?', v, b.id);
+  return ok({ board: { id: b.id, title: v } });
+}
+/** A copy of one of the owner's boards, of the same kind (a template's copy gets its own share code). */
+export function duplicateBoard(u, id) {
+  const b = ownBoard(u, id); if (!b || !canHost(u)) return fail('notFound');
+  if (b.kind === 'template' && q.get("SELECT COUNT(*) n FROM manip_boards WHERE owner_id=? AND kind='template'", u.id).n >= LIMITS.boards) return fail('tooMany');
+  const nid = uid(12), code = newCode(), t = now(), title = `${b.title} (copy)`.slice(0, LIMITS.titleChars);
+  q.run('INSERT INTO manip_boards(id, owner_id, code, tool, title, state, created_at, kind, updated_at, opened_at) VALUES (?,?,?,?,?,?,?,?,?,?)', nid, u.id, code, b.tool, title, b.state, t, b.kind, t, t);
+  if (b.kind === 'recent') trimRecent(u.id);
+  return ok({ board: { id: nid, code, title, kind: b.kind } });
+}
+/** Keep the newest RECENT_MAX recent boards of an owner. */
+function trimRecent(ownerId) {
+  q.run(`DELETE FROM manip_boards WHERE owner_id=? AND kind='recent' AND id NOT IN (SELECT id FROM manip_boards WHERE owner_id=? AND kind='recent'
+    ORDER BY MAX(created_at, updated_at, opened_at) DESC, rowid DESC LIMIT ${RECENT_MAX})`, ownerId, ownerId);
+}
+/** A new recent board (cleaned state text): opened 0 for an AI draft nobody opened yet. -> { id, code } */
+export function addRecent(u, slug, title, stateText, { opened = now() } = {}) {
+  const id = uid(12), code = newCode(), t = now();
+  q.run("INSERT INTO manip_boards(id, owner_id, code, tool, title, state, created_at, kind, updated_at, opened_at) VALUES (?,?,?,?,?,?,?,'recent',?,?)", id, u.id, code, slug, cleanTitle(title, toolOf(slug).name), stateText, t, t, opened);
+  trimRecent(u.id);
+  return { id, code };
+}
+/**
+ * Autosave: the board a host is working on, saved a moment after each change (no button). With id: that recent board
+ * of theirs (a template is never written here: it only ever gives copies); without: a new recent board.
+ * -> { ok, board: { id, at } } | fail
+ */
+export function autosave(u, { id = null, tool, title, state } = {}) {
+  if (!canHost(u)) return fail('notFound');
+  const tl = toolOf(tool); if (!tl) return fail('badTool');
+  const c = cleanState(state, null, tl.slug); if (!c.ok) return c;
+  const t = now();
+  if (id) {
+    const b = q.get("SELECT id, tool FROM manip_boards WHERE id=? AND owner_id=? AND kind='recent'", String(id), u.id);
+    if (!b) return fail('notFound');
+    if (b.tool !== tl.slug) return fail('otherTool');
+    q.run('UPDATE manip_boards SET state=?, updated_at=? WHERE id=?', c.state, t, b.id);
+    return ok({ board: { id: b.id, at: t } });
+  }
+  prune(t);
+  const b = addRecent(u, tl.slug, title, c.state);
+  return ok({ board: { id: b.id, at: t } });
+}
+/** A share code opens a copy of a template: the tool and the board, for the opener's own board. Anyone who may use
+ *  the page. (A recent board's code opens nothing: only templates are shared.) */
 export function openCode(u, code) {
   if (!roleOf(u)) return fail('notFound');
-  const b = q.get('SELECT code, tool, title, state FROM manip_boards WHERE code=?', normCode(code));
+  const b = q.get("SELECT code, tool, title, state FROM manip_boards WHERE code=? AND kind='template'", normCode(code));
   // A student who opens a code gets the board without the teacher's answers.
   return b ? ok({ board: { code: b.code, tool: b.tool, title: b.title, state: canHost(u) ? b.state : withoutKeys(b.state) } }) : fail('noCode');
 }
@@ -263,8 +331,9 @@ export function createSession(u, { classId, tool, title, boardId = null } = {}) 
   const fromBoard = b ? fitTeacherArea(tl.slug, migrate(tl.slug, json(b.state, {}) || {})) : null;
   if (fromBoard && (fromBoard.objects || []).some(o => o && o.st && o.st.key)) fromBoard.totals = false;
   const room = fromBoard ? JSON.stringify(fromBoard) : '{}';
-  q.run('INSERT INTO manip_sessions(id, code, host_id, class_id, tool, title, created_at, room, room_at) VALUES (?,?,?,?,?,?,?,?,?)', id, code, u.id, c.id, tl.slug,
-    cleanTitle(title, b ? b.title : `${tl.name} session`), now(), room, b ? now() : 0);
+  const t = now();
+  q.run('INSERT INTO manip_sessions(id, code, host_id, class_id, tool, title, created_at, room, room_at, opened_at) VALUES (?,?,?,?,?,?,?,?,?,?)', id, code, u.id, c.id, tl.slug,
+    cleanTitle(title, b ? b.title : `${tl.name} session`), t, room, b ? t : 0, t);
   audit(u.id, 'manip.session', id, { class: c.id });
   return ok({ session: { id, code } });
 }
@@ -272,7 +341,7 @@ export function createSession(u, { classId, tool, title, boardId = null } = {}) 
 export function hostSessions(u) {
   if (!canHost(u)) return [];
   prune();
-  return q.all(`SELECT s.id, s.code, s.tool, s.title, s.status, s.created_at, s.class_id, c.name class_name,
+  return q.all(`SELECT s.id, s.code, s.tool, s.title, s.status, s.created_at, s.opened_at, s.ended_at, s.class_id, c.name class_name,
     (SELECT COUNT(*) FROM manip_work w WHERE w.session_id=s.id) joined FROM manip_sessions s JOIN classrooms c ON c.id=s.class_id
     WHERE s.host_id=? ORDER BY s.created_at DESC LIMIT 30`, u.id);
 }
@@ -362,6 +431,42 @@ export function end(u, id) {
   const s = getSession(id);
   if (!isSessionHost(u, s)) return fail('notFound');
   if (s.status === 'active') q.run("UPDATE manip_sessions SET status='ended', ended_at=? WHERE id=?", now(), s.id);
+  LIVE.forget(s.id);
+  return ok();
+}
+/** Reopen room (My boards, or the ended room's menu): an ended room runs again with the same join code, the teacher's
+ *  area and every student's square as they were (a student who joins again gets their own square back). Its 12 hours
+ *  start again; as with a new room, one running room per class (any other ends). Until KEEP_DAYS after it ended. */
+export function reopen(u, id) {
+  const s = getSession(id);
+  if (!isSessionHost(u, s) || !canHostClass(u, S.getClass(s.class_id))) return fail('notFound');
+  if (s.status !== 'active') {
+    const t = now();
+    for (const r of q.all("SELECT id FROM manip_sessions WHERE class_id=? AND status='active' AND id!=?", s.class_id, s.id)) LIVE.forget(r.id);
+    q.run("UPDATE manip_sessions SET status='ended', ended_at=? WHERE class_id=? AND status='active' AND id!=?", t, s.class_id, s.id);
+    q.run("UPDATE manip_sessions SET status='active', ended_at=NULL, opened_at=? WHERE id=?", t, s.id);
+    audit(u.id, 'manip.reopen', s.id, { class: s.class_id });
+    LIVE.publish(s.id, { t: 'dirty' });
+  }
+  return ok({ session: { id: s.id, code: s.code } });
+}
+/** The teacher renames a room (the word rules of any title). */
+export function renameSession(u, id, title) {
+  const s = getSession(id);
+  if (!isSessionHost(u, s)) return fail('notFound');
+  const v = clipStr(title, LIMITS.titleChars).replace(/\s+/g, ' ').trim();
+  if (!v) return fail('noTitle');
+  const p = textProblem(v); if (p) return fail(p);
+  q.run('UPDATE manip_sessions SET title=? WHERE id=?', v, s.id);
+  LIVE.publish(s.id, { t: 'dirty' });
+  return ok({ session: { id: s.id, title: v } });
+}
+/** The teacher deletes an ended room, and its students' work with it (a running room is ended first). */
+export function deleteSession(u, id) {
+  const s = getSession(id);
+  if (!isSessionHost(u, s)) return fail('notFound');
+  if (s.status === 'active') return fail('notEnded');
+  q.run('DELETE FROM manip_sessions WHERE id=?', s.id);
   LIVE.forget(s.id);
   return ok();
 }
@@ -756,8 +861,13 @@ function prompt(tl, { grade, brief, task }) {
 }
 /** Without the AI (no key, or the AI budget is resting): the tool's usual board, the brief as its one step. */
 const templateDraft = (tl, { brief, task }) => ({ title: (task ? task.split(':')[0] : '') || `${tl.name} lesson`, steps: [clipStr(brief, 140)], items: [] });
-/** -> { ok, draft, ai } | { ok:false, code: 'notFound'|'badTool'|'brief'|'words'|'personal'|'names'|'aiFailed' } */
-export async function draftLesson(u, { tool, brief, grade = '', task = '' } = {}) {
+/**
+ * The checks before anything is stored or sent (services/manip-drafts.js runs them when a draft is asked for, and
+ * again before the AI is called): a host, a real tool, a brief of a few words that passes the word rules and names
+ * none of the host's students; a grade K-8 or none; a task only from this tool's own library.
+ * -> { ok, tool, brief, grade, task } (the request as it may be stored and sent) | { ok:false, code: 'notFound'|'badTool'|'brief'|'words'|'personal'|'names' }
+ */
+export function draftRequest(u, { tool, brief, grade = '', task = '' } = {}) {
   if (!canHost(u)) return fail('notFound');
   const tl = toolOf(tool); if (!tl) return fail('badTool');
   const b = clipStr(brief, LIMITS.briefChars).replace(/\s+/g, ' ').trim();
@@ -767,15 +877,20 @@ export async function draftLesson(u, { tool, brief, grade = '', task = '' } = {}
   const g = /^(K|[1-8])$/.test(String(grade)) ? String(grade) : '';
   // Only a task from this tool's own library is passed on (by its title and prompt).
   const tk = (TASKS[tl.slug] || []).find(x => `${x.title}: ${x.prompt}` === String(task)) || null;
-  const taskText = tk ? `${tk.title}: ${tk.prompt}` : '';
+  return ok({ tool: tl.slug, brief: b, grade: g, task: tk ? `${tk.title}: ${tk.prompt}` : '' });
+}
+/** The AI call for a checked request (draftRequest's), or the tool's usual board without it (no key, or the AI budget
+ *  is resting). -> { ok, draft, ai } | { ok:false, code: 'aiFailed' } */
+export async function runDraft(u, r) {
+  const tl = toolOf(r.tool);
   const client = hooks.create ? { messages: { create: hooks.create } } : anthropic('free');
-  if (!client) return ok({ draft: sanitizeDraft(templateDraft(tl, { brief: b, task: taskText }), tl.slug), ai: false });
+  if (!client) return ok({ draft: sanitizeDraft(templateDraft(tl, { brief: r.brief, task: r.task }), tl.slug), ai: false });
   let raw;
   try {
     const res = await client.messages.create({
       model: config.builderModel, max_tokens: 4000,
       output_config: { effort: 'low', format: { type: 'json_schema', schema: DRAFT_SCHEMA } },
-      messages: [{ role: 'user', content: prompt(tl, { grade: g, brief: b, task: taskText }) }],
+      messages: [{ role: 'user', content: prompt(tl, { grade: r.grade, brief: r.brief, task: r.task }) }],
     }, { timeout: 60000, maxRetries: 1 });
     if (res && res.usage) aiBudget.recordUsage(res.model || config.builderModel, res.usage);
     const block = ((res && res.content) || []).find(c => c.type === 'text');
@@ -784,11 +899,17 @@ export async function draftLesson(u, { tool, brief, grade = '', task = '' } = {}
   audit(u.id, 'manip.draft', tl.slug, {});
   return ok({ draft: sanitizeDraft(raw, tl.slug), ai: true });
 }
+/** Both at once (the drafter's job runs them as two steps). -> { ok, draft, ai } | fail */
+export async function draftLesson(u, args = {}) {
+  const r = draftRequest(u, args); if (!r.ok) return r;
+  return runDraft(u, r);
+}
 
 // ---------------------------------------------------------------- cleanup (accounts and classes)
 /** An account is deleted (services/account-delete.js): their boards, their work, the sessions they ran. */
 export function forgetUser(userId) {
   q.run('DELETE FROM manip_boards WHERE owner_id=?', userId);
+  q.run('DELETE FROM manip_drafts WHERE owner_id=?', userId);
   q.run('DELETE FROM manip_work WHERE user_id=?', userId);
   q.run('DELETE FROM manip_sessions WHERE host_id=?', userId);
 }

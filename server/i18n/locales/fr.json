@@ -3352,11 +3352,96 @@
         "resize": "Glisse pour changer la taille de ce cadre",
         "smaller": "Texte plus petit",
         "bigger": "Texte plus grand"
+      },
+      "boards": {
+        "title": "Mes tableaux",
+        "none": "Les tableaux sur lesquels vous travaillez s’enregistrent tout seuls et apparaissent ici. « Enregistrer comme modèle » garde un point de départ vierge.",
+        "templates": "Modèles",
+        "templatesSub": "ouvre une copie neuve à chaque fois",
+        "recent": "Tableaux récents",
+        "recentSub": "enregistrés pendant votre travail",
+        "code": "code {code}",
+        "edited": "modifié {when}",
+        "aiDraft": "Brouillon IA, terminé {when}",
+        "roomLive": "Salle en direct · {klass} · {n, plural, one {# élève} other {# élèves}}",
+        "roomEnded": "Salle en direct · {klass} · terminée {when} · {n, plural, one {# case gardée} other {# cases gardées}}",
+        "live": "En direct",
+        "new": "Nouveau",
+        "more": "Plus pour {title}",
+        "start": "Lancer une salle en direct avec",
+        "rename": "Renommer",
+        "duplicate": "Dupliquer",
+        "reopen": "Rouvrir la salle",
+        "deleteConfirm": "Supprimer « {title} » ? C’est définitif.",
+        "deleteRoom": "Supprimer la salle « {title} » et la case de chaque élève ? C’est définitif.",
+        "pickClass": "Choisissez la classe pour cette salle, puis lancez-la."
+      },
+      "share": {
+        "save": "Enregistrer comme modèle"
+      },
+      "draft": {
+        "progress": "Préparation de votre tableau",
+        "drafting": "Préparation…",
+        "quote": "« {brief} »",
+        "leave": "Vous pouvez fermer cette page ou l’actualiser. Le brouillon continue sur notre serveur et sera dans Mes tableaux une fois prêt.",
+        "eta": {
+          "under": "En général moins d’une minute",
+          "about": "{n, plural, one {En général environ une minute} other {En général environ # minutes}}",
+          "guessUnder": "Souvent moins d’une minute",
+          "guess": "{n, plural, one {Environ une minute} other {Environ # minutes}}",
+          "longer": "Un peu plus long que d’habitude",
+          "soFar": "{time} pour l’instant"
+        },
+        "step": {
+          "check": {
+            "now": "Vérification : pas de noms d’élèves dans vos mots",
+            "done": "Vérifié : pas de noms d’élèves dans vos mots"
+          },
+          "ai": {
+            "now": "L’IA choisit les problèmes",
+            "done": "L’IA a choisi les problèmes"
+          },
+          "build": {
+            "now": "Mise en place du tableau et des étapes",
+            "done": "Tableau et étapes en place"
+          },
+          "save": {
+            "now": "Enregistrement dans Mes tableaux",
+            "done": "Enregistré dans Mes tableaux"
+          }
+        },
+        "away": "Votre brouillon IA « {title} » s’est terminé pendant votre absence.",
+        "awayN": "{n, plural, one {# problème} other {# problèmes}} et {steps, plural, one {# étape} other {# étapes}}.",
+        "inBoards": "Il est enregistré dans Mes tableaux.",
+        "use": "Le mettre sur mon tableau",
+        "dismiss": "Fermer",
+        "failedAway": "Votre brouillon IA pour {tool} n’a pas pu être terminé.",
+        "failed": "Le brouillon n’a pas pu être terminé.",
+        "retry": "Réessayer",
+        "err": {
+          "aiFailed": "L’IA n’a pas pu le préparer pour l’instant. Vos mots sont toujours là : réessayez dans un moment.",
+          "restart": "Notre serveur a redémarré pendant la préparation. Vos mots sont toujours là : réessayez.",
+          "names": "Ne mettez pas de noms d’élèves dans la description : les noms ne vont jamais à l’IA.",
+          "words": "Certains mots de la description ne sont pas permis. Changez-les et réessayez.",
+          "personal": "Retirez numéros de téléphone, e-mails, liens et codes, puis réessayez.",
+          "other": "Un problème est survenu. Réessayez dans un moment."
+        }
+      },
+      "save": {
+        "name": "Nom du modèle",
+        "what": "Un modèle est un point de départ vierge : l’ouvrir, ou lancer une salle avec, donne toujours une copie neuve. Ce tableau continue de s’enregistrer pendant votre travail.",
+        "go": "Enregistrer",
+        "cancel": "Annuler",
+        "done": "Enregistré comme modèle « {title} ». Code {code}",
+        "savedAt": "Enregistré à {time}",
+        "notYet": "Pas encore enregistré. Nouvel essai…"
       }
     },
     "manip-room": {
       "actionsFor": "Actions pour {label}",
-      "teacherLock": "Ton enseignant a verrouillé ceci."
+      "teacherLock": "Ton enseignant a verrouillé ceci.",
+      "reopen": "Rouvrir la salle",
+      "reopened": "La salle est rouverte. Chaque élève retrouve sa propre case."
     },
     "figures-editor": {
       "undo": "Annuler",
