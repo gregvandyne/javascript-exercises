@@ -3676,7 +3676,7 @@
       "facts": "Everything about it",
       "answersWait": "The answers appear as soon as the figure can be drawn. Oomba never draws a wrong figure.",
       "pickHelp": "Pick which number answers your question, or press Randomize for a ready-made question.",
-      "noSolve": "This figure has no worked numbers. Write the answer into your question's key yourself.",
+      "noSolve": "This figure has no worked numbers to pick from.",
       "hide": "Hide answer for students",
       "hideWhat": "What to hide",
       "hideAll": "Every measure",
