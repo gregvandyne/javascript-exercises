@@ -3619,7 +3619,20 @@
       "print": "Printen",
       "printKey": "Printen met antwoorden",
       "assign": "Aan een klas toewijzen",
-      "assignNext": "Binnenkort: een werkblad aan een klas toewijzen met start- en inleverdatum."
+      "assignTitle": "Opgeven aan een klas",
+      "assignClass": "Klas",
+      "assignOpens": "Start (optioneel)",
+      "assignDue": "Inleveren (optioneel)",
+      "assignShow": "Antwoorden tonen na de inleverdatum",
+      "assignShowHint": "Standaard uit. Aan: na de inleverdatum zien leerlingen die hebben ingeleverd de antwoorden en de uitwerking.",
+      "assignSnapshot": "Leerlingen krijgen het werkblad zoals het nu is. Latere wijzigingen veranderen het niet.",
+      "assignGo": "Opgeven",
+      "assignCancel": "Annuleren",
+      "assignEmpty": "Voeg eerst vragen toe en geef dan het werkblad op.",
+      "assignNoClasses": "Je geeft nog geen les aan een klas. Maak eerst een klas en geef dan op.",
+      "assignDone": "Opgegeven aan {class}.",
+      "assignSee": "Bekijk het als leerling",
+      "assignProgress": "Voortgang bekijken"
     }
   },
   "favorites": {
@@ -4247,7 +4260,8 @@
       "build": "Bouw een game",
       "text": "Lees of doe",
       "question": "Beantwoord een vraag",
-      "quiz": "Quizvragen beantwoorden"
+      "quiz": "Quizvragen beantwoorden",
+      "figures": "Vragen over figuren beantwoorden"
     },
     "library": {
       "title": "Lessenbibliotheek",
@@ -12480,6 +12494,51 @@
       "dotCross": {
         "name": "Stip-kruisdiagram",
         "desc": "Gedeelde en overgedragen elektronen in schillen"
+      }
+    },
+    "step": {
+      "answerLabel": "Jouw antwoord op vraag {n}",
+      "right": "Goed",
+      "notRight": "Niet goed",
+      "answer": "Antwoord:",
+      "teacherAnswer": "Antwoordblad:",
+      "score": "Je hebt {right} van de {total} goed ({pct}%).",
+      "answersLater": "Je leraar laat de antwoorden zien na de inleverdatum.",
+      "noAnswers": "Je leraar heeft de antwoorden en bespreekt ze misschien met de klas.",
+      "teacherNote": "Dit zien leerlingen, met het antwoord onder elke vraag voor jou.",
+      "showOnNote": "Leerlingen zien de antwoorden na de inleverdatum.",
+      "showOffNote": "Leerlingen zien de antwoorden nooit.",
+      "handInHint": "Sla tussendoor op. Als je inlevert, worden je antwoorden nagekeken en kun je ze niet meer veranderen.",
+      "answersReady": "De antwoorden staan klaar. Lever je werk in om ze te zien.",
+      "save": "Opslaan",
+      "handIn": "Inleveren",
+      "handInConfirm": "Je antwoorden inleveren? Daarna kun je ze niet meer veranderen.",
+      "saved": "Opgeslagen",
+      "handedIn": "Ingeleverd",
+      "showIsOn": "Antwoorden komen na de inleverdatum",
+      "showIsOff": "Antwoorden zijn verborgen voor leerlingen",
+      "errors": {
+        "handedIn": "Je hebt dit al ingeleverd.",
+        "empty": "Schrijf eerst minstens één antwoord."
+      },
+      "showAnswers": "Antwoorden tonen na de inleverdatum",
+      "showAnswersHint": "Standaard uit. Aan: na de inleverdatum ziet elke leerling die heeft ingeleverd de antwoorden en de uitwerking.",
+      "showNeedsDue": "Geef deze les een inleverdatum om de antwoorden daarna te tonen.",
+      "handedInCount": "Ingeleverd: {done} van {total}",
+      "questionN": "Vraag {n}",
+      "rightOf": "{right} van {total} goed",
+      "answersTable": "De antwoorden van elke leerling",
+      "noneYet": "Nog niemand heeft ingeleverd.",
+      "questions": "{count, plural, one {# vraag over een figuur} other {# vragen over figuren}}"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Voeg een vraag toe voordat je dit werkblad opgeeft.",
+        "noAnswer": "Elke vraag heeft een antwoord nodig voordat je hem opgeeft. Kies er een voor vraag {list} in de editor.",
+        "noClass": "Kies een van je klassen.",
+        "badDate": "Die datum klopt niet.",
+        "dueBeforeOpen": "De inleverdatum ligt voor de startdatum.",
+        "needsDue": "Kies een inleverdatum om de antwoorden daarna te tonen."
       }
     }
   }

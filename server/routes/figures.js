@@ -17,6 +17,8 @@
 //   POST /api/figures/worksheets/:id/items         add a question ({ item } or { kind } for a starter)
 //   POST /api/figures/worksheets/:id/items/:item   change a question; .../delete, .../move ({ dir }), .../regen
 //   POST /api/figures/worksheets/:id/draft         "Power with AI" ({ brief, grade, count })
+//   POST /api/figures/worksheets/:id/assign        Assign to class ({ classId, opensAt, dueAt, showAnswers }): a lesson with
+//                                                  one figures step (services/figures-steps.js)
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { page, VERSION } from '../views/layout.js';
@@ -24,11 +26,14 @@ import { rateLimit } from '../services/ratelimit.js';
 import { localeInfo } from '../i18n/index.js';
 import { figTag } from '../services/figlibs.js';
 import * as F from '../services/figures.js';
+import * as FS from '../services/figures-steps.js';
 import { canHost as manipHost } from '../services/manipulatives.js';
 import { decodeData, SOON } from '../../public/js/figures-catalog.js';
 
 export const router = Router();
 const STATUS = { notFound: 404, tooMany: 409, fullSheet: 409, tooBig: 413 };
+/** Assign's own refusals (figures.assign.errors.*): which question has no answer, a class that isn't theirs, dates. */
+const ASSIGN_ERRORS = ['empty', 'noAnswer', 'noClass', 'badDate', 'dueBeforeOpen', 'needsDue'];
 const fail = (req, res, r) => res.status(STATUS[r.code] || 400).json({ error: req.t(`figures.errors.${r.code}`), code: r.code, ...(r.problems ? { problems: r.problems } : {}) });
 const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
 
@@ -111,7 +116,8 @@ function builder(req, res, w) {
     title: w ? w.title : t('figures.sheet.newTitle'), active: null, head: CSS, scripts: ['/js/figures-sheet.js'], bodyClass: 'fg-page',
     body: html`${teachingTools(req, 'figures')}
       ${crumbs(t, [['/figures', t('figures.title')], [null, t('figures.sheet.crumb')]])}
-      ${jsonData('fg-sheet', { id: w ? w.id : null, ai: F.aiPref(u), startAi: req.query.ai === '1', kinds, subjects: Object.fromEntries(F.SUBJECTS.map(s => [s, subjName(t, s)])), untitled: t('figures.sheet.untitled') })}
+      ${jsonData('fg-sheet', { id: w ? w.id : null, ai: F.aiPref(u), startAi: req.query.ai === '1', kinds, subjects: Object.fromEntries(F.SUBJECTS.map(s => [s, subjName(t, s)])), untitled: t('figures.sheet.untitled'),
+        classes: FS.classesFor(u).map(c => ({ id: c.id, name: c.name, school: c.school_name || '' })) })}
       <div id="fg-sheet-app" class="fg-sheet"><p class="muted">${t('figures.loading')}</p></div>`,
   });
 }
@@ -184,6 +190,16 @@ router.post('/api/figures/worksheets/:id/items/:item', rateLimit('figures-save',
 router.post('/api/figures/worksheets/:id/items/:item/delete', (req, res) => sendSheet(req, res, F.deleteItem(req.user, req.params.id, req.params.item)));
 router.post('/api/figures/worksheets/:id/items/:item/move', (req, res) => sendSheet(req, res, F.moveItem(req.user, req.params.id, req.params.item, body(req).dir === 'up' ? 'up' : 'down')));
 router.post('/api/figures/worksheets/:id/items/:item/regen', rateLimit('figures-gen', 900, 3600e3), (req, res) => sendSheet(req, res, F.regenItem(req.user, req.params.id, req.params.item)));
+router.post('/api/figures/worksheets/:id/assign', rateLimit('figures-assign', 60, 3600e3), (req, res) => {
+  const b = body(req);
+  const r = FS.assignWorksheet(req.user, req.params.id, b.classId, { opensAt: b.opensAt || null, dueAt: b.dueAt || null, showAnswers: b.showAnswers === true || b.showAnswers === 'on' || b.showAnswers === '1' });
+  if (!r.ok) {
+    if (ASSIGN_ERRORS.includes(r.code)) return res.status(400).json({ error: req.t(`figures.assign.errors.${r.code}`, { list: (r.questions || []).join(', ') }), code: r.code, ...(r.questions ? { questions: r.questions } : {}) });
+    return fail(req, res, r.code === 'notFound' ? r : { code: 'notFound' });
+  }
+  const cl = r.classLesson;
+  res.json({ ok: true, lessonId: r.lesson.id, classLessonId: cl.id, classId: cl.class_id, view: `/class/${cl.class_id}/lessons/${cl.id}`, progress: `/class/${cl.class_id}/progress/${cl.id}` });
+});
 router.post('/api/figures/worksheets/:id/draft', rateLimit('figures-ai', 30, 3600e3), async (req, res) => {
   const { brief, grade, count } = body(req);
   const r = await F.draftWorksheet(req.user, req.params.id, { brief, grade, count });

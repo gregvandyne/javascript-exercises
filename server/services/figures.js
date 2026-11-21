@@ -257,6 +257,25 @@ export function starterItem(kind) {
   return { kind: K.id, data: K.presets[0] };
 }
 
+/** The number a stored question's answer is, for marking a student's answer (services/figures-steps.js): the OF.solve
+ *  value of its answerKey (shown to 2 decimal places, as the answer is), else, while the figure is still exactly what its
+ *  generator makes for its seed, the generator's value with the generator's dp and unit. null when the question has no
+ *  answer (the teacher has not chosen one). -> { value, dp, unit } | null */
+export function answerOf(it, v) {
+  if (!it || !kindOf(it.kind)) return null;
+  if (it.answerKey) {
+    const x = solved(it.kind, it.data, v)[it.answerKey];
+    if (typeof x === 'number' && Number.isFinite(x)) return { value: x, dp: 2, unit: keyUnit(it.answerKey, it.data) };
+  }
+  if (it.gen && it.seed) {
+    const g = generate(it.gen, it.seed, v);
+    if (g && canon(g.data) === canon(it.data) && typeof g.value === 'number' && Number.isFinite(g.value)) return { value: g.value, dp: g.dp, unit: g.unit };
+  }
+  return null;
+}
+/** The pinned Oomba Figures for a version (a stored step's of_version), or the current one. */
+export const kitFor = v => kit(v);
+
 /** A worksheet for its owner's page: its questions with their figures drawn (the screen's colors). */
 export function worksheetView(u, id, { lang = 'en' } = {}) {
   const w = ownWorksheet(u, id); if (!w) return null;

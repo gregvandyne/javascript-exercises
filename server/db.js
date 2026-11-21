@@ -1127,6 +1127,15 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS idx_figure_presets_owner ON figure_presets(owner_id, kind, created_at);
     CREATE TABLE IF NOT EXISTS figure_prefs (user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
       ai INTEGER NOT NULL DEFAULT 1, updated_at INTEGER NOT NULL);`],
+  // A Figures worksheet assigned to a class (docs/decisions.md "Figures: Assign to class"; services/figures-steps.js): a
+  // lesson of kind 'figures' with one lesson step of kind 'figures'. The step keeps a snapshot of the worksheet's
+  // questions in lesson_steps.items (figure data, question, answer, unit, value, dp, worked lines), so later edits to
+  // the worksheet never change an assigned lesson; set_id names the worksheet it came from (question_sets.id, never read
+  // back). of_version: the Oomba Figures version the figures are drawn with. show_answers: 1 when the teacher lets
+  // students who handed in see the answers and worked lines once the due date is over (0, the default: never).
+  ['0096_figures_steps', `
+    ALTER TABLE lesson_steps ADD COLUMN of_version TEXT NOT NULL DEFAULT '';
+    ALTER TABLE lesson_steps ADD COLUMN show_answers INTEGER NOT NULL DEFAULT 0;`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

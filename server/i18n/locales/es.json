@@ -3618,7 +3618,20 @@
       "print": "Imprimir",
       "printKey": "Imprimir con solucionario",
       "assign": "Asignar a una clase",
-      "assignNext": "Próximamente: asignar una ficha a una clase con fechas de inicio y entrega."
+      "assignTitle": "Asignar a una clase",
+      "assignClass": "Clase",
+      "assignOpens": "Se abre (opcional)",
+      "assignDue": "Entrega (opcional)",
+      "assignShow": "Mostrar respuestas después de la fecha de entrega",
+      "assignShowHint": "Desactivado por defecto. Activado: cuando pasa la fecha de entrega, quienes entregaron ven las respuestas y los pasos.",
+      "assignSnapshot": "Los estudiantes reciben la ficha tal como está ahora. Los cambios que hagas después no la cambian.",
+      "assignGo": "Asignar",
+      "assignCancel": "Cancelar",
+      "assignEmpty": "Primero agrega preguntas y luego asigna la ficha.",
+      "assignNoClasses": "Todavía no das clase a ningún grupo. Crea una clase primero y luego asigna.",
+      "assignDone": "Asignado a {class}.",
+      "assignSee": "Verlo como los estudiantes",
+      "assignProgress": "Ver el progreso"
     }
   },
   "favorites": {
@@ -4246,7 +4259,8 @@
       "build": "Crear un juego",
       "text": "Leer o hacer",
       "question": "Responder una pregunta",
-      "quiz": "Responder preguntas del quiz"
+      "quiz": "Responder preguntas del quiz",
+      "figures": "Responder preguntas de figuras"
     },
     "library": {
       "title": "Biblioteca de lecciones",
@@ -12479,6 +12493,51 @@
       "dotCross": {
         "name": "Diagrama de puntos y cruces",
         "desc": "Electrones compartidos y transferidos en capas"
+      }
+    },
+    "step": {
+      "answerLabel": "Tu respuesta a la pregunta {n}",
+      "right": "Correcto",
+      "notRight": "No es correcto",
+      "answer": "Respuesta:",
+      "teacherAnswer": "Clave de respuestas:",
+      "score": "Acertaste {right} de {total} ({pct} %).",
+      "answersLater": "Tu docente mostrará las respuestas después de la fecha de entrega.",
+      "noAnswers": "Tu docente tiene las respuestas y puede repasarlas con la clase.",
+      "teacherNote": "Esto es lo que ven los estudiantes, con la clave de respuestas debajo de cada pregunta para ti.",
+      "showOnNote": "Las respuestas se muestran a los estudiantes después de la fecha de entrega.",
+      "showOffNote": "Las respuestas nunca se muestran a los estudiantes.",
+      "handInHint": "Guarda mientras trabajas. Cuando entregues, tus respuestas se corrigen y ya no se pueden cambiar.",
+      "answersReady": "Las respuestas ya están. Entrega tu trabajo para verlas.",
+      "save": "Guardar",
+      "handIn": "Entregar",
+      "handInConfirm": "¿Entregar tus respuestas? Después no podrás cambiarlas.",
+      "saved": "Guardado",
+      "handedIn": "Entregado",
+      "showIsOn": "Las respuestas se mostrarán después de la fecha de entrega",
+      "showIsOff": "Las respuestas están ocultas para los estudiantes",
+      "errors": {
+        "handedIn": "Ya entregaste esto.",
+        "empty": "Escribe al menos una respuesta primero."
+      },
+      "showAnswers": "Mostrar respuestas después de la fecha de entrega",
+      "showAnswersHint": "Desactivado por defecto. Activado: cuando pasa la fecha de entrega, cada estudiante que entregó ve las respuestas y los pasos.",
+      "showNeedsDue": "Pon una fecha de entrega a esta lección para mostrar las respuestas después.",
+      "handedInCount": "Entregados: {done} de {total}",
+      "questionN": "Pregunta {n}",
+      "rightOf": "{right} de {total} correctas",
+      "answersTable": "Las respuestas de cada estudiante",
+      "noneYet": "Nadie ha entregado todavía.",
+      "questions": "{count, plural, one {# pregunta de figura} other {# preguntas de figuras}}"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Agrega una pregunta antes de asignar esta ficha.",
+        "noAnswer": "Cada pregunta necesita una respuesta antes de asignarla. Elige una para la pregunta {list} en el editor.",
+        "noClass": "Elige una de tus clases.",
+        "badDate": "Esa fecha no parece correcta.",
+        "dueBeforeOpen": "La fecha de entrega es anterior a la de inicio.",
+        "needsDue": "Pon una fecha de entrega para mostrar las respuestas después."
       }
     }
   }

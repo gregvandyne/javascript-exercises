@@ -3619,7 +3619,20 @@
       "print": "Drucken",
       "printKey": "Mit Lösungen drucken",
       "assign": "Einer Klasse zuweisen",
-      "assignNext": "Als Nächstes: ein Arbeitsblatt einer Klasse mit Start- und Abgabedatum zuweisen."
+      "assignTitle": "Einer Klasse zuweisen",
+      "assignClass": "Klasse",
+      "assignOpens": "Startet (optional)",
+      "assignDue": "Abgabe (optional)",
+      "assignShow": "Antworten nach dem Abgabedatum zeigen",
+      "assignShowHint": "Standardmäßig aus. An: Nach dem Abgabedatum sehen alle, die abgegeben haben, die Antworten und den Rechenweg.",
+      "assignSnapshot": "Die Klasse bekommt das Arbeitsblatt so, wie es jetzt ist. Spätere Änderungen ändern es nicht.",
+      "assignGo": "Zuweisen",
+      "assignCancel": "Abbrechen",
+      "assignEmpty": "Füge zuerst Fragen hinzu, dann weise das Arbeitsblatt zu.",
+      "assignNoClasses": "Du unterrichtest noch keine Klasse. Lege zuerst eine Klasse an, dann weise zu.",
+      "assignDone": "{class} zugewiesen.",
+      "assignSee": "So sehen es die Schüler",
+      "assignProgress": "Fortschritt ansehen"
     }
   },
   "favorites": {
@@ -4247,7 +4260,8 @@
       "build": "Ein Spiel bauen",
       "text": "Lesen oder mitmachen",
       "question": "Eine Frage beantworten",
-      "quiz": "Quizfragen beantworten"
+      "quiz": "Quizfragen beantworten",
+      "figures": "Fragen zu Abbildungen beantworten"
     },
     "library": {
       "title": "Lektionsbibliothek",
@@ -12480,6 +12494,51 @@
       "dotCross": {
         "name": "Punkt-Kreuz-Schema",
         "desc": "Geteilte und übertragene Elektronen in Schalen"
+      }
+    },
+    "step": {
+      "answerLabel": "Deine Antwort auf Frage {n}",
+      "right": "Richtig",
+      "notRight": "Nicht richtig",
+      "answer": "Antwort:",
+      "teacherAnswer": "Lösung:",
+      "score": "Du hast {right} von {total} richtig ({pct} %).",
+      "answersLater": "Deine Lehrkraft zeigt die Antworten nach dem Abgabedatum.",
+      "noAnswers": "Deine Lehrkraft hat die Antworten und bespricht sie vielleicht mit der Klasse.",
+      "teacherNote": "So sehen es die Schülerinnen und Schüler, mit der Lösung unter jeder Frage für dich.",
+      "showOnNote": "Die Antworten werden nach dem Abgabedatum gezeigt.",
+      "showOffNote": "Die Antworten werden nie gezeigt.",
+      "handInHint": "Speichere zwischendurch. Wenn du abgibst, werden deine Antworten bewertet und können nicht mehr geändert werden.",
+      "answersReady": "Die Antworten sind da. Gib deine Arbeit ab, um sie zu sehen.",
+      "save": "Speichern",
+      "handIn": "Abgeben",
+      "handInConfirm": "Antworten abgeben? Danach kannst du sie nicht mehr ändern.",
+      "saved": "Gespeichert",
+      "handedIn": "Abgegeben",
+      "showIsOn": "Antworten werden nach dem Abgabedatum gezeigt",
+      "showIsOff": "Antworten sind für Schüler verborgen",
+      "errors": {
+        "handedIn": "Du hast das schon abgegeben.",
+        "empty": "Schreib zuerst mindestens eine Antwort."
+      },
+      "showAnswers": "Antworten nach dem Abgabedatum zeigen",
+      "showAnswersHint": "Standardmäßig aus. An: Nach dem Abgabedatum sieht jeder, der abgegeben hat, die Antworten und den Rechenweg.",
+      "showNeedsDue": "Gib dieser Lektion ein Abgabedatum, um die Antworten danach zu zeigen.",
+      "handedInCount": "Abgegeben: {done} von {total}",
+      "questionN": "Frage {n}",
+      "rightOf": "{right} von {total} richtig",
+      "answersTable": "Die Antworten aller Schüler",
+      "noneYet": "Noch hat niemand abgegeben.",
+      "questions": "{count, plural, one {# Frage zu einer Abbildung} other {# Fragen zu Abbildungen}}"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Füge eine Frage hinzu, bevor du dieses Arbeitsblatt zuweist.",
+        "noAnswer": "Jede Frage braucht eine Antwort, bevor du sie zuweist. Wähle im Editor eine für Frage {list}.",
+        "noClass": "Wähle eine deiner Klassen.",
+        "badDate": "Dieses Datum sieht nicht richtig aus.",
+        "dueBeforeOpen": "Das Abgabedatum liegt vor dem Startdatum.",
+        "needsDue": "Lege ein Abgabedatum fest, um die Antworten danach zu zeigen."
       }
     }
   }
