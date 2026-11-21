@@ -243,7 +243,6 @@
 									}}><Ellipsis size={20} strokeWidth={2.5} aria-hidden="true" /></button
 								>
 								{#if menuFor === s.id}
-									<!-- svelte-ignore a11y_interactive_supports_focus -->
 									<div class="menu" role="menu" tabindex="-1" aria-label={t('ui.home.more', { x: name })} onkeydown={menuKey}>
 										{#if keys}
 											<button type="button" role="menuitem" tabindex="-1" data-ws-key={s.id} onclick={() => choose(s, () => print(s, true))}

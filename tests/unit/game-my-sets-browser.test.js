@@ -377,18 +377,19 @@ test('Algebra Builder: My question sets lists the saved sets; open one and save 
     assert.equal(await page.locator('[data-set]').count(), 2);
     assert.match(await page.locator(`[data-set="${A}"]`).textContent(), /Unit 2 warm-up[\s\S]*2 questions · Solve, Factor/);
     assert.match(await page.locator(`[data-set="${B}"] .title`).textContent(), /1 question/);
+    assert.deepEqual(await page.locator(`[data-set="${A}"] button:not([data-ws-open])`).evaluateAll(l => l.map(b => b.getAttribute('aria-label'))), ['More for Unit 2 warm-up']);
     if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'algebra-builder-my-question-sets.png') });
-    await page.locator(`[data-ws-copy="${A}"]`).click();
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-copy="${A}"]`).click();
     assert.equal((await g.log('copy')).at(-1).what, `http://game.test/play/algebra-builder?chapter=${A}&lock=1`);
-    await page.locator(`[data-ws-rename="${B}"]`).click();
+    await page.locator(`[data-ws-more="${B}"]`).click(); await page.locator(`[data-ws-rename="${B}"]`).click();
     await page.locator(`#ab-rename-${B}`).fill('Multiplying binomials');
     await page.locator('#ab-rename-ok').click();
     await page.locator(`[data-set="${B}"] .title`, { hasText: 'Multiplying binomials' }).waitFor();
-    await page.locator(`[data-ws-dup="${A}"]`).click();
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-dup="${A}"]`).click();
     await page.waitForFunction(() => document.querySelectorAll('[data-set]').length === 3);
     assert.match(await page.locator('[data-set]').first().textContent(), /Copy of Unit 2 warm-up/);
     // Open: the question set page with its questions; a change saves under the same code
-    await page.locator(`[data-ws-open="${A}"]`).click();
+    await page.locator(`[data-set="${A}"] .meta`).click();
     await page.getByRole('heading', { name: 'Question set' }).waitFor();
     assert.equal(await page.locator('.item').count(), 2);
     await page.getByRole('button', { name: 'Remove question 2' }).click();
@@ -397,12 +398,12 @@ test('Algebra Builder: My question sets lists the saved sets; open one and save 
     const sv = (await g.log('save')).at(-1);
     assert.equal(sv.id, A); assert.equal(sv.items.length, 1);
     await page.getByRole('button', { name: '← Back' }).click();
-    await page.locator(`[data-ws-del="${A}"]`).click();
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-del="${A}"]`).click();
     assert.match(await page.locator('.ask').textContent(), /Delete “Unit 2 warm-up”\?/);
     await page.locator('#ab-my-delno').click();
-    await page.locator(`[data-ws-del="${A}"]`).click(); await page.locator('#ab-my-delyes').click();
+    await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-del="${A}"]`).click(); await page.locator('#ab-my-delyes').click();
     await page.waitForFunction(id => !document.querySelector(`[data-set="${id}"]`), A);
-    for (const id of (await g.store()).map(s => s.id)) { await page.locator(`[data-ws-del="${id}"]`).click(); await page.locator('#ab-my-delyes').click(); await page.waitForFunction(i => !document.querySelector(`[data-set="${i}"]`), id); }
+    for (const id of (await g.store()).map(s => s.id)) { await page.locator(`[data-ws-more="${id}"]`).click(); await page.locator(`[data-ws-del="${id}"]`).click(); await page.locator('#ab-my-delyes').click(); await page.waitForFunction(i => !document.querySelector(`[data-set="${i}"]`), id); }
     await page.locator('#ab-my-empty').waitFor();
     assert.deepEqual(g.errors, []);
   } finally { await g.ctx.close(); }
