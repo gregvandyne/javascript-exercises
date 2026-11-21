@@ -767,8 +767,10 @@ A figure made in Oomba that leaves the site carries Oomba's notice: "Made with O
 contributes to this figure is dedicated to the public domain under CC0 1.0
 (https://creativecommons.org/publicdomain/zero/1.0/). Anything original added by the person who made it is theirs."
 `OF.notice` is that text and `OF.withNotice(svgText)` puts it into a figure's SVG as `<metadata>` (Creative Commons'
-RDF: `dc:rights` and `cc:license`). Figures drawn on a page or a printed worksheet do not carry it; the export path
-(PNG text chunks and XMP, the download and copy buttons) is not built yet.
+RDF: `dc:rights` and `cc:license`). Figures drawn on a page or a printed worksheet do not carry it. The export path is the
+Figures product's editor (`/figures/:kind`, docs/decisions.md "Figures, the standalone product"): Download SVG is
+`OF.withNotice`, and Download PNG and Copy image carry the same words as a PNG tEXt "Copyright" chunk and an XMP iTXt
+chunk (`public/js/figures-export.js`).
 
 ## Not yet
 

@@ -179,6 +179,7 @@ function answers(bad = problems()) {
   if (st.answerKey && !(st.answerKey in flat)) st.answerKey = null;
   $('fg-key').innerHTML = sel([['', keys.length ? t('js.figures-editor.pickAnswer') : t('js.figures-editor.noAnswers')], ...keys.slice(0, 60).map(k => [k, `${keyLabel(k)} = ${numText(flat[k], 2)}`])], st.answerKey || '');
   $('fg-key').disabled = !keys.length;
+  $('fg-key').closest('label').hidden = !keys.length;
   const g = st.genResult;
   let main = '';
   if (bad.length) main = `<p class="muted">${esc(t('js.figures-editor.answersWait'))}</p>`;
