@@ -412,13 +412,18 @@ const KEYWORDS = [
   [/population|carrying capacity|logistic|exponential growth/, ['populationGrowth']], [/predator|prey|lotka/, ['predatorPrey']], [/enzyme|denatur|substrate/, ['enzymeActivity']],
   [/photosynth|limiting factor/, ['photosynthesis']], [/punnett|genotype|phenotype|allele|dominant|recessive|mendel/, ['punnett']], [/pedigree|inheritance|heredit/, ['pedigree']],
   [/transcription|translation|codon|mrna|protein synthesis|\bdna\b/, ['proteinSynthesis']], [/electrophoresis|\bgel\b|dna fingerprint/, ['gel']], [/osmosis|tonicity|hypertonic|hypotonic|diffusion/, ['osmosis']], [/pipette/, ['reading']],
+  // economics (1.4.0)
+  [/supply and demand|demand curve|supply curve|equilibrium price|price ceiling|price floor|shortage|consumer surplus|producer surplus|deadweight|tax incidence/, ['supplyDemand']],
+  [/money market|money supply|loanable funds|interest rate|reserves|monetary policy/, ['moneyMarket']], [/business cycle|recession|peaks? and troughs?/, ['businessCycle']],
+  [/phillips|unemployment|inflation/, ['phillipsCurve']], [/production possibilit|\bppc\b|opportunity cost|comparative advantage/, ['possibilitiesCurve']],
+  [/aggregate demand|aggregate supply|\bad-as\b|output gap|recessionary gap|inflationary gap|fiscal policy/, ['adAs']], [/marginal cost|average total cost|cost curves?|monopol|perfect competition|profit maxim/, ['costCurves']],
 ];
 /** A plain starter set without the AI: kinds the brief's words point at (else its subject's), within its grade band. */
 export function templateItems({ brief = '', grade = '', count = 6 } = {}) {
   const b = String(brief).toLowerCase(), band = bandOf(grade || (/\bgrade\s*(\d{1,2}|k)\b/i.exec(b) || [])[1] || '');
   let ids = [...new Set(KEYWORDS.filter(([re]) => re.test(b)).flatMap(([, ks]) => ks))];
   if (!ids.length) {
-    const subj = /physic/.test(b) ? 'physics' : /chem/.test(b) ? 'chem' : /biolog|life science|genetic|cell/.test(b) ? 'biology' : /data|statistic|probab|graph/.test(b) ? 'data' : 'math';
+    const subj = /physic/.test(b) ? 'physics' : /chem/.test(b) ? 'chem' : /biolog|life science|genetic|cell/.test(b) ? 'biology' : /econom|macro|micro/.test(b) ? 'economics' : /data|statistic|probab|graph/.test(b) ? 'data' : 'math';
     ids = draftKinds().filter(K => K.subject === subj).map(K => K.id);
   }
   let kinds = ids.map(kindOf).filter(K => K && K.gens.length);

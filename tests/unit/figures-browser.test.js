@@ -55,7 +55,7 @@ test('the menu on a laptop and a phone: subject tabs, grade chips and search fil
     const { ctx, page, errors } = await open('/figures', opts);
     await page.waitForSelector('.fg-card');
     await noSideScroll(page);
-    assert.equal((await visibleKinds(page)).length, 67, 'every kind in the catalog (1.2.0 added eight chemistry kinds, 1.3.0 nine biology kinds)');
+    assert.equal((await visibleKinds(page)).length, 74, 'every kind in the catalog (1.2.0 added eight chemistry kinds, 1.3.0 nine biology kinds, 1.4.0 seven economics kinds)');
     await shot(page, `menu-${label}`);
     if (label === 'laptop') await shot(page, 'menu-laptop-full', true);
     await page.click('[data-tab="physics"]');
@@ -253,7 +253,6 @@ test('the 1.3.0 Biology tab (no longer Coming soon) and its editors: each kind d
     const bio = await visibleKinds(page);
     assert.deepEqual(bio.filter(k => k !== 'reading').sort(), [...BIO].sort()); assert.ok(bio.includes('reading'), 'the readings (the micropipette) are under Biology too');
     await noSideScroll(page);
-    assert.ok(await page.$('.fg-soon:has-text("Economics")'), 'Economics is still Coming soon');
     await shot(page, `menu-biology-${label}`);
     assert.deepEqual(errors, [], label);
     await ctx.close();
@@ -282,6 +281,43 @@ test('the 1.3.0 Biology tab (no longer Coming soon) and its editors: each kind d
   await page2.waitForSelector('#fg-figure svg .of-digit');
   assert.deepEqual(await page2.$$eval('#fg-figure .of-digit', ds => ds.map(d => d.textContent)), ['1', '2', '5']);
   await shot(page2, 'editor-bio-micropipette');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('the 1.4.0 Economics tab (no longer Coming soon) and its editors: each kind draws, randomizes a question, and a change that cannot be drawn shows the panel', { skip }, async () => {
+  const ECON = ['supplyDemand', 'moneyMarket', 'businessCycle', 'phillipsCurve', 'possibilitiesCurve', 'adAs', 'costCurves'];
+  for (const [label, opts] of [['laptop', LAPTOP()], ['phone', PHONE()]]) {
+    const { ctx, page, errors } = await open('/figures', opts);
+    await page.waitForSelector('.fg-card');
+    assert.equal(await page.$('.fg-soon'), null, 'nothing is Coming soon');
+    await page.click('[data-tab="economics"]');
+    assert.deepEqual((await visibleKinds(page)).sort(), [...ECON].sort());
+    await noSideScroll(page);
+    await shot(page, `menu-economics-${label}`);
+    assert.deepEqual(errors, [], label);
+    await ctx.close();
+  }
+  for (const kind of ECON) {
+    const { ctx, page, errors } = await open(`/figures/${kind}`);
+    await page.waitForSelector('#fg-figure svg');
+    assert.equal(await page.isHidden('#fg-cant'), true, kind);
+    await shot(page, `editor-econ-${kind}`);
+    await page.click('[data-act="random"]'); await page.waitForFunction(() => document.getElementById('fg-question').value.length > 5);
+    await page.waitForTimeout(150);
+    assert.equal(await page.isHidden('#fg-cant'), true, `${kind}: a new question draws`);
+    assert.deepEqual(errors, [], kind);
+    await ctx.close();
+  }
+  // supply and demand: curves that never cross show the cannot-draw panel, and Undo brings the figure back
+  const { ctx, page, errors } = await open('/figures/supplyDemand');
+  await page.waitForSelector('#fg-figure svg');
+  await page.click('#fg-adv summary');
+  await page.fill('#fg-json', JSON.stringify({ demand: 'vertical', supply: 'vertical' }));
+  await page.waitForSelector('#fg-cant:not([hidden])');
+  assert.equal(await page.isHidden('#fg-cant'), false, 'two upright curves never cross');
+  await page.click('[data-act="undo"]');
+  await page.waitForFunction(() => document.getElementById('fg-cant').hidden);
   assert.deepEqual(errors, []);
   await ctx.close();
 });

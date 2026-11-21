@@ -12623,6 +12623,34 @@
       "osmosis": {
         "name": "浸透",
         "desc": "溶液の中の細胞・U字管・袋"
+      },
+      "supplyDemand": {
+        "name": "需要と供給",
+        "desc": "シフト、価格規制、税、余剰"
+      },
+      "moneyMarket": {
+        "name": "貨幣市場",
+        "desc": "貨幣、貸付資金、準備預金"
+      },
+      "businessCycle": {
+        "name": "景気循環",
+        "desc": "トレンドを中心とした山、谷、局面"
+      },
+      "phillipsCurve": {
+        "name": "フィリップス曲線",
+        "desc": "短期と長期、シフトと期待"
+      },
+      "possibilitiesCurve": {
+        "name": "生産可能性",
+        "desc": "トレードオフ、成長、比較優位"
+      },
+      "adAs": {
+        "name": "AD-ASモデル",
+        "desc": "GDPギャップ、ショック、政策"
+      },
+      "costCurves": {
+        "name": "費用曲線と収入曲線",
+        "desc": "限界費用、平均総費用、利潤、市場構造"
       }
     },
     "step": {

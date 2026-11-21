@@ -12625,6 +12625,34 @@
       "osmosis": {
         "name": "Osmose",
         "desc": "Células, tubos em U e sacos em soluções"
+      },
+      "supplyDemand": {
+        "name": "Oferta e procura",
+        "desc": "Deslocamentos, controlo de preços, impostos e excedentes"
+      },
+      "moneyMarket": {
+        "name": "Mercados monetários",
+        "desc": "Moeda, fundos emprestáveis e reservas"
+      },
+      "businessCycle": {
+        "name": "Ciclo económico",
+        "desc": "Picos, vales e fases em torno de uma tendência"
+      },
+      "phillipsCurve": {
+        "name": "Curva de Phillips",
+        "desc": "Curto e longo prazo, deslocamentos e expectativas"
+      },
+      "possibilitiesCurve": {
+        "name": "Possibilidades de produção",
+        "desc": "Escolhas, crescimento e vantagem comparativa"
+      },
+      "adAs": {
+        "name": "Modelo OA-DA",
+        "desc": "Hiatos do produto, choques e políticas"
+      },
+      "costCurves": {
+        "name": "Curvas de custo e receita",
+        "desc": "CMg, CTMe, lucro e estruturas de mercado"
       }
     },
     "step": {

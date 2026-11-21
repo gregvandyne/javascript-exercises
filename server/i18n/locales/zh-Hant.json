@@ -12623,6 +12623,34 @@
       "osmosis": {
         "name": "滲透",
         "desc": "溶液中的細胞、U 形管與袋子"
+      },
+      "supplyDemand": {
+        "name": "供給與需求",
+        "desc": "移動、價格管制、租稅與剩餘"
+      },
+      "moneyMarket": {
+        "name": "貨幣市場",
+        "desc": "貨幣、可貸資金與準備金"
+      },
+      "businessCycle": {
+        "name": "景氣循環",
+        "desc": "趨勢周圍的高峰、谷底與階段"
+      },
+      "phillipsCurve": {
+        "name": "菲利普曲線",
+        "desc": "短期與長期、移動與預期"
+      },
+      "possibilitiesCurve": {
+        "name": "生產可能",
+        "desc": "取捨、成長與比較利益"
+      },
+      "adAs": {
+        "name": "AD-AS模型",
+        "desc": "產出缺口、衝擊與政策"
+      },
+      "costCurves": {
+        "name": "成本與收益曲線",
+        "desc": "邊際成本、平均總成本、利潤與市場結構"
       }
     },
     "step": {
