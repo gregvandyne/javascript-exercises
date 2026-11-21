@@ -11,6 +11,7 @@
 // without it (signed-out visitors, kids, grown-ups) the tools are listed as plain words. Every word is under teach.loop.*.
 // No prices, no names but the teacher's own class name (staff only), and nothing that promises tools not built yet.
 import { html, raw } from './html.js';
+import { ico } from './icon.js';
 
 /** The four steps: an emoji and the tools each one uses (link names from loopLinks). */
 export const LOOP = [
@@ -70,18 +71,18 @@ function tool(t, k, links) {
   // its name in plain words.
   if (!href) return links && k === 'live' ? '' : html`<li class="tl-tool">${check}<span>${plainName(t, k)}</span></li>`;
   const label = toolName(t, k);
-  const extra = k === 'gradebook' && links.csv ? html`<a class="btn btn-sm tl-csv" href="${links.csv}" download>⬇️ ${t('teach.loop.tools.csv')}</a>` : '';
+  const extra = k === 'gradebook' && links.csv ? html`<a class="btn btn-sm tl-csv" href="${links.csv}" download>${ico('⬇️', { size: 18 })} ${t('teach.loop.tools.csv')}</a>` : '';
   return html`<li class="tl-tool"><a class="btn btn-sm" href="${href}">${label}</a>${extra}</li>`;
 }
 /** No class yet: one button to make it, instead of class tools that would all go to the same place. */
-const makeClass = (t, links) => links && links.makeClass ? html`<p class="tl-make"><a class="btn btn-primary" href="${links.makeClass}">🍎 ${t('teach.loop.home.makeClass')}</a></p>` : '';
+const makeClass = (t, links) => links && links.makeClass ? html`<p class="tl-make"><a class="btn btn-primary" href="${links.makeClass}">${ico('🍎', { size: 18 })} ${t('teach.loop.home.makeClass')}</a></p>` : '';
 const tick = (t, on) => html`<span class="tl-tick${on ? ' on' : ''}" aria-hidden="true">${on ? check : ''}</span><span class="sr-only">${on ? t('teach.loop.home.done') : t('teach.loop.home.todo')}</span>`;
 
 /** /teach/loop and /teachers: four panels in the app's look, then the screenshots. */
 function pageLook(t, { links, state, live, shots, id, headingTag, cls }) {
   const H = raw(headingTag);
   return html`<section class="tl tl-page${cls ? ` ${cls}` : ''}" id="${id}" aria-labelledby="${id}-h">
-  <${H} id="${id}-h" class="tl-h">🔁 ${t('teach.loop.h')}</${H}>
+  <${H} id="${id}-h" class="tl-h">${ico('🔁', { size: 28 })} ${t('teach.loop.h')}</${H}>
   <p class="tl-lead">${t('teach.loop.lead')}</p>
   ${makeClass(t, links)}
   <ol class="plain tl-steps">${LOOP.map((s, i) => { const on = !!(state && state.done[s.step]);
@@ -101,7 +102,7 @@ function compact(t, { links, state, live, id }) {
   const nextStep = (LOOP.find(s => !st.done[s.step]) || {}).step;
   const lead = links && links.class ? t('teach.loop.home.lead', { class: links.class.name }) : t('teach.loop.home.leadNoClass');
   return html`<section class="panel tl tl-compact" id="${id}" aria-labelledby="${id}-h">
-  <div class="tl-top"><h2 id="${id}-h">🔁 ${t('teach.loop.home.h')}</h2><span class="chip-s tl-count">${t('teach.loop.home.count', { done: st.count, total: LOOP.length })}</span></div>
+  <div class="tl-top"><h2 id="${id}-h">${ico('🔁', { size: 28 })} ${t('teach.loop.home.h')}</h2><span class="chip-s tl-count">${t('teach.loop.home.count', { done: st.count, total: LOOP.length })}</span></div>
   <p class="small muted tl-sub">${lead}</p>
   ${makeClass(t, links)}
   <ol class="plain tl-mini">${LOOP.map(s => { const on = !!st.done[s.step], next = s.step === nextStep;

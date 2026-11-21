@@ -1,7 +1,8 @@
 // A course step (server/views/courses.js stepPage): the slides one at a time (Next / Back, dots, swipe, arrow keys,
 // read-aloud with the site's AI voice, else the device's English voice), then the quick check one question at a time, graded by the server.
 // Without this script the page still works: the slides are a scrolling page and the check is a plain form.
-import { api, pageData, $, $$, t, toast } from '/js/app.js';
+import { api, pageData, $, $$, t, toast, esc } from '/js/app.js';
+import { iconHtml } from '/js/icons.js';
 import { deviceSpeak, stopReading } from '/js/tts.js';
 
 const d = pageData();
@@ -652,10 +653,11 @@ function nqMoments(nq, anchor) {
   if (nq.marks && nq.marks.awarded) parts.push(['marks', t('js.course.nqMarks', { marks: nq.marks.marks, total: nq.marks.total })]);
   if (nq.dailyGoal && nq.dailyGoal.justMet) parts.push(['goal', t('js.course.nqGoal')]);
   if (nq.lap) parts.push(['lap', t('js.course.nqLap', { lap: nq.lap.lap })]);
+  const ICON = { marks: '🐱', goal: '🌱', lap: '🏅' };
   for (const [kind, text] of parts) {
     const el = document.createElement('div');
     el.className = `nq-moment nq-moment-${kind}`; el.setAttribute('role', 'status');
-    el.textContent = text;
+    el.innerHTML = `${iconHtml(ICON[kind], { size: 20 })} ${esc(text)}`;
     anchor.after(el);
     setTimeout(() => el.remove(), kind === 'lap' ? 6000 : 4200);
   }

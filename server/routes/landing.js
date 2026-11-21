@@ -39,6 +39,7 @@ import { rateLimit } from '../services/ratelimit.js';
 import { enabled as classroomOn } from '../services/gclassroom.js';
 import { config } from '../config.js';
 import { LAYOUT_TEMPLATES, WIDGETS } from '../services/dash.js';
+import { ico } from '../views/icon.js';
 
 /** Where "Just Play" goes: the games for kids, no sign-up. */
 export const JUST_PLAY_URL = '/play';
@@ -151,7 +152,7 @@ export function renderLanding(req, res) {
       <p class="lp-lead"${fb('landing.hero.lead')}>${t('landing.hero.lead')}</p>
       <div class="lp-ctas">
         ${cta(TRIAL_URL, t('landing.hero.cta'), { big: true })}
-        ${live ? html`<a class="lp-btn lp-btn-spark lp-btn-big" href="${HOST_NOW_URL}" data-cta="host" id="lp-host-now"${fb('quickLive.cta')}><span aria-hidden="true">📡</span> ${t('quickLive.cta')}</a>` : ''}
+        ${live ? html`<a class="lp-btn lp-btn-spark lp-btn-big" href="${HOST_NOW_URL}" data-cta="host" id="lp-host-now"${fb('quickLive.cta')}>${ico('📡', { size: 18 })} ${t('quickLive.cta')}</a>` : ''}
         <a class="lp-btn lp-btn-ghost lp-btn-big" href="#how" data-cta="how">${t('landing.hero.how')} <span aria-hidden="true">↓</span></a>
       </div>
       <ul class="lp-trust">
@@ -306,7 +307,7 @@ export function renderLanding(req, res) {
       <p class="lp-eyebrow">${t('landing.live.kicker')}</p><h2 id="live-h">${t('landing.live.h')}</h2><p>${t('landing.live.lead')}</p>
       <ul class="lp-list">${[1, 2, 3, 4].map(i => html`<li>${check}<span>${t(`landing.live.li${i}`)}</span></li>`)}</ul>
       <div class="lp-ctas lp-live-ctas">
-        <a class="lp-btn lp-btn-spark" href="${HOST_NOW_URL}" data-cta="host"${fb('quickLive.cta')}><span aria-hidden="true">📡</span> ${t('quickLive.cta')}</a>
+        <a class="lp-btn lp-btn-spark" href="${HOST_NOW_URL}" data-cta="host"${fb('quickLive.cta')}>${ico('📡', { size: 18 })} ${t('quickLive.cta')}</a>
         <a class="lp-btn lp-btn-ghost" href="/join" id="lp-join"${fb('quickLive.haveCode')}>${t('quickLive.haveCode')}</a>
       </div>
       ${el(fb, t, 'quickLive.ctaNote')}
@@ -340,9 +341,9 @@ export function renderLanding(req, res) {
     </div>
   </div>
   <div class="lp-wrap"><div class="lp-everywhere">
-    <div class="lp-card rv"><span aria-hidden="true">💻</span><h3>${t('landing.everywhere.h')}</h3><p>${t('landing.everywhere.devices')}</p></div>
-    <div class="lp-card rv"><span aria-hidden="true">🌍</span><h3>${t('landing.footer.languages')}</h3><p>${t('landing.everywhere.languages', { count })}</p></div>
-    <div class="lp-card rv"><span aria-hidden="true">🔊</span><h3>${t('landing.everywhere.voicesH')}</h3><p>${t('landing.everywhere.voices')}</p></div>
+    <div class="lp-card rv">${ico('💻', { size: 18 })}<h3>${t('landing.everywhere.h')}</h3><p>${t('landing.everywhere.devices')}</p></div>
+    <div class="lp-card rv">${ico('🌍', { size: 18 })}<h3>${t('landing.footer.languages')}</h3><p>${t('landing.everywhere.languages', { count })}</p></div>
+    <div class="lp-card rv">${ico('🔊', { size: 18 })}<h3>${t('landing.everywhere.voicesH')}</h3><p>${t('landing.everywhere.voices')}</p></div>
   </div></div>
 </section>`;
 
@@ -401,7 +402,7 @@ export function renderLanding(req, res) {
     <div class="lp-ctas lp-ctas-c">${cta(TRIAL_URL, t('landing.final.cta'), { big: true })}<a class="lp-btn lp-btn-ghost lp-btn-big" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')} ${ARROW}</a></div>
   </div>
 </section>`;
-  const playBand = html`<section class="lp-play" id="play" aria-labelledby="play-h"><div class="lp-wrap lp-play-in"><h2 id="play-h">🎮 ${t('landing.play.h')}</h2><p>${t('landing.play.p')}</p><a class="lp-btn lp-btn-spark" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.play.cta')} ${ARROW}</a></div></section>`;
+  const playBand = html`<section class="lp-play" id="play" aria-labelledby="play-h"><div class="lp-wrap lp-play-in"><h2 id="play-h">${ico('🎮', { size: 28 })} ${t('landing.play.h')}</h2><p>${t('landing.play.p')}</p><a class="lp-btn lp-btn-spark" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.play.cta')} ${ARROW}</a></div></section>`;
 
   const others = availableLocales().filter(l => langs.includes(l.code));
   const footer = html`<footer class="lp-foot">
@@ -409,7 +410,7 @@ export function renderLanding(req, res) {
   <div class="lp-wrap lp-foot-in">
     <div class="lp-foot-brand"><a class="lp-logo" href="${lp('/')}" aria-label="${t('landing.nav.home')}">${appMark('lp-mark')}<span class="lp-word" dir="ltr" aria-hidden="true">${wordmark('lp-wordmark')}<span>Academy</span></span></a><p class="lp-tagline">${t('brand.tagline')}</p><p>${t('landing.footer.tagline')}</p>
       <a class="lp-btn lp-btn-ghost lp-btn-sm" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')} ${ARROW}</a>
-      <a class="lp-pref" href="${PREFERRED_SOURCE_URL}" rel="noopener" data-cta="preferred-source"><span aria-hidden="true">⭐</span>${t('landing.footer.preferredSource')}</a></div>
+      <a class="lp-pref" href="${PREFERRED_SOURCE_URL}" rel="noopener" data-cta="preferred-source">${ico('⭐', { size: 18 })}${t('landing.footer.preferredSource')}</a></div>
     <nav aria-labelledby="ft-t"><h2 id="ft-t">${t('landing.footer.teachers')}</h2><ul>
       <li><a href="${lp('/teachers')}">${t('landing.footer.guide')}</a></li>
       <li><a href="${lp('/teachers/cs-quest')}">${t('landing.courses.cs.name')}</a></li>
@@ -436,8 +437,8 @@ export function renderLanding(req, res) {
     </ul></nav>
   </div>
   <div class="lp-wrap lp-foot-base">
-    <nav class="lp-langs" aria-labelledby="fl-t"><h2 id="fl-t" class="sr-only">${t('landing.footer.languages')}</h2><span aria-hidden="true">🌐</span>${others.map(l => html`<a href="${seo.localeUrl('/', l.code)}" hreflang="${l.code}" lang="${l.code}"${l.code === locale ? raw(' aria-current="page"') : ''}>${l.name}</a>`)}</nav>
-    <p class="lp-theme"><span>${t('landing.footer.theme')}:</span> <a href="?theme=dark" rel="nofollow"${theme === 'dark' ? raw(' aria-current="true"') : ''}>🌙 ${t('landing.footer.dark')}</a> <a href="?theme=light" rel="nofollow"${theme === 'light' ? raw(' aria-current="true"') : ''}>☀️ ${t('landing.footer.light')}</a></p>
+    <nav class="lp-langs" aria-labelledby="fl-t"><h2 id="fl-t" class="sr-only">${t('landing.footer.languages')}</h2>${ico('🌐', { size: 18 })}${others.map(l => html`<a href="${seo.localeUrl('/', l.code)}" hreflang="${l.code}" lang="${l.code}"${l.code === locale ? raw(' aria-current="page"') : ''}>${l.name}</a>`)}</nav>
+    <p class="lp-theme"><span>${t('landing.footer.theme')}:</span> <a href="?theme=dark" rel="nofollow"${theme === 'dark' ? raw(' aria-current="true"') : ''}>${ico('🌙', { size: 18 })} ${t('landing.footer.dark')}</a> <a href="?theme=light" rel="nofollow"${theme === 'light' ? raw(' aria-current="true"') : ''}>${ico('☀️', { size: 18 })} ${t('landing.footer.light')}</a></p>
     <p class="lp-copy">© ${new Date().getFullYear()} ${BRAND}</p>
   </div>
 </footer>`;
@@ -491,11 +492,11 @@ function heroStage(t, fb) {
   <div class="lp-hs-phone" data-depth=".1" aria-hidden="true"><img src="/img/how/dash-student-p-390.webp" srcset="/img/how/dash-student-p-390.webp 390w, /img/how/dash-student-p-780.webp 780w" sizes="150px" width="390" height="844" alt="" decoding="async"></div>
   <div class="lp-glass lp-hs-card lp-hs-build" data-depth="-.14">
     ${cover('fraction-factory', { eager: true, w: 240, cls: 'lp-hs-cover' })}
-    <div><p class="lp-d-tag"${fb('landing.hero.cBuildTag')}>✨ ${t('landing.hero.cBuildTag')}</p><p class="lp-hs-t"${fb('landing.hero.cBuild')}>${t('landing.hero.cBuild')}</p></div>
+    <div><p class="lp-d-tag"${fb('landing.hero.cBuildTag')}>${ico('✨', { size: 18 })} ${t('landing.hero.cBuildTag')}</p><p class="lp-hs-t"${fb('landing.hero.cBuild')}>${t('landing.hero.cBuild')}</p></div>
   </div>
   <div class="lp-glass lp-hs-card lp-hs-live" data-depth="-.06">
     <span class="lp-hs-dot" aria-hidden="true"></span>
-    <div><p class="lp-d-tag"${fb('landing.hero.cLiveTag')}>📡 ${t('landing.hero.cLiveTag')}</p><p class="lp-hs-t"${fb('landing.hero.cLive')}>${t('landing.hero.cLive')}</p></div>
+    <div><p class="lp-d-tag"${fb('landing.hero.cLiveTag')}>${ico('📡', { size: 18 })} ${t('landing.hero.cLiveTag')}</p><p class="lp-hs-t"${fb('landing.hero.cLive')}>${t('landing.hero.cLive')}</p></div>
     <span class="lp-hs-faces" aria-hidden="true"><i>🐼</i><i>🦊</i><i>🐨</i><i>🦦</i></span>
   </div>
 </figure>`;
@@ -506,21 +507,21 @@ function heroStage(t, fb) {
 function demo(t, fb) {
   return html`<figure class="lp-demo" data-stage="done" aria-labelledby="lp-demo-cap">
   <div class="lp-glass lp-d-lesson">
-    <p class="lp-d-tag">📄 ${t('landing.demo.lessonTag')}</p>
+    <p class="lp-d-tag">${ico('📄', { size: 18 })} ${t('landing.demo.lessonTag')}</p>
     <p class="lp-d-title">${t('landing.demo.lessonTitle')}</p>
     <p class="lp-d-body"${fb('landing.demo.lessonBody')}>${t('landing.demo.lessonBody')}</p>
-    <span class="lp-chip">📎 ${t('landing.demo.file')}</span>
+    <span class="lp-chip">${ico('📎', { size: 18 })} ${t('landing.demo.file')}</span>
   </div>
   <div class="lp-beam lp-beam-1" aria-hidden="true"></div>
   <div class="lp-glass lp-d-build">
-    <p class="lp-d-tag">✨ ${t('landing.demo.builderTag')}</p>
+    <p class="lp-d-tag">${ico('✨', { size: 18 })} ${t('landing.demo.builderTag')}</p>
     <ol class="lp-d-steps">${[1, 2, 3, 4].map(i => html`<li data-i="${i}">${check}<span>${t(`landing.demo.step${i}`)}</span></li>`)}</ol>
     <div class="lp-d-bar" aria-hidden="true"><i></i></div>
   </div>
   <div class="lp-beam lp-beam-2" aria-hidden="true"></div>
   <div class="lp-glass lp-d-game">
     ${cover('fraction-factory', { eager: true, cls: 'lp-d-cover' })}
-    <div class="lp-d-gtext"><p class="lp-d-tag">🎮 ${t('landing.demo.gameTag')}</p><p class="lp-d-title" lang="en" dir="ltr">Fraction Factory</p><p class="lp-d-meta">${t('landing.demo.gameMeta')}</p>
+    <div class="lp-d-gtext"><p class="lp-d-tag">${ico('🎮', { size: 18 })} ${t('landing.demo.gameTag')}</p><p class="lp-d-title" lang="en" dir="ltr">Fraction Factory</p><p class="lp-d-meta">${t('landing.demo.gameMeta')}</p>
     <p class="lp-d-btns" aria-hidden="true"><span>▶ ${t('landing.demo.host')}</span><span>${t('landing.demo.assign')}</span></p></div>
   </div>
   <figcaption id="lp-demo-cap" class="lp-d-cap">${t('landing.demo.label')}. ${t('landing.demo.credit')}</figcaption>

@@ -9713,6 +9713,36 @@ lesson text, games and seed games) stay as they are.
   shared chrome has no emoji left as icons. Older tests that checked an emoji's place byte for byte read the page through
   `tests/support/deicon.js`, which turns each icon back into its emoji, so they still check which icon sits where.
 
+## Icons, round 2: bright people icons, dark-theme fixes, the rest of the app (21 Nov 2026)
+
+Follows "Icons: Fluent Emoji 3D". The owner saw the icons on a phone in the dark theme.
+- **People.** Grown-ups (👪, and the family headings' 🧑‍🧒) is Fluent's house with garden; Friends (👫) is the hugging
+  face; Two players (👥) is the two people with bunny ears; 👤 is the yellow person. People hugging and the busts in
+  silhouette were near-black or muddy on the dark bars and are no longer shipped. Fluent has no "people holding hands"
+  or family pictures, so these are the clearest bright ones it has.
+- **Dark theme.** Every mapped icon was drawn on the dark (#141414) and light (#F4F1E6) backgrounds and measured. The
+  file cabinet (🗄️) became the card file box and the musical note (🎵) the musical score. Fluent draws a few with no
+  bright twin in near-black (mortarboard, footprints, ninja, pirate flag, traffic light, the phone and the students'
+  gowns at Flat size): in the dark theme they sit on a soft light disc (`--fx-plate`, a token that is transparent in the
+  light theme, like the Live antenna's sky disc).
+- **The rest of the app** now uses the same helper: the class dashboard and its tools and widgets (buttons, menus,
+  widget and template icons, the big weather and quiet-signal pictures at 1em of their box), the Studio (chips,
+  steps, notes, the publish button, sheets), CS Quest and Number Quest's own pages, the course pages, and every toast
+  and sheet title (`app.js` draws a leading emoji as its icon: `leadIcon`, `iconLine`, `setIcon`, `setLabel` in
+  `public/js/icons.js`). A sweep of server/views, server/routes and public/js did the same for headings, buttons, chips
+  and notices elsewhere. 76 more Fluent icons; 24 with a 3D picture.
+- **Strings.** The Studio's resumed and resting notes, the activity editor's title and Number Quest's toasts started with
+  an emoji: it moved into the markup in all 12 languages; the words are unchanged.
+- **Budget.** Flat SVGs keep one decimal (a 32-unit box), so `public/icons` stays under its 1.1 MB budget with the new
+  icons (`scripts/icons/build_fluent.py` rounds when it builds).
+- **Still emoji, on purpose:** avatars, game covers and game emoji, the story characters, Number Quest's game pictures,
+  select options, aria labels, text glyphs (▶ ✕ ✓ as a status mark), the visibility words, the mood and thumbs answers, the noise meter and document camera (their scripts import nothing, by design),
+  the graph's picture icons, and the pages another session owns (sign-in, Google, the teacher plan trial, the
+  teachers page setup block, family onboarding, the /teach home, Google Classroom).
+- **Tests.** `tests/unit/icons.test.js` also checks the converted files (each leftover listed with why), the toast and
+  sheet helper, that no dark silhouette is mapped or shipped and Grown-ups, Friends and Two players differ, and the
+  moved strings in every language.
+
 ## Story Library: sliding page dots for long books (20 Nov 2026)
 
 - Owner chose "sliding dots" (option B of three mocked: a progress bar, sliding dots, parts) after the 50-page Velveteen

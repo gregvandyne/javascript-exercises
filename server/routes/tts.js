@@ -66,6 +66,7 @@ import { sayOf } from '../views/courses.js';
 import * as LIB from '../services/library.js';
 import { sentences as storySentences } from '../../public/js/library-text.js';
 import { isStaff } from '../services/schools.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 
@@ -276,7 +277,7 @@ router.get('/admin/voices', (req, res) => {
   const locales = LOCALES.filter(l => ttsLocaleList().includes(l.code));
   const games_ = TG.list(), silent = TG.silentWhy();
   const body = html`
-  <div class="pagehead"><h1>🔊 AI voices</h1></div>
+  <div class="pagehead"><h1>${ico('🔊', { size: 36 })} AI voices</h1></div>
   ${on ? '' : html`<section class="panel" role="status"><b>AI voices are off.</b> They need TTS_ENABLED=1 and a key (TTS_API_KEY, or STT_API_KEY when both providers are openai). Until then nothing here can play, and every page uses the device's own voice.</section>`}
   <section class="panel small">
     <p><b>Provider</b> ${config.ttsProvider || '–'} · <b>model</b> ${config.ttsProvider === 'mock' ? 'mock (silent audio)' : config.ttsModel} · <b>TTS_LOCALES</b> ${config.ttsLocales.join(', ')}</p>

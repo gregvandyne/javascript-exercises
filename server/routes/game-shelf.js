@@ -164,7 +164,7 @@ function gameRow(req, ctx, g0, { folder = null, own = false, grip = false } = {}
   const more = [
     folder && own ? html`<form data-api="/api/game-folders/${folder.id}/games/${g.id}/delete" data-reload><button class="btn" type="submit">${t('folders.removeGame')}</button></form>` : '',
     html`<a class="btn" href="/build/save?id=${g.id}">${ico('📁', { size: 18 })} ${folder && own ? t('folders.saveAnother') : t('folders.save')}</a>`,
-    ctx.kind === 'build' && mineGame ? html`<button class="btn" type="button" data-rename>🏷️ ${t('build.rename')}</button><button class="btn mg-del" type="button" data-delete>${ico('🗑️', { size: 18 })} ${t('build.delete')}</button>` : '',
+    ctx.kind === 'build' && mineGame ? html`<button class="btn" type="button" data-rename>${ico('🏷️', { size: 18 })} ${t('build.rename')}</button><button class="btn mg-del" type="button" data-delete>${ico('🗑️', { size: 18 })} ${t('build.delete')}</button>` : '',
   ];
   const live = mineGame && g.status === 'published' && g.published_version_id;
   return html`<li class="mygame shelf-game" data-id="${g.id}" data-title="${g.title}" data-published="${live ? '1' : ''}"${folder && own ? html` data-folder="${folder.id}" data-folder-name="${folder.name}"` : ''}>
@@ -259,7 +259,7 @@ function folderMenu(req, ctx, f, mine, idp = 'shelf') {
       : html`<form class="shelf-share" data-api="/api/game-folders/${f.id}/share" data-reload>${schools.length > 1 ? html`<label class="sr-only" for="${idp}-share-s">${t('folders.shareTitle')}</label><select class="input" id="${idp}-share-s" name="schoolId">${schools.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select>` : html`<input type="hidden" name="schoolId" value="${schools[0].id}">`}
         <button class="btn" type="submit">${ico('🤝', { size: 18 })} ${schools.length > 1 ? t('folders.shareTitle') : t('folders.shareWith', { school: schools[0].name })}</button></form>`;
   return menu(t('folders.more', { name: f.name }), [
-    html`<form class="shelf-rename" data-api="/api/game-folders/${f.id}" data-reload><label for="${idp}-rn">🏷️ ${t('build.rename')}</label><div class="row"><input class="input grow" id="${idp}-rn" name="name" value="${f.name}" maxlength="60"><button class="btn btn-primary" type="submit">${t('school.save')}</button></div></form>`,
+    html`<form class="shelf-rename" data-api="/api/game-folders/${f.id}" data-reload><label for="${idp}-rn">${ico('🏷️', { size: 18 })} ${t('build.rename')}</label><div class="row"><input class="input grow" id="${idp}-rn" name="name" value="${f.name}" maxlength="60"><button class="btn btn-primary" type="submit">${t('school.save')}</button></div></form>`,
     share, schools.length ? html`<p class="small muted">${t('folders.shareNote')}</p>` : '',
     i > 0 ? html`<form data-api="/api/game-folders/${f.id}/up" data-reload><button class="btn" type="submit">↑ ${t('folders.moveUp')}</button></form>` : '',
     i >= 0 && i < mine.length - 1 ? html`<form data-api="/api/game-folders/${f.id}/down" data-reload><button class="btn" type="submit">↓ ${t('folders.moveDown')}</button></form>` : '',
@@ -391,7 +391,7 @@ function libFolder(req, ctx, sel, mine, myGames) {
   if (sel.view === 'all') {
     return html`${back}<div class="lib-head"><div class="lib-title"><h2 id="lib-h" dir="auto">${ico('🛠️', { size: 28 })} ${t('folders.allGames')}</h2><p>${t('folders.gamesN', { count: myGames.length })}</p></div></div>
       ${myGames.length ? html`<ul class="lib-list">${myGames.map((g, i) => libGame(req, ctx, g, i, []))}</ul>`
-        : html`<div class="cl-none lib-none"><span class="emo" aria-hidden="true">🌱</span><div><b>${t('folders.phone.allEmpty')}</b><p class="small"><a href="/build/new">${t('folders.buildNew')}</a></p></div></div>`}`;
+        : html`<div class="cl-none lib-none"><span class="emo" aria-hidden="true">${ico('🌱', { size: 32 })}</span><div><b>${t('folders.phone.allEmpty')}</b><p class="small"><a href="/build/new">${t('folders.buildNew')}</a></p></div></div>`}`;
   }
   const f = sel.folder, own = sel.own, list = F.gamesIn(req.user, f.id), ids = list.map(g => g.id);
   const canMove = own && list.length > 1, moving = canMove && reorder;
@@ -404,7 +404,7 @@ function libFolder(req, ctx, sel, mine, myGames) {
   return html`${back}<div class="lib-head"><div class="lib-title lib-ftitle"><h2 id="lib-h" dir="auto"><span aria-hidden="true">${own ? '📁' : '🤝'}</span> ${f.name}</h2><p dir="auto">${meta}</p></div><div class="lib-fmore">${more}</div>
     ${String(tools).trim() ? html`<div class="lib-tools">${tools}</div>` : ''}</div>
     ${list.length ? html`<ul class="lib-list">${list.map((g, i) => libGame(req, ctx, g, i, ids, { folder: f, own, reorder: moving }))}</ul>`
-      : html`<div class="cl-none lib-none"><span class="emo" aria-hidden="true">📁</span><div><b>${t('folders.phone.collectionEmpty')}</b><p class="small muted">${own ? t('folders.emptyText') : t('folders.sharedEmpty')}</p></div></div>`}`;
+      : html`<div class="cl-none lib-none"><span class="emo" aria-hidden="true">${ico('📁', { size: 32 })}</span><div><b>${t('folders.phone.collectionEmpty')}</b><p class="small muted">${own ? t('folders.emptyText') : t('folders.sharedEmpty')}</p></div></div>`}`;
 }
 
 /** The phone's Games tab: the two-part switch and the picked part. */

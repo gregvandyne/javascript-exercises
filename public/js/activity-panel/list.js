@@ -2,6 +2,9 @@
 // its line, a short status and ✏️; under the list, Add a problem and Copy problem N. Every change goes through
 // M.commit(change, fn), so it can be undone and is named on the version.
 import { P, E, clone, thumb, lineOf, checkOne, kit } from './shared.js';
+import { iconHtml } from '../icons.js';
+/** A Fluent icon for an emoji (decorative; public/js/icons.js). */
+const ico = (e, size = 18) => iconHtml(e, { size });
 
 /** Move problem i to j (both 0-based). */
 export function move(M, i, j) {
@@ -32,7 +35,7 @@ export function renderList(M, box) {
     const li = document.createElement('li'); li.className = `ap-row${i === M.sel ? ' is-sel' : ''}${why ? ' is-bad' : ''}`; li.dataset.i = i;
     const sub = why ? `⚠️ ${E('needsFix')}` : p.tool === 'figure.number' ? `✓ ${E('answerIs', { a: `\u2066${p.answer}${p.unit ? ` ${p.unit}` : ''}\u2069` })} · ${E('workedN', { n: (p.work || []).length })}`
       : p.tool === 'figure.choice' ? `✓ ${E('answerIs', { a: (p.choices || [])[p.answer] || '' })} · ${E('workedN', { n: (p.work || []).length })}` : `✓ ${E('kitSteps')}`;
-    li.innerHTML = `<button type="button" class="ap-grip" aria-label="${E('moveRow', { n: i + 1 })}" title="${E('moveHint')}"><span aria-hidden="true">⠿</span></button><span class="ap-n" aria-hidden="true">${i + 1}</span><span class="ap-t"><b dir="auto"></b><small class="${why ? 'bad' : 'ok'}">${sub}</small></span><button type="button" class="ap-edit" aria-label="${E('editN', { n: i + 1 })}"><span aria-hidden="true">✏️</span></button>`;
+    li.innerHTML = `<button type="button" class="ap-grip" aria-label="${E('moveRow', { n: i + 1 })}" title="${E('moveHint')}"><span aria-hidden="true">⠿</span></button><span class="ap-n" aria-hidden="true">${i + 1}</span><span class="ap-t"><b dir="auto"></b><small class="${why ? 'bad' : 'ok'}">${sub}</small></span><button type="button" class="ap-edit" aria-label="${E('editN', { n: i + 1 })}">${ico('✏️')}</button>`;
     li.querySelector('b').textContent = lineOf(p);
     li.querySelector('.ap-n').after(thumb(p));
     const grip = li.querySelector('.ap-grip');

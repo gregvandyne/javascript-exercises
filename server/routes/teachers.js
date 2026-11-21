@@ -12,6 +12,7 @@ import { LIMITS as SET_LIMITS } from '../services/classlive-sets.js';
 import express, { Router } from 'express';
 import fs from 'node:fs';
 import { html, raw } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { folded } from './info.js';
 import { page, notFound, parentsLabel, signedOut, VERSION } from '../views/layout.js';
 import { coverArt, gameCard, rail } from '../views/components.js';
@@ -318,12 +319,12 @@ router.get('/teachers', (req, res) => {
     ${el(t, 'p', 'teachers.kicker', {}, ' class="lp-kicker"')}
     ${el(t, 'h1', 'teachers.h1', {}, ' id="lp-h1"')}
     ${el(t, 'p', 'teachers.lead', {}, ' class="lead"')}
-    <p class="small lp-leader">🏫 ${tHtml(t, 'teachers.leaderLine', { href: '#start' })}</p>
+    <p class="small lp-leader">${ico('🏫', { size: 18 })} ${tHtml(t, 'teachers.leaderLine', { href: '#start' })}</p>
     <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${e}</span> ${el(t, 'span', k)}</li>`)}</ul>
     ${el(t, 'p', plans ? 'teachers.free.line' : 'teachers.free.lineOff', { daily: req.fmt.int(config.teacherDailyMessages), plans: '/plans' }, ' class="lp-freeline"')}
     <div class="row lp-cta">
       <a class="btn btn-primary btn-big" href="#start">${t('teachers.cta.start')}</a>
-      ${liveOn() && !(req.user && !req.user.is_guest && !canHost(req.user)) ? html`<a class="btn btn-hot btn-big" href="${canHost(req.user) ? '/live/quick' : '/teachers/host'}" id="host-now">📡 ${el(t, 'span', 'quickLive.cta')}</a>` : ''}
+      ${liveOn() && !(req.user && !req.user.is_guest && !canHost(req.user)) ? html`<a class="btn btn-hot btn-big" href="${canHost(req.user) ? '/live/quick' : '/teachers/host'}" id="host-now">${ico('📡', { size: 18 })} ${el(t, 'span', 'quickLive.cta')}</a>` : ''}
       ${list[0] ? html`<a class="btn btn-big" href="${keepLang(req, `/play/${list[0].slug}`)}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
     </div>
     ${howArt(req, 'teachers')}
@@ -333,7 +334,7 @@ router.get('/teachers', (req, res) => {
   <section class="lp-sec" id="play" aria-labelledby="play-h">
     ${el(t, 'h2', 'teachers.play.h', {}, ' id="play-h"')}${el(t, 'p', 'teachers.play.p')}
     <ul class="lp-games">${list.map(card)}</ul>
-    <p class="lp-research">📚 <a href="/research">${t('teachers.research.link')}</a></p>
+    <p class="lp-research">${ico('📚', { size: 18 })} <a href="/research">${t('teachers.research.link')}</a></p>
   </section>
 
   <section class="lp-sec" id="brain-breaks" aria-labelledby="bb-h">
@@ -410,7 +411,7 @@ router.get('/teachers/live', (req, res, next) => {
   const faq = faqBlock(req, [1, 2, 3, 4, 5].map(n => [`teachersLive.faq.q${n}`, `teachersLive.faq.a${n}`]), 'teachersLive.faq.h', vars);
   // Each mode says how many players it is made for (classlive-access.js CAPACITY, docs/live-capacity.md).
   const MODE_ID = { race: 'quest-race', battle: 'battle', board: 'board', wyr: 'wyr', atlas: 'atlas', tug: 'tug', doodle: 'doodle' };
-  const mode = (emoji, k) => { const c = capacityFor({ mode: MODE_ID[k] }); return html`<section class="panel lp-mode"><h3><span aria-hidden="true">${emoji}</span> ${el(t, 'span', `teachersLive.modes.${k}.h`)}</h3>${el(t, 'p', `teachersLive.modes.${k}.p`)}<p class="small lp-mode-players">👥 ${t('live.landing.best', { min: c.best[0], max: c.best[1] })}</p></section>`; };
+  const mode = (emoji, k) => { const c = capacityFor({ mode: MODE_ID[k] }); return html`<section class="panel lp-mode"><h3><span aria-hidden="true">${emoji}</span> ${el(t, 'span', `teachersLive.modes.${k}.h`)}</h3>${el(t, 'p', `teachersLive.modes.${k}.p`)}<p class="small lp-mode-players">${ico('👥', { size: 18 })} ${t('live.landing.best', { min: c.best[0], max: c.best[1] })}</p></section>`; };
   const startBtns = kid ? html`<a class="btn btn-primary btn-big" href="/join">${t('teachersLive.cta.join')}</a>`
     : html`<a class="btn btn-primary btn-big" href="${hostHref}">${t('teachersLive.cta.host')}</a>`;
   const body = html`<div class="lp">
@@ -484,7 +485,7 @@ const tracks = t => html`<section class="panel" id="tracks" aria-labelledby="tra
 /** How making a game works (the make-a-game page). */
 const builder = (req, t) => html`<section class="panel" id="how" aria-labelledby="how-h">${el(t, 'h2', 'learn.hubs.makeAGame.how.h', {}, ' id="how-h"')}
     <ol class="lp-steps">${[1, 2, 3, 4].map(n => el(t, 'li', `learn.hubs.makeAGame.how.li${n}`))}</ol>
-    <p><a class="btn btn-primary" href="/build">🛠️ ${t('learn.hubs.makeAGame.cta')}</a></p></section>
+    <p><a class="btn btn-primary" href="/build">${ico('🛠️', { size: 18 })} ${t('learn.hubs.makeAGame.cta')}</a></p></section>
   <section class="panel" id="skills" aria-labelledby="skills-h">${el(t, 'h2', 'learn.hubs.makeAGame.skills.h', {}, ' id="skills-h"')}${el(t, 'p', 'learn.hubs.makeAGame.skills.p')}</section>
   ${t.own('learn.hubs.makeAGame.parents.h') ? html`<section class="panel" id="parents" aria-labelledby="parents-h">${el(t, 'h2', 'learn.hubs.makeAGame.parents.h', {}, ' id="parents-h"')}${el(t, 'p', 'learn.hubs.makeAGame.parents.p1')}${el(t, 'p', 'learn.hubs.makeAGame.parents.p2')}</section>` : ''}
   ${t.own('learn.hubs.makeAGame.ideas.h') ? html`<section class="panel" id="ideas" aria-labelledby="ideas-h">${el(t, 'h2', 'learn.hubs.makeAGame.ideas.h', {}, ' id="ideas-h"')}
@@ -496,7 +497,7 @@ const builder = (req, t) => html`<section class="panel" id="how" aria-labelledby
 /** The computer-science page: the four games are chapters of CS Quest, the teacher program (hub.extra === 'cs'). */
 const csTeaser = (req, t) => html`<section class="panel" id="cs-quest" aria-labelledby="csq-h">${el(t, 'h2', 'learn.hubs.cs.program.h', {}, ' id="csq-h"')}${el(t, 'p', 'learn.hubs.cs.program.p')}
     <ul class="lp-list">${[1, 2, 3, 4].map(n => el(t, 'li', `learn.hubs.cs.program.li${n}`))}</ul>
-    <p><a class="btn btn-primary" href="${lp(req, '/teachers/cs-quest')}">💻 ${t('learn.hubs.cs.program.link')}</a></p></section>`;
+    <p><a class="btn btn-primary" href="${lp(req, '/teachers/cs-quest')}">${ico('💻', { size: 18 })} ${t('learn.hubs.cs.program.link')}</a></p></section>`;
 
 /** "Using this in class? See Oomba Academy for teachers." on the subject, age and game pages, for signed-out visitors
  *  and guests (a teacher who found a game from a search); empty for anyone with an account, and in a language that
@@ -572,9 +573,9 @@ router.get('/learn', (req, res) => {
   const acts = g => {
     if (!staff) return '';
     const l = liveGameOf(g);
-    const main = l && live ? html`<a class="btn btn-sm btn-hot" href="/live?mode=${l.mode}">📡 ${t('learn.tab.host')}</a>`
-      : l && !l.play ? '' : html`<a class="btn btn-sm btn-primary" href="/teach/assign?game=${g.slug}">📌 ${t('learn.tab.assign')}</a>`;
-    return html`${codesOf(g.slug).map(([fw, c]) => codeChips(t, fw, c, { fold: 3 }))}<div class="lcard-acts">${main}<a class="lcard-try" href="${keepLang(req, `/play/${l ? l.solo : g.slug}`)}">▶ ${t('learn.tab.try')}</a><a class="lcard-try" href="/build/save?id=${g.id}">📁 ${t('folders.save')}</a></div>`;
+    const main = l && live ? html`<a class="btn btn-sm btn-hot" href="/live?mode=${l.mode}">${ico('📡', { size: 18 })} ${t('learn.tab.host')}</a>`
+      : l && !l.play ? '' : html`<a class="btn btn-sm btn-primary" href="/teach/assign?game=${g.slug}">${ico('📌', { size: 18 })} ${t('learn.tab.assign')}</a>`;
+    return html`${codesOf(g.slug).map(([fw, c]) => codeChips(t, fw, c, { fold: 3 }))}<div class="lcard-acts">${main}<a class="lcard-try" href="${keepLang(req, `/play/${l ? l.solo : g.slug}`)}">▶ ${t('learn.tab.try')}</a><a class="lcard-try" href="/build/save?id=${g.id}">${ico('📁', { size: 18 })} ${t('folders.save')}</a></div>`;
   };
   const cards = list => html`<ul class="cardgrid lcards">${list.map(g => html`<li class="lcard">${gameCard(g, { meta: meta(g) })}${acts(g)}</li>`)}</ul>`;
   // Courses (not in the "two players" or "live" views): progress for players, Assign for staff.
@@ -595,7 +596,7 @@ router.get('/learn', (req, res) => {
   const subj = SUBJECTS.find(x => x.key === f.subject);
   const chip = (on, link, label, emoji = '') => html`<a class="chip${on ? ' on' : ''}" href="${link}" rel="nofollow"${on ? raw(' aria-current="true"') : ''}>${emoji ? html`<span aria-hidden="true">${emoji}</span>` : ''}${label}</a>`;
   // Kids' "Got a game code from your teacher?" (grown-ups and staff have Join in the top bar), under the games.
-  const joinDoor = live && !staff && !isGrownup(u) ? html`<div class="home-join learn-join"><a class="door door-join" href="/join" id="learn-join"><span class="door-e" aria-hidden="true">🎟️</span><span class="door-t"><span class="door-h">${t('learn.tab.joinH')}</span><span class="door-s">${t('live.entry.join')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : '';
+  const joinDoor = live && !staff && !isGrownup(u) ? html`<div class="home-join learn-join"><a class="door door-join" href="/join" id="learn-join"><span class="door-e" aria-hidden="true">${ico('🎟️', { size: 40 })}</span><span class="door-t"><span class="door-h">${t('learn.tab.joinH')}</span><span class="door-s">${t('live.entry.join')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : '';
   // Live class games: first for staff (they host them) and for students in a class; under the learning games for
   // everyone else (a kid at home plays the learning games; live modes need a class).
   const liveFirst = staff || (!out && classesOf(u.id, 'student').length > 0);
@@ -610,14 +611,14 @@ router.get('/learn', (req, res) => {
     return html`<li><a class="lp-hub panel" href="${lp(req, `/learn/${h.slug}`)}"><span class="lp-hub-e" aria-hidden="true">${h.emoji}</span><span><span class="lp-hub-t">${t('learn.tab.hubNamed', { subject: subjName(sx.key), hub: t(`learn.hubs.${h.key}.name`) })}</span>${el(t, 'span', `learn.hubs.${h.key}.short`, {}, ' class="lp-hub-d"')}</span></a></li>`; };
   const forVisitors = out || staff || isGrownup(u);
   const kidEnd = !out && !staff && !isGrownup(u);
-  const liveSec = liveList.length ? html`<section class="lp-sec" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">📡 ${t('learn.tab.live')}</h2>
+  const liveSec = liveList.length ? html`<section class="lp-sec" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">${ico('📡', { size: 28 })} ${t('learn.tab.live')}</h2>
       <p class="small muted">${staff ? t('learn.tab.liveStaff') : t('learn.tab.liveText')}</p>${cards(liveList)}</section>` : '';
   const body = html`<div class="lp learn-tab">
     ${seenCrumbs.length ? html`<nav class="crumbs small" aria-label="${t('learn.crumbs')}"><ol>${seenCrumbs.map(([name, p], i) => html`<li>${i < seenCrumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>` : ''}
     ${out ? html`<section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
       ${el(t, 'h1', 'learn.index.h1', {}, ' id="lp-h1"')}
       ${el(t, 'p', 'learn.index.lead', {}, ' class="lead"')}
-    </section>` : html`<div class="pagehead learn-head"><h1 id="lp-h1"><span aria-hidden="true">📚</span> ${t('learn.tab.h1')}</h1><p class="muted">${staff ? t('learn.tab.leadStaff') : t('learn.tab.lead')}</p></div>`}
+    </section>` : html`<div class="pagehead learn-head"><h1 id="lp-h1">${ico('📚', { size: 36 })} ${t('learn.tab.h1')}</h1><p class="muted">${staff ? t('learn.tab.leadStaff') : t('learn.tab.lead')}</p></div>`}
     <form class="learn-filters" id="filters" method="get" action="${lp(req, '/learn')}" aria-label="${t('learn.tab.filters')}">
       <div class="chips scroll" role="group" aria-label="${t('learn.tab.subject')}">
         ${chip(!f.subject, href({ subject: '' }), t('learn.tab.subjects.all'))}
@@ -638,10 +639,10 @@ router.get('/learn', (req, res) => {
       </div>
     </form>
     ${subj && subj.hub ? html`<p class="learn-more"><a href="${lp(req, `/learn/${subj.hub}`)}">${t('learn.tab.moreAbout', { subject: subjName(subj.key) })} <span class="flip" aria-hidden="true">→</span></a></p>` : ''}
-    ${f.how === 'two' || f.how === 'live' || std ? '' : html`<div class="home-join learn-join learn-library"><a class="door" href="/library" id="learn-library"><span class="door-e" aria-hidden="true">📚</span><span class="door-t"><span class="door-h">${t('library.door.title')}</span><span class="door-s">${staff ? t('library.door.staff', { count: LIB.books().length }) : t('library.door.kids', { count: LIB.books().length })}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>`}
+    ${f.how === 'two' || f.how === 'live' || std ? '' : html`<div class="home-join learn-join learn-library"><a class="door" href="/library" id="learn-library"><span class="door-e" aria-hidden="true">${ico('📚', { size: 40 })}</span><span class="door-t"><span class="door-h">${t('library.door.title')}</span><span class="door-s">${staff ? t('library.door.staff', { count: LIB.books().length }) : t('library.door.kids', { count: LIB.books().length })}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>`}
     ${courseMarkup}
     ${liveFirst ? liveSec : ''}
-    <section class="lp-sec" id="learn-games" aria-labelledby="learn-games-h"><h2 id="learn-games-h">🎓 ${t('learn.tab.games')}</h2>
+    <section class="lp-sec" id="learn-games" aria-labelledby="learn-games-h"><h2 id="learn-games-h">${ico('🎓', { size: 28 })} ${t('learn.tab.games')}</h2>
       ${grid.length ? cards(grid) : liveList.length ? '' : html`<p class="notice">${t('learn.tab.none')} <a href="${lp(req, '/learn')}#filters">${t('learn.tab.clear')}</a></p>`}
       ${staff && [...grid, ...liveList].some(g => codesOf(g.slug).length) ? stdNotice(t) : ''}</section>
     ${liveFirst ? '' : liveSec}
@@ -654,8 +655,8 @@ router.get('/learn', (req, res) => {
     ${forVisitors ? html`<section class="lp-sec" id="ages" aria-labelledby="ages-h">${el(t, 'h2', 'learn.index.ages', {}, ' id="ages-h"')}
       <ul class="lp-hubs">${AGES.map(a => card(`/learn/${a.slug}`, a.emoji, `learn.ages.${a.key}.name`, `learn.ages.${a.key}.short`))}</ul></section>
     <section class="lp-sec" id="who" aria-labelledby="who-h">${el(t, 'h2', 'learn.index.who', {}, ' id="who-h"')}
-      <ul class="chips lp-more"><li><a class="chip" href="${lp(req, '/teachers')}"><span aria-hidden="true">🍎</span>${t('learn.teachersLink')}</a></li>
-        <li><a class="chip" href="${lp(req, '/parents')}"><span aria-hidden="true">👪</span>${parentsLabel(t, 'learn.parentsLink')}</a></li></ul></section>` : ''}
+      <ul class="chips lp-more"><li><a class="chip" href="${lp(req, '/teachers')}">${ico('🍎', { size: 18 })}${t('learn.teachersLink')}</a></li>
+        <li><a class="chip" href="${lp(req, '/parents')}">${ico('👪', { size: 18 })}${parentsLabel(t, 'learn.parentsLink')}</a></li></ul></section>` : ''}
     ${kidEnd ? joinDoor : ''}
   </div>`;
   const items = [...HUBS.map(h => [`/learn/${h.slug}`, t(`learn.hubs.${h.key}.name`)]), ...AGES.map(a => [`/learn/${a.slug}`, t(`learn.ages.${a.key}.name`)])]
@@ -704,7 +705,7 @@ router.get('/learn/:hub', (req, res) => {
     <section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
       ${raw(`<h1 id="lp-h1"${fb(t, `${k}.h1`)}><span aria-hidden="true">${hub.emoji}</span> ${tHtml(t, `${k}.h1`)}</h1>`)}
       ${el(t, 'p', `${k}.lead`, {}, ' class="lead"')}
-      ${band ? html`<p class="lp-grades"><span aria-hidden="true">🎒</span> ${el(t, 'span', 'learn.grades', band)}</p>` : ''}
+      ${band ? html`<p class="lp-grades">${ico('🎒', { size: 18 })} ${el(t, 'span', 'learn.grades', band)}</p>` : ''}
     </section>
     ${hub.extra === 'builder' ? builder(req, t) : html`<section class="lp-sec" aria-label="${t('learn.gamesHeading')}">${list.length ? list.map(gameItem) : html`<p class="notice">${t('learn.noGames')}</p>`}</section>`}
     ${hub.extra === 'tracks' ? tracks(t) : ''}
@@ -715,8 +716,8 @@ router.get('/learn/:hub', (req, res) => {
     ${inClassLine(req)}
     <section class="lp-sec" aria-labelledby="more-h">${el(t, 'h2', 'learn.moreHeading', {}, ' id="more-h"')}
       <ul class="chips lp-more">${others.map(h => html`<li><a class="chip" href="${lp(req, `/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span>${t(`learn.hubs.${h.key}.name`)}</a></li>`)}
-        <li><a class="chip" href="${lp(req, '/teachers')}"><span aria-hidden="true">🍎</span>${t('learn.teachersLink')}</a></li>
-        <li><a class="chip" href="${lp(req, '/parents')}"><span aria-hidden="true">👪</span>${parentsLabel(t, 'learn.parentsLink')}</a></li></ul>
+        <li><a class="chip" href="${lp(req, '/teachers')}">${ico('🍎', { size: 18 })}${t('learn.teachersLink')}</a></li>
+        <li><a class="chip" href="${lp(req, '/parents')}">${ico('👪', { size: 18 })}${parentsLabel(t, 'learn.parentsLink')}</a></li></ul>
       ${t.own('learn.byAgeHeading') ? html`${el(t, 'h2', 'learn.byAgeHeading', {}, ' class="lp-sub"')}
       <ul class="chips lp-more">${AGES.map(a => html`<li><a class="chip" href="${lp(req, `/learn/${a.slug}`)}"><span aria-hidden="true">${a.emoji}</span>${t(`learn.ages.${a.key}.name`)}</a></li>`)}</ul>` : ''}
     </section>

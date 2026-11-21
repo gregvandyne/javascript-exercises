@@ -345,7 +345,7 @@ const SCHOOL_TABS = ['classes', 'people', 'settings'];
 function chatOffNotice(req, s, tab) {
   const t = req.t, st = S.settingsOf(s);
   if (!st.chatNotice || st.chat !== 'off' || s.archived_at || tab === 'settings') return '';
-  return html`<p class="notice warn" id="chat-off-notice" role="status"><span aria-hidden="true">🛡️</span> ${t('school.settings.chatNoticeShort')} <a class="btn btn-sm" href="/school/${s.slug}?tab=settings#set-chat">${t('school.tabs.settings')}</a></p>`;
+  return html`<p class="notice warn" id="chat-off-notice" role="status">${ico('🛡️', { size: 18 })} ${t('school.settings.chatNoticeShort')} <a class="btn btn-sm" href="/school/${s.slug}?tab=settings#set-chat">${t('school.tabs.settings')}</a></p>`;
 }
 // /school: the School tab of a school admin's menu. An admin of one school goes to its People tab; of several, picks
 // one; anyone else (teachers, students, kids, the platform admin who isn't a school's admin) gets a 404.
@@ -356,7 +356,7 @@ router.get('/school', requireUser, (req, res) => {
   // The School tab opens on the overview: the setup checklist and the classes (People is one tap away).
   if (list.length === 1) return res.redirect(302, `/school/${encodeURIComponent(list[0].slug)}`);
   const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  const body = html`<div class="pagehead"><h1${en('school.pick.title')}>🏛️ ${t('school.pick.title')}</h1></div>
+  const body = html`<div class="pagehead"><h1${en('school.pick.title')}>${ico('🏛️', { size: 36 })} ${t('school.pick.title')}</h1></div>
     <p class="muted"${en('school.pick.text')}>${t('school.pick.text')}</p>
     <div class="classgrid">${list.map(x => html`<div class="panel classcard"><a class="cc-name cc-link" href="/school/${x.slug}"><b>${x.name}</b></a></div>`)}</div>`;
   page(req, res, { title: t(t.own('school.pick.title') ? 'school.pick.title' : 'nav.schools'), active: 'school', body, head: CSS });
@@ -456,7 +456,7 @@ function schoolStats(req, s, live) {
     <li><a href="${people}#staff">${ico('🍎', { size: 18 })} ${t('school.stats.staff', { count: staff.length })}</a></li>
     <li><a href="${people}#students">${ico('👩‍🎓', { size: 18 })} ${t('school.class.studentsN', { count: students.length })}</a></li>
     ${unplaced ? html`<li class="warn"><a href="${people}#students">${ico('🧭', { size: 18 })} ${t('school.stats.unplaced', { count: unplaced })}</a></li>` : ''}
-    ${toRead ? html`<li class="warn"><a href="${Object.keys(byClass).filter(id => byClass[id]).length > 1 ? '#class-list' : `/class/${most.id}/progress#to-review`}">✍️ ${t('progress.teach.toRead', { count: toRead })}</a></li>` : ''}
+    ${toRead ? html`<li class="warn"><a href="${Object.keys(byClass).filter(id => byClass[id]).length > 1 ? '#class-list' : `/class/${most.id}/progress#to-review`}">${ico('✍️', { size: 18 })} ${t('progress.teach.toRead', { count: toRead })}</a></li>` : ''}
   </ul>`;
 }
 function schoolClasses(req, s) {
@@ -476,7 +476,7 @@ function personRow(req, s, p, me, classes, ginfo, live = []) {
   const t = req.t;
   const mine = p.id === me.id; const student = p.role === 'student';
   const second = student
-    ? html`<details class="gedit"><summary class="btn btn-sm" aria-label="${t('school.people.changeGrade', { name: nameOf(p) })}"><span class="gv">${p.grade || '–'} <span aria-hidden="true">✏️</span></span><span class="gx" aria-hidden="true" title="${t('school.cancel')}">✕</span></summary><form class="inline" data-api="/api/schools/${s.id}/members/${p.id}" data-reload data-toast="${t('school.settings.saved')}"><label class="sr-only" for="g-${p.id}">${t('school.people.grade')}</label><input class="input input-sm" id="g-${p.id}" name="grade" value="${p.grade}" maxlength="12" placeholder="${t('school.people.grade')}"><button class="btn btn-sm" type="submit">${t('school.save')}</button></form></details>`
+    ? html`<details class="gedit"><summary class="btn btn-sm" aria-label="${t('school.people.changeGrade', { name: nameOf(p) })}"><span class="gv">${p.grade || '–'} ${ico('✏️', { size: 18 })}</span><span class="gx" aria-hidden="true" title="${t('school.cancel')}">✕</span></summary><form class="inline" data-api="/api/schools/${s.id}/members/${p.id}" data-reload data-toast="${t('school.settings.saved')}"><label class="sr-only" for="g-${p.id}">${t('school.people.grade')}</label><input class="input input-sm" id="g-${p.id}" name="grade" value="${p.grade}" maxlength="12" placeholder="${t('school.people.grade')}"><button class="btn btn-sm" type="submit">${t('school.save')}</button></form></details>`
     : mine ? html`<span>${t('school.people.you', { role: t(`school.roles.${p.role}`) })}</span>`
       : html`<form class="inline" data-api="/api/schools/${s.id}/members/${p.id}" data-reload data-toast="${t('school.settings.saved')}"><label class="sr-only" for="r-${p.id}">${t('school.people.role')}</label><select class="input input-sm" id="r-${p.id}" name="role">${['teacher', 'admin'].map(r => html`<option value="${r}" ${selected(p.role === r)}>${t(`school.roles.${r}`)}</option>`)}</select><button class="btn btn-sm" type="submit">${t('school.save')}</button></form>`;
   return html`<tr${student && !(classes[p.id] || []).length ? raw(' data-noclass') : ''}><td><span class="pp">${avatar(p, 32)}<span><b>${nameOf(p)}</b><span class="small muted"><bdi>@${p.username}</bdi> · ${p.managed_school === s.id ? t('school.people.schoolAccount') : t('school.people.ownAccount')}</span>${googleRosterLine(req, ginfo, p)}</span></span></td>
@@ -490,7 +490,7 @@ function personRow(req, s, p, me, classes, ginfo, live = []) {
           <select class="input input-sm" id="ac-${p.id}" name="classId">${live.filter(c => !(classes[p.id] || []).some(x => x.id === c.id)).map(c => html`<option value="${c.id}">${c.name}</option>`)}</select><button class="btn btn-sm" type="submit">${ico('➕', { size: 18 })} ${t('school.class.addToClass')}</button></form>` : ''}
         <form class="inline menu-form" data-api="/api/schools/${s.id}/members/${p.id}" data-reload data-toast="${t('school.settings.saved')}"><label class="small" for="rn-${p.id}">${t('school.people.changeName')}</label>
           <input class="input input-sm" id="rn-${p.id}" name="rosterName" value="${p.roster_name || ''}" maxlength="60" required><button class="btn btn-sm" type="submit">${t('school.save')}</button></form>
-        ${!student && !p.managed_school ? html`<form data-api="/api/schools/${s.id}/members/${p.id}/not-staff" data-reload data-confirm="${t('school.people.notStaffConfirm', { name: nameOf(p) })}"><button class="btn btn-sm" type="submit">↩️ ${t('school.people.notStaff')}</button></form>` : ''}
+        ${!student && !p.managed_school ? html`<form data-api="/api/schools/${s.id}/members/${p.id}/not-staff" data-reload data-confirm="${t('school.people.notStaffConfirm', { name: nameOf(p) })}"><button class="btn btn-sm" type="submit">${ico('↩️', { size: 18 })} ${t('school.people.notStaff')}</button></form>` : ''}
         <form data-api="/api/schools/${s.id}/members/${p.id}/remove" data-reload data-confirm="${t('school.people.removeConfirm', { name: nameOf(p) })}"><button class="btn btn-sm btn-danger" type="submit">${t('school.people.remove')}</button></form></div></details>`}
     </div></td></tr>`;
 }
@@ -501,7 +501,7 @@ function formerStaffPanel(req, s) {
   return list.length ? html`<details class="libdrop" id="former-staff"><summary class="btn btn-sm">${t('school.people.formerStaff')} <span class="count">${list.length}</span></summary><div>
     <p class="small muted">${t('school.people.formerStaffText')}</p>
     <ul class="plain">${list.map(p => html`<li class="row inv-row"><span><b>${p.roster_name || p.username}</b> <span class="small muted"><bdi>@${p.username}</bdi> · ${t(`school.roles.${p.role}`)}</span></span>
-      <form data-api="/api/schools/${s.id}/members/${p.id}/not-staff" data-reload data-confirm="${t('school.people.notStaffConfirm', { name: p.roster_name || p.username })}"><button class="btn btn-sm" type="submit">↩️ ${t('school.people.notStaff')}</button></form></li>`)}</ul></div></details>` : '';
+      <form data-api="/api/schools/${s.id}/members/${p.id}/not-staff" data-reload data-confirm="${t('school.people.notStaffConfirm', { name: p.roster_name || p.username })}"><button class="btn btn-sm" type="submit">${ico('↩️', { size: 18 })} ${t('school.people.notStaff')}</button></form></li>`)}</ul></div></details>` : '';
 }
 function schoolPeople(req, s) {
   const t = req.t; const staff = S.members(s.id, 'staff'), classes = S.memberClasses(s.id), invites = S.invitesOf(s.id);
@@ -567,7 +567,7 @@ function schoolSettings(req, s) {
     <div class="field"><label for="set-teachersCreateClasses">${t('school.settings.teachersCreate')}</label>${yn('teachersCreateClasses', st.teachersCreateClasses)}</div>
     <div class="field"><label for="set-allowOwnAccounts">${t('school.settings.ownAccounts')}</label>${yn('allowOwnAccounts', st.allowOwnAccounts)}<span class="hint">${t('school.settings.ownAccountsHint')}</span></div>
     <h3>${ico('🎮', { size: 22 })} ${t('school.settings.gameSite')}</h3><p class="small muted">${t('school.settings.gameSiteText')}</p>
-    ${st.chatNotice && st.chat === 'off' ? html`<p class="notice warn" id="chat-notice" role="status"><span aria-hidden="true">🛡️</span> ${t('school.settings.chatNotice')}
+    ${st.chatNotice && st.chat === 'off' ? html`<p class="notice warn" id="chat-notice" role="status">${ico('🛡️', { size: 18 })} ${t('school.settings.chatNotice')}
       <button class="btn btn-sm" type="submit" form="chat-notice-seen">${t('school.settings.chatNoticeKeep')}</button></p>` : ''}
     <div class="field"><label for="set-chat">${t('school.settings.chat')}</label><select class="input" id="set-chat" name="chat" data-hint-classmates="${t('school.settings.chatHint')}" data-hint-off="${t('school.settings.chatHintOff')}"><option value="off" ${selected(st.chat === 'off')}>${t('school.settings.chatOff')}</option><option value="classmates" ${selected(st.chat === 'classmates')}>${t('school.settings.chatClassmates')}</option></select><span class="hint" id="set-chat-hint">${t(st.chat === 'off' ? 'school.settings.chatHintOff' : 'school.settings.chatHint')}</span></div>
     <div class="field"><label for="set-publishing">${t('school.settings.publishing')}</label><select class="input" id="set-publishing" name="publishing" aria-describedby="set-publishing-hint"><option value="school" ${selected(st.publishing === 'school')}>${t('school.settings.publishSchool')}</option><option value="public" ${selected(st.publishing === 'public')}>${t('school.settings.publishPublic')}</option></select><span class="hint" id="set-publishing-hint">${t('school.settings.publishingHint')}</span></div>
@@ -1045,7 +1045,7 @@ function teacherClass(req, res, c) {
     </form></section>
   <section class="panel" aria-labelledby="tch-h"><h2 id="tch-h">${ico('🍎', { size: 28 })} ${t('school.class.teachers')}</h2>
     <p class="small muted">${teachers.length ? t('school.class.teachersText') : t('school.class.noTeacher')}</p>
-    ${teachers.length ? html`<ul class="plain chips-list">${teachers.map(p => html`<li class="pp">${avatar(p, 28)} ${nameOf(p)}${teachers.length > 1 && p.id !== req.user.id ? html`<form class="inline" data-api="/api/classes/${c.id}/students/${p.id}/remove" data-reload data-confirm="${t('school.class.removeTeacherConfirm', { name: nameOf(p) })}"><button class="linkbtn" type="submit" aria-label="${t('school.class.removeTeacher', { name: nameOf(p) })}">✖</button></form>` : ''}</li>`)}</ul>` : ''}
+    ${teachers.length ? html`<ul class="plain chips-list">${teachers.map(p => html`<li class="pp">${avatar(p, 28)} ${nameOf(p)}${teachers.length > 1 && p.id !== req.user.id ? html`<form class="inline" data-api="/api/classes/${c.id}/students/${p.id}/remove" data-reload data-confirm="${t('school.class.removeTeacherConfirm', { name: nameOf(p) })}"><button class="linkbtn" type="submit" aria-label="${t('school.class.removeTeacher', { name: nameOf(p) })}">${ico('✖', { size: 18 })}</button></form>` : ''}</li>`)}</ul>` : ''}
     ${schoolStaff.length ? html`<form class="row" data-api="/api/classes/${c.id}/teachers" data-reload><label class="sr-only" for="at">${t('school.class.addTeacher')}</label><select class="input grow" id="at" name="userId" required><option value="">${t('school.class.teacherChoose')}</option>${staffOptions(t, schoolStaff, req.user)}</select><button class="btn" type="submit">${ico('➕', { size: 18 })} ${t('school.class.addTeacher')}</button></form>`
       : manager ? html`<p class="small"><a href="/school/${s.slug}?tab=people#add-staff">${ico('➕', { size: 18 })} ${t('school.class.addStaffLink')}</a></p>`
         : html`<p class="small muted">${t('school.class.onlyStaff', { school: s.name })} ${admins ? t('school.class.askAdmin', { admins }) : t('school.class.askNoAdmin', { school: s.name })}</p>`}

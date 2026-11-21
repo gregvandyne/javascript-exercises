@@ -6,6 +6,7 @@
 import { html, raw } from './html.js';
 import { VERSION } from './layout.js';
 import * as P from '../services/number-quest-placement.js';
+import { ico } from './icon.js';
 
 // The shared per-boot cache buster, like every other stylesheet: a fixed "?v=1" would keep the old
 // sheet in returning browsers after a deploy (the strand-card contrast fix must actually arrive).
@@ -21,7 +22,7 @@ const GRADES = [['K', 'Kindergarten'], ['1', 'Grade 1'], ['2', 'Grade 2'], ['3',
 export function sortingGamePage({ placement, ttsLangs = [] } = {}) {
   return html`<div class="nq" lang="en" data-tts-langs="${ttsLangs.join(',')}">
   <section class="nq-stage" id="nq-doors">
-    <p class="nq-kicker">🔢 Number Quest</p>
+    <p class="nq-kicker">${ico('🔢', { size: 18 })} Number Quest</p>
     <h1>Tally's Sorting Game</h1>
     <p class="lead">Tally the cat runs the Numberworks. She wants to find your first workshop. Show her what you can do!</p>
     ${placement && placement.disabled ? html`<div class="panel"><p>Your teacher or parent has placed you at <b>${P.nodeInfo(placement.startNode).workshop}</b>, so there is no game to play today.</p><p><a class="btn btn-primary" href="/courses/number-quest">Go to Number Quest</a></p></div>` : html`
@@ -42,7 +43,7 @@ export function sortingGamePage({ placement, ttsLangs = [] } = {}) {
     <div class="nq-tally panel">
       <img class="nq-tally-img" src="/img/csq/chars/tally.webp" alt="Tally the cat" width="219" height="353">
       <p class="nq-tally-says"><b>Tally says:</b> <span id="nq-tally-line">Show me what you can do!</span></p>
-      <button type="button" class="btn" id="nq-listen" hidden>🔊 Listen</button>
+      <button type="button" class="btn" id="nq-listen" hidden>${ico('🔊', { size: 18 })} Listen</button>
     </div>
     <div class="nq-trail" aria-hidden="true"><span class="nq-trail-fill" id="nq-trail-fill"></span><span class="nq-trail-paw">🐾</span></div>
     <p class="nq-strand small muted" id="nq-strand"></p>
@@ -61,7 +62,7 @@ export function sortingGamePage({ placement, ttsLangs = [] } = {}) {
   </section>
 
   <section class="nq-stage" id="nq-result" hidden>
-    <p class="nq-kicker">🔢 Number Quest</p>
+    <p class="nq-kicker">${ico('🔢', { size: 18 })} Number Quest</p>
     <h1 id="nq-result-h">I found your starting workshop!</h1>
     <p class="lead" id="nq-result-workshop"></p>
     <p id="nq-result-beyond" hidden></p>
@@ -83,7 +84,7 @@ export function sortingGamePage({ placement, ttsLangs = [] } = {}) {
 export function startingPointPage({ child, placement, note, canManage }) {
   const info = placement && placement.startNode ? P.nodeInfo(placement.startNode) : null;
   return html`<div class="nq" lang="en">
-  <p class="nq-kicker">🔢 Number Quest · for teachers and parents</p>
+  <p class="nq-kicker">${ico('🔢', { size: 18 })} Number Quest · for teachers and parents</p>
   <h1>Starting Point note</h1>
   ${child ? html`<p class="lead">For ${child.display_name || child.username}.</p>` : ''}
   ${!placement || !placement.startNode ? html`<div class="panel"><p>No placement yet. The Sorting Game has not placed this learner, or they chose to start from the very beginning without one being saved.</p></div>` : html`

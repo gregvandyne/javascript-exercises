@@ -11,6 +11,9 @@ import { renderList } from './list.js';
 import { openEditor } from './editor.js';
 import { renderGenerator, genOn } from './generator.js';
 import { save, saveLabel } from './save.js';
+import { iconHtml } from '../icons.js';
+/** A Fluent icon for an emoji (decorative; public/js/icons.js). */
+const ico = (e, size = 18) => iconHtml(e, { size });
 
 const SUPPORTS = ['watch', 'count', 'guided', 'own'], PURPOSES = ['screen', 'worksheet', 'generator'];
 const narrow = matchMedia('(max-width: 960px)');
@@ -33,7 +36,7 @@ export async function mountPanel(S0, H) {
 
   // ---- the place: a tab beside the Builder (desktop), a sheet (phones)
   const tabs = document.createElement('div'); tabs.className = 'st-lefttabs'; tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', P('switchLabel'));
-  tabs.innerHTML = `<button type="button" role="tab" id="ap-tab-b" aria-selected="true" aria-controls="st-log">🤖 ${E('builder')}</button><button type="button" role="tab" id="ap-tab-a" aria-selected="false" aria-controls="st-activity" tabindex="-1">🧮 ${E('activity')}</button>`;
+  tabs.innerHTML = `<button type="button" role="tab" id="ap-tab-b" aria-selected="true" aria-controls="st-log">${ico('🤖')} ${E('builder')}</button><button type="button" role="tab" id="ap-tab-a" aria-selected="false" aria-controls="st-activity" tabindex="-1">${ico('🧮')} ${E('activity')}</button>`;
   chat.prepend(tabs);
   const box = document.createElement('section'); box.id = 'st-activity'; box.className = 'ap'; box.setAttribute('aria-labelledby', 'ap-h');
   chat.append(box);
@@ -60,27 +63,27 @@ export async function mountPanel(S0, H) {
     const purpose = Array.isArray(c.purpose) && c.purpose.length ? c.purpose : ['screen'];
     const max = gen ? 12 : Math.max(1, Math.min(12, d.problems.length)), count = Math.min(max, Number.isInteger(c.count) ? c.count : 5);
     const busy = !!S.turn;
-    box.innerHTML = `<div class="ap-head"><h2 id="ap-h" tabindex="-1">🧮 ${E('activity')}</h2><span class="muted small">${E('versionN', { n: M.number })}</span><button type="button" class="iconbtn ap-x" data-ap="close" aria-label="${E('close')}">✕</button></div>
+    box.innerHTML = `<div class="ap-head"><h2 id="ap-h" tabindex="-1">${ico('🧮', 28)} ${E('activity')}</h2><span class="muted small">${E('versionN', { n: M.number })}</span><button type="button" class="iconbtn ap-x" data-ap="close" aria-label="${E('close')}">✕</button></div>
       <div class="ap-body">
       <p class="ap-intro">${E('intro')}</p>
       ${M.kit !== M.latest ? `<p class="ap-note">${E('upgradeNote')}</p>` : ''}
-      <section class="ap-card" aria-labelledby="ap-ph"><div class="ap-ch"><h3 id="ap-ph">📝 ${E('problems')}</h3><span class="muted small">${E('inList', { n: d.problems.length })}</span></div>
+      <section class="ap-card" aria-labelledby="ap-ph"><div class="ap-ch"><h3 id="ap-ph">${ico('📝')} ${E('problems')}</h3><span class="muted small">${E('inList', { n: d.problems.length })}</span></div>
         <div class="seg ap-seg" role="group" aria-label="${E('problems')}"><button type="button" data-ap="list" aria-pressed="${!gen}">${E('sameList')}</button><button type="button" data-ap="gen" aria-pressed="${gen}">${E('newEach')}</button></div>
         <div class="ap-listbox"></div></section>
-      ${gen ? `<section class="ap-card" aria-labelledby="ap-gh"><div class="ap-ch"><h3 id="ap-gh">🎲 ${E('genH')}</h3></div><div class="ap-genbox"></div></section>` : ''}
-      <section class="ap-card" aria-labelledby="ap-hh"><div class="ap-ch"><h3 id="ap-hh">🪜 ${E('helpH')}</h3></div><p class="small muted">${E('helpHint')}</p>
+      ${gen ? `<section class="ap-card" aria-labelledby="ap-gh"><div class="ap-ch"><h3 id="ap-gh">${ico('🎲')} ${E('genH')}</h3></div><div class="ap-genbox"></div></section>` : ''}
+      <section class="ap-card" aria-labelledby="ap-hh"><div class="ap-ch"><h3 id="ap-hh">${ico('🪜')} ${E('helpH')}</h3></div><p class="small muted">${E('helpHint')}</p>
         <div class="ap-tiles">${SUPPORTS.map(m => tile('ap-sup', m, supports.includes(m), false, E(`sup.${m}`), E(`supD.${m}`))).join('')}</div>
         <button type="button" class="btn btn-sm ap-more" data-ap="helpmore" aria-expanded="${M.helpMore}">${E(M.helpMore ? 'lessOptions' : 'moreOptions')}</button>
         <div class="field ap-more-box"${M.helpMore ? '' : ' hidden'}><label for="ap-start">${E('startsOn')}</label><select class="input" id="ap-start"${supports.length < 2 ? ' disabled' : ''}>${supports.map(m => `<option value="${m}"${(c.support || supports[0]) === m ? ' selected' : ''}>${E(`sup.${m}`)}</option>`).join('')}</select></div></section>
-      <section class="ap-card" aria-labelledby="ap-ch"><div class="ap-ch"><h3 id="ap-ch">🔢 ${E('countH')}</h3></div>
+      <section class="ap-card" aria-labelledby="ap-ch"><div class="ap-ch"><h3 id="ap-ch">${ico('🔢')} ${E('countH')}</h3></div>
         <div class="ap-step"><button type="button" class="btn" data-ap="minus" aria-label="${E('fewer')}"${count <= 1 ? ' disabled' : ''}>−</button><b aria-live="polite" id="ap-count">${count}</b><button type="button" class="btn" data-ap="plus" aria-label="${E('more')}"${count >= max ? ' disabled' : ''}>+</button>
         <span class="small muted">${gen ? E('countGen') : E('countList', { n: d.problems.length, max })}</span></div></section>
-      <section class="ap-card" aria-labelledby="ap-uh"><div class="ap-ch"><h3 id="ap-uh">🎯 ${E('purposeH')}</h3></div>
+      <section class="ap-card" aria-labelledby="ap-uh"><div class="ap-ch"><h3 id="ap-uh">${ico('🎯')} ${E('purposeH')}</h3></div>
         <div class="ap-tiles">${PURPOSES.map(k => tile('ap-pur', k, purpose.includes(k) && (k !== 'generator' || gen), k === 'generator' && !gen || k === 'screen', E(`pur.${k}`), E(`purD.${k === 'generator' && !gen ? 'needsGen' : k}`))).join('')}</div></section>
       </div>
       <div class="ap-foot">
         <p class="ap-sum small" role="status" aria-live="polite"></p>
-        <div class="ap-footb"><button type="button" class="btn" data-ap="undo"${M.undo.length ? '' : ' disabled'}>↶ ${E('undo')}</button><button type="button" class="btn btn-primary" data-ap="save"${M.changes.length && !busy && !M.stale && (!gen || M.genOk !== false) ? '' : ' disabled'}>💾 ${esc(saveLabel(M))}</button></div>
+        <div class="ap-footb"><button type="button" class="btn" data-ap="undo"${M.undo.length ? '' : ' disabled'}>↶ ${E('undo')}</button><button type="button" class="btn btn-primary" data-ap="save"${M.changes.length && !busy && !M.stale && (!gen || M.genOk !== false) ? '' : ' disabled'}>${ico('💾')} ${esc(saveLabel(M))}</button></div>
       </div>`;
     renderList(M, box.querySelector('.ap-listbox'));
     if (gen) renderGenerator(M, box.querySelector('.ap-genbox'));

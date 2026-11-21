@@ -2480,8 +2480,8 @@
           "learn": "Nach jedem Bauen spielt die App das Spiel etwa 20 Sekunden selbst: Tasten, Tippen, Wischen, und sie prüft, ob sich die Punkte ändern und nichts kaputtgeht."
         }
       },
-      "resumed": "🔄 Der Server wurde neu gestartet, darum hat der Baumeister dort weitergemacht, wo er war.",
-      "resumedV": "🔄 Der Server wurde neu gestartet, darum hat der Baumeister bei Version {v} weitergemacht.",
+      "resumed": "Der Server wurde neu gestartet, darum hat der Baumeister dort weitergemacht, wo er war.",
+      "resumedV": "Der Server wurde neu gestartet, darum hat der Baumeister bei Version {v} weitergemacht.",
       "stopped": {
         "restart": "Der Baumeister hat aufgehört, als unser Server neu gestartet ist. Alles, was er gemacht hat, ist gespeichert.",
         "ai": "Der Baumeister hat aufgehört, als unser Server neu gestartet ist, und der KI-Baumeister ruht sich gerade aus. Alles, was er gemacht hat, ist gespeichert."
@@ -2538,7 +2538,7 @@
       },
       "stillWorking": "Einen Moment, der Baumeister arbeitet noch!",
       "resting": {
-        "text": "😴 Der KI-Baumeister ruht sich gerade aus. Er ist {when} wieder da. Dein Spiel und deine Nachrichten an den Baumeister sind gespeichert, komm dann einfach wieder!",
+        "text": "Der KI-Baumeister ruht sich gerade aus. Er ist {when} wieder da. Dein Spiel und deine Nachrichten an den Baumeister sind gespeichert, komm dann einfach wieder!",
         "today": "heute um {time}",
         "tomorrow": "morgen um {time}",
         "date": "am {date} um {time}"
@@ -3228,7 +3228,7 @@
       "editN": "Aufgabe {n} bearbeiten",
       "add": "Aufgabe hinzufügen",
       "copyN": "Aufgabe {n} kopieren",
-      "editTitle": "✏️ Aufgabe {n} von {total}",
+      "editTitle": "Aufgabe {n} von {total}",
       "kind": {
         "reading": "Skala ablesen",
         "thermometer": "Thermometer",

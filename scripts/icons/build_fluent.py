@@ -5,7 +5,7 @@ Usage: python3 scripts/icons/build_fluent.py <fluent checkout> <glyphs.json>
   <fluent checkout>: a clone of https://github.com/microsoft/fluentui-emoji (a sparse, blob-less clone is enough: the
   files this needs are checked out on demand).
   <glyphs.json>: {"<glyph>": {"name": "<file name>", "folder": "<assets folder>", "big": true|false}}
-Writes flat/<name>.svg (every icon) and 3d/<name>-64.webp + 3d/<name>-128.webp (icons shown at 28 px and up), and copies
+Writes flat/<name>.svg (every icon; numbers rounded to one decimal) and 3d/<name>-64.webp + 3d/<name>-128.webp (icons shown at 28 px and up), and copies
 the license. docs/decisions.md "Icons: Fluent Emoji 3D".
 """
 import json, os, re, subprocess, sys
@@ -32,6 +32,7 @@ for g, s in spec.items():
     if not f: print('no flat', s['folder']); continue
     svg = open(f).read()
     svg = re.sub(r'>\s+<', '><', svg).strip()
+    svg = re.sub(r'(\d\.\d)\d+', r'\1', svg)   # one decimal is plenty in a 32-unit box (keeps public/icons in its budget)
     open(os.path.join(out, 'flat', s['name'] + '.svg'), 'w').write(svg)
     if s.get('big'):
         p = find(s['folder'], '3D')

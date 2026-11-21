@@ -35,6 +35,7 @@ import { teacherHost } from '../services/classlive-access.js';
 import { ART2D_TEMPLATES, ART2D_WORLD_IDS } from '../builder/art2d.js';
 import { LIMITS as UPLOADS } from '../builder/uploads.js';
 import { MAX_INPUT } from '../builder/agent.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 

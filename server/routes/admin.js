@@ -114,7 +114,7 @@ function reportsTab() {
       </div>
     </div>
     <div class="row aacts" style="margin-top:12px">
-      ${g.open_reports || g.hidden_reason ? html`<button class="btn" type="button" data-act="restore" data-id="${g.id}">↩️ Restore &amp; dismiss reports</button>` : ''}
+      ${g.open_reports || g.hidden_reason ? html`<button class="btn" type="button" data-act="restore" data-id="${g.id}">${ico('↩️', { size: 18 })} Restore &amp; dismiss reports</button>` : ''}
       ${g.status === 'suspended' ? html`<button class="btn" type="button" data-act="unsuspend" data-id="${g.id}">▶️ Unsuspend</button>` : html`<button class="btn btn-danger" type="button" data-act="suspend" data-id="${g.id}">${ico('⛔', { size: 18 })} Suspend game</button>`}
     </div>
   </article>`)}</div>`;
@@ -248,7 +248,7 @@ function userPanel(u, me) {
   return html`<section class="panel upanel" style="margin-top:16px">
     <div class="row uhead">${avatar(u, 56)}<div style="flex:1;min-width:180px"><h2 style="margin:0">${u.display_name}</h2><div class="muted">@${u.username}${u.is_guest ? ' · guest' : ''}</div></div>
       ${u.banned ? html`<span class="chip-s bad">${ico('⛔', { size: 18 })} Banned</span>` : html`<span class="chip-s">${ico('✅', { size: 18 })} Active</span>`}</div>
-    <div class="row aacts uacts">${u.is_guest ? '' : html`<a class="btn btn-primary" href="/admin/messages/${encodeURIComponent(u.username)}"><span aria-hidden="true">📬</span> Message</a>`}${u.account_type === 'grownup' ? '' : html`<a class="btn" href="/u/${u.username}">View profile</a>`}
+    <div class="row aacts uacts">${u.is_guest ? '' : html`<a class="btn btn-primary" href="/admin/messages/${encodeURIComponent(u.username)}">${ico('📬', { size: 18 })} Message</a>`}${u.account_type === 'grownup' ? '' : html`<a class="btn" href="/u/${u.username}">View profile</a>`}
       ${u.photo_at ? html`<button class="btn" type="button" data-act="unphoto" data-id="${u.id}" data-name="${u.username}">${ico('🖼️', { size: 18 })} Remove photo</button>` : ''}
       ${u.role === 'admin' ? '' : u.banned ? html`<button class="btn" type="button" data-act="unban" data-id="${u.id}" data-name="${u.username}">Unban</button>` : html`<button class="btn btn-danger" type="button" data-act="ban" data-id="${u.id}" data-name="${u.username}">${ico('⛔', { size: 18 })} Ban</button>`}
       ${[null, 'billing'].includes(adminDeleteRefusal(me, getUser(u.id))) ? html`<a class="btn btn-danger" href="/admin/users/${u.id}/delete" id="u-delete">${ico('🗑️', { size: 18 })} Delete account</a>` : ''}</div>
@@ -342,7 +342,7 @@ function peopleTab(req) {
   <form class="panel nu-form" method="get" action="/admin" role="search">
     <input type="hidden" name="tab" value="people">
     <div class="nu-top"><div class="field"><label for="nu-q">Search</label><input class="input" id="nu-q" name="q" value="${f.search}" placeholder="Username or display name" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
-    <div class="row nu-go"><button class="btn btn-primary" type="submit">Show</button><a class="btn" href="/admin/users.csv?${qs(peopleParams({ ...f, page: 1 }))}" download><span aria-hidden="true">⬇️</span> CSV</a></div></div>
+    <div class="row nu-go"><button class="btn btn-primary" type="submit">Show</button><a class="btn" href="/admin/users.csv?${qs(peopleParams({ ...f, page: 1 }))}" download>${ico('⬇️', { size: 18 })} CSV</a></div></div>
     <details class="nu-more" data-open-wide ${filtered ? raw('open') : ''}><summary><span>Filters &amp; sort <span class="small muted nu-now">· ${desc.length ? `${desc.join(' · ')} · ` : ''}sorted by ${AA.SORTS[f.sort][2].toLowerCase()}, ${dirWords(f)}</span></span></summary><div class="nu-filters">
     ${sel('nu-type', 'type', 'Account type', f.type, [['', 'All types'], ...AU.TYPES.map(k => [k, AU.TYPE_LABEL[k]])])}
     ${sel('nu-active', 'active', 'Active', f.active, Object.entries(AA.ACTIVE))}
@@ -466,7 +466,7 @@ function messagesTab(req) {
       <div class="field"><label for="ann-text">Message</label><textarea class="input" id="ann-text" name="text" maxlength="${team.MAX_TEAM_LEN}" rows="3" placeholder="New games are here! ..."></textarea></div>
       <div class="row"><button class="btn btn-primary" type="submit">Check who it reaches…</button></div>
     </form>
-    ${recent.length ? html`<details class="asection annhist" data-open-wide><summary>Recent announcements (${recent.length})</summary><ul class="small annlist">${recent.map(a => html`<li>${when(a.created_at)} · ${AUDIENCE_LABEL[a.audience] || a.audience}${a.school_name ? ` (${a.school_name})` : ''} · ${int(a.recipients)} people · by @${a.admin_name || '?'}: “${a.body.slice(0, 140)}” ${a.unsent ? html`<b>· unsent</b>` : html`<form class="inline" style="display:inline" data-api="/api/admin/announcements/${a.id}/unsend" data-reload data-toast="Unsent: it's gone from everyone's inbox." data-confirm="Unsend this announcement? It disappears from all ${int(a.recipients)} inboxes."><button class="btn btn-sm" type="submit">↩️ Unsend</button></form>`}</li>`)}</ul></details>` : ''}
+    ${recent.length ? html`<details class="asection annhist" data-open-wide><summary>Recent announcements (${recent.length})</summary><ul class="small annlist">${recent.map(a => html`<li>${when(a.created_at)} · ${AUDIENCE_LABEL[a.audience] || a.audience}${a.school_name ? ` (${a.school_name})` : ''} · ${int(a.recipients)} people · by @${a.admin_name || '?'}: “${a.body.slice(0, 140)}” ${a.unsent ? html`<b>· unsent</b>` : html`<form class="inline" style="display:inline" data-api="/api/admin/announcements/${a.id}/unsend" data-reload data-toast="Unsent: it's gone from everyone's inbox." data-confirm="Unsend this announcement? It disappears from all ${int(a.recipients)} inboxes."><button class="btn btn-sm" type="submit">${ico('↩️', { size: 18 })} Unsend</button></form>`}</li>`)}</ul></details>` : ''}
   </section>
   <section class="panel" aria-labelledby="wel-h">
     <h2 id="wel-h" style="margin-top:0">${ico('👋', { size: 28 })} Welcome messages for new people</h2>
@@ -518,7 +518,7 @@ router.get('/admin', (req, res) => {
   const waiting = Object.values(n).reduce((a, b) => a + (b || 0), 0);
   const tabLink = ([k, e, l]) => html`<a href="/admin?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}><span aria-hidden="true">${e}</span>&nbsp;${l}${n[k] ? html`&nbsp;<span class="badge">${n[k]}</span>` : ''}</a>`;
   const body = html`
-  <div class="ahead"><div class="pagehead adminhead"><h1>${ico('🛡️', { size: 36 })} Admin</h1><div class="row ashort"><a class="btn${c.queue ? ' btn-hot' : ''}" href="/admin?tab=queue" aria-label="Review queue: ${c.queue} game${c.queue === 1 ? '' : 's'} waiting"><span aria-hidden="true">⏳</span> Review${c.queue ? html`&nbsp;<span class="badge">${c.queue}</span>` : ''}</a><a class="btn" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a><a class="btn" href="/admin/emails"><span aria-hidden="true">📧</span> Emails</a><a class="btn" href="/admin/voices"><span aria-hidden="true">🔊</span> Voices</a></div></div>
+  <div class="ahead"><div class="pagehead adminhead"><h1>${ico('🛡️', { size: 36 })} Admin</h1><div class="row ashort"><a class="btn${c.queue ? ' btn-hot' : ''}" href="/admin?tab=queue" aria-label="Review queue: ${c.queue} game${c.queue === 1 ? '' : 's'} waiting">${ico('⏳', { size: 18 })} Review${c.queue ? html`&nbsp;<span class="badge">${c.queue}</span>` : ''}</a><a class="btn" href="/admin/stats">${ico('📊', { size: 18 })} Stats</a><a class="btn" href="/admin/schools">${ico('🏫', { size: 18 })} Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing">${ico('💳', { size: 18 })} Billing</a><a class="btn" href="/admin/emails">${ico('📧', { size: 18 })} Emails</a><a class="btn" href="/admin/voices">${ico('🔊', { size: 18 })} Voices</a></div></div>
   ${aiSpendPanel()}
   <nav class="tabs adminnav" aria-label="Admin sections">
     <input type="checkbox" id="adminnav-t" class="adminnav-t" aria-controls="adminnav-groups">
@@ -555,7 +555,7 @@ router.get('/admin/messages/:username', (req, res) => {
   const line = m => {
     const fromTeam = m.from_id === tu.id;
     return html`<li class="msg ${fromTeam ? 'mine' : 'theirs'} ${m.kind}"><div class="bubble" dir="auto">${chat.present(m, u, tEn).body}</div>
-      <span class="when small muted">${fromTeam ? (m.kind === 'notice' ? 'automatic notice' : m.kind === 'announce' ? `announcement by @${m.admin_name || '?'}` : m.admin_name ? `@${m.admin_name}` : 'automatic welcome') : `@${u.username}`} · ${when(m.created_at)}${m.status === 'unsent' ? ' · unsent (they no longer see it)' : m.status !== 'ok' ? ' · hidden' : ''}</span>${fromTeam && m.kind === 'team' && m.status === 'ok' ? html`<form class="unsend" data-api="/api/admin/team/messages/${m.id}/unsend" data-reload data-toast="Unsent." data-confirm="Unsend this message? It disappears from their inbox (and their grown-up's copy)."><button class="btn btn-sm" type="submit">↩️ Unsend</button></form>` : ''}</li>`;
+      <span class="when small muted">${fromTeam ? (m.kind === 'notice' ? 'automatic notice' : m.kind === 'announce' ? `announcement by @${m.admin_name || '?'}` : m.admin_name ? `@${m.admin_name}` : 'automatic welcome') : `@${u.username}`} · ${when(m.created_at)}${m.status === 'unsent' ? ' · unsent (they no longer see it)' : m.status !== 'ok' ? ' · hidden' : ''}</span>${fromTeam && m.kind === 'team' && m.status === 'ok' ? html`<form class="unsend" data-api="/api/admin/team/messages/${m.id}/unsend" data-reload data-toast="Unsent." data-confirm="Unsend this message? It disappears from their inbox (and their grown-up's copy)."><button class="btn btn-sm" type="submit">${ico('↩️', { size: 18 })} Unsend</button></form>` : ''}</li>`;
   };
   const body = html`
   <div class="pagehead"><h1>${ico('📬', { size: 36 })} ${u.display_name} <span class="muted small">@${u.username}</span></h1><div class="row"><a class="btn" href="/admin?tab=users&amp;username=${encodeURIComponent(u.username)}">${ico('👤', { size: 18 })} User details</a></div></div>
@@ -763,7 +763,7 @@ router.get('/admin/stats', (req, res) => {
         ${top7.map(g => html`<tr><td>${gameLink(g)}</td><td data-label="Plays">${int(g.plays)}</td><td data-label="Players">${int(g.players)}</td><td data-label="Minutes">${int(g.minutes)}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No plays yet this week.</p>`}
     </section>
     <section class="panel"><h2>${ico('🏆', { size: 28 })} All-time favourites</h2>
-      <div class="tblwrap"><table class="tbl atable inl n3"><thead><tr><th>Game</th><th>Plays</th><th>❤️</th><th>★</th></tr></thead><tbody>
+      <div class="tblwrap"><table class="tbl atable inl n3"><thead><tr><th>Game</th><th>Plays</th><th>${ico('❤️', { size: 18 })}</th><th>★</th></tr></thead><tbody>
         ${topAll.map(g => html`<tr><td>${gameLink(g)}</td><td data-label="Plays">${int(g.plays)}</td><td data-label="❤️">${int(g.likes)}</td><td data-label="★">${g.rating ? html`${g.rating} <span class="muted small">(${g.rating_count})</span>` : '–'}</td></tr>`)}</tbody></table></div>
     </section>
     <section class="panel"><h2>${ico('🛠️', { size: 28 })} Top builders</h2>

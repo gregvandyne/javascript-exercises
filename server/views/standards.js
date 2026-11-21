@@ -5,6 +5,7 @@
 import { html } from './html.js';
 import { emptyState, jumpNav } from './components.js';
 import * as FW from '../standards/frameworks.js';
+import { ico } from './icon.js';
 
 const SHORT = { month: 'short', day: 'numeric' };
 const dash = html`<span class="muted">–</span>`;
@@ -64,7 +65,7 @@ export function classBody(req, { c, view, student = null, gameTitles = new Map()
       <label class="small" for="std-grade">${t('standards.class.grade')}</label>
       <select class="input input-sm" id="std-grade" name="grade" data-autosubmit><option value="">${t('standards.class.covered')}</option>${fw.grades.map(g => html`<option value="${g}" ${view.grade === g ? 'selected' : ''}>${t('standards.class.allOf', { grade: gradeName(t, g) })}</option>`)}</select>
       <button class="btn btn-sm" type="submit" data-nojs>${t('cs.standards.show')}</button></form>
-    <a class="btn btn-sm" href="${base}.csv?fw=${view.framework}${view.grade ? `&grade=${view.grade}` : ''}" download>⬇️ ${t('cs.standards.csv')}</a></div>`;
+    <a class="btn btn-sm" href="${base}.csv?fw=${view.framework}${view.grade ? `&grade=${view.grade}` : ''}" download>${ico('⬇️', { size: 18 })} ${t('cs.standards.csv')}</a></div>`;
   const summary = view.summary.length ? html`<ul class="std-summary" aria-label="${t('standards.class.summaryH')}">${view.summary.map(s => html`<li class="panel"><b>${gradeName(t, s.grade)}</b><span>${t('standards.class.summary', { covered: s.covered, total: s.total })}</span>
     <span class="std-bar" aria-hidden="true"><span style="width:${s.total ? Math.round((100 * s.covered) / s.total) : 0}%"></span></span></li>`)}</ul>` : '';
   if (!view.rows.length) {
@@ -76,7 +77,7 @@ export function classBody(req, { c, view, student = null, gameTitles = new Map()
   const L = k => t(`standards.cols.${k}`);
   const sourcesCell = r => {
     const out = [];
-    for (const id of r.sources.lessons) { const x = cl.get(id); if (x) out.push(html`<a href="/class/${c.id}/progress/${x.id}" dir="auto">${x.title}</a>${x.due_at ? html` <span class="nw small muted">📅 ${f.day(x.due_at, SHORT)}</span>` : ''}`); }
+    for (const id of r.sources.lessons) { const x = cl.get(id); if (x) out.push(html`<a href="/class/${c.id}/progress/${x.id}" dir="auto">${x.title}</a>${x.due_at ? html` <span class="nw small muted">${ico('📅', { size: 18 })} ${f.day(x.due_at, SHORT)}</span>` : ''}`); }
     for (const s of r.sources.games) out.push(html`🎮 <span dir="auto">${gameTitles.get(s) || s}</span>`);
     if (r.sources.live) out.push(html`📡 ${t('standards.src.live', { count: r.sources.live })}`);
     for (const s of r.sources.courses) out.push(html`🔢 ${s === 'number-quest' ? t('courses.nq.title') : s}`);
@@ -136,7 +137,7 @@ export function lessonBody(req, { l, steps, tags, framework, filters, results, e
   const targets = [['', t('standards.lesson.whole')], ...steps.map(s => [s.id, stepName(s.id)])];
   const tagged = tags.filter(x => FW.isCcss(x.framework));
   const byTarget = groupBy(tagged, x => x.step_id);
-  const current = html`<section class="panel" id="tagged" aria-labelledby="tagged-h"><h2 id="tagged-h">🎯 ${t('standards.lesson.current')}</h2>
+  const current = html`<section class="panel" id="tagged" aria-labelledby="tagged-h"><h2 id="tagged-h">${ico('🎯', { size: 28 })} ${t('standards.lesson.current')}</h2>
     ${tagged.length ? html`<ul class="plain std-tagged">${targets.filter(([id]) => byTarget.some(([k]) => k === id)).map(([id, name]) => html`<li><h3 class="small" dir="auto">${name}</h3>
       <ul class="plain std-taglist">${byTarget.find(([k]) => k === id)[1].map(x => { const s = FW.CCSS[x.framework].byId(x.code); return html`<li class="std-tag">
         <span class="std-tag-t"><b lang="en" dir="ltr">${x.code}</b> <span class="chip-s">${fwName(t, x.framework)}</span><span class="small muted" lang="en" dir="ltr">${s ? s.statement : ''}</span></span>
@@ -147,14 +148,14 @@ export function lessonBody(req, { l, steps, tags, framework, filters, results, e
   const fwTabs = html`<nav class="chips std-fw" aria-label="${t('standards.picker')}">${FW.CCSS_IDS.map(id => html`<a class="chip${id === framework ? ' on' : ''}" href="${base}?fw=${id}#find"${id === framework ? html` aria-current="page"` : ''}>${fwName(t, id)}</a>`)}</nav>`;
   const domains = fw.domainsIn(filters.grade);
   const isTagged = (code, stepId) => tagged.some(x => x.framework === framework && x.code === code && x.step_id === stepId);
-  const picker = html`<section class="panel" id="find" aria-labelledby="find-h"><h2 id="find-h">🔎 ${t('standards.lesson.find')}</h2>${fwTabs}
+  const picker = html`<section class="panel" id="find" aria-labelledby="find-h"><h2 id="find-h">${ico('🔎', { size: 28 })} ${t('standards.lesson.find')}</h2>${fwTabs}
     <form method="get" action="${base}#find" class="formgrid std-filters" role="search">
       <input type="hidden" name="fw" value="${framework}">
       <div class="field"><label for="sf-g">${t('standards.class.grade')}</label><select class="input" id="sf-g" name="grade" data-autosubmit><option value="">${t('standards.lesson.gradeAny')}</option>${fw.grades.map(g => html`<option value="${g}" ${filters.grade === g ? 'selected' : ''}>${gradeName(t, g)}</option>`)}</select></div>
       <div class="field"><label for="sf-d">${t('standards.lesson.domain')}</label><select class="input" id="sf-d" name="domain" data-autosubmit><option value="">${t('standards.lesson.domainAll')}</option>${domains.map(d => html`<option value="${d}" ${filters.domain === d ? 'selected' : ''}>${d} · ${fw.domains[d]}</option>`)}</select></div>
       <div class="field wide"><label for="sf-q">${t('standards.lesson.search')}</label><input class="input" id="sf-q" name="q" type="search" value="${filters.q}" maxlength="80" placeholder="${framework === 'ccss-ela' ? t('standards.lesson.searchHintEla') : t('standards.lesson.searchHint')}"></div>
       <div class="field"><label for="sf-t">${t('standards.lesson.addTo')}</label><select class="input" id="sf-t" name="to" data-autosubmit data-addto>${targets.map(([id, name]) => html`<option value="${id}" ${filters.to === id ? 'selected' : ''}>${name}</option>`)}</select></div>
-      <div class="formacts wide"><button class="btn btn-primary" type="submit">🔎 ${t('standards.lesson.search')}</button></div>
+      <div class="formacts wide"><button class="btn btn-primary" type="submit">${ico('🔎', { size: 18 })} ${t('standards.lesson.search')}</button></div>
     </form>
     <p class="small muted" role="status">${t('standards.lesson.results', { count: results.total })}${results.total > results.list.length ? html` ${t('standards.lesson.more', { shown: results.list.length })}` : ''}</p>
     ${results.list.length ? html`<ul class="plain std-results">${results.list.map(s => { const on = isTagged(s.id, filters.to); return html`<li class="std-result${s.parent ? ' std-sub' : ''}">
