@@ -23,7 +23,7 @@ import { q, tx, audit } from '../db.js';
 import { getSchool, settingsOf, classDeleted } from './schools.js';
 import { unlinkAll } from './family.js';
 import { currentLivemode } from './stripe.js';
-import { picFile } from './dash.js';
+import { picFile, pdfFile } from './dash.js';
 
 const marks = ids => ids.map(() => '?').join(',');
 /** DELETE FROM table WHERE col IN (ids); nothing to do for no ids. -> rows removed */
@@ -142,6 +142,7 @@ export function deleteSchool(by, schoolId) {
     // Ids and counts only: never the school's name, its domains or anyone's name.
     audit(by.id, 'school.delete', s, { classes: classIds.length, members: counts.school_members, schoolAccounts: schoolAccounts.length });
   });
-  for (const id of pictureIds) { try { fs.unlinkSync(picFile(id)); } catch { /* already gone */ } }
+  // A dash_pictures row is a picture (<id>.jpg) or a Class Board PDF (<id>.pdf): both files go.
+  for (const id of pictureIds) for (const f of [picFile(id), pdfFile(id)]) { try { fs.unlinkSync(f); } catch { /* already gone, or not this kind */ } }
   return { ok: true, counts };
 }

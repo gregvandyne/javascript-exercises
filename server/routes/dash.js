@@ -13,6 +13,10 @@
 //   POST /api/dash/:id/links, /links/:lid/remove           approved links ({ qr: true }: the QR widget's typed website)
 //   POST /api/dash/:id/eyes                   Eyes up on or off
 //   POST /api/dash/:id/pictures, GET /api/dash/:id/pictures, POST /api/dash/:id/pictures/:pid/remove
+// Class Board parity (docs/decisions.md "Class Board: PDF, link tile and stickers"):
+//   POST /api/dash/:id/pdfs                   the class's teacher uploads a PDF for a PDF widget (size cap, PDF only)
+//   GET  /dash/pdfs/:pid                      that PDF: its owner only, while still the class's teacher
+// The link tile and the stickers add no address (stickers come from /img/stickers/, the library's served copy).
 // Stage 2 (docs/decisions.md "Classroom dashboards, stage 2"): everyday widgets. Their changing state (timers, help
 // queue, checks, weather) rides on /live; these only act or fetch once.
 //   POST /api/dash/:id/timers/:wid            a teacher starts, pauses, resets or sets a timer (server time)
@@ -117,7 +121,7 @@ function dashPage(req, res, c, role) {
   if (role === 'teacher') {
     const layouts = D.ensureLayouts(u, c, t);
     const cur = D.currentLayout(u, c, layouts);
-    data = { role, classId: c.id, className: c.name, tz: S.zoneOf(s) || D.FALLBACK_TZ, tzSet: !!S.zoneOf(s), registry: reg, practice: D.practiceFor(c), layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), templates: D.templatesFor(t), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS };
+    data = { role, classId: c.id, className: c.name, tz: S.zoneOf(s) || D.FALLBACK_TZ, tzSet: !!S.zoneOf(s), registry: reg, practice: D.practiceFor(c), layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), templates: D.templatesFor(t), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS, maxStickers: D.MAX_STICKERS };
     top = html`<header class="dash-top" id="dash-top">
       <a class="dash-logo" href="/class/${c.id}" aria-label="${t('dash.top.backClass')}">${wordmark()}</a>
       <span class="dash-sep" aria-hidden="true"></span>
@@ -125,6 +129,7 @@ function dashPage(req, res, c, role) {
       <span class="dash-date" id="dash-date"></span>
       <span class="dash-grow"></span>
       <span class="dash-now" id="dash-now" aria-hidden="true"></span>
+      <button class="btn btn-sm" type="button" id="dash-stickers-btn" aria-expanded="false" aria-controls="dash-stkpanel">${ico('🌟', { size: 18 })} ${t('dash.w.stickers.open')}</button>
       <button class="btn btn-sm" type="button" id="dash-projector" aria-pressed="false">${ico('📽️', { size: 18 })} ${t('dash.top.projector')}</button>
       <button class="btn btn-sm" type="button" id="dash-edit">${ico('✏️', { size: 18 })} ${t('dash.top.edit')}</button>
     </header>
@@ -332,6 +337,26 @@ router.get('/api/dash/:id/pictures', requireUser, (req, res) => {
 router.post('/api/dash/:id/pictures/:pid/remove', requireUser, rateLimit('dash-picture', 60, 3600e3), (req, res) => {
   const x = load(req, res); if (!x) return;
   send(req, res, D.removePicture(req.user, x.c, req.params.pid));
+});
+
+// ---------------------------------------------------------------- PDFs (Class Board parity: the PDF widget)
+// The class's own teacher uploads a PDF (at most D.PDF_MAX_BYTES); only that teacher fetches it back.
+const pdfTooBig = (req, res, next) => (Number(req.get('content-length')) > D.PDF_MAX_BYTES ? fail(req, res, 'pdf_tooBig', 413) : next());
+router.post('/api/dash/:id/pdfs', requireUser, rateLimit('dash-pdf', 30, 3600e3), pdfTooBig, express.raw({ type: () => true, limit: D.PDF_MAX_BYTES + 1024, inflate: false }), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  try {
+    const r = D.savePdf(req.user, x.c, Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0));
+    res.json({ ok: true, id: r.id });
+  } catch (e) {
+    if (e instanceof D.PdfError) return fail(req, res, `pdf_${e.code}`, e.status);
+    throw e;
+  }
+});
+router.get('/dash/pdfs/:pid', (req, res) => {
+  res.set({ 'Cache-Control': 'private, no-store', Vary: 'Cookie', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'", 'Cross-Origin-Resource-Policy': 'same-origin', 'Referrer-Policy': 'no-referrer' });
+  const p = D.getPicture(req.params.pid);
+  if (!p || !D.canSeePdf(req.user, p) || !fs.existsSync(D.pdfFile(p.id))) return res.status(404).end();
+  res.type('application/pdf').set('Content-Disposition', 'inline; filename="document.pdf"').sendFile(D.pdfFile(p.id));
 });
 
 // ================================================================ stage 2: everyday widgets

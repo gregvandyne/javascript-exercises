@@ -6646,6 +6646,8 @@ Stopwatch of its own. Code: `WIDGETS` (timer), `RETIRED`, `migrateWidget(s)`, `t
   timer).
 
 ## Classroom dashboards: stickers widget removed (16 Nov 2026)
+**Reversed on 21 Nov 2026** by the owner: stickers are back as individually placed stickers from the owner's sticker
+library (see "Class Board: PDF, link tile and stickers"). The old emoji stickers widget described here stays dropped.
 Product decision ("Remove the sticker widget"): the **stickers** widget (stage 2) is gone. It is out of the registry
 (`WIDGETS` in `server/services/dash.js`, with its hidden `stamps` setting type, `cleanStamps`, `MAX_STAMPS` and
 `STAMP_COUNT`), so it is no longer in the widget library and neither teachers nor students can add it; its renderer and
@@ -9794,6 +9796,68 @@ Follows "Icons: Fluent Emoji 3D". The owner saw the icons on a phone in the dark
   line (`.lp-jsteps::after`, drawn after the steps) then painted over the icon's `z-index`. The line now has
   `z-index: 0` and each step `z-index: 1`, so the icons are in front during the fade and after. Test:
   `tests/unit/landing-journey-browser.test.js` (phone and laptop, both fade states; it fails without the fix).
+
+## Class Board: PDF, link tile and stickers (21 Nov 2026)
+Owner's Class Board parity spec (vs Classroomscreen), P0 only: a PDF widget, a link tile and stickers. The **stickers
+removal of 16 Nov 2026 is reversed** by the owner (21 Nov 2026). P1 and P2 are not part of this change. Code:
+`WIDGETS`, `cleanLink`, `savePdf`/`canSeePdf`, `stickerKey` and `cleanWidgets` in `server/services/dash.js`; two routes
+in `server/routes/dash.js`; `public/js/dash-pdf.js`, `public/js/dash-link.js`, `public/js/dash-stickers.js`; the
+settings editors and the sticker layer's wiring in `public/js/dash.js`; strings `dash.w.pdf|link|stickers.*` and
+`dash.errors.pdf_*` in every locale (en-GB only where UK spelling differs: Favourites, Maths, Transport).
+- **All three are the teacher's screen and projector only** (`TEACHER_ONLY`, `pin: false`): never pinned, never pushed,
+  never on a student screen, and students can't add them.
+- **PDF widget.** The class's own teacher uploads a PDF (`POST /api/dash/:id/pdfs`: PDF header checked, at most 10 MB,
+  refused from the Content-Length before it is read). It is a `dash_pictures` row with `use = 'pdf'` (no migration: the
+  column is free text) and the file `<dataDir>/dash-pictures/<id>.pdf`, so account deletion (`forgetUser`) and school
+  deletion (`services/school-delete.js`, which now removes `<id>.pdf` too) take it with the pictures. **Only its owner**
+  fetches it (`GET /dash/pdfs/:pid`, while still the class's teacher): not a co-teacher of the same class, another
+  teacher, a school admin or a student, so no teacher can download another's file. `no-store`, a `sandbox` CSP, never
+  served as a picture. A widget may point only at its teacher's own PDF for that class (`ownPictures`). The newest 12
+  per teacher per class are kept. **Decided: pdf.js, self-hosted** (`public/vendor/pdfjs/4.10.38/`, the legacy build so
+  older iPads work, with its `standard_fonts/` and `cmaps/` so PDFs that don't embed their fonts, and CJK ones, draw
+  right; `LICENSE` is Apache 2.0) rather than the browser's own viewer in a frame, which on iPad Safari often shows only
+  the first page with no page controls. Vendored like Three.js (not a `package.json` dependency). One page at a time,
+  fitted inside the widget (redrawn as it resizes), Previous / Next buttons and the arrow keys; `isEvalSupported:
+  false`, no annotations, links or PDF scripts. The page shown lives in the browser while the board is open: **nothing
+  is stored but the uploaded file.**
+- **Link tile.** A title (60) and an address. `cleanLink` (and its browser copy `linkUrl`, tested to agree): http or
+  https only (never `javascript:`, `data:`, `file:` or anything else), no user name or password, a host, at most 500
+  characters; "example.org" is read as https. The tile opens it with `target="_blank" rel="noopener noreferrer"`. The
+  server never fetches it (unlike the site window, which stays https only).
+- **Stickers: the library.** The owner's files in `docs/class-board/sticker-library/` (7 zips, unzipped outside the
+  repo) are built into `public/img/stickers/` by `scripts/build-stickers.js`: the 153 illustrated PNGs (80.5 MB with the
+  greetings) become transparent WebP at most 512 px (`ill/`, alpha untouched: the white die-cut outline and clear
+  corners survive) plus 192 px thumbnails for the panel (`ill/t/`); the 3,504 greeting SVGs are copied byte for byte
+  (`gr/`); `index.json` is the supplied `search-index.json` with each file pointed at its served copy plus its width and
+  height. No keyword is typed or invented. Served total about 7 MB.
+- **Stickers: on the board.** Each placed sticker is **its own entry in the layout** (type `stickers`, `free`: not on
+  the grid): `{ k, x, y, size, r, back }`, the sticker's id in the library, its centre in grid columns and rows (so it
+  stays with the widgets it decorates as the board resizes, and on the projector), its longer side (60 to 600 px on a
+  1200 px wide board, scaled with the board between 0.6x and 1.6x), its turn (0 to 359 degrees) and whether it sits
+  behind the widgets. **Decided: stickers don't count toward the 24 widgets** (a decorated board would run out of room
+  for real widgets); a layout holds at most 60 (`MAX_STICKERS`). One whose sticker isn't in the library (the old emoji
+  widget included) is dropped when sent and when read, so old layouts still load as the removal made them.
+- **Stickers: moving them.** Stickers sit in front of the cards. Tap or click a sticker to select it: drag it
+  anywhere (mouse, touch, pen), drag its corner to resize (proportions kept), drag the round handle to turn (snaps to
+  15 degrees near a step). Its own toolbar has only Duplicate and Delete (owner, 21 Nov 2026: Small / Medium / Large,
+  turn buttons and Bring to front / Send to back were too many buttons, since the handles already size and turn it);
+  the sticker moved, resized or turned last sits on top of the others. Keyboard: arrows move, +/- resize, R turns,
+  Delete deletes. (The saved layout still reads a `back` flag, so nothing breaks if one is ever set.) Every change saves with the layout and can be undone in edit mode. Works on the board
+  itself, in and out of edit mode.
+- **Stickers: the panel.** "Stickers" in the top bar (and Stickers in the widget library) opens a drawer at the side
+  (a sheet at the bottom on a phone). Search box always at the top ("Search stickers"), live, case- and accent-blind,
+  the whole phrase against the sticker's name, words, theme, language and keywords (plus the theme and language names
+  on screen); theme, language and shape filters combine with it; a count ("225 stickers" for "good morning"); 60 at a
+  time, more as it scrolls; empty: "No stickers found for ..." and Clear search. The index is read once and searched in
+  memory (under 1 ms for 3,657). With the search empty: Favorites (starred) and the 12 most recently used. **Decided:
+  recents and favorites live in this browser** (`localStorage`, per teacher), not on the server. A tap puts one sticker
+  in the middle of the board in view; dragging one out of the panel puts it where it is dropped.
+- **Tests.** `tests/unit/dash-board-p0.test.js` (registry, words in every locale, the address check, PDF ownership and
+  the size cap, deletion, the served library against the supplied index, search counts, saving and the caps);
+  `tests/unit/dash-board-p0-browser.test.js` (page 2 of a PDF, the link's new tab, the panel's six search counts, the
+  owner's save test with a mouse, and touch on a phone). `dash-stage2.test.js` now expects the stickers type back
+  (free, teacher only, never pinned) and still drops the old emoji widget; `dash-stage4.test.js` counts the two new
+  routes.
 
 ## Virtual math manipulatives: hold to edit (21 Nov 2026)
 
