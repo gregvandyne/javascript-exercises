@@ -9747,3 +9747,12 @@ lesson text, games and seed games) stay as they are.
   touch starting within 20px of the screen's left or right edge is left to Safari's back/forward swipe (a web page
   can't turn that off, and doing both at once looked broken). Pictures have no save menu or drag ghost in the reader,
   and words aren't selected mid-swipe.
+
+## Story Library: the "You finished" card fixed, and compact on phones (21 Nov 2026)
+
+- Owner's iPhone screenshot: the star in "You finished ..." was as big as the cover (the cover's size rule,
+  `.rd-end-head img`, also caught the star icon in the heading), the heading wrapped around it, and the script's focus
+  on the heading drew a yellow ring. Now the rule is `.rd-end-head > img`, the star is the size of the words, the
+  heading shows no focus ring (it is focused only for screen readers), and on phones (600px and narrower) a small 4:3
+  cover sits beside "You finished ..." so the first question is on the screen. Laptops keep the centered cover.
+  Test: `library-classics-browser.test.js` (star size, no ring, phone layout).

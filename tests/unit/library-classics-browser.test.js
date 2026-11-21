@@ -309,3 +309,20 @@ test('swiping turns the page: a finger drags the page and turns it, a short drag
   assert.deepEqual(errors, []);
   await ctx.close();
 });
+
+test('the "You finished" card: a small star in the line, no focus ring, a compact header on phones', { skip }, async () => {
+  for (const [name, opts] of [['phone', { ...devices['iPhone 13'] }], ['laptop', LAPTOP]]) {
+    const { ctx, page, errors } = await open(null, '/library/sw-0001/read?p=12', opts);
+    await page.waitForTimeout(300);
+    const m = await page.$eval('#rd-end-h', h => ({ star: h.querySelector('img').getBoundingClientRect().height, h: h.getBoundingClientRect().height,
+      outline: getComputedStyle(h).outlineStyle, focused: document.activeElement === h, cover: h.parentElement.querySelector(':scope > img').getBoundingClientRect(),
+      q1: document.querySelector('.rd-q').getBoundingClientRect().top, vh: innerHeight }));
+    assert.ok(m.star < 40, `${name}: the star is icon-sized (${m.star}px)`);
+    assert.ok(m.h < 80, `${name}: the heading is a line or two (${m.h}px)`);
+    if (m.focused) assert.equal(m.outline, 'none', `${name}: no focus ring`);
+    if (name === 'phone') { assert.ok(m.cover.width <= 120, 'a small cover'); assert.ok(m.q1 < m.vh * 0.6, 'the first question is on the screen'); }
+    await shot(page, `finish-${name}`);
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  }
+});
