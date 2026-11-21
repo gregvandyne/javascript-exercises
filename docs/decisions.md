@@ -9756,3 +9756,11 @@ lesson text, games and seed games) stay as they are.
   heading shows no focus ring (it is focused only for screen readers), and on phones (600px and narrower) a small 4:3
   cover sits beside "You finished ..." so the first question is on the screen. Laptops keep the centered cover.
   Test: `library-classics-browser.test.js` (star size, no ring, phone layout).
+
+## Landing page: the "How it works" line stays behind the icons (21 Nov 2026)
+
+- Owner's iPhone: the first time the page opens, the line through the five steps covered their icons. Each step fades
+  in (`.rv-wait`/`.rv-in`, opacity and a transform), which makes it its own layer for the length of the fade, and the
+  line (`.lp-jsteps::after`, drawn after the steps) then painted over the icon's `z-index`. The line now has
+  `z-index: 0` and each step `z-index: 1`, so the icons are in front during the fade and after. Test:
+  `tests/unit/landing-journey-browser.test.js` (phone and laptop, both fade states; it fails without the fix).
