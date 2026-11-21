@@ -3323,6 +3323,31 @@
       "doneMsg": "Bravo ! {right} sur {total} justes du premier coup. Super lecture !",
       "doneShort": "Bravo ! Super lecture !",
       "pagesOf": "Pages {from}-{to} sur {pages}"
+    },
+    "manip": {
+      "board": {
+        "pieceHint": "Touche une pièce pour la choisir et fais-la glisser pour la déplacer. Appuie longuement, fais un clic droit ou appuie sur Maj+F10 pour ses actions. Les notes autocollantes se déplacent partout ; touche-en une pour écrire."
+      },
+      "wheel": {
+        "menu": "Actions pour {label}",
+        "copy": "Copier",
+        "fill": "Remplir",
+        "rotate": "Tourner",
+        "flip": "Retourner",
+        "break": "Casser en 10",
+        "lock": "Verrouiller",
+        "unlock": "Déverrouiller",
+        "delete": "Supprimer",
+        "deleted": "{label} supprimé",
+        "undo": "Annuler",
+        "lockedHint": "Verrouillé. Appuie longuement pour le déverrouiller.",
+        "pieceLocked": "Pièce {label}, verrouillée",
+        "objLocked": "{name}, verrouillé"
+      }
+    },
+    "manip-room": {
+      "actionsFor": "Actions pour {label}",
+      "teacherLock": "Ton enseignant a verrouillé ceci."
     }
   },
   "favorites": {

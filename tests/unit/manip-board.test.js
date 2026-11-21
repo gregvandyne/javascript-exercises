@@ -4,7 +4,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { TOOLS, pieceDefs } from '../../public/js/manip-data.js';
 import { WORLD, OBJECTS, kindsOf, objectTool, objRect, clockSector, addMinutes, migrate, newBoard, reframe, placeObject, snapFor, slotsOf, pieceBox, groupOf,
-  SNAP_PX, ORIGIN, parseFrac, OBJ_MAX } from '../../public/js/manip-board.js';
+  SNAP_PX, ORIGIN, parseFrac, OBJ_MAX, snapOpts, linksPieces, seatedIn, nearSpot, FRAMES } from '../../public/js/manip-board.js';
+import { wheelLayout } from '../../public/js/manip-wheel.js';
 import { buildPractice, fracEquation, fracText, PRACTICE_TABLE, PRACTICE_HELP, PRACTICE_MAX } from '../../public/js/manip-practice.js';
 
 const overlaps = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
@@ -268,4 +269,41 @@ test('checking an answer accepts sensible equivalent forms and never needs the a
   yes('6 square units', '6'); yes('6 square units', '6 sq units'); yes('1 1/2', '3/2');
   yes('1x² + 3x + 2', 'x^2 + 3x + 2'); yes('2x² − 1', '2x²-1'); no('x', '');
   assert.equal(timeOf('quarter to 1'), timeOf('12:45')); assert.deepEqual(valueOf('1,032'), { n: 1032, d: 1 }); assert.equal(centsOf('2.5'), 250);
+});
+
+test('two-color counters never link: no snap to another counter, only into an EMPTY frame cell; other tools still link', () => {
+  const t = SNAP_PX;
+  assert.equal(linksPieces('two-color-counters'), false); assert.equal(linksPieces('linking-cubes'), true);
+  assert.deepEqual(snapOpts('two-color-counters'), { link: false });
+  const a = piece('a', 'pos', 100, 100, 48, 48), b = piece('b', 'neg', 152, 103, 48, 48);
+  assert.equal(snapFor([b], [a], [], t, snapOpts('two-color-counters')), null, 'right beside another counter: stays where dropped');
+  assert.ok(snapFor([b], [a], [], t, snapOpts('linking-cubes')).to, 'the same drop links other pieces');
+  const frame = { id: 'f', k: 'ten-frame', x: 0, y: 200, s: 1, st: { n: 10 } }, cells = slotsOf('two-color-counters', frame);
+  const sitting = piece('s', 'pos', cells[0].x + 6, cells[0].y + 6, 48, 48);
+  // Dropped over cell 0 (taken) next to the counter there: no snap to that counter or into its cell.
+  assert.equal(snapFor([piece('c', 'pos', cells[0].x + 10, cells[0].y + 8, 48, 48)], [sitting], cells, t, { link: false }), null);
+  // Over the empty cell 1: centered in it, joined to nothing.
+  const c = piece('c', 'pos', cells[1].x + 9, cells[1].y + 2, 48, 48), s = snapFor([c], [sitting], cells, t, { link: false });
+  assert.deepEqual([c.x + s.dx, c.y + s.dy, s.to], [cells[1].x + 6, cells[1].y + 6, null]);
+  // A place-value column is not a counter's slot.
+  const chart = { id: 'c', k: 'pv-chart', x: 0, y: 0, s: 1, st: { cols: ['Ones'] } };
+  assert.equal(snapFor([piece('u', 'pos', 20, 60, 48, 48)], [], slotsOf('base-ten-blocks', chart), t, { link: false }), null);
+  // A frame carries the counters seated in its cells (not locked ones, not ones outside).
+  assert.ok(FRAMES.has('ten-frame') && FRAMES.has('double-ten-frame') && !FRAMES.has('mat'));
+  const locked = piece('l', 'neg', cells[2].x + 6, cells[2].y + 6, 48, 48, { locked: true }), away = piece('w', 'pos', 600, 600, 48, 48);
+  assert.deepEqual(seatedIn('two-color-counters', frame, [sitting, locked, away]).map(p => p.id), ['s']);
+  // A copy lands right beside its piece when there is room.
+  assert.deepEqual(nearSpot([{ x: 100, y: 100, w: 48, h: 48 }], { x: 100, y: 100, w: 48, h: 48 }, { x: 0, y: 0, w: 1000, h: 1000 }), { x: 100, y: 158 });
+});
+
+test('the wheel\'s layout: a ring around the finger, moved in up to 36 px near an edge, else a half wheel; always on screen', () => {
+  const on = (L, w, h) => L.pts.every(p => p.x - 24 >= 0 && p.y - 24 >= 0 && p.x + 24 <= w && p.y + 24 <= h);
+  const mid = wheelLayout(195, 330, 5, 390, 664);
+  assert.equal(mid.mode, 'ring'); assert.equal(Math.round(Math.hypot(mid.pts[0].x - 195, mid.pts[0].y - 330)), 64);
+  assert.deepEqual(mid.pts[0], { x: 195, y: 266 }, 'the first button at the top');
+  const near = wheelLayout(80, 330, 5, 390, 664); assert.equal(near.mode, 'ring'); assert.ok(on(near, 390, 664));
+  for (const [x, y] of [[4, 330], [386, 330], [195, 4], [195, 660], [4, 4], [386, 660]]) for (const n of [1, 3, 4, 5, 6]) {
+    const L = wheelLayout(x, y, n, 390, 664); assert.equal(L.pts.length, n); assert.ok(on(L, 390, 664), `${x},${y} n=${n}: ${L.mode}`);
+    if (n > 1) assert.equal(L.mode, 'arc');
+  }
 });

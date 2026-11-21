@@ -3324,6 +3324,31 @@
       "doneMsg": "Fertig! {right} von {total} beim ersten Versuch richtig. Toll gelesen!",
       "doneShort": "Fertig! Toll gelesen!",
       "pagesOf": "Seiten {from}-{to} von {pages}"
+    },
+    "manip": {
+      "board": {
+        "pieceHint": "Tippe auf ein Teil, um es auszuwählen, und zieh es, um es zu bewegen. Halte es gedrückt, klicke mit rechts oder drücke Umschalt+F10 für seine Aktionen. Haftnotizen lassen sich überallhin ziehen; tippe auf eine, um zu schreiben."
+      },
+      "wheel": {
+        "menu": "Aktionen für {label}",
+        "copy": "Kopieren",
+        "fill": "Füllen",
+        "rotate": "Drehen",
+        "flip": "Umdrehen",
+        "break": "In 10 teilen",
+        "lock": "Sperren",
+        "unlock": "Entsperren",
+        "delete": "Löschen",
+        "deleted": "{label} gelöscht",
+        "undo": "Rückgängig",
+        "lockedHint": "Gesperrt. Lange drücken zum Entsperren.",
+        "pieceLocked": "Teil {label}, gesperrt",
+        "objLocked": "{name}, gesperrt"
+      }
+    },
+    "manip-room": {
+      "actionsFor": "Aktionen für {label}",
+      "teacherLock": "Deine Lehrkraft hat das gesperrt."
     }
   },
   "favorites": {

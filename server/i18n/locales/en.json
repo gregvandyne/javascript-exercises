@@ -3412,21 +3412,12 @@
       "board": {
         "label": "{tool} board",
         "emptyPieces": "Tap something in the palette to put it on the board, then drag it. Drag the empty board to move around.",
-        "pieceHint": "Tap a piece on the board for its buttons. Sticky notes can be dragged anywhere; tap one to type."
+        "pieceHint": "Tap a piece to select it and drag it to move it. Hold it, right-click it or press Shift+F10 for its actions. Sticky notes can be dragged anywhere; tap one to type."
       },
       "piece": {
         "label": "Piece {label}",
-        "actions": "Buttons for {label}",
-        "copy": "Copy",
-        "flip": "Flip",
-        "rotate": "Rotate",
-        "fill": "Fill",
-        "lock": "Lock",
-        "unlock": "Unlock",
-        "delete": "Delete",
         "pickBreak": "Tap a piece that can be broken into ten first.",
-        "pickRegroup": "Tap one of ten pieces of the same kind first.",
-        "separate": "Separate"
+        "pickRegroup": "Tap one of ten pieces of the same kind first."
       },
       "note": {
         "label": "Sticky note {n}",
@@ -3514,9 +3505,6 @@
         "delete": "Delete this text"
       },
       "obj": {
-        "actions": "{name}: actions",
-        "copy": "Duplicate",
-        "delete": "Delete",
         "resize": "Drag to resize",
         "move": "{name}: drag to move",
         "full": "At most {n} objects on a board.",
@@ -3539,6 +3527,22 @@
         "right": "right",
         "again": "Try again",
         "result": "{right} of {total} right."
+      },
+      "wheel": {
+        "menu": "Actions for {label}",
+        "copy": "Copy",
+        "fill": "Fill",
+        "rotate": "Rotate",
+        "flip": "Flip over",
+        "break": "Break into 10",
+        "lock": "Lock",
+        "unlock": "Unlock",
+        "delete": "Delete",
+        "deleted": "{label} deleted",
+        "undo": "Undo",
+        "lockedHint": "Locked. Hold it to unlock.",
+        "pieceLocked": "Piece {label}, locked",
+        "objLocked": "{name}, locked"
       }
     },
     "manip-room": {
@@ -3637,7 +3641,9 @@
       "checkScore": "{right}/{total} ✓",
       "checksSwitch": "Students can check answers",
       "checksTitle": "Answers checked",
-      "checkShort": "Check"
+      "checkShort": "Check",
+      "actionsFor": "Actions for {label}",
+      "teacherLock": "Your teacher locked this."
     }
   },
   "favorites": {

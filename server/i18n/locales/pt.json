@@ -3324,6 +3324,31 @@
       "doneMsg": "Pronto! {right} de {total} certas na primeira tentativa. Ótima leitura!",
       "doneShort": "Pronto! Ótima leitura!",
       "pagesOf": "Páginas {from}-{to} de {pages}"
+    },
+    "manip": {
+      "board": {
+        "pieceHint": "Toque numa peça para selecioná-la e arraste para movê-la. Mantenha pressionado, clique com o botão direito ou aperte Shift+F10 para ver as ações. As notas adesivas podem ser arrastadas para qualquer lugar; toque numa para escrever."
+      },
+      "wheel": {
+        "menu": "Ações para {label}",
+        "copy": "Copiar",
+        "fill": "Preencher",
+        "rotate": "Girar",
+        "flip": "Virar",
+        "break": "Dividir em 10",
+        "lock": "Travar",
+        "unlock": "Destravar",
+        "delete": "Apagar",
+        "deleted": "{label} apagado",
+        "undo": "Desfazer",
+        "lockedHint": "Travado. Mantenha pressionado para destravar.",
+        "pieceLocked": "Peça {label}, travada",
+        "objLocked": "{name}, travado"
+      }
+    },
+    "manip-room": {
+      "actionsFor": "Ações para {label}",
+      "teacherLock": "Seu professor travou isto."
     }
   },
   "favorites": {

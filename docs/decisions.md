@@ -9794,3 +9794,56 @@ Follows "Icons: Fluent Emoji 3D". The owner saw the icons on a phone in the dark
   line (`.lp-jsteps::after`, drawn after the steps) then painted over the icon's `z-index`. The line now has
   `z-index: 0` and each step `z-index: 1`, so the icons are in front during the fade and after. Test:
   `tests/unit/landing-journey-browser.test.js` (phone and laptop, both fade states; it fails without the fix).
+
+## Virtual math manipulatives: hold to edit (21 Nov 2026)
+
+The owner tested Fraction Tiles on an iPhone: a tap showed a permanent row of black pill buttons (Copy, Separate, Flip,
+Rotate, Fill, Lock, Delete) on every piece, and Flip mirrored that row backwards (the row was built inside the piece,
+which got `scaleX(-1)`). An approved mockup ("no disc": icon buttons in their own 48 px dark circles, Delete red, in a
+ring with nothing behind them) replaces it. Code: `public/js/manip-wheel.js` (the wheel, the hold timer, the undo
+message), `public/js/manip.js` (each tool's wheel, the actions, the solo board), `public/js/manip-room.js` (the room).
+
+- **Tap, drag, hold.** A tap selects (green outline), no menu. A drag starts after 10 px and moves the snapped group. A
+  hold of 450 ms (a ring fills from 120 ms; moving 10 px first makes it a drag) lifts the piece out of its group about
+  8 px away (1.06x, a shadow), vibrates 12 ms where supported and opens the wheel around the finger; sliding on drags
+  just that piece. **Owner: holding always separates; drag it back to rejoin.** Right-click, a long mouse press,
+  Shift+F10, the ContextMenu key and Enter on a focused piece open the same wheel; arrows and Tab move between icons,
+  Esc closes it and returns focus to the piece.
+- **The wheel** is a fixed overlay on `<body>`, never inside the piece, so it never turns or mirrors. Ring radius 60
+  (4 icons), 64 (5), 70 (more); near an edge it moves inward up to 36 px, else it opens as a half wheel away from the
+  edge. Each icon has an `aria-label` and a tooltip. It closes on a tap outside (that tap is used up), Esc, scrolling,
+  resizing, zooming, or after Copy, Fill, Lock, Break and Delete; Rotate and Flip keep it open. Delete acts at once
+  with a 5-second "Undo" message that uses the board's own Undo. The old `.mp-pbar` row and the objects' Duplicate /
+  Delete `.mp-obar` are gone.
+- **Per tool** (owner): Fraction Tiles, Linking Cubes: Copy, Fill, Rotate (90°), Lock, Delete. Pattern Blocks: the
+  same with 30° turns, plus Flip on the parallelogram only (its outline is drawn the other way; nothing is mirrored).
+  Color Tiles: Copy, Fill, Lock, Delete. Number Rods: Copy, Rotate (90°), Lock, Delete. Base Ten Blocks: Break (on
+  pieces that break), Copy, Rotate (90°), Lock, Delete; Break left the palette, Regroup stays there. Place Value Disks:
+  Break (where possible), Copy, Lock, Delete. Algebra Tiles: Flip, Rotate (90°), Copy, Lock, Delete; Flip turns a tile
+  into its opposite (1/−1, x/−x, x²/−x², y/−y); xy and y² have no opposite tile in the set, so they show no Flip.
+  Money: Copy, Lock, Delete (no trade exists to reuse, so none was added). Two-Color Counters: Flip, Copy, Lock,
+  Delete; Flip turns the counter over (+1 yellow to −1 red and back) by changing its kind, color, label and value: the
+  face squeezes to zero width and opens again, never mirrored. Blue and green counters have no other side: no Flip.
+  **Owner defaults:** Rotate and Copy act on the held piece only (a copy lands right beside it when there is room);
+  Fill stays solid / outline; no tool keeps the old mirror-only Flip (a piece is never drawn mirrored now, old boards
+  included). Fraction Circles, Rekenreks, Hundred Board, Number Lines, Bar Models, XY Coordinate Board, Geoboard and
+  Clock keep their own taps; only their objects' handles get the object wheel.
+- **Lock.** A locked piece shows a lock badge, does not drag (a small shake), does not separate, and its wheel holds
+  only Unlock.
+- **Counters never link** (owner): a counter never joins or snaps to another counter (`linksPieces`, `snapFor`'s
+  `link: false`); it snaps only into an empty frame cell and stays exactly where it is dropped anywhere else.
+- **Objects** (owner, for consistency): every object (frames, mats, charts, clocks, boards) has the same hold wheel on
+  its handle or its empty parts: Lock or Unlock, Copy, Delete. A locked object shows a badge on its handle, does not
+  drag or resize and can't be deleted until unlocked; its own controls still work and counters still snap into a
+  locked frame. **Owner: dragging an unlocked frame carries the counters seated in its cells.** Objects now keep
+  `locked` (and `lockBy`, below) in saved boards, share codes and the room (`cleanObjects`).
+- **The room** behaves the same for teachers and students; locks and flips travel with the square's state like any
+  other change. Permission: the room already keeps the teacher's sticky notes in a student's square as the teacher's
+  (the student can't change or remove them). Locks follow the same model: what the teacher locks in a student's square
+  is stored with `lockBy: 't'` (decided by the server, `lockedBy` in `services/manipulatives.js`); the student gets no
+  wheel for it ("Your teacher locked this.") and the server puts a teacher-locked piece back as it was, and a
+  teacher-locked object back in its place and lock (its own state stays the student's), if a page tries otherwise. A
+  student's own locks carry no author and they may undo them; the teacher may unlock anything.
+- Tests: `tests/unit/manip-wheel-browser.test.js` (iPhone 13 with real touch, the laptop, the room),
+  `tests/unit/manip-board.test.js` (the counters' snap rule, the wheel's layout), `tests/unit/manipulatives.test.js`
+  (lock storage and the room's lock rule).

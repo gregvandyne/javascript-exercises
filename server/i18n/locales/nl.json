@@ -3324,6 +3324,31 @@
       "doneMsg": "Klaar! {right} van {total} in één keer goed. Goed gelezen!",
       "doneShort": "Klaar! Goed gelezen!",
       "pagesOf": "Pagina’s {from}-{to} van {pages}"
+    },
+    "manip": {
+      "board": {
+        "pieceHint": "Tik op een stuk om het te kiezen en sleep het om het te verplaatsen. Houd het ingedrukt, klik met rechts of druk op Shift+F10 voor de acties. Plakbriefjes kun je overal heen slepen; tik op een briefje om te typen."
+      },
+      "wheel": {
+        "menu": "Acties voor {label}",
+        "copy": "Kopiëren",
+        "fill": "Vullen",
+        "rotate": "Draaien",
+        "flip": "Omdraaien",
+        "break": "In 10 breken",
+        "lock": "Vastzetten",
+        "unlock": "Losmaken",
+        "delete": "Verwijderen",
+        "deleted": "{label} verwijderd",
+        "undo": "Ongedaan maken",
+        "lockedHint": "Vastgezet. Houd het ingedrukt om het los te maken.",
+        "pieceLocked": "Stuk {label}, vastgezet",
+        "objLocked": "{name}, vastgezet"
+      }
+    },
+    "manip-room": {
+      "actionsFor": "Acties voor {label}",
+      "teacherLock": "Je leraar heeft dit vastgezet."
     }
   },
   "favorites": {
