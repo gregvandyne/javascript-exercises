@@ -68,6 +68,38 @@
   "oomba-figures/1.1.0/packs/physics.js": {
    "sha256": "966068b5e07764182919bd18d80e92fd1e5d3c4176f23b0dea5ce381abe466e9",
    "sri": "sha384-YPAcWv4CdkzB9dZUXWnz0kMPeUKiooCtAK/f39OSrPml6D2RJ5STDTXdRQzeShjT"
+  },
+  "oomba-figures/1.2.0/LICENSE": {
+   "sha256": "a222c2b3e67474e441a6f0e41413985087c96b45488fe32b49a586cdc777dd6f",
+   "sri": "sha384-GVE87+94tY+GH6kPj/5F4mVZ3fUo64AudYGl24gX1sN2WeTkyxTEScA3xssYqkY2"
+  },
+  "oomba-figures/1.2.0/manifest.json": {
+   "sha256": "599d0a4ce5513989a1cb3482ce40a86a6ea55da30181b969c8929347b4a4b88e",
+   "sri": "sha384-az5L2q1hE3ZKI29b0mYX5q2BpBQ6J6np6Pw7QZB7TssTGG0pHusweq0L9Xr3NMcU"
+  },
+  "oomba-figures/1.2.0/oomba-figures.js": {
+   "sha256": "277746920f077fe5ffaec418b32b7385055075b5d37e9c531e29d1f3e81e46ee",
+   "sri": "sha384-hQhGzZRkyXBjBNjoOtjkhDDEcdLJIaZQ3BcX7ntXibPEtmBciTR+satwuMci+dJ/"
+  },
+  "oomba-figures/1.2.0/packs/chem.js": {
+   "sha256": "5b774313bc7c78be34bc2086c8423885c1c151f8add6c43ca4d46b33f92ea948",
+   "sri": "sha384-xpf24Z6gOSaHrTa3vj7PTGPg1e+uOHyGskaqOJHPoejzBMjW3SHFDnS0BndB/NP7"
+  },
+  "oomba-figures/1.2.0/packs/data.js": {
+   "sha256": "c80162d7a32fc4469e5ec9045c7b5c7427004251e1483cc49189fb0a66a3f740",
+   "sri": "sha384-rnZxJcSLa37+EwOJ1V4LweNWeewVLTDmhTuHXGPq/hyx6aLlbSNkEjvGwA6PzhVe"
+  },
+  "oomba-figures/1.2.0/packs/math.js": {
+   "sha256": "c92cc70a3cade1729f62bfe6c9c44939b749efa30d571b32b7fb81df9060dca1",
+   "sri": "sha384-0t36oGzESEnImbh1C+ZnbxMk/AJm738RoZZBNWNhjoDCwb0pZRp638V9d/8zF3IE"
+  },
+  "oomba-figures/1.2.0/packs/measure.js": {
+   "sha256": "686bc40a9dac68cb4784fe291bb924dfb3d5d9e35a04b2edd14fbd1e1d8042af",
+   "sri": "sha384-Veyne0qGMAY6RJF/H4ixrRzYf2VwMNOYEQabzfP7jg94uBb3RJtk7xWSSKJzxCQl"
+  },
+  "oomba-figures/1.2.0/packs/physics.js": {
+   "sha256": "71a8df338572c5f249c1c4246e4785dc0de7029a72c8d030183665d6527713c9",
+   "sri": "sha384-Udm03LvcH/l655tAYyny8aaEElf1qXQKwUKnv8GjhMrHrVbYXWJn0TJDSj6DNCCW"
   }
  }
 }

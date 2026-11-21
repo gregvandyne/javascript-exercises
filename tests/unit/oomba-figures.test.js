@@ -226,12 +226,12 @@ test('the shipped oomba-figures.js and its packs are a fresh build of figures/sr
   assert.equal(F.version, v);
   assert.equal(F.svg('bohr', { element: 'Na' }), OF.svg('bohr', { element: 'Na' }), 'the frozen file draws what the source draws');
 });
-test('1.1.0 is minified, the core and each pack: no comments but the legal ones (each header, and each ported file\'s Apache 2.0 note, in the file it is in), and smaller', () => {
-  const ported = fs.readdirSync(path.join(ROOT, 'figures/src/ported')).filter(f => f.endsWith('.js'));
+test('the latest version (1.2.0; 1.1.0 was the first) is minified, the core and each pack: no comments but the legal ones (each header, and each ported file\'s Apache 2.0 note, in the file it is in), and smaller', () => {
+  const ported = fs.readdirSync(path.join(ROOT, 'figures/src/ported')).filter(f => f.endsWith('.js')), v = version();
   let notes = 0;
   for (const part of Object.keys(PARTS)) {
-    const js = fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-figures/1.1.0', partFile(part)), 'utf8'), src = bundle(part);
-    assert.ok(js.startsWith(part === 'core' ? '/*! Oomba Figures 1.1.0 |' : `/*! Oomba Figures 1.1.0, the ${part} pack |`), `${part}: the header stays`);
+    const js = fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-figures', v, partFile(part)), 'utf8'), src = bundle(part);
+    assert.ok(js.startsWith(part === 'core' ? `/*! Oomba Figures ${v} |` : `/*! Oomba Figures ${v}, the ${part} pack |`), `${part}: the header stays`);
     const mine = ported.filter(f => PARTS[part].includes(`figures/src/ported/${f}`));
     for (const f of mine) {
       const note = new RegExp(`/\\*! figures/src/ported/${f.replace('.', '\\.')}:\\n[\\s\\S]*?Ported code, used under the Apache License 2\\.0[\\s\\S]*?Changed from the original[\\s\\S]*?\\*/`);
