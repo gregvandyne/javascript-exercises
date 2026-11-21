@@ -3343,6 +3343,12 @@
         "lockedHint": "ロックしました。長押しで解除できます。",
         "pieceLocked": "ピース {label}（ロック中）",
         "objLocked": "{name}（ロック中）"
+      },
+      "text": {
+        "move": "ドラッグしてこの文字を動かす",
+        "resize": "ドラッグしてこの枠の大きさを変える",
+        "smaller": "文字を小さく",
+        "bigger": "文字を大きく"
       }
     },
     "manip-room": {

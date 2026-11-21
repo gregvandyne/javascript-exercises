@@ -3344,6 +3344,12 @@
         "lockedHint": "Vastgezet. Houd het ingedrukt om het los te maken.",
         "pieceLocked": "Stuk {label}, vastgezet",
         "objLocked": "{name}, vastgezet"
+      },
+      "text": {
+        "move": "Sleep om deze tekst te verplaatsen",
+        "resize": "Sleep om de grootte van dit vak te wijzigen",
+        "smaller": "Kleinere tekst",
+        "bigger": "Grotere tekst"
       }
     },
     "manip-room": {

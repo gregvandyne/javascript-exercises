@@ -9911,3 +9911,33 @@ message), `public/js/manip.js` (each tool's wheel, the actions, the solo board),
 - Tests: `tests/unit/manip-wheel-browser.test.js` (iPhone 13 with real touch, the laptop, the room),
   `tests/unit/manip-board.test.js` (the counters' snap rule, the wheel's layout), `tests/unit/manipulatives.test.js`
   (lock storage and the room's lock rule).
+
+## Virtual math manipulatives: answer boxes, text boxes and the coordinate grid (21 Nov 2026)
+
+Owner report from the big board: a long typed answer did not wrap and resizing the box only made the text bigger; text
+boxes could not be resized, made bigger or (reliably) moved; and the coordinate grid could not move a connected line.
+- **Answer boxes** wrap their words (a `textarea`, one paragraph: Enter finishes, new lines become spaces). The corner
+  now changes the box's own width and height (`st.w`, `st.h`; `FREE_SIZE`, `answerSize`, `freeResize` in
+  `manip-board.js`), never its scale, so more of the answer shows at the same font size. Typing past the bottom grows
+  the box (`growAnswer`, up to `ANS.hMax` and the space's edge); past that the words scroll, never clipped silently. The
+  typed answer may be 100 characters now (`ANS.max`, checked the same in "Check my answers"). Works for the student's
+  own box and the teacher's, solo and in the room (the size travels in the object's state like any other change).
+- **Text boxes** (T): while one is being written it shows a small bar above it (a grip to drag it, A− and A+, ×) and a
+  corner to resize it. Four sizes, S 14, M 18 (the default), L 26, XL 36 px (`TEXT_SIZES`); once resized it is a box
+  (`w`, `h`) its words wrap in, growing taller when they need room. No new toolbar: the bar is the existing edit UI.
+  A text not being written still drags from anywhere on it; a tap opens it. A dropped text snaps like a piece: lined up
+  with, or 8 px beside, an edge of anything nearby (`snapBox`). The server keeps `fs` (S, L, XL; M is not stored) and
+  `w`/`h` (both or neither) within `TEXT_BOX` (`textBoxFields`); classmates still get nothing of a student's text.
+- **Why text "could not be moved":** typing near the edge of the board let the browser scroll the board's clipped box
+  (`overflow: hidden` still scrolls for a caret), which shifted everything under the pointer. The board and the room
+  are `overflow: clip` now, so they can never scroll.
+- **Coordinate grid:** points of one color join into a line in the order plotted (each color its own line, in its
+  color); the color swatches pick the color. Dragging a point moves just that point (its line reshapes); dragging the
+  line between points moves the whole line and all its points by whole grid steps, stopped at the grid's edge so the
+  shape is kept (`xyLines`, `xySnap`, `xyMoveLine`). Points have the bigger hit area and sit on top, so a touch near a
+  point takes the point. New: axes with arrowheads and x and y labels, a "Line arrows" switch (arrowheads at both ends
+  of each line) and a "Table" switch (the x/y table, on by default, with each point's color). The server keeps the
+  switches true or false and at most 60 whole-number points with hex colors. Not added (to stay calm): curves, line
+  equations or slope readouts, per-line labels, point naming; possible later if teachers ask.
+- Tests: `tests/unit/manip-text-graph-browser.test.js` (laptop and iPhone 13 with real touch, solo and the room),
+  `tests/unit/manip-board.test.js` (sizes, snapping, the line math), `tests/unit/manipulatives.test.js` (storage limits).

@@ -3343,6 +3343,12 @@
         "lockedHint": "已鎖定。長按即可解鎖。",
         "pieceLocked": "積木 {label}，已鎖定",
         "objLocked": "{name}，已鎖定"
+      },
+      "text": {
+        "move": "拖曳以移動這段文字",
+        "resize": "拖曳以調整這個方框的大小",
+        "smaller": "文字變小",
+        "bigger": "文字變大"
       }
     },
     "manip-room": {

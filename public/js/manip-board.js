@@ -40,7 +40,9 @@ export const OBJECTS = {
     init: () => ({ bars: [{ name: 'Whole', segs: [{ label: 'Part A', value: 3, color: '#7CB342' }, { label: 'Part B', value: 2, color: '#AED581' }] }, { name: 'Compare', segs: [{ label: 'Red', value: 5, color: '#1E88E5' }] }] }),
     size: st => ({ w: 700, h: OBJ_HEAD + 24 + clamp((st.bars || []).length, 1, 8) * 118 }) }],
   'xy-coordinate-board': [{ k: 'xy-coordinate-board', name: 'Coordinate grid', add: 'Add a coordinate grid', start: true,
-    init: () => ({ four: true, labels: true, connect: true, color: '#E53935', pts: [{ x: 3, y: 4, color: '#E53935' }, { x: 6, y: 2, color: '#1E88E5' }] }),
+    // Points of one color join into a line (in the order plotted); arrows: arrowheads at a line's two ends; table: the
+    // x/y table beside the grid (on unless turned off).
+    init: () => ({ four: true, labels: true, connect: true, arrows: false, table: true, color: '#E53935', pts: [{ x: -2, y: -1, color: '#E53935' }, { x: 1, y: 2, color: '#E53935' }, { x: 4, y: 5, color: '#E53935' }] }),
     size: () => ({ w: 720, h: OBJ_HEAD + 476 }) }],
   geoboard: [{ k: 'geoboard', name: 'Geoboard', add: 'Add a geoboard', start: true, init: () => ({ board: 'square', band: [], bands: [], color: '#E53935', fill: true }),
     size: () => ({ w: 432, h: OBJ_HEAD + 462 }) }],
@@ -64,8 +66,100 @@ for (const slug of ['linking-cubes', 'color-tiles', 'number-rods', 'fraction-til
 const FRAC_EQ = { k: 'frac-eq', name: 'Fraction equation', add: 'Add a fraction equation', init: () => ({ a: '1/2', op: '+', b: '1/4', text: '1/2 + 1/4 = ?', ans: '' }), size: st => fracEqSize(st) };
 OBJECTS['fraction-tiles'].unshift(FRAC_EQ); OBJECTS['fraction-circles'].push({ ...FRAC_EQ, init: () => ({ ...FRAC_EQ.init(), shape: 'circles' }) });
 // An answer box, on every tool: "?" to type into (the student's, private like their text), sized for its answer.
-export const ANSWER = { k: 'answer', name: 'Answer', add: 'Add an answer box', init: () => ({ ans: '', size: 'M' }), size: st => ({ w: { S: 170, M: 220, L: 300 }[st && st.size] || 220, h: OBJ_HEAD + 58 }) };
+// Its size is the box's own width and height (st.w, st.h: the box under its handle bar), never a scale: dragging its
+// corner shows more of a long answer, which wraps inside it, at the same font size (owner, 21 Nov 2026).
+export const ANSWER = { k: 'answer', name: 'Answer', add: 'Add an answer box', init: () => ({ ans: '', size: 'M' }), size: st => answerSize(st) };
 for (const slug of Object.keys(OBJECTS)) OBJECTS[slug].push(ANSWER);
+/** An answer box's limits: its typed answer (characters), width (the whole box) and height (under the handle bar). */
+export const ANS = { max: 100, wMin: 120, wMax: 900, hMin: 58, hMax: 600, h: 58, preset: { S: 170, M: 220, L: 300 } };
+/** Kinds sized by their own width and height (a corner drag changes them) instead of a scale. */
+export const FREE_SIZE = new Set(['answer']);
+/** An answer box's size: its preset width (S, M, L) until it is resized; then st.w x st.h, within ANS. */
+export function answerSize(st) {
+  const w = clamp(Math.round(num(st && st.w, ANS.preset[st && st.size] || ANS.preset.M)), ANS.wMin, ANS.wMax);
+  return { w, h: OBJ_HEAD + clamp(Math.round(num(st && st.h, ANS.h)), ANS.hMin, ANS.hMax) };
+}
+/**
+ * A free-size object's corner dragged by (dx, dy) plane pixels: its new st.w and st.h (in its own unscaled pixels, so
+ * the font keeps its size), within its kind's limits and inside the space (it never grows past the space's edge).
+ * o: { x, y, s, st }; space: { w, h }. -> { w, h }
+ */
+export function freeResize(o, dx, dy, space) {
+  const s = num(o.s, 1) || 1, z = answerSize(o.st || {}), h0 = z.h - OBJ_HEAD;
+  const wMax = Math.min(ANS.wMax, Math.floor((space.w - num(o.x)) / s)), hMax = Math.min(ANS.hMax, Math.floor((space.h - num(o.y)) / s) - OBJ_HEAD);
+  return { w: Math.round(clamp(z.w + dx / s, ANS.wMin, wMax)), h: Math.round(clamp(h0 + dy / s, ANS.hMin, hMax)) };
+}
+/** An answer box grown to show all of its text (h: the height its words need, unscaled): never smaller, within ANS. */
+export const grownHeight = (st, need) => Math.max(answerSize(st).h - OBJ_HEAD, Math.min(ANS.hMax, Math.ceil(num(need, 0))));
+
+// ---------------------------------------------------------------- board text (T): its size and box
+/** Board text sizes (font pixels): S, M (the default), L, XL. */
+export const TEXT_SIZES = { S: 14, M: 18, L: 26, XL: 36 };
+export const TEXT_FS = Object.keys(TEXT_SIZES);
+/** A text box's limits, in pixels of its space: width and height (its height grows with its words). */
+export const TEXT_BOX = { wMin: 60, wMax: 1200, hMin: 24, hMax: 800 };
+export const textFont = x => TEXT_SIZES[x && x.fs] || TEXT_SIZES.M;
+/** One size step bigger (dir 1) or smaller (dir -1): S <-> M <-> L <-> XL. */
+export function stepTextSize(fs, dir) { const i = Math.max(0, TEXT_FS.indexOf(fs in TEXT_SIZES ? fs : 'M')); return TEXT_FS[clamp(i + (dir > 0 ? 1 : -1), 0, TEXT_FS.length - 1)]; }
+/** A board text's size fields as they may be stored: fs only when not the default; w and h (a resized box, both
+ *  together) within TEXT_BOX. -> { fs?, w?, h? } */
+export function textBoxFields(n) {
+  const out = {};
+  if (n && n.fs in TEXT_SIZES && n.fs !== 'M') out.fs = n.fs;
+  if (n && Number.isFinite(+n.w) && Number.isFinite(+n.h)) { out.w = Math.round(clamp(+n.w, TEXT_BOX.wMin, TEXT_BOX.wMax)); out.h = Math.round(clamp(+n.h, TEXT_BOX.hMin, TEXT_BOX.hMax)); }
+  return out;
+}
+/** A text box's corner dragged by (dx, dy) pixels of its space, from its size w0 x h0: its new size within TEXT_BOX and
+ *  inside the space (x, y: its place in pixels). -> { w, h } */
+export function textResize(w0, h0, dx, dy, x, y, space) {
+  return { w: Math.round(clamp(w0 + dx, TEXT_BOX.wMin, Math.min(TEXT_BOX.wMax, space.w - x))), h: Math.round(clamp(h0 + dy, TEXT_BOX.hMin, Math.min(TEXT_BOX.hMax, space.h - y))) };
+}
+/** A board text's rectangle in pixels of its space (an unsized one: about as wide as its words, on one line). */
+export function textRect(n, space) {
+  const f = textFont(n), x = num(n.x) * space.w, y = num(n.y) * space.h;
+  if (Number.isFinite(+n.w) && Number.isFinite(+n.h)) return { x, y, w: +n.w, h: +n.h };
+  return { x, y, w: Math.min(360 * (f / 18), 14 + 10 * (f / 18) * String(n.text || '').length), h: Math.round(f * 1.25 + 6) };
+}
+/**
+ * A dragged box's magnetic snap (board text): its left, right, top or bottom edge lines up with, or sits just beside,
+ * an edge of anything nearby (objects, pieces, other texts) when within t pixels; each direction on its own.
+ * b: { x, y, w, h }; others: rectangles. -> { dx, dy }
+ */
+export function snapBox(b, others, t, gap = 8) {
+  let bx = null, by = null;
+  for (const o of others) {
+    const near = b.x < o.x + o.w + 3 * t && b.x + b.w > o.x - 3 * t && b.y < o.y + o.h + 3 * t && b.y + b.h > o.y - 3 * t;
+    if (!near) continue;
+    for (const d of [o.x - b.x, o.x + o.w - (b.x + b.w), o.x + o.w + gap - b.x, o.x - gap - (b.x + b.w)]) if (Math.abs(d) <= t && (bx === null || Math.abs(d) < Math.abs(bx))) bx = d;
+    for (const d of [o.y - b.y, o.y + o.h - (b.y + b.h), o.y + o.h + gap - b.y, o.y - gap - (b.y + b.h)]) if (Math.abs(d) <= t && (by === null || Math.abs(d) < Math.abs(by))) by = d;
+  }
+  return { dx: bx || 0, dy: by || 0 };
+}
+
+// ---------------------------------------------------------------- the coordinate grid: lines and moving them
+/** The grid's range of values: four quadrants -10..10, the first quadrant 0..12. */
+export const xyRange = st => (st && st.four ? { lo: -10, hi: 10 } : { lo: 0, hi: 12 });
+/** The grid's lines: the points of each color, in the order they were plotted, joined (a color with one point has no
+ *  line). -> [{ color, idx: [point indexes] }] */
+export function xyLines(pts) {
+  const by = new Map();
+  (pts || []).forEach((p, i) => { const c = String(p && p.color || ''); if (!by.has(c)) by.set(c, []); by.get(c).push(i); });
+  return [...by].filter(([, idx]) => idx.length > 1).map(([color, idx]) => ({ color, idx }));
+}
+/** A point dragged to (x, y) grid values: on the nearest grid point, inside the grid. -> { x, y } */
+export const xySnap = (x, y, lo, hi) => ({ x: clamp(Math.round(num(x)), lo, hi), y: clamp(Math.round(num(y)), lo, hi) });
+/**
+ * A whole line moved by (dx, dy) grid values: every point of it moves by the same whole number of grid steps, and the
+ * move is cut short so no point leaves the grid (the line keeps its shape). pts: all the points; idx: the line's.
+ * -> new points (the others as they were)
+ */
+export function xyMoveLine(pts, idx, dx, dy, lo, hi) {
+  const on = (pts || []).filter((_, i) => idx.includes(i));
+  if (!on.length) return (pts || []).slice();
+  const xs = on.map(p => num(p.x)), ys = on.map(p => num(p.y));
+  const mx = clamp(Math.round(num(dx)), lo - Math.min(...xs), hi - Math.max(...xs)), my = clamp(Math.round(num(dy)), lo - Math.min(...ys), hi - Math.max(...ys));
+  return pts.map((p, i) => (idx.includes(i) ? { ...p, x: num(p.x) + mx, y: num(p.y) + my } : p));
+}
 export const PV_COL = { w: 136, gap: 6, pad: 10, h: 236 };
 function matSize(st) { return { w: clamp(num(st && st.w, 440), 160, 1600), h: OBJ_HEAD + clamp(num(st && st.h, 290), 80, 1200) }; }
 OBJECTS['base-ten-blocks'][1].size = matSize; OBJECTS['place-value-disks'][1].size = matSize; OBJECTS['two-color-counters'][2].size = matSize;
@@ -177,7 +271,7 @@ export function boxesOf(slug, b, space, { noteW = 176, noteH = 110 } = {}) {
   const ann = b.__ann || {};
   return [...(b.objects || []).map(o => objRect(slug, o)), ...(b.pieces || []).map(p => ({ x: num(p.x), y: num(p.y), w: num(p.w, 40), h: num(p.h, 40) })),
     ...(ann.notes || []).map(n => ({ x: num(n.x) * space.w, y: num(n.y) * space.h, w: noteW, h: noteH })),
-    ...(ann.texts || []).map(n => ({ x: num(n.x) * space.w, y: num(n.y) * space.h, w: Math.min(360, 14 + 10 * String(n.text || '').length), h: 28 }))];
+    ...(ann.texts || []).map(n => textRect(n, space))];
 }
 export function bbox(boxes) {
   if (!boxes.length) return null;

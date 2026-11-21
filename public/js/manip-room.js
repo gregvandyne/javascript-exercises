@@ -12,7 +12,7 @@ import { t, api, toast, esc, copyText } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { toolOf, roomLayout, layoutOf, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H } from '/js/manip-data.js';
 import { WORLD, migrate, fitInto, newBoard, objectTool, kindOf, objSize, objRect, boxesOf, bbox, spotIn, slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, OBJ_MAX, OBJ_MAX_SQUARE, S_MIN, S_MAX,
-  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot } from '/js/manip-board.js';
+  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, freeResize } from '/js/manip-board.js';
 import { openWheel, closeWheel, startHold, shake, SLOP } from '/js/manip-wheel.js';
 
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
@@ -97,7 +97,7 @@ function renderWorld() {
   el.style.width = `${wd.w}px`; el.style.height = `${wd.h}px`;
   el.innerHTML = [...R.areas.values()].sort((a, b) => (a.key === 't' ? -1 : b.key === 't' ? 1 : a.slot - b.slot)).map(areaHtml).join('');
   R.world = el;
-  for (const A of R.areas.values()) bindArea(A.key);
+  for (const A of R.areas.values()) { bindArea(A.key); const ael = !A.hidden && el.querySelector(`.rm-area[data-key="${CSS.escape(A.key)}"]`); if (ael) R.deps.growAnswers(ael, A.st, workSize(A)); }
   applyView();
 }
 function areaHtml(A) {
@@ -192,9 +192,8 @@ function areaInner(A) {
 }
 /** Board text (T): plain words in the theme's ink; while being written, a field with its ×. */
 function textHtml(A, x) {
-  const pos = `left:${(+x.x || 0) * 100}%;top:${(+x.y || 0) * 100}%`, id = esc(x.id);
-  if (R.textEdit && R.textEdit.key === A.key && R.textEdit.id === x.id && canEditNote(A, x)) return `<div class="mp-text editing" data-text="${id}" style="${pos}"><label class="sr-only" for="rt-${id}">${esc(t('js.manip-room.textLabel'))}</label><input id="rt-${id}" class="mp-textin" maxlength="200" value="${esc(x.text)}" placeholder="${esc(t('js.manip-room.textPh'))}" autocomplete="off" enterkeyhint="done">${btn('mp-textx', `data-rtx="${id}" aria-label="${esc(t('js.manip-room.textDelete'))}"`, '×')}</div>`;
-  return `<div class="mp-text${canEditNote(A, x) ? '' : ' ro'}" data-text="${id}" style="${pos}">${esc(x.text)}</div>`;
+  const editing = !!(R.textEdit && R.textEdit.key === A.key && R.textEdit.id === x.id && canEditNote(A, x));
+  return R.deps.textBoxHtml(x, { editing, ro: !canEditNote(A, x), del: 'data-rtx', id: `rt-${x.id}`, label: t('js.manip-room.textLabel'), ph: t('js.manip-room.textPh'), delLabel: t('js.manip-room.textDelete') });
 }
 const canEditNote = (A, n) => A.editable && R.room.status === 'active' && (R.role === 'teacher' || n.by !== 't');
 function noteHtml(A, n, i) {
@@ -220,7 +219,8 @@ function renderArea(key) {
   el.classList.toggle('active', R.role === 'teacher' && R.active === key);
   el.querySelector('.rm-body').outerHTML = areaInner(A);
   bindArea(key); R.fresh = null;
-  const ta = el.querySelector('textarea.mp-notetext, input.mp-textin'); if (ta) ta.focus({ preventScroll: true });
+  if (!A.hidden) R.deps.growAnswers(el, A.st, workSize(A));   // a long answer shows whole (its box grows; saved with its next change)
+  const ta = el.querySelector('textarea.mp-notetext, textarea.mp-textin'); if (ta) ta.focus({ preventScroll: true });
 }
 function bindArea(key) {
   const A = R.areas.get(key), el = R.world.querySelector(`.rm-area[data-key="${CSS.escape(key)}"]`);
@@ -494,6 +494,7 @@ function bind() {
     edit(R.active, st0 => { const st = settingsOf(A, st0); if (!st) return false; st[k] = typeof st[k] === 'boolean' ? !!v : typeof st[k] === 'number' ? (Number.isFinite(+v) ? +v : st[k]) : v; if (R.impl.onSet) R.impl.onSet(st, k); });
   });
   el.addEventListener('keydown', e => {
+    if (e.target.matches('textarea.mp-answer') && e.key === 'Enter') { e.preventDefault(); e.target.blur(); return; }   // one line of words: Enter finishes
     if (e.target.matches('.mp-textin') && (e.key === 'Enter' || e.key === 'Escape')) { e.preventDefault(); commitText(); return; }
     // A focused piece or object handle: Shift+F10, the ContextMenu key or Enter opens its wheel.
     if (!R.deps.wheelKey(e)) return;
@@ -503,12 +504,13 @@ function bind() {
     if (pe) pieceMenu(area.dataset.key, pe.dataset.pid, x, y, true); else objMenu(area.dataset.key, oh.closest('.mp-obj').dataset.oid, x, y, true);
   });
   el.addEventListener('contextmenu', e => { if (e.target.closest('.rm-area .mp-piece, .rm-area .mp-obj')) e.preventDefault(); });
-  el.addEventListener('focusout', e => { if (e.target.matches('.mp-textin')) setTimeout(() => { const box = e.target.closest('.mp-text'); if (R && R.textEdit && !(box && box.contains(document.activeElement))) commitText(); }, 0); });
+  el.addEventListener('focusout', e => { if (e.target.matches('.mp-textin')) setTimeout(() => { const box = e.target.closest('.mp-text'); if (R && R.textEdit && !(box && box.contains(document.activeElement)) && !(Date.now() - (R.textHold || 0) < 700)) commitText(); }, 0); });
+  el.addEventListener('mousedown', e => { if (e.target.closest('.mp-text.editing .mp-textbar, .mp-text.editing [data-trz]')) e.preventDefault(); });   // the field keeps its focus
   el.addEventListener('input', e => {
     const area = e.target.closest('.rm-area'), A = area && R.areas.get(area.dataset.key); if (!A || !A.editable) return;
     if (e.target.classList.contains('mp-seglabel') && R.impl.input) { const oe = e.target.closest('.mp-obj'), o = oe && A.st.objects.find(x => x.id === oe.dataset.oid); if (o) { R.impl.input(o.st, e.target); queueSave(A.key); } }
-    if (e.target.classList.contains('mp-answer')) { const o = A.st.objects.find(x => x.id === e.target.dataset.oid); if (o) { o.st.ans = e.target.value.slice(0, 40); queueSave(A.key); if (R.checked && o.id in R.checked) { delete R.checked[o.id]; const box = e.target.closest('.mp-ansbox'); box.classList.remove('ok', 'again'); box.querySelector('.mp-checkmark')?.remove(); } } return; }
-    if (e.target.classList.contains('mp-textin') && R.textEdit) { const x = A.ann.texts.find(n => n.id === R.textEdit.id); if (x) x.text = e.target.value.slice(0, 200); }
+    if (e.target.classList.contains('mp-answer')) { const o = A.st.objects.find(x => x.id === e.target.dataset.oid); if (o) { if (e.target.value.includes('\n')) e.target.value = e.target.value.replace(/\n+/g, ' '); o.st.ans = e.target.value.slice(0, ANS.max); R.deps.growAnswer(o, e.target, workSize(A)); queueSave(A.key); if (R.checked && o.id in R.checked) { delete R.checked[o.id]; const box = e.target.closest('.mp-ansbox'); box.classList.remove('ok', 'again'); box.querySelector('.mp-checkmark')?.remove(); } } return; }
+    if (e.target.classList.contains('mp-textin') && R.textEdit) { if (e.target.value.includes('\n')) e.target.value = e.target.value.replace(/\n+/g, ' '); const x = A.ann.texts.find(n => n.id === R.textEdit.id); if (x) { x.text = e.target.value.slice(0, 200); R.deps.growText(x, e.target, workSize(A)); } }
     if (e.target.classList.contains('mp-notetext') && R.editing) { const n = A.ann.notes.find(x => x.id === R.editing.id); if (n) { n.text = e.target.value.slice(0, 300); queueSave(A.key); } }
   });
 }
@@ -524,6 +526,7 @@ function down(e) {
     R.gesture = { kind: 'pinch', d: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 };
     return;
   }
+  if (e.target.closest('.mp-text.editing .mp-textbar, .mp-text.editing [data-trz]')) R.textHold = Date.now();   // the text's own buttons keep it open
   if (e.target.closest(UI)) return;
   const areaEl = e.target.closest('.rm-area'), A = areaEl && R.areas.get(areaEl.dataset.key);
   const live = R.room.status === 'active';
@@ -539,7 +542,7 @@ function down(e) {
     }
     const before = JSON.stringify({ st: A.st, ann: A.ann });
     const rz = !R.annotate && !R.textMode && e.target.closest('[data-oresize]');
-    if (rz) { const o = A.st.objects.find(x => x.id === rz.dataset.oresize); if (o && !o.locked) { R.gesture = { kind: 'resize', key: A.key, o, nat: objSize(R.room.tool, o), s0: o.s, sx: e.clientX, sy: e.clientY, before, el: rz.closest('.mp-obj'), moved: false }; rm.setPointerCapture(e.pointerId); e.preventDefault(); return; } }
+    if (rz) { const o = A.st.objects.find(x => x.id === rz.dataset.oresize); if (o && !o.locked) { R.gesture = { kind: 'resize', key: A.key, o, nat: objSize(R.room.tool, o), s0: o.s, st0: JSON.stringify(o.st), sx: e.clientX, sy: e.clientY, before, el: rz.closest('.mp-obj'), moved: false }; rm.setPointerCapture(e.pointerId); e.preventDefault(); return; } }
     const pieceEl = !R.textMode && e.target.closest('.mp-piece');
     if (pieceEl && A.st.pieces) {
       const p = A.st.pieces.find(x => x.id === pieceEl.dataset.pid);
@@ -554,6 +557,14 @@ function down(e) {
       }
     }
     const textEl = e.target.closest('.mp-text[data-text]');
+    if (textEl && textEl.classList.contains('editing')) {
+      // The text being written: its grip moves it, its corner resizes it (its buttons and field are its own).
+      const x = A.ann.texts.find(n => n.id === textEl.dataset.text);
+      if (x && canEditNote(A, x) && R.deps.textBoxPointer(e, { x, el: textEl, space: workSize(A), zoom: () => R.view.z, others: () => R.deps.othersThan(R.room.tool, { ...A.st, __ann: A.ann }, workSize(A), x.id),
+        start: () => { R.hist.push([A.key, JSON.stringify({ st: A.st, ann: A.ann })]); },
+        done: moved => { if (moved) { queueSave(A.key); textEl.querySelector('textarea')?.focus({ preventScroll: true }); } R.justPanned = true; } })) return;
+      return;
+    }
     if (textEl && !textEl.classList.contains('editing')) {
       const x = A.ann.texts.find(n => n.id === textEl.dataset.text);
       if (x && canEditNote(A, x)) { R.gesture = { kind: 'text', key: A.key, n: x, el: textEl, sx: e.clientX, sy: e.clientY, x0: +x.x || 0, y0: +x.y || 0, inner, moved: false }; rm.setPointerCapture(e.pointerId); e.preventDefault(); return; }
@@ -638,6 +649,11 @@ function move(e) {
     for (const c of g.carry || []) { c.m.x = c.x0 + g.o.x - g.x0; c.m.y = c.y0 + g.o.y - g.y0; if (c.el) { c.el.style.left = `${c.m.x}px`; c.el.style.top = `${c.m.y}px`; } }
     return;
   }
+  if (g.kind === 'resize' && FREE_SIZE.has(g.o.k)) {
+    // An answer box: its own width and height change (more room for its words), never its font size.
+    const r = freeResize({ ...g.o, st: JSON.parse(g.st0) }, dx / z, dy / z, ws);
+    g.o.st.w = r.w; g.o.st.h = r.h; R.deps.sizeObjEl(g.el, g.o, objSize(R.room.tool, g.o)); return;
+  }
   if (g.kind === 'resize') {
     g.o.s = Math.round(clamp((g.nat.w * g.s0 + dx / z) / g.nat.w, S_MIN, Math.min(S_MAX, (ws.w - g.o.x) / g.nat.w, (ws.h - g.o.y) / g.nat.h)) * 1000) / 1000;
     g.el.style.width = `${Math.round(g.nat.w * g.o.s)}px`; g.el.style.height = `${Math.round(g.nat.h * g.o.s)}px`; g.el.querySelector('.mp-objin').style.transform = `scale(${g.o.s})`; return;
@@ -692,7 +708,7 @@ function up(e) {
     R.justPanned = true; return;
   }
   if (g.kind === 'text') {
-    if (g.moved) { renderPal(); queueSave(g.key); }
+    if (g.moved) { const A = R.areas.get(g.key); if (A) R.deps.snapText(g.n, g.el, workSize(A), R.deps.othersThan(R.room.tool, { ...A.st, __ann: A.ann }, workSize(A), g.n.id), SNAP_PX / R.view.z); renderPal(); queueSave(g.key); }
     else { if (R.textEdit) commitText(); R.textEdit = { key: g.key, id: g.n.id }; renderArea(g.key); }
     R.justPanned = true; return;
   }
@@ -743,6 +759,16 @@ function click(e) {
   if (hgo) { const A = R.areas.get(hgo.dataset.hgo); if (A) fitRect({ x: A.rect.x, y: A.rect.y - 36, w: A.rect.w, h: A.rect.h + 36 }, 12); return; }
   const hlow = e.target.closest('[data-hlow]');
   if (hlow) { api(`/api/manipulatives/live/${R.id}/hand`, { method: 'POST', body: { up: false, key: hlow.dataset.hlow } }).then(() => { if (!R.wsOk) refresh(); }).catch(err => toast(err.message, { bad: true })); return; }
+  const tsz = e.target.closest('[data-tsz]');
+  if (tsz && R.textEdit) {
+    const A = R.areas.get(R.textEdit.key), x = A && A.ann.texts.find(n => n.id === tsz.dataset.id);
+    if (x && canEditNote(A, x)) {
+      const inp = R.world.querySelector(`.rm-area[data-key="${CSS.escape(A.key)}"] .mp-textin`); if (inp) x.text = inp.value.replace(/\n+/g, ' ').slice(0, 200);
+      const before = JSON.stringify({ st: A.st, ann: A.ann });
+      if (R.deps.textSizeButton(x, +tsz.dataset.tsz)) { R.hist.push([A.key, before]); renderArea(A.key); queueSave(A.key); }
+    }
+    return;
+  }
   const rtx = e.target.closest('[data-rtx]');
   if (rtx && R.textEdit) { const A = R.areas.get(R.textEdit.key); if (A) { R.hist.push([A.key, JSON.stringify({ st: A.st, ann: A.ann })]); A.ann.texts = A.ann.texts.filter(n => n.id !== rtx.dataset.rtx); R.textEdit = null; renderArea(A.key); queueSave(A.key); } return; }
   const my = e.target.closest('[data-mystep]');
@@ -767,7 +793,7 @@ function commitText() {
   const te = R.textEdit; if (!te) return;
   const A = R.areas.get(te.key); R.textEdit = null; if (!A) return;
   const inp = R.world.querySelector(`.rm-area[data-key="${CSS.escape(te.key)}"] .mp-textin`), x = A.ann.texts.find(n => n.id === te.id);
-  if (x && inp) x.text = inp.value.slice(0, 200);
+  if (x && inp) x.text = inp.value.replace(/\n+/g, ' ').slice(0, 200);
   A.ann.texts = A.ann.texts.filter(n => String(n.text || '').trim());
   renderArea(te.key); renderPal(); queueSave(te.key);
 }

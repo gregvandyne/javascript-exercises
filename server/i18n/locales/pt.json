@@ -3344,6 +3344,12 @@
         "lockedHint": "Travado. Mantenha pressionado para destravar.",
         "pieceLocked": "Peça {label}, travada",
         "objLocked": "{name}, travado"
+      },
+      "text": {
+        "move": "Arraste para mover este texto",
+        "resize": "Arraste para mudar o tamanho desta caixa",
+        "smaller": "Texto menor",
+        "bigger": "Texto maior"
       }
     },
     "manip-room": {
