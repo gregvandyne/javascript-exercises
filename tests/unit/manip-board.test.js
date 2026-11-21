@@ -307,3 +307,68 @@ test('the wheel\'s layout: a ring around the finger, moved in up to 36 px near a
     if (n > 1) assert.equal(L.mode, 'arc');
   }
 });
+
+// ---------------------------------------------------------------- answer boxes, text boxes, the coordinate grid
+import { ANS, FREE_SIZE, answerSize, freeResize, grownHeight, TEXT_SIZES, TEXT_BOX, textFont, stepTextSize, textBoxFields, textResize, textRect, snapBox,
+  xyRange, xyLines, xySnap, xyMoveLine, OBJ_HEAD, kindOf } from '../../public/js/manip-board.js';
+
+test('an answer box is sized by its own width and height (never a scale): presets until resized, bounded, inside the space', () => {
+  assert.ok(FREE_SIZE.has('answer'));
+  assert.deepEqual(answerSize({ size: 'M' }), { w: 220, h: OBJ_HEAD + 58 }, 'the old size');
+  assert.deepEqual(answerSize({ size: 'L' }), { w: 300, h: OBJ_HEAD + 58 });
+  assert.deepEqual(kindOf('clock', 'answer').size({ size: 'S', w: 410, h: 140 }), { w: 410, h: OBJ_HEAD + 140 }, 'resized: its own size');
+  assert.deepEqual(answerSize({ w: 5, h: -3 }), { w: ANS.wMin, h: OBJ_HEAD + ANS.hMin }, 'never smaller than a line');
+  assert.deepEqual(answerSize({ w: 1e6, h: 1e6 }), { w: ANS.wMax, h: OBJ_HEAD + ANS.hMax });
+  assert.deepEqual(answerSize({ w: 'wide', h: null }), { w: 220, h: OBJ_HEAD + 58 }, 'nonsense: the preset');
+  // A corner drag: the box's own pixels (a box shown at half size moves twice as far), its scale untouched.
+  const o = { x: 100, y: 100, s: 0.5, st: { size: 'M' } };
+  assert.deepEqual(freeResize(o, 50, 20, WORLD), { w: 320, h: 98 });
+  assert.deepEqual(freeResize(o, -900, -900, WORLD), { w: ANS.wMin, h: ANS.hMin });
+  assert.deepEqual(freeResize({ x: 3800, y: 2300, s: 1, st: { size: 'M' } }, 900, 900, WORLD), { w: 200, h: 70 }, 'never past the space\'s edge');
+  // Typing past the bottom: taller (never shorter), within the limit.
+  assert.equal(grownHeight({ size: 'M' }, 130), 130);
+  assert.equal(grownHeight({ size: 'M', h: 200 }, 130), 200);
+  assert.equal(grownHeight({ size: 'M' }, 5000), ANS.hMax);
+});
+
+test('board text: four sizes, A− and A+ step through them, a resized box is bounded, stored fields are clean', () => {
+  assert.deepEqual(Object.keys(TEXT_SIZES), ['S', 'M', 'L', 'XL']);
+  assert.equal(textFont({}), 18); assert.equal(textFont({ fs: 'XL' }), 36); assert.equal(textFont({ fs: 'huge' }), 18);
+  assert.equal(stepTextSize(undefined, 1), 'L'); assert.equal(stepTextSize('L', 1), 'XL'); assert.equal(stepTextSize('XL', 1), 'XL');
+  assert.equal(stepTextSize('M', -1), 'S'); assert.equal(stepTextSize('S', -1), 'S'); assert.equal(stepTextSize('nope', -1), 'S');
+  assert.deepEqual(textBoxFields({ fs: 'M', w: 300, h: 90 }), { w: 300, h: 90 }, 'the default size is not stored');
+  assert.deepEqual(textBoxFields({ fs: 'XL', w: 5, h: 99999 }), { fs: 'XL', w: TEXT_BOX.wMin, h: TEXT_BOX.hMax });
+  assert.deepEqual(textBoxFields({ fs: '<b>', w: 300 }), {}, 'a width alone, or an unknown size: nothing');
+  assert.deepEqual(textBoxFields({ w: 'x', h: 40 }), {});
+  assert.deepEqual(textResize(200, 50, 100, 30, 0, 0, WORLD), { w: 300, h: 80 });
+  assert.deepEqual(textResize(200, 50, -500, -500, 0, 0, WORLD), { w: TEXT_BOX.wMin, h: TEXT_BOX.hMin });
+  assert.deepEqual(textResize(200, 50, 900, 900, 3900, 2380, WORLD), { w: 100, h: TEXT_BOX.hMin }, 'at the edge: no bigger than the space allows');
+  assert.deepEqual(textRect({ x: 0.5, y: 0.25, w: 300, h: 90 }, WORLD), { x: 2000, y: 600, w: 300, h: 90 });
+  assert.ok(textRect({ x: 0, y: 0, text: 'Hello', fs: 'XL' }, WORLD).h > textRect({ x: 0, y: 0, text: 'Hello' }, WORLD).h, 'a bigger font takes more room');
+});
+
+test('a dropped text snaps like a piece: lined up with or just beside things nearby, each direction on its own; nothing near: stays', () => {
+  const clock = { x: 100, y: 100, w: 250, h: 380 };
+  assert.deepEqual(snapBox({ x: 362, y: 106, w: 120, h: 30 }, [clock], 14), { dx: -4, dy: -6 }, '8 px right of the clock, its top lined up');
+  assert.deepEqual(snapBox({ x: 95, y: 500, w: 120, h: 30 }, [clock], 14), { dx: 5, dy: -12 }, 'under it, left edges lined up');
+  assert.deepEqual(snapBox({ x: 700, y: 700, w: 120, h: 30 }, [clock], 14), { dx: 0, dy: 0 }, 'too far: no snap');
+  assert.deepEqual(snapBox({ x: 380, y: 300, w: 120, h: 30 }, [clock], 14), { dx: 0, dy: 0 }, 'more than the snap distance: no snap');
+});
+
+test('the coordinate grid: one line per color, a point snaps to the grid, a whole line moves by whole steps and never leaves the grid', () => {
+  assert.deepEqual(xyRange({ four: true }), { lo: -10, hi: 10 }); assert.deepEqual(xyRange({ four: false }), { lo: 0, hi: 12 });
+  const B = '#1E88E5', Rd = '#E53935';
+  const pts = [{ x: -4, y: -3, color: B }, { x: 2, y: 6, color: Rd }, { x: 0, y: -1, color: B }, { x: 4, y: 1, color: B }];
+  assert.deepEqual(xyLines(pts), [{ color: B, idx: [0, 2, 3] }], 'the lone red point is no line');
+  assert.deepEqual(xySnap(3.4, -2.6, -10, 10), { x: 3, y: -3 });
+  assert.deepEqual(xySnap(14, -30, -10, 10), { x: 10, y: -10 });
+  const moved = xyMoveLine(pts, [0, 2, 3], 3.2, 1.8, -10, 10);
+  assert.deepEqual(moved.map(p => [p.x, p.y]), [[-1, -1], [2, 6], [3, 1], [7, 3]], 'the blue points 3 right and 2 up; the red one stays');
+  assert.equal(moved[0].color, B);
+  assert.deepEqual(xyMoveLine(pts, [0, 2, 3], 20, -20, -10, 10).map(p => [p.x, p.y]), [[2, -10], [2, 6], [6, -8], [10, -6]], 'stopped at the edges, its shape kept');
+  assert.deepEqual(xyMoveLine(pts, [], 3, 3, -10, 10), pts, 'no line: nothing moves');
+  assert.deepEqual(xyMoveLine([{ x: 1, y: 1 }, { x: 5, y: 2 }], [0, 1], -3, 0, 0, 12).map(p => [p.x, p.y]), [[0, 1], [4, 2]], 'first quadrant: never below 0');
+  // A new grid: three red points on one line, the table on, arrows off.
+  const st = OBJECTS['xy-coordinate-board'][0].init();
+  assert.equal(xyLines(st.pts).length, 1); assert.equal(st.table, true); assert.equal(st.arrows, false);
+});

@@ -28,7 +28,7 @@ import { draftClues } from '../services/set-ai.js';
 import { wordsFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
 import { PRINTERS } from '../services/game-print.js';
 import { canvasPrintable, cleanCanvasPrintDoc, canvasPrintHtml } from '../services/canvas-print.js';
-import { canvasVersion } from '../services/canvaskit.js';
+import { canvasVersion, activityData } from '../services/canvaskit.js';
 import { hasModel } from '../builder/anthropic.js';
 import { onlineGame } from './match.js';
 import fs from 'node:fs';
@@ -382,6 +382,9 @@ router.get('/frame/:token', (req, res) => {
   // Re-check the live game against the viewer (catches a game since hidden, unpublished or made private); preview is owner/admin-only at mint.
   if (!preview && !games.canView(u, g)) return sendFrameText(res, 404, t('errors.api.notFound'));
   const lang = normalizeCode(tok.l) || req.locale;
+  // Which question sets this frame's game keeps (setKind): an official set game's, or a classroom activity's worksheets
+  // in its published version (never a preview of another version).
+  const kind = setGame(g) ? g.slug : !preview && (canvasSetVersion(g) || {}).id === v.id ? gameSets.CANVAS_KIND : null;
   const init = {
     user: { ...(u ? { displayName: u.display_name, avatar: u.avatar, isGuest: !!u.is_guest, character: characterOf(u) } : { displayName: t('play.defaultPlayer'), avatar: '🙂', isGuest: true }), lang, dir: localeInfo(lang).dir },
     // url: the game's own play page, for a game that shares a link to itself (BRB.gameUrl: a link with lesson
@@ -396,17 +399,19 @@ router.get('/frame/:token', (req, res) => {
     ...(hasParams(unpackParams(tok.o)) ? { params: unpackParams(tok.o) } : {}),
     // A question set (services/game-sets.js) a teacher saved in this game, when the link's chapter is its code
     // (BRB.questionSet: { id, items, mine }); a code with no set: { id, missing: true }.
-    ...(setFor(g, unpackParams(tok.o).chapter, u)),
+    ...(setFor(g, unpackParams(tok.o).chapter, u, kind)),
     // Saving a set and looking up a class code (BRB.canSaveSet / BRB.canFindSet): false only where the grown-up fence
     // (routes/family.js) refuses that call, so the game hides what would fail; absent means the game may offer it.
-    ...setRights(g, u),
+    ...setRights(g, u, kind),
     // A teacher (school staff) in a set game may assign what they made to a class (BRB.canAssign / BRB.assign: the page
     // opens /teach/assign with it, where "Also post to Google Classroom" is offered for a linked class).
     ...(!preview && setGame(g) && isSchoolStaff(u) ? { canAssign: true } : {}),
     // "My worksheets" (BRB.canListSets / BRB.mySets): school staff and the platform admin get their own saved sets in a
     // set game, to open again, print, share, copy, rename and delete. Never a student, a child, a guest or a family
-    // grown-up (the fence keeps them to playing), never in a preview.
-    ...(!preview && setGame(g) && u && !u.is_guest && isStaff(u) && fenceLets(u, 'GET', `/api/games/${g.id}/sets`) ? { mySets: true } : {}),
+    // grown-up (the fence keeps them to playing), never in a preview. A Builder classroom activity that keeps
+    // worksheets (canvasSetVersion: Oomba Canvas 1.4.0 for a worksheet or a generator) offers it the same way, in its
+    // published version only, and never under the Studio's "As a student".
+    ...(!preview && !tok.st && kind && u && !u.is_guest && isStaff(u) && fenceLets(u, 'GET', `/api/games/${g.id}/sets`) ? { mySets: true } : {}),
     // Crossword's "Write clues with AI" (BRB.canWriteClues / BRB.writeClues): grown-ups who may host, with a model set.
     // The fence has the last word: a family grown-up may host, but these calls are school tools (routes/family.js).
     ...(!preview && cluesGame(g) && liveCanHost(u) && hasModel() && fenceLets(u, 'POST', `/api/games/${g.id}/clues`) && fenceLets(u, 'POST', `/api/games/${g.id}/words-from-doc`) ? { clues: true } : {}),
@@ -446,13 +451,29 @@ function apiGame(req, res) {
 // Question sets (services/game-sets.js): an official game on the list keeps a teacher's list of questions under a short
 // code. Body { items, id? } (id: change that set, the caller's own). -> { id }. Not for guests (a set outlives a guest).
 const setGame = g => gameSets.SET_GAMES.has(g.slug) && g.source === 'seed' && (games.getOwner(g) || {}).username === OFFICIAL;
-/** What the fence lets this viewer do with a set game's sets: { setSave: false } and/or { setFind: false }, else {}. */
-function setRights(g, u) {
-  if (!setGame(g)) return {};
-  return { ...(fenceLets(u, 'POST', `/api/games/${g.id}/sets`) ? {} : { setSave: false }), ...(fenceLets(u, 'GET', `/api/games/${g.id}/sets/code`) ? {} : { setFind: false }) };
+/** A Builder classroom activity that keeps worksheets (docs/canvas-api.md "Worksheets"): its published version is an
+ *  Oomba Canvas 1.4.0 (or later) activity, whatever it is for (one for a worksheet or a generator also prints them).
+ *  -> that version, or null. Its sets are the teacher's saved questions (game-sets.js cleanCanvasItems, cleaned for
+ *  that version). */
+function canvasSetVersion(g) {
+  if (!g || !g.published_version_id || setGame(g)) return null;
+  const v = games.getVersion(g.published_version_id);
+  return v && v.game_id === g.id && gameSets.canvasSetKit(v.html) && (activityData(v.html) || {}).data ? v : null;
 }
-function setFor(g, chapter, u) {
-  if (!chapter || !gameSets.SET_ID.test(chapter) || !setGame(g)) return {};
+/** Which sets a game keeps: an official set game's slug (its cleaner), gameSets.CANVAS_KIND for a classroom activity
+ *  that keeps worksheets, or null. */
+const setKind = g => (setGame(g) ? g.slug : canvasSetVersion(g) ? gameSets.CANVAS_KIND : null);
+/** What the fence lets this viewer do with a set game's sets: { setSave: false } and/or { setFind: false }, else {}. A
+ *  classroom activity's worksheets are saved by school staff only (BRB.canSaveSet false for anyone else). */
+function setRights(g, u, kind = setKind(g)) {
+  if (!kind) return {};
+  const save = fenceLets(u, 'POST', `/api/games/${g.id}/sets`) && (kind !== gameSets.CANVAS_KIND || (!!u && !u.is_guest && isStaff(u)));
+  return { ...(save ? {} : { setSave: false }), ...(fenceLets(u, 'GET', `/api/games/${g.id}/sets/code`) ? {} : { setFind: false }) };
+}
+/** INIT.set for a link's chapter. kind: the frame's (a classroom activity's worksheet opens only in its published
+ *  version; a preview gets none). */
+function setFor(g, chapter, u, kind) {
+  if (!chapter || !gameSets.SET_ID.test(chapter) || !kind) return {};
   const s = gameSets.get(g.id, chapter);
   return { set: s ? { id: s.id, items: s.items, mine: !!u && s.ownerId === u.id } : { id: chapter, missing: true } };
 }
@@ -460,7 +481,7 @@ function setFor(g, chapter, u) {
 // game may look one up (a code is what a teacher hands out); slowed per address, so codes can't be guessed in bulk.
 router.get('/api/games/:id/sets/:code', rateLimit('game-set-code', 30, 60e3, 'errors.api.slowDown', { byIp: true }), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
-  if (!setGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  if (!setKind(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
   const id = gameSets.codeToId(req.params.code);
   const s = id && gameSets.get(g.id, id);
   if (!s) return res.status(404).json({ error: req.t('game.api.notFound'), code: 'noSet' });
@@ -468,23 +489,30 @@ router.get('/api/games/:id/sets/:code', rateLimit('game-set-code', 30, 60e3, 'er
 });
 router.post('/api/games/:id/sets', requireUser, rateLimit('game-sets', 60, 60e3), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
-  if (!setGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  const kind = setKind(g);
+  if (!kind) return res.status(404).json({ error: req.t('game.api.notFound') });
   if (req.user.is_guest) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'guest' });
+  // A classroom activity's worksheet: school staff and the platform admin only (never a student or a child: a set is
+  // a teacher's handout), cleaned for the activity's published version.
+  const canvas = kind === gameSets.CANVAS_KIND;
+  if (canvas && !isStaff(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' });
   const b = req.body || {}, id = b.id === undefined || b.id === null ? null : String(b.id);
   if (id !== null && !gameSets.SET_ID.test(id)) return res.status(400).json({ error: req.t('errors.api.badRequest') });
-  const r = gameSets.save(g.id, req.user.id, b.items, id, g.slug, typeof b.title === 'string' ? { title: b.title } : {});
+  const r = gameSets.save(g.id, req.user.id, b.items, id, kind, { ...(typeof b.title === 'string' ? { title: b.title } : {}), ...(canvas ? { html: canvasSetVersion(g).html } : {}) });
   if (r.error) return res.status(r.error === 'notYours' ? 404 : 400).json({ error: req.t('errors.api.badRequest'), code: r.error });
   res.json({ id: r.id });
 });
 // "My worksheets" (docs/sdk.md "Question sets"; BRB.mySets and friends): the signed-in teacher's own sets in this game,
 // to open again, print, share, copy, rename and delete. Never a guest; anyone else's set answers 404, exactly as one
 // that isn't there. Slowed per account like saving.
-/** The set game and its signed-in, non-guest owner, or null (the answer already sent). */
+/** The set game and its signed-in, non-guest owner, or null (the answer already sent). g.kind: which sets it keeps
+ *  (setKind: its slug, or a classroom activity's). */
 function mySetsGame(req, res) {
   const g = apiGame(req, res); if (!g) return null;
-  if (!setGame(g)) { res.status(404).json({ error: req.t('game.api.notFound') }); return null; }
+  const kind = setKind(g);
+  if (!kind) { res.status(404).json({ error: req.t('game.api.notFound') }); return null; }
   if (req.user.is_guest) { res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'guest' }); return null; }
-  return g;
+  return { ...g, kind };
 }
 const setIdOf = (req, res) => {
   const id = String(req.params.set || '');
@@ -495,7 +523,7 @@ const setIdOf = (req, res) => {
 const noSet = (req, res) => res.status(404).json({ error: req.t('game.api.notFound'), code: 'noSet' });
 router.get('/api/games/:id/sets', requireUser, rateLimit('game-sets-list', 60, 60e3), (req, res) => {
   const g = mySetsGame(req, res); if (!g) return;
-  res.json({ sets: gameSets.listMine(g.id, req.user.id, g.slug), max: gameSets.MAX_PER_OWNER });
+  res.json({ sets: gameSets.listMine(g.id, req.user.id, g.kind), max: gameSets.MAX_PER_OWNER });
 });
 router.delete('/api/games/:id/sets/:set', requireUser, rateLimit('game-sets', 60, 60e3), (req, res) => {
   const g = mySetsGame(req, res); if (!g) return;
@@ -508,7 +536,7 @@ router.post('/api/games/:id/sets/:set/rename', requireUser, rateLimit('game-sets
   const id = setIdOf(req, res); if (!id) return;
   const title = (req.body || {}).title;
   if (typeof title !== 'string') return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'title' });
-  const r = gameSets.rename(g.id, req.user.id, id, title, g.slug);
+  const r = gameSets.rename(g.id, req.user.id, id, title, g.kind);
   if (r.error === 'notYours') return noSet(req, res);
   if (r.error) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.error });
   res.json({ ok: true, title: r.title });
@@ -518,11 +546,11 @@ router.post('/api/games/:id/sets/:set/duplicate', requireUser, rateLimit('game-s
   const id = setIdOf(req, res); if (!id) return;
   const was = gameSets.get(g.id, id);
   if (!was || was.ownerId !== req.user.id) return noSet(req, res);
-  const name = req.t('game.sets.copyOf', { title: was.title || gameSets.labelOf(g.slug, was.items) });
-  const r = gameSets.duplicate(g.id, req.user.id, id, name, g.slug);
+  const name = req.t('game.sets.copyOf', { title: was.title || gameSets.labelOf(g.kind, was.items) });
+  const r = gameSets.duplicate(g.id, req.user.id, id, name, g.kind);
   if (r.error === 'notYours') return noSet(req, res);
   if (r.error) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.error });
-  res.json({ id: r.id, set: gameSets.oneMine(g.id, req.user.id, r.id, g.slug) });
+  res.json({ id: r.id, set: gameSets.oneMine(g.id, req.user.id, r.id, g.kind) });
 });
 // Crossword clues (services/set-ai.js draftClues): Claude writes a clue for each of the teacher's words, for the game's
 // word list only (nothing is saved here). Body { words: [string] (1-30), level }. -> { clues: [string] } | { code }.
@@ -593,7 +621,14 @@ router.post('/api/games/:id/print', rateLimit('game-print', 20, 60e3, 'errors.ap
     const r = cleanCanvasPrintDoc((req.body || {}).doc);
     if (!r.ok) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
     if (r.doc.key && !canvasKeyFor(req.user, g)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'key' });
-    const out = canvasPrintHtml(v.html, r.doc, { t: req.t, dir: localeInfo(req.locale).dir, lang: req.locale });
+    // 1.4.0: a saved worksheet (doc.set): its own questions, from the published version that keeps worksheets
+    let set = null;
+    if (r.doc.set) {
+      const cv = canvasSetVersion(g), s = cv && cv.id === v.id && gameSets.get(g.id, r.doc.set);
+      if (!s) return res.status(404).json({ error: req.t('game.api.notFound'), code: 'noSet' });
+      set = { items: s.items, code: gameSets.codeOf(s.id), link: `${requestOrigin(req)}/play/${g.slug}?chapter=${s.id}&lock=1` };
+    }
+    const out = canvasPrintHtml(v.html, r.doc, { t: req.t, dir: localeInfo(req.locale).dir, lang: req.locale, set });
     return out ? res.json({ html: out }) : res.status(404).json({ error: req.t('game.api.notFound') });
   }
   const r = printer.clean((req.body || {}).doc);

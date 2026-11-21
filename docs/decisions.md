@@ -9917,6 +9917,35 @@ message), `public/js/manip.js` (each tool's wheel, the actions, the solo board),
   `tests/unit/manip-board.test.js` (the counters' snap rule, the wheel's layout), `tests/unit/manipulatives.test.js`
   (lock storage and the room's lock rule).
 
+## Virtual math manipulatives: answer boxes, text boxes and the coordinate grid (21 Nov 2026)
+
+Owner report from the big board: a long typed answer did not wrap and resizing the box only made the text bigger; text
+boxes could not be resized, made bigger or (reliably) moved; and the coordinate grid could not move a connected line.
+- **Answer boxes** wrap their words (a `textarea`, one paragraph: Enter finishes, new lines become spaces). The corner
+  now changes the box's own width and height (`st.w`, `st.h`; `FREE_SIZE`, `answerSize`, `freeResize` in
+  `manip-board.js`), never its scale, so more of the answer shows at the same font size. Typing past the bottom grows
+  the box (`growAnswer`, up to `ANS.hMax` and the space's edge); past that the words scroll, never clipped silently. The
+  typed answer may be 100 characters now (`ANS.max`, checked the same in "Check my answers"). Works for the student's
+  own box and the teacher's, solo and in the room (the size travels in the object's state like any other change).
+- **Text boxes** (T): while one is being written it shows a small bar above it (a grip to drag it, A− and A+, ×) and a
+  corner to resize it. Four sizes, S 14, M 18 (the default), L 26, XL 36 px (`TEXT_SIZES`); once resized it is a box
+  (`w`, `h`) its words wrap in, growing taller when they need room. No new toolbar: the bar is the existing edit UI.
+  A text not being written still drags from anywhere on it; a tap opens it. A dropped text snaps like a piece: lined up
+  with, or 8 px beside, an edge of anything nearby (`snapBox`). The server keeps `fs` (S, L, XL; M is not stored) and
+  `w`/`h` (both or neither) within `TEXT_BOX` (`textBoxFields`); classmates still get nothing of a student's text.
+- **Why text "could not be moved":** typing near the edge of the board let the browser scroll the board's clipped box
+  (`overflow: hidden` still scrolls for a caret), which shifted everything under the pointer. The board and the room
+  are `overflow: clip` now, so they can never scroll.
+- **Coordinate grid:** points of one color join into a line in the order plotted (each color its own line, in its
+  color); the color swatches pick the color. Dragging a point moves just that point (its line reshapes); dragging the
+  line between points moves the whole line and all its points by whole grid steps, stopped at the grid's edge so the
+  shape is kept (`xyLines`, `xySnap`, `xyMoveLine`). Points have the bigger hit area and sit on top, so a touch near a
+  point takes the point. New: axes with arrowheads and x and y labels, a "Line arrows" switch (arrowheads at both ends
+  of each line) and a "Table" switch (the x/y table, on by default, with each point's color). The server keeps the
+  switches true or false and at most 60 whole-number points with hex colors. Not added (to stay calm): curves, line
+  equations or slope readouts, per-line labels, point naming; possible later if teachers ask.
+- Tests: `tests/unit/manip-text-graph-browser.test.js` (laptop and iPhone 13 with real touch, solo and the room),
+  `tests/unit/manip-board.test.js` (sizes, snapping, the line math), `tests/unit/manipulatives.test.js` (storage limits).
 ## Oomba Figures 1.1.0 split by subject; the physics port (21 Nov 2026)
 
 - **1.1.0 ships split.** It has not shipped yet, so the first 1.1.0 teachers get is already split: a core
@@ -10089,6 +10118,49 @@ Oomba, like Figures' "My worksheets" and the manipulatives' saved boards.
   the page's message checks) and tests/unit/game-my-sets-browser.test.js (each game in Chromium: the list, Open and save
   under the same code, Print, Copy link, Rename, Duplicate, Delete with its confirm, the empty list, and no button for a
   student).
+
+## My worksheets in Builder classroom activities (Oomba Canvas 1.4.0) (21 Nov 2026)
+Owner, after My worksheets in Crossword and The Big Divide: "make sure the builder knows to do this for teachers who
+build lessons", and "The worksheet buttons are way too busy, can we make this look a bit more simple".
+- **Built into the platform, not left to the model.** Oomba Canvas 1.4.0 (new files; 1.0.0 to 1.3.0 byte for byte as
+  they shipped) draws My worksheets itself (`canvas/src/sets.js`), the server keeps them as game sets of a new kind
+  (`game-sets.js CANVAS_KIND`, `cleanCanvasItems`; `routes/games.js canvasSetVersion` / `setKind`), and the Builder's
+  CANVAS RULES (generated from docs/canvas-api.md) only say that every lesson activity keeps worksheets by itself:
+  keep the questions as data, keep the setup's "worksheet" or "generator" so they print, and never build saving, class
+  codes, links, a list or a print button of their own. New activities start on 1.4.0 (the starter's tag); an older
+  activity moves to it only when saved from the Activity panel, as with 1.3.0. No migration: `game_sets` (with 0097's
+  title) holds them, owner-scoped per game id.
+- **Which activities.** Every Builder classroom activity on 1.4.0, whatever it is for (an activity for a worksheet or a
+  generator also prints them). Gating on the purpose alone would have left out the fixed-list, screen-only activities
+  the setup still makes when no generator fits.
+- **Who.** School staff and the platform admin (`INIT.mySets`), in the published activity, never in a preview or under
+  "As a student". Saving is refused (403) to anyone else, so a student's or a child's account never owns a set; the
+  list, rename, duplicate and delete are the owner's only (anyone else's is the same 404 as one that isn't there).
+- **What a worksheet holds.** The questions on screen (at most 20, the play page's limit for a set), each cleaned by the
+  activity's own pinned kit file (only the fields the kit reads), every piece of text in them through the site's text
+  filter (like Crossword's words), and the set must pass the kit's self-test and Oomba Figures' check for that
+  activity. Nothing a student did.
+- **The simple list** (the design the owner asked for): one row each, the name in bold, one quiet line ("5 questions ·
+  Nov 21") with the class code as a small chip, the whole row opens it; at the end only 🖨 Print and ⋯ More (Answer
+  key, Copy link, Duplicate, Rename, Delete last in red with a question). The menu takes the arrow keys, Home, End,
+  Escape and a click outside, and gives focus back to ⋯. 44 px targets; it fits at 375 px (in the Teacher menu there).
+  "💾 Save as worksheet" sits at the top of the card. The teacher bar stays one line at 1024 and 1280 px: its button
+  reads "📄 Worksheets" (the icon alone under 1180 px; "My worksheets" to screen readers and as a tooltip), and "students
+  don't see this bar" shows only from 1440 px (a tooltip on "Teacher" below). A worksheet opened from the list replaces the set on that screen
+  (a line under the teacher's controls says which; New set leaves it); its link plays exactly its questions for
+  everyone, and a link to a deleted one plays the activity's own questions and says so.
+- **Printing** a worksheet sends its code (`{ k: 'canvas', set, n, paper, key }`); the server prints the saved questions
+  with the version's kit file, with the class code and link in the footer. The answer key stays the maker's and school
+  staff's.
+- **The one text box** in the kit is the teacher's rename box (staff only); students still type digits only. The kit
+  test checks there is exactly one, in sets.js.
+- **Words** in the kit's 12 languages (`WORDS_140`); the server's strings were already there.
+- **Not built.** Assign to a class from the list (the official games' Assign stays theirs); a set game's class code
+  box for students in the activity (a link or QR is how students get there).
+- **Tests.** tests/unit/canvas-worksheets.test.js (the cleaner, who may save, owner-only routes, the frame's flags, the
+  link, printing by code), tests/unit/canvas-worksheets-browser.test.js (Chromium, in the production frame: save, the
+  row, Print, the More menu by keyboard, Copy link, Duplicate, Rename, Delete with its question, Open, 375 px, a
+  student, a deleted worksheet), the CANVAS RULES line in builder-canvas.test.js, and the 1.4.0 lock in canvas-kit.
 
 ## Figures 1.3.0: biology (21 Nov 2026)
 

@@ -3505,7 +3505,11 @@
       "text": {
         "label": "Text on the board",
         "ph": "Type here…",
-        "delete": "Delete this text"
+        "delete": "Delete this text",
+        "move": "Drag to move this text",
+        "resize": "Drag to change the size of this box",
+        "smaller": "Smaller text",
+        "bigger": "Bigger text"
       },
       "obj": {
         "resize": "Drag to resize",

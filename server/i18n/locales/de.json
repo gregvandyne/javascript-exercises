@@ -3347,6 +3347,12 @@
         "lockedHint": "Gesperrt. Lange drücken zum Entsperren.",
         "pieceLocked": "Teil {label}, gesperrt",
         "objLocked": "{name}, gesperrt"
+      },
+      "text": {
+        "move": "Ziehen, um diesen Text zu verschieben",
+        "resize": "Ziehen, um die Größe dieses Felds zu ändern",
+        "smaller": "Kleinere Schrift",
+        "bigger": "Größere Schrift"
       }
     },
     "manip-room": {

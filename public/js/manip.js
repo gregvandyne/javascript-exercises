@@ -16,7 +16,7 @@ import * as ROOM from '/js/manip-room.js';
 import { stepsOf } from '/js/manip-data.js';
 import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSector, addMinutes, migrate, newBoard, boxesOf, bbox, spotIn, placeObject,
   slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, S_MIN, S_FLOOR, S_MAX, OBJ_MAX, OBJ_HEAD, UNDER, parseFrac, EQ_BAR,
-  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot } from '/js/manip-board.js';
+  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, TEXT_SIZES, textFont, stepTextSize, textResize, textRect, snapBox, textBoxFields, xyRange, xyLines, xySnap, xyMoveLine } from '/js/manip-board.js';
 import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP } from '/js/manip-wheel.js';
 
 const ROOT = document.getElementById('manip');
@@ -269,34 +269,34 @@ const IMPL = {
   },
 
   'xy-coordinate-board': {
-    init: () => ({ four: true, labels: true, connect: true, color: '#E53935', pts: [{ x: 3, y: 4, color: '#E53935' }, { x: 6, y: 2, color: '#1E88E5' }] }),
+    init: () => OBJECTS['xy-coordinate-board'][0].init(),
     total: st => `${st.pts.length} points`,
-    palette: st => [...['#E53935', '#1E88E5', '#43A047', '#FB8C00', '#8E24AA'].map(c => ({ label: 'Point color', color: c, pressed: st.color === c, run: s => { s.color = c; } })),
+    palette: st => [...XY_COLORS.map(c => ({ label: 'Point color', color: c, pressed: st.color === c, run: s => { s.color = c; } })),
       { label: st.connect ? 'Lines off' : 'Connect the points', color: '#212121', run: s => { s.connect = !s.connect; } },
       { label: 'Clear points', color: '#616161', run: s => { s.pts = []; } }],
-    settings: st => `${sel('four', [['', 'First quadrant'], ['1', 'All four quadrants']], st.four ? '1' : '', 'Quadrants')}${toggle('labels', st.labels, 'Labels on', 'Labels off')}`,
-    hint: 'Tap the grid to plot a point in the chosen color. Points snap to the grid.',
-    note: 'Ordered pairs, lines and polygons, with a data table of every point.',
-    board: st => {
-      const S = 440, lo = st.four ? -10 : 0, hi = st.four ? 10 : 12;
+    settings: st => `${sel('four', [['', 'First quadrant'], ['1', 'All four quadrants']], st.four ? '1' : '', 'Quadrants')}${toggle('labels', st.labels, 'Labels on', 'Labels off')}${toggle('arrows', !!st.arrows, 'Line arrows on', 'Line arrows off')}${toggle('table', st.table !== false, 'Table on', 'Table off')}`,
+    hint: 'Tap the grid to plot a point in the chosen color. Points of one color join into a line. Drag a point to move just that point; drag the line between points to move the whole line. Everything snaps to the grid.',
+    note: 'Ordered pairs, lines and polygons, with a table of every point.',
+    board: (st, view = {}) => {
+      const S = XY_S, { lo, hi } = xyRange(st), ro = !!view.readOnly;
       const px = v => ((v - lo) / (hi - lo)) * S, py = v => S - ((v - lo) / (hi - lo)) * S;
-      const ticks = []; for (let v = lo; v <= hi; v++) ticks.push(v);
-      return `<div class="mp-pad mp-xy"><svg class="mp-grid" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}" role="img" aria-label="Coordinate grid, tap to plot a point">
-        ${ticks.map(v => `<line x1="${px(v)}" y1="0" x2="${px(v)}" y2="${S}" stroke="var(--line)" stroke-dasharray="2 4"/><line x1="0" y1="${py(v)}" x2="${S}" y2="${py(v)}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${px(v) + 3}" y="${py(0) - 4}" font-size="11" fill="var(--muted)">${v}</text><text x="${px(0) + 3}" y="${py(v) - 3}" font-size="11" fill="var(--muted)">${v}</text>`).join('')}
-        <line x1="${px(0)}" y1="0" x2="${px(0)}" y2="${S}" stroke="var(--text)" stroke-width="2"/><line x1="0" y1="${py(0)}" x2="${S}" y2="${py(0)}" stroke="var(--text)" stroke-width="2"/>
-        ${st.connect && st.pts.length > 1 ? `<polyline fill="none" stroke="var(--text)" stroke-width="2.5" points="${st.pts.map(p => `${px(p.x)},${py(p.y)}`).join(' ')}"/>` : ''}
-        ${st.pts.map(p => `<circle cx="${px(p.x)}" cy="${py(p.y)}" r="8" fill="${esc(p.color)}" stroke="#fff" stroke-width="2"/>${st.labels ? `<text x="${px(p.x) + 11}" y="${py(p.y) - 8}" font-size="13" font-weight="700" fill="var(--text)">(${p.x},${p.y})</text>` : ''}`).join('')}</svg>
-        ${st.ask ? '' : `<div class="mp-xytable"><p class="mp-barname">Data table</p><table class="mp-table"><thead><tr><th>x</th><th>y</th><th>Point</th><th><span class="sr-only">Remove</span></th></tr></thead><tbody>${st.pts.map((p, i) => `<tr><td>${p.x}</td><td>${p.y}</td><td><b>(${p.x},${p.y})</b></td><td>${btn('mp-x', `data-act="unpt" data-i="${i}" aria-label="Remove point ${p.x} ${p.y}"`, '✕')}</td></tr>`).join('')}</tbody></table>${st.pts.length ? '' : '<p class="small muted">No points yet. Tap the grid.</p>'}</div>`}</div>`;
+      return `<div class="mp-pad mp-xy"><svg class="mp-grid" ${ro ? '' : `data-xy="${esc(view.oid || '')}"`} width="${S}" height="${S}" viewBox="0 0 ${S} ${S}" role="img" aria-label="Coordinate grid, tap to plot a point">${xySvgInner(st, ro)}</svg>
+        ${st.ask || st.table === false ? '' : `<div class="mp-xytable"><p class="mp-barname">Table</p><table class="mp-table"><thead><tr><th>x</th><th>y</th><th>Point</th><th><span class="sr-only">Remove</span></th></tr></thead><tbody>${st.pts.map((p, i) => `<tr><td><span class="mp-xydot" style="background:${esc(p.color)}"></span>${p.x}</td><td>${p.y}</td><td><b>(${p.x},${p.y})</b></td><td>${ro ? '' : btn('mp-x', `data-act="unpt" data-i="${i}" aria-label="Remove point ${p.x} ${p.y}"`, '✕')}</td></tr>`).join('')}</tbody></table>${st.pts.length ? '' : '<p class="small muted">No points yet. Tap the grid.</p>'}</div>`}</div>`;
     },
     act: (st, d, e) => {
       if (d.act === 'unpt') { st.pts.splice(+d.i, 1); return true; }
+      // The tap that ends a drag of a point or a line plots nothing; nor does a tap on a point or a line.
+      if (Date.now() - xyDragEnd < 300 || e.target.closest('[data-pt], [data-line]')) return false;
       const svg = e.target.closest('svg.mp-grid'); if (!svg) return false;
-      const r = svg.getBoundingClientRect(), lo = st.four ? -10 : 0, hi = st.four ? 10 : 12;
-      st.pts.push({ x: Math.round(lo + ((e.clientX - r.left) / r.width) * (hi - lo)), y: Math.round(lo + (1 - (e.clientY - r.top) / r.height) * (hi - lo)), color: st.color });
+      const r = svg.getBoundingClientRect(), { lo, hi } = xyRange(st);
+      const p = xySnap(lo + ((e.clientX - r.left) / r.width) * (hi - lo), lo + (1 - (e.clientY - r.top) / r.height) * (hi - lo), lo, hi);
+      if (st.pts.length >= XY_MAX) return false;
+      st.pts.push({ ...p, color: st.color });
       return true;
     },
     onSet: (st, key) => { if (key === 'four') st.pts = []; },
     boardTap: true,
+    bind: (el, ctx) => bindGrids(el, ctx),
   },
 
   geoboard: {
@@ -390,6 +390,76 @@ function bindClocks(el, ctx) {
   }
 }
 
+const XY_COLORS = ['#E53935', '#1E88E5', '#43A047', '#FB8C00', '#8E24AA'];
+const XY_S = 440, XY_MAX = 60;
+let xyDragEnd = 0;
+/** An arrowhead at (x, y) pointing along (dx, dy) (screen pixels), as a polygon's points. */
+function arrowHead(x, y, dx, dy, size = 13) {
+  const n = Math.hypot(dx, dy) || 1, ux = dx / n, uy = dy / n, bx = x - ux * size, by = y - uy * size;
+  return `${x},${y} ${bx - uy * size * 0.55},${by + ux * size * 0.55} ${bx + uy * size * 0.55},${by - ux * size * 0.55}`;
+}
+/** The grid's drawing: grid lines and numbers, the axes with their arrows and x and y, each color's line (with its end
+ *  arrows when on) and the points on top. Points and lines carry their hit areas (a point's is bigger and on top, so a
+ *  touch near a point takes the point). */
+function xySvgInner(st, ro = false) {
+  const S = XY_S, { lo, hi } = xyRange(st), px = v => ((v - lo) / (hi - lo)) * S, py = v => S - ((v - lo) / (hi - lo)) * S;
+  const ticks = []; for (let v = lo; v <= hi; v++) ticks.push(v);
+  const X0 = px(0), Y0 = py(0), A = 12;
+  const axes = `<line x1="${X0}" y1="${A}" x2="${X0}" y2="${S - (lo < 0 ? A : 0)}" stroke="var(--text)" stroke-width="2"/><line x1="${lo < 0 ? A : 0}" y1="${Y0}" x2="${S - A}" y2="${Y0}" stroke="var(--text)" stroke-width="2"/>
+    <polygon points="${arrowHead(S - 1, Y0, 1, 0, 12)}" fill="var(--text)"/><polygon points="${arrowHead(X0, 1, 0, -1, 12)}" fill="var(--text)"/>
+    ${lo < 0 ? `<polygon points="${arrowHead(1, Y0, -1, 0, 12)}" fill="var(--text)"/><polygon points="${arrowHead(X0, S - 1, 0, 1, 12)}" fill="var(--text)"/>` : ''}
+    <text x="${S - 16}" y="${Y0 - 12}" font-size="16" font-weight="800" font-style="italic" fill="var(--text)">x</text><text x="${X0 + 12}" y="${18}" font-size="16" font-weight="800" font-style="italic" fill="var(--text)">y</text>`;
+  const lines = st.connect ? xyLines(st.pts).map(L => {
+    const P = L.idx.map(i => st.pts[i]), pts = P.map(p => `${px(p.x)},${py(p.y)}`).join(' ');
+    let ends = '';
+    if (st.arrows) {
+      const a = P[0], b = P[1], y = P[P.length - 2], z = P[P.length - 1];
+      const tip = (p, q) => { const dx = px(p.x) - px(q.x), dy = py(p.y) - py(q.y), n = Math.hypot(dx, dy) || 1; return { x: px(p.x) + (dx / n) * 26, y: py(p.y) + (dy / n) * 26, dx, dy }; };
+      const t1 = tip(a, b), t2 = tip(z, y);
+      ends = `<line x1="${px(a.x)}" y1="${py(a.y)}" x2="${t1.x}" y2="${t1.y}" stroke="${esc(L.color)}" stroke-width="3"/><line x1="${px(z.x)}" y1="${py(z.y)}" x2="${t2.x}" y2="${t2.y}" stroke="${esc(L.color)}" stroke-width="3"/>
+        <polygon points="${arrowHead(t1.x, t1.y, t1.dx, t1.dy)}" fill="${esc(L.color)}"/><polygon points="${arrowHead(t2.x, t2.y, t2.dx, t2.dy)}" fill="${esc(L.color)}"/>`;
+    }
+    const hit = ro ? '' : `<polyline class="mp-xyline" data-line="${esc(L.color)}" points="${pts}" fill="none" stroke="transparent" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"><title>Drag to move the whole line</title></polyline>`;
+    return `<g><polyline points="${pts}" fill="none" stroke="${esc(L.color)}" stroke-width="3" stroke-linejoin="round"/>${ends}${hit}</g>`;
+  }).join('') : '';
+  const dots = st.pts.map((p, i) => `<circle cx="${px(p.x)}" cy="${py(p.y)}" r="8" fill="${esc(p.color)}" stroke="#fff" stroke-width="2"/>${st.labels ? `<text x="${px(p.x) + 11}" y="${py(p.y) - 8}" font-size="13" font-weight="700" fill="var(--text)" pointer-events="none">(${p.x},${p.y})</text>` : ''}`).join('');
+  const hits = ro ? '' : st.pts.map((p, i) => `<circle class="mp-xypt" data-pt="${i}" cx="${px(p.x)}" cy="${py(p.y)}" r="17" fill="transparent"><title>Drag to move this point</title></circle>`).join('');
+  return `${ticks.map(v => `<line x1="${px(v)}" y1="0" x2="${px(v)}" y2="${S}" stroke="var(--line)" stroke-dasharray="2 4"/><line x1="0" y1="${py(v)}" x2="${S}" y2="${py(v)}" stroke="var(--line)" stroke-dasharray="2 4"/>${v && v !== hi ? `<text x="${px(v) + 3}" y="${Y0 + 14}" font-size="11" fill="var(--muted)">${v}</text><text x="${X0 + 4}" y="${py(v) - 3}" font-size="11" fill="var(--muted)">${v}</text>` : ''}`).join('')}
+    ${axes}${lines}${dots}${hits}`;
+}
+/**
+ * Dragging on a coordinate grid (solo and room): a point moves alone (its line reshapes to follow it); the line between
+ * points moves the whole line with all its points, by whole grid steps, never off the grid. Both snap to grid points.
+ * ctx: as bindClocks.
+ */
+function bindGrids(el, ctx) {
+  for (const svg of el.querySelectorAll('svg[data-xy]')) {
+    let d = null;
+    const val = e => { const o = ctx.find(svg.dataset.xy), r = svg.getBoundingClientRect(), { lo, hi } = xyRange(o.st); return { x: lo + ((e.clientX - r.left) / r.width) * (hi - lo), y: lo + (1 - (e.clientY - r.top) / r.height) * (hi - lo) }; };
+    svg.addEventListener('pointerdown', e => {
+      if ((ctx.blocked && ctx.blocked()) || e.button > 0) return;
+      const pt = e.target.closest('[data-pt]'), ln = !pt && e.target.closest('[data-line]'); if (!pt && !ln) return;
+      const o = ctx.find(svg.dataset.xy); if (!o || o.st.q) return;
+      e.stopPropagation(); e.preventDefault();
+      const L = ln && xyLines(o.st.pts).find(x => x.color === ln.dataset.line);
+      d = { o, at: val(e), pts0: JSON.parse(JSON.stringify(o.st.pts)), i: pt ? +pt.dataset.pt : -1, idx: L ? L.idx : [], before: ctx.before(), moved: false, sx: e.clientX, sy: e.clientY };
+      svg.setPointerCapture(e.pointerId);
+    });
+    svg.addEventListener('pointermove', e => {
+      if (!d) return;
+      if (!d.moved && Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < 4) return;
+      d.moved = true;
+      const v = val(e), { lo, hi } = xyRange(d.o.st);
+      if (d.i >= 0) { const p0 = d.pts0[d.i]; if (!p0) return; d.o.st.pts = d.pts0.map((p, i) => (i === d.i ? { ...p, ...xySnap(p0.x + v.x - d.at.x, p0.y + v.y - d.at.y, lo, hi) } : p)); }
+      else d.o.st.pts = xyMoveLine(d.pts0, d.idx, v.x - d.at.x, v.y - d.at.y, lo, hi);
+      svg.innerHTML = xySvgInner(d.o.st);
+      svg.classList.add('dragging');
+    });
+    const up = () => { if (!d) return; const x = d; d = null; if (x.moved) xyDragEnd = Date.now(); svg.classList.remove('dragging'); if (x.moved && JSON.stringify(x.pts0) !== JSON.stringify(x.o.st.pts)) ctx.done(x.before); };
+    svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
+  }
+}
+
 // ================================================================ the board (shell)
 // The board is a big plane (manip-board.js WORLD) seen through a window: drag empty space to pan, pinch or the zoom
 // buttons to zoom, Fit to see everything. Objects (a clock, a geoboard, a place-value chart...) sit on it, each with
@@ -419,7 +489,7 @@ function loadState(obj) {
   const ann = o.__ann || {};
   V.ann = { notes: Array.isArray(ann.notes) ? ann.notes.slice(0, NOTE_MAX).map((n, i) => ({ id: String(n.id || `n${i}`), text: String(n.text || ''), x: +n.x || 0, y: +n.y || 0 })) : [],
     strokes: Array.isArray(ann.strokes) ? ann.strokes : [],
-    texts: Array.isArray(ann.texts) ? ann.texts.slice(0, 30).map((n, i) => ({ id: String(n.id || `t${i}`), text: String(n.text || ''), x: +n.x || 0, y: +n.y || 0 })) : [] };
+    texts: Array.isArray(ann.texts) ? ann.texts.slice(0, 30).map((n, i) => ({ id: String(n.id || `t${i}`), text: String(n.text || ''), x: +n.x || 0, y: +n.y || 0, ...textBoxFields(n) })) : [] };
   V.steps = stepsOf(o);   // the exercise's steps travel with the board (saves, share codes, pushes)
   const rest = { ...o }; delete rest.__ann; delete rest.__steps;
   V.st = normalize(V.tool.slug, V.impl, rest);
@@ -570,7 +640,33 @@ function matHtml(o, view = {}) {
   return '<div class="mp-matin"></div>';
 }
 /** An answer box: "?" to type into (the student's own answer: private like their text). */
-const answerHtml = (o, view) => `<div class="mp-ansbox${checkCls(o, view)}"><input class="mp-answer" data-oid="${esc(o.id)}" maxlength="40" placeholder="?" autocomplete="off" enterkeyhint="done" value="${esc(o.st.ans || '')}" aria-label="${esc(t('js.manip.obj.answer'))}"${view.readOnly ? ' readonly tabindex="-1"' : ''}>${checkMark(o, view)}</div>`;
+/** Its words wrap inside the box (a long answer: a corner drag makes the box wider or taller, never the words bigger;
+ *  typing past the bottom grows the box: growAnswer). One line of words: Enter finishes, as in a field. */
+const answerHtml = (o, view) => `<div class="mp-ansbox wrap${checkCls(o, view)}"><textarea class="mp-answer wrap" data-oid="${esc(o.id)}" rows="1" maxlength="${ANS.max}" placeholder="?" autocomplete="off" spellcheck="false" enterkeyhint="done" aria-label="${esc(t('js.manip.obj.answer'))}"${view.readOnly ? ' readonly tabindex="-1"' : ''}>${esc(o.st.ans || '')}</textarea>${checkMark(o, view)}</div>`;
+/**
+ * An answer box whose words no longer fit grows taller to show them all (never past ANS.hMax or the space's bottom; past
+ * that its words scroll, never clipped silently). ta: its textarea; o: its object; space: the board's or square's size.
+ * -> true when the box grew
+ */
+function growAnswer(o, ta, space) {
+  if (!ta || o.k !== 'answer') return false;
+  const s = +o.s || 1, box = ta.closest('.mp-ansbox'), pad = box ? box.offsetHeight - ta.offsetHeight : 14;
+  if (ta.scrollHeight <= ta.clientHeight + 1) return false;
+  const need = Math.min(grownHeight(o.st, ta.scrollHeight + (ta.offsetHeight - ta.clientHeight) + pad), Math.floor((space.h - (+o.y || 0)) / s) - OBJ_HEAD);
+  if (need <= answerSize(o.st).h - OBJ_HEAD) return false;
+  o.st.h = need; sizeObjEl(ta.closest('.mp-obj'), o, answerSize(o.st));
+  return true;
+}
+/** Every answer box drawn in el grown to show its whole answer (a long answer from a saved board or a push). */
+function growAnswers(el, st, space) {
+  for (const ta of el.querySelectorAll('textarea.mp-answer')) { const o = (st.objects || []).find(x => x.id === ta.dataset.oid); if (o) growAnswer(o, ta, space); }
+}
+/** An object's element drawn at size z (its natural size) and its scale, while it changes (a drag of its corner). */
+function sizeObjEl(el, o, z) {
+  if (!el) return; const s = +o.s || 1;
+  el.style.width = `${Math.round(z.w * s)}px`; el.style.height = `${Math.round(z.h * s)}px`;
+  const inn = el.querySelector('.mp-objin'); if (inn) { inn.style.width = `${z.w}px`; inn.style.height = `${z.h}px`; inn.style.transform = `scale(${s})`; }
+}
 /** After "Check my answers": ✓ (green) or "Try again" (soft orange) on a box. Never the right answer. */
 const checkCls = (o, view) => (view.checked && o.id in view.checked ? (view.checked[o.id] ? ' ok' : ' again') : '');
 const checkMark = (o, view) => (view.checked && o.id in view.checked ? `<span class="mp-checkmark" role="status">${view.checked[o.id] ? `${iconHtml('✓', { size: 18 })}<span class="sr-only"> ${esc(t('js.manip.check.right'))}</span>` : esc(t('js.manip.check.again'))}</span>` : '');
@@ -675,6 +771,7 @@ function renderBoard() {
   if (empty && !hint) { hint = document.createElement('p'); hint.className = 'mp-boardhint'; hint.textContent = t('js.manip.board.emptyPieces'); board.appendChild(hint); }
   if (!empty && hint) hint.remove();
   if (V.impl.bind) V.impl.bind(content, bindCtx());
+  growAnswers(content, V.st, WORLD);
   renderInk(); renderTexts(); renderNotes();
   const draw = document.getElementById('mp-draw');
   draw.innerHTML = V.annotate ? `<div class="mp-drawlayer" role="application" aria-label="${esc(t('js.manip.ann.surface'))}"></div>` : '';
@@ -747,14 +844,87 @@ function textHist() { pushHistory({ texts: JSON.stringify(V.ann.texts) }); }
 function renderTexts() {
   const box = document.getElementById('mp-texts'); if (!box) return;
   box.innerHTML = V.ann.texts.map(x => textHtml(x, V.textEdit === x.id)).join('');
-  const inp = box.querySelector('input'); if (inp) { inp.focus({ preventScroll: true }); inp.setSelectionRange(inp.value.length, inp.value.length); }
+  const inp = box.querySelector('textarea.mp-textin'); if (inp) { inp.focus({ preventScroll: true }); inp.setSelectionRange(inp.value.length, inp.value.length); }
 }
 /** One text: the words in the theme's ink, or, while it is being written, a field in the same place with its ×. */
 function textHtml(x, editing, readOnly = false) {
-  const pos = `left:${(+x.x || 0) * 100}%;top:${(+x.y || 0) * 100}%`;
-  if (editing && !readOnly) return `<div class="mp-text editing" data-text="${esc(x.id)}" style="${pos}"><label class="sr-only" for="tx-${esc(x.id)}">${esc(t('js.manip.text.label'))}</label><input id="tx-${esc(x.id)}" class="mp-textin" maxlength="200" value="${esc(x.text)}" placeholder="${esc(t('js.manip.text.ph'))}" autocomplete="off" enterkeyhint="done">${btn('mp-textx', `data-tx="${esc(x.id)}" aria-label="${esc(t('js.manip.text.delete'))}"`, '×')}</div>`;
-  return `<div class="mp-text${readOnly ? ' ro' : ''}" data-text="${esc(x.id)}" style="${pos}">${esc(x.text)}</div>`;
+  return textBoxHtml(x, { editing: editing && !readOnly, ro: readOnly, del: 'data-tx', id: `tx-${x.id}`, label: t('js.manip.text.label'), ph: t('js.manip.text.ph'), delLabel: t('js.manip.text.delete') });
 }
+/**
+ * A board text (solo and room). Its font size (S, M, L, XL) and, once its corner was dragged, its box (w x h in pixels of
+ * its space: the words wrap inside it, and it grows taller when they need more room). While it is being written: a small
+ * bar above it (a grip to drag it, A− and A+ for the size, × to delete it), the field, and a corner to resize it.
+ * o: { editing, ro, del (the delete button's attribute), id (the field's id), label, ph, delLabel }
+ */
+function textBoxHtml(x, o) {
+  const sized = Number.isFinite(+x.w) && Number.isFinite(+x.h), id = esc(x.id), f = textFont(x);
+  const style = `left:${(+x.x || 0) * 100}%;top:${(+x.y || 0) * 100}%;font-size:${f}px${sized ? `;width:${+x.w}px;min-height:${+x.h}px` : ''}`;
+  const cls = `mp-text${sized ? ' sized' : ''}`;
+  if (o.editing) {
+    const fs = x.fs in TEXT_SIZES ? x.fs : 'M';
+    return `<div class="${cls} editing" data-text="${id}" style="${style}">
+      <div class="mp-textbar"><span class="mp-textgrip" data-tgrip="${id}" role="img" aria-label="${esc(t('js.manip.text.move'))}" title="${esc(t('js.manip.text.move'))}">⠿</span>${btn('mp-tsz', `data-tsz="-1" data-id="${id}" aria-label="${esc(t('js.manip.text.smaller'))}" title="${esc(t('js.manip.text.smaller'))}"${fs === 'S' ? ' disabled' : ''}`, 'A−')}${btn('mp-tsz big', `data-tsz="1" data-id="${id}" aria-label="${esc(t('js.manip.text.bigger'))}" title="${esc(t('js.manip.text.bigger'))}"${fs === 'XL' ? ' disabled' : ''}`, 'A+')}${btn('mp-textx', `${o.del}="${id}" aria-label="${esc(o.delLabel)}"`, '×')}</div>
+      <label class="sr-only" for="${esc(o.id)}">${esc(o.label)}</label><textarea id="${esc(o.id)}" class="mp-textin" rows="1" maxlength="200" placeholder="${esc(o.ph)}" autocomplete="off" enterkeyhint="done">${esc(x.text)}</textarea>
+      <span class="mp-textrz" data-trz="${id}" role="img" aria-label="${esc(t('js.manip.text.resize'))}" title="${esc(t('js.manip.text.resize'))}"></span></div>`;
+  }
+  return `<div class="${cls}${o.ro ? ' ro' : ''}" data-text="${id}" style="${style}">${esc(x.text)}</div>`;
+}
+/** A text's font one size bigger or smaller (dir 1 or -1). -> false when it is already the biggest or smallest. */
+function textSizeButton(x, dir) {
+  const fs = stepTextSize(x.fs, dir); if (fs === (x.fs || 'M')) return false;
+  if (fs === 'M') delete x.fs; else x.fs = fs;
+  return true;
+}
+/** A text's box grown to show all its words while they are typed (sized boxes only; never past TEXT_BOX or the space). */
+function growText(x, ta, space) {
+  if (!ta || !Number.isFinite(+x.w) || !Number.isFinite(+x.h) || ta.scrollHeight <= ta.clientHeight + 1) return;
+  const h = Math.min(800, Math.round(space.h * (1 - (+x.y || 0))), ta.scrollHeight + 4); if (h <= +x.h) return;
+  x.h = h; const el = ta.closest('.mp-text'); if (el) el.style.minHeight = `${h}px`;
+}
+/**
+ * A press on a text's grip (move it: the whole box, snapped to things nearby when let go) or its corner (resize it: its
+ * words wrap inside). Solo and room. ctx: { x (the text), el (its element), space (its space's size), zoom(),
+ * others() (rectangles of everything else in that space), start() (before the first change: undo), done(changed) }.
+ * -> true when it was one of them
+ */
+function textBoxPointer(e, ctx) {
+  const grip = e.target.closest('[data-tgrip]'), rz = !grip && e.target.closest('[data-trz]'); if (!grip && !rz) return false;
+  e.preventDefault(); e.stopPropagation();
+  const { x, el, space } = ctx, h = grip || rz, z = ctx.zoom();
+  const d = { sx: e.clientX, sy: e.clientY, x0: +x.x || 0, y0: +x.y || 0, w0: Number.isFinite(+x.w) ? +x.w : el.offsetWidth, h0: Number.isFinite(+x.h) ? +x.h : el.offsetHeight, moved: false };
+  try { h.setPointerCapture(e.pointerId); } catch { /* gone */ }
+  const move = ev => {
+    if (ev.pointerId !== e.pointerId) return;
+    const dx = (ev.clientX - d.sx) / z, dy = (ev.clientY - d.sy) / z;
+    if (!d.moved && Math.abs(dx) + Math.abs(dy) < 3) return;
+    if (!d.moved) { ctx.start(); d.moved = true; el.classList.add('dragging'); }
+    if (grip) {
+      x.x = clamp(d.x0 + dx / space.w, 0, Math.max(0, 1 - el.offsetWidth / space.w)); x.y = clamp(d.y0 + dy / space.h, 0, Math.max(0, 1 - el.offsetHeight / space.h));
+      el.style.left = `${x.x * 100}%`; el.style.top = `${x.y * 100}%`;
+    } else {
+      const r = textResize(d.w0, d.h0, dx, dy, (+x.x || 0) * space.w, (+x.y || 0) * space.h, space);
+      x.w = r.w; x.h = r.h; el.classList.add('sized'); el.style.width = `${r.w}px`; el.style.minHeight = `${r.h}px`;
+    }
+  };
+  const up = ev => {
+    if (ev.pointerId !== e.pointerId) return;
+    h.removeEventListener('pointermove', move); h.removeEventListener('pointerup', up); h.removeEventListener('pointercancel', up);
+    el.classList.remove('dragging');
+    if (grip && d.moved) snapText(x, el, space, ctx.others(), SNAP_PX / z);
+    ctx.done(d.moved);
+  };
+  h.addEventListener('pointermove', move); h.addEventListener('pointerup', up); h.addEventListener('pointercancel', up);
+  return true;
+}
+/** A dropped text: magnetic, like a dropped piece (manip-board.js snapBox): lined up with or just beside things nearby. */
+function snapText(x, el, space, others, t) {
+  const b = { x: (+x.x || 0) * space.w, y: (+x.y || 0) * space.h, w: el.offsetWidth, h: el.offsetHeight };
+  const s = snapBox(b, others, t); if (!s.dx && !s.dy) return;
+  x.x = clamp((b.x + s.dx) / space.w, 0, Math.max(0, 1 - b.w / space.w)); x.y = clamp((b.y + s.dy) / space.h, 0, Math.max(0, 1 - b.h / space.h));
+  el.style.left = `${x.x * 100}%`; el.style.top = `${x.y * 100}%`;
+}
+/** Everything in a space but one text, as rectangles (what a dropped text snaps to). */
+const othersThan = (slug, b, space, id) => boxesOf(slug, { ...b, __ann: { ...(b.__ann || {}), notes: [], texts: ((b.__ann || {}).texts || []).filter(n => n.id !== id) } }, space);
 function placeText(e) {
   if (V.textEdit) { commitText(); return; }
   textHist();
@@ -763,34 +933,57 @@ function placeText(e) {
   V.ann.texts.push(x); V.textEdit = x.id; renderTexts();
 }
 function commitText() {
-  const inp = document.querySelector('#mp-texts input'); const x = V.ann.texts.find(n => n.id === V.textEdit);
-  if (x && inp) x.text = inp.value.slice(0, 200);
+  const inp = document.querySelector('#mp-texts textarea.mp-textin'); const x = V.ann.texts.find(n => n.id === V.textEdit);
+  if (x && inp) x.text = inp.value.replace(/\n+/g, ' ').slice(0, 200);
   V.ann.texts = V.ann.texts.filter(n => n.text.trim());
   V.textEdit = null; renderTexts();
 }
-/** Texts move with mouse or finger; a tap opens one to edit. */
+/** Texts move with mouse or finger (anywhere on one that is not being written; by its grip while it is), snapping to
+ *  things nearby when let go; a tap opens one to edit; its corner resizes it; A− and A+ change its size. */
 function bindTexts() {
   const box = document.getElementById('mp-texts');
   let d = null;
+  const others = id => othersThan(V.tool.slug, boardState(), WORLD, id);
   box.addEventListener('pointerdown', e => {
-    const el = e.target.closest('.mp-text'); if (!el || el.classList.contains('editing')) return;
+    const el = e.target.closest('.mp-text'); if (!el) return;
     const x = V.ann.texts.find(n => n.id === el.dataset.text); if (!x) return;
+    if (el.classList.contains('editing')) {
+      if (e.target.closest('.mp-textbar, [data-trz]')) V.textHold = Date.now();   // its own buttons keep it open
+      textBoxPointer(e, { x, el, space: WORLD, zoom: () => V.view.z, others: () => others(x.id), start: textHist,
+        done: moved => { if (moved) el.querySelector('textarea')?.focus({ preventScroll: true }); } });
+      return;
+    }
     d = { el, x, sx: e.clientX, sy: e.clientY, x0: x.x, y0: x.y, moved: false };
     el.setPointerCapture(e.pointerId); e.preventDefault(); e.stopPropagation();
   });
+  box.addEventListener('mousedown', e => { if (e.target.closest('.mp-text.editing .mp-textbar, .mp-text.editing [data-trz]')) e.preventDefault(); });   // the field keeps its focus
   box.addEventListener('pointermove', e => {
     if (!d) return;
     if (!d.moved && Math.abs(e.clientX - d.sx) + Math.abs(e.clientY - d.sy) < 6) return;
-    if (!d.moved) textHist();
+    if (!d.moved) { textHist(); d.el.classList.add('dragging'); }
     d.moved = true;
     d.x.x = clamp(d.x0 + (e.clientX - d.sx) / V.view.z / WORLD.w, 0, 0.99); d.x.y = clamp(d.y0 + (e.clientY - d.sy) / V.view.z / WORLD.h, 0, 0.99);
     d.el.style.left = `${d.x.x * 100}%`; d.el.style.top = `${d.x.y * 100}%`;
   });
-  const up = () => { if (!d) return; const x = d; d = null; if (!x.moved) { if (V.textEdit) commitText(); V.textEdit = x.x.id; renderTexts(); } };
-  box.addEventListener('pointerup', up); box.addEventListener('pointercancel', () => { d = null; });
+  const up = () => {
+    if (!d) return; const x = d; d = null; x.el.classList.remove('dragging');
+    if (x.moved) { snapText(x.x, x.el, WORLD, others(x.x.id), SNAP_PX / V.view.z); return; }
+    if (V.textEdit) commitText(); V.textEdit = x.x.id; renderTexts();
+  };
+  box.addEventListener('pointerup', up); box.addEventListener('pointercancel', () => { if (d) d.el.classList.remove('dragging'); d = null; });
+  box.addEventListener('click', e => {
+    const b = e.target.closest('[data-tsz]'); if (!b) return;
+    const x = V.ann.texts.find(n => n.id === b.dataset.id); if (!x) return;
+    const inp = box.querySelector('textarea.mp-textin'); if (inp) x.text = inp.value.replace(/\n+/g, ' ').slice(0, 200);
+    textHist(); if (textSizeButton(x, +b.dataset.tsz)) renderTexts(); else V.hist.pop();
+  });
   box.addEventListener('keydown', e => { if (e.target.matches('.mp-textin') && (e.key === 'Enter' || e.key === 'Escape')) { e.preventDefault(); commitText(); } });
-  box.addEventListener('focusout', e => { if (e.target.matches('.mp-textin')) setTimeout(() => { if (V && V.textEdit && !box.contains(document.activeElement)) commitText(); }, 0); });
-  box.addEventListener('input', e => { if (e.target.matches('.mp-textin')) { const x = V.ann.texts.find(n => n.id === V.textEdit); if (x) x.text = e.target.value.slice(0, 200); } });
+  box.addEventListener('focusout', e => { if (e.target.matches('.mp-textin')) setTimeout(() => { if (V && V.textEdit && !box.contains(document.activeElement) && !(Date.now() - (V.textHold || 0) < 700)) commitText(); }, 0); });
+  box.addEventListener('input', e => {
+    if (!e.target.matches('.mp-textin')) return;
+    if (e.target.value.includes('\n')) e.target.value = e.target.value.replace(/\n+/g, ' ');
+    const x = V.ann.texts.find(n => n.id === V.textEdit); if (x) { x.text = e.target.value.slice(0, 200); growText(x, e.target, WORLD); }
+  });
 }
 function renderAnnBar() {
   const el = document.getElementById('mp-annbar');
@@ -874,7 +1067,9 @@ function bindBoard() {
     if (e.target.classList.contains('mp-answer')) {
       const o = V.st.objects.find(x => x.id === e.target.dataset.oid); if (!o) return;
       if (!V.typing) { pushHistory(JSON.stringify(V.st)); V.typing = true; }
-      o.st.ans = e.target.value.slice(0, 40);
+      if (e.target.value.includes('\n')) e.target.value = e.target.value.replace(/\n+/g, ' ');
+      o.st.ans = e.target.value.slice(0, ANS.max);
+      growAnswer(o, e.target, WORLD);
       if (V.checked && o.id in V.checked) { delete V.checked[o.id]; const box = e.target.closest('.mp-ansbox'); box.classList.remove('ok', 'again'); box.querySelector('.mp-checkmark')?.remove(); }
       return;
     }
@@ -1106,6 +1301,7 @@ function bindPlane() {
   const ghost = () => document.getElementById('mp-ghost');
   board.addEventListener('contextmenu', e => { if (e.target.closest('.mp-piece, .mp-obj')) e.preventDefault(); });
   board.addEventListener('keydown', e => {
+    if (e.target.matches('textarea.mp-answer') && e.key === 'Enter') { e.preventDefault(); e.target.blur(); return; }   // one line of words: Enter finishes
     if (!wheelKey(e)) return;
     const pe = e.target.closest('.mp-piece'), oh = !pe && e.target.closest('.mp-ohead'); if (!pe && !oh) return;
     e.preventDefault();
@@ -1121,7 +1317,7 @@ function bindPlane() {
     if (e.target.closest('.mp-zoom, .mp-drawlayer, .mp-sticky, .mp-text, button, input, select, textarea, a')) return;
     if (V.textMode) return;
     const rz = e.target.closest('[data-oresize]');
-    if (rz) { const o = V.st.objects.find(x => x.id === rz.dataset.oresize); if (o && !o.locked) { const z = objSize(V.tool.slug, o); g = { kind: 'resize', o, nat: z, s0: o.s, sx: e.clientX, sy: e.clientY, before: JSON.stringify(V.st), el: rz.closest('.mp-obj') }; board.setPointerCapture(e.pointerId); e.preventDefault(); } return; }
+    if (rz) { const o = V.st.objects.find(x => x.id === rz.dataset.oresize); if (o && !o.locked) { const z = objSize(V.tool.slug, o); g = { kind: 'resize', o, nat: z, s0: o.s, st0: JSON.stringify(o.st), sx: e.clientX, sy: e.clientY, before: JSON.stringify(V.st), el: rz.closest('.mp-obj') }; board.setPointerCapture(e.pointerId); e.preventDefault(); } return; }
     const pieceEl = e.target.closest('.mp-piece');
     if (pieceEl) {
       const p = V.st.pieces.find(x => x.id === pieceEl.dataset.pid); if (!p) return;
@@ -1184,6 +1380,11 @@ function bindPlane() {
       for (const c of g.carry) { c.m.x = c.x0 + g.o.x - g.x0; c.m.y = c.y0 + g.o.y - g.y0; if (c.el) { c.el.style.left = `${c.m.x}px`; c.el.style.top = `${c.m.y}px`; } }
       return;
     }
+    if (g.kind === 'resize' && FREE_SIZE.has(g.o.k)) {
+      // A box sized by its own width and height (an answer box): more room for its words, the same font size.
+      const st0 = JSON.parse(g.st0), r = freeResize({ ...g.o, st: st0 }, dx / z, dy / z, WORLD);
+      g.o.st.w = r.w; g.o.st.h = r.h; sizeObjEl(g.el, g.o, objSize(slug, g.o)); return;
+    }
     if (g.kind === 'resize') {
       g.o.s = Math.round(clamp((g.nat.w * g.s0 + dx / z) / g.nat.w, S_MIN, Math.min(S_MAX, (WORLD.w - g.o.x) / g.nat.w, (WORLD.h - g.o.y) / g.nat.h)) * 1000) / 1000;
       g.el.style.width = `${Math.round(g.nat.w * g.o.s)}px`; g.el.style.height = `${Math.round(g.nat.h * g.o.s)}px`; g.el.querySelector('.mp-objin').style.transform = `scale(${g.o.s})`; return;
@@ -1208,7 +1409,7 @@ function bindPlane() {
     if (x.kind === 'dead') { V.justMoved = true; return; }
     if (x.moved) V.justMoved = true;
     if (x.kind === 'pan') { if (!x.moved && (V.sel || V.osel) && !V.textMode) { V.sel = null; V.osel = null; renderBoard(); renderChrome(); } return; }
-    if (x.kind === 'resize') { if (x.o.s !== x.s0) { pushHistory(x.before); renderBoard(); renderChrome(); } return; }
+    if (x.kind === 'resize') { if (x.o.s !== x.s0 || JSON.stringify(x.o.st) !== x.st0) { pushHistory(x.before); renderBoard(); renderChrome(); } return; }
     // Held: the wheel stays open after the finger lifts.
     if ((x.kind === 'obj' || x.kind === 'piece') && !x.moved && (x.held || e.type === 'pointercancel')) { V.justMoved = true; return; }
     if (x.kind === 'obj') {
@@ -1368,7 +1569,7 @@ async function liveRoom(id, joinFirst) {
   clear(); V = null;
   try {
     if (joinFirst) { await api('/api/manipulatives/live/join', { method: 'POST', body: { id } }); history.replaceState(null, '', `#live/${id}`); }
-    await ROOM.open(ROOT, id, { palButton, bindTrayDrag, dropAt, IMPL, mkPiece, breakPiece, regroup, newId, boards: STATE.boards, normalize, boardHtml, paletteFor, pieceAction, objectAction, joinGroup, target, inkLine, pieceWheel, objWheel, wheelItems, wheelRun, wheelKey, objName });
+    await ROOM.open(ROOT, id, { palButton, bindTrayDrag, dropAt, IMPL, mkPiece, breakPiece, regroup, newId, boards: STATE.boards, normalize, boardHtml, paletteFor, pieceAction, objectAction, joinGroup, target, inkLine, pieceWheel, objWheel, wheelItems, wheelRun, wheelKey, objName, growAnswer, growAnswers, sizeObjEl, textBoxHtml, textBoxPointer, textSizeButton, growText, snapText, othersThan });
   } catch (e) { ROOT.innerHTML = `<div class="empty"><h1>${esc(e.status === 409 ? t('js.manip.live.ended') : t('js.manip.live.gone'))}</h1><p><a href="#">${esc(t('js.manip.nav.back'))}</a></p></div>`; }
 }
 

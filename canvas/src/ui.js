@@ -5,13 +5,17 @@
 // kit's own keypad and digit keys): there is no text field anywhere.
 // 1.3.0: the teacher's controls (teach.js) for the activity's maker and school staff (BRB.canTeach), and the worked
 // answer's own lines on screen when it is shown.
+// 1.4.0: worksheets (sets.js). A link with a teacher's saved worksheet (BRB.questionSet) plays exactly its questions,
+// for everyone; school staff get "My worksheets" in the teacher's controls (BRB.canListSets) to save the questions on
+// screen, open, print, share, copy, rename and delete them.
 import { TOOLS, SUPPORTS, PURPOSES, MAX_COUNT, MAX_PROBLEMS, deal, selfTest, seeded, manipulativeOf, cleanProblem, numText } from './logic.js';
 import { sheet } from './sheet.js';
 import { WORDS, wordsFor } from './words.js';
 import { CSS } from './style.js';
 import { teachControls } from './teach.js';
+import { worksheets } from './sets.js';
 
-const VERSION = '1.3.0';
+const VERSION = '1.4.0';
 const SAVE_KEY = 'oc-progress-v1';
 const IDLE_MS = 45000;
 
@@ -31,12 +35,19 @@ const h = (tag, attrs = {}, ...kids) => {
 /** A short signature of the activity, so a saved place is only resumed in the same activity. */
 function sigOf(a) { const s = JSON.stringify([a.problems || null, a.gen || null, (a.config || {}).count || null]); let x = 5381; for (let i = 0; i < s.length; i++) x = ((x * 33) ^ s.charCodeAt(i)) >>> 0; return x.toString(36); }
 
+/** A worksheet's class code as a teacher reads it: s-c5exp1cm9h -> "C5EXP 1CM9H". */
+const wsCode = id => { const c = String(id).replace(/^s-/, '').toUpperCase(); return `${c.slice(0, 5)} ${c.slice(5)}`; };
 /** One stacked fraction (the dashboard's .dt-frac). */
 const frac = (n, d) => h('span', { class: 'oc-frac', role: 'img', 'aria-label': `${n}/${d}` }, h('span', { class: 'oc-fn' }, n), h('span', { class: 'oc-fl', 'aria-hidden': 'true' }), h('span', { class: 'oc-fd' }, d));
 
 export function activity(input) {
   if (typeof document === 'undefined') return null;
-  const A = input && typeof input === 'object' ? input : {};
+  const A0 = input && typeof input === 'object' ? input : {};
+  // 1.4.0: a teacher's worksheet that the link opened (BRB.questionSet: the questions they saved, which the server
+  // cleaned for this activity): exactly those questions, in their order, for everyone who opens the link
+  const qsIn = B().questionSet, qsMissing = !!(qsIn && qsIn.missing);
+  const QS = qsIn && !qsIn.missing && typeof qsIn.id === 'string' && Array.isArray(qsIn.items) && qsIn.items.length ? qsIn : null;
+  const A = QS ? { ...A0, problems: JSON.parse(JSON.stringify(QS.items)).slice(0, MAX_PROBLEMS), gen: null, config: { ...(A0.config && typeof A0.config === 'object' ? A0.config : {}), fresh: false } } : A0;
   const cfg = A.config && typeof A.config === 'object' ? A.config : {};
   const lang = (B().user && B().user.lang) || cfg.lang || 'en', W = wordsFor(lang), dir = (B().user && B().user.dir) || (/^(ar|he)\b/.test(lang) ? 'rtl' : 'ltr');
   // 1.1.0: config.supports, the help modes this activity offers (in SUPPORTS order). More than one: the support chip is a
@@ -92,7 +103,9 @@ export function activity(input) {
     printable ? (el.printBtn = h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-expanded': 'false', 'aria-controls': 'oc-print', onclick: () => printPanel(!PR.open) }, '🖨 ', T('print'))) : null,
     el.keyBtn = h('button', { type: 'button', class: 'oc-btn oc-sm oc-keybtn', 'aria-pressed': 'false', 'aria-controls': 'oc-keys', onclick: () => keypad(!S.keys) }, '⌨ ', T('keypad')));
   // 1.3.0: the teacher's controls (teach.js): a bar under the strip, or one Teacher button and its menu on phones
-  const TC = teach ? teachControls({ h, T, supports: SUPPORTS, gen: !!(A.gen && TOOLS[A.gen.tool]), state: () => ({ board: S.boardOn }), on: { show: showAnswer, board: setBoard, help: m => setSupport(m, true), newSet: () => again(true) } }) : null;
+  // 1.4.0: My worksheets, only where the page offers the list (school staff in the published activity; never a student)
+  const hasSets = teach && B().canListSets === true && typeof B().mySets === 'function' && typeof B().saveQuestionSet === 'function';
+  const TC = teach ? teachControls({ h, T, supports: SUPPORTS, gen: !!(A.gen && TOOLS[A.gen.tool]), sets: hasSets, state: () => ({ board: S.boardOn }), on: { show: showAnswer, board: setBoard, help: m => setSupport(m, true), newSet: () => again(true), sets: () => setTimeout(() => wsPanel(!WS.isOpen()), 0) } }) : null;
   if (TC) strip.insertBefore(TC.button, el.keyBtn);
   const canSay = !!(task.say && B().speak);
   const card = h('section', { class: 'oc-task', 'aria-label': T('task') },
@@ -117,7 +130,11 @@ export function activity(input) {
   el.end = h('section', { class: 'oc-end', hidden: true, 'aria-labelledby': 'oc-end-h' });
   el.main = h('div', { class: 'oc-main' }, el.work, el.stepsBox);
   el.print = h('section', { class: 'oc-card oc-print', id: 'oc-print', hidden: true, 'aria-labelledby': 'oc-print-h' });
-  const shell = h('div', { class: `oc${board ? ' oc-board' : ''}${teach ? ' oc-teach' : ''}`, 'data-support': support }, strip, TC ? TC.bar : null, el.print, card, el.main, band, el.end, TC ? TC.scrim : null, TC ? TC.menu : null);
+  // 1.4.0: the worksheet on screen (teachers), or a link whose worksheet is gone (everyone)
+  el.wsNote = h('p', { class: 'oc-wsbar', role: 'status', hidden: true });
+  const WS = hasSets ? worksheets({ h, T, lang, B, current: () => ({ items: S.set.slice(0, 20), title: task.title || '' }), onScreen: () => S.ws, open: openWorksheet, paper: () => PR.paper,
+    opener: () => (TC.setsButton && TC.setsButton.offsetParent ? TC.setsButton : TC.menuButton) }) : null;
+  const shell = h('div', { class: `oc${board ? ' oc-board' : ''}${teach ? ' oc-teach' : ''}`, 'data-support': support }, strip, TC ? TC.bar : null, el.wsNote, el.print, WS ? WS.panel : null, card, el.main, band, el.end, TC ? TC.scrim : null, TC ? TC.menu : null);
   root.append(shell);
 
   // ---- the set: fresh per student (a seed of their own, never the same problem twice), and where they were
@@ -129,14 +146,18 @@ export function activity(input) {
     // 1.3.0: shown (the problems whose answer the teacher showed: not counted), boardOn (board mode now), boardUsed (this
     // set was run on the board: no score), revealed (the worked answer is on screen)
     shown: saved && Array.isArray(saved.sh) ? saved.sh.filter(Number.isInteger) : [], boardOn: false, boardUsed: false, revealed: false, byTeacher: false,
+    // 1.4.0: the worksheet on screen: { id, code, title, items? } (link: true when the link opened it; else a teacher
+    // opened it from My worksheets, and its questions replace the set on this screen only)
+    ws: QS ? { id: QS.id, code: wsCode(QS.id), title: '', link: true } : null,
   };
   function dealSet(resume) {
-    S.set = deal(A, { seed: S.seed, seen: S.seen });
+    S.set = S.ws && !S.ws.link ? deal({ ...A, problems: S.ws.items, gen: null, config: { ...cfg, fresh: false } }, { seed: S.seed }) : deal(A, { seed: S.seed, seen: S.seen });
     S.i = 0; S.right = 0; S.wrong = 0; S.reported = false; S.boardUsed = S.boardOn;
     if (resume && saved && !saved.done && Number.isInteger(saved.i) && saved.i < S.set.length) { S.i = saved.i; S.right = saved.right | 0; S.wrong = saved.wrong | 0; } else S.shown = [];
     for (const p of S.set) { const k = TOOLS[p.tool].key(p); if (!S.seen.includes(k)) S.seen.push(k); }
   }
-  const save = (extra = {}) => call(() => B().storage && B().storage.set(SAVE_KEY, { sig, seed: S.seed, seen: S.seen.slice(-200), i: S.i, right: S.right, wrong: S.wrong, st: S.phase === 'work' ? S.st : null, ...(S.shown.length ? { sh: S.shown } : {}), ...extra }));
+  // (a worksheet a teacher opened here is not their place in the activity: nothing is kept for it)
+  const save = (extra = {}) => !(S.ws && !S.ws.link) && call(() => B().storage && B().storage.set(SAVE_KEY, { sig, seed: S.seed, seen: S.seen.slice(-200), i: S.i, right: S.right, wrong: S.wrong, st: S.phase === 'work' ? S.st : null, ...(S.shown.length ? { sh: S.shown } : {}), ...extra }));
 
   // ---- one problem
   const P = () => S.set[S.i];
@@ -373,6 +394,7 @@ export function activity(input) {
   function again(newSheet) {
     if (A.gen) S.seed = (S.seed * 48271 + 11) % 2147483647 || 7;
     if (newSheet === true) S.seen = [];   // "New sheet" (1.2.0): a fresh set from the generator, on screen
+    if (newSheet === true && S.ws && !S.ws.link) { S.ws = null; paintWs(); }   // (1.4.0) New set leaves a worksheet opened here
     dealSet(false); save();
     el.main.hidden = false; card.hidden = false; band.hidden = false; el.end.hidden = true;
     begin();
@@ -390,6 +412,17 @@ export function activity(input) {
     const canKey = B().canPrintKey === true, seedSel = S.sel === 'seed';
     const tog = (on, label, fn) => h('button', { type: 'button', class: 'oc-btn oc-sm oc-tog', 'aria-pressed': String(on), onclick: fn }, label);
     el.print.textContent = '';
+    // 1.4.0: a worksheet on screen prints its own questions, with its class code on the sheet
+    if (S.ws) {
+      el.print.append(
+        h('div', { class: 'oc-ptop' }, h('h2', { id: 'oc-print-h', tabindex: '-1' }, '🖨 ', T('printH')), h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-label': T('close'), onclick: () => printPanel(false) }, '✕')),
+        h('p', { class: 'oc-psmall' }, T('wsPrints', { code: S.ws.code, n: S.set.length })),
+        h('div', { class: 'oc-prow' }, h('span', { class: 'oc-plab', id: 'oc-pp' }, T('paper')),
+          h('span', { class: 'oc-pseg', role: 'group', 'aria-labelledby': 'oc-pp' }, tog(PR.paper === 'a4', T('a4'), () => { PR.paper = 'a4'; paintPrint(); }), tog(PR.paper === 'letter', T('letter'), () => { PR.paper = 'letter'; paintPrint(); }))),
+        canKey ? h('div', { class: 'oc-prow' }, tog(PR.key, `🔑 ${T('keyAdd')}`, () => { PR.key = !PR.key; paintPrint(); })) : null,
+        h('div', { class: 'oc-prow' }, h('button', { type: 'button', class: 'oc-btn oc-primary', disabled: PR.busy, onclick: doPrint }, '🖨 ', T('printGo')), h('span', { class: 'oc-pmsg', role: 'status' }, PR.msg)));
+      return;
+    }
     el.print.append(
       h('div', { class: 'oc-ptop' }, h('h2', { id: 'oc-print-h', tabindex: '-1' }, '🖨 ', T('printH')), h('button', { type: 'button', class: 'oc-btn oc-sm', 'aria-label': T('close'), onclick: () => printPanel(false) }, '✕')),
       h('div', { class: 'oc-prow' }, h('span', { class: 'oc-plab', id: 'oc-pn' }, T('printCount')),
@@ -407,14 +440,40 @@ export function activity(input) {
       h('div', { class: 'oc-prow' }, h('button', { type: 'button', class: 'oc-btn oc-primary', disabled: PR.busy || !PR.seed, onclick: doPrint }, '🖨 ', T('printGo')), h('span', { class: 'oc-pmsg', role: 'status' }, PR.msg)));
   }
   function doPrint() {
-    if (PR.busy || !PR.seed) return;
+    if (PR.busy || (!PR.seed && !S.ws)) return;
     PR.busy = true; PR.msg = T('printBusy'); paintPrint();
-    let r = null; try { r = B().print({ k: 'canvas', seed: PR.seed, n: PR.n, paper: PR.paper, key: PR.key && B().canPrintKey === true }); } catch (e) { r = null; }
+    const which = S.ws ? { set: S.ws.id, n: Math.max(1, Math.min(MAX_PROBLEMS, S.set.length)) } : { seed: PR.seed, n: PR.n };
+    let r = null; try { r = B().print({ k: 'canvas', ...which, paper: PR.paper, key: PR.key && B().canPrintKey === true }); } catch (e) { r = null; }
     Promise.resolve(r).then(x => {
       PR.busy = false;
       PR.msg = x && x.ok ? T('printOk') : T(x && x.error === 'tap' ? 'printTap' : x && x.error === 'key' ? 'keyTeacher' : x && x.error === 'notAllowed' ? 'printNo' : 'printErr');
       paintPrint();
     });
+  }
+  // ---- 1.4.0: worksheets
+  /** A worksheet from My worksheets on this screen: its questions in their order (a new set or New sheet leaves it). */
+  function openWorksheet(set) {
+    if (!set || !Array.isArray(set.items) || !set.items.length) return;
+    S.ws = { id: set.id, code: set.code || wsCode(set.id), title: set.title || set.label || '', items: JSON.parse(JSON.stringify(set.items)) };
+    if (PR.open) printPanel(false);
+    dealSet(false);
+    if (!S.set.length) { S.ws = null; dealSet(false); }
+    el.main.hidden = false; card.hidden = false; band.hidden = false; el.end.hidden = true;
+    paintWs(); begin();
+  }
+  function wsPanel(on) {
+    if (!WS) return;
+    if (on && PR.open) printPanel(false);
+    WS.show(on);
+    if (TC.setsButton) TC.setsButton.setAttribute('aria-expanded', String(!!on));
+  }
+  /** The line under the teacher's controls: the worksheet on screen (teachers), or a link whose worksheet is gone. */
+  function paintWs() {
+    el.wsNote.textContent = '';
+    if (S.ws && teach) el.wsNote.append(h('span', { 'aria-hidden': 'true' }, '📄 '), T('wsOnScreen', { title: S.ws.title || T('wsUntitled') }), ' ', h('span', { class: 'oc-wsc', dir: 'ltr' }, S.ws.code));
+    else if (qsMissing) el.wsNote.append(T('wsMissing'));
+    el.wsNote.hidden = !el.wsNote.textContent;
+    if (WS) WS.paint();
   }
   function keypad(on) { S.keys = !!on; el.keys.hidden = !S.keys; el.keyBtn.setAttribute('aria-pressed', String(S.keys)); }
   const coarse = () => typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
@@ -431,13 +490,14 @@ export function activity(input) {
   setInterval(() => { if (S.phase === 'work' && !S.watching && !S.stuck && Date.now() - S.idle > IDLE_MS) { S.stuck = true; paint(); } }, 5000);
 
   dealSet(true);
+  paintWs();
   if (!S.set.length) { el.work.append(h('p', {}, T('fbEmpty'))); return { selfTest: () => selfTest(A, WORDS.en) }; }
   if (saved && saved.done) { S.i = 0; }
   begin(saved && !saved.done && saved.i === S.i ? saved.st : null);
   if (support === 'own') S.stepsOpen = false, paintSteps();
   const api = {
     version: VERSION, selfTest: () => selfTest(A, WORDS.en),
-    state: () => ({ screen: el.end.hidden ? 'work' : 'end', problem: S.i + 1, problems: S.set.length, right: S.right, wrong: S.wrong, tool: P() && P().tool, phase: S.phase, score: S.right, controls: 'none', support, supports: modes || [support], purpose, seed: S.seed }),
+    state: () => ({ screen: el.end.hidden ? 'work' : 'end', problem: S.i + 1, problems: S.set.length, right: S.right, wrong: S.wrong, tool: P() && P().tool, phase: S.phase, score: S.right, controls: 'none', support, supports: modes || [support], purpose, seed: S.seed, worksheet: S.ws ? S.ws.id : null }),
     /** The printable sheet for a seed (sheet.js), as data: what the page prints for this activity. */
     sheet: (seed, n) => sheet(A, { seed, n, lang }),
   };
