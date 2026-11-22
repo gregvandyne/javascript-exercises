@@ -1115,6 +1115,14 @@
         "h": "Materiales manipulativos de matemáticas en clase",
         "p1": "<b>Sesiones de clase en directo:</b> cuando un docente dirige una sesión en directo con los materiales de matemáticas, el tablero de cada estudiante (sus piezas, notas adhesivas, texto y respuestas) se guarda para su docente y se borra 30 días después de que termine la sesión. No guardamos hacia dónde señalan los estudiantes (sus cursores) ni las manos levantadas.",
         "p2": "<b>Preparar un tablero con IA:</b> un docente puede describir una clase y pedir a la IA que prepare un tablero. Solo enviamos la descripción del docente a nuestro proveedor de IA, Anthropic. Nunca enviamos el trabajo ni los nombres de los estudiantes."
+      },
+      "companion": {
+        "h": "Oomba, el ayudante para enseñar",
+        "p1": "Los docentes con el Plan Docente pueden chatear con Oomba desde una burbuja en sus propias páginas. Los estudiantes y los niños nunca la ven. Los mensajes de un docente, el texto de un documento que adjunte y una imagen que adjunte se envían a nuestro proveedor de IA, Anthropic, para crear la respuesta. Antes de enviar nada, quitamos los nombres de los estudiantes del docente, los correos, los teléfonos y los enlaces. Las imágenes en las que aparece una persona se rechazan y nunca se guardan.",
+        "p2": "Oomba solo ve lo que el docente tiene abierto y datos seguros sobre eso (el grado y el tamaño de una clase, los widgets de un panel), nunca los nombres, respuestas ni trabajos de los estudiantes. Solo cambia un panel después de que el docente toca Aplicar, y el cambio se puede deshacer.",
+        "p3": "Cuando la búsqueda web está activada, Oomba puede enviar búsquedas cortas a la búsqueda web de Anthropic. Nunca incluyen nombres ni una ubicación; los sitios para adultos, de apuestas, redes sociales y similares están bloqueados, y cada búsqueda queda registrada para nuestro equipo sin el nombre del docente. Las páginas encontradas en la web se muestran como fuentes que Oomba no revisó.",
+        "p4": "Un docente puede hablar en lugar de escribir: la grabación se envía a {provider} para convertirla en palabras, y el audio nunca se guarda, ni nosotros ni ellos. Las palabras aparecen en el cuadro del mensaje para que el docente las revise.",
+        "p5": "Guardamos el chat de un docente, con el texto de lo que adjuntó, durante 60 días desde su último uso (una escuela puede elegir de 7 a 365 días); una imagen se borra en cuanto Oomba responde, y como máximo en un día. Un docente puede borrar el chat con Chat nuevo, y se borra con la cuenta. Un administrador de la escuela puede desactivar Oomba o su búsqueda web para la escuela."
       }
     }
   },
@@ -4007,6 +4015,180 @@
       "needText": "Primero escribe unas palabras para Oomba.",
       "slow": "Son muchos mensajes en una hora. Espera un poco y vuelve a intentarlo.",
       "other": "Algo salió mal. Tu mensaje sigue aquí: inténtalo de nuevo en un momento."
+    },
+    "companion": {
+      "sees": "Ve:",
+      "dashOf": "Panel de {name}",
+      "newChat": "Chat nuevo",
+      "newChatAsk": "¿Empezar un chat nuevo? Se borrarán esta conversación y todo lo que adjuntaste.",
+      "newChatOk": "Empezar un chat nuevo",
+      "hello": "¡Hola! Soy Oomba, tu ayudante para enseñar. Pídeme un juego, un libro, un cambio en tu panel o ayuda con una clase.",
+      "idea": {
+        "game": {
+          "label": "Buscar un juego",
+          "text": "Dame un juego de fracciones para 3.º grado, de unos 10 minutos"
+        },
+        "book": {
+          "label": "Buscar un libro",
+          "text": "Muéstrame un libro sobre animales para un lector de nivel M"
+        },
+        "dash": {
+          "label": "Cambiar mi panel",
+          "text": "Agrega a mi panel un temporizador de 5 minutos y las tareas de clase"
+        },
+        "plan": {
+          "label": "Planear una clase",
+          "text": "Ayúdame a planear una clase de 30 minutos sobre "
+        },
+        "dashTimer": {
+          "label": "Agregar un temporizador de 5 minutos",
+          "text": "Agrega un temporizador de 5 minutos"
+        },
+        "dashJobs": {
+          "label": "Agregar tareas de clase",
+          "text": "Agrega un temporizador de 5 minutos y las tareas de clase"
+        }
+      },
+      "placeholder": "Pregúntale a Oomba…",
+      "leave": "Puedes cerrar esto. La respuesta te esperará aquí.",
+      "attach": "Adjuntar un plan de clase, un documento o una imagen",
+      "attachNote": "Sin nombres ni trabajos de estudiantes ni fotos de personas, por favor. Quitamos los que encontremos.",
+      "fileNote": "El archivo no se guarda. Solo su texto se queda en este chat.",
+      "imageNote": "La imagen solo se guarda hasta que Oomba responde; después se borra.",
+      "removeFile": "Quitar el adjunto",
+      "reading": "Leyendo {name}…",
+      "removed": "{count, plural, one {Quitamos # nombre o dato de contacto.} other {Quitamos # nombres o datos de contacto.}}",
+      "pages": "{n, plural, one {# página} other {# páginas}}",
+      "file": {
+        "docType": "Adjunta un archivo PDF, Word (.docx), de texto o Markdown, o una imagen.",
+        "docBig": "Ese archivo pesa más de 5 MB.",
+        "docPages": "Ese PDF tiene más de 10 páginas.",
+        "docScan": "Ese PDF parece un escaneo, así que no se puede leer su texto. Prueba con un archivo de Word o copia el texto.",
+        "docBad": "Ese archivo no se puede abrir. Puede estar dañado o bloqueado.",
+        "docEmpty": "Ese archivo no tiene texto para leer.",
+        "docLimit": "Ya adjuntaste todos los archivos que puedes hoy. Vuelve a intentarlo mañana.",
+        "blocked": "Algunas palabras de ese archivo no están permitidas aquí, así que no se adjuntó.",
+        "imgType": "No se puede leer esa imagen. Prueba con un JPEG o PNG.",
+        "imgBig": "Esa imagen es demasiado grande.",
+        "imgLimit": "Ya adjuntaste todas las imágenes que puedes hoy. Vuelve a intentarlo mañana.",
+        "imgPerson": "En esa imagen aparece una persona, así que no se adjuntó. Oomba solo acepta imágenes sin personas, como una hoja de trabajo o un diagrama.",
+        "imgPersonal": "Esa imagen muestra datos privados, como un nombre o el logo de una escuela, así que no se adjuntó.",
+        "imgUnsafe": "Esa imagen no es adecuada para un sitio escolar, así que no se adjuntó.",
+        "imgResting": "Ahora no se pueden revisar imágenes, así que no se pueden adjuntar. Inténtalo más tarde.",
+        "other": "No funcionó. Inténtalo de nuevo en un momento."
+      },
+      "mic": {
+        "start": "Hablar en lugar de escribir",
+        "stop": "Dejar de escuchar",
+        "listening": "Escuchando… toca detener cuando termines",
+        "kept": "el audio no se guarda",
+        "denied": "El micrófono está bloqueado para este sitio. Permítelo en tu navegador y vuelve a intentarlo.",
+        "failed": "Oomba no pudo oír eso. Inténtalo de nuevo o escríbelo.",
+        "tooLong": "Fue demasiado largo. Habla hasta un minuto.",
+        "tooFast": "Son muchas grabaciones en un minuto. Espera un momento.",
+        "daily": "Por hoy ya no se puede hablar más. Puedes seguir escribiendo.",
+        "busy": "Hablar no está disponible ahora. Puedes seguir escribiendo."
+      },
+      "web": {
+        "on": "Búsqueda web activada",
+        "off": "Búsqueda web desactivada",
+        "offSchool": "La búsqueda web está desactivada para tu escuela",
+        "from": "De la web",
+        "notOn": "No está en Oomba",
+        "warn": "Oomba no revisó estas páginas, así que míralas antes de compartirlas con tu clase."
+      },
+      "step": {
+        "explain": "Consultó cómo funciona Oomba Academy",
+        "page": "Leyó esta página",
+        "dash": "Leyó tu diseño {q} ({n} widgets)",
+        "games": "Buscó juegos: {q}",
+        "books": "Buscó en la Story Library",
+        "booksLevel": "Relacionó el nivel de lectura {q}",
+        "lessons": "Buscó clases y hojas de trabajo",
+        "propose": "Preparó un cambio para que lo revises",
+        "dashNo": "No pudo planear ese cambio del panel",
+        "brief": "Escribió una descripción",
+        "briefNo": "No pudo escribir esa descripción",
+        "read": "Leyó tu archivo ({n, plural, one {# página} other {# páginas}}, solo texto)",
+        "readNo": "No encontró ese archivo",
+        "readImage": "Miró tu imagen",
+        "web": "Buscó en la web ({n, plural, one {# búsqueda} other {# búsquedas}})",
+        "webNo": "Buscó en la web, pero dejó fuera lo que encontró",
+        "toolNo": "Un paso no funcionó"
+      },
+      "stepsSum": "{n, plural, one {# paso} other {# pasos}} · {s} s",
+      "prog": {
+        "check": {
+          "now": "Quitando los nombres de los estudiantes",
+          "done": "Quitó los nombres de los estudiantes"
+        },
+        "ai": {
+          "now": "Oomba está pensando",
+          "done": "Oomba lo pensó"
+        },
+        "tools": {
+          "now": "Buscando",
+          "done": "Buscó"
+        },
+        "answer": {
+          "now": "Escribiendo la respuesta",
+          "done": "Respondió"
+        }
+      },
+      "card": {
+        "grade": "Grado {g}",
+        "minutes": "Unos {n} min",
+        "live": "En vivo en clase",
+        "play": "Jugar",
+        "host": "Dirigir en vivo",
+        "assign": "Asignar",
+        "read": "Leer",
+        "open": "Abrir",
+        "lessonKind": "Clase de CS Quest",
+        "genKind": "Hoja de Figures"
+      },
+      "dash": {
+        "set": "cambiarlo: {what}",
+        "add": "agregarlo {what}",
+        "remove": "quitarlo",
+        "minutes": "{n, plural, one {# minuto} other {# minutos}}",
+        "apply": "Aplicar",
+        "notNow": "Ahora no",
+        "applied": "Aplicado",
+        "declined": "Sin cambios",
+        "done": "Listo. Cambios en tu panel:",
+        "highlighted": "Resaltado en tu pantalla por un momento.",
+        "openDash": "Abrir el panel"
+      },
+      "hand": {
+        "builder": "Actividad de clase en el Builder",
+        "figures": "Hoja de trabajo en Figures",
+        "manipulatives": "Tablero en los Manipulativos",
+        "open": {
+          "builder": "Abrir el Builder",
+          "figures": "Abrir Figures",
+          "manipulatives": "Abrir los Manipulativos"
+        },
+        "change": "Cambiar la descripción",
+        "changeText": "Cambia la descripción: ",
+        "grade": "Grado",
+        "practice": "Practica",
+        "help": "Ayuda",
+        "length": "Duración",
+        "fromPlan": "De tu plan",
+        "filled": "Oomba escribió tu descripción. Revísala y luego toca el botón para crearlo."
+      },
+      "err": {
+        "words": "Algunas palabras de tu mensaje no están permitidas. Cámbialas y envíalo de nuevo.",
+        "personal": "Quita los teléfonos, correos y enlaces, y envíalo de nuevo.",
+        "brief": "Primero escribe unas palabras para Oomba.",
+        "chatBusy": "Oomba todavía está respondiendo tu último mensaje. Espera un momento.",
+        "otherBusy": "Oomba todavía está respondiendo tu último mensaje. Espera un momento.",
+        "notFound": "Esta cuenta no puede usar Oomba ahora.",
+        "slow": "Son muchos mensajes para una hora. Espera un poco y vuelve a intentarlo.",
+        "fileGone": "Ese adjunto ya no está. Adjúntalo otra vez.",
+        "other": "Algo salió mal. Tu mensaje sigue aquí: inténtalo de nuevo en un momento."
+      }
     }
   },
   "favorites": {
@@ -13166,6 +13348,30 @@
       "ready": "Oomba leyó los resultados.",
       "resting": "Oomba está descansando ahora. Aquí tienes la lectura a partir de los números.",
       "failed": "Oomba no pudo leer los resultados esta vez. Aquí tienes la lectura a partir de los números."
+    }
+  },
+  "companion": {
+    "settings": {
+      "title": "Oomba, el ayudante para enseñar",
+      "text": "Los docentes con el Plan Docente pueden pedirle a Oomba juegos, libros, cambios en el panel y ayuda con las clases desde una burbuja en sus páginas. Los estudiantes nunca la ven. Sus mensajes, el texto adjunto y las imágenes van a nuestro proveedor de IA, Anthropic, sin los nombres de los estudiantes.",
+      "on": "Oomba para los docentes de esta escuela",
+      "onHint": "Desactivado: ningún docente de esta escuela ve la burbuja de Oomba.",
+      "web": "Búsqueda web",
+      "webHint": "Activada: Oomba puede buscar en la web para preguntas de enseñanza y muestra sus fuentes. Las búsquedas nunca incluyen nombres.",
+      "retentionDays": "Días que se guarda un chat",
+      "retentionDaysHint": "Un chat que nadie usó durante tantos días se borra, con lo que tenía adjunto. De {min} a {max}; sugerimos {def}.",
+      "keep": "Mensajes guardados en un chat",
+      "keepHint": "Los mensajes más antiguos se borran. De {min} a {max}; sugerimos {def}.",
+      "send": "Mensajes que Oomba vuelve a leer",
+      "sendHint": "Cuántos mensajes anteriores van a la IA con uno nuevo. De {min} a {max}, y no más que los guardados; sugerimos {def}.",
+      "steps": "Pasos para una respuesta",
+      "stepsHint": "Las búsquedas máximas que Oomba puede hacer para una respuesta. De {min} a {max}; sugerimos {def}.",
+      "perHour": "Mensajes que un docente puede enviar en una hora",
+      "perHourHint": "De {min} a {max}; sugerimos {def}.",
+      "err": {
+        "bounds": "Elige un número de {min} a {max}.",
+        "sendKeep": "Elige un número de {min} a {max}: no más que los mensajes guardados."
+      }
     }
   }
 }
