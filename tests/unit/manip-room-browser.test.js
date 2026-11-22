@@ -144,10 +144,18 @@ test('the teacher\'s ⋯ menu with 16 answers checked: inside the screen, End se
     if (dev === '390') {
       // End the session from the menu, then Reopen room, both in reach; the room comes back on Step 2 of 3.
       await press(page, '.rm-menu [data-rtool="end"]'); await page.waitForSelector('.rm-menu [data-rtool="reopen"]');
+      // Ended: the check results are gone (memory only), so no "Answers checked" line at all (never "0 of 16").
+      assert.equal(await page.locator('.rm-menu .rm-checks').count(), 0, 'no Answers checked line in an ended room');
       assert.ok(await reachable(page, '.rm-menu [data-rtool="reopen"]'), 'Reopen room can be clicked');
       await shot(page, `room-menu-ended-${dev}`);
       await press(page, '.rm-menu [data-rtool="reopen"]'); await page.waitForSelector('.rm-stepnow');
       assert.equal(await page.locator('.rm-stepnow').textContent(), 'Step 2 of 3');
+      // Reopened with checks still on: the line is back as before (nobody has checked since: 0 of 16, nothing to open).
+      if (!(await page.locator('.rm-menu').count())) await press(page, '[data-rtool="menu"]');
+      await page.waitForSelector('.rm-menu .rm-checks-none');
+      assert.equal((await page.locator('.rm-menu .rm-checks-none').textContent()).trim(), 'Answers checked: 0 of 16');
+      await page.waitForFunction(() => !document.querySelector('.toast'), null, { timeout: 6000 });   // "The room is open again" goes
+      assert.ok(await reachable(page, '.rm-menu [data-rtool="end"]'), 'End session in reach again');
     }
     assert.deepEqual(errors, []);
     await ctx.close();

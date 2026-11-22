@@ -459,7 +459,8 @@ function renderMenu() {
 function checksHtml() {
   const students = [...R.areas.values()].filter(A => A.key !== 't').sort((a, b) => a.slot - b.slot).map(A => ({ key: A.key, name: A.name }));
   const sum = checkSummary(R.room.checks, students);
-  if (!students.length || (!sum.checked && !checksOn())) return '';
+  // An ended room: none (results are memory only and go when it ends, so it would read 0); back after Reopen.
+  if (R.room.status !== 'active' || !students.length || (!sum.checked && !checksOn())) return '';
   const line = esc(t('js.manip-room.checksSummary', { checked: sum.checked, total: sum.total }));
   if (!sum.checked) return `<div class="rm-checks rm-checks-none">${iconHtml('☑', { size: 18 })}<span>${line}</span></div>`;
   const row = r => `<li class="${r.ok ? 'ok' : 'help'}"><span class="rm-cname" title="${esc(r.name)}">${esc(r.name)}</span><span class="rm-cscore"><bdi>${r.right}/${r.total}</bdi>${iconHtml(r.ok ? '✅' : '⚠️', { size: 16, label: t(r.ok ? 'js.manip-room.checkAllRight' : 'js.manip-room.checkNeedsHelp') })}</span></li>`;
