@@ -16,6 +16,7 @@ const L = await import('../../server/services/lessons.js');
 const F = await import('../../server/services/figures.js');
 const FS = await import('../../server/services/figures-steps.js');
 const LA = await import('../../server/services/lesson-ai.js');
+const AI = await import('../../server/services/ai-call.js');
 const aiBudget = await import('../../server/services/ai-budget.js');
 const { createApp } = await import('../../server/app.js');
 
@@ -292,6 +293,29 @@ test('Draft with AI: no key or a resting budget gives the template, with a Figur
     const t = await F.draftTest(boss, F.createWorksheet(boss, { purpose: 'test' }).id, { topic: 'Area of triangles', subject: 'math' });
     assert.equal(t.ai, false); assert.ok(t.added > 0); assert.equal(called, 0);
   } finally { unhook(); config.aiDailyBudgetUsd = daily; }
+});
+
+test('the AI times out or fails: lessons, worksheets and tests fall back to their templates, one warn line each (never the words), no second wait', async () => {
+  const lines = [], opts = [];
+  AI.hooks.log = (msg, f) => lines.push({ msg, ...f });
+  try {
+    hookAI(async (params, o) => { opts.push(o); const e = new Error('Request timed out.'); e.name = 'APIConnectionTimeoutError'; throw e; });
+    const r = await as(boss)('/api/lessons/draft', { body: { schoolId: oak.id, topic: 'Secret topic about area', grade: '4' } });
+    assert.equal(r.status, 200); assert.match(r.json.redirect, /drafted=template/);
+    const w = await F.draftWorksheet(boss, F.createWorksheet(boss, {}).id, { brief: 'Secret brief about area', count: 2 });
+    assert.equal(w.ok, true); assert.equal(w.ai, false); assert.equal(w.reason, 'timeout'); assert.equal(w.added, 2);
+    const t = await F.draftTest(boss, F.createWorksheet(boss, { purpose: 'test' }).id, { topic: 'Secret topic about area', subject: 'math', count: 2 });
+    assert.equal(t.ok, true); assert.equal(t.ai, false); assert.equal(t.reason, 'timeout'); assert.ok(t.added > 0);
+    assert.equal(opts.length, 3, 'one call each: a timeout is not tried again');
+    assert.ok(opts.every(o => o.maxRetries === 0 && o.timeout === AI.AI_CALL.timeoutMs));
+    assert.deepEqual(lines.map(l => [l.msg, l.kind]), [['lesson draft ai failed', 'timeout'], ['figures worksheet draft ai failed', 'timeout'], ['figures test draft ai failed', 'timeout']]);
+    assert.ok(!JSON.stringify(lines).includes('Secret'), 'never the teacher\'s words');
+    // Bad JSON from the lesson drafter: the template, logged as bad_json.
+    lines.length = 0;
+    hookAI(async () => ({ ...reply({}), content: [{ type: 'text', text: '{"title": ' }] }));
+    const b = await as(boss)('/api/lessons/draft', { body: { schoolId: oak.id, topic: 'Perimeter', grade: '4' } });
+    assert.match(b.json.redirect, /drafted=template/); assert.equal(lines[0].kind, 'bad_json');
+  } finally { unhook(); AI.hooks.log = null; }
 });
 
 test('Build a test: the menu entry, AI on (generators, so each question re-deals), repairs logged, edit, then an explicit Assign', async () => {

@@ -3391,7 +3391,8 @@
           "guessUnder": "Oft weniger als eine Minute",
           "guess": "{n, plural, one {Etwa eine Minute} other {Etwa # Minuten}}",
           "longer": "Dauert etwas länger als sonst",
-          "soFar": "{time} bisher"
+          "soFar": "{time} bisher",
+          "longerMax": "{n, plural, one {Dauert länger als sonst. In spätestens einer Minute hast du auf jeden Fall eine Tafel.} other {Dauert länger als sonst. In spätestens # Minuten hast du auf jeden Fall eine Tafel.}}"
         },
         "step": {
           "check": {
@@ -3425,7 +3426,18 @@
           "names": "Lass Namen von Schüler:innen aus der Beschreibung weg: Namen gehen nie an die KI.",
           "words": "Einige Wörter in der Beschreibung sind nicht erlaubt. Ändere sie und versuch es nochmal.",
           "personal": "Lass Telefonnummern, E-Mails, Links und Codes weg und versuch es nochmal.",
-          "other": "Etwas ist schiefgegangen. Versuch es gleich nochmal."
+          "other": "Etwas ist schiefgegangen. Versuch es gleich nochmal.",
+          "notFound": "Dieses Konto kann gerade keine Tafeln mit KI entwerfen. Bitte die Person, die dir die Materialien eingerichtet hat, deinen Zugang zu prüfen.",
+          "badTool": "Dieses Werkzeug kann nicht mit KI entworfen werden. Öffne ein anderes Werkzeug und versuch es dort.",
+          "brief": "Die Beschreibung war zu kurz. Schreib ein paar Wörter über die Stunde und versuch es nochmal.",
+          "badState": "Die entworfene Tafel konnte nicht gespeichert werden. Versuch es nochmal oder bitte um weniger Aufgaben.",
+          "tooBig": "Die entworfene Tafel war zu groß zum Speichern. Bitte um weniger Aufgaben und versuch es nochmal."
+        },
+        "fallback": {
+          "resting": "Die KI macht gerade Pause, darum hier eine Starttafel. Du kannst den KI-Entwurf später nochmal versuchen.",
+          "timeout": "Die KI hat nicht rechtzeitig geantwortet, darum hier eine Starttafel. Du kannst den KI-Entwurf nochmal versuchen.",
+          "busy": "Die KI ist gerade sehr ausgelastet, darum hier eine Starttafel. Versuch den KI-Entwurf in ein paar Minuten nochmal.",
+          "error": "Die KI konnte das nicht entwerfen, darum hier eine Starttafel. Du kannst den KI-Entwurf nochmal versuchen."
         }
       },
       "save": {
@@ -3790,7 +3802,8 @@
       "removeTestQ": "Diesen Test löschen?",
       "removeLesson": "Diese Fragen löschen",
       "removeLessonQ": "Diese Fragen zu Abbildungen löschen?",
-      "removeLessonText": "Der Abbildungs-Schritt der Lektion behält die Fragen, mit denen er zuletzt gespeichert wurde. Das lässt sich nicht rückgängig machen."
+      "removeLessonText": "Der Abbildungs-Schritt der Lektion behält die Fragen, mit denen er zuletzt gespeichert wurde. Das lässt sich nicht rückgängig machen.",
+      "fallback": "Die KI hat diesmal nicht geantwortet, hier ist ein Startset ({count, plural, one {# Frage} other {# Fragen}}). Du kannst es nochmal versuchen."
     }
   },
   "favorites": {

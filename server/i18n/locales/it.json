@@ -3391,7 +3391,8 @@
           "guessUnder": "Spesso meno di un minuto",
           "guess": "{n, plural, one {Circa un minuto} other {Circa # minuti}}",
           "longer": "Ci vuole un po’ più del solito",
-          "soFar": "{time} finora"
+          "soFar": "{time} finora",
+          "longerMax": "{n, plural, one {Ci vuole più del solito. Entro un minuto avrai comunque una lavagna.} other {Ci vuole più del solito. Entro # minuti avrai comunque una lavagna.}}"
         },
         "step": {
           "check": {
@@ -3425,7 +3426,18 @@
           "names": "Togli i nomi degli studenti dalla descrizione: i nomi non vanno mai all’IA.",
           "words": "Alcune parole della descrizione non sono permesse. Cambiale e riprova.",
           "personal": "Togli numeri di telefono, email, link e codici, poi riprova.",
-          "other": "Qualcosa è andato storto. Riprova tra un momento."
+          "other": "Qualcosa è andato storto. Riprova tra un momento.",
+          "notFound": "Questo account non può preparare lavagne con l’IA in questo momento. Chiedi a chi ti ha dato accesso ai materiali di controllare il tuo accesso.",
+          "badTool": "Questo strumento non si può preparare con l’IA. Apri un altro strumento e prova lì.",
+          "brief": "La descrizione era troppo corta. Scrivi qualche parola sulla lezione, poi riprova.",
+          "badState": "La lavagna preparata non è stata salvata. Riprova, oppure chiedi meno problemi.",
+          "tooBig": "La lavagna preparata era troppo grande da salvare. Chiedi meno problemi e riprova."
+        },
+        "fallback": {
+          "resting": "L’IA è in pausa in questo momento, quindi ecco una lavagna di partenza. Puoi riprovare con l’IA più tardi.",
+          "timeout": "L’IA non ha risposto in tempo, quindi ecco una lavagna di partenza. Puoi riprovare con l’IA.",
+          "busy": "L’IA è molto occupata in questo momento, quindi ecco una lavagna di partenza. Riprova con l’IA tra qualche minuto.",
+          "error": "L’IA non è riuscita a prepararla, quindi ecco una lavagna di partenza. Puoi riprovare con l’IA."
         }
       },
       "save": {
@@ -3790,7 +3802,8 @@
       "removeTestQ": "Eliminare questa verifica?",
       "removeLesson": "Elimina queste domande",
       "removeLessonQ": "Eliminare queste domande con figure?",
-      "removeLessonText": "Il passaggio Figure della lezione mantiene le domande con cui è stato salvato l'ultima volta. Non si può annullare."
+      "removeLessonText": "Il passaggio Figure della lezione mantiene le domande con cui è stato salvato l'ultima volta. Non si può annullare.",
+      "fallback": "L’IA non ha risposto questa volta, ecco un set di partenza ({count, plural, one {# domanda} other {# domande}}). Puoi riprovare."
     }
   },
   "favorites": {
