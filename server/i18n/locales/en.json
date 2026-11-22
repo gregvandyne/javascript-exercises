@@ -77,7 +77,9 @@
     "learn": "Learn",
     "class": "Class",
     "classroom": "Classroom",
-    "live": "Live"
+    "live": "Live",
+    "tools": "Teaching tools",
+    "toolsTab": "Tools"
   },
   "errors": {
     "goHome": "Go home",
@@ -13104,7 +13106,6 @@
       "9-12": "Grades 9-12"
     },
     "menu": {
-      "testing": "Testing: only you can see this",
       "pitch": "Exact, to-scale figures for worksheets, tests and slides. Print-ready, with the answers worked out.",
       "buildTitle": "Build a worksheet",
       "buildText": "Pick figures by hand, or describe what you need and let AI draft the questions. Every number is checked so each figure can really be drawn.",
@@ -13551,6 +13552,19 @@
       "care3": "These terms are about the figures you export. The rest of Oomba Academy follows the site's own terms.",
       "siteTerms": "Read the site's terms",
       "back": "Back to Figures"
+    },
+    "plan": {
+      "titleFigures": "Figures",
+      "titleManip": "Manipulatives",
+      "headingFigures": "Figures is part of the Teacher plan",
+      "headingManip": "The Manipulatives are part of the Teacher plan",
+      "leadFigures": "Make exact figures for math, data, science and economics, build worksheets and tests from them, and add Figure questions to your lessons.",
+      "leadManip": "Use virtual manipulatives on the board, save boards to share, and run live sessions with your classes.",
+      "trial": "Try the Teacher plan free for {days} days. No card needed to start.",
+      "kept": "Anything you already assigned keeps working for your students.",
+      "start": "Start my free trial",
+      "plans": "See the plans",
+      "api": "This is part of the Teacher plan."
     }
   }
 }

@@ -35,7 +35,7 @@ const withFlags = async (flags, fn) => { const old = { f: config.figures, u: con
 const pageData = (text, id) => JSON.parse(new RegExp(`<script type="application/json" id="${id}">([\\s\\S]*?)</script>`).exec(text)[1].replace(/\\u003c/g, '<'));
 const DAY = 24 * 3600e3, isoDay = ms => new Date(ms).toISOString().slice(0, 10);
 
-// The platform admin (a Figures tester) teaches 8A; T teaches 8B and is not on the tester list.
+// The platform admin teaches 8A; T teaches 8B and is on no tester list (Figures is open to every teacher).
 const boss = createUser({ username: 'FigP3Boss', password: 'secret123', role: 'admin' });
 const oak = S.createSchool(boss, { name: 'Phase Three Oak' }).school;
 S.addMember(boss, oak.id, boss.id, 'teacher', { rosterName: 'Ms Boss' });
@@ -44,6 +44,9 @@ const T = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Tom Teacher
 S.createClass(boss, oak.id, { name: '8B', teacherId: T.id });
 const kid = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Quinn Kid' }).user.id);
 S.addToClass(boss, A.id, kid.id);
+// T has the Teacher plan, with paid plans on for everyone (docs/decisions.md "Figures and the Manipulatives: Teacher plan only").
+const TOOLS = await import('./_tools-plan.js');
+TOOLS.plansOn(); TOOLS.givePlan(T.id);
 const lessonOf = (u, title = 'Shapes and forces') => L.createLesson(u, oak.id, { title, kind: 'lesson', grade: '7' }).lesson;
 const hookAI = (fn, logs) => { F.hooks.create = fn; F.hooks.log = logs ? x => logs.push(x) : null; LA.hooks.create = fn; LA.hooks.log = logs ? x => logs.push(x) : null; };
 const unhook = () => { F.hooks.create = null; F.hooks.log = null; LA.hooks.create = null; LA.hooks.log = null; };
@@ -74,7 +77,7 @@ test('the figure catalog: kinds with a generator, a line, a parameter schema, OF
   assert.match(F.catalogLine(tri), /^- triangle \(math; grades .*\): .*Parameters: \{.*"AB":"number".*answerKey choices for the example: .*sides\.CA/);
 });
 
-test('gate: the lesson editor offers Figure questions to a Figures tester only; FIGURES=0 hides it', async () => {
+test('gate: the lesson editor offers Figure questions to every teacher (not only testers); FIGURES=0 hides it', async () => {
   const l = lessonOf(boss);
   let ed = await as(boss)(`/teach/lessons/${l.id}`);
   assert.equal(ed.status, 200);
@@ -85,15 +88,22 @@ test('gate: the lesson editor offers Figure questions to a Figures tester only; 
     const r = await as(boss)(`/api/lessons/${l.id}/steps`, { body: { kind: 'figures', title: 'x' } });
     assert.equal(r.status, 400); assert.match(r.json.error, /Pick a type of step/);
   });
+  // A plain teacher (on no tester list): the same, and FIGURES=0 hides it from them too.
+  assert.ok(!config.manipulativesUsers.includes(T.username.toLowerCase()));
   const tl = lessonOf(T, 'Tom lesson');
   ed = await as(T)(`/teach/lessons/${tl.id}`);
-  assert.equal(ed.status, 200); assert.doesNotMatch(ed.text, /<option value="figures"/);
-  assert.equal((await as(T)(`/api/lessons/${tl.id}/steps`, { body: { kind: 'figures' } })).status, 400);
+  assert.equal(ed.status, 200); assert.match(ed.text, /<option value="figures"\s*>📐 Figure questions<\/option>/);
+  await withFlags({ figures: false }, async () => {
+    assert.doesNotMatch((await as(T)(`/teach/lessons/${tl.id}`)).text, /<option value="figures"/);
+    assert.equal((await as(T)(`/api/lessons/${tl.id}/steps`, { body: { kind: 'figures' } })).status, 400);
+  });
+  const made = await as(T)(`/api/lessons/${tl.id}/steps`, { body: { kind: 'figures', title: 'Tom figures' } });
+  assert.equal(made.status, 200, made.text); assert.match(made.json.redirect, /^\/figures\/worksheets\//);
   // The service never makes one by itself.
   assert.equal(L.addStep(boss, l.id, { kind: 'figures', body: 'x' }).code, 'stepKind');
   // Someone else's lesson: no set.
   assert.equal(FS.newLessonSet(boss, tl.id).ok, true, 'the platform admin is a school admin here');
-  await withFlags({ manipulativesUsers: [T.username.toLowerCase()] }, async () => assert.equal(FS.newLessonSet(T, l.id).code, 'notFound'));
+  assert.equal(FS.newLessonSet(T, l.id).code, 'notFound', 'a lesson T cannot edit');
 });
 
 test('a Figure step: built in the Figures builder, Save to lesson snapshots it, saved again replaces it, students keep it once started', async () => {
@@ -214,7 +224,7 @@ test('print: a Figure step prints black on white, the key on request, for its ed
   assert.equal((await as(kid)(`/teach/lesson-steps/${step.id}/print`)).status, 404);
 });
 
-test('Draft with AI: a tester gets the figure catalog; only catalog figures; bad ones repaired and logged without the topic', async () => {
+test('Draft with AI: a teacher gets the figure catalog; only catalog figures; bad ones repaired and logged without the topic', async () => {
   const logs = [], seen = [];
   const topic = 'Zanzibar triangles secret topic';
   hookAI(async req => {
@@ -256,13 +266,16 @@ test('Draft with AI: a tester gets the figure catalog; only catalog figures; bad
     assert.ok(logs.some(x => x.kind === 'rectangle' && /answerKey/.test(x.why)));
     assert.ok(logs.some(x => x.kind === 'unicorn'));
     assert.ok(!JSON.stringify(logs).includes('Zanzibar'), 'never the topic');
-    // A teacher the Figures gate does not let in: no catalog, no figures steps in the schema.
+    // A plain teacher (on no tester list) gets the catalog too.
     seen.length = 0;
-    const r2 = await as(T)('/api/lessons/draft', { body: { schoolId: oak.id, topic: 'Triangles', grade: '7' } });
-    assert.equal(r2.status, 200);
+    assert.equal((await as(T)('/api/lessons/draft', { body: { schoolId: oak.id, topic: 'Triangles', grade: '7' } })).status, 200);
+    assert.match(JSON.stringify(seen[0]), /Figure catalog/);
+    // FIGURES=0: no catalog, no figures steps in the schema.
+    seen.length = 0;
+    await withFlags({ figures: false }, async () => assert.equal((await as(T)('/api/lessons/draft', { body: { schoolId: oak.id, topic: 'Triangles', grade: '7' } })).status, 200));
     assert.doesNotMatch(JSON.stringify(seen[0]), /Figure catalog/);
     assert.ok(!seen[0].output_config.format.schema.properties.steps.items.properties.kind.enum.includes('figures'));
-    // A figures step from a non-tester's draft would be dropped too (no catalog: nothing allowed).
+    // A figures step from a draft without the catalog would be dropped too (nothing allowed).
     assert.equal(LA.figureStep({ kind: 'figures', figures: [{ kind: 'triangle', question: 'Q?' }] }, 0, []).kind, 'question');
   } finally { unhook(); }
 });
@@ -325,7 +338,9 @@ test('Build a test: the menu entry, AI on (generators, so each question re-deals
   assert.equal(page.status, 200);
   const data = pageData(page.text, 'fg-sheet');
   assert.equal(data.purpose, 'test'); assert.equal(data.untitled, 'Untitled test'); assert.equal(data.lesson, null);
-  assert.equal((await as(T)('/figures/tests/new')).status, 404, 'behind the Figures gate');
+  assert.equal((await as(T)('/figures/tests/new')).status, 200, 'every teacher');
+  await withFlags({ figures: false }, async () => assert.equal((await as(T)('/figures/tests/new')).status, 404, 'behind the Figures gate'));
+  assert.equal((await as(kid)('/figures/tests/new')).status, 404, 'never a student');
   // "Power with AI" is remembered per teacher (figure_prefs), the same switch as worksheets.
   await as(boss)('/api/figures/prefs', { body: { ai: false } });
   assert.equal(pageData((await as(boss)('/figures/tests/new')).text, 'fg-sheet').ai, false);

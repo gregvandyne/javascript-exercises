@@ -76,7 +76,9 @@
     "learn": "Aprender",
     "class": "Clase",
     "classroom": "Mi aula",
-    "live": "En vivo"
+    "live": "En vivo",
+    "tools": "Herramientas docentes",
+    "toolsTab": "Herramientas"
   },
   "errors": {
     "goHome": "Ir al inicio",
@@ -12385,7 +12387,6 @@
       "9-12": "Grados 9-12"
     },
     "menu": {
-      "testing": "En prueba: solo tú puedes verlo",
       "pitch": "Figuras exactas y a escala para fichas, exámenes y presentaciones. Listas para imprimir, con las respuestas resueltas.",
       "buildTitle": "Crear una ficha",
       "buildText": "Elige las figuras tú mismo, o describe lo que necesitas y deja que la IA redacte las preguntas. Cada número se comprueba para que cada figura se pueda dibujar de verdad.",
@@ -12832,6 +12833,19 @@
       "care3": "Estas condiciones tratan de las figuras que exportas. El resto de Oomba Academy se rige por los términos del sitio.",
       "siteTerms": "Leer los términos del sitio",
       "back": "Volver a Figuras"
+    },
+    "plan": {
+      "titleFigures": "Figuras",
+      "titleManip": "Manipulativos",
+      "headingFigures": "Figuras es parte del plan Docente",
+      "headingManip": "Los manipulativos son parte del plan Docente",
+      "leadFigures": "Cree figuras exactas de matemáticas, datos, ciencias y economía, arme con ellas hojas de trabajo y pruebas, y agregue preguntas con figuras a sus lecciones.",
+      "leadManip": "Use manipulativos virtuales en la pizarra, guarde tableros para compartir y haga sesiones en vivo con sus clases.",
+      "trial": "Pruebe el plan Docente gratis durante {days} días. No hace falta tarjeta para empezar.",
+      "kept": "Todo lo que ya asignó sigue funcionando para sus alumnos.",
+      "start": "Empezar mi prueba gratis",
+      "plans": "Ver los planes",
+      "api": "Esto es parte del plan Docente."
     }
   }
 }

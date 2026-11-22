@@ -2,7 +2,9 @@
 // share codes, live class sessions and an AI lesson drafter. Hidden while it is tested (config.manipulatives).
 //
 // Who may use it:
-//   - hosts: the platform admin, and school staff whose username is in MANIPULATIVES_USERS. Only hosts save boards
+//   - hosts (services/teacher-tools.js toolAccess, the same rule as Figures; docs/decisions.md "Figures and the
+//     Manipulatives: Teacher plan only"): the platform admin, school staff whose username is in MANIPULATIVES_USERS,
+//     and, while paid plans are on, school staff with the Teacher plan (other staff see the plan page). Only hosts save boards
 //     (each saved board gets a share code), run live sessions, push boards, export and draft with AI.
 //   - students: a signed-in student of a class whose teacher (a host) is running a session for it. A join code finds
 //     the session, but only that class's own students get in; for anyone else the code is the same 404 as a wrong one.
@@ -19,8 +21,9 @@
 import crypto from 'node:crypto';
 import { q, uid, now, audit } from '../db.js';
 import { config } from '../config.js';
-import { isGrownup, getUser } from '../auth.js';
+import { getUser } from '../auth.js';
 import * as S from './schools.js';
+import { toolAccess } from './teacher-tools.js';
 import { anthropic } from '../builder/anthropic.js';
 import * as aiBudget from './ai-budget.js';
 import { callAi, logAiFail, fallbackReason } from './ai-call.js';
@@ -52,12 +55,11 @@ const json = (s, d) => { try { return JSON.parse(s); } catch { return d; } };
 
 // ---------------------------------------------------------------- who may use it
 export const on = () => !!config.manipulatives;
-/** May this account host (save boards with share codes, run sessions, draft with AI)? */
-export function canHost(u) {
-  if (!on() || !u || u.is_guest || u.banned || isGrownup(u)) return false;
-  if (S.isPlatformAdmin(u)) return true;
-  return config.manipulativesUsers.includes(String(u.username || '').toLowerCase()) && S.isSchoolStaff(u);
-}
+/** May this account host (save boards with share codes, run sessions, draft with AI)? (services/teacher-tools.js) */
+export const canHost = u => toolAccess(u, on()) === 'yes';
+/** A session's host, for its students: still staff the tools know (a host whose Teacher plan lapsed keeps the session
+ *  they started for their class; they cannot start a new one). */
+const hostStill = u => toolAccess(u, on()) !== null;
 const isStudentOf = (u, classId) => {
   const c = S.getClass(classId);
   const m = u && c && !c.archived_at ? S.classMember(c.id, u.id) : null;
@@ -85,12 +87,14 @@ export function studentSessions(u) {
   const rows = q.all(`SELECT s.*, c.name class_name, (SELECT 1 FROM manip_work w WHERE w.session_id=s.id AND w.user_id=?) joined FROM manip_sessions s
     JOIN class_members m ON m.class_id=s.class_id AND m.user_id=? AND m.status='active' AND m.role='student' JOIN classrooms c ON c.id=s.class_id
     WHERE c.archived_at IS NULL AND (s.status='active' AND s.opened_at>? OR s.ended_at>?) ORDER BY s.created_at DESC`, u.id, u.id, t - SESSION_HOURS * HOUR, t - SESSION_HOURS * HOUR);
-  return rows.filter(s => (s.status === 'active' || s.joined) && isStudentOf(u, s.class_id) && canHost(getUser(s.host_id)));
+  return rows.filter(s => (s.status === 'active' || s.joined) && isStudentOf(u, s.class_id) && hostStill(getUser(s.host_id)));
 }
-/** 'host' | 'student' | null (null: the normal 404). */
+/** 'host' | 'student' | 'plan' (school staff without the Teacher plan: the plan page) | null (null: the normal 404). */
 export function roleOf(u) {
-  if (canHost(u)) return 'host';
-  return studentSessions(u).length ? 'student' : null;
+  const a = toolAccess(u, on());
+  if (a === 'yes') return 'host';
+  if (studentSessions(u).length) return 'student';
+  return a === 'plan' ? 'plan' : null;
 }
 
 // ---------------------------------------------------------------- boards (the JSON a tool saves)
@@ -359,7 +363,7 @@ export const isSessionHost = (u, s) => !!(s && canHost(u) && (s.host_id === u.id
 /** A student's session, if they may be in it (its class's student; its teacher may still host). */
 function studentSession(u, id) {
   const s = getSession(id);
-  if (!s || !on() || !u || u.is_guest || u.banned || !isStudentOf(u, s.class_id) || !canHost(getUser(s.host_id))) return null;
+  if (!s || !on() || !u || u.is_guest || u.banned || !isStudentOf(u, s.class_id) || !hostStill(getUser(s.host_id))) return null;
   return s;
 }
 /** Join with a code (or by id from the class list). A code from another class gets the same answer as a wrong one. */

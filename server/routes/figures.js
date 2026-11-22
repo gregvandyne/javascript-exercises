@@ -1,7 +1,9 @@
-// Figures, the standalone product (services/figures.js; docs/decisions.md "Figures, the standalone product"). Hidden
-// while it is tested: every address here answers only someone services/figures.js roleOf lets in (the platform admin and
-// the school staff on the manipulatives' tester list); everyone else falls through to the site's normal 404. Never
-// linked from any menu, the sitemap or search, and never indexed (X-Robots-Tag and the layout's noindex).
+// Figures, the standalone product (services/figures.js; docs/decisions.md "Figures, the standalone product" and "Figures
+// opens to all teachers"). Every address here answers only someone services/figures.js roleOf lets in (the platform
+// admin and every school staff member); signed out, a page goes to the sign-in page and an API answers 401 (as the /teach
+// pages do); everyone else signed in falls through to the site's normal 404. FIGURES=0 is the normal 404 for everyone.
+// The "Teaching tools" menu entry (views/layout.js) links here; never in the sitemap or search, and never indexed
+// (X-Robots-Tag and the layout's noindex).
 //   GET  /figures                                  the menu: every kind as a card, the teacher's worksheets
 //   GET  /figures/thumb/<kind>.svg                 a card's picture (the kind's example, drawn on the server, cached)
 //   GET  /figures/terms                            what teachers may do with the figures they export (plain words)
@@ -34,6 +36,9 @@ import { figTag } from '../services/figlibs.js';
 import * as F from '../services/figures.js';
 import * as FS from '../services/figures-steps.js';
 import { canHost as manipHost } from '../services/manipulatives.js';
+import { requireUser } from '../auth.js';
+import { config } from '../config.js';
+import { ico } from '../views/icon.js';
 import { decodeData, SOON } from '../../public/js/figures-catalog.js';
 
 export const router = Router();
@@ -43,19 +48,43 @@ const ASSIGN_ERRORS = ['empty', 'noAnswer', 'noClass', 'badDate', 'dueBeforeOpen
 const fail = (req, res, r) => res.status(STATUS[r.code] || 400).json({ error: req.t(`figures.errors.${r.code}`), code: r.code, ...(r.problems ? { problems: r.problems } : {}) });
 const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
 
-// The gate: anyone else goes on to the next router, and so to the site's 404 (the page's, or the API's JSON one).
+// The gate: signed out (Figures on), the sign-in page or a 401, like a /teach page; anyone else goes on to the next
+// router, and so to the site's 404 (the page's, or the API's JSON one).
 router.use(['/figures', '/api/figures'], (req, res, next) => {
   const role = F.roleOf(req.user);
+  if (!role && !req.user && F.on()) { res.set({ 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'no-store' }); return requireUser(req, res, next); }
   if (!role) return next('router');
-  req.figRole = role;
   res.set({ 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'no-store' });
+  // School staff without the Teacher plan (while paid plans are on): every page is the calm plan page, every API says so.
+  if (role === 'plan') return planReply(req, res, 'figures');
+  req.figRole = role;
   next();
 });
+
+/** A teaching tool for school staff without the Teacher plan (services/teacher-tools.js 'plan'): a page that says it is
+ *  part of the Teacher plan, with the free trial (/trial) and the plans (/plans); no price here (prices are on /plans
+ *  only). An API answers 403 with the same words. Only school staff ever get here: never a student, kid or grown-up. */
+export function planReply(req, res, tool) {
+  const t = req.t;
+  if (req.originalUrl.startsWith('/api/')) return res.status(403).json({ error: t('figures.plan.api'), code: 'teacherPlan' });
+  if (req.method !== 'GET' && req.method !== 'HEAD') return next404(req, res);
+  return page(req, res, {
+    title: t(tool === 'manip' ? 'figures.plan.titleManip' : 'figures.plan.titleFigures'), active: 'tools', head: CSS, bodyClass: 'fg-page',
+    body: html`<section class="panel fg-plan" aria-labelledby="fg-plan-h">
+      <h1 id="fg-plan-h">${ico(tool === 'manip' ? '🧮' : '📐', { size: 32 })} ${t(tool === 'manip' ? 'figures.plan.headingManip' : 'figures.plan.headingFigures')}</h1>
+      <p class="lead">${t(tool === 'manip' ? 'figures.plan.leadManip' : 'figures.plan.leadFigures')}</p>
+      <p>${t('figures.plan.trial', { days: config.teacherTrialDays })}</p>
+      <p class="muted">${t('figures.plan.kept')}</p>
+      <div class="row"><a class="btn btn-primary" href="/trial">${t('figures.plan.start')}</a><a class="btn" href="/plans">${t('figures.plan.plans')}</a></div>
+    </section>`,
+  });
+}
+const next404 = (req, res) => res.status(404).json({ error: req.t('errors.api.notFound') });
 
 const CSS = raw(`<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`);
 const kindName = (t, id) => t(`figures.kinds.${id}.name`);
 const subjName = (t, s) => t(`figures.subjects.${s}`);
-/** "Teaching tools: Manipulatives · Figures", for someone who can open both (both are hidden while they are tested). */
+/** "Teaching tools: Manipulatives · Figures", only for someone who can open both (Manipulatives keeps its tester list). */
 export function teachingTools(req, current) {
   const u = req.user;
   if (!(manipHost(u) && F.canMake(u))) return '';
@@ -86,10 +115,10 @@ router.get('/figures', (req, res) => {
         <small>${[w.purpose === 'test' ? t('figures.menu.isTest') : '', w.grade ? t('figures.menu.gradeOf', { grade: w.grade }) : '', t('figures.menu.edited', { date: dateOf(req, w.updated_at) })].filter(Boolean).join(' · ')}</small></span></li>`)}</ul>`
     : html`<p class="muted">${t('figures.menu.noSheets')}</p>`;
   page(req, res, {
-    title: t('figures.title'), active: null, head: CSS, scripts: ['/js/figures.js'], bodyClass: 'fg-page',
+    title: t('figures.title'), active: 'tools', head: CSS, scripts: ['/js/figures.js'], bodyClass: 'fg-page',
     body: html`${teachingTools(req, 'figures')}
       <header class="fg-hero"><span class="fg-logo" aria-hidden="true"><svg viewBox="0 0 40 40" width="40" height="40"><path d="M8 32 L32 8 L32 32 Z" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/><path d="M25 32 v-7 h7" fill="none" stroke="currentColor" stroke-width="3"/></svg></span>
-        <h1>${t('figures.title')}</h1><span class="fg-testing">${t('figures.menu.testing')}</span></header>
+        <h1>${t('figures.title')}</h1></header>
       <p class="fg-lead">${t('figures.menu.pitch')}</p>
       <div class="fg-top">
         <section class="fg-build"><h2>${t('figures.menu.buildTitle')}</h2><p>${t('figures.menu.buildText')}</p>
@@ -123,7 +152,7 @@ router.get('/figures/terms', (req, res) => {
   const t = req.t, notice = F.kitFor().notice, CC0 = 'https://creativecommons.org/publicdomain/zero/1.0/';
   const li = keys => html`<ul class="fg-terms-list">${keys.map(k => html`<li>${t(`figures.terms.${k}`)}</li>`)}</ul>`;
   page(req, res, {
-    title: t('figures.terms.title'), active: null, head: CSS, bodyClass: 'fg-page',
+    title: t('figures.terms.title'), active: 'tools', head: CSS, bodyClass: 'fg-page',
     body: html`${teachingTools(req, 'figures')}
       ${crumbs(t, [['/figures', t('figures.title')], [null, t('figures.terms.crumb')]])}
       <article class="fg-terms">
@@ -149,7 +178,7 @@ function builder(req, res, w, { purpose = w ? w.purpose : 'worksheet' } = {}) {
   const test = purpose === 'test';
   const crumb = lesson ? [[`/teach/lessons/${lesson.id}`, lesson.title], [null, t('figures.sheet.crumbLesson')]] : [['/figures', t('figures.title')], [null, t(test ? 'figures.sheet.crumbTest' : 'figures.sheet.crumb')]];
   page(req, res, {
-    title: w ? w.title : t(test ? 'figures.sheet.newTest' : 'figures.sheet.newTitle'), active: null, head: CSS, scripts: ['/js/figures-sheet.js'], bodyClass: 'fg-page',
+    title: w ? w.title : t(test ? 'figures.sheet.newTest' : 'figures.sheet.newTitle'), active: 'tools', head: CSS, scripts: ['/js/figures-sheet.js'], bodyClass: 'fg-page',
     body: html`${teachingTools(req, 'figures')}
       ${crumbs(t, crumb)}
       ${jsonData('fg-sheet', { id: w ? w.id : null, purpose, lesson, ai: F.aiPref(u), startAi: req.query.ai === '1', kinds, subjects: Object.fromEntries(F.SUBJECTS.map(s => [s, subjName(t, s)])), untitled: t(test ? 'figures.sheet.untitledTest' : 'figures.sheet.untitled'),
@@ -165,7 +194,7 @@ router.get('/figures/worksheets/:id/print', (req, res, next) => {
   const t = req.t, key = req.query.key === '1', info = localeInfo(req.locale);
   const frag = F.printHtml(w, F.itemsOf(w.id), { t, lang: req.locale || 'en', dir: info.dir, key });
   page(req, res, {
-    title: key ? t('figures.print.keyTitle', { title: w.title }) : w.title, active: null, head: CSS, scripts: ['/js/figures-print.js'], bodyClass: 'fg-page fg-printpage',
+    title: key ? t('figures.print.keyTitle', { title: w.title }) : w.title, active: 'tools', head: CSS, scripts: ['/js/figures-print.js'], bodyClass: 'fg-page fg-printpage',
     body: html`<div class="fg-printbar noprint">${crumbs(t, [['/figures', t('figures.title')], [`/figures/worksheets/${w.id}`, w.title], [null, t('figures.print.crumb')]])}
       <div class="row"><a class="chip${key ? '' : ' on'}" href="?key=0">${t('figures.print.sheetOnly')}</a><a class="chip${key ? ' on' : ''}" href="?key=1">${t('figures.print.withKey')}</a>
       <button class="btn btn-primary" type="button" data-print>🖨️ ${t('figures.print.print')}</button></div></div>${raw(frag)}`,
@@ -183,7 +212,7 @@ router.get('/figures/:kind', (req, res, next) => {
   else if (req.query.d) { const d = decodeData(req.query.d); const c = d ? F.cleanData(d) : null; if (c && c.data) start = { data: c.data }; }
   const presets = K.presets.map((d, i) => ({ name: t('figures.editor.example', { n: i + 1 }), data: d }));
   page(req, res, {
-    title: kindName(t, K.id), active: null, bodyClass: 'fg-page', scripts: ['/js/figures-editor.js'],
+    title: kindName(t, K.id), active: 'tools', bodyClass: 'fg-page', scripts: ['/js/figures-editor.js'],
     head: raw(`${CSS}\n${figTag('oomba-figures', F.OF_VERSION, { kinds: [K.id] })}`),
     body: html`${teachingTools(req, 'figures')}
       ${crumbs(t, [['/figures', t('figures.title')], [`/figures#${K.subject}`, subjName(t, K.subject)], [null, kindName(t, K.id)]])}
@@ -206,10 +235,12 @@ router.post('/api/figures/gen', rateLimit('figures-gen', 900, 3600e3), (req, res
   const gid = typeof b.gen === 'string' && F.genOf(b.gen) ? b.gen : K && K.gens.length ? K.gens[Math.floor(Math.random() * K.gens.length)].id : null;
   if (!gid) return fail(req, res, { code: 'noGen' });
   const seed = Number.isInteger(b.seed) && b.seed > 0 && b.seed < 1e9 ? b.seed : F.newSeed();
+  // The words: the language of the worksheet the editor was opened from (ws), else the page's.
+  const ws = typeof b.ws === 'string' ? F.ownWorksheet(req.user, b.ws) : null, lang = ws ? ws.lang : F.genLang(req.locale);
   // A saved question's figure ({ gen, seed, data }, the editor opened from a worksheet): what its generator dealt for it,
   // an earlier definition (PAST_GENS) included, the same lookup the server uses when it saves (F.dealtFor).
   const saved = b.gen === gid && b.data && typeof b.data === 'object' && !Array.isArray(b.data) ? b.data : undefined;
-  const g = saved ? F.dealtFor(gid, seed, saved) : F.generate(gid, seed);
+  const g = saved ? F.dealtFor(gid, seed, saved, undefined, lang) : F.generate(gid, seed, undefined, null, lang);
   return g ? res.json({ ok: true, gen: gid, seed, ...g }) : fail(req, res, { code: 'noGen' });
 });
 router.get('/api/figures/presets/:kind', (req, res) => res.json({ ok: true, presets: F.listPresets(req.user, req.params.kind) }));
@@ -218,7 +249,7 @@ router.post('/api/figures/presets/:id/delete', (req, res) => { const r = F.delet
 router.post('/api/figures/prefs', (req, res) => { const r = F.setAiPref(req.user, !!body(req).ai); return r.ok ? res.json(r) : fail(req, res, r); });
 
 // The browser makes a worksheet or a test; a lesson set is made only from its lesson's step form (routes/lessons.js).
-router.post('/api/figures/worksheets', rateLimit('figures-save', 300, 3600e3), (req, res) => { const b = body(req); sendSheet(req, res, F.createWorksheet(req.user, { title: b.title, grade: b.grade, items: b.items, purpose: b.purpose === 'test' ? 'test' : 'worksheet' })); });
+router.post('/api/figures/worksheets', rateLimit('figures-save', 300, 3600e3), (req, res) => { const b = body(req); sendSheet(req, res, F.createWorksheet(req.user, { title: b.title, grade: b.grade, items: b.items, purpose: b.purpose === 'test' ? 'test' : 'worksheet', lang: F.genLang(req.locale) })); });
 router.get('/api/figures/worksheets/:id', (req, res) => { const w = view(req, req.params.id); return w ? res.json({ ok: true, worksheet: w }) : fail(req, res, { code: 'notFound' }); });
 router.post('/api/figures/worksheets/:id', rateLimit('figures-save', 300, 3600e3), (req, res) => sendSheet(req, res, F.updateWorksheet(req.user, req.params.id, body(req))));
 router.post('/api/figures/worksheets/:id/delete', (req, res) => { const r = F.deleteWorksheet(req.user, req.params.id); return r.ok ? res.json(r) : fail(req, res, r); });

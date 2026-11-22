@@ -25,7 +25,7 @@ const as = (who, lang = '') => async (p, { body } = {}) => {
   if (body !== undefined) headers['content-type'] = 'application/json';
   const r = await fetch(base + p, { method: body !== undefined ? 'POST' : 'GET', headers, body: body !== undefined ? JSON.stringify(body) : undefined, redirect: 'manual' });
   const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
-  return { status: r.status, text, json };
+  return { status: r.status, text, json, headers: r.headers };
 };
 const boss = createUser({ username: 'FigPolish', password: 'secret123', role: 'admin' });
 const other = createUser({ username: 'FigOther', password: 'secret123', role: 'admin' });
@@ -96,9 +96,10 @@ test('the terms page renders in every locale with the notice word for word, the 
 
 test('the terms page is behind the Figures gate, and the editor links to it from the export notice', async () => {
   assert.equal((await as(kid)('/figures/terms')).status, 404);
-  assert.equal((await as(null)('/figures/terms')).status, 404);
+  const out = await as(null)('/figures/terms');
+  assert.equal(out.status, 302, 'signed out: the sign-in page, like the other Figures pages'); assert.match(out.headers.get('location'), /^\/login\?next=/);
   const old = config.figures; config.figures = false;
-  try { assert.equal((await as(boss)('/figures/terms')).status, 404); } finally { config.figures = old; }
+  try { assert.equal((await as(boss)('/figures/terms')).status, 404); assert.equal((await as(null)('/figures/terms')).status, 404); } finally { config.figures = old; }
   const src = fs.readFileSync(path.join(ROOT, 'public/js/figures-editor.js'), 'utf8');
   assert.match(src, /js\.figures-editor\.notice'\)\)\} <a href="\/figures\/terms">/);
 });
@@ -132,7 +133,7 @@ test('POST /api/figures/gen with a saved figure finds the earlier definition tha
   assert.equal(J(now.json.data), J(F.generate('angles', seed).data), 'without a figure: the current definition');
   const other = await api('/api/figures/gen', { body: { gen: 'angles', seed, data: { rays: [0, 33, 90] } } });
   assert.equal(J(other.json.data), J(F.generate('angles', seed).data), 'a figure no definition dealt: the current one (the editor then shows no generator answer)');
-  assert.match(fs.readFileSync(path.join(ROOT, 'public/js/figures-editor.js'), 'utf8'), /body: \{ gen: S\.gen, seed: S\.seed, data: S\.data \}/);
+  assert.match(fs.readFileSync(path.join(ROOT, 'public/js/figures-editor.js'), 'utf8'), /body: \{ gen: S\.gen, seed: S\.seed, data: S\.data, ws: S\.ws \}/);
 });
 
 test('card pictures: wide examples are stacked (two or three of them), every picture is whole and drawable', () => {

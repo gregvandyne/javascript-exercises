@@ -1,11 +1,13 @@
 // Figures, the standalone product (docs/decisions.md "Figures, the standalone product"; routes/figures.js): the menu of
 // figure kinds, one editor for every kind, worksheets of figure questions (print a student sheet and an answer key), the
-// teacher's own presets, and "Power with AI" (a worksheet drafted from a brief). Hidden while it is tested
-// (config.figures), exactly like the manipulatives.
+// teacher's own presets, and "Power with AI" (a worksheet drafted from a brief). FIGURES=0 (config.figures) hides it
+// from everyone, the platform admin included.
 //
-// Who may use it: the platform admin, and school staff whose username is in MANIPULATIVES_USERS (the same tester list as
-// the manipulatives); never a guest, a banned account or a grown-up (family) account. Everyone else gets the normal 404,
-// on the pages and on every API. Students never open /figures: a worksheet reaches a class through Assign to class
+// Who may use it (services/teacher-tools.js toolAccess, the same rule as the Manipulatives; docs/decisions.md "Figures
+// and the Manipulatives: Teacher plan only"): the platform admin, school staff on the tester list, and, while paid plans
+// are on, school staff with the Teacher plan (a trial and a school seat count). Other school staff see the "part of the
+// Teacher plan" page; never a guest, a banned account, a student or kid account, or a grown-up (family) account (the
+// normal 404, on the pages and on every API). Signed out, a page asks to sign in (like the /teach pages). Students never open /figures: a worksheet reaches a class through Assign to class
 // (services/figures-steps.js), as a lesson step on the class's own lesson page.
 // What each person sees: a worksheet is its owner's. Only the owner lists, opens, edits, prints (the student sheet and
 // the answer key) or deletes it; for anyone else it is the same 404 as a wrong id. A preset is its owner's too.
@@ -15,8 +17,8 @@
 // The AI never sees students' names: a brief that names a student of the teacher's classes is refused.
 import { q, uid, now, audit } from '../db.js';
 import { config } from '../config.js';
-import { isGrownup } from '../auth.js';
 import * as S from './schools.js';
+import { toolAccess } from './teacher-tools.js';
 import { anthropic } from '../builder/anthropic.js';
 import * as aiBudget from './ai-budget.js';
 import { hasProfanity, personalInfo } from './textfilter.js';
@@ -26,8 +28,11 @@ import { log } from './log.js';
 import { callAi, logAiFail, fallbackReason } from './ai-call.js';
 import { tEn } from '../i18n/index.js';
 import { KINDS, SUBJECTS, GRADE_BANDS, kindOf, genOf, flatSolve, solveOf, numText, PAST_GENS } from '../../public/js/figures-catalog.js';
+import { localGen, genLang, labelLangs, isGenChoices, GEN_LANGS } from '../../public/js/figures-gen-words/index.js';
 
-export { KINDS, SUBJECTS, GRADE_BANDS, kindOf, genOf };
+export { KINDS, SUBJECTS, GRADE_BANDS, kindOf, genOf, genLang, GEN_LANGS };
+/** The language the AI writes in, for each site language (the lesson drafter uses the same). */
+export const LANG_NAMES = Object.freeze({ en: 'English (US)', 'en-GB': 'British English', pt: 'Brazilian Portuguese', fr: 'French', es: 'Spanish', de: 'German', he: 'Hebrew', ja: 'Japanese', ar: 'Arabic', ru: 'Russian', it: 'Italian', 'zh-Hant': 'Traditional Chinese', nl: 'Dutch' });
 export const LIMITS = Object.freeze({ worksheets: 200, items: 40, presets: 50, titleChars: 80, questionChars: 400, briefChars: 1000, dataChars: 20000, nameChars: 60, draftMax: 12 });
 /** Test hooks: create replaces the AI client's messages.create (no network in tests); log receives each repair. */
 export const hooks = { create: null, log: null };
@@ -38,14 +43,13 @@ const clipStr = (s, n) => String(s ?? '').replace(/[\u0000-\u0008\u000b\u000c\u0
 
 // ---------------------------------------------------------------- who may use it
 export const on = () => !!config.figures;
-/** May this account make figures and worksheets? The manipulatives' host rule, with the same tester list. */
-export function canMake(u) {
-  if (!on() || !u || u.is_guest || u.banned || isGrownup(u)) return false;
-  if (S.isPlatformAdmin(u)) return true;
-  return config.manipulativesUsers.includes(String(u.username || '').toLowerCase()) && S.isSchoolStaff(u);
+/** May this account make figures and worksheets? (services/teacher-tools.js toolAccess, shared with the Manipulatives.) */
+export const canMake = u => toolAccess(u, on()) === 'yes';
+/** 'teacher' | 'plan' (school staff without the Teacher plan: the plan page) | null (the normal 404). */
+export function roleOf(u) {
+  const a = toolAccess(u, on());
+  return a === 'yes' ? 'teacher' : a === 'plan' ? 'plan' : null;
 }
-/** 'teacher' | null (null: the normal 404). */
-export const roleOf = u => (canMake(u) ? 'teacher' : null);
 
 // ---------------------------------------------------------------- Oomba Figures on the server
 export const OF_VERSION = FIG_LATEST['oomba-figures'];
@@ -162,11 +166,14 @@ export function dealRaw(genId, seed, g = genOf(genId)) {
   if (!g || !lg.TOOLS[g.tool]) return null;
   return lg.TOOLS[g.tool].gen(lg.seeded(Number.isInteger(seed) && seed > 0 ? seed : 1), g);
 }
-/** A generator's question with this seed: { kind, data, hide, question, answer, work, unit, dp, value, answerType,
- *  choices, correct } or null. A number question's value is the OF.solve value the generator names (key); a generator
+/** A generator's question with this seed, in a language (lang, English by default): { kind, data, hide, question,
+ *  answer, work, unit, dp, value, answerType, choices, correct } or null. The numbers and the answer are the same in
+ *  every language; only the words differ (and a figure's labels, for the few that have words). A number question's value is the OF.solve value the generator names (key); a generator
  *  for a kind without a solver keeps its own formula. A choice question's right option (correct, also value) is the one
  *  its key and pick give, and {choice} in its question and worked lines is that option's words. */
-export function generate(genId, seed, v, g = genOf(genId)) {
+export function generate(genId, seed, v, past = null, lang = 'en') {
+  // The catalog's generator in the language (public/js/figures-gen-words); an earlier definition (past) as it was.
+  const g = past || localGen(genOf(genId), lang);
   const raw = g ? dealRaw(genId, seed, g) : null; if (!raw || !raw.fig || typeof raw.fig !== 'object') return null;
   const { kind, hide, ...data } = raw.fig;
   if (kind !== g.kind || checkFigure(kind, data, v).length) return null;
@@ -185,12 +192,18 @@ export function generate(genId, seed, v, g = genOf(genId)) {
   return { kind, data, hide: cleanHide(kindOf(kind), hide === undefined ? false : hide), question: c.q, answer: unitText(numText(value, c.dp), c.unit), work: c.work, unit: c.unit, dp: c.dp, value, answerType: 'number', choices: [], correct: null };
 }
 export const newSeed = () => 1 + Math.floor(Math.random() * 999999);
-/** What a saved question's generator dealt for its seed: the current definition, or, when the saved figure is not what
- *  it deals now, the earlier definition (PAST_GENS) that dealt exactly that figure, so a generator changed after the
- *  question was saved keeps its answer. With no figure given, the current definition. null when none deals it. */
-export function dealtFor(genId, seed, data, v) {
-  const now1 = generate(genId, seed, v);
+/** What a saved question's generator dealt for its seed: the current definition in the language, or, when the saved
+ *  figure is not what it deals now, the same in the language its figure was dealt in (a generator whose figure has
+ *  words: a figure dealt in Spanish has Spanish labels), else the earlier definition (PAST_GENS, in English) that dealt
+ *  exactly that figure, so a generator changed after the question was saved keeps its answer. With no figure given, the
+ *  current definition in the language. null when none deals it. */
+export function dealtFor(genId, seed, data, v, lang = 'en') {
+  const L = genLang(lang), now1 = generate(genId, seed, v, null, L);
   if (data === undefined || (now1 && canon(now1.data) === canon(data))) return now1;
+  for (const other of [...new Set(['en', ...labelLangs(genId)])].filter(x => x !== L)) {
+    const g = generate(genId, seed, v, null, other);
+    if (g && canon(g.data) === canon(data)) return g;
+  }
   for (const past of PAST_GENS[genId] || []) {
     const g = generate(genId, seed, v, { ...past, kind: past.kind || (genOf(genId) || {}).kind });
     if (g && canon(g.data) === canon(data)) return g;
@@ -212,9 +225,9 @@ export function cleanChoices(list, correct) {
   if (new Set(out.map(x => x.toLowerCase())).size !== out.length) return { code: 'sameChoices' };
   return { choices: out, correct: right };
 }
-const sameList = (a, b) => Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((x, i) => x === b[i]);
-/** A choice question's link to its generator ("gen:<id>"): while its options are still that generator's, the right one is
- *  worked out from the figure with OF.solve (key and pick), even after the teacher changes the figure. */
+/** A choice question's link to its generator ("gen:<id>"): while its options are still that generator's (in any
+ *  language), the right one is worked out from the figure with OF.solve (key and pick), even after the teacher changes
+ *  the figure. */
 const GEN_LINK = /^gen:([A-Za-z.]{2,40})$/;
 const linkedGen = (key, kind) => { const m = GEN_LINK.exec(String(key || '')); const g = m && genOf(m[1]); return g && g.kind === kind && g.tool === 'figure.choice' && g.pick ? g : null; };
 
@@ -226,13 +239,13 @@ const linkedGen = (key, kind) => { const m = GEN_LINK.exec(String(key || '')); c
  * options (choices) and the index of the right one (correct): from its generator (OF.solve through key and pick) while
  * it is linked to one (answerKey "gen:<id>"), else the one the teacher marked. -> { ok, item } | { ok: false, code, problems? }
  */
-export function cleanItem(raw, v) {
+export function cleanItem(raw, v, lang = 'en') {
   const r = raw && typeof raw === 'object' ? raw : {};
   const K = kindOf(r.kind); if (!K) return fail('badKind');
   const question = clipStr(r.question, LIMITS.questionChars).replace(/\s+/g, ' ').trim();
   const tp = textProblem(question); if (tp) return fail(tp);
   const seed = Number.isInteger(r.seed) && r.seed > 0 && r.seed < 1e9 ? r.seed : null;
-  const g = typeof r.gen === 'string' && genOf(r.gen) && genOf(r.gen).kind === K.id && seed ? dealtFor(r.gen, seed, r.data === undefined ? undefined : cleanData(r.data).data || undefined, v) : null;
+  const g = typeof r.gen === 'string' && genOf(r.gen) && genOf(r.gen).kind === K.id && seed ? dealtFor(r.gen, seed, r.data === undefined ? undefined : cleanData(r.data).data || undefined, v, lang) : null;
   let data;
   if (r.data === undefined && g) data = g.data;
   else { const c = cleanData(r.data); if (!c.data) return fail(c.code); data = c.data; }
@@ -248,7 +261,7 @@ export function cleanItem(raw, v) {
     if (typed.code) return fail(typed.code);
     const linkId = fromGenChoice && (r.answerKey === undefined || r.answerKey === `gen:${r.gen}`) ? r.gen : (GEN_LINK.exec(String(r.answerKey || '')) || [])[1];
     const link = linkId ? linkedGen(`gen:${linkId}`, K.id) : null;
-    const linked = link && sameList(typed.choices, link.choices) ? link : null;
+    const linked = link && isGenChoices(link, typed.choices) ? link : null;
     let correct = typed.correct;
     if (linked) { const pk = pickOf(linked, K.id, data, v); correct = pk !== undefined ? pk : fromGenChoice ? g.correct : null; }
     if (typed.choices.length < CHOICES.min) correct = null;
@@ -306,16 +319,16 @@ function subjectOf(setId) {
 const resubject = id => q.run('UPDATE question_sets SET subject=? WHERE id=?', subjectOf(id), id);
 
 /** A new worksheet, test or lesson set (purpose; a lesson set names its lesson: lessonId, checked by the caller). */
-export function createWorksheet(u, { title, grade, items = [], purpose = 'worksheet', lessonId = null } = {}) {
+export function createWorksheet(u, { title, grade, items = [], purpose = 'worksheet', lessonId = null, lang = 'en' } = {}) {
   if (!canMake(u)) return fail('notFound');
   const pp = PURPOSES.includes(purpose) ? purpose : 'worksheet';
   if (pp === 'lesson' && !lessonId) return fail('notFound');
   if (q.get('SELECT COUNT(*) n FROM question_sets WHERE owner_id=? AND purpose=?', u.id, pp).n >= LIMITS.worksheets) return fail('tooMany');
-  const list = [];
-  for (const raw of (Array.isArray(items) ? items : []).slice(0, LIMITS.items)) { const c = cleanItem(raw); if (!c.ok) return c; list.push(c.item); }
+  const list = [], L = genLang(lang);
+  for (const raw of (Array.isArray(items) ? items : []).slice(0, LIMITS.items)) { const c = cleanItem(raw, undefined, L); if (!c.ok) return c; list.push(c.item); }
   const id = uid(12), t = now();
-  q.run("INSERT INTO question_sets(id, owner_id, title, grade, subject, purpose, of_version, created_at, updated_at, lesson_id) VALUES (?,?,?,?,'',?,?,?,?,?)",
-    id, u.id, cleanTitle(title, tEn(pp === 'test' ? 'figures.sheet.untitledTest' : 'figures.sheet.untitled')), cleanGrade(grade), pp, OF_VERSION, t, t, pp === 'lesson' ? String(lessonId) : null);
+  q.run("INSERT INTO question_sets(id, owner_id, title, grade, subject, purpose, of_version, created_at, updated_at, lesson_id, lang) VALUES (?,?,?,?,'',?,?,?,?,?,?)",
+    id, u.id, cleanTitle(title, tEn(pp === 'test' ? 'figures.sheet.untitledTest' : 'figures.sheet.untitled')), cleanGrade(grade), pp, OF_VERSION, t, t, pp === 'lesson' ? String(lessonId) : null, L);
   list.forEach((it, i) => storeItem(id, i, it));
   resubject(id);
   audit(u.id, 'figures.worksheet.create', id, { items: list.length, purpose: pp });
@@ -338,7 +351,7 @@ export function deleteWorksheet(u, id) {
 export function addItem(u, id, raw) {
   const w = ownWorksheet(u, id); if (!w) return fail('notFound');
   if (q.get('SELECT COUNT(*) n FROM question_set_items WHERE set_id=?', w.id).n >= LIMITS.items) return fail('fullSheet');
-  const c = cleanItem(raw, w.of_version); if (!c.ok) return c;
+  const c = cleanItem(raw, w.of_version, w.lang); if (!c.ok) return c;
   storeItem(w.id, q.get('SELECT COALESCE(MAX(pos), -1) + 1 p FROM question_set_items WHERE set_id=?', w.id).p, c.item);
   resubject(w.id); touch(w.id);
   return ok({ id: w.id });
@@ -353,7 +366,7 @@ export function updateItem(u, id, itemId, patch = {}) {
   const next = { kind: old.kind, gen: old.gen, seed: old.seed, data: 'data' in p ? p.data : old.data, hide: 'hide' in p ? p.hide : old.hide,
     question: 'question' in p ? p.question : old.question, answerKey: 'answerKey' in p ? p.answerKey : old.answerKey,
     answerType: 'answerType' in p ? p.answerType : old.answerType, choices: 'choices' in p ? p.choices : old.choices, correct: 'correct' in p ? p.correct : old.correct };
-  const c = cleanItem(next, w.of_version); if (!c.ok) return c;
+  const c = cleanItem(next, w.of_version, w.lang); if (!c.ok) return c;
   rewrite(r.id, c.item);
   touch(w.id);
   return ok({ id: w.id });
@@ -382,7 +395,7 @@ export function regenItem(u, id, itemId, seed) {
   const r = ownItem(w, itemId); if (!r) return fail('notFound');
   const gid = r.gen || (kindOf(r.kind) && kindOf(r.kind).gens[0] && kindOf(r.kind).gens[0].id);
   if (!gid) return fail('noGen');
-  const deal = s => cleanItem({ kind: r.kind, gen: gid, seed: s }, w.of_version);
+  const deal = s => cleanItem({ kind: r.kind, gen: gid, seed: s }, w.of_version, w.lang);
   const was = rowItem(r), same = x => canon(x.item.data) === canon(was.data) && x.item.question === was.question;
   let c = deal(seed === undefined ? newSeed() : seed);
   for (let i = 0; seed === undefined && i < 12 && c.ok && same(c); i++) c = deal(newSeed());
@@ -396,7 +409,7 @@ export function swapItem(u, id, itemId, kind) {
   const w = ownWorksheet(u, id); if (!w) return fail('notFound');
   const r = ownItem(w, itemId); if (!r) return fail('notFound');
   const raw = starterItem(kind); if (!raw) return fail('badKind');
-  const c = cleanItem(raw, w.of_version); if (!c.ok) return c;
+  const c = cleanItem(raw, w.of_version, w.lang); if (!c.ok) return c;
   q.run('UPDATE question_set_items SET kind=? WHERE id=?', c.item.kind, r.id);
   rewrite(r.id, c.item);
   resubject(w.id); touch(w.id);
@@ -421,7 +434,7 @@ export function answerOf(it, v) {
     const n = Array.isArray(it.choices) ? it.choices.length : 0;
     if (n < CHOICES.min || n > CHOICES.max) return null;
     const link = linkedGen(it.answerKey, it.kind);
-    const pk = link && sameList(it.choices, link.choices) ? pickOf(link, it.kind, it.data, v) : undefined;
+    const pk = link && isGenChoices(link, it.choices) ? pickOf(link, it.kind, it.data, v) : undefined;
     const i = pk !== undefined ? pk : it.correct;
     return Number.isInteger(i) && i >= 0 && i < n ? { type: 'choice', value: i, dp: 0, unit: '', choices: it.choices.slice() } : null;
   }
@@ -443,7 +456,7 @@ export function worksheetView(u, id, { lang = 'en' } = {}) {
   const w = ownWorksheet(u, id); if (!w) return null;
   const F = kit(w.of_version);
   const items = itemsOf(w.id).map(it => ({ ...it, svg: F.svg(it.kind, it.data, { lang, hide: it.hide, title: it.question.slice(0, 120) || it.kind, width: 220 }), hasGen: !!(it.gen || kindOf(it.kind).gens.length) }));
-  return { id: w.id, title: w.title, grade: w.grade, subject: w.subject, purpose: w.purpose, lessonId: w.lesson_id || null, ofVersion: w.of_version, updatedAt: w.updated_at, items };
+  return { id: w.id, title: w.title, grade: w.grade, subject: w.subject, purpose: w.purpose, lessonId: w.lesson_id || null, ofVersion: w.of_version, lang: genLang(w.lang), updatedAt: w.updated_at, items };
 }
 
 // ---------------------------------------------------------------- print (student sheet and answer key)
@@ -571,10 +584,10 @@ const DRAFT_SCHEMA = () => ({
       answerKey: { type: 'string' }, choices: { type: 'array', items: { type: 'string' } }, correct: { type: 'integer' } } } },
   },
 });
-function draftPrompt({ brief, grade, count }) {
+function draftPrompt({ brief, grade, count, lang = 'en' }) {
   return [
     'You are drafting a printable worksheet of figure questions for a teacher on Oomba Academy. Each question has one figure drawn by Oomba Figures from data you give.',
-    `Write in US English, plain and clear for grade ${grade || 'the grade in the brief'} students. No names of people, no links, no brands.`,
+    `Write the title, the questions and the options in ${LANG_NAMES[genLang(lang)]}, plain and clear for grade ${grade || 'the grade in the brief'} students. No names of people, no links, no brands.`,
     `Make exactly ${count} questions, different from each other, that fit the brief. Only use kinds from this catalog, and give each figure's data as JSON text in "data" with the same fields as the example (change the numbers and words to fit the question). Never draw or describe SVG.`,
     'Every figure must be drawable truthfully to scale: numbers that cannot make the figure are rejected and replaced.',
     'answerType "number" (most questions): answerKey is the name of the OF.solve value that answers the question (one of the kind\'s answerKey choices, for example "area" or "sides.CA"); choices [] and correct 0. You never work a number out yourself: Oomba Figures does. Numbers may be negative.',
@@ -609,7 +622,7 @@ const KEYWORDS = [
 /** The kinds a topic's words point at (KEYWORDS), [] when none. */
 export const topicKinds = text => [...new Set(KEYWORDS.filter(([re]) => re.test(String(text || '').toLowerCase())).flatMap(([, ks]) => ks))];
 /** A plain starter set without the AI: kinds the brief's words point at (else its subject's), within its grade band. */
-export function templateItems({ brief = '', grade = '', count = 6 } = {}) {
+export function templateItems({ brief = '', grade = '', count = 6, lang = 'en' } = {}) {
   const b = String(brief).toLowerCase(), band = bandOf(grade || (/\bgrade\s*(\d{1,2}|k)\b/i.exec(b) || [])[1] || '');
   let ids = [...new Set(KEYWORDS.filter(([re]) => re.test(b)).flatMap(([, ks]) => ks))];
   if (!ids.length) {
@@ -621,7 +634,7 @@ export function templateItems({ brief = '', grade = '', count = 6 } = {}) {
   const out = [];
   for (let i = 0; out.length < count && i < count * 4; i++) {
     const K = kinds[i % kinds.length], gid = K.gens[Math.floor(i / kinds.length) % K.gens.length].id;
-    const c = cleanItem({ kind: K.id, gen: gid, seed: newSeed() }); if (c.ok) out.push(c.item);
+    const c = cleanItem({ kind: K.id, gen: gid, seed: newSeed() }, undefined, lang); if (c.ok) out.push(c.item);
   }
   return out;
 }
@@ -639,7 +652,7 @@ const logRepair = fields => (hooks.log ? hooks.log(fields) : log('warn', 'figure
  * marked right, or words that are not allowed (options too): the item is replaced by a fresh question from that kind's
  * generator. Every repair is logged (the kind and why, never the brief). -> { items, repaired, dropped }
  */
-export function repairDraft(raw, { max = LIMITS.draftMax } = {}) {
+export function repairDraft(raw, { max = LIMITS.draftMax, lang = 'en' } = {}) {
   const items = [], allowed = new Set(draftKinds().map(K => K.id));
   let repaired = 0, dropped = 0;
   for (const [i, x] of (Array.isArray(raw) ? raw : []).slice(0, max).entries()) {
@@ -652,16 +665,16 @@ export function repairDraft(raw, { max = LIMITS.draftMax } = {}) {
       // Options as given: 2 to 6, each a short non-empty string, all different, one of them right (no blank left out).
       const list = Array.isArray(x.choices) ? x.choices : [];
       const shape = list.length >= CHOICES.min && list.length <= CHOICES.max && list.every(o => typeof o === 'string' && o.trim() && o.trim().length <= CHOICES.chars) && Number.isInteger(x.correct) && x.correct >= 0 && x.correct < list.length;
-      c = data ? cleanItem({ kind, data, question: x.question, answerType: 'choice', choices: list, correct: x.correct, hide: false }) : fail('badData');
+      c = data ? cleanItem({ kind, data, question: x.question, answerType: 'choice', choices: list, correct: x.correct, hide: false }, undefined, lang) : fail('badData');
       keyOk = shape && c.ok && c.item.choices.length === list.length && c.item.correct === x.correct;
       if (!shape && c.ok) c = fail('choices: 2 to 6 short different options and the index of the right one');
     } else {
       keyOk = data && typeof x.answerKey === 'string' && typeof solved(kind, data)[x.answerKey] === 'number';
-      c = data ? cleanItem({ kind, data, question: x.question, answerKey: x.answerKey, hide: false }) : fail('badData');
+      c = data ? cleanItem({ kind, data, question: x.question, answerKey: x.answerKey, hide: false }, undefined, lang) : fail('badData');
     }
     if (c.ok && keyOk && c.item.question) { items.push(c.item); continue; }
     const why = !data ? 'data is not JSON' : c.code === 'cannotDraw' ? `OF.check: ${c.problems[0]}` : !c.ok ? c.code : !keyOk ? (choice ? 'choices: 2 to 6 short different options and the index of the right one' : 'answerKey is not an OF.solve value') : 'no question';
-    const K = kindOf(kind), gid = K.gens[0].id, g = cleanItem({ kind, gen: gid, seed: newSeed() });
+    const K = kindOf(kind), gid = K.gens[0].id, g = cleanItem({ kind, gen: gid, seed: newSeed() }, undefined, lang);
     if (g.ok) { items.push(g.item); repaired++; logRepair({ item: i, kind, action: 'replaced by its generator', why: clipStr(why, 200) }); }
     else { dropped++; logRepair({ item: i, kind, action: 'dropped', why: clipStr(why, 200) }); }
   }
@@ -690,16 +703,16 @@ export async function draftWorksheet(u, id, { brief, grade = '', count = 6 } = {
       const res = await callAi(client, {
         model: config.builderModel, max_tokens: 6000,
         output_config: { effort: 'low', format: { type: 'json_schema', schema: DRAFT_SCHEMA() } },
-        messages: [{ role: 'user', content: draftPrompt({ brief: b, grade: g, count: n }) }],
+        messages: [{ role: 'user', content: draftPrompt({ brief: b, grade: g, count: n, lang: w.lang }) }],
       });
       if (res && res.usage) aiBudget.recordUsage(res.model || config.builderModel, res.usage);
       const block = ((res && res.content) || []).find(c => c.type === 'text');
       const d = JSON.parse(block ? block.text : '');
-      const r = repairDraft(d && d.items, { max: n });
+      const r = repairDraft(d && d.items, { max: n, lang: w.lang });
       if (r.items.length) { ({ items, repaired, dropped } = r); ai = true; title = d && typeof d.title === 'string' ? d.title : ''; }
     } catch (e) { reason = fallbackReason(logAiFail('figures worksheet draft ai failed', { sheet: w.id }, e, t0)); }
   }
-  if (!items) items = templateItems({ brief: b, grade: g, count: n });
+  if (!items) items = templateItems({ brief: b, grade: g, count: n, lang: w.lang });
   items.forEach((it, i) => storeItem(w.id, have + i, it));
   if (title && w.title === tEn('figures.sheet.untitled')) { const tt = cleanTitle(title, ''); if (tt) q.run('UPDATE question_sets SET title=? WHERE id=?', tt, w.id); }
   if (g && !w.grade) q.run('UPDATE question_sets SET grade=? WHERE id=?', g, w.id);
@@ -733,11 +746,11 @@ const TEST_SCHEMA = () => ({
       answerKey: { type: 'string' }, choices: { type: 'array', items: { type: 'string' } }, correct: { type: 'integer' } } } },
   },
 });
-function testPrompt({ topic, grade, subject, count }) {
+function testPrompt({ topic, grade, subject, count, lang = 'en' }) {
   const gens = genCatalog({ subject, grade });
   return [
     'You are drafting a test of figure questions for a teacher on Oomba Academy. Each question has one figure drawn by Oomba Figures.',
-    `Write in US English, plain and clear for grade ${grade || 'the grade the topic suits'} students. No names of people, no links, no brands.`,
+    `Write the title and any question or option of your own in ${LANG_NAMES[genLang(lang)]} (the generators already speak it), plain and clear for grade ${grade || 'the grade the topic suits'} students. No names of people, no links, no brands.`,
     `Make exactly ${count} questions that fit the topic, different from each other, from easier to harder.`,
     'Prefer generators: put a generator id from the list below in "gen" and leave kind, question, data and answerKey "" (choices [], answerType "number", correct 0). Oomba Figures deals the numbers and works out the answer, so the teacher can deal new numbers for any question. Use each generator at most twice.',
     'Only when no generator fits the topic: gen "" and write your own figure question from the figure catalog (kind, question, data as JSON text with the same fields as the example, answerType and answerKey from the kind\'s answerKey choices, or answerType "choice" with 2 to 6 short options and the index of the right one). Never draw or describe SVG. Figures that cannot be drawn truthfully to scale are replaced.',
@@ -747,10 +760,10 @@ function testPrompt({ topic, grade, subject, count }) {
     `<topic>\n${topic}\n</topic>`,
   ].join('\n\n');
 }
-/** A generator's question, dealt with a fresh seed (a few tries: a seed can fail a generator's own where). */
-function dealt(gid) {
+/** A generator's question in a language, dealt with a fresh seed (a few tries: a seed can fail a generator's own where). */
+function dealt(gid, lang = 'en') {
   const g = genOf(gid); if (!g) return null;
-  for (let i = 0; i < 6; i++) { const c = cleanItem({ kind: g.kind, gen: gid, seed: newSeed() }); if (c.ok) return c.item; }
+  for (let i = 0; i < 6; i++) { const c = cleanItem({ kind: g.kind, gen: gid, seed: newSeed() }, undefined, lang); if (c.ok) return c.item; }
   return null;
 }
 /**
@@ -759,29 +772,29 @@ function dealt(gid) {
  * keys, choices, words: replaced by its kind's generator). Every repair is logged (the kind and why, never the topic).
  * -> { items, repaired, dropped }
  */
-export function repairTestDraft(raw, { max = LIMITS.draftMax, subject = '', grade = '' } = {}) {
+export function repairTestDraft(raw, { max = LIMITS.draftMax, subject = '', grade = '', lang = 'en' } = {}) {
   const allowed = new Set(genCatalog({ subject, grade }).map(g => g.id)), items = [];
   let repaired = 0, dropped = 0;
   for (const [i, x] of (Array.isArray(raw) ? raw : []).slice(0, max).entries()) {
     const gid = x && typeof x.gen === 'string' ? x.gen.trim() : '';
     if (gid) {
       if (!allowed.has(gid)) { dropped++; logRepair({ item: i, kind: clipStr(gid, 40), action: 'dropped', why: 'generator not in the catalog' }); continue; }
-      const it = dealt(gid);
+      const it = dealt(gid, lang);
       if (it) items.push(it); else { dropped++; logRepair({ item: i, kind: genOf(gid).kind, action: 'dropped', why: 'the generator dealt nothing' }); }
       continue;
     }
-    const r = repairDraft([x], { max: 1 });
+    const r = repairDraft([x], { max: 1, lang });
     items.push(...r.items); repaired += r.repaired; dropped += r.dropped;
   }
   return { items, repaired, dropped };
 }
 /** A starter test without the AI: the generators the topic's words point at, in the subject (if any) and grade band. */
-export function templateTest({ topic = '', subject = '', grade = '', count = 6 } = {}) {
+export function templateTest({ topic = '', subject = '', grade = '', count = 6, lang = 'en' } = {}) {
   const cat = genCatalog({ subject, grade }), hit = new Set(topicKinds(topic));
   let pool = cat.filter(g => hit.has(g.kind));
   if (!pool.length) pool = cat;
   const out = [];
-  for (let i = 0; out.length < count && i < count * 4 && pool.length; i++) { const it = dealt(pool[i % pool.length].id); if (it) out.push(it); }
+  for (let i = 0; out.length < count && i < count * 4 && pool.length; i++) { const it = dealt(pool[i % pool.length].id, lang); if (it) out.push(it); }
   return out;
 }
 /**
@@ -808,16 +821,16 @@ export async function draftTest(u, id, { topic, grade = '', subject = '', count 
       const res = await callAi(client, {
         model: config.builderModel, max_tokens: 6000,
         output_config: { effort: 'low', format: { type: 'json_schema', schema: TEST_SCHEMA() } },
-        messages: [{ role: 'user', content: testPrompt({ topic: b, grade: g, subject: subj, count: n }) }],
+        messages: [{ role: 'user', content: testPrompt({ topic: b, grade: g, subject: subj, count: n, lang: w.lang }) }],
       });
       if (res && res.usage) aiBudget.recordUsage(res.model || config.builderModel, res.usage);
       const block = ((res && res.content) || []).find(c => c.type === 'text');
       const d = JSON.parse(block ? block.text : '');
-      const r = repairTestDraft(d && d.items, { max: n, subject: subj, grade: g });
+      const r = repairTestDraft(d && d.items, { max: n, subject: subj, grade: g, lang: w.lang });
       if (r.items.length) { ({ items, repaired, dropped } = r); ai = true; title = d && typeof d.title === 'string' ? d.title : ''; }
     } catch (e) { reason = fallbackReason(logAiFail('figures test draft ai failed', { sheet: w.id, subject: subj }, e, t0)); }
   }
-  if (!items) { items = templateTest({ topic: b, subject: subj, grade: g, count: n }); if (!title) title = b; }
+  if (!items) { items = templateTest({ topic: b, subject: subj, grade: g, count: n, lang: w.lang }); if (!title) title = b; }
   items.forEach((it, i) => storeItem(w.id, have + i, it));
   if (title && w.title === tEn('figures.sheet.untitledTest')) { const tt = cleanTitle(title, ''); if (tt) q.run('UPDATE question_sets SET title=? WHERE id=?', tt, w.id); }
   if (g && !w.grade) q.run('UPDATE question_sets SET grade=? WHERE id=?', g, w.id);

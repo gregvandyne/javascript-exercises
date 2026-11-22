@@ -77,7 +77,9 @@
     "learn": "Leren",
     "class": "Klas",
     "classroom": "Klaslokaal",
-    "live": "Live"
+    "live": "Live",
+    "tools": "Lesmiddelen",
+    "toolsTab": "Lesmiddelen"
   },
   "errors": {
     "goHome": "Naar de start",
@@ -12386,7 +12388,6 @@
       "9-12": "Groep 9-12"
     },
     "menu": {
-      "testing": "In test: alleen jij ziet dit",
       "pitch": "Exacte figuren op schaal voor werkbladen, toetsen en dia's. Klaar om te printen, met uitgewerkte antwoorden.",
       "buildTitle": "Een werkblad maken",
       "buildText": "Kies figuren zelf, of beschrijf wat je nodig hebt en laat AI de vragen opstellen. Elk getal wordt gecontroleerd, zodat elke figuur echt getekend kan worden.",
@@ -12833,6 +12834,19 @@
       "care3": "Deze voorwaarden gaan over de figuren die je exporteert. Voor de rest van Oomba Academy gelden de voorwaarden van de site.",
       "siteTerms": "Lees de voorwaarden van de site",
       "back": "Terug naar Figuren"
+    },
+    "plan": {
+      "titleFigures": "Figuren",
+      "titleManip": "Manipulatieven",
+      "headingFigures": "Figuren hoort bij het Leerkracht-abonnement",
+      "headingManip": "De manipulatieven horen bij het Leerkracht-abonnement",
+      "leadFigures": "Maak exacte figuren voor wiskunde, data, natuurwetenschappen en economie, maak er werkbladen en toetsen van en voeg figuurvragen toe aan je lessen.",
+      "leadManip": "Gebruik virtuele manipulatieven op het bord, bewaar borden om te delen en geef live sessies met je klassen.",
+      "trial": "Probeer het Leerkracht-abonnement {days} dagen gratis. Je hebt geen kaart nodig om te beginnen.",
+      "kept": "Alles wat je al hebt opgegeven, blijft werken voor je leerlingen.",
+      "start": "Mijn gratis proefperiode starten",
+      "plans": "Abonnementen bekijken",
+      "api": "Dit hoort bij het Leerkracht-abonnement."
     }
   }
 }

@@ -9213,6 +9213,8 @@ books from our library, chosen by a cheap Claude model.
 
 ## Virtual math manipulatives, hidden while it is tested (20 Nov 2026)
 
+> Changed 22 Nov 2026: hosting is now for school staff with the Teacher plan (the tester list still works); see "Figures and the Manipulatives: Teacher plan only".
+
 The Muse-hosted "Virtual Math Manipulatives" app (branch virtual-manipulatives) is rebuilt inside the site, on the site's
 accounts, classes, database, AI client, theme and i18n. Nothing of Muse, Bun or React is kept: the site has no React
 and no bundle step for pages, so the UI is a plain ES module like the classroom dashboard (public/js/manip.js, with its
@@ -9968,6 +9970,8 @@ boxes could not be resized, made bigger or (reliably) moved; and the coordinate 
 
 ## Figures, the standalone product, hidden while it is tested (21 Nov 2026)
 
+> Changed 22 Nov 2026: Figures is no longer hidden. It has a "Teaching tools" menu entry, opens to school staff with the Teacher plan (testers and the platform admin keep it), and its generators speak every site language; see "Figures opens to all teachers" and "Figures and the Manipulatives: Teacher plan only".
+
 - **What it is.** `/figures` (server/routes/figures.js, services/figures.js, public/js/figures*.js): a menu of every
   Oomba Figures kind (cards with thumbnails drawn on the server from each kind's example and cached), one editor for
   every kind (`/figures/:kind`), and worksheets of figure questions with a printable student sheet and answer key. It
@@ -9999,7 +10003,7 @@ boxes could not be resized, made bigger or (reliably) moved; and the coordinate 
 - **Generators.** The docs' figure question generators are the catalog's (the tests compare them); seven more were
   written for kinds the docs had none for (freeBody, vectors, inclinedPlane, pulley, halfLife, bohr, the thermometer).
   orbitals, lewis and titration have none: Randomize picks another preset. Generator questions are in English (the
-  teacher edits them); the product's own words are in every site language.
+  teacher edits them); the product's own words are in every site language. (Changed 22 Nov 2026: generator questions are in every site language; see "Figures opens to all teachers".)
 - **Export.** Download SVG is `OF.withNotice`; Download PNG and Copy image are drawn in the browser and carry the same
   notice as a PNG tEXt "Copyright" chunk and an XMP iTXt chunk (public/js/figures-export.js), with the wording of plan
   rule 3. The tests check the bytes. Copy link puts the figure's data in `?d=`.
@@ -10063,7 +10067,7 @@ boxes could not be resized, made bigger or (reliably) moved; and the coordinate 
   there is Phase 3); a figures step cannot be added by hand or changed into another kind, and the editor shows how many
   questions it has instead of an edit form.
 - **Gate.** Assigning stays behind the Figures gate (`FIGURES` and the Manipulatives tester list): anyone else gets the
-  same 404 on the assign API as on every `/figures` page. A tester can assign only their own worksheet, only to a class
+  same 404 on the assign API as on every `/figures` page. (Changed 22 Nov 2026: see "Figures and the Manipulatives: Teacher plan only".) A tester can assign only their own worksheet, only to a class
   they teach.
 
 - **Assign is next.** Assigning a worksheet to a class with open and due dates, and the student view with answer
@@ -10504,7 +10508,7 @@ Phase 3 of the Figures plan ("AI-powered assignment and test builds"), built on 
 sets, the Figures builder, the `figures` lesson step and its snapshot, Assign, and `lesson-ai.js`.
 
 - **One gate.** Everything new sits behind `services/figures.js` `canMake` (the `FIGURES` flag and the Manipulatives
-  tester list), the same gate as `/figures`. Opening Figures to everyone is a change there and nowhere else. The student
+  tester list), the same gate as `/figures`. Opening Figures to everyone is a change there and nowhere else. (Changed 22 Nov 2026: see "Figures and the Manipulatives: Teacher plan only".) The student
   side needs no gate: a figures step exists only because a tester made it.
 - **"Figure questions" in the lesson editor.** A tester's step form offers it as a fifth type. Adding one makes a
   question set of purpose `'lesson'` for that lesson (migration `0100_figures_lesson_sets`: `question_sets.lesson_id`)
@@ -10614,7 +10618,7 @@ Phase 4 of the Figures plan (presets, undo/redo, the reuse terms page, example f
   add), and two cautions (check a figure before use; keep students' details out of shared figures), with a link to the
   site's Terms. No legal jargon. Linked from the editor's export notice under the download buttons. All 13 locales.
   Judgment call: it sits behind the Figures gate like every Figures page while the product is tested, and opens with
-  it.
+  it. (Changed 22 Nov 2026: see "Figures and the Manipulatives: Teacher plan only".)
 - **Card pictures in Oomba style.** The menu's cards were checked tab by tab. The figures were already Oomba Figures'
   own drawings (cream paper #FFFDF2, Ink lines, Mint fills, Leaf accents); what was wrong was size: wide strips (number
   line, motion map, orbital diagram, protein synthesis, box plot, segment addition, table of values, projectile) were a
@@ -10631,6 +10635,94 @@ Phase 4 of the Figures plan (presets, undo/redo, the reuse terms page, example f
   question, the Presets menu by keyboard with save, apply and delete, the rows' More menu by keyboard, Alt+Arrow,
   Swap figure, Delete with Cancel and OK, the row opening the editor, a phone at 375 px, the nouns, the terms link);
   figures-browser, figures-draw-browser and figures-lesson-step-browser now use the menus.
+
+## Figures opens to all teachers (22 Nov 2026)
+
+Figures leaves its tester list. Then, the same day, the owner decided it (and the Manipulatives) is for the Teacher plan
+for now; the next section is the gate that ships. This section is the rest of the launch.
+
+- **Who sees what.** One gate for both teaching tools (`services/teacher-tools.js` `toolAccess`, next section): every
+  Figures page and API, the lesson editor's Figure step, Build a test, the terms page and the figure catalog the lesson
+  drafter gets. Signed out, a Figures page goes to the sign-in page and an API answers 401, as a `/teach` page does, with
+  `X-Robots-Tag: noindex, nofollow`; guests, grown-ups (family accounts), students and kids and banned accounts get the
+  site's normal 404 (noindex). Students do the Figure steps their teacher assigned exactly as before: the student side
+  never had a gate. The "Testing: only you can see this" chip is gone. The Teaching tools switcher on `/figures` shows
+  the Manipulatives only to someone who can open them (as before).
+- **Kill switch.** `FIGURES=0` hides Figures from everyone, the platform admin included (the normal 404, and no menu
+  entry). `MANIPULATIVES=0` does the same for the Manipulatives.
+- **The menu.** School staff get **Teaching tools** (🧰, `nav.tools`, `/figures`, current on every Figures page) in the
+  desktop top bar after Build: Classroom · Build · Teaching tools · Live. The phone tab bar has room (four tabs before,
+  five now, like every other role) and shows it with the short label `nav.toolsTab` ("Tools"); when the Story Builder is
+  on as well the bar would need six, so it moves into the account menu, shown on phones only (`acct-phone`; the top bar
+  has it on wider screens). Judgment call: not inside Classroom, which is about classes, and the account menu only when
+  the bar is full. The entry is there for staff who may open Figures and, while paid plans are on, for staff without the
+  Teacher plan as the door to the plan page; with paid plans off it is there only for testers and the platform admin
+  (the platform admin, not staff, has no Classroom bar and opens `/figures` directly). 13 locales.
+- **Translations.** Every generator's question, worked lines, options, word units ("tons of cloth", "years") and the
+  few words drawn in its figure (bar graph fruits, pie chart and two-way table labels, the Punnett square's tall and
+  short, Country A, axis titles) are in `public/js/figures-gen-words/<lang>.js`, keyed by generator id, for es, fr, de,
+  it, pt (Brazilian), nl, ru, ja, zh-Hant, ar and he; en-GB lists only what differs (trapezium, centre, metres,
+  centimetres, burette, cuboid, percentage, tonnes). `localGen(g, lang)` lays a language's words over the catalog's
+  generator; everything that decides the numbers (vars, where, answer, dp, key, pick) stays the catalog's, so a
+  question has the same numbers, figure and answer in every language, and a choice question's right option keeps its
+  index. Placeholders (`{a}`, `{=expr}`, `{choice}`) are exactly the English ones, line by line; formulas, numbers and
+  units stay as written (they read left to right inside Arabic and Hebrew sentences, which the pages show with
+  `dir="auto"`). Judgment call: only the server deals questions (the editor's New numbers asks `/api/figures/gen`), so
+  the tables are server-side modules under `public/js` (beside the catalog) that the browser never loads. Earlier
+  generator definitions (`PAST_GENS`) stay English: they only answer questions saved before.
+- **A set's language.** Migration `0101_figures_lang` adds `question_sets.lang` ('en' for every older set). A worksheet
+  or test is made in the teacher's page language, a lesson set in the language of the teacher who adds the step; adding,
+  re-dealing and swapping questions deal in the set's language, and the editor opened from a set deals in it (`ws`). A
+  saved question keeps its words: its stored question and worked lines are never redone in another language. A figure
+  with translated labels is found again in the language it was dealt in (`dealtFor` tries the set's language, English,
+  then the languages that label that figure), so its answer, assign and marking work; a choice question stays linked to
+  its generator when its options are that generator's in any language (`isGenChoices`).
+- **The AI.** The worksheet and test drafters write the title, questions and options in the set's language
+  (`LANG_NAMES`, the lesson drafter's list); a figure they get wrong is replaced by its generator in that language, and
+  the no-AI starter sets and the lesson template's Figure step are dealt in it. The template still picks kinds from
+  English topic words (a Spanish topic falls back to its subject's kinds).
+- **Tests.** figures-gen-words (every generator in every language, the English placeholders line by line, no em
+  dashes, the same numbers, figure, answer and right option, the Canvas self-test in every language as in English, the
+  set's language, saved words kept, choices linked, labels keeping their answer, the drafters' language), nav-roles
+  (Teaching tools: staff only, current on `/figures`, the account menu when the bar is full, `FIGURES=0`), and the gate
+  tests below.
+
+## Figures and the Manipulatives: Teacher plan only (22 Nov 2026)
+
+The owner: "Figures and manipulatives should only be available via a paid plan for right now."
+
+- **One gate.** `services/teacher-tools.js` `toolAccess(u, on)`, used by `services/figures.js` `canMake` / `roleOf` and
+  `services/manipulatives.js` `canHost` / `roleOf` (and so by everything they gate: every page and API, the lesson
+  Figure step, Build a test, the lesson drafter's figure catalog, boards, live sessions, the AI lesson drafter):
+  - the tool's switch off (`FIGURES=0`, `MANIPULATIVES=0`): nobody, the platform admin included;
+  - never a guest, a banned account, a grown-up (family) account or anyone who is not school staff (students, kids);
+  - the platform admin and staff on `MANIPULATIVES_USERS`: always (the testers keep their access);
+  - while paid plans are on for everyone (billing on and `BILLING_PUBLIC=1`): school staff with the Teacher plan,
+    `teacherPlan(userId).entitled`: their own plan, a grant, **a trial** (`trialing` entitles, as for every Teacher plan
+    extra; the trial is how the plan is sold) or a school's teacher seat; other school staff get the plan page;
+  - while paid plans are off (no billing, or a key not yet public, so only the preview cookie would show plans): the
+    tester list alone, as before billing. Judgment call: the preview cookie does not count here, because the gate is
+    checked in services that have no request; a previewing teacher without a tester entry sees what everyone sees.
+- **The plan page.** A teacher without the plan who opens any Figures or Manipulatives page gets a calm page (200, not a
+  404, noindex): "Figures is part of the Teacher plan" (or "The Manipulatives are part of the Teacher plan"), a line
+  about the tool, "Try the Teacher plan free for 14 days. No card needed to start.", "Anything you already assigned
+  keeps working for your students.", **Start my free trial** (`/trial`, which also covers a used trial) and **See the
+  plans** (`/plans`). No price (prices are on `/plans` only). Their APIs answer 403 `{ code: 'teacherPlan' }`. Students,
+  kids, grown-ups and guests never see it (the normal 404). Teaching tools stays in a free teacher's menu as the door to
+  this page (judgment call: calm, one link, the way the Builder's limit card points a teacher to `/trial`). 13 locales.
+- **Students never pay.** A Figure step a teacher assigned keeps working when their plan lapses (the student side has
+  no gate). A Manipulatives session keeps its students when its host's plan lapses: students join while the host is
+  still staff the tools know (`toolAccess` not null), not only while they can host; the host cannot start a new
+  session, save a board or make new Figures work until they have the plan again.
+- **Tests.** teacher-tools (the rule for both tools: paid, trial, seat, school admin, tester, admin, free, students,
+  kids, guests, grown-ups, banned, each switch, plans off; the plan page for both tools in English and Spanish with no
+  price and the menu door, APIs 403; a lapsed host's session keeps its student), figures-product (every Figures page
+  for each kind of account, signed out, the plan page, a lapsed plan, plans off, `FIGURES=0`), figures-assign (a lapsed
+  teacher's assigned step: the student opens, answers and hands in; the teacher gets the plan page), figures-lesson-step
+  and nav-roles. Tests write the plans straight into the billing tables (`tests/unit/_tools-plan.js`).
+- **Owner to decide.** Whether the Manipulatives' and Figures' tester list should end once the plan is live; whether a
+  teacher whose trial ended should see "Get the Teacher plan" wording here instead of the trial line (today `/trial`
+  says it).
 
 ## AI drafts: one time budget, a starting board when the AI doesn't answer (22 Nov 2026)
 

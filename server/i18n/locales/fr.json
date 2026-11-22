@@ -76,7 +76,9 @@
     "learn": "Apprendre",
     "class": "Classe",
     "classroom": "Ma classe",
-    "live": "En direct"
+    "live": "En direct",
+    "tools": "Outils pédagogiques",
+    "toolsTab": "Outils"
   },
   "errors": {
     "goHome": "Retour à l’accueil",
@@ -12385,7 +12387,6 @@
       "9-12": "Niveaux 9-12"
     },
     "menu": {
-      "testing": "En test : vous seul le voyez",
       "pitch": "Des figures exactes et à l'échelle pour vos fiches, contrôles et diaporamas. Prêtes à imprimer, avec les réponses détaillées.",
       "buildTitle": "Créer une fiche",
       "buildText": "Choisissez les figures vous-même, ou décrivez ce qu'il vous faut et laissez l'IA rédiger les questions. Chaque nombre est vérifié pour que chaque figure puisse vraiment être tracée.",
@@ -12832,6 +12833,19 @@
       "care3": "Ces conditions concernent les figures que vous exportez. Le reste d'Oomba Academy suit les conditions d'utilisation du site.",
       "siteTerms": "Lire les conditions d'utilisation du site",
       "back": "Retour aux Figures"
+    },
+    "plan": {
+      "titleFigures": "Figures",
+      "titleManip": "Manipulables",
+      "headingFigures": "Figures fait partie de la formule Enseignant",
+      "headingManip": "Les manipulables font partie de la formule Enseignant",
+      "leadFigures": "Créez des figures exactes en maths, statistiques, sciences et économie, faites-en des fiches et des évaluations, et ajoutez des questions à figures à vos leçons.",
+      "leadManip": "Utilisez des manipulables virtuels au tableau, enregistrez des tableaux à partager et animez des séances en direct avec vos classes.",
+      "trial": "Essayez la formule Enseignant gratuitement pendant {days} jours. Aucune carte n’est demandée pour commencer.",
+      "kept": "Tout ce que vous avez déjà donné à vos élèves continue de fonctionner pour eux.",
+      "start": "Commencer mon essai gratuit",
+      "plans": "Voir les formules",
+      "api": "Cela fait partie de la formule Enseignant."
     }
   }
 }

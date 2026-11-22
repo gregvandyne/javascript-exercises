@@ -1,6 +1,6 @@
 // Figures: Assign to class (services/figures-steps.js, routes/figures.js /assign, routes/progress.js; docs/decisions.md
-// "Figures: Assign to class"): the worksheet builder assigns a worksheet to one of the tester's classes as a lesson with
-// one figures step (a snapshot: later worksheet edits never change it); only testers can assign; the class's students
+// "Figures: Assign to class"): the worksheet builder assigns a worksheet to one of the teacher's classes as a lesson with
+// one figures step (a snapshot: later worksheet edits never change it); only school staff can assign; the class's students
 // answer under each figure, save, hand in once, and are marked with a tolerance from the stored dp; the gradebook and
 // the Score count it like a quiz; answers and worked lines never reach a student before the teacher allows it, the due
 // date is over and the student handed in; the teacher's switch; the step editor offers the kind only behind the gate.
@@ -32,12 +32,15 @@ const as = who => async (p, { method = 'GET', body } = {}) => {
 };
 const withFlags = async (flags, fn) => { const old = { f: config.figures, u: config.manipulativesUsers }; Object.assign(config, flags); try { await fn(); } finally { config.figures = old.f; config.manipulativesUsers = old.u; } };
 
-// The platform admin (a Figures tester) teaches 7A; T teaches 7B and is not on the tester list. kid and kid2 are in 7A.
+// The platform admin teaches 7A; T teaches 7B and is on no tester list (Figures is open to every teacher). kid and kid2 are in 7A.
 const boss = createUser({ username: 'FigAssignBoss', password: 'secret123', role: 'admin' });
 const oak = S.createSchool(boss, { name: 'Assign Oak' }).school;
 S.addMember(boss, oak.id, boss.id, 'teacher', { rosterName: 'Ms Boss' });
 const A = S.createClass(boss, oak.id, { name: '7A' }).class;
 const T = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Tom Teacher', role: 'teacher' }).user.id);
+// T has the Teacher plan, with paid plans on for everyone (docs/decisions.md "Figures and the Manipulatives: Teacher plan only").
+const TOOLS = await import('./_tools-plan.js');
+TOOLS.plansOn(); TOOLS.givePlan(T.id);
 const B7 = S.createClass(boss, oak.id, { name: '7B', teacherId: T.id }).class;
 const kid = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Kim Kid' }).user.id);
 const kid2 = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Lee Kid' }).user.id);
@@ -83,20 +86,20 @@ test('marking: numbers in many spellings, a tolerance of half the last decimal p
   assert.ok(FS.isRight('1/6', { value: 1 / 6, dp: 3 })); assert.ok(FS.isRight('0.167', { value: 1 / 6, dp: 3 })); assert.ok(!FS.isRight('0.17', { value: 1 / 6, dp: 3 }));
 });
 
-test('gate: only a Figures tester assigns, only their own worksheet, only to a class they teach', async () => {
+test('gate: a teacher assigns only their own worksheet, only to a class they teach; never a student; FIGURES=0', async () => {
   const id = sheet();
-  // T teaches 7B but is not on the tester list: the normal 404, like every /figures address.
+  // T teaches 7B; the worksheet is the boss's: the same 404 as a wrong id.
   assert.equal((await as(T)(`/api/figures/worksheets/${id}/assign`, { body: { classId: B7.id } })).status, 404);
   assert.equal(FS.assignWorksheet(T, id, B7.id).code, 'notFound');
   assert.equal((await as(kid)(`/api/figures/worksheets/${id}/assign`, { body: { classId: A.id } })).status, 404);
   await withFlags({ figures: false }, async () => assert.equal((await as(boss)(`/api/figures/worksheets/${id}/assign`, { body: { classId: A.id } })).status, 404, 'FIGURES=0'));
-  await withFlags({ manipulativesUsers: [T.username.toLowerCase()] }, async () => {
-    // On the list now, but the worksheet is the boss's: the same 404 as a wrong id.
-    assert.equal((await as(T)(`/api/figures/worksheets/${id}/assign`, { body: { classId: B7.id } })).status, 404);
-  });
+  // T's own worksheet, to T's own class: a plain teacher (no tester list) assigns it.
+  const mine = F.createWorksheet(T, { title: 'Tom sheet', items: [{ kind: 'rectangle', data: { AB: 7, BC: 3, unit: 'cm' }, answerKey: 'area', question: 'Area?' }] });
+  assert.equal((await as(T)(`/api/figures/worksheets/${mine.id}/assign`, { body: { classId: B7.id } })).status, 200);
+  assert.equal((await as(T)(`/api/figures/worksheets/${mine.id}/assign`, { body: { classId: A.id } })).json.code, 'noClass', 'not a class T teaches');
   const r = await as(boss)(`/api/figures/worksheets/${id}/assign`, { body: { classId: B7.id } });
   assert.equal(r.status, 400); assert.equal(r.json.code, 'noClass', 'the boss does not teach 7B');
-  // The builder lists the tester's own classes for the dialog.
+  // The builder lists the teacher's own classes for the dialog.
   const page = await as(boss)(`/figures/worksheets/${id}`);
   const data = JSON.parse(/<script type="application\/json" id="fg-sheet">([\s\S]*?)<\/script>/.exec(page.text)[1].replace(/\\u003c/g, '<'));
   assert.deepEqual(data.classes.map(c => c.id), [A.id]);
@@ -270,7 +273,7 @@ test('the step editor offers Figure questions only behind the Figures gate; its 
   const { step } = await assigned({ dueAt: isoDay(Date.now() + 7 * DAY), showAnswers: true });
   const ed = await as(boss)(`/teach/lessons/${step.lesson_id}`);
   assert.equal(ed.status, 200);
-  // A Figures tester may add a "Figure questions" step (tests/unit/figures-lesson-step.test.js); with FIGURES=0 it is gone.
+  // A teacher may add a "Figure questions" step (tests/unit/figures-lesson-step.test.js); with FIGURES=0 it is gone.
   assert.match(ed.text, /<option value="figures"/);
   await withFlags({ figures: false }, async () => assert.doesNotMatch((await as(boss)(`/teach/lessons/${step.lesson_id}`)).text, /<option value="figures"/));
   assert.match(ed.text, /3 figure questions/);
@@ -284,4 +287,29 @@ test('the step editor offers Figure questions only behind the Figures gate; its 
   // The class's lessons list shows it with the figures icon.
   const cls = await as(boss)(`/class/${A.id}?tab=lessons`);
   assert.equal(cls.status, 200);
+});
+
+test('a teacher\'s Teacher plan lapses: the work already assigned keeps working for students; the teacher cannot make new work', async () => {
+  const lee = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Lee Lapse', role: 'teacher' }).user.id);
+  const sid = TOOLS.givePlan(lee.id);
+  const C7 = S.createClass(boss, oak.id, { name: '7C', teacherId: lee.id }).class;
+  const pupil = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Pia Pupil' }).user.id);
+  S.addToClass(boss, C7.id, pupil.id);
+  const w = F.createWorksheet(lee, { title: 'Lee sheet', items: [{ kind: 'rectangle', data: { AB: 7, BC: 3, unit: 'cm' }, answerKey: 'area', question: 'Area?' }] });
+  const r = await as(lee)(`/api/figures/worksheets/${w.id}/assign`, { body: { classId: C7.id } });
+  assert.equal(r.status, 200, r.text);
+  const cl = L.getClassLesson(r.json.classLessonId), step = L.steps(r.json.lessonId)[0];
+  TOOLS.endPlan(sid);
+  assert.equal(F.canMake(lee), false); assert.equal(F.roleOf(lee), 'plan');
+  // The student: the lesson page, the step's figures, saving and handing in, as before.
+  const pageR = await as(pupil)(`/class/${C7.id}/lessons/${cl.id}`);
+  assert.equal(pageR.status, 200); assert.match(pageR.text, /Area\?/);
+  const api = `/api/progress/${cl.id}/${step.id}/figures`;
+  assert.equal((await as(pupil)(api)).status, 200);
+  const done = await as(pupil)(api, { body: { hand: '1', a0: '21' } });
+  assert.equal(done.status, 200, done.text); assert.equal(done.json.score, 100);
+  // The teacher still sees their class's lesson and its results; new work needs the plan again.
+  assert.equal((await as(lee)(`/class/${C7.id}/lessons/${cl.id}`)).status, 200);
+  assert.equal((await as(lee)(`/api/figures/worksheets/${w.id}/assign`, { body: { classId: C7.id } })).status, 403);
+  assert.match((await as(lee)('/figures')).text, /part of the Teacher plan/);
 });

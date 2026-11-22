@@ -77,7 +77,9 @@
     "learn": "Impara",
     "class": "Classe",
     "classroom": "La mia classe",
-    "live": "Live"
+    "live": "Live",
+    "tools": "Strumenti didattici",
+    "toolsTab": "Strumenti"
   },
   "errors": {
     "goHome": "Torna alla home",
@@ -12386,7 +12388,6 @@
       "9-12": "Classi 9-12"
     },
     "menu": {
-      "testing": "In prova: solo tu puoi vederlo",
       "pitch": "Figure esatte e in scala per schede, verifiche e presentazioni. Pronte da stampare, con le risposte svolte.",
       "buildTitle": "Crea una scheda",
       "buildText": "Scegli tu le figure, oppure descrivi ciò che ti serve e lascia che l'IA scriva le domande. Ogni numero viene controllato perché ogni figura si possa davvero disegnare.",
@@ -12833,6 +12834,19 @@
       "care3": "Queste condizioni riguardano le figure che esporti. Per il resto di Oomba Academy valgono i termini del sito.",
       "siteTerms": "Leggi i termini del sito",
       "back": "Torna a Figure"
+    },
+    "plan": {
+      "titleFigures": "Figure",
+      "titleManip": "Materiali manipolativi",
+      "headingFigures": "Figure fa parte del piano Insegnante",
+      "headingManip": "I materiali manipolativi fanno parte del piano Insegnante",
+      "leadFigures": "Crea figure esatte di matematica, dati, scienze ed economia, preparaci schede e verifiche, e aggiungi domande con figure alle tue lezioni.",
+      "leadManip": "Usa materiali manipolativi virtuali alla lavagna, salva lavagne da condividere e conduci sessioni dal vivo con le tue classi.",
+      "trial": "Prova il piano Insegnante gratis per {days} giorni. Non serve una carta per iniziare.",
+      "kept": "Tutto ciò che hai già assegnato continua a funzionare per i tuoi studenti.",
+      "start": "Inizia la prova gratuita",
+      "plans": "Vedi i piani",
+      "api": "Questo fa parte del piano Insegnante."
     }
   }
 }
