@@ -3677,7 +3677,8 @@
         "gridTitle": "In een assenstelsel",
         "addGrid": "De figuur in het assenstelsel aan een werkblad toevoegen",
         "drawInstead": "In plaats daarvan op een rooster tekenen"
-      }
+      },
+      "choiceNote": "Dit is een meerkeuzevraag. De opties en de juiste stel je in het werkblad in."
     },
     "figures-sheet": {
       "title": "Titel van het werkblad",
@@ -3733,7 +3734,19 @@
       "assignNoClasses": "Je geeft nog geen les aan een klas. Maak eerst een klas en geef dan op.",
       "assignDone": "Opgegeven aan {class}.",
       "assignSee": "Bekijk het als leerling",
-      "assignProgress": "Voortgang bekijken"
+      "assignProgress": "Voortgang bekijken",
+      "answerType": "Antwoord",
+      "typeNumber": "Getal",
+      "typeChoice": "Meerkeuze",
+      "options": "Opties (vink de juiste aan)",
+      "optionN": "Optie {letter} van vraag {n}",
+      "rightN": "Optie {letter} is het goede antwoord",
+      "markRight": "Het goede antwoord",
+      "addOption": "Optie toevoegen",
+      "removeOption": "Optie {letter} verwijderen",
+      "fromFigure": "De goede optie wordt uit de figuur afgeleid. Verander een optie of vink een andere aan om zelf te kiezen.",
+      "needTwo": "Schrijf minstens 2 opties.",
+      "needRight": "Vink de juiste optie aan."
     }
   },
   "favorites": {
@@ -12346,7 +12359,9 @@
       "crumb": "Printen",
       "sheetOnly": "Leerlingblad",
       "withKey": "Met de antwoorden",
-      "print": "Printen"
+      "print": "Printen",
+      "options": "Opties",
+      "rightOne": "(het goede antwoord)"
     },
     "errors": {
       "notFound": "Dat is hier niet.",
@@ -12361,7 +12376,8 @@
       "noGen": "Deze figuur heeft nog geen vragengenerator.",
       "name": "Geef het eerst een naam.",
       "brief": "Beschrijf het werkblad eerst in een paar woorden.",
-      "names": "Laat namen van leerlingen uit de beschrijving: namen gaan nooit naar de AI."
+      "names": "Laat namen van leerlingen uit de beschrijving: namen gaan nooit naar de AI.",
+      "sameChoices": "Twee opties zijn hetzelfde. Maak ze allemaal anders."
     },
     "kinds": {
       "numberLine": {
@@ -12694,7 +12710,10 @@
       "rightOf": "{right} van {total} goed",
       "answersTable": "De antwoorden van elke leerling",
       "noneYet": "Nog niemand heeft ingeleverd.",
-      "questions": "{count, plural, one {# vraag over een figuur} other {# vragen over figuren}}"
+      "questions": "{count, plural, one {# vraag over een figuur} other {# vragen over figuren}}",
+      "sign": "Negatief of positief maken",
+      "signLabel": "Je antwoord op vraag {n} wisselen tussen negatief en positief",
+      "rightOption": "Goed antwoord"
     },
     "assign": {
       "errors": {

@@ -3676,7 +3676,8 @@
         "gridTitle": "En una cuadrícula de coordenadas",
         "addGrid": "Añadir la figura de la cuadrícula a una ficha",
         "drawInstead": "Dibujarla en una cuadrícula"
-      }
+      },
+      "choiceNote": "Es una pregunta de opción múltiple. Sus opciones y la correcta se eligen en la hoja de trabajo."
     },
     "figures-sheet": {
       "title": "Título de la ficha",
@@ -3732,7 +3733,19 @@
       "assignNoClasses": "Todavía no das clase a ningún grupo. Crea una clase primero y luego asigna.",
       "assignDone": "Asignado a {class}.",
       "assignSee": "Verlo como los estudiantes",
-      "assignProgress": "Ver el progreso"
+      "assignProgress": "Ver el progreso",
+      "answerType": "Respuesta",
+      "typeNumber": "Número",
+      "typeChoice": "Opción múltiple",
+      "options": "Opciones (marca la correcta)",
+      "optionN": "Opción {letter} de la pregunta {n}",
+      "rightN": "La opción {letter} es la respuesta correcta",
+      "markRight": "La respuesta correcta",
+      "addOption": "Añadir opción",
+      "removeOption": "Quitar la opción {letter}",
+      "fromFigure": "La opción correcta se calcula a partir de la figura. Cambia una opción o marca otra para elegirla tú.",
+      "needTwo": "Escribe al menos 2 opciones.",
+      "needRight": "Marca la opción correcta."
     }
   },
   "favorites": {
@@ -12345,7 +12358,9 @@
       "crumb": "Imprimir",
       "sheetOnly": "Ficha del alumno",
       "withKey": "Con el solucionario",
-      "print": "Imprimir"
+      "print": "Imprimir",
+      "options": "Opciones",
+      "rightOne": "(la respuesta correcta)"
     },
     "errors": {
       "notFound": "Esto no está aquí.",
@@ -12360,7 +12375,8 @@
       "noGen": "Esta figura aún no tiene generador de preguntas.",
       "name": "Ponle un nombre primero.",
       "brief": "Describe la ficha en pocas palabras primero.",
-      "names": "No pongas nombres de alumnos en la descripción: los nombres nunca se envían a la IA."
+      "names": "No pongas nombres de alumnos en la descripción: los nombres nunca se envían a la IA.",
+      "sameChoices": "Dos opciones son iguales. Haz que cada una sea distinta."
     },
     "kinds": {
       "numberLine": {
@@ -12693,7 +12709,10 @@
       "rightOf": "{right} de {total} correctas",
       "answersTable": "Las respuestas de cada estudiante",
       "noneYet": "Nadie ha entregado todavía.",
-      "questions": "{count, plural, one {# pregunta de figura} other {# preguntas de figuras}}"
+      "questions": "{count, plural, one {# pregunta de figura} other {# preguntas de figuras}}",
+      "sign": "Hacerlo negativo o positivo",
+      "signLabel": "Cambiar tu respuesta a la pregunta {n} entre negativa y positiva",
+      "rightOption": "Respuesta correcta"
     },
     "assign": {
       "errors": {

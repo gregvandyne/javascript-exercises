@@ -19,7 +19,6 @@ const { createUser, startSession, getUser } = await import('../../server/auth.js
 const S = await import('../../server/services/schools.js');
 const F = await import('../../server/services/figures.js');
 const { figuresKit, FIG_PACKS, FIG_LATEST } = await import('../../server/services/figlibs.js');
-const { canvasKit } = await import('../../server/services/canvaskit.js');
 const { deleteAccount } = await import('../../server/services/account-delete.js');
 const { createApp } = await import('../../server/app.js');
 const CAT = await import('../../public/js/figures-catalog.js');
@@ -136,8 +135,7 @@ test('the catalog: every preset draws, the docs\' generators are the catalog\'s,
   const md = fs.readFileSync(path.join(ROOT, 'docs/figures-api.md'), 'utf8'), docs = {};
   for (const m of md.matchAll(/```json\n([\s\S]*?)\n```/g)) for (const p of m[1].split(/\n(?=\{ ?"tool")/)) { try { const g = JSON.parse(p); if (g.fig) docs[g.fig.kind === 'reading' ? `reading.${g.fig.type}` : g.fig.kind] = g; } catch { /* not a generator */ } }
   assert.ok(Object.keys(docs).length >= 40);
-  for (const [id, g] of Object.entries(docs)) { const c = CAT.genOf(id); assert.ok(c, id); const { id: _i, key: _k, kind: _kk, ...rest } = c; assert.deepEqual(rest, g, `${id} is the docs' generator`); }
-  const L = canvasKit().logic;
+  for (const [id, g] of Object.entries(docs)) { const c = CAT.genOf(id); assert.ok(c, id); const { id: _i, key: _k, pick: _p, kind: _kk, ...rest } = c; assert.deepEqual(rest, g, `${id} is the docs' generator`); }
   for (const K of CAT.KINDS) {
     assert.equal(OF.packOf(K.id) === 'core' || OF.packOf(K.id) !== null, true);
     for (const p of K.presets) assert.equal(OF.check(K.id, p).length, 0, `${K.id} ${JSON.stringify(p)}`);
@@ -145,7 +143,15 @@ test('the catalog: every preset draws, the docs\' generators are the catalog\'s,
     for (const g of K.gens) for (const seed of [11, 222, 3333, 44444]) {
       const r = F.generate(g.id, seed); assert.ok(r, `${g.id} ${seed}`);
       assert.equal(OF.check(r.kind, r.data).length, 0);
-      const raw = L.cleanProblem(L.TOOLS[g.tool].gen(L.seeded(seed), g)).p;
+      // What the generator's own formula says (Canvas deals it), against the answer from OF.solve.
+      const raw = F.dealRaw(g.id, seed);
+      if (g.tool === 'figure.choice') {
+        assert.equal(r.answerType, 'choice'); assert.equal(r.correct, Math.round(raw.answer), `${g.id}: OF.solve's option is the generator's`);
+        assert.equal(r.correct, g.pick[String(OF.solve[r.kind](r.data)[g.key])], `${g.id}: key and pick`);
+        assert.ok(r.work.at(-1).includes(r.choices[r.correct]), `${g.id}: the last worked line says the right option`);
+        assert.doesNotMatch(JSON.stringify([r.question, r.work]), /\{choice\}/);
+        continue;
+      }
       assert.ok(Math.abs(r.value - raw.answer) <= 0.5 * 10 ** -(raw.dp ?? 3) + 1e-9, `${g.id}: OF.solve ${r.value} is the generator's ${raw.answer}`);
       if (g.key) assert.equal(r.value, CAT.flatSolve(OF.solve[r.kind](r.data))[g.key]);
     }

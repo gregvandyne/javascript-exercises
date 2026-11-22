@@ -1,5 +1,6 @@
 // A student's lesson page: "🔊 Read to me" on each step reads the step's title and the teacher's words aloud with this
-// device's own voice (nothing is sent anywhere). The buttons show only where the device can speak.
+// device's own voice (nothing is sent anywhere). The buttons show only where the device can speak. Also the ± button of
+// a Figures worksheet's number blank.
 import { readAloud, stopReading } from '/js/tts.js';
 
 const pageLang = document.documentElement.lang || 'en';
@@ -33,3 +34,13 @@ if (window.speechSynthesis) {
     const done = setInterval(() => { if (!u.speaking) { b.setAttribute('aria-pressed', 'false'); clearInterval(done); } }, 500);
   });
 }
+
+// A Figures worksheet's number blank (server/views/figures-step.js): ± flips the sign of what is typed, for phones whose
+// decimal keypad has no minus key. Focus goes back to the blank, with the caret at the end.
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-fs-sign]'); if (!b) return;
+  const input = document.getElementById(b.dataset.fsSign); if (!input || input.readOnly) return;
+  const v = input.value.trim();
+  input.value = /^[-−–]/.test(v) ? v.replace(/^[-−–]\s*/, '') : `-${v}`;
+  input.focus(); try { input.setSelectionRange(input.value.length, input.value.length); } catch { /* not a text box */ }
+});
