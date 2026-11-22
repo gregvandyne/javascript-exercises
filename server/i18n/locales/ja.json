@@ -3891,7 +3891,7 @@
         "steps": "生徒向けにもっとわかりやすい手順を書いて"
       },
       "placeholder": "ボードの変更をOombaに頼む",
-      "placeholderEmpty": "授業の内容を書いてください。例:30分ちょうどの時計を4つ"
+      "placeholderEmpty": "このボードでやりたい授業を書いてください"
     }
   },
   "favorites": {

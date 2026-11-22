@@ -4173,7 +4173,7 @@
         "steps": "Write clearer steps for my students"
       },
       "placeholder": "Ask Oomba to change the board",
-      "placeholderEmpty": "Describe the lesson, for example: 4 clocks to the half hour",
+      "placeholderEmpty": "Describe the lesson you’d like on this board",
       "gradeLabel": "Grade",
       "anyGrade": "Any",
       "grade": "Grade {grade}",

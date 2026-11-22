@@ -3891,7 +3891,7 @@
         "steps": "Escribe pasos más claros para mis estudiantes"
       },
       "placeholder": "Pide a Oomba que cambie el tablero",
-      "placeholderEmpty": "Describe la clase, por ejemplo: 4 relojes a la media hora"
+      "placeholderEmpty": "Describe la clase que quieres en este tablero"
     }
   },
   "favorites": {
