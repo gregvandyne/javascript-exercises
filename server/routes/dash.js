@@ -191,7 +191,7 @@ function dashPage(req, res, c, role) {
       ${side(t)}
     </div>
     ${foot}
-    ${role === 'student' ? html`<div class="dash-eyes" id="dash-eyes" role="alertdialog" aria-modal="true" aria-labelledby="dash-eyes-h" hidden><div class="dash-eyescard"><div class="dash-eyesmark" aria-hidden="true">${ico('👀', { size: 128 })}</div><h2 id="dash-eyes-h">${t('dash.eyes.title')}</h2><p>${t('dash.eyes.text')}</p></div></div>` : ''}
+    ${role === 'student' ? html`<dialog class="dash-eyes" id="dash-eyes" role="alertdialog" aria-labelledby="dash-eyes-h" closedby="none"><div class="dash-eyescard"><div class="dash-eyesmark" aria-hidden="true">${ico('👀', { size: 128 })}</div><h2 id="dash-eyes-h">${t('dash.eyes.title')}</h2><p>${t('dash.eyes.text')}</p></div></dialog>` : ''}
     <p class="sr-only" id="dash-say" aria-live="polite"></p>
     <noscript><p class="notice warn">${t('dash.noscript')}</p></noscript>
     ${jsonData('page-data', { ...data, school: s ? s.name : '' })}

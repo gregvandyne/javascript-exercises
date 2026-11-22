@@ -370,7 +370,9 @@ export function jobsEditor(field, w, W, o) {
     from.append(new Option(W.fromNames, 'names', false, st.from === 'names'), new Option(fill(W.fromClass, { class: o.className || '' }), 'class', false, st.from === 'class'));
     from.addEventListener('change', () => { st.from = from.value; typing = -1; st.people = peopleOf(st.from); write(false); o.commit(); o.redraw(); render('from'); });
     field.appendChild(labelled('dw5-jlab dw5-jfrom', o.fromLabel || W.fromNames, from, 'from'));
-    if (!n) field.appendChild(el('p', 'small muted dw5-jnote', st.from === 'names' ? W.noNames : W.nobody));
+    // The class's students not here yet (a layout just switched to: they come with the next check, asked for at once):
+    // a neutral line, never "No students".
+    if (!n) field.appendChild(el('p', 'small muted dw5-jnote', st.from === 'names' ? W.noNames : o.roster() ? W.nobody : W.loading));
     // Typed names: each can be taken off the chart.
     if (st.from === 'names' && n) {
       const h = el('p', 'dw5-jlabel', o.namesLabel || W.fromNames); h.id = `${o.id}-names`;
@@ -403,7 +405,11 @@ function jobs(body, s, ctx) {
   wait.dir = 'auto';
   body.appendChild(wait);
   const draw = live => {
-    people = byHand ? typedNames.map((name, i) => ({ id: `t${i}`, name })) : orderBy((((live || ctx.live()).crew) || {})[ctx.id] || [], crew.order);
+    // The class's students come with the live check; until this widget's are there (a layout just switched to, a
+    // widget just added), it says they are on their way, never "No students".
+    const roster = byHand ? null : ((((live || ctx.live()).crew) || {})[ctx.id] || null);
+    const loading = !byHand && !roster;
+    people = byHand ? typedNames.map((name, i) => ({ id: `t${i}`, name })) : orderBy(roster || [], crew.order);
     const who = jobAssign(names.length, people, crew.shift || 0);
     // More students than jobs: the ones with no job this turn, on one line (they come in with ↻ Next week).
     const waiting = jobWaiting(names.length, people, crew.shift || 0);
@@ -413,10 +419,13 @@ function jobs(body, s, ctx) {
     names.forEach((job, i) => {
       const li = el('li', 'dw5-job');
       li.appendChild(own ? typed('span', 'dw5-jobname', job) : el('span', 'dw5-jobname', job));
-      li.appendChild(who[i] ? (byHand ? typed('b', 'dw5-jobwho dw5-iso', who[i].name) : el('b', 'dw5-jobwho dw5-iso', who[i].name)) : el('span', 'dw5-jobwho dw5-muted', W.open));
+      li.appendChild(who[i] ? (byHand ? typed('b', 'dw5-jobwho dw5-iso', who[i].name) : el('b', 'dw5-jobwho dw5-iso', who[i].name)) : el('span', 'dw5-jobwho dw5-muted', loading ? '…' : W.open));
       grid.appendChild(li);
     });
-    if (!people.length) grid.appendChild(el('li', 'dw-empty dw5-jobnote', W.nobodyTyped || W.nobody));
+    if (loading) grid.appendChild(el('li', 'dw-empty dw5-jobnote dw-loading', W.loading));
+    else if (!people.length) grid.appendChild(el('li', 'dw-empty dw5-jobnote', W.nobodyTyped || W.nobody));
+    // ↻ Next week and 🔀 Shuffle wait for the names (they save the class's order).
+    for (const b of body.querySelectorAll('.dw-foot button')) b.disabled = loading;
   };
   if (ctx.teacher && !ctx.editing) {
     const row = el('div', 'dw-row dw-foot');
@@ -484,12 +493,16 @@ export function points(body, s, ctx) {
     });
   };
   const draw = live => {
-    const p = ((live || ctx.live()).points) || { list: [], total: 0 };
-    const s2 = JSON.stringify(p); if (s2 === sig) return; sig = s2;
+    // The class's points come with the live check; until they are there (a layout just switched to, a widget just
+    // added), a neutral line, never "No students" or a total of 0.
+    const got = (live || ctx.live()).points;
+    const p = got || { list: [], total: 0 };
+    const s2 = got ? JSON.stringify(p) : 'loading'; if (s2 === sig) return; sig = s2;
     total.textContent = '';
-    total.append(icon('🏆'), el('span', null, fill(W.classTotal, { n: p.total || 0 })));
+    if (got) total.append(icon('🏆'), el('span', null, fill(W.classTotal, { n: p.total || 0 })));
     list.textContent = '';
-    if (!p.list.length) list.appendChild(el('li', 'dw-empty', W.nobody));
+    if (!got) list.appendChild(el('li', 'dw-empty dw-loading', W.loading));
+    else if (!p.list.length) list.appendChild(el('li', 'dw-empty', W.nobody));
     for (const k of p.list) {
       const li = el('li', 'dw5-prow');
       li.append(el('span', 'dw5-name dw5-iso', k.name), el('b', 'dw5-pn', String(k.n)));
