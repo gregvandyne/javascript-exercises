@@ -118,7 +118,7 @@ export function renderLanding(req, res) {
   // The page's sections, in the order of the story (docs/decisions.md "Landing: the whole class day"). wide: also in
   // the bar on wide screens; every one is in the menu (phones and narrower screens, where the bar has no room).
   const NAV = [['#how', 'how', false], ['#dashboards', 'dashboards', true], ['#builder', 'builder', true], ...(live ? [['#live', 'live', true]] : []),
-    ['#kids', 'kids', false], ['#courses', 'courses', true], ['#pricing', 'pricing', true], ['#faq', 'faq', true]];
+    ['#kids', 'kids', false], ['#pricing', 'pricing', true], ['#faq', 'faq', true]];
   const NAV_CTA = { '#how': 'how', '#pricing': 'pricing' };
   const navLink = (href, key) => html`<a href="${href}"${NAV_CTA[href] ? raw(` data-cta="${NAV_CTA[href]}"`) : ''}${fb(`landing.nav.${key}`)}>${t(`landing.nav.${key}`)}</a>`;
   const header = html`<a class="lp-skip" href="#lp-main">${t('landing.nav.skip')}</a>
@@ -272,22 +272,6 @@ export function renderLanding(req, res) {
   </div>
 </section>`;
 
-  const COURSES = [['nq', '/teachers/number-quest', 'lp-c-nq', ['sum-racer', 'fraction-factory', 'quest-race']], ['cs', '/teachers/cs-quest', 'lp-c-cs', ['data-detective', 'robo-route', 'packet-post']], ['cd', '/teachers/cyber-defenders', 'lp-c-cd', ['escape-the-post-office', 'trick-inbox', 'packet-post']]];
-  const courses = html`<section class="lp-sec" id="courses" aria-labelledby="courses-h">
-  <div class="lp-wrap">
-    <header class="lp-sec-head"><p class="lp-eyebrow">${t('landing.courses.kicker')}</p><h2 id="courses-h">${t('landing.courses.h')}</h2><p>${t('landing.courses.lead')}</p></header>
-    <div class="lp-courses">
-      ${COURSES.map(([k, href, cls, games]) => html`<article class="lp-card lp-course ${cls} rv">
-        <div class="lp-course-art" aria-hidden="true">${games.map(s => cover(s))}</div>
-        <p class="lp-tag">${t(`landing.courses.${k}.tag`)}</p>
-        <h3>${t(`landing.courses.${k}.name`)}</h3>
-        <p>${t(`landing.courses.${k}.p`)}</p>
-        <a class="lp-more" href="${lp(href)}">${t('landing.courses.link')}<span class="sr-only">: ${t(`landing.courses.${k}.name`)}</span> ${ARROW}</a>
-      </article>`)}
-    </div>
-  </div>
-  <div class="lp-marquee" aria-hidden="true"><div class="lp-marquee-track">${[...MARQUEE, ...MARQUEE].map(s => cover(s))}</div></div>
-</section>`;
 
   // Google Classroom: only when it is on here (every line is teachers.classroom.*, the same words as /teachers).
   const classroomSec = gcOn ? html`<section class="lp-sec" id="classroom" aria-labelledby="classroom-h">
@@ -456,7 +440,7 @@ export function renderLanding(req, res) {
     seo.faqLd(faq.map(([q, a]) => [q, seo.plainText(a)])),
   ]);
 
-  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${dashSec}${dtourSec}${builder}${liveSec}${videosSec}${kidsSec}${loopSec}${courses}${classroomSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
+  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${dashSec}${dtourSec}${builder}${liveSec}${videosSec}${kidsSec}${loopSec}${classroomSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
   const head = seo.seoHead(req, { index: true, path: '/', langs, image: '/og/landing.jpg', imageAlt: t('landing.meta.imageAlt'), jsonld: [jsonld] }, { title, description });
   res.status(200).type('html').set('Vary', 'Cookie, Accept-Language').send(`<!doctype html>
 <html lang="${esc(locale)}" dir="${esc(info.dir)}" data-theme="${theme}" class="lp-html${theme === 'light' ? ' lp-light' : ''}">
@@ -484,8 +468,6 @@ ${body}
 
 /** The covers fanned out in the hero. */
 const HERO_FAN = ['beat-lanes', 'robo-route', 'fraction-factory', 'atlas-quest', 'word-trail'];
-/** The games in the moving row under the courses. */
-const MARQUEE = ['sum-racer', 'atlas-quest', 'doodle-hoot', 'trick-inbox', 'code-isle', 'data-detective', 'fraction-factory', 'quest-race', 'brain-board', 'word-trail'];
 
 /** The hero's picture: the class dashboard on the projector (a real capture, scripts/how-shots.js), a student's own screen
  *  on a phone, and around it the rest of the day: a game the Builder just made and a live game starting. The cards move
