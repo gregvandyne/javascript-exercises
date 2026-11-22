@@ -325,7 +325,7 @@ function item(icon, text, cls, tag = 'button') {
 function splitIcon(b) {
   const name = (b.getAttribute('aria-label') || b.textContent || '').trim().replace(/\s+/g, ' ');
   if (b.querySelector('.dt-ic, .dt-lbl')) return name;
-  const img = b.firstElementChild && b.firstElementChild.matches('img.fx') ? b.firstElementChild : null;
+  const img = b.firstElementChild && b.firstElementChild.matches('.fx') ? b.firstElementChild : null;
   if (img) {
     const rest = b.textContent.trim().replace(/\s+/g, ' ');
     if (/\p{L}/u.test(rest)) {

@@ -53,9 +53,9 @@ test('signed out and guests get the same doors: Grown-ups tab, no Friends, Paren
     assert.deepEqual(order, ['/', '/learn', '/build', '/parents', '/login'], `${who}: Play · Learn · Build · Grown-ups · Sign in`);
     assert.match(footer(home.text), /href="\/plans"/, `${who}: Plans in the footer (not in the bars)`);
     assert.match(tabs, /🎮<\/span><span class="tab-t">Play<\/span>/, who); assert.match(tabs, /📚<\/span><span class="tab-t">Learn<\/span>/, who);
-    // 👪 is drawn as Fluent's house with garden (Fluent has no family emoji; people hugging was muddy on the dark theme),
-    // a different picture from Friends' 👫 (the hugging face).
-    assert.match(tabbar(home.raw), /house-with-garden-64\.webp[^>]*><\/span><span class="tab-t">Grown-ups<\/span>/, who);
+    // 👪 (Fluent's house with garden) is drawn in the tab bar as the Oomba Grown-ups icon, a different drawing from
+    // Friends' 👫 (docs/decisions.md "Icons: Oomba geometric for controls, Fluent 3D for big spots").
+    assert.match(tabbar(home.raw), /data-fx="house-with-garden"[^>]*><use href="\/icons\/oomba\/grownups\.svg[^"]*"\/><\/svg><\/span><span class="tab-t">Grown-ups<\/span>/, who);
     assert.doesNotMatch(tabs, /href="\/search"/, `${who}: search is the top bar's field, not a tab`);
     assert.doesNotMatch(tabs + topnav(home.text), /href="\/friends"/, `${who}: no Friends before an account`);
     assert.match(topnav(home.text), /href="\/parents"/, who); assert.match(topnav(home.text), /href="\/teachers"/, who);

@@ -54,7 +54,7 @@ function landing(t, { live, cta, id, shots = true }) {
   <div class="lp-wrap">
     <header class="lp-sec-head"><p class="lp-eyebrow">${t('teach.loop.kicker')}</p><h2 id="${id}-h">${t('teach.loop.h')}</h2><p>${t('teach.loop.lead')}</p></header>
     <ol class="lp-loop-steps">
-      ${LOOP.map((s, i) => html`<li class="lp-card lp-step lp-loop-step rv"><span class="lp-step-n" aria-hidden="true">0${i + 1}</span><span class="lp-step-e" aria-hidden="true">${s.emoji}</span>
+      ${LOOP.map((s, i) => html`<li class="lp-card lp-step lp-loop-step rv"><span class="lp-step-n" aria-hidden="true">0${i + 1}</span><span class="lp-step-e" aria-hidden="true">${ico(s.emoji, { size: 32 })}</span>
         <h3>${t(`teach.loop.steps.${s.step}.name`)}</h3><p>${t(`teach.loop.steps.${s.step}.benefit`)}</p>
         <ul class="lp-loop-tools">${toolsOf(s, live).map(k => html`<li>${lpCheck}<span>${plainName(t, k)}</span></li>`)}</ul></li>`)}
     </ol>
@@ -87,7 +87,7 @@ function pageLook(t, { links, state, live, shots, id, headingTag, cls }) {
   ${makeClass(t, links)}
   <ol class="plain tl-steps">${LOOP.map((s, i) => { const on = !!(state && state.done[s.step]);
     return html`<li class="panel tl-step${on ? ' is-done' : ''}" id="${id}-${s.step}">
-      <div class="tl-step-head"><span class="tl-e" aria-hidden="true">${s.emoji}</span><h3 class="tl-step-t"><span class="tl-n" aria-hidden="true">${i + 1}</span> ${t(`teach.loop.steps.${s.step}.name`)}</h3>${state ? tick(t, on) : ''}</div>
+      <div class="tl-step-head"><span class="tl-e" aria-hidden="true">${ico(s.emoji, { size: 28 })}</span><h3 class="tl-step-t"><span class="tl-n" aria-hidden="true">${i + 1}</span> ${t(`teach.loop.steps.${s.step}.name`)}</h3>${state ? tick(t, on) : ''}</div>
       <p>${t(`teach.loop.steps.${s.step}.benefit`)}</p>
       <ul class="plain tl-tools">${toolsOf(s, live).map(k => tool(t, k, links))}</ul></li>`; })}</ol>
   ${shots ? html`<div class="tl-shots">${SHOTS.map(([name]) => html`<figure class="panel tl-shot">${img(t, name, '(min-width: 1000px) 480px, (min-width: 700px) 46vw, 92vw')}<figcaption class="small muted">${t(`teach.loop.shots.${name}.caption`)}</figcaption></figure>`)}</div>` : ''}
@@ -106,7 +106,7 @@ function compact(t, { links, state, live, id }) {
   <p class="small muted tl-sub">${lead}</p>
   ${makeClass(t, links)}
   <ol class="plain tl-mini">${LOOP.map(s => { const on = !!st.done[s.step], next = s.step === nextStep;
-    return html`<li class="tl-mstep${on ? ' is-done' : ''}${next ? ' is-next' : ''}">${tick(t, on)}<span class="tl-mtext"><b>${s.emoji} ${t(`teach.loop.steps.${s.step}.name`)}</b><span class="small muted">${t(`teach.loop.steps.${s.step}.benefit`)}</span>
+    return html`<li class="tl-mstep${on ? ' is-done' : ''}${next ? ' is-next' : ''}">${tick(t, on)}<span class="tl-mtext"><b>${ico(s.emoji, { size: 18 })} ${t(`teach.loop.steps.${s.step}.name`)}</b><span class="small muted">${t(`teach.loop.steps.${s.step}.benefit`)}</span>
       <span class="tl-mtools">${toolsOf(s, live).filter(k => links && links[k]).map(k => html`<a class="chip" href="${links[k]}">${toolName(t, k)}</a>`)}</span></span></li>`; })}</ol>
   <div class="small tl-more"><a href="/teach/loop">${t('teach.loop.page.link')}</a>
     <form class="tl-hide" data-api="/api/teach/loop/hide" data-reload data-toast="${t('teach.loop.home.hidden')}"><button class="btn btn-sm" type="submit">${t('teach.loop.home.hide')}</button></form></div>

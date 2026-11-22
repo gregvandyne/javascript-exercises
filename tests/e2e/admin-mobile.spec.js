@@ -166,7 +166,7 @@ test('/admin/billing: "Ready to go live?" lists every check with what to do, by 
     await page.goto('/admin/billing');
     const panel = page.locator('section#ready');
     await expect(panel.locator('h2')).toHaveText('Ready to go live?');
-  await expect(panel.locator('h2 img.fx[src*="traffic-light"]')).toHaveCount(1);
+  await expect(panel.locator('h2 :is(img.fx[src*="traffic-light"], svg.fx[data-fx*="traffic-light"])')).toHaveCount(1);
     // It is the first section, and the jump chips lead to it.
     const top = s => page.locator(s).evaluate(e => e.getBoundingClientRect().top);
     expect(await top('#ready')).toBeLessThan(await top('#requests'));

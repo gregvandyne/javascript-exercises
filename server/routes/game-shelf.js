@@ -422,7 +422,7 @@ function phoneLib(req, ctx, mine, shared) {
   } else if (sel.view === 'oomba') {
     body = html`<a class="lib-back" href="${base}?view=library">${BACK} ${t('folders.phone.library')}</a><div class="lib-oomba">${oombaPane(req, ctx, { idp: 'lib-oo', heading: 'lib-h' })}</div>`;
   } else body = libFolder(req, ctx, sel, mine, myGames);
-  const seg = (on, href, emo, label, n) => html`<a class="lib-seg${on ? ' is-on' : ''}" href="${href}"${on ? raw(' aria-current="page"') : ''}><span aria-hidden="true">${emo}</span> <span class="lib-segl">${label}</span>${n === undefined ? '' : html` <span class="lib-segn">${n}</span>`}</a>`;
+  const seg = (on, href, emo, label, n) => html`<a class="lib-seg${on ? ' is-on' : ''}" href="${href}"${on ? raw(' aria-current="page"') : ''}><span aria-hidden="true">${ico(emo, { size: 18 })}</span> <span class="lib-segl">${label}</span>${n === undefined ? '' : html` <span class="lib-segn">${n}</span>`}</a>`;
   return html`<div class="lib" data-lib="${sel.view}">
     ${ctx.folders ? html`<nav class="lib-segs" aria-label="${t('folders.sideClass')}">${seg(onAssigned, `${base}?view=assigned`, '📌', t('folders.phone.assigned'), ctx.assigned.count)}${seg(!onAssigned, `${base}?view=library`, '📁', t('folders.phone.library'))}</nav>` : ''}
     <section class="lib-card panel" aria-labelledby="lib-h">${body}</section>

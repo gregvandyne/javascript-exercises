@@ -134,9 +134,9 @@ test('the kid\'s tab bar and top bar, byte for byte (Play · Learn · Build · F
   const got = await get(kid, '/'), page = got.text;
   assert.equal(tabbar(page), KID_TAB);
   assert.equal(topnav(page), KID_TOP);
-  // As drawn: Fluent 3D pictures (30 px in the tab bar, 28 in the top bar), the kid's own avatar still an emoji.
-  assert.match(tabbar(got.raw), /<span class="emo" aria-hidden="true"><img class="fx fx-3d" src="\/icons\/fluent\/3d\/video-game-64\.webp" srcset="[^"]+ 1x, [^"]+video-game-128\.webp 2x" width="30" height="30" alt="" aria-hidden="true"/);
-  assert.match(topnav(got.raw), /<img class="fx fx-3d" src="\/icons\/fluent\/3d\/books-64\.webp"[^>]* width="28" height="28"/);
+  // As drawn: the Oomba icons (30 px in the tab bar, 28 in the top bar: controls, below 40), the kid's own avatar still an emoji.
+  assert.match(tabbar(got.raw), /<span class="emo" aria-hidden="true"><svg class="fx fx-oo" data-fx="video-game" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true" focusable="false"><use href="\/icons\/oomba\/games\.svg\?v=[0-9a-f]+#i"\/><\/svg>/);
+  assert.match(topnav(got.raw), /<svg class="fx fx-oo" data-fx="books"[^>]* width="28" height="28"[^>]*><use href="\/icons\/oomba\/lessons\.svg/);
   assert.match(tabbar(got.raw), /href="\/me" ><span class="emo" aria-hidden="true">🦊<\/span>/);
 });
 

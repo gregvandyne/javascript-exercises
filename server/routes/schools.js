@@ -867,7 +867,7 @@ const CLASS_TABS = ['lessons', 'progress', 'students', 'settings'];
 function schoolLink(req, s) {
   if (s.archived_at) return s.name;
   if (S.canManageSchool(req.user, s.id)) return html`<a href="/school/${s.slug}">${s.name}</a>`;
-  return staffHere(req.user, s.id) ? html`<a href="/school/${s.slug}/invite" id="school-invite-link">${s.name} · ✉️ ${req.t('school.emailInvite.teacherLink')}</a>` : s.name;
+  return staffHere(req.user, s.id) ? html`<a href="/school/${s.slug}/invite" id="school-invite-link">${s.name} · ${ico('✉️', { size: 16 })} ${req.t('school.emailInvite.teacherLink')}</a>` : s.name;
 }
 /** Phones only (public/css/schools.css .classtiles; docs/decisions.md "Action tiles on the class page, on phones"): a
  *  2×2 grid of Host a live game, Class dashboard, Build new game and Find Oomba games, under the class header on every
@@ -904,7 +904,7 @@ export function classHeader(req, c, active) {
     ${chip || host || dash ? html`<div class="row classacts">${chip}${dash ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">${ico('🖥️', { size: 18 })} ${t('dash.entry.teacher')}</a>` : ''}${host ? html`<a class="btn btn-primary" href="/live?class=${c.id}">${ico('📡', { size: 18 })} ${t('live.entry.host')}</a>` : ''}</div>` : ''}</div>
   ${c.archived_at ? html`<div class="notice warn archbanner"><span>${ico('🗄️', { size: 18 })} ${t('school.class.archivedBanner')}</span><form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form></div>` : ''}
   ${classTiles(req, c, { host, dash })}
-  <nav class="tabs classtabs" aria-label="${c.name}">${CLASS_TABS.map(k => html`<a href="${href[k]}" ${k === active ? raw('aria-current="page"') : ''}><span aria-hidden="true">${icon[k]}</span> ${k === 'lessons' ? t('school.classTabs.games') : t(`school.classTabs.${k}`)}${badge[k] || ''}</a>`)}</nav>`;
+  <nav class="tabs classtabs" aria-label="${c.name}">${CLASS_TABS.map(k => html`<a href="${href[k]}" ${k === active ? raw('aria-current="page"') : ''}><span aria-hidden="true">${ico(icon[k], { size: 18 })}</span> ${k === 'lessons' ? t('school.classTabs.games') : t(`school.classTabs.${k}`)}${badge[k] || ''}</a>`)}</nav>`;
 }
 
 function requestsPanel(req, c, s, people) {

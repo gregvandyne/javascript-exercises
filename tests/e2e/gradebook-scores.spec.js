@@ -79,7 +79,7 @@ test('the gradebook: Work done apart from Score, late, live games, both names; a
   await expect(row(zoe.id).locator('a.gb-score')).toHaveCount(0);
   // late: Noah finished after the due date, Mia has work missing
   await expect(row(noah.id).locator('.gb-latedone')).toHaveText('Done late');
-  await expect(row(noah.id).locator('.gb-latedone img.fx[src*="alarm-clock"]')).toHaveCount(1);
+  await expect(row(noah.id).locator('.gb-latedone :is(img.fx[src*="alarm-clock"], svg.fx[data-fx*="alarm-clock"])')).toHaveCount(1);
   await expect(row(mia.id).locator('td.gb-late')).toHaveCount(1);
   // both names: the roster name (a link to the student's page) and the name used in games under it
   await expect(row(ava.id).locator('.sname b')).toHaveText('Ava Lopez');
