@@ -246,7 +246,7 @@ test('the file: its own page (no Oomba Kit), only Google Fonts from outside, the
 });
 
 test('registration: seeded after The Big Divide, Learn shelf words 2-8, word games hub, no spoken lines, a cover', () => {
-  assert.equal(SEED_GAMES.at(-1), 'crossword');
+  assert.equal(SEED_GAMES[SEED_GAMES.indexOf('box-by-box') + 1], 'crossword');
   assert.equal(META.slug, 'crossword'); assert.equal(META.shelf, 'learn'); assert.equal(META.players_max, 1); assert.ok(META.notes.length > 800);
   assert.deepEqual(SHELF_INFO.crossword, { subject: 'words', from: 2, to: 8 });
   assert.equal(LEARNING.crossword.key, 'crossword');
