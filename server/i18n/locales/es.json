@@ -6789,6 +6789,128 @@
       "p": "Escribe a {email}. Para los datos de una cuenta escolar, es la escuela quien nos contacta. Consulta también nuestra <a href=\"{privacy}\">Política de privacidad</a> y cómo mantenemos a los niños <a href=\"{safety}\">seguros</a>."
     }
   },
+  "compare": {
+    "name": "Cómo se compara Oomba",
+    "link": "Cómo se compara Oomba con otras herramientas para el aula",
+    "title": "Cómo se compara Oomba: juegos, un panel de clase y herramientas de matemáticas en un solo lugar",
+    "description": "Oomba Academy junto a otras tres herramientas para el aula, según cada necesidad de la clase: juegos en vivo, un panel de clase, manipulativos matemáticos virtuales, hojas de trabajo y un compañero docente con IA.",
+    "kicker": "Para docentes",
+    "h1": "Cómo se compara Oomba",
+    "lead": "Oomba Academy es un solo lugar para su clase: juegos educativos y juegos de clase en vivo, un panel de clase, manipulativos matemáticos virtuales con salas en vivo, Oomba Figuras para diagramas y hojas de trabajo, el Constructor donde los estudiantes crean sus propios juegos y Oomba, su compañero para enseñar.",
+    "checked": "Última revisión: {date}",
+    "table": {
+      "h": "Lado a lado, por necesidad de la clase",
+      "caption": "Lo que ofrece cada producto para necesidades comunes del aula. Los datos de los otros productos vienen de sus propios sitios web públicos.",
+      "need": "Necesidad de la clase",
+      "hint": "Deslice la tabla hacia un lado para ver todos los productos.",
+      "legend": "Sí: lo ofrece. Parcial: lo ofrece en parte. No: no lo ofrece. No indicado: no lo hemos confirmado en su sitio web público."
+    },
+    "status": {
+      "yes": "Sí",
+      "partial": "Parcial",
+      "no": "No",
+      "notStated": "No indicado"
+    },
+    "gate": {
+      "plan": "Plan Docente",
+      "testing": "En prueba"
+    },
+    "rows": {
+      "games": {
+        "need": "Juegos y cuestionarios en vivo",
+        "oomba": "Juegos educativos de matemáticas, lectura, lógica y música, y juegos de clase en vivo en la pantalla grande.",
+        "oombaNoLive": "Juegos educativos de matemáticas, lectura, lógica y música."
+      },
+      "build": {
+        "need": "Los estudiantes crean sus propios juegos",
+        "oomba": "El Constructor: los estudiantes describen un juego con sus propias palabras y él lo crea."
+      },
+      "dashboard": {
+        "need": "Widgets de panel de clase",
+        "oomba": "El panel de clase, gratis para cada clase."
+      },
+      "routines": {
+        "need": "Temporizadores, tareas de clase y registros de ánimo",
+        "oomba": "Temporizadores, tareas de clase y registros de ánimo en el panel."
+      },
+      "eyes": {
+        "need": "Pausar pantallas y enviar herramientas a los estudiantes",
+        "oomba": "\"Ojos al frente\" pausa la pantalla de cada estudiante, y \"Enviar a la clase\" pone una herramienta en sus dispositivos."
+      },
+      "manip": {
+        "need": "Manipulativos matemáticos virtuales",
+        "oomba": "18 herramientas, con plantillas, pizarras que se guardan mientras trabaja y Mis pizarras."
+      },
+      "room": {
+        "need": "Una sala en vivo que muestra el trabajo de cada estudiante",
+        "oomba": "Cada estudiante trabaja en su propio cuadro mientras usted ve a toda la clase. Los estudiantes revisan sus respuestas, y usted reabre la sala después del recreo."
+      },
+      "regroup": {
+        "need": "Reagrupar por valor posicional",
+        "oomba": "Los bloques de base diez se reagrupan en tablas de valor posicional cuando los estudiantes canjean."
+      },
+      "figures": {
+        "need": "Figuras de matemáticas y ciencias, hojas de trabajo imprimibles con respuestas",
+        "oomba": "Diagramas exactos de matemáticas y ciencias, hojas de trabajo y pruebas imprimibles con hoja de respuestas."
+      },
+      "aiDraft": {
+        "need": "Borradores con IA de hojas de trabajo y práctica",
+        "oomba": "Describa lo que necesita y ajústelo en un chat, con Deshacer para cada cambio. La app calcula las respuestas, y un borrador sigue avanzando si recarga la página."
+      },
+      "companion": {
+        "need": "Un compañero para enseñar (chat con IA)",
+        "oomba": "Oomba sabe en qué página está. Encuentra juegos por grado, estándar y tiempo, y libros por nivel de lectura, lee sus planes de clase e imágenes, y busca en la web mostrando sus fuentes. Solo cambia su panel cuando usted confirma, con Deshacer. Entrada por voz, y el audio no se guarda. Su escuela puede fijar los límites."
+      },
+      "videos": {
+        "need": "Videos cortos de cada herramienta",
+        "oomba": "Videos de un minuto con subtítulos, grabados en la app real."
+      },
+      "grades": {
+        "need": "De kínder a 8.º grado",
+        "oomba": "Hecho para niños de 5 a 14 años, de kínder a 8.º grado."
+      },
+      "languages": {
+        "need": "Idiomas disponibles",
+        "oomba": "Todo el sitio en {count} idiomas."
+      },
+      "devices": {
+        "need": "Funciona en Chromebooks y teléfonos",
+        "oomba": "Funciona en cualquier navegador actualizado, sin instalar nada."
+      },
+      "privacy": {
+        "need": "Privacidad de los estudiantes",
+        "oomba": "Sin anuncios, sin cookies publicitarias ni de seguimiento, y nunca vendemos la información personal de nadie. No hace falta el correo de los estudiantes."
+      },
+      "free": {
+        "need": "Una opción gratis",
+        "oomba": "Todos los juegos, sus clases, las lecciones, el libro de calificaciones y el panel de clase son gratis.",
+        "oombaPlans": "Todos los juegos, sus clases, las lecciones, el libro de calificaciones y el panel de clase son gratis. El plan Docente añade las herramientas para enseñar: <a href=\"{plans}\">vea los planes</a>."
+      }
+    },
+    "why": {
+      "h": "Por qué los docentes eligen Oomba",
+      "one": {
+        "h": "Un solo lugar para todo el día de clase",
+        "p": "Los juegos, el panel de clase, los manipulativos y las hojas de trabajo comparten un inicio de sesión y una lista de clase, así hay menos que preparar y menos cambios entre herramientas."
+      },
+      "make": {
+        "h": "Los estudiantes crean, no solo juegan",
+        "p": "Con el Constructor, los estudiantes describen un juego con sus propias palabras y lo prueban: planificar, escribir y depurar sin saber programar."
+      },
+      "safe": {
+        "h": "Hecho para niños, en sus idiomas",
+        "p": "Sin anuncios, sin vender la información de nadie y sin pedir el correo de los estudiantes, de kínder a 8.º grado, en {count} idiomas."
+      }
+    },
+    "sources": {
+      "h": "Fuentes y aviso",
+      "p": "Cada dato de otro producto que no dice \"No indicado\" tiene una nota numerada con un enlace a la página de su propio sitio web que lo respalda.",
+      "fnLabel": "Fuente {n}",
+      "read": "leído el {date}",
+      "sites": "Sus sitios web públicos:"
+    },
+    "notice": "{names} son marcas de sus dueños. Oomba no está afiliado con ellos. Comparación basada en sus sitios web públicos al {date}; <a href=\"{href}\">avísenos si algo cambió</a>."
+  },
   "connections": {
     "title": "Contactos adultos",
     "heading": "Mis contactos adultos",

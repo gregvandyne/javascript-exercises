@@ -7414,6 +7414,128 @@
       "p": "Email {email}. For records of a school account, the school contacts us. See also our <a href=\"{privacy}\">Privacy Policy</a> and how we keep kids <a href=\"{safety}\">safe</a>."
     }
   },
+  "compare": {
+    "name": "How Oomba compares",
+    "link": "How Oomba compares with other classroom tools",
+    "title": "How Oomba compares: games, a class dashboard and math tools in one place",
+    "description": "Oomba Academy beside three other classroom tools, by classroom need: live games, a class dashboard, virtual math manipulatives, worksheets and an AI teaching companion.",
+    "kicker": "For teachers",
+    "h1": "How Oomba compares",
+    "lead": "Oomba Academy is one place for your class: learning games and live class games, a class dashboard, virtual math manipulatives with live rooms, Oomba Figures for diagrams and worksheets, the Builder where students make their own games, and Oomba, your teaching companion.",
+    "checked": "Last checked: {date}",
+    "table": {
+      "h": "Side by side, by classroom need",
+      "caption": "What each product offers for common classroom needs. Cells for the other products come from their own public websites.",
+      "need": "Classroom need",
+      "hint": "Slide the table sideways to see every product.",
+      "legend": "Yes: offered. Partial: offered in part. No: not offered. Not stated: we have not confirmed it from their public website."
+    },
+    "status": {
+      "yes": "Yes",
+      "partial": "Partial",
+      "no": "No",
+      "notStated": "Not stated"
+    },
+    "gate": {
+      "plan": "Teacher plan",
+      "testing": "In testing"
+    },
+    "rows": {
+      "games": {
+        "need": "Live games and quizzes",
+        "oomba": "Learning games for math, reading, logic and music, and live class games on the big screen.",
+        "oombaNoLive": "Learning games for math, reading, logic and music."
+      },
+      "build": {
+        "need": "Students build their own games",
+        "oomba": "The Builder: students describe a game in their own words and it makes it."
+      },
+      "dashboard": {
+        "need": "Class dashboard widgets",
+        "oomba": "The Classroom Dashboard, free for every class."
+      },
+      "routines": {
+        "need": "Timers, jobs and check-ins",
+        "oomba": "Timers, class jobs and check-ins on the dashboard."
+      },
+      "eyes": {
+        "need": "Pause screens and send tools to students",
+        "oomba": "Eyes up pauses every student screen, and Send to students puts a tool on their devices."
+      },
+      "manip": {
+        "need": "Virtual math manipulatives",
+        "oomba": "18 tools, with templates, boards that save as you work, and My boards."
+      },
+      "room": {
+        "need": "A live room that shows every student's work",
+        "oomba": "Each student works in their own square while you see the whole class. Check my answers, and reopen the room after recess."
+      },
+      "regroup": {
+        "need": "Place-value regrouping",
+        "oomba": "Base ten blocks regroup in place-value charts as students trade."
+      },
+      "figures": {
+        "need": "Math and science figures, printable worksheets with answer keys",
+        "oomba": "Exact math and science diagrams, printable worksheets and tests with answer keys."
+      },
+      "aiDraft": {
+        "need": "AI drafting of worksheets and practice",
+        "oomba": "Describe what you need, then refine it in a chat with Undo for each change. The app works out the answers, and a draft keeps going if you refresh."
+      },
+      "companion": {
+        "need": "A teaching companion (AI chat)",
+        "oomba": "Oomba knows the page you are on. It finds games by grade, standard and time, and books by reading level, reads your lesson plans and pictures, and searches the web with its sources shown. It changes your dashboard only when you confirm, with Undo. Voice input, and the audio is not kept. Your school can set its limits."
+      },
+      "videos": {
+        "need": "Short videos of each tool",
+        "oomba": "One-minute videos with captions, recorded in the real app."
+      },
+      "grades": {
+        "need": "Kindergarten to grade 8",
+        "oomba": "Made for ages 5 to 14, kindergarten to grade 8."
+      },
+      "languages": {
+        "need": "Languages offered",
+        "oomba": "The whole site in {count} languages."
+      },
+      "devices": {
+        "need": "Works on Chromebooks and phones",
+        "oomba": "Runs in any up-to-date browser, with nothing to install."
+      },
+      "privacy": {
+        "need": "Student privacy",
+        "oomba": "No ads, no advertising or tracking cookies, and we never sell anyone's personal information. No student email needed."
+      },
+      "free": {
+        "need": "A free option",
+        "oomba": "Every game, your classes, lessons, the gradebook and the Classroom Dashboard are free.",
+        "oombaPlans": "Every game, your classes, lessons, the gradebook and the Classroom Dashboard are free. The Teacher plan adds the teaching tools: <a href=\"{plans}\">see the plans</a>."
+      }
+    },
+    "why": {
+      "h": "Why teachers pick Oomba",
+      "one": {
+        "h": "One place for the whole class day",
+        "p": "Games, the class dashboard, math manipulatives and worksheets share one sign-in and one class list, so there is less to set up and switch between."
+      },
+      "make": {
+        "h": "Students make, not only play",
+        "p": "With the Builder, students describe a game in their own words and test it, which is planning, writing and debugging without knowing code first."
+      },
+      "safe": {
+        "h": "Made for kids, in their languages",
+        "p": "No ads, no selling of anyone's information and no student email needed, for kindergarten to grade 8, in {count} languages."
+      }
+    },
+    "sources": {
+      "h": "Sources and notice",
+      "p": "Every cell for another product that is not Not stated has a numbered note linking to the page on its own website that supports it.",
+      "fnLabel": "Source {n}",
+      "read": "read on {date}",
+      "sites": "Their public websites:"
+    },
+    "notice": "{names} are trademarks of their owners. Oomba is not affiliated with them. Comparison based on their public websites as of {date}; <a href=\"{href}\">tell us if something changed</a>."
+  },
   "connections": {
     "title": "Grown-up connections",
     "heading": "My grown-up connections",

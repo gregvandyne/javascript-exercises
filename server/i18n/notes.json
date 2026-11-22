@@ -1571,5 +1571,8 @@
   "figures.assign.errors.noAnswer": "Figures worksheet builder, Assign to class: some questions have no answer yet. {list} is their numbers, e.g. \"2, 5\".",
   "figures.step.score": "A student's Figures worksheet after handing in. {right} questions right of {total}; {pct} is the percent (a number, the % sign is in the text).",
   "figures.step.handedInCount": "Teacher's progress page for a Figures worksheet: {done} students handed in of {total} in the class.",
-  "js.figures-sheet.assignDone": "Shown after a teacher assigns a Figures worksheet. {class} is the class name, e.g. \"Grade 7 Math\"."
+  "js.figures-sheet.assignDone": "Shown after a teacher assigns a Figures worksheet. {class} is the class name, e.g. \"Grade 7 Math\".",
+  "compare.notice": "Trademark notice at the end of /compare. {names} is the list of the three other products (product names, never translated, joined for your language by the site); {date} is the day the comparison was checked; keep the <a href=\"{href}\">...</a> around the words that ask people to tell us about a change.",
+  "compare.checked": "Line under the /compare heading. {date} is the day the other products' websites were last checked.",
+  "compare.status.notStated": "A cell in the comparison table: we have not confirmed this from the other product's public website. Neutral, never negative."
 }

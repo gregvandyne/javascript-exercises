@@ -11467,3 +11467,33 @@ engine (server service and client component) that Figures uses now and the site-
   is kept; the answer reader; a second surface with one live turn per conversation) and
   `tests/unit/figures-chat-browser.test.js` (Chromium on a laptop and an iPhone 13). `figures-browser`,
   `figures-lesson-step-browser`, `figures-product` and `figures-lesson-step` now drive the chat and the menu's box.
+
+## Comparison page: the one page that names other products (22 Nov 2026)
+
+The site's rule stays: **never name other products**, in any page, string, prompt or test fixture. The owner made one
+exception, for one page only: `/compare`, "How Oomba compares", may name **Kahoot!** (live quiz games),
+**Classroomscreen** (class dashboard and whiteboard widgets) and **Brainingcamp** (virtual math manipulatives).
+
+- **Where the names live.** Only `server/routes/compare.js` (`COMPETITORS`) and its test. The locale strings never
+  hold them: the trademark notice gets the names as `{names}` (joined for each language). `tests/unit/compare.test.js`
+  scans every text file in the repository outside `docs/` and fails if any other file names them, and checks that the
+  pages around it (/teachers, /research, /compliance, /safety, /privacy, /parents, /learn) never do.
+- **The page.** Public and indexable, with language addresses (`/es/compare`) and a sitemap entry, built like
+  /research and /compliance (routes/trust.js): a short intro of what Oomba is, a table by classroom need (columns Oomba,
+  Kahoot!, Classroomscreen, Brainingcamp), three "Why teachers pick Oomba" points, the /teachers sign-up button (or
+  `/trial` with paid plans on), "Last checked: <date>" (`COMPARE_CHECKED`) and the trademark notice with the site's
+  contact address. /teachers has one link to it, under "See it in action". All 13 locales (en-GB: maths).
+- **The cells.** Yes, Partial, No or Not stated, each with a Fluent mark and its word (never color alone). Another
+  product's cell is only what its own public website clearly states, with the address, the day and the exact words
+  (`CELLS`, docs/compare-sources.md), shown as a footnote; anything not confirmed there is Not stated, never a guess.
+  No prices, theirs or ours (prices stay on /plans; the Free row links there when paid plans are on). On 2026-11-22
+  none of the three websites could be reached from the build network, so every cell for them is Not stated until
+  someone reads their pages and fills them in.
+- **Oomba's cells** say only what is live. The Manipulatives, their live rooms, place-value regrouping, Figures, the AI
+  drafting and Oomba the teaching companion carry the gate's tag, worded like the "See it in action" note
+  (views/see-it.js): "Teacher plan" while paid plans are on for everyone, "In testing" while only testers have them.
+  The companion row describes the teaching companion on branch `teacher-companion`, merged with or before this page.
+- **Table on phones.** The table scrolls inside its own box with the need column kept in view (sticky), so the page
+  never scrolls sideways; the box can be reached and scrolled by keyboard.
+- **Legal.** docs/legal-review.md "Comparison page naming Kahoot!, Classroomscreen, Brainingcamp: lawyer review
+  pending".
