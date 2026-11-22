@@ -138,6 +138,9 @@ const TYPES = {
   // BRB.wordsFromDoc (Crossword): a PDF or Word file of at most 2 MB, for AI words (the server checks who may ask).
   'brb:doc': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof Blob === 'function' && m.file instanceof Blob && m.file.size > 0 && m.file.size <= 2 * 1024 * 1024
     && (m.kind === 'pdf' || m.kind === 'docx') && typeof m.level === 'string' && m.level.length <= 60,
+  // BRB.textFromDoc (Mistake Hunt): a PDF or Word file of at most 2 MB, for its text (the server checks who may ask).
+  'brb:textdoc': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof Blob === 'function' && m.file instanceof Blob && m.file.size > 0 && m.file.size <= 2 * 1024 * 1024
+    && (m.kind === 'pdf' || m.kind === 'docx'),
   // BRB.writeClues (Crossword): the teacher's words, for AI clues (the server checks who may ask).
   'brb:clues': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.words) && m.words.length >= 1 && m.words.length <= 30
     && m.words.every(w => typeof w === 'string' && w.length <= 40) && typeof m.level === 'string' && m.level.length <= 60,
@@ -257,6 +260,7 @@ addEventListener('message', e => {
     case 'brb:sets': mySetsForGame(m); break;
     case 'brb:clues': cluesForGame(m); break;
     case 'brb:doc': docForGame(m); break;
+    case 'brb:textdoc': textDocForGame(m); break;
     // BRB.print (Crossword): the frame can't print, so the page does, only right after a tap.
     case 'brb:print': printForGame(m, tappedJustNow('brb-print-at', 2000)); break;
     // BRB.assign (a teacher in a set game): after a tap, the game's Assign page with the problem or set it opens at.
@@ -382,6 +386,16 @@ async function docForGame(m) {
     out = { title: String(r.title || ''), words: Array.isArray(r.words) ? r.words.map(p => [String(p[0]), String(p[1])]) : [], cut: r.cut === true, ai: r.ai !== false };
   } catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'aiFailed' : 'offline') }; }
   toFrame({ type: 'brb:doc-done', id: m.id, ...out });
+}
+async function textDocForGame(m) {
+  let out;
+  try {
+    const bytes = new Uint8Array(await m.file.arrayBuffer());
+    let bin = ''; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    const r = await api(`/api/games/${d.gameId}/text-from-doc`, { method: 'POST', body: { kind: m.kind, data: btoa(bin) } });
+    out = { text: String(r.text || ''), cut: r.cut === true };
+  } catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'docBad' : 'offline') }; }
+  toFrame({ type: 'brb:textdoc-done', id: m.id, ...out });
 }
 /** BRB.print (docs/sdk.md "Printing"): the server checks the puzzle (its words and clues through the text filter, the
  *  layout, the answer key for teachers only) and makes the printable page in the viewer's language; it goes into a

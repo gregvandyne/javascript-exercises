@@ -72,8 +72,9 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.voice(lang?)` | The `SpeechSynthesisVoice` `BRB.speak` would use for a language tag (default `BRB.user.lang`), or `null`. |
 | `BRB.gameUrl` | The game's own play page (`https://…/play/<slug>`), or `null` in a preview. A game that shares a link to itself adds lesson parameters to it (`?mode=…&chapter=…&lock=1`, see [Lesson parameters](#lesson-parameters)). |
 | `BRB.copy(textOrPng)` | Copies for the game, which can't use the clipboard itself (it is sandboxed): a link to the game's own play page (`BRB.gameUrl`, with any query, at most 400 characters) or a PNG `Blob` (at most 300 KB, such as that link's QR code). The play page copies only right after a tap. A Promise of `true` when copied, `false` when refused or after 3 s. |
-| `BRB.questionSet` / `BRB.saveQuestionSet(items, id?)` | Official games on the list (Algebra Builder, The Big Divide, Crossword), and Builder classroom activities on Oomba Canvas 1.4.0 (the kit uses them itself: never call them from a Builder game's own code): the teacher's question set a link opened, and saving one. See [Question sets](#question-sets-brbquestionset). |
+| `BRB.questionSet` / `BRB.saveQuestionSet(items, id?)` | Official games on the list (Algebra Builder, The Big Divide, Crossword, Mistake Hunt), and Builder classroom activities on Oomba Canvas 1.4.0 (the kit uses them itself: never call them from a Builder game's own code): the teacher's question set a link opened, and saving one. See [Question sets](#question-sets-brbquestionset). |
 | `BRB.wordsFromDoc(file, { kind, level })` | Crossword only, the same grown-ups as `writeClues`: a PDF (at most 5 pages) or Word (.docx) `Blob` of at most 2 MB (`kind` `'pdf'` or `'docx'`); about 5 pages of text are read (15,000 characters), the rest is cut off. A Promise of `{ title, words: [[word, clue]], cut, ai }` (`cut`: only the start was read; `ai`: the AI took the words out, `false` for a plain "word - definition" list read as it is) or `{ error }` (`notAllowed`, `aiOff`, `aiFailed`, `docBad`, `docBig`, `docType`, `docPages`, `docScan` (no text: a scanned page), `docEmpty`, `docNone`, `docLimit` (10 files a day), `offline`). The page posts `POST /api/games/:id/words-from-doc`; the file is never stored. |
+| `BRB.canReadDocs` / `BRB.textFromDoc(file, { kind })` | Mistake Hunt only, for grown-ups who may host (`INIT.docText`; never a kid, a student or a guest, and not past the family grown-up fence): the text of a PDF (at most 5 pages) or Word (.docx) `Blob` of at most 2 MB, read on the server with **no AI** (Crossword's readers and limits, its 10 files a day). A Promise of `{ text, cut }` (`cut`: only about the first 5 pages were read) or `{ error }` (`notAllowed`, `docBad`, `docBig`, `docType`, `docPages`, `docScan`, `docEmpty`, `docLimit`, `offline`). The page posts `POST /api/games/:id/text-from-doc`; the file is never stored or logged. |
 | `BRB.canWriteClues` / `BRB.writeClues(words, { level })` | Crossword only, for a grown-up who may host and whom the family fence lets through (school staff and the admin, not a family grown-up), with AI on: a Promise of `{ clues }` (one per word, `''` where none) or `{ error }` (`notAllowed`, `aiOff`, `aiFailed`, `words`, `offline`). The page posts `POST /api/games/:id/clues`; the clues are for the teacher to read and edit, nothing is saved. |
 | `BRB.afterSpeech(fn, opts?)` | Calls `fn` once nothing is being said: no line playing, queued, or still on its way from the AI voice, for `gap` ms (250). Never before `min` ms (0) nor after `max` ms (10000), so a line that never ends can't hold the game. Returns a function that cancels it. Use it wherever the game moves on to the next question, so the last line is never cut off by the next one. |
 | `BRB.speaking()` | `true` while a line is playing, queued or on its way from the AI voice. |
@@ -339,7 +340,12 @@ cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, 
   `multiply`, up to 100 `[a, b]` problems it can work, the support level, the 7 flags of a custom mix, `d: 1` for a fresh
   set per student and the plan `g` it is made from. No free text in either. Crossword: one item `{ t, w, r, b, h }`: a title,
   3 to 30 `[word, clue]` pairs (the teacher's own words: each word, clue and the title pass the site's text filter when
-  saved), the layout's seed and the word bank and hints options.
+  saved), the layout's seed and the word bank and hints options. Mistake Hunt: 1 to 8 passages
+  `{ t, x, g, m: [{ a, b, w, k, p?, y? }], o? }`: a title, the teacher's correct text (40 to 1,500 characters, in the
+  form the game keeps it), a grade (0 to 8), the mistakes (a token range of the text, the wrong words students see, the
+  kind, pinned, a why line of the teacher's own), and on the first passage only the options `{ h: hints, s: Show
+  answers, n: 'total' | 'type' | 'none' }`; `cleanProofItems` checks every mistake by the game's own rules
+  (`services/proof-core.js`) and every text through the site's filter (refused, never changed), 20,000 characters in all.
 - `BRB.saveQuestionSet(items, id?, { title }?)` → a Promise of `{ id }` or `{ error }` (`guest`, `bad`, `full`,
   `notYours`, `offline`). The page posts it to `POST /api/games/:id/sets` for the signed-in player (not a guest): a new
   set, or with `id` their own set changed under the same code. 1 to 20 items (Algebra Builder); 200 sets per player per
@@ -387,7 +393,7 @@ same rule as `INIT.printKey` (the activity's maker, school staff) and never for 
 preview. Nothing in those controls reaches the server.
 
 ## Printing (`BRB.print`)
-Crossword and The Big Divide (frames where `INIT.print` is set: those official games, not in a preview; each game's
+Crossword, The Big Divide and Mistake Hunt (frames where `INIT.print` is set: those official games, not in a preview; each game's
 printer is in `server/services/game-print.js`), and Builder classroom activities on Oomba Canvas 1.2.0 whose purpose is a
 worksheet or a question generator (also in the Studio's preview; `server/services/canvas-print.js`: the doc is only
 `{ k: 'canvas', seed, n, paper, key }` and the server makes the sheet from the version's own data; `BRB.canPrintKey` is
@@ -405,7 +411,11 @@ true only for the activity's maker and school staff, from `INIT.printKey`). The 
   bank option, the layout as numbers (1 to 25 a side, at most one entry per word), the answer key (true or false) and the
   saved set's id (or `''`). The server puts the letters down from the words (a layout that doesn't spell its words is
   refused), counts the clue numbers in reading order, and adds the class code and link to the footer only for a set of
-  this game that exists. Both take `note`, the teacher's own instructions: plain text of at most 300 characters
+  this game that exists. Mistake Hunt's: `{ T, p, key, set, note? }`: the set's name and its passages exactly as a
+  saved set holds them (`cleanProofItems`); the server writes the wrong text from the teacher's text and the mistakes, so
+  the worksheet and its key always agree (`services/proof-print.js`: a sheet a passage with the directions, a legend of
+  proofreading marks and "I found ___ of N"; then for staff a key a passage, each fix numbered in place and listed with
+  its kind, Common Core code and why line). All three take `note`, the teacher's own instructions: plain text of at most 300 characters
   (`services/print-note.js`: control characters dropped, line breaks kept, blank is none), printed in bold at the top of
   the sheet and never on the answer key.
 - `POST /api/games/:id/print` `{ doc }` → `{ html }` (the printable page in the viewer's language and direction) or

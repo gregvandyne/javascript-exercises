@@ -5895,7 +5895,8 @@
       "sudoku": "Logische puzzels, van een mini 4×4 met plaatjes tot de klassieke 9×9: in elke rij, kolom en elk blok staat elk getal één keer.",
       "sumSpotter": "Vind het getal dat de som (of het product) is van twee andere, van sommen tot 10 tot de tafels, met een race van 60 seconden.",
       "wordTrail": "De meest gebruikte Engelse woorden, van kleuter tot groep 5, op een sprookjespad met Bramble de egel: luister naar een woord en tik erop, maak een zin af, leg het met letters, in korte lessen met een dagreeks.",
-      "crossword": "Maak van elke woordenlijst een kruiswoordpuzzel: typ of upload de woorden, voeg omschrijvingen toe of laat AI ze schrijven, en deel hem met de klas."
+      "crossword": "Maak van elke woordenlijst een kruiswoordpuzzel: typ of upload de woorden, voeg omschrijvingen toe of laat AI ze schrijven, en deel hem met de klas.",
+      "mistakeHunt": "Vind en verbeter de fouten in een korte tekst: leraren plakken hun eigen tekst, zetten er spel-, grammatica- en interpunctiefouten in en delen, geven op of printen hem."
     },
     "hubs": {
       "math": {

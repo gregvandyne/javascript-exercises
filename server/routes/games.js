@@ -25,7 +25,7 @@ import * as match from '../services/match.js';
 import * as polls from '../services/polls.js';
 import * as gameSets from '../services/game-sets.js';
 import { draftClues } from '../services/set-ai.js';
-import { wordsFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
+import { wordsFromFile, textFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
 import { PRINTERS } from '../services/game-print.js';
 import { canvasPrintable, cleanCanvasPrintDoc, canvasPrintHtml } from '../services/canvas-print.js';
 import { canvasVersion, activityData } from '../services/canvaskit.js';
@@ -415,7 +415,10 @@ router.get('/frame/:token', (req, res) => {
     // Crossword's "Write clues with AI" (BRB.canWriteClues / BRB.writeClues): grown-ups who may host, with a model set.
     // The fence has the last word: a family grown-up may host, but these calls are school tools (routes/family.js).
     ...(!preview && cluesGame(g) && liveCanHost(u) && hasModel() && fenceLets(u, 'POST', `/api/games/${g.id}/clues`) && fenceLets(u, 'POST', `/api/games/${g.id}/words-from-doc`) ? { clues: true } : {}),
-    // Print (BRB.canPrint / BRB.print; Crossword, The Big Divide): the play page prints for the frame (POST /api/games/:id/print).
+    // Mistake Hunt's "Upload a passage" (BRB.canReadDocs / BRB.textFromDoc): the text of a PDF or Word file, no AI, for the
+    // same grown-ups as Crossword's word lists (who may host), where the fence lets the call through.
+    ...(!preview && docTextGame(g) && liveCanHost(u) && fenceLets(u, 'POST', `/api/games/${g.id}/text-from-doc`) ? { docText: true } : {}),
+    // Print (BRB.canPrint / BRB.print; Crossword, The Big Divide, Mistake Hunt): the play page prints for the frame (POST /api/games/:id/print).
     ...(!preview && printGame(g) ? { print: true } : {}),
     // A classroom activity that prints (canvas-print.js), in the Studio's preview too (its maker): printKey offers the
     // answer key (BRB.canPrintKey) to its maker and school staff only; the print route checks again.
@@ -555,6 +558,8 @@ router.post('/api/games/:id/sets/:set/duplicate', requireUser, rateLimit('game-s
 // Crossword clues (services/set-ai.js draftClues): Claude writes a clue for each of the teacher's words, for the game's
 // word list only (nothing is saved here). Body { words: [string] (1-30), level }. -> { clues: [string] } | { code }.
 const cluesGame = g => setGame(g) && g.slug === 'crossword';
+/** Mistake Hunt: a passage from a teacher's document (services/crossword-doc.js textFromFile). */
+const docTextGame = g => setGame(g) && g.slug === 'mistake-hunt';
 /** A game that prints (services/game-print.js): Crossword's puzzles, The Big Divide's worksheets. */
 const printGame = g => setGame(g) && PRINTERS.has(g.slug);
 /** A Builder classroom activity that prints (Oomba Canvas 1.2.0 with a worksheet or generator purpose,
@@ -603,6 +608,26 @@ router.post('/api/games/:id/words-from-doc', requireUser, rateLimit('game-doc', 
   if (!r.ok) return res.status(r.code === 'aiOff' || r.code === 'aiFailed' ? 503 : 400).json({ error: req.t('errors.api.badRequest'), code: r.code });
   audit(req.user.id, 'game.doc_words', g.id, { kind: b.kind, count: r.words.length, ai: r.ai, cut: r.cut });
   res.json({ title: r.title, words: r.words, cut: r.cut, ai: r.ai });
+});
+// Mistake Hunt's passage from a document (services/crossword-doc.js textFromFile): the text of a PDF (at most 5 pages)
+// or a Word file, at most 2 MB, read here with no AI; Crossword's limits and its 10 files a day (the same counter).
+// Grown-ups who may host only, never a kid or a guest. Body { kind: 'pdf'|'docx', data: base64 } -> { text, cut } | { code }.
+// The file is never stored or logged (the audit line has its kind and how long the text was).
+router.post('/api/games/:id/text-from-doc', requireUser, rateLimit('game-doc', 20, 60e3), (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!docTextGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  if (!liveCanHost(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' });
+  const b = req.body || {}, max = CW_DOC.bytes;
+  if (!['pdf', 'docx'].includes(b.kind)) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'docType' });
+  if (typeof b.data !== 'string' || !/^[A-Za-z0-9+/]+=*$/.test(b.data)) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'docBad' });
+  if (b.data.length > Math.ceil(max / 3) * 4 + 4) return res.status(413).json({ error: req.t('errors.api.badRequest'), code: 'docBig' });
+  const day = `game-doc-day:${req.user.id}`;
+  if (countLimit(day) >= CW_DOC.perDay) return res.status(429).json({ error: req.t('errors.api.slowDown'), code: 'docLimit' });
+  const r = textFromFile({ kind: b.kind, buf: Buffer.from(b.data, 'base64') });
+  if (r.ok || r.code === 'docEmpty') allow(day, CW_DOC.perDay, 864e5);
+  if (!r.ok) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
+  audit(req.user.id, 'game.doc_text', g.id, { kind: b.kind, chars: r.text.length, cut: r.cut });
+  res.json({ text: r.text, cut: r.cut });
 });
 // Print (services/game-print.js): a game's own data -> { html }, the printable page the play page prints for the frame, in
 // the viewer's language. Crossword: its puzzle (its words and clues, the word bank option and the layout as numbers;

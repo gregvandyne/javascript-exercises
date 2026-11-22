@@ -6500,7 +6500,8 @@
       "sudoku": "Logic puzzles from a tiny 4×4 with pictures to the classic 9×9: every row, column and box gets each number once.",
       "sumSpotter": "Spot the number that two others add up to (or multiply to make), from sums to 10 to times tables, with a 60-second Rush.",
       "wordTrail": "The sight words, from Pre-primer to Grade 3, on a storybook trail with Bramble the hedgehog: hear a word and tap it, finish a sentence, spell it with letter tiles, in short lessons with a daily streak.",
-      "crossword": "Turn any vocabulary list into a crossword: type or upload the words, add clues or let AI write them, and share it with the class."
+      "crossword": "Turn any vocabulary list into a crossword: type or upload the words, add clues or let AI write them, and share it with the class.",
+      "mistakeHunt": "Find and fix the mistakes in a short passage: teachers paste their own text, plant spelling, grammar and punctuation mistakes, then share, assign or print it."
     },
     "hubs": {
       "math": {

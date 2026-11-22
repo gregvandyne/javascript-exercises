@@ -1114,6 +1114,30 @@
     if (Array.isArray(m.words) && m.words.every(function (p) { return Array.isArray(p) && p.length === 2 && typeof p[0] === 'string' && typeof p[1] === 'string'; })) w({ title: typeof m.title === 'string' ? m.title : '', words: m.words.slice(0, 30), cut: m.cut === true, ai: m.ai !== false });
     else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
   });
+  // Mistake Hunt's "Upload a passage" (BRB.canReadDocs: a grown-up who may host): BRB.textFromDoc(file, { kind: 'pdf'|'docx' })
+  // -> a Promise of { text, cut } (the document's text, read on the server with no AI; cut: only the first pages were
+  // read) or { error } ('notAllowed', 'docBad', 'docBig', 'docType', 'docPages', 'docScan', 'docEmpty', 'docLimit',
+  // 'offline'). The file (a Blob, at most 2 MB) goes to the page, which sends it to the server.
+  var textWait = {}, textSeq = 0;
+  function textFromDoc(file, opts) {
+    if (typeof Promise !== 'function') return null;
+    return new Promise(function (res) {
+      if (INIT.docText !== true) return res({ error: 'notAllowed' });
+      var kind = opts && (opts.kind === 'pdf' || opts.kind === 'docx') ? opts.kind : '';
+      if (!kind || typeof Blob !== 'function' || !(file instanceof Blob)) return res({ error: 'docBad' });
+      if (file.size > 2 * 1024 * 1024) return res({ error: 'docBig' });
+      var n = ++textSeq, timer = setTimeout(function () { delete textWait[n]; res({ error: 'offline' }); }, 60000);
+      textWait[n] = function (r) { clearTimeout(timer); delete textWait[n]; res(r); };
+      send('brb:textdoc', { id: n, file: file, kind: kind });
+    });
+  }
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:textdoc-done' || typeof m.id !== 'number') return;
+    var w = textWait[m.id]; if (!w) return;
+    if (typeof m.text === 'string') w({ text: m.text.slice(0, 20000), cut: m.cut === true });
+    else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
+  });
   // Crossword's Print (BRB.canPrint): the frame can't print (no allow-modals), so BRB.print(doc) hands the puzzle to the
   // page as plain data, { t, w: [[word, clue]], b, g: { w, h, e: [[word index, 'a'|'d', row, col]] }, key, set }, right
   // after a tap; the page has the server check it and make the printable page, then prints it. A Promise of { ok: true }
@@ -1388,6 +1412,8 @@
     canWriteClues: INIT.clues === true,
     writeClues: writeClues,
     wordsFromDoc: wordsFromDoc,
+    canReadDocs: INIT.docText === true,
+    textFromDoc: textFromDoc,
     canPrint: INIT.print === true,
     // A classroom activity's answer key (Oomba Canvas 1.2.0): its maker and school staff only (the server checks too).
     canPrintKey: INIT.print === true && INIT.printKey === true,

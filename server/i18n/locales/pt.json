@@ -5896,7 +5896,8 @@
       "sudoku": "Desafios de lógica, de um mini 4×4 com figuras ao clássico 9×9: cada linha, coluna e quadrado tem cada número uma vez.",
       "sumSpotter": "Encontre o número que é a soma (ou o produto) de outros dois, das somas até 10 à tabuada, com uma corrida de 60 segundos.",
       "wordTrail": "As palavras mais usadas do inglês, da pré-escola ao 3º ano, numa trilha de livro de histórias com Bramble, o ouriço: ouça uma palavra e toque nela, complete uma frase, soletre com letras, em lições curtas com sequência diária.",
-      "crossword": "Transforme qualquer lista de vocabulário em palavras cruzadas: digite ou envie as palavras, escreva as dicas ou deixe a IA escrever e compartilhe com a turma."
+      "crossword": "Transforme qualquer lista de vocabulário em palavras cruzadas: digite ou envie as palavras, escreva as dicas ou deixe a IA escrever e compartilhe com a turma.",
+      "mistakeHunt": "Encontre e corrija os erros de um texto curto: o professor cola o próprio texto, planta erros de ortografia, gramática e pontuação e depois compartilha, atribui ou imprime."
     },
     "hubs": {
       "math": {

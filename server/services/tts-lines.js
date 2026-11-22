@@ -163,6 +163,8 @@ export const GAMES = {
   'box-by-box': { title: 'The Big Divide', role: 'friendly', spoken: /^say\./, fills: /^w\./ },
   // Crossword reads nothing aloud: its clues are the teacher's own words, shown on the screen.
   'crossword': { title: 'Crossword', role: 'friendly', spoken: /(?!)/ },
+  // Mistake Hunt reads nothing aloud yet: its passages are the teacher's own words (a "proof" read-aloud context is Phase 4).
+  'mistake-hunt': { title: 'Mistake Hunt', role: 'friendly', spoken: /(?!)/ },
   // Jungle Cup: the story, the people's lines and the finale (d.*, story.*, end.*), each speaker's role from its VOICES block.
   'jungle-cup': { title: 'Jungle Cup', role: 'narrator', spoken: /^(?:d\.[a-z]+\.[a-z0-9]+|story\.\d+|end\.\d+|sign\.[a-z]+|lift\.(?:open|locked))$/ },
 };
