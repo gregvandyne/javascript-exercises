@@ -42,6 +42,7 @@
 .mpc-change p span{color:var(--text-2)}
 .mpc-chips{display:flex;flex-wrap:wrap;gap:8px;padding-inline-start:36px}
 .mpc-chips .chip{white-space:normal;text-align:start;line-height:1.2;padding:8px 14px}
+.mpc-wline{display:flex;align-items:center;gap:8px;font-weight:700}
 .mpc-dots{display:inline-flex;gap:4px;vertical-align:middle}
 .mpc-dots i{width:7px;height:7px;border-radius:50%;background:var(--accent-line);animation:mpcdot 1.2s ease-in-out infinite}
 .mpc-dots i:nth-child(2){animation-delay:.15s}.mpc-dots i:nth-child(3){animation-delay:.3s}
@@ -72,3 +73,4 @@
   .mpc{inset-inline:0;top:auto;bottom:var(--mpc-bottom);width:auto;height:min(74vh,calc(100dvh - var(--top) - var(--mpc-bottom) - 8px));border-inline-start:0;border-top:1px solid var(--line);border-radius:var(--r) var(--r) 0 0;box-shadow:0 -8px 30px rgba(20,20,20,.18)}
   .mpc-compose{padding-bottom:10px}
 }
+.mpc-minbar{display:inline-block;width:14px;height:3px;border-radius:2px;background:currentColor;vertical-align:middle}

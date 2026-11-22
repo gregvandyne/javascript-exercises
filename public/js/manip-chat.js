@@ -32,7 +32,7 @@ export function attach(ctx) {
   root.id = 'mpc-root';
   root.innerHTML = `<aside class="mpc" id="mpc" aria-labelledby="mpc-title" hidden>
       <header class="mpc-head"><span class="mpc-av">${oombaMark(36)}</span><div class="mpc-who"><h2 id="mpc-title">${esc(t('js.manip-chat.title'))}</h2><p class="mpc-sub">${esc(t('js.manip-chat.knows', { tool: ctx.name }))}</p></div>
-        <button type="button" class="mpc-hbtn" data-c="min" aria-label="${esc(t('js.manip-chat.minimize'))}" title="${esc(t('js.manip-chat.minimize'))}"><span aria-hidden="true">–</span></button>
+        <button type="button" class="mpc-hbtn" data-c="min" aria-label="${esc(t('js.manip-chat.minimize'))}" title="${esc(t('js.manip-chat.minimize'))}"><span class="mpc-minbar" aria-hidden="true"></span></button>
         <button type="button" class="mpc-hbtn" data-c="close" aria-label="${esc(t('js.manip-chat.close'))}" title="${esc(t('js.manip-chat.close'))}"><span aria-hidden="true">✕</span></button></header>
       <div class="mpc-log" id="mpc-log" role="log" aria-live="polite" aria-relevant="additions text"></div>
       <form class="mpc-compose" id="mpc-form" autocomplete="off">
@@ -208,7 +208,7 @@ function changeCard(x) {
   if (canUndo && !undone) action = `<button type="button" class="btn btn-sm mpc-act" data-c="undo" data-id="${esc(x.id)}">↩ ${esc(t('js.manip-chat.undo'))}</button>`;
   else if (canUndo && undone) action = `<button type="button" class="btn btn-sm mpc-act" data-c="redo" data-id="${esc(x.id)}">${esc(t('js.manip-chat.redo'))}</button>`;
   else if (ch.state && !ch.applied) action = `<button type="button" class="btn btn-primary btn-sm mpc-act" data-c="use" data-id="${esc(x.id)}">${esc(t('js.manip-chat.use'))}</button>`;
-  return `<div class="mpc-change${undone ? ' undone' : ''}"><p><b>${esc(undone ? t('js.manip-chat.undoneTitle') : t('js.manip-chat.changedTitle', { title: ch.title }))}</b> <span>${esc(undone ? '' : what)}${!undone && ch.capped ? ` ${esc(t('js.manip-chat.capped', { max: 12 }))}` : ''}</span></p>${action}</div>`;
+  return `<div class="mpc-change${undone ? ' undone' : ''}"><p><b>${esc(undone ? t('js.manip-chat.undoneTitle') : t('js.manip-chat.changedTitle', { title: ch.title }))}</b>${undone ? '' : '<br>'}<span>${esc(undone ? '' : what)}${!undone && ch.capped ? ` ${esc(t('js.manip-chat.capped', { max: 12 }))}` : ''}</span></p>${action}</div>`;
 }
 function render() {
   if (!C || C.mode !== 'open') return;
@@ -234,7 +234,7 @@ function render() {
       parts.push(bot(`<span dir="auto">${esc(x.text)}</span>${x.note === 'notBuilt' ? `<span class="mpc-note">${esc(t('js.manip-chat.notBuilt'))}</span>` : ''}${x.change ? changeCard(x) : ''}`));
     }
   }
-  if (C.chat.pending) parts.push(`<div class="mpc-turn bot mpc-wait"><span class="mpc-av sm">${oombaMark(28)}</span><div class="mpc-msg bot"><span class="mpc-dots" aria-hidden="true"><i></i><i></i><i></i></span> <span data-c-time>${esc(waitText())}</span><span class="mpc-note">${esc(t('js.manip-chat.leave'))}</span></div></div>`);
+  if (C.chat.pending) parts.push(`<div class="mpc-turn bot mpc-wait"><span class="mpc-av sm">${oombaMark(28)}</span><div class="mpc-msg bot"><span class="mpc-wline"><span class="mpc-dots" aria-hidden="true"><i></i><i></i><i></i></span> <span data-c-time>${esc(waitText())}</span></span><span class="mpc-note">${esc(t('js.manip-chat.leave'))}</span></div></div>`);
   log.innerHTML = parts.join('');
   C.el.input.placeholder = t(turns.length || !g.empty ? 'js.manip-chat.placeholder' : 'js.manip-chat.placeholderEmpty');
   C.el.send.disabled = !!C.chat.pending;

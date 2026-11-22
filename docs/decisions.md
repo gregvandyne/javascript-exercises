@@ -10843,3 +10843,72 @@ We still don't know which error the API gave that morning, since nothing was log
   owner gives chosen staff free access, set on Render); the billing preview cookie does not open the tools (the gate
   runs where there is no request, so pages and services must agree).
 
+
+## Virtual math manipulatives: Oomba chat (22 Nov 2026)
+
+The owner: "what happens if the teacher wants to make adjustments with the AI? I am thinking we need to make this an
+interactive chat. So if you press draft with AI the Oomba Builder pops up on the right side of the screen and you can
+tell it what you'd like it to do. Oomba should know exactly what page you are on for this. For mobile, we could allow
+users to minimize the chat and an oomba chat logo would go to the bottom right of the screen."
+
+- **The panel** (public/js/manip-chat.js, public/css/manip-chat.css). "Draft with AI" in the board's tools, and a new
+  Oomba button by the board's title, open Oomba's chat. Laptops and tablets (900 px and wider): a panel docked on the
+  right below the top bar (380 px, 340 px under 1100 px); the page narrows beside it and the board fits again, nothing
+  is covered. Phones: a sheet above the tab bar with Minimize and Close; minimized it is a round Oomba bubble (the logo
+  mark) at the bottom right just above the tab bar, with a green dot and "a new answer" in its name when Oomba answered
+  meanwhile. Escape in the chat minimizes; focus goes to the composer on open, to the bubble on minimize, back to the
+  button that opened it on close. Closing while Oomba is answering minimizes instead, so the answer has a place to land.
+  The Builder chat's look: the teacher's words in Mint on the end side, Oomba's on a card with its mark, the same
+  composer and Send. Logical properties (RTL), the site's tokens (dark mode), 13 locales (js.manip-chat).
+- **The first message is the brief.** On an empty board Oomba says "Tell me the lesson you'd like on this Clock board"
+  and offers up to three of the tool's library tasks as chips; on a board with things on it, three ideas (two more
+  problems, easier, clearer steps). The grade (Any, K to 8) sits under the composer and goes with every message. The
+  old drafter form is no longer opened from the page; draft jobs already running (services/manip-drafts.js) still show
+  their progress, notice and fallback as before, and POST /api/manipulatives/draft stays.
+- **What Oomba knows (built on the server, services/manip-chat.js).** Each message carries the teacher's own board;
+  the server cleans it (cleanState) and builds the context itself: the tool and its grades, whether it is a new board or
+  one saved in My boards, whether the teacher is running a live room with this tool, the grade, the title and steps,
+  and the items in the practice-set form (each drafted cell's settings in PRACTICE_HELP's words, its box and its answer
+  key; a board made by hand as a "free" list of object kinds, numbers and piece counts). Never sticky notes, pen marks,
+  text typed on the board, typed answers, labels, students' names or work. A title or step that fails the word rules or
+  names one of the teacher's students is left out. The teacher's message passes textProblem and namesIn like a draft
+  brief; a message that fails is refused before anything is stored or sent, and the words stay in the box with the
+  reason.
+- **What Oomba can do.** The model answers plain JSON (no strict json_schema: it hung in production) shaped
+  { reply, action: null | { op: "replace", draft: { title, steps, items } } }. A change is always the whole new board,
+  run through sanitizeDraft and buildPractice exactly like Draft with AI, then cleanState: every board the chat makes is
+  checked and laid out by the code. If every item it sent fails the checks, the board stays and the reply says so. Any
+  other action is ignored (a reply only). The page puts a change on the board as one change: the board's own Undo, and
+  "Undo Oomba's change" (then "Put it back") under the reply, which also brings back the title and steps. A change that
+  arrived while the page was closed is offered once as "Put it on my board".
+- **A turn is a job** (like the drafts): POST /api/manipulatives/chat checks, stores the message and returns; the answer
+  is made in this process, apart from any request, and the page asks every 2 s while it waits ("Oomba is thinking 0:12",
+  "You can close this page. The answer will wait here."). A refresh shows the same wait and applies the answer when it
+  comes. One turn at a time per board (409 chatBusy). One AI call per turn with the one 90 s budget (services/ai-call.js
+  callAi), the AI budget pool ('free', recordUsage), config.builderModel, max_tokens 3000, effort low; every failure is
+  one warn line without the teacher's words and a calm answer ("Oomba couldn't answer this time; your board is
+  unchanged", and its timeout, busy, resting and restart sentences) with Try again (the failed pair makes way for the
+  same words sent again) and Edit (the words back in the box). A turn cut off by a restart ends as failed ('restart')
+  the next time the chat is read. Rate limit: the drafts' own bucket (manip-ai, 30 an hour, shared with Draft with AI).
+- **Kept** (migration 0103_manipulatives_chat, manip_chats): one conversation per teacher and board (a recent board's id,
+  or new:<tool> until the board's first autosave, which then takes it over within 30 minutes; an older new-board chat
+  is dropped when a new board opens). The newest 20 turns; 8 go to the AI with a message; the built board's state only
+  on the newest 3 changes. Messages at most 1000 characters, replies 600, board context 8000. Deleted with the board
+  (deleteBoard, and recent boards trimmed or expired: pruned on the next read), after 60 days untouched, and with the
+  account (forgetUser and the users foreign key).
+- **Endpoints** (hosts only, behind the Teacher plan gate; students, kids and guests get the 404, staff without the plan
+  403 teacherPlan): GET /api/manipulatives/chat?tool=&boardId= (the conversation: turns, the pending turn, the grade),
+  POST /api/manipulatives/chat ({ tool, boardId?, title, text, grade?, state, retry? }: -> the conversation), POST
+  /api/manipulatives/chat/applied ({ tool, boardId?, turnId }: the change was put on the board, not offered again).
+- **Judgment calls.** Only "replace" (the whole board) is implemented: an "edit" with a list of changes would need its
+  own checks and the whole-board draft already goes through the tested ones. The chat is on the teacher's own board, where
+  Draft with AI lives; the live room's teacher view has no Oomba button yet (its context knows when a room runs on the
+  same tool). The board's own Undo brings back the pieces and objects; "Undo Oomba's change" brings back the title and
+  steps too. Oomba replies in the teacher's language; what goes on the board stays US English for children, as drafts.
+- **Tests:** manip-chat (a reply-only turn and what the AI sees; a change built by the code, offered once, the history
+  on the next turn; bad JSON and a timeout with Try again; names, personal details and short messages refused before
+  the AI; students, guests and a free teacher refused; one turn at a time; a restart; the chat following its board and
+  going with it and the account; the context and the answer reader) and manip-chat-browser (Chromium: docked on a
+  laptop with the board beside it, a change and both Undos; a refresh mid-answer, a failed answer and Try again, a
+  refused message keeping its words; an iPhone 13 sheet above the tab bar, the bubble with its dot, reopened, Escape).
+  manip-saving-browser starts its draft jobs through the API now.
