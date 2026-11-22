@@ -27,6 +27,7 @@ import { toolAccess } from './teacher-tools.js';
 import { anthropic } from '../builder/anthropic.js';
 import * as aiBudget from './ai-budget.js';
 import { callAi, logAiFail, fallbackReason } from './ai-call.js';
+import { log } from './log.js';
 import { hasProfanity, personalInfo } from './textfilter.js';
 import { STRIP, layoutOf, TOOLS, toolOf, pieceDefs, roomLayout, ROOM_COLORS, instructionNotes, stripHeight, stepsOf, stepStripTexts, TEACHER_STEP_H } from '../../public/js/manip-data.js';
 import * as LIVE from './manip-live.js';
@@ -817,7 +818,8 @@ export function exportPdf(u, id) {
 // decides WHERE (public/js/manip-practice.js). No coordinates, no sticky notes, no pen marks: a drafted board is a tidy
 // grid the teacher can trust, and the instructions are the steps of the deck.
 const PT = { type: 'object', additionalProperties: false, required: ['x', 'y'], properties: { x: { type: 'integer' }, y: { type: 'integer' } } };
-const DRAFT_SCHEMA = {
+// The shape a draft has (the prompt describes it; kept as the reference for sanitizeDraft and the tests).
+export const DRAFT_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['title', 'steps', 'items'],
   properties: {
     title: { type: 'string' },
@@ -857,6 +859,7 @@ export function namesIn(u, brief) {
   }
   return false;
 }
+const PT_HINT = ', points and pegs as {"x": 1, "y": 2}, pieces as {"kind": "...", "count": 3}';
 function prompt(tl, { grade, brief, task }) {
   return [
     'You are preparing a practice board for a teacher, on a virtual math manipulatives tool. You decide WHAT goes on it; the app decides where.',
@@ -869,6 +872,7 @@ function prompt(tl, { grade, brief, task }) {
     'label: optional, at most 4 words (for example "Start" or "Problem 2"). Usually leave it out.',
     `steps: 1 to ${STEPS_MAX} short steps for the students, in order, one idea each, under 100 characters, for example "Write the time under each clock."`,
     'title: a short title for the board (under 60 characters).',
+    `Answer with one JSON object and nothing else, shaped like {"title": "...", "steps": ["..."], "items": [{"box": "answer", ...the settings above...}]}. Use only the settings listed for this tool; numbers as numbers, lists as arrays${PT_HINT}.`,
     `<lesson>\n${brief}${task ? `\nBased on this library task: ${task}` : ''}\n</lesson>`,
   ].join('\n');
 }
@@ -898,6 +902,14 @@ export function draftRequest(u, { tool, brief, grade = '', task = '' } = {}) {
  *  something that is not a draft (reason 'timeout' | 'busy' | 'error', one warn line: services/ai-call.js), the draft
  *  is the template (ai: false) and the page says why. at: { draft } (the job's id, for the warn line).
  *  -> { ok, draft, ai, reason? } */
+/** The first JSON object in the model's text (it may wrap it in a code fence or a sentence). -> object | throws */
+export function jsonIn(text) {
+  const t = String(text || '').replace(/^\s*```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '');
+  try { return JSON.parse(t); } catch { /* look for the object inside */ }
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  if (a < 0 || b <= a) throw new SyntaxError('no JSON object');
+  return JSON.parse(t.slice(a, b + 1));
+}
 export async function runDraft(u, r, at = {}) {
   const tl = toolOf(r.tool);
   const template = reason => ok({ draft: sanitizeDraft(templateDraft(tl, { brief: r.brief, task: r.task }), tl.slug), ai: false, reason });
@@ -909,13 +921,17 @@ export async function runDraft(u, r, at = {}) {
     // A full board (PRACTICE_MAX items with their settings, STEPS_MAX steps, a title) is well under 2000 tokens of JSON.
     const res = await callAi(client, {
       model: config.builderModel, max_tokens: 3000,
-      output_config: { effort: 'low', format: { type: 'json_schema', schema: DRAFT_SCHEMA } },
+      // No strict json_schema here: with this many optional item settings the constrained grammar made the call hang
+      // past the budget in production (22 Nov 2026, two drafts timed out with no answer). The model writes plain JSON
+      // to the shape in the prompt; sanitizeDraft checks every field anyway.
+      output_config: { effort: 'low' },
       messages: [{ role: 'user', content: prompt(tl, { grade: r.grade, brief: r.brief, task: r.task }) }],
     });
     if (res && res.usage) aiBudget.recordUsage(res.model || config.builderModel, res.usage);
     const block = ((res && res.content) || []).find(c => c.type === 'text');
-    raw = JSON.parse(block ? block.text : '');
-    if (!raw || typeof raw !== 'object') throw new SyntaxError('not a draft');
+    raw = jsonIn(block ? block.text : '');
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new SyntaxError('not a draft');
+    log('info', 'manipulatives draft ai answered', { draft: at.draft || null, tool: tl.slug, ms: Date.now() - t0 });
   } catch (e) {
     return template(fallbackReason(logAiFail('manipulatives draft ai failed', { draft: at.draft || null, tool: tl.slug }, e, t0)));
   }

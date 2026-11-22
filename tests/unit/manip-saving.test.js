@@ -359,3 +359,20 @@ test('account deletion takes the teacher\'s drafts with their boards', async () 
   assert.equal(q.get('SELECT COUNT(*) n FROM manip_drafts WHERE owner_id=?', boss.id).n, 0);
   assert.equal(q.get('SELECT COUNT(*) n FROM manip_boards WHERE owner_id=?', boss.id).n, 0);
 });
+
+test('Draft with AI asks for plain JSON (no strict schema, which hung in production) and reads it from a fence or a sentence', async () => {
+  const M2 = await import('../../server/services/manipulatives.js');
+  assert.equal(M2.jsonIn('```json\n{"title":"T","steps":[],"items":[]}\n```').title, 'T');
+  assert.equal(M2.jsonIn('Here is the board: {"title":"U","steps":["a"],"items":[]} Enjoy.').title, 'U');
+  assert.throws(() => M2.jsonIn('no json here'), SyntaxError);
+  let seen = null;
+  const prev = M2.hooks.create;
+  M2.hooks.create = async (params) => { seen = params; return { content: [{ type: 'text', text: '```json\n{"title":"Clocks","steps":["Read each clock."],"items":[{"box":"answer","time":"3:30"}]}\n```' }] }; };
+  try {
+    const boss2 = createUser({ username: 'JsonDraftBoss', password: 'secret123', role: 'admin' });
+    const r = await M2.runDraft(boss2, { tool: 'clock', brief: 'telling time to the half hour', grade: '2', task: '' });
+    assert.equal(r.ok, true); assert.equal(r.ai, true);
+    assert.equal(seen.output_config.format, undefined, 'no json_schema format');
+    assert.match(seen.messages[0].content, /Answer with one JSON object/);
+  } finally { M2.hooks.create = prev; }
+});
