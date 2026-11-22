@@ -3403,7 +3403,15 @@
         "reopen": "Ruimte heropenen",
         "deleteConfirm": "‘{title}’ verwijderen? Dit kan niet ongedaan worden.",
         "deleteRoom": "De ruimte ‘{title}’ en het vak van elke leerling erin verwijderen? Dit kan niet ongedaan worden.",
-        "pickClass": "Kies de klas voor deze ruimte en start hem dan."
+        "pickClass": "Kies de klas voor deze ruimte en start hem dan.",
+        "seeAll": "Alle borden bekijken ({n})",
+        "count": "{n, plural, one {# bord} other {# borden}}",
+        "allTitle": "Alle borden",
+        "allLead": "Al je sjablonen, recente borden en live ruimtes, per hulpmiddel. Recente borden blijven 60 dagen (de nieuwste 30), beëindigde ruimtes 30 dagen en sjablonen tot je ze verwijdert.",
+        "back": "Terug naar de materialen",
+        "noTemplates": "Nog geen sjablonen. Met ‘Bewaren als sjabloon’ houd je een schoon startpunt.",
+        "noRecent": "Nog geen recente borden. Borden waaraan je werkt, worden vanzelf bewaard en staan hier.",
+        "showAllTemplates": "Alle {n} sjablonen tonen"
       },
       "share": {
         "save": "Bewaren als sjabloon"

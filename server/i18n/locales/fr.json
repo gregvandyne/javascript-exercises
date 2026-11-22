@@ -3402,7 +3402,15 @@
         "reopen": "Rouvrir la salle",
         "deleteConfirm": "Supprimer « {title} » ? C’est définitif.",
         "deleteRoom": "Supprimer la salle « {title} » et la case de chaque élève ? C’est définitif.",
-        "pickClass": "Choisissez la classe pour cette salle, puis lancez-la."
+        "pickClass": "Choisissez la classe pour cette salle, puis lancez-la.",
+        "seeAll": "Voir tous les tableaux ({n})",
+        "count": "{n, plural, one {# tableau} other {# tableaux}}",
+        "allTitle": "Tous les tableaux",
+        "allLead": "Tous vos modèles, tableaux récents et salles en direct, rangés par outil. Les tableaux récents restent 60 jours (les 30 plus récents), les salles terminées 30 jours, les modèles jusqu’à ce que vous les supprimiez.",
+        "back": "Retour aux manipulables",
+        "noTemplates": "Pas encore de modèle. « Enregistrer comme modèle » garde un point de départ vierge.",
+        "noRecent": "Pas encore de tableau récent. Les tableaux sur lesquels vous travaillez s’enregistrent tout seuls et apparaissent ici.",
+        "showAllTemplates": "Voir les {n} modèles"
       },
       "share": {
         "save": "Enregistrer comme modèle"

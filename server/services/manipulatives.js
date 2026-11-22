@@ -238,8 +238,11 @@ export function saveBoard(u, { tool, title, state } = {}) {
   return ok({ board: { id, code, title: cleanTitle(title, tl.name) } });
 }
 const BOARD_COLS = 'id, code, tool, title, kind, created_at, updated_at, opened_at';
-/** The owner's templates, newest first (no states). */
-export const listBoards = u => (canHost(u) ? q.all(`SELECT ${BOARD_COLS} FROM manip_boards WHERE owner_id=? AND kind='template' ORDER BY created_at DESC, rowid DESC LIMIT 100`, u.id) : []);
+/** The owner's templates, newest first (no states): the newest 100 for the home, or all of them ({ all: true }, the
+ *  All boards page; at most LIMITS.boards can exist). */
+export const listBoards = (u, { all = false } = {}) => (canHost(u) ? q.all(`SELECT ${BOARD_COLS} FROM manip_boards WHERE owner_id=? AND kind='template' ORDER BY created_at DESC, rowid DESC LIMIT ${all ? LIMITS.boards : 100}`, u.id) : []);
+/** How many templates the owner has (the home's "See all boards" count). */
+export const countBoards = u => (canHost(u) ? q.get("SELECT COUNT(*) n FROM manip_boards WHERE owner_id=? AND kind='template'", u.id).n : 0);
 /** The owner's recent boards, most recently used first (no states). opened_at 0: an AI draft not opened yet ("New"). */
 export const listRecent = u => (canHost(u) ? q.all(`SELECT ${BOARD_COLS} FROM manip_boards WHERE owner_id=? AND kind='recent' ORDER BY MAX(created_at, updated_at, opened_at) DESC, rowid DESC LIMIT ${RECENT_MAX}`, u.id) : []);
 /** One of the owner's boards, with its state. */

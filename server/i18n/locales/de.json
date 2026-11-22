@@ -3403,7 +3403,15 @@
         "reopen": "Raum wieder öffnen",
         "deleteConfirm": "„{title}“ löschen? Das lässt sich nicht rückgängig machen.",
         "deleteRoom": "Den Raum „{title}“ und alle Felder der Schüler:innen darin löschen? Das lässt sich nicht rückgängig machen.",
-        "pickClass": "Wähle die Klasse für diesen Raum und starte ihn dann."
+        "pickClass": "Wähle die Klasse für diesen Raum und starte ihn dann.",
+        "seeAll": "Alle Tafeln ansehen ({n})",
+        "count": "{n, plural, one {# Tafel} other {# Tafeln}}",
+        "allTitle": "Alle Tafeln",
+        "allLead": "Alle deine Vorlagen, zuletzt benutzten Tafeln und Live-Räume, nach Werkzeug sortiert. Zuletzt benutzte Tafeln bleiben 60 Tage (die neuesten 30), beendete Räume 30 Tage, Vorlagen, bis du sie löschst.",
+        "back": "Zurück zu den Arbeitsmitteln",
+        "noTemplates": "Noch keine Vorlagen. Mit „Als Vorlage speichern“ behältst du einen frischen Startpunkt.",
+        "noRecent": "Noch keine Tafeln. Tafeln, an denen du arbeitest, speichern sich selbst und erscheinen hier.",
+        "showAllTemplates": "Alle {n} Vorlagen zeigen"
       },
       "share": {
         "save": "Als Vorlage speichern"
