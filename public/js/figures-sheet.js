@@ -1,6 +1,7 @@
 // Figures, the worksheet builder (routes/figures.js GET /figures/worksheets/new and /:id). A worksheet is a title and
 // figure questions in order. Each question can move up or down, be deleted, get new numbers from its generator, or open
-// in the editor; "Add figure question" adds one of any kind; Oomba's chat (public/js/oomba-chat.js, services/figures-chat.js)
+// in the editor; "Add figure question" adds one of any kind; Oomba (the site's one companion chat, public/js/companion.js,
+// with this page's workflow: services/figures-chat.js)
 // drafts the questions from the teacher's first message and adjusts them after ("make 3 and 7 harder and use inches"):
 // the server checks every figure with OF.check and works every answer out with OF.solve; the questions Oomba changed are
 // marked, and each answer has Undo. "Ask Oomba about this" (a question's More menu) quotes it into the chat. The print preview (student sheet and
@@ -19,7 +20,8 @@
 import { t, api, toast, esc, pageData, ask, sheet } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { moreMenu, menuItem, menuSep, bindMenus } from '/js/figures-menu.js';
-import { mountChat, oombaMark } from '/js/oomba-chat.js';
+import { oombaMark } from '/js/oomba-chat.js';
+import * as BUS from '/js/oomba-bus.js';
 
 const P = pageData('fg-sheet');
 const app = document.getElementById('fg-sheet-app');
@@ -231,7 +233,7 @@ const ACTS = {
     const id = itemId(b), i = W.items.findIndex(x => x.id === id); if (i < 0 || !chat) return;
     quoted = id; draw();
     const q = W.items[i].question;
-    chat.quote({ ref: id, html: `<b>${esc(t('js.figures-sheet.questionN', { n: i + 1 }))}:</b> ${esc(q)}` });
+    chat.quote({ ref: `${W.id}:${id}`, html: `<b>${esc(t('js.figures-sheet.questionN', { n: i + 1 }))}:</b> ${esc(q)}` });
   },
 };
 /** Move a question up or down (⋯ More, or Alt+Arrow): the keyboard stays with it, and a screen reader hears where. */
@@ -255,7 +257,6 @@ function lessonUi() {
   });
 }
 // ---------------------------------------------------------------- Oomba's chat
-const chatUrl = () => (W ? `/api/figures/worksheets/${encodeURIComponent(W.id)}/chat` : null);
 const listN = ns => ns.join(', ');
 /** A unit's name in the page's language ("inches"), from the browser's own unit names; else its symbol. */
 const UNIT_NAMES = { mm: 'millimeter', cm: 'centimeter', m: 'meter', km: 'kilometer', in: 'inch', ft: 'foot', yd: 'yard', mi: 'mile' };
@@ -283,54 +284,61 @@ function changeHtml(x) {
   lines.push(t('js.figures-sheet.chAnswers'));
   return `<p><b>${iconHtml('✓', { size: 16 })} ${esc(t('js.figures-sheet.chTitleWhat'))}</b></p><ul class="oc-list">${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`;
 }
+/** This page's workflow in Oomba, the site's one companion chat (public/js/oomba-bus.js, services/companion.js with
+ *  services/figures-chat.js): the companion knows this worksheet, drafts and changes it (each answer with Undo), quotes a
+ *  question ("Ask Oomba about this") and offers "Add a starter set instead" when it could not draft. */
+const mine = x => !!(x && x.change && x.change.kind === 'figures' && W && x.change.sheetId === W.id);
+const meOf = (c, x) => (c && x ? c.turns.find(y => y.id === x.for) : null);
 function chatUi() {
   const opener = document.getElementById('fg-oomba');
   const empty = () => !W || !W.items.length;
-  chat = mountChat({
-    id: `figures:${P.id || 'new'}`, url: chatUrl, ensure: async () => { await ensure(); return chatUrl(); }, opener,
-    sub: t(TEST ? 'js.figures-sheet.chatSubTest' : 'js.figures-sheet.chatSub'),
-    privacy: t('js.figures-sheet.chatPrivate'), leave: t('js.figures-sheet.chatLeave'),
+  BUS.setPage({
+    kind: 'figures',
+    page: () => (W ? { type: 'figures-sheet', sheetId: W.id } : { type: 'figures' }),
+    label: () => (W && W.title) || document.getElementById('fg-title')?.value || P.untitled,
+    ensure: async () => { await ensure(); },
     hello: () => t(empty() ? (TEST ? 'js.figures-sheet.helloEmptyTest' : 'js.figures-sheet.helloEmpty') : 'js.figures-sheet.hello'),
     ideas: () => (empty() ? [] : ['ideaHarder', 'ideaWords', 'ideaEasier'].map(k => ({ label: t(`js.figures-sheet.${k}`), text: t(`js.figures-sheet.${k}`) }))),
-    ideasAfter: c => { const last = c.turns[c.turns.length - 1]; return last && last.change && last.change.first && !last.change.undone ? ['ideaHarder', 'ideaWords', 'ideaEasier'].map(k => ({ label: t(`js.figures-sheet.${k}`), text: t(`js.figures-sheet.${k}`) })) : []; },
+    ideasAfter: c => { const last = c.turns[c.turns.length - 1]; return last && mine(last) && last.change.first && !last.change.undone ? ['ideaHarder', 'ideaWords', 'ideaEasier'].map(k => ({ label: t(`js.figures-sheet.${k}`), text: t(`js.figures-sheet.${k}`) })) : null; },
     placeholder: () => t(empty() ? 'js.figures-sheet.placeholderEmpty' : 'js.figures-sheet.placeholder'),
-    stepText: (k, state) => t(`js.figures-sheet.step.${k}.${state === 'done' ? 'done' : 'now'}`),
-    quoteText: q => (q.text ? t('js.figures-sheet.quoteN', { n: q.n, text: q.text }) : t('js.figures-sheet.questionN', { n: q.n })),
-    change: changeHtml,
-    changeLinks: x => (!x.change.first && x.change.ids && x.change.ids.length ? `<a href="#fg-items" data-c="act" data-act="show" data-turn="${esc(x.id)}">${esc(t('js.figures-sheet.showMe'))}</a>` : ''),
-    note: x => (x.note === 'starter' ? `<span>${esc(t('js.figures-sheet.starterDone'))}</span>` : ''),
-    extra: x => (x.failed && !x.starter && empty() && ['resting', 'timeout', 'busy', 'error', 'restart'].includes(x.failed)
-      ? `<button type="button" class="btn btn-sm" data-c="act" data-act="starter" data-turn="${esc(x.id)}">${esc(t('js.figures-sheet.starter'))}</button>` : ''),
+    change: x => (x.change && x.change.kind === 'figures' ? changeHtml(x) : undefined),
+    changeLinks: x => (mine(x) && !x.change.first && x.change.ids && x.change.ids.length ? `<a href="#fg-items" data-c="act" data-act="show" data-turn="${esc(x.id)}">${esc(t('js.figures-sheet.showMe'))}</a>` : ''),
+    note: x => (x.note && x.note.starter ? `<span>${esc(t('js.figures-sheet.starterDone'))}</span>` : ''),
+    extra: (x, c) => { const me = meOf(c, x); return x.failed && !x.starter && empty() && me && me.meta && me.meta.page && W && me.meta.page.sheetId === W.id && ['resting', 'timeout', 'busy', 'error', 'restart'].includes(x.failed)
+      ? `<button type="button" class="btn btn-sm" data-c="act" data-act="starter" data-turn="${esc(x.id)}">${esc(t('js.figures-sheet.starter'))}</button>` : ''; },
     async onAct(act, turn) {
       if (act === 'show') { if (turn && turn.change) marked = new Set(turn.change.ids || []); showMarked(); return null; }
       if (act === 'starter' && turn) {
-        try { const r = await api(`${chatUrl()}/starter`, { method: 'POST', body: { turnId: turn.id } }); W = r.worksheet; marked = new Set(); draw(); return r; }
+        try { const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act: 'starter' } }); marked = new Set(); await reload(); return r; }
         catch (e) { toast(e.message, { bad: true }); return null; }
       }
-      return null;
+      return undefined;
     },
     // A first draft marks nothing (every question is new); a later change marks the questions it added or changed.
-    onAnswer(x) { if (x.change) { marked = new Set(x.change.first ? [] : x.change.ids || []); quoted = ''; } reload(); },
-    onUndo(r) { if (r.worksheet) W = r.worksheet; marked = new Set(); draw(); },
+    onAnswer(x) { if (mine(x)) { marked = new Set(x.change.first ? [] : x.change.ids || []); quoted = ''; } reload(); },
+    onUndo() { marked = new Set(); reload(); },
     onQuote(q) { if (!q && quoted) { quoted = ''; draw(); } },
     onSync() { if (!busy) draw(); },
     onMode(mode) {
+      if (opener) { opener.setAttribute('aria-expanded', String(mode === 'open')); opener.classList.toggle('on', mode === 'open'); }
       if (mode !== 'open') { quoted = ''; }
       draw();
       api('/api/figures/prefs', { method: 'POST', body: { ai: mode === 'open' }, background: true }).catch(() => {});
     },
     // Open by itself on a laptop for a new, empty worksheet or test (the teacher's choice is remembered: Power with AI's
-    // old switch); a lesson's figure questions start by hand (the lesson editor sent them here), Oomba one tap away.
-    start: P.startAi || (P.ai && !LESSON && empty() && window.matchMedia('(min-width: 900px)').matches) ? 'open' : 'closed',
+    // old switch), and after "Describe what you need"; a lesson's figure questions start by hand, Oomba one tap away.
+    start: () => (P.startAi || new URLSearchParams(location.search).get('ai') === '1' || (P.ai && !LESSON && empty() && window.matchMedia('(min-width: 900px)').matches) ? 'open' : 'closed'),
   });
+  BUS.whenChat(c => { chat = c; if (opener) opener.addEventListener('click', () => c.setMode(c.state().mode === 'open' ? 'closed' : 'open')); });
 }
 async function boot() {
   shell();
   assignUi();
   lessonUi();
-  if (P.id) { try { W = (await api(`/api/figures/worksheets/${encodeURIComponent(P.id)}`)).worksheet; } catch (e) { toast(e.message, { bad: true }); } }
-  draw();
   chatUi();
+  if (P.id) { try { W = (await api(`/api/figures/worksheets/${encodeURIComponent(P.id)}`)).worksheet; } catch (e) { toast(e.message, { bad: true }); } }
+  BUS.setPage(BUS.page());   // the "Sees:" line takes the worksheet's title
+  draw();
   app.addEventListener('click', e => {
     const tb = e.target.closest('[data-tab]'); if (tb) { tab = tb.dataset.tab; draw(); return; }
     const hb = e.target.closest('[data-half]'); if (hb) { half = hb.dataset.half; draw(); return; }

@@ -2,6 +2,11 @@
 // text"). The page streams the mic as 16-bit mono PCM over a WebSocket to this relay (same origin: the key never leaves
 // the server and the CSP is unchanged); the relay forwards it to the provider's realtime API (stt.js openRealtime) and
 // sends back the words so far, always tidied and with rude words starred (never a raw piece from the provider).
+// - The teacher allowance (docs/decisions.md "Oomba teaching companion"): /api/companion/listen streams a teacher's
+//   words into Oomba's message box, for Teacher plan staff only (services/companion-settings.js companionFor: the
+//   toolAccess rule and the school's companion switch), with the same caps as the Studio (one live mic per account,
+//   clips a minute and a day, the site's minutes, the AI spending caps). It is its own route with its own gate: the
+//   kid rules below (a real account, the game's owner, the Builder on) are not changed or loosened by it.
 // - The same rules as POST /api/studio/:id/transcribe: a real kid account, the game's owner (or an admin), the Builder
 //   on for the account, clips a minute (the same bucket), clips a day, the site's minutes and the AI spending caps.
 //   Refusals before the upgrade are plain HTTP errors; the rest come as a message the page can show in the kid's
@@ -24,6 +29,7 @@ import { allow } from './ratelimit.js';
 import * as sttUsage from './stt-usage.js';
 import { liveEnabled, openRealtime, SttError, RATE } from './stt.js';
 import { allowanceFor } from '../builder/usage.js';
+import { companionFor } from './companion-settings.js';
 import { lifecycle } from './health.js';
 import { log } from './log.js';
 import { q } from '../db.js';
@@ -71,6 +77,32 @@ export function gate(req, id) {
   return { user, game };
 }
 
+/** The companion's live mic (a teacher's words into Oomba's box): its own path and gate. */
+export const COMPANION_PATH = /^\/api\/companion\/listen$/;
+/** The key its sessions are kept under in stt_live (no game: the teacher's own message box). */
+export const COMPANION_KEY = 'companion';
+export function teacherGate(req) {
+  if (lifecycle.draining || config.maintenance || config.movedTo) return { status: 503, why: 'closed' };
+  if (!originOk(req)) return { status: 403, why: 'origin' };
+  const { u: user } = userFromRequest(req);
+  if (!user) return { status: 401, why: 'signed out' };
+  if (user.is_guest) return { status: 403, why: 'guest' };
+  if (!liveEnabled()) return { status: 404, why: 'live off' };
+  if (!companionFor(user)) return { status: 404, why: 'no companion' };   // students, kids, staff without the plan
+  return { user, game: { id: COMPANION_KEY } };
+}
+export const companionRoute = {
+  name: 'stt-companion',
+  match: COMPANION_PATH,
+  handle(req, socket, head) {
+    if (!wss) wss = new WebSocketServer({ noServer: true, maxPayload: MAX_FRAME, perMessageDeflate: false, clientTracking: false });
+    let g;
+    try { g = teacherGate(req); } catch { return refuse(socket, 500); }
+    if (g.status) { hooks.log('info', 'live mic refused', { status: g.status, why: g.why || '' }); return refuse(socket, g.status); }
+    wss.handleUpgrade(req, socket, head, ws => session(ws, req, g.user, g.game, { teacher: true }));
+  },
+};
+
 /** The live mic's route for the one upgrade listener (services/upgrade.js). */
 export const route = {
   name: 'stt',
@@ -86,7 +118,7 @@ export const route = {
 
 /** Listen for live mic sessions only (tests; server/index.js attaches every route at once). Other upgrades: 404. */
 export function attachLive(server) {
-  attachUpgrades(server, [route]);
+  attachUpgrades(server, [route, companionRoute]);
   return wss;
 }
 
@@ -98,16 +130,16 @@ export function drainLive() {
 }
 export const openCount = () => open.size;
 
-function session(ws, req, user, game) {
+function session(ws, req, user, game, { teacher = false } = {}) {
   const locale = pickLocale({ cookie: readCookie(req, LANG_COOKIE), user, acceptLanguage: req.headers['accept-language'] }).locale;
   const t = tFor(locale);
   const send = obj => { if (ws.readyState === 1) ws.send(JSON.stringify(obj)); };
   const refuseWith = (code, key, closeCode) => { send({ type: 'error', code, error: t(key), fallback: false }); ws.close(closeCode); };
   // The Builder is off for this account: no voice leaves the site (the page has no mic then; this is the guard).
-  if (!user.builder_enabled) return refuseWith('builder_off', 'studio.api.buildingOff', 4403);
+  if (!teacher && !user.builder_enabled) return refuseWith('builder_off', 'studio.api.buildingOff', 4403);
   if (open.has(user.id)) return refuseWith('busy', 'studio.mic.oneAtATime', 4409);
   if (!allow(`stt:${user.id}`, config.sttPerMinute, 60e3)) return refuseWith('fast', 'studio.mic.tooFast', 4429);
-  const pool = allowanceFor(user).pool;
+  const pool = teacher ? 'free' : allowanceFor(user).pool;
   const why = sttUsage.blocked(user.id, pool);
   if (why === 'daily') return refuseWith('daily', 'studio.mic.daily', 4429);
   if (why) return refuseWith('site', 'studio.mic.busy', 4503);

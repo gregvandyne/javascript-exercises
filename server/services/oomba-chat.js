@@ -120,12 +120,13 @@ export function view(sid, row) {
   return { id: row.id, turns, pending };
 }
 
-/** The conversation the page shows. Seeing it also marks how its finished turns ended as seen. -> { ok, chat } | fail */
-export function current(u, sid, key) {
+/** The conversation the page shows. Seeing it also marks how its finished turns ended as seen (unless see: false, a
+ *  page peeking in the background). -> { ok, chat } | fail */
+export function current(u, sid, key, { see = true } = {}) {
   const s = surfaceOf(sid); if (!s || !u || !s.may(u)) return fail('notFound');
   const ctx = s.context(u, key); if (!ctx) return fail('notFound');
   const row = chatRow(u, sid, key);
-  if (row) q.run("UPDATE oomba_turns SET seen_at=? WHERE chat_id=? AND status IN ('done','failed') AND seen_at IS NULL", now(), row.id);
+  if (row && see) q.run("UPDATE oomba_turns SET seen_at=? WHERE chat_id=? AND status IN ('done','failed') AND seen_at IS NULL", now(), row.id);
   return ok({ chat: view(sid, row) });
 }
 

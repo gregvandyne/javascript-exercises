@@ -1,6 +1,6 @@
 // Oomba, the teaching companion's API (services/companion.js; docs/decisions.md "Oomba teaching companion"). Teacher plan
 // staff only (companionFor); everyone else gets the normal 404, never an upsell.
-//   GET  /api/companion/chat               the conversation ({ chat, web, webAllowed })
+//   GET  /api/companion/chat?peek=1        the conversation ({ chat, web, webAllowed, unseen, mic, live }); peek: endings stay unseen
 //   POST /api/companion/chat               a message ({ text, page, file?, retry? }) -> a job (services/oomba-chat.js)
 //   POST /api/companion/chat/undo          Undo a change Oomba made ({ turnId })
 //   POST /api/companion/chat/act           a tap on a card ({ turnId, act: 'apply' | 'decline' | 'handoff' })
@@ -18,8 +18,9 @@ import * as CO from '../services/companion.js';
 import * as CS from '../services/companion-settings.js';
 import { FILE_LIMITS, kindOf, readLessonFile, scrub, screenLesson, studentNames } from '../builder/lesson.js';
 import { cleanJpeg, jpegSize, PhotoError } from '../services/photos.js';
-import { sttEnabled, transcribe, sniff, baseMime, MIMES, KINDS, SttError, clipSeconds, countedSeconds } from '../services/stt.js';
+import { sttEnabled, liveEnabled, RATE, transcribe, sniff, baseMime, MIMES, KINDS, SttError, clipSeconds, countedSeconds } from '../services/stt.js';
 import * as sttUsage from '../services/stt-usage.js';
+import { consumeFallback, COMPANION_KEY } from '../services/stt-live.js';
 import { audit } from '../db.js';
 
 export const router = Router();
@@ -30,10 +31,10 @@ const fail = (req, res, r) => res.status(STATUS[r.code] || 400).json({ error: re
 /** Only for Teacher plan staff: anyone else gets a 404 before anything is read. */
 const may = (req, res, next) => (req.user && CO.companionFor(req.user) ? next() : res.status(404).json({ error: req.t('errors.api.notFound'), code: 'notFound' }));
 
-router.get('/api/companion/chat', may, (req, res) => { const r = CO.current(req.user); return r.ok ? res.json({ ...r, mic: sttEnabled() }) : fail(req, res, r); });
+router.get('/api/companion/chat', may, (req, res) => { const r = CO.current(req.user, { peek: req.query.peek === '1' }); return r.ok ? res.json({ ...r, mic: sttEnabled(), live: liveEnabled(), ...(liveEnabled() ? { rate: RATE[config.sttProvider], maxMs: config.sttMaxSeconds * 1000 } : {}) }) : fail(req, res, r); });
 router.post('/api/companion/chat', may, rateLimit('companion-ai', 120, 3600e3), (req, res) => {
   const b = body(req);
-  const r = CO.send(req.user, { text: b.text, page: b.page, file: typeof b.file === 'string' ? b.file : null, lang: req.locale || 'en', retry: typeof b.retry === 'string' ? b.retry : null });
+  const r = CO.send(req.user, { text: b.text, page: b.page, board: b.board && typeof b.board === 'object' ? b.board : null, quote: typeof b.quote === 'string' ? b.quote : null, file: typeof b.file === 'string' ? b.file : null, lang: req.locale || 'en', retry: typeof b.retry === 'string' ? b.retry : null });
   return r.ok ? res.json({ ok: true, chat: r.chat }) : fail(req, res, r);
 });
 router.post('/api/companion/chat/undo', may, rateLimit('companion-act', 300, 3600e3), (req, res) => {
@@ -115,8 +116,10 @@ router.post('/api/companion/transcribe', may, (req, res, next) => {
   const ms = Number(req.get('x-clip-ms'));
   if (!req.get('x-clip-ms') || !Number.isFinite(ms) || ms < 0) return res.status(400).json({ error: req.t('js.companion.mic.failed'), code: 'bad' });
   if (ms > config.sttMaxSeconds * 1000 + 2000) return res.status(413).json({ error: req.t('js.companion.mic.tooLong'), code: 'too_long' });
-  if (!allow(`stt:${req.user.id}`, config.sttPerMinute, 60e3)) return res.status(429).json({ error: req.t('js.companion.mic.tooFast'), code: 'fast' });
-  const why = sttUsage.blocked(req.user.id, 'free');
+  // X-Live-Id: the clip of a live session that failed (services/stt-live.js), uploaded once instead: already counted.
+  req.sttFromLive = !!req.get('x-live-id') && consumeFallback(req.get('x-live-id'), req.user.id, COMPANION_KEY);
+  if (!req.sttFromLive && !allow(`stt:${req.user.id}`, config.sttPerMinute, 60e3)) return res.status(429).json({ error: req.t('js.companion.mic.tooFast'), code: 'fast' });
+  const why = req.sttFromLive ? sttUsage.siteBlocked('free') : sttUsage.blocked(req.user.id, 'free');
   if (why === 'daily') return res.status(429).json({ error: req.t('js.companion.mic.daily'), code: 'daily' });
   if (why) return res.status(503).json({ error: req.t('js.companion.mic.busy'), code: 'site' });
   next();
@@ -127,7 +130,7 @@ router.post('/api/companion/transcribe', may, (req, res, next) => {
   const size = bytes.length, real = clipSeconds(bytes);
   if (real != null && real > config.sttMaxSeconds + 2) { bytes = null; return res.status(413).json({ error: req.t('js.companion.mic.tooLong'), code: 'too_long' }); }
   const seconds = countedSeconds(bytes, +req.get('x-clip-ms'));
-  sttUsage.record(req.user.id, seconds, config.sttProvider, 'free');
+  if (req.sttFromLive) sttUsage.addSeconds(req.user.id, seconds, config.sttProvider, 'free'); else sttUsage.record(req.user.id, seconds, config.sttProvider, 'free');
   try {
     const r = await transcribe({ bytes, locale: req.locale || 'en' });
     bytes = null;
