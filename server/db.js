@@ -1179,6 +1179,10 @@ export const MIGRATIONS = [
   ['0100_figures_lesson_sets', `
     ALTER TABLE question_sets ADD COLUMN lesson_id TEXT;
     CREATE INDEX IF NOT EXISTS idx_question_sets_lesson ON question_sets(lesson_id);`],
+  // Figures opens to all teachers (docs/decisions.md): the language a worksheet, test or lesson set was made in, so its
+  // generators deal their questions in it. Every set before this one was English.
+  ['0101_figures_lang', `
+    ALTER TABLE question_sets ADD COLUMN lang TEXT NOT NULL DEFAULT 'en';`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

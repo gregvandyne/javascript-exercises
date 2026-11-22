@@ -211,10 +211,12 @@ router.post('/api/figures/gen', rateLimit('figures-gen', 900, 3600e3), (req, res
   const gid = typeof b.gen === 'string' && F.genOf(b.gen) ? b.gen : K && K.gens.length ? K.gens[Math.floor(Math.random() * K.gens.length)].id : null;
   if (!gid) return fail(req, res, { code: 'noGen' });
   const seed = Number.isInteger(b.seed) && b.seed > 0 && b.seed < 1e9 ? b.seed : F.newSeed();
+  // The words: the language of the worksheet the editor was opened from (ws), else the page's.
+  const ws = typeof b.ws === 'string' ? F.ownWorksheet(req.user, b.ws) : null, lang = ws ? ws.lang : F.genLang(req.locale);
   // A saved question's figure ({ gen, seed, data }, the editor opened from a worksheet): what its generator dealt for it,
   // an earlier definition (PAST_GENS) included, the same lookup the server uses when it saves (F.dealtFor).
   const saved = b.gen === gid && b.data && typeof b.data === 'object' && !Array.isArray(b.data) ? b.data : undefined;
-  const g = saved ? F.dealtFor(gid, seed, saved) : F.generate(gid, seed);
+  const g = saved ? F.dealtFor(gid, seed, saved, undefined, lang) : F.generate(gid, seed, undefined, null, lang);
   return g ? res.json({ ok: true, gen: gid, seed, ...g }) : fail(req, res, { code: 'noGen' });
 });
 router.get('/api/figures/presets/:kind', (req, res) => res.json({ ok: true, presets: F.listPresets(req.user, req.params.kind) }));
@@ -223,7 +225,7 @@ router.post('/api/figures/presets/:id/delete', (req, res) => { const r = F.delet
 router.post('/api/figures/prefs', (req, res) => { const r = F.setAiPref(req.user, !!body(req).ai); return r.ok ? res.json(r) : fail(req, res, r); });
 
 // The browser makes a worksheet or a test; a lesson set is made only from its lesson's step form (routes/lessons.js).
-router.post('/api/figures/worksheets', rateLimit('figures-save', 300, 3600e3), (req, res) => { const b = body(req); sendSheet(req, res, F.createWorksheet(req.user, { title: b.title, grade: b.grade, items: b.items, purpose: b.purpose === 'test' ? 'test' : 'worksheet' })); });
+router.post('/api/figures/worksheets', rateLimit('figures-save', 300, 3600e3), (req, res) => { const b = body(req); sendSheet(req, res, F.createWorksheet(req.user, { title: b.title, grade: b.grade, items: b.items, purpose: b.purpose === 'test' ? 'test' : 'worksheet', lang: F.genLang(req.locale) })); });
 router.get('/api/figures/worksheets/:id', (req, res) => { const w = view(req, req.params.id); return w ? res.json({ ok: true, worksheet: w }) : fail(req, res, { code: 'notFound' }); });
 router.post('/api/figures/worksheets/:id', rateLimit('figures-save', 300, 3600e3), (req, res) => sendSheet(req, res, F.updateWorksheet(req.user, req.params.id, body(req))));
 router.post('/api/figures/worksheets/:id/delete', (req, res) => { const r = F.deleteWorksheet(req.user, req.params.id); return r.ok ? res.json(r) : fail(req, res, r); });

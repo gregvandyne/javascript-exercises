@@ -346,7 +346,7 @@ const ACTS = {
     }
     btn.disabled = true;
     try {
-      const g = await api('/api/figures/gen', { method: 'POST', body: { kind: K.id } });
+      const g = await api('/api/figures/gen', { method: 'POST', body: { kind: K.id, ...(S && S.ws ? { ws: S.ws } : {}) } });
       Object.assign(st, { data: g.data, hide: g.hide, question: g.question, gen: g.gen, seed: g.seed, answerKey: null, genResult: { data: clone(g.data), answer: g.answer, work: g.work } });
       fields(); render(); commit(true);
     } catch (e) { toast(e.message, { bad: true }); } finally { btn.disabled = false; }
@@ -497,5 +497,5 @@ if (DRAW) {
 // A worksheet question from a generator: what the generator says, so its answer and worked lines show (the server
 // works them out again when it is saved). The figure goes too, so a question saved with an earlier definition of its
 // generator (PAST_GENS in figures-catalog.js) finds that definition, as the server does when it saves (dealtFor).
-if (S && S.gen && S.seed) api('/api/figures/gen', { method: 'POST', body: { gen: S.gen, seed: S.seed, data: S.data } }).then(g => { if (canon(g.data) === canon(st.data)) { st.genResult = { data: g.data, answer: g.answer, work: g.work }; hist.settle(); answers(); } }).catch(() => {});
+if (S && S.gen && S.seed) api('/api/figures/gen', { method: 'POST', body: { gen: S.gen, seed: S.seed, data: S.data, ws: S.ws } }).then(g => { if (canon(g.data) === canon(st.data)) { st.genResult = { data: g.data, answer: g.answer, work: g.work }; hist.settle(); answers(); } }).catch(() => {});
 fields(); render();

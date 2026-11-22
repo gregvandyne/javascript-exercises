@@ -133,7 +133,7 @@ test('POST /api/figures/gen with a saved figure finds the earlier definition tha
   assert.equal(J(now.json.data), J(F.generate('angles', seed).data), 'without a figure: the current definition');
   const other = await api('/api/figures/gen', { body: { gen: 'angles', seed, data: { rays: [0, 33, 90] } } });
   assert.equal(J(other.json.data), J(F.generate('angles', seed).data), 'a figure no definition dealt: the current one (the editor then shows no generator answer)');
-  assert.match(fs.readFileSync(path.join(ROOT, 'public/js/figures-editor.js'), 'utf8'), /body: \{ gen: S\.gen, seed: S\.seed, data: S\.data \}/);
+  assert.match(fs.readFileSync(path.join(ROOT, 'public/js/figures-editor.js'), 'utf8'), /body: \{ gen: S\.gen, seed: S\.seed, data: S\.data, ws: S\.ws \}/);
 });
 
 test('card pictures: wide examples are stacked (two or three of them), every picture is whole and drawable', () => {

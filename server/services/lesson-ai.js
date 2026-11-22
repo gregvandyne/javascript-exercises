@@ -43,7 +43,7 @@ const schemaWithFigures = () => {
 };
 /** The figure catalog as the prompt lists it (services/figures.js catalogLine). */
 const figureLines = figures => figures.slice(0, 120).map(F.catalogLine).join('\n');
-const LANGS = { en: 'English (US)', 'en-GB': 'British English', pt: 'Brazilian Portuguese', fr: 'French', es: 'Spanish', de: 'German', he: 'Hebrew', ja: 'Japanese', ar: 'Arabic', ru: 'Russian', it: 'Italian', 'zh-Hant': 'Traditional Chinese', nl: 'Dutch' };
+const LANGS = F.LANG_NAMES;
 
 /** catalog: [{ id, title, description, tags }] games the teacher may use. figures: the figure catalog (F.figureCatalog)
  *  for a teacher who may use Figures, else [] (no figure steps). Returns { draft, ai: boolean }; a figures step of the
@@ -52,7 +52,9 @@ export async function draftLesson({ topic, grade = '', subject = '', minutes = 4
   const ids = new Set(catalog.map(g => g.id));
   const withFigs = Array.isArray(figures) && figures.length > 0;
   const client = client0();
-  if (!client) return { draft: templateDraft({ topic, grade, subject, minutes }, catalog, t, { figures }), ai: false };
+  // Figure questions dealt by a generator (the template's, a repair's) speak the teacher's language too.
+  const figLang = F.genLang(localeInfo(locale).code);
+  if (!client) return { draft: templateDraft({ topic, grade, subject, minutes }, catalog, t, { figures, lang: figLang }), ai: false };
   const lang = LANGS[localeInfo(locale).code] || 'English (US)';
   const games = catalog.slice(0, 80).map(g => `- ${g.id}: ${g.title}${g.description ? `: ${String(g.description).slice(0, 120)}` : ''}${g.tags ? ` [${String(g.tags).slice(0, 60)}]` : ''}`).join('\n');
   const res = await client.messages.create({
@@ -73,10 +75,10 @@ Objectives: 2 to 4 short lines, one per line.`,
   aiBudget.recordUsage(res.model || config.builderModel, res.usage);
   const block = (res.content || []).find(c => c.type === 'text');
   let d; try { d = JSON.parse(block ? block.text : '{}'); } catch { d = null; }
-  if (!d || !Array.isArray(d.steps)) return { draft: templateDraft({ topic, grade, subject, minutes }, catalog, t, { figures }), ai: false };
+  if (!d || !Array.isArray(d.steps)) return { draft: templateDraft({ topic, grade, subject, minutes }, catalog, t, { figures, lang: figLang }), ai: false };
   d.steps = d.steps.slice(0, 10).map(s => ({ ...s, gameId: s.kind === 'game' && ids.has(s.gameId) ? s.gameId : '' }))
     .map(s => (s.kind === 'game' && !s.gameId ? { ...s, kind: 'text' } : s))
-    .map((s, i) => figureStep(s, i, withFigs ? figures : []))
+    .map((s, i) => figureStep(s, i, withFigs ? figures : [], figLang))
     .map(({ figures: f, ...s }) => (s.kind === 'figures' ? { ...s, figures: f } : s));
   return { draft: d, ai: true };
 }
@@ -85,7 +87,7 @@ Objectives: 2 to 4 short lines, one per line.`,
  *  the catalog given; data that fails OF.check, a wrong answerKey or bad choices: its kind's generator instead); a
  *  question whose kind is not in the catalog loses its figure and keeps its words. No figure left: the step becomes a
  *  written question (the kept questions) or, with none, a text step. Every repair is logged (step, kind, why). */
-export function figureStep(s, i, figures = []) {
+export function figureStep(s, i, figures = [], lang = 'en') {
   if (!s || s.kind !== 'figures') return s;
   const allowed = new Set(figures.map(c => c.id)), list = Array.isArray(s.figures) ? s.figures.slice(0, F.LIMITS.draftMax) : [];
   const keep = [], kept = [];
@@ -102,7 +104,7 @@ export function figureStep(s, i, figures = []) {
   // F.repairDraft logs through its own hook: here each of its repairs is this step's.
   const before = F.hooks.log; F.hooks.log = f => logRepair({ step: i, ...f });
   let r;
-  try { r = F.repairDraft(keep, { max: F.LIMITS.draftMax }); } finally { F.hooks.log = before; }
+  try { r = F.repairDraft(keep, { max: F.LIMITS.draftMax, lang }); } finally { F.hooks.log = before; }
   if (r.items.length) return { ...s, figures: r.items, body: String(s.body || '') };
   if (kept.length) return { ...s, kind: 'question', body: [String(s.body || '').trim(), ...kept].filter(Boolean).join('\n\n'), figures: [] };
   logRepair({ step: i, kind: '', action: 'step became text', why: 'no figure question could be used' });
@@ -117,7 +119,7 @@ const wordsOf = s => String(s || '').toLowerCase().split(/[^\p{L}\p{N}]+/u).filt
 /** A plain starting point without the AI: warm-up, a matching game if one is found, a build activity, an exit ticket.
  *  A game matches on its tags first, then its title (topic words before subject words), never on its description alone.
  *  Step minutes are scaled to the length asked for (weights 1 · 2 · 4 · 1). */
-export function templateDraft({ topic, grade, subject, minutes = 40 }, catalog = [], t = tEn, { figures = [] } = {}) {
+export function templateDraft({ topic, grade, subject, minutes = 40 }, catalog = [], t = tEn, { figures = [], lang = 'en' } = {}) {
   const find = words => {
     if (!words.length) return null;
     const hit = field => catalog.find(g => wordsOf(g[field]).some(w => words.includes(w)));
@@ -130,7 +132,7 @@ export function templateDraft({ topic, grade, subject, minutes = 40 }, catalog =
     { kind: 'build', title: t('lessons.template.build'), body: t('lessons.template.buildText', { topic }), w: 4, gameId: '' },
     // A teacher Figures lets in, whose topic points at figures (services/figures.js templateTest: its words, the grade band)
     // gets a starter Figure step dealt from the generators.
-    ...figureTemplate({ topic, subject, grade }, figures, t),
+    ...figureTemplate({ topic, subject, grade }, figures, t, lang),
     { kind: 'question', title: t('lessons.template.exit'), body: t('lessons.template.exitText', { topic }), w: 1, gameId: '' },
   ].filter(Boolean);
   const total = Math.max(steps.length, Math.round(+minutes || 40)), weight = steps.reduce((n, s) => n + s.w, 0);
@@ -140,8 +142,8 @@ export function templateDraft({ topic, grade, subject, minutes = 40 }, catalog =
   return { title: String(topic || '').slice(0, 100), summary: '', objectives: '', steps: steps.map(({ w, ...s }) => s), grade, subject };
 }
 /** The template's Figure step: only when the figure catalog is given and the topic's words name a figure. */
-function figureTemplate({ topic, subject, grade }, figures, t) {
+function figureTemplate({ topic, subject, grade }, figures, t, lang = 'en') {
   if (!Array.isArray(figures) || !figures.length || !F.topicKinds(`${topic || ''} ${subject || ''}`).length) return [];
-  const items = F.templateTest({ topic: `${topic || ''} ${subject || ''}`, grade, count: 4 }).filter(it => figures.some(c => c.id === it.kind));
+  const items = F.templateTest({ topic: `${topic || ''} ${subject || ''}`, grade, count: 4, lang }).filter(it => figures.some(c => c.id === it.kind));
   return items.length ? [{ kind: 'figures', title: t('lessons.template.figures'), body: t('lessons.template.figuresText'), w: 2, gameId: '', figures: items }] : [];
 }
