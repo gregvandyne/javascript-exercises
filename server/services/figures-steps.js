@@ -45,7 +45,9 @@ export function snapshot(u, worksheetId) {
     if (!a) { missing.push(i + 1); return; }
     const choice = a.type === 'choice';
     out.push({ kind: it.kind, data: it.data, hide: it.hide, question: it.question, answer: choice ? F.choiceText(a.choices, a.value) : it.answer, unit: a.unit || '', value: a.value, dp: Math.max(0, Math.min(6, a.dp | 0)), work: Array.isArray(it.work) ? it.work.slice(0, 8) : [],
-      type: choice ? 'choice' : 'number', ...(choice ? { choices: a.choices } : {}) });
+      type: choice ? 'choice' : 'number', ...(choice ? { choices: a.choices } : {}),
+      // Where it came from, for "Edit questions" on a lesson's Figure step (F.fromSnapshot); never sent to a student.
+      gen: it.gen || null, seed: it.seed || null, answerKey: it.answerKey || null });
   });
   if (missing.length) return fail('noAnswer', { questions: missing });
   return ok({ worksheet: w, items: out });
@@ -78,6 +80,83 @@ export function assignWorksheet(u, worksheetId, classId, { opensAt = null, dueAt
     audit(u.id, 'figures.assign', c.id, { worksheet: w.id, lesson: made.lesson.id, items: snap.items.length, show: !!showAnswers });
     return ok({ lesson: made.lesson, classLesson: a.classLesson, step: step.step });
   }); } catch (e) { if (e && e.r) return e.r; throw e; }
+}
+
+// ---------------------------------------------------------------- a lesson's Figure step (the lesson editor)
+// "Figure questions" is a step kind the lesson editor offers to Figures testers (the same gate as /figures: F.canMake,
+// the one place to open it to everyone). Its questions are edited in the Figures builder as a question set of purpose
+// 'lesson' (question_sets.lesson_id names the lesson); "Save to lesson" snapshots them into the step exactly as Assign
+// does, so the student page, marking, the gradebook and print are the same. A step whose students have started cannot
+// have its questions changed (their marks would no longer match): the teacher makes a copy of the lesson instead.
+const ownLessonSet = (u, setId, lessonId) => { const w = F.ownWorksheet(u, setId); return w && w.purpose === 'lesson' && w.lesson_id === lessonId ? w : null; };
+/** A new lesson set for a Figure step being added (from the step form). -> { ok, id } */
+export function newLessonSet(u, lessonId, { title = '' } = {}) {
+  const l = L.getLesson(lessonId);
+  if (!F.canMake(u) || !L.canEditLesson(u, l)) return fail('notFound');
+  return F.createWorksheet(u, { title: title || l.title, grade: l.grade, purpose: 'lesson', lessonId: l.id });
+}
+/** "Edit questions" on a Figure step: the set its questions are edited in, the step's own lesson set if it still
+ *  matches, else a new one made from the step's snapshot (a worksheet's Assign step, a copied lesson). -> { ok, id } */
+export function editStepSet(u, stepId) {
+  const s = L.getStep(stepId), l = s && L.getLesson(s.lesson_id);
+  if (!F.canMake(u) || !s || s.kind !== FIGURES_KIND || !L.canEditLesson(u, l)) return fail('notFound');
+  const own = s.set_id ? ownLessonSet(u, s.set_id, l.id) : null;
+  if (own) return ok({ id: own.id });
+  const items = itemsOf(s).map(it => F.fromSnapshot(it, s.of_version));
+  const r = F.createWorksheet(u, { title: s.title || l.title, grade: l.grade, purpose: 'lesson', lessonId: l.id, items: [] });
+  if (!r.ok) return r;
+  for (const raw of items) { const c = F.addItem(u, r.id, raw); if (!c.ok) F.addItem(u, r.id, F.starterItem(raw.kind) || raw); }
+  q.run('UPDATE lesson_steps SET set_id=? WHERE id=?', r.id, s.id);
+  return ok({ id: r.id });
+}
+/** "Save to lesson": the lesson set's questions as they are now become its Figure step (a new step the first time,
+ *  else that step's snapshot is replaced). Every question needs an answer, and a step students have started is kept.
+ *  -> { ok, lesson, step } | { ok: false, code: notFound | empty | noAnswer (questions) | started } */
+export function saveToLesson(u, setId) {
+  const w = F.ownWorksheet(u, setId); if (!w || w.purpose !== 'lesson') return fail('notFound');
+  const l = L.getLesson(w.lesson_id); if (!L.canEditLesson(u, l)) return fail('notFound');
+  const snap = snapshot(u, w.id); if (!snap.ok) return snap;
+  const step = q.get('SELECT * FROM lesson_steps WHERE lesson_id=? AND set_id=? AND kind=?', l.id, w.id, FIGURES_KIND);
+  if (step) {
+    if (L.stepWork(step.id)) return fail('started');
+    q.run('UPDATE lesson_steps SET items=?, of_version=?, title=? WHERE id=?', JSON.stringify(snap.items), w.of_version, step.title || w.title, step.id);
+    q.run('UPDATE lessons SET updated_at=? WHERE id=?', now(), l.id);
+    audit(u.id, 'figures.lessonStep.save', l.id, { step: step.id, items: snap.items.length });
+    return ok({ lesson: l, step: L.getStep(step.id) });
+  }
+  const r = L.addFiguresStep(u, l.id, { title: w.title, setId: w.id, items: snap.items, ofVersion: w.of_version });
+  if (!r.ok) return r;
+  audit(u.id, 'figures.lessonStep.add', l.id, { step: r.step.id, items: snap.items.length });
+  return ok({ lesson: l, step: r.step });
+}
+/** A Figure step of a lesson drafted with AI (services/lesson-ai.js: its questions already checked and repaired): its
+ *  lesson set and the step, saved at once like "Save to lesson" (the teacher edits the whole draft before using it).
+ *  -> { ok, step } | fail */
+export function draftedStep(u, lessonId, s) {
+  const items = Array.isArray(s && s.figures) ? s.figures : [];
+  if (!items.length || !F.canMake(u)) return fail('empty');
+  const r = F.createWorksheet(u, { title: String(s.title || '').slice(0, 80), purpose: 'lesson', lessonId, items });
+  if (!r.ok) return r;
+  const saved = saveToLesson(u, r.id);
+  if (!saved.ok) return saved;
+  q.run('UPDATE lesson_steps SET body=?, minutes=? WHERE id=?', String(s.body || '').slice(0, 4000), Math.max(0, Math.min(240, Math.round(+s.minutes || 0))), saved.step.id);
+  return ok({ step: L.getStep(saved.step.id) });
+}
+/** Where a set's builder goes back to: its lesson (a lesson set whose lesson the teacher can still edit), else null. */
+export function lessonOfSet(u, w) {
+  if (!w || w.purpose !== 'lesson' || !w.lesson_id) return null;
+  const l = L.getLesson(w.lesson_id); if (!L.canEditLesson(u, l)) return null;
+  const step = q.get('SELECT id FROM lesson_steps WHERE lesson_id=? AND set_id=? AND kind=?', l.id, w.id, FIGURES_KIND);
+  return { id: l.id, title: l.title, stepId: step ? step.id : null, started: step ? L.stepWork(step.id) > 0 : false };
+}
+/** A Figure step's questions as print takes them (services/figures.js printHtml). */
+export const printItems = step => itemsOf(step).map(it => ({ kind: it.kind, data: it.data, hide: it.hide === undefined ? false : it.hide, question: String(it.question || ''), answer: String(it.answer || ''),
+  work: Array.isArray(it.work) ? it.work.map(String) : [], answerType: isChoice(it) ? 'choice' : 'number', choices: isChoice(it) ? it.choices.map(String) : [], correct: isChoice(it) ? it.value : null }));
+/** The printable student sheet (and the answer key) of a Figure step: for the lesson's editors. -> html | null */
+export function stepPrintHtml(u, stepId, { t = tEn, lang = 'en', dir = 'ltr', key = false } = {}) {
+  const s = L.getStep(stepId), l = s && L.getLesson(s.lesson_id);
+  if (!s || s.kind !== FIGURES_KIND || !L.canEditLesson(u, l)) return null;
+  return F.printHtml({ title: s.title || l.title, of_version: s.of_version }, printItems(s), { t, lang, dir, key });
 }
 
 // ---------------------------------------------------------------- reading a step

@@ -3,7 +3,7 @@
 // one figures step (a snapshot: later worksheet edits never change it); only testers can assign; the class's students
 // answer under each figure, save, hand in once, and are marked with a tolerance from the stored dp; the gradebook and
 // the Score count it like a quiz; answers and worked lines never reach a student before the teacher allows it, the due
-// date is over and the student handed in; the teacher's switch; the lesson editor never offers the step kind.
+// date is over and the student handed in; the teacher's switch; the step editor offers the kind only behind the gate.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -266,11 +266,13 @@ test('the figure SVG a student gets: hidden parts left out and no data-* values'
   assert.doesNotMatch(svg, /data-(?!of=)/);
 });
 
-test('the lesson editor never offers a figures step; its kind stays; a copy keeps the snapshot', async () => {
+test('the step editor offers Figure questions only behind the Figures gate; its kind stays; a copy keeps the snapshot', async () => {
   const { step } = await assigned({ dueAt: isoDay(Date.now() + 7 * DAY), showAnswers: true });
   const ed = await as(boss)(`/teach/lessons/${step.lesson_id}`);
   assert.equal(ed.status, 200);
-  assert.doesNotMatch(ed.text, /<option value="figures"/);
+  // A Figures tester may add a "Figure questions" step (tests/unit/figures-lesson-step.test.js); with FIGURES=0 it is gone.
+  assert.match(ed.text, /<option value="figures"/);
+  await withFlags({ figures: false }, async () => assert.doesNotMatch((await as(boss)(`/teach/lessons/${step.lesson_id}`)).text, /<option value="figures"/));
   assert.match(ed.text, /3 figure questions/);
   assert.equal(L.addStep(boss, step.lesson_id, { kind: 'figures', body: 'x' }).code, 'stepKind');
   assert.equal(L.updateStep(boss, step.id, { kind: 'text', body: 'x' }).code, 'stepKind');

@@ -3739,7 +3739,26 @@
       "removeOption": "Optie {letter} verwijderen",
       "fromFigure": "De goede optie wordt uit de figuur afgeleid. Verander een optie of vink een andere aan om zelf te kiezen.",
       "needTwo": "Schrijf minstens 2 opties.",
-      "needRight": "Vink de juiste optie aan."
+      "needRight": "Vink de juiste optie aan.",
+      "testAiTitle": "Een toets als concept",
+      "topicLabel": "Onderwerp",
+      "topicHint": "Bijvoorbeeld: oppervlakte van rechthoeken en driehoeken",
+      "subject": "Vak",
+      "anySubject": "Elk vak",
+      "draftTest": "Concept maken",
+      "testBudget": "Gemaakt met de vraaggeneratoren, dus je kunt voor elke vraag nieuwe getallen trekken. Telt mee voor de AI-limiet; zonder AI wordt een starttoets getrokken.",
+      "byHand": "Met de hand: kies een vak, voeg vragen bij figuren toe en stel daarna elke figuur en het antwoord in.",
+      "checkFirst": "Controleer elke vraag voordat je hem toewijst.",
+      "topicFirst": "Schrijf eerst het onderwerp van de toets.",
+      "saveLesson": "Opslaan in de les",
+      "saveLessonHint": "Zet deze vragen in {title}. In de les verandert niets tot je opslaat.",
+      "saveLessonAgain": "Opnieuw opslaan vervangt de vragen in {title}.",
+      "lessonStarted": "Leerlingen zijn aan deze stap begonnen, dus de vragen blijven zoals ze zijn. Maak een kopie van de les om ze te veranderen.",
+      "backToLesson": "Terug naar de les",
+      "subjects": "Vakken",
+      "more": "Meer",
+      "swapLabel": "Figuur vervangen door",
+      "swap": "Figuur vervangen"
     }
   },
   "favorites": {
@@ -4368,7 +4387,8 @@
       "text": "Lees of doe",
       "question": "Beantwoord een vraag",
       "quiz": "Quizvragen beantwoorden",
-      "figures": "Vragen over figuren beantwoorden"
+      "figures": "Vragen over figuren beantwoorden",
+      "figureStep": "Vragen bij figuren"
     },
     "library": {
       "title": "Lessenbibliotheek",
@@ -4447,7 +4467,14 @@
       "newGameLink": "Maak een nieuwe game voor leerlingen",
       "deleteWorkConfirm": "Deze stap verwijderen? Het werk van {n, plural, one {# leerling} other {# leerlingen}} aan deze stap wordt verwijderd. Dit kan niet ongedaan worden gemaakt.",
       "liveGames": "Live klassenspellen (jij leidt ze)",
-      "otherGames": "Meer spellen"
+      "otherGames": "Meer spellen",
+      "bodyFigures": "Instructies voor leerlingen (optioneel)",
+      "figuresHint": "Daarna opent de figurenbouwer: kies figuren, stel getallen en antwoorden in en kies dan Opslaan in de les.",
+      "editFigures": "Vragen bewerken",
+      "printFigures": "Afdrukken",
+      "figuresStarted": "Leerlingen zijn aan deze stap begonnen, dus de vragen blijven zoals ze zijn.",
+      "more": "Meer",
+      "figuresSaved": "Vragen bij figuren opgeslagen in de les."
     },
     "ai": {
       "button": "Opzet met AI",
@@ -4526,7 +4553,9 @@
       "build": "Bouw je eigen game",
       "buildText": "Een quizgame met 6 vragen over {topic}",
       "exit": "Exitticket",
-      "exitText": "In twee of drie zinnen: wat is het belangrijkste dat je vandaag over {topic} hebt geleerd?"
+      "exitText": "In twee of drie zinnen: wat is het belangrijkste dat je vandaag over {topic} hebt geleerd?",
+      "figures": "Vragen bij figuren",
+      "figuresText": "Beantwoord de vraag onder elke figuur."
     },
     "errors": {
       "notFound": "We konden dat niet vinden, of je kunt het niet openen.",
@@ -12330,12 +12359,19 @@
       "search": "Figuren zoeken",
       "searchHint": "Figuren zoeken, zoals cilinder of boxplot",
       "count": "{count, plural, one {# figuur} other {# figuren}}",
-      "nothing": "Geen figuren gevonden. Probeer een ander woord of een andere groep."
+      "nothing": "Geen figuren gevonden. Probeer een ander woord of een andere groep.",
+      "buildTest": "Een toets maken",
+      "buildTestText": "Een hele toets met vragen bij figuren, als concept met AI of met de hand gebouwd.",
+      "isTest": "Toets"
     },
     "sheet": {
       "newTitle": "Nieuw werkblad",
       "crumb": "Werkbladmaker",
-      "untitled": "Werkblad zonder titel"
+      "untitled": "Werkblad zonder titel",
+      "untitledTest": "Toets zonder titel",
+      "newTest": "Nieuwe toets",
+      "crumbTest": "Toetsbouwer",
+      "crumbLesson": "Vragen bij figuren"
     },
     "editor": {
       "example": "Voorbeeld {n}"
@@ -12370,7 +12406,8 @@
       "name": "Geef het eerst een naam.",
       "brief": "Beschrijf het werkblad eerst in een paar woorden.",
       "names": "Laat namen van leerlingen uit de beschrijving: namen gaan nooit naar de AI.",
-      "sameChoices": "Twee opties zijn hetzelfde. Maak ze allemaal anders."
+      "sameChoices": "Twee opties zijn hetzelfde. Maak ze allemaal anders.",
+      "topic": "Schrijf eerst waar de toets over gaat."
     },
     "kinds": {
       "numberLine": {
@@ -12715,7 +12752,8 @@
         "noClass": "Kies een van je klassen.",
         "badDate": "Die datum klopt niet.",
         "dueBeforeOpen": "De inleverdatum ligt voor de startdatum.",
-        "needsDue": "Kies een inleverdatum om de antwoorden daarna te tonen."
+        "needsDue": "Kies een inleverdatum om de antwoorden daarna te tonen.",
+        "started": "Leerlingen zijn aan deze stap begonnen, dus de vragen blijven zoals ze zijn. Maak een kopie van de les om ze te veranderen."
       }
     }
   }

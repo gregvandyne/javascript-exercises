@@ -5,7 +5,8 @@
 //   GET  /figures                                  the menu: every kind as a card, the teacher's worksheets
 //   GET  /figures/thumb/<kind>.svg                 a card's picture (the kind's example, drawn on the server, cached)
 //   GET  /figures/:kind                            one kind's editor (?d= a figure's data, ?ws=&item= a worksheet question)
-//   GET  /figures/worksheets/new, /figures/worksheets/:id   the worksheet builder
+//   GET  /figures/worksheets/new, /figures/worksheets/:id   the worksheet builder (also a test's and a lesson step's)
+//   GET  /figures/tests/new                        "Build a test": the same builder for a test (purpose 'test')
 //   GET  /figures/worksheets/:id/print?key=0|1     the printable student sheet (and the answer key: its owner only)
 //   GET  /api/figures/state                        the teacher's worksheets
 //   POST /api/figures/gen                          a generator's question for a seed ({ gen, seed } or { kind })
@@ -17,6 +18,9 @@
 //   POST /api/figures/worksheets/:id/items         add a question ({ item } or { kind } for a starter)
 //   POST /api/figures/worksheets/:id/items/:item   change a question; .../delete, .../move ({ dir }), .../regen
 //   POST /api/figures/worksheets/:id/draft         "Power with AI" ({ brief, grade, count })
+//   POST /api/figures/worksheets/:id/draft-test    "Build a test with AI" ({ topic, grade, subject, count }): a test
+//   POST /api/figures/worksheets/:id/items/:item/swap   "Swap figure" ({ kind })
+//   POST /api/figures/worksheets/:id/save-to-lesson     a lesson set's questions become its lesson's Figure step
 //   POST /api/figures/worksheets/:id/assign        Assign to class ({ classId, opensAt, dueAt, showAnswers }): a lesson with
 //                                                  one figures step (services/figures-steps.js)
 import { Router } from 'express';
@@ -33,7 +37,7 @@ import { decodeData, SOON } from '../../public/js/figures-catalog.js';
 export const router = Router();
 const STATUS = { notFound: 404, tooMany: 409, fullSheet: 409, tooBig: 413 };
 /** Assign's own refusals (figures.assign.errors.*): which question has no answer, a class that isn't theirs, dates. */
-const ASSIGN_ERRORS = ['empty', 'noAnswer', 'noClass', 'badDate', 'dueBeforeOpen', 'needsDue'];
+const ASSIGN_ERRORS = ['empty', 'noAnswer', 'noClass', 'badDate', 'dueBeforeOpen', 'needsDue', 'started'];
 const fail = (req, res, r) => res.status(STATUS[r.code] || 400).json({ error: req.t(`figures.errors.${r.code}`), code: r.code, ...(r.problems ? { problems: r.problems } : {}) });
 const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
 
@@ -77,7 +81,7 @@ router.get('/figures', (req, res) => {
     : html`<button class="chip${s === 'all' ? ' on' : ''}" type="button" data-tab="${s}" aria-pressed="${s === 'all' ? 'true' : 'false'}">${label}</button>`);
   const mine = sheets.length
     ? html`<ul class="fg-mine">${sheets.slice(0, 6).map(w => html`<li><span class="fg-qs">${t('figures.menu.questions', { count: w.n })}</span><span><a href="/figures/worksheets/${w.id}">${w.title}</a>
-        <small>${[w.grade ? t('figures.menu.gradeOf', { grade: w.grade }) : '', t('figures.menu.edited', { date: dateOf(req, w.updated_at) })].filter(Boolean).join(' · ')}</small></span></li>`)}</ul>`
+        <small>${[w.purpose === 'test' ? t('figures.menu.isTest') : '', w.grade ? t('figures.menu.gradeOf', { grade: w.grade }) : '', t('figures.menu.edited', { date: dateOf(req, w.updated_at) })].filter(Boolean).join(' · ')}</small></span></li>`)}</ul>`
     : html`<p class="muted">${t('figures.menu.noSheets')}</p>`;
   page(req, res, {
     title: t('figures.title'), active: null, head: CSS, scripts: ['/js/figures.js'], bodyClass: 'fg-page',
@@ -87,7 +91,8 @@ router.get('/figures', (req, res) => {
       <p class="fg-lead">${t('figures.menu.pitch')}</p>
       <div class="fg-top">
         <section class="fg-build"><h2>${t('figures.menu.buildTitle')}</h2><p>${t('figures.menu.buildText')}</p>
-          <div class="row"><a class="btn btn-hot" href="/figures/worksheets/new?ai=1">✨ ${t('figures.menu.draftAi')}</a><a class="btn fg-ghost" href="/figures/worksheets/new">${t('figures.menu.scratch')}</a></div></section>
+          <div class="row"><a class="btn btn-hot" href="/figures/worksheets/new?ai=1">✨ ${t('figures.menu.draftAi')}</a><a class="btn fg-ghost" href="/figures/worksheets/new">${t('figures.menu.scratch')}</a></div>
+          <p class="fg-testline"><a class="btn fg-ghost" href="/figures/tests/new">📝 ${t('figures.menu.buildTest')}</a> <span>${t('figures.menu.buildTestText')}</span></p></section>
         <section class="panel fg-minebox"><h2>${t('figures.menu.mine')}</h2>${mine}</section>
       </div>
       <div class="fg-filters">
@@ -109,19 +114,24 @@ router.get('/figures/thumb/:file', (req, res, next) => {
 });
 
 // ---------------------------------------------------------------- the worksheet builder and its print page
-function builder(req, res, w) {
+function builder(req, res, w, { purpose = w ? w.purpose : 'worksheet' } = {}) {
   const t = req.t, u = req.user;
   const kinds = F.KINDS.map(K => ({ id: K.id, name: kindName(t, K.id), subject: K.subject, gen: K.gens.length > 0 }));
+  // A lesson set goes back to its lesson (Save to lesson); a test and a worksheet assign to a class.
+  const lesson = FS.lessonOfSet(u, w);
+  const test = purpose === 'test';
+  const crumb = lesson ? [[`/teach/lessons/${lesson.id}`, lesson.title], [null, t('figures.sheet.crumbLesson')]] : [['/figures', t('figures.title')], [null, t(test ? 'figures.sheet.crumbTest' : 'figures.sheet.crumb')]];
   page(req, res, {
-    title: w ? w.title : t('figures.sheet.newTitle'), active: null, head: CSS, scripts: ['/js/figures-sheet.js'], bodyClass: 'fg-page',
+    title: w ? w.title : t(test ? 'figures.sheet.newTest' : 'figures.sheet.newTitle'), active: null, head: CSS, scripts: ['/js/figures-sheet.js'], bodyClass: 'fg-page',
     body: html`${teachingTools(req, 'figures')}
-      ${crumbs(t, [['/figures', t('figures.title')], [null, t('figures.sheet.crumb')]])}
-      ${jsonData('fg-sheet', { id: w ? w.id : null, ai: F.aiPref(u), startAi: req.query.ai === '1', kinds, subjects: Object.fromEntries(F.SUBJECTS.map(s => [s, subjName(t, s)])), untitled: t('figures.sheet.untitled'),
-        classes: FS.classesFor(u).map(c => ({ id: c.id, name: c.name, school: c.school_name || '' })) })}
+      ${crumbs(t, crumb)}
+      ${jsonData('fg-sheet', { id: w ? w.id : null, purpose, lesson, ai: F.aiPref(u), startAi: req.query.ai === '1', kinds, subjects: Object.fromEntries(F.SUBJECTS.map(s => [s, subjName(t, s)])), untitled: t(test ? 'figures.sheet.untitledTest' : 'figures.sheet.untitled'),
+        classes: lesson ? [] : FS.classesFor(u).map(c => ({ id: c.id, name: c.name, school: c.school_name || '' })) })}
       <div id="fg-sheet-app" class="fg-sheet"><p class="muted">${t('figures.loading')}</p></div>`,
   });
 }
 router.get('/figures/worksheets/new', (req, res) => builder(req, res, null));
+router.get('/figures/tests/new', (req, res) => builder(req, res, null, { purpose: 'test' }));
 router.get('/figures/worksheets/:id', (req, res, next) => { const w = F.ownWorksheet(req.user, req.params.id); return w ? builder(req, res, w) : next(); });
 router.get('/figures/worksheets/:id/print', (req, res, next) => {
   const w = F.ownWorksheet(req.user, req.params.id); if (!w) return next();
@@ -177,7 +187,8 @@ router.post('/api/figures/presets', rateLimit('figures-preset', 120, 3600e3), (r
 router.post('/api/figures/presets/:id/delete', (req, res) => { const r = F.deletePreset(req.user, req.params.id); return r.ok ? res.json(r) : fail(req, res, r); });
 router.post('/api/figures/prefs', (req, res) => { const r = F.setAiPref(req.user, !!body(req).ai); return r.ok ? res.json(r) : fail(req, res, r); });
 
-router.post('/api/figures/worksheets', rateLimit('figures-save', 300, 3600e3), (req, res) => { const b = body(req); sendSheet(req, res, F.createWorksheet(req.user, { title: b.title, grade: b.grade, items: b.items })); });
+// The browser makes a worksheet or a test; a lesson set is made only from its lesson's step form (routes/lessons.js).
+router.post('/api/figures/worksheets', rateLimit('figures-save', 300, 3600e3), (req, res) => { const b = body(req); sendSheet(req, res, F.createWorksheet(req.user, { title: b.title, grade: b.grade, items: b.items, purpose: b.purpose === 'test' ? 'test' : 'worksheet' })); });
 router.get('/api/figures/worksheets/:id', (req, res) => { const w = view(req, req.params.id); return w ? res.json({ ok: true, worksheet: w }) : fail(req, res, { code: 'notFound' }); });
 router.post('/api/figures/worksheets/:id', rateLimit('figures-save', 300, 3600e3), (req, res) => sendSheet(req, res, F.updateWorksheet(req.user, req.params.id, body(req))));
 router.post('/api/figures/worksheets/:id/delete', (req, res) => { const r = F.deleteWorksheet(req.user, req.params.id); return r.ok ? res.json(r) : fail(req, res, r); });
@@ -189,6 +200,20 @@ router.post('/api/figures/worksheets/:id/items', rateLimit('figures-save', 300, 
 router.post('/api/figures/worksheets/:id/items/:item', rateLimit('figures-save', 300, 3600e3), (req, res) => sendSheet(req, res, F.updateItem(req.user, req.params.id, req.params.item, body(req))));
 router.post('/api/figures/worksheets/:id/items/:item/delete', (req, res) => sendSheet(req, res, F.deleteItem(req.user, req.params.id, req.params.item)));
 router.post('/api/figures/worksheets/:id/items/:item/move', (req, res) => sendSheet(req, res, F.moveItem(req.user, req.params.id, req.params.item, body(req).dir === 'up' ? 'up' : 'down')));
+router.post('/api/figures/worksheets/:id/items/:item/swap', rateLimit('figures-gen', 900, 3600e3), (req, res) => sendSheet(req, res, F.swapItem(req.user, req.params.id, req.params.item, body(req).kind)));
+router.post('/api/figures/worksheets/:id/save-to-lesson', rateLimit('figures-assign', 60, 3600e3), (req, res) => {
+  const r = FS.saveToLesson(req.user, req.params.id);
+  if (!r.ok) {
+    if (ASSIGN_ERRORS.includes(r.code)) return res.status(400).json({ error: req.t(`figures.assign.errors.${r.code}`, { list: (r.questions || []).join(', ') }), code: r.code, ...(r.questions ? { questions: r.questions } : {}) });
+    return fail(req, res, { code: 'notFound' });
+  }
+  res.json({ ok: true, lessonId: r.lesson.id, stepId: r.step.id, redirect: `/teach/lessons/${r.lesson.id}?figures=saved#steps` });
+});
+router.post('/api/figures/worksheets/:id/draft-test', rateLimit('figures-ai', 30, 3600e3), async (req, res) => {
+  const { topic, grade, subject, count } = body(req);
+  const r = await F.draftTest(req.user, req.params.id, { topic, grade, subject, count });
+  return r.ok ? res.json({ ...r, worksheet: view(req, req.params.id) }) : fail(req, res, r);
+});
 router.post('/api/figures/worksheets/:id/items/:item/regen', rateLimit('figures-gen', 900, 3600e3), (req, res) => sendSheet(req, res, F.regenItem(req.user, req.params.id, req.params.item)));
 router.post('/api/figures/worksheets/:id/assign', rateLimit('figures-assign', 60, 3600e3), (req, res) => {
   const b = body(req);

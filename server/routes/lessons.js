@@ -7,12 +7,13 @@ import { html, raw } from '../views/html.js';
 import { ico } from '../views/icon.js';
 import { page, notFound, VERSION } from '../views/layout.js';
 import { emptyState, gradeLabel, nameFilter, jumpNav, coverArt } from '../views/components.js';
-import { tHtml } from '../i18n/index.js';
+import { tHtml, localeInfo } from '../i18n/index.js';
 import { requireUser, requireAccount } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as L from '../services/lessons.js';
 import * as FS from '../services/figures-steps.js';
+import * as F from '../services/figures.js';
 import * as games from '../services/games.js';
 import { publish } from '../services/publish.js';
 import { draftLesson } from '../services/lesson-ai.js';
@@ -138,12 +139,18 @@ router.post('/api/lessons/draft', requireUser, rateLimit('lesson-ai', 30, 3600e3
   if (!S.getSchool(schoolId) || !['admin', 'teacher'].includes(S.roleIn(req.user, schoolId))) return no(req, res);
   const pick = L.gamesForPicker(req.user, schoolId);
   const catalog = [...pick.school, ...pick.site].map(g => ({ ...g, ...(games.getGame(g.id) || {}) })).map(g => ({ id: g.id, title: g.title, description: g.description, tags: g.tags }));
+  // A Figures tester's draft may have Figure steps: the figure catalog goes with the game catalog (the Figures gate).
+  const figures = figureSteps(req.user) ? F.figureCatalog() : [];
+  if (figures.length && F.namesIn(req.user, `${topic} ${subject || ''}`)) return res.status(400).json({ error: req.t('figures.errors.names'), field: 'topic' });
   let d;
-  try { d = await draftLesson({ topic, grade, subject, minutes: Math.max(10, Math.min(180, +minutes || 40)), locale: req.locale, t: req.t }, catalog); }
+  try { d = await draftLesson({ topic, grade, subject, minutes: Math.max(10, Math.min(180, +minutes || 40)), locale: req.locale, t: req.t }, catalog, figures); }
   catch { return err(req, res, 'aiFailed', 503); }
   const r = L.createLesson(req.user, schoolId, { title: d.draft.title || topic, folderId: folderId || null, summary: d.draft.summary, subject: subject || d.draft.subject || '', grade: grade || d.draft.grade || '', objectives: d.draft.objectives });
   if (!r.ok) return err(req, res, r.code);
-  for (const s of d.draft.steps || []) L.addStep(req.user, r.lesson.id, { kind: s.kind, title: s.title, body: s.body, minutes: s.minutes, gameId: s.gameId || null });
+  for (const s of d.draft.steps || []) {
+    if (s.kind === L.FIGURES_KIND) { FS.draftedStep(req.user, r.lesson.id, s); continue; }
+    L.addStep(req.user, r.lesson.id, { kind: s.kind, title: s.title, body: s.body, minutes: s.minutes, gameId: s.gameId || null });
+  }
   audit(req.user.id, 'lesson.draft', r.lesson.id, { ai: d.ai });
   const cid = classParam(req.user, classId, r.lesson.school_id);
   res.json({ ok: true, redirect: `/teach/lessons/${r.lesson.id}?drafted=${d.ai ? 'ai' : 'template'}${cid ? `&class=${encodeURIComponent(cid)}` : ''}` });
@@ -178,7 +185,10 @@ router.post('/api/lessons/:id/delete', requireUser, (req, res) => {
 // The step form shows the fields for its type: the server sets data-kind on the form, public/js/schools.js keeps it in
 // step with the Type select, and the CSS hides the Game field for other types (it also follows the select without JS).
 const KIND_ORDER = ['text', 'question', 'game', 'build'];
-const BODY_LABEL = { text: 'lessons.step.bodyText', question: 'lessons.step.bodyQuestion', build: 'lessons.step.bodyBuild', game: 'lessons.step.bodyGame' };
+const BODY_LABEL = { text: 'lessons.step.bodyText', question: 'lessons.step.bodyQuestion', build: 'lessons.step.bodyBuild', game: 'lessons.step.bodyGame', figures: 'lessons.step.bodyFigures' };
+/** "Figure questions" in the step editor: only for someone the Figures gate lets in (services/figures.js canMake, the
+ *  one place that opens Figures to everyone). Adding one opens the Figures builder for the step's questions. */
+const figureSteps = u => F.canMake(u);
 /** The step form's Rubric select (question and build steps): the teacher's rubrics, and the one on the step now. */
 function rubricField(t, rubrics, current, idp, kinds, forKind) {
   const has = rubrics.some(r => r.id === current), cur = current && !has ? R.getRubric(current) : null;
@@ -186,12 +196,13 @@ function rubricField(t, rubrics, current, idp, kinds, forKind) {
     <select class="input" id="${idp}-r" name="rubricId"><option value="">${t('rubrics.attach.none')}</option>${cur ? html`<option value="${cur.id}" selected>📏 ${cur.title}</option>` : ''}${rubrics.map(r => html`<option value="${r.id}" ${r.id === current ? raw('selected') : ''}>📏 ${r.title}</option>`)}</select>
     <span class="hint">${rubrics.length ? t('rubrics.attach.hint') : t('rubrics.attach.noneYet')} <a href="/teach/rubrics">${t('rubrics.attach.library')}</a></span></div>`;
 }
-function stepFields(t, pick, s = {}, idp, { newGameLink = false, rubrics = [] } = {}) {
+function stepFields(t, pick, s = {}, idp, { newGameLink = false, rubrics = [], figures = false } = {}) {
   const kind = s.kind || 'text';
+  const kinds = figures ? [...KIND_ORDER, L.FIGURES_KIND] : KIND_ORDER;
   const opt = g => html`<option value="${g.id}" ${g.id === s.game_id ? raw('selected') : ''}>${g.icon} ${g.title}</option>`;
   const forKind = k => (k === kind ? '' : raw('hidden'));
   return html`
-    <div class="field f-k"><label for="${idp}-k">${t('lessons.step.kind')}</label><select class="input" id="${idp}-k" name="kind">${KIND_ORDER.map(k => html`<option value="${k}" ${k === kind ? raw('selected') : ''}>${KIND_ICON[k]} ${t(`lessons.kinds.${k}`)}</option>`)}</select></div>
+    <div class="field f-k"><label for="${idp}-k">${t('lessons.step.kind')}</label><select class="input" id="${idp}-k" name="kind">${kinds.map(k => html`<option value="${k}" ${k === kind ? raw('selected') : ''}>${KIND_ICON[k]} ${t(k === L.FIGURES_KIND ? 'lessons.kinds.figureStep' : `lessons.kinds.${k}`)}</option>`)}</select></div>
     <div class="field f-t"><label for="${idp}-t">${t('lessons.step.title')}</label><input class="input" id="${idp}-t" name="title" value="${s.title || ''}" maxlength="100"></div>
     <div class="field f-g"><label for="${idp}-g">${t('lessons.step.game')}</label><select class="input" id="${idp}-g" name="gameId"><option value="">–</option>
       ${pick.mine.length ? html`<optgroup label="${t('lessons.step.myGames')}">${pick.mine.map(opt)}</optgroup>` : ''}
@@ -200,7 +211,7 @@ function stepFields(t, pick, s = {}, idp, { newGameLink = false, rubrics = [] } 
       ${siteGroups(t, pick.site).map(gr => html`<optgroup label="${gr.label}">${gr.games.map(opt)}</optgroup>`)}</select><span class="err" id="${idp}-g-err"></span>
       ${newGameLink ? html`<a class="small f-glink" href="#ng-i">${ico('➕', { size: 18 })} ${t('lessons.step.newGameLink')}</a>` : ''}</div>
     <div class="field f-m"><label for="${idp}-m">${t('lessons.step.minutes')}</label><input class="input" id="${idp}-m" name="minutes" type="number" min="0" max="240" value="${s.minutes || ''}"></div>
-    <div class="field f-b"><label for="${idp}-b">${KIND_ORDER.map(k => html`<span data-for-kind="${k}" ${forKind(k)}>${t(BODY_LABEL[k])}</span>`)}</label><textarea class="input" id="${idp}-b" name="body" rows="3" maxlength="4000">${s.body || ''}</textarea><span class="hint" data-for-kind="build" ${forKind('build')}>${t('lessons.step.buildHint')}</span><span class="err" id="${idp}-b-err"></span>
+    <div class="field f-b"><label for="${idp}-b">${kinds.map(k => html`<span data-for-kind="${k}" ${forKind(k)}>${t(BODY_LABEL[k])}</span>`)}</label><textarea class="input" id="${idp}-b" name="body" rows="3" maxlength="4000">${s.body || ''}</textarea><span class="hint" data-for-kind="build" ${forKind('build')}>${t('lessons.step.buildHint')}</span>${figures ? html`<span class="hint" data-for-kind="figures" ${forKind('figures')}>${ico('📐', { size: 18 })} ${t('lessons.step.figuresHint')}</span>` : ''}<span class="err" id="${idp}-b-err"></span>
       ${rubricField(t, rubrics, s.rubric_id || null, idp, R.STEP_KINDS, R.STEP_KINDS.includes(kind) ? '' : raw('hidden'))}</div>`;
 }
 router.get('/teach/lessons/:id', requireUser, (req, res) => {
@@ -257,13 +268,26 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
       ${ccOf(s.id).length || gameOf(s).length || needsGrade(s) ? html`<div class="std-stepcodes">${ccChips(ccOf(s.id))}${gameOf(s).map(([fw, codes]) => codeChips(t, fw, codes, { label: t('standards.lesson.gameCodes', { framework: fwName(t, fw) }) }))}${needsGrade(s) ? html`<p class="small muted">${t('standards.lesson.gameNeedsGrade')}</p>` : ''}</div>` : ''}
       ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">${ico('💬', { size: 18 })} “${s.body}”</p>` : s.body ? html`<div class="sc-body ${s.kind === 'question' ? 'q-text' : ''}">${paras(s.body)}</div>` : ''}
       ${R.STEP_KINDS.includes(s.kind) ? rubricChip(s.rubric_id) : ''}
-      ${s.kind === L.FIGURES_KIND ? html`<p class="small muted">${ico('📐', { size: 18 })} ${t('figures.step.questions', { count: FS.itemsOf(s).length })} · ${s.show_answers ? t('figures.step.showOnNote') : t('figures.step.showOffNote')}</p>` : ''}
+      ${s.kind === L.FIGURES_KIND ? figureStepView(s, work) : ''}
       ${edit && s.kind !== L.FIGURES_KIND ? html`<details><summary class="small">${ico('✏️', { size: 18 })} ${t('lessons.step.edit')}</summary>
         <form class="formgrid stepgrid" data-kind="${s.kind}" data-api="/api/lesson-steps/${s.id}" data-reload novalidate>${stepFields(t, pick, s, `s${s.id}`, { rubrics })}
           <div class="formacts"><button class="btn btn-primary" type="submit">${t('school.save')}</button><button class="btn btn-danger" type="submit" form="sd-${s.id}">${t('lessons.step.delete')}</button></div></form>
         <form id="sd-${s.id}" hidden data-api="/api/lesson-steps/${s.id}/delete" data-reload data-confirm="${work ? t('lessons.step.deleteWorkConfirm', { n: work }) : t('lessons.step.deleteConfirm')}"></form></details>` : ''}
     </li>`;
   };
+  // A Figure step: how many questions, the answers switch, and (its editors) Edit questions, Print and a small form for
+  // its title, minutes and instructions with Delete. Edit questions is a Figures tester's (the Figures gate).
+  const figureStepView = (s, work) => html`<p class="small muted">${ico('📐', { size: 18 })} ${t('figures.step.questions', { count: FS.itemsOf(s).length })} · ${s.show_answers ? t('figures.step.showOnNote') : t('figures.step.showOffNote')}</p>
+    ${edit ? html`<div class="row fstep-acts">${figureSteps(u) ? html`<form data-api="/api/lesson-steps/${s.id}/figures-edit"><button class="btn btn-sm btn-primary" type="submit">${ico('✏️', { size: 18 })} ${t('lessons.step.editFigures')}</button></form>` : ''}
+      <a class="btn btn-sm" href="/teach/lesson-steps/${s.id}/print">${ico('🖨️', { size: 18 })} ${t('lessons.step.printFigures')}</a></div>
+      ${work ? html`<p class="small muted">${t('lessons.step.figuresStarted')}</p>` : ''}
+      <details><summary class="small">⋯ ${t('lessons.step.more')}</summary>
+        <form class="formgrid" data-api="/api/lesson-steps/${s.id}" data-reload novalidate><input type="hidden" name="kind" value="figures">
+          <div class="field"><label for="s${s.id}-t">${t('lessons.step.title')}</label><input class="input" id="s${s.id}-t" name="title" value="${s.title || ''}" maxlength="100"></div>
+          <div class="field"><label for="s${s.id}-m">${t('lessons.step.minutes')}</label><input class="input" id="s${s.id}-m" name="minutes" type="number" min="0" max="240" value="${s.minutes || ''}"></div>
+          <div class="field wide"><label for="s${s.id}-b">${t('lessons.step.bodyFigures')}</label><textarea class="input" id="s${s.id}-b" name="body" rows="2" maxlength="4000">${s.body || ''}</textarea></div>
+          <div class="formacts wide"><button class="btn btn-primary" type="submit">${t('school.save')}</button><button class="btn btn-danger" type="submit" form="sd-${s.id}">${t('lessons.step.delete')}</button></div></form>
+        <form id="sd-${s.id}" hidden data-api="/api/lesson-steps/${s.id}/delete" data-reload data-confirm="${work ? t('lessons.step.deleteWorkConfirm', { n: work }) : t('lessons.step.deleteConfirm')}"></form></details>` : ''}`;
   const drafted = req.query.drafted;
   const progressLinks = listOf(t, assigned, a => html`<a href="/class/${a.class_id}/progress/${a.id}">${a.name}</a>`);
   const body = html`
@@ -274,6 +298,7 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
       : html`<form data-api="/api/lessons/${l.id}/copy"><button class="btn btn-primary" type="submit">${ico('📄', { size: 18 })} ${t('lessons.shared.copy')}</button></form>`}</div>
   ${edit && req.query.copied ? html`<p class="notice good">${ico('📄', { size: 18 })} ${t('lessons.lesson.copiedNotice')}</p>` : ''}
   ${l.template_key && T.getTemplate(l.template_key) ? editorBanner(req, l, T.getTemplate(l.template_key), { edit }) : ''}
+  ${req.query.figures === 'saved' ? html`<p class="notice good" role="status">${ico('📐', { size: 18 })} ${t('lessons.step.figuresSaved')}</p>` : ''}
   ${drafted ? html`<p class="notice ${drafted === 'ai' ? '' : 'warn'}">${drafted === 'ai' ? `✨ ${t('lessons.ai.done')}` : t('lessons.ai.template')}</p>` : ''}
   ${assigned.length ? html`<p class="notice livenote">${ico('📌', { size: 18 })} ${tHtml(t, 'lessons.editor.live', { classes: progressLinks, count: started })}</p>` : ''}
   ${edit ? html`<details class="panel lessondetails"><summary>${ico('✏️', { size: 18 })} ${t('lessons.lesson.editDetails')}</summary>
@@ -297,7 +322,7 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   ${st.length ? html`<ol class="plain steplist">${st.map(stepView)}</ol>` : html`<p class="muted">${t('lessons.lesson.noSteps')}</p>`}
   ${edit ? html`
   <section class="panel" id="add-step"><h2>${ico('➕', { size: 28 })} ${t('lessons.step.add')}</h2>
-    <form class="formgrid stepgrid" data-kind="text" data-api="/api/lessons/${l.id}/steps" data-reload novalidate>${stepFields(t, pick, {}, 'ns', { newGameLink: true, rubrics })}
+    <form class="formgrid stepgrid" data-kind="text" data-api="/api/lessons/${l.id}/steps" data-reload novalidate>${stepFields(t, pick, {}, 'ns', { newGameLink: true, rubrics, figures: figureSteps(u) })}
       <div class="formacts"><button class="btn btn-primary" type="submit">${ico('➕', { size: 18 })} ${t('lessons.step.addButton')}</button></div></form>
     <details class="newgame" id="new-game"><summary class="small">${ico('➕', { size: 18 })} ${t('lessons.step.newGameLink')}</summary>
       <form class="formgrid" data-api="/api/lessons/${l.id}/new-game" novalidate>
@@ -341,7 +366,35 @@ const CS_CODES = ['stepOptions', 'stepStandards', 'stepTemplate', 'stepRubric'];
 const stepErr = (req, res, r) => (r.code === 'buildPrompt' || r.code === 'stepText' || r.code === 'questionText' ? err(req, res, r.code, 400, 'body') : r.code === 'pickGame' ? err(req, res, r.code, 400, 'gameId')
   : r.code === 'rubricPick' ? res.status(400).json({ error: req.t('rubrics.errors.pick'), field: 'rubricId' })
   : CS_CODES.includes(r.code) ? res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code }) : send(req, res, r));
-router.post('/api/lessons/:id/steps', requireUser, (req, res) => { const r = L.addStep(req.user, req.params.id, stepInput(b(req))); return r.ok ? res.json({ ok: true }) : stepErr(req, res, r); });
+router.post('/api/lessons/:id/steps', requireUser, (req, res) => {
+  // "Figure questions": a lesson set for the step's questions, then the Figures builder (the step is made by its "Save
+  // to lesson"). Anyone the Figures gate does not let in is refused like any unknown step kind.
+  if (b(req).kind === L.FIGURES_KIND) {
+    if (!figureSteps(req.user)) return stepErr(req, res, { ok: false, code: 'stepKind' });
+    const r = FS.newLessonSet(req.user, req.params.id, { title: String(b(req).title || '').trim() });
+    return r.ok ? res.json({ ok: true, redirect: `/figures/worksheets/${r.id}` }) : send(req, res, r);
+  }
+  const r = L.addStep(req.user, req.params.id, stepInput(b(req))); return r.ok ? res.json({ ok: true }) : stepErr(req, res, r);
+});
+/** "Edit questions" on a Figure step: the Figures builder on the step's lesson set (made from its snapshot if needed). */
+router.post('/api/lesson-steps/:id/figures-edit', requireUser, (req, res) => {
+  const r = FS.editStepSet(req.user, req.params.id);
+  return r.ok ? res.json({ ok: true, redirect: `/figures/worksheets/${r.id}` }) : no(req, res);
+});
+/** A Figure step's printable student sheet (?key=1: with the answer key), black on white: the lesson's editors. */
+router.get('/teach/lesson-steps/:id/print', requireUser, (req, res) => {
+  const t = req.t, key = req.query.key === '1', info = localeInfo(req.locale);
+  const s = L.getStep(req.params.id), l = s && L.getLesson(s.lesson_id);
+  const frag = FS.stepPrintHtml(req.user, req.params.id, { t, lang: req.locale || 'en', dir: info.dir, key });
+  if (frag === null) return no(req, res);
+  const title = s.title || l.title;
+  page(req, res, {
+    title: key ? t('figures.print.keyTitle', { title }) : title, head: raw(`${CSS}<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`), scripts: ['/js/figures-print.js'], bodyClass: 'fg-page fg-printpage',
+    body: html`<div class="fg-printbar noprint"><nav class="fg-crumbs" aria-label="${t('figures.crumbs')}"><a href="/teach/lessons/${l.id}">${l.title}</a> <span aria-hidden="true">/</span> <b>${t('figures.print.crumb')}</b></nav>
+      <div class="row"><a class="chip${key ? '' : ' on'}" href="?key=0">${t('figures.print.sheetOnly')}</a><a class="chip${key ? ' on' : ''}" href="?key=1">${t('figures.print.withKey')}</a>
+      <button class="btn btn-primary" type="button" data-print>🖨️ ${t('figures.print.print')}</button></div></div>${raw(frag)}`,
+  });
+});
 router.post('/api/lesson-steps/:id', requireUser, (req, res) => { const r = L.updateStep(req.user, req.params.id, stepInput(b(req))); return r.ok ? res.json({ ok: true }) : stepErr(req, res, r); });
 router.post('/api/lesson-steps/:id/up', requireUser, (req, res) => send(req, res, L.reorderStep(req.user, req.params.id, -1)));
 router.post('/api/lesson-steps/:id/down', requireUser, (req, res) => send(req, res, L.reorderStep(req.user, req.params.id, 1)));

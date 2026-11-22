@@ -3739,7 +3739,26 @@
       "removeOption": "Remover a opção {letter}",
       "fromFigure": "A opção certa é calculada a partir da figura. Mude uma opção ou marque outra para escolher você mesmo.",
       "needTwo": "Escreva pelo menos 2 opções.",
-      "needRight": "Marque a opção certa."
+      "needRight": "Marque a opção certa.",
+      "testAiTitle": "Rascunhar um teste",
+      "topicLabel": "Tema",
+      "topicHint": "Por exemplo: área de retângulos e triângulos",
+      "subject": "Matéria",
+      "anySubject": "Qualquer matéria",
+      "draftTest": "Rascunhar o teste",
+      "testBudget": "Feito com os geradores de questões, então você pode sortear novos números para qualquer questão. Conta no limite de IA; sem IA, um teste inicial é sorteado.",
+      "byHand": "À mão: escolha uma matéria, adicione questões com figuras e depois ajuste cada figura e sua resposta.",
+      "checkFirst": "Confira cada questão antes de atribuir.",
+      "topicFirst": "Primeiro escreva o tema do teste.",
+      "saveLesson": "Salvar na aula",
+      "saveLessonHint": "Coloca estas questões em {title}. Nada muda na aula até você salvar.",
+      "saveLessonAgain": "Salvar de novo substitui as questões em {title}.",
+      "lessonStarted": "Os alunos já começaram esta etapa, então as questões ficam como estão. Faça uma cópia da aula para mudá-las.",
+      "backToLesson": "Voltar para a aula",
+      "subjects": "Matérias",
+      "more": "Mais",
+      "swapLabel": "Trocar a figura por",
+      "swap": "Trocar figura"
     }
   },
   "favorites": {
@@ -4369,7 +4388,8 @@
       "text": "Ler ou fazer",
       "question": "Responder a uma pergunta",
       "quiz": "Responder às perguntas do quiz",
-      "figures": "Responder perguntas de figuras"
+      "figures": "Responder perguntas de figuras",
+      "figureStep": "Questões com figuras"
     },
     "library": {
       "title": "Biblioteca de aulas",
@@ -4448,7 +4468,14 @@
       "newGameLink": "Criar um novo jogo para os alunos jogarem",
       "deleteWorkConfirm": "Excluir esta etapa? {n, plural, one {O trabalho de # aluno nela será excluído.} other {Os trabalhos de # alunos nela serão excluídos.}} Isso não pode ser desfeito.",
       "liveGames": "Jogos ao vivo para a turma (você conduz)",
-      "otherGames": "Mais jogos"
+      "otherGames": "Mais jogos",
+      "bodyFigures": "Instruções para os alunos (opcional)",
+      "figuresHint": "Em seguida, o criador de figuras abre: escolha as figuras, ajuste os números e as respostas e depois Salvar na aula.",
+      "editFigures": "Editar questões",
+      "printFigures": "Imprimir",
+      "figuresStarted": "Os alunos já começaram esta etapa, então as questões ficam como estão.",
+      "more": "Mais",
+      "figuresSaved": "Questões com figuras salvas na aula."
     },
     "ai": {
       "button": "Criar rascunho com IA",
@@ -4527,7 +4554,9 @@
       "build": "Crie o seu próprio jogo",
       "buildText": "Um quiz com 6 perguntas sobre {topic}",
       "exit": "Bilhete de saída",
-      "exitText": "Em duas ou três frases: qual é a coisa mais importante que você aprendeu sobre {topic} hoje?"
+      "exitText": "Em duas ou três frases: qual é a coisa mais importante que você aprendeu sobre {topic} hoje?",
+      "figures": "Questões com figuras",
+      "figuresText": "Responda à pergunta embaixo de cada figura."
     },
     "errors": {
       "notFound": "Não encontramos isso, ou não é possível abrir.",
@@ -12331,12 +12360,19 @@
       "search": "Buscar figuras",
       "searchHint": "Buscar figuras, como cilindro ou diagrama de caixa",
       "count": "{count, plural, one {# figura} other {# figuras}}",
-      "nothing": "Nenhuma figura corresponde. Tente outra palavra ou outro ano."
+      "nothing": "Nenhuma figura corresponde. Tente outra palavra ou outro ano.",
+      "buildTest": "Criar um teste",
+      "buildTestText": "Um teste inteiro de questões com figuras, rascunhado com IA ou feito à mão.",
+      "isTest": "Teste"
     },
     "sheet": {
       "newTitle": "Nova atividade",
       "crumb": "Criador de atividades",
-      "untitled": "Atividade sem título"
+      "untitled": "Atividade sem título",
+      "untitledTest": "Teste sem título",
+      "newTest": "Novo teste",
+      "crumbTest": "Criador de testes",
+      "crumbLesson": "Questões com figuras"
     },
     "editor": {
       "example": "Exemplo {n}"
@@ -12371,7 +12407,8 @@
       "name": "Dê um nome primeiro.",
       "brief": "Descreva a atividade em poucas palavras primeiro.",
       "names": "Não coloque nomes de alunos na descrição: nomes nunca vão para a IA.",
-      "sameChoices": "Duas opções são iguais. Deixe cada uma diferente."
+      "sameChoices": "Duas opções são iguais. Deixe cada uma diferente.",
+      "topic": "Primeiro escreva o tema do teste."
     },
     "kinds": {
       "numberLine": {
@@ -12716,7 +12753,8 @@
         "noClass": "Escolha uma das suas turmas.",
         "badDate": "Essa data não parece certa.",
         "dueBeforeOpen": "A data de entrega é antes da data de abertura.",
-        "needsDue": "Defina uma data de entrega para mostrar as respostas depois."
+        "needsDue": "Defina uma data de entrega para mostrar as respostas depois.",
+        "started": "Os alunos já começaram esta etapa, então as questões ficam como estão. Faça uma cópia da aula para mudá-las."
       }
     }
   }
