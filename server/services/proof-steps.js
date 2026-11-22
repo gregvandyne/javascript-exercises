@@ -14,6 +14,11 @@
 // each mistake once with proof-core's checker, the same rules as the game: step_progress.marks one character a mistake
 // in reading order ('1' found, '0' missed), score = the share of mistakes found (%), label 'proofread'. Changing words
 // that were right costs nothing (as in the game): the count is shown to the teacher, never taken off the score.
+//
+// Hints (docs/decisions.md "Mistake Hunt: free AI cap, hints, assign choice"): the teacher's "Allow hints" (off by
+// default) is kept in the snapshot (hints: true). A hint needs the key, which never reaches the student's page, so the
+// server answers it (hintFor): the sentence with a mistake the student has not fixed yet, and its kind. Each hint is
+// counted here (step_progress.hints, at most HINTS_MAX) and the teacher sees the plain count per student, never a ranking.
 import { q, tx, audit } from '../db.js';
 import * as S from './schools.js';
 import * as L from './lessons.js';
@@ -28,17 +33,20 @@ export const PROOF_KIND = L.PROOF_KIND;
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = (code, extra = {}) => ({ ok: false, code, ...extra });
 export const EDIT_LIMITS = { perPassage: 200, chars: 80 };
+/** The most hints a student's row counts (a small integer, whatever is asked). */
+export const HINTS_MAX = 99;
 export const SLUG = 'mistake-hunt';
 
 /** The official Mistake Hunt game row, or null. */
 export const proofGame = () => { const g = games.getGameBySlug(SLUG); return g && g.source === 'seed' ? g : null; };
 
 // ---------------------------------------------------------------- snapshot and assign
-/** A set's passages as a step keeps them: [{ t, x, g, m: [{ a, b, w, k, y? }] }] and tell. */
-export function snapshotOf(items) {
+/** A set's passages as a step keeps them: [{ t, x, g, m: [{ a, b, w, k, y? }] }], tell, and hints (true only when the
+ *  teacher allowed them on the Assign page). */
+export function snapshotOf(items, { hints = false } = {}) {
   const passages = items.map(it => ({ t: it.t || '', x: it.x, g: it.g, m: it.m.map(m => ({ a: m.a, b: m.b, w: m.w, k: m.k, ...(m.y ? { y: m.y } : {}) })) }));
   const o = (items[0] && items[0].o) || {};
-  return { tell: o.n === 'type' || o.n === 'none' ? o.n : 'total', passages };
+  return { tell: o.n === 'type' || o.n === 'none' ? o.n : 'total', ...(hints ? { hints: true } : {}), passages };
 }
 /** The teacher's own saved set, or null. */
 export function ownSet(u, setId) {
@@ -54,9 +62,10 @@ export const classesFor = u => (canAssign(u) ? S.classesOf(u.id, 'teacher').filt
 /**
  * Assign a passage set to one of the teacher's classes for a grade: a lesson "<set title>" (kind 'proofread') with one
  * proofread step (the snapshot), assigned with its dates. showAnswers: the fixes and why lines after the due date (needs
- * one). -> { ok, lesson, classLesson, step, class } | { ok: false, code: notFound | noClass | badDate | dueBeforeOpen | needsDue }
+ * one). hints: students may ask for hints (off by default).
+ * -> { ok, lesson, classLesson, step, class } | { ok: false, code: notFound | noClass | badDate | dueBeforeOpen | needsDue }
  */
-export function assignSet(u, setId, classId, { opensAt = null, dueAt = null, showAnswers = false } = {}) {
+export function assignSet(u, setId, classId, { opensAt = null, dueAt = null, showAnswers = false, hints = false } = {}) {
   if (!canAssign(u)) return fail('notFound');
   const s = ownSet(u, setId); if (!s || !Array.isArray(s.items) || !s.items.length) return fail('notFound');
   const c = S.getClass(String(classId || ''));
@@ -65,7 +74,7 @@ export function assignSet(u, setId, classId, { opensAt = null, dueAt = null, sho
   if (o === undefined || d === undefined) return fail('badDate');
   if (o !== null && d !== null && d < o) return fail('dueBeforeOpen');
   if (showAnswers && d === null) return fail('needsDue');
-  const snap = snapshotOf(s.items);
+  const snap = snapshotOf(s.items, { hints: hints === true });
   const title = (s.title || s.items[0].t || tEn('proof.assign.untitled')).slice(0, 100);
   const grade = Number.isInteger(s.items[0].g) ? (s.items[0].g === 0 ? 'K' : String(s.items[0].g)) : '';
   try { return tx(() => {
@@ -75,17 +84,35 @@ export function assignSet(u, setId, classId, { opensAt = null, dueAt = null, sho
     if (!step.ok) throw Object.assign(new Error('step'), { r: step });
     const a = L.assign(u, c.id, made.lesson.id, { opensAt: o === null ? null : new Date(o).toISOString().slice(0, 10), dueAt: d === null ? null : new Date(d).toISOString().slice(0, 10) });
     if (!a.ok) throw Object.assign(new Error('assign'), { r: a });
-    audit(u.id, 'proof.assign', c.id, { set: s.id, lesson: made.lesson.id, passages: snap.passages.length, show: !!showAnswers });
+    audit(u.id, 'proof.assign', c.id, { set: s.id, lesson: made.lesson.id, passages: snap.passages.length, show: !!showAnswers, hints: !!snap.hints });
     return ok({ lesson: L.getLesson(made.lesson.id), classLesson: a.classLesson, step: step.step, class: c });
   }); } catch (e) { if (e && e.r) return e.r; throw e; }
 }
 
 // ---------------------------------------------------------------- reading a step
-/** The step's snapshot: { tell, passages } (empty passages when unreadable). */
+/** The step's snapshot: { tell, hints, passages } (empty passages when unreadable; hints false unless allowed). */
 export function snapOf(step) {
   let x = null; try { x = JSON.parse((step && step.items) || 'null'); } catch { x = null; }
-  if (!x || typeof x !== 'object' || !Array.isArray(x.passages)) return { tell: 'total', passages: [] };
-  return { tell: x.tell === 'type' || x.tell === 'none' ? x.tell : 'total', passages: x.passages.filter(p => p && typeof p.x === 'string' && Array.isArray(p.m)) };
+  if (!x || typeof x !== 'object' || !Array.isArray(x.passages)) return { tell: 'total', hints: false, passages: [] };
+  return { tell: x.tell === 'type' || x.tell === 'none' ? x.tell : 'total', hints: x.hints === true, passages: x.passages.filter(p => p && typeof p.x === 'string' && Array.isArray(p.m)) };
+}
+/** Did the teacher allow hints on this step? */
+export const hintsOn = step => snapOf(step).hints;
+/** How many hints a student's row has used (0 to HINTS_MAX). */
+export const hintsOf = row => { const n = row ? Math.floor(+row.hints) : 0; return Number.isFinite(n) ? Math.max(0, Math.min(HINTS_MAX, n)) : 0; };
+/**
+ * A hint for passage i with the student's fixes (cleanEdits' edits): the first mistake in reading order they have not
+ * fixed yet, as the sentence holding it (word indexes a..b over the words students see) and its kind and group.
+ * -> { i, a, b, k, g } | null (nothing left to hint in that passage) | undefined (no such passage)
+ */
+export function hintFor(step, edits, i) {
+  const P = proofCore(), snap = snapOf(step), p = snap.passages[i];
+  if (!Number.isInteger(i) || !p) return undefined;
+  const r = P.check(p.x, p.m, edits[i] || []);
+  const k = P.key(p.x, p.m).find(x => !r.found.includes(x.i));
+  if (!k) return null;
+  const s = P.sentenceOf(p.x, p.m, k.i), m = p.m[k.i];
+  return { i, a: s.a, b: s.b, k: m.k, g: P.BY[m.k] ? P.BY[m.k].g : '' };
 }
 /** Every mistake in marking order: [{ p (passage), j (index in its m), k, cc, g }]. */
 export function mistakesOf(snap) {
@@ -158,6 +185,8 @@ export function viewFor(step, cl, row, { teacher = false, t } = {}) {
   const edits = editsOf(row, snap.passages.length);
   const view = {
     title: step.title || '', tell: snap.tell, handedIn: done, revealed, edits,
+    // hints: the teacher allowed them; hintsUsed: how many this student asked for (counted by the server)
+    hints: snap.hints, hintsUsed: hintsOf(row),
     // the answers will open after the due date (the teacher's switch is on and there is a due date)
     later: !teacher && !revealed && !!step.show_answers && !!(cl && cl.due_at),
     passages: snap.passages.map(p => {
@@ -199,9 +228,9 @@ export function typeTotals(step, rows) {
   }
   return { kinds: [...by.values()], handed, foundPct: all ? Math.round((100 * found) / all) : null };
 }
-/** A student's handed-in result for the teacher: { found, total, changed, score } or null. */
+/** A student's handed-in result for the teacher: { found, total, changed, score, hints } or null. */
 export function resultOf(step, row) {
   if (!handedIn(row)) return null;
   const snap = snapOf(step), r = markAll(step, editsOf(row, snap.passages.length));
-  return { found: r.found, total: r.total, changed: r.changed, score: row.score };
+  return { found: r.found, total: r.total, changed: r.changed, score: row.score, hints: hintsOf(row) };
 }

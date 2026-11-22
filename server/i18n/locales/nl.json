@@ -12992,8 +12992,13 @@
       "showHint": "Standaard uit. Aan: na de inleverdatum zien leerlingen die hebben ingeleverd de verbeteringen en waarom elk klopt.",
       "snapshotNote": "Leerlingen krijgen deze set zoals hij nu is. Latere wijzigingen veranderen niet wat de klas kreeg. De resultaten gaan naar Voortgang en het cijferoverzicht.",
       "submit": "Toewijzen",
-      "practiceInstead": "In plaats daarvan oefenen in het spel (geen cijfer)",
-      "practiceHint": "Leerlingen spelen de set als spel, controleren onderweg en krijgen hints. Hij telt als klaar als ze klaar zijn."
+      "practiceHint": "Leerlingen spelen de set als spel, controleren onderweg en krijgen hints. Hij telt als klaar als ze klaar zijn.",
+      "chooseH": "Hoe doen de leerlingen het?",
+      "gradeSub": "Ze doen het één keer in de les. Het wordt beoordeeld en komt in het cijferoverzicht.",
+      "practiceH": "Oefenen",
+      "practiceSub": "Ze spelen de set zo vaak ze willen. Niets krijgt een cijfer.",
+      "allowHints": "Hints toestaan",
+      "hintsHint": "Standaard uit. Aan: een leerling kan om een hint vragen (de zin met een fout, daarna het soort fout). Je ziet hoeveel hints elke leerling gebruikte."
     },
     "step": {
       "score": "Je vond {found} van de {total} fouten ({pct}%).",
@@ -13022,7 +13027,11 @@
       "changedHint": "Goede woorden veranderen kost geen punten; het aantal staat hier zodat je erover kunt praten.",
       "errors": {
         "words": "Die verbetering bevat woorden die we niet kunnen gebruiken. Probeer andere woorden."
-      }
+      },
+      "hintsAllowed": "Hints: toegestaan",
+      "hintsOff": "Hints: uit",
+      "hintsCol": "Hints",
+      "hintsN": "{count, plural, one {# hint} other {# hints}}"
     },
     "insight": {
       "title": "Oomba's lezing",

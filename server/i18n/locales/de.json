@@ -12992,8 +12992,13 @@
       "showHint": "Standardmäßig aus. An: Nach dem Abgabedatum sehen Schüler, die abgegeben haben, die Korrekturen und warum jede stimmt.",
       "snapshotNote": "Die Schüler bekommen diese Sammlung so, wie sie jetzt ist. Spätere Änderungen ändern nicht, was die Klasse bekommen hat. Die Ergebnisse gehen in den Fortschritt und das Notenbuch.",
       "submit": "Zuweisen",
-      "practiceInstead": "Stattdessen im Spiel üben (ohne Note)",
-      "practiceHint": "Die Schüler spielen die Sammlung als Spiel, prüfen unterwegs und bekommen Tipps. Sie ist erledigt, wenn sie fertig sind."
+      "practiceHint": "Die Schüler spielen die Sammlung als Spiel, prüfen unterwegs und bekommen Tipps. Sie ist erledigt, wenn sie fertig sind.",
+      "chooseH": "Wie sollen die Schüler es machen?",
+      "gradeSub": "Sie machen es einmal in der Lektion. Es wird bewertet und kommt ins Notenbuch.",
+      "practiceH": "Üben",
+      "practiceSub": "Sie spielen die Sammlung so oft sie wollen. Nichts wird bewertet.",
+      "allowHints": "Tipps erlauben",
+      "hintsHint": "Standardmäßig aus. An: Ein Schüler kann um einen Tipp bitten (der Satz mit einem Fehler, dann die Fehlerart). Sie sehen, wie viele Tipps jeder Schüler genutzt hat."
     },
     "step": {
       "score": "Du hast {found} von {total} Fehlern gefunden ({pct} %).",
@@ -13022,7 +13027,11 @@
       "changedHint": "Richtige Wörter zu ändern senkt die Punktzahl nicht; die Zahl steht hier, damit ihr darüber sprechen könnt.",
       "errors": {
         "words": "Diese Verbesserung enthält Wörter, die wir nicht verwenden können. Versuch andere Wörter."
-      }
+      },
+      "hintsAllowed": "Tipps: erlaubt",
+      "hintsOff": "Tipps: aus",
+      "hintsCol": "Tipps",
+      "hintsN": "{count, plural, one {# Tipp} other {# Tipps}}"
     },
     "insight": {
       "title": "Oombas Einschätzung",

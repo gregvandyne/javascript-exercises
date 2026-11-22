@@ -291,7 +291,7 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
         <form id="sd-${s.id}" hidden data-api="/api/lesson-steps/${s.id}/delete" data-reload data-confirm="${work ? t('lessons.step.deleteWorkConfirm', { n: work }) : t('lessons.step.deleteConfirm')}"></form></details>` : ''}`;
   // A graded Mistake Hunt set (services/proof-steps.js): its passages and mistakes are its snapshot; the title, minutes and
   // instructions can be edited, or the step deleted.
-  const proofStepView = (s, work) => { const sn = PS.snapOf(s); return html`<p class="small muted">${ico('🔎', { size: 18 })} ${t('proof.step.passagesN', { count: sn.passages.length })} · ${t('proof.step.mistakesN', { count: PS.mistakesOf(sn).length })} · ${s.show_answers ? t('figures.step.showOnNote') : t('figures.step.showOffNote')}</p>
+  const proofStepView = (s, work) => { const sn = PS.snapOf(s); return html`<p class="small muted">${ico('🔎', { size: 18 })} ${t('proof.step.passagesN', { count: sn.passages.length })} · ${t('proof.step.mistakesN', { count: PS.mistakesOf(sn).length })} · ${s.show_answers ? t('figures.step.showOnNote') : t('figures.step.showOffNote')} · ${t(sn.hints ? 'proof.step.hintsAllowed' : 'proof.step.hintsOff')}</p>
     ${edit ? html`${work ? html`<p class="small muted">${t('lessons.step.figuresStarted')}</p>` : ''}
       <details><summary class="small">⋯ ${t('lessons.step.more')}</summary>
         <form class="formgrid" data-api="/api/lesson-steps/${s.id}" data-reload novalidate><input type="hidden" name="kind" value="${L.PROOF_KIND}">

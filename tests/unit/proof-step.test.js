@@ -72,7 +72,7 @@ test('assign: a lesson with one proofread step, a snapshot of the set; only the 
   // the Assign page offers "Hand in for a grade" for the teacher's own set
   const page = await call(`/teach/assign?game=mistake-hunt&opts=${encodeURIComponent(`chapter=${setId}&lock=1`)}`, { user: teacher });
   assert.equal(page.status, 200);
-  assert.match(page.text, /Hand in for a grade/); assert.match(page.text, /data-api="\/api\/teach\/assign-proofread"/); assert.match(page.text, /Practice in the game instead/);
+  assert.match(page.text, /Hand in for a grade/); assert.match(page.text, /data-api="\/api\/teach\/assign-proofread"/); assert.match(page.text, /data-api="\/api\/teach\/assign-game"/);
   assert.doesNotMatch((await call(`/teach/assign?game=mistake-hunt&opts=${encodeURIComponent(`chapter=${other}&lock=1`)}`, { user: teacher })).text, /assign-proofread/, 'not for another teacher\'s set');
 });
 
@@ -201,4 +201,94 @@ test('answers: only with the switch on, the due date over, and handed in; the te
   // the teacher's own preview always has the key
   const tp = await call(`/class/${cls.id}/lessons/${cl.id}`, { user: teacher });
   assert.match(tp.text, /Students fix these passages in Mistake Hunt/);
+});
+
+test('the Assign page: the teacher must choose "Hand in for a grade" or "Practice"; nothing is picked, and neither form shows before a choice', async () => {
+  const setId = await saveSet();
+  const page = await call(`/teach/assign?game=mistake-hunt&opts=${encodeURIComponent(`chapter=${setId}&lock=1`)}`, { user: teacher });
+  assert.equal(page.status, 200);
+  const h = page.text;
+  assert.match(h, /How will students do it\?/);
+  const radios = h.match(/<input type="radio" name="pf-mode"[^>]*>/g) || [];
+  assert.deepEqual(radios.map(r => /value="(\w+)"/.exec(r)[1]), ['grade', 'practice'], 'two choices');
+  assert.ok(radios.every(r => !/checked/.test(r)), 'nothing preselected');
+  assert.match(h, /Students do it once in the lesson\. It is marked and goes to the gradebook\./);
+  assert.match(h, /Students play the set as often as they like\. Nothing is graded\./);
+  // the radios belong to no form, so neither form can be sent without a choice; each form sits in its own pane
+  for (const f of h.match(/<form[\s\S]*?<\/form>/g) || []) assert.doesNotMatch(f, /pf-mode/, 'a choice radio inside a form');
+  const grade = /<div class="pf-pane" id="pf-pane-grade">[\s\S]*?<\/form><\/div>/.exec(h), practice = /<div class="pf-pane" id="pf-pane-practice">[\s\S]*?<\/form><\/div>/.exec(h);
+  assert.ok(grade && /assign-proofread/.test(grade[0]) && /name="allowHints"/.test(grade[0]) && /name="showAnswers"/.test(grade[0]) && /name="opensAt"/.test(grade[0]) && /name="dueAt"/.test(grade[0]));
+  assert.doesNotMatch(grade[0], /name="allowHints"[^>]*checked/, 'Allow hints is off by default');
+  assert.ok(practice && /assign-game/.test(practice[0]) && /name="dueAt"/.test(practice[0]) && !/assign-proofread/.test(practice[0]));
+  assert.doesNotMatch(h, /pf-practice|Practice in the game instead/, 'no folded practice form any more');
+  // the panes are hidden until their radio is checked (CSS :has(); both show where :has() is unknown)
+  const fs = await import('node:fs');
+  const css = fs.readFileSync(new URL('../../public/css/schools.css', import.meta.url), 'utf8');
+  assert.match(css, /@supports selector\(:has\(\*\)\)\{\s*\.pf-pane\{display:none\}/);
+  assert.match(css, /\.assign-game:has\(#pf-mode-grade:checked\) #pf-pane-grade,\.assign-game:has\(#pf-mode-practice:checked\) #pf-pane-practice\{display:block\}/);
+});
+
+test('hints: off by default; allowed on the Assign page, answered and counted by the server, shown to the teacher as a plain count', async () => {
+  // off by default: the snapshot, the frame and the API all say no
+  const off = await assigned({ dueAt: isoDay(Date.now() + 7 * DAY) });
+  assert.equal(PS.snapOf(off.step).hints, false);
+  const offApi = `/api/progress/${off.cl.id}/${off.step.id}/proofread`;
+  assert.equal((await call(offApi, { user: mia })).json.hints, false);
+  const no = await call(offApi, { method: 'POST', body: { edits: [[]], hint: 0 }, user: mia });
+  assert.equal(no.status, 400); assert.equal(no.json.code, 'noHints');
+  const offPage = await call(`/class/${cls.id}/progress/${off.cl.id}`, { user: teacher });
+  assert.match(offPage.text, /Hints: off/); assert.doesNotMatch(offPage.text, /<th scope="col">Hints<\/th>/);
+  // allowed: the snapshot keeps it (no migration: it is in the step's JSON), a round trip through assign
+  const { cl, step } = await assigned({ dueAt: isoDay(Date.now() + 7 * DAY), allowHints: '1' });
+  assert.equal(PS.snapOf(step).hints, true); assert.equal(PS.hintsOn(step), true);
+  assert.equal(JSON.parse(step.items).hints, true);
+  const api = `/api/progress/${cl.id}/${step.id}/proofread`;
+  const play = await call(`/play/mistake-hunt?lesson=${cl.id}&step=${step.id}`, { user: mia });
+  const frame = await call(/data-src="(\/frame\/[^"]+?)"/.exec(play.text)[1].replace(/&amp;/g, '&'), { user: mia });
+  const init = JSON.parse(/window\.__BRB_INIT__=(\{.*?\});<\/script>/.exec(frame.text)[1]);
+  assert.equal(init.proofStep.hints, true); assert.equal(init.proofStep.hintsUsed, 0);
+  // a hint: the sentence of the first mistake not fixed yet, and its kind; the fixes are saved; counted once
+  const k0 = C.key(X1, ITEMS[0].m)[0];
+  const h1 = await call(api, { method: 'POST', body: { edits: [[], []], hint: 0 }, user: mia });
+  assert.equal(h1.status, 200, h1.text);
+  assert.equal(h1.json.hint.i, 0); assert.equal(h1.json.hint.k, k0.k);
+  const sen = C.sentenceOf(X1, ITEMS[0].m, k0.i);
+  assert.deepEqual([h1.json.hint.a, h1.json.hint.b], [sen.a, sen.b]);
+  assert.ok(h1.json.hint.a <= k0.a && k0.b <= h1.json.hint.b, 'the sentence holds the mistake');
+  assert.equal(h1.json.view.hintsUsed, 1);
+  noSecrets(h1.text, 'a hint');
+  assert.doesNotMatch(h1.text, /"right"|"y":/, 'never the right words or a why line');
+  // with that mistake fixed, the next hint moves on; the count goes up each time
+  const h2 = await call(api, { method: 'POST', body: { edits: [[{ a: k0.a, b: k0.b, s: k0.right }], []], hint: 0 }, user: mia });
+  const k1 = C.key(X1, ITEMS[0].m)[1];
+  assert.equal(h2.json.hint.k, k1.k, 'the next mistake in reading order');
+  assert.equal(h2.json.view.hintsUsed, 2);
+  assert.equal(JSON.stringify(P.get(cl.id, step.id, mia.id).answer).includes(k0.right.replace(/"/g, '')), true, 'the fixes were saved');
+  // a passage with every mistake fixed: nothing to hint, not counted
+  const h3 = await call(api, { method: 'POST', body: { edits: [allFixes(ITEMS[0]), []], hint: 0 }, user: mia });
+  assert.equal(h3.status, 200); assert.equal(h3.json.hint, null); assert.equal(h3.json.view.hintsUsed, 2);
+  // validation: a passage that isn't there, not a whole number, a count sent by the page (ignored)
+  for (const hint of [2, -1, 1.5, '0', 100]) assert.equal((await call(api, { method: 'POST', body: { edits: [[], []], hint }, user: mia })).status, 400, `hint ${hint}`);
+  await call(api, { method: 'POST', body: { edits: [allFixes(ITEMS[0]), []], hints: 0, hintsUsed: 0 }, user: mia });
+  assert.equal(P.get(cl.id, step.id, mia.id).hints, 2, 'the page cannot set the count');
+  // a small integer: never above PS.HINTS_MAX, whatever the row holds
+  await call(api, { method: 'POST', body: { edits: [[{ a: 0, b: 1, s: 'A' }], []] }, user: leo });
+  q.run('UPDATE step_progress SET hints=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', PS.HINTS_MAX, cl.id, step.id, leo.id);
+  await call(api, { method: 'POST', body: { edits: [[], []], hint: 1 }, user: leo });
+  assert.equal(P.get(cl.id, step.id, leo.id).hints, PS.HINTS_MAX);
+  assert.equal(PS.hintsOf({ hints: 5000 }), PS.HINTS_MAX); assert.equal(PS.hintsOf({ hints: -3 }), 0); assert.equal(PS.hintsOf(null), 0);
+  // someone else's step: 404; after handing in: no more hints
+  assert.equal((await call(api, { method: 'POST', body: { edits: [[], []], hint: 0 }, user: zed })).status, 404);
+  const h = await call(api, { method: 'POST', body: { edits: [allFixes(ITEMS[0]), []], handIn: true }, user: mia });
+  assert.equal(h.json.view.hintsUsed, 2, 'saved with the work');
+  assert.equal((await call(api, { method: 'POST', body: { edits: [[], []], hint: 1 }, user: mia })).json.code, 'handedIn');
+  // the teacher: "Hints: allowed" on the progress page and the lesson editor, each student's plain count
+  const pp = await call(`/class/${cls.id}/progress/${cl.id}`, { user: teacher });
+  assert.match(pp.text, /Hints: allowed/); assert.match(pp.text, /<th scope="col">Hints<\/th>/);
+  assert.match(pp.text, /<td class="pf-hintsn">2 hints<\/td>/);
+  assert.equal(PS.resultOf(L.getStep(step.id), P.get(cl.id, step.id, mia.id)).hints, 2);
+  const ed = await call(`/teach/lessons/${cl.lesson_id}`, { user: teacher });
+  assert.match(ed.text, /Hints: allowed/);
+  const tp = await call(`/class/${cls.id}/lessons/${cl.id}`, { user: teacher });
+  assert.match(tp.text, /Hints: allowed/);
 });
