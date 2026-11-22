@@ -30,8 +30,8 @@ const h = location.hash.slice(1);
 if (h && $(`[data-tab="${CSS.escape(h)}"]`)) state.tab = h;
 apply();
 
-// "Describe what you need" (services/figures-chat.js start): the words make a new worksheet or test with Oomba's first
-// turn already running, then the builder opens with the chat. Refused words stay in the box with the reason.
+// "Describe what you need" (services/companion.js startSheet): the words make a new worksheet or test with the
+// companion's first turn on it already running, then the builder opens with Oomba's panel (one chat everywhere). Refused words stay in the box with the reason.
 const form = $('#fgd-form');
 if (form) {
   const err = $('#fgd-err'), go = $('#fgd-go'), box = $('#fgd-in');
@@ -56,7 +56,7 @@ if (form) {
 for (const b of $$('[data-dismiss]')) {
   b.addEventListener('click', async () => {
     const card = b.closest('[data-ready]');
-    try { await api(`/api/figures/worksheets/${encodeURIComponent(b.dataset.dismiss)}/chat/dismiss`, { method: 'POST', body: {} }); } catch { /* it shows again next time */ }
+    try { await api(`/api/figures/worksheets/${encodeURIComponent(b.dataset.dismiss)}/ready/dismiss`, { method: 'POST', body: {} }); } catch { /* it shows again next time */ }
     if (card) card.hidden = true;
   });
 }

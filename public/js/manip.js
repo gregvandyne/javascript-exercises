@@ -586,7 +586,7 @@ function openTool(slug, { restore = null, boardId = null, title = '' } = {}) {
   startAutosave();
   if (HOST) CHAT.attach(chatCtx());
 }
-/** What Oomba's chat (public/js/manip-chat.js) reads and changes: the open board, one change at a time (Undo too). */
+/** What Oomba (the companion, with this board's workflow: public/js/manip-chat.js) reads and changes: the open board, one change at a time (Undo too). */
 const chatCtx = () => ({
   slug: V.tool.slug, name: V.tool.name, layout: () => V && fit(),
   get: () => ({ boardId: V.boardId, title: V.title, state: boardState(), empty: !(V.steps || []).length && !(V.st.pieces || []).length && V.st.objects.length <= 1 }),
@@ -1201,7 +1201,7 @@ function toolButton(k) {
     if (draftLive()) { V.draftHidden = !V.draftHidden; renderChrome(); return; }
     // Draft with AI opens Oomba's chat: the first message is the brief, every later one adjusts the board.
     DJ.notice = null; DJ.fallback = null; renderDraft();
-    CHAT.open({ from: document.querySelector('#mp-toolsrow [data-tool="draft"]') }); return;
+    CHAT.open(); return;
   }
   if (k === 'reset') { change(st => { const settings = {}; for (const key of ['decimal', 'mode', 'unit']) if (key in st) settings[key] = st[key]; const fresh = normalize(V.tool.slug, V.impl, newBoard(V.tool.slug, WORLD, settings)); for (const key of Object.keys(st)) delete st[key]; Object.assign(st, fresh); V.sel = null; V.osel = null; }); fit(); }
 }
@@ -1816,29 +1816,8 @@ function renderDraft() {
     return;
   }
   if (!V.draftOpen) { el.innerHTML = ''; return; }
-  if (el.querySelector('#mp-brief') && el.contains(document.activeElement)) return;   // typing in it: keep it as it is
-  const tasks = TASKS[V.tool.slug] || [], re = DJ.retry && DJ.retry.tool === V.tool.slug ? DJ.retry : null;
-  el.innerHTML = `<section class="panel mp-drafter" aria-label="${esc(t('js.manip.draft.title'))}"><div class="row"><h2>${iconHtml('✨', { size: 28 })} ${esc(t('js.manip.draft.title'))}</h2>${btn('btn btn-sm btn-ghost', 'data-tool="draft"', `✕ ${esc(t('js.manip.draft.close'))}`)}</div>
-    <p class="small muted">${esc(t('js.manip.draft.text'))}</p>
-    <div class="mp-draftrow"><label class="mp-set grow"><span>${esc(t('js.manip.draft.task'))}</span><select class="input input-sm" id="mp-dtask"><option value="">${esc(t('js.manip.draft.ownLesson'))}</option>${tasks.map(x => `<option value="${esc(`${x.title}: ${x.prompt}`)}" data-grade="${esc(x.grade)}">${esc(x.title)} · ${esc(t('js.manip.grade', { grade: x.grade }))}</option>`).join('')}</select></label>
-      <label class="mp-set"><span>${esc(t('js.manip.draft.grade'))}</span><select class="input input-sm" id="mp-dgrade"><option value="">${esc(t('js.manip.draft.any'))}</option>${['K', '1', '2', '3', '4', '5', '6', '7', '8'].map(g => `<option value="${g}">${esc(t('js.manip.grade', { grade: g }))}</option>`).join('')}</select></label></div>
-    <label class="mp-set mp-block"><span>${esc(t('js.manip.draft.brief'))}</span><textarea class="input" id="mp-brief" rows="3" maxlength="1000" placeholder="${esc(t('js.manip.draft.briefPh'))}">${esc(re ? re.brief : '')}</textarea></label>
-    <p class="small muted">${esc(t('js.manip.draft.private'))}</p>
-    <div class="row">${btn('btn btn-primary', 'id="mp-dgo"', `${iconHtml('✨', { size: 18 })} ${esc(t(re ? 'js.manip.draft.retry' : 'js.manip.draft.go'))}`)}<span class="small muted">${esc(t('js.manip.draft.hint'))}</span></div>
-    <p class="small${re && re.error ? ' bad' : ''}" id="mp-dmsg" role="status">${re && re.error ? esc(`${t('js.manip.draft.failed')} ${errorText(re.error)}`) : ''}</p></section>`;
-  const task = document.getElementById('mp-dtask'), brief = document.getElementById('mp-brief');
-  if (re) { task.value = re.task || ''; document.getElementById('mp-dgrade').value = re.grade || ''; }
-  task.onchange = () => { if (task.value) { brief.value = task.value; document.getElementById('mp-dgrade').value = task.selectedOptions[0].dataset.grade || ''; } };
-  document.getElementById('mp-dgo').onclick = async ev => {
-    const b = ev.currentTarget, msg = document.getElementById('mp-dmsg');
-    if (brief.value.trim().length < 3) { msg.textContent = t('js.manip.draft.needBrief'); return; }
-    b.disabled = true; msg.classList.remove('bad'); msg.textContent = t('js.manip.draft.working');
-    try {
-      const r = await api('/api/manipulatives/draft', { method: 'POST', body: { tool: V.tool.slug, brief: brief.value, grade: document.getElementById('mp-dgrade').value, task: task.value } });
-      DJ.retry = null; DJ.notice = null; DJ.fallback = null; V.draftHidden = false;
-      setJob(r.job, r.eta);
-    } catch (e) { msg.textContent = e.message; b.disabled = false; }
-  };
+  // One chat everywhere: Try again on a draft that failed (or its starting board) opens Oomba with the words in its box.
+  { const re0 = DJ.retry && DJ.retry.tool === V.tool.slug ? DJ.retry : null; V.draftOpen = false; DJ.retry = null; el.innerHTML = ''; CHAT.ask(re0 ? re0.brief : ''); return; }
 }
 function renderTasksBox() {
   const el = document.getElementById('mp-tasks'), tasks = TASKS[V.tool.slug] || [];
@@ -1852,6 +1831,7 @@ function renderTasksBox() {
 // ---------------------------------------------------------------- a live session: the shared room (public/js/manip-room.js)
 async function liveRoom(id, joinFirst) {
   clear(); V = null;
+  if (HOST) CHAT.attachLive();
   try {
     if (joinFirst) { await api('/api/manipulatives/live/join', { method: 'POST', body: { id } }); history.replaceState(null, '', `#live/${id}`); }
     await ROOM.open(ROOT, id, { palButton, bindTrayDrag, dropAt, IMPL, mkPiece, breakPiece, regroup, settleBoard, scaleWithChart, newId, boards: STATE.boards, normalize, boardHtml, paletteFor, pieceAction, objectAction, joinGroup, target, inkLine, pieceWheel, objWheel, wheelItems, wheelRun, wheelKey, objName, growAnswer, growAnswers, sizeObjEl, textBoxHtml, textBoxPointer, textSizeButton, growText, snapText, othersThan });

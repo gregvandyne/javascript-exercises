@@ -84,3 +84,5 @@ sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1
 .oc-pill:disabled{cursor:default;opacity:.8}
 .oc-attachnote{font-size:.78rem;color:var(--muted);font-weight:600;flex:1 1 180px}
 @media (max-width:899px){.oc-row{flex-wrap:wrap}.oc-row .oc-in{flex-basis:100%;order:-1}.oc-row .oc-send{margin-inline-start:auto}}
+/* Words still coming in from the live microphone: greyed and read-only until they settle. */
+.oc-in.interim{color:var(--text-2);font-style:italic;background:var(--hover)}

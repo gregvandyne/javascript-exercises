@@ -1119,9 +1119,9 @@
       "companion": {
         "h": "Oomba, el ayudante para enseñar",
         "p1": "Los docentes con el Plan Docente pueden chatear con Oomba desde una burbuja en sus propias páginas. Los estudiantes y los niños nunca la ven. Los mensajes de un docente, el texto de un documento que adjunte y una imagen que adjunte se envían a nuestro proveedor de IA, Anthropic, para crear la respuesta. Antes de enviar nada, quitamos los nombres de los estudiantes del docente, los correos, los teléfonos y los enlaces. Las imágenes en las que aparece una persona se rechazan y nunca se guardan.",
-        "p2": "Oomba solo ve lo que el docente tiene abierto y datos seguros sobre eso (el grado y el tamaño de una clase, los widgets de un panel), nunca los nombres, respuestas ni trabajos de los estudiantes. Solo cambia un panel después de que el docente toca Aplicar, y el cambio se puede deshacer.",
+        "p2": "Oomba solo ve lo que el docente tiene abierto y datos seguros sobre eso (el grado y el tamaño de una clase, los widgets de un panel, las preguntas de una hoja de Figures, los elementos y pasos de un tablero de manipulativos), nunca los nombres, respuestas ni trabajos de los estudiantes. Solo cambia un panel después de que el docente toca Aplicar. En una hoja de Figures o un tablero de manipulativos, hace enseguida el cambio que pide el docente, y el docente puede deshacerlo.",
         "p3": "Cuando la búsqueda web está activada, Oomba puede enviar búsquedas cortas a la búsqueda web de Anthropic. Nunca incluyen nombres ni una ubicación; los sitios para adultos, de apuestas, redes sociales y similares están bloqueados, y cada búsqueda queda registrada para nuestro equipo sin el nombre del docente. Las páginas encontradas en la web se muestran como fuentes que Oomba no revisó.",
-        "p4": "Un docente puede hablar en lugar de escribir: la grabación se envía a {provider} para convertirla en palabras, y el audio nunca se guarda, ni nosotros ni ellos. Las palabras aparecen en el cuadro del mensaje para que el docente las revise.",
+        "p4": "Un docente puede hablar en lugar de escribir: el sonido se envía a {provider} para convertirlo en palabras mientras habla, y el audio nunca se guarda, ni nosotros ni ellos. Las palabras aparecen en el cuadro del mensaje para que el docente las revise.",
         "p5": "Guardamos el chat de un docente, con el texto de lo que adjuntó, durante 60 días desde su último uso (una escuela puede elegir de 7 a 365 días); una imagen se borra en cuanto Oomba responde, y como máximo en un día. Un docente puede borrar el chat con Chat nuevo, y se borra con la cuenta. Un administrador de la escuela puede desactivar Oomba o su búsqueda web para la escuela."
       }
     }
@@ -3941,7 +3941,9 @@
         "steps": "Escribe pasos más claros para mis estudiantes"
       },
       "placeholder": "Pide a Oomba que cambie el tablero",
-      "placeholderEmpty": "Describe la clase que quieres en este tablero"
+      "placeholderEmpty": "Describe la clase que quieres en este tablero",
+      "boardOf": "Tablero de {tool}",
+      "liveRoom": "Sala en vivo"
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4114,7 +4116,12 @@
         "readImage": "Miró tu imagen",
         "web": "Buscó en la web ({n, plural, one {# búsqueda} other {# búsquedas}})",
         "webNo": "Buscó en la web, pero dejó fuera lo que encontró",
-        "toolNo": "Un paso no funcionó"
+        "toolNo": "Un paso no funcionó",
+        "sheet": "Leyó tu hoja ({n} preguntas)",
+        "edit": "Cambió tu hoja ({n} cambios)",
+        "editNo": "No pudo cambiar la hoja",
+        "board": "Armó el tablero ({n} elementos)",
+        "boardNo": "No pudo armar ese tablero"
       },
       "stepsSum": "{n, plural, one {# paso} other {# pasos}} · {s} s",
       "prog": {
@@ -4188,7 +4195,9 @@
         "slow": "Son muchos mensajes para una hora. Espera un poco y vuelve a intentarlo.",
         "fileGone": "Ese adjunto ya no está. Adjúntalo otra vez.",
         "other": "Algo salió mal. Tu mensaje sigue aquí: inténtalo de nuevo en un momento."
-      }
+      },
+      "quoteN": "Pregunta {n}: {text}",
+      "questionN": "Pregunta {n}"
     }
   },
   "favorites": {

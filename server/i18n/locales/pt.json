@@ -1120,9 +1120,9 @@
       "companion": {
         "h": "Oomba, o ajudante para ensinar",
         "p1": "Professores com o Plano Professor podem conversar com o Oomba por uma bolha nas próprias páginas. Alunos e crianças nunca a veem. As mensagens de um professor, o texto de um documento anexado e uma imagem anexada são enviados ao nosso provedor de IA, a Anthropic, para criar a resposta. Antes de enviar qualquer coisa, removemos os nomes dos alunos do professor, e-mails, telefones e links. Imagens que mostram uma pessoa são recusadas e nunca guardadas.",
-        "p2": "O Oomba vê só o que o professor tem aberto e dados seguros sobre isso (o ano e o tamanho de uma turma, os widgets de um painel), nunca nomes, respostas ou trabalhos dos alunos. Ele só muda um painel depois que o professor toca em Aplicar, e a mudança pode ser desfeita.",
+        "p2": "O Oomba vê só o que o professor tem aberto e dados seguros sobre isso (o ano e o tamanho de uma turma, os widgets de um painel, as perguntas de uma folha do Figures, os itens e passos de um quadro dos manipulativos), nunca nomes, respostas ou trabalhos dos alunos. Ele só muda um painel depois que o professor toca em Aplicar. Numa folha do Figures ou num quadro dos manipulativos, faz na hora a mudança pedida, e o professor pode desfazê-la.",
         "p3": "Quando a busca na web está ligada, o Oomba pode enviar buscas curtas para a busca na web da Anthropic. Elas nunca incluem nomes nem uma localização; sites para adultos, de apostas, redes sociais e parecidos são bloqueados, e cada busca é registrada para nossa equipe sem o nome do professor. As páginas encontradas na web aparecem como fontes que o Oomba não verificou.",
-        "p4": "Um professor pode falar em vez de digitar: a gravação é enviada para {provider} para virar palavras, e o áudio nunca é guardado, nem por nós nem por eles. As palavras vão para a caixa de mensagem para o professor conferir.",
+        "p4": "Um professor pode falar em vez de digitar: o som é enviado para {provider} para virar palavras enquanto ele fala, e o áudio nunca é guardado, nem por nós nem por eles. As palavras vão para a caixa de mensagem para o professor conferir.",
         "p5": "Guardamos a conversa de um professor, com o texto do que ele anexou, por 60 dias após o último uso (uma escola pode escolher de 7 a 365 dias); uma imagem é apagada assim que o Oomba responde, no máximo em um dia. Um professor pode apagar a conversa com Nova conversa, e ela é apagada junto com a conta. Um administrador da escola pode desligar o Oomba ou a busca na web dele para a escola."
       }
     }
@@ -3942,7 +3942,9 @@
         "steps": "Escreva passos mais claros para meus alunos"
       },
       "placeholder": "Peça ao Oomba para mudar o quadro",
-      "placeholderEmpty": "Descreva a aula que você quer neste quadro"
+      "placeholderEmpty": "Descreva a aula que você quer neste quadro",
+      "boardOf": "Quadro de {tool}",
+      "liveRoom": "Sala ao vivo"
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4115,7 +4117,12 @@
         "readImage": "Olhou sua imagem",
         "web": "Buscou na web ({n, plural, one {# busca} other {# buscas}})",
         "webNo": "Buscou na web, mas deixou de fora o que encontrou",
-        "toolNo": "Uma etapa não funcionou"
+        "toolNo": "Uma etapa não funcionou",
+        "sheet": "Leu sua folha ({n} perguntas)",
+        "edit": "Mudou sua folha ({n} mudanças)",
+        "editNo": "Não conseguiu mudar a folha",
+        "board": "Montou o quadro ({n} itens)",
+        "boardNo": "Não conseguiu montar esse quadro"
       },
       "stepsSum": "{n, plural, one {# etapa} other {# etapas}} · {s} s",
       "prog": {
@@ -4189,7 +4196,9 @@
         "slow": "São muitas mensagens em uma hora. Espere um pouco e tente de novo.",
         "fileGone": "Esse anexo não está mais aqui. Anexe de novo.",
         "other": "Algo deu errado. Sua mensagem continua aqui: tente de novo daqui a pouco."
-      }
+      },
+      "quoteN": "Pergunta {n}: {text}",
+      "questionN": "Pergunta {n}"
     }
   },
   "favorites": {

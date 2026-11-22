@@ -401,16 +401,20 @@ ${scripts.map(s => `<script type="module" src="${esc(s)}?v=${VERSION}"></script>
 // Oomba, the teaching companion (services/companion.js; docs/decisions.md "Oomba teaching companion"): its bubble on
 // every teacher page for Teacher plan staff, on every device. Never on a bare page (a game playing, a live player, a quest
 // player) unless the page asks for it (the class dashboard's teacher screen: companion 'dash', at the end of its layout
-// bar), never on a print page, a student view of a lesson, or a page with its own Oomba chat (a Figures worksheet, the
-// Manipulatives). The dashboard hides it again in Projector and Eyes up (public/js/companion.js).
-const NO_COMPANION = /(^|\/)print(\/|$)|^\/class\/[^/]+\/lessons\/|^\/figures\/worksheets\/|^\/manipulatives|^\/play\/|^\/live\/(play|frame|host|cohost)\/|^\/number-quest\/|^\/cs-quest\/play/;
-const OWN_CHAT = ['/js/figures-sheet.js', '/js/manip.js'];
+// bar), never on a print page or a student view of a lesson. One chat everywhere: a Figures worksheet and the
+// math boards have no panel of their own, the companion offers their workflow there (their page scripts register it:
+// public/js/oomba-bus.js). The dashboard hides it again in Projector and Eyes up (public/js/companion.js).
+const NO_COMPANION = /(^|\/)print(\/|$)|^\/class\/[^/]+\/lessons\/|^\/play\/|^\/live\/(play|frame|host|cohost)\/|^\/number-quest\/|^\/cs-quest\/play/;
+const OWN_CHAT = [];
 /** The page as the companion's first message describes it (checked again on the server: services/companion.js pageOf). */
 export function companionPage(req, { bare = false, companion = null, scripts = [] } = {}) {
   if (companion === false || (bare && companion !== 'dash')) return null;
   const p = req.path || '';
   if (NO_COMPANION.test(p) || scripts.some(x => OWN_CHAT.includes(x))) return null;
   if (!companionFor(req.user)) return null;
+  const fs = /^\/figures\/worksheets\/([A-Za-z0-9_-]{1,64})$/.exec(p);
+  if (fs && fs[1] !== 'new') return { type: 'figures-sheet', sheetId: fs[1] };
+  if (/^\/manip/.test(p)) return { type: 'tools' };
   const m = /^\/class\/([A-Za-z0-9_-]{1,64})(\/dashboard)?/.exec(p);
   if (m) return { type: m[2] ? 'dashboard' : 'class', classId: m[1] };
   const cls = typeof (req.query || {}).class === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(req.query.class) ? req.query.class : undefined;

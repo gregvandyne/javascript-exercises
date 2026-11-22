@@ -89,7 +89,7 @@ export function mountChat(o) {
 
   // ---------------------------------------------------------------- the server
   async function load({ initial = false } = {}) {
-    const url = o.url(); if (!url) { render(); return; }
+    const url = (o.getUrl || o.url)(); if (!url) { render(); return; }
     try { took((await api(url, { background: true })).chat, { initial }); } catch { /* the next tick asks again */ }
   }
   function took(chat, { initial = false } = {}) {
@@ -118,6 +118,7 @@ export function mountChat(o) {
     if (C.chat.pending) { showErr(t('js.oomba-chat.err.chatBusy')); return; }
     C.el.send.disabled = true;
     try {
+      if (o.beforeSend) await o.beforeSend(text);   // the site companion: a page's own first step (a new worksheet is saved first)
       const url = o.url() || (o.ensure ? await o.ensure() : null);
       if (!url) throw new Error(t('js.oomba-chat.err.other'));
       const r = await api(url, { method: 'POST', body: { text, ...(C.quote ? { quote: C.quote.ref } : {}), ...(retry ? { retry } : {}), ...(o.body ? o.body({ retry }) : {}) } });
@@ -228,7 +229,8 @@ export function mountChat(o) {
 
   load({ initial: true }).then(() => {
     const m = store.get(`oc:${o.id}`);
-    const start = C.chat.pending ? (wide() || o.start === 'open' ? 'open' : 'min') : m || o.start || 'closed';
+    const st0 = typeof o.start === 'function' ? o.start() : o.start;
+    const start = C.chat.pending ? (wide() || st0 === 'open' ? 'open' : 'min') : st0 === 'open' ? 'open' : m || st0 || 'closed';
     // Only when the teacher hasn't opened or closed it meanwhile (a tap while the conversation was loading wins).
     if (start !== 'closed' && !C.touched) setMode(start, { focus: false, user: false });
   });

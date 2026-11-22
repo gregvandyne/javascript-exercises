@@ -42,6 +42,10 @@ import * as SR from '../builder/search.js';
 import { prefilter } from '../builder/screen.js';
 import { tFor } from '../i18n/index.js';
 import { register } from './jobs.js';
+import * as FC from './figures-chat.js';
+import * as M from './manipulatives.js';
+import * as MC from './manip-chat.js';
+import { toolOf } from '../../public/js/manip-data.js';
 
 export const SURFACE = 'companion';
 export const KEY = 'main';
@@ -63,7 +67,10 @@ export function cleanText(u, text, names = studentNames(u)) { return scrub(Strin
 const wordsProblem = text => (hasProfanity(String(text || '')) ? 'words' : null);
 
 // ---------------------------------------------------------------- the page the teacher has open
-export const PAGES = Object.freeze(['class', 'dashboard', 'library', 'teach', 'build', 'figures', 'tools', 'school', 'live', 'other']);
+// figures-sheet: a Figures worksheet, test or lesson set (sheetId); manip: a host's Manipulatives board (tool, boardId);
+// manip-live: the live room's teacher view (tool). These pages have their own workflow (services/figures-chat.js,
+// services/manip-chat.js): the companion offers it there, and only there.
+export const PAGES = Object.freeze(['class', 'dashboard', 'library', 'teach', 'build', 'figures', 'figures-sheet', 'tools', 'manip', 'manip-live', 'school', 'live', 'other']);
 const ID = /^[A-Za-z0-9_-]{1,64}$/;
 /** The page context as the browser sent it, checked: only a class this teacher teaches, only their own layout. */
 export function pageOf(u, raw) {
@@ -79,6 +86,15 @@ export function pageOf(u, raw) {
     if (l && l.class_id === out.classId && l.owner_id === u.id) out.layoutId = l.id;
   }
   if (type === 'dashboard' && !out.classId) out.type = 'other';
+  if (type === 'figures-sheet') {
+    const w = typeof p.sheetId === 'string' && ID.test(p.sheetId) && F.canMake(u) ? F.ownWorksheet(u, p.sheetId) : null;
+    if (w) out.sheetId = w.id; else out.type = 'figures';
+  }
+  if (type === 'manip' || type === 'manip-live') {
+    const tl = M.canHost(u) ? toolOf(p.tool) : null;
+    if (tl) { out.tool = tl.slug; if (type === 'manip' && typeof p.boardId === 'string' && ID.test(p.boardId) && M.ownBoard(u, p.boardId)) out.boardId = p.boardId; }
+    else out.type = 'tools';
+  }
   return out;
 }
 
@@ -334,7 +350,7 @@ export function applyProposal(u, p) {
   audit(u.id, 'companion.dash.apply', l.id, { classId: c.id, ops: p.ops.map(o => `${o.op}:${o.type}`) });
   return {
     change: { kind: 'dash', classId: c.id, layoutId: l.id, lines: p.lines, ids: touched.map(x => x.id).filter(id => after.has(id)) },
-    undo: { classId: c.id, layoutId: l.id, items: touched.map(x => ({ id: x.id, before: x.before, index: x.index ?? null, after: wkey(after.get(x.id) || null) })) },
+    undo: { kind: 'dash', classId: c.id, layoutId: l.id, items: touched.map(x => ({ id: x.id, before: x.before, index: x.index ?? null, after: wkey(after.get(x.id) || null) })) },
   };
 }
 /** Undo: each widget still as Oomba left it goes back; one changed since stays. -> { ok, skipped } */
@@ -388,6 +404,17 @@ export const TOOLS = Object.freeze([
   { name: 'readUpload', description: 'Read the text of a document the teacher attached to this chat (by its file id). Names of students were already taken out.', input_schema: { type: 'object', required: ['fileId'], properties: { fileId: str('The file id.') } } },
 ]);
 
+// The page tools: offered only on their own page (the teacher's own worksheet; a host's own board).
+export const PAGE_TOOLS = Object.freeze({
+  'figures-sheet': { name: 'editWorksheet', description: 'Draft or change the Figures worksheet or test the teacher has open (this page only). Only for requests about this worksheet\'s questions, title, grade or units. The change is made at once and the teacher can Undo it.', input_schema: { type: 'object', required: ['edits'], properties: {
+    title: { type: 'string' }, grade: { type: 'string' }, units: { type: 'string', enum: FC.UNITS },
+    edits: { type: 'array', items: { type: 'object', required: ['op'], properties: { op: { type: 'string', enum: ['add', 'replace', 'remove'] }, n: { type: 'integer' }, after: { type: ['integer', 'null'] }, item: { type: 'object' } } } } } } },
+  manip: { name: 'changeBoard', description: 'Change the Manipulatives board the teacher has open (this page only): the WHOLE new board as a draft. Only for requests about this board. The page puts it on the board at once and the teacher can Undo it.', input_schema: { type: 'object', required: ['items'], properties: {
+    title: { type: 'string' }, steps: { type: 'array', items: { type: 'string' } }, items: { type: 'array', items: { type: 'object' } } } } },
+});
+/** The tools for a page: the general ones and, on a worksheet or board, that page's own. */
+export const toolsFor = page => (PAGE_TOOLS[page.type] ? [...TOOLS, PAGE_TOOLS[page.type]] : [...TOOLS]);
+
 const EXPLAIN = [
   'Oomba Academy is a kid-safe site with learning games, a Story Library of free picture books, ready-made lessons (CS Quest, Number Quest), classes with assignments and progress, Oomba Live (host a game for the whole class), classroom dashboards with widgets for the projector, Figures (printable worksheets and tests with drawn figures), Math Manipulatives, Mistake Hunt and the AI Builder that makes games and classroom activities from a lesson.',
   'You (Oomba) can: find games, books and lessons; change the teacher\'s class dashboard after they tap Apply (with Undo); read a lesson plan they attach (text only) or a picture without people; search the web when it is on, with sources; hand off a build to the Builder, Figures or the Manipulatives with a brief.',
@@ -403,6 +430,10 @@ export function runTool(name, input, ctx) {
     case 'explainOomba': return { result: { text: EXPLAIN }, step: { k: 'explain' } };
     case 'getPageContext': {
       const r = pageContext(u, ctx.page, { lang: ctx.lang, names: ctx.names });
+      if (ctx.page.type === 'figures-sheet') { const w = F.ownWorksheet(u, ctx.page.sheetId); if (w) r.worksheet = FC.sheetContext(u, w); }
+      if (ctx.page.type === 'manip' && ctx.page.board) r.board = { tool: ctx.page.board.tool, title: ctx.page.board.title, ...ctx.page.board.board };
+      if (ctx.page.type === 'manip-live') r.liveRoom = { tool: ctx.page.tool, note: 'The live room is running: Oomba does not change the room\'s boards.' };
+      if (r.worksheet) return { result: r, step: { k: 'sheet', n: r.worksheet.questions.length } };
       return { result: r, step: { k: r.dashboard ? 'dash' : 'page', n: r.dashboard ? r.dashboard.widgets.length : 0, q: r.dashboard ? r.dashboard.name : '' } };
     }
     case 'searchGames': {
@@ -441,6 +472,23 @@ export function runTool(name, input, ctx) {
       if (f.kind === 'image') return { result: { note: 'This is a picture; it is in the teacher\'s message when it is still kept.' }, step: { k: 'readImage' } };
       return { result: { name: f.name, pages: parse(f.meta, {}).pages || 1, text: f.text || '' }, step: { k: 'read', n: parse(f.meta, {}).pages || 1, q: f.name } };
     }
+    case 'editWorksheet': {
+      const w = ctx.page.type === 'figures-sheet' ? F.ownWorksheet(u, ctx.page.sheetId) : null;
+      if (!w) return { result: { error: 'There is no worksheet open on this page.' }, step: { k: 'editNo' } };
+      let plan;
+      try { plan = FC.readAnswer({ reply: 'ok', ...i }, w, F.itemsOf(w.id)); } catch { plan = null; }
+      if (!plan || (!plan.ops.length && !plan.title && !plan.grade && !plan.units)) return { result: { error: 'Nothing to change: give edits.' }, step: { k: 'editNo' } };
+      ctx.out.figures = { sheetId: w.id, plan, first: F.itemsOf(w.id).length === 0 };
+      return { result: { done: true, changes: plan.ops.length, repaired: plan.repaired, dropped: plan.dropped, note: 'Applied when you answer; the teacher can Undo it.' }, step: { k: 'edit', n: plan.ops.length } };
+    }
+    case 'changeBoard': {
+      const b = ctx.page.type === 'manip' ? ctx.page.board : null;
+      if (!b) return { result: { error: 'There is no board open on this page.' }, step: { k: 'boardNo' } };
+      const r = MC.buildChange(i, b.tool);
+      if (!r.change) return { result: { error: 'The app could not build that board: nothing was changed.' }, step: { k: 'boardNo' } };
+      ctx.out.manip = { tool: b.tool, boardId: ctx.page.boardId || null, ...r.change };
+      return { result: { done: true, items: r.change.n, steps: r.change.steps, capped: r.change.capped }, step: { k: 'board', n: r.change.n } };
+    }
     default: return { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } };
   }
 }
@@ -458,19 +506,30 @@ function system(u, lang, page, settings) {
     'Web search, when you have it: only for teaching questions Oomba\'s own tools cannot answer (methods, background facts). Short plain queries, never anything personal, never a person, a school or a town. Say the answer in your own words; the app shows the sources. Never write links or site names in your answer.',
     `Pages and limits: the teacher is on a "${page.type}" page. You may use at most ${settings.steps} tool steps for one answer.`,
     'Never pretend: if you could not find something on Oomba, say so.',
+    ...(page.rules ? [
+      'Routing: this page has its own tool (below). Use it only for requests about what is on this page. Anything else (a book, a game, the dashboard, how the site works, a teaching question) is answered with the general tools, and the page is left as it is. When you cannot tell whether the teacher means this page or something else, ask one short question and change nothing.',
+      page.rules,
+    ] : []),
   ].join('\n');
 }
+/** The page's own workflow rules, built from the teacher's own worksheet or board (or none). */
+function pageRules(u, page) {
+  if (page.type === 'figures-sheet') { const w = F.ownWorksheet(u, page.sheetId); return w ? FC.workflowRules(u, w) : ''; }
+  if (page.type === 'manip' && page.board) return MC.workflowRules(page.board);
+  return '';
+}
 /** The conversation as the AI sees it: earlier turns' words, and the new message with its file and page. */
-function messagesFor(history, text, meta, image) {
+const quoted = (q, words) => (q ? `(About question ${q.n}${q.text ? `: "${q.text}"` : ''}) ${words}` : words);
+function messagesFor(history, text, meta, image, quote = null) {
   const out = [];
   const add = (role, content) => { if (out.length && out[out.length - 1].role === role && typeof content === 'string' && typeof out[out.length - 1].content === 'string') out[out.length - 1].content += `\n${content}`; else out.push({ role, content }); };
   for (const x of history) {
-    if (x.role === 'me') add('user', `${x.text}${x.meta && x.meta.file ? `\n[Attached earlier: ${x.meta.file.kind === 'image' ? 'a picture' : `"${x.meta.file.name}", file id ${x.meta.file.id}`}]` : ''}`);
+    if (x.role === 'me') add('user', `${quoted(x.quote, x.text)}${x.meta && x.meta.file ? `\n[Attached earlier: ${x.meta.file.kind === 'image' ? 'a picture' : `"${x.meta.file.name}", file id ${x.meta.file.id}`}]` : ''}`);
     else if (x.text) add('assistant', x.text);
   }
   const file = meta && meta.file;
   const note = file ? (file.kind === 'image' ? (image ? '[The teacher attached this picture.]' : '[The teacher attached a picture that is no longer kept.]') : `[The teacher attached "${file.name}" (${file.pages || 1} pages), file id ${file.id}: read it with readUpload.]`) : '';
-  const words = `${text}${note ? `\n${note}` : ''}`;
+  const words = `${quoted(quote, text)}${note ? `\n${note}` : ''}`;
   if (image) out.push({ role: 'user', content: [{ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: image.toString('base64') } }, { type: 'text', text: words }] });
   else add('user', words);
   while (out.length && out[0].role !== 'user') out.shift();
@@ -534,11 +593,13 @@ function cardOf(it) {
 let webBroken = null;
 export const _resetWeb = () => { webBroken = null; };
 const aiClient = () => (hooks.create ? (aiBudget.ok() ? { messages: { create: hooks.create } } : null) : anthropic());
-async function answer({ user, text, meta, history, step, turnId }) {
+async function answer({ user, text, meta, quote, history, step, turnId }) {
   const client = aiClient();
   if (!client) return { failed: 'resting' };
   const settings = limitsOf(user), lang = (meta && meta.lang) || 'en';
   const page = pageOf(user, meta && meta.page);
+  if (page.type === 'manip' && meta.page && meta.page.board && meta.page.board.tool === page.tool) page.board = meta.page.board;
+  page.rules = pageRules(user, page);
   const names = studentNames(user);
   const row = chatRow(user);
   const files = row ? q.all('SELECT * FROM oomba_files WHERE chat_id=? ORDER BY created_at', row.id) : [];
@@ -547,8 +608,8 @@ async function answer({ user, text, meta, history, step, turnId }) {
   const ctx = { user, page, lang, names, files, seen: new Map(), out: {}, lastList: null };
   const web = { turnId, names: [...names.map(n => n.name), ...SR.namesOf(user)], searches: 0, queries: new Map(), found: new Map(), flagged: false };
   let useWeb = webOn(user, row) && !webBroken;
-  const tools = () => (useWeb ? [...TOOLS, { ...SR.WEB_SEARCH_TOOL, max_uses: 3 }] : [...TOOLS]);
-  const msgs = messagesFor(history, text, meta, image);
+  const tools = () => (useWeb ? [...toolsFor(page), { ...SR.WEB_SEARCH_TOOL, max_uses: 3 }] : toolsFor(page));
+  const msgs = messagesFor(history, text, meta, image, quote);
   const steps = [];
   const model = config.companionModel || config.builderModel;
   const t0 = Date.now();
@@ -570,7 +631,7 @@ async function answer({ user, text, meta, history, step, turnId }) {
       const results = [];
       for (const tu of uses) {
         let r;
-        try { r = TOOL_NAMES.includes(tu.name) ? runTool(tu.name, tu.input, ctx) : { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } }; } catch (e) { log('warn', 'companion tool failed', { tool: tu.name, error: e.message }); r = { result: { error: 'That did not work.' }, step: { k: 'toolNo' } }; }
+        try { r = TOOL_NAMES.includes(tu.name) || Object.values(PAGE_TOOLS).some(x => x.name === tu.name) ? runTool(tu.name, tu.input, ctx) : { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } }; } catch (e) { log('warn', 'companion tool failed', { tool: tu.name, error: e.message }); r = { result: { error: 'That did not work.' }, step: { k: 'toolNo' } }; }
         if (r.step && !['unknown'].includes(r.step.k)) steps.push(r.step);
         results.push({ type: 'tool_result', tool_use_id: tu.id, content: JSON.stringify(r.result).slice(0, 20000) });
       }
@@ -583,11 +644,24 @@ async function answer({ user, text, meta, history, step, turnId }) {
   if (web.searches) steps.unshift({ k: web.flagged ? 'webNo' : 'web', n: web.searches });
   const fin = finalText(res && res.content, ctx, web);
   let reply = cleanText(user, fin.text, names);
-  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff) return { failed: 'error' };
+  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip) return { failed: 'error' };
   if (!SR.textOk(reply)) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
-  const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}) };
-  log('info', 'companion answered', { turn: turnId, ms: note.ms, steps: steps.length, web: web.searches });
-  return { reply, apply: () => { if (image && file) dropBytes(file.id); return { note }; } };
+  const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}),
+    ...(ctx.out.manip ? { manip: ctx.out.manip } : {}) };
+  log('info', 'companion answered', { turn: turnId, ms: note.ms, steps: steps.length, web: web.searches, page: page.type });
+  if (ctx.out.manip) audit(user.id, 'manip.chat', ctx.out.manip.tool, { changed: true });
+  const fig = ctx.out.figures;
+  return {
+    reply, apply: () => {
+      if (image && file) dropBytes(file.id);
+      if (!fig) return { note };
+      // A worksheet's change: written in the engine's transaction, with its Undo (only what is still as Oomba left it).
+      const w = F.ownWorksheet(user, fig.sheetId); if (!w) return { note };
+      const a = FC.applyPlan(user, w, fig.plan, { first: fig.first });
+      if (a.code || !a.change) return { note };
+      return { note, change: { kind: 'figures', sheetId: w.id, ...a.change }, undo: { kind: 'figures', sheetId: w.id, ...a.undo } };
+    },
+  };
 }
 
 // ---------------------------------------------------------------- the surface
@@ -601,15 +675,27 @@ export const surface = C.defineSurface({
   may: u => companionFor(u),
   context: (u, key) => (key === KEY ? { key } : null),
   clean: (u, text) => cleanText(u, text),
-  check: (u, text) => wordsProblem(text),
+  // Checked again when the job starts: a student may have joined a class since (the words were cleaned on sending).
+  check: (u, text) => wordsProblem(text) || (cleanText(u, text) !== text ? 'names' : null),
   meta(u, ctx, body) {
     const out = { page: pageOf(u, body.page), lang: typeof body.lang === 'string' && /^[a-zA-Z-]{2,8}$/.test(body.lang) ? body.lang : 'en' };
     if (body.file) { const f = fileOf(u, String(body.file)); if (!f) return { code: 'fileGone' }; out.file = fileRef(f); }
+    // On a board: the board as the AI may see it, built here from what the page sent (manip-chat.js pageBoard).
+    if (out.page.type === 'manip' && body.board && typeof body.board === 'object') { const b = MC.pageBoard(u, { ...body.board, tool: out.page.tool, boardId: out.page.boardId }); if (b) out.page.board = b; }
     return out;
   },
   limits: u => { const l = limitsOf(u); return { history: l.keep, historyToAi: l.send }; },
   answer,
-  undo: (u, ctx, data) => undoProposal(u, data),
+  undo: (u, ctx, data) => {
+    if (data && data.kind === 'figures') { const w = F.ownWorksheet(u, data.sheetId); return w ? FC.undoPlan(u, w, data) : { ok: false, code: 'notFound' }; }
+    return undoProposal(u, data);
+  },
+  // "Ask Oomba about this" on a Figures question: ref "<worksheet>:<question>", only the teacher's own.
+  quote(u, ctx, ref) {
+    const [sid, iid] = String(ref || '').split(':');
+    const w = sid && ID.test(sid) && F.canMake(u) ? F.ownWorksheet(u, sid) : null;
+    return w ? FC.quoteOf(u, w, iid) : null;
+  },
   prune: t => prune(t),
 });
 
@@ -622,15 +708,22 @@ export function prune(t = now()) {
     const days = CS.settingsFor({ id: r.owner_id }).retentionDays;
     if (r.updated_at < t - days * DAY) n += q.run('DELETE FROM oomba_chats WHERE id=?', r.id).changes;
   }
+  // The old per-worksheet Figures chats and per-board Manipulatives chats (before one chat everywhere): no longer
+  // written, kept readable in the database until their own 60 days.
+  q.run("DELETE FROM oomba_chats WHERE surface=? AND updated_at<? AND id NOT IN (SELECT chat_id FROM oomba_turns WHERE status IN ('queued','running','interrupted'))", FC.SURFACE, t - 60 * DAY);
+  MC.prune(null, t);
   return n;
 }
 register('companion-retention', 3600e3, () => { C.prune(); }, { firstAfterMs: 11 * 60e3 });
 
 // ---------------------------------------------------------------- the routes' calls
-export function current(u) {
-  const r = C.current(u, SURFACE, KEY); if (!r.ok) return r;
+/** The conversation. peek: a page loading in the background, the bubble closed: endings are not marked as seen (so the
+ *  bubble can show its dot and the Figures menu its notice). */
+export function current(u, { peek = false } = {}) {
+  const n = peek ? unseen(u) : 0;
+  const r = C.current(u, SURFACE, KEY, { see: !peek }); if (!r.ok) return r;
   const row = chatRow(u);
-  return { ...r, web: webOn(u, row), webAllowed: !!config.companionWebSearch && limitsOf(u).web };
+  return { ...r, web: webOn(u, row), webAllowed: !!config.companionWebSearch && limitsOf(u).web, unseen: n };
 }
 export function send(u, body) {
   if (!companionFor(u)) return { ok: false, code: 'notFound' };
@@ -655,7 +748,9 @@ export function reset(u) {
 export function act(u, turnId, a) {
   if (!companionFor(u)) return { ok: false, code: 'notFound' };
   const row = chatRow(u); if (!row) return { ok: false, code: 'notFound' };
-  const turns = parse(row.turns, []), turn = turns.find(x => x.id === String(turnId || '') && x.role === 'oomba' && x.note);
+  const turns = parse(row.turns, []);
+  if (a === 'starter') return starter(u, turns, String(turnId || ''));
+  const turn = turns.find(x => x.id === String(turnId || '') && x.role === 'oomba' && x.note);
   if (!turn) return { ok: false, code: 'notFound' };
   const note = turn.note;
   if (a === 'apply' || a === 'decline') {
@@ -664,12 +759,66 @@ export function act(u, turnId, a) {
     if (a === 'decline') return markNote(u, row, turn.id, { ...note, proposal: { ...p, state: 'declined' } });
     return C.addTurn(u, SURFACE, KEY, { mark: { id: turn.id, fields: { note: { ...note, proposal: { ...p, state: 'applied' } } } }, apply: () => applyProposal(u, p), text: '' });
   }
+  if (a === 'manipApplied') {
+    const m = note.manip; if (!m) return { ok: false, code: 'notFound' };
+    return markNote(u, row, turn.id, { ...note, manip: { ...m, applied: true } });
+  }
   if (a === 'handoff') {
     const h = note.handoff; if (!h) return { ok: false, code: 'notFound' };
     audit(u.id, 'companion.handoff', h.id, { tool: h.tool });
     return { ok: true, handoff: h };
   }
   return { ok: false, code: 'notFound' };
+}
+/** "Add a starter set instead" after a first draft Oomba couldn't make on an empty worksheet: the generators its words
+ *  point at, without the AI, once per failed answer, with Undo. */
+function starter(u, turns, turnId) {
+  const failed = turns.find(x => x.id === turnId && x.failed && !x.starter);
+  const me = failed && turns.find(x => x.id === failed.for);
+  const sid = me && me.meta && me.meta.page && me.meta.page.type === 'figures-sheet' ? me.meta.page.sheetId : null;
+  const w = sid && F.canMake(u) ? F.ownWorksheet(u, sid) : null;
+  if (!w) return { ok: false, code: 'notFound' };
+  const plan = FC.starterPlan(w, me.text);
+  if (!plan) return { ok: false, code: F.itemsOf(w.id).length ? 'notEmpty' : 'notFound' };
+  return C.addTurn(u, SURFACE, KEY, {
+    mark: { id: failed.id, fields: { starter: true } }, text: '',
+    apply: () => { const a = FC.applyPlan(u, w, plan, { first: true }); return { change: { kind: 'figures', sheetId: w.id, ...a.change }, undo: { kind: 'figures', sheetId: w.id, ...a.undo }, note: { starter: true } }; },
+  });
+}
+/** Worksheets whose answer ended while the teacher was away (the Figures menu's "finished while you were away"). */
+export function readySheets(u) {
+  const rows = q.all(`SELECT t.id, t.me_id, t.status, t.error, c.turns FROM oomba_turns t JOIN oomba_chats c ON c.id=t.chat_id
+    WHERE t.owner_id=? AND t.surface=? AND t.status IN ('done','failed') AND t.seen_at IS NULL AND t.ended_at>? ORDER BY t.ended_at DESC LIMIT 6`, u.id, SURFACE, now() - 7 * DAY);
+  const out = [];
+  for (const r of rows) {
+    const me = parse(r.turns, []).find(x => x.id === r.me_id);
+    const sid = me && me.meta && me.meta.page && me.meta.page.type === 'figures-sheet' ? me.meta.page.sheetId : null;
+    const w = sid ? F.ownWorksheet(u, sid) : null;
+    if (w && !out.some(x => x.id === w.id)) out.push({ id: w.id, job: r.id, title: w.title, n: F.itemsOf(w.id).length, status: r.status, error: r.error || null });
+  }
+  return out.slice(0, 3);
+}
+/** The teacher dismissed a worksheet's "finished while you were away". */
+export function dismissSheet(u, sheetId) {
+  for (const r of readySheets(u)) if (r.id === String(sheetId || '')) q.run('UPDATE oomba_turns SET seen_at=? WHERE id=?', now(), r.job);
+  return { ok: true };
+}
+/** Unseen endings (the bubble's dot when the teacher comes back). */
+export const unseen = u => q.get("SELECT COUNT(*) n FROM oomba_turns WHERE owner_id=? AND surface=? AND status IN ('done','failed') AND seen_at IS NULL AND ended_at>?", u.id, SURFACE, now() - 7 * DAY).n;
+/** The Figures menu's "Describe what you need": checked first (nothing is made when the words fail), then a new
+ *  worksheet or test and the companion's first turn on it. -> { ok, id } | fail */
+export function startSheet(u, { text, purpose = 'worksheet', grade = '', lang = 'en' } = {}) {
+  if (!companionFor(u) || !F.canMake(u)) return { ok: false, code: 'notFound' };
+  const v = cleanText(u, clip(text, 1000)).replace(/\s+/g, ' ').trim();
+  if (v.length < 2) return { ok: false, code: 'brief' };
+  if (wordsProblem(v)) return { ok: false, code: 'words' };
+  const live = q.get("SELECT 1 FROM oomba_turns WHERE live_key=? AND status IN ('queued','running','interrupted')", `${SURFACE}:${u.id}`);
+  if (live) return { ok: false, code: 'otherBusy' };
+  const made = F.createWorksheet(u, { purpose: purpose === 'test' ? 'test' : 'worksheet', grade, lang });
+  if (!made.ok) return made;
+  const r = send(u, { text: v, page: { type: 'figures-sheet', sheetId: made.id }, lang });
+  if (!r.ok) { F.deleteWorksheet(u, made.id); return r; }
+  return { ok: true, id: made.id };
 }
 function markNote(u, row, turnId, note) {
   db.transaction(() => {

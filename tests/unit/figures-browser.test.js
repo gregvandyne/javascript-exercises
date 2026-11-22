@@ -14,6 +14,8 @@ config.anthropicKey = '';
 const { createApp } = await import('../../server/app.js');
 const { createUser, startSession } = await import('../../server/auth.js');
 const F = await import('../../server/services/figures.js');
+// Oomba on a worksheet is the site's one companion chat: its AI stand-in (tests/unit/_companion-standin.js).
+const SI = await import('./_companion-standin.js');
 const { q } = await import('../../server/db.js');
 const { pngText } = await import('../../public/js/figures-export.js');
 
@@ -169,13 +171,13 @@ test('on a phone: add a figure to a new worksheet, see it in the builder with it
 });
 
 test('the worksheet builder on a laptop: Oomba\'s chat (mocked) adds checked questions; reorder, new numbers; print preview', { skip }, async () => {
-  F.hooks.create = async () => ({ model: config.builderModel, usage: { input_tokens: 1, output_tokens: 1 }, content: [{ type: 'text', text: JSON.stringify({ reply: 'Here are 5 questions.', title: 'Area and volume practice', edits: [
+  SI.figuresStandIn({ reply: 'Here are 5 questions.', title: 'Area and volume practice', edits: [
     { kind: 'rectangle', question: 'Find the area of the rectangle.', data: JSON.stringify({ AB: 6, BC: 2, unit: 'm' }), answerKey: 'area' },
     { kind: 'prism', question: 'A gift box has these measurements. How much space is inside it?', data: JSON.stringify({ length: 5, width: 2, height: 3, unit: 'in' }), answerKey: 'volume' },
     { kind: 'triangle', question: 'Find CA.', data: JSON.stringify({ AB: 1, BC: 2, CA: 10 }), answerKey: 'sides.CA' },
     { kind: 'cylinder', question: 'Find the volume of the cylinder. Round to the nearest tenth.', data: JSON.stringify({ radius: 4, height: 11, unit: 'm' }), answerKey: 'volume' },
     { kind: 'boxPlot', question: 'What is the interquartile range?', data: JSON.stringify({ summary: [12, 18, 23, 29, 40], values: true }), answerKey: 'iqr' },
-  ].map(item => ({ op: 'add', item })) }) }] });
+  ].map(item => ({ op: 'add', item })) });
   try {
     const { ctx, page, errors } = await open('/figures/worksheets/new?ai=1');
     await page.waitForSelector('#oc-in');
@@ -216,7 +218,7 @@ test('the worksheet builder on a laptop: Oomba\'s chat (mocked) adds checked que
     assert.equal(await page.isHidden('.fg-printbar'), true, 'the print bar is not printed');
     assert.deepEqual(errors, []);
     await ctx.close();
-  } finally { F.hooks.create = null; }
+  } finally { F.hooks.create = null; SI.clearStandIn(); }
 });
 
 test('editors for a kind from data, physics and chemistry draw without errors', { skip }, async () => {

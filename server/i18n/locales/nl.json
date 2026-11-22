@@ -1120,9 +1120,9 @@
       "companion": {
         "h": "Oomba, je hulpje bij het lesgeven",
         "p1": "Leerkrachten met het Leerkracht-abonnement kunnen via een bolletje op hun eigen pagina's met Oomba chatten. Leerlingen en kinderen zien het nooit. De berichten van een leerkracht, de tekst van een bijgevoegd document en een bijgevoegde afbeelding gaan naar onze AI-leverancier, Anthropic, om het antwoord te maken. Voordat er iets wordt verstuurd, halen we de namen van de leerlingen van de leerkracht, e-mailadressen, telefoonnummers en links weg. Afbeeldingen waarop een persoon staat, worden geweigerd en nooit bewaard.",
-        "p2": "Oomba ziet alleen wat een leerkracht open heeft en veilige gegevens daarover (het leerjaar en de grootte van een klas, de widgets van een dashboard), nooit namen, antwoorden of werk van leerlingen. Een dashboard wordt pas aangepast nadat de leerkracht op Toepassen tikt, en de wijziging kan ongedaan worden gemaakt.",
+        "p2": "Oomba ziet alleen wat een leerkracht open heeft en veilige gegevens daarover (het leerjaar en de grootte van een klas, de widgets van een dashboard, de vragen van een Figures-werkblad, de onderdelen en stappen van een bord bij de manipulatieven), nooit namen, antwoorden of werk van leerlingen. Een dashboard wordt pas aangepast nadat de leerkracht op Toepassen tikt. Op een Figures-werkblad of een bord voert Oomba de gevraagde wijziging meteen uit, en de leerkracht kan die ongedaan maken.",
         "p3": "Als zoeken op internet aan staat, kan Oomba korte zoekopdrachten naar de webzoekfunctie van Anthropic sturen. Die bevatten nooit namen of een locatie; sites voor volwassenen, gokken, sociale netwerken en dergelijke zijn geblokkeerd, en elke zoekopdracht wordt voor ons team vastgelegd zonder de naam van de leerkracht. Pagina's van internet worden getoond als bronnen die Oomba niet heeft gecontroleerd.",
-        "p4": "Een leerkracht kan praten in plaats van typen: de opname gaat naar {provider} om er woorden van te maken, en de audio wordt nooit bewaard, niet door ons en niet door hen. De woorden komen in het berichtvak, zodat de leerkracht ze kan controleren.",
+        "p4": "Een leerkracht kan praten in plaats van typen: het geluid gaat naar {provider} om er al tijdens het praten woorden van te maken, en de audio wordt nooit bewaard, niet door ons en niet door hen. De woorden komen in het berichtvak, zodat de leerkracht ze kan controleren.",
         "p5": "We bewaren de chat van een leerkracht, met de tekst van de bijlagen, 60 dagen na het laatste gebruik (een school kan 7 tot 365 dagen kiezen); een afbeelding wordt verwijderd zodra Oomba heeft geantwoord, uiterlijk na een dag. Een leerkracht kan de chat verwijderen met Nieuwe chat, en hij wordt verwijderd met het account. Een schoolbeheerder kan Oomba of het zoeken op internet uitzetten voor de school."
       }
     }
@@ -3942,7 +3942,9 @@
         "steps": "Schrijf duidelijkere stappen voor mijn leerlingen"
       },
       "placeholder": "Vraag Oomba het bord te veranderen",
-      "placeholderEmpty": "Beschrijf de les die je op dit bord wilt"
+      "placeholderEmpty": "Beschrijf de les die je op dit bord wilt",
+      "boardOf": "Bord {tool}",
+      "liveRoom": "Live-ruimte"
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4115,7 +4117,12 @@
         "readImage": "Je afbeelding bekeken",
         "web": "Op internet gezocht ({n, plural, one {# zoekopdracht} other {# zoekopdrachten}})",
         "webNo": "Op internet gezocht, maar de resultaten weggelaten",
-        "toolNo": "Eén stap lukte niet"
+        "toolNo": "Eén stap lukte niet",
+        "sheet": "Je werkblad gelezen ({n} vragen)",
+        "edit": "Je werkblad aangepast ({n} wijzigingen)",
+        "editNo": "Kon het werkblad niet aanpassen",
+        "board": "Het bord gemaakt ({n} onderdelen)",
+        "boardNo": "Kon dat bord niet maken"
       },
       "stepsSum": "{n, plural, one {# stap} other {# stappen}} · {s} s",
       "prog": {
@@ -4189,7 +4196,9 @@
         "slow": "Dat zijn veel berichten in een uur. Wacht even en probeer het dan opnieuw.",
         "fileGone": "Die bijlage is er niet meer. Voeg hem opnieuw toe.",
         "other": "Er ging iets mis. Je bericht staat er nog: probeer het zo meteen opnieuw."
-      }
+      },
+      "quoteN": "Vraag {n}: {text}",
+      "questionN": "Vraag {n}"
     }
   },
   "favorites": {

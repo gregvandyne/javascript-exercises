@@ -1120,9 +1120,9 @@
       "companion": {
         "h": "Oomba, the teaching companion",
         "p1": "Teachers with the Teacher plan can chat with Oomba from a bubble on their own pages. Students and children never see it. A teacher's messages, the text of a document they attach and a picture they attach are sent to our AI provider, Anthropic, to make the answer. Before anything is sent, we take out the names of the teacher's students, emails, phone numbers and links. Pictures that show a person are refused and never kept.",
-        "p2": "Oomba sees only what a teacher has open and safe facts about it (a class's grade and size, a dashboard's widgets), never students' names, answers or work. It changes a dashboard only after the teacher taps Apply, and the change can be undone.",
+        "p2": "Oomba sees only what a teacher has open and safe facts about it (a class's grade and size, a dashboard's widgets, a Figures worksheet's questions, a manipulatives board's items and steps), never students' names, answers or work. It changes a dashboard only after the teacher taps Apply. On a Figures worksheet or a manipulatives board, it makes the change the teacher asks for right away, and the teacher can undo it.",
         "p3": "When web search is on, Oomba may send short searches to Anthropic's web search. They never include names or a location, sites for adults, gambling, social networks and the like are blocked, and every search is logged for our team without the teacher's name. Pages found on the web are shown as sources Oomba hasn't checked.",
-        "p4": "A teacher can speak instead of typing: the recording is sent to {provider} to turn it into words, and the audio is never kept, by us or by them. The words go into the message box for the teacher to check.",
+        "p4": "A teacher can speak instead of typing: the sound is streamed to {provider} to turn it into words as they speak, and the audio is never kept, by us or by them. The words go into the message box for the teacher to check.",
         "p5": "We keep a teacher's chat, with the text of what they attached, for 60 days after it was last used (a school can choose from 7 to 365 days); a picture is deleted once Oomba has answered, and within a day at the latest. A teacher can delete the chat with New chat, and it is deleted with the account. A school admin can turn Oomba or its web search off for the school."
       }
     }
@@ -4223,7 +4223,9 @@
       "gradeLabel": "Grade",
       "anyGrade": "Any",
       "grade": "Grade {grade}",
-      "capped": "At most {max} problems fit on one board, so it has {max}."
+      "capped": "At most {max} problems fit on one board, so it has {max}.",
+      "boardOf": "{tool} board",
+      "liveRoom": "Live room"
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4396,7 +4398,12 @@
         "readImage": "Looked at your picture",
         "web": "Searched the web ({n, plural, one {# search} other {# searches}})",
         "webNo": "Searched the web, but left out what it found",
-        "toolNo": "One step didn't work"
+        "toolNo": "One step didn't work",
+        "sheet": "Read your worksheet ({n} questions)",
+        "edit": "Changed your worksheet ({n} changes)",
+        "editNo": "Couldn't change the worksheet",
+        "board": "Made the board ({n} items)",
+        "boardNo": "Couldn't build that board"
       },
       "stepsSum": "{n, plural, one {# step} other {# steps}} · {s} s",
       "prog": {
@@ -4470,7 +4477,9 @@
         "slow": "That's a lot of messages for one hour. Wait a little, then try again.",
         "fileGone": "That attachment isn't here anymore. Attach it again.",
         "other": "Something went wrong. Your message is still here: try again in a moment."
-      }
+      },
+      "quoteN": "Question {n}: {text}",
+      "questionN": "Question {n}"
     }
   },
   "favorites": {

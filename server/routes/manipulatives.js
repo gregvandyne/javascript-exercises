@@ -40,10 +40,8 @@
 //                                               (services/manip-drafts.js), one at a time; -> the job
 //   GET  /api/manipulatives/draft               the host's draft now (running, or ended and not seen yet) and the estimate
 //   POST /api/manipulatives/draft/:id/seen      the host saw how it ended
-//   GET  /api/manipulatives/chat?tool=&boardId= the host's Oomba chat for the board they have open (services/manip-chat.js)
-//   POST /api/manipulatives/chat                a message to Oomba about that board ({ tool, boardId?, title, text, grade?,
-//                                               state, retry? }): checked, stored, answered in the background; -> the chat
-//   POST /api/manipulatives/chat/applied        a change Oomba made was put on the board ({ tool, boardId?, turnId })
+//   (Oomba on a board is the site's one companion chat: services/companion.js with the board workflow of
+//   services/manip-chat.js; no chat routes of its own.)
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { ico } from '../views/icon.js';
@@ -51,7 +49,6 @@ import { page, VERSION } from '../views/layout.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as M from '../services/manipulatives.js';
 import * as D from '../services/manip-drafts.js';
-import * as C from '../services/manip-chat.js';
 import { teachingTools, planReply } from './figures.js';
 
 export const router = Router();
@@ -72,7 +69,7 @@ router.use(['/manipulatives', '/api/manipulatives'], (req, res, next) => {
 });
 const hostOnly = (req, res, next) => (req.manipRole === 'host' ? next() : fail(req, res, 'notFound'));
 
-const CSS = raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/manip-chat.css?v=${VERSION}">`);
+const CSS = raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}">`);
 router.get('/manipulatives', (req, res) => {
   const t = req.t;
   // "Teaching tools: Manipulatives · Figures" for someone who can open both (routes/figures.js).
@@ -162,10 +159,6 @@ router.post('/api/manipulatives/draft', hostOnly, rateLimit('manip-ai', 30, 3600
 router.get('/api/manipulatives/draft', hostOnly, (req, res) => res.json({ ok: true, job: D.current(req.user), eta: D.eta() }));
 router.post('/api/manipulatives/draft/:id/seen', hostOnly, (req, res) => send(req, res, D.seen(req.user, req.params.id)));
 
-// ---- Oomba on the board: a chat about the open board (services/manip-chat.js); each message is one AI turn, a job
-router.get('/api/manipulatives/chat', hostOnly, (req, res) => send(req, res, C.current(req.user, { tool: req.query.tool, boardId: req.query.boardId || null })));
-router.post('/api/manipulatives/chat', hostOnly, rateLimit('manip-ai', 30, 3600e3), (req, res) => send(req, res, C.send(req.user, body(req))));
-router.post('/api/manipulatives/chat/applied', hostOnly, (req, res) => send(req, res, C.applied(req.user, body(req))));
 
 /** A student's class page: "Your teacher started a math board" while a session for this class is running. */
 export function classBanner(req, c) {

@@ -177,3 +177,43 @@ test('play.js: a start left over from before a reload never opens the mic for th
   loudMessage({ op: 'start' }); await new Promise(r => setTimeout(r, 0));
   assert.deepEqual(log, [['start', true]], 'a fresh start goes through');
 });
+
+// Oomba, the teaching companion: the live speech relay's teacher allowance (services/stt-live.js companionRoute,
+// /api/companion/listen). Only Teacher plan staff with the companion on (companionFor) open it; a kid, a student, staff
+// without the plan and the signed-out are refused before the upgrade, and the kid route keeps its own rules.
+test('the companion\'s live mic: teachers with Oomba only; never a kid, a student or staff without the plan; the kid route unchanged', async () => {
+  const { default: WebSocket } = await import('ws');
+  const live = await import('../../server/services/stt-live.js');
+  const S = await import('../../server/services/schools.js');
+  const TT = await import('./_tools-plan.js');
+  live.attachLive(server);
+  const prev = { p: config.sttProvider, l: config.sttLive, u: config.manipulativesUsers };
+  config.sttProvider = 'mock'; config.sttLive = true;
+  const cookie = u => { let c = ''; auth.startSession({ append: (k, v) => { c = v.split(';')[0]; } }, u.id); return c; };
+  const open = (u, path = '/api/companion/listen') => new Promise(r => {
+    const ws = new WebSocket(`ws://127.0.0.1:${server.address().port}${path}`, { headers: { origin: BASE, ...(u ? { cookie: cookie(u) } : {}) } });
+    ws.on('unexpected-response', (req, res) => r({ status: res.statusCode }));
+    ws.on('message', d => { const m = JSON.parse(String(d)); if (m.type === 'open' || m.type === 'error') { ws.close(); r({ status: 101, m }); } });
+    ws.on('error', () => r({ status: 0 }));
+  });
+  try {
+    const boss = auth.createUser({ username: 'MicBoss', password: 'secret123', role: 'admin' });
+    const oak = S.createSchool(boss, { name: 'Mic Oak' }).school;
+    const staff = name => auth.getUser(S.createSchoolAccount(boss, oak.id, { rosterName: name, role: 'teacher' }).user.id);
+    const tester = staff('Tia Tester'), free = staff('Fay Free');
+    const pupil = auth.getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Pip Pupil' }).user.id);
+    config.manipulativesUsers = [tester.username.toLowerCase()];
+    const ok = await open(tester);
+    assert.equal(ok.status, 101); assert.equal(ok.m.type, 'open', 'a teacher with Oomba: the live mic opens');
+    assert.equal((await open(boss)).status, 101, 'the platform admin');
+    for (const [u, why] of [[kid, 'a kid'], [pupil, 'a student'], [free, 'staff without the plan (plans off)'], [null, 'signed out']]) assert.notEqual((await open(u)).status, 101, why);
+    TT.plansOn(true);
+    try { assert.equal((await open(free)).status, 404, 'staff without the plan (plans on)'); } finally { TT.plansOn(false); }
+    // The kid route keeps its own rules: a teacher with Oomba gets nothing more there.
+    assert.notEqual((await open(tester, '/api/studio/not-a-game/listen')).status, 101);
+    const src = fs.readFileSync('server/services/stt-live.js', 'utf8');
+    assert.match(src, /if \(!teacher && !user\.builder_enabled\)/, 'the Builder check stays for every kid session');
+    assert.match(src, /session\(ws, req, g\.user, g\.game, \{ teacher: true \}\)/);
+    assert.equal((src.match(/teacher: true/g) || []).length, 1, 'only the companion route opens a teacher session');
+  } finally { config.sttProvider = prev.p; config.sttLive = prev.l; config.manipulativesUsers = prev.u; }
+});

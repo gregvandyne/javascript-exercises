@@ -113,14 +113,16 @@ test('who: the Teacher plan rule with paid plans on (plan holders, testers, the 
   assert.equal(CO.companionFor(tester), true); assert.equal(CO.companionFor(boss), true);
 });
 
-test('which pages: teacher pages and the dashboard\'s teacher screen; never a game, a player, a print page, a student view or a page with its own Oomba chat', async () => {
+test('which pages: teacher pages, Figures and the Manipulatives, and the dashboard\'s teacher screen; never a game, a player, a print page or a student view', async () => {
   const req = (path, query = {}) => ({ path, query, user: tester });
   assert.deepEqual(companionPage(req(`/class/${cls.id}`)), { type: 'class', classId: cls.id });
   assert.deepEqual(companionPage(req(`/class/${cls.id}/dashboard`), { bare: true, companion: 'dash' }), { type: 'dashboard', classId: cls.id });
   assert.equal(companionPage(req(`/class/${cls.id}/dashboard`), { bare: true }), null, 'a bare page without the dashboard\'s opt-in');
   assert.deepEqual(companionPage(req('/library', { class: cls.id })), { type: 'library', classId: cls.id });
-  for (const p of ['/play/fraction-factory', '/live/play/abc', '/live/host/abc', '/teach/rubrics/x/print', '/figures/worksheets/abc', `/class/${cls.id}/lessons/l1`, '/manipulatives', '/number-quest/sorting-game']) assert.equal(companionPage(req(p)), null, p);
-  assert.equal(companionPage(req('/teach'), { scripts: ['/js/figures-sheet.js'] }), null, 'a page with its own Oomba chat');
+  for (const p of ['/play/fraction-factory', '/live/play/abc', '/live/host/abc', '/teach/rubrics/x/print', '/figures/worksheets/abc/print', `/class/${cls.id}/lessons/l1`, '/number-quest/sorting-game']) assert.equal(companionPage(req(p)), null, p);
+  // One chat everywhere: a Figures worksheet and the Manipulatives have the same bubble (their workflow is in it).
+  assert.deepEqual(companionPage(req('/figures/worksheets/abc'), { scripts: ['/js/figures-sheet.js'] }), { type: 'figures-sheet', sheetId: 'abc' });
+  assert.deepEqual(companionPage(req('/manipulatives'), { scripts: ['/js/manip.js'] }), { type: 'tools' });
   assert.equal(companionPage(req('/teach'), { companion: false }), null);
   assert.equal(companionPage({ path: '/teach', query: {}, user: quinn }), null, 'a student');
   // Real pages: the dashboard for its teacher (at the end of its layout bar), not a game.

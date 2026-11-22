@@ -1,38 +1,32 @@
-// Oomba's chat on a Figures worksheet or test (docs/decisions.md "Figures: Oomba's chat and the shared chat engine"), the
-// first surface of the shared engine (services/oomba-chat.js). The teacher's first message drafts the questions; every
-// later one adjusts them ("make 3 and 7 harder and use inches", "add 2 more word problems", "make it grade 3").
+// The Figures page workflow of Oomba, the teaching companion (docs/decisions.md "Figures: Oomba's chat and the shared
+// chat engine" and "Oomba teaching companion: one chat everywhere"). Since the owner's "one chat everywhere" decision the
+// worksheet has no chat of its own: the companion (services/companion.js) knows it is on a Figures worksheet or test and
+// has this page's tool, editWorksheet. What stays here is the workflow itself, unchanged:
 //
 // - Who: whoever may make figures (services/figures.js canMake: the Teacher plan gate), on their own worksheet, test or
 //   lesson set only. Students and kids never see it.
-// - What the AI gets, built HERE from the teacher's own worksheet: its kind (worksheet or test), title, grade and language,
-//   and each question by number (its figure's kind and data, its question, how it is answered, its options and its worked
-//   answer). A title, question or option that fails the word rules or names one of the teacher's students is left out
-//   (the AI sees "(left out)"). Never classes, assignments, students' answers or results. The teacher's message passes the
-//   word rules and the name check before anything is stored or sent (the engine), and again when its job starts.
-// - What it answers: plain JSON (no strict json_schema: it hung in production) { reply, title?, grade?, units?, edits: [
-//   { op: 'add', after?, item } | { op: 'replace', n, item } | { op: 'remove', n } ] }. n is a question's number as the
-//   teacher saw it. An item is a generator ({ gen }) or a figure question of its own; either way it goes through the same
-//   checks as a draft (repairDraft / repairTestDraft: OF.check, OF.solve answer keys, options, words; a bad one is
-//   replaced by its kind's generator and logged). Units are the app's: every figure that takes a unit gets it and its
-//   answer is worked out again with OF.solve. Questions the teacher didn't name are never sent back through the AI: the
-//   code changes only what an edit names.
+// - What the AI gets, built HERE from the teacher's own worksheet (sheetContext): its kind (worksheet or test), title,
+//   grade and language, and each question by number (its figure's kind and data, its question, how it is answered, its
+//   options and its worked answer). A title, question or option that fails the word rules or names one of the teacher's
+//   students is left out (the AI sees "(left out)"). Never classes, assignments, students' answers or results.
+// - What it sends (editWorksheet's input): { title?, grade?, units?, edits: [{ op: 'add', after?, item } | { op:
+//   'replace', n, item } | { op: 'remove', n }] }. n is a question's number as the teacher saw it. An item is a
+//   generator ({ gen }) or a figure question of its own; either way it goes through the same checks as a draft
+//   (repairDraft / repairTestDraft: OF.check, OF.solve answer keys, options, words; a bad one is replaced by its kind's
+//   generator and logged). Units are the app's: every figure that takes a unit gets it and its answer is worked out
+//   again with OF.solve. Questions the teacher didn't name are never sent back through the AI.
 // - Applied in one transaction with Oomba's reply (the engine), by question id, so a question the teacher edited or
 //   deleted while Oomba was thinking is left alone. Undo puts back only the questions that are still as Oomba left them.
 // - Limits: at most LIMITS.draftMax (12) questions added in one answer, LIMITS.items (40) on a worksheet.
 import { q, now, audit } from '../db.js';
-import { config } from '../config.js';
-import { anthropic } from '../builder/anthropic.js';
-import * as aiBudget from './ai-budget.js';
-import { callAi, logAiFail, fallbackReason } from './ai-call.js';
-import { log } from './log.js';
 import * as F from './figures.js';
-import * as C from './oomba-chat.js';
 
+/** The old per-worksheet chat's surface name (its rows are pruned by services/companion.js). */
 export const SURFACE = 'figures';
 export const UNITS = Object.freeze(['mm', 'cm', 'm', 'km', 'in', 'ft', 'yd', 'mi']);
 const S = F._sheet;
 const parse = (s, d) => { try { return JSON.parse(s); } catch { return d; } };
-const clip = C.clip;
+const clip = (s, n) => String(s ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u202a-\u202e\u2066-\u2069]/g, '').slice(0, n);
 const fine = (u, s) => !!s && !F.textProblem(s) && !F.namesIn(u, s);
 const sheetName = w => (w.purpose === 'test' ? 'test' : w.purpose === 'lesson' ? "lesson's figure questions" : 'worksheet');
 
@@ -53,16 +47,17 @@ export function sheetContext(u, w, items = F.itemsOf(w.id)) {
   };
 }
 
-function system(u, w, items) {
+/** The page workflow's rules for the companion's system prompt (only on this worksheet's page). */
+export function workflowRules(u, w, items = F.itemsOf(w.id)) {
   const test = w.purpose === 'test';
   const gens = F.genCatalog({ grade: w.grade });
   return [
-    `You are Oomba, a friendly helper for teachers on Oomba Academy. A teacher is building a printable ${sheetName(w)} of figure questions and is talking to you about it. Each question has one figure drawn by Oomba Figures from data. You decide WHAT the questions are; the app draws every figure, checks it can be drawn truthfully to scale, and works out every answer itself. You never work out an answer.`,
-    `Write questions, options and titles in ${F.LANG_NAMES[F.genLang(w.lang)]}, plain and clear for ${w.grade ? `grade ${w.grade}` : 'the grade the teacher names'} students. No names of people, no links, no brands or product names. Never ask for, guess or repeat the names of students.`,
-    'Your reply is for the teacher: one to three short, warm sentences, in the language the teacher writes in. Say what you changed, or answer the question. If the request is unclear, ask one short question and change nothing.',
-    'Answer with one JSON object and nothing else: {"reply": "...", "title": null, "grade": null, "units": null, "edits": []}.',
-    `- title: a new short title (under 60 characters) only when there is none yet or the teacher asks; else null. grade: "K" or "1" to "12" only when the teacher asks for another grade; else null.`,
-    `- units: one of ${UNITS.join(', ')} when the teacher asks for other units; else null. The app then changes the unit of every figure and works every answer out again, so do not replace questions just to change units (only replace a question whose own words name a unit).`,
+    `# This page: a printable ${sheetName(w)} of figure questions in Figures`,
+    `The teacher has their ${sheetName(w)} open. To draft it or change it, call editWorksheet. Each question has one figure drawn by Oomba Figures from data. You decide WHAT the questions are; the app draws every figure, checks it can be drawn truthfully to scale, and works out every answer itself. You never work out an answer.`,
+    `Write questions, options and titles in ${F.LANG_NAMES[F.genLang(w.lang)]}, plain and clear for ${w.grade ? `grade ${w.grade}` : 'the grade the teacher names'} students. No names of people, no links, no brands or product names.`,
+    'After editWorksheet, say in one to three short sentences what you changed. If what the teacher wants for the worksheet is unclear, ask one short question and change nothing.',
+    `- title: a new short title (under 60 characters) only when there is none yet or the teacher asks. grade: "K" or "1" to "12" only when the teacher asks for another grade.`,
+    `- units: one of ${UNITS.join(', ')} when the teacher asks for other units. The app then changes the unit of every figure and works every answer out again, so do not replace questions just to change units (only replace a question whose own words name a unit).`,
     '- edits: what changes, in order. n is a question number as it is now (1 is the first). {"op": "replace", "n": 3, "item": ITEM} changes a question (harder, easier, other numbers, other words, another kind): give the whole new question. {"op": "remove", "n": 5}. {"op": "add", "after": 4, "item": ITEM} ("after": 0 for the start, null for the end).',
     `- Only touch the questions the teacher asks about; every other question stays exactly as it is (never repeat it). At most ${F.LIMITS.draftMax} questions added in one answer; the ${sheetName(w)} holds at most ${F.LIMITS.items}. A first draft: ${test ? '8' : '6 to 8'} questions unless the teacher says how many, from easier to harder.`,
     `- ITEM is ${test ? 'preferably' : 'either'} {"gen": "<generator id>"} (a fresh question from a generator: the app deals the numbers and the teacher can deal new ones${test ? '; use each generator at most twice' : ''}) or a figure question of your own: {"kind": "<catalog kind>", "question": "...", "data": {same fields as the kind's example}, "answerType": "number", "answerKey": "<one of the kind's answerKey choices>"}.`,
@@ -75,20 +70,6 @@ function system(u, w, items) {
     `<sheet>\n${JSON.stringify(sheetContext(u, w, items))}\n</sheet>`,
   ].join('\n');
 }
-/** A change as the AI is reminded of it in the history. */
-const said = c => (c ? { changed: { added: c.added, replaced: c.changed, removed: c.removed, units: c.units || null, grade: c.grade || null }, undone: !!c.undone } : null);
-function messages(u, history, text, quote) {
-  const out = [];
-  const add = (role, content) => { if (out.length && out[out.length - 1].role === role) out[out.length - 1].content += `\n${content}`; else out.push({ role, content }); };
-  for (const x of history) {
-    if (x.role === 'me') add('user', x.quote ? `(About question ${x.quote.n}) ${x.text}` : x.text);
-    else add('assistant', JSON.stringify({ reply: x.text, ...(said(x.change) || {}) }));
-  }
-  add('user', quote ? `(About question ${quote.n}${quote.text ? `: "${quote.text}"` : ''}) ${text}` : text);
-  while (out.length && out[0].role !== 'user') out.shift();
-  return out;
-}
-
 // ---------------------------------------------------------------- the answer, checked
 /** One ITEM from the AI, checked and repaired like a draft's. -> { item, repaired, dropped } */
 function checkItem(raw, w) {
@@ -244,27 +225,6 @@ export function undoPlan(u, w0, data) {
   return { ok: true, skipped };
 }
 
-// ---------------------------------------------------------------- one turn: the AI call
-const aiClient = () => (F.hooks.create ? (aiBudget.ok() ? { messages: { create: F.hooks.create } } : null) : anthropic());
-async function answer({ user, ctx: w, text, quote, history, step, turnId }) {
-  const items = F.itemsOf(w.id);
-  const client = aiClient();
-  if (!client) return { failed: 'resting' };
-  const t0 = Date.now();
-  let plan;
-  try {
-    const res = await callAi(client, { model: config.builderModel, max_tokens: 6000, output_config: { effort: 'low' }, system: system(user, w, items), messages: messages(user, history, text, quote) });
-    if (res && res.usage) aiBudget.recordUsage(res.model || config.builderModel, res.usage);
-    const block = ((res && res.content) || []).find(c => c.type === 'text');
-    step(2);   // build: every figure checked, every answer worked out
-    plan = readAnswer(jsonIn(block ? block.text : ''), w, items);
-    log('info', 'figures chat ai answered', { turn: turnId, sheet: w.id, ms: Date.now() - t0, ops: plan.ops.length, units: !!plan.units });
-  } catch (e) {
-    return { failed: fallbackReason(logAiFail('figures chat ai failed', { turn: turnId, sheet: w.id }, e, t0)) };
-  }
-  const first = items.length === 0;
-  return { reply: plan.reply, apply: () => applyPlan(user, w, plan, { first }) };
-}
 /** The JSON object in the model's text (a code fence or words around it are tolerated). */
 export function jsonIn(text) {
   const t = String(text || '').replace(/^\s*```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '');
@@ -274,62 +234,17 @@ export function jsonIn(text) {
   return JSON.parse(t.slice(a, b + 1));
 }
 
-// ---------------------------------------------------------------- the surface
-export const surface = C.defineSurface({
-  id: SURFACE,
-  live: 'owner',   // one answer at a time per teacher, across their worksheets
-  eta: { p50: 30e3, p75: 45e3 },
-  may: u => F.canMake(u),
-  context: (u, key) => F.ownWorksheet(u, key),
-  check: (u, text) => F.textProblem(text) || (F.namesIn(u, text) ? 'names' : null),
-  quote(u, w, ref) {
-    const items = F.itemsOf(w.id), i = items.findIndex(x => x.id === String(ref || ''));
-    if (i < 0) return null;
-    return { ref: items[i].id, n: i + 1, text: fine(u, items[i].question) ? clip(items[i].question, 160) : '' };
-  },
-  answer,
-  undo: (u, w, data) => undoPlan(u, w, data),
-});
-
-// ---------------------------------------------------------------- the routes' calls
-export const current = (u, id) => C.current(u, SURFACE, id);
-export const send = (u, id, body) => C.send(u, SURFACE, id, body);
-export const undo = (u, id, turnId) => C.undo(u, SURFACE, id, turnId);
+// ---------------------------------------------------------------- the companion's calls
+/** "Ask Oomba about this": a question of the teacher's own worksheet, as the message quotes it. */
+export function quoteOf(u, w, itemId) {
+  const items = F.itemsOf(w.id), i = items.findIndex(x => x.id === String(itemId || ''));
+  if (i < 0) return null;
+  return { ref: `${w.id}:${items[i].id}`, sheetId: w.id, n: i + 1, text: fine(u, items[i].question) ? clip(items[i].question, 160) : '' };
+}
 /** "Add a starter set instead" after a first draft Oomba couldn't make: the generators the words point at, without the
- *  AI. Only for an empty worksheet, once per failed answer. */
-export function starter(u, id, turnId) {
-  const w = F.ownWorksheet(u, id); if (!w) return { ok: false, code: 'notFound' };
-  const row = q.get('SELECT turns FROM oomba_chats WHERE owner_id=? AND surface=? AND ctx_key=?', u.id, SURFACE, w.id);
-  const turns = parse(row ? row.turns : '[]', []), failed = turns.find(x => x.id === String(turnId || '') && x.failed && !x.starter);
-  const me = failed && turns.find(x => x.id === failed.for);
-  if (!me) return { ok: false, code: 'notFound' };
-  if (F.itemsOf(w.id).length) return { ok: false, code: 'notEmpty' };
-  const items = w.purpose === 'test' ? F.templateTest({ topic: me.text, grade: w.grade, count: 8, lang: w.lang }) : F.templateItems({ brief: me.text, grade: w.grade, count: 8, lang: w.lang });
-  if (!items.length) return { ok: false, code: 'notFound' };
-  return C.addTurn(u, SURFACE, w.id, {
-    mark: { id: failed.id, fields: { starter: true } },
-    apply: () => ({ ...applyPlan(u, w, { ops: items.map(item => ({ op: 'add', after: 'end', item })), title: '', grade: '', units: '' }, { first: true }), note: 'starter' }),
-    text: '',
-  });
+ *  AI, written like a plan (the companion adds it as a turn with Undo). Only for an empty worksheet. -> plan | null */
+export function starterPlan(w, words) {
+  if (F.itemsOf(w.id).length) return null;
+  const items = w.purpose === 'test' ? F.templateTest({ topic: words, grade: w.grade, count: 8, lang: w.lang }) : F.templateItems({ brief: words, grade: w.grade, count: 8, lang: w.lang });
+  return items.length ? { ops: items.map(item => ({ op: 'add', after: 'end', item })), title: '', grade: '', units: '' } : null;
 }
-/** Worksheets whose answer finished while the teacher was away. -> [{ id, title, n, status }] */
-export function ready(u) {
-  return C.ready(u, SURFACE).map(r => { const w = F.ownWorksheet(u, r.key); return w ? { id: w.id, title: w.title, n: F.itemsOf(w.id).length, status: r.status, error: r.error || null } : null; }).filter(Boolean);
-}
-export const dismiss = (u, id) => C.dismiss(u, SURFACE, id);
-/** The home page's "Describe what you need": checked first (nothing is made when the words fail), then a new worksheet or
- *  test and Oomba's first turn on it. -> { ok, id } | fail */
-export function start(u, { text, purpose = 'worksheet', grade = '', lang = 'en' } = {}) {
-  if (!F.canMake(u)) return { ok: false, code: 'notFound' };
-  const v = clip(text, 1000).replace(/\s+/g, ' ').trim();
-  if (v.length < 2) return { ok: false, code: 'brief' };
-  const p = F.textProblem(v) || (F.namesIn(u, v) ? 'names' : null); if (p) return { ok: false, code: p };
-  const live = q.get("SELECT c.ctx_key key FROM oomba_turns t JOIN oomba_chats c ON c.id=t.chat_id WHERE t.live_key=? AND t.status IN ('queued','running','interrupted')", `${SURFACE}:${u.id}`);
-  if (live) return { ok: false, code: 'otherBusy', key: live.key };
-  const made = F.createWorksheet(u, { purpose: purpose === 'test' ? 'test' : 'worksheet', grade, lang });
-  if (!made.ok) return made;
-  const r = C.send(u, SURFACE, made.id, { text: v });
-  if (!r.ok) { F.deleteWorksheet(u, made.id); return r; }
-  return { ok: true, id: made.id };
-}
-export { C as engine };

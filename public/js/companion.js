@@ -11,6 +11,7 @@
 import { t, api, esc, toast, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { mountChat } from '/js/oomba-chat.js';
+import * as BUS from '/js/oomba-bus.js';
 
 const raw = document.body.dataset.oc;
 const PAGE = raw ? (() => { try { return JSON.parse(raw); } catch { return null; } })() : null;
@@ -19,7 +20,7 @@ const L = k => t(`js.companion.${k}`);
 const ic = (e, size = 18) => iconHtml(e, { size });
 const DOC_ACCEPT = '.pdf,.docx,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown';
 const IMG_ACCEPT = 'image/jpeg,image/png,image/webp,image/heic';
-const MAX_CLIP_MS = 60e3;
+const MAX_CLIP_MS = 120e3;   // the longest recording here (the server's own STT_MAX_SECONDS may be shorter)
 
 if (PAGE) start();
 
@@ -27,12 +28,14 @@ function start() {
   const dash = PAGE.type === 'dashboard';
   const S = { file: null, sent: false, web: true, webAllowed: true, mic: null };
   const label = () => {
+    const a = BUS.page(); if (a && a.label) { const x = a.label(); if (x) return String(x).slice(0, 60); }
     const h = document.querySelector(dash ? '.dash-class' : 'main h1');
     const txt = (h ? h.textContent : document.title.split('·')[0]).replace(/\s+/g, ' ').trim().slice(0, 60);
     return dash ? t('js.companion.dashOf', { name: txt }) : txt;
   };
   /** The page as it is now: on the dashboard, the layout on screen (by its chip's name). */
   function pageNow() {
+    const a = BUS.page(); if (a && a.page) { const x = a.page(); if (x) return x; }
     const p = { ...PAGE };
     if (dash) {
       try {
@@ -45,38 +48,56 @@ function start() {
     return p;
   }
 
+  // The page's own workflow, when it has one (a Figures worksheet, a Manipulatives board: public/js/oomba-bus.js).
+  const P = () => BUS.page();
+  const ref = { chat: null };   // the panel, once mounted (its first load runs while mounting)
+  const via = (k, ...a) => { const x = P(); return x && typeof x[k] === 'function' ? x[k](...a) : undefined; };
   const chat = mountChat({
-    id: 'companion', url: () => '/api/companion/chat', start: 'closed', alwaysBubble: true,
+    id: 'companion', url: () => '/api/companion/chat', getUrl: () => `/api/companion/chat${ref.chat && ref.chat.state().mode === 'open' ? '' : '?peek=1'}`, alwaysBubble: true,
+    start: () => via('start') || 'closed',
     bubbleHost: dash ? document.getElementById('dash-foot') : null,
-    subHtml: `<span class="oc-ctx"><i aria-hidden="true"></i>${esc(L('sees'))} <b>${esc(label())}</b></span>`,
+    subHtml: `<span class="oc-ctx"><i aria-hidden="true"></i>${esc(L('sees'))} <b id="oc-sees">${esc(label())}</b></span>`,
     headExtra: `<button type="button" class="oc-hbtn" id="oc-new" aria-label="${esc(L('newChat'))}" title="${esc(L('newChat'))}">${ic('✏️', 20)}</button>`,
     aboveRow: '<div class="oc-attach" id="oc-attach" hidden></div><div class="oc-listen" id="oc-listen" role="status" hidden></div>',
     toolsStart: `<button type="button" class="oc-ibtn" id="oc-attach-btn" aria-label="${esc(L('attach'))}" title="${esc(L('attach'))}">${ic('📎', 22)}</button><input type="file" id="oc-file" accept="${DOC_ACCEPT},${IMG_ACCEPT}" hidden>`,
     toolsEnd: `<button type="button" class="oc-ibtn" id="oc-mic" aria-label="${esc(L('mic.start'))}" title="${esc(L('mic.start'))}" hidden>${ic('🎤', 22)}</button>`,
     foot: `<div class="oc-foot"><button type="button" class="oc-pill on" id="oc-web" role="switch" aria-checked="true">${ic('🌐', 16)} <span>${esc(L('web.on'))}</span></button><span class="oc-attachnote" id="oc-note">${esc(L('attachNote'))}</span></div>`,
-    hello: () => L('hello'),
-    ideas: () => (dash ? ['dashTimer', 'dashJobs', 'game', 'plan'] : ['game', 'book', 'dash', 'plan']).map(k => ({ label: L(`idea.${k}.label`), text: L(`idea.${k}.text`) })),
-    placeholder: () => L('placeholder'),
+    hello: c => via('hello', c) || L('hello'),
+    ideas: c => via('ideas', c) || (dash ? ['dashTimer', 'dashJobs', 'game', 'plan'] : ['game', 'book', 'dash', 'plan']).map(k => ({ label: L(`idea.${k}.label`), text: L(`idea.${k}.text`) })),
+    ideasAfter: c => via('ideasAfter', c) || [],
+    placeholder: c => via('placeholder', c) || L('placeholder'),
     leave: L('leave'),
     stepText: (k, state) => t(`js.companion.prog.${k}.${state === 'done' ? 'done' : 'now'}`),
-    body: () => { S.sent = true; return { page: pageNow(), ...(S.file ? { file: S.file.id } : {}) }; },
+    quoteText: q => (q.text ? t('js.companion.quoteN', { n: q.n, text: q.text }) : t('js.companion.questionN', { n: q.n })),
+    beforeSend: () => via('ensure'),
+    body: () => { S.sent = true; stopMic({ cancel: true }); return { page: pageNow(), ...(via('body') || {}), ...(S.file ? { file: S.file.id } : {}) }; },
     errText: code => (['slow', 'fileGone'].includes(code) ? L(`err.${code}`) : null),
     meExtra: x => (x.meta && x.meta.file ? `<span class="oc-file">${ic(x.meta.file.kind === 'image' ? '🖼️' : '📄', 18)} ${esc(x.meta.file.name)}${x.meta.file.pages ? ` <small>${esc(t('js.companion.pages', { n: x.meta.file.pages }))}</small>` : ''}</span>` : ''),
     format: (text, x) => `${x.note && x.note.steps ? stepsHtml(x.note) : ''}${formatText(text)}`,
-    note: x => noteHtml(x),
-    change: x => changeHtml(x),
-    onAct: (act, turn, btn) => onAct(act, turn, btn),
-    onAnswer: x => { if (x.change && x.change.kind === 'dash') afterDash(x.change); },
-    onUndo: () => { if (dash) { store.set('oc-hl', '[]'); location.reload(); } },
-    onSync: () => { if (S.sent) { S.sent = false; setFile(null); } },
+    note: x => noteHtml(x) + (via('note', x) || ''),
+    change: x => (x.change && x.change.kind === 'dash' ? changeHtml(x) : via('change', x) || changeHtml(x)),
+    changeLinks: x => via('changeLinks', x) || '',
+    extra: (x, c) => via('extra', x, c) || '',
+    onAct: async (act, turn, btn) => { const r = await via('onAct', act, turn, btn); return r === undefined ? onAct(act, turn, btn) : r; },
+    onAnswer: (x, c) => { if (x.change && x.change.kind === 'dash') afterDash(x.change); via('onAnswer', x, c); },
+    onUndo: r => { if (dash) { store.set('oc-hl', '[]'); location.reload(); return; } via('onUndo', r); },
+    onQuote: q => via('onQuote', q),
+    onMode: m => { if (m !== 'open') stopMic(); via('onMode', m); },
+    onSync: c => { if (S.sent) { S.sent = false; setFile(null); } via('onSync', c); },
   });
+  ref.chat = chat;
+  BUS.setChat(chat);
+  BUS.onPage(() => { const b = document.getElementById('oc-sees'); if (b) b.textContent = label(); chat.render(); });
   const root = chat.root;
   const $ = id => document.getElementById(id);
 
   // ---------------------------------------------------------------- the flags: web search, the microphone
-  api('/api/companion/chat', { background: true }).then(r => {
+  api('/api/companion/chat?peek=1', { background: true }).then(r => {
     S.web = !!r.web; S.webAllowed = !!r.webAllowed; drawWeb();
-    $('oc-mic').hidden = !(r.mic && window.MediaRecorder && navigator.mediaDevices);
+    S.live = !!r.live; S.rate = r.rate || 16000; S.maxMs = Math.min(r.maxMs || MAX_CLIP_MS, MAX_CLIP_MS);
+    $('oc-mic').hidden = !(r.mic && navigator.mediaDevices && (window.MediaRecorder || (r.live && AC)));
+    // An answer that ended while the teacher was away: the bubble's dot.
+    if (r.unseen && chat.state().mode !== 'open') { chat.state().unread = true; chat.setMode(chat.state().mode, { focus: false, user: false }); }
   }).catch(() => {});
   function drawWeb() {
     const b = $('oc-web'); if (!b) return;
@@ -135,42 +156,110 @@ function start() {
     } finally { URL.revokeObjectURL(url); }
   }
 
-  // ---------------------------------------------------------------- the microphone (tap to start, tap to stop)
-  const micBtn = $('oc-mic'), bar = $('oc-listen');
+  // ---------------------------------------------------------------- the microphone: words as the teacher speaks
+  // Tap to start. Live (services/stt-live.js, /api/companion/listen): the mic goes through public/js/stt-worklet.js as
+  // 16-bit mono PCM to our relay, which streams it to the speech service and sends back the words so far (greyed in
+  // the box: not final yet) and, on stop, the final words (settled, editable). The audio passes through: nothing is
+  // kept here or on the server. MediaRecorder also records the clip in memory, so if the live link is not there (the
+  // relay is off or fails), the clip is uploaded once instead (/api/companion/transcribe). Stops on a tap, on Send,
+  // when the panel closes, when the page is hidden, and at the longest recording.
+  const micBtn = $('oc-mic'), bar = $('oc-listen'), box = $('oc-in');
+  const AC = window.AudioContext || window.webkitAudioContext;
   micBtn.addEventListener('click', () => (S.mic ? stopMic() : startMic()));
+  document.addEventListener('visibilitychange', () => { if (document.hidden) stopMic({ cancel: true }); });
+  window.addEventListener('pagehide', () => stopMic({ cancel: true }));
+  const joined = (base, text) => (base && text ? `${base} ${text}` : base || text).slice(0, 1000);
+  function setBox(text, interim) { box.value = text; box.classList.toggle('interim', !!interim); box.readOnly = !!interim; box.dispatchEvent(new Event('input')); }
   async function startMic() {
     chat.showErr('');
     let stream;
     try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { chat.showErr(L('mic.denied')); return; }
-    const type = ['audio/webm', 'audio/mp4', 'audio/ogg'].find(x => window.MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(x)) || '';
-    const rec = new MediaRecorder(stream, type ? { mimeType: type } : {});
-    const parts = [], t0 = Date.now();
-    rec.ondataavailable = e => { if (e.data && e.data.size) parts.push(e.data); };
-    rec.onstop = async () => {
-      stream.getTracks().forEach(x => x.stop());
-      const ms = Date.now() - t0, blob = new Blob(parts, { type: (rec.mimeType || type || 'audio/webm').split(';')[0] });
-      parts.length = 0;
-      drawMic(null);
-      try {
-        const res = await fetch('/api/companion/transcribe', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': blob.type, 'X-Clip-Ms': String(ms) }, body: blob });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error || L('mic.failed'));
-        if (data.text) { const box = $('oc-in'); box.value = `${box.value ? `${box.value.replace(/\s+$/, '')} ` : ''}${data.text}`; box.dispatchEvent(new Event('input')); box.focus(); }
-      } catch (e) { chat.showErr(e.message || L('mic.failed')); }
-    };
-    S.mic = { rec, t0, timer: setInterval(() => { drawMic(S.mic); if (Date.now() - t0 > MAX_CLIP_MS) stopMic(); }, 500) };
-    rec.start(500);
-    drawMic(S.mic);
+    const type = ['audio/webm', 'audio/mp4', 'audio/ogg'].find(x => window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(x)) || '';
+    const rec = window.MediaRecorder ? new MediaRecorder(stream, type ? { mimeType: type } : {}) : null;
+    const m = { stream, rec, parts: [], t0: Date.now(), base: box.value.replace(/\s+$/, ''), live: null, done: false, cancel: false, upload: true };
+    S.mic = m;
+    if (rec) { rec.ondataavailable = e => { if (e.data && e.data.size) m.parts.push(e.data); }; rec.onstop = () => finish(m); rec.start(500); }
+    m.timer = setInterval(() => { drawMic(S.mic); if (Date.now() - m.t0 >= S.maxMs) stopMic(); }, 500);
+    if (S.live && AC && window.AudioWorkletNode && window.WebSocket) startLive(m);
+    drawMic(m);
   }
-  function stopMic() { const m = S.mic; if (!m) return; S.mic = null; clearInterval(m.timer); try { m.rec.stop(); } catch { /* stopped */ } }
+  function startLive(m) {
+    const l = m.live = { ws: null, ctx: null, node: null, src: null, ready: false, failed: false, queue: [], final: null };
+    let ws;
+    try { ws = new WebSocket(`${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/api/companion/listen`); } catch { l.failed = true; return; }
+    ws.binaryType = 'arraybuffer'; l.ws = ws;
+    ws.onopen = () => { for (const b of l.queue) ws.send(b); l.queue = []; };
+    ws.onmessage = e => {
+      let x = null; try { x = JSON.parse(e.data); } catch { return; }
+      if (x.liveId) l.liveId = String(x.liveId);
+      if (S.mic !== m && x.type !== 'final') return;
+      if (x.type === 'ready') l.ready = true;
+      else if (x.type === 'text' && !m.cancel) setBox(joined(m.base, String(x.text || '')), true);
+      else if (x.type === 'limit') stopMic();
+      else if (x.type === 'final') { l.final = String(x.text || ''); if (!m.cancel) setBox(joined(m.base, l.final), false); m.upload = false; closeLive(l); }
+      else if (x.type === 'error') { l.failed = true; closeLive(l); if (!x.fallback) { m.upload = false; chat.showErr(x.error || L('mic.failed')); stopMic({ cancel: true }); } }
+    };
+    ws.onclose = () => { if (!l.final) l.failed = true; };
+    ws.onerror = () => {};
+    (async () => {
+      try {
+        l.ctx = new AC();
+        await l.ctx.audioWorklet.addModule('/js/stt-worklet.js');
+        if (S.mic !== m) return;
+        l.src = l.ctx.createMediaStreamSource(m.stream);
+        l.node = new AudioWorkletNode(l.ctx, 'oomba-pcm', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1], processorOptions: { targetRate: S.rate || 16000 } });
+        l.node.port.onmessage = ev => { if (ev.data === 'flushed' || l.failed) return; if (l.ws && l.ws.readyState === 1) l.ws.send(ev.data); else if (l.queue.length < 1200) l.queue.push(ev.data); };
+        const mute = l.ctx.createGain(); mute.gain.value = 0;
+        l.src.connect(l.node); l.node.connect(mute); mute.connect(l.ctx.destination);
+      } catch { l.failed = true; closeLive(l); }
+    })();
+  }
+  function closeLive(l, msg) {
+    try { if (l.node) { l.node.port.onmessage = null; l.node.disconnect(); } } catch { /* gone */ }
+    try { if (l.src) l.src.disconnect(); } catch { /* gone */ }
+    try { if (l.ctx && l.ctx.state !== 'closed') l.ctx.close(); } catch { /* gone */ }
+    l.node = l.src = l.ctx = null;
+    const ws = l.ws; l.ws = null;
+    if (ws) { try { if (msg && ws.readyState === 1) ws.send(JSON.stringify(msg)); else ws.close(1000); } catch { /* gone */ } }
+  }
+  /** Stop listening. cancel: Send, the panel closed or the page hidden: no more words go into the box. */
+  function stopMic({ cancel = false } = {}) {
+    const m = S.mic; if (!m) return;
+    S.mic = null; clearInterval(m.timer); m.cancel = cancel;
+    m.stream.getTracks().forEach(x => x.stop());
+    if (m.live) {
+      const l = m.live;
+      if (cancel) { m.upload = false; closeLive(l, { type: 'cancel' }); }
+      else if (l.ws && l.ws.readyState === 1 && !l.failed) { try { l.ws.send(JSON.stringify({ type: 'stop' })); } catch { /* gone */ } setTimeout(() => { if (!l.final) { l.failed = true; closeLive(l); finish(m); } }, 6000); }
+      else l.failed = true;
+    }
+    if (cancel) { m.upload = false; box.classList.remove('interim'); box.readOnly = false; }
+    if (m.rec && m.rec.state !== 'inactive') { try { m.rec.stop(); } catch { /* stopped */ } } else finish(m);
+    drawMic(null);
+  }
+  /** After the recorder stopped: the live words are in the box already; otherwise the clip is uploaded once. */
+  async function finish(m) {
+    if (m.done) return;
+    if (m.live && !m.live.failed && !m.live.final && !m.cancel) return;   // the final words are on their way
+    m.done = true;
+    const blob = m.parts.length ? new Blob(m.parts, { type: (m.rec && m.rec.mimeType || 'audio/webm').split(';')[0] }) : null;
+    m.parts = [];
+    if (!m.upload || m.cancel || !blob) { box.classList.remove('interim'); box.readOnly = false; return; }
+    try {
+      const res = await fetch('/api/companion/transcribe', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': blob.type, 'X-Clip-Ms': String(Date.now() - m.t0), ...(m.live && m.live.liveId ? { 'X-Live-Id': m.live.liveId } : {}) }, body: blob });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || L('mic.failed'));
+      setBox(joined(m.base, data.text || ''), false); box.focus();
+    } catch (e) { setBox(m.base, false); chat.showErr(e.message || L('mic.failed')); }
+  }
   function drawMic(m) {
     micBtn.classList.toggle('oc-mic-on', !!m);
     micBtn.innerHTML = m ? ic('⏹️', 22) : ic('🎤', 22);
+    micBtn.setAttribute('aria-pressed', String(!!m));
     micBtn.setAttribute('aria-label', L(m ? 'mic.stop' : 'mic.start')); micBtn.title = L(m ? 'mic.stop' : 'mic.start');
     bar.hidden = !m;
     if (m) { const s = Math.round((Date.now() - m.t0) / 1000); bar.innerHTML = `<span class="oc-wave" aria-hidden="true">${[8, 14, 18, 10, 16, 6, 12].map(h => `<i style="height:${h}px"></i>`).join('')}</span><span>${esc(L('mic.listening'))}</span><small>${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')} · ${esc(L('mic.kept'))}</small>`; }
   }
-
   // ---------------------------------------------------------------- Oomba's answers
   function stepsHtml(n) {
     const rows = (n.steps || []).map(s => `<li>${ic('✓', 14)} <span>${esc(t(`js.companion.step.${s.k}`, { n: s.n || 0, q: s.q || '' }))}</span></li>`).join('');
