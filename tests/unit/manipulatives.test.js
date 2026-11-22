@@ -822,6 +822,29 @@ test('"Check my answers" says so when everything is right; otherwise how many an
   }
 });
 
+test('"Answers checked" in the teacher\'s menu: how many of the room checked; the ones who need help first, then all right, by name', async () => {
+  const { checkSummary } = await import('../../public/js/manip-data.js');
+  const students = ['Zed', 'ada', 'Ben', 'Cleo', 'Dev', 'Eli'].map((name, i) => ({ key: `k${i}`, name }));
+  const checks = { k0: { right: 1, total: 4 }, k1: { right: 4, total: 4 }, k2: { right: 0, total: 4 }, k4: { right: 3, total: 4 }, gone: { right: 0, total: 1 }, k5: { right: 2, total: 4 } };
+  const sum = checkSummary(checks, students);
+  assert.deepEqual([sum.checked, sum.total], [5, 6], 'Cleo has not checked; a student no longer in the room is left out');
+  assert.deepEqual(sum.rows.map(r => [r.name, r.ok]), [['Ben', false], ['Zed', false], ['Eli', false], ['Dev', false], ['ada', true]], 'fewest right first, then all right');
+  // Ties go by name, any case; all-right rows by name.
+  const tie = checkSummary({ a: { right: 0, total: 1 }, b: { right: 0, total: 1 }, c: { right: 1, total: 1 }, d: { right: 1, total: 1 } }, [{ key: 'a', name: 'bo' }, { key: 'b', name: 'Al' }, { key: 'c', name: 'zoe' }, { key: 'd', name: 'Amy' }]);
+  assert.deepEqual(tie.rows.map(r => r.name), ['Al', 'bo', 'Amy', 'zoe']);
+  assert.deepEqual(checkSummary({}, students), { checked: 0, total: 6, rows: [] });
+  assert.deepEqual(checkSummary(null, null), { checked: 0, total: 0, rows: [] });
+  // The line and the marks, in every language the room speaks (plurals through the i18n helper).
+  const { translate, CODES } = await import('../../server/i18n/index.js');
+  assert.equal(translate('en', 'js.manip-room.checksSummary', { checked: 12, total: 16 }), 'Answers checked: 12 of 16');
+  assert.equal(translate('en', 'js.manip-room.checksSummary', { checked: 0, total: 1 }), 'Answers checked: 0 of 1');
+  for (const code of CODES) for (const [key, vars] of [['checksSummary', { checked: 12, total: 16 }], ['checkAllRight'], ['checkNeedsHelp']]) {
+    const x = translate(code, `js.manip-room.${key}`, vars);
+    assert.ok(x && !/[{}#]/.test(x) && x !== `js.manip-room.${key}` && !/\u2014/.test(x), `${code} ${key}: ${x}`);
+    if (vars) assert.ok(/12/.test(x) && /16/.test(x), `${code}: ${x}`);
+  }
+});
+
 test('raised hands never reach classmates\' sockets: a student\'s socket carries their own hand only', async () => {
   const { WebSocket } = await import('ws');
   const { attachUpgrades } = await import('../../server/services/upgrade.js');

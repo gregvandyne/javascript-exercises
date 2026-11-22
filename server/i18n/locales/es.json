@@ -3507,7 +3507,10 @@
       "hideSteps": "Ocultar los pasos",
       "showSteps": "Mostrar los pasos",
       "checkResult": "{right} de {total} bien. Inténtalo otra vez con las demás.",
-      "checkAll": "{total, plural, one {¡Todo bien!} other {¡Las # bien!}}"
+      "checkAll": "{total, plural, one {¡Todo bien!} other {¡Las # bien!}}",
+      "checksSummary": "{total, plural, one {Respuestas comprobadas: {checked} de #} other {Respuestas comprobadas: {checked} de #}}",
+      "checkAllRight": "Todo bien",
+      "checkNeedsHelp": "Necesita ayuda"
     },
     "figures-editor": {
       "undo": "Deshacer",

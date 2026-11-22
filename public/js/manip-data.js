@@ -174,3 +174,20 @@ export const stepsOf = st => (st && Array.isArray(st.__steps) ? st.__steps : [])
 export const stepStripTexts = (steps, i, total = steps.length) => (total ? [`Step ${i + 1} of ${total}: ${steps[i] ? steps[i].text : ''}`, ...(i > 0 ? [`Earlier steps (${i})`] : [])] : []);
 /** The teacher's area keeps the current step big at its top: this much of it (room pixels) in step mode. */
 export const TEACHER_STEP_H = 110;
+/**
+ * The teacher's "Answers checked" line in the live room's ⋯ menu (public/js/manip-room.js): how many of the room's
+ * students checked, and their rows with the ones who need help first (anyone not all right: the fewest right first),
+ * then the all-right ones, each group by name. checks: { key: { right, total } } (the room's last check per student);
+ * students: [{ key, name }] (the squares in the room: a check from someone no longer there is left out).
+ * -> { checked, total, rows: [{ key, name, right, total, ok }] }
+ */
+export function checkSummary(checks, students) {
+  const c = checks && typeof checks === 'object' ? checks : {}, list = Array.isArray(students) ? students : [];
+  const rows = list.filter(s => s && c[s.key]).map(s => {
+    const right = Math.max(0, Number(c[s.key].right) || 0), total = Math.max(0, Number(c[s.key].total) || 0);
+    return { key: s.key, name: String(s.name || ''), right, total, ok: total > 0 && right >= total };
+  });
+  const byName = (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base', numeric: true });
+  rows.sort((a, b) => (a.ok - b.ok) || (a.ok ? 0 : a.right / (a.total || 1) - b.right / (b.total || 1)) || byName(a, b));
+  return { checked: rows.length, total: list.length, rows };
+}

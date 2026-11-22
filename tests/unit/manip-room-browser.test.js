@@ -32,9 +32,10 @@ const cookieOf = id => { let c = ''; startSession({ append: (k, v) => { c = v.sp
 const oak = S.createSchool(boss, { name: 'Room Oak' }).school;
 S.addMember(boss, oak.id, boss.id, 'teacher', { rosterName: 'Ms Boss' });
 const NAMES = ['Ada', 'Ben', 'Cleo', 'Dev', 'Eli', 'Fay', 'Gus', 'Hana', 'Ivo', 'Jade', 'Kai', 'Lia', 'Max', 'Nia', 'Oz', 'Pia'];
-function klass(name, n) {
+const LONG = 'Maximiliana Montgomery-Featherstonehaugh';
+function klass(name, n, long = false) {
   const c = S.createClass(boss, oak.id, { name }).class;
-  const kids = NAMES.slice(0, n).map(k => { const u = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: `${k} ${name}` }).user.id); S.addToClass(boss, c.id, u.id); return u; });
+  const kids = NAMES.slice(0, n).map((k, i) => { const u = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: long && i === n - 1 ? LONG : `${k} ${name}` }).user.id); S.addToClass(boss, c.id, u.id); return u; });
   return { c, kids };
 }
 
@@ -76,8 +77,8 @@ const roomBottom = page => page.evaluate(() => {
 
 // A class of 16 working through a board of three steps with one answer box; checks on, everyone checked.
 const STEPS = [{ id: 's1', text: 'Put 7 counters in the ten-frame.' }, { id: 's2', text: 'Fill the rest with the other color.' }, { id: 's3', text: 'How many more make 10?' }];
-function checkedRoom() {
-  const { c, kids } = klass('2A', 16);
+function checkedRoom({ check = true } = {}) {
+  const { c, kids } = klass('2A', 16, true);
   const b = M.saveBoard(boss, { tool: 'two-color-counters', title: 'Make 10', state: { v: 2, pieces: [], __steps: STEPS, objects: [
     { id: 'oframe', k: 'ten-frame', x: 1560, y: 1040, s: 1, st: { n: 10 }, locked: true }, { id: 'oans', k: 'answer', x: 1896, y: 1090, s: 1, st: { ans: '', size: 'S', key: '3' } }] } }).board;
   const s = M.createSession(boss, { classId: c.id, boardId: b.id }).session;
@@ -85,7 +86,8 @@ function checkedRoom() {
   assert.ok(M.push(boss, s.id, b.id).ok);
   const room = JSON.parse(M.getSession(s.id).room); room.checks = true;
   assert.ok(M.saveArea(boss, s.id, 't', room).ok);
-  kids.forEach((k, i) => assert.ok(M.checkAnswers(k, s.id, { oans: i % 3 ? '3' : '4' }).ok));
+  // Every third one (Ada, Dev, Gus, Jade, Max and the long name) got it wrong: they need help.
+  if (check) kids.forEach((k, i) => assert.ok(M.checkAnswers(k, s.id, { oans: i % 3 ? '3' : '4' }).ok));
   assert.ok(M.step(boss, s.id, { to: 1 }).ok);
   return { s, kids };
 }
@@ -98,16 +100,47 @@ test('the teacher\'s ⋯ menu with 16 answers checked: inside the screen, End se
     await page.waitForSelector('.rm-area[data-key]'); await page.waitForTimeout(500);
     assert.ok(await reachable(page, '[data-rtool="menu"]'), `${dev}: the ⋯ button is on the screen`);
     await press(page, '[data-rtool="menu"]');
-    assert.equal(await page.locator('.rm-checklist li').count(), 16);
+    // "Answers checked: 16 of 16", one line, closed: no names showing.
+    assert.equal((await page.locator('.rm-checks > summary').textContent()).trim(), 'Answers checked: 16 of 16');
+    assert.equal(await page.locator('details.rm-checks').evaluate(d => d.open), false, `${dev}: closed by default`);
+    assert.equal(await page.locator('.rm-checks li').first().isVisible(), false);
     const menu = await box(page, '.rm-menu'), b = await roomBottom(page);
     assert.ok(menu.y + menu.height <= b.rm + 0.5 && b.rm <= b.tabTop + 0.5, `${dev}: the menu ends inside the room (${menu.y + menu.height} <= ${b.rm})`);
     assert.ok(await reachable(page, '.rm-menu [data-rtool="end"]'), `${dev}: End session can be clicked`);
-    // The long list scrolls inside the menu; End session stays where it is.
+    await shot(page, `room-menu-${dev}`);
+    // Opened (a tap on the line): the six who need help first, then the ten all right, each a name and a score.
+    await press(page, '.rm-checks > summary');
     const end0 = await box(page, '.rm-menu [data-rtool="end"]');
+    assert.equal(await page.locator('details.rm-checks').evaluate(d => d.open), true);
+    const rows = await page.locator('.rm-checks li').evaluateAll(els => els.map(li => ({ cls: li.className, name: li.querySelector('.rm-cname').textContent, score: li.querySelector('.rm-cscore').textContent.trim(), mark: li.querySelector('.rm-cscore img')?.getAttribute('alt') })));
+    assert.equal(rows.length, 16);
+    assert.deepEqual(rows.map(r => r.cls), [...Array(6).fill('help'), ...Array(10).fill('ok')]);
+    assert.deepEqual(rows.slice(0, 6).map(r => r.name), ['Ada 2A', 'Dev 2A', 'Gus 2A', 'Jade 2A', 'Max 2A', LONG]);
+    assert.ok(rows.slice(0, 6).every(r => r.score === '0/1' && r.mark === 'Needs help'));
+    assert.ok(rows.slice(6).every(r => r.score === '1/1' && r.mark === 'All right'));
+    // Nothing overlaps: the rows sit under the switches, each name left of its score, inside the menu; a long name is
+    // cut short with an ellipsis.
+    const geo = await page.evaluate(() => {
+      const R = el => el.getBoundingClientRect(), m = R(document.querySelector('.rm-menu-body'));
+      const sw = [...document.querySelectorAll('.rm-menu .rm-switch, .rm-menu .rm-codeline, .rm-checks > summary')].map(R);
+      const cells = [...document.querySelectorAll('.rm-checks li')].map(li => ({ n: R(li.querySelector('.rm-cname')), s: R(li.querySelector('.rm-cscore')), cut: li.querySelector('.rm-cname').scrollWidth > li.querySelector('.rm-cname').clientWidth }));
+      return { m, sw, cells };
+    });
+    const hit = (a, b) => a.left < b.right - 0.5 && b.left < a.right - 0.5 && a.top < b.bottom - 0.5 && b.top < a.bottom - 0.5;
+    for (const [i, c] of geo.cells.entries()) {
+      assert.ok(c.n.right <= c.s.left + 0.5, `${dev}: row ${i} name left of its score`);
+      assert.ok(c.n.left >= geo.m.left - 0.5 && c.s.right <= geo.m.right + 0.5, `${dev}: row ${i} inside the menu`);
+      for (const w of geo.sw) assert.ok(!hit(c.n, w) && !hit(c.s, w), `${dev}: row ${i} overlaps a switch`);
+      if (i) assert.ok(c.n.top >= geo.cells[i - 1].n.bottom - 0.5, `${dev}: row ${i} under the one before`);
+    }
+    assert.equal(geo.cells[5].cut, true, `${dev}: the long name is cut short`);
+    assert.ok(geo.cells.slice(0, 5).every(c => !c.cut));
+    // The list scrolls inside the menu; End session stays where it is, in reach.
     await page.locator('.rm-menu-body').evaluate(el => { el.scrollTop = el.scrollHeight; });
     assert.deepEqual(await box(page, '.rm-menu [data-rtool="end"]'), end0, `${dev}: pinned`);
-    assert.ok(await reachable(page, '.rm-checklist li:last-child'), `${dev}: the last student can be scrolled to`);
-    await shot(page, `room-menu-${dev}`);
+    assert.ok(await reachable(page, '.rm-checks li:last-child .rm-cscore'), `${dev}: the last student can be scrolled to`);
+    assert.ok(await reachable(page, '.rm-menu [data-rtool="end"]'), `${dev}: End session still in reach`);
+    await shot(page, `room-menu-open-${dev}`);
     if (dev === '390') {
       // End the session from the menu, then Reopen room, both in reach; the room comes back on Step 2 of 3.
       await press(page, '.rm-menu [data-rtool="end"]'); await page.waitForSelector('.rm-menu [data-rtool="reopen"]');
@@ -124,6 +157,22 @@ test('the teacher\'s ⋯ menu with 16 answers checked: inside the screen, End se
   await page.waitForSelector('.rm-stepnow');
   assert.equal(await page.locator('.rm-stepnow').textContent(), 'Step 2 of 3');
   await ctx.close();
+  M.end(boss, s.id);
+});
+
+test('nobody has checked yet: "Answers checked: 0 of 16", one calm line with nothing to open', async t => {
+  if (skip) return t.skip(skip);
+  const { s } = checkedRoom({ check: false });
+  for (const [dev, opts] of DEVICES()) {
+    const { ctx, page, errors } = await open(boss, `#live/${s.id}`, opts);
+    await page.waitForSelector('.rm-area[data-key]'); await page.waitForTimeout(400);
+    await press(page, '[data-rtool="menu"]');
+    assert.equal((await page.locator('.rm-checks-none').textContent()).trim(), 'Answers checked: 0 of 16');
+    assert.equal(await page.locator('details.rm-checks').count(), 0);
+    assert.ok(await reachable(page, '.rm-menu [data-rtool="end"]'));
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  }
   M.end(boss, s.id);
 });
 

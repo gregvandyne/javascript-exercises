@@ -10,7 +10,7 @@
 // The tools' own code (boards, palettes, taps) comes from public/js/manip.js through open()'s deps.
 import { t, api, toast, esc, copyText } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
-import { toolOf, roomLayout, layoutOf, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H } from '/js/manip-data.js';
+import { toolOf, roomLayout, layoutOf, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H, checkSummary } from '/js/manip-data.js';
 import { WORLD, migrate, fitInto, newBoard, objectTool, kindOf, objSize, objRect, boxesOf, bbox, spotIn, slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, OBJ_MAX, OBJ_MAX_SQUARE, S_MIN, S_MAX,
   snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, freeResize } from '/js/manip-board.js';
 import { inChart, paletteAdd } from '/js/manip-pv.js';
@@ -446,12 +446,26 @@ function renderMenu() {
     <div class="rm-mi rm-codeline">${esc(t('js.manip-room.joinCode', { code: room.code || '' }))}${btn('btn btn-sm', 'data-rtool="copycode"', esc(t('js.manip-room.copy')))}</div>
     ${btn('rm-mi rm-switch', `role="switch" aria-checked="${!room.showWork}" data-rtool="showwork"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.hideWork'))}`)}
     ${live ? btn('rm-mi rm-switch', `role="switch" aria-checked="${checksOn()}" data-rtool="checks"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.checksSwitch'))}`) : ''}
-    ${Object.keys(R.room.checks || {}).length ? `<div class="rm-checklist" role="group" aria-label="${esc(t('js.manip-room.checksTitle'))}"><b>${esc(t('js.manip-room.checksTitle'))}</b><ul>${Object.entries(R.room.checks).map(([k, c]) => { const A = R.areas.get(k); return A ? `<li><span class="rm-dot" style="background:${esc(A.color)}"></span>${esc(A.name)} <b>${esc(t('js.manip-room.checkScore', { right: c.right, total: c.total }))}</b></li>` : ''; }).join('')}</ul></div>` : ''}
+    ${checksHtml()}
     ${live ? btn('rm-mi rm-switch', `role="switch" aria-checked="${(R.areas.get('t') || { st: {} }).st.totals !== false}" data-rtool="totals"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.totals'))}`) : ''}
     ${d.total > 1 && live ? btn('rm-mi rm-switch', `role="switch" aria-checked="${!!d.pace}" data-rtool="pace"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.pace'))}`) : ''}
     ${live ? btn('rm-mi', 'data-rtool="push"', `${iconHtml('📤', { size: 18 })} ${esc(t('js.manip-room.push'))}`) : ''}
     <a class="rm-mi" href="/api/manipulatives/live/${esc(R.id)}/export.pdf" download>${iconHtml('📄', { size: 18 })} ${esc(t('js.manip-room.pdf'))}</a></div>
     <div class="rm-menu-foot">${live ? btn('rm-mi bad', 'data-rtool="end"', `${iconHtml('⏹', { size: 18 })} ${esc(t('js.manip-room.end'))}`) : btn('rm-mi', 'data-rtool="reopen"', `${iconHtml('🔄', { size: 18 })} ${esc(t('js.manip-room.reopen'))}`)}</div></div>`;
+}
+/** "Answers checked: 12 of 16" in the ⋯ menu: one line, closed by default, that opens (a native details) to the names,
+ *  those who need help first, each with their score and a mark. Nobody checked yet: the line alone. Shown while checks
+ *  are on, or once anyone checked. */
+function checksHtml() {
+  const students = [...R.areas.values()].filter(A => A.key !== 't').sort((a, b) => a.slot - b.slot).map(A => ({ key: A.key, name: A.name }));
+  const sum = checkSummary(R.room.checks, students);
+  if (!students.length || (!sum.checked && !checksOn())) return '';
+  const line = esc(t('js.manip-room.checksSummary', { checked: sum.checked, total: sum.total }));
+  if (!sum.checked) return `<div class="rm-checks rm-checks-none">${iconHtml('☑', { size: 18 })}<span>${line}</span></div>`;
+  const row = r => `<li class="${r.ok ? 'ok' : 'help'}"><span class="rm-cname" title="${esc(r.name)}">${esc(r.name)}</span><span class="rm-cscore"><bdi>${r.right}/${r.total}</bdi>${iconHtml(r.ok ? '✅' : '⚠️', { size: 16, label: t(r.ok ? 'js.manip-room.checkAllRight' : 'js.manip-room.checkNeedsHelp') })}</span></li>`;
+  const open = R.checksOpen ? ' open' : '';
+  return `<details class="rm-checks"${open}><summary>${iconHtml('☑', { size: 18 })}<span>${line}</span></summary>
+    <ul aria-label="${esc(t('js.manip-room.checksTitle'))}">${sum.rows.map(row).join('')}</ul></details>`;
 }
 const handBtn = cls => btn(`${cls} rm-hand${handUp(R.me) ? ' on' : ''}`, `data-rtool="hand" aria-pressed="${handUp(R.me)}" aria-label="${esc(t('js.manip-room.raiseHand'))}"`, `${iconHtml('✋', { size: 18 })} <span class="rm-handt">${esc(handUp(R.me) ? t('js.manip-room.lowerHand') : t('js.manip-room.raiseHand'))}</span>`);
 const initials = name => String(name).split(/\s+/).map(w => [...w][0] || '').join('').slice(0, 2).toUpperCase() || '?';
@@ -501,6 +515,8 @@ function bind() {
   // The wheel zooms the board, except over a list that scrolls (the ⋯ menu's "Answers checked", raised hands).
   el.addEventListener('wheel', e => { if (e.target.closest('.rm-menu, .rm-handlist')) return; e.preventDefault(); const r = el.getBoundingClientRect(); zoomAt(Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
   el.addEventListener('click', click);
+  // The menu's "Answers checked" stays open (or closed) as the teacher left it when the menu is drawn again.
+  el.addEventListener('toggle', e => { if (e.target.matches && e.target.matches('details.rm-checks')) R.checksOpen = e.target.open; }, true);
   el.addEventListener('change', e => {
     const s = e.target.closest('[data-set]'); if (!s || !e.target.closest('#rm-pal')) return;
     const k = s.dataset.set, v = s.value;
