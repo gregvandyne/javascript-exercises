@@ -3496,7 +3496,16 @@
       "actionsFor": "{label} の操作",
       "teacherLock": "先生がロックしています。",
       "reopen": "ルームを再開",
-      "reopened": "ルームが再開しました。みんな自分のマスに戻れます。"
+      "reopened": "ルームが再開しました。みんな自分のマスに戻れます。",
+      "steps": "ステップ",
+      "stepOf": "ステップ {n} / {total}",
+      "instructions": "やりかた",
+      "prevStep": "前のステップ",
+      "nextStep": "次のステップ",
+      "allSteps": "すべてのステップ",
+      "thisStep": "このステップだけ",
+      "hideSteps": "ステップをかくす",
+      "showSteps": "ステップを見る"
     },
     "figures-editor": {
       "undo": "元に戻す",

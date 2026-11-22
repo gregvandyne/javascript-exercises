@@ -3497,7 +3497,16 @@
       "actionsFor": "Ações para {label}",
       "teacherLock": "Seu professor travou isto.",
       "reopen": "Reabrir a sala",
-      "reopened": "A sala está aberta de novo. Cada estudante volta ao próprio quadrado."
+      "reopened": "A sala está aberta de novo. Cada estudante volta ao próprio quadrado.",
+      "steps": "Passos",
+      "stepOf": "Passo {n} de {total}",
+      "instructions": "Instruções",
+      "prevStep": "Passo anterior",
+      "nextStep": "Próximo passo",
+      "allSteps": "Todos os passos",
+      "thisStep": "Só este passo",
+      "hideSteps": "Ocultar os passos",
+      "showSteps": "Mostrar os passos"
     },
     "figures-editor": {
       "undo": "Desfazer",

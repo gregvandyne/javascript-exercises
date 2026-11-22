@@ -10843,3 +10843,40 @@ We still don't know which error the API gave that morning, since nothing was log
   owner gives chosen staff free access, set on Render); the billing preview cookie does not open the tools (the gate
   runs where there is no request, so pages and services must agree).
 
+
+## Virtual math manipulatives: steps on the board, charts locked in place (22 Nov 2026)
+
+Two owner asks. "When you place down a chart, table, or graph, it should always be locked in place by default." And,
+looking at the 📋 Steps editor: "where are the steps laid out for the students? I see them written here, but how would
+a student see it? I am thinking we need to put the steps on the actual board."
+
+- **Locked by default.** The backdrops other pieces go onto (`manip-board.js` `BACKDROP`): the place-value chart, the
+  work mat, the five-frame, ten-frame and double ten-frame, the part-part-whole mat, the hundred board, the coordinate
+  grid, the number line and the bar model. A new one starts with the wheel's ordinary lock (`locked: true`, no author)
+  wherever it is placed: the palette, a new board's first object, an AI draft (`draftLayout`), a practice set
+  (`buildPractice`, so the drafter's boards too), the room's palette. Unlock from the wheel as before. Judgment calls:
+  the clock, geoboard, rekenrek, fraction set, fraction equation and answer box are tools in their own right, not
+  backdrops, so they start free. Boards saved before keep the locks they were saved with (nothing is migrated, and
+  first-format boards migrate unlocked). The room's rule is unchanged: a student's own locks (theirs, or a chart in a
+  board they loaded from a push) they may undo; what the teacher locks in their square (`lockBy: 't'`, decided by the
+  server) stays locked for them.
+- **Dragging a locked object's body pans the board** (solo and room); its handle bar still shakes. With grids locked
+  by default a coordinate grid can fill a phone's screen, and one finger must still move the view.
+- **The steps card** (`manip-room.js` `stepCardHtml`, one design with the live square's strip: its tint, 📌 and words).
+  Pinned above the board and joined to its top edge, so nothing on the board is ever under it (it is not a piece and
+  the board's own space does not change). "Step 2 of 4" and the step big (24 px, 20 on phones); ◀ ▶ (the viewer moves
+  through their own board's steps); "All steps" opens the numbered list with the current one marked; one step shows
+  as "Instructions" with no buttons. The teacher can fold it to one slim line ("Show steps"). Hidden entirely when the
+  board has no steps; it follows the Steps editor as the teacher types. Phones: the heading and ✕ on one line, All
+  steps and ◀ ▶ on the next, every button 44 px. Right to left: Back is on the right and points right. Printed, it
+  lists every step. 13 locales (the strip's "Step {n} of {total}" and "Instructions" now translated too).
+- **Where steps show.** The teacher's own board and any board opened from a share code or a saved board: the card.
+  A live session (a session started from a board, or a pushed board's steps as the deck): unchanged, the strip in
+  every square and the big step in the teacher's area, still never a future step sent to a student. The session PDF
+  now starts with the session's steps, numbered. Students do not open boards outside a session (Teacher plan gate), so
+  the room's strip is their view; the room's teacher area is also the projection view.
+- **Tests:** `manip-board.test.js` (every placement path locks a backdrop, others and old boards stay as they were),
+  `manipulatives.test.js` (the PDF's Steps block), `manip-steps-browser.test.js` (iPhone 13 and laptop: the card above
+  the board, 44 px targets, no sideways scroll, ◀ ▶, All steps, fold, the editor; another teacher's share code; no
+  steps, one step; Hebrew; a live square and a pushed board show step 1 only; a new chart locked, a drag pans, its
+  wheel holds only Unlock).

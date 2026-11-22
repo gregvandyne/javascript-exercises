@@ -3497,7 +3497,16 @@
       "actionsFor": "Aktionen für {label}",
       "teacherLock": "Deine Lehrkraft hat das gesperrt.",
       "reopen": "Raum wieder öffnen",
-      "reopened": "Der Raum ist wieder offen. Alle kommen zurück in ihr eigenes Feld."
+      "reopened": "Der Raum ist wieder offen. Alle kommen zurück in ihr eigenes Feld.",
+      "steps": "Schritte",
+      "stepOf": "Schritt {n} von {total}",
+      "instructions": "Anleitung",
+      "prevStep": "Vorheriger Schritt",
+      "nextStep": "Nächster Schritt",
+      "allSteps": "Alle Schritte",
+      "thisStep": "Nur dieser Schritt",
+      "hideSteps": "Schritte ausblenden",
+      "showSteps": "Schritte zeigen"
     },
     "figures-editor": {
       "undo": "Rückgängig",

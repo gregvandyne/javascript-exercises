@@ -3496,7 +3496,16 @@
       "actionsFor": "Acciones para {label}",
       "teacherLock": "Tu maestro bloqueó esto.",
       "reopen": "Reabrir la sala",
-      "reopened": "La sala está abierta otra vez. Cada estudiante vuelve a su propio cuadro."
+      "reopened": "La sala está abierta otra vez. Cada estudiante vuelve a su propio cuadro.",
+      "steps": "Pasos",
+      "stepOf": "Paso {n} de {total}",
+      "instructions": "Instrucciones",
+      "prevStep": "Paso anterior",
+      "nextStep": "Paso siguiente",
+      "allSteps": "Todos los pasos",
+      "thisStep": "Solo este paso",
+      "hideSteps": "Ocultar los pasos",
+      "showSteps": "Mostrar los pasos"
     },
     "figures-editor": {
       "undo": "Deshacer",
