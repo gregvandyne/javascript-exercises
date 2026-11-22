@@ -10313,3 +10313,63 @@ weren't saved at all unless the teacher pressed Save, which made a new share cod
   figures-econ-macro, figures-econ-firm (computed equilibria, areas and shifts against the algebra, cannot-be-drawn,
   print, hide, languages, the generators), figures-econ-words (12 languages and look-alikes), figures-scrub, and the
   Economics tab and its editors in Chromium (figures-browser).
+
+## Figures 1.5.0: organic structures and atomic energy levels (22 Nov 2026)
+
+- **A new version, like 1.4.0.** Oomba Figures 1.5.0 is a new version folder: the core and the same seven packs (no
+  new pack; the chem pack gains `skeletal` and `energyLevels`). 1.0.0 to 1.4.0 have shipped and stay byte for byte (the
+  lock, and git at the 1.4.0 release); every catalog figure 1.4.0 drew (each preset and two generator figures per
+  generator, in every mode) draws the same bytes in 1.5.0, and checks and solves the same
+  (`tests/unit/figures-v150.test.js`). New builds, the Builder's tags and the Figures product pin 1.5.0; the CSP, the
+  scanner and the screenshot worker list the eight new files. Minified with the pinned esbuild; the ported file keeps its
+  Apache 4(b) note as a legal comment.
+- **Skeletal structures, server-drawn.** These were deferred in 1.2.0 because the only way Oomba drew them,
+  `OF.structure` (SmilesDrawer), needs a browser, so a printed sheet, a Figures thumbnail or a student's lesson step
+  (all drawn on the server) could not show them. `skeletal` is a proper kind drawn by Oomba as lines and text, so it
+  prints and renders on the server. The source's organic structure editor already worked this way (its views are pure
+  arithmetic on atom places), so its views are ported (`ported/organic.js`: valence and added hydrogens, labels with
+  subscripts and backward labels, bond lines with the inner second line, the full formula's hydrogen placement, the
+  chiral asterisk, carbon numbering). The editor's behavior becomes data: `view`, `ends`, `rings`, `acids`, `reverse`,
+  `numbers`, `flip`, `chiral`, a caption (`name`), and atoms placed by hand (`atoms` with `x`, `y` and `h` for dragged
+  hydrogens). The source has no SMILES and no automatic layout (its ADR: layout is research-grade once rings meet), so
+  Oomba adds its own: SMILES-lite and a straight `chain` with groups (what a generator deals), laid out on 30 degree
+  steps (zigzag, or straight for a full formula), single rings as regular polygons, then checked for overlaps.
+- **What is left out, and why.** Rings that share atoms (naphthalene, steroids, spiro and bridged rings) are not laid
+  out automatically: an honest layout for fused systems is the research-grade problem the source avoided, so they are
+  refused with the reason (give them as `atoms` with places, which draw and print, or use `OF.structure` in the browser).
+  Bracket atoms (charges, isotopes, explicit H), stereo marks and five-membered aromatic rings in lowercase are refused
+  (write the Kekulé form). The editor's pointer UI (drawing, dropping rings, moving, swinging hydrogens) is not ported:
+  the Figures editor is data-driven (typed SMILES, toggles, JSON), as with every other kind. `OF.structure` stays as it
+  is (shipped versions pin it); the FIGURE RULES now say to use `skeletal` for worksheets and `OF.structure` only for
+  what `skeletal` refuses, so there is one way to draw a printable structure.
+- **Truthful.** Hydrogens are always worked out from valence (never typed), an overbonded atom is refused, a layout
+  where atoms or bonds would overlap is refused, and a skeletal formula that would hide a carbon in a straight line (the
+  source only warns in its editor) is refused. `OF.solve.skeletal` gives the molecular formula in Hill order, counts,
+  molar mass (IUPAC standard atomic weights), degree of unsaturation and functional groups (a Kekulé benzene is an
+  arene, not three alkenes).
+- **Atomic energy levels, Oomba's own.** The source has no such generator, so `energyLevels` is written fresh: hydrogen
+  (or a one-electron ion) from E = -13.6 Z²/n² eV, or any atom's levels in eV, each line exactly at its energy, labels
+  spread on leaders where lines crowd; emission arrows down (solid), absorption up (dashed), ionization to n = ∞;
+  wavelengths from λ = hc/ΔE with exact SI constants. Arrows between levels too close to draw at the figure's height
+  (n = 6 to 5 at the default 360 px is 4 px) are refused with the reason, not drawn as a smudge; `height` up to 900 fits
+  more. On screen a visible photon's arrow is in its color (the line spectrum's color function); print is black.
+
+| Source item | Status | Oomba | Notes |
+| --- | --- | --- | --- |
+| Organic Structure Editor: the four views (skeletal, carbon skeleton, condensed, full structural) | Ported | `skeletal` (new) | From one shape; labels, bond lines, added hydrogens, CO₂H, backward labels, chiral asterisk, carbon numbering. |
+| Organic Structure Editor: drawing by hand | Partial | `skeletal` with `atoms` + `bonds` | As data (places in bond lengths, `h` for placed hydrogens), edited as JSON; the pointer editing is not ported. |
+| Organic Structure Editor: rings tray (cyclopentane, cyclohexane, benzene) | Partial | SMILES-lite rings | Single rings of 3 to 8 (benzene, pyridine in lowercase); fused, spiro and bridged rings only as `atoms`. |
+| Organic Structure Editor: Zigzag and Straighten (planned in the source) | Ported as data | `layout: "zigzag" \| "straight"` | Straight is refused in the skeletal view (it would hide carbons). |
+| SMILES input and automatic layout | New (Oomba's own) | `smiles`, `chain` | Not in the source; organic subset only. |
+| Atomic energy levels with transitions | New (Oomba's own) | `energyLevels` (new) | Not in the source; hydrogen-like or given levels, emission, absorption, ionization, cascades, series. |
+
+- **Judgment calls.** The kind is `skeletal` (it also draws condensed and full formulas, but the skeletal formula is
+  what teachers ask for and the name fits the Canvas kit's 20 characters); the catalog calls it "Organic structures".
+  Hydrogen uses 13.6 eV (the textbook Bohr value) so the figure's numbers match a student's working; hc is exact
+  (1239.84 eV nm), and the generator's question says so. Element labels use Arial widths so the ported label boxes fit;
+  heteroatoms are colored on screen only. The figure question generators: hydrogens in a chain with one double bond
+  (CnH2n), and the wavelength of a hydrogen emission line to n = 1 or 2.
+- **Tests.** figures-v150 (frozen versions, latest pin, byte-identical 1.4.0 figures, the new kinds in the frozen file),
+  figures-chem-organic, figures-chem-levels (formulas, groups, scale, photons against the Balmer and Lyman lines,
+  cannot-be-drawn, print, hide, languages, the generators), figures-chem2-words (12 languages and look-alikes),
+  figures-scrub, and the new editors in Chromium (figures-browser).
