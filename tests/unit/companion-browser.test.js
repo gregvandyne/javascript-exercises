@@ -40,16 +40,19 @@ q.run("UPDATE users SET display_name='Demo Teacher' WHERE id=?", teacher.id);
 config.manipulativesUsers = [teacher.username.toLowerCase()];
 const cls = S.createClass(boss, school.id, { name: 'Demo Class', grade: '4', teacherId: teacher.id }).class;
 const kids = ['Bouncy Owl', 'Jolly Dolphin', 'Lucky Gecko', 'Sunny Robin', 'Ada Park'].map(n => { const u = getUser(S.createSchoolAccount(boss, school.id, { rosterName: n }).user.id); S.addToClass(boss, cls.id, u.id); return u; });
-for (const [slug, title, desc] of [['fraction-factory', 'Fraction Factory', 'Cut cakes into equal parts and put them on a number line. Wrong cuts are shown, never punished.'], ['mistake-hunt', 'Mistake Hunt', 'Students find and fix the mistakes in a short passage.']]) {
-  if (!G.getGameBySlug(slug)) { const g = G.createGame(boss.id, { title, source: 'seed', slug, category: 'learning', description: desc, icon: '🧁' }); q.run("UPDATE games SET status='published' WHERE id=?", g.id); }
-}
+// Two official games, imported as the seed does (a real game page for "no Oomba while a game plays").
+const { importGame } = await import('../../scripts/import-game.js');
+const { seedOfficial } = await import('../../scripts/seed.js');
+const official = seedOfficial();
+for (const slug of ['fraction-factory', 'mistake-hunt']) if (!G.getGameBySlug(slug)) importGame(`seed-games/${slug}.html`, `seed-games/${slug}.json`, official.id);
 const cookieOf = id => { let c = ''; startSession({ append: (k, v) => { c = v.split(';')[0]; } }, id); return c; };
 
 /** The stand-in AI: answers by the teacher's last words. */
 function ai() {
   const calls = [];
   const lastUser = p => { for (let i = p.messages.length - 1; i >= 0; i--) { const m = p.messages[i]; if (m.role === 'user' && typeof m.content === 'string') return m.content; if (m.role === 'user' && Array.isArray(m.content) && m.content.some(c => c.type === 'text')) return m.content.find(c => c.type === 'text').text; } return ''; };
-  const asked = p => p.messages.filter(m => m.role === 'assistant').length;
+  // Tool rounds in this answer: the assistant turns after the teacher's newest words (earlier answers are history).
+  const asked = p => { let i = p.messages.length - 1; while (i >= 0 && !(p.messages[i].role === 'user' && (typeof p.messages[i].content === 'string' || p.messages[i].content.some(c => c.type === 'text')))) i--; return p.messages.slice(i + 1).filter(m => m.role === 'assistant').length; };
   const tool = (name, input) => ({ stop_reason: 'tool_use', content: [{ type: 'tool_use', id: `tu_${name}_${calls.length}`, name, input }] });
   const text = s => ({ stop_reason: 'end_turn', content: [{ type: 'text', text: s }] });
   CO.hooks.create = async p => {
@@ -66,6 +69,13 @@ function ai() {
       if (n === 0) r = tool('readUpload', { fileId: id });
       else if (n === 1) r = tool('startBuild', { tool: 'builder', title: 'Fractions on a number line', grade: '3', brief: 'A classroom activity: students place halves, thirds and fourths on a number line, guided first and then on their own.', practice: 'Fractions on a number line', help: 'Guided, then On my own', length: 'About 10 minutes', fromPlan: 'Watch for counting tick marks instead of spaces' });
       else r = text('Your plan places halves, thirds and fourths on a number line. Here is what I would hand the Builder:');
+    } else if (/level M reader/i.test(w)) {
+      if (n === 0) r = tool('searchBooks', { words: 'animals', readingLevel: 'M' });
+      else {
+        const res = p.messages.at(-1).content.find(c => c.type === 'tool_result');
+        const books = JSON.parse(res.content).books.slice(0, 2);
+        r = text(`Oomba's library sorts books by grade, not by guided reading level. Level M is usually late grade 2 to early grade 3, so these should fit:\n${books.map(b => `[[book:${b.id}]]`).join('\n')}`);
+      }
     } else if (/English learners/i.test(w)) {
       const urls = ['https://ell-teaching.example.org/vocab', 'https://education.example.edu/turn-talk', 'https://teachers.example.gov/frames'];
       r = { stop_reason: 'end_turn', content: [
@@ -135,6 +145,13 @@ test('laptop: the bubble on a teacher page; game search cards; a web answer with
     assert.match(await page.locator('.oc-did').first().textContent(), /Searched games/);
     await noSideScroll(page);
     await shot(page, 'b_games');
+    // A book for a guided reading level: the library's grade bands, said as such, with Read and Assign.
+    await ask(page, 'Show me a book for a level M reader about animals');
+    await page.locator('.oc-card.book').first().waitFor({ timeout: 15000 });
+    assert.match(await page.locator('.oc-did').last().textContent(), /reading level M/);
+    assert.match(await page.locator('.oc-card.book a', { hasText: 'Read' }).first().getAttribute('href'), /^\/library\/.+\/read$/);
+    await page.evaluate(() => { const l = document.getElementById('oc-log'); l.scrollTop = l.scrollHeight; });
+    await shot(page, 'c_books');
     // A web answer: numbered sources, "Not on Oomba", links that open in a new tab.
     await ask(page, 'What are good ways to support English learners during a read-aloud?');
     await page.locator('.oc-web').waitFor({ timeout: 15000 });
@@ -211,7 +228,9 @@ test('laptop: a lesson plan attached becomes a Builder hand-off; the Builder ope
 
 test('no bubble while a game plays, nor for a student', { skip }, async () => {
   const a = await open(teacher, '/play/fraction-factory');
-  try { await a.page.waitForTimeout(500); assert.equal(await a.page.locator('#oc-bubble').count(), 0); await shot(a.page, 'f_play'); } finally { await a.ctx.close(); }
+  try { await a.page.waitForTimeout(3000); assert.equal(await a.page.locator('#oc-bubble').count(), 0); await shot(a.page, 'f_play'); } finally { await a.ctx.close(); }
+  const ph = await open(teacher, '/play/fraction-factory', PHONE());
+  try { await ph.page.waitForTimeout(3000); assert.equal(await ph.page.locator('#oc-bubble').count(), 0); await shot(ph.page, 'f_play_phone'); } finally { await ph.ctx.close(); }
   const b = await open(kids[0], `/class/${cls.id}`);
   try { assert.equal(await b.page.locator('#oc-bubble').count(), 0); assert.equal(await b.page.evaluate(() => document.body.dataset.oc || ''), ''); } finally { await b.ctx.close(); }
 });
@@ -266,7 +285,7 @@ test('the school settings section (a school admin)', { skip }, async () => {
     await page.waitForTimeout(1200);
     assert.equal(CO.limitsOf(head).steps, 6);
     await page.locator('#companion-settings').scrollIntoViewIfNeeded();
-    if (SHOTS) await page.locator('#companion-settings').screenshot({ path: path.join(SHOTS, 'k_school_settings.png') });
+    if (SHOTS) { await page.evaluate(() => { document.querySelector('.topbar').style.position = 'static'; document.getElementById('companion-settings').scrollIntoView(); }); await page.waitForTimeout(300); await page.screenshot({ path: path.join(SHOTS, 'k_school_settings.png') }); }
     assert.deepEqual(errors.filter(e => !/400/.test(e)), []);
   } finally { await ctx.close(); }
 });

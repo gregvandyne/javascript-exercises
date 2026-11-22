@@ -101,6 +101,11 @@ test('who: the Teacher plan rule with paid plans on (plan holders, testers, the 
     assert.match((await as(paid)(`/class/${cls.id}`)).text, /\/js\/companion\.js/);
     assert.doesNotMatch((await as(free)(`/class/${cls.id}`)).text, /companion\.js|data-oc=/);
     assert.doesNotMatch((await as(quinn)(`/class/${cls.id}`)).text, /companion\.js|data-oc=/);
+    // The microphone (tap to speak) is allowed only on pages with the bubble: never for staff without the plan or a student.
+    const pp = async who => { const r = await fetch(`${base}/class/${cls.id}`, { headers: { cookie: cookieFor(who.id) } }); return r.headers.get('permissions-policy'); };
+    assert.match(await pp(paid), /microphone=\(self\)/);
+    assert.match(await pp(free), /microphone=\(\)/);
+    assert.match(await pp(quinn), /microphone=\(\)/);
     config.companion = false;
     try { assert.equal(CO.companionFor(boss), false, 'COMPANION=0 hides it from everyone'); } finally { config.companion = true; }
   } finally { TOOLS.plansOn(false); }

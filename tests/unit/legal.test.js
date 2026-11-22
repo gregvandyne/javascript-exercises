@@ -39,7 +39,7 @@ test('/terms, /refunds and /privacy are public, dated, and show every paragraph 
     const r = await get(path); assert.equal(r.status, 200, path);
     const text = decode(r.text);
     assert.match(text, new RegExp(`<h1>[^<]*${en[`info.${key}.heading`]}</h1>`), `${path} heading`);
-    assert.match(text, new RegExp(`Last updated: <time datetime="${LEGAL_UPDATED}">November 20, 2026</time>`), `${path} date`);
+    assert.match(text, new RegExp(`Last updated: <time datetime="${LEGAL_UPDATED}">November 22, 2026</time>`), `${path} date`);
     assert.match(text, /href="mailto:greg@oomba\.ai"/, `${path} contact`);
     for (const k of Object.keys(en).filter(k => k.startsWith(`info.${key}.`) && !k.startsWith('info.privacy.more.') && !k.startsWith('info.privacy.made.') && /\.(p|li|s)\d+$/.test(k))) {
       const words = plain(en[k]).slice(0, 60);

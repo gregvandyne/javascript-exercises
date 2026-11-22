@@ -126,7 +126,9 @@ test('nothing else grants the microphone: no iframe allow names it, SANDBOX is u
     assert.ok(!/allow="[^"]*microphone/.test(s) && !/allow\s*=\s*['`][^'`]*microphone/.test(s), `${f}: an iframe allow= naming the microphone`);
     // Classroom dashboards, stage 5: the class's teacher's own dashboard page (the noise meter, after the teacher's tap;
     // never a student's page: tests/unit/dash-stage5.test.js).
-    if (/microphone=\(self\)|microphone=\*/.test(s)) assert.ok(['server/routes/studio.js', 'server/services/mic-games.js', 'server/services/dash-media.js'].includes(f), `${f} grants the microphone`);
+    // Oomba, the teaching companion: only pages that show its bubble, for Teacher plan staff (views/layout.js
+    // companionPage; never a kid's or student's page: tests/unit/companion.test.js).
+    if (/microphone=\(self\)|microphone=\*/.test(s)) assert.ok(['server/routes/studio.js', 'server/services/mic-games.js', 'server/services/dash-media.js', 'server/views/layout.js'].includes(f), `${f} grants the microphone`);
   }
   assert.equal(SANDBOX, 'allow-scripts allow-pointer-lock allow-orientation-lock');
   assert.match(fs.readFileSync('public/js/live-common.js', 'utf8'), /allow-scripts allow-pointer-lock allow-orientation-lock/);
