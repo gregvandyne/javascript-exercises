@@ -1,4 +1,4 @@
-# Oomba Figures API (1.4.0)
+# Oomba Figures API (1.5.0)
 
 Oomba Figures draws the figures science, maths and graph worksheets need, as accessible SVG, from plain data: free-body
 diagrams, vectors, inclined planes, pulleys, ray diagrams, circuits, motion graphs, a coordinate grid, half-life and
@@ -20,7 +20,10 @@ displacement), orbital diagrams for all 118 elements, Bohr ion marks, several ha
 curves from measured pH, and more Lewis molecules); and biology (since 1.3.0: population growth and predator-prey graphs,
 enzyme activity and photosynthesis rate graphs, Punnett squares, pedigrees, protein synthesis, gel electrophoresis and
 osmosis, and the micropipette reading); and economics (since 1.4.0: supply and demand, the money markets, the business
-cycle, the Phillips curve, production possibilities, the AD-AS model and the firm's cost and revenue curves). Skeletal structures come from SMILES through SmilesDrawer, and interactive boards from
+cycle, the Phillips curve, production possibilities, the AD-AS model and the firm's cost and revenue curves); and, since
+1.5.0, organic structures (skeletal, carbon skeleton, condensed and full structural formulas, drawn by Oomba itself, so
+they print) and atomic energy levels with transitions. SmilesDrawer still draws a structure from any SMILES in the
+browser (`OF.structure`, for what `skeletal` refuses), and interactive boards come from
 JSXGraph. Classroom activities (Oomba Canvas 1.2.0, `docs/canvas-api.md`) and arcade games can both use it.
 
 - Source: `figures/src/` (`svg.js` the drawing core and colours, `physics.js`, `graphs.js`, `chem.js`, `readings.js`,
@@ -44,11 +47,11 @@ JSXGraph. Classroom activities (Oomba Canvas 1.2.0, `docs/canvas-api.md`) and ar
   and their configurations; since 1.3.0 `ecology.js` population growth and predator-prey (`ported/growth.js`,
   `ported/lotka.js`), `rates.js` enzyme activity and photosynthesis (`ported/rates.js`), `genetics.js` Punnett squares and
   pedigrees (`ported/punnett.js`, `ported/pedigree.js`), `molecular.js` protein synthesis and gels (`ported/dna.js`,
-  `ported/gel.js`), `osmosis.js` osmosis (`ported/osmosis.js`) and `pipette.js` the micropipette (`ported/pipette.js`); since 1.4.0 `econ.js` what every economics graph is drawn with (`ported/econcurves.js` the curve math), `markets.js` supply and demand and the money markets (`ported/markets.js`), `macro.js` AD-AS, the Phillips curve and the business cycle (`ported/macro.js`) and `firm.js` the cost and revenue curves and production possibilities (`ported/firm.js`); `core.js` the global and the registry, `packs/*.js` each
+  `ported/gel.js`), `osmosis.js` osmosis (`ported/osmosis.js`) and `pipette.js` the micropipette (`ported/pipette.js`); since 1.5.0 `skeletal.js` organic structures (`ported/organic.js` the views) and `levels.js` atomic energy levels; since 1.4.0 `econ.js` what every economics graph is drawn with (`ported/econcurves.js` the curve math), `markets.js` supply and demand and the money markets (`ported/markets.js`), `macro.js` AD-AS, the Phillips curve and the business cycle (`ported/macro.js`) and `firm.js` the cost and revenue curves and production possibilities (`ported/firm.js`); `core.js` the global and the registry, `packs/*.js` each
   pack's registration, `index.js` everything at once for the tests), plus `canvas/src/expr.js` (the small safe formula language it shares with Oomba Canvas). `scripts/build-figures.js` bundles it into
   `public/vendor/oomba-figures/<version>/oomba-figures.js` (with its LICENSE and `manifest.json`) and writes
   `figures/SHIPPED.json`, the lock for it and for the vendored libraries (1.0.0 and 1.1.0 stay byte for byte; 1.1.0 adds the
-  number line, the shapes and the notice, 1.2.0 the chemistry kinds and lab readings, 1.3.0 the biology pack and the micropipette, 1.4.0 the economics pack, and its LICENSE file carries the Apache License 2.0 after ours; 1.1.0 is minified
+  number line, the shapes and the notice, 1.2.0 the chemistry kinds and lab readings, 1.3.0 the biology pack and the micropipette, 1.4.0 the economics pack, 1.5.0 organic structures and atomic energy levels in the chem pack, and its LICENSE file carries the Apache License 2.0 after ours; 1.1.0 is minified
   by esbuild, its legal comments kept: the header and each ported file's Apache 2.0 note) (`scripts/vendor-figures.js` copies JSXGraph
   and SmilesDrawer from npm; licences in `docs/third-party.md`).
 - Split by subject (since 1.1.0, "The core and its packs" below): `oomba-figures.js` is the core, and `packs/math.js`,
@@ -101,6 +104,8 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
   lineSpectrum { strips: [{ element: "H" }, { element: "Na" }, { name: "Unknown", mix: [0, 1] }] } (elements H, He, Li, Na, K, Ca, Sr, Ba, Cu, Zn, Cd, Hg, Ne, Ar, Kr, or { name, lines: [nm] }; style: "absorption"; from, to in nm; print is black lines on white; hide: "names")    photoelectron { element: "Na", compare: "Mg" } (H to Xe; one peak per sublevel as tall as its electrons at its binding energy; unit "MJ/mol" or "eV", scale "log" or "linear", energies: true; hide: "sublevels", "element")
   dotCross { molecule: "H2O" } (a molecule from the Lewis list without a charge: shells overlap where atoms bond, each atom's electrons its own mark) or { ions: [{ element: "Mg", count: 1 }, { element: "Cl", count: 2 }] } (a metal and a non-metal, charges balanced); OF.solve gives sharedPairs, lonePairs or the ions, transferred; hide: true (empty shells)
   particles { particles: [{ count: 8, shape: "bent", look: { size: "m", shade: "gray" }, outer: { size: "s", shade: "white" }, name: "Water" }], state: "gas" } (shapes single, pair, bent, line, triangle, cross; sizes xs to xl; shades white, light, gray, dark, black; charge "+", "-", "2+"...; state gas, liquid, solid; boxes: 2 with each kind's after count: atoms are conserved; or lattice: { pattern: "alternate", rows: 4, columns: 5, main, second }; every particle must fit; hide: "names")
+  Chemistry (1.5.0, the chem pack): skeletal { smiles: "CC(=O)O", name: "Ethanoic acid", formula: true } (an organic structure from SMILES-lite: C N O S P F Cl Br I, R and X for any group, c and n in rings of six, branches, - = #, ring digits, "." between molecules; no brackets, charges or stereo marks; single rings of 3 to 8, never rings that share atoms; or chain: 5 with double: [2], triple, groups: [{ at: 4, group: "OH" }] (OH, NH2, F, Cl, Br, I, CH3, C2H5, =O); or atoms: [{ el: "C", x: 0, y: 0 }] (bond lengths, y up) with bonds: [[1, 2, 2]]; view "skeletal" | "carbons" | "condensed" | "full", layout "zigzag" | "straight", ends, numbers, acids, chiral: [atoms]; hydrogens are worked out from each atom's valence; OF.solve gives formula, atoms.C, atoms.H, hydrogens, mass, unsaturation and groups.alcohol etc.); hide: "name", "formula". It is drawn by Oomba, so it prints and draws on the server: use it, not OF.structure, for worksheets.
+  energyLevels { transitions: [{ from: 3, to: 2 }, { from: 4, to: 2 }], series: true } (hydrogen, or z: 2 for He+ and on: E = -13.6 Z²/n² eV, top: the highest n, 2 to 7; or levels: [-10.4, -5.5, -3.7] in eV for any atom; to: "inf" ionizes; cascade: 4 every way down; show "wavelength" | "energy" | "both" | "none"; unit "eV" | "J"; levels too close for an arrow are refused: make height larger; OF.solve gives wavelength (nm), energy (eV), joules, frequency (Hz) of the first transition, and lines); hide: "values", "levels".
   A micropipette is a reading type too (1.3.0): { type: "micropipette", model: "P20", value: 12.5 } (models P2, P10, P20, P100, P200, P1000; a volume the model can be set to; hide: "value").
   The chemistry readings are reading types (the measure pack): { type: "buret", value: 24.65, initial: 1.20, max: 50 } (reads down, to 0.05 mL; OF.solve gives the titre), { type: "beaker", value: 175, max: 250, step: 25 }, { type: "syringe", value: 43.5, max: 100, setup: true }, { type: "balance", value: 24.73, decimals: 2 }, { type: "tripleBeam", value: 347.65 } (to 0.05 g), { type: "thermometer", digital: true, value: 23.4, unit: "°C" | "K" | "°F" }, { type: "pH", meter: "digital" | "analog" | "paper", value: 4.62 } (analog to 0.1, paper whole numbers), { type: "displacement", before: 42, after: 50, max: 100, step: 1, major: 10, object: "rock" | "marbles" } (OF.solve gives the volume). Also bohr { element: "Na", charge: 1, ionMarks: true }, orbitals { element: "Ag", core: true, arrangement: "energy" } (H to Og), halfLife { isotopes: [{ halfLife: 5, name: "A" }, { halfLife: 12, name: "B" }] }, titration { points: [[0, 2.9], [5, 4.1], ...] } (measured pH), and more Lewis molecules: H2S, PH3, PCl3, NF3, OF2, SiH4, CF4, CH3Cl, H2O2, C2H6, HOCl, CO, CN, H3O, HCHO.
   Biology (1.3.0, the bio pack): populationGrowth { model: "logistic", n0: 20, r: 0.4, k: 500, span: 30, unit: "years", inflection: true } (model logistic, exponential, both, overshoot (lag), crash (k is the peak); graph "size" | "rate" | "perCapita", against: "size" for a rate against N; census: { every, noise, seed }; phases: true; OF.solve gives k, maxRate (rK/4), doubling, inflection, final; hide: "k")    predatorPrey { pair: "hare-lynx", names: ["Hares", "Lynx"] } (or prey: { average, start }, predators: { average, start }, period, span; scale: "two" for two axes; OF.solve gives period, lag, each one's high and low; hide: "predators")
@@ -138,7 +143,7 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
   protractor { angle: 50, reading: true } (whole degrees 1 to 180; base: "right" reads the inner scale, "left" the outer; start: 20 for an angle that does not start on 0; names: ["A", "B", "C"]); hide: "reading"
   Every chart also takes heading (a title drawn on it) and, where it has axes, xtitle and ytitle; in print, series are told apart by gray, white and hatched fills. OF.solve.barGraph(data) (and every kind above) gives the numbers: mean, median, mode, quartiles, IQR, range, totals, areas, outcome probabilities, P(A|B), the pairs.
   These geometry kinds take names, labels, ticks, arcs and arrows only where true (as the shapes do), unit, round, size, turn, rightAngles: false, and hide: true (no measures; names and marks stay) or a group ("angles", "parts", "spans", "lines", "arcs", "sides", "splits", "radius"). OF.solve.angles(data) (and parallelLines, segmentAddition, circle, compositeShape, grid) gives the numbers.
-  OF.structure("CCO", { title }) a skeletal structure (SmilesDrawer); OF.board(element, { x: [-5, 5], y: [-5, 5] }) a JSXGraph board in the Oomba colours (an interactive graph: then board.create("functiongraph", [x => x * x]) etc.).
+  OF.structure("CCO", { title }) a skeletal structure drawn by SmilesDrawer in the browser only (for a structure skeletal refuses, such as fused rings; never on a printed sheet); OF.board(element, { x: [-5, 5], y: [-5, 5] }) a JSXGraph board in the Oomba colours (an interactive graph: then board.create("functiongraph", [x => x * x]) etc.).
 - In a classroom activity (Oomba Canvas 1.2.0): a figure question is a problem { tool: "figure.number", q: "What is the reading?", fig: { kind: "reading", type: "thermometer", value: 23.5, min: -10, max: 50, step: 1, hide: "value" }, answer: 23.5, dp: 1, unit: "°C", work: ["The liquid stops half way between 23 and 24.", "The reading is 23.5 °C."] } or { tool: "figure.choice", q, fig, choices: ["real", "virtual"], answer: 1, work: [...] }. fig is the figure's data with "kind" (and "hide" to leave the answer out). work is the worked answer the answer key prints: 1 to 6 short lines, the last one ending on the answer. Answers are numbers 0 or more (say a direction in words); dp is the decimal places the student types.
 - A figure question generator: gen { tool: "figure.number", vars: { m: [2, 10], a: [1, 5] }, where: "m*a <= 40", q: "A {m} kg cart speeds up at {a} m/s². What is the net force on it?", fig: { kind: "freeBody", body: "box", label: "{m} kg", forces: [{ name: "F", dir: "right", size: "{=m*a}" }] }, answer: "m*a", dp: 0, unit: "N", work: ["F = m × a", "= {m} × {a}", "= {=m*a} N"] }. vars: [lo, hi], [lo, hi, step] or { "of": [values] }; in text "{m}" is a value and "{=formula}" a worked-out number; in fig a string that is only "{m}" or "{=formula}" becomes that number. Formulas: + − * / ^, brackets, sqrt, abs, round(x, dp), min, max, sin, cos, tan (degrees), log, ln, if(test, a, b).
 - The self-test checks every figure (OF.check on each problem, and on three sets from a generator) and that the page loads the pinned Oomba Figures tag and the tag of each pack its kinds need: a version with a wrong figure or a missing pack is not saved, and the reply names it.
@@ -206,6 +211,8 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
 | `lineSpectrum` (1.2.0) | `strips: [{ element } \| { name, lines } \| { name, mix }]`, `style`, `from`, `to`, `strength`, `heading` | `names`, `true` |
 | `photoelectron` (1.2.0) | `element`, `compare`, `unit`, `scale`, `sublevels`, `energies`, `heading` | `sublevels`, `element`, `true` |
 | `dotCross` (1.2.0) | `molecule` (or `atoms` + `bonds`, no charge), or `ions: [{ element, count }]` (a metal and a non-metal) | `true` |
+| `skeletal` (1.5.0) | `smiles`, or `chain` with `double`, `triple`, `groups`, or `atoms` + `bonds`; `view`, `layout`, `ends`, `rings`, `acids`, `reverse`, `numbers`, `flip`, `chiral`, `name`, `formula` | `name`, `formula`, `true` |
+| `energyLevels` (1.5.0) | `z`, `top` or `levels`; `transitions` or `cascade`; `show`, `unit`, `series`, `ionization`, `height`, `heading` | `values`, `levels`, `true` |
 | `populationGrowth` (1.3.0) | `model`, `n0`, `r`, `k`, `lag`, `span`, `unit`, `graph`, `against`, `census`, `kLine`, `inflection`, `phases`, `names`, `heading` | `k`, `curve`, `true` |
 | `predatorPrey` (1.3.0) | `pair`, or `prey` + `predators` (`average`, `start`) + `period`; `span`, `unit`, `scale`, `names`, `peaks`, `heading` | `predators`, `true` |
 | `enzymeActivity` (1.3.0) | `graph` (`temperature`, `pH`, `substrate`), `curves` (`enzyme`, or `opt` + `width`; or `km`, `inhibitor`, `strength`), `axes`, `unit`, `marks`, `x` | `marks`, `curves`, `true` |
@@ -804,7 +811,7 @@ numbers and refuses data it cannot draw truthfully:
 - `energyProfile`: the peaks and dips are exactly the levels' energies (each transition state above its neighbors);
   Ea, the reverse Ea and ΔH are worked out from them, a catalyst lowers the transition state but not ΔH, and the
   rate-determining step is named only when it is clear cut. `style: "levels"` is an energy level diagram (reactants,
-  products and ΔH). Atomic energy levels with transitions are not drawn yet.
+  products and ΔH). Atomic energy levels with transitions came in 1.5.0 (`energyLevels`).
 - `nuclide`: the mass number at the top left, the atomic number at the bottom left, the charge at the top right; never
   fewer than 0 neutrons or electrons; nuclear particles with their fixed numbers.
 - `lineSpectrum`: each element's strongest visible lines (NIST) at their wavelengths, in their colors; a mixture
@@ -829,8 +836,8 @@ numbers and refuses data it cannot draw truthfully:
   figure as `lewis` (no shells) or `bohr` (one atom, every shell). A charged molecule or a dative bond (CO) is refused
   for now (draw it with `lewis`).
 
-Deferred: skeletal structures and the organic structure editor (owner decision), and atomic energy levels with
-transitions. Builder trigger words for these figures are in every site language (`server/builder/figures.js`).
+Deferred then, both drawn since 1.5.0 ("Chemistry: organic structures and atomic energy levels (1.5.0)"): skeletal
+structures with the organic structure editor's views, and atomic energy levels with transitions. Builder trigger words for these figures are in every site language (`server/builder/figures.js`).
 
 ```json
 {"tool": "figure.number", "vars": {"m": [1, 3], "n": [1, 3]}, "q": "How many electrons does the metal give away in one formula unit of this compound?", "fig": {"kind": "dotCross", "ions": [{"element": "{=10 + m}", "count": "{=n/if(m - n, 1, m)}"}, {"element": "{=18 - n}", "count": "{=m/if(m - n, 1, m)}"}]}, "answer": "m*n/if(m - n, 1, m)", "dp": 0, "work": ["The metal ion is {m}+ and the non-metal ion is {n}−.", "The charges balance with {=n/if(m - n, 1, m)} metal and {=m/if(m - n, 1, m)} non-metal ions.", "Electrons given: {=n/if(m - n, 1, m)} × {m} = {=m*n/if(m - n, 1, m)}"]}
@@ -960,6 +967,55 @@ these figures are in every site language (`server/builder/figures.js`).
 {"tool":"figure.number","vars":{"c":{"of":[3,3.5,4,4.5,5]},"q":{"of":[4,5,6,7]}},"q":"This perfectly competitive firm is in long-run equilibrium: the price is at the lowest point of ATC. What is the price?","fig":{"kind":"costCurves","market":"perfect","price":"breakeven","atc":{"q":"{q}","cost":"{c}"},"mcSlope":1,"axes":"numbered","hide":"values"},"answer":"c","dp":2,"unit":"$","work":["In the long run, entry and exit push the price to the lowest ATC.","Find where MC crosses ATC: the lowest point of ATC.","Read across: ${c}."]}
 ```
 
+## Chemistry: organic structures and atomic energy levels (1.5.0)
+
+The two chemistry kinds deferred in 1.2.0, now in the chem pack. Oomba Figures 1.5.0 is a new version folder (the core
+and its seven packs, no new pack); 1.0.0 to 1.4.0 have shipped and stay byte for byte, and every catalog figure 1.4.0
+drew draws the same bytes in 1.5.0 (`tests/unit/figures-v150.test.js`). New builds and the Figures product get 1.5.0.
+
+- `skeletal`: an organic structure as plain lines and text, drawn by Oomba (no browser library), so a printed worksheet,
+  the server's thumbnails and a student's lesson step show it as the screen does. One shape, four views, as the source's
+  organic structure editor draws them (`ported/organic.js`): the skeletal formula (carbons hidden; `ends: true` writes
+  a chain's CH₃ ends), the carbon skeleton (each carbon a C), the condensed formula (CH₃, CH₂, OH; written backward,
+  H₃C and HO, when its bonds all come from the right; `acids: true` writes CO₂H), and the full structural formula (every
+  hydrogen drawn, spread evenly on 30 degree steps). No view moves an atom. Hydrogens are never given: each atom's are
+  worked out from its usual valence (C 4, N 3, O 2, S 2, P 3, halogens 1; R and X take one bond and none). `numbers:
+  true` numbers the carbons the way high school naming does (`flip` from the other end); `chiral` marks centers
+  with an asterisk. The shape comes from one of three forms. `smiles`: SMILES-lite (the organic subset: C, N, O, S, P,
+  F, Cl, Br, I, R and X, lowercase c and n in rings of six, branches, - = #, ring digits 1 to 9, and "." between
+  molecules; no brackets, charges, isotopes or stereo marks), laid out by Oomba on 30 degree steps, chains zigzag
+  (`layout: "straight"` for a full structural formula's straight chain), single rings of 3 to 8 as regular polygons.
+  `chain`: a straight chain of 1 to 12 carbons with `double` and `triple` bonds (the bond from carbon k to k + 1) and
+  `groups` (OH, NH2, F, Cl, Br, I, CH3, C2H5, =O), what a generator deals. `atoms` with `bonds`: atoms placed by
+  hand (x and y in bond lengths, y up; `h` places an atom's hydrogens in the full formula), as the editor's teacher
+  draws them. Refused with the reason: an atom with more bonds than its element can have, rings that share atoms
+  (fused, spiro, bridged: give them as `atoms`), aromatic atoms outside a ring of six, a layout where atoms or bonds
+  would overlap, a skeletal formula that would hide a carbon in a straight line, and numbering two rings or a ring
+  with N or O. `OF.solve.skeletal` gives the molecular formula (Hill order), each element's count (`atoms.H`),
+  `carbons`, `hydrogens`, the molar mass (IUPAC standard atomic weights; none with R or X), the degree of
+  unsaturation, rings, double and triple bonds, and the functional groups counted (`groups.alcohol`, alkene, alkyne,
+  arene, phenol, ether, aldehyde, ketone, carboxylicAcid, ester, amine, amide, nitrile, haloalkane). hide: "name" (the
+  caption is a line to write on), "formula" (the molecular formula under it), `true` (both). Print is black; on
+  screen, O, N, S, P and the halogens are in color.
+- `energyLevels`: atomic energy levels with electron transitions (Oomba's own; the source has no such generator).
+  Hydrogen's levels, or a one-electron ion's (`z` 2 to 6), E = -13.6 Z²/n² eV (the Bohr model's textbook value), up to
+  `top` (n = 2 to 7), or any atom's `levels` in eV. Every level is drawn exactly at its energy, n = ∞ (0 eV) dashed at
+  the top; where lines crowd, their labels spread apart on leaders while the lines stay true. Each transition is a
+  vertical arrow between its levels: emission down (solid), absorption up (dashed), `to: "inf"` ionization; on screen a
+  visible photon's arrow is in its color. The labels are its photon's wavelength (λ = hc/ΔE, hc = 1239.84 eV·nm), its
+  energy, or both (`show`); `cascade: 4` draws every way down from n = 4; `series: true` names hydrogen's series. Levels too
+  close for an arrow at the figure's `height` are refused (make it taller, or leave that arrow out). `OF.solve.energyLevels`
+  gives the levels, the ionization energy, each transition's photon (eV, J, nm, Hz, emission or absorption, UV, visible
+  or IR, series), the first transition's `wavelength`, `energy`, `joules` and `frequency`, and `lines` (how many).
+  hide: "values" (the arrows' labels), "levels" (the levels' energies), `true` (both).
+
+Builder trigger words for both are in every site language (`server/builder/figures.js`).
+
+```json
+{"tool":"figure.number","vars":{"n":[3,8],"k":[1,7]},"where":"k < n","q":"Each corner and end of a skeletal formula is a carbon with enough hydrogens to make four bonds. How many hydrogen atoms does this molecule have?","fig":{"kind":"skeletal","chain":"{n}","double":["{k}"]},"answer":"2*n","dp":0,"work":["Count the carbons: {n}.","One C=C double bond: an alkene, CₙH₂ₙ.","2 × {n} = {=2*n} hydrogen atoms"]}
+{"tool":"figure.number","vars":{"n":[3,6],"m":[1,2]},"q":"The electron in a hydrogen atom falls from n = {n} to n = {m}. What is the wavelength of the light it gives out, in nm? (Eₙ = −13.6 ÷ n² eV, hc = 1239.84 eV·nm)","fig":{"kind":"energyLevels","transitions":[{"from":"{n}","to":"{m}"}],"hide":"values"},"answer":"1239.84198/(13.6*(1/(m*m) - 1/(n*n)))","dp":0,"unit":"nm","work":["ΔE = 13.6 × (1/{m}² − 1/{n}²) = {=round(13.6*(1/(m*m) - 1/(n*n)), 3)} eV","λ = hc ÷ ΔE = 1239.84 ÷ {=round(13.6*(1/(m*m) - 1/(n*n)), 3)}","= {=round(1239.84198/(13.6*(1/(m*m) - 1/(n*n))), 0)} nm"]}
+```
+
 ## Radians (1.1.0)
 
 The formula language (`canvas/src/expr.js`) works in degrees, as school trigonometry does, and stays so: it is frozen
@@ -1001,8 +1057,8 @@ chunk (`public/js/figures-export.js`).
 
 ## Not yet
 
-Skeletal structures (SmilesDrawer) are drawn in the browser only, so a printed worksheet cannot show them yet (use a
-Lewis structure there). Optics with thick lenses, 3D molecules, atomic energy-level diagrams with transitions (reaction energy diagrams came
-in 1.2.0: `energyProfile`) and moving physics (Phaser's
+Organic structures print since 1.5.0 (`skeletal`); rings that share atoms (naphthalene, steroids, bridged rings) are not
+laid out automatically: give them as `atoms` with places, or draw them with `OF.structure` (SmilesDrawer, browser only).
+Atomic energy levels with transitions came in 1.5.0 (`energyLevels`). Optics with thick lenses, 3D molecules and moving physics (Phaser's
 built-in Matter physics already serves arcade games) are later. Compound circuits beyond one level of branches came in
 1.1.0 (`circuit` with `layout: "network"`, series-parallel only: a bridge circuit, which is neither, is not drawn).

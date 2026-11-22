@@ -12588,6 +12588,14 @@
         "name": "點叉圖",
         "desc": "電子層中共用與轉移的電子"
       },
+      "skeletal": {
+        "name": "有機結構",
+        "desc": "鍵線式、示性式與結構式"
+      },
+      "energyLevels": {
+        "name": "原子能階",
+        "desc": "電子躍遷、波長與譜系"
+      },
       "populationGrowth": {
         "name": "族群成長",
         "desc": "J 形與 S 形曲線、K 與成長階段"

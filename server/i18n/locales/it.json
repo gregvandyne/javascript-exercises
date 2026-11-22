@@ -12589,6 +12589,14 @@
         "name": "Diagramma a punti e croci",
         "desc": "Elettroni condivisi e trasferiti nei gusci"
       },
+      "skeletal": {
+        "name": "Strutture organiche",
+        "desc": "Formule scheletriche, condensate e di struttura"
+      },
+      "energyLevels": {
+        "name": "Livelli energetici dell'atomo",
+        "desc": "Transizioni elettroniche, lunghezze d'onda e serie"
+      },
       "populationGrowth": {
         "name": "Crescita della popolazione",
         "desc": "Curve a J e a S, K e le fasi di crescita"

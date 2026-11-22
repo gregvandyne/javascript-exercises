@@ -12589,6 +12589,14 @@
         "name": "Stip-kruisdiagram",
         "desc": "Gedeelde en overgedragen elektronen in schillen"
       },
+      "skeletal": {
+        "name": "Organische structuren",
+        "desc": "Skelet-, beknopte en volledige structuurformules"
+      },
+      "energyLevels": {
+        "name": "Energieniveaus van het atoom",
+        "desc": "Elektronenovergangen, golflengten en reeksen"
+      },
       "populationGrowth": {
         "name": "Populatiegroei",
         "desc": "J- en S-curven, K en de groeifasen"

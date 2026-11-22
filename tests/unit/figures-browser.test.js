@@ -55,7 +55,7 @@ test('the menu on a laptop and a phone: subject tabs, grade chips and search fil
     const { ctx, page, errors } = await open('/figures', opts);
     await page.waitForSelector('.fg-card');
     await noSideScroll(page);
-    assert.equal((await visibleKinds(page)).length, 74, 'every kind in the catalog (1.2.0 added eight chemistry kinds, 1.3.0 nine biology kinds, 1.4.0 seven economics kinds)');
+    assert.equal((await visibleKinds(page)).length, 76, 'every kind in the catalog (1.2.0 added eight chemistry kinds, 1.3.0 nine biology kinds, 1.4.0 seven economics kinds, 1.5.0 two chemistry kinds)');
     await shot(page, `menu-${label}`);
     if (label === 'laptop') await shot(page, 'menu-laptop-full', true);
     await page.click('[data-tab="physics"]');
@@ -320,4 +320,54 @@ test('the 1.4.0 Economics tab (no longer Coming soon) and its editors: each kind
   await page.waitForFunction(() => document.getElementById('fg-cant').hidden);
   assert.deepEqual(errors, []);
   await ctx.close();
+});
+
+test('the 1.5.0 chemistry editors: organic structures and atomic energy levels draw, randomize, take typed SMILES, print, and refuse what cannot be drawn', { skip }, async () => {
+  const { ctx: c0, page: p0, errors: e0 } = await open('/figures', LAPTOP());
+  await p0.waitForSelector('.fg-card');
+  await p0.click('[data-tab="chem"]');
+  const chem = await visibleKinds(p0);
+  for (const k of ['skeletal', 'energyLevels']) assert.ok(chem.includes(k), `${k} is on the Chemistry tab`);
+  assert.deepEqual(e0, []); await c0.close();
+  for (const kind of ['skeletal', 'energyLevels']) for (const [label, opts] of [['laptop', LAPTOP()], ['phone', PHONE()]]) {
+    const { ctx, page, errors } = await open(`/figures/${kind}`, opts);
+    await page.waitForSelector('#fg-figure svg');
+    assert.equal(await page.isHidden('#fg-cant'), true, kind);
+    await noSideScroll(page);
+    await shot(page, `editor-chem2-${kind}-${label}`);
+    if (label === 'laptop') {
+      await page.check('#fg-print'); await page.waitForSelector('#fg-figure svg.of-print');
+      await shot(page, `editor-chem2-${kind}-print`);
+      await page.uncheck('#fg-print');
+      await page.click('[data-act="random"]'); await page.waitForFunction(() => document.getElementById('fg-question').value.length > 5);
+      await page.waitForTimeout(150);
+      assert.equal(await page.isHidden('#fg-cant'), true, `${kind}: a new question draws`);
+    }
+    assert.deepEqual(errors, [], `${kind} ${label}`);
+    await ctx.close();
+  }
+  // skeletal: a SMILES typed in redraws; fused rings show the cannot-draw panel, and Undo brings the figure back
+  const { ctx, page, errors } = await open('/figures/skeletal');
+  await page.waitForSelector('#fg-figure svg');
+  const before = await page.innerHTML('#fg-figure');
+  await page.fill('#fg-f-smiles', 'CCCC(=O)O');
+  await page.waitForFunction(b => document.getElementById('fg-figure').innerHTML !== b, before);
+  assert.equal(await page.isHidden('#fg-cant'), true, 'butanoic acid draws');
+  assert.equal(await page.$$eval('#fg-figure .of-atom', n => n.length), 2, 'its two O');
+  await page.fill('#fg-f-smiles', 'c1ccc2ccccc2c1');
+  await page.waitForSelector('#fg-cant:not([hidden])');
+  await page.click('[data-act="undo"]');
+  await page.waitForFunction(() => document.getElementById('fg-cant').hidden);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+  // energy levels: an arrow between levels too close to draw shows the panel
+  const { ctx: c2, page: p2, errors: e2 } = await open('/figures/energyLevels');
+  await p2.waitForSelector('#fg-figure svg');
+  await p2.click('#fg-adv summary');
+  await p2.fill('#fg-json', JSON.stringify({ transitions: [{ from: 6, to: 5 }] }));
+  await p2.waitForSelector('#fg-cant:not([hidden])');
+  await p2.click('[data-act="undo"]');
+  await p2.waitForFunction(() => document.getElementById('fg-cant').hidden);
+  assert.deepEqual(e2, []);
+  await c2.close();
 });
