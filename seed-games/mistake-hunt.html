@@ -237,7 +237,7 @@
   .mhc-head { display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 14px; border-bottom: 1px solid var(--line); flex: none; }
   .mhc-who { flex: 1; min-width: 0; }
   .mhc-who h2 { margin: 0; font-size: 1.15rem; line-height: 1.2; }
-  .mhc-sub { margin: 0; font-size: .85rem; font-weight: 600; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mhc-sub { margin: 0; font-size: .85rem; font-weight: 600; color: var(--muted); line-height: 1.3; }
   .mhc-mark { flex: none; display: block; }
   .mhc-hbtn { flex: none; width: 44px; height: 44px; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--muted); font-weight: 800; font-size: 1.1rem; display: grid; place-items: center; }
   .mhc-hbtn:hover { background: var(--hover); }
@@ -2426,9 +2426,9 @@ var I18N = {
       '<button type="button" class="mhc-hbtn" data-c="close" id="mhc-close"><span aria-hidden="true">✕</span></button></header>' +
       (plan ? '<div class="mhc-plan" id="mhc-plan"></div>' :
         '<div class="mhc-log" id="mhc-log" role="log" aria-live="polite" aria-relevant="additions text"></div>' +
-        '<form class="mhc-compose" id="mhc-form" autocomplete="off"><p class="mhc-err" id="mhc-err" role="alert" hidden></p>' +
+        '<div class="mhc-compose" id="mhc-form"><p class="mhc-err" id="mhc-err" role="alert" hidden></p>' +
         '<div class="mhc-row"><label class="sr" for="mhc-in" id="mhc-inl"></label><textarea class="input mhc-in" id="mhc-in" rows="1" maxlength="1000" dir="auto"></textarea>' +
-        '<button class="btn go mhc-send" type="submit" id="mhc-send"></button></div><p class="mhc-private" id="mhc-private"></p></form>') +
+        '<button class="btn go mhc-send" type="button" id="mhc-send"></button></div><p class="mhc-private" id="mhc-private"></p></div>') +
       '</aside><button type="button" class="mhc-bubble" id="mhc-bubble" hidden>' + OMARK(56, true) + '<span class="mhc-dot" hidden></span></button>';
     document.body.appendChild(root);
     CH.root = root;
@@ -2442,7 +2442,8 @@ var I18N = {
       if (B.proofAi.plans && B.openTrial) pl.appendChild(btn('btn go', t('tryPlan'), function () { B.openTrial(); }, 'mhc-trial'));
     } else {
       $('mhc-inl').textContent = t('chatInput'); CH.el.send.textContent = t('chatSend'); $('mhc-private').textContent = t('chatPrivate');
-      CH.el.form.addEventListener('submit', function (e) { e.preventDefault(); chatSend(CH.el.input.value); });
+      // a button, not a form: the sandboxed frame may not submit forms
+      CH.el.send.addEventListener('click', function () { chatSend(CH.el.input.value); });
       CH.el.input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); chatSend(CH.el.input.value); } });
       CH.el.input.addEventListener('input', chatSize);
     }
