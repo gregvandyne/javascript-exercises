@@ -10574,3 +10574,60 @@ bigger, so it broke into ten).
 - **Tests:** manip-pv (the rule, ten taps, the value from the other block set, waiting in Hundreds, every fallback, the
   gap) and manip-pv-browser (iPhone 13, default zoom: one rod dragged into Tens, nine taps of Rod, all ten inside Tens
   with none across a border and nothing in Ones, Total 100; a Unit tap is not forced into Tens; Undo takes it back).
+
+## Figures Phase 4: polish (22 Nov 2026)
+
+Phase 4 of the Figures plan (presets, undo/redo, the reuse terms page, example figures in Oomba style), plus the owner's
+"less busy" rule for the question rows in the worksheet, test and lesson builder.
+
+- **Undo and redo.** `public/js/figures-history.js` is the one history for a figure's edits: snapshots of the figure's
+  data, its question, answer, hide and drawing as text, the last 100 kept, typing gathered into one step (350 ms), a new
+  change after an undo dropping what could be redone, an undo while a change is still being typed undoing that change.
+  The editor (`/figures/:kind`, also when it is opened from a worksheet, test or lesson set question with `?ws=&item=`)
+  has icon-only Undo and Redo buttons (curved arrows, named "Undo" and "Redo" to screen readers, a tooltip with the
+  key) and the keys Ctrl/Cmd+Z, Shift+Ctrl/Cmd+Z and Ctrl/Cmd+Y. A text box keeps the keys for its own typing, so the
+  keys work outside the boxes. A screen reader hears "Undone." or "Redone.". The cannot-draw panel's "Undo my last
+  change" is the same history. Applying a preset or an example is one step.
+- **Presets** (the source's Presets/presetStore behavior, on Oomba's `figure_presets`): the select and the "Save as my
+  preset" button are gone; one "⋯ Presets" More menu holds the kind's built-in examples first, then its drawn examples
+  (Draw it kinds), then the teacher's own presets (newest first), then Save as my preset (off while the figure cannot be
+  drawn; a drawing is kept with it, as before) and Delete a preset, which lists the teacher's presets for the kind, each
+  deleted after a question. The routes were already there (`/api/figures/presets*`, owner only).
+- **The ⋯ More menus** (`public/js/figures-menu.js`) follow the My worksheets More menus: `aria-haspopup="menu"`, the
+  first item focused, the arrow keys (wrapping), Home and End, Escape (focus back to ⋯), Tab or a click outside closes,
+  and a menu near the bottom of the window opens upward.
+- **Quieter question rows** (owner: the buttons were too busy). A row had six buttons (move up, move down, re-deal,
+  edit, delete, more). Now: the row itself or its figure opens the editor (the figure is a real link named "Edit the
+  figure of question 2 (Triangle)"; a click on the row's blank space follows it, never on its boxes, radios, buttons or
+  menu); one visible ⟳ New numbers, only on a question from a generator; and ⋯ More with Move up, Move down, Swap
+  figure… (a box with every kind by subject) and Delete (last, red, after a question). Alt+Arrow Up/Down moves the
+  question the keyboard is in (not while typing in its question or option boxes); the keyboard stays with the question
+  and a screen reader hears its new number. After a delete the keyboard goes to the question that took its place.
+- **The delete button's noun.** "Delete worksheet" on a test and on a lesson's figure questions was wrong: a test says
+  "Delete test" ("Delete this test?") and a lesson set "Delete these questions" ("Delete these figure questions?", with
+  a line that the lesson's Figure step keeps the questions it was last saved with).
+- **The reuse terms page** (`/figures/terms`, plan rule 3): what a teacher may do with an exported figure (use, copy,
+  print, share, change, publish or sell, without asking and without credit), the note inside the file shown word for
+  word from Oomba Figures (`OF.notice`, the same text `figures-export.js` stamps into a PNG and `OF.withNotice` into an
+  SVG; in English, `lang="en"`, as it is in the file), what it means (Oomba Academy gives up its rights in its part; the
+  note may stay or go), what CC0 1.0 means with a link to the deed, what stays the teacher's (anything original they
+  add), and two cautions (check a figure before use; keep students' details out of shared figures), with a link to the
+  site's Terms. No legal jargon. Linked from the editor's export notice under the download buttons. All 13 locales.
+  Judgment call: it sits behind the Figures gate like every Figures page while the product is tested, and opens with
+  it.
+- **Card pictures in Oomba style.** The menu's cards were checked tab by tab. The figures were already Oomba Figures'
+  own drawings (cream paper #FFFDF2, Ink lines, Mint fills, Leaf accents); what was wrong was size: wide strips (number
+  line, motion map, orbital diagram, protein synthesis, box plot, segment addition, table of values, projectile) were a
+  thin line on the card, and small figures (organic structures, nuclide notation, Lewis structures) never grew to the
+  card. Now `services/figures.js thumbSvg` stacks two or three of a wide kind's examples (its other presets, then a few
+  checked extras for kinds with one example) into one picture, centered, nothing cropped, and the picture fills its box
+  (`object-fit: contain`) on a framed paper with a thin line, under Bricolage Grotesque card titles. The editors' first
+  presets are unchanged (they are the docs' examples, which the generator tests compare).
+- **Words** in all 13 locales (en-GB has none of its own); the unused `js.figures-editor.presets` and
+  `js.figures-sheet.more` keys were removed.
+- **Tests.** figures-polish (the history and its keys, the terms page in every locale with the notice word for word and
+  no em dashes, its gate, the presets routes, the card pictures, the row markup, the delete nouns) and
+  figures-polish-browser (Chromium: Undo/Redo by button and keys, the cannot-draw panel, the editor from a worksheet
+  question, the Presets menu by keyboard with save, apply and delete, the rows' More menu by keyboard, Alt+Arrow,
+  Swap figure, Delete with Cancel and OK, the row opening the editor, a phone at 375 px, the nouns, the terms link);
+  figures-browser, figures-draw-browser and figures-lesson-step-browser now use the menus.
