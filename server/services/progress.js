@@ -175,6 +175,26 @@ export function proofAnswer(u, clId, stepId, edits, { handIn = false } = {}) {
   q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', r.marks, clId, stepId, u.id);
   return ok({ handedIn: true, score: r.score, view: PS.viewFor(c.step, c.cl, get(clId, stepId, u.id)) });
 }
+/** A hint on a proofread step (only when the teacher allowed hints, before handing in): the fixes so far are saved, the
+ *  server finds the sentence with a mistake not fixed yet in passage i (proof-steps hintFor; the key stays here) and
+ *  counts the hint in step_progress.hints (at most PS.HINTS_MAX). Nothing left to hint is not counted.
+ *  -> { ok, hint: { i, a, b, k, g } | null, view } | fail('noHints' | 'handedIn' | 'badRequest' | 'words' | 'notFound') */
+export function proofHint(u, clId, stepId, edits, i) {
+  const c = context(u, clId, stepId); if (!c.ok) return c;
+  if (c.step.kind !== L.PROOF_KIND) return fail('notFound');
+  if (!PS.hintsOn(c.step)) return fail('noHints');
+  const ce = PS.cleanEdits(c.step, edits); if (!ce.ok) return ce;
+  const old = get(clId, stepId, u.id);
+  if (PS.handedIn(old)) return fail('handedIn');
+  const hint = PS.hintFor(c.step, ce.edits, i);
+  if (hint === undefined) return fail('badRequest');
+  let row = upsert(clId, stepId, u.id, { answer: JSON.stringify(ce.edits) });
+  if (hint) {
+    q.run('UPDATE step_progress SET hints=MIN(?, hints+1) WHERE class_lesson_id=? AND step_id=? AND user_id=?', PS.HINTS_MAX, clId, stepId, u.id);
+    row = get(clId, stepId, u.id);
+  }
+  return ok({ hint, view: PS.viewFor(c.step, c.cl, row) });
+}
 /** A Story Library step (services/library.js): the student is reading the step's book, or has finished it. The book's
  *  progress lives in story_reads; this row is the class's copy: started, then done with marks (first try per question,
  *  '1'/'0'), score (% right first time) and label ('aloud' when Read to me was used, else 'own').

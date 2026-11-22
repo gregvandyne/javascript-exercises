@@ -12993,8 +12993,13 @@
       "showHint": "Desligado por padrão. Ligado: depois do prazo, quem entregou vê as correções e por que cada uma está certa.",
       "snapshotNote": "Os alunos recebem este conjunto como ele está agora. Mudanças depois não mudam o que a turma recebeu. Os resultados vão para Progresso e o boletim.",
       "submit": "Atribuir",
-      "practiceInstead": "Praticar no jogo em vez disso (sem nota)",
-      "practiceHint": "Os alunos jogam o conjunto como um jogo, conferem enquanto fazem e recebem dicas. Conta como feito quando terminam."
+      "practiceHint": "Os alunos jogam o conjunto como um jogo, conferem enquanto fazem e recebem dicas. Conta como feito quando terminam.",
+      "chooseH": "Como os alunos vão fazer?",
+      "gradeSub": "Eles fazem uma vez na aula. É corrigido e vai para o diário de notas.",
+      "practiceH": "Prática",
+      "practiceSub": "Eles jogam o conjunto quantas vezes quiserem. Nada vale nota.",
+      "allowHints": "Permitir dicas",
+      "hintsHint": "Desligado por padrão. Ligado: o aluno pode pedir uma dica (a frase com um erro e depois o tipo). Você vê quantas dicas cada aluno usou."
     },
     "step": {
       "score": "Você encontrou {found} de {total} erros ({pct}%).",
@@ -13023,7 +13028,11 @@
       "changedHint": "Trocar palavras que estavam certas não baixa a nota; a contagem está aqui para vocês conversarem.",
       "errors": {
         "words": "Essa correção tem palavras que não podemos usar. Tente outras palavras."
-      }
+      },
+      "hintsAllowed": "Dicas: permitidas",
+      "hintsOff": "Dicas: desligadas",
+      "hintsCol": "Dicas",
+      "hintsN": "{count, plural, one {# dica} other {# dicas}}"
     },
     "insight": {
       "title": "A leitura do Oomba",

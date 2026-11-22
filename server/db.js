@@ -1212,6 +1212,17 @@ export const MIGRATIONS = [
     CREATE UNIQUE INDEX IF NOT EXISTS proof_chats_set ON proof_chats(owner_id, set_key);
     CREATE TABLE IF NOT EXISTS proof_insights (class_lesson_id TEXT NOT NULL, step_id TEXT NOT NULL, lang TEXT NOT NULL DEFAULT 'en',
       handed INTEGER NOT NULL, body TEXT NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY (class_lesson_id, step_id));`],
+  // Mistake Hunt: the free AI cap, hints (docs/decisions.md "Mistake Hunt: free AI cap, hints, assign choice").
+  // proof_ai_days: a free teacher's AI requests on one UTC calendar day (services/proof-ai.js take: one atomic upsert, so
+  // a restart or a deploy never resets the count); rows older than a week are pruned. proof_ai_drafts: a hash of each
+  // passage Oomba drafted for a teacher (never the text), kept 7 days, so why lines for those passages stay free.
+  // step_progress.hints: how many hints a student asked for on a graded proofread step (counted by the server).
+  ['0106_mistake_hunt_limits', `
+    CREATE TABLE IF NOT EXISTS proof_ai_days (user_id TEXT NOT NULL, day TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (user_id, day));
+    CREATE INDEX IF NOT EXISTS proof_ai_days_day ON proof_ai_days(day);
+    CREATE TABLE IF NOT EXISTS proof_ai_drafts (user_id TEXT NOT NULL, hash TEXT NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY (user_id, hash));
+    CREATE INDEX IF NOT EXISTS proof_ai_drafts_at ON proof_ai_drafts(created_at);
+    ALTER TABLE step_progress ADD COLUMN hints INTEGER NOT NULL DEFAULT 0;`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

@@ -13,10 +13,13 @@
 //   - one call each, services/ai-call.js callAi (the one 90 s budget, plain JSON read with jsonIn: no strict json_schema,
 //     which hung in production), config.builderModel, effort low, the AI budget pool ('free', recordUsage). A failure
 //     is one warn line without the teacher's words and a calm answer (ai: false, reason) the page words.
-//   - free teachers: config.proofAiFreePerDay AI requests a day (passages and checks together); Teacher plan holders
-//     (teacher-tools: their plan, a trial, a seat), testers and the platform admin: no daily cap.
+//   - free teachers: config.proofAiFreePerDay AI requests a UTC calendar day (passages, checks, and why lines for text
+//     Oomba did not draft, together), counted in the database (proof_ai_days, migration 0106) so a restart or a deploy
+//     never resets it; Teacher plan holders (teacher-tools: their plan, a trial, a seat), testers and the platform admin:
+//     no daily cap. docs/decisions.md "Mistake Hunt: free AI cap, hints, assign choice".
+import crypto from 'node:crypto';
 import { config } from '../config.js';
-import { audit } from '../db.js';
+import { audit, q, now, today } from '../db.js';
 import { isGrownup } from '../auth.js';
 import * as S from './schools.js';
 import * as aiBudget from './ai-budget.js';
@@ -27,7 +30,6 @@ import { cleanText } from './textfilter.js';
 import { proofCore, proofT } from './proof-core.js';
 import { isTester, plansOn } from './teacher-tools.js';
 import { teacherPlan } from './teacher-plan.js';
-import { allow, count } from './ratelimit.js';
 import { log } from './log.js';
 
 /** Test hooks: create replaces the AI client's messages.create (no network in tests). */
@@ -47,15 +49,46 @@ export function aiAccess(u) {
   if (isTester(u) || teacherPlan(u.id).entitled) return 'plan';
   return 'free';
 }
-const dayKey = u => `proof-ai-day:${u.id}`;
-/** How many free AI requests are left today (Infinity for 'plan'). */
+/** The free cap's bookkeeping: a free teacher's count lives in proof_ai_days, one row a UTC calendar day (the count
+ *  starts again at midnight UTC), so a restart never forgets it. Drafted passages' hashes are kept FREE.draftDays. */
+export const FREE = { keepDays: 8, draftDays: 7 };
+const usedToday = u => (q.get('SELECT n FROM proof_ai_days WHERE user_id=? AND day=?', u.id, today()) || {}).n || 0;
+let pruned = 0;
+/** Drop old day rows and drafted-passage hashes, at most once a minute (cheap: both by an index). */
+function prune() {
+  const t = now(); if (t - pruned < 60e3) return; pruned = t;
+  q.run('DELETE FROM proof_ai_days WHERE day<?', today(t - FREE.keepDays * 864e5));
+  q.run('DELETE FROM proof_ai_drafts WHERE created_at<?', t - FREE.draftDays * 864e5);
+}
+export const _resetPrune = () => { pruned = 0; };
+/** How many free AI requests are left today (Infinity for 'plan'). The page's "left" number comes from here too. */
 export function left(u, access = aiAccess(u)) {
   if (access === 'plan') return Infinity;
   if (access !== 'free') return 0;
-  return Math.max(0, config.proofAiFreePerDay - count(dayKey(u)));
+  return Math.max(0, config.proofAiFreePerDay - usedToday(u));
 }
-/** Spend one of today's free requests (called only when the AI is actually asked). */
-const spend = (u, access) => { if (access === 'free') allow(dayKey(u), config.proofAiFreePerDay, 864e5); };
+/**
+ * Take one of today's free requests: true when one was left (and it is now spent), false at the cap. One conditional
+ * upsert, synchronous (better-sqlite3) and called before the first await, so two requests at once can never both take
+ * the last one, and nothing in memory is involved. 'plan': always true, nothing counted.
+ */
+export function take(u, access) {
+  if (access === 'plan') return true;
+  if (access !== 'free') return false;
+  prune();
+  const max = config.proofAiFreePerDay; if (max <= 0) return false;
+  return q.run(`INSERT INTO proof_ai_days(user_id, day, n) VALUES (?,?,1)
+    ON CONFLICT(user_id, day) DO UPDATE SET n=n+1 WHERE n<?`, u.id, today(), max).changes === 1;
+}
+/** A passage's fingerprint (the text itself is never stored). */
+export const passageHash = x => crypto.createHash('sha256').update(String(x)).digest('base64url').slice(0, 32);
+/** Remember the passages Oomba drafted for this teacher (for every teacher, so a lapsed plan keeps a week's grace). */
+function rememberDrafts(u, texts) {
+  const t = now();
+  for (const x of texts) q.run('INSERT INTO proof_ai_drafts(user_id, hash, created_at) VALUES (?,?,?) ON CONFLICT(user_id, hash) DO UPDATE SET created_at=excluded.created_at', u.id, passageHash(x), t);
+}
+/** Did Oomba draft this exact passage for this teacher in the last FREE.draftDays days? */
+export const drafted = (u, x) => !!q.get('SELECT 1 FROM proof_ai_drafts WHERE user_id=? AND hash=? AND created_at>=?', u.id, passageHash(x), now() - FREE.draftDays * 864e5);
 /** Mistake Hunt, Phase 3: Oomba's chat on a set and the class insights are Teacher plan tools (teacher-tools.js
  *  toolAccess's people: plan holders, testers, the platform admin): 'yes'; a teacher without the plan while paid plans
  *  are on: 'plan' (a calm "part of the Teacher plan" note with the trial); anyone else: null. */
@@ -155,7 +188,7 @@ export async function draftPassages(u, { topic, grade = 4, length = 'short', n =
   const plant = kinds.length ? kinds : P.preset(g);
   const many = Math.max(1, Math.min(P.LIMITS.perPassage, Math.round(+count) || 6));
   if (!anthropic('free') && !hooks.create) return ok({ passages: [], ai: false, reason: 'resting', left: left(u, access) });
-  spend(u, access);
+  if (!take(u, access)) return fail('cap');
   const r = await ask(u, passagesPrompt({ topic: tp, grade: g, length: len, n: howMany }), { maxTokens: 900 * howMany + 300, what: 'passages' });
   if (r.reason) return ok({ passages: [], ai: false, reason: r.reason, left: left(u, access) });
   const list = Array.isArray(r.raw.passages) ? r.raw.passages.slice(0, howMany) : [];
@@ -169,6 +202,7 @@ export async function draftPassages(u, { topic, grade = 4, length = 'short', n =
     if (!m.length || P.problem(x, m)) { dropped++; continue; }
     out.push({ t: ct.ok ? ct.value : '', x, m });
   }
+  rememberDrafts(u, out.map(p => p.x));
   audit(u.id, 'proof.ai.passages', 'mistake-hunt', { asked: howMany, got: out.length, dropped });
   if (!out.length) return ok({ passages: [], ai: false, reason: 'filtered', left: left(u, access) });
   return ok({ passages: out, ai: true, dropped, left: left(u, access) });
@@ -208,7 +242,7 @@ export async function scanPassage(u, { text } = {}) {
   const bad = briefProblem(u, x); if (bad) return fail(bad);
   if (!left(u, access)) return fail('cap');
   if (!anthropic('free') && !hooks.create) return ok({ flags: [], ai: false, reason: 'resting', left: left(u, access) });
-  spend(u, access);
+  if (!take(u, access)) return fail('cap');
   const r = await ask(u, scanPrompt(x), { maxTokens: 1500, what: 'scan' });
   if (r.reason) return ok({ flags: [], ai: false, reason: r.reason, left: left(u, access) });
   const out = [];
@@ -239,8 +273,10 @@ export function whyPrompt(grade, items) {
 /**
  * Why lines for a set's mistakes, drafted in one call: { grade, items: [{ x (the passage), a, b, w, k }] } (each item a
  * mistake as the set keeps it, with its passage's text). -> { ok, lines: [string] ('' where the AI gave none that passes
- * the filter), ai: true } | { ok, lines: [], ai: false, reason } | { ok: false, code: 'notAllowed'|'bad'|'names' }.
- * Not counted in the daily cap: it is part of saving, one call a save.
+ * the filter), ai: true, left } | { ok, lines: [], ai: false, reason, left } | { ok: false, code: 'notAllowed'|'bad'|'names'|'cap' }.
+ * Part of saving. For a free teacher it is free only when every item's passage is one Oomba drafted for them in the last
+ * week (proof_ai_drafts); any other passage makes the call cost one of today's free requests, refused with 'cap' when
+ * none are left (otherwise any text could be sent here for free). Plan holders, testers, the admin: no cap.
  */
 export async function whyLines(u, { grade = 4, items = [] } = {}) {
   const access = aiAccess(u); if (!access) return fail('notAllowed');
@@ -255,10 +291,13 @@ export async function whyLines(u, { grade = 4, items = [] } = {}) {
     asks.push({ sentence: sent.filter(s => s !== null).join(' '), wrong: it.w, right, kind: proofT('en')(`ty.${it.k}`) });
   }
   if (asks.some(a => namesIn(u, a.sentence))) return fail('names');
-  if (!anthropic('free') && !hooks.create) return ok({ lines: [], ai: false, reason: 'resting' });
+  const costs = access === 'free' && !items.every(it => drafted(u, it.x));
+  if (costs && !left(u, access)) return fail('cap');
+  if (!anthropic('free') && !hooks.create) return ok({ lines: [], ai: false, reason: 'resting', left: left(u, access) });
+  if (costs && !take(u, access)) return fail('cap');
   const g = Math.max(0, Math.min(8, Math.round(+grade) || 0));
   const r = await ask(u, whyPrompt(g, asks), { maxTokens: 60 * asks.length + 200, what: 'why' });
-  if (r.reason) return ok({ lines: [], ai: false, reason: r.reason });
+  if (r.reason) return ok({ lines: [], ai: false, reason: r.reason, left: left(u, access) });
   const got = Array.isArray(r.raw.lines) ? r.raw.lines : [];
   const lines = asks.map((_, i) => {
     const s = String(got[i] || '').replace(/\s+/g, ' ').trim();
@@ -266,6 +305,6 @@ export async function whyLines(u, { grade = 4, items = [] } = {}) {
     const c = cleanText(s, AI_LIMITS.why);
     return c.ok && c.value === s ? s : '';
   });
-  audit(u.id, 'proof.ai.why', 'mistake-hunt', { n: lines.length, kept: lines.filter(Boolean).length });
-  return ok({ lines, ai: true });
+  audit(u.id, 'proof.ai.why', 'mistake-hunt', { n: lines.length, kept: lines.filter(Boolean).length, counted: costs });
+  return ok({ lines, ai: true, left: left(u, access) });
 }

@@ -28,7 +28,7 @@ const fake = fn => { calls = []; A.hooks.create = async (params, opts) => { call
 const draft = (user, body) => call(`/api/games/${MH.id}/proof/draft`, { method: 'POST', body, user });
 const scan = (user, body) => call(`/api/games/${MH.id}/proof/scan`, { method: 'POST', body, user });
 const why = (user, body) => call(`/api/games/${MH.id}/proof/why`, { method: 'POST', body, user });
-test.beforeEach(() => { RL._reset(); logs = []; callHooks.log = (msg, line) => logs.push({ msg, line }); config.proofAiFreePerDay = 50; });
+test.beforeEach(() => { RL._reset(); q.run('DELETE FROM proof_ai_days'); q.run('DELETE FROM proof_ai_drafts'); logs = []; callHooks.log = (msg, line) => logs.push({ msg, line }); config.proofAiFreePerDay = 50; });
 test.after(() => { A.hooks.create = null; callHooks.log = null; TOOLS.plansOn(false); });
 
 test('passages: plain JSON, kept exactly, mistakes planted by proof-core, the text filter drops the rest', async () => {
@@ -80,7 +80,7 @@ test('passages: a failure, a timeout or bad JSON falls back calmly with its reas
   r = await draft(teacher, { topic: 'Owls', grade: 3 });
   assert.equal(r.json.ai, false); assert.equal(r.json.reason, 'filtered');
   // no model at all (no key, the budget resting): 'resting', and the day's count is not spent
-  A.hooks.create = null; config.proofAiFreePerDay = 1; RL._reset(); const key = config.anthropicKey; config.anthropicKey = '';
+  A.hooks.create = null; config.proofAiFreePerDay = 1; q.run('DELETE FROM proof_ai_days'); const key = config.anthropicKey; config.anthropicKey = '';
   r = await draft(teacher, { topic: 'Owls', grade: 3 });
   assert.equal(r.json.ai, false); assert.equal(r.json.reason, 'resting'); assert.equal(r.json.left, 1);
   config.anthropicKey = key;
@@ -158,7 +158,7 @@ test('the daily cap: free teachers get a few AI requests a day, Teacher plan hol
   // a refused topic does not spend one; a Teacher plan holder has no cap
   for (let i = 0; i < 6; i++) { const r = await draft(teacher2, { topic: 'Owls' }); assert.equal(r.status, 200); assert.equal(r.json.left, null); }
   assert.equal(A.aiAccess(teacher2), 'plan'); assert.equal(A.aiAccess(teacher), 'free');
-  // why lines are part of saving: not capped
+  // why lines for a passage Oomba drafted for this teacher (X1 above): free, even at the cap
   const m = P.plant(X1, { types: ['pc-end'], n: 1, seed: 1 });
   fake(() => answer({ lines: ['A line.'] }));
   assert.equal((await why(teacher, { grade: 4, items: [{ x: X1, ...m[0] }] })).status, 200);
@@ -193,6 +193,75 @@ test('the SDK and the play page carry the AI tools and the graded step; the play
   const play = fs.readFileSync(new URL('../../public/js/play.js', import.meta.url), 'utf8');
   for (const k of ['proofAsk: proofAsk', 'proofSave: proofSave', 'openTrial:', "'brb:proofai'", "'brb:proof'"]) assert.ok(sdk.includes(k), k);
   for (const k of ["'brb:proofai': m =>", "'brb:proof': m =>", "'brb:trial': m =>", "case 'brb:trial': if (tappedJustNow("]) assert.ok(play.includes(k), k);
+});
+
+test('the free cap lives in the database: a restart (the in-memory limiter reset) changes nothing; the frame reads it', async () => {
+  config.proofAiFreePerDay = 3;
+  fake(() => answer({ passages: [{ title: 'Owls', text: X1 }] }));
+  assert.equal((await draft(teacher, { topic: 'Owls' })).json.left, 2);
+  assert.equal((await scan(teacher, { text: X2 })).json.left, 1);
+  RL._reset();   // what a deploy or restart used to do to the count
+  assert.equal(A.left(teacher), 1, 'still 1 left after the reset');
+  assert.equal((await frameInit(teacher)).proofAi.left, 1, 'the page\'s number is the same count');
+  assert.equal(q.get('SELECT n FROM proof_ai_days WHERE user_id=?', teacher.id).n, 2);
+  assert.equal((await draft(teacher, { topic: 'Owls' })).json.left, 0);
+  RL._reset();
+  const capped = await draft(teacher, { topic: 'Owls' });
+  assert.equal(capped.status, 429); assert.equal(capped.json.code, 'cap');
+  // the day is a UTC calendar day: yesterday's row does not count today, and old rows are pruned
+  q.run('UPDATE proof_ai_days SET day=? WHERE user_id=?', '2000-01-01', teacher.id);
+  assert.equal(A.left(teacher), 3);
+  A._resetPrune(); assert.equal(A.take(teacher, 'free'), true);
+  assert.equal(q.get("SELECT COUNT(*) n FROM proof_ai_days WHERE day='2000-01-01'").n, 0, 'pruned');
+});
+
+test('two requests at once with one left: only one reaches the AI', async () => {
+  config.proofAiFreePerDay = 1;
+  let release; const gate = new Promise(r => { release = r; });
+  fake(async () => { await gate; return answer({ passages: [{ title: 'Owls', text: X1 }] }); });
+  const both = Promise.all([A.draftPassages(teacher, { topic: 'Owls' }), A.draftPassages(teacher, { topic: 'Owls' }), A.scanPassage(teacher, { text: X1 })]);
+  release();
+  const [a, b, c] = await both;
+  assert.equal(a.ok, true); assert.equal(a.ai, true);
+  assert.deepEqual([b.code, c.code], ['cap', 'cap']);
+  assert.equal(calls.length, 1, 'one AI call');
+  // the same over HTTP: two at once, one through
+  q.run('DELETE FROM proof_ai_days');
+  fake(() => answer({ passages: [{ title: 'Owls', text: X1 }] }));
+  const r = await Promise.all([draft(teacher, { topic: 'Owls' }), draft(teacher, { topic: 'Owls' })]);
+  assert.deepEqual(r.map(x => x.status).sort(), [200, 429]);
+  assert.equal(calls.length, 1);
+});
+
+test('why lines: free for passages Oomba drafted for this teacher; any other passage costs a request, refused at the cap', async () => {
+  config.proofAiFreePerDay = 2;
+  fake(() => answer({ passages: [{ title: 'Inside a volcano', text: X1 }] }));
+  assert.equal((await draft(teacher, { topic: 'Volcanoes' })).json.left, 1);
+  assert.ok(A.drafted(teacher, X1)); assert.ok(!A.drafted(teacher, X2)); assert.ok(!A.drafted(teacher2, X1), 'per teacher');
+  assert.equal(q.get('SELECT COUNT(*) n FROM proof_ai_drafts WHERE user_id=?', teacher.id).n, 1);
+  assert.equal(JSON.stringify(q.all('SELECT * FROM proof_ai_drafts')).includes('volcano'), false, 'a hash, never the text');
+  const m1 = P.plant(X1, { types: ['pc-end'], n: 1, seed: 1 }), m2 = P.plant(X2, { types: ['pc-end'], n: 1, seed: 1 });
+  fake(p => answer({ lines: Array.from({ length: (p.messages[0].content.match(/Students see:/g) || []).length }, () => 'A line.') }));
+  // Oomba's own passage: free, as often as saving needs
+  for (let i = 0; i < 3; i++) { const r = await why(teacher, { grade: 4, items: [{ x: X1, ...m1[0] }] }); assert.equal(r.status, 200); assert.equal(r.json.left, 1); }
+  // a passage Oomba did not draft (alone, or mixed in with Oomba's): one request
+  const mixed = await why(teacher, { grade: 4, items: [{ x: X1, ...m1[0] }, { x: X2, ...m2[0] }] });
+  assert.equal(mixed.status, 200); assert.equal(mixed.json.left, 0);
+  const before = calls.length;
+  const refused = await why(teacher, { grade: 4, items: [{ x: X2, ...m2[0] }] });
+  assert.equal(refused.status, 429); assert.equal(refused.json.code, 'cap'); assert.equal(refused.json.left, 0);
+  assert.equal(calls.length, before, 'refused before the AI');
+  assert.equal((await why(teacher, { grade: 4, items: [{ x: X1, ...m1[0] }] })).status, 200, 'Oomba\'s passage stays free at the cap');
+  // a passage edited after Oomba wrote it is not Oomba's
+  const edited = X1.replace('slowly', 'very slowly'), me = P.plant(edited, { types: ['pc-end'], n: 1, seed: 1 });
+  assert.equal((await why(teacher, { grade: 4, items: [{ x: edited, ...me[0] }] })).json.code, 'cap');
+  // older than a week: no longer free
+  q.run('UPDATE proof_ai_drafts SET created_at=? WHERE user_id=?', Date.now() - 8 * 864e5, teacher.id);
+  assert.equal((await why(teacher, { grade: 4, items: [{ x: X1, ...m1[0] }] })).json.code, 'cap');
+  // a Teacher plan holder: no cap, any passage
+  TOOLS.plansOn(); TOOLS.givePlan(teacher2.id);
+  for (let i = 0; i < 4; i++) { const r = await why(teacher2, { grade: 4, items: [{ x: X2, ...m2[0] }] }); assert.equal(r.status, 200); assert.equal(r.json.left, null); }
+  TOOLS.plansOn(false);
 });
 
 async function frameInit(user) {

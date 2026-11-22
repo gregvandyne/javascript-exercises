@@ -409,7 +409,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   const proofs = lp.steps.map((s, i) => ({ s, i })).filter(({ s }) => s.kind === L.PROOF_KIND).map(({ s, i }) => {
     const full = fullSteps.find(x => x.id === s.id) || s, cells = lp.students.map(p => p.cells[i]);
     return proofResultsHtml(t, { step: full, cl: lp.cl, totals: PS.typeTotals(full, cells.filter(Boolean)), rows: lp.students.map((p, k) => ({ p, result: PS.resultOf(full, cells[k]) })),
-      studentsN: lp.students.length, lang: req.locale || 'en', nameOf: p => html`<span class="pp">${avatar(p, 28)}${staffStudentName(p)}</span>`,
+      studentsN: lp.students.length, lang: req.locale || 'en', hints: PS.hintsOn(full), nameOf: p => html`<span class="pp">${avatar(p, 28)}${staffStudentName(p)}</span>`,
       // Oomba's read (Phase 3): counts only to the AI, the code's own read as the fallback; Teacher plan.
       insight: (() => { const c = PI.card(req.user, lp.cl.id, s.id, { t, lang: req.locale || 'en' }); return c.ok ? proofInsightHtml(t, c, { cl: lp.cl, step: s, plans: plansOn() }) : ''; })() });
   });
@@ -636,9 +636,18 @@ router.get('/api/progress/:clid/:sid/proofread', requireUser, (req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json(r.view);
 });
-/** Save or hand in a proofread step's fixes: { edits: [[{ a, b, s }], ...], handIn }. -> { ok, handedIn, score, view } */
+/** Save or hand in a proofread step's fixes: { edits: [[{ a, b, s }], ...], handIn }. -> { ok, handedIn, score, view }
+ *  With hint: i (a passage index; only when the teacher allowed hints): the fixes are saved and the server's hint comes
+ *  back. -> { ok, handedIn: false, hint: { i, a, b, k, g } | null, view } */
 router.post('/api/progress/:clid/:sid/proofread', requireUser, rateLimit('progress', 240, 60e3), (req, res) => {
   const body = b(req);
+  if (body.hint !== undefined && body.hint !== null) {
+    if (!Number.isInteger(body.hint) || body.hint < 0 || body.hint > 99) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'badRequest' });
+    const h = P.proofHint(req.user, req.params.clid, req.params.sid, body.edits, body.hint);
+    if (!h.ok) return h.code === 'notFound' ? no(req, res) : res.status(400).json({ error: req.t(h.code === 'handedIn' ? 'figures.step.errors.handedIn' : h.code === 'words' ? 'proof.step.errors.words' : 'errors.api.badRequest'), code: h.code });
+    res.set('Cache-Control', 'no-store');
+    return res.json({ ok: true, handedIn: false, hint: h.hint, view: h.view });
+  }
   const r = P.proofAnswer(req.user, req.params.clid, req.params.sid, body.edits, { handIn: body.handIn === true });
   if (!r.ok) return r.code === 'notFound' ? no(req, res) : res.status(400).json({ error: req.t(r.code === 'handedIn' ? 'figures.step.errors.handedIn' : r.code === 'words' ? 'proof.step.errors.words' : 'errors.api.badRequest'), code: r.code });
   res.set('Cache-Control', 'no-store');

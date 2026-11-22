@@ -146,7 +146,8 @@ const TYPES = {
     && m.words.every(w => typeof w === 'string' && w.length <= 40) && typeof m.level === 'string' && m.level.length <= 60,
   // Mistake Hunt (docs/sdk.md "Mistake Hunt"): BRB.proofAsk (the server checks who may ask) and a graded step's fixes.
   'brb:proofai': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && ['draft', 'scan', 'why', 'chat', 'chat-get', 'chat-applied'].includes(m.op) && !!m.body && typeof m.body === 'object' && !Array.isArray(m.body) && JSON.stringify(m.body).length <= 60000,
-  'brb:proof': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.edits) && JSON.stringify(m.edits).length <= 60000 && typeof m.handIn === 'boolean',
+  'brb:proof': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.edits) && JSON.stringify(m.edits).length <= 60000 && typeof m.handIn === 'boolean'
+    && (m.hint === undefined || (Number.isInteger(m.hint) && m.hint >= 0 && m.hint < 100)),
   'brb:trial': m => true,
   // BRB.print (Crossword): the puzzle as plain data, at most 20,000 characters (the server checks every part of it).
   'brb:print': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && !!m.doc && typeof m.doc === 'object' && !Array.isArray(m.doc) && JSON.stringify(m.doc).length <= 20000,
@@ -417,13 +418,15 @@ async function proofAiForGame(m) {
   catch (e) { r = { error: (e.data && e.data.code) || (e.status === 429 ? 'slow' : 'offline'), ...(e.data && e.data.left === 0 ? { left: 0 } : {}) }; }
   toFrame({ type: 'brb:proofai-done', id: m.id, r });
 }
-/** BRB.proofSave (a graded Mistake Hunt step): save or hand in the fixes; the step as it is now goes back. */
+/** BRB.proofSave (a graded Mistake Hunt step): save or hand in the fixes; the step as it is now goes back. With hint (a
+ *  passage index, when the teacher allowed hints) the server saves the fixes and answers the hint (it holds the key). */
 async function proofForGame(m) {
   const done = out => toFrame({ type: 'brb:proof-done', id: m.id, ...out });
   if (!d.lesson || !d.lesson.proof) return done({ error: 'notAllowed' });
   try {
-    const r = await api(`/api/progress/${d.lesson.cl}/${d.lesson.step}/proofread`, { method: 'POST', body: { edits: m.edits, handIn: m.handIn }, active: playing() });
-    done({ view: r.view });
+    const hint = Number.isInteger(m.hint) ? { hint: m.hint } : {};
+    const r = await api(`/api/progress/${d.lesson.cl}/${d.lesson.step}/proofread`, { method: 'POST', body: { edits: m.edits, handIn: m.handIn, ...hint }, active: playing() });
+    done({ view: r.view, ...('hint' in hint ? { hint: r.hint || null } : {}) });
   } catch (e) { done({ error: (e.data && e.data.code) || 'offline' }); }
 }
 /** BRB.print (docs/sdk.md "Printing"): the server checks the puzzle (its words and clues through the text filter, the

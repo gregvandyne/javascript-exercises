@@ -28,10 +28,13 @@ export function proofStudentHtml(t, v, { href, showAnswers = false, dueSet = fal
   </section>`;
 }
 
-/** The teacher's preview on the class's lesson page: what the step holds, and the answers rule. */
+/** "Hints: allowed" or "Hints: off", the teacher's choice on the Assign page. */
+export const hintsLine = (t, on) => t(on ? 'proof.step.hintsAllowed' : 'proof.step.hintsOff');
+
+/** The teacher's preview on the class's lesson page: what the step holds, the answers rule and the hints setting. */
 export function proofTeacherHtml(t, v, { showAnswers = false, lang = 'en' }) {
   return html`<section class="pf-step" aria-label="${t('lessons.kinds.proofread')}">
-    <p class="notice small">${ico('👀', { size: 18 })} ${t('proof.step.teacherNote')} ${showAnswers ? t('figures.step.showOnNote') : t('figures.step.showOffNote')}</p>
+    <p class="notice small">${ico('👀', { size: 18 })} ${t('proof.step.teacherNote')} ${showAnswers ? t('figures.step.showOnNote') : t('figures.step.showOffNote')} ${hintsLine(t, v.hints)}</p>
     <ol class="pf-plist">${(v.key || []).map((p, i) => html`<li><b dir="auto">${v.passages[i].t || t('proof.step.passageN', { n: i + 1 })}</b>
       <span class="small muted">${t('proof.step.mistakesN', { count: p.m.length })}</span>
       <span class="small muted" lang="en" dir="ltr">${[...new Set(p.m.map(m => kindName(lang, m.k)))].join(', ')}</span></li>`)}</ol>
@@ -40,9 +43,10 @@ export function proofTeacherHtml(t, v, { showAnswers = false, lang = 'en' }) {
 
 /**
  * The lesson progress page's panel for one proofread step.
- * totals: typeTotals(); rows: [{ p (student), result: resultOf() | null }] in roster order.
+ * totals: typeTotals(); rows: [{ p (student), result: resultOf() | null }] in roster order. hints: the teacher allowed
+ * hints (each student's count shows as a plain number, "2 hints", never a ranking).
  */
-export function proofResultsHtml(t, { step, cl, totals, rows, studentsN, lang = 'en', nameOf, insight = '' }) {
+export function proofResultsHtml(t, { step, cl, totals, rows, studentsN, lang = 'en', nameOf, insight = '', hints = false }) {
   const bar = x => { const all = x.found + x.missed, w = all ? Math.round((100 * x.found) / all) : 0;
     return html`<div class="pf-bar" role="img" aria-label="${t('proof.step.foundMissed', { found: x.found, missed: x.missed })}"><span style="${raw(`width:${w}%`)}"></span></div>`; };
   return html`<section class="panel answers pf-results" id="pr-${step.id}" aria-labelledby="pr-h-${step.id}"><h2 id="pr-h-${step.id}">${ico('🔎', { size: 28 })} ${step.title || t('lessons.kinds.proofread')}</h2>
@@ -50,12 +54,12 @@ export function proofResultsHtml(t, { step, cl, totals, rows, studentsN, lang = 
       <label class="chk"><input type="checkbox" name="on" value="1" ${step.show_answers ? raw('checked') : ''} ${cl.due_at ? '' : raw('disabled')}> <b>${t('figures.step.showAnswers')}</b></label>
       <p class="small muted">${cl.due_at ? t('proof.step.showAnswersHint') : t('figures.step.showNeedsDue')}</p>
       ${cl.due_at ? html`<div class="row"><button class="btn btn-sm" type="submit">${t('school.save')}</button></div>` : ''}<p class="err form-err" aria-live="polite"></p></form>
-    <div class="pf-stats"><p><b>${t('proof.step.handedInOf', { done: totals.handed, total: studentsN })}</b></p>${totals.foundPct !== null ? html`<p><b dir="ltr">${totals.foundPct}%</b> ${t('proof.step.ofFound')}</p>` : ''}</div>
+    <div class="pf-stats"><p><b>${t('proof.step.handedInOf', { done: totals.handed, total: studentsN })}</b></p>${totals.foundPct !== null ? html`<p><b dir="ltr">${totals.foundPct}%</b> ${t('proof.step.ofFound')}</p>` : ''}<p class="pf-hints-set">${hintsLine(t, hints)}</p></div>
     ${insight}
     ${totals.handed ? html`<h3>${t('proof.step.byKind')}</h3><p class="small muted">${t('proof.step.byKindHint')}</p>
       <ul class="plain pf-kinds">${totals.kinds.map(x => html`<li><div class="pf-kline"><span>${kindName(lang, x.k)} <span class="small muted" lang="en" dir="ltr">${x.cc}</span></span><span class="small">${t('proof.step.foundMissed', { found: x.found, missed: x.missed })}</span></div>${bar(x)}</li>`)}</ul>
-      <div class="gbwrap" tabindex="0" role="region" aria-label="${t('proof.step.studentsTable')}"><table class="tbl gradebook pf-table"><thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th><th scope="col">${t('proof.step.found')}</th><th scope="col">${t('proof.step.changed')}</th><th scope="col">${t('gradebook.score')}</th></tr></thead>
-      <tbody>${rows.map(({ p, result }) => html`<tr><th scope="row" class="gb-name">${nameOf(p)}</th>${result ? html`<td dir="ltr">${result.found}/${result.total}</td><td dir="ltr">${result.changed}</td><td><b dir="ltr">${result.score}%</b></td>` : html`<td colspan="3"><span class="muted">${t('proof.step.notYet')}</span></td>`}</tr>`)}</tbody></table></div>
+      <div class="gbwrap" tabindex="0" role="region" aria-label="${t('proof.step.studentsTable')}"><table class="tbl gradebook pf-table"><thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th><th scope="col">${t('proof.step.found')}</th><th scope="col">${t('proof.step.changed')}</th>${hints ? html`<th scope="col">${t('proof.step.hintsCol')}</th>` : ''}<th scope="col">${t('gradebook.score')}</th></tr></thead>
+      <tbody>${rows.map(({ p, result }) => html`<tr><th scope="row" class="gb-name">${nameOf(p)}</th>${result ? html`<td dir="ltr">${result.found}/${result.total}</td><td dir="ltr">${result.changed}</td>${hints ? html`<td class="pf-hintsn">${t('proof.step.hintsN', { count: result.hints || 0 })}</td>` : ''}<td><b dir="ltr">${result.score}%</b></td>` : html`<td colspan="${hints ? 4 : 3}"><span class="muted">${t('proof.step.notYet')}</span></td>`}</tr>`)}</tbody></table></div>
       <p class="small muted">${t('proof.step.changedHint')}</p>`
       : html`<p class="muted">${t('figures.step.noneYet')}</p>`}
   </section>`;
