@@ -9699,7 +9699,8 @@
         "settings": "已變更自動同步",
         "topic": "已重新命名主題",
         "removeLeft": "已移除離開 Classroom 的學生",
-        "keepLeft": "已留下離開 Classroom 的學生"
+        "keepLeft": "已留下離開 Classroom 的學生",
+        "pointPost": "班級儀表板的分數"
       }
     },
     "errors": {
@@ -11079,7 +11080,7 @@
         },
         "reason": "原因",
         "award": "給 {name} 一分",
-        "awardAll": "全班各加一分",
+        "awardAll": "全班",
         "everyone": "全班",
         "undo": "復原",
         "undone": "剛才的一分已經收回。",
@@ -11099,7 +11100,41 @@
         "r_listening": "專心聆聽",
         "r_responsible": "負責任",
         "r_brave": "勇於嘗試",
-        "r_creative": "好點子"
+        "r_creative": "好點子",
+        "classPoints": "全班的分數：{n}",
+        "classGiven": "全班因為{reason}得到一分",
+        "classPick": "給全班一分",
+        "recent": "最近",
+        "recentClass": "全班最近的分數",
+        "recentNone": "還沒有分數。",
+        "gcPost": "同時發布到 Google Classroom",
+        "gcPostHint": "全班的分數會發到課程訊息串，學生個人的分數只有那位學生看得到。不會有名字或排名。",
+        "gcAllow": "允許發布到 Google Classroom",
+        "gcPosted": "已發布到 Google Classroom。",
+        "gcPending": "正在發布到 Google Classroom…",
+        "gcFailed": "現在無法發布到 Google Classroom。分數已經儲存。",
+        "gcNotOnClassroom": "沒有發布：這位學生沒有連結 Google Classroom。分數已經儲存。",
+        "gcTooMany": "發布到 Google Classroom 暫停一下（每小時 10 則）。分數已經儲存。",
+        "gcReconnect": "需要重新連結 Google Classroom 才能發布。分數已經儲存。",
+        "gcOn": "分數也會發到 Google Classroom。",
+        "gcOff": "分數只留在 Oomba。",
+        "onlyYou": "只有你和你的老師看得到你的分數。",
+        "r_leadership": "領導力",
+        "r_focus": "專注",
+        "r_example": "以身作則",
+        "r_participation": "積極參與",
+        "f_leadership": "領導力",
+        "f_teamwork": "團隊合作",
+        "f_focus": "專注",
+        "f_kind": "友善",
+        "f_example": "以身作則",
+        "f_effort": "認真努力",
+        "f_participation": "積極參與",
+        "f_helpful": "幫助別人",
+        "f_listening": "專心聆聽",
+        "f_responsible": "負責任",
+        "f_brave": "勇於嘗試",
+        "f_creative": "好點子"
       },
       "fractions": {
         "name": "分數",
@@ -12535,6 +12570,12 @@
         "red": "請保持安靜",
         "yellow": "小聲說話",
         "green": "和夥伴討論"
+      }
+    },
+    "points": {
+      "gc": {
+        "class": "我們班因為{reason}得到一分！🎉",
+        "student": "你因為{reason}得到一分！🌟"
       }
     }
   },

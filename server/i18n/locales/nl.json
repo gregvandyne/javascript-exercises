@@ -9700,7 +9700,8 @@
         "settings": "Automatisch bijwerken gewijzigd",
         "topic": "Onderwerp hernoemd",
         "removeLeft": "Leerling die Classroom verliet uit de klas gehaald",
-        "keepLeft": "Leerling die Classroom verliet gehouden"
+        "keepLeft": "Leerling die Classroom verliet gehouden",
+        "pointPost": "Punt van het klasdashboard"
       }
     },
     "errors": {
@@ -11080,7 +11081,7 @@
         },
         "reason": "Reden",
         "award": "Een punt voor {name}",
-        "awardAll": "Een punt voor iedereen",
+        "awardAll": "Hele klas",
         "everyone": "Iedereen",
         "undo": "Ongedaan maken",
         "undone": "Het laatste punt is teruggenomen.",
@@ -11100,7 +11101,41 @@
         "r_listening": "Luisteren",
         "r_responsible": "Verantwoordelijk",
         "r_brave": "Iets nieuws proberen",
-        "r_creative": "Goede ideeën"
+        "r_creative": "Goede ideeën",
+        "classPoints": "Punten van de hele klas: {n}",
+        "classGiven": "De hele klas kreeg een punt voor {reason}",
+        "classPick": "Een punt voor de hele klas",
+        "recent": "Recent",
+        "recentClass": "Recente klaspunten",
+        "recentNone": "Nog geen punten.",
+        "gcPost": "Ook in Google Classroom plaatsen",
+        "gcPostHint": "Een punt voor de hele klas komt in de stream van de klas. Het punt van een leerling ziet alleen die leerling. Nooit namen of ranglijsten.",
+        "gcAllow": "Plaatsen in Google Classroom toestaan",
+        "gcPosted": "Geplaatst in Google Classroom.",
+        "gcPending": "Bezig met plaatsen in Google Classroom…",
+        "gcFailed": "Plaatsen in Google Classroom lukte nu niet. Het punt is bewaard.",
+        "gcNotOnClassroom": "Niet geplaatst: deze leerling is niet gekoppeld aan Google Classroom. Het punt is bewaard.",
+        "gcTooMany": "Berichten in Google Classroom staan even op pauze (10 per uur). Het punt is bewaard.",
+        "gcReconnect": "Google Classroom moet opnieuw verbonden worden. Het punt is bewaard.",
+        "gcOn": "Punten gaan nu ook naar Google Classroom.",
+        "gcOff": "Punten blijven alleen in Oomba.",
+        "onlyYou": "Alleen jij en je leerkracht zien jouw punten.",
+        "r_leadership": "Leiderschap",
+        "r_focus": "Focus",
+        "r_example": "Het goede voorbeeld geven",
+        "r_participation": "Meedoen",
+        "f_leadership": "leiderschap",
+        "f_teamwork": "samenwerken",
+        "f_focus": "focus",
+        "f_kind": "vriendelijkheid",
+        "f_example": "het goede voorbeeld",
+        "f_effort": "hard werken",
+        "f_participation": "meedoen",
+        "f_helpful": "helpen",
+        "f_listening": "luisteren",
+        "f_responsible": "verantwoordelijkheid",
+        "f_brave": "iets nieuws proberen",
+        "f_creative": "goede ideeën"
       },
       "fractions": {
         "name": "Breuken",
@@ -12536,6 +12571,12 @@
         "red": "Stilte, alsjeblieft",
         "yellow": "Fluisterstem",
         "green": "Praat met je maatje"
+      }
+    },
+    "points": {
+      "gc": {
+        "class": "Onze klas kreeg een punt voor {reason}! 🎉",
+        "student": "Je kreeg een punt voor {reason}! 🌟"
       }
     }
   },

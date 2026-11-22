@@ -10389,7 +10389,8 @@
         "settings": "Changed automatic sync",
         "topic": "Renamed the topic",
         "removeLeft": "Removed a student who left Classroom",
-        "keepLeft": "Kept a student who left Classroom"
+        "keepLeft": "Kept a student who left Classroom",
+        "pointPost": "Dashboard point"
       }
     },
     "errors": {
@@ -11769,7 +11770,7 @@
         },
         "reason": "Reason",
         "award": "A point for {name}",
-        "awardAll": "A point for everyone",
+        "awardAll": "Whole class",
         "everyone": "Everyone",
         "undo": "Undo",
         "undone": "The last point was taken back.",
@@ -11789,7 +11790,41 @@
         "r_listening": "Listening",
         "r_responsible": "Being responsible",
         "r_brave": "Trying something new",
-        "r_creative": "Good ideas"
+        "r_creative": "Good ideas",
+        "classPoints": "Whole-class points: {n}",
+        "classGiven": "The whole class earned a point for {reason}",
+        "classPick": "A point for the whole class",
+        "recent": "Recent",
+        "recentClass": "Recent class points",
+        "recentNone": "No points yet.",
+        "gcPost": "Also post to Google Classroom",
+        "gcPostHint": "A whole-class point goes to the class stream. A student's point goes only to that student. Never names or rankings.",
+        "gcAllow": "Allow posting in Google Classroom",
+        "gcPosted": "Posted to Google Classroom.",
+        "gcPending": "Posting to Google Classroom…",
+        "gcFailed": "Couldn't post to Google Classroom just now. The point is saved.",
+        "gcNotOnClassroom": "Not posted: this student isn't linked to Google Classroom. The point is saved.",
+        "gcTooMany": "Google Classroom posts are paused for a while (10 an hour). The point is saved.",
+        "gcReconnect": "Google Classroom needs connecting again to post. The point is saved.",
+        "gcOn": "Points will also go to Google Classroom.",
+        "gcOff": "Points stay in Oomba only.",
+        "onlyYou": "Only you and your teacher see your points.",
+        "r_leadership": "Leadership",
+        "r_focus": "Focus",
+        "r_example": "Setting a good example",
+        "r_participation": "Participation",
+        "f_leadership": "leadership",
+        "f_teamwork": "teamwork",
+        "f_focus": "focus",
+        "f_kind": "kindness",
+        "f_example": "setting a good example",
+        "f_effort": "hard work",
+        "f_participation": "participation",
+        "f_helpful": "helping",
+        "f_listening": "listening",
+        "f_responsible": "being responsible",
+        "f_brave": "trying something new",
+        "f_creative": "good ideas"
       },
       "fractions": {
         "name": "Fractions",
@@ -13225,6 +13260,12 @@
         "red": "Quiet, please",
         "yellow": "Whisper voices",
         "green": "Talk with a partner"
+      }
+    },
+    "points": {
+      "gc": {
+        "class": "Our class earned a point for {reason}! 🎉",
+        "student": "You earned a point for {reason}! 🌟"
       }
     }
   },

@@ -11578,3 +11578,61 @@ Manipulatives board chat are folded into the companion; the microphone shows wor
   memory only, for a one-time upload (`X-Live-Id`, not counted twice) when the live link fails.
 - **Follow-up**: Mistake Hunt's chat (services/proof-chat.js, inside the game's teacher editor) is still its own; moving
   it onto the companion is a later change.
+
+## Dashboard points: reasons, whole-class points, the student's view and Google Classroom (22 Nov 2026)
+
+The owner asked: "For giving points to kids on the dashboard you should be able to pick what those points are for and
+there should also be an option to give the whole class a point for something and it should be noted as something the
+whole class received a point for as well as what the point was for (e.g. leadership, teamwork, focused, being kind,
+setting a good example, working hard, participation etc... doesn't have to be that wording exactly but options for why
+the point was awarded would be great) And this should be visible on the students account so that they can see. This
+should also be available to be pushed to Google Classroom"
+
+This builds on stage 5's "Points for each student" (the scoreboard's Each student mode).
+
+- **Reasons.** A fixed, positive list of 12 (nobody types a reason, there is no minus), in this order: leadership,
+  teamwork, focus, kindness, setting a good example, hard work, participation (the owner's examples first), then
+  helping, listening, being responsible, trying something new, good ideas. The first version's keys (kind, helpful,
+  teamwork, effort, listening, responsible, brave, creative) are kept as they were, so stored points read the same with
+  no migration of rows; a request may also use a few other names (kindness, focused, hard-work...), stored under the
+  key (`POINT_ALIASES`). **Decided:** a fixed, tidy grid (two or three columns of icon and word) rather than most-used
+  first: the buttons never move, so a teacher's hand learns where Teamwork is. A tap on a student's row (the whole row
+  is the button, "+1" shows it) opens the grid; one tap on a reason gives the point.
+- **Whole-class point.** **Whole class** (where "A point for everyone" was) opens the same grid and gives ONE point to
+  the class, stored as the class's own tally per reason (`dash_class_points`), never one point per student. It shows
+  as "Whole-class points: 7" with its reasons, and is recorded as "The whole class earned a point for teamwork".
+  **Decided:** the old "everyone" is replaced; a request still sending `user: 'all'` gets the class point. Points the
+  first version gave everyone (one row per student) stay as each student's own and read as before.
+- **History.** Every award is remembered (`dash_point_awards`: who gave it, the student or the class, the reason,
+  when, and whether it went to Google Classroom) for at most a year and 2,000 rows per class. Undo takes back the
+  latest matching award and its count (never below zero; a count stored before awards were remembered still drops).
+  **Decided:** Start again clears the counts and the remembered awards together: a fresh start, so students don't see
+  old awards under a total of zero. Start again moved into the Recent sheet (three buttons fit the smallest scoreboard
+  in every language, and the rare, clearing action is one step further away).
+- **The student's view.** On the student's own class page (`/class/:id`), a calm **My points** card, once the class has
+  any points: their own total, their points by reason, their latest awards ("Teamwork, Tue, Nov 22"), the class's
+  points with reasons and the class's latest awards, and "Only you and your teacher see your points." The Classes tab
+  links to it ("My points: 3"). The in-dashboard student view keeps its own points and adds the class's. A student never
+  sees another student's name, id or points and never a ranking (tested: another student's reason and count are never
+  in the page). The students' total ("Class total") stays as it was.
+- **Teacher and projector.** The teacher's list stays in the class list's order (by name), never ranked; one line on
+  top says the class's points and every student's together; **Recent** lists the latest awards (names on the teacher's
+  screen only). The projector hides names and each student's points as before and shows the class's points big, with
+  their reasons when the box is tall enough, and the students' total under them.
+- **Google Classroom.** When the class is linked to a Classroom course, the reasons sheet has "Also post to Google
+  Classroom" (one switch per class, `dash_class.points_gc`, off by default). Without the announcements scope (or with a
+  connection that stopped working) the switch is greyed out with "Allow posting in Google Classroom", the class's
+  Classroom page (the existing allow and reconnect path). A whole-class point posts to the class stream "Our class earned
+  a point for teamwork! 🎉"; a student's point posts "You earned a point for teamwork! 🌟" to that student only
+  (`assigneeMode: INDIVIDUAL_STUDENTS`, `individualStudentsOptions.studentIds` with only their Google id, from the
+  roster link `gc_roster`, else the id they sign in with). The words are fixed, in the teacher's language: no names, no
+  counts, no rankings. The point is always saved first; Google never blocks it: after 2.5 seconds the answer is
+  "Posting to Google Classroom..." and the post finishes on its own; a failure, a student not on the Classroom roster or
+  the class's 10 announcements an hour (shared with the Classroom page's announcements) gives a calm line ("The point is
+  saved."). Undo of a posted point deletes its announcement too (best effort). The sync log says only "Dashboard point"
+  and whether it was for the class or a student.
+- **Deleting.** Both tables go with the school (`services/school-delete.js`). Deleting an account removes the awards for
+  that student; awards a teacher gave stay with the class, no longer saying who gave them.
+- Migration `0109_dash_point_awards`. Tests: `tests/unit/dash-points.test.js` (with the fakes in `tests/support`), and
+  `tests/unit/dash-stage5.test.js` where "everyone" changed. `npm run dash:fit` seeds whole-class points too, and
+  `SIZES=stage5` checks only the stage 5 layouts.

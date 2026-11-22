@@ -9700,7 +9700,8 @@
         "settings": "Sincronizzazione automatica cambiata",
         "topic": "Argomento rinominato",
         "removeLeft": "Tolto uno studente uscito da Classroom",
-        "keepLeft": "Tenuto uno studente uscito da Classroom"
+        "keepLeft": "Tenuto uno studente uscito da Classroom",
+        "pointPost": "Punto dalla bacheca di classe"
       }
     },
     "errors": {
@@ -11080,7 +11081,7 @@
         },
         "reason": "Motivo",
         "award": "Un punto a {name}",
-        "awardAll": "Un punto a tutti",
+        "awardAll": "Tutta la classe",
         "everyone": "Tutti",
         "undo": "Annulla",
         "undone": "L’ultimo punto è stato tolto.",
@@ -11100,7 +11101,41 @@
         "r_listening": "Ascolto",
         "r_responsible": "Responsabilità",
         "r_brave": "Provare cose nuove",
-        "r_creative": "Buone idee"
+        "r_creative": "Buone idee",
+        "classPoints": "Punti di tutta la classe: {n}",
+        "classGiven": "Tutta la classe ha guadagnato un punto per {reason}",
+        "classPick": "Un punto a tutta la classe",
+        "recent": "Recenti",
+        "recentClass": "Punti recenti della classe",
+        "recentNone": "Ancora nessun punto.",
+        "gcPost": "Pubblica anche su Google Classroom",
+        "gcPostHint": "Un punto a tutta la classe va nello stream del corso. Il punto di uno studente lo vede solo quello studente. Mai nomi o classifiche.",
+        "gcAllow": "Consenti di pubblicare su Google Classroom",
+        "gcPosted": "Pubblicato su Google Classroom.",
+        "gcPending": "Pubblicazione su Google Classroom…",
+        "gcFailed": "Ora non è stato possibile pubblicare su Google Classroom. Il punto è salvato.",
+        "gcNotOnClassroom": "Non pubblicato: questo studente non è collegato a Google Classroom. Il punto è salvato.",
+        "gcTooMany": "Le pubblicazioni su Google Classroom sono in pausa per un po' (10 all'ora). Il punto è salvato.",
+        "gcReconnect": "Google Classroom va ricollegato per pubblicare. Il punto è salvato.",
+        "gcOn": "I punti andranno anche su Google Classroom.",
+        "gcOff": "I punti restano solo su Oomba.",
+        "onlyYou": "Solo tu e il tuo insegnante vedete i tuoi punti.",
+        "r_leadership": "Capacità di guida",
+        "r_focus": "Concentrazione",
+        "r_example": "Dare il buon esempio",
+        "r_participation": "Partecipazione",
+        "f_leadership": "la capacità di guida",
+        "f_teamwork": "il lavoro di squadra",
+        "f_focus": "la concentrazione",
+        "f_kind": "la gentilezza",
+        "f_example": "il buon esempio",
+        "f_effort": "l'impegno",
+        "f_participation": "la partecipazione",
+        "f_helpful": "l'aiuto",
+        "f_listening": "l'ascolto",
+        "f_responsible": "la responsabilità",
+        "f_brave": "il coraggio di provare",
+        "f_creative": "le buone idee"
       },
       "fractions": {
         "name": "Frazioni",
@@ -12536,6 +12571,12 @@
         "red": "Silenzio, per favore",
         "yellow": "Voce bassa",
         "green": "Parla a coppie"
+      }
+    },
+    "points": {
+      "gc": {
+        "class": "La nostra classe ha guadagnato un punto per {reason}! 🎉",
+        "student": "Hai guadagnato un punto per {reason}! 🌟"
       }
     }
   },
