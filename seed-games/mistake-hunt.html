@@ -2019,6 +2019,9 @@ var I18N = {
     // The current passage's answer key over the words students see: [{ a, b, wrong, right, k }].
     mhKey: function () { var R = S.run; if (!R) return []; var x = it(); return P.key(x.x, x.m).map(function (k) { return { a: k.a, b: k.b, wrong: k.wrong, right: k.right, k: k.k }; }); },
     mhSample: function () { S.setDone = true; playSample(); },
+    // Put a fix in, as the fix sheet does (the cover's recipe), and Check.
+    mhFix: function (a, b, s) { if (!S.run) return null; setEdit(a, b, s); drawText(); drawBand(); drawResult(); return testState(); },
+    mhCheck: function () { if (S.run) check(); return testState(); },
   });
   begin();
 })();
