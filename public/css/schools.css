@@ -1114,6 +1114,16 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .fs-in{width:10em;max-width:100%;font-size:1.1rem}
 .fs-in[readonly]{background:var(--card-2)}
 .fs-unit{font-weight:700}
+.fs-sign{min-width:44px;min-height:44px;font-size:1.15rem;font-weight:800}
+.fs-choices{border:0;margin:0;padding:0;display:grid;gap:6px;min-width:0}
+.fs-choices legend{padding:0;margin-bottom:4px}
+.fs-opt{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer}
+.fs-opt:has(input:checked){border-color:var(--accent,var(--ok));box-shadow:inset 0 0 0 1px var(--accent,var(--ok))}
+.fs-opt:has(input:focus-visible){outline:3px solid var(--focus,var(--accent,#2563eb));outline-offset:2px}
+.fs-opt input{width:20px;height:20px;margin:0;flex:none}
+.fs-letter{display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:6px;background:var(--card-2);font-size:.85rem}
+.fs-choices[disabled] .fs-opt{cursor:default}
+.fs-opt.fs-right{border-color:var(--ok);background:var(--ok-bg)}
 .fs-mark.ok{color:var(--ok)}
 .fs-mark.bad{color:var(--bad-ink)}
 .fs-key{border-inline-start:4px solid var(--ok);padding-inline-start:var(--s2)}

@@ -1162,6 +1162,16 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS idx_manip_boards_kind ON manip_boards(owner_id, kind);
     ALTER TABLE manip_sessions ADD COLUMN opened_at INTEGER NOT NULL DEFAULT 0;
     UPDATE manip_sessions SET opened_at=created_at;`],
+  // Figures answer types (docs/decisions.md "Figures: multiple choice and negative answers"): a worksheet question is
+  // answered with a number (any sign) or by picking one of 2 to 6 options. answer_type 'number' (every question before
+  // this) | 'choice'; choices: the options as a JSON list of strings, in the order students see them; correct: the index
+  // of the right one (NULL while the teacher has not marked one). A number question keeps options it had, so switching
+  // back to multiple choice brings them back. A lesson step's snapshot keeps the same three fields
+  // in its items JSON (no column: an older snapshot without them is a number question).
+  ['0099_figures_answer_types', `
+    ALTER TABLE question_set_items ADD COLUMN answer_type TEXT NOT NULL DEFAULT 'number';
+    ALTER TABLE question_set_items ADD COLUMN choices TEXT NOT NULL DEFAULT '[]';
+    ALTER TABLE question_set_items ADD COLUMN correct INTEGER;`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

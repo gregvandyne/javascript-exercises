@@ -142,7 +142,7 @@ router.get('/figures/:kind', (req, res, next) => {
   let start = null;
   const w = req.query.ws ? F.ownWorksheet(u, req.query.ws) : null;
   const it = w ? F.itemsOf(w.id).find(x => x.id === req.query.item && x.kind === K.id) : null;
-  if (it) start = { data: it.data, hide: it.hide, question: it.question, answerKey: it.answerKey, gen: it.gen, seed: it.seed, ws: w.id, item: it.id, wsTitle: w.title };
+  if (it) start = { data: it.data, hide: it.hide, question: it.question, answerKey: it.answerKey, gen: it.gen, seed: it.seed, ws: w.id, item: it.id, wsTitle: w.title, answerType: it.answerType, choices: it.choices, correct: it.correct };
   else if (req.query.d) { const d = decodeData(req.query.d); const c = d ? F.cleanData(d) : null; if (c && c.data) start = { data: c.data }; }
   const presets = K.presets.map((d, i) => ({ name: t('figures.editor.example', { n: i + 1 }), data: d }));
   page(req, res, {

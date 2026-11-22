@@ -171,7 +171,7 @@ test('the student page and JSON: figures drawn here, a blank with the unit, neve
   const js = await as(kid)(`/api/progress/${cl.id}/${step.id}/figures`);
   assert.equal(js.status, 200);
   assert.equal(js.json.revealed, false); assert.equal(js.json.items.length, 3);
-  assert.deepEqual(Object.keys(js.json.items[0]).sort(), ['n', 'question', 'svg', 'typed', 'unit']);
+  assert.deepEqual(Object.keys(js.json.items[0]).sort(), ['n', 'question', 'svg', 'type', 'typed', 'unit']);
   noSecrets(js.text, items, 'student JSON');
   // Not in the class, or a teacher: no student JSON. The teacher's own preview has the answer key.
   assert.equal((await as(other)(`/api/progress/${cl.id}/${step.id}/figures`)).status, 404);
