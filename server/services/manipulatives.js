@@ -26,6 +26,7 @@ import * as S from './schools.js';
 import { toolAccess } from './teacher-tools.js';
 import { anthropic } from '../builder/anthropic.js';
 import * as aiBudget from './ai-budget.js';
+import { callAi, logAiFail, fallbackReason } from './ai-call.js';
 import { hasProfanity, personalInfo } from './textfilter.js';
 import { STRIP, layoutOf, TOOLS, toolOf, pieceDefs, roomLayout, ROOM_COLORS, instructionNotes, stripHeight, stepsOf, stepStripTexts, TEACHER_STEP_H } from '../../public/js/manip-data.js';
 import * as LIVE from './manip-live.js';
@@ -871,7 +872,8 @@ function prompt(tl, { grade, brief, task }) {
     `<lesson>\n${brief}${task ? `\nBased on this library task: ${task}` : ''}\n</lesson>`,
   ].join('\n');
 }
-/** Without the AI (no key, or the AI budget is resting): the tool's usual board, the brief as its one step. */
+/** Without the AI (no key, the AI budget is resting, or the AI failed or didn't answer in time): the tool's usual
+ *  board, the brief as its one step. */
 const templateDraft = (tl, { brief, task }) => ({ title: (task ? task.split(':')[0] : '') || `${tl.name} lesson`, steps: [clipStr(brief, 140)], items: [] });
 /**
  * The checks before anything is stored or sent (services/manip-drafts.js runs them when a draft is asked for, and
@@ -891,23 +893,32 @@ export function draftRequest(u, { tool, brief, grade = '', task = '' } = {}) {
   const tk = (TASKS[tl.slug] || []).find(x => `${x.title}: ${x.prompt}` === String(task)) || null;
   return ok({ tool: tl.slug, brief: b, grade: g, task: tk ? `${tk.title}: ${tk.prompt}` : '' });
 }
-/** The AI call for a checked request (draftRequest's), or the tool's usual board without it (no key, or the AI budget
- *  is resting). -> { ok, draft, ai } | { ok:false, code: 'aiFailed' } */
-export async function runDraft(u, r) {
+/** The AI call for a checked request (draftRequest's), or the tool's usual board without it. It never fails because of
+ *  the AI: with no key or the AI budget resting (reason 'resting'), or when the call fails, times out or sends back
+ *  something that is not a draft (reason 'timeout' | 'busy' | 'error', one warn line: services/ai-call.js), the draft
+ *  is the template (ai: false) and the page says why. at: { draft } (the job's id, for the warn line).
+ *  -> { ok, draft, ai, reason? } */
+export async function runDraft(u, r, at = {}) {
   const tl = toolOf(r.tool);
+  const template = reason => ok({ draft: sanitizeDraft(templateDraft(tl, { brief: r.brief, task: r.task }), tl.slug), ai: false, reason });
   const client = hooks.create ? { messages: { create: hooks.create } } : anthropic('free');
-  if (!client) return ok({ draft: sanitizeDraft(templateDraft(tl, { brief: r.brief, task: r.task }), tl.slug), ai: false });
+  if (!client) return template('resting');
   let raw;
+  const t0 = Date.now();
   try {
-    const res = await client.messages.create({
-      model: config.builderModel, max_tokens: 4000,
+    // A full board (PRACTICE_MAX items with their settings, STEPS_MAX steps, a title) is well under 2000 tokens of JSON.
+    const res = await callAi(client, {
+      model: config.builderModel, max_tokens: 3000,
       output_config: { effort: 'low', format: { type: 'json_schema', schema: DRAFT_SCHEMA } },
       messages: [{ role: 'user', content: prompt(tl, { grade: r.grade, brief: r.brief, task: r.task }) }],
-    }, { timeout: 60000, maxRetries: 1 });
+    });
     if (res && res.usage) aiBudget.recordUsage(res.model || config.builderModel, res.usage);
     const block = ((res && res.content) || []).find(c => c.type === 'text');
     raw = JSON.parse(block ? block.text : '');
-  } catch { return fail('aiFailed'); }
+    if (!raw || typeof raw !== 'object') throw new SyntaxError('not a draft');
+  } catch (e) {
+    return template(fallbackReason(logAiFail('manipulatives draft ai failed', { draft: at.draft || null, tool: tl.slug }, e, t0)));
+  }
   audit(u.id, 'manip.draft', tl.slug, {});
   return ok({ draft: sanitizeDraft(raw, tl.slug), ai: true });
 }

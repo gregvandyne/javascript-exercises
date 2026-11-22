@@ -382,9 +382,9 @@ test('Power with AI (mocked): catalog kinds only, every item checked with OF.che
     const a = q.get("SELECT details FROM audit_log WHERE action='figures.draft' AND target=? ORDER BY rowid DESC", id);
     assert.deepEqual(JSON.parse(a.details), { ai: true, added: 4, repaired: 3, dropped: 1 });
     // a failing call falls back to the starter set
-    F.hooks.create = async () => { throw new Error('overloaded'); };
+    F.hooks.create = async () => { const e = new Error('529 overloaded_error'); e.status = 529; throw e; };
     const f = await B(`/api/figures/worksheets/${id}/draft`, { body: { brief: 'box plots and histograms', count: 2 } });
-    assert.equal(f.json.ai, false); assert.equal(f.json.added, 2);
+    assert.equal(f.json.ai, false); assert.equal(f.json.added, 2); assert.equal(f.json.reason, 'busy');
   } finally { F.hooks.create = null; F.hooks.log = null; }
 });
 

@@ -75,6 +75,8 @@ async function call(path, body = {}) {
 const kindOptions = (s, sel = '') => P.kinds.filter(k => k.subject === s).map(k => `<option value="${esc(k.id)}"${k.id === sel ? ' selected' : ''}>${esc(k.name)}</option>`).join('');
 const editHref = it => `/figures/${encodeURIComponent(it.kind)}?ws=${encodeURIComponent(W.id)}&item=${encodeURIComponent(it.id)}`;
 /** The words for this set: a worksheet, a test or a lesson's figure questions. */
+/** What a draft added: by the AI, or a starter set because the AI is resting or didn't answer (services/figures.js reason). */
+const draftedText = r => t(r.ai ? 'js.figures-sheet.drafted' : r.reason && r.reason !== 'resting' ? 'js.figures-sheet.fallback' : 'js.figures-sheet.resting', { count: r.added });
 const NOUN = LESSON ? 'Lesson' : TEST ? 'Test' : '';
 const allKindOptions = sel => Object.entries(P.subjects).map(([s, name]) => `<optgroup label="${esc(name)}">${kindOptions(s, sel)}</optgroup>`).join('');
 /** "Power with AI" for a test: topic, subject, how many (the grade is the page's). */
@@ -237,7 +239,7 @@ const ACTS = {
     note = `<p class="notice fg-small">${esc(t('js.figures-sheet.drafting'))}</p>`; draw(true);
     const r = await call('/draft-test', { topic, grade: document.getElementById('fg-grade').value, subject: document.getElementById('fg-subject').value, count: +document.getElementById('fg-count').value });
     if (!r) { note = ''; draw(); return; }
-    const bits = [r.ai ? t('js.figures-sheet.drafted', { count: r.added }) : t('js.figures-sheet.resting', { count: r.added })];
+    const bits = [draftedText(r)];
     if (r.repaired) bits.push(t('js.figures-sheet.repaired', { count: r.repaired }));
     if (r.dropped) bits.push(t('js.figures-sheet.dropped', { count: r.dropped }));
     bits.push(t('js.figures-sheet.checkFirst'));
@@ -249,7 +251,7 @@ const ACTS = {
     note = `<p class="notice fg-small">${esc(t('js.figures-sheet.drafting'))}</p>`; draw(true);
     const r = await call('/draft', { brief, grade: document.getElementById('fg-grade').value, count: +document.getElementById('fg-count').value });
     if (!r) { note = ''; draw(); return; }
-    const bits = [r.ai ? t('js.figures-sheet.drafted', { count: r.added }) : t('js.figures-sheet.resting', { count: r.added })];
+    const bits = [draftedText(r)];
     if (r.repaired) bits.push(t('js.figures-sheet.repaired', { count: r.repaired }));
     if (r.dropped) bits.push(t('js.figures-sheet.dropped', { count: r.dropped }));
     note = `<p class="notice ${r.ai ? 'good' : ''} fg-small">${esc(bits.join(' '))}</p>`; draw();

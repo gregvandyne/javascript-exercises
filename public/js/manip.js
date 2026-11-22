@@ -17,7 +17,7 @@ import { stepsOf } from '/js/manip-data.js';
 import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSector, addMinutes, migrate, newBoard, boxesOf, bbox, spotIn, placeObject,
   slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, S_MIN, S_FLOOR, S_MAX, OBJ_MAX, OBJ_HEAD, UNDER, parseFrac, EQ_BAR,
   snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, TEXT_SIZES, textFont, stepTextSize, textResize, textRect, snapBox, textBoxFields, xyRange, xyLines, xySnap, xyMoveLine } from '/js/manip-board.js';
-import { settleCharts, chartInfo, strayIds, inChart, homeFor, placeAtHome, columnHome } from '/js/manip-pv.js';
+import { settleCharts, chartInfo, strayIds, inChart, homeFor, placeAtHome, columnHome, sameValueHome } from '/js/manip-pv.js';
 import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP } from '/js/manip-wheel.js';
 
 const ROOT = document.getElementById('manip');
@@ -864,6 +864,9 @@ function fit() {
 /** A new piece from the palette: right after the last one added (manip-board.js nextPieceSpot), in the part of the
  *  board on screen; never on another piece or object. */
 function placePiece(st, d) {
+  // The block before it went into a chart's column and this one is worth the same: into that column too.
+  const home = sameValueHome(V.tool.slug, st, V.lastAdd, d);
+  if (home) { const p = mkPiece(d, 0, 0); placeAtHome(home, [p], WORLD); V.lastAdd = { id: p.id, runX: p.x }; return p; }
   const at = nextPieceSpot(V.tool.slug, st, d, viewRegion(), V.lastAdd), p = mkPiece(d, at.x, at.y);
   V.lastAdd = { id: p.id, runX: at.runX };
   return p;
@@ -1180,7 +1183,7 @@ function toolButton(k) {
   }
   if (k === 'draft') {
     if (draftLive()) { V.draftHidden = !V.draftHidden; renderChrome(); return; }
-    if (DJ.notice) { DJ.notice = null; V.draftOpen = true; } else V.draftOpen = !V.draftOpen;
+    if (DJ.notice) { DJ.notice = null; V.draftOpen = true; } else if (DJ.fallback) { DJ.retry = DJ.fallback; DJ.fallback = null; V.draftOpen = true; } else V.draftOpen = !V.draftOpen;
     renderChrome(); if (V.draftOpen) document.getElementById('mp-brief')?.focus(); return;
   }
   if (k === 'reset') { change(st => { const settings = {}; for (const key of ['decimal', 'mode', 'unit']) if (key in st) settings[key] = st[key]; const fresh = normalize(V.tool.slug, V.impl, newBoard(V.tool.slug, WORLD, settings)); for (const key of Object.keys(st)) delete st[key]; Object.assign(st, fresh); V.sel = null; V.osel = null; }); fit(); }
@@ -1487,6 +1490,7 @@ function bindPlane() {
             V.snapped = new Set(x.members.map(q => q.m.id));
           }
         }
+        V.lastAdd = { id: x.p.id, runX: x.p.x };   // the last block placed (a palette add of the same value follows it into its column)
         settleBoard(slug, V.st, V, WORLD);
         pushHistory(x.before);
       }
@@ -1636,7 +1640,7 @@ function renderSteps() {
 // tool, it goes onto the board (Undo brings back what was there); otherwise one notice says it finished while the
 // teacher was away (the board is in My boards either way). A failed draft opens the drafter again with the words kept.
 const DRAFT_STEPS = ['check', 'ai', 'build', 'save'];
-const DJ = { job: null, eta: null, sawId: null, timer: null, ticks: 0, skew: 0, notice: null, retry: null, polling: false };
+const DJ = { job: null, eta: null, sawId: null, timer: null, ticks: 0, skew: 0, notice: null, retry: null, polling: false, fallback: null };
 const draftLive = () => !!DJ.job && (DJ.job.status === 'queued' || DJ.job.status === 'running');
 const mmss = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
 const draftElapsed = () => (DJ.job ? Date.now() + DJ.skew - (DJ.job.startedAt || DJ.job.createdAt) : 0);
@@ -1678,7 +1682,9 @@ function draftTick() {
  *  from real timed drafts, "About" from first guesses; past the usual time, "Taking a bit longer than usual". */
 function etaNow() {
   const e = DJ.eta || { src: 'default', p50: 25e3, p75: 40e3 }, el = draftElapsed(), guess = e.src !== 'data';
-  if (el > e.p75 + Math.max(15e3, 0.15 * e.p75)) return { state: 'longer', text: t('js.manip.draft.eta.longer') };
+  // Past the usual time: the server's longest (its AI budget and a margin, manip-drafts.js longest) says when the
+  // teacher has a board either way. The page never stops asking while the draft runs.
+  if (el > e.p75 + Math.max(15e3, 0.15 * e.p75)) return { state: 'longer', text: e.max ? t('js.manip.draft.eta.longerMax', { n: Math.max(1, Math.ceil((e.max - el) / 60e3)) }) : t('js.manip.draft.eta.longer') };
   if (e.p75 <= 50e3) return { state: 'on', text: t(guess ? 'js.manip.draft.eta.guessUnder' : 'js.manip.draft.eta.under') };
   return { state: 'on', text: t(guess ? 'js.manip.draft.eta.guess' : 'js.manip.draft.eta.about', { n: Math.ceil(e.p75 / 60e3) }) };
 }
@@ -1701,13 +1707,19 @@ function progressHtml() {
     <ol class="mp-dsteps" id="mp-dsteps">${stepRows()}</ol>
     <p class="small mp-dleave">${iconHtml('🌙', { size: 18 })} ${esc(t('js.manip.draft.leave'))}</p></section>`;
 }
-const doneMessage = r => `${t('js.manip.draft.doneSet', { title: r.title, n: r.n, steps: r.steps })}${r.capped ? ` ${t('js.manip.draft.capped', { max: 12 })}` : ''}${r.ai ? '' : ` ${t('js.manip.draft.noAi')}`}`;
-const errorText = code => t(`js.manip.draft.err.${['aiFailed', 'restart', 'names', 'words', 'personal'].includes(code) ? code : 'other'}`);
+/** Why a draft is the tool's starting board instead of the AI's (manip-drafts.js summary reason): the AI is resting,
+ *  didn't answer in time, was busy, or sent back something that wasn't a board. */
+const FALLBACKS = ['resting', 'timeout', 'busy', 'error'];
+const fallbackText = r => t(`js.manip.draft.fallback.${FALLBACKS.includes(r.reason) ? r.reason : 'resting'}`);
+const doneMessage = r => (r.ai ? `${t('js.manip.draft.doneSet', { title: r.title, n: r.n, steps: r.steps })}${r.capped ? ` ${t('js.manip.draft.capped', { max: 12 })}` : ''}` : fallbackText(r));
+/** Every reason a draft can end as failed (manip-drafts.js: draftRequest's checks, runDraft, cleanState, a restart). */
+const ERRORS = ['notFound', 'badTool', 'brief', 'words', 'personal', 'names', 'aiFailed', 'restart', 'badState', 'tooBig'];
+const errorText = code => t(`js.manip.draft.err.${ERRORS.includes(code) ? code : 'other'}`);
 /** The one notice: a draft that finished (or failed) while the teacher was away. */
 function noticeHtml(j) {
   const tl = toolOf(j.tool), r = j.result || {};
   if (j.status === 'done') {
-    return `<div class="notice good mp-dnote" role="status">${iconHtml('✨', { size: 22 })}<p><b>${esc(t('js.manip.draft.away', { title: r.title || '' }))}</b> ${esc(r.n ? t('js.manip.draft.awayN', { n: r.n, steps: r.steps }) : '')} ${esc(t('js.manip.draft.inBoards'))}</p>
+    return `<div class="notice good mp-dnote" role="status">${iconHtml('✨', { size: 22 })}<p><b>${esc(t('js.manip.draft.away', { title: r.title || '' }))}</b> ${esc(r.n ? t('js.manip.draft.awayN', { n: r.n, steps: r.steps }) : '')} ${esc(r.ai === false ? fallbackText(r) : '')} ${esc(t('js.manip.draft.inBoards'))}</p>
       ${btn('btn btn-primary btn-sm', 'data-dnote="use"', esc(t('js.manip.draft.use')))}${btn('mp-dx', `data-dnote="x" aria-label="${esc(t('js.manip.draft.dismiss'))}"`, '✕')}</div>`;
   }
   return `<div class="notice bad mp-dnote" role="status">${iconHtml('⚠️', { size: 22 })}<p><b>${esc(t('js.manip.draft.failedAway', { tool: tl ? tl.name : '' }))}</b> ${esc(errorText(j.error))}</p>
@@ -1733,6 +1745,10 @@ function drawNotice() {
 async function applyDone(j) {
   try {
     const r = await api(`/api/manipulatives/boards/${encodeURIComponent(j.boardId)}`);
+    // The AI didn't make this one (it timed out, was busy or failed): the starting board opens, and a calm note
+    // stays above it with the words kept for another try.
+    const res = j.result || {};
+    DJ.fallback = res.ai === false && res.reason && res.reason !== 'resting' ? { ...j, error: null } : null;
     if (!V || V.tool.slug !== j.tool) { pendingOpen = r.board; location.hash = `board/${r.board.id}`; return; }
     await autosave();   // what was on the board stays in its own recent board
     restoreInto(r.board.state);
@@ -1748,6 +1764,17 @@ function renderDraft() {
   if (!HOST) { el.innerHTML = ''; return; }
   if (draftLive() && !V.draftHidden) { el.innerHTML = progressHtml(); return; }
   if (DJ.notice && !draftLive()) { el.innerHTML = noticeHtml(DJ.notice); bindNotice(el); return; }
+  if (DJ.fallback && DJ.fallback.tool !== V.tool.slug) DJ.fallback = null;
+  if (!V.draftOpen && DJ.fallback) {
+    el.innerHTML = `<div class="notice mp-dnote mp-dfall" role="status">${iconHtml('✨', { size: 22 })}<p>${esc(fallbackText(DJ.fallback.result || {}))}</p>
+      ${btn('btn btn-primary btn-sm', 'data-dfall="retry"', esc(t('js.manip.draft.retry')))}${btn('mp-dx', `data-dfall="x" aria-label="${esc(t('js.manip.draft.dismiss'))}"`, '✕')}</div>`;
+    for (const b of el.querySelectorAll('[data-dfall]')) b.onclick = () => {
+      const j = DJ.fallback; DJ.fallback = null;
+      if (b.dataset.dfall === 'retry') { DJ.retry = j; V.draftOpen = true; }
+      renderChrome(); if (V.draftOpen) document.getElementById('mp-brief')?.focus();
+    };
+    return;
+  }
   if (!V.draftOpen) { el.innerHTML = ''; return; }
   if (el.querySelector('#mp-brief') && el.contains(document.activeElement)) return;   // typing in it: keep it as it is
   const tasks = TASKS[V.tool.slug] || [], re = DJ.retry && DJ.retry.tool === V.tool.slug ? DJ.retry : null;
@@ -1758,7 +1785,7 @@ function renderDraft() {
     <label class="mp-set mp-block"><span>${esc(t('js.manip.draft.brief'))}</span><textarea class="input" id="mp-brief" rows="3" maxlength="1000" placeholder="${esc(t('js.manip.draft.briefPh'))}">${esc(re ? re.brief : '')}</textarea></label>
     <p class="small muted">${esc(t('js.manip.draft.private'))}</p>
     <div class="row">${btn('btn btn-primary', 'id="mp-dgo"', `${iconHtml('✨', { size: 18 })} ${esc(t(re ? 'js.manip.draft.retry' : 'js.manip.draft.go'))}`)}<span class="small muted">${esc(t('js.manip.draft.hint'))}</span></div>
-    <p class="small${re ? ' bad' : ''}" id="mp-dmsg" role="status">${re ? esc(`${t('js.manip.draft.failed')} ${errorText(re.error)}`) : ''}</p></section>`;
+    <p class="small${re && re.error ? ' bad' : ''}" id="mp-dmsg" role="status">${re && re.error ? esc(`${t('js.manip.draft.failed')} ${errorText(re.error)}`) : ''}</p></section>`;
   const task = document.getElementById('mp-dtask'), brief = document.getElementById('mp-brief');
   if (re) { task.value = re.task || ''; document.getElementById('mp-dgrade').value = re.grade || ''; }
   task.onchange = () => { if (task.value) { brief.value = task.value; document.getElementById('mp-dgrade').value = task.selectedOptions[0].dataset.grade || ''; } };
@@ -1768,7 +1795,7 @@ function renderDraft() {
     b.disabled = true; msg.classList.remove('bad'); msg.textContent = t('js.manip.draft.working');
     try {
       const r = await api('/api/manipulatives/draft', { method: 'POST', body: { tool: V.tool.slug, brief: brief.value, grade: document.getElementById('mp-dgrade').value, task: task.value } });
-      DJ.retry = null; DJ.notice = null; V.draftHidden = false;
+      DJ.retry = null; DJ.notice = null; DJ.fallback = null; V.draftHidden = false;
       setJob(r.job, r.eta);
     } catch (e) { msg.textContent = e.message; b.disabled = false; }
   };

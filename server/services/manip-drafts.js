@@ -13,6 +13,7 @@ import { q, uid, now } from '../db.js';
 import { getUser } from '../auth.js';
 import { log } from './log.js';
 import * as M from './manipulatives.js';
+import { AI_CALL } from './ai-call.js';
 
 /** The progress card's rows, in order (the page words them). */
 export const STEPS = ['check', 'ai', 'build', 'save'];
@@ -50,13 +51,16 @@ export function view(r) {
   };
 }
 
-/** How long drafts take here: the newest timed ones (p50, p75 in ms), or first guesses (src 'default'). */
+/** The longest a draft takes (ms): the AI's one time budget (services/ai-call.js) and a margin for the other steps. After
+ *  it the draft has ended either way (a starting board when the AI didn't answer), so the page never gives up first. */
+export const longest = () => AI_CALL.timeoutMs + 30e3;
+/** How long drafts take here: the newest timed ones (p50, p75 in ms), or first guesses (src 'default'); max: longest(). */
 export function eta(t = now()) {
   const rows = q.all(`SELECT ended_at - started_at ms FROM manip_drafts WHERE status='done' AND started_at IS NOT NULL AND ended_at>? AND attempt=1
     ORDER BY ended_at DESC LIMIT ${DRAFTS.ETA_SAMPLE}`, t - DRAFTS.ETA_WINDOW_DAYS * DAY).map(r => r.ms).filter(x => x >= 0).sort((a, b) => a - b);
-  if (rows.length < DRAFTS.ETA_MIN) return { src: 'default', ...DRAFTS.ETA_DEFAULT };
+  if (rows.length < DRAFTS.ETA_MIN) return { src: 'default', ...DRAFTS.ETA_DEFAULT, max: longest() };
   const at = p => rows[Math.min(rows.length - 1, Math.max(0, Math.ceil(p * rows.length) - 1))];
-  return { src: 'data', p50: at(0.5), p75: at(0.75) };
+  return { src: 'data', p50: at(0.5), p75: at(0.75), max: longest() };
 }
 
 /** The draft the page shows: the unfinished one, else the newest finished one the teacher hasn't seen end. */
@@ -122,9 +126,10 @@ export function run(id) {
     // 1. check: the words again (a student may have joined the class since), and that they may still draft.
     const req = owner ? M.draftRequest(owner, { ...parse(r0.request, {}), tool: r0.tool }) : { ok: false, code: 'notFound' };
     if (!req.ok) { finish(id, attempt, { status: 'failed', error: req.code }); return; }
-    // 2. ai: the model chooses what goes on the board (or the tool's usual board without the AI).
+    // 2. ai: the model chooses what goes on the board (or the tool's usual board without the AI: no key, the budget
+    //    resting, or the AI failed or didn't answer within its budget; the summary's reason says which).
     if (!setStep(id, attempt, 1, t0)) return;
-    const res = await M.runDraft(owner, req);
+    const res = await M.runDraft(owner, req, { draft: id });
     if (!res.ok) { finish(id, attempt, { status: 'failed', error: res.code }); return; }
     // 3. build: the app checked every problem and laid the board out (sanitizeDraft); 4. save: a recent board.
     if (!setStep(id, attempt, 2, t0)) return;
@@ -135,7 +140,7 @@ export function run(id) {
     if (!setStep(id, attempt, 3, t0)) return;
     const cur = get(id); if (!cur || cur.status !== 'running' || cur.attempt !== attempt) return;
     const b = M.addRecent(owner, req.tool, d.title, c.state, { opened: 0 });
-    const summary = { title: d.title, n: d.n, steps: (d.steps || []).length, capped: !!d.capped, ai: !!res.ai };
+    const summary = { title: d.title, n: d.n, steps: (d.steps || []).length, capped: !!d.capped, ai: !!res.ai, ...(res.ai ? {} : { reason: res.reason || 'resting' }) };
     if (!finish(id, attempt, { status: 'done', board_id: b.id, result: JSON.stringify(summary) })) q.run('DELETE FROM manip_boards WHERE id=?', b.id);
   })().catch(e => {
     log('error', 'manipulatives draft failed', { draft: id, error: e.message });

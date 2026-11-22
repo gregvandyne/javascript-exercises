@@ -25,6 +25,7 @@ import { hasProfanity, personalInfo } from './textfilter.js';
 import { figuresKit, FIG_LATEST, FIG_VERSIONS } from './figlibs.js';
 import { canvasKit } from './canvaskit.js';
 import { log } from './log.js';
+import { callAi, logAiFail, fallbackReason } from './ai-call.js';
 import { tEn } from '../i18n/index.js';
 import { KINDS, SUBJECTS, GRADE_BANDS, kindOf, genOf, flatSolve, solveOf, numText, PAST_GENS } from '../../public/js/figures-catalog.js';
 import { localGen, genLang, labelLangs, isGenChoices, GEN_LANGS } from '../../public/js/figures-gen-words/index.js';
@@ -695,20 +696,21 @@ export async function draftWorksheet(u, id, { brief, grade = '', count = 6 } = {
   if (LIMITS.items - have <= 0) return fail('fullSheet');
   const g = cleanGrade(grade) || w.grade;
   const client = hooks.create ? { messages: { create: hooks.create } } : anthropic();
-  let items = null, ai = false, repaired = 0, dropped = 0, title = '';
+  let items = null, ai = false, repaired = 0, dropped = 0, title = '', reason = client ? 'error' : 'resting';
   if (client) {
+    const t0 = Date.now();
     try {
-      const res = await client.messages.create({
+      const res = await callAi(client, {
         model: config.builderModel, max_tokens: 6000,
         output_config: { effort: 'low', format: { type: 'json_schema', schema: DRAFT_SCHEMA() } },
         messages: [{ role: 'user', content: draftPrompt({ brief: b, grade: g, count: n, lang: w.lang }) }],
-      }, { timeout: 60000, maxRetries: 1 });
+      });
       if (res && res.usage) aiBudget.recordUsage(res.model || config.builderModel, res.usage);
       const block = ((res && res.content) || []).find(c => c.type === 'text');
       const d = JSON.parse(block ? block.text : '');
       const r = repairDraft(d && d.items, { max: n, lang: w.lang });
       if (r.items.length) { ({ items, repaired, dropped } = r); ai = true; title = d && typeof d.title === 'string' ? d.title : ''; }
-    } catch (e) { log('warn', 'figures.draft.failed', { error: String(e && e.message || e).slice(0, 200) }); }
+    } catch (e) { reason = fallbackReason(logAiFail('figures worksheet draft ai failed', { sheet: w.id }, e, t0)); }
   }
   if (!items) items = templateItems({ brief: b, grade: g, count: n, lang: w.lang });
   items.forEach((it, i) => storeItem(w.id, have + i, it));
@@ -716,7 +718,7 @@ export async function draftWorksheet(u, id, { brief, grade = '', count = 6 } = {
   if (g && !w.grade) q.run('UPDATE question_sets SET grade=? WHERE id=?', g, w.id);
   resubject(w.id); touch(w.id);
   audit(u.id, 'figures.draft', w.id, { ai, added: items.length, repaired, dropped });
-  return ok({ ai, added: items.length, repaired, dropped });
+  return ok({ ai, added: items.length, repaired, dropped, ...(ai ? {} : { reason }) });
 }
 
 // ---------------------------------------------------------------- "Build a test" (purpose 'test')
@@ -812,20 +814,21 @@ export async function draftTest(u, id, { topic, grade = '', subject = '', count 
   const n = Math.max(1, Math.min(LIMITS.draftMax, LIMITS.items - have, Number.isInteger(+count) ? +count : 8));
   const g = cleanGrade(grade) || w.grade;
   const client = aiClient();
-  let items = null, ai = false, repaired = 0, dropped = 0, title = '';
+  let items = null, ai = false, repaired = 0, dropped = 0, title = '', reason = client ? 'error' : 'resting';
   if (client) {
+    const t0 = Date.now();
     try {
-      const res = await client.messages.create({
+      const res = await callAi(client, {
         model: config.builderModel, max_tokens: 6000,
         output_config: { effort: 'low', format: { type: 'json_schema', schema: TEST_SCHEMA() } },
         messages: [{ role: 'user', content: testPrompt({ topic: b, grade: g, subject: subj, count: n, lang: w.lang }) }],
-      }, { timeout: 60000, maxRetries: 1 });
+      });
       if (res && res.usage) aiBudget.recordUsage(res.model || config.builderModel, res.usage);
       const block = ((res && res.content) || []).find(c => c.type === 'text');
       const d = JSON.parse(block ? block.text : '');
       const r = repairTestDraft(d && d.items, { max: n, subject: subj, grade: g, lang: w.lang });
       if (r.items.length) { ({ items, repaired, dropped } = r); ai = true; title = d && typeof d.title === 'string' ? d.title : ''; }
-    } catch (e) { log('warn', 'figures.test.failed', { error: String(e && e.message || e).slice(0, 200) }); }
+    } catch (e) { reason = fallbackReason(logAiFail('figures test draft ai failed', { sheet: w.id, subject: subj }, e, t0)); }
   }
   if (!items) { items = templateTest({ topic: b, subject: subj, grade: g, count: n, lang: w.lang }); if (!title) title = b; }
   items.forEach((it, i) => storeItem(w.id, have + i, it));
@@ -833,7 +836,7 @@ export async function draftTest(u, id, { topic, grade = '', subject = '', count 
   if (g && !w.grade) q.run('UPDATE question_sets SET grade=? WHERE id=?', g, w.id);
   resubject(w.id); touch(w.id);
   audit(u.id, 'figures.test.draft', w.id, { ai, added: items.length, repaired, dropped });
-  return ok({ ai, added: items.length, repaired, dropped });
+  return ok({ ai, added: items.length, repaired, dropped, ...(ai ? {} : { reason }) });
 }
 
 // ---------------------------------------------------------------- a lesson step's snapshot, back into a set

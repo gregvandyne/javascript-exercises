@@ -11,7 +11,7 @@
 //      - a block two or more places away (a cube in Tens, a unit in Hundreds) goes to its own column of that chart,
 //        if the chart has one; if not, it stays where it was dropped.
 //   Locked blocks are left as they are (never traded, moved or resized).
-import { slotsOf } from './manip-board.js';
+import { slotsOf, PV_COL } from './manip-board.js';
 import { allPieceDefs, pieceDefs } from './manip-data.js';
 
 const num = (v, d = 0) => (Number.isFinite(+v) ? +v : d);
@@ -58,7 +58,16 @@ const mid = p => ({ x: num(p.x) + num(p.w, 40) / 2, y: num(p.y) + num(p.h, 40) /
 export function columnOf(cols, p) {
   const c = mid(p); let hit = null;
   for (const col of cols) { const s = col.slot; if (c.x >= s.x && c.x <= s.x + s.w && c.y >= s.y && c.y <= s.y + s.h) hit = col; }
-  return hit;
+  if (hit) return hit;
+  // A middle in the thin gap between two columns of a chart (a block straddling their border): the nearer column, so
+  // the layout pulls it inside instead of leaving it across the line.
+  let best = null, bd = Infinity;
+  for (const col of cols) {
+    const s = col.slot, g = (PV_COL.gap / 2) * (Number.isFinite(+col.o.s) ? +col.o.s : 1) + 0.01;
+    if (c.y < s.y || c.y > s.y + s.h || c.x < s.x - g || c.x > s.x + s.w + g) continue;
+    const d = c.x < s.x ? s.x - c.x : c.x - s.x - s.w; if (d < bd) { bd = d; best = col; }
+  }
+  return best;
 }
 /** The unlocked pieces in a chart's columns (they move with the chart). */
 export function inChart(slug, o, pieces) {
@@ -265,6 +274,18 @@ export function homeFor(slug, st, p, value) {
 }
 /** The column a piece is in, as a home for placeAtHome (a copy of it goes there too), or null. */
 export function columnHome(slug, st, p) { const c = columnOf(columnsOf(slug, st), p); return c ? { col: c } : null; }
+/**
+ * Where a block added from the palette goes when the block placed just before it (last: { id }, the last one added or
+ * dropped on this board or square) sits in a chart's column and is worth the same: { col } of that column (the layout
+ * then fits them all). Any other case (another value, no such piece, not in a column any more, its chart gone): null,
+ * and the usual placement applies.
+ */
+export function sameValueHome(slug, st, last, d) {
+  const L = last && last.id != null ? ((st && st.pieces) || []).find(p => p.id === last.id) : null;
+  if (!L || !d) return null;
+  const v = valueOf(slug, L); if (Math.abs(v - d.value) > Math.abs(v) * 1e-9) return null;
+  return columnHome(slug, st, L);
+}
 /** Put new pieces at a home from homeFor: in the column (at its end) or in rows of five under the chart. */
 export function placeAtHome(home, news, space = null) {
   if (home.col) { const s = home.col.slot; news.forEach((q, i) => { centerAt(q, s.x + s.w / 2, s.y + s.h - 2); q.y = r1(q.y + i * 0.01); }); return; }

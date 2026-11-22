@@ -1,6 +1,7 @@
 // "✨ Draft with AI": Claude drafts a lesson (title, summary, objectives, steps) from a topic and grade, choosing games
 // from the ones this teacher can use. The teacher edits the draft before using it. Counts towards the AI spending cap.
-// Without an API key (or when the AI budget is resting) a simple template draft is made instead.
+// Without an API key (or when the AI budget is resting), or when the AI fails or doesn't answer in time (one warn line,
+// services/ai-call.js), a simple template draft is made instead.
 //
 // Figure questions (docs/decisions.md "Figures: the lesson Figure step and Build a test"): for a teacher Figures lets in
 // (services/figures.js canMake: every school staff member) the caller also passes the figure catalog (services/figures.js figureCatalog: kinds with a generator, each with its id, a
@@ -15,6 +16,7 @@ import * as aiBudget from './ai-budget.js';
 import { config } from '../config.js';
 import { localeInfo, tEn } from '../i18n/index.js';
 import { log } from './log.js';
+import { callAi, logAiFail, fallbackReason } from './ai-call.js';
 import * as F from './figures.js';
 
 /** Test hooks: create replaces the AI client's messages.create (no network in tests; the AI budget still applies, as
@@ -57,7 +59,7 @@ export async function draftLesson({ topic, grade = '', subject = '', minutes = 4
   if (!client) return { draft: templateDraft({ topic, grade, subject, minutes }, catalog, t, { figures, lang: figLang }), ai: false };
   const lang = LANGS[localeInfo(locale).code] || 'English (US)';
   const games = catalog.slice(0, 80).map(g => `- ${g.id}: ${g.title}${g.description ? `: ${String(g.description).slice(0, 120)}` : ''}${g.tags ? ` [${String(g.tags).slice(0, 60)}]` : ''}`).join('\n');
-  const res = await client.messages.create({
+  const params = {
     model: config.builderModel, max_tokens: 3000,
     system: `You help primary and middle school teachers plan lessons on Oomba Academy, a kid-safe website where children play and build small web games.
 Write a practical lesson plan for the teacher, in ${lang}. Keep it kind, clear and age-appropriate. No external links, no personal data, no brands.
@@ -71,11 +73,17 @@ ${withFigs ? `- "figures": the students answer 2 to 6 questions about exact, to-
 Objectives: 2 to 4 short lines, one per line.`,
     output_config: { effort: 'low', format: { type: 'json_schema', schema: withFigs ? schemaWithFigures() : SCHEMA } },
     messages: [{ role: 'user', content: `Topic: ${String(topic).slice(0, 200)}\nGrade: ${String(grade).slice(0, 20) || 'not given'}\nSubject: ${String(subject).slice(0, 40) || 'not given'}\n\nAvailable games:\n${games || '(none)'}${withFigs ? `\n\nFigure catalog:\n${figureLines(figures)}` : ''}` }],
-  }, { timeout: 60000, maxRetries: 1 });
-  aiBudget.recordUsage(res.model || config.builderModel, res.usage);
-  const block = (res.content || []).find(c => c.type === 'text');
-  let d; try { d = JSON.parse(block ? block.text : '{}'); } catch { d = null; }
-  if (!d || !Array.isArray(d.steps)) return { draft: templateDraft({ topic, grade, subject, minutes }, catalog, t, { figures, lang: figLang }), ai: false };
+  };
+  const t0 = Date.now();
+  let res;
+  try { res = await callAi(client, params); } catch (e) {   // failed or didn't answer in time: one warn line (never the topic), and the template draft
+    const reason = fallbackReason(logAiFail('lesson draft ai failed', { figures: withFigs }, e, t0));
+    return { draft: templateDraft({ topic, grade, subject, minutes }, catalog, t, { figures, lang: figLang }), ai: false, reason };
+  }
+  if (res && res.usage) aiBudget.recordUsage(res.model || config.builderModel, res.usage);
+  const block = ((res && res.content) || []).find(c => c.type === 'text');
+  let d; try { d = JSON.parse(block ? block.text : '{}'); } catch (e) { logAiFail('lesson draft ai failed', { figures: withFigs }, e, t0); d = null; }
+  if (!d || !Array.isArray(d.steps)) return { draft: templateDraft({ topic, grade, subject, minutes }, catalog, t, { figures, lang: figLang }), ai: false, reason: 'error' };
   d.steps = d.steps.slice(0, 10).map(s => ({ ...s, gameId: s.kind === 'game' && ids.has(s.gameId) ? s.gameId : '' }))
     .map(s => (s.kind === 'game' && !s.gameId ? { ...s, kind: 'text' } : s))
     .map((s, i) => figureStep(s, i, withFigs ? figures : [], figLang))

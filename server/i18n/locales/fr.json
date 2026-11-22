@@ -3392,7 +3392,8 @@
           "guessUnder": "Souvent moins d’une minute",
           "guess": "{n, plural, one {Environ une minute} other {Environ # minutes}}",
           "longer": "Un peu plus long que d’habitude",
-          "soFar": "{time} pour l’instant"
+          "soFar": "{time} pour l’instant",
+          "longerMax": "{n, plural, one {Cela prend plus de temps que d’habitude. Vous aurez un tableau d’ici une minute, quoi qu’il arrive.} other {Cela prend plus de temps que d’habitude. Vous aurez un tableau d’ici # minutes, quoi qu’il arrive.}}"
         },
         "step": {
           "check": {
@@ -3426,7 +3427,18 @@
           "names": "Ne mettez pas de noms d’élèves dans la description : les noms ne vont jamais à l’IA.",
           "words": "Certains mots de la description ne sont pas permis. Changez-les et réessayez.",
           "personal": "Retirez numéros de téléphone, e-mails, liens et codes, puis réessayez.",
-          "other": "Un problème est survenu. Réessayez dans un moment."
+          "other": "Un problème est survenu. Réessayez dans un moment.",
+          "notFound": "Ce compte ne peut pas préparer de tableaux avec l’IA pour le moment. Demandez à la personne qui vous a donné accès aux manipulables de vérifier votre accès.",
+          "badTool": "Cet outil ne peut pas être préparé avec l’IA. Ouvrez un autre outil et essayez-y.",
+          "brief": "La description était trop courte. Écrivez quelques mots sur la leçon, puis réessayez.",
+          "badState": "Le tableau préparé n’a pas pu être enregistré. Réessayez, ou demandez moins de problèmes.",
+          "tooBig": "Le tableau préparé était trop grand pour être enregistré. Demandez moins de problèmes et réessayez."
+        },
+        "fallback": {
+          "resting": "L’IA est en pause pour le moment, voici donc un tableau de départ. Vous pourrez réessayer avec l’IA plus tard.",
+          "timeout": "L’IA n’a pas répondu à temps, voici donc un tableau de départ. Vous pouvez réessayer avec l’IA.",
+          "busy": "L’IA est très occupée en ce moment, voici donc un tableau de départ. Réessayez avec l’IA dans quelques minutes.",
+          "error": "L’IA n’a pas pu préparer celui-ci, voici donc un tableau de départ. Vous pouvez réessayer avec l’IA."
         }
       },
       "save": {
@@ -3791,7 +3803,8 @@
       "removeTestQ": "Supprimer ce contrôle ?",
       "removeLesson": "Supprimer ces questions",
       "removeLessonQ": "Supprimer ces questions avec figures ?",
-      "removeLessonText": "L'étape Figure de la leçon garde les questions de son dernier enregistrement. C'est définitif."
+      "removeLessonText": "L'étape Figure de la leçon garde les questions de son dernier enregistrement. C'est définitif.",
+      "fallback": "L’IA n’a pas répondu cette fois, voici une série de départ ({count, plural, one {# question} other {# questions}}). Vous pouvez réessayer."
     }
   },
   "favorites": {

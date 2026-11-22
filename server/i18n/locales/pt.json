@@ -3393,7 +3393,8 @@
           "guessUnder": "Muitas vezes menos de um minuto",
           "guess": "{n, plural, one {Cerca de um minuto} other {Cerca de # minutos}}",
           "longer": "Está demorando um pouco mais que o normal",
-          "soFar": "{time} até agora"
+          "soFar": "{time} até agora",
+          "longerMax": "{n, plural, one {Está demorando mais que o normal. Em até um minuto você terá um quadro de qualquer forma.} other {Está demorando mais que o normal. Em até # minutos você terá um quadro de qualquer forma.}}"
         },
         "step": {
           "check": {
@@ -3427,7 +3428,18 @@
           "names": "Tire os nomes de estudantes da descrição: nomes nunca vão para a IA.",
           "words": "Algumas palavras da descrição não são permitidas. Troque e tente de novo.",
           "personal": "Tire números de telefone, e-mails, links e códigos e tente de novo.",
-          "other": "Algo deu errado. Tente de novo em instantes."
+          "other": "Algo deu errado. Tente de novo em instantes.",
+          "notFound": "Esta conta não pode preparar quadros com IA agora. Peça a quem liberou os manipuláveis para você que verifique seu acesso.",
+          "badTool": "Esta ferramenta não pode ser preparada com IA. Abra outra ferramenta e tente lá.",
+          "brief": "A descrição ficou curta demais. Escreva algumas palavras sobre a aula e tente de novo.",
+          "badState": "Não foi possível salvar o quadro preparado. Tente de novo ou peça menos problemas.",
+          "tooBig": "O quadro preparado ficou grande demais para salvar. Peça menos problemas e tente de novo."
+        },
+        "fallback": {
+          "resting": "A IA está descansando agora, então aqui está um quadro inicial. Você pode tentar com a IA de novo mais tarde.",
+          "timeout": "A IA não respondeu a tempo, então aqui está um quadro inicial. Você pode tentar com a IA de novo.",
+          "busy": "A IA está muito ocupada agora, então aqui está um quadro inicial. Tente com a IA de novo em alguns minutos.",
+          "error": "A IA não conseguiu preparar este, então aqui está um quadro inicial. Você pode tentar com a IA de novo."
         }
       },
       "save": {
@@ -3792,7 +3804,8 @@
       "removeTestQ": "Apagar este teste?",
       "removeLesson": "Apagar estas questões",
       "removeLessonQ": "Apagar estas questões com figuras?",
-      "removeLessonText": "A etapa de figuras da aula mantém as questões com que foi salva pela última vez. Não dá para desfazer."
+      "removeLessonText": "A etapa de figuras da aula mantém as questões com que foi salva pela última vez. Não dá para desfazer.",
+      "fallback": "A IA não respondeu desta vez, então aqui está um conjunto inicial ({count, plural, one {# pergunta} other {# perguntas}}). Você pode tentar de novo."
     }
   },
   "favorites": {

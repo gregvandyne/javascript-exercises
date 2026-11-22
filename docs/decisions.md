@@ -10556,6 +10556,29 @@ sets, the Figures builder, the `figures` lesson step and its snapshot, Assign, a
   (Chromium: the editor step built by hand and printed; a test drafted with AI, edited, switched to by hand, assigned,
   answered and handed in).
 
+## Virtual math manipulatives: tap to add follows the last block into its column (22 Nov 2026)
+
+On an iPhone a teacher dragged a rod into the chart's Tens column and then tapped Rod again and again. The 4th rod sat
+across the Tens/Ones border and the 5th landed in Ones and broke into ten units. Why: a palette tap places a block next
+to the last one added (manip-board.js nextPieceSpot). In a column it only looked for room under the last block at full
+size; with the column already laid out there was none, so it put the rod to the right of the last one. Its middle fell
+in the 6 px gap between two columns (in no column, so the layout left it across the border) or in Ones (one place
+bigger, so it broke into ten).
+
+- **The rule (manip-pv.js sameValueHome).** When a block is added from the palette (tap, Enter, or dragged off it) and
+  the block placed just before it sits in a chart's column and is worth the same, the new block goes into that same
+  column, and the column is laid out again so all fit. The block placed before is the last one added or dropped on that
+  board (solo: per board; live room: per square; a dragged block counts once it is dropped). Any other case, the usual
+  placement: another value (a Unit after a Rod), nothing placed yet, that block gone or moved out of the chart, or its
+  chart deleted. Ten taps of Rod after a rod in Tens give ten rods in Tens (their own column: they never trade, they
+  shrink to fit); after a rod waiting in Hundreds they join it there and trade at ten, as on a drop. One Undo takes back
+  one add.
+- **A middle in the gap between two columns** now belongs to the nearer column (columnOf), so a block can never be left
+  across a column's border; past the chart's outer edge is still no column.
+- **Tests:** manip-pv (the rule, ten taps, the value from the other block set, waiting in Hundreds, every fallback, the
+  gap) and manip-pv-browser (iPhone 13, default zoom: one rod dragged into Tens, nine taps of Rod, all ten inside Tens
+  with none across a border and nothing in Ones, Total 100; a Unit tap is not forced into Tens; Undo takes it back).
+
 ## Figures Phase 4: polish (22 Nov 2026)
 
 Phase 4 of the Figures plan (presets, undo/redo, the reuse terms page, example figures in Oomba style), plus the owner's
@@ -10700,3 +10723,39 @@ The owner: "Figures and manipulatives should only be available via a paid plan f
 - **Owner to decide.** Whether the Manipulatives' and Figures' tester list should end once the plan is live; whether a
   teacher whose trial ended should see "Get the Teacher plan" wording here instead of the trial line (today `/trial`
   says it).
+
+## AI drafts: one time budget, a starting board when the AI doesn't answer (22 Nov 2026)
+
+On oomba.ai the owner asked Manipulatives "Draft with AI" for a board. The page counted for about two minutes and then
+said only to try again. The logs showed the draft queued, two minutes of polling, then the end, and not one warn or error
+line. Why: runDraft called the model with a 60 s timeout and maxRetries 1, so a slow answer waited 60 s, the SDK tried
+again for another 60 s, and the catch returned 'aiFailed' without logging anything. The page then showed its generic
+"try again". The Figures worksheet and test drafters and the lesson drafter used the same 60 s + retry pattern (Figures
+fell back and logged the error message; the lesson drafter neither caught nor logged, so the route answered 503).
+We still don't know which error the API gave that morning, since nothing was logged.
+
+- **One call, one budget (services/ai-call.js callAi).** The drafters (Manipulatives, Figures worksheet and test,
+  lessons) call the AI with a single 90 s budget and no SDK retries. A timeout is never tried again. Only "busy" (429
+  rate limit, 529 overloaded) gets one more try after a 2 s pause, and only with at least 15 s of the budget left. The
+  call is also raced against the budget, so it can't run past it. The Manipulatives max_tokens went from 4000 to 3000
+  (a full board of PRACTICE_MAX items and STEPS_MAX steps is well under 2000 tokens of JSON).
+- **Never silent (logAiFail).** Each failed call writes one warn line: what was drafting (the draft id and tool, or the
+  sheet id), the kind (timeout, rate_limit, overloaded, api_error, bad_json), the HTTP status and how long it took.
+  It never logs the brief, the topic or any name.
+- **A starting board instead of a failure.** When the AI fails, times out or sends back something that isn't a draft,
+  the Manipulatives draft ends done with the template (the tool's usual board with the brief as its one step),
+  ai: false and a reason (timeout, busy or error; resting when there is no key or the budget is resting). The board
+  opens, and a calm note above it says why ("The AI didn't answer in time, so here's a starting board. You can try
+  Draft with AI again.") with Try again, which keeps the words. Figures worksheets and tests already fell back; they now
+  return the reason too, and the sheet says "The AI didn't answer this time" instead of "AI is resting". The lesson
+  drafter now falls back to its template draft too, instead of the 503.
+- **Real failures say why.** Every code a draft can end with has its own sentence (notFound, badTool, brief, words,
+  personal, names, aiFailed, restart, badState, tooBig), in the 12 translated locales.
+- **Progress.** The page never stopped polling while a draft ran, and still doesn't. The estimate now carries the
+  longest a draft takes (the AI budget plus 30 s, manip-drafts.js longest), and past the usual time the line says
+  "Taking longer than usual. You'll have a board within 2 minutes either way."
+- **Tests:** manip-saving (a call that never answers ends at the budget with one call and maxRetries 0, the SDK's
+  timeout error, a rate limit tried once more, bad JSON, no key; each ends done with the starting board and its reason,
+  one warn line without the brief), figures-lesson-step (lessons, worksheets and tests on a timeout and bad JSON),
+  figures-product (overloaded: reason busy) and manip-saving-browser (Chromium: the note and the starting board after a
+  timeout, Try again keeps the words; a draft refused for a student's name says so).
