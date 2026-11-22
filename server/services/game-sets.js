@@ -457,7 +457,7 @@ export function duplicate(gameId, ownerId, id, title, slug = 'algebra-builder') 
 }
 
 /** An account's sets go with it. */
-export function forgetUser(userId) { q.run('DELETE FROM game_sets WHERE owner_id=?', userId); q.run('DELETE FROM proof_chats WHERE owner_id=?', userId); }
+export function forgetUser(userId) { q.run('DELETE FROM game_sets WHERE owner_id=?', userId); q.run('DELETE FROM proof_chats WHERE owner_id=?', userId); q.run('DELETE FROM proof_ai_drafts WHERE user_id=?', userId); }
 
 const ACT_NAME = { solve: 'Solve', multiply: 'Multiply', factor: 'Factor' };
 const FROM = { p: '+', q: '=', e: '^', o: '(', c: ')' };

@@ -13821,8 +13821,13 @@
       "showHint": "Off by default. On: once the due date is over, students who handed in see the fixes and why each one is right.",
       "snapshotNote": "Students get this set as it is now. Later edits don't change what the class was given. Results go to Progress and the gradebook.",
       "submit": "Assign",
-      "practiceInstead": "Practice in the game instead (no grade)",
-      "practiceHint": "Students play the set as a game, check as they go and get hints. It counts as done when they finish."
+      "practiceHint": "Students play the set as a game, check as they go and get hints. It counts as done when they finish.",
+      "chooseH": "How will students do it?",
+      "gradeSub": "Students do it once in the lesson. It is marked and goes to the gradebook.",
+      "practiceH": "Practice",
+      "practiceSub": "Students play the set as often as they like. Nothing is graded.",
+      "allowHints": "Allow hints",
+      "hintsHint": "Off by default. On: a student can ask for a hint (the sentence with a mistake, then its kind). You see how many hints each student used."
     },
     "step": {
       "score": "You found {found} of {total} mistakes ({pct}%).",
@@ -13851,7 +13856,11 @@
       "changedHint": "Changing words that were right doesn't lower the score; the count is here so you can talk about it.",
       "errors": {
         "words": "That fix has words we can't use. Try different words."
-      }
+      },
+      "hintsAllowed": "Hints: allowed",
+      "hintsOff": "Hints: off",
+      "hintsCol": "Hints",
+      "hintsN": "{count, plural, one {# hint} other {# hints}}"
     },
     "insight": {
       "title": "Oomba's read",

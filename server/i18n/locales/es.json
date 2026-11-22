@@ -13105,8 +13105,13 @@
       "showHint": "Desactivado por defecto. Activado: cuando pase la fecha de entrega, quienes entregaron ven las correcciones y por qué cada una es correcta.",
       "snapshotNote": "Los alumnos reciben este conjunto tal como está ahora. Los cambios posteriores no cambian lo que recibió la clase. Los resultados van a Progreso y al libro de calificaciones.",
       "submit": "Asignar",
-      "practiceInstead": "Practicar en el juego (sin calificación)",
-      "practiceHint": "Los alumnos juegan el conjunto como un juego, comprueban sobre la marcha y reciben pistas. Cuenta como hecho cuando terminan."
+      "practiceHint": "Los alumnos juegan el conjunto como un juego, comprueban sobre la marcha y reciben pistas. Cuenta como hecho cuando terminan.",
+      "chooseH": "¿Cómo lo harán los estudiantes?",
+      "gradeSub": "Lo hacen una vez en la lección. Se califica y va al libro de calificaciones.",
+      "practiceH": "Práctica",
+      "practiceSub": "Juegan el conjunto tantas veces como quieran. Nada se califica.",
+      "allowHints": "Permitir pistas",
+      "hintsHint": "Desactivado por defecto. Activado: un estudiante puede pedir una pista (la oración con un error y luego su tipo). Verás cuántas pistas usó cada estudiante."
     },
     "step": {
       "score": "Encontraste {found} de {total} errores ({pct} %).",
@@ -13135,7 +13140,11 @@
       "changedHint": "Cambiar palabras que estaban bien no baja la nota; el recuento está aquí para que puedan hablarlo.",
       "errors": {
         "words": "Esa corrección tiene palabras que no podemos usar. Prueba con otras."
-      }
+      },
+      "hintsAllowed": "Pistas: permitidas",
+      "hintsOff": "Pistas: desactivadas",
+      "hintsCol": "Pistas",
+      "hintsN": "{count, plural, one {# pista} other {# pistas}}"
     },
     "insight": {
       "title": "La lectura de Oomba",

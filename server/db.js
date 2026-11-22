@@ -1212,6 +1212,17 @@ export const MIGRATIONS = [
     CREATE UNIQUE INDEX IF NOT EXISTS proof_chats_set ON proof_chats(owner_id, set_key);
     CREATE TABLE IF NOT EXISTS proof_insights (class_lesson_id TEXT NOT NULL, step_id TEXT NOT NULL, lang TEXT NOT NULL DEFAULT 'en',
       handed INTEGER NOT NULL, body TEXT NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY (class_lesson_id, step_id));`],
+  // Mistake Hunt: the free AI cap, hints (docs/decisions.md "Mistake Hunt: free AI cap, hints, assign choice").
+  // proof_ai_days: a free teacher's AI requests on one UTC calendar day (services/proof-ai.js take: one atomic upsert, so
+  // a restart or a deploy never resets the count); rows older than a week are pruned. proof_ai_drafts: a hash of each
+  // passage Oomba drafted for a teacher (never the text), kept 7 days, so why lines for those passages stay free.
+  // step_progress.hints: how many hints a student asked for on a graded proofread step (counted by the server).
+  ['0106_mistake_hunt_limits', `
+    CREATE TABLE IF NOT EXISTS proof_ai_days (user_id TEXT NOT NULL, day TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (user_id, day));
+    CREATE INDEX IF NOT EXISTS proof_ai_days_day ON proof_ai_days(day);
+    CREATE TABLE IF NOT EXISTS proof_ai_drafts (user_id TEXT NOT NULL, hash TEXT NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY (user_id, hash));
+    CREATE INDEX IF NOT EXISTS proof_ai_drafts_at ON proof_ai_drafts(created_at);
+    ALTER TABLE step_progress ADD COLUMN hints INTEGER NOT NULL DEFAULT 0;`],
   // Oomba's shared chat engine (services/oomba-chat.js; docs/decisions.md "Figures: Oomba's chat and the shared chat
   // engine"), first used by Figures. oomba_chats: one conversation per teacher, surface ('figures') and context key (a
   // worksheet's id); turns: the newest turns as JSON ({ id, role 'me'|'oomba', text, at, quote?, change?, undo?, failed?,
@@ -1219,7 +1230,8 @@ export const MIGRATIONS = [
   // interrupted | done | failed), its progress (step, steps: ms after the start each row began), attempt, error, and
   // seen_at (the teacher saw how it ended: "finished while you were away"). live_key: the surface's one-live-turn rule
   // ('<surface>:<owner>' for one per teacher, 'chat:<id>' for one per conversation), held by the partial unique index.
-  ['0106_figures_chat', `
+  // (First numbered 0106 on its branch; main took 0106 for Mistake Hunt's limits first.)
+  ['0107_figures_chat', `
     CREATE TABLE IF NOT EXISTS oomba_chats (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       surface TEXT NOT NULL, ctx_key TEXT NOT NULL, turns TEXT NOT NULL DEFAULT '[]', updated_at INTEGER NOT NULL);
     CREATE UNIQUE INDEX IF NOT EXISTS oomba_chats_ctx ON oomba_chats(owner_id, surface, ctx_key);

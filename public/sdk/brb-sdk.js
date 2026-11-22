@@ -1168,7 +1168,9 @@
   });
   // A graded Mistake Hunt step (BRB.proofStep: the words students see, their saved fixes, marks once handed in, the
   // key only once the teacher allows it). BRB.proofSave(edits, { handIn }) -> a Promise of { view } (the step as it is
-  // now) or { error } ('handedIn', 'words', 'badRequest', 'offline'). Hand in is final.
+  // now) or { error } ('handedIn', 'words', 'badRequest', 'noHints', 'offline'). Hand in is final. With { hint: i } (when
+  // BRB.proofStep.hints): the fixes are saved and the server answers a hint for passage i -> { view, hint: { i, a, b, k,
+  // g } | null } (the sentence a..b over the words students see, the kind of mistake; null: nothing left to hint).
   var pfWait = {}, pfSeq = 0;
   function proofSave(edits, opts) {
     if (typeof Promise !== 'function') return null;
@@ -1178,14 +1180,21 @@
       if (!Array.isArray(copy) || JSON.stringify(copy).length > 60000) return res({ error: 'badRequest' });
       var n = ++pfSeq, timer = setTimeout(function () { delete pfWait[n]; res({ error: 'offline' }); }, 20000);
       pfWait[n] = function (r) { clearTimeout(timer); delete pfWait[n]; res(r); };
-      send('brb:proof', { id: n, edits: copy, handIn: !!(opts && opts.handIn) });
+      var h = opts && typeof opts.hint === 'number' && opts.hint % 1 === 0 && opts.hint >= 0 && opts.hint < 100 ? opts.hint : undefined;
+      send('brb:proof', h === undefined ? { id: n, edits: copy, handIn: !!(opts && opts.handIn) } : { id: n, edits: copy, handIn: false, hint: h });
     });
   }
   window.addEventListener('message', function (e) {
     if (e.source !== parentWin) return;
     var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:proof-done' || typeof m.id !== 'number') return;
     var w = pfWait[m.id]; if (!w) return;
-    if (m.view && typeof m.view === 'object') { try { w({ view: JSON.parse(JSON.stringify(m.view)) }); } catch (x) { w({ error: 'offline' }); } }
+    if (m.view && typeof m.view === 'object') {
+      try {
+        var out = { view: JSON.parse(JSON.stringify(m.view)) };
+        if ('hint' in m) out.hint = m.hint && typeof m.hint === 'object' ? JSON.parse(JSON.stringify(m.hint)) : null;
+        w(out);
+      } catch (x) { w({ error: 'offline' }); }
+    }
     else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
   });
   // Crossword's Print (BRB.canPrint): the frame can't print (no allow-modals), so BRB.print(doc) hands the puzzle to the

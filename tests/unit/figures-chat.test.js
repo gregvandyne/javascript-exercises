@@ -83,9 +83,9 @@ async function drafted(boss) {
   return id;
 }
 
-test('migration 0106: after 0105, the shared engine\'s conversations and jobs with one live turn per live key', () => {
+test('migration 0107: after 0106, the shared engine\'s conversations and jobs with one live turn per live key', () => {
   const names = MIGRATIONS.map(m => m[0]);
-  assert.ok(names.indexOf('0106_figures_chat') > names.indexOf('0105_mistake_hunt_chat'));
+  assert.ok(names.indexOf('0107_figures_chat') > names.indexOf('0106_mistake_hunt_limits'));
   assert.ok(q.all('PRAGMA table_info(oomba_turns)').some(c => c.name === 'live_key'));
   assert.ok(q.get("SELECT 1 FROM sqlite_master WHERE type='index' AND name='oomba_turns_one_live'"));
   assert.ok(q.get("SELECT 1 FROM sqlite_master WHERE type='index' AND name='oomba_chats_ctx'"));

@@ -11317,6 +11317,69 @@ Three things found while filming the dashboard promo.
   the same over a copy filling the screen and a question box; a layout switch on a slow network never shows the empty
   text and the names come at once; the banner, tray and copy titles equal the teacher's widget titles in every mode.
 
+## Mistake Hunt: free AI cap, hints, assign choice (22 Nov 2026)
+Three owner decisions on the Phase 2 and 3 open questions.
+
+**1. The free cap.** Owner: "3 free AI requests a day is fine, just make sure there isn't a way to get around that."
+Holes found and closed:
+- **The count was in memory** (`services/ratelimit.js`, the Phase 2 note "a restart forgets it"): every deploy or
+  restart gave every free teacher a fresh 3. Now it is in the database (migration `0106_mistake_hunt_limits`,
+  `proof_ai_days`: one row per teacher and **UTC calendar day**, `n` requests; the count starts again at midnight UTC,
+  rows older than 8 days are pruned). Judgment call: a calendar day rather than a rolling 24 hours, because the page can
+  say "today" and it is one row a day. `services/proof-ai.js take()` spends one with a single conditional upsert
+  (`... ON CONFLICT DO UPDATE SET n=n+1 WHERE n<cap`, better-sqlite3, synchronous) before the first `await`, so two
+  requests at once can never both take the last one (it would hold across processes too). `left()`, which the page's
+  "N free AI requests left today" number comes from (`aiInfo` in the frame, `left` in every answer), reads the same row.
+- **Why lines took any text** (`POST /api/games/:id/proof/why`, up to 60 items, "not counted"): a free teacher could
+  send any passage for unlimited AI. Now every passage Oomba drafts (Power with AI, for every teacher) is remembered as a
+  hash (`proof_ai_drafts`: sha256 of the exact text, never the text; kept 7 days; deleted with the account). For a free
+  teacher why lines are free only when every item's passage is one Oomba drafted for them in the last week; if any is
+  not (pasted, uploaded, or edited after Oomba wrote it), the call costs one of the day's requests and is refused with
+  `cap` (429) when none are left. At the cap the builder saves with the usual lines and says "You've used today's free
+  AI requests, so the set uses the usual why lines." Plan holders, testers and the admin: unchanged, no cap. Recording
+  for plan holders too means a lapsed plan keeps a week's free why lines for passages Oomba wrote.
+- **Checked, no hole:** Oomba's chat (`proof-chat.js`: `current`, `send`, `applied` all need `planTools` `'yes'`) and
+  class insights (`proof-insights.js ask`: `'yes'` only; the GET card makes no AI call) are Teacher plan only. Text from
+  a document (`text-from-doc`) uses no AI. Crossword's AI clues answer only the Crossword game. A refused topic, a name,
+  or the AI resting spends nothing; a request that reaches the AI counts even if the AI then fails (as before).
+- **Not prevented:** one person with several free accounts gets 3 a day on each. Nothing is built for that (owner's
+  call); the site's AI budget still caps the total.
+
+**2. Hints on a graded hand-in.** Owner: "Allow teachers to choose whether hints can be used." The hand-in form has
+**Allow hints** (off by default). It is kept in the step's snapshot JSON (`lesson_steps.items`: `{ tell, hints: true,
+passages }`; no migration for the setting, a copied lesson keeps it) and sent to the game in `viewFor` (`hints`,
+`hintsUsed`). A hint needs the key, which never reaches the student's page, so **the server answers it**: the game's
+Hint posts the fixes so far with `hint: i` (`progress.proofHint`, `proof-steps hintFor`), the fixes are saved, and the
+answer is the sentence (word indexes over what students see) with the first mistake in reading order not fixed yet and
+its kind. The card says where to look; asking again for the same sentence adds the kind of mistake and the usual line
+for that kind (never the set's own why line, which can give the answer away). Nothing left to hint: "No more hints for
+this passage.", not counted. Each hint is counted by the server in `step_progress.hints` (migration 0106; at most 99; the
+page can never send a count) and saved with the work. The teacher's progress panel says **Hints: allowed** or **Hints:
+off** and, when allowed, a Hints column with a plain count per student ("2 hints"), in roster order, never a ranking;
+the lesson editor and the teacher's lesson page say the setting too. Hints never change the score. Check and Show
+answers stay off in graded play.
+
+**3. The Assign page makes the teacher choose.** Owner: "When the teacher assigns it, they should have to choose this."
+`/teach/assign` for a Mistake Hunt set now shows "How will students do it?" with two cards and nothing picked: **Hand in
+for a grade** ("Students do it once in the lesson. It is marked and goes to the gradebook.": class, Opens, Due, Show
+answers after the due date, Allow hints) and **Practice** ("Students play the set as often as they like. Nothing is
+graded.": class, Due). Only the picked option's form shows. The radios belong to no form, so nothing can be sent before
+a choice. No script: CSS `:has()` (inside `@supports selector(:has(*))`); a browser without `:has()` shows both forms,
+each under its own heading, and the button pressed is the choice (the forms are the site's `data-api` forms, which need
+the site's script anyway). The old folded "Practice in the game instead" is gone. **Printing never needs assigning:**
+Print stays in the builder and on each saved set in My worksheets.
+
+- **13 locales:** the server's `proof.assign.*` and `proof.step.hints*`, and the game's `hintNone` and `whyCap`.
+- **Tests:** `tests/unit/proof-ai.test.js` (the count survives the in-memory limiter's reset and the frame reads it; a
+  calendar day and pruning; three requests at once with one left, one through, also over HTTP; why lines free for
+  Oomba's passages, a foreign or edited passage costs one and is refused at the cap before the AI, old drafts expire,
+  plan holders uncapped), `tests/unit/proof-step.test.js` (the Assign page: two choices, none checked, no radio inside a
+  form, each form in its pane, Allow hints off; hints off by default and refused; allowed: the snapshot round trip, the
+  frame, the hint's sentence and kind, saved fixes, the count, nothing to hint not counted, bad indexes, a count the
+  page sends ignored, the 99 ceiling, handed in, the teacher's pages), `tests/unit/proof-browser.test.js` (Chromium:
+  no form before a choice, only the chosen one after; a student on an iPhone 13 taps Hint, sees the sentence, then the
+  kind, and the server counts 2).
+
 ## Figures: Oomba's chat and the shared chat engine (22 Nov 2026)
 
 The owner: Figures should be "hooked up to AI the same way Manipulatives is", with "a chat on the side where the teacher
@@ -11344,7 +11407,7 @@ engine (server service and client component) that Figures uses now and the site-
   Escape minimizes, the progress card while a turn runs, failed turns with Try again and Edit, "What changed" with Undo,
   and a quote above the message box. The Manipulatives and Mistake Hunt chats keep their own code for now; moving them
   onto the engine is a later change (their tables and pages differ, and moving them here was not trivial).
-- **Migration** `0106_figures_chat`: `oomba_chats(owner_id, surface, ctx_key, turns, updated_at)` (unique per owner,
+- **Migration** `0107_figures_chat` (0106 went to Mistake Hunt's limits first): `oomba_chats(owner_id, surface, ctx_key, turns, updated_at)` (unique per owner,
   surface and key) and `oomba_turns(chat_id, owner_id, surface, live_key, me_id, status, step, steps, attempt, error,
   created_at, started_at, ended_at, seen_at)`. Generic names on purpose: the companion chat uses the same tables.
 - **Figures as a surface** (`server/services/figures-chat.js`). The first message on an empty worksheet or test drafts

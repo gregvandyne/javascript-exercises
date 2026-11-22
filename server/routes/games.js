@@ -644,8 +644,8 @@ router.post('/api/games/:id/text-from-doc', requireUser, rateLimit('game-doc', 2
 });
 // Mistake Hunt's AI tools (docs/decisions.md "Mistake Hunt, Phase 2"; services/proof-ai.js): Power with AI passages,
 // Check my passage and why lines. Teachers only (school staff and the platform admin; students, kids, family grown-ups
-// and guests get 403 notAllowed); free teachers have a daily cap (config.proofAiFreePerDay: 429 code 'cap'), Teacher
-// plan holders none. Nothing here is stored: the teacher reviews everything before saving the set.
+// and guests get 403 notAllowed); free teachers have a daily cap kept in the database (config.proofAiFreePerDay: 429
+// code 'cap'; why lines count only for passages Oomba did not draft for them), Teacher plan holders none. Nothing here is stored: the teacher reviews everything before saving the set.
 const proofAiReply = (req, res, r, data) => {
   if (r.ok) return res.json(data(r));
   const status = r.code === 'notAllowed' ? 403 : r.code === 'cap' ? 429 : 400;
@@ -672,7 +672,7 @@ router.post('/api/games/:id/proof/why', requireUser, rateLimit('proof-ai', 30, 3
   if (!docTextGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
   const b = req.body || {};
   const r = await proofAi.whyLines(req.user, { grade: b.grade, items: b.items });
-  proofAiReply(req, res, r, x => ({ lines: x.lines, ai: x.ai, ...(x.reason ? { reason: x.reason } : {}) }));
+  proofAiReply(req, res, r, x => ({ lines: x.lines, ai: x.ai, ...(x.reason ? { reason: x.reason } : {}), left: Number.isFinite(x.left) ? x.left : null }));
 });
 // Oomba's chat on a passage set (docs/decisions.md "Mistake Hunt, Phase 3"; services/proof-chat.js): a turn is a job.
 // The Teacher plan's people only (plan holders, testers, the platform admin); a teacher without the plan gets 403

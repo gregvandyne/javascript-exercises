@@ -13105,8 +13105,13 @@
       "showHint": "Désactivé par défaut. Activé : une fois la date limite passée, les élèves qui ont rendu voient les corrections et pourquoi chacune est juste.",
       "snapshotNote": "Les élèves reçoivent cette série telle qu'elle est maintenant. Les modifications ultérieures ne changent pas ce que la classe a reçu. Les résultats vont dans Progrès et le carnet de notes.",
       "submit": "Assigner",
-      "practiceInstead": "S'entraîner dans le jeu à la place (sans note)",
-      "practiceHint": "Les élèves jouent la série comme un jeu, vérifient au fur et à mesure et ont des indices. C'est fait quand ils ont fini."
+      "practiceHint": "Les élèves jouent la série comme un jeu, vérifient au fur et à mesure et ont des indices. C'est fait quand ils ont fini.",
+      "chooseH": "Comment les élèves vont-ils le faire ?",
+      "gradeSub": "Ils le font une fois dans la leçon. C'est noté et ça va dans le carnet de notes.",
+      "practiceH": "Entraînement",
+      "practiceSub": "Ils jouent la série autant de fois qu'ils veulent. Rien n'est noté.",
+      "allowHints": "Autoriser les indices",
+      "hintsHint": "Désactivé par défaut. Activé : un élève peut demander un indice (la phrase avec une faute, puis son type). Vous voyez combien d'indices chaque élève a utilisés."
     },
     "step": {
       "score": "Tu as trouvé {found} fautes sur {total} ({pct} %).",
@@ -13135,7 +13140,11 @@
       "changedHint": "Modifier des mots qui étaient justes ne baisse pas la note ; le total est là pour en parler.",
       "errors": {
         "words": "Cette correction contient des mots que nous ne pouvons pas utiliser. Essaie d'autres mots."
-      }
+      },
+      "hintsAllowed": "Indices : autorisés",
+      "hintsOff": "Indices : désactivés",
+      "hintsCol": "Indices",
+      "hintsN": "{count, plural, one {# indice} other {# indices}}"
     },
     "insight": {
       "title": "La lecture d'Oomba",

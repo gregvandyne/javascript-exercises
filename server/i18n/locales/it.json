@@ -13106,8 +13106,13 @@
       "showHint": "Disattivato di base. Attivo: passata la scadenza, chi ha consegnato vede le correzioni e perché ognuna è giusta.",
       "snapshotNote": "Gli studenti ricevono questa raccolta così com'è ora. Le modifiche successive non cambiano ciò che ha ricevuto la classe. I risultati vanno in Progressi e nel registro.",
       "submit": "Assegna",
-      "practiceInstead": "Esercitarsi nel gioco invece (senza voto)",
-      "practiceHint": "Gli studenti giocano la raccolta come un gioco, controllano strada facendo e ricevono suggerimenti. Conta come fatto quando finiscono."
+      "practiceHint": "Gli studenti giocano la raccolta come un gioco, controllano strada facendo e ricevono suggerimenti. Conta come fatto quando finiscono.",
+      "chooseH": "Come lo faranno gli studenti?",
+      "gradeSub": "Lo fanno una volta nella lezione. Viene valutato e va nel registro dei voti.",
+      "practiceH": "Esercizio",
+      "practiceSub": "Giocano la raccolta tutte le volte che vogliono. Niente viene valutato.",
+      "allowHints": "Consenti gli aiuti",
+      "hintsHint": "Disattivato di base. Attivo: uno studente può chiedere un aiuto (la frase con un errore, poi il tipo). Vedi quanti aiuti ha usato ogni studente."
     },
     "step": {
       "score": "Hai trovato {found} errori su {total} ({pct}%).",
@@ -13136,7 +13141,11 @@
       "changedHint": "Cambiare parole che erano giuste non abbassa il punteggio; il conteggio è qui per parlarne.",
       "errors": {
         "words": "Quella correzione contiene parole che non possiamo usare. Prova altre parole."
-      }
+      },
+      "hintsAllowed": "Aiuti: consentiti",
+      "hintsOff": "Aiuti: disattivati",
+      "hintsCol": "Aiuti",
+      "hintsN": "{count, plural, one {# aiuto} other {# aiuti}}"
     },
     "insight": {
       "title": "La lettura di Oomba",

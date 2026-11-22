@@ -114,9 +114,19 @@ test('a teacher: Power with AI, Check my passage, why lines to review, then Assi
   assert.ok(saved.items[0].m.some(m => m.y === 'Earth is a name, so it starts with a capital letter.' && m.ai === 1), 'the teacher\'s edit is stored');
   assert.ok(saved.items[2].x.includes('library.') && saved.items[2].x.includes('alot'));
   assert.deepEqual(t.errors, []);
-  // Assign to class: the game opens the Assign page, with "Hand in for a grade"
+  // Assign to class: the game opens the Assign page; the teacher must choose "Hand in for a grade" or "Practice" first
   await Promise.all([t.page.waitForURL(/\/teach\/assign/), f.click('#mh-assign')]);
+  await t.page.waitForSelector('#pf-choice');
+  assert.equal(await t.page.isVisible('#pa-go'), false, 'no form before a choice');
+  assert.equal(await t.page.isVisible('#ag-go'), false);
+  assert.deepEqual(await t.page.$$eval('input[name="pf-mode"]', r => r.map(x => x.checked)), [false, false], 'nothing picked');
+  if (process.env.MH_ASSIGN_SHOT) await t.page.screenshot({ path: process.env.MH_ASSIGN_SHOT, fullPage: true });
+  await t.page.check('#pf-mode-practice');
+  assert.ok(await t.page.isVisible('#ag-go')); assert.equal(await t.page.isVisible('#pa-go'), false, 'only the chosen form');
+  await t.page.check('#pf-mode-grade');
   await t.page.waitForSelector('#pa-go');
+  assert.equal(await t.page.isVisible('#ag-go'), false);
+  assert.equal(await t.page.isChecked('#pa-hints'), false, 'Allow hints is off by default');
   await t.page.fill('#pa-d', isoDay(Date.now() + 7 * 864e5));
   await t.page.check('#pa-show');
   await shot(t.page, 'assign-dialog', true);
@@ -198,6 +208,27 @@ test('students on an iPhone 13 by touch: open the step from the lesson, fix, han
   assert.deepEqual(t.errors, []);
   await t.c.close();
   void q;
+});
+
+test('hints a teacher allowed: a student on an iPhone 13 taps Hint, sees the sentence, then the kind; the server counts them', { skip, timeout: 120_000 }, async () => {
+  assert.ok(setId, 'the teacher test saved a set');
+  const r = PS.assignSet(teacher, setId, cls.id, { dueAt: isoDay(Date.now() + 7 * 864e5), hints: true });
+  assert.ok(r.ok);
+  const s = await open(mia, `/play/mistake-hunt?lesson=${r.classLesson.id}&step=${r.step.id}`, { ...devices['iPhone 13'], reducedMotion: 'reduce' });
+  const f = await frameOf(s.page);
+  await f.waitForSelector('#mh-hint');
+  assert.equal(await f.locator('#mh-check').count(), 0, 'still no Check in a graded step');
+  await f.locator('#mh-hint').tap();
+  await f.waitForSelector('#mh-hintcard');
+  assert.ok(await f.locator('#mh-ptext .hintline').count() >= 1, 'the sentence is highlighted');
+  assert.doesNotMatch(await f.textContent('#mh-hintcard'), /kind of mistake/);
+  await f.locator('#mh-hint').tap();
+  await f.waitForFunction(() => /kind of mistake/.test(document.getElementById('mh-hintcard').textContent));
+  const row = q.get('SELECT hints FROM step_progress WHERE class_lesson_id=? AND step_id=? AND user_id=?', r.classLesson.id, r.step.id, mia.id);
+  assert.equal(row.hints, 2);
+  assert.equal(await f.evaluate(() => JSON.stringify(window.__brbTest.mhGraded()).includes('"key"')), false, 'still no key in the frame');
+  assert.deepEqual(s.errors, []);
+  await s.c.close();
 });
 
 test('the practice game\'s end card (Phase 1) takes a tap at once with motion on, on an iPhone 13', { skip, timeout: 120_000 }, async () => {

@@ -4,7 +4,7 @@
 // use it, what its context is (a worksheet), how a message is checked, what the AI is told and asked, and how an answer
 // changes things and is undone. The engine does the rest, the same way for every surface:
 //
-// - A conversation per teacher, surface and context key (oomba_chats, migration 0106): the newest HISTORY turns as JSON.
+// - A conversation per teacher, surface and context key (oomba_chats, migration 0107): the newest HISTORY turns as JSON.
 // - Each message is a JOB (oomba_turns), in the Builder's and the manipulative drafts' pattern: the POST checks the words
 //   (nothing is stored or sent when they fail), stores the message and returns at once; the answer is made in this process
 //   apart from any request, so a refresh, a closed tab or a lost connection changes nothing; the page asks how it is going
