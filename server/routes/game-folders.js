@@ -188,7 +188,7 @@ router.post('/api/teach/assign-proofread', requireUser, rateLimit('lesson-new', 
   if (!PS.canAssign(u)) return res.status(404).json({ error: req.t('lessons.errors.notFound') });
   const on = v => v === true || v === '1' || v === 'on';
   const r = PS.assignSet(u, String(x.setId || ''), String(x.classId || ''), { opensAt: x.opensAt || null, dueAt: x.dueAt || null, showAnswers: on(x.showAnswers) });
-  if (!r.ok) return res.status(r.code === 'notFound' ? 404 : 400).json({ error: req.t(r.code === 'notFound' ? 'lessons.errors.notFound' : `figures.assign.errors.${r.code}`), code: r.code });
+  if (!r.ok) return res.status(r.code === 'notFound' ? 404 : 400).json({ error: req.t(r.code === 'notFound' ? 'lessons.errors.notFound' : ['noClass', 'badDate', 'dueBeforeOpen', 'needsDue'].includes(r.code) ? `figures.assign.errors.${r.code}` : 'errors.api.badRequest'), code: r.code });
   res.json({ ok: true, toast: req.t('lessons.assign.done', { class: r.class.name }), redirect: `/class/${r.class.id}/progress/${r.classLesson.id}` });
 });
 /** "Assign all" (a folder on the class page): each game in the folder (one's own, or shared with one) that the class can

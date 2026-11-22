@@ -400,10 +400,10 @@ export function addFiguresStep(u, lessonId, { title = '', setId = null, items, o
   touch(l.id);
   return ok({ step: getStep(id) });
 }
-/** A proofread step from a Mistake Hunt passage set's snapshot (services/proof-steps.js snapshot). -> { ok, step } */
+/** A proofread step from a Mistake Hunt passage set's snapshot ({ tell, passages }: services/proof-steps.js snapshotOf). -> { ok, step } */
 export function addProofStep(u, lessonId, { title = '', setId = null, items, showAnswers = false, minutes = 0, body = '' }) {
   const l = getLesson(lessonId); if (!canEditLesson(u, l)) return fail('notFound');
-  if (!Array.isArray(items) || !items.length) return fail('stepKind');
+  if (!items || !Array.isArray(items.passages) || !items.passages.length) return fail('stepKind');
   const id = uid(10);
   q.run('INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, set_id, items, show_answers) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
     id, l.id, nextPos('lesson_steps', 'lesson_id=?', l.id), PROOF_KIND, clip(title, 100), clipText(body, 4000), null, Math.max(0, Math.min(240, Math.round(+minutes || 0))), now(), setId || null,
