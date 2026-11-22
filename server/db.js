@@ -1196,6 +1196,9 @@ export const MIGRATIONS = [
       board_key TEXT NOT NULL, tool TEXT NOT NULL, grade TEXT NOT NULL DEFAULT '', turns TEXT NOT NULL DEFAULT '[]',
       pending_id TEXT, pending_at INTEGER, updated_at INTEGER NOT NULL);
     CREATE UNIQUE INDEX IF NOT EXISTS manip_chats_board ON manip_chats(owner_id, board_key);`],
+  // Mistake Hunt (seed-games/mistake-hunt.json, docs/decisions.md "Mistake Hunt") is a Learn game: its own shelf step, as
+  // each new Learn game gets (0062 is never edited). Its passage sets live in game_sets (0097's title); no new table.
+  ['0104_mistake_hunt_shelf', "UPDATE games SET shelf='learn' WHERE source='seed' AND slug='mistake-hunt';"],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

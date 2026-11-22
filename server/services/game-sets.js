@@ -9,6 +9,8 @@ import crypto from 'node:crypto';
 import { q, now } from '../db.js';
 import { cleanText } from './textfilter.js';
 import { canvasVersion, canvasKit, figureProblems } from './canvaskit.js';
+import { proofCore } from './proof-core.js';
+import { useSetCodes } from '../standards/official-tags.js';
 
 export const MAX_ITEMS = 20;
 /** How many sets one account may keep in one game. */
@@ -191,6 +193,88 @@ export function cleanCrossItems(raw) {
   return [{ t, w: words, r, b: it.b === true, h: it.h !== false }];
 }
 
+// ---------------------------------------------------------------- Mistake Hunt: a set of passages to proofread
+// [{ t: the passage's title ('' allowed), x: the teacher's correct text, g: grade 0 (K) to 8,
+//    m: [{ a, b: a token range of x (end exclusive), w: what students see there, k: the mistake type, p?: 1 pinned,
+//          y?: a why line of the teacher's own (Phase 2: drafted for the teacher to check; the game's fixed line otherwise) }],
+//    o?: (the first passage only) { h: hints, s: Show answers, n: what students are told: 'total' | 'type' | 'none' } }], 1 to 8.
+// The passages are the teacher's own text, so the title, the text, every wrong word and a why line pass the site's
+// text filter (no rude words, personal details or links) as Crossword's words do; a text the filter would change is
+// refused, never changed, since the mistakes point into it. The mistakes are checked by the game's own rules
+// (services/proof-core.js: the range is inside one paragraph, at most 4 words, a known type, the wrong text differs from
+// the right one, no two overlap), so an answer key made from a set is always right. docs/decisions.md "Mistake Hunt".
+export const PROOF = { passages: 8, minText: 40, maxText: 1500, title: 60, why: 140, bytes: 20000 };
+export const PROOF_TELL = ['total', 'type', 'none'];
+const PROOF_KEYS = ['t', 'x', 'g', 'm', 'o'], PROOF_M_KEYS = ['a', 'b', 'w', 'k', 'p', 'y'];
+const plainObject = v => !!v && typeof v === 'object' && !Array.isArray(v);
+/** A passage set's options -> { h, s, n } or null. */
+function cleanProofOptions(o) {
+  if (!plainObject(o) || Object.keys(o).some(k => !['h', 's', 'n'].includes(k))) return null;
+  if ((o.h !== undefined && typeof o.h !== 'boolean') || (o.s !== undefined && typeof o.s !== 'boolean')) return null;
+  if (o.n !== undefined && !PROOF_TELL.includes(o.n)) return null;
+  return { h: o.h !== false, s: o.s !== false, n: o.n || 'total' };
+}
+/** Mistake Hunt: the clean list of passages, or null when it isn't one. Strict: an unknown key, a text the filter
+ *  refuses or would change, or a mistake the game's rules don't keep, and the whole set is turned down. */
+export function cleanProofItems(raw) {
+  if (!Array.isArray(raw) || raw.length < 1 || raw.length > PROOF.passages) return null;
+  let size; try { size = JSON.stringify(raw).length; } catch { return null; }
+  if (size > PROOF.bytes) return null;
+  const P = proofCore(), out = [];
+  for (const [i, it] of raw.entries()) {
+    if (!plainObject(it) || Object.keys(it).some(k => !PROOF_KEYS.includes(k))) return null;
+    let t = '';
+    if (it.t !== undefined && it.t !== '') {
+      if (typeof it.t !== 'string' || it.t.length > PROOF.title) return null;
+      const ct = cleanText(it.t.replace(/\s+/g, ' '), PROOF.title);
+      if (!ct.ok) return null;
+      t = ct.value;
+    }
+    if (typeof it.x !== 'string' || it.x.length > PROOF.maxText || P.normText(it.x) !== it.x || it.x.length < PROOF.minText) return null;
+    const cx = cleanText(it.x, PROOF.maxText);
+    if (!cx.ok || cx.value !== it.x) return null;
+    if (!Number.isInteger(it.g) || it.g < 0 || it.g > 8) return null;
+    if (!Array.isArray(it.m) || !it.m.every(m => plainObject(m) && Object.keys(m).every(k => PROOF_M_KEYS.includes(k)))) return null;
+    if (P.problem(it.x, it.m)) return null;
+    const m = [];
+    for (const mm of it.m) {
+      const cw = cleanText(mm.w, P.LIMITS.wrong);
+      if (!cw.ok || cw.value !== mm.w) return null;
+      if (mm.p !== undefined && mm.p !== 1) return null;
+      const c = { a: mm.a, b: mm.b, w: mm.w, k: mm.k };
+      if (mm.p === 1) c.p = 1;
+      if (mm.y !== undefined && mm.y !== '') {
+        if (typeof mm.y !== 'string' || mm.y.length > PROOF.why) return null;
+        const cy = cleanText(mm.y.replace(/\s+/g, ' '), PROOF.why);
+        if (!cy.ok) return null;
+        c.y = cy.value;
+      }
+      m.push(c);
+    }
+    m.sort((p, q) => p.a - q.a);
+    const item = { t, x: it.x, g: it.g, m };
+    if (it.o !== undefined) {
+      if (i !== 0) return null;
+      const o = cleanProofOptions(it.o);
+      if (!o) return null;
+      item.o = o;
+    }
+    out.push(item);
+  }
+  return out;
+}
+/** The Common Core codes a passage set practises (its mistakes' types), for the class Standards tab. */
+export function proofCodes(items) {
+  const P = proofCore(), out = new Set();
+  for (const it of Array.isArray(items) ? items : []) for (const m of (it && Array.isArray(it.m) ? it.m : [])) if (P.BY[m.k]) out.add(P.BY[m.k].cc);
+  return [...out].sort();
+}
+// A lesson step that opens a passage set practises its mistakes' codes (the class Standards tab, standards-ccss.js).
+useSetCodes('mistake-hunt', 'ccss-ela', id => {
+  const r = q.get("SELECT items FROM game_sets WHERE id=?", id);
+  try { return r ? proofCodes(JSON.parse(r.items)) : []; } catch { return []; }
+});
+
 // ---------------------------------------------------------------- Oomba Canvas: a classroom activity's worksheet
 // A Builder-made classroom activity (Oomba Canvas 1.4.0 or later, whatever it is for; routes/games.js canvasSetVersion)
 // keeps a teacher's worksheets: the questions that were on screen, under a class code, so a link opens
@@ -238,7 +322,7 @@ export function cleanCanvasItems(raw, html) {
 }
 
 /** Official games that may keep question sets (slug -> the cleaner of their sets). */
-export const SET_GAMES = new Map([['algebra-builder', cleanItems], ['box-by-box', cleanBoxItems], ['crossword', cleanCrossItems]]);
+export const SET_GAMES = new Map([['algebra-builder', cleanItems], ['box-by-box', cleanBoxItems], ['crossword', cleanCrossItems], ['mistake-hunt', cleanProofItems]]);
 
 // New codes leave out letters and digits that read alike (i l 1, o 0), since a student may type one as a class code.
 // (Codes made before keep working: SET_ID still takes any letter or digit.)
@@ -312,6 +396,7 @@ export function sizeOf(slug, items) {
   const a = items[0] || {};
   if (slug === 'crossword') return Array.isArray(a.w) ? a.w.length : 0;
   if (slug === 'box-by-box') return a.d ? (a.p.length || (a.k === 'divide' ? 16 : 12)) : a.p.length;
+  if (slug === 'mistake-hunt') return items.reduce((n, it) => n + (Array.isArray(it.m) ? it.m.length : 0), 0);
   return items.length;   // Algebra Builder's questions, a classroom activity's problems
 }
 function view(r, slug) {
@@ -390,6 +475,10 @@ export function labelOf(slug, items) {
     return `${BB_KIND[a.k]}, ${n} problem${n === 1 ? '' : 's'}${a.d ? ' (different for each student)' : ''}, ${a.dec ? 'decimals, ' : ''}${BB_FORM[a.r] ? `${BB_FORM[a.r]}, ` : ''}${BB_METHOD[a.m] ? `${BB_METHOD[a.m]}, ` : ''}${BB_LEVEL[a.l]}`;
   }
   if (slug === CANVAS_KIND) return `${items.length} question${items.length === 1 ? '' : 's'}`;
+  if (slug === 'mistake-hunt') {
+    const n = sizeOf(slug, items);
+    return `${a.t ? `${a.t}: ` : ''}${items.length} passage${items.length === 1 ? '' : 's'}, ${n} mistake${n === 1 ? '' : 's'}`;
+  }
   const kinds = [...new Set(items.map(i => ACT_NAME[i.a]).filter(Boolean))].join(', ');
   return `${items.length} question${items.length === 1 ? '' : 's'}${kinds ? `: ${kinds}` : ''}`;
 }
@@ -401,7 +490,7 @@ export function describe(gameId, params, slug = 'algebra-builder') {
   if (SET_ID.test(ch)) {
     const s = get(gameId, ch);
     if (!s) return null;
-    if (slug === 'crossword' || slug === 'box-by-box') return { kind: 'one', label: labelOf(slug, s.items) };
+    if (slug === 'crossword' || slug === 'box-by-box' || slug === 'mistake-hunt') return { kind: 'one', label: labelOf(slug, s.items) };
     return { kind: 'set', n: s.items.length };
   }
   if (slug !== 'algebra-builder') return null;

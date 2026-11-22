@@ -121,3 +121,30 @@ export async function wordsFromFile({ kind, buf, level = '', locale = 'en', onAi
   const ct = cleanText(r.title || '', CROSS.title);
   return { ok: true, title: ct.ok ? ct.value : '', words, cut, ai: true };
 }
+
+/**
+ * Mistake Hunt's "Upload a passage" (docs/decisions.md "Mistake Hunt"): the text of a teacher's PDF or Word file, read
+ * here with the same readers and limits as Crossword's word lists (2 MB, a PDF of at most 5 pages, about 5 pages of
+ * text), and no AI at all: the teacher reads it in the builder before planting. A PDF whose text can't be read here
+ * (a scanned page, a font with no map) is turned away. -> { ok: true, text, cut } or { ok: false, code } (as wordsFromFile).
+ * The file is never stored or logged.
+ */
+export function textFromFile({ kind, buf }) {
+  if (!['pdf', 'docx'].includes(kind) || !Buffer.isBuffer(buf) || !buf.length) return { ok: false, code: 'docType' };
+  if (buf.length > LIMITS.bytes) return { ok: false, code: 'docBig' };
+  let text;
+  if (kind === 'docx') {
+    if (buf.readUInt32LE(0) !== 0x04034b50) return { ok: false, code: 'docType' };
+    text = docxText(buf);
+    if (text === null) return { ok: false, code: 'docBad' };
+  } else {
+    if (buf.subarray(0, 5).toString('latin1') !== '%PDF-') return { ok: false, code: 'docType' };
+    const info = pdfInfo(buf);
+    if (!info || info.encrypted) return { ok: false, code: 'docBad' };
+    if (info.pages > LIMITS.pages) return { ok: false, code: 'docPages' };
+    if (!info.fonts || !info.text) return { ok: false, code: 'docScan' };
+    text = info.text;
+  }
+  if (String(text).trim().length < 3) return { ok: false, code: 'docEmpty' };
+  return { ok: true, ...capText(text) };
+}

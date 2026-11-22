@@ -37,7 +37,8 @@ test('a registered game yields its lines, unless it is one of the known no-table
   // as the original didn't.
   const NO_TABLE = new Set(['atlas-quest', 'code-isle', 'algebra-builder']);
   // Crossword (Nov 2026) has a marked I18N block but reads nothing aloud: its clues are the teacher's own words, shown.
-  const SILENT = new Set(['crossword']);
+  // Mistake Hunt (Nov 2026) likewise: its passages are the teacher's own text (a read-aloud context is later work).
+  const SILENT = new Set(['crossword', 'mistake-hunt']);
   for (const slug of lines.TTS_GAMES) {
     const g = lines.readGame(slug);
     if (!g) { assert.ok(NO_TABLE.has(slug), `${slug} is registered but its lines cannot be read`); continue; }
