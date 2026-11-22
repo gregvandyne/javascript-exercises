@@ -3436,6 +3436,13 @@
         "done": "Bewaard als sjabloon ‘{title}’. Code {code}",
         "savedAt": "Bewaard {time}",
         "notYet": "Nog niet bewaard. Opnieuw proberen…"
+      },
+      "pv": {
+        "traded": "{n} × {from} geruild voor {m} × {to}.",
+        "broke": "{from} werd {n} × {to}.",
+        "moved": "{label} ging naar de kolom {col}.",
+        "needTen": "Er zijn 10 nodig om te ruilen",
+        "count": "{n} stukken in {col}"
       }
     },
     "manip-room": {
@@ -12641,6 +12648,14 @@
       "dotCross": {
         "name": "Stip-kruisdiagram",
         "desc": "Gedeelde en overgedragen elektronen in schillen"
+      },
+      "skeletal": {
+        "name": "Organische structuren",
+        "desc": "Skelet-, beknopte en volledige structuurformules"
+      },
+      "energyLevels": {
+        "name": "Energieniveaus van het atoom",
+        "desc": "Elektronenovergangen, golflengten en reeksen"
       },
       "populationGrowth": {
         "name": "Populatiegroei",

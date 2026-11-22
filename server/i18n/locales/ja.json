@@ -3435,6 +3435,13 @@
         "done": "テンプレート「{title}」として保存しました。コード {code}",
         "savedAt": "{time} に保存",
         "notYet": "まだ保存されていません。もう一度試しています…"
+      },
+      "pv": {
+        "traded": "{n} × {from} を {m} × {to} に交換しました。",
+        "broke": "{from} が {n} × {to} になりました。",
+        "moved": "{label} を {col} の列に移しました。",
+        "needTen": "10こで交換できます",
+        "count": "{col}: {n}こ"
       }
     },
     "manip-room": {
@@ -12640,6 +12647,14 @@
       "dotCross": {
         "name": "点と×の電子配置図",
         "desc": "電子殻で共有・移動する電子"
+      },
+      "skeletal": {
+        "name": "有機化合物の構造",
+        "desc": "骨格構造式、示性式、構造式"
+      },
+      "energyLevels": {
+        "name": "原子のエネルギー準位",
+        "desc": "電子の遷移、波長、系列"
       },
       "populationGrowth": {
         "name": "個体群の成長",

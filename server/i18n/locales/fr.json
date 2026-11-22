@@ -3435,6 +3435,13 @@
         "done": "Enregistré comme modèle « {title} ». Code {code}",
         "savedAt": "Enregistré à {time}",
         "notYet": "Pas encore enregistré. Nouvel essai…"
+      },
+      "pv": {
+        "traded": "{n} × {from} échangés contre {m} × {to}.",
+        "broke": "{from} est devenu {n} × {to}.",
+        "moved": "{label} est allé dans la colonne {col}.",
+        "needTen": "Il en faut 10 pour échanger",
+        "count": "{n} pièces dans {col}"
       }
     },
     "manip-room": {
@@ -12640,6 +12647,14 @@
       "dotCross": {
         "name": "Schéma points-croix",
         "desc": "Électrons partagés et transférés dans les couches"
+      },
+      "skeletal": {
+        "name": "Structures organiques",
+        "desc": "Formules topologiques, semi-développées et développées"
+      },
+      "energyLevels": {
+        "name": "Niveaux d'énergie de l'atome",
+        "desc": "Transitions électroniques, longueurs d'onde et séries"
       },
       "populationGrowth": {
         "name": "Croissance de la population",

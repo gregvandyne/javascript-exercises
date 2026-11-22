@@ -379,7 +379,9 @@ export function fitInto(slug, b, from, to, { grow = false, pad = 12 } = {}) {
   const map = (x, y, cell) => { const p = place(x, y, cell); return { x: pad + p.x * k, y: pad + p.y * k }; };
   const cellOf = st => (st && Number.isInteger(st.cell) ? st.cell : -1);
   for (const o of src.objects || []) { const p = map(num(o.x), num(o.y), cellOf(o.st)); o.x = Math.round(p.x * 10) / 10; o.y = Math.round(p.y * 10) / 10; o.s = Math.round(Math.max(S_FLOOR, num(o.s, 1) * k) * 1000) / 1000; }
-  for (const p of src.pieces || []) { const q = map(num(p.x), num(p.y), Number.isInteger(p.cell) ? p.cell : -1); p.x = Math.round(q.x * 10) / 10; p.y = Math.round(q.y * 10) / 10; p.w = Math.max(4, Math.round(num(p.w, 40) * k)); p.h = Math.max(4, Math.round(num(p.h, 40) * k)); }
+  for (const p of src.pieces || []) { const q = map(num(p.x), num(p.y), Number.isInteger(p.cell) ? p.cell : -1); p.x = Math.round(q.x * 10) / 10; p.y = Math.round(q.y * 10) / 10; p.w = Math.max(4, Math.round(num(p.w, 40) * k)); p.h = Math.max(4, Math.round(num(p.h, 40) * k));
+    // A block made smaller in a chart's column keeps its own size (manip-pv.js), at the same scale.
+    if (p.nw !== undefined) p.nw = Math.max(4, Math.round(num(p.nw, 40) * k)); if (p.nh !== undefined) p.nh = Math.max(4, Math.round(num(p.nh, 40) * k)); }
   const outH = grow ? Math.ceil(pad * 2 + bh * k) : to.h, out = { w: to.w, h: Math.max(outH, 1) };
   const ann = src.__ann;
   if (ann) {
@@ -439,7 +441,10 @@ export function snapFor(moving, others, slots, t, { link = true } = {}) {
   const ids = new Set(moving.map(p => p.id));
   let best = null;
   const offer = (dx, dy, to, slot) => { const d = Math.hypot(dx, dy); if (!best || d < best.d) best = { dx, dy, to, slot, d }; };
-  for (const q0 of link ? others : []) {
+  // Dropped in a place-value chart's column: the column lays its blocks out (manip-pv.js), so no edge-to-edge snap
+  // (that pulled blocks out over the column's edge).
+  const h0 = boxes[0], inColumn = slots.some(s => s.kind === 'column' && h0.x + h0.w / 2 >= s.x && h0.x + h0.w / 2 <= s.x + s.w && h0.y + h0.h / 2 >= s.y && h0.y + h0.h / 2 <= s.y + s.h);
+  for (const q0 of link && !inColumn ? others : []) {
     if (ids.has(q0.id)) continue;
     const q = pieceBox(q0); if (!q) continue;
     for (const a of boxes) {

@@ -3622,6 +3622,13 @@
         "done": "Saved as template \"{title}\". Share code {code}",
         "savedAt": "Saved {time}",
         "notYet": "Not saved yet. Trying again…"
+      },
+      "pv": {
+        "traded": "Traded {n} × {from} for {m} × {to}.",
+        "broke": "{from} became {n} × {to}.",
+        "moved": "{label} moved to the {col} column.",
+        "needTen": "Needs 10 to trade",
+        "count": "{n} pieces in {col}"
       }
     },
     "manip-room": {
@@ -13360,6 +13367,14 @@
       "dotCross": {
         "name": "Dot-and-cross diagram",
         "desc": "Shared and transferred electrons in shells"
+      },
+      "skeletal": {
+        "name": "Organic structures",
+        "desc": "Skeletal, condensed and full structural formulas"
+      },
+      "energyLevels": {
+        "name": "Atomic energy levels",
+        "desc": "Electron transitions, wavelengths and series"
       },
       "populationGrowth": {
         "name": "Population growth",

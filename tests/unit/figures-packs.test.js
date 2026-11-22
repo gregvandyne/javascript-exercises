@@ -1,10 +1,10 @@
 // Oomba Figures 1.1.0 is split by subject (docs/figures-api.md "The core and its packs"): the core (oomba-figures.js:
 // the drawing core, words, math labels, the formula language, the notice, the grid and the registry) and its packs
-// (packs/math.js, data.js, physics.js, chem.js, measure.js; since 1.3.0 bio.js, since 1.4.0 econ.js), each a classic script that registers its kinds into the
+// (packs/math.js, data.js, physics.js, chem.js, measure.js; since 1.3.0 bio.js, since 1.4.0 econ.js; 1.5.0 adds two chem kinds), each a classic script that registers its kinds into the
 // core. Each file has its own pinned tag (SRI, crossorigin), the scanner admits a pack only after the core of its
 // version, the CSP and the screenshot worker name each pack file, the lock and manifest list each, the server's copy runs
 // the core and every pack, and the self-tests fail a page that draws a kind whose pack tag is missing. 1.0.0 (one file)
-// is unchanged, and so is 1.1.0 (shipped): pages pinned to either keep working. New builds get the latest (1.4.0).
+// is unchanged, and so is 1.1.0 (shipped): pages pinned to either keep working. New builds get the latest (1.5.0).
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';

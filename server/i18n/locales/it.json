@@ -3436,6 +3436,13 @@
         "done": "Salvato come modello «{title}». Codice {code}",
         "savedAt": "Salvata {time}",
         "notYet": "Non ancora salvata. Riprovo…"
+      },
+      "pv": {
+        "traded": "Scambiati {n} × {from} con {m} × {to}.",
+        "broke": "{from} è diventato {n} × {to}.",
+        "moved": "{label} è passato nella colonna {col}.",
+        "needTen": "Ne servono 10 per cambiare",
+        "count": "{n} pezzi in {col}"
       }
     },
     "manip-room": {
@@ -12641,6 +12648,14 @@
       "dotCross": {
         "name": "Diagramma a punti e croci",
         "desc": "Elettroni condivisi e trasferiti nei gusci"
+      },
+      "skeletal": {
+        "name": "Strutture organiche",
+        "desc": "Formule scheletriche, condensate e di struttura"
+      },
+      "energyLevels": {
+        "name": "Livelli energetici dell'atomo",
+        "desc": "Transizioni elettroniche, lunghezze d'onda e serie"
       },
       "populationGrowth": {
         "name": "Crescita della popolazione",

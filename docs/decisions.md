@@ -10314,6 +10314,50 @@ weren't saved at all unless the teacher pressed Save, which made a new share cod
   print, hide, languages, the generators), figures-econ-words (12 languages and look-alikes), figures-scrub, and the
   Economics tab and its editors in Chromium (figures-browser).
 
+## Virtual math manipulatives: place-value charts fit and regroup (22 Nov 2026)
+
+Testing Base Ten Blocks on an iPhone, rods dropped into the chart's Tens column spilled over its edges and lay on top of
+each other, and a rod broken into ten units left the units outside the chart. A drop into a column now lays the column
+out and regroups it, by fixed rules (public/js/manip-pv.js, shared by the solo board, the live room and the tests).
+
+- **Fit.** The blocks in a column sit in tidy rows inside it (under its heading, centered), all made smaller by one
+  factor as more come in, never bigger than their own size, so none crosses the column's edges or covers another. The
+  layout runs after every change: a drop, a palette add, Copy, Delete, Break, Regroup, a chart moved (it carries the
+  blocks in its columns, like a frame) or resized, and when a board is opened (layout only, no trades). A block made
+  smaller keeps its own size (nw, nh; the server keeps them bounded) and gets it back when dragged out of the chart.
+  Below 0.4 of a block's size the column shows how many it holds ("×37"); past that the gaps close up and, only for
+  hundreds of blocks, the rows overlap a little, still inside. A drop inside a column no longer snaps edge to edge to a
+  neighbor (that was what pulled rods over the edge). Every chart on every tool with one (Base Ten Blocks, Place Value
+  Disks, practice "Build 346" charts) works this way.
+- **Regroup on drop: one place at a time, the total never changes.** A column's place comes from its heading (Ones,
+  Tens, Hundreds, Thousands, Tenths... up to Millions). For each block in a column:
+  - its own column (a rod in Tens): it just stays;
+  - one place smaller (a rod in Hundreds): it waits there, drawn softer, and the column says "Needs 10 to trade"; as
+    soon as the column holds ten of them, each ten trade for one of the column's block (ten rods become one flat),
+    leftovers stay waiting (23 units in Tens: two rods and three units). So ten 1s in Tens make a 10, ten 10s in
+    Hundreds a 100, ten 100s in Thousands a 1,000;
+  - one place bigger (a flat in Tens, a cube in Hundreds, a rod in Ones): it breaks into ten of the column's block,
+    right there;
+  - two or more places away (a cube in Tens, a unit in Hundreds): it goes to its own column of that chart with a short
+    note ("1,000 moved to the Thousands column"); a chart without that column leaves it where it was, marked.
+  We chose one place at a time because each step is the ten-for-one trade children are learning; breaking a cube into
+  100 rods, or waiting for 100 units in Hundreds, would hide it. Waiting (rather than sending a rod in Hundreds back to
+  Tens) lets a child collect ten and see the trade happen. Locked blocks are never traded, moved or resized.
+- **Break and Regroup on a chart.** Break (the wheel's "Break into 10") on a block in a chart puts the ten pieces into
+  the column for their value in the same chart (a rod in Tens: ten units in Ones; a flat: ten rods in Tens; a cube: ten
+  flats in Hundreds). Regroup (ten of a kind into one) puts the new block in its column too (ten units in Ones: a rod in
+  Tens). A chart without that column gets them just under it, so they are not traded straight back; off a chart both
+  work as before. A copy of a block in a column stays in that column.
+- **One step, everywhere.** A regroup happens inside the change that caused it, so one Undo takes back the drop and its
+  trade together. New blocks from a trade pop in (none with reduced motion) and one toast says what happened ("Traded
+  10 × 10 for 1 × 100."). In a live room the square's state is regrouped in the browser that made the change and saved
+  as usual (the server validates it as before); everyone else just sees the result.
+- **Words** in all 13 languages under js.manip.pv.* (en-GB uses the English). **Tests:** manip-pv (the fit math, every
+  block x column pair, ten-for-one trades in every column, decimals and disks, Break and Regroup homes, carry and snap,
+  fitInto and the server's bounds) and manip-pv-browser (an iPhone 13 with touch and a laptop: ten rods into Hundreds
+  become a flat and Undo takes it back, the flat into Tens becomes ten rods inside it, Break on a rod in Tens puts ten
+  units inside Ones, nothing drawn outside its column; and a student's trade saved in a live room).
+
 ## Algebra Builder builds again: the math field's files are in the repository (22 Nov 2026)
 
 - **Why it could not build.** `tools/algebra-builder/.gitignore` said `dist/`, meant for Vite's output, but it also
@@ -10393,6 +10437,66 @@ question. Now a worksheet question has an answer type.
   figures-answers-browser (Chromium: the builder's switch and options by keyboard, print, the student's radios with the
   arrow keys, the ± button, hand in, the reveal, a phone without sideways scroll); figures-product and figures-assign
   updated, the biology and economics generator checks through `_choice-gens.js`.
+
+## Figures 1.5.0: organic structures and atomic energy levels (22 Nov 2026)
+
+- **A new version, like 1.4.0.** Oomba Figures 1.5.0 is a new version folder: the core and the same seven packs (no
+  new pack; the chem pack gains `skeletal` and `energyLevels`). 1.0.0 to 1.4.0 have shipped and stay byte for byte (the
+  lock, and git at the 1.4.0 release); every catalog figure 1.4.0 drew (each preset and two generator figures per
+  generator, in every mode) draws the same bytes in 1.5.0, and checks and solves the same
+  (`tests/unit/figures-v150.test.js`). New builds, the Builder's tags and the Figures product pin 1.5.0; the CSP, the
+  scanner and the screenshot worker list the eight new files. Minified with the pinned esbuild; the ported file keeps its
+  Apache 4(b) note as a legal comment.
+- **Skeletal structures, server-drawn.** These were deferred in 1.2.0 because the only way Oomba drew them,
+  `OF.structure` (SmilesDrawer), needs a browser, so a printed sheet, a Figures thumbnail or a student's lesson step
+  (all drawn on the server) could not show them. `skeletal` is a proper kind drawn by Oomba as lines and text, so it
+  prints and renders on the server. The source's organic structure editor already worked this way (its views are pure
+  arithmetic on atom places), so its views are ported (`ported/organic.js`: valence and added hydrogens, labels with
+  subscripts and backward labels, bond lines with the inner second line, the full formula's hydrogen placement, the
+  chiral asterisk, carbon numbering). The editor's behavior becomes data: `view`, `ends`, `rings`, `acids`, `reverse`,
+  `numbers`, `flip`, `chiral`, a caption (`name`), and atoms placed by hand (`atoms` with `x`, `y` and `h` for dragged
+  hydrogens). The source has no SMILES and no automatic layout (its ADR: layout is research-grade once rings meet), so
+  Oomba adds its own: SMILES-lite and a straight `chain` with groups (what a generator deals), laid out on 30 degree
+  steps (zigzag, or straight for a full formula), single rings as regular polygons, then checked for overlaps.
+- **What is left out, and why.** Rings that share atoms (naphthalene, steroids, spiro and bridged rings) are not laid
+  out automatically: an honest layout for fused systems is the research-grade problem the source avoided, so they are
+  refused with the reason (give them as `atoms` with places, which draw and print, or use `OF.structure` in the browser).
+  Bracket atoms (charges, isotopes, explicit H), stereo marks and five-membered aromatic rings in lowercase are refused
+  (write the Kekulé form). The editor's pointer UI (drawing, dropping rings, moving, swinging hydrogens) is not ported:
+  the Figures editor is data-driven (typed SMILES, toggles, JSON), as with every other kind. `OF.structure` stays as it
+  is (shipped versions pin it); the FIGURE RULES now say to use `skeletal` for worksheets and `OF.structure` only for
+  what `skeletal` refuses, so there is one way to draw a printable structure.
+- **Truthful.** Hydrogens are always worked out from valence (never typed), an overbonded atom is refused, a layout
+  where atoms or bonds would overlap is refused, and a skeletal formula that would hide a carbon in a straight line (the
+  source only warns in its editor) is refused. `OF.solve.skeletal` gives the molecular formula in Hill order, counts,
+  molar mass (IUPAC standard atomic weights), degree of unsaturation and functional groups (a Kekulé benzene is an
+  arene, not three alkenes).
+- **Atomic energy levels, Oomba's own.** The source has no such generator, so `energyLevels` is written fresh: hydrogen
+  (or a one-electron ion) from E = -13.6 Z²/n² eV, or any atom's levels in eV, each line exactly at its energy, labels
+  spread on leaders where lines crowd; emission arrows down (solid), absorption up (dashed), ionization to n = ∞;
+  wavelengths from λ = hc/ΔE with exact SI constants. Arrows between levels too close to draw at the figure's height
+  (n = 6 to 5 at the default 360 px is 4 px) are refused with the reason, not drawn as a smudge; `height` up to 900 fits
+  more. On screen a visible photon's arrow is in its color (the line spectrum's color function); print is black.
+
+| Source item | Status | Oomba | Notes |
+| --- | --- | --- | --- |
+| Organic Structure Editor: the four views (skeletal, carbon skeleton, condensed, full structural) | Ported | `skeletal` (new) | From one shape; labels, bond lines, added hydrogens, CO₂H, backward labels, chiral asterisk, carbon numbering. |
+| Organic Structure Editor: drawing by hand | Partial | `skeletal` with `atoms` + `bonds` | As data (places in bond lengths, `h` for placed hydrogens), edited as JSON; the pointer editing is not ported. |
+| Organic Structure Editor: rings tray (cyclopentane, cyclohexane, benzene) | Partial | SMILES-lite rings | Single rings of 3 to 8 (benzene, pyridine in lowercase); fused, spiro and bridged rings only as `atoms`. |
+| Organic Structure Editor: Zigzag and Straighten (planned in the source) | Ported as data | `layout: "zigzag" \| "straight"` | Straight is refused in the skeletal view (it would hide carbons). |
+| SMILES input and automatic layout | New (Oomba's own) | `smiles`, `chain` | Not in the source; organic subset only. |
+| Atomic energy levels with transitions | New (Oomba's own) | `energyLevels` (new) | Not in the source; hydrogen-like or given levels, emission, absorption, ionization, cascades, series. |
+
+- **Judgment calls.** The kind is `skeletal` (it also draws condensed and full formulas, but the skeletal formula is
+  what teachers ask for and the name fits the Canvas kit's 20 characters); the catalog calls it "Organic structures".
+  Hydrogen uses 13.6 eV (the textbook Bohr value) so the figure's numbers match a student's working; hc is exact
+  (1239.84 eV nm), and the generator's question says so. Element labels use Arial widths so the ported label boxes fit;
+  heteroatoms are colored on screen only. The figure question generators: hydrogens in a chain with one double bond
+  (CnH2n), and the wavelength of a hydrogen emission line to n = 1 or 2.
+- **Tests.** figures-v150 (frozen versions, latest pin, byte-identical 1.4.0 figures, the new kinds in the frozen file),
+  figures-chem-organic, figures-chem-levels (formulas, groups, scale, photons against the Balmer and Lyman lines,
+  cannot-be-drawn, print, hide, languages, the generators), figures-chem2-words (12 languages and look-alikes),
+  figures-scrub, and the new editors in Chromium (figures-browser).
 
 ## Figures: the lesson Figure step and Build a test (22 Nov 2026)
 

@@ -571,6 +571,8 @@ const KEYWORDS = [
   [/population|carrying capacity|logistic|exponential growth/, ['populationGrowth']], [/predator|prey|lotka/, ['predatorPrey']], [/enzyme|denatur|substrate/, ['enzymeActivity']],
   [/photosynth|limiting factor/, ['photosynthesis']], [/punnett|genotype|phenotype|allele|dominant|recessive|mendel/, ['punnett']], [/pedigree|inheritance|heredit/, ['pedigree']],
   [/transcription|translation|codon|mrna|protein synthesis|\bdna\b/, ['proteinSynthesis']], [/electrophoresis|\bgel\b|dna fingerprint/, ['gel']], [/osmosis|tonicity|hypertonic|hypotonic|diffusion/, ['osmosis']], [/pipette/, ['reading']],
+  // chemistry (1.5.0)
+  [/skeletal|structural formula|condensed formula|organic|hydrocarbon|alkane|alkene|alkyne|functional group|isomer/, ['skeletal']], [/energy level|electron transition|emission line|balmer|lyman|photon/, ['energyLevels']],
   // economics (1.4.0)
   [/supply and demand|demand curve|supply curve|equilibrium price|price ceiling|price floor|shortage|consumer surplus|producer surplus|deadweight|tax incidence/, ['supplyDemand']],
   [/money market|money supply|loanable funds|interest rate|reserves|monetary policy/, ['moneyMarket']], [/business cycle|recession|peaks? and troughs?/, ['businessCycle']],

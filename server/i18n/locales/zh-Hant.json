@@ -3435,6 +3435,13 @@
         "done": "已另存為範本「{title}」。代碼 {code}",
         "savedAt": "{time} 已儲存",
         "notYet": "還沒儲存。正在重試…"
+      },
+      "pv": {
+        "traded": "用 {n} × {from} 換成 {m} × {to}。",
+        "broke": "{from} 變成 {n} × {to}。",
+        "moved": "{label} 移到 {col} 欄。",
+        "needTen": "需要 10 個才能交換",
+        "count": "{col} 有 {n} 個"
       }
     },
     "manip-room": {
@@ -12640,6 +12647,14 @@
       "dotCross": {
         "name": "點叉圖",
         "desc": "電子層中共用與轉移的電子"
+      },
+      "skeletal": {
+        "name": "有機結構",
+        "desc": "鍵線式、示性式與結構式"
+      },
+      "energyLevels": {
+        "name": "原子能階",
+        "desc": "電子躍遷、波長與譜系"
       },
       "populationGrowth": {
         "name": "族群成長",
