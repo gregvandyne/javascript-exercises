@@ -56,10 +56,19 @@ export function left(u, access = aiAccess(u)) {
 }
 /** Spend one of today's free requests (called only when the AI is actually asked). */
 const spend = (u, access) => { if (access === 'free') allow(dayKey(u), config.proofAiFreePerDay, 864e5); };
-/** What the page needs to know: { access, left, plans } (left: null when there is no cap). */
+/** Mistake Hunt, Phase 3: Oomba's chat on a set and the class insights are Teacher plan tools (teacher-tools.js
+ *  toolAccess's people: plan holders, testers, the platform admin): 'yes'; a teacher without the plan while paid plans
+ *  are on: 'plan' (a calm "part of the Teacher plan" note with the trial); anyone else: null. */
+export function planTools(u) {
+  const a = aiAccess(u);
+  if (a === 'plan') return 'yes';
+  if (a === 'free' && plansOn()) return 'plan';
+  return null;
+}
+/** What the page needs to know: { access, left, plans, chat } (left: null when there is no cap; chat: planTools). */
 export function aiInfo(u) {
   const a = aiAccess(u); if (!a) return null;
-  return { access: a, left: a === 'plan' ? null : left(u, a), plans: plansOn() };
+  return { access: a, left: a === 'plan' ? null : left(u, a), plans: plansOn(), chat: planTools(u) };
 }
 
 // ---------------------------------------------------------------- names of the teacher's students

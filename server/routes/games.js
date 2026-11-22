@@ -23,6 +23,7 @@ import * as progress from '../services/progress.js';
 import * as L from '../services/lessons.js';
 import * as PS from '../services/proof-steps.js';
 import * as proofAi from '../services/proof-ai.js';
+import * as proofChat from '../services/proof-chat.js';
 import { characterOf } from '../services/character.js';
 import * as match from '../services/match.js';
 import * as polls from '../services/polls.js';
@@ -672,6 +673,33 @@ router.post('/api/games/:id/proof/why', requireUser, rateLimit('proof-ai', 30, 3
   const b = req.body || {};
   const r = await proofAi.whyLines(req.user, { grade: b.grade, items: b.items });
   proofAiReply(req, res, r, x => ({ lines: x.lines, ai: x.ai, ...(x.reason ? { reason: x.reason } : {}) }));
+});
+// Oomba's chat on a passage set (docs/decisions.md "Mistake Hunt, Phase 3"; services/proof-chat.js): a turn is a job.
+// The Teacher plan's people only (plan holders, testers, the platform admin); a teacher without the plan gets 403
+// teacherPlan, anyone else 403 notAllowed. GET ?setId= -> { chat }; POST { setId?, text, set, retry? } -> { chat } (the
+// answer comes later: the page asks again); POST .../applied { setId?, turnId }: the change was put in the builder.
+const proofChatReply = (req, res, r) => {
+  if (r.ok) { res.set('Cache-Control', 'no-store'); return res.json(r.chat ? { chat: r.chat } : { ok: true }); }
+  const status = r.code === 'notAllowed' || r.code === 'teacherPlan' ? 403 : r.code === 'chatBusy' ? 409 : r.code === 'notFound' ? 404 : 400;
+  res.status(status).json({ error: req.t('errors.api.badRequest'), code: r.code });
+};
+router.get('/api/games/:id/proof/chat', requireUser, (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!docTextGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  proofChatReply(req, res, proofChat.current(req.user, { setId: typeof req.query.setId === 'string' ? req.query.setId.slice(0, 40) : null }));
+});
+router.post('/api/games/:id/proof/chat', requireUser, rateLimit('proof-ai', 30, 3600e3), (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!docTextGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  const b = req.body || {};
+  if (typeof b.text !== 'string' || b.text.length > 4000) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'brief' });
+  proofChatReply(req, res, proofChat.send(req.user, { setId: typeof b.setId === 'string' ? b.setId : null, text: b.text, set: b.set, retry: b.retry }));
+});
+router.post('/api/games/:id/proof/chat/applied', requireUser, (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!docTextGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  const b = req.body || {};
+  proofChatReply(req, res, proofChat.applied(req.user, { setId: typeof b.setId === 'string' ? b.setId : null, turnId: b.turnId }));
 });
 // Print (services/game-print.js): a game's own data -> { html }, the printable page the play page prints for the frame, in
 // the viewer's language. Crossword: its puzzle (its words and clues, the word bank option and the layout as numbers;

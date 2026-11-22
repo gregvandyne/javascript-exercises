@@ -13713,6 +13713,27 @@
       "errors": {
         "words": "That fix has words we can't use. Try different words."
       }
+    },
+    "insight": {
+      "title": "Oomba's read",
+      "planNote": "Oomba's read of the class's results is part of the Teacher plan.",
+      "tryPlan": "Try the Teacher plan",
+      "noneYet": "Oomba can read the results once someone hands in.",
+      "foundLine": "{done} of {total} handed in. Together they found {pct}% of the mistakes.",
+      "missedLine": "Missed most: {list}.",
+      "missedItem": "{kind} (missed {missed} of {all} times)",
+      "foundWell": "Found well: {kind}.",
+      "allFound": "Every kind of mistake was found every time.",
+      "tipHarder": "Next time, try more mistakes or kinds from a higher grade.",
+      "tipSet": "Try a short set with only \"{kind}\" mistakes ({code}), then talk through the why lines together.",
+      "tipAloud": "Read a passage aloud together and stop at each \"{kind}\" mistake.",
+      "aiNote": "Oomba wrote this from the class's counts only. No names or student work went to the AI.",
+      "stale": "New work was handed in since Oomba's last read.",
+      "ask": "Ask Oomba",
+      "privacy": "Only the counts for each kind of mistake go to Oomba, never names or work.",
+      "ready": "Oomba read the results.",
+      "resting": "Oomba is resting right now. Here is the read from the numbers.",
+      "failed": "Oomba couldn't read the results this time. Here is the read from the numbers."
     }
   }
 }

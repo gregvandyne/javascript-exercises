@@ -164,8 +164,8 @@ test('the daily cap: free teachers get a few AI requests a day, Teacher plan hol
   assert.equal((await why(teacher, { grade: 4, items: [{ x: X1, ...m[0] }] })).status, 200);
   // the frame tells the page: left today and whether plans are on (for the trial link)
   const init = await frameInit(teacher);
-  assert.deepEqual(init.proofAi, { access: 'free', left: 0, plans: true });
-  assert.deepEqual((await frameInit(teacher2)).proofAi, { access: 'plan', left: null, plans: true });
+  assert.deepEqual(init.proofAi, { access: 'free', left: 0, plans: true, chat: 'plan' });
+  assert.deepEqual((await frameInit(teacher2)).proofAi, { access: 'plan', left: null, plans: true, chat: 'yes' });
   TOOLS.plansOn(false);
 });
 

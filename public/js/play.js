@@ -145,7 +145,7 @@ const TYPES = {
   'brb:clues': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.words) && m.words.length >= 1 && m.words.length <= 30
     && m.words.every(w => typeof w === 'string' && w.length <= 40) && typeof m.level === 'string' && m.level.length <= 60,
   // Mistake Hunt (docs/sdk.md "Mistake Hunt"): BRB.proofAsk (the server checks who may ask) and a graded step's fixes.
-  'brb:proofai': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && ['draft', 'scan', 'why'].includes(m.op) && !!m.body && typeof m.body === 'object' && !Array.isArray(m.body) && JSON.stringify(m.body).length <= 60000,
+  'brb:proofai': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && ['draft', 'scan', 'why', 'chat', 'chat-get', 'chat-applied'].includes(m.op) && !!m.body && typeof m.body === 'object' && !Array.isArray(m.body) && JSON.stringify(m.body).length <= 60000,
   'brb:proof': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.edits) && JSON.stringify(m.edits).length <= 60000 && typeof m.handIn === 'boolean',
   'brb:trial': m => true,
   // BRB.print (Crossword): the puzzle as plain data, at most 20,000 characters (the server checks every part of it).
@@ -406,9 +406,14 @@ async function textDocForGame(m) {
   toFrame({ type: 'brb:textdoc-done', id: m.id, ...out });
 }
 /** BRB.proofAsk (Mistake Hunt's AI tools): the server answers; the answer (or { error }) goes back as brb:proofai-done. */
+// Oomba's chat on a set (Phase 3): 'chat' sends a message, 'chat-get' reads the conversation (asked every 2 s while a
+// turn runs), 'chat-applied' says a change was put in the builder.
 async function proofAiForGame(m) {
   let r;
-  try { r = await api(`/api/games/${d.gameId}/proof/${m.op}`, { method: 'POST', body: m.body, active: playing() }); }
+  try {
+    if (m.op === 'chat-get') r = await api(`/api/games/${d.gameId}/proof/chat${typeof m.body.setId === 'string' && m.body.setId ? `?setId=${encodeURIComponent(m.body.setId.slice(0, 40))}` : ''}`, { background: true });
+    else r = await api(`/api/games/${d.gameId}/proof/${m.op === 'chat-applied' ? 'chat/applied' : m.op}`, { method: 'POST', body: m.body, active: playing(), ...(m.op === 'chat-applied' ? { background: true } : {}) });
+  }
   catch (e) { r = { error: (e.data && e.data.code) || (e.status === 429 ? 'slow' : 'offline'), ...(e.data && e.data.left === 0 ? { left: 0 } : {}) }; }
   toFrame({ type: 'brb:proofai-done', id: m.id, r });
 }

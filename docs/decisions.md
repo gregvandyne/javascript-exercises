@@ -11179,3 +11179,78 @@ small daily cap and Teacher plan holders without one.
 - **Tests:** `manipulatives.test.js` (counting, order, strings in every locale), `manip-room-browser.test.js` (1440 x 900
   and iPhone 13: 16 checked, closed by default, the count, needs-help first, no overlap with the switches, a long name
   cut short, End session in reach; nobody checked).
+
+## Mistake Hunt, Phase 3: Oomba's chat on a set and class insights (22 Nov 2026)
+Phase 3 of the plan the owner approved with the mockup (the Oomba panel beside the builder, the AI card on the results).
+**Gating:** both are **Teacher plan tools** (`services/proof-ai.js planTools`, toolAccess's people: Teacher plan holders,
+a trial, a grant or a school seat, testers on `MANIPULATIVES_USERS`, the platform admin): `'yes'`. A teacher without the
+plan sees a calm "part of the Teacher plan" note with **Try the Teacher plan** (`/trial`, no price) while paid plans are
+on (`'plan'`); while plans are off they see nothing new. Students, kids, family grown-ups and guests never. The Phase 2
+tools (Power with AI, Check my passage, why lines, the free daily cap) are unchanged.
+
+- **Oomba's chat on a set** (`services/proof-chat.js`, the Manipulatives chat's pattern, `services/manip-chat.js`).
+  An **Oomba** button in the builder's head opens the panel. The game is its own sandboxed page, so the panel lives in
+  the game (mirroring `public/css/manip-chat.css` in the game's tokens rather than sharing the file): 900 px and wider, a
+  panel docked on the end side (380 px, 340 px under 1100 px) and the builder narrows beside it; narrower, a sheet over
+  the lower part of the page with Minimize and Close, minimized to the round Oomba bubble at the bottom end corner with a
+  dot when an answer came meanwhile. Escape minimizes; focus to the composer, the bubble, or back to the button. Closing
+  while Oomba answers minimizes. Leaving the builder hides it. The teacher's words in Mint on the end side, Oomba's on a
+  card with its mark; first-message ideas ("Fewer comma mistakes", "Make passage 1 easier", "Add a passage", "Only
+  spelling"; on an empty set two topic ideas). The composer is a button, not a form: the sandboxed frame may not submit
+  forms. The frame talks through the play page (`BRB.proofAsk` ops `chat`, `chat-get`, `chat-applied`), never directly.
+- **What Oomba knows** (built on the server from the draft the page sends, `cleanDraft` then `setContext`): the set's
+  title, grade, chosen kinds and how many a passage, each passage's correct text and its planted mistakes (kind, what
+  students see, the right words). A passage the set could not keep (the game's tidying, the length limits, the text
+  filter) is left out. A title or passage that fails the word rules or **names one of the teacher's students** is hidden
+  from the AI (`{ hidden: true }`), and the AI is told to keep it with `{ keep: n }`. Never anything about students. The
+  teacher's message passes `textProblem` and `namesIn` before anything is stored or sent; a refused message keeps its
+  words in the box with the reason.
+- **What Oomba can do.** Plain JSON (no strict schema): `{ reply, action: null | { op: 'replace', set: { title, grade,
+  kinds, perPassage, max, passages: [{ keep: n, title?, count? } | { title, text, count? }] } } }`. **The AI never
+  writes or places a mistake.** A kept passage's text comes from the teacher's own draft; a new one goes through
+  `cleanPassage` (tidied, 40 to 1,500 characters, the text filter unchanged, no student's name) or is dropped; then
+  **proof-core plants** the chosen kinds (`plantCapped`: `max` caps a kind, a group or a family such as `commas`,
+  `capitals`, `apostrophes`, `homophones` in each passage, so "fewer comma mistakes" is a cap, not a guess). A kept
+  passage under the same kinds and count keeps its mistakes, why lines and pins exactly; otherwise it is planted again
+  (pins kept). Wrong words go through the filter. Any "mistakes" the AI sends are ignored. If nothing usable comes back,
+  the set is unchanged ("Oomba's passages couldn't be used"). The builder puts a change in as **one change**: the whole
+  set (name, grade, kinds, count, passages), "Oomba's change is in your set.", new passages labelled "Written with AI.
+  Read it before you save.", and under the reply **Undo Oomba's change** (then **Put it back**). A change that arrived
+  while the page was closed is offered once as "Put it in my set". Why lines are drafted again on the next Save.
+- **A turn is a job** (one at a time per set, 409 `chatBusy`); the page asks every 2 s; a refresh shows the same wait; a
+  restart ends the turn as failed. One AI call per turn (`callAi`, the one 90 s budget, `config.builderModel`, effort
+  low, max_tokens 6000, the AI budget pool); every failure is one warn line without the teacher's words and a calm answer
+  ("Oomba couldn't answer this time; your set is unchanged", and its timeout, busy, resting and restart sentences) with
+  Try again and Edit. Rate limit: the Phase 2 `proof-ai` bucket (30 an hour).
+- **Kept** (migration `0105_mistake_hunt_chat`, `proof_chats`): one conversation per teacher and set (the saved set's
+  id, or `new` until the first save, which takes it over within 30 minutes), the newest 20 turns, 8 to the AI, the built
+  set only on the newest 3 changes. Deleted with the set (`game-sets remove`, and pruned when the set is gone), after 60
+  days untouched, and with the account (`game-sets forgetUser`, the users foreign key).
+- **Class insights: "Oomba's read"** (`services/proof-insights.js`, `views/proof-step.js proofInsightHtml`), a card in
+  each graded proofread step's panel on the lesson's progress page, above "By kind of mistake". **Only counts go to the
+  AI:** for each kind of mistake in the set its found and missed totals across the students who handed in, its Common
+  Core code, how many handed in out of how many, the grade and the number of passages. Never names, never a student's
+  work or edits, never one student's result, never the passages. The AI writes `{ read, tips }` (two or three sentences,
+  one or two teaching ideas) in the teacher's language, each line through the text filter. **The code's own read** is
+  the fallback and is shown whenever there is no fresh read: "2 of 2 handed in. Together they found 36% of the
+  mistakes.", "Missed most: ..." (the kinds missed most by share), "Found well: ...", and two ideas (a short set of the
+  kind missed most, reading aloud and stopping at the next one). **Ask Oomba** (a data-api form, the page reloads):
+  cached per assigned lesson and step (`proof_insights`) until a new hand-in arrives (hand-ins are final, so the count is
+  the key) or the page is read in another language; "New work was handed in since Oomba's last read." A failure keeps the
+  code's read with a calm toast. No rankings of students anywhere. `GET/POST /api/proof/insights/:cl/:step` (the class's
+  managers; students and other teachers 404; a teacher without the plan gets `access: 'plan'` and 403 `teacherPlan`).
+- **13 locales:** the game's new words (its I18N block, `chat*`, `idea*`) and the server's `proof.insight.*`.
+- **Judgment calls.** The panel is mirrored inside the game rather than reusing `public/js/manip-chat.js`: the game is a
+  sandboxed frame without the site's CSS or modules, so sharing would need the site's tokens and `api()` there. Empty
+  passage tabs are not part of what Oomba sees, so a change drops them. Insights are generated on demand, not when a
+  hand-in arrives, to keep AI use to what a teacher asks for. Insight rows hold no names; they are not deleted with a
+  lesson yet (they are keyed by the assigned lesson and are unreachable once it goes).
+- **Tests:** `tests/unit/proof-chat.test.js` (a reply-only turn and what the AI sees, no student names; a hidden passage
+  kept; a replace re-planted by proof-core with the key fixing each passage back, the AI's own mistakes ignored, the set
+  saving as it came back; caps, only spelling, an easier passage; filtered passages dropped; bad JSON and a timeout with
+  Try again and a warn line without the words; a name refused before the AI; free teachers, students, kids and plans
+  off; one turn at a time and a restart; the chat following its set and going with it and the account; insights with
+  counts only, cached until a new hand-in, the fallback on failure, the plan note, students refused),
+  `tests/unit/proof-chat-browser.test.js` (Chromium: the laptop panel docked beside the builder, a new passage as one
+  change, Undo and Put it back, Escape; the iPhone 13 sheet and bubble; the plan note; the progress page's card before
+  and after Ask Oomba). `proof-ai.test.js` checks the frame's new `chat` field.

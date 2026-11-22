@@ -1143,13 +1143,15 @@
   // a Promise of the server's answer ({ passages, ai, reason?, left } / { flags, ai, reason?, left } / { lines, ai,
   // reason? }) or { error, left? } ('notAllowed', 'cap', 'names', 'words', 'personal', 'topic', 'short', 'bad',
   // 'offline'). Nothing is saved; the teacher reviews it all. BRB.openTrial(): the page opens the Teacher plan's trial
-  // page, right after a tap.
+  // page, right after a tap. Phase 3, Oomba's chat on a set (BRB.proofAi.chat: 'yes' with the Teacher plan, 'plan' for
+  // the plan note): op 'chat' ({ setId?, text, set, retry? } -> { chat }), 'chat-get' ({ setId? } -> { chat }) and
+  // 'chat-applied' ({ setId?, turnId } -> { ok }); errors 'teacherPlan', 'chatBusy', 'brief', 'names', 'words', 'personal'.
   var aiWait = {}, aiSeq = 0;
   function proofAsk(op, body) {
     if (typeof Promise !== 'function') return null;
     return new Promise(function (res) {
       if (!INIT.proofAi || typeof INIT.proofAi !== 'object') return res({ error: 'notAllowed' });
-      if (op !== 'draft' && op !== 'scan' && op !== 'why') return res({ error: 'bad' });
+      if (['draft', 'scan', 'why', 'chat', 'chat-get', 'chat-applied'].indexOf(op) < 0) return res({ error: 'bad' });
       var copy; try { copy = JSON.parse(JSON.stringify(body || {})); } catch (e) { copy = null; }
       if (!copy || typeof copy !== 'object' || Array.isArray(copy) || JSON.stringify(copy).length > 60000) return res({ error: 'bad' });
       var n = ++aiSeq, timer = setTimeout(function () { delete aiWait[n]; res({ error: 'offline' }); }, 130000);

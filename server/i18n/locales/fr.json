@@ -12997,6 +12997,27 @@
       "errors": {
         "words": "Cette correction contient des mots que nous ne pouvons pas utiliser. Essaie d'autres mots."
       }
+    },
+    "insight": {
+      "title": "La lecture d'Oomba",
+      "planNote": "La lecture d'Oomba des résultats de la classe fait partie de l'offre Enseignant.",
+      "tryPlan": "Essayer l'offre Enseignant",
+      "noneYet": "Oomba pourra lire les résultats dès qu'un élève aura rendu son travail.",
+      "foundLine": "{done} sur {total} ont rendu leur travail. Ensemble, ils ont trouvé {pct} % des fautes.",
+      "missedLine": "Les plus manquées : {list}.",
+      "missedItem": "{kind} (manquée {missed} fois sur {all})",
+      "foundWell": "Bien trouvées : {kind}.",
+      "allFound": "Chaque type de faute a été trouvé à chaque fois.",
+      "tipHarder": "La prochaine fois, essayez plus de fautes ou des types d'un niveau plus élevé.",
+      "tipSet": "Essayez une courte série avec seulement des fautes de type {kind} ({code}), puis discutez ensemble des explications.",
+      "tipAloud": "Lisez un texte à voix haute ensemble et arrêtez-vous à chaque faute de type {kind}.",
+      "aiNote": "Oomba a écrit ceci uniquement à partir des chiffres de la classe. Aucun nom ni travail d'élève n'a été envoyé à l'IA.",
+      "stale": "Du nouveau travail a été rendu depuis la dernière lecture d'Oomba.",
+      "ask": "Demander à Oomba",
+      "privacy": "Seuls les chiffres par type de faute vont à Oomba, jamais les noms ni les travaux.",
+      "ready": "Oomba a lu les résultats.",
+      "resting": "Oomba se repose en ce moment. Voici la lecture à partir des chiffres.",
+      "failed": "Oomba n'a pas pu lire les résultats cette fois. Voici la lecture à partir des chiffres."
     }
   }
 }

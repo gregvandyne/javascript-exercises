@@ -12998,6 +12998,27 @@
       "errors": {
         "words": "Die verbetering bevat woorden die we niet kunnen gebruiken. Probeer andere woorden."
       }
+    },
+    "insight": {
+      "title": "Oomba's lezing",
+      "planNote": "Oomba's lezing van de klassenresultaten hoort bij het Leraarabonnement.",
+      "tryPlan": "Probeer het Leraarabonnement",
+      "noneYet": "Oomba kan de resultaten lezen zodra iemand inlevert.",
+      "foundLine": "{done} van de {total} hebben ingeleverd. Samen vonden ze {pct}% van de fouten.",
+      "missedLine": "Het vaakst gemist: {list}.",
+      "missedItem": "{kind} ({missed} van de {all} keer gemist)",
+      "foundWell": "Goed gevonden: {kind}.",
+      "allFound": "Elke soort fout werd elke keer gevonden.",
+      "tipHarder": "Probeer de volgende keer meer fouten of soorten van een hogere groep.",
+      "tipSet": "Probeer een korte set met alleen fouten van de soort {kind} ({code}) en bespreek daarna samen de uitleg.",
+      "tipAloud": "Lees samen een tekst hardop en stop bij elke fout van de soort {kind}.",
+      "aiNote": "Oomba schreef dit alleen op basis van de aantallen van de klas. Er gingen geen namen of leerlingwerk naar de AI.",
+      "stale": "Er is nieuw werk ingeleverd sinds Oomba's laatste lezing.",
+      "ask": "Vraag het Oomba",
+      "privacy": "Alleen de aantallen per soort fout gaan naar Oomba, nooit namen of werk.",
+      "ready": "Oomba heeft de resultaten gelezen.",
+      "resting": "Oomba rust nu even. Hier is de lezing op basis van de cijfers.",
+      "failed": "Oomba kon de resultaten deze keer niet lezen. Hier is de lezing op basis van de cijfers."
     }
   }
 }
