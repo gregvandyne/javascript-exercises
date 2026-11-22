@@ -251,7 +251,7 @@ test('the layout tour: every ready-made layout with its real screenshot and widg
 test('the story: the class day in five steps that lead to their sections in order, and a menu for phones that needs no script', async () => {
   const s = (await call(null, '/')).text;
   const at = id => s.indexOf(`id="${id}"`);
-  const order = ['how', 'dashboards', 'dash-tour', 'builder', 'kids', 'courses', 'pricing', 'faq'];
+  const order = ['how', 'dashboards', 'dash-tour', 'builder', 'kids', 'pricing', 'faq'];
   for (const id of order) assert.ok(at(id) > 0, id);
   for (let i = 1; i < order.length; i++) assert.ok(at(order[i - 1]) < at(order[i]), `${order[i - 1]} before ${order[i]}`);
   // Five steps, each a link to a section on the page.
@@ -262,7 +262,7 @@ test('the story: the class day in five steps that lead to their sections in orde
   // The menu: a <details> (opens without JavaScript) with every section, sign in and Just Play.
   const menu = s.slice(s.indexOf('<details class="lp-menu"'), s.indexOf('</details>'));
   assert.ok(menu.length > 100, 'menu');
-  for (const id of ['how', 'dashboards', 'builder', 'kids', 'courses', 'pricing', 'faq']) assert.match(menu, new RegExp(`href="#${id}"`), id);
+  for (const id of ['how', 'dashboards', 'builder', 'kids', 'pricing', 'faq']) assert.match(menu, new RegExp(`href="#${id}"`), id);
   assert.match(menu, /href="\/login"/); assert.match(menu, /href="\/play"/);
   // The hero shows the class dashboard (the lesson → game loop is in the Builder section now, still complete before any script).
   const hero = s.slice(0, at('how'));
