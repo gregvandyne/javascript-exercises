@@ -173,16 +173,19 @@
   .dots i { width: 12px; height: 12px; border-radius: 50%; background: var(--line); display: block; }
   .dots i.f { background: var(--leaf); }
   .dots i.on { box-shadow: 0 0 0 2px var(--ink); }
-  .play .passage { font-size: 1.2rem; line-height: 2.3; }
-  .play .tok { padding: 8px 1px; }
+  .play .passage { font-size: 1.2rem; line-height: 1.7; }
+  /* line spacing stays tight; each word's tap area reaches 44 px through an invisible hit box, not through line gaps */
+  .play .tok { padding: 2px 1px; position: relative; }
+  .play .tok::after { content: ''; position: absolute; inset: -9px -3px; }
   .tok.fixed { color: var(--leaf); font-weight: 800; }
   .tok.fixed s { color: var(--muted); font-weight: 400; margin-inline-end: 4px; text-decoration-thickness: 1.5px; }
   .tok.good { background: var(--mint-t); }
   .tok.oops { background: var(--rose-t); }
   .tok.shown { color: var(--leaf-ink); font-weight: 800; background: var(--mint-t); }
   .tok.missed { box-shadow: inset 0 -3px 0 var(--rose); }
-  .tok.hintline { background: var(--spark-t); border-radius: 0; }
-  .tok.hintline.sel, .tok.sel { background: var(--spark); }
+  /* the hint's sentence: one soft highlight behind its words, wrapping line to line */
+  .hintline { background: var(--spark-t); border-radius: 6px; padding: 3px 0; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .tok.sel { background: var(--spark); }
   .result { padding: 12px 16px; border-radius: 16px; background: var(--mint-t); color: var(--leaf-ink); font-weight: 800; }
   .result.warn { background: var(--spark-t); color: var(--spark-ink); font-weight: 700; }
   .hintcard { border-inline-start: 6px solid var(--spark); }
@@ -211,7 +214,7 @@
     .mh h1 { font-size: 1.35rem; }
     .bhead .titlein { font-size: 1.15rem; flex-basis: 100%; order: 2; }
     .passage { font-size: 1.08rem; }
-    .play .passage { font-size: 1.12rem; }
+    .play .passage { font-size: 1.12rem; line-height: 1.7; }
     .wsic { display: none; }
     .mrow { grid-template-columns: 28px minmax(0, 1fr) auto; gap: 8px; }
   }
@@ -1264,7 +1267,7 @@ var I18N = {
         [t('startOver'), function () { SAVE.draft = null; persist(); edit(null); }, '', 'mh-new']];
     }, 'mh-more'));
     box.appendChild(head);
-    D.msg = el('p', 'msg', ''); D.msg.id = 'mh-msg'; D.msg.setAttribute('role', 'status'); box.appendChild(D.msg);
+    D.msg = el('p', 'msg', ''); D.msg.id = 'mh-msg'; D.msg.setAttribute('role', 'status'); D.msg.setAttribute('aria-live', 'polite'); box.appendChild(D.msg);
     D.printBox = el('div'); box.appendChild(D.printBox);
     D.share = el('div'); box.appendChild(D.share);
     D.opts = el('div'); box.appendChild(D.opts);
@@ -1274,7 +1277,8 @@ var I18N = {
     drawSettings(); drawTabs(); drawPassage(); drawPrintBox(); drawOpts(); if (S.share && d.set) drawShare(d.set);
     if (!d.p[0].x) { var ta = document.getElementById('mh-paste'); if (ta) ta.focus(); } else focusTop(ti);
   }
-  function say(s, ok) { if (!D.msg) return; D.msg.className = 'msg ' + (ok ? 'ok' : 'err'); tell(s, D.msg); }
+  // The builder's status: one inline line (role=status, read out by screen readers), no toast on top of it.
+  function say(s, ok) { if (!D.msg) return; D.msg.className = 'msg ' + (ok ? 'ok' : 'err'); D.msg.textContent = s; }
 
   function drawSettings() {
     var c = D.settings, d = S.draft; c.innerHTML = '';
@@ -1789,7 +1793,7 @@ var I18N = {
     var R = S.run, item = it(), Wt = P.wrongTokens(item.x, item.m), E = R.e[R.i], st = R.st[R.i];
     var box = D.ptext; box.innerHTML = '';
     var para = el('p'); box.appendChild(para);
-    var marks = marksOf(), hl = R.hint && R.hint.i === R.i ? R.hint : null;
+    var marks = marksOf(), hl = R.hint && R.hint.i === R.i ? R.hint : null, hlSpan = null;
     if (st === 'shown' || st === 'done') return drawAnswers(box, para, st);
     for (var j = 0; j < Wt.length;) {
       var e = E.filter(function (x) { return x.a === j; })[0], b, end;
@@ -1801,12 +1805,15 @@ var I18N = {
       } else { end = j + 1; b = btn('tok', Wt[j].s); }
       b.dataset.a = String(j); b.dataset.b = String(end);
       if (marks[j]) b.classList.add(marks[j]);
-      if (hl && j >= hl.a && j < hl.b) b.classList.add('hintline');
       if (S.fix && S.fix.a <= j && j < S.fix.b) b.classList.add('sel');
       b.addEventListener('click', (function (a, z) { return function () { openFix(a, z); }; })(j, end));
-      para.appendChild(b);
+      // the hint's sentence: its words in one highlighted span (one soft band, not a box a word)
+      var inHl = hl && j >= hl.a && j < hl.b;
+      if (inHl && (!hlSpan || hlSpan.parentNode !== para)) { hlSpan = el('span', 'hintline'); para.appendChild(hlSpan); }
+      (inHl ? hlSpan : para).appendChild(b);
       var sp = Wt[end - 1].sp;
-      if (sp === '\n\n') { para = el('p'); box.appendChild(para); } else if (sp) para.appendChild(document.createTextNode(' '));
+      if (sp === '\n\n') { para = el('p'); box.appendChild(para); hlSpan = null; }
+      else if (sp) (inHl && end < hl.b ? hlSpan : para).appendChild(document.createTextNode(' '));
       j = end;
     }
     var nE = E.length, c = document.getElementById('mh-changes');
