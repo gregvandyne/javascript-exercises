@@ -158,6 +158,8 @@ export function viewFor(step, cl, row, { teacher = false, t } = {}) {
   const edits = editsOf(row, snap.passages.length);
   const view = {
     title: step.title || '', tell: snap.tell, handedIn: done, revealed, edits,
+    // the answers will open after the due date (the teacher's switch is on and there is a due date)
+    later: !teacher && !revealed && !!step.show_answers && !!(cl && cl.due_at),
     passages: snap.passages.map(p => {
       const w = P.wrongTokens(p.x, p.m).map(x => [x.s, x.sp]);
       return { t: p.t || '', w, n: p.m.length, ...(snap.tell === 'type' ? { groups: P.byGroup(p.m) } : {}) };
