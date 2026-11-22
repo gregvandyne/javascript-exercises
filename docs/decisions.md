@@ -10819,3 +10819,13 @@ We still don't know which error the API gave that morning, since nothing was log
   one warn line without the brief), figures-lesson-step (lessons, worksheets and tests on a timeout and bad JSON),
   figures-product (overloaded: reason busy) and manip-saving-browser (Chromium: the note and the starting board after a
   timeout, Try again keeps the words; a draft refused for a student's name says so).
+
+## Teaching tools plan page: a used trial gets the plan, not a trial offer (22 Nov 2026)
+
+- A teacher without the Teacher plan who has already had the free trial (services/teacher-plan.js `trialUsed`) sees
+  "Your free trial has ended. Get the Teacher plan to keep using it." and a "Get the Teacher plan" button (to /trial,
+  which sends a used trial to Checkout), instead of a trial offer they cannot take. Everyone else sees the trial offer.
+- Owner asked for best judgment on the open questions: the MANIPULATIVES_USERS tester override stays (it is how the
+  owner gives chosen staff free access, set on Render); the billing preview cookie does not open the tools (the gate
+  runs where there is no request, so pages and services must agree).
+

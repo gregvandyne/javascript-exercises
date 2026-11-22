@@ -36,6 +36,7 @@ import { figTag } from '../services/figlibs.js';
 import * as F from '../services/figures.js';
 import * as FS from '../services/figures-steps.js';
 import { canHost as manipHost } from '../services/manipulatives.js';
+import { trialUsed } from '../services/teacher-plan.js';
 import { requireUser } from '../auth.js';
 import { config } from '../config.js';
 import { ico } from '../views/icon.js';
@@ -68,14 +69,16 @@ export function planReply(req, res, tool) {
   const t = req.t;
   if (req.originalUrl.startsWith('/api/')) return res.status(403).json({ error: t('figures.plan.api'), code: 'teacherPlan' });
   if (req.method !== 'GET' && req.method !== 'HEAD') return next404(req, res);
+  // A teacher whose free trial is used gets the plan itself (/trial sends them to Checkout), not a trial offer.
+  let used = false; try { used = !!(req.user && trialUsed({ userId: req.user.id })); } catch { used = false; }
   return page(req, res, {
     title: t(tool === 'manip' ? 'figures.plan.titleManip' : 'figures.plan.titleFigures'), active: 'tools', head: CSS, bodyClass: 'fg-page',
     body: html`<section class="panel fg-plan" aria-labelledby="fg-plan-h">
       <h1 id="fg-plan-h">${ico(tool === 'manip' ? '🧮' : '📐', { size: 32 })} ${t(tool === 'manip' ? 'figures.plan.headingManip' : 'figures.plan.headingFigures')}</h1>
       <p class="lead">${t(tool === 'manip' ? 'figures.plan.leadManip' : 'figures.plan.leadFigures')}</p>
-      <p>${t('figures.plan.trial', { days: config.teacherTrialDays })}</p>
+      <p>${used ? t('figures.plan.trialUsed') : t('figures.plan.trial', { days: config.teacherTrialDays })}</p>
       <p class="muted">${t('figures.plan.kept')}</p>
-      <div class="row"><a class="btn btn-primary" href="/trial">${t('figures.plan.start')}</a><a class="btn" href="/plans">${t('figures.plan.plans')}</a></div>
+      <div class="row"><a class="btn btn-primary" href="/trial">${t(used ? 'figures.plan.get' : 'figures.plan.start')}</a><a class="btn" href="/plans">${t('figures.plan.plans')}</a></div>
     </section>`,
   });
 }
