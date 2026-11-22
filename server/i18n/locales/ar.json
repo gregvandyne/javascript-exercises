@@ -3436,6 +3436,13 @@
         "done": "حُفظ كقالب «{title}». الرمز {code}",
         "savedAt": "حُفظت {time}",
         "notYet": "لم تُحفظ بعد. نحاول مرة أخرى…"
+      },
+      "pv": {
+        "traded": "تم تبديل {n} × {from} بـ {m} × {to}.",
+        "broke": "أصبح {from} {n} × {to}.",
+        "moved": "انتقل {label} إلى عمود {col}.",
+        "needTen": "يلزم 10 للتبديل",
+        "count": "{n} قطع في {col}"
       }
     },
     "manip-room": {

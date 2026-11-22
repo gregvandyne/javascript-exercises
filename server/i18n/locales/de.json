@@ -3436,6 +3436,13 @@
         "done": "Als Vorlage „{title}“ gespeichert. Code {code}",
         "savedAt": "Gespeichert {time}",
         "notYet": "Noch nicht gespeichert. Neuer Versuch…"
+      },
+      "pv": {
+        "traded": "{n} × {from} gegen {m} × {to} getauscht.",
+        "broke": "{from} wurde zu {n} × {to}.",
+        "moved": "{label} ist in die Spalte {col} gewandert.",
+        "needTen": "Braucht 10 zum Tauschen",
+        "count": "{n} Teile in {col}"
       }
     },
     "manip-room": {

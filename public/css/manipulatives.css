@@ -371,6 +371,15 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
 .mp-oresize{position:absolute;inset-inline-end:-10px;bottom:-10px;width:26px;height:26px;border-radius:50%;background:var(--accent);border:3px solid var(--card);box-shadow:var(--shadow);cursor:nwse-resize;touch-action:none;z-index:41}
 .mp-obj .mp-pvchart{position:static;display:flex;gap:6px;padding:10px;height:100%}
 .mp-obj .mp-pvchart div{flex:none;width:136px;max-width:none;height:236px;border:2px dashed color-mix(in srgb,var(--accent-line) 60%,transparent);border-radius:var(--r-sm);text-align:center;font-size:.8rem;font-weight:800;color:var(--accent-ink);padding-top:4px}
+/* A chart's column (public/js/manip-pv.js): its heading on top, a foot for "Needs 10 to trade" or a count; blocks
+   waiting to trade drawn softer; new blocks from a trade pop in. */
+.mp-obj .mp-pvchart>div{position:relative}
+.mp-pvname{display:block}
+.mp-pvfoot{position:absolute;inset-inline:4px;bottom:2px;font-size:.68rem;font-weight:700;line-height:1.3;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-piece.stray .mp-face{opacity:.7;outline:2px dashed color-mix(in srgb,var(--text) 55%,transparent);outline-offset:1px}
+.mp-piece.traded .mp-face{animation:mp-trade .5s cubic-bezier(.2,.8,.3,1.2)}
+@keyframes mp-trade{0%{scale:.5;box-shadow:0 0 0 10px color-mix(in srgb,var(--spark) 55%,transparent)}60%{scale:1.08}100%{scale:1;box-shadow:0 0 0 0 transparent}}
+@media (prefers-reduced-motion:reduce){.mp-piece.traded .mp-face{animation:none}}
 .mp-obj .mp-frame{position:static;margin:10px;display:grid;grid-template-columns:repeat(5,60px);width:max-content;border:3px solid var(--text);border-radius:8px;overflow:hidden;background:var(--card-2)}
 .mp-obj .mp-frame div{height:60px;border:1px solid color-mix(in srgb,var(--text) 50%,transparent)}
 .mp-matin{height:100%}

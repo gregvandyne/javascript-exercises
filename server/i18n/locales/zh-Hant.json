@@ -3435,6 +3435,13 @@
         "done": "已另存為範本「{title}」。代碼 {code}",
         "savedAt": "{time} 已儲存",
         "notYet": "還沒儲存。正在重試…"
+      },
+      "pv": {
+        "traded": "用 {n} × {from} 換成 {m} × {to}。",
+        "broke": "{from} 變成 {n} × {to}。",
+        "moved": "{label} 移到 {col} 欄。",
+        "needTen": "需要 10 個才能交換",
+        "count": "{col} 有 {n} 個"
       }
     },
     "manip-room": {

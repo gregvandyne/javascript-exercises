@@ -3436,6 +3436,13 @@
         "done": "Salvo como modelo “{title}”. Código {code}",
         "savedAt": "Salvo {time}",
         "notYet": "Ainda não salvo. Tentando de novo…"
+      },
+      "pv": {
+        "traded": "Trocou {n} × {from} por {m} × {to}.",
+        "broke": "{from} virou {n} × {to}.",
+        "moved": "{label} foi para a coluna {col}.",
+        "needTen": "Precisa de 10 para trocar",
+        "count": "{n} peças em {col}"
       }
     },
     "manip-room": {
