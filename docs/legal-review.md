@@ -703,9 +703,10 @@ page does to stay factual:
 - The product names are shown as plain text (no logos), with the notice: "Kahoot!, Classroomscreen and Brainingcamp are
   trademarks of their owners. Oomba is not affiliated with them. Comparison based on their public websites as of
   <date>; tell us if something changed." with a link to the site's contact address.
-- As built on 2026-11-22 every cell for the other products is Not stated: their websites could not be reached from the
-  network the page was built on. Someone has to read their pages and fill in the cells with sources before the page says
-  anything about them.
+- The cells were read on 2026-11-22 from each product's own pages; each footnote shows the page's address, the day
+  and the quoted words. Where a row is only partly confirmed the cell says Partial (for example a free trial but no
+  free plan stated); where nothing on the pages read says it, Not stated. Their privacy policies on other hosts
+  (trust.kahoot.com) could not be read; the Kahoot! privacy cell quotes its safety center on kahoot.com instead.
 
 Questions for the lawyer:
 

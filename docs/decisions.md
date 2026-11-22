@@ -11597,9 +11597,11 @@ exception, for one page only: `/compare`, "How Oomba compares", may name **Kahoo
 - **The cells.** Yes, Partial, No or Not stated, each with a Fluent mark and its word (never color alone). Another
   product's cell is only what its own public website clearly states, with the address, the day and the exact words
   (`CELLS`, docs/compare-sources.md), shown as a footnote; anything not confirmed there is Not stated, never a guess.
-  No prices, theirs or ours (prices stay on /plans; the Free row links there when paid plans are on). On 2026-11-22
-  none of the three websites could be reached from the build network, so every cell for them is Not stated until
-  someone reads their pages and fills them in.
+  No prices, theirs or ours (prices stay on /plans; the Free row links there when paid plans are on). The cells were
+  read on 2026-11-22 from each product's own pages (rendered in a browser, folded FAQ answers opened); each footnote
+  shows the address, the day and the quoted words. Pricing pages were read only to see whether a free option exists,
+  and no source links to a pricing page. Pages on other hosts (trust.kahoot.com, support.kahoot.com,
+  media.brainingcamp.com) could not be checked; nothing depends on them.
 - **Oomba's cells** say only what is live. The Manipulatives, their live rooms, place-value regrouping, Figures, the AI
   drafting and Oomba the teaching companion carry the gate's tag, worded like the "See it in action" note
   (views/see-it.js): "Teacher plan" while paid plans are on for everyone, "In testing" while only testers have them.

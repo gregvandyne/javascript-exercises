@@ -48,8 +48,8 @@ test('/compare: 200, indexable, one H1, canonical, breadcrumbs under Teachers, i
   for (const c of CODES.filter(c => !c.startsWith('en'))) {
     const seg = c.toLowerCase(); const p = await get(`/${seg}/compare`);
     assert.equal(p.status, 200, `/${seg}/compare`);
-    // Only the product names (never translated) are marked English on a translated page.
-    const rest = main(p.text).replace(/<(th|span)[^>]*lang="en" dir="ltr">(?:Kahoot!|Classroomscreen|Brainingcamp)<\/\1>/g, '');
+    // Only the product names (never translated) and the quoted words from their websites are marked English.
+    const rest = main(p.text).replace(/<(th|span)[^>]*lang="en" dir="ltr">(?:Kahoot!|Classroomscreen|Brainingcamp)<\/\1>/g, '').replace(/<q class="cmp-quote" lang="en" dir="ltr">[^<]*<\/q>/g, '');
     assert.doesNotMatch(rest, /lang="en"/, `/${seg}/compare: every string translated`);
   }
 });
@@ -81,6 +81,7 @@ test('the table: real table markup, a header per product, a row header per need,
 });
 
 test('every claim about another product has a source on its own website, shown as a footnote; Not stated has none', async () => {
+  assert.ok(Object.values(C.CELLS).some(r => Object.values(r).some(c => c.s !== 'notStated')), 'the researched cells are there');
   const sites = Object.fromEntries(C.COMPETITORS.map(c => [c.id, new URL(c.site).hostname.replace(/^www\./, '')]));
   for (const [rowId, byComp] of Object.entries(C.CELLS)) {
     assert.ok(C.ROWS.some(r => r.id === rowId), `CELLS.${rowId} is a row`);
@@ -106,12 +107,16 @@ test('every claim about another product has a source on its own website, shown a
       if (fn) assert.match(h, new RegExp(`<li id="fn-${fn[1]}">`));
     }
   }
-  // The footnote numbering itself: one number per source address, in table order.
+  // Each footnote shows the exact words from their page.
+  for (const f of C.footnotes().list) assert.ok(h.includes(`<li id="fn-${f.n}">`) && h.includes(`<q class="cmp-quote" lang="en" dir="ltr">${f.quote.replace(/'/g, '&#39;')}</q>`), `footnote ${f.n} quotes its source`);
+  // The footnote numbering itself: one number per source (address and words), in table order.
   const fake = { games: { kahoot: { s: 'yes', src: { url: 'https://kahoot.com/a', checked: '2026-11-01', quote: 'supporting words' } } },
     build: { kahoot: { s: 'partial', src: { url: 'https://kahoot.com/a', checked: '2026-11-01', quote: 'more words here' } }, brainingcamp: { s: 'no', src: { url: 'https://www.brainingcamp.com/b', checked: '2026-11-01', quote: 'other words' } } } };
   const n = C.footnotes(fake);
-  assert.deepEqual(n.list.map(f => [f.n, f.url]), [[1, 'https://kahoot.com/a'], [2, 'https://www.brainingcamp.com/b']]);
-  assert.equal(n.numOf('build', 'kahoot'), 1); assert.equal(n.numOf('build', 'brainingcamp'), 2); assert.equal(n.numOf('games', 'classroomscreen'), 0);
+  assert.deepEqual(n.list.map(f => [f.n, f.url]), [[1, 'https://kahoot.com/a'], [2, 'https://kahoot.com/a'], [3, 'https://www.brainingcamp.com/b']]);
+  assert.equal(n.numOf('games', 'kahoot'), 1); assert.equal(n.numOf('build', 'kahoot'), 2); assert.equal(n.numOf('build', 'brainingcamp'), 3); assert.equal(n.numOf('games', 'classroomscreen'), 0);
+  const again = C.footnotes({ games: fake.games, build: { kahoot: fake.games.kahoot } });
+  assert.equal(again.list.length, 1, 'the same source twice is one footnote');
   assert.deepEqual(C.cellOf('free', 'kahoot', {}), { s: 'notStated' });
 });
 

@@ -57,25 +57,78 @@ export const ROWS = [
  * { s: 'yes' | 'partial' | 'no', src: { url, checked: 'YYYY-MM-DD', quote: 'the exact words on that page' } }.
  * A row or product left out here is Not stated.
  *
- * On 2026-11-22 none of the three websites could be reached from the network this page was built on, so every cell is
- * Not stated until someone reads their pages (docs/compare-sources.md lists what to check). Not stated is never a
- * claim about the product: the legend says it means we have not confirmed it.
+ * Read on 2026-11-22 from each product's own public pages (docs/compare-sources.md has every cell, what was read and
+ * what could not be checked). Not stated is never a claim about the product: the legend says it means we have not
+ * confirmed it from their public website.
  */
-export const CELLS = {};
+export const CELLS = {
+  games: {
+    kahoot: { s: 'yes', src: { url: 'https://kahoot.com/home/mobile-app/', checked: '2026-11-22', quote: 'You can create quiz games, host live sessions, and access millions of ready-made kahoots at no cost.' } },
+    classroomscreen: { s: 'yes', src: { url: 'https://classroomscreen.com/product/games-for-learners', checked: '2026-11-22', quote: 'Play and learn with Classroomscreen’s ready-made games and templates.' } },
+  },
+  build: {
+    kahoot: { s: 'yes', src: { url: 'https://kahoot.com/schools/interactive-lessons/', checked: '2026-11-22', quote: 'Encourage students to create their own kahoots.' } },
+  },
+  dashboard: {
+    classroomscreen: { s: 'yes', src: { url: 'https://classroomscreen.com/', checked: '2026-11-22', quote: 'Keep students focused on the one screen they should be focused on with our engaging widgets.' } },
+  },
+  routines: {
+    classroomscreen: { s: 'partial', src: { url: 'https://classroomscreen.com/', checked: '2026-11-22', quote: 'Help students manage their time effectively with a range of timer widgets.' } },
+  },
+  eyes: {
+    brainingcamp: { s: 'partial', src: { url: 'https://www.brainingcamp.com/', checked: '2026-11-22', quote: 'Share Codes make collaboration easy by allowing you to instantly share customized lessons, activities, or tasks.' } },
+  },
+  manip: {
+    brainingcamp: { s: 'yes', src: { url: 'https://www.brainingcamp.com/', checked: '2026-11-22', quote: 'With Brainingcamp, you get 18 of the most popular classroom manipulatives.' } },
+  },
+  room: {
+    brainingcamp: { s: 'yes', src: { url: 'https://www.brainingcamp.com/live', checked: '2026-11-22', quote: 'See all your students\' screens, monitor their progress, and provide instant feedback.' } },
+  },
+  regroup: {
+    brainingcamp: { s: 'yes', src: { url: 'https://www.brainingcamp.com/base-ten-blocks', checked: '2026-11-22', quote: 'Regroup animations' } },
+  },
+  aiDraft: {
+    kahoot: { s: 'yes', src: { url: 'https://kahoot.com/schools/', checked: '2026-11-22', quote: 'Create quick quizzes, exit tickets, and generate content with AI.' } },
+  },
+  grades: {
+    kahoot: { s: 'yes', src: { url: 'https://kahoot.com/schools/', checked: '2026-11-22', quote: 'Kahoot! for K12 teachers and schools' } },
+    classroomscreen: { s: 'yes', src: { url: 'https://classroomscreen.com/', checked: '2026-11-22', quote: 'These brain breaks are suitable for a variety of ages from elementary to high school.' } },
+    brainingcamp: { s: 'yes', src: { url: 'https://www.brainingcamp.com/', checked: '2026-11-22', quote: 'Access 300+ high-quality K-8 Tasks, complete with Teacher Notes and Share Codes for students to launch.' } },
+  },
+  languages: {
+    kahoot: { s: 'yes', src: { url: 'https://kahoot.com/schools/plans/', checked: '2026-11-22', quote: 'You can also play, create and host kahoots, view reports and more in Spanish, Brazilian Portuguese, French, German, Italian, Japanese, Dutch, Polish, Turkish, Norwegian, Swedish, Danish, Arabic, Ukrainian, Korean, Indonesian, Simplified Chinese, Traditional Chinese, Thai and Vietnamese.' } },
+    classroomscreen: { s: 'partial', src: { url: 'https://classroomscreen.com/helpcenter/how-do-i-change-the-language', checked: '2026-11-22', quote: 'Although we currently only support English for the rest of the application, it is on our backlog to offer the application in more languages in the future.' } },
+  },
+  devices: {
+    kahoot: { s: 'yes', src: { url: 'https://kahoot.com/home/mobile-app/', checked: '2026-11-22', quote: 'Players join from any device.' } },
+    classroomscreen: { s: 'yes', src: { url: 'https://classroomscreen.com/schools-districts', checked: '2026-11-22', quote: 'Classroomscreen works on any device with an internet connection.' } },
+    brainingcamp: { s: 'yes', src: { url: 'https://www.brainingcamp.com/', checked: '2026-11-22', quote: 'Yes, Brainingcamp can be used on any web-enabled device without any installation.' } },
+  },
+  privacy: {
+    kahoot: { s: 'yes', src: { url: 'https://kahoot.com/safety-center/child-safety-online/', checked: '2026-11-22', quote: 'We do not knowingly seek or collect personal information for users under the age of 13 (for U.S. users) or 16 (for non-U.S. users).' } },
+    classroomscreen: { s: 'yes', src: { url: 'https://classroomscreen.com/legal/privacy-policy', checked: '2026-11-22', quote: 'We never sell your personal information.' } },
+    brainingcamp: { s: 'yes', src: { url: 'https://www.brainingcamp.com/', checked: '2026-11-22', quote: 'Students share generic accounts that contain no personally identifiable data.' } },
+  },
+  free: {
+    kahoot: { s: 'yes', src: { url: 'https://kahoot.com/schools/plans/', checked: '2026-11-22', quote: 'Yes, we offer Kahoot! Go, a free plan for teachers.' } },
+    classroomscreen: { s: 'yes', src: { url: 'https://classroomscreen.com/helpcenter/what-is-classroomscreen', checked: '2026-11-22', quote: 'Classroomscreen is free to use for everyone, with a few additional features like saving or sharing screens available in our Pro subscription.' } },
+    brainingcamp: { s: 'partial', src: { url: 'https://www.brainingcamp.com/', checked: '2026-11-22', quote: 'No commitment, credit card, or cancellation required. It\'s a 100% free trial.' } },
+  },
+};
 
 /** The cell for one row and product. */
 export const cellOf = (rowId, compId, cells = CELLS) => (cells[rowId] && cells[rowId][compId]) || { s: 'notStated' };
 
-/** The numbered footnotes: one per distinct source address, in table order. -> { list: [{ n, url, comp, checked,
+/** The numbered footnotes: one per distinct source (address and words), in table order. -> { list: [{ n, url, comp, checked,
  *  quote }], numOf(rowId, compId) -> n | 0 } */
 export function footnotes(cells = CELLS, rows = ROWS) {
-  const list = []; const byUrl = new Map();
+  const list = []; const byKey = new Map(); const key = src => `${src.url}\n${src.quote}`;
   for (const r of rows) for (const c of COMPETITORS) {
     const cell = cellOf(r.id, c.id, cells);
     if (cell.s === 'notStated' || !cell.src) continue;
-    if (!byUrl.has(cell.src.url)) { byUrl.set(cell.src.url, list.length + 1); list.push({ n: list.length + 1, url: cell.src.url, comp: c, checked: cell.src.checked, quote: cell.src.quote }); }
+    if (!byKey.has(key(cell.src))) { byKey.set(key(cell.src), list.length + 1); list.push({ n: list.length + 1, url: cell.src.url, comp: c, checked: cell.src.checked, quote: cell.src.quote }); }
   }
-  return { list, numOf: (rowId, compId) => { const cell = cellOf(rowId, compId, cells); return cell.src ? byUrl.get(cell.src.url) || 0 : 0; } };
+  return { list, numOf: (rowId, compId) => { const cell = cellOf(rowId, compId, cells); return cell.src ? byKey.get(key(cell.src)) || 0 : 0; } };
 }
 
 /** "Kahoot!, Classroomscreen and Brainingcamp" in the page's language. */
@@ -120,6 +173,7 @@ const CSS = raw(`<style>
 .cmp-why p{margin:0}
 .cmp-sources{padding-inline-start:1.2em;overflow-wrap:anywhere}
 .cmp-sources li{margin-block:.4em}
+.cmp-quote{color:var(--text-2);font-size:.9rem}
 .cmp-notice{font-size:.9rem;color:var(--muted)}
 .cmp-checked{font-weight:700}
 </style>`);
@@ -184,7 +238,7 @@ router.get(PATH, (req, res) => {
     <section class="panel" id="sources" aria-labelledby="sources-h">
       ${el(t, 'h2', 'compare.sources.h', {}, ' id="sources-h"')}
       ${el(t, 'p', 'compare.sources.p')}
-      ${notes.list.length ? html`<ol class="cmp-sources">${notes.list.map(f => html`<li id="fn-${f.n}"><span lang="en" dir="ltr">${f.comp.name}</span>: <a href="${f.url}" rel="noopener nofollow" dir="ltr">${f.url}</a> <span class="muted small">(${t('compare.sources.read', { date: fmt(req.locale || DEFAULT_LOCALE).day(Date.parse(`${f.checked}T00:00:00Z`), { year: 'numeric', month: 'long', day: 'numeric' }) })})</span></li>`)}</ol>` : ''}
+      ${notes.list.length ? html`<ol class="cmp-sources">${notes.list.map(f => html`<li id="fn-${f.n}"><span lang="en" dir="ltr">${f.comp.name}</span>: <a href="${f.url}" rel="noopener nofollow" dir="ltr">${f.url}</a> <span class="muted small">(${t('compare.sources.read', { date: fmt(req.locale || DEFAULT_LOCALE).day(Date.parse(`${f.checked}T00:00:00Z`), { year: 'numeric', month: 'long', day: 'numeric' }) })})</span><br><q class="cmp-quote" lang="en" dir="ltr">${f.quote}</q></li>`)}</ol>` : ''}
       ${el(t, 'p', 'compare.sources.sites')}
       <ul class="cmp-sources">${COMPETITORS.map(c => html`<li><span lang="en" dir="ltr">${c.name}</span>: <a href="${c.site}" rel="noopener nofollow" dir="ltr">${c.site}</a></li>`)}</ul>
       <p class="cmp-notice" id="notice"${fb(t, 'compare.notice')}>${tHtml(t, 'compare.notice', { names: namesList(req), date: dateTag(req), href: `mailto:${email}` })}</p>
