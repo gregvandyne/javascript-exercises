@@ -1,0 +1,162 @@
+{
+  "name": "oomba-figures",
+  "version": "1.5.0",
+  "license": "MIT AND Apache-2.0",
+  "source": "figures/src (this repository; figures/src/ported is Apache-2.0, docs/third-party.md)",
+  "core": {
+    "file": "oomba-figures.js",
+    "kinds": [
+      "grid"
+    ]
+  },
+  "packs": {
+    "math": {
+      "file": "packs/math.js",
+      "kinds": [
+        "numberLine",
+        "triangle",
+        "rectangle",
+        "parallelogram",
+        "trapezoid",
+        "kite",
+        "regularPolygon",
+        "angles",
+        "parallelLines",
+        "segmentAddition",
+        "circle",
+        "compositeShape",
+        "prism",
+        "cylinder",
+        "pyramid",
+        "cone",
+        "sphere",
+        "net",
+        "mappingDiagram"
+      ]
+    },
+    "data": {
+      "file": "packs/data.js",
+      "kinds": [
+        "barGraph",
+        "dotPlot",
+        "histogram",
+        "boxPlot",
+        "scatterPlot",
+        "stemAndLeaf",
+        "pieChart",
+        "cumulativeFrequency",
+        "normalCurve",
+        "treeDiagram",
+        "vennDiagram",
+        "twoWayTable",
+        "tableOfValues"
+      ]
+    },
+    "physics": {
+      "file": "packs/physics.js",
+      "kinds": [
+        "freeBody",
+        "vectors",
+        "inclinedPlane",
+        "pulley",
+        "rays",
+        "circuit",
+        "motionGraph",
+        "motionMap",
+        "projectile",
+        "waves"
+      ]
+    },
+    "chem": {
+      "file": "packs/chem.js",
+      "kinds": [
+        "halfLife",
+        "titration",
+        "bohr",
+        "orbitals",
+        "lewis",
+        "massSpectrum",
+        "heatingCurve",
+        "energyProfile",
+        "nuclide",
+        "lineSpectrum",
+        "photoelectron",
+        "particles",
+        "dotCross",
+        "skeletal",
+        "energyLevels"
+      ]
+    },
+    "bio": {
+      "file": "packs/bio.js",
+      "kinds": [
+        "populationGrowth",
+        "predatorPrey",
+        "enzymeActivity",
+        "photosynthesis",
+        "punnett",
+        "pedigree",
+        "proteinSynthesis",
+        "gel",
+        "osmosis"
+      ]
+    },
+    "econ": {
+      "file": "packs/econ.js",
+      "kinds": [
+        "supplyDemand",
+        "moneyMarket",
+        "businessCycle",
+        "phillipsCurve",
+        "possibilitiesCurve",
+        "adAs",
+        "costCurves"
+      ]
+    },
+    "measure": {
+      "file": "packs/measure.js",
+      "kinds": [
+        "reading",
+        "protractor"
+      ]
+    }
+  },
+  "files": {
+    "oomba-figures.js": {
+      "sha256": "eae91316b263dfa53abd9fd8bfde92df19093ad7fef141acc94bf410d554185d",
+      "sri": "sha384-zCf7KFd/4rg4bSYxwPjjV0snSTSNkqKTjFJ7ILAxb19qqxHyYCG74kMnPEeYlOH5"
+    },
+    "packs/math.js": {
+      "sha256": "29a30d76bb4237a22a64a7dee48bb10c1b7ceb853fc3e6d99153a3a8c9b447ee",
+      "sri": "sha384-KO8YGZH2GLh0DXnt9U8w2W4NVJRGdQqC3HXieUkrQbDxGjYBfQrNma9uvj08Hjyr"
+    },
+    "packs/data.js": {
+      "sha256": "7442d1999bffabbe01b74820019a162d95135ce8ae97cd1637482428eeec6139",
+      "sri": "sha384-TrY8GJrgsmOq/vF2YMG60nfFAaN7oDEWo/t6WacQlCZK3E2yu7vr5st8rgiS21FJ"
+    },
+    "packs/physics.js": {
+      "sha256": "ec2e2b5c9852cea2e0997c88e4e92779b600e81e9b256b17a220d68de06dbb4e",
+      "sri": "sha384-dqozBKp4/RwXIjkvCpx5tEZiQOYwh/Kh4HhL5ZyN5L3MlJLOG+W2lPDLGAcTmE0G"
+    },
+    "packs/chem.js": {
+      "sha256": "6f0d4ba6fd49d6964ceaccad6aa477cf1e175a29d3b6131a667b159dbb9e1b87",
+      "sri": "sha384-9vn/gBRNTQUS+Aj/scTxBd0bKy4CKhBr/Cl7FDkJCQtmGj+rnZRykiWzQHOV2Fox"
+    },
+    "packs/bio.js": {
+      "sha256": "8d6572f88a2a006acf046b5b96445da06d051eacdeb1d21b8647a466e7d5ca63",
+      "sri": "sha384-g9mSlUaqJXy6NRBkw4xA9wtbLOTkZ7IXvmxu/pj8AP3IS7kmtsBDTKTh7c4HBmFQ"
+    },
+    "packs/econ.js": {
+      "sha256": "3d53004baa20caa38304b150cdf19982927071fe1d958f7954081394fdd19eb0",
+      "sri": "sha384-xIuOGfgmiXtG+wXc7oE7+nInVRpAbaJ4O/Az8ye468PvgoXG3pO7o4i2OF3hzYQl"
+    },
+    "packs/measure.js": {
+      "sha256": "cb22dae794efc457a4439d89db6c5a1873c52d9922c05531550d8893121d2edd",
+      "sri": "sha384-5pz/JX/Na0EV1XSgwuPYJV6kCtf0glaPO+jdWYP7M3FZkRRjcAbdd1bU8HMHgf7d"
+    },
+    "LICENSE": {
+      "sha256": "a222c2b3e67474e441a6f0e41413985087c96b45488fe32b49a586cdc777dd6f",
+      "sri": "sha384-GVE87+94tY+GH6kPj/5F4mVZ3fUo64AudYGl24gX1sN2WeTkyxTEScA3xssYqkY2"
+    }
+  }
+}
