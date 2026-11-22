@@ -169,7 +169,7 @@ export async function draftPassages(u, { topic, grade = 4, length = 'short', n =
 export function cleanPassage(text) {
   const P = proofCore();
   if (typeof text !== 'string') return '';
-  const x = P.normText(text.replace(/\r\n?/g, '\n').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[—–]/g, ', ').replace(/ ,/g, ','));
+  const x = P.normText(text.replace(/\r\n?/g, '\n').replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"').replace(/\s*[\u2014\u2013]\s*/g, ', ').replace(/ ,/g, ','));
   if (x.length < P.LIMITS.minText || x.length > P.LIMITS.maxText) return '';
   const c = cleanText(x, P.LIMITS.maxText);
   if (!c.ok || c.value !== x || P.normText(x) !== x) return '';

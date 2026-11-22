@@ -282,7 +282,7 @@ router.get('/play/:slug', (req, res) => {
   // A graded Mistake Hunt step (services/proof-steps.js) opens the game in its hand-in mode: proof marks it, and the frame
   // gets the step's passages (never the key until it is allowed) instead of a game score.
   const proofStep = !!(lc && lc.ok && lc.step.kind === L.PROOF_KIND && g.slug === PS.SLUG && g.source === 'seed');
-  const lesson = lc && lc.ok && ((lc.step.kind === 'game' && lc.step.game_id === g.id && !progress.hostedLive(lc.step)) || proofStep) ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}#step-${lc.step.id}`, ...(proofStep ? { proof: true } : {}) } : null;
+  const lesson = lc && lc.ok && ((lc.step.kind === 'game' && lc.step.game_id === g.id && !progress.hostedLive(lc.step)) || proofStep) ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}`, ...(proofStep ? { proof: true } : {}) } : null;
   const asked = req.query.course ? courses.getCourse(String(req.query.course)) : null;
   let cstep = null;
   // The step context is honoured for every signed-in player who arrives with one, the game's owner and
