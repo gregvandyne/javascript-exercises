@@ -277,7 +277,7 @@ async function capture(gameHtml, opts) {
     page.on('dialog', d => d.dismiss().catch(() => {}));
     await page.goto(`${HOST}/`, { waitUntil: 'domcontentloaded', timeout: 15000 });
     const frame = await waitFrame(page);
-    // An activity on an older Oomba Canvas: the kit's own parts are as that version shipped (1.3.1 fixed their phone
+    // An activity on an older Oomba Canvas: the kit's own parts are as that version shipped (1.4.1 fixed their phone
     // layout), and the model may not change the kit, so the layout check looks only at what the activity adds.
     const cv = canvasVersion(gameHtml), skipKit = !!cv && cv !== CANVAS_LATEST;
     if (o.mode === 'autoplay') return await autoplay({ ctx, page, frame, errors, kitWarnings, o: { ...o, skipKit }, shape });

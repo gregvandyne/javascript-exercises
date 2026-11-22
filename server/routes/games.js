@@ -1,6 +1,7 @@
 // Game page, play page, the sandboxed frame, and the game APIs the SDK talks to (via the parent page).
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound, landingFor, signedOut } from '../views/layout.js';
 import { inClassLine } from './teachers.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
@@ -27,7 +28,7 @@ import { draftClues } from '../services/set-ai.js';
 import { wordsFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
 import { PRINTERS } from '../services/game-print.js';
 import { canvasPrintable, cleanCanvasPrintDoc, canvasPrintHtml } from '../services/canvas-print.js';
-import { canvasVersion } from '../services/canvaskit.js';
+import { canvasVersion, activityData } from '../services/canvaskit.js';
 import { hasModel } from '../builder/anthropic.js';
 import { onlineGame } from './match.js';
 import fs from 'node:fs';
@@ -105,9 +106,9 @@ router.get('/g/:slug', (req, res) => {
       <div class="gh-cover" style="position:relative">${coverArt(d, '', { eager: true })}</div>
       <div>
         <h1>${g.title}</h1>
-        ${byGrownup ? html`<span class="person ownerchip ownerchip-grownup">${avatar(owner, 32)}<span class="nm"><bdi>${owner.display_name}</bdi></span><span class="gu-tag"${fbl('game.grownupBuilder')}>🧑 ${t('game.grownupBuilder')}</span></span>`
+        ${byGrownup ? html`<span class="person ownerchip ownerchip-grownup">${avatar(owner, 32)}<span class="nm"><bdi>${owner.display_name}</bdi></span><span class="gu-tag"${fbl('game.grownupBuilder')}>${ico('🧑', { size: 18 })} ${t('game.grownupBuilder')}</span></span>`
           : grownup ? html`<span class="person ownerchip">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></span>` : html`<a class="person ownerchip" href="/u/${owner.username}">${avatar(owner, 32)}<span class="nm">${owner.display_name}</span></a>`}
-        ${shared && shared.names.length ? html`<div class="sharedwith small"><span>🎒 ${t('game.sharedWith')}</span> <ul class="chips-inline">${shared.names.map(n => html`<li dir="auto">${n}</li>`)}</ul>${shared.others ? html` <span class="muted">${t('game.sharedWithMore', { count: shared.others })}</span>` : ''}</div>` : ''}
+        ${shared && shared.names.length ? html`<div class="sharedwith small"><span>${ico('🎒', { size: 18 })} ${t('game.sharedWith')}</span> <ul class="chips-inline">${shared.names.map(n => html`<li dir="auto">${n}</li>`)}</ul>${shared.others ? html` <span class="muted">${t('game.sharedWithMore', { count: shared.others })}</span>` : ''}</div>` : ''}
         <div class="statrow">
           <div class="stat"><b>${d.rating_count ? d.rating.toFixed(1) + ' ★' : t('cards.new')}</b>${d.rating_count ? t('game.stats.ratings', { count: d.rating_count, n: f.num(d.rating_count) }) : t('game.stats.noRatings')}</div>
           <div class="stat"><b data-live="${g.id}" data-live-format="number">${d.playing}</b>${t('game.stats.playingNow')}</div>
@@ -116,17 +117,17 @@ router.get('/g/:slug', (req, res) => {
         </div>
         ${liveEntry && playable ? '' : html`<div class="row actions">
           ${playable ? html`<a class="btn btn-primary btn-big playbig" href="${keepLang(req, `/play/${g.slug}`)}" id="playbtn">▶ ${t('game.play')}</a>` : html`<span class="notice">${t('game.notReady')}</span>`}
-          ${playable && liveOn() && liveCanHost(req.user) && gameLiveReady(g) ? html`<a class="btn btn-big" href="/live?game=${g.id}" id="hostlive">📡 ${t('live.entry.hostLive')}</a>` : ''}
+          ${playable && liveOn() && liveCanHost(req.user) && gameLiveReady(g) ? html`<a class="btn btn-big" href="/live?game=${g.id}" id="hostlive">${ico('📡', { size: 18 })} ${t('live.entry.hostLive')}</a>` : ''}
         </div>`}
         ${isOwner ? html`<p class="small muted" style="margin-top:8px">${statusLabel(g, t, shared ? shared.names.length : 1, byGrownup)}${g.pending_version_id ? ` · ${t('game.updateWaiting')}` : ''}${g.review_note ? html` · ${t('game.reviewer', { note: g.review_note })}` : ''}</p>` : ''}
       </div>
       ${liveEntry && playable ? livePanel(req, g, liveEntry) : ''}
       <div class="quietacts">
           ${grownup ? '' : html`<button class="qact" type="button" id="likebtn" aria-pressed="${String(!!liked)}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span>${t('game.like')}</button>`}
-          <button class="qact" type="button" id="sharebtn"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
-          ${isOwner ? html`<a class="qact" href="/studio/${g.id}"><span class="emo" aria-hidden="true">🛠️</span>${t('game.edit')}</a>` : ''}
-          ${u && isSchoolStaff(u) ? html`<a class="qact" href="/build/save?id=${g.id}"><span class="emo" aria-hidden="true">📁</span>${t('folders.save')}</a>${playable && !g.course_only ? html`<a class="qact" href="/teach/assign?id=${g.id}"><span class="emo" aria-hidden="true">📌</span>${t('folders.assign')}</a>` : ''}` : ''}
-          ${isOwner || !t.own('game.makeLike') ? '' : html`<a class="qact" href="/build" id="makelike"><span class="emo" aria-hidden="true">🛠️</span>${t.own('game.makeLikeShort') ? t('game.makeLikeShort') : t('game.makeLike')}</a>`}
+          <button class="qact" type="button" id="sharebtn"><span class="emo">${ico('🔗', { size: 20 })}</span>${t('game.share')}</button>
+          ${isOwner ? html`<a class="qact" href="/studio/${g.id}"><span class="emo">${ico('🛠️', { size: 20 })}</span>${t('game.edit')}</a>` : ''}
+          ${u && isSchoolStaff(u) ? html`<a class="qact" href="/build/save?id=${g.id}"><span class="emo">${ico('📁', { size: 20 })}</span>${t('folders.save')}</a>${playable && !g.course_only ? html`<a class="qact" href="/teach/assign?id=${g.id}"><span class="emo">${ico('📌', { size: 20 })}</span>${t('folders.assign')}</a>` : ''}` : ''}
+          ${isOwner || !t.own('game.makeLike') ? '' : html`<a class="qact" href="/build" id="makelike"><span class="emo">${ico('🛠️', { size: 20 })}</span>${t.own('game.makeLikeShort') ? t('game.makeLikeShort') : t('game.makeLike')}</a>`}
         </div>
     </div>
     <div class="grid2">
@@ -144,7 +145,7 @@ router.get('/g/:slug', (req, res) => {
             <p class="small muted" id="ratemsg">${myStars ? t('game.rate.thanks') : t('game.rate.tap')}</p>`
           : html`<p><button class="btn" type="button" data-guest-play="">${t('game.rate.guest')}</button></p>`}
         </section>`}
-        <section class="panel" aria-labelledby="lb-h"><h2 id="lb-h">🏆 ${t('game.leaderboard.heading')}</h2>
+        <section class="panel" aria-labelledby="lb-h"><h2 id="lb-h">${ico('🏆', { size: 28 })} ${t('game.leaderboard.heading')}</h2>
           ${lb.length ? html`<ol class="lb">${lb.map(r => html`<li>${avatar(r, 30)}<span>${u ? r.display_name : ''}</span><span class="sc" dir="ltr">${f.int(r.score)}${r.label ? ' ' + r.label : ''}</span></li>`)}</ol>
             ${u ? '' : html`<p class="small muted" style="margin:10px 0 0"${fbl('game.leaderboard.signIn')}>${t('game.leaderboard.signIn')}</p>`}` : html`<p class="muted">${t('game.leaderboard.empty')}</p>`}
         </section>
@@ -153,7 +154,7 @@ router.get('/g/:slug', (req, res) => {
         ${more.length ? html`<section><h2>${t('game.more.heading')}</h2>${cardGrid(more, {})}</section>` : ''}
       </aside>
     </div>
-    ${isOwner ? '' : html`<p class="reportline"><button class="linkbtn" type="button" id="reportbtn"><span class="emo" aria-hidden="true">🚩</span> ${t('game.report.button')}</button></p>`}
+    ${isOwner ? '' : html`<p class="reportline"><button class="linkbtn" type="button" id="reportbtn"><span class="emo">${ico('🚩', { size: 20 })}</span> ${t('game.report.button')}</button></p>`}
   </article>
   ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, visibility: g.visibility, shareText: t(`game.shareText.${g.visibility === 'friends' && byGrownup ? 'connections' : g.visibility}`), reasons: reportReasons(t), signedIn: !!u })}`;
   if (!official) res.set('X-Robots-Tag', 'noindex, nofollow');
@@ -173,15 +174,15 @@ router.get('/g/:slug', (req, res) => {
 function livePanel(req, g, entry) {
   const t = req.t, u = req.user;
   const out = !u || u.is_guest;
-  const host = !out && liveCanHost(u) ? html`<a class="btn btn-big" href="/live?mode=${entry.mode}" id="hostlive">📡 ${t('live.entry.host')}</a>`
-    : out ? html`<a class="btn" href="${lp(req, '/teachers/live')}" id="hostlive">📡 ${t('live.entry.teacherHost')}</a>` : '';
+  const host = !out && liveCanHost(u) ? html`<a class="btn btn-big" href="/live?mode=${entry.mode}" id="hostlive">${ico('📡', { size: 18 })} ${t('live.entry.host')}</a>`
+    : out ? html`<a class="btn" href="${lp(req, '/teachers/live')}" id="hostlive">${ico('📡', { size: 18 })} ${t('live.entry.teacherHost')}</a>` : '';
   return html`<section class="livepanel" aria-labelledby="livepanel-h">
-    <p class="livepanel-tag" id="livepanel-h"><span aria-hidden="true">📡</span> ${t('live.entry.badgeLong')}</p>
+    <p class="livepanel-tag" id="livepanel-h">${ico('📡', { size: 18 })} ${t('live.entry.badgeLong')}</p>
     <p class="livepanel-how">${t('live.entry.howJoin')}</p>
     <form class="livepanel-join" method="get" action="/join" novalidate><input type="hidden" name="go" value="1">
       <label class="sr-only" for="lpjc">${t('live.join.codeLabel')}</label>
       <input class="input lv-code-input" id="lpjc" name="code" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="9" dir="ltr" placeholder="123 4567" required>
-      <button class="btn btn-primary btn-big" type="submit" id="lpjoin">🎟️ ${t('live.entry.joinGo')}</button>
+      <button class="btn btn-primary btn-big" type="submit" id="lpjoin">${ico('🎟️', { size: 18 })} ${t('live.entry.joinGo')}</button>
     </form>
     <div class="row actions">${host}<a class="btn" href="${keepLang(req, `/play/${entry.solo}`)}" id="playbtn">▶ ${t(entry.play ? entry.playKey || 'live.entry.play' : 'live.entry.solo')}</a></div>
   </section>`;
@@ -189,9 +190,9 @@ function livePanel(req, g, entry) {
 
 function adminVoices(u, g) {
   if (!u || u.role !== 'admin') return '';
-  if (ttsListed(g)) return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr"><h2>🔊 AI voices for this game</h2><p>On: an official game listed for AI voices. Languages: <a href="/admin/voices">AI voices</a>.</p>${ttsGames.silentWhy() ? html`<p id="admin-voices-note"><b>Nothing plays yet.</b> ${ttsGames.silentWhy()}</p>` : ''}</section>`;
+  if (ttsListed(g)) return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr"><h2>${ico('🔊', { size: 28 })} AI voices for this game</h2><p>On: an official game listed for AI voices. Languages: <a href="/admin/voices">AI voices</a>.</p>${ttsGames.silentWhy() ? html`<p id="admin-voices-note"><b>Nothing plays yet.</b> ${ttsGames.silentWhy()}</p>` : ''}</section>`;
   const x = ttsGames.info(g);
-  return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr" data-game="${g.id}"><h2>🔊 AI voices for this game</h2>
+  return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr" data-game="${g.id}"><h2>${ico('🔊', { size: 28 })} AI voices for this game</h2>
     <p class="muted">Admin only. Reads this game's own words (from its published version) with AI voices in the languages switched on at <a href="/admin/voices">AI voices</a>; never what a player types. ${x.on && !x.live ? 'It starts once the game is published and not hidden.' : ''}</p>
     <p id="admin-voices-default"><b>By default:</b> ${ttsBuilt(g) ? 'on. Only the exact lines fixed in the published version (it passed the safety check) are read, in one friendly voice.' : 'off for this game now. A Builder game gets AI voices once it is published, not hidden, and its published version passed the safety check (and TTS_BUILT_GAMES is not 0).'} The switch below goes further for this one game: lines with changing numbers, the game's own names and a few of its sentences read as one.</p>
     ${x.ok || x.on ? html`<label class="row" style="gap:8px"><input type="checkbox" id="admin-voices-on" ${x.on ? raw('checked') : ''}> AI voices for this game</label>` : ''}
@@ -331,18 +332,18 @@ router.get('/play/:slug', (req, res) => {
   const body = html`
   <header class="playbar">
     <a class="iconbtn" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
-    <h1 class="ptitle">${g.icon} ${g.title}${inCourse ? html` <a class="pcourse" href="/courses/${inCourse.course.slug}">📚 ${t('courses.step', { course: t(`${inCourse.course.key}.title`), n: inCourse.n, total: inCourse.total })}</a>` : ''}</h1>
+    <h1 class="ptitle">${g.icon} ${g.title}${inCourse ? html` <a class="pcourse" href="/courses/${inCourse.course.slug}">${ico('📚', { size: 18 })} ${t('courses.step', { course: t(`${inCourse.course.key}.title`), n: inCourse.n, total: inCourse.total })}</a>` : ''}</h1>
     <span class="livecount" data-live="${g.id}" data-live-format="bar"></span>
     ${grownup ? '' : html`<button class="iconbtn" type="button" id="p-like" aria-pressed="${String(!!liked)}" aria-label="${t('game.like')}"><span class="emo" aria-hidden="true">${liked ? '❤️' : '🤍'}</span><span class="lbl">${t('game.like')}</span></button>
-    <button class="iconbtn" type="button" id="p-rate" aria-label="${t('play.rate')}"><span class="emo" aria-hidden="true">⭐</span><span class="lbl">${t('play.rate')}</span></button>`}
-    ${ttsData ? html`<button class="iconbtn" type="button" id="p-voices" aria-haspopup="dialog" aria-label="${t('play.voices')}"><span class="emo" aria-hidden="true">🔊</span><span class="lbl">${t('play.voices')}</span></button>` : ''}
+    <button class="iconbtn" type="button" id="p-rate" aria-label="${t('play.rate')}"><span class="emo">${ico('⭐', { size: 20 })}</span><span class="lbl">${t('play.rate')}</span></button>`}
+    ${ttsData ? html`<button class="iconbtn" type="button" id="p-voices" aria-haspopup="dialog" aria-label="${t('play.voices')}"><span class="emo">${ico('🔊', { size: 20 })}</span><span class="lbl">${t('play.voices')}</span></button>` : ''}
     <button class="iconbtn" type="button" id="p-full" aria-label="${t('play.fullScreen')}"><span class="emo" aria-hidden="true">⛶</span><span class="lbl">${t('play.fullScreen')}</span></button>
   </header>
   <div class="stage" id="stage" dir="ltr">
     <a class="fsback" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}${frameQ}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
-  <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo" aria-hidden="true">📱</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
+  <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo">${ico('📱', { size: 56 })}</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
   ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}) })}`;
   // (keyboard: Doodle Hoot's guess box; an on-screen keyboard shrinks the page, so the box and the drawing stay in view)
   page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'], i18n: mic ? ['js.match', 'js.loudness'] : ['js.match'] });
@@ -381,6 +382,9 @@ router.get('/frame/:token', (req, res) => {
   // Re-check the live game against the viewer (catches a game since hidden, unpublished or made private); preview is owner/admin-only at mint.
   if (!preview && !games.canView(u, g)) return sendFrameText(res, 404, t('errors.api.notFound'));
   const lang = normalizeCode(tok.l) || req.locale;
+  // Which question sets this frame's game keeps (setKind): an official set game's, or a classroom activity's worksheets
+  // in its published version (never a preview of another version).
+  const kind = setGame(g) ? g.slug : !preview && (canvasSetVersion(g) || {}).id === v.id ? gameSets.CANVAS_KIND : null;
   const init = {
     user: { ...(u ? { displayName: u.display_name, avatar: u.avatar, isGuest: !!u.is_guest, character: characterOf(u) } : { displayName: t('play.defaultPlayer'), avatar: '🙂', isGuest: true }), lang, dir: localeInfo(lang).dir },
     // url: the game's own play page, for a game that shares a link to itself (BRB.gameUrl: a link with lesson
@@ -395,13 +399,19 @@ router.get('/frame/:token', (req, res) => {
     ...(hasParams(unpackParams(tok.o)) ? { params: unpackParams(tok.o) } : {}),
     // A question set (services/game-sets.js) a teacher saved in this game, when the link's chapter is its code
     // (BRB.questionSet: { id, items, mine }); a code with no set: { id, missing: true }.
-    ...(setFor(g, unpackParams(tok.o).chapter, u)),
+    ...(setFor(g, unpackParams(tok.o).chapter, u, kind)),
     // Saving a set and looking up a class code (BRB.canSaveSet / BRB.canFindSet): false only where the grown-up fence
     // (routes/family.js) refuses that call, so the game hides what would fail; absent means the game may offer it.
-    ...setRights(g, u),
+    ...setRights(g, u, kind),
     // A teacher (school staff) in a set game may assign what they made to a class (BRB.canAssign / BRB.assign: the page
     // opens /teach/assign with it, where "Also post to Google Classroom" is offered for a linked class).
     ...(!preview && setGame(g) && isSchoolStaff(u) ? { canAssign: true } : {}),
+    // "My worksheets" (BRB.canListSets / BRB.mySets): school staff and the platform admin get their own saved sets in a
+    // set game, to open again, print, share, copy, rename and delete. Never a student, a child, a guest or a family
+    // grown-up (the fence keeps them to playing), never in a preview. A Builder classroom activity that keeps
+    // worksheets (canvasSetVersion: Oomba Canvas 1.4.0 for a worksheet or a generator) offers it the same way, in its
+    // published version only, and never under the Studio's "As a student".
+    ...(!preview && !tok.st && kind && u && !u.is_guest && isStaff(u) && fenceLets(u, 'GET', `/api/games/${g.id}/sets`) ? { mySets: true } : {}),
     // Crossword's "Write clues with AI" (BRB.canWriteClues / BRB.writeClues): grown-ups who may host, with a model set.
     // The fence has the last word: a family grown-up may host, but these calls are school tools (routes/family.js).
     ...(!preview && cluesGame(g) && liveCanHost(u) && hasModel() && fenceLets(u, 'POST', `/api/games/${g.id}/clues`) && fenceLets(u, 'POST', `/api/games/${g.id}/words-from-doc`) ? { clues: true } : {}),
@@ -441,13 +451,29 @@ function apiGame(req, res) {
 // Question sets (services/game-sets.js): an official game on the list keeps a teacher's list of questions under a short
 // code. Body { items, id? } (id: change that set, the caller's own). -> { id }. Not for guests (a set outlives a guest).
 const setGame = g => gameSets.SET_GAMES.has(g.slug) && g.source === 'seed' && (games.getOwner(g) || {}).username === OFFICIAL;
-/** What the fence lets this viewer do with a set game's sets: { setSave: false } and/or { setFind: false }, else {}. */
-function setRights(g, u) {
-  if (!setGame(g)) return {};
-  return { ...(fenceLets(u, 'POST', `/api/games/${g.id}/sets`) ? {} : { setSave: false }), ...(fenceLets(u, 'GET', `/api/games/${g.id}/sets/code`) ? {} : { setFind: false }) };
+/** A Builder classroom activity that keeps worksheets (docs/canvas-api.md "Worksheets"): its published version is an
+ *  Oomba Canvas 1.4.0 (or later) activity, whatever it is for (one for a worksheet or a generator also prints them).
+ *  -> that version, or null. Its sets are the teacher's saved questions (game-sets.js cleanCanvasItems, cleaned for
+ *  that version). */
+function canvasSetVersion(g) {
+  if (!g || !g.published_version_id || setGame(g)) return null;
+  const v = games.getVersion(g.published_version_id);
+  return v && v.game_id === g.id && gameSets.canvasSetKit(v.html) && (activityData(v.html) || {}).data ? v : null;
 }
-function setFor(g, chapter, u) {
-  if (!chapter || !gameSets.SET_ID.test(chapter) || !setGame(g)) return {};
+/** Which sets a game keeps: an official set game's slug (its cleaner), gameSets.CANVAS_KIND for a classroom activity
+ *  that keeps worksheets, or null. */
+const setKind = g => (setGame(g) ? g.slug : canvasSetVersion(g) ? gameSets.CANVAS_KIND : null);
+/** What the fence lets this viewer do with a set game's sets: { setSave: false } and/or { setFind: false }, else {}. A
+ *  classroom activity's worksheets are saved by school staff only (BRB.canSaveSet false for anyone else). */
+function setRights(g, u, kind = setKind(g)) {
+  if (!kind) return {};
+  const save = fenceLets(u, 'POST', `/api/games/${g.id}/sets`) && (kind !== gameSets.CANVAS_KIND || (!!u && !u.is_guest && isStaff(u)));
+  return { ...(save ? {} : { setSave: false }), ...(fenceLets(u, 'GET', `/api/games/${g.id}/sets/code`) ? {} : { setFind: false }) };
+}
+/** INIT.set for a link's chapter. kind: the frame's (a classroom activity's worksheet opens only in its published
+ *  version; a preview gets none). */
+function setFor(g, chapter, u, kind) {
+  if (!chapter || !gameSets.SET_ID.test(chapter) || !kind) return {};
   const s = gameSets.get(g.id, chapter);
   return { set: s ? { id: s.id, items: s.items, mine: !!u && s.ownerId === u.id } : { id: chapter, missing: true } };
 }
@@ -455,7 +481,7 @@ function setFor(g, chapter, u) {
 // game may look one up (a code is what a teacher hands out); slowed per address, so codes can't be guessed in bulk.
 router.get('/api/games/:id/sets/:code', rateLimit('game-set-code', 30, 60e3, 'errors.api.slowDown', { byIp: true }), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
-  if (!setGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  if (!setKind(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
   const id = gameSets.codeToId(req.params.code);
   const s = id && gameSets.get(g.id, id);
   if (!s) return res.status(404).json({ error: req.t('game.api.notFound'), code: 'noSet' });
@@ -463,13 +489,68 @@ router.get('/api/games/:id/sets/:code', rateLimit('game-set-code', 30, 60e3, 'er
 });
 router.post('/api/games/:id/sets', requireUser, rateLimit('game-sets', 60, 60e3), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
-  if (!setGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  const kind = setKind(g);
+  if (!kind) return res.status(404).json({ error: req.t('game.api.notFound') });
   if (req.user.is_guest) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'guest' });
+  // A classroom activity's worksheet: school staff and the platform admin only (never a student or a child: a set is
+  // a teacher's handout), cleaned for the activity's published version.
+  const canvas = kind === gameSets.CANVAS_KIND;
+  if (canvas && !isStaff(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' });
   const b = req.body || {}, id = b.id === undefined || b.id === null ? null : String(b.id);
   if (id !== null && !gameSets.SET_ID.test(id)) return res.status(400).json({ error: req.t('errors.api.badRequest') });
-  const r = gameSets.save(g.id, req.user.id, b.items, id, g.slug);
+  const r = gameSets.save(g.id, req.user.id, b.items, id, kind, { ...(typeof b.title === 'string' ? { title: b.title } : {}), ...(canvas ? { html: canvasSetVersion(g).html } : {}) });
   if (r.error) return res.status(r.error === 'notYours' ? 404 : 400).json({ error: req.t('errors.api.badRequest'), code: r.error });
   res.json({ id: r.id });
+});
+// "My worksheets" (docs/sdk.md "Question sets"; BRB.mySets and friends): the signed-in teacher's own sets in this game,
+// to open again, print, share, copy, rename and delete. Never a guest; anyone else's set answers 404, exactly as one
+// that isn't there. Slowed per account like saving.
+/** The set game and its signed-in, non-guest owner, or null (the answer already sent). g.kind: which sets it keeps
+ *  (setKind: its slug, or a classroom activity's). */
+function mySetsGame(req, res) {
+  const g = apiGame(req, res); if (!g) return null;
+  const kind = setKind(g);
+  if (!kind) { res.status(404).json({ error: req.t('game.api.notFound') }); return null; }
+  if (req.user.is_guest) { res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'guest' }); return null; }
+  return { ...g, kind };
+}
+const setIdOf = (req, res) => {
+  const id = String(req.params.set || '');
+  if (gameSets.SET_ID.test(id)) return id;
+  res.status(404).json({ error: req.t('game.api.notFound'), code: 'noSet' });
+  return null;
+};
+const noSet = (req, res) => res.status(404).json({ error: req.t('game.api.notFound'), code: 'noSet' });
+router.get('/api/games/:id/sets', requireUser, rateLimit('game-sets-list', 60, 60e3), (req, res) => {
+  const g = mySetsGame(req, res); if (!g) return;
+  res.json({ sets: gameSets.listMine(g.id, req.user.id, g.kind), max: gameSets.MAX_PER_OWNER });
+});
+router.delete('/api/games/:id/sets/:set', requireUser, rateLimit('game-sets', 60, 60e3), (req, res) => {
+  const g = mySetsGame(req, res); if (!g) return;
+  const id = setIdOf(req, res); if (!id) return;
+  if (!gameSets.remove(g.id, req.user.id, id)) return noSet(req, res);
+  res.json({ ok: true });
+});
+router.post('/api/games/:id/sets/:set/rename', requireUser, rateLimit('game-sets', 60, 60e3), (req, res) => {
+  const g = mySetsGame(req, res); if (!g) return;
+  const id = setIdOf(req, res); if (!id) return;
+  const title = (req.body || {}).title;
+  if (typeof title !== 'string') return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'title' });
+  const r = gameSets.rename(g.id, req.user.id, id, title, g.kind);
+  if (r.error === 'notYours') return noSet(req, res);
+  if (r.error) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.error });
+  res.json({ ok: true, title: r.title });
+});
+router.post('/api/games/:id/sets/:set/duplicate', requireUser, rateLimit('game-sets', 60, 60e3), (req, res) => {
+  const g = mySetsGame(req, res); if (!g) return;
+  const id = setIdOf(req, res); if (!id) return;
+  const was = gameSets.get(g.id, id);
+  if (!was || was.ownerId !== req.user.id) return noSet(req, res);
+  const name = req.t('game.sets.copyOf', { title: was.title || gameSets.labelOf(g.kind, was.items) });
+  const r = gameSets.duplicate(g.id, req.user.id, id, name, g.kind);
+  if (r.error === 'notYours') return noSet(req, res);
+  if (r.error) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.error });
+  res.json({ id: r.id, set: gameSets.oneMine(g.id, req.user.id, r.id, g.kind) });
 });
 // Crossword clues (services/set-ai.js draftClues): Claude writes a clue for each of the teacher's words, for the game's
 // word list only (nothing is saved here). Body { words: [string] (1-30), level }. -> { clues: [string] } | { code }.
@@ -540,7 +621,14 @@ router.post('/api/games/:id/print', rateLimit('game-print', 20, 60e3, 'errors.ap
     const r = cleanCanvasPrintDoc((req.body || {}).doc);
     if (!r.ok) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
     if (r.doc.key && !canvasKeyFor(req.user, g)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'key' });
-    const out = canvasPrintHtml(v.html, r.doc, { t: req.t, dir: localeInfo(req.locale).dir, lang: req.locale });
+    // 1.4.0: a saved worksheet (doc.set): its own questions, from the published version that keeps worksheets
+    let set = null;
+    if (r.doc.set) {
+      const cv = canvasSetVersion(g), s = cv && cv.id === v.id && gameSets.get(g.id, r.doc.set);
+      if (!s) return res.status(404).json({ error: req.t('game.api.notFound'), code: 'noSet' });
+      set = { items: s.items, code: gameSets.codeOf(s.id), link: `${requestOrigin(req)}/play/${g.slug}?chapter=${s.id}&lock=1` };
+    }
+    const out = canvasPrintHtml(v.html, r.doc, { t: req.t, dir: localeInfo(req.locale).dir, lang: req.locale, set });
     return out ? res.json({ html: out }) : res.status(404).json({ error: req.t('game.api.notFound') });
   }
   const r = printer.clean((req.body || {}).doc);

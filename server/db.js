@@ -1065,6 +1065,120 @@ export const MIGRATIONS = [
   // A game step's best score that came from a set where the teacher showed an answer (Oomba Canvas 1.3.0's Show answer:
   // those problems are not in the score). Shown to the class's staff only, beside that score (routes/progress.js).
   ['0090_step_progress_helped', 'ALTER TABLE step_progress ADD COLUMN helped INTEGER NOT NULL DEFAULT 0;'],
+  // Story Library (docs/decisions.md "Story Library"; server/services/library.js). story_reads: each reader's own progress
+  // on a book (furthest page, whether Read to me was used, the questions: marks = first try per question '1'/'0'/'-',
+  // solved = got it right in the end '1'/'-'). A book assigned to a class is a lesson of kind 'story' with one step of
+  // kind 'story' whose story_id names the book (lesson_steps.story_id), so the class page, due dates, the gradebook and
+  // the Score treat it like an assigned game; its step_progress row holds done, the first-try marks and the score.
+  ['0091_story_library', `CREATE TABLE IF NOT EXISTS story_reads (user_id TEXT NOT NULL, book_id TEXT NOT NULL, page INTEGER NOT NULL DEFAULT 0,
+      pages INTEGER NOT NULL DEFAULT 0, aloud INTEGER NOT NULL DEFAULT 0, marks TEXT NOT NULL DEFAULT '', solved TEXT NOT NULL DEFAULT '',
+      finished_at INTEGER, quiz_at INTEGER, started_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (user_id, book_id));
+    CREATE INDEX IF NOT EXISTS story_reads_user ON story_reads(user_id, updated_at);
+    ALTER TABLE lesson_steps ADD COLUMN story_id TEXT;`],
+  // Virtual math manipulatives (docs/decisions.md "Virtual math manipulatives"; services/manipulatives.js), hidden while
+  // it is tested. (0091 is also taken on an unmerged branch, so this starts at 0092; migrations run by name, a gap is fine.)
+  // manip_boards: a grown-up's saved boards, each with its own share code (owner only lists and deletes them).
+  // manip_sessions: a live session, owned by its teacher (host_id) and for one of their classes; its join code works
+  // only for that class's students. manip_work: each joined student's own board in a session (state: the board as JSON,
+  // their sticky notes included), seen by that student and the session's teacher only.
+  ['0092_manipulatives', `
+    CREATE TABLE IF NOT EXISTS manip_boards (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      code TEXT NOT NULL UNIQUE, tool TEXT NOT NULL, title TEXT NOT NULL, state TEXT NOT NULL, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_manip_boards_owner ON manip_boards(owner_id, created_at);
+    CREATE TABLE IF NOT EXISTS manip_sessions (id TEXT PRIMARY KEY, code TEXT NOT NULL UNIQUE,
+      host_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE,
+      tool TEXT NOT NULL, title TEXT NOT NULL, pushed_state TEXT, pushed_at INTEGER, status TEXT NOT NULL DEFAULT 'active',
+      created_at INTEGER NOT NULL, ended_at INTEGER);
+    CREATE INDEX IF NOT EXISTS idx_manip_sessions_class ON manip_sessions(class_id, status);
+    CREATE INDEX IF NOT EXISTS idx_manip_sessions_host ON manip_sessions(host_id, created_at);
+    CREATE TABLE IF NOT EXISTS manip_work (session_id TEXT NOT NULL REFERENCES manip_sessions(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, state TEXT NOT NULL DEFAULT '{}', joined_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL, PRIMARY KEY (session_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_manip_work_user ON manip_work(user_id);`],
+  // Manipulatives live sessions as one shared room (docs/decisions.md "Virtual math manipulatives: the shared room"):
+  // the teacher's own area on the room's board (room, as JSON, and when it last changed) and each student's square in
+  // the room's grid (slot). Cursors and "Bring everyone to me" are never stored (services/manip-live.js).
+  ['0093_manipulatives_room', `
+    ALTER TABLE manip_sessions ADD COLUMN room TEXT NOT NULL DEFAULT '{}';
+    ALTER TABLE manip_sessions ADD COLUMN room_at INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE manip_work ADD COLUMN slot INTEGER NOT NULL DEFAULT 0;`],
+  // A live room's "Hide students' work" (docs/decisions.md "Virtual math manipulatives: hidden work"): 0, the default,
+  // sends a student nothing of a classmate's square but its frame, name and hand; 1 when the teacher shows the work.
+  ['0094_manipulatives_show_work', 'ALTER TABLE manip_sessions ADD COLUMN show_work INTEGER NOT NULL DEFAULT 0;'],
+  // Figures, the standalone product (docs/decisions.md "Figures, the standalone product"; services/figures.js), hidden
+  // while it is tested. One question-set model that a Figures worksheet uses now (purpose 'worksheet') and a test or a
+  // lesson's Figure step can use later ('test', 'lesson'). question_sets: owned by its teacher (only the owner lists,
+  // opens, prints or deletes it), of_version pins the Oomba Figures version its figures were checked with.
+  // question_set_items: one figure question each, in order (pos): the kind, its data (JSON that passed OF.check), the
+  // generator it came from (gen, with its seed: "regenerate numbers"), hide (what the student's copy leaves out), the
+  // question text, answer_key (the OF.solve value the answer is), and the answer and worked lines worked out on the
+  // server. figure_presets: a teacher's own saved figures per kind. figure_prefs: the teacher's "Power with AI" switch.
+  ['0095_figures_question_sets', `
+    CREATE TABLE IF NOT EXISTS question_sets (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      title TEXT NOT NULL, grade TEXT NOT NULL DEFAULT '', subject TEXT NOT NULL DEFAULT '', purpose TEXT NOT NULL DEFAULT 'worksheet',
+      of_version TEXT NOT NULL, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_question_sets_owner ON question_sets(owner_id, purpose, updated_at);
+    CREATE TABLE IF NOT EXISTS question_set_items (id TEXT PRIMARY KEY, set_id TEXT NOT NULL REFERENCES question_sets(id) ON DELETE CASCADE,
+      pos INTEGER NOT NULL, kind TEXT NOT NULL, data TEXT NOT NULL, gen TEXT, seed INTEGER, hide TEXT, question TEXT NOT NULL DEFAULT '',
+      answer_key TEXT, answer TEXT NOT NULL DEFAULT '', work TEXT NOT NULL DEFAULT '[]', points INTEGER NOT NULL DEFAULT 1);
+    CREATE INDEX IF NOT EXISTS idx_question_set_items_set ON question_set_items(set_id, pos);
+    CREATE TABLE IF NOT EXISTS figure_presets (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      kind TEXT NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_figure_presets_owner ON figure_presets(owner_id, kind, created_at);
+    CREATE TABLE IF NOT EXISTS figure_prefs (user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+      ai INTEGER NOT NULL DEFAULT 1, updated_at INTEGER NOT NULL);`],
+  // A Figures worksheet assigned to a class (docs/decisions.md "Figures: Assign to class"; services/figures-steps.js): a
+  // lesson of kind 'figures' with one lesson step of kind 'figures'. The step keeps a snapshot of the worksheet's
+  // questions in lesson_steps.items (figure data, question, answer, unit, value, dp, worked lines), so later edits to
+  // the worksheet never change an assigned lesson; set_id names the worksheet it came from (question_sets.id, never read
+  // back). of_version: the Oomba Figures version the figures are drawn with. show_answers: 1 when the teacher lets
+  // students who handed in see the answers and worked lines once the due date is over (0, the default: never).
+  ['0096_figures_steps', `
+    ALTER TABLE lesson_steps ADD COLUMN of_version TEXT NOT NULL DEFAULT '';
+    ALTER TABLE lesson_steps ADD COLUMN show_answers INTEGER NOT NULL DEFAULT 0;`],
+  // An official game's question sets get a name of their own (docs/decisions.md "My worksheets in Crossword, The Big
+  // Divide and Algebra Builder"): what the teacher calls it in their list. '' until they name it (the list then shows a
+  // label made from the set). Only its owner ever sees it; it passes the site's text filter.
+  ['0097_game_sets_title', "ALTER TABLE game_sets ADD COLUMN title TEXT NOT NULL DEFAULT '';"],
+  // Manipulatives saving (docs/decisions.md "Virtual math manipulatives: saving and AI drafts"). manip_drafts: an AI
+  // draft as a server job (services/manip-drafts.js, the Builder's pattern): status queued | running | interrupted |
+  // done | failed, at most one unfinished per teacher (the unique index), step (the progress card's row) and steps (when
+  // each row started, ms after the start, JSON), the request (the teacher's checked words, JSON), the result's summary
+  // (JSON) and the board it was saved as (board_id). seen_at: the teacher saw how it ended. manip_boards.kind: 'template'
+  // (a saved board with a share code: every board saved before this) or 'recent' (saved as the teacher works);
+  // updated_at and opened_at for "Recent boards" and their 60 days. manip_sessions.opened_at: when the room was started
+  // or last reopened (its 12 hours count from there).
+  ['0098_manipulatives_saving', `
+    CREATE TABLE IF NOT EXISTS manip_drafts (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      tool TEXT NOT NULL, request TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'queued', step INTEGER NOT NULL DEFAULT 0,
+      steps TEXT NOT NULL DEFAULT '[]', result TEXT, error TEXT, board_id TEXT, attempt INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL, started_at INTEGER, ended_at INTEGER, seen_at INTEGER);
+    CREATE UNIQUE INDEX IF NOT EXISTS manip_drafts_one_live ON manip_drafts(owner_id) WHERE status IN ('queued','running','interrupted');
+    CREATE INDEX IF NOT EXISTS idx_manip_drafts_owner ON manip_drafts(owner_id, created_at);
+    ALTER TABLE manip_boards ADD COLUMN kind TEXT NOT NULL DEFAULT 'template';
+    ALTER TABLE manip_boards ADD COLUMN updated_at INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE manip_boards ADD COLUMN opened_at INTEGER NOT NULL DEFAULT 0;
+    UPDATE manip_boards SET updated_at=created_at, opened_at=created_at;
+    CREATE INDEX IF NOT EXISTS idx_manip_boards_kind ON manip_boards(owner_id, kind);
+    ALTER TABLE manip_sessions ADD COLUMN opened_at INTEGER NOT NULL DEFAULT 0;
+    UPDATE manip_sessions SET opened_at=created_at;`],
+  // Figures answer types (docs/decisions.md "Figures: multiple choice and negative answers"): a worksheet question is
+  // answered with a number (any sign) or by picking one of 2 to 6 options. answer_type 'number' (every question before
+  // this) | 'choice'; choices: the options as a JSON list of strings, in the order students see them; correct: the index
+  // of the right one (NULL while the teacher has not marked one). A number question keeps options it had, so switching
+  // back to multiple choice brings them back. A lesson step's snapshot keeps the same three fields
+  // in its items JSON (no column: an older snapshot without them is a number question).
+  ['0099_figures_answer_types', `
+    ALTER TABLE question_set_items ADD COLUMN answer_type TEXT NOT NULL DEFAULT 'number';
+    ALTER TABLE question_set_items ADD COLUMN choices TEXT NOT NULL DEFAULT '[]';
+    ALTER TABLE question_set_items ADD COLUMN correct INTEGER;`],
+  // A lesson's Figure step and "Build a test" (docs/decisions.md "Figures: the lesson Figure step and Build a test"):
+  // question_sets with purpose 'lesson' are the questions of one lesson's Figure step while the teacher edits them;
+  // lesson_id names that lesson (NULL for a worksheet or a test). "Save to lesson" snapshots the set into the step
+  // (lesson_steps.set_id names the set), as Assign does; deleting the lesson deletes its sets.
+  ['0100_figures_lesson_sets', `
+    ALTER TABLE question_sets ADD COLUMN lesson_id TEXT;
+    CREATE INDEX IF NOT EXISTS idx_question_sets_lesson ON question_sets(lesson_id);`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

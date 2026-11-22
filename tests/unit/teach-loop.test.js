@@ -21,6 +21,7 @@ const V = await import('../../server/views/teacher-loop.js');
 const { setting } = await import('../../server/db.js');
 const { CODES } = await import('../../server/i18n/index.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 seed({ quiet: true });
 let server, base;
@@ -29,7 +30,7 @@ test.after(() => server.close());
 test.beforeEach(() => resetLimits());
 const cookieFor = id => { let c = ''; auth.startSession({ append: (k, v) => { c = v.split(';')[0]; } }, id); return c; };
 const H = { accept: 'text/html', 'user-agent': 'Mozilla/5.0 Chrome/141.0' };
-const get = async (p, u) => { const r = await fetch(base + p, { headers: { ...H, ...(u ? { cookie: cookieFor(u.id) } : {}) }, redirect: 'manual' }); return { status: r.status, text: await r.text(), location: r.headers.get('location') }; };
+const get = async (p, u) => { const r = await fetch(base + p, { headers: { ...H, ...(u ? { cookie: cookieFor(u.id) } : {}) }, redirect: 'manual' }); return { status: r.status, text: deicon(await r.text()), location: r.headers.get('location') }; };
 const post = async (p, u, body = {}) => {
   const r = await fetch(base + p, { method: 'POST', redirect: 'manual', headers: { ...H, 'sec-fetch-site': 'same-origin', 'content-type': 'application/json', ...(u ? { cookie: cookieFor(u.id) } : {}) }, body: JSON.stringify(body) });
   return { status: r.status, json: await r.json().catch(() => null) };
@@ -158,7 +159,7 @@ test('the landing at "/": one teaching-loop section after the students build, wi
   assert.ok(!sec.includes('Standards tab'), 'no Standards tab');
   assert.ok(!/Lesson library|Draft with AI/.test(sec), 'games, not lessons');
   assert.doesNotMatch(sec, /href="\/(?:class|teach)\//, 'no links into teacher-only pages for signed-out visitors');
-  assert.match(sec, /href="\/trial" data-cta="trial"/);
+  assert.match(sec, /href="\/signup\?trial=1" data-cta="trial"/);
   for (const [name] of V.SHOTS) {
     const img = new RegExp(`<img src="/img/teach-loop/${name}\\.webp\\?v=\\d+" width="1280" height="800" [^>]*alt="([^"]{30,})" loading="lazy"`).exec(sec);
     assert.ok(img, name);

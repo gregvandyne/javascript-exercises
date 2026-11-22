@@ -25,6 +25,7 @@ import * as OT from '../standards/official-tags.js';
 import * as V from '../views/standards.js';
 import { CSS as CSQ_CSS } from '../views/cs-quest.js';
 import { classHeader, classBack } from './schools.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 const CSS = raw(`${CSQ_CSS}<link rel="stylesheet" href="/css/standards.css?v=${VERSION}">`);
@@ -98,7 +99,7 @@ router.get('/teach/lessons/:id/standards', requireUser, (req, res) => {
   const to = steps.some(s => s.id === String(req.query.to || '')) ? String(req.query.to) : '';
   const filters = { grade, domain, q: String(req.query.q || '').slice(0, 80), to };
   const results = fw.search({ q: filters.q, grade, domain, limit: 60 });
-  const body = html`<div class="pagehead"><div><span class="small muted" dir="auto">${l.title}</span><h1>🎯 ${t('standards.lesson.title')}</h1>
+  const body = html`<div class="pagehead"><div><span class="small muted" dir="auto">${l.title}</span><h1>${ico('🎯', { size: 36 })} ${t('standards.lesson.title')}</h1>
     <p class="muted">${t('standards.lesson.lead')}</p></div><div class="row"><a class="btn" href="/teach/lessons/${l.id}">← ${t('standards.lesson.back')}</a></div></div>
     ${V.lessonBody(req, { l, steps, tags: CC.lessonTags(l.id), framework, filters, results, edit })}`;
   page(req, res, { title: `${t('standards.lesson.title')} · ${l.title}`, active: 'classes', mid: true, body, head: CSS, scripts: ['/js/schools.js', '/js/standards.js'], back: `/teach/lessons/${l.id}`, backLabel: l.title });

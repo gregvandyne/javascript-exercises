@@ -13,6 +13,10 @@
 //   POST /api/dash/:id/links, /links/:lid/remove           approved links ({ qr: true }: the QR widget's typed website)
 //   POST /api/dash/:id/eyes                   Eyes up on or off
 //   POST /api/dash/:id/pictures, GET /api/dash/:id/pictures, POST /api/dash/:id/pictures/:pid/remove
+// Class Board parity (docs/decisions.md "Class Board: PDF, link tile and stickers"):
+//   POST /api/dash/:id/pdfs                   the class's teacher uploads a PDF for a PDF widget (size cap, PDF only)
+//   GET  /dash/pdfs/:pid                      that PDF: its owner only, while still the class's teacher
+// The link tile and the stickers add no address (stickers come from /img/stickers/, the library's served copy).
 // Stage 2 (docs/decisions.md "Classroom dashboards, stage 2"): everyday widgets. Their changing state (timers, help
 // queue, checks, weather) rides on /live; these only act or fetch once.
 //   POST /api/dash/:id/timers/:wid            a teacher starts, pauses, resets or sets a timer (server time)
@@ -52,6 +56,7 @@ import { Router } from 'express';
 import express from 'express';
 import fs from 'node:fs';
 import { html, raw, jsonData } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound, VERSION } from '../views/layout.js';
 import { wordmark } from '../views/brand.js';
 import { avatar } from '../views/components.js';
@@ -85,7 +90,7 @@ function bgBar(t) {
   return html`<section class="dash-bgbar" aria-labelledby="dash-bg-h"><h2 class="dash-h3" id="dash-bg-h">${t('dash.bg.heading')}</h2>
     <div class="dash-sws" role="group" aria-label="${t('dash.bg.colors')}">${D.BG_COLORS.map(id => sw('color', id))}</div>
     <div class="dash-sws" role="group" aria-label="${t('dash.bg.art')}">${D.BG_ART.map(id => sw('art', id))}</div>
-    <button class="btn btn-sm" type="button" data-bg-upload>🖼️ ${t('dash.bg.upload')}</button>
+    <button class="btn btn-sm" type="button" data-bg-upload>${ico('🖼️', { size: 18 })} ${t('dash.bg.upload')}</button>
     <input type="file" accept="image/*" id="dash-bg-file" hidden>
     <p class="small muted dash-bgnote">${t('dash.bg.note')}</p></section>`;
 }
@@ -105,7 +110,7 @@ const side = t => html`<aside class="dash-side" id="dash-side" aria-labelledby="
  *  so each language keeps its own order and punctuation. */
 function editTitle(t, name) {
   const MARK = '\u0001', [pre, post = ''] = t('dash.top.editing', { name: MARK }).split(MARK);
-  return html`<h1 class="dash-class dash-edittitle" id="dash-editing"><span>${pre}</span><span class="dash-namebox"><input class="dash-namein" id="dash-edit-name" maxlength="40" value="${name}" aria-label="${t('dash.top.layoutName')}" aria-describedby="dash-edit-name-err" autocomplete="off" spellcheck="false" enterkeyhint="done"><span class="dash-namepen" aria-hidden="true">✏️</span></span><span>${post}</span></h1>
+  return html`<h1 class="dash-class dash-edittitle" id="dash-editing"><span>${pre}</span><span class="dash-namebox"><input class="dash-namein" id="dash-edit-name" maxlength="40" value="${name}" aria-label="${t('dash.top.layoutName')}" aria-describedby="dash-edit-name-err" autocomplete="off" spellcheck="false" enterkeyhint="done"><span class="dash-namepen" aria-hidden="true">${ico('✏️', { size: 18 })}</span></span><span>${post}</span></h1>
       <span class="err dash-nameerr" id="dash-edit-name-err" role="alert"></span>`;
 }
 function dashPage(req, res, c, role) {
@@ -116,7 +121,7 @@ function dashPage(req, res, c, role) {
   if (role === 'teacher') {
     const layouts = D.ensureLayouts(u, c, t);
     const cur = D.currentLayout(u, c, layouts);
-    data = { role, classId: c.id, className: c.name, tz: S.zoneOf(s) || D.FALLBACK_TZ, tzSet: !!S.zoneOf(s), registry: reg, practice: D.practiceFor(c), layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), templates: D.templatesFor(t), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS };
+    data = { role, classId: c.id, className: c.name, tz: S.zoneOf(s) || D.FALLBACK_TZ, tzSet: !!S.zoneOf(s), registry: reg, practice: D.practiceFor(c), layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), templates: D.templatesFor(t), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS, maxStickers: D.MAX_STICKERS };
     top = html`<header class="dash-top" id="dash-top">
       <a class="dash-logo" href="/class/${c.id}" aria-label="${t('dash.top.backClass')}">${wordmark()}</a>
       <span class="dash-sep" aria-hidden="true"></span>
@@ -124,8 +129,9 @@ function dashPage(req, res, c, role) {
       <span class="dash-date" id="dash-date"></span>
       <span class="dash-grow"></span>
       <span class="dash-now" id="dash-now" aria-hidden="true"></span>
-      <button class="btn btn-sm" type="button" id="dash-projector" aria-pressed="false">📽️ ${t('dash.top.projector')}</button>
-      <button class="btn btn-sm" type="button" id="dash-edit">✏️ ${t('dash.top.edit')}</button>
+      <button class="btn btn-sm" type="button" id="dash-stickers-btn" aria-expanded="false" aria-controls="dash-stkpanel">${ico('🌟', { size: 18 })} ${t('dash.w.stickers.open')}</button>
+      <button class="btn btn-sm" type="button" id="dash-projector" aria-pressed="false">${ico('📽️', { size: 18 })} ${t('dash.top.projector')}</button>
+      <button class="btn btn-sm" type="button" id="dash-edit">${ico('✏️', { size: 18 })} ${t('dash.top.edit')}</button>
     </header>
     <header class="dash-top dash-edithead" id="dash-edithead" hidden>
       ${editTitle(t, cur.name)}
@@ -138,12 +144,12 @@ function dashPage(req, res, c, role) {
       <div class="dash-switch" id="dash-switch">
         <span class="dash-lab" id="dash-layouts-l">${t('dash.layouts.label')}</span>
         <nav class="dash-layouts" id="dash-layouts" aria-labelledby="dash-layouts-l"></nav>
-        <button class="btn btn-sm dash-lnew" type="button" id="dash-layout-new"><span><span aria-hidden="true">➕</span> <span class="dash-lnewt">${t('dash.layouts.new')}</span></span></button>
+        <button class="btn btn-sm dash-lnew" type="button" id="dash-layout-new"><span>${ico('➕', { size: 18 })} <span class="dash-lnewt">${t('dash.layouts.new')}</span></span></button>
         <button class="btn btn-sm" type="button" id="dash-layout-more" aria-label="${t('dash.layouts.manage')}">⋯</button>
       </div>
       <span class="dash-grow"></span>
-      <button class="btn btn-sm" type="button" id="dash-eyes-btn" aria-pressed="false">👀 ${t('dash.foot.eyes')}</button>
-      <button class="btn btn-primary btn-sm" type="button" id="dash-push">📤 ${t('dash.foot.push')} <span class="dash-count" id="dash-push-n" hidden></span></button>
+      <button class="btn btn-sm" type="button" id="dash-eyes-btn" aria-pressed="false">${ico('👀', { size: 18 })} ${t('dash.foot.eyes')}</button>
+      <button class="btn btn-primary btn-sm" type="button" id="dash-push">${ico('📤', { size: 18 })} ${t('dash.foot.push')} <span class="dash-count" id="dash-push-n" hidden></span></button>
     </footer>`;
   } else {
     const st = D.studentState(c.id, u.id);
@@ -153,10 +159,10 @@ function dashPage(req, res, c, role) {
       <span class="dash-sep" aria-hidden="true"></span>
       <h1 class="dash-class">${c.name}</h1>
       <span class="dash-grow"></span>
-      <button class="btn btn-sm dash-traybtn" type="button" id="dash-tray-btn" aria-expanded="false" aria-controls="dash-tray">📥 ${t('dash.tray.button')} <span class="dash-count" id="dash-tray-n">0</span></button>
+      <button class="btn btn-sm dash-traybtn" type="button" id="dash-tray-btn" aria-expanded="false" aria-controls="dash-tray">${ico('📥', { size: 18 })} ${t('dash.tray.button')} <span class="dash-count" id="dash-tray-n">0</span></button>
       <span class="dash-now" id="dash-now" aria-hidden="true"></span>
       <span class="dash-me">${avatar(u, 36)}<span class="dash-myname">${u.display_name}</span></span>
-      <button class="btn btn-sm" type="button" id="dash-edit">✏️ ${t('dash.top.editMine')}</button>
+      <button class="btn btn-sm" type="button" id="dash-edit">${ico('✏️', { size: 18 })} ${t('dash.top.editMine')}</button>
     </header>
     <header class="dash-top dash-edithead" id="dash-edithead" hidden>
       <h1 class="dash-class">${t('dash.top.editingMine')}</h1>
@@ -185,7 +191,7 @@ function dashPage(req, res, c, role) {
       ${side(t)}
     </div>
     ${foot}
-    ${role === 'student' ? html`<div class="dash-eyes" id="dash-eyes" role="alertdialog" aria-modal="true" aria-labelledby="dash-eyes-h" hidden><div class="dash-eyescard"><div class="dash-eyesmark" aria-hidden="true">👀</div><h2 id="dash-eyes-h">${t('dash.eyes.title')}</h2><p>${t('dash.eyes.text')}</p></div></div>` : ''}
+    ${role === 'student' ? html`<div class="dash-eyes" id="dash-eyes" role="alertdialog" aria-modal="true" aria-labelledby="dash-eyes-h" hidden><div class="dash-eyescard"><div class="dash-eyesmark" aria-hidden="true">${ico('👀', { size: 128 })}</div><h2 id="dash-eyes-h">${t('dash.eyes.title')}</h2><p>${t('dash.eyes.text')}</p></div></div>` : ''}
     <p class="sr-only" id="dash-say" aria-live="polite"></p>
     <noscript><p class="notice warn">${t('dash.noscript')}</p></noscript>
     ${jsonData('page-data', { ...data, school: s ? s.name : '' })}
@@ -208,7 +214,7 @@ router.get('/dashboard', requireUser, (req, res) => {
   const mine = S.classesOf(req.user.id, 'student').filter(c => D.isStudent(req.user, S.getClass(c.id)));
   if (mine.length === 1) return res.redirect(`/class/${mine[0].id}/dashboard`);
   if (!mine.length) return res.redirect(S.isSchoolStaff(req.user) ? '/teach' : '/classes');
-  page(req, res, { title: t('dash.pick.title'), active: 'classes', head: CSS, body: html`<div class="pagehead"><h1>🖥️ ${t('dash.pick.title')}</h1></div>
+  page(req, res, { title: t('dash.pick.title'), active: 'classes', head: CSS, body: html`<div class="pagehead"><h1>${ico('🖥️', { size: 36 })} ${t('dash.pick.title')}</h1></div>
     <ul class="plain dash-pick">${mine.map(c => html`<li><a class="panel dash-pickcard" href="/class/${c.id}/dashboard"><b>${c.name}</b><span class="small muted">${c.school_name}</span></a></li>`)}</ul>` });
 });
 
@@ -331,6 +337,26 @@ router.get('/api/dash/:id/pictures', requireUser, (req, res) => {
 router.post('/api/dash/:id/pictures/:pid/remove', requireUser, rateLimit('dash-picture', 60, 3600e3), (req, res) => {
   const x = load(req, res); if (!x) return;
   send(req, res, D.removePicture(req.user, x.c, req.params.pid));
+});
+
+// ---------------------------------------------------------------- PDFs (Class Board parity: the PDF widget)
+// The class's own teacher uploads a PDF (at most D.PDF_MAX_BYTES); only that teacher fetches it back.
+const pdfTooBig = (req, res, next) => (Number(req.get('content-length')) > D.PDF_MAX_BYTES ? fail(req, res, 'pdf_tooBig', 413) : next());
+router.post('/api/dash/:id/pdfs', requireUser, rateLimit('dash-pdf', 30, 3600e3), pdfTooBig, express.raw({ type: () => true, limit: D.PDF_MAX_BYTES + 1024, inflate: false }), (req, res) => {
+  const x = load(req, res, { teacher: true }); if (!x) return;
+  try {
+    const r = D.savePdf(req.user, x.c, Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0));
+    res.json({ ok: true, id: r.id });
+  } catch (e) {
+    if (e instanceof D.PdfError) return fail(req, res, `pdf_${e.code}`, e.status);
+    throw e;
+  }
+});
+router.get('/dash/pdfs/:pid', (req, res) => {
+  res.set({ 'Cache-Control': 'private, no-store', Vary: 'Cookie', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'", 'Cross-Origin-Resource-Policy': 'same-origin', 'Referrer-Policy': 'no-referrer' });
+  const p = D.getPicture(req.params.pid);
+  if (!p || !D.canSeePdf(req.user, p) || !fs.existsSync(D.pdfFile(p.id))) return res.status(404).end();
+  res.type('application/pdf').set('Content-Disposition', 'inline; filename="document.pdf"').sendFile(D.pdfFile(p.id));
 });
 
 // ================================================================ stage 2: everyday widgets

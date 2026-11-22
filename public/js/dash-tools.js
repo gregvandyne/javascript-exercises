@@ -14,6 +14,7 @@ import { questionFor } from './dash-ask.js';
 import { tip } from './dash-tip.js';
 import { numField } from './dash-num.js';
 import { BUILD, answerBars } from './dash-build.js';
+import { setIcon, setLabel } from './icons.js';
 
 /** The tools with the shared Show/Hide the answer (server/services/dash-tools.js ANSWER_TOOLS, tested to agree). */
 export const ANSWER_TOOLS = new Set(['numline', 'coord', 'graph', 'base10', 'placeval', 'tenframe', 'hundreds', 'area', 'times', 'tclock', 'fdp', 'geoboard',
@@ -22,7 +23,7 @@ export const ANSWER_TOOLS = new Set(['numline', 'coord', 'graph', 'base10', 'pla
 const SVGNS = 'http://www.w3.org/2000/svg';
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 const svg = (tag, attrs = {}, text) => { const e = document.createElementNS(SVGNS, tag); for (const [k, v] of Object.entries(attrs)) if (v != null) e.setAttribute(k, v); if (text != null) e.textContent = text; return e; };
-const btn = (label, cls = 'btn btn-sm', aria) => { const b = el('button', cls, label); b.type = 'button'; if (aria) { b.setAttribute('aria-label', aria); b.title = aria; } return b; };
+const btn = (label, cls = 'btn btn-sm', aria) => { const b = setLabel(el('button', cls), label); b.type = 'button'; if (aria) { b.setAttribute('aria-label', aria); b.title = aria; } return b; };
 const fill = (s, vars = {}) => String(s || '').replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
 const clone = x => JSON.parse(JSON.stringify(x));
 /** Math reads left to right in every language: numbers, fractions and equations keep their order on a Hebrew page. */
@@ -101,7 +102,7 @@ function shell(body, s, ctx, id) {
       const bs = options.map(([v, text, aria, icon]) => {
         const b = btn(icon ? '' : text, 'btn btn-sm', aria);
         // An icon and its words; on a narrow widget only the icon shows (the button keeps its name).
-        if (icon) { const i = el('span', 'dt-ic', icon); i.setAttribute('aria-hidden', 'true'); const l = el('span', 'dt-lbl', text); l.setAttribute('aria-hidden', 'true'); b.append(i, l); b.setAttribute('aria-label', text); tip(b, text); }
+        if (icon) { const i = setIcon(el('span', 'dt-ic'), icon); i.setAttribute('aria-hidden', 'true'); const l = el('span', 'dt-lbl', text); l.setAttribute('aria-hidden', 'true'); b.append(i, l); b.setAttribute('aria-label', text); tip(b, text); }
         b.addEventListener('click', () => set(v)); g.appendChild(b); return [v, b];
       });
       g.sync = () => { for (const [v, b] of bs) b.setAttribute('aria-pressed', String(get() === v)); };
@@ -176,7 +177,7 @@ function shell(body, s, ctx, id) {
       let moreM = null;
       if (extra.length) {
         const mb = tip(btn('', 'btn btn-sm dt-morebtn', C.moreActs), C.moreActs);
-        const i = el('span', 'dt-ic', '⋯'); i.setAttribute('aria-hidden', 'true'); mb.appendChild(i);
+        const i = setIcon(el('span', 'dt-ic'), '⋯'); i.setAttribute('aria-hidden', 'true'); mb.appendChild(i);
         moreM = popMenu(mb, C.moreActs, 'dt-moremenu');
         for (const b of extra) moreM.add(b);
         foot.append(mb, moreM.el);
@@ -185,7 +186,7 @@ function shell(body, s, ctx, id) {
       let optB = null;
       if (options && !ctx.editing) {
         const label = fill(C.optionsFor, { name: ctx.type.name }), ob = optB = headBtn('dt-opt', label);
-        ob.firstChild.textContent = '⚙️'; ob.setAttribute('aria-haspopup', 'dialog');
+        setIcon(ob.firstChild, '⚙️'); ob.setAttribute('aria-haspopup', 'dialog');
         ob.addEventListener('click', () => {
           const sh = ctx.sheet({ title: label, content: '' });
           const box = el('div', 'stack dt-opts'); sh.el.querySelector('.sheet-body').appendChild(box);
@@ -229,7 +230,7 @@ function shell(body, s, ctx, id) {
         else practice.addEventListener('click', () => {
           const sh = ctx.sheet({ title: C.practice, content: '' });
           const ul = el('ul', 'plain stack dt-practicelist'); sh.el.querySelector('.sheet-body').appendChild(ul);
-          for (const g of games) { const li = el('li'), link = el('a', 'btn dt-practicego'); link.href = g.href; const t = el('span', null, g.title); t.dir = 'auto'; link.append(el('span', 'dt-ic', g.icon || '🎮'), t); li.appendChild(link); ul.appendChild(li); }
+          for (const g of games) { const li = el('li'), link = el('a', 'btn dt-practicego'); link.href = g.href; const t = el('span', null, g.title); t.dir = 'auto'; link.append(setIcon(el('span', 'dt-ic'), g.icon || '🎮'), t); li.appendChild(link); ul.appendChild(li); }
           ul.querySelector('a')?.focus();
         });
         share.push(practice);
@@ -240,7 +241,7 @@ function shell(body, s, ctx, id) {
         rowItem(practice); practice.classList.add('dt-practice1'); foot.appendChild(practice);
       } else if (share.length) {
         const sb = tip(btn('', 'btn btn-sm btn-primary dt-share', C.share), C.share);
-        const i = el('span', 'dt-ic', '📤'), l = el('span', 'dt-lbl', C.share), caret = el('span', 'dt-caret', '▾');
+        const i = setIcon(el('span', 'dt-ic'), '📤'), l = el('span', 'dt-lbl', C.share), caret = el('span', 'dt-caret', '▾');
         for (const x of [i, l, caret]) x.setAttribute('aria-hidden', 'true');
         sb.append(i, l, caret);
         shareM = popMenu(sb, C.share, 'dt-sharemenu');
@@ -255,7 +256,7 @@ function shell(body, s, ctx, id) {
       if (own ? !ctx.editing && !ctx.build : mine && ANSWER_TOOLS.has(id)) {
         ans = headBtn(`dt-ans ${T.ansCls}`.trim(), C.hideAns); ans.dataset.k = 'ans';
         const hidden = () => (own ? !!T.ownHide() : !!st.qh);
-        ans.sync = () => { const h = hidden(), w = h ? C.showAns : C.hideAns; ans.firstChild.textContent = h ? '👀' : '🙈'; ans.setAttribute('aria-label', w); tip(ans, w); };
+        ans.sync = () => { const h = hidden(), w = h ? C.showAns : C.hideAns; setIcon(ans.firstChild, h ? '👀' : '🙈'); ans.setAttribute('aria-label', w); tip(ans, w); };
         ans.addEventListener('click', () => {
           const h = !hidden();
           if (own) T.setOwnHide(h); else if (h) st.qh = true; else delete st.qh;
@@ -279,7 +280,7 @@ function shell(body, s, ctx, id) {
         foot.classList.add('is-tight');
         if (over() && !moreM) {
           const mb = tip(btn('', 'btn btn-sm dt-morebtn', C.moreActs), C.moreActs);
-          const i = el('span', 'dt-ic', '⋯'); i.setAttribute('aria-hidden', 'true'); mb.appendChild(i);
+          const i = setIcon(el('span', 'dt-ic'), '⋯'); i.setAttribute('aria-hidden', 'true'); mb.appendChild(i);
           moreM = popMenu(mb, C.moreActs, 'dt-moremenu'); gap.after(mb, moreM.el);
         }
         while (over() && tools.children.length) { const b = tools.lastElementChild; b.dataset.fit = '1'; moreM.add(b, true); }
@@ -314,7 +315,7 @@ function shell(body, s, ctx, id) {
 /** A button of a menu: its icon and its words. tag: 'button' or 'a'. */
 function item(icon, text, cls, tag = 'button') {
   const b = el(tag, `btn btn-sm ${cls}`); if (tag === 'button') b.type = 'button';
-  const i = el('span', 'dt-ic', icon), l = el('span', 'dt-lbl', text);
+  const i = setIcon(el('span', 'dt-ic'), icon), l = el('span', 'dt-lbl', text);
   i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
   b.append(i, l); b.setAttribute('aria-label', text); return b;
 }
@@ -324,11 +325,22 @@ function item(icon, text, cls, tag = 'button') {
 function splitIcon(b) {
   const name = (b.getAttribute('aria-label') || b.textContent || '').trim().replace(/\s+/g, ' ');
   if (b.querySelector('.dt-ic, .dt-lbl')) return name;
+  const img = b.firstElementChild && b.firstElementChild.matches('img.fx') ? b.firstElementChild : null;
+  if (img) {
+    const rest = b.textContent.trim().replace(/\s+/g, ' ');
+    if (/\p{L}/u.test(rest)) {
+      b.textContent = '';
+      const i = el('span', 'dt-ic'), l = el('span', 'dt-lbl', rest); i.append(img); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
+      b.append(i, l); if (!b.getAttribute('aria-label')) b.setAttribute('aria-label', rest);
+      return b.getAttribute('aria-label');
+    }
+    return name;
+  }
   const text = b.textContent.trim().replace(/\s+/g, ' '), sp = text.indexOf(' ');
   const first = sp > 0 ? text.slice(0, sp) : '', rest = sp > 0 ? text.slice(sp + 1) : '';
   if (first && !/[\p{L}\p{N}]/u.test(first) && /\p{L}/u.test(rest)) {
     b.textContent = '';
-    const i = el('span', 'dt-ic', first), l = el('span', 'dt-lbl', rest); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
+    const i = setIcon(el('span', 'dt-ic'), first), l = el('span', 'dt-lbl', rest); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
     b.append(i, l); if (!b.getAttribute('aria-label')) b.setAttribute('aria-label', rest);
     return b.getAttribute('aria-label');
   }
@@ -415,7 +427,7 @@ function popMenu(trigger, label, cls = '') {
       if (!b.querySelector('.dt-lbl')) {
         const name = (b.getAttribute('aria-label') || b.textContent).trim(), text = b.textContent.trim();
         b.textContent = '';
-        const i = el('span', 'dt-ic', text !== name ? text : ''), l = el('span', 'dt-lbl', name); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
+        const i = setIcon(el('span', 'dt-ic'), text !== name ? text : ''), l = el('span', 'dt-lbl', name); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
         i.dir = 'ltr'; b.append(i, l); b.setAttribute('aria-label', name);
       }
       b.classList.add('dt-mi'); b.removeAttribute('title');
@@ -487,7 +499,7 @@ function askSheet(ctx, made) {
     list.appendChild(li); return inp;
   });
   const err = el('p', 'err form-err'); err.setAttribute('role', 'alert'); f.appendChild(err);
-  const row = el('div', 'row'), go = el('button', 'btn btn-primary', `📤 ${C.askSend}`); go.type = 'submit'; row.appendChild(go); f.appendChild(row);
+  const row = el('div', 'row'), go = setLabel(el('button', 'btn btn-primary'), `📤 ${C.askSend}`); go.type = 'submit'; row.appendChild(go); f.appendChild(row);
   f.addEventListener('submit', async e => {
     e.preventDefault();
     const options = inputs.map(i => i.value.trim()).filter(Boolean);
@@ -729,7 +741,7 @@ function fractions(body, s, ctx) {
     T.stage.appendChild(wrap);
     // A narrow widget: Check shows only ✔ (it keeps its name) so the typed answer stays on the sentence's line.
     const eq = wrap.firstChild, go = eq.querySelector('.dt-fcheck');
-    if (go && !phone && eq.offsetHeight > eq.querySelector('.dt-fo').offsetHeight + 12) { go.textContent = '✔'; go.setAttribute('aria-label', W.check); tip(go, W.check); go.classList.add('dt-fcheck-i'); }
+    if (go && !phone && eq.offsetHeight > eq.querySelector('.dt-fo').offsetHeight + 12) { setIcon(go, '✔'); go.setAttribute('aria-label', W.check); tip(go, W.check); go.classList.add('dt-fcheck-i'); }
     // Little room for the picture (a small widget, long words): the steps shown before the last become their numbers
     // only (each still read out in full), so the picture keeps its size.
     if (!phone && st.step > 1 && pic.clientHeight < 150) wrap.replaceChild(stepRow(r, meas, steps, true), wrap.lastChild);
@@ -760,7 +772,7 @@ function fractions(body, s, ctx) {
   function readout(op, r, meas) {
     T.read.textContent = '';
     const notes = [];
-    if (limitNote) { const x = el('div', 'dt-flimit', `✋ ${limitNote}`); x.dir = 'auto'; T.read.appendChild(x); }
+    if (limitNote) { const x = setLabel(el('div', 'dt-flimit'), `✋ ${limitNote}`); x.dir = 'auto'; T.read.appendChild(x); }
     if (zeroNote) notes.push(W.noZero);
     if (st.hide) {
       if (meas && st.fit) notes.push(fitWords(meas, st.fit));
@@ -773,7 +785,7 @@ function fractions(body, s, ctx) {
       else if (op !== 'div' && simpler && !r.whole) notes.push(fill(W.simplest, { f: iso(r.mixed) }));
       else if (op !== 'div' && !simpler && !r.whole && r.raw.n) notes.push(fill(W.already, { f: iso(M.fracRaw(r.raw)) }));
     }
-    if (checked && st.hide) T.read.appendChild(el('div', `dt-ffb is-${checked}`, `${checked === 'right' ? '🎉 ' : checked === 'simplify' ? '🤏 ' : ''}${W[CHECK[checked]]}`));
+    if (checked && st.hide) T.read.appendChild(setLabel(el('div', `dt-ffb is-${checked}`), `${checked === 'right' ? '🎉 ' : checked === 'simplify' ? '🤏 ' : ''}${W[CHECK[checked]]}`));
     if (notes.length) T.read.appendChild(el('div', 'dt-sub', notes.join(' ')));
   }
   /** The working, one step a chip: Add and Subtract (the same bottom number, rename both, add or take away the tops),
@@ -1149,7 +1161,7 @@ function stepsPanel(o) {
   const box = el('section', 'dt-stepsbox'), id = `dt-steps${++stepIds}`;
   box.setAttribute('aria-label', o.C.steps);
   const t = el('button', 'dt-stepst'); t.type = 'button'; t.setAttribute('aria-expanded', String(open)); t.setAttribute('aria-controls', id); t.dataset.k = 'steps';
-  const ic = el('span', 'dt-ic', '💡'), name = el('span', null, o.C.steps), count = el('span', 'dt-stepsn', fill(o.C.stepsOf, { n: o.items.length, total: o.total })), tri = el('span', 'dt-stepstri', open ? '▾' : '▸');
+  const ic = setIcon(el('span', 'dt-ic'), '💡'), name = el('span', null, o.C.steps), count = el('span', 'dt-stepsn', fill(o.C.stepsOf, { n: o.items.length, total: o.total })), tri = el('span', 'dt-stepstri', open ? '▾' : '▸');
   ic.setAttribute('aria-hidden', 'true'); tri.setAttribute('aria-hidden', 'true');
   t.append(ic, name, count, tri);
   t.addEventListener('click', () => { stepsOpen.set(o.key, !open); o.onToggle(); });
@@ -2287,7 +2299,7 @@ function board(body, s, ctx) {
   boards.set(ctx.id, st);
   const top = el('div', 'dt-top dw-row');
   const tools = el('div', 'dt-seg'); tools.setAttribute('role', 'group'); tools.setAttribute('aria-label', W.pen);
-  const toolBtns = [['pen', '✏️', W.pen], ['marker', '🖍️', W.marker], ['eraser', '🧽', W.eraser]].map(([k, ic, label]) => { const b = btn(ic, 'btn btn-sm', label); b.addEventListener('click', () => { st.tool = k; sync(); ctx.say(label); }); tools.appendChild(b); return [k, b]; });
+  const toolBtns = [['pen', '✏️', W.pen], ['marker', '🖍️', W.marker], ['eraser', '🧽', W.eraser]].map(([k, ic, label]) => { const b = setIcon(btn('', 'btn btn-sm', label), ic); b.addEventListener('click', () => { st.tool = k; sync(); ctx.say(label); }); tools.appendChild(b); return [k, b]; });
   const colors = el('div', 'dt-seg dt-colors'); colors.setAttribute('role', 'group'); colors.setAttribute('aria-label', W.color);
   const colBtns = PENS.map(k => { const b = btn('', `btn btn-sm dt-sw dt-pen-${k}`, `${W.color}: ${W[k] || k}`); b.addEventListener('click', () => { st.color = k; if (st.tool === 'eraser') st.tool = 'pen'; sync(); ctx.say(b.getAttribute('aria-label')); }); colors.appendChild(b); return [k, b]; });
   top.append(tools, colors);
@@ -2417,7 +2429,7 @@ function picture(body, s, ctx) {
     file.addEventListener('change', async () => {
       const f = file.files && file.files[0]; if (!f) return; file.value = '';
       b.disabled = true; b.textContent = W.uploading;
-      try { const r = await ctx.upload(f); if (r && r.id) ctx.set('pic', r.id); } catch (err) { ctx.toast(err.message || W.bad, { bad: true }); b.disabled = false; b.textContent = `🖼️ ${label}`; }
+      try { const r = await ctx.upload(f); if (r && r.id) ctx.set('pic', r.id); } catch (err) { ctx.toast(err.message || W.bad, { bad: true }); b.disabled = false; setLabel(b, `🖼️ ${label}`); }
     });
     const row = el('div', 'dw-row dt-picrow'); row.append(b, file); return row;
   }

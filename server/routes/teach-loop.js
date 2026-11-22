@@ -10,6 +10,7 @@ import * as TL from '../services/teach-loop.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { teacherLoop } from '../views/teacher-loop.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 export const LOOP_CSS = raw(`<link rel="stylesheet" href="/css/teach-loop.css?v=${VERSION}">`);
@@ -24,9 +25,9 @@ router.get('/teach/loop', requireUser, (req, res) => {
   if (!staff(req, res)) return;
   const t = req.t, u = req.user;
   const state = TL.loopState(u), links = TL.loopLinks(u);
-  const body = html`<div class="pagehead"><div><h1>🗓️ ${t('teach.loop.page.title')}</h1><p class="muted">${t('teach.loop.page.lead')}</p></div></div>
+  const body = html`<div class="pagehead"><div><h1>${ico('🗓️', { size: 36 })} ${t('teach.loop.page.title')}</h1><p class="muted">${t('teach.loop.page.lead')}</p></div></div>
   ${teacherLoop(t, { variant: 'page', links, state, live: liveOn() && liveCanHost(u), headingTag: 'h2' })}
-  <div class="row tl-foot">${state.hidden && !state.all ? html`<form data-api="/api/teach/loop/show" data-reload data-toast="${t('teach.loop.page.shown', { classroom: t('nav.classroom') })}"><button class="btn" type="submit">🔁 ${t('teach.loop.page.show', { classroom: t('nav.classroom') })}</button></form>` : ''}<a class="btn" href="/teach">🍎 ${t('nav.classroom')}</a></div>`;
+  <div class="row tl-foot">${state.hidden && !state.all ? html`<form data-api="/api/teach/loop/show" data-reload data-toast="${t('teach.loop.page.shown', { classroom: t('nav.classroom') })}"><button class="btn" type="submit">${ico('🔁', { size: 18 })} ${t('teach.loop.page.show', { classroom: t('nav.classroom') })}</button></form>` : ''}<a class="btn" href="/teach">${ico('🍎', { size: 18 })} ${t('nav.classroom')}</a></div>`;
   page(req, res, { title: t('teach.loop.page.title'), active: 'classes', body, head: LOOP_CSS, back: '/teach', backLabel: t('nav.classroom') });
 });
 

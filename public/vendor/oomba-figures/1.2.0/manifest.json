@@ -1,0 +1,126 @@
+{
+  "name": "oomba-figures",
+  "version": "1.2.0",
+  "license": "MIT AND Apache-2.0",
+  "source": "figures/src (this repository; figures/src/ported is Apache-2.0, docs/third-party.md)",
+  "core": {
+    "file": "oomba-figures.js",
+    "kinds": [
+      "grid"
+    ]
+  },
+  "packs": {
+    "math": {
+      "file": "packs/math.js",
+      "kinds": [
+        "numberLine",
+        "triangle",
+        "rectangle",
+        "parallelogram",
+        "trapezoid",
+        "kite",
+        "regularPolygon",
+        "angles",
+        "parallelLines",
+        "segmentAddition",
+        "circle",
+        "compositeShape",
+        "prism",
+        "cylinder",
+        "pyramid",
+        "cone",
+        "sphere",
+        "net",
+        "mappingDiagram"
+      ]
+    },
+    "data": {
+      "file": "packs/data.js",
+      "kinds": [
+        "barGraph",
+        "dotPlot",
+        "histogram",
+        "boxPlot",
+        "scatterPlot",
+        "stemAndLeaf",
+        "pieChart",
+        "cumulativeFrequency",
+        "normalCurve",
+        "treeDiagram",
+        "vennDiagram",
+        "twoWayTable",
+        "tableOfValues"
+      ]
+    },
+    "physics": {
+      "file": "packs/physics.js",
+      "kinds": [
+        "freeBody",
+        "vectors",
+        "inclinedPlane",
+        "pulley",
+        "rays",
+        "circuit",
+        "motionGraph",
+        "motionMap",
+        "projectile",
+        "waves"
+      ]
+    },
+    "chem": {
+      "file": "packs/chem.js",
+      "kinds": [
+        "halfLife",
+        "titration",
+        "bohr",
+        "orbitals",
+        "lewis",
+        "massSpectrum",
+        "heatingCurve",
+        "energyProfile",
+        "nuclide",
+        "lineSpectrum",
+        "photoelectron",
+        "particles",
+        "dotCross"
+      ]
+    },
+    "measure": {
+      "file": "packs/measure.js",
+      "kinds": [
+        "reading",
+        "protractor"
+      ]
+    }
+  },
+  "files": {
+    "oomba-figures.js": {
+      "sha256": "2fe7a79e907c1003e81baf8820e53fd51c57e2a2cfd23363dc48de22d8f0f547",
+      "sri": "sha384-Ah6yR1lRu1GHuz3qPiz2kw/H5Aw9CJ6i34Aw5RoyEXODn/VcHhEbiqEVpXZcUYWy"
+    },
+    "packs/math.js": {
+      "sha256": "c92cc70a3cade1729f62bfe6c9c44939b749efa30d571b32b7fb81df9060dca1",
+      "sri": "sha384-0t36oGzESEnImbh1C+ZnbxMk/AJm738RoZZBNWNhjoDCwb0pZRp638V9d/8zF3IE"
+    },
+    "packs/data.js": {
+      "sha256": "c80162d7a32fc4469e5ec9045c7b5c7427004251e1483cc49189fb0a66a3f740",
+      "sri": "sha384-rnZxJcSLa37+EwOJ1V4LweNWeewVLTDmhTuHXGPq/hyx6aLlbSNkEjvGwA6PzhVe"
+    },
+    "packs/physics.js": {
+      "sha256": "71a8df338572c5f249c1c4246e4785dc0de7029a72c8d030183665d6527713c9",
+      "sri": "sha384-Udm03LvcH/l655tAYyny8aaEElf1qXQKwUKnv8GjhMrHrVbYXWJn0TJDSj6DNCCW"
+    },
+    "packs/chem.js": {
+      "sha256": "071783c32f6be1dfb64ba77009419f81fe6c6aa2c6873fab82a671dec38ccebf",
+      "sri": "sha384-9xaOzeMrP0f/RoGGGX2e63cg6ImROXwRBWTgK2+IXc06RzBi8SriMzSyQzrhFTNL"
+    },
+    "packs/measure.js": {
+      "sha256": "38ca2244bee54fa7bd4dd2d22aa50b35a297239a92f0c882693b5480005aa207",
+      "sri": "sha384-/0mWQTJIpgQmqXGYdXvRJ+olb89+IhnqNr29RKfsvkSAnT9lrGDLNTIBydAByCdC"
+    },
+    "LICENSE": {
+      "sha256": "a222c2b3e67474e441a6f0e41413985087c96b45488fe32b49a586cdc777dd6f",
+      "sri": "sha384-GVE87+94tY+GH6kPj/5F4mVZ3fUo64AudYGl24gX1sN2WeTkyxTEScA3xssYqkY2"
+    }
+  }
+}

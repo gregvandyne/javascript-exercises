@@ -54,10 +54,10 @@ test('two wrong Checks show the worked answer and count as not yet; no text fiel
   expect(await page.evaluate(() => window.__over)).toEqual([{ won: false, score: 0 }]);
 });
 
-// Oomba Canvas 1.3.1 on a phone (390 px), as the owner saw it: a fraction activity with a generator, a printable
+// Oomba Canvas 1.4.1 on a phone (390 px), as the owner saw it: a fraction activity with a generator, a printable
 // worksheet and the teacher's controls. The top strip is one row of status chips and one row of actions (no button
 // alone on a line), and the end card's three buttons stack full width, primary first: nothing overlaps or is cut off.
-test('1.3.1 at 390 px: the toolbar rows and the end card never overlap or clip', async ({ page, baseURL }) => {
+test('1.4.1 at 390 px: the toolbar rows and the end card never overlap or clip', async ({ page, baseURL }) => {
   const { layoutProblems } = await import('../../server/services/layout-check.js');
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/health');
@@ -65,7 +65,7 @@ test('1.3.1 at 390 px: the toolbar rows and the end card never overlap or clip',
     problems: [], gen: { tool: 'fractions.equiv', dens: [2, 3, 4], mult: [2, 3] } })
     .replace("theme:'light',", "theme:'light',canTeach:true,canPrint:true,back(){},print(){return {ok:true}},");
   await page.setContent(html, { waitUntil: 'load' });
-  expect(await page.evaluate(() => Oc.version)).toBe('1.3.1');
+  expect(await page.evaluate(() => Oc.version)).toBe('1.4.1');
   const rows = () => page.evaluate(() => [...document.querySelectorAll('.oc-stat > :not([hidden]), .oc-acts > :not([hidden])')].map(e => { const r = e.getBoundingClientRect(); return [e.parentElement.className, Math.round(r.top + r.height / 2)]; }));
   // each group is one row: its items share one middle line
   for (const g of ['oc-stat', 'oc-acts']) expect(new Set((await rows()).filter(([c]) => c === g).map(([, t]) => t)).size).toBe(1);

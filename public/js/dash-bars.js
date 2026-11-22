@@ -11,6 +11,7 @@ import * as B from './dash-math5.js';
 import { parts } from './dash-tools.js';
 import { tip } from './dash-tip.js';
 import { format } from './i18n-format.js';
+import { setIcon } from './icons.js';
 
 const { shell, field, numberIn, checkRow, el, svg, btn, ltr, iso } = parts;
 const fill = (s, vars = {}) => String(s || '').replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
@@ -20,7 +21,7 @@ const boxes = new Map(), stories = new Map();
 /** A button with an icon and its words (the words hide on a narrow tool; the tooltip names it). */
 function ibtn(icon, text, cls = 'btn btn-sm') {
   const b = tip(btn('', cls), text); b.setAttribute('aria-label', text);
-  const i = el('span', 'dt-ic', icon), l = el('span', 'dt-lbl', text);
+  const i = setIcon(el('span', 'dt-ic'), icon), l = el('span', 'dt-lbl', text);
   i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
   b.append(i, l); return b;
 }
@@ -84,7 +85,7 @@ export function bars(body, s, ctx) {
     () => change(() => { if (st.kind === 'mul') st.e++; else if (st.kind === 'part') st.p[pick]++; else st.cb++; }),
     n => change(() => { if (st.kind === 'mul') st.e = n; else if (st.kind === 'part') st.p[pick] = n; else st.cb = n; }), masked(2));
   const fresh = tip(btn('', 'btn btn-sm dt-bnew'), W.newProblem); fresh.setAttribute('aria-label', W.newProblem);
-  { const i = el('span', 'dt-ic', '🎲'); i.setAttribute('aria-hidden', 'true'); fresh.appendChild(i); }
+  { const i = setIcon(el('span', 'dt-ic'), '🎲'); i.setAttribute('aria-hidden', 'true'); fresh.appendChild(i); }
   fresh.addEventListener('click', () => {
     let next = st, k = 0;
     do next = B.newBarProblem(st); while (k++ < 20 && JSON.stringify(B.barModel(next).slots) === JSON.stringify(B.barModel(st).slots) && next.unk === st.unk);
@@ -101,7 +102,7 @@ export function bars(body, s, ctx) {
   let storyOpen = !!st.story;
   const write = T.toggle('', null, () => storyOpen, v => { storyOpen = v; T.draw(); if (v) T.read.querySelector('.dt-bstory textarea')?.focus(); });
   tip(write, W.story); write.setAttribute('aria-label', W.story);
-  { const i = el('span', 'dt-ic', '✏️'), l = el('span', 'dt-lbl', W.storyBtn); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true'); write.append(i, l); }
+  { const i = setIcon(el('span', 'dt-ic'), '✏️'), l = el('span', 'dt-lbl', W.storyBtn); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true'); write.append(i, l); }
   T.foot.append(unk, write);
   // Bar models' own hide is the answer's (Make a question hides it too; docs/decisions.md "Build it"): 👀/🙈 in the
   // header (the shell's), saying the answer when it shows.

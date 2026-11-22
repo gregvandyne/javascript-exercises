@@ -82,7 +82,9 @@ test('BG-1 leave and come back: the leave line shows; Me and My games say Buildi
   await page.goto('/me');
   await expect(page.locator('.metile-sub')).toHaveText('1 game building');
   await page.goto('/build');
-  await expect(page.locator(`.mygame[data-id="${id}"] .mg-status`)).toContainText('🛠️ Building…');
+  // The chip's icon is a picture now (docs/decisions.md "Icons: Fluent Emoji 3D"): the words, then which picture.
+  await expect(page.locator(`.mygame[data-id="${id}"] .mg-status`)).toContainText('Building…');
+  await expect(page.locator(`.mygame[data-id="${id}"] .mg-status img.fx[src*="hammer-and-wrench"]`)).toHaveCount(1);
   await page.goto(`/studio/${id}`);
   // The running build at once: its message, no greeting or idea chips; then the replay fills the card.
   await expect(page.locator('#st-log .msg.me')).toHaveText(FOX);
@@ -154,7 +156,8 @@ test('BG-4 sign out mid-build, sign in later: the game is ready, said once on th
   await page.reload();
   await expect(page.locator('.notice.good.pagenote')).toHaveCount(0);
   await page.goto('/build');
-  await expect(page.locator(`.mygame[data-id="${id}"] .mg-status`)).toContainText('✨ Ready');
+  await expect(page.locator(`.mygame[data-id="${id}"] .mg-status`)).toContainText('Ready');
+  await expect(page.locator(`.mygame[data-id="${id}"] .mg-status img.fx[src*="sparkles"]`)).toHaveCount(1);
   await page.goto(`/studio/${id}`);
   await expect(page.locator('#st-log .ev.version')).toHaveCount(1);
   await expect(page.locator('.stp-sum').last()).toContainText('How the building blocks did this');

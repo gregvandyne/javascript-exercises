@@ -14,6 +14,7 @@ import * as G from './dash-math4.js';
 import { parts } from './dash-tools.js';
 import { tip } from './dash-tip.js';
 import { format } from './i18n-format.js';
+import { setIcon } from './icons.js';
 
 const { shell, el, svg, btn, ltr, svgPoint, selectOf, popMenu } = parts;
 const fill = (s, vars = {}) => String(s || '').replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
@@ -30,14 +31,14 @@ const tone = n => (n <= 10 ? `dt-rod${n}` : 'dt-rodl');
 
 function ibtn(icon, text, cls = 'btn btn-sm') {
   const b = tip(btn('', cls), text); b.setAttribute('aria-label', text);
-  const i = el('span', 'dt-ic', icon), l = el('span', 'dt-lbl', text);
+  const i = setIcon(el('span', 'dt-ic'), icon), l = el('span', 'dt-lbl', text);
   i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
   b.append(i, l); return b;
 }
 /** A button showing only its icon: the dark tooltip names it (hover, keyboard focus, a long press). */
 function icon(ic, text, cls = 'btn btn-sm dt-ricbtn') {
   const b = tip(btn('', cls), text); b.setAttribute('aria-label', text);
-  const i = el('span', 'dt-ic', ic); i.setAttribute('aria-hidden', 'true'); b.appendChild(i); return b;
+  const i = setIcon(el('span', 'dt-ic'), ic); i.setAttribute('aria-hidden', 'true'); b.appendChild(i); return b;
 }
 /** A little rod for the palette and the lifted copy: n units, its number on it. */
 /** A palette button drawn as its rod: its colour, as long as its number (within limits), its unit marks and its number. */
@@ -134,7 +135,7 @@ export function rods(body, s, ctx) {
     const inp = el('input', 'input'); Object.assign(inp, { id, maxLength: 30, value: R.eqText(eq(), '?'), autocomplete: 'off' }); inp.dir = 'ltr';
     const hint = el('p', 'small muted', W.typeHint);
     const err = el('p', 'err form-err'); err.setAttribute('role', 'alert');
-    const row = el('div', 'row'), go = el('button', 'btn btn-primary', `✓ ${C().done || 'OK'}`); go.type = 'submit'; row.appendChild(go);
+    const row = el('div', 'row'), go = setLabel(el('button', 'btn btn-primary'), `✓ ${C().done || 'OK'}`); go.type = 'submit'; row.appendChild(go);
     f.append(lab, inp, hint, err, row);
     f.addEventListener('submit', e => {
       e.preventDefault();
@@ -161,7 +162,7 @@ export function rods(body, s, ctx) {
   const units = T.toggle('', null, () => st.units, v => { st.units = v; T.commit(`${W.units}: ${v ? '✓' : '✗'}`); });
   for (const [b, ic, text] of [[grid, '▦', W.grid], [units, '┆', W.units]]) {
     tip(b, text); b.setAttribute('aria-label', text); b.classList.add('dt-ricbtn');
-    const i = el('span', 'dt-ic', ic); i.setAttribute('aria-hidden', 'true'); b.appendChild(i);
+    const i = setIcon(el('span', 'dt-ic'), ic); i.setAttribute('aria-hidden', 'true'); b.appendChild(i);
   }
   const zoomOut = icon('🔍−', W.zoomOut), zoomIn = icon('🔍+', W.zoomIn);
   const setZoom = z => { M.zoom = z; T.draw(); ctx.say(`${Math.round(z * 100)}%`); };
@@ -177,14 +178,14 @@ export function rods(body, s, ctx) {
   reset.addEventListener('click', () => { change(() => { st.rods = []; st.model = false; sel = -1; }, W.resetDone); });
   const eqOn = T.toggle('', null, () => st.eq, v => change(() => { st.eq = v; }, v ? spoken(eq()) : W.eqOff));
   tip(eqOn, W.eq); eqOn.setAttribute('aria-label', W.eq); eqOn.classList.add('dt-ricbtn');
-  { const i = el('span', 'dt-ic', '🟰'); i.setAttribute('aria-hidden', 'true'); eqOn.appendChild(i); }
+  { const i = setIcon(el('span', 'dt-ic'), '🟰'); i.setAttribute('aria-hidden', 'true'); eqOn.appendChild(i); }
   // Turn, Copy and Delete: a small bar by the chosen rod, only while a rod is chosen (docs/decisions.md "one calm row
   // of buttons"). The way new rods lie, the grid, unit lines, zoom and the equation: behind 👁️ View. The row at the
   // bottom: Undo, Redo, Reset, View and Share.
   const selBox = el('div', 'dt-rsel'); selBox.setAttribute('role', 'toolbar'); selBox.setAttribute('aria-label', W.chosen); selBox.append(turn, copy, del);
   const viewWord = (ctx.common || {}).view;
   const view = tip(btn('', 'btn btn-sm dt-act dt-icon dt-rviewbtn', viewWord), viewWord);
-  { const i = el('span', 'dt-ic', '👁️'), l = el('span', 'dt-lbl', viewWord); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true'); view.append(i, l); }
+  { const i = setIcon(el('span', 'dt-ic'), '👁️'), l = el('span', 'dt-lbl', viewWord); i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true'); view.append(i, l); }
   const viewM = popMenu(view, viewWord, 'dt-viewmenu');
   viewM.el.dataset.stay = '1';   // its switches and zoom are used a few at a time: it stays open until a tap outside
   for (const b of [dir, grid, units, zoomOut, zoomIn, eqOn]) viewM.add(b);

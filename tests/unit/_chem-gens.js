@@ -1,0 +1,42 @@
+// The figure question generators for the 1.2.0 chemistry kinds and lab readings (docs/figures-api.md "Chemistry
+// (1.2.0)"): one each, shared by their tests, and the checks every one must pass (the same as the physics ones:
+// _physics-gens.js): the self-test passes with the kind's pack tag and fails without it, every dealt figure passes
+// OF.check, its answer is the figure's own number from OF.solve, and the numbers change from seed to seed.
+export const CHEM_GENS = {
+  massSpectrum: { tool: 'figure.number', vars: { m: [6, 60], a: [51, 95] }, q: 'Element X has two isotopes, shown in its mass spectrum. What is its relative atomic mass?', fig: { kind: 'massSpectrum', isotopes: [{ mass: '{m}', abundance: '{a}' }, { mass: '{=m + 2}', abundance: '{=100 - a}' }], name: 'Element X' }, answer: '(m*a + (m + 2)*(100 - a))/100', dp: 2, work: ['Weight each mass number by its abundance.', '({m} × {a} + {=m + 2} × {=100 - a}) ÷ 100', '= {=round((m*a + (m + 2)*(100 - a))/100, 2)}'] },
+  heatingCurve: { tool: 'figure.number', vars: { m: [50, 200, 10] }, q: '{m} g of ice at −20 °C is heated to steam at 120 °C. How much heat melts the ice? (ΔHfus = 6.01 kJ/mol, M = 18.02 g/mol)', fig: { kind: 'heatingCurve', substance: 'water', mass: '{m}', x: 'heat' }, answer: 'm/18.02*6.01', dp: 1, unit: 'kJ', work: ['n = {m} ÷ 18.02 = {=round(m/18.02, 3)} mol', 'q = n × ΔHfus = {=round(m/18.02, 3)} × 6.01', '= {=round(m/18.02*6.01, 1)} kJ'] },
+  energyProfile: { tool: 'figure.number', vars: { r: [20, 80, 5], t: [100, 200, 10], p: [0, 90, 5] }, where: '(t > r + 10) * (t > p + 10) * (p != r)', q: 'What is the activation energy of the forward reaction, in kJ/mol?', fig: { kind: 'energyProfile', levels: ['{r}', '{t}', '{p}'], arrows: ['dh'], hide: 'values' }, answer: 't - r', dp: 0, unit: 'kJ/mol', work: ['Eₐ = E(transition state) − E(reactants)', '= {t} − {r}', '= {=t - r} kJ/mol'] },
+  nuclide: { tool: 'figure.number', vars: { z: [3, 30], n: [3, 40] }, where: '(n >= z) * (n <= 2*z)', q: 'How many neutrons does this nucleus have?', fig: { kind: 'nuclide', element: '{z}', mass: '{=z + n}' }, answer: 'n', dp: 0, work: ['Neutrons = mass number − atomic number', '= {=z + n} − {z}', '= {n}'] },
+  lineSpectrum: { tool: 'figure.number', vars: { a: [400, 700] }, q: 'Element X gives out one visible line. What is the frequency of this light, in units of 10¹⁴ Hz? (c = 3.00 × 10⁸ m/s)', fig: { kind: 'lineSpectrum', strips: [{ name: 'X', lines: ['{a}'] }] }, answer: '3000/a', dp: 2, work: ['f = c ÷ λ', '= 3.00 × 10⁸ ÷ ({a} × 10⁻⁹)', '= {=round(3000/a, 2)} × 10¹⁴ Hz'] },
+  photoelectron: { tool: 'figure.number', vars: { z: [3, 20] }, q: 'How many electrons does this atom have?', fig: { kind: 'photoelectron', element: '{z}', hide: 'element' }, answer: 'z', dp: 0, work: ['Each peak is as tall as the electrons in its sublevel.', 'Add the heights of the peaks.', 'The atom has {z} electrons.'] },
+  particles: { tool: 'figure.number', vars: { a: [3, 10], b: [2, 8] }, q: 'How many molecules are in the box?', fig: { kind: 'particles', particles: [{ count: '{a}', shape: 'pair', look: { size: 's', shade: 'white' }, outer: { size: 's', shade: 'white' } }, { count: '{b}', shape: 'bent', look: { size: 'm', shade: 'dark' }, outer: { size: 's', shade: 'white' } }] }, answer: 'a + b', dp: 0, work: ['Count each molecule once, whatever its atoms.', '{a} + {b}', '= {=a + b}'] },
+  dotCross: { tool: 'figure.number', vars: { m: [1, 3], n: [1, 3] }, q: 'How many electrons does the metal give away in one formula unit of this compound?', fig: { kind: 'dotCross', ions: [{ element: '{=10 + m}', count: '{=n/if(m - n, 1, m)}' }, { element: '{=18 - n}', count: '{=m/if(m - n, 1, m)}' }] }, answer: 'm*n/if(m - n, 1, m)', dp: 0, work: ['The metal ion is {m}+ and the non-metal ion is {n}−.', 'The charges balance with {=n/if(m - n, 1, m)} metal and {=m/if(m - n, 1, m)} non-metal ions.', 'Electrons given: {=n/if(m - n, 1, m)} × {m} = {=m*n/if(m - n, 1, m)}'] },
+  'reading.buret': { tool: 'figure.number', vars: { i: [0, 60], f: [300, 980] }, q: 'What volume was added from the buret, in mL?', fig: { kind: 'reading', type: 'buret', max: 50, initial: '{=i/20}', value: '{=f/20}', hide: 'value' }, answer: '(f - i)/20', dp: 2, unit: 'mL', work: ['Initial reading: {=i/20} mL', 'Final reading: {=f/20} mL', 'Volume added = {=f/20} − {=i/20} = {=(f - i)/20} mL'] },
+  'reading.beaker': { tool: 'figure.number', vars: { k: [2, 18] }, q: 'What volume of liquid is in the beaker, in mL?', fig: { kind: 'reading', type: 'beaker', value: '{=k*12.5}', max: 250, step: 25, hide: 'value' }, answer: 'k*12.5', dp: 1, unit: 'mL', work: ['The marks are 25 mL apart.', 'The surface is at {=k*12.5} mL.'] },
+  'reading.syringe': { tool: 'figure.number', vars: { a: [10, 190] }, q: 'How much gas has the syringe collected, in cm³?', fig: { kind: 'reading', type: 'syringe', value: '{=a/2}', max: 100, setup: true, hide: 'value' }, answer: 'a/2', dp: 1, unit: 'cm³', work: ['Each small mark is 1 cm³.', 'The face of the plunger is at {=a/2} cm³.'] },
+  'reading.tripleBeam': { tool: 'figure.number', vars: { h: [0, 5], t: [0, 9], f: [0, 199] }, q: 'What mass does the triple beam balance show, in g?', fig: { kind: 'reading', type: 'tripleBeam', value: '{=100*h + 10*t + f/20}', hide: 'value' }, answer: '100*h + 10*t + f/20', dp: 2, unit: 'g', work: ['Add the three riders.', '{=100*h} + {=10*t} + {=f/20}', '= {=100*h + 10*t + f/20} g'] },
+  'reading.pH': { tool: 'figure.number', vars: { a: [10, 130] }, q: 'What pH does the meter show?', fig: { kind: 'reading', type: 'pH', meter: 'analog', value: '{=a/10}', hide: 'value' }, answer: 'a/10', dp: 1, work: ['The small marks are 0.2 apart.', 'The needle points to {=a/10}.'] },
+  'reading.displacement': { tool: 'figure.number', vars: { b: [20, 60], r: [4, 20] }, q: 'A rock is lowered into the water. What is its volume, in mL?', fig: { kind: 'reading', type: 'displacement', before: '{b}', after: '{=b + r}', max: 100, step: 1, major: 10, hide: 'value' }, answer: 'r', dp: 0, unit: 'mL', work: ['Before: {b} mL. After: {=b + r} mL.', 'The rock pushed the water up {=b + r} − {b} = {r} mL.', 'Its volume is {r} mL.'] },
+};
+/** The OF.solve value each generator's answer is (its key in the Figures catalog). */
+export const CHEM_KEYS = { massSpectrum: 'mass', heatingCurve: 'melt', energyProfile: 'ea', nuclide: 'neutrons', photoelectron: 'electrons', particles: 'total', dotCross: 'transferred', 'reading.buret': 'titre', 'reading.beaker': 'value', 'reading.syringe': 'value', 'reading.tripleBeam': 'value', 'reading.pH': 'value', 'reading.displacement': 'volume' };
+export async function checkChemGenerator(assert, name) {
+  const { figTag, figuresKit, FIG_LATEST } = await import('../../server/services/figlibs.js');
+  const { canvasTag, canvasKit, selfTestHtml } = await import('../../server/services/canvaskit.js');
+  const g = CHEM_GENS[name], kind = g.fig.kind, kit = canvasKit(), F = figuresKit(FIG_LATEST['oomba-figures']);
+  const data = { config: { count: 6, purpose: ['screen', 'worksheet', 'generator'] }, task: { title: `${name} practice` }, problems: [], gen: g };
+  const page = tag => `<title>Chemistry</title>\n${tag}\n${canvasTag()}\n<div id="oc-app"></div>\n<script type="application/json" id="oc-activity">\n${JSON.stringify(data)}\n</script>\n<script>Oc.activity(JSON.parse(document.getElementById('oc-activity').textContent));</script>`;
+  assert.deepEqual(selfTestHtml(page(figTag('oomba-figures', undefined, { kinds: [kind] }))), { ok: true, problems: [] }, name);
+  const noPack = selfTestHtml(page(figTag('oomba-figures', undefined, { packs: [] })));
+  assert.equal(noPack.ok, false, `${name}: its pack's tag is needed`); assert.match(noPack.problems[0].why, new RegExp(`the Oomba Figures ${F.packOf(kind)} pack`));
+  const seen = new Set(), key = CHEM_KEYS[name];
+  for (const seed of [1, 2, 3, 4, 5]) for (const p of kit.logic.deal(data, { seed: seed * 7919, count: 8 })) {
+    const { kind: k, hide, ...fig } = p.fig;
+    assert.equal(k, kind); assert.deepEqual([...F.check(k, fig)], [], `${name} ${JSON.stringify(fig)}`);
+    if (key) { const want = F.solve[k](fig)[key]; assert.ok(Math.abs(want - p.answer) <= 0.5 * 10 ** -g.dp + 1e-9, `${name}: the key ${p.answer} is the figure's ${want}`); }
+    seen.add(p.answer);
+  }
+  assert.ok(seen.size >= 4, `${name} randomized: ${[...seen].join(', ')}`);
+  const sheet = kit.sheet(data, { seed: 4242, n: 4 });
+  assert.ok(sheet.items.every(i => i.picture && i.picture.fig.kind === kind && i.work.length >= 2));
+}

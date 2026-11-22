@@ -117,6 +117,8 @@ main{position:relative;z-index:1}
 .lp-btn-ghost:active{transform:translateY(2px)}
 .lp-btn-spark{background:var(--spark);color:#141414;box-shadow:0 4px 0 #C99A00}
 .lp-btn-spark:hover{background:#FFDB66}
+/* Phones, where the host button is full width: the words sit in the true center and the icon hangs to their left (28px icon + 8px gap). */
+@media (max-width:520px){.lp-btn[data-cta="host"]>.fx{margin-left:-36px}}
 .lp-btn-spark:active{transform:translateY(3px);box-shadow:0 1px 0 #C99A00}
 .lp-arrow{transition:transform .2s ease}
 .lp-btn:hover .lp-arrow:not(.flip),.lp-more:hover .lp-arrow:not(.flip){transform:translateX(3px)}
@@ -337,6 +339,18 @@ main{position:relative;z-index:1}
 .lp-faq details{padding:0}
 .lp-faq summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;cursor:pointer;border-radius:var(--r)}
 .lp-faq summary::-webkit-details-marker{display:none}
+.lp-doors{display:grid;gap:16px;margin-top:40px}
+@media (min-width:720px){.lp-doors{grid-template-columns:1fr 1fr}}
+.lp-door{position:relative;display:flex;flex-direction:column;color:var(--text);text-decoration:none;transition:transform .2s,border-color .2s}
+.lp-door:hover{transform:translateY(-3px);border-color:var(--mint)}
+.lp-door:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+.lp-door .lp-eyebrow{margin-bottom:10px}
+.lp-door h3{font-size:1.25rem;line-height:1.25;margin:0 0 10px;letter-spacing:-.01em;text-wrap:balance}
+.lp-door p{color:var(--text-2);margin:0 0 14px;line-height:1.55}
+.lp-door-badges{list-style:none;padding:0;margin:0 0 8px;display:grid;gap:6px;font-weight:600;font-size:15px}
+.lp-door-badges span{color:var(--accent-text)}
+.lp-door-go{margin-top:auto;align-self:flex-end;font-size:1.4rem;font-weight:800;color:var(--accent-text)}
+@media (prefers-reduced-motion:reduce){.lp-door,.lp-door:hover{transition:none;transform:none}}
 .lp-faq summary h3{font-size:1.1rem;margin:0;font-weight:700;line-height:1.35;letter-spacing:-.01em}
 .lp-faq details p{padding:0 24px 22px}
 .lp-plus{position:relative;width:20px;height:20px;flex:none}
@@ -502,7 +516,10 @@ main{position:relative;z-index:1}
 .lp-jsteps::before,.lp-jsteps::after{content:"";position:absolute;inset-inline-start:31px;top:34px;bottom:34px;width:4px;border-radius:4px;background:var(--line-2)}
 .lp-jsteps::after{background:linear-gradient(var(--mint),var(--spark));transform-origin:top;transform:scaleY(var(--fill))}
 .lp-ready .lp-jsteps[data-fill]{--fill:0}
-.lp-jstep{position:relative}
+/* The line is drawn under the steps, always: while a step fades in on first load (.rv-wait/.rv-in) it is its own layer,
+   and the line (drawn after the steps) would cover its icon (owner's iPhone, 21 Nov 2026). */
+.lp-jsteps::before,.lp-jsteps::after{z-index:0}
+.lp-jstep{position:relative;z-index:1}
 .lp-jlink{display:grid;grid-template-columns:66px minmax(0,1fr);column-gap:16px;align-items:start;padding:16px 18px 16px 0;border-radius:var(--r);color:inherit;text-decoration:none}
 .lp-jlink>*:not(.lp-jbadge){grid-column:2}
 .lp-jbadge{grid-row:1 / span 4;position:relative;z-index:1;display:grid;place-items:center;width:66px;height:66px;border-radius:22px;background:var(--card-solid);

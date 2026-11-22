@@ -6646,6 +6646,8 @@ Stopwatch of its own. Code: `WIDGETS` (timer), `RETIRED`, `migrateWidget(s)`, `t
   timer).
 
 ## Classroom dashboards: stickers widget removed (16 Nov 2026)
+**Reversed on 21 Nov 2026** by the owner: stickers are back as individually placed stickers from the owner's sticker
+library (see "Class Board: PDF, link tile and stickers"). The old emoji stickers widget described here stays dropped.
 Product decision ("Remove the sticker widget"): the **stickers** widget (stage 2) is gone. It is out of the registry
 (`WIDGETS` in `server/services/dash.js`, with its hidden `stamps` setting type, `cleanStamps`, `MAX_STAMPS` and
 `STAMP_COUNT`), so it is no longer in the widget library and neither teachers nor students can add it; its renderer and
@@ -8782,6 +8784,11 @@ such figures with open-source libraries under suitable licences, and a classroom
   its LICENSE file. `figures/SHIPPED.json` locks every file. No GPL code: no CircuitJS, no PhET; Ketcher is too big;
   matter-js is not needed because Phaser 3.90 (already vendored) carries Matter physics. None of the owner's example
   sites' code (their figures are CC0, their code is not open) was copied or looked at.
+  **Correction (21 Nov 2026):** by the evidence, those example sites were the source project (see
+  docs/third-party.md): the same figure kinds, several sister sites, CC0 figures. Its code was open: Apache 2.0 since
+  its first commit (24 Sep 2026). With the owner's confirmed permission, Oomba Figures 1.1.0 ports its number line under
+  that license (the record, the license copy and the changes are in docs/third-party.md). The rule stands for every
+  other site: code without an open license is never copied or consulted.
 - **Allowed exactly like the kits.** `server/services/figlibs.js` makes the one tag per library (pinned URL, SRI hash,
   `crossorigin="anonymous"`); the scanner admits exactly those (`checkFigures`) and fails anything else naming their
   folders; the frame CSP lists the three pinned files **file by file** (never a folder, scripts only); the screenshot
@@ -8903,8 +8910,1729 @@ The disappearing games were not the drag and nothing was lost on the server. Eac
 
 There is now one drag for games (public/js/folder-drop.js), the one a folder with a single game always had: the row fades in place, a small round picture of the game follows the pointer, and a folder under it lights up. In a folder that can be put in order, the faded row also moves to where it will land while the pointer is over the list; over a folder or outside the list it goes back to its place, and Escape cancels. reorder.js keeps the folder chips' drag and Alt and the arrow keys, and saves one order at a time; a save that fails puts the list back in the order the server last saved, with no reload.
 
-## Phones and desktops: Oomba Canvas 1.3.1 and the Builder's layout check (19 Nov 2026)
-- Oomba Canvas 1.3.1 is the phone layout only (same data and behaviour as 1.3.0): the top strip is three groups (title; help mode, ✓, ✗, to go; New sheet, Print, Teacher, Keypad), each one row that scrolls sideways if it ever cannot fit, never a lone button on a line; short labels under 480 px; 44 px tap targets; the end card's buttons stack full width (primary first) on a card under 480 px and otherwise wrap whole, never overlapping or cut. — The owner saw "Try new or" / "Print workshe" overlapping and "Keypad" alone on a third line on an iPhone. 1.0.0 to 1.3.0 never change (saved activities pin their hash); a 1.3.x activity gets the fix when it is saved from the Studio's Activity panel.
+## Phones and desktops: Oomba Canvas 1.4.1 and the Builder's layout check (19 Nov 2026)
+- Oomba Canvas 1.4.1 is 1.4.0 (worksheets) with the phone layout only (same data and behaviour as 1.4.0). It was first made as 1.3.1 on 1.3.0, but 1.4.0 shipped before it did; a 1.3.1 after 1.4.0 would be out of order and would have no worksheets, so the layout was carried onto 1.4.0's sources and shipped as 1.4.1 instead, and 1.3.1 never shipped. 1.0.0 to 1.4.0 stay byte for byte; activities pinned to them keep their pin until they are saved from the Activity panel. 1.4.1: the top strip is three groups (title; help mode, ✓, ✗, to go; New sheet, Print, Teacher, Keypad), each one row that scrolls sideways if it ever cannot fit, never a lone button on a line; short labels under 480 px; 44 px tap targets; the end card's buttons stack full width (primary first) on a card under 480 px and otherwise wrap whole, never overlapping or cut. — The owner saw "Try new or" / "Print workshe" overlapping and "Keypad" alone on a third line on an iPhone. 1.0.0 to 1.3.0 never change (saved activities pin their hash); a 1.3.x activity gets the fix when it is saved from the Studio's Activity panel.
 - Every Builder playtest checks the layout at 390x844 (a phone held upright, tap targets 40 px) and 1280x800 first, then phone landscape and tablet portrait, in the same page and browser (one resize each); a classroom activity is also played to its end card and that card checked at both sizes. Findings ("At 390px wide (phone portrait, 390x844): the buttons "Try new ones" and "Print worksheet" overlap") go back to the model like the other playtest problems (a fix round; the version is still saved). Rows that scroll sideways on purpose, content passing under a sticky bar and a page scrolled down are not findings; on an activity pinned to an older kit, the kit's own parts are left out (the model may not change the kit). — "Make sure the builder is optimizing for both mobile and desktop." About 1.5 s more per activity build, about 0.5 s per arcade build.
 - CANVAS_RULES gain one line (390 px phone and 1280 px desktop, no fixed widths for buttons); the arcade SYSTEM_PROMPT and TOOLS are unchanged (their hash is pinned), so arcade games get this only through the playtest's feedback.
 - The play page's title wraps to two lines on a phone instead of "Co…" beside the icon buttons.
+## Classroom setup in four steps (19 Nov 2026)
+
+A Classroom lesson in /build/new now has 4 steps: what you are making → your lesson → "How will students use it?" →
+how much help, then the plan ("Step N of 4"). Three of the old choices overlapped or no longer needed asking:
+"Practice on screen" and "On their own devices" meant the same thing; every activity has Board mode under the kit's
+Teacher button (Oomba Canvas 1.3.0); and a question generator is a switch in the Studio's Activity panel ("New ones for
+each student"), which the teacher's "New set" uses.
+
+- **"How will students use it?"**: On their devices and/or On paper (at least one), with one quiet line under the
+  cards: the board is always there from the Teacher button, and a fresh set is made whenever possible. "What is it
+  for?" (with its Question generator card) and "How will it be played?" are gone; the arcade path is unchanged.
+- **The plan the Builder gets** keeps its old fields (builder/plan.js usesPlan; the page does the same): purpose is the
+  uses plus `generator` always, so the Builder writes a generator whenever the problems allow one (and is told to leave
+  `generator` out of config.purpose when none fits, since the kit refuses it without `gen`). played is `both` when
+  students use it on their devices (their own copy, results to Progress, Board mode from the Teacher button) and
+  `board` on paper only (nobody plays it on their own device: config.board true, no score sent). The note tells the
+  Builder only what was picked: no worksheet without paper, no devices without devices.
+- **The plan screen** has one Use row ("On their devices and on paper"); its Change goes back to step 3.
+- **Older plans** (the five-step page still open somewhere, saved chats) are read as they are, never migrated:
+  usesOf maps purpose to uses (a worksheet is paper; practice on screen, or a generator alone, is devices), and an old
+  "On the board" with practice on screen still says "We play it together on the board".
+
+Follow-up (same day): the plan screen says what the Builder gets from "Your lesson" — one line under the message
+("Plus your lesson file: NAME, N pages. The Builder reads all of it.", or the first part when the file was cut at its
+limit) and a closed "Show what the Builder reads" with each part and the start of the file, from the same scrubbed
+plan the server sends (the LESSON CONTEXT carries the file's text, up to its limit, in the first build). The first
+message is a box the teacher may edit, with Reset; their words go as plan.told and are sent instead of the sentence
+(builder/runner.js submit; classroom activities only), the plan still with them, their students' names taken out and
+screened like any typed message. Step 3 starts on "On their devices" again.
+
+## Story Library: open-licensed picture books to read, hear and answer (19 Nov 2026)
+
+Owner: kids read illustrated open-licensed picture books one page at a time (big text, optional read-aloud), answer 3
+short questions at the end, and teachers assign a story to a class and see who read it and their scores; "be careful
+to only select the right ones". Built to the approved mockups (library grid, reader, end screen, teacher results).
+
+- **Source and licences.** StoryWeaver books by Pratham Books, from the `global-asp/pb-source` text and
+  `global-asp/pb-imagebank` pictures. `scripts/import-stories.js` (pure parts in `server/library/import-lib.js`) keeps a
+  book only when its text and **every picture it uses** are CC BY 4.0 or Public Domain, read row by row from the
+  picture metadata; NC, ND, SA, other versions, missing or unreadable licences are left out, as is any book whose
+  pictures do not line up one-to-one with its pages (picture 01 the cover, N+1 page N) or whose metadata lists a
+  picture the image bank lacks. Nothing is guessed. Of 395 English books: 58 in the launch set; the report with every
+  book and its reason is `docs/story-library-sources.md` (written by the importer; never edited by hand).
+- **The words are never changed** (whitespace and conversion leftovers only), so books with mistakes in their own text
+  were left out rather than corrected. Picture-book English titles keep their own spelling ("Colours"). (Changed by the
+  owner on 20 Nov 2026: typos are now corrected as listed data; see "Story Library: typos corrected".)
+- **Choosing the launch set.** Every candidate was read in full for ages 4 to 10: no violence beyond mild peril,
+  nothing scary, no romance, no religious instruction or religion-centred plots (festivals mentioned in passing are
+  kept), no stereotypes or labels on children, nothing likely to upset parents (e.g. a child crossing a busy road, a
+  pet snake eating a mouse, hunters with guns). The site's text scanners (profanity, personal info, the Builder's
+  prefilter and mock classifier) run on every page; three false alarms ("blood" in a science question, "don't talk to
+  strangers", "my sister") were reviewed by a person and are listed in the report. Reasons for each book read and left
+  out are in `seed-library/storyweaver.json` (`skipped`). **Left out by the owner** (20 Nov 2026): "Fat King Thin Dog" (the jokes poke fun at body size) and "Didi and
+  the Colourful Treasure" (children who live by a garbage dump and do not go to school).
+- **Levels**, from words per text page and words in all: Level 1 Just starting (≤ 12 a page on average, no page over
+  20, ≤ 150 in all), Level 2 Learning to read (≤ 30 a page, ≤ 450 in all), Level 3 Reading on my own (up to 1,200;
+  longer books are left out). The launch set: 19 / 25 / 16. Replaced on 20 Nov 2026 by US grades (next section).
+- **Questions and glossary are Oomba's** (`seed-library/storyweaver.json`): 3 multiple-choice questions a book (3
+  choices, two about what the text says and one small inference, each pointing at the page that answers it) and short
+  notes for words from India (kheer, pakodas, sooji...). Both are labelled as written by Oomba, not part of the book.
+  The importer places the right answer at a stable spot (not always first); the answers never reach the browser: the
+  server checks each one.
+- **Data model.** `server/library/manifest.json` (id `sw-NNNN`, `source: 'storyweaver'`, pages with picture sizes,
+  credits with each part's licence, level, word counts, glossary, questions). A second source (Bloom Library, which needs
+  an API key we do not have) adds its own parser returning the same shape and an id prefix; no schema change. Nothing is
+  fetched from Bloom or anywhere at run time. Pictures are WebP in `public/img/library/<id>/` (from the image bank's
+  `large` copies: pages at most 720 px, covers 440 px), 14.1 MB for the 58 books.
+- **Integrated like an assigned game, not a parallel system** (migration `0091_story_library`). A book assigned to a
+  class is a lesson of kind `story` with one step of kind `story` (`lesson_steps.story_id`), assigned with the same
+  `L.assign` (due date, unassign, reorder, Student view, Google Classroom post when linked). The class page lists it
+  ("📖 Story", its cover on phones); the gradebook counts it as one step; its questions count in the **Score** like a
+  quiz: 1 point each, right on the first try (a wrong first try is still shown, and the child can try again until
+  right to finish). `/class/:cid/progress/:clid` for a story shows the results: who read it, with Read to me or on
+  their own, the score with ✓/✗ per question, where they stopped, last active, and the hardest question.
+- **Progress.** `story_reads` keeps each reader's own furthest page, Read to me used, and first-try marks; the
+  assignment's `step_progress` row is started when the book is opened from the class and done when its questions are
+  finished. An assigned book is read again from the start (the owner's decision, 20 Nov 2026): the first time the child opens it
+  from the class, their earlier reading of that book is cleared (`freshForAssignment`), so a book finished before it was
+  assigned does not count; after that, reading carries on where they stopped.
+  Visitors can read and answer with nothing saved. The questions need the last page reached (signed in). Account delete
+  removes `story_reads`.
+- **Read to me** uses the site's voice stack: the device voice per sentence with `speechSynthesis` word boundaries
+  lighting each word (sentence highlight where boundaries never fire), or, when AI voices are on for English, the AI
+  voice by sentence (`/api/tts` ctx `story`: book, page and sentence by number only; the server reads the manifest; the
+  sentence cut is `public/js/library-text.js`, shared by both), falling back to the device voice on any failure. The
+  questions' "Read it to me" uses the AI voice the same way when it is on (ctx `story` with `q`, the question number:
+  the question and its choices as shown, no letters), else the device voice (fixed 20 Nov 2026: it was always the
+  device voice). Stories are English only for now (no language picker in the reader, unlike the mockup).
+- **Where it lives.** `/library` (Learn: a "Story Library" door at the top of the Learn tab; the tab stays highlighted),
+  `/library/:id`, `/library/:id/read`, `/library/:id/assign`. Teachers: Assign on every card and book page, "Story
+  Library" in the class page's sidebar (`/library?class=` keeps the class), "Assign another story" and "Read it
+  together" on the results. Credits and the license link are under every reader page and on every book page; the
+  library's footer names Pratham Books, StoryWeaver and CC BY 4.0. External links (license deed, the original book)
+  open in a new tab.
+- **Not done / open:** the library is not in the sitemap; other languages of the same books (pb-source has many) are a
+  later import (text licences would be checked the same way); a projector mode beyond the reader itself; Bloom Library.
+- Tests: `tests/unit/library.test.js` (licence filter on fixtures with CC BY, NC, SA, ND, PD, mixed pictures, missing
+  and unreadable metadata; parsing; leveling; the manifest; the sentence cut; the pages and APIs over HTTP: assign,
+  progress, answers, results, Score; the TTS ctx; account delete), `tests/unit/library-browser.test.js` (Chromium:
+  filter and search, reading to the end with Read to me highlighting, wrong then right answer with "Look at page N",
+  a teacher's assign and results, phones and a tablet).
+
+## Story Library: US grade levels, and every remaining StoryWeaver story read (20 Nov 2026)
+
+Owner: replace Level 1/2/3 with US grade levels (Pre-K/K, Grade 1, Grade 2, Grade 3, Grades 4-5), computed from public,
+documented measures; and "keep adding more books from the original source".
+
+- **The grade is Oomba's estimate, not a branded level.** Nothing is labeled Lexile, Guided Reading or Fountas & Pinnell
+  (proprietary). The book page has a small "About the grade level" fold for teachers: "The grade is Oomba's estimate of
+  the US school grade this book suits, worked out from its text. It is not a Lexile, Guided Reading or Fountas & Pinnell
+  level." and the measures (words, words a page, words a sentence, syllables a word, Flesch-Kincaid grade, share not on
+  the Dolch or Fry lists). Grade chips replace level chips on the library, cards, book page, assign page and results.
+- **The measures** (`server/library/import-lib.js` `measure`): words in all; words a text page; words a sentence
+  (sentences cut exactly as the reader cuts them, at . ! ? and every line break, so a poem's lines count as sentences);
+  syllables a word (the usual vowel-group estimate); the Flesch-Kincaid grade (0.39 × words a sentence + 11.8 ×
+  syllables a word − 15.59); and the share of words not on the Dolch (220 service words and 95 nouns) or Fry 1,000
+  lists, allowing common endings (-s, -es, -ed, -ing, -ly, -er, -est, -'s), with names inside a sentence and numbers
+  not counted. The lists are in `server/library/sight-words.json` with a source note (Dolch 1948; Fry 1980, transcribed
+  from the qdapDictionaries R package, one duplicate removed; lists of common words are facts).
+- **The rule** (`gradeOf`, `GRADE_RULE`, printed in `docs/story-library-sources.md`): each measure becomes a grade
+  number (Pre-K/K 0, Grade 1 = 1 ... Grades 4-5 = 4.5) on straight lines between anchor points, clamped to −0.5..5.5:
+
+  | Measure | K (0) | Gr 1 | Gr 2 | Gr 3 | Gr 4-5 (4.5) | Weight |
+  | --- | --- | --- | --- | --- | --- | --- |
+  | Words in all (log scale) | 60 | 150 | 400 | 900 | 2,000 | 0.25 |
+  | Words a page (log scale) | 6 | 12 | 25 | 50 | 100 | 0.25 |
+  | Words a sentence | 4.5 | 6 | 7.5 | 9.5 | 12 | 0.20 |
+  | % not Dolch/Fry | 8 | 12 | 16 | 20 | 25 | 0.05 → 0.15 |
+  | Flesch-Kincaid | its own value | | | | | 0 → 0.15 |
+
+  The score is the weighted mean. Flesch-Kincaid and the sight-word share are unreliable on very short texts (a 50-word
+  patterned book with "knit" and "blink" is 40% "hard words"), so their weights rise from 0.05 and 0 at 100 words to
+  0.15 at 300 words. Bands: score < 0.5 Pre-K/K, < 1.5 Grade 1, < 2.5 Grade 2, < 3.5 Grade 3, < 5 Grades 4-5. Over 2,500
+  words (the old cap was 1,200) or a score of 5 or more is left out.
+- **Calibration.** Tuned by reading the 58 launch books and checking each estimate by hand, then the long ones. The
+  patterned, sight-word books land in Pre-K/K, the short stories with words like "boulder" and "stumbled" in Grade 1,
+  the 200-450-word stories in Grade 1-2, and the long, idiom-rich ones (The Timid Train: "bellowed", "maiden journey",
+  14 words a sentence) in Grades 4-5. The data did not argue for other bands: picture books cluster in K-2, so Grade 3
+  and Grades 4-5 hold the longer books. Worked examples:
+  - Can and Can't (50 words, 7.1 a page, 5 a sentence, FK −1.4, 40% not sight words): votes −0.2, 0.2, 0.3, 5.5, −0.5;
+    at 50 words only the sight-word share counts a little (weight 0.05) and FK not at all → 0.45, **Pre-K/K**.
+  - Smile Please! (102 words, 9.3 a page, 6 a sentence, FK 0.9, 20.6%): votes 0.6, 0.6, 1.0, 3.2, 0.9 → 0.88,
+    **Grade 1**.
+  - Grandma's Glasses (296 words, 29.6 a page, 6.9 a sentence, FK 2.2, 15.1%): 1.7, 2.2, 1.6, 1.8, 2.2 → 1.89,
+    **Grade 2**.
+  - The Timid Train (619 words, 56.3 a page, 14.4 a sentence, FK 5.2, 19.4%): 2.5, 3.3, 5.5, 2.8, 5.2 → 3.75,
+    **Grades 4-5**.
+  - Jadav and the Tree-Place (1,485 words, 78.2 a page, 11.3 a sentence, FK 3.8, 16%): 3.9, 4.0, 4.1, 2.0, 3.8 → 3.66,
+    **Grades 4-5**.
+  The 58 launch books: Pre-K/K 9, Grade 1 26, Grade 2 18, Grade 3 4, Grades 4-5 1. **Old links:** `/library?level=N`
+  redirects (301) to the grade most of that level's books now have: Level 1 → Pre-K/K (9 of 18 K, the rest Grade 1),
+  Level 2 → Grade 1 (16 of 25), Level 3 → Grade 2 (9 of 15). The reader reads a little slower for Pre-K/K (was Level 1).
+- **Every remaining English story read.** All 235 licensed books not in the launch set (the 222 not yet read and the
+  12 that were only too long) were read in full with the same rules as before; 25 added. The other 210 each have a
+  reason in `seed-library/storyweaver.json` `skipped`: most of the later StoryWeaver uploads are written by children or
+  first-time authors and have mistakes we may not correct (about 170: "did'nt", "May be sing", spaces before
+  punctuation, "Mughlai cusine"); the rest for content (a teacher slapping a child, demons and curses, prayers or a
+  religious plot, labels on bodies such as "My fat aunt", hunting or killing animals, children alone at night, Marvel
+  characters) or for being one page with too little for 3 questions. The scanner flagged one new book, The Magic Powder
+  ("repeat the above step" in a craft page): reviewed, fine (`scanReviewed`).
+- **Pictures that do not line up.** All 52 were checked against their image descriptions. Two are placed by hand
+  (`pictureMap`, with the page-by-page match written down and shown in the report): My Balwadi (11 pictures for 9 pages;
+  the last is a second picture of the play-dough tub) and The Tree (13 for 11; the last is a coloring page; page 11 is
+  wordless in the source, as in the book). The other 50 stay out with a reason (`pictureReview`): no text, the whole
+  book on one page with no cover, as many pictures as pages (which page goes without is not clear), fewer pictures than
+  pages, duplicate descriptions, coloring or craft pages, or (I lost my bat!) a last picture that is the ending with no
+  text. The license rule is unchanged: the text and every picture in the metadata (not only the used ones) must be CC BY
+  4.0 or Public Domain; the owner's two exclusions (sw-0002, sw-0167) stay out.
+- **Totals: 85 books** (58 + 27): Pre-K/K 9, Grade 1 35, Grade 2 29, Grade 3 7, Grades 4-5 5 (new: Grade 1 9, Grade 2
+  11, Grade 3 3, Grades 4-5 4). Pictures: 20.8 MB at the same settings (pages 720 px, WebP q50), far under the 80 MB
+  budget, so no quality change. The longest new page (409 words, Jadav) scrolls under the sticky Back / Next on a phone.
+- **Owner's review (20 Nov 2026):** kept Do and Don't (a toilet joke, "the big job"), Annual Haircut Day ("Oh God, help
+  me!" said by a worried man), The Carpenter's last job (a grown-up parable for Grades 4-5) and Dive! (a line refers to
+  bold lettering the reader does not show; the divers swim near sleeping reef sharks, "pretty harmless"). Left out What
+  If? (the boy calls himself "a little skinny"). 84 books.
+- Tests: `tests/unit/library.test.js` (the measures and bands, sight words with endings, hand-placed pictures accepted
+  only when valid, every licensed story read, grades and measures in the manifest, old level links), and
+  `library-browser.test.js` (grade chips).
+
+## Story Library: Bloom Library books (20 Nov 2026)
+
+Owner: add Bloom Library books licensed CC BY, CC BY-SA or CC0 (never NC, ND, custom, "ask" or anything unclear), about
+150 to 200 good ones, biased toward Grades 2 to 5; read Bloom's files from the public storage link its book list gives
+(Bloom's own file server sits behind a bot check, which is not to be defeated); keep only Bloom's book id, never the
+storage link or the uploader.
+
+- **Source and privacy.** `scripts/import-bloom.js` (pure parts in `server/library/bloom-lib.js`) takes a saved copy
+  of Bloom's public English book list (`GET https://api.bloomlibrary.org/v1/books?lang=en`) and, for each candidate in
+  `seed-library/bloom.json`, reads the book's `meta.json`, its HTML and the pictures it uses from the storage folder the
+  list names, about 4 requests a second with a User-Agent naming the importer and retries with backoff. Those folder
+  links can contain the uploader's email address, so they are used only at import time and never written anywhere: the
+  manifest, the curation file and the report hold only Bloom's id (`bl-<id>`) and the book's page
+  (`https://bloomlibrary.org/book/<id>`); credits come from the book's own credits and copyright text with email
+  addresses and phone numbers removed, and where a book's copyright holder is a private person who is not its author
+  the book is left out or credited to the original publisher. Tests check that no `@` or storage host appears in the
+  manifest, the curation file or the report.
+- **License rule, in code** (`bloomLicense`, `checkBloomPictures`): the book's `meta.json` license must be `cc-by`,
+  `cc-by-sa` or `cc0` and agree with the book's own license link, which gives the version (CC BY 2.0 to 4.0, CC BY-SA
+  2.0 to 4.0, CC0 1.0; a ported country version is left out); its license notes, copyright, credits and
+  acknowledgments must not say "not for distribution", "all rights reserved", "permission", "do not copy" and the
+  like; Bloom must have finished processing it, and it must not be a draft, a shell, a template, a test, an
+  incoming or problem book, or have quiz, activity, widget or video pages. **Every picture used** (the cover and one
+  per page) must carry its own CC BY, CC BY-SA or CC0 license, no stricter than the book's (a BY-SA picture keeps a CC
+  BY book out, so the license shown is true of every part); a picture with no license of its own is used only when its
+  copyright holder is the book's own (it then inherits the book's license; counted in the report); a picture credited
+  to a stock or clip-art source (Microsoft, Pixabay, Getty and the like) is treated as unclear. One picture that fails
+  leaves the book out: 464 candidates failed on a picture, 203 of them because a picture carries no license and no
+  copyright at all.
+- **What is taken.** Story pages are Bloom's pages that are not front or back matter; on each, the English in its
+  translation groups (template `z` and `*` blocks, image descriptions and other languages are not text; the other
+  languages are recorded per book in `otherLangs` for a later Spanish or Portuguese library). A page without English,
+  without a picture or with several pictures keeps the book out. Wordless pages at the end are not used, and a person
+  may name pages after the story that are not part of it (comprehension questions, a drawing activity, notes for
+  grown-ups, a coloring page) in the pick's `dropEnd`, with why; the report lists them. Line breaks Bloom places only
+  for the printed layout inside a sentence become spaces; the words are never changed. Pictures use the StoryWeaver
+  settings (pages 720 px, covers 440 px, WebP), and the grade uses the same `gradeOf` rule.
+- **Choosing.** 1,771 English candidates were taken from the 3,962 books with an allowed license (shells,
+  religious collections and Bible series left out by tag and title first; at most two versions of a title; titles of
+  StoryWeaver books already in the library or read and left out skipped). Every one that passed the license rule was
+  read in full with the StoryWeaver rules, applied strictly: no religious instruction or religion-centered plots
+  (prayers, church, Bible, "thankful to God"), no labels on bodies or disabilities, no stereotypes, no unsafe behavior
+  shown as fine (children alone in rivers or on roads), no violence beyond mild peril (folk tales where animals are
+  eaten, burned or killed were left out), nothing political, and no mistakes in the text (missing spaces, uneven
+  quotation marks, split words from the print layout, wrong words). Copies, translations and adaptations of the same
+  story were compared and the best English version kept. Every skip has a reason in `seed-library/bloom.json`
+  (`skipped`); the importer writes `docs/story-library-bloom.md` with every candidate and why it is in or out.
+- **Credits and license on the site.** The book page and every reader page show the author, illustrator(s),
+  translator(s), "Based on a book by ..." for adaptations, the publisher or copyright holder with "Bloom Library", and
+  the book's license linked to its deed; the note says Oomba resized the pictures and shows the book one page at a
+  time, that Bloom Library, SIL Global and the book's publisher do not endorse Oomba, and for CC BY-SA books that these
+  adapted pages are shared under the same license. The book page links the original on Bloom Library. Cards and book
+  pages name the source (StoryWeaver or Bloom Library), search also matches the publisher and source, and the
+  library's footer names both sources (`library.footSources` replaces `library.footCredit`). The glossary note under
+  a Bloom book says the notes help with words children may not know (`library.glossaryNoteAll`; StoryWeaver's says
+  words from India). No source filter.
+- **Result: 110 Bloom books** (Pre-K/K 31, Grade 1 45, Grade 2 22, Grade 3 10, Grades 4-5 2; CC BY 4.0 91, CC BY-SA
+  4.0 18, CC0 1.0 1), 504 read and left out, the rest left out by the rule; the library has 194 books. Fewer than the
+  150 to 200 asked for, and fewer at Grades 2 to 5 than hoped: most longer Bloom books in English fail the picture rule
+  or have mistakes in their text, and the strict reading leaves out most traditional tales (animals eaten, burned or
+  tricked to death). **Open for the owner:** 193 more books pass every automatic check except that some pictures carry
+  no license and no copyright at all (the book's own license would then have to be read as covering them); treating
+  that as allowed would let a person read those for perhaps 50 more books. Pictures: 27.3 MB for the Bloom books, 48 MB
+  for the whole library, under the 80 MB budget at the StoryWeaver settings; at 200 Bloom books it would be about 70 MB,
+  and the page quality could go from WebP 50 to 40 if it ever passes 80 MB.
+- **Shared manifest.** Both importers write `server/library/manifest.json` and keep the other source's books; each
+  removes only its own picture folders (`sw-` or `bl-`).
+- Tests: `tests/unit/library-bloom.test.js` (the license rule with Bloom-shaped fixtures for CC BY, CC BY-SA, CC0, NC,
+  ND, custom, ported and missing versions, a stricter or unlabeled or stock picture, notes that restrict, shells and
+  quizzes; reading the HTML; credits without contact details; the shared manifest; the shipped books, with no `@` or
+  storage host in the manifest, curation file or report; the pages over HTTP: source, license, deed link and the
+  share-alike note), `library.test.js` (both sources in the manifest), `library-browser.test.js` (search across both
+  sources, the source on each card).
+
+## Story Library: book suggestions, "What would you like to read today?" (20 Nov 2026)
+
+Owner: a friendly box at the top of the Story Library where a reader types what they want to read and gets up to 5
+books from our library, chosen by a cheap Claude model.
+
+- **The model only chooses.** It gets the catalog (one line a book: id | title | grade | the first 18 words of its first
+  two text pages and what its first pictures show) and answers with book ids in a JSON schema (`{ ids: string[] }`,
+  structured outputs). Ids are checked against the library (`getBook`): unknown ones dropped, no repeats, at most 5. The
+  page shows the library's own cards for them (`bookCard` in `routes/library.js`, shared with the grid) under "Books
+  for you", with "All books" to go back. Every word on screen is ours, in all languages; nothing the model writes is
+  shown. Books are read only through `books()` / `getBook()`, so a second source (Bloom) joins the catalog by itself.
+- **The model and the call** (`server/services/library-suggest.js`): `claude-haiku-5-5` (`LIBRARY_SUGGEST_MODEL` to
+  change it) through the shared client `anthropic('free')` (no key or the AI budget spent: no call), `output_config`
+  `effort: 'low'` and the schema, no `thinking` setting (a disabled one returns a 400 on some models; low effort keeps
+  it short), `max_tokens` 300, 8 s timeout and no retries. The catalog is in the system prompt with
+  `cache_control: ephemeral` and is byte-identical for every reader (the grade preference goes in the user turn), so
+  repeated calls read it from the cache. The wish is in `<request>` tags with the rule that it is a reader's wish, never
+  instructions. Usage is recorded with `aiBudget.recordUsage`.
+- **Cost per query** (84 books; the catalog and rules are about 4,800 tokens): a cache read is 4,800 × $0.01/M =
+  $0.00005, plus about 60 uncached input tokens ($0.000006) and 30 to 150 output tokens ($0.00002 to $0.00008): **about
+  $0.0001 a query** while the cache is warm (5 minutes), **about $0.0007** for the first one after it cools (a cache
+  write at 1.25 × $0.10/M = $0.0006). The kid-safety model check before it (below) adds about $0.00005 to $0.0001. With
+  the 1-hour answer cache, a class asking for "dinosaurs" pays once. Bloom books make the catalog longer at about 58
+  tokens a book (500 books: about 29,000 tokens, $0.0003 a warm query).
+- **Safety and privacy.** The wish is at most 120 characters; emails, phone numbers and links are taken out first. Then
+  the Builder's own screening runs (`screenInput`: the word rules, and the model classifier when a key is set); a wish
+  it stops gets "Let's try different words..." and no suggestion call. The wish is never stored or logged: no table
+  holds it (a test reads every table), the request log writes only the method and path, and the answer cache keys are
+  SHA-256 hashes of the normalized wish and grade (at most 300, one hour, least recently used out first). The endpoint
+  is rate limited (40 a minute per reader or address).
+- **Always works.** No client, an error, a refusal, a cut-off answer or a timeout: a local keyword match on titles (3
+  points), page text and picture descriptions (1), with a few related words ("funny" finds "laugh", "space" finds
+  "moon") and grade words ("easy" Grade 1, "grade 3", "chapter book" Grades 4-5). Local answers are not cached, so the
+  model is asked again next time. When nothing fits (the model's empty list, or no local match): "We could not find a
+  book about that yet" and 4 books: the most read, then the easiest at or near the reader's grade.
+- **The reader's grade** is a preference, not a filter: the grade chip they are on, else a signed-in student's grade
+  from their school (`school_members.grade`, "3rd" or "K" read as a band). The model is told to prefer books at or near
+  it; the local match sorts by it after the topic.
+- **Where it lives.** `routes/library-suggest.js` (`POST /api/library/suggest`, the box markup), 
+  `public/js/library-suggest.js` (the box is hidden until the script runs, so it never shows without JavaScript),
+  `public/css/library-suggest.css`. The only edits to the library page: the box above the grade chips, its script and
+  stylesheet, and the card moved into `bookCard`. Strings: `library.wish.*` in every language (en-GB uses the English).
+- Tests: `tests/unit/library-suggest.test.js` (a stand-in model: ids checked, the request shape and cache marker, a
+  screened wish never reaches the model, the local match on no client / error / refusal / bad JSON / timeout, the
+  cache, the length cap and cleaning, no table holds the wish, the grade preference, the rate limit, the API's cards)
+  and `tests/unit/library-suggest-browser.test.js` (Chromium: a wish shows the cards, All books brings the grid back, a
+  screened wish, phones with no sideways scroll). No real API call was made while building it (no key in the sandbox).
+
+## Virtual math manipulatives, hidden while it is tested (20 Nov 2026)
+
+The Muse-hosted "Virtual Math Manipulatives" app (branch virtual-manipulatives) is rebuilt inside the site, on the site's
+accounts, classes, database, AI client, theme and i18n. Nothing of Muse, Bun or React is kept: the site has no React
+and no bundle step for pages, so the UI is a plain ES module like the classroom dashboard (public/js/manip.js, with its
+data in public/js/manip-data.js and the 300 tasks in public/js/manip-tasks.js, shared with the server).
+
+- **Hidden.** /manipulatives and /api/manipulatives/* answer only the platform admin, school staff whose usernames are in
+  MANIPULATIVES_USERS, and the students of a class one of them is running a session for (routes/manipulatives.js gate;
+  everyone else falls through to the normal 404). MANIPULATIVES=0 turns it off for everyone. No menu, sitemap or search
+  links it; the page is noindex and sends X-Robots-Tag. The only other place it shows is a "Join" notice on a student's
+  own class page while their teacher runs a session.
+- **Turning it on for teachers later:** add their usernames to MANIPULATIVES_USERS (one teacher at a time), or, for
+  everyone, change canHost in services/manipulatives.js to S.isSchoolStaff(u) and add a link from the class page or the
+  Teach menu; then add it to the privacy page (below) and translate the js.manip.* strings.
+- **Identity.** No typed names and no anonymous joins. A session belongs to its teacher and one class they teach (or
+  that their school admin membership covers); its join code only finds it: a student outside the class gets the same
+  404 as a wrong code. One running session per class; a session ends by itself after 12 hours and is deleted (with the
+  students' work) 30 days after it ends.
+- **Who sees what.** Saved boards (manip_boards) are their owner's: only the owner lists, opens by id or deletes them.
+  Only hosts save boards and so make share codes; opening a code copies the board into the opener's own board. A
+  student's work (manip_work) is seen by that student and the session's teacher (and the platform admin): students get
+  their own board and the pushed board, never the class list or another student's board. The teacher sees students by
+  the name the class roster shows (roster name, else display name) on the dashboard and its PDF. Only the teacher (or
+  the platform admin) reads the dashboard, pushes, exports or ends.
+- **Text.** Every board that is saved, sent or pushed is rebuilt on the server (cleanState): sticky notes and bar labels
+  go through the site's word lists and personal-information rules (textfilter.js); any other string on the board must be
+  clean too. The family link-code shape is not checked here ("Build 246 with blocks" looks like one, and a note only
+  reaches its writer and their teacher).
+- **AI.** "Draft with AI" is for hosts only, through builder/anthropic.js (the AI budget, config.builderModel), 30 an
+  hour. It gets the teacher's description, the tool and its piece list, and a task from the tool's own library: never
+  students' work or names (a description with the name of one of the teacher's students is refused). The answer is
+  sanitized as the original was (piece kinds from the tool's palette only, at most 30, coordinates clamped, 2 to 6 notes
+  that pass the word rules, at most 4 pen marks in the pen colors). No key or a resting budget: a plain starting board.
+- **Live updates** poll every few seconds, like the classroom dashboard (Oomba Live's socket is for its games).
+- **PDF export** is made on the server (a text summary per student), for the session's teacher only.
+- **Content.** "Cuisenaire Rods" became "Number rods" (slug number-rods); "Miro" is gone; US spelling; grades K-8 (the six
+  grade-9 algebra tasks are labeled grade 8 and keep their high-school codes); every task and its code is kept.
+- **Database:** migration 0092_manipulatives (0091 is taken on an unmerged branch; migrations run by name). Account
+  deletion removes a person's boards, work and sessions; leaving a class removes their work in its sessions; deleting a
+  class or school removes its sessions (school-delete.js BY_CLASS, and ON DELETE CASCADE).
+- **Not translated yet:** tool names, descriptions, help lines and palette labels (manip-data.js and the tool code) and
+  the whole task library are English only; the page's own words are js.manip.* / manip.* keys in en.json.
+- **Privacy page before launch:** it should say that students' boards in a session (pieces, sticky notes, pen marks) are
+  kept for the teacher for up to 30 days after the session, and that teachers' lesson descriptions go to the AI. Not
+  changed while hidden (no LEGAL_UPDATED bump).
+
+## Story Library: typos corrected in StoryWeaver books (20 Nov 2026)
+
+Owner: "Just fix the typos" for the StoryWeaver books that were left out only for mistakes in their own text. CC BY 4.0
+allows adaptations as long as the changes are indicated.
+
+- **Corrections are data, not edited sources.** A pick in `seed-library/storyweaver.json` may have `fixes`, a list of
+  `{ page, from, to }` (page 1..N a text page, page 0 the title). The importer (`applyFixes` in
+  `server/library/import-lib.js`, called first in `evaluate`) replaces each `from` with `to` in order, as an exact
+  substring, and throws when a `from` is not on its page exactly once, so a correction that no longer matches its
+  source stops the import instead of being skipped. The grade, measures, scanners and questions all see the corrected
+  text. Every correction is listed in `docs/story-library-sources.md` ("Text corrected by Oomba").
+- **What a fix may change:** spelling ("dinosuar", "cusine", "lightening"), punctuation and spacing (spaces before
+  commas and periods, quotation marks, "did'nt"), capitalization, words run together or split ("wholetown",
+  "henarrated"), line breaks from a print layout inside a sentence, a repeated passage (Marching to Freedom's last
+  page said the same lines twice), and small grammar slips (a/an, "a lot of", "who I am?", a clearly dropped word
+  such as "A frog on his seat"). Never the style, the vocabulary, the meaning or correct Indian English
+  ("kheer", "Amma", "then only", "lakh"); the book's own British/Indian spelling stays ("colour", "favourite").
+- **The change notice.** A corrected book's credits (book page and every reader page) start their note with "Oomba
+  corrected spelling and punctuation." (`library.credits.corrected`, 13 languages; en-GB uses the English), before
+  "Oomba resized the pictures and shows the book one page at a time." The number of fixes is in the manifest
+  (`credits.corrections`); a book with none has no count and no sentence. The only change outside the StoryWeaver
+  importer is that sentence in `credits()` (`server/routes/library.js`) and its locale strings.
+- **Revisited: 118 books**, every StoryWeaver book left out for its text alone, the borderline ones whose other reason
+  was text-like (an author's note, an unclear plot), and the one-page books. Each was read again in full with the
+  unchanged content rules. **63 added** (317 corrections; the most: It's bath time! 26, The puppy that did not bark 24,
+  The Princess and the Veggy Lion 21, all spaces before punctuation) with 3 questions each in the usual format and
+  glossary notes. **55 still left out**, each with a new reason starting "Revisited for typos": text so broken that
+  fixing it would mean rewriting (about 25), one page or a few lines with too little for 3 questions (about 15), or a
+  content reason found or kept on rereading (a child gives chocolate to a dog, a small child ironing or cooking alone,
+  a teacher's robot camera following a pupil, a man asking the boy to "come and meet me later", children slipping off
+  without telling anyone, a TV cartoon's characters, wrong facts about toothpaste, fireflies choosing mates, "I hate my
+  life"). Books with a content reason as well as typos were not revisited: those rules are unchanged. "Too thin" and
+  picture-mismatch skips were looked at again and none was trivially fixable.
+- **Judgment calls for the owner's review:** Under My Bed keeps "Oh my God!" (as Annual Haircut Day keeps "Oh God,
+  help me!"); Raza Meets the King describes Akbar's "large, slightly slanted eyes" (a portrait of a real king, not a
+  label on a child); Marching to Freedom is history of the Dandi March (Gandhiji, the salt tax, arrests) and its fact
+  page says the arrest "sparked off the Non-cooperation Movement" (it was the Civil Disobedience Movement; facts are
+  not ours to change); Starry and the land of the unknown has Zeus giving a boon (mythology, not religious practice);
+  How Do Aeroplanes Fly? has some loose physics ("the engine ... acts like the brain of the plane"). The scanner
+  flagged four new books, all false alarms reviewed and listed (`scanReviewed`): "BooBoo" (profanity), "cocked his
+  ears" (profanity), "rum-pa-pum-pa-pum" (drugs) and Gandhiji (real people).
+- **Totals: StoryWeaver 147 books** (Pre-K/K 9, Grade 1 46, Grade 2 59, Grade 3 22, Grades 4-5 11; added: Grade 1 11,
+  Grade 2 31, Grade 3 15, Grades 4-5 6), **257 in the library** with Bloom's 110. Pictures: 33.9 MB for StoryWeaver,
+  about 61 MB for all of `public/img/library`, under the 80 MB budget, so no quality change (pages stay WebP 50).
+- **License re-check.** An independent script (its own parser, not `licenseOf`) read the text license and every row of
+  the image metadata for all 147 StoryWeaver books in the manifest: 1,470 picture rows, all CC BY 4.0 or Public
+  Domain; the only odd row is a trailing period after one CC BY link (sw-0359, picture 08), still CC BY 4.0.
+- Tests: `tests/unit/library.test.js` (fixes applied in order and to the title; a `from` that is missing, appears
+  twice or is out of range stops the import; the corrected text is what is measured and shown; the report lists the
+  corrections; the corrections sentence appears in English and French only on corrected books; every shipped book's
+  count matches its fixes).
+
+## Story Library: more Bloom books, a couple of unlabeled pictures and corrected typos (20 Nov 2026)
+
+Owner, two decisions: "If there is a book with just a couple of missing licenses, then just add it" and, for books
+left out only for text mistakes, "just fix the typos".
+
+- **Unlabeled pictures** (`checkBloomPictures`, `MAX_UNLABELED = 2` in `server/library/bloom-lib.js`). A picture with
+  no license and no copyright at all now takes the book's own license (CC BY, CC BY-SA or CC0) when the book has at
+  most 2 such pictures and they are not most of its pictures. Everything else stays strict: a picture with a license
+  of its own that is stricter (NC, ND, custom, all rights reserved), one with another copyright holder, and one whose
+  creator, copyright or file name names a stock or clip-art source (Microsoft, Pixabay, Google, Freepik and the like)
+  still keep the book out. A picture labeled in one of its two places (the data div's cover and the front cover) counts
+  as labeled. Each book records `credits.pictureRules.unlabeled`; the report shows own / inherited / unlabeled per book.
+  Result: 7 books use 9 such pictures. For the owner to decide later, the report counts the books left out only for
+  this that pass every other automatic check (not read for content): at a limit of 3: 0 more; 5: 1; any number while
+  not most of the pictures: 1; any number even when most or all pictures are unlabeled: 169. So raising the limit gains
+  almost nothing; only dropping the "not most of the pictures" rule would open many books.
+- **Corrections as data.** A pick's `fixes` (`[{ page, from, to }]`, page 0 is the title) in `seed-library/bloom.json`
+  are applied by the importer with the same exact-once rule as the StoryWeaver importer (`applyFixes` in
+  `server/library/import-lib.js`, merged from the StoryWeaver typo work): a `from` that is missing or found twice keeps
+  the book out. Fixed are only real errors (spelling, punctuation and spacing, capitalization, quotation marks,
+  print-layout hyphens and line breaks, obvious grammar slips such as "This my daughter" or "for e to carry you");
+  the book's own British spelling and style are kept. Grades are estimated on the corrected text. Corrected books carry
+  `credits.corrections` and show the shared note `library.credits.corrected` ("Oomba corrected spelling and
+  punctuation.") before the Bloom change note, so for a CC BY-SA book the share-alike sentence that follows covers the
+  corrected pages. The report lists every correction. Books whose mistakes run all through (fixing would mean
+  rewriting) stay out, with that reason.
+- **What was read.** 169 candidates in full: every book skipped for text mistakes alone or alongside a small issue,
+  and every book the new picture rule lets through. 74 added (Pre-K/K 7, Grade 1 19, Grade 2 34, Grade 3 12, Grades 4-5
+  2; CC BY 4.0 68, CC BY-SA 4.0 6), 71 of them with 237 corrections in all; 98 left out with reasons (duplicates of
+  other uploads or of books already in the library, content: violence, animals killed or eaten, religion, unsafe
+  behavior, labels on children, smoking; mistakes all through; unclear credits). Pages after a story that are not part
+  of it (notes, coloring pages, questions) are left out with `dropEnd`.
+- **Result: 184 Bloom books, 331 in the library** (Pre-K/K 47, Grade 1 110, Grade 2 115, Grade 3 44, Grades 4-5 15).
+- **Pictures.** The whole of `public/img/library` passed the 80 MB budget (about 84 MB with the StoryWeaver typo
+  books), so pages went from WebP quality 50 to 40 for the whole library (`IMAGE` in `scripts/import-stories.js`, used
+  by both importers; covers stay at 55). The Bloom importer's conversion stamp now includes the quality, so a change
+  converts again. Now 71.2 MB in all (StoryWeaver 29.5 MB, Bloom 41.6 MB).
+- An independent re-check of every Bloom book in the manifest against freshly fetched live files (meta.json, the
+  book's HTML, the picture attributes, with the new rule) is kept outside the repository.
+- Tests: `tests/unit/library-bloom.test.js` (0, 1, 2 and 3 unlabeled pictures, most of them, the cover, a stock-credited
+  or stock-named unlabeled picture, an explicit NC picture, another holder, "all rights reserved"; corrections applied,
+  missing or doubled; the report's list; every shipped book's unlabeled count and corrections; the correction note
+  over HTTP before the share-alike note, and not on uncorrected books).
+
+## Story Library: a history fact corrected in Marching to Freedom (20 Nov 2026)
+
+- The owner asked to fix a factual error in sw-0093 (the Dandi March). Its "Fun facts of History" page said the arrest at
+  Dandi "sparked off the Non-cooperation Movement" (that was 1920-22). It now says the march sparked the Civil
+  Disobedience Movement, that people broke the salt law and boycotted British goods, and that Gandhi was arrested a few
+  weeks later (5 May 1930, not at Dandi on the day). "The year 2005 marks the 75th anniversary" became "In 2005, India
+  marked the 75th anniversary".
+- How: two `fixes` with `kind: "fact"` in `seed-library/storyweaver.json`, applied by the same `applyFixes`. The manifest
+  counts them apart (`credits.factCorrections`; `credits.corrections` stays typos only), and the credits add "Oomba
+  corrected a history fact." (`library.credits.factCorrected`, 13 languages). Fact fixes are made only when the owner
+  asks; typo fixes stay limited to real typos.
+
+## Story Library: words and picture on one screen in the reader (20 Nov 2026)
+
+- The owner had to scroll away from the picture to read long pages. Now:
+  - Each page's text gets a length band from its word count (`data-len`: s up to 20 words, m up to 50, l up to 100, xl
+    beyond), set by the server and by `public/js/library.js` on every page turn; longer bands use smaller type.
+  - Wide, landscape screens (at least 900 px wide and wider than tall): picture left, words right, both within the
+    screen's height; a very long page scrolls inside the words column while the picture stays.
+  - Portrait (phones, tablets upright): the picture is shorter, and on long pages (l, xl) it stays pinned under the top
+    bar while the words scroll beneath it; Back / Next stay pinned above the tab bar as before.
+- Test: `library-browser.test.js` checks the library's longest page at 1280x720 (side by side, both on screen) and on an
+  iPhone 13 (the picture stays on screen after scrolling).
+
+## Virtual math manipulatives: the shared room (20 Nov 2026)
+
+The owner approved mockups for live sessions as one shared board (hidden like the rest of the feature).
+
+- **One board per session**, panned and zoomed like a whiteboard: drag empty space or two fingers to pan, the wheel or a
+  pinch to zoom, a "− % + Fit" control (on phones in the bottom tray, so it never covers a classmate's name) and a mini-map
+  (tap a place to go there). The teacher's area runs across the top; below it, one square per student in a grid
+  (manip_work.slot, given at join). Square sizes per tool are in public/js/manip-data.js (roomLayout).
+- **Who writes where:** a student adds and moves things only in their own square; the teacher anywhere. The server
+  enforces it: POST /api/manipulatives/live/:id/area/:key accepts a student only for their own key, and every saved
+  square's pieces are clamped inside it.
+- **Names:** classmates see each other by display name; the teacher sees roster names (the class page's rule).
+- **Typed text:** a student's sticky notes and bar labels reach only that student and the teacher. Classmates get the
+  note's shape with no text, removed on the server (services/manipulatives.js forClassmates), never sent. The teacher's
+  notes (in their area or in a student's square) are read by everyone; note authors are kept on the server, so a student
+  can't change, remove or imitate a teacher's note.
+- **Cursors** (an arrow and a name tag in a color per person; on touch screens the last touch point; a distinct "Teacher"
+  cursor) travel on a new route of the shared upgrade listener, /api/manipulatives/ws?s=<id> (services/manip-socket.js):
+  Oomba Live's origin check and per-address limit, a per-socket limit (20 a second), the hidden gate and the room's
+  membership rules, looked up again every few seconds. Batches go out every 100 ms. Without a socket the page falls back
+  to POST .../cursor and reading the room. Cursors live in memory only (services/manip-live.js): never in the database or
+  a log line; a cursor goes when its socket closes, after 10 seconds without a move, or when the session ends.
+- **"Bring everyone to me"**: the teacher's current view goes once to every student (memory only, like cursors); their
+  screen jumps there (on a phone never below 40% zoom), says "Your teacher brought you here" and shows a big "Back to my
+  square" button. "My square" is always one tap away on phones and computers. Students stay free to move.
+- **Saving** stays on the cleaned path: an area that changed is sent half a second later and checked like every board;
+  the socket only says "something changed" so the others read the room again.
+- **Database:** migration 0093_manipulatives_room (manip_sessions.room and room_at for the teacher's area, manip_work.slot).
+
+## Virtual math manipulatives: Instructions strip and raised hands (20 Nov 2026)
+
+- **Instructions strip:** every sticky note the teacher writes in the teacher's area also shows, read-only and numbered,
+  in a strip pinned to the top of every student's square (the same for everyone, live as the teacher adds, edits or
+  deletes notes). It is at most a third of the square; longer sets show the first lines and a "More" that opens for
+  that viewer only. A square's work space starts under the strip: new pieces and notes are placed below it, dragged
+  pieces stay below it, and the server clamps a student's square to the same space (manip-data.js stripHeight, used by
+  the page and services/manipulatives.js saveArea). Teacher notes put inside one student's square stay in that square.
+- **Raised hands:** a student's "Raise hand" / "Lower hand" (no text, no message). The teacher gets "Hands up (N)": the
+  hands in the order raised, by roster name; tapping one goes to that square; "Lower" one or "Lower all"; the button
+  flashes when a hand goes up (no sound; the site's reduced-motion rule stops the flash). Squares and cursor tags show
+  ✋, and classmates see it too (display names only, like the squares), so everyone knows who is waiting, as the
+  dashboard's help queue does with "You're number n in line". Hands live in memory like cursors (manip-live.js): never
+  stored, gone when the student's last socket closes or the session ends; a student changes their own hand at most 8
+  times a minute (the socket's { t:'h', up } or POST .../hand); only the teacher lowers someone else's.
+
+## Virtual math manipulatives: hidden work (20 Nov 2026)
+
+So students don't copy each other: by default a student sees only their own square's work. A classmate's square is a
+frosted frame with its display name, ✋ and the Instructions strip; the server sends nothing else of it (no pieces, pen
+marks, note shapes, totals or when it changed), so there is nothing to reveal in the browser. The teacher always sees
+everything and has a "Hide students' work" switch in the room's top bar (on by default; manip_sessions.show_work,
+migration 0094) for when the class should compare; switching it reaches every student at once (the socket says "read
+the room again"). Sticky-note text stays private either way. Cursors, hands, "Bring everyone to me" and the teacher's
+area are unaffected.
+
+## Virtual math manipulatives: steps, and a calmer room (20 Nov 2026)
+
+- **A deck of steps.** A teacher builds the exercise as ordered steps in the tool (📋 Steps: add, edit, delete, drag or
+  ↑ ↓ to reorder). The steps save with the board (__steps), so saved boards, share codes and pushes carry them, and
+  "Draft with AI" fills them (the model's notes, in order, through the same cleaning). A session can start from a saved
+  board (its tool and steps), and pushing a board with steps makes them the session's deck, from step 1.
+- **In a session** there is one current step: the teacher's "◀ Back · Step 2 of 5 · Next ▶" (only with 2+ steps), the
+  step big at the top of the teacher's area, and as the Instructions strip in every square, with earlier steps folded
+  into "Earlier steps (n)". A student is sent only the steps up to their own: a future step never leaves the server.
+  Students can't move it, unless the teacher turns on "Students go at their own pace": then each student has ◀ ▶ in
+  their own strip (never past the last step) and the teacher sees "Step 3: 6 · Step 4: 2"; turning it off brings
+  everyone back to the teacher's step. A step change glows briefly on the strip (no sound; reduced motion stops it).
+  The step position is live and kept in memory (services/manip-live.js); the deck itself is saved.
+- **A calmer room** (the owner: "it must not get busy"). The teacher's bar holds only the step bar (2+ steps), "✋
+  Hands up" (a count only when someone has a hand up; nothing opens when nobody does), "Bring everyone to me" and one
+  "⋯" menu for the rest: Hide students' work, Students go at their own pace, Push a board, PDF, End session. Students
+  get their pieces tray, the strip, Raise hand and My square; no step buttons unless pace is on. No mini-map on phones;
+  "Your teacher brought you here" goes after five seconds while "Back to my square" stays.
+
+## Virtual math manipulatives: tucked away (20 Nov 2026)
+
+The owner's three tuck-aways: raised hands are the teacher's alone (a student's room request and socket carry only
+their own hand, never a classmate's: services/manipulatives.js handsFor, services/manip-socket.js); students get "Fit"
+and "My square" instead of the zoom control and mini-map (wheel and pinch still zoom; on phones "My square" is in the
+bar); the join code moves from the teacher's bar into the ⋯ menu ("Join code: …" with Copy).
+
+## Virtual math manipulatives: text on the board (20 Nov 2026)
+
+"T Text" sits next to the sticky note, in the solo tool and in the room: tap T, tap the board (a student only inside
+their own square, the teacher anywhere), type; Enter, Esc or tapping away finishes. Tap text to edit it, drag to move
+it, × to delete it; Undo covers all of it. Plain text in the theme's ink color, no card, one size (18 board px, so it
+scales with zoom in the room); S/M/L was left out to keep the tray calm. The student phone tray still fits one row
+(Note, T, Pen, Undo, Hand), so no "Write" chooser was needed.
+Server side it is cleaned like notes (max 30 texts, 200 characters, word list and personal-info check), saved with the
+board (share code, push, PDF summary). A student's text reaches only them and the teacher: classmates get nothing for it
+(no shape, no blank box) whether work is shown or hidden; teacher text is visible to everyone and is never a step
+(steps stay sticky notes). The AI draft keeps using notes and steps for labels.
+
+## Virtual math manipulatives: one big board (20 Nov 2026)
+
+Every tool, solo or live, is now the same big plane as the room (public/js/manip-board.js): drag empty space to pan,
+pinch or − + to zoom, Fit to see everything. What used to be each tool's one fixed layout is an **object** you add as
+many times as you like ("+ Add a clock", "+ Add a geoboard", a place-value chart, ten-frames, a double ten-frame, a
+part-part-whole mat, a work mat, a fraction equation, an answer box), each with its own state, moved by its bar or empty
+parts, resized in proportion by its corner, duplicated or deleted from its buttons. Pieces stay free pieces on the plane.
+A new board starts with one object of the tool in the middle (tools that had no drawn mat start empty, as before).
+- **Format 2** (`v: 2`): `objects [{ id, k, x, y, s, st }]`, `pieces`, a piece tool's settings, `__ann`, `__steps`. Notes,
+  texts and pen marks are fractions of the plane (solo: 4000 x 2400) or of the square. Boards saved before (#465 on
+  production) are migrated when they are read: one object of the tool (a two-clock board: two clocks, the end clock
+  tracking from the start) plus their pieces, notes where they were. The server stores what it is sent; it does not
+  rewrite old rows.
+- **Server**: known kinds of the tool only, at most 40 objects on a board and 30 in a square (a 12-problem practice set
+  is 24 or more), an object's own state at most 20 KB, its scale 0.35 to 3, kept inside the board or the square (under
+  its strip). A student writes only their own square (unchanged). **Room squares stay the same size**: a new object is
+  made smaller to fit a free spot, and can be resized; growing squares would reshuffle everyone's grid.
+- **The clock's yellow** (the owner's photo): one minute-hand sector from the start minute to the current minute,
+  clockwise, a light full ring with "+1 h" for each full hour, nothing when not tracking or at zero (clockSector). The
+  old drawing filled between the two hands, so 9:10 looked like a half-disc.
+- **The pen flash**: a mark was drawn from its first point; a one-point polyline with round caps inside a stretched
+  `0 0 1 1` viewBox (vector-effect non-scaling-stroke) is drawn by some browsers (Safari) as a dot as wide as the whole
+  board, in the pen's color, until the second point arrives. Marks are now drawn in plane pixels and only once they
+  have two different points. A Playwright check samples pixels around the pen on pointerdown and on the first move
+  (mouse and touch): unchanged. Headless Chromium never showed the flash and WebKit isn't installed here, so the
+  check guards the fix rather than reproducing the bug.
+- **Magnetic drops**: a piece dropped within 14 screen pixels of another snaps flush to its side, end, top or bottom,
+  lined up with its top, middle or bottom when that is close too (coins and counters by their middles); else into a
+  frame's cell (centered) or a place-value column (centered across it). A soft dashed preview shows while dragging and
+  a short settle plays on the drop (none with reduced motion). Snapped pieces form a group that drags as one; "Separate"
+  in a piece's buttons (and Rotate) takes one out. In the room a square's pieces only ever snap to that square's own
+  pieces and slots, and a snap that would leave the square or go under its strip doesn't happen.
+- **Adding**: a new piece or object appears unselected with a short highlight; its buttons open only on a tap (never
+  after a drag, a duplicate, a draft, a push). Tap-to-add puts the next piece right of the last piece added from the
+  palette (centers lined up, a 6 px gap), steps past anything in the way, wraps under the start of the run, and fills
+  the next free cell or column space of the object the last piece went into. Pieces and objects can also be dragged
+  from the palette (on phones a press, or a drag toward the board; a swipe along the tray still scrolls it); off the
+  board, or outside your own square, a drop does nothing.
+- **Totals**: each object shows its own (a frame's value and zero pairs, a chart's number, a geoboard's area); the clock
+  shows its time itself. The header keeps a board-wide total only for a piece tool with no mats (money with one at
+  most). Solo: "Totals" on or off. Room: the teacher's ⋯ "Students see totals" (off for a session started from a
+  practice board). Practice questions never show a total or a clock's digital time.
+- **Palette**: a mini piece with its value inside ("+1" in the yellow counter, "10" in the rod, "25¢" in the quarter),
+  a name beside it only where it adds something ("Rod", "Quarter", "Blue counter"); the counters' "•" is gone from the
+  palette and the counters. Object kinds come first ("+ Add a ..."), then the selected object's actions, then pieces.
+  The empty-board hint shows only on a truly empty board, centered in the window, and goes once anything is added.
+  Piece and object buttons stay inside the visible board, on one row.
+
+## Virtual math manipulatives: practice sets drafted with AI (20 Nov 2026)
+
+The owner: drafts were "sticky notes that look random". Now the model only says WHAT (public/js/manip-practice.js): a
+title, 1 to 4 short steps, and items with each one's settings and whether it gets an answer box, a "build it here"
+space, or nothing. No coordinates, sticky notes or pen marks are asked for or accepted (AI pen marks are dropped
+entirely: they crossed the clocks). The code checks every setting against the tool (valid times, ranges on the steps,
+denominators the tools have, results the tiles can show, values the pieces can make), replaces repeats with distinct
+items, caps the set at 12 (the step says so when more were asked for), computes each answer, and lays the board out by
+one recipe: a grid up to 4 across, equal cells, each item centered with its answer box under it, the title above, the
+whole centered so one Fit shows it. "Create 8 different clocks..." gives 8 clocks at 8 times, 8 answer boxes, one step.
+
+Answer boxes are objects ("?", sized for the answer); what a student types is theirs like their text (a classmate gets
+it blank, hidden work sends nothing). The teacher's answers (`key`) live only on the teacher's board: "Show answers" is
+hers alone; keys are stripped from share codes a student opens, from pushes, from the teacher's area as students get
+it, and from anything a student saves. A "Check my answers" for students is a follow-up.
+
+| Tool | A practice item |
+| --- | --- |
+| Clock | a clock at a time (answer: the time; build: a clock at 12:00 to set to the time) |
+| Number Lines | a number line (from, to, step) with one point marked "?" (answer: the number) |
+| Hundred Board | a hundred board with one number covered (answer: the number) |
+| Rekenreks | a rekenrek showing a number of beads (answer: how many) |
+| Fraction Circles | a fraction set showing fractions, or a fraction equation drawn with circles |
+| Fraction Tiles | a fraction equation (+, −, × by a whole number or a fraction, ÷ by a whole number, equivalence "1/2 = ?/8", compare) drawn with tiles, an empty bar to build on and an answer box; or a row of tiles to add up |
+| Base Ten Blocks | blocks showing a number (answer: the number; build: an empty place-value chart "Build 346") |
+| Place Value Disks | disks showing a number (answer: the number; build: an empty place-value chart) |
+| Two-Color Counters | a ten-frame with counters, or yellow and red counters (answer: how many, or the value) |
+| Linking Cubes | a stick of cubes (answer: how many; build: "Make a stick of 7") |
+| Color Tiles | a rectangle of tiles (answer: the area; build: "Build an area of 12") |
+| Number rods | a train of rods (answer: its length) |
+| Money | coins and bills for an amount (answer: the amount; build: "Make $1.35") |
+| Algebra Tiles | a set of tiles (answer: the expression) |
+| Pattern Blocks | a set of blocks (answer: their value in hexagons) |
+| XY Coordinate Board | a grid with points plotted, labels and table hidden (answer: the ordered pairs; build: points to plot) |
+| Geoboard | a band around pegs (answer: the area; build: "Make an area of 6") |
+| Bar Models | a part-part-whole bar with one value "?" (answer: the missing value) |
+## Story Library: credits folded under "Author & publisher notes" (20 Nov 2026)
+
+- The owner found the credits block under every page too heavy. Now the creators stay in view on one short line
+  ("Story: … · Pictures: …", plus translator and "Based on a book by" when present), and the publisher, the license with
+  its deed link, Oomba's change notes (resized pictures, corrected spelling or a history fact, the CC BY-SA same-license
+  note), the not-endorsed line and the link to the original fold under "Author & publisher notes"
+  (`library.credits.notes`, 13 languages). It is all still in the page, one tap away, so CC BY / BY-SA attribution
+  ("reasonable to the medium") is kept: the creators are named on every page and the license is linked beside them.
+Follow-up (20 Nov 2026): a practice question is read-only for everyone (a clock to read has no Hour+/Min+5 and its
+hands don't move; a number line, grid or rekenrek can't be changed), shows no digital time, total or tracker line
+(the teacher sees the time only with "Show answers" on), and a practice board has no header total. "Build" items stay
+settable. On phones the board's zoom bar sits at the top of the board (the site's tab bar covers the bottom of the
+screen) and a step in the steps editor takes the full width, its ↑ ↓ × under it. Playwright scans every tool's page
+(solo at three widths, the room as teacher and student) for a raw "js.manip..." key, and a unit test checks every key
+the two pages ask for exists.
+
+## Virtual math manipulatives: a board placed in the room keeps its shape (20 Nov 2026)
+
+Production showed the 8-clock practice board overlapping in the room: when a board was fitted into the teacher's area
+or a student's square, places were scaled down but every object kept a minimum size (0.35), so cards ran into each
+other and off the right edge. Now a fitted board uses ONE factor for places and sizes (public/js/manip-board.js
+fitInto; objects may be stored as small as 0.1 inside a fitted group). Below a readable size (0.4: a clock about 100 px
+wide) it doesn't shrink further: a practice board (it carries its grid) is laid out again in fewer columns, keeping
+its gaps, and the area grows taller instead. The teacher's area grows when a session starts from a board; every
+square grows when a board is pushed (the teacher's area's `layout` { th, sh }, set only by the server). I chose taller
+squares over scrolling inside a square: the room is already panned and zoomed, and a scrolling square inside it would
+be a second, hidden scroll. A unit test places 8 clocks, 12 fraction equations and 6 number lines into the teacher's
+area and a student's square: one scale, nothing intersecting, everything inside, readable.
+
+## Virtual math manipulatives: Check my answers (20 Nov 2026)
+
+On a practice board with answer boxes, students get one "Check my answers" button (live room, while the teacher's ⋯
+switch "Students can check answers" is on; off by default). The page sends only the student's typed answers; the
+server takes the right answers from the teacher's pushed board (its own copy, found by the board's code, owned by the
+session's host) and replies right / not yet per box and a count, never an answer, not even after checking. Each box
+shows ✓ (green) or "Try again" (soft orange); typing in a box clears its mark. At most 5 checks a minute per student
+(then "wait a minute"), so it isn't a guessing machine. Results are memory only (services/manip-live.js): the teacher
+sees each student's last "6/8 ✓" on their square and in a short list in the ⋯ menu; students never see anyone's.
+Accepted forms (public/js/manip-practice.js answerMatches): times "7:30", "7.30", "half past 7", "quarter to 8",
+"7 o'clock"; numbers with or without commas; fractions in any equal form ("10/12" for 5/6, "5/4" or "1.25" for 1 1/4)
+unless the board asks for simplest form (its title or steps say "simplest form" or "lowest terms"); "?/8" equivalence
+items want that denominator; money "$1.25", "1.25", "125¢", "125 cents"; areas with or without "square units"; ordered
+pairs and expressions without regard to spaces, "x^2" and a leading 1. On the teacher's own solo board the same rules
+run in the page (she has the answers already). The privacy page says these results are not stored.
+## Story Library: a Classics shelf, and an open-book reader for text pages (20 Nov 2026)
+
+Owner: a Classics shelf of public-domain illustrated stories for older readers (the library was thin at Grade 3 and
+Grades 4-5), and a reader layout for books where many pages have no picture: on wide landscape screens, text-only pages
+side by side as an open book (approved mockup). Pages must fit half a 1280 x 720 screen without scrolling.
+
+- **Rights rule, in code** (`checkPublicDomain` in `server/library/classics-lib.js`): published before 1931 (public
+  domain in the US) and every author, illustrator and translator died before 1956 (so it is free in "life plus 70"
+  countries too); a death year that is not known keeps the book out; a translator the book does not name counts as
+  anonymous (an anonymous pre-1931 work is free everywhere). Each source's edition, year and makers' death years are in
+  `seed-library/classics.json`; the report `docs/story-library-classics.md` (written by `scripts/import-classics.js`)
+  lists them. **The Aesop for Children (1919) is out:** Milo Winter died in 1956, not before; the Aesop books use the
+  1884 edition illustrated by Harrison Weir (d. 1906), John Tenniel (d. 1914) and Ernest Griset (d. 1907) instead. A
+  test refuses the Winter edition. The 1911 Andersen (Edmund Dulac, d. 1953) names no translator.
+- **Sources and the Project Gutenberg trademark.** Read from Project Gutenberg's HTML editions, saved from the
+  GITenberg mirror on GitHub (www.gutenberg.org was down). Only the public-domain words and pictures are used: no
+  header, footer, license text or the name on the site (a test checks the manifest and the pages); the ebook numbers
+  are in the curation file and the report only.
+- **Content.** Every story was read in full with the library's rules, applied strictly. **In (21):** Kipling: How the
+  Whale Got His Throat, How the Camel Got His Hump, The Sing-Song of Old Man Kangaroo, The Beginning of the
+  Armadillos; Beatrix Potter: Peter Rabbit (Mr. McGregor's pie judged mild and period, as asked), Mr. Jeremy Fisher,
+  Two Bad Mice, Mrs. Tittlemouse, Ginger and Pickles; The Velveteen Rabbit; The Emperor's New Clothes; 10 Aesop books
+  of 6 to 9 fables each, grouped by theme ("Clever Thinking", "Friends and Helpers"...). **Out, with reasons in the
+  curation file and the report:** Leopard (a racial slur), Crab ("the Malazy, the lazy people", a slur on Malay
+  people), Rhinoceros ("more-than-oriental splendour" about a Parsee man, three times), Elephant's Child (relatives
+  spank the child all through), First Letter (Taffy "ought to be spanked"; a mob attacks a stranger), Alphabet (needs
+  the earlier story and some 20 small inline drawings), Cat that Walked (people "always throw things at a Cat"),
+  Butterfly (999 quarrelsome wives); Potter's Benjamin Bunny (a child whipped; a pipe), Tom Kitten (smacked), Squirrel
+  Nutkin (an owl about to skin him), Jemima Puddle-Duck (the fox's end offstage, injuries, eggs eaten), Johnny
+  Town-Mouse (the cat killed the canary), Pie and the Patty-Pan (mouse pie; a death), Flopsy Bunnies ("skin them and
+  cut off their heads"), Tailor of Gloucester, Samuel Whiskers; Miss Moppet ("a Pussy") and Mrs. Tiggy-Winkle ("Cock
+  Robin", "dicky shirt-fronts"): words that read as rude today and that the site's filter flags, which we may not
+  change; Andersen's Nightingale (Death at the bedside) and others; Raggedy Ann (a recurring "Indian doll"; a prayer);
+  The Three Bears (Goldenlocks jumps from an upstairs window); Aesop fables where an animal is killed or eaten,
+  fables whose title or moral uses "Ass", "cock" or "faggot", and ones that mock a body. Poems between Kipling's
+  stories and captions printed as paragraphs are not used. **For the owner:** the Whale keeps "For the Mariner he was
+  also an Hi-ber-ni-an" (a joke about Irish speech; the owner approved this story in the mockup).
+- **Pages that fit** (`paginate`, `PAGE_FIT`): at most 13 lines of about 42 characters (a paragraph gap is half a
+  line) and 105 words, measured against the reader's Classics type; a page ends only where a sentence ends (never
+  inside one, never between lines of a list or poem that is one sentence, never after "Mr.", never before a small
+  letter as in "ker-pflop! with a splash"), prefers a paragraph end, never ends right after a fable's title, and a
+  scrap of under three lines is joined to the sentences before it. Every page of every classic is checked in the
+  browser at 1280 x 720 and 1440 x 900: both pages of a spread fully visible, no scrolling. A browser check found the
+  first estimate (44 characters a line, 110 words) overflowed 5 of 312 views; it was tightened and the page padding
+  narrowed.
+- **Pictures on the page they illustrate.** Kipling's follow their words (the sentence before, or one a person names
+  from the caption with `at`); Potter's come first (the words after them; a run of two shares out the sentences; where
+  there were more pictures than sentences a person dropped one); each fable's main picture goes with that fable (the
+  small head- and tail-pieces are not used). Big first letters printed as pictures are put back ("N the sea" -> "In
+  the sea"), and a first word in small capitals is set in normal type ("ONCE upon" -> "Once upon"). Weak alt texts
+  from the transcription ("Jeremy") are left empty; poor ones are rewritten in the curation file.
+- **The reader** (`public/js/library.js`, `public/css/library.css`, `server/routes/library.js`). A book with any page
+  without a picture gets the book layout (`.rd-stage.is-classic`): one type size for the whole book, paragraphs kept.
+  On a wide landscape screen (the existing >= 900 px and landscape rule) a run of text-only pages pairs up 1-2, 3-4...;
+  a lone one gets a spread with a blank right page; the spread is two paper pages with a soft fold shadow and page
+  numbers; Next and Back turn both; the counter says "Pages 3-4 of 12" (`js.library.pagesOf`). A picture page is laid
+  out as today. Phones and portrait screens show one page at a time. Read to me reads the left page and then the right
+  with the same highlighting (the AI voice still asks by book, page and sentence number). The progress saved is the
+  right-hand page (a spread of 1-2 counts as page 2), so assigning, results and questions ("Look at page N" opens the
+  spread with page N) are unchanged. Books with a picture on every page (all StoryWeaver and Bloom books, and Peter
+  Rabbit, Jeremy Fisher and Two Bad Mice) get exactly the markup and behavior they had.
+- **Grades.** The shared `gradeOf`, with the length cap raised from 2,500 to 4,000 words for this source only
+  (Armadillos 2,579, The Velveteen Rabbit 3,898). Result: Grade 3: 2, Grades 4-5: 19 (the library now has 46 at Grade 3
+  and 34 at Grades 4-5). Potter's books land at Grade 3 to 4-5 (Peter Rabbit 3.54, just over the line): long
+  sentences and old words ("soporific", "camomile"). They are read aloud in K-2, but the estimate is for reading alone,
+  so it is left as the rule gives it.
+- **Credits** (`library.credits.publicDomain`, `firstPublished`, `changesClassic`; 13 languages): in view "Story:
+  Rudyard Kipling · Pictures: Joseph M. Gleeson (1912)"; under "Author & publisher notes": "Public domain · First
+  published in 1912 (Doubleday, Page & Company, New York)." and "Oomba split the story into pages and resized the
+  pictures. The words are the author's own." (with "Oomba corrected spelling and punctuation." on Mrs. Tittlemouse,
+  whose transcription had "Mrs. tittlemouse" four times). Cards and book pages say "Classics" (`library.sources.classics`),
+  the footer adds a line (`library.footClassics`); search and the suggestion box find the shelf by itself (`books()`).
+- **Pictures:** the shared settings (pages WebP q40 at most 720 px, covers q55 at 440 px; color plates as covers):
+  4.4 MB for the Classics, 76 MB for the whole library, under the 80 MB budget.
+- Tests: `tests/unit/library-classics.test.js` (the rule with a too-recent illustrator, reading an edition, page cuts
+  never inside a sentence and within the budget, picture placement, the shipped books, no digitizer's name anywhere,
+  credits and markup over HTTP, progress and answers) and `tests/unit/library-classics-browser.test.js` (spreads at
+  1280 x 720 and 1440 x 900, Next and Back, the picture page, the lone page, Read to me with both voices, reading to
+  the end, phones, a StoryWeaver book unchanged); `library.test.js` allows pages without a picture for this source only.
+
+## Story Library Classics: Potter at Grade 3, one line cut from the Whale (20 Nov 2026)
+
+- Owner, asked to use best judgment on Beatrix Potter's grade: the shared rule scores her Grade 3 to Grades 4-5 because
+  of her old words and long sentences, but US schools read her aloud in K-2 and children read her alone around Grade 3.
+  All five Potter books are set to Grade 3 by hand (`grade` plus `gradeWhy` in `seed-library/classics.json`); the
+  importer records the rule's grade beside it in `docs/story-library-classics.md`.
+- Owner: cut "For the Mariner he was also an Hi-ber-ni-an." from How the Whale Got His Throat (a joke about Irish
+  speech). A fix with `kind: "cut"` leaves out a line; it is counted in `credits.cuts`, not as a spelling correction, and
+  the book's notes say "Oomba ... left out one line" (`library.credits.changesClassicCut`, 12 languages; en-GB uses en).
+- Owner: the books left out for old words a filter flags ("Pussy", "cock", "Ass") stay out.
+
+## Icons: Fluent Emoji 3D (20 Nov 2026)
+
+The owner chose Microsoft's Fluent Emoji (MIT) in its 3D style over flat line icons. Emoji used as interface icons
+become pictures; emoji that are people's or games' own (avatars, game covers and titles, anything someone wrote,
+lesson text, games and seed games) stay as they are.
+- **One map, one helper.** `public/js/icons.js` maps each emoji the code used to its files and draws it
+  (`iconHtml(emoji, { size, label, lazy })`); `server/views/icon.js` (`ico`) is the same for server pages. An emoji with
+  no icon comes back as itself, so a helper call can never turn someone's content into something else.
+- **Sizes.** 28 px and up: the 3D picture as WebP (64 px, and 128 px for 2x screens). Smaller: Fluent's Flat SVG, from
+  the same family (3D goes muddy small). Nav and tab bar icons are 28 to 30 px, tiles 32 to 40, empty states 56; inline
+  buttons, menus and chips 16 to 20. The `<img>` carries its width and height, alt="" and aria-hidden (the text next to
+  it says what it is); `label` names one that stands alone.
+- **Live.** Fluent's satellite antenna is pale grey: it gets a soft sky-blue disc behind it.
+- **Classroom** keeps the apple (Fluent has no chalkboard).
+- **The 18 manipulatives** use our drawn soft-3D icons (Fluent's abacus, mantelpiece clock and coin for rekenreks,
+  clock and money) on a soft tile of each tool's color.
+- **Strings.** The build notes and status chips (`layout.build.*`, `build.status.*`) started with an emoji: it moved
+  into the markup, in all 12 languages; the words are unchanged.
+- **Files.** `public/icons/fluent/` (built by `scripts/icons/build_fluent.py` from a clone of Microsoft's repo, with its
+  LICENSE.txt), `public/icons/tools/`; credits in docs/media-credits.md. A page loads only the icons it shows.
+- **Left as emoji, for later:** emoji inside other pages' own sentences and client widgets (the class dashboard tools,
+  the Builder's Studio script, Number Quest and CS Quest, the course pages, toasts), select options and aria labels
+  (text only), and the files another session owns (routes/auth.js, routes/google.js, services/google.js, the teacher
+  plan /trial page, teachers.js setupBlock, family onboarding, the /teach home, gclassroom).
+- **Tests.** `tests/unit/icons.test.js` checks the map's files, the helper, the size budget, the license and that the
+  shared chrome has no emoji left as icons. Older tests that checked an emoji's place byte for byte read the page through
+  `tests/support/deicon.js`, which turns each icon back into its emoji, so they still check which icon sits where.
+
+## Icons, round 2: bright people icons, dark-theme fixes, the rest of the app (21 Nov 2026)
+
+Follows "Icons: Fluent Emoji 3D". The owner saw the icons on a phone in the dark theme.
+- **People.** Grown-ups (👪, and the family headings' 🧑‍🧒) is Fluent's house with garden; Friends (👫) is the hugging
+  face; Two players (👥) is the two people with bunny ears; 👤 is the yellow person. People hugging and the busts in
+  silhouette were near-black or muddy on the dark bars and are no longer shipped. Fluent has no "people holding hands"
+  or family pictures, so these are the clearest bright ones it has.
+- **Dark theme.** Every mapped icon was drawn on the dark (#141414) and light (#F4F1E6) backgrounds and measured. The
+  file cabinet (🗄️) became the card file box and the musical note (🎵) the musical score. Fluent draws a few with no
+  bright twin in near-black (mortarboard, footprints, ninja, pirate flag, traffic light, the phone and the students'
+  gowns at Flat size): in the dark theme they sit on a soft light disc (`--fx-plate`, a token that is transparent in the
+  light theme, like the Live antenna's sky disc).
+- **The rest of the app** now uses the same helper: the class dashboard and its tools and widgets (buttons, menus,
+  widget and template icons, the big weather and quiet-signal pictures at 1em of their box), the Studio (chips,
+  steps, notes, the publish button, sheets), CS Quest and Number Quest's own pages, the course pages, and every toast
+  and sheet title (`app.js` draws a leading emoji as its icon: `leadIcon`, `iconLine`, `setIcon`, `setLabel` in
+  `public/js/icons.js`). A sweep of server/views, server/routes and public/js did the same for headings, buttons, chips
+  and notices elsewhere. 76 more Fluent icons; 24 with a 3D picture.
+- **Strings.** The Studio's resumed and resting notes, the activity editor's title and Number Quest's toasts started with
+  an emoji: it moved into the markup in all 12 languages; the words are unchanged.
+- **Budget.** Flat SVGs keep one decimal (a 32-unit box), so `public/icons` stays under its 1.1 MB budget with the new
+  icons (`scripts/icons/build_fluent.py` rounds when it builds).
+- **Still emoji, on purpose:** avatars, game covers and game emoji, the story characters, Number Quest's game pictures,
+  select options, aria labels, text glyphs (▶ ✕ ✓ as a status mark), the visibility words, the mood and thumbs answers, the noise meter and document camera (their scripts import nothing, by design),
+  the graph's picture icons, and the pages another session owns (sign-in, Google, the teacher plan trial, the
+  teachers page setup block, family onboarding, the /teach home, Google Classroom).
+- **Tests.** `tests/unit/icons.test.js` also checks the converted files (each leftover listed with why), the toast and
+  sheet helper, that no dark silhouette is mapped or shipped and Grown-ups, Friends and Two players differ, and the
+  moved strings in every language.
+
+## Story Library: sliding page dots for long books (20 Nov 2026)
+
+- Owner chose "sliding dots" (option B of three mocked: a progress bar, sliding dots, parts) after the 50-page Velveteen
+  Rabbit's dots wrapped onto two lines. A book of more than 24 pages shows 13 dots that slide with the reader, the
+  current page as the larger dot and "…" on a side with more pages (`dotWindow` in `public/js/library-text.js`, used
+  by the server's first paint and the reader). Books of 24 pages or fewer show every dot, as before. 8 books slide
+  today (6 Classics, 2 Bloom). Tests: `library-classics.test.js` (the window and the server markup) and
+  `library-classics-browser.test.js` (one line at 1280 x 720, the window follows Next, a short book unchanged).
+
+## Story Library: swiping turns the page, with the page following the finger (20 Nov 2026)
+
+- Owner asked for swipe to turn the page. A touch swipe already turned it (since the library shipped) but gave no
+  feedback, and laptops had no swipe. Now a finger or pen drags the page along (the picture and words, or both pages
+  of a spread) and letting go past 60px, or a quick flick past 30px, turns it with a short slide; a shorter drag
+  springs back, an up-and-down drag still scrolls (`touch-action: pan-y`), and nothing moves past page 1. A laptop's
+  two-finger sideways trackpad swipe turns once per swipe (momentum ignored). Swiping left goes forward (the words are
+  English, as in a paper book). Turning goes through the Back/Next buttons, so spreads, the questions and progress
+  work as before. Reduced motion: no sliding, the page just turns. Test: `library-classics-browser.test.js`.
+- Follow-up (20 Nov 2026), owner: "not quite reactive enough". The page now sticks to the finger one-to-one after 6px
+  (was 60% of the finger's travel after 12px); letting go past a sixth of the width (at most 80px) or with a flick
+  (faster than 0.3px/ms, over 15px) slides the page off from where the finger left it and slides the next one in
+  (about 0.4s in all; was a jump plus a 48px nudge); a swipe during a slide finishes it at once, so quick swipes turn
+  quick pages. The trackpad swipe moves the page as the fingers move, turns past 90px, and springs back if it stops
+  short. The stage clips sideways (`overflow-x: clip`) so a page sliding off doesn't widen the screen.
+- Follow-up (20 Nov 2026), owner: "it moves the whole browser page instead of turning the page". A sideways
+  two-finger trackpad swipe outside the book went to the browser, whose own back/forward swipe slides the whole site
+  away. The reader now takes sideways wheel swipes anywhere on the reading page (not in a text box), and while a book
+  is open `html` and `body` have `overscroll-behavior-x: none` (no browser back/forward swipe, no sideways rubber-band)
+  and `overflow-x: clip`. Not reachable from a web page: iPhone Safari's back swipe from the very left edge of the
+  screen.
+- Follow-up (20 Nov 2026), owner on iPhone Safari: "better but still not perfect". The finger swipe now uses touch
+  events with a non-passive `touchmove` that cancels the browser's own move as soon as a finger goes sideways (pointer
+  events can't stop iPhone Safari from panning the site first); up and down stays a scroll, two fingers a pinch. A
+  touch starting within 20px of the screen's left or right edge is left to Safari's back/forward swipe (a web page
+  can't turn that off, and doing both at once looked broken). Pictures have no save menu or drag ghost in the reader,
+  and words aren't selected mid-swipe.
+
+## Story Library: the "You finished" card fixed, and compact on phones (21 Nov 2026)
+
+- Owner's iPhone screenshot: the star in "You finished ..." was as big as the cover (the cover's size rule,
+  `.rd-end-head img`, also caught the star icon in the heading), the heading wrapped around it, and the script's focus
+  on the heading drew a yellow ring. Now the rule is `.rd-end-head > img`, the star is the size of the words, the
+  heading shows no focus ring (it is focused only for screen readers), and on phones (600px and narrower) a small 4:3
+  cover sits beside "You finished ..." so the first question is on the screen. Laptops keep the centered cover.
+  Test: `library-classics-browser.test.js` (star size, no ring, phone layout).
+
+## Landing page: the "How it works" line stays behind the icons (21 Nov 2026)
+
+- Owner's iPhone: the first time the page opens, the line through the five steps covered their icons. Each step fades
+  in (`.rv-wait`/`.rv-in`, opacity and a transform), which makes it its own layer for the length of the fade, and the
+  line (`.lp-jsteps::after`, drawn after the steps) then painted over the icon's `z-index`. The line now has
+  `z-index: 0` and each step `z-index: 1`, so the icons are in front during the fade and after. Test:
+  `tests/unit/landing-journey-browser.test.js` (phone and laptop, both fade states; it fails without the fix).
+
+## Class Board: PDF, link tile and stickers (21 Nov 2026)
+Owner's Class Board parity spec (vs Classroomscreen), P0 only: a PDF widget, a link tile and stickers. The **stickers
+removal of 16 Nov 2026 is reversed** by the owner (21 Nov 2026). P1 and P2 are not part of this change. Code:
+`WIDGETS`, `cleanLink`, `savePdf`/`canSeePdf`, `stickerKey` and `cleanWidgets` in `server/services/dash.js`; two routes
+in `server/routes/dash.js`; `public/js/dash-pdf.js`, `public/js/dash-link.js`, `public/js/dash-stickers.js`; the
+settings editors and the sticker layer's wiring in `public/js/dash.js`; strings `dash.w.pdf|link|stickers.*` and
+`dash.errors.pdf_*` in every locale (en-GB only where UK spelling differs: Favourites, Maths, Transport).
+- **All three are the teacher's screen and projector only** (`TEACHER_ONLY`, `pin: false`): never pinned, never pushed,
+  never on a student screen, and students can't add them.
+- **PDF widget.** The class's own teacher uploads a PDF (`POST /api/dash/:id/pdfs`: PDF header checked, at most 10 MB,
+  refused from the Content-Length before it is read). It is a `dash_pictures` row with `use = 'pdf'` (no migration: the
+  column is free text) and the file `<dataDir>/dash-pictures/<id>.pdf`, so account deletion (`forgetUser`) and school
+  deletion (`services/school-delete.js`, which now removes `<id>.pdf` too) take it with the pictures. **Only its owner**
+  fetches it (`GET /dash/pdfs/:pid`, while still the class's teacher): not a co-teacher of the same class, another
+  teacher, a school admin or a student, so no teacher can download another's file. `no-store`, a `sandbox` CSP, never
+  served as a picture. A widget may point only at its teacher's own PDF for that class (`ownPictures`). The newest 12
+  per teacher per class are kept. **Decided: pdf.js, self-hosted** (`public/vendor/pdfjs/4.10.38/`, the legacy build so
+  older iPads work, with its `standard_fonts/` and `cmaps/` so PDFs that don't embed their fonts, and CJK ones, draw
+  right; `LICENSE` is Apache 2.0) rather than the browser's own viewer in a frame, which on iPad Safari often shows only
+  the first page with no page controls. Vendored like Three.js (not a `package.json` dependency). One page at a time,
+  fitted inside the widget (redrawn as it resizes), Previous / Next buttons and the arrow keys; `isEvalSupported:
+  false`, no annotations, links or PDF scripts. The page shown lives in the browser while the board is open: **nothing
+  is stored but the uploaded file.**
+- **Link tile.** A title (60) and an address. `cleanLink` (and its browser copy `linkUrl`, tested to agree): http or
+  https only (never `javascript:`, `data:`, `file:` or anything else), no user name or password, a host, at most 500
+  characters; "example.org" is read as https. The tile opens it with `target="_blank" rel="noopener noreferrer"`. The
+  server never fetches it (unlike the site window, which stays https only).
+- **Stickers: the library.** The owner's files in `docs/class-board/sticker-library/` (7 zips, unzipped outside the
+  repo) are built into `public/img/stickers/` by `scripts/build-stickers.js`: the 153 illustrated PNGs (80.5 MB with the
+  greetings) become transparent WebP at most 512 px (`ill/`, alpha untouched: the white die-cut outline and clear
+  corners survive) plus 192 px thumbnails for the panel (`ill/t/`); the 3,504 greeting SVGs are copied byte for byte
+  (`gr/`); `index.json` is the supplied `search-index.json` with each file pointed at its served copy plus its width and
+  height. No keyword is typed or invented. Served total about 7 MB.
+- **Stickers: on the board.** Each placed sticker is **its own entry in the layout** (type `stickers`, `free`: not on
+  the grid): `{ k, x, y, size, r, back }`, the sticker's id in the library, its centre in grid columns and rows (so it
+  stays with the widgets it decorates as the board resizes, and on the projector), its longer side (60 to 600 px on a
+  1200 px wide board, scaled with the board between 0.6x and 1.6x), its turn (0 to 359 degrees) and whether it sits
+  behind the widgets. **Decided: stickers don't count toward the 24 widgets** (a decorated board would run out of room
+  for real widgets); a layout holds at most 60 (`MAX_STICKERS`). One whose sticker isn't in the library (the old emoji
+  widget included) is dropped when sent and when read, so old layouts still load as the removal made them.
+- **Stickers: moving them.** Stickers sit in front of the cards. Tap or click a sticker to select it: drag it
+  anywhere (mouse, touch, pen), drag its corner to resize (proportions kept), drag the round handle to turn (snaps to
+  15 degrees near a step). Its own toolbar has only Duplicate and Delete (owner, 21 Nov 2026: Small / Medium / Large,
+  turn buttons and Bring to front / Send to back were too many buttons, since the handles already size and turn it);
+  the sticker moved, resized or turned last sits on top of the others. Keyboard: arrows move, +/- resize, R turns,
+  Delete deletes. (The saved layout still reads a `back` flag, so nothing breaks if one is ever set.) Every change saves with the layout and can be undone in edit mode. Works on the board
+  itself, in and out of edit mode.
+- **Stickers: the panel.** "Stickers" in the top bar (and Stickers in the widget library) opens a drawer at the side
+  (a sheet at the bottom on a phone). Search box always at the top ("Search stickers"), live, case- and accent-blind,
+  the whole phrase against the sticker's name, words, theme, language and keywords (plus the theme and language names
+  on screen); theme, language and shape filters combine with it; a count ("225 stickers" for "good morning"); 60 at a
+  time, more as it scrolls; empty: "No stickers found for ..." and Clear search. The index is read once and searched in
+  memory (under 1 ms for 3,657). With the search empty: Favorites (starred) and the 12 most recently used. **Decided:
+  recents and favorites live in this browser** (`localStorage`, per teacher), not on the server. A tap puts one sticker
+  in the middle of the board in view; dragging one out of the panel puts it where it is dropped.
+- **Tests.** `tests/unit/dash-board-p0.test.js` (registry, words in every locale, the address check, PDF ownership and
+  the size cap, deletion, the served library against the supplied index, search counts, saving and the caps);
+  `tests/unit/dash-board-p0-browser.test.js` (page 2 of a PDF, the link's new tab, the panel's six search counts, the
+  owner's save test with a mouse, and touch on a phone). `dash-stage2.test.js` now expects the stickers type back
+  (free, teacher only, never pinned) and still drops the old emoji widget; `dash-stage4.test.js` counts the two new
+  routes.
+
+## Virtual math manipulatives: hold to edit (21 Nov 2026)
+
+The owner tested Fraction Tiles on an iPhone: a tap showed a permanent row of black pill buttons (Copy, Separate, Flip,
+Rotate, Fill, Lock, Delete) on every piece, and Flip mirrored that row backwards (the row was built inside the piece,
+which got `scaleX(-1)`). An approved mockup ("no disc": icon buttons in their own 48 px dark circles, Delete red, in a
+ring with nothing behind them) replaces it. Code: `public/js/manip-wheel.js` (the wheel, the hold timer, the undo
+message), `public/js/manip.js` (each tool's wheel, the actions, the solo board), `public/js/manip-room.js` (the room).
+
+- **Tap, drag, hold.** A tap selects (green outline), no menu. A drag starts after 10 px and moves the snapped group. A
+  hold of 450 ms (a ring fills from 120 ms; moving 10 px first makes it a drag) lifts the piece out of its group about
+  8 px away (1.06x, a shadow), vibrates 12 ms where supported and opens the wheel around the finger; sliding on drags
+  just that piece. **Owner: holding always separates; drag it back to rejoin.** Right-click, a long mouse press,
+  Shift+F10, the ContextMenu key and Enter on a focused piece open the same wheel; arrows and Tab move between icons,
+  Esc closes it and returns focus to the piece.
+- **The wheel** is a fixed overlay on `<body>`, never inside the piece, so it never turns or mirrors. Ring radius 60
+  (4 icons), 64 (5), 70 (more); near an edge it moves inward up to 36 px, else it opens as a half wheel away from the
+  edge. Each icon has an `aria-label` and a tooltip. It closes on a tap outside (that tap is used up), Esc, scrolling,
+  resizing, zooming, or after Copy, Fill, Lock, Break and Delete; Rotate and Flip keep it open. Delete acts at once
+  with a 5-second "Undo" message that uses the board's own Undo. The old `.mp-pbar` row and the objects' Duplicate /
+  Delete `.mp-obar` are gone.
+- **Per tool** (owner): Fraction Tiles, Linking Cubes: Copy, Fill, Rotate (90°), Lock, Delete. Pattern Blocks: the
+  same with 30° turns, plus Flip on the parallelogram only (its outline is drawn the other way; nothing is mirrored).
+  Color Tiles: Copy, Fill, Lock, Delete. Number Rods: Copy, Rotate (90°), Lock, Delete. Base Ten Blocks: Break (on
+  pieces that break), Copy, Rotate (90°), Lock, Delete; Break left the palette, Regroup stays there. Place Value Disks:
+  Break (where possible), Copy, Lock, Delete. Algebra Tiles: Flip, Rotate (90°), Copy, Lock, Delete; Flip turns a tile
+  into its opposite (1/−1, x/−x, x²/−x², y/−y); xy and y² have no opposite tile in the set, so they show no Flip.
+  Money: Copy, Lock, Delete (no trade exists to reuse, so none was added). Two-Color Counters: Flip, Copy, Lock,
+  Delete; Flip turns the counter over (+1 yellow to −1 red and back) by changing its kind, color, label and value: the
+  face squeezes to zero width and opens again, never mirrored. Blue and green counters have no other side: no Flip.
+  **Owner defaults:** Rotate and Copy act on the held piece only (a copy lands right beside it when there is room);
+  Fill stays solid / outline; no tool keeps the old mirror-only Flip (a piece is never drawn mirrored now, old boards
+  included). Fraction Circles, Rekenreks, Hundred Board, Number Lines, Bar Models, XY Coordinate Board, Geoboard and
+  Clock keep their own taps; only their objects' handles get the object wheel.
+- **Lock.** A locked piece shows a lock badge, does not drag (a small shake), does not separate, and its wheel holds
+  only Unlock.
+- **Counters never link** (owner): a counter never joins or snaps to another counter (`linksPieces`, `snapFor`'s
+  `link: false`); it snaps only into an empty frame cell and stays exactly where it is dropped anywhere else.
+- **Objects** (owner, for consistency): every object (frames, mats, charts, clocks, boards) has the same hold wheel on
+  its handle or its empty parts: Lock or Unlock, Copy, Delete. A locked object shows a badge on its handle, does not
+  drag or resize and can't be deleted until unlocked; its own controls still work and counters still snap into a
+  locked frame. **Owner: dragging an unlocked frame carries the counters seated in its cells.** Objects now keep
+  `locked` (and `lockBy`, below) in saved boards, share codes and the room (`cleanObjects`).
+- **The room** behaves the same for teachers and students; locks and flips travel with the square's state like any
+  other change. Permission: the room already keeps the teacher's sticky notes in a student's square as the teacher's
+  (the student can't change or remove them). Locks follow the same model: what the teacher locks in a student's square
+  is stored with `lockBy: 't'` (decided by the server, `lockedBy` in `services/manipulatives.js`); the student gets no
+  wheel for it ("Your teacher locked this.") and the server puts a teacher-locked piece back as it was, and a
+  teacher-locked object back in its place and lock (its own state stays the student's), if a page tries otherwise. A
+  student's own locks carry no author and they may undo them; the teacher may unlock anything.
+- Tests: `tests/unit/manip-wheel-browser.test.js` (iPhone 13 with real touch, the laptop, the room),
+  `tests/unit/manip-board.test.js` (the counters' snap rule, the wheel's layout), `tests/unit/manipulatives.test.js`
+  (lock storage and the room's lock rule).
+
+## Virtual math manipulatives: answer boxes, text boxes and the coordinate grid (21 Nov 2026)
+
+Owner report from the big board: a long typed answer did not wrap and resizing the box only made the text bigger; text
+boxes could not be resized, made bigger or (reliably) moved; and the coordinate grid could not move a connected line.
+- **Answer boxes** wrap their words (a `textarea`, one paragraph: Enter finishes, new lines become spaces). The corner
+  now changes the box's own width and height (`st.w`, `st.h`; `FREE_SIZE`, `answerSize`, `freeResize` in
+  `manip-board.js`), never its scale, so more of the answer shows at the same font size. Typing past the bottom grows
+  the box (`growAnswer`, up to `ANS.hMax` and the space's edge); past that the words scroll, never clipped silently. The
+  typed answer may be 100 characters now (`ANS.max`, checked the same in "Check my answers"). Works for the student's
+  own box and the teacher's, solo and in the room (the size travels in the object's state like any other change).
+- **Text boxes** (T): while one is being written it shows a small bar above it (a grip to drag it, A− and A+, ×) and a
+  corner to resize it. Four sizes, S 14, M 18 (the default), L 26, XL 36 px (`TEXT_SIZES`); once resized it is a box
+  (`w`, `h`) its words wrap in, growing taller when they need room. No new toolbar: the bar is the existing edit UI.
+  A text not being written still drags from anywhere on it; a tap opens it. A dropped text snaps like a piece: lined up
+  with, or 8 px beside, an edge of anything nearby (`snapBox`). The server keeps `fs` (S, L, XL; M is not stored) and
+  `w`/`h` (both or neither) within `TEXT_BOX` (`textBoxFields`); classmates still get nothing of a student's text.
+- **Why text "could not be moved":** typing near the edge of the board let the browser scroll the board's clipped box
+  (`overflow: hidden` still scrolls for a caret), which shifted everything under the pointer. The board and the room
+  are `overflow: clip` now, so they can never scroll.
+- **Coordinate grid:** points of one color join into a line in the order plotted (each color its own line, in its
+  color); the color swatches pick the color. Dragging a point moves just that point (its line reshapes); dragging the
+  line between points moves the whole line and all its points by whole grid steps, stopped at the grid's edge so the
+  shape is kept (`xyLines`, `xySnap`, `xyMoveLine`). Points have the bigger hit area and sit on top, so a touch near a
+  point takes the point. New: axes with arrowheads and x and y labels, a "Line arrows" switch (arrowheads at both ends
+  of each line) and a "Table" switch (the x/y table, on by default, with each point's color). The server keeps the
+  switches true or false and at most 60 whole-number points with hex colors. Not added (to stay calm): curves, line
+  equations or slope readouts, per-line labels, point naming; possible later if teachers ask.
+- Tests: `tests/unit/manip-text-graph-browser.test.js` (laptop and iPhone 13 with real touch, solo and the room),
+  `tests/unit/manip-board.test.js` (sizes, snapping, the line math), `tests/unit/manipulatives.test.js` (storage limits).
+## Oomba Figures 1.1.0 split by subject; the physics port (21 Nov 2026)
+
+- **1.1.0 ships split.** It has not shipped yet, so the first 1.1.0 teachers get is already split: a core
+  (`oomba-figures.js`: the drawing core, words, math labels, the formula language, the notice, the registry and the
+  coordinate grid) and five packs in the same version folder (`packs/math.js`, `data.js`, `physics.js`, `chem.js`,
+  `measure.js`), each a classic script registering its kinds into the core (docs/figures-api.md "The core and its
+  packs"). `reading` and `protractor` are their own measure pack because reading an instrument is taught in math,
+  physics, chemistry and biology. Each file has its own pinned tag, SRI and lock entry; the scanner admits a pack tag only
+  after its core tag; the CSP and the screenshot worker list each pack file; the server's copy runs them all; the
+  self-tests name a missing pack's exact tag. 1.0.0 stays one file, byte for byte.
+- **How a page gets its packs.** `figTag("oomba-figures", v, { kinds })` adds exactly the packs those kinds need (the
+  mock Builder uses it); the model's FIGURE RULES list every kind with its pack and every pack tag, and the activity
+  self-test and the playtest fail a page that draws a kind whose pack tag is missing, naming the tag. Rewriting the
+  model's saved page to add tags was not done: the save path belongs to the Builder's agent.
+- **The physics port.** Projectile motion, waves and motion maps are new kinds; `motionGraph` (segments,
+  acceleration-time, stacked graphs), `rays` (plane mirror), `circuit` (`layout: "network"`, closing the "compound
+  circuits" Not-yet item) and `reading` (caliper, micrometer, spring scale masses and zero error) are extended, their
+  old data drawing exactly as in 1.0.0. Only the physics and math logic is ported (docs/third-party.md); coil and
+  magnet is not ported (off on the live site), and vectors are not ported twice.
+
+## Figures, the standalone product, hidden while it is tested (21 Nov 2026)
+
+- **What it is.** `/figures` (server/routes/figures.js, services/figures.js, public/js/figures*.js): a menu of every
+  Oomba Figures kind (cards with thumbnails drawn on the server from each kind's example and cached), one editor for
+  every kind (`/figures/:kind`), and worksheets of figure questions with a printable student sheet and answer key. It
+  follows the approved mockup (proposal of 21 Nov), without the mockup banner or its mock data.
+- **Shipped like the Manipulatives.** A `FIGURES` flag, on unless set to 0, read from the environment (no Render
+  change). The gate copies `services/manipulatives.js` `canHost` exactly: never a guest, a banned or a grown-up account;
+  the platform admin, or school staff whose username is in `MANIPULATIVES_USERS`. One tester list for both (no new
+  variable). Everyone else gets the site's normal 404 (noindex) on every page and API; testers get `X-Robots-Tag:
+  noindex, nofollow` and `Cache-Control: no-store`. No menu, sitemap or search link. A "Teaching tools: Manipulatives ·
+  Figures" switcher shows on both pages only to someone who can open both.
+- **Subjects.** Math, Data and statistics, Physics and Chemistry open (all 50 kinds of Oomba Figures 1.1.0, the measure
+  pack's `reading` under Physics and `protractor` under Math). Biology and Economics show as "Coming soon", not
+  clickable.
+- **One editor, made from the data.** `public/js/figures-catalog.js` lists each kind's subject, grade bands, presets
+  (the docs' examples), the fields whose values are a fixed list, the measures it takes that its example may leave out,
+  what "Hide answer for students" can hide, and whether it takes `notToScale`. Numbers become number boxes, true/false a
+  switch, listed values a select, words a text box; lists and objects are edited in "Advanced (data)", a JSON box
+  checked as it is typed. No kind has a hand-built form yet (the triangle's dedicated layout in the mockup is later).
+  The page loads the core and only that kind's pack with `figTag(..., { kinds })` (pinned, SRI, the site CSP).
+- **Cannot draw.** OF.check's first reason is matched to a plain-words panel (triangle inequality, angles past 180,
+  a side too short, disagreeing measures, not drawn to scale, ranges), with OF.check's own words under it, Undo my last
+  change and Back to the example; export and Add to worksheet are off until it draws.
+- **Answers come from OF.solve.** The editor's "The answer is" lists the figure's OF.solve numbers; a worksheet
+  question stores which one (`answer_key`) and the server works the answer out (with the figure's unit, squared or
+  cubed). A question from a generator keeps the generator's question and worked lines while its figure is exactly what
+  that generator makes for its seed; its answer is the OF.solve value the generator names (`key`), checked against the
+  generator's own formula by the tests. Kinds without an OF.solve keep their generator's formula. The browser never
+  sends an answer the server keeps.
+- **Generators.** The docs' figure question generators are the catalog's (the tests compare them); seven more were
+  written for kinds the docs had none for (freeBody, vectors, inclinedPlane, pulley, halfLife, bohr, the thermometer).
+  orbitals, lewis and titration have none: Randomize picks another preset. Generator questions are in English (the
+  teacher edits them); the product's own words are in every site language.
+- **Export.** Download SVG is `OF.withNotice`; Download PNG and Copy image are drawn in the browser and carry the same
+  notice as a PNG tEXt "Copyright" chunk and an XMP iTXt chunk (public/js/figures-export.js), with the wording of plan
+  rule 3. The tests check the bytes. Copy link puts the figure's data in `?d=`.
+- **One question-set model.** `question_sets` / `question_set_items` (migration 0095) with a `purpose` ('worksheet'
+  now; 'test' and 'lesson' later) and `of_version` (the Oomba Figures version the figures were checked with), so a
+  later lesson Figure step and "Build a test with AI" reuse them. A worksheet is its owner's only: anyone else, the
+  platform admin included, gets the same 404 for it, its print page and its answer key. `figure_presets` (a teacher's
+  own presets, per kind) and `figure_prefs` (the "Power with AI" switch, remembered per teacher) are in the same
+  migration. Account deletion removes all of it.
+- **Power with AI.** `draftWorksheet` follows `lesson-ai.js`: `anthropic()` (null without a key or while the AI budget
+  is resting), `config.builderModel`, structured JSON output, usage recorded in the AI budget, rate limited (30 an
+  hour). Claude sees only the catalog (kinds with a generator: id, a line, the example data, the OF.solve values it may
+  name) and writes question text, data (JSON text) and an answerKey. Every item is checked on the server: an unknown kind
+  is dropped; data that fails OF.check, an answerKey that is not an OF.solve value, or words that are not allowed: the
+  item is replaced by a fresh question from that kind's generator. Every repair is logged (the kind and why, never the
+  brief) and counted in the audit log. Without a key, while the budget rests or when the call fails, a starter set is
+  built from the generators the brief's words point at, within its grade band. A brief that names one of the teacher's
+  students is refused before anything is sent.
+- **Assign to class.** Shipped: see "Figures: Assign to class" below (a lesson step of kind `figures`, snapshotting the
+  worksheet; answers after the due date only when the teacher allows it).
+
+## Figures: Assign to class (21 Nov 2026)
+
+- **What it is.** "Assign to class" in the worksheet builder (`/figures/worksheets/:id`, public/js/figures-sheet.js) is
+  real: a form under the print preview with one of the tester's classes, an open date and a due date (both optional),
+  and "Show answers after the due date" (off by default). `POST /api/figures/worksheets/:id/assign`
+  (services/figures-steps.js `assignWorksheet`) does what "Set as homework" does for a live question set: a lesson of
+  kind `figures` named after the worksheet in the teacher's library, with one lesson step of kind `figures`, assigned to
+  the class with `lessons.assign` (dates, units, removal and the gradebook all work as for any assigned lesson). Each
+  assign makes a new lesson, so the switch is per assignment.
+- **A snapshot, like the quiz step.** Migration 0096 adds `lesson_steps.of_version` and `lesson_steps.show_answers`.
+  The step's `items` holds every question as it was assigned: kind, figure data, hide, question, the answer as the key
+  shows it, unit, the number (`value`), its decimal places (`dp`) and the worked lines; `set_id` names the worksheet
+  (never read back). Editing, regenerating or deleting the worksheet later changes nothing a class was given, and a
+  lesson copy keeps the snapshot. `value` and `dp` are worked out at assign time: the OF.solve value of the question's
+  answerKey (2 places, as the key shows it), else the generator's value and dp while the figure is still exactly what
+  its generator makes. A worksheet with a question that has no answer cannot be assigned (the error names the question
+  numbers).
+- **Students.** The lesson page draws each figure on the server with the step's pinned Oomba Figures version
+  (`figuresKit(of_version)`), the parts the teacher hid left out, and a blank with the unit under its question. Save
+  keeps what they typed (`step_progress.answer`, a JSON list); Hand in (it asks first) marks every question once
+  (`marks` '1'/'0', `score` = % right, label `figures`) and the step is done; nothing changes after. A typed answer is
+  right when it is within half a unit in the last of the stored dp (dp 1: within 0.05), read in many spellings ("5 cm",
+  "x = 5", "2,5", "3/4", Arabic and full-width digits). After handing in each question says Right or Not right, and the
+  score shows. The student side is not behind the tester list: the step only exists because a tester assigned it.
+- **Answers are never sent early.** A student gets the answers and worked lines only when all three hold: the teacher
+  turned on "Show answers after the due date", the due date is over (the school's time zone: `lessons.lateFrom`), and
+  that student has handed in (so a late student cannot read the answers and then hand in). Until then the server leaves
+  out answer, value and worked lines from the page and from `GET /api/progress/:cl/:step/figures`, and never sends the
+  figure's data. Judgment call: the student page draws the figures on the server instead of loading Oomba Figures with
+  `figTag` in the browser, because for many kinds the figure's data is the answer (a ruler's or caliper's reading, a
+  protractor's angle, a mapping diagram's outputs), and Oomba Figures keeps values in `data-*` attributes of its SVG, so
+  those are stripped too (only `data-of` stays). Once answers are allowed the full figure is drawn. The tests check the
+  answers, worked lines and answer fields are absent from the student HTML and JSON in every other case.
+- **Teachers.** The class's lesson page (the teacher's preview) shows the answer key under each question. The lesson's
+  progress page shows the step's score in its cell (right/total and %, like a quiz), a panel with how many handed in,
+  how many got each question right (counts only), each student's answers in roster order (never ranked), and the "Show
+  answers after the due date" switch (it needs a due date; the class's teachers and school admins can change it). The
+  gradebook and the Score count a handed-in worksheet like a quiz step (one point per question).
+- **Not in the step editor.** `figures` is not in `STEP_KINDS`, so the lesson editor never offers it (a "Figure" step
+  there is Phase 3); a figures step cannot be added by hand or changed into another kind, and the editor shows how many
+  questions it has instead of an edit form.
+- **Gate.** Assigning stays behind the Figures gate (`FIGURES` and the Manipulatives tester list): anyone else gets the
+  same 404 on the assign API as on every `/figures` page. A tester can assign only their own worksheet, only to a class
+  they teach.
+
+- **Assign is next.** Assigning a worksheet to a class with open and due dates, and the student view with answer
+  blanks, are not built: delivering a worksheet through the lessons flow needs a new lesson step kind (snapshotting the
+  questions like the quiz step, rendering figures and answer blanks on the student lesson page, saving answers in
+  step_progress, the gradebook, and the rule that answers show after the due date only when the teacher allows it).
+  That touches the student lesson page, progress and the gradebook, so it is its own change. The builder shows "Assign
+  to class" disabled with "Coming next". Print and Save work now.
+
+## My worksheets in Crossword, The Big Divide and Algebra Builder (21 Nov 2026)
+Owner: "I also love the feature for saving worksheets in figures and manipulatives. Can you do the same for crossword
+puzzles, the big divide, and the algebra course." The three games already saved a teacher's set on Oomba under a class
+code (`game_sets`, docs/sdk.md "Question sets"), but a teacher could only find one again through the game's own list in
+their game save, which holds drafts and only remembers the last few. Now each game has a list of everything saved on
+Oomba, like Figures' "My worksheets" and the manipulatives' saved boards.
+- **Who sees it.** School staff and the platform admin (`INIT.mySets`, `BRB.canListSets`), in the published game, not in
+  a preview. Students, children, guests and family grown-ups never see the button (the grown-up fence refuses the routes
+  as well). The routes themselves answer any signed-in, non-guest owner for their own sets, so a set a child saved
+  before this is still theirs to delete through the API; nothing in the games offers it to them.
+- **The server** (`server/services/game-sets.js` `listMine`, `oneMine`, `remove`, `rename`, `duplicate`, `labelOf`,
+  `sizeOf`, `codeOf`; `server/routes/games.js`): `GET /api/games/:id/sets` (newest first, each with its class code, name,
+  an English label, its size, when it changed and its items, so Open needs no second call), `DELETE
+  /api/games/:id/sets/:set`, `POST .../rename` `{ title }` and `POST .../duplicate`. Owner only: anyone else's set, a bad
+  id and another game's set are all the same 404. Guests get 403, signed out 401. 60 calls a minute per account, as
+  saving. A copy counts toward the 200 sets a teacher may keep in a game.
+- **Names.** Migration `0097_game_sets_title` gives `game_sets` a `title` ('' until named; only its owner sees it). A name
+  goes through the site's text filter (`cleanText`: rude words, personal details, links), at most 60 characters. A name
+  sent with a save that the filter refuses is left out and the set still saves. Crossword's name is its puzzle's title,
+  so renaming a crossword changes the title students see, and saving it from the game names it after its title. The Big
+  Divide now sends its activity's title when it saves (`BRB.saveQuestionSet(items, id, { title })`), so the list shows
+  the names teachers already gave their activities; before, sets held no free text at all for these two math games, and
+  the name is still kept out of the set's items. Algebra Builder sets have no name until renamed: the list shows "3
+  questions" and what kinds. A copy is named "Copy of ..." in the teacher's language (`game.sets.copyOf`, all 13 locales).
+- **In each game** the list has Open (into the game's own editor: Crossword's builder, The Big Divide's activity editor,
+  Algebra Builder's question set page; saving there keeps the same class code and link), Print and the answer key
+  (Crossword and The Big Divide, the existing print; the key only for school staff, as before), Copy link, Duplicate,
+  Rename (inline, Enter saves, Escape cancels) and Delete with a confirm that says the class code and link stop working.
+  An empty list points to making one. Crossword's list is a widget card like its other screens (not the Oomba Kit), with
+  its own words in its 13 languages; The Big Divide's matches its activities page, in its 12 word tables; Algebra Builder
+  is English only, like the rest of it, and calls them question sets ("My question sets"), its own word.
+- **Deleting** a worksheet also takes its copies out of the game's own list (Crossword's "Your crosswords", The Big
+  Divide's activities, Algebra Builder's recent sets), so it does not linger there as a draft without a code. Renaming
+  updates those copies' titles. The printed instructions a teacher wrote stay in the game save with the activity they
+  belong to, and are used when printing from the list.
+- **Not built.** Algebra Builder's committed page (`seed-games/algebra-builder.html`) was not rebuilt in this change:
+  the vendored math field's built files (`tools/algebra-builder/vendor/mathfield-*/dist`) are ignored by git and were not
+  in the checkout, so `build.mjs` (and `--check`) cannot run there. The sources carry the feature; run
+  `npm run build:algebra-builder` where those files are, and the browser test (tests/unit/game-my-sets-browser.test.js)
+  runs once the page has it.
+- **Tests.** tests/unit/game-my-sets.test.js (the routes: owner only, 404 for others, guests and the fence refused,
+  delete, rename through the filter, duplicate and the 200 limit, the rate limit, who the frame offers it to, the SDK and
+  the page's message checks) and tests/unit/game-my-sets-browser.test.js (each game in Chromium: the list, Open and save
+  under the same code, Print, Copy link, Rename, Duplicate, Delete with its confirm, the empty list, and no button for a
+  student).
+
+## My worksheets in Builder classroom activities (Oomba Canvas 1.4.0) (21 Nov 2026)
+Owner, after My worksheets in Crossword and The Big Divide: "make sure the builder knows to do this for teachers who
+build lessons", and "The worksheet buttons are way too busy, can we make this look a bit more simple".
+- **Built into the platform, not left to the model.** Oomba Canvas 1.4.0 (new files; 1.0.0 to 1.3.0 byte for byte as
+  they shipped) draws My worksheets itself (`canvas/src/sets.js`), the server keeps them as game sets of a new kind
+  (`game-sets.js CANVAS_KIND`, `cleanCanvasItems`; `routes/games.js canvasSetVersion` / `setKind`), and the Builder's
+  CANVAS RULES (generated from docs/canvas-api.md) only say that every lesson activity keeps worksheets by itself:
+  keep the questions as data, keep the setup's "worksheet" or "generator" so they print, and never build saving, class
+  codes, links, a list or a print button of their own. New activities start on 1.4.0 (the starter's tag); an older
+  activity moves to it only when saved from the Activity panel, as with 1.3.0. No migration: `game_sets` (with 0097's
+  title) holds them, owner-scoped per game id.
+- **Which activities.** Every Builder classroom activity on 1.4.0, whatever it is for (an activity for a worksheet or a
+  generator also prints them). Gating on the purpose alone would have left out the fixed-list, screen-only activities
+  the setup still makes when no generator fits.
+- **Who.** School staff and the platform admin (`INIT.mySets`), in the published activity, never in a preview or under
+  "As a student". Saving is refused (403) to anyone else, so a student's or a child's account never owns a set; the
+  list, rename, duplicate and delete are the owner's only (anyone else's is the same 404 as one that isn't there).
+- **What a worksheet holds.** The questions on screen (at most 20, the play page's limit for a set), each cleaned by the
+  activity's own pinned kit file (only the fields the kit reads), every piece of text in them through the site's text
+  filter (like Crossword's words), and the set must pass the kit's self-test and Oomba Figures' check for that
+  activity. Nothing a student did.
+- **The simple list** (the design the owner asked for): one row each, the name in bold, one quiet line ("5 questions ·
+  Nov 21") with the class code as a small chip, the whole row opens it; at the end only 🖨 Print and ⋯ More (Answer
+  key, Copy link, Duplicate, Rename, Delete last in red with a question). The menu takes the arrow keys, Home, End,
+  Escape and a click outside, and gives focus back to ⋯. 44 px targets; it fits at 375 px (in the Teacher menu there).
+  "💾 Save as worksheet" sits at the top of the card. The teacher bar stays one line at 1024 and 1280 px: its button
+  reads "📄 Worksheets" (the icon alone under 1180 px; "My worksheets" to screen readers and as a tooltip), and "students
+  don't see this bar" shows only from 1440 px (a tooltip on "Teacher" below). A worksheet opened from the list replaces the set on that screen
+  (a line under the teacher's controls says which; New set leaves it); its link plays exactly its questions for
+  everyone, and a link to a deleted one plays the activity's own questions and says so.
+- **Printing** a worksheet sends its code (`{ k: 'canvas', set, n, paper, key }`); the server prints the saved questions
+  with the version's kit file, with the class code and link in the footer. The answer key stays the maker's and school
+  staff's.
+- **The one text box** in the kit is the teacher's rename box (staff only); students still type digits only. The kit
+  test checks there is exactly one, in sets.js.
+- **Words** in the kit's 12 languages (`WORDS_140`); the server's strings were already there.
+- **Not built.** Assign to a class from the list (the official games' Assign stays theirs); a set game's class code
+  box for students in the activity (a link or QR is how students get there).
+- **Tests.** tests/unit/canvas-worksheets.test.js (the cleaner, who may save, owner-only routes, the frame's flags, the
+  link, printing by code), tests/unit/canvas-worksheets-browser.test.js (Chromium, in the production frame: save, the
+  row, Print, the More menu by keyboard, Copy link, Duplicate, Rename, Delete with its question, Open, 375 px, a
+  student, a deleted worksheet), the CANVAS RULES line in builder-canvas.test.js, and the 1.4.0 lock in canvas-kit.
+
+## Figures 1.3.0: biology (21 Nov 2026)
+
+- **A new version, like 1.2.0.** Oomba Figures 1.3.0 is a new version folder: the core and six packs, `bio` new
+  (`packs/bio.js`), the micropipette a new `reading` type in the measure pack. 1.0.0, 1.1.0 and 1.2.0 have shipped and
+  stay byte for byte (the lock, and git at the 1.2.0 release); every catalog figure 1.2.0 drew (each preset and two
+  generator figures per generator, in every mode) draws the same bytes in 1.3.0, and checks and solves the same
+  (`tests/unit/figures-v130.test.js`). New builds, the Builder's tags and the Figures product pin 1.3.0; the CSP, the
+  scanner and the screenshot worker list the seven new files. Minified with the pinned esbuild; each ported file keeps
+  its Apache 4(b) note as a legal comment.
+- **What was ported, and what is Oomba's own.** Only the models and data (`figures/src/ported/`: growth, lotka, rates,
+  punnett, pedigree, dna, gel, osmosis, pipette); reading the data, the checks with their "cannot be drawn" reasons, the
+  answers (`OF.solve`), hide, print and the drawing are Oomba's (`ecology.js`, `rates.js`, `genetics.js`,
+  `molecular.js`, `osmosis.js`, `pipette.js`). The source's math input field is not used: a Punnett parent is a list of
+  allele tokens (`["C^R", "C^W"]`), a pedigree family is its one-line form or a seed, a DNA strand is a string of bases.
+- **Print needs no color.** Every bio figure prints in grays only (a test reads every hex color in the print SVG):
+  curves are solid, dashed and dotted with a key; bases are always their letters (the screen tints are extra); pedigree
+  symbols are filled black with a dot for carriers; osmosis solutes are circles, squares and triangles; the
+  micropipette's decimal wheels are shaded gray under the decimal line.
+- **Figures product.** Biology moves from Coming soon to an open tab with its nine kinds (and the readings, listed under
+  Physics, Chemistry and Biology); Economics stays Coming soon. Each kind has presets, options, hide parts, grades and
+  one figure question generator whose answer is its OF.solve value (`tests/unit/_bio-gens.js`, the same in
+  docs/figures-api.md). Names and descriptions in all 12 site languages. The template drafter's keywords know the
+  biology words. Builder trigger words in 12 languages, checked against look-alikes; a kit topic stays a Canvas
+  activity (plan.js unchanged).
+
+| Source generator | Status | Oomba | Notes |
+| --- | --- | --- | --- |
+| Population growth | Ported | `populationGrowth` (new) | Exponential, logistic, both, overshoot, crash; size, rate or per capita over time or against N; K, inflection, phases, census. The source's fitted axes and settings are Oomba's own axes. |
+| Punnett square | Ported | `punnett` (new) | Monohybrid, dihybrid, X-linked; complete, incomplete, codominance; ratios, percents, fractions computed. Alleles as tokens, not typed text. |
+| Pedigree | Ported | `pedigree` (new) | Seeded random family for a mode (kept only when a student can tell the mode); a family given with a mode is checked by genotype elimination; proved genotypes. Hand editing and the classic families list are not ported (a classic family is a preset). |
+| Predator-prey | Ported | `predatorPrey` (new) | Lotka-Volterra from averages, start and period; one or two axes; peaks. The noisy census is not ported. |
+| Enzyme activity | Ported | `enzymeActivity` (new) | Temperature, pH, substrate with inhibitors; six named enzymes or your own. |
+| DNA / protein synthesis | Ported | `proteinSynthesis` (new) | Template, coding, mRNA, tRNA, amino rows; seeded blanks; letters always. Deliberate mistakes and the codon chart are not ported. |
+| Photosynthesis rate | Ported | `photosynthesis` (new) | Light (or lamp distance), CO₂, temperature; net rate. The closed chamber's CO₂ and O₂ over time are not ported. |
+| Osmosis | Ported | `osmosis` (new) | Blood cell, plant cell, split beaker, U-tube, dialysis bag; start, result or both; dots to scale. The shuffled three-up is not ported. |
+| Gel electrophoresis | Ported | `gel` (new) | Bands from log(size) to scale with crowding past the range; three real ladders; cm ruler; glow look on screen. |
+| Micropipette reading | Extended | `reading` type `micropipette` | P2 to P1000, digits, decimal line, parts. |
+| Cell diagram | Skipped | | Turned off on the source's live site; owner decision. |
+| Cell division | Skipped | | Turned off on the source's live site; owner decision. |
+| Food web | Skipped | | Turned off on the source's live site (and it bundles organism pictures); owner decision. |
+| Microscope field of view | Skipped | | Turned off on the source's live site; owner decision. |
+
+- **Judgment calls.** A pedigree's `mode` also takes its place in the list (0 to 4) so a generator can deal one; its
+  generator is a figure.number question ("write 1, 2 or 3") because the Figures product's worksheets store number
+  answers only. The pedigree's title never names its mode. A U-tube is drawn as a wide U, schematic but with its levels
+  to scale.
+- **Tests.** figures-v130 (frozen versions, latest pin, byte-identical 1.2.0 figures), figures-bio-rates,
+  figures-bio-genetics, figures-bio-molecular (truthful numbers, cannot-be-drawn, print, hide, languages, the
+  generators), figures-bio-words (12 languages and look-alikes), figures-scrub (the source project named only in its
+  attribution record and license copy), and the Biology tab and its editors in Chromium (figures-browser).
+
+## Virtual math manipulatives: saving and AI drafts (21 Nov 2026)
+
+A teacher drafted a worksheet with AI, refreshed, and the draft was gone: the drafter waited for the AI inside the
+browser's request, so a refresh dropped the answer (the AI call still ran and was still counted). Boards on your own
+weren't saved at all unless the teacher pressed Save, which made a new share code every time.
+
+- **AI drafts are server jobs, in the Builder's pattern** (services/manip-drafts.js, like builder/runner.js and turns.js).
+  Asking for a draft checks the words first (a host, a real tool, the word rules, no names of the teacher's students:
+  nothing is stored or sent when that fails), then stores a manip_drafts row and runs it in this process, apart from any
+  request. Its steps are real events: check, ai, build (the app checks every problem and lays the board out), save. It
+  ends as a recent board in My boards (opened_at 0: "New"). One unfinished draft per teacher (a unique partial index);
+  asking again gives back the one that runs. Shutdown marks a running draft interrupted (the hand-off); the next boot
+  runs it again once if it is under 10 minutes old, else ends it as failed ('restart'). Single instance, like the
+  Builder. Finished rows go after 7 days; the board stays.
+- **The page.** While a draft runs, the drafter's box shows its progress (the teacher's words, an estimate, the four
+  steps with their times, and "You can close this page or refresh") and the "Draft with AI" button counts the time and
+  shows or hides the box. The estimate follows the Builder's: "Usually" only from this site's own timed drafts (10 or
+  more), "Often" / "About" from first guesses, "Taking a bit longer than usual" past the usual time. A refresh shows the
+  same job again. When it ends and the page saw it run on the same tool, the draft goes onto the board (Undo brings back
+  what was there, which also stays in its own recent board); otherwise one notice says it finished while the teacher
+  was away ("Put it on my board", shown once, then marked seen). A failed draft opens the drafter with the words, grade
+  and task kept and "Try again".
+- **Two kinds of saved board** (manip_boards.kind). "Recent" boards save themselves 2 seconds after a change (no
+  button; "Saved 10:42" is text), and the address becomes #board/<id>, so a refresh brings the same board back. A
+  template is what "Save as template" keeps (the existing save button, renamed; it asks only for a name and still gives
+  a share code). Opening a template, by its row or its code, always gives a fresh copy; autosave never writes into one.
+  Boards saved before this are templates. Recent boards: the newest 30 per teacher, each for 60 days after it was last
+  opened or changed. Templates stay until deleted.
+- **My boards** replaces "Your saved boards" and moves to the top of the manipulatives home: Templates, then Recent
+  boards (solo boards, AI drafts and live rooms, newest first). A row's title opens it; its one ⋯ menu (in place of the
+  old Open and Delete buttons) holds Rename, Duplicate, Delete, "Start a live room with it" (templates, when the teacher
+  has a class) and "Reopen room" (ended rooms). The rooms list in the "Run a live session" panel went (the rooms are in
+  My boards).
+- **Rooms and recess.** No Pause button: leaving the page already keeps a room live, and each student's square
+  (manip_work.slot) comes back when they join again. An ended room can be reopened from My boards or from its own ⋯
+  menu, with the same join code and every square as it was; its 12 hours count from the reopening
+  (manip_sessions.opened_at), and, as with a new room, any other running room of that class ends. Ended rooms still go
+  30 days after they end; a room can be deleted once ended.
+- **New visible controls**, each in place of something: the progress card is the drafter's own box, the counting label
+  is the drafter's own button, "Try again" is "Draft my board" relabeled, "Save as template" is the old save button, the
+  ⋯ per row replaces Open and Delete, "Reopen room" sits in the room's existing ⋯ menu where "End session" was. The one
+  new thing is the notice for a draft that finished while the teacher was away (one action and a close), shown once.
+- **Privacy.** Only the teacher's own words go to the AI, after the name check, never student work or names. Drafts,
+  templates and recent boards are the teacher's only; students never see a draft. No prices anywhere.
+- Migration 0098_manipulatives_saving. Tests: tests/unit/manip-saving.test.js (the job's states, one at a time, the
+  hand-off and boot recovery, the estimate, autosave, templates, rename, duplicate, delete, retention, reopen) and
+  tests/unit/manip-saving-browser.test.js (Chromium: a refresh mid-draft, a draft that finished while away, autosave and
+  Save as template, My boards, a room reopened after recess).
+
+## Figures 1.4.0: economics (21 Nov 2026)
+
+- **A new version, like 1.3.0.** Oomba Figures 1.4.0 is a new version folder: the core and seven packs, `econ` new
+  (`packs/econ.js`). 1.0.0 to 1.3.0 have shipped and stay byte for byte (the lock, and git at the 1.3.0 release); every
+  catalog figure 1.3.0 drew (each preset and two generator figures per generator, in every mode) draws the same bytes in
+  1.4.0, and checks and solves the same (`tests/unit/figures-v140.test.js`). New builds, the Builder's tags and the
+  Figures product pin 1.4.0; the CSP, the scanner and the screenshot worker list the eight new files. Minified with the
+  pinned esbuild; each ported file keeps its Apache 4(b) note as a legal comment.
+- **What was ported, and what is Oomba's own.** Only the models (`figures/src/ported/`: econcurves, markets, macro,
+  firm); reading the data, the checks with their "cannot be drawn" reasons, the answers (`OF.solve`), hide, print, the
+  label placement, the shift arrows, the hatching and the drawing are Oomba's (`econ.js`, `markets.js`, `macro.js`,
+  `firm.js`). The source's label placer, panel layout, settings and address format are not used.
+- **Truthful for a schematic subject.** Economics graphs have no numbers on their axes, so "to scale" means every
+  equilibrium, quantity, shift and shaded area is computed from the curves: crossings are found on the curves, a
+  control's quantities read off them, a tax's prices from the shifted supply curve, the areas from exact polygons (a
+  schedule's corners kept). Curves that never cross, cross off the graph or below 0, a control on a curve that never
+  reaches it, an inflationary gap on the three-range curve, MC dipping below the axis and countries with equal
+  opportunity costs are refused with their reason.
+- **Print needs no color.** Every curve is black in print, told apart by its name and its dash (AVC dashed, AFC dotted,
+  MR dashed, a taxed supply dashed); each shaded region is its own gray with its own hatching (consumer surplus at 45
+  degrees, producer surplus at -45, deadweight loss level, revenue upright, profit and loss each their own), a test reads
+  every hex color in the print SVG.
+- **Figures product.** Economics leaves Coming soon: `SOON` is now empty, and the menu renders no Coming soon chip (the
+  mechanism stays for a future subject; with an empty list nothing is drawn). The seven kinds have presets, options,
+  hide parts, grades (supply and demand and production possibilities 6-8 and 9-12, the rest 9-12) and one figure
+  question generator whose answer is its OF.solve value (`tests/unit/_econ-gens.js`, the same in docs/figures-api.md).
+  Names and descriptions in all 12 site languages, and the figure's own words (axis titles, Shortage, Price ceiling,
+  Recessionary gap, Peak, Efficient and the rest) in words.js. The template drafter's keywords know the economics words.
+  Builder trigger words in 12 languages, checked against look-alikes (school supplies, a market day, a balloon's
+  inflation); a kit topic stays a Canvas activity (plan.js unchanged).
+
+| Source generator | Status | Oomba | Notes |
+| --- | --- | --- | --- |
+| Supply and demand | Ported | `supplyDemand` (new) | Five schematic shapes, numbered lines or a schedule; shifts; ceiling and floor with shortage or surplus; tax and subsidy; CS, PS, DWL, revenue shaded with exact areas. The schedule's dots and the numbered shift "to the next row" are not ported (a numbered shift is how far across). |
+| Money markets | Ported | `moneyMarket` (new) | Money market, loanable funds, market for reserves (ample, limited); shifts; which way the rate and quantity move. Schematic only, as in the source. |
+| Business cycle | Ported | `businessCycle` (new) | Seeded irregular cycles, trend, turns and phases found on the wave; words or letters; recessions shaded. |
+| Phillips curve | Ported | `phillipsCurve` (new) | Along SRPC, back to LRPC, supply shock, expectations, LRPC shift; schematic or numbered in %. The percent-placement choice is not ported (numbers always carry %). |
+| Production possibilities | Ported | `possibilitiesCurve` (new) | Bowed out, straight, bowed in; points on, inside, outside; shifts and pivots; opportunity cost steps; two countries together or side by side. |
+| AD-AS | Ported | `adAs` (new) | Straight or three-range AS, gaps, shifts by size or "full", LRAS shifts, the gap braced; numbered from a schedule. The callout and the schedule's dots are not ported. |
+| Cost and revenue curves | Ported | `costCurves` (new) | Cost curves, perfect competition (five price cases or any price), monopoly with regulation (P = MC or P = ATC), monopolistic competition short and long run; profit or loss, CS, DWL. The "both regulations marked" view and the market panel beside the firm are partial: one regulated outcome per figure, no market panel. |
+
+- **Judgment calls.** The production possibilities kind is `possibilitiesCurve`, not `productionPossibilities`: Oomba
+  Canvas (frozen) takes kind names of at most 20 letters. A money market's shift also takes 1 and -1 (as the pedigree's
+  mode takes its number) so a generator can deal one, and its answer is 1, 2 or 3 (rises, the same, falls) because
+  the worksheets' keypad has no minus sign; for the same reason the AD-AS generator asks for the size of a recessionary
+  gap (`gapSize`). Economics names default to the English letters textbooks use everywhere (D, S, AD, SRAS, MC);
+  data can give its own (`labels`).
+- **Tests.** figures-v140 (frozen versions, latest pin, byte-identical 1.3.0 figures), figures-econ-markets,
+  figures-econ-macro, figures-econ-firm (computed equilibria, areas and shifts against the algebra, cannot-be-drawn,
+  print, hide, languages, the generators), figures-econ-words (12 languages and look-alikes), figures-scrub, and the
+  Economics tab and its editors in Chromium (figures-browser).
+
+## Virtual math manipulatives: place-value charts fit and regroup (22 Nov 2026)
+
+Testing Base Ten Blocks on an iPhone, rods dropped into the chart's Tens column spilled over its edges and lay on top of
+each other, and a rod broken into ten units left the units outside the chart. A drop into a column now lays the column
+out and regroups it, by fixed rules (public/js/manip-pv.js, shared by the solo board, the live room and the tests).
+
+- **Fit.** The blocks in a column sit in tidy rows inside it (under its heading, centered), all made smaller by one
+  factor as more come in, never bigger than their own size, so none crosses the column's edges or covers another. The
+  layout runs after every change: a drop, a palette add, Copy, Delete, Break, Regroup, a chart moved (it carries the
+  blocks in its columns, like a frame) or resized, and when a board is opened (layout only, no trades). A block made
+  smaller keeps its own size (nw, nh; the server keeps them bounded) and gets it back when dragged out of the chart.
+  Below 0.4 of a block's size the column shows how many it holds ("×37"); past that the gaps close up and, only for
+  hundreds of blocks, the rows overlap a little, still inside. A drop inside a column no longer snaps edge to edge to a
+  neighbor (that was what pulled rods over the edge). Every chart on every tool with one (Base Ten Blocks, Place Value
+  Disks, practice "Build 346" charts) works this way.
+- **Regroup on drop: one place at a time, the total never changes.** A column's place comes from its heading (Ones,
+  Tens, Hundreds, Thousands, Tenths... up to Millions). For each block in a column:
+  - its own column (a rod in Tens): it just stays;
+  - one place smaller (a rod in Hundreds): it waits there, drawn softer, and the column says "Needs 10 to trade"; as
+    soon as the column holds ten of them, each ten trade for one of the column's block (ten rods become one flat),
+    leftovers stay waiting (23 units in Tens: two rods and three units). So ten 1s in Tens make a 10, ten 10s in
+    Hundreds a 100, ten 100s in Thousands a 1,000;
+  - one place bigger (a flat in Tens, a cube in Hundreds, a rod in Ones): it breaks into ten of the column's block,
+    right there;
+  - two or more places away (a cube in Tens, a unit in Hundreds): it goes to its own column of that chart with a short
+    note ("1,000 moved to the Thousands column"); a chart without that column leaves it where it was, marked.
+  We chose one place at a time because each step is the ten-for-one trade children are learning; breaking a cube into
+  100 rods, or waiting for 100 units in Hundreds, would hide it. Waiting (rather than sending a rod in Hundreds back to
+  Tens) lets a child collect ten and see the trade happen. Locked blocks are never traded, moved or resized.
+- **Break and Regroup on a chart.** Break (the wheel's "Break into 10") on a block in a chart puts the ten pieces into
+  the column for their value in the same chart (a rod in Tens: ten units in Ones; a flat: ten rods in Tens; a cube: ten
+  flats in Hundreds). Regroup (ten of a kind into one) puts the new block in its column too (ten units in Ones: a rod in
+  Tens). A chart without that column gets them just under it, so they are not traded straight back; off a chart both
+  work as before. A copy of a block in a column stays in that column.
+- **One step, everywhere.** A regroup happens inside the change that caused it, so one Undo takes back the drop and its
+  trade together. New blocks from a trade pop in (none with reduced motion) and one toast says what happened ("Traded
+  10 × 10 for 1 × 100."). In a live room the square's state is regrouped in the browser that made the change and saved
+  as usual (the server validates it as before); everyone else just sees the result.
+- **Words** in all 13 languages under js.manip.pv.* (en-GB uses the English). **Tests:** manip-pv (the fit math, every
+  block x column pair, ten-for-one trades in every column, decimals and disks, Break and Regroup homes, carry and snap,
+  fitInto and the server's bounds) and manip-pv-browser (an iPhone 13 with touch and a laptop: ten rods into Hundreds
+  become a flat and Undo takes it back, the flat into Tens becomes ten rods inside it, Break on a rod in Tens puts ten
+  units inside Ones, nothing drawn outside its column; and a student's trade saved in a live room).
+
+## Algebra Builder builds again: the math field's files are in the repository (22 Nov 2026)
+
+- **Why it could not build.** `tools/algebra-builder/.gitignore` said `dist/`, meant for Vite's output, but it also
+  matched `vendor/mathfield-*/dist/`, the vendored math input field's built code. Only the three `package.json` files
+  were ever committed, so since 18 Nov no checkout could run `build.mjs`; #429 patched the built page by hand, and the
+  My worksheets lists (#492, #493) were left in the sources only.
+- **The fix.** The rule is now `/dist/` (the app's own output only) and the three `dist/` folders are committed. They
+  are the same packages renamed the same way as before: rebuilding the sources of 5d256511 and e5970b22 with them gives
+  those commits' `seed-games/algebra-builder.html` byte for byte, so they are the files the game was first built with.
+- **Rebuilt** from the current sources: Algebra Builder now has My question sets in the simple list design. Its
+  browser test in `game-my-sets-browser.test.js` runs (it was skipped while the page could not be built).
+
+## Figures: multiple choice and negative answers (22 Nov 2026)
+
+Worksheet answers were numbers 0 or more, typed on a keypad without a minus sign, so four generators asked a stand-in
+question. Now a worksheet question has an answer type.
+
+- **Two answer types.** `number` (any sign: the student's blank reads "-5", "−5" and "- 5", Arabic and Persian digits
+  as before, marked within half a unit of the last stored decimal place) and `choice` (2 to 6 short options, all
+  different, one marked right). Migration `0099_figures_answer_types` adds `answer_type` ('number' by default, so every
+  older question is a number question), `choices` (JSON) and `correct` (the right option's index, NULL until marked) to
+  `question_set_items`. The lesson step's snapshot items carry `type` and `choices`, with `value` the right index; an
+  older snapshot without a type is a number question. A number question keeps options it had, so switching back to
+  multiple choice brings them back.
+- **Fixed order, not shuffled (judgment call).** Options show in the order the teacher (or the generator) wrote them,
+  on screen and on paper. The printed sheet and its key letter them A, B, C, and the same letters must mean the same
+  options on a student's screen, on the class's printed copy and in the teacher's results table (which shows each pick
+  as its letter). A generator's options are in their natural order (rises, stays the same, falls). The radio buttons'
+  values are the option indexes, which say nothing about which one is right.
+- **The right option is never sent early.** The student page and `GET /api/progress/:cl/:step/figures` send the options
+  but never `correct`, the answer text or worked lines until the three rules of "Figures: Assign to class" hold (the
+  teacher allows it, the due date is over, the student handed in). The tests check two assignments of the same
+  questions with different right options give byte-identical student markup.
+- **The builder.** Each question has an "Answer: Number / Multiple choice" switch (radio buttons in a fieldset). Multiple
+  choice shows the options in a fieldset: a radio to mark the right one, the letter, a text box, a remove button, and
+  "Add option" (up to 6). Blank rows stay on screen until filled; the server keeps only options with words (the right
+  one's index follows) and refuses two the same or words the site's filter refuses. Redrawing the list keeps the
+  keyboard in the same box. The editor shows a choice question's options read-only and never sends an answerKey for it.
+- **Print.** The student sheet lists the options with a circle and the letter (no answer lines); the key fills the
+  right one's circle, bolds it and prints "B) right" with the worked lines.
+- **Generators.** The catalog's generators may be `figure.choice` (the Oomba Canvas form, with 2 to 6 options) whose
+  worked lines say `{choice}`, and number answers may be negative. Oomba Canvas itself is frozen and cannot take
+  either (its keypad has no minus, its choices are 2 to 4 and its worked lines are checked as written), so the Figures
+  product deals with Canvas's own gen code and checks the result itself (`services/figures.js` `dealRaw`, `generate`).
+  A choice generator names `key` (an OF.solve value, a number or a word: OF.solve already gives `mode`, `water`,
+  `gapType` and `rateChange`) and `pick` (each value to its option), so the right option comes from OF.solve; the
+  frozen Oomba Figures versions are unchanged and no solve value was added. While a question's options are still its
+  generator's (`answerKey` `"gen:<id>"`) the right option is worked out again from the figure, even after the teacher
+  changes the figure; marking another option or changing an option's words makes it the teacher's. The generator tests
+  (`_choice-gens.js`) deal 40 seeds, check each figure with OF.check, check the generator's own answer formula agrees
+  with OF.solve's pick, that every option comes up, that the catalog has the same generator, and run the dealt
+  questions through the Canvas self-test with and without the pack.
+
+| Generator | Before | Now |
+| --- | --- | --- |
+| `pedigree` | "Write 1 for autosomal dominant, 2 for autosomal recessive or 3 for X-linked recessive." (key `modeNumber`) | "Which inheritance pattern does this family show?" autosomal dominant / autosomal recessive / X-linked recessive (key `mode`) |
+| `osmosis` | "What is their total concentration outside the cell, in %?" (the solutes that cannot cross) | "Which way does water move across the cell membrane?" into the cell / out of the cell / no net movement (key `water`; the start view, no arrows, tonicity hidden) |
+| `moneyMarket` | "Write 1 if the nominal interest rate rises, 2 if it ends where it started, or 3 if it falls." (key `rateMove`) | "What happens to the nominal interest rate?" rises / stays the same / falls (key `rateChange`) |
+| `adAs` | "How large is the recessionary gap?" (always recessionary, key `gapSize`) | "What does the economy have?" a recessionary gap / an inflationary gap / no output gap (key `gapType`; the gap's brace hidden; real GDP on both sides of potential) |
+| `reading.thermometer` | readings 0 to 50 on a scale from -10 | readings -10 to 50 |
+
+  The other generators were read for stand-ins ("write 1", "1, 2 or 3", a size in place of a direction, a scale that
+  never goes below 0); these five were all. `OF.solve`'s `modeNumber`, `rateMove` and `gapSize` stay (frozen versions).
+- **The AI drafter** may write choice questions: `answerType`, `choices` and `correct` are in its JSON schema, and it is
+  told to use them only when the answer is a word the figure shows plainly. A choice item needs 2 to 6 short different
+  options, none blank, its `correct` one of them, and every option through the word rules; otherwise it is replaced by
+  the kind's generator and the repair is logged (the kind and why, never the brief or the words). Judgment call: the
+  AI's right option is the AI's, unlike its numbers (OF.solve's); the teacher sees it marked in the builder and reviews
+  the draft before assigning, as with every draft.
+- **The student step.** A choice question is a fieldset whose legend is the question, with one radio button per option
+  (the arrow keys move between them, 44 px rows); after the reveal the right one is marked "Right answer". Every number
+  blank has a ± button (public/js/lesson-read.js) that flips the sign, for phones whose decimal keypad has no minus; it
+  is on every number question so it never hints that an answer is negative.
+- **Words** in all 13 locales (en-GB needs none of its own). No new tester gate: assigning still needs the Figures gate.
+- **Tests.** figures-answers (the migration, choices cleaned, the generator link, the rewritten generators, print, the
+  AI drafter, marking, the student page and JSON never sending the right option early, the teacher's results), and
+  figures-answers-browser (Chromium: the builder's switch and options by keyboard, print, the student's radios with the
+  arrow keys, the ± button, hand in, the reveal, a phone without sideways scroll); figures-product and figures-assign
+  updated, the biology and economics generator checks through `_choice-gens.js`.
+
+## Figures 1.5.0: organic structures and atomic energy levels (22 Nov 2026)
+
+- **A new version, like 1.4.0.** Oomba Figures 1.5.0 is a new version folder: the core and the same seven packs (no
+  new pack; the chem pack gains `skeletal` and `energyLevels`). 1.0.0 to 1.4.0 have shipped and stay byte for byte (the
+  lock, and git at the 1.4.0 release); every catalog figure 1.4.0 drew (each preset and two generator figures per
+  generator, in every mode) draws the same bytes in 1.5.0, and checks and solves the same
+  (`tests/unit/figures-v150.test.js`). New builds, the Builder's tags and the Figures product pin 1.5.0; the CSP, the
+  scanner and the screenshot worker list the eight new files. Minified with the pinned esbuild; the ported file keeps its
+  Apache 4(b) note as a legal comment.
+- **Skeletal structures, server-drawn.** These were deferred in 1.2.0 because the only way Oomba drew them,
+  `OF.structure` (SmilesDrawer), needs a browser, so a printed sheet, a Figures thumbnail or a student's lesson step
+  (all drawn on the server) could not show them. `skeletal` is a proper kind drawn by Oomba as lines and text, so it
+  prints and renders on the server. The source's organic structure editor already worked this way (its views are pure
+  arithmetic on atom places), so its views are ported (`ported/organic.js`: valence and added hydrogens, labels with
+  subscripts and backward labels, bond lines with the inner second line, the full formula's hydrogen placement, the
+  chiral asterisk, carbon numbering). The editor's behavior becomes data: `view`, `ends`, `rings`, `acids`, `reverse`,
+  `numbers`, `flip`, `chiral`, a caption (`name`), and atoms placed by hand (`atoms` with `x`, `y` and `h` for dragged
+  hydrogens). The source has no SMILES and no automatic layout (its ADR: layout is research-grade once rings meet), so
+  Oomba adds its own: SMILES-lite and a straight `chain` with groups (what a generator deals), laid out on 30 degree
+  steps (zigzag, or straight for a full formula), single rings as regular polygons, then checked for overlaps.
+- **What is left out, and why.** Rings that share atoms (naphthalene, steroids, spiro and bridged rings) are not laid
+  out automatically: an honest layout for fused systems is the research-grade problem the source avoided, so they are
+  refused with the reason (give them as `atoms` with places, which draw and print, or use `OF.structure` in the browser).
+  Bracket atoms (charges, isotopes, explicit H), stereo marks and five-membered aromatic rings in lowercase are refused
+  (write the Kekulé form). The editor's pointer UI (drawing, dropping rings, moving, swinging hydrogens) is not ported:
+  the Figures editor is data-driven (typed SMILES, toggles, JSON), as with every other kind. `OF.structure` stays as it
+  is (shipped versions pin it); the FIGURE RULES now say to use `skeletal` for worksheets and `OF.structure` only for
+  what `skeletal` refuses, so there is one way to draw a printable structure.
+- **Truthful.** Hydrogens are always worked out from valence (never typed), an overbonded atom is refused, a layout
+  where atoms or bonds would overlap is refused, and a skeletal formula that would hide a carbon in a straight line (the
+  source only warns in its editor) is refused. `OF.solve.skeletal` gives the molecular formula in Hill order, counts,
+  molar mass (IUPAC standard atomic weights), degree of unsaturation and functional groups (a Kekulé benzene is an
+  arene, not three alkenes).
+- **Atomic energy levels, Oomba's own.** The source has no such generator, so `energyLevels` is written fresh: hydrogen
+  (or a one-electron ion) from E = -13.6 Z²/n² eV, or any atom's levels in eV, each line exactly at its energy, labels
+  spread on leaders where lines crowd; emission arrows down (solid), absorption up (dashed), ionization to n = ∞;
+  wavelengths from λ = hc/ΔE with exact SI constants. Arrows between levels too close to draw at the figure's height
+  (n = 6 to 5 at the default 360 px is 4 px) are refused with the reason, not drawn as a smudge; `height` up to 900 fits
+  more. On screen a visible photon's arrow is in its color (the line spectrum's color function); print is black.
+
+| Source item | Status | Oomba | Notes |
+| --- | --- | --- | --- |
+| Organic Structure Editor: the four views (skeletal, carbon skeleton, condensed, full structural) | Ported | `skeletal` (new) | From one shape; labels, bond lines, added hydrogens, CO₂H, backward labels, chiral asterisk, carbon numbering. |
+| Organic Structure Editor: drawing by hand | Partial | `skeletal` with `atoms` + `bonds` | As data (places in bond lengths, `h` for placed hydrogens), edited as JSON; the pointer editing is not ported. |
+| Organic Structure Editor: rings tray (cyclopentane, cyclohexane, benzene) | Partial | SMILES-lite rings | Single rings of 3 to 8 (benzene, pyridine in lowercase); fused, spiro and bridged rings only as `atoms`. |
+| Organic Structure Editor: Zigzag and Straighten (planned in the source) | Ported as data | `layout: "zigzag" \| "straight"` | Straight is refused in the skeletal view (it would hide carbons). |
+| SMILES input and automatic layout | New (Oomba's own) | `smiles`, `chain` | Not in the source; organic subset only. |
+| Atomic energy levels with transitions | New (Oomba's own) | `energyLevels` (new) | Not in the source; hydrogen-like or given levels, emission, absorption, ionization, cascades, series. |
+
+- **Judgment calls.** The kind is `skeletal` (it also draws condensed and full formulas, but the skeletal formula is
+  what teachers ask for and the name fits the Canvas kit's 20 characters); the catalog calls it "Organic structures".
+  Hydrogen uses 13.6 eV (the textbook Bohr value) so the figure's numbers match a student's working; hc is exact
+  (1239.84 eV nm), and the generator's question says so. Element labels use Arial widths so the ported label boxes fit;
+  heteroatoms are colored on screen only. The figure question generators: hydrogens in a chain with one double bond
+  (CnH2n), and the wavelength of a hydrogen emission line to n = 1 or 2.
+- **Tests.** figures-v150 (frozen versions, latest pin, byte-identical 1.4.0 figures, the new kinds in the frozen file),
+  figures-chem-organic, figures-chem-levels (formulas, groups, scale, photons against the Balmer and Lyman lines,
+  cannot-be-drawn, print, hide, languages, the generators), figures-chem2-words (12 languages and look-alikes),
+  figures-scrub, and the new editors in Chromium (figures-browser).
+
+## Figures: the lesson Figure step and Build a test (22 Nov 2026)
+
+Phase 3 of the Figures plan ("AI-powered assignment and test builds"), built on the seams that were there: question
+sets, the Figures builder, the `figures` lesson step and its snapshot, Assign, and `lesson-ai.js`.
+
+- **One gate.** Everything new sits behind `services/figures.js` `canMake` (the `FIGURES` flag and the Manipulatives
+  tester list), the same gate as `/figures`. Opening Figures to everyone is a change there and nowhere else. The student
+  side needs no gate: a figures step exists only because a tester made it.
+- **"Figure questions" in the lesson editor.** A tester's step form offers it as a fifth type. Adding one makes a
+  question set of purpose `'lesson'` for that lesson (migration `0100_figures_lesson_sets`: `question_sets.lesson_id`)
+  and opens the Figures builder on it (`/figures/worksheets/:id`): subject tabs, then a kind; the figure editor for its
+  measures (the same editor as `/figures`, which saves back to the set); a generator to deal the values; the question
+  text; a number or multiple choice answer (#500). Nothing is in the lesson until **Save to lesson**
+  (`figures-steps.js saveToLesson`), which snapshots the set into one `figures` step exactly as Assign does (the
+  snapshot now also keeps each question's generator, seed and answerKey, never sent to students). Saving again
+  replaces that step's questions. Once a student has work on the step it is refused ("started"): their marks would no
+  longer match; the teacher copies the lesson instead. On the lesson page a Figure step has Edit questions, Print and a
+  ⋯ More with its title, minutes, instructions and Delete. Edit questions on a step made by Assign, or on a copy,
+  starts a lesson set from the step's snapshot (an older snapshot's answerKey is found again as the OF.solve value equal
+  to the stored answer), so a worksheet is never edited from a lesson. Deleting the step or the lesson deletes its
+  lesson set. Lesson sets are not listed in My worksheets.
+- **Print.** `/teach/lesson-steps/:id/print` (`?key=1` with the key) prints the step's snapshot with the worksheet's
+  print (`printHtml`: `opts.print`, black on white), for the lesson's editors.
+- **Draft with AI gets a figure catalog.** `figureCatalog()`: kinds with a generator, each with its id, subject, grade
+  bands, a line, a parameter schema (fields typed `number`, `text`, `bool`, `list`, `object` or a fixed list, from the
+  example and the catalog's `extra` and `options`), the example and its OF.solve keys (docs/figures-api.md "The figure
+  catalog for the AI drafters"). The lesson route passes it to `draftLesson` beside the game catalog, only for a tester;
+  the schema then allows `figures` steps with figure questions. Every figure goes through `repairDraft` (OF.check with
+  the pinned version, an OF.solve answerKey, choices, the word rules): a bad one is replaced by its kind's generator; a
+  kind not in the catalog loses its figure and keeps its question (the step becomes a written question when no figure is
+  left). Each repair is logged with the step, the kind and why, never the topic. A brief naming a student is refused. The
+  budget cap and the template are as before; the template adds a starter Figure step when the topic's words name a
+  figure. The test hooks (`hooks.create`) obey the AI budget like the real client, so the cap is tested.
+- **Build a test.** "Build a test" on `/figures` (a line under Build a worksheet) opens the same builder for a question
+  set of purpose `'test'` (the column was there). "Power with AI" is the worksheets' switch (`figure_prefs`, remembered
+  per teacher). On: topic, grade and subject; Claude picks **generators** from the subject's catalog (each is dealt here
+  with a fresh seed, so ⟳ re-deals any question) and writes its own figure question only when none fits (checked as
+  above); an unknown or other-subject generator is dropped and logged. Off, no key, budget resting or a failed call: a
+  starter test dealt from the generators the topic's words point at, in the subject and grade band. Either way the
+  teacher edits: ⟳ re-deal, ✏️ the figure's numbers, the question, the answer type, 🗑️ delete, and ⋯ More with **Swap
+  figure** (another kind in the same place). Nothing is assigned until Assign (class, opens, dues): the existing
+  `assignWorksheet`, so reorder, dates, unassign and deleting the lesson (its steps and assignments) are the existing
+  flow. Tests and worksheets share My worksheets (a test says "Test").
+- **Judgment calls.** A test is a question set like a worksheet, not a new model, and uses the worksheet builder with a
+  different AI box rather than a second page. The lesson Figure step is built in the Figures builder (not a second
+  editor inside the lesson page), so there is one place figures are edited. The lesson drafter's figures are saved
+  straight into the drafted lesson (like its other steps): the teacher reviews the whole draft before assigning it.
+  Questions use the step's snapshot for print, so a printed copy always matches what students see.
+- **Tests.** figures-lesson-step (the migration, the catalog, the gate, Save to lesson and its refusals, Edit questions
+  from a snapshot, print, the lesson drafter with a mocked AI and its repairs, the budget cap and the template, Build a
+  test on and off, swap, re-deal, edit, delete, assign with dates, the student) and figures-lesson-step-browser
+  (Chromium: the editor step built by hand and printed; a test drafted with AI, edited, switched to by hand, assigned,
+  answered and handed in).
+
+## Virtual math manipulatives: tap to add follows the last block into its column (22 Nov 2026)
+
+On an iPhone a teacher dragged a rod into the chart's Tens column and then tapped Rod again and again. The 4th rod sat
+across the Tens/Ones border and the 5th landed in Ones and broke into ten units. Why: a palette tap places a block next
+to the last one added (manip-board.js nextPieceSpot). In a column it only looked for room under the last block at full
+size; with the column already laid out there was none, so it put the rod to the right of the last one. Its middle fell
+in the 6 px gap between two columns (in no column, so the layout left it across the border) or in Ones (one place
+bigger, so it broke into ten).
+
+- **The rule (manip-pv.js sameValueHome).** When a block is added from the palette (tap, Enter, or dragged off it) and
+  the block placed just before it sits in a chart's column and is worth the same, the new block goes into that same
+  column, and the column is laid out again so all fit. The block placed before is the last one added or dropped on that
+  board (solo: per board; live room: per square; a dragged block counts once it is dropped). Any other case, the usual
+  placement: another value (a Unit after a Rod), nothing placed yet, that block gone or moved out of the chart, or its
+  chart deleted. Ten taps of Rod after a rod in Tens give ten rods in Tens (their own column: they never trade, they
+  shrink to fit); after a rod waiting in Hundreds they join it there and trade at ten, as on a drop. One Undo takes back
+  one add.
+- **A middle in the gap between two columns** now belongs to the nearer column (columnOf), so a block can never be left
+  across a column's border; past the chart's outer edge is still no column.
+- **Tests:** manip-pv (the rule, ten taps, the value from the other block set, waiting in Hundreds, every fallback, the
+  gap) and manip-pv-browser (iPhone 13, default zoom: one rod dragged into Tens, nine taps of Rod, all ten inside Tens
+  with none across a border and nothing in Ones, Total 100; a Unit tap is not forced into Tens; Undo takes it back).
+
+## Figures Phase 4: polish (22 Nov 2026)
+
+Phase 4 of the Figures plan (presets, undo/redo, the reuse terms page, example figures in Oomba style), plus the owner's
+"less busy" rule for the question rows in the worksheet, test and lesson builder.
+
+- **Undo and redo.** `public/js/figures-history.js` is the one history for a figure's edits: snapshots of the figure's
+  data, its question, answer, hide and drawing as text, the last 100 kept, typing gathered into one step (350 ms), a new
+  change after an undo dropping what could be redone, an undo while a change is still being typed undoing that change.
+  The editor (`/figures/:kind`, also when it is opened from a worksheet, test or lesson set question with `?ws=&item=`)
+  has icon-only Undo and Redo buttons (curved arrows, named "Undo" and "Redo" to screen readers, a tooltip with the
+  key) and the keys Ctrl/Cmd+Z, Shift+Ctrl/Cmd+Z and Ctrl/Cmd+Y. A text box keeps the keys for its own typing, so the
+  keys work outside the boxes. A screen reader hears "Undone." or "Redone.". The cannot-draw panel's "Undo my last
+  change" is the same history. Applying a preset or an example is one step.
+- **Presets** (the source's Presets/presetStore behavior, on Oomba's `figure_presets`): the select and the "Save as my
+  preset" button are gone; one "⋯ Presets" More menu holds the kind's built-in examples first, then its drawn examples
+  (Draw it kinds), then the teacher's own presets (newest first), then Save as my preset (off while the figure cannot be
+  drawn; a drawing is kept with it, as before) and Delete a preset, which lists the teacher's presets for the kind, each
+  deleted after a question. The routes were already there (`/api/figures/presets*`, owner only).
+- **The ⋯ More menus** (`public/js/figures-menu.js`) follow the My worksheets More menus: `aria-haspopup="menu"`, the
+  first item focused, the arrow keys (wrapping), Home and End, Escape (focus back to ⋯), Tab or a click outside closes,
+  and a menu near the bottom of the window opens upward.
+- **Quieter question rows** (owner: the buttons were too busy). A row had six buttons (move up, move down, re-deal,
+  edit, delete, more). Now: the row itself or its figure opens the editor (the figure is a real link named "Edit the
+  figure of question 2 (Triangle)"; a click on the row's blank space follows it, never on its boxes, radios, buttons or
+  menu); one visible ⟳ New numbers, only on a question from a generator; and ⋯ More with Move up, Move down, Swap
+  figure… (a box with every kind by subject) and Delete (last, red, after a question). Alt+Arrow Up/Down moves the
+  question the keyboard is in (not while typing in its question or option boxes); the keyboard stays with the question
+  and a screen reader hears its new number. After a delete the keyboard goes to the question that took its place.
+- **The delete button's noun.** "Delete worksheet" on a test and on a lesson's figure questions was wrong: a test says
+  "Delete test" ("Delete this test?") and a lesson set "Delete these questions" ("Delete these figure questions?", with
+  a line that the lesson's Figure step keeps the questions it was last saved with).
+- **The reuse terms page** (`/figures/terms`, plan rule 3): what a teacher may do with an exported figure (use, copy,
+  print, share, change, publish or sell, without asking and without credit), the note inside the file shown word for
+  word from Oomba Figures (`OF.notice`, the same text `figures-export.js` stamps into a PNG and `OF.withNotice` into an
+  SVG; in English, `lang="en"`, as it is in the file), what it means (Oomba Academy gives up its rights in its part; the
+  note may stay or go), what CC0 1.0 means with a link to the deed, what stays the teacher's (anything original they
+  add), and two cautions (check a figure before use; keep students' details out of shared figures), with a link to the
+  site's Terms. No legal jargon. Linked from the editor's export notice under the download buttons. All 13 locales.
+  Judgment call: it sits behind the Figures gate like every Figures page while the product is tested, and opens with
+  it.
+- **Card pictures in Oomba style.** The menu's cards were checked tab by tab. The figures were already Oomba Figures'
+  own drawings (cream paper #FFFDF2, Ink lines, Mint fills, Leaf accents); what was wrong was size: wide strips (number
+  line, motion map, orbital diagram, protein synthesis, box plot, segment addition, table of values, projectile) were a
+  thin line on the card, and small figures (organic structures, nuclide notation, Lewis structures) never grew to the
+  card. Now `services/figures.js thumbSvg` stacks two or three of a wide kind's examples (its other presets, then a few
+  checked extras for kinds with one example) into one picture, centered, nothing cropped, and the picture fills its box
+  (`object-fit: contain`) on a framed paper with a thin line, under Bricolage Grotesque card titles. The editors' first
+  presets are unchanged (they are the docs' examples, which the generator tests compare).
+- **Words** in all 13 locales (en-GB has none of its own); the unused `js.figures-editor.presets` and
+  `js.figures-sheet.more` keys were removed.
+- **Tests.** figures-polish (the history and its keys, the terms page in every locale with the notice word for word and
+  no em dashes, its gate, the presets routes, the card pictures, the row markup, the delete nouns) and
+  figures-polish-browser (Chromium: Undo/Redo by button and keys, the cannot-draw panel, the editor from a worksheet
+  question, the Presets menu by keyboard with save, apply and delete, the rows' More menu by keyboard, Alt+Arrow,
+  Swap figure, Delete with Cancel and OK, the row opening the editor, a phone at 375 px, the nouns, the terms link);
+  figures-browser, figures-draw-browser and figures-lesson-step-browser now use the menus.

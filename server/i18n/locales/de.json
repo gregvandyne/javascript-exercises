@@ -48,10 +48,10 @@
       "schools": "Für Schulen"
     },
     "build": {
-      "ready": "✨ Dein Spiel „{title}“ ist fertig! <a href=\"{href}\">Öffnen</a>",
-      "question": "💬 Der Baumeister hat eine Frage zu „{title}“. <a href=\"{href}\">Öffnen</a>",
-      "stopped": "⚠️ „{title}“ wurde gestoppt, bevor es fertig war. <a href=\"{href}\">Öffne es, um weiterzumachen</a>",
-      "many": "✨ Der Baumeister hat Neuigkeiten zu einigen deiner Spiele. <a href=\"{href}\">Zu „Meine Spiele“</a>"
+      "ready": "Dein Spiel „{title}“ ist fertig! <a href=\"{href}\">Öffnen</a>",
+      "question": "Der Baumeister hat eine Frage zu „{title}“. <a href=\"{href}\">Öffnen</a>",
+      "stopped": "„{title}“ wurde gestoppt, bevor es fertig war. <a href=\"{href}\">Öffne es, um weiterzumachen</a>",
+      "many": "Der Baumeister hat Neuigkeiten zu einigen deiner Spiele. <a href=\"{href}\">Zu „Meine Spiele“</a>"
     },
     "shortPasswordGrownup": "Ihr Passwort ist kürzer als {min} Zeichen. Bitte <a href=\"{href}\">wählen Sie ein längeres</a>."
   },
@@ -1109,6 +1109,11 @@
         "li5": "Bevor der Erwachsene das Konto erstellt, liest er einen Hinweis dazu, was wir speichern, und bestätigt per Häkchen, dass er ihn gelesen hat und Elternteil oder erziehungsberechtigt ist. Davon speichern wir einen Nachweis: wann und welche Version des Hinweises. Das ist keine Prüfung der elterlichen Einwilligung im Sinne von Datenschutzgesetzen für Kinder, und wir behandeln es auch nicht so. Das Bezahlen eines Abos ist ebenfalls keine.",
         "li9": "Der Erwachsene kann diese Zahlen sehen und das Konto auf seiner Familienseite löschen: Alles, was das Kind gemacht, geschrieben und hochgeladen hat, wird sofort gelöscht. Wir behalten einen kurzen Nachweis, dass es das Konto gab und wer es erstellt hat, der alte Benutzername wird 90 Tage lang zurückgehalten, damit ihn niemand sonst nehmen kann, und eine Klasse, in der das Kind früher war, behält ihre eigenen Unterlagen. Ist das Kind gerade in einer Schulklasse, entfernt die Lehrkraft es zuerst aus der Klasse.",
         "li7": "Wie lange: solange es das Konto gibt. Automatische Löschfristen gibt es noch nicht."
+      },
+      "manip": {
+        "h": "Mathe-Materialien im Unterricht",
+        "p1": "<b>Live-Unterrichtsstunden:</b> Wenn eine Lehrkraft eine Live-Stunde mit den Mathe-Materialien leitet, wird das Brett jedes Schülers darin (Teile, Haftnotizen, Text und Antworten) für die Lehrkraft aufbewahrt und 30 Tage nach dem Ende der Stunde gelöscht. Wohin Schüler zeigen (ihr Mauszeiger) und gemeldete Hände werden nicht gespeichert.",
+        "p2": "<b>Ein Brett mit KI entwerfen:</b> Eine Lehrkraft kann eine Stunde beschreiben und die KI ein Brett dafür entwerfen lassen. Nur die Beschreibung der Lehrkraft wird an unseren KI-Anbieter Anthropic gesendet. Arbeiten und Namen von Schülern werden nie gesendet."
       }
     }
   },
@@ -1187,7 +1192,10 @@
     },
     "makeLike": "Bau ein Spiel wie dieses",
     "makeLikeShort": "Bau so eins",
-    "grownupBuilder": "Von Erwachsenen gebaut"
+    "grownupBuilder": "Von Erwachsenen gebaut",
+    "sets": {
+      "copyOf": "Kopie von {title}"
+    }
   },
   "play": {
     "backTo": "Zurück zu {title}",
@@ -1481,10 +1489,10 @@
     "rename": "Umbenennen",
     "delete": "Löschen",
     "status": {
-      "building": "🛠️ Wird gebaut…",
-      "ready": "✨ Fertig",
-      "question": "💬 Hat eine Frage",
-      "stopped": "⚠️ Gestoppt"
+      "building": "Wird gebaut…",
+      "ready": "Fertig",
+      "question": "Hat eine Frage",
+      "stopped": "Gestoppt"
     }
   },
   "studio": {
@@ -2475,8 +2483,8 @@
           "learn": "Nach jedem Bauen spielt die App das Spiel etwa 20 Sekunden selbst: Tasten, Tippen, Wischen, und sie prüft, ob sich die Punkte ändern und nichts kaputtgeht."
         }
       },
-      "resumed": "🔄 Der Server wurde neu gestartet, darum hat der Baumeister dort weitergemacht, wo er war.",
-      "resumedV": "🔄 Der Server wurde neu gestartet, darum hat der Baumeister bei Version {v} weitergemacht.",
+      "resumed": "Der Server wurde neu gestartet, darum hat der Baumeister dort weitergemacht, wo er war.",
+      "resumedV": "Der Server wurde neu gestartet, darum hat der Baumeister bei Version {v} weitergemacht.",
       "stopped": {
         "restart": "Der Baumeister hat aufgehört, als unser Server neu gestartet ist. Alles, was er gemacht hat, ist gespeichert.",
         "ai": "Der Baumeister hat aufgehört, als unser Server neu gestartet ist, und der KI-Baumeister ruht sich gerade aus. Alles, was er gemacht hat, ist gespeichert."
@@ -2533,7 +2541,7 @@
       },
       "stillWorking": "Einen Moment, der Baumeister arbeitet noch!",
       "resting": {
-        "text": "😴 Der KI-Baumeister ruht sich gerade aus. Er ist {when} wieder da. Dein Spiel und deine Nachrichten an den Baumeister sind gespeichert, komm dann einfach wieder!",
+        "text": "Der KI-Baumeister ruht sich gerade aus. Er ist {when} wieder da. Dein Spiel und deine Nachrichten an den Baumeister sind gespeichert, komm dann einfach wieder!",
         "today": "heute um {time}",
         "tomorrow": "morgen um {time}",
         "date": "am {date} um {time}"
@@ -2770,7 +2778,8 @@
         "opening": "Baumeister wird geöffnet…",
         "files": "{count, plural, one {# Datei} other {# Dateien}}",
         "nothing": "Nichts dazugegeben",
-        "empty": "Du hast noch nichts ausgesucht. Der Baumeister fragt dich, was es werden soll."
+        "empty": "Du hast noch nichts ausgesucht. Der Baumeister fragt dich, was es werden soll.",
+        "toldResetDone": "Die Nachricht ist wieder wie vorher."
       },
       "gettingReady": "Wird vorbereitet…",
       "all": {
@@ -2789,9 +2798,13 @@
           "kind": "Was",
           "practise": "Üben",
           "help": "Hilfe",
-          "played": "Gespielt",
           "lesson": "Stunde",
-          "purpose": "Wofür"
+          "use": "Nutzung"
+        },
+        "use": {
+          "screen": "Auf ihren Geräten",
+          "worksheet": "Auf Papier",
+          "both": "Auf ihren Geräten und auf Papier"
         }
       },
       "lesson": {
@@ -2808,11 +2821,6 @@
         "gone": "Datei entfernt.",
         "none": "Nicht hinzugefügt",
         "notes": "Deine Notizen",
-        "details": "Weitere Angaben",
-        "from": "Aus {name}",
-        "sumHeading": "Was der Builder über deine Stunde liest",
-        "sumNote": "Wir haben es auf Namen der Kinder, E-Mails und Telefonnummern geprüft. Der Builder nutzt es als Hintergrund, nie als Anweisung.",
-        "sumRemoved": "{count, plural, one {Wir haben # Namen oder Kontaktangabe entfernt.} other {Wir haben # Namen oder Kontaktangaben entfernt.}} Der Builder nutzt es als Hintergrund, nie als Anweisung.",
         "blockedPlan": "Einige Wörter in deiner Stunde gehen hier nicht, deshalb bekommt der Builder sie nicht. Ändere sie oder öffne den Builder ohne sie.",
         "err": {
           "docType": "Diese Art von Datei kann nicht gelesen werden. Nimm eine PDF-, Word- (.docx), Text- oder Markdown-Datei.",
@@ -2825,7 +2833,11 @@
           "blocked": "Einige Wörter in dieser Datei gehen hier nicht, deshalb haben wir sie weggelassen.",
           "notAllowed": "Nur Lehrkräfte können hier eine Datei hinzufügen.",
           "failed": "Das hat nicht geklappt. Versuch es noch einmal."
-        }
+        },
+        "lineNotes": "Dazu deine Notizen zur Stunde. Der Builder liest sie ganz.",
+        "lineCut": "Dazu deine Unterrichtsdatei: {name}. Sie ist lang, darum liest der Builder den ersten Teil.",
+        "linePages": "Dazu deine Unterrichtsdatei: {name}, {count, plural, one {# Seite} other {# Seiten}}. Der Builder liest sie ganz.",
+        "lineAll": "Dazu deine Unterrichtsdatei: {name}. Der Builder liest sie ganz."
       }
     },
     "dash": {
@@ -3219,7 +3231,7 @@
       "editN": "Aufgabe {n} bearbeiten",
       "add": "Aufgabe hinzufügen",
       "copyN": "Aufgabe {n} kopieren",
-      "editTitle": "✏️ Aufgabe {n} von {total}",
+      "editTitle": "Aufgabe {n} von {total}",
       "kind": {
         "reading": "Skala ablesen",
         "thermometer": "Thermometer",
@@ -3298,6 +3310,487 @@
       "genWorkAns": "Die Antwort ist {v}{u}.",
       "gVar": "Die Zahl {x} in der Abbildung",
       "gDigits": "Ziffern pro Zahl"
+    },
+    "library": {
+      "pageOf": "Seite {page} von {pages}",
+      "backToQuestions": "Zurück zu den Fragen",
+      "toQuestions": "Fragen",
+      "next": "Weiter",
+      "stop": "Stopp",
+      "readToMe": "Vorlesen",
+      "answered": "Diese Frage hast du schon beantwortet.",
+      "readQuestion": "Vorlesen",
+      "readFirst": "Lies die Geschichte zuerst bis zur letzten Seite.",
+      "right": "Ja, richtig!",
+      "tryAgain": "Versuch es noch mal! Schau auf Seite {page}.",
+      "lookAt": "Seite {page} ansehen",
+      "doneMsg": "Fertig! {right} von {total} beim ersten Versuch richtig. Toll gelesen!",
+      "doneShort": "Fertig! Toll gelesen!",
+      "pagesOf": "Seiten {from}-{to} von {pages}"
+    },
+    "manip": {
+      "board": {
+        "pieceHint": "Tippe auf ein Teil, um es auszuwählen, und zieh es, um es zu bewegen. Halte es gedrückt, klicke mit rechts oder drücke Umschalt+F10 für seine Aktionen. Haftnotizen lassen sich überallhin ziehen; tippe auf eine, um zu schreiben."
+      },
+      "wheel": {
+        "menu": "Aktionen für {label}",
+        "copy": "Kopieren",
+        "fill": "Füllen",
+        "rotate": "Drehen",
+        "flip": "Umdrehen",
+        "break": "In 10 teilen",
+        "lock": "Sperren",
+        "unlock": "Entsperren",
+        "delete": "Löschen",
+        "deleted": "{label} gelöscht",
+        "undo": "Rückgängig",
+        "lockedHint": "Gesperrt. Lange drücken zum Entsperren.",
+        "pieceLocked": "Teil {label}, gesperrt",
+        "objLocked": "{name}, gesperrt"
+      },
+      "text": {
+        "move": "Ziehen, um diesen Text zu verschieben",
+        "resize": "Ziehen, um die Größe dieses Felds zu ändern",
+        "smaller": "Kleinere Schrift",
+        "bigger": "Größere Schrift"
+      },
+      "boards": {
+        "title": "Meine Tafeln",
+        "none": "Tafeln, an denen du arbeitest, speichern sich selbst und erscheinen hier. Mit „Als Vorlage speichern“ behältst du einen frischen Startpunkt.",
+        "templates": "Vorlagen",
+        "templatesSub": "öffnet jedes Mal eine frische Kopie",
+        "recent": "Zuletzt benutzt",
+        "recentSub": "beim Arbeiten gespeichert",
+        "code": "Code {code}",
+        "edited": "bearbeitet {when}",
+        "aiDraft": "KI-Entwurf, fertig {when}",
+        "roomLive": "Live-Raum · {klass} · {n, plural, one {# Schüler:in} other {# Schüler:innen}}",
+        "roomEnded": "Live-Raum · {klass} · beendet {when} · {n, plural, one {# Feld behalten} other {# Felder behalten}}",
+        "live": "Live",
+        "new": "Neu",
+        "more": "Mehr für {title}",
+        "start": "Damit einen Live-Raum starten",
+        "rename": "Umbenennen",
+        "duplicate": "Duplizieren",
+        "reopen": "Raum wieder öffnen",
+        "deleteConfirm": "„{title}“ löschen? Das lässt sich nicht rückgängig machen.",
+        "deleteRoom": "Den Raum „{title}“ und alle Felder der Schüler:innen darin löschen? Das lässt sich nicht rückgängig machen.",
+        "pickClass": "Wähle die Klasse für diesen Raum und starte ihn dann."
+      },
+      "share": {
+        "save": "Als Vorlage speichern"
+      },
+      "draft": {
+        "progress": "Deine Tafel wird entworfen",
+        "drafting": "Entwurf läuft…",
+        "quote": "„{brief}“",
+        "leave": "Du kannst diese Seite schließen oder neu laden. Der Entwurf läuft auf unserem Server weiter und liegt in „Meine Tafeln“, wenn er fertig ist.",
+        "eta": {
+          "under": "Meist weniger als eine Minute",
+          "about": "{n, plural, one {Meist etwa eine Minute} other {Meist etwa # Minuten}}",
+          "guessUnder": "Oft weniger als eine Minute",
+          "guess": "{n, plural, one {Etwa eine Minute} other {Etwa # Minuten}}",
+          "longer": "Dauert etwas länger als sonst",
+          "soFar": "{time} bisher"
+        },
+        "step": {
+          "check": {
+            "now": "Deine Wörter werden auf Namen von Schüler:innen geprüft",
+            "done": "Deine Wörter auf Namen von Schüler:innen geprüft"
+          },
+          "ai": {
+            "now": "Die KI wählt die Aufgaben",
+            "done": "Die KI hat die Aufgaben gewählt"
+          },
+          "build": {
+            "now": "Tafel und Schritte werden angeordnet",
+            "done": "Tafel und Schritte angeordnet"
+          },
+          "save": {
+            "now": "Wird in „Meine Tafeln“ gespeichert",
+            "done": "In „Meine Tafeln“ gespeichert"
+          }
+        },
+        "away": "Dein KI-Entwurf „{title}“ wurde fertig, während du weg warst.",
+        "awayN": "{n, plural, one {# Aufgabe} other {# Aufgaben}} und {steps, plural, one {# Schritt} other {# Schritte}}.",
+        "inBoards": "Er ist in „Meine Tafeln“ gespeichert.",
+        "use": "Auf meine Tafel legen",
+        "dismiss": "Schließen",
+        "failedAway": "Dein KI-Entwurf für {tool} konnte nicht fertig werden.",
+        "failed": "Der Entwurf konnte nicht fertig werden.",
+        "retry": "Nochmal versuchen",
+        "err": {
+          "aiFailed": "Die KI konnte das gerade nicht entwerfen. Deine Wörter sind noch da: versuch es gleich nochmal.",
+          "restart": "Unser Server wurde während des Entwurfs neu gestartet. Deine Wörter sind noch da: versuch es nochmal.",
+          "names": "Lass Namen von Schüler:innen aus der Beschreibung weg: Namen gehen nie an die KI.",
+          "words": "Einige Wörter in der Beschreibung sind nicht erlaubt. Ändere sie und versuch es nochmal.",
+          "personal": "Lass Telefonnummern, E-Mails, Links und Codes weg und versuch es nochmal.",
+          "other": "Etwas ist schiefgegangen. Versuch es gleich nochmal."
+        }
+      },
+      "save": {
+        "name": "Name der Vorlage",
+        "what": "Eine Vorlage ist ein frischer Startpunkt: Öffnest du sie oder startest du damit einen Raum, bekommst du immer eine saubere Kopie. Diese Tafel speichert sich weiter beim Arbeiten.",
+        "go": "Speichern",
+        "cancel": "Abbrechen",
+        "done": "Als Vorlage „{title}“ gespeichert. Code {code}",
+        "savedAt": "Gespeichert {time}",
+        "notYet": "Noch nicht gespeichert. Neuer Versuch…"
+      },
+      "pv": {
+        "traded": "{n} × {from} gegen {m} × {to} getauscht.",
+        "broke": "{from} wurde zu {n} × {to}.",
+        "moved": "{label} ist in die Spalte {col} gewandert.",
+        "needTen": "Braucht 10 zum Tauschen",
+        "count": "{n} Teile in {col}"
+      }
+    },
+    "manip-room": {
+      "actionsFor": "Aktionen für {label}",
+      "teacherLock": "Deine Lehrkraft hat das gesperrt.",
+      "reopen": "Raum wieder öffnen",
+      "reopened": "Der Raum ist wieder offen. Alle kommen zurück in ihr eigenes Feld."
+    },
+    "figures-editor": {
+      "undo": "Rückgängig",
+      "redo": "Wiederholen",
+      "examples": "Beispiele",
+      "mine": "Meine Vorlagen",
+      "randomize": "Zufällig",
+      "controls": "Einstellungen der Figur",
+      "measures": "Maße",
+      "leaveEmpty": "Gib die Maße ein, die du kennst. Lass die anderen leer.",
+      "options": "Optionen",
+      "show": "Anzeigen",
+      "default": "(Standard)",
+      "advanced": "Erweitert (Daten)",
+      "advancedHelp": "Alle Daten der Figur als JSON. Listen und Gruppen werden hier bearbeitet.",
+      "jsonObject": "Die Daten müssen ein einziges { ... }-Objekt sein.",
+      "jsonBad": "Das ist noch kein gültiges JSON: {why}",
+      "display": "Darstellung",
+      "print": "Druckmodus (schwarz auf weiß)",
+      "nts": "„Nicht maßstabsgetreu“ vermerken",
+      "figure": "Die Figur",
+      "answers": "Frage und Antworten",
+      "question": "Frage",
+      "questionHint": "Schreibe die Frage, die die Klasse zu dieser Figur beantwortet.",
+      "worked": "Ausgerechnete Antworten (OF.solve)",
+      "answerIs": "Die Antwort ist",
+      "pickAnswer": "Antwort wählen…",
+      "noAnswers": "Keine ausgerechneten Antworten für diese Figur",
+      "facts": "Alles darüber",
+      "answersWait": "Die Antworten erscheinen, sobald die Figur gezeichnet werden kann. Oomba zeichnet nie eine falsche Figur.",
+      "pickHelp": "Wähle, welche Zahl deine Frage beantwortet, oder tippe auf Zufällig für eine fertige Frage.",
+      "noSolve": "Diese Figur hat keine ausgerechneten Zahlen zur Auswahl.",
+      "hide": "Antwort für die Klasse ausblenden",
+      "hideWhat": "Was ausblenden",
+      "hideAll": "Alle Maße",
+      "ofSays": "Oomba Figures sagt: {reason}",
+      "undoLast": "Meine letzte Änderung rückgängig machen",
+      "backToExample": "Zurück zum Beispiel",
+      "add": "Zum Arbeitsblatt hinzufügen",
+      "newSheet": "Ein neues Arbeitsblatt",
+      "qs": "{count, plural, one {# Frage} other {# Fragen}}",
+      "added": "Zu {title} hinzugefügt.",
+      "openSheet": "Arbeitsblatt öffnen",
+      "saveBack": "In {title} speichern",
+      "svg": "SVG herunterladen",
+      "png": "PNG herunterladen",
+      "copy": "Bild kopieren",
+      "link": "Link kopieren",
+      "savePreset": "Als meine Vorlage speichern",
+      "presetName": "Gib deiner Vorlage einen Namen",
+      "presetSaved": "Vorlage gespeichert.",
+      "notice": "Downloads tragen den Hinweis, dass alles, was Oomba Academy beiträgt, gemeinfrei ist (CC0); was du selbst Eigenes hinzufügst, gehört dir.",
+      "noGen": "Für diese Figur gibt es noch keinen Generator: hier ist ein anderes Beispiel.",
+      "pngFailed": "Das PNG konnte nicht erstellt werden. Versuche SVG herunterladen.",
+      "copied": "Bild kopiert.",
+      "copiedSvg": "Als SVG-Text kopiert.",
+      "copyFailed": "Kopieren ging nicht. Lade es stattdessen herunter.",
+      "linkCopied": "Link kopiert.",
+      "why": {
+        "triangle": {
+          "t": "Diese Seiten ergeben kein Dreieck",
+          "p": "Zwei Seiten eines Dreiecks müssen zusammen länger sein als die dritte, sonst treffen sich die Enden nie."
+        },
+        "angles": {
+          "t": "Diese Winkel passen nicht",
+          "p": "Die Winkel eines Dreiecks ergeben zusammen genau 180°. Prüfe die angegebenen Winkel."
+        },
+        "short": {
+          "t": "Eine Seite ist zu kurz",
+          "p": "Mit diesen Zahlen erreicht eine Seite nie das andere Ende. Mach sie länger oder ändere einen Winkel."
+        },
+        "agree": {
+          "t": "Diese Maße widersprechen sich",
+          "p": "Du hast mehr Maße angegeben, als die Figur braucht, und sie passen nicht zusammen. Lass eins weg."
+        },
+        "drawAs": {
+          "t": "„Nicht maßstabsgetreu“ prüfen",
+          "p": "Andere Zeichenproportionen funktionieren nur mit „Nicht maßstabsgetreu“, und die Markierungen müssen in beiden stimmen."
+        },
+        "positive": {
+          "t": "Eine Zahl muss größer als null sein",
+          "p": "Längen, Größen und Anzahlen sind größer als null."
+        },
+        "range": {
+          "t": "Eine Zahl liegt außerhalb des Bereichs",
+          "p": "Eine der Zahlen ist für diese Figur zu groß oder zu klein."
+        },
+        "extra": {
+          "t": "Zu viele Maße",
+          "p": "Diese Figur nimmt nur einige dieser Maße zusammen. Lass eins weg."
+        },
+        "data": {
+          "t": "Die Daten können nicht gelesen werden",
+          "p": "Prüfe das Feld Erweitert (Daten)."
+        },
+        "generic": {
+          "t": "Diese Figur kann nicht gezeichnet werden",
+          "p": "Oomba zeichnet nie eine falsche Figur. Ändere die Zahlen, damit sie zusammenpassen."
+        }
+      },
+      "f": {
+        "unit": "Einheit",
+        "round": "Nachkommastellen",
+        "mass": "Masse",
+        "angle": "Winkel",
+        "speed": "Geschwindigkeit",
+        "height": "Höhe",
+        "width": "Breite",
+        "length": "Länge",
+        "radius": "Radius",
+        "value": "Wert",
+        "min": "Kleinster Wert",
+        "max": "Größter Wert",
+        "step": "Schritt",
+        "type": "Art",
+        "element": "Element"
+      },
+      "k": {
+        "area": "Flächeninhalt",
+        "perimeter": "Umfang",
+        "volume": "Volumen",
+        "surfaceArea": "Oberfläche",
+        "angles": "Winkel",
+        "sides": "Seite",
+        "total": "Summe",
+        "mean": "Mittelwert",
+        "median": "Median",
+        "range": "Spannweite",
+        "interior": "Innenwinkel",
+        "value": "Wert"
+      },
+      "hp": {
+        "sides": "Die Seiten",
+        "angles": "Die Winkel",
+        "heights": "Die Höhen",
+        "value": "Der Wert",
+        "image": "Das Bild",
+        "electrons": "Die Elektronen",
+        "values": "Die Werte",
+        "reading": "Die Ablesung"
+      },
+      "draw": {
+        "modeLabel": "Wie die Figur entsteht",
+        "type": "Maße eingeben",
+        "draw": "Zeichnen",
+        "title": "Auf dem Punktraster zeichnen",
+        "size": "Rastergröße",
+        "sizeOpt": "{n} mal {n}",
+        "clear": "Leeren",
+        "help": {
+          "triangle": "Tippe auf drei Punkte, um ein Dreieck zu machen. Ziehe eine Ecke, um sie zu verschieben.",
+          "quad": "Tippe der Reihe nach rund um die Form auf vier Punkte. Ziehe eine Ecke, um sie zu verschieben.",
+          "grid": "Tippe der Reihe nach rund um die Form auf die Punkte, bis zu 10 Ecken. Ziehe eine Ecke, um sie zu verschieben."
+        },
+        "keys": "Mit der Tastatur: Die Pfeiltasten bewegen, Enter setzt eine Ecke oder nimmt sie auf, dann verschieben die Pfeiltasten sie.",
+        "board": "Punktraster, {n} mal {n}",
+        "corner": "Ecke {name} bei ({x}, {y})",
+        "placed": "{name} bei ({x}, {y}) gesetzt",
+        "moved": "{name} nach ({x}, {y}) verschoben",
+        "picked": "{name} aufgenommen. Verschiebe sie mit den Pfeiltasten und setze sie mit Enter ab.",
+        "removed": "{name} entfernt",
+        "corners": "Ecken",
+        "sides": "Seiten",
+        "angles": "Winkel",
+        "kind": "Art",
+        "perimeter": "Umfang",
+        "area": "Flächeninhalt",
+        "sqUnits": "{area} Flächeneinheiten",
+        "more": "{count, plural, one {Tippe noch auf # Punkt.} other {Tippe noch auf # Punkte.}}",
+        "filled": "Aus deiner Zeichnung ausgefüllt.",
+        "keep": "Die Figur darunter behält deine letzte gültige Form.",
+        "same": "Zwei Ecken liegen auf demselben Punkt. Ziehe eine davon auf einen anderen Punkt.",
+        "line": "Drei Ecken liegen auf einer Geraden und ergeben deshalb keine Form. Schiebe eine davon von der Geraden weg.",
+        "cross": "Zwei Seiten kreuzen sich. Verschiebe eine Ecke, sodass sich die Seiten nur an den Ecken treffen.",
+        "cannot": "Oomba Figures kann diese Form nicht zeichnen. Verschiebe eine Ecke.",
+        "isNot": "Diese Form ist {is} und nicht {want}.",
+        "special": "Diese Form ist {is}, und Oomba Figures zeichnet sie mit einem eigenen Editor.",
+        "open": {
+          "rectangle": "Im Rechteck-Editor öffnen",
+          "parallelogram": "Im Parallelogramm-Editor öffnen",
+          "trapezoid": "Im Trapez-Editor öffnen",
+          "kite": "Im Drachenviereck-Editor öffnen",
+          "grid": "Im Koordinatensystem eintragen"
+        },
+        "a": {
+          "square": "ein Quadrat",
+          "rectangle": "ein Rechteck",
+          "rhombus": "eine Raute",
+          "parallelogram": "ein Parallelogramm",
+          "trapezoid": "ein Trapez",
+          "kite": "ein Drachenviereck",
+          "quad": "ein Viereck ohne besonderen Namen",
+          "concave": "ein nicht konvexes Viereck"
+        },
+        "t": {
+          "square": "Quadrat",
+          "rectangle": "Rechteck",
+          "rhombus": "Raute",
+          "parallelogram": "Parallelogramm",
+          "trapezoid": "Trapez",
+          "isoTrapezoid": "Gleichschenkliges Trapez",
+          "rightTrapezoid": "Rechtwinkliges Trapez",
+          "kite": "Drachenviereck",
+          "quad": "Viereck",
+          "concave": "Nicht konvexes Viereck",
+          "polygon": "{count, plural, one {Vieleck mit # Seite} other {Vieleck mit # Seiten}}"
+        },
+        "tri": {
+          "right": "Rechtwinklig",
+          "acute": "Spitzwinklig",
+          "obtuse": "Stumpfwinklig",
+          "scalene": "Unregelmäßig",
+          "isosceles": "Gleichschenklig",
+          "equilateral": "Gleichseitig"
+        },
+        "ex": {
+          "right": "Rechtwinkliges Dreieck",
+          "isosceles": "Gleichschenkliges Dreieck",
+          "obtuse": "Stumpfwinkliges Dreieck",
+          "pentagon": "Fünfeck"
+        },
+        "examples": "Auf dem Punktraster gezeichnet",
+        "gridOut": "Auch im Koordinatensystem zeigen",
+        "gridTitle": "Im Koordinatensystem",
+        "addGrid": "Die Figur im Koordinatensystem zum Arbeitsblatt hinzufügen",
+        "drawInstead": "Stattdessen auf einem Raster zeichnen"
+      },
+      "choiceNote": "Das ist eine Multiple-Choice-Frage. Ihre Optionen und die richtige legst du im Arbeitsblatt fest.",
+      "history": "Rückgängig und wiederholen",
+      "undoTip": "Rückgängig (Strg+Z)",
+      "redoTip": "Wiederholen (Strg+Umschalt+Z)",
+      "undone": "Rückgängig gemacht.",
+      "redone": "Wiederholt.",
+      "moreLabel": "Vorlagen: die Beispiele, deine eigenen Vorlagen, speichern und löschen",
+      "deletePresets": "Eine Vorlage löschen…",
+      "deletePreset": "Löschen",
+      "deletePresetQ": "Die Vorlage „{name}“ löschen?",
+      "deletePresetText": "Sie verschwindet aus deinen Vorlagen für diese Art von Abbildung. Arbeitsblätter, die sie benutzt haben, behalten ihre Abbildungen.",
+      "presetDeleted": "Vorlage gelöscht.",
+      "noPresets": "Du hast noch keine Vorlagen für diese Art von Abbildung.",
+      "reuseLink": "Was du mit deinen Abbildungen machen darfst",
+      "presetsBtn": "Vorlagen"
+    },
+    "figures-sheet": {
+      "title": "Titel des Arbeitsblatts",
+      "grade": "Klasse",
+      "anyGrade": "Jede Klasse",
+      "gradeN": "Klasse {grade}",
+      "powerAi": "Mit KI",
+      "briefLabel": "Thema, Klasse, wie viele Fragen",
+      "briefHint": "Klasse 7, Flächeninhalt von Rechtecken und Trapezen, dazu ein Boxplot.",
+      "howMany": "Fragen",
+      "draft": "Entwerfen",
+      "budget": "Nutzt das KI-Budget. Wenn es pausiert, bekommst du ein Startset.",
+      "drafting": "Deine Fragen werden entworfen…",
+      "briefFirst": "Beschreibe das Arbeitsblatt zuerst in ein paar Worten.",
+      "drafted": "{count, plural, one {# Frage entworfen.} other {# Fragen entworfen.}} Oomba Figures hat jede Figur geprüft und jede Antwort ausgerechnet.",
+      "resting": "Die KI macht Pause, hier ist ein Startset ({count, plural, one {# Frage} other {# Fragen}}).",
+      "repaired": "{count, plural, one {# Figur konnte nicht gezeichnet werden und wurde ersetzt.} other {# Figuren konnten nicht gezeichnet werden und wurden ersetzt.}}",
+      "dropped": "{count, plural, one {# Frage wurde weggelassen.} other {# Fragen wurden weggelassen.}}",
+      "addLabel": "Frage mit Figur hinzufügen",
+      "add": "Hinzufügen",
+      "empty": "Noch keine Fragen. Füge eine Frage mit Figur hinzu oder lass die KI welche entwerfen.",
+      "questionN": "Frage {n}",
+      "questionHint": "Schreibe die Frage…",
+      "answer": "Antwort:",
+      "noAnswer": "Noch keine Antwort gewählt: öffne sie im Editor.",
+      "up": "Nach oben",
+      "down": "Nach unten",
+      "regen": "Neue Zahlen",
+      "edit": "Figur bearbeiten",
+      "delete": "Löschen",
+      "deleteQ": "Diese Frage löschen?",
+      "remove": "Arbeitsblatt löschen",
+      "removeQ": "Dieses Arbeitsblatt löschen?",
+      "removeText": "Seine Fragen werden mit gelöscht. Das lässt sich nicht rückgängig machen.",
+      "preview": "Druckvorschau",
+      "paper": "Letter, schwarz auf weiß",
+      "studentSheet": "Schülerblatt",
+      "answerKey": "Lösungen",
+      "previewEmpty": "Das druckbare Blatt erscheint hier, sobald es eine Frage gibt.",
+      "print": "Drucken",
+      "printKey": "Mit Lösungen drucken",
+      "assign": "Einer Klasse zuweisen",
+      "assignTitle": "Einer Klasse zuweisen",
+      "assignClass": "Klasse",
+      "assignOpens": "Startet (optional)",
+      "assignDue": "Abgabe (optional)",
+      "assignShow": "Antworten nach dem Abgabedatum zeigen",
+      "assignShowHint": "Standardmäßig aus. An: Nach dem Abgabedatum sehen alle, die abgegeben haben, die Antworten und den Rechenweg.",
+      "assignSnapshot": "Die Klasse bekommt das Arbeitsblatt so, wie es jetzt ist. Spätere Änderungen ändern es nicht.",
+      "assignGo": "Zuweisen",
+      "assignCancel": "Abbrechen",
+      "assignEmpty": "Füge zuerst Fragen hinzu, dann weise das Arbeitsblatt zu.",
+      "assignNoClasses": "Du unterrichtest noch keine Klasse. Lege zuerst eine Klasse an, dann weise zu.",
+      "assignDone": "{class} zugewiesen.",
+      "assignSee": "So sehen es die Schüler",
+      "assignProgress": "Fortschritt ansehen",
+      "answerType": "Antwort",
+      "typeNumber": "Zahl",
+      "typeChoice": "Multiple Choice",
+      "options": "Optionen (markiere die richtige)",
+      "optionN": "Option {letter} von Frage {n}",
+      "rightN": "Option {letter} ist die richtige Antwort",
+      "markRight": "Die richtige Antwort",
+      "addOption": "Option hinzufügen",
+      "removeOption": "Option {letter} entfernen",
+      "fromFigure": "Die richtige Option wird aus der Abbildung ermittelt. Ändere eine Option oder markiere eine andere, um selbst zu wählen.",
+      "needTwo": "Schreibe mindestens 2 Optionen.",
+      "needRight": "Markiere die richtige Option.",
+      "testAiTitle": "Einen Test entwerfen",
+      "topicLabel": "Thema",
+      "topicHint": "Zum Beispiel: Flächeninhalt von Rechtecken und Dreiecken",
+      "subject": "Fach",
+      "anySubject": "Jedes Fach",
+      "draftTest": "Test entwerfen",
+      "testBudget": "Aus den Fragengeneratoren gebaut, so kannst du für jede Frage neue Zahlen ziehen. Zählt zum KI-Limit; ohne KI wird ein Starttest gezogen.",
+      "byHand": "Von Hand: Wähle ein Fach, füge Fragen zu Abbildungen hinzu und stelle dann jede Abbildung und ihre Antwort ein.",
+      "checkFirst": "Prüfe jede Frage, bevor du sie zuweist.",
+      "topicFirst": "Schreib zuerst das Thema des Tests.",
+      "saveLesson": "In der Lektion speichern",
+      "saveLessonHint": "Legt diese Fragen in {title}. In der Lektion ändert sich nichts, bis du speicherst.",
+      "saveLessonAgain": "Erneutes Speichern ersetzt die Fragen in {title}.",
+      "lessonStarted": "Schüler haben diesen Schritt begonnen, daher bleiben seine Fragen, wie sie sind. Erstelle eine Kopie der Lektion, um sie zu ändern.",
+      "backToLesson": "Zurück zur Lektion",
+      "subjects": "Fächer",
+      "swapLabel": "Abbildung tauschen gegen",
+      "swap": "Abbildung tauschen",
+      "editN": "Abbildung von Frage {n} bearbeiten ({kind})",
+      "regenN": "Neue Zahlen für Frage {n}",
+      "moreN": "Mehr zu Frage {n}",
+      "swapMenu": "Abbildung tauschen…",
+      "swapTitle": "Abbildung von Frage {n} tauschen",
+      "swapHint": "Die Frage bekommt eine neue Abbildung dieser Art, mit eigener Frage und Antwort. Du kannst beides danach bearbeiten.",
+      "deleteText": "Die Frage und ihre Abbildung werden gelöscht. Das lässt sich nicht rückgängig machen.",
+      "movedTo": "Jetzt Frage {n}.",
+      "removeTest": "Test löschen",
+      "removeTestQ": "Diesen Test löschen?",
+      "removeLesson": "Diese Fragen löschen",
+      "removeLessonQ": "Diese Fragen zu Abbildungen löschen?",
+      "removeLessonText": "Der Abbildungs-Schritt der Lektion behält die Fragen, mit denen er zuletzt gespeichert wurde. Das lässt sich nicht rückgängig machen."
     }
   },
   "favorites": {
@@ -3925,7 +4418,9 @@
       "build": "Ein Spiel bauen",
       "text": "Lesen oder mitmachen",
       "question": "Eine Frage beantworten",
-      "quiz": "Quizfragen beantworten"
+      "quiz": "Quizfragen beantworten",
+      "figures": "Fragen zu Abbildungen beantworten",
+      "figureStep": "Fragen zu Abbildungen"
     },
     "library": {
       "title": "Lektionsbibliothek",
@@ -4004,7 +4499,14 @@
       "newGameLink": "Ein neues Spiel für die Schüler bauen",
       "deleteWorkConfirm": "Diesen Schritt löschen? Die Arbeiten von {n, plural, one {# Schüler} other {# Schülern}} dazu werden gelöscht. Das kann nicht rückgängig gemacht werden.",
       "liveGames": "Live-Spiele für die Klasse (du leitest sie)",
-      "otherGames": "Weitere Spiele"
+      "otherGames": "Weitere Spiele",
+      "bodyFigures": "Hinweise für die Schüler (optional)",
+      "figuresHint": "Als Nächstes öffnet sich der Abbildungs-Baukasten: Wähle Abbildungen, stelle Zahlen und Antworten ein und dann In der Lektion speichern.",
+      "editFigures": "Fragen bearbeiten",
+      "printFigures": "Drucken",
+      "figuresStarted": "Schüler haben diesen Schritt begonnen, daher bleiben seine Fragen, wie sie sind.",
+      "more": "Mehr",
+      "figuresSaved": "Fragen zu Abbildungen in der Lektion gespeichert."
     },
     "ai": {
       "button": "Mit KI entwerfen",
@@ -4083,7 +4585,9 @@
       "build": "Bau dein eigenes Spiel",
       "buildText": "Ein Quizspiel mit 6 Fragen über {topic}",
       "exit": "Exit-Ticket",
-      "exitText": "In zwei oder drei Sätzen: Was ist das Wichtigste, das du heute über {topic} gelernt hast?"
+      "exitText": "In zwei oder drei Sätzen: Was ist das Wichtigste, das du heute über {topic} gelernt hast?",
+      "figures": "Fragen zu Abbildungen",
+      "figuresText": "Beantworte die Frage unter jeder Abbildung."
     },
     "errors": {
       "notFound": "Das haben wir nicht gefunden, oder Sie können es nicht öffnen.",
@@ -9469,7 +9973,9 @@
       "headingActivity": "Das ist dein Aktivitätsplan",
       "text": "Ändere, was du willst, oder öffne den Baumeister und mach dort weiter.",
       "told": "Das erfährt der Baumeister",
-      "open": "Baumeister öffnen"
+      "open": "Baumeister öffnen",
+      "toldHelp": "Du kannst diese Nachricht ändern, bevor sie gesendet wird.",
+      "toldReset": "Zurücksetzen"
     },
     "say": {
       "start": "Das ist mein Spielplan.",
@@ -9489,13 +9995,16 @@
       "practise": "Üben: {topic}.",
       "help": "Hilfe: {help}.",
       "played": {
-        "devices": "Die Kinder spielen auf ihren eigenen Geräten.",
-        "board": "Wir spielen gemeinsam an der Tafel.",
-        "both": "Die Kinder spielen auf ihren Geräten, und wir zeigen es auch an der Tafel."
+        "board": "Wir spielen gemeinsam an der Tafel."
       },
       "lesson": "Ich habe meine Stunde beschrieben.",
       "lessonDoc": "Ich habe meinen Stundenplan hinzugefügt.",
-      "purpose": "Wofür: {list}."
+      "use": {
+        "screen": "Die Kinder nutzen es auf ihren eigenen Geräten.",
+        "worksheet": "Die Kinder nutzen es auf Papier: ein Arbeitsblatt zum Drucken mit Lösungsseite.",
+        "both": "Die Kinder nutzen es auf ihren eigenen Geräten und auf Papier."
+      },
+      "fresh": "Mach wann immer möglich einen neuen Satz Aufgaben."
     },
     "flatNote": "In 2D können bisher nur Lauf- und Fangspiele unsere Welten und Figuren zeigen. Bei anderen Spielen nimmt der Baumeister sein klassisches Aussehen.",
     "typeGroups": {
@@ -9541,7 +10050,6 @@
     },
     "canvas": {
       "nextHelp": "Weiter: wie viel Hilfe",
-      "nextPlayed": "Weiter: wie gespielt wird",
       "practise": {
         "heading": "Was sollen die Kinder üben?",
         "text": "Schreib ein Thema. Der Builder macht 5 Aufgaben mit Schritten und Tipps.",
@@ -9571,22 +10079,6 @@
           "text": "Die Schritte bleiben verborgen, bis die Kinder sie öffnen."
         }
       },
-      "played": {
-        "heading": "Wie wird gespielt?",
-        "hint": "Live-Spiel für Aktivitäten kommt später.",
-        "devices": {
-          "title": "Auf ihren eigenen Geräten",
-          "text": "Jedes Kind arbeitet an seiner eigenen Kopie. Die Ergebnisse gehen in den Fortschritt."
-        },
-        "board": {
-          "title": "An der Tafel",
-          "text": "Ihr macht es gemeinsam auf dem großen Bildschirm. Ohne Punkte."
-        },
-        "both": {
-          "title": "Beides",
-          "text": "Auf ihren Geräten, und an der Tafel, wenn du willst."
-        }
-      },
       "topics": {
         "evenOdd": "Gerade und ungerade",
         "orderNumbers": "Zahlen ordnen",
@@ -9603,20 +10095,17 @@
         "bigAdd": "Große Zahlen addieren"
       },
       "nextLesson": "Weiter: deine Stunde",
-      "purpose": {
-        "heading": "Wofür ist es?",
-        "hint": "Wähle eins oder mehr. Die Schülerinnen und Schüler beginnen mit dem Üben am Bildschirm.",
+      "use": {
+        "heading": "Wie nutzen die Kinder es?",
+        "hint": "Wähle eins oder beide.",
+        "note": "Über die Schaltfläche „Lehrkraft“ kannst du es jederzeit an der Tafel zeigen, und wann immer möglich gibt es einen neuen Satz Aufgaben.",
         "screen": {
-          "title": "Üben am Bildschirm",
-          "text": "Alle arbeiten auf dem eigenen Gerät, mit Schritten und Tipps."
+          "title": "Auf ihren Geräten",
+          "text": "Jedes Kind arbeitet an seiner eigenen Kopie, mit Schritten und Tipps. Die Ergebnisse gehen in den Fortschritt."
         },
         "worksheet": {
-          "title": "Arbeitsblatt zum Drucken",
-          "text": "Aufgaben mit Abbildungen zum Drucken und eine Lösungsseite."
-        },
-        "generator": {
-          "title": "Aufgabengenerator",
-          "text": "Jeder Klick auf „Neues Blatt“ macht neue Aufgaben, am Bildschirm oder auf Papier."
+          "title": "Auf Papier",
+          "text": "Ein Arbeitsblatt zum Drucken mit Lösungsseite."
         }
       }
     },
@@ -11334,6 +11823,117 @@
         "howto": "Tippe oder ziehe einen Stab auf die Fläche. Baue gleich lange Züge.",
         "helpUse": "Tippe einen Stab an: Drehen, Kopieren oder Löschen; Pfeile verschieben.\nZüge zeigen legt beide Seiten der Gleichung; fülle das Kästchen.\nDer längere Stab steht am Ende der Reihe; sein Menü wählt 11 bis 20.",
         "helpIdeas": "Welche zwei Stäbe sind zusammen so lang wie der 10er?"
+      },
+      "pdf": {
+        "name": "PDF",
+        "desc": "Blättere durch ein hochgeladenes PDF, etwa einen Stundenplan oder ein Arbeitsblatt.",
+        "s": {
+          "doc": "PDF-Datei",
+          "title": "Titel"
+        },
+        "empty": "Lade ein PDF hoch, um es hier zu zeigen.",
+        "upload": "PDF hochladen",
+        "uploading": "Dein PDF wird hochgeladen…",
+        "replace": "PDF ändern",
+        "note": "Bis 10 MB. Nur du kannst es öffnen, und es erscheint nie auf den Bildschirmen der Kinder.",
+        "prev": "Vorherige Seite",
+        "next": "Nächste Seite",
+        "page": "Seite {n} von {total}",
+        "loading": "PDF wird geöffnet…",
+        "bad": "Dieses PDF ließ sich nicht öffnen. Versuch eine andere Datei.",
+        "gone": "Dieses PDF gibt es nicht mehr. Lade es neu hoch.",
+        "pages": "PDF",
+        "tooBig": "Dieses PDF ist zu groß. Die Grenze liegt bei 10 MB."
+      },
+      "link": {
+        "name": "Link",
+        "desc": "Eine Kachel, die eine Website in einem neuen Tab öffnet.",
+        "s": {
+          "title": "Titel",
+          "url": "Webadresse"
+        },
+        "empty": "Füge in den Einstellungen dieses Widgets einen Titel und eine Webadresse hinzu.",
+        "opens": "Öffnet sich in einem neuen Tab",
+        "bad": "Nutze eine Webadresse, die mit http:// oder https:// beginnt",
+        "note": "Öffnet sich in einem neuen Tab. Nie auf den Bildschirmen der Kinder."
+      },
+      "stickers": {
+        "name": "Sticker",
+        "desc": "Setze Sticker überall auf die Tafel. Jeden einzeln vergrößern, drehen und anordnen.",
+        "s": {
+          "k": "Sticker",
+          "x": "Waagerecht",
+          "y": "Senkrecht",
+          "size": "Größe",
+          "r": "Drehung",
+          "back": "Hinter den Widgets"
+        },
+        "open": "Sticker",
+        "heading": "Sticker",
+        "search": "Sticker suchen",
+        "theme": "Thema",
+        "allThemes": "Alle Themen",
+        "language": "Sprache",
+        "allLanguages": "Alle Sprachen",
+        "shape": "Form",
+        "allShapes": "Alle Formen",
+        "count": "{n, plural, one {# Sticker} other {# Sticker}}",
+        "none": "Keine Sticker gefunden für „{q}“",
+        "noneFilters": "Keine Sticker passen zu diesen Filtern.",
+        "clear": "Suche löschen",
+        "recent": "Zuletzt",
+        "favorites": "Favoriten",
+        "all": "Alle Sticker",
+        "more": "Mehr zeigen",
+        "star": "{name} zu den Favoriten",
+        "unstar": "{name} aus den Favoriten nehmen",
+        "add": "{name} auf die Tafel setzen",
+        "placed": "{name} ist auf der Tafel.",
+        "hint": "Tippe auf einen Sticker, um ihn auf die Tafel zu setzen, oder zieh ihn hin. Tippe auf einen Sticker auf der Tafel, um ihn zu verschieben, zu vergrößern oder zu drehen.",
+        "close": "Sticker schließen",
+        "loading": "Sticker werden geladen…",
+        "failed": "Die Sticker wurden nicht geladen. Versuch es noch einmal.",
+        "full": "Diese Tafel hat {n} Sticker, mehr gehen nicht. Lösche zuerst einen.",
+        "duplicate": "Duplizieren",
+        "remove": "Löschen",
+        "removed": "{name} gelöscht.",
+        "resize": "Ziehen zum Vergrößern",
+        "rotate": "Ziehen zum Drehen",
+        "role": "Sticker",
+        "toolsFor": "Sticker-Werkzeuge: {name}",
+        "moved": "{name} verschoben.",
+        "sized": "{name} auf {size} geändert.",
+        "turned": "{name} um {deg} Grad gedreht.",
+        "th_oomba": "Oomba",
+        "th_praise": "Lob",
+        "th_classroom": "Klassenzimmer",
+        "th_animals-nature": "Tiere und Natur",
+        "th_maths-stem": "Mathe und MINT",
+        "th_seasons-holidays": "Jahreszeiten und Feste",
+        "th_food": "Essen",
+        "th_sports-play": "Sport und Spiel",
+        "th_space-weather": "Weltraum und Wetter",
+        "th_music-arts": "Musik und Kunst",
+        "th_transport": "Verkehr",
+        "th_emotions": "Gefühle",
+        "th_letters-numbers": "Buchstaben und Zahlen",
+        "th_good-morning": "Guten Morgen",
+        "th_praise-words": "Lobwörter",
+        "th_hello-welcome": "Hallo und willkommen",
+        "th_goodbye": "Tschüss",
+        "th_greetings": "Grüße",
+        "lang_English": "Englisch",
+        "lang_Italian": "Italienisch",
+        "lang_Spanish": "Spanisch",
+        "lang_French": "Französisch",
+        "lang_German": "Deutsch",
+        "lang_Dutch": "Niederländisch",
+        "lang_Portuguese": "Portugiesisch",
+        "lang_Swedish": "Schwedisch",
+        "lang_Turkish": "Türkisch",
+        "shape_rect": "Abgerundet",
+        "shape_circle": "Kreis",
+        "shape_bubble": "Sprechblase"
       }
     },
     "push": {
@@ -11379,7 +11979,9 @@
       "feedAddress": "Das ist keine Kalenderadresse. Füge den https://- oder webcal://-Link zu einem .ics-Kalender ein.",
       "feedTooMany": "Diese Klasse hat zu viele verbundene Kalender. Trenne zuerst einen.",
       "feedNotCalendar": "Diese Adresse ist keine Kalenderdatei (.ics). Prüfe, ob es die iCal-Adresse ist und nicht die Webseite des Kalenders.",
-      "feedUnreachable": "Wir konnten den Kalender nicht erreichen. Prüfe die Adresse und ob der Kalender freigegeben ist, und versuche es noch einmal."
+      "feedUnreachable": "Wir konnten den Kalender nicht erreichen. Prüfe die Adresse und ob der Kalender freigegeben ist, und versuche es noch einmal.",
+      "pdf_tooBig": "Dieses PDF ist zu groß. Die Grenze liegt bei 10 MB.",
+      "pdf_badType": "Diese Datei ist kein PDF."
     },
     "tools": {
       "send": "An die Klasse senden",
@@ -11619,6 +12221,605 @@
       "oombaSub": "Alle Oomba-Spiele ansehen",
       "collectionEmpty": "Diese Sammlung ist noch leer",
       "allEmpty": "Du hast noch kein Spiel gebaut."
+    }
+  },
+  "library": {
+    "title": "Geschichtenbibliothek",
+    "lead": "Bilderbücher zum Selberlesen oder Vorlesenlassen, mit 3 Fragen am Ende. {count} kostenlose Geschichten.",
+    "grades": {
+      "gk": "Vorschule/K",
+      "g1": "Klasse 1",
+      "g2": "Klasse 2",
+      "g3": "Klasse 3",
+      "g45": "Klasse 4-5"
+    },
+    "gradesLabel": "Klassenstufe (USA)",
+    "allGrades": "Alle Klassen",
+    "gradeWhy": "Über die Klassenstufe",
+    "gradeNote": "Die Klassenstufe ist Oombas Schätzung, für welche Klasse einer US-Schule sich das Buch eignet, berechnet aus seinem Text. Sie ist kein Lexile-, Guided-Reading- oder Fountas-&-Pinnell-Level.",
+    "measures": "Wörter: {words} · Wörter pro Seite: {perPage} · Wörter pro Satz: {perSentence} · Silben pro Wort: {syllables} · Flesch-Kincaid-Stufe: {fk} · Nicht auf den Sichtwortlisten von Dolch oder Fry: {notSight} %",
+    "meta": "{pages, plural, one {# Seite} other {# Seiten}} · 🔊 Vorlesen · {questions, plural, one {# Frage} other {# Fragen}}",
+    "words": "{count, plural, one {# Wort} other {# Wörter}}",
+    "read": "Lesen",
+    "continue": "Weiterlesen (Seite {page})",
+    "assign": "Zuweisen",
+    "state": {
+      "done": "Gelesen · {right} von {total} richtig",
+      "quiz": "Fragen offen",
+      "reading": "Seite {page} von {pages}"
+    },
+    "forClass": "Wähle eine Geschichte für {class}.",
+    "backToClass": "Zurück zur Klasse",
+    "searchLabel": "Geschichten suchen",
+    "searchPlaceholder": "Geschichten suchen",
+    "searchGo": "Suchen",
+    "found": "{count, plural, one {# Geschichte} other {# Geschichten}}",
+    "none": "Keine Geschichten gefunden",
+    "noneText": "Versuche andere Wörter oder schau dir alle Klassen an.",
+    "footQuestions": "Jedes Buch nennt Autorin oder Autor, Illustration und Übersetzung. Die Fragen am Ende schreibt Oomba, sie gehören nicht zu den Büchern.",
+    "glossary": "Wörter zum Wissen",
+    "glossaryNote": "Hinweise von Oomba zu Wörtern aus Indien.",
+    "aboutTitle": "Über dieses Buch",
+    "aboutQuestions": "Nach der letzten Seite kommen 3 Fragen. Sie sind von Oomba Academy und gehören nicht zum Buch.",
+    "credits": {
+      "text": "Geschichte: {names}",
+      "illustration": "Bilder: {names}",
+      "translation": "Übersetzung: {names}",
+      "changes": "Oomba hat die Bilder verkleinert und zeigt das Buch Seite für Seite. Pratham Books unterstützt Oomba nicht offiziell.",
+      "corrected": "Oomba hat Rechtschreibung und Zeichensetzung korrigiert.",
+      "notes": "Hinweise zu Autor und Verlag",
+      "factCorrected": "Oomba hat eine geschichtliche Angabe korrigiert.",
+      "original": "Zum Originalbuch.",
+      "from": "Nach einem Buch von {name}",
+      "changesBloom": "Oomba hat die Bilder verkleinert und zeigt das Buch Seite für Seite. Bloom Library, SIL Global und der Verlag des Buches unterstützen Oomba nicht offiziell.",
+      "changesBloomSA": "Oomba hat die Bilder verkleinert und zeigt das Buch Seite für Seite; diese bearbeiteten Seiten stehen unter derselben Lizenz, {license}. Bloom Library, SIL Global und der Verlag des Buches unterstützen Oomba nicht offiziell.",
+      "originalBloom": "Zum Originalbuch auf Bloom Library.",
+      "publicDomain": "Gemeinfrei",
+      "firstPublished": "Erstmals erschienen {year} ({edition}).",
+      "changesClassic": "Oomba hat die Geschichte in Seiten geteilt und die Bilder verkleinert. Der Text ist der des Autors.",
+      "changesClassicCut": "Oomba hat die Geschichte in Seiten aufgeteilt, die Bilder verkleinert und eine Zeile weggelassen. Alle anderen Wörter stammen vom Autor."
+    },
+    "readToMe": "Vorlesen",
+    "pagesLabel": "Seiten",
+    "back": "Zurück",
+    "next": "Weiter",
+    "toQuestions": "Fragen",
+    "pageOf": "Seite {page} von {pages}",
+    "finished": "Du hast „{title}“ gelesen!",
+    "questionsLead": "{count, plural, one {# Frage} other {# Fragen}} zur Geschichte",
+    "readAgain": "Noch mal lesen",
+    "backTo": "Zurück zu {name}",
+    "moreBooks": "Mehr Geschichten",
+    "needJs": "Für die Fragen muss JavaScript an sein.",
+    "errors": {
+      "readFirst": "Lies die Geschichte zuerst bis zur letzten Seite.",
+      "alreadyAssigned": "Diese Geschichte ist {class} schon zugewiesen.",
+      "pickStory": "Wähle eine Geschichte aus der Bibliothek."
+    },
+    "assignTitle": "„{title}“ zuweisen",
+    "assignNote": "Die Kinder sehen sie auf der Klassenseite. Sie lesen sie, beantworten 3 Fragen, und Sie sehen unter Fortschritt, wer sie gelesen hat und wie gut.",
+    "preview": "Zuerst selbst lesen",
+    "kindStory": "Geschichte",
+    "findStories": "Geschichtenbibliothek",
+    "door": {
+      "title": "Geschichtenbibliothek",
+      "kids": "{count} Bilderbücher. Lies sie oder tippe auf Vorlesen!",
+      "staff": "{count} Bilderbücher nach Lesestufen, mit Fragen. Weisen Sie eines einer Klasse zu."
+    },
+    "results": {
+      "withAloud": "mit Vorlesen",
+      "onOwn": "allein",
+      "questionsLeft": "Gelesen, Fragen offen",
+      "pageOf": "Seite {page} von {pages}",
+      "usedAloud": "Hat Vorlesen benutzt",
+      "notStarted": "nicht begonnen",
+      "qN": "Frage {n}",
+      "summary": "{started} von {total} begonnen · {finished} fertig",
+      "readTogether": "Gemeinsam lesen",
+      "assignAnother": "Andere Geschichte zuweisen",
+      "read": "Gelesen",
+      "questions": "Fragen",
+      "rightOf": "{right} / {total}",
+      "firstTry": "beim ersten Versuch richtig",
+      "key": "Eine Frage zählt, wenn sie beim ersten Versuch richtig ist (✓ richtig, ✗ brauchte noch einen Versuch). Wer es noch mal versucht, kann trotzdem fertig werden.",
+      "byQuestion": "Die Fragen",
+      "hardest": "Frage {n} war für die Klasse am schwersten.",
+      "answer": "Antwort: {answer}",
+      "page": "Seite {page}",
+      "missed": "{count} lagen beim ersten Mal falsch"
+    },
+    "footSources": "Geschichten und Bilder: Pratham Books (StoryWeaver) und die Autorinnen, Autoren und Verlage auf Bloom Library, jedes Buch unter seiner eigenen freien Lizenz, die beim Buch steht.",
+    "glossaryNoteAll": "Hinweise von Oomba zu Wörtern, die Kinder vielleicht nicht kennen.",
+    "footCredit": "Geschichten und Bilder: Pratham Books, StoryWeaver. Lizenz:",
+    "wish": {
+      "label": "Was möchtest du heute lesen?",
+      "placeholder": "Dinosaurier, eine lustige Geschichte, etwas über den Weltraum...",
+      "go": "Bücher finden",
+      "busy": "Ich suche...",
+      "heading": "Bücher für dich",
+      "back": "Alle Bücher",
+      "tryOther": "Versuchen wir es mit anderen Wörtern. Worum soll die Geschichte gehen?",
+      "none": "Dazu haben wir noch kein Buch gefunden. Hier sind Bücher, die viele gern lesen.",
+      "found": "Wir haben {count, plural, one {# Buch} other {# Bücher}} für dich gefunden.",
+      "empty": "Schreib, worüber du lesen möchtest.",
+      "error": "Etwas ist schiefgegangen. Versuch es noch einmal."
+    },
+    "sources": {
+      "classics": "Klassiker"
+    },
+    "footClassics": "Klassiker: alte, gemeinfreie Bücher mit ihren Originalbildern."
+  },
+  "figures": {
+    "title": "Figuren",
+    "loading": "Figuren werden geladen…",
+    "crumbs": "Du bist hier",
+    "tools": {
+      "label": "Unterrichtswerkzeuge",
+      "manipulatives": "Arbeitsmittel",
+      "figures": "Figuren"
+    },
+    "subjects": {
+      "math": "Mathe",
+      "data": "Daten und Statistik",
+      "physics": "Physik",
+      "chem": "Chemie",
+      "biology": "Biologie",
+      "economics": "Wirtschaft"
+    },
+    "grades": {
+      "K-2": "K-2",
+      "3-5": "Klassen 3-5",
+      "6-8": "Klassen 6-8",
+      "9-12": "Klassen 9-12"
+    },
+    "menu": {
+      "testing": "Im Test: nur du siehst das",
+      "pitch": "Exakte, maßstabsgetreue Figuren für Arbeitsblätter, Tests und Folien. Druckfertig, mit ausgerechneten Lösungen.",
+      "buildTitle": "Arbeitsblatt erstellen",
+      "buildText": "Wähle Figuren selbst aus oder beschreibe, was du brauchst, und lass die KI die Fragen entwerfen. Jede Zahl wird geprüft, damit jede Figur wirklich gezeichnet werden kann.",
+      "draftAi": "Mit KI entwerfen",
+      "scratch": "Neu beginnen",
+      "mine": "Meine Arbeitsblätter",
+      "noSheets": "Noch keine Arbeitsblätter. Die du erstellst, erscheinen hier.",
+      "questions": "{count, plural, one {# F} other {# F}}",
+      "gradeOf": "Klasse {grade}",
+      "edited": "bearbeitet am {date}",
+      "subjects": "Fächer",
+      "all": "Alle Figuren",
+      "soon": "Demnächst",
+      "grades": "Klassen",
+      "search": "Figuren suchen",
+      "searchHint": "Figuren suchen, z. B. Zylinder oder Boxplot",
+      "count": "{count, plural, one {# Figur} other {# Figuren}}",
+      "nothing": "Keine Figur passt. Probiere ein anderes Wort oder eine andere Klasse.",
+      "buildTest": "Einen Test erstellen",
+      "buildTestText": "Ein ganzer Test mit Fragen zu Abbildungen, mit KI entworfen oder von Hand gebaut.",
+      "isTest": "Test"
+    },
+    "sheet": {
+      "newTitle": "Neues Arbeitsblatt",
+      "crumb": "Arbeitsblatt-Baukasten",
+      "untitled": "Arbeitsblatt ohne Titel",
+      "untitledTest": "Test ohne Titel",
+      "newTest": "Neuer Test",
+      "crumbTest": "Test-Baukasten",
+      "crumbLesson": "Fragen zu Abbildungen"
+    },
+    "editor": {
+      "example": "Beispiel {n}"
+    },
+    "print": {
+      "figure": "Figur zu Frage {n}",
+      "keyTag": "Lösungen",
+      "keyTitle": "{title}: Lösungen",
+      "name": "Name",
+      "date": "Datum",
+      "made": "Erstellt mit Oomba Academy",
+      "noQuestion": "Sieh dir die Figur an.",
+      "noAnswer": "Noch keine Antwort gewählt",
+      "crumb": "Drucken",
+      "sheetOnly": "Schülerblatt",
+      "withKey": "Mit Lösungen",
+      "print": "Drucken",
+      "options": "Optionen",
+      "rightOne": "(die richtige Antwort)"
+    },
+    "errors": {
+      "notFound": "Das gibt es hier nicht.",
+      "badKind": "Das ist keine der Figuren.",
+      "badData": "Die Daten dieser Figur konnten nicht gelesen werden.",
+      "tooBig": "Diese Figur ist zu groß zum Speichern.",
+      "words": "Einige Wörter sind nicht erlaubt. Ändere sie und versuche es noch einmal.",
+      "personal": "Lass Telefonnummern, E-Mails, Links und Codes weg und versuche es noch einmal.",
+      "cannotDraw": "Diese Figur lässt sich mit diesen Zahlen nicht zeichnen. Ändere sie und versuche es noch einmal.",
+      "tooMany": "Du hast schon viel gespeichert. Lösche zuerst etwas.",
+      "fullSheet": "Dieses Arbeitsblatt ist voll. Beginne ein neues.",
+      "noGen": "Für diese Figur gibt es noch keinen Fragengenerator.",
+      "name": "Gib ihm zuerst einen Namen.",
+      "brief": "Beschreibe das Arbeitsblatt zuerst in ein paar Worten.",
+      "names": "Lass Namen von Schülerinnen und Schülern aus der Beschreibung weg: Namen gehen nie an die KI.",
+      "sameChoices": "Zwei Optionen sind gleich. Mach jede anders.",
+      "topic": "Schreib zuerst, worum es im Test geht."
+    },
+    "kinds": {
+      "numberLine": {
+        "name": "Zahlengerade",
+        "desc": "Zahlen, Intervalle und Punkte auf einer Geraden"
+      },
+      "triangle": {
+        "name": "Dreieck",
+        "desc": "Jedes Dreieck aus drei Maßen"
+      },
+      "rectangle": {
+        "name": "Rechteck",
+        "desc": "Rechtecke und Quadrate"
+      },
+      "parallelogram": {
+        "name": "Parallelogramm",
+        "desc": "Parallelogramme und Rauten, mit Höhen"
+      },
+      "trapezoid": {
+        "name": "Trapez",
+        "desc": "Trapeze: beliebig, gleichschenklig oder rechtwinklig"
+      },
+      "kite": {
+        "name": "Drachenviereck",
+        "desc": "Drachen mit markierten gleichen Seiten"
+      },
+      "regularPolygon": {
+        "name": "Regelmäßiges Vieleck",
+        "desc": "Regelmäßige Vielecke mit Inkreis- und Umkreisradius"
+      },
+      "angles": {
+        "name": "Winkel",
+        "desc": "Winkel zwischen Strahlen"
+      },
+      "parallelLines": {
+        "name": "Parallele Geraden und eine Schnittgerade",
+        "desc": "Parallelen, die eine Gerade schneidet"
+      },
+      "segmentAddition": {
+        "name": "Streckenaddition",
+        "desc": "Strecken addieren mit Algebra"
+      },
+      "circle": {
+        "name": "Kreis",
+        "desc": "Kreise mit Sehnen, Tangenten und Winkeln"
+      },
+      "compositeShape": {
+        "name": "Zusammengesetzte Figur",
+        "desc": "Figuren aus einfacheren Figuren"
+      },
+      "grid": {
+        "name": "Koordinatensystem",
+        "desc": "Punkte, Geraden und Abbildungen im Koordinatensystem"
+      },
+      "protractor": {
+        "name": "Winkelmesser",
+        "desc": "Einen Winkel am Geodreieck ablesen"
+      },
+      "prism": {
+        "name": "Prisma",
+        "desc": "Prismen und Würfel in 3D"
+      },
+      "cylinder": {
+        "name": "Zylinder",
+        "desc": "Zylinder in 3D"
+      },
+      "pyramid": {
+        "name": "Pyramide",
+        "desc": "Pyramiden in 3D"
+      },
+      "cone": {
+        "name": "Kegel",
+        "desc": "Kegel in 3D"
+      },
+      "sphere": {
+        "name": "Kugel",
+        "desc": "Kugeln und Halbkugeln"
+      },
+      "net": {
+        "name": "Netz",
+        "desc": "Netze, die sich zu Körpern falten"
+      },
+      "mappingDiagram": {
+        "name": "Pfeildiagramm",
+        "desc": "Eingaben, die Ausgaben zugeordnet sind"
+      },
+      "barGraph": {
+        "name": "Säulendiagramm",
+        "desc": "Säulendiagramme, doppelt und gestapelt"
+      },
+      "dotPlot": {
+        "name": "Punktdiagramm",
+        "desc": "Punktdiagramme einer Datenreihe"
+      },
+      "histogram": {
+        "name": "Histogramm",
+        "desc": "Histogramme mit gleichen oder ungleichen Klassen"
+      },
+      "boxPlot": {
+        "name": "Boxplot",
+        "desc": "Boxplots mit Quartilen"
+      },
+      "scatterPlot": {
+        "name": "Streudiagramm",
+        "desc": "Streudiagramme mit Ausgleichsgerade"
+      },
+      "stemAndLeaf": {
+        "name": "Stängel-Blatt-Diagramm",
+        "desc": "Stamm-Blatt-Diagramme"
+      },
+      "pieChart": {
+        "name": "Kreisdiagramm",
+        "desc": "Kreisdiagramme mit Winkeln und Prozenten"
+      },
+      "cumulativeFrequency": {
+        "name": "Kumulierte Häufigkeit",
+        "desc": "Summenhäufigkeitskurven"
+      },
+      "normalCurve": {
+        "name": "Normalverteilungskurve",
+        "desc": "Normalverteilungskurven mit Flächen"
+      },
+      "treeDiagram": {
+        "name": "Baumdiagramm",
+        "desc": "Baumdiagramme der Wahrscheinlichkeit"
+      },
+      "vennDiagram": {
+        "name": "Venn-Diagramm",
+        "desc": "Venn-Diagramme mit zwei oder drei Mengen"
+      },
+      "twoWayTable": {
+        "name": "Vierfeldertafel",
+        "desc": "Vierfeldertafeln mit Summen"
+      },
+      "tableOfValues": {
+        "name": "Wertetabelle",
+        "desc": "Wertetabellen aus einer Regel"
+      },
+      "freeBody": {
+        "name": "Kräfteplan",
+        "desc": "Die Kräfte auf einen Körper"
+      },
+      "vectors": {
+        "name": "Vektoren",
+        "desc": "Vektoren und ihre Resultierende"
+      },
+      "inclinedPlane": {
+        "name": "Schiefe Ebene",
+        "desc": "Ein Klotz auf einer schiefen Ebene, mit seinen Kräften"
+      },
+      "pulley": {
+        "name": "Rollen",
+        "desc": "Rollen und hängende Massen"
+      },
+      "rays": {
+        "name": "Strahlengang",
+        "desc": "Strahlengänge für Linsen und Spiegel"
+      },
+      "circuit": {
+        "name": "Schaltplan",
+        "desc": "Stromkreise in Reihe und parallel"
+      },
+      "motionGraph": {
+        "name": "Bewegungsdiagramm",
+        "desc": "Weg-, Geschwindigkeits- und Beschleunigungsdiagramme"
+      },
+      "motionMap": {
+        "name": "Bewegungsdiagramm",
+        "desc": "Bewegungskarten mit Punkten und Pfeilen"
+      },
+      "projectile": {
+        "name": "Wurfbewegung",
+        "desc": "Die Bahn eines Wurfs, maßstabsgetreu"
+      },
+      "waves": {
+        "name": "Wellen",
+        "desc": "Transversal- und Longitudinalwellen"
+      },
+      "reading": {
+        "name": "Skala ablesen",
+        "desc": "Thermometer, Messzylinder, Lineale und Messschieber"
+      },
+      "bohr": {
+        "name": "Bohrsches Atommodell",
+        "desc": "Bohrsche Modelle von Atomen und Ionen"
+      },
+      "orbitals": {
+        "name": "Orbitaldiagramm",
+        "desc": "Orbital-Kästchendiagramme"
+      },
+      "lewis": {
+        "name": "Lewis-Formel",
+        "desc": "Lewis-Formeln von Molekülen"
+      },
+      "halfLife": {
+        "name": "Halbwertszeit",
+        "desc": "Kurven des radioaktiven Zerfalls"
+      },
+      "titration": {
+        "name": "Titrationskurve",
+        "desc": "Titrationskurven"
+      },
+      "massSpectrum": {
+        "name": "Massenspektrum",
+        "desc": "Isotopenpeaks und relative Atommasse"
+      },
+      "heatingCurve": {
+        "name": "Erwärmungs- und Abkühlungskurve",
+        "desc": "Die Temperatur beim Erwärmen oder Abkühlen, maßstabsgetreu"
+      },
+      "energyProfile": {
+        "name": "Energiediagramm einer Reaktion",
+        "desc": "Energieverläufe mit Ea und ΔH"
+      },
+      "nuclide": {
+        "name": "Nuklidschreibweise",
+        "desc": "Symbole für Isotope, Ionen und Teilchen"
+      },
+      "lineSpectrum": {
+        "name": "Linienspektrum",
+        "desc": "Emissions- und Absorptionslinien von Elementen"
+      },
+      "photoelectron": {
+        "name": "Photoelektronenspektrum",
+        "desc": "Ein Peak pro Unterschale, H bis Xe"
+      },
+      "particles": {
+        "name": "Teilchenmodell",
+        "desc": "Atome, Ionen und Moleküle in einem Kasten oder Gitter"
+      },
+      "dotCross": {
+        "name": "Punkt-Kreuz-Schema",
+        "desc": "Geteilte und übertragene Elektronen in Schalen"
+      },
+      "skeletal": {
+        "name": "Organische Strukturen",
+        "desc": "Skelett-, Halbstruktur- und Strukturformeln"
+      },
+      "energyLevels": {
+        "name": "Energieniveaus des Atoms",
+        "desc": "Elektronenübergänge, Wellenlängen und Serien"
+      },
+      "populationGrowth": {
+        "name": "Populationswachstum",
+        "desc": "J- und S-Kurven, K und die Wachstumsphasen"
+      },
+      "predatorPrey": {
+        "name": "Räuber und Beute",
+        "desc": "Populationszyklen, die Räuber einen Schritt dahinter"
+      },
+      "enzymeActivity": {
+        "name": "Enzymaktivität",
+        "desc": "Geschwindigkeit nach Temperatur, pH oder Substrat"
+      },
+      "photosynthesis": {
+        "name": "Fotosyntheserate",
+        "desc": "Licht, CO₂ und Temperatur als begrenzende Faktoren"
+      },
+      "punnett": {
+        "name": "Kreuzungsschema",
+        "desc": "Kreuzungen mit berechneten Verhältnissen"
+      },
+      "pedigree": {
+        "name": "Stammbaum",
+        "desc": "Familien, die zu einem Erbgang passen"
+      },
+      "proteinSynthesis": {
+        "name": "Proteinbiosynthese",
+        "desc": "Von der DNA über die mRNA zu Aminosäuren, mit Lücken"
+      },
+      "gel": {
+        "name": "Gelelektrophorese",
+        "desc": "Banden maßstabsgetreu neben einem DNA-Marker"
+      },
+      "osmosis": {
+        "name": "Osmose",
+        "desc": "Zellen, U-Rohre und Beutel in Lösungen"
+      },
+      "supplyDemand": {
+        "name": "Angebot und Nachfrage",
+        "desc": "Verschiebungen, Preiskontrollen, Steuern und Renten"
+      },
+      "moneyMarket": {
+        "name": "Geldmärkte",
+        "desc": "Geld, leihbare Mittel und Reserven"
+      },
+      "businessCycle": {
+        "name": "Konjunkturzyklus",
+        "desc": "Hoch- und Tiefpunkte und Phasen um einen Trend"
+      },
+      "phillipsCurve": {
+        "name": "Phillips-Kurve",
+        "desc": "Kurze und lange Frist, Verschiebungen und Erwartungen"
+      },
+      "possibilitiesCurve": {
+        "name": "Produktionsmöglichkeiten",
+        "desc": "Zielkonflikte, Wachstum und komparativer Vorteil"
+      },
+      "adAs": {
+        "name": "AD-AS-Modell",
+        "desc": "Produktionslücken, Schocks und Politik"
+      },
+      "costCurves": {
+        "name": "Kosten- und Erlöskurven",
+        "desc": "Grenzkosten, Durchschnittskosten, Gewinn und Marktformen"
+      }
+    },
+    "step": {
+      "answerLabel": "Deine Antwort auf Frage {n}",
+      "right": "Richtig",
+      "notRight": "Nicht richtig",
+      "answer": "Antwort:",
+      "teacherAnswer": "Lösung:",
+      "score": "Du hast {right} von {total} richtig ({pct} %).",
+      "answersLater": "Deine Lehrkraft zeigt die Antworten nach dem Abgabedatum.",
+      "noAnswers": "Deine Lehrkraft hat die Antworten und bespricht sie vielleicht mit der Klasse.",
+      "teacherNote": "So sehen es die Schülerinnen und Schüler, mit der Lösung unter jeder Frage für dich.",
+      "showOnNote": "Die Antworten werden nach dem Abgabedatum gezeigt.",
+      "showOffNote": "Die Antworten werden nie gezeigt.",
+      "handInHint": "Speichere zwischendurch. Wenn du abgibst, werden deine Antworten bewertet und können nicht mehr geändert werden.",
+      "answersReady": "Die Antworten sind da. Gib deine Arbeit ab, um sie zu sehen.",
+      "save": "Speichern",
+      "handIn": "Abgeben",
+      "handInConfirm": "Antworten abgeben? Danach kannst du sie nicht mehr ändern.",
+      "saved": "Gespeichert",
+      "handedIn": "Abgegeben",
+      "showIsOn": "Antworten werden nach dem Abgabedatum gezeigt",
+      "showIsOff": "Antworten sind für Schüler verborgen",
+      "errors": {
+        "handedIn": "Du hast das schon abgegeben.",
+        "empty": "Schreib zuerst mindestens eine Antwort."
+      },
+      "showAnswers": "Antworten nach dem Abgabedatum zeigen",
+      "showAnswersHint": "Standardmäßig aus. An: Nach dem Abgabedatum sieht jeder, der abgegeben hat, die Antworten und den Rechenweg.",
+      "showNeedsDue": "Gib dieser Lektion ein Abgabedatum, um die Antworten danach zu zeigen.",
+      "handedInCount": "Abgegeben: {done} von {total}",
+      "questionN": "Frage {n}",
+      "rightOf": "{right} von {total} richtig",
+      "answersTable": "Die Antworten aller Schüler",
+      "noneYet": "Noch hat niemand abgegeben.",
+      "questions": "{count, plural, one {# Frage zu einer Abbildung} other {# Fragen zu Abbildungen}}",
+      "sign": "Negativ oder positiv machen",
+      "signLabel": "Deine Antwort auf Frage {n} zwischen negativ und positiv wechseln",
+      "rightOption": "Richtige Antwort"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Füge eine Frage hinzu, bevor du dieses Arbeitsblatt zuweist.",
+        "noAnswer": "Jede Frage braucht eine Antwort, bevor du sie zuweist. Wähle im Editor eine für Frage {list}.",
+        "noClass": "Wähle eine deiner Klassen.",
+        "badDate": "Dieses Datum sieht nicht richtig aus.",
+        "dueBeforeOpen": "Das Abgabedatum liegt vor dem Startdatum.",
+        "needsDue": "Lege ein Abgabedatum fest, um die Antworten danach zu zeigen.",
+        "started": "Schüler haben diesen Schritt begonnen, daher bleiben seine Fragen, wie sie sind. Erstelle eine Kopie der Lektion, um sie zu ändern."
+      }
+    },
+    "terms": {
+      "title": "Deine Abbildungen weiterverwenden",
+      "crumb": "Weiterverwendung",
+      "lead": "Jede Abbildung, die du in Figuren erstellst, darfst du frei verwenden. Hier steht in einfachen Worten, was das heißt.",
+      "canTitle": "Was du darfst",
+      "can1": "Deine Abbildungen im Unterricht, auf Arbeitsblättern und Tests, in Präsentationen und auf Websites verwenden.",
+      "can2": "Sie kopieren, drucken und mit allen teilen: mit Schülerinnen und Schülern, Familien und anderen Lehrkräften.",
+      "can3": "Sie verändern: zuschneiden, beschriften oder in deine eigenen Materialien einbauen.",
+      "can4": "Sie in Materialien verwenden, die du veröffentlichst oder verkaufst.",
+      "can5": "All das, ohne uns zu fragen und ohne uns zu nennen. Eine Erwähnung freut uns, ist aber nie Pflicht.",
+      "noticeTitle": "Der Hinweis in der Datei",
+      "noticeText": "Jede SVG- oder PNG-Datei, die du herunterlädst oder kopierst, enthält diesen Hinweis in der Datei selbst, dort, wo Bildprogramme und Suchmaschinen nachsehen. Er ist auf Englisch, damit er überall gleich lautet:",
+      "noticeMeans": "Er bedeutet: Oomba Academy verzichtet auf alle Rechte an ihrem Teil der Abbildung (die Zeichnung, das Layout und die Beschriftungen, die sie erstellt), damit alle diesen Teil weiterverwenden dürfen. Du kannst den Hinweis behalten oder entfernen.",
+      "cc0Title": "Was CC0 bedeutet",
+      "cc0Text": "CC0 1.0 ist eine Gemeinfreiheitserklärung von Creative Commons. Für unseren Teil einer Abbildung gibt es keinerlei Bedingungen: keine Namensnennung, keine Lizenz, die du befolgen musst, weltweit, soweit das Gesetz es erlaubt.",
+      "cc0Link": "CC0 1.0 auf der Website von Creative Commons lesen",
+      "yoursTitle": "Was dir gehört",
+      "yoursText": "Alles Eigene, das du hinzufügst, gehört dir: deine eigene Frage, deine eigenen Beschriftungen und Daten und deine eigenen Zeichnungen. Ob andere diese Teile weiterverwenden dürfen, entscheidest du.",
+      "careTitle": "Gut zu wissen",
+      "care1": "Prüfe eine Abbildung, bevor du sie verwendest. Wir prüfen Abbildungen sorgfältig, können aber nicht versprechen, dass jede Abbildung für jeden Zweck stimmt.",
+      "care2": "Lass Namen und persönliche Angaben von Schülerinnen und Schülern aus Abbildungen heraus, die du teilst.",
+      "care3": "Diese Bedingungen gelten für die Abbildungen, die du exportierst. Für alles andere bei Oomba Academy gelten die Nutzungsbedingungen der Website.",
+      "siteTerms": "Nutzungsbedingungen der Website lesen",
+      "back": "Zurück zu Figuren"
     }
   }
 }

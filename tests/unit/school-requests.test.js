@@ -22,6 +22,7 @@ const SR = await import('../../server/services/school-requests.js');
 const { seatQuote } = await import('../../server/routes/plans.js');
 const { SETUP_LIMITS } = await import('../../server/routes/teachers.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 let server, base;
 test.before(async () => { server = createApp().listen(0, '127.0.0.1'); server.keepAliveTimeout = 0; await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
@@ -34,7 +35,7 @@ async function call(cookie, path, { method = 'GET', body, headers = {}, form = f
   let payload;
   if (body !== undefined) { h['content-type'] = form ? 'application/x-www-form-urlencoded' : 'application/json'; payload = form ? new URLSearchParams(body).toString() : JSON.stringify(body); }
   const r = await fetch(base + path, { method, headers: h, body: payload, redirect: 'manual' });
-  const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
+  const raw = await r.text(), text = deicon(raw); let json = null; try { json = JSON.parse(raw, (k, v) => typeof v === 'string' ? deicon(v) : v); } catch { /* html */ }
   return { status: r.status, text, json, location: r.headers.get('location') };
 }
 const as = u => (path, opts) => call(u ? cookieFor(u.id) : null, path, opts);

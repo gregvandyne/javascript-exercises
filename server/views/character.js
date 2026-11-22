@@ -6,6 +6,7 @@ import { html, raw, jsonData } from './html.js';
 import { CHARACTER, DEFAULT_CHARACTER, characterOf } from '../services/character.js';
 import { PALETTE, SKIN, HAIR } from '../../kit/src/tokens.js';
 import { kitSrc, kitPackSrc, KIT_VERSIONS, KIT_PACKS, KIT_LATEST } from '../services/kit.js';
+import { ico } from './icon.js';
 
 const radio = (name, value, checked, label, extra = '') => html`<label class="chchip${extra ? ' ' + extra : ''}"><input type="radio" name="${name}" value="${value}" ${checked ? raw('checked') : ''}><span>${label}</span></label>`;
 const swatch = (name, value, checked, label, hex) => html`<label class="chsw" title="${label}"><input type="radio" name="${name}" value="${value}" ${checked ? raw('checked') : ''}><span class="chsw-dot" style="--sw:${hex}" aria-hidden="true"></span><span class="sr-only">${label}</span></label>`;
@@ -38,7 +39,7 @@ export function characterPanel(req) {
   // The kit (and the Bold pack, for the Bold preview) with their pinned hashes: the editor loads them into its frame.
   const kit = { src: kitSrc(KIT_LATEST), sri: KIT_VERSIONS[KIT_LATEST], bold: kitPackSrc('style-bold', KIT_LATEST), boldSri: KIT_PACKS[KIT_LATEST]['style-bold'] };
   return html`<section class="panel charpanel" id="character" aria-labelledby="ch-h">
-    <h2 id="ch-h"><span aria-hidden="true">🎨</span> ${t('me.character.heading')}</h2>
+    <h2 id="ch-h">${ico('🎨', { size: 28 })} ${t('me.character.heading')}</h2>
     <p class="muted">${guest ? t('me.character.guestText') : t('me.character.text')}</p>
     <form class="chform${kid ? '' : ' notkid'}" id="charform" data-guest="${guest ? '1' : ''}" data-saved="${saved ? '1' : ''}" novalidate>
       <div class="chstage">

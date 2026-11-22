@@ -304,6 +304,12 @@ test('teacher with Google: an own (teacher-to-be) account with the verified emai
 
 test('the trial: /trial (signed out) runs the teacher steps and comes back to /trial; prices stay off the sign-up', async () => {
   assert.equal(loc(await get('/trial')), '/signup/teacher?trial=1');
+  // The landing's "Start free trial": who's signing up first; the teacher's door keeps the trial.
+  const who = (await get('/signup?trial=1')).body2;
+  assert.match(who, /href="\/signup\/for\/teacher\?trial=1"/);
+  assert.match(who, /href="\/signup\/for\/kid"/);
+  assert.equal(loc(await get('/signup/for/teacher?trial=1')), '/signup/teacher?trial=1');
+  assert.equal(loc(await get('/signup/for/teacher')), '/signup/teacher');
   const t = await teacher({ trial: '1', seats: '3' });
   assert.equal(t.r.json2.redirect, '/signup/teacher/school?trial=1&seats=3');
   const steps = (await get('/signup/teacher/school?trial=1&seats=3', t.cookie)).body2;

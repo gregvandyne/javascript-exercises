@@ -24,17 +24,24 @@ import { rods } from './dash-rods.js';
 // sticky note, checklist and points for each student are in dash-class5.js; the document camera in dash-camera.js.
 import { RENDER5, points } from './dash-class5.js';
 import { camera } from './dash-camera.js';
+// Class Board parity (docs/decisions.md "Class Board: PDF, link tile and stickers"): the PDF widget and the link tile. Placed
+// stickers are not grid widgets: public/js/dash-stickers.js draws them over the grid.
+import { pdf } from './dash-pdf.js';
+import { link } from './dash-link.js';
 import { numField } from './dash-num.js';
 import { tip } from './dash-tip.js';
 import { format } from './i18n-format.js';
 import { periodsFor } from './agenda.js';
+import { iconHtml, setIcon, setLabel } from './icons.js';
+/** A Fluent icon for an emoji (decorative; public/js/icons.js). */
+const ico = (e, size = 18) => iconHtml(e, { size });
 
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 /** Text a person typed: its own direction (an English agenda on a Hebrew page reads left to right). */
 const typed = (tag, cls, text) => { const e = el(tag, cls, text); e.dir = 'auto'; return e; };
 const SVG = 'http://www.w3.org/2000/svg';
 const svgEl = (tag, attrs) => { const e = document.createElementNS(SVG, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); return e; };
-const btn = (label, cls = 'btn btn-sm', aria) => { const b = el('button', cls, label); b.type = 'button'; if (aria) b.setAttribute('aria-label', aria); return b; };
+const btn = (label, cls = 'btn btn-sm', aria) => { const b = setLabel(el('button', cls), label); b.type = 'button'; if (aria) b.setAttribute('aria-label', aria); return b; };
 /** A word with {placeholders} filled in. */
 export const fill = (s, vars = {}) => String(s || '').replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
 
@@ -498,13 +505,13 @@ function weather(body, s, ctx) {
     if (d.loading || d.resting) {
       const p = el('div', 'dw-wrest');
       const msg = el('span', null, d.resting ? W.resting : W.loading); msg.setAttribute('role', 'status');
-      p.append(el('span', 'dw-wicon', d.resting ? '😴' : '⏳'), msg);
+      p.append(setIcon(el('span', 'dw-wicon'), d.resting ? '😴' : '⏳', 128), msg);
       p.firstChild.setAttribute('aria-hidden', 'true');
       body.append(p, typed('div', 'dw-wplace small muted', s.place.name));
       return;
     }
     const main = el('div', 'dw-wmain');
-    const icon = el('span', 'dw-wicon', WEATHER_ICON[d.group] || '☁️'); icon.setAttribute('aria-hidden', 'true');
+    const icon = setIcon(el('span', 'dw-wicon'), WEATHER_ICON[d.group] || '☁️', 128); icon.setAttribute('aria-hidden', 'true');
     main.append(icon, el('span', 'dw-wtemp', `${temp(d.t, unit)}${unit === 'f' ? 'F' : 'C'}`));
     const side = el('div', 'dw-wside');
     side.append(el('div', 'dw-wwords', W[d.group] || ''), el('div', 'dw-whl', fill(W.hiLo, { hi: temp(d.hi, unit), lo: temp(d.lo, unit) })), typed('div', 'dw-wplace small muted', s.place.name));
@@ -559,7 +566,7 @@ function picker(body, s, ctx) {
   body.classList.add('dw-picker');
   if (wheelMode) body.classList.add('dw-wheelmode');
   // The big readout: the name under the pointer while the wheel turns, then the winner (always the full name).
-  const name = el('div', 'dw-pickname', wheelMode ? '' : '🎲'); name.setAttribute('aria-live', 'polite'); name.dir = 'auto';
+  const name = wheelMode ? el('div', 'dw-pickname', '') : setIcon(el('div', 'dw-pickname'), '🎲', 128); name.setAttribute('aria-live', 'polite'); name.dir = 'auto';
   let wheel = null, rot = 0, spinning = false, raf = 0;
   const wrap = el('div', 'dw-pickwrap');   // inside the body, so the widget's size rules (container queries) reach it
   if (wheelMode) { wheel = el('div', 'dw-wheel'); wheel.setAttribute('aria-hidden', 'true'); wrap.appendChild(wheel); }
@@ -673,7 +680,7 @@ function picker(body, s, ctx) {
         view = r; pickName = r.pick.name; index = before.indexOf(pickName);
         if (wheelMode && index < 0) { drawWheel(); index = shown.indexOf(pickName); }   // a new round began
       }
-      const land = () => { name.removeAttribute('aria-busy'); name.textContent = pickName; name.classList.add('is-picked'); go.disabled = false; showLeft(); if (!wheelMode) go.textContent = `🎲 ${W.again}`; };
+      const land = () => { name.removeAttribute('aria-busy'); name.textContent = pickName; name.classList.add('is-picked'); go.disabled = false; showLeft(); if (!wheelMode) setLabel(go, `🎲 ${W.again}`); };
       name.setAttribute('aria-busy', 'true');
       if (wheelMode) { spinTo(Math.max(0, index), land); return; }
       const names = view.students.map(k => k.name);
@@ -688,7 +695,7 @@ function picker(body, s, ctx) {
   reset.addEventListener('click', async () => {
     if (own) { ownState.picked = []; name.textContent = ''; showLeft(); return; }
     const r = await ctx.act('/picker', { action: 'reset' });
-    if (r) { view = r; name.textContent = wheelMode ? '' : '🎲'; name.classList.remove('is-picked'); go.textContent = wheelMode ? `🎡 ${W.spin}` : `🎲 ${W.pick}`; showLeft(); }
+    if (r) { view = r; if (wheelMode) name.textContent = ''; else setIcon(name, '🎲', 128); name.classList.remove('is-picked'); setLabel(go, wheelMode ? `🎡 ${W.spin}` : `🎲 ${W.pick}`); showLeft(); }
   });
   away.addEventListener('click', async () => {
     if (!view) await load();
@@ -767,12 +774,12 @@ function help(body, s, ctx) {
     const q = (((live || ctx.live()).help) || {}).queue || [];
     const s2 = JSON.stringify(q); if (s2 === sig) return; sig = s2;
     const waiting = q.filter(x => x.kind === 'help'), finished = q.filter(x => x.kind === 'done');
-    counts.textContent = `✋ ${format(W.waiting, { n: waiting.length }, ctx.intl)} · ✅ ${format(W.finished, { n: finished.length }, ctx.intl)}`;
+    counts.textContent = ''; counts.append(setIcon(el('span'), '✋'), ` ${format(W.waiting, { n: waiting.length }, ctx.intl)} · `, setIcon(el('span'), '✅'), ` ${format(W.finished, { n: finished.length }, ctx.intl)}`);
     list.textContent = '';
     if (!q.length) list.appendChild(el('li', 'dw-empty', W.empty));
     for (const x of [...waiting, ...finished]) {
       const li = el('li', `dw-qrow dw-q-${x.kind}`);
-      const mark = el('span', 'dw-qmark', x.kind === 'help' ? '✋' : '✅'); mark.setAttribute('aria-hidden', 'true');
+      const mark = setIcon(el('span', 'dw-qmark'), x.kind === 'help' ? '✋' : '✅'); mark.setAttribute('aria-hidden', 'true');
       li.append(mark, typed('span', 'dw-qname', x.name));
       const rm = btn('✖', 'btn btn-sm dw-qx', fill(W.remove, { name: x.name }));
       rm.addEventListener('click', () => teacherAct({ action: 'remove', user: x.id }));
@@ -830,7 +837,7 @@ function check(body, s, ctx) {
     });
     meta.textContent = `${fill(W.answered, { n: cur.n, total: L.size ?? '–' })}${cur.open ? '' : ` · ${W.ended}`}`;
     end.disabled = !cur.open;
-    save.textContent = cur.saved ? `✔ ${W.saved}` : W.save;
+    setLabel(save, cur.saved ? `✔ ${W.saved}` : W.save);
     save.setAttribute('aria-pressed', String(!!cur.saved));
   };
   add.addEventListener('click', () => composer());
@@ -853,8 +860,8 @@ function check(body, s, ctx) {
     const sh = ctx.sheet({ title: W.new, content: `<form class="stack dw-compose" novalidate>
       <fieldset class="dw-kinds"><legend>${esc(W.kind)}</legend>${['thumbs', 'fist', 'choice', 'scale'].map(k => `<label class="chip"><input type="radio" name="dw-kind" value="${k}"${k === kind ? ' checked' : ''}> ${esc(W[k])}</label>`).join('')}</fieldset>
       <div class="field"><label for="dw-q">${esc(W.question)}</label><input class="input" id="dw-q" maxlength="120" dir="auto" placeholder="${esc(W.questionHint)}"></div>
-      <fieldset class="dw-opts" hidden><legend>${esc(W.options)}</legend><ol class="dw-optlist"></ol><button class="btn btn-sm" type="button" data-addopt>➕ ${esc(W.addOption)}</button></fieldset>
-      <p class="err form-err" role="alert"></p><div class="row"><button class="btn btn-primary" type="submit">📤 ${esc(W.send)}</button></div></form>` });
+      <fieldset class="dw-opts" hidden><legend>${esc(W.options)}</legend><ol class="dw-optlist"></ol><button class="btn btn-sm" type="button" data-addopt>${ico('➕')} ${esc(W.addOption)}</button></fieldset>
+      <p class="err form-err" role="alert"></p><div class="row"><button class="btn btn-primary" type="submit">${ico('📤')} ${esc(W.send)}</button></div></form>` });
     const f = sh.el.querySelector('form'), opts = f.querySelector('.dw-opts'), ol = f.querySelector('.dw-optlist');
     const addOpt = () => { const n = ol.children.length; if (n >= 6) return null; const li = document.createElement('li'); li.innerHTML = `<label class="sr-only" for="dw-o${n}">${esc(fill(W.option, { n: n + 1 }))}</label><input class="input" id="dw-o${n}" maxlength="60" dir="auto">`; ol.appendChild(li); return li.querySelector('input'); };
     addOpt(); addOpt();
@@ -1081,7 +1088,7 @@ function symbols(body, s, ctx) {
   const W = ctx.type.words, f = ctx.type.settings.find(x => x.key === 'mode');
   body.classList.add('dw-sym', `dw-sym-${s.mode}`);
   const big = el('div', 'dw-symbig'); big.setAttribute('role', 'status');
-  const ic = el('span', 'dw-symicon', SYMBOLS[s.mode] || '🤫'); ic.setAttribute('aria-hidden', 'true');
+  const ic = setIcon(el('span', 'dw-symicon'), SYMBOLS[s.mode] || '🤫', 128); ic.setAttribute('aria-hidden', 'true');
   big.append(ic, el('span', 'dw-symlabel', f.labels[s.mode]));
   body.appendChild(big);
   if (ctx.teacher && !ctx.editing) {
@@ -1190,7 +1197,7 @@ function groups(body, s, ctx) {
       const ul = el('ul', 'dw-groupnames'); for (const nm of g) ul.appendChild(typed('li', null, nm));
       card.appendChild(ul); out.appendChild(card);
     });
-    go.textContent = `🔀 ${W.again}`;
+    setLabel(go, `🔀 ${W.again}`);
   };
   show(madeGroups.get(ctx.id));
   go.addEventListener('click', async () => {
@@ -1234,4 +1241,4 @@ function score(body, s, ctx) {
 }
 
 /** id -> renderer. A type the server lists but this file doesn't know yet is left out of the screen. */
-export const RENDER = { clock, text, ican, timer, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, ...withModes({ ...TOOLS, ...TOOLS4, bars, rods }), ...RENDER5, camera };
+export const RENDER = { clock, text, ican, timer, schedule, weather, qr, picker, noise, help, check, tiles, countdown, calendar, symbols, light, dice, random, groups, score, ...withModes({ ...TOOLS, ...TOOLS4, bars, rods }), ...RENDER5, camera, pdf, link };
