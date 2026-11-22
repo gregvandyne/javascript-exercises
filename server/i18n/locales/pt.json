@@ -2012,7 +2012,8 @@
       "invitePlay": "Vamos jogar!",
       "inviteNo": "Agora não",
       "ok": "OK",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "fullExit": "Sair da tela cheia"
     },
     "game": {
       "needSignIn": "Toque em “Jogar como convidado” ou entre primeiro.",
@@ -2031,8 +2032,6 @@
     "play": {
       "saveFailed": "Não foi possível salvar seu progresso.",
       "newBest": "Novo recorde: {score}!",
-      "noFullscreen": "A tela cheia não está disponível aqui.",
-      "tapFullscreen": "Toque no botão de tela cheia para ver grandão.",
       "signInToLike": "Entre ou jogue como convidado para salvar favoritos.",
       "signInToRate": "Entre ou jogue como convidado para avaliar jogos.",
       "liked": "Adicionado aos seus favoritos!",
@@ -2121,7 +2120,6 @@
       "fixButton": "Pedir conserto ao Construtor",
       "fixMessage": "Por favor, conserte os problemas da verificação de segurança na versão {number}:",
       "buildFirst": "Crie algo primeiro!",
-      "noFullscreen": "A tela cheia não é permitida aqui.",
       "roundOver": "Fim da rodada! Pontos: {score}",
       "noAnswer": "O Construtor não conseguiu responder. Tente de novo.",
       "signInAgain": "Entrar de novo",
@@ -2181,8 +2179,8 @@
         "publishBtn": "Publicar",
         "fix": "Ao vivo, mas precisa de um conserto: {issue}",
         "fixBtn": "Consertar",
-        "off": "Não é um jogo ao vivo",
-        "make": "Fazer ao vivo"
+        "make": "Transformar em jogo ao vivo",
+        "game": "Jogo ao vivo"
       },
       "safety": {
         "chipPass": "Seguro",
@@ -2615,7 +2613,7 @@
       "world2dUse": "Use o mundo 2D {name}.",
       "animal2dUse": "Faça deste animal o herói: {name}.",
       "sparks": "{n, plural, one {# mensagem de Pacotes Faísca} other {# mensagens de Pacotes Faísca}}",
-      "activityEdit": "Editar atividade",
+      "activityEdit": "Editar aula",
       "asStudent": "Como aluno",
       "activitySaveFirst": "Primeiro salve ou desfaça as mudanças do painel da atividade.",
       "play": {

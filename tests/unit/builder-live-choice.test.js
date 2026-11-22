@@ -3,8 +3,9 @@
 //   the plan's play field (normalisePlan): its defaults per kind of game and per account, Live refused where a kind of
 //   game or a ready-made 3D world cannot be live; what the model reads for each answer (planNote, planBrief, the sentence);
 //   state.wantsLive from the plan; the live-or-closed question never asked again once the plan answered it; the Studio's
-//   line (Ready to host live / Publish it / Live but needs a fix / Not a live game) from GET /api/studio/:id and in
-//   Chromium on a desktop and an iPhone; kids never get Host.
+//   line (Ready to host live / Publish it / Live but needs a fix / not live) from GET /api/studio/:id and, in Chromium on a
+//   desktop and an iPhone, its live button ("📡 Live game" in Spark yellow, or a plain "📡 Make it a live game"); kids
+//   never get Host.
 // LIVE_CHOICE_SHOTS=<dir> saves pictures of the step and of each line. The browser parts are skipped without Chromium.
 process.env.BRB_DB = ':memory:';
 process.env.BRB_SILENT = '1';
@@ -338,36 +339,46 @@ for (const [label, opts] of VIEWS) {
     for (const [who, c, G] of [['teacher', teach.c, tGames], ['kid', kid.c, kGames]]) {
       const { ctx, page, errors } = await pageFor(c, opts);
       const line = async id => {
-        await page.goto(`${BASE}/studio/${id}`); await page.waitForSelector('#st-liveclass');
-        const r = await page.$eval('#st-liveclass', el => ({ line: el.dataset.line, html: el.innerHTML, host: !!el.querySelector('[data-act="host-live"]'), btns: [...el.querySelectorAll('button')].map(b => b.dataset.act) }));
-        // The line's icon is a Fluent picture now: read it back as the emoji it stands for (tests/support/deicon.js).
-        return { ...r, text: deicon(r.html).replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim() };
+        await page.goto(`${BASE}/studio/${id}`); await page.waitForSelector('#st-livebtn');
+        // The row's icons are Fluent pictures now: read them back as the emoji they stand for (tests/support/deicon.js).
+        const txt = h => deicon(h).replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/\s+/g, ' ').trim();
+        const r = await page.$eval('#st-livebtn', el => {
+          const cap = document.getElementById('st-live-cap');
+          return { line: el.dataset.line, html: el.innerHTML, act: el.dataset.act, tag: el.tagName, live: el.classList.contains('btn-hot'),
+            capHtml: cap ? cap.innerHTML : null, bg: getComputedStyle(el).backgroundColor };
+        });
+        return { ...r, text: txt(r.html), cap: r.capHtml == null ? null : txt(r.capHtml) };
       };
+      const YELLOW = 'rgb(255, 210, 63)';   // --spark, the Publish button's yellow
       const host = await line(G.host.id);
-      if (who === 'teacher') { assert.deepEqual([host.line, host.text, host.host], ['host', '📡 Ready to host live Host live', true]); }
-      else { assert.deepEqual([host.line, host.text, host.host], ['host', '📡 A teacher or grown-up can host this live', false], 'a kid never gets Host'); }
+      if (who === 'teacher') { assert.deepEqual([host.line, host.text, host.act, host.tag, host.cap], ['host', '📡 Live game', 'host-live', 'A', '📡 Ready to host live']); }
+      else { assert.deepEqual([host.line, host.text, host.act, host.tag, host.cap], ['host', '📡 Live game', 'live-info', 'BUTTON', '📡 A teacher or grown-up can host this live'], 'a kid never gets Host'); }
+      assert.equal(host.live, true); assert.equal(host.bg, YELLOW);
       assert.equal(await page.$$eval('a[href^="/live?game="]', a => a.length), who === 'teacher' ? 1 : 0);
-      const box = await page.$eval('#st-liveclass', el => { const r = el.getBoundingClientRect(); return [r.left, r.right]; });
-      assert.ok(box[0] >= 0 && box[1] <= (await page.evaluate(() => innerWidth)), 'the line fits'); assert.ok(await noScroll(page));
-      if (SHOTS) await page.locator('.st-preview, #st-liveclass').last().screenshot({ path: `${SHOTS}/studio-host-${who}-${label}.png` });
+      const box = await page.$eval('#st-acts', el => { const r = el.getBoundingClientRect(); return [r.left, r.right]; });
+      assert.ok(box[0] >= 0 && box[1] <= (await page.evaluate(() => innerWidth)), 'the row fits'); assert.ok(await noScroll(page));
+      if (SHOTS) await page.locator('.st-preview, #st-acts').last().screenshot({ path: `${SHOTS}/studio-host-${who}-${label}.png` });
       const pub = await line(G.publish.id);
-      assert.equal(pub.text, who === 'teacher' ? '📡 Publish it to host it live Publish' : '📡 Publish it so a teacher or grown-up can host it live Publish'); assert.deepEqual(pub.btns, ['live-publish']);
-      if (SHOTS) await page.locator('#st-liveclass').screenshot({ path: `${SHOTS}/studio-publish-${who}-${label}.png` });
+      assert.equal(pub.cap, who === 'teacher' ? '📡 Publish it to host it live' : '📡 Publish it so a teacher or grown-up can host it live');
+      assert.deepEqual([pub.text, pub.act, pub.live], ['📡 Live game', 'live-publish', true]);
+      if (SHOTS) await page.locator('#st-acts').screenshot({ path: `${SHOTS}/studio-publish-${who}-${label}.png` });
       const fix = await line(G.fix.id);
-      assert.equal(fix.text, "📡 Live, but needs a fix: it doesn't say when it is ready Fix it"); assert.deepEqual(fix.btns, ['fix-live']);
-      if (SHOTS) await page.locator('#st-liveclass').screenshot({ path: `${SHOTS}/studio-fix-${who}-${label}.png` });
+      assert.equal(fix.cap, "📡 Live, but needs a fix: it doesn't say when it is ready"); assert.deepEqual([fix.text, fix.act, fix.live], ['📡 Live game', 'fix-live', true]);
+      if (SHOTS) await page.locator('#st-acts').screenshot({ path: `${SHOTS}/studio-fix-${who}-${label}.png` });
       const off = await line(G.off.id);
-      assert.equal(off.text, '📡 Not a live game Make it live'); assert.deepEqual(off.btns, ['make-live']);
-      if (SHOTS) await page.locator('#st-liveclass').screenshot({ path: `${SHOTS}/studio-off-${who}-${label}.png` });
-      // "Make it live" where it cannot be: says why, sends nothing
+      assert.deepEqual([off.text, off.act, off.live, off.cap], ['📡 Make it a live game', 'make-live', false, null]);
+      assert.notEqual(off.bg, YELLOW);
+      assert.equal(await page.$$eval('#st-acts', b => b[0].textContent.includes('Not a live game')), false, 'no "Not a live game" chip any more');
+      if (SHOTS) await page.locator('#st-acts').screenshot({ path: `${SHOTS}/studio-off-${who}-${label}.png` });
+      // "Make it a live game" where it cannot be: says why, sends nothing
       await line(G.kit2.id);
       let sent = 0; page.on('request', r => { if (/\/chat$/.test(r.url()) && r.method() === 'POST') sent++; });
-      await page.click('#st-liveclass [data-act="make-live"]');
+      await page.click('#st-livebtn[data-act="make-live"]');
       assert.equal(await page.isVisible('#st-live-why'), true);
       assert.equal(await page.textContent('#st-live-why'), "The ready-made 3D worlds can't be played live yet.");
-      assert.equal(await page.getAttribute('#st-liveclass [data-act="make-live"]', 'aria-expanded'), 'true');
+      assert.equal(await page.getAttribute('#st-livebtn', 'aria-expanded'), 'true');
       await page.waitForTimeout(200); assert.equal(sent, 0, 'nothing is sent to the Builder');
-      if (SHOTS) await page.locator('#st-liveclass').screenshot({ path: `${SHOTS}/studio-off-kit2-${who}-${label}.png` });
+      if (SHOTS) await page.locator('#st-acts').screenshot({ path: `${SHOTS}/studio-off-kit2-${who}-${label}.png` });
       assert.deepEqual(errors, [], who); await ctx.close();
     }
   });

@@ -210,8 +210,9 @@ export function activityPanelState(user, g, cur, t) {
  *             teacher, a grown-up, the admin); a kid reads "A teacher or grown-up can host this live" and never gets Host
  *   'publish' live-ready, not published (or the published version is not): "Publish it to host it live"
  *   'fix'     it loads the live pack but the check fails: "Live, but needs a fix: <the check's first reason>" and Fix it
- *   'off'     not a live game: "Not a live game" and Make it live (a fixed Builder message), or, where it cannot be
- *             live (a ready-made 3D world, a tool for the board, the survey, the exit ticket: plan.js LIVE_NOT), why not
+ *   'off'     not a live game: "Make it a live game" (a fixed Builder message), or, where it cannot be live (a
+ *             ready-made 3D world, a tool for the board, the survey, the exit ticket: plan.js LIVE_NOT), why not
+ * (public/js/studio.js renderActs: one "📡 Live game" button in Spark yellow for the first three, plain for 'off')
  * state: the Builder's saved state (state.play: the setup steps' "How will it be played?" and the kind of game).
  */
 export function liveClassState(user, g, cur, t, state = {}) {
@@ -229,8 +230,8 @@ export function liveClassState(user, g, cur, t, state = {}) {
 
 /**
  * The Studio's classroom activity line (docs/decisions.md "Classroom activity vs Arcade game"): for a version that is an
- * Oomba Canvas activity, "Classroom activity · results go to Progress" (or "· on the board") and "Make it an arcade game
- * instead"; for an arcade game that came from a class's setup steps (state.fromClass), "Make it a classroom activity".
+ * Oomba Canvas activity, "Classroom activity · results go to Progress" (or "· on the board") and "Make it an arcade
+ * game"; for an arcade game that came from a class's setup steps (state.fromClass), "Make it a classroom activity".
  * Each switch is a fixed Builder message in the builder's language (prompt.js wantsCanvas knows them), like "Make it live".
  */
 export function canvasLineState(cur, t, state = {}) {

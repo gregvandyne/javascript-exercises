@@ -1775,7 +1775,7 @@
       "activity": "Attività di classe · i risultati vanno in Progressi",
       "board": "Attività di classe · alla lavagna",
       "arcade": "Gioco arcade · fatto per la tua classe",
-      "toArcade": "Fallo diventare un gioco arcade",
+      "toArcade": "Rendilo un gioco arcade",
       "toArcadeAsk": "Fallo diventare un gioco arcade: un quiz, un gioco di corsa o di presa con gli stessi problemi.",
       "toCanvas": "Fallo diventare un'attività di classe",
       "toCanvasAsk": "Fallo diventare un'attività di classe: uno spazio da manipolare con le stesse domande, gli stessi passi e aiuti."
@@ -2012,7 +2012,8 @@
       "invitePlay": "Giochiamo!",
       "inviteNo": "Non ora",
       "ok": "OK",
-      "cancel": "Annulla"
+      "cancel": "Annulla",
+      "fullExit": "Esci da schermo intero"
     },
     "game": {
       "needSignIn": "Tocca «Gioca come ospite» oppure accedi prima.",
@@ -2031,8 +2032,6 @@
     "play": {
       "saveFailed": "Non è stato possibile salvare i tuoi progressi.",
       "newBest": "Nuovo record: {score}!",
-      "noFullscreen": "Lo schermo intero non è disponibile qui.",
-      "tapFullscreen": "Tocca il pulsante schermo intero per vedere in grande.",
       "signInToLike": "Accedi o gioca come ospite per salvare i preferiti.",
       "signInToRate": "Accedi o gioca come ospite per votare i giochi.",
       "liked": "Aggiunto ai tuoi preferiti!",
@@ -2121,7 +2120,6 @@
       "fixButton": "Fai sistemare al Costruttore",
       "fixMessage": "Per favore, sistema i problemi del controllo di sicurezza nella versione {number}:",
       "buildFirst": "Prima crea qualcosa!",
-      "noFullscreen": "Lo schermo intero non è permesso qui.",
       "roundOver": "Partita finita! Punti: {score}",
       "noAnswer": "Il Costruttore non è riuscito a rispondere. Riprova.",
       "signInAgain": "Accedi di nuovo",
@@ -2181,8 +2179,8 @@
         "publishBtn": "Pubblica",
         "fix": "Dal vivo, ma c’è da sistemare: {issue}",
         "fixBtn": "Sistemalo",
-        "off": "Non è un gioco dal vivo",
-        "make": "Rendilo dal vivo"
+        "make": "Rendilo un gioco dal vivo",
+        "game": "Gioco dal vivo"
       },
       "safety": {
         "chipPass": "Sicuro",
@@ -2615,7 +2613,7 @@
       "world2dUse": "Usa il mondo 2D {name}.",
       "animal2dUse": "Fai di questo animale l’eroe: {name}.",
       "sparks": "{n, plural, one {# messaggio dai Pacchetti Scintilla} other {# messaggi dai Pacchetti Scintilla}}",
-      "activityEdit": "Modifica attività",
+      "activityEdit": "Modifica lezione",
       "asStudent": "Come studente",
       "activitySaveFirst": "Prima salvi o annulli le modifiche nel pannello attività.",
       "play": {

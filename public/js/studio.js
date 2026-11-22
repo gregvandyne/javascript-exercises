@@ -6,6 +6,7 @@
 // a follow-up ("follow-ups" below) that the Builder reads at its next step.
 import { api, toast, sheet, pageData, signedOut, tappedJustNow, setPlaceholder, $, $$, esc, copyText, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
+import { fullScreen } from '/js/fullscreen.js';
 import { iconHtml, hasIcon } from '/js/icons.js';
 /** A Fluent icon for an emoji (decorative; public/js/icons.js). */
 const ico = (e, size = 18) => iconHtml(e, { size });
@@ -209,39 +210,46 @@ function waitingText() {
   if (isGroup(S.live.visibility) || (S.grownup && S.live.visibility === 'friends')) return E('js.studio.live.waitingPublic');
   return E(S.live.visibility === 'friends' ? 'js.studio.live.waitingFriends' : 'js.studio.live.waitingYou');
 }
-// Oomba Live: one line under the safety line that says where this version stands, with the one thing to do next
-// (server/routes/studio.js liveClassState): Ready to host live (Host, for hosts only: a kid is told a teacher or grown-up
-// hosts it), Publish it to host it live, Live but needs a fix (Fix it), or Not a live game (Make it live, or why it
-// cannot be live yet).
-function renderLiveClass() {
-  let box = $('#st-liveclass');
-  const L = S.liveClass;
-  if (!L) { if (box) box.remove(); return; }
-  if (!box) { box = document.createElement('div'); box.id = 'st-liveclass'; box.className = 'st-liveclass'; box.setAttribute('aria-live', 'polite'); $('#st-safety').after(box); }
-  box.dataset.line = L.line;
-  const chip = (tone, words) => `<span class="stchip ${tone}">${ico('📡')} ${words}</span>`;
-  if (L.line === 'host') {
-    box.innerHTML = L.canHost ? `${chip('good', E('js.studio.liveLine.ready'))} <a class="btn btn-sm btn-primary" href="${esc(L.host)}" data-act="host-live">${E('js.studio.live.host')}</a>`
-      : `${chip('good', E('js.studio.liveLine.kidReady'))}`;
-  } else if (L.line === 'publish') {
-    box.innerHTML = `${chip('', E(L.canHost ? 'js.studio.liveLine.publish' : 'js.studio.liveLine.kidPublish'))} <button class="btn btn-sm" type="button" data-act="live-publish">${E('js.studio.liveLine.publishBtn')}</button>`;
-  } else if (L.line === 'fix') {
-    box.innerHTML = `${chip('warn', E('js.studio.liveLine.fix', { issue: L.issue }))} <button class="btn btn-sm" type="button" data-act="fix-live">${E('js.studio.liveLine.fixBtn')}</button>`;
-  } else {
-    box.innerHTML = `${chip('', E('js.studio.liveLine.off'))} <button class="btn btn-sm" type="button" data-act="make-live" aria-expanded="false" aria-controls="st-live-why">${E('js.studio.liveLine.make')}</button>`
-      + (L.why ? `<p class="small muted st-live-why" id="st-live-why" hidden>${esc(L.why)}</p>` : '');
+// Under the preview (server/routes/studio.js liveClassState and canvasLineState): on a phone, "🧮 Edit lesson" (a classroom
+// activity's owner) opens the Activity panel right below it, as an accordion (public/js/activity-panel/); then one row
+// of two equal buttons, the same on a desktop:
+//   - the activity switch (a fixed Builder message): "🎮 Make it an arcade game", or, for an arcade game made from a
+//     class, "🧮 Make it a classroom activity";
+//   - the live button: "📡 Live game" (Spark, the Publish yellow) when the game is live, doing the one thing to do next
+//     (Host it, Publish it, or Fix it); "📡 Make it a live game" (plain) when not, which sends the fixed message or,
+//     where this game cannot be live yet, says why (nothing is sent).
+// A small line under the row says where it stands ("Classroom activity · results go to Progress", "Ready to host live").
+function renderActs() {
+  const C = S.canvasLine, L = S.liveClass;
+  let box = $('#st-acts');
+  if (!box) {
+    box = document.createElement('div'); box.id = 'st-acts'; box.className = 'st-acts';
+    box.innerHTML = `<button class="btn btn-primary st-editact" type="button" data-act="edit-activity" aria-expanded="false" aria-controls="st-acc" hidden><span>${ico('🧮')} ${E('js.studio.activityEdit')}</span><span class="st-chev" aria-hidden="true"></span></button>
+      <div class="st-acc" id="st-acc" hidden></div><div class="st-btnrow" id="st-btnrow"></div><div class="st-actcap" id="st-actcap" aria-live="polite"></div>`;
+    $('#st-safety').after(box);
   }
-}
-// A classroom activity (Oomba Canvas): one line under the safety line (server/routes/studio.js canvasLineState): "Classroom
-// activity · results go to Progress" and "Make it an arcade game instead", or, for an arcade game made from a class,
-// "Make it a classroom activity". The button sends a fixed Builder message, like "Make it live".
-function renderCanvasLine() {
-  let box = $('#st-canvasline');
-  const L = S.canvasLine;
-  if (!L) { if (box) box.remove(); return; }
-  if (!box) { box = document.createElement('div'); box.id = 'st-canvasline'; box.className = 'st-liveclass st-canvasline'; $('#st-safety').after(box); }
-  box.dataset.kind = L.kind;
-  box.innerHTML = `${S.activity ? `<button class="btn btn-sm btn-primary st-editact" type="button" data-act="edit-activity">${ico('🧮')} ${E('js.studio.activityEdit')}</button> ` : ''}<span class="stchip${L.kind === 'activity' ? ' good' : ''}"><span aria-hidden="true">${L.kind === 'activity' ? '🧮' : '🎮'}</span> ${esc(L.label)}</span> <button class="btn btn-sm" type="button" data-act="canvas-switch">${L.kind === 'activity' ? '🎮' : '🧮'} ${esc(L.button)}</button>`;
+  box.hidden = !C && !L && !S.activity;
+  box.querySelector('.st-editact').hidden = !S.activity;
+  const row = [], cap = [];
+  if (C) {
+    row.push(`<button class="btn st-actbtn" type="button" data-act="canvas-switch" data-kind="${esc(C.kind)}"><span>${ico(C.kind === 'activity' ? '🎮' : '🧮')} ${esc(C.button)}</span></button>`);
+    cap.push(`<p class="st-cap" data-kind="${esc(C.kind)}">${ico(C.kind === 'activity' ? '🧮' : '🎮')} ${esc(C.label)}</p>`);
+  }
+  if (L) {
+    const live = L.line !== 'off';
+    const words = `<span>${ico('📡')} ${E(live ? 'js.studio.liveLine.game' : 'js.studio.liveLine.make')}</span>`;
+    const attrs = `id="st-livebtn" class="btn st-actbtn st-livebtn${live ? ' btn-hot is-live' : ''}" data-line="${esc(L.line)}"${live ? ' aria-describedby="st-live-cap"' : ''}`;
+    if (L.line === 'host' && L.canHost) row.push(`<a ${attrs} href="${esc(L.host)}" data-act="host-live">${words}</a>`);
+    else if (L.line === 'off') row.push(`<button ${attrs} type="button" data-act="make-live" aria-expanded="false" aria-controls="st-live-why">${words}</button>`);
+    else row.push(`<button ${attrs} type="button" data-act="${{ host: 'live-info', publish: 'live-publish', fix: 'fix-live' }[L.line]}">${words}</button>`);
+    if (live) {
+      const say = L.line === 'host' ? E(L.canHost ? 'js.studio.liveLine.ready' : 'js.studio.liveLine.kidReady')
+        : L.line === 'publish' ? E(L.canHost ? 'js.studio.liveLine.publish' : 'js.studio.liveLine.kidPublish') : E('js.studio.liveLine.fix', { issue: L.issue });
+      cap.push(`<p class="st-cap${L.line === 'fix' ? ' warn' : ''}" id="st-live-cap">${ico('📡')} ${say}</p>`);
+    } else if (L.why) cap.push(`<p class="st-cap st-live-why" id="st-live-why" hidden>${esc(L.why)}</p>`);
+  }
+  const r = $('#st-btnrow'); r.innerHTML = row.join(''); r.dataset.n = String(row.length);
+  $('#st-actcap').innerHTML = cap.join('');
 }
 // ---------------------------------------------------------------- the Activity panel (public/js/activity-panel/)
 // A classroom activity's owner edits its problems and settings without a Builder message (S.activity: the server sends
@@ -271,7 +279,7 @@ function renderStudentBtn() {
   b.addEventListener('click', () => asStudent(!student));
   $('.st-prev-tools').prepend(b);
 }
-/** "Make it live": a fixed Builder message, or, where this game cannot be live yet, why not (nothing is sent). */
+/** "Make it a live game": a fixed Builder message, or, where this game cannot be live yet, why not (nothing is sent). */
 function makeLive(btn) {
   const L = S.liveClass; if (!L) return;
   const why = $('#st-live-why');
@@ -280,10 +288,10 @@ function makeLive(btn) {
 }
 /** After each new version: read the live line again (the check runs on the saved version). */
 async function refreshLiveLine() {
-  try { const st = await api(`/api/studio/${ID}`, { background: true }); S.liveClass = st.liveClass; S.canvasLine = st.canvasLine; S.activity = st.activity; S.versions = st.versions; renderLiveClass(); renderCanvasLine(); syncPanel(); } catch { /* the next resync redraws it */ }
+  try { const st = await api(`/api/studio/${ID}`, { background: true }); S.liveClass = st.liveClass; S.canvasLine = st.canvasLine; S.activity = st.activity; S.versions = st.versions; renderActs(); syncPanel(); } catch { /* the next resync redraws it */ }
 }
 function renderSafety() {
-  renderLiveClass(); renderCanvasLine();
+  renderActs();
   const box = $('#st-safety'); const c = S.current;
   if (!c) { box.innerHTML = ''; return; }
   const list = c.issues.length ? `<ul dir="ltr" lang="en">${c.issues.map(i => `<li>${esc(i.message)}</li>`).join('')}</ul>` : '';
@@ -361,11 +369,14 @@ async function retryPreview() {
   try { const st = await api(`/api/studio/${ID}`); if (st.preview) S.preview = st.preview; } catch { /* keep the old link */ }
   if (S.preview) reloadPreview();
 }
-const full = () => { if (document.fullscreenElement) document.exitFullscreen(); else if (stage.requestFullscreen) stage.requestFullscreen().catch(() => toast(t('js.studio.noFullscreen'), { bad: true })); };
+// Full screen: the Fullscreen API, or where there is none (iPhone Safari) or it is refused, the preview filling the
+// window with its own "✕ Exit full screen" button (public/js/fullscreen.js).
+const fs = fullScreen(stage, { onChange: () => requestAnimationFrame(fit) });
+const full = () => fs.toggle();
 $('#st-full').addEventListener('click', full);
 addEventListener('message', e => {
   if (e.source !== frame.contentWindow || !e.data || e.data.brb !== 1) return; // only our sandboxed preview
-  if (e.data.type === 'brb:fullscreen') { if (!!e.data.on !== !!document.fullscreenElement) full(); }
+  if (e.data.type === 'brb:fullscreen') { if (!!e.data.on !== fs.on()) full(); }
   else if (e.data.type === 'brb:gameover' && typeof e.data.score === 'number') toast(t('js.studio.roundOver', { score: e.data.score }));
   else if (e.data.type === 'brb:retry' && tappedJustNow()) retryPreview();
   // A classroom activity's printed worksheet (BRB.print, Oomba Canvas 1.2.0): the preview prints through this page,
@@ -1525,7 +1536,8 @@ document.addEventListener('click', e => {
   else if (a.dataset.act === 'ask-grownup') askGrownup(a);
   else if (a.dataset.act === 'make-live' && S.liveClass) makeLive(a);
   else if (a.dataset.act === 'canvas-switch' && S.canvasLine) send(S.canvasLine.ask);
-  else if (a.dataset.act === 'edit-activity' && panel) panel.openSheet();
+  else if (a.dataset.act === 'edit-activity' && panel) panel.toggleInline();
+  else if (a.dataset.act === 'live-info' && S.liveClass) toast(t('js.studio.liveLine.kidReady'));
   else if (a.dataset.act === 'fix-live' && S.liveClass && S.liveClass.fixAsk) send(S.liveClass.fixAsk);
   else if (a.dataset.act === 'live-publish') $('#st-publish').click();
   else if (a.dataset.act === 'continue' && S.lastTurn) send(t('js.studio.continueMessage'), { continueOf: S.lastTurn.id });

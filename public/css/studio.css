@@ -64,7 +64,7 @@
 .st-main{display:grid;grid-template-columns:minmax(330px,430px) minmax(0,1fr);gap:16px;height:calc(100vh - var(--top) - 190px);min-height:560px}
 @media (max-width:960px){.st-main{grid-template-columns:minmax(0,1fr);height:auto}}
 .st-chat,.st-preview{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:0;min-width:0}
-@media (max-width:960px){.st-chat{height:min(68vh,620px)}.st-preview{height:min(86vh,820px)}}
+@media (max-width:960px){.st-chat{height:min(68vh,620px)}}
 .st-chat-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap;flex:none}
 .st-bot{font-size:1.5rem}
 .st-turns{order:3;flex-basis:100%;font-size:.85rem;font-weight:700;color:var(--muted)}
@@ -251,7 +251,9 @@ button.stp-line{cursor:pointer}
 .st-prev-head .seg button{min-height:44px}
 .st-prev-tools{display:flex;gap:6px;margin-inline-start:auto}
 .st-prev-tools .btn-sm{min-height:44px}
-@media (max-width:520px){.st-prev-head .seg{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}.st-prev-head .seg button{padding:0 4px;font-size:.85rem;white-space:nowrap}.st-prev-tools{margin-inline-start:0;width:100%}.st-prev-tools .btn{flex:1}}
+/* Phones: the three tools (As a student, Reload, Full screen, each with its icon) share the row with tighter padding, and
+   wrap to a second line where even that does not fit (320 px), so the page never scrolls sideways. */
+@media (max-width:520px){.st-prev-head .seg{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}.st-prev-head .seg button{padding:0 4px;font-size:.85rem;white-space:nowrap}.st-prev-tools{margin-inline-start:0;width:100%;gap:4px;flex-wrap:wrap}.st-prev-tools .btn{flex:1;padding:0 6px;white-space:nowrap}}
 .st-stage{flex:1;min-height:0;position:relative;overflow:hidden;background:repeating-conic-gradient(var(--card-2) 0 25%,var(--bg) 0 50%) 0 0/24px 24px;border-radius:0 0 var(--r) var(--r)}
 .st-device{position:absolute;left:50%;top:50%;width:var(--w,390px);height:var(--h,720px);transform:translate(-50%,-50%) scale(var(--k,1));border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 0 0 8px var(--brand-ink),0 0 0 9px var(--edge),0 18px 40px rgba(20,20,20,.25)}
 .st-device[data-size="landscape"]{border-radius:18px}
@@ -268,9 +270,28 @@ button.stp-line{cursor:pointer}
 .st-safety ul{margin:0;padding-inline-start:20px;flex-basis:100%;font-weight:500}
 .st-safety .st-played{white-space:nowrap}
 .st-playblock{margin:0 0 4px;font-weight:600}
-.st-liveclass{padding:8px 10px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.95rem;min-width:0}
-.st-liveclass .stchip{white-space:normal;overflow-wrap:anywhere;max-width:100%}
-.st-live-why{flex-basis:100%;margin:0}
+/* Under the preview (public/js/studio.js renderActs): on a phone "🧮 Edit lesson" across the whole width, the Activity
+   panel opening below it (.st-acc), then one row of two equal buttons (the activity switch, the live button), and a
+   small line or two under it. The row never wraps: on a narrow phone the words get smaller and may break between
+   words inside a button, never inside one. */
+.st-acts{padding:8px 10px 10px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px;min-width:0}
+.st-editact{width:100%;gap:10px;min-height:48px}
+.st-chev{flex:none;width:.5em;height:.5em;border:solid currentColor;border-width:0 3px 3px 0;transform:translateY(-.12em) rotate(45deg);transition:transform .2s}
+.st-editact[aria-expanded="true"] .st-chev{transform:translateY(.12em) rotate(-135deg)}
+@media (prefers-reduced-motion:reduce){.st-chev{transition:none}}
+.st-acc{min-width:0}
+.st-btnrow{display:flex;gap:8px;min-width:0}
+.st-btnrow:empty{display:none}
+.st-actbtn{flex:1 1 0;min-width:0;min-height:48px;padding:6px 12px;gap:6px;font-size:.95rem;line-height:1.15;white-space:normal;overflow-wrap:normal;word-break:normal;hyphens:manual;text-align:center;text-wrap:balance}
+.st-livebtn:not(.is-live){background:var(--card)}
+.st-actcap{display:flex;flex-direction:column;gap:4px;min-width:0}
+.st-actcap:empty{display:none}
+.st-cap{margin:0;font-size:.86rem;line-height:1.3;color:var(--text-2);overflow-wrap:anywhere}
+.st-cap.warn{color:var(--text);font-weight:600}
+@media (max-width:440px){.st-btnrow{gap:6px}.st-actbtn{padding:6px 8px;gap:4px;font-size:clamp(.74rem,3.6vw,.88rem)}}
+/* A phone: the preview is as tall as what it holds (the panel opens inside it, under Edit lesson); the stage keeps its
+   own height. */
+@media (max-width:960px){.st-preview{height:auto}.st-stage{flex:none;height:min(62vh,580px)}}
 
 /* sheets */
 .vlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}

@@ -1775,7 +1775,7 @@
       "activity": "Klassenaktivität · Ergebnisse gehen in den Fortschritt",
       "board": "Klassenaktivität · an der Tafel",
       "arcade": "Arcade-Spiel · für deine Klasse gemacht",
-      "toArcade": "Lieber ein Arcade-Spiel daraus machen",
+      "toArcade": "Zum Arcade-Spiel machen",
       "toArcadeAsk": "Mach lieber ein Arcade-Spiel daraus: ein Quiz-, Lauf- oder Fangspiel mit denselben Aufgaben.",
       "toCanvas": "Eine Klassenaktivität daraus machen",
       "toCanvasAsk": "Mach lieber eine Klassenaktivität daraus: eine Arbeitsfläche mit denselben Fragen, Schritten und Tipps."
@@ -2012,7 +2012,8 @@
       "invitePlay": "Los geht's!",
       "inviteNo": "Jetzt nicht",
       "ok": "OK",
-      "cancel": "Abbrechen"
+      "cancel": "Abbrechen",
+      "fullExit": "Vollbild beenden"
     },
     "game": {
       "needSignIn": "Tipp auf „Als Gast spielen“ oder melde dich zuerst an.",
@@ -2031,8 +2032,6 @@
     "play": {
       "saveFailed": "Dein Fortschritt konnte nicht gespeichert werden.",
       "newBest": "Neuer Rekord: {score}!",
-      "noFullscreen": "Vollbild geht hier nicht.",
-      "tapFullscreen": "Tipp auf den Vollbild-Knopf, um es groß zu machen.",
       "signInToLike": "Melde dich an oder spiel als Gast, um Favoriten zu speichern.",
       "signInToRate": "Melde dich an oder spiel als Gast, um Spiele zu bewerten.",
       "liked": "Zu deinen Favoriten hinzugefügt!",
@@ -2121,7 +2120,6 @@
       "fixButton": "Baumeister soll's reparieren",
       "fixMessage": "Bitte repariere die Probleme beim Sicherheitscheck in Version {number}:",
       "buildFirst": "Bau zuerst etwas!",
-      "noFullscreen": "Vollbild ist hier nicht erlaubt.",
       "roundOver": "Runde vorbei! Punkte: {score}",
       "noAnswer": "Der Baumeister konnte nicht antworten. Bitte versuch es noch mal.",
       "signInAgain": "Wieder anmelden",
@@ -2181,8 +2179,8 @@
         "publishBtn": "Veröffentlichen",
         "fix": "Live, aber etwas muss repariert werden: {issue}",
         "fixBtn": "Reparieren",
-        "off": "Kein Live-Spiel",
-        "make": "Live machen"
+        "make": "Zum Live-Spiel machen",
+        "game": "Live-Spiel"
       },
       "safety": {
         "chipPass": "Sicher",
@@ -2615,7 +2613,7 @@
       "world2dUse": "Nimm die 2D-Welt {name}.",
       "animal2dUse": "Mach dieses Tier zum Helden: {name}.",
       "sparks": "{n, plural, one {# Nachricht aus Funkenpaketen} other {# Nachrichten aus Funkenpaketen}}",
-      "activityEdit": "Aktivität bearbeiten",
+      "activityEdit": "Lektion bearbeiten",
       "asStudent": "Als Schüler",
       "activitySaveFirst": "Speichern oder verwerfen Sie zuerst Ihre Änderungen im Aktivitätsbereich.",
       "play": {
