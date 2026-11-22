@@ -10631,3 +10631,39 @@ Phase 4 of the Figures plan (presets, undo/redo, the reuse terms page, example f
   question, the Presets menu by keyboard with save, apply and delete, the rows' More menu by keyboard, Alt+Arrow,
   Swap figure, Delete with Cancel and OK, the row opening the editor, a phone at 375 px, the nouns, the terms link);
   figures-browser, figures-draw-browser and figures-lesson-step-browser now use the menus.
+
+## AI drafts: one time budget, a starting board when the AI doesn't answer (22 Nov 2026)
+
+On oomba.ai the owner asked Manipulatives "Draft with AI" for a board. The page counted for about two minutes and then
+said only to try again. The logs showed the draft queued, two minutes of polling, then the end, and not one warn or error
+line. Why: runDraft called the model with a 60 s timeout and maxRetries 1, so a slow answer waited 60 s, the SDK tried
+again for another 60 s, and the catch returned 'aiFailed' without logging anything. The page then showed its generic
+"try again". The Figures worksheet and test drafters and the lesson drafter used the same 60 s + retry pattern (Figures
+fell back and logged the error message; the lesson drafter neither caught nor logged, so the route answered 503).
+We still don't know which error the API gave that morning, since nothing was logged.
+
+- **One call, one budget (services/ai-call.js callAi).** The drafters (Manipulatives, Figures worksheet and test,
+  lessons) call the AI with a single 90 s budget and no SDK retries. A timeout is never tried again. Only "busy" (429
+  rate limit, 529 overloaded) gets one more try after a 2 s pause, and only with at least 15 s of the budget left. The
+  call is also raced against the budget, so it can't run past it. The Manipulatives max_tokens went from 4000 to 3000
+  (a full board of PRACTICE_MAX items and STEPS_MAX steps is well under 2000 tokens of JSON).
+- **Never silent (logAiFail).** Each failed call writes one warn line: what was drafting (the draft id and tool, or the
+  sheet id), the kind (timeout, rate_limit, overloaded, api_error, bad_json), the HTTP status and how long it took.
+  It never logs the brief, the topic or any name.
+- **A starting board instead of a failure.** When the AI fails, times out or sends back something that isn't a draft,
+  the Manipulatives draft ends done with the template (the tool's usual board with the brief as its one step),
+  ai: false and a reason (timeout, busy or error; resting when there is no key or the budget is resting). The board
+  opens, and a calm note above it says why ("The AI didn't answer in time, so here's a starting board. You can try
+  Draft with AI again.") with Try again, which keeps the words. Figures worksheets and tests already fell back; they now
+  return the reason too, and the sheet says "The AI didn't answer this time" instead of "AI is resting". The lesson
+  drafter now falls back to its template draft too, instead of the 503.
+- **Real failures say why.** Every code a draft can end with has its own sentence (notFound, badTool, brief, words,
+  personal, names, aiFailed, restart, badState, tooBig), in the 12 translated locales.
+- **Progress.** The page never stopped polling while a draft ran, and still doesn't. The estimate now carries the
+  longest a draft takes (the AI budget plus 30 s, manip-drafts.js longest), and past the usual time the line says
+  "Taking longer than usual. You'll have a board within 2 minutes either way."
+- **Tests:** manip-saving (a call that never answers ends at the budget with one call and maxRetries 0, the SDK's
+  timeout error, a rate limit tried once more, bad JSON, no key; each ends done with the starting board and its reason,
+  one warn line without the brief), figures-lesson-step (lessons, worksheets and tests on a timeout and bad JSON),
+  figures-product (overloaded: reason busy) and manip-saving-browser (Chromium: the note and the starting board after a
+  timeout, Try again keeps the words; a draft refused for a student's name says so).

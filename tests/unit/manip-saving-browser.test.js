@@ -2,7 +2,8 @@
 // drafts"): a draft keeps going through a refresh (its progress shows again in the drafter's box and the side button
 // counts its time) and lands on the board; a draft that finished while the teacher was away shows one notice; a board
 // saves itself and comes back after a refresh; Save as template asks for a name; My boards opens, renames and deletes;
-// and a room ended before recess, reopened from My boards, gives a student their same square back. The AI is the
+// a room ended before recess, reopened from My boards, gives a student their same square back; and an AI that doesn't
+// answer gives the starting board with a calm note, while a refused draft says exactly why. The AI is the
 // existing stand-in (services/manipulatives.js hooks.create). MANIP_SHOTS=<dir> also saves pictures. Skipped when no
 // Chromium is installed.
 import './_setup.js';
@@ -189,4 +190,44 @@ test('after recess: the room ended, the teacher reopens it from My boards, and a
   assert.deepEqual([...t.errors, ...k.errors], []);
   await t.ctx.close(); await k.ctx.close();
   M.end(boss, s.id);
+});
+
+test('the AI does not answer: the starting board opens with a calm note (Try again keeps the words); a refused draft says why', { skip }, async () => {
+  M.hooks.create = async () => { const e = new Error('Request timed out.'); e.name = 'APIConnectionTimeoutError'; throw e; };
+  try {
+    const { ctx, page, errors } = await open(boss, '#clock');
+    await page.waitForSelector('#mp-board');
+    await page.click('[data-tool="draft"]');
+    await page.fill('#mp-brief', 'Four clocks to the quarter hour');
+    await page.click('#mp-dgo');
+    await page.waitForSelector('.mp-dfall', { timeout: 15000 });
+    assert.match(await page.textContent('.mp-dfall'), /didn’t answer in time, so here’s a starting board\. You can try Draft with AI again\./);
+    const job = liveDraft();
+    assert.equal(job.status, 'done'); assert.equal(JSON.parse(job.result).reason, 'timeout');
+    assert.equal(await page.evaluate(() => location.hash), `#board/${job.board_id}`, 'the starting board is open');
+    assert.match(await page.textContent('#mp-steps'), /Four clocks to the quarter hour/, 'the brief is its step');
+    assert.doesNotMatch(await page.textContent('#mp-draft'), /Something went wrong|couldn’t be finished/);
+    await shot(page, 'draft-fallback-timeout');
+    await page.click('[data-dfall="retry"]');
+    await page.waitForSelector('#mp-brief');
+    assert.equal(await page.inputValue('#mp-brief'), 'Four clocks to the quarter hour', 'the words are kept');
+    assert.equal(await page.textContent('#mp-dmsg'), '', 'no error under it');
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  } finally { M.hooks.create = null; }
+  // A draft refused at the check before the AI (a student of the class named in it): the notice says exactly why.
+  const oak = S.createSchool(boss, { name: 'Names Oak' }).school;
+  S.addMember(boss, oak.id, boss.id, 'teacher', { rosterName: 'Ms Boss' });
+  const A = S.createClass(boss, oak.id, { name: 'Names 2B' }).class;
+  q.run("INSERT INTO manip_drafts(id, owner_id, tool, request, status, created_at) VALUES ('namez1', ?, 'clock', ?, 'interrupted', ?)", boss.id, JSON.stringify({ brief: 'Clocks for Quilla Zent' }), Date.now());
+  S.addToClass(boss, A.id, S.createSchoolAccount(boss, oak.id, { rosterName: 'Quilla Zent' }).user.id);
+  D.recover(); await D.settled('namez1');
+  assert.equal(D.get('namez1').error, 'names');
+  const b = await open(boss, '');
+  await b.page.waitForSelector('.mp-dnote');
+  const text = await b.page.textContent('.mp-dnote');
+  assert.match(text, /Leave students’ names out of the description/); assert.doesNotMatch(text, /Something went wrong/);
+  await shot(b.page, 'draft-failed-names');
+  assert.deepEqual(b.errors, []);
+  await b.ctx.close();
 });
