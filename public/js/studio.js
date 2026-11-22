@@ -4,7 +4,7 @@
 // connects, so a reload, another tab or another device shows the same build. After every build the page reads the
 // Studio state again and redraws the chat from the saved transcript. Send stays on while a build runs: the message is
 // a follow-up ("follow-ups" below) that the Builder reads at its next step.
-import { api, toast, sheet, pageData, signedOut, tappedJustNow, setPlaceholder, $, $$, esc, copyText, t } from '/js/app.js';
+import { api, toast, sheet, pageData, signedOut, tappedJustNow, setPlaceholder, $, $$, esc, copyText, t, ask as askBox, verbOf } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
 import { fullScreen } from '/js/fullscreen.js';
 import { iconHtml, hasIcon } from '/js/icons.js';
@@ -332,7 +332,8 @@ function playBlocked(er, retry) {
   s.el.addEventListener('click', async e => {
     const b = e.target.closest('[data-play]'); if (!b) return;
     if (b.dataset.play === 'fix') { s.close(); send(d.ask); return; }
-    if (!confirm(t('js.studio.play.confirm'))) return;
+    // The site's own question box over the sheet (app.js ask(), not the browser's confirm()): Cancel has the focus first.
+    if (!await askBox({ text: t('js.studio.play.confirm'), ok: verbOf(b), danger: true })) return;
     b.disabled = true;
     try { const r = await retry(true); applyState(r.state); toast(r.message, { ms: 5000 }); s.close(); } catch (err) { b.disabled = false; toast(err.message, { bad: true, ms: 6000 }); }
   });
