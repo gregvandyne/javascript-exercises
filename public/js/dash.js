@@ -66,6 +66,12 @@ function start() {
   const rowsUsed = () => S.widgets.reduce((m, w) => Math.max(m, w.y + w.h), 0);
   const canRemove = w => !w.pinned;
   const nameOf = w => (types.get(w.type) || {}).name || w.type;
+  /** Whether a widget on screen is waiting for the class's list from the live check (the server sends class jobs' names
+   *  and the points for each student only for the widgets of the layout on screen). */
+  const needsLive = () => {
+    const live = S.live || {};
+    return S.widgets.some(w => (w.type === 'jobs' && !(live.crew && live.crew[w.id])) || (w.type === 'score' && w.s && w.s.mode === 'students' && !live.points));
+  };
   /** Whether the settings panel has anything for this widget (a field, or the teacher's "Pin on student screens"). */
   const hasSettings = type => !!type && (type.settings.some(f => !f.hidden) || (TEACHER && !!type.pin));
 
@@ -411,6 +417,9 @@ function start() {
         S.mine = r.state;
       }
       if (board && board.status && !saveTimer) setLabel(board.status, `✓ ${t('js.dash.side.saved')}`);
+      // A widget just added or changed that needs the class's list (class jobs, points for each student): the server
+      // knows about it now, so ask at once.
+      if (TEACHER && needsLive()) poll();
       return true;
     } catch (err) { toast(err.message, { bad: true }); return false; }
   }
@@ -688,7 +697,7 @@ function start() {
     // students are the teacher's live list (ids and Oomba names, on the teacher's screen only).
     jobcards(field, f, w, id, type, { commit, redraw }) {
       const label = k => (type.settings.find(x => x.key === k) || {}).label;
-      jobsEditor(field, w, type.words, { id, roster: () => ((S.live && S.live.crew) || {})[w.id] || [], className: D.className || '', label: f.label, fromLabel: label('from'), namesLabel: label('names'), commit, redraw, say: announce });
+      jobsEditor(field, w, type.words, { id, roster: () => ((S.live && S.live.crew) || {})[w.id] || null, className: D.className || '', label: f.label, fromLabel: label('from'), namesLabel: label('names'), commit, redraw, say: announce });
     },
     // Class Board parity: the PDF widget's file (the class's teacher uploads a PDF; only they can open it again).
     pdf(field, f, w, id, type, { commit, redraw }) {
@@ -1092,12 +1101,18 @@ function start() {
   setInterval(tick, 1000);
 
   // ---------------------------------------------------------------- live state (every few seconds while in view)
+  // Each check is numbered: an answer that comes back after a newer one (a check asked for at once on a layout switch,
+  // while the regular one was still on its way) is dropped, so a screen never goes back to an older layout's state.
+  let pollSeq = 0, pollShown = 0;
   async function poll() {
     if (document.hidden) return;
+    const mine = ++pollSeq;
     try {
       const sent = Date.now();
       const live = await api(`/api/dash/${CID}/live`, { background: true });
       const got = Date.now();
+      if (mine < pollShown) return;
+      pollShown = mine;
       // The server's clock: the estimate from the quickest of the last few round trips (timers agree on every screen).
       S.samples.push({ rtt: got - sent, skew: skewOf(live.now, sent, got) }); if (S.samples.length > 8) S.samples.shift();
       S.skew = S.samples.reduce((a, b) => (b.rtt < a.rtt ? b : a)).skew;
@@ -1160,6 +1175,9 @@ function start() {
       S.layoutId = id; S.active = id; loadWidgets(l.widgets); S.bg = l.bg; S.undo = []; S.selected = null;
       applyBg(); render(); renderLayouts(); resetName();
       announce(t('js.dash.say.layout', { name: l.name }));
+      // The new layout's class lists (class jobs, points for each student) come with the live check: asked for now, not
+      // with the next regular one a few seconds later (until then those widgets say the list is on its way).
+      if (needsLive()) poll();
     } catch (err) { toast(err.message, { bad: true }); }
   }
   function nameSheet(title, value, copy, onSave) {
@@ -1256,10 +1274,13 @@ function start() {
   });
 
   const KIND_ICON = { game: '🎮', live: '📡', lesson: '📚', link: '🔗', check: '✅', tool: '🧮', build: '🧱' };
-  /** A sent tool is named by its mode when it has one ("Base-ten blocks", not "Place value"). */
-  const toolName = tool => { const ty = types.get(tool && tool.type) || {}; const m = (ty.modes || []).find(x => x.id === ((tool.state && tool.state.tab) || ty.id)); return (m && m.name) || ty.name; };
+  /** A sent tool's name on a student's screen (banner, tray, their copy) and in the teacher's list: the tool's own name,
+   *  the title of its widget on the teacher's screen ("Shape board", whichever of its modes shows), never the mode's. */
+  const toolName = tool => (types.get(tool && tool.type) || {}).name;
+  /** A mode's name on the tool's switch ("Geoboard"), or the tool's own name for a tool without modes. */
+  const modeName = (type, mode) => { const ty = types.get(type) || {}; const m = (ty.modes || []).find(x => x.id === (mode || ty.id)); return (m && m.name) || ty.name; };
   /** A Build it set's name: the tool's mode ("Fraction bars"), or the tool itself ("Fractions") for a set of equations. */
-  const buildName = (type, mode, eq) => (eq ? (types.get(type) || {}).name : toolName({ type, state: { tab: mode } })) || '';
+  const buildName = (type, mode, eq) => (eq ? (types.get(type) || {}).name : modeName(type, mode)) || '';
   const titleOf = p => (p.kind === 'tool' ? toolName(p.tool) || t('js.dash.kind.tool')
     : p.kind === 'build' ? t('js.dash.build.title', { name: p.build ? buildName(p.build.type, p.build.mode, !!(p.build.targets && p.build.targets[0] && p.build.targets[0].op)) : '' })
       : p.title || t(`js.dash.kind.${p.kind}`));
@@ -1377,18 +1398,36 @@ function start() {
       <p class="small dash-checknote" role="status">${esc(ch.mine == null ? t('js.dash.check.tap') : t('js.dash.check.thanks'))}</p>`;
     if (had != null) box.querySelector(`[data-answer="${had}"]`)?.focus();
   }
-  // Eyes up: a card over the whole screen until the teacher ends it (or it ends by itself).
-  let eyesTimer = null;
+  // Eyes up: a card over the whole screen until the teacher ends it (or it ends by itself). A <dialog> opened with
+  // showModal(), so it is in the top layer: over a student's open tool sheet (app.js sheet()), a menu, a question box
+  // (app.js ask(), itself a top-layer dialog) and a tool made full screen alike, and everything under it is inert. What
+  // is under it is left exactly as it was (an open sheet, its tool, the scroll), so it is all there again afterwards.
+  let eyesTimer = null, eyesUp = false;
+  const showEyes = box => { try { box.showModal(); } catch { box.setAttribute('open', ''); } };
   function eyes(on) {
     const box = $('#dash-eyes'); if (!box) return;
-    const was = !box.hidden;
-    box.hidden = !on;
+    const was = box.open;
+    eyesUp = !!on;
     for (const el of [...root.children].filter(x => x !== box && x.id !== 'dash-say')) el.inert = !!on;
+    if (on && !was) showEyes(box);
+    else if (!on && was) box.close();
     clearTimeout(eyesTimer);
     if (on) { eyesTimer = setTimeout(() => { S.live.eyes = null; eyes(null); }, Math.max(0, on.until - Date.now())); if (!was) { announce(t('js.dash.say.eyesUp')); box.focus?.(); } }
   }
+  /** Something put in the top layer after Eyes up (a tool going full screen, a question box): Eyes up goes back on top. */
+  function eyesOnTop() {
+    const box = $('#dash-eyes'); if (!box || !eyesUp || !box.open) return;
+    box.close(); showEyes(box); box.focus?.();
+  }
   if (!TEACHER) {
-    $('#dash-eyes').tabIndex = -1;
+    const box = $('#dash-eyes');
+    box.tabIndex = -1;
+    // Only the teacher ends it: Escape (the dialog's own close request) and a press outside do nothing, and a sheet
+    // under it never hears a key (app.js sheet() closes on Escape).
+    box.addEventListener('cancel', e => e.preventDefault());
+    box.addEventListener('close', () => { if (eyesUp && !box.open) { showEyes(box); box.focus?.(); } });
+    window.addEventListener('keydown', e => { if (!eyesUp) return; e.stopImmediatePropagation(); if (e.key === 'Escape' || e.key === 'Tab') e.preventDefault(); }, true);
+    document.addEventListener('fullscreenchange', () => { if (eyesUp && document.fullscreenElement) eyesOnTop(); });
     const tray = $('#dash-tray'), trayBtn = $('#dash-tray-btn');
     const setTray = open => { tray.hidden = !open; trayBtn.setAttribute('aria-expanded', String(open)); if (open) $('#dash-tray-close').focus(); };
     trayBtn.addEventListener('click', () => setTray(tray.hidden));
@@ -1429,8 +1468,8 @@ function start() {
     const type = p && p.tool && types.get(p.tool.type);
     if (!type || !RENDER[type.id]) return;
     const C = D.registry.common || {};
-    const mode = (type.modes || []).find(x => x.id === ((p.tool.state && p.tool.state.tab) || type.id));
-    const sh = sheet({ title: `${(mode && mode.icon) || type.icon} ${toolName(p.tool)}`, content: `<p class="small muted">${esc(C.yourCopy)}</p><section class="dash-w dash-wcopy" data-group="${esc(type.group)}"><div class="dash-wb"></div></section><div class="row dash-copyacts"><button class="btn btn-primary" type="button" data-pincopy>${ico('📌')} ${esc(C.pin)}</button></div>` });
+    // Titled as the teacher's widget is: the tool's icon and name (its mode shows inside, on the tool's own switch).
+    const sh = sheet({ title: `${type.icon} ${toolName(p.tool)}`, content: `<p class="small muted">${esc(C.yourCopy)}</p><section class="dash-w dash-wcopy" data-group="${esc(type.group)}"><div class="dash-wb"></div></section><div class="row dash-copyacts"><button class="btn btn-primary" type="button" data-pincopy>${ico('📌')} ${esc(C.pin)}</button></div>` });
     sh.el.querySelector('.sheet').classList.add('dash-copysheet');
     const body = sh.el.querySelector('.dash-wcopy .dash-wb');
     const w = { id: `copy-${pid}`, type: type.id, s: { state: copies.get(pid) || p.tool.state } };

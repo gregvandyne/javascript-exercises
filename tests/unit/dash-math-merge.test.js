@@ -239,7 +239,7 @@ test('sent copies: an old push opens as the mode; a new one carries the whole to
   // A student pins their copy: kept on their own screen in the mode they left it.
   const saved = (await K(`/api/dash/${w.A.id}/me`, POST({ widgets: [{ id: 'mine1', type: 'placeval', x: 0, y: 2, w: 7, h: 7, s: { state: sent.tool.state } }] }))).json.state;
   assert.deepEqual(saved.widgets[0].s.state.base10, { h: 3, t: 1, o: 0 });
-  // The browser names a sent tool by its mode and keeps the copy in this browser (copies.set), as before.
+  // The browser names a sent tool (toolName: as the teacher's widget is) and keeps the copy in this browser (copies.set).
   const page = fs.readFileSync('public/js/dash.js', 'utf8');
   assert.match(page, /const toolName = tool =>/);
   assert.match(page, /keep: state => copies\.set\(pid, state\)/);

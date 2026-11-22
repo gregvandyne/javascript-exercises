@@ -191,8 +191,12 @@ body.dash-page{padding-bottom:0}
 .dash-sent{display:flex;flex-direction:column;gap:var(--s2)}
 
 /* ---------- Eyes up ---------- */
-.dash-eyes{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:var(--s5);background:var(--brand-ink);color:var(--brand-cream);text-align:center}
-.dash-eyes[hidden]{display:none}
+/* A <dialog> opened with showModal() (public/js/dash.js eyes): in the top layer, so it covers everything on the screen,
+   a student's open tool sheet, a menu, a question box and a tool made full screen included, and nothing under it can
+   be touched. The z-index is for a browser without showModal() only. */
+.dash-eyes{position:fixed;inset:0;z-index:2147483000;width:100%;height:100%;max-width:none;max-height:none;margin:0;border:0;box-sizing:border-box;display:grid;place-items:center;padding:var(--s5);background:var(--brand-ink);color:var(--brand-cream);text-align:center;overflow:auto}
+.dash-eyes:not([open]){display:none}
+.dash-eyes::backdrop{background:var(--brand-ink)}
 .dash-eyescard{display:flex;flex-direction:column;align-items:center;gap:var(--s3)}
 .dash-eyesmark{font-size:clamp(4rem,14vw,10rem);line-height:1}
 .dash-eyesmark img.fx{width:clamp(4rem,14vw,10rem);height:auto}

@@ -6956,7 +6956,9 @@ blocks"), Make a question, Send to students, Practice it and the projector. Code
   differs: the "times tables grid"; its old descriptions of the shape board, pattern blocks, algebra tiles and chance lab
   were removed so the new English ones show). A mode's name on the switch is the old tool's name in that language
   (`dash.w.<tool>.m.<mode>`), so nothing a teacher knew is renamed inside a tool. Searching the library also finds a tool
-  by its modes' names ("times table" finds Multiply and divide). A sent tool is named by its mode in the banner and tray.
+  by its modes' names ("times table" finds Multiply and divide). A sent tool was named by its mode in the banner and
+  tray; since "Classroom dashboards: Eyes up on top, class lists on a layout switch, sent tools' names" it is named as its
+  widget is on the teacher's screen.
 - **Sizes**: each tool is at least as big as its biggest mode was, plus the switch's row: fractions 6 × 8 (smallest 5 ×
   8), place value 7 × 7 (6 × 6), multiply and divide 6 × 8 (5 × 8), shape board 8 × 8 (5 × 8), geometry 7 × 8 (6 × 8),
   algebra 7 × 7 (6 × 7), data and chance 7 × 7 (6 × 7). Smaller saved boxes grow when read.
@@ -11282,3 +11284,35 @@ tools (Power with AI, Check my passage, why lines, the free daily cap) are uncha
   Dashboard is free for every class." then, with paid plans on, "The Manipulatives, their live rooms and Figures are part
   of the Teacher plan." or, off, "The other three tools are being tried out in a few classrooms now." Same music
   (AtlasAudio via Pixabay), added to the credits row.
+
+## Classroom dashboards: Eyes up on top, class lists on a layout switch, sent tools' names (22 Nov 2026)
+
+Three things found while filming the dashboard promo.
+- **Eyes up covers everything on a student's screen.** The card was a `position:fixed` box at z-index 60 inside the
+  dashboard, so a student's open tool sheet (app.js `sheet()`, z-index 80, appended to `<body>`) sat on top of it: only
+  the page's edges went dark and the student could keep using the tool. A tool filling the screen (the Fullscreen API,
+  or `.gb-max` at z-index 1000) and any `<dialog>` or popover in the top layer were above it too. Now `#dash-eyes` is a
+  `<dialog closedby="none">` opened with `showModal()` (public/js/dash.js `eyes`): in the top layer, shown last, so it is
+  over all of them, and everything under it is inert (nothing can be tapped, clicked or reached by keyboard). Escape,
+  its own close request and a tap outside do nothing; a key never reaches a sheet under it (`sheet()` closes on Escape);
+  if it is closed by anything but the teacher it opens again, and a tool going full screen while it is up puts it back
+  on top. Nothing under it is closed or changed, so the sheet, the tool in it, its scroll and a tool filling the screen
+  are all as they were once the teacher ends it. The z-index is only for a browser without `showModal()`.
+- **No "No students" after a layout switch.** The live check sends class jobs' names (`crew`) and the points for each
+  student only for the widgets of the layout on screen, and the board asked for it only every 4 s, so for up to 4 s
+  after a switch the scoreboard said "No students in this class yet." and class jobs "No students yet: add names...".
+  Now the board asks at once after a switch, and after a save that adds such a widget or turns the scoreboard to
+  students (`needsLive`); checks are numbered so an older answer arriving late is dropped. Until the names are there,
+  both widgets say "Getting the class list..." (`dash.w.score.loading`, `dash.w.jobs.loading`, all 12 locales that have
+  the widgets), with no class total of 0, no job "Open", and Next week and Shuffle disabled; the settings' jobs editor
+  says the same. The empty state shows only when the server says the class has no students.
+- **A sent tool is named as its widget is.** A tool with modes reached students named by its mode ("Geoboard", "Angle
+  maker", "Fraction, decimal, percent", "3D shapes and nets") while the teacher's widget says the tool's name ("Shape
+  board", "Fractions", "Geometry"): every tool with modes had the mismatch. `toolName` is now the tool's own name
+  everywhere a sent tool is named (the student's banner, tray and copy, with the tool's icon, and the teacher's push
+  list and "sent" toast). Build it sets keep their mode's name (`modeName`): the teacher's "Make a set" sheet names the
+  mode too, so the two screens agree there.
+- **Test:** `tests/unit/dash-film-fixes-browser.test.js` (Chromium, a student on an iPhone 13): Eyes up is on top at the
+  middle and corners over an open sheet, taps, clicks and Escape reach nothing, and the sheet is as it was afterwards;
+  the same over a copy filling the screen and a question box; a layout switch on a slow network never shows the empty
+  text and the names come at once; the banner, tray and copy titles equal the teacher's widget titles in every mode.

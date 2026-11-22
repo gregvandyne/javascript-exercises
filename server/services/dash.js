@@ -262,7 +262,7 @@ export const WIDGETS = [
     { key: 'n', type: 'number', min: 2, max: 12, def: 4 }] },
   { id: 'score', icon: '🏆', group: 'class', who: 'teacher', size: [5, 3], min: [4, 3], words: ['team', 'plus', 'minus', 'reset',
     // stage 5: points for each student (positive only), from a fixed list of reasons
-    'reason', 'award', 'awardAll', 'everyone', 'undo', 'undone', 'classTotal', 'mine', 'given', 'resetAll', 'resetConfirm', 'hidden', 'nobody', 'pick',
+    'reason', 'award', 'awardAll', 'everyone', 'undo', 'undone', 'classTotal', 'mine', 'given', 'resetAll', 'resetConfirm', 'hidden', 'nobody', 'loading', 'pick',
     ...POINT_REASONS.map(r => `r_${r}`)], settings: [
     { key: 'mode', type: 'select', options: ['teams', 'students'], def: 'teams' },
     { key: 'teams', type: 'textarea', max: 240, def: '' },
@@ -307,7 +307,7 @@ export const WIDGETS = [
     { key: 'places', type: 'places', def: PASS_PLACES },
     { key: 'oneOut', type: 'bool', def: true },
     { key: 'mins', type: 'number', min: 1, max: 30, def: 5 }] },
-  { id: 'jobs', icon: '🧹', group: 'class', who: 'teacher', size: [5, 5], min: [4, 4], words: ['rotate', 'shuffle', 'rotated', 'shuffled', 'nobody', 'nobodyTyped', 'open', 'defaults', 'waiting',
+  { id: 'jobs', icon: '🧹', group: 'class', who: 'teacher', size: [5, 5], min: [4, 4], words: ['rotate', 'shuffle', 'rotated', 'shuffled', 'nobody', 'nobodyTyped', 'loading', 'open', 'defaults', 'waiting',
     // The settings sheet: one card per job (docs/decisions.md "Class jobs: one card per job").
     'cardsIntro', 'job', 'jobN', 'student', 'studentFor', 'nobodyYet', 'typeName', 'nameLabel', 'addName', 'addJob', 'newJob', 'removeJob', 'removedJob', 'picked', 'movedUp',
     'fromNames', 'fromClass', 'removeName', 'removedName', 'noNames', 'maxJobs'], settings: [
