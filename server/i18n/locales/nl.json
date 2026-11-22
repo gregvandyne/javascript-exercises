@@ -4533,7 +4533,8 @@
       "question": "Beantwoord een vraag",
       "quiz": "Quizvragen beantwoorden",
       "figures": "Vragen over figuren beantwoorden",
-      "figureStep": "Vragen bij figuren"
+      "figureStep": "Vragen bij figuren",
+      "proofread": "Tekst nakijken"
     },
     "library": {
       "title": "Lessenbibliotheek",
@@ -12953,6 +12954,47 @@
   "manip": {
     "errors": {
       "chatBusy": "Oomba beantwoordt je vorige bericht nog. Wacht even."
+    }
+  },
+  "proof": {
+    "assign": {
+      "title": "Inleveren voor een cijfer",
+      "untitled": "Mistake Hunt",
+      "opens": "Opent",
+      "showHint": "Standaard uit. Aan: na de inleverdatum zien leerlingen die hebben ingeleverd de verbeteringen en waarom elk klopt.",
+      "snapshotNote": "Leerlingen krijgen deze set zoals hij nu is. Latere wijzigingen veranderen niet wat de klas kreeg. De resultaten gaan naar Voortgang en het cijferoverzicht.",
+      "submit": "Toewijzen",
+      "practiceInstead": "In plaats daarvan oefenen in het spel (geen cijfer)",
+      "practiceHint": "Leerlingen spelen de set als spel, controleren onderweg en krijgen hints. Hij telt als klaar als ze klaar zijn."
+    },
+    "step": {
+      "score": "Je vond {found} van de {total} fouten ({pct}%).",
+      "seeAnswers": "Antwoorden bekijken",
+      "seeWork": "Mijn werk bekijken",
+      "answersLater": "Je leerkracht laat de antwoorden zien na de inleverdatum.",
+      "noAnswers": "Je leerkracht heeft de antwoorden en bespreekt ze misschien met de klas.",
+      "passagesN": "{count, plural, one {# tekst} other {# teksten}}",
+      "mistakesN": "{count, plural, one {# fout} other {# fouten}}",
+      "handInHint": "Verbeter de fouten en lever dan in. Inleveren is definitief.",
+      "answersReady": "De antwoorden zijn klaar. Lever je werk in om ze te zien.",
+      "keepGoing": "Verder",
+      "start": "Beginnen",
+      "teacherNote": "Leerlingen verbeteren deze teksten in Mistake Hunt en leveren één keer in; Oomba kijkt elke fout na.",
+      "passageN": "Tekst {n}",
+      "foundMissed": "{found} gevonden · {missed} gemist",
+      "showAnswersHint": "Standaard uit. Aan: na de inleverdatum ziet elke leerling die heeft ingeleverd de verbeteringen en waarom elk klopt.",
+      "handedInOf": "{done} van {total} ingeleverd",
+      "ofFound": "van de fouten gevonden",
+      "byKind": "Per soort fout",
+      "byKindHint": "Aantallen voor de hele klas: gevonden en gemist, over alle teksten.",
+      "studentsTable": "Het resultaat van elke leerling",
+      "found": "Gevonden",
+      "changed": "Goede woorden veranderd",
+      "notYet": "Nog niet ingeleverd",
+      "changedHint": "Goede woorden veranderen kost geen punten; het aantal staat hier zodat je erover kunt praten.",
+      "errors": {
+        "words": "Die verbetering bevat woorden die we niet kunnen gebruiken. Probeer andere woorden."
+      }
     }
   }
 }

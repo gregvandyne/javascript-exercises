@@ -313,6 +313,10 @@ export const config = {
   // separated, school staff only), plus the students of a class one of them is running a session for. Everyone else
   // gets the normal 404. MANIPULATIVES=0 turns it off for everyone.
   manipulatives: manipulatives.on,
+  // Mistake Hunt's AI tools (docs/decisions.md "Mistake Hunt, Phase 2"; services/proof-ai.js): how many AI requests
+  // (Power with AI passages and Check my passage together) a teacher without the Teacher plan may make a day. Teacher
+  // plan holders have no daily cap (the site's AI budget still applies).
+  proofAiFreePerDay: Math.max(0, Math.floor(+(process.env.PROOF_AI_FREE_PER_DAY ?? 3)) || 0),
   manipulativesUsers: String(process.env.MANIPULATIVES_USERS || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean),
   // Figures, the standalone product (docs/decisions.md "Figures opens to all teachers"; services/figures.js): /figures
   // answers the platform admin and every school staff member; everyone else gets the normal 404. FIGURES=0 is the kill

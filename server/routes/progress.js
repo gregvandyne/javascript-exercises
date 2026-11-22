@@ -41,6 +41,8 @@ import { storyResults } from './library.js';
 import * as LIB from '../services/library.js';
 import * as FS from '../services/figures-steps.js';
 import { figuresStepHtml } from '../views/figures-step.js';
+import * as PS from '../services/proof-steps.js';
+import { proofStudentHtml, proofTeacherHtml, proofResultsHtml } from '../views/proof-step.js';
 /** The class teams editor's script (Oomba Live part 3; the page shows the saved state without it). */
 const CLASS_TEAMS_JS = fs.existsSync(fileURLToPath(new URL('../../public/js/live-class-teams.js', import.meta.url)));
 const liveHostOk = u => liveOn() && liveCanHost(u);
@@ -50,7 +52,7 @@ router.use(studentRoutes);   // /class/:id/student/:uid: one student's page for 
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
 const b = req => req.body || {};
 const nameOf = r => r.roster_name || r.display_name;
-const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩', story: '📚', figures: '📐' };
+const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩', story: '📚', figures: '📐', proofread: '🔎' };
 /** Official games a class plays only when the teacher hosts them live (the Oomba Live built-in modes, Would You Rather
  *  Live among them): a lesson step on one of them shows "Your teacher hosts this live" instead of Play and "I played it",
  *  and the server refuses the student's own progress calls on it: the live run writes that cell (CS Quest P5;
@@ -309,7 +311,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
     const isDone = x.status === 'done';
     const reviewed = x.reviewed_at ? t('progress.lesson.read') : t('progress.lesson.new');
     // A quiz the site checked: how many were right and the % (the same figure the student saw).
-    const qz = s.kind === L.QUIZ_KIND || s.kind === L.FIGURES_KIND ? P.quizResult(x) : null;
+    const qz = s.kind === L.QUIZ_KIND || L.HANDIN_KINDS.includes(s.kind) ? P.quizResult(x) : null;
     const extra = qz ? html`<span class="st-score st-quiz" title="${t('progress.lesson.quizScore', qz)}"><span dir="ltr" aria-hidden="true">${qz.right}/${qz.total} · ${qz.pct}%</span><span class="sr-only">${t('progress.lesson.quizScore', qz)}</span></span>`
       : s.kind === 'game' && x.score !== null ? html`<span class="st-score" dir="ltr">${f.int(x.score)}${x.label ? ` ${x.label}` : ''}</span>${x.helped ? html`<span class="st-helped" title="${t('progress.lesson.helped')}">${ico('👀', { size: 18 })}<span class="sr-only">${t('progress.lesson.helped')}</span></span>` : ''}`
       : s.kind === 'question' && x.answer ? html`<span class="${x.reviewed_at ? 'st-read' : 'chip-s warn'}" title="${reviewed}"><span aria-hidden="true">${x.reviewed_at ? '✔️' : '✍️'}</span><span class="sr-only">${reviewed}</span></span>` : '';
@@ -401,6 +403,12 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
         : html`<p class="muted">${t('figures.step.noneYet')}</p>`}
     </section>`;
   });
+  // Graded Mistake Hunt sets (services/proof-steps.js): counts per kind of mistake, each student's result in roster order.
+  const proofs = lp.steps.map((s, i) => ({ s, i })).filter(({ s }) => s.kind === L.PROOF_KIND).map(({ s, i }) => {
+    const full = fullSteps.find(x => x.id === s.id) || s, cells = lp.students.map(p => p.cells[i]);
+    return proofResultsHtml(t, { step: full, cl: lp.cl, totals: PS.typeTotals(full, cells.filter(Boolean)), rows: lp.students.map((p, k) => ({ p, result: PS.resultOf(full, cells[k]) })),
+      studentsN: lp.students.length, lang: req.locale || 'en', nameOf: p => html`<span class="pp">${avatar(p, 28)}${staffStudentName(p)}</span>` });
+  });
   // The whole lesson's rubric: one card per student, scored with the levels, a comment per criterion and feedback.
   const lessonRb = libRubric(l.rubric_id);
   const whole = lessonRb && lp.students.length ? html`<section class="panel answers" id="lesson-rubric" aria-labelledby="lr-h"><h2 id="lr-h">${ico('📏', { size: 28 })} ${t('rubrics.attach.lessonTitle')}</h2>
@@ -431,6 +439,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
       <p class="small muted gb-key"><span>${ico('✅', { size: 18 })} ${t('progress.key.done')}</span><span>◐ ${t('progress.status.started')}</span>${lp.lateFrom !== null ? html`<span>${ico('⏰', { size: 18 })} ${t('gradebook.stepLate')}</span>` : ''}${hasGame ? html`<span id="key-self">${ico('☑️', { size: 18 })} ${t('progress.lesson.selfMarked')}</span>` : ''}${anyHelped ? html`<span>${ico('👀', { size: 18 })} ${t('progress.lesson.helped')}</span>` : ''}</p></section>`}
   ${questions.length || builds.length ? html`<div id="answers">${answers}${builds}</div>` : ''}
   ${figs}
+  ${proofs}
   ${whole}`;
   page(req, res, { title: `${l.title} · ${c.name}`, active: 'classes', body, head: CSS, scripts: ['/js/schools.js'], back: `/class/${c.id}/progress`, backLabel: t('progress.gradebook.title') });
 });
@@ -532,6 +541,8 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
     </section>`;
     // A Figures worksheet (services/figures-steps.js): the figures drawn here, a blank under each, Save and Hand in.
     if (s.kind === L.FIGURES_KIND) return figuresStepHtml(t, FS.viewFor(s, cl, x, { lang: req.locale || 'en' }), { student: { api: `${api(s)}/figures` }, stepId: s.id, showAnswers: !!s.show_answers, dueSet: !!cl.due_at, dueOver: FS.dueOver(cl) });
+    // A graded Mistake Hunt set (services/proof-steps.js): played in the game, handed in there; the score shows here.
+    if (s.kind === L.PROOF_KIND) return proofStudentHtml(t, PS.viewFor(s, cl, x), { href: `/play/${PS.SLUG}?lesson=${cl.id}&step=${s.id}`, showAnswers: !!s.show_answers, dueSet: !!cl.due_at, dueOver: PS.dueOver(cl) });
     if (s.kind === 'question') return html`
       <form class="answerform" data-api="${api(s)}/answer" data-reload novalidate>
         <label class="sr-only" for="ans-${s.id}">${t('progress.student.yourAnswer')}</label>
@@ -553,6 +564,7 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
     return html`<a class="btn" href="/live?cl=${cl.id}&step=${s.id}&${lg ? `mode=${lg.mode}` : `game=${s.game_id}`}">${ico('📡', { size: 18 })} ${t('live.entry.hostLive')}</a>`;
   };
   const preview = s => (s.kind === L.FIGURES_KIND ? figuresStepHtml(t, FS.viewFor(s, cl, null, { lang: req.locale || 'en', teacher: true }), { stepId: s.id, showAnswers: !!s.show_answers, dueSet: !!cl.due_at })
+    : s.kind === L.PROOF_KIND ? proofTeacherHtml(t, PS.viewFor(s, cl, null, { teacher: true }), { showAnswers: !!s.show_answers, lang: req.locale || 'en' })
     : s.kind !== 'game' ? '' : !L.playableBy(s, c.school_id, c.id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>`
     : s.game_slug ? html`<div class="row"><a class="btn" href="${playHref(s, null)}">▶ ${t('lessons.view.play', { title: s.game_title })}</a>${hostLive(s)}</div>` : '');
   const quizLive = teacher && liveHostOk(u) && st.some(s => s.kind === 'question')
@@ -611,6 +623,22 @@ router.post('/api/progress/:clid/:sid/figures', requireUser, rateLimit('progress
   const r = P.figuresAnswer(req.user, req.params.clid, req.params.sid, answers, { handIn });
   if (!r.ok) return r.code === 'notFound' ? no(req, res) : res.status(400).json({ error: req.t(r.code === 'handedIn' ? 'figures.step.errors.handedIn' : r.code === 'answerEmpty' ? 'figures.step.errors.empty' : 'errors.api.badRequest'), code: r.code });
   res.json({ ok: true, handedIn: r.handedIn, score: r.score, toast: req.t(r.handedIn ? 'figures.step.handedIn' : 'figures.step.saved') });
+});
+/** A proofread step for the student as JSON (services/proof-steps.js viewFor): never the key or why lines before they
+ *  are allowed. */
+router.get('/api/progress/:clid/:sid/proofread', requireUser, (req, res) => {
+  const r = P.proofFor(req.user, req.params.clid, req.params.sid);
+  if (!r.ok) return no(req, res);
+  res.set('Cache-Control', 'no-store');
+  res.json(r.view);
+});
+/** Save or hand in a proofread step's fixes: { edits: [[{ a, b, s }], ...], handIn }. -> { ok, handedIn, score, view } */
+router.post('/api/progress/:clid/:sid/proofread', requireUser, rateLimit('progress', 240, 60e3), (req, res) => {
+  const body = b(req);
+  const r = P.proofAnswer(req.user, req.params.clid, req.params.sid, body.edits, { handIn: body.handIn === true });
+  if (!r.ok) return r.code === 'notFound' ? no(req, res) : res.status(400).json({ error: req.t(r.code === 'handedIn' ? 'figures.step.errors.handedIn' : r.code === 'words' ? 'proof.step.errors.words' : 'errors.api.badRequest'), code: r.code });
+  res.set('Cache-Control', 'no-store');
+  res.json({ ok: true, handedIn: r.handedIn, score: r.score, view: r.view });
 });
 /** "Show answers after the due date" for one assigned worksheet (the class's teachers and school admins): { on }. */
 router.post('/api/progress/:clid/:sid/show-answers', requireUser, (req, res) => {

@@ -4533,7 +4533,8 @@
       "question": "Eine Frage beantworten",
       "quiz": "Quizfragen beantworten",
       "figures": "Fragen zu Abbildungen beantworten",
-      "figureStep": "Fragen zu Abbildungen"
+      "figureStep": "Fragen zu Abbildungen",
+      "proofread": "Korrekturlesen"
     },
     "library": {
       "title": "Lektionsbibliothek",
@@ -12953,6 +12954,47 @@
   "manip": {
     "errors": {
       "chatBusy": "Oomba beantwortet noch deine letzte Nachricht. Warte einen Moment."
+    }
+  },
+  "proof": {
+    "assign": {
+      "title": "Zur Bewertung abgeben",
+      "untitled": "Mistake Hunt",
+      "opens": "Öffnet am",
+      "showHint": "Standardmäßig aus. An: Nach dem Abgabedatum sehen Schüler, die abgegeben haben, die Korrekturen und warum jede stimmt.",
+      "snapshotNote": "Die Schüler bekommen diese Sammlung so, wie sie jetzt ist. Spätere Änderungen ändern nicht, was die Klasse bekommen hat. Die Ergebnisse gehen in den Fortschritt und das Notenbuch.",
+      "submit": "Zuweisen",
+      "practiceInstead": "Stattdessen im Spiel üben (ohne Note)",
+      "practiceHint": "Die Schüler spielen die Sammlung als Spiel, prüfen unterwegs und bekommen Tipps. Sie ist erledigt, wenn sie fertig sind."
+    },
+    "step": {
+      "score": "Du hast {found} von {total} Fehlern gefunden ({pct} %).",
+      "seeAnswers": "Lösungen ansehen",
+      "seeWork": "Meine Arbeit ansehen",
+      "answersLater": "Deine Lehrkraft zeigt die Lösungen nach dem Abgabedatum.",
+      "noAnswers": "Deine Lehrkraft hat die Lösungen und bespricht sie vielleicht mit der Klasse.",
+      "passagesN": "{count, plural, one {# Text} other {# Texte}}",
+      "mistakesN": "{count, plural, one {# Fehler} other {# Fehler}}",
+      "handInHint": "Verbessere die Fehler und gib dann ab. Die Abgabe ist endgültig.",
+      "answersReady": "Die Lösungen sind bereit. Gib deine Arbeit ab, um sie zu sehen.",
+      "keepGoing": "Weitermachen",
+      "start": "Starten",
+      "teacherNote": "Die Schüler verbessern diese Texte in Mistake Hunt und geben einmal ab; Oomba bewertet jeden Fehler.",
+      "passageN": "Text {n}",
+      "foundMissed": "{found} gefunden · {missed} übersehen",
+      "showAnswersHint": "Standardmäßig aus. An: Nach dem Abgabedatum sieht jeder Schüler, der abgegeben hat, die Korrekturen und warum jede stimmt.",
+      "handedInOf": "{done} von {total} abgegeben",
+      "ofFound": "der Fehler gefunden",
+      "byKind": "Nach Art des Fehlers",
+      "byKindHint": "Zahlen für die ganze Klasse: gefunden und übersehen, über alle Texte.",
+      "studentsTable": "Das Ergebnis jedes Schülers",
+      "found": "Gefunden",
+      "changed": "Richtige Wörter geändert",
+      "notYet": "Noch nicht abgegeben",
+      "changedHint": "Richtige Wörter zu ändern senkt die Punktzahl nicht; die Zahl steht hier, damit ihr darüber sprechen könnt.",
+      "errors": {
+        "words": "Diese Verbesserung enthält Wörter, die wir nicht verwenden können. Versuch andere Wörter."
+      }
     }
   }
 }

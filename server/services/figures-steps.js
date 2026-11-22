@@ -262,13 +262,14 @@ export function viewFor(step, cl, row, { lang = 'en', teacher = false, t = now()
 
 // ---------------------------------------------------------------- teachers
 const managedCl = (u, clId) => { const cl = L.getClassLesson(clId); const c = cl && S.getClass(cl.class_id); return c && S.canManageClass(u, c) ? cl : null; };
-/** "Show answers after the due date" on or off for one assigned worksheet (the class's managers). */
+/** "Show answers after the due date" on or off for one assigned worksheet or graded passage set (L.HANDIN_KINDS; the
+ *  class's managers). */
 export function setShowAnswers(u, clId, stepId, on) {
   const cl = managedCl(u, clId); const s = cl && L.getStep(stepId);
-  if (!s || s.lesson_id !== cl.lesson_id || s.kind !== FIGURES_KIND) return fail('notFound');
+  if (!s || s.lesson_id !== cl.lesson_id || !L.HANDIN_KINDS.includes(s.kind)) return fail('notFound');
   if (on && !cl.due_at) return fail('needsDue');
   q.run('UPDATE lesson_steps SET show_answers=? WHERE id=?', on ? 1 : 0, s.id);
-  audit(u.id, 'figures.showAnswers', cl.class_id, { step: s.id, on: !!on });
+  audit(u.id, s.kind === FIGURES_KIND ? 'figures.showAnswers' : 'proof.showAnswers', cl.class_id, { step: s.id, on: !!on });
   return ok({ on: !!on });
 }
 /** Per question: how many of the class's students who handed in got it right (counts only: never a ranking). */

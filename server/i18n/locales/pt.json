@@ -4534,7 +4534,8 @@
       "question": "Responder a uma pergunta",
       "quiz": "Responder às perguntas do quiz",
       "figures": "Responder perguntas de figuras",
-      "figureStep": "Questões com figuras"
+      "figureStep": "Questões com figuras",
+      "proofread": "Revisão de texto"
     },
     "library": {
       "title": "Biblioteca de aulas",
@@ -12954,6 +12955,47 @@
   "manip": {
     "errors": {
       "chatBusy": "O Oomba ainda está respondendo à sua última mensagem. Espere um momento."
+    }
+  },
+  "proof": {
+    "assign": {
+      "title": "Entregar para nota",
+      "untitled": "Mistake Hunt",
+      "opens": "Abre em",
+      "showHint": "Desligado por padrão. Ligado: depois do prazo, quem entregou vê as correções e por que cada uma está certa.",
+      "snapshotNote": "Os alunos recebem este conjunto como ele está agora. Mudanças depois não mudam o que a turma recebeu. Os resultados vão para Progresso e o boletim.",
+      "submit": "Atribuir",
+      "practiceInstead": "Praticar no jogo em vez disso (sem nota)",
+      "practiceHint": "Os alunos jogam o conjunto como um jogo, conferem enquanto fazem e recebem dicas. Conta como feito quando terminam."
+    },
+    "step": {
+      "score": "Você encontrou {found} de {total} erros ({pct}%).",
+      "seeAnswers": "Ver as respostas",
+      "seeWork": "Ver meu trabalho",
+      "answersLater": "Seu professor vai mostrar as respostas depois do prazo.",
+      "noAnswers": "Seu professor tem as respostas e pode revê-las com a turma.",
+      "passagesN": "{count, plural, one {# texto} other {# textos}}",
+      "mistakesN": "{count, plural, one {# erro} other {# erros}}",
+      "handInHint": "Corrija os erros e depois entregue. A entrega é final.",
+      "answersReady": "As respostas estão prontas. Entregue seu trabalho para vê-las.",
+      "keepGoing": "Continuar",
+      "start": "Começar",
+      "teacherNote": "Os alunos corrigem estes textos no Mistake Hunt e entregam uma vez; o Oomba corrige cada erro.",
+      "passageN": "Texto {n}",
+      "foundMissed": "{found} encontrados · {missed} perdidos",
+      "showAnswersHint": "Desligado por padrão. Ligado: depois do prazo, cada aluno que entregou vê as correções e por que cada uma está certa.",
+      "handedInOf": "{done} de {total} entregaram",
+      "ofFound": "dos erros encontrados",
+      "byKind": "Por tipo de erro",
+      "byKindHint": "Contagens da turma toda: encontrados e perdidos, em todos os textos.",
+      "studentsTable": "O resultado de cada aluno",
+      "found": "Encontrados",
+      "changed": "Palavras certas trocadas",
+      "notYet": "Ainda não entregou",
+      "changedHint": "Trocar palavras que estavam certas não baixa a nota; a contagem está aqui para vocês conversarem.",
+      "errors": {
+        "words": "Essa correção tem palavras que não podemos usar. Tente outras palavras."
+      }
     }
   }
 }

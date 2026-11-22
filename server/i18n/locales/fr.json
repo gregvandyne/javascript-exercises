@@ -4532,7 +4532,8 @@
       "question": "Répondre à une question",
       "quiz": "Répondre aux questions du quiz",
       "figures": "Répondre à des questions sur des figures",
-      "figureStep": "Questions avec figures"
+      "figureStep": "Questions avec figures",
+      "proofread": "Correction de texte"
     },
     "library": {
       "title": "Bibliothèque de leçons",
@@ -12952,6 +12953,47 @@
   "manip": {
     "errors": {
       "chatBusy": "Oomba répond encore à ton dernier message. Attends un instant."
+    }
+  },
+  "proof": {
+    "assign": {
+      "title": "Rendre pour une note",
+      "untitled": "Mistake Hunt",
+      "opens": "Ouverture",
+      "showHint": "Désactivé par défaut. Activé : une fois la date limite passée, les élèves qui ont rendu voient les corrections et pourquoi chacune est juste.",
+      "snapshotNote": "Les élèves reçoivent cette série telle qu'elle est maintenant. Les modifications ultérieures ne changent pas ce que la classe a reçu. Les résultats vont dans Progrès et le carnet de notes.",
+      "submit": "Assigner",
+      "practiceInstead": "S'entraîner dans le jeu à la place (sans note)",
+      "practiceHint": "Les élèves jouent la série comme un jeu, vérifient au fur et à mesure et ont des indices. C'est fait quand ils ont fini."
+    },
+    "step": {
+      "score": "Tu as trouvé {found} fautes sur {total} ({pct} %).",
+      "seeAnswers": "Voir les réponses",
+      "seeWork": "Voir mon travail",
+      "answersLater": "Ton enseignant montrera les réponses après la date limite.",
+      "noAnswers": "Ton enseignant a les réponses et pourra les revoir avec la classe.",
+      "passagesN": "{count, plural, one {# texte} other {# textes}}",
+      "mistakesN": "{count, plural, one {# faute} other {# fautes}}",
+      "handInHint": "Corrige les fautes, puis rends ton travail. Rendre est définitif.",
+      "answersReady": "Les réponses sont prêtes. Rends ton travail pour les voir.",
+      "keepGoing": "Continuer",
+      "start": "Commencer",
+      "teacherNote": "Les élèves corrigent ces textes dans Mistake Hunt et rendent une seule fois ; Oomba note chaque faute.",
+      "passageN": "Texte {n}",
+      "foundMissed": "{found} trouvées · {missed} manquées",
+      "showAnswersHint": "Désactivé par défaut. Activé : une fois la date limite passée, chaque élève qui a rendu voit les corrections et pourquoi chacune est juste.",
+      "handedInOf": "{done} sur {total} ont rendu",
+      "ofFound": "des fautes trouvées",
+      "byKind": "Par type de faute",
+      "byKindHint": "Totaux pour toute la classe : trouvées et manquées, sur tous les textes.",
+      "studentsTable": "Le résultat de chaque élève",
+      "found": "Trouvées",
+      "changed": "Mots justes modifiés",
+      "notYet": "Pas encore rendu",
+      "changedHint": "Modifier des mots qui étaient justes ne baisse pas la note ; le total est là pour en parler.",
+      "errors": {
+        "words": "Cette correction contient des mots que nous ne pouvons pas utiliser. Essaie d'autres mots."
+      }
     }
   }
 }

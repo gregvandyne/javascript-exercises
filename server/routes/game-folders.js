@@ -18,6 +18,7 @@ import { liveOn } from '../services/classlive-sessions.js';
 import { gcAssignField, gcAfterAssign } from './gclassroom.js';
 import * as gameSets from '../services/game-sets.js';
 import { cleanOptions, parseParams } from '../services/play-params.js';
+import * as PS from '../services/proof-steps.js';
 
 /** An official game that opens at a teacher's problem or question set (services/game-sets.js SET_GAMES): its Assign
  *  carries those lesson options (opts), and the lesson is named after them. -> { opts, what, title } | null (not one) */
@@ -130,19 +131,35 @@ router.get('/teach/assign', requireUser, (req, res) => {
   // Algebra Builder: what students open (from the game's Assign button), or a note to choose it in the game first (the
   // class would otherwise land on the teacher's gallery).
   const sa = setAssign(t, g0, req.query.opts);
-  const body = html`<div class="pagehead"><h1>${ico('📌', { size: 36 })} ${t('teach.assign.title', { game: g.title })}</h1></div>
-  <section class="panel assign-game" aria-labelledby="ag-h">
-    <h2 id="ag-h" class="sr-only">${t('teach.assign.pickClass')}</h2>
-    ${sa && sa.what ? html`<p class="lead">${t('teach.assign.opens', { what: sa.label })}</p>` : ''}
-    ${sa && !sa.what ? html`<p class="notice">${t('teach.assign.pickFirst')}</p><p><a class="btn btn-primary" href="/play/${g0.slug}">▶ ${t('teach.assign.openGame')}</a></p>`
-      : liveOnly ? html`<p class="notice">${t('teach.assign.liveOnly')}</p>${liveOn() && liveCanHost(u) ? html`<p><a class="btn btn-primary" href="/live?mode=${lg.mode}">${ico('📡', { size: 18 })} ${t('live.entry.hostLive')}</a></p>` : ''}`
-      : draft ? html`<p class="notice">${t('folders.errors.publishFirst')}</p><p><a class="btn btn-primary" href="/studio/${g0.id}">${ico('✏️', { size: 18 })} ${t('game.edit')}</a></p>`
-      : classes.length ? html`<form class="formgrid assigngrid" data-api="/api/teach/assign-game" novalidate><input type="hidden" name="gameId" value="${g0.id}">${sa && sa.opts ? html`<input type="hidden" name="opts" value="${sa.opts}">` : ''}
+  // Mistake Hunt (services/proof-steps.js): the teacher's own passage set can be handed in for a grade (the default) or
+  // played as practice in the game (the game step below).
+  const proofSet = g0.slug === PS.SLUG && sa && sa.what ? PS.ownSet(u, parseParams(sa.opts).chapter) : null;
+  const practiceForm = classes.length ? html`<form class="formgrid assigngrid" data-api="/api/teach/assign-game" novalidate><input type="hidden" name="gameId" value="${g0.id}">${sa && sa.opts ? html`<input type="hidden" name="opts" value="${sa.opts}">` : ''}
       <div class="field"><label for="ag-c">${t('teach.assign.pickClass')}</label><select class="input" id="ag-c" name="classId">${classes.map(c => html`<option value="${c.id}"${c.id === pre ? raw(' selected') : ''}>${c.name}</option>`)}</select></div>
       <div class="field"><label for="ag-d">${t('lessons.assign.due')}</label><input class="input" id="ag-d" name="dueAt" type="date"></div>
       ${gc}
       <div class="field end"><button class="btn btn-primary" type="submit" id="ag-go">${ico('📌', { size: 18 })} ${t('teach.assign.submit')}</button></div>
-      <p class="small muted wide">${t('folders.assignNote')}</p>${gc ? html`<p class="small muted wide">${ico('🎓', { size: 18 })} ${t('teach.assign.gcGrades')}</p>` : ''}${classes[0] ? html`<p class="small muted wide">${zoneNote(t, classes[0].school_id, u)}</p>` : ''}<p class="form-err err wide" role="alert"></p></form>`
+      <p class="small muted wide">${t('folders.assignNote')}</p>${gc ? html`<p class="small muted wide">${ico('🎓', { size: 18 })} ${t('teach.assign.gcGrades')}</p>` : ''}${classes[0] ? html`<p class="small muted wide">${zoneNote(t, classes[0].school_id, u)}</p>` : ''}<p class="form-err err wide" role="alert"></p></form>` : '';
+  const proofClasses = proofSet ? PS.classesFor(u) : [];
+  const proofForm = proofSet ? html`<div class="pf-setcard"><span class="pf-setic" aria-hidden="true">${ico('📄', { size: 24 })}</span><div><b dir="auto">${proofSet.title || proofSet.items[0].t || t('proof.assign.untitled')}</b>
+      <p class="small muted">${t('proof.step.passagesN', { count: proofSet.items.length })} · ${t('proof.step.mistakesN', { count: proofSet.items.reduce((n, it) => n + it.m.length, 0) })}</p></div></div>
+    ${proofClasses.length ? html`<form class="formgrid assigngrid pf-assign" data-api="/api/teach/assign-proofread" novalidate><input type="hidden" name="setId" value="${proofSet.id}">
+      <div class="field wide"><label for="pa-c">${t('teach.assign.pickClass')}</label><select class="input" id="pa-c" name="classId">${proofClasses.map(c => html`<option value="${c.id}"${c.id === pre ? raw(' selected') : ''}>${c.name}</option>`)}</select></div>
+      <div class="field"><label for="pa-o">${t('proof.assign.opens')}</label><input class="input" id="pa-o" name="opensAt" type="date"></div>
+      <div class="field"><label for="pa-d">${t('lessons.assign.due')}</label><input class="input" id="pa-d" name="dueAt" type="date"></div>
+      <div class="field wide"><label class="chk"><input type="checkbox" name="showAnswers" value="1" id="pa-show"> <b>${t('figures.step.showAnswers')}</b></label><p class="small muted">${t('proof.assign.showHint')}</p></div>
+      <p class="small muted wide">${t('proof.assign.snapshotNote')}</p>${classes[0] ? html`<p class="small muted wide">${zoneNote(t, classes[0].school_id, u)}</p>` : ''}
+      <div class="field end wide"><button class="btn btn-primary" type="submit" id="pa-go">${ico('📌', { size: 18 })} ${t('proof.assign.submit')}</button></div>
+      <p class="form-err err wide" role="alert"></p></form>` : html`<p class="muted">${t('teach.assign.none')}</p>`}
+    <details class="pf-practice"><summary>${t('proof.assign.practiceInstead')}</summary><p class="small muted">${t('proof.assign.practiceHint')}</p>${practiceForm}</details>` : '';
+  const body = html`<div class="pagehead"><h1>${ico('📌', { size: 36 })} ${t('teach.assign.title', { game: g.title })}</h1></div>
+  <section class="panel assign-game" aria-labelledby="ag-h">
+    <h2 id="ag-h" class="sr-only">${t('teach.assign.pickClass')}</h2>
+    ${proofSet ? html`<h2 class="pf-assign-h">${t('proof.assign.title')}</h2>${proofForm}` : sa && sa.what ? html`<p class="lead">${t('teach.assign.opens', { what: sa.label })}</p>` : ''}
+    ${proofSet ? '' : sa && !sa.what ? html`<p class="notice">${t('teach.assign.pickFirst')}</p><p><a class="btn btn-primary" href="/play/${g0.slug}">▶ ${t('teach.assign.openGame')}</a></p>`
+      : liveOnly ? html`<p class="notice">${t('teach.assign.liveOnly')}</p>${liveOn() && liveCanHost(u) ? html`<p><a class="btn btn-primary" href="/live?mode=${lg.mode}">${ico('📡', { size: 18 })} ${t('live.entry.hostLive')}</a></p>` : ''}`
+      : draft ? html`<p class="notice">${t('folders.errors.publishFirst')}</p><p><a class="btn btn-primary" href="/studio/${g0.id}">${ico('✏️', { size: 18 })} ${t('game.edit')}</a></p>`
+      : classes.length ? practiceForm
       : html`<p class="muted">${t('teach.assign.none')}</p><p><a class="btn" href="/teach">${t('nav.classroom')}</a></p>`}
     <p class="row"><a class="btn" href="${playHref(u, g0)}">▶ ${t('learn.tab.try')}</a><a class="btn btn-ghost" href="/build/save?id=${g0.id}">${ico('📁', { size: 18 })} ${t('folders.save')}</a></p>
   </section>`;
@@ -163,6 +180,16 @@ router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 
   // From the phone's "All my games" (view=all): back there.
   const fid = String(b(req).folder || ''), back = /^[\w-]{1,40}$/.test(fid) ? `?folder=${encodeURIComponent(fid)}` : b(req).view === 'all' ? '?view=all' : '';
   res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, redirect: `/class/${r.class.id}${back}` });
+});
+/** Mistake Hunt "Hand in for a grade" (services/proof-steps.js assignSet): { setId, classId, opensAt, dueAt, showAnswers }.
+ *  A lesson with one proofread step (a snapshot of the set), assigned with its dates. */
+router.post('/api/teach/assign-proofread', requireUser, rateLimit('lesson-new', 120, 3600e3), (req, res) => {
+  const u = req.user, x = b(req);
+  if (!PS.canAssign(u)) return res.status(404).json({ error: req.t('lessons.errors.notFound') });
+  const on = v => v === true || v === '1' || v === 'on';
+  const r = PS.assignSet(u, String(x.setId || ''), String(x.classId || ''), { opensAt: x.opensAt || null, dueAt: x.dueAt || null, showAnswers: on(x.showAnswers) });
+  if (!r.ok) return res.status(r.code === 'notFound' ? 404 : 400).json({ error: req.t(r.code === 'notFound' ? 'lessons.errors.notFound' : ['noClass', 'badDate', 'dueBeforeOpen', 'needsDue'].includes(r.code) ? `figures.assign.errors.${r.code}` : 'errors.api.badRequest'), code: r.code });
+  res.json({ ok: true, toast: req.t('lessons.assign.done', { class: r.class.name }), redirect: `/class/${r.class.id}/progress/${r.classLesson.id}` });
 });
 /** "Assign all" (a folder on the class page): each game in the folder (one's own, or shared with one) that the class can
  *  play and doesn't have yet, with one due day, and posted to Google Classroom when asked. Games that need setting up

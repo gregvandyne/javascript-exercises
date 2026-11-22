@@ -1138,6 +1138,54 @@
     if (typeof m.text === 'string') w({ text: m.text.slice(0, 20000), cut: m.cut === true });
     else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
   });
+  // Mistake Hunt's AI tools (BRB.proofAi: { access: 'plan'|'free', left: n|null, plans }, teachers only):
+  // BRB.proofAsk(op, body) with op 'draft' (Power with AI passages), 'scan' (Check my passage) or 'why' (why lines) ->
+  // a Promise of the server's answer ({ passages, ai, reason?, left } / { flags, ai, reason?, left } / { lines, ai,
+  // reason? }) or { error, left? } ('notAllowed', 'cap', 'names', 'words', 'personal', 'topic', 'short', 'bad',
+  // 'offline'). Nothing is saved; the teacher reviews it all. BRB.openTrial(): the page opens the Teacher plan's trial
+  // page, right after a tap.
+  var aiWait = {}, aiSeq = 0;
+  function proofAsk(op, body) {
+    if (typeof Promise !== 'function') return null;
+    return new Promise(function (res) {
+      if (!INIT.proofAi || typeof INIT.proofAi !== 'object') return res({ error: 'notAllowed' });
+      if (op !== 'draft' && op !== 'scan' && op !== 'why') return res({ error: 'bad' });
+      var copy; try { copy = JSON.parse(JSON.stringify(body || {})); } catch (e) { copy = null; }
+      if (!copy || typeof copy !== 'object' || Array.isArray(copy) || JSON.stringify(copy).length > 60000) return res({ error: 'bad' });
+      var n = ++aiSeq, timer = setTimeout(function () { delete aiWait[n]; res({ error: 'offline' }); }, 130000);
+      aiWait[n] = function (r) { clearTimeout(timer); delete aiWait[n]; res(r); };
+      send('brb:proofai', { id: n, op: op, body: copy });
+    });
+  }
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:proofai-done' || typeof m.id !== 'number') return;
+    var w = aiWait[m.id]; if (!w) return;
+    var r = m.r && typeof m.r === 'object' && !Array.isArray(m.r) ? m.r : { error: 'offline' };
+    try { w(JSON.parse(JSON.stringify(r))); } catch (x) { w({ error: 'offline' }); }
+  });
+  // A graded Mistake Hunt step (BRB.proofStep: the words students see, their saved fixes, marks once handed in, the
+  // key only once the teacher allows it). BRB.proofSave(edits, { handIn }) -> a Promise of { view } (the step as it is
+  // now) or { error } ('handedIn', 'words', 'badRequest', 'offline'). Hand in is final.
+  var pfWait = {}, pfSeq = 0;
+  function proofSave(edits, opts) {
+    if (typeof Promise !== 'function') return null;
+    return new Promise(function (res) {
+      if (!INIT.proofStep || typeof INIT.proofStep !== 'object') return res({ error: 'notAllowed' });
+      var copy; try { copy = JSON.parse(JSON.stringify(edits)); } catch (e) { copy = null; }
+      if (!Array.isArray(copy) || JSON.stringify(copy).length > 60000) return res({ error: 'badRequest' });
+      var n = ++pfSeq, timer = setTimeout(function () { delete pfWait[n]; res({ error: 'offline' }); }, 20000);
+      pfWait[n] = function (r) { clearTimeout(timer); delete pfWait[n]; res(r); };
+      send('brb:proof', { id: n, edits: copy, handIn: !!(opts && opts.handIn) });
+    });
+  }
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:proof-done' || typeof m.id !== 'number') return;
+    var w = pfWait[m.id]; if (!w) return;
+    if (m.view && typeof m.view === 'object') { try { w({ view: JSON.parse(JSON.stringify(m.view)) }); } catch (x) { w({ error: 'offline' }); } }
+    else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
+  });
   // Crossword's Print (BRB.canPrint): the frame can't print (no allow-modals), so BRB.print(doc) hands the puzzle to the
   // page as plain data, { t, w: [[word, clue]], b, g: { w, h, e: [[word index, 'a'|'d', row, col]] }, key, set }, right
   // after a tap; the page has the server check it and make the printable page, then prints it. A Promise of { ok: true }
@@ -1414,6 +1462,11 @@
     wordsFromDoc: wordsFromDoc,
     canReadDocs: INIT.docText === true,
     textFromDoc: textFromDoc,
+    proofAi: INIT.proofAi && typeof INIT.proofAi === 'object' ? JSON.parse(JSON.stringify(INIT.proofAi)) : null,
+    proofAsk: proofAsk,
+    openTrial: function () { send('brb:trial', {}); },
+    proofStep: INIT.proofStep && typeof INIT.proofStep === 'object' ? JSON.parse(JSON.stringify(INIT.proofStep)) : null,
+    proofSave: proofSave,
     canPrint: INIT.print === true,
     // A classroom activity's answer key (Oomba Canvas 1.2.0): its maker and school staff only (the server checks too).
     canPrintKey: INIT.print === true && INIT.printKey === true,

@@ -11068,3 +11068,99 @@ correct text with mistakes planted in it by code, never by AI, so the key is alw
   standards), `tests/e2e/mistake-hunt.spec.js` (Chromium: a teacher builds, marks, pins, saves, prints the sheet and key
   to a Letter PDF and finds it in My worksheets; a student on an iPhone 13 plays by class code to the end card). The
   cover (`scripts/covers/mistake-hunt.recipe.js`) and share picture.
+
+## Mistake Hunt, Phase 2: AI passages, Check my passage, why lines, and a graded proofread step (22 Nov 2026)
+Phase 2 of the plan the owner approved with the mockup. **Gating, the owner's recommendation accepted:** the game,
+saving, print, the key and Assign stay free (like Crossword); the AI tools are for teachers only, free teachers with a
+small daily cap and Teacher plan holders without one.
+
+- **Who gets the AI tools** (`services/proof-ai.js aiAccess`): school staff and the platform admin. Never a student, a
+  kid, a family grown-up (the grown-up fence also refuses the routes) or a guest; the AI never talks to students. With
+  the Teacher plan (`teacherPlan(...).entitled`: their own plan, a trial, a grant or a school seat), a tester
+  (`MANIPULATIVES_USERS`) or the platform admin: `plan`, no daily cap (the site's AI budget still applies). Every other
+  teacher: `free`, **`config.proofAiFreePerDay` AI requests a day (3; `PROOF_AI_FREE_PER_DAY`)**, Power with AI and
+  Check my passage together. Only a request that reaches the AI counts (a refused topic, or the AI resting, does not).
+  The count is the in-memory day window the site's other daily limits use (Crossword's 10 files a day): a restart
+  forgets it, judged fine for a soft cap. When it is used up the builder says calmly "You've used today's free AI
+  passages. They come back tomorrow, or try the Teacher plan." with **Try the Teacher plan** (`BRB.openTrial`: the play
+  page opens `/trial` after a tap; no price). While paid plans are off, the sentence ends at "tomorrow" and there is no
+  link. Why lines are part of saving and are not counted.
+- **One way to call the AI** for all three: `callAi` (the one 90 s budget, no SDK retries, one more try only when busy),
+  `config.builderModel`, effort low, plain JSON read with `jsonIn` (no strict `json_schema`: #512), the AI budget pool
+  ('free', `recordUsage`). A failure is one warn line (`logAiFail`: the user id, the tool, the kind, the status, how long;
+  never the topic or text) and a calm answer with `ai: false` and a reason (timeout, busy, error, resting, filtered).
+- **Power with AI passages** (`POST /api/games/:id/proof/draft`, `draftPassages`): a switch at the top of "Mistakes to
+  plant" (off by default; on: Topic, Length short / medium / long, Passages 1 to 5, with the existing grade, kinds and
+  count). The topic passes the word rules and must not name one of the teacher's students (`namesIn` against the
+  rosters of the classes they teach or run): refused before the AI ("Names never go to the AI"). The AI writes ONLY
+  clean, correct, original, kid-appropriate passages; each is tidied (curly quotes, dashes), must be 40 to 1,500
+  characters and pass the site's text filter **unchanged**, or it is dropped; then **proof-core plants the chosen
+  mistakes on the server** with the builder's own planter, so the key is the AI's own clean text. The passages fill the
+  empty passage tabs and then new ones (up to 8), the set's name becomes the topic if it had none, and each shows the
+  label **"Written with AI. Read it before you save."** (kept until the teacher edits the text; not saved). When the AI
+  fails or rests: "Oomba couldn't write passages this time; paste your own or try again." Judgment call: no starter
+  passage library yet (the plan's fallback); the paste box is always there.
+- **Check my passage** (`POST .../proof/scan`, `scanPassage`), on the paste screen beside "Use this text": the AI lists
+  real mistakes in the teacher's "correct" text; the server keeps only flags whose words occur exactly once in it (with
+  their offset), a filtered suggestion and a reason. The page lists each (wrong → suggestion, the reason) with
+  **Accept** and **Ignore**; nothing changes unless accepted, and an accepted one replaces only its own words. Names
+  are checked first, as for a topic.
+- **AI why lines** (`POST .../proof/why`, `whyLines`): pressing Save with mistakes that have no why line of their own
+  asks the AI once for all of them (the sentence with its mistake, what students see, the right words, the kind). The
+  lines go into the mistake list as editable boxes marked "Written with AI" with "Oomba wrote these why lines. Read and
+  edit them, then press Save."; the next Save saves. Each line is at most 140 characters and passes the filter, or is
+  left empty (the fixed line a kind stays). Stored as the set's why lines (`m[].y`, the Phase 1 seam) with `ai: 1`
+  (`cleanProofItems` now allows `ai`, only as 1). Any mistake's line can be edited later from its ⋯ menu ("Edit the why
+  line"). If the AI can't, the set saves with the usual lines and says so.
+- **A graded proofread step.** "Assign to class" (the builder's share box and My worksheets, as before) opens
+  `/teach/assign`, which for the teacher's own Mistake Hunt set now offers **Hand in for a grade** first (the set's name,
+  passages and mistakes; class, Opens, Due, **Show answers after the due date**, off by default and needing a due date;
+  "Students get this set as it is now...") and "Practice in the game instead (no grade)" folded below (the Phase 1 game
+  step). `POST /api/teach/assign-proofread` (`services/proof-steps.js assignSet`): school staff, their own set, a class
+  they teach; a lesson of kind `proofread` with one step of kind `proofread` (`lessons.PROOF_KIND`, in
+  `SNAPSHOT_KINDS` and the new `HANDIN_KINDS` with figures), assigned with its dates. **No migration**: the step's
+  `items` is the snapshot `{ tell, passages: [{ t, x, g, m: [{ a, b, w, k, y }] }] }`, `show_answers` is 0096's column,
+  `step_progress` holds the work. Later edits or deleting the set change nothing; a copied lesson keeps the snapshot and
+  the switch; the step editor shows "2 passages · 7 mistakes" and only title, minutes and instructions.
+- **Students play it in the game** (phone first): the lesson card says how many passages and "Fix the mistakes, then
+  hand in. Handing in is final." with **Start** (then Keep going) to `/play/mistake-hunt?lesson=&step=`. The play page
+  marks that lesson context `proof` and the frame gets `INIT.proofStep` (`proof-steps.js viewFor`): **only the words
+  students see** (`[word, space]` pairs, no mistake marks, no correct text, keys or why lines), how many mistakes (or by
+  kind, per the set's "what students are told") and their saved fixes. The game's graded mode reuses the tap-to-fix
+  sheet; there is no Check, no hints and no Show answers (they need the key); fixes save as they go ("Saved");
+  Previous / Next passage; **Hand in** asks in the page (no browser dialog) and is final. `POST
+  /api/progress/:cl/:step/proofread` (`progress.proofAnswer`): every fix inside its passage, at most 6 words and 80
+  characters, through the site's text filter (a student can't post words through it), no overlaps. Hand in marks each
+  mistake once with proof-core's checker (the game's rules, so a run-on mended with ", and" counts).
+- **Scoring:** `marks` is one character a mistake in reading order (passage by passage, '1' found, '0' missed), `score`
+  = the share of mistakes found (%), label `proofread`. **Changing correct words costs nothing** (as in the game): the
+  count is shown to the teacher ("Right words changed") and the student sees those words in rose under "See my work",
+  never taken off the score. The end card: "You found 5 of 7 mistakes (71%)", each passage's count, and when the
+  answers open "See the answers" (each mistake fixed, found or not, with its why line); "See my work" shows the
+  student's fixes, green where they found one.
+- **Answers never reach a student early:** the key and why lines are in the JSON, the frame and the lesson page only
+  when the teacher's switch is on, the due date is over (the school's time zone) and that student has handed in
+  (`figures-steps.reveals`, reused). The tests check the correct text, the why lines and any key are absent otherwise.
+- **Teachers:** the lesson's progress page has a panel per proofread step: "Show answers after the due date" (the
+  figures switch, `setShowAnswers` now takes both hand-in kinds), "N of M handed in", "% of mistakes found", **By kind of
+  mistake** (each kind with its Common Core code, found and missed counts and a bar; counts for the whole class, never a
+  ranking), and each student's found / changed / score in roster order. The gradebook, its quiz column and the Score
+  count it like a quiz or figures step (one point a mistake). The class Standards tab credits each mistake's Common Core
+  code from the snapshot, right or not per student (`standards-ccss.js`, as quiz items).
+- **13 locales:** the game's new words (its I18N block) and the server's `proof.*` and `lessons.kinds.proofread`.
+- **Not in Phase 2:** hints in the graded step (the mockup's Hints switch: hints need the key, so a graded hint would be
+  a server call; owner to decide), the class insight card and Oomba chat (Phase 3), a starter passage library.
+- **Owner decisions open:** whether 3 a day is the right free cap; hints in the graded step; whether the graded step
+  should become the default Assign (it is the default on the Assign page now); whether students may see the why lines
+  after a miss once answers open only (today: only with released answers in the graded step); the trademark check.
+- **Tests:** `tests/unit/proof-ai.test.js` (plain JSON, planted and filtered passages, timeout/bad JSON/busy/resting
+  fallbacks with one warn line and no topic, a student's name refused before the AI, Check my passage flags with nothing
+  applied, why lines stored and editable, the daily cap vs the plan, students, kids, grown-ups and guests refused, the
+  frame's flags), `tests/unit/proof-step.test.js` (assign rules and the snapshot, the frame and JSON without the key,
+  save, hand in, marks and score, no second hand-in, gradebook, Score, Standards, the progress page's counts, answers
+  only when allowed), `tests/unit/proof-browser.test.js` (Chromium: Power with AI, Check my passage, why-line review and
+  Assign on a laptop; students on an iPhone 13 fix and hand in by touch with motion on and with reduced motion, the end
+  card's buttons tappable at once while the confetti falls (it takes no taps), the practice end card too; the teacher's
+  progress page). Phone pictures are taken by a separate student at device scale 2 and pressed by DOM click: Chromium's
+  screenshot at a scale other than the device's own leaves the sandboxed game frame's tap mapping stale (a harness quirk;
+  the page itself reports the button on top).

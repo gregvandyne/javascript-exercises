@@ -205,7 +205,7 @@ export function cleanCrossItems(raw) {
 // the right one, no two overlap), so an answer key made from a set is always right. docs/decisions.md "Mistake Hunt".
 export const PROOF = { passages: 8, minText: 40, maxText: 1500, title: 60, why: 140, bytes: 20000 };
 export const PROOF_TELL = ['total', 'type', 'none'];
-const PROOF_KEYS = ['t', 'x', 'g', 'm', 'o'], PROOF_M_KEYS = ['a', 'b', 'w', 'k', 'p', 'y'];
+const PROOF_KEYS = ['t', 'x', 'g', 'm', 'o'], PROOF_M_KEYS = ['a', 'b', 'w', 'k', 'p', 'y', 'ai'];
 const plainObject = v => !!v && typeof v === 'object' && !Array.isArray(v);
 /** A passage set's options -> { h, s, n } or null. */
 function cleanProofOptions(o) {
@@ -243,11 +243,14 @@ export function cleanProofItems(raw) {
       if (mm.p !== undefined && mm.p !== 1) return null;
       const c = { a: mm.a, b: mm.b, w: mm.w, k: mm.k };
       if (mm.p === 1) c.p = 1;
+      // ai: 1 when the why line was drafted by AI (and reviewed by the teacher before saving: Mistake Hunt, Phase 2).
+      if (mm.ai !== undefined && mm.ai !== 1) return null;
       if (mm.y !== undefined && mm.y !== '') {
         if (typeof mm.y !== 'string' || mm.y.length > PROOF.why) return null;
         const cy = cleanText(mm.y.replace(/\s+/g, ' '), PROOF.why);
         if (!cy.ok) return null;
         c.y = cy.value;
+        if (mm.ai === 1) c.ai = 1;
       }
       m.push(c);
     }

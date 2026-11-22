@@ -4815,7 +4815,8 @@
       "question": "Answer a question",
       "quiz": "Answer quiz questions",
       "figures": "Answer figure questions",
-      "figureStep": "Figure questions"
+      "figureStep": "Figure questions",
+      "proofread": "Proofreading"
     },
     "library": {
       "title": "Lesson library",
@@ -13668,6 +13669,47 @@
       "start": "Start my free trial",
       "plans": "See the plans",
       "api": "This is part of the Teacher plan."
+    }
+  },
+  "proof": {
+    "assign": {
+      "title": "Hand in for a grade",
+      "untitled": "Mistake Hunt",
+      "opens": "Opens",
+      "showHint": "Off by default. On: once the due date is over, students who handed in see the fixes and why each one is right.",
+      "snapshotNote": "Students get this set as it is now. Later edits don't change what the class was given. Results go to Progress and the gradebook.",
+      "submit": "Assign",
+      "practiceInstead": "Practice in the game instead (no grade)",
+      "practiceHint": "Students play the set as a game, check as they go and get hints. It counts as done when they finish."
+    },
+    "step": {
+      "score": "You found {found} of {total} mistakes ({pct}%).",
+      "seeAnswers": "See the answers",
+      "seeWork": "See my work",
+      "answersLater": "Your teacher will show the answers after the due date.",
+      "noAnswers": "Your teacher has the answers and may go over them with the class.",
+      "passagesN": "{count, plural, one {# passage} other {# passages}}",
+      "mistakesN": "{count, plural, one {# mistake} other {# mistakes}}",
+      "handInHint": "Fix the mistakes, then hand in. Handing in is final.",
+      "answersReady": "The answers are ready. Hand in your work to see them.",
+      "keepGoing": "Keep going",
+      "start": "Start",
+      "teacherNote": "Students fix these passages in Mistake Hunt and hand in once; Oomba marks each mistake.",
+      "passageN": "Passage {n}",
+      "foundMissed": "{found} found · {missed} missed",
+      "showAnswersHint": "Off by default. On: once the due date is over, each student who handed in sees the fixes and why each one is right.",
+      "handedInOf": "{done} of {total} handed in",
+      "ofFound": "of mistakes found",
+      "byKind": "By kind of mistake",
+      "byKindHint": "Counts for the whole class: found and missed, across all passages.",
+      "studentsTable": "Each student's result",
+      "found": "Found",
+      "changed": "Right words changed",
+      "notYet": "Not handed in yet",
+      "changedHint": "Changing words that were right doesn't lower the score; the count is here so you can talk about it.",
+      "errors": {
+        "words": "That fix has words we can't use. Try different words."
+      }
     }
   }
 }
