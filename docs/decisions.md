@@ -10314,6 +10314,18 @@ weren't saved at all unless the teacher pressed Save, which made a new share cod
   print, hide, languages, the generators), figures-econ-words (12 languages and look-alikes), figures-scrub, and the
   Economics tab and its editors in Chromium (figures-browser).
 
+## Algebra Builder builds again: the math field's files are in the repository (22 Nov 2026)
+
+- **Why it could not build.** `tools/algebra-builder/.gitignore` said `dist/`, meant for Vite's output, but it also
+  matched `vendor/mathfield-*/dist/`, the vendored math input field's built code. Only the three `package.json` files
+  were ever committed, so since 18 Nov no checkout could run `build.mjs`; #429 patched the built page by hand, and the
+  My worksheets lists (#492, #493) were left in the sources only.
+- **The fix.** The rule is now `/dist/` (the app's own output only) and the three `dist/` folders are committed. They
+  are the same packages renamed the same way as before: rebuilding the sources of 5d256511 and e5970b22 with them gives
+  those commits' `seed-games/algebra-builder.html` byte for byte, so they are the files the game was first built with.
+- **Rebuilt** from the current sources: Algebra Builder now has My question sets in the simple list design. Its
+  browser test in `game-my-sets-browser.test.js` runs (it was skipped while the page could not be built).
+
 ## Figures: multiple choice and negative answers (22 Nov 2026)
 
 Worksheet answers were numbers 0 or more, typed on a keypad without a minus sign, so four generators asked a stand-in
