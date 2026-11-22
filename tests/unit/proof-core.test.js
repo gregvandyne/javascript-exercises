@@ -215,7 +215,7 @@ test('the server runs the same core and reads the same word tables', () => {
 test('the file: its own page outside the Oomba Kit; the scanner passes it; every language has every word; no em dash; registered', () => {
   assert.doesNotMatch(HTML, /oomba-kit|Oomba\.(scene|kit)/);
   assert.equal(scanVersion(HTML).status, 'pass');
-  for (const s of [HTML, JSON.stringify(META)]) assert.ok(!s.includes('—'), 'no em dash');
+  for (const s of [HTML, JSON.stringify(META)]) assert.ok(!s.includes('\u2014'), 'no em dash');
   const en = I18N.en;
   for (const l of LANGS) {
     const w = I18N[l]; assert.ok(w, l);
