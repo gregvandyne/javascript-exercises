@@ -5877,8 +5877,12 @@
         "title": "Stanze di matematica dal vivo",
         "p": "Ogni studente lavora nel proprio riquadro e Lei vede tutta la classe su un solo schermo."
       },
-      "plan": "I materiali manipolativi, le loro stanze dal vivo e Figure fanno parte del piano Insegnante.",
-      "testing": "Questi strumenti sono ora in prova in alcune classi."
+      "dashboard": {
+        "title": "Bacheca di classe",
+        "p": "Timer, incarichi, appelli dell’umore e strumenti di matematica per tutta la giornata di classe, su un solo schermo."
+      },
+      "plan": "La bacheca di classe è gratuita per ogni classe. I materiali manipolativi, le loro stanze dal vivo e Figure fanno parte del piano Insegnante.",
+      "testing": "La bacheca di classe è gratuita per ogni classe. Gli altri tre strumenti sono ora in prova in alcune classi."
     }
   },
   "learn": {

@@ -5876,8 +5876,12 @@
         "title": "Salles de maths en direct",
         "p": "Chaque élève travaille dans sa propre case, et vous voyez toute la classe sur un seul écran."
       },
-      "plan": "Les manipulables, leurs salles en direct et Figures font partie de la formule Enseignant.",
-      "testing": "Ces outils sont en cours d’essai dans quelques classes."
+      "dashboard": {
+        "title": "Tableau de bord de la classe",
+        "p": "Minuteurs, responsabilités, météo des émotions et outils de maths pour toute la journée de classe, sur un seul écran."
+      },
+      "plan": "Le tableau de bord de la classe est gratuit pour chaque classe. Les manipulables, leurs salles en direct et Figures font partie de la formule Enseignant.",
+      "testing": "Le tableau de bord de la classe est gratuit pour chaque classe. Les trois autres outils sont en cours d’essai dans quelques classes."
     }
   },
   "learn": {

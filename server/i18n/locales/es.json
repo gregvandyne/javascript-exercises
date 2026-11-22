@@ -5876,8 +5876,12 @@
         "title": "Salas de matemáticas en vivo",
         "p": "Cada estudiante trabaja en su propio recuadro y usted ve a toda la clase en una sola pantalla."
       },
-      "plan": "Los manipulativos, sus salas en vivo y Figuras son parte del plan Docente.",
-      "testing": "Estas herramientas se están probando ahora en algunas clases."
+      "dashboard": {
+        "title": "Panel de clase",
+        "p": "Temporizadores, tareas, registros de ánimo y herramientas de matemáticas para todo el día de clase, en una sola pantalla."
+      },
+      "plan": "El panel de clase es gratis para cada clase. Los manipulativos, sus salas en vivo y Figuras son parte del plan Docente.",
+      "testing": "El panel de clase es gratis para cada clase. Las otras tres herramientas se están probando ahora en algunas clases."
     }
   },
   "learn": {
