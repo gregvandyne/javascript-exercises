@@ -3848,6 +3848,59 @@
       "removeLessonQ": "要刪除這些圖形題嗎？",
       "removeLessonText": "課程的圖形步驟會保留最後一次儲存時的題目。無法復原。",
       "fallback": "這次 AI 沒有回應,所以先給你一組起始題目({count, plural, other {# 題}})。你可以再試一次。"
+    },
+    "manip-chat": {
+      "title": "Oomba",
+      "button": "Oomba",
+      "knows": "認得你的{tool}板",
+      "minimize": "最小化",
+      "close": "關閉 Oomba",
+      "inputLabel": "給 Oomba 的訊息",
+      "send": "送出",
+      "private": "Oomba 只看得到這個板子和你的話,從不看學生的名字或作品。",
+      "reopen": "開啟 Oomba",
+      "reopenNew": "開啟 Oomba:有新回覆",
+      "thinking": "Oomba 正在思考 · {time}",
+      "longer": "需要多一點時間 · {time}",
+      "leave": "你可以關閉這個頁面,回覆會在這裡等你。",
+      "needText": "請先寫幾個字給 Oomba。",
+      "err": {
+        "names": "請不要寫學生的名字:名字從不會送給 AI。你的訊息還在。",
+        "words": "訊息中有些字詞不被允許。請修改後再送出。",
+        "personal": "請拿掉電話號碼、電子郵件、連結和代碼,再送出一次。",
+        "brief": "請先寫幾個字給 Oomba。",
+        "chatBusy": "Oomba 還在回覆你上一則訊息,請稍等。",
+        "badTool": "Oomba 無法協助這個工具。請開啟其他工具再試。",
+        "notFound": "這個帳號目前無法在教具中使用 Oomba。",
+        "slow": "一小時內的訊息太多了。請稍等一下再試。",
+        "other": "發生了一些問題。你的訊息還在:請稍後再試。"
+      },
+      "fail": {
+        "error": "Oomba 這次沒辦法回答;你的板子沒有改變。",
+        "timeout": "Oomba 沒有及時回答;你的板子沒有改變。",
+        "busy": "Oomba 現在很忙;你的板子沒有改變。請幾分鐘後再試。",
+        "resting": "Oomba 正在休息;你的板子沒有改變。請稍後再試。",
+        "restart": "Oomba 回答前我們的伺服器重新啟動了;你的板子沒有改變。"
+      },
+      "retry": "再試一次",
+      "edit": "編輯",
+      "changedTitle": "板子已更新:{title}",
+      "changed": "{n} 題,{steps} 個步驟",
+      "undoneTitle": "已復原變更。你的板子和原本一樣。",
+      "undo": "復原 Oomba 的變更",
+      "redo": "放回去",
+      "use": "放到我的板子上",
+      "notBuilt": "這些題目沒有通過板子的檢查,所以你的板子沒有改變。",
+      "helloEmpty": "嗨!告訴我你想在這個{tool}板上上什麼課,我來幫你準備。",
+      "hello": "嗨!我看得到你的{tool}板。請我改點什麼,或問我任何關於它的問題。",
+      "ideas": "點子",
+      "idea": {
+        "more": "再加兩題",
+        "easier": "讓題目簡單一點",
+        "steps": "幫我的學生寫更清楚的步驟"
+      },
+      "placeholder": "請 Oomba 修改板子",
+      "placeholderEmpty": "描述你想在這個板子上上的課"
     }
   },
   "favorites": {
@@ -12891,6 +12944,11 @@
       "start": "開始免費試用",
       "plans": "查看方案",
       "api": "這屬於教師方案。"
+    }
+  },
+  "manip": {
+    "errors": {
+      "chatBusy": "Oomba 還在回覆你上一則訊息,請稍等。"
     }
   }
 }

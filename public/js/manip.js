@@ -20,6 +20,7 @@ import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSec
   snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, TEXT_SIZES, textFont, stepTextSize, textResize, textRect, snapBox, textBoxFields, xyRange, xyLines, xySnap, xyMoveLine } from '/js/manip-board.js';
 import { settleCharts, chartInfo, strayIds, inChart, homeFor, placeAtHome, columnHome, sameValueHome } from '/js/manip-pv.js';
 import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP } from '/js/manip-wheel.js';
+import * as CHAT from '/js/manip-chat.js';
 
 const ROOT = document.getElementById('manip');
 const ROLE = pageData().role === 'host' ? 'host' : 'student';
@@ -31,7 +32,7 @@ const NOTE_MAX = 12, NOTE_W = 176, NOTE_H = 118;
 let STATE = { boards: [], recent: [], classes: [], sessions: [], draft: null, eta: null };
 let V = null;          // the open board (tool view)
 let timers = [];       // intervals and timeouts of the current view
-const clear = () => { for (const x of timers) { clearInterval(x); clearTimeout(x); } timers = []; };
+const clear = () => { for (const x of timers) { clearInterval(x); clearTimeout(x); } timers = []; CHAT.detach(); };
 const clamp = (v, lo, hi) => Math.min(Math.max(lo, v), Math.max(lo, hi));
 const round3 = n => Math.round(n * 1000) / 1000;
 const parse = (s, d) => { try { return typeof s === 'string' ? JSON.parse(s) : s; } catch { return d; } };
@@ -583,7 +584,16 @@ function openTool(slug, { restore = null, boardId = null, title = '' } = {}) {
   fit();
   window.scrollTo(0, 0);
   startAutosave();
+  if (HOST) CHAT.attach(chatCtx());
 }
+/** What Oomba's chat (public/js/manip-chat.js) reads and changes: the open board, one change at a time (Undo too). */
+const chatCtx = () => ({
+  slug: V.tool.slug, name: V.tool.name, layout: () => V && fit(),
+  get: () => ({ boardId: V.boardId, title: V.title, state: boardState(), empty: !(V.steps || []).length && !(V.st.pieces || []).length && V.st.objects.length <= 1 }),
+  snapshot: () => ({ state: boardState(), title: V.title }),
+  apply: (state, title) => { restoreInto(state); if (title) V.title = title; renderShare(); fit(); },
+  restore: s => { restoreInto(s.state); V.title = s.title; renderShare(); fit(); },
+});
 
 // ---------------------------------------------------------------- objects and the palette (shared with the room)
 /** The object the palette and the settings work on: the selected one, else the last of the tool's own kind. */
@@ -1190,8 +1200,9 @@ function toolButton(k) {
   }
   if (k === 'draft') {
     if (draftLive()) { V.draftHidden = !V.draftHidden; renderChrome(); return; }
-    if (DJ.notice) { DJ.notice = null; V.draftOpen = true; } else if (DJ.fallback) { DJ.retry = DJ.fallback; DJ.fallback = null; V.draftOpen = true; } else V.draftOpen = !V.draftOpen;
-    renderChrome(); if (V.draftOpen) document.getElementById('mp-brief')?.focus(); return;
+    // Draft with AI opens Oomba's chat: the first message is the brief, every later one adjusts the board.
+    DJ.notice = null; DJ.fallback = null; renderDraft();
+    CHAT.open({ from: document.querySelector('#mp-toolsrow [data-tool="draft"]') }); return;
   }
   if (k === 'reset') { change(st => { const settings = {}; for (const key of ['decimal', 'mode', 'unit']) if (key in st) settings[key] = st[key]; const fresh = normalize(V.tool.slug, V.impl, newBoard(V.tool.slug, WORLD, settings)); for (const key of Object.keys(st)) delete st[key]; Object.assign(st, fresh); V.sel = null; V.osel = null; }); fit(); }
 }

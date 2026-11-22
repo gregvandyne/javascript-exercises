@@ -259,6 +259,7 @@ export function openBoard(u, id) {
 export function deleteBoard(u, id) {
   const b = ownBoard(u, id); if (!b) return fail('notFound');
   q.run('DELETE FROM manip_boards WHERE id=? AND owner_id=?', b.id, u.id);
+  q.run('DELETE FROM manip_chats WHERE owner_id=? AND board_key=?', u.id, b.id);   // its Oomba chat (services/manip-chat.js)
   return ok();
 }
 /** Only the owner renames a board (the same word rules as any title). */
@@ -955,6 +956,7 @@ export async function draftLesson(u, args = {}) {
 export function forgetUser(userId) {
   q.run('DELETE FROM manip_boards WHERE owner_id=?', userId);
   q.run('DELETE FROM manip_drafts WHERE owner_id=?', userId);
+  q.run('DELETE FROM manip_chats WHERE owner_id=?', userId);
   q.run('DELETE FROM manip_work WHERE user_id=?', userId);
   q.run('DELETE FROM manip_sessions WHERE host_id=?', userId);
 }
