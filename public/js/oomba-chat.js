@@ -32,30 +32,36 @@ const wide = () => window.matchMedia('(min-width: 900px)').matches;
  *   ideas(chat) -> [{ label, text }], change(turn) -> html of "What changed", extra(turn, chat) -> html (buttons with
  *   data-c="act" data-act), onAct(act, turn) -> Promise, onAnswer(turn, chat): a new answer arrived (reload the page's data),
  *   onUndo(result): an undo came back, onMode(mode): the panel opened or closed, onQuote(null): the quote went (sent or
- *   removed), onSync(chat): a new copy of the conversation (a turn started or ended), start: 'open' | 'min' | 'closed' }
- * -> { open, setMode, quote, refresh, send, state }
+ *   removed), onSync(chat): a new copy of the conversation (a turn started or ended), start: 'open' | 'min' | 'closed',
+ *   and for the site companion (public/js/companion.js): headExtra / aboveRow / toolsStart / toolsEnd / foot (html in the
+ *   header and the message box), body() -> more fields for each message, meExtra(turn) -> html above a sent message,
+ *   format(text, turn) -> Oomba's words as html (escaped by the surface), errText(code) -> a send error's words,
+ *   alwaysBubble: the bubble shows whenever the panel is not open, bubbleHost: the element the bubble sits in }
+ * -> { open, setMode, quote, refresh, send, state, root }
  */
 export function mountChat(o) {
   const C = { o, mode: 'closed', chat: { turns: [], pending: null }, unread: false, timer: null, tick: null, quote: null, sig: '' };
   const root = document.createElement('div');
   root.id = 'oc-root';
   root.innerHTML = `<aside class="oc" id="oc" aria-labelledby="oc-title" hidden>
-      <header class="oc-head"><span class="oc-av">${oombaMark(36)}</span><div class="oc-who"><h2 id="oc-title">${esc(t('js.oomba-chat.title'))}</h2><p class="oc-sub">${esc(o.sub || '')}</p></div>
+      <header class="oc-head"><span class="oc-av">${oombaMark(36)}</span><div class="oc-who"><h2 id="oc-title">${esc(t('js.oomba-chat.title'))}</h2><p class="oc-sub">${o.subHtml || esc(o.sub || '')}</p></div>${o.headExtra || ''}
         <button type="button" class="oc-hbtn" data-c="min" aria-label="${esc(t('js.oomba-chat.minimize'))}" title="${esc(t('js.oomba-chat.minimize'))}"><span class="oc-minbar" aria-hidden="true"></span></button>
         <button type="button" class="oc-hbtn" data-c="close" aria-label="${esc(t('js.oomba-chat.close'))}" title="${esc(t('js.oomba-chat.close'))}"><span aria-hidden="true">✕</span></button></header>
       <div class="oc-log" id="oc-log" role="log" aria-live="polite" aria-relevant="additions text"></div>
       <form class="oc-compose" id="oc-form" autocomplete="off">
         <p class="oc-err" id="oc-err" role="alert" hidden></p>
-        <div class="oc-quote" id="oc-quote" hidden></div>
-        <div class="oc-row"><label class="sr-only" for="oc-in">${esc(t('js.oomba-chat.inputLabel'))}</label>
-          <textarea class="oc-in" id="oc-in" rows="1" maxlength="1000" dir="auto"></textarea>
+        <div class="oc-quote" id="oc-quote" hidden></div>${o.aboveRow || ''}
+        <div class="oc-row">${o.toolsStart || ''}<label class="sr-only" for="oc-in">${esc(t('js.oomba-chat.inputLabel'))}</label>
+          <textarea class="oc-in" id="oc-in" rows="1" maxlength="1000" dir="auto"></textarea>${o.toolsEnd || ''}
           <button class="btn btn-primary oc-send" type="submit" id="oc-send">${esc(t('js.oomba-chat.send'))}</button></div>
-        <p class="oc-private">${iconHtml('🔒', { size: 14 })} ${esc(o.privacy || t('js.oomba-chat.private'))}</p>
+        ${o.foot || `<p class="oc-private">${iconHtml('🔒', { size: 14 })} ${esc(o.privacy || t('js.oomba-chat.private'))}</p>`}
       </form></aside>
     <button type="button" class="oc-bubble" id="oc-bubble" hidden aria-label="${esc(t('js.oomba-chat.reopen'))}">${oombaMark(56, true)}<span class="oc-dot" hidden></span></button>`;
   document.body.appendChild(root);
-  const $ = id => root.querySelector(`#${id}`);
+  if (o.bubbleHost) o.bubbleHost.appendChild(root.querySelector('#oc-bubble'));
+  const $ = id => root.querySelector(`#${id}`) || document.getElementById(id);
   C.el = { panel: $('oc'), log: $('oc-log'), form: $('oc-form'), input: $('oc-in'), send: $('oc-send'), err: $('oc-err'), quote: $('oc-quote'), bubble: $('oc-bubble') };
+  if (o.alwaysBubble) C.el.bubble.hidden = false;
   const draftKey = `oc-draft:${o.id}`;
   C.el.input.value = store.get(draftKey) || '';
 
@@ -66,7 +72,7 @@ export function mountChat(o) {
     const was = C.mode; C.mode = mode;
     store.set(`oc:${o.id}`, mode);
     C.el.panel.hidden = mode !== 'open';
-    C.el.bubble.hidden = mode !== 'min';
+    C.el.bubble.hidden = o.alwaysBubble ? mode === 'open' : mode !== 'min';
     if (mode === 'open') C.unread = false;
     C.el.bubble.querySelector('.oc-dot').hidden = !C.unread;
     C.el.bubble.setAttribute('aria-label', t(C.unread ? 'js.oomba-chat.reopenNew' : 'js.oomba-chat.reopen'));
@@ -83,7 +89,7 @@ export function mountChat(o) {
 
   // ---------------------------------------------------------------- the server
   async function load({ initial = false } = {}) {
-    const url = o.url(); if (!url) { render(); return; }
+    const url = (o.getUrl || o.url)(); if (!url) { render(); return; }
     try { took((await api(url, { background: true })).chat, { initial }); } catch { /* the next tick asks again */ }
   }
   function took(chat, { initial = false } = {}) {
@@ -112,9 +118,10 @@ export function mountChat(o) {
     if (C.chat.pending) { showErr(t('js.oomba-chat.err.chatBusy')); return; }
     C.el.send.disabled = true;
     try {
+      if (o.beforeSend) await o.beforeSend(text);   // the site companion: a page's own first step (a new worksheet is saved first)
       const url = o.url() || (o.ensure ? await o.ensure() : null);
       if (!url) throw new Error(t('js.oomba-chat.err.other'));
-      const r = await api(url, { method: 'POST', body: { text, ...(C.quote ? { quote: C.quote.ref } : {}), ...(retry ? { retry } : {}) } });
+      const r = await api(url, { method: 'POST', body: { text, ...(C.quote ? { quote: C.quote.ref } : {}), ...(retry ? { retry } : {}), ...(o.body ? o.body({ retry }) : {}) } });
       if (!retry || C.el.input.value.trim() === text) { C.el.input.value = ''; store.set(draftKey, ''); autosize(); }
       C.quote = null; drawQuote(); if (o.onQuote) o.onQuote(null);
       took(r.chat);
@@ -122,7 +129,7 @@ export function mountChat(o) {
     } catch (e) {
       const code = e.data && e.data.code;
       if (retry && !C.el.input.value.trim()) { C.el.input.value = text; autosize(); }
-      showErr(SEND_ERRORS.includes(code) ? t(`js.oomba-chat.err.${code}`) : e.status === 429 ? t('js.oomba-chat.err.slow') : e.message || t('js.oomba-chat.err.other'));
+      showErr((o.errText && o.errText(code, e)) || (SEND_ERRORS.includes(code) ? t(`js.oomba-chat.err.${code}`) : e.status === 429 ? t('js.oomba-chat.err.slow') : e.message || t('js.oomba-chat.err.other')));
     } finally { C.el.send.disabled = !!C.chat.pending; }
   }
   async function undo(id, btn) {
@@ -182,11 +189,11 @@ export function mountChat(o) {
       if (x.role === 'me') {
         const failed = lastBot && lastBot.failed && lastBot.for === x.id && !C.chat.pending;
         const q = x.quote ? `<span class="oc-q">${esc(o.quoteText ? o.quoteText(x.quote) : x.quote.text)}</span>` : '';
-        parts.push(`<div class="oc-turn me"><div class="oc-msg me" dir="auto">${q}${esc(x.text)}</div>${failed ? `<div class="oc-again"><button type="button" class="btn btn-sm" data-c="retry" data-id="${esc(x.id)}">${esc(t('js.oomba-chat.retry'))}</button><button type="button" class="btn btn-sm btn-ghost" data-c="edit" data-id="${esc(x.id)}">${esc(t('js.oomba-chat.edit'))}</button></div>` : ''}</div>`);
+        parts.push(`<div class="oc-turn me">${o.meExtra ? o.meExtra(x) : ''}<div class="oc-msg me" dir="auto">${q}${esc(x.text)}</div>${failed ? `<div class="oc-again"><button type="button" class="btn btn-sm" data-c="retry" data-id="${esc(x.id)}">${esc(t('js.oomba-chat.retry'))}</button><button type="button" class="btn btn-sm btn-ghost" data-c="edit" data-id="${esc(x.id)}">${esc(t('js.oomba-chat.edit'))}</button></div>` : ''}</div>`);
       } else if (x.failed) {
         parts.push(`<div class="oc-turn bot"><span class="oc-av sm">${oombaMark(28)}</span><div class="oc-msg bot calm"><span>${esc(o.failText ? o.failText(x) : failText(x.failed))}</span>${o.extra ? o.extra(x, C.chat) : ''}</div></div>`);
       } else {
-        parts.push(bot(`${x.text ? `<span dir="auto">${esc(x.text)}</span>` : ''}${o.note ? o.note(x) : ''}${x.change ? changeCard(x) : ''}${o.extra ? o.extra(x, C.chat) : ''}`));
+        parts.push(bot(`${x.text ? (o.format ? o.format(x.text, x) : `<span dir="auto">${esc(x.text)}</span>`) : ''}${o.note ? o.note(x) : ''}${x.change ? changeCard(x) : ''}${o.extra ? o.extra(x, C.chat) : ''}`));
       }
     }
     if (C.chat.pending) parts.push(progress());
@@ -222,9 +229,10 @@ export function mountChat(o) {
 
   load({ initial: true }).then(() => {
     const m = store.get(`oc:${o.id}`);
-    const start = C.chat.pending ? (wide() || o.start === 'open' ? 'open' : 'min') : m || o.start || 'closed';
+    const st0 = typeof o.start === 'function' ? o.start() : o.start;
+    const start = C.chat.pending ? (wide() || st0 === 'open' ? 'open' : 'min') : st0 === 'open' ? 'open' : m || st0 || 'closed';
     // Only when the teacher hasn't opened or closed it meanwhile (a tap while the conversation was loading wins).
     if (start !== 'closed' && !C.touched) setMode(start, { focus: false, user: false });
   });
-  return { open, setMode, quote, send, refresh: () => load(), took, state: () => C, render: () => render() };
+  return { open, setMode, quote, send, refresh: () => load(), took, state: () => C, render: () => render(), root, showErr };
 }

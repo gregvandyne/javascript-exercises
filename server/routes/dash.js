@@ -196,7 +196,7 @@ function dashPage(req, res, c, role) {
     <noscript><p class="notice warn">${t('dash.noscript')}</p></noscript>
     ${jsonData('page-data', { ...data, school: s ? s.name : '' })}
   </div>`;
-  page(req, res, { title: role === 'teacher' ? t('dash.title', { name: c.name }) : t('dash.myTitle', { name: c.name }), active: 'classes', body: bodyHtml, head: CSS, bare: true, bodyClass: `dash-page dash-page-${role}`, scripts: ['/js/dash.js'] });
+  page(req, res, { title: role === 'teacher' ? t('dash.title', { name: c.name }) : t('dash.myTitle', { name: c.name }), active: 'classes', body: bodyHtml, head: CSS, bare: true, bodyClass: `dash-page dash-page-${role}`, scripts: ['/js/dash.js'], companion: role === 'teacher' ? 'dash' : false });
 }
 
 router.get('/class/:id/dashboard', requireUser, (req, res) => {

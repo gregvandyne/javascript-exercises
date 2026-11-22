@@ -213,10 +213,11 @@ test('the AI does not answer: the starting board opens with a calm note (Try aga
     assert.match(await page.textContent('#mp-steps'), /Four clocks to the quarter hour/, 'the brief is its step');
     assert.doesNotMatch(await page.textContent('#mp-draft'), /Something went wrong|couldn’t be finished/);
     await shot(page, 'draft-fallback-timeout');
+    // Try again opens Oomba, the one chat everywhere (public/js/manip-chat.js), with the words in its box.
     await page.click('[data-dfall="retry"]');
-    await page.waitForSelector('#mp-brief');
-    assert.equal(await page.inputValue('#mp-brief'), 'Four clocks to the quarter hour', 'the words are kept');
-    assert.equal(await page.textContent('#mp-dmsg'), '', 'no error under it');
+    await page.waitForSelector('#oc:not([hidden])');
+    assert.equal(await page.inputValue('#oc-in'), 'Four clocks to the quarter hour', 'the words are kept');
+    assert.equal(await page.locator('#oc-err').isVisible(), false, 'no error under it');
     assert.deepEqual(errors, []);
     await ctx.close();
   } finally { M.hooks.create = null; }

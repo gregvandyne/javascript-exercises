@@ -11468,6 +11468,117 @@ engine (server service and client component) that Figures uses now and the site-
   `tests/unit/figures-chat-browser.test.js` (Chromium on a laptop and an iPhone 13). `figures-browser`,
   `figures-lesson-step-browser`, `figures-product` and `figures-lesson-step` now drive the chat and the menu's box.
 
+## Oomba teaching companion, phase 1 (22 Nov 2026)
+
+The owner approved the design and mockups (a bubble on every teacher page; a panel docked on the right on laptops, a
+sheet above the tab bar on phones) with these decisions, built as a new surface of the shared chat engine (see "Figures:
+Oomba's chat and the shared chat engine"):
+
+- **Who** (`services/companion-settings.js companionFor`): the Teacher plan rule, `toolAccess(u) === 'yes'`
+  (services/teacher-tools.js): the platform admin and testers (MANIPULATIVES_USERS) always; with paid plans on, staff
+  with the Teacher plan; with plans off, testers and the admin only. `COMPANION=0` hides it from everyone; a school can
+  turn it off for its staff. Everyone else gets no bubble and no upsell, never on a student or kid surface.
+- **Where** (`views/layout.js companionPage`): every teacher page on every device; not on bare pages (games, live
+  players, quest players), print pages, a student view of a lesson, or a page with its own Oomba chat (a Figures
+  worksheet, the Manipulatives: two Oomba panels would fight over one side of the screen; deviation from "every page",
+  noted for the owner). On the class dashboard's teacher screen (bare, opted in with `companion: 'dash'`) the bubble is
+  the last thing in the layout bar, never over a widget, and hides in Projector, Eyes up and full screen. The page's
+  Permissions-Policy allows the microphone (`self`) only on pages that show the bubble.
+- **The loop** (`services/companion.js`): one conversation per teacher (`ctx_key 'main'`, New chat starts again); each
+  message a job (one live turn per teacher). A real tool-use loop: `explainOomba`, `getPageContext` (page type and safe
+  ids: a class's grade, subject and number of students; on the dashboard the layout's widgets with numbers, switches and
+  choices only, never their text, and the widget library), `searchGames` (a curated metadata list for the official
+  games, `services/companion-games.js`: grades, subject, topics, CCSS standards seeded from the Number Quest unit
+  mappings in each game's notes, minutes), `searchBooks` (the Story Library; guided reading levels A to Z are mapped to
+  its grade bands and Oomba says so), `searchLessons` (CS Quest lessons, Figures generators, dashboard templates),
+  `proposeDashboardChange`, `startBuild`, `readUpload`, and the web search server tool. At most the school's steps per
+  answer; the last call is made with `tool_choice: none`. The model is `COMPANION_MODEL` or `BUILDER_MODEL` (no model id
+  in code); AI budget resting is the calm "resting" turn. Markers in the reply (`[[game:id]]`) become cards, only for
+  things a tool returned in that answer.
+- **Writes need a tap.** `proposeDashboardChange` only makes a confirm card (prefers changing an existing widget of the
+  same type over adding a second); Apply writes it to the teacher's own layout of a class they teach (engine `addTurn`),
+  Undo puts back what is still as Oomba left it; both audited (`companion.dash.apply`, `.undo`). Not now marks it.
+  `startBuild` makes a hand-off card for the Builder, Figures or the Manipulatives; "Open the Builder" opens
+  `/build/new?for=class&class=...` with the brief filled into "Your lesson" (or Figures' "Describe what you need"); the
+  teacher presses the final button there (audited `companion.handoff`). **No "build a widget"** and no "My activity"
+  widget: when no widget fits, Oomba suggests existing widgets or a combination.
+- **Privacy.** Messages, uploads and transcripts go through the Builder's scrubber (builder/lesson.js `scrub`: the
+  teacher's students' names, emails, phone numbers, links) before they are stored or sent; the reply is scrubbed too and
+  held back if it fails the Builder's text check. Web search is on by default (per-chat switch, school switch,
+  `COMPANION_WEB_SEARCH=0`), reuses builder/search.js (blocked sites, query screening, the admin search log, ai-budget
+  cost tracking), sends no location; a search that looks personal or unsafe shows no sources and is logged redacted.
+- **Uploads** (migration `0108_teacher_companion`: `oomba_chats.opts`, `oomba_files`). Documents through the Builder's
+  lesson reader (PDF, .docx, .txt, .md; 5 MB; a PDF at most 10 pages; scans refused; the shared 20 a day; the name
+  scrubber and keyword pre-filter); the file is not kept, its text (at most 10,000 characters) stays with the chat and
+  goes with it. Pictures: made a JPEG of at most 1,600 px in the browser, cleaned on the server (photos.cleanJpeg: JPEG
+  only, size limits, every metadata segment removed), then the AI check (the profile photo's rules plus "no people":
+  any person refused with a kind message, never kept, audited); a picture that passes is kept only until the answer
+  that reads it is done, never longer than a day (decided: the smallest retention that still lets Try again work).
+- **Microphone**: tap to start, tap to stop ("Listening… audio isn't kept"); the clip goes to
+  `POST /api/companion/transcribe` (services/stt.js `transcribe`) and the words land in the box to edit. A teacher
+  allowance: Teacher plan staff on their own conversation, with the Studio's caps (clips a minute, clips a day, the
+  site's minutes); the kid rules (a kid's own game) are unchanged. Upload mode only in phase 1 (the live WebSocket relay
+  is tied to a game id; words appear when the teacher taps stop).
+- **Per-school settings** (School page, Settings tab, its own form; `schools.settings.companion`, no migration): Oomba
+  on or off, web search on or off, days a chat is kept (7 to 365, default 60), messages kept (4 to 40, default 20),
+  messages sent to the AI (2 to 16, default 8, never more than kept), steps per answer (2 to 12, default 8), messages a
+  teacher may send an hour (5 to 100, default 40). Out of bounds is refused, never clamped. A teacher in no school gets
+  the defaults; one in several gets the strictest. The engine gained optional surface hooks for this (`clean`, `meta`,
+  `limits`, `prune`), backward compatible with Figures.
+- **Legal:** /privacy section (all locales), LEGAL_UPDATED 2026-11-22, docs/legal-review.md entry (lawyer review
+  pending).
+
+## Oomba teaching companion: one chat everywhere, and live speech (22 Nov 2026)
+
+The owner, after reviewing phase 1: ONE Oomba bubble and panel across the app. The Figures worksheet chat and the
+Manipulatives board chat are folded into the companion; the microphone shows words as the teacher speaks.
+
+- **Conversation model** (chosen as recommended): one running companion conversation per teacher (the engine's
+  `ctx_key 'main'`), with page-scoped artifacts. Every message carries the page it was sent from (`meta.page`: the
+  worksheet's id, the board's tool and id, checked on the server: only the teacher's own worksheet, only a host's own
+  board), and the "Sees:" line follows the page (an SPA page like the Manipulatives updates it as the teacher moves).
+  Each worksheet keeps its own change history through the turns that changed it (`change.kind 'figures'` with the
+  sheet's id and its own Undo data); each board change is put on the board by the page with its own Undo and Redo.
+  The old per-worksheet Figures chats (`oomba_chats` surface 'figures') and per-board chats (`manip_chats`) start
+  fresh: they are not shown any more, kept in the database until their own 60 days (pruned by the companion's job)
+  and deleted with their worksheet, board and account. No worksheet or board data is touched.
+- **Page tools** (services/companion.js `PAGE_TOOLS`, offered only on their own page): `editWorksheet` (the Figures
+  workflow, unchanged, in services/figures-chat.js: readAnswer, checkItem/repairDraft, OF.solve recompute, untouched
+  questions never re-sent, applyPlan/undoPlan by question id, starterPlan, quoteOf, workflowRules for the system
+  prompt) and `changeBoard` (the Manipulatives workflow, unchanged, in services/manip-chat.js: boardContext,
+  readAnswer/buildChange through sanitizeDraft and cleanState, pageBoard, workflowRules). `getPageContext` adds the
+  worksheet (sheetContext) or the board. On the live room's teacher view Oomba knows it is there and changes nothing
+  (as before: the old chat was never in the room).
+- **Routing**: on those pages the system prompt says the page tool is only for requests about what is on that page;
+  anything else (a book, a game, the dashboard, how the site works, a teaching question) goes to the general tools and
+  leaves the page as it is; when it can't tell, it asks one short question and changes nothing.
+- **Writes, stated consistently**: a dashboard change needs the teacher's Apply tap (then Undo); a worksheet or board
+  change is made at once when the teacher asks for it on that page, with Undo (the existing behavior of those chats,
+  kept); builds are hand-offs the teacher finishes.
+- **Names**: one rule everywhere: the teacher's students' names, emails, phone numbers and links are taken out of the
+  message before it is kept or sent (the Figures and Manipulatives chats used to refuse such a message instead), and
+  the words are checked again when the job starts (a student who joined meanwhile ends the turn as 'names'). Question
+  text, board steps and titles naming a student are left out of what the AI sees, as before.
+- **One panel**: the separate panels are gone (`public/css/manip-chat.css` removed; `public/js/manip-chat.js` is now the
+  board's adapter; `public/js/figures-sheet.js` registers the worksheet's). Pages meet the panel through
+  `public/js/oomba-bus.js` (`setPage(adapter)`: the page context, what goes with a message, ideas, the change card, the
+  page's buttons, "Ask Oomba about this" quotes, Undo, the Questions | Print preview switch on laptops). Figures' menu
+  "Describe what you need" makes the worksheet and sends the companion's first turn on it (services/companion.js
+  `startSheet`); its "finished while you were away" notice reads the companion's unseen endings (`readySheets`; a
+  background load peeks without marking them seen, and the bubble shows its dot). "Draft with AI" on a board opens the
+  panel; the board's old drafter (Try again on a failed draft job) opens it with the words in the box.
+- **Removed routes**: `/api/figures/worksheets/:id/chat` (and undo, starter, dismiss) and `/api/manipulatives/chat` (and
+  applied); `/api/figures/worksheets/:id/ready/dismiss` added. The `figures` engine surface is no longer defined.
+- **Live speech** (services/stt-live.js `companionRoute`, `/api/companion/listen`): the Studio's live relay with a
+  teacher allowance, its own path and gate (`teacherGate`: companionFor, so the toolAccess rule and the school's switch),
+  the same caps; the kid route and its rules are unchanged (the Builder check stays for every kid session). The page
+  streams the mic as PCM (public/js/stt-worklet.js), shows the words so far greyed and read-only in the box, and they
+  settle as final, editable words. Stops on a tap, on Send (no more words go in), when the panel closes, when the page
+  is hidden, and at the longest recording (2 minutes, or STT_MAX_SECONDS if shorter). MediaRecorder keeps the clip in
+  memory only, for a one-time upload (`X-Live-Id`, not counted twice) when the live link fails.
+- **Follow-up**: Mistake Hunt's chat (services/proof-chat.js, inside the game's teacher editor) is still its own; moving
+  it onto the companion is a later change.
+
 ## Comparison page: the one page that names other products (22 Nov 2026)
 
 The site's rule stays: **never name other products**, in any page, string, prompt or test fixture. The owner made one
@@ -11492,7 +11603,9 @@ exception, for one page only: `/compare`, "How Oomba compares", may name **Kahoo
 - **Oomba's cells** say only what is live. The Manipulatives, their live rooms, place-value regrouping, Figures, the AI
   drafting and Oomba the teaching companion carry the gate's tag, worded like the "See it in action" note
   (views/see-it.js): "Teacher plan" while paid plans are on for everyone, "In testing" while only testers have them.
-  The companion row describes the teaching companion on branch `teacher-companion`, merged with or before this page.
+  The companion row describes the teaching companion as it is on main today ("Oomba teaching companion: one chat
+  everywhere, and live speech"): one chat that knows the page, Figures and the Manipulatives included, words shown as
+  the teacher speaks, audio not kept.
 - **Table on phones.** The table scrolls inside its own box with the need column kept in view (sticky), so the page
   never scrolls sideways; the box can be reached and scrolled by keyboard.
 - **Legal.** docs/legal-review.md "Comparison page naming Kahoot!, Classroomscreen, Brainingcamp: lawyer review

@@ -1115,6 +1115,14 @@
         "h": "Le matériel de manipulation en maths, en classe",
         "p1": "<b>Séances en direct :</b> quand un enseignant mène une séance en direct avec le matériel de manipulation, le plateau de chaque élève (ses pièces, notes, textes et réponses) est conservé pour son enseignant et supprimé 30 jours après la fin de la séance. L'endroit où pointent les élèves (leur curseur) et les mains levées ne sont pas enregistrés.",
         "p2": "<b>Préparer un plateau avec l'IA :</b> un enseignant peut décrire une leçon et demander à l'IA d'en préparer le plateau. Seule la description de l'enseignant est envoyée à notre fournisseur d'IA, Anthropic. Le travail et les noms des élèves ne sont jamais envoyés."
+      },
+      "companion": {
+        "h": "Oomba, l'assistant pour enseigner",
+        "p1": "Les enseignants avec la Formule Enseignant peuvent discuter avec Oomba depuis une bulle sur leurs propres pages. Les élèves et les enfants ne la voient jamais. Les messages d'un enseignant, le texte d'un document joint et une image jointe sont envoyés à notre fournisseur d'IA, Anthropic, pour produire la réponse. Avant tout envoi, nous retirons les noms des élèves de l'enseignant, les e-mails, les numéros de téléphone et les liens. Les images qui montrent une personne sont refusées et jamais conservées.",
+        "p2": "Oomba ne voit que ce que l'enseignant a ouvert et des informations sûres à ce sujet (le niveau et l'effectif d'une classe, les widgets d'un tableau de bord, les questions d'une fiche Figures, les éléments et étapes d'un plateau de manipulations), jamais les noms, réponses ou travaux des élèves. Il ne modifie un tableau de bord qu'après que l'enseignant a touché Appliquer. Sur une fiche Figures ou un plateau de manipulations, il fait tout de suite le changement demandé, et l'enseignant peut l'annuler.",
+        "p3": "Quand la recherche web est activée, Oomba peut envoyer de courtes recherches à la recherche web d'Anthropic. Elles ne contiennent jamais de noms ni de localisation ; les sites pour adultes, de jeux d'argent, les réseaux sociaux et autres sont bloqués, et chaque recherche est enregistrée pour notre équipe sans le nom de l'enseignant. Les pages trouvées sur le web sont présentées comme des sources qu'Oomba n'a pas vérifiées.",
+        "p4": "Un enseignant peut parler au lieu d'écrire : le son est transmis à {provider} pour être transformé en mots pendant qu'il parle, et l'audio n'est jamais conservé, ni par nous ni par eux. Les mots arrivent dans la zone de message pour que l'enseignant les vérifie.",
+        "p5": "Nous conservons la discussion d'un enseignant, avec le texte de ses pièces jointes, pendant 60 jours après sa dernière utilisation (une école peut choisir de 7 à 365 jours) ; une image est supprimée dès qu'Oomba a répondu, et au plus tard au bout d'un jour. Un enseignant peut supprimer la discussion avec Nouvelle discussion, et elle est supprimée avec le compte. Un administrateur de l'école peut désactiver Oomba ou sa recherche web pour l'école."
       }
     }
   },
@@ -3933,7 +3941,9 @@
         "steps": "Écris des étapes plus claires pour mes élèves"
       },
       "placeholder": "Demande à Oomba de changer le tableau",
-      "placeholderEmpty": "Décris la leçon que tu veux sur ce tableau"
+      "placeholderEmpty": "Décris la leçon que tu veux sur ce tableau",
+      "boardOf": "Plateau {tool}",
+      "liveRoom": "Salle en direct"
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4007,6 +4017,187 @@
       "needText": "Écris d’abord quelques mots pour Oomba.",
       "slow": "Cela fait beaucoup de messages en une heure. Attends un peu, puis réessaie.",
       "other": "Un problème est survenu. Ton message est toujours là : réessaie dans un instant."
+    },
+    "companion": {
+      "sees": "Voit :",
+      "dashOf": "Tableau de bord {name}",
+      "newChat": "Nouvelle discussion",
+      "newChatAsk": "Commencer une nouvelle discussion ? Cette conversation et tout ce que tu y as joint seront supprimés.",
+      "newChatOk": "Commencer une nouvelle discussion",
+      "hello": "Bonjour ! Je suis Oomba, ton assistant pour enseigner. Demande-moi un jeu, un livre, un changement sur ton tableau de bord ou de l'aide pour un cours.",
+      "idea": {
+        "game": {
+          "label": "Trouver un jeu",
+          "text": "Donne-moi un jeu sur les fractions pour le CE2, environ 10 minutes"
+        },
+        "book": {
+          "label": "Trouver un livre",
+          "text": "Montre-moi un livre sur les animaux pour un lecteur de niveau M"
+        },
+        "dash": {
+          "label": "Modifier mon tableau de bord",
+          "text": "Ajoute un minuteur de 5 minutes et les métiers de la classe à mon tableau de bord"
+        },
+        "plan": {
+          "label": "Préparer un cours",
+          "text": "Aide-moi à préparer un cours de 30 minutes sur "
+        },
+        "dashTimer": {
+          "label": "Ajouter un minuteur de 5 minutes",
+          "text": "Ajoute un minuteur de 5 minutes"
+        },
+        "dashJobs": {
+          "label": "Ajouter les métiers de la classe",
+          "text": "Ajoute un minuteur de 5 minutes et les métiers de la classe"
+        }
+      },
+      "placeholder": "Demande à Oomba…",
+      "leave": "Tu peux fermer ceci. La réponse t'attendra ici.",
+      "attach": "Joindre une fiche de préparation, un document ou une image",
+      "attachNote": "Pas de noms ni de travaux d'élèves, ni de photos de personnes, s'il te plaît. Nous retirons ceux que nous trouvons.",
+      "fileNote": "Le fichier n'est pas conservé. Seul son texte reste dans cette discussion.",
+      "imageNote": "L'image n'est conservée que jusqu'à la réponse d'Oomba, puis elle est supprimée.",
+      "removeFile": "Retirer la pièce jointe",
+      "reading": "Lecture de {name}…",
+      "removed": "{count, plural, one {Nous avons retiré # nom ou coordonnée.} other {Nous avons retiré # noms ou coordonnées.}}",
+      "pages": "{n, plural, one {# page} other {# pages}}",
+      "file": {
+        "docType": "Joins un fichier PDF, Word (.docx), texte ou Markdown, ou une image.",
+        "docBig": "Ce fichier dépasse 5 Mo.",
+        "docPages": "Ce PDF a plus de 10 pages.",
+        "docScan": "Ce PDF ressemble à un scan, son texte ne peut donc pas être lu. Essaie un fichier Word ou copie le texte.",
+        "docBad": "Ce fichier ne peut pas être ouvert. Il est peut-être endommagé ou verrouillé.",
+        "docEmpty": "Ce fichier ne contient pas de texte à lire.",
+        "docLimit": "Tu as joint tous les fichiers possibles aujourd'hui. Réessaie demain.",
+        "blocked": "Certains mots de ce fichier ne sont pas autorisés ici, il n'a donc pas été joint.",
+        "imgType": "Cette image ne peut pas être lue. Essaie un JPEG ou un PNG.",
+        "imgBig": "Cette image est trop grande.",
+        "imgLimit": "Tu as joint toutes les images possibles aujourd'hui. Réessaie demain.",
+        "imgPerson": "Cette image montre une personne, elle n'a donc pas été jointe. Oomba n'accepte que des images sans personnes, comme une fiche d'exercices ou un schéma.",
+        "imgPersonal": "Cette image montre des informations privées, comme un nom ou le logo d'une école, elle n'a donc pas été jointe.",
+        "imgUnsafe": "Cette image ne convient pas à un site scolaire, elle n'a donc pas été jointe.",
+        "imgResting": "Les images ne peuvent pas être vérifiées pour l'instant, elles ne peuvent donc pas être jointes. Réessaie plus tard.",
+        "other": "Ça n'a pas marché. Réessaie dans un instant."
+      },
+      "mic": {
+        "start": "Parler au lieu d'écrire",
+        "stop": "Arrêter l'écoute",
+        "listening": "J'écoute… touche Arrêter quand tu as fini",
+        "kept": "l'audio n'est pas conservé",
+        "denied": "Le micro est bloqué pour ce site. Autorise-le dans ton navigateur, puis réessaie.",
+        "failed": "Oomba n'a pas pu entendre. Réessaie ou écris-le.",
+        "tooLong": "C'était trop long. Parle une minute au maximum.",
+        "tooFast": "Cela fait beaucoup d'enregistrements en une minute. Attends un instant.",
+        "daily": "Tu ne peux plus parler pour aujourd'hui. Tu peux toujours écrire.",
+        "busy": "La parole n'est pas disponible pour l'instant. Tu peux toujours écrire."
+      },
+      "web": {
+        "on": "Recherche web activée",
+        "off": "Recherche web désactivée",
+        "offSchool": "La recherche web est désactivée pour ton école",
+        "from": "Sur le web",
+        "notOn": "Pas sur Oomba",
+        "warn": "Oomba n'a pas vérifié ces pages : regarde-les avant de les partager avec ta classe."
+      },
+      "step": {
+        "explain": "A regardé comment fonctionne Oomba Academy",
+        "page": "A lu cette page",
+        "dash": "A lu ta disposition {q} ({n} widgets)",
+        "games": "A cherché des jeux : {q}",
+        "books": "A cherché dans la Story Library",
+        "booksLevel": "A fait correspondre le niveau de lecture {q}",
+        "lessons": "A cherché des cours et des fiches",
+        "propose": "A préparé un changement à vérifier",
+        "dashNo": "N'a pas pu préparer ce changement du tableau de bord",
+        "brief": "A rédigé une description",
+        "briefNo": "N'a pas pu rédiger cette description",
+        "read": "A lu ton fichier ({n, plural, one {# page} other {# pages}}, texte seulement)",
+        "readNo": "N'a pas trouvé ce fichier",
+        "readImage": "A regardé ton image",
+        "web": "A cherché sur le web ({n, plural, one {# recherche} other {# recherches}})",
+        "webNo": "A cherché sur le web, mais a écarté les résultats",
+        "toolNo": "Une étape n'a pas marché",
+        "sheet": "A lu ta fiche ({n} questions)",
+        "edit": "A modifié ta fiche ({n} changements)",
+        "editNo": "N'a pas pu modifier la fiche",
+        "board": "A préparé le plateau ({n} éléments)",
+        "boardNo": "N'a pas pu préparer ce plateau"
+      },
+      "stepsSum": "{n, plural, one {# étape} other {# étapes}} · {s} s",
+      "prog": {
+        "check": {
+          "now": "Retire les noms des élèves",
+          "done": "A retiré les noms des élèves"
+        },
+        "ai": {
+          "now": "Oomba réfléchit",
+          "done": "Oomba a réfléchi"
+        },
+        "tools": {
+          "now": "Fait des recherches",
+          "done": "A fait des recherches"
+        },
+        "answer": {
+          "now": "Écrit la réponse",
+          "done": "A répondu"
+        }
+      },
+      "card": {
+        "grade": "Niveau {g}",
+        "minutes": "Environ {n} min",
+        "live": "En direct en classe",
+        "play": "Jouer",
+        "host": "Animer en direct",
+        "assign": "Attribuer",
+        "read": "Lire",
+        "open": "Ouvrir",
+        "lessonKind": "Cours CS Quest",
+        "genKind": "Fiche Figures"
+      },
+      "dash": {
+        "set": "le modifier : {what}",
+        "add": "l'ajouter {what}",
+        "remove": "le retirer",
+        "minutes": "{n, plural, one {# minute} other {# minutes}}",
+        "apply": "Appliquer",
+        "notNow": "Pas maintenant",
+        "applied": "Appliqué",
+        "declined": "Rien n'a changé",
+        "done": "C'est fait. Modifié sur ton tableau de bord :",
+        "highlighted": "Mis en évidence un instant sur ton écran.",
+        "openDash": "Ouvrir le tableau de bord"
+      },
+      "hand": {
+        "builder": "Activité de classe dans le Builder",
+        "figures": "Fiche dans Figures",
+        "manipulatives": "Plateau dans les Manipulations",
+        "open": {
+          "builder": "Ouvrir le Builder",
+          "figures": "Ouvrir Figures",
+          "manipulatives": "Ouvrir les Manipulations"
+        },
+        "change": "Modifier la description",
+        "changeText": "Modifie la description : ",
+        "grade": "Niveau",
+        "practice": "S'exercer à",
+        "help": "Aide",
+        "length": "Durée",
+        "fromPlan": "De ta préparation",
+        "filled": "Oomba a rempli ta description. Vérifie-la, puis appuie sur le bouton pour le créer."
+      },
+      "err": {
+        "words": "Certains mots de ton message ne sont pas autorisés. Modifie-les et renvoie-le.",
+        "personal": "Retire les numéros de téléphone, e-mails et liens, puis renvoie-le.",
+        "brief": "Écris d'abord quelques mots pour Oomba.",
+        "chatBusy": "Oomba répond encore à ton dernier message. Attends un instant.",
+        "otherBusy": "Oomba répond encore à ton dernier message. Attends un instant.",
+        "notFound": "Ce compte ne peut pas utiliser Oomba pour l'instant.",
+        "slow": "Cela fait beaucoup de messages en une heure. Attends un peu, puis réessaie.",
+        "fileGone": "Cette pièce jointe n'est plus là. Joins-la à nouveau.",
+        "other": "Un problème est survenu. Ton message est toujours là : réessaie dans un instant."
+      },
+      "quoteN": "Question {n} : {text}",
+      "questionN": "Question {n}"
     }
   },
   "favorites": {
@@ -6859,7 +7050,7 @@
       },
       "companion": {
         "need": "Un compagnon pour enseigner (chat avec IA)",
-        "oomba": "Oomba sait sur quelle page vous êtes. Il trouve des jeux par niveau, norme et durée, et des livres par niveau de lecture, lit vos préparations et vos images, et cherche sur le web en montrant ses sources. Il ne modifie votre tableau de bord que si vous confirmez, avec Annuler. Saisie vocale, et l’audio n’est pas conservé. Votre école peut fixer ses limites."
+        "oomba": "Un seul chat dans toute l’appli, qui sait sur quelle page vous êtes, y compris dans Figures et les manipulables. Il trouve des jeux par niveau, norme et durée, et des livres par niveau de lecture, lit vos préparations et vos images, et cherche sur le web en montrant ses sources. Il ne modifie votre tableau de bord que si vous confirmez, avec Annuler. Avec la saisie vocale, vos mots s’affichent pendant que vous parlez, et l’audio n’est pas conservé. Votre école peut fixer ses limites."
       },
       "videos": {
         "need": "De courtes vidéos de chaque outil",
@@ -13288,6 +13479,30 @@
       "ready": "Oomba a lu les résultats.",
       "resting": "Oomba se repose en ce moment. Voici la lecture à partir des chiffres.",
       "failed": "Oomba n'a pas pu lire les résultats cette fois. Voici la lecture à partir des chiffres."
+    }
+  },
+  "companion": {
+    "settings": {
+      "title": "Oomba, l'assistant pour enseigner",
+      "text": "Les enseignants avec la Formule Enseignant peuvent demander à Oomba des jeux, des livres, des changements de tableau de bord et de l'aide pour leurs cours depuis une bulle sur leurs pages. Les élèves ne la voient jamais. Leurs messages, le texte joint et les images sont envoyés à notre fournisseur d'IA, Anthropic, sans les noms des élèves.",
+      "on": "Oomba pour les enseignants de cette école",
+      "onHint": "Désactivé : aucune bulle Oomba pour les enseignants de cette école.",
+      "web": "Recherche web",
+      "webHint": "Activée : Oomba peut chercher sur le web pour des questions pédagogiques et montre ses sources. Les recherches ne contiennent jamais de noms.",
+      "retentionDays": "Jours de conservation d'une discussion",
+      "retentionDaysHint": "Une discussion inutilisée pendant ce nombre de jours est supprimée, avec ses pièces jointes. De {min} à {max} ; nous suggérons {def}.",
+      "keep": "Messages conservés dans une discussion",
+      "keepHint": "Les messages plus anciens sont supprimés. De {min} à {max} ; nous suggérons {def}.",
+      "send": "Messages qu'Oomba relit",
+      "sendHint": "Combien de messages précédents sont envoyés à l'IA avec un nouveau. De {min} à {max}, et pas plus que les messages conservés ; nous suggérons {def}.",
+      "steps": "Étapes pour une réponse",
+      "stepsHint": "Le nombre maximal de recherches qu'Oomba peut faire pour une réponse. De {min} à {max} ; nous suggérons {def}.",
+      "perHour": "Messages qu'un enseignant peut envoyer par heure",
+      "perHourHint": "De {min} à {max} ; nous suggérons {def}.",
+      "err": {
+        "bounds": "Choisis un nombre de {min} à {max}.",
+        "sendKeep": "Choisis un nombre de {min} à {max} : pas plus que les messages conservés."
+      }
     }
   }
 }

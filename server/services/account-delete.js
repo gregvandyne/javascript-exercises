@@ -40,6 +40,7 @@ import { forgetUser as forgetDash } from './dash.js';
 import { forgetUser as forgetGameSets } from './game-sets.js';
 import { forgetUser as forgetManipulatives } from './manipulatives.js';
 import { forgetUser as forgetFigures } from './figures.js';
+import { forgetUser as forgetCompanion } from './companion.js';
 
 const DAY = 86400e3;
 /** How long a deleted child's old username can't be taken. */
@@ -127,6 +128,8 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     forgetManipulatives(u.id);
     // 11d. Figures: their worksheets (question sets), presets and "Power with AI" switch
     forgetFigures(u.id);
+    // 11e. Oomba, the teaching companion: their conversation, its attached texts and pictures (services/companion.js)
+    forgetCompanion(u.id);
     // 12. the audit (ids only, never the old name)
     audit(actor ? actor.id : null, 'user.delete', u.id, { by: actor ? actor.id : null, kind: by, ...(parentMade ? { parentMade: true } : {}) });
   });

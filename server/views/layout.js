@@ -10,6 +10,7 @@
 import { html, raw, esc, jsonData } from './html.js';
 import { ico } from './icon.js';
 import { toolAccess } from '../services/teacher-tools.js';
+import { companionFor } from '../services/companion-settings.js';
 import { avatar, BRAND, wordmark, appMark } from './components.js';
 import { accountKind, STAFF_PASSWORD_MIN, isGrownup, longPasswordKind } from '../auth.js';
 import { config } from '../config.js';
@@ -267,7 +268,7 @@ function staffMenu(req, { name, badge, active, unread, tools = false }) {
   </details>`;
 }
 
-export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, mid = false, i18n = [], seo = null, keyboard = false, signinPage = false } = {}) {
+export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, mid = false, i18n = [], seo = null, keyboard = false, signinPage = false, companion = null } = {}) {
   const t = tReq(req);
   const locale = req.locale || DEFAULT_LOCALE; const info = localeInfo(locale);
   const u = req.user;
@@ -353,6 +354,11 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const made = !bare && u && !u.is_guest ? html`${pwResetNote(req, t)}${madeCard(req, t)}` : '';
   // Staff (and the platform admin) who signed in with a short password are asked for a longer one on every page.
   const shortPw = !bare && u && u.password_short && longPasswordKind(u) ? html`<p class="notice warn pagenote">${tHtml(t, accountKind(u) === 'grownup' ? 'layout.shortPasswordGrownup' : 'layout.shortPassword', { min: STAFF_PASSWORD_MIN, href: grownup ? '/family/account#password' : '/me/settings#password' })}</p>` : '';
+  const oc = u && !u.is_guest ? companionPage(req, { bare, companion, scripts }) : null;
+  // The companion's microphone (tap to speak) needs this page, and only this page, to allow it ('self', never '*'):
+  // only for Teacher plan staff on a page with the bubble; every other page keeps the site's microphone=().
+  if (oc && req.res && !req.res.headersSent) { const pp = String(req.res.get('Permissions-Policy') || ''); if (pp.includes('microphone=()')) req.res.set('Permissions-Policy', pp.replace('microphone=()', 'microphone=(self)')); }
+  if (oc) { scripts = [...scripts, '/js/companion.js']; i18n = [...i18n, 'js.oomba-chat']; head = `${head}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}"><link rel="stylesheet" href="/css/companion.css?v=${VERSION}">`; }
   const prefixes = ['js.app', ...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
   // An explicit Light or Dark choice is on <html> before any CSS loads, so the first paint is right (no flash, no JS).
   const theme = req.theme === 'light' || req.theme === 'dark' ? req.theme : null;
@@ -381,7 +387,7 @@ ${themeColor}
 <link rel="stylesheet" href="/css/app.css?v=${VERSION}">
 ${head}
 </head>
-<body class="${esc(bodyClass)}" data-user="${u ? esc(u.id) : ''}" data-guest="${u && u.is_guest ? '1' : ''}">
+<body class="${esc(bodyClass)}" data-user="${u ? esc(u.id) : ''}" data-guest="${u && u.is_guest ? '1' : ''}"${oc ? ` data-oc="${esc(JSON.stringify(oc))}"` : ''}>
 ${nav}
 <main id="main"${bare ? '' : mid ? ' class="wrap mid"' : ' class="wrap"'}>${ended}${news}${made}${shortPw}${backHtml}${body}</main>
 ${foot}
@@ -391,6 +397,29 @@ ${strings}
 ${scripts.map(s => `<script type="module" src="${esc(s)}?v=${VERSION}"></script>`).join('\n')}
 </body>
 </html>`;
+}
+// Oomba, the teaching companion (services/companion.js; docs/decisions.md "Oomba teaching companion"): its bubble on
+// every teacher page for Teacher plan staff, on every device. Never on a bare page (a game playing, a live player, a quest
+// player) unless the page asks for it (the class dashboard's teacher screen: companion 'dash', at the end of its layout
+// bar), never on a print page or a student view of a lesson. One chat everywhere: a Figures worksheet and the
+// math boards have no panel of their own, the companion offers their workflow there (their page scripts register it:
+// public/js/oomba-bus.js). The dashboard hides it again in Projector and Eyes up (public/js/companion.js).
+const NO_COMPANION = /(^|\/)print(\/|$)|^\/class\/[^/]+\/lessons\/|^\/play\/|^\/live\/(play|frame|host|cohost)\/|^\/number-quest\/|^\/cs-quest\/play/;
+const OWN_CHAT = [];
+/** The page as the companion's first message describes it (checked again on the server: services/companion.js pageOf). */
+export function companionPage(req, { bare = false, companion = null, scripts = [] } = {}) {
+  if (companion === false || (bare && companion !== 'dash')) return null;
+  const p = req.path || '';
+  if (NO_COMPANION.test(p) || scripts.some(x => OWN_CHAT.includes(x))) return null;
+  if (!companionFor(req.user)) return null;
+  const fs = /^\/figures\/worksheets\/([A-Za-z0-9_-]{1,64})$/.exec(p);
+  if (fs && fs[1] !== 'new') return { type: 'figures-sheet', sheetId: fs[1] };
+  if (/^\/manip/.test(p)) return { type: 'tools' };
+  const m = /^\/class\/([A-Za-z0-9_-]{1,64})(\/dashboard)?/.exec(p);
+  if (m) return { type: m[2] ? 'dashboard' : 'class', classId: m[1] };
+  const cls = typeof (req.query || {}).class === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(req.query.class) ? req.query.class : undefined;
+  const type = /^\/library/.test(p) ? 'library' : /^\/teach/.test(p) ? 'teach' : /^\/build/.test(p) ? 'build' : /^\/figures/.test(p) ? 'figures' : /^\/school/.test(p) ? 'school' : /^\/live/.test(p) ? 'live' : 'other';
+  return { type, ...(cls ? { classId: cls } : {}) };
 }
 /** The one-time "✨ Your game “X” is ready!" note (builder/turns.js notices), marked as told once drawn. */
 function buildNews(t, u) {

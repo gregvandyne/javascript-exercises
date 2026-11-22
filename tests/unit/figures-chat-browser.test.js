@@ -1,11 +1,12 @@
-// Oomba's chat on a Figures worksheet in a real browser (docs/decisions.md "Figures: Oomba's chat and the shared chat
-// engine"; public/js/oomba-chat.js, public/js/figures-sheet.js). On a laptop: "Describe what you need" on the menu makes
-// the worksheet and opens the builder with the chat's progress card (steps and an estimate); a refresh mid-draft shows the
-// same progress again and the questions land; "make 3 and 7 harder and use inches" changes only those two (marked) and
-// the units, with the answers worked out again; Undo; "Ask Oomba about this" quotes a question; the budget resting says
-// so and offers "Add a starter set instead". On an iPhone 13: the chat is a sheet that minimizes to the Oomba bubble, with
-// a dot when Oomba answered meanwhile. No sideways scroll, no console errors. The AI is the existing stand-in
-// (services/figures.js hooks.create). FIGCHAT_SHOTS=<dir> also saves pictures. Skipped when no Chromium is installed.
+// Figures through Oomba, the site's one companion chat, in a real browser (docs/decisions.md "Oomba teaching companion:
+// one chat everywhere"; public/js/companion.js with this page's workflow in public/js/figures-sheet.js). On a laptop:
+// "Describe what you need" on the menu makes the worksheet and opens the builder with the companion's progress card; a
+// refresh mid-draft shows the same progress again and the questions land; "make 3 and 7 harder and use inches" changes
+// only those two (marked) and the units, with the answers worked out again; Undo; "Ask Oomba about this" quotes a
+// question; an off-topic request (a book) answers with the general tools and leaves the worksheet alone; the budget
+// resting says so and offers "Add a starter set instead". On an iPhone 13: the panel is a sheet that minimizes to the
+// Oomba bubble, with a dot when Oomba answered meanwhile. No sideways scroll, no console errors. The AI is a stand-in
+// (services/companion.js hooks.create) answering with the page's tool. FIGCHAT_SHOTS=<dir> also saves pictures.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -17,6 +18,7 @@ const { createApp } = await import('../../server/app.js');
 const { createUser, startSession } = await import('../../server/auth.js');
 const F = await import('../../server/services/figures.js');
 const C = await import('../../server/services/oomba-chat.js');
+const CO = await import('../../server/services/companion.js');
 
 const LOCAL = ['/opt/pw-browsers/chromium', '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell'];
 const exe = [process.env.BRB_CHROMIUM, ...LOCAL].find(p => p && fs.existsSync(p));
@@ -35,7 +37,7 @@ test.before(async () => {
   browser = await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox'] });
   if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 });
-test.after(async () => { F.hooks.create = null; if (browser) await browser.close(); if (server) { server.closeAllConnections(); server.close(); } });
+test.after(async () => { CO.hooks.create = null; if (browser) await browser.close(); if (server) { server.closeAllConnections(); server.close(); } });
 
 const LAPTOP = { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 };
 async function open(path, ctxOpts = LAPTOP) {
@@ -57,23 +59,30 @@ const FIRST = [
   rect(5, 5, 'perimeter', 'A square garden has sides of 5. How much fence goes all the way around it?'), rect(8, 2, 'perimeter', 'What is the perimeter of the rectangle?'),
   rect(10, 7, 'area', 'A rug is 10 long and 7 wide. How much floor does it cover?'),
 ];
-/** The stand-in AI: a first draft on an empty sheet, "harder" makes 3 and 7 two-rectangle shapes (and inches), "sandbox"
- *  rewrites the quoted question; each answer waits for release() while held. */
+/** The stand-in AI: a first draft on an empty sheet, "harder" makes 3 and 7 two-rectangle shapes (and inches),
+ *  "sandbox" rewrites the quoted question, "book" searches the library; each answer waits for release() while held. It
+ *  calls the page's tool (editWorksheet) with the change, then says the reply. */
 function ai() {
   const calls = []; let gate = null, release = () => {};
   const hold = () => { gate = new Promise(r => { release = r; }); };
-  F.hooks.create = async params => {
+  CO.hooks.create = async params => {
     calls.push(params);
-    if (gate) await gate;
-    const last = params.messages.at(-1).content;
+    const lastMsg = params.messages.at(-1), afterTool = Array.isArray(lastMsg.content) && lastMsg.content.some(c => c.type === 'tool_result');
+    if (!afterTool && gate) await gate;
+    const words = [...params.messages].reverse().find(m => m.role === 'user' && typeof m.content === 'string').content;
     let json;
-    if (/harder/.test(last)) json = { reply: 'Questions 3 and 7 are harder now, and every question uses inches.', units: 'in', edits: [
+    if (/book/.test(words)) json = { reply: 'Level M is usually late grade 2 to early grade 3, so these should fit.', tool: 'searchBooks', input: { words: 'animals', readingLevel: 'M' } };
+    else if (/harder/.test(words)) json = { reply: 'Questions 3 and 7 are harder now, and every question uses inches.', units: 'in', edits: [
       { op: 'replace', n: 3, item: { kind: 'compositeShape', question: 'This shape is made of two rectangles. What is its area?', data: { parts: [{ rect: [0, 0, 12, 4] }, { rect: [0, 4, 5, 6] }], sides: true, unit: 'in' }, answerType: 'number', answerKey: 'area' } },
       { op: 'replace', n: 7, item: { kind: 'compositeShape', question: 'What is the perimeter of the shape?', data: { parts: [{ rect: [0, 0, 14, 5] }, { rect: [9, 5, 5, 6] }], sides: true, unit: 'in' }, answerType: 'number', answerKey: 'perimeter' } },
     ] };
-    else if (/sandbox/.test(last)) json = { reply: 'Question 4 is about a sandbox now.', edits: [{ op: 'replace', n: 4, item: { kind: 'triangle', question: 'A sandbox is shaped like this right triangle. How much sand covers its floor?', data: { AB: 6, BC: 8, B: 90, unit: 'in' }, answerType: 'number', answerKey: 'area' } }] };
+    else if (/sandbox/.test(words)) json = { reply: 'Question 4 is about a sandbox now.', edits: [{ op: 'replace', n: 4, item: { kind: 'triangle', question: 'A sandbox is shaped like this right triangle. How much sand covers its floor?', data: { AB: 6, BC: 8, B: 90, unit: 'in' }, answerType: 'number', answerKey: 'area' } }] };
     else json = { reply: 'Here are 8 questions on area and perimeter of rectangles.', title: 'Area and perimeter of rectangles', edits: FIRST.map(item => ({ op: 'add', item })) };
-    return { model: params.model, usage: { input_tokens: 5, output_tokens: 5 }, content: [{ type: 'text', text: JSON.stringify(json) }] };
+    const base = { model: params.model, usage: { input_tokens: 5, output_tokens: 5 } };
+    if (afterTool) return { ...base, stop_reason: 'end_turn', content: [{ type: 'text', text: json.reply }] };
+    if (json.tool) return { ...base, stop_reason: 'tool_use', content: [{ type: 'tool_use', id: `tu${calls.length}`, name: json.tool, input: json.input }] };
+    const { reply, ...input } = json;
+    return { ...base, stop_reason: 'tool_use', content: [{ type: 'tool_use', id: `tu${calls.length}`, name: 'editWorksheet', input }] };
   };
   return { calls, hold, release: () => { const r = release; gate = null; r(); } };
 }
@@ -93,9 +102,10 @@ test('on a laptop: describe on the menu, the progress card, a refresh mid-draft,
     // The chat is open beside the builder with the progress card: four steps, an estimate, "you can close this page".
     await page.waitForSelector('#oc:not([hidden]) .oc-steps li.cur');
     assert.equal(await page.locator('.oc-steps li').count(), 4);
-    assert.match(await page.textContent('.oc-steps li.cur'), /Oomba is choosing the questions/);
-    assert.match(await page.textContent('.oc-eta'), /about 30 seconds · \d:\d\d so far/);
-    assert.match(await page.textContent('.oc-prog'), /You can close this page/);
+    assert.match(await page.textContent('.oc-steps li.cur'), /Oomba is thinking/);
+    assert.match(await page.textContent('.oc-eta'), /about 15 seconds · \d:\d\d so far/);
+    assert.match(await page.textContent('#oc-sees'), /Untitled|Area|worksheet/i, 'Sees: this worksheet');
+    assert.match(await page.textContent('.oc-prog'), /You can close this/);
     assert.match(await page.textContent('.fg-empty'), /Oomba is drafting your questions/);
     await shot(page, 'builder-drafting');
     // A refresh mid-draft: the same progress again, and the questions land when Oomba answers.
@@ -141,13 +151,20 @@ test('on a laptop: describe on the menu, the progress card, a refresh mid-draft,
     await page.click('#oc-send');
     assert.ok(await page.isHidden('#oc-quote'));
     await page.waitForFunction(() => /sandbox/.test(document.querySelector('.fg-item:nth-child(4) [data-q]').value));
-    assert.match(stand.calls.at(-1).messages.at(-1).content, /About question 4: "Find the area of the right triangle\."/);
+    assert.ok(stand.calls.some(c => c.messages.some(m => m.role === 'user' && typeof m.content === 'string' && /About question 4: "Find the area of the right triangle\."/.test(m.content))));
     assert.match(await page.locator('.oc-msg.me').last().textContent(), /Question 4: Find the area/);
+    // Off topic on the worksheet page: a book for a level M reader comes back as book cards; the worksheet stays as it is.
+    const before = await answers(page);
+    await page.fill('#oc-in', 'find me a book for a level M reader about animals');
+    await page.click('#oc-send');
+    await page.waitForSelector('.oc-card.book');
+    assert.deepEqual(await answers(page), before, 'the worksheet is not touched');
+    await shot(page, 'off-topic-book');
     await noSideScroll(page);
     assert.deepEqual(errors, []);
     await ctx.close();
     assert.ok(F.ownWorksheet(boss, id));
-  } finally { F.hooks.create = null; }
+  } finally { CO.hooks.create = null; await C.allSettled(); CO.reset(boss); }
 });
 
 test('the budget resting: the chat says so plainly and offers a starter set; the builder still works by hand', { skip }, async () => {
@@ -164,7 +181,7 @@ test('the budget resting: the chat says so plainly and offers a starter set; the
     assert.equal(stand.calls.length, 0);
     assert.equal(await page.locator('.fg-item').count(), 0, 'no silent starter set');
     await shot(page, 'ai-resting');
-    await Promise.all([page.waitForResponse(r => /\/chat\/starter$/.test(r.url()) && r.status() === 200), page.click('[data-act="starter"]')]);
+    await Promise.all([page.waitForResponse(r => /\/chat\/act$/.test(r.url()) && r.status() === 200), page.click('[data-act="starter"]')]);
     await page.waitForSelector('.fg-item');
     assert.match(await page.textContent('#oc-log'), /a starter set from the figure generators, made without the AI/);
     assert.equal(await page.locator('[data-act="starter"]').count(), 0, 'offered once');
@@ -176,7 +193,7 @@ test('the budget resting: the chat says so plainly and offers a starter set; the
     await page.waitForFunction(n => document.querySelectorAll('.fg-item').length === n + 1, n0);
     assert.deepEqual(errors, []);
     await ctx.close();
-  } finally { config.aiDailyBudgetUsd = daily; F.hooks.create = null; }
+  } finally { config.aiDailyBudgetUsd = daily; CO.hooks.create = null; await C.allSettled(); CO.reset(boss); }
 });
 
 test('on an iPhone 13: the chat is a sheet that minimizes to the Oomba bubble, with a dot for a new answer', { skip }, async () => {
@@ -215,5 +232,5 @@ test('on an iPhone 13: the chat is a sheet that minimizes to the Oomba bubble, w
     assert.deepEqual(errors, []);
     await ctx.close();
     await C.allSettled();
-  } finally { F.hooks.create = null; }
+  } finally { CO.hooks.create = null; await C.allSettled(); CO.reset(boss); }
 });

@@ -16,6 +16,8 @@ const { createUser, startSession, getUser } = await import('../../server/auth.js
 const S = await import('../../server/services/schools.js');
 const L = await import('../../server/services/lessons.js');
 const F = await import('../../server/services/figures.js');
+// Oomba on a worksheet is the site's one companion chat: its AI stand-in (tests/unit/_companion-standin.js).
+const SI = await import('./_companion-standin.js');
 const FS = await import('../../server/services/figures-steps.js');
 const { q } = await import('../../server/db.js');
 
@@ -100,9 +102,9 @@ test('a Figure step built by hand in the lesson editor, saved to the lesson, pri
 
 test('Build a test with AI on and off, edit it, assign with dates, the student does it', { skip }, async () => {
   // Oomba's chat drafts the test from the menu's "Describe what you need" (Test), mostly from the generators.
-  F.hooks.create = async () => ({ model: 'mock', usage: { input_tokens: 10, output_tokens: 10 }, content: [{ type: 'text', text: JSON.stringify({ reply: 'Here is a test on forces.', title: 'Forces on a ramp', edits: [
+  SI.figuresStandIn({ reply: 'Here is a test on forces.', title: 'Forces on a ramp', edits: [
     { op: 'add', item: { gen: 'freeBody' } }, { op: 'add', item: { gen: 'inclinedPlane' } }, { op: 'add', item: { gen: 'pulley' } }, { op: 'add', item: { gen: 'vectors' } },
-  ] }) }] });
+  ] });
   try {
     F.setAiPref(boss, true);
     const t = await open(boss, '/figures');
@@ -172,5 +174,5 @@ test('Build a test with AI on and off, edit it, assign with dates, the student d
     await shot(s.page, 'student-test-handed-in', true);
     assert.deepEqual(s.errors, []);
     await s.ctx.close();
-  } finally { F.hooks.create = null; }
+  } finally { F.hooks.create = null; SI.clearStandIn(); }
 });
