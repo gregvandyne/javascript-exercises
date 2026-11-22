@@ -4,6 +4,9 @@
 // live; and Full screen without the Fullscreen API (iPhone Safari): the preview covers the window, ✕ and Esc leave it.
 import { test, expect } from '@playwright/test';
 import { teacherSignup, templateGame } from './helpers.js';
+// Icons are Fluent pictures (public/js/icons.js): a button reads "<img> Edit lesson", so its words and its picture are
+// checked apart.
+const icon = (loc, name) => expect(loc.locator(`img.fx[src*="/${name}"]`)).toHaveCount(1);
 
 // Spark (the Publish button's yellow) and the site's white card (Cream, #FFFDF2, in the light theme)
 const YELLOW = 'rgb(255, 210, 63)', WHITE = 'rgb(255, 253, 242)';
@@ -20,7 +23,7 @@ test.describe('the Studio on a phone', () => {
     await teacherSignup(page);
     await templateGame(page, { template: 'canvas' });
     const edit = page.locator('[data-act="edit-activity"]');
-    await expect(edit).toHaveText('🧮 Edit lesson');
+    await expect(edit).toHaveText('Edit lesson'); await icon(edit, 'abacus');
     await expect(edit).toHaveAttribute('aria-expanded', 'false');
     await expect(edit).toHaveAttribute('aria-controls', 'st-acc');
     // full width of its container
@@ -30,8 +33,8 @@ test.describe('the Studio on a phone', () => {
 
     // the row: two equal buttons, one line, the live one plain
     const arcade = page.locator('#st-btnrow [data-act="canvas-switch"]'), live = page.locator('#st-livebtn');
-    await expect(arcade).toHaveText('🎮 Make it an arcade game');
-    await expect(live).toHaveText('📡 Make it a live game');
+    await expect(arcade).toHaveText('Make it an arcade game'); await icon(arcade, 'video-game');
+    await expect(live).toHaveText('Make it a live game'); await icon(live, 'satellite-antenna');
     await expect(live).toHaveAttribute('data-act', 'make-live');
     expect(await live.evaluate(el => getComputedStyle(el).backgroundColor)).toBe(WHITE);
     const [a0, l0] = [await box(page, '#st-btnrow [data-act="canvas-switch"]'), await box(page, '#st-livebtn')];
@@ -102,10 +105,10 @@ test.describe('the Studio on a phone', () => {
     await teacherSignup(page);
     await templateGame(page);
     const live = page.locator('#st-livebtn');
-    await expect(live).toHaveText('📡 Make it a live game');
+    await expect(live).toHaveText('Make it a live game'); await icon(live, 'satellite-antenna');
     expect(await live.evaluate(el => getComputedStyle(el).backgroundColor)).toBe(WHITE);
     await live.click();   // the fixed Builder message (the mock Builder makes it live-ready)
-    await expect(live).toHaveText('📡 Live game', { timeout: 90_000 });
+    await expect(live).toHaveText('Live game', { timeout: 90_000 }); await icon(live, 'satellite-antenna');
     await expect(live).toHaveAttribute('data-act', 'live-publish');
     await page.mouse.move(5, 5);   // (not the hover shade)
     await expect.poll(() => live.evaluate(el => getComputedStyle(el).backgroundColor)).toBe(YELLOW);

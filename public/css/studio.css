@@ -251,7 +251,9 @@ button.stp-line{cursor:pointer}
 .st-prev-head .seg button{min-height:44px}
 .st-prev-tools{display:flex;gap:6px;margin-inline-start:auto}
 .st-prev-tools .btn-sm{min-height:44px}
-@media (max-width:520px){.st-prev-head .seg{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}.st-prev-head .seg button{padding:0 4px;font-size:.85rem;white-space:nowrap}.st-prev-tools{margin-inline-start:0;width:100%}.st-prev-tools .btn{flex:1}}
+/* Phones: the three tools (As a student, Reload, Full screen, each with its icon) share the row with tighter padding, and
+   wrap to a second line where even that does not fit (320 px), so the page never scrolls sideways. */
+@media (max-width:520px){.st-prev-head .seg{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}.st-prev-head .seg button{padding:0 4px;font-size:.85rem;white-space:nowrap}.st-prev-tools{margin-inline-start:0;width:100%;gap:4px;flex-wrap:wrap}.st-prev-tools .btn{flex:1;padding:0 6px;white-space:nowrap}}
 .st-stage{flex:1;min-height:0;position:relative;overflow:hidden;background:repeating-conic-gradient(var(--card-2) 0 25%,var(--bg) 0 50%) 0 0/24px 24px;border-radius:0 0 var(--r) var(--r)}
 .st-device{position:absolute;left:50%;top:50%;width:var(--w,390px);height:var(--h,720px);transform:translate(-50%,-50%) scale(var(--k,1));border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 0 0 8px var(--brand-ink),0 0 0 9px var(--edge),0 18px 40px rgba(20,20,20,.25)}
 .st-device[data-size="landscape"]{border-radius:18px}
