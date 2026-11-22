@@ -10950,3 +10950,95 @@ a student see it? I am thinking we need to put the steps on the actual board."
   the board, 44 px targets, no sideways scroll, ◀ ▶, All steps, fold, the editor; another teacher's share code; no
   steps, one step; Hebrew; a live square and a pushed board show step 1 only; a new chart locked, a drag pans, its
   wheel holds only Unlock).
+
+## Mistake Hunt: proofreading passages, Phase 1 (22 Nov 2026)
+Owner, on the plan and mockup (a proofreading game in the spirit of passageproof.com, played end to end first): "This is
+brilliant. Go ahead and build", and that a printable worksheet matters (a student sheet with write-on space, Name and
+Date, a small proofreading-marks legend, "find N mistakes", and a separate staff-only answer key, US Letter, black on
+white). **Owner decisions, taken with the plan's recommendations:**
+- **Name:** "Mistake Hunt" is a working name; a **trademark check is still pending** (as for Doodle Hoot).
+- **Entirely our own:** original name, look, code, mistake rules, word lists and passages. Nothing from the source
+  site (its name, branding, text, code or word lists) is used; we did not ask teacher.dev to reuse anything.
+- **Free like Crossword:** the game, saving, My worksheets, print, the key and Assign are free; the AI tools come in
+  Phase 2 (and the costliest ones may go behind the Teacher plan then: still the owner's call).
+- **English passages in v1**, the page in all 13 site languages (passages, wrong words and the rules stay US English).
+- **Students see a hint while playing**, with fixed why lines we wrote for each kind of mistake (no AI in Phase 1).
+
+**What it is.** `seed-games/mistake-hunt.html`, an official Learn game (words, grades 1-8; migration
+`0104_mistake_hunt_shelf`), hand-written like Crossword, outside the Oomba Kit, in the mockup's look (cream cards, Leaf
+and Spark, Bricolage Grotesque, light and dark). A teacher's **passage set** is 1 to 8 passages; each is the teacher's
+correct text with mistakes planted in it by code, never by AI, so the key is always the teacher's own text.
+- **The planter and checker** (`proof-core`, the pure block between `proof-core:begin` and `proof-core:end`; the server
+  runs the same block from the same file through `server/services/proof-core.js`): text in tokens (a word with its
+  punctuation); a mistake is a token range `[a, b)` and the wrong words students see there. **30 kinds in 5 groups**, each
+  with a Common Core Language code (all real codes in `server/standards/ccss-ela.json`) and a why line:
+  - Spelling: commonly misspelled word (L.4.2d), doubled or dropped letter (L.3.2e), spelling with an ending (L.3.2e),
+    ie or ei (L.3.2f);
+  - Word choice: there/their/they're, to/too/two, its/it's, your/you're, sound-alike words, mixed-up words (then/than,
+    affect/effect, a lot/alot; all L.4.1g), could of (L.6.1e, off by default);
+  - Grammar: subject and verb (L.3.1f), irregular past (L.2.1d), verb tense shift (L.5.1d), pronoun case (L.6.1a),
+    adjective or adverb (L.2.1e), irregular plural (L.2.1b);
+  - Sentences: run-on, comma splice, fragment (L.4.1f);
+  - Capitals and punctuation: end punctuation (L.1.2b), capital at the start and capital I (L.K.2a), names and places
+    (L.2.2a), stray capital (L.4.2a, off by default), possessive and contraction apostrophes (L.2.2c), comma in a list
+    (L.5.2a), after an opening part (L.5.2b), before and/but/so (L.4.2c).
+  Our own word lists (misspellings, homophones, confused pairs, irregular verbs and participles, regular verbs, adverbs,
+  irregular plurals), null-prototype lookups (a passage may say "constructor"). Grade presets (K: capitals and end
+  marks; more kinds each grade). Planting is seeded (the same text, kinds, count and seed plant the same mistakes),
+  kinds take turns, a sentence with fewer mistakes goes first, two mistakes never overlap or (when there is room) touch,
+  and a mistake stays inside one paragraph, at most 4 words. **Re-roll** keeps pinned mistakes; **re-roll one**,
+  **remove**, **pin**; a teacher **selects words to mark their own**: the kinds that fit there (each with what students
+  would see), or wrong words they type with a kind that takes that many words. **Checking:** a mistake counts when the
+  student's words over it read as the teacher's text (spaces and curly quotes aside; a run-on or comma splice also
+  mended with "; " or ", and/but/so"); a correct word the student changed is reported ("That doesn't cost you
+  anything, but take another look"), never counted.
+- **The builder** (calm, as the owner asks): the set's name, Save, Print and one ⋯ More (Try it as a student, What
+  students get, Start a new set); a "Mistakes to plant" card (grade, a chip a group, More kinds with every kind and its
+  code, how many, Plant / Re-roll); passage tabs; the passage with its mistakes highlighted and numbered, then the list
+  (wrong → right, the why line, the kind and code, a ⋯ menu each: Pin, Re-roll this one, Remove) and an answer key
+  preview. **Paste, or upload** a .txt (read in the page) or a Word or PDF file (`BRB.textFromDoc`, new: the text read on
+  the server with Crossword's readers and limits, 2 MB, 5 pages, 10 files a day, **no AI**; grown-ups who may host, never
+  a kid or a student; the family grown-up fence refuses it). A long text is split into passages at paragraph ends. The
+  draft saves itself to the game save ("Keep working on my draft").
+- **Saving and sharing:** `game_sets` through the existing routes (`SET_GAMES` gains `mistake-hunt` with
+  `cleanProofItems`: strict keys, 1 to 8 passages, 40 to 1,500 characters each, 1 to 15 mistakes, 20,000 characters in
+  all; the title, the text, every wrong word and a why line through the site's text filter, and a text the filter or the
+  game's tidying would change is refused, never changed, since the mistakes point into it; every mistake by the same
+  rules). The class code, link, QR code, Copy and Assign to class (`BRB.assign`, a one-step lesson). **My worksheets**
+  (#492/#493's list: open in the builder under the same code, Print, ⋯ Answer key, Assign, Copy link, Duplicate,
+  Rename, Delete with an inline confirm). Labels: "Inside a volcano: 2 passages, 7 mistakes".
+- **Students** (phone first): tap a word, a sheet opens with the word in a box (Fix, Put it back, "Next word too" for a
+  fix across two words, as a run-on needs); fixes show struck with the new words in green. **Check** ("You found 4 of 6.
+  Keep going!", the sentences that still hold one, a changed correct word flagged); **Hint** lights the sentence ("A
+  hint for the yellow sentence" and what to look at), then the kind and its why line; **Show answers** after a check when
+  the teacher allows it. What students are told first: how many, how many of each kind, or nothing. Work is kept in the
+  game save per set (not reused if the teacher changed the set). The end card (stars, each passage's count) sends one
+  `BRB.gameOver({ won: true, score: % found })`: a lesson step done, the Classroom completion grade, as Crossword.
+  Keyboard: every word is a button, Enter fixes, Escape closes; screen reader labels; 44 px buttons; the page's chrome
+  follows the language's direction and the passage stays English, left to right.
+- **Print** (`services/proof-print.js`, `BRB.print`): a worksheet a passage (kicker, Name and Date, title, the
+  teacher's note, directions with the count, a legend of 8 proofreading marks drawn here, the wrong text double spaced,
+  "I found ___ of N mistakes", the class code and link); then, for school staff only (403 `key` for anyone else), a key
+  a passage (each fix in place, bold and numbered, and the list: wrong → right · kind (code) and the why line). Words
+  from the game's own tables in the viewer's language. CSS in `public/css/app.css` (`.mhp-*`).
+- **Standards:** a lesson step that opens a set (`chapter=s-…`) practises its mistakes' Common Core codes
+  (`official-tags.js SET_CODES`, registered by `game-sets.js`; `stepGameCodes` / `stepGameCover`), so the class
+  Standards tab counts them when a student finishes (the tab itself is still unlinked from the class page, 12 Nov).
+- **Read aloud: deferred.** The site's TTS speaks only lines registered in a game's word table; passages are the
+  teacher's text, so a "proof" context (by passage and sentence) is Phase 4. Registered as silent in `tts-lines.js`.
+- **Not in Phase 1, seamed:** Phase 2: Power with AI passages, "Check my passage" and AI why lines (the set already
+  keeps `m[].y`, a why line of the teacher's own, filtered, 140 characters; the page and print use it before the fixed
+  line), and a graded `proofread` lesson step (the plan's `step_progress` shape; the checker already returns found,
+  missed and changed per mistake). Phase 3: Oomba chat on a set and class insights (counts per kind come from the same
+  mistakes and their codes). Later: a different version per student (the seed is already the planter's input), a time
+  limit, a live class mode.
+- **Owner decisions still open:** the name's trademark check; which AI tools (if any) go behind the Teacher plan in
+  Phase 2; whether Phase 2's graded step replaces the game step; Spanish passages; whether students may see the why
+  line after every miss or only once answers are released (Phase 1: in the hint's second step); a live class mode.
+- **Tests:** `tests/unit/proof-core.test.js` (every kind plants and its key fixes the passage back exactly, every
+  candidate; determinism; no overlap; pin, re-roll, re-roll one, remove, the teacher's own; checking; the text filter;
+  the server's copy; the file, languages and registration), `tests/unit/proof-sets.test.js` (the cleaner, save, find by
+  code, My worksheets routes, the frame's flags, print and the staff-only key, Hebrew, text from a document, the SDK,
+  standards), `tests/e2e/mistake-hunt.spec.js` (Chromium: a teacher builds, marks, pins, saves, prints the sheet and key
+  to a Letter PDF and finds it in My worksheets; a student on an iPhone 13 plays by class code to the end card). The
+  cover (`scripts/covers/mistake-hunt.recipe.js`) and share picture.
