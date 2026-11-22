@@ -439,7 +439,7 @@ export function push(u, id, boardId) {
   const room = json(s.room || '{}', {}) || {}, lay = layoutOf(room), sh = squareHeightFor(s.tool, migrate(s.tool, o), lay);
   const next = { ...room, layout: { ...lay, sh: Math.max(lay.sh || 0, sh) }, ...(steps && steps.length ? { __steps: steps } : {}) };
   q.run('UPDATE manip_sessions SET room=?, room_at=? WHERE id=?', JSON.stringify(next), now(), s.id);
-  if (steps && steps.length) LIVE.setStep(s.id, 0);
+  if (steps && steps.length) { posOf(s); LIVE.setStep(s.id, 0); keepStep(s.id); }
   // Students get it without the teacher's answers (never sent to a student).
   q.run('UPDATE manip_sessions SET pushed_state=?, pushed_at=? WHERE id=?', JSON.stringify({ tool: b.tool, code: b.code, state: withoutKeys(JSON.stringify(o)) }), now(), s.id);
   LIVE.publish(s.id, { t: 'dirty' });
@@ -528,21 +528,45 @@ export function roomFor(u, id) {
   // The deck: the teacher gets every step and where each student is; a student only the steps up to their own (a
   // future step is never sent), and the teacher's area without its steps.
   const tState = json(s.room || '{}', {}) || {}, deck = deckFor(s, tState, who);
+  delete tState[DECK_AT];
   if (who.role !== 'teacher' && tState.__steps) delete tState.__steps;
   if (who.role !== 'teacher' && Array.isArray(tState.objects)) Object.assign(tState, JSON.parse(withoutKeys(tState)));
   return { role: who.role, me: who.key, id: s.id, code: who.role === 'teacher' ? s.code : undefined, tool: s.tool, title: s.title, status: s.status,
-    className: c ? c.name : '', teacher: { state: who.role === 'teacher' ? s.room || '{}' : JSON.stringify(tState), updatedAt: s.room_at || 0 }, areas, showWork: !!s.show_work, deck,
+    className: c ? c.name : '', teacher: { state: JSON.stringify(tState), updatedAt: s.room_at || 0 }, areas, showWork: !!s.show_work, deck,
     pushed: who.role === 'student' ? s.pushed_state || null : !!s.pushed_state, pushedAt: s.pushed_at || 0,
     bring: LIVE.bringOf(s.id), cursors: LIVE.cursorsOf(s.id), hands: handsFor(s.id, who), ...(who.role === 'teacher' ? { checks: LIVE.checksOf(s.id) } : {}) };
 }
+/** The deck's position kept with the session: the teacher's area (manip_sessions.room) under DECK_AT, the server's own
+ *  key (a page never sets it, and none is sent one). Written each time the step, the pace switch or a student's own step
+ *  changes, so an ended room that is reopened (or a room after the server restarted) is back on the same step. */
+export const DECK_AT = '__deckAt';
+function savedStep(s) {
+  const at = (json(s.room || '{}', {}) || {})[DECK_AT];
+  if (!at || typeof at !== 'object') return { cur: 0, pace: false, mine: new Map() };
+  const mine = new Map(Object.entries(at.mine && typeof at.mine === 'object' ? at.mine : {}).filter(([, i]) => Number.isInteger(i) && i >= 0));
+  return { cur: Number.isInteger(at.cur) && at.cur >= 0 ? at.cur : 0, pace: !!at.pace, mine };
+}
+/** Where the deck is now: the running room's (memory), loaded from the session first if it has none yet. */
+function posOf(s) {
+  if (LIVE.stepKnown(s.id)) return LIVE.stepOf(s.id);
+  const saved = savedStep(s);
+  return s.status === 'active' ? LIVE.loadStep(s.id, saved) : saved;
+}
+/** Keep the running room's position with the session (see DECK_AT). The room's change time stays: nothing to redraw. */
+function keepStep(sid) {
+  const s = getSession(sid); if (!s) return;
+  const pos = LIVE.stepOf(sid), room = json(s.room || '{}', {}) || {};
+  room[DECK_AT] = { cur: pos.cur, pace: !!pos.pace, mine: Object.fromEntries(pos.mine) };
+  q.run('UPDATE manip_sessions SET room=? WHERE id=?', JSON.stringify(room), sid);
+}
 /** Where the deck is: the teacher's step, and a student's own while they go at their own pace (clamped to the deck). */
 export function stepIndex(s, steps, key) {
-  const pos = LIVE.stepOf(s.id), last = Math.max(0, steps.length - 1);
+  const pos = posOf(s), last = Math.max(0, steps.length - 1);
   const i = pos.pace && key !== 't' && pos.mine.has(String(key)) ? pos.mine.get(String(key)) : pos.cur;
   return Math.min(Math.max(0, i), last);
 }
 function deckFor(s, tState, who) {
-  const steps = stepsOf(tState), pos = LIVE.stepOf(s.id);
+  const steps = stepsOf(tState), pos = posOf(s);
   if (!steps.length) return { total: 0, cur: 0, pace: pos.pace, list: [] };
   if (who.role === 'teacher') {
     const mine = {}; for (const w of q.all('SELECT user_id FROM manip_work WHERE session_id=?', s.id)) mine[w.user_id] = stepIndex(s, steps, w.user_id);
@@ -567,17 +591,17 @@ export function step(u, id, { dir = 0, to = null } = {}) {
   const steps = stepsOf(json(s.room || '{}', {}) || {}); if (!steps.length) return fail('notFound');
   const now0 = stepIndex(s, steps, who.key), last = steps.length - 1;
   const next = Math.min(last, Math.max(0, to !== null && Number.isFinite(+to) ? Math.round(+to) : now0 + Math.sign(+dir || 0)));
-  if (who.role === 'teacher') { LIVE.setStep(s.id, next); return ok({ cur: next }); }
-  if (!LIVE.stepOf(s.id).pace) return fail('notFound');
+  if (who.role === 'teacher') { LIVE.setStep(s.id, next); keepStep(s.id); return ok({ cur: next }); }
+  if (!posOf(s).pace) return fail('notFound');
   if (!allow(`mstep:${s.id}:${who.key}`, STEP_LIMIT, 60e3)) return fail('slow');
-  LIVE.setMine(s.id, who.key, next);
+  LIVE.setMine(s.id, who.key, next); keepStep(s.id);
   return ok({ cur: next });
 }
 /** "Students go at their own pace": the teacher only. Off snaps everyone back to the teacher's step. */
 export function pace(u, id, on) {
   const s = getSession(id), who = roomRole(u, s);
   if (!who || who.role !== 'teacher') return fail('notFound');
-  LIVE.setPace(s.id, !!on);
+  posOf(s); LIVE.setPace(s.id, !!on); keepStep(s.id);
   return ok();
 }
 /** A square's notes or texts with their authors decided here: in the teacher's area all are the teacher's; the teacher
@@ -644,6 +668,8 @@ export function saveArea(u, id, key, state) {
   lockedBy(prev, next, key, who);
   // The room's grown sizes are the server's to set (a session from a board, a push): never from a page.
   if (key === 't') { if (prev.layout) next.layout = prev.layout; else delete next.layout; } else delete next.layout;
+  // The deck's position too (DECK_AT): kept as it was, never taken from a page.
+  if (key === 't' && prev[DECK_AT]) next[DECK_AT] = prev[DECK_AT]; else delete next[DECK_AT];
   const text = JSON.stringify(next);
   if (key === 't') q.run('UPDATE manip_sessions SET room=?, room_at=? WHERE id=?', text, now(), s.id);
   else q.run('UPDATE manip_work SET state=?, updated_at=? WHERE session_id=? AND user_id=?', text, now(), s.id, String(key));

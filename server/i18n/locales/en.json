@@ -3771,6 +3771,7 @@
       "totals": "Students see totals",
       "check": "Check my answers",
       "checkResult": "{right} of {total} right. Try again on the others.",
+      "checkAll": "{total, plural, one {All # right!} other {All # right!}}",
       "checkScore": "{right}/{total} ✓",
       "checksSwitch": "Students can check answers",
       "checksTitle": "Answers checked",

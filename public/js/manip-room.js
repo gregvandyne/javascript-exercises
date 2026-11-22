@@ -11,13 +11,14 @@
 import { t, api, toast, esc, copyText } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { toolOf, roomLayout, layoutOf, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H } from '/js/manip-data.js';
-import { WORLD, migrate, fitInto, newBoard, objectTool, kindOf, objSize, objRect, boxesOf, bbox, spotIn, slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, OBJ_MAX, OBJ_MAX_SQUARE, S_MIN, S_MAX,
+import { WORLD, migrate, fitInto, newBoard, objectTool, kindOf, objSize, objRect, boxesOf, bbox, spotIn, slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, OBJ_MAX, OBJ_MAX_SQUARE, S_MIN, S_MAX,
   snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, freeResize } from '/js/manip-board.js';
-import { inChart, sameValueHome, placeAtHome } from '/js/manip-pv.js';
+import { inChart, paletteAdd } from '/js/manip-pv.js';
 import { openWheel, closeWheel, startHold, shake, SLOP } from '/js/manip-wheel.js';
 
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
-const NOTE_MAX = 12, Z_MIN = 0.12, Z_MAX = 2.5;
+// Z_FIT: how far Fit may zoom out (below Z_MIN) so a big class still shows whole on a phone, between its bars.
+const NOTE_MAX = 12, Z_MIN = 0.12, Z_MAX = 2.5, Z_FIT = 0.04;
 let R = null;
 const clamp = (v, lo, hi) => Math.min(Math.max(lo, v), Math.max(lo, hi));
 const parse = (s, d) => { try { return typeof s === 'string' ? JSON.parse(s) : s || d; } catch { return d; } };
@@ -120,7 +121,9 @@ async function checkMine() {
   const answers = {}; for (const o of myBoxes()) answers[o.id] = String(o.st.ans || '');
   try {
     const r = await api(`/api/manipulatives/live/${R.id}/check`, { method: 'POST', body: { answers } });
-    R.checked = r.results; renderArea(R.me); toast(t('js.manip-room.checkResult', { right: r.right, total: r.total }));
+    // Everything right: a cheer, never "Try again on the others" (there are none); else how many and a nudge.
+    R.checked = r.results; renderArea(R.me);
+    toast(r.right >= r.total ? t('js.manip-room.checkAll', { total: r.total }) : t('js.manip-room.checkResult', { right: r.right, total: r.total }));
   } catch (e) { toast(e.message, { bad: true }); }
 }
 /** Raised hands changed (the socket, or a read of the room): badges, the student's button, the teacher's list. */
@@ -349,7 +352,7 @@ function applyView() {
   const pct = document.querySelectorAll('.rm-pct'); for (const p of pct) p.textContent = `${Math.round(R.view.z * 100)}%`;
 }
 function zoomAt(f, sx, sy) {
-  const z = clamp(R.view.z * f, Z_MIN, Z_MAX), k = z / R.view.z;
+  const z = clamp(R.view.z * f, Math.min(Z_MIN, R.view.z), Z_MAX), k = z / R.view.z;   // never further out than Fit went
   R.view = { x: sx - (sx - R.view.x) * k, y: sy - (sy - R.view.y) * k, z };
   applyView();
 }
@@ -358,7 +361,7 @@ function fitRect(rect, pad = 24) {
   const s = size(), top = (document.getElementById('rm-bar')?.offsetHeight || 60) + 24, left = !phone() ? (document.getElementById('rm-pal')?.offsetWidth || 0) + 32 : 8;
   const bottom = phone() ? (document.getElementById('rm-pal')?.offsetHeight || 0) + 16 : 16;
   const w = Math.max(100, s.w - left - 16), h = Math.max(100, s.h - top - bottom);
-  const z = clamp(Math.min(w / (rect.w + pad * 2), h / (rect.h + pad * 2)), Z_MIN, Z_MAX);
+  const z = clamp(Math.min(w / (rect.w + pad * 2), h / (rect.h + pad * 2)), Z_FIT, Z_MAX);
   R.view = { z, x: left + (w - rect.w * z) / 2 - rect.x * z, y: top + (h - rect.h * z) / 2 - rect.y * z };
   applyView();
 }
@@ -433,21 +436,22 @@ function renderBar() {
   requestAnimationFrame(() => { const rm = document.getElementById('rm'); if (rm && el) rm.style.setProperty('--rm-bar-h', `${el.offsetHeight}px`); });
 }
 const handsLabel = () => (R.hands.length ? ` ${t('js.manip-room.handsUpN', { n: R.hands.length })}` : ` ${t('js.manip-room.handsUpNone')}`);
-/** The teacher's ⋯ menu: everything that isn't needed every minute. */
+/** The teacher's ⋯ menu: everything that isn't needed every minute. Its body scrolls (the "Answers checked" list grows
+ *  with the class); the session's action (End session, or Reopen room) stays pinned at its foot, always in reach. */
 function renderMenu() {
   const el = document.getElementById('rm-menu'); if (!el) return;
   if (R.role !== 'teacher' || !R.menuOpen) { el.innerHTML = ''; return; }
   const room = R.room, live = room.status === 'active', d = deck();
-  el.innerHTML = `<div class="rm-menu panel" role="menu">
+  el.innerHTML = `<div class="rm-menu panel" role="menu"><div class="rm-menu-body">
     <div class="rm-mi rm-codeline">${esc(t('js.manip-room.joinCode', { code: room.code || '' }))}${btn('btn btn-sm', 'data-rtool="copycode"', esc(t('js.manip-room.copy')))}</div>
     ${btn('rm-mi rm-switch', `role="switch" aria-checked="${!room.showWork}" data-rtool="showwork"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.hideWork'))}`)}
     ${live ? btn('rm-mi rm-switch', `role="switch" aria-checked="${checksOn()}" data-rtool="checks"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.checksSwitch'))}`) : ''}
-    ${Object.keys(R.room.checks || {}).length ? `<div class="rm-mi rm-checklist"><b>${esc(t('js.manip-room.checksTitle'))}</b><ul>${Object.entries(R.room.checks).map(([k, c]) => { const A = R.areas.get(k); return A ? `<li><span class="rm-dot" style="background:${esc(A.color)}"></span>${esc(A.name)} <b>${esc(t('js.manip-room.checkScore', { right: c.right, total: c.total }))}</b></li>` : ''; }).join('')}</ul></div>` : ''}
+    ${Object.keys(R.room.checks || {}).length ? `<div class="rm-checklist" role="group" aria-label="${esc(t('js.manip-room.checksTitle'))}"><b>${esc(t('js.manip-room.checksTitle'))}</b><ul>${Object.entries(R.room.checks).map(([k, c]) => { const A = R.areas.get(k); return A ? `<li><span class="rm-dot" style="background:${esc(A.color)}"></span>${esc(A.name)} <b>${esc(t('js.manip-room.checkScore', { right: c.right, total: c.total }))}</b></li>` : ''; }).join('')}</ul></div>` : ''}
     ${live ? btn('rm-mi rm-switch', `role="switch" aria-checked="${(R.areas.get('t') || { st: {} }).st.totals !== false}" data-rtool="totals"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.totals'))}`) : ''}
     ${d.total > 1 && live ? btn('rm-mi rm-switch', `role="switch" aria-checked="${!!d.pace}" data-rtool="pace"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.pace'))}`) : ''}
     ${live ? btn('rm-mi', 'data-rtool="push"', `${iconHtml('📤', { size: 18 })} ${esc(t('js.manip-room.push'))}`) : ''}
-    <a class="rm-mi" href="/api/manipulatives/live/${esc(R.id)}/export.pdf" download>${iconHtml('📄', { size: 18 })} ${esc(t('js.manip-room.pdf'))}</a>
-    ${live ? btn('rm-mi bad', 'data-rtool="end"', `${iconHtml('⏹', { size: 18 })} ${esc(t('js.manip-room.end'))}`) : btn('rm-mi', 'data-rtool="reopen"', `${iconHtml('🔄', { size: 18 })} ${esc(t('js.manip-room.reopen'))}`)}</div>`;
+    <a class="rm-mi" href="/api/manipulatives/live/${esc(R.id)}/export.pdf" download>${iconHtml('📄', { size: 18 })} ${esc(t('js.manip-room.pdf'))}</a></div>
+    <div class="rm-menu-foot">${live ? btn('rm-mi bad', 'data-rtool="end"', `${iconHtml('⏹', { size: 18 })} ${esc(t('js.manip-room.end'))}`) : btn('rm-mi', 'data-rtool="reopen"', `${iconHtml('🔄', { size: 18 })} ${esc(t('js.manip-room.reopen'))}`)}</div></div>`;
 }
 const handBtn = cls => btn(`${cls} rm-hand${handUp(R.me) ? ' on' : ''}`, `data-rtool="hand" aria-pressed="${handUp(R.me)}" aria-label="${esc(t('js.manip-room.raiseHand'))}"`, `${iconHtml('✋', { size: 18 })} <span class="rm-handt">${esc(handUp(R.me) ? t('js.manip-room.lowerHand') : t('js.manip-room.raiseHand'))}</span>`);
 const initials = name => String(name).split(/\s+/).map(w => [...w][0] || '').join('').slice(0, 2).toUpperCase() || '?';
@@ -460,14 +464,11 @@ function palette(A) {
 }
 /** A new piece in the first free spot of the area: never on a piece, an object or a note already there. */
 function place(A, d) {
-  const ws = workSize(A);
-  // The block before it went into a chart's column and this one is worth the same: into that column too.
-  const home = sameValueHome(R.room.tool, A.st, A.lastAdd, d);
-  if (home) { const q = R.deps.mkPiece(d, 0, 0); placeAtHome(home, [q], ws); A.lastAdd = { id: q.id, runX: q.x }; return q; }
-  const at = nextPieceSpot(R.room.tool, A.st, d, { x: 0, y: 0, w: ws.w, h: ws.h }, A.lastAdd);
-  const p = R.deps.mkPiece(d, Math.min(at.x, Math.max(0, ws.w - d.w)), Math.min(at.y, Math.max(0, ws.h - d.h)));
-  A.lastAdd = { id: p.id, runX: at.runX };
-  return p;
+  // As on the solo board (manip-pv.js paletteAdd): the last block's column when this one is worth the same, else the
+  // square's next free spot (never on a chart), else the chart's column for its value.
+  const ws = workSize(A), r = paletteAdd(R.room.tool, A.st, d, { x: 0, y: 0, w: ws.w, h: ws.h }, A.lastAdd, R.deps.mkPiece, ws);
+  A.lastAdd = r.last;
+  return r.p;
 }
 /** The selected object of an area (else its last object of the tool's own kind): what settings change. */
 const tgt = A => R.deps.target(R.room.tool, A.st, R.osel && R.osel.key === A.key ? R.osel.id : null);
@@ -497,7 +498,8 @@ function bind() {
   el.addEventListener('pointerdown', down);
   el.addEventListener('pointermove', move);
   el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
-  el.addEventListener('wheel', e => { e.preventDefault(); const r = el.getBoundingClientRect(); zoomAt(Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+  // The wheel zooms the board, except over a list that scrolls (the ⋯ menu's "Answers checked", raised hands).
+  el.addEventListener('wheel', e => { if (e.target.closest('.rm-menu, .rm-handlist')) return; e.preventDefault(); const r = el.getBoundingClientRect(); zoomAt(Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
   el.addEventListener('click', click);
   el.addEventListener('change', e => {
     const s = e.target.closest('[data-set]'); if (!s || !e.target.closest('#rm-pal')) return;

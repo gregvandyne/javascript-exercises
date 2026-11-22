@@ -1,6 +1,7 @@
 // The moving parts of a manipulatives live room that are never stored (docs/decisions.md "Virtual math manipulatives:
 // the shared room"): everyone's cursor, raised hands, the deck's current step, the teacher's last "Bring everyone to me", and who is listening.
-// Memory only: nothing here is written to the database or to a log line. A cursor goes when its socket closes, after
+// Memory only: nothing here is written to the database or to a log line (the deck's step is also kept with the session,
+// by services/manipulatives.js: see stepOf). A cursor goes when its socket closes, after
 // IDLE_MS without a move, or when the session ends (forget); the whole room goes with its last listener.
 export const IDLE_MS = 10e3;
 export const TICK_MS = 100;
@@ -46,12 +47,22 @@ export function connected(sid, key, delta) {
   r.conns.delete(k); dropCursor(sid, k);
   if (r.hands.has(k)) { r.hands.delete(k); publish(sid, { t: 'hands', list: handsOf(sid) }); }
 }
-/** The deck's position (live, never stored): the teacher's step, whether students go at their own pace, and each
- *  student's own step while they do. */
+/** The deck's position: the teacher's step, whether students go at their own pace, and each student's own step while
+ *  they do. Held here while the room runs; services/manipulatives.js also keeps a copy with the session (so a reopened
+ *  room, or one after a restart, is back on the same step) and hands it over with loadStep before the first read.
+ *  `known`: this room's position was set or loaded (else it is the default and the stored one should be loaded). */
 export const stepOf = sid => { const r = rooms.get(sid); return r ? r.step : { cur: 0, pace: false, mine: new Map() }; };
-export function setStep(sid, cur) { const r = roomOf(sid); r.step.cur = cur; if (!r.step.pace) r.step.mine.clear(); publish(sid, { t: 'step' }); }
-export function setPace(sid, on) { const r = roomOf(sid); r.step.pace = !!on; r.step.mine.clear(); publish(sid, { t: 'step' }); }
-export function setMine(sid, key, i) { const r = roomOf(sid); r.step.mine.set(String(key), i); publish(sid, { t: 'step' }); }
+export const stepKnown = sid => { const r = rooms.get(sid); return !!(r && r.step.known); };
+/** The stored position ({ cur, pace, mine: { key: step } }), unless this room already has one. -> the position */
+export function loadStep(sid, pos = {}) {
+  const r = roomOf(sid); if (r.step.known) return r.step;
+  const mine = pos.mine instanceof Map ? pos.mine : new Map(Object.entries(pos.mine && typeof pos.mine === 'object' ? pos.mine : {}));
+  r.step = { cur: Math.max(0, Math.round(Number(pos.cur) || 0)), pace: !!pos.pace, mine, known: true };
+  return r.step;
+}
+export function setStep(sid, cur) { const r = roomOf(sid); r.step.known = true; r.step.cur = cur; if (!r.step.pace) r.step.mine.clear(); publish(sid, { t: 'step' }); }
+export function setPace(sid, on) { const r = roomOf(sid); r.step.known = true; r.step.pace = !!on; r.step.mine.clear(); publish(sid, { t: 'step' }); }
+export function setMine(sid, key, i) { const r = roomOf(sid); r.step.known = true; r.step.mine.set(String(key), i); publish(sid, { t: 'step' }); }
 /** The teacher's "Bring everyone to me": the view (a room rectangle) and a number that grows each time. */
 export function setBring(sid, view) { const r = roomOf(sid); r.bring = { seq: r.bring.seq + 1, view }; publish(sid, { t: 'bring', ...r.bring }); return r.bring.seq; }
 export const bringOf = sid => (rooms.get(sid) || { bring: { seq: 0, view: null } }).bring;

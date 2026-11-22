@@ -216,7 +216,15 @@
 main.rm-main{max-width:none;padding:0}
 body:has(main.rm-main) .foot{display:none}
 html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavior:none}
-.rm{position:relative;height:calc(100vh - var(--top));height:calc(100dvh - var(--top));overflow:hidden;overflow:clip;touch-action:none;user-select:none;-webkit-user-select:none;outline:0;
+/* The room fills what is left of the screen under the site's bar: main is a column as tall as that, and whatever sits
+   above the room in it (the "Teaching tools" bar, a notice) takes its own height first, so the room is never pushed
+   past the bottom of the screen (Fit then shows every square). On a phone the tab bar at the bottom is left out too. */
+main.rm-main{display:flex;flex-direction:column;height:calc(100vh - var(--top));height:calc(100dvh - var(--top));overflow:hidden}
+main.rm-main>*{flex:none}
+main.rm-main>#manip{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+main.rm-main .fg-tools{margin-bottom:0}
+@media (max-width:820px){main.rm-main{height:calc(100vh - var(--top) - var(--tabbar) - env(safe-area-inset-bottom));height:calc(100dvh - var(--top) - var(--tabbar) - env(safe-area-inset-bottom))}}
+.rm{position:relative;flex:1 1 auto;min-height:0;overflow:hidden;overflow:clip;touch-action:none;user-select:none;-webkit-user-select:none;outline:0;
   background-color:var(--bg);background-image:radial-gradient(circle,color-mix(in srgb,var(--accent) 28%,transparent) 1.2px,transparent 1.3px);background-size:28px 28px;cursor:grab}
 .rm.inking .rm-area.editable{cursor:crosshair}
 .rm-world{position:absolute;left:0;top:0;transform-origin:0 0}
@@ -275,10 +283,14 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
 .rm-back{position:absolute;z-index:70;left:50%;transform:translateX(-50%);bottom:24px;box-shadow:0 4px 0 var(--accent-press),var(--shadow-lg)}
 .rm .mp-viewer,.manip .mp-viewer{cursor:default}
 @media (max-width:899px){
-  .rm{height:calc(100vh - var(--top) - var(--tabbar));height:calc(100dvh - var(--top) - var(--tabbar))}
   .rm-hidephone{display:none!important}
   .rm-phoneonly{display:inline-flex!important}
   .rm-bar{left:8px;right:8px;top:8px;padding:6px 10px;flex-wrap:nowrap}
+  /* The teacher's bar on a phone: the step buttons get a line of their own under the rest, so the ⋯ menu stays on screen. */
+  .rm-teacher .rm-bar{flex-wrap:wrap;row-gap:6px}
+  .rm-teacher .rm-bar h1{flex:1 1 0}
+  .rm-teacher .rm-bar .rm-grow{display:none}
+  .rm-teacher .rm-steps{order:9;flex:1 1 100%;justify-content:center}
   .rm-bar .btn{min-height:40px;padding:0 12px;font-size:.9rem}
   .rm-zoomdesk{display:none}
   .rm-minifloat{right:8px;bottom:auto;top:calc(var(--rm-bar-h,52px) + 14px)}
@@ -340,7 +352,14 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
 .rm-steps{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
 .rm-stepnow{white-space:nowrap}
 .rm-menubtn{min-width:48px;font-size:1.3rem;letter-spacing:.05em}
-.rm-menu{position:absolute;z-index:76;right:16px;top:calc(var(--rm-bar-h,60px) + 24px);width:min(320px,calc(100% - 24px));display:flex;flex-direction:column;gap:4px;padding:10px;cursor:default}
+/* The ⋯ menu never runs past the bottom of the room: it is as tall as there is room for; its body (the switches and the
+   "Answers checked" list, which grows with the class) scrolls inside it, and the session's action (End session or
+   Reopen room) is pinned at its foot, always in reach. */
+.rm-menu{position:absolute;z-index:76;right:16px;top:calc(var(--rm-bar-h,60px) + 24px);width:min(320px,calc(100% - 24px));max-height:calc(100% - var(--rm-bar-h,60px) - 36px);display:flex;flex-direction:column;padding:10px;cursor:default}
+.rm-menu-body{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;display:flex;flex-direction:column;gap:4px}
+.rm-menu-body>*{flex:none}
+.rm-menu-foot{flex:none;margin-top:6px;padding-top:6px;border-top:1px solid var(--line);display:flex;flex-direction:column}
+.rm-checklist{padding:6px 12px}
 .rm-mi{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:0;border-radius:var(--r-sm);background:transparent;color:var(--text);font:700 .95rem var(--font);text-align:start;cursor:pointer;text-decoration:none}
 .rm-mi:hover{background:var(--hover);text-decoration:none}
 .rm-mi.bad{color:var(--danger)}

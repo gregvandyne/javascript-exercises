@@ -3506,7 +3506,9 @@
       "allSteps": "Tutti i passaggi",
       "thisStep": "Solo questo passaggio",
       "hideSteps": "Nascondi i passaggi",
-      "showSteps": "Mostra i passaggi"
+      "showSteps": "Mostra i passaggi",
+      "checkResult": "{right} su {total} giuste. Riprova con le altre.",
+      "checkAll": "{total, plural, one {Tutto giusto!} other {Tutte e # giuste!}}"
     },
     "figures-editor": {
       "undo": "Annulla",

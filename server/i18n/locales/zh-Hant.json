@@ -3505,7 +3505,9 @@
       "allSteps": "所有步驟",
       "thisStep": "只看這一步",
       "hideSteps": "隱藏步驟",
-      "showSteps": "顯示步驟"
+      "showSteps": "顯示步驟",
+      "checkResult": "{total} 題答對 {right} 題。再試試其他題。",
+      "checkAll": "{total, plural, other {# 題全部答對！}}"
     },
     "figures-editor": {
       "undo": "復原",

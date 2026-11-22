@@ -3505,7 +3505,9 @@
       "allSteps": "すべてのステップ",
       "thisStep": "このステップだけ",
       "hideSteps": "ステップをかくす",
-      "showSteps": "ステップを見る"
+      "showSteps": "ステップを見る",
+      "checkResult": "{total} 問中 {right} 問正解。のこりをもう一度やってみよう。",
+      "checkAll": "{total, plural, other {# 問ぜんぶ正解！}}"
     },
     "figures-editor": {
       "undo": "元に戻す",

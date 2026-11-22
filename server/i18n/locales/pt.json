@@ -3506,7 +3506,9 @@
       "allSteps": "Todos os passos",
       "thisStep": "Só este passo",
       "hideSteps": "Ocultar os passos",
-      "showSteps": "Mostrar os passos"
+      "showSteps": "Mostrar os passos",
+      "checkResult": "{right} de {total} certas. Tente de novo as outras.",
+      "checkAll": "{total, plural, one {Tudo certo!} other {Todas as # certas!}}"
     },
     "figures-editor": {
       "undo": "Desfazer",
