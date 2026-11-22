@@ -3670,7 +3670,8 @@
         "gridTitle": "Im Koordinatensystem",
         "addGrid": "Die Figur im Koordinatensystem zum Arbeitsblatt hinzufügen",
         "drawInstead": "Stattdessen auf einem Raster zeichnen"
-      }
+      },
+      "choiceNote": "Das ist eine Multiple-Choice-Frage. Ihre Optionen und die richtige legst du im Arbeitsblatt fest."
     },
     "figures-sheet": {
       "title": "Titel des Arbeitsblatts",
@@ -3726,7 +3727,19 @@
       "assignNoClasses": "Du unterrichtest noch keine Klasse. Lege zuerst eine Klasse an, dann weise zu.",
       "assignDone": "{class} zugewiesen.",
       "assignSee": "So sehen es die Schüler",
-      "assignProgress": "Fortschritt ansehen"
+      "assignProgress": "Fortschritt ansehen",
+      "answerType": "Antwort",
+      "typeNumber": "Zahl",
+      "typeChoice": "Multiple Choice",
+      "options": "Optionen (markiere die richtige)",
+      "optionN": "Option {letter} von Frage {n}",
+      "rightN": "Option {letter} ist die richtige Antwort",
+      "markRight": "Die richtige Antwort",
+      "addOption": "Option hinzufügen",
+      "removeOption": "Option {letter} entfernen",
+      "fromFigure": "Die richtige Option wird aus der Abbildung ermittelt. Ändere eine Option oder markiere eine andere, um selbst zu wählen.",
+      "needTwo": "Schreibe mindestens 2 Optionen.",
+      "needRight": "Markiere die richtige Option."
     }
   },
   "favorites": {
@@ -12339,7 +12352,9 @@
       "crumb": "Drucken",
       "sheetOnly": "Schülerblatt",
       "withKey": "Mit Lösungen",
-      "print": "Drucken"
+      "print": "Drucken",
+      "options": "Optionen",
+      "rightOne": "(die richtige Antwort)"
     },
     "errors": {
       "notFound": "Das gibt es hier nicht.",
@@ -12354,7 +12369,8 @@
       "noGen": "Für diese Figur gibt es noch keinen Fragengenerator.",
       "name": "Gib ihm zuerst einen Namen.",
       "brief": "Beschreibe das Arbeitsblatt zuerst in ein paar Worten.",
-      "names": "Lass Namen von Schülerinnen und Schülern aus der Beschreibung weg: Namen gehen nie an die KI."
+      "names": "Lass Namen von Schülerinnen und Schülern aus der Beschreibung weg: Namen gehen nie an die KI.",
+      "sameChoices": "Zwei Optionen sind gleich. Mach jede anders."
     },
     "kinds": {
       "numberLine": {
@@ -12695,7 +12711,10 @@
       "rightOf": "{right} von {total} richtig",
       "answersTable": "Die Antworten aller Schüler",
       "noneYet": "Noch hat niemand abgegeben.",
-      "questions": "{count, plural, one {# Frage zu einer Abbildung} other {# Fragen zu Abbildungen}}"
+      "questions": "{count, plural, one {# Frage zu einer Abbildung} other {# Fragen zu Abbildungen}}",
+      "sign": "Negativ oder positiv machen",
+      "signLabel": "Deine Antwort auf Frage {n} zwischen negativ und positiv wechseln",
+      "rightOption": "Richtige Antwort"
     },
     "assign": {
       "errors": {

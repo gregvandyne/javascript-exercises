@@ -3670,7 +3670,8 @@
         "gridTitle": "Su un piano cartesiano",
         "addGrid": "Aggiungi la figura del piano a una scheda",
         "drawInstead": "Disegnala invece su una griglia"
-      }
+      },
+      "choiceNote": "Questa è una domanda a scelta multipla. Le opzioni e quella giusta si impostano nella scheda."
     },
     "figures-sheet": {
       "title": "Titolo della scheda",
@@ -3726,7 +3727,19 @@
       "assignNoClasses": "Non insegni ancora in una classe. Crea prima una classe, poi assegna.",
       "assignDone": "Assegnato a {class}.",
       "assignSee": "Guarda come gli studenti",
-      "assignProgress": "Vedi i progressi"
+      "assignProgress": "Vedi i progressi",
+      "answerType": "Risposta",
+      "typeNumber": "Numero",
+      "typeChoice": "Scelta multipla",
+      "options": "Opzioni (segna quella giusta)",
+      "optionN": "Opzione {letter} della domanda {n}",
+      "rightN": "L’opzione {letter} è la risposta giusta",
+      "markRight": "La risposta giusta",
+      "addOption": "Aggiungi opzione",
+      "removeOption": "Togli l’opzione {letter}",
+      "fromFigure": "L’opzione giusta è ricavata dalla figura. Cambia un’opzione o segnane un’altra per sceglierla tu.",
+      "needTwo": "Scrivi almeno 2 opzioni.",
+      "needRight": "Segna l’opzione giusta."
     }
   },
   "favorites": {
@@ -12339,7 +12352,9 @@
       "crumb": "Stampa",
       "sheetOnly": "Scheda studente",
       "withKey": "Con le soluzioni",
-      "print": "Stampa"
+      "print": "Stampa",
+      "options": "Opzioni",
+      "rightOne": "(la risposta giusta)"
     },
     "errors": {
       "notFound": "Non è qui.",
@@ -12354,7 +12369,8 @@
       "noGen": "Questa figura non ha ancora un generatore di domande.",
       "name": "Prima dagli un nome.",
       "brief": "Prima descrivi la scheda in poche parole.",
-      "names": "Non mettere i nomi degli studenti nella descrizione: i nomi non vanno mai all'IA."
+      "names": "Non mettere i nomi degli studenti nella descrizione: i nomi non vanno mai all'IA.",
+      "sameChoices": "Due opzioni sono uguali. Rendile tutte diverse."
     },
     "kinds": {
       "numberLine": {
@@ -12695,7 +12711,10 @@
       "rightOf": "{right} su {total} giuste",
       "answersTable": "Le risposte di ogni studente",
       "noneYet": "Nessuno ha ancora consegnato.",
-      "questions": "{count, plural, one {# domanda su una figura} other {# domande sulle figure}}"
+      "questions": "{count, plural, one {# domanda su una figura} other {# domande sulle figure}}",
+      "sign": "Rendilo negativo o positivo",
+      "signLabel": "Passa la risposta alla domanda {n} tra negativa e positiva",
+      "rightOption": "Risposta giusta"
     },
     "assign": {
       "errors": {

@@ -3669,7 +3669,8 @@
         "gridTitle": "座標平面",
         "addGrid": "座標平面の図をワークシートに追加",
         "drawInstead": "かわりにグリッドに描く"
-      }
+      },
+      "choiceNote": "これは選択式の問題です。選択肢と正解はワークシートで設定します。"
     },
     "figures-sheet": {
       "title": "ワークシートの題名",
@@ -3725,7 +3726,19 @@
       "assignNoClasses": "担当のクラスがまだありません。先にクラスを作ってから配布してください。",
       "assignDone": "{class}に配布しました。",
       "assignSee": "生徒の画面で見る",
-      "assignProgress": "進み具合を見る"
+      "assignProgress": "進み具合を見る",
+      "answerType": "答え方",
+      "typeNumber": "数",
+      "typeChoice": "選択式",
+      "options": "選択肢(正解に印をつける)",
+      "optionN": "問題{n}の選択肢{letter}",
+      "rightN": "選択肢{letter}が正解",
+      "markRight": "正解",
+      "addOption": "選択肢を追加",
+      "removeOption": "選択肢{letter}を削除",
+      "fromFigure": "正解の選択肢は図から求められます。自分で選ぶには、選択肢を変えるか別のものに印をつけてください。",
+      "needTwo": "選択肢を2つ以上書いてください。",
+      "needRight": "正解の選択肢に印をつけてください。"
     }
   },
   "favorites": {
@@ -12338,7 +12351,9 @@
       "crumb": "印刷",
       "sheetOnly": "生徒用シート",
       "withKey": "解答つき",
-      "print": "印刷"
+      "print": "印刷",
+      "options": "選択肢",
+      "rightOne": "(正解)"
     },
     "errors": {
       "notFound": "ここにはありません。",
@@ -12353,7 +12368,8 @@
       "noGen": "この図形にはまだ問題ジェネレーターがありません。",
       "name": "先に名前をつけてください。",
       "brief": "先にワークシートの内容を短く書いてください。",
-      "names": "説明に生徒の名前を書かないでください: 名前が AI に送られることはありません。"
+      "names": "説明に生徒の名前を書かないでください: 名前が AI に送られることはありません。",
+      "sameChoices": "同じ選択肢が2つあります。それぞれ違うものにしてください。"
     },
     "kinds": {
       "numberLine": {
@@ -12694,7 +12710,10 @@
       "rightOf": "{total}人中{right}人が正解",
       "answersTable": "生徒ごとのこたえ",
       "noneYet": "まだだれも提出していません。",
-      "questions": "{count, plural, other {図の問題 #問}}"
+      "questions": "{count, plural, other {図の問題 #問}}",
+      "sign": "マイナスとプラスを切り替える",
+      "signLabel": "問題{n}の答えのマイナスとプラスを切り替える",
+      "rightOption": "正解"
     },
     "assign": {
       "errors": {

@@ -3670,7 +3670,8 @@
         "gridTitle": "No plano cartesiano",
         "addGrid": "Adicionar a figura do plano à atividade",
         "drawInstead": "Desenhar numa malha"
-      }
+      },
+      "choiceNote": "Esta é uma pergunta de múltipla escolha. As opções e a certa são definidas na folha de exercícios."
     },
     "figures-sheet": {
       "title": "Título da atividade",
@@ -3726,7 +3727,19 @@
       "assignNoClasses": "Você ainda não tem turma. Crie uma turma primeiro e depois atribua.",
       "assignDone": "Atribuído a {class}.",
       "assignSee": "Ver como os alunos",
-      "assignProgress": "Ver o progresso"
+      "assignProgress": "Ver o progresso",
+      "answerType": "Resposta",
+      "typeNumber": "Número",
+      "typeChoice": "Múltipla escolha",
+      "options": "Opções (marque a certa)",
+      "optionN": "Opção {letter} da pergunta {n}",
+      "rightN": "A opção {letter} é a resposta certa",
+      "markRight": "A resposta certa",
+      "addOption": "Adicionar opção",
+      "removeOption": "Remover a opção {letter}",
+      "fromFigure": "A opção certa é calculada a partir da figura. Mude uma opção ou marque outra para escolher você mesmo.",
+      "needTwo": "Escreva pelo menos 2 opções.",
+      "needRight": "Marque a opção certa."
     }
   },
   "favorites": {
@@ -12340,7 +12353,9 @@
       "crumb": "Imprimir",
       "sheetOnly": "Folha do aluno",
       "withKey": "Com o gabarito",
-      "print": "Imprimir"
+      "print": "Imprimir",
+      "options": "Opções",
+      "rightOne": "(a resposta certa)"
     },
     "errors": {
       "notFound": "Isso não está aqui.",
@@ -12355,7 +12370,8 @@
       "noGen": "Esta figura ainda não tem gerador de perguntas.",
       "name": "Dê um nome primeiro.",
       "brief": "Descreva a atividade em poucas palavras primeiro.",
-      "names": "Não coloque nomes de alunos na descrição: nomes nunca vão para a IA."
+      "names": "Não coloque nomes de alunos na descrição: nomes nunca vão para a IA.",
+      "sameChoices": "Duas opções são iguais. Deixe cada uma diferente."
     },
     "kinds": {
       "numberLine": {
@@ -12696,7 +12712,10 @@
       "rightOf": "{right} de {total} certas",
       "answersTable": "As respostas de cada aluno",
       "noneYet": "Ninguém entregou ainda.",
-      "questions": "{count, plural, one {# pergunta de figura} other {# perguntas de figuras}}"
+      "questions": "{count, plural, one {# pergunta de figura} other {# perguntas de figuras}}",
+      "sign": "Tornar negativo ou positivo",
+      "signLabel": "Trocar sua resposta à pergunta {n} entre negativa e positiva",
+      "rightOption": "Resposta certa"
     },
     "assign": {
       "errors": {

@@ -10314,6 +10314,86 @@ weren't saved at all unless the teacher pressed Save, which made a new share cod
   print, hide, languages, the generators), figures-econ-words (12 languages and look-alikes), figures-scrub, and the
   Economics tab and its editors in Chromium (figures-browser).
 
+## Algebra Builder builds again: the math field's files are in the repository (22 Nov 2026)
+
+- **Why it could not build.** `tools/algebra-builder/.gitignore` said `dist/`, meant for Vite's output, but it also
+  matched `vendor/mathfield-*/dist/`, the vendored math input field's built code. Only the three `package.json` files
+  were ever committed, so since 18 Nov no checkout could run `build.mjs`; #429 patched the built page by hand, and the
+  My worksheets lists (#492, #493) were left in the sources only.
+- **The fix.** The rule is now `/dist/` (the app's own output only) and the three `dist/` folders are committed. They
+  are the same packages renamed the same way as before: rebuilding the sources of 5d256511 and e5970b22 with them gives
+  those commits' `seed-games/algebra-builder.html` byte for byte, so they are the files the game was first built with.
+- **Rebuilt** from the current sources: Algebra Builder now has My question sets in the simple list design. Its
+  browser test in `game-my-sets-browser.test.js` runs (it was skipped while the page could not be built).
+
+## Figures: multiple choice and negative answers (22 Nov 2026)
+
+Worksheet answers were numbers 0 or more, typed on a keypad without a minus sign, so four generators asked a stand-in
+question. Now a worksheet question has an answer type.
+
+- **Two answer types.** `number` (any sign: the student's blank reads "-5", "−5" and "- 5", Arabic and Persian digits
+  as before, marked within half a unit of the last stored decimal place) and `choice` (2 to 6 short options, all
+  different, one marked right). Migration `0099_figures_answer_types` adds `answer_type` ('number' by default, so every
+  older question is a number question), `choices` (JSON) and `correct` (the right option's index, NULL until marked) to
+  `question_set_items`. The lesson step's snapshot items carry `type` and `choices`, with `value` the right index; an
+  older snapshot without a type is a number question. A number question keeps options it had, so switching back to
+  multiple choice brings them back.
+- **Fixed order, not shuffled (judgment call).** Options show in the order the teacher (or the generator) wrote them,
+  on screen and on paper. The printed sheet and its key letter them A, B, C, and the same letters must mean the same
+  options on a student's screen, on the class's printed copy and in the teacher's results table (which shows each pick
+  as its letter). A generator's options are in their natural order (rises, stays the same, falls). The radio buttons'
+  values are the option indexes, which say nothing about which one is right.
+- **The right option is never sent early.** The student page and `GET /api/progress/:cl/:step/figures` send the options
+  but never `correct`, the answer text or worked lines until the three rules of "Figures: Assign to class" hold (the
+  teacher allows it, the due date is over, the student handed in). The tests check two assignments of the same
+  questions with different right options give byte-identical student markup.
+- **The builder.** Each question has an "Answer: Number / Multiple choice" switch (radio buttons in a fieldset). Multiple
+  choice shows the options in a fieldset: a radio to mark the right one, the letter, a text box, a remove button, and
+  "Add option" (up to 6). Blank rows stay on screen until filled; the server keeps only options with words (the right
+  one's index follows) and refuses two the same or words the site's filter refuses. Redrawing the list keeps the
+  keyboard in the same box. The editor shows a choice question's options read-only and never sends an answerKey for it.
+- **Print.** The student sheet lists the options with a circle and the letter (no answer lines); the key fills the
+  right one's circle, bolds it and prints "B) right" with the worked lines.
+- **Generators.** The catalog's generators may be `figure.choice` (the Oomba Canvas form, with 2 to 6 options) whose
+  worked lines say `{choice}`, and number answers may be negative. Oomba Canvas itself is frozen and cannot take
+  either (its keypad has no minus, its choices are 2 to 4 and its worked lines are checked as written), so the Figures
+  product deals with Canvas's own gen code and checks the result itself (`services/figures.js` `dealRaw`, `generate`).
+  A choice generator names `key` (an OF.solve value, a number or a word: OF.solve already gives `mode`, `water`,
+  `gapType` and `rateChange`) and `pick` (each value to its option), so the right option comes from OF.solve; the
+  frozen Oomba Figures versions are unchanged and no solve value was added. While a question's options are still its
+  generator's (`answerKey` `"gen:<id>"`) the right option is worked out again from the figure, even after the teacher
+  changes the figure; marking another option or changing an option's words makes it the teacher's. The generator tests
+  (`_choice-gens.js`) deal 40 seeds, check each figure with OF.check, check the generator's own answer formula agrees
+  with OF.solve's pick, that every option comes up, that the catalog has the same generator, and run the dealt
+  questions through the Canvas self-test with and without the pack.
+
+| Generator | Before | Now |
+| --- | --- | --- |
+| `pedigree` | "Write 1 for autosomal dominant, 2 for autosomal recessive or 3 for X-linked recessive." (key `modeNumber`) | "Which inheritance pattern does this family show?" autosomal dominant / autosomal recessive / X-linked recessive (key `mode`) |
+| `osmosis` | "What is their total concentration outside the cell, in %?" (the solutes that cannot cross) | "Which way does water move across the cell membrane?" into the cell / out of the cell / no net movement (key `water`; the start view, no arrows, tonicity hidden) |
+| `moneyMarket` | "Write 1 if the nominal interest rate rises, 2 if it ends where it started, or 3 if it falls." (key `rateMove`) | "What happens to the nominal interest rate?" rises / stays the same / falls (key `rateChange`) |
+| `adAs` | "How large is the recessionary gap?" (always recessionary, key `gapSize`) | "What does the economy have?" a recessionary gap / an inflationary gap / no output gap (key `gapType`; the gap's brace hidden; real GDP on both sides of potential) |
+| `reading.thermometer` | readings 0 to 50 on a scale from -10 | readings -10 to 50 |
+
+  The other generators were read for stand-ins ("write 1", "1, 2 or 3", a size in place of a direction, a scale that
+  never goes below 0); these five were all. `OF.solve`'s `modeNumber`, `rateMove` and `gapSize` stay (frozen versions).
+- **The AI drafter** may write choice questions: `answerType`, `choices` and `correct` are in its JSON schema, and it is
+  told to use them only when the answer is a word the figure shows plainly. A choice item needs 2 to 6 short different
+  options, none blank, its `correct` one of them, and every option through the word rules; otherwise it is replaced by
+  the kind's generator and the repair is logged (the kind and why, never the brief or the words). Judgment call: the
+  AI's right option is the AI's, unlike its numbers (OF.solve's); the teacher sees it marked in the builder and reviews
+  the draft before assigning, as with every draft.
+- **The student step.** A choice question is a fieldset whose legend is the question, with one radio button per option
+  (the arrow keys move between them, 44 px rows); after the reveal the right one is marked "Right answer". Every number
+  blank has a ± button (public/js/lesson-read.js) that flips the sign, for phones whose decimal keypad has no minus; it
+  is on every number question so it never hints that an answer is negative.
+- **Words** in all 13 locales (en-GB needs none of its own). No new tester gate: assigning still needs the Figures gate.
+- **Tests.** figures-answers (the migration, choices cleaned, the generator link, the rewritten generators, print, the
+  AI drafter, marking, the student page and JSON never sending the right option early, the teacher's results), and
+  figures-answers-browser (Chromium: the builder's switch and options by keyboard, print, the student's radios with the
+  arrow keys, the ± button, hand in, the reveal, a phone without sideways scroll); figures-product and figures-assign
+  updated, the biology and economics generator checks through `_choice-gens.js`.
+
 ## Figures 1.5.0: organic structures and atomic energy levels (22 Nov 2026)
 
 - **A new version, like 1.4.0.** Oomba Figures 1.5.0 is a new version folder: the core and the same seven packs (no

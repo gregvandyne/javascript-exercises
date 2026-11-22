@@ -385,7 +385,10 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
     const totals = FS.questionTotals(full, rows), handed = rows.filter(FS.handedIn).length;
     const cell = (p, k) => { const x = p.cells[i]; if (!FS.handedIn(x)) return html`<td><span class="muted" aria-hidden="true">–</span><span class="sr-only">${t('progress.status.none')}</span></td>`;
       const a = FS.answersOf(x, items.length)[k], right = x.marks[k] === '1';
-      return html`<td class="${right ? 'fs-ok' : 'fs-bad'}"><span aria-hidden="true">${right ? '✓' : '✗'}</span><span class="sr-only">${right ? t('figures.step.right') : t('figures.step.notRight')}</span> <span dir="ltr">${a || '–'}</span></td>`; };
+      // A choice question's answer is the option's letter (its words as a tooltip and for screen readers).
+      const pk = FS.isChoice(items[k]) ? FS.pickedOf(a, items[k]) : null;
+      const shown = pk !== null ? html`<span dir="ltr" title="${items[k].choices[pk]}"><span aria-hidden="true">${String.fromCharCode(65 + pk)}</span><span class="sr-only">${String.fromCharCode(65 + pk)}) ${items[k].choices[pk]}</span></span>` : html`<span dir="ltr">${a || '–'}</span>`;
+      return html`<td class="${right ? 'fs-ok' : 'fs-bad'}"><span aria-hidden="true">${right ? '✓' : '✗'}</span><span class="sr-only">${right ? t('figures.step.right') : t('figures.step.notRight')}</span> ${shown}</td>`; };
     return html`<section class="panel answers fs-results" id="fr-${s.id}" aria-labelledby="fr-h-${s.id}"><h2 id="fr-h-${s.id}">${ico('📐', { size: 28 })} ${s.title || t('lessons.kinds.figures')}</h2>
       <form class="fs-show" data-api="/api/progress/${lp.cl.id}/${s.id}/show-answers" data-reload novalidate>
         <label class="chk"><input type="checkbox" name="on" value="1" ${full.show_answers ? raw('checked') : ''} ${lp.cl.due_at ? '' : raw('disabled')}> <b>${t('figures.step.showAnswers')}</b></label>

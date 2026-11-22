@@ -1,2 +1,3 @@
-dist/
+# The app's own build output only: the vendored packages under vendor/*/dist are committed (the build needs them).
+/dist/
 data/

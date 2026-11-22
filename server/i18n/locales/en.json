@@ -3952,7 +3952,8 @@
         "gridTitle": "On a coordinate grid",
         "addGrid": "Add the grid figure to a worksheet",
         "drawInstead": "Draw it on a grid instead"
-      }
+      },
+      "choiceNote": "This is a multiple choice question. Its options and the right one are set in the worksheet."
     },
     "figures-sheet": {
       "title": "Worksheet title",
@@ -4008,7 +4009,19 @@
       "assignNoClasses": "You don't teach a class yet. Make a class first, then assign.",
       "assignDone": "Assigned to {class}.",
       "assignSee": "See it as students do",
-      "assignProgress": "See progress"
+      "assignProgress": "See progress",
+      "answerType": "Answer",
+      "typeNumber": "Number",
+      "typeChoice": "Multiple choice",
+      "options": "Options (mark the right one)",
+      "optionN": "Option {letter} of question {n}",
+      "rightN": "Option {letter} is the right answer",
+      "markRight": "The right answer",
+      "addOption": "Add option",
+      "removeOption": "Remove option {letter}",
+      "fromFigure": "The right option is worked out from the figure. Change an option or mark another one to choose it yourself.",
+      "needTwo": "Write at least 2 options.",
+      "needRight": "Mark the right option."
     }
   },
   "favorites": {
@@ -13058,7 +13071,9 @@
       "crumb": "Print",
       "sheetOnly": "Student sheet",
       "withKey": "With the answer key",
-      "print": "Print"
+      "print": "Print",
+      "options": "Options",
+      "rightOne": "(the right answer)"
     },
     "errors": {
       "notFound": "That isn't here.",
@@ -13073,7 +13088,8 @@
       "noGen": "This figure has no question generator yet.",
       "name": "Give it a name first.",
       "brief": "Describe the worksheet in a few words first.",
-      "names": "Leave students' names out of the description: names never go to the AI."
+      "names": "Leave students' names out of the description: names never go to the AI.",
+      "sameChoices": "Two options are the same. Make each one different."
     },
     "kinds": {
       "numberLine": {
@@ -13414,7 +13430,10 @@
       "rightOf": "{right} of {total} right",
       "answersTable": "Each student's answers",
       "noneYet": "Nobody has handed in yet.",
-      "questions": "{count, plural, one {# figure question} other {# figure questions}}"
+      "questions": "{count, plural, one {# figure question} other {# figure questions}}",
+      "sign": "Make it negative or positive",
+      "signLabel": "Switch your answer to question {n} between negative and positive",
+      "rightOption": "Right answer"
     },
     "assign": {
       "errors": {

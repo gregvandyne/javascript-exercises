@@ -46,6 +46,9 @@ const DRAW_EX = {
 // ---------------------------------------------------------------- state and history
 const st = { data: clone(K.presets[0]), hide: false, print: false, question: '', answerKey: null, gen: null, seed: null, genResult: null, draw: { on: false, pts: [], n: 10, o: originFor(10), grid: false } };
 const S = P.start;
+/** A worksheet's multiple choice question: its options are set in the worksheet; the right one shows here (from the
+ *  figure while it comes from a generator: saving back works it out again on the server). */
+const CHOICE = !!(S && S.answerType === 'choice');
 if (S) Object.assign(st, { data: clone(S.data), hide: S.hide ?? false, question: S.question || '', answerKey: S.answerKey || null, gen: S.gen || null, seed: S.seed || null });
 const snap = () => JSON.stringify({ data: st.data, hide: st.hide, question: st.question, answerKey: st.answerKey, gen: st.gen, seed: st.seed, genResult: st.genResult, draw: st.draw });
 const undo = [], redo = [];
@@ -219,6 +222,12 @@ function render() {
   buttons();
 }
 function answers(bad = problems()) {
+  if (CHOICE) {
+    $('fg-key').closest('label').hidden = true;
+    $('fg-answer').innerHTML = `<p class="muted fg-small">${esc(t('js.figures-editor.choiceNote'))}</p><ol class="fg-work" type="A">${(S.choices || []).map((c, i) => `<li${i === S.correct ? ' class="fg-big"' : ''}>${esc(c)}${i === S.correct ? ' ✓' : ''}</li>`).join('')}</ol>`;
+    $('fg-factsbox').hidden = true;
+    return;
+  }
   const solve = bad.length ? null : solveOf(OF, K.id, st.data), flat = solve ? flatSolve(solve) : {}, keys = Object.keys(flat);
   if (st.answerKey && !(st.answerKey in flat)) st.answerKey = null;
   $('fg-key').innerHTML = sel([['', keys.length ? t('js.figures-editor.pickAnswer') : t('js.figures-editor.noAnswers')], ...keys.slice(0, 60).map(k => [k, `${keyLabel(k)} = ${numText(flat[k], 2)}`])], st.answerKey || '');
@@ -328,7 +337,7 @@ const ACTS = {
   drawit() { st.draw.on = true; drawApply(); fields(); render(); commit(true); $('fg-draw').scrollIntoView({ block: 'start', behavior: 'smooth' }); board.focus({ preventScroll: true }); },
   dclear() { st.draw.pts = []; drawApply(); render(); commit(true); board.focus({ preventScroll: true }); },
   async saveback() {
-    try { await api(`/api/figures/worksheets/${encodeURIComponent(S.ws)}/items/${encodeURIComponent(S.item)}`, { method: 'POST', body: { data: st.data, hide: st.hide, question: st.question, answerKey: st.answerKey } }); location.href = `/figures/worksheets/${encodeURIComponent(S.ws)}`; }
+    try { await api(`/api/figures/worksheets/${encodeURIComponent(S.ws)}/items/${encodeURIComponent(S.item)}`, { method: 'POST', body: { data: st.data, hide: st.hide, question: st.question, ...(CHOICE ? {} : { answerKey: st.answerKey }) } }); location.href = `/figures/worksheets/${encodeURIComponent(S.ws)}`; }
     catch (e) { toast(e.message, { bad: true }); }
   },
 };
