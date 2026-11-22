@@ -1,7 +1,7 @@
 // My boards and the All boards page in a real browser (docs/decisions.md "Virtual math manipulatives: saving and AI
 // drafts"), on a phone (iPhone 13) and a 1440 laptop, with 8 templates, 12 recent boards and an ended room: the home
 // shows the newest 5 of each and one "See all boards" link; the page shows every one, grouped by tool (the most
-// recently used tool first, a room under its own tool); its ⋯ menu renames, duplicates, deletes, reopens a room and
+// recently used tool first, a room under its own tool), each group closed until opened and remembered after a reload; its ⋯ menu renames, duplicates, deletes, reopens a room and
 // starts a live room; no sideways scroll and no console errors. MANIP_SHOTS=<dir> also saves pictures (one dark).
 // Skipped when no Chromium is installed.
 import './_setup.js';
@@ -84,6 +84,14 @@ const pageShots = async (page, name, phone) => {
   await page.evaluate(() => { const h = document.querySelector('#mp-allrecent'); scrollTo(0, h.getBoundingClientRect().top + scrollY - 80); }); await page.waitForTimeout(300);
   await page.screenshot({ path: `${SHOTS}/${name}-recent.png` });
 };
+/** A row on the All boards page, its tool group opened first when closed. */
+async function shown(scope, title) {
+  const r = scope.locator(`.mp-brow:has(.mp-blink:text-is("${title}"))`), d = r.locator('xpath=ancestor::details[1]');
+  if (!(await d.evaluate(x => x.open))) await d.locator(':scope > summary').click();
+  await r.waitFor();
+  return r;
+}
+const visibleRows = page => page.locator('.mp-allboards .mp-brow').evaluateAll(rs => rs.filter(r => r.checkVisibility()).length);
 const sideways = page => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 const titles = loc => loc.locator('.mp-blink').allTextContents();
 const groups = loc => loc.locator('.mp-tgroup .mp-tname').evaluateAll(hs => hs.map(h => h.textContent.replace(/\s+/g, ' ').trim()));
@@ -110,7 +118,7 @@ for (const [label, opts] of [['iPhone 13', PHONE()], ['1440', WIDE]]) {
     if (SHOTS) await cardShot(page, card, `home-card-${w}`);
     await link.click();
     await page.waitForURL(/\/manipulatives\/boards$/);
-    await page.waitForSelector('#mp-alltpl .mp-brow');
+    await page.waitForSelector('#mp-alltpl .mp-brow', { state: 'attached' });
     assert.match(await page.textContent('h1'), /All boards/);
     assert.equal(await page.locator('a.btn[href="/manipulatives"]').textContent(), 'Back to Manipulatives');
     const tpl = page.locator('#mp-alltpl'), rec = page.locator('#mp-allrecent');
@@ -124,19 +132,44 @@ for (const [label, opts] of [['iPhone 13', PHONE()], ['1440', WIDE]]) {
     assert.equal(await rec.locator('.mp-tgroup[data-tool="money"] .mp-brow:has-text("Coins room") .mp-ico svg, .mp-tgroup[data-tool="money"] .mp-brow:has-text("Coins room") .mp-ico img').count() > 0, true, 'the room keeps its icon');
     assert.equal(await page.locator('.mp-tname .mp-ico').count(), 9, 'each tool heading has its icon');
     assert.equal(await page.locator('#mp-moretpl').count(), 0, 'no "Show all" for 8 templates');
+    // Every tool group starts closed: its heading shows, its rows don't.
+    assert.equal(await page.locator('details.mp-tgroup').count(), 9);
+    assert.equal(await page.locator('details.mp-tgroup[open]').count(), 0, 'all closed');
+    assert.equal(await visibleRows(page), 0, 'no rows showing');
     assert.ok(await sideways(page) <= 0, 'no sideways scroll on the page');
-    // The ⋯ menu opens here as on the home.
-    const row = tpl.locator('.mp-brow:has(.mp-blink:text-is("Template 1"))');
+    if (SHOTS) await pageShots(page, `page-${w}-closed`, w < 800);
+    // Opening one shows its rows only.
+    const clock = tpl.locator('.mp-tgroup[data-tool="clock"]');
+    await clock.locator('summary').click();
+    await page.waitForFunction(() => document.querySelector('#mp-alltpl .mp-tgroup[data-tool="clock"]').open);
+    assert.equal(await visibleRows(page), 2);
+    assert.ok(await clock.locator('.mp-blink:text-is("Template 1")').isVisible());
+    // The ⋯ menu on an opened row: that row's own menu, and it acts on that row (Duplicate makes "Template 1 (copy)").
+    const row = clock.locator('.mp-brow:has(.mp-blink:text-is("Template 1"))');
     await row.locator('.mp-more').click();
     assert.deepEqual(await row.locator('[role="menuitem"]').allTextContents(), ['Start a live room with it', 'Rename', 'Duplicate', 'Delete']);
     assert.ok(await sideways(page) <= 0, 'the open menu adds no sideways scroll');
+    if (SHOTS) await page.screenshot({ path: `${SHOTS}/page-menu-${w}.png` });
+    await row.locator('[data-act="duplicate"]').click();
+    await page.waitForSelector('#mp-alltpl .mp-blink:text-is("Template 1 (copy)")');
+    assert.equal(await page.locator('#mp-alltpl .mp-tgroup[data-tool="clock"]').getAttribute('open'), '', 'still open after the list is drawn again');
+    const copy = q.get("SELECT id FROM manip_boards WHERE owner_id=? AND title='Template 1 (copy)'", boss.id);
+    assert.ok(copy, 'the copy is of the row the menu was on'); M.deleteBoard(boss, copy.id);
+    // Open stays open after a reload; the rest stay closed.
+    await page.reload(); await page.waitForSelector('#mp-alltpl .mp-brow', { state: 'attached' });
+    assert.deepEqual(await page.locator('details.mp-tgroup[open]').evaluateAll(ds => ds.map(d => d.dataset.key)), ['tpl:clock']);
+    assert.equal(await visibleRows(page), 2);
+    // Closing it is remembered too.
+    await page.locator('#mp-alltpl .mp-tgroup[data-tool="clock"] summary').click();
+    await page.reload(); await page.waitForSelector('#mp-alltpl .mp-brow', { state: 'attached' });
+    assert.equal(await page.locator('details.mp-tgroup[open]').count(), 0);
     if (SHOTS) {
-      await page.keyboard.press('Escape');
-      await page.evaluate(() => { document.activeElement?.blur(); scrollTo(0, 0); }); await page.waitForTimeout(200);
-      await pageShots(page, `page-${w}`, w < 800);
-      await row.locator('.mp-more').click();
-      await page.screenshot({ path: `${SHOTS}/page-menu-${w}.png` });
+      await page.locator('#mp-allrecent .mp-tgroup[data-tool="clock"] summary').click();
+      await page.locator('#mp-alltpl .mp-tgroup[data-tool="number-lines"] summary').click();
+      await page.evaluate(() => document.activeElement?.blur());
+      await pageShots(page, `page-${w}-open`, w < 800);
     }
+    assert.ok(await sideways(page) <= 0);
     assert.deepEqual(errors, []);
     await ctx.close();
   });
@@ -146,18 +179,24 @@ test('dark: the home card and the page (pictures only when MANIP_SHOTS is set)',
   const { ctx, page, errors } = await open('/manipulatives#', { ...PHONE(), colorScheme: 'dark' });
   await page.waitForSelector('.mp-boards .mp-ball a');
   if (SHOTS) await cardShot(page, page.locator('.mp-boards'), 'home-card-390-dark');
-  await page.goto(`${BASE}/manipulatives/boards`); await page.waitForSelector('#mp-allrecent .mp-brow');
+  await page.goto(`${BASE}/manipulatives/boards`); await page.waitForSelector('#mp-allrecent .mp-brow', { state: 'attached' });
   assert.ok(await sideways(page) <= 0);
-  if (SHOTS) await pageShots(page, 'page-390-dark', true);
+  assert.equal(await page.locator('details.mp-tgroup[open]').count(), 0);
+  if (SHOTS) {
+    await pageShots(page, 'page-390-dark-closed', true);
+    await page.locator('#mp-alltpl .mp-tgroup[data-tool="number-lines"] summary').click();
+    await page.locator('#mp-allrecent .mp-tgroup[data-tool="money"] summary').click();
+    await pageShots(page, 'page-390-dark-open', true);
+  }
   assert.deepEqual(errors, []);
   await ctx.close();
 });
 
 test('the page\'s ⋯ menu: rename, duplicate and delete in place; a title opens the board; reopen and start go to the room', { skip }, async () => {
   const { ctx, page, errors } = await open('/manipulatives/boards', WIDE);
-  await page.waitForSelector('#mp-alltpl .mp-brow');
+  await page.waitForSelector('#mp-alltpl .mp-brow', { state: 'attached' });
   const tpl = page.locator('#mp-alltpl');
-  const menu = async (scope, title, act) => { const r = scope.locator(`.mp-brow:has(.mp-blink:text-is("${title}"))`); await r.locator('.mp-more').click(); await r.locator(`[data-act="${act}"]`).click(); };
+  const menu = async (scope, title, act) => { const r = await shown(scope, title); await r.locator('.mp-more').click(); await r.locator(`[data-act="${act}"]`).click(); };
   // Rename the oldest template (not on the home).
   await menu(tpl, 'Template 1', 'rename');
   await page.fill('#mp-rn', 'Oldest clock'); await page.press('#mp-rn', 'Enter');
@@ -178,18 +217,18 @@ test('the page\'s ⋯ menu: rename, duplicate and delete in place; a title opens
   assert.equal(q.get("SELECT COUNT(*) n FROM manip_boards WHERE owner_id=? AND title='Recent 1'", boss.id).n, 0);
   // A recent board's title opens it on the manipulatives page.
   const r2 = q.get("SELECT id FROM manip_boards WHERE owner_id=? AND title='Recent 2'", boss.id).id;
-  await rec.locator('.mp-blink:text-is("Recent 2")').click();
+  await (await shown(rec, 'Recent 2')).locator('.mp-blink').click();
   await page.waitForURL(u => u.pathname === '/manipulatives' && u.hash === `#board/${r2}`);
   await page.waitForSelector('#mp-board');
   // Reopen the ended room: the room opens.
-  await page.goto(`${BASE}/manipulatives/boards`); await page.waitForSelector('#mp-allrecent .mp-brow');
+  await page.goto(`${BASE}/manipulatives/boards`); await page.waitForSelector('#mp-allrecent .mp-brow', { state: 'attached' });
   await menu(page.locator('#mp-allrecent'), 'Coins room', 'reopen');
   await page.waitForURL(u => u.pathname === '/manipulatives' && u.hash === `#live/${room.id}`);
   await page.waitForSelector('.rm-live');
   assert.equal(M.getSession(room.id).status, 'active');
   M.end(boss, room.id);
   // Start a live room with a template (one class: straight into the room).
-  await page.goto(`${BASE}/manipulatives/boards`); await page.waitForSelector('#mp-alltpl .mp-brow');
+  await page.goto(`${BASE}/manipulatives/boards`); await page.waitForSelector('#mp-alltpl .mp-brow', { state: 'attached' });
   await menu(page.locator('#mp-alltpl'), 'Template 6', 'start');
   await page.waitForURL(u => u.pathname === '/manipulatives' && /^#live\//.test(u.hash));
   await page.waitForSelector('.rm-live');
@@ -199,7 +238,7 @@ test('the page\'s ⋯ menu: rename, duplicate and delete in place; a title opens
   // Several classes: the home's room form, with the template picked.
   const oak = q.get('SELECT school_id FROM classrooms WHERE id=?', klass.id).school_id;
   S.createClass(boss, oak, { name: 'Boards 3B' });
-  await page.goto(`${BASE}/manipulatives/boards`); await page.waitForSelector('#mp-alltpl .mp-brow');
+  await page.goto(`${BASE}/manipulatives/boards`); await page.waitForSelector('#mp-alltpl .mp-brow', { state: 'attached' });
   await menu(page.locator('#mp-alltpl'), 'Template 7', 'start');
   await page.waitForURL(u => u.pathname === '/manipulatives');
   await page.waitForFunction(() => document.querySelector('#mp-host select[name="boardId"]')?.selectedOptions[0]?.textContent.includes('Template 7'));
@@ -222,6 +261,21 @@ test('many templates: the page shows the newest 50, then "Show all" brings the r
   assert.equal(await page.locator('#mp-moretpl').count(), 0);
   await page.goto(`${BASE}/manipulatives#`); await page.waitForSelector('.mp-boards .mp-ball a');
   assert.equal(await page.locator('.mp-boards .mp-blist').nth(0).locator('.mp-brow').count(), 5);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('without storage (blocked): the groups start closed, open and close, and nothing breaks', { skip }, async () => {
+  const ctx = await browser.newContext(WIDE);
+  await ctx.addInitScript(() => { for (const k of ['getItem', 'setItem']) Storage.prototype[k] = () => { throw new Error('blocked'); }; });
+  const [name, value] = cookieOf(boss.id).split('='); await ctx.addCookies([{ name, value, url: BASE }]);
+  const page = await ctx.newPage(); const errors = [];
+  page.on('pageerror', e => errors.push(String(e))); page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+  await page.goto(`${BASE}/manipulatives/boards`); await page.waitForSelector('#mp-alltpl .mp-brow', { state: 'attached' });
+  assert.equal(await page.locator('details.mp-tgroup[open]').count(), 0);
+  await page.locator('#mp-allrecent .mp-tgroup[data-tool="clock"] summary').click();
+  await page.waitForFunction(() => document.querySelector('#mp-allrecent .mp-tgroup[data-tool="clock"]').open);
+  assert.ok(await visibleRows(page) > 0);
   assert.deepEqual(errors, []);
   await ctx.close();
 });
