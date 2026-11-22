@@ -1,4 +1,4 @@
-// Oomba Figures 1.4.0 (docs/figures-api.md "Economics (1.4.0)"): a new version folder, the core and its seven packs (econ
+// Oomba Figures 1.4.0 (shipped; new builds pin 1.5.0 since figures-v150.test.js) (docs/figures-api.md "Economics (1.4.0)"): a new version folder, the core and its seven packs (econ
 // is new), built and locked like 1.3.0. 1.0.0 to 1.3.0 have shipped and never change: their files are byte for byte what
 // the lock (and git) say. New builds (the Builder's tags, the Figures product, figuresKit by default) get 1.4.0, while a
 // page pinned to an older version keeps its own files. And every figure 1.3.0 drew (each catalog preset and generator
@@ -38,22 +38,16 @@ test('1.0.0 to 1.3.0 are frozen: every file is what the lock says and what git h
   if (shipped) for (const [k, h] of Object.entries(shipped)) assert.deepEqual(L.FIG_LOCK.files[k], h, `${k}: its lock entry is unchanged`);
 });
 
-test('new builds pin 1.4.0: the latest version, the Builder\'s tags, the Figures product and the server\'s copy; the econ pack is its own file', () => {
-  assert.equal(version(), '1.4.0'); assert.equal(L.FIG_LATEST['oomba-figures'], '1.4.0'); assert.equal(OF.version, '1.4.0');
-  assert.match(L.figTags(), /\/vendor\/oomba-figures\/1\.4\.0\/oomba-figures\.js/);
-  assert.match(L.figTags(), /\/vendor\/oomba-figures\/1\.4\.0\/packs\/econ\.js/);
-  assert.doesNotMatch(L.figTags(), /\/1\.3\.0\//);
-  assert.equal(F.OF_VERSION, '1.4.0'); assert.equal(L.figuresKit().version, '1.4.0');
+test('1.4.0 shipped and is frozen like 1.3.0: pages pinned to it keep their own files, with the econ pack (new builds pin 1.5.0: figures-v150.test.js)', () => {
+  assert.notEqual(version(), '1.4.0'); assert.equal(L.FIG_LATEST['oomba-figures'], version()); assert.equal(F.OF_VERSION, version());
   assert.deepEqual(Object.keys(L.FIG_PACKS['1.4.0']), ['math', 'data', 'physics', 'chem', 'bio', 'econ', 'measure']);
-  assert.deepEqual(Object.keys(L.FIG_PACKS['1.3.0']), ['math', 'data', 'physics', 'chem', 'bio', 'measure'], '1.3.0 keeps its six');
   const econ = ['supplyDemand', 'moneyMarket', 'businessCycle', 'phillipsCurve', 'possibilitiesCurve', 'adAs', 'costCurves'];
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-figures/1.4.0/manifest.json'), 'utf8')).packs.econ.kinds, econ);
-  assert.deepEqual(L.figPacksFor(['adAs', 'reading']), ['econ', 'measure']);
-  const t = L.figTag('oomba-figures', undefined, { kinds: ['supplyDemand'] });
+  assert.deepEqual(L.figPacksFor(['adAs', 'reading'], '1.4.0'), ['econ', 'measure']);
+  const t = L.figTag('oomba-figures', '1.4.0', { kinds: ['supplyDemand'] });
   assert.deepEqual(L.checkFigures(`<title>x</title>${t}<script>OF.draw('supplyDemand', { shift: { demand: 'increase' } })</script>`).issues, []);
-  // a 1.3.0 page knows nothing of economics: the kind is unknown there (no pack to add)
   assert.equal(L.figuresKit('1.3.0').kinds.includes('adAs'), false);
-  for (const v of ['1.0.0', '1.1.0', '1.2.0', '1.3.0']) assert.equal(L.figuresKit(v).version, v);
+  for (const v of ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0']) assert.equal(L.figuresKit(v).version, v);
 });
 
 const OPTS = [{}, { print: true }, { hide: true }, { lang: 'de' }, { lang: 'he' }, { lang: 'ja', print: true }, { title: 'A figure', width: 300 }];
@@ -72,5 +66,5 @@ test('every figure 1.3.0 drew draws the same bytes in 1.4.0, and checks and solv
   }
   assert.ok(n > 1000, `${n} figures compared`);
   // the source and the frozen 1.4.0 file draw the same
-  for (const K of CAT.KINDS.filter(k => k.subject === 'economics')) for (const d of K.presets) assert.equal(L.figuresKit('1.4.0').svg(K.id, d, { print: true }), OF.svg(K.id, d, { print: true }), K.id);
+  for (const K of CAT.KINDS.filter(k => k.subject === 'economics')) for (const d of K.presets) assert.equal(L.figuresKit('1.4.0').svg(K.id, d, { print: true }), L.figuresKit('1.5.0').svg(K.id, d, { print: true }), K.id);
 });

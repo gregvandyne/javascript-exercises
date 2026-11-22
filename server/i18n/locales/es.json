@@ -12604,6 +12604,14 @@
         "name": "Diagrama de puntos y cruces",
         "desc": "Electrones compartidos y transferidos en capas"
       },
+      "skeletal": {
+        "name": "Estructuras orgánicas",
+        "desc": "Fórmulas esqueléticas, semidesarrolladas y desarrolladas"
+      },
+      "energyLevels": {
+        "name": "Niveles de energía atómicos",
+        "desc": "Transiciones electrónicas, longitudes de onda y series"
+      },
       "populationGrowth": {
         "name": "Crecimiento de la población",
         "desc": "Curvas J y S, K y las fases de crecimiento"

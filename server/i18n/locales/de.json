@@ -12605,6 +12605,14 @@
         "name": "Punkt-Kreuz-Schema",
         "desc": "Geteilte und übertragene Elektronen in Schalen"
       },
+      "skeletal": {
+        "name": "Organische Strukturen",
+        "desc": "Skelett-, Halbstruktur- und Strukturformeln"
+      },
+      "energyLevels": {
+        "name": "Energieniveaus des Atoms",
+        "desc": "Elektronenübergänge, Wellenlängen und Serien"
+      },
       "populationGrowth": {
         "name": "Populationswachstum",
         "desc": "J- und S-Kurven, K und die Wachstumsphasen"

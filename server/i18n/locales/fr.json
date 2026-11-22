@@ -12604,6 +12604,14 @@
         "name": "Schéma points-croix",
         "desc": "Électrons partagés et transférés dans les couches"
       },
+      "skeletal": {
+        "name": "Structures organiques",
+        "desc": "Formules topologiques, semi-développées et développées"
+      },
+      "energyLevels": {
+        "name": "Niveaux d'énergie de l'atome",
+        "desc": "Transitions électroniques, longueurs d'onde et séries"
+      },
       "populationGrowth": {
         "name": "Croissance de la population",
         "desc": "Courbes en J et en S, K et les phases de croissance"

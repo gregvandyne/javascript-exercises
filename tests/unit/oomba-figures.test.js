@@ -72,6 +72,8 @@ const SAMPLES = {
   // 1.4.0 economics (tests/unit/figures-econ-*.test.js)
   supplyDemand: { shift: { demand: 'increase' } }, moneyMarket: { shift: { supply: 'increase' } }, businessCycle: { cycles: 2 }, phillipsCurve: { movement: 'along' },
   possibilitiesCurve: { points: [{ name: 'A', at: 0.5 }] }, adAs: { start: 'recession' }, costCurves: { market: 'perfect' },
+  // 1.5.0 chemistry (tests/unit/figures-chem-organic.test.js, figures-chem-levels.test.js)
+  skeletal: { smiles: 'CCO' }, energyLevels: { transitions: [{ from: 3, to: 2 }] },
 };
 
 test('every kind: plain data in, one accessible <svg> out, no problems for good data', () => {
@@ -236,7 +238,7 @@ test('the shipped oomba-figures.js and its packs are a fresh build of figures/sr
   assert.equal(F.version, v);
   assert.equal(F.svg('bohr', { element: 'Na' }), OF.svg('bohr', { element: 'Na' }), 'the frozen file draws what the source draws');
 });
-test('the latest version (1.4.0; 1.1.0 was the first) is minified, the core and each pack: no comments but the legal ones (each header, and each ported file\'s Apache 2.0 note, in the file it is in), and smaller', () => {
+test('the latest version (1.5.0; 1.1.0 was the first) is minified, the core and each pack: no comments but the legal ones (each header, and each ported file\'s Apache 2.0 note, in the file it is in), and smaller', () => {
   const ported = fs.readdirSync(path.join(ROOT, 'figures/src/ported')).filter(f => f.endsWith('.js')), v = version();
   let notes = 0;
   for (const part of Object.keys(PARTS)) {

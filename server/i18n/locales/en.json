@@ -13324,6 +13324,14 @@
         "name": "Dot-and-cross diagram",
         "desc": "Shared and transferred electrons in shells"
       },
+      "skeletal": {
+        "name": "Organic structures",
+        "desc": "Skeletal, condensed and full structural formulas"
+      },
+      "energyLevels": {
+        "name": "Atomic energy levels",
+        "desc": "Electron transitions, wavelengths and series"
+      },
       "populationGrowth": {
         "name": "Population growth",
         "desc": "J- and S-curves, K and the growth phases"
