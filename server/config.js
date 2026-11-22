@@ -115,6 +115,8 @@ const micBuilder = parseFlag(process.env.MIC_BUILDER, 'MIC_BUILDER', true);
 const liveTeams = parseFlag(process.env.LIVE_TEAMS, 'LIVE_TEAMS', true);
 const manipulatives = parseFlag(process.env.MANIPULATIVES, 'MANIPULATIVES', true);
 const figures = parseFlag(process.env.FIGURES, 'FIGURES', true);
+const companion = parseFlag(process.env.COMPANION, 'COMPANION', true);
+const companionWebSearch = parseFlag(process.env.COMPANION_WEB_SEARCH, 'COMPANION_WEB_SEARCH', true);
 const liveSaveSupport = parseFlag(process.env.LIVE_SAVE_SUPPORT, 'LIVE_SAVE_SUPPORT');
 const liveHomework = parseFlag(process.env.LIVE_HOMEWORK, 'LIVE_HOMEWORK');
 const liveCohost = parseFlag(process.env.LIVE_COHOST, 'LIVE_COHOST', true);
@@ -247,7 +249,7 @@ export const config = {
     ...email.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, sttLive.error, liveClassroom.error,
     liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error, quizSteps.error, micGames.error, micBuilder.error,
-    builderWebSearch.error, manipulatives.error, figures.error,
+    builderWebSearch.error, manipulatives.error, figures.error, companion.error, companionWebSearch.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
     ttsEnabled.error, ttsBuiltGames.error, ttsLocales.error,
@@ -322,6 +324,15 @@ export const config = {
   // answers the platform admin and every school staff member; everyone else gets the normal 404. FIGURES=0 is the kill
   // switch: it hides Figures (and its "Teaching tools" menu entry) from everyone, the platform admin included.
   figures: figures.on,
+  // Oomba, the teaching companion (docs/decisions.md "Oomba teaching companion"; services/companion.js): the bubble on
+  // teacher pages for Teacher plan staff (services/teacher-tools.js toolAccess). COMPANION=0 hides it from everyone.
+  // COMPANION_WEB_SEARCH=0 turns its web search off for everyone (a school can turn it off for its own staff).
+  // COMPANION_MODEL: the model it answers with (defaults to BUILDER_MODEL); COMPANION_SCREEN_MODEL: the model that
+  // checks uploaded pictures (defaults to BUILDER_SCREEN_MODEL, then COMPANION_MODEL). No model names in the code.
+  companion: companion.on,
+  companionWebSearch: companionWebSearch.on,
+  companionModel: process.env.COMPANION_MODEL || '',
+  companionScreenModel: process.env.COMPANION_SCREEN_MODEL || process.env.BUILDER_SCREEN_MODEL || '',
   liveMaxPlayers: Math.min(100, Math.max(2, Math.floor(num(process.env.LIVE_MAX_PLAYERS, 60)))),
   liveMaxSessions: Math.max(1, Math.floor(num(process.env.LIVE_MAX_SESSIONS, 60))),
   liveMaxSeats: Math.max(2, Math.floor(num(process.env.LIVE_MAX_SEATS, 2000))),

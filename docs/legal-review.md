@@ -643,3 +643,38 @@ Questions for the lawyer:
    the privacy policy and a public "how we use Google data" statement need wording before Google verifies the app?
 4. State laws (NY Ed Law 2-d, SOPIPA, SOPPA): does a teacher-initiated sync to Google need to appear in the school DPA
    template or the published list of subprocessors? (Google is the school's own processor here, not ours.)
+
+### Oomba, the teaching companion on /privacy (2026-11-22; LAWYER REVIEW PENDING)
+
+New /privacy section "Oomba, the teaching companion" (`info.privacy.companion.*`, all locales) and LEGAL_UPDATED moved
+to 2026-11-22. The feature (docs/decisions.md "Oomba teaching companion") is a chat bubble for Teacher plan staff only;
+students and kids never see it. What the text says, and what the code does:
+
+- **Sent to the AI provider (Anthropic):** the teacher's messages, the text of a document they attach (lesson plan,
+  worksheet: PDF, Word, text or Markdown) and a picture they attach, after we take out the names of the teacher's
+  students (roster, display and user names), emails, phone numbers and links (builder/lesson.js scrub, the Builder's
+  "Your lesson" rules). Tool results the AI sees carry ids and safe fields only (a class's grade and size, a dashboard's
+  widgets with their numbers and switches, never their text): never names, answers or work.
+- **Pictures:** cleaned to a JPEG with every metadata segment removed (EXIF location included), then checked by the AI
+  with the profile photo's rules plus "no people at all"; a refused picture is never stored (only an audit line with the
+  verdict). One that passes is kept only until the answer that reads it is done, at most a day.
+- **Web search** (on by default; a school can turn it off): short queries go to Anthropic's web search tool with the
+  Builder's blocked-site list, no user location, and screening of what comes back; queries can only hold what the AI saw
+  (never a name); each is logged for the admin (builder_searches, 90 days, a personal-looking query stored as
+  `[redacted]`). Found pages are shown as sources labeled "Not on Oomba" and "Oomba hasn't checked these pages".
+- **Speech:** the recording goes to the speech-to-text provider (STT_PROVIDER) and is never stored; the words go to the
+  message box for the teacher to check.
+- **Kept:** the conversation (the teacher's words, Oomba's replies, a document's extracted text up to 10,000
+  characters) 60 days after it was last used, or what the school chose (7 to 365 days); deleted with New chat and with
+  the account.
+
+Questions for the lawyer:
+
+1. Is sending a teacher's lesson-plan text and pictures (with students' names removed) to Anthropic covered by our
+   existing AI-provider wording and school terms, or does the school DPA need the companion named?
+2. Web search: is a query sent to Anthropic's web search (which may reach third-party search providers) a disclosure
+   that the privacy policy should describe in more detail, and is "Oomba hasn't checked these pages" enough as a notice?
+3. The default retention (60 days, school-configurable 7 to 365): acceptable under the state student-privacy laws we
+   follow (SOPIPA, NY Ed Law 2-d), given the content is teacher-authored and scrubbed of student names?
+4. Pictures: is refusing every picture with a person (and keeping none) sufficient, or do we need a stronger warning
+   before upload?

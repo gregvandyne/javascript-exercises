@@ -11467,3 +11467,63 @@ engine (server service and client component) that Figures uses now and the site-
   is kept; the answer reader; a second surface with one live turn per conversation) and
   `tests/unit/figures-chat-browser.test.js` (Chromium on a laptop and an iPhone 13). `figures-browser`,
   `figures-lesson-step-browser`, `figures-product` and `figures-lesson-step` now drive the chat and the menu's box.
+
+## Oomba teaching companion, phase 1 (22 Nov 2026)
+
+The owner approved the design and mockups (a bubble on every teacher page; a panel docked on the right on laptops, a
+sheet above the tab bar on phones) with these decisions, built as a new surface of the shared chat engine (see "Figures:
+Oomba's chat and the shared chat engine"):
+
+- **Who** (`services/companion-settings.js companionFor`): the Teacher plan rule, `toolAccess(u) === 'yes'`
+  (services/teacher-tools.js): the platform admin and testers (MANIPULATIVES_USERS) always; with paid plans on, staff
+  with the Teacher plan; with plans off, testers and the admin only. `COMPANION=0` hides it from everyone; a school can
+  turn it off for its staff. Everyone else gets no bubble and no upsell, never on a student or kid surface.
+- **Where** (`views/layout.js companionPage`): every teacher page on every device; not on bare pages (games, live
+  players, quest players), print pages, a student view of a lesson, or a page with its own Oomba chat (a Figures
+  worksheet, the Manipulatives: two Oomba panels would fight over one side of the screen; deviation from "every page",
+  noted for the owner). On the class dashboard's teacher screen (bare, opted in with `companion: 'dash'`) the bubble is
+  the last thing in the layout bar, never over a widget, and hides in Projector, Eyes up and full screen. The page's
+  Permissions-Policy allows the microphone (`self`) only on pages that show the bubble.
+- **The loop** (`services/companion.js`): one conversation per teacher (`ctx_key 'main'`, New chat starts again); each
+  message a job (one live turn per teacher). A real tool-use loop: `explainOomba`, `getPageContext` (page type and safe
+  ids: a class's grade, subject and number of students; on the dashboard the layout's widgets with numbers, switches and
+  choices only, never their text, and the widget library), `searchGames` (a curated metadata list for the official
+  games, `services/companion-games.js`: grades, subject, topics, CCSS standards seeded from the Number Quest unit
+  mappings in each game's notes, minutes), `searchBooks` (the Story Library; guided reading levels A to Z are mapped to
+  its grade bands and Oomba says so), `searchLessons` (CS Quest lessons, Figures generators, dashboard templates),
+  `proposeDashboardChange`, `startBuild`, `readUpload`, and the web search server tool. At most the school's steps per
+  answer; the last call is made with `tool_choice: none`. The model is `COMPANION_MODEL` or `BUILDER_MODEL` (no model id
+  in code); AI budget resting is the calm "resting" turn. Markers in the reply (`[[game:id]]`) become cards, only for
+  things a tool returned in that answer.
+- **Writes need a tap.** `proposeDashboardChange` only makes a confirm card (prefers changing an existing widget of the
+  same type over adding a second); Apply writes it to the teacher's own layout of a class they teach (engine `addTurn`),
+  Undo puts back what is still as Oomba left it; both audited (`companion.dash.apply`, `.undo`). Not now marks it.
+  `startBuild` makes a hand-off card for the Builder, Figures or the Manipulatives; "Open the Builder" opens
+  `/build/new?for=class&class=...` with the brief filled into "Your lesson" (or Figures' "Describe what you need"); the
+  teacher presses the final button there (audited `companion.handoff`). **No "build a widget"** and no "My activity"
+  widget: when no widget fits, Oomba suggests existing widgets or a combination.
+- **Privacy.** Messages, uploads and transcripts go through the Builder's scrubber (builder/lesson.js `scrub`: the
+  teacher's students' names, emails, phone numbers, links) before they are stored or sent; the reply is scrubbed too and
+  held back if it fails the Builder's text check. Web search is on by default (per-chat switch, school switch,
+  `COMPANION_WEB_SEARCH=0`), reuses builder/search.js (blocked sites, query screening, the admin search log, ai-budget
+  cost tracking), sends no location; a search that looks personal or unsafe shows no sources and is logged redacted.
+- **Uploads** (migration `0108_teacher_companion`: `oomba_chats.opts`, `oomba_files`). Documents through the Builder's
+  lesson reader (PDF, .docx, .txt, .md; 5 MB; a PDF at most 10 pages; scans refused; the shared 20 a day; the name
+  scrubber and keyword pre-filter); the file is not kept, its text (at most 10,000 characters) stays with the chat and
+  goes with it. Pictures: made a JPEG of at most 1,600 px in the browser, cleaned on the server (photos.cleanJpeg: JPEG
+  only, size limits, every metadata segment removed), then the AI check (the profile photo's rules plus "no people":
+  any person refused with a kind message, never kept, audited); a picture that passes is kept only until the answer
+  that reads it is done, never longer than a day (decided: the smallest retention that still lets Try again work).
+- **Microphone**: tap to start, tap to stop ("Listening… audio isn't kept"); the clip goes to
+  `POST /api/companion/transcribe` (services/stt.js `transcribe`) and the words land in the box to edit. A teacher
+  allowance: Teacher plan staff on their own conversation, with the Studio's caps (clips a minute, clips a day, the
+  site's minutes); the kid rules (a kid's own game) are unchanged. Upload mode only in phase 1 (the live WebSocket relay
+  is tied to a game id; words appear when the teacher taps stop).
+- **Per-school settings** (School page, Settings tab, its own form; `schools.settings.companion`, no migration): Oomba
+  on or off, web search on or off, days a chat is kept (7 to 365, default 60), messages kept (4 to 40, default 20),
+  messages sent to the AI (2 to 16, default 8, never more than kept), steps per answer (2 to 12, default 8), messages a
+  teacher may send an hour (5 to 100, default 40). Out of bounds is refused, never clamped. A teacher in no school gets
+  the defaults; one in several gets the strictest. The engine gained optional surface hooks for this (`clean`, `meta`,
+  `limits`, `prune`), backward compatible with Figures.
+- **Legal:** /privacy section (all locales), LEGAL_UPDATED 2026-11-22, docs/legal-review.md entry (lawyer review
+  pending).

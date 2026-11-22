@@ -52,7 +52,12 @@ const DEFAULTS = { steps: ['check', 'ai', 'build', 'save'], live: 'owner', textM
  *   check(u, text, ctx) -> null | code              the words (word rules, names of the teacher's students)
  *   quote?(u, ctx, ref) -> { ref, n?, text } | null what a message quotes (built on the server from the context)
  *   answer({ user, ctx, key, text, quote, history, step, turnId }) -> Promise<{ reply, apply?() -> { change?, undo?, note? } } | { failed }>
- *   undo?(u, ctx, data) -> { ok, kept, skipped } }
+ *   undo?(u, ctx, data) -> { ok, kept, skipped },
+ *   clean?(u, text, ctx) -> text                     the words as kept and sent (the companion takes students' names out)
+ *   meta?(u, ctx, body) -> object | null             what else a message carries, built on the server from the body
+ *                                                    (the companion: the page it was sent from, an attached file)
+ *   limits?(u) -> { history?, historyToAi? }         this teacher's own limits (the companion: their school's settings)
+ *   prune?(t)                                        the surface's own cleanup instead of keepDays (per-school days) }
  * -> the surface
  */
 export function defineSurface(def) {
@@ -88,6 +93,13 @@ export function eta(sid, t = now()) {
   return { src: 'data', p50: at(0.5), p75: at(0.75), max: longest() };
 }
 
+/** A surface's limits for one teacher (limits(u) over its own; a user or an id). */
+function lim(s, who) {
+  if (!s || typeof s.limits !== 'function') return s;
+  const u = typeof who === 'string' ? getUser(who) : who;
+  const l = u ? s.limits(u) || {} : {};
+  return { ...s, ...(l.history ? { history: l.history } : {}), ...(l.historyToAi ? { historyToAi: l.historyToAi } : {}) };
+}
 /** The newest turns; undo data only on the newest undoKept changes. */
 function trim(s, turns) {
   const out = turns.slice(-s.history);
@@ -136,7 +148,8 @@ export function dismiss(u, sid, key) {
 export function messageRequest(u, sid, key, text) {
   const s = surfaceOf(sid); if (!s || !u || !s.may(u)) return fail('notFound');
   const ctx = s.context(u, key); if (!ctx) return fail('notFound');
-  const v = clip(text, s.textMax).replace(/\s+/g, ' ').trim();
+  let v = clip(text, s.textMax).replace(/\s+/g, ' ').trim();
+  if (typeof s.clean === 'function') v = clip(s.clean(u, v, ctx), s.textMax).replace(/\s+/g, ' ').trim();
   if (v.length < 2) return fail('brief');
   const p = s.check(u, v, ctx); if (p) return fail(p);
   return ok({ s, ctx, text: v });
@@ -161,15 +174,17 @@ export function send(u, sid, key, body = {}) {
   const other = q.get(`SELECT c.ctx_key key FROM oomba_turns t JOIN oomba_chats c ON c.id=t.chat_id WHERE t.live_key=? AND t.status IN ${LIVE_SQL}`, liveKey);
   if (other) return fail('otherBusy', { key: other.key });
   const quote = body.quote && typeof s.quote === 'function' ? s.quote(u, ctx, body.quote) : null;
+  const meta = typeof s.meta === 'function' ? s.meta(u, ctx, body) : null;
+  if (meta && meta.code) return fail(meta.code);
   const retry = typeof body.retry === 'string' ? body.retry : '';
-  const me = { id: uid(10), role: 'me', text: r.text, at: now(), ...(quote ? { quote } : {}) };
+  const me = { id: uid(10), role: 'me', text: r.text, at: now(), ...(quote ? { quote } : {}), ...(meta ? { meta } : {}) };
   const jobId = uid(16);
   try {
     db.transaction(() => {
       const fresh = q.get('SELECT turns FROM oomba_chats WHERE id=?', row.id);
       const turns = parse(fresh.turns, []).filter(x => !retry || (x.id !== retry && x.for !== retry));
       turns.push(me);
-      q.run('UPDATE oomba_chats SET turns=?, updated_at=? WHERE id=?', JSON.stringify(trim(s, turns)), now(), row.id);
+      q.run('UPDATE oomba_chats SET turns=?, updated_at=? WHERE id=?', JSON.stringify(trim(lim(s, u), turns)), now(), row.id);
       q.run("INSERT INTO oomba_turns(id, chat_id, owner_id, surface, live_key, me_id, status, created_at) VALUES (?,?,?,?,?,?,'queued',?)", jobId, row.id, u.id, sid, liveKey, me.id, now());
       // A new message takes over from any earlier ending they haven't seen here.
       q.run("UPDATE oomba_turns SET seen_at=? WHERE chat_id=? AND status IN ('done','failed') AND seen_at IS NULL", now(), row.id);
@@ -199,7 +214,7 @@ export function addTurn(u, sid, key, { text = '', apply = null, mark = null } = 
       const a = (apply ? apply() : {}) || {};
       if (a.code) { out = fail(a.code); throw ROLLBACK; }
       turns.push({ id: uid(10), role: 'oomba', text: clip(text, s.replyMax), at: now(), ...(a.change ? { change: a.change } : {}), ...(a.undo ? { undo: a.undo } : {}), ...(a.note ? { note: a.note } : {}) });
-      q.run('UPDATE oomba_chats SET turns=?, updated_at=? WHERE id=?', JSON.stringify(trim(s, turns)), now(), row.id);
+      q.run('UPDATE oomba_chats SET turns=?, updated_at=? WHERE id=?', JSON.stringify(trim(lim(s, u), turns)), now(), row.id);
       out = ok();
     })();
   } catch (e) { if (e !== ROLLBACK) throw e; }
@@ -241,7 +256,7 @@ function finish(id, attempt, s, { reply = '', apply = null, failed = null }) {
     const turns = parse(chat.turns, []);
     if (why) turns.push({ id: uid(10), role: 'oomba', text: '', failed: why, for: r.me_id, at: now() });
     else turns.push({ id: uid(10), role: 'oomba', text: clip(reply, s.replyMax), at: now(), ...(a.change ? { change: a.change } : {}), ...(a.undo ? { undo: a.undo } : {}), ...(a.note ? { note: a.note } : {}) });
-    q.run('UPDATE oomba_chats SET turns=?, updated_at=? WHERE id=?', JSON.stringify(trim(s, turns)), now(), chat.id);
+    q.run('UPDATE oomba_chats SET turns=?, updated_at=? WHERE id=?', JSON.stringify(trim(lim(s, chat.owner_id), turns)), now(), chat.id);
     const steps = parse(r.steps, []), last = s.steps.length - 1;
     if (steps[last] === undefined || steps[last] === null) steps[last] = Math.max(0, now() - (r.started_at || now()));
     q.run('UPDATE oomba_turns SET status=?, error=?, step=?, steps=?, ended_at=? WHERE id=?', why ? 'failed' : 'done', why, last, JSON.stringify(steps), now(), id);
@@ -276,8 +291,8 @@ export function run(id) {
     if (p0) { finish(id, attempt, s, { failed: p0 }); return; }
     // 2. the AI, and the surface's own steps after it (step(n) moves the progress card).
     if (!setStep(id, attempt, 1, t0)) return;
-    const history = turns.slice(0, turns.indexOf(me)).filter(x => !x.failed).slice(-s.historyToAi);
-    const a = await s.answer({ user: owner, ctx, key: chat.ctx_key, text: me.text, quote: me.quote || null, history, turnId: id, step: n => setStep(id, attempt, Math.min(n, s.steps.length - 1), t0) });
+    const history = turns.slice(0, turns.indexOf(me)).filter(x => !x.failed).slice(-lim(s, owner).historyToAi);
+    const a = await s.answer({ user: owner, ctx, key: chat.ctx_key, text: me.text, quote: me.quote || null, meta: me.meta || null, meId: me.id, history, turnId: id, step: n => setStep(id, attempt, Math.min(n, s.steps.length - 1), t0) });
     if (!a || a.failed) { finish(id, attempt, s, { failed: (a && a.failed) || 'error' }); return; }
     setStep(id, attempt, s.steps.length - 1, t0);
     // The context may have gone meanwhile (a deleted worksheet): nothing to apply to.
@@ -321,7 +336,7 @@ export function recover(t = now()) {
 /** Finished jobs after JOBS_DAYS; conversations untouched for their surface's keepDays. */
 export function prune(t = now()) {
   q.run(`DELETE FROM oomba_turns WHERE status NOT IN ${LIVE_SQL} AND ended_at<?`, t - ENGINE.JOBS_DAYS * DAY);
-  for (const s of surfaces.values()) q.run(`DELETE FROM oomba_chats WHERE surface=? AND updated_at<? AND id NOT IN (SELECT chat_id FROM oomba_turns WHERE status IN ${LIVE_SQL})`, s.id, t - s.keepDays * DAY);
+  for (const s of surfaces.values()) if (typeof s.prune === 'function') s.prune(t); else q.run(`DELETE FROM oomba_chats WHERE surface=? AND updated_at<? AND id NOT IN (SELECT chat_id FROM oomba_turns WHERE status IN ${LIVE_SQL})`, s.id, t - s.keepDays * DAY);
 }
 /** A context is gone (a deleted worksheet): its conversations and jobs go with it. */
 export function forgetKey(sid, key) { q.run('DELETE FROM oomba_chats WHERE surface=? AND ctx_key=?', sid, String(key)); }

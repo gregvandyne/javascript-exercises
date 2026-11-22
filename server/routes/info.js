@@ -18,7 +18,7 @@ export const router = Router();
 const indexed = (path, key) => ({ index: true, path, langs: langsWithKey(key) });
 
 /** The legal pages' "Last updated" date (a calendar day, UTC). Change it with every change to their text. */
-export const LEGAL_UPDATED = '2026-11-20';
+export const LEGAL_UPDATED = '2026-11-22';
 /** Where the legal pages send people: CONTACT_EMAIL, else the owner's address. */
 const legalEmail = () => config.contactEmail || 'greg@oomba.ai';
 // The speech-to-text company named in the privacy text (STT_PROVIDER): a company name, never translated.
@@ -156,7 +156,7 @@ export const fullPrivacy = req => legalReader(req.user) || req.query.for === 'gr
 router.get('/privacy', legalPage('privacy', '🔒', req => {
   const full = fullPrivacy(req);
   return ['intro',
-    ...['stored', 'never', 'ai', 'keep'].map(s => section(req, `info.parents.${s}`, { id: s })), 'manip', googlePrivacy(req),
+    ...['stored', 'never', 'ai', 'keep'].map(s => section(req, `info.parents.${s}`, { id: s })), 'manip', 'companion', googlePrivacy(req),
     // Parent-made child accounts (docs/decisions.md): only while they are on (madeOn). No plan names, so for every reader.
     madeOn(req) ? 'made' : null,
     ...(full ? ['grownups', 'linking', 'payments', 'schoolBilling', 'schoolSetup'] : []), 'children', ...(full ? ['billingKeep', 'where'] : []),

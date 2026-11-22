@@ -1116,6 +1116,14 @@
         "h": "Rekenmaterialen in de klas",
         "p1": "<b>Live lessen:</b> als een leraar een live les met de rekenmaterialen geeft, wordt het bord van elke leerling (blokjes, plakbriefjes, tekst en antwoorden) voor de leraar bewaard en 30 dagen na het einde van de les verwijderd. Waar leerlingen wijzen (hun cursor) en opgestoken handen worden niet bewaard.",
         "p2": "<b>Een bord laten maken door AI:</b> een leraar kan een les beschrijven en de AI er een bord voor laten maken. Alleen de beschrijving van de leraar gaat naar onze AI-leverancier, Anthropic. Werk en namen van leerlingen worden nooit verstuurd."
+      },
+      "companion": {
+        "h": "Oomba, je hulpje bij het lesgeven",
+        "p1": "Leerkrachten met het Leerkracht-abonnement kunnen via een bolletje op hun eigen pagina's met Oomba chatten. Leerlingen en kinderen zien het nooit. De berichten van een leerkracht, de tekst van een bijgevoegd document en een bijgevoegde afbeelding gaan naar onze AI-leverancier, Anthropic, om het antwoord te maken. Voordat er iets wordt verstuurd, halen we de namen van de leerlingen van de leerkracht, e-mailadressen, telefoonnummers en links weg. Afbeeldingen waarop een persoon staat, worden geweigerd en nooit bewaard.",
+        "p2": "Oomba ziet alleen wat een leerkracht open heeft en veilige gegevens daarover (het leerjaar en de grootte van een klas, de widgets van een dashboard), nooit namen, antwoorden of werk van leerlingen. Een dashboard wordt pas aangepast nadat de leerkracht op Toepassen tikt, en de wijziging kan ongedaan worden gemaakt.",
+        "p3": "Als zoeken op internet aan staat, kan Oomba korte zoekopdrachten naar de webzoekfunctie van Anthropic sturen. Die bevatten nooit namen of een locatie; sites voor volwassenen, gokken, sociale netwerken en dergelijke zijn geblokkeerd, en elke zoekopdracht wordt voor ons team vastgelegd zonder de naam van de leerkracht. Pagina's van internet worden getoond als bronnen die Oomba niet heeft gecontroleerd.",
+        "p4": "Een leerkracht kan praten in plaats van typen: de opname gaat naar {provider} om er woorden van te maken, en de audio wordt nooit bewaard, niet door ons en niet door hen. De woorden komen in het berichtvak, zodat de leerkracht ze kan controleren.",
+        "p5": "We bewaren de chat van een leerkracht, met de tekst van de bijlagen, 60 dagen na het laatste gebruik (een school kan 7 tot 365 dagen kiezen); een afbeelding wordt verwijderd zodra Oomba heeft geantwoord, uiterlijk na een dag. Een leerkracht kan de chat verwijderen met Nieuwe chat, en hij wordt verwijderd met het account. Een schoolbeheerder kan Oomba of het zoeken op internet uitzetten voor de school."
       }
     }
   },
@@ -4008,6 +4016,180 @@
       "needText": "Schrijf eerst een paar woorden voor Oomba.",
       "slow": "Dat zijn veel berichten in een uur. Wacht even en probeer het dan opnieuw.",
       "other": "Er ging iets mis. Je bericht staat er nog: probeer het zo opnieuw."
+    },
+    "companion": {
+      "sees": "Ziet:",
+      "dashOf": "Dashboard van {name}",
+      "newChat": "Nieuwe chat",
+      "newChatAsk": "Een nieuwe chat beginnen? Dit gesprek en alles wat je hebt bijgevoegd, wordt verwijderd.",
+      "newChatOk": "Nieuwe chat beginnen",
+      "hello": "Hoi! Ik ben Oomba, je hulpje bij het lesgeven. Vraag me om een spel, een boek, een wijziging op je dashboard of hulp bij een les.",
+      "idea": {
+        "game": {
+          "label": "Een spel zoeken",
+          "text": "Geef me een spel over breuken voor groep 5, ongeveer 10 minuten"
+        },
+        "book": {
+          "label": "Een boek zoeken",
+          "text": "Laat me een boek over dieren zien voor een lezer op niveau M"
+        },
+        "dash": {
+          "label": "Mijn dashboard aanpassen",
+          "text": "Zet een timer van 5 minuten en klassentaken op mijn dashboard"
+        },
+        "plan": {
+          "label": "Een les plannen",
+          "text": "Help me een les van 30 minuten te plannen over "
+        },
+        "dashTimer": {
+          "label": "Timer van 5 minuten toevoegen",
+          "text": "Voeg een timer van 5 minuten toe"
+        },
+        "dashJobs": {
+          "label": "Klassentaken toevoegen",
+          "text": "Voeg een timer van 5 minuten en klassentaken toe"
+        }
+      },
+      "placeholder": "Vraag het Oomba…",
+      "leave": "Je kunt dit sluiten. Het antwoord wacht hier.",
+      "attach": "Een lesplan, document of afbeelding bijvoegen",
+      "attachNote": "Graag geen namen of werk van leerlingen en geen foto's van mensen. Wat we vinden, halen we weg.",
+      "fileNote": "Het bestand wordt niet bewaard. Alleen de tekst blijft bij deze chat.",
+      "imageNote": "De afbeelding wordt alleen bewaard tot Oomba antwoordt en daarna verwijderd.",
+      "removeFile": "Bijlage weghalen",
+      "reading": "{name} lezen…",
+      "removed": "{count, plural, one {We hebben # naam of contactgegeven weggehaald.} other {We hebben # namen of contactgegevens weggehaald.}}",
+      "pages": "{n, plural, one {# pagina} other {# pagina's}}",
+      "file": {
+        "docType": "Voeg een PDF-, Word- (.docx), tekst- of Markdown-bestand of een afbeelding toe.",
+        "docBig": "Dat bestand is groter dan 5 MB.",
+        "docPages": "Die PDF heeft meer dan 10 pagina's.",
+        "docScan": "Die PDF lijkt een scan, dus de tekst kan niet gelezen worden. Probeer een Word-bestand of kopieer de tekst.",
+        "docBad": "Dat bestand gaat niet open. Het is misschien beschadigd of beveiligd.",
+        "docEmpty": "Dat bestand heeft geen tekst om te lezen.",
+        "docLimit": "Je hebt vandaag alle bestanden bijgevoegd die kunnen. Probeer het morgen weer.",
+        "blocked": "Sommige woorden in dat bestand zijn hier niet toegestaan, dus het is niet bijgevoegd.",
+        "imgType": "Die afbeelding kan niet gelezen worden. Probeer een JPEG of PNG.",
+        "imgBig": "Die afbeelding is te groot.",
+        "imgLimit": "Je hebt vandaag alle afbeeldingen bijgevoegd die kunnen. Probeer het morgen weer.",
+        "imgPerson": "Op die afbeelding staat een persoon, dus ze is niet bijgevoegd. Oomba neemt alleen afbeeldingen zonder mensen, zoals een werkblad of een schema.",
+        "imgPersonal": "Die afbeelding toont privégegevens, zoals een naam of een schoollogo, dus ze is niet bijgevoegd.",
+        "imgUnsafe": "Die afbeelding past niet op een schoolsite, dus ze is niet bijgevoegd.",
+        "imgResting": "Afbeeldingen kunnen nu niet gecontroleerd worden, dus ook niet bijgevoegd. Probeer het later weer.",
+        "other": "Dat lukte niet. Probeer het zo meteen opnieuw."
+      },
+      "mic": {
+        "start": "Praten in plaats van typen",
+        "stop": "Stoppen met luisteren",
+        "listening": "Aan het luisteren… tik op stop als je klaar bent",
+        "kept": "audio wordt niet bewaard",
+        "denied": "De microfoon is geblokkeerd voor deze site. Sta hem toe in je browser en probeer het opnieuw.",
+        "failed": "Oomba kon dat niet verstaan. Probeer het opnieuw of typ het.",
+        "tooLong": "Dat was te lang. Praat maximaal een minuut.",
+        "tooFast": "Dat zijn veel opnames in een minuut. Wacht even.",
+        "daily": "Praten kan vandaag niet meer. Typen kan nog wel.",
+        "busy": "Praten is nu niet beschikbaar. Typen kan nog wel."
+      },
+      "web": {
+        "on": "Zoeken op internet aan",
+        "off": "Zoeken op internet uit",
+        "offSchool": "Zoeken op internet staat uit voor je school",
+        "from": "Van internet",
+        "notOn": "Niet op Oomba",
+        "warn": "Oomba heeft deze pagina's niet gecontroleerd. Bekijk ze voordat je ze met je klas deelt."
+      },
+      "step": {
+        "explain": "Nagekeken hoe Oomba Academy werkt",
+        "page": "Deze pagina gelezen",
+        "dash": "Je indeling {q} gelezen ({n} widgets)",
+        "games": "Spellen gezocht: {q}",
+        "books": "In de Story Library gezocht",
+        "booksLevel": "Leesniveau {q} gekoppeld",
+        "lessons": "Lessen en werkbladen gezocht",
+        "propose": "Een wijziging klaargezet om te controleren",
+        "dashNo": "Kon die dashboardwijziging niet plannen",
+        "brief": "Een beschrijving geschreven",
+        "briefNo": "Kon die beschrijving niet schrijven",
+        "read": "Je bestand gelezen ({n, plural, one {# pagina} other {# pagina's}}, alleen tekst)",
+        "readNo": "Kon dat bestand niet vinden",
+        "readImage": "Je afbeelding bekeken",
+        "web": "Op internet gezocht ({n, plural, one {# zoekopdracht} other {# zoekopdrachten}})",
+        "webNo": "Op internet gezocht, maar de resultaten weggelaten",
+        "toolNo": "Eén stap lukte niet"
+      },
+      "stepsSum": "{n, plural, one {# stap} other {# stappen}} · {s} s",
+      "prog": {
+        "check": {
+          "now": "Namen van leerlingen weghalen",
+          "done": "Namen van leerlingen weggehaald"
+        },
+        "ai": {
+          "now": "Oomba denkt na",
+          "done": "Oomba heeft nagedacht"
+        },
+        "tools": {
+          "now": "Aan het opzoeken",
+          "done": "Opgezocht"
+        },
+        "answer": {
+          "now": "Schrijft het antwoord",
+          "done": "Geantwoord"
+        }
+      },
+      "card": {
+        "grade": "Leerjaar {g}",
+        "minutes": "Ongeveer {n} min",
+        "live": "Live in de klas",
+        "play": "Spelen",
+        "host": "Live leiden",
+        "assign": "Toewijzen",
+        "read": "Lezen",
+        "open": "Openen",
+        "lessonKind": "CS Quest-les",
+        "genKind": "Figures-werkblad"
+      },
+      "dash": {
+        "set": "aanpassen: {what}",
+        "add": "toevoegen {what}",
+        "remove": "weghalen",
+        "minutes": "{n, plural, one {# minuut} other {# minuten}}",
+        "apply": "Toepassen",
+        "notNow": "Nu niet",
+        "applied": "Toegepast",
+        "declined": "Niet gewijzigd",
+        "done": "Klaar. Aangepast op je dashboard:",
+        "highlighted": "Even gemarkeerd op je scherm.",
+        "openDash": "Dashboard openen"
+      },
+      "hand": {
+        "builder": "Klasactiviteit in de Builder",
+        "figures": "Werkblad in Figures",
+        "manipulatives": "Bord in de Manipulatieven",
+        "open": {
+          "builder": "De Builder openen",
+          "figures": "Figures openen",
+          "manipulatives": "De Manipulatieven openen"
+        },
+        "change": "Beschrijving aanpassen",
+        "changeText": "Pas de beschrijving aan: ",
+        "grade": "Leerjaar",
+        "practice": "Oefent",
+        "help": "Hulp",
+        "length": "Duur",
+        "fromPlan": "Uit je plan",
+        "filled": "Oomba heeft je beschrijving ingevuld. Controleer die en druk dan op de knop om het te maken."
+      },
+      "err": {
+        "words": "Sommige woorden in je bericht zijn niet toegestaan. Pas ze aan en stuur het opnieuw.",
+        "personal": "Laat telefoonnummers, e-mailadressen en links weg en stuur het opnieuw.",
+        "brief": "Schrijf eerst een paar woorden voor Oomba.",
+        "chatBusy": "Oomba is nog bezig met je vorige bericht. Wacht even.",
+        "otherBusy": "Oomba is nog bezig met je vorige bericht. Wacht even.",
+        "notFound": "Dit account kan Oomba nu niet gebruiken.",
+        "slow": "Dat zijn veel berichten in een uur. Wacht even en probeer het dan opnieuw.",
+        "fileGone": "Die bijlage is er niet meer. Voeg hem opnieuw toe.",
+        "other": "Er ging iets mis. Je bericht staat er nog: probeer het zo meteen opnieuw."
+      }
     }
   },
   "favorites": {
@@ -13167,6 +13349,30 @@
       "ready": "Oomba heeft de resultaten gelezen.",
       "resting": "Oomba rust nu even. Hier is de lezing op basis van de cijfers.",
       "failed": "Oomba kon de resultaten deze keer niet lezen. Hier is de lezing op basis van de cijfers."
+    }
+  },
+  "companion": {
+    "settings": {
+      "title": "Oomba, je hulpje bij het lesgeven",
+      "text": "Leerkrachten met het Leerkracht-abonnement kunnen Oomba via een bolletje op hun pagina's vragen om spellen, boeken, dashboardwijzigingen en hulp bij lessen. Leerlingen zien het nooit. Hun berichten, bijgevoegde tekst en afbeeldingen gaan naar onze AI-leverancier, Anthropic, zonder de namen van leerlingen.",
+      "on": "Oomba voor de leerkrachten van deze school",
+      "onHint": "Uit: geen Oomba-bolletje voor leerkrachten van deze school.",
+      "web": "Zoeken op internet",
+      "webHint": "Aan: Oomba mag op internet zoeken voor vragen over lesgeven en toont de bronnen. Zoekopdrachten bevatten nooit namen.",
+      "retentionDays": "Dagen dat een chat bewaard blijft",
+      "retentionDaysHint": "Een chat die zo veel dagen niet gebruikt is, wordt met de bijlagen verwijderd. {min} tot {max}; wij raden {def} aan.",
+      "keep": "Bewaarde berichten per chat",
+      "keepHint": "Oudere berichten worden verwijderd. {min} tot {max}; wij raden {def} aan.",
+      "send": "Berichten die Oomba terugleest",
+      "sendHint": "Hoeveel eerdere berichten met een nieuw bericht naar de AI gaan. {min} tot {max}, en niet meer dan de bewaarde; wij raden {def} aan.",
+      "steps": "Stappen voor één antwoord",
+      "stepsHint": "Hoe vaak Oomba hoogstens iets mag opzoeken voor één antwoord. {min} tot {max}; wij raden {def} aan.",
+      "perHour": "Berichten die een leerkracht per uur mag sturen",
+      "perHourHint": "{min} tot {max}; wij raden {def} aan.",
+      "err": {
+        "bounds": "Kies een getal van {min} tot {max}.",
+        "sendKeep": "Kies een getal van {min} tot {max}: niet meer dan de bewaarde berichten."
+      }
     }
   }
 }

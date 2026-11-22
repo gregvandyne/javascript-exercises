@@ -39,6 +39,7 @@ import { teacherLoop } from '../views/teacher-loop.js';
 import { LOOP_CSS } from './teach-loop.js';
 import * as DASH from '../services/dash.js';
 import { emailInvitesPanel } from './staff-invites.js';
+import { companionSettings } from '../views/companion-settings.js';
 import { openCount as openEmailInvites } from '../services/staff-email-invites.js';
 import { classBanner as manipBanner } from './manipulatives.js';
 
@@ -575,7 +576,8 @@ function schoolSettings(req, s) {
     <div class="savebar"><span class="small unsaved-note" id="set-unsaved" hidden>${ico('⚠️', { size: 18 })} ${t('school.settings.unsaved')}</span><button class="btn btn-primary" type="submit">${t('school.save')}</button></div>
   </form>
   ${st.chatNotice && st.chat === 'off' ? html`<form id="chat-notice-seen" data-api="/api/schools/${s.id}/settings" data-reload hidden><input type="hidden" name="chatNotice" value="seen"></form>` : ''}</section>
-  ${schoolGoogleSettings(req, s)}`;
+  ${schoolGoogleSettings(req, s)}
+  ${companionSettings(req, s)}`;
 }
 
 // ---- school page APIs
