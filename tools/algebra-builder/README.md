@@ -15,7 +15,8 @@ node build.mjs --check  # exit 1 if the committed game is not what these sources
 - `src/lib/oomba.ts`: everything that talks to Oomba (lesson parameters, links, copy, Oomba Kit effects).
 - `src/lib/nav.svelte.ts`, `src/App.svelte`: the screens (gallery, setup, play, about).
 - The other files in `src/lib` are the original's activities, checks, whiteboard and pictures.
-- `vendor/mathfield-*`: the math input field, vendored.
+- `vendor/mathfield-*`: the math input field, vendored, its built `dist/` committed (the build needs it; `.gitignore`
+  drops only the app's own `/dist/`).
 
 A link to one problem: `/play/algebra-builder?mode=solve&chapter=2xp3q7&level=1&lock=1`
 (`chapter` is the problem with `+ = ^ ( )` written as `p q e o c`; `level` 1 or 2 is the live balance on or off for
