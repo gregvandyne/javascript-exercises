@@ -1141,3 +1141,24 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 
 /* A lesson's Figure step (routes/lessons.js figureStepView): Edit questions and Print side by side. */
 .fstep-acts{gap:8px;flex-wrap:wrap}
+
+/* Mistake Hunt, Phase 2: a graded proofread step (views/proof-step.js) on the progress page, the lesson page and the
+   Assign page (routes/game-folders.js). Counts per kind as found / missed bars, never a ranking. */
+.pf-results .fs-show .chk{display:inline-flex;gap:8px;align-items:center}
+.pf-stats{display:flex;flex-wrap:wrap;gap:var(--s3);margin:var(--s3) 0}
+.pf-stats p{margin:0;padding:var(--s2) var(--s3);border:1px solid var(--line);border-radius:14px;background:var(--card);min-width:150px}
+.pf-results h3{margin:var(--s3) 0 0}
+.pf-kinds{display:grid;gap:var(--s2);padding:0;margin:var(--s2) 0 var(--s3)}
+.pf-kline{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px var(--s3);align-items:baseline}
+.pf-kline .small{white-space:nowrap}
+.pf-bar{height:12px;border-radius:999px;background:var(--bad-bg);overflow:hidden;margin-top:4px}
+.pf-bar span{display:block;height:100%;background:var(--ok);border-radius:999px}
+.pf-step>*+*{margin-top:var(--s3)}
+.pf-plist{margin:0;padding-inline-start:1.4em;display:grid;gap:4px}
+.pf-plist li span{margin-inline-start:6px}
+.pf-setcard{display:flex;gap:var(--s3);align-items:center;padding:var(--s3);border-radius:16px;background:var(--card-2);margin-bottom:var(--s3)}
+.pf-setcard p{margin:2px 0 0}
+.pf-setic{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--accent-soft);flex:none}
+.pf-assign .chk{display:inline-flex;gap:8px;align-items:center;min-height:44px}
+.pf-practice{margin-top:var(--s4);border-top:1px solid var(--line);padding-top:var(--s3)}
+.pf-practice summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700}
