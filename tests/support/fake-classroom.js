@@ -1,7 +1,8 @@
 // A small stand-in for the Google Classroom API for tests (like tests/support/fake-stripe.js). It never talks to Google
 // and imports nothing from server/. Point CLASSROOM_API_BASE at it; the OAuth side (tokens, refresh, revoke) is
 // tests/support/fake-google.js. Any "Bearer fake-at-…" token is accepted and acts as the one teacher, `teacherId`.
-// Courses, their students, coursework and its submissions, materials, announcements and topics (a topic deleted from
+// Courses, their students, coursework and its submissions, materials, announcements (to the class or to some of its
+// students; deleted by id) and topics (a topic deleted from
 // `topics` is gone, as when a teacher deletes it in Classroom).
 // The values here are fake test data, not secrets. Run alone: node tests/support/fake-classroom.js --port 5940
 import http from 'node:http';
@@ -76,8 +77,19 @@ export async function startFakeClassroom({ port = 0, host = '127.0.0.1' } = {}) 
       const c = courses.get(decodeURIComponent(m[1])); if (!c) return gErr(res, 404, 'NOT_FOUND');
       if (!c.teachers.has('me')) return gErr(res, 403, 'PERMISSION_DENIED');
       if (typeof body.text !== 'string' || !body.text.trim()) return gErr(res, 400, 'INVALID_ARGUMENT', 'text');
+      // For some students only: assigneeMode INDIVIDUAL_STUDENTS and their ids, each a student of the course.
+      if (body.assigneeMode && !['ALL_STUDENTS', 'INDIVIDUAL_STUDENTS'].includes(body.assigneeMode)) return gErr(res, 400, 'INVALID_ARGUMENT', 'assigneeMode');
+      if (body.assigneeMode === 'INDIVIDUAL_STUDENTS') {
+        const ids = body.individualStudentsOptions && body.individualStudentsOptions.studentIds;
+        if (!Array.isArray(ids) || !ids.length || ids.some(x => !c.students.some(st => st.userId === x))) return gErr(res, 400, 'INVALID_ARGUMENT', 'individualStudentsOptions.studentIds');
+      } else if (body.individualStudentsOptions) return gErr(res, 400, 'INVALID_ARGUMENT', 'individualStudentsOptions needs INDIVIDUAL_STUDENTS');
       const aid = id(); announcements.set(aid, { courseId: c.id, body });
       return send(res, 200, { id: aid, courseId: c.id, ...body, alternateLink: `https://classroom.google.com/c/${c.id}/p/${aid}` });
+    }
+    if (req.method === 'DELETE' && (m = u.pathname.match(/^\/v1\/courses\/([^/]+)\/announcements\/([^/]+)$/))) {
+      const a = announcements.get(decodeURIComponent(m[2]));
+      if (!a || a.courseId !== decodeURIComponent(m[1])) return gErr(res, 404, 'NOT_FOUND');
+      announcements.delete(decodeURIComponent(m[2])); return send(res, 200, {});
     }
     if ((m = u.pathname.match(/^\/v1\/courses\/([^/]+)\/topics(?:\/([^/]+))?$/))) {
       const c = courses.get(decodeURIComponent(m[1])); if (!c) return gErr(res, 404, 'NOT_FOUND');

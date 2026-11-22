@@ -32,6 +32,7 @@ import { cleanFeedRef, feedDay, forgetFeedsOf } from './dash-calendar.js';
 // worked out here exactly as on their screen.
 import * as B from '../../public/js/dash-build.js';
 import { lookup } from '../i18n/index.js';
+import * as GC from './gclassroom.js';
 import { fits, MAX_DASH_VERSION } from './qr.js';
 
 // ---------------------------------------------------------------- the widget registry
@@ -148,8 +149,15 @@ export const PRACTICE = {
 // ---- stage 5 (docs/decisions.md "Classroom dashboards, stage 5")
 /** Hall pass places a teacher may offer (fixed: students never type where they are going). */
 export const PASS_PLACES = ['bathroom', 'water', 'nurse', 'office', 'library'];
-/** Reasons for a student's point: positive behaviours only. There is no reason to take a point away. */
-export const POINT_REASONS = ['kind', 'helpful', 'teamwork', 'effort', 'listening', 'responsible', 'brave', 'creative'];
+/** Reasons for a point: positive behaviours only, a fixed list (nobody types one), in the order the picker shows them:
+ *  the owner's examples first (docs/decisions.md "Dashboard points: reasons, whole-class points, the student's view and
+ *  Google Classroom"). The first list's keys (kind, helpful, teamwork, effort, listening, responsible, brave, creative)
+ *  are kept as they were, so points stored before read the same. There is no reason to take a point away. */
+export const POINT_REASONS = ['leadership', 'teamwork', 'focus', 'kind', 'example', 'effort', 'participation', 'helpful', 'listening', 'responsible', 'brave', 'creative'];
+/** Other names a request may use for a reason -> its stored key. */
+export const POINT_ALIASES = { kindness: 'kind', helping: 'helpful', hardwork: 'effort', 'hard-work': 'effort', focused: 'focus', goodexample: 'example', 'good-example': 'example', ideas: 'creative', participating: 'participation', leader: 'leadership' };
+/** A reason as stored ('' when it is not one of the list). */
+export const pointReason = r => { const k = String(r || '').trim().toLowerCase(); const v = Object.hasOwn(POINT_ALIASES, k) ? POINT_ALIASES[k] : k; return POINT_REASONS.includes(v) ? v : ''; };
 /** The mood check-in's faces, in order (an index is stored, never text). */
 export const MOODS = ['great', 'good', 'okay', 'meh', 'sad'];
 /** Widgets that show something from outside Oomba (or the camera): the teacher's screen and projector only. Never
@@ -263,7 +271,10 @@ export const WIDGETS = [
   { id: 'score', icon: '🏆', group: 'class', who: 'teacher', size: [5, 3], min: [4, 3], words: ['team', 'plus', 'minus', 'reset',
     // stage 5: points for each student (positive only), from a fixed list of reasons
     'reason', 'award', 'awardAll', 'everyone', 'undo', 'undone', 'classTotal', 'mine', 'given', 'resetAll', 'resetConfirm', 'hidden', 'nobody', 'loading', 'pick',
-    ...POINT_REASONS.map(r => `r_${r}`)], settings: [
+    // whole-class points, the Recent list and Google Classroom (docs/decisions.md "Dashboard points: reasons, ...")
+    'classPoints', 'classGiven', 'classPick', 'recent', 'recentClass', 'recentNone', 'gcPost', 'gcPostHint', 'gcAllow', 'gcPosted', 'gcPending', 'gcFailed',
+    'gcNotOnClassroom', 'gcTooMany', 'gcReconnect', 'gcOff', 'gcOn', 'onlyYou',
+    ...POINT_REASONS.map(r => `r_${r}`), ...POINT_REASONS.map(r => `f_${r}`)], settings: [
     { key: 'mode', type: 'select', options: ['teams', 'students'], def: 'teams' },
     { key: 'teams', type: 'textarea', max: 240, def: '' },
     { key: 'scores', type: 'scores', hidden: true, def: [] }] },
@@ -1580,7 +1591,7 @@ function stage5Live(c, u, role, shown) {
     const kids = studentsOf(c);
     out.crew = Object.fromEntries(jobs.map(w => [w.id, crewPeople(kids, w.s && w.s.crew).map(k => (teacher ? k : { name: k.name }))]));
   }
-  if (shown.some(w => w.type === 'score' && w.s && w.s.mode === 'students')) out.points = teacher ? pointsAll(c) : pointsMine(c, u.id);
+  if (shown.some(w => w.type === 'score' && w.s && w.s.mode === 'students')) out.points = teacher ? pointsAll(c, u) : pointsMine(c, u.id);
   if (has('mood')) out.mood = teacher ? moodCounts(c) : { mine: moodMine(c, u.id) };
   return out;
 }
@@ -1666,38 +1677,149 @@ export function jobAssign(jobCount, people, shift = 0) {
 }
 
 // ---------------------------------------------------------------- points for each student (positive only)
-// The teacher gives a point with a reason from a fixed list. There is no minus: a point given by mistake can be taken
-// back once (Undo), never below zero. A student sees only their own total and the class's; nobody sees a ranking.
+// The teacher gives a point with a reason from a fixed list, to one student or to the whole class (one point for the
+// class, kept as the class's own tally: never one point per student). There is no minus: a point given by mistake can be
+// taken back (Undo takes back the latest matching award), never below zero. Each award is remembered (who gave it, the
+// student or the class, the reason, when) for the Recent lists. A student sees only their own points and the class's;
+// nobody sees a ranking. docs/decisions.md "Dashboard points: reasons, whole-class points, the student's view and
+// Google Classroom".
+export const MAX_POINTS = 9999;
+/** Awards are remembered for a year, and at most this many per class (the oldest go first). */
+export const POINT_HISTORY_DAYS = 365;
+export const POINT_HISTORY_MAX = 2000;
+/** How many recent awards each list shows. */
+export const POINT_RECENT = 6;
 const pointRows = c => q.all(`SELECT p.user_id, p.reason, p.n FROM dash_points p JOIN class_members m ON m.class_id=p.class_id AND m.user_id=p.user_id AND m.status='active' AND m.role='student'
   WHERE p.class_id=? AND p.n>0`, c.id);
-export function pointsAll(c) {
+/** The whole class's points: { n, r: { reason: n } }. */
+export function classPoints(c) {
+  const rows = q.all('SELECT reason, n FROM dash_class_points WHERE class_id=? AND n>0', c.id);
+  return { n: rows.reduce((a, b) => a + b.n, 0), r: Object.fromEntries(rows.map(x => [x.reason, x.n])) };
+}
+/** The latest awards: the whole class's (user null) or one student's; who: true adds the student's name (the teacher's
+ *  list only). Awards of students who left the class are not listed. */
+function recentAwards(c, { user, cls = false, n = POINT_RECENT, names = null } = {}) {
+  const rows = cls
+    ? q.all('SELECT id, user_id, reason, at, gc FROM dash_point_awards WHERE class_id=? AND user_id IS NULL ORDER BY at DESC, rowid DESC LIMIT ?', c.id, n)
+    : user ? q.all('SELECT id, user_id, reason, at, gc FROM dash_point_awards WHERE class_id=? AND user_id=? ORDER BY at DESC, rowid DESC LIMIT ?', c.id, user, n)
+      : q.all('SELECT id, user_id, reason, at, gc FROM dash_point_awards WHERE class_id=? ORDER BY at DESC, rowid DESC LIMIT ?', c.id, n * 3);
+  const out = [];
+  for (const r of rows) {
+    if (names && r.user_id && !names.has(r.user_id)) continue;
+    out.push(names ? { id: r.id, user: r.user_id || null, name: r.user_id ? names.get(r.user_id) : null, reason: r.reason, at: r.at, gc: r.gc ? r.gc.split(':')[0] : '' } : { reason: r.reason, at: r.at });
+    if (out.length >= n) break;
+  }
+  return out;
+}
+/** The teacher's view: every student in name order (never ranked), the students' total, the class's own points, the
+ *  latest awards and the Google Classroom switch (gcState). */
+export function pointsAll(c, u = null) {
   const rows = pointRows(c), by = new Map();
   for (const r of rows) { const x = by.get(r.user_id) || { n: 0, r: {} }; x.n += r.n; x.r[r.reason] = r.n; by.set(r.user_id, x); }
-  const list = studentsOf(c).map(k => ({ id: k.id, name: k.name, n: (by.get(k.id) || {}).n || 0, r: (by.get(k.id) || {}).r || {} }));
-  return { list, total: list.reduce((a, b) => a + b.n, 0) };
+  const kids = studentsOf(c);
+  const list = kids.map(k => ({ id: k.id, name: k.name, n: (by.get(k.id) || {}).n || 0, r: (by.get(k.id) || {}).r || {} }));
+  return { list, total: list.reduce((a, b) => a + b.n, 0), cls: classPoints(c), recent: recentAwards(c, { names: new Map(kids.map(k => [k.id, k.name])) }), gc: gcState(u, c) };
 }
+/** A student's view: their own points (by reason, and their latest awards) and the class's (its points, its latest
+ *  awards, and the students' total). Never another student's name, id or points. */
 export function pointsMine(c, userId) {
   const rows = pointRows(c), mine = rows.filter(r => r.user_id === userId);
-  return { mine: mine.reduce((a, b) => a + b.n, 0), r: Object.fromEntries(mine.map(r => [r.reason, r.n])), total: rows.reduce((a, b) => a + b.n, 0) };
+  return { mine: mine.reduce((a, b) => a + b.n, 0), r: Object.fromEntries(mine.map(r => [r.reason, r.n])), total: rows.reduce((a, b) => a + b.n, 0),
+    cls: classPoints(c), recent: recentAwards(c, { user: userId }), classRecent: recentAwards(c, { cls: true }) };
 }
-export const MAX_POINTS = 9999;
-/** award: one point for one student (user) or every student (user 'all') for a reason; undo: take one such point
- *  back (never below zero); reset: everyone back to zero. */
+/** Has this class any points at all (a student's, the class's, or an award still remembered)? */
+export const hasPoints = c => !!(q.get('SELECT 1 FROM dash_points WHERE class_id=? AND n>0 LIMIT 1', c.id) || q.get('SELECT 1 FROM dash_class_points WHERE class_id=? AND n>0 LIMIT 1', c.id)
+  || q.get('SELECT 1 FROM dash_point_awards WHERE class_id=? LIMIT 1', c.id));
+const trimHistory = c => {
+  q.run('DELETE FROM dash_point_awards WHERE class_id=? AND at<?', c.id, now() - POINT_HISTORY_DAYS * 86400e3);
+  q.run('DELETE FROM dash_point_awards WHERE class_id=? AND id NOT IN (SELECT id FROM dash_point_awards WHERE class_id=? ORDER BY at DESC, rowid DESC LIMIT ?)', c.id, c.id, POINT_HISTORY_MAX);
+};
+/**
+ * award: one point for a reason, to one student (user: their id) or to the whole class (user 'class'; 'all', what the
+ * first version sent for "everyone", means the class too); undo: take back the latest such award (never below zero);
+ * reset: every count back to zero and the remembered awards gone (a fresh start: students no longer see the old ones).
+ * -> the teacher's view, and for an award or undo the award ({ id, user, reason, gcId }) for services/gclassroom.js.
+ */
 export function pointsAction(u, c, { action, user, reason } = {}) {
-  if (action === 'reset') { q.run('DELETE FROM dash_points WHERE class_id=?', c.id); return pointsAll(c); }
+  if (action === 'reset') {
+    tx(() => { for (const t of ['dash_points', 'dash_class_points', 'dash_point_awards']) q.run(`DELETE FROM ${t} WHERE class_id=?`, c.id); });
+    return pointsAll(c, u);
+  }
   if (!['award', 'undo'].includes(action)) return { error: 'kind' };
-  if (!POINT_REASONS.includes(reason)) return { error: 'reason' };
-  const kids = studentsOf(c), who = user === 'all' ? kids : kids.filter(k => k.id === String(user || ''));
-  if (!who.length) return { error: user === 'all' ? 'nobody' : 'notFound' };
+  const why = pointReason(reason);
+  if (!why) return { error: 'reason' };
+  const cls = user === 'class' || user === 'all';
+  const kid = cls ? null : studentsOf(c).find(k => k.id === String(user || ''));
+  if (!cls && !kid) return { error: 'notFound' };
+  if (cls && !studentsOf(c).length) return { error: 'nobody' };
+  const who = kid ? kid.id : null;
+  let award = null;
   tx(() => {
-    for (const k of who) {
-      if (action === 'award') q.run(`INSERT INTO dash_points(class_id, user_id, reason, n, at) VALUES (?,?,?,1,?)
-        ON CONFLICT(class_id, user_id, reason) DO UPDATE SET n=MIN(?, n+1), at=excluded.at`, c.id, k.id, reason, now(), MAX_POINTS);
-      else if (action === 'undo') q.run('UPDATE dash_points SET n=MAX(0, n-1) WHERE class_id=? AND user_id=? AND reason=?', c.id, k.id, reason);
+    if (action === 'award') {
+      if (kid) q.run(`INSERT INTO dash_points(class_id, user_id, reason, n, at) VALUES (?,?,?,1,?)
+        ON CONFLICT(class_id, user_id, reason) DO UPDATE SET n=MIN(?, n+1), at=excluded.at`, c.id, kid.id, why, now(), MAX_POINTS);
+      else q.run(`INSERT INTO dash_class_points(class_id, reason, n, at) VALUES (?,?,1,?)
+        ON CONFLICT(class_id, reason) DO UPDATE SET n=MIN(?, n+1), at=excluded.at`, c.id, why, now(), MAX_POINTS);
+      award = { id: uid(16), user: who, reason: why };
+      q.run('INSERT INTO dash_point_awards(id, class_id, user_id, reason, by_id, at) VALUES (?,?,?,?,?,?)', award.id, c.id, who, why, u ? u.id : null, now());
+      trimHistory(c);
+    } else {
+      if (kid) q.run('UPDATE dash_points SET n=MAX(0, n-1) WHERE class_id=? AND user_id=? AND reason=?', c.id, kid.id, why);
+      else q.run('UPDATE dash_class_points SET n=MAX(0, n-1) WHERE class_id=? AND reason=?', c.id, why);
+      // The latest matching award goes (a count stored before awards were remembered has none: only the count drops).
+      const last = q.get(`SELECT id, gc_id FROM dash_point_awards WHERE class_id=? AND reason=? AND ${kid ? 'user_id=?' : 'user_id IS NULL'} ORDER BY at DESC, rowid DESC LIMIT 1`, ...(kid ? [c.id, why, kid.id] : [c.id, why]));
+      if (last) { q.run('DELETE FROM dash_point_awards WHERE id=?', last.id); award = { id: last.id, user: who, reason: why, gcId: last.gc_id || '' }; }
     }
+    q.run('DELETE FROM dash_points WHERE class_id=? AND n<=0', c.id);
+    q.run('DELETE FROM dash_class_points WHERE class_id=? AND n<=0', c.id);
   });
-  q.run('DELETE FROM dash_points WHERE class_id=? AND n<=0', c.id);
-  return pointsAll(c);
+  return { ...pointsAll(c, u), award };
+}
+
+// ---- points to Google Classroom
+/** Is "Also post to Google Classroom" on for this class? (off by default; one switch per class, kept on dash_class) */
+export const pointsGcOn = c => !!(q.get('SELECT points_gc FROM dash_class WHERE class_id=?', c.id) || {}).points_gc;
+/** What the teacher's points widget shows about Google Classroom: nothing (show false) unless Classroom is set up on
+ *  this site and the class is linked to a course. ready: this teacher may post announcements there now; allow: where
+ *  to connect again or allow announcements (the class's Google Classroom page) when not. */
+export function gcState(u, c) {
+  if (!u || !GC.enabled() || !GC.mayConnect(u) || !GC.linkOf(c.id)) return { show: false };
+  const st = GC.connectionState(u.id), ready = st === 'ok' && GC.can(u.id, 'announce');
+  return { show: true, on: pointsGcOn(c), ready, why: ready ? '' : st === 'ok' ? 'needsScope' : st === 'none' ? 'notConnected' : 'reconnect', allow: `/class/${c.id}/google-classroom#gc-announce` };
+}
+/** The switch, for this class. -> the teacher's view */
+export function setPointsGc(u, c, on) {
+  q.run('INSERT INTO dash_class(class_id, points_gc) VALUES (?,?) ON CONFLICT(class_id) DO UPDATE SET points_gc=excluded.points_gc', c.id, on ? 1 : 0);
+  return pointsAll(c, u);
+}
+/** The announcement's words, in the teacher's language: a whole-class point for the class stream, or a student's point
+ *  for that student only ("You earned a point for teamwork!"). Never a name, a count or a ranking. */
+export const pointText = (t, award) => t(award.user ? 'dash.points.gc.student' : 'dash.points.gc.class', { reason: t(`dash.w.score.f_${award.reason}`) });
+const markAward = (id, gc, gcId = null) => q.run('UPDATE dash_point_awards SET gc=?, gc_id=COALESCE(?, gc_id) WHERE id=?', gc, gcId, id);
+/**
+ * After an award is saved: when the switch is on and the class is linked, post it to Google Classroom
+ * (services/gclassroom.js announcePoint). The award never waits on Google for long and never fails because of it: after
+ * `wait` ms the answer is { pending: true } and the post finishes on its own (the Recent list then shows it).
+ * -> null (nothing to post) | { ok: true, pending? } | { ok: false, code } (calm words on the teacher's screen)
+ */
+export async function postPoint(u, c, award, t, { wait = 2500 } = {}) {
+  if (!award || !pointsGcOn(c)) return null;
+  const st = gcState(u, c); if (!st.show) return null;
+  if (!st.ready) { markAward(award.id, `failed:${st.why}`); return { ok: false, code: st.why }; }
+  const p = GC.announcePoint(u, c, { text: pointText(t, award), studentId: award.user || '' })
+    .then(r => { markAward(award.id, r.ok ? 'posted' : `failed:${r.code}`, r.ok ? r.id || null : null); return r.ok ? { ok: true } : { ok: false, code: r.code }; })
+    .catch(() => { markAward(award.id, 'failed:googleDown'); return { ok: false, code: 'googleDown' }; });
+  let timer;
+  const late = new Promise(r => { timer = setTimeout(() => r({ ok: true, pending: true }), wait); timer.unref?.(); });
+  try { return await Promise.race([p, late]); } finally { clearTimeout(timer); }
+}
+/** Undo of a point that went to Classroom: its announcement goes there too (best effort, never waited on for long). */
+export async function unpostPoint(u, c, award, { wait = 2500 } = {}) {
+  if (!award || !award.gcId || !gcState(u, c).show) return null;
+  const p = GC.unannouncePoint(u, c, award.gcId).catch(() => ({ ok: false }));
+  let timer;
+  const late = new Promise(r => { timer = setTimeout(() => r({ ok: true, pending: true }), wait); timer.unref?.(); });
+  try { return await Promise.race([p, late]); } finally { clearTimeout(timer); }
 }
 
 // ---------------------------------------------------------------- mood check-in (faces only)
@@ -1742,8 +1864,10 @@ export function forgetUser(userId) {
   // Stage 2: their place in help queues, their check answers, and any picker list they are on.
   q.run('DELETE FROM dash_help WHERE user_id=?', userId);
   q.run('DELETE FROM dash_answers WHERE user_id=?', userId);
-  // Stage 5: their hall pass, points and mood.
-  for (const t of ['dash_passes', 'dash_points', 'dash_moods']) q.run(`DELETE FROM ${t} WHERE user_id=?`, userId);
+  // Stage 5: their hall pass, points (and the awards remembered for them) and mood. Points they gave as a teacher stay
+  // with the class, no longer saying who gave them.
+  for (const t of ['dash_passes', 'dash_points', 'dash_point_awards', 'dash_moods']) q.run(`DELETE FROM ${t} WHERE user_id=?`, userId);
+  q.run('UPDATE dash_point_awards SET by_id=NULL WHERE by_id=?', userId);
   for (const r of q.all("SELECT class_id, picker FROM dash_class WHERE picker LIKE ?", `%${userId}%`)) {
     const p = json(r.picker, {});
     for (const k of ['picked', 'away']) if (Array.isArray(p[k])) p[k] = p[k].filter(id => id !== userId);
