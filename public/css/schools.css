@@ -1138,3 +1138,6 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .fs-table td.fs-bad{color:var(--bad-ink)}
 .fs-show .chk{display:inline-flex;gap:8px;align-items:center}
 @media (max-width:560px){.fs-q{grid-template-columns:1fr}.fs-n{grid-row:auto}.fs-body{grid-column:1}}
+
+/* A lesson's Figure step (routes/lessons.js figureStepView): Edit questions and Print side by side. */
+.fstep-acts{gap:8px;flex-wrap:wrap}

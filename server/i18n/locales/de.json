@@ -3746,7 +3746,26 @@
       "removeOption": "Option {letter} entfernen",
       "fromFigure": "Die richtige Option wird aus der Abbildung ermittelt. Ändere eine Option oder markiere eine andere, um selbst zu wählen.",
       "needTwo": "Schreibe mindestens 2 Optionen.",
-      "needRight": "Markiere die richtige Option."
+      "needRight": "Markiere die richtige Option.",
+      "testAiTitle": "Einen Test entwerfen",
+      "topicLabel": "Thema",
+      "topicHint": "Zum Beispiel: Flächeninhalt von Rechtecken und Dreiecken",
+      "subject": "Fach",
+      "anySubject": "Jedes Fach",
+      "draftTest": "Test entwerfen",
+      "testBudget": "Aus den Fragengeneratoren gebaut, so kannst du für jede Frage neue Zahlen ziehen. Zählt zum KI-Limit; ohne KI wird ein Starttest gezogen.",
+      "byHand": "Von Hand: Wähle ein Fach, füge Fragen zu Abbildungen hinzu und stelle dann jede Abbildung und ihre Antwort ein.",
+      "checkFirst": "Prüfe jede Frage, bevor du sie zuweist.",
+      "topicFirst": "Schreib zuerst das Thema des Tests.",
+      "saveLesson": "In der Lektion speichern",
+      "saveLessonHint": "Legt diese Fragen in {title}. In der Lektion ändert sich nichts, bis du speicherst.",
+      "saveLessonAgain": "Erneutes Speichern ersetzt die Fragen in {title}.",
+      "lessonStarted": "Schüler haben diesen Schritt begonnen, daher bleiben seine Fragen, wie sie sind. Erstelle eine Kopie der Lektion, um sie zu ändern.",
+      "backToLesson": "Zurück zur Lektion",
+      "subjects": "Fächer",
+      "more": "Mehr",
+      "swapLabel": "Abbildung tauschen gegen",
+      "swap": "Abbildung tauschen"
     }
   },
   "favorites": {
@@ -4375,7 +4394,8 @@
       "text": "Lesen oder mitmachen",
       "question": "Eine Frage beantworten",
       "quiz": "Quizfragen beantworten",
-      "figures": "Fragen zu Abbildungen beantworten"
+      "figures": "Fragen zu Abbildungen beantworten",
+      "figureStep": "Fragen zu Abbildungen"
     },
     "library": {
       "title": "Lektionsbibliothek",
@@ -4454,7 +4474,14 @@
       "newGameLink": "Ein neues Spiel für die Schüler bauen",
       "deleteWorkConfirm": "Diesen Schritt löschen? Die Arbeiten von {n, plural, one {# Schüler} other {# Schülern}} dazu werden gelöscht. Das kann nicht rückgängig gemacht werden.",
       "liveGames": "Live-Spiele für die Klasse (du leitest sie)",
-      "otherGames": "Weitere Spiele"
+      "otherGames": "Weitere Spiele",
+      "bodyFigures": "Hinweise für die Schüler (optional)",
+      "figuresHint": "Als Nächstes öffnet sich der Abbildungs-Baukasten: Wähle Abbildungen, stelle Zahlen und Antworten ein und dann In der Lektion speichern.",
+      "editFigures": "Fragen bearbeiten",
+      "printFigures": "Drucken",
+      "figuresStarted": "Schüler haben diesen Schritt begonnen, daher bleiben seine Fragen, wie sie sind.",
+      "more": "Mehr",
+      "figuresSaved": "Fragen zu Abbildungen in der Lektion gespeichert."
     },
     "ai": {
       "button": "Mit KI entwerfen",
@@ -4533,7 +4560,9 @@
       "build": "Bau dein eigenes Spiel",
       "buildText": "Ein Quizspiel mit 6 Fragen über {topic}",
       "exit": "Exit-Ticket",
-      "exitText": "In zwei oder drei Sätzen: Was ist das Wichtigste, das du heute über {topic} gelernt hast?"
+      "exitText": "In zwei oder drei Sätzen: Was ist das Wichtigste, das du heute über {topic} gelernt hast?",
+      "figures": "Fragen zu Abbildungen",
+      "figuresText": "Beantworte die Frage unter jeder Abbildung."
     },
     "errors": {
       "notFound": "Das haben wir nicht gefunden, oder Sie können es nicht öffnen.",
@@ -12337,12 +12366,19 @@
       "search": "Figuren suchen",
       "searchHint": "Figuren suchen, z. B. Zylinder oder Boxplot",
       "count": "{count, plural, one {# Figur} other {# Figuren}}",
-      "nothing": "Keine Figur passt. Probiere ein anderes Wort oder eine andere Klasse."
+      "nothing": "Keine Figur passt. Probiere ein anderes Wort oder eine andere Klasse.",
+      "buildTest": "Einen Test erstellen",
+      "buildTestText": "Ein ganzer Test mit Fragen zu Abbildungen, mit KI entworfen oder von Hand gebaut.",
+      "isTest": "Test"
     },
     "sheet": {
       "newTitle": "Neues Arbeitsblatt",
       "crumb": "Arbeitsblatt-Baukasten",
-      "untitled": "Arbeitsblatt ohne Titel"
+      "untitled": "Arbeitsblatt ohne Titel",
+      "untitledTest": "Test ohne Titel",
+      "newTest": "Neuer Test",
+      "crumbTest": "Test-Baukasten",
+      "crumbLesson": "Fragen zu Abbildungen"
     },
     "editor": {
       "example": "Beispiel {n}"
@@ -12377,7 +12413,8 @@
       "name": "Gib ihm zuerst einen Namen.",
       "brief": "Beschreibe das Arbeitsblatt zuerst in ein paar Worten.",
       "names": "Lass Namen von Schülerinnen und Schülern aus der Beschreibung weg: Namen gehen nie an die KI.",
-      "sameChoices": "Zwei Optionen sind gleich. Mach jede anders."
+      "sameChoices": "Zwei Optionen sind gleich. Mach jede anders.",
+      "topic": "Schreib zuerst, worum es im Test geht."
     },
     "kinds": {
       "numberLine": {
@@ -12730,7 +12767,8 @@
         "noClass": "Wähle eine deiner Klassen.",
         "badDate": "Dieses Datum sieht nicht richtig aus.",
         "dueBeforeOpen": "Das Abgabedatum liegt vor dem Startdatum.",
-        "needsDue": "Lege ein Abgabedatum fest, um die Antworten danach zu zeigen."
+        "needsDue": "Lege ein Abgabedatum fest, um die Antworten danach zu zeigen.",
+        "started": "Schüler haben diesen Schritt begonnen, daher bleiben seine Fragen, wie sie sind. Erstelle eine Kopie der Lektion, um sie zu ändern."
       }
     }
   }

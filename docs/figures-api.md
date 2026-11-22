@@ -993,6 +993,21 @@ pattern (it was "write 1, 2 or 3"), which way water moves in osmosis (it was the
 the nominal interest rate moves in the money market (it was "write 1, 2 or 3") and what kind of output gap AD-AS shows
 (it was the size of a recessionary gap, never its sign); the thermometer reads below 0 as its scale does.
 
+## The figure catalog for the AI drafters
+
+Three drafters are shown the same catalog and nothing else (`services/figures.js` `figureCatalog`): the worksheet
+drafter ("Power with AI"), the test drafter ("Build a test") and the lesson drafter ("Draft with AI",
+`services/lesson-ai.js`, for a Figures tester, passed in beside the game catalog). An entry is a kind with at least one
+generator (so a bad figure can always be replaced): `{ id, subject, grades, description, params, example, keys }`.
+`params` is the kind's parameter schema, read from its example and the catalog's `extra` and `options`: each field is
+`"number"`, `"text"`, `"bool"`, `"list"`, `"object"` or its fixed list of values. `keys` are the OF.solve values of the
+example an answer may name (`answerKey`). The test drafter also sees the generators (`genCatalog`: id, kind, subject,
+grade bands, number or choice, its question) and is told to prefer them, so every question can be dealt new numbers.
+
+The server never trusts a drafted figure: an unknown kind or generator is dropped (the lesson drafter keeps its question
+as words), data that fails `OF.check`, an `answerKey` that is not an OF.solve value or bad options are replaced by that
+kind's generator, and each repair is logged with the kind and why, never the teacher's words.
+
 ## Chemistry: organic structures and atomic energy levels (1.5.0)
 
 The two chemistry kinds deferred in 1.2.0, now in the chem pack. Oomba Figures 1.5.0 is a new version folder (the core

@@ -1172,6 +1172,13 @@ export const MIGRATIONS = [
     ALTER TABLE question_set_items ADD COLUMN answer_type TEXT NOT NULL DEFAULT 'number';
     ALTER TABLE question_set_items ADD COLUMN choices TEXT NOT NULL DEFAULT '[]';
     ALTER TABLE question_set_items ADD COLUMN correct INTEGER;`],
+  // A lesson's Figure step and "Build a test" (docs/decisions.md "Figures: the lesson Figure step and Build a test"):
+  // question_sets with purpose 'lesson' are the questions of one lesson's Figure step while the teacher edits them;
+  // lesson_id names that lesson (NULL for a worksheet or a test). "Save to lesson" snapshots the set into the step
+  // (lesson_steps.set_id names the set), as Assign does; deleting the lesson deletes its sets.
+  ['0100_figures_lesson_sets', `
+    ALTER TABLE question_sets ADD COLUMN lesson_id TEXT;
+    CREATE INDEX IF NOT EXISTS idx_question_sets_lesson ON question_sets(lesson_id);`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

@@ -265,7 +265,12 @@ export function cleanItem(raw, v) {
   return ok({ item: { ...base, ...src, answer: keyAnswer, work: [] } });
 }
 
-// ---------------------------------------------------------------- worksheets (question sets, purpose 'worksheet')
+// ---------------------------------------------------------------- worksheets (question sets)
+// One model for three uses (purpose): a 'worksheet' (printed, or assigned), a 'test' ("Build a test": the same builder,
+// drafted from a topic, a grade and a subject with the generators) and a 'lesson' set (the questions of one lesson's
+// Figure step while the teacher edits them; lesson_id names the lesson and "Save to lesson" snapshots them into the
+// step, services/figures-steps.js). All three are their owner's only, and edited the same way.
+export const PURPOSES = Object.freeze(['worksheet', 'test', 'lesson']);
 const cleanTitle = (s, d) => { const v = clipStr(s, LIMITS.titleChars).replace(/\s+/g, ' ').trim(); return v && !textProblem(v) ? v : d; };
 const cleanGrade = g => (GRADE_BANDS.includes(g) || /^(K|[1-9]|1[0-2])$/.test(String(g)) ? String(g) : '');
 const rowItem = r => ({ id: r.id, kind: r.kind, data: json(r.data, {}), gen: r.gen || null, seed: r.seed || null, hide: r.hide === null || r.hide === undefined ? false : r.hide === 'true' ? true : r.hide,
@@ -275,12 +280,14 @@ export const itemsOf = setId => q.all('SELECT * FROM question_set_items WHERE se
 /** The owner's own worksheet, or null (anyone else: null, the same as a wrong id). */
 export function ownWorksheet(u, id) {
   if (!canMake(u)) return null;
-  return q.get("SELECT * FROM question_sets WHERE id=? AND owner_id=? AND purpose='worksheet'", String(id || ''), u.id) || null;
+  return q.get("SELECT * FROM question_sets WHERE id=? AND owner_id=? AND purpose IN ('worksheet','test','lesson')", String(id || ''), u.id) || null;
 }
-export function listWorksheets(u) {
+/** The teacher's worksheets and tests (newest first; a lesson's sets belong to their lesson and are not listed). */
+export function listWorksheets(u, { purposes = ['worksheet', 'test'] } = {}) {
   if (!canMake(u)) return [];
-  return q.all(`SELECT s.id, s.title, s.grade, s.subject, s.updated_at, (SELECT COUNT(*) FROM question_set_items i WHERE i.set_id=s.id) n
-    FROM question_sets s WHERE s.owner_id=? AND s.purpose='worksheet' ORDER BY s.updated_at DESC LIMIT 100`, u.id);
+  const ps = purposes.filter(p => PURPOSES.includes(p)); if (!ps.length) return [];
+  return q.all(`SELECT s.id, s.title, s.grade, s.subject, s.purpose, s.updated_at, (SELECT COUNT(*) FROM question_set_items i WHERE i.set_id=s.id) n
+    FROM question_sets s WHERE s.owner_id=? AND s.purpose IN (${ps.map(() => '?').join(',')}) ORDER BY s.updated_at DESC LIMIT 100`, u.id, ...ps);
 }
 const storeItem = (setId, pos, it) => q.run(`INSERT INTO question_set_items(id, set_id, pos, kind, data, gen, seed, hide, question, answer_key, answer, work, answer_type, choices, correct, points)
   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)`, uid(12), setId, pos, it.kind, JSON.stringify(it.data), it.gen, it.seed, it.hide === false ? null : String(it.hide), it.question, it.answerKey, it.answer, JSON.stringify(it.work),
@@ -297,17 +304,20 @@ function subjectOf(setId) {
 }
 const resubject = id => q.run('UPDATE question_sets SET subject=? WHERE id=?', subjectOf(id), id);
 
-export function createWorksheet(u, { title, grade, items = [] } = {}) {
+/** A new worksheet, test or lesson set (purpose; a lesson set names its lesson: lessonId, checked by the caller). */
+export function createWorksheet(u, { title, grade, items = [], purpose = 'worksheet', lessonId = null } = {}) {
   if (!canMake(u)) return fail('notFound');
-  if (q.get("SELECT COUNT(*) n FROM question_sets WHERE owner_id=? AND purpose='worksheet'", u.id).n >= LIMITS.worksheets) return fail('tooMany');
+  const pp = PURPOSES.includes(purpose) ? purpose : 'worksheet';
+  if (pp === 'lesson' && !lessonId) return fail('notFound');
+  if (q.get('SELECT COUNT(*) n FROM question_sets WHERE owner_id=? AND purpose=?', u.id, pp).n >= LIMITS.worksheets) return fail('tooMany');
   const list = [];
   for (const raw of (Array.isArray(items) ? items : []).slice(0, LIMITS.items)) { const c = cleanItem(raw); if (!c.ok) return c; list.push(c.item); }
   const id = uid(12), t = now();
-  q.run("INSERT INTO question_sets(id, owner_id, title, grade, subject, purpose, of_version, created_at, updated_at) VALUES (?,?,?,?,'','worksheet',?,?,?)",
-    id, u.id, cleanTitle(title, tEn('figures.sheet.untitled')), cleanGrade(grade), OF_VERSION, t, t);
+  q.run("INSERT INTO question_sets(id, owner_id, title, grade, subject, purpose, of_version, created_at, updated_at, lesson_id) VALUES (?,?,?,?,'',?,?,?,?,?)",
+    id, u.id, cleanTitle(title, tEn(pp === 'test' ? 'figures.sheet.untitledTest' : 'figures.sheet.untitled')), cleanGrade(grade), pp, OF_VERSION, t, t, pp === 'lesson' ? String(lessonId) : null);
   list.forEach((it, i) => storeItem(id, i, it));
   resubject(id);
-  audit(u.id, 'figures.worksheet.create', id, { items: list.length });
+  audit(u.id, 'figures.worksheet.create', id, { items: list.length, purpose: pp });
   return ok({ id });
 }
 export function updateWorksheet(u, id, { title, grade } = {}) {
@@ -380,6 +390,17 @@ export function regenItem(u, id, itemId, seed) {
   touch(w.id);
   return ok({ id: w.id });
 }
+/** "Swap figure": the question becomes a fresh one of another kind (from its generator, else its example), in place. */
+export function swapItem(u, id, itemId, kind) {
+  const w = ownWorksheet(u, id); if (!w) return fail('notFound');
+  const r = ownItem(w, itemId); if (!r) return fail('notFound');
+  const raw = starterItem(kind); if (!raw) return fail('badKind');
+  const c = cleanItem(raw, w.of_version); if (!c.ok) return c;
+  q.run('UPDATE question_set_items SET kind=? WHERE id=?', c.item.kind, r.id);
+  rewrite(r.id, c.item);
+  resubject(w.id); touch(w.id);
+  return ok({ id: w.id });
+}
 /** A new question of this kind for "Add figure question": a fresh one from its generator, else its example. */
 export function starterItem(kind) {
   const K = kindOf(kind); if (!K) return null;
@@ -421,7 +442,7 @@ export function worksheetView(u, id, { lang = 'en' } = {}) {
   const w = ownWorksheet(u, id); if (!w) return null;
   const F = kit(w.of_version);
   const items = itemsOf(w.id).map(it => ({ ...it, svg: F.svg(it.kind, it.data, { lang, hide: it.hide, title: it.question.slice(0, 120) || it.kind, width: 220 }), hasGen: !!(it.gen || kindOf(it.kind).gens.length) }));
-  return { id: w.id, title: w.title, grade: w.grade, subject: w.subject, ofVersion: w.of_version, updatedAt: w.updated_at, items };
+  return { id: w.id, title: w.title, grade: w.grade, subject: w.subject, purpose: w.purpose, lessonId: w.lesson_id || null, ofVersion: w.of_version, updatedAt: w.updated_at, items };
 }
 
 // ---------------------------------------------------------------- print (student sheet and answer key)
@@ -517,13 +538,29 @@ export function namesIn(u, brief) {
 }
 /** The kinds the AI may choose from: those with a generator (so a bad item can always be repaired). */
 export const draftKinds = () => KINDS.filter(K => K.gens.length);
-/** The catalog the AI is shown: each kind's id, what it draws, its example data and the answers OF.solve can give. */
-export function draftCatalog() {
-  return draftKinds().map(K => {
-    const keys = Object.keys(solved(K.id, K.presets[0])).slice(0, 14);
-    return `- ${K.id} (${K.subject}; grades ${K.grades.join(', ')}): ${tEn(`figures.kinds.${K.id}.desc`)}. Example data: ${JSON.stringify(K.presets[0])}.${keys.length ? ` answerKey choices for the example: ${keys.join(', ')}.` : ' (no answerKey: leave it "")'}`;
-  }).join('\n');
+/** A kind's parameter schema for the AI: each field of its example and its extra measures, with its type ('number',
+ *  'text', 'bool', 'list', 'object') or its fixed list of values. */
+export function paramSchema(K) {
+  const out = {}, ex = (K && K.presets && K.presets[0]) || {};
+  const typeOf = v => (typeof v === 'number' ? 'number' : typeof v === 'boolean' ? 'bool' : typeof v === 'string' ? 'text' : Array.isArray(v) ? 'list' : v && typeof v === 'object' ? 'object' : 'text');
+  for (const [k, v] of Object.entries(ex)) out[k] = typeOf(v);
+  for (const [k, v] of Object.entries(K.extra || {})) if (!(k in out)) out[k] = v;
+  for (const [k, v] of Object.entries(K.options || {})) if (Array.isArray(v)) out[k] = v.filter(x => x !== '').slice(0, 12);
+  return out;
 }
+/** The figure catalog (kinds with a generator, so a bad figure can always be repaired): id, subject, grade bands, a
+ *  line about it, its parameter schema, its example and the OF.solve values (answerKey) the example gives. The worksheet
+ *  drafter, the test drafter and the lesson drafter (services/lesson-ai.js) are all shown this, and only this. */
+export function figureCatalog({ subject = '' } = {}) {
+  return draftKinds().filter(K => !subject || K.subject === subject || (K.also || []).includes(subject)).map(K => ({
+    id: K.id, subject: K.subject, grades: K.grades.slice(), description: tEn(`figures.kinds.${K.id}.desc`), params: paramSchema(K), example: K.presets[0],
+    keys: Object.keys(solved(K.id, K.presets[0])).slice(0, 14),
+  }));
+}
+/** One catalog entry as a line of the prompt. */
+export const catalogLine = c => `- ${c.id} (${c.subject}; grades ${c.grades.join(', ')}): ${c.description}. Parameters: ${JSON.stringify(c.params)}. Example data: ${JSON.stringify(c.example)}.${c.keys.length ? ` answerKey choices for the example: ${c.keys.join(', ')}.` : ' (no answerKey: leave it "")'}`;
+/** The catalog the AI is shown: each kind's id, what it draws, its parameters, its example data and the answers OF.solve can give. */
+export function draftCatalog(opts) { return figureCatalog(opts).map(catalogLine).join('\n'); }
 const DRAFT_SCHEMA = () => ({
   type: 'object', additionalProperties: false, required: ['title', 'items'],
   properties: {
@@ -568,6 +605,8 @@ const KEYWORDS = [
   [/phillips|unemployment|inflation/, ['phillipsCurve']], [/production possibilit|\bppc\b|opportunity cost|comparative advantage/, ['possibilitiesCurve']],
   [/aggregate demand|aggregate supply|\bad-as\b|output gap|recessionary gap|inflationary gap|fiscal policy/, ['adAs']], [/marginal cost|average total cost|cost curves?|monopol|perfect competition|profit maxim/, ['costCurves']],
 ];
+/** The kinds a topic's words point at (KEYWORDS), [] when none. */
+export const topicKinds = text => [...new Set(KEYWORDS.filter(([re]) => re.test(String(text || '').toLowerCase())).flatMap(([, ks]) => ks))];
 /** A plain starter set without the AI: kinds the brief's words point at (else its subject's), within its grade band. */
 export function templateItems({ brief = '', grade = '', count = 6 } = {}) {
   const b = String(brief).toLowerCase(), band = bandOf(grade || (/\bgrade\s*(\d{1,2}|k)\b/i.exec(b) || [])[1] || '');
@@ -665,6 +704,138 @@ export async function draftWorksheet(u, id, { brief, grade = '', count = 6 } = {
   resubject(w.id); touch(w.id);
   audit(u.id, 'figures.draft', w.id, { ai, added: items.length, repaired, dropped });
   return ok({ ai, added: items.length, repaired, dropped });
+}
+
+// ---------------------------------------------------------------- "Build a test" (purpose 'test')
+// A test is drafted from a topic, a grade and a subject. With "Power with AI" on, Claude picks question GENERATORS from
+// the catalog (each question is then dealt here with a fresh seed, so the teacher can re-deal it), and may write its
+// own figure question only when no generator fits (checked exactly like a worksheet draft: repairDraft). With AI off,
+// or without a key, while the budget rests or when the call fails, a starter test is dealt from the generators the
+// topic's words point at, within the subject and grade band. Either way the test is only a draft: nothing is assigned
+// until the teacher assigns it (services/figures-steps.js assignWorksheet).
+/** The AI client: the test hook (only while the AI budget is not resting, like the real client), or the real one. */
+const aiClient = () => (hooks.create ? (aiBudget.ok() ? { messages: { create: hooks.create } } : null) : anthropic());
+/** The generators the test drafter may pick: id, kind, subject, grade bands, number or choice, and its question. */
+export function genCatalog({ subject = '', grade = '' } = {}) {
+  const band = bandOf(grade);
+  const kinds = draftKinds().filter(K => !subject || K.subject === subject || (K.also || []).includes(subject));
+  const fit = band && kinds.some(K => K.grades.includes(band)) ? kinds.filter(K => K.grades.includes(band)) : kinds;
+  return fit.flatMap(K => K.gens.map(g => ({ id: g.id, kind: K.id, subject: K.subject, grades: K.grades.slice(), type: g.tool === 'figure.choice' ? 'choice' : 'number', question: String(g.q || '').slice(0, 160), description: tEn(`figures.kinds.${K.id}.desc`) })));
+}
+const TEST_SCHEMA = () => ({
+  type: 'object', additionalProperties: false, required: ['title', 'items'],
+  properties: {
+    title: { type: 'string' },
+    items: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['gen', 'kind', 'question', 'data', 'answerType', 'answerKey', 'choices', 'correct'], properties: {
+      gen: { type: 'string' }, kind: { type: 'string' }, question: { type: 'string' }, data: { type: 'string' }, answerType: { type: 'string', enum: ['number', 'choice'] },
+      answerKey: { type: 'string' }, choices: { type: 'array', items: { type: 'string' } }, correct: { type: 'integer' } } } },
+  },
+});
+function testPrompt({ topic, grade, subject, count }) {
+  const gens = genCatalog({ subject, grade });
+  return [
+    'You are drafting a test of figure questions for a teacher on Oomba Academy. Each question has one figure drawn by Oomba Figures.',
+    `Write in US English, plain and clear for grade ${grade || 'the grade the topic suits'} students. No names of people, no links, no brands.`,
+    `Make exactly ${count} questions that fit the topic, different from each other, from easier to harder.`,
+    'Prefer generators: put a generator id from the list below in "gen" and leave kind, question, data and answerKey "" (choices [], answerType "number", correct 0). Oomba Figures deals the numbers and works out the answer, so the teacher can deal new numbers for any question. Use each generator at most twice.',
+    'Only when no generator fits the topic: gen "" and write your own figure question from the figure catalog (kind, question, data as JSON text with the same fields as the example, answerType and answerKey from the kind\'s answerKey choices, or answerType "choice" with 2 to 6 short options and the index of the right one). Never draw or describe SVG. Figures that cannot be drawn truthfully to scale are replaced.',
+    'title: a short title for the test (under 60 characters).',
+    `Generators:\n${gens.map(g => `- ${g.id} (figure ${g.kind}; ${g.subject}; grades ${g.grades.join(', ')}; ${g.type} answer): ${g.question}`).join('\n')}`,
+    `Figure catalog:\n${draftCatalog({ subject })}`,
+    `<topic>\n${topic}\n</topic>`,
+  ].join('\n\n');
+}
+/** A generator's question, dealt with a fresh seed (a few tries: a seed can fail a generator's own where). */
+function dealt(gid) {
+  const g = genOf(gid); if (!g) return null;
+  for (let i = 0; i < 6; i++) { const c = cleanItem({ kind: g.kind, gen: gid, seed: newSeed() }); if (c.ok) return c.item; }
+  return null;
+}
+/**
+ * The test drafter's items made safe: a generator that is not in the catalog (or not of the chosen subject) is dropped;
+ * a generator question is dealt here (fresh seed); an own figure question goes through repairDraft (OF.check, OF.solve
+ * keys, choices, words: replaced by its kind's generator). Every repair is logged (the kind and why, never the topic).
+ * -> { items, repaired, dropped }
+ */
+export function repairTestDraft(raw, { max = LIMITS.draftMax, subject = '', grade = '' } = {}) {
+  const allowed = new Set(genCatalog({ subject, grade }).map(g => g.id)), items = [];
+  let repaired = 0, dropped = 0;
+  for (const [i, x] of (Array.isArray(raw) ? raw : []).slice(0, max).entries()) {
+    const gid = x && typeof x.gen === 'string' ? x.gen.trim() : '';
+    if (gid) {
+      if (!allowed.has(gid)) { dropped++; logRepair({ item: i, kind: clipStr(gid, 40), action: 'dropped', why: 'generator not in the catalog' }); continue; }
+      const it = dealt(gid);
+      if (it) items.push(it); else { dropped++; logRepair({ item: i, kind: genOf(gid).kind, action: 'dropped', why: 'the generator dealt nothing' }); }
+      continue;
+    }
+    const r = repairDraft([x], { max: 1 });
+    items.push(...r.items); repaired += r.repaired; dropped += r.dropped;
+  }
+  return { items, repaired, dropped };
+}
+/** A starter test without the AI: the generators the topic's words point at, in the subject (if any) and grade band. */
+export function templateTest({ topic = '', subject = '', grade = '', count = 6 } = {}) {
+  const cat = genCatalog({ subject, grade }), hit = new Set(topicKinds(topic));
+  let pool = cat.filter(g => hit.has(g.kind));
+  if (!pool.length) pool = cat;
+  const out = [];
+  for (let i = 0; out.length < count && i < count * 4 && pool.length; i++) { const it = dealt(pool[i % pool.length].id); if (it) out.push(it); }
+  return out;
+}
+/**
+ * "Build a test with AI" -> { ok, ai, added, repaired, dropped }: the questions are added to the test (a question set of
+ * purpose 'test'); the teacher edits them before anything is assigned. Usage counts towards the AI budget; without a key
+ * or while it rests, or when the call fails, a starter test is dealt from the generators instead (ai: false).
+ */
+export async function draftTest(u, id, { topic, grade = '', subject = '', count = 8 } = {}) {
+  const w = ownWorksheet(u, id); if (!w || w.purpose !== 'test') return fail('notFound');
+  const b = clipStr(topic, LIMITS.briefChars).replace(/\s+/g, ' ').trim();
+  if (b.length < 3) return fail('topic');
+  const p = textProblem(b); if (p) return fail(p);
+  if (namesIn(u, b)) return fail('names');
+  const subj = SUBJECTS.includes(subject) ? subject : '';
+  const have = q.get('SELECT COUNT(*) n FROM question_set_items WHERE set_id=?', w.id).n;
+  if (LIMITS.items - have <= 0) return fail('fullSheet');
+  const n = Math.max(1, Math.min(LIMITS.draftMax, LIMITS.items - have, Number.isInteger(+count) ? +count : 8));
+  const g = cleanGrade(grade) || w.grade;
+  const client = aiClient();
+  let items = null, ai = false, repaired = 0, dropped = 0, title = '';
+  if (client) {
+    try {
+      const res = await client.messages.create({
+        model: config.builderModel, max_tokens: 6000,
+        output_config: { effort: 'low', format: { type: 'json_schema', schema: TEST_SCHEMA() } },
+        messages: [{ role: 'user', content: testPrompt({ topic: b, grade: g, subject: subj, count: n }) }],
+      }, { timeout: 60000, maxRetries: 1 });
+      if (res && res.usage) aiBudget.recordUsage(res.model || config.builderModel, res.usage);
+      const block = ((res && res.content) || []).find(c => c.type === 'text');
+      const d = JSON.parse(block ? block.text : '');
+      const r = repairTestDraft(d && d.items, { max: n, subject: subj, grade: g });
+      if (r.items.length) { ({ items, repaired, dropped } = r); ai = true; title = d && typeof d.title === 'string' ? d.title : ''; }
+    } catch (e) { log('warn', 'figures.test.failed', { error: String(e && e.message || e).slice(0, 200) }); }
+  }
+  if (!items) { items = templateTest({ topic: b, subject: subj, grade: g, count: n }); if (!title) title = b; }
+  items.forEach((it, i) => storeItem(w.id, have + i, it));
+  if (title && w.title === tEn('figures.sheet.untitledTest')) { const tt = cleanTitle(title, ''); if (tt) q.run('UPDATE question_sets SET title=? WHERE id=?', tt, w.id); }
+  if (g && !w.grade) q.run('UPDATE question_sets SET grade=? WHERE id=?', g, w.id);
+  resubject(w.id); touch(w.id);
+  audit(u.id, 'figures.test.draft', w.id, { ai, added: items.length, repaired, dropped });
+  return ok({ ai, added: items.length, repaired, dropped });
+}
+
+// ---------------------------------------------------------------- a lesson step's snapshot, back into a set
+/** A snapshot question (services/figures-steps.js snapshot) as a set question again, for "Edit questions" on a lesson's
+ *  Figure step: its generator and seed while it has them, the answerKey (an older snapshot without one: the OF.solve
+ *  value that equals the stored answer), the right option of a choice question. */
+export function fromSnapshot(it, v) {
+  const choice = it && it.type === 'choice';
+  let key = typeof it.answerKey === 'string' ? it.answerKey : null;
+  if (!choice && !key && !it.gen && typeof it.value === 'number') {
+    const nums = solved(it.kind, it.data, v);
+    key = Object.keys(nums).find(k => Math.abs(nums[k] - it.value) <= 1e-9 * Math.max(1, Math.abs(it.value))) || null;
+  }
+  return { kind: it.kind, data: it.data, hide: it.hide === undefined ? false : it.hide, question: String(it.question || ''), gen: it.gen || null, seed: it.seed || null,
+    answerType: choice ? 'choice' : 'number', ...(choice ? { choices: it.choices, correct: it.value } : {}), ...(key ? { answerKey: key } : choice && it.answerKey ? { answerKey: it.answerKey } : {}) };
 }
 
 // ---------------------------------------------------------------- thumbnails (the menu's cards), cached
