@@ -600,7 +600,7 @@ function down(e) {
         e.preventDefault();
         if (e.button === 2) { objMenu(A.key, o.id, e.clientX, e.clientY); return; }
         if (e.button > 0) return;
-        const gg = R.gesture = { kind: 'obj', key: A.key, o, el: objEl, x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before };
+        const gg = R.gesture = { kind: 'obj', key: A.key, o, el: objEl, head: !!e.target.closest('.mp-ohead'), x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before };
         gg.hold = startHold(e.clientX, e.clientY, () => { if (R && R.gesture === gg && !gg.moved) { gg.held = true; objMenu(gg.key, o.id, gg.sx, gg.sy); } });
         rm.setPointerCapture(e.pointerId); return;
       }
@@ -628,6 +628,9 @@ function move(e) {
     if (Math.hypot(dx, dy) < SLOP) return;
     g.hold.cancel();
     const A0 = R.areas.get(g.key); if (!A0) { R.gesture = null; return; }
+    // A locked chart, grid or mat dragged by its body pans the room (backdrops start locked); by its handle bar, or a
+    // locked piece: a small shake.
+    if (g.kind === 'obj' && g.o.locked && !g.held && !g.head) { R.gesture = { kind: 'pan', sx: g.sx, sy: g.sy, x0: R.view.x, y0: R.view.y, moved: true }; R.view.x += dx; R.view.y += dy; applyView(); return; }
     if (g.kind === 'piece' ? g.p.locked : g.o.locked) { if (!g.held) shake(g.kind === 'piece' ? pieceElIn(g.key, g.p.id) : objElIn(g.key, g.o.id)); R.gesture = { kind: 'dead', key: g.key }; return; }
     if (g.held) { closeWheel({ focus: false }); g.before = JSON.stringify({ st: A0.st, ann: A0.ann }); }
     if (g.kind === 'piece') {
@@ -954,6 +957,34 @@ function pushSheet() {
     const b = e.target.closest('[data-push]'); if (!b) return;
     try { await api(`/api/manipulatives/live/${R.id}/push`, { method: 'POST', body: { boardId: b.dataset.push } }); toast(t('js.manip-room.pushed')); box.remove(); } catch (err) { toast(err.message, { bad: true }); }
   });
+}
+
+// ---------------------------------------------------------------- the steps card (on the board itself)
+/**
+ * The steps card pinned at the top of a board (docs/decisions.md "steps on the board"): "Step 2 of 4", the step big,
+ * ◀ ▶ for whoever may move it, "All steps" for the list (only the steps given here: a viewer is never handed one they
+ * may not see), and for the teacher a way to fold it to one slim line. Not a piece: it sits above the board, so nothing
+ * on the board is ever under it. The same look and words as a live square's strip (rm-strip). '' with no steps.
+ * o: { list: [{ text }], i (current), total (defaults to the list's length), move (◀ ▶ shown), open (the list),
+ *      folded, fold (the teacher may fold it) }. Buttons: data-sc="prev|next|all|fold|unfold".
+ */
+export function stepCardHtml({ list = [], i = 0, total = list.length, move = true, open = false, folded = false, fold = false } = {}) {
+  if (!total || !list.length) return '';
+  const n = Math.max(0, Math.min(i, list.length - 1)), rtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl';
+  const label = total > 1 ? t('js.manip-room.stepOf', { n: n + 1, total }) : t('js.manip-room.instructions');
+  // Printed, the card shows every step it may (no buttons).
+  const print = `<ol class="mp-sc-print">${list.map(x => `<li>${esc(x.text)}</li>`).join('')}</ol>`;
+  if (folded) {
+    return `<section class="mp-stepcard folded" aria-label="${esc(t('js.manip-room.steps'))}"><div class="mp-sc-row"><span class="mp-sc-no">${iconHtml('📌', { size: 18 })} ${esc(label)}</span>
+      <span class="mp-sc-grow"></span>${btn('mp-sc-link', 'data-sc="unfold" aria-expanded="false"', esc(t('js.manip-room.showSteps')))}</div>${print}</section>`;
+  }
+  const nav = move && total > 1 ? `<span class="mp-sc-nav">${btn('chip mp-sc-arrow', `data-sc="prev"${n ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.prevStep'))}" title="${esc(t('js.manip-room.prevStep'))}"`, rtl ? '▶' : '◀')}${btn('chip mp-sc-arrow', `data-sc="next"${n + 1 < total ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.nextStep'))}" title="${esc(t('js.manip-room.nextStep'))}"`, rtl ? '◀' : '▶')}</span>` : '';
+  const all = list.length > 1 ? btn('mp-sc-link', `data-sc="all" aria-expanded="${!!open}"`, esc(open ? t('js.manip-room.thisStep') : t('js.manip-room.allSteps'))) : '';
+  const foldBtn = fold ? btn('mp-sc-quiet', `data-sc="fold" aria-label="${esc(t('js.manip-room.hideSteps'))}" title="${esc(t('js.manip-room.hideSteps'))}"`, '✕') : '';
+  const body = open ? `<ol class="mp-sc-list">${list.map((x, j) => `<li${j === n ? ' aria-current="step" class="now"' : ''}>${esc(x.text)}</li>`).join('')}</ol>`
+    : `<p class="mp-sc-text" aria-live="polite">${esc(list[n] ? list[n].text : '')}</p>`;
+  return `<section class="mp-stepcard${open ? ' open' : ''}" aria-label="${esc(t('js.manip-room.steps'))}"><div class="mp-sc-row"><span class="mp-sc-no">${iconHtml('📌', { size: 18 })} ${esc(label)}</span>
+    ${all}<span class="mp-sc-grow"></span>${nav}${foldBtn}</div>${body}${print}</section>`;
 }
 
 // ---------------------------------------------------------------- the steps editor (the room and the tool on its own)

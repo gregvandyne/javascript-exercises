@@ -3610,7 +3610,7 @@
       },
       "steps": {
         "title": "Steps",
-        "text": "The exercise, one step at a time: in a live session students see the current step at the top of their square, never the ones after it. Drag or use ↑ ↓ to reorder."
+        "text": "The exercise, one step at a time. The steps show at the top of the board for everyone who opens it (a share code too); in a live session students see only the current step, never the ones after it. Drag or use ↑ ↓ to reorder."
       },
       "text": {
         "label": "Text on the board",
@@ -3753,7 +3753,7 @@
       "handsUpN": "Hands up · {n}",
       "handsUpNone": "Hands up",
       "steps": "Steps",
-      "stepsText": "The exercise, one step at a time: students see the current step at the top of their square, never the ones after it. Drag or use ↑ ↓ to reorder.",
+      "stepsText": "The exercise, one step at a time. The steps show at the top of the board for everyone who opens it; in a live session students see only the current step, never the ones after it. Drag or use ↑ ↓ to reorder.",
       "stepN": "Step {n}",
       "stepPh": "What should students do in this step?",
       "stepUp": "Move step {n} up",
@@ -3778,7 +3778,13 @@
       "actionsFor": "Actions for {label}",
       "teacherLock": "Your teacher locked this.",
       "reopen": "Reopen room",
-      "reopened": "The room is open again. Students go back to their own squares."
+      "reopened": "The room is open again. Students go back to their own squares.",
+      "prevStep": "Previous step",
+      "nextStep": "Next step",
+      "allSteps": "All steps",
+      "thisStep": "Just this step",
+      "hideSteps": "Hide steps",
+      "showSteps": "Show steps"
     },
     "figures-editor": {
       "undo": "Undo",

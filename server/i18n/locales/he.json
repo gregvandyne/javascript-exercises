@@ -3497,7 +3497,16 @@
       "actionsFor": "פעולות עבור {label}",
       "teacherLock": "המורה נעל את זה.",
       "reopen": "פתיחת החדר מחדש",
-      "reopened": "החדר פתוח שוב. כל תלמיד חוזר למשבצת שלו."
+      "reopened": "החדר פתוח שוב. כל תלמיד חוזר למשבצת שלו.",
+      "steps": "שלבים",
+      "stepOf": "שלב {n} מתוך {total}",
+      "instructions": "הוראות",
+      "prevStep": "השלב הקודם",
+      "nextStep": "השלב הבא",
+      "allSteps": "כל השלבים",
+      "thisStep": "רק השלב הזה",
+      "hideSteps": "הסתרת השלבים",
+      "showSteps": "הצגת השלבים"
     },
     "figures-editor": {
       "undo": "ביטול",

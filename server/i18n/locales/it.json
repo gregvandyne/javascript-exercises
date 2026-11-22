@@ -3497,7 +3497,16 @@
       "actionsFor": "Azioni per {label}",
       "teacherLock": "Il tuo insegnante ha bloccato questo.",
       "reopen": "Riapri la stanza",
-      "reopened": "La stanza è di nuovo aperta. Ogni studente torna al proprio riquadro."
+      "reopened": "La stanza è di nuovo aperta. Ogni studente torna al proprio riquadro.",
+      "steps": "Passaggi",
+      "stepOf": "Passaggio {n} di {total}",
+      "instructions": "Istruzioni",
+      "prevStep": "Passaggio precedente",
+      "nextStep": "Passaggio successivo",
+      "allSteps": "Tutti i passaggi",
+      "thisStep": "Solo questo passaggio",
+      "hideSteps": "Nascondi i passaggi",
+      "showSteps": "Mostra i passaggi"
     },
     "figures-editor": {
       "undo": "Annulla",

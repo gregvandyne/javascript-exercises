@@ -812,6 +812,9 @@ export function exportPdf(u, id) {
   const c = S.getClass(v.classId), tz = c ? S.zoneOf(S.getSchool(c.school_id)) : null, tl = toolOf(v.tool);
   const blocks = v.students.length ? v.students.map(w => ({ heading: `${w.name}  (last saved ${stamp(w.updatedAt, tz)})`, lines: summarize(w.state) }))
     : [{ heading: 'No student work yet', lines: ['No student has joined or sent work in this session yet.'] }];
+  // The session's steps first, as the class saw them on the board (the teacher's export: every step).
+  const steps = stepsOf(json(getSession(id).room || '{}', {}) || {});
+  if (steps.length) blocks.unshift({ heading: 'Steps', lines: steps.map((x, i) => `${i + 1}. ${x.text}`) });
   const pdf = makePdf(`${v.title} - ${tl ? tl.name : v.tool} - ${v.className} - started ${stamp(v.createdAt, tz)}`, blocks);
   audit(u.id, 'manip.export', v.id, { students: v.students.length });
   return ok({ pdf, filename: `manipulatives-${v.code.toLowerCase()}.pdf` });

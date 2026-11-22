@@ -3496,7 +3496,16 @@
       "actionsFor": "Actions pour {label}",
       "teacherLock": "Ton enseignant a verrouillé ceci.",
       "reopen": "Rouvrir la salle",
-      "reopened": "La salle est rouverte. Chaque élève retrouve sa propre case."
+      "reopened": "La salle est rouverte. Chaque élève retrouve sa propre case.",
+      "steps": "Étapes",
+      "stepOf": "Étape {n} sur {total}",
+      "instructions": "Consignes",
+      "prevStep": "Étape précédente",
+      "nextStep": "Étape suivante",
+      "allSteps": "Toutes les étapes",
+      "thisStep": "Cette étape seulement",
+      "hideSteps": "Masquer les étapes",
+      "showSteps": "Afficher les étapes"
     },
     "figures-editor": {
       "undo": "Annuler",

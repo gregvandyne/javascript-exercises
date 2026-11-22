@@ -372,3 +372,36 @@ test('the coordinate grid: one line per color, a point snaps to the grid, a whol
   const st = OBJECTS['xy-coordinate-board'][0].init();
   assert.equal(xyLines(st.pts).length, 1); assert.equal(st.table, true); assert.equal(st.arrows, false);
 });
+
+test('charts, tables, frames, mats and graphs start locked wherever they are placed; other objects and old boards do not', async () => {
+  const { BACKDROP, startLock, newObject, draftLayout } = await import('../../public/js/manip-board.js');
+  const { sanitizeDraft } = await import('../../server/services/manipulatives.js').catch(() => ({}));
+  for (const k of ['pv-chart', 'mat', 'ten-frame', 'five-frame', 'double-ten-frame', 'ppw', 'hundred-board', 'xy-coordinate-board', 'number-lines', 'bar-models']) assert.ok(BACKDROP.has(k), k);
+  for (const k of ['clock', 'geoboard', 'rekenreks', 'fraction-circles', 'frac-eq', 'answer']) { assert.ok(!BACKDROP.has(k), k); assert.deepEqual(startLock(k), {}); }
+  // A new board, the palette (placeObject) and any new object of a backdrop kind: locked, by nobody in particular.
+  assert.equal(newBoard('base-ten-blocks').objects[0].locked, true, 'a new base ten board: its chart locked');
+  assert.equal(newBoard('two-color-counters').objects[0].locked, true);
+  assert.equal(newBoard('hundred-board').objects[0].locked, true);
+  assert.equal(newBoard('xy-coordinate-board').objects[0].locked, true);
+  assert.equal(newBoard('clock').objects[0].locked, undefined, 'a clock is not a backdrop');
+  assert.equal(newBoard('geoboard').objects[0].locked, undefined);
+  const region = { x: 0, y: 0, w: WORLD.w, h: WORLD.h };
+  assert.equal(placeObject('base-ten-blocks', newBoard('base-ten-blocks'), 'mat', region, WORLD).locked, true, 'a work mat from the palette');
+  assert.equal(placeObject('two-color-counters', { v: 2, objects: [], pieces: [] }, 'ppw', region, WORLD).locked, true);
+  assert.equal(placeObject('money', { v: 2, objects: [], pieces: [] }, 'answer', region, WORLD).locked, undefined, 'an answer box is not');
+  for (const o of [newObject('number-lines', 'number-lines'), newObject('bar-models', 'bar-models')]) { assert.equal(o.locked, true); assert.equal(o.lockBy, undefined); }
+  // An AI draft's layout and a practice set: their charts and mats locked too.
+  const d = draftLayout('base-ten-blocks', { title: 'T', objects: [{ k: 'pv-chart', label: 'Build 34' }], pieces: [] }, pieceDefs('base-ten-blocks'));
+  assert.equal(d.objects[0].locked, true);
+  const p = buildPractice('base-ten-blocks', { title: 'Build', items: [{ value: 346, box: 'build' }, { value: 52, box: 'build' }] });
+  assert.ok(p.board.objects.filter(o => o.k === 'pv-chart').length >= 1 && p.board.objects.filter(o => o.k === 'pv-chart').every(o => o.locked === true), 'practice charts locked');
+  assert.ok(p.board.objects.filter(o => o.k === 'answer').every(o => !o.locked), 'answer boxes stay free');
+  const clocks = buildPractice('clock', { title: 'Clocks', items: [{ time: '7:30' }, { time: '3:15' }] });
+  assert.ok(clocks.board.objects.every(o => !o.locked), 'practice clocks are not backdrops');
+  if (sanitizeDraft) assert.ok(sanitizeDraft({ title: 'x', items: [] }, 'base-ten-blocks').board.objects.every(o => o.k !== 'pv-chart' || o.locked), 'an empty draft: the usual (locked) start');
+  // Saved boards keep the lock they were saved with: nothing is migrated.
+  const saved = { v: 2, objects: [{ id: 'A', k: 'pv-chart', x: 10, y: 10, s: 1, st: { cols: ['Tens', 'Ones'] } }], pieces: [] };
+  assert.equal(migrate('base-ten-blocks', saved).objects[0].locked, undefined, 'an old unlocked chart stays unlocked');
+  const old = migrate('base-ten-blocks', { pieces: [], decimal: false });
+  assert.equal(old.objects.find(o => o.k === 'pv-chart').locked, undefined, 'a first-format board migrates without a lock');
+});

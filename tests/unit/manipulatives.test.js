@@ -423,6 +423,12 @@ test('the PDF: the teacher\'s export of the students\' work, with the names the 
   const xref = +r.text.match(/startxref\n(\d+)/)[1];
   assert.equal(r.text.slice(xref, xref + 4), 'xref', 'the xref offset is right');
   assert.equal(M.pdfSafe('Zoë · 3×4 − 1 ✓ ā'), 'Zoë · 3×4 - 1 OK a');
+  assert.doesNotMatch(r.text, /\(Steps\)/, 'no steps: no Steps block');
+  // A session with steps: they come first, numbered (the teacher's export: every step).
+  assert.ok(M.saveArea(boss, s.id, 't', { v: 2, objects: [], pieces: [], __steps: [{ id: 'a', text: 'Build 23' }, { id: 'b', text: 'Trade a ten' }] }).ok);
+  const r2 = await as(boss)(`/api/manipulatives/live/${s.id}/export.pdf`);
+  assert.match(r2.text, /\(Steps\) Tj/); assert.match(r2.text, /1\. Build 23/); assert.match(r2.text, /2\. Trade a ten/);
+  assert.ok(r2.text.indexOf('1. Build 23') < r2.text.indexOf('Ada Apple'), 'the steps before the students');
 });
 
 test('the class page tells the class\'s students about a running session, and nobody else', async () => {

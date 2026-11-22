@@ -528,6 +528,7 @@ function loadState(obj) {
     strokes: Array.isArray(ann.strokes) ? ann.strokes : [],
     texts: Array.isArray(ann.texts) ? ann.texts.slice(0, 30).map((n, i) => ({ id: String(n.id || `t${i}`), text: String(n.text || ''), x: +n.x || 0, y: +n.y || 0, ...textBoxFields(n) })) : [] };
   V.steps = stepsOf(o);   // the exercise's steps travel with the board (saves, share codes, pushes)
+  V.stepAt = 0; V.stepsList = false;   // the steps card starts at step 1, its list closed
   const rest = { ...o }; delete rest.__ann; delete rest.__steps;
   V.st = normalize(V.tool.slug, V.impl, rest);
   if (V.impl.pieces) settleCharts(V.tool.slug, V.st, { trade: false, space: WORLD });   // blocks fit their chart's columns
@@ -561,6 +562,7 @@ function openTool(slug, { restore = null, boardId = null, title = '' } = {}) {
       </aside>
       <div class="mp-main">
         <div id="mp-annbar"></div><div id="mp-steps"></div><div id="mp-draft"></div>
+        <div id="mp-stepcard"></div>
         <div class="mp-board" id="mp-board" aria-label="${esc(t('js.manip.board.label', { tool: tool.name }))}">
           <div class="mp-world" id="mp-world" style="width:${WORLD.w}px;height:${WORLD.h}px">
             <div class="mp-content mp-abs" id="mp-content"></div>
@@ -805,7 +807,7 @@ function renderChrome() {
   const set = document.getElementById('mp-settings');
   const settings = objectTool(slug) ? (o && !o.st.q && V.impl.settings ? V.impl.settings(o.st) : '') : V.impl.settings ? V.impl.settings(V.st) : '';
   set.innerHTML = `${settings}${btn('chip', `data-view="totals" aria-pressed="${V.totals !== false}"`, esc(V.totals !== false ? t('js.manip.view.totalsOn') : t('js.manip.view.totalsOff')))}<p class="small muted mp-hint">${esc(V.impl.hint || '')}${V.impl.pieces ? ` ${esc(t('js.manip.board.pieceHint'))}` : ''}</p>`;
-  renderAnnBar(); renderDraft(); renderSteps();
+  renderAnnBar(); renderDraft(); renderSteps(); renderStepCard();
 }
 function renderTotal() {
   const el = document.getElementById('mp-total'); if (!el) return;
@@ -1103,6 +1105,8 @@ function bindBoard() {
     }
     const tl = e.target.closest('[data-tool]');
     if (tl) return toolButton(tl.dataset.tool);
+    const sc = e.target.closest('[data-sc]');
+    if (sc) return stepCardButton(sc.dataset.sc);
     const tg = e.target.closest('[data-toggle]');
     if (tg) { const k = tg.dataset.toggle; return change(st => { const s2 = settingsTarget(st); s2[k] = !s2[k]; }); }
     const an = e.target.closest('[data-ann]');
@@ -1410,7 +1414,7 @@ function bindPlane() {
       e.preventDefault();
       if (e.button === 2) { soloObjMenu(o.id, e.clientX, e.clientY); return; }
       if (e.button > 0) return;
-      const gg = g = { kind: 'obj', o, el: objEl, x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before: JSON.stringify(V.st) };
+      const gg = g = { kind: 'obj', o, el: objEl, head: !!e.target.closest('.mp-ohead'), x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before: JSON.stringify(V.st) };
       gg.hold = startHold(e.clientX, e.clientY, () => { if (g !== gg || gg.moved) return; gg.held = true; soloObjMenu(o.id, gg.sx, gg.sy); });
       board.setPointerCapture(e.pointerId); return;
     }
@@ -1431,6 +1435,9 @@ function bindPlane() {
       // A piece or object starts to move after 10 px; before that it may still become a hold.
       if (Math.hypot(dx, dy) < SLOP) return;
       g.hold.cancel();
+      // A locked chart, grid or mat dragged by its body pans the board (backdrops start locked and can fill a phone's
+      // screen); by its handle bar, or a locked piece: a small shake.
+      if (g.kind === 'obj' && g.o.locked && !g.held && !g.head) { g = { kind: 'pan', sx: g.sx, sy: g.sy, x0: V.view.x, y0: V.view.y, moved: true }; V.view.x = g.x0 + dx; V.view.y = g.y0 + dy; applyView(); return; }
       if (g.kind === 'piece' ? g.p.locked : g.o.locked) { if (!g.held) shake(g.kind === 'piece' ? pieceElOf(g.p.id) : objElOf(g.o.id)); g = { kind: 'dead' }; return; }
       if (g.held) { closeWheel({ focus: false }); g.before = JSON.stringify(V.st); }
       if (g.kind === 'piece') {
@@ -1645,7 +1652,27 @@ function renderSteps() {
   if (el.firstChild && el.contains(document.activeElement)) return;   // typing in it: the editor keeps its own place
   el.innerHTML = `<section class="panel mp-drafter" aria-label="${esc(t('js.manip.steps.title'))}"><div class="row"><h2>${iconHtml('📋', { size: 28 })} ${esc(t('js.manip.steps.title'))}</h2>${btn('btn btn-sm btn-ghost', 'data-tool="steps"', `✕ ${esc(t('js.manip.draft.close'))}`)}</div>
     <p class="small muted">${esc(t('js.manip.steps.text'))}</p><div id="mp-stepsed"></div></section>`;
-  ROOM.stepsEditor(document.getElementById('mp-stepsed'), V.steps || [], list => { V.steps = list.filter(x => x.text.trim()); });
+  ROOM.stepsEditor(document.getElementById('mp-stepsed'), V.steps || [], list => { V.steps = list.filter(x => x.text.trim()); renderStepCard(); });
+}
+/** The steps on the board itself (owner, 22 Nov 2026: "we need to put the steps on the actual board"): a card pinned
+ *  above the board, for everyone who opens it (the teacher, a share code, a student), hidden with no steps. On a board
+ *  of one's own the viewer moves through the steps; the teacher may fold the card to one line. */
+function renderStepCard() {
+  const el = document.getElementById('mp-stepcard'); if (!el || !V) return;
+  const list = V.steps || [];
+  V.stepAt = clamp(V.stepAt || 0, 0, Math.max(0, list.length - 1));
+  el.innerHTML = ROOM.stepCardHtml({ list, i: V.stepAt, move: true, open: !!V.stepsList, folded: HOST && !!V.stepsFolded, fold: HOST });
+}
+function stepCardButton(k) {
+  const n = (V.steps || []).length;
+  if (k === 'prev' || k === 'next') V.stepAt = clamp((V.stepAt || 0) + (k === 'next' ? 1 : -1), 0, Math.max(0, n - 1));
+  else if (k === 'all') V.stepsList = !V.stepsList;
+  else if (k === 'fold') V.stepsFolded = true;
+  else if (k === 'unfold') V.stepsFolded = false;
+  renderStepCard();
+  // Keep the keyboard where it was (the same button, or its partner when it went disabled).
+  const card = document.getElementById('mp-stepcard'), same = card && card.querySelector(`[data-sc="${k}"]:not(:disabled)`);
+  (same || (card && card.querySelector('[data-sc]:not(:disabled)')))?.focus({ preventScroll: true });
 }
 // ---------------------------------------------------------------- the AI drafter: a job on the server
 // A draft runs on our server (services/manip-drafts.js), not in this page: a refresh or a closed tab changes nothing.

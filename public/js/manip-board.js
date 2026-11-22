@@ -189,6 +189,13 @@ export const kindOf = (slug, k) => kindsOf(slug).find(x => x.k === k) || null;
 export const objectTool = slug => !pieceDefs(slug).length;
 /** Kinds that lie under everything else (mats and charts that pieces sit on). */
 export const UNDER = new Set(['mat', 'pv-chart', 'ten-frame', 'five-frame', 'double-ten-frame', 'ppw']);
+/** Backdrops: the charts, tables, frames, mats and graphs other pieces go onto (owner, 22 Nov 2026: "when you place
+ *  down a chart, table, or graph, it should always be locked in place by default"). A new one starts locked, wherever
+ *  it is placed (the palette, a new board, an AI draft, a practice set), so dragging pieces onto it never moves it; the
+ *  wheel's Unlock frees it. Boards saved before keep the locks they were saved with (nothing is migrated). */
+export const BACKDROP = new Set([...UNDER, 'hundred-board', 'xy-coordinate-board', 'number-lines', 'bar-models']);
+/** The lock a new object of kind k starts with: { locked: true } for a backdrop, else nothing. */
+export const startLock = k => (BACKDROP.has(k) ? { locked: true } : {});
 /** An object's natural size (unscaled) and its place on the plane (scaled). */
 export function objSize(slug, o) { const K = kindOf(slug, o.k); return K ? K.size(o.st || {}) : { w: 300, h: 200 }; }
 export function objRect(slug, o) { const z = objSize(slug, o), s = num(o.s, 1); return { x: num(o.x), y: num(o.y), w: z.w * s, h: z.h * s }; }
@@ -212,7 +219,7 @@ export function addMinutes(c, d) { const t = (((toMin(c) + d) % 720) + 720) % 72
 // ---------------------------------------------------------------- new boards, and boards saved before format 2
 let seq = 0;
 const oid = () => `o${Date.now().toString(36)}${(seq++).toString(36)}`;
-export const newObject = (slug, k, x = 0, y = 0, s = 1) => { const K = kindOf(slug, k); return K ? { id: oid(), k, x: Math.round(x), y: Math.round(y), s, st: K.init() } : null; };
+export const newObject = (slug, k, x = 0, y = 0, s = 1) => { const K = kindOf(slug, k); return K ? { id: oid(), k, x: Math.round(x), y: Math.round(y), s, st: K.init(), ...startLock(k) } : null; };
 /** A new board: one object of the tool (if it starts with one), centered in the space. */
 export function newBoard(slug, space = WORLD, extra = {}) {
   const K = kindsOf(slug).find(x => x.start), objects = [];

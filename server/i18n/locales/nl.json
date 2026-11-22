@@ -3497,7 +3497,16 @@
       "actionsFor": "Acties voor {label}",
       "teacherLock": "Je leraar heeft dit vastgezet.",
       "reopen": "Ruimte heropenen",
-      "reopened": "De ruimte is weer open. Iedereen gaat terug naar het eigen vak."
+      "reopened": "De ruimte is weer open. Iedereen gaat terug naar het eigen vak.",
+      "steps": "Stappen",
+      "stepOf": "Stap {n} van {total}",
+      "instructions": "Instructies",
+      "prevStep": "Vorige stap",
+      "nextStep": "Volgende stap",
+      "allSteps": "Alle stappen",
+      "thisStep": "Alleen deze stap",
+      "hideSteps": "Stappen verbergen",
+      "showSteps": "Stappen tonen"
     },
     "figures-editor": {
       "undo": "Ongedaan maken",

@@ -3496,7 +3496,16 @@
       "actionsFor": "{label} 的動作",
       "teacherLock": "老師鎖定了這個。",
       "reopen": "重新開啟教室",
-      "reopened": "教室重新開啟了。每位學生都回到自己的格子。"
+      "reopened": "教室重新開啟了。每位學生都回到自己的格子。",
+      "steps": "步驟",
+      "stepOf": "第 {n} 步，共 {total} 步",
+      "instructions": "說明",
+      "prevStep": "上一步",
+      "nextStep": "下一步",
+      "allSteps": "所有步驟",
+      "thisStep": "只看這一步",
+      "hideSteps": "隱藏步驟",
+      "showSteps": "顯示步驟"
     },
     "figures-editor": {
       "undo": "復原",
