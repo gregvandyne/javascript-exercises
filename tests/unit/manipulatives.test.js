@@ -280,7 +280,9 @@ test('the AI drafter: hosts only, through the site\'s AI client with the configu
     const prompt = calls[0].messages[0].content;
     assert.doesNotMatch(prompt, /miro|muse/i); assert.doesNotMatch(prompt, /not a real task/, 'only library tasks are passed on'); assert.doesNotMatch(prompt, /Ada|Apple|Abe|Bea/);
     assert.match(prompt, /exactly as many items as the teacher asks for/); assert.doesNotMatch(prompt, /coordinates|fractions of the board/i, 'no places from the model');
-    assert.doesNotMatch(JSON.stringify(calls[0].output_config.format.schema), /"x":\{"type":"number"\}|notes|strokes/, 'no coordinates, notes or pen marks in the schema');
+    assert.equal(calls[0].output_config.format, undefined, 'plain JSON: no strict schema (it hung in production)');
+    assert.doesNotMatch(JSON.stringify(M.DRAFT_SCHEMA), /"x":\{"type":"number"\}|notes|strokes/, 'no coordinates, notes or pen marks in the draft shape');
+    assert.doesNotMatch(prompt, /notes|strokes|pen marks/i);
     const d = r.json.draft, clocks = d.board.objects.filter(o => o.k === 'clock'), boxes = d.board.objects.filter(o => o.k === 'answer');
     assert.equal(d.n, 7, 'the invalid time is dropped'); assert.equal(clocks.length, 7); assert.equal(boxes.length, 7);
     assert.equal(new Set(clocks.map(o => `${o.st.h}:${o.st.m}`)).size, 7, 'every clock a different time (a repeat became a new time)');
