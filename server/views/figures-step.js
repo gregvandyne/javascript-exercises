@@ -1,5 +1,5 @@
 // A figures step on the lesson page (services/figures-steps.js viewFor; routes/progress.js): each figure drawn on the
-// server (the hidden parts left out), its question, and a blank with the unit. A student saves as they go and hands in
+// server (the hidden parts left out), its question, and a blank with the unit (any sign) or its options to pick one. A student saves as they go and hands in
 // once; then each question says right or not right and the score shows. The answer and worked lines show only when
 // viewFor sent them (the teacher; a student once "Show answers after the due date" lets them). Every word is escaped.
 import { html, raw } from './html.js';
@@ -8,15 +8,26 @@ import { ico } from './icon.js';
 /** v: viewFor's result. student: { api } to answer (a student of the class), or null (the teacher's preview). */
 export function figuresStepHtml(t, v, { student = null, stepId, showAnswers = false, dueSet = false, dueOver = false } = {}) {
   const locked = !student || v.handedIn;
+  const mark = it => (it.right === true ? html`<span class="chip-s fs-mark ok">${ico('✅', { size: 18 })} ${t('figures.step.right')}</span>` : it.right === false ? html`<span class="chip-s fs-mark bad">${ico('❌', { size: 18 })} ${t('figures.step.notRight')}</span>` : '');
+  // A number blank takes any sign: phones' decimal keypads often have no minus key, so a ± button flips the sign
+  // (public/js/lesson-read.js). Every number question has it, so it never says whether an answer is negative.
+  const numberBlank = it => html`<div class="fs-blank"><label class="sr-only" for="fa-${stepId}-${it.n}">${t('figures.step.answerLabel', { n: it.n })}</label>
+        <input class="input fs-in" id="fa-${stepId}-${it.n}" name="a${it.n - 1}" value="${it.typed}" maxlength="40" inputmode="decimal" autocomplete="off" spellcheck="false" dir="ltr" ${locked ? raw('readonly') : ''}>
+        ${locked ? '' : html`<button class="btn btn-sm fs-sign" type="button" data-fs-sign="fa-${stepId}-${it.n}" aria-label="${t('figures.step.signLabel', { n: it.n })}" title="${t('figures.step.sign')}">±</button>`}
+        ${it.unit ? html`<span class="fs-unit" dir="ltr">${it.unit}</span>` : ''}
+        ${mark(it)}</div>`;
+  // A choice question: its options as radio buttons in a fieldset whose legend is the question (the arrow keys move
+  // between them). The right one is marked only when viewFor sent it (correct).
+  const choiceBlank = it => html`<fieldset class="fs-choices"${locked ? raw(' disabled') : ''}>
+        <legend class="fs-text" dir="auto">${it.question || t('figures.print.noQuestion')}</legend>
+        ${it.choices.map((c, k) => { const right = it.correct === k; return html`<label class="fs-opt${right ? ' fs-right' : ''}"><input type="radio" name="a${it.n - 1}" value="${String(k)}" ${it.typed === String(k) ? raw('checked') : ''}>
+          <b class="fs-letter" aria-hidden="true">${String.fromCharCode(65 + k)}</b><span dir="auto">${c}</span>${right ? html` <span class="chip-s fs-mark ok">${ico('🔑', { size: 18 })} ${t('figures.step.rightOption')}</span>` : ''}</label>`; })}
+        ${mark(it)}</fieldset>`;
   const q1 = it => html`<li class="fs-q" id="fq-${stepId}-${it.n}">
     <span class="fs-n" aria-hidden="true">${it.n}</span>
     <div class="fs-fig">${raw(it.svg)}</div>
     <div class="fs-body">
-      <p class="fs-text" dir="auto">${it.question || t('figures.print.noQuestion')}</p>
-      <div class="fs-blank"><label class="sr-only" for="fa-${stepId}-${it.n}">${t('figures.step.answerLabel', { n: it.n })}</label>
-        <input class="input fs-in" id="fa-${stepId}-${it.n}" name="a${it.n - 1}" value="${it.typed}" maxlength="40" inputmode="decimal" autocomplete="off" spellcheck="false" dir="ltr" ${locked ? raw('readonly') : ''}>
-        ${it.unit ? html`<span class="fs-unit" dir="ltr">${it.unit}</span>` : ''}
-        ${it.right === true ? html`<span class="chip-s fs-mark ok">${ico('✅', { size: 18 })} ${t('figures.step.right')}</span>` : it.right === false ? html`<span class="chip-s fs-mark bad">${ico('❌', { size: 18 })} ${t('figures.step.notRight')}</span>` : ''}</div>
+      ${it.type === 'choice' ? choiceBlank(it) : html`<p class="fs-text" dir="auto">${it.question || t('figures.print.noQuestion')}</p>${numberBlank(it)}`}
       ${it.answer !== undefined ? html`<div class="fs-key"><p><b>${student ? t('figures.step.answer') : t('figures.step.teacherAnswer')}</b> <span dir="auto">${it.answer}</span></p>
         ${it.work && it.work.length ? html`<ul class="fs-work">${it.work.map(w => html`<li dir="auto">${w}</li>`)}</ul>` : ''}</div>` : ''}
     </div></li>`;

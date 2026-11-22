@@ -172,6 +172,18 @@
 .fg-ikind{font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .fg-iq{min-height:56px;font-weight:700}
 .fg-ians{margin:0;color:var(--accent-ink);font-size:.95rem;overflow-wrap:anywhere}
+.fg-atype{border:0;margin:2px 0 0;padding:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;font-size:.9rem}
+.fg-atype legend{float:inline-start;font-weight:700;margin-inline-end:8px;padding:0}
+.fg-atype label{display:inline-flex;align-items:center;gap:6px;min-height:32px;cursor:pointer}
+.fg-atype input{width:18px;height:18px;margin:0}
+.fg-opts{border:1px solid var(--line);border-radius:12px;margin:4px 0 0;padding:8px 10px;display:grid;gap:6px;min-width:0}
+.fg-opts legend{font-weight:700;font-size:.9rem;padding:0 4px}
+.fg-opt{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:6px;align-items:center}
+.fg-opt .fg-oright{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;cursor:pointer}
+.fg-opt .fg-oright input{width:20px;height:20px;margin:0}
+.fg-opt b{min-width:1.4em;text-align:center}
+.fg-opt .input{min-height:36px;padding:4px 8px}
+.fg-opts .fg-small{margin:0}
 .fg-iacts{display:grid;grid-template-columns:repeat(2,44px);gap:6px}
 .fg-iacts .btn{min-height:40px}
 .fg-empty{padding:16px;background:var(--card);border-radius:var(--r)}
@@ -217,6 +229,11 @@
 .fgp-text p{margin:0 0 6pt}
 .fgp-ans{margin-top:10pt!important}
 .fgp-kans{font-weight:800}
+.fgp-choices{list-style:none;margin:2pt 0 6pt;padding:0;display:grid;gap:4pt}
+.fgp-choices li{display:flex;align-items:center;gap:6pt}
+.fgp-box{display:inline-grid;place-items:center;width:10pt;height:10pt;border:1pt solid #000;border-radius:50%;font-style:normal;font-size:8pt;font-weight:800;flex:none}
+.fgp-right{font-weight:800}
+.fgp-right .fgp-box{background:#000;color:#fff}
 .fgp-work{margin:0;padding-inline-start:14pt;font-size:10pt}
 .fgp-fig svg{max-width:100%;height:auto;max-height:220pt}
 .fgp-foot{margin-top:10pt;font-size:8pt;color:#333}

@@ -3669,7 +3669,8 @@
         "gridTitle": "Dans un repère",
         "addGrid": "Ajouter la figure du repère à une fiche",
         "drawInstead": "La dessiner plutôt sur une grille"
-      }
+      },
+      "choiceNote": "C’est une question à choix multiple. Ses options et la bonne réponse se règlent dans la fiche."
     },
     "figures-sheet": {
       "title": "Titre de la fiche",
@@ -3725,7 +3726,19 @@
       "assignNoClasses": "Vous n'avez pas encore de classe. Créez d'abord une classe, puis donnez la fiche.",
       "assignDone": "Donné à {class}.",
       "assignSee": "Voir comme les élèves",
-      "assignProgress": "Voir la progression"
+      "assignProgress": "Voir la progression",
+      "answerType": "Réponse",
+      "typeNumber": "Nombre",
+      "typeChoice": "Choix multiple",
+      "options": "Options (cochez la bonne)",
+      "optionN": "Option {letter} de la question {n}",
+      "rightN": "L’option {letter} est la bonne réponse",
+      "markRight": "La bonne réponse",
+      "addOption": "Ajouter une option",
+      "removeOption": "Retirer l’option {letter}",
+      "fromFigure": "La bonne option est déduite de la figure. Modifiez une option ou cochez-en une autre pour choisir vous-même.",
+      "needTwo": "Écrivez au moins 2 options.",
+      "needRight": "Cochez la bonne option."
     }
   },
   "favorites": {
@@ -12338,7 +12351,9 @@
       "crumb": "Imprimer",
       "sheetOnly": "Fiche élève",
       "withKey": "Avec le corrigé",
-      "print": "Imprimer"
+      "print": "Imprimer",
+      "options": "Options",
+      "rightOne": "(la bonne réponse)"
     },
     "errors": {
       "notFound": "Ce n'est pas ici.",
@@ -12353,7 +12368,8 @@
       "noGen": "Cette figure n'a pas encore de générateur de questions.",
       "name": "Donnez-lui d'abord un nom.",
       "brief": "Décrivez d'abord la fiche en quelques mots.",
-      "names": "Ne mettez pas de noms d'élèves dans la description : les noms ne sont jamais envoyés à l'IA."
+      "names": "Ne mettez pas de noms d'élèves dans la description : les noms ne sont jamais envoyés à l'IA.",
+      "sameChoices": "Deux options sont identiques. Rendez-les toutes différentes."
     },
     "kinds": {
       "numberLine": {
@@ -12686,7 +12702,10 @@
       "rightOf": "{right} sur {total} justes",
       "answersTable": "Les réponses de chaque élève",
       "noneYet": "Personne n'a encore rendu.",
-      "questions": "{count, plural, one {# question sur une figure} other {# questions sur des figures}}"
+      "questions": "{count, plural, one {# question sur une figure} other {# questions sur des figures}}",
+      "sign": "Rendre négatif ou positif",
+      "signLabel": "Passer votre réponse à la question {n} en négatif ou en positif",
+      "rightOption": "Bonne réponse"
     },
     "assign": {
       "errors": {

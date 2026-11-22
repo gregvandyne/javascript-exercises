@@ -100,28 +100,110 @@ const unitText = (v, unit) => (unit ? (/^[°′″%]/.test(unit) ? `${v}${unit}`
 export const solved = (kind, data, v) => flatSolve(solveOf(kit(v), kind, data) || {});
 
 const L = () => canvasKit().logic;
-/** A generator's question with this seed: { kind, data, hide, question, answer, work, unit, dp } or null. The answer is
- *  the OF.solve value the generator names (key); a generator for a kind without a solver keeps its own formula. */
-export function generate(genId, seed, v) {
+// ---------------------------------------------------------------- figure question generators
+// The catalog's generators are written in the gen language of Oomba Canvas (docs/figures-api.md "Figure question
+// generators in Figures worksheets"): Canvas deals the values and fills the text and the figure (TOOLS[tool].gen), and
+// the Figures product checks what it made itself, because a worksheet takes more than a Canvas activity does: a number
+// answer of any sign (a worksheet blank takes a minus sign; Canvas's keypad does not) and "figure.choice" with 2 to 6
+// options whose worked lines say the right one with {choice}. A choice generator's right option comes from OF.solve:
+// key is the OF.solve value (a number or a word, read from the solve result) and pick maps each of its values to the
+// option it means ({ "ad": 0, "ar": 1, "xr": 2 }); the generator's own answer formula must agree (the tests check it).
+export const CHOICES = Object.freeze({ min: 2, max: 6, chars: 80 });
+/** An OF.solve value by its dotted path, a number or a string (flatSolve keeps numbers only). */
+export function solveValue(kind, data, path, v) {
+  let o = solveOf(kit(v), kind, data);
+  for (const k of String(path || '').split('.')) { if (!o || typeof o !== 'object' || !(k in o)) return undefined; o = o[k]; }
+  return typeof o === 'number' && Number.isFinite(o) ? o : typeof o === 'string' ? o : undefined;
+}
+/** The option a choice generator's key and pick give for this figure, or undefined. */
+export function pickOf(g, kind, data, v) {
+  if (!g || !g.key || !g.pick || typeof g.pick !== 'object') return undefined;
+  const x = solveValue(kind, data, g.key, v);
+  if (x === undefined) return undefined;
+  const i = g.pick[String(x)];
+  return Number.isInteger(i) && i >= 0 && i < (g.choices || []).length ? i : undefined;
+}
+const letter = i => String.fromCharCode(65 + i);
+/** The answer as the key shows it for a choice question: "B) autosomal recessive". */
+export const choiceText = (choices, i) => (Number.isInteger(i) && choices[i] ? `${letter(i)}) ${choices[i]}` : '');
+const line = (s, n) => (typeof s === 'string' ? s.replace(/\s+/g, ' ').trim().slice(0, n) : '');
+/** What a generator dealt, checked the Figures way: { q, fig, work, unit, dp, answer } or { choices, answer: index }. */
+function cleanDealt(p, tool) {
+  if (!p || typeof p.why === 'string') return null;
+  const q = line(p.q, LIMITS.questionChars), fig = p.fig;
+  if (!q || !fig || typeof fig !== 'object' || Array.isArray(fig) || typeof fig.kind !== 'string') return null;
+  const work = Array.isArray(p.work) && p.work.length >= 1 && p.work.length <= 8 && p.work.every(x => typeof x === 'string' && x.trim()) ? p.work.map(x => line(x, 200)) : null;
+  if (!work) return null;
+  if (tool === 'figure.choice') {
+    const ch = Array.isArray(p.choices) ? p.choices.map(x => line(String(x ?? ''), CHOICES.chars)) : [];
+    if (ch.length < CHOICES.min || ch.length > CHOICES.max || ch.some(x => !x) || new Set(ch.map(x => x.toLowerCase())).size !== ch.length) return null;
+    if (!Number.isInteger(p.answer) || p.answer < 0 || p.answer >= ch.length) return null;
+    return { q, fig, work, choices: ch, answer: p.answer };
+  }
+  if (typeof p.answer !== 'number' || !Number.isFinite(p.answer) || Math.abs(p.answer) > 1e9) return null;
+  const dec = (numText(p.answer, 6).split('.')[1] || '').length;
+  const dp = Number.isInteger(p.dp) && p.dp >= 0 && p.dp <= 3 ? p.dp : Math.min(3, dec);
+  return { q, fig, work, unit: line(p.unit, 20), dp, answer: p.answer };
+}
+/** What a generator deals for this seed, before the figure is checked (also what the tests compare against OF.solve):
+ *  the Canvas gen's own output, with {choice} still in the text. null for an unknown generator. */
+export function dealRaw(genId, seed) {
   const g = genOf(genId), lg = L();
   if (!g || !lg.TOOLS[g.tool]) return null;
-  const s = Number.isInteger(seed) && seed > 0 ? seed : 1;
-  const c = lg.cleanProblem(lg.TOOLS[g.tool].gen(lg.seeded(s), g));
-  if (!c.p || !c.p.fig) return null;
-  const { kind, hide, ...data } = c.p.fig;
+  return lg.TOOLS[g.tool].gen(lg.seeded(Number.isInteger(seed) && seed > 0 ? seed : 1), g);
+}
+/** A generator's question with this seed: { kind, data, hide, question, answer, work, unit, dp, value, answerType,
+ *  choices, correct } or null. A number question's value is the OF.solve value the generator names (key); a generator
+ *  for a kind without a solver keeps its own formula. A choice question's right option (correct, also value) is the one
+ *  its key and pick give, and {choice} in its question and worked lines is that option's words. */
+export function generate(genId, seed, v) {
+  const g = genOf(genId);
+  const raw = dealRaw(genId, seed); if (!raw || !raw.fig || typeof raw.fig !== 'object') return null;
+  const { kind, hide, ...data } = raw.fig;
   if (kind !== g.kind || checkFigure(kind, data, v).length) return null;
-  const dp = Number.isInteger(c.p.dp) ? c.p.dp : 2;
+  if (g.tool === 'figure.choice') {
+    const picked = pickOf(g, kind, data, v), idx = picked !== undefined ? picked : Math.round(raw.answer);
+    const say = s => String(s).replace(/\{choice\}/g, () => String((raw.choices || [])[idx] ?? ''));
+    const c = cleanDealt({ ...raw, answer: idx, q: say(raw.q || ''), work: (raw.work || []).map(say) }, g.tool);
+    if (!c) return null;
+    const last = c.work[c.work.length - 1].toLowerCase();
+    if (!last.includes(c.choices[idx].toLowerCase())) return null;
+    return { kind, data, hide: cleanHide(kindOf(kind), hide === undefined ? false : hide), question: c.q, answer: choiceText(c.choices, idx), work: c.work, unit: '', dp: 0, value: idx, answerType: 'choice', choices: c.choices, correct: idx };
+  }
+  const c = cleanDealt(raw, g.tool); if (!c) return null;
   const fromSolve = g.key ? solved(kind, data, v)[g.key] : undefined;
-  const value = typeof fromSolve === 'number' ? fromSolve : c.p.answer;
-  return { kind, data, hide: cleanHide(kindOf(kind), hide === undefined ? false : hide), question: String(c.p.q || ''), answer: unitText(numText(value, dp), c.p.unit || ''), work: (c.p.work || []).map(String).slice(0, 8), unit: c.p.unit || '', dp, value };
+  const value = typeof fromSolve === 'number' ? fromSolve : c.answer;
+  return { kind, data, hide: cleanHide(kindOf(kind), hide === undefined ? false : hide), question: c.q, answer: unitText(numText(value, c.dp), c.unit), work: c.work, unit: c.unit, dp: c.dp, value, answerType: 'number', choices: [], correct: null };
 }
 export const newSeed = () => 1 + Math.floor(Math.random() * 999999);
+
+/** A choice question's options as typed: trimmed, blanks left out (the right one's index follows), at most 6, each through
+ *  the word rules. -> { choices, correct } | { code } (words, personal, sameChoices) */
+export function cleanChoices(list, correct) {
+  const out = []; let right = null;
+  (Array.isArray(list) ? list : []).slice(0, CHOICES.max + 4).forEach((x, i) => {
+    const v = clipStr(typeof x === 'number' ? String(x) : typeof x === 'string' ? x : '', CHOICES.chars).replace(/\s+/g, ' ').trim();
+    if (!v || out.length >= CHOICES.max) return;
+    if (i === correct) right = out.length;
+    out.push(v);
+  });
+  for (const v of out) { const p = textProblem(v); if (p) return { code: p }; }
+  if (new Set(out.map(x => x.toLowerCase())).size !== out.length) return { code: 'sameChoices' };
+  return { choices: out, correct: right };
+}
+const sameList = (a, b) => Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((x, i) => x === b[i]);
+/** A choice question's link to its generator ("gen:<id>"): while its options are still that generator's, the right one is
+ *  worked out from the figure with OF.solve (key and pick), even after the teacher changes the figure. */
+const GEN_LINK = /^gen:([A-Za-z.]{2,40})$/;
+const linkedGen = (key, kind) => { const m = GEN_LINK.exec(String(key || '')); const g = m && genOf(m[1]); return g && g.kind === kind && g.tool === 'figure.choice' && g.pick ? g : null; };
 
 /**
  * One worksheet question as it may be stored, worked out here from what the browser sent (never trusting its answer or
  * worked lines). An item from a generator keeps the generator's question, answer and worked lines while its data is
  * exactly what that generator makes for its seed; once the teacher changes the figure it is a figure of their own,
- * answered from OF.solve by answerKey. -> { ok, item } | { ok: false, code, problems? }
+ * answered from OF.solve by answerKey. answerType 'number' (the default) or 'choice': a choice question has 2 to 6
+ * options (choices) and the index of the right one (correct): from its generator (OF.solve through key and pick) while
+ * it is linked to one (answerKey "gen:<id>"), else the one the teacher marked. -> { ok, item } | { ok: false, code, problems? }
  */
 export function cleanItem(raw, v) {
   const r = raw && typeof raw === 'object' ? raw : {};
@@ -136,20 +218,37 @@ export function cleanItem(raw, v) {
   const problems = checkFigure(K.id, data, v);
   if (problems.length) return fail('cannotDraw', { problems: problems.slice(0, 5) });
   const fromGen = g && canon(g.data) === canon(data);
+  const type = r.answerType === 'choice' || r.answerType === 'number' ? r.answerType : fromGen ? g.answerType : 'number';
+  const hide = r.hide === undefined && fromGen ? g.hide : cleanHide(K, r.hide);
+  const src = fromGen ? { gen: r.gen, seed } : { gen: null, seed: null };
+  if (type === 'choice') {
+    const fromGenChoice = fromGen && g.answerType === 'choice';
+    const typed = r.choices === undefined && fromGenChoice ? { choices: g.choices, correct: g.correct } : cleanChoices(r.choices, Number.isInteger(r.correct) ? r.correct : null);
+    if (typed.code) return fail(typed.code);
+    const linkId = fromGenChoice && (r.answerKey === undefined || r.answerKey === `gen:${r.gen}`) ? r.gen : (GEN_LINK.exec(String(r.answerKey || '')) || [])[1];
+    const link = linkId ? linkedGen(`gen:${linkId}`, K.id) : null;
+    const linked = link && sameList(typed.choices, link.choices) ? link : null;
+    let correct = typed.correct;
+    if (linked) { const pk = pickOf(linked, K.id, data, v); correct = pk !== undefined ? pk : fromGenChoice ? g.correct : null; }
+    if (typed.choices.length < CHOICES.min) correct = null;
+    const base = { kind: K.id, data, hide, question: question || (fromGen ? g.question : ''), answerType: 'choice', choices: typed.choices, correct, answerKey: linked ? `gen:${linked.id}` : null };
+    const work = fromGenChoice && linked ? g.work : [];
+    return ok({ item: { ...base, ...src, answer: choiceText(base.choices, base.correct), work } });
+  }
   const nums = solved(K.id, data, v);
   const key = typeof r.answerKey === 'string' && typeof nums[r.answerKey] === 'number' ? r.answerKey : null;
-  const hide = r.hide === undefined && fromGen ? g.hide : cleanHide(K, r.hide);
-  const base = { kind: K.id, data, hide, question: question || (fromGen ? g.question : ''), answerKey: key };
+  const base = { kind: K.id, data, hide, question: question || (fromGen ? g.question : ''), answerKey: key, answerType: 'number', choices: [], correct: null };
   const keyAnswer = key ? unitText(numText(nums[key], 2), keyUnit(key, data)) : '';
-  if (fromGen) return ok({ item: { ...base, gen: r.gen, seed, answer: key ? keyAnswer : g.answer, work: key ? [] : g.work } });
-  return ok({ item: { ...base, gen: null, seed: null, answer: keyAnswer, work: [] } });
+  if (fromGen && g.answerType === 'number') return ok({ item: { ...base, gen: r.gen, seed, answer: key ? keyAnswer : g.answer, work: key ? [] : g.work } });
+  return ok({ item: { ...base, ...src, answer: keyAnswer, work: [] } });
 }
 
 // ---------------------------------------------------------------- worksheets (question sets, purpose 'worksheet')
 const cleanTitle = (s, d) => { const v = clipStr(s, LIMITS.titleChars).replace(/\s+/g, ' ').trim(); return v && !textProblem(v) ? v : d; };
 const cleanGrade = g => (GRADE_BANDS.includes(g) || /^(K|[1-9]|1[0-2])$/.test(String(g)) ? String(g) : '');
 const rowItem = r => ({ id: r.id, kind: r.kind, data: json(r.data, {}), gen: r.gen || null, seed: r.seed || null, hide: r.hide === null || r.hide === undefined ? false : r.hide === 'true' ? true : r.hide,
-  question: r.question, answerKey: r.answer_key || null, answer: r.answer, work: json(r.work, []) });
+  question: r.question, answerKey: r.answer_key || null, answer: r.answer, work: json(r.work, []),
+  answerType: r.answer_type === 'choice' ? 'choice' : 'number', choices: r.answer_type === 'choice' ? json(r.choices, []).filter(x => typeof x === 'string') : [], correct: Number.isInteger(r.correct) ? r.correct : null });
 export const itemsOf = setId => q.all('SELECT * FROM question_set_items WHERE set_id=? ORDER BY pos, id', setId).map(rowItem);
 /** The owner's own worksheet, or null (anyone else: null, the same as a wrong id). */
 export function ownWorksheet(u, id) {
@@ -161,8 +260,13 @@ export function listWorksheets(u) {
   return q.all(`SELECT s.id, s.title, s.grade, s.subject, s.updated_at, (SELECT COUNT(*) FROM question_set_items i WHERE i.set_id=s.id) n
     FROM question_sets s WHERE s.owner_id=? AND s.purpose='worksheet' ORDER BY s.updated_at DESC LIMIT 100`, u.id);
 }
-const storeItem = (setId, pos, it) => q.run(`INSERT INTO question_set_items(id, set_id, pos, kind, data, gen, seed, hide, question, answer_key, answer, work, points)
-  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,1)`, uid(12), setId, pos, it.kind, JSON.stringify(it.data), it.gen, it.seed, it.hide === false ? null : String(it.hide), it.question, it.answerKey, it.answer, JSON.stringify(it.work));
+const storeItem = (setId, pos, it) => q.run(`INSERT INTO question_set_items(id, set_id, pos, kind, data, gen, seed, hide, question, answer_key, answer, work, answer_type, choices, correct, points)
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)`, uid(12), setId, pos, it.kind, JSON.stringify(it.data), it.gen, it.seed, it.hide === false ? null : String(it.hide), it.question, it.answerKey, it.answer, JSON.stringify(it.work),
+  it.answerType === 'choice' ? 'choice' : 'number', JSON.stringify(it.answerType === 'choice' ? it.choices : []), it.answerType === 'choice' && Number.isInteger(it.correct) ? it.correct : null);
+/** Write a question's worked-out fields back to its row. */
+const rewrite = (id, it) => q.run('UPDATE question_set_items SET data=?, gen=?, seed=?, hide=?, question=?, answer_key=?, answer=?, work=?, answer_type=?, choices=?, correct=? WHERE id=?',
+  JSON.stringify(it.data), it.gen, it.seed, it.hide === false ? null : String(it.hide), it.question, it.answerKey, it.answer, JSON.stringify(it.work),
+  it.answerType === 'choice' ? 'choice' : 'number', JSON.stringify(it.answerType === 'choice' ? it.choices : []), it.answerType === 'choice' && Number.isInteger(it.correct) ? it.correct : null, id);
 const touch = id => q.run('UPDATE question_sets SET updated_at=? WHERE id=?', now(), id);
 /** The subject a worksheet is mostly about (its items' kinds). */
 function subjectOf(setId) {
@@ -207,17 +311,17 @@ export function addItem(u, id, raw) {
   return ok({ id: w.id });
 }
 const ownItem = (w, itemId) => q.get('SELECT * FROM question_set_items WHERE id=? AND set_id=?', String(itemId || ''), w.id) || null;
-/** A change to one question: any of data, hide, question, answerKey (the rest is kept), worked out again. */
+/** A change to one question: any of data, hide, question, answerKey, answerType, choices, correct (the rest is kept),
+ *  worked out again. */
 export function updateItem(u, id, itemId, patch = {}) {
   const w = ownWorksheet(u, id); if (!w) return fail('notFound');
   const r = ownItem(w, itemId); if (!r) return fail('notFound');
   const old = rowItem(r), p = patch && typeof patch === 'object' ? patch : {};
   const next = { kind: old.kind, gen: old.gen, seed: old.seed, data: 'data' in p ? p.data : old.data, hide: 'hide' in p ? p.hide : old.hide,
-    question: 'question' in p ? p.question : old.question, answerKey: 'answerKey' in p ? p.answerKey : old.answerKey };
+    question: 'question' in p ? p.question : old.question, answerKey: 'answerKey' in p ? p.answerKey : old.answerKey,
+    answerType: 'answerType' in p ? p.answerType : old.answerType, choices: 'choices' in p ? p.choices : old.choices, correct: 'correct' in p ? p.correct : old.correct };
   const c = cleanItem(next, w.of_version); if (!c.ok) return c;
-  const it = c.item;
-  q.run('UPDATE question_set_items SET data=?, gen=?, seed=?, hide=?, question=?, answer_key=?, answer=?, work=? WHERE id=?',
-    JSON.stringify(it.data), it.gen, it.seed, it.hide === false ? null : String(it.hide), it.question, it.answerKey, it.answer, JSON.stringify(it.work), r.id);
+  rewrite(r.id, c.item);
   touch(w.id);
   return ok({ id: w.id });
 }
@@ -244,9 +348,7 @@ export function regenItem(u, id, itemId, seed = newSeed()) {
   const gid = r.gen || (kindOf(r.kind) && kindOf(r.kind).gens[0] && kindOf(r.kind).gens[0].id);
   if (!gid) return fail('noGen');
   const c = cleanItem({ kind: r.kind, gen: gid, seed }, w.of_version); if (!c.ok) return c;
-  const it = c.item;
-  q.run('UPDATE question_set_items SET data=?, gen=?, seed=?, hide=?, question=?, answer_key=?, answer=?, work=? WHERE id=?',
-    JSON.stringify(it.data), it.gen, it.seed, it.hide === false ? null : String(it.hide), it.question, it.answerKey, it.answer, JSON.stringify(it.work), r.id);
+  rewrite(r.id, c.item);
   touch(w.id);
   return ok({ id: w.id });
 }
@@ -257,19 +359,29 @@ export function starterItem(kind) {
   return { kind: K.id, data: K.presets[0] };
 }
 
-/** The number a stored question's answer is, for marking a student's answer (services/figures-steps.js): the OF.solve
- *  value of its answerKey (shown to 2 decimal places, as the answer is), else, while the figure is still exactly what its
- *  generator makes for its seed, the generator's value with the generator's dp and unit. null when the question has no
- *  answer (the teacher has not chosen one). -> { value, dp, unit } | null */
+/** The answer a stored question has, for marking a student's answer (services/figures-steps.js). A number question: the
+ *  OF.solve value of its answerKey (shown to 2 decimal places, as the answer is), else, while the figure is still exactly
+ *  what its generator makes for its seed, the generator's value with the generator's dp and unit. A choice question: the
+ *  index of the right option (worked out with OF.solve while it is linked to its generator) and its options. null when
+ *  the question has no answer (the teacher has not chosen one, or a choice question has fewer than 2 options).
+ *  -> { type?, value, dp, unit, choices? } | null */
 export function answerOf(it, v) {
   if (!it || !kindOf(it.kind)) return null;
+  if (it.answerType === 'choice') {
+    const n = Array.isArray(it.choices) ? it.choices.length : 0;
+    if (n < CHOICES.min || n > CHOICES.max) return null;
+    const link = linkedGen(it.answerKey, it.kind);
+    const pk = link && sameList(it.choices, link.choices) ? pickOf(link, it.kind, it.data, v) : undefined;
+    const i = pk !== undefined ? pk : it.correct;
+    return Number.isInteger(i) && i >= 0 && i < n ? { type: 'choice', value: i, dp: 0, unit: '', choices: it.choices.slice() } : null;
+  }
   if (it.answerKey) {
     const x = solved(it.kind, it.data, v)[it.answerKey];
     if (typeof x === 'number' && Number.isFinite(x)) return { value: x, dp: 2, unit: keyUnit(it.answerKey, it.data) };
   }
   if (it.gen && it.seed) {
     const g = generate(it.gen, it.seed, v);
-    if (g && canon(g.data) === canon(it.data) && typeof g.value === 'number' && Number.isFinite(g.value)) return { value: g.value, dp: g.dp, unit: g.unit };
+    if (g && g.answerType === 'number' && canon(g.data) === canon(it.data) && typeof g.value === 'number' && Number.isFinite(g.value)) return { value: g.value, dp: g.dp, unit: g.unit };
   }
   return null;
 }
@@ -299,8 +411,14 @@ export function printHtml(w, items, { t = tEn, lang = 'en', dir = 'ltr', key = f
 <p class="fgp-lines"><span>${esc(t('figures.print.name'))} <i class="fgp-blank fgp-blank-name"></i></span><span>${esc(t('figures.print.date'))} <i class="fgp-blank"></i></span></p></header>`;
   const foot = `<footer class="fgp-foot">${esc(t('figures.print.made'))}</footer>`;
   const list = items.map((it, i) => ({ ...it, n: i + 1 }));
-  const q1 = it => `<li class="fgp-q" value="${it.n}"><div class="fgp-text"><p dir="auto">${esc(it.question || t('figures.print.noQuestion'))}</p><p class="fgp-ans"><i class="fgp-blank fgp-wide"></i></p><p class="fgp-ans"><i class="fgp-blank fgp-wide"></i></p></div>${fig(it, false)}</li>`;
-  const k1 = it => `<li class="fgp-q" value="${it.n}"><div class="fgp-text"><p dir="auto">${esc(it.question || t('figures.print.noQuestion'))}</p><p class="fgp-kans" dir="auto">${esc(it.answer || t('figures.print.noAnswer'))}</p>${it.work.length ? `<ul class="fgp-work">${it.work.map(x => `<li dir="auto">${esc(x)}</li>`).join('')}</ul>` : ''}</div>${fig(it, true)}</li>`;
+  // A choice question lists its options as A), B), C) with a box to tick; the key marks the right one and says its letter.
+  const isChoice = it => it.answerType === 'choice' && Array.isArray(it.choices) && it.choices.length;
+  const opts = (it, key) => `<ul class="fgp-choices" aria-label="${esc(t('figures.print.options'))}">${it.choices.map((c, i) => {
+    const right = key && i === it.correct;
+    return `<li${right ? ' class="fgp-right"' : ''}><i class="fgp-box" aria-hidden="true">${right ? '✓' : ''}</i><b class="fgp-letter">${letter(i)})</b> <span dir="auto">${esc(c)}</span>${right ? ` <span class="sr-only">${esc(t('figures.print.rightOne'))}</span>` : ''}</li>`; }).join('')}</ul>`;
+  const blanks = '<p class="fgp-ans"><i class="fgp-blank fgp-wide"></i></p><p class="fgp-ans"><i class="fgp-blank fgp-wide"></i></p>';
+  const q1 = it => `<li class="fgp-q" value="${it.n}"><div class="fgp-text"><p dir="auto">${esc(it.question || t('figures.print.noQuestion'))}</p>${isChoice(it) ? opts(it, false) : blanks}</div>${fig(it, false)}</li>`;
+  const k1 = it => `<li class="fgp-q" value="${it.n}"><div class="fgp-text"><p dir="auto">${esc(it.question || t('figures.print.noQuestion'))}</p>${isChoice(it) ? opts(it, true) : ''}<p class="fgp-kans" dir="auto">${esc(it.answer || t('figures.print.noAnswer'))}</p>${it.work.length ? `<ul class="fgp-work">${it.work.map(x => `<li dir="auto">${esc(x)}</li>`).join('')}</ul>` : ''}</div>${fig(it, true)}</li>`;
   const sheetPage = sheet ? `<section class="fgp-page">${head(w.title, false)}<ol class="fgp-list">${list.map(q1).join('')}</ol>${foot}</section>` : '';
   const keyPage = key ? `<section class="fgp-page fgp-key">${head(w.title, true)}<ol class="fgp-list">${list.map(k1).join('')}</ol>${foot}</section>` : '';
   return `<div class="fgp" lang="${esc(lang)}" dir="${dir === 'rtl' ? 'rtl' : 'ltr'}" data-questions="${list.length}" data-key="${key ? 1 : 0}">${sheetPage}${keyPage}</div>`;
@@ -382,8 +500,9 @@ const DRAFT_SCHEMA = () => ({
   type: 'object', additionalProperties: false, required: ['title', 'items'],
   properties: {
     title: { type: 'string' },
-    items: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['kind', 'question', 'data', 'answerKey'], properties: {
-      kind: { type: 'string', enum: draftKinds().map(K => K.id) }, question: { type: 'string' }, data: { type: 'string' }, answerKey: { type: 'string' } } } },
+    items: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['kind', 'question', 'data', 'answerType', 'answerKey', 'choices', 'correct'], properties: {
+      kind: { type: 'string', enum: draftKinds().map(K => K.id) }, question: { type: 'string' }, data: { type: 'string' }, answerType: { type: 'string', enum: ['number', 'choice'] },
+      answerKey: { type: 'string' }, choices: { type: 'array', items: { type: 'string' } }, correct: { type: 'integer' } } } },
   },
 });
 function draftPrompt({ brief, grade, count }) {
@@ -392,7 +511,8 @@ function draftPrompt({ brief, grade, count }) {
     `Write in US English, plain and clear for grade ${grade || 'the grade in the brief'} students. No names of people, no links, no brands.`,
     `Make exactly ${count} questions, different from each other, that fit the brief. Only use kinds from this catalog, and give each figure's data as JSON text in "data" with the same fields as the example (change the numbers and words to fit the question). Never draw or describe SVG.`,
     'Every figure must be drawable truthfully to scale: numbers that cannot make the figure are rejected and replaced.',
-    'answerKey: the name of the OF.solve value that answers the question (one of the kind\'s answerKey choices, for example "area" or "sides.CA"). You never work the answer out yourself: Oomba Figures does.',
+    'answerType "number" (most questions): answerKey is the name of the OF.solve value that answers the question (one of the kind\'s answerKey choices, for example "area" or "sides.CA"); choices [] and correct 0. You never work a number out yourself: Oomba Figures does. Numbers may be negative.',
+    `answerType "choice" only for a question whose answer is a word, not a number (which way, which kind, which pattern, true or false): choices are ${CHOICES.min} to ${CHOICES.max} short, different options (under ${CHOICES.chars} characters each) and correct is the index of the one right option (0 for the first); answerKey "". The figure must show the answer plainly. Never ask for a number as a choice.`,
     'question: one or two short sentences. title: a short title for the worksheet (under 60 characters).',
     `Catalog:\n${draftCatalog()}`,
     `<brief>\n${brief}\n</brief>`,
@@ -445,8 +565,9 @@ export function bandOf(g) {
 const logRepair = fields => (hooks.log ? hooks.log(fields) : log('warn', 'figures.draft.repair', fields));
 /**
  * The AI's items made safe: a kind not in the catalog is dropped; data that does not pass OF.check, an answerKey that is
- * not one of the figure's OF.solve values, or words that are not allowed: the item is replaced by a fresh question from
- * that kind's generator. Every repair is logged (the kind and why, never the brief). -> { items, repaired, dropped }
+ * not one of the figure's OF.solve values, a choice question whose options are not 2 to 6 short different ones with one
+ * marked right, or words that are not allowed (options too): the item is replaced by a fresh question from that kind's
+ * generator. Every repair is logged (the kind and why, never the brief). -> { items, repaired, dropped }
  */
 export function repairDraft(raw, { max = LIMITS.draftMax } = {}) {
   const items = [], allowed = new Set(draftKinds().map(K => K.id));
@@ -455,10 +576,21 @@ export function repairDraft(raw, { max = LIMITS.draftMax } = {}) {
     const kind = x && typeof x.kind === 'string' ? x.kind : '';
     if (!allowed.has(kind)) { dropped++; logRepair({ item: i, kind: clipStr(kind, 30), action: 'dropped', why: 'not in the catalog' }); continue; }
     const data = typeof (x && x.data) === 'string' ? json(x.data, null) : x && x.data;
-    const keyOk = data && typeof x.answerKey === 'string' && typeof solved(kind, data)[x.answerKey] === 'number';
-    const c = data ? cleanItem({ kind, data, question: x.question, answerKey: x.answerKey, hide: false }) : fail('badData');
+    const choice = x && x.answerType === 'choice';
+    let keyOk, c;
+    if (choice) {
+      // Options as given: 2 to 6, each a short non-empty string, all different, one of them right (no blank left out).
+      const list = Array.isArray(x.choices) ? x.choices : [];
+      const shape = list.length >= CHOICES.min && list.length <= CHOICES.max && list.every(o => typeof o === 'string' && o.trim() && o.trim().length <= CHOICES.chars) && Number.isInteger(x.correct) && x.correct >= 0 && x.correct < list.length;
+      c = data ? cleanItem({ kind, data, question: x.question, answerType: 'choice', choices: list, correct: x.correct, hide: false }) : fail('badData');
+      keyOk = shape && c.ok && c.item.choices.length === list.length && c.item.correct === x.correct;
+      if (!shape && c.ok) c = fail('choices: 2 to 6 short different options and the index of the right one');
+    } else {
+      keyOk = data && typeof x.answerKey === 'string' && typeof solved(kind, data)[x.answerKey] === 'number';
+      c = data ? cleanItem({ kind, data, question: x.question, answerKey: x.answerKey, hide: false }) : fail('badData');
+    }
     if (c.ok && keyOk && c.item.question) { items.push(c.item); continue; }
-    const why = !data ? 'data is not JSON' : c.code === 'cannotDraw' ? `OF.check: ${c.problems[0]}` : !c.ok ? c.code : !keyOk ? 'answerKey is not an OF.solve value' : 'no question';
+    const why = !data ? 'data is not JSON' : c.code === 'cannotDraw' ? `OF.check: ${c.problems[0]}` : !c.ok ? c.code : !keyOk ? (choice ? 'choices: 2 to 6 short different options and the index of the right one' : 'answerKey is not an OF.solve value') : 'no question';
     const K = kindOf(kind), gid = K.gens[0].id, g = cleanItem({ kind, gen: gid, seed: newSeed() });
     if (g.ok) { items.push(g.item); repaired++; logRepair({ item: i, kind, action: 'replaced by its generator', why: clipStr(why, 200) }); }
     else { dropped++; logRepair({ item: i, kind, action: 'dropped', why: clipStr(why, 200) }); }

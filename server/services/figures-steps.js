@@ -4,9 +4,11 @@
 //
 // The step keeps a snapshot of the worksheet (lesson_steps.items, of_version), so editing or deleting the worksheet
 // later never changes work a class has been given. Each snapshot question:
-//   { kind, data, hide, question, answer (the answer as the key shows it), unit, value, dp, work }
-// Students type a number in a blank under each figure (step_progress.answer: a JSON list of what they typed). Save keeps
-// it; Hand in marks it once (step_progress.marks '1'/'0' per question, score = % right, label 'figures') and the step is
+//   { kind, data, hide, question, answer (the answer as the key shows it), unit, value, dp, work, type, choices? }
+// type 'number' (a snapshot from before answer types has none: a number) or 'choice': choices are the options in the
+// order every student sees them, and value is the index of the right one.
+// Students type a number (any sign) in a blank under each figure, or pick one option (step_progress.answer: a JSON list
+// of what they typed, a choice as its option's index, "0" for the first). Save keeps it; Hand in marks it once (step_progress.marks '1'/'0' per question, score = % right, label 'figures') and the step is
 // done, scored like a quiz step in the gradebook and the Score.
 //
 // Who can do what:
@@ -14,8 +16,8 @@
 //   the class's managers                                                   see answers, turn "Show answers" on or off
 //   the class's students                                                   answer and hand in (no tester list here: the
 //                                                                          step exists only because a tester assigned it)
-// The answers never reach a student's page before they are allowed: the server leaves out answer, value and worked
-// lines, and sends each figure as an SVG drawn here with the hidden parts left out and the figure's data-* attributes
+// The answers never reach a student's page before they are allowed: the server leaves out answer, value, the right
+// option and worked lines (a choice question's options are sent, in their fixed order, never which one is right), and sends each figure as an SVG drawn here with the hidden parts left out and the figure's data-* attributes
 // (some carry values) removed, never the figure's data (which holds the answer for many kinds, a ruler's reading say).
 // A student sees the answers and worked lines only when the teacher turned on "Show answers after the due date", the
 // due date is over (the school's time zone: lessons.lateFrom) and that student has handed in.
@@ -41,7 +43,9 @@ export function snapshot(u, worksheetId) {
   items.forEach((it, i) => {
     const a = F.answerOf(it, w.of_version);
     if (!a) { missing.push(i + 1); return; }
-    out.push({ kind: it.kind, data: it.data, hide: it.hide, question: it.question, answer: it.answer, unit: a.unit || '', value: a.value, dp: Math.max(0, Math.min(6, a.dp | 0)), work: Array.isArray(it.work) ? it.work.slice(0, 8) : [] });
+    const choice = a.type === 'choice';
+    out.push({ kind: it.kind, data: it.data, hide: it.hide, question: it.question, answer: choice ? F.choiceText(a.choices, a.value) : it.answer, unit: a.unit || '', value: a.value, dp: Math.max(0, Math.min(6, a.dp | 0)), work: Array.isArray(it.work) ? it.work.slice(0, 8) : [],
+      type: choice ? 'choice' : 'number', ...(choice ? { choices: a.choices } : {}) });
   });
   if (missing.length) return fail('noAnswer', { questions: missing });
   return ok({ worksheet: w, items: out });
@@ -135,10 +139,15 @@ export function readNumber(text) {
   }
   return out;
 }
-/** Is this answer right? Within half a unit in the answer's last decimal place (dp 1: within 0.05), so a rounded answer
- *  counts and a wrong one never does. */
+/** Is a snapshot question a choice question? (An older snapshot has no type: a number question.) */
+export const isChoice = it => !!(it && it.type === 'choice' && Array.isArray(it.choices) && it.choices.length >= 2);
+/** The option a student picked ("0" for the first), or null. */
+export const pickedOf = (text, it) => { const s = String(text ?? '').trim(); return /^\d$/.test(s) && +s < it.choices.length ? +s : null; };
+/** Is this answer right? A choice: the right option picked. A number (of any sign): within half a unit in the answer's
+ *  last decimal place (dp 1: within 0.05), so a rounded answer counts and a wrong one never does. */
 export function isRight(text, it) {
   if (!it || typeof it.value !== 'number') return false;
+  if (isChoice(it)) return pickedOf(text, it) === it.value;
   const tol = 0.5 * 10 ** -Math.max(0, Math.min(6, it.dp | 0)) + 1e-9 * Math.max(1, Math.abs(it.value));
   return readNumber(text).some(x => Math.abs(x - it.value) <= tol);
 }
@@ -148,8 +157,10 @@ export const markAll = (items, answers) => items.map((it, i) => (isRight(answers
 // ---------------------------------------------------------------- for pages
 /**
  * One figures step as a page shows it to someone: the questions, each with its figure (SVG), question and unit; the
- * student's answers and marks once handed in; and only when allowed (teacher: always; a student: reveals) the answer and
- * worked lines. -> { items: [{ n, question, unit, svg, typed, right?, answer?, work? }], handedIn, revealed, score }
+ * student's answers and marks once handed in; and only when allowed (teacher: always; a student: reveals) the answer,
+ * the right option of a choice question and worked lines. A choice question's options are always there (in the order
+ * the teacher wrote them), never which one is right before that.
+ * -> { items: [{ n, question, unit, svg, typed, type, choices?, right?, answer?, work?, correct? }], handedIn, revealed, score }
  */
 export function viewFor(step, cl, row, { lang = 'en', teacher = false, t = now() } = {}) {
   const items = itemsOf(step), typed = answersOf(row, items.length), done = handedIn(row);
@@ -159,8 +170,9 @@ export function viewFor(step, cl, row, { lang = 'en', teacher = false, t = now()
     handedIn: done, revealed, score: done ? row.score : null, right: done ? [...marks].filter(m => m === '1').length : 0, total: items.length,
     items: items.map((it, i) => ({
       n: i + 1, question: String(it.question || ''), unit: String(it.unit || ''), svg: figureSvg(step, i, { lang, full: revealed && !teacher ? true : false }), typed: typed[i],
+      type: isChoice(it) ? 'choice' : 'number', ...(isChoice(it) ? { choices: it.choices.map(String) } : {}),
       ...(done ? { right: marks[i] === '1' } : {}),
-      ...(revealed ? { answer: String(it.answer || ''), work: Array.isArray(it.work) ? it.work.map(String) : [] } : {}),
+      ...(revealed ? { answer: String(it.answer || ''), work: Array.isArray(it.work) ? it.work.map(String) : [], ...(isChoice(it) ? { correct: it.value } : {}) } : {}),
     })),
   };
 }
