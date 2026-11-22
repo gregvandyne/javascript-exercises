@@ -188,7 +188,7 @@ test('the builder rows: quiet, the ⋯ More menu by keyboard, Alt+Arrow reorders
   // the menu by keyboard: Move up is off on the first row, so Move down has the focus
   await row(1).locator('.fg-mm-btn').focus(); await page.keyboard.press('Enter');
   assert.equal(await focused(page), 'down');
-  assert.deepEqual(await row(1).locator('[role="menuitem"]').evaluateAll(b => b.map(x => [x.dataset.mi, x.disabled, x.classList.contains('bad')])), [['up', true, false], ['down', false, false], ['swap', false, false], ['del', false, true]]);
+  assert.deepEqual(await row(1).locator('[role="menuitem"]').evaluateAll(b => b.map(x => [x.dataset.mi, x.disabled, x.classList.contains('bad')])), [['up', true, false], ['down', false, false], ['swap', false, false], ['ask', false, false], ['del', false, true]]);
   await page.keyboard.press('ArrowDown'); assert.equal(await focused(page), 'swap');
   await page.keyboard.press('Home'); assert.equal(await focused(page), 'down');
   await page.keyboard.press('End'); assert.equal(await focused(page), 'del');

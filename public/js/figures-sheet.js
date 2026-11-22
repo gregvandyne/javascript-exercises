@@ -1,25 +1,32 @@
 // Figures, the worksheet builder (routes/figures.js GET /figures/worksheets/new and /:id). A worksheet is a title and
 // figure questions in order. Each question can move up or down, be deleted, get new numbers from its generator, or open
-// in the editor; "Add figure question" adds one of any kind; "Power with AI" drafts questions from a brief (the server
-// checks every figure with OF.check and works every answer out with OF.solve). The print preview (student sheet and
+// in the editor; "Add figure question" adds one of any kind; Oomba's chat (public/js/oomba-chat.js, services/figures-chat.js)
+// drafts the questions from the teacher's first message and adjusts them after ("make 3 and 7 harder and use inches"):
+// the server checks every figure with OF.check and works every answer out with OF.solve; the questions Oomba changed are
+// marked, and each answer has Undo. "Ask Oomba about this" (a question's More menu) quotes it into the chat. The print preview (student sheet and
 // answer key, black on white) is the server's printable page. A new worksheet is saved the first time something is
 // added to it. "Assign to class" picks one of the teacher's classes, open and due dates and "Show answers after the due
 // date" (off by default), and makes a lesson with the worksheet's questions as they are now (services/figures-steps.js).
 // Each question is answered with a number (any sign) or is multiple choice: 2 to 6 options, one marked right. A choice
 // question from a generator has its right option worked out from the figure (OF.solve) until the teacher changes its
 // options or marks another one.
-// The same builder makes a test ("Build a test", purpose 'test': with "Power with AI" on, a topic, a grade and a subject
-// draft a whole test from the question generators, so each question can be dealt new numbers) and a lesson's Figure
+// The same builder makes a test (purpose 'test': Oomba drafts it mostly from the question generators, so each question
+// can be dealt new numbers) and a lesson's Figure
 // step (purpose 'lesson': "Save to lesson" puts the questions in the step, in place of Assign). Kinds are picked by
 // subject. A question's row is kept quiet (the owner's "less busy" rule): the row or its figure opens the editor, ⟳
 // deals new numbers (only for a question from a generator), and ⋯ More has Move up, Move down, Swap figure and Delete
 // (last, red, after a question). Alt+Arrow Up and Down move the question the keyboard is in.
 import { t, api, toast, esc, pageData, ask, sheet } from '/js/app.js';
+import { iconHtml } from '/js/icons.js';
 import { moreMenu, menuItem, menuSep, bindMenus } from '/js/figures-menu.js';
+import { mountChat, oombaMark } from '/js/oomba-chat.js';
 
 const P = pageData('fg-sheet');
 const app = document.getElementById('fg-sheet-app');
-let W = null, ai = !!P.ai, tab = 'sheet', busy = false, note = '';
+let W = null, tab = 'sheet', busy = false, note = '';
+/** Oomba's chat; the questions its newest answer added or changed (marked until the teacher edits); the quoted one;
+ *  with the chat open on a laptop, which half shows ('sheet' the questions, 'preview' the print preview). */
+let chat = null, marked = new Set(), quoted = '', half = 'sheet';
 const TEST = P.purpose === 'test', LESSON = !!P.lesson;
 let pickSubject = Object.keys(P.subjects)[0];
 const kindName = id => (P.kinds.find(k => k.id === id) || { name: id }).name;
@@ -75,19 +82,8 @@ async function call(path, body = {}) {
 const kindOptions = (s, sel = '') => P.kinds.filter(k => k.subject === s).map(k => `<option value="${esc(k.id)}"${k.id === sel ? ' selected' : ''}>${esc(k.name)}</option>`).join('');
 const editHref = it => `/figures/${encodeURIComponent(it.kind)}?ws=${encodeURIComponent(W.id)}&item=${encodeURIComponent(it.id)}`;
 /** The words for this set: a worksheet, a test or a lesson's figure questions. */
-/** What a draft added: by the AI, or a starter set because the AI is resting or didn't answer (services/figures.js reason). */
-const draftedText = r => t(r.ai ? 'js.figures-sheet.drafted' : r.reason && r.reason !== 'resting' ? 'js.figures-sheet.fallback' : 'js.figures-sheet.resting', { count: r.added });
 const NOUN = LESSON ? 'Lesson' : TEST ? 'Test' : '';
 const allKindOptions = sel => Object.entries(P.subjects).map(([s, name]) => `<optgroup label="${esc(name)}">${kindOptions(s, sel)}</optgroup>`).join('');
-/** "Power with AI" for a test: topic, subject, how many (the grade is the page's). */
-const testAiBox = () => `<section class="fg-aibox" id="fg-aibox"${ai ? '' : ' hidden'}><h2>${esc(t('js.figures-sheet.testAiTitle'))}</h2>
-      <label class="fg-block"><span>${esc(t('js.figures-sheet.topicLabel'))}</span><input class="input" id="fg-topic" maxlength="200" placeholder="${esc(t('js.figures-sheet.topicHint'))}"></label>
-      <div class="row"><label class="fg-count"><span>${esc(t('js.figures-sheet.subject'))}</span><select class="input" id="fg-subject"><option value="">${esc(t('js.figures-sheet.anySubject'))}</option>${Object.entries(P.subjects).map(([s, name]) => `<option value="${esc(s)}">${esc(name)}</option>`).join('')}</select></label>
-      <label class="fg-count"><span>${esc(t('js.figures-sheet.howMany'))}</span><select class="input" id="fg-count">${[4, 5, 6, 8, 10, 12].map(n => `<option${n === 8 ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
-      <button class="btn btn-primary" type="button" data-act="draftTest">✨ ${esc(t('js.figures-sheet.draftTest'))}</button></div>
-      <p class="muted fg-small">${esc(t('js.figures-sheet.testBudget'))}</p></section>`;
-/** By hand (AI off), and always: what a test is built from. */
-const handNote = () => (TEST ? `<p class="muted fg-small" id="fg-hand"${ai ? ' hidden' : ''}>${esc(t('js.figures-sheet.byHand'))}</p>` : '');
 /** The aside's last box: Save to lesson (a lesson's Figure step), else Assign to class. */
 const lessonBox = () => `<div class="fg-assign fg-tolesson"><button class="btn btn-primary" type="button" id="fg-save-lesson" aria-describedby="fg-save-why"${P.lesson.started ? ' disabled' : ''}>💾 ${esc(t('js.figures-sheet.saveLesson'))}</button>
       <p class="muted fg-small" id="fg-save-why">${esc(P.lesson.started ? t('js.figures-sheet.lessonStarted') : t(P.lesson.stepId ? 'js.figures-sheet.saveLessonAgain' : 'js.figures-sheet.saveLessonHint', { title: P.lesson.title }))}</p>
@@ -98,14 +94,9 @@ function shell() {
   app.innerHTML = `<div class="fg-sh-head">
     <label class="fg-titlebox"><span class="sr-only">${esc(t('js.figures-sheet.title'))}</span><input class="input fg-titlein" id="fg-title" maxlength="80" placeholder="${esc(P.untitled)}"></label>
     <label class="fg-grade"><span>${esc(t('js.figures-sheet.grade'))}</span><select class="input" id="fg-grade"><option value="">${esc(t('js.figures-sheet.anyGrade'))}</option>${['K', ...Array.from({ length: 12 }, (_, i) => String(i + 1))].map(g => `<option value="${g}">${esc(t('js.figures-sheet.gradeN', { grade: g }))}</option>`).join('')}</select></label>
-    <label class="fg-switch fg-aiswitch"><span>✨ ${esc(t('js.figures-sheet.powerAi'))}</span><input type="checkbox" id="fg-ai"${ai ? ' checked' : ''}></label></div>
+    <button type="button" class="fg-oomba" id="fg-oomba">${oombaMark(26)}<span>${esc(t('js.figures-sheet.oomba'))}</span></button></div>
+  <div class="chips fg-halves" role="group" aria-label="${esc(t('js.figures-sheet.halves'))}"><button class="chip" type="button" data-half="sheet">${esc(t('js.figures-sheet.halfSheet'))}</button><button class="chip" type="button" data-half="preview">${esc(t('js.figures-sheet.preview'))}</button></div>
   <div class="fg-sh-grid"><div class="fg-sh-main">
-    ${TEST ? testAiBox() : `<section class="fg-aibox" id="fg-aibox"${ai ? '' : ' hidden'}><h2><label for="fg-brief">${esc(t('js.figures-sheet.briefLabel'))}</label></h2>
-      <textarea class="input" id="fg-brief" rows="3" maxlength="1000" placeholder="${esc(t('js.figures-sheet.briefHint'))}"></textarea>
-      <div class="row"><label class="fg-count"><span>${esc(t('js.figures-sheet.howMany'))}</span><select class="input" id="fg-count">${[3, 4, 5, 6, 8, 10, 12].map(n => `<option${n === 6 ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
-      <button class="btn btn-primary" type="button" data-act="draft">✨ ${esc(t('js.figures-sheet.draft'))}</button></div>
-      <p class="muted fg-small">${esc(t('js.figures-sheet.budget'))}</p></section>`}
-    ${handNote()}
     <div id="fg-note" role="status"></div><p class="sr-only" id="fg-moved" role="status" aria-live="polite"></p>
     <ol class="fg-items" id="fg-items"></ol>
     <div class="panel fg-addq">${tabs}<label class="fg-block"><span>${esc(t('js.figures-sheet.addLabel'))}</span><select class="input" id="fg-addkind">${kindOptions(pickSubject)}</select></label>
@@ -139,9 +130,9 @@ function draw(wait = false) {
   document.getElementById('fg-note').innerHTML = note;
   // Redrawing the list keeps the keyboard where it was (the same box, by its id).
   const had = document.activeElement && document.getElementById('fg-items').contains(document.activeElement) ? document.activeElement.id : '';
-  document.getElementById('fg-items').innerHTML = items.length ? items.map((it, i) => `<li class="fg-item" data-id="${esc(it.id)}">
+  document.getElementById('fg-items').innerHTML = items.length ? items.map((it, i) => `<li class="fg-item${marked.has(it.id) ? ' fg-marked' : ''}${quoted === it.id ? ' fg-quoted' : ''}" data-id="${esc(it.id)}">
     <span class="fg-n" aria-hidden="true">${i + 1}</span><a class="fg-ithumb" id="fg-e-${esc(it.id)}" href="${esc(editHref(it))}" aria-label="${esc(t('js.figures-sheet.editN', { n: i + 1, kind: kindName(it.kind) }))}" title="${esc(t('js.figures-sheet.edit'))}">${it.svg}</a>
-    <div class="fg-itext"><span class="fg-ikind">${esc(kindName(it.kind))}</span>
+    <div class="fg-itext"><span class="fg-ikind">${esc(kindName(it.kind))}${marked.has(it.id) ? ` <span class="fg-badge">${esc(t('js.figures-sheet.byOomba'))}</span>` : ''}${quoted === it.id ? ` <span class="fg-badge q">${esc(t('js.figures-sheet.inChat'))}</span>` : ''}</span>
       <label class="sr-only" for="fg-q-${esc(it.id)}">${esc(t('js.figures-sheet.questionN', { n: i + 1 }))}</label>
       <textarea class="input fg-iq" id="fg-q-${esc(it.id)}" rows="2" maxlength="400" data-q placeholder="${esc(t('js.figures-sheet.questionHint'))}">${esc(it.question)}</textarea>
       ${answerUi(it, i)}
@@ -150,10 +141,12 @@ function draw(wait = false) {
       ${it.hasGen ? `<button class="btn fg-icon" type="button" id="fg-rg-${esc(it.id)}" data-act="regen" aria-label="${esc(t('js.figures-sheet.regenN', { n: i + 1 }))}" title="${esc(t('js.figures-sheet.regen'))}"><span aria-hidden="true">⟳</span></button>` : ''}
       ${moreMenu({ label: t('js.figures-sheet.moreN', { n: i + 1 }), btnId: `fg-mb-${it.id}`, items: menuItem('up', t('js.figures-sheet.up'), { icon: '↑', attrs: i ? ' aria-keyshortcuts="Alt+ArrowUp"' : ' disabled' })
         + menuItem('down', t('js.figures-sheet.down'), { icon: '↓', attrs: i < items.length - 1 ? ' aria-keyshortcuts="Alt+ArrowDown"' : ' disabled' })
-        + menuItem('swap', t('js.figures-sheet.swapMenu'), { icon: '⇄' }) + menuSep() + menuItem('del', t('js.figures-sheet.delete'), { danger: true, icon: '🗑' }) })}</div></li>`).join('')
-    : `<li class="fg-empty muted">${esc(t('js.figures-sheet.empty'))}</li>`;
+        + menuItem('swap', t('js.figures-sheet.swapMenu'), { icon: '⇄' }) + menuItem('ask', t('js.figures-sheet.askOomba'), { icon: '💬' }) + menuSep() + menuItem('del', t('js.figures-sheet.delete'), { danger: true, icon: '🗑' }) })}</div></li>`).join('')
+    : `<li class="fg-empty muted">${esc(t(chat && chat.state().chat.pending ? 'js.figures-sheet.draftingHere' : 'js.figures-sheet.empty'))}</li>`;
   if (had && document.getElementById(had)) document.getElementById(had).focus({ preventScroll: true });
   for (const b of app.querySelectorAll('[data-tab]')) { const on = b.dataset.tab === tab; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }
+  for (const b of app.querySelectorAll('[data-half]')) { const on = b.dataset.half === half; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }
+  document.body.classList.toggle('fg-half-preview', half === 'preview');
   document.getElementById('fg-paper').innerHTML = W && items.length ? (tab === 'key' ? W.preview.key : W.preview.sheet) : `<p class="muted">${esc(t('js.figures-sheet.previewEmpty'))}</p>`;
   document.getElementById('fg-pv-actions').innerHTML = W && items.length ? `<a class="btn btn-primary" href="/figures/worksheets/${esc(W.id)}/print?key=0">🖨️ ${esc(t('js.figures-sheet.print'))}</a>
     <a class="btn" href="/figures/worksheets/${esc(W.id)}/print?key=1">${esc(t('js.figures-sheet.printKey'))}</a>
@@ -233,28 +226,12 @@ const ACTS = {
       document.getElementById(`fg-mb-${id}`)?.focus();
     });
   },
-  async draftTest() {
-    const topic = document.getElementById('fg-topic').value.trim();
-    if (topic.length < 3) { toast(t('js.figures-sheet.topicFirst'), { bad: true }); document.getElementById('fg-topic').focus(); return; }
-    note = `<p class="notice fg-small">${esc(t('js.figures-sheet.drafting'))}</p>`; draw(true);
-    const r = await call('/draft-test', { topic, grade: document.getElementById('fg-grade').value, subject: document.getElementById('fg-subject').value, count: +document.getElementById('fg-count').value });
-    if (!r) { note = ''; draw(); return; }
-    const bits = [draftedText(r)];
-    if (r.repaired) bits.push(t('js.figures-sheet.repaired', { count: r.repaired }));
-    if (r.dropped) bits.push(t('js.figures-sheet.dropped', { count: r.dropped }));
-    bits.push(t('js.figures-sheet.checkFirst'));
-    note = `<p class="notice ${r.ai ? 'good' : ''} fg-small">${esc(bits.join(' '))}</p>`; draw();
-  },
-  async draft() {
-    const brief = document.getElementById('fg-brief').value.trim();
-    if (brief.length < 3) { toast(t('js.figures-sheet.briefFirst'), { bad: true }); return; }
-    note = `<p class="notice fg-small">${esc(t('js.figures-sheet.drafting'))}</p>`; draw(true);
-    const r = await call('/draft', { brief, grade: document.getElementById('fg-grade').value, count: +document.getElementById('fg-count').value });
-    if (!r) { note = ''; draw(); return; }
-    const bits = [draftedText(r)];
-    if (r.repaired) bits.push(t('js.figures-sheet.repaired', { count: r.repaired }));
-    if (r.dropped) bits.push(t('js.figures-sheet.dropped', { count: r.dropped }));
-    note = `<p class="notice ${r.ai ? 'good' : ''} fg-small">${esc(bits.join(' '))}</p>`; draw();
+  /** "Ask Oomba about this": the question, quoted above the chat's message box. */
+  ask(b) {
+    const id = itemId(b), i = W.items.findIndex(x => x.id === id); if (i < 0 || !chat) return;
+    quoted = id; draw();
+    const q = W.items[i].question;
+    chat.quote({ ref: id, html: `<b>${esc(t('js.figures-sheet.questionN', { n: i + 1 }))}:</b> ${esc(q)}` });
   },
 };
 /** Move a question up or down (⋯ More, or Alt+Arrow): the keyboard stays with it, and a screen reader hears where. */
@@ -277,16 +254,86 @@ function lessonUi() {
     catch (x) { err.textContent = x.message; go.disabled = false; }
   });
 }
+// ---------------------------------------------------------------- Oomba's chat
+const chatUrl = () => (W ? `/api/figures/worksheets/${encodeURIComponent(W.id)}/chat` : null);
+const listN = ns => ns.join(', ');
+/** A unit's name in the page's language ("inches"), from the browser's own unit names; else its symbol. */
+const UNIT_NAMES = { mm: 'millimeter', cm: 'centimeter', m: 'meter', km: 'kilometer', in: 'inch', ft: 'foot', yd: 'yard', mi: 'mile' };
+function unitName(u) {
+  try { const p = new Intl.NumberFormat(document.documentElement.lang || 'en', { style: 'unit', unit: UNIT_NAMES[u], unitDisplay: 'long' }).formatToParts(2).find(x => x.type === 'unit'); return p ? p.value : u; } catch { return u; }
+}
+async function reload() { if (!W) return; try { W = (await api(`/api/figures/worksheets/${encodeURIComponent(W.id)}`, { background: true })).worksheet; } catch { /* next time */ } draw(); }
+function showMarked() {
+  half = 'sheet'; draw();
+  const first = W && W.items.find(x => marked.has(x.id));
+  const li = first && app.querySelector(`.fg-item[data-id="${CSS.escape(first.id)}"]`);
+  if (li) { li.scrollIntoView({ block: 'center', behavior: 'smooth' }); document.getElementById(`fg-q-${first.id}`)?.focus({ preventScroll: true }); }
+}
+/** "What changed" under one of Oomba's answers, from the server's summary of the change. */
+function changeHtml(x) {
+  const c = x.change, lines = [];
+  if (c.first || (!c.changed.length && !c.removed.length && c.added.length && c.added.length === c.count)) lines.push(t('js.figures-sheet.chAddedAll', { count: c.added.length }));
+  else if (c.added.length) lines.push(t('js.figures-sheet.chAdded', { count: c.added.length, list: listN(c.added) }));
+  if (c.changed.length) lines.push(t('js.figures-sheet.chChanged', { count: c.changed.length, list: listN(c.changed) }));
+  if (c.removed.length) lines.push(t('js.figures-sheet.chRemoved', { count: c.removed.length, list: listN(c.removed) }));
+  if (c.units) lines.push(t('js.figures-sheet.chUnits', { unit: unitName(c.units), count: c.unitsOn }));
+  if (c.title) lines.push(t('js.figures-sheet.chTitle', { title: c.title }));
+  if (c.grade) lines.push(t('js.figures-sheet.chGrade', { grade: c.grade }));
+  if (c.repaired || c.dropped) lines.push(t('js.figures-sheet.chRepaired', { count: c.repaired + c.dropped }));
+  lines.push(t('js.figures-sheet.chAnswers'));
+  return `<p><b>${iconHtml('✓', { size: 16 })} ${esc(t('js.figures-sheet.chTitleWhat'))}</b></p><ul class="oc-list">${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`;
+}
+function chatUi() {
+  const opener = document.getElementById('fg-oomba');
+  const empty = () => !W || !W.items.length;
+  chat = mountChat({
+    id: `figures:${P.id || 'new'}`, url: chatUrl, ensure: async () => { await ensure(); return chatUrl(); }, opener,
+    sub: t(TEST ? 'js.figures-sheet.chatSubTest' : 'js.figures-sheet.chatSub'),
+    privacy: t('js.figures-sheet.chatPrivate'), leave: t('js.figures-sheet.chatLeave'),
+    hello: () => t(empty() ? (TEST ? 'js.figures-sheet.helloEmptyTest' : 'js.figures-sheet.helloEmpty') : 'js.figures-sheet.hello'),
+    ideas: () => (empty() ? [] : ['ideaHarder', 'ideaWords', 'ideaEasier'].map(k => ({ label: t(`js.figures-sheet.${k}`), text: t(`js.figures-sheet.${k}`) }))),
+    ideasAfter: c => { const last = c.turns[c.turns.length - 1]; return last && last.change && last.change.first && !last.change.undone ? ['ideaHarder', 'ideaWords', 'ideaEasier'].map(k => ({ label: t(`js.figures-sheet.${k}`), text: t(`js.figures-sheet.${k}`) })) : []; },
+    placeholder: () => t(empty() ? 'js.figures-sheet.placeholderEmpty' : 'js.figures-sheet.placeholder'),
+    stepText: (k, state) => t(`js.figures-sheet.step.${k}.${state === 'done' ? 'done' : 'now'}`),
+    quoteText: q => (q.text ? t('js.figures-sheet.quoteN', { n: q.n, text: q.text }) : t('js.figures-sheet.questionN', { n: q.n })),
+    change: changeHtml,
+    changeLinks: x => (!x.change.first && x.change.ids && x.change.ids.length ? `<a href="#fg-items" data-c="act" data-act="show" data-turn="${esc(x.id)}">${esc(t('js.figures-sheet.showMe'))}</a>` : ''),
+    note: x => (x.note === 'starter' ? `<span>${esc(t('js.figures-sheet.starterDone'))}</span>` : ''),
+    extra: x => (x.failed && !x.starter && empty() && ['resting', 'timeout', 'busy', 'error', 'restart'].includes(x.failed)
+      ? `<button type="button" class="btn btn-sm" data-c="act" data-act="starter" data-turn="${esc(x.id)}">${esc(t('js.figures-sheet.starter'))}</button>` : ''),
+    async onAct(act, turn) {
+      if (act === 'show') { if (turn && turn.change) marked = new Set(turn.change.ids || []); showMarked(); return null; }
+      if (act === 'starter' && turn) {
+        try { const r = await api(`${chatUrl()}/starter`, { method: 'POST', body: { turnId: turn.id } }); W = r.worksheet; marked = new Set(); draw(); return r; }
+        catch (e) { toast(e.message, { bad: true }); return null; }
+      }
+      return null;
+    },
+    // A first draft marks nothing (every question is new); a later change marks the questions it added or changed.
+    onAnswer(x) { if (x.change) { marked = new Set(x.change.first ? [] : x.change.ids || []); quoted = ''; } reload(); },
+    onUndo(r) { if (r.worksheet) W = r.worksheet; marked = new Set(); draw(); },
+    onQuote(q) { if (!q && quoted) { quoted = ''; draw(); } },
+    onSync() { if (!busy) draw(); },
+    onMode(mode) {
+      if (mode !== 'open') { quoted = ''; }
+      draw();
+      api('/api/figures/prefs', { method: 'POST', body: { ai: mode === 'open' }, background: true }).catch(() => {});
+    },
+    // Open by itself on a laptop for a new, empty worksheet or test (the teacher's choice is remembered: Power with AI's
+    // old switch); a lesson's figure questions start by hand (the lesson editor sent them here), Oomba one tap away.
+    start: P.startAi || (P.ai && !LESSON && empty() && window.matchMedia('(min-width: 900px)').matches) ? 'open' : 'closed',
+  });
+}
 async function boot() {
   shell();
   assignUi();
   lessonUi();
   if (P.id) { try { W = (await api(`/api/figures/worksheets/${encodeURIComponent(P.id)}`)).worksheet; } catch (e) { toast(e.message, { bad: true }); } }
-  if (P.startAi && !ai) { ai = true; document.getElementById('fg-ai').checked = true; document.getElementById('fg-aibox').hidden = false; }
   draw();
-  if (P.startAi) document.getElementById(TEST ? 'fg-topic' : 'fg-brief').focus();
+  chatUi();
   app.addEventListener('click', e => {
     const tb = e.target.closest('[data-tab]'); if (tb) { tab = tb.dataset.tab; draw(); return; }
+    const hb = e.target.closest('[data-half]'); if (hb) { half = hb.dataset.half; draw(); return; }
     const pk = e.target.closest('[data-pick]');
     if (pk) { pickSubject = pk.dataset.pick; for (const c of app.querySelectorAll('[data-pick]')) { const on = c === pk; c.classList.toggle('on', on); c.setAttribute('aria-pressed', String(on)); } document.getElementById('fg-addkind').innerHTML = kindOptions(pickSubject); return; }
     const b = e.target.closest('button[data-act]'); if (b) { if (!b.disabled && !busy) { const f = ACTS[b.dataset.act]; if (f) f(b); } return; }
@@ -300,11 +347,6 @@ async function boot() {
     if (!e.altKey || e.ctrlKey || e.metaKey || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
     const li = e.target.closest('.fg-item[data-id]'); if (!li || e.target.closest('input[type="text"],input:not([type]),textarea,.fg-mm-list') || busy) return;
     e.preventDefault(); move(li.dataset.id, e.key === 'ArrowUp' ? 'up' : 'down', e.target);
-  });
-  document.getElementById('fg-ai').addEventListener('change', async e => {
-    ai = e.target.checked; document.getElementById('fg-aibox').hidden = !ai;
-    const hand = document.getElementById('fg-hand'); if (hand) hand.hidden = ai;
-    try { await api('/api/figures/prefs', { method: 'POST', body: { ai } }); } catch { /* remembered next time */ }
   });
   const saveMeta = async () => { if (!W && !document.getElementById('fg-title').value.trim()) return; const id = await ensure().catch(() => null); if (!id) return;
     try { const r = await api(`/api/figures/worksheets/${encodeURIComponent(id)}`, { method: 'POST', body: { title: document.getElementById('fg-title').value, grade: document.getElementById('fg-grade').value } }); W = r.worksheet; draw(); } catch (e) { toast(e.message, { bad: true }); } };
@@ -320,6 +362,7 @@ async function boot() {
     }
     if (li && (e.target.matches('[data-otext]') || e.target.matches('[data-oright]'))) { const { texts, correct } = readOpts(li); await saveOpts(li, texts, correct); return; }
     const q = e.target.closest('[data-q]'); if (!q) return;
+    marked.delete(itemId(q));
     await call(`/items/${encodeURIComponent(itemId(q))}`, { question: q.value });
   });
 }

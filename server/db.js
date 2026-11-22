@@ -1223,6 +1223,25 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS proof_ai_drafts (user_id TEXT NOT NULL, hash TEXT NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY (user_id, hash));
     CREATE INDEX IF NOT EXISTS proof_ai_drafts_at ON proof_ai_drafts(created_at);
     ALTER TABLE step_progress ADD COLUMN hints INTEGER NOT NULL DEFAULT 0;`],
+  // Oomba's shared chat engine (services/oomba-chat.js; docs/decisions.md "Figures: Oomba's chat and the shared chat
+  // engine"), first used by Figures. oomba_chats: one conversation per teacher, surface ('figures') and context key (a
+  // worksheet's id); turns: the newest turns as JSON ({ id, role 'me'|'oomba', text, at, quote?, change?, undo?, failed?,
+  // for? }), never student names or work. oomba_turns: each message's answer as a server job (queued | running |
+  // interrupted | done | failed), its progress (step, steps: ms after the start each row began), attempt, error, and
+  // seen_at (the teacher saw how it ended: "finished while you were away"). live_key: the surface's one-live-turn rule
+  // ('<surface>:<owner>' for one per teacher, 'chat:<id>' for one per conversation), held by the partial unique index.
+  // (First numbered 0106 on its branch; main took 0106 for Mistake Hunt's limits first.)
+  ['0107_figures_chat', `
+    CREATE TABLE IF NOT EXISTS oomba_chats (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      surface TEXT NOT NULL, ctx_key TEXT NOT NULL, turns TEXT NOT NULL DEFAULT '[]', updated_at INTEGER NOT NULL);
+    CREATE UNIQUE INDEX IF NOT EXISTS oomba_chats_ctx ON oomba_chats(owner_id, surface, ctx_key);
+    CREATE TABLE IF NOT EXISTS oomba_turns (id TEXT PRIMARY KEY, chat_id TEXT NOT NULL REFERENCES oomba_chats(id) ON DELETE CASCADE,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, surface TEXT NOT NULL, live_key TEXT NOT NULL, me_id TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'queued', step INTEGER NOT NULL DEFAULT 0, steps TEXT NOT NULL DEFAULT '[]', attempt INTEGER NOT NULL DEFAULT 0,
+      error TEXT, created_at INTEGER NOT NULL, started_at INTEGER, ended_at INTEGER, seen_at INTEGER);
+    CREATE UNIQUE INDEX IF NOT EXISTS oomba_turns_one_live ON oomba_turns(live_key) WHERE status IN ('queued','running','interrupted');
+    CREATE INDEX IF NOT EXISTS idx_oomba_turns_owner ON oomba_turns(owner_id, surface, ended_at);
+    CREATE INDEX IF NOT EXISTS idx_oomba_turns_chat ON oomba_turns(chat_id);`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

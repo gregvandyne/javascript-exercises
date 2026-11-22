@@ -333,7 +333,7 @@ test('the AI times out or fails: lessons, worksheets and tests fall back to thei
 
 test('Build a test: the menu entry, AI on (generators, so each question re-deals), repairs logged, edit, then an explicit Assign', async () => {
   const menu = await as(boss)('/figures');
-  assert.match(menu.text, /href="\/figures\/tests\/new"/); assert.match(menu.text, /Build a test/);
+  assert.match(menu.text, /href="\/figures\/tests\/new"/); assert.match(menu.text, /Blank test/); assert.match(menu.text, /name="purpose" value="test"/);
   const page = await as(boss)('/figures/tests/new');
   assert.equal(page.status, 200);
   const data = pageData(page.text, 'fg-sheet');

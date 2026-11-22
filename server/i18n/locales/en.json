@@ -4037,18 +4037,6 @@
       "grade": "Grade",
       "anyGrade": "Any grade",
       "gradeN": "Grade {grade}",
-      "powerAi": "Power with AI",
-      "briefLabel": "Topic, grade, how many questions",
-      "briefHint": "Grade 7, area of rectangles and trapezoids, plus one box plot.",
-      "howMany": "Questions",
-      "draft": "Draft",
-      "budget": "Uses the AI budget. If it is resting, you get a starter set instead.",
-      "drafting": "Drafting your questions…",
-      "briefFirst": "Describe the worksheet in a few words first.",
-      "drafted": "{count, plural, one {# question drafted.} other {# questions drafted.}} Every figure was checked and every answer worked out by Oomba Figures.",
-      "resting": "AI is resting, here is a starter set ({count, plural, one {# question} other {# questions}}).",
-      "repaired": "{count, plural, one {# figure couldn't be drawn and was replaced.} other {# figures couldn't be drawn and were replaced.}}",
-      "dropped": "{count, plural, one {# question was left out.} other {# questions were left out.}}",
       "addLabel": "Add a figure question",
       "add": "Add",
       "empty": "No questions yet. Add a figure question, or draft some with AI.",
@@ -4099,16 +4087,6 @@
       "fromFigure": "The right option is worked out from the figure. Change an option or mark another one to choose it yourself.",
       "needTwo": "Write at least 2 options.",
       "needRight": "Mark the right option.",
-      "testAiTitle": "Draft a test",
-      "topicLabel": "Topic",
-      "topicHint": "For example: area of rectangles and triangles",
-      "subject": "Subject",
-      "anySubject": "Any subject",
-      "draftTest": "Draft the test",
-      "testBudget": "Built from the question generators, so you can deal new numbers for any question. Counts towards the AI limit; without AI a starter test is dealt.",
-      "byHand": "By hand: pick a subject, add figure questions, then set each figure and its answer.",
-      "checkFirst": "Check every question before you assign it.",
-      "topicFirst": "Type the test's topic first.",
       "saveLesson": "Save to lesson",
       "saveLessonHint": "Puts these questions in {title}. Nothing changes in the lesson until you save.",
       "saveLessonAgain": "Saving again replaces the questions in {title}.",
@@ -4130,7 +4108,57 @@
       "removeLesson": "Delete these questions",
       "removeLessonQ": "Delete these figure questions?",
       "removeLessonText": "The lesson's Figure step keeps the questions it was last saved with. This cannot be undone.",
-      "fallback": "The AI didn’t answer this time, so here is a starter set ({count, plural, one {# question} other {# questions}}). You can try again."
+      "oomba": "Oomba",
+      "halves": "Show",
+      "halfSheet": "Questions",
+      "byOomba": "Changed by Oomba",
+      "inChat": "In the chat",
+      "askOomba": "Ask Oomba about this",
+      "draftingHere": "Oomba is drafting your questions. They will show up here.",
+      "chatSub": "Knows this worksheet",
+      "chatSubTest": "Knows this test",
+      "chatPrivate": "Oomba sees this worksheet and your words, never students’ names or work.",
+      "chatLeave": "You can close this page. Your questions will be here when you come back.",
+      "helloEmpty": "Hi! Tell me what you need on this worksheet: the topic, the grade, how many questions. I’ll draft it, then you can ask me to change anything.",
+      "helloEmptyTest": "Hi! Tell me what this test should cover: the topic, the grade, how many questions. I’ll draft it, then you can ask me to change anything.",
+      "hello": "Hi! I can see your questions. Ask me to change some of them, add more, or change the units or the grade.",
+      "ideaHarder": "Make them a little harder",
+      "ideaWords": "Add 2 more word problems",
+      "ideaEasier": "Make them a little easier",
+      "placeholder": "Tell Oomba what to change",
+      "placeholderEmpty": "Describe what you need",
+      "step": {
+        "check": {
+          "now": "Checking your words for students’ names",
+          "done": "Checked your words for students’ names"
+        },
+        "ai": {
+          "now": "Oomba is choosing the questions",
+          "done": "Oomba chose the questions"
+        },
+        "build": {
+          "now": "Drawing every figure and working out the answers",
+          "done": "Drew every figure and worked out the answers"
+        },
+        "save": {
+          "now": "Putting them on your worksheet",
+          "done": "Put them on your worksheet"
+        }
+      },
+      "quoteN": "Question {n}: {text}",
+      "showMe": "Show me",
+      "starterDone": "Here is a starter set from the figure generators, made without the AI. Check each question before you use it.",
+      "starter": "Add a starter set instead",
+      "chTitleWhat": "What changed",
+      "chAddedAll": "{count, plural, one {Added # question} other {Added # questions}}",
+      "chAdded": "{count, plural, one {Added question {list}} other {Added questions {list}}}",
+      "chChanged": "{count, plural, one {Changed question {list}} other {Changed questions {list}}}",
+      "chRemoved": "{count, plural, one {Removed question {list}} other {Removed questions {list}}}",
+      "chUnits": "Units: {unit} on {count, plural, one {# question} other {# questions}}",
+      "chTitle": "Title: {title}",
+      "chGrade": "Grade: {grade}",
+      "chRepaired": "{count, plural, one {# figure couldn’t be drawn and was replaced or left out} other {# figures couldn’t be drawn and were replaced or left out}}",
+      "chAnswers": "Every answer worked out from its figure"
     },
     "manip-chat": {
       "title": "Oomba",
@@ -4188,6 +4216,79 @@
       "anyGrade": "Any",
       "grade": "Grade {grade}",
       "capped": "At most {max} problems fit on one board, so it has {max}."
+    },
+    "oomba-chat": {
+      "title": "Oomba",
+      "minimize": "Minimize",
+      "close": "Close Oomba",
+      "inputLabel": "Message to Oomba",
+      "send": "Send",
+      "private": "Oomba sees what you have open and your words, never students’ names or work.",
+      "reopen": "Open Oomba",
+      "reopenNew": "Open Oomba: a new answer",
+      "leave": "You can close this page. The answer will wait here.",
+      "needText": "Write a few words for Oomba first.",
+      "retry": "Try again",
+      "edit": "Edit",
+      "undo": "Undo",
+      "undone": "Change undone.",
+      "undoneKept": "{count, plural, one {# thing you changed since was kept.} other {# things you changed since were kept.}}",
+      "ideas": "Ideas",
+      "unquote": "Remove the quote",
+      "eta": {
+        "under": "Usually about {n} seconds",
+        "guessUnder": "Often about {n} seconds",
+        "about": "{n, plural, one {Usually about a minute} other {Usually about # minutes}}",
+        "longer": "Taking a little longer than usual",
+        "soFar": "{time} so far"
+      },
+      "step": {
+        "check": {
+          "now": "Checking your words for students’ names",
+          "done": "Checked your words for students’ names"
+        },
+        "ai": {
+          "now": "Oomba is thinking",
+          "done": "Oomba answered"
+        },
+        "build": {
+          "now": "Checking the answer",
+          "done": "Checked the answer"
+        },
+        "save": {
+          "now": "Saving it",
+          "done": "Saved"
+        }
+      },
+      "fail": {
+        "error": "Oomba couldn’t answer this time. Nothing was changed.",
+        "timeout": "Oomba didn’t answer in time. Nothing was changed.",
+        "busy": "Oomba is very busy right now. Nothing was changed. Try again in a few minutes.",
+        "resting": "Oomba is resting right now, so nothing was changed. You can keep working by hand and try Oomba again later.",
+        "restart": "Our server restarted before Oomba answered. Nothing was changed.",
+        "names": "Leave students’ names out: names never go to the AI. Nothing was sent.",
+        "words": "Some words in your message aren’t allowed. Nothing was sent.",
+        "personal": "Leave out phone numbers, emails, links and codes. Nothing was sent.",
+        "notFound": "This isn’t here anymore, so nothing was changed."
+      },
+      "err": {
+        "names": "Leave students’ names out: names never go to the AI. Your message is still here.",
+        "words": "Some words in your message aren’t allowed. Change them and send it again.",
+        "personal": "Leave out phone numbers, emails, links and codes, then send it again.",
+        "brief": "Write a few words for Oomba first.",
+        "chatBusy": "Oomba is still answering your last message. Wait a moment.",
+        "otherBusy": "Oomba is still working on another of your worksheets. Wait a moment, then send this.",
+        "notFound": "This account can’t use Oomba here right now.",
+        "notEmpty": "This worksheet already has questions.",
+        "tooMany": "You have as many worksheets as you can keep. Delete one, then try again.",
+        "slow": "That’s a lot of messages for one hour. Wait a little, then try again.",
+        "other": "Something went wrong. Your message is still here: try again in a moment."
+      }
+    },
+    "figures": {
+      "needText": "Write a few words for Oomba first.",
+      "slow": "That’s a lot of messages for one hour. Wait a little, then try again.",
+      "other": "Something went wrong. Your message is still here: try again in a moment."
     }
   },
   "favorites": {
@@ -13237,9 +13338,6 @@
     },
     "menu": {
       "pitch": "Exact, to-scale figures for worksheets, tests and slides. Print-ready, with the answers worked out.",
-      "buildTitle": "Build a worksheet",
-      "buildText": "Pick figures by hand, or describe what you need and let AI draft the questions. Every number is checked so each figure can really be drawn.",
-      "draftAi": "Draft with AI",
       "scratch": "Start from scratch",
       "mine": "My worksheets",
       "noSheets": "No worksheets yet. The ones you build show up here.",
@@ -13254,9 +13352,25 @@
       "searchHint": "Search the figures, like cylinder or box plot",
       "count": "{count, plural, one {# figure} other {# figures}}",
       "nothing": "No figures match. Try another word or grade.",
-      "buildTest": "Build a test",
-      "buildTestText": "A whole test of figure questions, drafted with AI or built by hand.",
-      "isTest": "Test"
+      "isTest": "Test",
+      "describeTitle": "Build a worksheet or a test",
+      "describeText": "Say what you need. Oomba drafts the questions, Figures draws every figure and works out every answer, and you can keep adjusting in the chat.",
+      "describeLabel": "Describe what you need",
+      "describeHint": "Describe what you need, like: grade 4 area and perimeter of rectangles, 8 questions, two word problems",
+      "makeA": "Make a",
+      "worksheet": "Worksheet",
+      "test": "Test",
+      "grade": "Grade",
+      "anyGrade": "Any",
+      "gradeN": "Grade {grade}",
+      "draftIt": "Draft it",
+      "privacy": "Only these words go to the AI. Leave out students’ names: they never go to the AI.",
+      "blankTest": "Blank test",
+      "readyTitle": "“{title}” is ready.",
+      "readyText": "Oomba finished it while you were away: {count, plural, one {# question.} other {# questions.}}",
+      "readyFailed": "Oomba couldn’t finish “{title}”. Open it to try again.",
+      "readyOpen": "Open it",
+      "readyDismiss": "Dismiss"
     },
     "sheet": {
       "newTitle": "New worksheet",

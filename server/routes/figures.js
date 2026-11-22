@@ -15,14 +15,22 @@
 //   POST /api/figures/gen                          a generator's question for a seed ({ gen, seed } or { kind }; with
 //                                                  data, the definition that dealt that figure, PAST_GENS included)
 //   GET  /api/figures/presets/:kind, POST /api/figures/presets, POST /api/figures/presets/:id/delete
-//   POST /api/figures/prefs                        "Power with AI" on or off ({ ai })
+//   POST /api/figures/prefs                        whether Oomba's chat opens by itself on a new worksheet ({ ai })
 //   POST /api/figures/worksheets                   a new worksheet ({ title, grade, items })
 //   GET  /api/figures/worksheets/:id               a worksheet with its figures and its print preview
 //   POST /api/figures/worksheets/:id               title and grade;  POST .../delete
 //   POST /api/figures/worksheets/:id/items         add a question ({ item } or { kind } for a starter)
 //   POST /api/figures/worksheets/:id/items/:item   change a question; .../delete, .../move ({ dir }), .../regen
-//   POST /api/figures/worksheets/:id/draft         "Power with AI" ({ brief, grade, count })
-//   POST /api/figures/worksheets/:id/draft-test    "Build a test with AI" ({ topic, grade, subject, count }): a test
+//   POST /api/figures/start                        "Describe what you need" on the menu ({ text, purpose, grade }): a new
+//                                                  worksheet or test with Oomba's first turn running (services/figures-chat.js)
+//   GET  /api/figures/worksheets/:id/chat          Oomba's chat on this worksheet (turns, the turn running and its progress)
+//   POST /api/figures/worksheets/:id/chat          a message to Oomba ({ text, quote?, retry? }): checked, stored, answered
+//                                                  in the background (one at a time per teacher); -> the chat
+//   POST /api/figures/worksheets/:id/chat/undo     undo the change a turn made ({ turnId }); -> the chat and the worksheet
+//   POST /api/figures/worksheets/:id/chat/starter  "Add a starter set instead" after a first draft Oomba couldn't make
+//   POST /api/figures/worksheets/:id/chat/dismiss  the menu's "finished while you were away" notice, dismissed
+//   POST /api/figures/worksheets/:id/draft         the old one-shot draft ({ brief, grade, count }), kept for one release
+//   POST /api/figures/worksheets/:id/draft-test    the old one-shot test draft ({ topic, grade, subject, count }), kept for one release
 //   POST /api/figures/worksheets/:id/items/:item/swap   "Swap figure" ({ kind })
 //   POST /api/figures/worksheets/:id/save-to-lesson     a lesson set's questions become its lesson's Figure step
 //   POST /api/figures/worksheets/:id/assign        Assign to class ({ classId, opensAt, dueAt, showAnswers }): a lesson with
@@ -35,6 +43,7 @@ import { localeInfo } from '../i18n/index.js';
 import { figTag } from '../services/figlibs.js';
 import * as F from '../services/figures.js';
 import * as FS from '../services/figures-steps.js';
+import * as FC from '../services/figures-chat.js';
 import { canHost as manipHost } from '../services/manipulatives.js';
 import { trialUsed } from '../services/teacher-plan.js';
 import { requireUser } from '../auth.js';
@@ -85,6 +94,7 @@ export function planReply(req, res, tool) {
 const next404 = (req, res) => res.status(404).json({ error: req.t('errors.api.notFound') });
 
 const CSS = raw(`<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`);
+const CHAT_CSS = raw(`<link rel="stylesheet" href="/css/figures.css?v=${VERSION}"><link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}">`);
 const kindName = (t, id) => t(`figures.kinds.${id}.name`);
 const subjName = (t, s) => t(`figures.subjects.${s}`);
 /** "Teaching tools: Manipulatives · Figures", only for someone who can open both (Manipulatives keeps its tester list). */
@@ -117,6 +127,10 @@ router.get('/figures', (req, res) => {
     ? html`<ul class="fg-mine">${sheets.slice(0, 6).map(w => html`<li><span class="fg-qs">${t('figures.menu.questions', { count: w.n })}</span><span><a href="/figures/worksheets/${w.id}">${w.title}</a>
         <small>${[w.purpose === 'test' ? t('figures.menu.isTest') : '', w.grade ? t('figures.menu.gradeOf', { grade: w.grade }) : '', t('figures.menu.edited', { date: dateOf(req, w.updated_at) })].filter(Boolean).join(' · ')}</small></span></li>`)}</ul>`
     : html`<p class="muted">${t('figures.menu.noSheets')}</p>`;
+  // "Finished while you were away": Oomba's answers on a worksheet the teacher hasn't opened since.
+  const readyNotes = FC.ready(u).map(r => html`<div class="fgd-away${r.status === 'failed' ? ' bad' : ''}" role="status" data-ready="${r.id}"><span aria-hidden="true">${ico(r.status === 'failed' ? '💬' : '✨', { size: 20 })}</span><div>
+      <p><b>${t(r.status === 'failed' ? 'figures.menu.readyFailed' : 'figures.menu.readyTitle', { title: r.title })}</b> ${r.status === 'failed' ? '' : t('figures.menu.readyText', { count: r.n })}</p>
+      <div class="row"><a class="btn btn-primary btn-sm" href="/figures/worksheets/${r.id}">${t('figures.menu.readyOpen')}</a><button class="btn btn-sm" type="button" data-dismiss="${r.id}">${t('figures.menu.readyDismiss')}</button></div></div></div>`);
   page(req, res, {
     title: t('figures.title'), active: 'tools', head: CSS, scripts: ['/js/figures.js'], bodyClass: 'fg-page',
     body: html`${teachingTools(req, 'figures')}
@@ -124,10 +138,20 @@ router.get('/figures', (req, res) => {
         <h1>${t('figures.title')}</h1></header>
       <p class="fg-lead">${t('figures.menu.pitch')}</p>
       <div class="fg-top">
-        <section class="fg-build"><h2>${t('figures.menu.buildTitle')}</h2><p>${t('figures.menu.buildText')}</p>
-          <div class="row"><a class="btn btn-hot" href="/figures/worksheets/new?ai=1">✨ ${t('figures.menu.draftAi')}</a><a class="btn fg-ghost" href="/figures/worksheets/new">${t('figures.menu.scratch')}</a></div>
-          <p class="fg-testline"><a class="btn fg-ghost" href="/figures/tests/new">📝 ${t('figures.menu.buildTest')}</a> <span>${t('figures.menu.buildTestText')}</span></p></section>
-        <section class="panel fg-minebox"><h2>${t('figures.menu.mine')}</h2>${mine}</section>
+        <section class="fg-build" aria-labelledby="fgd-h"><h2 id="fgd-h">${t('figures.menu.describeTitle')}</h2><p>${t('figures.menu.describeText')}</p>
+          <form id="fgd-form" class="fgd-form" novalidate>
+            <label class="sr-only" for="fgd-in">${t('figures.menu.describeLabel')}</label>
+            <textarea class="fgd-in" id="fgd-in" name="text" rows="3" maxlength="1000" dir="auto" placeholder="${t('figures.menu.describeHint')}"></textarea>
+            <div class="fgd-row"><div class="fgd-seg" role="radiogroup" aria-label="${t('figures.menu.makeA')}">
+                <label><input type="radio" name="purpose" value="worksheet" checked><span>${t('figures.menu.worksheet')}</span></label>
+                <label><input type="radio" name="purpose" value="test"><span>${t('figures.menu.test')}</span></label></div>
+              <label class="fgd-grade"><span>${t('figures.menu.grade')}</span><select class="input input-sm" name="grade" id="fgd-grade"><option value="">${t('figures.menu.anyGrade')}</option>${['K', ...Array.from({ length: 12 }, (_, i) => String(i + 1))].map(g => html`<option value="${g}">${t('figures.menu.gradeN', { grade: g })}</option>`)}</select></label>
+              <button class="btn btn-hot fgd-go" type="submit" id="fgd-go">${ico('✨', { size: 18 })} ${t('figures.menu.draftIt')}</button></div>
+            <p class="fgd-err" id="fgd-err" role="alert" hidden></p>
+            <p class="fgd-priv">${ico('🔒', { size: 16 })} ${t('figures.menu.privacy')}</p>
+          </form>
+          <p class="fgd-scratch"><a href="/figures/worksheets/new">${t('figures.menu.scratch')}</a> · <a href="/figures/tests/new">${t('figures.menu.blankTest')}</a></p></section>
+        <section class="panel fg-minebox"><h2>${t('figures.menu.mine')}</h2>${readyNotes}${mine}</section>
       </div>
       <div class="fg-filters">
         <div class="chips fg-tabs" role="group" aria-label="${t('figures.menu.subjects')}">${tab('all', t('figures.menu.all'))}${F.SUBJECTS.map(s => tab(s, subjName(t, s)))}${SOON.map(s => tab(s, subjName(t, s), true))}</div>
@@ -181,7 +205,7 @@ function builder(req, res, w, { purpose = w ? w.purpose : 'worksheet' } = {}) {
   const test = purpose === 'test';
   const crumb = lesson ? [[`/teach/lessons/${lesson.id}`, lesson.title], [null, t('figures.sheet.crumbLesson')]] : [['/figures', t('figures.title')], [null, t(test ? 'figures.sheet.crumbTest' : 'figures.sheet.crumb')]];
   page(req, res, {
-    title: w ? w.title : t(test ? 'figures.sheet.newTest' : 'figures.sheet.newTitle'), active: 'tools', head: CSS, scripts: ['/js/figures-sheet.js'], bodyClass: 'fg-page',
+    title: w ? w.title : t(test ? 'figures.sheet.newTest' : 'figures.sheet.newTitle'), active: 'tools', head: CHAT_CSS, scripts: ['/js/figures-sheet.js'], i18n: ['js.oomba-chat'], bodyClass: 'fg-page',
     body: html`${teachingTools(req, 'figures')}
       ${crumbs(t, crumb)}
       ${jsonData('fg-sheet', { id: w ? w.id : null, purpose, lesson, ai: F.aiPref(u), startAi: req.query.ai === '1', kinds, subjects: Object.fromEntries(F.SUBJECTS.map(s => [s, subjName(t, s)])), untitled: t(test ? 'figures.sheet.untitledTest' : 'figures.sheet.untitled'),
@@ -289,6 +313,31 @@ router.post('/api/figures/worksheets/:id/assign', rateLimit('figures-assign', 60
   const cl = r.classLesson;
   res.json({ ok: true, lessonId: r.lesson.id, classLessonId: cl.id, classId: cl.class_id, view: `/class/${cl.class_id}/lessons/${cl.id}`, progress: `/class/${cl.class_id}/progress/${cl.id}` });
 });
+// ---------------------------------------------------------------- Oomba's chat (services/figures-chat.js, oomba-chat.js)
+const CHAT_STATUS = { notFound: 404, chatBusy: 409, otherBusy: 409, notEmpty: 409 };
+const CHAT_CODES = ['names', 'words', 'personal', 'brief', 'chatBusy', 'otherBusy', 'notFound', 'notEmpty', 'tooMany'];
+const chatFail = (req, res, r) => res.status(CHAT_STATUS[r.code] || 400).json({ error: req.t(`js.oomba-chat.err.${CHAT_CODES.includes(r.code) ? r.code : 'other'}`), code: r.code, ...(r.key ? { key: r.key } : {}) });
+router.post('/api/figures/start', rateLimit('figures-ai', 30, 3600e3), (req, res) => {
+  const b = body(req);
+  const r = FC.start(req.user, { text: b.text, purpose: b.purpose === 'test' ? 'test' : 'worksheet', grade: b.grade, lang: F.genLang(req.locale) });
+  return r.ok ? res.json({ ok: true, id: r.id, redirect: `/figures/worksheets/${r.id}` }) : chatFail(req, res, r);
+});
+router.get('/api/figures/worksheets/:id/chat', (req, res) => { const r = FC.current(req.user, req.params.id); return r.ok ? res.json(r) : chatFail(req, res, r); });
+router.post('/api/figures/worksheets/:id/chat', rateLimit('figures-ai', 30, 3600e3), (req, res) => {
+  const b = body(req);
+  const r = FC.send(req.user, req.params.id, { text: b.text, quote: typeof b.quote === 'string' ? b.quote : null, retry: typeof b.retry === 'string' ? b.retry : null });
+  return r.ok ? res.json({ ok: true, chat: r.chat }) : chatFail(req, res, r);
+});
+router.post('/api/figures/worksheets/:id/chat/undo', rateLimit('figures-save', 300, 3600e3), (req, res) => {
+  const r = FC.undo(req.user, req.params.id, body(req).turnId);
+  return r.ok ? res.json({ ok: true, chat: r.chat, kept: r.kept, worksheet: view(req, req.params.id) }) : chatFail(req, res, r);
+});
+router.post('/api/figures/worksheets/:id/chat/starter', rateLimit('figures-save', 300, 3600e3), (req, res) => {
+  const r = FC.starter(req.user, req.params.id, body(req).turnId);
+  return r.ok ? res.json({ ok: true, chat: r.chat, worksheet: view(req, req.params.id) }) : chatFail(req, res, r);
+});
+router.post('/api/figures/worksheets/:id/chat/dismiss', (req, res) => { const r = FC.dismiss(req.user, req.params.id); return r.ok ? res.json(r) : chatFail(req, res, r); });
+// The old one-shot drafts (before Oomba's chat), kept for one release for pages still open; the page no longer calls them.
 router.post('/api/figures/worksheets/:id/draft', rateLimit('figures-ai', 30, 3600e3), async (req, res) => {
   const { brief, grade, count } = body(req);
   const r = await F.draftWorksheet(req.user, req.params.id, { brief, grade, count });

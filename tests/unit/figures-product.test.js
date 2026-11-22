@@ -162,7 +162,8 @@ test('the menu: every catalog kind as a card with a server-drawn thumbnail; ever
   assert.deepEqual([...CAT.SOON], [], 'no subject is Coming soon');
   assert.doesNotMatch(r.text, /fg-soon|Coming soon/, 'and the menu shows no Coming soon chip');
   assert.match(r.text, /<section class="fg-sec" data-subject="economics"/);
-  assert.match(r.text, /Build a worksheet[\s\S]*Draft with AI[\s\S]*Start from scratch[\s\S]*My worksheets/);
+  // "Describe what you need" (Oomba's chat drafts it: figures-chat.test.js), Worksheet or Test, then Start from scratch.
+  assert.match(r.text, /Build a worksheet or a test[\s\S]*id="fgd-in"[\s\S]*value="worksheet" checked[\s\S]*value="test"[\s\S]*Draft it[\s\S]*Start from scratch[\s\S]*My worksheets/);
   const th = await as(boss)('/figures/thumb/boxPlot.svg');
   assert.equal(th.status, 200);
   assert.match(th.headers.get('content-type'), /image\/svg\+xml/);

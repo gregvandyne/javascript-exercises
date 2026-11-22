@@ -3759,18 +3759,6 @@
       "grade": "年級",
       "anyGrade": "任何年級",
       "gradeN": "{grade} 年級",
-      "powerAi": "用 AI 協助",
-      "briefLabel": "主題、年級、題數",
-      "briefHint": "7 年級，長方形和梯形的面積，再加一個盒狀圖。",
-      "howMany": "題數",
-      "draft": "草擬",
-      "budget": "會使用 AI 額度。額度暫停時，會改給你一組入門題目。",
-      "drafting": "正在草擬題目…",
-      "briefFirst": "請先用幾個字描述這份學習單。",
-      "drafted": "{count, plural, other {已草擬 # 題。}}每個圖形都經 Oomba Figures 檢查，每個答案都由它算出。",
-      "resting": "AI 正在休息，這裡是一組入門題目（{count, plural, other {# 題}}）。",
-      "repaired": "{count, plural, other {有 # 個圖形畫不出來，已替換。}}",
-      "dropped": "{count, plural, other {有 # 題被拿掉。}}",
       "addLabel": "加入圖形題目",
       "add": "加入",
       "empty": "還沒有題目。加入一題圖形題目，或用 AI 草擬一些。",
@@ -3821,16 +3809,6 @@
       "fromFigure": "正確選項是根據圖形算出的。修改選項或標出另一個,就由你自己決定。",
       "needTwo": "至少寫 2 個選項。",
       "needRight": "標出正確的選項。",
-      "testAiTitle": "起草測驗",
-      "topicLabel": "主題",
-      "topicHint": "例如：長方形和三角形的面積",
-      "subject": "科目",
-      "anySubject": "任何科目",
-      "draftTest": "起草測驗",
-      "testBudget": "用題目產生器製作，每一題都能重新出新的數字。會計入 AI 用量上限；沒有 AI 時會產生一份起始測驗。",
-      "byHand": "自己動手：選擇科目，加入圖形題，再設定每個圖形和答案。",
-      "checkFirst": "指派前請檢查每一題。",
-      "topicFirst": "請先寫下測驗的主題。",
       "saveLesson": "儲存到課程",
       "saveLessonHint": "把這些題目放進「{title}」。儲存前課程不會改變。",
       "saveLessonAgain": "再次儲存會取代「{title}」裡的題目。",
@@ -3852,7 +3830,57 @@
       "removeLesson": "刪除這些題目",
       "removeLessonQ": "要刪除這些圖形題嗎？",
       "removeLessonText": "課程的圖形步驟會保留最後一次儲存時的題目。無法復原。",
-      "fallback": "這次 AI 沒有回應,所以先給你一組起始題目({count, plural, other {# 題}})。你可以再試一次。"
+      "oomba": "Oomba",
+      "halves": "顯示",
+      "halfSheet": "題目",
+      "byOomba": "Oomba 已修改",
+      "inChat": "在聊天中",
+      "askOomba": "問 Oomba 這一題",
+      "draftingHere": "Oomba 正在擬題目,題目會出現在這裡。",
+      "chatSub": "了解這份學習單",
+      "chatSubTest": "了解這份測驗",
+      "chatPrivate": "Oomba 只看得到這份學習單和你的話,從不看學生的名字或作品。",
+      "chatLeave": "你可以關閉這個頁面。回來時題目會在這裡。",
+      "helloEmpty": "嗨!告訴我這份學習單需要什麼:主題、年級、題數。我先擬好,之後你可以請我修改任何地方。",
+      "helloEmptyTest": "嗨!告訴我這份測驗要涵蓋什麼:主題、年級、題數。我先擬好,之後你可以請我修改任何地方。",
+      "hello": "嗨!我看得到你的題目。你可以請我修改其中幾題、再加幾題,或更改單位或年級。",
+      "ideaHarder": "讓題目難一點",
+      "ideaWords": "再加 2 題文字題",
+      "ideaEasier": "讓題目簡單一點",
+      "placeholder": "告訴 Oomba 要改什麼",
+      "placeholderEmpty": "描述你需要什麼",
+      "step": {
+        "check": {
+          "now": "正在檢查你的文字裡有沒有學生名字",
+          "done": "已檢查你的文字裡有沒有學生名字"
+        },
+        "ai": {
+          "now": "Oomba 正在挑選題目",
+          "done": "Oomba 已挑好題目"
+        },
+        "build": {
+          "now": "正在畫出每個圖形並算出答案",
+          "done": "已畫出每個圖形並算出答案"
+        },
+        "save": {
+          "now": "正在放進你的學習單",
+          "done": "已放進你的學習單"
+        }
+      },
+      "quoteN": "第 {n} 題:{text}",
+      "showMe": "給我看",
+      "starterDone": "這是由圖形產生器做出的入門題組,沒有使用 AI。使用前請檢查每一題。",
+      "starter": "改為加入入門題組",
+      "chTitleWhat": "改了什麼",
+      "chAddedAll": "新增了 {count} 題",
+      "chAdded": "新增第 {list} 題",
+      "chChanged": "修改第 {list} 題",
+      "chRemoved": "移除第 {list} 題",
+      "chUnits": "單位:{count} 題改為 {unit}",
+      "chTitle": "標題:{title}",
+      "chGrade": "年級:{grade}",
+      "chRepaired": "有 {count} 個圖形畫不出來,已替換或移除",
+      "chAnswers": "每個答案都由它的圖形算出"
     },
     "manip-chat": {
       "title": "Oomba",
@@ -3906,6 +3934,79 @@
       },
       "placeholder": "請 Oomba 修改板子",
       "placeholderEmpty": "描述你想在這個板子上上的課"
+    },
+    "oomba-chat": {
+      "title": "Oomba",
+      "minimize": "最小化",
+      "close": "關閉 Oomba",
+      "inputLabel": "給 Oomba 的訊息",
+      "send": "送出",
+      "private": "Oomba 只看得到你打開的內容和你的話,從不看學生的名字或作品。",
+      "reopen": "打開 Oomba",
+      "reopenNew": "打開 Oomba:有新的回答",
+      "leave": "你可以關閉這個頁面。回答會在這裡等你。",
+      "needText": "請先寫幾個字給 Oomba。",
+      "retry": "再試一次",
+      "edit": "編輯",
+      "undo": "復原",
+      "undone": "已復原這項變更。",
+      "undoneKept": "之後你自己改過的 {count} 處已保留。",
+      "ideas": "點子",
+      "unquote": "移除引用",
+      "eta": {
+        "under": "通常約 {n} 秒",
+        "guessUnder": "通常大約 {n} 秒",
+        "about": "通常約 {n} 分鐘",
+        "longer": "比平常久一點",
+        "soFar": "已過 {time}"
+      },
+      "step": {
+        "check": {
+          "now": "正在檢查你的文字裡有沒有學生名字",
+          "done": "已檢查你的文字裡有沒有學生名字"
+        },
+        "ai": {
+          "now": "Oomba 正在思考",
+          "done": "Oomba 已回答"
+        },
+        "build": {
+          "now": "正在檢查回答",
+          "done": "已檢查回答"
+        },
+        "save": {
+          "now": "正在儲存",
+          "done": "已儲存"
+        }
+      },
+      "fail": {
+        "error": "Oomba 這次無法回答。沒有任何變更。",
+        "timeout": "Oomba 沒有及時回答。沒有任何變更。",
+        "busy": "Oomba 現在非常忙。沒有任何變更。請幾分鐘後再試。",
+        "resting": "Oomba 現在正在休息,所以沒有任何變更。你可以繼續手動製作,稍後再請 Oomba 幫忙。",
+        "restart": "Oomba 回答前我們的伺服器重新啟動了。沒有任何變更。",
+        "names": "請不要寫學生的名字:名字絕不會送到 AI。沒有送出任何內容。",
+        "words": "你的訊息中有些字詞不被允許。沒有送出任何內容。",
+        "personal": "請不要寫電話號碼、電子郵件、連結和代碼。沒有送出任何內容。",
+        "notFound": "這已經不在了,所以沒有任何變更。"
+      },
+      "err": {
+        "names": "請不要寫學生的名字:名字絕不會送到 AI。你的訊息還在。",
+        "words": "你的訊息中有些字詞不被允許。請修改後再送出。",
+        "personal": "請刪除電話號碼、電子郵件、連結和代碼,然後再送出。",
+        "brief": "請先寫幾個字給 Oomba。",
+        "chatBusy": "Oomba 還在回答你上一則訊息。請稍等。",
+        "otherBusy": "Oomba 還在處理你的另一份學習單。請稍等,再送出這則訊息。",
+        "notFound": "這個帳號現在無法在這裡使用 Oomba。",
+        "notEmpty": "這份學習單已經有題目了。",
+        "tooMany": "你的學習單已達上限。刪除一份後再試一次。",
+        "slow": "一小時內的訊息太多了。請稍等一下再試。",
+        "other": "出了點問題。你的訊息還在:請稍後再試。"
+      }
+    },
+    "figures": {
+      "needText": "請先寫幾個字給 Oomba。",
+      "slow": "一小時內的訊息太多了。請稍等一下再試。",
+      "other": "出了點問題。你的訊息還在:請稍後再試。"
     }
   },
   "favorites": {
@@ -12516,9 +12617,6 @@
     },
     "menu": {
       "pitch": "用於學習單、測驗和簡報的精確等比例圖形。可直接列印，並附上答案的算法。",
-      "buildTitle": "製作學習單",
-      "buildText": "自己挑選圖形，或描述你的需求，讓 AI 草擬題目。每個數字都會檢查，確保每個圖形真的畫得出來。",
-      "draftAi": "用 AI 草擬",
       "scratch": "從頭開始",
       "mine": "我的學習單",
       "noSheets": "還沒有學習單。你做的學習單會出現在這裡。",
@@ -12533,9 +12631,25 @@
       "searchHint": "搜尋圖形，例如圓柱或盒狀圖",
       "count": "{count, plural, other {# 種圖形}}",
       "nothing": "沒有符合的圖形。試試別的字詞或年級。",
-      "buildTest": "製作測驗",
-      "buildTestText": "整份圖形題測驗，可由 AI 起草或自己動手做。",
-      "isTest": "測驗"
+      "isTest": "測驗",
+      "describeTitle": "製作學習單或測驗",
+      "describeText": "說出你需要什麼。Oomba 會擬好題目,Figures 會畫出每個圖形並算出每個答案,你還可以在聊天中繼續調整。",
+      "describeLabel": "描述你需要什麼",
+      "describeHint": "描述你需要什麼,例如:四年級,長方形的面積和周長,8 題,兩題文字題",
+      "makeA": "製作",
+      "worksheet": "學習單",
+      "test": "測驗",
+      "grade": "年級",
+      "anyGrade": "不限",
+      "gradeN": "{grade} 年級",
+      "draftIt": "開始擬稿",
+      "privacy": "只有這些文字會送到 AI。請不要寫學生的名字:名字絕不會送到 AI。",
+      "blankTest": "空白測驗",
+      "readyTitle": "「{title}」完成了。",
+      "readyText": "你不在時 Oomba 已完成:{count} 題。",
+      "readyFailed": "Oomba 無法完成「{title}」。打開它再試一次。",
+      "readyOpen": "打開",
+      "readyDismiss": "關閉"
     },
     "sheet": {
       "newTitle": "新學習單",

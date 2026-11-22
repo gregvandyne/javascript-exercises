@@ -64,7 +64,8 @@ test('a Figure step built by hand in the lesson editor, saved to the lesson, pri
   await Promise.all([t.page.waitForURL(/\/figures\/worksheets\//), t.page.click('#add-step button[type="submit"]')]);
   // The builder, by hand: the Math tab, a rectangle, its question.
   await t.page.waitForSelector('#fg-save-lesson');
-  if (await t.page.isChecked('#fg-ai')) await t.page.click('#fg-ai');
+  // Built by hand: Oomba's chat (open on an empty set) is closed first.
+  if (await t.page.isVisible('#oc')) await t.page.click('#oc [data-c="close"]');
   await t.page.click('[data-pick="math"]');
   await t.page.selectOption('#fg-addkind', 'rectangle');
   await Promise.all([t.page.waitForResponse(r => /\/items$/.test(r.url())), t.page.click('[data-act="add"]')]);
@@ -98,26 +99,23 @@ test('a Figure step built by hand in the lesson editor, saved to the lesson, pri
 });
 
 test('Build a test with AI on and off, edit it, assign with dates, the student does it', { skip }, async () => {
-  F.hooks.create = async () => ({ model: 'mock', usage: { input_tokens: 10, output_tokens: 10 }, content: [{ type: 'text', text: JSON.stringify({ title: 'Forces on a ramp', items: [
-    { gen: 'freeBody', kind: '', question: '', data: '', answerType: 'number', answerKey: '', choices: [], correct: 0 },
-    { gen: 'inclinedPlane', kind: '', question: '', data: '', answerType: 'number', answerKey: '', choices: [], correct: 0 },
-    { gen: 'pulley', kind: '', question: '', data: '', answerType: 'number', answerKey: '', choices: [], correct: 0 },
-    { gen: 'vectors', kind: '', question: '', data: '', answerType: 'number', answerKey: '', choices: [], correct: 0 },
+  // Oomba's chat drafts the test from the menu's "Describe what you need" (Test), mostly from the generators.
+  F.hooks.create = async () => ({ model: 'mock', usage: { input_tokens: 10, output_tokens: 10 }, content: [{ type: 'text', text: JSON.stringify({ reply: 'Here is a test on forces.', title: 'Forces on a ramp', edits: [
+    { op: 'add', item: { gen: 'freeBody' } }, { op: 'add', item: { gen: 'inclinedPlane' } }, { op: 'add', item: { gen: 'pulley' } }, { op: 'add', item: { gen: 'vectors' } },
   ] }) }] });
   try {
     F.setAiPref(boss, true);
     const t = await open(boss, '/figures');
-    await Promise.all([t.page.waitForURL(/\/figures\/tests\/new/), t.page.click('a[href="/figures/tests/new"]')]);
-    await t.page.waitForSelector('#fg-topic');
-    assert.ok(await t.page.isChecked('#fg-ai'));
-    await t.page.fill('#fg-topic', 'Forces on ramps and pulleys');
-    await t.page.selectOption('#fg-grade', '9');
-    await t.page.selectOption('#fg-subject', 'physics');
-    await t.page.selectOption('#fg-count', '4');
-    await Promise.all([t.page.waitForResponse(r => /\/draft-test$/.test(r.url()) && r.status() === 200), t.page.click('[data-act="draftTest"]')]);
+    assert.ok(await t.page.isVisible('a[href="/figures/tests/new"]'), 'a blank test by hand is one link away');
+    await t.page.check('input[name="purpose"][value="test"]');
+    await t.page.fill('#fgd-in', 'Forces on ramps and pulleys');
+    await t.page.selectOption('#fgd-grade', '9');
+    await Promise.all([t.page.waitForURL(/\/figures\/worksheets\/[^/?#]+/), t.page.click('#fgd-go')]);
     await t.page.waitForSelector('.fg-item:nth-child(4)');
-    assert.match(await t.page.textContent('#fg-note'), /Check every question before you assign it/);
+    await t.page.waitForSelector('.oc-change');
+    assert.match(await t.page.textContent('.oc-change'), /Added 4 questions/);
     assert.equal(await t.page.inputValue('#fg-title'), 'Forces on a ramp');
+    assert.equal(await t.page.inputValue('#fg-grade'), '9');
     await shot(t.page, 'build-test-ai-on');
     const id = /\/figures\/worksheets\/([^/?#]+)/.exec(t.page.url())[1];
     assert.equal(F.ownWorksheet(boss, id).purpose, 'test');
@@ -137,10 +135,9 @@ test('Build a test with AI on and off, edit it, assign with dates, the student d
     await t.page.waitForSelector('dialog.ob-dialog[open]');
     await Promise.all([t.page.waitForResponse(r => /\/delete$/.test(r.url())), t.page.click('dialog.ob-dialog [data-ob="ok"]')]);
     await t.page.waitForFunction(() => document.querySelectorAll('.fg-item').length === 3);
-    // AI off: the same builder by hand (remembered for next time).
-    await Promise.all([t.page.waitForResponse(r => /\/prefs$/.test(r.url())), t.page.click('#fg-ai')]);
-    assert.ok(await t.page.isHidden('#fg-aibox'));
-    assert.ok(await t.page.isVisible('#fg-hand'));
+    // Oomba closed: the same builder by hand (remembered for next time).
+    await Promise.all([t.page.waitForResponse(r => /\/prefs$/.test(r.url())), t.page.click('#fg-oomba')]);
+    assert.ok(await t.page.isHidden('#oc'));
     assert.equal(F.aiPref(boss), false);
     await t.page.click('[data-pick="math"]');
     await t.page.selectOption('#fg-addkind', 'triangle');
