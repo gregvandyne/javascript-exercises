@@ -1895,6 +1895,14 @@ function menuItems(r) {
 }
 /** Where a row's title goes: on the All boards page, back to the manipulatives page with it open. */
 const openRow = hash => { if (ALL_PAGE) location.href = `/manipulatives#${hash}`; else location.hash = hash; };
+/** Which tool groups on the All boards page are open ('tpl:clock', 'recent:money'...): this browser's, best effort
+ *  (all closed without storage; the page still works, remembering only until it is left). */
+const GROUPS_KEY = 'manip.allBoards.open';
+function groupOpen() {
+  if (!groupOpen.set) { let v = []; try { v = JSON.parse(localStorage.getItem(GROUPS_KEY) || '[]'); } catch { v = []; } groupOpen.set = new Set(Array.isArray(v) ? v.filter(x => typeof x === 'string').slice(0, 100) : []); }
+  return groupOpen.set;
+}
+function saveGroupOpen() { try { localStorage.setItem(GROUPS_KEY, JSON.stringify([...groupOpen()])); } catch { /* no storage: open for this visit only */ } }
 /** My boards: on the home the newest HOME_MAX of each section (manip-library.js homeLists) and, when any are left out,
  *  one "See all boards" link; on the All boards page every one, grouped by tool (byTool). The same rows and ⋯ menu. */
 function drawBoards() {
@@ -1912,17 +1920,20 @@ function drawBoards() {
       <span class="mp-bmore"><button type="button" class="mp-more" data-more="${i}" aria-haspopup="menu" aria-expanded="false" aria-label="${esc(t('js.manip.boards.more', { title: r.title }))}">⋯</button><span class="mp-bmenu panel" role="menu" hidden>${menuItems(r)}</span></span></li>`;
   };
   const ul = list => `<ul class="plain mp-blist">${list.map(row).join('')}</ul>`;
-  // The All boards page: a small heading per tool (its icon, name and count), the most recently used tool first.
-  const byToolHtml = list => byTool(list).map(g => { const x = toolOf(g.tool);
-    return `<section class="mp-tgroup" data-tool="${esc(g.tool)}"><h4 class="mp-tname"><span class="mp-ico xs" style="--tc:${x ? x.color : '#888'}">${toolIconHtml(g.tool, { size: 20, lazy: true })}</span>${esc(x ? x.name : g.tool)} <span class="small muted">${esc(t('js.manip.boards.count', { n: g.rows.length }))}</span></h4>${ul(g.rows)}</section>`; }).join('');
+  // The All boards page: one disclosure per tool (its icon, name and count), the most recently used tool first; closed
+  // until the teacher opens it, and kept open or closed as they left it (groupOpen). Opening one draws nothing again,
+  // so each row's data-i stays its place in `all`.
+  const byToolHtml = (list, sec) => byTool(list).map(g => { const x = toolOf(g.tool), key = `${sec}:${g.tool}`;
+    return `<details class="mp-tgroup" data-tool="${esc(g.tool)}" data-key="${esc(key)}"${groupOpen().has(key) ? ' open' : ''}><summary class="mp-tname"><span class="mp-ico xs" style="--tc:${x ? x.color : '#888'}">${toolIconHtml(g.tool, { size: 20, lazy: true })}</span>${esc(x ? x.name : g.tool)} <span class="small muted">${esc(t('js.manip.boards.count', { n: g.rows.length }))}</span><span class="mp-caret" aria-hidden="true"></span></summary>${ul(g.rows)}</details>`; }).join('');
   const head = (title, sub) => `<h3 class="mp-group">${esc(title)} <span class="small muted">· ${esc(sub)}</span></h3>`;
   const group = (list, title, sub) => (list.length ? head(title, sub) + ul(list) : '');
   if (ALL_PAGE) {
     const rest = rows.templates.length - templates.length;
-    el.innerHTML = `<section class="mp-bsec" id="mp-alltpl">${head(t('js.manip.boards.templates'), t('js.manip.boards.templatesSub'))}${templates.length ? byToolHtml(templates) : `<p class="small muted mp-bempty">${esc(t('js.manip.boards.noTemplates'))}</p>`}
+    el.innerHTML = `<section class="mp-bsec" id="mp-alltpl">${head(t('js.manip.boards.templates'), t('js.manip.boards.templatesSub'))}${templates.length ? byToolHtml(templates, 'tpl') : `<p class="small muted mp-bempty">${esc(t('js.manip.boards.noTemplates'))}</p>`}
       ${rest > 0 ? `<p class="mp-ball"><button type="button" class="btn btn-sm" id="mp-moretpl">${esc(t('js.manip.boards.showAllTemplates', { n: rows.templates.length }))}</button></p>` : ''}</section>
-      <section class="mp-bsec" id="mp-allrecent">${head(t('js.manip.boards.recent'), t('js.manip.boards.recentSub'))}${recent.length ? byToolHtml(recent) : `<p class="small muted mp-bempty">${esc(t('js.manip.boards.noRecent'))}</p>`}</section>`;
+      <section class="mp-bsec" id="mp-allrecent">${head(t('js.manip.boards.recent'), t('js.manip.boards.recentSub'))}${recent.length ? byToolHtml(recent, 'recent') : `<p class="small muted mp-bempty">${esc(t('js.manip.boards.noRecent'))}</p>`}</section>`;
     const more = document.getElementById('mp-moretpl'); if (more) more.onclick = () => { drawBoards.allTpl = true; drawBoards(); };
+    for (const d of el.querySelectorAll('details.mp-tgroup')) d.ontoggle = () => { const open = groupOpen(); if (d.open) open.add(d.dataset.key); else open.delete(d.dataset.key); saveGroupOpen(); };
   } else {
     el.innerHTML = templates.length + recent.length ? group(templates, t('js.manip.boards.templates'), t('js.manip.boards.templatesSub')) + group(recent, t('js.manip.boards.recent'), t('js.manip.boards.recentSub'))
       + (home.more ? `<p class="mp-ball"><a href="/manipulatives/boards">${esc(t('js.manip.boards.seeAll', { n: home.total }))}</a></p>` : '')

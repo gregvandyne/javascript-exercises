@@ -10320,6 +10320,10 @@ weren't saved at all unless the teacher pressed Save, which made a new share cod
   and the retention rules are unchanged. The state gives every template with ?all=1 and the template count always
   (public/js/manip-library.js homeLists and byTool). Tests: tests/unit/manip-boards-page.test.js and
   tests/unit/manip-boards-page-browser.test.js.
+  Each tool group on the page is a native <details> disclosure (its icon, name, count and a chevron), all closed at
+  first so the page starts short; which ones the teacher opened is kept in this browser's localStorage (best effort:
+  without storage they start closed and still open and close). Opening one draws nothing again, so the ⋯ menu still
+  acts on its own row.
 - **Rooms and recess.** No Pause button: leaving the page already keeps a room live, and each student's square
   (manip_work.slot) comes back when they join again. An ended room can be reopened from My boards or from its own ⋯
   menu, with the same join code and every square as it was; its 12 hours count from the reopening

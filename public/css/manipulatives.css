@@ -546,8 +546,13 @@ html:has(main.rm-main),body:has(main.rm-main){overflow:hidden;overscroll-behavio
 .mp-ball{margin:10px 0 0;font-size:.9rem;font-weight:700}
 /* All boards (/manipulatives/boards): each section grouped by tool */
 .mp-bsec+.mp-bsec{margin-top:20px}
-.mp-tgroup{margin-top:6px}
-.mp-tname{display:flex;align-items:center;gap:8px;margin:12px 0 0;font-size:.95rem;font-weight:800}
+.mp-tgroup{margin-top:2px}
+.mp-tname{display:flex;align-items:center;gap:8px;margin:0;padding:8px 0;min-height:44px;font-size:.95rem;font-weight:800;cursor:pointer;list-style:none;border-bottom:1px solid var(--line)}
+.mp-tname::-webkit-details-marker{display:none}
+.mp-caret{margin-inline-start:auto;width:10px;height:10px;border-inline-end:2px solid currentColor;border-block-end:2px solid currentColor;transform:rotate(45deg);transition:transform .2s ease;margin-inline-end:8px}
+.mp-tgroup[open]>.mp-tname .mp-caret{transform:rotate(-135deg)}
+.mp-tgroup[open]>.mp-tname{border-bottom:0}
+.mp-tgroup>.mp-blist{padding-inline-start:4px}
 .mp-ico.xs{width:26px;height:26px;font-size:.8rem}
 .mp-bempty{margin:6px 0 0}
 .mp-mi{text-align:start;min-height:44px;padding:0 12px;border:0;border-radius:8px;background:none;font:700 .95rem var(--font);color:var(--text);cursor:pointer}
