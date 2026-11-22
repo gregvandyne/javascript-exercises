@@ -3506,7 +3506,9 @@
       "allSteps": "كل الخطوات",
       "thisStep": "هذه الخطوة فقط",
       "hideSteps": "إخفاء الخطوات",
-      "showSteps": "إظهار الخطوات"
+      "showSteps": "إظهار الخطوات",
+      "checkResult": "{right} من {total} صحيحة. حاول مرة أخرى في الباقي.",
+      "checkAll": "{total, plural, one {كلها صحيحة!} other {كلها صحيحة: #!}}"
     },
     "figures-editor": {
       "undo": "تراجع",

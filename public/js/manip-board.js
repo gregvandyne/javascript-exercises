@@ -298,13 +298,20 @@ export function spotIn(boxes, w, h, region) {
  * run (left-aligned with it) when the row would leave the region (the part of the board on screen, or the square).
  * When that last piece sits in an object's slot (a frame's cell, a chart's column), a piece of the same kind fills that
  * object's next free slot first. Nothing before (or the last piece is gone): the region's first free spot.
- * last: { id, runX } | null. -> { x, y, runX }
+ * A place-value chart is in the way of both (a block is never dropped on its heading, nor into a column it happens to
+ * land in, where it could be traded): the first block goes beside or under the chart; a block of the same value as the
+ * one before it follows that one into its column (manip-pv.js sameValueHome, before this).
+ * last: { id, runX } | null. -> { x, y, runX, full } (full: no free spot was left in the region; the place is a
+ * fallback that may cover something: manip-pv.js paletteAdd then tries the chart's column for the block's value)
  */
 export const ROW_GAP = 6;
 export function nextPieceSpot(slug, b, d, region, last) {
   const pieces = b.pieces || [], L = last && pieces.find(p => p.id === last.id);
-  const obstacles = [...pieces.map(p => ({ x: p.x, y: p.y, w: p.w, h: p.h })), ...(b.objects || []).filter(o => !UNDER.has(o.k)).map(o => objRect(slug, o))];
-  const free = (x, y) => !obstacles.some(o => x < o.x + o.w + ROW_GAP - 1 && x + d.w + ROW_GAP - 1 > o.x && y < o.y + o.h + ROW_GAP - 1 && y + d.h + ROW_GAP - 1 > o.y);
+  const charts = (b.objects || []).filter(o => o.k === 'pv-chart').map(o => ({ ...objRect(slug, o), head: OBJ_HEAD * num(o.s, 1) }));
+  const inSlots = [...pieces.map(p => ({ x: p.x, y: p.y, w: p.w, h: p.h })), ...(b.objects || []).filter(o => !UNDER.has(o.k)).map(o => objRect(slug, o))];
+  const obstacles = [...charts, ...inSlots];   // charts first: a full region's fallback steps on from the last piece
+  const clearOf = list => (x, y) => !list.some(o => x < o.x + o.w + ROW_GAP - 1 && x + d.w + ROW_GAP - 1 > o.x && y < o.y + o.h + ROW_GAP - 1 && y + d.h + ROW_GAP - 1 > o.y);
+  const free = clearOf(obstacles), freeInSlot = clearOf(inSlots);
   const inside = (x, y) => x >= region.x && y >= region.y && x + d.w <= region.x + region.w && y + d.h <= region.y + region.h;
   if (L) {
     const cx = L.x + L.w / 2, cy = L.y + L.h / 2;
@@ -318,7 +325,7 @@ export function nextPieceSpot(slug, b, d, region, last) {
         if (next) return { x: Math.round(next.x + (next.w - d.w) / 2), y: Math.round(next.y + (next.h - d.h) / 2), runX: last.runX };
       } else {
         const x = Math.round(sl.x + (sl.w - d.w) / 2);
-        for (let y = L.y + L.h + 4; y + d.h <= sl.y + sl.h; y += 4) if (free(x, y)) return { x, y: Math.round(y), runX: last.runX };
+        for (let y = L.y + L.h + 4; y + d.h <= sl.y + sl.h; y += 4) if (freeInSlot(x, y)) return { x, y: Math.round(y), runX: last.runX };
       }
     }
     // The row: right of the last piece, centers lined up; wrap under the run's start.
@@ -331,8 +338,10 @@ export function nextPieceSpot(slug, b, d, region, last) {
       x += 4;
     }
   }
-  const at = spotIn(obstacles, d.w, d.h, region);
-  return { x: at.x, y: at.y, runX: at.x };
+  const at = spotIn(obstacles, d.w, d.h, region), full = !(inside(at.x, at.y) && free(at.x, at.y));
+  // A full region: spotIn's fallback may still land on a chart; then under it (never on its heading).
+  for (const c of charts) if (at.x < c.x + c.w && at.x + d.w > c.x && at.y < c.y + c.head && at.y + d.h > c.y) at.y = Math.round(c.y + c.h + ROW_GAP);
+  return { x: at.x, y: at.y, runX: at.x, ...(full ? { full: true } : {}) };
 }
 /** A new object in the next free spot of region, made smaller if it does not fit (never below S_MIN). -> object */
 export function placeObject(slug, b, k, region, space) {

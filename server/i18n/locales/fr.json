@@ -3505,7 +3505,9 @@
       "allSteps": "Toutes les étapes",
       "thisStep": "Cette étape seulement",
       "hideSteps": "Masquer les étapes",
-      "showSteps": "Afficher les étapes"
+      "showSteps": "Afficher les étapes",
+      "checkResult": "{right} sur {total} justes. Réessaie les autres.",
+      "checkAll": "{total, plural, one {Tout est juste !} other {Les # sont justes !}}"
     },
     "figures-editor": {
       "undo": "Annuler",

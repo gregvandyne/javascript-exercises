@@ -3505,7 +3505,9 @@
       "allSteps": "Все шаги",
       "thisStep": "Только этот шаг",
       "hideSteps": "Скрыть шаги",
-      "showSteps": "Показать шаги"
+      "showSteps": "Показать шаги",
+      "checkResult": "Верно {right} из {total}. Попробуй ещё раз остальные.",
+      "checkAll": "{total, plural, one {Всё верно!} few {Все # верно!} many {Все # верно!} other {Все # верно!}}"
     },
     "figures-editor": {
       "undo": "Отменить",

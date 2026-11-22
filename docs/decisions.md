@@ -10950,3 +10950,29 @@ a student see it? I am thinking we need to put the steps on the actual board."
   the board, 44 px targets, no sideways scroll, ◀ ▶, All steps, fold, the editor; another teacher's share code; no
   steps, one step; Hebrew; a live square and a pushed board show step 1 only; a new chart locked, a drag pans, its
   wheel holds only Unlock).
+
+## Virtual math manipulatives: live room fixes from the promo shoot (22 Nov 2026)
+
+- **The teacher's ⋯ menu** is capped to the room (`max-height` under the bar). Its body (switches, the "Answers
+  checked" list) scrolls; the session's action (End session, or Reopen room) is pinned at its foot, so it is always in
+  reach with a class of any size. The mouse wheel over the menu or the hands list scrolls it instead of zooming. On a
+  phone the teacher's step buttons take a second line of the bar, so the ⋯ button stays on screen.
+- **The room's height:** `main.rm-main` is a column exactly as tall as the screen under the site's bar (and above the
+  tab bar on a phone); whatever sits above the room in it (the "Teaching tools" bar, a notice) takes its own height and
+  the room the rest. Fit may zoom out below the usual 12% (to 4%) so a big class shows whole on a phone; the − button
+  never zooms out further than Fit went.
+- **The deck's step is kept with the session:** the teacher's area JSON (`manip_sessions.room`) holds `__deckAt`
+  ({ cur, pace, mine }), written whenever the step, the pace switch or a student's own step changes, and loaded into
+  memory (services/manip-live.js `loadStep`) on the first read of a running room. A reopened room, or one after a
+  restart, is back on the same step. The key is the server's own: never sent to a page, never taken from one. No
+  migration.
+- **"Check my answers":** everything right says "All N right!" (`checkAll`, a plural); otherwise "R of N right. Try
+  again on the others." In every language the room has strings in.
+- **Tap to add with a place-value chart** (the solo board and a live square alike, `manip-pv.js paletteAdd`): the chart
+  counts as in the way for the next free spot, so a block never lands on its heading or falls into a column by chance;
+  the same value as the last block still follows it into its column (#506). When the region has no free spot left (a
+  square the chart fills), the block goes into the chart's column for its value (a rod: Tens); with no such column,
+  under the chart.
+- **Tests:** `manipulatives.test.js` (the step through end, reopen and a restart; the toast strings in every locale),
+  `manip-pv.test.js` (placement in a square with a chart), `manip-room-browser.test.js` (1440 x 900 and iPhone 13: the
+  menu with 16 checked, Fit with 16 squares, the toast, tap placement in a student's square).

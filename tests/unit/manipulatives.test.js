@@ -761,6 +761,67 @@ test('the deck of steps: saved with the board, through share codes, push and ses
   } finally { ws.terminate(); server.off('upgrade', listener); }
 });
 
+test('the deck\'s step is kept with the session: a reopened room (and one after a restart) is back on the same step, pace and students\' own steps too', async () => {
+  const LIVE = await import('../../server/services/manip-live.js');
+  const w = world();
+  const b = M.saveBoard(boss, { tool: 'base-ten-blocks', title: 'Keep my step', state: { pieces: [], __steps: [{ id: 'a', text: 'One' }, { id: 'b', text: 'Two' }, { id: 'c', text: 'Three' }] } }).board;
+  const s = M.createSession(boss, { classId: w.A.id, boardId: b.id }).session;
+  M.join(w.a1, { code: s.code }); M.join(w.a2, { code: s.code });
+  const room = who => as(who)(`/api/manipulatives/live/${s.id}/room`);
+  const step = (who, body) => as(who)(`/api/manipulatives/live/${s.id}/step`, { method: 'POST', body });
+  assert.equal((await step(boss, { to: 1 })).status, 200);
+  assert.equal((await room(boss)).json.room.deck.cur, 1);
+  // Stored with the session (the teacher's area), never sent to a page, never taken from one.
+  const stored = () => JSON.parse(M.getSession(s.id).room)[M.DECK_AT];
+  assert.equal(stored().cur, 1);
+  for (const who of [boss, w.a1]) assert.doesNotMatch((await room(who)).text, /__deckAt/);
+  const t = JSON.parse((await room(boss)).json.room.teacher.state);
+  assert.equal(M.saveArea(boss, s.id, 't', { ...t, v: 2, [M.DECK_AT]: { cur: 0, pace: false, mine: {} } }).ok, true);
+  assert.equal(stored().cur, 1, 'a save of the teacher\'s area keeps the stored step as it was');
+  assert.equal(M.saveArea(w.a1, s.id, w.a1.id, { v: 2, pieces: [], [M.DECK_AT]: { cur: 2 } }).ok, true);
+  assert.equal(JSON.parse(q.get('SELECT state FROM manip_work WHERE session_id=? AND user_id=?', s.id, w.a1.id).state)[M.DECK_AT], undefined, 'never in a square');
+  // End, reopen: the teacher and the students are back on step 2 of 3 (the bar's "Step 2 of 3"), not step 1.
+  assert.equal(M.end(boss, s.id).ok, true);
+  assert.equal(LIVE._rooms.has(s.id), false, 'the running room is forgotten when it ends');
+  assert.equal((await room(boss)).json.room.deck.cur, 1, 'an ended room shows the step it ended on');
+  assert.equal(M.reopen(boss, s.id).ok, true);
+  assert.equal((await room(boss)).json.room.deck.cur, 1);
+  assert.equal((await room(w.a1)).json.room.deck.cur, 1);
+  assert.deepEqual((await room(w.a1)).json.room.deck.list.map(x => x.text), ['One', 'Two'], 'a student still gets no later step');
+  // Their own pace, with a student ahead: kept as well, through a restart (the memory gone, the session running).
+  await as(boss)(`/api/manipulatives/live/${s.id}/pace`, { method: 'POST', body: { on: true } });
+  assert.equal((await step(w.a1, { dir: 1 })).status, 200);
+  LIVE._rooms.delete(s.id);
+  let tr = (await room(boss)).json.room;
+  assert.deepEqual([tr.deck.cur, tr.deck.pace, tr.deck.mine[w.a1.id], tr.deck.mine[w.a2.id]], [1, true, 2, 1]);
+  assert.equal((await room(w.a1)).json.room.deck.cur, 2);
+  // A pushed board starts its own deck at its first step, and that is kept too.
+  const b2 = M.saveBoard(boss, { tool: 'base-ten-blocks', state: { pieces: [], __steps: [{ id: 'p', text: 'Pushed one' }, { id: 'q', text: 'Pushed two' }] } }).board;
+  assert.equal(M.push(boss, s.id, b2.id).ok, true);
+  assert.equal(stored().cur, 0);
+  M.end(boss, s.id); M.reopen(boss, s.id);
+  tr = (await room(boss)).json.room;
+  assert.deepEqual([tr.deck.total, tr.deck.cur], [2, 0]);
+  M.end(boss, s.id);
+});
+
+test('"Check my answers" says so when everything is right; otherwise how many and "Try again on the others" (every language the room speaks)', async () => {
+  const { translate, CODES } = await import('../../server/i18n/index.js');
+  assert.equal(translate('en', 'js.manip-room.checkAll', { total: 1 }), 'All 1 right!');
+  assert.equal(translate('en', 'js.manip-room.checkAll', { total: 4 }), 'All 4 right!');
+  assert.equal(translate('en', 'js.manip-room.checkResult', { right: 3, total: 4 }), '3 of 4 right. Try again on the others.');
+  // The page picks the message: all right never says "Try again".
+  const src = fs.readFileSync(path.join(ROOT, 'public/js/manip-room.js'), 'utf8');
+  assert.match(src, /r\.right >= r\.total \? t\('js\.manip-room\.checkAll', \{ total: r\.total \}\) : t\('js\.manip-room\.checkResult'/);
+  for (const code of CODES) {
+    const all = translate(code, 'js.manip-room.checkAll', { total: 1 }), some = translate(code, 'js.manip-room.checkResult', { right: 3, total: 4 });
+    assert.ok(!/[{}]/.test(all) && !/[{}]/.test(some), `${code}: ${all} / ${some}`);
+    assert.notEqual(all, some, code);
+    assert.match(some, /3/); assert.match(some, /4/);
+    assert.ok(!/\u2014/.test(all + some), `${code}: no em dash`);
+  }
+});
+
 test('raised hands never reach classmates\' sockets: a student\'s socket carries their own hand only', async () => {
   const { WebSocket } = await import('ws');
   const { attachUpgrades } = await import('../../server/services/upgrade.js');

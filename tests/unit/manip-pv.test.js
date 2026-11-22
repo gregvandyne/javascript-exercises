@@ -311,3 +311,52 @@ test('a block whose middle is in the gap between two columns belongs to the near
   // Outside the chart (past the outer edge, or above it): no column.
   assert.equal(columnOf(cols, make(def(BT, 'unit'), ones.x + ones.w + 20, ones.y + 10)), null);
 });
+
+// ---------------------------------------------------------------- tap to add with a chart in a live room's square
+test('a palette add with a chart there (a live room\'s square, the solo board): never on the chart\'s heading; beside or under it while there is room, else its column for the value; the next ones follow', async () => {
+  const { paletteAdd, valueHome } = await import('../../public/js/manip-pv.js');
+  const { OBJ_HEAD, objRect, nextPieceSpot } = await import('../../public/js/manip-board.js');
+  const PV3 = ['Hundreds', 'Tens', 'Ones'];
+  // A student's square as a pushed board leaves it (480 x 360 for base-ten blocks, less under a strip): the chart in
+  // its top left corner (fitInto's padding).
+  const square = (w, h, s) => ({ space: { w, h }, st: { v: 2, objects: [chart(PV3, { x: 12, y: 12, s })], pieces: [] } });
+  const add = (q, kind, last) => { const r = paletteAdd(BT, q.st, def(BT, kind), { x: 0, y: 0, ...q.space }, last, make, q.space); q.st.pieces.push(r.p); settle(BT, q.st); return r; };
+  const headOf = q => { const o = q.st.objects[0], r = objRect(BT, o); return { x: r.x, y: r.y, w: r.w, h: OBJ_HEAD * o.s }; };
+  const onChart = (q, p) => overlaps(pieceBox(p), objRect(BT, q.st.objects[0]));
+  // Room to spare under the chart: the first unit and rod go there (not on the heading, not into a column), in a row.
+  const big = square(560, 520, 1);
+  let r = add(big, 'unit', null);
+  assert.ok(!onChart(big, r.p), `first unit beside or under the chart: ${JSON.stringify([r.p.x, r.p.y])}`);
+  r = add(big, 'unit', r.last);
+  assert.ok(!onChart(big, r.p), 'the next unit too');
+  const units = big.st.pieces; assert.equal(Math.round(units[0].y + units[0].h / 2), Math.round(units[1].y + units[1].h / 2), 'in a row');
+  assert.ok(!overlaps(pieceBox(units[0]), pieceBox(units[1])));
+  // A square the chart fills (the room's square for base-ten blocks): no free spot for a rod. It goes into Tens, never
+  // onto the heading (the bug: it was stacked over the chart's top left corner), and the next rods follow it there.
+  for (const [w, h, s] of [[480, 360, 1], [480, 320, 1]]) {
+    const q = square(w, h, s);
+    assert.equal(nextPieceSpot(BT, q.st, def(BT, 'rod'), { x: 0, y: 0, w, h }, null).full, true, 'no room outside the chart');
+    let last = null;
+    for (let i = 1; i <= 4; i++) {
+      const a = add(q, 'rod', last); last = a.last;
+      assert.ok(!overlaps(pieceBox(a.p), headOf(q)), `rod ${i} not on the heading`);
+      assert.deepEqual(kindsIn(BT, q.st, 'Tens'), Array(i).fill('rod'), `rod ${i} in Tens (${w}x${h} at ${s})`);
+      assert.deepEqual(kindsIn(BT, q.st, 'Hundreds'), []);
+      assertTidy(BT, q.st, `rod ${i}`);
+    }
+    assert.equal(totalOf(BT, q.st), 40, 'nothing traded');
+    // A unit after the rods: another value; a unit fits under the chart, so there (not forced into a column).
+    const u = add(q, 'unit', last);
+    assert.ok(!overlaps(pieceBox(u.p), headOf(q)));
+  }
+  // A full square and a value the chart has no column for: under the chart (kept inside the square), never its heading.
+  const q = square(480, 360, 1); q.st.objects[0].st.cols = ['Hundreds', 'Ones'];
+  const c = add(q, 'rod', null);
+  assert.equal(valueHome(BT, q.st, def(BT, 'rod')), null);
+  assert.ok(!overlaps(pieceBox(c.p), headOf(q)), JSON.stringify([c.p.x, c.p.y]));
+  assert.ok(c.p.y + c.p.h <= 360 + 0.01);
+  // Without a chart nothing changes: the region's first free spot.
+  const plain = { v: 2, objects: [], pieces: [] };
+  const p0 = paletteAdd(BT, plain, def(BT, 'unit'), { x: 0, y: 0, w: 480, h: 360 }, null, make, { w: 480, h: 360 }).p;
+  assert.deepEqual([p0.x, p0.y], [16, 16]);
+});

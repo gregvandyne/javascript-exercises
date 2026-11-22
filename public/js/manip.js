@@ -16,9 +16,9 @@ import * as ROOM from '/js/manip-room.js';
 import { PAGE_TEMPLATES, homeLists, byTool } from '/js/manip-library.js';
 import { stepsOf } from '/js/manip-data.js';
 import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSector, addMinutes, migrate, newBoard, boxesOf, bbox, spotIn, placeObject,
-  slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, S_MIN, S_FLOOR, S_MAX, OBJ_MAX, OBJ_HEAD, UNDER, parseFrac, EQ_BAR,
+  slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, S_MIN, S_FLOOR, S_MAX, OBJ_MAX, OBJ_HEAD, UNDER, parseFrac, EQ_BAR,
   snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, TEXT_SIZES, textFont, stepTextSize, textResize, textRect, snapBox, textBoxFields, xyRange, xyLines, xySnap, xyMoveLine } from '/js/manip-board.js';
-import { settleCharts, chartInfo, strayIds, inChart, homeFor, placeAtHome, columnHome, sameValueHome } from '/js/manip-pv.js';
+import { settleCharts, chartInfo, strayIds, inChart, homeFor, placeAtHome, columnHome, paletteAdd } from '/js/manip-pv.js';
 import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP } from '/js/manip-wheel.js';
 import * as CHAT from '/js/manip-chat.js';
 
@@ -879,12 +879,11 @@ function fit() {
 /** A new piece from the palette: right after the last one added (manip-board.js nextPieceSpot), in the part of the
  *  board on screen; never on another piece or object. */
 function placePiece(st, d) {
-  // The block before it went into a chart's column and this one is worth the same: into that column too.
-  const home = sameValueHome(V.tool.slug, st, V.lastAdd, d);
-  if (home) { const p = mkPiece(d, 0, 0); placeAtHome(home, [p], WORLD); V.lastAdd = { id: p.id, runX: p.x }; return p; }
-  const at = nextPieceSpot(V.tool.slug, st, d, viewRegion(), V.lastAdd), p = mkPiece(d, at.x, at.y);
-  V.lastAdd = { id: p.id, runX: at.runX };
-  return p;
+  // The last block's column when this one is worth the same, else the next free spot in view (never on a chart), else
+  // the chart's column for its value (manip-pv.js paletteAdd; a live room's square places the same way).
+  const r = paletteAdd(V.tool.slug, st, d, viewRegion(), V.lastAdd, mkPiece, WORLD);
+  V.lastAdd = r.last;
+  return r.p;
 }
 function noteHtml(n, i, readOnly) {
   if (!readOnly && V.editing === n.id) {
