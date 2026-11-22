@@ -161,7 +161,11 @@ export function stepPrintHtml(u, stepId, { t = tEn, lang = 'en', dir = 'ltr', ke
 
 // ---------------------------------------------------------------- reading a step
 /** The step's questions ([] when unreadable). */
-export const itemsOf = step => { try { const x = JSON.parse((step && step.items) || '[]'); return Array.isArray(x) ? x : []; } catch { return []; } };
+export const itemsOf = step => {
+  let x = []; try { x = JSON.parse((step && step.items) || '[]'); } catch { x = []; }
+  // A snapshot saved before currency went first keeps "125 $"; it shows as "$125".
+  return Array.isArray(x) ? x.map(it => (it && typeof it.answer === 'string' ? { ...it, answer: F.shownAnswer(it.answer) } : it)) : [];
+};
 /** What the student typed, one string per question. */
 export const answersOf = (row, n) => { let a = []; try { a = JSON.parse((row && row.answer) || '[]'); } catch { a = []; } if (!Array.isArray(a)) a = []; return Array.from({ length: n }, (_, i) => (typeof a[i] === 'string' ? a[i] : '')); };
 /** Has the student handed in? */
@@ -194,7 +198,7 @@ const DIGITS = { '٠': 0, '١': 1, '٢': 2, '٣': 3, '٤': 4, '٥': 5, '٦': 6, 
 export function readNumber(text) {
   let s = String(text || '').replace(/[²³]/g, '').normalize('NFKC').replace(/[٠-٩۰-۹]/g, ch => String(DIGITS[ch])).replace(/٫/g, '.').replace(/٬/g, '')
     .replace(/[−–‐]/g, '-').replace(/[\s   ]+/g, '');
-  s = s.replace(/^[a-zA-Z]{1,3}=/, '');
+  s = s.replace(/^[a-zA-Z]{1,3}=/, '').replace(/^([-+]?)[$€£¥₹]/, '$1');
   const m = /^([-+]?)(\d[\d.,]*|[.,]\d+)(?:\/(\d+(?:\.\d+)?))?(.*)$/.exec(s);
   if (!m) return [];
   const [, sign, num, den, rest] = m;
