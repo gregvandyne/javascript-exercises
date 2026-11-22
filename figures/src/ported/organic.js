@@ -15,7 +15,8 @@
 // share one scope with the rest of the bundle; an atom's id is its index as text; the editor's pointer work (adding,
 // dropping, growing, moving, swinging and deleting atoms, rings and bonds, the page and its margins, reading back from
 // browser storage) is left out, as are the editor's marks, the export crop and the description for screen readers
-// (Oomba lays out, checks and names the figure itself); the numbering note is a flag, not English words.
+// (Oomba lays out, checks and names the figure itself); the numbering note is a flag, not English words; a label's box
+// reaches down to its subscripts' baseline and keeps 4 units clear (3 in the original), so no bond touches a subscript.
 
 /** Each element's usual valence, which added hydrogens fill, and the most bonds it can have before it is overbonded (S
  *  and P can expand theirs). R and X, any group, take one bond and never get hydrogens. */
@@ -37,7 +38,7 @@ export const OG_STAR_FONT = OG_FONT;
 const OG_STAR_GAP = 13;
 const OG_LINE_GAP = 7;
 const OG_INSET = OG_BOND * 0.14;
-const OG_LABEL_PAD = 3;
+const OG_LABEL_PAD = 4;
 const OG_RAD = Math.PI / 180;
 
 /** A direction in whole degrees from 0 to 359: 0 to the right, 90 down the page. */
@@ -118,7 +119,8 @@ function ogMakeLabel(atomId, at, element, hydrogens, backward, chiral = false, f
   const runs = backward ? [...ahead, symbol, ...star] : [...ahead, symbol, ...follows];
   const before = ahead.reduce((w, r) => w + ogRunWidth(r), 0);
   const x = at.x - before - ogRunWidth(symbol) / 2, width = runs.reduce((w, r) => w + ogRunWidth(r), 0);
-  const bottom = runs.some(r => r.sub) ? OG_SUB_DROP + OG_SUB_FONT * 0.36 : OG_CAP;
+  // a subscript sits on its own baseline, 0.35 em plus the drop below the atom's middle: the box reaches it
+  const bottom = runs.some(r => r.sub) ? OG_FONT * 0.35 + OG_SUB_DROP : OG_CAP;
   return { atomId, x, y: at.y, runs, text: runs.map(r => r.text).join(''), box: { x: x - OG_LABEL_PAD, y: at.y - OG_CAP - OG_LABEL_PAD, width: width + 2 * OG_LABEL_PAD, height: OG_CAP + bottom + 2 * OG_LABEL_PAD } };
 }
 /** How many hydrogens an atom's label writes, or null for no label. */

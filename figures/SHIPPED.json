@@ -182,8 +182,8 @@
    "sri": "sha384-GVE87+94tY+GH6kPj/5F4mVZ3fUo64AudYGl24gX1sN2WeTkyxTEScA3xssYqkY2"
   },
   "oomba-figures/1.5.0/manifest.json": {
-   "sha256": "633a605b8f7e39850116bdd23af114a488baba614d1d6b80cc8c958532acd808",
-   "sri": "sha384-4SIPbskvXIjrAYbFHJqHnkllaE+7e2z7TPEiX+hWgnFJ42TvmM4twLeWuje98/Xs"
+   "sha256": "30a0dc5ad265a69fe8602e465a6a471a97c4c08b6dfc07bddbfe9cae09ac2942",
+   "sri": "sha384-T6WEkekxOIpGhqCxG9vQh+Bn1z9dDWDxgxgvsPpxo3dvQAXefTGK7R2DKCfBZQ3Z"
   },
   "oomba-figures/1.5.0/oomba-figures.js": {
    "sha256": "eae91316b263dfa53abd9fd8bfde92df19093ad7fef141acc94bf410d554185d",
@@ -194,8 +194,8 @@
    "sri": "sha384-g9mSlUaqJXy6NRBkw4xA9wtbLOTkZ7IXvmxu/pj8AP3IS7kmtsBDTKTh7c4HBmFQ"
   },
   "oomba-figures/1.5.0/packs/chem.js": {
-   "sha256": "6f0d4ba6fd49d6964ceaccad6aa477cf1e175a29d3b6131a667b159dbb9e1b87",
-   "sri": "sha384-9vn/gBRNTQUS+Aj/scTxBd0bKy4CKhBr/Cl7FDkJCQtmGj+rnZRykiWzQHOV2Fox"
+   "sha256": "56440d03221eee6f95448d9cc02b51f93e97927bd62650eeab1aa984b442bf1c",
+   "sri": "sha384-HBm8MgJEB/ggXCIOqYDkFFfgZIxRiwJ1sIPZMT3Vex/w9Ha2DFvAuCEluav+m+1w"
   },
   "oomba-figures/1.5.0/packs/data.js": {
    "sha256": "7442d1999bffabbe01b74820019a162d95135ce8ae97cd1637482428eeec6139",

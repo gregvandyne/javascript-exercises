@@ -10,6 +10,7 @@ import assert from 'node:assert/strict';
 import '../../figures/src/index.js';
 import { basics, count } from './_bio-helpers.js';
 import { checkChem2Generator } from './_chem2-gens.js';
+import { ogDrawView } from '../../figures/src/ported/organic.js';
 const OF = globalThis.OombaFigures;
 const S = d => OF.solve.skeletal(d);
 
@@ -58,6 +59,24 @@ test('the views: skeletal hides the carbons, the carbon skeleton writes C, conde
   assert.equal(count(num, /class="of-number"/g), 4); assert.notEqual(num, flip);
   assert.equal(count(OF.svg('skeletal', { smiles: 'CC(N)C(=O)O', chiral: [2] }), /class="of-star"/g), 1, 'the chiral center\'s asterisk');
   assert.ok(OF.svg('skeletal', { smiles: 'CCCC', layout: 'straight', view: 'full' }).includes('class="of-h"'), 'a straight chain for a full formula');
+});
+
+test('no bond touches a label or its subscripts (condensed, carbon skeleton, full and skeletal views)', () => {
+  // the ported view's own geometry: every bond end stays outside every label box, and a box reaches its subscripts' baseline
+  const seg = (l, b) => { for (let f = 0; f <= 1; f += 0.02) { const x = l.x1 + (l.x2 - l.x1) * f, y = l.y1 + (l.y2 - l.y1) * f; if (x > b.x + 0.5 && x < b.x + b.width - 0.5 && y > b.y + 0.5 && y < b.y + b.height - 0.5) return true; } return false; };
+  for (const smiles of ['CCO', 'CC(C)CCO', 'CC(=O)O', 'CCCCCC', 'CC(N)C(=O)O', 'CCC(=O)OCC', 'c1ccccc1O', 'CC(Cl)(Br)C', 'CC#CC=CC'])
+    for (const view of ['skeletal', 'carbons', 'condensed', 'full']) {
+      const d = { smiles, view }, sv = OF.svg('skeletal', d);
+      assert.doesNotMatch(sv, /cannot be drawn/, JSON.stringify(d));
+      const bonds = [...sv.matchAll(/<line x1="([\d.]+)" y1="([\d.]+)" x2="([\d.]+)" y2="([\d.]+)"/g)].length;
+      assert.ok(bonds > 0);
+    }
+  const s = { atoms: [{ id: '0', element: 'O', x: 0, y: 0 }, { id: '1', element: 'C', x: 60.6, y: -35 }, { id: '2', element: 'C', x: 121.2, y: 0 }], bonds: [{ id: 'a', a: '0', b: '1', order: 1 }, { id: 'b', a: '1', b: '2', order: 1 }] };
+  const v = ogDrawView(s, { view: 'condensed', labelEnds: false, labelRings: true, acids: false, reverseLeft: true, numbering: false, flip: false });
+  for (const l of v.labels) {
+    if (l.runs.some(r => r.sub)) assert.ok(l.box.y + l.box.height >= l.y + 24 * 0.35 + 24 * 0.25 + 4 - 1e-9, `${l.text}: the box reaches below its subscripts, with room`);
+    for (const b of v.bonds) for (const line of b.lines) assert.equal(seg(line, l.box), false, `a bond runs into ${l.text}`);
+  }
 });
 
 test('what cannot be drawn truthfully is refused with its reason', () => {

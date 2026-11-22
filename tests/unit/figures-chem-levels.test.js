@@ -55,4 +55,43 @@ test('what cannot be drawn is refused; hide, print and the reader\'s words', () 
   assert.match(OF.svg('energyLevels', d, { lang: 'fr' }), /−3,4 eV/, 'the reader\'s decimal mark');
 });
 
+// Every value label: its box (data-box) crosses no level line and no other label; each transition has one; a leader
+// from an arrow to its label crosses no level line.
+function labelProblems(d, o = {}) {
+  const s = OF.svg('energyLevels', d, o), out = [];
+  const lines = [...s.matchAll(/<line x1="[\d.]+" y1="([\d.]+)"[^>]*class="of-level"/g)].map(m => +m[1]);
+  const boxes = [...s.matchAll(/data-box="([\d. -]+)"/g)].map(m => m[1].split(' ').map(Number));
+  const want = d.show === 'none' ? 0 : OF.solve.energyLevels(d).lines;
+  if (boxes.length !== want) out.push(`${boxes.length} labels for ${want} transitions`);
+  boxes.forEach(([x, y, w, h], i) => {
+    for (const ly of lines) if (ly > y - 1 && ly < y + h + 1) out.push(`label ${i} crosses the level at ${ly}`);
+    boxes.forEach(([x2, y2, w2, h2], j) => { if (j > i && x < x2 + w2 && x2 < x + w && y < y2 + h2 && y2 < y + h) out.push(`labels ${i} and ${j} overlap`); });
+  });
+  for (const m of s.matchAll(/<line x1="[\d.]+" y1="([\d.]+)" x2="[\d.]+" y2="([\d.]+)"[^>]*class="of-leader"/g)) {
+    const a = +m[1], b = +m[2];
+    for (const y of lines) if (y > Math.min(a, b) + 0.5 && y < Math.max(a, b) - 0.5) out.push(`a leader crosses the level at ${y}`);
+  }
+  return out;
+}
+test('labels: none crosses a level line or another label, for every preset and a sweep of generator outputs and data', async () => {
+  const CAT = await import('../../public/js/figures-catalog.js');
+  const { canvasKit } = await import('../../server/services/canvaskit.js');
+  const L = canvasKit().logic, figs = [...CAT.kindOf('energyLevels').presets];
+  for (const g of CAT.kindOf('energyLevels').gens) for (let seed = 1; seed <= 40; seed++) { const p = L.cleanProblem(L.TOOLS[g.tool].gen(L.seeded(seed * 37), g)).p; const { kind, hide, ...fig } = p.fig; figs.push(fig); }
+  for (const show of ['wavelength', 'energy', 'both']) for (let c = 2; c <= 6; c++) for (const height of [360, 600, 900]) figs.push({ cascade: c, show, height });
+  for (let a = 1; a <= 6; a++) for (let b = 1; b <= 6; b++) if (a !== b) for (const show of ['both', 'wavelength']) figs.push({ transitions: [{ from: a, to: b }], show }, { transitions: [{ from: a, to: b }, { from: 1, to: 'inf' }, { from: 3, to: 2 }], show, series: true });
+  figs.push({ levels: [-10.4, -5.5, -4.9, -3.7, -2.7, -1.6], cascade: 6, show: 'both', height: 900 }, { z: 3, top: 7, cascade: 4, show: 'both' });
+  let n = 0;
+  for (const d of figs) {
+    if (OF.check('energyLevels', d).length) continue;
+    for (const o of [{}, { hide: 'values' }, { lang: 'de' }]) assert.deepEqual(labelProblems(d, o), [], `${JSON.stringify(d)} ${JSON.stringify(o)}`);
+    n++;
+  }
+  assert.ok(n > 120, `${n} figures`);
+  // the Balmer preset: 656 nm runs along its arrow between n = 3 and n = 2, not below n = 2
+  const s = OF.svg("energyLevels", CAT.kindOf("energyLevels").presets[0]);
+  const lv = [...s.matchAll(/y1="([\d.]+)"[^>]*class="of-level"/g)].map(m => +m[1]).sort((a, b) => a - b), box = s.match(/data-box="([\d. -]+)"/)[1].split(' ').map(Number);
+  assert.ok(box[1] > lv[4] && box[1] + box[3] < lv[5], `656 nm sits between n = 3 (${lv[4]}) and n = 2 (${lv[5]})`);
+});
+
 test('the energyLevels generator: self-test, OF.check, answers from OF.solve, randomized', async () => checkChem2Generator(assert, 'energyLevels'));
