@@ -4,12 +4,14 @@
 // linked from any menu, the sitemap or search, and never indexed (X-Robots-Tag and the layout's noindex).
 //   GET  /figures                                  the menu: every kind as a card, the teacher's worksheets
 //   GET  /figures/thumb/<kind>.svg                 a card's picture (the kind's example, drawn on the server, cached)
+//   GET  /figures/terms                            what teachers may do with the figures they export (plain words)
 //   GET  /figures/:kind                            one kind's editor (?d= a figure's data, ?ws=&item= a worksheet question)
 //   GET  /figures/worksheets/new, /figures/worksheets/:id   the worksheet builder (also a test's and a lesson step's)
 //   GET  /figures/tests/new                        "Build a test": the same builder for a test (purpose 'test')
 //   GET  /figures/worksheets/:id/print?key=0|1     the printable student sheet (and the answer key: its owner only)
 //   GET  /api/figures/state                        the teacher's worksheets
-//   POST /api/figures/gen                          a generator's question for a seed ({ gen, seed } or { kind })
+//   POST /api/figures/gen                          a generator's question for a seed ({ gen, seed } or { kind }; with
+//                                                  data, the definition that dealt that figure, PAST_GENS included)
 //   GET  /api/figures/presets/:kind, POST /api/figures/presets, POST /api/figures/presets/:id/delete
 //   POST /api/figures/prefs                        "Power with AI" on or off ({ ai })
 //   POST /api/figures/worksheets                   a new worksheet ({ title, grade, items })
@@ -113,6 +115,31 @@ router.get('/figures/thumb/:file', (req, res, next) => {
   res.set({ 'Content-Type': 'image/svg+xml; charset=utf-8', 'Cache-Control': 'private, max-age=86400' }).send(svg);
 });
 
+// ---------------------------------------------------------------- the reuse terms (plan rule 3, in plain teacher words)
+// What a teacher may do with an exported figure, what the note in the file is (Oomba Figures' own words, OF.notice, the
+// same text figures-export.js stamps into a PNG), and what CC0 1.0 means. Behind the same gate as every Figures page
+// while the product is tested; it opens with it.
+router.get('/figures/terms', (req, res) => {
+  const t = req.t, notice = F.kitFor().notice, CC0 = 'https://creativecommons.org/publicdomain/zero/1.0/';
+  const li = keys => html`<ul class="fg-terms-list">${keys.map(k => html`<li>${t(`figures.terms.${k}`)}</li>`)}</ul>`;
+  page(req, res, {
+    title: t('figures.terms.title'), active: null, head: CSS, bodyClass: 'fg-page',
+    body: html`${teachingTools(req, 'figures')}
+      ${crumbs(t, [['/figures', t('figures.title')], [null, t('figures.terms.crumb')]])}
+      <article class="fg-terms">
+        <header class="fg-terms-hero"><h1>${t('figures.terms.title')}</h1><p class="fg-lead">${t('figures.terms.lead')}</p></header>
+        <section class="panel fg-terms-can" aria-labelledby="fg-t-can"><h2 id="fg-t-can">✓ ${t('figures.terms.canTitle')}</h2>${li(['can1', 'can2', 'can3', 'can4', 'can5'])}</section>
+        <section class="panel" aria-labelledby="fg-t-note"><h2 id="fg-t-note">${t('figures.terms.noticeTitle')}</h2><p>${t('figures.terms.noticeText')}</p>
+          <blockquote class="fg-terms-notice" lang="en" dir="ltr" id="fg-notice">${notice}</blockquote><p>${t('figures.terms.noticeMeans')}</p></section>
+        <section class="panel" aria-labelledby="fg-t-cc0"><h2 id="fg-t-cc0">${t('figures.terms.cc0Title')}</h2><p>${t('figures.terms.cc0Text')}</p>
+          <p><a href="${CC0}" rel="noopener" target="_blank">${t('figures.terms.cc0Link')}</a></p></section>
+        <section class="panel" aria-labelledby="fg-t-yours"><h2 id="fg-t-yours">${t('figures.terms.yoursTitle')}</h2><p>${t('figures.terms.yoursText')}</p></section>
+        <section class="panel" aria-labelledby="fg-t-care"><h2 id="fg-t-care">${t('figures.terms.careTitle')}</h2>${li(['care1', 'care2'])}<p>${t('figures.terms.care3')} <a href="/terms">${t('figures.terms.siteTerms')}</a></p></section>
+        <p><a class="btn btn-primary" href="/figures">${t('figures.terms.back')}</a></p>
+      </article>`,
+  });
+});
+
 // ---------------------------------------------------------------- the worksheet builder and its print page
 function builder(req, res, w, { purpose = w ? w.purpose : 'worksheet' } = {}) {
   const t = req.t, u = req.user;
@@ -179,7 +206,10 @@ router.post('/api/figures/gen', rateLimit('figures-gen', 900, 3600e3), (req, res
   const gid = typeof b.gen === 'string' && F.genOf(b.gen) ? b.gen : K && K.gens.length ? K.gens[Math.floor(Math.random() * K.gens.length)].id : null;
   if (!gid) return fail(req, res, { code: 'noGen' });
   const seed = Number.isInteger(b.seed) && b.seed > 0 && b.seed < 1e9 ? b.seed : F.newSeed();
-  const g = F.generate(gid, seed);
+  // A saved question's figure ({ gen, seed, data }, the editor opened from a worksheet): what its generator dealt for it,
+  // an earlier definition (PAST_GENS) included, the same lookup the server uses when it saves (F.dealtFor).
+  const saved = b.gen === gid && b.data && typeof b.data === 'object' && !Array.isArray(b.data) ? b.data : undefined;
+  const g = saved ? F.dealtFor(gid, seed, saved) : F.generate(gid, seed);
   return g ? res.json({ ok: true, gen: gid, seed, ...g }) : fail(req, res, { code: 'noGen' });
 });
 router.get('/api/figures/presets/:kind', (req, res) => res.json({ ok: true, presets: F.listPresets(req.user, req.params.kind) }));

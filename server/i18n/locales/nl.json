@@ -3454,7 +3454,6 @@
     "figures-editor": {
       "undo": "Ongedaan maken",
       "redo": "Opnieuw",
-      "presets": "Voorinstellingen…",
       "examples": "Voorbeelden",
       "mine": "Mijn voorinstellingen",
       "randomize": "Willekeurig",
@@ -3678,7 +3677,21 @@
         "addGrid": "De figuur in het assenstelsel aan een werkblad toevoegen",
         "drawInstead": "In plaats daarvan op een rooster tekenen"
       },
-      "choiceNote": "Dit is een meerkeuzevraag. De opties en de juiste stel je in het werkblad in."
+      "choiceNote": "Dit is een meerkeuzevraag. De opties en de juiste stel je in het werkblad in.",
+      "history": "Ongedaan maken en opnieuw",
+      "undoTip": "Ongedaan maken (Ctrl+Z)",
+      "redoTip": "Opnieuw (Ctrl+Shift+Z)",
+      "undone": "Ongedaan gemaakt.",
+      "redone": "Opnieuw gedaan.",
+      "moreLabel": "Voorinstellingen: de voorbeelden, je eigen, opslaan en verwijderen",
+      "deletePresets": "Een voorinstelling verwijderen…",
+      "deletePreset": "Verwijderen",
+      "deletePresetQ": "De voorinstelling \"{name}\" verwijderen?",
+      "deletePresetText": "Hij verdwijnt uit je voorinstellingen voor dit soort figuur. Werkbladen die hem gebruikten houden hun figuren.",
+      "presetDeleted": "Voorinstelling verwijderd.",
+      "noPresets": "Je hebt nog geen voorinstellingen voor dit soort figuur.",
+      "reuseLink": "Wat je met je figuren mag doen",
+      "presetsBtn": "Voorinstellingen"
     },
     "figures-sheet": {
       "title": "Titel van het werkblad",
@@ -3763,9 +3776,21 @@
       "lessonStarted": "Leerlingen zijn aan deze stap begonnen, dus de vragen blijven zoals ze zijn. Maak een kopie van de les om ze te veranderen.",
       "backToLesson": "Terug naar de les",
       "subjects": "Vakken",
-      "more": "Meer",
       "swapLabel": "Figuur vervangen door",
-      "swap": "Figuur vervangen"
+      "swap": "Figuur vervangen",
+      "editN": "Figuur van vraag {n} bewerken ({kind})",
+      "regenN": "Nieuwe getallen voor vraag {n}",
+      "moreN": "Meer voor vraag {n}",
+      "swapMenu": "Figuur vervangen…",
+      "swapTitle": "Figuur van vraag {n} vervangen",
+      "swapHint": "De vraag krijgt een nieuwe figuur van dat soort, met een eigen vraag en antwoord. Je kunt ze daarna bewerken.",
+      "deleteText": "De vraag en de figuur gaan weg. Dit kan niet ongedaan worden.",
+      "movedTo": "Nu vraag {n}.",
+      "removeTest": "Toets verwijderen",
+      "removeTestQ": "Deze toets verwijderen?",
+      "removeLesson": "Deze vragen verwijderen",
+      "removeLessonQ": "Deze vragen bij figuren verwijderen?",
+      "removeLessonText": "De figuurstap van de les houdt de vragen waarmee hij het laatst is opgeslagen. Dit kan niet ongedaan worden."
     }
   },
   "favorites": {
@@ -12770,6 +12795,31 @@
         "needsDue": "Kies een inleverdatum om de antwoorden daarna te tonen.",
         "started": "Leerlingen zijn aan deze stap begonnen, dus de vragen blijven zoals ze zijn. Maak een kopie van de les om ze te veranderen."
       }
+    },
+    "terms": {
+      "title": "Je figuren hergebruiken",
+      "crumb": "Voorwaarden voor hergebruik",
+      "lead": "Elke figuur die je in Figuren maakt, mag je vrij gebruiken. Dit is wat dat betekent, in gewone woorden.",
+      "canTitle": "Wat je mag",
+      "can1": "Je figuren gebruiken in de klas, op werkbladen en toetsen, in presentaties en op websites.",
+      "can2": "Ze kopiëren, printen en delen met iedereen: leerlingen, ouders en andere leraren.",
+      "can3": "Ze aanpassen: bijsnijden, labels toevoegen of in je eigen lesmateriaal verwerken.",
+      "can4": "Ze gebruiken in materiaal dat je publiceert of verkoopt.",
+      "can5": "Dit allemaal zonder het ons te vragen en zonder ons te noemen. Een vermelding is welkom, maar nooit verplicht.",
+      "noticeTitle": "De notitie in het bestand",
+      "noticeText": "Elk SVG- of PNG-bestand dat je downloadt of kopieert, bevat deze notitie in het bestand zelf, waar beeldprogramma's en zoekmachines kijken. Hij is in het Engels, zodat hij overal hetzelfde leest:",
+      "noticeMeans": "Hij betekent dat Oomba Academy afziet van alle rechten op haar deel van de figuur (de tekening, de opmaak en de labels die ze maakt), zodat iedereen dat deel mag hergebruiken. Je mag de notitie laten staan of weghalen.",
+      "cc0Title": "Wat CC0 betekent",
+      "cc0Text": "CC0 1.0 is een verklaring van Creative Commons waarmee iets in het publieke domein komt. Voor ons deel van een figuur gelden geen voorwaarden: geen naamsvermelding, geen licentie om te volgen, overal ter wereld, voor zover de wet dat toelaat.",
+      "cc0Link": "Lees CC0 1.0 op de website van Creative Commons",
+      "yoursTitle": "Wat van jou blijft",
+      "yoursText": "Alles wat je zelf origineel toevoegt, is van jou: je eigen vraag, je eigen labels en gegevens en je eigen tekeningen. Of anderen die delen mogen hergebruiken, bepaal jij.",
+      "careTitle": "Goed om te weten",
+      "care1": "Controleer een figuur voordat je hem gebruikt. We controleren figuren zorgvuldig, maar we kunnen niet beloven dat elke figuur voor elk doel klopt.",
+      "care2": "Zet geen namen of persoonlijke gegevens van leerlingen in figuren die je deelt.",
+      "care3": "Deze voorwaarden gaan over de figuren die je exporteert. Voor de rest van Oomba Academy gelden de voorwaarden van de site.",
+      "siteTerms": "Lees de voorwaarden van de site",
+      "back": "Terug naar Figuren"
     }
   }
 }

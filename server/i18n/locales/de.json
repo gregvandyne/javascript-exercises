@@ -3454,7 +3454,6 @@
     "figures-editor": {
       "undo": "Rückgängig",
       "redo": "Wiederholen",
-      "presets": "Vorlagen…",
       "examples": "Beispiele",
       "mine": "Meine Vorlagen",
       "randomize": "Zufällig",
@@ -3678,7 +3677,21 @@
         "addGrid": "Die Figur im Koordinatensystem zum Arbeitsblatt hinzufügen",
         "drawInstead": "Stattdessen auf einem Raster zeichnen"
       },
-      "choiceNote": "Das ist eine Multiple-Choice-Frage. Ihre Optionen und die richtige legst du im Arbeitsblatt fest."
+      "choiceNote": "Das ist eine Multiple-Choice-Frage. Ihre Optionen und die richtige legst du im Arbeitsblatt fest.",
+      "history": "Rückgängig und wiederholen",
+      "undoTip": "Rückgängig (Strg+Z)",
+      "redoTip": "Wiederholen (Strg+Umschalt+Z)",
+      "undone": "Rückgängig gemacht.",
+      "redone": "Wiederholt.",
+      "moreLabel": "Vorlagen: die Beispiele, deine eigenen Vorlagen, speichern und löschen",
+      "deletePresets": "Eine Vorlage löschen…",
+      "deletePreset": "Löschen",
+      "deletePresetQ": "Die Vorlage „{name}“ löschen?",
+      "deletePresetText": "Sie verschwindet aus deinen Vorlagen für diese Art von Abbildung. Arbeitsblätter, die sie benutzt haben, behalten ihre Abbildungen.",
+      "presetDeleted": "Vorlage gelöscht.",
+      "noPresets": "Du hast noch keine Vorlagen für diese Art von Abbildung.",
+      "reuseLink": "Was du mit deinen Abbildungen machen darfst",
+      "presetsBtn": "Vorlagen"
     },
     "figures-sheet": {
       "title": "Titel des Arbeitsblatts",
@@ -3763,9 +3776,21 @@
       "lessonStarted": "Schüler haben diesen Schritt begonnen, daher bleiben seine Fragen, wie sie sind. Erstelle eine Kopie der Lektion, um sie zu ändern.",
       "backToLesson": "Zurück zur Lektion",
       "subjects": "Fächer",
-      "more": "Mehr",
       "swapLabel": "Abbildung tauschen gegen",
-      "swap": "Abbildung tauschen"
+      "swap": "Abbildung tauschen",
+      "editN": "Abbildung von Frage {n} bearbeiten ({kind})",
+      "regenN": "Neue Zahlen für Frage {n}",
+      "moreN": "Mehr zu Frage {n}",
+      "swapMenu": "Abbildung tauschen…",
+      "swapTitle": "Abbildung von Frage {n} tauschen",
+      "swapHint": "Die Frage bekommt eine neue Abbildung dieser Art, mit eigener Frage und Antwort. Du kannst beides danach bearbeiten.",
+      "deleteText": "Die Frage und ihre Abbildung werden gelöscht. Das lässt sich nicht rückgängig machen.",
+      "movedTo": "Jetzt Frage {n}.",
+      "removeTest": "Test löschen",
+      "removeTestQ": "Diesen Test löschen?",
+      "removeLesson": "Diese Fragen löschen",
+      "removeLessonQ": "Diese Fragen zu Abbildungen löschen?",
+      "removeLessonText": "Der Abbildungs-Schritt der Lektion behält die Fragen, mit denen er zuletzt gespeichert wurde. Das lässt sich nicht rückgängig machen."
     }
   },
   "favorites": {
@@ -12770,6 +12795,31 @@
         "needsDue": "Lege ein Abgabedatum fest, um die Antworten danach zu zeigen.",
         "started": "Schüler haben diesen Schritt begonnen, daher bleiben seine Fragen, wie sie sind. Erstelle eine Kopie der Lektion, um sie zu ändern."
       }
+    },
+    "terms": {
+      "title": "Deine Abbildungen weiterverwenden",
+      "crumb": "Weiterverwendung",
+      "lead": "Jede Abbildung, die du in Figuren erstellst, darfst du frei verwenden. Hier steht in einfachen Worten, was das heißt.",
+      "canTitle": "Was du darfst",
+      "can1": "Deine Abbildungen im Unterricht, auf Arbeitsblättern und Tests, in Präsentationen und auf Websites verwenden.",
+      "can2": "Sie kopieren, drucken und mit allen teilen: mit Schülerinnen und Schülern, Familien und anderen Lehrkräften.",
+      "can3": "Sie verändern: zuschneiden, beschriften oder in deine eigenen Materialien einbauen.",
+      "can4": "Sie in Materialien verwenden, die du veröffentlichst oder verkaufst.",
+      "can5": "All das, ohne uns zu fragen und ohne uns zu nennen. Eine Erwähnung freut uns, ist aber nie Pflicht.",
+      "noticeTitle": "Der Hinweis in der Datei",
+      "noticeText": "Jede SVG- oder PNG-Datei, die du herunterlädst oder kopierst, enthält diesen Hinweis in der Datei selbst, dort, wo Bildprogramme und Suchmaschinen nachsehen. Er ist auf Englisch, damit er überall gleich lautet:",
+      "noticeMeans": "Er bedeutet: Oomba Academy verzichtet auf alle Rechte an ihrem Teil der Abbildung (die Zeichnung, das Layout und die Beschriftungen, die sie erstellt), damit alle diesen Teil weiterverwenden dürfen. Du kannst den Hinweis behalten oder entfernen.",
+      "cc0Title": "Was CC0 bedeutet",
+      "cc0Text": "CC0 1.0 ist eine Gemeinfreiheitserklärung von Creative Commons. Für unseren Teil einer Abbildung gibt es keinerlei Bedingungen: keine Namensnennung, keine Lizenz, die du befolgen musst, weltweit, soweit das Gesetz es erlaubt.",
+      "cc0Link": "CC0 1.0 auf der Website von Creative Commons lesen",
+      "yoursTitle": "Was dir gehört",
+      "yoursText": "Alles Eigene, das du hinzufügst, gehört dir: deine eigene Frage, deine eigenen Beschriftungen und Daten und deine eigenen Zeichnungen. Ob andere diese Teile weiterverwenden dürfen, entscheidest du.",
+      "careTitle": "Gut zu wissen",
+      "care1": "Prüfe eine Abbildung, bevor du sie verwendest. Wir prüfen Abbildungen sorgfältig, können aber nicht versprechen, dass jede Abbildung für jeden Zweck stimmt.",
+      "care2": "Lass Namen und persönliche Angaben von Schülerinnen und Schülern aus Abbildungen heraus, die du teilst.",
+      "care3": "Diese Bedingungen gelten für die Abbildungen, die du exportierst. Für alles andere bei Oomba Academy gelten die Nutzungsbedingungen der Website.",
+      "siteTerms": "Nutzungsbedingungen der Website lesen",
+      "back": "Zurück zu Figuren"
     }
   }
 }

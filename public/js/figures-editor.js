@@ -3,15 +3,20 @@
 // words a text box, and lists and objects live in "Advanced (data)", a JSON box checked as it is typed. The figure is
 // drawn live by the pinned Oomba Figures (the page loads only the pack this kind needs); data that cannot be drawn shows
 // OF.check's reason in plain words and turns export off. Worked answers come from OF.solve. Undo and redo stay in the
-// browser; a figure can be linked (?d=), downloaded as SVG or PNG with Oomba's CC0 notice in the file, copied, saved
-// as one of the teacher's presets, or added to a worksheet (where the server checks and answers it again).
+// browser (public/js/figures-history.js: the last 100 changes, Ctrl/Cmd+Z, Shift+Ctrl/Cmd+Z and Ctrl/Cmd+Y; the
+// cannot-draw panel's Undo my last change is the same history). A figure can be linked (?d=), downloaded as SVG or PNG
+// with Oomba's CC0 notice in the file (what that means: /figures/terms), copied, or added to a worksheet (where the
+// server checks and answers it again). The ⋯ Presets menu lists the kind's examples first, then the teacher's own
+// presets, with Save as my preset and Delete a preset.
 // "Draw it" (triangles, the quadrilaterals and the coordinate grid): the teacher draws the shape on a dot grid
 // (public/js/figures-draw.js) and its measures are worked out exactly (public/js/figures-draw-geom.js) and filled in as
 // the kind's real data; a drawing that is not a shape, or not this kind of shape, says so and never changes the figure.
 // The same corners can be a second figure too, plotted on a coordinate grid. Drawn shapes are in undo, redo and presets.
-import { t, api, toast, esc, pageData, askText, copyText } from '/js/app.js';
+import { t, api, toast, esc, pageData, ask, askText, copyText, sheet } from '/js/app.js';
 import { flatSolve, solveOf, numText, encodeData } from '/js/figures-catalog.js';
 import { pngWithNotice } from '/js/figures-export.js';
+import { createHistory, historyKey } from '/js/figures-history.js';
+import { moreMenu, menuItem, menuGroup, menuSep, bindMenus } from '/js/figures-menu.js';
 import { makeBoard } from '/js/figures-draw.js';
 import { NAMES, CORNERS, analyze, triangleType, quadType, toData, gridData, lengthValue, lengthLabel, ptsText, parsePts } from '/js/figures-draw-geom.js';
 
@@ -51,22 +56,20 @@ const S = P.start;
 const CHOICE = !!(S && S.answerType === 'choice');
 if (S) Object.assign(st, { data: clone(S.data), hide: S.hide ?? false, question: S.question || '', answerKey: S.answerKey || null, gen: S.gen || null, seed: S.seed || null });
 const snap = () => JSON.stringify({ data: st.data, hide: st.hide, question: st.question, answerKey: st.answerKey, gen: st.gen, seed: st.seed, genResult: st.genResult, draw: st.draw });
-const undo = [], redo = [];
-let last = snap(), timer = 0;
-function commit(now = false) {
-  clearTimeout(timer);
-  const go = () => { const s = snap(); if (s !== last) { undo.push(last); if (undo.length > 100) undo.shift(); redo.length = 0; last = s; } buttons(); };
-  if (now) go(); else timer = setTimeout(go, 350);
-}
-function restore(s) { Object.assign(st, JSON.parse(s)); last = s; if (DRAW) drawApply(); fields(); render(); }
+// Undo and redo (public/js/figures-history.js): the last 100 changes to the figure, its question, answer and drawing.
+const hist = createHistory({ snap, restore: s => { Object.assign(st, JSON.parse(s)); if (DRAW) drawApply(); fields(); render(); }, limit: 100, onChange: () => buttons() });
+function commit(now = false) { hist.commit(now); buttons(); }
 
 // ---------------------------------------------------------------- the page
+const ICON_UNDO = '<svg class="fg-svgi" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M9 14 4 9l5-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ICON_REDO = ICON_UNDO.replace('<svg ', '<svg style="transform:scaleX(-1)" ');
 const sel = (opts, cur) => opts.map(([v, l]) => `<option value="${esc(v)}"${String(v) === String(cur) ? ' selected' : ''}>${esc(l)}</option>`).join('');
 app.innerHTML = `<div class="fg-ed-head"><h1>${esc(P.name)}</h1>
   <div class="fg-ed-actions">
-    <button class="btn fg-icon" type="button" data-act="undo" aria-label="${esc(t('js.figures-editor.undo'))}" title="${esc(t('js.figures-editor.undo'))}">↶</button>
-    <button class="btn fg-icon" type="button" data-act="redo" aria-label="${esc(t('js.figures-editor.redo'))}" title="${esc(t('js.figures-editor.redo'))}">↷</button>
-    <label class="fg-presets"><span class="sr-only">${esc(t('js.figures-editor.presets'))}</span><select class="input" id="fg-preset"></select></label>
+    <span class="fg-hist" role="group" aria-label="${esc(t('js.figures-editor.history'))}">
+      <button class="btn fg-icon" type="button" data-act="undo" aria-keyshortcuts="Control+Z Meta+Z" title="${esc(t('js.figures-editor.undoTip'))}">${ICON_UNDO}<span class="sr-only">${esc(t('js.figures-editor.undo'))}</span></button>
+      <button class="btn fg-icon" type="button" data-act="redo" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z Control+Y" title="${esc(t('js.figures-editor.redoTip'))}">${ICON_REDO}<span class="sr-only">${esc(t('js.figures-editor.redo'))}</span></button></span>
+    <span id="fg-presets"></span>
     <button class="btn btn-hot" type="button" data-act="random">🎲 ${esc(t('js.figures-editor.randomize'))}</button>
   </div></div>
 <div class="fg-ed-grid">
@@ -93,6 +96,7 @@ app.innerHTML = `<div class="fg-ed-head"><h1>${esc(P.name)}</h1>
       <div class="fg-ed-figure fg-gridfig" id="fg-gridfig"></div><div class="fg-add" id="fg-gaddbox"></div><p class="notice good fg-small" id="fg-gadded" role="status" hidden></p></section>`}` : ''}
     <div class="panel fg-ed-figure" id="fg-figure" aria-live="polite"></div>
     <div class="fg-cant" id="fg-cant" role="alert" hidden></div>
+    <p class="sr-only" id="fg-hist-msg" role="status" aria-live="polite"></p>
     <code class="fg-code" id="fg-code" dir="ltr"></code>
   </section>
   <section class="panel fg-ed-side" aria-label="${esc(t('js.figures-editor.answers'))}">
@@ -110,23 +114,27 @@ app.innerHTML = `<div class="fg-ed-head"><h1>${esc(P.name)}</h1>
       <button class="btn" type="button" data-act="png" data-needs-ok>${esc(t('js.figures-editor.png'))}</button>
       <button class="btn" type="button" data-act="copy" data-needs-ok>${esc(t('js.figures-editor.copy'))}</button>
       <button class="btn" type="button" data-act="link">${esc(t('js.figures-editor.link'))}</button>
-      <button class="btn" type="button" data-act="preset" data-needs-ok>${esc(t('js.figures-editor.savePreset'))}</button>
     </div>
-    <p class="muted fg-small">${esc(t('js.figures-editor.notice'))}</p>
+    <p class="muted fg-small">${esc(t('js.figures-editor.notice'))} <a href="/figures/terms">${esc(t('js.figures-editor.reuseLink'))}</a></p>
   </section>
 </div>`;
 const $ = id => document.getElementById(id);
 
-// ---------------------------------------------------------------- presets
+// ---------------------------------------------------------------- presets, in the ⋯ More menu
+// The kind's examples first (and its drawn examples), then the teacher's own presets; Save as preset names the figure as
+// it is now (with its drawing), Delete a preset lists theirs, each deleted after a question.
 let mine = P.mine || [];
 function presets() {
-  $('fg-preset').innerHTML = `<option value="">${esc(t('js.figures-editor.presets'))}</option><optgroup label="${esc(t('js.figures-editor.examples'))}">${P.presets.map((p, i) => `<option value="x${i}">${esc(p.name)}</option>`).join('')}</optgroup>`
-    + (DRAW ? `<optgroup label="${esc(D('examples'))}">${DRAW_EX[K.id].map(([k, pts], i) => `<option value="d${i}">${esc(D(k, { count: pts.length }))}</option>`).join('')}</optgroup>` : '')
-    + (mine.length ? `<optgroup label="${esc(t('js.figures-editor.mine'))}">${mine.map(p => `<option value="m${esc(p.id)}">${esc(p.name)}</option>`).join('')}</optgroup>` : '');
+  const items = menuGroup(t('js.figures-editor.examples'), P.presets.map((p, i) => menuItem('apply', p.name, { attrs: ` data-p="x${i}"` })).join(''))
+    + (DRAW ? menuGroup(D('examples'), DRAW_EX[K.id].map(([k, pts], i) => menuItem('apply', D(k, { count: pts.length }), { attrs: ` data-p="d${i}"` })).join('')) : '')
+    + (mine.length ? menuGroup(t('js.figures-editor.mine'), mine.map(p => menuItem('apply', p.name, { attrs: ` data-p="m${esc(p.id)}"` })).join('')) : '')
+    + menuSep()
+    + menuItem('preset', t('js.figures-editor.savePreset'), { attrs: ' data-needs-ok' })
+    + (mine.length ? menuItem('delpresets', t('js.figures-editor.deletePresets')) : '');
+  $('fg-presets').innerHTML = moreMenu({ label: t('js.figures-editor.moreLabel'), items, cls: 'fg-presetmenu', text: t('js.figures-editor.presetsBtn'), icon: '⋯' });
+  if (typeof render === 'function' && rendered) for (const b of $('fg-presets').querySelectorAll('[data-needs-ok]')) b.disabled = problems().length > 0;
 }
-presets();
-$('fg-preset').addEventListener('change', async e => {
-  const v = e.target.value; e.target.value = '';
+function applyPreset(v) {
   if (v[0] === 'd' && DRAW_EX[K.id] && DRAW_EX[K.id][+v.slice(1)]) { startDrawing(DRAW_EX[K.id][+v.slice(1)][1], 10); return; }
   const p = v[0] === 'x' ? P.presets[+v.slice(1)] : mine.find(m => `m${m.id}` === v);
   if (!p) return;
@@ -134,6 +142,31 @@ $('fg-preset').addEventListener('change', async e => {
   Object.assign(st, { data: clone(p.data), gen: null, seed: null, genResult: null, answerKey: null });
   if (DRAW) { st.draw.on = false; drawApply(); }
   fields(); render(); commit(true);
+}
+/** Delete a preset: the teacher's presets for this kind, each with Delete (after a question). */
+function deletePresets() {
+  const list = () => (mine.length ? `<ul class="fg-plist">${mine.map(p => `<li><span>${esc(p.name)}</span><button class="btn btn-sm fg-danger" type="button" data-delp="${esc(p.id)}">${esc(t('js.figures-editor.deletePreset'))}<span class="sr-only"> ${esc(p.name)}</span></button></li>`).join('')}</ul>`
+    : `<p class="muted">${esc(t('js.figures-editor.noPresets'))}</p>`);
+  const sh = sheet({ title: t('js.figures-editor.deletePresets'), content: `<div id="fg-plist">${list()}</div>` });
+  sh.el.addEventListener('click', async e => {
+    const b = e.target.closest('[data-delp]'); if (!b) return;
+    const p = mine.find(m => m.id === b.dataset.delp); if (!p) return;
+    if (!(await ask({ title: t('js.figures-editor.deletePresetQ', { name: p.name }), text: t('js.figures-editor.deletePresetText'), ok: t('js.figures-editor.deletePreset'), danger: true }))) return;
+    try {
+      await api(`/api/figures/presets/${encodeURIComponent(p.id)}/delete`, { method: 'POST', body: {} });
+      mine = mine.filter(m => m.id !== p.id); presets();
+      sh.el.querySelector('#fg-plist').innerHTML = list();
+      (sh.el.querySelector('[data-delp]') || sh.el.querySelector('.close')).focus();
+      toast(t('js.figures-editor.presetDeleted', { name: p.name }));
+    } catch (x) { toast(x.message, { bad: true }); }
+  });
+}
+let rendered = false;
+presets();
+bindMenus(app, it => {
+  if (it.dataset.mi === 'apply') applyPreset(it.dataset.p);
+  else if (it.dataset.mi === 'delpresets') deletePresets();
+  else if (ACTS[it.dataset.mi]) ACTS[it.dataset.mi](it);
 });
 
 // ---------------------------------------------------------------- the controls, from the kind's data
@@ -210,12 +243,13 @@ function render() {
     const why = (WHY.find(([re]) => re.test(bad[0])) || [null, 'generic'])[1];
     cant.innerHTML = `<h3>⚠ ${esc(t(`js.figures-editor.why.${why}.t`))}</h3><p>${esc(t(`js.figures-editor.why.${why}.p`))}</p>
       <p class="fg-small">${esc(t('js.figures-editor.ofSays', { reason: bad.slice(0, 3).join('; ') }))}</p>
-      <div class="row"><button class="btn btn-primary" type="button" data-act="undo"${undo.length ? '' : ' disabled'}>${esc(t('js.figures-editor.undoLast'))}</button><button class="btn" type="button" data-act="example">${esc(t('js.figures-editor.backToExample'))}</button>${DRAW && !st.draw.on ? `<button class="btn btn-hot" type="button" data-act="drawit">✏️ ${esc(D('drawInstead'))}</button>` : ''}</div>`;
+      <div class="row"><button class="btn btn-primary" type="button" data-act="undo"${hist.canUndo() ? '' : ' disabled'}>${esc(t('js.figures-editor.undoLast'))}</button><button class="btn" type="button" data-act="example">${esc(t('js.figures-editor.backToExample'))}</button>${DRAW && !st.draw.on ? `<button class="btn btn-hot" type="button" data-act="drawit">✏️ ${esc(D('drawInstead'))}</button>` : ''}</div>`;
     cant.hidden = false;
   } else cant.hidden = true;
   for (const el of document.querySelectorAll('.fg-ed-controls .fg-num input')) el.classList.toggle('bad', bad.length > 0 && el.value !== '');
   $('fg-code').textContent = `OF.svg('${K.id}', ${JSON.stringify(st.data)}${st.hide !== false ? `, { hide: ${JSON.stringify(st.hide)} }` : ''})`;
   for (const b of document.querySelectorAll('[data-needs-ok]')) b.disabled = bad.length > 0;
+  rendered = true;
   answers(bad);
   addBox(bad);
   if (DRAW) drawShow();
@@ -244,8 +278,8 @@ function answers(bad = problems()) {
   $('fg-facts').innerHTML = keys.slice(0, 18).map(k => `<div><dt>${esc(keyLabel(k))}</dt><dd>${esc(numText(flat[k], 2))}</dd></div>`).join('');
 }
 function buttons() {
-  for (const b of document.querySelectorAll('[data-act="undo"]')) b.disabled = !undo.length;
-  for (const b of document.querySelectorAll('[data-act="redo"]')) b.disabled = !redo.length;
+  for (const b of document.querySelectorAll('[data-act="undo"]')) b.disabled = !hist.canUndo();
+  for (const b of document.querySelectorAll('[data-act="redo"]')) b.disabled = !hist.canRedo();
 }
 
 // ---------------------------------------------------------------- add to a worksheet (or save back to one)
@@ -301,8 +335,8 @@ async function pngBlob(scale = 2) {
   } finally { URL.revokeObjectURL(url); }
 }
 const ACTS = {
-  undo() { if (!undo.length) return; clearTimeout(timer); redo.push(snap()); restore(undo.pop()); buttons(); },
-  redo() { if (!redo.length) return; undo.push(snap()); restore(redo.pop()); buttons(); },
+  undo() { if (hist.undo()) announce('undone'); },
+  redo() { if (hist.redo()) announce('redone'); },
   example() { Object.assign(st, { data: clone(K.presets[0]), gen: null, seed: null, genResult: null, answerKey: null }); if (DRAW) { st.draw.on = false; drawApply(); } fields(); render(); commit(true); },
   async random(btn) {
     if (!K.gens.length) {
@@ -345,10 +379,13 @@ app.addEventListener('click', e => {
   const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
   const f = ACTS[b.dataset.act]; if (f) { e.preventDefault(); f(b); }
 });
+// Ctrl/Cmd+Z undoes, Shift+Ctrl/Cmd+Z and Ctrl/Cmd+Y redo; a text box keeps the keys for its own typing.
 document.addEventListener('keydown', e => {
-  if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'z' || e.target.closest('input,textarea,select')) return;
-  e.preventDefault(); (e.shiftKey ? ACTS.redo : ACTS.undo)();
+  const k = historyKey(e); if (!k || e.target.closest('input,textarea,select,[contenteditable]') || e.target.closest('.sheet-bg,dialog')) return;
+  e.preventDefault(); ACTS[k]();
 });
+/** Undo and redo say what happened to a screen reader (the figure itself changes silently). */
+function announce(what) { const el = $('fg-hist-msg'); if (el) { el.textContent = ''; setTimeout(() => { el.textContent = t(`js.figures-editor.${what}`); }, 30); } }
 
 // ---------------------------------------------------------------- Draw it
 let drawn = null;
@@ -454,10 +491,11 @@ if (DRAW) {
     st.draw = { on: true, pts: pts.slice(0, CORNERS[K.id][1]), n, o: o && o.length === 1 ? o[0] : originFor(n), grid: false };
     drawApply();
   } else drawApply();
-  last = snap();
+  hist.reset();
 }
 
 // A worksheet question from a generator: what the generator says, so its answer and worked lines show (the server
-// works them out again when it is saved).
-if (S && S.gen && S.seed) api('/api/figures/gen', { method: 'POST', body: { gen: S.gen, seed: S.seed } }).then(g => { if (canon(g.data) === canon(st.data)) { st.genResult = { data: g.data, answer: g.answer, work: g.work }; last = snap(); answers(); } }).catch(() => {});
+// works them out again when it is saved). The figure goes too, so a question saved with an earlier definition of its
+// generator (PAST_GENS in figures-catalog.js) finds that definition, as the server does when it saves (dealtFor).
+if (S && S.gen && S.seed) api('/api/figures/gen', { method: 'POST', body: { gen: S.gen, seed: S.seed, data: S.data } }).then(g => { if (canon(g.data) === canon(st.data)) { st.genResult = { data: g.data, answer: g.answer, work: g.work }; hist.settle(); answers(); } }).catch(() => {});
 fields(); render();

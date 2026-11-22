@@ -193,7 +193,8 @@ test('the worksheet builder on a laptop: Power with AI (mocked) adds checked que
     await shot(page, 'worksheet-builder-ai-mocked-full', true);
     // reorder and new numbers
     const first = await page.$eval('.fg-item', li => li.dataset.id);
-    await page.click(`.fg-item[data-id="${first}"] [data-act="down"]`);
+    await page.click(`.fg-item[data-id="${first}"] .fg-mm-btn`);
+    await page.click(`.fg-item[data-id="${first}"] [data-mi="down"]`);
     await page.waitForFunction(id => document.querySelectorAll('.fg-item')[1].dataset.id === id, first);
     await Promise.all([page.waitForResponse(r => /\/regen$/.test(r.url()) && r.status() === 200), page.click('.fg-item:nth-child(3) [data-act="regen"]')]);
     await page.click('[data-tab="key"]');

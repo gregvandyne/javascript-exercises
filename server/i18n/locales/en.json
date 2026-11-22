@@ -3736,7 +3736,6 @@
     "figures-editor": {
       "undo": "Undo",
       "redo": "Redo",
-      "presets": "Presets…",
       "examples": "Examples",
       "mine": "My presets",
       "randomize": "Randomize",
@@ -3960,7 +3959,21 @@
         "addGrid": "Add the grid figure to a worksheet",
         "drawInstead": "Draw it on a grid instead"
       },
-      "choiceNote": "This is a multiple choice question. Its options and the right one are set in the worksheet."
+      "choiceNote": "This is a multiple choice question. Its options and the right one are set in the worksheet.",
+      "history": "Undo and redo",
+      "undoTip": "Undo (Ctrl+Z)",
+      "redoTip": "Redo (Ctrl+Shift+Z)",
+      "undone": "Undone.",
+      "redone": "Redone.",
+      "moreLabel": "Presets: the examples, your own presets, save and delete",
+      "deletePresets": "Delete a preset…",
+      "deletePreset": "Delete",
+      "deletePresetQ": "Delete the preset \"{name}\"?",
+      "deletePresetText": "It goes from your presets for this kind of figure. Worksheets that used it keep their figures.",
+      "presetDeleted": "Preset deleted.",
+      "noPresets": "You have no presets for this kind of figure yet.",
+      "reuseLink": "What you may do with your figures",
+      "presetsBtn": "Presets"
     },
     "figures-sheet": {
       "title": "Worksheet title",
@@ -4045,9 +4058,21 @@
       "lessonStarted": "Students have started this step, so its questions stay as they are. Make a copy of the lesson to change them.",
       "backToLesson": "Back to the lesson",
       "subjects": "Subjects",
-      "more": "More",
       "swapLabel": "Swap the figure for",
-      "swap": "Swap figure"
+      "swap": "Swap figure",
+      "editN": "Edit the figure of question {n} ({kind})",
+      "regenN": "New numbers for question {n}",
+      "moreN": "More for question {n}",
+      "swapMenu": "Swap figure…",
+      "swapTitle": "Swap the figure of question {n}",
+      "swapHint": "The question gets a new figure of that kind, with its own question and answer. You can edit them after.",
+      "deleteText": "The question and its figure go. This cannot be undone.",
+      "movedTo": "Moved to question {n}.",
+      "removeTest": "Delete test",
+      "removeTestQ": "Delete this test?",
+      "removeLesson": "Delete these questions",
+      "removeLessonQ": "Delete these figure questions?",
+      "removeLessonText": "The lesson's Figure step keeps the questions it was last saved with. This cannot be undone."
     }
   },
   "favorites": {
@@ -13489,6 +13514,31 @@
         "needsDue": "Set a due date to show the answers after it.",
         "started": "Students have started this step, so its questions stay as they are. Make a copy of the lesson to change them."
       }
+    },
+    "terms": {
+      "title": "Reusing your figures",
+      "crumb": "Reuse terms",
+      "lead": "Every figure you make in Figures is free for you to use. Here is what that means, in plain words.",
+      "canTitle": "What you can do",
+      "can1": "Use your figures in class, on worksheets and tests, in slides and on websites.",
+      "can2": "Copy, print and share them with anyone: students, families and other teachers.",
+      "can3": "Change them: crop them, add labels, or build them into your own materials.",
+      "can4": "Use them in materials you publish or sell.",
+      "can5": "Do all of this without asking us and without giving credit. A mention is welcome, never required.",
+      "noticeTitle": "The note inside the file",
+      "noticeText": "Every SVG or PNG you download or copy carries this note, written into the file itself, where image programs and search engines look for it. It is in English so it reads the same everywhere:",
+      "noticeMeans": "It means Oomba Academy gives up any rights it has in its part of the figure (the drawing, the layout and the labels it makes), so anyone may reuse that part. You may keep the note or take it out.",
+      "cc0Title": "What CC0 means",
+      "cc0Text": "CC0 1.0 is a public domain dedication from Creative Commons. For our part of a figure there are no conditions at all: no credit, no license to follow, anywhere in the world, as far as the law allows.",
+      "cc0Link": "Read CC0 1.0 on the Creative Commons website",
+      "yoursTitle": "What stays yours",
+      "yoursText": "Anything original you add is yours: your own question, your own labels and data, and your own drawings. Whether others may reuse those parts is up to you.",
+      "careTitle": "Good to know",
+      "care1": "Check a figure before you use it. We check figures carefully, but we cannot promise that every figure is right for every use.",
+      "care2": "Keep students' names and personal details out of figures you share.",
+      "care3": "These terms are about the figures you export. The rest of Oomba Academy follows the site's own terms.",
+      "siteTerms": "Read the site's terms",
+      "back": "Back to Figures"
     }
   }
 }
