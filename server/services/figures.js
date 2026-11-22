@@ -24,7 +24,7 @@ import { figuresKit, FIG_LATEST, FIG_VERSIONS } from './figlibs.js';
 import { canvasKit } from './canvaskit.js';
 import { log } from './log.js';
 import { tEn } from '../i18n/index.js';
-import { KINDS, SUBJECTS, GRADE_BANDS, kindOf, genOf, flatSolve, solveOf, numText } from '../../public/js/figures-catalog.js';
+import { KINDS, SUBJECTS, GRADE_BANDS, kindOf, genOf, flatSolve, solveOf, numText, PAST_GENS } from '../../public/js/figures-catalog.js';
 
 export { KINDS, SUBJECTS, GRADE_BANDS, kindOf, genOf };
 export const LIMITS = Object.freeze({ worksheets: 200, items: 40, presets: 50, titleChars: 80, questionChars: 400, briefChars: 1000, dataChars: 20000, nameChars: 60, draftMax: 12 });
@@ -94,7 +94,16 @@ export function keyUnit(key, data) {
   if (/^volume$/.test(last)) return `${u}³`;
   return /^(sides|perimeter|height|heights|radius|diameter|side|slant|diagonals|apothem|length|width|circumference)$/.test(last) ? u : '';
 }
-const unitText = (v, unit) => (unit ? (/^[°′″%]/.test(unit) ? `${v}${unit}` : `${v} ${unit}`) : String(v));
+/** A currency unit: written before the number ($125, -$3.5); every other unit after it (12 N, 45°, 50%). */
+export const CURRENCY = /^[$€£¥₹]$/;
+export function unitText(v, unit) {
+  const s = String(v);
+  if (!unit) return s;
+  if (CURRENCY.test(unit)) return s.startsWith('-') ? `-${unit}${s.slice(1)}` : `${unit}${s}`;
+  return /^[°′″%]/.test(unit) ? `${s}${unit}` : `${s} ${unit}`;
+}
+/** A stored answer as it shows: one saved before currency went first ("125 $") reads "$125". */
+export const shownAnswer = a => (typeof a === 'string' ? a.replace(/^(-?)(\d[\d.,]*) ([$€£¥₹])$/, '$1$3$2') : a);
 
 /** The numbers OF.solve gives for this figure, by path ({ 'sides.CA': 5, area: 6 }); {} for a kind without them. */
 export const solved = (kind, data, v) => flatSolve(solveOf(kit(v), kind, data) || {});
@@ -147,8 +156,8 @@ function cleanDealt(p, tool) {
 }
 /** What a generator deals for this seed, before the figure is checked (also what the tests compare against OF.solve):
  *  the Canvas gen's own output, with {choice} still in the text. null for an unknown generator. */
-export function dealRaw(genId, seed) {
-  const g = genOf(genId), lg = L();
+export function dealRaw(genId, seed, g = genOf(genId)) {
+  const lg = L();
   if (!g || !lg.TOOLS[g.tool]) return null;
   return lg.TOOLS[g.tool].gen(lg.seeded(Number.isInteger(seed) && seed > 0 ? seed : 1), g);
 }
@@ -156,9 +165,8 @@ export function dealRaw(genId, seed) {
  *  choices, correct } or null. A number question's value is the OF.solve value the generator names (key); a generator
  *  for a kind without a solver keeps its own formula. A choice question's right option (correct, also value) is the one
  *  its key and pick give, and {choice} in its question and worked lines is that option's words. */
-export function generate(genId, seed, v) {
-  const g = genOf(genId);
-  const raw = dealRaw(genId, seed); if (!raw || !raw.fig || typeof raw.fig !== 'object') return null;
+export function generate(genId, seed, v, g = genOf(genId)) {
+  const raw = g ? dealRaw(genId, seed, g) : null; if (!raw || !raw.fig || typeof raw.fig !== 'object') return null;
   const { kind, hide, ...data } = raw.fig;
   if (kind !== g.kind || checkFigure(kind, data, v).length) return null;
   if (g.tool === 'figure.choice') {
@@ -176,6 +184,18 @@ export function generate(genId, seed, v) {
   return { kind, data, hide: cleanHide(kindOf(kind), hide === undefined ? false : hide), question: c.q, answer: unitText(numText(value, c.dp), c.unit), work: c.work, unit: c.unit, dp: c.dp, value, answerType: 'number', choices: [], correct: null };
 }
 export const newSeed = () => 1 + Math.floor(Math.random() * 999999);
+/** What a saved question's generator dealt for its seed: the current definition, or, when the saved figure is not what
+ *  it deals now, the earlier definition (PAST_GENS) that dealt exactly that figure, so a generator changed after the
+ *  question was saved keeps its answer. With no figure given, the current definition. null when none deals it. */
+export function dealtFor(genId, seed, data, v) {
+  const now1 = generate(genId, seed, v);
+  if (data === undefined || (now1 && canon(now1.data) === canon(data))) return now1;
+  for (const past of PAST_GENS[genId] || []) {
+    const g = generate(genId, seed, v, { ...past, kind: past.kind || (genOf(genId) || {}).kind });
+    if (g && canon(g.data) === canon(data)) return g;
+  }
+  return now1;
+}
 
 /** A choice question's options as typed: trimmed, blanks left out (the right one's index follows), at most 6, each through
  *  the word rules. -> { choices, correct } | { code } (words, personal, sameChoices) */
@@ -211,7 +231,7 @@ export function cleanItem(raw, v) {
   const question = clipStr(r.question, LIMITS.questionChars).replace(/\s+/g, ' ').trim();
   const tp = textProblem(question); if (tp) return fail(tp);
   const seed = Number.isInteger(r.seed) && r.seed > 0 && r.seed < 1e9 ? r.seed : null;
-  const g = typeof r.gen === 'string' && genOf(r.gen) && genOf(r.gen).kind === K.id && seed ? generate(r.gen, seed, v) : null;
+  const g = typeof r.gen === 'string' && genOf(r.gen) && genOf(r.gen).kind === K.id && seed ? dealtFor(r.gen, seed, r.data === undefined ? undefined : cleanData(r.data).data || undefined, v) : null;
   let data;
   if (r.data === undefined && g) data = g.data;
   else { const c = cleanData(r.data); if (!c.data) return fail(c.code); data = c.data; }
@@ -254,7 +274,7 @@ export const PURPOSES = Object.freeze(['worksheet', 'test', 'lesson']);
 const cleanTitle = (s, d) => { const v = clipStr(s, LIMITS.titleChars).replace(/\s+/g, ' ').trim(); return v && !textProblem(v) ? v : d; };
 const cleanGrade = g => (GRADE_BANDS.includes(g) || /^(K|[1-9]|1[0-2])$/.test(String(g)) ? String(g) : '');
 const rowItem = r => ({ id: r.id, kind: r.kind, data: json(r.data, {}), gen: r.gen || null, seed: r.seed || null, hide: r.hide === null || r.hide === undefined ? false : r.hide === 'true' ? true : r.hide,
-  question: r.question, answerKey: r.answer_key || null, answer: r.answer, work: json(r.work, []),
+  question: r.question, answerKey: r.answer_key || null, answer: shownAnswer(r.answer), work: json(r.work, []),
   answerType: r.answer_type === 'choice' ? 'choice' : 'number', choices: json(r.choices, []).filter(x => typeof x === 'string'), correct: Number.isInteger(r.correct) ? r.correct : null });
 export const itemsOf = setId => q.all('SELECT * FROM question_set_items WHERE set_id=? ORDER BY pos, id', setId).map(rowItem);
 /** The owner's own worksheet, or null (anyone else: null, the same as a wrong id). */
@@ -353,13 +373,19 @@ export function moveItem(u, id, itemId, dir) {
   if (j >= 0 && j < list.length) { [list[i], list[j]] = [list[j], list[i]]; list.forEach((it, k) => q.run('UPDATE question_set_items SET pos=? WHERE id=?', k, it.id)); touch(w.id); }
   return ok({ id: w.id });
 }
-/** "Regenerate numbers": the same generator with a new seed (a question from a generator only). */
-export function regenItem(u, id, itemId, seed = newSeed()) {
+/** "Regenerate numbers": the same generator with a new seed (a question from a generator only). Without a seed given,
+ *  a fresh random one, drawn again (up to 12 times) while it deals the same figure and question as now, so a re-deal
+ *  always changes the question when its generator can make another. */
+export function regenItem(u, id, itemId, seed) {
   const w = ownWorksheet(u, id); if (!w) return fail('notFound');
   const r = ownItem(w, itemId); if (!r) return fail('notFound');
   const gid = r.gen || (kindOf(r.kind) && kindOf(r.kind).gens[0] && kindOf(r.kind).gens[0].id);
   if (!gid) return fail('noGen');
-  const c = cleanItem({ kind: r.kind, gen: gid, seed }, w.of_version); if (!c.ok) return c;
+  const deal = s => cleanItem({ kind: r.kind, gen: gid, seed: s }, w.of_version);
+  const was = rowItem(r), same = x => canon(x.item.data) === canon(was.data) && x.item.question === was.question;
+  let c = deal(seed === undefined ? newSeed() : seed);
+  for (let i = 0; seed === undefined && i < 12 && c.ok && same(c); i++) c = deal(newSeed());
+  if (!c.ok) return c;
   rewrite(r.id, c.item);
   touch(w.id);
   return ok({ id: w.id });
@@ -403,7 +429,7 @@ export function answerOf(it, v) {
     if (typeof x === 'number' && Number.isFinite(x)) return { value: x, dp: 2, unit: keyUnit(it.answerKey, it.data) };
   }
   if (it.gen && it.seed) {
-    const g = generate(it.gen, it.seed, v);
+    const g = dealtFor(it.gen, it.seed, it.data, v);
     if (g && g.answerType === 'number' && canon(g.data) === canon(it.data) && typeof g.value === 'number' && Number.isFinite(g.value)) return { value: g.value, dp: g.dp, unit: g.unit };
   }
   return null;

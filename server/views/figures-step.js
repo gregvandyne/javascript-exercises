@@ -5,16 +5,18 @@
 import { html, raw } from './html.js';
 import { ico } from './icon.js';
 
+/** A currency unit goes before the blank ($ ___), every other unit after it (___ cm). */
+const money = u => /^[$€£¥₹]$/.test(String(u || ''));
 /** v: viewFor's result. student: { api } to answer (a student of the class), or null (the teacher's preview). */
 export function figuresStepHtml(t, v, { student = null, stepId, showAnswers = false, dueSet = false, dueOver = false } = {}) {
   const locked = !student || v.handedIn;
   const mark = it => (it.right === true ? html`<span class="chip-s fs-mark ok">${ico('✅', { size: 18 })} ${t('figures.step.right')}</span>` : it.right === false ? html`<span class="chip-s fs-mark bad">${ico('❌', { size: 18 })} ${t('figures.step.notRight')}</span>` : '');
   // A number blank takes any sign: phones' decimal keypads often have no minus key, so a ± button flips the sign
   // (public/js/lesson-read.js). Every number question has it, so it never says whether an answer is negative.
-  const numberBlank = it => html`<div class="fs-blank"><label class="sr-only" for="fa-${stepId}-${it.n}">${t('figures.step.answerLabel', { n: it.n })}</label>
+  const numberBlank = it => html`<div class="fs-blank">${money(it.unit) ? html`<span class="fs-unit" dir="ltr">${it.unit}</span>` : ''}<label class="sr-only" for="fa-${stepId}-${it.n}">${t('figures.step.answerLabel', { n: it.n })}</label>
         <input class="input fs-in" id="fa-${stepId}-${it.n}" name="a${it.n - 1}" value="${it.typed}" maxlength="40" inputmode="decimal" autocomplete="off" spellcheck="false" dir="ltr" ${locked ? raw('readonly') : ''}>
         ${locked ? '' : html`<button class="btn btn-sm fs-sign" type="button" data-fs-sign="fa-${stepId}-${it.n}" aria-label="${t('figures.step.signLabel', { n: it.n })}" title="${t('figures.step.sign')}">±</button>`}
-        ${it.unit ? html`<span class="fs-unit" dir="ltr">${it.unit}</span>` : ''}
+        ${it.unit && !money(it.unit) ? html`<span class="fs-unit" dir="ltr">${it.unit}</span>` : ''}
         ${mark(it)}</div>`;
   // A choice question: its options as radio buttons in a fieldset whose legend is the question (the arrow keys move
   // between them). The right one is marked only when viewFor sent it (correct).
