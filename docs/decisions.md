@@ -11265,7 +11265,7 @@ tools (Power with AI, Check my passage, why lines, the free daily cap) are uncha
   sign-up button (the landing's trial, `/teachers`' "#start" or `/trial` when paid plans are on). No prices, no links into
   the tools.
 - **Videos:** `public/video/oomba-manipulatives.mp4`, `oomba-figures.mp4`, `oomba-room.mp4` (the 720p web cuts as made,
-  3.4, 4.0 and 4.2 MB), each with a `-poster.jpg` (a frame just after the hook card) and `.en.vtt` (checked against the
+  3.4, 4.3 and 4.2 MB), each with a `-poster.jpg` (a frame just after the hook card) and `.en.vtt` (checked against the
   burned-in captions of the web cut). The same markup as the `/teachers/live` demo: `controls muted playsinline
   preload="none"`, poster, a captions track, named by its title and described by its line. A video shows only when all
   three of its files are there; the Classroom Dashboard video is one commented entry in `VIDEOS`, plus its files and
