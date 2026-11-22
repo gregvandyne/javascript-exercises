@@ -3425,7 +3425,15 @@
         "reopen": "Reopen room",
         "deleteConfirm": "Delete \"{title}\"? This can’t be undone.",
         "deleteRoom": "Delete the room \"{title}\" and every student’s square in it? This can’t be undone.",
-        "pickClass": "Pick the class for this room, then start it."
+        "pickClass": "Pick the class for this room, then start it.",
+        "seeAll": "See all boards ({n})",
+        "count": "{n, plural, one {# board} other {# boards}}",
+        "allTitle": "All boards",
+        "allLead": "Every template and every recent board and live room you have, grouped by tool. Recent boards stay for 60 days (the newest 30), ended rooms for 30 days, and templates until you delete them.",
+        "back": "Back to Manipulatives",
+        "noTemplates": "No templates yet. Use \"Save as template\" on a board to keep a fresh starting point.",
+        "noRecent": "No recent boards yet. Boards you work on save themselves and show up here.",
+        "showAllTemplates": "Show all {n} templates"
       },
       "share": {
         "save": "Save as template",
@@ -13081,6 +13089,7 @@
   },
   "manip": {
     "title": "Math manipulatives",
+    "boardsTitle": "All boards · Math manipulatives",
     "loading": "Loading the math manipulatives…",
     "class": {
       "banner": "Your teacher started a math board:",

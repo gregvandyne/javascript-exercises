@@ -13,6 +13,7 @@ import { TOOLS, CATS, toolOf, pieceDefs, allPieceDefs, BREAKS, FRACTION_DENS, fr
 import { TASKS } from '/js/manip-tasks.js';
 import { answerMatches } from '/js/manip-practice.js';
 import * as ROOM from '/js/manip-room.js';
+import { PAGE_TEMPLATES, homeLists, byTool } from '/js/manip-library.js';
 import { stepsOf } from '/js/manip-data.js';
 import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSector, addMinutes, migrate, newBoard, boxesOf, bbox, spotIn, placeObject,
   slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, S_MIN, S_FLOOR, S_MAX, OBJ_MAX, OBJ_HEAD, UNDER, parseFrac, EQ_BAR,
@@ -23,6 +24,8 @@ import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP } from '
 const ROOT = document.getElementById('manip');
 const ROLE = pageData().role === 'host' ? 'host' : 'student';
 const HOST = ROLE === 'host';
+// /manipulatives/boards: the All boards page (boardsPage). Its rows open on the manipulatives page itself.
+const ALL_PAGE = HOST && pageData().view === 'boards';
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
 const NOTE_MAX = 12, NOTE_W = 176, NOTE_H = 118;
 let STATE = { boards: [], recent: [], classes: [], sessions: [], draft: null, eta: null };
@@ -1871,7 +1874,7 @@ const whenText = ms => {
 };
 function boardRows() {
   const nameOf = slug => { const x = toolOf(slug); return x ? x.name : slug; };
-  const templates = STATE.boards.map(b => ({ type: 'template', id: b.id, tool: b.tool, title: b.title, sub: `${nameOf(b.tool)} · ${t('js.manip.boards.code', { code: b.code })}` }));
+  const templates = STATE.boards.map(b => ({ type: 'template', id: b.id, tool: b.tool, title: b.title, at: Math.max(b.updated_at || 0, b.opened_at || 0, b.created_at || 0), sub: `${nameOf(b.tool)} · ${t('js.manip.boards.code', { code: b.code })}` }));
   const recent = [
     ...(STATE.recent || []).map(b => {
       const at = Math.max(b.updated_at || 0, b.opened_at || 0, b.created_at || 0), fresh = !b.opened_at;
@@ -1890,22 +1893,43 @@ function menuItems(r) {
   if (r.type === 'board') return [it('rename', t('js.manip.boards.rename')), it('duplicate', t('js.manip.boards.duplicate')), it('delete', t('js.manip.boards.delete'), ' bad')].join('');
   return [r.live ? '' : it('reopen', t('js.manip.boards.reopen')), it('rename', t('js.manip.boards.rename')), r.live ? '' : it('delete', t('js.manip.boards.delete'), ' bad')].join('');
 }
+/** Where a row's title goes: on the All boards page, back to the manipulatives page with it open. */
+const openRow = hash => { if (ALL_PAGE) location.href = `/manipulatives#${hash}`; else location.hash = hash; };
+/** My boards: on the home the newest HOME_MAX of each section (manip-library.js homeLists) and, when any are left out,
+ *  one "See all boards" link; on the All boards page every one, grouped by tool (byTool). The same rows and ⋯ menu. */
 function drawBoards() {
   const el = document.getElementById('mp-boardlist'); if (!el) return;
-  const { templates, recent } = boardRows(), all = [...templates, ...recent];
-  const row = (r, i) => {
-    const x = toolOf(r.tool);
+  const rows = boardRows();
+  const home = homeLists(rows.templates, rows.recent, STATE.templateCount ?? rows.templates.length);
+  const shownTpl = ALL_PAGE ? (drawBoards.allTpl ? rows.templates : rows.templates.slice(0, PAGE_TEMPLATES)) : home.templates;
+  const templates = shownTpl, recent = ALL_PAGE ? rows.recent : home.recent;
+  const all = [];   // the rows in the order drawn (grouped by tool on the All boards page): data-i is a row's place here
+  const row = r => {
+    const i = all.push(r) - 1, x = toolOf(r.tool);
     const ico = r.type === 'room' ? `<span class="mp-ico sm">${iconHtml('📡', { size: 28 })}</span>` : `<span class="mp-ico sm" style="--tc:${x ? x.color : '#888'}">${toolIconHtml(r.tool, { size: 28, lazy: true })}</span>`;
     const tags = `${r.live ? ` <span class="mp-tag good">${esc(t('js.manip.boards.live'))}</span>` : ''}${r.isNew ? ` <span class="mp-tag hot">${esc(t('js.manip.boards.new'))}</span>` : ''}`;
     return `<li class="mp-brow" data-i="${i}">${ico}<span class="mp-btx"><span class="mp-bname"><button type="button" class="mp-blink" data-open="${i}">${esc(r.title)}</button>${tags}</span><span class="small muted">${esc(r.sub)}</span></span>
       <span class="mp-bmore"><button type="button" class="mp-more" data-more="${i}" aria-haspopup="menu" aria-expanded="false" aria-label="${esc(t('js.manip.boards.more', { title: r.title }))}">⋯</button><span class="mp-bmenu panel" role="menu" hidden>${menuItems(r)}</span></span></li>`;
   };
-  let i = 0;
-  const group = (list, title, sub) => (list.length ? `<h3 class="mp-group">${esc(title)} <span class="small muted">· ${esc(sub)}</span></h3><ul class="plain mp-blist">${list.map(r => row(r, i++)).join('')}</ul>` : '');
-  el.innerHTML = all.length ? group(templates, t('js.manip.boards.templates'), t('js.manip.boards.templatesSub')) + group(recent, t('js.manip.boards.recent'), t('js.manip.boards.recentSub'))
-    : `<p class="small muted">${esc(t('js.manip.boards.none'))}</p>`;
+  const ul = list => `<ul class="plain mp-blist">${list.map(row).join('')}</ul>`;
+  // The All boards page: a small heading per tool (its icon, name and count), the most recently used tool first.
+  const byToolHtml = list => byTool(list).map(g => { const x = toolOf(g.tool);
+    return `<section class="mp-tgroup" data-tool="${esc(g.tool)}"><h4 class="mp-tname"><span class="mp-ico xs" style="--tc:${x ? x.color : '#888'}">${toolIconHtml(g.tool, { size: 20, lazy: true })}</span>${esc(x ? x.name : g.tool)} <span class="small muted">${esc(t('js.manip.boards.count', { n: g.rows.length }))}</span></h4>${ul(g.rows)}</section>`; }).join('');
+  const head = (title, sub) => `<h3 class="mp-group">${esc(title)} <span class="small muted">· ${esc(sub)}</span></h3>`;
+  const group = (list, title, sub) => (list.length ? head(title, sub) + ul(list) : '');
+  if (ALL_PAGE) {
+    const rest = rows.templates.length - templates.length;
+    el.innerHTML = `<section class="mp-bsec" id="mp-alltpl">${head(t('js.manip.boards.templates'), t('js.manip.boards.templatesSub'))}${templates.length ? byToolHtml(templates) : `<p class="small muted mp-bempty">${esc(t('js.manip.boards.noTemplates'))}</p>`}
+      ${rest > 0 ? `<p class="mp-ball"><button type="button" class="btn btn-sm" id="mp-moretpl">${esc(t('js.manip.boards.showAllTemplates', { n: rows.templates.length }))}</button></p>` : ''}</section>
+      <section class="mp-bsec" id="mp-allrecent">${head(t('js.manip.boards.recent'), t('js.manip.boards.recentSub'))}${recent.length ? byToolHtml(recent) : `<p class="small muted mp-bempty">${esc(t('js.manip.boards.noRecent'))}</p>`}</section>`;
+    const more = document.getElementById('mp-moretpl'); if (more) more.onclick = () => { drawBoards.allTpl = true; drawBoards(); };
+  } else {
+    el.innerHTML = templates.length + recent.length ? group(templates, t('js.manip.boards.templates'), t('js.manip.boards.templatesSub')) + group(recent, t('js.manip.boards.recent'), t('js.manip.boards.recentSub'))
+      + (home.more ? `<p class="mp-ball"><a href="/manipulatives/boards">${esc(t('js.manip.boards.seeAll', { n: home.total }))}</a></p>` : '')
+      : `<p class="small muted">${esc(t('js.manip.boards.none'))}</p>`;
+  }
   const closeMenus = () => { for (const m of el.querySelectorAll('.mp-bmenu')) m.hidden = true; for (const b of el.querySelectorAll('.mp-more')) b.setAttribute('aria-expanded', 'false'); };
-  for (const b of el.querySelectorAll('[data-open]')) b.onclick = () => { const r = all[+b.dataset.open]; location.hash = r.type === 'room' ? `live/${r.id}` : `board/${r.id}`; };
+  for (const b of el.querySelectorAll('[data-open]')) b.onclick = () => { const r = all[+b.dataset.open]; openRow(r.type === 'room' ? `live/${r.id}` : `board/${r.id}`); };
   for (const b of el.querySelectorAll('[data-more]')) b.onclick = e => {
     e.stopPropagation();
     const m = b.nextElementSibling, open = m.hidden; closeMenus();
@@ -1929,19 +1953,31 @@ async function boardAction(r, act, li) {
     } else if (act === 'duplicate') {
       await api(`${base}/duplicate`, { method: 'POST', body: {} });
     } else if (act === 'reopen') {
-      await api(`${base}/reopen`, { method: 'POST', body: {} }); await loadState2(); location.hash = `live/${r.id}`; return;
+      await api(`${base}/reopen`, { method: 'POST', body: {} }); await loadState2(); openRow(`live/${r.id}`); return;
     } else if (act === 'start') {
       if (STATE.classes.length === 1) {
         const s = await api('/api/manipulatives/live', { method: 'POST', body: { classId: STATE.classes[0].id, boardId: r.id } });
-        await loadState2(); location.hash = `live/${s.session.id}`; return;
+        await loadState2(); openRow(`live/${s.session.id}`); return;
       }
-      // Several classes: the room form above, with this template picked; the teacher picks the class.
-      const f = document.getElementById('mp-host'); if (!f) return;
-      f.elements.boardId.value = r.id; f.scrollIntoView({ behavior: 'smooth', block: 'center' }); f.elements.classId.focus(); toast(t('js.manip.boards.pickClass'));
-      return;
+      // Several classes: the room form on the home, with this template picked; the teacher picks the class.
+      if (ALL_PAGE) { location.href = `/manipulatives#start/${encodeURIComponent(r.id)}`; return; }
+      return pickClassFor(r.id);
     }
     await loadState2(); drawBoards();
   } catch (e) { toast(e.message, { bad: true }); }
+}
+/** The home's room form with a template picked, for a teacher with several classes to pick from. */
+function pickClassFor(id) {
+  const f = document.getElementById('mp-host'); if (!f) return;
+  f.elements.boardId.value = id; f.scrollIntoView({ behavior: 'smooth', block: 'center' }); f.elements.classId.focus(); toast(t('js.manip.boards.pickClass'));
+}
+/** The All boards page (/manipulatives/boards): every template and every kept recent board and room, by tool. */
+function boardsPage() {
+  clear(); V = null;
+  ROOT.innerHTML = `<div class="pagehead"><h1>${iconHtml('🗂️', { size: 36 })} ${esc(t('js.manip.boards.allTitle'))}</h1><a class="btn btn-sm" href="/manipulatives">${esc(t('js.manip.boards.back'))}</a></div>
+    <p class="mp-lead">${esc(t('js.manip.boards.allLead'))}</p>
+    <section class="panel mp-boards mp-allboards" aria-label="${esc(t('js.manip.boards.allTitle'))}"><div id="mp-boardlist"></div></section>`;
+  drawBoards();
 }
 /** Rename in place: the title becomes a text box (Enter saves, Escape puts it back). */
 function renameRow(r, li, base) {
@@ -1995,7 +2031,7 @@ function tasksView() {
 
 // ================================================================ start
 async function loadState2() {
-  try { STATE = { boards: [], recent: [], classes: [], sessions: [], draft: null, eta: null, ...(await api('/api/manipulatives/state')) }; } catch { return; /* keep what we have */ }
+  try { STATE = { boards: [], recent: [], classes: [], sessions: [], draft: null, eta: null, ...(await api(`/api/manipulatives/state${ALL_PAGE ? '?all=1' : ''}`)) }; } catch { return; /* keep what we have */ }
   if (HOST) setJob(STATE.draft, STATE.eta);
 }
 /** A saved board by id (#board/<id>): a recent board goes on saving into itself; a template opens as a fresh copy. */
@@ -2015,6 +2051,8 @@ async function route() {
   if (V) autosave({ keepalive: true });   // leaving a board: its last change is saved
   ROOM.close();
   if (HOST && h.startsWith('board/')) return openSaved(h.slice(6));
+  // From the All boards page: "Start a live room with it" for a teacher with several classes (the home's room form).
+  if (HOST && h.startsWith('start/')) { await loadState2(); home(); history.replaceState(null, '', '#'); return pickClassFor(h.slice(6)); }
   if (h.startsWith('join/')) return liveRoom(h.slice(5), true);
   if (h.startsWith('live/') || h.startsWith('session/')) return liveRoom(h.slice(h.indexOf('/') + 1), false);
   if (h === 'tasks' && HOST) return tasksView();
@@ -2022,6 +2060,9 @@ async function route() {
   if (!h || !HOST) { await loadState2(); return home(); }
   home();
 }
-window.addEventListener('hashchange', route);
-window.addEventListener('pagehide', () => { if (V) autosave({ keepalive: true }); });
-loadState2().then(route);
+if (ALL_PAGE) loadState2().then(boardsPage);
+else {
+  window.addEventListener('hashchange', route);
+  window.addEventListener('pagehide', () => { if (V) autosave({ keepalive: true }); });
+  loadState2().then(route);
+}

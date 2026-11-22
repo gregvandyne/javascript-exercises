@@ -3403,7 +3403,15 @@
         "reopen": "Riapri la stanza",
         "deleteConfirm": "Eliminare «{title}»? Non si può annullare.",
         "deleteRoom": "Eliminare la stanza «{title}» e il riquadro di ogni studente? Non si può annullare.",
-        "pickClass": "Scegli la classe per questa stanza, poi avviala."
+        "pickClass": "Scegli la classe per questa stanza, poi avviala.",
+        "seeAll": "Vedi tutte le lavagne ({n})",
+        "count": "{n, plural, one {# lavagna} other {# lavagne}}",
+        "allTitle": "Tutte le lavagne",
+        "allLead": "Tutti i tuoi modelli, le lavagne recenti e le stanze dal vivo, raggruppati per strumento. Le lavagne recenti restano 60 giorni (le 30 più nuove), le stanze chiuse 30 giorni e i modelli finché non li elimini.",
+        "back": "Torna ai materiali",
+        "noTemplates": "Ancora nessun modello. Usa «Salva come modello» per tenere un punto di partenza pulito.",
+        "noRecent": "Ancora nessuna lavagna recente. Le lavagne su cui lavori si salvano da sole e appaiono qui.",
+        "showAllTemplates": "Vedi tutti i {n} modelli"
       },
       "share": {
         "save": "Salva come modello"

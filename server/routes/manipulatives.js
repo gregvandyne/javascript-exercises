@@ -3,6 +3,7 @@
 // a class with a session running); everyone else falls through to the site's normal 404. Never linked from any menu,
 // the sitemap or search, and never indexed (X-Robots-Tag and the layout's noindex).
 //   GET  /manipulatives                         the page (tools, tasks, live): the browser's public/js/manip.js
+//   GET  /manipulatives/boards                  a host's All boards page (every template, recent board and room, by tool)
 //   GET  /api/manipulatives/state               what the page starts from: role, own templates and recent boards,
 //                                               classes, sessions, the AI draft (and how long drafts take)
 //   POST /api/manipulatives/boards              a host saves a template (Save as template: it gets a share code)
@@ -78,9 +79,22 @@ router.get('/manipulatives', (req, res) => {
   });
 });
 
+// All boards: every template and every kept recent board and room, grouped by tool (public/js/manip.js boardsPage). The
+// teacher's own page: anyone else (a student too) gets the site's 404, as for anything here the gate doesn't let in.
+router.get('/manipulatives/boards', (req, res, next) => {
+  if (req.manipRole !== 'host') return next('router');
+  const t = req.t, tools = teachingTools(req, 'manip');
+  page(req, res, {
+    title: t('manip.boardsTitle'), active: null, head: tools ? raw(`${CSS}<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`) : CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room'], bodyClass: 'manip-page',
+    body: html`${tools}${jsonData('page-data', { role: req.manipRole, view: 'boards' })}
+      <div id="manip" class="manip" data-role="${req.manipRole}"><p class="muted">${t('manip.loading')}</p></div>`,
+  });
+});
+
 router.get('/api/manipulatives/state', (req, res) => {
   const u = req.user;
-  if (req.manipRole === 'host') return res.json({ role: 'host', boards: M.listBoards(u), recent: M.listRecent(u), classes: M.hostClasses(u), sessions: M.hostSessions(u), draft: D.current(u), eta: D.eta() });
+  // ?all=1: every template (the All boards page); the home gets the newest 100 and the count.
+  if (req.manipRole === 'host') return res.json({ role: 'host', boards: M.listBoards(u, { all: req.query.all === '1' }), templateCount: M.countBoards(u), recent: M.listRecent(u), classes: M.hostClasses(u), sessions: M.hostSessions(u), draft: D.current(u), eta: D.eta() });
   res.json({ role: 'student', sessions: M.studentSessions(u).map(s => ({ id: s.id, tool: s.tool, title: s.title, status: s.status, className: s.class_name, joined: !!s.joined })) });
 });
 

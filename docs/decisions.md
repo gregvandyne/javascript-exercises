@@ -10310,6 +10310,16 @@ weren't saved at all unless the teacher pressed Save, which made a new share cod
   old Open and Delete buttons) holds Rename, Duplicate, Delete, "Start a live room with it" (templates, when the teacher
   has a class) and "Reopen room" (ended rooms). The rooms list in the "Run a live session" panel went (the rooms are in
   My boards).
+- **All boards** (22 Nov 2026). The home's My boards shows the newest 5 templates and the newest 5 recent boards
+  (rooms among them), ungrouped; when anything is left out, one small "See all boards (n)" link at the bottom of the card
+  (no new toolbar buttons) opens /manipulatives/boards, the same gate (a host only; anyone else, a student too, the
+  site's 404), noindex, the same layout and Teaching tools nav, and a "Back to Manipulatives" link. It lists every
+  template and every kept recent board and room, each section grouped by tool (a small heading with the tool's icon and
+  count, the most recently used tool first, boards newest first inside; a room under its own tool), with the same rows
+  and the same ⋯ menu (drawBoards, not a copy); past 50 templates, one "Show all" button. Nothing is deleted by the cap
+  and the retention rules are unchanged. The state gives every template with ?all=1 and the template count always
+  (public/js/manip-library.js homeLists and byTool). Tests: tests/unit/manip-boards-page.test.js and
+  tests/unit/manip-boards-page-browser.test.js.
 - **Rooms and recess.** No Pause button: leaving the page already keeps a room live, and each student's square
   (manip_work.slot) comes back when they join again. An ended room can be reopened from My boards or from its own ⋯
   menu, with the same join code and every square as it was; its 12 hours count from the reopening

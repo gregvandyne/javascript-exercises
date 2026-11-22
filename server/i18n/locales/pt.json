@@ -3403,7 +3403,15 @@
         "reopen": "Reabrir a sala",
         "deleteConfirm": "Apagar “{title}”? Não dá para desfazer.",
         "deleteRoom": "Apagar a sala “{title}” e o quadrado de cada estudante? Não dá para desfazer.",
-        "pickClass": "Escolha a turma desta sala e depois abra."
+        "pickClass": "Escolha a turma desta sala e depois abra.",
+        "seeAll": "Ver todos os quadros ({n})",
+        "count": "{n, plural, one {# quadro} other {# quadros}}",
+        "allTitle": "Todos os quadros",
+        "allLead": "Todos os seus modelos, quadros recentes e salas ao vivo, agrupados por ferramenta. Quadros recentes ficam 60 dias (os 30 mais novos), salas encerradas 30 dias e modelos até você apagá-los.",
+        "back": "Voltar aos manipuláveis",
+        "noTemplates": "Ainda não há modelos. Use “Salvar como modelo” para guardar um ponto de partida limpo.",
+        "noRecent": "Ainda não há quadros recentes. Os quadros em que você trabalha são salvos sozinhos e aparecem aqui.",
+        "showAllTemplates": "Ver os {n} modelos"
       },
       "share": {
         "save": "Salvar como modelo"

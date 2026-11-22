@@ -3402,7 +3402,15 @@
         "reopen": "Reabrir la sala",
         "deleteConfirm": "¿Borrar «{title}»? No se puede deshacer.",
         "deleteRoom": "¿Borrar la sala «{title}» y el cuadro de cada estudiante? No se puede deshacer.",
-        "pickClass": "Elige la clase para esta sala y luego ábrela."
+        "pickClass": "Elige la clase para esta sala y luego ábrela.",
+        "seeAll": "Ver todas las pizarras ({n})",
+        "count": "{n, plural, one {# pizarra} other {# pizarras}}",
+        "allTitle": "Todas las pizarras",
+        "allLead": "Todas tus plantillas, pizarras recientes y salas en vivo, agrupadas por herramienta. Las pizarras recientes se quedan 60 días (las 30 más nuevas), las salas terminadas 30 días y las plantillas hasta que las borres.",
+        "back": "Volver a los manipulativos",
+        "noTemplates": "Aún no hay plantillas. Usa «Guardar como plantilla» para tener un punto de partida limpio.",
+        "noRecent": "Aún no hay pizarras recientes. Las pizarras en las que trabajas se guardan solas y aparecen aquí.",
+        "showAllTemplates": "Ver las {n} plantillas"
       },
       "share": {
         "save": "Guardar como plantilla"
