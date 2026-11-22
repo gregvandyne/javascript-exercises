@@ -11,7 +11,10 @@
 //   hide       what "Hide answer for students" can leave out (OF's hide values; the first is the default)
 //   nts        the kind takes notToScale ("Not drawn to scale")
 //   gens       figure question generators (the gen language of Oomba Canvas: vars, where, q, fig, answer, dp, unit,
-//              work); key, where given, is the OF.solve value the answer is (so the answer comes from OF.solve)
+//              work); key, where given, is the OF.solve value the answer is (so the answer comes from OF.solve). A
+//              "figure.choice" generator has choices (2 to 6 options), answer the index of the right one, {choice} in its
+//              worked lines, and pick: each OF.solve value of key (a number or a word) to the option it means. A number
+//              answer may be negative. (docs/figures-api.md "Figure question generators in Figures worksheets")
 // The generators are the docs' own, plus a few for kinds the docs have none for (freeBody, vectors, inclinedPlane,
 // pulley, halfLife, bohr and the thermometer). Kinds without one (orbitals, lewis, titration) randomize from presets.
 export const SUBJECTS = Object.freeze(['math', 'data', 'physics', 'chem', 'biology', 'economics']);

@@ -1165,7 +1165,8 @@ export const MIGRATIONS = [
   // Figures answer types (docs/decisions.md "Figures: multiple choice and negative answers"): a worksheet question is
   // answered with a number (any sign) or by picking one of 2 to 6 options. answer_type 'number' (every question before
   // this) | 'choice'; choices: the options as a JSON list of strings, in the order students see them; correct: the index
-  // of the right one (NULL while the teacher has not marked one). A lesson step's snapshot keeps the same three fields
+  // of the right one (NULL while the teacher has not marked one). A number question keeps options it had, so switching
+  // back to multiple choice brings them back. A lesson step's snapshot keeps the same three fields
   // in its items JSON (no column: an older snapshot without them is a number question).
   ['0099_figures_answer_types', `
     ALTER TABLE question_set_items ADD COLUMN answer_type TEXT NOT NULL DEFAULT 'number';

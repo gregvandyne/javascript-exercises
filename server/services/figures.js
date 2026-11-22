@@ -237,7 +237,9 @@ export function cleanItem(raw, v) {
   }
   const nums = solved(K.id, data, v);
   const key = typeof r.answerKey === 'string' && typeof nums[r.answerKey] === 'number' ? r.answerKey : null;
-  const base = { kind: K.id, data, hide, question: question || (fromGen ? g.question : ''), answerKey: key, answerType: 'number', choices: [], correct: null };
+  // A number question keeps options the teacher wrote (switching back to multiple choice brings them back).
+  const kept = r.choices === undefined ? { choices: [], correct: null } : cleanChoices(r.choices, Number.isInteger(r.correct) ? r.correct : null);
+  const base = { kind: K.id, data, hide, question: question || (fromGen ? g.question : ''), answerKey: key, answerType: 'number', choices: kept.choices || [], correct: kept.code ? null : kept.correct };
   const keyAnswer = key ? unitText(numText(nums[key], 2), keyUnit(key, data)) : '';
   if (fromGen && g.answerType === 'number') return ok({ item: { ...base, gen: r.gen, seed, answer: key ? keyAnswer : g.answer, work: key ? [] : g.work } });
   return ok({ item: { ...base, ...src, answer: keyAnswer, work: [] } });
@@ -248,7 +250,7 @@ const cleanTitle = (s, d) => { const v = clipStr(s, LIMITS.titleChars).replace(/
 const cleanGrade = g => (GRADE_BANDS.includes(g) || /^(K|[1-9]|1[0-2])$/.test(String(g)) ? String(g) : '');
 const rowItem = r => ({ id: r.id, kind: r.kind, data: json(r.data, {}), gen: r.gen || null, seed: r.seed || null, hide: r.hide === null || r.hide === undefined ? false : r.hide === 'true' ? true : r.hide,
   question: r.question, answerKey: r.answer_key || null, answer: r.answer, work: json(r.work, []),
-  answerType: r.answer_type === 'choice' ? 'choice' : 'number', choices: r.answer_type === 'choice' ? json(r.choices, []).filter(x => typeof x === 'string') : [], correct: Number.isInteger(r.correct) ? r.correct : null });
+  answerType: r.answer_type === 'choice' ? 'choice' : 'number', choices: json(r.choices, []).filter(x => typeof x === 'string'), correct: Number.isInteger(r.correct) ? r.correct : null });
 export const itemsOf = setId => q.all('SELECT * FROM question_set_items WHERE set_id=? ORDER BY pos, id', setId).map(rowItem);
 /** The owner's own worksheet, or null (anyone else: null, the same as a wrong id). */
 export function ownWorksheet(u, id) {
@@ -262,11 +264,11 @@ export function listWorksheets(u) {
 }
 const storeItem = (setId, pos, it) => q.run(`INSERT INTO question_set_items(id, set_id, pos, kind, data, gen, seed, hide, question, answer_key, answer, work, answer_type, choices, correct, points)
   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)`, uid(12), setId, pos, it.kind, JSON.stringify(it.data), it.gen, it.seed, it.hide === false ? null : String(it.hide), it.question, it.answerKey, it.answer, JSON.stringify(it.work),
-  it.answerType === 'choice' ? 'choice' : 'number', JSON.stringify(it.answerType === 'choice' ? it.choices : []), it.answerType === 'choice' && Number.isInteger(it.correct) ? it.correct : null);
+  it.answerType === 'choice' ? 'choice' : 'number', JSON.stringify(it.choices || []), Number.isInteger(it.correct) ? it.correct : null);
 /** Write a question's worked-out fields back to its row. */
 const rewrite = (id, it) => q.run('UPDATE question_set_items SET data=?, gen=?, seed=?, hide=?, question=?, answer_key=?, answer=?, work=?, answer_type=?, choices=?, correct=? WHERE id=?',
   JSON.stringify(it.data), it.gen, it.seed, it.hide === false ? null : String(it.hide), it.question, it.answerKey, it.answer, JSON.stringify(it.work),
-  it.answerType === 'choice' ? 'choice' : 'number', JSON.stringify(it.answerType === 'choice' ? it.choices : []), it.answerType === 'choice' && Number.isInteger(it.correct) ? it.correct : null, id);
+  it.answerType === 'choice' ? 'choice' : 'number', JSON.stringify(it.choices || []), Number.isInteger(it.correct) ? it.correct : null, id);
 const touch = id => q.run('UPDATE question_sets SET updated_at=? WHERE id=?', now(), id);
 /** The subject a worksheet is mostly about (its items' kinds). */
 function subjectOf(setId) {
