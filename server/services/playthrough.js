@@ -3,7 +3,7 @@
 // version reached the game's end: BRB.gameOver or the results card, with no uncaught errors, no stuck screen, and a
 // score where the game sends one. The playthrough itself runs in the browser (snapshot.js playthroughGame ->
 // playthrough-play.js); this module picks how to play a version, judges what happened, and keeps the result on the
-// version (game_versions.playthrough_status / playthrough_report, migration 0101), so publishing checks it cheaply.
+// version (game_versions.playthrough_status / playthrough_report, migration 0102), so publishing checks it cheaply.
 //   - The Builder plays every new version after a build (builder/tools.js autoPlaytest): a failure goes back to the
 //     model as fix-it feedback (autotest.js), like the other playtest problems.
 //   - Publishing (services/publish.js) needs a pass. A version with no result yet (made before this, or when the build

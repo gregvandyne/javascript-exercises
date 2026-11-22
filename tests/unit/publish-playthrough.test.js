@@ -40,8 +40,8 @@ let k = 0;
 const user = (o = {}) => auth.createUser({ username: `Pt${o.role === 'admin' ? 'Admin' : 'Kid'}${k++}`, password: 'secret12', ...o });
 const version = (g, html, o = {}) => games.addVersion(g.id, html, { createdBy: g.owner_id, safetyStatus: 'pass', ...o });
 
-test('migration 0101 adds the playthrough result to every version', () => {
-  assert.ok(q.get("SELECT 1 FROM migrations WHERE name='0101_version_playthrough'"));
+test('migration 0102 adds the playthrough result to every version', () => {
+  assert.ok(q.get("SELECT 1 FROM migrations WHERE name='0102_version_playthrough'"));
   const cols = q.all('PRAGMA table_info(game_versions)').map(c => c.name);
   assert.ok(cols.includes('playthrough_status') && cols.includes('playthrough_report'));
 });

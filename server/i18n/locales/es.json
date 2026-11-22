@@ -76,7 +76,9 @@
     "learn": "Aprender",
     "class": "Clase",
     "classroom": "Mi aula",
-    "live": "En vivo"
+    "live": "En vivo",
+    "tools": "Herramientas docentes",
+    "toolsTab": "Herramientas"
   },
   "errors": {
     "goHome": "Ir al inicio",
@@ -3418,7 +3420,8 @@
           "guessUnder": "A menudo menos de un minuto",
           "guess": "{n, plural, one {Un minuto, más o menos} other {Unos # minutos}}",
           "longer": "Tarda un poco más de lo normal",
-          "soFar": "{time} hasta ahora"
+          "soFar": "{time} hasta ahora",
+          "longerMax": "{n, plural, one {Está tardando más de lo habitual. En un minuto como mucho tendrás un tablero de todos modos.} other {Está tardando más de lo habitual. En # minutos como mucho tendrás un tablero de todos modos.}}"
         },
         "step": {
           "check": {
@@ -3452,7 +3455,18 @@
           "names": "No pongas nombres de estudiantes en la descripción: los nombres nunca van a la IA.",
           "words": "Algunas palabras de la descripción no están permitidas. Cámbialas e inténtalo de nuevo.",
           "personal": "Quita números de teléfono, correos, enlaces y códigos, e inténtalo de nuevo.",
-          "other": "Algo salió mal. Inténtalo en un momento."
+          "other": "Algo salió mal. Inténtalo en un momento.",
+          "notFound": "Esta cuenta no puede preparar tableros con IA ahora. Pide a quien te dio acceso a los manipulativos que revise tu acceso.",
+          "badTool": "Esta herramienta no se puede preparar con IA. Abre otra herramienta y prueba allí.",
+          "brief": "La descripción era demasiado corta. Escribe unas palabras sobre la lección y vuelve a intentarlo.",
+          "badState": "No se pudo guardar el tablero preparado. Vuelve a intentarlo o pide menos problemas.",
+          "tooBig": "El tablero preparado era demasiado grande para guardarlo. Pide menos problemas y vuelve a intentarlo."
+        },
+        "fallback": {
+          "resting": "La IA está descansando ahora, así que aquí tienes un tablero inicial. Puedes volver a probar con la IA más tarde.",
+          "timeout": "La IA no respondió a tiempo, así que aquí tienes un tablero inicial. Puedes volver a probar con la IA.",
+          "busy": "La IA está muy ocupada ahora, así que aquí tienes un tablero inicial. Vuelve a probar con la IA en unos minutos.",
+          "error": "La IA no pudo preparar este, así que aquí tienes un tablero inicial. Puedes volver a probar con la IA."
         }
       },
       "save": {
@@ -3817,7 +3831,8 @@
       "removeTestQ": "¿Borrar esta prueba?",
       "removeLesson": "Borrar estas preguntas",
       "removeLessonQ": "¿Borrar estas preguntas con figuras?",
-      "removeLessonText": "El paso de figuras de la lección conserva las preguntas con las que se guardó por última vez. No se puede deshacer."
+      "removeLessonText": "El paso de figuras de la lección conserva las preguntas con las que se guardó por última vez. No se puede deshacer.",
+      "fallback": "La IA no respondió esta vez, así que aquí tienes un conjunto inicial ({count, plural, one {# pregunta} other {# preguntas}}). Puedes volver a intentarlo."
     }
   },
   "favorites": {
@@ -12400,7 +12415,6 @@
       "9-12": "Grados 9-12"
     },
     "menu": {
-      "testing": "En prueba: solo tú puedes verlo",
       "pitch": "Figuras exactas y a escala para fichas, exámenes y presentaciones. Listas para imprimir, con las respuestas resueltas.",
       "buildTitle": "Crear una ficha",
       "buildText": "Elige las figuras tú mismo, o describe lo que necesitas y deja que la IA redacte las preguntas. Cada número se comprueba para que cada figura se pueda dibujar de verdad.",
@@ -12847,6 +12861,19 @@
       "care3": "Estas condiciones tratan de las figuras que exportas. El resto de Oomba Academy se rige por los términos del sitio.",
       "siteTerms": "Leer los términos del sitio",
       "back": "Volver a Figuras"
+    },
+    "plan": {
+      "titleFigures": "Figuras",
+      "titleManip": "Manipulativos",
+      "headingFigures": "Figuras es parte del plan Docente",
+      "headingManip": "Los manipulativos son parte del plan Docente",
+      "leadFigures": "Cree figuras exactas de matemáticas, datos, ciencias y economía, arme con ellas hojas de trabajo y pruebas, y agregue preguntas con figuras a sus lecciones.",
+      "leadManip": "Use manipulativos virtuales en la pizarra, guarde tableros para compartir y haga sesiones en vivo con sus clases.",
+      "trial": "Pruebe el plan Docente gratis durante {days} días. No hace falta tarjeta para empezar.",
+      "kept": "Todo lo que ya asignó sigue funcionando para sus alumnos.",
+      "start": "Empezar mi prueba gratis",
+      "plans": "Ver los planes",
+      "api": "Esto es parte del plan Docente."
     }
   }
 }

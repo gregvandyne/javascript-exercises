@@ -2,7 +2,9 @@
 // share codes, live class sessions and an AI lesson drafter. Hidden while it is tested (config.manipulatives).
 //
 // Who may use it:
-//   - hosts: the platform admin, and school staff whose username is in MANIPULATIVES_USERS. Only hosts save boards
+//   - hosts (services/teacher-tools.js toolAccess, the same rule as Figures; docs/decisions.md "Figures and the
+//     Manipulatives: Teacher plan only"): the platform admin, school staff whose username is in MANIPULATIVES_USERS,
+//     and, while paid plans are on, school staff with the Teacher plan (other staff see the plan page). Only hosts save boards
 //     (each saved board gets a share code), run live sessions, push boards, export and draft with AI.
 //   - students: a signed-in student of a class whose teacher (a host) is running a session for it. A join code finds
 //     the session, but only that class's own students get in; for anyone else the code is the same 404 as a wrong one.
@@ -19,10 +21,12 @@
 import crypto from 'node:crypto';
 import { q, uid, now, audit } from '../db.js';
 import { config } from '../config.js';
-import { isGrownup, getUser } from '../auth.js';
+import { getUser } from '../auth.js';
 import * as S from './schools.js';
+import { toolAccess } from './teacher-tools.js';
 import { anthropic } from '../builder/anthropic.js';
 import * as aiBudget from './ai-budget.js';
+import { callAi, logAiFail, fallbackReason } from './ai-call.js';
 import { hasProfanity, personalInfo } from './textfilter.js';
 import { STRIP, layoutOf, TOOLS, toolOf, pieceDefs, roomLayout, ROOM_COLORS, instructionNotes, stripHeight, stepsOf, stepStripTexts, TEACHER_STEP_H } from '../../public/js/manip-data.js';
 import * as LIVE from './manip-live.js';
@@ -51,12 +55,11 @@ const json = (s, d) => { try { return JSON.parse(s); } catch { return d; } };
 
 // ---------------------------------------------------------------- who may use it
 export const on = () => !!config.manipulatives;
-/** May this account host (save boards with share codes, run sessions, draft with AI)? */
-export function canHost(u) {
-  if (!on() || !u || u.is_guest || u.banned || isGrownup(u)) return false;
-  if (S.isPlatformAdmin(u)) return true;
-  return config.manipulativesUsers.includes(String(u.username || '').toLowerCase()) && S.isSchoolStaff(u);
-}
+/** May this account host (save boards with share codes, run sessions, draft with AI)? (services/teacher-tools.js) */
+export const canHost = u => toolAccess(u, on()) === 'yes';
+/** A session's host, for its students: still staff the tools know (a host whose Teacher plan lapsed keeps the session
+ *  they started for their class; they cannot start a new one). */
+const hostStill = u => toolAccess(u, on()) !== null;
 const isStudentOf = (u, classId) => {
   const c = S.getClass(classId);
   const m = u && c && !c.archived_at ? S.classMember(c.id, u.id) : null;
@@ -84,12 +87,14 @@ export function studentSessions(u) {
   const rows = q.all(`SELECT s.*, c.name class_name, (SELECT 1 FROM manip_work w WHERE w.session_id=s.id AND w.user_id=?) joined FROM manip_sessions s
     JOIN class_members m ON m.class_id=s.class_id AND m.user_id=? AND m.status='active' AND m.role='student' JOIN classrooms c ON c.id=s.class_id
     WHERE c.archived_at IS NULL AND (s.status='active' AND s.opened_at>? OR s.ended_at>?) ORDER BY s.created_at DESC`, u.id, u.id, t - SESSION_HOURS * HOUR, t - SESSION_HOURS * HOUR);
-  return rows.filter(s => (s.status === 'active' || s.joined) && isStudentOf(u, s.class_id) && canHost(getUser(s.host_id)));
+  return rows.filter(s => (s.status === 'active' || s.joined) && isStudentOf(u, s.class_id) && hostStill(getUser(s.host_id)));
 }
-/** 'host' | 'student' | null (null: the normal 404). */
+/** 'host' | 'student' | 'plan' (school staff without the Teacher plan: the plan page) | null (null: the normal 404). */
 export function roleOf(u) {
-  if (canHost(u)) return 'host';
-  return studentSessions(u).length ? 'student' : null;
+  const a = toolAccess(u, on());
+  if (a === 'yes') return 'host';
+  if (studentSessions(u).length) return 'student';
+  return a === 'plan' ? 'plan' : null;
 }
 
 // ---------------------------------------------------------------- boards (the JSON a tool saves)
@@ -358,7 +363,7 @@ export const isSessionHost = (u, s) => !!(s && canHost(u) && (s.host_id === u.id
 /** A student's session, if they may be in it (its class's student; its teacher may still host). */
 function studentSession(u, id) {
   const s = getSession(id);
-  if (!s || !on() || !u || u.is_guest || u.banned || !isStudentOf(u, s.class_id) || !canHost(getUser(s.host_id))) return null;
+  if (!s || !on() || !u || u.is_guest || u.banned || !isStudentOf(u, s.class_id) || !hostStill(getUser(s.host_id))) return null;
   return s;
 }
 /** Join with a code (or by id from the class list). A code from another class gets the same answer as a wrong one. */
@@ -867,7 +872,8 @@ function prompt(tl, { grade, brief, task }) {
     `<lesson>\n${brief}${task ? `\nBased on this library task: ${task}` : ''}\n</lesson>`,
   ].join('\n');
 }
-/** Without the AI (no key, or the AI budget is resting): the tool's usual board, the brief as its one step. */
+/** Without the AI (no key, the AI budget is resting, or the AI failed or didn't answer in time): the tool's usual
+ *  board, the brief as its one step. */
 const templateDraft = (tl, { brief, task }) => ({ title: (task ? task.split(':')[0] : '') || `${tl.name} lesson`, steps: [clipStr(brief, 140)], items: [] });
 /**
  * The checks before anything is stored or sent (services/manip-drafts.js runs them when a draft is asked for, and
@@ -887,23 +893,32 @@ export function draftRequest(u, { tool, brief, grade = '', task = '' } = {}) {
   const tk = (TASKS[tl.slug] || []).find(x => `${x.title}: ${x.prompt}` === String(task)) || null;
   return ok({ tool: tl.slug, brief: b, grade: g, task: tk ? `${tk.title}: ${tk.prompt}` : '' });
 }
-/** The AI call for a checked request (draftRequest's), or the tool's usual board without it (no key, or the AI budget
- *  is resting). -> { ok, draft, ai } | { ok:false, code: 'aiFailed' } */
-export async function runDraft(u, r) {
+/** The AI call for a checked request (draftRequest's), or the tool's usual board without it. It never fails because of
+ *  the AI: with no key or the AI budget resting (reason 'resting'), or when the call fails, times out or sends back
+ *  something that is not a draft (reason 'timeout' | 'busy' | 'error', one warn line: services/ai-call.js), the draft
+ *  is the template (ai: false) and the page says why. at: { draft } (the job's id, for the warn line).
+ *  -> { ok, draft, ai, reason? } */
+export async function runDraft(u, r, at = {}) {
   const tl = toolOf(r.tool);
+  const template = reason => ok({ draft: sanitizeDraft(templateDraft(tl, { brief: r.brief, task: r.task }), tl.slug), ai: false, reason });
   const client = hooks.create ? { messages: { create: hooks.create } } : anthropic('free');
-  if (!client) return ok({ draft: sanitizeDraft(templateDraft(tl, { brief: r.brief, task: r.task }), tl.slug), ai: false });
+  if (!client) return template('resting');
   let raw;
+  const t0 = Date.now();
   try {
-    const res = await client.messages.create({
-      model: config.builderModel, max_tokens: 4000,
+    // A full board (PRACTICE_MAX items with their settings, STEPS_MAX steps, a title) is well under 2000 tokens of JSON.
+    const res = await callAi(client, {
+      model: config.builderModel, max_tokens: 3000,
       output_config: { effort: 'low', format: { type: 'json_schema', schema: DRAFT_SCHEMA } },
       messages: [{ role: 'user', content: prompt(tl, { grade: r.grade, brief: r.brief, task: r.task }) }],
-    }, { timeout: 60000, maxRetries: 1 });
+    });
     if (res && res.usage) aiBudget.recordUsage(res.model || config.builderModel, res.usage);
     const block = ((res && res.content) || []).find(c => c.type === 'text');
     raw = JSON.parse(block ? block.text : '');
-  } catch { return fail('aiFailed'); }
+    if (!raw || typeof raw !== 'object') throw new SyntaxError('not a draft');
+  } catch (e) {
+    return template(fallbackReason(logAiFail('manipulatives draft ai failed', { draft: at.draft || null, tool: tl.slug }, e, t0)));
+  }
   audit(u.id, 'manip.draft', tl.slug, {});
   return ok({ draft: sanitizeDraft(raw, tl.slug), ai: true });
 }

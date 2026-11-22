@@ -77,7 +77,9 @@
     "learn": "Learn",
     "class": "Class",
     "classroom": "Classroom",
-    "live": "Live"
+    "live": "Live",
+    "tools": "Teaching tools",
+    "toolsTab": "Tools"
   },
   "errors": {
     "goHome": "Go home",
@@ -3503,7 +3505,6 @@
         "go": "Draft my board",
         "needBrief": "Describe the lesson first.",
         "working": "Drafting your board…",
-        "noAi": "(The AI is resting, so this is a simple starting board.)",
         "doneSet": "\"{title}\" is on the board: {n} problems and {steps} steps.",
         "capped": "At most {max} problems fit on one board, so it has {max}.",
         "hint": "You choose what and how many (up to 12). The app checks every problem and lays the board out.",
@@ -3517,7 +3518,8 @@
           "guessUnder": "Often less than a minute",
           "guess": "{n, plural, one {About a minute} other {About # minutes}}",
           "longer": "Taking a bit longer than usual",
-          "soFar": "{time} so far"
+          "soFar": "{time} so far",
+          "longerMax": "{n, plural, one {Taking longer than usual. You’ll have a board within a minute either way.} other {Taking longer than usual. You’ll have a board within # minutes either way.}}"
         },
         "step": {
           "check": {
@@ -3551,7 +3553,18 @@
           "names": "Leave students’ names out of the description: names never go to the AI.",
           "words": "Some words in the description aren’t allowed. Change them and try again.",
           "personal": "Leave out phone numbers, emails, links and codes, then try again.",
-          "other": "Something went wrong. Try again in a moment."
+          "other": "Something went wrong. Try again in a moment.",
+          "notFound": "This account can’t draft boards with AI right now. Ask the person who set up Manipulatives for you to check your access.",
+          "badTool": "This tool can’t be drafted with AI. Open another tool and try there.",
+          "brief": "The description was too short. Write a few words about the lesson, then try again.",
+          "badState": "The drafted board couldn’t be saved. Try again, or ask for fewer problems.",
+          "tooBig": "The drafted board was too big to save. Ask for fewer problems and try again."
+        },
+        "fallback": {
+          "resting": "The AI is resting right now, so here’s a starting board. You can try Draft with AI again later.",
+          "timeout": "The AI didn’t answer in time, so here’s a starting board. You can try Draft with AI again.",
+          "busy": "The AI is very busy right now, so here’s a starting board. You can try Draft with AI again in a few minutes.",
+          "error": "The AI couldn’t draft this one, so here’s a starting board. You can try Draft with AI again."
         }
       },
       "tasks": {
@@ -4100,7 +4113,8 @@
       "removeTestQ": "Delete this test?",
       "removeLesson": "Delete these questions",
       "removeLessonQ": "Delete these figure questions?",
-      "removeLessonText": "The lesson's Figure step keeps the questions it was last saved with. This cannot be undone."
+      "removeLessonText": "The lesson's Figure step keeps the questions it was last saved with. This cannot be undone.",
+      "fallback": "The AI didn’t answer this time, so here is a starter set ({count, plural, one {# question} other {# questions}}). You can try again."
     }
   },
   "favorites": {
@@ -13120,7 +13134,6 @@
       "9-12": "Grades 9-12"
     },
     "menu": {
-      "testing": "Testing: only you can see this",
       "pitch": "Exact, to-scale figures for worksheets, tests and slides. Print-ready, with the answers worked out.",
       "buildTitle": "Build a worksheet",
       "buildText": "Pick figures by hand, or describe what you need and let AI draft the questions. Every number is checked so each figure can really be drawn.",
@@ -13567,6 +13580,19 @@
       "care3": "These terms are about the figures you export. The rest of Oomba Academy follows the site's own terms.",
       "siteTerms": "Read the site's terms",
       "back": "Back to Figures"
+    },
+    "plan": {
+      "titleFigures": "Figures",
+      "titleManip": "Manipulatives",
+      "headingFigures": "Figures is part of the Teacher plan",
+      "headingManip": "The Manipulatives are part of the Teacher plan",
+      "leadFigures": "Make exact figures for math, data, science and economics, build worksheets and tests from them, and add Figure questions to your lessons.",
+      "leadManip": "Use virtual manipulatives on the board, save boards to share, and run live sessions with your classes.",
+      "trial": "Try the Teacher plan free for {days} days. No card needed to start.",
+      "kept": "Anything you already assigned keeps working for your students.",
+      "start": "Start my free trial",
+      "plans": "See the plans",
+      "api": "This is part of the Teacher plan."
     }
   }
 }

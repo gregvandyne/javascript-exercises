@@ -12,10 +12,10 @@
 // done, scored like a quiz step in the gradebook and the Score.
 //
 // Who can do what:
-//   a Figures tester (services/figures.js canMake) who teaches the class   assign their own worksheet
+//   a teacher Figures lets in (services/figures.js canMake) who teaches it assign their own worksheet
 //   the class's managers                                                   see answers, turn "Show answers" on or off
-//   the class's students                                                   answer and hand in (no tester list here: the
-//                                                                          step exists only because a tester assigned it)
+//   the class's students                                                   answer and hand in (no Figures gate here: the
+//                                                                          step exists only because a teacher assigned it)
 // The answers never reach a student's page before they are allowed: the server leaves out answer, value, the right
 // option and worked lines (a choice question's options are sent, in their fixed order, never which one is right), and sends each figure as an SVG drawn here with the hidden parts left out and the figure's data-* attributes
 // (some carry values) removed, never the figure's data (which holds the answer for many kinds, a ruler's reading say).
@@ -83,27 +83,27 @@ export function assignWorksheet(u, worksheetId, classId, { opensAt = null, dueAt
 }
 
 // ---------------------------------------------------------------- a lesson's Figure step (the lesson editor)
-// "Figure questions" is a step kind the lesson editor offers to Figures testers (the same gate as /figures: F.canMake,
-// the one place to open it to everyone). Its questions are edited in the Figures builder as a question set of purpose
+// "Figure questions" is a step kind the lesson editor offers to every teacher Figures lets in (the same gate as
+// /figures: F.canMake). Its questions are edited in the Figures builder as a question set of purpose
 // 'lesson' (question_sets.lesson_id names the lesson); "Save to lesson" snapshots them into the step exactly as Assign
 // does, so the student page, marking, the gradebook and print are the same. A step whose students have started cannot
 // have its questions changed (their marks would no longer match): the teacher makes a copy of the lesson instead.
 const ownLessonSet = (u, setId, lessonId) => { const w = F.ownWorksheet(u, setId); return w && w.purpose === 'lesson' && w.lesson_id === lessonId ? w : null; };
-/** A new lesson set for a Figure step being added (from the step form). -> { ok, id } */
-export function newLessonSet(u, lessonId, { title = '' } = {}) {
+/** A new lesson set for a Figure step being added (from the step form), in the teacher's language. -> { ok, id } */
+export function newLessonSet(u, lessonId, { title = '', lang = 'en' } = {}) {
   const l = L.getLesson(lessonId);
   if (!F.canMake(u) || !L.canEditLesson(u, l)) return fail('notFound');
-  return F.createWorksheet(u, { title: title || l.title, grade: l.grade, purpose: 'lesson', lessonId: l.id });
+  return F.createWorksheet(u, { title: title || l.title, grade: l.grade, purpose: 'lesson', lessonId: l.id, lang });
 }
 /** "Edit questions" on a Figure step: the set its questions are edited in, the step's own lesson set if it still
  *  matches, else a new one made from the step's snapshot (a worksheet's Assign step, a copied lesson). -> { ok, id } */
-export function editStepSet(u, stepId) {
+export function editStepSet(u, stepId, { lang = 'en' } = {}) {
   const s = L.getStep(stepId), l = s && L.getLesson(s.lesson_id);
   if (!F.canMake(u) || !s || s.kind !== FIGURES_KIND || !L.canEditLesson(u, l)) return fail('notFound');
   const own = s.set_id ? ownLessonSet(u, s.set_id, l.id) : null;
   if (own) return ok({ id: own.id });
   const items = itemsOf(s).map(it => F.fromSnapshot(it, s.of_version));
-  const r = F.createWorksheet(u, { title: s.title || l.title, grade: l.grade, purpose: 'lesson', lessonId: l.id, items: [] });
+  const r = F.createWorksheet(u, { title: s.title || l.title, grade: l.grade, purpose: 'lesson', lessonId: l.id, items: [], lang });
   if (!r.ok) return r;
   for (const raw of items) { const c = F.addItem(u, r.id, raw); if (!c.ok) F.addItem(u, r.id, F.starterItem(raw.kind) || raw); }
   q.run('UPDATE lesson_steps SET set_id=? WHERE id=?', r.id, s.id);
@@ -132,10 +132,10 @@ export function saveToLesson(u, setId) {
 /** A Figure step of a lesson drafted with AI (services/lesson-ai.js: its questions already checked and repaired): its
  *  lesson set and the step, saved at once like "Save to lesson" (the teacher edits the whole draft before using it).
  *  -> { ok, step } | fail */
-export function draftedStep(u, lessonId, s) {
+export function draftedStep(u, lessonId, s, { lang = 'en' } = {}) {
   const items = Array.isArray(s && s.figures) ? s.figures : [];
   if (!items.length || !F.canMake(u)) return fail('empty');
-  const r = F.createWorksheet(u, { title: String(s.title || '').slice(0, 80), purpose: 'lesson', lessonId, items });
+  const r = F.createWorksheet(u, { title: String(s.title || '').slice(0, 80), purpose: 'lesson', lessonId, items, lang });
   if (!r.ok) return r;
   const saved = saveToLesson(u, r.id);
   if (!saved.ok) return saved;

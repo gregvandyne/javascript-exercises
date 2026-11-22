@@ -15,7 +15,6 @@
 .fg-hero{display:flex;align-items:center;flex-wrap:wrap;gap:12px 16px;margin:8px 0 6px}
 .fg-hero h1{margin:0;font-size:clamp(2rem,6vw,3rem);line-height:1}
 .fg-logo{display:grid;place-items:center;width:56px;height:56px;border-radius:16px;background:var(--brand-mint);color:var(--brand-ink);flex:none}
-.fg-testing{display:inline-flex;align-items:center;min-height:30px;padding:0 12px;border-radius:999px;background:var(--hover);font-weight:700;font-size:.85rem}
 .fg-lead{max-width:760px;color:var(--text-2);font-size:1.1rem;margin:0 0 20px}
 .fg-top{display:grid;gap:16px;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);margin-bottom:24px}
 .fg-build{background:var(--brand-ink);color:var(--brand-cream);border-radius:var(--r);padding:24px}

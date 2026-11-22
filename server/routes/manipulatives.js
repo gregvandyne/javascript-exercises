@@ -46,7 +46,7 @@ import { page, VERSION } from '../views/layout.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as M from '../services/manipulatives.js';
 import * as D from '../services/manip-drafts.js';
-import { teachingTools } from './figures.js';
+import { teachingTools, planReply } from './figures.js';
 
 export const router = Router();
 const STATUS = { notFound: 404, ended: 409, notEnded: 409, aiFailed: 503, tooBig: 413, slow: 429, checkSlow: 429, noAnswers: 404 };
@@ -58,8 +58,10 @@ const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
 router.use(['/manipulatives', '/api/manipulatives'], (req, res, next) => {
   const role = M.roleOf(req.user);
   if (!role) return next('router');
-  req.manipRole = role;
   res.set({ 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'no-store' });
+  // School staff without the Teacher plan: the plan page (routes/figures.js planReply), the same as for Figures.
+  if (role === 'plan') return planReply(req, res, 'manip');
+  req.manipRole = role;
   next();
 });
 const hostOnly = (req, res, next) => (req.manipRole === 'host' ? next() : fail(req, res, 'notFound'));

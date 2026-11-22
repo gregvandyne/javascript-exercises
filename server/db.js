@@ -1179,10 +1179,14 @@ export const MIGRATIONS = [
   ['0100_figures_lesson_sets', `
     ALTER TABLE question_sets ADD COLUMN lesson_id TEXT;
     CREATE INDEX IF NOT EXISTS idx_question_sets_lesson ON question_sets(lesson_id);`],
+  // Figures opens to all teachers (docs/decisions.md): the language a worksheet, test or lesson set was made in, so its
+  // generators deal their questions in it. Every set before this one was English.
+  ['0101_figures_lang', `
+    ALTER TABLE question_sets ADD COLUMN lang TEXT NOT NULL DEFAULT 'en';`],
   // The Builder's full playthrough of each version (services/playthrough.js): '' not played yet, 'pass' it reached the
   // game's end, 'fail' it did not (playthrough_report says why). Publishing needs a pass. (First numbered 0091 on its
-  // branch; 0091 to 0100 were taken first.)
-  ['0101_version_playthrough', "ALTER TABLE game_versions ADD COLUMN playthrough_status TEXT NOT NULL DEFAULT ''; ALTER TABLE game_versions ADD COLUMN playthrough_report TEXT NOT NULL DEFAULT '';"],
+  // branch; 0091 to 0101 were taken first.)
+  ['0102_version_playthrough', "ALTER TABLE game_versions ADD COLUMN playthrough_status TEXT NOT NULL DEFAULT ''; ALTER TABLE game_versions ADD COLUMN playthrough_report TEXT NOT NULL DEFAULT '';"],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by
