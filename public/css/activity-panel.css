@@ -1,5 +1,6 @@
-/* The Studio's Activity panel (public/js/activity-panel/): a tab beside the Builder on wide screens, a full-height sheet
-   on phones (≤960 px, where the Studio stacks), and the edit-one-problem sheet (app.js sheet). Site tokens only. */
+/* The Studio's Activity panel (public/js/activity-panel/): a tab beside the Builder on wide screens, an accordion under
+   "Edit lesson" on phones (≤960 px, where the Studio stacks: public/css/studio.css .st-acc), and the edit-one-problem
+   sheet (app.js sheet). Site tokens only. */
 .st-lefttabs{display:flex;gap:2px;margin:10px 12px 0;padding:3px;border-radius:999px;background:var(--card-2);border:2px solid var(--line);align-self:flex-start;flex:none}
 .st-lefttabs button{min-height:40px;padding:0 16px;border:0;border-radius:999px;background:transparent;font:700 .92rem var(--font);color:var(--text-2);cursor:pointer}
 .st-lefttabs button[aria-selected="true"]{background:var(--current);color:var(--on-current)}
@@ -9,11 +10,14 @@
   .st-chat.ap-tab>:not(.st-lefttabs):not(#st-activity){display:none!important}
   .st-chat.ap-tab>#st-activity{display:flex;flex-direction:column;flex:1;min-height:0}
   .st-editact{display:none}
-  .ap:not(.is-sheet) .ap-head{display:none}
+  .ap:not(.is-inline) .ap-head{display:none}
 }
 @media (max-width:960px){.st-lefttabs{display:none}}
-.ap.is-sheet{display:flex;flex-direction:column;position:fixed;inset:0;z-index:70;background:var(--bg)}
-body.ap-open{overflow:hidden}
+/* phones: inline, its natural height (the page scrolls), Save and Undo kept in view at the bottom while it is open */
+.ap.is-inline{display:flex;flex-direction:column;border:2px solid var(--line);border-radius:var(--r);background:var(--bg);overflow:clip}
+.ap.is-inline .ap-body{overflow:visible;flex:none}
+.ap.is-inline .ap-foot{position:sticky;bottom:0;z-index:2;border-radius:0 0 var(--r) var(--r)}
+@media (max-width:820px){.ap.is-inline .ap-foot{bottom:calc(var(--tabbar) + env(safe-area-inset-bottom))}}   /* above the tab bar */
 .ap-head{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--card);flex:none}
 .ap-head h2{margin:0;font-size:1.1rem;margin-inline-end:auto}
 .ap-x{margin:0}

@@ -8910,6 +8910,24 @@ The disappearing games were not the drag and nothing was lost on the server. Eac
 
 There is now one drag for games (public/js/folder-drop.js), the one a folder with a single game always had: the row fades in place, a small round picture of the game follows the pointer, and a folder under it lights up. In a folder that can be put in order, the faded row also moves to where it will land while the pointer is over the list; over a folder or outside the list it goes back to its place, and Escape cancels. reorder.js keeps the folder chips' drag and Alt and the arrow keys, and saves one order at a time; a save that fails puts the list back in the order the server last saved, with no reload.
 
+## The Studio on a phone: Edit lesson inline, one row of buttons, full screen on iPhone (19 Nov 2026)
+
+On a phone (below the Studio's two columns, 960 px) "🧮 Edit lesson" runs the width of the preview card and opens the
+Activity panel right under it as an accordion (aria-expanded, a turning chevron); the full-height sheet is gone. The
+panel's changes, Undo and Save work the same open or closed, Save and Undo stay in view at the bottom while it is open,
+and editing one problem still opens its own sheet. A desktop keeps the Builder | Activity switch.
+
+Under it, on a phone and a desktop alike, one row of two equal buttons replaces the two chip lines: "🎮 Make it an arcade
+game" (the same fixed message as before) and the live button. A live game (ready, waiting to be published, or needing a
+fix) reads "📡 Live game" in Spark, the Publish yellow, and does the one next thing (Host, Publish, Fix it; a kid is told a
+grown-up hosts it); anything else reads "📡 Make it a live game" in the plain white and does what "Make it live" did. "Not
+a live game" is gone; where the line stands ("Classroom activity · results go to Progress", "Publish it to host it live")
+is a small caption under the row. At 320 px the words shrink and may wrap between words, never inside one.
+
+Full screen (public/js/fullscreen.js, the Studio's preview and the play page's stage) keeps the Fullscreen API
+(`requestFullscreen`, `webkitRequestFullscreen`). Where there is none (iPhone Safari allows it on video only) or the
+request is refused, the element is fixed over the window (inset 0, 100dvh, above everything), the page is locked, and
+"✕ Exit full screen" sits in the top corner inside the safe area; Esc and that button leave it.
 ## Classroom setup in four steps (19 Nov 2026)
 
 A Classroom lesson in /build/new now has 4 steps: what you are making → your lesson → "How will students use it?" →

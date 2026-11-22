@@ -1992,7 +1992,8 @@
       "invitePlay": "あそぼう！",
       "inviteNo": "あとで",
       "ok": "OK",
-      "cancel": "キャンセル"
+      "cancel": "キャンセル",
+      "fullExit": "全画面をやめる"
     },
     "game": {
       "needSignIn": "「ゲストであそぶ」をタップするか、先にログインしてください。",
@@ -2011,8 +2012,6 @@
     "play": {
       "saveFailed": "きろくをほぞんできませんでした。",
       "newBest": "ベストきろく：{score}！",
-      "noFullscreen": "ここでは全画面にできません。",
-      "tapFullscreen": "全画面ボタンをタップして、大きくしよう。",
       "signInToLike": "お気に入りをほぞんするには、ログインするか、ゲストであそんでください。",
       "signInToRate": "ひょうかするには、ログインするか、ゲストであそんでください。",
       "liked": "お気に入りに入れました！",
@@ -2101,7 +2100,6 @@
       "fixButton": "ビルダーになおしてもらう",
       "fixMessage": "バージョン{number}のあんぜんチェックのもんだいをなおしてください：",
       "buildFirst": "先になにかつくってください！",
-      "noFullscreen": "ここでは全画面はつかえません。",
       "roundOver": "ラウンドおわり！ スコア：{score}",
       "noAnswer": "ビルダーがこたえられませんでした。もう一度ためしてください。",
       "signInAgain": "もう一度ログイン",
@@ -2161,8 +2159,8 @@
         "publishBtn": "公開する",
         "fix": "ライブだけど、なおすところがあるよ: {issue}",
         "fixBtn": "なおす",
-        "off": "ライブゲームじゃないよ",
-        "make": "ライブにする"
+        "make": "ライブゲームにする",
+        "game": "ライブゲーム"
       },
       "safety": {
         "chipPass": "あんぜん",
@@ -2595,7 +2593,7 @@
       "world2dUse": "2Dワールド「{name}」を つかって。",
       "animal2dUse": "ヒーローを この どうぶつに して：{name}。",
       "sparks": "{n, plural, other {スパークパック #回分}}",
-      "activityEdit": "アクティビティを編集",
+      "activityEdit": "レッスンを編集",
       "asStudent": "生徒として",
       "activitySaveFirst": "先にアクティビティパネルの変更を保存するか、元に戻してください。"
     },

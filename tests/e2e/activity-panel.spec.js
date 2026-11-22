@@ -107,8 +107,10 @@ test.describe('on a phone, with touch', () => {
     await teacherSignup(page);
     const g = await templateGame(page, { template: 'canvas' });
     await page.click('[data-act="edit-activity"]');
-    await expect(page.locator('#st-activity.is-sheet .ap-row')).not.toHaveCount(0);
+    await expect(page.locator('#st-acc #st-activity.is-inline .ap-row')).not.toHaveCount(0);
     const second = await page.locator('.ap-row[data-i="1"] .ap-t b').textContent();
+    // (the panel opens in the page under Edit lesson: the two rows on screen first)
+    await page.locator('.ap-row[data-i="1"]').evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
     // a finger on the second row's handle, moved up onto the first row, then lifted (real touch events, not a mouse)
     const from = await page.locator('.ap-row[data-i="1"] .ap-grip').boundingBox(), to = await page.locator('.ap-row[data-i="0"]').boundingBox();
     const cdp = await page.context().newCDPSession(page);

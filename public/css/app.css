@@ -494,13 +494,21 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 @media (max-width:560px){.playbar .lbl{display:none}}
 .stage{position:fixed;top:52px;inset-inline:0;bottom:0;background:#000}
 .stage iframe,.studio-preview iframe{width:100%;height:100%;border:0;display:block;background:#fff}
-.stage:fullscreen{top:0}
+.stage:fullscreen,.stage.css-full{top:0}
 /* an on-screen keyboard up (public/js/play.js): the stage fits the part of the page still visible */
 body.playmode.kb-up .stage{top:calc(52px + var(--vvt,0px));bottom:auto;height:calc(var(--vvh,100dvh) - 52px)}
+/* Full screen without the Fullscreen API (public/js/fullscreen.js: iPhone Safari, or a refused request): the element
+   fixed over the whole window, above everything, the page behind it locked, and its own "✕ Exit full screen" button
+   in the top end corner, clear of the notch and the rounded corners (safe-area insets). */
+.css-full{position:fixed!important;inset:0!important;width:auto!important;height:100vh!important;height:100dvh!important;max-height:none!important;margin:0!important;z-index:2147483000!important;border-radius:0!important;background:#000!important}
+html.css-full-on,html.css-full-on body{overflow:hidden!important;overscroll-behavior:none}
+.fs-exit{position:absolute;top:calc(10px + env(safe-area-inset-top));right:calc(10px + env(safe-area-inset-right));z-index:5;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid color-mix(in srgb,var(--brand-cream) 30%,var(--brand-ink));background:var(--brand-ink);color:var(--brand-cream);font:700 .92rem var(--font);white-space:nowrap;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.5)}
+.fs-exit:hover{background:#000}
+.fs-exit:focus-visible{outline:3px solid var(--brand-spark);outline-offset:2px}
 /* The playbar's back link again, inside the stage: fullscreen paints only the stage's subtree, so the playbar
    never shows there. Shown only in fullscreen, over the game's top-start corner, in the playbar's own colours. */
 .fsback{display:none}
-.stage:fullscreen .fsback{display:inline-flex;position:absolute;top:calc(10px + env(safe-area-inset-top));inset-inline-start:10px;z-index:2;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;background:var(--brand-ink);color:var(--brand-cream);border:1px solid color-mix(in srgb,var(--brand-cream) 25%,var(--brand-ink));font-size:.85rem;font-weight:700;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,.45)}
+.stage:fullscreen .fsback,.stage.css-full .fsback{display:inline-flex;position:absolute;top:calc(10px + env(safe-area-inset-top));inset-inline-start:10px;z-index:2;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;background:var(--brand-ink);color:var(--brand-cream);border:1px solid color-mix(in srgb,var(--brand-cream) 25%,var(--brand-ink));font-size:.85rem;font-weight:700;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,.45)}
 .stage:fullscreen .fsback:hover{background:#000}
 /* The global focus ring is Ink in the light theme — on this Ink pill it would be invisible. Spark reads on Ink
    (and the play bar's own controls already use it, .playbar :focus-visible above). */

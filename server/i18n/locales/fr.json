@@ -1774,7 +1774,7 @@
       "activity": "Activité de classe · les résultats vont dans Progrès",
       "board": "Activité de classe · au tableau",
       "arcade": "Jeu d’arcade · fait pour ta classe",
-      "toArcade": "En faire plutôt un jeu d’arcade",
+      "toArcade": "En faire un jeu d’arcade",
       "toArcadeAsk": "Fais-en plutôt un jeu d’arcade : un quiz, un jeu de course ou d’attrape qui pose les mêmes problèmes.",
       "toCanvas": "En faire une activité de classe",
       "toCanvasAsk": "Fais-en plutôt une activité de classe : un espace de manipulation avec les mêmes questions, étapes et indices."
@@ -1992,7 +1992,8 @@
       "invitePlay": "On joue !",
       "inviteNo": "Pas maintenant",
       "ok": "OK",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "fullExit": "Quitter le plein écran"
     },
     "game": {
       "needSignIn": "Touche « Jouer en invité » ou connecte-toi d’abord.",
@@ -2011,8 +2012,6 @@
     "play": {
       "saveFailed": "Impossible d’enregistrer ta progression.",
       "newBest": "Nouveau record : {score} !",
-      "noFullscreen": "Le plein écran n’est pas disponible ici.",
-      "tapFullscreen": "Touche le bouton plein écran pour voir en grand.",
       "signInToLike": "Connecte-toi ou joue en invité pour garder tes favoris.",
       "signInToRate": "Connecte-toi ou joue en invité pour noter des jeux.",
       "liked": "Ajouté à tes favoris !",
@@ -2101,7 +2100,6 @@
       "fixButton": "Réparer avec le Constructeur",
       "fixMessage": "Répare les problèmes de sécurité de la version {number}, s’il te plaît :",
       "buildFirst": "Crée d’abord quelque chose !",
-      "noFullscreen": "Le plein écran n’est pas autorisé ici.",
       "roundOver": "Manche terminée ! Score : {score}",
       "noAnswer": "Le Constructeur n’a pas pu répondre. Réessaie, s’il te plaît.",
       "signInAgain": "Se reconnecter",
@@ -2161,8 +2159,8 @@
         "publishBtn": "Publier",
         "fix": "En direct, mais il faut réparer : {issue}",
         "fixBtn": "Réparer",
-        "off": "Pas un jeu en direct",
-        "make": "Le mettre en direct"
+        "make": "En faire un jeu en direct",
+        "game": "Jeu en direct"
       },
       "safety": {
         "chipPass": "Sûr",
@@ -2595,7 +2593,7 @@
       "world2dUse": "Utilise le monde 2D {name}.",
       "animal2dUse": "Fais de cet animal le héros : {name}.",
       "sparks": "{n, plural, one {# message de Packs Étincelle} other {# messages de Packs Étincelle}}",
-      "activityEdit": "Modifier l'activité",
+      "activityEdit": "Modifier la leçon",
       "asStudent": "Comme un élève",
       "activitySaveFirst": "Enregistrez ou annulez d'abord vos changements dans le panneau d'activité."
     },
