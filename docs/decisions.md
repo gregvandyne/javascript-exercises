@@ -10393,3 +10393,57 @@ question. Now a worksheet question has an answer type.
   figures-answers-browser (Chromium: the builder's switch and options by keyboard, print, the student's radios with the
   arrow keys, the ± button, hand in, the reveal, a phone without sideways scroll); figures-product and figures-assign
   updated, the biology and economics generator checks through `_choice-gens.js`.
+
+## Figures: the lesson Figure step and Build a test (22 Nov 2026)
+
+Phase 3 of the Figures plan ("AI-powered assignment and test builds"), built on the seams that were there: question
+sets, the Figures builder, the `figures` lesson step and its snapshot, Assign, and `lesson-ai.js`.
+
+- **One gate.** Everything new sits behind `services/figures.js` `canMake` (the `FIGURES` flag and the Manipulatives
+  tester list), the same gate as `/figures`. Opening Figures to everyone is a change there and nowhere else. The student
+  side needs no gate: a figures step exists only because a tester made it.
+- **"Figure questions" in the lesson editor.** A tester's step form offers it as a fifth type. Adding one makes a
+  question set of purpose `'lesson'` for that lesson (migration `0100_figures_lesson_sets`: `question_sets.lesson_id`)
+  and opens the Figures builder on it (`/figures/worksheets/:id`): subject tabs, then a kind; the figure editor for its
+  measures (the same editor as `/figures`, which saves back to the set); a generator to deal the values; the question
+  text; a number or multiple choice answer (#500). Nothing is in the lesson until **Save to lesson**
+  (`figures-steps.js saveToLesson`), which snapshots the set into one `figures` step exactly as Assign does (the
+  snapshot now also keeps each question's generator, seed and answerKey, never sent to students). Saving again
+  replaces that step's questions. Once a student has work on the step it is refused ("started"): their marks would no
+  longer match; the teacher copies the lesson instead. On the lesson page a Figure step has Edit questions, Print and a
+  ⋯ More with its title, minutes, instructions and Delete. Edit questions on a step made by Assign, or on a copy,
+  starts a lesson set from the step's snapshot (an older snapshot's answerKey is found again as the OF.solve value equal
+  to the stored answer), so a worksheet is never edited from a lesson. Deleting the step or the lesson deletes its
+  lesson set. Lesson sets are not listed in My worksheets.
+- **Print.** `/teach/lesson-steps/:id/print` (`?key=1` with the key) prints the step's snapshot with the worksheet's
+  print (`printHtml`: `opts.print`, black on white), for the lesson's editors.
+- **Draft with AI gets a figure catalog.** `figureCatalog()`: kinds with a generator, each with its id, subject, grade
+  bands, a line, a parameter schema (fields typed `number`, `text`, `bool`, `list`, `object` or a fixed list, from the
+  example and the catalog's `extra` and `options`), the example and its OF.solve keys (docs/figures-api.md "The figure
+  catalog for the AI drafters"). The lesson route passes it to `draftLesson` beside the game catalog, only for a tester;
+  the schema then allows `figures` steps with figure questions. Every figure goes through `repairDraft` (OF.check with
+  the pinned version, an OF.solve answerKey, choices, the word rules): a bad one is replaced by its kind's generator; a
+  kind not in the catalog loses its figure and keeps its question (the step becomes a written question when no figure is
+  left). Each repair is logged with the step, the kind and why, never the topic. A brief naming a student is refused. The
+  budget cap and the template are as before; the template adds a starter Figure step when the topic's words name a
+  figure. The test hooks (`hooks.create`) obey the AI budget like the real client, so the cap is tested.
+- **Build a test.** "Build a test" on `/figures` (a line under Build a worksheet) opens the same builder for a question
+  set of purpose `'test'` (the column was there). "Power with AI" is the worksheets' switch (`figure_prefs`, remembered
+  per teacher). On: topic, grade and subject; Claude picks **generators** from the subject's catalog (each is dealt here
+  with a fresh seed, so ⟳ re-deals any question) and writes its own figure question only when none fits (checked as
+  above); an unknown or other-subject generator is dropped and logged. Off, no key, budget resting or a failed call: a
+  starter test dealt from the generators the topic's words point at, in the subject and grade band. Either way the
+  teacher edits: ⟳ re-deal, ✏️ the figure's numbers, the question, the answer type, 🗑️ delete, and ⋯ More with **Swap
+  figure** (another kind in the same place). Nothing is assigned until Assign (class, opens, dues): the existing
+  `assignWorksheet`, so reorder, dates, unassign and deleting the lesson (its steps and assignments) are the existing
+  flow. Tests and worksheets share My worksheets (a test says "Test").
+- **Judgment calls.** A test is a question set like a worksheet, not a new model, and uses the worksheet builder with a
+  different AI box rather than a second page. The lesson Figure step is built in the Figures builder (not a second
+  editor inside the lesson page), so there is one place figures are edited. The lesson drafter's figures are saved
+  straight into the drafted lesson (like its other steps): the teacher reviews the whole draft before assigning it.
+  Questions use the step's snapshot for print, so a printed copy always matches what students see.
+- **Tests.** figures-lesson-step (the migration, the catalog, the gate, Save to lesson and its refusals, Edit questions
+  from a snapshot, print, the lesson drafter with a mocked AI and its repairs, the budget cap and the template, Build a
+  test on and off, swap, re-deal, edit, delete, assign with dates, the student) and figures-lesson-step-browser
+  (Chromium: the editor step built by hand and printed; a test drafted with AI, edited, switched to by hand, assigned,
+  answered and handed in).

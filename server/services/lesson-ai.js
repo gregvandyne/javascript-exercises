@@ -54,7 +54,7 @@ export async function draftLesson({ topic, grade = '', subject = '', minutes = 4
   const client = client0();
   if (!client) return { draft: templateDraft({ topic, grade, subject, minutes }, catalog, t, { figures }), ai: false };
   const lang = LANGS[localeInfo(locale).code] || 'English (US)';
-  const games = catalog.slice(0, 80).map(g => `- ${g.id}: ${g.title}${g.description ? ` — ${String(g.description).slice(0, 120)}` : ''}${g.tags ? ` [${String(g.tags).slice(0, 60)}]` : ''}`).join('\n');
+  const games = catalog.slice(0, 80).map(g => `- ${g.id}: ${g.title}${g.description ? `: ${String(g.description).slice(0, 120)}` : ''}${g.tags ? ` [${String(g.tags).slice(0, 60)}]` : ''}`).join('\n');
   const res = await client.messages.create({
     model: config.builderModel, max_tokens: 3000,
     system: `You help primary and middle school teachers plan lessons on Oomba Academy, a kid-safe website where children play and build small web games.

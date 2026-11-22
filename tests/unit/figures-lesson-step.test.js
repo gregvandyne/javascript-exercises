@@ -61,7 +61,7 @@ test('the figure catalog: kinds with a generator, a line, a parameter schema, OF
   for (const c of cat) {
     const K = F.kindOf(c.id);
     assert.ok(K.gens.length, `${c.id} has a generator`);
-    assert.ok(c.description && !/[—–]/.test(c.description), c.id);
+    assert.ok(c.description && !/[\u2014\u2013]/.test(c.description), c.id);
     assert.ok(Object.keys(c.params).length, `${c.id} has parameters`);
     for (const [k, v] of Object.entries(c.params)) assert.ok(Array.isArray(v) || ['number', 'text', 'bool', 'list', 'object'].includes(v), `${c.id}.${k}: ${v}`);
     assert.equal(F.checkFigure(c.id, c.example).length, 0, c.id);
