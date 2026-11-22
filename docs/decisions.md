@@ -11159,4 +11159,8 @@ small daily cap and Teacher plan holders without one.
   frame's flags), `tests/unit/proof-step.test.js` (assign rules and the snapshot, the frame and JSON without the key,
   save, hand in, marks and score, no second hand-in, gradebook, Score, Standards, the progress page's counts, answers
   only when allowed), `tests/unit/proof-browser.test.js` (Chromium: Power with AI, Check my passage, why-line review and
-  Assign on a laptop; a student on an iPhone 13 fixes and hands in; the teacher's progress page).
+  Assign on a laptop; students on an iPhone 13 fix and hand in by touch with motion on and with reduced motion, the end
+  card's buttons tappable at once while the confetti falls (it takes no taps), the practice end card too; the teacher's
+  progress page). Phone pictures are taken by a separate student at device scale 2 and pressed by DOM click: Chromium's
+  screenshot at a scale other than the device's own leaves the sandboxed game frame's tap mapping stale (a harness quirk;
+  the page itself reports the button on top).

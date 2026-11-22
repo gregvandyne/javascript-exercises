@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ctx as live, publish, official, teacher, cls, mia, leo, cookieFor, q, RL, L } from './_live.js';
+import { ctx as live, publish, official, teacher, cls, mia, leo, cookieFor, q, RL, L, S } from './_live.js';
 import * as A from '../../server/services/proof-ai.js';
 import * as G from '../../server/services/game-sets.js';
 import * as PS from '../../server/services/proof-steps.js';
@@ -128,49 +128,69 @@ test('a teacher: Power with AI, Check my passage, why lines to review, then Assi
   await t.c.close();
 });
 
-test('a student on an iPhone 13: opens the step from the lesson, taps to fix, hands in, sees the score; the teacher\'s progress page', { skip, timeout: 240_000 }, async () => {
-  assert.ok(clId, 'the teacher test assigned it');
+/** In the frame: is the element at the centre of this button the button itself (nothing laid over it)? */
+const onTop = (f, sel) => f.evaluate(q => { const b = document.querySelector(q); b.scrollIntoView({ block: 'center', behavior: 'instant' }); const r = b.getBoundingClientRect(), e = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return !!e && (e === b || b.contains(e)); }, sel);
+/** A phone picture. Chromium's screenshot under device emulation with a device scale other than the device's own leaves
+ *  the sandboxed (out-of-process) game frame's input mapping stale, so Playwright's next tap there lands on the wrong
+ *  spot (a harness quirk: the page reports the button on top at its centre, and the same flow passes by touch with
+ *  motion on at the iPhone's own scale). The picture run therefore presses buttons with a DOM click after a picture. */
+const phoneShot = (page, name, full = false) => shot(page, name, full);
+/** One student's whole hand-in on an iPhone 13, by touch, with motion on or reduced. -> how many were found */
+async function studentFlow(user, { motion, pictures, fixFirst }) {
+  const press = async (f, sel) => { if (pictures) await f.locator(sel).evaluate(b => b.click()); else await f.locator(sel).tap(); };
   const step = L.getStep(stepId), snap = PS.snapOf(step);
-  const s = await open(mia, `/class/${cls.id}/lessons/${clId}`, { ...devices['iPhone 13'], deviceScaleFactor: SHOTS ? 2 : 1, reducedMotion: 'reduce' });
-  await Promise.all([s.page.waitForURL(/\/play\/mistake-hunt\?lesson=/), s.page.click(`a[href^="/play/mistake-hunt?lesson=${clId}"]`)]);
+  const s = await open(user, `/class/${cls.id}/lessons/${clId}`, { ...devices['iPhone 13'], deviceScaleFactor: pictures && SHOTS ? 2 : 3, reducedMotion: motion ? 'no-preference' : 'reduce' });
+  await Promise.all([s.page.waitForURL(/\/play\/mistake-hunt\?lesson=/), s.page.tap(`a[href^="/play/mistake-hunt?lesson=${clId}"]`)]);
   const f = await frameOf(s.page);
   await f.waitForSelector('#mh-handin');
-  await shot(s.page, 'student-play-iphone13');
+  if (pictures) await phoneShot(s.page, 'student-play-iphone13');
   assert.equal(await f.evaluate(() => JSON.stringify(window.__brbTest.mhGraded()).includes('"key"')), false, 'no key in the frame');
   assert.equal(await f.evaluate(() => window.BRB.proofAi), null, 'no AI tools for a student');
   assert.equal(await f.locator('#mh-check').count(), 0, 'no Check in a graded step'); assert.equal(await f.locator('#mh-hint').count(), 0, 'no hints');
-  // tap the first mistake's word, fix it in the sheet
   const k = C.key(snap.passages[0].x, snap.passages[0].m);
-  await f.click(`#mh-ptext [data-a="${k[0].a}"]`);
-  await f.waitForSelector('#mh-sheet');
-  if (k[0].b - k[0].a > 1) await f.click('#mh-fixnext');
-  await f.fill('#mh-fixin', k[0].right);
-  await f.click('#mh-fixok');
-  await f.waitForFunction(() => /Saved/.test(document.getElementById('mh-saved').textContent));
-  // the rest of passage 1 through the test hook, then hand in (asked first)
-  for (const x of k.slice(1)) await f.evaluate(([a, b, r]) => window.__brbTest.mhFix(a, b, r), [x.a, x.b, x.right]);
-  await f.click('#mh-handin');
+  if (fixFirst) {
+    // tap the first mistake's word, fix it in the sheet; the rest of passage 1 through the test hook
+    await press(f, `#mh-ptext [data-a="${k[0].a}"]`);
+    await f.waitForSelector('#mh-sheet');
+    if (k[0].b - k[0].a > 1) await press(f, '#mh-fixnext');
+    await f.fill('#mh-fixin', k[0].right);
+    await press(f, '#mh-fixok');
+    await f.waitForFunction(() => /Saved/.test(document.getElementById('mh-saved').textContent));
+    for (const x of k.slice(1)) await f.evaluate(([a, b, r]) => window.__brbTest.mhFix(a, b, r), [x.a, x.b, x.right]);
+  }
+  await press(f, '#mh-handin');
   await f.waitForSelector('#mh-handin-ask');
   assert.match(await f.textContent('#mh-handin-ask'), /Hand in your fixes\?/);
-  await shot(s.page, 'student-handin-ask-iphone13');
-  await f.click('#mh-handin-yes');
+  if (pictures) await phoneShot(s.page, 'student-handin-ask-iphone13');
+  assert.ok(await onTop(f, '#mh-handin-yes'), 'nothing over Hand in');
+  await press(f, '#mh-handin-yes');
   await f.waitForSelector('#mh-gscore');
-  const total = snap.passages.reduce((n, p) => n + p.m.length, 0), found = k.length;
+  const total = snap.passages.reduce((n, p) => n + p.m.length, 0), found = fixFirst ? k.length : 0;
   assert.equal(await f.textContent('#mh-gscore'), `You found ${found} of ${total} mistakes (${Math.round(100 * found / total)}%).`);
   assert.match(await f.textContent('#mh'), /Your teacher will show the answers after the due date/);
   assert.ok(await s.page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll');
-  await shot(s.page, 'student-handin-iphone13');
-  await f.click('#mh-gwork');
-  await f.waitForSelector('#mh-review-0 .tok.good');
-  await shot(s.page, 'student-work-iphone13', true);
+  // the end card's buttons take a tap at once, while the confetti (motion on) is still falling
+  assert.ok(await onTop(f, '#mh-gwork'), 'nothing over See my work');
+  assert.equal(await f.evaluate(() => getComputedStyle(document.querySelector('.confetti') || document.body).pointerEvents), motion ? 'none' : 'auto');
+  await press(f, '#mh-gwork');
+  await f.waitForSelector('#mh-review-0');
+  if (pictures) { await press(f, '#mh-review-back'); await f.waitForSelector('#mh-gscore'); await phoneShot(s.page, 'student-handin-iphone13'); await press(f, '#mh-gwork'); await f.waitForSelector('#mh-review-0 .tok.good'); await phoneShot(s.page, 'student-work-iphone13', true); }
   assert.deepEqual(s.errors, []);
   await s.c.close();
-  // leo hands in nothing changed, for the counts
-  await fetch(`${live.base}/api/progress/${clId}/${stepId}/proofread`, { method: 'POST', headers: { 'content-type': 'application/json', cookie: cookieFor(leo.id) }, body: JSON.stringify({ edits: snap.passages.map(() => []), handIn: true }) });
+  return found;
+}
+
+test('students on an iPhone 13 by touch: open the step from the lesson, fix, hand in, see the score (motion on and reduced); the teacher\'s progress page', { skip, timeout: 240_000 }, async () => {
+  assert.ok(clId, 'the teacher test assigned it');
+  // by touch at the iPhone's own scale: motion on (the end card's confetti falling), and reduced motion
+  await studentFlow(mia, { motion: true, pictures: false, fixFirst: true });
+  await studentFlow(leo, { motion: false, pictures: false, fixFirst: false });
+  // the pictures (device scale 2), by a third student
+  if (SHOTS) { const pia = S.createSchoolAccount(teacher, cls.school_id, { rosterName: 'Pia Pupil' }).user; S.addToClass(teacher, cls.id, pia.id); await studentFlow(pia, { motion: true, pictures: true, fixFirst: true }); }
   // the teacher's progress page: counts per kind of mistake, each student's result
   const t = await open(teacher, `/class/${cls.id}/progress/${clId}`, LAPTOP);
   await t.page.waitForSelector('.pf-results');
-  assert.match(await t.page.textContent('.pf-results'), /2 of 2 handed in/);
+  assert.match(await t.page.textContent('.pf-results'), SHOTS ? /3 of 3 handed in/ : /2 of 2 handed in/);
   assert.ok(await t.page.locator('.pf-kinds li').count() >= 2);
   await t.page.locator('.pf-results').scrollIntoViewIfNeeded();
   if (SHOTS) await t.page.locator('.pf-results').screenshot({ path: path.join(SHOTS, 'teacher-progress-by-kind.png') });
@@ -178,4 +198,20 @@ test('a student on an iPhone 13: opens the step from the lesson, taps to fix, ha
   assert.deepEqual(t.errors, []);
   await t.c.close();
   void q;
+});
+
+test('the practice game\'s end card (Phase 1) takes a tap at once with motion on, on an iPhone 13', { skip, timeout: 120_000 }, async () => {
+  const s = await open(leo, '/play/mistake-hunt', { ...devices['iPhone 13'], reducedMotion: 'no-preference' });
+  const f = await frameOf(s.page);
+  await f.evaluate(() => window.__brbTest.mhSample());
+  for (const x of await f.evaluate(() => window.__brbTest.mhKey())) await f.evaluate(([a, b, r]) => window.__brbTest.mhFix(a, b, r), [x.a, x.b, x.right]);
+  await f.locator('#mh-check').tap();
+  await f.locator('#mh-next').tap();
+  await f.waitForSelector('#mh-endscore');
+  assert.equal(await f.evaluate(() => getComputedStyle(document.querySelector('.confetti')).pointerEvents), 'none', 'the confetti is falling and takes no taps');
+  assert.ok(await onTop(f, '#mh-again'), 'nothing over Play again');
+  await f.locator('#mh-again').tap();
+  await f.waitForSelector('#mh-ptext');
+  assert.deepEqual(s.errors, []);
+  await s.c.close();
 });
