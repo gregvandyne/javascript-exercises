@@ -150,7 +150,7 @@ test('the landing at "/": one teaching-loop section after the students build, wi
   const s = (await get('/')).text;
   assert.match(s, /<h1 id="lp-h1" class="lp-h1"/);
   const at = s.indexOf('<section class="lp-sec lp-loop" id="loop"');
-  assert.ok(at > s.indexOf('id="kids"') && at < s.indexOf('id="courses"'), 'after "Your students build", before courses (the class-day order)');
+  assert.ok(at > s.indexOf('id="kids"') && at < s.indexOf('id="pricing"'), 'after "Your students build", before pricing (the class-day order)');
   assert.equal(s.split('class="lp-sec lp-loop"').length, 2, 'once');
   const sec = s.slice(at, s.indexOf('</section>', at));
   assert.match(sec, /<h2 id="loop-h">Plan → Play → Check → Feedback<\/h2>/);

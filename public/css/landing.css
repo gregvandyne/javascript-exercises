@@ -117,8 +117,8 @@ main{position:relative;z-index:1}
 .lp-btn-ghost:active{transform:translateY(2px)}
 .lp-btn-spark{background:var(--spark);color:#141414;box-shadow:0 4px 0 #C99A00}
 .lp-btn-spark:hover{background:#FFDB66}
-/* Phones, where the host button is full width: the words sit in the true center and the icon hangs to their left (28px icon + 8px gap). */
-@media (max-width:520px){.lp-btn[data-cta="host"]>.fx{margin-left:-36px}}
+/* Phones, where the hero's host button is full width (only there; the live section's button hugs its words): the words sit in the true center and the icon hangs to their left (28px icon + 8px gap). */
+@media (max-width:520px){.lp-hero .lp-ctas .lp-btn[data-cta="host"]>.fx{margin-left:-36px}}
 .lp-btn-spark:active{transform:translateY(3px);box-shadow:0 1px 0 #C99A00}
 .lp-arrow{transition:transform .2s ease}
 .lp-btn:hover .lp-arrow:not(.flip),.lp-more:hover .lp-arrow:not(.flip){transform:translateX(3px)}
@@ -281,25 +281,7 @@ main{position:relative;z-index:1}
 :root.lp-light .lp-glow{opacity:.35}
 
 /* courses */
-.lp-courses{display:grid;gap:18px}
-@media (min-width:760px){.lp-courses{grid-template-columns:repeat(3,1fr)}}
-.lp-course{position:relative;overflow:hidden;padding-top:178px;display:flex;flex-direction:column}
-.lp-course .lp-more{margin-top:auto;padding-top:16px}
-.lp-course-art{position:absolute;inset:0 0 auto;height:162px;display:flex;justify-content:center;align-items:center;padding-top:10px}
-.lp-course-art img{width:84px;height:112px;object-fit:cover;border-radius:14px;border:2px solid var(--card-solid);box-shadow:0 10px 22px -10px rgba(0,0,0,.6);margin-inline:-10px}
-.lp-course-art img:nth-child(1){transform:rotate(-8deg) translateY(6px)} .lp-course-art img:nth-child(3){transform:rotate(8deg) translateY(6px)}
-.lp-course-art img:nth-child(2){position:relative;z-index:1;width:92px;height:123px}
-.lp-c-nq .lp-course-art{background:radial-gradient(70% 90% at 50% 100%,rgba(255,210,63,.33),transparent 70%)}
-.lp-c-cs .lp-course-art{background:radial-gradient(70% 90% at 50% 100%,rgba(102,199,146,.33),transparent 70%)}
-.lp-c-cd .lp-course-art{background:radial-gradient(70% 90% at 50% 100%,rgba(255,162,148,.3),transparent 70%)}
 .lp-tag{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-text);margin-bottom:8px}
-@media (prefers-reduced-motion:no-preference){.lp-course:hover .lp-course-art img:nth-child(2){transform:translateY(-6px)}.lp-course-art img{transition:transform .35s ease}}
-.lp-marquee{margin-top:clamp(48px,6vw,72px);overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
-.lp-marquee-track{display:flex;gap:16px;width:max-content;padding-block:10px}
-.lp-marquee img{width:132px;height:176px;object-fit:cover;border-radius:18px;border:1px solid var(--line-2);box-shadow:var(--shadow)}
-@media (prefers-reduced-motion:no-preference){.lp-marquee-track{animation:lp-marquee 70s linear infinite}[dir="rtl"] .lp-marquee-track{animation-direction:reverse}}
-@keyframes lp-marquee{to{transform:translate3d(-50%,0,0)}}
-@media (prefers-reduced-motion:reduce){.lp-marquee{overflow-x:auto}}
 
 /* why games work */
 .lp-why{display:grid;gap:16px}
@@ -397,7 +379,6 @@ main{position:relative;z-index:1}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .rv-wait{opacity:1;transform:none}
 }
-@media print{.lp-sky,.lp-floor,.lp-bar,.lp-marquee{display:none}body.lp{background:#fff;color:#000}}
 
 /* The teaching loop, Plan → Play → Check → Feedback (server/views/teacher-loop.js, docs/decisions.md "The teaching loop"):
    numbered cards like "How it works", each with its tools, then the four real screens in the device frame. */
