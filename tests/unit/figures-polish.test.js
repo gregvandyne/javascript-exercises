@@ -81,14 +81,14 @@ test('the terms page renders in every locale with the notice word for word, the 
     assert.ok(r.text.includes('https://creativecommons.org/publicdomain/zero/1.0/'), l);
     assert.match(r.text, /href="\/terms"/);
     const main = r.text.slice(r.text.indexOf('<article class="fg-terms">'), r.text.indexOf('</article>'));
-    assert.doesNotMatch(main, /—/, `${l}: no em dashes`);
+    assert.doesNotMatch(main, /\u2014/, `${l}: no em dashes`);
     const j = JSON.parse(fs.readFileSync(path.join(ROOT, `server/i18n/locales/${l}.json`), 'utf8'));
     if (l !== 'en-GB') {
       assert.equal(Object.keys(j.figures.terms).length, Object.keys(en.figures.terms).length, `${l}: every terms string`);
       assert.ok(main.includes(j.figures.terms.can1.replace(/'/g, '&#39;').replace(/"/g, '&quot;')), `${l}: in its language`);
     }
   }
-  for (const [k, v] of Object.entries(en.figures.terms)) assert.doesNotMatch(v, /—|–/, k);
+  for (const [k, v] of Object.entries(en.figures.terms)) assert.doesNotMatch(v, /\u2014|\u2013/, k);
   // the words a teacher needs: free to use, copy, print, share and change; what stays theirs
   const r = await as(boss)('/figures/terms');
   for (const w of [/Copy, print and share/, /Change them/, /without asking us and without giving credit/, /Anything original you add is yours/, /What CC0 means/]) assert.match(r.text, w);
