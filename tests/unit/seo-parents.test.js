@@ -15,6 +15,7 @@ const { q, now } = await import('../../server/db.js');
 const { AGES, PARENT_GUIDES, HUBS, HOME_TIPS } = await import('../../server/learn.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
 const { withoutKeys } = await import('../support/i18n-gaps.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 seed({ quiet: true });
 const kid = auth.createUser({ username: 'ParentPageKid', password: 'a-long-password-1', displayName: 'Mia Kidname' });
@@ -32,7 +33,7 @@ test.beforeEach(() => resetLimits());
 /** Billing on (a fake test key; no page here calls Stripe) and public, or back to off. */
 function paid(on, pub = on) { config.stripeApiKey = on ? 'rk_test_fake' : ''; config.stripeWebhookSecret = on ? 'whsec_fake_par' : ''; config.billingPublic = pub; }
 test.afterEach(() => paid(false));
-const get = async (path, headers = {}) => { const r = await fetch(base + path, { headers, redirect: 'manual' }); return { status: r.status, headers: r.headers, text: await r.text() }; };
+const get = async (path, headers = {}) => { const r = await fetch(base + path, { headers, redirect: 'manual' }); const raw = await r.text(); return { status: r.status, headers: r.headers, text: deicon(raw), raw }; };
 const robotsMeta = h => (/<meta name="robots" content="([^"]+)">/.exec(h) || [])[1];
 const canonical = h => (/<link rel="canonical" href="([^"]+)">/.exec(h) || [])[1];
 const ld = h => [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m => JSON.parse(m[1]));
@@ -299,7 +300,8 @@ test('localized pages stay in one language: no untranslated additions on game, s
     assert.match(gap, /<span class="door-h">Para las familias<\/span>/, 'the parent door, until "I’m a parent" is translated');
     assert.doesNotMatch(gap, /lang="en"[^>]*>For parents|>Parents<|I’m a parent/);
   });
-  assert.match((await get('/es/teachers')).text, /<a class="navlink" href="\/parents"[^>]*><span class="emo" aria-hidden="true">👪<\/span>Familias<\/a>/);
+  // 👪 is drawn as Fluent's house with garden (Fluent has no family emoji).
+  assert.match((await get('/es/teachers')).raw, /<a class="navlink" href="\/parents"[^>]*><span class="emo" aria-hidden="true"><img class="fx fx-3d" src="\/icons\/fluent\/3d\/house-with-garden-64\.webp"[^>]*><\/span>Familias<\/a>/);
   // English keeps all of it.
   assert.match((await get('/g/sum-racer')).text, /Ages 6–11/);
   assert.match((await get('/learn/math-games')).text, /id="home"/);
@@ -362,5 +364,21 @@ test('a translated /parents with paid plans on stays in its language: no new Eng
     const sec = /<section class="panel" id="plans">[\s\S]*?<\/section>/.exec(h)[0] + /<section class="panel" id="families"[\s\S]*?<\/section>/.exec(h)[0];
     assert.doesNotMatch(sec, /lang="en"/, p);
     assert.doesNotMatch(sec, /A plan adds extra Builder messages/, `${p}: the new sentence waits for its translation`);
+  }
+});
+
+test('/parents and /teachers are short: the extra sections and every FAQ answer fold under their headings, still on the page', async () => {
+  const folds = (h, id) => new RegExp(`id="${id}"[^>]*>\\s*<details class="lp-fold"><summary><h2`).test(h);
+  const p = (await get('/parents')).text;
+  for (const id of ['ages', 'subjects', 'make', 'home', 'guides', 'private']) assert.ok(folds(p, id), `/parents #${id}`);
+  for (const id of ['safe', 'play']) assert.ok(!folds(p, id), `/parents #${id} stays open`);
+  const t = (await get('/teachers')).text;
+  for (const id of ['brain-breaks', 'subjects', 'build', 'class', 'safe', 'uses']) assert.ok(folds(t, id), `/teachers #${id}`);
+  assert.ok(!folds(t, 'play'), '/teachers #play stays open');
+  for (const h of [p, t]) {
+    const faq = /<section class="panel faq lp-faq" id="faq"[\s\S]*?<\/section>/.exec(h)[0];
+    const qs = (faq.match(/<h3/g) || []).length;
+    assert.ok(qs >= 5); assert.equal((faq.match(/<details class="lp-fold"><summary><h3/g) || []).length, qs, 'every answer folds');
+    assert.match(h, /"@type":"FAQPage"/, 'the answers are still in the structured data');
   }
 });

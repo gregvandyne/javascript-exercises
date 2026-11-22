@@ -47,10 +47,10 @@
       "schools": "Para escuelas"
     },
     "build": {
-      "ready": "✨ ¡Tu juego “{title}” está listo! <a href=\"{href}\">Ábrelo</a>",
-      "question": "💬 El Constructor tiene una pregunta sobre “{title}”. <a href=\"{href}\">Ábrelo</a>",
-      "stopped": "⚠️ “{title}” se detuvo antes de terminar. <a href=\"{href}\">Ábrelo para seguir</a>",
-      "many": "✨ Algunos de tus juegos tienen noticias del Constructor. <a href=\"{href}\">Ver Mis juegos</a>"
+      "ready": "¡Tu juego “{title}” está listo! <a href=\"{href}\">Ábrelo</a>",
+      "question": "El Constructor tiene una pregunta sobre “{title}”. <a href=\"{href}\">Ábrelo</a>",
+      "stopped": "“{title}” se detuvo antes de terminar. <a href=\"{href}\">Ábrelo para seguir</a>",
+      "many": "Algunos de tus juegos tienen noticias del Constructor. <a href=\"{href}\">Ver Mis juegos</a>"
     },
     "shortPasswordGrownup": "Su contraseña tiene menos de {min} caracteres. Por favor, <a href=\"{href}\">elija una más larga</a>."
   },
@@ -1108,6 +1108,11 @@
         "li5": "Antes de crear la cuenta, el adulto lee un aviso sobre lo que guardamos y marca que lo leyó y que es la madre, el padre o el tutor legal del niño. Guardamos un registro de eso: cuándo y qué versión del aviso. Esto no es una verificación de consentimiento parental según las leyes de privacidad infantil, y no lo tratamos como tal. Pagar un plan tampoco lo es.",
         "li9": "El adulto puede ver estas cantidades y borrar la cuenta desde su página familiar: todo lo que el niño creó, escribió y subió se borra de inmediato. Guardamos un registro breve de que la cuenta existió y de quién la creó, el nombre de usuario anterior queda reservado durante 90 días para que nadie más pueda usarlo, y una clase en la que estuvo el niño conserva sus propios registros. Si el niño está ahora en una clase de una escuela, primero el docente lo quita de la clase.",
         "li7": "Cuánto tiempo: mientras exista la cuenta. Todavía no tenemos plazos de borrado automático."
+      },
+      "manip": {
+        "h": "Materiales manipulativos de matemáticas en clase",
+        "p1": "<b>Sesiones de clase en directo:</b> cuando un docente dirige una sesión en directo con los materiales de matemáticas, el tablero de cada estudiante (sus piezas, notas adhesivas, texto y respuestas) se guarda para su docente y se borra 30 días después de que termine la sesión. No guardamos hacia dónde señalan los estudiantes (sus cursores) ni las manos levantadas.",
+        "p2": "<b>Preparar un tablero con IA:</b> un docente puede describir una clase y pedir a la IA que prepare un tablero. Solo enviamos la descripción del docente a nuestro proveedor de IA, Anthropic. Nunca enviamos el trabajo ni los nombres de los estudiantes."
       }
     }
   },
@@ -1186,7 +1191,10 @@
     },
     "makeLike": "Crea un juego como este",
     "makeLikeShort": "Haz uno así",
-    "grownupBuilder": "Creador adulto"
+    "grownupBuilder": "Creador adulto",
+    "sets": {
+      "copyOf": "Copia de {title}"
+    }
   },
   "play": {
     "backTo": "Volver a {title}",
@@ -1480,10 +1488,10 @@
     "rename": "Renombrar",
     "delete": "Borrar",
     "status": {
-      "building": "🛠️ Creando…",
-      "ready": "✨ Listo",
-      "question": "💬 Una pregunta",
-      "stopped": "⚠️ Detenido"
+      "building": "Creando…",
+      "ready": "Listo",
+      "question": "Una pregunta",
+      "stopped": "Detenido"
     }
   },
   "studio": {
@@ -2493,8 +2501,8 @@
           "learn": "Después de cada construcción, la app juega sola unos 20 segundos: pulsa teclas, toca, desliza y comprueba que la puntuación cambia y que nada se rompe."
         }
       },
-      "resumed": "🔄 El servidor se reinició, así que el Constructor siguió desde donde estaba.",
-      "resumedV": "🔄 El servidor se reinició, así que el Constructor siguió desde la versión {v}.",
+      "resumed": "El servidor se reinició, así que el Constructor siguió desde donde estaba.",
+      "resumedV": "El servidor se reinició, así que el Constructor siguió desde la versión {v}.",
       "stopped": {
         "restart": "El Constructor se detuvo cuando nuestro servidor se reinició. Todo lo que hizo está guardado.",
         "ai": "El Constructor se detuvo cuando nuestro servidor se reinició, y el Constructor de IA está descansando ahora. Todo lo que hizo está guardado."
@@ -2551,7 +2559,7 @@
       },
       "stillWorking": "¡Un momento, el Constructor todavía está trabajando!",
       "resting": {
-        "text": "😴 El Constructor con IA está descansando ahora. Volverá {when}. Tu juego y tus mensajes para el Constructor están guardados, ¡vuelve entonces!",
+        "text": "El Constructor con IA está descansando ahora. Volverá {when}. Tu juego y tus mensajes para el Constructor están guardados, ¡vuelve entonces!",
         "today": "hoy a las {time}",
         "tomorrow": "mañana a las {time}",
         "date": "el {date} a las {time}"
@@ -3250,7 +3258,7 @@
       "editN": "Editar el problema {n}",
       "add": "Añadir un problema",
       "copyN": "Copiar el problema {n}",
-      "editTitle": "✏️ Problema {n} de {total}",
+      "editTitle": "Problema {n} de {total}",
       "kind": {
         "reading": "Leer una escala",
         "thermometer": "termómetro",
@@ -3329,6 +3337,487 @@
       "genWorkAns": "La respuesta es {v}{u}.",
       "gVar": "El número {x} de la figura",
       "gDigits": "Cifras de cada número"
+    },
+    "library": {
+      "pageOf": "Página {page} de {pages}",
+      "backToQuestions": "Volver a las preguntas",
+      "toQuestions": "Preguntas",
+      "next": "Siguiente",
+      "stop": "Parar",
+      "readToMe": "Léemelo",
+      "answered": "Ya respondiste esta.",
+      "readQuestion": "Léemela",
+      "readFirst": "Primero lee el cuento hasta la última página.",
+      "right": "¡Sí, muy bien!",
+      "tryAgain": "¡Inténtalo otra vez! Mira la página {page}.",
+      "lookAt": "Mirar la página {page}",
+      "doneMsg": "¡Terminaste! {right} de {total} bien al primer intento. ¡Qué buena lectura!",
+      "doneShort": "¡Terminaste! ¡Qué buena lectura!",
+      "pagesOf": "Páginas {from}-{to} de {pages}"
+    },
+    "manip": {
+      "board": {
+        "pieceHint": "Toca una pieza para elegirla y arrástrala para moverla. Mantenla pulsada, haz clic derecho o pulsa Mayús+F10 para ver sus acciones. Las notas adhesivas se pueden arrastrar a cualquier sitio; toca una para escribir."
+      },
+      "wheel": {
+        "menu": "Acciones para {label}",
+        "copy": "Copiar",
+        "fill": "Relleno",
+        "rotate": "Girar",
+        "flip": "Dar la vuelta",
+        "break": "Partir en 10",
+        "lock": "Bloquear",
+        "unlock": "Desbloquear",
+        "delete": "Borrar",
+        "deleted": "Se borró {label}",
+        "undo": "Deshacer",
+        "lockedHint": "Bloqueado. Mantenlo pulsado para desbloquearlo.",
+        "pieceLocked": "Pieza {label}, bloqueada",
+        "objLocked": "{name}, bloqueado"
+      },
+      "text": {
+        "move": "Arrastra para mover este texto",
+        "resize": "Arrastra para cambiar el tamaño de este cuadro",
+        "smaller": "Texto más pequeño",
+        "bigger": "Texto más grande"
+      },
+      "boards": {
+        "title": "Mis pizarras",
+        "none": "Las pizarras en las que trabajas se guardan solas y aparecen aquí. Usa «Guardar como plantilla» para tener un punto de partida limpio.",
+        "templates": "Plantillas",
+        "templatesSub": "abre una copia nueva cada vez",
+        "recent": "Pizarras recientes",
+        "recentSub": "guardadas mientras trabajas",
+        "code": "código {code}",
+        "edited": "editada {when}",
+        "aiDraft": "Borrador de IA, listo {when}",
+        "roomLive": "Sala en vivo · {klass} · {n, plural, one {# estudiante} other {# estudiantes}}",
+        "roomEnded": "Sala en vivo · {klass} · terminó {when} · {n, plural, one {# cuadro guardado} other {# cuadros guardados}}",
+        "live": "En vivo",
+        "new": "Nuevo",
+        "more": "Más opciones para {title}",
+        "start": "Abrir una sala en vivo con ella",
+        "rename": "Cambiar nombre",
+        "duplicate": "Duplicar",
+        "reopen": "Reabrir la sala",
+        "deleteConfirm": "¿Borrar «{title}»? No se puede deshacer.",
+        "deleteRoom": "¿Borrar la sala «{title}» y el cuadro de cada estudiante? No se puede deshacer.",
+        "pickClass": "Elige la clase para esta sala y luego ábrela."
+      },
+      "share": {
+        "save": "Guardar como plantilla"
+      },
+      "draft": {
+        "progress": "Preparando tu pizarra",
+        "drafting": "Preparando…",
+        "quote": "«{brief}»",
+        "leave": "Puedes cerrar esta página o recargarla. El borrador sigue en nuestro servidor y estará en Mis pizarras cuando termine.",
+        "eta": {
+          "under": "Normalmente menos de un minuto",
+          "about": "{n, plural, one {Normalmente un minuto} other {Normalmente unos # minutos}}",
+          "guessUnder": "A menudo menos de un minuto",
+          "guess": "{n, plural, one {Un minuto, más o menos} other {Unos # minutos}}",
+          "longer": "Tarda un poco más de lo normal",
+          "soFar": "{time} hasta ahora"
+        },
+        "step": {
+          "check": {
+            "now": "Revisando que tus palabras no tengan nombres de estudiantes",
+            "done": "Revisado: sin nombres de estudiantes"
+          },
+          "ai": {
+            "now": "La IA está eligiendo los problemas",
+            "done": "La IA eligió los problemas"
+          },
+          "build": {
+            "now": "Ordenando la pizarra y los pasos",
+            "done": "Pizarra y pasos ordenados"
+          },
+          "save": {
+            "now": "Guardando en Mis pizarras",
+            "done": "Guardado en Mis pizarras"
+          }
+        },
+        "away": "Tu borrador de IA «{title}» terminó mientras no estabas.",
+        "awayN": "{n, plural, one {# problema} other {# problemas}} y {steps, plural, one {# paso} other {# pasos}}.",
+        "inBoards": "Está guardado en Mis pizarras.",
+        "use": "Ponerlo en mi pizarra",
+        "dismiss": "Cerrar",
+        "failedAway": "Tu borrador de IA para {tool} no se pudo terminar.",
+        "failed": "El borrador no se pudo terminar.",
+        "retry": "Intentar de nuevo",
+        "err": {
+          "aiFailed": "La IA no pudo prepararlo ahora. Tus palabras siguen aquí: inténtalo en un momento.",
+          "restart": "Nuestro servidor se reinició mientras preparaba el borrador. Tus palabras siguen aquí: inténtalo de nuevo.",
+          "names": "No pongas nombres de estudiantes en la descripción: los nombres nunca van a la IA.",
+          "words": "Algunas palabras de la descripción no están permitidas. Cámbialas e inténtalo de nuevo.",
+          "personal": "Quita números de teléfono, correos, enlaces y códigos, e inténtalo de nuevo.",
+          "other": "Algo salió mal. Inténtalo en un momento."
+        }
+      },
+      "save": {
+        "name": "Nombre de la plantilla",
+        "what": "Una plantilla es un punto de partida limpio: al abrirla, o al abrir una sala con ella, siempre recibes una copia nueva. Esta pizarra se sigue guardando mientras trabajas.",
+        "go": "Guardar",
+        "cancel": "Cancelar",
+        "done": "Guardada como plantilla «{title}». Código {code}",
+        "savedAt": "Guardado {time}",
+        "notYet": "Aún no se guardó. Intentando de nuevo…"
+      },
+      "pv": {
+        "traded": "Cambiaste {n} × {from} por {m} × {to}.",
+        "broke": "{from} se convirtió en {n} × {to}.",
+        "moved": "{label} pasó a la columna {col}.",
+        "needTen": "Hacen falta 10 para cambiar",
+        "count": "{n} piezas en {col}"
+      }
+    },
+    "manip-room": {
+      "actionsFor": "Acciones para {label}",
+      "teacherLock": "Tu maestro bloqueó esto.",
+      "reopen": "Reabrir la sala",
+      "reopened": "La sala está abierta otra vez. Cada estudiante vuelve a su propio cuadro."
+    },
+    "figures-editor": {
+      "undo": "Deshacer",
+      "redo": "Rehacer",
+      "examples": "Ejemplos",
+      "mine": "Mis ajustes",
+      "randomize": "Al azar",
+      "controls": "Ajustes de la figura",
+      "measures": "Medidas",
+      "leaveEmpty": "Escribe las medidas que conoces. Deja vacías las demás.",
+      "options": "Opciones",
+      "show": "Mostrar",
+      "default": "(predeterminado)",
+      "advanced": "Avanzado (datos)",
+      "advancedHelp": "Todos los datos de la figura en JSON. Las listas y los grupos se editan aquí.",
+      "jsonObject": "Los datos deben ser un solo objeto { ... }.",
+      "jsonBad": "Aún no es JSON válido: {why}",
+      "display": "Visualización",
+      "print": "Modo impresión (negro sobre blanco)",
+      "nts": "Marcar «No está a escala»",
+      "figure": "La figura",
+      "answers": "Pregunta y respuestas",
+      "question": "Pregunta",
+      "questionHint": "Escribe la pregunta que los alumnos responden sobre esta figura.",
+      "worked": "Respuestas resueltas (OF.solve)",
+      "answerIs": "La respuesta es",
+      "pickAnswer": "Elige la respuesta…",
+      "noAnswers": "No hay respuestas resueltas para esta figura",
+      "facts": "Todo sobre ella",
+      "answersWait": "Las respuestas aparecen en cuanto la figura se puede dibujar. Oomba nunca dibuja una figura incorrecta.",
+      "pickHelp": "Elige qué número responde a tu pregunta, o pulsa Al azar para una pregunta ya hecha.",
+      "noSolve": "Esta figura no tiene números calculados para elegir.",
+      "hide": "Ocultar la respuesta a los alumnos",
+      "hideWhat": "Qué ocultar",
+      "hideAll": "Todas las medidas",
+      "ofSays": "Oomba Figures dice: {reason}",
+      "undoLast": "Deshacer mi último cambio",
+      "backToExample": "Volver al ejemplo",
+      "add": "Añadir a una ficha",
+      "newSheet": "Una ficha nueva",
+      "qs": "{count, plural, one {# pregunta} other {# preguntas}}",
+      "added": "Añadida a {title}.",
+      "openSheet": "Abrir la ficha",
+      "saveBack": "Guardar en {title}",
+      "svg": "Descargar SVG",
+      "png": "Descargar PNG",
+      "copy": "Copiar imagen",
+      "link": "Copiar enlace",
+      "savePreset": "Guardar como mi ajuste",
+      "presetName": "Ponle nombre a tu ajuste",
+      "presetSaved": "Ajuste guardado.",
+      "notice": "Las descargas indican que lo que aporta Oomba Academy es de dominio público (CC0); lo original que añadas es tuyo.",
+      "noGen": "Esta figura aún no tiene generador: aquí tienes otro ejemplo.",
+      "pngFailed": "No se pudo crear el PNG. Prueba Descargar SVG.",
+      "copied": "Imagen copiada.",
+      "copiedSvg": "Copiada como texto SVG.",
+      "copyFailed": "No se pudo copiar. Prueba a descargarla.",
+      "linkCopied": "Enlace copiado.",
+      "why": {
+        "triangle": {
+          "t": "Estos lados no pueden formar un triángulo",
+          "p": "Dos lados cualesquiera de un triángulo deben sumar más que el tercero, o los extremos nunca se juntan."
+        },
+        "angles": {
+          "t": "Estos ángulos no encajan",
+          "p": "Los ángulos de un triángulo suman exactamente 180°. Revisa los ángulos que diste."
+        },
+        "short": {
+          "t": "Un lado es demasiado corto",
+          "p": "Con estos números un lado nunca llega al otro extremo. Alárgalo o cambia un ángulo."
+        },
+        "agree": {
+          "t": "Estas medidas no coinciden",
+          "p": "Diste más medidas de las que la figura necesita y no coinciden. Quita una."
+        },
+        "drawAs": {
+          "t": "Revisa «No está a escala»",
+          "p": "Otras proporciones de dibujo solo funcionan con «No está a escala» activado, y las marcas deben ser ciertas en ambos casos."
+        },
+        "positive": {
+          "t": "Un número debe ser mayor que cero",
+          "p": "Las longitudes, tamaños y cantidades son mayores que cero."
+        },
+        "range": {
+          "t": "Un número está fuera de rango",
+          "p": "Uno de los números es demasiado grande o pequeño para esta figura."
+        },
+        "extra": {
+          "t": "Demasiadas medidas",
+          "p": "Esta figura solo acepta algunas de estas medidas a la vez. Quita una."
+        },
+        "data": {
+          "t": "No se pueden leer los datos",
+          "p": "Revisa el cuadro Avanzado (datos)."
+        },
+        "generic": {
+          "t": "Esta figura no se puede dibujar",
+          "p": "Oomba nunca dibuja una figura incorrecta. Cambia los números para que encajen."
+        }
+      },
+      "f": {
+        "unit": "Unidad",
+        "round": "Decimales",
+        "mass": "Masa",
+        "angle": "Ángulo",
+        "speed": "Rapidez",
+        "height": "Altura",
+        "width": "Ancho",
+        "length": "Longitud",
+        "radius": "Radio",
+        "value": "Valor",
+        "min": "Mínimo",
+        "max": "Máximo",
+        "step": "Paso",
+        "type": "Tipo",
+        "element": "Elemento"
+      },
+      "k": {
+        "area": "Área",
+        "perimeter": "Perímetro",
+        "volume": "Volumen",
+        "surfaceArea": "Área total",
+        "angles": "Ángulo",
+        "sides": "Lado",
+        "total": "Total",
+        "mean": "Media",
+        "median": "Mediana",
+        "range": "Rango",
+        "interior": "Ángulo interior",
+        "value": "Valor"
+      },
+      "hp": {
+        "sides": "Los lados",
+        "angles": "Los ángulos",
+        "heights": "Las alturas",
+        "value": "El valor",
+        "image": "La imagen",
+        "electrons": "Los electrones",
+        "values": "Los valores",
+        "reading": "La lectura"
+      },
+      "draw": {
+        "modeLabel": "Cómo hacer la figura",
+        "type": "Escribir las medidas",
+        "draw": "Dibujarla",
+        "title": "Dibújala en la cuadrícula de puntos",
+        "size": "Tamaño de la cuadrícula",
+        "sizeOpt": "{n} por {n}",
+        "clear": "Borrar",
+        "help": {
+          "triangle": "Toca tres puntos para hacer un triángulo. Arrastra un vértice para moverlo.",
+          "quad": "Toca cuatro puntos en orden alrededor de la figura. Arrastra un vértice para moverlo.",
+          "grid": "Toca los puntos en orden alrededor de la figura, hasta 10 vértices. Arrastra un vértice para moverlo."
+        },
+        "keys": "Con el teclado: las flechas mueven, Intro coloca un vértice o lo toma, y luego las flechas lo mueven.",
+        "board": "Cuadrícula de puntos, {n} por {n}",
+        "corner": "Vértice {name} en ({x}, {y})",
+        "placed": "{name} colocado en ({x}, {y})",
+        "moved": "{name} movido a ({x}, {y})",
+        "picked": "{name} tomado. Muévelo con las flechas y pulsa Intro para soltarlo.",
+        "removed": "{name} quitado",
+        "corners": "Vértices",
+        "sides": "Lados",
+        "angles": "Ángulos",
+        "kind": "Tipo",
+        "perimeter": "Perímetro",
+        "area": "Área",
+        "sqUnits": "{area} unidades cuadradas",
+        "more": "{count, plural, one {Toca # punto más.} other {Toca # puntos más.}}",
+        "filled": "Completado a partir de tu dibujo.",
+        "keep": "La figura de abajo conserva tu última forma válida.",
+        "same": "Dos vértices están en el mismo punto. Arrastra uno de ellos a otro punto.",
+        "line": "Tres vértices están en línea recta, así que no forman una figura. Mueve uno de ellos fuera de la línea.",
+        "cross": "Dos lados se cruzan. Mueve un vértice para que los lados solo se toquen en los vértices.",
+        "cannot": "Oomba Figures no puede dibujar esta. Prueba a mover un vértice.",
+        "isNot": "Esa figura es {is}, no {want}.",
+        "special": "Esa figura es {is}, y Oomba Figures la dibuja con su propio editor.",
+        "open": {
+          "rectangle": "Abrirla en el editor de Rectángulo",
+          "parallelogram": "Abrirla en el editor de Paralelogramo",
+          "trapezoid": "Abrirla en el editor de Trapecio",
+          "kite": "Abrirla en el editor de Deltoide",
+          "grid": "Ubicarla en una cuadrícula de coordenadas"
+        },
+        "a": {
+          "square": "un cuadrado",
+          "rectangle": "un rectángulo",
+          "rhombus": "un rombo",
+          "parallelogram": "un paralelogramo",
+          "trapezoid": "un trapecio",
+          "kite": "un deltoide",
+          "quad": "un cuadrilátero sin nombre especial",
+          "concave": "un cuadrilátero cóncavo"
+        },
+        "t": {
+          "square": "Cuadrado",
+          "rectangle": "Rectángulo",
+          "rhombus": "Rombo",
+          "parallelogram": "Paralelogramo",
+          "trapezoid": "Trapecio",
+          "isoTrapezoid": "Trapecio isósceles",
+          "rightTrapezoid": "Trapecio rectángulo",
+          "kite": "Deltoide",
+          "quad": "Cuadrilátero",
+          "concave": "Cuadrilátero cóncavo",
+          "polygon": "{count, plural, one {Polígono de # lado} other {Polígono de # lados}}"
+        },
+        "tri": {
+          "right": "Rectángulo",
+          "acute": "Acutángulo",
+          "obtuse": "Obtusángulo",
+          "scalene": "Escaleno",
+          "isosceles": "Isósceles",
+          "equilateral": "Equilátero"
+        },
+        "ex": {
+          "right": "Triángulo rectángulo",
+          "isosceles": "Triángulo isósceles",
+          "obtuse": "Triángulo obtusángulo",
+          "pentagon": "Pentágono"
+        },
+        "examples": "Dibujadas en la cuadrícula de puntos",
+        "gridOut": "Mostrarla también en una cuadrícula de coordenadas",
+        "gridTitle": "En una cuadrícula de coordenadas",
+        "addGrid": "Añadir la figura de la cuadrícula a una ficha",
+        "drawInstead": "Dibujarla en una cuadrícula"
+      },
+      "choiceNote": "Es una pregunta de opción múltiple. Sus opciones y la correcta se eligen en la hoja de trabajo.",
+      "history": "Deshacer y rehacer",
+      "undoTip": "Deshacer (Ctrl+Z)",
+      "redoTip": "Rehacer (Ctrl+Mayús+Z)",
+      "undone": "Deshecho.",
+      "redone": "Rehecho.",
+      "moreLabel": "Ajustes guardados: los ejemplos, los tuyos, guardar y borrar",
+      "deletePresets": "Borrar un ajuste…",
+      "deletePreset": "Borrar",
+      "deletePresetQ": "¿Borrar el ajuste «{name}»?",
+      "deletePresetText": "Desaparece de tus ajustes para este tipo de figura. Las fichas que lo usaron conservan sus figuras.",
+      "presetDeleted": "Ajuste borrado.",
+      "noPresets": "Todavía no tienes ajustes para este tipo de figura.",
+      "reuseLink": "Lo que puedes hacer con tus figuras",
+      "presetsBtn": "Ajustes guardados"
+    },
+    "figures-sheet": {
+      "title": "Título de la ficha",
+      "grade": "Grado",
+      "anyGrade": "Cualquier grado",
+      "gradeN": "Grado {grade}",
+      "powerAi": "Con IA",
+      "briefLabel": "Tema, grado, cuántas preguntas",
+      "briefHint": "Grado 7, área de rectángulos y trapecios, y un diagrama de caja.",
+      "howMany": "Preguntas",
+      "draft": "Redactar",
+      "budget": "Usa el presupuesto de IA. Si está en pausa, recibes un conjunto inicial.",
+      "drafting": "Redactando tus preguntas…",
+      "briefFirst": "Describe la ficha en pocas palabras primero.",
+      "drafted": "{count, plural, one {# pregunta redactada.} other {# preguntas redactadas.}} Oomba Figures comprobó cada figura y resolvió cada respuesta.",
+      "resting": "La IA está en pausa, aquí tienes un conjunto inicial ({count, plural, one {# pregunta} other {# preguntas}}).",
+      "repaired": "{count, plural, one {# figura no se podía dibujar y se reemplazó.} other {# figuras no se podían dibujar y se reemplazaron.}}",
+      "dropped": "{count, plural, one {# pregunta se dejó fuera.} other {# preguntas se dejaron fuera.}}",
+      "addLabel": "Añadir una pregunta con figura",
+      "add": "Añadir",
+      "empty": "Aún no hay preguntas. Añade una pregunta con figura o redacta algunas con IA.",
+      "questionN": "Pregunta {n}",
+      "questionHint": "Escribe la pregunta…",
+      "answer": "Respuesta:",
+      "noAnswer": "Aún no hay respuesta elegida: ábrela en el editor.",
+      "up": "Subir",
+      "down": "Bajar",
+      "regen": "Números nuevos",
+      "edit": "Editar la figura",
+      "delete": "Borrar",
+      "deleteQ": "¿Borrar esta pregunta?",
+      "remove": "Borrar la ficha",
+      "removeQ": "¿Borrar esta ficha?",
+      "removeText": "Sus preguntas también se borran. No se puede deshacer.",
+      "preview": "Vista previa de impresión",
+      "paper": "Carta, negro sobre blanco",
+      "studentSheet": "Ficha del alumno",
+      "answerKey": "Solucionario",
+      "previewEmpty": "La ficha imprimible aparece aquí cuando haya una pregunta.",
+      "print": "Imprimir",
+      "printKey": "Imprimir con solucionario",
+      "assign": "Asignar a una clase",
+      "assignTitle": "Asignar a una clase",
+      "assignClass": "Clase",
+      "assignOpens": "Se abre (opcional)",
+      "assignDue": "Entrega (opcional)",
+      "assignShow": "Mostrar respuestas después de la fecha de entrega",
+      "assignShowHint": "Desactivado por defecto. Activado: cuando pasa la fecha de entrega, quienes entregaron ven las respuestas y los pasos.",
+      "assignSnapshot": "Los estudiantes reciben la ficha tal como está ahora. Los cambios que hagas después no la cambian.",
+      "assignGo": "Asignar",
+      "assignCancel": "Cancelar",
+      "assignEmpty": "Primero agrega preguntas y luego asigna la ficha.",
+      "assignNoClasses": "Todavía no das clase a ningún grupo. Crea una clase primero y luego asigna.",
+      "assignDone": "Asignado a {class}.",
+      "assignSee": "Verlo como los estudiantes",
+      "assignProgress": "Ver el progreso",
+      "answerType": "Respuesta",
+      "typeNumber": "Número",
+      "typeChoice": "Opción múltiple",
+      "options": "Opciones (marca la correcta)",
+      "optionN": "Opción {letter} de la pregunta {n}",
+      "rightN": "La opción {letter} es la respuesta correcta",
+      "markRight": "La respuesta correcta",
+      "addOption": "Añadir opción",
+      "removeOption": "Quitar la opción {letter}",
+      "fromFigure": "La opción correcta se calcula a partir de la figura. Cambia una opción o marca otra para elegirla tú.",
+      "needTwo": "Escribe al menos 2 opciones.",
+      "needRight": "Marca la opción correcta.",
+      "testAiTitle": "Redactar una prueba",
+      "topicLabel": "Tema",
+      "topicHint": "Por ejemplo: área de rectángulos y triángulos",
+      "subject": "Materia",
+      "anySubject": "Cualquier materia",
+      "draftTest": "Redactar la prueba",
+      "testBudget": "Hecha con los generadores de preguntas, así puedes sacar números nuevos para cualquier pregunta. Cuenta para el límite de IA; sin IA se saca una prueba inicial.",
+      "byHand": "A mano: elige una materia, agrega preguntas con figuras y luego ajusta cada figura y su respuesta.",
+      "checkFirst": "Revisa cada pregunta antes de asignarla.",
+      "topicFirst": "Primero escribe el tema de la prueba.",
+      "saveLesson": "Guardar en la lección",
+      "saveLessonHint": "Pone estas preguntas en {title}. Nada cambia en la lección hasta que guardes.",
+      "saveLessonAgain": "Guardar de nuevo reemplaza las preguntas de {title}.",
+      "lessonStarted": "Hay estudiantes que ya empezaron este paso, así que sus preguntas se quedan como están. Haz una copia de la lección para cambiarlas.",
+      "backToLesson": "Volver a la lección",
+      "subjects": "Materias",
+      "swapLabel": "Cambiar la figura por",
+      "swap": "Cambiar figura",
+      "editN": "Editar la figura de la pregunta {n} ({kind})",
+      "regenN": "Números nuevos para la pregunta {n}",
+      "moreN": "Más opciones de la pregunta {n}",
+      "swapMenu": "Cambiar la figura…",
+      "swapTitle": "Cambiar la figura de la pregunta {n}",
+      "swapHint": "La pregunta recibe una figura nueva de ese tipo, con su propia pregunta y respuesta. Después puedes editarlas.",
+      "deleteText": "Se borran la pregunta y su figura. No se puede deshacer.",
+      "movedTo": "Ahora es la pregunta {n}.",
+      "removeTest": "Borrar la prueba",
+      "removeTestQ": "¿Borrar esta prueba?",
+      "removeLesson": "Borrar estas preguntas",
+      "removeLessonQ": "¿Borrar estas preguntas con figuras?",
+      "removeLessonText": "El paso de figuras de la lección conserva las preguntas con las que se guardó por última vez. No se puede deshacer."
     }
   },
   "favorites": {
@@ -3956,7 +4445,9 @@
       "build": "Crear un juego",
       "text": "Leer o hacer",
       "question": "Responder una pregunta",
-      "quiz": "Responder preguntas del quiz"
+      "quiz": "Responder preguntas del quiz",
+      "figures": "Responder preguntas de figuras",
+      "figureStep": "Preguntas con figuras"
     },
     "library": {
       "title": "Biblioteca de lecciones",
@@ -4035,7 +4526,14 @@
       "newGameLink": "Crear un juego nuevo para que jueguen los estudiantes",
       "deleteWorkConfirm": "¿Eliminar este paso? {n, plural, one {Se eliminará el trabajo de # estudiante en este paso.} other {Se eliminará el trabajo de # estudiantes en este paso.}} Esta acción no se puede deshacer.",
       "liveGames": "Juegos en vivo para la clase (tú los diriges)",
-      "otherGames": "Más juegos"
+      "otherGames": "Más juegos",
+      "bodyFigures": "Instrucciones para los estudiantes (opcional)",
+      "figuresHint": "Luego se abre el creador de figuras: elige las figuras, ajusta sus números y respuestas, y después Guardar en la lección.",
+      "editFigures": "Editar preguntas",
+      "printFigures": "Imprimir",
+      "figuresStarted": "Hay estudiantes que ya empezaron este paso, así que sus preguntas se quedan como están.",
+      "more": "Más",
+      "figuresSaved": "Preguntas con figuras guardadas en la lección."
     },
     "ai": {
       "button": "Crear borrador con IA",
@@ -4114,7 +4612,9 @@
       "build": "Crea tu propio juego",
       "buildText": "Un quiz con 6 preguntas sobre {topic}",
       "exit": "Ticket de salida",
-      "exitText": "En dos o tres oraciones: ¿qué es lo más importante que aprendiste hoy sobre {topic}?"
+      "exitText": "En dos o tres oraciones: ¿qué es lo más importante que aprendiste hoy sobre {topic}?",
+      "figures": "Preguntas con figuras",
+      "figuresText": "Responde la pregunta debajo de cada figura."
     },
     "errors": {
       "notFound": "No pudimos encontrarlo, o no se puede abrir.",
@@ -11350,6 +11850,117 @@
         "howto": "Toca o arrastra una regleta al tablero. Forma trenes iguales de largos.",
         "helpUse": "Toca una regleta y luego Girar, Copiar o Borrar; las flechas la mueven.\nMostrar trenes arma los dos lados de la igualdad; llena la casilla.\nLa regleta más larga está al final de la fila; su menú va de 11 a 20.",
         "helpIdeas": "¿Qué dos regletas forman un tren tan largo como la de 10?"
+      },
+      "pdf": {
+        "name": "PDF",
+        "desc": "Pasa las páginas de un PDF que subas, como un plan de clase o una ficha.",
+        "s": {
+          "doc": "Archivo PDF",
+          "title": "Título"
+        },
+        "empty": "Sube un PDF para mostrarlo aquí.",
+        "upload": "Subir un PDF",
+        "uploading": "Subiendo tu PDF…",
+        "replace": "Cambiar el PDF",
+        "note": "Hasta 10 MB. Solo tú puedes abrirlo y nunca se muestra en las pantallas de los alumnos.",
+        "prev": "Página anterior",
+        "next": "Página siguiente",
+        "page": "Página {n} de {total}",
+        "loading": "Abriendo el PDF…",
+        "bad": "Ese PDF no se abrió. Prueba con otro archivo.",
+        "gone": "Este PDF ya no está. Súbelo de nuevo.",
+        "pages": "PDF",
+        "tooBig": "Ese PDF es demasiado grande. El límite es 10 MB."
+      },
+      "link": {
+        "name": "Enlace",
+        "desc": "Un mosaico que abre un sitio web en una pestaña nueva.",
+        "s": {
+          "title": "Título",
+          "url": "Dirección web"
+        },
+        "empty": "Añade un título y una dirección web en los ajustes de este widget.",
+        "opens": "Se abre en una pestaña nueva",
+        "bad": "Usa una dirección web que empiece por http:// o https://",
+        "note": "Se abre en una pestaña nueva. Nunca se muestra en las pantallas de los alumnos."
+      },
+      "stickers": {
+        "name": "Pegatinas",
+        "desc": "Pon pegatinas en cualquier lugar del tablero. Cambia el tamaño, gira y ordena cada una.",
+        "s": {
+          "k": "Pegatina",
+          "x": "Horizontal",
+          "y": "Vertical",
+          "size": "Tamaño",
+          "r": "Giro",
+          "back": "Detrás de los widgets"
+        },
+        "open": "Pegatinas",
+        "heading": "Pegatinas",
+        "search": "Buscar pegatinas",
+        "theme": "Tema",
+        "allThemes": "Todos los temas",
+        "language": "Idioma",
+        "allLanguages": "Todos los idiomas",
+        "shape": "Forma",
+        "allShapes": "Todas las formas",
+        "count": "{n, plural, one {# pegatina} other {# pegatinas}}",
+        "none": "No se encontraron pegatinas para \"{q}\"",
+        "noneFilters": "Ninguna pegatina coincide con estos filtros.",
+        "clear": "Borrar la búsqueda",
+        "recent": "Recientes",
+        "favorites": "Favoritas",
+        "all": "Todas las pegatinas",
+        "more": "Mostrar más",
+        "star": "Añadir {name} a Favoritas",
+        "unstar": "Quitar {name} de Favoritas",
+        "add": "Poner {name} en el tablero",
+        "placed": "{name} está en el tablero.",
+        "hint": "Toca una pegatina para ponerla en el tablero, o arrástrala. Toca una pegatina del tablero para moverla, cambiar su tamaño o girarla.",
+        "close": "Cerrar pegatinas",
+        "loading": "Cargando pegatinas…",
+        "failed": "Las pegatinas no se cargaron. Inténtalo de nuevo.",
+        "full": "Este tablero tiene {n} pegatinas, el máximo. Borra una primero.",
+        "duplicate": "Duplicar",
+        "remove": "Borrar",
+        "removed": "{name} borrada.",
+        "resize": "Arrastra para cambiar el tamaño",
+        "rotate": "Arrastra para girar",
+        "role": "pegatina",
+        "toolsFor": "Herramientas de pegatina: {name}",
+        "moved": "{name} movida.",
+        "sized": "{name} cambiada a tamaño {size}.",
+        "turned": "{name} girada {deg} grados.",
+        "th_oomba": "Oomba",
+        "th_praise": "Elogios",
+        "th_classroom": "Aula",
+        "th_animals-nature": "Animales y naturaleza",
+        "th_maths-stem": "Matemáticas y STEM",
+        "th_seasons-holidays": "Estaciones y fiestas",
+        "th_food": "Comida",
+        "th_sports-play": "Deportes y juegos",
+        "th_space-weather": "Espacio y tiempo",
+        "th_music-arts": "Música y arte",
+        "th_transport": "Transporte",
+        "th_emotions": "Emociones",
+        "th_letters-numbers": "Letras y números",
+        "th_good-morning": "Buenos días",
+        "th_praise-words": "Palabras de elogio",
+        "th_hello-welcome": "Hola y bienvenida",
+        "th_goodbye": "Adiós",
+        "th_greetings": "Saludos",
+        "lang_English": "Inglés",
+        "lang_Italian": "Italiano",
+        "lang_Spanish": "Español",
+        "lang_French": "Francés",
+        "lang_German": "Alemán",
+        "lang_Dutch": "Neerlandés",
+        "lang_Portuguese": "Portugués",
+        "lang_Swedish": "Sueco",
+        "lang_Turkish": "Turco",
+        "shape_rect": "Redondeada",
+        "shape_circle": "Círculo",
+        "shape_bubble": "Bocadillo"
       }
     },
     "push": {
@@ -11395,7 +12006,9 @@
       "feedAddress": "Eso no es una dirección de calendario. Pega el enlace https:// o webcal:// de un calendario .ics.",
       "feedTooMany": "Esta clase tiene demasiados calendarios conectados. Desconecta uno primero.",
       "feedNotCalendar": "Esa dirección no es un archivo de calendario (.ics). Comprueba que sea la dirección iCal y no la página web del calendario.",
-      "feedUnreachable": "No pudimos llegar a ese calendario. Comprueba la dirección y que el calendario esté compartido, y vuelve a intentarlo."
+      "feedUnreachable": "No pudimos llegar a ese calendario. Comprueba la dirección y que el calendario esté compartido, y vuelve a intentarlo.",
+      "pdf_tooBig": "Ese PDF es demasiado grande. El límite es 10 MB.",
+      "pdf_badType": "Ese archivo no es un PDF."
     },
     "tools": {
       "send": "Enviar a la clase",
@@ -11635,6 +12248,605 @@
       "oombaSub": "Ver todos los juegos de Oomba",
       "collectionEmpty": "Esta colección aún está vacía",
       "allEmpty": "Todavía no has creado ningún juego."
+    }
+  },
+  "library": {
+    "title": "Biblioteca de cuentos",
+    "lead": "Libros ilustrados para leer solo o para que te los lean, con 3 preguntas al final. {count} cuentos gratis.",
+    "grades": {
+      "gk": "Preescolar/K",
+      "g1": "1.er grado",
+      "g2": "2.º grado",
+      "g3": "3.er grado",
+      "g45": "4.º-5.º grado"
+    },
+    "gradesLabel": "Grado escolar (EE. UU.)",
+    "allGrades": "Todos los grados",
+    "gradeWhy": "Sobre el grado",
+    "gradeNote": "El grado es una estimación de Oomba del grado escolar de EE. UU. adecuado para este libro, calculada a partir de su texto. No es un nivel Lexile, Guided Reading ni Fountas & Pinnell.",
+    "measures": "Palabras: {words} · Palabras por página: {perPage} · Palabras por oración: {perSentence} · Sílabas por palabra: {syllables} · Grado Flesch-Kincaid: {fk} · Fuera de las listas de palabras frecuentes Dolch y Fry: {notSight} %",
+    "meta": "{pages, plural, one {# página} other {# páginas}} · 🔊 Léemelo · {questions, plural, one {# pregunta} other {# preguntas}}",
+    "words": "{count, plural, one {# palabra} other {# palabras}}",
+    "read": "Leer",
+    "continue": "Seguir leyendo (página {page})",
+    "assign": "Asignar",
+    "state": {
+      "done": "Leído · {right} de {total} bien",
+      "quiz": "Faltan las preguntas",
+      "reading": "Página {page} de {pages}"
+    },
+    "forClass": "Elige un cuento para asignar a {class}.",
+    "backToClass": "Volver a la clase",
+    "searchLabel": "Buscar cuentos",
+    "searchPlaceholder": "Buscar cuentos",
+    "searchGo": "Buscar",
+    "found": "{count, plural, one {# cuento} other {# cuentos}}",
+    "none": "No encontramos cuentos",
+    "noneText": "Prueba con otras palabras o mira todos los grados.",
+    "footQuestions": "Cada libro indica su autor, ilustrador y traductor. Las preguntas del final las escribe Oomba y no forman parte de los libros.",
+    "glossary": "Palabras para saber",
+    "glossaryNote": "Notas de Oomba para entender palabras de la India.",
+    "aboutTitle": "Sobre este libro",
+    "aboutQuestions": "Después de la última página hay 3 preguntas. Las escribe Oomba Academy y no forman parte del libro.",
+    "credits": {
+      "text": "Cuento: {names}",
+      "illustration": "Ilustraciones: {names}",
+      "translation": "Traducción: {names}",
+      "changes": "Oomba cambió el tamaño de las imágenes y muestra el libro página por página. Pratham Books no respalda a Oomba.",
+      "corrected": "Oomba corrigió la ortografía y la puntuación.",
+      "notes": "Notas del autor y la editorial",
+      "factCorrected": "Oomba corrigió un dato histórico.",
+      "original": "Ver el libro original.",
+      "from": "Basado en un libro de {name}",
+      "changesBloom": "Oomba cambió el tamaño de las imágenes y muestra el libro página por página. Bloom Library, SIL Global y la editorial del libro no respaldan a Oomba.",
+      "changesBloomSA": "Oomba cambió el tamaño de las imágenes y muestra el libro página por página; estas páginas adaptadas se comparten con la misma licencia, {license}. Bloom Library, SIL Global y la editorial del libro no respaldan a Oomba.",
+      "originalBloom": "Ver el libro original en Bloom Library.",
+      "publicDomain": "Dominio público",
+      "firstPublished": "Publicado por primera vez en {year} ({edition}).",
+      "changesClassic": "Oomba dividió el cuento en páginas y cambió el tamaño de las imágenes. Las palabras son del autor.",
+      "changesClassicCut": "Oomba dividió el cuento en páginas, cambió el tamaño de las imágenes y quitó una línea. Las demás palabras son del autor."
+    },
+    "readToMe": "Léemelo",
+    "pagesLabel": "Páginas",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "toQuestions": "Preguntas",
+    "pageOf": "Página {page} de {pages}",
+    "finished": "¡Terminaste «{title}»!",
+    "questionsLead": "{count, plural, one {# pregunta} other {# preguntas}} sobre el cuento",
+    "readAgain": "Leerlo otra vez",
+    "backTo": "Volver a {name}",
+    "moreBooks": "Más cuentos",
+    "needJs": "Las preguntas necesitan JavaScript activado.",
+    "errors": {
+      "readFirst": "Primero lee el cuento hasta la última página.",
+      "alreadyAssigned": "Este cuento ya está asignado a {class}.",
+      "pickStory": "Elige un cuento de la biblioteca."
+    },
+    "assignTitle": "Asignar «{title}»",
+    "assignNote": "Los estudiantes lo ven en la página de la clase. Lo leen, responden 3 preguntas y tú ves quién lo leyó y sus resultados en Progreso.",
+    "preview": "Leerlo primero",
+    "kindStory": "Cuento",
+    "findStories": "Biblioteca de cuentos",
+    "door": {
+      "title": "Biblioteca de cuentos",
+      "kids": "{count} libros ilustrados. ¡Léelos o toca Léemelo!",
+      "staff": "{count} libros ilustrados por niveles, con preguntas. Asigna uno a una clase."
+    },
+    "results": {
+      "withAloud": "con Léemelo",
+      "onOwn": "solo",
+      "questionsLeft": "Leído, faltan preguntas",
+      "pageOf": "página {page} de {pages}",
+      "usedAloud": "Usó Léemelo",
+      "notStarted": "sin empezar",
+      "qN": "Pregunta {n}",
+      "summary": "{started} de {total} empezaron · {finished} terminaron",
+      "readTogether": "Leerlo juntos",
+      "assignAnother": "Asignar otro cuento",
+      "read": "Lectura",
+      "questions": "Preguntas",
+      "rightOf": "{right} / {total}",
+      "firstTry": "bien al primer intento",
+      "key": "Las preguntas cuentan si salen bien al primer intento (✓ bien, ✗ necesitó otro intento). Quien vuelve a intentarlo igual puede terminar.",
+      "byQuestion": "Las preguntas",
+      "hardest": "La pregunta {n} fue la más difícil para la clase.",
+      "answer": "Respuesta: {answer}",
+      "page": "página {page}",
+      "missed": "{count} fallaron la primera vez"
+    },
+    "footSources": "Cuentos e ilustraciones: Pratham Books (StoryWeaver) y los autores y editoriales de Bloom Library, cada libro con su propia licencia abierta, indicada junto al libro.",
+    "glossaryNoteAll": "Notas de Oomba para entender palabras que quizá no conozcan los niños.",
+    "footCredit": "Cuentos e ilustraciones: Pratham Books, StoryWeaver. Licencia:",
+    "wish": {
+      "label": "¿Qué te gustaría leer hoy?",
+      "placeholder": "dinosaurios, un cuento divertido, algo sobre el espacio...",
+      "go": "Buscar libros",
+      "busy": "Buscando...",
+      "heading": "Libros para ti",
+      "back": "Todos los libros",
+      "tryOther": "Probemos con otras palabras. ¿De qué te gustaría que trate el cuento?",
+      "none": "Todavía no encontramos un libro sobre eso. Aquí tienes libros que les encantan a muchos lectores.",
+      "found": "Encontramos {count, plural, one {# libro} other {# libros}} para ti.",
+      "empty": "Escribe sobre qué te gustaría leer.",
+      "error": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "sources": {
+      "classics": "Clásicos"
+    },
+    "footClassics": "Clásicos: libros antiguos de dominio público, con sus ilustraciones originales."
+  },
+  "figures": {
+    "title": "Figuras",
+    "loading": "Cargando las figuras…",
+    "crumbs": "Estás aquí",
+    "tools": {
+      "label": "Herramientas docentes",
+      "manipulatives": "Manipulativos",
+      "figures": "Figuras"
+    },
+    "subjects": {
+      "math": "Matemáticas",
+      "data": "Datos y estadística",
+      "physics": "Física",
+      "chem": "Química",
+      "biology": "Biología",
+      "economics": "Economía"
+    },
+    "grades": {
+      "K-2": "K-2",
+      "3-5": "Grados 3-5",
+      "6-8": "Grados 6-8",
+      "9-12": "Grados 9-12"
+    },
+    "menu": {
+      "testing": "En prueba: solo tú puedes verlo",
+      "pitch": "Figuras exactas y a escala para fichas, exámenes y presentaciones. Listas para imprimir, con las respuestas resueltas.",
+      "buildTitle": "Crear una ficha",
+      "buildText": "Elige las figuras tú mismo, o describe lo que necesitas y deja que la IA redacte las preguntas. Cada número se comprueba para que cada figura se pueda dibujar de verdad.",
+      "draftAi": "Redactar con IA",
+      "scratch": "Empezar de cero",
+      "mine": "Mis fichas",
+      "noSheets": "Aún no hay fichas. Las que crees aparecerán aquí.",
+      "questions": "{count, plural, one {# P} other {# P}}",
+      "gradeOf": "Grado {grade}",
+      "edited": "editada el {date}",
+      "subjects": "Materias",
+      "all": "Todas las figuras",
+      "soon": "Próximamente",
+      "grades": "Grados",
+      "search": "Buscar figuras",
+      "searchHint": "Buscar figuras, como cilindro o diagrama de caja",
+      "count": "{count, plural, one {# figura} other {# figuras}}",
+      "nothing": "Ninguna figura coincide. Prueba otra palabra u otro grado.",
+      "buildTest": "Crear una prueba",
+      "buildTestText": "Una prueba completa de preguntas con figuras, redactada con IA o hecha a mano.",
+      "isTest": "Prueba"
+    },
+    "sheet": {
+      "newTitle": "Nueva ficha",
+      "crumb": "Creador de fichas",
+      "untitled": "Ficha sin título",
+      "untitledTest": "Prueba sin título",
+      "newTest": "Nueva prueba",
+      "crumbTest": "Creador de pruebas",
+      "crumbLesson": "Preguntas con figuras"
+    },
+    "editor": {
+      "example": "Ejemplo {n}"
+    },
+    "print": {
+      "figure": "Figura de la pregunta {n}",
+      "keyTag": "Solucionario",
+      "keyTitle": "{title}: solucionario",
+      "name": "Nombre",
+      "date": "Fecha",
+      "made": "Hecho con Oomba Academy",
+      "noQuestion": "Mira la figura.",
+      "noAnswer": "Aún no hay respuesta elegida",
+      "crumb": "Imprimir",
+      "sheetOnly": "Ficha del alumno",
+      "withKey": "Con el solucionario",
+      "print": "Imprimir",
+      "options": "Opciones",
+      "rightOne": "(la respuesta correcta)"
+    },
+    "errors": {
+      "notFound": "Esto no está aquí.",
+      "badKind": "Esa no es una de las figuras.",
+      "badData": "No se pudieron leer los datos de esa figura.",
+      "tooBig": "Esa figura es demasiado grande para guardarla.",
+      "words": "Algunas palabras no están permitidas. Cámbialas y vuelve a intentarlo.",
+      "personal": "Quita los números de teléfono, correos, enlaces y códigos, y vuelve a intentarlo.",
+      "cannotDraw": "Esta figura no se puede dibujar con estos números. Cámbialos y vuelve a intentarlo.",
+      "tooMany": "Ya tienes muchas cosas guardadas. Borra algunas primero.",
+      "fullSheet": "Esta ficha está llena. Empieza una nueva.",
+      "noGen": "Esta figura aún no tiene generador de preguntas.",
+      "name": "Ponle un nombre primero.",
+      "brief": "Describe la ficha en pocas palabras primero.",
+      "names": "No pongas nombres de alumnos en la descripción: los nombres nunca se envían a la IA.",
+      "sameChoices": "Dos opciones son iguales. Haz que cada una sea distinta.",
+      "topic": "Primero escribe el tema de la prueba."
+    },
+    "kinds": {
+      "numberLine": {
+        "name": "Recta numérica",
+        "desc": "Números, intervalos y puntos en una recta"
+      },
+      "triangle": {
+        "name": "Triángulo",
+        "desc": "Cualquier triángulo a partir de tres medidas"
+      },
+      "rectangle": {
+        "name": "Rectángulo",
+        "desc": "Rectángulos y cuadrados"
+      },
+      "parallelogram": {
+        "name": "Paralelogramo",
+        "desc": "Paralelogramos y rombos, con alturas"
+      },
+      "trapezoid": {
+        "name": "Trapecio",
+        "desc": "Trapecios: cualquiera, isósceles o rectángulos"
+      },
+      "kite": {
+        "name": "Deltoide",
+        "desc": "Deltoides con sus lados iguales marcados"
+      },
+      "regularPolygon": {
+        "name": "Polígono regular",
+        "desc": "Polígonos regulares con apotema y radio"
+      },
+      "angles": {
+        "name": "Ángulos",
+        "desc": "Ángulos entre semirrectas"
+      },
+      "parallelLines": {
+        "name": "Rectas paralelas y una secante",
+        "desc": "Rectas paralelas cortadas por una secante"
+      },
+      "segmentAddition": {
+        "name": "Suma de segmentos",
+        "desc": "Suma de segmentos con álgebra"
+      },
+      "circle": {
+        "name": "Círculo",
+        "desc": "Círculos con cuerdas, tangentes y ángulos"
+      },
+      "compositeShape": {
+        "name": "Figura compuesta",
+        "desc": "Figuras hechas de figuras más simples"
+      },
+      "grid": {
+        "name": "Cuadrícula de coordenadas",
+        "desc": "Puntos, rectas y transformaciones en una cuadrícula"
+      },
+      "protractor": {
+        "name": "Transportador",
+        "desc": "Leer un ángulo en un transportador"
+      },
+      "prism": {
+        "name": "Prisma",
+        "desc": "Prismas y cubos en 3D"
+      },
+      "cylinder": {
+        "name": "Cilindro",
+        "desc": "Cilindros en 3D"
+      },
+      "pyramid": {
+        "name": "Pirámide",
+        "desc": "Pirámides en 3D"
+      },
+      "cone": {
+        "name": "Cono",
+        "desc": "Conos en 3D"
+      },
+      "sphere": {
+        "name": "Esfera",
+        "desc": "Esferas y semiesferas"
+      },
+      "net": {
+        "name": "Desarrollo plano",
+        "desc": "Desarrollos que se pliegan en sólidos"
+      },
+      "mappingDiagram": {
+        "name": "Diagrama sagital",
+        "desc": "Entradas asociadas a salidas"
+      },
+      "barGraph": {
+        "name": "Gráfico de barras",
+        "desc": "Gráficos de barras, dobles y apilados"
+      },
+      "dotPlot": {
+        "name": "Diagrama de puntos",
+        "desc": "Diagramas de puntos de un conjunto de datos"
+      },
+      "histogram": {
+        "name": "Histograma",
+        "desc": "Histogramas con clases iguales o desiguales"
+      },
+      "boxPlot": {
+        "name": "Diagrama de caja",
+        "desc": "Diagramas de caja con cuartiles"
+      },
+      "scatterPlot": {
+        "name": "Diagrama de dispersión",
+        "desc": "Diagramas de dispersión con recta de ajuste"
+      },
+      "stemAndLeaf": {
+        "name": "Diagrama de tallo y hojas",
+        "desc": "Diagramas de tallo y hojas"
+      },
+      "pieChart": {
+        "name": "Gráfico circular",
+        "desc": "Gráficos circulares con ángulos y porcentajes"
+      },
+      "cumulativeFrequency": {
+        "name": "Frecuencia acumulada",
+        "desc": "Gráficos de frecuencia acumulada"
+      },
+      "normalCurve": {
+        "name": "Curva normal",
+        "desc": "Curvas normales con regiones sombreadas"
+      },
+      "treeDiagram": {
+        "name": "Diagrama de árbol",
+        "desc": "Diagramas de árbol de probabilidad"
+      },
+      "vennDiagram": {
+        "name": "Diagrama de Venn",
+        "desc": "Diagramas de Venn con dos o tres conjuntos"
+      },
+      "twoWayTable": {
+        "name": "Tabla de doble entrada",
+        "desc": "Tablas de doble entrada con totales"
+      },
+      "tableOfValues": {
+        "name": "Tabla de valores",
+        "desc": "Tablas de valores a partir de una regla"
+      },
+      "freeBody": {
+        "name": "Diagrama de cuerpo libre",
+        "desc": "Las fuerzas sobre un objeto"
+      },
+      "vectors": {
+        "name": "Vectores",
+        "desc": "Vectores y su resultante"
+      },
+      "inclinedPlane": {
+        "name": "Plano inclinado",
+        "desc": "Un bloque en una pendiente, con sus fuerzas"
+      },
+      "pulley": {
+        "name": "Poleas",
+        "desc": "Poleas y masas colgantes"
+      },
+      "rays": {
+        "name": "Diagrama de rayos",
+        "desc": "Diagramas de rayos para lentes y espejos"
+      },
+      "circuit": {
+        "name": "Diagrama de circuito",
+        "desc": "Circuitos en serie y en paralelo"
+      },
+      "motionGraph": {
+        "name": "Gráfico de movimiento",
+        "desc": "Gráficos de distancia, velocidad y aceleración"
+      },
+      "motionMap": {
+        "name": "Diagrama de movimiento",
+        "desc": "Mapas de movimiento con puntos y flechas"
+      },
+      "projectile": {
+        "name": "Movimiento de proyectiles",
+        "desc": "La trayectoria de un proyectil, a escala"
+      },
+      "waves": {
+        "name": "Ondas",
+        "desc": "Ondas transversales y longitudinales"
+      },
+      "reading": {
+        "name": "Lectura de una escala",
+        "desc": "Termómetros, probetas, reglas y calibres"
+      },
+      "bohr": {
+        "name": "Modelo de Bohr",
+        "desc": "Modelos de Bohr de átomos e iones"
+      },
+      "orbitals": {
+        "name": "Diagrama de orbitales",
+        "desc": "Diagramas de orbitales en cajas"
+      },
+      "lewis": {
+        "name": "Estructura de Lewis",
+        "desc": "Estructuras de Lewis de moléculas"
+      },
+      "halfLife": {
+        "name": "Semivida",
+        "desc": "Curvas de desintegración radiactiva"
+      },
+      "titration": {
+        "name": "Curva de valoración",
+        "desc": "Curvas de valoración"
+      },
+      "massSpectrum": {
+        "name": "Espectro de masas",
+        "desc": "Picos de isótopos y masa atómica relativa"
+      },
+      "heatingCurve": {
+        "name": "Curva de calentamiento y enfriamiento",
+        "desc": "La temperatura al dar o quitar calor, a escala"
+      },
+      "energyProfile": {
+        "name": "Diagrama de energía potencial",
+        "desc": "Perfiles de energía de reacción con Ea y ΔH"
+      },
+      "nuclide": {
+        "name": "Notación de núclidos",
+        "desc": "Símbolos de isótopos, iones y partículas"
+      },
+      "lineSpectrum": {
+        "name": "Espectro de líneas",
+        "desc": "Líneas de emisión y absorción de elementos"
+      },
+      "photoelectron": {
+        "name": "Espectro fotoelectrónico",
+        "desc": "Un pico por subnivel, de H a Xe"
+      },
+      "particles": {
+        "name": "Diagrama de partículas",
+        "desc": "Átomos, iones y moléculas en una caja o una red"
+      },
+      "dotCross": {
+        "name": "Diagrama de puntos y cruces",
+        "desc": "Electrones compartidos y transferidos en capas"
+      },
+      "skeletal": {
+        "name": "Estructuras orgánicas",
+        "desc": "Fórmulas esqueléticas, semidesarrolladas y desarrolladas"
+      },
+      "energyLevels": {
+        "name": "Niveles de energía atómicos",
+        "desc": "Transiciones electrónicas, longitudes de onda y series"
+      },
+      "populationGrowth": {
+        "name": "Crecimiento de la población",
+        "desc": "Curvas J y S, K y las fases de crecimiento"
+      },
+      "predatorPrey": {
+        "name": "Depredador y presa",
+        "desc": "Ciclos de población, los depredadores un paso detrás"
+      },
+      "enzymeActivity": {
+        "name": "Actividad enzimática",
+        "desc": "Velocidad según la temperatura, el pH o el sustrato"
+      },
+      "photosynthesis": {
+        "name": "Tasa de fotosíntesis",
+        "desc": "Luz, CO₂ y temperatura como factores limitantes"
+      },
+      "punnett": {
+        "name": "Cuadro de Punnett",
+        "desc": "Cruces con las proporciones calculadas"
+      },
+      "pedigree": {
+        "name": "Árbol genealógico",
+        "desc": "Familias que siguen un patrón de herencia"
+      },
+      "proteinSynthesis": {
+        "name": "Síntesis de proteínas",
+        "desc": "Del ADN al ARNm y a los aminoácidos, con huecos"
+      },
+      "gel": {
+        "name": "Electroforesis en gel",
+        "desc": "Bandas a escala junto a un marcador de ADN"
+      },
+      "osmosis": {
+        "name": "Ósmosis",
+        "desc": "Células, tubos en U y bolsas en soluciones"
+      },
+      "supplyDemand": {
+        "name": "Oferta y demanda",
+        "desc": "Desplazamientos, controles de precios, impuestos y excedentes"
+      },
+      "moneyMarket": {
+        "name": "Mercados de dinero",
+        "desc": "Dinero, fondos prestables y reservas"
+      },
+      "businessCycle": {
+        "name": "Ciclo económico",
+        "desc": "Picos, valles y fases alrededor de una tendencia"
+      },
+      "phillipsCurve": {
+        "name": "Curva de Phillips",
+        "desc": "Corto y largo plazo, desplazamientos y expectativas"
+      },
+      "possibilitiesCurve": {
+        "name": "Posibilidades de producción",
+        "desc": "Disyuntivas, crecimiento y ventaja comparativa"
+      },
+      "adAs": {
+        "name": "Modelo OA-DA",
+        "desc": "Brechas de producción, perturbaciones y políticas"
+      },
+      "costCurves": {
+        "name": "Curvas de costos e ingresos",
+        "desc": "CMg, CTMe, ganancia y estructuras de mercado"
+      }
+    },
+    "step": {
+      "answerLabel": "Tu respuesta a la pregunta {n}",
+      "right": "Correcto",
+      "notRight": "No es correcto",
+      "answer": "Respuesta:",
+      "teacherAnswer": "Clave de respuestas:",
+      "score": "Acertaste {right} de {total} ({pct} %).",
+      "answersLater": "Tu docente mostrará las respuestas después de la fecha de entrega.",
+      "noAnswers": "Tu docente tiene las respuestas y puede repasarlas con la clase.",
+      "teacherNote": "Esto es lo que ven los estudiantes, con la clave de respuestas debajo de cada pregunta para ti.",
+      "showOnNote": "Las respuestas se muestran a los estudiantes después de la fecha de entrega.",
+      "showOffNote": "Las respuestas nunca se muestran a los estudiantes.",
+      "handInHint": "Guarda mientras trabajas. Cuando entregues, tus respuestas se corrigen y ya no se pueden cambiar.",
+      "answersReady": "Las respuestas ya están. Entrega tu trabajo para verlas.",
+      "save": "Guardar",
+      "handIn": "Entregar",
+      "handInConfirm": "¿Entregar tus respuestas? Después no podrás cambiarlas.",
+      "saved": "Guardado",
+      "handedIn": "Entregado",
+      "showIsOn": "Las respuestas se mostrarán después de la fecha de entrega",
+      "showIsOff": "Las respuestas están ocultas para los estudiantes",
+      "errors": {
+        "handedIn": "Ya entregaste esto.",
+        "empty": "Escribe al menos una respuesta primero."
+      },
+      "showAnswers": "Mostrar respuestas después de la fecha de entrega",
+      "showAnswersHint": "Desactivado por defecto. Activado: cuando pasa la fecha de entrega, cada estudiante que entregó ve las respuestas y los pasos.",
+      "showNeedsDue": "Pon una fecha de entrega a esta lección para mostrar las respuestas después.",
+      "handedInCount": "Entregados: {done} de {total}",
+      "questionN": "Pregunta {n}",
+      "rightOf": "{right} de {total} correctas",
+      "answersTable": "Las respuestas de cada estudiante",
+      "noneYet": "Nadie ha entregado todavía.",
+      "questions": "{count, plural, one {# pregunta de figura} other {# preguntas de figuras}}",
+      "sign": "Hacerlo negativo o positivo",
+      "signLabel": "Cambiar tu respuesta a la pregunta {n} entre negativa y positiva",
+      "rightOption": "Respuesta correcta"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Agrega una pregunta antes de asignar esta ficha.",
+        "noAnswer": "Cada pregunta necesita una respuesta antes de asignarla. Elige una para la pregunta {list} en el editor.",
+        "noClass": "Elige una de tus clases.",
+        "badDate": "Esa fecha no parece correcta.",
+        "dueBeforeOpen": "La fecha de entrega es anterior a la de inicio.",
+        "needsDue": "Pon una fecha de entrega para mostrar las respuestas después.",
+        "started": "Hay estudiantes que ya empezaron este paso, así que sus preguntas se quedan como están. Haz una copia de la lección para cambiarlas."
+      }
+    },
+    "terms": {
+      "title": "Reutilizar tus figuras",
+      "crumb": "Condiciones de reutilización",
+      "lead": "Cada figura que creas en Figuras es libre para que la uses. Esto es lo que significa, en palabras sencillas.",
+      "canTitle": "Lo que puedes hacer",
+      "can1": "Usar tus figuras en clase, en fichas y pruebas, en presentaciones y en sitios web.",
+      "can2": "Copiarlas, imprimirlas y compartirlas con cualquiera: alumnos, familias y otros docentes.",
+      "can3": "Cambiarlas: recortarlas, añadirles rótulos o incluirlas en tus propios materiales.",
+      "can4": "Usarlas en materiales que publiques o vendas.",
+      "can5": "Hacer todo esto sin pedirnos permiso y sin citarnos. Una mención se agradece, pero nunca es obligatoria.",
+      "noticeTitle": "La nota dentro del archivo",
+      "noticeText": "Cada SVG o PNG que descargas o copias lleva esta nota, escrita dentro del propio archivo, donde la buscan los programas de imágenes y los buscadores. Está en inglés para que se lea igual en todas partes:",
+      "noticeMeans": "Significa que Oomba Academy renuncia a cualquier derecho sobre su parte de la figura (el dibujo, la composición y los rótulos que crea), para que cualquiera pueda reutilizarla. Puedes dejar la nota o quitarla.",
+      "cc0Title": "Qué significa CC0",
+      "cc0Text": "CC0 1.0 es una dedicación al dominio público de Creative Commons. Para nuestra parte de una figura no hay ninguna condición: ni citarnos ni seguir una licencia, en cualquier lugar del mundo, en la medida en que la ley lo permita.",
+      "cc0Link": "Leer CC0 1.0 en el sitio de Creative Commons",
+      "yoursTitle": "Lo que sigue siendo tuyo",
+      "yoursText": "Todo lo original que añadas es tuyo: tu propia pregunta, tus rótulos y datos, y tus dibujos. Tú decides si otros pueden reutilizar esas partes.",
+      "careTitle": "Conviene saber",
+      "care1": "Revisa una figura antes de usarla. Revisamos las figuras con cuidado, pero no podemos prometer que cada figura sirva para cualquier uso.",
+      "care2": "No pongas nombres ni datos personales de tus alumnos en las figuras que compartas.",
+      "care3": "Estas condiciones tratan de las figuras que exportas. El resto de Oomba Academy se rige por los términos del sitio.",
+      "siteTerms": "Leer los términos del sitio",
+      "back": "Volver a Figuras"
     }
   }
 }

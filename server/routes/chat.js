@@ -11,6 +11,7 @@ import * as games from '../services/games.js';
 import { COMMUNITY_CSS } from './social.js';
 import { tHtml } from '../i18n/index.js';
 import { isSchoolStaff, noFriendsAccount } from '../services/schools.js';
+import { ico } from '../views/icon.js';
 /** The chat safety line: kids' words for kids; a teacher or grown-up reads one written for adults. */
 const safetyKey = u => (isSchoolStaff(u) || noFriendsAccount(u) || isGrownup(u) ? 'chat.safety.staff' : 'chat.safety.text');
 
@@ -37,9 +38,9 @@ router.get('/chat', (req, res) => {
   const staff = noFriendsAccount(u);
   const body = html`
   <div class="chatcol">
-  <div class="pagehead"><h1>${t(staff ? 'team.name' : 'chat.title')}</h1>${staff ? '' : html`<a class="btn" href="/friends"><span aria-hidden="true">👫</span> ${t('nav.friends')}</a>`}</div>
+  <div class="pagehead"><h1>${t(staff ? 'team.name' : 'chat.title')}</h1>${staff ? '' : html`<a class="btn" href="/friends">${ico('👫', { size: 18 })} ${t('nav.friends')}</a>`}</div>
   ${!staff && !u.chat_enabled ? html`<p class="notice warn">${tHtml(t, 'chat.offNotice', { link: html`<a href="/me">${t('nav.me')}</a>` })}</p>` : ''}
-  <p class="notice small chatsafety"><span aria-hidden="true">🛡️</span> ${t(safetyKey(u))}</p>
+  <p class="notice small chatsafety">${ico('🛡️', { size: 18 })} ${t(safetyKey(u))}</p>
   ${list.length ? html`<ul class="plain inbox panel" id="inbox" aria-label="${t('chat.inbox.label')}">${list.map(th => inboxRow(req, th))}</ul>`
     : staff ? emptyState({ emoji: '📬', title: t('team.name'), text: t('team.empty') })
     : emptyState({ emoji: '🤝', title: t('chat.inbox.emptyTitle'), text: t('chat.inbox.emptyText'), action: { href: '/friends', label: t('friends.add.heading') } })}
@@ -71,7 +72,7 @@ function teamPage(req, res) {
     <div class="threadhead">
       <span class="th-who">${avatar(tu, 44)}<span class="who"><span class="nm">${name}${verified(t)}</span><span class="sub">${t('team.sub')}</span></span></span>
     </div>
-    <p class="notice small chatsafety"><span aria-hidden="true">🛡️</span> ${t(child ? 'team.safety.child' : 'team.safety.grownup')}</p>
+    <p class="notice small chatsafety">${ico('🛡️', { size: 18 })} ${t(child ? 'team.safety.child' : 'team.safety.grownup')}</p>
     <div class="msgs" id="msgs" role="log" aria-live="polite" aria-label="${t('chat.thread.label', { name })}" tabindex="0">
       <p class="msgs-empty muted center" id="msgs-empty" ${msgs.length ? 'hidden' : ''}>${t('team.empty')}</p>
     </div>
@@ -114,9 +115,9 @@ router.get('/chat/:username', (req, res) => {
     <div class="threadhead">
       <a class="th-who" href="/u/${other.username}">${avatar(other, 44)}<span class="who"><span class="nm">${name}</span><span class="sub"><bdi>@${other.username}</bdi></span></span></a>
       ${blockedByMe ? html`<button class="btn" type="button" id="unblockbtn">${t('friends.blocked.unblock')}</button>`
-        : can.code !== 'not_friends' ? html`<button class="btn btn-ghost btn-danger" type="button" id="blockbtn"><span aria-hidden="true">🚫</span> ${t('chat.block')}</button>` : ''}
+        : can.code !== 'not_friends' ? html`<button class="btn btn-ghost btn-danger" type="button" id="blockbtn">${ico('🚫', { size: 18 })} ${t('chat.block')}</button>` : ''}
     </div>
-    <details class="chatsafety notice small" ${msgs.length ? '' : 'open'}><summary><span aria-hidden="true">🛡️</span> ${t('chat.safety.heading')}</summary><p>${t(safetyKey(u))}</p></details>
+    <details class="chatsafety notice small" ${msgs.length ? '' : 'open'}><summary>${ico('🛡️', { size: 18 })} ${t('chat.safety.heading')}</summary><p>${t(safetyKey(u))}</p></details>
     <div class="msgs" id="msgs" role="log" aria-live="polite" aria-label="${t('chat.thread.label', { name })}" tabindex="0">
       <p class="msgs-empty muted center" id="msgs-empty" ${msgs.length ? 'hidden' : ''}>${t('chat.thread.empty')}</p>
     </div>
@@ -124,7 +125,7 @@ router.get('/chat/:username', (req, res) => {
       <div class="quick chips scroll" role="group" aria-label="${t('chat.thread.quickLabel')}">${chat.quickPhrases(t).map(([id, text]) => html`<button class="chip" type="button" data-quick="${id}">${text}</button>`)}</div>
       <p class="notice warn small" id="pausednote" ${paused ? '' : 'hidden'}></p>
       <form id="sendform" class="sendrow" novalidate>
-        <button class="iconbtn sharegame" type="button" id="sharegame" aria-label="${t('chat.thread.shareGame')}" ${shareable.length ? '' : 'disabled'}><span class="emo" aria-hidden="true">🎮</span><span>${t('chat.thread.game')}</span></button>
+        <button class="iconbtn sharegame" type="button" id="sharegame" aria-label="${t('chat.thread.shareGame')}" ${shareable.length ? '' : 'disabled'}><span class="emo" aria-hidden="true">${ico('🎮', { size: 18 })}</span><span>${t('chat.thread.game')}</span></button>
         <label class="sr-only" for="msg">${t('chat.thread.messageTo', { name })}</label>
         <input class="input" id="msg" name="body" maxlength="200" dir="auto" autocomplete="off" placeholder="${t('chat.thread.placeholder')}" aria-describedby="msgcount sendmsg">
         <button class="btn btn-primary" type="submit">${t('chat.thread.send')}</button>

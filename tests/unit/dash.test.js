@@ -18,6 +18,7 @@ const games = await import('../../server/services/games.js');
 const D = await import('../../server/services/dash.js');
 const { createApp } = await import('../../server/app.js');
 const { tFor } = await import('../../server/i18n/index.js');
+const { deicon } = await import('../support/deicon.js');
 
 let server, base;
 test.before(async () => { server = createApp().listen(0); server.keepAliveTimeout = 0; await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
@@ -103,7 +104,9 @@ test('layouts on a phone: one layout switcher (a nav labelled "Layout", New and 
   assert.ok(sw, 'the switcher is the footer\'s first part, before Eyes up and Push');
   assert.match(sw[1], /<span class="dash-lab" id="dash-layouts-l">Layout<\/span>/);
   assert.match(sw[1], /<nav class="dash-layouts" id="dash-layouts" aria-labelledby="dash-layouts-l"><\/nav>/);
-  assert.match(sw[1], /id="dash-layout-new"><span><span aria-hidden="true">➕<\/span> <span class="dash-lnewt">New<\/span><\/span><\/button>/);
+  // ➕ is the Fluent plus now (an <img>, decorative): read back as its emoji through tests/support/deicon.js.
+  assert.match(deicon(sw[1]), /id="dash-layout-new"><span>➕ <span class="dash-lnewt">New<\/span><\/span><\/button>/);
+  assert.match(sw[1], /id="dash-layout-new"><span><img class="fx fx-flat" src="\/icons\/fluent\/flat\/plus\.svg"[^>]* aria-hidden="true"[^>]*> <span class="dash-lnewt">/);
   assert.match(sw[1], /id="dash-layout-more" aria-label="Rename or delete this layout"/);
   for (const id of ['dash-switch', 'dash-layouts', 'dash-layout-new', 'dash-layout-more', 'dash-eyes-btn', 'dash-push']) assert.equal(t.split(`id="${id}"`).length, 2, `one ${id}`);
   const s = (await as(w.a1)(url)).text;

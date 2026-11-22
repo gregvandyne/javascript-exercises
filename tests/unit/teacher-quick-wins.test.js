@@ -39,6 +39,7 @@ const PR = await import('../../server/routes/password-reset.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
 const { tFor, CODES } = await import('../../server/i18n/index.js');
 const { createApp } = await import('../../server/app.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 const sent = [];
 E._hooks({ fetch: (url, init) => { sent.push(JSON.parse(init.body)); return Promise.resolve({ status: 200, json: async () => ({ id: `re_qw_${sent.length}` }) }); }, wait: () => Promise.resolve() });
@@ -52,7 +53,7 @@ const cookieFor = id => { let c = ''; auth.startSession({ append: (k, v) => { c 
 const req = async (who, path, { method = 'GET', body, cookie = null } = {}) => {
   const headers = { ...(who ? { cookie: cookieFor(who.id) } : cookie ? { cookie } : {}), ...(body ? { 'content-type': 'application/json' } : {}), origin: base };
   const r = await fetch(base + path, { method, headers, body: body ? JSON.stringify(body) : undefined, redirect: 'manual' });
-  const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* a page */ }
+  const raw = await r.text(), text = deicon(raw); let json = null; try { json = JSON.parse(raw, (k, v) => typeof v === 'string' ? deicon(v) : v); } catch { /* a page */ }
   return { status: r.status, text, json, location: r.headers.get('location') || '', headers: r.headers };
 };
 const tick = () => new Promise(r => setTimeout(r, 20));
@@ -442,7 +443,7 @@ test('o. contrast and labels: dark ink on the yellow "Just Play", a name for the
   const prev = process.env.LANDING_AT_ROOT; process.env.LANDING_AT_ROOT = '1';
   try {
     const home = await req(null, '/');
-    assert.match(home.text, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/trial" data-cta="trial" aria-label="Start free trial"><span class="lp-long">Start free trial<\/span><span class="lp-short" aria-hidden="true">/);
+    assert.match(home.text, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/signup\?trial=1" data-cta="trial" aria-label="Start free trial"><span class="lp-long">Start free trial<\/span><span class="lp-short" aria-hidden="true">/);
     assert.doesNotMatch(home.text.replace(/<script[\s\S]*?<\/script>/g, ''), /\$\d/, 'and still no price on "/"');
   } finally { process.env.LANDING_AT_ROOT = prev; }
 });

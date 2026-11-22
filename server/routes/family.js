@@ -15,6 +15,7 @@
 // the same families gate, the billing tester rule while the key is a test key, and the password typed again.
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound, tabKey as navLabel } from '../views/layout.js';
 import { avatar, notYou } from '../views/components.js';
 import * as auth from '../auth.js';
@@ -54,7 +55,7 @@ import { present as presentMessage } from '../services/chat.js';
 function teamLink(req) {
   const t = req.t, row = team.inboxRow(req.user, t, presentMessage);
   if (!row) return '';
-  return html`<p class="notice teamlink"><a href="/chat/${auth.OFFICIAL}"><span aria-hidden="true">📬</span> ${row.unread ? t('team.link.new', { count: row.unread }) : t('team.link.open')}</a></p>`;
+  return html`<p class="notice teamlink"><a href="/chat/${auth.OFFICIAL}">${ico('📬', { size: 18 })} ${row.unread ? t('team.link.new', { count: row.unread }) : t('team.link.open')}</a></p>`;
 }
 
 export const router = Router();
@@ -176,7 +177,7 @@ export function meFamilyPanel(req) {
   const say = (key, s) => (t.own(key) ? s : html`<span lang="en" dir="ltr">${s}</span>`);
   const k = (key, vars) => say(key, t(key, vars));
   const kh = (key, vars) => say(key, tHtml(t, key, vars));
-  const head = html`<h2 id="fam-h"><span aria-hidden="true">🧑‍🧒</span> ${k('me.family.heading')}</h2>`;
+  const head = html`<h2 id="fam-h">${ico('🧑‍🧒', { size: 28 })} ${k('me.family.heading')}</h2>`;
   const form = (action, label, { cls = 'btn', confirm = '', extra = '' } = {}) => html`<form data-api="/api/me/family/${action}" data-reload data-confirm="${confirm}">${extra}<button class="${cls}" type="submit">${label}</button></form>`;
   const r = F.liveRowOf(u.id);
   let inner;
@@ -210,7 +211,7 @@ export function meFamilyPanel(req) {
       <div id="famcode" class="famcode" hidden><p class="small muted" style="margin:0">${k('me.family.codeLabel')}</p>
         <p style="margin:6px 0"><span class="bigcode" id="famcode-value" dir="ltr"></span></p>
         <p class="small">${kh('me.family.codeHowDay', { where: html`<bdi dir="ltr">${where}</bdi>` })}</p>
-        <p class="small"><strong><span aria-hidden="true">🔒</span> ${k('me.family.codeWarn')}</strong></p></div>
+        <p class="small"><strong>${ico('🔒', { size: 18 })} ${k('me.family.codeWarn')}</strong></p></div>
       <button class="btn btn-primary" type="button" data-family-code>${open ? k('me.family.newCode') : k('me.family.getCode')}</button>`;
   }
   return html`<section class="panel" id="grownups" aria-labelledby="fam-h">${head}${inner}</section>`;
@@ -366,9 +367,9 @@ router.get('/family', grownupOnly, async (req, res) => {
   // Families off (billing off): no children, links or plans, but the grown-up can still change their language and
   // password and sign out.
   if (!F.familiesOn(req)) {
-    const body = html`<div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>${teamLink(req)}
+    const body = html`<div class="pagehead"><h1>${ico('👪', { size: 36 })} ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>${teamLink(req)}
     <section class="panel"><p class="muted"${en('family.page.offAccount')}>${t('family.page.offAccount')}</p>
-      <p style="margin-bottom:0"><a class="btn" href="/family/account">⚙️ ${t(navLabel(t, 'account'))}</a></p></section>`;
+      <p style="margin-bottom:0"><a class="btn" href="/family/account">${ico('⚙️', { size: 18 })} ${t(navLabel(t, 'account'))}</a></p></section>`;
     return page(req, res, { title: t('family.page.title'), active: 'family', body, scripts: ['/js/family.js'] });
   }
   const fam = F.ensureFamily(u);
@@ -411,7 +412,7 @@ router.get('/family', grownupOnly, async (req, res) => {
     ? html`<p class="notice warn" id="basic-note">${tHtml(t, 'family.billing.basicNote', { name: html`<b><bdi>${firstCovered.display_name}</bdi></b>`, max: config.familyMaxChildren })}</p>` : '';
   // One door to "Add your kids" (make an account while madeOn, or link one with the child's code).
   const addKey = made ? 'family.add.cta' : 'family.page.add';
-  const addBtn = kids.length < max ? html`<a class="btn btn-primary" href="/family/add"${en(addKey)}>➕ ${t(addKey)}</a>`
+  const addBtn = kids.length < max ? html`<a class="btn btn-primary" href="/family/add"${en(addKey)}>${ico('➕', { size: 18 })} ${t(addKey)}</a>`
     : html`<p class="small">${plan.entitled && plan.plan === 'basic' ? t('family.page.fullBasic', { max: config.familyMaxChildren }) : t('family.page.full', { max })}</p>`;
   const kidsBox = html`<section class="panel" aria-labelledby="kids-h"><h2 id="kids-h">${t('family.page.children')}</h2>
     ${kids.length ? html`<ul class="famkids">${rows}</ul><p class="small muted">${t('family.page.usageNote')}</p>` : html`<p class="muted">${t('family.page.none')}</p>`}
@@ -423,25 +424,25 @@ router.get('/family', grownupOnly, async (req, res) => {
   const mineAll = games.myGames(u.id, 6), mine = mineAll.slice(0, 5);
   const waiting = friends.incoming(u.id).length;
   const own = F.ownerUsage(fam.id, u.id);
-  const yourGames = html`<section class="panel famgames" aria-labelledby="famgames-h" id="your-games"><h2 id="famgames-h"${en('familyGames.heading')}>🛠️ ${t('familyGames.heading')}</h2>
+  const yourGames = html`<section class="panel famgames" aria-labelledby="famgames-h" id="your-games"><h2 id="famgames-h"${en('familyGames.heading')}>${ico('🛠️', { size: 28 })} ${t('familyGames.heading')}</h2>
     ${mine.length ? html`<ul class="famgames-list">${mine.map(g => html`<li class="famgame"><a class="famgame-cover" href="/studio/${g.id}" tabindex="-1" aria-hidden="true">${coverArt(g, '', { draft: true })}</a>
       <div class="famgame-main"><a href="/studio/${g.id}"><b>${g.title}</b></a><div class="small muted">${statusLabel(g, t)}</div></div></li>`)}</ul>`
     : html`<p class="muted"${en('familyGames.empty')}>${t('familyGames.empty')}</p>`}
-    <div class="row"><a class="btn btn-primary" href="/build"${en('familyGames.build')}>✨ ${t('familyGames.build')}</a>${mineAll.length > 5 ? html`<a class="btn" href="/build"${en('familyGames.seeAll')}>${t('familyGames.seeAll')}</a>` : ''}
-      <a class="btn" href="/family/connections"${en('familyGames.connections')}>🤝 ${t('familyGames.connections', { count: waiting })}</a></div>
+    <div class="row"><a class="btn btn-primary" href="/build"${en('familyGames.build')}>${ico('✨', { size: 18 })} ${t('familyGames.build')}</a>${mineAll.length > 5 ? html`<a class="btn" href="/build"${en('familyGames.seeAll')}>${t('familyGames.seeAll')}</a>` : ''}
+      <a class="btn" href="/family/connections"${en('familyGames.connections')}>${ico('🤝', { size: 18 })} ${t('familyGames.connections', { count: waiting })}</a></div>
     <p class="small muted famgames-use"><b${en('familyGames.usage')}>${t('familyGames.usage')}</b> <span${en('familyGames.usageLine')}>${t('familyGames.usageLine', { yesterday: own.yesterday, month: own.month })}</span></p>
   </section>`;
   // A plan picked on /plans (and not paid yet) comes first: that is what the grown-up came here to do.
   const planFirst = (chosen && !plan.entitled) || (typeof req.query.checkout === 'string' && !plan.entitled);
   const body = html`
-  <div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>${teamLink(req)}
+  <div class="pagehead"><h1>${ico('👪', { size: 36 })} ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>${teamLink(req)}
   ${familyChecklist(req, { fam, kids, plan, max, sale: await familyOnSale(u) })}
   ${asksBox}
   ${planFirst ? html`${planBox}${kidsBox}` : html`${kidsBox}${planBox}`}
   ${sparksBox}
   ${yourGames}
-  ${liveOn() ? html`<section class="panel" aria-labelledby="famlive-h" id="family-live"><h2 id="famlive-h">📡 ${t('live.entry.family')}</h2>
-    <p class="muted">${t('live.entry.familyText')}</p><div class="row"><a class="btn btn-primary" href="/live">📡 ${t('live.entry.host')}</a></div></section>` : ''}
+  ${liveOn() ? html`<section class="panel" aria-labelledby="famlive-h" id="family-live"><h2 id="famlive-h">${ico('📡', { size: 28 })} ${t('live.entry.family')}</h2>
+    <p class="muted">${t('live.entry.familyText')}</p><div class="row"><a class="btn btn-primary" href="/live">${ico('📡', { size: 18 })} ${t('live.entry.host')}</a></div></section>` : ''}
   ${config.contactEmail ? html`<section class="panel" aria-labelledby="help-h"><h2 id="help-h">${t('family.page.helpHeading')}</h2>
     <p>${tHtml(t, 'family.page.help', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p></section>` : ''}`;
   page(req, res, { title: t('family.page.title'), active: 'family', body, scripts: ['/js/family.js'] });
@@ -455,7 +456,7 @@ router.get('/family', grownupOnly, async (req, res) => {
 router.get('/family/account', grownupOnly, (req, res) => {
   const t = req.t;
   const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  const body = html`<div class="pagehead"><h1${en('family.account.heading')}>⚙️ ${t('family.account.heading')}</h1>${notYou(req, { plain: true })}</div>
+  const body = html`<div class="pagehead"><h1${en('family.account.heading')}>${ico('⚙️', { size: 36 })} ${t('family.account.heading')}</h1>${notYou(req, { plain: true })}</div>
   <div class="mesettings">${namePanel(req)}${languagePanel(req)}${appearancePanel(req)}${plansPanel(req)}${noPasswordText(req) ? '' : passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
   page(req, res, { title: t(navLabel(t, 'account')), active: 'account', body, back: '/family', backLabel: t('family.page.title') });
 });
@@ -543,7 +544,7 @@ async function planPanel(req, fam, plan, kids, chosen) {
   if (checkoutId && !plan.entitled) {
     return html`<section class="panel" aria-labelledby="plan-h" id="plan">${head}
       <div class="notice" role="status" data-checkout-wait="${checkoutId}" data-back="${ADD_AFTER.checkout}">
-        <p style="margin:0"><span aria-hidden="true">⏳</span> ${t('family.billing.waiting')}</p>
+        <p style="margin:0">${ico('⏳', { size: 18 })} ${t('family.billing.waiting')}</p>
         <div data-slow hidden><p class="small" style="margin:.5em 0 0">${t('family.billing.slow')}</p>
           <p class="small" style="margin:.5em 0 0"><a href="/family">${t('family.billing.back')}</a></p></div></div></section>`;
   }
@@ -644,11 +645,11 @@ async function sparksPanel(req, fam, plan) {
   const left = sparks.balance(fam.id), list = sparks.packsOf(fam.id);
   const sid = typeof req.query.sparks_checkout === 'string' ? req.query.sparks_checkout.slice(0, 200) : '';
   if (!plan.entitled && !left && !list.length && !sid && !req.query.sparks) return '';
-  const head = html`<h2 id="sparks-h"><span aria-hidden="true">⚡</span> ${t('family.sparks.heading')}</h2>`;
+  const head = html`<h2 id="sparks-h">${ico('⚡', { size: 28 })} ${t('family.sparks.heading')}</h2>`;
   if (sid) {
     return html`<section class="panel sparks" aria-labelledby="sparks-h" id="sparks">${head}
       <div class="notice" role="status" data-checkout-wait="${sid}" data-status-url="/api/billing/sparks/status" data-back="/family#sparks" data-done="${t('family.sparks.done')}">
-        <p style="margin:0"><span aria-hidden="true">⏳</span> ${t('family.sparks.waiting')}</p>
+        <p style="margin:0">${ico('⏳', { size: 18 })} ${t('family.sparks.waiting')}</p>
         <div data-slow hidden><p class="small" style="margin:.5em 0 0">${t('family.billing.slow')}</p>
           <p class="small" style="margin:.5em 0 0"><a href="/family#sparks">${t('family.billing.back')}</a></p></div></div></section>`;
   }
@@ -672,7 +673,7 @@ async function sparksPanel(req, fam, plan) {
         </ul>
         ${passwordField(req, 'pw-sparks')}
         <p class="err form-err" aria-live="polite"></p>
-        <div class="row planbtns sparkbtns">${prices.map((p, i) => html`<button class="btn ${i === 1 ? 'btn-primary' : ''}" type="submit" name="pack" value="${p.size}"><span aria-hidden="true">⚡</span> ${t('family.sparks.buy', { n: p.messages, price: f.money(p.unitAmount) })}</button>`)}</div>
+        <div class="row planbtns sparkbtns">${prices.map((p, i) => html`<button class="btn ${i === 1 ? 'btn-primary' : ''}" type="submit" name="pack" value="${p.size}">${ico('⚡', { size: 18 })} ${t('family.sparks.buy', { n: p.messages, price: f.money(p.unitAmount) })}</button>`)}</div>
         <p class="small muted">${t('family.billing.stripe')}</p>
       </form>`);
     }
@@ -690,9 +691,9 @@ function asksPanel(req, fam) {
   const asks = sparks.asksFor(fam.id);
   if (!asks.length) return '';
   sparks.markSeen(fam.id);
-  return html`<section class="panel famasks" aria-labelledby="asks-h" id="asks"><h2 id="asks-h"><span aria-hidden="true">🙋</span> ${t('family.asks.heading')}</h2>
+  return html`<section class="panel famasks" aria-labelledby="asks-h" id="asks"><h2 id="asks-h">${ico('🙋', { size: 28 })} ${t('family.asks.heading')}</h2>
     <ul class="famasks-list">${asks.map(a => html`<li class="famask" data-ask="${a.id}"><p>${tHtml(t, a.kind === 'spark' ? 'family.asks.spark' : 'family.asks.plan', { name: html`<b><bdi>${a.name}</bdi></b>` })} <span class="small muted">${f.ago(a.created_at)}</span></p>
-      <div class="row">${a.kind === 'spark' ? html`<a class="btn btn-primary btn-sm" href="/family?sparks=1#sparks"><span aria-hidden="true">⚡</span> ${t('family.asks.getSpark')}</a>` : html`<a class="btn btn-primary btn-sm" href="/plans">${t('family.page.seePlans')}</a>`}
+      <div class="row">${a.kind === 'spark' ? html`<a class="btn btn-primary btn-sm" href="/family?sparks=1#sparks">${ico('⚡', { size: 18 })} ${t('family.asks.getSpark')}</a>` : html`<a class="btn btn-primary btn-sm" href="/plans">${t('family.page.seePlans')}</a>`}
         <form data-api="/api/family/asks/${a.id}/dismiss" data-reload><button class="btn btn-sm" type="submit">${t('family.asks.dismiss')}</button></form></div></li>`)}</ul></section>`;
 }
 
@@ -787,10 +788,10 @@ router.get('/family/connections', grownupOnly, (req, res) => {
   const act = (p, action, label, cls = 'btn') => html`<form data-api="/api/friends/${p.id}/${action}" data-reload><button class="${cls}" type="submit"${en(`connections.${action}`)}>${label}</button></form>`;
   const inc = friends.incoming(u.id), out = friends.outgoing(u.id), list = friends.list(u.id);
   const section = (id, key, rows) => (rows.length ? html`<section class="panel" aria-labelledby="${id}"><h2 id="${id}"${en(key)}>${t(key)}</h2><ul class="famkids">${rows}</ul></section>` : '');
-  const body = html`<div class="pagehead"><h1${en('connections.heading')}>🤝 ${t('connections.heading')}</h1>${notYou(req, { plain: true })}</div>
+  const body = html`<div class="pagehead"><h1${en('connections.heading')}>${ico('🤝', { size: 36 })} ${t('connections.heading')}</h1>${notYou(req, { plain: true })}</div>
   <section class="panel" aria-labelledby="conn-code-h">
     <p${en('connections.intro')}>${t('connections.intro')}</p>
-    <p class="notice"${en('connections.adultsOnly')}><span aria-hidden="true">🛡️</span> ${t('connections.adultsOnly')}</p>
+    <p class="notice"${en('connections.adultsOnly')}>${ico('🛡️', { size: 18 })} ${t('connections.adultsOnly')}</p>
     <h2 id="conn-code-h"${en('connections.yourCode')}>${t('connections.yourCode')}</h2>
     <p><span class="bigcode" id="mycode" dir="ltr">${friends.codeOf(u) || ''}</span></p>
     <p class="small muted"${en('connections.codeHelp')}>${t('connections.codeHelp')}</p>

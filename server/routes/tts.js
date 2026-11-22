@@ -26,6 +26,11 @@
 //                  English with Tally's voice (Fraction Factory's registered role). The page never sends text.
 //     ctx 'lesson' { clId, stepId, i }  a lesson quiz step's question i, behind the same access as its quiz API, in the
 //                  page's language.
+//     ctx 'story'  { book, page, s }  sentence s of page `page` (1-based) of a Story Library book, by its numbers only
+//                  (or { book, q }: question q after the book, with its choices); the
+//                  server reads the book's own words from the manifest (services/library.js; cut into sentences by
+//                  public/js/library-text.js, the same cut the reader highlights). English, narrator role. No account
+//                  needed: the words are a published book's, never typed by anyone.
 //     ctx 'move'   { episode, seg, line }  one narration line of a Brain Break (Oomba Breathe & Bend, /move), by its
 //                  numbers only: the server reads the registered line (services/tts-lines.js MOVE_LINES, from
 //                  services/move-data.js) in English, in the narrator role with the series' pinned voice
@@ -58,7 +63,10 @@ import { ADMIN_BODY, ADMIN_CSS, note } from '../views/admin-ui.js';
 import * as COURSES from '../services/courses.js';
 import * as NQP from '../services/number-quest-placement.js';
 import { sayOf } from '../views/courses.js';
+import * as LIB from '../services/library.js';
+import { sentences as storySentences } from '../../public/js/library-text.js';
 import { isStaff } from '../services/schools.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 
@@ -184,6 +192,21 @@ function resolve(req, b) {
     if (!it) return { error: [404, 'off'] };
     return { text: questionText(it.q, it.choices), locale: V.ttsLocale(req.locale) || 'en', role: 'narrator', rate: 'normal' };
   }
+  if (b.ctx === 'story') {
+    const bk = LIB.getBook(String(b.book || ''));
+    // Question q (0-based) after the book, with its choices: Oomba's own words, read like a lesson quiz question.
+    if (bk && b.page === undefined && Number.isInteger(b.q)) {
+      const it = bk.questions[b.q];
+      if (!it) return { error: [404, 'off'] };
+      // The same words the reader shows, in order (no A/B/C: the buttons have no letters).
+      const text = [it.q, ...it.choices].map(x => String(x || '').trim()).filter(Boolean).map(x => (/[.!?]$/.test(x) ? x : x + '.')).join(' ');
+      return { text, locale: 'en', role: 'narrator', rate: 'normal' };
+    }
+    const pg = bk && Number.isInteger(b.page) ? bk.pages[b.page - 1] : null;
+    const sen = pg && Number.isInteger(b.s) ? storySentences(pg.text)[b.s] : null;
+    if (!sen) return { error: [404, 'off'] };
+    return { text: sen.text, locale: 'en', role: 'narrator', rate: 'normal' };
+  }
   if (b.ctx === 'move') {
     // A Brain Break is public (guests play free in class), so no account is needed; the words are ours
     // alone, picked by number from the registry, never sent by the page. Narration is English first:
@@ -254,7 +277,7 @@ router.get('/admin/voices', (req, res) => {
   const locales = LOCALES.filter(l => ttsLocaleList().includes(l.code));
   const games_ = TG.list(), silent = TG.silentWhy();
   const body = html`
-  <div class="pagehead"><h1>🔊 AI voices</h1></div>
+  <div class="pagehead"><h1>${ico('🔊', { size: 36 })} AI voices</h1></div>
   ${on ? '' : html`<section class="panel" role="status"><b>AI voices are off.</b> They need TTS_ENABLED=1 and a key (TTS_API_KEY, or STT_API_KEY when both providers are openai). Until then nothing here can play, and every page uses the device's own voice.</section>`}
   <section class="panel small">
     <p><b>Provider</b> ${config.ttsProvider || '–'} · <b>model</b> ${config.ttsProvider === 'mock' ? 'mock (silent audio)' : config.ttsModel} · <b>TTS_LOCALES</b> ${config.ttsLocales.join(', ')}</p>

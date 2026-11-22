@@ -296,7 +296,7 @@ async function capture(gameHtml, opts) {
       const title = await page.screenshot({ type: 'jpeg', quality: 45 }).catch(() => null);
       return { mode: 'playthrough', ...r, title: title || Buffer.alloc(0), kitWarnings: [...new Set(kitWarnings)].slice(0, 6), launches };
     }
-    // An activity on an older Oomba Canvas: the kit's own parts are as that version shipped (1.3.1 fixed their phone
+    // An activity on an older Oomba Canvas: the kit's own parts are as that version shipped (1.4.1 fixed their phone
     // layout), and the model may not change the kit, so the layout check looks only at what the activity adds.
     const cv = canvasVersion(gameHtml), skipKit = !!cv && cv !== CANVAS_LATEST;
     if (o.mode === 'autoplay') return await autoplay({ ctx, page, frame, errors, kitWarnings, o: { ...o, skipKit }, shape });

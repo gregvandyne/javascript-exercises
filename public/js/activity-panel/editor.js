@@ -5,6 +5,9 @@
 import { sheet, esc } from '/js/app.js';
 import { P, E, clone, valText, valParse, kindIcon, kindName, checkOne, figures } from './shared.js';
 import { move } from './list.js';
+import { iconHtml } from '../icons.js';
+/** A Fluent icon for an emoji (decorative; public/js/icons.js). */
+const ico = (e, size = 18) => iconHtml(e, { size });
 
 // A tool's numbers: [field, kind] (kind 'val': a number or n/d; 'int': a whole number)
 const FIELDS = {
@@ -21,7 +24,7 @@ export function openEditor(M, i) {
   const orig = M.data.problems[i]; if (!orig) return;
   const p = clone(orig);
   let more = false, moreSteps = false;
-  const s = sheet({ title: P('editTitle', { n: i + 1, total: M.data.problems.length }), content: '<div class="ap-ed"></div>' });
+  const s = sheet({ title: `✏️ ${P('editTitle', { n: i + 1, total: M.data.problems.length })}`, content: '<div class="ap-ed"></div>' });
   s.el.querySelector('.sheet').classList.add('ap-sheet');
   const root = s.el.querySelector('.ap-ed');
   const field = (label, html, id) => `<div class="field"><label for="${id}">${label}</label>${html}</div>`;
@@ -35,7 +38,7 @@ export function openEditor(M, i) {
       <p class="ap-check" role="status" aria-live="polite"></p>
       ${isFig ? `<h3>${E('workedSteps')}</h3><p class="small muted">${E('workedHint')}</p><ol class="ap-steps"></ol>
         <div class="ap-acts"><button type="button" class="btn btn-sm" data-ed="step"${(p.work || []).length >= 6 ? ' disabled' : ''}>＋ ${E('addStep')}</button><button type="button" class="btn btn-sm ap-more" data-ed="moresteps" aria-expanded="${moreSteps}">${E(moreSteps ? 'lessOptions' : 'moreOptions')}</button></div>` : `<p class="small muted">${E('kitStepsHint')}</p>`}
-      <div class="ap-edfoot"><button type="button" class="btn btn-sm btn-danger" data-ed="del"${M.data.problems.length <= 1 ? ' disabled' : ''}>🗑 ${E('delete')}</button><button type="button" class="btn btn-sm" data-ed="up"${i === 0 ? ' disabled' : ''}>↑ ${E('up')}</button><button type="button" class="btn btn-sm" data-ed="down"${i >= M.data.problems.length - 1 ? ' disabled' : ''}>↓ ${E('down')}</button>
+      <div class="ap-edfoot"><button type="button" class="btn btn-sm btn-danger" data-ed="del"${M.data.problems.length <= 1 ? ' disabled' : ''}>${ico('🗑️')} ${E('delete')}</button><button type="button" class="btn btn-sm" data-ed="up"${i === 0 ? ' disabled' : ''}>↑ ${E('up')}</button><button type="button" class="btn btn-sm" data-ed="down"${i >= M.data.problems.length - 1 ? ' disabled' : ''}>↓ ${E('down')}</button>
         <span class="ap-grow"></span><button type="button" class="btn" data-ed="cancel">${E('cancel')}</button><button type="button" class="btn btn-primary" data-ed="done">${E('done')}</button></div>`;
     const nums = root.querySelector('.ap-nums');
     if (fig) {
@@ -78,7 +81,7 @@ export function openEditor(M, i) {
     const done = root.querySelector('[data-ed="done"]'); if (done) done.disabled = false;
     if (why) { el.className = 'ap-check bad'; el.innerHTML = `⚠️ <b>${E('notYet')}</b> <span lang="en" dir="ltr"></span>`; el.querySelector('span').textContent = why; return; }
     el.className = 'ap-check good';
-    el.textContent = `✅ ${p.fig && p.fig.kind === 'reading' && p.tool === 'figure.number' && +p.answer === +p.fig.value ? P('matchesReading', { a: `${numText(p.answer)}${p.unit ? ` ${p.unit}` : ''}` }) : P('checksOut')}`;
+    el.innerHTML = `${ico('✅')} ${esc(p.fig && p.fig.kind === 'reading' && p.tool === 'figure.number' && +p.answer === +p.fig.value ? P('matchesReading', { a: `${numText(p.answer)}${p.unit ? ` ${p.unit}` : ''}` }) : P('checksOut'))}`;
   }
   const on = (sel, ev, fn) => root.querySelectorAll(sel).forEach(el => el.addEventListener(ev, fn));
   function wire() {

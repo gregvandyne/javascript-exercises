@@ -29,6 +29,7 @@ import * as SB from '../services/school-billing.js';
 import { familyOf } from '../builder/usage.js';
 import * as TP from '../services/teacher-plan.js';
 import { limitsText, onSale, planName } from './family.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 const on = (req, res, next) => (F.familiesOn(req) ? next() : notFound(req, res));
@@ -160,13 +161,13 @@ router.get('/plans', on, async (req, res) => {
 
   // A kid or a teacher who tapped a paid plan: who buys it, calmly.
   const askPanel = ask === 'basic' || ask === 'family' ? (who === 'kid'
-    ? html`<section class="panel plan-ask" id="ask" role="status" aria-labelledby="ask-h"><h2 id="ask-h"><span aria-hidden="true">🧑‍🧒</span> ${T('plans.kid.heading')}</h2>
+    ? html`<section class="panel plan-ask" id="ask" role="status" aria-labelledby="ask-h"><h2 id="ask-h">${ico('🧑‍🧒', { size: 28 })} ${T('plans.kid.heading')}</h2>
       <p>${TH('plans.kid.text', { where: html`<bdi dir="ltr"><b>${siteHost(req)}/plans</b></bdi>` })}</p>
       <p class="muted" style="margin-bottom:0">${T('plans.kid.free')}</p></section>`
-    : html`<section class="panel plan-ask" id="ask" role="status" aria-labelledby="ask-h"><h2 id="ask-h"><span aria-hidden="true">🏫</span> ${T('plans.staff.heading')}</h2>
+    : html`<section class="panel plan-ask" id="ask" role="status" aria-labelledby="ask-h"><h2 id="ask-h">${ico('🏫', { size: 28 })} ${T('plans.staff.heading')}</h2>
       <p>${T('plans.staff.text')}</p><p style="margin-bottom:0"><a class="btn" href="#plan-teacher">${T('plans.staff.toSchool')}</a></p></section>`) : '';
   // Not on sale to this visitor: said at the top, before any card (a signed-out visitor may still make a grown-up account).
-  const soonPanel = notOnSale ? html`<section class="panel plan-ask" id="soon" role="status"><p${who === 'out' ? '' : raw(' style="margin-bottom:0"')}><span aria-hidden="true">⏳</span> ${T('plans.notOnSale')}</p>
+  const soonPanel = notOnSale ? html`<section class="panel plan-ask" id="soon" role="status"><p${who === 'out' ? '' : raw(' style="margin-bottom:0"')}>${ico('⏳', { size: 18 })} ${T('plans.notOnSale')}</p>
     ${who === 'out' ? html`<p style="margin-bottom:0">${T('plans.notOnSaleOut')} <a href="/signup/parent">${T('family.landing.signup')}</a></p>` : ''}</section>` : '';
   const seg = html`<nav class="seg plan-seg" aria-label="${t('plans.interval.label')}">${['month', 'year'].map(iv => html`<a href="/plans?interval=${iv}" ${iv === interval ? raw('aria-current="page"') : ''}>${T(iv === 'year' ? 'plans.interval.year' : 'plans.interval.month')}</a>`)}</nav>`;
   const body = html`<div class="plans">
@@ -214,9 +215,9 @@ router.get('/plans/schools', on, async (req, res) => {
       </form>
       ${quote.total !== null ? html`<p class="seatcalc-out" role="status">${TH('plans.schools.calc.result', { seats: quote.seats, price: cents(seat), total: html`<b>${f.money(quote.total)}</b>` })}</p>` : ''}
       <p class="small muted">${T('plans.schools.calc.tax')}</p>
-      <p style="margin-bottom:0"><a class="btn btn-primary" href="/plans/schools/print?students=${shown}">🖨️ ${T('plans.schools.calc.print')}</a></p>
+      <p style="margin-bottom:0"><a class="btn btn-primary" href="/plans/schools/print?students=${shown}">${ico('🖨️', { size: 18 })} ${T('plans.schools.calc.print')}</a></p>
       <p class="small muted" style="margin:var(--s2) 0 0">${T('plans.schools.calc.printHint')}</p></section>`;
-  const body = html`<div class="wrap narrow" style="padding:0"><h1>🏫 ${T('plans.schools.heading')}</h1>
+  const body = html`<div class="wrap narrow" style="padding:0"><h1>${ico('🏫', { size: 36 })} ${T('plans.schools.heading')}</h1>
     <p class="lead">${T('plans.schools.intro')}</p>
     <section class="panel"><h2>${T('plans.schools.what.h')}</h2>
       ${seat !== null ? html`<p>${TH('school.billing.tp.price', { price: cents(seat), daily })}</p>` : ''}
@@ -243,9 +244,9 @@ router.get('/plans/schools/print', on, async (req, res) => {
   const host = siteHost(req);
   const row = (k, v, ltr = true) => html`<tr><th scope="row">${T(k)}</th><td${ltr ? raw(' dir="ltr"') : ''}>${v}</td></tr>`;
   const body = html`<div class="printdoc">
-    <div class="row printbar"><button class="btn btn-primary" type="button" data-print>🖨️ ${T('plans.schools.print.printButton')}</button>
+    <div class="row printbar"><button class="btn btn-primary" type="button" data-print>${ico('🖨️', { size: 18 })} ${T('plans.schools.print.printButton')}</button>
       <a class="btn" href="/plans/schools?students=${quote.students ?? 1}#calc">${T('plans.schools.print.back')}</a></div>
-    <h1>🏫 ${T('plans.schools.print.heading')}</h1>
+    <h1>${ico('🏫', { size: 36 })} ${T('plans.schools.print.heading')}</h1>
     <p class="lead">${T('plans.schools.print.intro')}</p>
     <section class="panel"><h2>${T('plans.schools.print.cost')}</h2>
       ${seat === null ? html`<p style="margin-bottom:0">${T('plans.noPrice')}</p>` : html`<div class="tblwrap"><table class="tbl"><tbody>

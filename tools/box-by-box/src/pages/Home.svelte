@@ -3,11 +3,11 @@
 	// The teacher's activities: a card for each (newest first), a New activity menu, and on each card a menu to open
 	// it, copy its student link (saving it first when it hasn't been shared as it is) or delete it.
 	import { NAME_HERE as NAME } from '$lib/i18n';
-	import { Ellipsis, Plus } from '@lucide/svelte';
+	import { Ellipsis, FolderOpen, Plus } from '@lucide/svelte';
 	import { create, isShared, list, loadList, remove, shareActivity, sorted, titleOf, type Activity } from '$lib/activities.svelte';
 	import { KINDS, kindInfo, levelInfo, type Kind } from '$lib/logic';
 	import { methodInfo } from '$lib/methods';
-	import { copy, setLink } from '$lib/oomba';
+	import { canListSets, copy, setLink } from '$lib/oomba';
 	import { go, show } from '$lib/nav.svelte';
 	import Logo from '$lib/Logo.svelte';
 	import Footer from '$lib/Footer.svelte';
@@ -104,6 +104,9 @@
 			</p>
 		</div>
 		<div class="top-actions">
+			{#if canListSets()}
+				<button type="button" class="btn-ghost" id="bb-ws" onclick={() => go({ name: 'sheets' })}><FolderOpen size={16} aria-hidden="true" /> {t('ui.ws.button')}</button>
+			{/if}
 			<div class="menu-wrap new-wrap">
 				<button type="button" class="btn-primary" aria-haspopup="menu" aria-expanded={newOpen} bind:this={newBtn} onclick={() => (newOpen = !newOpen)}
 					><Plus size={16} aria-hidden="true" /> {t('ui.home.new')}</button

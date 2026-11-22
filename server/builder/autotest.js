@@ -10,7 +10,7 @@
 import { cleanNote } from './steps.js';
 import { trustedMaker } from './usage.js';
 import { selfTestHtml } from '../services/canvaskit.js';
-import { usesFigures, checkFigures, figureLibs } from '../services/figlibs.js';
+import { usesFigures, checkFigures, figureLibs, missingFigurePacks } from '../services/figlibs.js';
 
 // ---- The classroom activity check (Oomba Canvas, docs/canvas-api.md) -------------------------------------------------
 // An activity's answer key is checked by the kit itself before anything else: every problem (or 30 a generator makes)
@@ -158,7 +158,9 @@ export function buildReport(raw, o = {}) {
   // least one figure (an <svg>) was on screen while it was played (a figure that failed to draw shows nothing).
   if (usesFigures(html)) {
     const bad = checkFigures(html).issues;
+    const lacks = bad.length ? [] : missingFigurePacks(html);
     if (bad.length) add('figures', `The figure libraries are not loaded from their pinned tags: ${bad.map(i => cleanNote(i.message, 220)).join(' | ')}`);
+    else if (lacks.length) add('figures', `The game draws ${lacks.flatMap(m => m.kinds).join(', ')} but does not load the Oomba Figures pack${lacks.length > 1 ? 's' : ''} they are in: add ${lacks.map(m => m.tag).join(' and ')} right after the Oomba Figures tag.`);
     else if (figureLibs(html)['oomba-figures'] && !blank && !readings.some(r => (r.svgs || 0) > 0) && !(raw.s0 && raw.s0.svgs > 0)) add('figures', 'The game loads Oomba Figures but no figure (an <svg>) was on screen while it was played: check that OF.draw(...) is called and its result is added to the page, and that OF.check(kind, data) is [] for the data.');
   }
   const pt = o.playthrough || null, ptText = playthroughProblem(pt);

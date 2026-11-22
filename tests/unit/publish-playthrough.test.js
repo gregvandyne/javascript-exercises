@@ -40,8 +40,8 @@ let k = 0;
 const user = (o = {}) => auth.createUser({ username: `Pt${o.role === 'admin' ? 'Admin' : 'Kid'}${k++}`, password: 'secret12', ...o });
 const version = (g, html, o = {}) => games.addVersion(g.id, html, { createdBy: g.owner_id, safetyStatus: 'pass', ...o });
 
-test('migration 0091 adds the playthrough result to every version', () => {
-  assert.ok(q.get("SELECT 1 FROM migrations WHERE name='0091_version_playthrough'"));
+test('migration 0101 adds the playthrough result to every version', () => {
+  assert.ok(q.get("SELECT 1 FROM migrations WHERE name='0101_version_playthrough'"));
   const cols = q.all('PRAGMA table_info(game_versions)').map(c => c.name);
   assert.ok(cols.includes('playthrough_status') && cols.includes('playthrough_report'));
 });
@@ -164,7 +164,8 @@ for (const [width, height] of [[390, 844], [1280, 800]]) {
     let { ctx, page } = await studio(kid, g.id, { width, height });
     const line = page.locator('#st-safety .st-played');
     await line.waitFor();
-    assert.equal((await line.textContent()).trim(), '✅ Played all the way through');
+    assert.equal((await line.textContent()).trim(), 'Played all the way through');
+    assert.equal(await line.locator('img.fx[src$="/check-mark-button.svg"]').count(), 1, 'the ✅ is the Fluent icon (no emoji in the chrome)');
     assert.match(await page.locator('#st-safety').textContent(), /Safety check passed for version 1\./);
     const m = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
     assert.ok(m.sw <= m.cw, 'no sideways scroll');
@@ -205,7 +206,8 @@ test('the Studio in Hebrew and Arabic: the line and the refusal read right to le
     let { ctx, page } = await studio(kid, g.id, { width: 390, height: 844 });
     assert.equal(await page.evaluate(() => document.documentElement.dir), 'rtl');
     const line = (await page.locator('#st-safety .st-played').textContent()).trim();
-    assert.equal(line, `✅ ${tFor(lang)('js.studio.play.pass')}`);
+    assert.equal(line, tFor(lang)('js.studio.play.pass'));
+    assert.equal(await page.locator('#st-safety .st-played img.fx[src$="/check-mark-button.svg"]').count(), 1, 'the ✅ is the Fluent icon');
     await shot(page, `played-line-390-${lang}.png`);
     await ctx.close();
     version(g, GAME + `BROKEN ${lang}`);

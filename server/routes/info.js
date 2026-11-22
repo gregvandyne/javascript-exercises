@@ -6,6 +6,7 @@
 import { Router } from 'express';
 import { googleEnabled } from '../oidc.js';
 import { html, raw } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, legalReader } from '../views/layout.js';
 import { tHtml, dictionary, DEFAULT_LOCALE, fmt } from '../i18n/index.js';
 import { config } from '../config.js';
@@ -17,7 +18,7 @@ export const router = Router();
 const indexed = (path, key) => ({ index: true, path, langs: langsWithKey(key) });
 
 /** The legal pages' "Last updated" date (a calendar day, UTC). Change it with every change to their text. */
-export const LEGAL_UPDATED = '2026-11-13';
+export const LEGAL_UPDATED = '2026-11-20';
 /** Where the legal pages send people: CONTACT_EMAIL, else the owner's address. */
 const legalEmail = () => config.contactEmail || 'greg@oomba.ai';
 // The speech-to-text company named in the privacy text (STT_PROVIDER): a company name, never translated.
@@ -119,7 +120,7 @@ export const parentSections = () => ['what', 'stored', 'never', 'ai', 'keep', 'f
 router.get('/sdk', (req, res) => {
   const t = req.t;
   // The SDK names (BRB.storage.get...) are code and stay as they are in every language.
-  const body = html`<div class="wrap narrow" style="padding:0"><h1>🧰 ${t('info.sdk.heading')}</h1>
+  const body = html`<div class="wrap narrow" style="padding:0"><h1>${ico('🧰', { size: 36 })} ${t('info.sdk.heading')}</h1>
     <section class="panel"><h2 dir="ltr">window.BRB</h2>
       <p>${tHtml(t, 'info.sdk.brb.p1', { get: codeBlock('BRB.storage.get(key)'), set: codeBlock('BRB.storage.set(key, value)') })}</p>
       <p>${tHtml(t, 'info.sdk.brb.p2', { submit: codeBlock('BRB.score.submit(score)'), over: codeBlock('BRB.gameOver({won, score})') })}</p>
@@ -155,7 +156,7 @@ export const fullPrivacy = req => legalReader(req.user) || req.query.for === 'gr
 router.get('/privacy', legalPage('privacy', '🔒', req => {
   const full = fullPrivacy(req);
   return ['intro',
-    ...['stored', 'never', 'ai', 'keep'].map(s => section(req, `info.parents.${s}`, { id: s })), googlePrivacy(req),
+    ...['stored', 'never', 'ai', 'keep'].map(s => section(req, `info.parents.${s}`, { id: s })), 'manip', googlePrivacy(req),
     // Parent-made child accounts (docs/decisions.md): only while they are on (madeOn). No plan names, so for every reader.
     madeOn(req) ? 'made' : null,
     ...(full ? ['grownups', 'linking', 'payments', 'schoolBilling', 'schoolSetup'] : []), 'children', ...(full ? ['billingKeep', 'where'] : []),

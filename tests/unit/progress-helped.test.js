@@ -13,6 +13,7 @@ const L = await import('../../server/services/lessons.js');
 const P = await import('../../server/services/progress.js');
 const games = await import('../../server/services/games.js');
 const { createApp } = await import('../../server/app.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 let server, base;
 test.before(async () => { server = createApp().listen(0); await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
@@ -21,7 +22,7 @@ const cookieFor = id => { let c = ''; startSession({ append: (k, v) => { c = v.s
 const as = who => async (path, { method = 'GET', body } = {}) => {
   const headers = { cookie: cookieFor(who.id) }; if (body !== undefined) headers['content-type'] = 'application/json';
   const r = await fetch(base + path, { method, headers, body: body !== undefined ? JSON.stringify(body) : undefined, redirect: 'manual' });
-  const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
+  const raw = await r.text(), text = deicon(raw); let json = null; try { json = JSON.parse(raw, (k, v) => typeof v === 'string' ? deicon(v) : v); } catch { /* html */ }
   return { status: r.status, text, json };
 };
 

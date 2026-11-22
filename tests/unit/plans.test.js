@@ -29,6 +29,7 @@ const aiBudget = await import('../../server/services/ai-budget.js');
 const { grownupMay } = await import('../../server/routes/family.js');
 const { viewerOf } = await import('../../server/routes/plans.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 const PW = 'a-long-password-1';
 let server, base;
@@ -49,7 +50,7 @@ function signIn(u) {
 async function call(who, path, { method = 'GET', body, redirect = 'manual' } = {}) {
   const h = {}; if (who) h.cookie = who.cookie; if (body !== undefined) h['content-type'] = 'application/json';
   const r = await fetch(base + path, { method, headers: h, body: body !== undefined ? JSON.stringify(body) : undefined, redirect });
-  const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
+  const raw = await r.text(), text = deicon(raw); let json = null; try { json = JSON.parse(raw, (k, v) => typeof v === 'string' ? deicon(v) : v); } catch { /* html */ }
   return { status: r.status, text, json, location: r.headers.get('location') };
 }
 let n = 0;
@@ -212,7 +213,8 @@ test('a kid sees the plans but can\'t buy: a calm "a grown-up buys plans" panel,
   assert.match(m, /id="plan-free"[\s\S]*<span class="plan-yours">Your plan<\/span>[\s\S]*id="plan-basic"/);
   assert.doesNotMatch(m, /id="ask"/);
   m = main(decode((await call(who, '/plans?ask=family')).text));
-  assert.match(m, /<section class="panel plan-ask" id="ask"[^>]*><h2 id="ask-h"><span aria-hidden="true">🧑‍🧒<\/span> A grown-up buys plans<\/h2>/);
+  // 🧑‍🧒 is drawn with the Grown-ups picture (house with garden), so the page reads back as 👪 there.
+  assert.match(m, /<section class="panel plan-ask" id="ask"[^>]*><h2 id="ask-h">👪 A grown-up buys plans<\/h2>/);
   assert.match(m, /They can sign up at <bdi dir="ltr"><b>127\.0\.0\.1:\d+\/plans<\/b><\/bdi>\./);
   assert.match(m, /You can keep playing and building for free\./);
   assert.doesNotMatch(m, /hurry|only \d+ left|today only|countdown|ends in/i);

@@ -8,6 +8,7 @@ import * as C from '../services/courses.js';
 import { DIAGRAM_TYPES, diagramSvg, diagramExtent } from './nq-diagrams.js';
 import { diagramAlt, uprightSvg, uprightExtent, raySvg } from './nq-diagrams-pro.js';
 import { sayMath } from '../../seed-lessons/number-quest/math-text.js';
+import { ico } from './icon.js';
 
 // CS Quest and Cyber Defenders name their bands '1b' (labelled Explorer) and '2' (labelled Pro). Number Quest's
 // bands are its tiers, stored under their own literal keys: 'launchpad', 'explorer' and 'pro' — so 'pro' here is
@@ -49,7 +50,7 @@ export function courseRow(items, { staff = false, title: heading = null } = {}) 
   if (!items.some(it => it.games.length)) return '';
   const title = heading || t('courses.row');
   return html`<section class="rail courses">
-    <div class="rail-head"><h2 id="courses-h">📚 ${title}</h2>
+    <div class="rail-head"><h2 id="courses-h">${ico('📚', { size: 28 })} ${title}</h2>
       <div class="rail-arrows" data-railnav="courses-track" hidden><button type="button" data-rail="courses-track" data-dir="-1" aria-label="${t('cards.scrollBack', { title })}"><span class="flip" aria-hidden="true">←</span></button><button type="button" data-rail="courses-track" data-dir="1" aria-label="${t('cards.scrollForward', { title })}"><span class="flip" aria-hidden="true">→</span></button></div>
     </div>
     <div class="course-rail"><div class="rail-track course-track" id="courses-track" role="region" aria-label="${title}" tabindex="0">
@@ -72,7 +73,7 @@ export function courseRow(items, { staff = false, title: heading = null } = {}) 
           <span class="course-gt"><span class="course-gname">${g.title}</span><span class="course-topic">${t(`courses.topics.${g.topic}`)}</span></span>
         </a></li>`)}</ol></details>
         ${staff ? html`<div class="course-foot">
-          ${assign ? html`<a class="btn btn-primary" href="${assign}" id="course-${c.slug}-assign">📌 ${t('learn.tab.assignCourse')}</a>` : ''}
+          ${assign ? html`<a class="btn btn-primary" href="${assign}" id="course-${c.slug}-assign">${ico('📌', { size: 18 })} ${t('learn.tab.assignCourse')}</a>` : ''}
           <a class="btn${assign ? ' btn-ghost' : ' btn-primary'}" href="${c.teacherPath}">${t('learn.tab.guide')}</a>
         </div>` : html`<div class="course-foot">
           <a class="btn btn-primary" href="${go}" id="course-${c.slug}-go">▶ ${begun ? t('courses.continue') : t('courses.start')}</a>
@@ -91,7 +92,7 @@ function hero(t, c, short = false) {
     </header>`;
 }
 function teachersBox(t, c) {
-  return html`<aside class="course-teach"><h2>🍎 ${t('courses.teachers.h')}</h2><p>${t(`${c.key}.teachers`)}</p>
+  return html`<aside class="course-teach"><h2>${ico('🍎', { size: 28 })} ${t('courses.teachers.h')}</h2><p>${t(`${c.key}.teachers`)}</p>
       <a class="btn course-teach-go" href="${c.teacherPath}">${t('courses.teachers.link')}</a></aside>`;
 }
 /** The two band cards (a form: works without the page script). */
@@ -120,7 +121,7 @@ function stateTag(t, state) {
 function mapStep(t, c, s, total, preview = false) {
   const { step } = s;
   const lesson = s.checked ? 'done' : preview ? 'preview' : !s.open ? 'locked' : 'next';
-  const gameK = () => html`<span class="cmap-k cmap-k2"><span class="cmap-kl">🎮 ${t('courses.map.game')}</span><span class="cmap-gm"${en}>${step.game.chapterTitle}</span></span>`;
+  const gameK = () => html`<span class="cmap-k cmap-k2"><span class="cmap-kl">${ico('🎮', { size: 18 })} ${t('courses.map.game')}</span><span class="cmap-gm"${en}>${step.game.chapterTitle}</span></span>`;
   const game = !step.game ? null : s.won ? 'done' : s.open && s.checked ? 'next' : 'locked';
   const href = `/courses/${c.slug}/${step.key}`;
   const cls = s.complete ? 'is-done' : s.open ? 'is-next' : 'is-locked';
@@ -128,11 +129,11 @@ function mapStep(t, c, s, total, preview = false) {
     <span class="cmap-n" aria-hidden="true">${s.complete ? '✓' : step.index + 1}</span>
     <div class="cmap-body">
       <h4 class="cmap-title"><span class="sr-only">${t('courses.lesson.of', { n: step.index + 1, total })}: </span><span${en}>${step.title}</span></h4>
-      ${s.open || preview ? html`<a class="cmap-row" href="${href}"><span class="cmap-k">📖 ${t('courses.map.lesson')}</span>${stateTag(t, lesson)}</a>`
-        : html`<span class="cmap-row"><span class="cmap-k">📖 ${t('courses.map.lesson')}</span>${stateTag(t, lesson)}</span>`}
+      ${s.open || preview ? html`<a class="cmap-row" href="${href}"><span class="cmap-k">${ico('📖', { size: 18 })} ${t('courses.map.lesson')}</span>${stateTag(t, lesson)}</a>`
+        : html`<span class="cmap-row"><span class="cmap-k">${ico('📖', { size: 18 })} ${t('courses.map.lesson')}</span>${stateTag(t, lesson)}</span>`}
       ${step.game ? (game === 'locked' ? html`<span class="cmap-row">${gameK()}${stateTag(t, game)}</span>`
         : html`<a class="cmap-row" href="${href}#play">${gameK()}${stateTag(t, game)}</a>`)
-        : html`<span class="cmap-row cmap-talk"><span class="cmap-k">💬 ${t('courses.map.talk')}</span></span>`}
+        : html`<span class="cmap-row cmap-talk"><span class="cmap-k">${ico('💬', { size: 18 })} ${t('courses.map.talk')}</span></span>`}
     </div>
   </li>`;
 }
@@ -156,7 +157,7 @@ function stampStrip(t, c, ov) {
  *  finish first (the first open step not done yet). */
 export function lockedNote(t, ov, key) {
   if (!key || !ov.next || !ov.list.some(s => s.step.key === key && !s.open)) return '';
-  return html`<p class="notice cmap-locked" role="status" id="cmap-locked"><span aria-hidden="true">🔒</span> ${t('courses.map.lockedNote', { n: ov.next.step.index + 1 })} <a href="#step-${ov.next.step.key}"${en}>${ov.next.step.title}</a></p>`;
+  return html`<p class="notice cmap-locked" role="status" id="cmap-locked">${ico('🔒', { size: 18 })} ${t('courses.map.lockedNote', { n: ov.next.step.index + 1 })} <a href="#step-${ov.next.step.key}"${en}>${ov.next.step.title}</a></p>`;
 }
 /** The course page: the band picker (first time), then the course map. On a laptop the map runs in the
  *  main column and the progress, the Studio card and the teachers' box ride beside it (.cmap-side). */
@@ -180,7 +181,7 @@ export function coursePage({ course: c, games, ov, canPick, preview = false, loc
       ${stampStrip(t, c, ov)}
       ${ov.next ? html`<a class="btn btn-primary btn-big cmap-go" href="/courses/${c.slug}/${ov.next.step.key}" id="cmap-go">▶ ${ov.done ? t('courses.continue') : t('courses.start')}</a>` : ''}
     </section>
-    <aside class="cmap-build"><span class="cmap-build-e" aria-hidden="true">🛠️</span><div><h3>${t('courses.map.build.h')}</h3><p>${t('courses.map.build.text')}</p>
+    <aside class="cmap-build"><span class="cmap-build-e" aria-hidden="true">${ico('🛠️', { size: 36 })}</span><div><h3>${t('courses.map.build.h')}</h3><p>${t('courses.map.build.text')}</p>
       <a class="btn" href="/build">${t('courses.map.build.go')}</a></div></aside>
     ${teachersBox(t, c)}
     </div>
@@ -694,9 +695,9 @@ function slide(t, s, i, n, step) {
       ${s.steps ? html`<ol class="chips-prog">${s.steps.map(x => html`<li class="chipblock">${x}</li>`)}</ol>` : ''}
       ${s.rows ? html`<table class="slide-table">${s.rows.map((r, ri) => html`<tr>${r.map(cell => (ri === 0 ? html`<th>${cell}</th>` : html`<td>${cell}</td>`))}</tr>`)}</table>` : ''}
       ${s.words ? html`<dl class="slide-wordlist">${s.words.map(w => html`<div><dt>${w.word}</dt>${w.means ? html`<dd>${w.means}</dd>` : ''}</div>`)}</dl>` : ''}
-      ${s.kind === 'mission' && step.game ? html`<p class="slide-mission">🎮 <b>${step.game.title}</b> · ${step.game.chapterTitle}</p>` : ''}
+      ${s.kind === 'mission' && step.game ? html`<p class="slide-mission">${ico('🎮', { size: 18 })} <b>${step.game.title}</b> · ${step.game.chapterTitle}</p>` : ''}
     </div>
-    <button class="btn slide-say" type="button" hidden data-say-btn><span aria-hidden="true">🔊</span> <span class="lbl" lang="${current().locale}">${t('courses.lesson.listen')}</span></button>
+    <button class="btn slide-say" type="button" hidden data-say-btn>${ico('🔊', { size: 18 })} <span class="lbl" lang="${current().locale}">${t('courses.lesson.listen')}</span></button>
   </section>`;
 }
 
@@ -719,7 +720,7 @@ export function afterSection(t, c, step, s, next) {
     <h2 id="play-h">${s.complete ? html`✓ ${t('courses.lesson.complete')}` : step.game ? t('courses.lesson.unlocked') : t('courses.lesson.talk')}</h2>
     ${step.game ? html`<a class="btn btn-hot btn-big cl-play" href="${play}" id="cl-play">▶ ${t('courses.play', { game: step.game.title, chapter: step.game.chapterTitle })}</a>
       ${s.won ? '' : html`<p class="muted small">${t('courses.lesson.playToFinish')}</p>`}`
-      : html`<p class="cl-talk"${en}>💬 ${step.talk}</p>`}
+      : html`<p class="cl-talk"${en}>${ico('💬', { size: 18 })} ${step.talk}</p>`}
     ${next ? html`<a class="btn ${s.complete ? 'btn-primary' : ''}" href="/courses/${c.slug}/${next.key}" id="cl-next" ${s.complete ? '' : raw('hidden')}>${t('courses.lesson.nextStep')} ›</a>` : ''}
     <a class="btn btn-ghost" href="/courses/${c.slug}#step-${step.key}">${t('courses.lesson.map')}</a>
   </section>`;
@@ -747,7 +748,7 @@ export function stepPage({ course: c, s, total, next, seed, result, signedIn, sl
       <button class="btn btn-primary" type="button" id="deck-next" data-next="${t('courses.lesson.next')} ›" data-check="${t('courses.lesson.toCheck')} ›">${t('courses.lesson.next')} ›</button>
     </nav>
     <section class="cl-check" id="check" aria-labelledby="check-h" data-done="${s.checked ? '1' : ''}" data-read="${s.read ? '1' : ''}">
-      <h2 id="check-h">✅ ${t('courses.check.h')}</h2>
+      <h2 id="check-h">${ico('✅', { size: 28 })} ${t('courses.check.h')}</h2>
       ${s.checked ? html`<p class="cl-passed">✓ ${t('courses.check.done')}</p>
         ${c.slug === 'number-quest' ? html`<p class="nq-passed-tally"><img class="nq-tally-img" src="/img/csq/chars/tally.webp" alt="" width="219" height="353"> <span lang="en" dir="ltr">Tally is purring: check passed. The mission is open below.</span></p>` : ''}`
         : html`<p class="muted">${t(step.game ? 'courses.check.intro' : 'courses.check.introTalk')}</p>

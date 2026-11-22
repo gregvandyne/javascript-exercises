@@ -48,10 +48,10 @@
       "schools": "For schools"
     },
     "build": {
-      "ready": "✨ Your game “{title}” is ready! <a href=\"{href}\">Open it</a>",
-      "question": "💬 The Builder has a question about “{title}”. <a href=\"{href}\">Open it</a>",
-      "stopped": "⚠️ “{title}” stopped before it was finished. <a href=\"{href}\">Open it to carry on</a>",
-      "many": "✨ Some of your games have news from the Builder. <a href=\"{href}\">See My games</a>"
+      "ready": "Your game “{title}” is ready! <a href=\"{href}\">Open it</a>",
+      "question": "The Builder has a question about “{title}”. <a href=\"{href}\">Open it</a>",
+      "stopped": "“{title}” stopped before it was finished. <a href=\"{href}\">Open it to carry on</a>",
+      "many": "Some of your games have news from the Builder. <a href=\"{href}\">See My games</a>"
     },
     "shortPasswordGrownup": "Your password is shorter than {min} characters. Please <a href=\"{href}\">choose a longer one</a>."
   },
@@ -1109,6 +1109,11 @@
         "li5": "Before making the account, the grown-up reads a notice about what we keep and ticks that they have read it and that they are the child's parent or legal guardian. We keep a record of that: when, and which version of the notice. This is not a parental consent check under children's privacy laws, and we don't treat it as one. Paying for a plan isn't one either.",
         "li9": "The grown-up can see these counts and delete the account from their family page: everything the child made, wrote and uploaded goes straight away. We keep a short record that the account existed and who made it, the old username is held back for 90 days so nobody else can take it, and a class the child used to be in keeps its own records. If the child is in a school class now, the teacher removes them from the class first.",
         "li7": "How long: as long as the account exists. We have no automatic deletion timers yet."
+      },
+      "manip": {
+        "h": "Math manipulatives in class",
+        "p1": "<b>Live class sessions:</b> when a teacher runs a live math manipulatives session, each student's board in it (their pieces, sticky notes, text and answers) is kept for their teacher and deleted 30 days after the session ends. Where students point (their cursors) and raised hands are not stored.",
+        "p2": "<b>Drafting a board with AI:</b> a teacher can describe a lesson and have the AI draft a board for it. Only the teacher's description is sent to our AI provider, Anthropic. Student work and names are never sent."
       }
     }
   },
@@ -1187,7 +1192,10 @@
     },
     "makeLike": "Make a game like this",
     "makeLikeShort": "Make one like this",
-    "grownupBuilder": "Grown-up builder"
+    "grownupBuilder": "Grown-up builder",
+    "sets": {
+      "copyOf": "Copy of {title}"
+    }
   },
   "play": {
     "backTo": "Back to {title}",
@@ -1481,10 +1489,10 @@
     "rename": "Rename",
     "delete": "Delete",
     "status": {
-      "building": "🛠️ Building…",
-      "ready": "✨ Ready",
-      "question": "💬 Has a question",
-      "stopped": "⚠️ Stopped"
+      "building": "Building…",
+      "ready": "Ready",
+      "question": "Has a question",
+      "stopped": "Stopped"
     }
   },
   "studio": {
@@ -2038,9 +2046,9 @@
       "voicesDevice": "This device's voice",
       "voicesNote": "Characters in this game are voiced by a computer (AI voices from {provider}). They read only the game's own words, never anything you type and never your name.",
       "voicesSaveData": "Data Saver is on, so this device's voice is used until you pick AI voices.",
-      "nqMarks": "🐱 +{marks} Tally Marks · {total} in total",
-      "nqGoal": "🌱 Daily goal done. Nice work!",
-      "nqLap": "🏅 Lap {lap} finished for this unit!",
+      "nqMarks": "+{marks} Tally Marks · {total} in total",
+      "nqGoal": "Daily goal done. Nice work!",
+      "nqLap": "Lap {lap} finished for this unit!",
       "guestWinTitle": "You won! 🏆",
       "guestWin": "That win is yours. Guests can play every game, but a course step only counts as finished with a free account — make one and we will count this win. We kept it for you.",
       "guestWinAction": "Make my free account",
@@ -2506,8 +2514,8 @@
           "learn": "After every build, the app plays the game by itself for about 20 seconds: pressing keys, tapping, swiping and checking the score changes and nothing breaks."
         }
       },
-      "resumed": "🔄 The server restarted, so the Builder carried on from where it was.",
-      "resumedV": "🔄 The server restarted, so the Builder carried on from version {v}.",
+      "resumed": "The server restarted, so the Builder carried on from where it was.",
+      "resumedV": "The server restarted, so the Builder carried on from version {v}.",
       "stopped": {
         "restart": "The Builder stopped when our server restarted. Anything it made is saved.",
         "ai": "The Builder stopped when our server restarted, and the AI Builder is resting right now. Anything it made is saved."
@@ -2564,7 +2572,7 @@
       },
       "stillWorking": "One moment, the Builder is still working!",
       "resting": {
-        "text": "😴 The AI Builder is resting right now. It will be back {when}. Your game and your Builder messages are saved, so come back then!",
+        "text": "The AI Builder is resting right now. It will be back {when}. Your game and your Builder messages are saved, so come back then!",
         "today": "today at {time}",
         "tomorrow": "tomorrow at {time}",
         "date": "on {date} at {time}"
@@ -2754,9 +2762,9 @@
       "again": "Try again",
       "passed": "You passed! {score} of {total} right.",
       "failed": "{score} of {total} right. You need {pass} to pass. Try again!",
-      "nqMarks": "🐱 +{marks} Tally Marks · {total} in total",
-      "nqGoal": "🌱 Daily goal done. Nice work!",
-      "nqLap": "🏅 Lap {lap} finished for this unit!",
+      "nqMarks": "+{marks} Tally Marks · {total} in total",
+      "nqGoal": "Daily goal done. Nice work!",
+      "nqLap": "Lap {lap} finished for this unit!",
       "guestSave": "You finished this step! Guests can play everything, but a finished step only counts with a free account. Make one now and we will count this finish — we kept it for you.",
       "guestSaveAction": "Make my free account"
     },
@@ -3269,7 +3277,7 @@
       "editN": "Edit problem {n}",
       "add": "Add a problem",
       "copyN": "Copy problem {n}",
-      "editTitle": "✏️ Problem {n} of {total}",
+      "editTitle": "Problem {n} of {total}",
       "kind": {
         "reading": "Read a scale",
         "thermometer": "thermometer",
@@ -3348,6 +3356,751 @@
       "genWorkAns": "The answer is {v}{u}.",
       "gVar": "The number {x} on the figure",
       "gDigits": "Digits in each number"
+    },
+    "library": {
+      "pageOf": "Page {page} of {pages}",
+      "backToQuestions": "Back to the questions",
+      "toQuestions": "Questions",
+      "next": "Next",
+      "stop": "Stop",
+      "readToMe": "Read to me",
+      "answered": "You answered this one.",
+      "readQuestion": "Read it to me",
+      "readFirst": "Read the story to the last page first.",
+      "right": "Yes, that's right!",
+      "tryAgain": "Try again! Look at page {page}.",
+      "lookAt": "Look at page {page}",
+      "doneMsg": "All done! {right} of {total} right on the first try. Great reading!",
+      "doneShort": "All done! Great reading!",
+      "pagesOf": "Pages {from}-{to} of {pages}"
+    },
+    "manip": {
+      "grades": "Grades {grades}",
+      "grade": "Grade {grade}",
+      "nav": {
+        "allTools": "← All tools",
+        "back": "← Back"
+      },
+      "home": {
+        "title": "Math manipulatives",
+        "testing": "Testing: only you can see this",
+        "lead": "18 virtual manipulatives on one board, with sticky notes, a pen, saved boards with share codes, live class sessions and {n} ready-made tasks for grades K-8.",
+        "search": "Search the tools",
+        "cat": "Category",
+        "allCats": "All categories",
+        "none": "No tool matches. Try a shorter word, like fraction or clock."
+      },
+      "host": {
+        "title": "Run a live session",
+        "klass": "Class",
+        "tool": "Tool",
+        "name": "Session name",
+        "namePh": "For example: Fractions warm-up",
+        "start": "Start the session",
+        "who": "Only the students of the class you pick can join, signed in with their own accounts. The join code alone lets nobody else in.",
+        "noClasses": "You don't teach a class yet, so there is no class to run a session for.",
+        "mine": "Your sessions",
+        "board": "Start from a saved board (its tool and steps)",
+        "noBoard": "An empty board"
+      },
+      "boards": {
+        "title": "My boards",
+        "none": "Boards you work on save themselves and show up here. Use \"Save as template\" on a board to keep a fresh starting point.",
+        "delete": "Delete",
+        "templates": "Templates",
+        "templatesSub": "open a fresh copy every time",
+        "recent": "Recent boards",
+        "recentSub": "saved as you work",
+        "code": "code {code}",
+        "edited": "edited {when}",
+        "aiDraft": "AI draft, finished {when}",
+        "roomLive": "Live room · {klass} · {n, plural, one {# student} other {# students}}",
+        "roomEnded": "Live room · {klass} · ended {when} · {n, plural, one {# student’s square kept} other {# students’ squares kept}}",
+        "live": "Live",
+        "new": "New",
+        "more": "More for {title}",
+        "start": "Start a live room with it",
+        "rename": "Rename",
+        "duplicate": "Duplicate",
+        "reopen": "Reopen room",
+        "deleteConfirm": "Delete \"{title}\"? This can’t be undone.",
+        "deleteRoom": "Delete the room \"{title}\" and every student’s square in it? This can’t be undone.",
+        "pickClass": "Pick the class for this room, then start it."
+      },
+      "share": {
+        "save": "Save as template",
+        "saved1": "Saved. Share code {code}",
+        "open": "Open a code",
+        "codePh": "ABCD2345",
+        "codeLabel": "Share code",
+        "go": "Go",
+        "needCode": "Type a share code first.",
+        "loaded": "Board {code} is on your board now.",
+        "saved": "Your saved boards for this tool",
+        "loadSaved": "Load saved board {code}",
+        "haveCode": "Have a share code?",
+        "haveCodeText": "Type it to open a copy of that board. The saved board never changes.",
+        "backToSession": "Back to {title}"
+      },
+      "side": {
+        "label": "Pieces and tools",
+        "objects": "Tap to add",
+        "tools": "Tools",
+        "add": "Add {label}",
+        "undo": "Undo",
+        "annotate": "Pen",
+        "note": "Sticky note",
+        "draft": "Draft with AI",
+        "reset": "Clear the board",
+        "text": "Text",
+        "addCap": "Add",
+        "forObj": "{name}",
+        "showAnswers": "Show answers"
+      },
+      "board": {
+        "label": "{tool} board",
+        "emptyPieces": "Tap something in the palette to put it on the board, then drag it. Drag the empty board to move around.",
+        "pieceHint": "Tap a piece to select it and drag it to move it. Hold it, right-click it or press Shift+F10 for its actions. Sticky notes can be dragged anywhere; tap one to type."
+      },
+      "piece": {
+        "label": "Piece {label}",
+        "pickBreak": "Tap a piece that can be broken into ten first.",
+        "pickRegroup": "Tap one of ten pieces of the same kind first."
+      },
+      "note": {
+        "label": "Sticky note {n}",
+        "text": "Text of sticky note {n}",
+        "placeholder": "Type a label or a question…",
+        "tap": "Tap to write…",
+        "edit": "Edit",
+        "editN": "Edit sticky note {n}",
+        "done": "Done",
+        "delete": "Delete",
+        "deleteN": "Delete sticky note {n}"
+      },
+      "ann": {
+        "toolbar": "Pen tools",
+        "surface": "Drawing area. Draw with a finger, pen or mouse.",
+        "pen": "Pen",
+        "color": "Pen color {color}",
+        "eraser": "Eraser",
+        "clear": "Clear the pen",
+        "done": "Done",
+        "penHint": "Draw on the board with a finger or the mouse.",
+        "eraseHint": "Rub over a drawing to erase it."
+      },
+      "draft": {
+        "title": "Draft a lesson with AI",
+        "close": "Close",
+        "text": "Describe a practice set and the AI builds it: the objects for each problem in a tidy grid, an answer box under each one, and the steps for students. It replaces what is on the board; Undo brings it back.",
+        "task": "Start from a task",
+        "ownLesson": "My own lesson",
+        "grade": "Grade",
+        "any": "Any",
+        "brief": "What should the lesson do?",
+        "briefPh": "For example: 8 clocks with different times for my students to read. Or: 6 fraction additions with unlike denominators, grade 5.",
+        "private": "Only your description goes to the AI: never students' names or work.",
+        "go": "Draft my board",
+        "needBrief": "Describe the lesson first.",
+        "working": "Drafting your board…",
+        "noAi": "(The AI is resting, so this is a simple starting board.)",
+        "doneSet": "\"{title}\" is on the board: {n} problems and {steps} steps.",
+        "capped": "At most {max} problems fit on one board, so it has {max}.",
+        "hint": "You choose what and how many (up to 12). The app checks every problem and lays the board out.",
+        "progress": "Drafting your board",
+        "drafting": "Drafting…",
+        "quote": "“{brief}”",
+        "leave": "You can close this page or refresh. The draft keeps going on our server and will be in My boards when it’s done.",
+        "eta": {
+          "under": "Usually less than a minute",
+          "about": "{n, plural, one {Usually about a minute} other {Usually about # minutes}}",
+          "guessUnder": "Often less than a minute",
+          "guess": "{n, plural, one {About a minute} other {About # minutes}}",
+          "longer": "Taking a bit longer than usual",
+          "soFar": "{time} so far"
+        },
+        "step": {
+          "check": {
+            "now": "Checking your words for students’ names",
+            "done": "Checked your words for students’ names"
+          },
+          "ai": {
+            "now": "The AI is choosing the problems",
+            "done": "The AI chose the problems"
+          },
+          "build": {
+            "now": "Laying out the board and the steps",
+            "done": "Laid out the board and the steps"
+          },
+          "save": {
+            "now": "Saving it to My boards",
+            "done": "Saved to My boards"
+          }
+        },
+        "away": "Your AI draft “{title}” finished while you were away.",
+        "awayN": "{n, plural, one {# problem} other {# problems}} and {steps, plural, one {# step} other {# steps}}.",
+        "inBoards": "It’s saved in My boards.",
+        "use": "Put it on my board",
+        "dismiss": "Dismiss",
+        "failedAway": "Your AI draft for {tool} couldn’t be finished.",
+        "failed": "The draft couldn’t be finished.",
+        "retry": "Try again",
+        "err": {
+          "aiFailed": "The AI couldn’t draft it just now. Your words are still here: try again in a moment.",
+          "restart": "Our server restarted while it was drafting. Your words are still here: try again.",
+          "names": "Leave students’ names out of the description: names never go to the AI.",
+          "words": "Some words in the description aren’t allowed. Change them and try again.",
+          "personal": "Leave out phone numbers, emails, links and codes, then try again.",
+          "other": "Something went wrong. Try again in a moment."
+        }
+      },
+      "tasks": {
+        "boxTitle": "Try this: ready-made tasks",
+        "boxLabel": "Tasks for this tool",
+        "teacherNote": "Teacher note:",
+        "all": "All {n} tasks for this tool",
+        "less": "Show fewer",
+        "library": "Task library",
+        "lead": "{n} original tasks for the 18 tools, grades K-8, each with teacher notes and its Common Core code.",
+        "search": "Search tasks, tools or codes",
+        "byTool": "Filter by tool",
+        "allTools": "All 18 tools",
+        "byGrade": "Filter by grade",
+        "allGrades": "All grades",
+        "count": "{n, plural, one {# task} other {# tasks}}",
+        "none": "No task matches. Try a tool name like Clock, or a code like 3.NF.",
+        "open": "Open the tool"
+      },
+      "live": {
+        "ended": "This session has ended.",
+        "gone": "This session isn't here."
+      },
+      "student": {
+        "title": "Math boards",
+        "yours": "Your class sessions",
+        "none": "There is no session for your class right now.",
+        "join": "Join",
+        "back": "Go back in",
+        "codeTitle": "Have a join code?",
+        "codeLabel": "Join code"
+      },
+      "dash": {
+        "live": "Live",
+        "ended": "Ended",
+        "joined": "{n, plural, one {# student joined} other {# students joined}}"
+      },
+      "steps": {
+        "title": "Steps",
+        "text": "The exercise, one step at a time: in a live session students see the current step at the top of their square, never the ones after it. Drag or use ↑ ↓ to reorder."
+      },
+      "text": {
+        "label": "Text on the board",
+        "ph": "Type here…",
+        "delete": "Delete this text",
+        "move": "Drag to move this text",
+        "resize": "Drag to change the size of this box",
+        "smaller": "Smaller text",
+        "bigger": "Bigger text"
+      },
+      "obj": {
+        "resize": "Drag to resize",
+        "move": "{name}: drag to move",
+        "full": "At most {n} objects on a board.",
+        "answer": "Your answer",
+        "answerIs": "Answer:",
+        "buildHere": "Build the answer here",
+        "whole": "Whole",
+        "part": "Part"
+      },
+      "view": {
+        "zoom": "Zoom",
+        "in": "Zoom in",
+        "out": "Zoom out",
+        "fit": "Fit",
+        "totalsOn": "Totals: on",
+        "totalsOff": "Totals: off"
+      },
+      "check": {
+        "button": "Check answers",
+        "right": "right",
+        "again": "Try again",
+        "result": "{right} of {total} right."
+      },
+      "wheel": {
+        "menu": "Actions for {label}",
+        "copy": "Copy",
+        "fill": "Fill",
+        "rotate": "Rotate",
+        "flip": "Flip over",
+        "break": "Break into 10",
+        "lock": "Lock",
+        "unlock": "Unlock",
+        "delete": "Delete",
+        "deleted": "{label} deleted",
+        "undo": "Undo",
+        "lockedHint": "Locked. Hold it to unlock.",
+        "pieceLocked": "Piece {label}, locked",
+        "objLocked": "{name}, locked"
+      },
+      "save": {
+        "name": "Template name",
+        "what": "A template is a fresh starting point: opening it, or starting a room with it, always gives a clean copy. This board keeps saving as you work.",
+        "go": "Save",
+        "cancel": "Cancel",
+        "done": "Saved as template \"{title}\". Share code {code}",
+        "savedAt": "Saved {time}",
+        "notYet": "Not saved yet. Trying again…"
+      },
+      "pv": {
+        "traded": "Traded {n} × {from} for {m} × {to}.",
+        "broke": "{from} became {n} × {to}.",
+        "moved": "{label} moved to the {col} column.",
+        "needTen": "Needs 10 to trade",
+        "count": "{n} pieces in {col}"
+      }
+    },
+    "manip-room": {
+      "loading": "Opening the room…",
+      "palette": "Pieces and tools",
+      "add": "Add {label}",
+      "addMine": "Tap to add (your square)",
+      "addTo": "Tap to add to: {name}",
+      "teacherArea": "Teacher's area",
+      "teacher": "Teacher",
+      "mySquare": "My square",
+      "mySquareBtn": "My square",
+      "backMine": "Back to my square",
+      "classmateNote": "A classmate's note",
+      "noteN": "Sticky note {n}",
+      "noteText": "Text of sticky note {n}",
+      "notePh": "Type a label or a question…",
+      "noteTap": "Tap to write…",
+      "edit": "Edit",
+      "done": "Done",
+      "delete": "Delete",
+      "note": "Sticky note",
+      "pen": "Pen",
+      "undo": "Undo",
+      "penColor": "Pen color {color}",
+      "clearPen": "Clear the pen",
+      "zoom": "Zoom",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "fit": "Fit",
+      "map": "Map of the room. Tap a place to go there.",
+      "live": "Live",
+      "ended": "Ended",
+      "bring": "Bring everyone to me",
+      "broughtAll": "Everyone is looking at your view now.",
+      "brought": "Your teacher brought you here",
+      "broughtText": "Look where your teacher is working. You can move around any time.",
+      "push": "Push a board",
+      "pdf": "PDF",
+      "end": "End session",
+      "endedMsg": "The session has ended.",
+      "loadPush": "Load it into my square",
+      "keep": "Keep mine",
+      "loadedPush": "Your teacher's board is in your square now. Undo brings yours back.",
+      "pushTitle": "Push a board to every student",
+      "pushText": "Each student can load it into their own square; their work stays until they do.",
+      "pushOne": "Push {code}",
+      "noBoards": "No saved board for this tool yet. Build one in the tool on its own and save it.",
+      "pushed": "Pushed to every student.",
+      "close": "Close",
+      "gone": "This session isn't here.",
+      "back": "Back",
+      "teacherAreaNote": "everyone can see this",
+      "instructions": "Instructions",
+      "more": "More",
+      "less": "Less",
+      "raiseHand": "Raise hand",
+      "lowerHand": "Lower hand",
+      "handUp": "Hand raised",
+      "handsTitle": "Hands up",
+      "lowerAll": "Lower all",
+      "lower": "Lower",
+      "lowerOne": "Lower {name}'s hand",
+      "noHands": "No hands up right now.",
+      "hideWork": "Hide students' work",
+      "hiddenWork": "Hidden for now",
+      "workShown": "Everyone can see each other's work now.",
+      "workHidden": "Students' work is hidden again.",
+      "stepOf": "Step {n} of {total}",
+      "next": "Next",
+      "earlier": "Earlier steps ({n})",
+      "paceSum": "Step {step}: {n}",
+      "menu": "More options",
+      "pace": "Students go at their own pace",
+      "handsUpN": "Hands up · {n}",
+      "handsUpNone": "Hands up",
+      "steps": "Steps",
+      "stepsText": "The exercise, one step at a time: students see the current step at the top of their square, never the ones after it. Drag or use ↑ ↓ to reorder.",
+      "stepN": "Step {n}",
+      "stepPh": "What should students do in this step?",
+      "stepUp": "Move step {n} up",
+      "stepDown": "Move step {n} down",
+      "stepDelete": "Delete step {n}",
+      "noSteps": "No steps yet.",
+      "addStep": "Add a step",
+      "joinCode": "Join code: {code}",
+      "copy": "Copy",
+      "copied": "Join code copied.",
+      "text": "Text",
+      "textLabel": "Text on the board",
+      "textPh": "Type here…",
+      "textDelete": "Delete this text",
+      "totals": "Students see totals",
+      "check": "Check my answers",
+      "checkResult": "{right} of {total} right. Try again on the others.",
+      "checkScore": "{right}/{total} ✓",
+      "checksSwitch": "Students can check answers",
+      "checksTitle": "Answers checked",
+      "checkShort": "Check",
+      "actionsFor": "Actions for {label}",
+      "teacherLock": "Your teacher locked this.",
+      "reopen": "Reopen room",
+      "reopened": "The room is open again. Students go back to their own squares."
+    },
+    "figures-editor": {
+      "undo": "Undo",
+      "redo": "Redo",
+      "examples": "Examples",
+      "mine": "My presets",
+      "randomize": "Randomize",
+      "controls": "Figure settings",
+      "measures": "Measures",
+      "leaveEmpty": "Give the measures you know. Leave the rest empty.",
+      "options": "Options",
+      "show": "Show",
+      "default": "(default)",
+      "advanced": "Advanced (data)",
+      "advancedHelp": "The figure's whole data as JSON. Lists and groups are edited here.",
+      "jsonObject": "The data must be one { ... } object.",
+      "jsonBad": "That isn't valid JSON yet: {why}",
+      "display": "Display",
+      "print": "Print mode (black on white)",
+      "nts": "Mark \"Not drawn to scale\"",
+      "figure": "The figure",
+      "answers": "Question and answers",
+      "question": "Question",
+      "questionHint": "Write the question students answer about this figure.",
+      "worked": "Worked answers (OF.solve)",
+      "answerIs": "The answer is",
+      "pickAnswer": "Pick the answer…",
+      "noAnswers": "No worked answers for this figure",
+      "facts": "Everything about it",
+      "answersWait": "The answers appear as soon as the figure can be drawn. Oomba never draws a wrong figure.",
+      "pickHelp": "Pick which number answers your question, or press Randomize for a ready-made question.",
+      "noSolve": "This figure has no worked numbers to pick from.",
+      "hide": "Hide answer for students",
+      "hideWhat": "What to hide",
+      "hideAll": "Every measure",
+      "ofSays": "Oomba Figures says: {reason}",
+      "undoLast": "Undo my last change",
+      "backToExample": "Back to the example",
+      "add": "Add to worksheet",
+      "newSheet": "A new worksheet",
+      "qs": "{count, plural, one {# question} other {# questions}}",
+      "added": "Added to {title}.",
+      "openSheet": "Open the worksheet",
+      "saveBack": "Save to {title}",
+      "svg": "Download SVG",
+      "png": "Download PNG",
+      "copy": "Copy image",
+      "link": "Copy link",
+      "savePreset": "Save as my preset",
+      "presetName": "Name your preset",
+      "presetSaved": "Preset saved.",
+      "notice": "Downloads carry the note that what Oomba Academy adds is in the public domain (CC0); anything original you add is yours.",
+      "noGen": "No question generator for this figure yet: here is another example.",
+      "pngFailed": "The PNG couldn't be made. Try Download SVG.",
+      "copied": "Image copied.",
+      "copiedSvg": "Copied as SVG text.",
+      "copyFailed": "Couldn't copy. Try a download instead.",
+      "linkCopied": "Link copied.",
+      "why": {
+        "triangle": {
+          "t": "These sides cannot make a triangle",
+          "p": "Any two sides of a triangle must add up to more than the third, or the ends never meet."
+        },
+        "angles": {
+          "t": "These angles don't fit",
+          "p": "A triangle's angles add up to exactly 180°. Check the angles you gave."
+        },
+        "short": {
+          "t": "A side is too short",
+          "p": "With these numbers one side can never reach the other end. Make it longer or change an angle."
+        },
+        "agree": {
+          "t": "These measures disagree",
+          "p": "You gave more measures than the figure needs, and they don't agree. Leave one out."
+        },
+        "drawAs": {
+          "t": "Check \"Not drawn to scale\"",
+          "p": "Other proportions to draw only work with \"Not drawn to scale\" on, and the marks must be true in both."
+        },
+        "positive": {
+          "t": "A number must be more than zero",
+          "p": "Lengths, sizes and counts are more than zero."
+        },
+        "range": {
+          "t": "A number is out of range",
+          "p": "One of the numbers is too big or too small for this figure."
+        },
+        "extra": {
+          "t": "Too many measures",
+          "p": "This figure takes only some of these measures together. Leave one out."
+        },
+        "data": {
+          "t": "The data can't be read",
+          "p": "Check the Advanced (data) box."
+        },
+        "generic": {
+          "t": "This figure cannot be drawn",
+          "p": "Oomba never draws a wrong figure. Change the numbers so they fit together."
+        }
+      },
+      "f": {
+        "unit": "Unit",
+        "round": "Decimal places",
+        "mass": "Mass",
+        "angle": "Angle",
+        "speed": "Speed",
+        "height": "Height",
+        "width": "Width",
+        "length": "Length",
+        "radius": "Radius",
+        "value": "Value",
+        "min": "Lowest",
+        "max": "Highest",
+        "step": "Step",
+        "type": "Type",
+        "element": "Element"
+      },
+      "k": {
+        "area": "Area",
+        "perimeter": "Perimeter",
+        "volume": "Volume",
+        "surfaceArea": "Surface area",
+        "angles": "Angle",
+        "sides": "Side",
+        "total": "Total",
+        "mean": "Mean",
+        "median": "Median",
+        "range": "Range",
+        "interior": "Interior angle",
+        "value": "Value"
+      },
+      "hp": {
+        "sides": "The sides",
+        "angles": "The angles",
+        "heights": "The heights",
+        "value": "The value",
+        "image": "The image",
+        "electrons": "The electrons",
+        "values": "The values",
+        "reading": "The reading"
+      },
+      "draw": {
+        "modeLabel": "How to make the figure",
+        "type": "Type the measures",
+        "draw": "Draw it",
+        "title": "Draw it on the dot grid",
+        "size": "Grid size",
+        "sizeOpt": "{n} by {n}",
+        "clear": "Clear",
+        "help": {
+          "triangle": "Tap three dots to make a triangle. Drag a corner to move it.",
+          "quad": "Tap four dots in order around the shape. Drag a corner to move it.",
+          "grid": "Tap the dots in order around the shape, up to 10 corners. Drag a corner to move it."
+        },
+        "keys": "With a keyboard: the arrow keys move, Enter places a corner or picks one up, and then the arrow keys nudge it.",
+        "board": "Dot grid, {n} by {n}",
+        "corner": "Corner {name} at ({x}, {y})",
+        "placed": "{name} placed at ({x}, {y})",
+        "moved": "{name} moved to ({x}, {y})",
+        "picked": "{name} picked up. Use the arrow keys to move it, and Enter to put it down.",
+        "removed": "{name} removed",
+        "corners": "Corners",
+        "sides": "Sides",
+        "angles": "Angles",
+        "kind": "Type",
+        "perimeter": "Perimeter",
+        "area": "Area",
+        "sqUnits": "{area} square units",
+        "more": "{count, plural, one {Tap # more dot.} other {Tap # more dots.}}",
+        "filled": "Filled in from your drawing.",
+        "keep": "The figure below keeps your last good shape.",
+        "same": "Two corners are on the same dot. Drag one of them to another dot.",
+        "line": "Three corners are in a straight line, so they do not make a shape. Move one of them off the line.",
+        "cross": "Two sides cross each other. Move a corner so the sides only meet at the corners.",
+        "cannot": "Oomba Figures cannot draw this one. Try moving a corner.",
+        "isNot": "That shape is {is}, not {want}.",
+        "special": "That shape is {is}, and Oomba Figures draws it with its own editor.",
+        "open": {
+          "rectangle": "Open it in the Rectangle editor",
+          "parallelogram": "Open it in the Parallelogram editor",
+          "trapezoid": "Open it in the Trapezoid editor",
+          "kite": "Open it in the Kite editor",
+          "grid": "Plot it on a coordinate grid"
+        },
+        "a": {
+          "square": "a square",
+          "rectangle": "a rectangle",
+          "rhombus": "a rhombus",
+          "parallelogram": "a parallelogram",
+          "trapezoid": "a trapezoid",
+          "kite": "a kite",
+          "quad": "a quadrilateral with no special name",
+          "concave": "a concave quadrilateral"
+        },
+        "t": {
+          "square": "Square",
+          "rectangle": "Rectangle",
+          "rhombus": "Rhombus",
+          "parallelogram": "Parallelogram",
+          "trapezoid": "Trapezoid",
+          "isoTrapezoid": "Isosceles trapezoid",
+          "rightTrapezoid": "Right trapezoid",
+          "kite": "Kite",
+          "quad": "Quadrilateral",
+          "concave": "Concave quadrilateral",
+          "polygon": "{count, plural, one {Polygon with # side} other {Polygon with # sides}}"
+        },
+        "tri": {
+          "right": "Right",
+          "acute": "Acute",
+          "obtuse": "Obtuse",
+          "scalene": "Scalene",
+          "isosceles": "Isosceles",
+          "equilateral": "Equilateral"
+        },
+        "ex": {
+          "right": "Right triangle",
+          "isosceles": "Isosceles triangle",
+          "obtuse": "Obtuse triangle",
+          "pentagon": "Pentagon"
+        },
+        "examples": "Drawn on the dot grid",
+        "gridOut": "Also show it on a coordinate grid",
+        "gridTitle": "On a coordinate grid",
+        "addGrid": "Add the grid figure to a worksheet",
+        "drawInstead": "Draw it on a grid instead"
+      },
+      "choiceNote": "This is a multiple choice question. Its options and the right one are set in the worksheet.",
+      "history": "Undo and redo",
+      "undoTip": "Undo (Ctrl+Z)",
+      "redoTip": "Redo (Ctrl+Shift+Z)",
+      "undone": "Undone.",
+      "redone": "Redone.",
+      "moreLabel": "Presets: the examples, your own presets, save and delete",
+      "deletePresets": "Delete a preset…",
+      "deletePreset": "Delete",
+      "deletePresetQ": "Delete the preset \"{name}\"?",
+      "deletePresetText": "It goes from your presets for this kind of figure. Worksheets that used it keep their figures.",
+      "presetDeleted": "Preset deleted.",
+      "noPresets": "You have no presets for this kind of figure yet.",
+      "reuseLink": "What you may do with your figures",
+      "presetsBtn": "Presets"
+    },
+    "figures-sheet": {
+      "title": "Worksheet title",
+      "grade": "Grade",
+      "anyGrade": "Any grade",
+      "gradeN": "Grade {grade}",
+      "powerAi": "Power with AI",
+      "briefLabel": "Topic, grade, how many questions",
+      "briefHint": "Grade 7, area of rectangles and trapezoids, plus one box plot.",
+      "howMany": "Questions",
+      "draft": "Draft",
+      "budget": "Uses the AI budget. If it is resting, you get a starter set instead.",
+      "drafting": "Drafting your questions…",
+      "briefFirst": "Describe the worksheet in a few words first.",
+      "drafted": "{count, plural, one {# question drafted.} other {# questions drafted.}} Every figure was checked and every answer worked out by Oomba Figures.",
+      "resting": "AI is resting, here is a starter set ({count, plural, one {# question} other {# questions}}).",
+      "repaired": "{count, plural, one {# figure couldn't be drawn and was replaced.} other {# figures couldn't be drawn and were replaced.}}",
+      "dropped": "{count, plural, one {# question was left out.} other {# questions were left out.}}",
+      "addLabel": "Add a figure question",
+      "add": "Add",
+      "empty": "No questions yet. Add a figure question, or draft some with AI.",
+      "questionN": "Question {n}",
+      "questionHint": "Write the question…",
+      "answer": "Answer:",
+      "noAnswer": "No answer chosen yet: open it in the editor.",
+      "up": "Move up",
+      "down": "Move down",
+      "regen": "New numbers",
+      "edit": "Edit the figure",
+      "delete": "Delete",
+      "deleteQ": "Delete this question?",
+      "remove": "Delete worksheet",
+      "removeQ": "Delete this worksheet?",
+      "removeText": "Its questions go too. This can't be undone.",
+      "preview": "Print preview",
+      "paper": "Letter, black on white",
+      "studentSheet": "Student sheet",
+      "answerKey": "Answer key",
+      "previewEmpty": "The printable sheet shows here once there is a question.",
+      "print": "Print",
+      "printKey": "Print with answer key",
+      "assign": "Assign to class",
+      "assignTitle": "Assign to a class",
+      "assignClass": "Class",
+      "assignOpens": "Opens (optional)",
+      "assignDue": "Due (optional)",
+      "assignShow": "Show answers after the due date",
+      "assignShowHint": "Off by default. On: once the due date is over, students who handed in see the answers and worked lines.",
+      "assignSnapshot": "Students get the worksheet as it is now. Changes you make later don't change it.",
+      "assignGo": "Assign",
+      "assignCancel": "Cancel",
+      "assignEmpty": "Add questions first, then assign the worksheet.",
+      "assignNoClasses": "You don't teach a class yet. Make a class first, then assign.",
+      "assignDone": "Assigned to {class}.",
+      "assignSee": "See it as students do",
+      "assignProgress": "See progress",
+      "answerType": "Answer",
+      "typeNumber": "Number",
+      "typeChoice": "Multiple choice",
+      "options": "Options (mark the right one)",
+      "optionN": "Option {letter} of question {n}",
+      "rightN": "Option {letter} is the right answer",
+      "markRight": "The right answer",
+      "addOption": "Add option",
+      "removeOption": "Remove option {letter}",
+      "fromFigure": "The right option is worked out from the figure. Change an option or mark another one to choose it yourself.",
+      "needTwo": "Write at least 2 options.",
+      "needRight": "Mark the right option.",
+      "testAiTitle": "Draft a test",
+      "topicLabel": "Topic",
+      "topicHint": "For example: area of rectangles and triangles",
+      "subject": "Subject",
+      "anySubject": "Any subject",
+      "draftTest": "Draft the test",
+      "testBudget": "Built from the question generators, so you can deal new numbers for any question. Counts towards the AI limit; without AI a starter test is dealt.",
+      "byHand": "By hand: pick a subject, add figure questions, then set each figure and its answer.",
+      "checkFirst": "Check every question before you assign it.",
+      "topicFirst": "Type the test's topic first.",
+      "saveLesson": "Save to lesson",
+      "saveLessonHint": "Puts these questions in {title}. Nothing changes in the lesson until you save.",
+      "saveLessonAgain": "Saving again replaces the questions in {title}.",
+      "lessonStarted": "Students have started this step, so its questions stay as they are. Make a copy of the lesson to change them.",
+      "backToLesson": "Back to the lesson",
+      "subjects": "Subjects",
+      "swapLabel": "Swap the figure for",
+      "swap": "Swap figure",
+      "editN": "Edit the figure of question {n} ({kind})",
+      "regenN": "New numbers for question {n}",
+      "moreN": "More for question {n}",
+      "swapMenu": "Swap figure…",
+      "swapTitle": "Swap the figure of question {n}",
+      "swapHint": "The question gets a new figure of that kind, with its own question and answer. You can edit them after.",
+      "deleteText": "The question and its figure go. This cannot be undone.",
+      "movedTo": "Moved to question {n}.",
+      "removeTest": "Delete test",
+      "removeTestQ": "Delete this test?",
+      "removeLesson": "Delete these questions",
+      "removeLessonQ": "Delete these figure questions?",
+      "removeLessonText": "The lesson's Figure step keeps the questions it was last saved with. This cannot be undone."
     }
   },
   "favorites": {
@@ -3976,7 +4729,9 @@
       "build": "Build a game",
       "text": "Read or do",
       "question": "Answer a question",
-      "quiz": "Answer quiz questions"
+      "quiz": "Answer quiz questions",
+      "figures": "Answer figure questions",
+      "figureStep": "Figure questions"
     },
     "library": {
       "title": "Lesson library",
@@ -4055,7 +4810,14 @@
       "newGameLink": "Make a new game for students to play",
       "deleteWorkConfirm": "Delete this step? {n, plural, one {# student's work} other {# students' work}} on it will be deleted. This can't be undone.",
       "liveGames": "Live class games (you host them)",
-      "otherGames": "More games"
+      "otherGames": "More games",
+      "bodyFigures": "Instructions for students (optional)",
+      "figuresHint": "Next, the Figures builder opens: pick figures, set their numbers and answers, then Save to lesson.",
+      "editFigures": "Edit questions",
+      "printFigures": "Print",
+      "figuresStarted": "Students have started this step, so its questions stay as they are.",
+      "more": "More",
+      "figuresSaved": "Figure questions saved to the lesson."
     },
     "ai": {
       "button": "Draft with AI",
@@ -4134,7 +4896,9 @@
       "build": "Build your own game",
       "buildText": "A quiz game with 6 questions about {topic}",
       "exit": "Exit ticket",
-      "exitText": "In two or three sentences: what is the most important thing you learned about {topic} today?"
+      "exitText": "In two or three sentences: what is the most important thing you learned about {topic} today?",
+      "figures": "Figure questions",
+      "figuresText": "Answer the question under each figure."
     },
     "errors": {
       "notFound": "We couldn't find that, or you can't open it.",
@@ -11777,6 +12541,117 @@
         "howto": "Tap or drag a rod onto the board. Build trains of the same length.",
         "helpUse": "Tap a rod, then Turn, Copy or Delete it; arrows move it.\nShow trains builds both sides of the equation; fill in the box.\nThe longer rod's menu, at the row's end, picks 11 to 20.",
         "helpIdeas": "Which two rods make a train as long as the 10-rod?"
+      },
+      "pdf": {
+        "name": "PDF",
+        "desc": "Page through a PDF you upload, like a lesson plan or worksheet.",
+        "s": {
+          "doc": "PDF file",
+          "title": "Title"
+        },
+        "empty": "Upload a PDF to show it here.",
+        "upload": "Upload a PDF",
+        "uploading": "Uploading your PDF…",
+        "replace": "Change the PDF",
+        "note": "Up to 10 MB. Only you can open it, and it is never shown on student screens.",
+        "prev": "Previous page",
+        "next": "Next page",
+        "page": "Page {n} of {total}",
+        "loading": "Opening the PDF…",
+        "bad": "That PDF didn't open. Try another file.",
+        "gone": "This PDF is gone. Upload it again.",
+        "pages": "PDF",
+        "tooBig": "That PDF is too big. The limit is 10 MB."
+      },
+      "link": {
+        "name": "Link",
+        "desc": "A tile that opens a website in a new tab.",
+        "s": {
+          "title": "Title",
+          "url": "Web address"
+        },
+        "empty": "Add a title and a web address in this widget's settings.",
+        "opens": "Opens in a new tab",
+        "bad": "Use a web address that starts with http:// or https://",
+        "note": "Opens in a new tab. Never shown on student screens."
+      },
+      "stickers": {
+        "name": "Stickers",
+        "desc": "Put stickers anywhere on the board. Resize, turn and layer each one.",
+        "s": {
+          "k": "Sticker",
+          "x": "Across",
+          "y": "Down",
+          "size": "Size",
+          "r": "Turn",
+          "back": "Behind widgets"
+        },
+        "open": "Stickers",
+        "heading": "Stickers",
+        "search": "Search stickers",
+        "theme": "Theme",
+        "allThemes": "All themes",
+        "language": "Language",
+        "allLanguages": "All languages",
+        "shape": "Shape",
+        "allShapes": "All shapes",
+        "count": "{n, plural, one {# sticker} other {# stickers}}",
+        "none": "No stickers found for \"{q}\"",
+        "noneFilters": "No stickers match these filters.",
+        "clear": "Clear search",
+        "recent": "Recent",
+        "favorites": "Favorites",
+        "all": "All stickers",
+        "more": "Show more",
+        "star": "Add {name} to Favorites",
+        "unstar": "Remove {name} from Favorites",
+        "add": "Put {name} on the board",
+        "placed": "{name} is on the board.",
+        "hint": "Tap a sticker to put it on the board, or drag it there. Tap a sticker on the board to move, resize or turn it.",
+        "close": "Close stickers",
+        "loading": "Loading stickers…",
+        "failed": "The stickers didn't load. Try again.",
+        "full": "This board has {n} stickers, the most it can hold. Delete one first.",
+        "duplicate": "Duplicate",
+        "remove": "Delete",
+        "removed": "{name} deleted.",
+        "resize": "Drag to resize",
+        "rotate": "Drag to turn",
+        "role": "sticker",
+        "toolsFor": "Sticker tools: {name}",
+        "moved": "{name} moved.",
+        "sized": "{name} resized to {size}.",
+        "turned": "{name} turned to {deg} degrees.",
+        "th_oomba": "Oomba",
+        "th_praise": "Praise",
+        "th_classroom": "Classroom",
+        "th_animals-nature": "Animals and nature",
+        "th_maths-stem": "Math and STEM",
+        "th_seasons-holidays": "Seasons and holidays",
+        "th_food": "Food",
+        "th_sports-play": "Sports and play",
+        "th_space-weather": "Space and weather",
+        "th_music-arts": "Music and arts",
+        "th_transport": "Transportation",
+        "th_emotions": "Emotions",
+        "th_letters-numbers": "Letters and numbers",
+        "th_good-morning": "Good morning",
+        "th_praise-words": "Praise words",
+        "th_hello-welcome": "Hello and welcome",
+        "th_goodbye": "Goodbye",
+        "th_greetings": "Greetings",
+        "lang_English": "English",
+        "lang_Italian": "Italian",
+        "lang_Spanish": "Spanish",
+        "lang_French": "French",
+        "lang_German": "German",
+        "lang_Dutch": "Dutch",
+        "lang_Portuguese": "Portuguese",
+        "lang_Swedish": "Swedish",
+        "lang_Turkish": "Turkish",
+        "shape_rect": "Rounded",
+        "shape_circle": "Circle",
+        "shape_bubble": "Speech bubble"
       }
     },
     "push": {
@@ -11822,7 +12697,9 @@
       "feedAddress": "That isn't a calendar address. Paste the https:// or webcal:// link to an .ics calendar.",
       "feedTooMany": "This class has too many connected calendars. Disconnect one first.",
       "feedNotCalendar": "That address isn't a calendar (.ics) file. Check it's the iCal address, not the calendar's web page.",
-      "feedUnreachable": "We couldn't reach that calendar. Check the address and that the calendar is shared, then try again."
+      "feedUnreachable": "We couldn't reach that calendar. Check the address and that the calendar is shared, then try again.",
+      "pdf_tooBig": "That PDF is too big. The limit is 10 MB.",
+      "pdf_badType": "That file isn't a PDF."
     },
     "tools": {
       "send": "Send to students",
@@ -12062,6 +12939,634 @@
       "oombaSub": "Browse every Oomba game",
       "collectionEmpty": "Nothing in this collection yet",
       "allEmpty": "You haven't built a game yet."
+    }
+  },
+  "library": {
+    "title": "Story Library",
+    "lead": "Picture books to read on your own or to have read to you, with 3 questions at the end. {count} free stories.",
+    "grades": {
+      "gk": "Pre-K/K",
+      "g1": "Grade 1",
+      "g2": "Grade 2",
+      "g3": "Grade 3",
+      "g45": "Grades 4-5"
+    },
+    "gradesLabel": "US grade level",
+    "allGrades": "All grades",
+    "gradeWhy": "About the grade level",
+    "gradeNote": "The grade is Oomba's estimate of the US school grade this book suits, worked out from its text. It is not a Lexile, Guided Reading or Fountas & Pinnell level.",
+    "measures": "Words: {words} · Words a page: {perPage} · Words a sentence: {perSentence} · Syllables a word: {syllables} · Flesch-Kincaid grade: {fk} · Not on the Dolch or Fry sight-word lists: {notSight}%",
+    "meta": "{pages, plural, one {# page} other {# pages}} · 🔊 Read to me · {questions, plural, one {# question} other {# questions}}",
+    "words": "{count, plural, one {# word} other {# words}}",
+    "read": "Read",
+    "continue": "Keep reading (page {page})",
+    "assign": "Assign",
+    "state": {
+      "done": "Read · {right} of {total} right",
+      "quiz": "Questions waiting",
+      "reading": "Page {page} of {pages}"
+    },
+    "forClass": "Pick a story to assign to {class}.",
+    "backToClass": "Back to the class",
+    "searchLabel": "Search stories",
+    "searchPlaceholder": "Search stories",
+    "searchGo": "Search",
+    "found": "{count, plural, one {# story} other {# stories}}",
+    "none": "No stories found",
+    "noneText": "Try other words, or look at every grade.",
+    "footQuestions": "Each book lists its author, illustrator and translator. The questions at the end are written by Oomba, not part of the books.",
+    "glossary": "Words to know",
+    "glossaryNote": "Notes by Oomba to help with words from India.",
+    "aboutTitle": "About this book",
+    "aboutQuestions": "After the last page there are 3 questions. They are written by Oomba Academy and are not part of the book.",
+    "credits": {
+      "text": "Story: {names}",
+      "illustration": "Pictures: {names}",
+      "translation": "Translation: {names}",
+      "changes": "Oomba resized the pictures and shows the book one page at a time. Pratham Books does not endorse Oomba.",
+      "corrected": "Oomba corrected spelling and punctuation.",
+      "notes": "Author & publisher notes",
+      "factCorrected": "Oomba corrected a history fact.",
+      "original": "See the original book.",
+      "from": "Based on a book by {name}",
+      "changesBloom": "Oomba resized the pictures and shows the book one page at a time. Bloom Library, SIL Global and the book's publisher do not endorse Oomba.",
+      "changesBloomSA": "Oomba resized the pictures and shows the book one page at a time; these adapted pages are shared under the same license, {license}. Bloom Library, SIL Global and the book's publisher do not endorse Oomba.",
+      "originalBloom": "See the original book on Bloom Library.",
+      "publicDomain": "Public domain",
+      "firstPublished": "First published in {year} ({edition}).",
+      "changesClassic": "Oomba split the story into pages and resized the pictures. The words are the author's own.",
+      "changesClassicCut": "Oomba split the story into pages, resized the pictures and left out one line. All the other words are the author's own."
+    },
+    "readToMe": "Read to me",
+    "pagesLabel": "Pages",
+    "back": "Back",
+    "next": "Next",
+    "toQuestions": "Questions",
+    "pageOf": "Page {page} of {pages}",
+    "finished": "You finished “{title}”",
+    "questionsLead": "{count, plural, one {# question} other {# questions}} about the story",
+    "readAgain": "Read it again",
+    "backTo": "Back to {name}",
+    "moreBooks": "More stories",
+    "needJs": "The questions need JavaScript turned on.",
+    "errors": {
+      "readFirst": "Read the story to the last page first.",
+      "alreadyAssigned": "This story is already assigned to {class}.",
+      "pickStory": "Pick a story from the library."
+    },
+    "assignTitle": "Assign “{title}”",
+    "assignNote": "Students see it on the class page. They read it, answer 3 questions, and you see who read it and their scores under Progress.",
+    "preview": "Read it first",
+    "kindStory": "Story",
+    "findStories": "Story Library",
+    "door": {
+      "title": "Story Library",
+      "kids": "{count} picture books. Read them, or tap Read to me!",
+      "staff": "{count} leveled picture books with questions. Assign one to a class."
+    },
+    "results": {
+      "withAloud": "with Read to me",
+      "onOwn": "on their own",
+      "questionsLeft": "Read it, questions left",
+      "pageOf": "page {page} of {pages}",
+      "usedAloud": "Used Read to me",
+      "notStarted": "not started",
+      "qN": "Question {n}",
+      "summary": "{started} of {total} started · {finished} finished",
+      "readTogether": "Read it together",
+      "assignAnother": "Assign another story",
+      "read": "Read",
+      "questions": "Questions",
+      "rightOf": "{right} / {total}",
+      "firstTry": "right on the first try",
+      "key": "Questions count when right on the first try (✓ right, ✗ needed another try). A student who tries again can still finish.",
+      "byQuestion": "The questions",
+      "hardest": "Question {n} was the hardest for the class.",
+      "answer": "Answer: {answer}",
+      "page": "page {page}",
+      "missed": "{count} missed it the first time"
+    },
+    "footSources": "Stories and pictures: Pratham Books (StoryWeaver) and the authors and publishers on Bloom Library, each book under its own open license, shown with the book.",
+    "glossaryNoteAll": "Notes by Oomba to help with words children may not know.",
+    "footCredit": "Stories and pictures: Pratham Books, StoryWeaver. License:",
+    "wish": {
+      "label": "What would you like to read today?",
+      "placeholder": "dinosaurs, a funny story, something about space...",
+      "go": "Find books",
+      "busy": "Looking...",
+      "heading": "Books for you",
+      "back": "All books",
+      "tryOther": "Let's try different words. What would you like a story to be about?",
+      "none": "We could not find a book about that yet. Here are some books lots of readers enjoy.",
+      "found": "We found {count, plural, one {# book} other {# books}} for you.",
+      "empty": "Type what you would like to read about.",
+      "error": "Something went wrong. Please try again."
+    },
+    "sources": {
+      "classics": "Classics"
+    },
+    "footClassics": "Classics: old books in the public domain, with their original pictures."
+  },
+  "manip": {
+    "title": "Math manipulatives",
+    "loading": "Loading the math manipulatives…",
+    "class": {
+      "banner": "Your teacher started a math board:",
+      "join": "Join"
+    },
+    "errors": {
+      "notFound": "That isn't here.",
+      "badTool": "That tool isn't one of the manipulatives.",
+      "badState": "That board couldn't be read.",
+      "tooBig": "That board is too big to save.",
+      "words": "Some words on the board aren't allowed. Change them and try again.",
+      "personal": "Leave out phone numbers, emails, links and codes, then try again.",
+      "tooMany": "You have a lot of saved boards. Delete some first.",
+      "noCode": "No board has that code. Check it and try again.",
+      "ended": "This session has ended.",
+      "noBoard": "Pick one of your saved boards.",
+      "otherTool": "That board is for another tool. Push a board made with this session's tool.",
+      "brief": "Describe the lesson in a few words first.",
+      "names": "Leave students' names out of the description: names never go to the AI.",
+      "aiFailed": "The AI couldn't draft that lesson just now. Try again in a moment.",
+      "slow": "That's a lot of hands. Wait a moment and try again.",
+      "checkSlow": "You've checked a lot. Wait a minute, look again, then check.",
+      "noAnswers": "There are no answers to check on this board.",
+      "noTitle": "Type a name first.",
+      "notEnded": "End the room before you delete it."
+    }
+  },
+  "figures": {
+    "title": "Figures",
+    "loading": "Loading the figures…",
+    "crumbs": "You are here",
+    "tools": {
+      "label": "Teaching tools",
+      "manipulatives": "Manipulatives",
+      "figures": "Figures"
+    },
+    "subjects": {
+      "math": "Math",
+      "data": "Data and statistics",
+      "physics": "Physics",
+      "chem": "Chemistry",
+      "biology": "Biology",
+      "economics": "Economics"
+    },
+    "grades": {
+      "K-2": "K-2",
+      "3-5": "Grades 3-5",
+      "6-8": "Grades 6-8",
+      "9-12": "Grades 9-12"
+    },
+    "menu": {
+      "testing": "Testing: only you can see this",
+      "pitch": "Exact, to-scale figures for worksheets, tests and slides. Print-ready, with the answers worked out.",
+      "buildTitle": "Build a worksheet",
+      "buildText": "Pick figures by hand, or describe what you need and let AI draft the questions. Every number is checked so each figure can really be drawn.",
+      "draftAi": "Draft with AI",
+      "scratch": "Start from scratch",
+      "mine": "My worksheets",
+      "noSheets": "No worksheets yet. The ones you build show up here.",
+      "questions": "{count, plural, one {# Q} other {# Qs}}",
+      "gradeOf": "Grade {grade}",
+      "edited": "edited {date}",
+      "subjects": "Subjects",
+      "all": "All figures",
+      "soon": "Coming soon",
+      "grades": "Grades",
+      "search": "Search the figures",
+      "searchHint": "Search the figures, like cylinder or box plot",
+      "count": "{count, plural, one {# figure} other {# figures}}",
+      "nothing": "No figures match. Try another word or grade.",
+      "buildTest": "Build a test",
+      "buildTestText": "A whole test of figure questions, drafted with AI or built by hand.",
+      "isTest": "Test"
+    },
+    "sheet": {
+      "newTitle": "New worksheet",
+      "crumb": "Worksheet builder",
+      "untitled": "Untitled worksheet",
+      "untitledTest": "Untitled test",
+      "newTest": "New test",
+      "crumbTest": "Test builder",
+      "crumbLesson": "Figure questions"
+    },
+    "editor": {
+      "example": "Example {n}"
+    },
+    "print": {
+      "figure": "Figure for question {n}",
+      "keyTag": "Answer key",
+      "keyTitle": "{title}: answer key",
+      "name": "Name",
+      "date": "Date",
+      "made": "Made with Oomba Academy",
+      "noQuestion": "Look at the figure.",
+      "noAnswer": "No answer chosen yet",
+      "crumb": "Print",
+      "sheetOnly": "Student sheet",
+      "withKey": "With the answer key",
+      "print": "Print",
+      "options": "Options",
+      "rightOne": "(the right answer)"
+    },
+    "errors": {
+      "notFound": "That isn't here.",
+      "badKind": "That isn't one of the figures.",
+      "badData": "That figure's data couldn't be read.",
+      "tooBig": "That figure is too big to save.",
+      "words": "Some words aren't allowed. Change them and try again.",
+      "personal": "Leave out phone numbers, emails, links and codes, then try again.",
+      "cannotDraw": "This figure cannot be drawn with these numbers. Change them and try again.",
+      "tooMany": "You have a lot saved already. Delete some first.",
+      "fullSheet": "This worksheet is full. Start a new one.",
+      "noGen": "This figure has no question generator yet.",
+      "name": "Give it a name first.",
+      "brief": "Describe the worksheet in a few words first.",
+      "names": "Leave students' names out of the description: names never go to the AI.",
+      "sameChoices": "Two options are the same. Make each one different.",
+      "topic": "Type what the test is about first."
+    },
+    "kinds": {
+      "numberLine": {
+        "name": "Number line",
+        "desc": "Numbers, intervals and points on a line"
+      },
+      "triangle": {
+        "name": "Triangle",
+        "desc": "Any triangle from three measures"
+      },
+      "rectangle": {
+        "name": "Rectangle",
+        "desc": "Rectangles and squares"
+      },
+      "parallelogram": {
+        "name": "Parallelogram",
+        "desc": "Parallelograms and rhombi, with heights"
+      },
+      "trapezoid": {
+        "name": "Trapezoid",
+        "desc": "Trapezoids: any, isosceles or right"
+      },
+      "kite": {
+        "name": "Kite",
+        "desc": "Kites with their equal sides marked"
+      },
+      "regularPolygon": {
+        "name": "Regular polygon",
+        "desc": "Regular polygons with apothem and radius"
+      },
+      "angles": {
+        "name": "Angles",
+        "desc": "Angles between rays"
+      },
+      "parallelLines": {
+        "name": "Parallel lines and a transversal",
+        "desc": "Parallel lines cut by a transversal"
+      },
+      "segmentAddition": {
+        "name": "Segment addition",
+        "desc": "Segment addition with algebra"
+      },
+      "circle": {
+        "name": "Circle",
+        "desc": "Circles with chords, tangents and angles"
+      },
+      "compositeShape": {
+        "name": "Composite shape",
+        "desc": "Shapes made of simpler shapes"
+      },
+      "grid": {
+        "name": "Coordinate grid",
+        "desc": "Points, lines and transformations on a grid"
+      },
+      "protractor": {
+        "name": "Protractor",
+        "desc": "Read an angle on a protractor"
+      },
+      "prism": {
+        "name": "Prism",
+        "desc": "Prisms and cubes in 3D"
+      },
+      "cylinder": {
+        "name": "Cylinder",
+        "desc": "Cylinders in 3D"
+      },
+      "pyramid": {
+        "name": "Pyramid",
+        "desc": "Pyramids in 3D"
+      },
+      "cone": {
+        "name": "Cone",
+        "desc": "Cones in 3D"
+      },
+      "sphere": {
+        "name": "Sphere",
+        "desc": "Spheres and hemispheres"
+      },
+      "net": {
+        "name": "Net",
+        "desc": "Nets that fold into solids"
+      },
+      "mappingDiagram": {
+        "name": "Mapping diagram",
+        "desc": "Inputs mapped to outputs"
+      },
+      "barGraph": {
+        "name": "Bar graph",
+        "desc": "Bar graphs, double and stacked"
+      },
+      "dotPlot": {
+        "name": "Dot plot",
+        "desc": "Dot plots of a data set"
+      },
+      "histogram": {
+        "name": "Histogram",
+        "desc": "Histograms with equal or unequal classes"
+      },
+      "boxPlot": {
+        "name": "Box plot",
+        "desc": "Box plots with quartiles"
+      },
+      "scatterPlot": {
+        "name": "Scatter plot",
+        "desc": "Scatter plots with a line of best fit"
+      },
+      "stemAndLeaf": {
+        "name": "Stem-and-leaf plot",
+        "desc": "Stem-and-leaf plots"
+      },
+      "pieChart": {
+        "name": "Pie chart",
+        "desc": "Pie charts with angles and percents"
+      },
+      "cumulativeFrequency": {
+        "name": "Cumulative frequency",
+        "desc": "Cumulative frequency graphs"
+      },
+      "normalCurve": {
+        "name": "Normal curve",
+        "desc": "Normal curves with shaded regions"
+      },
+      "treeDiagram": {
+        "name": "Tree diagram",
+        "desc": "Probability tree diagrams"
+      },
+      "vennDiagram": {
+        "name": "Venn diagram",
+        "desc": "Venn diagrams with two or three sets"
+      },
+      "twoWayTable": {
+        "name": "Two-way table",
+        "desc": "Two-way tables with totals"
+      },
+      "tableOfValues": {
+        "name": "Table of values",
+        "desc": "Tables of values from a rule"
+      },
+      "freeBody": {
+        "name": "Free-body diagram",
+        "desc": "The forces on an object"
+      },
+      "vectors": {
+        "name": "Vectors",
+        "desc": "Vectors and their resultant"
+      },
+      "inclinedPlane": {
+        "name": "Inclined plane",
+        "desc": "A block on a slope, with its forces"
+      },
+      "pulley": {
+        "name": "Pulleys",
+        "desc": "Pulleys and hanging masses"
+      },
+      "rays": {
+        "name": "Ray diagram",
+        "desc": "Ray diagrams for lenses and mirrors"
+      },
+      "circuit": {
+        "name": "Circuit diagram",
+        "desc": "Circuits in series and parallel"
+      },
+      "motionGraph": {
+        "name": "Motion graph",
+        "desc": "Distance, velocity and acceleration graphs"
+      },
+      "motionMap": {
+        "name": "Motion map",
+        "desc": "Motion maps with dots and arrows"
+      },
+      "projectile": {
+        "name": "Projectile motion",
+        "desc": "A projectile's path, to scale"
+      },
+      "waves": {
+        "name": "Waves",
+        "desc": "Transverse and longitudinal waves"
+      },
+      "reading": {
+        "name": "Reading a scale",
+        "desc": "Thermometers, cylinders, rulers and calipers"
+      },
+      "bohr": {
+        "name": "Bohr model",
+        "desc": "Bohr models of atoms and ions"
+      },
+      "orbitals": {
+        "name": "Orbital diagram",
+        "desc": "Orbital box diagrams"
+      },
+      "lewis": {
+        "name": "Lewis structure",
+        "desc": "Lewis structures of molecules"
+      },
+      "halfLife": {
+        "name": "Half-life",
+        "desc": "Radioactive decay curves"
+      },
+      "titration": {
+        "name": "Titration curve",
+        "desc": "Titration curves"
+      },
+      "massSpectrum": {
+        "name": "Mass spectrum",
+        "desc": "Isotope peaks and relative atomic mass"
+      },
+      "heatingCurve": {
+        "name": "Heating and cooling curve",
+        "desc": "Temperature as heat goes in or out, to scale"
+      },
+      "energyProfile": {
+        "name": "Potential energy diagram",
+        "desc": "Reaction energy profiles with Ea and ΔH"
+      },
+      "nuclide": {
+        "name": "Nuclide notation",
+        "desc": "Isotope, ion and particle symbols"
+      },
+      "lineSpectrum": {
+        "name": "Line spectrum",
+        "desc": "Emission and absorption lines of elements"
+      },
+      "photoelectron": {
+        "name": "Photoelectron spectrum",
+        "desc": "One peak per sublevel, H to Xe"
+      },
+      "particles": {
+        "name": "Particle diagram",
+        "desc": "Atoms, ions and molecules in a box or a lattice"
+      },
+      "dotCross": {
+        "name": "Dot-and-cross diagram",
+        "desc": "Shared and transferred electrons in shells"
+      },
+      "skeletal": {
+        "name": "Organic structures",
+        "desc": "Skeletal, condensed and full structural formulas"
+      },
+      "energyLevels": {
+        "name": "Atomic energy levels",
+        "desc": "Electron transitions, wavelengths and series"
+      },
+      "populationGrowth": {
+        "name": "Population growth",
+        "desc": "J- and S-curves, K and the growth phases"
+      },
+      "predatorPrey": {
+        "name": "Predator and prey",
+        "desc": "Population cycles, the predators a step behind"
+      },
+      "enzymeActivity": {
+        "name": "Enzyme activity",
+        "desc": "Rate against temperature, pH or substrate"
+      },
+      "photosynthesis": {
+        "name": "Photosynthesis rate",
+        "desc": "Light, CO₂ and temperature as limiting factors"
+      },
+      "punnett": {
+        "name": "Punnett square",
+        "desc": "Crosses with the ratios worked out"
+      },
+      "pedigree": {
+        "name": "Pedigree",
+        "desc": "Families that fit an inheritance pattern"
+      },
+      "proteinSynthesis": {
+        "name": "Protein synthesis",
+        "desc": "DNA to mRNA to amino acids, with blanks"
+      },
+      "gel": {
+        "name": "Gel electrophoresis",
+        "desc": "Bands to scale against a DNA ladder"
+      },
+      "osmosis": {
+        "name": "Osmosis",
+        "desc": "Cells, U-tubes and bags in solutions"
+      },
+      "supplyDemand": {
+        "name": "Supply and demand",
+        "desc": "Shifts, price controls, taxes and surplus"
+      },
+      "moneyMarket": {
+        "name": "Money markets",
+        "desc": "Money, loanable funds and reserves"
+      },
+      "businessCycle": {
+        "name": "Business cycle",
+        "desc": "Peaks, troughs and phases around a trend"
+      },
+      "phillipsCurve": {
+        "name": "Phillips curve",
+        "desc": "Short and long run, shifts and expectations"
+      },
+      "possibilitiesCurve": {
+        "name": "Production possibilities",
+        "desc": "Trade-offs, growth and comparative advantage"
+      },
+      "adAs": {
+        "name": "AD-AS model",
+        "desc": "Output gaps, shocks and policy"
+      },
+      "costCurves": {
+        "name": "Cost and revenue curves",
+        "desc": "MC, ATC, profit and market structures"
+      }
+    },
+    "step": {
+      "answerLabel": "Your answer to question {n}",
+      "right": "Right",
+      "notRight": "Not right",
+      "answer": "Answer:",
+      "teacherAnswer": "Answer key:",
+      "score": "You got {right} of {total} right ({pct}%).",
+      "answersLater": "Your teacher will show the answers after the due date.",
+      "noAnswers": "Your teacher has the answers and may go over them with the class.",
+      "teacherNote": "This is what students see, with the answer key under each question for you.",
+      "showOnNote": "Answers show to students after the due date.",
+      "showOffNote": "Answers never show to students.",
+      "handInHint": "Save as you go. When you hand in, your answers are marked and can't be changed.",
+      "answersReady": "The answers are ready. Hand in your work to see them.",
+      "save": "Save",
+      "handIn": "Hand in",
+      "handInConfirm": "Hand in your answers? You can't change them after.",
+      "saved": "Saved",
+      "handedIn": "Handed in",
+      "showIsOn": "Answers will show after the due date",
+      "showIsOff": "Answers are hidden from students",
+      "errors": {
+        "handedIn": "You've already handed this in.",
+        "empty": "Write at least one answer first."
+      },
+      "showAnswers": "Show answers after the due date",
+      "showAnswersHint": "Off by default. On: once the due date is over, each student who handed in sees the answers and worked lines.",
+      "showNeedsDue": "Set a due date for this lesson to show answers after it.",
+      "handedInCount": "Handed in: {done} of {total}",
+      "questionN": "Question {n}",
+      "rightOf": "{right} of {total} right",
+      "answersTable": "Each student's answers",
+      "noneYet": "Nobody has handed in yet.",
+      "questions": "{count, plural, one {# figure question} other {# figure questions}}",
+      "sign": "Make it negative or positive",
+      "signLabel": "Switch your answer to question {n} between negative and positive",
+      "rightOption": "Right answer"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Add a question before you assign this worksheet.",
+        "noAnswer": "Every question needs an answer before you assign it. Choose one for question {list} in the editor.",
+        "noClass": "Pick one of your classes.",
+        "badDate": "That date doesn't look right.",
+        "dueBeforeOpen": "The due date is before the open date.",
+        "needsDue": "Set a due date to show the answers after it.",
+        "started": "Students have started this step, so its questions stay as they are. Make a copy of the lesson to change them."
+      }
+    },
+    "terms": {
+      "title": "Reusing your figures",
+      "crumb": "Reuse terms",
+      "lead": "Every figure you make in Figures is free for you to use. Here is what that means, in plain words.",
+      "canTitle": "What you can do",
+      "can1": "Use your figures in class, on worksheets and tests, in slides and on websites.",
+      "can2": "Copy, print and share them with anyone: students, families and other teachers.",
+      "can3": "Change them: crop them, add labels, or build them into your own materials.",
+      "can4": "Use them in materials you publish or sell.",
+      "can5": "Do all of this without asking us and without giving credit. A mention is welcome, never required.",
+      "noticeTitle": "The note inside the file",
+      "noticeText": "Every SVG or PNG you download or copy carries this note, written into the file itself, where image programs and search engines look for it. It is in English so it reads the same everywhere:",
+      "noticeMeans": "It means Oomba Academy gives up any rights it has in its part of the figure (the drawing, the layout and the labels it makes), so anyone may reuse that part. You may keep the note or take it out.",
+      "cc0Title": "What CC0 means",
+      "cc0Text": "CC0 1.0 is a public domain dedication from Creative Commons. For our part of a figure there are no conditions at all: no credit, no license to follow, anywhere in the world, as far as the law allows.",
+      "cc0Link": "Read CC0 1.0 on the Creative Commons website",
+      "yoursTitle": "What stays yours",
+      "yoursText": "Anything original you add is yours: your own question, your own labels and data, and your own drawings. Whether others may reuse those parts is up to you.",
+      "careTitle": "Good to know",
+      "care1": "Check a figure before you use it. We check figures carefully, but we cannot promise that every figure is right for every use.",
+      "care2": "Keep students' names and personal details out of figures you share.",
+      "care3": "These terms are about the figures you export. The rest of Oomba Academy follows the site's own terms.",
+      "siteTerms": "Read the site's terms",
+      "back": "Back to Figures"
     }
   }
 }

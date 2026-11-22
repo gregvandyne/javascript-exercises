@@ -47,10 +47,10 @@
       "schools": "給學校"
     },
     "build": {
-      "ready": "✨ 你的遊戲「{title}」做好了！<a href=\"{href}\">打開看看</a>",
-      "question": "💬 小幫手有個關於「{title}」的問題。<a href=\"{href}\">打開看看</a>",
-      "stopped": "⚠️「{title}」還沒做完就停下來了。<a href=\"{href}\">打開來繼續做</a>",
-      "many": "✨ 你有幾個遊戲收到小幫手的新消息。<a href=\"{href}\">看看我的遊戲</a>"
+      "ready": "你的遊戲「{title}」做好了！<a href=\"{href}\">打開看看</a>",
+      "question": "小幫手有個關於「{title}」的問題。<a href=\"{href}\">打開看看</a>",
+      "stopped": "「{title}」還沒做完就停下來了。<a href=\"{href}\">打開來繼續做</a>",
+      "many": "你有幾個遊戲收到小幫手的新消息。<a href=\"{href}\">看看我的遊戲</a>"
     },
     "shortPasswordGrownup": "密碼少於 {min} 個字元。請<a href=\"{href}\">改用較長的密碼</a>。"
   },
@@ -1108,6 +1108,11 @@
         "li5": "建立帳號之前，大人會閱讀一份關於我們保存哪些資料的通知，並勾選確認已閱讀，且自己是孩子的家長或法定監護人。我們會保存這項紀錄：時間，以及通知的版本。這不是兒童隱私法規下的家長同意查核，我們也不會把它當成家長同意查核。付費購買方案也不是。",
         "li9": "大人可以在家庭頁面上查看這些數字並刪除帳號：孩子製作、撰寫和上傳的所有內容都會立即刪除。我們會保存一筆簡短的紀錄，記下這個帳號曾經存在以及由誰建立；原本的使用者名稱會保留 90 天，讓其他人無法使用；孩子以前待過的班級會保留班級自己的紀錄。如果孩子目前在學校的班級裡，需要先由老師將孩子從班級移除。",
         "li7": "保存多久：只要帳號存在就會保存。目前還沒有自動刪除的期限。"
+      },
+      "manip": {
+        "h": "課堂上的數學教具",
+        "p1": "<b>即時課堂：</b>老師開設數學教具即時課堂時，每位學生在其中的板面（教具、便利貼、文字和答案）會保留給老師，並在課堂結束 30 天後刪除。學生指向的位置（游標）和舉手不會被儲存。",
+        "p2": "<b>用 AI 準備板面：</b>老師可以描述一堂課，讓 AI 為它準備板面。只有老師的描述會傳送給我們的 AI 供應商 Anthropic。學生的作品和姓名絕不會被傳送。"
       }
     }
   },
@@ -1186,7 +1191,10 @@
     },
     "makeLike": "做一個像這樣的遊戲",
     "makeLikeShort": "做一個類似的",
-    "grownupBuilder": "大人製作者"
+    "grownupBuilder": "大人製作者",
+    "sets": {
+      "copyOf": "{title} 的副本"
+    }
   },
   "play": {
     "backTo": "回到 {title}",
@@ -1480,10 +1488,10 @@
     "rename": "改名",
     "delete": "刪除",
     "status": {
-      "building": "🛠️ 製作中…",
-      "ready": "✨ 做好了",
-      "question": "💬 有問題要問",
-      "stopped": "⚠️ 停下來了"
+      "building": "製作中…",
+      "ready": "做好了",
+      "question": "有問題要問",
+      "stopped": "停下來了"
     }
   },
   "studio": {
@@ -2493,8 +2501,8 @@
           "learn": "每次做完，應用程式會自己玩遊戲大約 20 秒：按鍵、點按、滑動，檢查分數有沒有變，有沒有東西壞掉。"
         }
       },
-      "resumed": "🔄 伺服器重新啟動了，所以小幫手從剛才的地方繼續做。",
-      "resumedV": "🔄 伺服器重新啟動了，所以小幫手從版本 {v} 繼續做。",
+      "resumed": "伺服器重新啟動了，所以小幫手從剛才的地方繼續做。",
+      "resumedV": "伺服器重新啟動了，所以小幫手從版本 {v} 繼續做。",
       "stopped": {
         "restart": "我們的伺服器重新啟動時，小幫手停下來了。它做好的東西都已經存好。",
         "ai": "我們的伺服器重新啟動時，小幫手停下來了，而 AI 小幫手現在正在休息。它做好的東西都已經存好。"
@@ -2551,7 +2559,7 @@
       },
       "stillWorking": "等一下，小幫手還在工作喔！",
       "resting": {
-        "text": "😴 AI 小幫手正在休息，會在{when}回來。你的遊戲和小幫手訊息都保存好了，到時候再來吧！",
+        "text": "AI 小幫手正在休息，會在{when}回來。你的遊戲和小幫手訊息都保存好了，到時候再來吧！",
         "today": "今天 {time}",
         "tomorrow": "明天 {time}",
         "date": "{date} {time}"
@@ -3250,7 +3258,7 @@
       "editN": "編輯第 {n} 題",
       "add": "新增題目",
       "copyN": "複製第 {n} 題",
-      "editTitle": "✏️ 第 {n} 題，共 {total} 題",
+      "editTitle": "第 {n} 題，共 {total} 題",
       "kind": {
         "reading": "讀刻度",
         "thermometer": "溫度計",
@@ -3329,6 +3337,487 @@
       "genWorkAns": "答案是 {v}{u}。",
       "gVar": "圖上的數字 {x}",
       "gDigits": "每個數的位數"
+    },
+    "library": {
+      "pageOf": "第{page}頁，共{pages}頁",
+      "backToQuestions": "回到問題",
+      "toQuestions": "問題",
+      "next": "下一頁",
+      "stop": "停止",
+      "readToMe": "讀給我聽",
+      "answered": "你已經回答過了。",
+      "readQuestion": "讀給我聽",
+      "readFirst": "請先把故事讀到最後一頁。",
+      "right": "答對了！",
+      "tryAgain": "再試一次！看看第{page}頁。",
+      "lookAt": "看第{page}頁",
+      "doneMsg": "完成了！第一次就答對{total}題中的{right}題。讀得真好！",
+      "doneShort": "完成了！讀得真好！",
+      "pagesOf": "第 {from}-{to} 頁，共 {pages} 頁"
+    },
+    "manip": {
+      "board": {
+        "pieceHint": "點一下積木就能選取，拖曳就能移動。長按、按右鍵或按 Shift+F10 可以看到它的動作。便利貼可以拖到任何地方；點一下就能打字。"
+      },
+      "wheel": {
+        "menu": "{label} 的動作",
+        "copy": "複製",
+        "fill": "填滿",
+        "rotate": "旋轉",
+        "flip": "翻面",
+        "break": "拆成 10 個",
+        "lock": "鎖定",
+        "unlock": "解鎖",
+        "delete": "刪除",
+        "deleted": "已刪除 {label}",
+        "undo": "復原",
+        "lockedHint": "已鎖定。長按即可解鎖。",
+        "pieceLocked": "積木 {label}，已鎖定",
+        "objLocked": "{name}，已鎖定"
+      },
+      "text": {
+        "move": "拖曳以移動這段文字",
+        "resize": "拖曳以調整這個方框的大小",
+        "smaller": "文字變小",
+        "bigger": "文字變大"
+      },
+      "boards": {
+        "title": "我的白板",
+        "none": "你正在使用的白板會自動儲存並顯示在這裡。用「另存為範本」保留一個全新的起點。",
+        "templates": "範本",
+        "templatesSub": "每次都開啟新的副本",
+        "recent": "最近的白板",
+        "recentSub": "邊做邊儲存",
+        "code": "代碼 {code}",
+        "edited": "{when} 編輯",
+        "aiDraft": "AI 草稿，{when} 完成",
+        "roomLive": "即時教室 · {klass} · {n, plural, other {# 位學生}}",
+        "roomEnded": "即時教室 · {klass} · {when} 結束 · {n, plural, other {保留 # 位學生的格子}}",
+        "live": "進行中",
+        "new": "新",
+        "more": "{title} 的更多選項",
+        "start": "用它開啟即時教室",
+        "rename": "重新命名",
+        "duplicate": "複製一份",
+        "reopen": "重新開啟教室",
+        "deleteConfirm": "要刪除「{title}」嗎？刪除後無法復原。",
+        "deleteRoom": "要刪除教室「{title}」和裡面每位學生的格子嗎？刪除後無法復原。",
+        "pickClass": "請選擇這間教室的班級，然後開始。"
+      },
+      "share": {
+        "save": "另存為範本"
+      },
+      "draft": {
+        "progress": "正在準備你的白板",
+        "drafting": "準備中…",
+        "quote": "「{brief}」",
+        "leave": "你可以關閉或重新整理這個頁面。草稿會在我們的伺服器上繼續進行，完成後會出現在「我的白板」。",
+        "eta": {
+          "under": "通常不到一分鐘",
+          "about": "{n, plural, other {通常大約 # 分鐘}}",
+          "guessUnder": "常常不到一分鐘",
+          "guess": "{n, plural, other {大約 # 分鐘}}",
+          "longer": "比平常久一點",
+          "soFar": "已經 {time}"
+        },
+        "step": {
+          "check": {
+            "now": "正在檢查文字裡有沒有學生姓名",
+            "done": "已檢查：文字裡沒有學生姓名"
+          },
+          "ai": {
+            "now": "AI 正在挑選題目",
+            "done": "AI 已挑好題目"
+          },
+          "build": {
+            "now": "正在排列白板和步驟",
+            "done": "白板和步驟已排好"
+          },
+          "save": {
+            "now": "正在存到「我的白板」",
+            "done": "已存到「我的白板」"
+          }
+        },
+        "away": "你的 AI 草稿「{title}」在你離開時完成了。",
+        "awayN": "{n, plural, other {# 題}}和{steps, plural, other {# 個步驟}}。",
+        "inBoards": "已儲存在「我的白板」。",
+        "use": "放到我的白板上",
+        "dismiss": "關閉",
+        "failedAway": "{tool} 的 AI 草稿沒能完成。",
+        "failed": "草稿沒能完成。",
+        "retry": "再試一次",
+        "err": {
+          "aiFailed": "AI 現在無法完成草稿。你的文字還在：等一下再試一次。",
+          "restart": "準備草稿時伺服器重新啟動了。你的文字還在：再試一次。",
+          "names": "請不要在說明裡寫學生姓名：姓名絕不會傳給 AI。",
+          "words": "說明裡有些字不被允許。請修改後再試一次。",
+          "personal": "請拿掉電話號碼、電子郵件、連結和代碼，然後再試一次。",
+          "other": "出了點問題。等一下再試一次。"
+        }
+      },
+      "save": {
+        "name": "範本名稱",
+        "what": "範本是一個全新的起點：開啟它，或用它開啟教室，都會得到一份乾淨的副本。這個白板會邊做邊繼續儲存。",
+        "go": "儲存",
+        "cancel": "取消",
+        "done": "已另存為範本「{title}」。代碼 {code}",
+        "savedAt": "{time} 已儲存",
+        "notYet": "還沒儲存。正在重試…"
+      },
+      "pv": {
+        "traded": "用 {n} × {from} 換成 {m} × {to}。",
+        "broke": "{from} 變成 {n} × {to}。",
+        "moved": "{label} 移到 {col} 欄。",
+        "needTen": "需要 10 個才能交換",
+        "count": "{col} 有 {n} 個"
+      }
+    },
+    "manip-room": {
+      "actionsFor": "{label} 的動作",
+      "teacherLock": "老師鎖定了這個。",
+      "reopen": "重新開啟教室",
+      "reopened": "教室重新開啟了。每位學生都回到自己的格子。"
+    },
+    "figures-editor": {
+      "undo": "復原",
+      "redo": "重做",
+      "examples": "範例",
+      "mine": "我的預設",
+      "randomize": "隨機",
+      "controls": "圖形設定",
+      "measures": "尺寸",
+      "leaveEmpty": "填入你知道的尺寸，其他留白。",
+      "options": "選項",
+      "show": "顯示",
+      "default": "（預設）",
+      "advanced": "進階（資料）",
+      "advancedHelp": "以 JSON 呈現圖形的完整資料。清單和群組在這裡編輯。",
+      "jsonObject": "資料必須是一個 { ... } 物件。",
+      "jsonBad": "還不是有效的 JSON：{why}",
+      "display": "顯示方式",
+      "print": "列印模式（白底黑字）",
+      "nts": "標示「未按比例繪製」",
+      "figure": "圖形",
+      "answers": "題目與答案",
+      "question": "題目",
+      "questionHint": "寫下學生要針對這個圖形回答的題目。",
+      "worked": "答案算法（OF.solve）",
+      "answerIs": "答案是",
+      "pickAnswer": "選擇答案…",
+      "noAnswers": "這個圖形沒有答案算法",
+      "facts": "關於它的一切",
+      "answersWait": "圖形能畫出來後就會顯示答案。Oomba 絕不畫錯誤的圖形。",
+      "pickHelp": "選擇哪個數字是題目的答案，或按「隨機」取得現成的題目。",
+      "noSolve": "這個圖形沒有可選的計算數值。",
+      "hide": "對學生隱藏答案",
+      "hideWhat": "要隱藏什麼",
+      "hideAll": "所有尺寸",
+      "ofSays": "Oomba Figures 說：{reason}",
+      "undoLast": "復原我上一個變更",
+      "backToExample": "回到範例",
+      "add": "加入學習單",
+      "newSheet": "新學習單",
+      "qs": "{count, plural, other {# 題}}",
+      "added": "已加入 {title}。",
+      "openSheet": "開啟學習單",
+      "saveBack": "儲存到 {title}",
+      "svg": "下載 SVG",
+      "png": "下載 PNG",
+      "copy": "複製圖片",
+      "link": "複製連結",
+      "savePreset": "存成我的預設",
+      "presetName": "幫你的預設取名字",
+      "presetSaved": "已儲存預設。",
+      "notice": "下載的檔案會註明：Oomba Academy 提供的部分屬於公共領域（CC0）；你自己加入的原創內容歸你所有。",
+      "noGen": "這個圖形還沒有產生器：這裡是另一個範例。",
+      "pngFailed": "無法產生 PNG。請改用下載 SVG。",
+      "copied": "已複製圖片。",
+      "copiedSvg": "已複製為 SVG 文字。",
+      "copyFailed": "無法複製。請改用下載。",
+      "linkCopied": "已複製連結。",
+      "why": {
+        "triangle": {
+          "t": "這三邊無法組成三角形",
+          "p": "三角形任兩邊的和必須大於第三邊，否則兩端永遠接不起來。"
+        },
+        "angles": {
+          "t": "這些角度不合",
+          "p": "三角形的內角和正好是 180°。請檢查你輸入的角度。"
+        },
+        "short": {
+          "t": "有一邊太短",
+          "p": "用這些數字，有一邊永遠碰不到另一端。把它加長或改變一個角度。"
+        },
+        "agree": {
+          "t": "這些尺寸互相矛盾",
+          "p": "你給的尺寸比圖形需要的多，而且彼此不一致。請拿掉一個。"
+        },
+        "drawAs": {
+          "t": "請檢查「未按比例繪製」",
+          "p": "只有打開「未按比例繪製」時才能用其他比例來畫，而且標記在兩種情況下都必須正確。"
+        },
+        "positive": {
+          "t": "數字必須大於零",
+          "p": "長度、大小和數量都大於零。"
+        },
+        "range": {
+          "t": "有數字超出範圍",
+          "p": "有一個數字對這個圖形來說太大或太小。"
+        },
+        "extra": {
+          "t": "尺寸太多",
+          "p": "這個圖形只接受其中幾個尺寸同時使用。請拿掉一個。"
+        },
+        "data": {
+          "t": "無法讀取資料",
+          "p": "請檢查「進階（資料）」欄位。"
+        },
+        "generic": {
+          "t": "這個圖形畫不出來",
+          "p": "Oomba 絕不畫錯誤的圖形。請修改數字，讓它們互相配合。"
+        }
+      },
+      "f": {
+        "unit": "單位",
+        "round": "小數位數",
+        "mass": "質量",
+        "angle": "角度",
+        "speed": "速率",
+        "height": "高",
+        "width": "寬",
+        "length": "長",
+        "radius": "半徑",
+        "value": "數值",
+        "min": "最小值",
+        "max": "最大值",
+        "step": "間隔",
+        "type": "類型",
+        "element": "元素"
+      },
+      "k": {
+        "area": "面積",
+        "perimeter": "周長",
+        "volume": "體積",
+        "surfaceArea": "表面積",
+        "angles": "角",
+        "sides": "邊",
+        "total": "總和",
+        "mean": "平均數",
+        "median": "中位數",
+        "range": "全距",
+        "interior": "內角",
+        "value": "數值"
+      },
+      "hp": {
+        "sides": "邊",
+        "angles": "角",
+        "heights": "高",
+        "value": "數值",
+        "image": "像",
+        "electrons": "電子",
+        "values": "數值",
+        "reading": "讀數"
+      },
+      "draw": {
+        "modeLabel": "如何做出圖形",
+        "type": "輸入量值",
+        "draw": "畫出來",
+        "title": "在點格上畫出來",
+        "size": "點格大小",
+        "sizeOpt": "{n} × {n}",
+        "clear": "清除",
+        "help": {
+          "triangle": "點三個點就能畫出三角形。拖曳頂點可以移動它。",
+          "quad": "沿著圖形依序點四個點。拖曳頂點可以移動它。",
+          "grid": "沿著圖形依序點各個點，最多 10 個頂點。拖曳頂點可以移動它。"
+        },
+        "keys": "使用鍵盤：方向鍵移動，Enter 放下或拿起頂點，接著用方向鍵移動它。",
+        "board": "點格，{n} × {n}",
+        "corner": "頂點 {name} 在 ({x}, {y})",
+        "placed": "{name} 放在 ({x}, {y})",
+        "moved": "{name} 移到 ({x}, {y})",
+        "picked": "已拿起 {name}。用方向鍵移動它，按 Enter 放下。",
+        "removed": "已移除 {name}",
+        "corners": "頂點",
+        "sides": "邊",
+        "angles": "角",
+        "kind": "類型",
+        "perimeter": "周長",
+        "area": "面積",
+        "sqUnits": "{area} 平方單位",
+        "more": "{count, plural, other {再點 # 個點。}}",
+        "filled": "已依照你的圖填好。",
+        "keep": "下方的圖形會保留你上一個正確的形狀。",
+        "same": "有兩個頂點在同一個點上。把其中一個拖到別的點。",
+        "line": "有三個頂點在同一條直線上，所以不能成為圖形。把其中一個移離這條線。",
+        "cross": "有兩條邊互相交叉。移動一個頂點，讓邊只在頂點相接。",
+        "cannot": "Oomba Figures 無法畫出這個圖形。試著移動一個頂點。",
+        "isNot": "這個圖形是{is}，不是{want}。",
+        "special": "這個圖形是{is}，Oomba Figures 用專屬的編輯器來畫它。",
+        "open": {
+          "rectangle": "在長方形編輯器中開啟",
+          "parallelogram": "在平行四邊形編輯器中開啟",
+          "trapezoid": "在梯形編輯器中開啟",
+          "kite": "在鳶形編輯器中開啟",
+          "grid": "畫在坐標平面上"
+        },
+        "a": {
+          "square": "正方形",
+          "rectangle": "長方形",
+          "rhombus": "菱形",
+          "parallelogram": "平行四邊形",
+          "trapezoid": "梯形",
+          "kite": "鳶形",
+          "quad": "沒有特別名稱的四邊形",
+          "concave": "凹四邊形"
+        },
+        "t": {
+          "square": "正方形",
+          "rectangle": "長方形",
+          "rhombus": "菱形",
+          "parallelogram": "平行四邊形",
+          "trapezoid": "梯形",
+          "isoTrapezoid": "等腰梯形",
+          "rightTrapezoid": "直角梯形",
+          "kite": "鳶形",
+          "quad": "四邊形",
+          "concave": "凹四邊形",
+          "polygon": "{count, plural, other {# 邊形}}"
+        },
+        "tri": {
+          "right": "直角",
+          "acute": "銳角",
+          "obtuse": "鈍角",
+          "scalene": "不等邊",
+          "isosceles": "等腰",
+          "equilateral": "正三角形"
+        },
+        "ex": {
+          "right": "直角三角形",
+          "isosceles": "等腰三角形",
+          "obtuse": "鈍角三角形",
+          "pentagon": "五邊形"
+        },
+        "examples": "畫在點格上",
+        "gridOut": "也在坐標平面上顯示",
+        "gridTitle": "坐標平面",
+        "addGrid": "把坐標平面的圖加入學習單",
+        "drawInstead": "改在點格上畫"
+      },
+      "choiceNote": "這是選擇題。選項和正確答案在學習單中設定。",
+      "history": "復原與重做",
+      "undoTip": "復原 (Ctrl+Z)",
+      "redoTip": "重做 (Ctrl+Shift+Z)",
+      "undone": "已復原。",
+      "redone": "已重做。",
+      "moreLabel": "預設：範例、我的預設、儲存與刪除",
+      "deletePresets": "刪除預設…",
+      "deletePreset": "刪除",
+      "deletePresetQ": "要刪除預設「{name}」嗎？",
+      "deletePresetText": "它會從你這類圖形的預設中移除。用過它的學習單會保留原本的圖形。",
+      "presetDeleted": "已刪除預設。",
+      "noPresets": "你還沒有這類圖形的預設。",
+      "reuseLink": "你可以怎麼使用你的圖形",
+      "presetsBtn": "預設"
+    },
+    "figures-sheet": {
+      "title": "學習單標題",
+      "grade": "年級",
+      "anyGrade": "任何年級",
+      "gradeN": "{grade} 年級",
+      "powerAi": "用 AI 協助",
+      "briefLabel": "主題、年級、題數",
+      "briefHint": "7 年級，長方形和梯形的面積，再加一個盒狀圖。",
+      "howMany": "題數",
+      "draft": "草擬",
+      "budget": "會使用 AI 額度。額度暫停時，會改給你一組入門題目。",
+      "drafting": "正在草擬題目…",
+      "briefFirst": "請先用幾個字描述這份學習單。",
+      "drafted": "{count, plural, other {已草擬 # 題。}}每個圖形都經 Oomba Figures 檢查，每個答案都由它算出。",
+      "resting": "AI 正在休息，這裡是一組入門題目（{count, plural, other {# 題}}）。",
+      "repaired": "{count, plural, other {有 # 個圖形畫不出來，已替換。}}",
+      "dropped": "{count, plural, other {有 # 題被拿掉。}}",
+      "addLabel": "加入圖形題目",
+      "add": "加入",
+      "empty": "還沒有題目。加入一題圖形題目，或用 AI 草擬一些。",
+      "questionN": "第 {n} 題",
+      "questionHint": "寫下題目…",
+      "answer": "答案：",
+      "noAnswer": "還沒選擇答案：請在編輯器中開啟。",
+      "up": "上移",
+      "down": "下移",
+      "regen": "換新數字",
+      "edit": "編輯圖形",
+      "delete": "刪除",
+      "deleteQ": "要刪除這一題嗎？",
+      "remove": "刪除學習單",
+      "removeQ": "要刪除這份學習單嗎？",
+      "removeText": "題目也會一起刪除。無法復原。",
+      "preview": "列印預覽",
+      "paper": "Letter 紙，白底黑字",
+      "studentSheet": "學生版",
+      "answerKey": "解答",
+      "previewEmpty": "有題目後，這裡會顯示可列印的學習單。",
+      "print": "列印",
+      "printKey": "連同解答列印",
+      "assign": "指派給班級",
+      "assignTitle": "指派給班級",
+      "assignClass": "班級",
+      "assignOpens": "開始（選填）",
+      "assignDue": "繳交期限（選填）",
+      "assignShow": "繳交期限過後顯示答案",
+      "assignShowHint": "預設關閉。開啟時：繳交期限過後，已繳交的學生能看到答案和解題步驟。",
+      "assignSnapshot": "學生拿到的是學習單現在的樣子。你之後的修改不會改變它。",
+      "assignGo": "指派",
+      "assignCancel": "取消",
+      "assignEmpty": "請先加入題目，再指派學習單。",
+      "assignNoClasses": "你還沒有任教的班級。請先建立班級，再指派。",
+      "assignDone": "已指派給 {class}。",
+      "assignSee": "以學生的角度查看",
+      "assignProgress": "查看進度",
+      "answerType": "作答方式",
+      "typeNumber": "數字",
+      "typeChoice": "選擇題",
+      "options": "選項(標出正確的一個)",
+      "optionN": "第 {n} 題的選項 {letter}",
+      "rightN": "選項 {letter} 是正確答案",
+      "markRight": "正確答案",
+      "addOption": "新增選項",
+      "removeOption": "移除選項 {letter}",
+      "fromFigure": "正確選項是根據圖形算出的。修改選項或標出另一個,就由你自己決定。",
+      "needTwo": "至少寫 2 個選項。",
+      "needRight": "標出正確的選項。",
+      "testAiTitle": "起草測驗",
+      "topicLabel": "主題",
+      "topicHint": "例如：長方形和三角形的面積",
+      "subject": "科目",
+      "anySubject": "任何科目",
+      "draftTest": "起草測驗",
+      "testBudget": "用題目產生器製作，每一題都能重新出新的數字。會計入 AI 用量上限；沒有 AI 時會產生一份起始測驗。",
+      "byHand": "自己動手：選擇科目，加入圖形題，再設定每個圖形和答案。",
+      "checkFirst": "指派前請檢查每一題。",
+      "topicFirst": "請先寫下測驗的主題。",
+      "saveLesson": "儲存到課程",
+      "saveLessonHint": "把這些題目放進「{title}」。儲存前課程不會改變。",
+      "saveLessonAgain": "再次儲存會取代「{title}」裡的題目。",
+      "lessonStarted": "學生已開始這個步驟，所以題目維持原樣。要修改，請複製這堂課。",
+      "backToLesson": "回到課程",
+      "subjects": "科目",
+      "swapLabel": "把圖形換成",
+      "swap": "換圖形",
+      "editN": "編輯第 {n} 題的圖形（{kind}）",
+      "regenN": "為第 {n} 題換新數字",
+      "moreN": "第 {n} 題的更多選項",
+      "swapMenu": "換一種圖形…",
+      "swapTitle": "換掉第 {n} 題的圖形",
+      "swapHint": "這一題會換成該類的新圖形，並有自己的題目和答案。之後可以再編輯。",
+      "deleteText": "這一題和它的圖形會被刪除。無法復原。",
+      "movedTo": "已移到第 {n} 題。",
+      "removeTest": "刪除測驗",
+      "removeTestQ": "要刪除這份測驗嗎？",
+      "removeLesson": "刪除這些題目",
+      "removeLessonQ": "要刪除這些圖形題嗎？",
+      "removeLessonText": "課程的圖形步驟會保留最後一次儲存時的題目。無法復原。"
     }
   },
   "favorites": {
@@ -3956,7 +4445,9 @@
       "build": "做遊戲",
       "text": "讀一讀、做一做",
       "question": "回答問題",
-      "quiz": "回答測驗題目"
+      "quiz": "回答測驗題目",
+      "figures": "回答圖形題",
+      "figureStep": "圖形題"
     },
     "library": {
       "title": "課程庫",
@@ -4035,7 +4526,14 @@
       "newGameLink": "製作新遊戲給學生玩",
       "deleteWorkConfirm": "要刪除這個步驟嗎？這個步驟中 {n, plural, other {# 位學生的作品}}也會一併刪除。此動作無法復原。",
       "liveGames": "班級即時遊戲（由你主持）",
-      "otherGames": "更多遊戲"
+      "otherGames": "更多遊戲",
+      "bodyFigures": "給學生的說明（選填）",
+      "figuresHint": "接著會開啟圖形製作：選擇圖形，設定數字和答案，然後按「儲存到課程」。",
+      "editFigures": "編輯題目",
+      "printFigures": "列印",
+      "figuresStarted": "學生已開始這個步驟，所以題目維持原樣。",
+      "more": "更多",
+      "figuresSaved": "圖形題已儲存到課程。"
     },
     "ai": {
       "button": "用 AI 擬草稿",
@@ -4114,7 +4612,9 @@
       "build": "做出你自己的遊戲",
       "buildText": "一個關於{topic}、有 6 題的問答遊戲",
       "exit": "今日小回顧",
-      "exitText": "用兩、三句話寫一寫：今天關於{topic}，你學到最重要的事是什麼？"
+      "exitText": "用兩、三句話寫一寫：今天關於{topic}，你學到最重要的事是什麼？",
+      "figures": "圖形題",
+      "figuresText": "回答每個圖形下方的問題。"
     },
     "errors": {
       "notFound": "找不到該項目，或你沒有權限開啟。",
@@ -11350,6 +11850,117 @@
         "howto": "點選或拖曳一根棒到板上。排出一樣長的列車。",
         "helpUse": "點一根棒,再選旋轉、複製或刪除;方向鍵可移動。\n「顯示列車」排出等式兩邊;在方框填數。\n較長的棒在這一排最後;用選單選 11 到 20。",
         "helpIdeas": "哪兩根棒接起來和 10 號棒一樣長?"
+      },
+      "pdf": {
+        "name": "PDF",
+        "desc": "翻閱你上傳的 PDF，例如教案或學習單。",
+        "s": {
+          "doc": "PDF 檔案",
+          "title": "標題"
+        },
+        "empty": "上傳 PDF 後會顯示在這裡。",
+        "upload": "上傳 PDF",
+        "uploading": "正在上傳 PDF…",
+        "replace": "更換 PDF",
+        "note": "最大 10 MB。只有你能開啟，絕不會顯示在學生的畫面上。",
+        "prev": "上一頁",
+        "next": "下一頁",
+        "page": "第 {n} 頁，共 {total} 頁",
+        "loading": "正在開啟 PDF…",
+        "bad": "這個 PDF 無法開啟。請試試其他檔案。",
+        "gone": "這個 PDF 已經不在了。請重新上傳。",
+        "pages": "PDF",
+        "tooBig": "這個 PDF 太大了。上限是 10 MB。"
+      },
+      "link": {
+        "name": "連結",
+        "desc": "在新分頁開啟網站的方塊。",
+        "s": {
+          "title": "標題",
+          "url": "網址"
+        },
+        "empty": "請在這個小工具的設定中加入標題和網址。",
+        "opens": "在新分頁開啟",
+        "bad": "請使用以 http:// 或 https:// 開頭的網址",
+        "note": "在新分頁開啟。絕不會顯示在學生的畫面上。"
+      },
+      "stickers": {
+        "name": "貼紙",
+        "desc": "把貼紙貼在白板的任何地方。每張都能調整大小、旋轉和前後順序。",
+        "s": {
+          "k": "貼紙",
+          "x": "水平",
+          "y": "垂直",
+          "size": "大小",
+          "r": "旋轉",
+          "back": "在小工具後面"
+        },
+        "open": "貼紙",
+        "heading": "貼紙",
+        "search": "搜尋貼紙",
+        "theme": "主題",
+        "allThemes": "所有主題",
+        "language": "語言",
+        "allLanguages": "所有語言",
+        "shape": "形狀",
+        "allShapes": "所有形狀",
+        "count": "{n, plural, other {# 張貼紙}}",
+        "none": "找不到「{q}」的貼紙",
+        "noneFilters": "沒有符合這些篩選條件的貼紙。",
+        "clear": "清除搜尋",
+        "recent": "最近使用",
+        "favorites": "我的最愛",
+        "all": "所有貼紙",
+        "more": "顯示更多",
+        "star": "把{name}加入我的最愛",
+        "unstar": "把{name}從我的最愛移除",
+        "add": "把{name}貼到白板上",
+        "placed": "{name}已貼到白板上。",
+        "hint": "點一下貼紙就能貼到白板上，也可以拖過去。點一下白板上的貼紙，就能移動、調整大小或旋轉。",
+        "close": "關閉貼紙",
+        "loading": "正在載入貼紙…",
+        "failed": "貼紙沒有載入。請再試一次。",
+        "full": "這個白板已有 {n} 張貼紙，已達上限。請先刪除一張。",
+        "duplicate": "複製",
+        "remove": "刪除",
+        "removed": "已刪除{name}。",
+        "resize": "拖曳以調整大小",
+        "rotate": "拖曳以旋轉",
+        "role": "貼紙",
+        "toolsFor": "貼紙工具：{name}",
+        "moved": "已移動{name}。",
+        "sized": "{name}的大小已改為 {size}。",
+        "turned": "{name}已轉到 {deg} 度。",
+        "th_oomba": "Oomba",
+        "th_praise": "讚美",
+        "th_classroom": "教室",
+        "th_animals-nature": "動物與自然",
+        "th_maths-stem": "數學與 STEM",
+        "th_seasons-holidays": "季節與節日",
+        "th_food": "食物",
+        "th_sports-play": "運動與遊戲",
+        "th_space-weather": "太空與天氣",
+        "th_music-arts": "音樂與美術",
+        "th_transport": "交通工具",
+        "th_emotions": "情緒",
+        "th_letters-numbers": "字母與數字",
+        "th_good-morning": "早安",
+        "th_praise-words": "讚美的話",
+        "th_hello-welcome": "你好與歡迎",
+        "th_goodbye": "再見",
+        "th_greetings": "問候",
+        "lang_English": "英文",
+        "lang_Italian": "義大利文",
+        "lang_Spanish": "西班牙文",
+        "lang_French": "法文",
+        "lang_German": "德文",
+        "lang_Dutch": "荷蘭文",
+        "lang_Portuguese": "葡萄牙文",
+        "lang_Swedish": "瑞典文",
+        "lang_Turkish": "土耳其文",
+        "shape_rect": "圓角",
+        "shape_circle": "圓形",
+        "shape_bubble": "對話框"
       }
     },
     "push": {
@@ -11395,7 +12006,9 @@
       "feedAddress": "這不是行事曆網址。請貼上 .ics 行事曆的 https:// 或 webcal:// 連結。",
       "feedTooMany": "這個班級連接的行事曆太多了。請先中斷一個。",
       "feedNotCalendar": "這個網址不是行事曆檔案（.ics）。請確認是 iCal 網址，而不是行事曆的網頁。",
-      "feedUnreachable": "無法連到那個行事曆。請檢查網址和行事曆是否已共用，再試一次。"
+      "feedUnreachable": "無法連到那個行事曆。請檢查網址和行事曆是否已共用，再試一次。",
+      "pdf_tooBig": "這個 PDF 太大了。上限是 10 MB。",
+      "pdf_badType": "這個檔案不是 PDF。"
     },
     "tools": {
       "send": "傳給全班",
@@ -11635,6 +12248,605 @@
       "oombaSub": "瀏覽所有 Oomba 遊戲",
       "collectionEmpty": "這個合集還是空的",
       "allEmpty": "你還沒有製作任何遊戲。"
+    }
+  },
+  "library": {
+    "title": "故事圖書館",
+    "lead": "可以自己讀，也可以聽別人讀的繪本，最後有3個問題。共{count}本免費故事。",
+    "grades": {
+      "gk": "學前/K",
+      "g1": "一年級",
+      "g2": "二年級",
+      "g3": "三年級",
+      "g45": "四至五年級"
+    },
+    "gradesLabel": "年級（美國）",
+    "allGrades": "所有年級",
+    "gradeWhy": "關於年級",
+    "gradeNote": "年級是 Oomba 根據本書文字估計的適合美國學校年級，不是 Lexile、Guided Reading 或 Fountas & Pinnell 的級別。",
+    "measures": "字數：{words} · 每頁字數：{perPage} · 每句字數：{perSentence} · 每字音節：{syllables} · Flesch-Kincaid 年級：{fk} · 不在 Dolch 和 Fry 常見字表中的字：{notSight}%",
+    "meta": "{pages}頁 · 🔊 讀給我聽 · {questions}個問題",
+    "words": "{count}個字",
+    "read": "閱讀",
+    "continue": "繼續閱讀（第{page}頁）",
+    "assign": "指派",
+    "state": {
+      "done": "已讀 · {total}題答對{right}題",
+      "quiz": "還有問題要回答",
+      "reading": "第{page}頁，共{pages}頁"
+    },
+    "forClass": "選一個故事指派給{class}。",
+    "backToClass": "回到班級",
+    "searchLabel": "搜尋故事",
+    "searchPlaceholder": "搜尋故事",
+    "searchGo": "搜尋",
+    "found": "{count}個故事",
+    "none": "找不到故事",
+    "noneText": "試試別的字，或看看所有年級。",
+    "footQuestions": "每本書都列出作者、插畫家和譯者。最後的問題由Oomba撰寫，不是書的一部分。",
+    "glossary": "要知道的字詞",
+    "glossaryNote": "Oomba為來自印度的字詞寫的說明。",
+    "aboutTitle": "關於這本書",
+    "aboutQuestions": "最後一頁之後有3個問題。這些問題由Oomba Academy撰寫，不是書的一部分。",
+    "credits": {
+      "text": "故事：{names}",
+      "illustration": "插圖：{names}",
+      "translation": "翻譯：{names}",
+      "changes": "Oomba調整了圖片大小，並一次顯示一頁。Pratham Books並未為Oomba背書。",
+      "corrected": "Oomba修正了拼字和標點符號。",
+      "notes": "作者與出版者說明",
+      "factCorrected": "Oomba修正了一項歷史事實。",
+      "original": "查看原書。",
+      "from": "改編自 {name} 的書",
+      "changesBloom": "Oomba 調整了圖片大小，並一次顯示一頁。Bloom Library、SIL Global 和這本書的出版者並未為 Oomba 背書。",
+      "changesBloomSA": "Oomba 調整了圖片大小，並一次顯示一頁；這些改編過的頁面以相同的授權 {license} 分享。Bloom Library、SIL Global 和這本書的出版者並未為 Oomba 背書。",
+      "originalBloom": "在 Bloom Library 上看原書。",
+      "publicDomain": "公有領域",
+      "firstPublished": "{year} 年首次出版（{edition}）。",
+      "changesClassic": "Oomba 把故事分成頁面，並調整了圖片大小。文字都是作者的原文。",
+      "changesClassicCut": "Oomba 將故事分成多頁、調整了圖片大小，並刪去一行。其餘文字都是作者的原文。"
+    },
+    "readToMe": "讀給我聽",
+    "pagesLabel": "頁面",
+    "back": "上一頁",
+    "next": "下一頁",
+    "toQuestions": "問題",
+    "pageOf": "第{page}頁，共{pages}頁",
+    "finished": "你讀完《{title}》了！",
+    "questionsLead": "關於故事的{count}個問題",
+    "readAgain": "再讀一次",
+    "backTo": "回到{name}",
+    "moreBooks": "更多故事",
+    "needJs": "回答問題需要開啟JavaScript。",
+    "errors": {
+      "readFirst": "請先把故事讀到最後一頁。",
+      "alreadyAssigned": "這個故事已經指派給{class}了。",
+      "pickStory": "請從圖書館選一個故事。"
+    },
+    "assignTitle": "指派《{title}》",
+    "assignNote": "學生會在班級頁面看到。他們閱讀並回答3個問題，你可以在「進度」看到誰讀了和他們的成績。",
+    "preview": "先讀一讀",
+    "kindStory": "故事",
+    "findStories": "故事圖書館",
+    "door": {
+      "title": "故事圖書館",
+      "kids": "{count}本繪本。自己讀，或按「讀給我聽」！",
+      "staff": "{count}本分級繪本，附問題。可以指派給班級。"
+    },
+    "results": {
+      "withAloud": "使用讀給我聽",
+      "onOwn": "自己讀",
+      "questionsLeft": "已讀，問題未答",
+      "pageOf": "第{page}頁，共{pages}頁",
+      "usedAloud": "使用了讀給我聽",
+      "notStarted": "尚未開始",
+      "qN": "問題{n}",
+      "summary": "{total}人中{started}人開始 · {finished}人完成",
+      "readTogether": "一起讀",
+      "assignAnother": "指派另一個故事",
+      "read": "閱讀",
+      "questions": "問題",
+      "rightOf": "{right} / {total}",
+      "firstTry": "第一次就答對",
+      "key": "第一次就答對的問題才計分（✓ 答對，✗ 需要再試一次）。再試的學生仍然可以完成。",
+      "byQuestion": "問題",
+      "hardest": "對全班來說，問題{n}最難。",
+      "answer": "答案：{answer}",
+      "page": "第{page}頁",
+      "missed": "第一次答錯：{count}人"
+    },
+    "footSources": "故事與插圖：Pratham Books（StoryWeaver），以及 Bloom Library 上的作者和出版者；每本書都有自己的開放授權，標示在書旁。",
+    "glossaryNoteAll": "Oomba為孩子可能不認識的字詞寫的說明。",
+    "footCredit": "故事與插圖：Pratham Books、StoryWeaver。授權：",
+    "wish": {
+      "label": "今天想讀什麼呢？",
+      "placeholder": "恐龍、好笑的故事、關於太空的書...",
+      "go": "找書",
+      "busy": "正在找...",
+      "heading": "給你的書",
+      "back": "所有的書",
+      "tryOther": "我們換幾個字試試看。你想讀關於什麼的故事？",
+      "none": "我們還沒找到相關的書。這些是很多小讀者喜歡的書。",
+      "found": "幫你找到 {count} 本書。",
+      "empty": "寫下你想讀的內容。",
+      "error": "出了點問題，請再試一次。"
+    },
+    "sources": {
+      "classics": "經典"
+    },
+    "footClassics": "經典：已進入公有領域的舊書，附上原本的插圖。"
+  },
+  "figures": {
+    "title": "圖形",
+    "loading": "正在載入圖形…",
+    "crumbs": "目前位置",
+    "tools": {
+      "label": "教學工具",
+      "manipulatives": "操作教具",
+      "figures": "圖形"
+    },
+    "subjects": {
+      "math": "數學",
+      "data": "資料與統計",
+      "physics": "物理",
+      "chem": "化學",
+      "biology": "生物",
+      "economics": "經濟"
+    },
+    "grades": {
+      "K-2": "K-2",
+      "3-5": "3-5 年級",
+      "6-8": "6-8 年級",
+      "9-12": "9-12 年級"
+    },
+    "menu": {
+      "testing": "測試中：只有你看得到",
+      "pitch": "用於學習單、測驗和簡報的精確等比例圖形。可直接列印，並附上答案的算法。",
+      "buildTitle": "製作學習單",
+      "buildText": "自己挑選圖形，或描述你的需求，讓 AI 草擬題目。每個數字都會檢查，確保每個圖形真的畫得出來。",
+      "draftAi": "用 AI 草擬",
+      "scratch": "從頭開始",
+      "mine": "我的學習單",
+      "noSheets": "還沒有學習單。你做的學習單會出現在這裡。",
+      "questions": "{count, plural, other {# 題}}",
+      "gradeOf": "{grade} 年級",
+      "edited": "{date} 編輯",
+      "subjects": "科目",
+      "all": "所有圖形",
+      "soon": "即將推出",
+      "grades": "年級",
+      "search": "搜尋圖形",
+      "searchHint": "搜尋圖形，例如圓柱或盒狀圖",
+      "count": "{count, plural, other {# 種圖形}}",
+      "nothing": "沒有符合的圖形。試試別的字詞或年級。",
+      "buildTest": "製作測驗",
+      "buildTestText": "整份圖形題測驗，可由 AI 起草或自己動手做。",
+      "isTest": "測驗"
+    },
+    "sheet": {
+      "newTitle": "新學習單",
+      "crumb": "學習單製作",
+      "untitled": "未命名學習單",
+      "untitledTest": "未命名測驗",
+      "newTest": "新測驗",
+      "crumbTest": "測驗製作",
+      "crumbLesson": "圖形題"
+    },
+    "editor": {
+      "example": "範例 {n}"
+    },
+    "print": {
+      "figure": "第 {n} 題的圖形",
+      "keyTag": "解答",
+      "keyTitle": "{title}：解答",
+      "name": "姓名",
+      "date": "日期",
+      "made": "用 Oomba Academy 製作",
+      "noQuestion": "看看這個圖形。",
+      "noAnswer": "還沒選擇答案",
+      "crumb": "列印",
+      "sheetOnly": "學生版",
+      "withKey": "附解答",
+      "print": "列印",
+      "options": "選項",
+      "rightOne": "(正確答案)"
+    },
+    "errors": {
+      "notFound": "這裡沒有這個。",
+      "badKind": "那不是其中一種圖形。",
+      "badData": "無法讀取那個圖形的資料。",
+      "tooBig": "那個圖形太大，無法儲存。",
+      "words": "有些字詞不允許使用。修改後再試一次。",
+      "personal": "請移除電話號碼、電子郵件、連結和代碼，再試一次。",
+      "cannotDraw": "用這些數字畫不出這個圖形。修改後再試一次。",
+      "tooMany": "你已經儲存很多了。請先刪除一些。",
+      "fullSheet": "這份學習單已滿。請開一份新的。",
+      "noGen": "這個圖形還沒有題目產生器。",
+      "name": "請先取個名字。",
+      "brief": "請先用幾個字描述這份學習單。",
+      "names": "描述裡不要寫學生的名字：名字永遠不會送給 AI。",
+      "sameChoices": "有兩個選項相同。請讓每個選項都不一樣。",
+      "topic": "請先寫下測驗的主題。"
+    },
+    "kinds": {
+      "numberLine": {
+        "name": "數線",
+        "desc": "數線上的數、區間和點"
+      },
+      "triangle": {
+        "name": "三角形",
+        "desc": "由三個尺寸畫出任何三角形"
+      },
+      "rectangle": {
+        "name": "長方形",
+        "desc": "長方形和正方形"
+      },
+      "parallelogram": {
+        "name": "平行四邊形",
+        "desc": "平行四邊形和菱形，附高"
+      },
+      "trapezoid": {
+        "name": "梯形",
+        "desc": "梯形：一般、等腰或直角"
+      },
+      "kite": {
+        "name": "鳶形",
+        "desc": "標出等邊的箏形"
+      },
+      "regularPolygon": {
+        "name": "正多邊形",
+        "desc": "附邊心距和半徑的正多邊形"
+      },
+      "angles": {
+        "name": "角",
+        "desc": "射線之間的角"
+      },
+      "parallelLines": {
+        "name": "平行線與截線",
+        "desc": "被截線切過的平行線"
+      },
+      "segmentAddition": {
+        "name": "線段相加",
+        "desc": "用代數做線段加法"
+      },
+      "circle": {
+        "name": "圓",
+        "desc": "有弦、切線和角的圓"
+      },
+      "compositeShape": {
+        "name": "組合圖形",
+        "desc": "由簡單圖形組成的圖形"
+      },
+      "grid": {
+        "name": "坐標平面",
+        "desc": "坐標平面上的點、直線和變換"
+      },
+      "protractor": {
+        "name": "量角器",
+        "desc": "用量角器讀角度"
+      },
+      "prism": {
+        "name": "角柱",
+        "desc": "3D 角柱和正方體"
+      },
+      "cylinder": {
+        "name": "圓柱",
+        "desc": "3D 圓柱"
+      },
+      "pyramid": {
+        "name": "角錐",
+        "desc": "3D 角錐"
+      },
+      "cone": {
+        "name": "圓錐",
+        "desc": "3D 圓錐"
+      },
+      "sphere": {
+        "name": "球",
+        "desc": "球和半球"
+      },
+      "net": {
+        "name": "展開圖",
+        "desc": "可摺成立體的展開圖"
+      },
+      "mappingDiagram": {
+        "name": "對應圖",
+        "desc": "輸入對應到輸出"
+      },
+      "barGraph": {
+        "name": "長條圖",
+        "desc": "長條圖，並列和堆疊"
+      },
+      "dotPlot": {
+        "name": "點圖",
+        "desc": "資料的點狀圖"
+      },
+      "histogram": {
+        "name": "直方圖",
+        "desc": "組距相等或不等的直方圖"
+      },
+      "boxPlot": {
+        "name": "盒鬚圖",
+        "desc": "附四分位數的盒狀圖"
+      },
+      "scatterPlot": {
+        "name": "散佈圖",
+        "desc": "附最適直線的散布圖"
+      },
+      "stemAndLeaf": {
+        "name": "莖葉圖",
+        "desc": "莖葉圖"
+      },
+      "pieChart": {
+        "name": "圓形圖",
+        "desc": "附角度和百分比的圓餅圖"
+      },
+      "cumulativeFrequency": {
+        "name": "累積次數",
+        "desc": "累積次數圖"
+      },
+      "normalCurve": {
+        "name": "常態曲線",
+        "desc": "附陰影區域的常態曲線"
+      },
+      "treeDiagram": {
+        "name": "樹狀圖",
+        "desc": "機率樹狀圖"
+      },
+      "vennDiagram": {
+        "name": "文氏圖",
+        "desc": "兩個或三個集合的文氏圖"
+      },
+      "twoWayTable": {
+        "name": "雙向表",
+        "desc": "附總和的雙向表"
+      },
+      "tableOfValues": {
+        "name": "數值表",
+        "desc": "由規則產生的數值表"
+      },
+      "freeBody": {
+        "name": "自由體圖",
+        "desc": "物體受到的力"
+      },
+      "vectors": {
+        "name": "向量",
+        "desc": "向量和它們的合向量"
+      },
+      "inclinedPlane": {
+        "name": "斜面",
+        "desc": "斜面上的物體和它的受力"
+      },
+      "pulley": {
+        "name": "滑輪",
+        "desc": "滑輪和懸掛的質量"
+      },
+      "rays": {
+        "name": "光線圖",
+        "desc": "透鏡和鏡子的光線圖"
+      },
+      "circuit": {
+        "name": "電路圖",
+        "desc": "串聯和並聯電路"
+      },
+      "motionGraph": {
+        "name": "運動圖",
+        "desc": "距離、速度和加速度圖"
+      },
+      "motionMap": {
+        "name": "運動圖",
+        "desc": "用點和箭頭表示的運動圖"
+      },
+      "projectile": {
+        "name": "拋體運動",
+        "desc": "拋射物的路徑，按比例繪製"
+      },
+      "waves": {
+        "name": "波",
+        "desc": "橫波和縱波"
+      },
+      "reading": {
+        "name": "讀取刻度",
+        "desc": "溫度計、量筒、尺和游標卡尺"
+      },
+      "bohr": {
+        "name": "波耳模型",
+        "desc": "原子和離子的波耳模型"
+      },
+      "orbitals": {
+        "name": "軌域圖",
+        "desc": "軌域方格圖"
+      },
+      "lewis": {
+        "name": "路易斯結構",
+        "desc": "分子的路易斯結構"
+      },
+      "halfLife": {
+        "name": "半衰期",
+        "desc": "放射性衰變曲線"
+      },
+      "titration": {
+        "name": "滴定曲線",
+        "desc": "滴定曲線"
+      },
+      "massSpectrum": {
+        "name": "質譜",
+        "desc": "同位素的峰與相對原子質量"
+      },
+      "heatingCurve": {
+        "name": "加熱與冷卻曲線",
+        "desc": "加熱或散熱時的溫度變化（按比例）"
+      },
+      "energyProfile": {
+        "name": "反應位能圖",
+        "desc": "標出活化能與 ΔH 的反應能量圖"
+      },
+      "nuclide": {
+        "name": "核種符號",
+        "desc": "同位素、離子與粒子的符號"
+      },
+      "lineSpectrum": {
+        "name": "線光譜",
+        "desc": "元素的發射與吸收譜線"
+      },
+      "photoelectron": {
+        "name": "光電子能譜",
+        "desc": "每個副層一個峰（H 到 Xe）"
+      },
+      "particles": {
+        "name": "粒子示意圖",
+        "desc": "方框或晶格中的原子、離子與分子"
+      },
+      "dotCross": {
+        "name": "點叉圖",
+        "desc": "電子層中共用與轉移的電子"
+      },
+      "skeletal": {
+        "name": "有機結構",
+        "desc": "鍵線式、示性式與結構式"
+      },
+      "energyLevels": {
+        "name": "原子能階",
+        "desc": "電子躍遷、波長與譜系"
+      },
+      "populationGrowth": {
+        "name": "族群成長",
+        "desc": "J 形與 S 形曲線、K 與成長階段"
+      },
+      "predatorPrey": {
+        "name": "掠食者與獵物",
+        "desc": "族群週期，掠食者慢一步"
+      },
+      "enzymeActivity": {
+        "name": "酵素活性",
+        "desc": "反應速率對溫度、pH 或受質"
+      },
+      "photosynthesis": {
+        "name": "光合作用速率",
+        "desc": "光、CO₂ 與溫度作為限制因子"
+      },
+      "punnett": {
+        "name": "龐尼特方格",
+        "desc": "算出比例的雜交"
+      },
+      "pedigree": {
+        "name": "譜系圖",
+        "desc": "符合遺傳方式的家族"
+      },
+      "proteinSynthesis": {
+        "name": "蛋白質合成",
+        "desc": "從 DNA 到 mRNA 再到胺基酸，可留空"
+      },
+      "gel": {
+        "name": "凝膠電泳",
+        "desc": "依比例繪出的條帶與 DNA 標記"
+      },
+      "osmosis": {
+        "name": "滲透",
+        "desc": "溶液中的細胞、U 形管與袋子"
+      },
+      "supplyDemand": {
+        "name": "供給與需求",
+        "desc": "移動、價格管制、租稅與剩餘"
+      },
+      "moneyMarket": {
+        "name": "貨幣市場",
+        "desc": "貨幣、可貸資金與準備金"
+      },
+      "businessCycle": {
+        "name": "景氣循環",
+        "desc": "趨勢周圍的高峰、谷底與階段"
+      },
+      "phillipsCurve": {
+        "name": "菲利普曲線",
+        "desc": "短期與長期、移動與預期"
+      },
+      "possibilitiesCurve": {
+        "name": "生產可能",
+        "desc": "取捨、成長與比較利益"
+      },
+      "adAs": {
+        "name": "AD-AS模型",
+        "desc": "產出缺口、衝擊與政策"
+      },
+      "costCurves": {
+        "name": "成本與收益曲線",
+        "desc": "邊際成本、平均總成本、利潤與市場結構"
+      }
+    },
+    "step": {
+      "answerLabel": "你對第 {n} 題的答案",
+      "right": "正確",
+      "notRight": "不正確",
+      "answer": "答案：",
+      "teacherAnswer": "答案卷：",
+      "score": "你答對了 {total} 題中的 {right} 題（{pct}%）。",
+      "answersLater": "老師會在繳交期限之後公布答案。",
+      "noAnswers": "答案在老師那裡，老師可能會和全班一起檢討。",
+      "teacherNote": "這是學生看到的畫面，每一題下方有給你看的答案。",
+      "showOnNote": "繳交期限過後，學生會看到答案。",
+      "showOffNote": "學生永遠不會看到答案。",
+      "handInHint": "邊做邊儲存。繳交後，答案會被批改，而且不能再修改。",
+      "answersReady": "答案已經可以看了。繳交你的作業就能看到。",
+      "save": "儲存",
+      "handIn": "繳交",
+      "handInConfirm": "要繳交答案嗎？之後就不能修改了。",
+      "saved": "已儲存",
+      "handedIn": "已繳交",
+      "showIsOn": "繳交期限過後會顯示答案",
+      "showIsOff": "學生看不到答案",
+      "errors": {
+        "handedIn": "你已經繳交過了。",
+        "empty": "請先寫至少一個答案。"
+      },
+      "showAnswers": "繳交期限過後顯示答案",
+      "showAnswersHint": "預設關閉。開啟時：繳交期限過後，每位已繳交的學生都能看到答案和解題步驟。",
+      "showNeedsDue": "請為這堂課設定繳交期限，才能在之後顯示答案。",
+      "handedInCount": "已繳交：{done} / {total}",
+      "questionN": "第 {n} 題",
+      "rightOf": "{total} 人中 {right} 人答對",
+      "answersTable": "每位學生的答案",
+      "noneYet": "還沒有人繳交。",
+      "questions": "{count, plural, other {# 題圖形題}}",
+      "sign": "切換正負號",
+      "signLabel": "切換第 {n} 題答案的正負號",
+      "rightOption": "正確答案"
+    },
+    "assign": {
+      "errors": {
+        "empty": "指派這份學習單之前，請先加入題目。",
+        "noAnswer": "每一題都要有答案才能指派。請在編輯器裡為第 {list} 題選一個答案。",
+        "noClass": "請選擇你的一個班級。",
+        "badDate": "這個日期看起來不對。",
+        "dueBeforeOpen": "繳交期限早於開始日期。",
+        "needsDue": "請設定繳交期限，才能在之後顯示答案。",
+        "started": "學生已開始這個步驟，所以題目維持原樣。要修改，請複製這堂課。"
+      }
+    },
+    "terms": {
+      "title": "重複使用你的圖形",
+      "crumb": "重複使用條款",
+      "lead": "你在圖形裡做的每一張圖都可以自由使用。以下用簡單的話說明這是什麼意思。",
+      "canTitle": "你可以做的事",
+      "can1": "在課堂上、學習單和測驗、簡報和網站中使用你的圖形。",
+      "can2": "複製、列印，並分享給任何人：學生、家長和其他老師。",
+      "can3": "修改它們：裁切、加上標籤，或放進你自己的教材。",
+      "can4": "用在你出版或販售的教材裡。",
+      "can5": "以上這些都不必先問我們，也不必標註出處。歡迎提到我們，但絕不是必要的。",
+      "noticeTitle": "檔案裡的註記",
+      "noticeText": "你下載或複製的每個 SVG 或 PNG 都帶有這段註記，寫在檔案本身裡，也就是圖片程式和搜尋引擎會讀取的地方。註記使用英文，在哪裡讀都一樣：",
+      "noticeMeans": "它的意思是：Oomba Academy 放棄它對圖形中自己那一部分（它畫的圖、版面和標籤）的所有權利，讓任何人都能重複使用這一部分。你可以保留註記，也可以刪掉。",
+      "cc0Title": "CC0 是什麼",
+      "cc0Text": "CC0 1.0 是 Creative Commons 的公眾領域貢獻宣告。圖形中我們的部分沒有任何條件：不用標註出處，也不用遵守授權，在全世界、在法律允許的範圍內都是如此。",
+      "cc0Link": "到 Creative Commons 網站閱讀 CC0 1.0",
+      "yoursTitle": "仍然屬於你的部分",
+      "yoursText": "你加入的原創內容都屬於你：你自己的題目、標籤和資料，以及你自己的繪圖。別人能不能重複使用這些部分，由你決定。",
+      "careTitle": "值得知道",
+      "care1": "使用前請先檢查圖形。我們會仔細檢查圖形，但無法保證每張圖都適合每一種用途。",
+      "care2": "分享的圖形裡不要放學生的姓名或個人資料。",
+      "care3": "這些條款只關於你匯出的圖形。Oomba Academy 的其他部分適用網站的服務條款。",
+      "siteTerms": "閱讀網站的服務條款",
+      "back": "回到圖形"
     }
   }
 }

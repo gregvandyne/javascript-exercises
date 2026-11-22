@@ -12,6 +12,7 @@ const auth = await import('../../server/auth.js');
 const G = await import('../../server/services/games.js');
 const C = await import('../../server/services/courses.js');
 const { deleteAccount } = await import('../../server/services/account-delete.js');
+const { deicon } = await import('../support/deicon.js');
 
 C.useDeckDir('tests/fixtures/course');
 seed({ quiet: true });
@@ -20,7 +21,7 @@ test.before(async () => { server = createApp().listen(0); server.keepAliveTimeou
 test.after(() => server.close());
 const cookieFor = id => { let c = ''; auth.startSession({ append: (k, v) => { c = v.split(';')[0]; } }, id); return c; };
 const H = { accept: 'text/html', 'user-agent': 'Mozilla/5.0 Chrome/141.0' };
-const get = async (path, u, extra = {}) => { const r = await fetch(base + path, { headers: { ...H, ...extra, ...(u ? { cookie: cookieFor(u.id) } : {}) }, redirect: 'manual' }); return { status: r.status, text: await r.text(), location: r.headers.get('location'), cookie: r.headers.get('set-cookie') }; };
+const get = async (path, u, extra = {}) => { const r = await fetch(base + path, { headers: { ...H, ...extra, ...(u ? { cookie: cookieFor(u.id) } : {}) }, redirect: 'manual' }); return { status: r.status, text: deicon(await r.text()), location: r.headers.get('location'), cookie: r.headers.get('set-cookie') }; };   // icons read back as their emoji
 const post = async (path, u, body, { form = false } = {}) => {
   const r = await fetch(base + path, { method: 'POST', redirect: 'manual', headers: { ...H, 'sec-fetch-site': 'same-origin', 'content-type': form ? 'application/x-www-form-urlencoded' : 'application/json', ...(u ? { cookie: cookieFor(u.id) } : {}) }, body: form ? new URLSearchParams(body).toString() : JSON.stringify(body) });
   const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }

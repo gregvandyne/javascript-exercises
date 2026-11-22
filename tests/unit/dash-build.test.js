@@ -3,6 +3,7 @@
 // a question, the push and progress flow with who may see what, the cleanup, and the place value chart's typed number.
 // The real page is checked in Chromium (skipped where none is installed).
 import fs from 'node:fs';
+import { deicon } from '../support/deicon.js';   // icons read back as the emoji they stand for
 import os from 'node:os';
 process.env.BRB_DB = ':memory:'; process.env.BRB_SILENT = '1'; process.env.LOG_REQUESTS = '0';
 process.env.BRB_DATA_DIR = fs.mkdtempSync(os.tmpdir() + '/brb-dashbuild-');
@@ -540,10 +541,10 @@ test('in Chromium: Make a question hides Base-ten blocks\' answer until Show the
     const plus = (p, n) => (async () => { for (let i = 0; i < n; i++) await sp.locator(`.dash-wbuild .dt-mat[data-place="${p}"] .dt-pm`).nth(1).click(); })();
     await plus('h', 3); await plus('t', 3); await plus('o', 7);
     await sp.click('[data-bcheck]'); await sp.waitForTimeout(300);
-    assert.equal(await sp.locator('.dash-bfb').textContent(), 'Not yet. Tens: you have 3; you need 4.');
+    assert.equal(deicon(await sp.locator('.dash-bfb').innerHTML()), 'Not yet. Tens: you have 3; you need 4.');
     await plus('t', 1); await sp.waitForTimeout(650);
     await sp.click('[data-bcheck]'); await sp.waitForTimeout(400);
-    assert.match(await sp.locator('.dash-bfb').textContent(), /Yes!/);
+    assert.match(deicon(await sp.locator('.dash-bfb').innerHTML()), /Yes!/);
     await sp.click('[data-bnext]'); await sp.click('[data-bnext]'); await sp.waitForTimeout(200);
     assert.match(await sp.locator('.dash-bdone').textContent(), /All done!.*1 of 2 right.*58/s);
     assert.deepEqual(q.all('SELECT item, ok FROM dash_builds WHERE push_id=? AND user_id=?', pid, w.a1.id), [{ item: 0, ok: 1 }]);
@@ -634,10 +635,10 @@ test('in Chromium: fractions, equations: the sheet\'s dropdowns, a student shade
     await sh.locator('[data-k="eqp+"]').click(); await sh.locator('[data-k="eqp+"]').click();
     await sh.locator('.dt-feqa [data-piece="1"]').click();
     await sp.click('[data-bcheck]'); await sp.waitForTimeout(300);
-    assert.equal(await sp.locator('.dash-bfb').textContent(), 'Not yet. You shaded 2/4. That\'s too little: shade some more.');
+    assert.equal(deicon(await sp.locator('.dash-bfb').innerHTML()), 'Not yet. You shaded 2/4. That\'s too little: shade some more.');
     await sh.locator('.dt-feqa [data-piece="2"]').click(); await sp.waitForTimeout(650);
     await sp.click('[data-bcheck]'); await sp.waitForTimeout(300);
-    assert.equal(await sp.locator('.dash-bfb').textContent(), '🎉 Yes! With 4 parts in each whole: 2/4 + 1/4 = 3/4.');
+    assert.equal(deicon(await sp.locator('.dash-bfb').innerHTML()), '🎉 Yes! With 4 parts in each whole: 2/4 + 1/4 = 3/4.');
     await sp.click('[data-bnext]'); await sp.waitForTimeout(200);
     // 3/4 + 1/2: a second whole for an answer bigger than one (typed: 8 parts in each).
     await sh.locator('[data-k="eqw+"]').click();
@@ -647,7 +648,7 @@ test('in Chromium: fractions, equations: the sheet\'s dropdowns, a student shade
     await sh.locator('.dt-feqa [data-piece="9"]').click();
     assert.equal(await sh.locator('.dt-feqa').getAttribute('aria-valuenow'), '10');
     await sp.click('[data-bcheck]'); await sp.waitForTimeout(400);
-    assert.match(await sp.locator('.dash-bfb').textContent(), /^🎉 Yes! .*5\/4 = 1 1\/4\.$/);
+    assert.match(deicon(await sp.locator('.dash-bfb').innerHTML()), /^🎉 Yes! .*5\/4 = 1 1\/4\.$/);
     assert.deepEqual(q.all('SELECT item, ok FROM dash_builds WHERE push_id=? AND user_id=? ORDER BY item', pid, w.a1.id), [{ item: 0, ok: 1 }, { item: 1, ok: 1 }]);
     // ---- the teacher shows 3/4 + 1/2 on the board: Add, those fractions, the answer shown.
     await tp.waitForTimeout(4500);

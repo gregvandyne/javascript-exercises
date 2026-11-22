@@ -17,6 +17,7 @@
 import fs from 'node:fs';
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound, parentsLabel } from '../views/layout.js';
 import { coverArt } from '../views/components.js';
 import { tHtml, availableLocales, fmt, localeInfo, DEFAULT_LOCALE, keepLang } from '../i18n/index.js';
@@ -25,7 +26,7 @@ import { isGrownup } from '../auth.js';
 import * as seo from '../seo.js';
 import { HUBS, AGES, ageBySlug, PARENT_GUIDES, guideBySlug, PARENT_GAMES, PARENTS_FAQ, TWO_PLAYER, gameKey, CONTENT_UPDATED } from '../learn.js';
 import { launchGame, faqBlock, el, fb, lp, contactEmail, inClassLine } from './teachers.js';
-import { section, parentSections, googlePrivacy, contact, setupLink } from './info.js';
+import { section, parentSections, googlePrivacy, contact, setupLink, folded } from './info.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { familyOnSale } from './family.js';
 import { howArt, howSteps, howHead, HOW_SCRIPT } from '../views/how.js';
@@ -136,7 +137,7 @@ router.get('/parents', async (req, res) => {
   const badges = [['✅', 'parents.badges.free'], ['🚫', 'parents.badges.ads'], ['🛍️', 'parents.badges.buy'], ['💬', 'parents.badges.strangers'], ['💻', 'parents.badges.browser'], ['🌐', 'parents.badges.languages']];
   const vars = { count, plans: '/plans', ai: lp(req, '/parents/ai-builder-safety'), screen: lp(req, '/parents/safety-and-screen-time') };
   const faqPairs = Array.from({ length: PARENTS_FAQ }, (_, i) => [`parents.faq.q${i + 1}`, `parents.faq.a${i + 1}${paid && (i === 0 || i === 6) ? 'paid' : ''}`]);
-  const faq = faqBlock(req, faqPairs, 'parents.faq.h', vars);
+  const faq = faqBlock(req, faqPairs, 'parents.faq.h', vars, { fold: true });
   const body = html`<div class="lp">
   <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
     ${el(t, 'p', 'parents.kicker', {}, ' class="lp-kicker"')}
@@ -165,34 +166,33 @@ router.get('/parents', async (req, res) => {
   </section>
 
   <section class="lp-sec" id="ages" aria-labelledby="ages-h">
-    ${el(t, 'h2', 'parents.ages.h', {}, ' id="ages-h"')}${el(t, 'p', 'parents.ages.p')}
-    ${ageCards(req)}
+    ${folded(el(t, 'h2', 'parents.ages.h', {}, ' id="ages-h"'), html`${el(t, 'p', 'parents.ages.p')}
+    ${ageCards(req)}`)}
   </section>
 
   <section class="lp-sec" id="subjects" aria-labelledby="subj-h">
-    ${el(t, 'h2', 'parents.subjects.h', {}, ' id="subj-h"')}
-    ${linkCards(t, HUBS.map(h => ({ href: lp(req, `/learn/${h.slug}`), emoji: h.emoji, name: `learn.hubs.${h.key}.name`, short: `learn.hubs.${h.key}.short` })))}
+    ${folded(el(t, 'h2', 'parents.subjects.h', {}, ' id="subj-h"'),
+      linkCards(t, HUBS.map(h => ({ href: lp(req, `/learn/${h.slug}`), emoji: h.emoji, name: `learn.hubs.${h.key}.name`, short: `learn.hubs.${h.key}.short` }))))}
   </section>
 
   <div class="lp-cols">
     <section class="panel" id="make" aria-labelledby="make-h">
-      ${el(t, 'h2', 'parents.make.h', {}, ' id="make-h"')}${el(t, 'p', 'parents.make.p1')}${el(t, 'p', 'parents.make.p2')}
-      <p class="row"><a class="btn" href="${lp(req, '/learn/make-a-game')}">🛠️ ${t('parents.make.link')}</a><a class="btn" href="${lp(req, '/parents/ai-builder-safety')}">🤖 ${t('parents.make.safe')}</a></p>
+      ${folded(el(t, 'h2', 'parents.make.h', {}, ' id="make-h"'), html`${el(t, 'p', 'parents.make.p1')}${el(t, 'p', 'parents.make.p2')}
+      <p class="row"><a class="btn" href="${lp(req, '/learn/make-a-game')}">${ico('🛠️', { size: 18 })} ${t('parents.make.link')}</a><a class="btn" href="${lp(req, '/parents/ai-builder-safety')}">${ico('🤖', { size: 18 })} ${t('parents.make.safe')}</a></p>`)}
     </section>
     <section class="panel" id="home" aria-labelledby="home-h">
-      ${el(t, 'h2', 'parents.home.h', {}, ' id="home-h"')}${el(t, 'p', 'parents.home.p')}
-      <ul class="lp-tags">${['li1', 'li2', 'li3', 'li4', 'li5', 'li6', 'li7'].map(k => el(t, 'li', `parents.home.${k}`))}</ul>
+      ${folded(el(t, 'h2', 'parents.home.h', {}, ' id="home-h"'), html`${el(t, 'p', 'parents.home.p')}
+      <ul class="lp-tags">${['li1', 'li2', 'li3', 'li4', 'li5', 'li6', 'li7'].map(k => el(t, 'li', `parents.home.${k}`))}</ul>`)}
     </section>
   </div>
 
   <section class="lp-sec" id="guides" aria-labelledby="guides-h">
-    ${el(t, 'h2', 'parents.guides.h', {}, ' id="guides-h"')}
-    ${guideCards(req)}
+    ${folded(el(t, 'h2', 'parents.guides.h', {}, ' id="guides-h"'), guideCards(req))}
   </section>
 
   <section class="panel" id="private" aria-labelledby="private-h">
-    ${el(t, 'h2', 'parents.private.h', {}, ' id="private-h"')}${el(t, 'p', 'parents.private.p1')}${el(t, 'p', 'parents.private.p2')}
-    ${paid ? el(t, 'p', 'parents.private.paid') : ''}${el(t, 'p', 'parents.private.p3', { href: lp(req, '/parents/safety-and-screen-time') })}
+    ${folded(el(t, 'h2', 'parents.private.h', {}, ' id="private-h"'), html`${el(t, 'p', 'parents.private.p1')}${el(t, 'p', 'parents.private.p2')}
+    ${paid ? el(t, 'p', 'parents.private.paid') : ''}${el(t, 'p', 'parents.private.p3', { href: lp(req, '/parents/safety-and-screen-time') })}`)}
   </section>
 
   <section class="lp-sec lp-detail" id="details" aria-labelledby="details-h">
@@ -272,9 +272,9 @@ router.get('/parents/:guide', (req, res) => {
     ${ctaEnd(req)}
     <section class="lp-sec" aria-labelledby="more-h">${el(t, 'h2', 'parents.guides.h', {}, ' id="more-h"')}
       ${guideCards(req, guide)}
-      <ul class="chips lp-more"><li><a class="chip" href="${lp(req, '/parents')}"><span aria-hidden="true">👪</span>${t('learn.parentsLink')}</a></li>
-        <li><a class="chip" href="${lp(req, '/learn/make-a-game')}"><span aria-hidden="true">🛠️</span>${t('learn.hubs.makeAGame.name')}</a></li>
-        <li><a class="chip" href="${lp(req, '/safety')}"><span aria-hidden="true">🛡️</span>${t('learn.safetyLink')}</a></li></ul>
+      <ul class="chips lp-more"><li><a class="chip" href="${lp(req, '/parents')}">${ico('👪', { size: 18 })}${t('learn.parentsLink')}</a></li>
+        <li><a class="chip" href="${lp(req, '/learn/make-a-game')}">${ico('🛠️', { size: 18 })}${t('learn.hubs.makeAGame.name')}</a></li>
+        <li><a class="chip" href="${lp(req, '/safety')}">${ico('🛡️', { size: 18 })}${t('learn.safetyLink')}</a></li></ul>
     </section>
   </div>`;
   page(req, res, {
@@ -310,7 +310,7 @@ router.get('/learn/:slug', (req, res, next) => {
       </div></article>`;
   };
   const make = html`<section class="panel lp-make" id="make" aria-labelledby="make-h">${el(t, 'h2', 'learn.ages.make.h', {}, ' id="make-h"')}${el(t, 'p', `${k}.make.p`)}
-    <div class="row"><a class="btn btn-primary" href="/build">🛠️ ${t('learn.hubs.makeAGame.cta')}</a><a class="btn" href="${lp(req, '/learn/make-a-game')}">${t('learn.ages.make.link')}</a></div></section>`;
+    <div class="row"><a class="btn btn-primary" href="/build">${ico('🛠️', { size: 18 })} ${t('learn.hubs.makeAGame.cta')}</a><a class="btn" href="${lp(req, '/learn/make-a-game')}">${t('learn.ages.make.link')}</a></div></section>`;
   // Subject pages that have some of this age's games, with those games' names.
   const skills = HUBS.filter(h => h.slug !== 'brain-break-games').map(h => [h, list.filter(g => h.games.includes(g.slug))]).filter(([h, gs]) => gs.length || (h.slug === 'make-a-game' && age.make));
   const faq = faqBlock(req, [['learn.ages.faq.q1', 'learn.ages.faq.a1'], ...Array.from({ length: age.faq - 1 }, (_, i) => [`${k}.faq.q${i + 2}`, `${k}.faq.a${i + 2}`])], 'parents.faq.h', { ai: lp(req, '/parents/ai-builder-safety') });
@@ -321,7 +321,7 @@ router.get('/learn/:slug', (req, res, next) => {
       ${raw(`<h1 id="lp-h1"${fb(t, `${k}.h1`)}><span aria-hidden="true">${age.emoji}</span> ${tHtml(t, `${k}.h1`)}</h1>`)}
       ${el(t, 'p', `${k}.lead`, {}, ' class="lead"')}
       ${age.key === 'a10' ? el(t, 'p', `${k}.abcya`, {}, ' class="lp-aside"') : ''}
-      <p class="lp-grades"><span aria-hidden="true">🎒</span> ${el(t, 'span', 'learn.ages.line', range)}</p>
+      <p class="lp-grades">${ico('🎒', { size: 18 })} ${el(t, 'span', 'learn.ages.line', range)}</p>
       ${ctaRow(req, { game: list[0] || tryGame() })}
     </section>
     ${age.make === 'first' ? make : ''}
@@ -337,7 +337,7 @@ router.get('/learn/:slug', (req, res, next) => {
     ${inClassLine(req)}
     <section class="lp-sec" aria-labelledby="more-h">${el(t, 'h2', 'learn.ages.moreHeading', {}, ' id="more-h"')}
       <ul class="chips lp-more">${AGES.filter(a => a !== age).map(a => html`<li><a class="chip" href="${lp(req, `/learn/${a.slug}`)}"><span aria-hidden="true">${a.emoji}</span>${t(`learn.ages.${a.key}.name`)}</a></li>`)}
-        <li><a class="chip" href="${lp(req, '/parents')}"><span aria-hidden="true">👪</span>${t('learn.parentsLink')}</a></li></ul>
+        <li><a class="chip" href="${lp(req, '/parents')}">${ico('👪', { size: 18 })}${t('learn.parentsLink')}</a></li></ul>
     </section>
   </div>`;
   const image = `/og/ages-${age.min}-${age.max}.jpg`;

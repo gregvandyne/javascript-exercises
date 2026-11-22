@@ -1,0 +1,1680 @@
+{
+  "about": "The Story Library's Classics shelf (docs/decisions.md \"Story Library: a Classics shelf\"; docs/story-library-classics.md, written by scripts/import-classics.js). Public-domain illustrated editions, read in full by a person for ages 4 to 10 with the library's content rules. Each source records the edition, its first publication year and every maker's death year (the public-domain rule: published before 1931 and every maker dead before 1956). Questions point at a phrase on the page that answers them (the importer works out the page). Fixes correct clear typos, each found exactly once; a fix with kind \"cut\" leaves out a line the owner asked to remove, and the book's notes say a line was left out. A book's grade may be set by hand (grade plus gradeWhy) when the owner decides.",
+  "sources": {
+    "justso": {
+      "ebook": "32488",
+      "title": "Just So Stories",
+      "edition": "Doubleday, Page & Company, New York",
+      "published": 1912,
+      "html": "32488-h/32488-h.htm",
+      "makers": [
+        {
+          "role": "author",
+          "name": "Rudyard Kipling",
+          "died": 1936
+        },
+        {
+          "role": "illustrator",
+          "name": "Joseph M. Gleeson",
+          "died": 1917
+        }
+      ]
+    },
+    "aesop": {
+      "ebook": "18732",
+      "title": "Aesop's Fables: A New Revised Version From Original Sources",
+      "edition": "Frank F. Lovell & Company, New York",
+      "published": 1884,
+      "html": "18732-h/18732-h.htm",
+      "makers": [
+        {
+          "role": "author",
+          "name": "Aesop",
+          "died": -564
+        },
+        {
+          "role": "translator",
+          "name": "the translator (not named in the book)",
+          "anonymous": true
+        },
+        {
+          "role": "illustrator",
+          "name": "Harrison Weir",
+          "died": 1906
+        },
+        {
+          "role": "illustrator",
+          "name": "John Tenniel",
+          "died": 1914
+        },
+        {
+          "role": "illustrator",
+          "name": "Ernest Griset",
+          "died": 1907
+        }
+      ]
+    },
+    "aesopWinter": {
+      "ebook": "19994",
+      "title": "The Aesop for Children",
+      "edition": "Rand McNally & Company, Chicago",
+      "published": 1919,
+      "html": "19994-h/19994-h.htm",
+      "makers": [
+        {
+          "role": "author",
+          "name": "Aesop",
+          "died": -564
+        },
+        {
+          "role": "illustrator",
+          "name": "Milo Winter",
+          "died": 1956
+        }
+      ]
+    },
+    "peter": {
+      "ebook": "14838",
+      "title": "The Tale of Peter Rabbit",
+      "edition": "Frederick Warne & Co.",
+      "published": 1902,
+      "html": "14838-h/14838-h.htm",
+      "makers": [
+        {
+          "role": "author",
+          "name": "Beatrix Potter",
+          "died": 1943
+        },
+        {
+          "role": "illustrator",
+          "name": "Beatrix Potter",
+          "died": 1943
+        }
+      ]
+    },
+    "jeremy": {
+      "ebook": "15077",
+      "title": "The Tale of Mr. Jeremy Fisher",
+      "edition": "Frederick Warne & Co., New York",
+      "published": 1906,
+      "html": "15077-h/15077-h.htm",
+      "makers": [
+        {
+          "role": "author",
+          "name": "Beatrix Potter",
+          "died": 1943
+        },
+        {
+          "role": "illustrator",
+          "name": "Beatrix Potter",
+          "died": 1943
+        }
+      ]
+    },
+    "mice": {
+      "ebook": "45264",
+      "title": "The Tale of Two Bad Mice",
+      "edition": "Frederick Warne & Co., London",
+      "published": 1904,
+      "html": "45264-h/45264-h.htm",
+      "makers": [
+        {
+          "role": "author",
+          "name": "Beatrix Potter",
+          "died": 1943
+        },
+        {
+          "role": "illustrator",
+          "name": "Beatrix Potter",
+          "died": 1943
+        }
+      ]
+    },
+    "tittlemouse": {
+      "ebook": "17089",
+      "title": "The Tale of Mrs. Tittlemouse",
+      "edition": "Frederick Warne & Co.",
+      "published": 1910,
+      "html": "17089-h/17089-h.htm",
+      "makers": [
+        {
+          "role": "author",
+          "name": "Beatrix Potter",
+          "died": 1943
+        },
+        {
+          "role": "illustrator",
+          "name": "Beatrix Potter",
+          "died": 1943
+        }
+      ]
+    },
+    "ginger": {
+      "ebook": "14877",
+      "title": "The Tale of Ginger and Pickles",
+      "edition": "Frederick Warne & Co.",
+      "published": 1909,
+      "html": "14877-h/14877-h.htm",
+      "makers": [
+        {
+          "role": "author",
+          "name": "Beatrix Potter",
+          "died": 1943
+        },
+        {
+          "role": "illustrator",
+          "name": "Beatrix Potter",
+          "died": 1943
+        }
+      ]
+    },
+    "velveteen": {
+      "ebook": "11757",
+      "title": "The Velveteen Rabbit",
+      "edition": "Doubleday & Company, Garden City, New York",
+      "published": 1922,
+      "html": "11757-h/11757-h.htm",
+      "makers": [
+        {
+          "role": "author",
+          "name": "Margery Williams",
+          "died": 1944
+        },
+        {
+          "role": "illustrator",
+          "name": "William Nicholson",
+          "died": 1949
+        }
+      ]
+    },
+    "andersen": {
+      "ebook": "17860",
+      "title": "Stories from Hans Andersen",
+      "edition": "Hodder & Stoughton, London",
+      "published": 1911,
+      "html": "17860-h/17860-h.htm",
+      "makers": [
+        {
+          "role": "author",
+          "name": "Hans Christian Andersen",
+          "died": 1875
+        },
+        {
+          "role": "translator",
+          "name": "the translator (not named in the book)",
+          "anonymous": true
+        },
+        {
+          "role": "illustrator",
+          "name": "Edmund Dulac",
+          "died": 1953
+        }
+      ]
+    }
+  },
+  "books": {
+    "whale": {
+      "source": "justso",
+      "title": "How the Whale Got His Throat",
+      "section": "HOW THE WHALE GOT HIS THROAT",
+      "end": "and that is the end of that tale.",
+      "cover": "col01.jpg",
+      "pictures": [
+        {
+          "file": "gs03.png",
+          "at": "and he swallowed the shipwrecked Mariner"
+        },
+        {
+          "file": "gs04.png",
+          "at": "went and hid himself in the mud"
+        }
+      ],
+      "questions": [
+        {
+          "q": "What did the Whale eat at the start of the story?",
+          "right": "All the fishes he could find in the sea",
+          "wrong": [
+            "Only seaweed and shells",
+            "Cakes and buns from the shore"
+          ],
+          "at": "All the fishes he could find in all the sea",
+          "kind": "literal"
+        },
+        {
+          "q": "What did the Mariner make out of his raft?",
+          "right": "A grating, tied in the Whale's throat with his suspenders",
+          "wrong": [
+            "A little boat to sail home in",
+            "A fishing net to catch the 'Stute Fish"
+          ],
+          "at": "cut up the raft into a little square grating",
+          "kind": "literal"
+        },
+        {
+          "q": "Why do you think the Mariner jumped and danced inside the Whale?",
+          "right": "To make the Whale so uncomfortable that he would let him out",
+          "wrong": [
+            "Because he loved dancing to music",
+            "To keep warm in the cold sea"
+          ],
+          "at": "he stumped and he jumped and he",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "'Stute": "Short for astute: clever.",
+        "Cetacean": "A whale, dolphin or porpoise.",
+        "breeches": "Short trousers that end at the knee.",
+        "suspenders": "Straps over the shoulders that hold up trousers.",
+        "sagacity": "Wisdom and good sense.",
+        "natal-shore": "The shore of the land where you were born.",
+        "hiccough": "An old spelling of hiccup.",
+        "grating": "A frame of crossed bars.",
+        "shingle": "A beach of small round pebbles."
+      },
+      "fixes": [
+        {
+          "from": "For the Mariner he was also an Hi-ber-ni-an. ",
+          "to": "",
+          "kind": "cut",
+          "why": "a joke about Irish speech; owner's decision 20 Nov 2026"
+        }
+      ]
+    },
+    "camel": {
+      "source": "justso",
+      "title": "How the Camel Got His Hump",
+      "section": "HOW THE CAMEL GOT HIS HUMP",
+      "end": "he has never yet learned how to behave.",
+      "cover": "col02.jpg",
+      "skip": [
+        "Here is the picture of the Djinn in charge",
+        "Underneath the truly picture"
+      ],
+      "pictures": [
+        {
+          "file": "gs07.png",
+          "at": "began to think a Great Magic"
+        },
+        {
+          "file": "gs08.png",
+          "alt": "The Djinn guiding the Magic with his magic fan, while the Camel looks at himself in a pool of water.",
+          "at": "puffing up and puffing up"
+        }
+      ],
+      "questions": [
+        {
+          "q": "What did the Camel say whenever anyone spoke to him?",
+          "right": "\"Humph!\"",
+          "wrong": [
+            "\"Hello, friend!\"",
+            "\"I will help!\""
+          ],
+          "at": "and when anybody spoke to him he said 'Humph!'",
+          "kind": "literal"
+        },
+        {
+          "q": "Who came to talk to the Camel about his idleness?",
+          "right": "The Djinn in charge of All Deserts",
+          "wrong": [
+            "The Man who owned the Horse",
+            "A big Lion from the Zoo"
+          ],
+          "at": "Presently there came along the Djinn in charge of All Deserts",
+          "kind": "literal"
+        },
+        {
+          "q": "What lesson does the Camel's hump teach?",
+          "right": "Being lazy can bring trouble on yourself",
+          "wrong": [
+            "It is good to say only one word",
+            "Deserts are too hot to work in"
+          ],
+          "at": "That's your very own humph that you've brought upon your very own self",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "Djinn": "A magic spirit in old stories from Arabia.",
+        "'scruciating": "Short for excruciating: terribly.",
+        "palaver": "A long talk. Indaba, punchayet and pow-wow are words from other languages for a meeting to talk things over.",
+        "tamarisks": "Bushes that grow in deserts.",
+        "idle": "Not working; lazy.",
+        "plough": "To dig up a field so seeds can be planted (US spelling: plow)."
+      }
+    },
+    "kangaroo": {
+      "source": "justso",
+      "title": "The Sing-Song of Old Man Kangaroo",
+      "section": "THE SING-SONG OF OLD MAN KANGAROO",
+      "end": "each said, 'That's your fault.'",
+      "cover": "col06.jpg",
+      "dropCaps": {
+        "gs19-not.png": "Not "
+      },
+      "skip": [
+        "This is a picture of Old Man Kangaroo when",
+        "The Kangaroo hasn't any real name",
+        "This is the picture of Old Man Kangaroo at five",
+        "I don't know the names of the flowers"
+      ],
+      "pictures": [
+        {
+          "file": "gs20.png",
+          "alt": "Old Man Kangaroo, grey and woolly with four short legs, dancing on a ledge of rock while Little God Nqa watches.",
+          "at": "he danced on an outcrop in the middle of Australia"
+        },
+        {
+          "file": "gs21.png",
+          "alt": "Old Man Kangaroo on his new long hind legs at five o'clock, with Big God Nqong in his bath and Yellow-Dog Dingo.",
+          "at": "Then came Nqong from his bath in the salt-pans"
+        }
+      ],
+      "questions": [
+        {
+          "q": "What did Kangaroo look like at the start of the story?",
+          "right": "Grey and woolly, with four short legs",
+          "wrong": [
+            "Brown, with long back legs and a pouch",
+            "Spotted, with a long neck"
+          ],
+          "at": "he danced on an outcrop in the middle of Australia",
+          "kind": "literal"
+        },
+        {
+          "q": "Who did Big God Nqong send to chase Kangaroo?",
+          "right": "Yellow-Dog Dingo",
+          "wrong": [
+            "Little God Nqa",
+            "A hungry crocodile"
+          ],
+          "at": "Nqong called Dingo",
+          "kind": "literal"
+        },
+        {
+          "q": "Why did Kangaroo end up with long, strong back legs?",
+          "right": "He had to hop and hop all day to get away from Dingo",
+          "wrong": [
+            "Nqong painted them on with magic",
+            "He ate special grass in the desert"
+          ],
+          "at": "First he hopped one yard",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "inordinate": "Much too big.",
+        "spinifex": "A spiky grass that grows in Australia.",
+        "mulga": "A small Australian tree.",
+        "salt-pan": "A flat place where water dried up and left salt behind.",
+        "played Old Scratch with": "An old saying meaning \"made a terrible mess of\".",
+        "importunate": "Asking again and again."
+      }
+    },
+    "armadillos": {
+      "source": "justso",
+      "title": "The Beginning of the Armadillos",
+      "section": "THE BEGINNING OF THE ARMADILLOS",
+      "end": "So that's all right, Best Beloved. Do you see?",
+      "cover": "col07.jpg",
+      "skip": [
+        "Transcriber's Note"
+      ],
+      "pictures": [
+        {
+          "file": "map.jpg",
+          "at": "Why can't you understand?"
+        },
+        {
+          "file": "gs23.png",
+          "at": "rolled round and round Painted Jaguar"
+        }
+      ],
+      "scanReviewed": "Read by a person: \"the prickles hurt him\" (a jaguar's sore paw), \"those directions\" and \"This is a mess!\" are ordinary words; nothing to change.",
+      "questions": [
+        {
+          "q": "What did Mother Jaguar say to do with a Hedgehog?",
+          "right": "Drop him into the water so he uncoils",
+          "wrong": [
+            "Roll him up a hill",
+            "Put him in a basket"
+          ],
+          "at": "'My son, when you find a Hedgehog you must drop him into the water",
+          "kind": "literal"
+        },
+        {
+          "q": "What did Stickly-Prickly learn to do with Slow-Solid's help?",
+          "right": "Swim",
+          "wrong": [
+            "Fly",
+            "Climb trees"
+          ],
+          "at": "I'm going to try to learn to swim",
+          "kind": "literal"
+        },
+        {
+          "q": "Why did Painted Jaguar get so mixed up?",
+          "right": "The Hedgehog and the Tortoise mixed up his mother's words on purpose",
+          "wrong": [
+            "He could not see in the dark",
+            "His mother told him about the wrong animals"
+          ],
+          "at": "said Stickly-Prickly Hedgehog. 'Are you quite sure?",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "turbid": "Cloudy and muddy (water).",
+        "Amazon": "A very long river in South America.",
+        "paddy-paw": "A playful word for a paw.",
+        "this month of Sundays": "An old saying: for a very long time.",
+        "uncoil": "To unroll from a ball."
+      }
+    },
+    "peter-rabbit": {
+      "source": "peter",
+      "title": "The Tale of Peter Rabbit",
+      "start": "Once upon a time there were four little Rabbits",
+      "end": "bread and milk and blackberries for supper.",
+      "cover": "peter04.jpg",
+      "pictureBook": true,
+      "pictureSide": "before",
+      "pictures": [
+        {
+          "file": "peter08.jpg",
+          "at": "Once upon a time there were four little Rabbits",
+          "alt": "The rabbits' home under the root of a big fir-tree."
+        },
+        "peter11.jpg",
+        "peter12.jpg",
+        "peter15.jpg",
+        "peter16.jpg",
+        {
+          "file": "peter19.jpg",
+          "alt": "Peter squeezing under the gate into Mr. McGregor's garden."
+        },
+        {
+          "file": "peter20.jpg",
+          "alt": "Peter eating lettuces in the garden."
+        },
+        {
+          "file": "peter23.jpg",
+          "alt": "Peter, feeling rather sick, looking for parsley."
+        },
+        "peter24.jpg",
+        "peter27.jpg",
+        "peter28.jpg",
+        "peter31.jpg",
+        "peter32.jpg",
+        "peter35.jpg",
+        "peter36.jpg",
+        {
+          "file": "peter39.jpg",
+          "alt": "Peter sneezes in the tool-shed."
+        },
+        "peter40.jpg",
+        "peter43.jpg",
+        "peter44.jpg",
+        "peter47.jpg",
+        "peter48.jpg",
+        "peter51.jpg",
+        {
+          "file": "peter52.jpg",
+          "alt": "Peter's little jacket and shoes on a scarecrow."
+        },
+        "peter55.jpg",
+        {
+          "file": "peter57.jpg",
+          "alt": "Peter in bed while his mother makes camomile tea."
+        },
+        {
+          "file": "peter58.jpg",
+          "alt": "Flopsy, Mopsy and Cotton-tail eating bread and milk and blackberries."
+        }
+      ],
+      "questions": [
+        {
+          "q": "Where did Mrs. Rabbit tell her children not to go?",
+          "right": "Mr. McGregor's garden",
+          "wrong": [
+            "The baker's shop",
+            "The blackberry lane"
+          ],
+          "at": "don't go into Mr. McGregor's garden",
+          "kind": "literal"
+        },
+        {
+          "q": "What did Peter lose in the garden?",
+          "right": "His shoes and his jacket",
+          "wrong": [
+            "His basket of blackberries",
+            "His hat and his umbrella"
+          ],
+          "at": "He lost one of his shoes among the cabbages",
+          "kind": "literal"
+        },
+        {
+          "q": "Why was Peter given camomile tea at bedtime?",
+          "right": "He was not well after his scary day in the garden",
+          "wrong": [
+            "It was his favorite drink",
+            "He had picked the camomile himself"
+          ],
+          "at": "made some camomile tea",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "camomile": "A plant whose flowers make a calming tea.",
+        "currant buns": "Sweet rolls with small dried grapes in them.",
+        "cucumber frame": "A low glass box that keeps young plants warm.",
+        "gooseberry net": "A net over gooseberry bushes to keep the birds off.",
+        "sieve": "A bowl with lots of tiny holes.",
+        "fortnight": "Two weeks."
+      },
+      "grade": "3",
+      "gradeWhy": "Owner asked for best judgment (20 Nov 2026): US schools read Potter aloud in K-2 and children read her alone around Grade 3; her old words and long sentences push the shared rule to Grades 4-5."
+    },
+    "jeremy-fisher": {
+      "source": "jeremy",
+      "title": "The Tale of Mr. Jeremy Fisher",
+      "start": "Once upon a time there was a frog called Mr. Jeremy Fisher",
+      "end": "but I think it must have been nasty!",
+      "cover": "jf03.jpg",
+      "pictureBook": true,
+      "pictureSide": "before",
+      "pictures": [
+        "jf04.jpg",
+        "jf05.jpg",
+        "jf06.jpg",
+        {
+          "file": "jf07.jpg",
+          "alt": "Mr. Jeremy Fisher digging for worms."
+        },
+        "jf08.jpg",
+        "jf09.jpg",
+        "jf10.jpg",
+        "jf11.jpg",
+        "jf12.jpg",
+        "jf13.jpg",
+        "jf14.jpg",
+        {
+          "file": "jf15.jpg",
+          "alt": "Mr. Jeremy Fisher in his boat: \"I trust that is not a rat.\""
+        },
+        "jf16.jpg",
+        "jf17.jpg",
+        "jf18.jpg",
+        "jf20.jpg",
+        "jf21.jpg",
+        "jf22.jpg",
+        "jf24.jpg",
+        "jf25.jpg",
+        {
+          "file": "jf26.jpg",
+          "alt": "Mr. Jeremy Fisher and his guests at dinner."
+        },
+        {
+          "file": "jf29.jpg",
+          "alt": "Dinner: a roasted grasshopper with lady-bird sauce."
+        }
+      ],
+      "scanReviewed": "Read by a person: \"it seized Mr. Jeremy with a snap\" is a trout catching the frog (he is spat out at once), not personal information; nothing to change.",
+      "questions": [
+        {
+          "q": "Where did Mr. Jeremy Fisher go fishing?",
+          "right": "In his boat on the pond",
+          "wrong": [
+            "In the sea",
+            "In a river by a mill"
+          ],
+          "at": "pushed the boat out into open water",
+          "kind": "literal"
+        },
+        {
+          "q": "What caught Mr. Jeremy and dived to the bottom of the pond?",
+          "right": "A great big trout",
+          "wrong": [
+            "A water-beetle",
+            "A stickleback"
+          ],
+          "at": "A great big enormous trout came up",
+          "kind": "literal"
+        },
+        {
+          "q": "Why did Mr. Jeremy say he would never dare to go fishing again?",
+          "right": "Being caught by the trout gave him a terrible fright",
+          "wrong": [
+            "He had caught too many fish to eat",
+            "His friends did not like minnows"
+          ],
+          "at": "I am sure I should never have dared to go fishing again",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "macintosh": "A raincoat.",
+        "goloshes": "Rubber shoes worn over other shoes in the rain.",
+        "minnows": "Very small fish.",
+        "stickleback": "A small fish with sharp spines on its back.",
+        "disconsolately": "Very sadly.",
+        "Alderman": "A member of a town council."
+      },
+      "grade": "3",
+      "gradeWhy": "Owner asked for best judgment (20 Nov 2026): US schools read Potter aloud in K-2 and children read her alone around Grade 3; her old words and long sentences push the shared rule to Grades 4-5."
+    },
+    "two-bad-mice": {
+      "source": "mice",
+      "title": "The Tale of Two Bad Mice",
+      "start": "ONCE upon a time there was a very beautiful doll's-house",
+      "end": "to sweep the Dollies' house!",
+      "cover": "frontis.jpg",
+      "pictureBook": true,
+      "pictureSide": "before",
+      "smallCaps": true,
+      "pictures": [
+        "illus19.jpg",
+        "illus22.jpg",
+        "illus25.jpg",
+        {
+          "file": "illus28.jpg",
+          "alt": "Tom Thumb popping out to see."
+        },
+        "illus31.jpg",
+        "illus34.jpg",
+        "illus37.jpg",
+        "illus40.jpg",
+        "illus43.jpg",
+        "illus46.jpg",
+        "illus49.jpg",
+        "illus52.jpg",
+        "illus55.jpg",
+        {
+          "file": "illus58.jpg",
+          "alt": "Hunca Munca tipping out the canisters."
+        },
+        "illus61.jpg",
+        "illus64.jpg",
+        "illus67.jpg",
+        "illus70.jpg",
+        "illus73.jpg",
+        "illus76.jpg",
+        {
+          "file": "illus79.jpg",
+          "alt": "Hunca Munca in a doll's dress, with a baby mouse in the cradle."
+        },
+        "illus82.jpg",
+        "illus85.jpg",
+        {
+          "file": "illus88.jpg",
+          "alt": "Tom Thumb with his many children."
+        },
+        {
+          "file": "illus92.jpg",
+          "at": "he and Hunca Munca stuffed it into one of the stockings",
+          "alt": "Tom Thumb and Hunca Munca putting the sixpence into a stocking."
+        },
+        "illus95.jpg"
+      ],
+      "scanReviewed": "Read by a person: \"The knife crumpled up and hurt him\" (a doll's tin knife bends and a mouse sucks his finger) is mild; nothing to change.",
+      "questions": [
+        {
+          "q": "Who did the doll's-house belong to?",
+          "right": "Two dolls called Lucinda and Jane",
+          "wrong": [
+            "Tom Thumb and Hunca Munca",
+            "The nurse"
+          ],
+          "at": "It belonged to two Dolls called Lucinda and Jane",
+          "kind": "literal"
+        },
+        {
+          "q": "What does Hunca Munca do very early every morning?",
+          "right": "Sweeps the dolls' house",
+          "wrong": [
+            "Cooks the dolls' dinner",
+            "Plays with the policeman doll"
+          ],
+          "at": "comes with her dust-pan and her broom",
+          "kind": "literal"
+        },
+        {
+          "q": "Why were the mice so angry at the dinner?",
+          "right": "The food looked real, but none of it could be eaten",
+          "wrong": [
+            "The dolls came home too soon",
+            "The fire in the kitchen was too hot"
+          ],
+          "at": "there was no end to the rage and disappointment",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "perambulator": "A baby carriage (a stroller).",
+        "skirting-board": "The board along the bottom of a wall.",
+        "cheesemonger": "A person who sells cheese.",
+        "frugal": "Careful not to waste anything.",
+        "bolster": "A long, round pillow.",
+        "sixpence": "An old British coin."
+      },
+      "grade": "3",
+      "gradeWhy": "Owner asked for best judgment (20 Nov 2026): US schools read Potter aloud in K-2 and children read her alone around Grade 3; her old words and long sentences push the shared rule to Grades 4-5."
+    },
+    "tittlemouse": {
+      "source": "tittlemouse",
+      "title": "The Tale of Mrs. Tittlemouse",
+      "start": "Once upon a time there was a wood-mouse",
+      "end": "Your very good health, Mrs. Tittlemouse!",
+      "cover": "04.jpg",
+      "pictureBook": true,
+      "pictureSide": "before",
+      "pictures": [
+        "11.jpg",
+        "12.jpg",
+        "15.jpg",
+        "16.jpg",
+        "19.jpg",
+        "20.jpg",
+        "23.jpg",
+        "24.jpg",
+        "27.jpg",
+        "28.jpg",
+        "31.jpg",
+        "32.jpg",
+        "35.jpg",
+        "36.jpg",
+        "39.jpg",
+        "40.jpg",
+        "43.jpg",
+        "44.jpg",
+        "47.jpg",
+        "48.jpg",
+        "51a.jpg",
+        "52.jpg",
+        "55.jpg",
+        "57.jpg",
+        "58.jpg"
+      ],
+      "fixes": [
+        {
+          "from": "Mrs. tittlemouse was a most",
+          "to": "Mrs. Tittlemouse was a most",
+          "why": "capital letter"
+        },
+        {
+          "from": "Mrs. tittlemouse went on her way",
+          "to": "Mrs. Tittlemouse went on her way",
+          "why": "capital letter"
+        },
+        {
+          "from": "Mrs. tittlemouse began to pull",
+          "to": "Mrs. Tittlemouse began to pull",
+          "why": "capital letter"
+        },
+        {
+          "from": "Mrs. tittlemouse decided",
+          "to": "Mrs. Tittlemouse decided",
+          "why": "capital letter"
+        }
+      ],
+      "questions": [
+        {
+          "q": "What kind of animal is Mrs. Tittlemouse?",
+          "right": "A wood-mouse",
+          "wrong": [
+            "A toad",
+            "A bumble bee"
+          ],
+          "at": "there was a wood-mouse",
+          "kind": "literal"
+        },
+        {
+          "q": "What did Mr. Jackson want to find in the house?",
+          "right": "Honey",
+          "wrong": [
+            "Cherry-stones",
+            "Thistle-down seed"
+          ],
+          "at": "would be a little dish of honey",
+          "kind": "literal"
+        },
+        {
+          "q": "Why did Mrs. Tittlemouse make her front door smaller?",
+          "right": "So Mr. Jackson could not squeeze in and make a mess again",
+          "wrong": [
+            "To keep the rain out of her bedroom",
+            "Because the old door was broken"
+          ],
+          "at": "I will make it too small for Mr. Jackson!",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "larder": "A cool room or cupboard for keeping food.",
+        "fender": "A low metal frame in front of a fireplace.",
+        "lodgings": "Rooms that people pay to stay in.",
+        "distracted": "Very upset and confused.",
+        "fortnight": "Two weeks."
+      },
+      "grade": "3",
+      "gradeWhy": "Owner asked for best judgment (20 Nov 2026): US schools read Potter aloud in K-2 and children read her alone around Grade 3; her old words and long sentences push the shared rule to Grades 4-5."
+    },
+    "ginger-and-pickles": {
+      "source": "ginger",
+      "title": "The Tale of Ginger and Pickles",
+      "start": "Once upon a time there was a village shop",
+      "end": "There is something to please everybody.",
+      "cover": "ginger_fig13.jpg",
+      "pictureBook": true,
+      "pictureSide": "before",
+      "pictures": [
+        "grayp11.png",
+        "ginger_fig13.jpg",
+        "grayp14.png",
+        "ginger_fig18.jpg",
+        "ginger_fig22.jpg",
+        "grayp24.png",
+        "grayp26.png",
+        "ginger_fig29.jpg",
+        "ginger_fig33.jpg",
+        {
+          "file": "grayp34.png",
+          "at": "There was an envelope lying on the counter"
+        },
+        "ginger_fig37.jpg",
+        "grayp38.png",
+        {
+          "file": "grayp43.png",
+          "at": "Ginger is living in the warren"
+        },
+        {
+          "file": "ginger_fig44.jpg",
+          "at": "Pickles is at present a gamekeeper"
+        },
+        "grayp46.png",
+        {
+          "file": "grayp49.png",
+          "at": "Of course there are the tradesmen's carts"
+        },
+        {
+          "file": "ginger_fig51.jpg",
+          "at": "After a time Mr. John Dormouse"
+        },
+        {
+          "file": "grayp52.png",
+          "at": "Besides—the candles which they sell"
+        },
+        "grayp53.png",
+        "grayp55.png",
+        "grayp56.png",
+        "ginger_fig58.jpg",
+        "grayp60.png"
+      ],
+      "questions": [
+        {
+          "q": "What kind of animals were Ginger and Pickles?",
+          "right": "A yellow tom-cat and a terrier",
+          "wrong": [
+            "Two rabbits",
+            "A hen and a mouse"
+          ],
+          "at": "Ginger was a yellow tom-cat",
+          "kind": "literal"
+        },
+        {
+          "q": "What did Ginger and Pickles give their customers?",
+          "right": "Unlimited credit",
+          "wrong": [
+            "Free toffee every day",
+            "A ride in the cart"
+          ],
+          "at": "Ginger and Pickles gave unlimited credit.",
+          "kind": "literal"
+        },
+        {
+          "q": "Why did the shop run out of money?",
+          "right": "The customers bought things but never paid for them",
+          "wrong": [
+            "A policeman took the money",
+            "The mice ate all the coins"
+          ],
+          "at": "they never paid for as much as a pennyworth",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "credit": "Taking things now and paying later.",
+        "till": "A drawer for money in a shop.",
+        "licence": "The British spelling of license.",
+        "rates and taxes": "Money people pay to the town and the government.",
+        "summons": "An order to go to court.",
+        "gamekeeper": "A person who looks after the wild birds and animals on a big piece of land."
+      },
+      "grade": "3",
+      "gradeWhy": "Owner asked for best judgment (20 Nov 2026): US schools read Potter aloud in K-2 and children read her alone around Grade 3; her old words and long sentences push the shared rule to Grades 4-5."
+    },
+    "velveteen-rabbit": {
+      "source": "velveteen",
+      "title": "The Velveteen Rabbit",
+      "start": "There was once a velveteen rabbit",
+      "end": "who had first helped him to be Real.",
+      "cover": "christmas.jpg",
+      "dropCaps": {
+        "detail.jpg": "T"
+      },
+      "skip": [
+        "Christmas Morning",
+        "The Skin Horse Tells His Story",
+        "Spring Time",
+        "Summer Days",
+        "Anxious Times",
+        "The Fairy Flower",
+        "At Last! At Last!"
+      ],
+      "pictures": [
+        {
+          "file": "christmas.jpg",
+          "alt": "Christmas morning: the Velveteen Rabbit in the Boy's stocking."
+        },
+        {
+          "file": "horse.jpg",
+          "alt": "The Skin Horse tells the Rabbit his story."
+        },
+        {
+          "file": "spring.jpg",
+          "alt": "Spring time: the Boy and the Rabbit in the garden."
+        },
+        {
+          "file": "summer.jpg",
+          "alt": "Summer days: the Velveteen Rabbit meets two wild rabbits."
+        },
+        {
+          "file": "anxious.jpg",
+          "alt": "Anxious times: the Boy is ill in bed."
+        },
+        {
+          "file": "fairy.jpg",
+          "alt": "The fairy flower: the nursery magic Fairy holds the Rabbit."
+        },
+        {
+          "file": "last.jpg",
+          "alt": "At last: the Rabbit is a real rabbit, dancing with the others."
+        }
+      ],
+      "scanReviewed": "Read by a person: \"made all in one piece\" (the toy rabbit's body) is not the name of a cartoon; nothing to change.",
+      "questions": [
+        {
+          "q": "Who told the Rabbit what Real means?",
+          "right": "The Skin Horse",
+          "wrong": [
+            "The model boat",
+            "Nana"
+          ],
+          "at": "Real isn't how you are made",
+          "kind": "literal"
+        },
+        {
+          "q": "Why did the doctor say the old Bunny had to be burnt?",
+          "right": "It was full of scarlet fever germs",
+          "wrong": [
+            "It was too dirty for the seaside",
+            "The Boy did not love it any more"
+          ],
+          "at": "it's a mass of scarlet fever germs",
+          "kind": "literal"
+        },
+        {
+          "q": "At the end, why does a rabbit in the wood look familiar to the Boy?",
+          "right": "It is his old Bunny, made Real by the Fairy",
+          "wrong": [
+            "It is the new white plush bunny",
+            "It is one of the wild rabbits who laughed"
+          ],
+          "at": "he looks just like my old Bunny",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "velveteen": "A soft cloth that looks like velvet.",
+        "sateen": "A smooth, shiny cotton cloth.",
+        "Nana": "A nanny who looks after the children.",
+        "nursery": "A children's room for playing and sleeping.",
+        "scarlet fever": "An illness that was common long ago; doctors can treat it easily today.",
+        "disinfected": "Cleaned to get rid of germs.",
+        "bracken": "Tall ferns."
+      }
+    },
+    "emperors-new-clothes": {
+      "source": "andersen",
+      "title": "The Emperor's New Clothes",
+      "section": "THE EMPEROR'S NEW CLOTHES",
+      "end": "held up the invisible train.",
+      "cover": "plate24-th.jpg",
+      "coverSrc": "plate24.jpg",
+      "skip": [
+        "They pointed to the empty loom, and the poor old minister stared",
+        "Then the emperor walked along in the procession"
+      ],
+      "pictures": [
+        {
+          "file": "plate23-th.jpg",
+          "src": "plate23.jpg",
+          "at": "and the poor old minister stared as hard as he could",
+          "alt": "The two swindlers show the old minister the empty loom."
+        },
+        {
+          "file": "plate24-th.jpg",
+          "src": "plate24.jpg",
+          "at": "Then the Emperor walked along in the procession under the gorgeous canopy",
+          "alt": "The Emperor walks in the procession under the gorgeous canopy."
+        }
+      ],
+      "scanReviewed": "Read by a person: \"how stupid his neighbour was\" is the story's point about vanity, not a label on a child; nothing to change.",
+      "questions": [
+        {
+          "q": "What did the swindlers say was special about their cloth?",
+          "right": "Anyone unfit for his job, or very dull, could not see it",
+          "wrong": [
+            "It glowed in the dark",
+            "It never got dirty"
+          ],
+          "at": "becoming invisible to every person",
+          "kind": "literal"
+        },
+        {
+          "q": "Who first said that the Emperor had nothing on?",
+          "right": "A little child",
+          "wrong": [
+            "The old minister",
+            "The Emperor himself"
+          ],
+          "at": "said a little child",
+          "kind": "literal"
+        },
+        {
+          "q": "Why did the old minister pretend he could see the cloth?",
+          "right": "He was afraid people would think he was a fool or not fit for his post",
+          "wrong": [
+            "He really could see it",
+            "He wanted to buy some for himself"
+          ],
+          "at": "Am I not fit for my post?",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "swindlers": "People who cheat others out of their money.",
+        "loom": "A frame for weaving cloth.",
+        "stuffs": "Cloth.",
+        "courtiers": "People who serve a king or an emperor.",
+        "chamberlains": "Officials of a royal court.",
+        "canopy": "A cloth roof carried over someone."
+      }
+    },
+    "aesop-clever-thinking": {
+      "source": "aesop",
+      "title": "Aesop's Fables: Clever Thinking",
+      "fables": [
+        "The Crow and the Pitcher.",
+        "The Fox and the Goat.",
+        "The Lark and her Young Ones.",
+        "The Wolf, the Goat and the Kid.",
+        "The Mice in Council.",
+        "The Two Frogs.",
+        "The Wild Boar and the Fox."
+      ],
+      "cover": "image50.png",
+      "questions": [
+        {
+          "q": "How did the Crow reach the water in the pitcher?",
+          "right": "He dropped stones in until the water came up",
+          "wrong": [
+            "He tipped the pitcher over",
+            "He broke the pitcher with his beak"
+          ],
+          "at": "he collected as many stones as he could carry",
+          "kind": "literal"
+        },
+        {
+          "q": "What did the Kid ask the Wolf to show before opening the door?",
+          "right": "A white paw",
+          "wrong": [
+            "A golden key",
+            "A bunch of grass"
+          ],
+          "at": "Show me a white paw",
+          "kind": "literal"
+        },
+        {
+          "q": "Why did the Mice never tie the bell on the Cat?",
+          "right": "Nobody was brave enough to go near the Cat to do it",
+          "wrong": [
+            "They had no bell",
+            "The Cat already had a bell"
+          ],
+          "at": "there was no one found to do it",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "pitcher": "A jug.",
+        "Kid": "A young goat.",
+        "brood": "A family of young birds.",
+        "sureties": "Promises that make something safe."
+      }
+    },
+    "aesop-tricksters": {
+      "source": "aesop",
+      "title": "Aesop's Fables: Tricks and Flattery",
+      "fables": [
+        "The Fox and the Crow.",
+        "The Fox and the Stork.",
+        "The Fox and the Grapes.",
+        "The Wolf and the Goat.",
+        "The Wolf and the Sheep.",
+        "The Cat and the Birds.",
+        "The Wolf and the Horse."
+      ],
+      "cover": "image63c.png",
+      "questions": [
+        {
+          "q": "How did the Fox get the Crow's meat?",
+          "right": "He praised her until she cawed and dropped it",
+          "wrong": [
+            "He climbed the tree",
+            "He gave her some grapes for it"
+          ],
+          "at": "set up a loud caw, and dropped the flesh",
+          "kind": "literal"
+        },
+        {
+          "q": "What did the Stork give the Fox for dinner?",
+          "right": "Minced meat in a tall, narrow glass jar",
+          "wrong": [
+            "Soup in a wide, shallow dish",
+            "Grapes on a plate"
+          ],
+          "at": "some minced meat in a glass jar",
+          "kind": "literal"
+        },
+        {
+          "q": "Why did the Fox say the grapes were sour?",
+          "right": "She could not reach them, so she pretended she did not want them",
+          "wrong": [
+            "She had tasted them and they were sour",
+            "A bird told her they were not ripe"
+          ],
+          "at": "The Grapes are sour",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "flattery": "Praise that is not really meant, said to get something.",
+        "Stork": "A tall bird with a long beak and long legs.",
+        "Reynard": "An old name for a fox.",
+        "precipice": "A very steep cliff.",
+        "hypocritical": "Saying one thing but meaning another."
+      }
+    },
+    "aesop-friends": {
+      "source": "aesop",
+      "title": "Aesop's Fables: Friends and Helpers",
+      "fables": [
+        "The Lion and the Mouse.",
+        "The Dove and the Ant.",
+        "The Bear and the Two Travelers.",
+        "The Town Mouse and the Country Mouse.",
+        "The Thrush and the Swallow.",
+        "The Man and the Satyr.",
+        "The Two Pots."
+      ],
+      "cover": "image48.png",
+      "scanReviewed": "Read by a person: the Lion \"was about to kill\" the Mouse but lets him go (mild peril; nobody is hurt); nothing to change.",
+      "questions": [
+        {
+          "q": "How did the Mouse help the Lion?",
+          "right": "He gnawed through the hunters' ropes",
+          "wrong": [
+            "He chased the hunters away",
+            "He brought the Lion food"
+          ],
+          "at": "gnawed the rope with his teeth",
+          "kind": "literal"
+        },
+        {
+          "q": "How did the Dove save the Ant?",
+          "right": "She dropped a leaf into the stream for the Ant to climb on",
+          "wrong": [
+            "She carried the Ant in her beak",
+            "She called the other ants to help"
+          ],
+          "at": "plucked a leaf",
+          "kind": "literal"
+        },
+        {
+          "q": "Why did the man say the Bear told him not to travel with a friend who runs away?",
+          "right": "His friend had climbed a tree and left him alone with the Bear",
+          "wrong": [
+            "The Bear really talked to him",
+            "The Bear wanted to be his friend"
+          ],
+          "at": "Never travel with a friend who deserts you",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "Satyr": "A creature from old Greek stories, part man and part goat.",
+        "lime-twigs": "Sticky twigs once used to catch birds.",
+        "earthenware": "Made of baked clay.",
+        "repast": "A meal.",
+        "famished": "Very hungry."
+      }
+    },
+    "aesop-showing-off": {
+      "source": "aesop",
+      "title": "Aesop's Fables: Showing Off",
+      "fables": [
+        "The Hare and the Tortoise.",
+        "The Fox and the Leopard.",
+        "The Boasting Traveler.",
+        "The Dancing Monkeys.",
+        "The Peacock and the Magpie.",
+        "The Kid and the Wolf."
+      ],
+      "cover": "image126.png",
+      "questions": [
+        {
+          "q": "Who won the race?",
+          "right": "The Tortoise",
+          "wrong": [
+            "The Hare",
+            "The Fox"
+          ],
+          "at": "he saw the Tortoise had reached the goal",
+          "kind": "literal"
+        },
+        {
+          "q": "What did the Monkeys do when nuts were thrown on the stage?",
+          "right": "Stopped dancing and fought over the nuts",
+          "wrong": [
+            "Danced even better",
+            "Threw the nuts back"
+          ],
+          "at": "they fought with one another for the nuts",
+          "kind": "literal"
+        },
+        {
+          "q": "Why did a bystander tell the Boasting Traveler to leap right there?",
+          "right": "He did not believe the story and wanted to see it proved",
+          "wrong": [
+            "He wanted to learn to leap",
+            "He had been to Rhodes too"
+          ],
+          "at": "Suppose this to be Rhodes",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "Rhodes": "An island in Greece.",
+        "courtier": "A person who serves a prince or king.",
+        "multitude": "A big crowd.",
+        "perseverance": "Keeping on trying.",
+        "vain": "Too proud of yourself."
+      }
+    },
+    "aesop-wanting-more": {
+      "source": "aesop",
+      "title": "Aesop's Fables: Wanting More",
+      "fables": [
+        "The Dog and the Shadow.",
+        "The Woman and her Hen.",
+        "The Boy and the Filberts.",
+        "The Dog in the Manger.",
+        "The Ants and the Grasshopper.",
+        "The Mouse and the Weasel.",
+        "The Viper and the File."
+      ],
+      "cover": "image121.png",
+      "scanReviewed": "Read by a person: \"A Woman possessed a Hen\" means owned; nothing to change.",
+      "questions": [
+        {
+          "q": "What happened when the Dog snapped at the meat in the water?",
+          "right": "He dropped his own piece into the stream",
+          "wrong": [
+            "He got two pieces of meat",
+            "The other dog ran away with his meat"
+          ],
+          "at": "He thus lost both",
+          "kind": "literal"
+        },
+        {
+          "q": "What did the Ants ask the Grasshopper?",
+          "right": "Why he did not save food in the summer",
+          "wrong": [
+            "Why he sang so loudly",
+            "Where he lived in the winter"
+          ],
+          "at": "Why did you not treasure up food during the summer?",
+          "kind": "literal"
+        },
+        {
+          "q": "Why couldn't the Boy get his hand out of the pitcher?",
+          "right": "He was holding too many filberts in his fist",
+          "wrong": [
+            "The pitcher was stuck to the table",
+            "His hand was too big for any pitcher"
+          ],
+          "at": "Be satisfied with half the quantity",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "filberts": "Hazelnuts.",
+        "manger": "A long box that holds food for horses and cows.",
+        "covetousness": "Wanting what you do not have, too much.",
+        "famine": "Having no food.",
+        "File": "A metal tool for smoothing things."
+      }
+    },
+    "aesop-wind-and-sun": {
+      "source": "aesop",
+      "title": "Aesop's Fables: The Wind, the Sun and the Trees",
+      "fables": [
+        "The Wind and the Sun.",
+        "The Oak and the Reeds.",
+        "The Fir Tree and the Bramble.",
+        "The Travelers and the Plane-Tree.",
+        "The Father and His Two Daughters.",
+        "The Camel and the Travelers.",
+        "The Great and the Little Fishes."
+      ],
+      "cover": "image167.png",
+      "questions": [
+        {
+          "q": "How did the Sun get the traveler to take off his cloak?",
+          "right": "He shone warmly until the man was too hot",
+          "wrong": [
+            "He blew it away",
+            "He asked the man politely"
+          ],
+          "at": "as the Sun shone brighter and brighter",
+          "kind": "literal"
+        },
+        {
+          "q": "Why weren't the Reeds broken by the wind?",
+          "right": "They bent with the wind instead of fighting it",
+          "wrong": [
+            "They grew behind a big rock",
+            "They were stronger than the Oak"
+          ],
+          "at": "bend before the least breath of air",
+          "kind": "literal"
+        },
+        {
+          "q": "Why couldn't the father join in both daughters' wishes?",
+          "right": "One wanted rain and the other wanted dry, sunny weather",
+          "wrong": [
+            "He did not like the gardener",
+            "He wished for snow instead"
+          ],
+          "at": "with which of the two am I to join my wishes",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "Plane-tree": "A big tree that gives lots of shade.",
+        "Thracian": "From Thrace, a cold land in old Greece.",
+        "Bramble": "A prickly bush, like a blackberry bush.",
+        "tile-maker": "A person who makes clay tiles and bricks.",
+        "conqueror": "The winner."
+      }
+    },
+    "aesop-work-and-fair-play": {
+      "source": "aesop",
+      "title": "Aesop's Fables: Work and Fair Play",
+      "fables": [
+        "The Bees, the Drones, and the Wasp.",
+        "The Horse and the Groom.",
+        "The Brazier and His Dog.",
+        "The Oxen and the Axle-Trees.",
+        "The Crab and its Mother.",
+        "The Three Tradesmen.",
+        "The Charcoal-Burner and the Fuller."
+      ],
+      "cover": "image116.png",
+      "questions": [
+        {
+          "q": "How did Judge Wasp find out who made the honeycomb?",
+          "right": "He asked both sides to build a new comb",
+          "wrong": [
+            "He tasted the honey himself",
+            "He asked the oak tree"
+          ],
+          "at": "Let each party take a hive to itself",
+          "kind": "literal"
+        },
+        {
+          "q": "What did the Horse say the Groom should do?",
+          "right": "Groom him less and feed him more",
+          "wrong": [
+            "Ride him every day",
+            "Give him a new saddle"
+          ],
+          "at": "you should groom me less, and feed me more",
+          "kind": "literal"
+        },
+        {
+          "q": "Why did the Crab's mother give up telling her child to walk straight?",
+          "right": "She could not walk straight herself",
+          "wrong": [
+            "Her child was already walking straight",
+            "She was too tired to talk"
+          ],
+          "at": "The mother tried in vain",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "Drones": "Male bees, which do not make honey.",
+        "Brazier": "A person who makes things out of brass.",
+        "Currier": "A person who prepares leather.",
+        "Fuller": "A person who cleans and thickens cloth.",
+        "axle-trees": "The bars that the wheels of a wagon turn on.",
+        "Charcoal-burner": "A person who makes charcoal."
+      }
+    },
+    "aesop-animal-wisdom": {
+      "source": "aesop",
+      "title": "Aesop's Fables: Animal Wisdom",
+      "fables": [
+        "The Hare and the Hound",
+        "The Fawn and his Mother.",
+        "The Wolf and the House-dog.",
+        "The Dove and the Crow.",
+        "The Swallow and the Crow.",
+        "The Kites and the Swans.",
+        "The Bull and the Goat.",
+        "The Horse and the Stag."
+      ],
+      "cover": "image86.png",
+      "questions": [
+        {
+          "q": "Why could the Hare run faster than the Hound?",
+          "right": "The Hare was running for his life",
+          "wrong": [
+            "The Hare had longer legs",
+            "The Hound was asleep"
+          ],
+          "at": "he for his life",
+          "kind": "literal"
+        },
+        {
+          "q": "Why didn't the Wolf want to live like the House-dog?",
+          "right": "The Dog had to drag a heavy log on his collar",
+          "wrong": [
+            "The Dog was always hungry",
+            "The Dog lived out in the cold"
+          ],
+          "at": "the weight of this chain is enough to spoil the appetite",
+          "kind": "literal"
+        },
+        {
+          "q": "What did the Crow mean about the Dove's many young ones?",
+          "right": "Being shut in a cage is sad, so more young ones in the cage means more sorrow",
+          "wrong": [
+            "The Dove should have even more young ones",
+            "Cages keep birds warm and safe"
+          ],
+          "at": "The larger the number of your family",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "Mastiff": "A very big, strong dog.",
+        "Kites": "Birds that hunt, a little like hawks.",
+        "Fawn": "A young deer.",
+        "plumage": "A bird's feathers.",
+        "Stag": "A male deer."
+      }
+    },
+    "aesop-think-again": {
+      "source": "aesop",
+      "title": "Aesop's Fables: Think Again",
+      "fables": [
+        "The Fox and the Mask.",
+        "The Dog and the Oyster.",
+        "The Boy and the Nettle.",
+        "The Astronomer.",
+        "The Mountain in Labor.",
+        "The Bull and the Calf.",
+        "The Hen and the Swallow.",
+        "The Buffoon and the Countryman.",
+        "The Fisherman Piping."
+      ],
+      "cover": "image7.png",
+      "questions": [
+        {
+          "q": "What did the Fox say about the Mask?",
+          "right": "It was a beautiful head with no brains",
+          "wrong": [
+            "It was too heavy to carry",
+            "It looked like a lion"
+          ],
+          "at": "it entirely wants brains",
+          "kind": "literal"
+        },
+        {
+          "q": "What came out of the groaning Mountain?",
+          "right": "A Mouse",
+          "wrong": [
+            "A Lion",
+            "A river"
+          ],
+          "at": "out came a Mouse",
+          "kind": "literal"
+        },
+        {
+          "q": "Why did the Astronomer fall into a well?",
+          "right": "He was looking up at the stars, not where he was walking",
+          "wrong": [
+            "Someone pushed him in",
+            "He was looking for water"
+          ],
+          "at": "with his whole thoughts rapt up in the skies",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "Astronomer": "A person who studies the stars.",
+        "Buffoon": "A clown.",
+        "viper": "A kind of snake.",
+        "nettle": "A plant whose leaves sting.",
+        "flute": "A musical pipe you blow into.",
+        "porker": "A young pig."
+      }
+    },
+    "aesop-lions-wolves-foxes": {
+      "source": "aesop",
+      "title": "Aesop's Fables: Lions, Wolves and Foxes",
+      "fables": [
+        "The Fox and the Lion.",
+        "The Lion and the Dolphin.",
+        "The Wolf and the Shepherds.",
+        "The Fox and the Wood-Cutter.",
+        "The Porcupine and the Snakes.",
+        "The Birds, the Beasts, and the Bat.",
+        "The Stag, the Wolf and the Sheep."
+      ],
+      "cover": "image23.png",
+      "questions": [
+        {
+          "q": "What happened when the Fox met the Lion for the third time?",
+          "right": "He was brave enough to talk with him",
+          "wrong": [
+            "He ran away again",
+            "He hid in a cave"
+          ],
+          "at": "he so increased in boldness",
+          "kind": "literal"
+        },
+        {
+          "q": "Why couldn't the Dolphin help the Lion?",
+          "right": "The Dolphin could not live on land",
+          "wrong": [
+            "The Dolphin was asleep",
+            "The Dolphin was afraid of bulls"
+          ],
+          "at": "the power of living upon the land",
+          "kind": "literal"
+        },
+        {
+          "q": "Why didn't the Fox thank the Wood-cutter?",
+          "right": "The Wood-cutter had pointed to where the Fox was hiding",
+          "wrong": [
+            "The Fox did not hear him",
+            "The Wood-cutter gave the Fox no food"
+          ],
+          "at": "if your deeds had been as good as your words",
+          "kind": "inference"
+        }
+      ],
+      "glossary": {
+        "sovereign": "A ruler, like a king.",
+        "surety": "Someone who promises to pay if the borrower does not.",
+        "Porcupine": "An animal covered in sharp quills.",
+        "haunch of mutton": "A leg of sheep meat.",
+        "Wood-cutter": "A person who cuts down trees for wood."
+      }
+    }
+  },
+  "skipped": {
+    "14848:The Story of Miss Moppet": "Its first sentence calls the kitten \"a Pussy\" (the old word for a cat); today the word reads as rude to many parents and the site's word filter flags it, and the author's words are not ours to change.",
+    "15137:The Tale of Mrs. Tiggy-Winkle": "Several old names and words read as rude today and the site's word filter flags them (\"Cock Robin\" twice, \"little dicky shirt-fronts\", \"Tom Titmouse\"), and the author's words are not ours to change; the copy that was transcribed is also a 1986 printing.",
+    "32488:How the Rhinoceros Got His Skin": "Calls the Parsee man's hat \"more-than-oriental splendour\" three times (exotic labels on a real people), and the Rhinoceros's greeting \"How!\" reads as a mock Native American word.",
+    "32488:How the Leopard Got His Spots": "Uses a racial slur and describes a man by his skin color.",
+    "32488:The Elephant's Child": "The child is spanked by every relative all through the story, and spanks them back at the end: hitting children as a running joke.",
+    "32488:How the First Letter Was Written": "Taffy's name means \"ought to be spanked\" and \"she was not spanked half as much as was good for her\"; the tribe attacks a stranger.",
+    "32488:How the Alphabet Was Made": "Follows on from the First Letter story (left out) and depends on about 20 small drawings set inside its sentences, which a page with one picture cannot show.",
+    "32488:The Crab That Played with the Sea": "\"They shall be called the Malazy, the lazy people\": a slur on Malay people.",
+    "32488:The Cat That Walked by Himself": "Ends by saying proper men \"will always throw things at a Cat\" and dogs chase him up a tree: cruelty to animals shown as right.",
+    "32488:The Butterfly That Stamped": "A king with 999 quarrelsome wives: plural marriage and wives mocked as a group.",
+    "32488:The poems between the stories": "Not part of the stories; left out (some mention ship lines and places only a grown-up would know).",
+    "14407:The Tale of Benjamin Bunny": "Old Mr. Bunny whips his son with a switch and smokes a pipe; he kicks the cat.",
+    "14837:The Tale of Tom Kitten": "The mother smacks the kittens and tells her friends a lie.",
+    "14872:The Tale of Squirrel Nutkin": "The owl holds Nutkin \"intending to skin him\" and his tail breaks off; dead mice and a mole are brought as presents.",
+    "14814:The Tale of Jemima Puddle-Duck": "A fight offstage ends the fox (\"nothing more was ever seen\"), the dogs are hurt and the puppies eat the eggs.",
+    "15284:The Tale of Johnny Town-Mouse": "\"The cat had killed the canary\", and the cook calls for a poker to kill the mouse.",
+    "15234:The Tale of the Pie and the Patty-Pan": "Built around a pie made of mice, and a cat who \"died of a thimble\".",
+    "14220:The Tale of the Flopsy Bunnies": "\"I shall skin them and cut off their heads\"; a bunny is hit by a thrown marrow.",
+    "14868:The Tailor of Gloucester": "The cat traps mice under teacups to eat them; a Christmas Eve plot with cathedral bells.",
+    "15575:The Tale of Samuel Whiskers": "Rats roll a kitten in dough to bake him in a pudding: too frightening.",
+    "17860:The Nightingale": "Death sits on the dying Emperor's chest: too frightening.",
+    "17860:The Snow Queen, The Mermaid, The Real Princess and the other tales": "Long and sad or frightening (the Mermaid dies), or a plot about marrying.",
+    "18190:Raggedy Ann Stories": "An \"Indian doll\" is one of the regular characters (a stereotype), and a story has a bedtime prayer.",
+    "15661:The Story of the Three Bears": "Goldenlocks escapes by jumping out of an upstairs window: unsafe behavior shown without comment.",
+    "18732:Fables where an animal is killed or eaten": "Left out by the content rule (The Wolf and the Lamb, The Cat and the Cock, The Lion and the Three Bulls, The Shepherd's Boy and the Wolf and many more; about 120 of the 240 fables).",
+    "18732:Fables with words that read as rude today": "Titles or morals with \"Ass\", \"Cock\" or \"faggot\" (a bundle of sticks), which we may not change: The Ass in the Lion's Skin, The Cock and the Jewel, The Father and his Sons and others.",
+    "18732:Fables that mock bodies or hurt children": "The Quack Frog (\"lame gait and wrinkled skin\"), The Bald Knight, The Hares and the Frogs (they mean to end their lives), The Thief and His Mother (a hanging).",
+    "19994:The Aesop for Children": "Not public domain everywhere: Milo Winter died in 1956 (the rule needs before 1956)."
+  }
+}

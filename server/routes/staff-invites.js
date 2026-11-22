@@ -13,6 +13,7 @@ import * as S from '../services/schools.js';
 import * as SE from '../services/staff-email-invites.js';
 import { maskEmail, sendingOn } from '../services/email.js';
 import { tFor, LOCALES, CODES } from '../i18n/index.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -47,10 +48,10 @@ export function emailInvitesPanel(req, s) {
   if (!who) return '';
   const list = SE.listFor(u, s.id), shown = takeLink(req, s);
   const lang = langOf(req, '');
-  return html`<section class="panel" id="email-invites" aria-labelledby="ei-h"><h3 id="ei-h">✉️ ${t('school.emailInvite.h')}</h3>
+  return html`<section class="panel" id="email-invites" aria-labelledby="ei-h"><h3 id="ei-h">${ico('✉️', { size: 18 })} ${t('school.emailInvite.h')}</h3>
     <p class="small muted">${t('school.emailInvite.text', { school: s.name, days: SE.INVITE_DAYS })}</p>
-    ${shown ? html`<div class="notice warn" role="status" id="invite-link"><p style="margin-top:0">⚠️ ${t(shown.status === 'off' ? 'school.emailInvite.notSentOff' : 'school.emailInvite.notSentFailed')}</p>
-      <p class="row"><input class="input" id="invite-link-url" readonly dir="ltr" value="${shown.url}" aria-label="${t('school.emailInvite.linkLabel')}"> <button class="btn btn-sm" type="button" data-copy="${shown.url}">📋 ${t('school.emailInvite.copy')}</button></p>
+    ${shown ? html`<div class="notice warn" role="status" id="invite-link"><p style="margin-top:0">${ico('⚠️', { size: 18 })} ${t(shown.status === 'off' ? 'school.emailInvite.notSentOff' : 'school.emailInvite.notSentFailed')}</p>
+      <p class="row"><input class="input" id="invite-link-url" readonly dir="ltr" value="${shown.url}" aria-label="${t('school.emailInvite.linkLabel')}"> <button class="btn btn-sm" type="button" data-copy="${shown.url}">${ico('📋', { size: 18 })} ${t('school.emailInvite.copy')}</button></p>
       <p class="small muted" style="margin-bottom:0">${t('school.emailInvite.linkOnce')}</p></div>` : ''}
     ${sendingOn() ? '' : html`<p class="small muted" id="invite-email-off">${t('school.emailInvite.offNote')}</p>`}
     <form class="formgrid" id="email-invite-form" data-api="/api/schools/${s.id}/email-invites" novalidate>
@@ -60,12 +61,12 @@ export function emailInvitesPanel(req, s) {
         : html`<input type="hidden" name="role" value="teacher"><p class="small muted wide" id="ei-teachers-only">${t('school.emailInvite.teachersOnly')}</p>`}
       <div class="field"><label for="ei-lang">${t('school.emailInvite.lang')}</label><select class="input" id="ei-lang" name="lang">${LOCALES.map(l => html`<option value="${l.code}" ${l.code === lang ? raw('selected') : ''}>${l.name}</option>`)}</select></div>
       <p class="err form-err wide" aria-live="polite"></p>
-      <div class="formacts"><button class="btn btn-primary" type="submit">✉️ ${t('school.emailInvite.send')}</button></div>
+      <div class="formacts"><button class="btn btn-primary" type="submit">${ico('✉️', { size: 18 })} ${t('school.emailInvite.send')}</button></div>
     </form>
     ${list.length ? html`<h4 id="ei-list-h">${t('school.emailInvite.pendingH')} <span class="count">${list.length}</span></h4>
       <p class="small muted">${t(who === 'admin' ? 'school.emailInvite.pendingAdmin' : 'school.emailInvite.pendingTeacher')}</p>
       <ul class="plain" id="email-invite-list">${list.map(i => html`<li class="row inv-row" data-invite="${i.id}"><span><b>${i.roster_name}</b> <span class="small muted"><bdi dir="ltr">${i.email}</bdi> · ${t(`school.roles.${i.role}`)} · ${t('school.emailInvite.by', { name: i.inviter })} · ${req.fmt.day(i.created_at)} · ${i.expired ? html`<span class="chip-s warn">${t('school.emailInvite.expired')}</span>` : t('school.emailInvite.expires', { date: req.fmt.day(i.expires_at) })}</span></span>
-        <span class="row"><form data-api="/api/schools/${s.id}/email-invites/${i.id}/resend"><button class="btn btn-sm" type="submit">🔁 ${t('school.emailInvite.resend')}</button></form>
+        <span class="row"><form data-api="/api/schools/${s.id}/email-invites/${i.id}/resend"><button class="btn btn-sm" type="submit">${ico('🔁', { size: 18 })} ${t('school.emailInvite.resend')}</button></form>
         <form data-api="/api/schools/${s.id}/email-invites/${i.id}/cancel" data-reload><button class="btn btn-sm" type="submit">${t('school.people.inviteCancel')}</button></form></span></li>`)}</ul>` : ''}
   </section>`;
 }
@@ -115,7 +116,7 @@ router.get('/school/:slug/invite', requireUser, (req, res) => {
   if (who === 'admin') return res.redirect(302, `/school/${s.slug}?tab=people${req.query.invlink ? `&invlink=${encodeURIComponent(String(req.query.invlink))}` : ''}#email-invites`);
   const t = req.t;
   noStore(res);
-  const body = html`<div class="pagehead"><div><span class="small muted">${s.name}</span><h1>✉️ ${t('school.emailInvite.teacherTitle')}</h1></div></div>
+  const body = html`<div class="pagehead"><div><span class="small muted">${s.name}</span><h1>${ico('✉️', { size: 36 })} ${t('school.emailInvite.teacherTitle')}</h1></div></div>
     ${emailInvitesPanel(req, s)}`;
   page(req, res, { title: t('school.emailInvite.teacherTitle'), active: 'classes', body, head: CSS, scripts: ['/js/schools.js'], back: '/teach', backLabel: t('school.teach.title') });
 });
@@ -154,8 +155,8 @@ router.get('/join-staff/:token', (req, res) => {
   }
   joinBox(req, res, t(J('title')), html`${head}
     ${c && c.claim ? html`<p class="small muted" id="join-claim">${t(J('claim'), { email: maskEmail(inv.email) })}</p>` : ''}
-    <p class="small inv-warn">⚠️ ${t('school.invite.warn')}</p>
-    <form data-api="/api/join-staff/${tok}/accept" novalidate><p class="err form-err" aria-live="polite"></p><button class="btn btn-primary btn-block btn-big" type="submit" id="join-accept">✅ ${t('school.invite.accept')}</button></form>
+    <p class="small inv-warn">${ico('⚠️', { size: 18 })} ${t('school.invite.warn')}</p>
+    <form data-api="/api/join-staff/${tok}/accept" novalidate><p class="err form-err" aria-live="polite"></p><button class="btn btn-primary btn-block btn-big" type="submit" id="join-accept">${ico('✅', { size: 18 })} ${t('school.invite.accept')}</button></form>
     <form data-api="/api/join-staff/${tok}/decline" data-confirm="${t(J('declineConfirm'), { school: s.name })}"><p><button class="btn btn-block" type="submit" id="join-decline">${t('school.invite.decline')}</button></p></form>`);
 });
 router.post('/api/join-staff/:token/:answer', requireUser, rateLimit('join-staff', 30, 3600e3), (req, res) => {

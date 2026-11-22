@@ -1,4 +1,4 @@
-# Oomba Canvas API (1.3.1)
+# Oomba Canvas API (1.4.1)
 
 Oomba Canvas is the kit for **classroom activities**: a hands-on canvas where each student drags, builds and checks,
 one problem at a time, with steps and hints. It is separate from the Oomba Kit (`kit/`, arcade games) and Kit 2
@@ -20,7 +20,7 @@ An activity is one small page: the kit's pinned tag, an `oc-app` element, the ac
 
 ```html
 <title>Equivalent fractions</title>
-<script src="/vendor/oomba-canvas/1.3.1/oomba-canvas.js" integrity="sha384-…" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-canvas/1.4.1/oomba-canvas.js" integrity="sha384-…" crossorigin="anonymous"></script>
 <div id="oc-app"></div>
 <script type="application/json" id="oc-activity">
 { "config": { "lang": "en", "support": "count", "supports": ["count", "guided"], "count": 5, "fresh": true, "board": false },
@@ -73,7 +73,7 @@ CANVAS RULES (Oomba Canvas: this build is a classroom activity, or the builder a
 - What it is: a hands-on canvas where each student builds and checks one problem at a time, with steps and hints, on their own device. It is calm and education first: never add lives, timers, enemies, a title screen with Play, scores that go up by themselves, or the Oomba Kit.
 - Start: start_from_template "canvas" (the classroom activity starter; it is allowed even though the tool list names only the arcade starters). Then make it theirs with edit_game on the oc-activity JSON block only: it must stay valid JSON (double quotes, no comments, no trailing commas). Change the <title> to match task.title.
 - Phones and desktops: it works at 390px phone and 1280px desktop. The kit lays itself out for both; never add fixed widths for buttons (or any CSS that sizes the kit's own parts).
-- Keep it editable in the Studio's Activity panel: the teacher changes the problems, the help, the set size and what it is for there, and the panel rewrites only the oc-activity JSON block. So everything the activity is lives in that one block: never a second copy of the problems in code, never problems made by a script, and the page calls exactly Oc.activity(JSON.parse(document.getElementById('oc-activity').textContent)). New activities use Oomba Canvas 1.3.0, the starter's tag: keep that tag exactly as it is.
+- Keep it editable in the Studio's Activity panel: the teacher changes the problems, the help, the set size and what it is for there, and the panel rewrites only the oc-activity JSON block. So everything the activity is lives in that one block: never a second copy of the problems in code, never problems made by a script, and the page calls exactly Oc.activity(JSON.parse(document.getElementById('oc-activity').textContent)). New activities use Oomba Canvas 1.4.1, the starter's tag: keep that tag exactly as it is.
 - The data: config { lang: the language the builder writes in, supports: the help modes the activity offers, a list of "watch" | "count" | "guided" | "own" in that order (exactly the ones the builder chose; with more than one, students switch between them), support: where it starts (the first of supports), count: problems in a set (1 to 12), fresh: true (a new set per student from gen), board: true only when it is played on the board together, purpose: what it is for, exactly the setup's choice, a list of "screen" (practice on screen) | "worksheet" (a printable worksheet) | "generator" (a question generator) (leave it out for practice on screen only) }; task { title (short), say (one short sentence read aloud) }; problems: a list, or gen: one generator for a fresh set per student (use gen whenever the topic suits one); steps / hints: only to replace the kit's own lines for a tool, { "<tool>": ["line", ...] } (up to 6 steps, 1 to 3 hints, short, in the builder's language). The kit writes each problem's own line, question, steps and hints in every language: leave steps and hints empty unless they asked for something special.
 - Tools (values: whole numbers, or fractions as [n, d]):
   fractions.equiv { from: [n, d], to: D } make n/d out of 1/D pieces (D must be a multiple of d); tray: [other piece sizes] optional. gen { dens: [2, 3, 4], mult: [2, 3] }
@@ -85,6 +85,7 @@ CANVAS RULES (Oomba Canvas: this build is a classroom activity, or the builder a
   tiles.sort { items: [numbers], rule: "evenodd" | "less" (n) | "mult" (n) | "half" } or { items: [{ t, bin }], bins: ["group", ...] } sort into 2 to 4 groups. gen { rule, n, lo, hi, tiles }
   tiles.order { items: [numbers or fractions], dir: "up" | "down" } put in order (no two the same). gen { lo, hi, tiles, fractions: true, dens, dir }
 - Worksheets and generators (config.purpose has "worksheet" or "generator"): the kit adds a "Print worksheet" button and prints the set itself (numbered questions with their figures and answer lines, the sheet's number, and the answer key with the worked answers on a page of its own for the teacher); never build printing of your own. With "generator", give "gen" (each New sheet is a fresh set from it, on screen or on paper). With "worksheet" alone, give "gen" or at least config.count problems. Every problem needs a worked answer for the key: the kit works out its own tools' answers; a figure question carries its own "work" lines, the last one ending on the answer. The self-test refuses a version whose printed sheet of N questions would not have N answers, or whose worked answer does not end on the answer.
+- Saved worksheets (1.4.0): every lesson activity a teacher builds with questions lets them save worksheets, and the kit does all of it: school staff get "Save as worksheet" (the questions on screen, saved under a short class code; its link opens exactly those questions for every student) and "My worksheets" in the Teacher controls (open, copy link, duplicate, rename, delete, and print with the answer key when config.purpose has "worksheet" or "generator"). Students never see it. So keep every question as data in the oc-activity block (problems or gen, never made by a script), keep the setup's "worksheet" or "generator" in config.purpose so the worksheets print (with "generator", give "gen"), and never build saving, class codes, links, a worksheet list or a print button of your own.
 - Figure questions (science, maths and graph figures: forces, rays, circuits, graphs, atoms, readings...): figure.number { q, fig, answer, dp, unit, work } and figure.choice { q, fig, choices, answer, work }, with the figure drawn by Oomba Figures from its data: follow the FIGURE RULES (they come with this block when a build needs figures) and put the Oomba Figures tag before the kit's. Never draw a figure yourself.
 - Never write answer-checking code: the kit checks every standard tool. Write only data. If the topic needs a tool the kit does not have yet (time, area, money, place value blocks), use the nearest tool, say in one short, kind sentence what you used, and never fake a checker.
 - The self-test: every version is checked before it is saved. Every problem must be solvable by its worked answer and an empty start must never count as right; a version that fails is NOT saved, and the reply names each problem ("problem 3: cannot be solved: 5/6 cannot be made with pieces of 1/4"). Fix the data and save again.
@@ -142,16 +143,20 @@ a version that could be shared or published, and the automatic playtest (`server
 - **1.3.0**: the teacher's controls inside an activity (below) and a worked answer's own lines on screen (a figure
   question's `work`, after a second try or Show answer). 1.0.0 to 1.2.0 stay byte for byte as they shipped; the scanner
   admits all four tags. An older activity moves to 1.3.0 only when it is saved from the Activity panel.
-- **1.3.1**: the phone layout, nothing else (same data, same behaviour). The top strip is three groups: the title (it
-  wraps, never "…"), the status (help mode, ✓, ✗, n to go) and the actions (New sheet, Print worksheet, the 🧑‍🏫 Teacher
+- **1.4.0**: worksheets (above): a link with a saved worksheet plays exactly its questions, and school staff get My
+  worksheets in the teacher's controls. 1.0.0 to 1.3.0 stay byte for byte as they shipped; the scanner admits all five
+  tags. An older activity moves to 1.4.0 only when it is saved from the Activity panel.
+- **1.4.1**: 1.4.0 with the phone layout, nothing else (same data, same behaviour, worksheets included). The top
+  strip is three groups: the title (it wraps, never "…"), the status (help mode, ✓, ✗, n to go) and the actions (New sheet, Print worksheet, the 🧑‍🏫 Teacher
   button on phones, Keypad); each group is one row that scrolls sideways if it ever cannot fit, so no button is left
   alone on a line. Under 480 px New sheet and Print worksheet show short labels (New, Print; their full names stay
   their accessible names). Tap targets are at least 44 px (strip buttons, the help switcher, the teacher bar, digit
   boxes, the keypad, which has 6 columns on phones). The end card's buttons stack full width, primary first, when the
   card is under 480 px wide, and otherwise wrap as whole buttons; labels wrap between words and never clip. A number
-  line's ticks are each as wide as their share of the line (at most 44 px), so they never overlap. 1.0.0 to 1.3.0 stay
-  byte for byte as they shipped; the scanner admits all five tags. An activity moves to 1.3.1 when it is saved from the
-  Activity panel (open it in the Studio, Activity, change nothing or anything, Save).
+  line's ticks are each as wide as their share of the line (at most 44 px), so they never overlap. 1.0.0 to 1.4.0 stay
+  byte for byte as they shipped; the scanner admits all six tags. An activity moves to 1.4.1 when it is saved from the
+  Activity panel (open it in the Studio, Activity, change nothing or anything, Save). It was first made as 1.3.1
+  on 1.3.0, which never shipped: it came after 1.4.0, so it is 1.4.1 and has worksheets too.
 - Read-aloud speaks the fixed `task.say` line only.
 
 ## Teacher controls (1.3.0)
@@ -159,7 +164,7 @@ a version that could be shared or published, and the automatic playtest (`server
 Only where the page says the viewer may have them: `BRB.canTeach`, from the server's `INIT.teach`, by the same rule as
 the answer key (the activity's maker, school staff). Never for a student, and never in the Studio's "As a student"
 preview. At 561 px and wider they are a bar under the top strip ("students don't see this bar"); narrower, one 🧑‍🏫
-Teacher button opens them as a bottom sheet. They change this screen only; nothing goes to the server.
+Teacher button opens them as a bottom sheet. They change this screen only; nothing goes to the server (1.4.0: My worksheets aside, below).
 
 - **👀 Show answer**: the worked answer of the problem on screen (its steps, or a figure question's `work` lines). That
   problem is marked "Answer shown by the teacher. This one is not counted." and counts neither right nor wrong.
@@ -183,7 +188,7 @@ not a sort into the Builder's own word groups, a figure question with choices, o
 numbers or two of them put together), with three examples and a check of 30 made-up problems), how much help, problems in a set, and what
 it is for. `public/js/activity-panel/` draws it; `POST /api/studio/:id/activity` (`server/routes/activity-panel.js`)
 saves it: only the `oc-activity` block changes (`server/builder/activity-data.js`, problems cleaned by the kit's own
-1.3.1 file), any text the teacher typed (a question, worked steps) is screened exactly like a Builder message (no
+1.4.1 file), any text the teacher typed (a question, worked steps) is screened exactly like a Builder message (no
 markup, no students' names, then the Builder's screening), and the kit's self-test and the scanner run before a new
 version is saved ("Activity panel: problem 3 moved up"). Saves by the same person within a minute join into one version.
 It refuses while a Builder turn runs for the game, and when the version changed since the panel loaded.
@@ -206,6 +211,40 @@ kit as `BRB.canPrintKey`): the activity's maker (the Studio's preview, and their
 student playing it never sees the option, and the print route refuses `key: true` from anyone else, so even a changed
 frame cannot print it.
 
+## Worksheets (1.4.0)
+
+Every Builder classroom activity on Oomba Canvas 1.4.0 keeps a teacher's worksheets, whatever it is for, the way
+Crossword, The Big Divide and Algebra Builder keep question sets (docs/sdk.md "Question sets"); one for a worksheet or a
+question generator (`config.purpose` "worksheet" or "generator") also prints them. It is the platform's, not the
+model's: the kit draws it, the server keeps it, and the Builder's CANVAS RULES only say to keep the questions as data
+and never build their own.
+
+- **Who.** School staff and the platform admin (`INIT.mySets`, read by the kit as `BRB.canListSets`), in the published
+  activity only: never in the Studio's preview, never under "As a student", never a student, a child, a guest or a family
+  grown-up. Only an activity pinned to 1.4.0 or later offers it (`routes/games.js canvasSetVersion`); an older one moves
+  to 1.4.0 when it is saved from the Activity panel, as before.
+- **📄 My worksheets** sits in the teacher's controls (on the bar, "📄 Worksheets", the icon alone under 1180 px, so the
+  bar stays one line from 1024 px; "students don't see this bar" shows from 1440 px and is the label's tooltip below;
+  the Teacher menu on phones) and opens
+  a card under the top strip: **💾 Save as worksheet** (the questions on screen, named after `task.title`), then one
+  quiet row per worksheet: its name in bold, one line with how many questions and the date, and the class code as a
+  small chip. The whole row opens the worksheet on this screen (its questions in their order; New set leaves it). At
+  the end of the row only 🖨 Print (an activity that prints) and ⋯ More, a menu with Answer key (where `BRB.canPrintKey`), Copy link, Duplicate,
+  Rename (inline: Enter saves, Escape cancels) and Delete (last, in red, with a question: its class code and link stop
+  working). Escape or a click outside closes the menu, the arrow keys, Home and End move in it, and focus goes back to
+  ⋯. 44 px targets; it fits a 375 px phone.
+- **A worksheet's link** (`/play/<slug>?chapter=s-<code>&lock=1`) opens exactly its questions for everyone
+  (`BRB.questionSet`), with their own place kept apart from the activity's; a link whose worksheet was deleted plays the
+  activity's own questions and says so.
+- **Printing a worksheet** sends its code, not its questions (`BRB.print({ k: 'canvas', set, n, paper, key })`): the
+  server prints the saved questions with the version's own kit file, with the class code and link in the footer.
+- **What is saved** (`server/services/game-sets.js cleanCanvasItems`): 1 to 20 problems (the first 20 of a longer
+  set), each cleaned by the activity's own pinned kit file (`cleanProblem`: only the fields the kit reads), every piece of text in them through
+  the site's text filter, at most 20,000 characters, and the whole set must pass the kit's self-test for that activity
+  (and its figures Oomba Figures' check). Problems only: nothing a student did. Saving is for school staff only; the
+  list, rename, duplicate and delete answer only the owner (anyone else's worksheet is a 404). 200 a teacher per
+  activity.
+
 ## Not yet (later phases)
 
-Skeletal structures on printed sheets, live canvas runs, class codes and "Assign" for Builder activities, and a bounded score in the gradebook.
+Skeletal structures on printed sheets, live canvas runs, "Assign" for Builder activities, and a bounded score in the gradebook.

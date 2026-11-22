@@ -6,6 +6,13 @@
 // a follow-up ("follow-ups" below) that the Builder reads at its next step.
 import { api, toast, sheet, pageData, signedOut, tappedJustNow, setPlaceholder, $, $$, esc, copyText, t } from '/js/app.js';
 import { INTL } from '/js/i18n.js';
+import { iconHtml, hasIcon } from '/js/icons.js';
+/** A Fluent icon for an emoji (decorative; public/js/icons.js). */
+const ico = (e, size = 18) => iconHtml(e, { size });
+/** The same icon as an element: a hidden <span> holding the <img> (or the emoji itself when there is no icon). */
+const icoEl = (e, cls = null, size = 18) => { const s = document.createElement('span'); if (cls) s.className = cls; s.setAttribute('aria-hidden', 'true'); if (hasIcon(e)) s.innerHTML = iconHtml(e, { size }); else s.textContent = e; return s; };
+/** el's text becomes "<icon> text". */
+const iconText = (el, e, text) => { el.textContent = ''; el.append(icoEl(e), ' ', text); return el; };
 
 let S = pageData();
 const ID = S.game.id;
@@ -28,13 +35,13 @@ const grownupHint = k => (!S.grownup ? '' : k === 'family' ? t('js.studio.share.
 const chipList = prefix => [...'abcdefgh'].map(k => t(`${prefix}.${k}`)).filter(x => !x.startsWith(prefix));
 const NEXT_CHIPS = chipList('js.studio.nextChips');
 const when = at => { const d = new Date(at); return d.toLocaleDateString(INTL, { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString(INTL, { hour: 'numeric', minute: '2-digit' }); };
-const safetyChip = s => ({ pass: `<span class="stchip good">✅ ${esc(t('js.studio.safety.chipPass'))}</span>`, flag: `<span class="stchip warn">⚠️ ${esc(t('js.studio.safety.chipFlag'))}</span>`, fail: `<span class="stchip bad">⛔ ${esc(t('js.studio.safety.chipFail'))}</span>` }[s] || '<span class="stchip">…</span>');
+const safetyChip = s => ({ pass: `<span class="stchip good">${ico('✅')} ${esc(t('js.studio.safety.chipPass'))}</span>`, flag: `<span class="stchip warn">${ico('⚠️')} ${esc(t('js.studio.safety.chipFlag'))}</span>`, fail: `<span class="stchip bad">${ico('⛔')} ${esc(t('js.studio.safety.chipFail'))}</span>` }[s] || '<span class="stchip">…</span>');
 
 // ---------------------------------------------------------------- state + top
 function applyState(st) { if (st) { S = { ...S, ...st }; renderTop(); renderLive(); renderSafety(); renderTurns(); syncPanel(); } }
 /** A request to share with everyone is waiting for the Oomba team (every public game is checked by a person first). */
 const teamWait = () => !!(S.pending && (S.pending.visibility || 'public') === 'public');
-const teamNote = () => `<p class="note info st-teamcheck">🛡️ ${E('js.studio.live.teamCheck')}</p>`;
+const teamNote = () => `<p class="note info st-teamcheck">${ico('🛡️')} ${E('js.studio.live.teamCheck')}</p>`;
 function renderTop() {
   $('#st-icon').textContent = S.game.icon;
   if (document.activeElement !== $('#st-title')) $('#st-title').value = S.game.title;
@@ -42,7 +49,7 @@ function renderTop() {
   const canUpdate = S.live && S.current && S.current.id !== S.live.id && !(S.pending && S.pending.id === S.current.id);
   pb.classList.toggle('st-update', !!canUpdate);
   pb.classList.toggle('btn-hot', !S.live || !!canUpdate);
-  pb.textContent = !S.live ? (S.pending ? `⏳ ${t('js.studio.top.inReview')}` : `🚀 ${t('js.studio.top.publish')}`) : canUpdate ? `⬆️ ${t('js.studio.top.update')}` : teamWait() ? `⏳ ${t('js.studio.top.inReview')}` : `✅ ${t('js.studio.top.live')}`;
+  iconText(pb, ...(!S.live ? (S.pending ? ['⏳', t('js.studio.top.inReview')] : ['🚀', t('js.studio.top.publish')]) : canUpdate ? ['⬆️', t('js.studio.top.update')] : teamWait() ? ['⏳', t('js.studio.top.inReview')] : ['✅', t('js.studio.top.live')]));
   document.title = t('js.studio.docTitle', { title: S.game.title });
 }
 // Free messages left today of the daily ones; a child whose family plan pays extra messages also sees how many are left
@@ -52,9 +59,10 @@ function renderTurns() {
   // The class wording may still be the English fallback in this language (data-class-en): then it reads left to right.
   const el = $('#st-turns'), en = S.classContext && el.hasAttribute('data-class-en');
   if (en) { el.lang = 'en'; el.dir = 'ltr'; } else { el.removeAttribute('lang'); el.removeAttribute('dir'); }
-  if (S.classContext) { $('#st-turns').textContent = `🔋 ${t('js.studio.turnsLeftToday', { left: Math.max(0, S.turnsLeft | 0) })}`; return; }
+  if (S.classContext) { iconText($('#st-turns'), '🔋', t('js.studio.turnsLeftToday', { left: Math.max(0, S.turnsLeft | 0) })); return; }
   const free = typeof S.freeLeft === 'number' ? S.freeLeft : S.turnsLeft;
-  $('#st-turns').textContent = `🔋 ${t('js.studio.turns', { left: free, total: S.dailyTurns })}${typeof S.extraLeft === 'number' ? ` · ${t('js.studio.extra', { n: S.extraLeft })}` : ''}${typeof S.sparkLeft === 'number' ? ` · ⚡ ${t('js.studio.sparks', { n: S.sparkLeft })}` : ''}`;
+  iconText(el, '🔋', `${t('js.studio.turns', { left: free, total: S.dailyTurns })}${typeof S.extraLeft === 'number' ? ` · ${t('js.studio.extra', { n: S.extraLeft })}` : ''}`);
+  if (typeof S.sparkLeft === 'number') el.append(' · ', icoEl('⚡'), ` ${t('js.studio.sparks', { n: S.sparkLeft })}`);
   syncLimit();
 }
 // ---- No Builder messages left today: the daily-limit card. It is drawn from the state (S.turnsLeft), so it is there
@@ -81,11 +89,11 @@ function syncLimit() {
   if (!out) { box.hidden = true; box.textContent = ''; }
   else {
     const canPublish = !!S.current && !(S.pending && S.pending.id === S.current.id) && (!S.live || S.current.id !== S.live.id);
-    const html = `<p class="st-limit-h" id="${LIMIT_WHY}"><span aria-hidden="true">🌙</span> ${E('js.studio.limitCard.heading')}</p>
+    const html = `<p class="st-limit-h" id="${LIMIT_WHY}">${ico('🌙')} ${E('js.studio.limitCard.heading')}</p>
       <p class="st-limit-text">${E(S.current ? 'js.studio.limitCard.text' : 'js.studio.limitCard.textEmpty')}</p>
       ${upsellHtml()}
-      <div class="st-limit-acts">${canPublish ? `<button class="btn btn-sm btn-hot" type="button" data-act="limit-publish">🚀 ${E('js.studio.limitCard.publish')}</button>` : ''}<a class="btn btn-sm" href="/">🎮 ${E('js.studio.limitCard.play')}</a><a class="btn btn-sm" href="/search?sort=new">✨ ${E('js.studio.limitCard.others')}</a></div>
-      ${S.grownUpLink ? `<p class="st-limit-gu"><span aria-hidden="true">🧑‍🧒</span> ${E('js.studio.limitCard.grownUp')} <a href="/me#grownups">${E('js.studio.limitCard.grownUpWhere')}</a></p>` : ''}`;
+      <div class="st-limit-acts">${canPublish ? `<button class="btn btn-sm btn-hot" type="button" data-act="limit-publish">${ico('🚀')} ${E('js.studio.limitCard.publish')}</button>` : ''}<a class="btn btn-sm" href="/">${ico('🎮')} ${E('js.studio.limitCard.play')}</a><a class="btn btn-sm" href="/search?sort=new">${ico('✨')} ${E('js.studio.limitCard.others')}</a></div>
+      ${S.grownUpLink ? `<p class="st-limit-gu">${ico('🧑‍🧒')} ${E('js.studio.limitCard.grownUp')} <a href="/me#grownups">${E('js.studio.limitCard.grownUpWhere')}</a></p>` : ''}`;
     if (box.dataset.html !== html || box.hidden) { box.innerHTML = html; box.dataset.html = html; }
     box.hidden = false;
   }
@@ -103,20 +111,20 @@ const E = (key, vars) => esc(t(key, vars));
 function upsellHtml() {
   const u = S.upsell || (S.grownup && S.grownup.seePlans ? { kind: 'plan', who: 'grownup', href: '/plans' } : null);
   if (!u) return '';
-  if (u.kind === 'resting') return `<p class="st-limit-up st-limit-note"><span aria-hidden="true">😴</span> ${E('js.studio.limitCard.resting')}</p>`;
-  if (u.kind === 'class') return `<p class="st-limit-up st-limit-note"><span aria-hidden="true">🎒</span> ${E('js.studio.limitCard.classText')}</p>`;
-  if (u.kind === 'teacher') return `<p class="st-limit-up st-limit-note"><span aria-hidden="true">🍎</span> ${E('js.studio.limitCard.teacherText')}</p>`;
+  if (u.kind === 'resting') return `<p class="st-limit-up st-limit-note">${ico('😴')} ${E('js.studio.limitCard.resting')}</p>`;
+  if (u.kind === 'class') return `<p class="st-limit-up st-limit-note">${ico('🎒')} ${E('js.studio.limitCard.classText')}</p>`;
+  if (u.kind === 'teacher') return `<p class="st-limit-up st-limit-note">${ico('🍎')} ${E('js.studio.limitCard.teacherText')}</p>`;
   const spark = u.kind === 'spark';
   if (u.who === 'grownup' || u.who === 'staff') {
-    return `<p class="st-limit-up"><a class="btn btn-sm btn-primary" href="${esc(u.href)}" data-upsell="${spark ? 'spark' : 'plan'}">${spark ? `<span aria-hidden="true">⚡</span> ${E('js.studio.limitCard.getSpark')}` : `<span aria-hidden="true">⭐</span> ${E('js.studio.limit.seePlans')}`}</a></p>`;
+    return `<p class="st-limit-up"><a class="btn btn-sm btn-primary" href="${esc(u.href)}" data-upsell="${spark ? 'spark' : 'plan'}">${spark ? `${ico('⚡')} ${E('js.studio.limitCard.getSpark')}` : `${ico('⭐')} ${E('js.studio.limit.seePlans')}`}</a></p>`;
   }
   if (u.grownup) {
     const text = E(spark ? 'js.studio.limitCard.askTextSpark' : 'js.studio.limitCard.askText');
-    const act = u.asked ? `<p class="st-limit-asked" role="status"><span aria-hidden="true">✅</span> ${E('js.studio.limitCard.asked')}</p>`
-      : `<button class="btn btn-sm btn-primary" type="button" data-act="ask-grownup"><span aria-hidden="true">🙋</span> ${E('js.studio.limitCard.askButton')}</button>`;
-    return `<div class="st-limit-up st-limit-ask"><p>${spark ? '<span aria-hidden="true">⚡</span> ' : '<span aria-hidden="true">🌟</span> '}${text}</p>${act}</div>`;
+    const act = u.asked ? `<p class="st-limit-asked" role="status">${ico('✅')} ${E('js.studio.limitCard.asked')}</p>`
+      : `<button class="btn btn-sm btn-primary" type="button" data-act="ask-grownup">${ico('🙋')} ${E('js.studio.limitCard.askButton')}</button>`;
+    return `<div class="st-limit-up st-limit-ask"><p>${ico(spark ? '⚡' : '🌟')} ${text}</p>${act}</div>`;
   }
-  return `<div class="st-limit-up st-limit-show"><p><span aria-hidden="true">🌟</span> ${t('js.studio.limitCard.showText', { address: `<bdi dir="ltr"><b>${esc(u.address)}</b></bdi>` })}</p>${u.qr ? `<div class="st-limit-qr" role="img" aria-label="${E('js.studio.limitCard.qrLabel')}">${u.qr}</div>` : ''}</div>`;
+  return `<div class="st-limit-up st-limit-show"><p>${ico('🌟')} ${t('js.studio.limitCard.showText', { address: `<bdi dir="ltr"><b>${esc(u.address)}</b></bdi>` })}</p>${u.qr ? `<div class="st-limit-qr" role="img" aria-label="${E('js.studio.limitCard.qrLabel')}">${u.qr}</div>` : ''}</div>`;
 }
 /** While the card shows: read the state again every 45 s and when the page comes back into view, so a plan or a Spark
  *  Pack bought meanwhile lifts the card without a reload (the counter and the offer follow too). */
@@ -147,37 +155,37 @@ async function askGrownup(btn) {
 }
 function renderLive() {
   const box = $('#st-live'); const parts = [];
-  const cur = S.current ? `✏️ ${E('js.studio.live.editing', { number: S.current.number })}` : `✏️ ${E('js.studio.live.nothingYet')}`;
-  if (S.game.hidden_reason) parts.push(`<p class="note">⚠️ ${E('js.studio.live.hidden')}</p>`);
+  const cur = S.current ? `${ico('✏️')} ${E('js.studio.live.editing', { number: S.current.number })}` : `${ico('✏️')} ${E('js.studio.live.nothingYet')}`;
+  if (S.game.hidden_reason) parts.push(`<p class="note">${ico('⚠️')} ${E('js.studio.live.hidden')}</p>`);
   if (S.live) {
     // A class game: the classes it reaches right now (a class it was shared with stops counting when the builder leaves
     // it or a teacher takes the game off it).
     const reach = S.live.visibility === 'class' ? classShare().live : null;
     // A class game that reaches no class right now is, in effect, only for its builder: say so, and why.
     const [e, w] = reach && !reach.length ? ['🔒', t('js.studio.live.onlyYouNow')] : visOf(S.live.visibility, reach ? reach.length : 1);
-    parts.push(`<span class="stchip good">🟢 ${E('js.studio.live.liveVersion', { number: S.live.number, who: `${e} ${w}` })}</span>${teamWait() ? `<span class="stchip warn">⏳ ${E('js.studio.live.waitingReview')}</span>` : ''}<span class="vtag">${cur}</span>`);
+    parts.push(`<span class="stchip good">${ico('🟢')} ${E('js.studio.live.liveVersion', { number: S.live.number, who: `${e} ${w}` })}</span>${teamWait() ? `<span class="stchip warn">${ico('⏳')} ${E('js.studio.live.waitingReview')}</span>` : ''}<span class="vtag">${cur}</span>`);
     if (reach) {
       const off = classShare().classes.filter(c => c.removed).map(c => c.name);
       if (reach.length) {
-        parts.push(`<p class="st-shared">🎒 ${t('js.studio.live.sharedWith', { names: nameList(reach.map(c => c.name)) })}</p>`);
-        if (off.length) parts.push(`<p class="note">🎒 ${t('js.studio.live.takenOffSome', { names: nameList(off) })}</p>`);
+        parts.push(`<p class="st-shared">${ico('🎒')} ${t('js.studio.live.sharedWith', { names: nameList(reach.map(c => c.name)) })}</p>`);
+        if (off.length) parts.push(`<p class="note">${ico('🎒')} ${t('js.studio.live.takenOffSome', { names: nameList(off) })}</p>`);
       } else {
         const why = off.length ? t('js.studio.live.takenOff', { names: nameList(off) }) : E('js.studio.live.leftClass');
-        parts.push(`<p class="note">🎒 ${why} ${E('js.studio.live.pickAgain')}</p>`);
+        parts.push(`<p class="note">${ico('🎒')} ${why} ${E('js.studio.live.pickAgain')}</p>`);
       }
     }
     const canUpdate = S.current && S.current.id !== S.live.id && !(S.pending && S.pending.id === S.current.id);
-    if (canUpdate) parts.push(`<button class="btn btn-hot btn-sm st-update" type="button" data-act="update">⬆️ ${E('js.studio.live.updateTo', { number: S.current.number })}</button>`);
-    if (S.pending && S.pending.id === S.live.id) parts.push(`<p class="note">⏳ ${waitingText()}</p>`);
-    else if (S.pending) parts.push(`<p class="note">⏳ ${E('js.studio.live.pendingUpdate', { pending: S.pending.number, live: S.live.number })}</p>`);
+    if (canUpdate) parts.push(`<button class="btn btn-hot btn-sm st-update" type="button" data-act="update">${ico('⬆️')} ${E('js.studio.live.updateTo', { number: S.current.number })}</button>`);
+    if (S.pending && S.pending.id === S.live.id) parts.push(`<p class="note">${ico('⏳')} ${waitingText()}</p>`);
+    else if (S.pending) parts.push(`<p class="note">${ico('⏳')} ${E('js.studio.live.pendingUpdate', { pending: S.pending.number, live: S.live.number })}</p>`);
     if (teamWait()) parts.push(teamNote());
     else if (canUpdate) parts.push(`<p class="note info">${E('js.studio.live.playersOn', { live: S.live.number, number: S.current.number })}${S.live.visibility === 'public' ? ' ' + E('js.studio.live.publicCheck') : isGroup(S.live.visibility) && needsCheck(S.current.id) ? ' ' + E('js.studio.share.groupHint') : ''}</p>`);
   } else {
     parts.push(`<span class="stchip">${esc(S.status.label)}${S.status.code === 'draft' ? ' · ' + E('js.studio.live.onlyYou') : ''}</span><span class="vtag">${cur}</span>`);
-    if (S.pending) parts.push(`<p class="note">⏳ ${E('js.studio.live.pendingNew', { number: S.pending.number })}</p>`);
+    if (S.pending) parts.push(`<p class="note">${ico('⏳')} ${E('js.studio.live.pendingNew', { number: S.pending.number })}</p>`);
     if (teamWait()) parts.push(teamNote());
   }
-  if (S.game.review_note) parts.push(`<p class="note">💬 ${E('js.studio.live.reviewer', { note: S.game.review_note })}</p>`);
+  if (S.game.review_note) parts.push(`<p class="note">${ico('💬')} ${E('js.studio.live.reviewer', { note: S.game.review_note })}</p>`);
   box.innerHTML = parts.join('');
 }
 // ---- "Share with my classes": S.classShare comes from the server (server/routes/studio.js classShare):
@@ -211,7 +219,7 @@ function renderLiveClass() {
   if (!L) { if (box) box.remove(); return; }
   if (!box) { box = document.createElement('div'); box.id = 'st-liveclass'; box.className = 'st-liveclass'; box.setAttribute('aria-live', 'polite'); $('#st-safety').after(box); }
   box.dataset.line = L.line;
-  const chip = (tone, words) => `<span class="stchip ${tone}"><span aria-hidden="true">📡</span> ${words}</span>`;
+  const chip = (tone, words) => `<span class="stchip ${tone}">${ico('📡')} ${words}</span>`;
   if (L.line === 'host') {
     box.innerHTML = L.canHost ? `${chip('good', E('js.studio.liveLine.ready'))} <a class="btn btn-sm btn-primary" href="${esc(L.host)}" data-act="host-live">${E('js.studio.live.host')}</a>`
       : `${chip('good', E('js.studio.liveLine.kidReady'))}`;
@@ -233,7 +241,7 @@ function renderCanvasLine() {
   if (!L) { if (box) box.remove(); return; }
   if (!box) { box = document.createElement('div'); box.id = 'st-canvasline'; box.className = 'st-liveclass st-canvasline'; $('#st-safety').after(box); }
   box.dataset.kind = L.kind;
-  box.innerHTML = `${S.activity ? `<button class="btn btn-sm btn-primary st-editact" type="button" data-act="edit-activity">🧮 ${E('js.studio.activityEdit')}</button> ` : ''}<span class="stchip${L.kind === 'activity' ? ' good' : ''}"><span aria-hidden="true">${L.kind === 'activity' ? '🧮' : '🎮'}</span> ${esc(L.label)}</span> <button class="btn btn-sm" type="button" data-act="canvas-switch">${L.kind === 'activity' ? '🎮' : '🧮'} ${esc(L.button)}</button>`;
+  box.innerHTML = `${S.activity ? `<button class="btn btn-sm btn-primary st-editact" type="button" data-act="edit-activity">${ico('🧮')} ${E('js.studio.activityEdit')}</button> ` : ''}<span class="stchip${L.kind === 'activity' ? ' good' : ''}"><span aria-hidden="true">${L.kind === 'activity' ? '🧮' : '🎮'}</span> ${esc(L.label)}</span> <button class="btn btn-sm" type="button" data-act="canvas-switch">${L.kind === 'activity' ? '🎮' : '🧮'} ${esc(L.button)}</button>`;
 }
 // ---------------------------------------------------------------- the Activity panel (public/js/activity-panel/)
 // A classroom activity's owner edits its problems and settings without a Builder message (S.activity: the server sends
@@ -259,7 +267,7 @@ function renderStudentBtn() {
   if (!S.activity) { if (b) b.remove(); student = false; return; }
   if (b) return;
   b = document.createElement('button'); b.type = 'button'; b.id = 'st-student'; b.className = 'btn btn-sm'; b.setAttribute('aria-pressed', 'false');
-  b.textContent = `🧑‍🎓 ${t('js.studio.asStudent')}`;
+  iconText(b, '🧑‍🎓', t('js.studio.asStudent'));
   b.addEventListener('click', () => asStudent(!student));
   $('.st-prev-tools').prepend(b);
 }
@@ -279,10 +287,10 @@ function renderSafety() {
   const box = $('#st-safety'); const c = S.current;
   if (!c) { box.innerHTML = ''; return; }
   const list = c.issues.length ? `<ul dir="ltr" lang="en">${c.issues.map(i => `<li>${esc(i.message)}</li>`).join('')}</ul>` : '';
-  const fixBtn = `<button class="btn btn-sm" type="button" data-act="fix">🛠️ ${E('js.studio.fixButton')}</button>`;
-  if (c.safety === 'pass') box.innerHTML = `✅ ${E('js.studio.safety.pass', { number: c.number })}${playedLine(c)}`;
-  else if (c.safety === 'flag') box.innerHTML = `⚠️ ${E('js.studio.safety.flag', { number: c.number })} ${fixBtn}${list}`;
-  else if (c.safety === 'fail') box.innerHTML = `⛔ ${E('js.studio.safety.fail', { number: c.number })} ${fixBtn}${list}`;
+  const fixBtn = `<button class="btn btn-sm" type="button" data-act="fix">${ico('🛠️')} ${E('js.studio.fixButton')}</button>`;
+  if (c.safety === 'pass') box.innerHTML = `${ico('✅')} ${E('js.studio.safety.pass', { number: c.number })}${playedLine(c)}`;
+  else if (c.safety === 'flag') box.innerHTML = `${ico('⚠️')} ${E('js.studio.safety.flag', { number: c.number })} ${fixBtn}${list}`;
+  else if (c.safety === 'fail') box.innerHTML = `${ico('⛔')} ${E('js.studio.safety.fail', { number: c.number })} ${fixBtn}${list}`;
   else box.innerHTML = E('js.studio.safety.checking', { number: c.number });
 }
 
@@ -292,7 +300,7 @@ function renderSafety() {
 // (that finding as a chat message) and, for an admin only, "Publish anyway" after a confirm.
 function playedLine(c) {
   if (c.played !== 'pass' && c.played !== 'endless') return '';
-  return `<span class="st-played">✅ ${E(c.played === 'endless' ? 'js.studio.play.endless' : 'js.studio.play.pass')}</span>`;
+  return `<span class="st-played">${ico('✅')} ${E(c.played === 'endless' ? 'js.studio.play.endless' : 'js.studio.play.pass')}</span>`;
 }
 /** A 'playtest' event of the build: the playthrough's result for the version on show. */
 function playedNow(d) {
@@ -310,7 +318,7 @@ function playChecking(btn) {
  *  admin's "Publish anyway"). -> true when handled. */
 function playBlocked(er, retry) {
   const d = er && er.data; if (!d || (d.code !== 'playthrough' && d.code !== 'playBusy')) return false;
-  const fix = d.ask ? `<button class="btn btn-primary" type="button" data-play="fix">🛠️ ${E('js.studio.play.fix')}</button>` : '';
+  const fix = d.ask ? `<button class="btn btn-primary" type="button" data-play="fix">${ico('🛠️')} ${E('js.studio.play.fix')}</button>` : '';
   const any = d.canOverride ? `<button class="btn" type="button" data-play="anyway">${E('js.studio.play.anyway')}</button>` : '';
   const s = sheet({ title: `🎮 ${t('js.studio.play.title')}`, content: `<p class="st-playblock">${esc(d.error || er.message)}</p><div class="sheet-actions">${any}${fix}</div>` });
   s.el.addEventListener('click', async e => {
@@ -424,7 +432,7 @@ function place(el) {
 }
 function bubble(cls, text) { const d = document.createElement('div'); d.className = `msg ${cls}`; d.dir = 'auto'; d.textContent = text || ''; return place(d); }
 function attHtml(list) {
-  return `<div class="att-list">${list.map(u => `<span class="att">${u.kind === 'image' ? `<img src="/api/studio/${ID}/uploads/${esc(u.id)}" alt="">` : `<span class="fi" aria-hidden="true">${u.kind === 'pdf' ? '📄' : '📝'}</span>`}<span class="nm">${esc(u.name)}</span></span>`).join('')}</div>`;
+  return `<div class="att-list">${list.map(u => `<span class="att">${u.kind === 'image' ? `<img src="/api/studio/${ID}/uploads/${esc(u.id)}" alt="">` : `<span class="fi" aria-hidden="true">${ico(u.kind === 'pdf' ? '📄' : '📝', 20)}</span>`}<span class="nm">${esc(u.name)}</span></span>`).join('')}</div>`;
 }
 function userBubble(text, uploads = []) {
   const d = bubble('me', text);
@@ -434,11 +442,11 @@ function userBubble(text, uploads = []) {
 function card(cls, inner) { const d = document.createElement('div'); d.className = `ev ${cls}`; d.innerHTML = inner; return place(d); }
 function versionCard(v, live = false) {
   const fail = v.status === 'fail';
-  const d = card(`version ${fail ? 'fail' : ''}`, `<span class="evh">🎮 ${E(fail ? 'js.studio.log.versionFailed' : 'js.studio.log.versionReady', { number: v.number })}</span><span dir="auto">${esc(v.notes)}</span>
-    <span class="row">${safetyChip(v.status)}${live ? `<button class="btn btn-sm" type="button" data-act="see">👀 ${E('js.studio.log.seeIt')}</button>` : ''}${fail && live ? `<button class="btn btn-sm" type="button" data-act="fix">🛠️ ${E('js.studio.fixButton')}</button>` : ''}</span>`);
+  const d = card(`version ${fail ? 'fail' : ''}`, `<span class="evh">${ico('🎮')} ${E(fail ? 'js.studio.log.versionFailed' : 'js.studio.log.versionReady', { number: v.number })}</span><span dir="auto">${esc(v.notes)}</span>
+    <span class="row">${safetyChip(v.status)}${live ? `<button class="btn btn-sm" type="button" data-act="see">${ico('👀')} ${E('js.studio.log.seeIt')}</button>` : ''}${fail && live ? `<button class="btn btn-sm" type="button" data-act="fix">${ico('🛠️')} ${E('js.studio.fixButton')}</button>` : ''}</span>`);
   return d;
 }
-function notesCard(list) { return card('notes', `<span class="evh">🧪 ${E('js.studio.log.thingsToTry')}</span><ul dir="auto">${list.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`); }
+function notesCard(list) { return card('notes', `<span class="evh">${ico('🧪')} ${E('js.studio.log.thingsToTry')}</span><ul dir="auto">${list.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`); }
 function metaCard(m) { return card('meta', `<span>${esc(m.icon)} ${t('js.studio.log.namedIt', { title: `<b>${esc(m.title)}</b>` })}</span>`); }
 function chips(options, active) {
   const d = document.createElement('div'); d.className = 'qchips' + (active ? '' : ' used');
@@ -450,7 +458,7 @@ function askBlock(a, active, into) {
   const q = document.createElement('span'); q.className = 'q'; q.textContent = a.question; b.appendChild(q);
   if (a.options && a.options.length) chips(a.options, active);
 }
-const note = (text, cls = '') => bubble(`note${cls ? ' ' + cls : ''}`, text);
+const note = (text, cls = '', icon = '') => { const d = bubble(`note${cls ? ' ' + cls : ''}`, text); if (icon) iconText(d, icon, text); return d; };
 /** One saved transcript entry (renderLog, and a running build's own entries in startTurnUI). last: its question's
  *  chips can still be tapped. */
 function drawEntry(m, last = false) {
@@ -459,7 +467,7 @@ function drawEntry(m, last = false) {
   const events = m.events || [];
   // Notes that belong before the reply: the server restarted and the Builder carried on; follow-ups started this build.
   for (const [name, d] of events) {
-    if (name === 'resumed') note(d && d.v ? t('js.studio.resumedV', { v: d.v }) : t('js.studio.resumed'));
+    if (name === 'resumed') note(d && d.v ? t('js.studio.resumedV', { v: d.v }) : t('js.studio.resumed'), '', '🔄');
     else if (name === 'carried') carriedNote();
   }
   const b = m.text || m.open ? bubble('bot' + (m.refused ? ' refused' : ''), m.text) : null;
@@ -483,8 +491,8 @@ function drawLastTurn(msgs) {
   if (lt.refunded) note(t('js.studio.notCounted'));
   if (!lt.cont && !lt.putBack) return;
   const row = document.createElement('div'); row.className = 'st-cont';
-  if (lt.cont) row.insertAdjacentHTML('beforeend', `<button class="btn btn-primary st-contbtn" type="button" data-act="continue">▶️ ${E('js.studio.continue')}</button>`);
-  if (lt.putBack) row.insertAdjacentHTML('beforeend', `<button class="btn st-contbtn" type="button" data-act="putback">✏️ ${E('js.studio.followups.putBack')}</button>`);
+  if (lt.cont) row.insertAdjacentHTML('beforeend', `<button class="btn btn-primary st-contbtn" type="button" data-act="continue">${ico('▶️')} ${E('js.studio.continue')}</button>`);
+  if (lt.putBack) row.insertAdjacentHTML('beforeend', `<button class="btn st-contbtn" type="button" data-act="putback">${ico('✏️')} ${E('js.studio.followups.putBack')}</button>`);
   place(row);
 }
 /** "The AI Builder is resting… back tomorrow at 1:00 AM" in the reader's own time zone and language. */
@@ -501,7 +509,7 @@ function restingText(until) {
 let restingEl = null;
 function restingNote() {
   if (restingEl && restingEl.isConnected) { log.appendChild(restingEl); return; }
-  restingEl = bubble('bot', restingText(S.resting));
+  restingEl = iconText(bubble('bot', ''), '😴', restingText(S.resting));
 }
 function renderLog() {
   restingEl = null;
@@ -575,7 +583,7 @@ const ST = (k, vars) => t(`js.studio.steps.${k}`, vars);
 const mk = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
 const hide = e => { e.setAttribute('aria-hidden', 'true'); return e; };
 /** An element with a decorative emoji (hidden from screen readers) before its text, and an optional bold lead-in. */
-const withIcon = (el, icon, text, lead) => { el.textContent = ''; el.append(hide(mk('span', null, icon)), ' '); if (lead) el.append(mk('b', null, lead), ' '); el.append(text); return el; };
+const withIcon = (el, icon, text, lead) => { el.textContent = ''; el.append(icoEl(icon), ' '); if (lead) el.append(mk('b', null, lead), ' '); el.append(text); return el; };
 const units = new Map();
 const unit = (u, n, digits) => {
   const k = `${u}${digits}`; let f = units.get(k);
@@ -742,7 +750,7 @@ function drawRow(li, o) {
   if (th || facts || sec) {
     // Parts are separated by " · " in CSS. The 🤔 is a visible word too (no tooltip on phones).
     const d = mk('span', 'stp-detail');
-    if (th) { v.th = mk('span', 'stp-th'); v.th.append(hide(mk('span', null, '🤔')), ' ', mk('span', null, th)); d.append(v.th); }
+    if (th) { v.th = mk('span', 'stp-th'); v.th.append(icoEl('🤔'), ' ', mk('span', null, th)); d.append(v.th); }
     if (facts) { v.facts = mk('span', null, facts); d.append(v.facts); }
     if (sec) {
       v.sec = mk('span', 'stp-sec', running ? fmtDur(Date.now() - o.at, true) : fmtDur(o.dur));
@@ -755,9 +763,9 @@ function drawRow(li, o) {
   const mark = mk('span', 'stp-mark');
   if (running) { if (o.current) mark.append(hide(mk('span', 'stp-spin'))); mark.append(mk('span', 'sr-only', ST('srNow'))); }
   else if (o.paused) mark.append(hide(mk('span', null, '…')), mk('span', 'sr-only', ST('srPaused')));
-  else if (warn) mark.append(hide(mk('span', null, '⚠️')), mk('span', 'sr-only', ST('srWarn')));
-  else mark.append(hide(mk('span', null, '✓')), mk('span', 'sr-only', ST('srDone')));
-  line.append(hide(mk('span', 'stp-ico', STEP_ICON[k] || '•')), text, mark);
+  else if (warn) mark.append(icoEl('⚠️'), mk('span', 'sr-only', ST('srWarn')));
+  else mark.append(icoEl('✓'), mk('span', 'sr-only', ST('srDone')));
+  line.append(icoEl(STEP_ICON[k] || '•', 'stp-ico'), text, mark);
   li.append(line);
   if (plan) {
     const p = mk('p', 'stp-plan'); v.plan = mk('span', null, plan); v.plan.dir = 'auto';
@@ -833,7 +841,7 @@ function liveSteps() {
     const sig = `${n.state}|${n.text}|${n.so}`;
     if (n.line && etaLine.dataset.sig !== sig) {
       etaLine.dataset.sig = sig; etaLine.textContent = '';
-      etaLine.append(hide(mk('span', null, n.state === 'longer' || n.state === 'big' ? '⏳' : '⏱')), ' ', mk('span', 'stp-eta-t', n.text));
+      etaLine.append(icoEl(n.state === 'longer' || n.state === 'big' ? '⏳' : '⏱️'), ' ', mk('span', 'stp-eta-t', n.text));
       if (n.so) etaLine.append(' ', hide(mk('span', 'stp-eta-so', `· ${n.so}`)));   // whole minutes, never read out
     }
     if (n.line && !etaLearn.firstChild) withIcon(etaLearn, '💡', ETA(est.s.p === 'ai' ? 'learnAi' : 'learnBlocks'));
@@ -853,7 +861,8 @@ function liveSteps() {
   function pill() {
     const r = newest(); if (!pillEl || !r) return;
     const det = AUTHOR.has(r.key) ? stepDetail(r.key, r.f) : '';
-    pillEl.textContent = `${STEP_ICON[r.key] || ''} ${stepLabel(r.key, r.f, r.done && !r.stopped)}${det ? ` · ${det}` : ''}`;
+    const pillText = `${stepLabel(r.key, r.f, r.done && !r.stopped)}${det ? ` · ${det}` : ''}`;
+    if (STEP_ICON[r.key]) iconText(pillEl, STEP_ICON[r.key], pillText); else pillEl.textContent = ` ${pillText}`;
   }
   /** The "Just now" line for a new timed row: an instant row that came right before it, not shown yet this turn. */
   function justFor(key) {
@@ -1029,7 +1038,7 @@ function stepsCard(rec) {
   const id = `stp-${++stepSeq}`;
   const btn = mk('button', 'stp-sum'); btn.type = 'button'; btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', id);
   const arrow = hide(mk('span', 'stp-arrow', '▾'));
-  btn.append(hide(mk('span', 'stp-ico', rec.p === 'ai' ? '🧠' : '🧱')), mk('span', 'stp-sum-t', summaryText(rec)), arrow);
+  btn.append(icoEl(rec.p === 'ai' ? '🧠' : '🧱', 'stp-ico'), mk('span', 'stp-sum-t', summaryText(rec)), arrow);
   const body = mk('div', 'stp-body'); body.id = id; body.hidden = true;
   const setOpen = open => {
     if (open && !body.firstChild) fillSummary(body, rec, () => { setOpen(false); btn.focus({ preventScroll: true }); });
@@ -1116,7 +1125,7 @@ function fuRefused(cid, text, reply) {
   bubble('bot refused', reply);
 }
 /** "Your message started a new build (1 turn)". */
-function carriedNote() { return card('carried', `<span>🔁 ${E('js.studio.followups.carriedNote')}</span>`); }
+function carriedNote() { return card('carried', `<span>${ico('🔁')} ${E('js.studio.followups.carriedNote')}</span>`); }
 /** The strip in the live card follows the follow-ups waiting now. */
 function syncStrip() { if (live) live.inbox($$('.msg.fu[data-state="waiting"]', log).length); }
 function onInbox(d) {
@@ -1533,7 +1542,7 @@ if (proBtn) { proBtn.addEventListener('click', () => { setPro(!pro); toast(pro ?
 const OK_TYPES = /^(image\/(png|jpeg|webp|gif)|application\/pdf|text\/(plain|markdown|csv)|application\/json)$/;
 function renderAttach() {
   const box = $('#st-attach'); box.hidden = !pending.length;
-  box.innerHTML = pending.map((u, i) => `<span class="att ${u.id ? '' : 'loading'}">${u.kind === 'image' && u.preview ? `<img src="${esc(u.preview)}" alt="">` : `<span class="fi" aria-hidden="true">${u.kind === 'image' ? '🖼️' : u.kind === 'pdf' ? '📄' : '📝'}</span>`}<span class="nm">${esc(u.name)}</span>${u.id ? `<button class="rm" type="button" data-rm="${i}" aria-label="${E('js.studio.uploads.remove', { name: u.name })}">✕</button>` : ''}</span>`).join('');
+  box.innerHTML = pending.map((u, i) => `<span class="att ${u.id ? '' : 'loading'}">${u.kind === 'image' && u.preview ? `<img src="${esc(u.preview)}" alt="">` : `<span class="fi" aria-hidden="true">${ico(u.kind === 'image' ? '🖼️' : u.kind === 'pdf' ? '📄' : '📝', 20)}</span>`}<span class="nm">${esc(u.name)}</span>${u.id ? `<button class="rm" type="button" data-rm="${i}" aria-label="${E('js.studio.uploads.remove', { name: u.name })}">✕</button>` : ''}</span>`).join('');
 }
 async function addFiles(files) {
   for (const f of files) {
@@ -1610,7 +1619,7 @@ const mic = (() => {
     btn.classList.toggle('rec', on); btn.disabled = busy;   // not while asking: the button keeps focus
     btn.setAttribute('aria-busy', busy ? 'true' : 'false');
     const label = t(on ? 'js.studio.mic.stop' : 'js.studio.mic.start'); btn.setAttribute('aria-label', label); btn.title = label;
-    $('.st-mic-ico', btn).textContent = on ? '⏹️' : busy ? '⏳' : '🎤';
+    $('.st-mic-ico', btn).innerHTML = ico(on ? '⏹️' : busy ? '⏳' : '🎤');
   }
   const listening = () => !!(L && L.ready && !L.failed);
   function tick() {
@@ -1901,8 +1910,8 @@ $('#st-save').addEventListener('click', () => {
 $('#st-history').addEventListener('click', () => {
   if (!S.versions.length) return toast(t('js.studio.versions.none'));
   const row = v => `<li class="vrow"><span class="vn" dir="ltr">v${v.number}</span><span><span class="vnotes" dir="auto">${esc(v.notes || t('js.studio.versions.newVersion'))}</span><br><span class="vmeta">${esc(when(v.at))}</span>
-    <span class="tags">${safetyChip(v.safety)}${v.current ? `<span class="stchip">✏️ ${E('js.studio.versions.editing')}</span>` : ''}${v.live ? `<span class="stchip good">🟢 ${E('js.studio.top.live')}</span>` : ''}${v.pending ? `<span class="stchip warn">⏳ ${E('js.studio.top.inReview')}</span>` : ''}</span></span>
-    ${v.current ? '' : `<button class="btn btn-sm" type="button" data-restore="${esc(v.id)}"${S.turn ? ' disabled' : ''}>↩️ ${E('js.studio.versions.bringBack')}</button>`}</li>`;
+    <span class="tags">${safetyChip(v.safety)}${v.current ? `<span class="stchip">${ico('✏️')} ${E('js.studio.versions.editing')}</span>` : ''}${v.live ? `<span class="stchip good">${ico('🟢')} ${E('js.studio.top.live')}</span>` : ''}${v.pending ? `<span class="stchip warn">${ico('⏳')} ${E('js.studio.top.inReview')}</span>` : ''}</span></span>
+    ${v.current ? '' : `<button class="btn btn-sm" type="button" data-restore="${esc(v.id)}"${S.turn ? ' disabled' : ''}>${ico('↩️')} ${E('js.studio.versions.bringBack')}</button>`}</li>`;
   const s = sheet({ title: `🕘 ${t('js.studio.versions.title')}`, content: `<p class="small muted">${E('js.studio.versions.hint')}</p><ul class="vlist">${S.versions.map(row).join('')}</ul>` });
   s.el.addEventListener('click', async e => {
     const b = e.target.closest('[data-restore]'); if (!b) return; b.disabled = true;
@@ -1947,7 +1956,7 @@ function shareSheet(mode) {
   };
   const optsHtml = () => options().filter(k => VIS[k] && (k !== 'class' || cls().length))
     .map(k => { if (k === 'class') return classOption(k); const [e, w] = visOf(k), h = grownupHint(k); return `<button type="button" data-vis="${k}" aria-pressed="${k === pick}"><b>${e} ${esc(w)}</b><span>${esc(S.shareText[k])}</span>${h ? `<span class="vis-hint">${esc(h)}</span>` : ''}</button>`; }).join('');
-  const link = live ? `<div class="field"><label for="share-link">${E('js.studio.share.link')}</label><div class="row"><input class="input" id="share-link" dir="ltr" readonly value="${esc(location.origin + S.shareUrl)}" style="flex:1;min-width:0"><button class="btn" type="button" id="share-copy">📋 ${E('js.studio.share.copy')}</button></div></div>` : '';
+  const link = live ? `<div class="field"><label for="share-link">${E('js.studio.share.link')}</label><div class="row"><input class="input" id="share-link" dir="ltr" readonly value="${esc(location.origin + S.shareUrl)}" style="flex:1;min-width:0"><button class="btn" type="button" id="share-copy">${ico('📋')} ${E('js.studio.share.copy')}</button></div></div>` : '';
   const title = live ? `🔗 ${t('js.studio.share.titleLive')}` : mode === 'publish' ? `🚀 ${t('js.studio.share.titlePublish')}` : `🔗 ${t('js.studio.share.titleWho')}`;
   const s = sheet({ title, content: `${live ? `<p>${E('js.studio.share.playersGet', { number: live.number })}</p>` : `<p>${E('js.studio.share.pickWho', { number: S.current.number })}</p>`}<div class="vischoice" role="group" aria-label="${E('js.studio.share.whoLabel')}">${optsHtml()}</div><p class="small muted" id="vis-hint"></p>${link}<div class="sheet-actions"><button class="btn btn-primary" type="button" id="vis-go">${live ? E('js.studio.share.save') : E('js.studio.top.publish')}</button></div>` });
   const choice = $('.vischoice', s.el);
@@ -2020,7 +2029,7 @@ async function updateLive() {
   const pub = S.live.visibility === 'public';
   // A class or school game updates at once unless the safety robot flagged the new version (then a person checks it).
   const text = pub ? E('js.studio.update.publicText', { live: S.live.number }) : isGroup(S.live.visibility) && needsCheck(S.current.id) ? E('js.studio.update.groupText', { live: S.live.number }) : E('js.studio.update.now');
-  const s = sheet({ title: `⬆️ ${t('js.studio.update.title')}`, content: `<p>${t('js.studio.update.text', { live: `<b>${E('js.studio.update.version', { number: S.live.number })}</b>`, number: `<b>${E('js.studio.update.version', { number: S.current.number })}</b>` })}</p><p>${text}</p><div class="sheet-actions"><button class="btn" type="button" data-close>${E('js.studio.update.notYet')}</button><button class="btn btn-hot" type="button" id="upd-go">⬆️ ${E('js.studio.update.button')}</button></div>` });
+  const s = sheet({ title: `⬆️ ${t('js.studio.update.title')}`, content: `<p>${t('js.studio.update.text', { live: `<b>${E('js.studio.update.version', { number: S.live.number })}</b>`, number: `<b>${E('js.studio.update.version', { number: S.current.number })}</b>` })}</p><p>${text}</p><div class="sheet-actions"><button class="btn" type="button" data-close>${E('js.studio.update.notYet')}</button><button class="btn btn-hot" type="button" id="upd-go">${ico('⬆️')} ${E('js.studio.update.button')}</button></div>` });
   s.el.querySelector('[data-close]').addEventListener('click', s.close);
   $('#upd-go', s.el).addEventListener('click', async e => {
     e.target.disabled = true; const back = playChecking(e.target);

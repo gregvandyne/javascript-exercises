@@ -16,6 +16,7 @@ import * as D from '../services/digest.js';
 import { renderDigest } from '../services/digest-email.js';
 import { googleEnabled } from '../oidc.js';
 import { sameOrigin } from '../i18n/index.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 /** The "no address" line: it says to connect Google only where Google sign-in is set up. */
@@ -47,7 +48,7 @@ export function digestPanel(req) {
   const school = D.schoolZone(u.id);
   const sel = on => (on ? raw('selected') : '');
   const address = E.addressOf(u.id);
-  return html`<section class="panel" id="digest" aria-labelledby="digest-h"><h2 id="digest-h"><span aria-hidden="true">📬</span> ${t('digest.me.heading')}</h2>
+  return html`<section class="panel" id="digest" aria-labelledby="digest-h"><h2 id="digest-h">${ico('📬', { size: 28 })} ${t('digest.me.heading')}</h2>
     <p class="muted">${t('digest.me.text')}</p>
     ${address ? '' : html`<p class="notice warn small" id="digest-noaddr">${noAddressText(req, 'me')}</p>`}
     <form class="dg-form" data-api="/api/me/digest" data-reload data-toast="${t('digest.me.saved')}" novalidate>
@@ -63,7 +64,7 @@ export function digestPanel(req) {
             ${S.ZONES.filter(z => z.includes('/')).map(z => html`<option value="${z}" ${sel(z === p.tz)}>${zoneLabel(z)}</option>`)}</select></div>
       </div>
       <p class="err form-err" aria-live="polite"></p>
-      <div class="row dg-acts"><button class="btn btn-primary" type="submit">${t('digest.me.save')}</button><a class="btn" href="/teach/summary">📬 ${t('digest.page.link')}</a></div>
+      <div class="row dg-acts"><button class="btn btn-primary" type="submit">${t('digest.me.save')}</button><a class="btn" href="/teach/summary">${ico('📬', { size: 18 })} ${t('digest.page.link')}</a></div>
     </form>
   </section>`;
 }
@@ -91,13 +92,13 @@ function classPanel(req, c) {
       ${stat(req, 'statNotStarted', f.int(c.notStarted))}
       ${stat(req, 'statLive', f.int(c.live))}
     </ul>
-    ${c.dueLessons.length ? html`<h3 class="dg-sub">📚 ${t('digest.page.dueHeading')}</h3><ul class="plain dg-list">${c.dueLessons.map(l => html`<li><b dir="auto">${l.title}</b>
+    ${c.dueLessons.length ? html`<h3 class="dg-sub">${ico('📚', { size: 18 })} ${t('digest.page.dueHeading')}</h3><ul class="plain dg-list">${c.dueLessons.map(l => html`<li><b dir="auto">${l.title}</b>
       <span class="small muted">${t('lessons.class.dueOn', { date: f.day(l.due_at) })} · ${t('digest.page.finished', { done: l.finished, count: c.students })}</span></li>`)}</ul>` : ''}
-    ${c.toReadLessons.length ? html`<h3 class="dg-sub">✍️ ${t('digest.page.toReadHeading')}</h3><ul class="plain dg-list">${c.toReadLessons.map(l => html`<li><a href="/class/${c.id}/progress/${l.cl}#answers"><b dir="auto">${l.title}</b></a>
+    ${c.toReadLessons.length ? html`<h3 class="dg-sub">${ico('✍️', { size: 18 })} ${t('digest.page.toReadHeading')}</h3><ul class="plain dg-list">${c.toReadLessons.map(l => html`<li><a href="/class/${c.id}/progress/${l.cl}#answers"><b dir="auto">${l.title}</b></a>
       <span class="small muted">${t('progress.teach.toRead', { count: l.n })}</span></li>`)}</ul>` : ''}
-    ${c.notStartedNames.length ? html`<details class="dg-names"><summary>⏳ ${t('digest.page.notStartedHeading', { count: c.notStartedNames.length })}</summary>
+    ${c.notStartedNames.length ? html`<details class="dg-names"><summary>${ico('⏳', { size: 18 })} ${t('digest.page.notStartedHeading', { count: c.notStartedNames.length })}</summary>
       <ul class="plain dg-namelist">${c.notStartedNames.map(n => html`<li><bdi>${n}</bdi></li>`)}</ul></details>` : ''}
-    <div class="row dg-acts"><a class="btn btn-sm" href="/class/${c.id}">${t('teach.home.openClass')}</a><a class="btn btn-sm" href="/class/${c.id}/progress">📊 ${t('school.classTabs.progress')}</a></div>
+    <div class="row dg-acts"><a class="btn btn-sm" href="/class/${c.id}">${t('teach.home.openClass')}</a><a class="btn btn-sm" href="/class/${c.id}/progress">${ico('📊', { size: 18 })} ${t('school.classTabs.progress')}</a></div>
   </section>`;
 }
 
@@ -109,16 +110,16 @@ router.get('/teach/summary', requireUser, staffOnly, (req, res) => {
   const address = E.addressOf(u.id);
   const sending = p.on && address;
   const body = html`
-  <div class="pagehead"><div><h1>📬 ${t('digest.page.title')}</h1><p class="muted">${t('digest.page.sub')}</p></div></div>
+  <div class="pagehead"><div><h1>${ico('📬', { size: 36 })} ${t('digest.page.title')}</h1><p class="muted">${t('digest.page.sub')}</p></div></div>
   <section class="panel dg-sched" id="dg-sched">
     <p>${sending ? t('digest.page.next', { when: whenText(req, p) }) : !p.on ? t('digest.page.off') : noAddressText(req, 'page')}</p>
     <p class="small muted">${t('digest.page.privacy')}</p>
-    <div class="row dg-acts">${sum.active.length ? html`<a class="btn" href="/teach/summary/email" id="dg-email">📧 ${t('digest.page.seeEmail')}</a>` : ''}<a class="btn" href="/me#digest">⚙️ ${t('digest.page.change')}</a></div>
+    <div class="row dg-acts">${sum.active.length ? html`<a class="btn" href="/teach/summary/email" id="dg-email">${ico('📧', { size: 18 })} ${t('digest.page.seeEmail')}</a>` : ''}<a class="btn" href="/me#digest">${ico('⚙️', { size: 18 })} ${t('digest.page.change')}</a></div>
   </section>
   ${!sum.classes.length ? emptyState({ emoji: '🍎', title: t('digest.page.noClasses'), text: t('digest.page.noClassesText'), action: { href: '/teach', label: t('nav.classroom') } })
     : !sum.active.length ? emptyState({ emoji: '🌤️', title: t('digest.page.quietAll'), text: t('digest.page.quietAllText') }) : ''}
   ${sum.active.map(c => classPanel(req, c))}
-  ${sum.active.length && sum.quiet.length ? html`<section class="panel dg-quiet" aria-labelledby="dg-quiet-h"><h2 id="dg-quiet-h">🌤️ ${t('digest.page.quietHeading')}</h2>
+  ${sum.active.length && sum.quiet.length ? html`<section class="panel dg-quiet" aria-labelledby="dg-quiet-h"><h2 id="dg-quiet-h">${ico('🌤️', { size: 28 })} ${t('digest.page.quietHeading')}</h2>
     <p class="small muted">${t('digest.page.quietText')}</p>
     <ul class="plain dg-list">${sum.quiet.map(c => html`<li><a href="/class/${c.id}"><b>${c.name}</b></a> <span class="small muted">${c.school}</span></li>`)}</ul></section>` : ''}`;
   page(req, res, { title: t('digest.page.title'), active: 'classes', body, head: CSS, back: '/teach', backLabel: t('nav.classroom') });

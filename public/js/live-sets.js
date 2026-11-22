@@ -7,6 +7,9 @@
 // grown-ups and checked on the server (profanity and personal information are refused).
 import { api, toast, sheet, t, esc, ask } from '/js/app.js';
 import { SECS, MAX, parsePasted } from '/js/live-paste.js';
+import { iconHtml } from '/js/icons.js';
+/** A Fluent icon for an emoji (decorative; public/js/icons.js). */
+const ico = (e, size = 18) => iconHtml(e, { size });
 
 const $ = id => document.getElementById(id);
 
@@ -241,8 +244,8 @@ if (editor) {
         </div>
         <label class="lv-check"><input type="checkbox" id="lv-set-shared"${set.shared ? ' checked' : ''}> ${esc(t('js.live-sets.shared'))}</label>
         <div class="lv-set-tools">
-          <button class="btn" type="button" id="lv-set-ai">✨ ${esc(t('js.live-sets.aiButton'))}</button>
-          <button class="btn" type="button" id="lv-set-paste">📋 ${esc(t('js.live-sets.pasteButton'))}</button>
+          <button class="btn" type="button" id="lv-set-ai">${ico('✨')} ${esc(t('js.live-sets.aiButton'))}</button>
+          <button class="btn" type="button" id="lv-set-paste">${ico('📋')} ${esc(t('js.live-sets.pasteButton'))}</button>
         </div>
         <ol class="lv-qlist" id="lv-qlist"></ol>
         <p><button class="btn" type="button" id="lv-q-add">＋ ${esc(t('js.live-sets.addQuestion'))}</button> <span class="small muted" id="lv-q-count"></span></p>
@@ -277,7 +280,7 @@ if (editor) {
     const n = Math.random().toString(36).slice(2, 8);
     li.innerHTML = `<div class="field lv-cat"><label for="c-${n}">${esc(t('js.live-sets.category'))}</label><input id="c-${n}" class="input" maxlength="${MAX.cat}" placeholder="${esc(t('js.live-sets.categoryHint'))}" value="${esc(it.cat || '')}" data-cat></div>
       <div class="field"><label for="q-${n}">${esc(t('js.live-sets.question'))}</label><textarea id="q-${n}" class="input" rows="2" maxlength="${MAX.q}">${esc(it.q)}</textarea></div>
-      ${it.why ? `<p class="small lv-why" dir="auto"><strong>📖 ${esc(t('js.live-sets.why'))}</strong> ${esc(it.why)}</p>` : ''}
+      ${it.why ? `<p class="small lv-why" dir="auto"><strong>${ico('📖')} ${esc(t('js.live-sets.why'))}</strong> ${esc(it.why)}</p>` : ''}
       <fieldset class="lv-group"><legend>${esc(t('js.live-sets.answers'))}</legend><div class="lv-choices"></div>
       <div class="lv-row"><button class="btn btn-sm" type="button" data-add-choice>＋ ${esc(t('js.live-sets.addAnswer'))}</button>
       <button class="btn btn-sm" type="button" data-tf>${esc(t('js.live-sets.makeTf'))}</button></div></fieldset>
@@ -327,7 +330,7 @@ if (editor) {
           <option value="mixed">${esc(t('js.live-sets.aiMixed'))}</option><option value="choice4">${esc(t('js.live-sets.aiChoice4'))}</option><option value="truefalse">${esc(t('js.live-sets.aiTf'))}</option><option value="board">${esc(t('js.live-sets.aiBoard'))}</option></select></div>
       </div>
       <p class="err" role="alert"></p>
-      <button class="btn btn-primary" type="submit">✨ ${esc(t('js.live-sets.aiGo'))}</button></form>` });
+      <button class="btn btn-primary" type="submit">${ico('✨')} ${esc(t('js.live-sets.aiGo'))}</button></form>` });
     const f = s.el.querySelector('form'), err = s.el.querySelector('.err');
     f.addEventListener('submit', async e => {
       e.preventDefault(); err.textContent = '';
@@ -337,7 +340,7 @@ if (editor) {
         const r = await api('/api/live/sets/draft', { method: 'POST', body: { topic, level: f.querySelector('#lv-ai-level').value.trim(), count: +f.querySelector('#lv-ai-count').value, kind: f.querySelector('#lv-ai-kind').value } });
         const title = $('lv-set-title'); if (!title.value.trim()) title.value = r.title;
         const n = addItems(r.items); s.close(); toast(t('js.live-sets.added', { n }));
-      } catch (er) { err.textContent = er.message; btn.disabled = false; btn.textContent = `✨ ${t('js.live-sets.aiGo')}`; }
+      } catch (er) { err.textContent = er.message; btn.disabled = false; btn.innerHTML = `${ico('✨')} ${esc(t('js.live-sets.aiGo'))}`; }
     });
   }
   // 📋 Paste questions: from a spreadsheet (one row each) or a document (one block each).

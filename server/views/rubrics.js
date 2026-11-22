@@ -3,6 +3,7 @@
 // each), and a student's result ("From your teacher").
 import { html, raw } from './html.js';
 import * as R from '../services/rubrics.js';
+import { ico } from './icon.js';
 
 const pts = (t, p) => t('rubrics.pointsN', { count: +(+p).toFixed(1) });
 /** A saved score's total as a chip text: "7 points", "3 points · 1 of 3 scored" while some criteria have no level yet,
@@ -36,7 +37,7 @@ export function scoreFields(t, r, score, idp) {
   const pick = i => (same && score.picks[i] !== null && score.picks[i] !== undefined ? score.picks[i] : '-');
   const comment = i => (same ? score.comments[i] || '' : '');
   return html`<div class="rb-score" role="group" aria-label="${t('rubrics.score.label', { title: r.title })}">
-    <p class="rb-score-h"><b>📏 <span dir="auto">${r.title}</span></b>${same ? html` <span class="chip-s">${totalText(t, score)}</span>` : ''}</p>
+    <p class="rb-score-h"><b>${ico('📏', { size: 18 })} <span dir="auto">${r.title}</span></b>${same ? html` <span class="chip-s">${totalText(t, score)}</span>` : ''}</p>
     ${score && !same ? html`<p class="small notice warn">${t('rubrics.score.changed')}</p>` : ''}
     ${r.criteria.map((c, i) => html`<fieldset class="rb-crit"><legend dir="auto">${c.name}</legend>
       <div class="rb-levels">
@@ -44,7 +45,7 @@ export function scoreFields(t, r, score, idp) {
           <span class="rb-lh"><b dir="auto">${l.label}</b><span class="rb-pts">${pts(t, l.points)}</span></span>${c.descs[j] ? html`<span class="rb-ld small" dir="auto">${c.descs[j]}</span>` : ''}</label>`)}
         <label class="rb-level rb-none"><input type="radio" name="lvl-${i}" value="-" ${pick(i) === '-' ? raw('checked') : ''}><span class="rb-lh"><b>–</b></span><span class="rb-ld small">${t('rubrics.score.notScored')}</span></label>
       </div>
-      <details class="rb-cmt" ${comment(i) ? raw('open') : ''}><summary class="small">💬 ${t('rubrics.score.comment')}</summary>
+      <details class="rb-cmt" ${comment(i) ? raw('open') : ''}><summary class="small">${ico('💬', { size: 18 })} ${t('rubrics.score.comment')}</summary>
         <label class="sr-only" for="${idp}-c${i}">${t('rubrics.score.commentFor', { name: c.name })}</label>
         <textarea class="input" id="${idp}-c${i}" name="cmt-${i}" rows="2" maxlength="${R.LIMITS.comment}" dir="auto">${comment(i)}</textarea></details>
     </fieldset>`)}
@@ -65,9 +66,9 @@ export function resultView(t, score) {
   const r = score && score.snapshot; if (!r || !Array.isArray(r.criteria)) return '';
   if (!R.scoredOf(score).n && !(score.comments || []).some(Boolean)) return '';   // feedback only: no grid of "Not scored"
   return html`<div class="rb-result">
-    <p class="rb-result-h"><b>📏 <span dir="auto">${r.title}</span></b> <span class="chip-s rb-total">${totalText(t, score)}</span></p>
+    <p class="rb-result-h"><b>${ico('📏', { size: 18 })} <span dir="auto">${r.title}</span></b> <span class="chip-s rb-total">${totalText(t, score)}</span></p>
     <ul class="plain rb-result-list">${r.criteria.map((c, i) => { const j = score.picks[i]; const l = j !== null && j !== undefined ? r.levels[j] : null; return html`<li>
       <span class="rb-rn" dir="auto">${c.name}</span>
       ${l ? html`<span class="rb-rl"><b dir="auto">${l.label}</b> · ${pts(t, l.points)}</span>${c.descs[j] ? html`<span class="small muted" dir="auto">${c.descs[j]}</span>` : ''}` : html`<span class="muted">${t('rubrics.score.notScored')}</span>`}
-      ${score.comments[i] ? html`<span class="rb-rc" dir="auto">💬 ${score.comments[i]}</span>` : ''}</li>`; })}</ul></div>`;
+      ${score.comments[i] ? html`<span class="rb-rc" dir="auto">${ico('💬', { size: 18 })} ${score.comments[i]}</span>` : ''}</li>`; })}</ul></div>`;
 }

@@ -2,7 +2,7 @@
 // playtest runs it in a game frame: overlapping buttons, a label that does not fit its button, a page wider than the
 // screen and a too-small tap target are flagged with short, specific findings; a clean page and a toolbar row that
 // scrolls sideways on purpose are not. Then an Oomba Canvas end card like the owner's (a fraction activity: Try new ones,
-// Print worksheet, Back) at 390 px: flagged on 1.3.0, clean on 1.3.1. Also how the findings reach the model
+// Print worksheet, Back) at 390 px: flagged on 1.3.0, clean on 1.4.1. Also how the findings reach the model
 // (autotest.js) and the sizes the playtest checks (snapshot.js). Skipped when no Chromium is installed.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -88,10 +88,10 @@ const toEnd = async page => { await page.waitForSelector('.oc-band .oc-primary')
 test('Oomba Canvas end card at 390 px: 1.3.0\'s three buttons are flagged, 1.3.1\'s are clean (and at 1280)', { skip }, async () => {
   const old = await check(canvasPage('1.3.0'), { before: toEnd });
   assert.ok(old.some(s => /^the text of the button "🎲 Try new ones" does not fit|^the text of the button "🖨 Print worksheet" does not fit/.test(s)), old.join(' | '));
-  assert.deepEqual(await check(canvasPage('1.3.1'), { before: toEnd }), []);
+  assert.deepEqual(await check(canvasPage('1.4.1'), { before: toEnd }), []);
   assert.deepEqual(await check(canvasPage('1.3.0'), { before: toEnd, skipKit: true }), [], 'an activity on an older kit: the kit\'s own parts are not the model\'s to fix');
-  assert.deepEqual(await check(canvasPage('1.3.1'), { before: toEnd, width: 1280, height: 800, minTap: 44 }), []);
-  assert.deepEqual(await check(canvasPage('1.3.1'), { before: p => p.waitForSelector('.oc-band .oc-primary') }), [], 'the activity itself at 390');
+  assert.deepEqual(await check(canvasPage('1.4.1'), { before: toEnd, width: 1280, height: 800, minTap: 44 }), []);
+  assert.deepEqual(await check(canvasPage('1.4.1'), { before: p => p.waitForSelector('.oc-band .oc-primary') }), [], 'the activity itself at 390');
 });
 
 test('the findings reach the model as a playtest problem, size by size; the playtest checks a phone upright and a desktop first', () => {

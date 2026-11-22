@@ -108,10 +108,22 @@ test('the arcade prompt is unchanged: SYSTEM_PROMPT and TOOLS never name the can
   assert.match(claude, /wantsCanvas\(st, ctx\.text, cur\) \? \[\{ type: 'text', text: CANVAS_RULES \}\]/, 'one block, no cache point of its own, only when wantsCanvas');
 });
 
+test('the CANVAS RULES tell the Builder that lesson activities keep worksheets by themselves (Oomba Canvas 1.4.0)', () => {
+  const r = prompt.CANVAS_RULES;
+  assert.match(r, /- Saved worksheets \(1\.4\.0\): every lesson activity a teacher builds with questions lets them save worksheets, and the kit does all of it/);
+  assert.match(r, /"Save as worksheet"/); assert.match(r, /"My worksheets"/); assert.match(r, /class code/);
+  assert.match(r, /keep every question as data in the oc-activity block/);
+  assert.match(r, /never build saving, class codes, links, a worksheet list or a print button of your own/);
+  assert.match(r, /New activities use Oomba Canvas 1\.4\.1/, 'the newest kit (1.4.0\'s worksheets with 1.4.1\'s phone layout)');
+  assert.ok(r.includes(canvasTag('1.4.1')), 'the pinned tag is the 1.4.1 one');
+  assert.match(fs.readFileSync(path.join(ROOT, 'docs/canvas-api.md'), 'utf8'), /<!-- builder:rules -->[\s\S]*Saved worksheets \(1\.4\.0\)[\s\S]*<!-- \/builder -->/, 'generated from the page');
+  assert.doesNotMatch(prompt.SYSTEM_PROMPT, /Save as worksheet|My worksheets/, 'the arcade prompt is untouched');
+});
+
 // ---------------------------------------------------------------- the starter, the self-test, the save
 test('the activity starter: pinned tag, data as JSON, scanned clean, and it passes the self-test', async () => {
   const html = loadTemplate('canvas');
-  assert.equal(canvasVersion(html), CANVAS_LATEST); assert.equal(CANVAS_LATEST, '1.3.1', 'new activities pin Oomba Canvas 1.3.1');
+  assert.equal(canvasVersion(html), CANVAS_LATEST); assert.equal(CANVAS_LATEST, '1.4.1', 'new activities pin Oomba Canvas 1.4.1 (worksheets and the phone layout)');
   assert.ok(activityData(html).data.problems.length >= 3);
   assert.deepEqual(autotest.canvasSelfTest(html), { ok: true, problems: [] });
   assert.equal(autotest.canvasSelfTest('<p>arcade</p>'), null);

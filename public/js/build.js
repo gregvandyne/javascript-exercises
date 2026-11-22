@@ -1,6 +1,9 @@
 // /build: My games can be renamed or deleted. "New game" is a link to the setup steps (/build/new, buildsetup.js), where
 // a game is started (the "Start from" and 3D world cards that were here are in those steps).
 import { api, toast, sheet, esc, $, t } from '/js/app.js';
+import { iconHtml } from '/js/icons.js';
+/** A Fluent icon for an emoji (decorative; public/js/icons.js). */
+const ico = (e, size = 18) => iconHtml(e, { size });
 
 // My games: rename and delete right from the list.
 function card(btn) { return btn.closest('.mygame'); }
@@ -10,7 +13,7 @@ function rename(li) {
     title: t('js.build.renameTitle'),
     content: `<form class="mg-sheet"><div class="field"><label for="mg-name">${esc(t('js.build.nameLabel'))}</label>
       <input class="input" id="mg-name" maxlength="60" dir="auto" autocomplete="off" value="${esc(li.dataset.title)}"></div>
-      <div class="mg-btns"><button class="btn btn-primary" type="submit">💾 ${esc(t('js.build.save'))}</button></div></form>`,
+      <div class="mg-btns"><button class="btn btn-primary" type="submit">${ico('💾')} ${esc(t('js.build.save'))}</button></div></form>`,
   });
   const input = $('#mg-name', el); setTimeout(() => input.select(), 40);
   $('form', el).addEventListener('submit', async e => {
@@ -31,7 +34,7 @@ function remove(li) {
     title: t('js.build.deleteTitle'),
     content: `<div class="mg-sheet"><p>${esc(t('js.build.deleteText', { title: '\u2068' + li.dataset.title + '\u2069' }))}${li.dataset.published ? ' ' + esc(t('js.build.deleteLive')) : ''}</p>
       <div class="mg-btns"><button class="btn" type="button" data-keep>${esc(t('js.build.keep'))}</button>
-      <button class="btn btn-danger" type="button" data-yes>🗑️ ${esc(t('js.build.deleteYes'))}</button></div></div>`,
+      <button class="btn btn-danger" type="button" data-yes>${ico('🗑️')} ${esc(t('js.build.deleteYes'))}</button></div></div>`,
   });
   $('[data-keep]', el).addEventListener('click', close);
   const yes = $('[data-yes]', el);
