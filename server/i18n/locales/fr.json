@@ -3745,7 +3745,26 @@
       "removeOption": "Retirer l’option {letter}",
       "fromFigure": "La bonne option est déduite de la figure. Modifiez une option ou cochez-en une autre pour choisir vous-même.",
       "needTwo": "Écrivez au moins 2 options.",
-      "needRight": "Cochez la bonne option."
+      "needRight": "Cochez la bonne option.",
+      "testAiTitle": "Rédiger un contrôle",
+      "topicLabel": "Sujet",
+      "topicHint": "Par exemple : aire des rectangles et des triangles",
+      "subject": "Matière",
+      "anySubject": "Toutes les matières",
+      "draftTest": "Rédiger le contrôle",
+      "testBudget": "Fait avec les générateurs de questions : vous pouvez tirer de nouveaux nombres pour chaque question. Compte dans la limite d'IA ; sans IA, un contrôle de départ est tiré.",
+      "byHand": "À la main : choisissez une matière, ajoutez des questions avec figures, puis réglez chaque figure et sa réponse.",
+      "checkFirst": "Vérifiez chaque question avant de l'attribuer.",
+      "topicFirst": "Écrivez d'abord le sujet du contrôle.",
+      "saveLesson": "Enregistrer dans la leçon",
+      "saveLessonHint": "Place ces questions dans {title}. Rien ne change dans la leçon avant l'enregistrement.",
+      "saveLessonAgain": "Enregistrer à nouveau remplace les questions de {title}.",
+      "lessonStarted": "Des élèves ont commencé cette étape : ses questions restent telles quelles. Faites une copie de la leçon pour les changer.",
+      "backToLesson": "Retour à la leçon",
+      "subjects": "Matières",
+      "more": "Plus",
+      "swapLabel": "Remplacer la figure par",
+      "swap": "Remplacer la figure"
     }
   },
   "favorites": {
@@ -4374,7 +4393,8 @@
       "text": "Lire ou faire",
       "question": "Répondre à une question",
       "quiz": "Répondre aux questions du quiz",
-      "figures": "Répondre à des questions sur des figures"
+      "figures": "Répondre à des questions sur des figures",
+      "figureStep": "Questions avec figures"
     },
     "library": {
       "title": "Bibliothèque de leçons",
@@ -4453,7 +4473,14 @@
       "newGameLink": "Créer un nouveau jeu pour les élèves",
       "deleteWorkConfirm": "Supprimer cette étape ? {n, plural, one {Le travail de # élève sur cette étape sera supprimé.} other {Le travail de # élèves sur cette étape sera supprimé.}} Cette action est irréversible.",
       "liveGames": "Jeux en direct pour la classe (c'est toi qui animes)",
-      "otherGames": "Autres jeux"
+      "otherGames": "Autres jeux",
+      "bodyFigures": "Consignes pour les élèves (facultatif)",
+      "figuresHint": "Ensuite, le créateur de figures s'ouvre : choisissez les figures, réglez leurs nombres et leurs réponses, puis Enregistrer dans la leçon.",
+      "editFigures": "Modifier les questions",
+      "printFigures": "Imprimer",
+      "figuresStarted": "Des élèves ont commencé cette étape : ses questions restent telles quelles.",
+      "more": "Plus",
+      "figuresSaved": "Questions avec figures enregistrées dans la leçon."
     },
     "ai": {
       "button": "Rédiger avec l’IA",
@@ -4532,7 +4559,9 @@
       "build": "Crée ton propre jeu",
       "buildText": "Un quiz de 6 questions sur {topic}",
       "exit": "Ticket de sortie",
-      "exitText": "En deux ou trois phrases : quelle est la chose la plus importante que tu as apprise sur {topic} aujourd’hui ?"
+      "exitText": "En deux ou trois phrases : quelle est la chose la plus importante que tu as apprise sur {topic} aujourd’hui ?",
+      "figures": "Questions avec figures",
+      "figuresText": "Réponds à la question sous chaque figure."
     },
     "errors": {
       "notFound": "Nous n’avons pas trouvé cette page, ou elle n’est pas accessible.",
@@ -12336,12 +12365,19 @@
       "search": "Chercher une figure",
       "searchHint": "Chercher une figure, par exemple cylindre ou boîte à moustaches",
       "count": "{count, plural, one {# figure} other {# figures}}",
-      "nothing": "Aucune figure ne correspond. Essayez un autre mot ou un autre niveau."
+      "nothing": "Aucune figure ne correspond. Essayez un autre mot ou un autre niveau.",
+      "buildTest": "Créer un contrôle",
+      "buildTestText": "Un contrôle complet de questions avec figures, rédigé avec l'IA ou à la main.",
+      "isTest": "Contrôle"
     },
     "sheet": {
       "newTitle": "Nouvelle fiche",
       "crumb": "Créateur de fiches",
-      "untitled": "Fiche sans titre"
+      "untitled": "Fiche sans titre",
+      "untitledTest": "Contrôle sans titre",
+      "newTest": "Nouveau contrôle",
+      "crumbTest": "Créateur de contrôles",
+      "crumbLesson": "Questions avec figures"
     },
     "editor": {
       "example": "Exemple {n}"
@@ -12376,7 +12412,8 @@
       "name": "Donnez-lui d'abord un nom.",
       "brief": "Décrivez d'abord la fiche en quelques mots.",
       "names": "Ne mettez pas de noms d'élèves dans la description : les noms ne sont jamais envoyés à l'IA.",
-      "sameChoices": "Deux options sont identiques. Rendez-les toutes différentes."
+      "sameChoices": "Deux options sont identiques. Rendez-les toutes différentes.",
+      "topic": "Écrivez d'abord le sujet du contrôle."
     },
     "kinds": {
       "numberLine": {
@@ -12729,7 +12766,8 @@
         "noClass": "Choisissez une de vos classes.",
         "badDate": "Cette date ne semble pas correcte.",
         "dueBeforeOpen": "La date de rendu est avant la date d'ouverture.",
-        "needsDue": "Fixez une date de rendu pour montrer les réponses après."
+        "needsDue": "Fixez une date de rendu pour montrer les réponses après.",
+        "started": "Des élèves ont commencé cette étape : ses questions restent telles quelles. Faites une copie de la leçon pour les changer."
       }
     }
   }

@@ -4028,7 +4028,26 @@
       "removeOption": "Remove option {letter}",
       "fromFigure": "The right option is worked out from the figure. Change an option or mark another one to choose it yourself.",
       "needTwo": "Write at least 2 options.",
-      "needRight": "Mark the right option."
+      "needRight": "Mark the right option.",
+      "testAiTitle": "Draft a test",
+      "topicLabel": "Topic",
+      "topicHint": "For example: area of rectangles and triangles",
+      "subject": "Subject",
+      "anySubject": "Any subject",
+      "draftTest": "Draft the test",
+      "testBudget": "Built from the question generators, so you can deal new numbers for any question. Counts towards the AI limit; without AI a starter test is dealt.",
+      "byHand": "By hand: pick a subject, add figure questions, then set each figure and its answer.",
+      "checkFirst": "Check every question before you assign it.",
+      "topicFirst": "Type the test's topic first.",
+      "saveLesson": "Save to lesson",
+      "saveLessonHint": "Puts these questions in {title}. Nothing changes in the lesson until you save.",
+      "saveLessonAgain": "Saving again replaces the questions in {title}.",
+      "lessonStarted": "Students have started this step, so its questions stay as they are. Make a copy of the lesson to change them.",
+      "backToLesson": "Back to the lesson",
+      "subjects": "Subjects",
+      "more": "More",
+      "swapLabel": "Swap the figure for",
+      "swap": "Swap figure"
     }
   },
   "favorites": {
@@ -4658,7 +4677,8 @@
       "text": "Read or do",
       "question": "Answer a question",
       "quiz": "Answer quiz questions",
-      "figures": "Answer figure questions"
+      "figures": "Answer figure questions",
+      "figureStep": "Figure questions"
     },
     "library": {
       "title": "Lesson library",
@@ -4737,7 +4757,14 @@
       "newGameLink": "Make a new game for students to play",
       "deleteWorkConfirm": "Delete this step? {n, plural, one {# student's work} other {# students' work}} on it will be deleted. This can't be undone.",
       "liveGames": "Live class games (you host them)",
-      "otherGames": "More games"
+      "otherGames": "More games",
+      "bodyFigures": "Instructions for students (optional)",
+      "figuresHint": "Next, the Figures builder opens: pick figures, set their numbers and answers, then Save to lesson.",
+      "editFigures": "Edit questions",
+      "printFigures": "Print",
+      "figuresStarted": "Students have started this step, so its questions stay as they are.",
+      "more": "More",
+      "figuresSaved": "Figure questions saved to the lesson."
     },
     "ai": {
       "button": "Draft with AI",
@@ -4816,7 +4843,9 @@
       "build": "Build your own game",
       "buildText": "A quiz game with 6 questions about {topic}",
       "exit": "Exit ticket",
-      "exitText": "In two or three sentences: what is the most important thing you learned about {topic} today?"
+      "exitText": "In two or three sentences: what is the most important thing you learned about {topic} today?",
+      "figures": "Figure questions",
+      "figuresText": "Answer the question under each figure."
     },
     "errors": {
       "notFound": "We couldn't find that, or you can't open it.",
@@ -13056,12 +13085,19 @@
       "search": "Search the figures",
       "searchHint": "Search the figures, like cylinder or box plot",
       "count": "{count, plural, one {# figure} other {# figures}}",
-      "nothing": "No figures match. Try another word or grade."
+      "nothing": "No figures match. Try another word or grade.",
+      "buildTest": "Build a test",
+      "buildTestText": "A whole test of figure questions, drafted with AI or built by hand.",
+      "isTest": "Test"
     },
     "sheet": {
       "newTitle": "New worksheet",
       "crumb": "Worksheet builder",
-      "untitled": "Untitled worksheet"
+      "untitled": "Untitled worksheet",
+      "untitledTest": "Untitled test",
+      "newTest": "New test",
+      "crumbTest": "Test builder",
+      "crumbLesson": "Figure questions"
     },
     "editor": {
       "example": "Example {n}"
@@ -13096,7 +13132,8 @@
       "name": "Give it a name first.",
       "brief": "Describe the worksheet in a few words first.",
       "names": "Leave students' names out of the description: names never go to the AI.",
-      "sameChoices": "Two options are the same. Make each one different."
+      "sameChoices": "Two options are the same. Make each one different.",
+      "topic": "Type what the test is about first."
     },
     "kinds": {
       "numberLine": {
@@ -13449,7 +13486,8 @@
         "noClass": "Pick one of your classes.",
         "badDate": "That date doesn't look right.",
         "dueBeforeOpen": "The due date is before the open date.",
-        "needsDue": "Set a due date to show the answers after it."
+        "needsDue": "Set a due date to show the answers after it.",
+        "started": "Students have started this step, so its questions stay as they are. Make a copy of the lesson to change them."
       }
     }
   }

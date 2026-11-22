@@ -3745,7 +3745,26 @@
       "removeOption": "移除選項 {letter}",
       "fromFigure": "正確選項是根據圖形算出的。修改選項或標出另一個,就由你自己決定。",
       "needTwo": "至少寫 2 個選項。",
-      "needRight": "標出正確的選項。"
+      "needRight": "標出正確的選項。",
+      "testAiTitle": "起草測驗",
+      "topicLabel": "主題",
+      "topicHint": "例如：長方形和三角形的面積",
+      "subject": "科目",
+      "anySubject": "任何科目",
+      "draftTest": "起草測驗",
+      "testBudget": "用題目產生器製作，每一題都能重新出新的數字。會計入 AI 用量上限；沒有 AI 時會產生一份起始測驗。",
+      "byHand": "自己動手：選擇科目，加入圖形題，再設定每個圖形和答案。",
+      "checkFirst": "指派前請檢查每一題。",
+      "topicFirst": "請先寫下測驗的主題。",
+      "saveLesson": "儲存到課程",
+      "saveLessonHint": "把這些題目放進「{title}」。儲存前課程不會改變。",
+      "saveLessonAgain": "再次儲存會取代「{title}」裡的題目。",
+      "lessonStarted": "學生已開始這個步驟，所以題目維持原樣。要修改，請複製這堂課。",
+      "backToLesson": "回到課程",
+      "subjects": "科目",
+      "more": "更多",
+      "swapLabel": "把圖形換成",
+      "swap": "換圖形"
     }
   },
   "favorites": {
@@ -4374,7 +4393,8 @@
       "text": "讀一讀、做一做",
       "question": "回答問題",
       "quiz": "回答測驗題目",
-      "figures": "回答圖形題"
+      "figures": "回答圖形題",
+      "figureStep": "圖形題"
     },
     "library": {
       "title": "課程庫",
@@ -4453,7 +4473,14 @@
       "newGameLink": "製作新遊戲給學生玩",
       "deleteWorkConfirm": "要刪除這個步驟嗎？這個步驟中 {n, plural, other {# 位學生的作品}}也會一併刪除。此動作無法復原。",
       "liveGames": "班級即時遊戲（由你主持）",
-      "otherGames": "更多遊戲"
+      "otherGames": "更多遊戲",
+      "bodyFigures": "給學生的說明（選填）",
+      "figuresHint": "接著會開啟圖形製作：選擇圖形，設定數字和答案，然後按「儲存到課程」。",
+      "editFigures": "編輯題目",
+      "printFigures": "列印",
+      "figuresStarted": "學生已開始這個步驟，所以題目維持原樣。",
+      "more": "更多",
+      "figuresSaved": "圖形題已儲存到課程。"
     },
     "ai": {
       "button": "用 AI 擬草稿",
@@ -4532,7 +4559,9 @@
       "build": "做出你自己的遊戲",
       "buildText": "一個關於{topic}、有 6 題的問答遊戲",
       "exit": "今日小回顧",
-      "exitText": "用兩、三句話寫一寫：今天關於{topic}，你學到最重要的事是什麼？"
+      "exitText": "用兩、三句話寫一寫：今天關於{topic}，你學到最重要的事是什麼？",
+      "figures": "圖形題",
+      "figuresText": "回答每個圖形下方的問題。"
     },
     "errors": {
       "notFound": "找不到該項目，或你沒有權限開啟。",
@@ -12336,12 +12365,19 @@
       "search": "搜尋圖形",
       "searchHint": "搜尋圖形，例如圓柱或盒狀圖",
       "count": "{count, plural, other {# 種圖形}}",
-      "nothing": "沒有符合的圖形。試試別的字詞或年級。"
+      "nothing": "沒有符合的圖形。試試別的字詞或年級。",
+      "buildTest": "製作測驗",
+      "buildTestText": "整份圖形題測驗，可由 AI 起草或自己動手做。",
+      "isTest": "測驗"
     },
     "sheet": {
       "newTitle": "新學習單",
       "crumb": "學習單製作",
-      "untitled": "未命名學習單"
+      "untitled": "未命名學習單",
+      "untitledTest": "未命名測驗",
+      "newTest": "新測驗",
+      "crumbTest": "測驗製作",
+      "crumbLesson": "圖形題"
     },
     "editor": {
       "example": "範例 {n}"
@@ -12376,7 +12412,8 @@
       "name": "請先取個名字。",
       "brief": "請先用幾個字描述這份學習單。",
       "names": "描述裡不要寫學生的名字：名字永遠不會送給 AI。",
-      "sameChoices": "有兩個選項相同。請讓每個選項都不一樣。"
+      "sameChoices": "有兩個選項相同。請讓每個選項都不一樣。",
+      "topic": "請先寫下測驗的主題。"
     },
     "kinds": {
       "numberLine": {
@@ -12729,7 +12766,8 @@
         "noClass": "請選擇你的一個班級。",
         "badDate": "這個日期看起來不對。",
         "dueBeforeOpen": "繳交期限早於開始日期。",
-        "needsDue": "請設定繳交期限，才能在之後顯示答案。"
+        "needsDue": "請設定繳交期限，才能在之後顯示答案。",
+        "started": "學生已開始這個步驟，所以題目維持原樣。要修改，請複製這堂課。"
       }
     }
   }

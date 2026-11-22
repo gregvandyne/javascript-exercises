@@ -8,11 +8,17 @@
 // Each question is answered with a number (any sign) or is multiple choice: 2 to 6 options, one marked right. A choice
 // question from a generator has its right option worked out from the figure (OF.solve) until the teacher changes its
 // options or marks another one.
+// The same builder makes a test ("Build a test", purpose 'test': with "Power with AI" on, a topic, a grade and a subject
+// draft a whole test from the question generators, so each question can be dealt new numbers) and a lesson's Figure
+// step (purpose 'lesson': "Save to lesson" puts the questions in the step, in place of Assign). Kinds are picked by
+// subject; a question's ⋯ menu swaps its figure for another kind.
 import { t, api, toast, esc, pageData, ask } from '/js/app.js';
 
 const P = pageData('fg-sheet');
 const app = document.getElementById('fg-sheet-app');
 let W = null, ai = !!P.ai, tab = 'sheet', busy = false, note = '';
+const TEST = P.purpose === 'test', LESSON = !!P.lesson;
+let pickSubject = Object.keys(P.subjects)[0];
 const kindName = id => (P.kinds.find(k => k.id === id) || { name: id }).name;
 const MAX_OPTS = 6, letter = k => String.fromCharCode(65 + k);
 /** Blank option rows a teacher added that are not saved yet (the server keeps only options with words), per question. */
@@ -52,7 +58,7 @@ async function saveOpts(li, texts, correct) {
 
 async function ensure() {
   if (W) return W.id;
-  const r = await api('/api/figures/worksheets', { method: 'POST', body: { title: document.getElementById('fg-title').value || P.untitled } });
+  const r = await api('/api/figures/worksheets', { method: 'POST', body: { title: document.getElementById('fg-title').value || P.untitled, purpose: TEST ? 'test' : 'worksheet' } });
   W = r.worksheet; history.replaceState(null, '', `/figures/worksheets/${W.id}`);
   return W.id;
 }
@@ -62,28 +68,46 @@ async function call(path, body = {}) {
   catch (e) { toast(e.message, { bad: true }); return null; } finally { busy = false; draw(); }
 }
 
+/** The kinds of one subject, as the Add picker's and Swap's options. */
+const kindOptions = (s, sel = '') => P.kinds.filter(k => k.subject === s).map(k => `<option value="${esc(k.id)}"${k.id === sel ? ' selected' : ''}>${esc(k.name)}</option>`).join('');
+const allKindOptions = sel => Object.entries(P.subjects).map(([s, name]) => `<optgroup label="${esc(name)}">${kindOptions(s, sel)}</optgroup>`).join('');
+/** "Power with AI" for a test: topic, subject, how many (the grade is the page's). */
+const testAiBox = () => `<section class="fg-aibox" id="fg-aibox"${ai ? '' : ' hidden'}><h2>${esc(t('js.figures-sheet.testAiTitle'))}</h2>
+      <label class="fg-block"><span>${esc(t('js.figures-sheet.topicLabel'))}</span><input class="input" id="fg-topic" maxlength="200" placeholder="${esc(t('js.figures-sheet.topicHint'))}"></label>
+      <div class="row"><label class="fg-count"><span>${esc(t('js.figures-sheet.subject'))}</span><select class="input" id="fg-subject"><option value="">${esc(t('js.figures-sheet.anySubject'))}</option>${Object.entries(P.subjects).map(([s, name]) => `<option value="${esc(s)}">${esc(name)}</option>`).join('')}</select></label>
+      <label class="fg-count"><span>${esc(t('js.figures-sheet.howMany'))}</span><select class="input" id="fg-count">${[4, 5, 6, 8, 10, 12].map(n => `<option${n === 8 ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
+      <button class="btn btn-primary" type="button" data-act="draftTest">✨ ${esc(t('js.figures-sheet.draftTest'))}</button></div>
+      <p class="muted fg-small">${esc(t('js.figures-sheet.testBudget'))}</p></section>`;
+/** By hand (AI off), and always: what a test is built from. */
+const handNote = () => (TEST ? `<p class="muted fg-small" id="fg-hand"${ai ? ' hidden' : ''}>${esc(t('js.figures-sheet.byHand'))}</p>` : '');
+/** The aside's last box: Save to lesson (a lesson's Figure step), else Assign to class. */
+const lessonBox = () => `<div class="fg-assign fg-tolesson"><button class="btn btn-primary" type="button" id="fg-save-lesson" aria-describedby="fg-save-why"${P.lesson.started ? ' disabled' : ''}>💾 ${esc(t('js.figures-sheet.saveLesson'))}</button>
+      <p class="muted fg-small" id="fg-save-why">${esc(P.lesson.started ? t('js.figures-sheet.lessonStarted') : t(P.lesson.stepId ? 'js.figures-sheet.saveLessonAgain' : 'js.figures-sheet.saveLessonHint', { title: P.lesson.title }))}</p>
+      <p class="err" id="fg-save-err" role="alert"></p>
+      <a class="btn btn-sm" href="/teach/lessons/${esc(P.lesson.id)}">${esc(t('js.figures-sheet.backToLesson'))}</a></div>`;
 function shell() {
-  const groups = Object.entries(P.subjects).map(([s, name]) => `<optgroup label="${esc(name)}">${P.kinds.filter(k => k.subject === s).map(k => `<option value="${esc(k.id)}">${esc(k.name)}</option>`).join('')}</optgroup>`).join('');
+  const tabs = `<div class="chips fg-picktabs" role="group" aria-label="${esc(t('js.figures-sheet.subjects'))}">${Object.entries(P.subjects).map(([s, name]) => `<button class="chip${s === pickSubject ? ' on' : ''}" type="button" data-pick="${esc(s)}" aria-pressed="${s === pickSubject}">${esc(name)}</button>`).join('')}</div>`;
   app.innerHTML = `<div class="fg-sh-head">
     <label class="fg-titlebox"><span class="sr-only">${esc(t('js.figures-sheet.title'))}</span><input class="input fg-titlein" id="fg-title" maxlength="80" placeholder="${esc(P.untitled)}"></label>
     <label class="fg-grade"><span>${esc(t('js.figures-sheet.grade'))}</span><select class="input" id="fg-grade"><option value="">${esc(t('js.figures-sheet.anyGrade'))}</option>${['K', ...Array.from({ length: 12 }, (_, i) => String(i + 1))].map(g => `<option value="${g}">${esc(t('js.figures-sheet.gradeN', { grade: g }))}</option>`).join('')}</select></label>
     <label class="fg-switch fg-aiswitch"><span>✨ ${esc(t('js.figures-sheet.powerAi'))}</span><input type="checkbox" id="fg-ai"${ai ? ' checked' : ''}></label></div>
   <div class="fg-sh-grid"><div class="fg-sh-main">
-    <section class="fg-aibox" id="fg-aibox"${ai ? '' : ' hidden'}><h2><label for="fg-brief">${esc(t('js.figures-sheet.briefLabel'))}</label></h2>
+    ${TEST ? testAiBox() : `<section class="fg-aibox" id="fg-aibox"${ai ? '' : ' hidden'}><h2><label for="fg-brief">${esc(t('js.figures-sheet.briefLabel'))}</label></h2>
       <textarea class="input" id="fg-brief" rows="3" maxlength="1000" placeholder="${esc(t('js.figures-sheet.briefHint'))}"></textarea>
       <div class="row"><label class="fg-count"><span>${esc(t('js.figures-sheet.howMany'))}</span><select class="input" id="fg-count">${[3, 4, 5, 6, 8, 10, 12].map(n => `<option${n === 6 ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
       <button class="btn btn-primary" type="button" data-act="draft">✨ ${esc(t('js.figures-sheet.draft'))}</button></div>
-      <p class="muted fg-small">${esc(t('js.figures-sheet.budget'))}</p></section>
+      <p class="muted fg-small">${esc(t('js.figures-sheet.budget'))}</p></section>`}
+    ${handNote()}
     <div id="fg-note" role="status"></div>
     <ol class="fg-items" id="fg-items"></ol>
-    <div class="panel fg-addq"><label class="fg-block"><span>${esc(t('js.figures-sheet.addLabel'))}</span><select class="input" id="fg-addkind">${groups}</select></label>
+    <div class="panel fg-addq">${tabs}<label class="fg-block"><span>${esc(t('js.figures-sheet.addLabel'))}</span><select class="input" id="fg-addkind">${kindOptions(pickSubject)}</select></label>
       <button class="btn btn-primary" type="button" data-act="add">+ ${esc(t('js.figures-sheet.add'))}</button></div>
   </div>
   <aside class="panel fg-preview" aria-label="${esc(t('js.figures-sheet.preview'))}"><div class="fg-pv-head"><h2>${esc(t('js.figures-sheet.preview'))}</h2><span class="muted fg-small">${esc(t('js.figures-sheet.paper'))}</span></div>
     <div class="chips" role="group"><button class="chip" type="button" data-tab="sheet">${esc(t('js.figures-sheet.studentSheet'))}</button><button class="chip" type="button" data-tab="key">${esc(t('js.figures-sheet.answerKey'))}</button></div>
     <div class="fg-paperwrap"><div class="fg-paper" id="fg-paper"></div></div>
     <div class="fg-pv-actions" id="fg-pv-actions"></div>
-    <div class="fg-assign"><button class="btn" type="button" id="fg-assign-open" aria-expanded="false" aria-controls="fg-assign-form" aria-describedby="fg-assign-why" disabled>📅 ${esc(t('js.figures-sheet.assign'))}</button>
+    ${LESSON ? lessonBox() : ''}<div class="fg-assign"${LESSON ? ' hidden' : ''}><button class="btn" type="button" id="fg-assign-open" aria-expanded="false" aria-controls="fg-assign-form" aria-describedby="fg-assign-why" disabled>📅 ${esc(t('js.figures-sheet.assign'))}</button>
       <p class="muted fg-small" id="fg-assign-why"></p>
       <form class="fg-assignform" id="fg-assign-form" hidden novalidate aria-labelledby="fg-assign-h">
         <h3 id="fg-assign-h">${esc(t('js.figures-sheet.assignTitle'))}</h3>
@@ -119,7 +143,10 @@ function draw(wait = false) {
       <button class="btn fg-icon" type="button" data-act="down" aria-label="${esc(t('js.figures-sheet.down'))}" title="${esc(t('js.figures-sheet.down'))}"${i < items.length - 1 ? '' : ' disabled'}>↓</button>
       <button class="btn fg-icon" type="button" data-act="regen" aria-label="${esc(t('js.figures-sheet.regen'))}" title="${esc(t('js.figures-sheet.regen'))}"${it.hasGen ? '' : ' disabled'}>⟳</button>
       <a class="btn fg-icon" href="/figures/${esc(it.kind)}?ws=${esc(W.id)}&amp;item=${esc(it.id)}" aria-label="${esc(t('js.figures-sheet.edit'))}" title="${esc(t('js.figures-sheet.edit'))}">✏️</a>
-      <button class="btn fg-icon" type="button" data-act="del" aria-label="${esc(t('js.figures-sheet.delete'))}" title="${esc(t('js.figures-sheet.delete'))}">🗑️</button></div></li>`).join('')
+      <button class="btn fg-icon" type="button" data-act="del" aria-label="${esc(t('js.figures-sheet.delete'))}" title="${esc(t('js.figures-sheet.delete'))}">🗑️</button>
+      <details class="fg-more"><summary class="btn fg-icon" aria-label="${esc(t('js.figures-sheet.more'))}" title="${esc(t('js.figures-sheet.more'))}">⋯</summary>
+        <div class="fg-moremenu"><label class="fg-block"><span>${esc(t('js.figures-sheet.swapLabel'))}</span><select class="input" id="fg-sw-${esc(it.id)}" data-swapkind>${allKindOptions(it.kind)}</select></label>
+          <button class="btn btn-sm" type="button" data-act="swap">${esc(t('js.figures-sheet.swap'))}</button></div></details></div></li>`).join('')
     : `<li class="fg-empty muted">${esc(t('js.figures-sheet.empty'))}</li>`;
   if (had && document.getElementById(had)) document.getElementById(had).focus({ preventScroll: true });
   for (const b of app.querySelectorAll('[data-tab]')) { const on = b.dataset.tab === tab; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }
@@ -178,7 +205,23 @@ const ACTS = {
   async del(b) { if (await ask({ title: t('js.figures-sheet.deleteQ'), ok: t('js.figures-sheet.delete'), danger: true })) call(`/items/${encodeURIComponent(itemId(b))}/delete`); },
   async remove() {
     if (!(await ask({ title: t('js.figures-sheet.removeQ'), text: t('js.figures-sheet.removeText'), ok: t('js.figures-sheet.remove'), danger: true }))) return;
-    try { await api(`/api/figures/worksheets/${encodeURIComponent(W.id)}/delete`, { method: 'POST', body: {} }); location.href = '/figures'; } catch (e) { toast(e.message, { bad: true }); }
+    try { await api(`/api/figures/worksheets/${encodeURIComponent(W.id)}/delete`, { method: 'POST', body: {} }); location.href = LESSON ? `/teach/lessons/${encodeURIComponent(P.lesson.id)}` : '/figures'; } catch (e) { toast(e.message, { bad: true }); }
+  },
+  swap(b) {
+    const li = b.closest('[data-id]'), kind = li.querySelector('[data-swapkind]').value;
+    return call(`/items/${encodeURIComponent(li.dataset.id)}/swap`, { kind });
+  },
+  async draftTest() {
+    const topic = document.getElementById('fg-topic').value.trim();
+    if (topic.length < 3) { toast(t('js.figures-sheet.topicFirst'), { bad: true }); document.getElementById('fg-topic').focus(); return; }
+    note = `<p class="notice fg-small">${esc(t('js.figures-sheet.drafting'))}</p>`; draw(true);
+    const r = await call('/draft-test', { topic, grade: document.getElementById('fg-grade').value, subject: document.getElementById('fg-subject').value, count: +document.getElementById('fg-count').value });
+    if (!r) { note = ''; draw(); return; }
+    const bits = [r.ai ? t('js.figures-sheet.drafted', { count: r.added }) : t('js.figures-sheet.resting', { count: r.added })];
+    if (r.repaired) bits.push(t('js.figures-sheet.repaired', { count: r.repaired }));
+    if (r.dropped) bits.push(t('js.figures-sheet.dropped', { count: r.dropped }));
+    bits.push(t('js.figures-sheet.checkFirst'));
+    note = `<p class="notice ${r.ai ? 'good' : ''} fg-small">${esc(bits.join(' '))}</p>`; draw();
   },
   async draft() {
     const brief = document.getElementById('fg-brief').value.trim();
@@ -192,20 +235,34 @@ const ACTS = {
     note = `<p class="notice ${r.ai ? 'good' : ''} fg-small">${esc(bits.join(' '))}</p>`; draw();
   },
 };
+function lessonUi() {
+  const go = document.getElementById('fg-save-lesson'); if (!go) return;
+  go.addEventListener('click', async () => {
+    const err = document.getElementById('fg-save-err'); err.textContent = '';
+    if (!W || !W.items.length) { err.textContent = t('js.figures-sheet.assignEmpty'); return; }
+    go.disabled = true;
+    try { const r = await api(`/api/figures/worksheets/${encodeURIComponent(W.id)}/save-to-lesson`, { method: 'POST', body: {} }); location.href = r.redirect; }
+    catch (x) { err.textContent = x.message; go.disabled = false; }
+  });
+}
 async function boot() {
   shell();
   assignUi();
+  lessonUi();
   if (P.id) { try { W = (await api(`/api/figures/worksheets/${encodeURIComponent(P.id)}`)).worksheet; } catch (e) { toast(e.message, { bad: true }); } }
   if (P.startAi && !ai) { ai = true; document.getElementById('fg-ai').checked = true; document.getElementById('fg-aibox').hidden = false; }
   draw();
-  if (P.startAi) document.getElementById('fg-brief').focus();
+  if (P.startAi) document.getElementById(TEST ? 'fg-topic' : 'fg-brief').focus();
   app.addEventListener('click', e => {
     const tb = e.target.closest('[data-tab]'); if (tb) { tab = tb.dataset.tab; draw(); return; }
+    const pk = e.target.closest('[data-pick]');
+    if (pk) { pickSubject = pk.dataset.pick; for (const c of app.querySelectorAll('[data-pick]')) { const on = c === pk; c.classList.toggle('on', on); c.setAttribute('aria-pressed', String(on)); } document.getElementById('fg-addkind').innerHTML = kindOptions(pickSubject); return; }
     const b = e.target.closest('button[data-act]'); if (!b || b.disabled || busy) return;
     const f = ACTS[b.dataset.act]; if (f) f(b);
   });
   document.getElementById('fg-ai').addEventListener('change', async e => {
     ai = e.target.checked; document.getElementById('fg-aibox').hidden = !ai;
+    const hand = document.getElementById('fg-hand'); if (hand) hand.hidden = ai;
     try { await api('/api/figures/prefs', { method: 'POST', body: { ai } }); } catch { /* remembered next time */ }
   });
   const saveMeta = async () => { if (!W && !document.getElementById('fg-title').value.trim()) return; const id = await ensure().catch(() => null); if (!id) return;

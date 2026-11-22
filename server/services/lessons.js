@@ -30,11 +30,12 @@ const TEMPLATE_KEY = /^[a-z0-9][a-z0-9._-]{0,59}$/;
  *  items (lesson_steps.items), so later set edits never change work in progress. Its title, text and minutes can be
  *  edited like any step; its questions can't. Answers are checked by the server (progress.quizAnswer). */
 export const QUIZ_KIND = 'quiz';
-/** A Figures worksheet assigned to a class (services/figures-steps.js): made only by Assign in the worksheet builder, with
- *  a snapshot of its questions (lesson_steps.items) and the Oomba Figures version they are drawn with (of_version), so
- *  later worksheet edits never change it. Not offered in the step editor; its title and text can be edited like a quiz
- *  step's. Answers are marked by the server (progress.figuresAnswer); show_answers is the teacher's "Show answers after
- *  the due date". */
+/** Figure questions (services/figures-steps.js): made by Assign in the Figures worksheet builder, or by "Save to lesson"
+ *  from the lesson editor's "Figure questions" step (Figures testers: the same gate as /figures), always with a snapshot
+ *  of the questions (lesson_steps.items) and the Oomba Figures version they are drawn with (of_version), so later set
+ *  edits never change it until the teacher saves again. Never made by addStep; its title, text and minutes can be
+ *  edited like a quiz step's. Answers are marked by the server (progress.figuresAnswer); show_answers is the teacher's
+ *  "Show answers after the due date". */
 export const FIGURES_KIND = 'figures';
 /** Step kinds made from a snapshot (never from the step editor): their questions can't be edited there. */
 export const SNAPSHOT_KINDS = [QUIZ_KIND, FIGURES_KIND];
@@ -194,6 +195,9 @@ export function deleteLesson(u, lessonId) {
     q.run('DELETE FROM gc_grades WHERE class_lesson_id IN (SELECT id FROM class_lessons WHERE lesson_id=?)', l.id); // and the grades they sent
     q.run('DELETE FROM class_lessons WHERE lesson_id=?', l.id); q.run('DELETE FROM lesson_steps WHERE lesson_id=?', l.id); q.run('DELETE FROM lessons WHERE id=?', l.id);
     q.run('DELETE FROM lesson_standards WHERE lesson_id=?', l.id);
+    // A Figure step's questions while they were edited (question_sets of purpose 'lesson', services/figures-steps.js).
+    q.run("DELETE FROM question_set_items WHERE set_id IN (SELECT id FROM question_sets WHERE lesson_id=? AND purpose='lesson')", l.id);
+    q.run("DELETE FROM question_sets WHERE lesson_id=? AND purpose='lesson'", l.id);
   });
   audit(u.id, 'lesson.delete', l.id, { title: l.title });
   return ok();
@@ -398,7 +402,11 @@ export function updateStep(u, stepId, input) {
 }
 export function deleteStep(u, stepId) {
   const s = getStep(stepId); const l = s && getLesson(s.lesson_id); if (!canEditLesson(u, l)) return fail('notFound');
-  tx(() => { q.run('DELETE FROM step_progress WHERE step_id=?', s.id); R.forgetStep(s.id); q.run('DELETE FROM lesson_standards WHERE step_id=?', s.id); q.run('DELETE FROM lesson_steps WHERE id=?', s.id); }); touch(l.id);
+  tx(() => {
+    q.run('DELETE FROM step_progress WHERE step_id=?', s.id); R.forgetStep(s.id); q.run('DELETE FROM lesson_standards WHERE step_id=?', s.id); q.run('DELETE FROM lesson_steps WHERE id=?', s.id);
+    // A Figure step's own lesson set goes with it (a worksheet or a test it was assigned from stays).
+    if (s.kind === FIGURES_KIND && s.set_id) { q.run("DELETE FROM question_set_items WHERE set_id IN (SELECT id FROM question_sets WHERE id=? AND purpose='lesson' AND lesson_id=?)", s.set_id, l.id); q.run("DELETE FROM question_sets WHERE id=? AND purpose='lesson' AND lesson_id=?", s.set_id, l.id); }
+  }); touch(l.id);
   return ok();
 }
 export function reorderStep(u, stepId, dir) {

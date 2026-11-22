@@ -3746,7 +3746,26 @@
       "removeOption": "Togli l’opzione {letter}",
       "fromFigure": "L’opzione giusta è ricavata dalla figura. Cambia un’opzione o segnane un’altra per sceglierla tu.",
       "needTwo": "Scrivi almeno 2 opzioni.",
-      "needRight": "Segna l’opzione giusta."
+      "needRight": "Segna l’opzione giusta.",
+      "testAiTitle": "Abbozza una verifica",
+      "topicLabel": "Argomento",
+      "topicHint": "Per esempio: area di rettangoli e triangoli",
+      "subject": "Materia",
+      "anySubject": "Qualsiasi materia",
+      "draftTest": "Abbozza la verifica",
+      "testBudget": "Fatta con i generatori di domande, così puoi estrarre nuovi numeri per ogni domanda. Conta nel limite dell'IA; senza IA viene estratta una verifica iniziale.",
+      "byHand": "A mano: scegli una materia, aggiungi domande con figure, poi imposta ogni figura e la sua risposta.",
+      "checkFirst": "Controlla ogni domanda prima di assegnarla.",
+      "topicFirst": "Scrivi prima l'argomento della verifica.",
+      "saveLesson": "Salva nella lezione",
+      "saveLessonHint": "Mette queste domande in {title}. Nella lezione non cambia nulla finché non salvi.",
+      "saveLessonAgain": "Salvare di nuovo sostituisce le domande in {title}.",
+      "lessonStarted": "Gli studenti hanno già iniziato questo passo, quindi le domande restano come sono. Fai una copia della lezione per cambiarle.",
+      "backToLesson": "Torna alla lezione",
+      "subjects": "Materie",
+      "more": "Altro",
+      "swapLabel": "Sostituisci la figura con",
+      "swap": "Sostituisci figura"
     }
   },
   "favorites": {
@@ -4375,7 +4394,8 @@
       "text": "Leggi o fai",
       "question": "Rispondi a una domanda",
       "quiz": "Rispondi alle domande del quiz",
-      "figures": "Rispondere a domande sulle figure"
+      "figures": "Rispondere a domande sulle figure",
+      "figureStep": "Domande con figure"
     },
     "library": {
       "title": "Biblioteca delle lezioni",
@@ -4454,7 +4474,14 @@
       "newGameLink": "Crea un nuovo gioco per gli studenti",
       "deleteWorkConfirm": "Eliminare questo passaggio? Verranno eliminati i lavori di {n, plural, one {# studente} other {# studenti}} in questo passaggio. L'operazione non si può annullare.",
       "liveGames": "Giochi dal vivo per la classe (li conduci tu)",
-      "otherGames": "Altri giochi"
+      "otherGames": "Altri giochi",
+      "bodyFigures": "Istruzioni per gli studenti (facoltativo)",
+      "figuresHint": "Poi si apre il creatore di figure: scegli le figure, imposta numeri e risposte, poi Salva nella lezione.",
+      "editFigures": "Modifica le domande",
+      "printFigures": "Stampa",
+      "figuresStarted": "Gli studenti hanno già iniziato questo passo, quindi le domande restano come sono.",
+      "more": "Altro",
+      "figuresSaved": "Domande con figure salvate nella lezione."
     },
     "ai": {
       "button": "Bozza con l'IA",
@@ -4533,7 +4560,9 @@
       "build": "Crea il tuo gioco",
       "buildText": "Un quiz con 6 domande su {topic}",
       "exit": "Biglietto d'uscita",
-      "exitText": "In due o tre frasi: qual è la cosa più importante che hai imparato oggi su {topic}?"
+      "exitText": "In due o tre frasi: qual è la cosa più importante che hai imparato oggi su {topic}?",
+      "figures": "Domande con figure",
+      "figuresText": "Rispondi alla domanda sotto ogni figura."
     },
     "errors": {
       "notFound": "Non l'abbiamo trovato, oppure non può aprirlo.",
@@ -12337,12 +12366,19 @@
       "search": "Cerca le figure",
       "searchHint": "Cerca le figure, per esempio cilindro o box plot",
       "count": "{count, plural, one {# figura} other {# figure}}",
-      "nothing": "Nessuna figura corrisponde. Prova un'altra parola o classe."
+      "nothing": "Nessuna figura corrisponde. Prova un'altra parola o classe.",
+      "buildTest": "Crea una verifica",
+      "buildTestText": "Una verifica intera di domande con figure, abbozzata con l'IA o fatta a mano.",
+      "isTest": "Verifica"
     },
     "sheet": {
       "newTitle": "Nuova scheda",
       "crumb": "Crea schede",
-      "untitled": "Scheda senza titolo"
+      "untitled": "Scheda senza titolo",
+      "untitledTest": "Verifica senza titolo",
+      "newTest": "Nuova verifica",
+      "crumbTest": "Creatore di verifiche",
+      "crumbLesson": "Domande con figure"
     },
     "editor": {
       "example": "Esempio {n}"
@@ -12377,7 +12413,8 @@
       "name": "Prima dagli un nome.",
       "brief": "Prima descrivi la scheda in poche parole.",
       "names": "Non mettere i nomi degli studenti nella descrizione: i nomi non vanno mai all'IA.",
-      "sameChoices": "Due opzioni sono uguali. Rendile tutte diverse."
+      "sameChoices": "Due opzioni sono uguali. Rendile tutte diverse.",
+      "topic": "Scrivi prima l'argomento della verifica."
     },
     "kinds": {
       "numberLine": {
@@ -12730,7 +12767,8 @@
         "noClass": "Scegli una delle tue classi.",
         "badDate": "Questa data non sembra giusta.",
         "dueBeforeOpen": "La data di consegna è prima della data di apertura.",
-        "needsDue": "Imposta una data di consegna per mostrare le risposte dopo."
+        "needsDue": "Imposta una data di consegna per mostrare le risposte dopo.",
+        "started": "Gli studenti hanno già iniziato questo passo, quindi le domande restano come sono. Fai una copia della lezione per cambiarle."
       }
     }
   }

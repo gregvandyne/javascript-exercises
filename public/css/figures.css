@@ -209,7 +209,8 @@
 @media (max-width:560px){
   .fg-item{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"n thumb" "text text" "acts acts"}
   .fg-n{grid-area:n}.fg-ithumb{grid-area:thumb}.fg-itext{grid-area:text}
-  .fg-iacts{grid-area:acts;grid-template-columns:repeat(5,44px)}
+  .fg-iacts{grid-area:acts;grid-template-columns:repeat(6,44px)}
+  .fg-moremenu{inset-inline-end:auto;inset-inline-start:0}
   .fg-titlein{font-size:1.2rem}
 }
 
@@ -248,3 +249,14 @@
   .fg-printpage .fgp-page+.fgp-page{border-top:0;margin-top:0;padding-top:0;break-before:page;page-break-before:always}
   .fgp-q{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
 }
+
+/* ---- Build a test, a lesson's Figure step (docs/decisions.md "Figures: the lesson Figure step and Build a test") */
+.fg-testline{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:16px 0 0;padding-top:16px;border-top:1px solid #3A3830;color:#E3DED0}
+.fg-picktabs{flex:1 1 100%;margin:0}
+.fg-more{position:relative}
+.fg-more>summary{list-style:none;display:inline-flex;align-items:center;justify-content:center;min-height:40px;cursor:pointer}
+.fg-more>summary::-webkit-details-marker{display:none}
+.fg-moremenu{position:absolute;z-index:5;inset-inline-end:0;top:calc(100% + 6px);width:260px;max-width:80vw;display:grid;gap:8px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 8px 24px rgba(20,20,20,.16)}
+.fg-moremenu .fg-block{margin:0}
+.fg-tolesson .btn-primary{width:100%}
+.fg-tolesson .btn-sm{margin-top:6px}
