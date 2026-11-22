@@ -11164,3 +11164,18 @@ small daily cap and Teacher plan holders without one.
   progress page). Phone pictures are taken by a separate student at device scale 2 and pressed by DOM click: Chromium's
   screenshot at a scale other than the device's own leaves the sandboxed game frame's tap mapping stale (a harness quirk;
   the page itself reports the button on top).
+
+## Virtual math manipulatives: "Answers checked" as one line in the teacher's menu (22 Nov 2026)
+
+- The ⋯ menu's full list of checked students is now one line, "Answers checked: 12 of 16" (students who checked, of
+  the students in the room), a native details closed by default; it opens to the names. Those who need help (anything
+  short of all right) come first, the fewest right first, then the all-right ones, each group by name
+  (`manip-data.js checkSummary`). Each row: the name (cut short with an ellipsis) and the score with a Fluent mark
+  (warning: needs help, check: all right) in a two-column grid. It stays open or closed as the teacher left it while
+  the menu redraws.
+- Nobody checked yet: the line alone with 0, nothing to open. It shows while checks are on, or once anyone checked.
+- It lives in the menu's scrolling body; End session / Reopen room stays pinned at the foot (#518).
+- Strings (`checksSummary` with a plural, `checkAllRight`, `checkNeedsHelp`) in every room locale.
+- **Tests:** `manipulatives.test.js` (counting, order, strings in every locale), `manip-room-browser.test.js` (1440 x 900
+  and iPhone 13: 16 checked, closed by default, the count, needs-help first, no overlap with the switches, a long name
+  cut short, End session in reach; nobody checked).

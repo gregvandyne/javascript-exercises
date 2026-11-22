@@ -3508,7 +3508,10 @@
       "hideSteps": "Ocultar os passos",
       "showSteps": "Mostrar os passos",
       "checkResult": "{right} de {total} certas. Tente de novo as outras.",
-      "checkAll": "{total, plural, one {Tudo certo!} other {Todas as # certas!}}"
+      "checkAll": "{total, plural, one {Tudo certo!} other {Todas as # certas!}}",
+      "checksSummary": "{total, plural, one {Respostas verificadas: {checked} de #} other {Respostas verificadas: {checked} de #}}",
+      "checkAllRight": "Tudo certo",
+      "checkNeedsHelp": "Precisa de ajuda"
     },
     "figures-editor": {
       "undo": "Desfazer",

@@ -3507,7 +3507,10 @@
       "hideSteps": "ステップをかくす",
       "showSteps": "ステップを見る",
       "checkResult": "{total} 問中 {right} 問正解。のこりをもう一度やってみよう。",
-      "checkAll": "{total, plural, other {# 問ぜんぶ正解！}}"
+      "checkAll": "{total, plural, other {# 問ぜんぶ正解！}}",
+      "checksSummary": "{total, plural, other {答えをたしかめた人: # 人中 {checked} 人}}",
+      "checkAllRight": "ぜんぶ正解",
+      "checkNeedsHelp": "てつだいが必要"
     },
     "figures-editor": {
       "undo": "元に戻す",

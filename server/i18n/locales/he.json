@@ -3508,7 +3508,10 @@
       "hideSteps": "הסתרת השלבים",
       "showSteps": "הצגת השלבים",
       "checkResult": "{right} מתוך {total} נכונות. נסו שוב את האחרות.",
-      "checkAll": "{total, plural, one {הכול נכון!} other {כל ה־# נכונות!}}"
+      "checkAll": "{total, plural, one {הכול נכון!} other {כל ה־# נכונות!}}",
+      "checksSummary": "{total, plural, one {בדקו תשובות: {checked} מתוך #} other {בדקו תשובות: {checked} מתוך #}}",
+      "checkAllRight": "הכול נכון",
+      "checkNeedsHelp": "צריך עזרה"
     },
     "figures-editor": {
       "undo": "ביטול",
