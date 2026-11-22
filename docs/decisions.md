@@ -11527,3 +11527,54 @@ Oomba's chat and the shared chat engine"):
   `limits`, `prune`), backward compatible with Figures.
 - **Legal:** /privacy section (all locales), LEGAL_UPDATED 2026-11-22, docs/legal-review.md entry (lawyer review
   pending).
+
+## Oomba teaching companion: one chat everywhere, and live speech (22 Nov 2026)
+
+The owner, after reviewing phase 1: ONE Oomba bubble and panel across the app. The Figures worksheet chat and the
+Manipulatives board chat are folded into the companion; the microphone shows words as the teacher speaks.
+
+- **Conversation model** (chosen as recommended): one running companion conversation per teacher (the engine's
+  `ctx_key 'main'`), with page-scoped artifacts. Every message carries the page it was sent from (`meta.page`: the
+  worksheet's id, the board's tool and id, checked on the server: only the teacher's own worksheet, only a host's own
+  board), and the "Sees:" line follows the page (an SPA page like the Manipulatives updates it as the teacher moves).
+  Each worksheet keeps its own change history through the turns that changed it (`change.kind 'figures'` with the
+  sheet's id and its own Undo data); each board change is put on the board by the page with its own Undo and Redo.
+  The old per-worksheet Figures chats (`oomba_chats` surface 'figures') and per-board chats (`manip_chats`) start
+  fresh: they are not shown any more, kept in the database until their own 60 days (pruned by the companion's job)
+  and deleted with their worksheet, board and account. No worksheet or board data is touched.
+- **Page tools** (services/companion.js `PAGE_TOOLS`, offered only on their own page): `editWorksheet` (the Figures
+  workflow, unchanged, in services/figures-chat.js: readAnswer, checkItem/repairDraft, OF.solve recompute, untouched
+  questions never re-sent, applyPlan/undoPlan by question id, starterPlan, quoteOf, workflowRules for the system
+  prompt) and `changeBoard` (the Manipulatives workflow, unchanged, in services/manip-chat.js: boardContext,
+  readAnswer/buildChange through sanitizeDraft and cleanState, pageBoard, workflowRules). `getPageContext` adds the
+  worksheet (sheetContext) or the board. On the live room's teacher view Oomba knows it is there and changes nothing
+  (as before: the old chat was never in the room).
+- **Routing**: on those pages the system prompt says the page tool is only for requests about what is on that page;
+  anything else (a book, a game, the dashboard, how the site works, a teaching question) goes to the general tools and
+  leaves the page as it is; when it can't tell, it asks one short question and changes nothing.
+- **Writes, stated consistently**: a dashboard change needs the teacher's Apply tap (then Undo); a worksheet or board
+  change is made at once when the teacher asks for it on that page, with Undo (the existing behavior of those chats,
+  kept); builds are hand-offs the teacher finishes.
+- **Names**: one rule everywhere: the teacher's students' names, emails, phone numbers and links are taken out of the
+  message before it is kept or sent (the Figures and Manipulatives chats used to refuse such a message instead), and
+  the words are checked again when the job starts (a student who joined meanwhile ends the turn as 'names'). Question
+  text, board steps and titles naming a student are left out of what the AI sees, as before.
+- **One panel**: the separate panels are gone (`public/css/manip-chat.css` removed; `public/js/manip-chat.js` is now the
+  board's adapter; `public/js/figures-sheet.js` registers the worksheet's). Pages meet the panel through
+  `public/js/oomba-bus.js` (`setPage(adapter)`: the page context, what goes with a message, ideas, the change card, the
+  page's buttons, "Ask Oomba about this" quotes, Undo, the Questions | Print preview switch on laptops). Figures' menu
+  "Describe what you need" makes the worksheet and sends the companion's first turn on it (services/companion.js
+  `startSheet`); its "finished while you were away" notice reads the companion's unseen endings (`readySheets`; a
+  background load peeks without marking them seen, and the bubble shows its dot). "Draft with AI" on a board opens the
+  panel; the board's old drafter (Try again on a failed draft job) opens it with the words in the box.
+- **Removed routes**: `/api/figures/worksheets/:id/chat` (and undo, starter, dismiss) and `/api/manipulatives/chat` (and
+  applied); `/api/figures/worksheets/:id/ready/dismiss` added. The `figures` engine surface is no longer defined.
+- **Live speech** (services/stt-live.js `companionRoute`, `/api/companion/listen`): the Studio's live relay with a
+  teacher allowance, its own path and gate (`teacherGate`: companionFor, so the toolAccess rule and the school's switch),
+  the same caps; the kid route and its rules are unchanged (the Builder check stays for every kid session). The page
+  streams the mic as PCM (public/js/stt-worklet.js), shows the words so far greyed and read-only in the box, and they
+  settle as final, editable words. Stops on a tap, on Send (no more words go in), when the panel closes, when the page
+  is hidden, and at the longest recording (2 minutes, or STT_MAX_SECONDS if shorter). MediaRecorder keeps the clip in
+  memory only, for a one-time upload (`X-Live-Id`, not counted twice) when the live link fails.
+- **Follow-up**: Mistake Hunt's chat (services/proof-chat.js, inside the game's teacher editor) is still its own; moving
+  it onto the companion is a later change.

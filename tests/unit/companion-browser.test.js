@@ -25,6 +25,7 @@ const CO = await import('../../server/services/companion.js');
 const C = await import('../../server/services/oomba-chat.js');
 const STT = await import('../../server/services/stt.js');
 const RL = await import('../../server/services/ratelimit.js');
+const LIVE = await import('../../server/services/stt-live.js');
 
 const LOCAL = ['/opt/pw-browsers/chromium', '/opt/pw-browsers/chromium-1243/chrome-linux/chrome', '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/opt/pw-browsers/chromium_headless_shell-1243/chrome-linux/headless_shell'];
 const exe = [process.env.BRB_CHROMIUM, ...LOCAL].find(p => p && fs.existsSync(p) && fs.statSync(p).isFile());
@@ -98,6 +99,7 @@ test.before(async () => {
   if (skip) return;
   server = createApp().listen(0); await new Promise(r => server.once('listening', r));
   BASE = `http://127.0.0.1:${server.address().port}`;
+  LIVE.attachLive(server);   // the live mic's sockets (the studio's and the companion's)
   browser = await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox', '--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'] });
   if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 });
@@ -288,4 +290,37 @@ test('the school settings section (a school admin)', { skip }, async () => {
     if (SHOTS) { await page.evaluate(() => { document.querySelector('.topbar').style.position = 'static'; document.getElementById('companion-settings').scrollIntoView(); }); await page.waitForTimeout(300); await page.screenshot({ path: path.join(SHOTS, 'k_school_settings.png') }); }
     assert.deepEqual(errors.filter(e => !/400/.test(e)), []);
   } finally { await ctx.close(); }
+});
+
+test('laptop: the live microphone streams words into the box as the teacher speaks (greyed), then they settle; audio is never kept', { skip }, async () => {
+  ai();
+  const prev = { p: config.sttProvider, l: config.sttLive, k: config.sttApiKey };
+  config.sttProvider = 'mock'; config.sttLive = true; config.sttApiKey = '';   // the stand-in realtime service (stt.js mock)
+  const { ctx, page, errors } = await open(teacher, `/class/${cls.id}`);
+  try {
+    await page.click('#oc-bubble');
+    await page.locator('#oc-mic').waitFor();
+    await page.fill('#oc-in', 'Find a game:');
+    await page.click('#oc-mic');
+    await page.locator('#oc-listen').waitFor();
+    assert.match(await page.locator('#oc-listen').textContent(), /Listening.*audio isn't kept/s);
+    // Words appear while the teacher speaks: greyed (not final yet), read-only, after what was typed.
+    await page.waitForFunction(() => { const b = document.getElementById('oc-in'); return b.classList.contains('interim') && /Find a game: make/.test(b.value); }, null, { timeout: 15000 });
+    assert.equal(await page.locator('#oc-in').getAttribute('readonly'), '');
+    await page.waitForTimeout(600);
+    await shot(page, 'l_mic_live');
+    await page.click('#oc-mic');
+    await page.waitForFunction(() => { const b = document.getElementById('oc-in'); return !b.classList.contains('interim') && /make the dragon fly faster$/.test(b.value); }, null, { timeout: 15000 });
+    assert.equal(await page.locator('#oc-in').getAttribute('readonly'), null, 'editable again');
+    assert.equal(await page.locator('#oc-listen').isVisible(), false);
+    // Nothing kept: no live session left over, nothing uploaded (the final words came over the socket).
+    assert.equal(q.get("SELECT COUNT(*) n FROM stt_live WHERE game_id='companion' AND state='open'").n, 0);
+    // Closing the panel while listening stops it at once (no more words go in).
+    await page.click('#oc-mic');
+    await page.locator('#oc-listen').waitFor();
+    await page.click('#oc button[data-c="close"]');
+    await page.waitForTimeout(500);
+    assert.equal(await page.locator('#oc-mic').getAttribute('aria-pressed'), 'false');
+    assert.deepEqual(errors, []);
+  } finally { Object.assign(config, { sttProvider: prev.p, sttLive: prev.l, sttApiKey: prev.k }); await C.allSettled(); CO.reset(teacher); await ctx.close(); }
 });

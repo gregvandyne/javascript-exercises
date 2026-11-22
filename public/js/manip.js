@@ -20,7 +20,7 @@ import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSec
   snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, TEXT_SIZES, textFont, stepTextSize, textResize, textRect, snapBox, textBoxFields, xyRange, xyLines, xySnap, xyMoveLine } from '/js/manip-board.js';
 import { settleCharts, chartInfo, strayIds, inChart, homeFor, placeAtHome, columnHome, paletteAdd } from '/js/manip-pv.js';
 import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP } from '/js/manip-wheel.js';
-import * as CHAT from '/js/manip-oomba.js';
+import * as CHAT from '/js/manip-chat.js';
 
 const ROOT = document.getElementById('manip');
 const ROLE = pageData().role === 'host' ? 'host' : 'student';
@@ -586,7 +586,7 @@ function openTool(slug, { restore = null, boardId = null, title = '' } = {}) {
   startAutosave();
   if (HOST) CHAT.attach(chatCtx());
 }
-/** What Oomba (the companion, with this board's workflow: public/js/manip-oomba.js) reads and changes: the open board, one change at a time (Undo too). */
+/** What Oomba (the companion, with this board's workflow: public/js/manip-chat.js) reads and changes: the open board, one change at a time (Undo too). */
 const chatCtx = () => ({
   slug: V.tool.slug, name: V.tool.name, layout: () => V && fit(),
   get: () => ({ boardId: V.boardId, title: V.title, state: boardState(), empty: !(V.steps || []).length && !(V.st.pieces || []).length && V.st.objects.length <= 1 }),

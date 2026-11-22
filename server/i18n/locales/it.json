@@ -1120,9 +1120,9 @@
       "companion": {
         "h": "Oomba, l'aiutante per insegnare",
         "p1": "Gli insegnanti con il Piano Insegnante possono chattare con Oomba da una bolla sulle proprie pagine. Studenti e bambini non la vedono mai. I messaggi di un insegnante, il testo di un documento allegato e un'immagine allegata vengono inviati al nostro fornitore di IA, Anthropic, per creare la risposta. Prima di inviare qualsiasi cosa, togliamo i nomi degli studenti dell'insegnante, le email, i numeri di telefono e i link. Le immagini che mostrano una persona vengono rifiutate e mai conservate.",
-        "p2": "Oomba vede solo ciò che l'insegnante ha aperto e dati sicuri al riguardo (la classe e il numero di studenti, i widget di una bacheca), mai nomi, risposte o lavori degli studenti. Modifica una bacheca solo dopo che l'insegnante ha toccato Applica, e la modifica si può annullare.",
+        "p2": "Oomba vede solo ciò che l'insegnante ha aperto e dati sicuri al riguardo (la classe e il numero di studenti, i widget di una bacheca, le domande di una scheda Figures, gli elementi e i passaggi di una tavola dei manipolativi), mai nomi, risposte o lavori degli studenti. Modifica una bacheca solo dopo che l'insegnante ha toccato Applica. Su una scheda Figures o una tavola dei manipolativi fa subito la modifica richiesta, e l'insegnante può annullarla.",
         "p3": "Quando la ricerca web è attiva, Oomba può inviare brevi ricerche alla ricerca web di Anthropic. Non contengono mai nomi né una posizione; i siti per adulti, di scommesse, i social network e simili sono bloccati, e ogni ricerca viene registrata per il nostro team senza il nome dell'insegnante. Le pagine trovate sul web sono mostrate come fonti che Oomba non ha controllato.",
-        "p4": "Un insegnante può parlare invece di scrivere: la registrazione viene inviata a {provider} per trasformarla in parole, e l'audio non viene mai conservato, né da noi né da loro. Le parole finiscono nella casella del messaggio perché l'insegnante le controlli.",
+        "p4": "Un insegnante può parlare invece di scrivere: il suono viene inviato a {provider} per trasformarlo in parole mentre parla, e l'audio non viene mai conservato, né da noi né da loro. Le parole finiscono nella casella del messaggio perché l'insegnante le controlli.",
         "p5": "Conserviamo la chat di un insegnante, con il testo dei suoi allegati, per 60 giorni dall'ultimo uso (una scuola può scegliere da 7 a 365 giorni); un'immagine viene eliminata appena Oomba ha risposto, al più tardi entro un giorno. Un insegnante può eliminare la chat con Nuova chat, e viene eliminata con l'account. Un amministratore della scuola può spegnere Oomba o la sua ricerca web per la scuola."
       }
     }
@@ -3942,7 +3942,9 @@
         "steps": "Scrivi passi più chiari per i miei studenti"
       },
       "placeholder": "Chiedi a Oomba di cambiare la lavagna",
-      "placeholderEmpty": "Descrivi la lezione che vuoi su questa lavagna"
+      "placeholderEmpty": "Descrivi la lezione che vuoi su questa lavagna",
+      "boardOf": "Tavola {tool}",
+      "liveRoom": "Stanza dal vivo"
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4115,7 +4117,12 @@
         "readImage": "Ha guardato la tua immagine",
         "web": "Ha cercato sul web ({n, plural, one {# ricerca} other {# ricerche}})",
         "webNo": "Ha cercato sul web, ma ha escluso i risultati",
-        "toolNo": "Un passaggio non ha funzionato"
+        "toolNo": "Un passaggio non ha funzionato",
+        "sheet": "Ha letto la tua scheda ({n} domande)",
+        "edit": "Ha modificato la tua scheda ({n} modifiche)",
+        "editNo": "Non è riuscito a modificare la scheda",
+        "board": "Ha preparato la tavola ({n} elementi)",
+        "boardNo": "Non è riuscito a preparare quella tavola"
       },
       "stepsSum": "{n, plural, one {# passaggio} other {# passaggi}} · {s} s",
       "prog": {
@@ -4189,7 +4196,9 @@
         "slow": "Sono tanti messaggi in un'ora. Aspetta un po', poi riprova.",
         "fileGone": "Quell'allegato non c'è più. Allegalo di nuovo.",
         "other": "Qualcosa è andato storto. Il tuo messaggio è ancora qui: riprova tra un momento."
-      }
+      },
+      "quoteN": "Domanda {n}: {text}",
+      "questionN": "Domanda {n}"
     }
   },
   "favorites": {

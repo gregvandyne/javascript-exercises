@@ -519,16 +519,17 @@ function pageRules(u, page) {
   return '';
 }
 /** The conversation as the AI sees it: earlier turns' words, and the new message with its file and page. */
-function messagesFor(history, text, meta, image) {
+const quoted = (q, words) => (q ? `(About question ${q.n}${q.text ? `: "${q.text}"` : ''}) ${words}` : words);
+function messagesFor(history, text, meta, image, quote = null) {
   const out = [];
   const add = (role, content) => { if (out.length && out[out.length - 1].role === role && typeof content === 'string' && typeof out[out.length - 1].content === 'string') out[out.length - 1].content += `\n${content}`; else out.push({ role, content }); };
   for (const x of history) {
-    if (x.role === 'me') add('user', `${x.text}${x.meta && x.meta.file ? `\n[Attached earlier: ${x.meta.file.kind === 'image' ? 'a picture' : `"${x.meta.file.name}", file id ${x.meta.file.id}`}]` : ''}`);
+    if (x.role === 'me') add('user', `${quoted(x.quote, x.text)}${x.meta && x.meta.file ? `\n[Attached earlier: ${x.meta.file.kind === 'image' ? 'a picture' : `"${x.meta.file.name}", file id ${x.meta.file.id}`}]` : ''}`);
     else if (x.text) add('assistant', x.text);
   }
   const file = meta && meta.file;
   const note = file ? (file.kind === 'image' ? (image ? '[The teacher attached this picture.]' : '[The teacher attached a picture that is no longer kept.]') : `[The teacher attached "${file.name}" (${file.pages || 1} pages), file id ${file.id}: read it with readUpload.]`) : '';
-  const words = `${text}${note ? `\n${note}` : ''}`;
+  const words = `${quoted(quote, text)}${note ? `\n${note}` : ''}`;
   if (image) out.push({ role: 'user', content: [{ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: image.toString('base64') } }, { type: 'text', text: words }] });
   else add('user', words);
   while (out.length && out[0].role !== 'user') out.shift();
@@ -592,7 +593,7 @@ function cardOf(it) {
 let webBroken = null;
 export const _resetWeb = () => { webBroken = null; };
 const aiClient = () => (hooks.create ? (aiBudget.ok() ? { messages: { create: hooks.create } } : null) : anthropic());
-async function answer({ user, text, meta, history, step, turnId }) {
+async function answer({ user, text, meta, quote, history, step, turnId }) {
   const client = aiClient();
   if (!client) return { failed: 'resting' };
   const settings = limitsOf(user), lang = (meta && meta.lang) || 'en';
@@ -608,7 +609,7 @@ async function answer({ user, text, meta, history, step, turnId }) {
   const web = { turnId, names: [...names.map(n => n.name), ...SR.namesOf(user)], searches: 0, queries: new Map(), found: new Map(), flagged: false };
   let useWeb = webOn(user, row) && !webBroken;
   const tools = () => (useWeb ? [...toolsFor(page), { ...SR.WEB_SEARCH_TOOL, max_uses: 3 }] : toolsFor(page));
-  const msgs = messagesFor(history, text, meta, image);
+  const msgs = messagesFor(history, text, meta, image, quote);
   const steps = [];
   const model = config.companionModel || config.builderModel;
   const t0 = Date.now();

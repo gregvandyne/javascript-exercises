@@ -50,9 +50,10 @@ function start() {
 
   // The page's own workflow, when it has one (a Figures worksheet, a Manipulatives board: public/js/oomba-bus.js).
   const P = () => BUS.page();
+  const ref = { chat: null };   // the panel, once mounted (its first load runs while mounting)
   const via = (k, ...a) => { const x = P(); return x && typeof x[k] === 'function' ? x[k](...a) : undefined; };
   const chat = mountChat({
-    id: 'companion', url: () => '/api/companion/chat', getUrl: () => `/api/companion/chat${chat && chat.state().mode === 'open' ? '' : '?peek=1'}`, alwaysBubble: true,
+    id: 'companion', url: () => '/api/companion/chat', getUrl: () => `/api/companion/chat${ref.chat && ref.chat.state().mode === 'open' ? '' : '?peek=1'}`, alwaysBubble: true,
     start: () => via('start') || 'closed',
     bubbleHost: dash ? document.getElementById('dash-foot') : null,
     subHtml: `<span class="oc-ctx"><i aria-hidden="true"></i>${esc(L('sees'))} <b id="oc-sees">${esc(label())}</b></span>`,
@@ -84,6 +85,7 @@ function start() {
     onMode: m => { if (m !== 'open') stopMic(); via('onMode', m); },
     onSync: c => { if (S.sent) { S.sent = false; setFile(null); } via('onSync', c); },
   });
+  ref.chat = chat;
   BUS.setChat(chat);
   BUS.onPage(() => { const b = document.getElementById('oc-sees'); if (b) b.textContent = label(); chat.render(); });
   const root = chat.root;

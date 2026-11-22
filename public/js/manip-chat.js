@@ -21,7 +21,7 @@ export function attach(ctx) {
     kind: 'manip',
     page: () => { const g = ctx.get(); return { type: 'manip', tool: ctx.slug, ...(g.boardId ? { boardId: g.boardId } : {}) }; },
     body: () => { const g = ctx.get(); A.waiting = true; return { board: { tool: ctx.slug, boardId: g.boardId || null, title: g.title || '', state: g.state } }; },
-    label: () => { const g = ctx.get(); return g.title ? `${ctx.name} · ${g.title}` : t('js.companion.boardOf', { tool: ctx.name }); },
+    label: () => { const g = ctx.get(); return g.title ? `${ctx.name} · ${g.title}` : t('js.manip-chat.boardOf', { tool: ctx.name }); },
     hello: () => t(ctx.get().empty ? 'js.manip-chat.helloEmpty' : 'js.manip-chat.hello', { tool: ctx.name }),
     ideas: () => {
       const tasks = ctx.get().empty ? (TASKS[ctx.slug] || []).slice(0, 3) : [];
@@ -53,7 +53,7 @@ export function ask(text) {
 /** The live room's teacher view: Oomba knows it is there (it does not change the room's boards). */
 export function attachLive(label) {
   A = null;
-  BUS.setPage({ kind: 'manip-live', page: () => ({ type: 'manip-live' }), label: () => label || t('js.companion.liveRoom') });
+  BUS.setPage({ kind: 'manip-live', page: () => ({ type: 'manip-live' }), label: () => label || t('js.manip-chat.liveRoom') });
 }
 
 function put(x) {

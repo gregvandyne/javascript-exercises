@@ -678,3 +678,13 @@ Questions for the lawyer:
    follow (SOPIPA, NY Ed Law 2-d), given the content is teacher-authored and scrubbed of student names?
 4. Pictures: is refusing every picture with a person (and keeping none) sufficient, or do we need a stronger warning
    before upload?
+
+### Oomba companion: one chat everywhere and live speech (2026-11-22; LAWYER REVIEW PENDING)
+
+Addendum to the entry above. /privacy "Oomba, the teaching companion" now also says that Oomba sees a Figures
+worksheet's questions and a manipulatives board's items and steps (never names, answers or work), that it changes
+those at once when the teacher asks (with Undo), and that speech is streamed to the speech-to-text provider while the
+teacher speaks (never kept). The Figures and Manipulatives chats used to refuse a message that named a student; the
+one chat now takes the names out before anything is kept or sent (the same protection, one rule). Question for the
+lawyer: is streaming a teacher's voice (rather than one recorded clip) covered by the existing speech-to-text wording
+and provider terms (zero retention)?
