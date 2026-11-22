@@ -18,6 +18,7 @@ const S = await import('../../server/services/schools.js');
 const L = await import('../../server/services/lessons.js');
 const F = await import('../../server/services/figures.js');
 const FS = await import('../../server/services/figures-steps.js');
+const CAT = await import('../../public/js/figures-catalog.js');
 
 const LOCAL = ['/opt/pw-browsers/chromium', '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell'];
 const exe = [process.env.BRB_CHROMIUM, ...LOCAL].find(p => p && fs.existsSync(p));
@@ -103,6 +104,23 @@ test('the editor opened from a worksheet question has the same Undo and Redo, an
   assert.equal(await field(page, 'AB').inputValue(), '9');
   await Promise.all([page.waitForURL(/\/figures\/worksheets\//), page.click('[data-act="saveback"]')]);
   assert.equal(F.itemsOf(w.id)[0].data.AB, 9);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('a question saved with an earlier definition of its generator (PAST_GENS) opens with its answer and worked lines', { skip }, async () => {
+  const past = CAT.PAST_GENS.freeBody[0];
+  let seed = 1, was = null;
+  for (; seed < 200000; seed += 7) { const w = F.generate('freeBody', seed, undefined, past), now = F.generate('freeBody', seed); if (w && now && JSON.stringify(w.data) !== JSON.stringify(now.data)) { was = w; break; } }
+  assert.ok(was, 'a seed the two definitions deal differently');
+  const w = F.createWorksheet(boss, { title: 'Old forces', items: [{ kind: 'freeBody', gen: 'freeBody', seed, data: was.data, hide: was.hide, question: was.question }] });
+  const it = F.itemsOf(w.id)[0];
+  assert.equal(it.gen, 'freeBody', 'the server still links it to its generator');
+  const { ctx, page, errors } = await open(`/figures/freeBody?ws=${w.id}&item=${it.id}`);
+  await page.waitForSelector('#fg-figure svg');
+  await page.waitForFunction(() => document.querySelectorAll('#fg-answer .fg-work li').length > 0);
+  assert.deepEqual(await page.$$eval('#fg-answer .fg-work li', l => l.map(x => x.textContent)), was.work);
+  if (!it.answerKey) assert.equal(await page.textContent('#fg-answer .fg-big'), was.answer);
   assert.deepEqual(errors, []);
   await ctx.close();
 });

@@ -10,7 +10,8 @@
 //   GET  /figures/tests/new                        "Build a test": the same builder for a test (purpose 'test')
 //   GET  /figures/worksheets/:id/print?key=0|1     the printable student sheet (and the answer key: its owner only)
 //   GET  /api/figures/state                        the teacher's worksheets
-//   POST /api/figures/gen                          a generator's question for a seed ({ gen, seed } or { kind })
+//   POST /api/figures/gen                          a generator's question for a seed ({ gen, seed } or { kind }; with
+//                                                  data, the definition that dealt that figure, PAST_GENS included)
 //   GET  /api/figures/presets/:kind, POST /api/figures/presets, POST /api/figures/presets/:id/delete
 //   POST /api/figures/prefs                        "Power with AI" on or off ({ ai })
 //   POST /api/figures/worksheets                   a new worksheet ({ title, grade, items })
@@ -205,7 +206,10 @@ router.post('/api/figures/gen', rateLimit('figures-gen', 900, 3600e3), (req, res
   const gid = typeof b.gen === 'string' && F.genOf(b.gen) ? b.gen : K && K.gens.length ? K.gens[Math.floor(Math.random() * K.gens.length)].id : null;
   if (!gid) return fail(req, res, { code: 'noGen' });
   const seed = Number.isInteger(b.seed) && b.seed > 0 && b.seed < 1e9 ? b.seed : F.newSeed();
-  const g = F.generate(gid, seed);
+  // A saved question's figure ({ gen, seed, data }, the editor opened from a worksheet): what its generator dealt for it,
+  // an earlier definition (PAST_GENS) included, the same lookup the server uses when it saves (F.dealtFor).
+  const saved = b.gen === gid && b.data && typeof b.data === 'object' && !Array.isArray(b.data) ? b.data : undefined;
+  const g = saved ? F.dealtFor(gid, seed, saved) : F.generate(gid, seed);
   return g ? res.json({ ok: true, gen: gid, seed, ...g }) : fail(req, res, { code: 'noGen' });
 });
 router.get('/api/figures/presets/:kind', (req, res) => res.json({ ok: true, presets: F.listPresets(req.user, req.params.kind) }));

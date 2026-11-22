@@ -118,6 +118,23 @@ test('presets: save, list (newest first), delete; another teacher cannot delete 
   assert.match(page.text, /"mine":\[\{"id":"[^"]+","name":"Small box"/);
 });
 
+test('POST /api/figures/gen with a saved figure finds the earlier definition that dealt it (PAST_GENS), as saving does', async () => {
+  const CAT = await import('../../public/js/figures-catalog.js');
+  const past = CAT.PAST_GENS.angles[0];
+  let seed = 1, was = null;
+  for (; seed < 200000; seed += 7) { const w = F.generate('angles', seed, undefined, past), now = F.generate('angles', seed); if (w && now && JSON.stringify(w.data) !== JSON.stringify(now.data)) { was = w; break; } }
+  assert.ok(was);
+  const api = as(boss);
+  const r = await api('/api/figures/gen', { body: { gen: 'angles', seed, data: was.data } });
+  assert.equal(r.status, 200); const J = x => JSON.stringify(x);
+  assert.equal(J(r.json.data), J(was.data)); assert.equal(r.json.answer, was.answer); assert.equal(J(r.json.work), J(was.work));
+  const now = await api('/api/figures/gen', { body: { gen: 'angles', seed } });
+  assert.equal(J(now.json.data), J(F.generate('angles', seed).data), 'without a figure: the current definition');
+  const other = await api('/api/figures/gen', { body: { gen: 'angles', seed, data: { rays: [0, 33, 90] } } });
+  assert.equal(J(other.json.data), J(F.generate('angles', seed).data), 'a figure no definition dealt: the current one (the editor then shows no generator answer)');
+  assert.match(fs.readFileSync(path.join(ROOT, 'public/js/figures-editor.js'), 'utf8'), /body: \{ gen: S\.gen, seed: S\.seed, data: S\.data \}/);
+});
+
 test('card pictures: wide examples are stacked (two or three of them), every picture is whole and drawable', () => {
   for (const K of F.KINDS) {
     const svg = F.thumbnail(K.id);
