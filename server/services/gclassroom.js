@@ -15,7 +15,8 @@
 //
 // What goes to Google: the lesson's title, a fixed one-line description, the link to the lesson, its due date, and a
 // score out of 100 for each student who is on the teacher's own Classroom roster; the topic's name; an announcement's
-// fixed template text (a join code and link, or a lesson's title and link) and the teacher's own words. Nothing else:
+// fixed template text (a join code and link, or a lesson's title and link) and the teacher's own words; a dashboard
+// point's fixed sentence with its reason (to the class stream, or to that one student only, by their Google id). Nothing else:
 // no names, no answers, no feedback, no games. What comes back: the teacher's course names, and each student's Google
 // account id and full name (the name is only the staff-only roster name, never the public one).
 //
@@ -650,6 +651,45 @@ export async function announce(u, c, { template, fixed = '', note = '' }) {
   // The log keeps the template and the length, never the text.
   syncLog(u.id, c.id, 'announce', 'ok', { template, chars: text.length });
   return ok({ link: alt });
+}
+
+// ------------------------------------------------------------------ dashboard points
+// docs/decisions.md "Dashboard points: reasons, whole-class points, the student's view and Google Classroom".
+/** A student's Google account id in this class's linked course: the roster link made by the import (gc_roster, still
+ *  on the Classroom roster), else the id they sign in with Google with. '' when neither is known. */
+export function googleIdOf(classId, courseId, userId) {
+  const r = q.get('SELECT sub FROM gc_roster WHERE class_id=? AND course_id=? AND user_id=? AND gone_at IS NULL', classId, courseId, userId)
+    || q.get('SELECT sub FROM google_identities WHERE user_id=? ORDER BY created_at LIMIT 1', userId);
+  return r ? safeId(String(r.sub || '')) : '';
+}
+/**
+ * A point given on the class dashboard (services/dash.js postPoint), as an announcement. text: a fixed sentence in the
+ * teacher's language (the reason's words; never a name, a count or a ranking). studentId: '' for a whole-class point
+ * (the class stream), else the Oomba id of the one student it is for: it goes to them only (assigneeMode
+ * INDIVIDUAL_STUDENTS with only their Google id). Counts in the class's 10 announcements an hour.
+ * -> { ok, id } | { ok: false, code }
+ */
+export async function announcePoint(u, c, { text, studentId = '' }) {
+  const lk = linkOf(c.id); if (!lk) return fail('notLinked');
+  if (!can(u.id, 'announce')) return fail('needsScope');
+  const words = cleanNote(text); if (!words || words.length > ANNOUNCE_MAX) return fail('badTemplate');
+  const sub = studentId ? googleIdOf(c.id, lk.course_id, studentId) : '';
+  if (studentId && !sub) return fail('notOnClassroom');
+  if (!allow(`gc-announce:${c.id}`, ANNOUNCE_PER_HOUR, 3600e3)) return fail('tooManyAnnouncements');
+  const body = { text: words, state: 'PUBLISHED', ...(sub ? { assigneeMode: 'INDIVIDUAL_STUDENTS', individualStudentsOptions: { studentIds: [sub] } } : {}) };
+  let a;
+  try { a = await withToken(u.id, tk => C.api(tk, 'POST', `/v1/courses/${encodeURIComponent(lk.course_id)}/announcements`, { body })); }
+  catch (e) { if (e.code === 'needsScope') dropScope(u.id, 'announce'); const f = asFail(e); syncLog(u.id, c.id, 'pointPost', 'error', { to: sub ? 'student' : 'class' }, f.code); return f; }
+  // The log says who it was for (one student or the class), never which student or the words.
+  syncLog(u.id, c.id, 'pointPost', 'ok', { to: sub ? 'student' : 'class' });
+  return ok({ id: a && typeof a.id === 'string' ? a.id.slice(0, 64) : '' });
+}
+/** Undo on the dashboard: the point's announcement goes from Classroom too (best effort). -> { ok } | { ok: false, code } */
+export async function unannouncePoint(u, c, id) {
+  const lk = linkOf(c.id); if (!lk || !id) return fail('notLinked');
+  try { await withToken(u.id, tk => C.api(tk, 'DELETE', `/v1/courses/${encodeURIComponent(lk.course_id)}/announcements/${encodeURIComponent(id)}`)); }
+  catch (e) { return e.code === 'notFound' ? ok() : asFail(e); }
+  return ok();
 }
 
 // ------------------------------------------------------------------ automatic sync (jobs)

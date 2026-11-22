@@ -422,10 +422,13 @@ test('points: positive reasons only, never below zero; a student sees only their
   const pts = b => as(w.T)(`/api/dash/${w.A.id}/points`, POST(b));
   assert.equal((await pts({ action: 'award', user: w.a1.id, reason: 'kind' })).status, 200);
   await pts({ action: 'award', user: w.a1.id, reason: 'effort' });
+  // "Everyone" ('all', the first version's) is now one point for the whole class (tests/unit/dash-points.test.js).
   await pts({ action: 'award', user: 'all', reason: 'teamwork' });
   let r = (await as(w.T)(`/api/dash/${w.A.id}/live`)).json.points;
-  assert.equal(r.total, 5);
-  assert.deepEqual(r.list.find(x => x.id === w.a1.id), { id: w.a1.id, name: w.a1.display_name, n: 3, r: { kind: 1, effort: 1, teamwork: 1 } });
+  assert.equal(r.total, 2);
+  assert.deepEqual(r.cls, { n: 1, r: { teamwork: 1 } });
+  assert.deepEqual(r.list.find(x => x.id === w.a1.id), { id: w.a1.id, name: w.a1.display_name, n: 2, r: { kind: 1, effort: 1 } });
+  await pts({ action: 'award', user: w.a1.id, reason: 'teamwork' }); await pts({ action: 'award', user: w.a2.id, reason: 'teamwork' });
   // No minus: no negative reason, no negative amount, nothing below zero.
   for (const b of [{ action: 'award', user: w.a2.id, reason: 'rude' }, { action: 'minus', user: w.a2.id, reason: 'kind' }, { action: 'award', user: w.b1.id, reason: 'kind' }, { action: 'award', user: w.a2.id }])
     assert.notEqual((await pts(b)).status, 200, JSON.stringify(b));
@@ -440,7 +443,7 @@ test('points: positive reasons only, never below zero; a student sees only their
   assert.ok(!D.POINT_REASONS.some(x => /bad|rude|late|minus|lose/i.test(x)));
   // A student: their own points and the class total only. No list, no other names, no ranking.
   const s1 = (await as(w.a1)(`/api/dash/${w.A.id}/live`)).json;
-  assert.deepEqual(s1.points, { mine: 3, r: { kind: 1, effort: 1, teamwork: 1 }, total: 4 });
+  assert.deepEqual({ mine: s1.points.mine, r: s1.points.r, total: s1.points.total, cls: s1.points.cls }, { mine: 3, r: { kind: 1, effort: 1, teamwork: 1 }, total: 3, cls: { n: 1, r: { teamwork: 1 } } });
   for (const other of [w.a2, w.a3]) { assert.ok(!JSON.stringify(s1).includes(other.display_name)); assert.ok(!JSON.stringify(s1).includes(other.id)); }
   assert.equal((await as(w.a2)(`/api/dash/${w.A.id}/live`)).json.points.mine, 0);
   // Students can't give points.

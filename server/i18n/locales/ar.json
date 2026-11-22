@@ -9700,7 +9700,8 @@
         "settings": "تغيّرت المزامنة التلقائية",
         "topic": "أُعيدت تسمية الموضوع",
         "removeLeft": "أُزيل طالب غادر Classroom‏",
-        "keepLeft": "أُبقي طالب غادر Classroom‏"
+        "keepLeft": "أُبقي طالب غادر Classroom‏",
+        "pointPost": "نقطة من لوحة الصف"
       }
     },
     "errors": {
@@ -11080,7 +11081,7 @@
         },
         "reason": "السبب",
         "award": "نقطة لـ {name}",
-        "awardAll": "نقطة للجميع",
+        "awardAll": "الصف كله",
         "everyone": "الجميع",
         "undo": "تراجع",
         "undone": "أُلغيت النقطة الأخيرة.",
@@ -11100,7 +11101,41 @@
         "r_listening": "الإصغاء",
         "r_responsible": "تحمّل المسؤولية",
         "r_brave": "تجربة شيء جديد",
-        "r_creative": "أفكار جيدة"
+        "r_creative": "أفكار جيدة",
+        "classPoints": "نقاط الصف كله: {n}",
+        "classGiven": "حصل الصف كله على نقطة من أجل {reason}",
+        "classPick": "نقطة للصف كله",
+        "recent": "الأحدث",
+        "recentClass": "أحدث نقاط الصف",
+        "recentNone": "لا توجد نقاط بعد.",
+        "gcPost": "انشر أيضًا في Google Classroom",
+        "gcPostHint": "نقطة الصف كله تُنشر في ساحة الصف. ونقطة الطالب لا يراها إلا ذلك الطالب. بلا أسماء أو ترتيب أبدًا.",
+        "gcAllow": "اسمح بالنشر في Google Classroom",
+        "gcPosted": "نُشرت في Google Classroom.",
+        "gcPending": "جارٍ النشر في Google Classroom…",
+        "gcFailed": "تعذّر النشر في Google Classroom الآن. النقطة محفوظة.",
+        "gcNotOnClassroom": "لم تُنشر: هذا الطالب غير مرتبط بـ Google Classroom. النقطة محفوظة.",
+        "gcTooMany": "النشر في Google Classroom متوقف قليلًا (10 في الساعة). النقطة محفوظة.",
+        "gcReconnect": "يلزم ربط Google Classroom من جديد للنشر. النقطة محفوظة.",
+        "gcOn": "ستذهب النقاط أيضًا إلى Google Classroom.",
+        "gcOff": "تبقى النقاط في Oomba فقط.",
+        "onlyYou": "لا يرى نقاطك إلا أنت ومعلمك.",
+        "r_leadership": "القيادة",
+        "r_focus": "التركيز",
+        "r_example": "القدوة الحسنة",
+        "r_participation": "المشاركة",
+        "f_leadership": "القيادة",
+        "f_teamwork": "العمل الجماعي",
+        "f_focus": "التركيز",
+        "f_kind": "اللطف",
+        "f_example": "القدوة الحسنة",
+        "f_effort": "الاجتهاد",
+        "f_participation": "المشاركة",
+        "f_helpful": "المساعدة",
+        "f_listening": "الإصغاء",
+        "f_responsible": "تحمّل المسؤولية",
+        "f_brave": "تجربة شيء جديد",
+        "f_creative": "الأفكار الجيدة"
       },
       "fractions": {
         "name": "الكسور",
@@ -12536,6 +12571,12 @@
         "red": "الهدوء من فضلكم",
         "yellow": "صوت هامس",
         "green": "حديث في أزواج"
+      }
+    },
+    "points": {
+      "gc": {
+        "class": "حصل صفنا على نقطة من أجل {reason}! 🎉",
+        "student": "حصلت على نقطة من أجل {reason}! 🌟"
       }
     }
   },

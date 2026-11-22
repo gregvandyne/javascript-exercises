@@ -9701,7 +9701,8 @@
         "settings": "הסנכרון האוטומטי שונה",
         "topic": "שם הנושא שונה",
         "removeLeft": "הוסר תלמיד שעזב את Classroom‏",
-        "keepLeft": "נשאר תלמיד שעזב את Classroom‏"
+        "keepLeft": "נשאר תלמיד שעזב את Classroom‏",
+        "pointPost": "נקודה מלוח הכיתה"
       }
     },
     "errors": {
@@ -11081,7 +11082,7 @@
         },
         "reason": "סיבה",
         "award": "נקודה ל{name}",
-        "awardAll": "נקודה לכולם",
+        "awardAll": "כל הכיתה",
         "everyone": "כולם",
         "undo": "ביטול",
         "undone": "הנקודה האחרונה בוטלה.",
@@ -11101,7 +11102,41 @@
         "r_listening": "הקשבה",
         "r_responsible": "אחריות",
         "r_brave": "לנסות משהו חדש",
-        "r_creative": "רעיונות טובים"
+        "r_creative": "רעיונות טובים",
+        "classPoints": "נקודות של כל הכיתה: {n}",
+        "classGiven": "כל הכיתה קיבלה נקודה על {reason}",
+        "classPick": "נקודה לכל הכיתה",
+        "recent": "לאחרונה",
+        "recentClass": "נקודות הכיתה לאחרונה",
+        "recentNone": "עדיין אין נקודות.",
+        "gcPost": "לפרסם גם ב-Google Classroom",
+        "gcPostHint": "נקודה לכל הכיתה מתפרסמת בזרם הכיתה. נקודה של תלמיד רואה רק אותו תלמיד. אף פעם לא שמות או דירוגים.",
+        "gcAllow": "לאפשר פרסום ב-Google Classroom",
+        "gcPosted": "פורסם ב-Google Classroom.",
+        "gcPending": "מפרסמים ב-Google Classroom…",
+        "gcFailed": "לא הצלחנו לפרסם ב-Google Classroom כרגע. הנקודה נשמרה.",
+        "gcNotOnClassroom": "לא פורסם: התלמיד הזה לא מקושר ל-Google Classroom. הנקודה נשמרה.",
+        "gcTooMany": "הפרסומים ב-Google Classroom בהפסקה קצרה (10 בשעה). הנקודה נשמרה.",
+        "gcReconnect": "צריך לחבר שוב את Google Classroom כדי לפרסם. הנקודה נשמרה.",
+        "gcOn": "הנקודות יפורסמו גם ב-Google Classroom.",
+        "gcOff": "הנקודות נשארות רק ב-Oomba.",
+        "onlyYou": "רק את/ה והמורה רואים את הנקודות שלך.",
+        "r_leadership": "מנהיגות",
+        "r_focus": "ריכוז",
+        "r_example": "דוגמה אישית",
+        "r_participation": "השתתפות",
+        "f_leadership": "מנהיגות",
+        "f_teamwork": "עבודת צוות",
+        "f_focus": "ריכוז",
+        "f_kind": "חברות",
+        "f_example": "דוגמה אישית",
+        "f_effort": "מאמץ",
+        "f_participation": "השתתפות",
+        "f_helpful": "עזרה",
+        "f_listening": "הקשבה",
+        "f_responsible": "אחריות",
+        "f_brave": "ניסיון של משהו חדש",
+        "f_creative": "רעיונות טובים"
       },
       "fractions": {
         "name": "שברים",
@@ -12537,6 +12572,12 @@
         "red": "שקט, בבקשה",
         "yellow": "מדברים בלחש",
         "green": "מדברים בזוגות"
+      }
+    },
+    "points": {
+      "gc": {
+        "class": "הכיתה שלנו קיבלה נקודה על {reason}! 🎉",
+        "student": "קיבלת נקודה על {reason}! 🌟"
       }
     }
   },

@@ -135,6 +135,11 @@ lost). To rotate the key, set the new one and tell teachers to reconnect.
     posted when it has none). A grade Google didn't take is tried again by the automatic sync, 1 hour later, then 2, 4
     and so on (at most a day apart), even if the student does nothing more, until it goes or that window ends; grades
     that went are not sent again.
+  - **A dashboard point** (when the teacher turned on "Also post to Google Classroom" for the class): a fixed sentence
+    with the reason, in the teacher's language ("Our class earned a point for teamwork! 🎉" to the class stream, or "You
+    earned a point for teamwork! 🌟" to that one student only: `assigneeMode` `INDIVIDUAL_STUDENTS` with only their
+    Google id). No names, counts or rankings; it counts in the 10 announcements an hour; Undo deletes it. See
+    docs/decisions.md "Dashboard points: reasons, whole-class points, the student's view and Google Classroom".
   - **A topic:** its name ("Oomba Academy", or the teacher's own name for it), made once per linked class.
   - **An announcement:** the template's fixed words (a live game's join code and link, or a lesson's title and link)
     and the teacher's own words, plain text, at most 500 characters. Oomba never adds a name or a result, and refuses
