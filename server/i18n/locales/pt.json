@@ -12871,6 +12871,8 @@
       "leadManip": "Use materiais manipuláveis virtuais na lousa, salve quadros para compartilhar e faça sessões ao vivo com suas turmas.",
       "trial": "Experimente o plano Professor grátis por {days} dias. Não precisa de cartão para começar.",
       "kept": "Tudo o que você já atribuiu continua funcionando para seus alunos.",
+      "trialUsed": "O seu teste gratuito terminou. Assine o plano Professor para continuar a usar.",
+      "get": "Assinar o plano Professor",
       "start": "Começar meu teste grátis",
       "plans": "Ver os planos",
       "api": "Isto faz parte do plano Professor."

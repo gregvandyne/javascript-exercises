@@ -12870,6 +12870,8 @@
       "leadManip": "Nutze virtuelle Arbeitsmittel an der Tafel, speichere Tafeln zum Teilen und leite Live-Sitzungen mit deinen Klassen.",
       "trial": "Teste das Lehrkraft-Plan {days} Tage kostenlos. Zum Start ist keine Karte nötig.",
       "kept": "Alles, was du schon zugewiesen hast, funktioniert für deine Schülerinnen und Schüler weiter.",
+      "trialUsed": "Dein kostenloser Test ist abgelaufen. Hol dir den Lehrkraft-Plan, um es weiter zu nutzen.",
+      "get": "Lehrkraft-Plan holen",
       "start": "Kostenlosen Test starten",
       "plans": "Pläne ansehen",
       "api": "Das gehört zum Lehrkraft-Plan."

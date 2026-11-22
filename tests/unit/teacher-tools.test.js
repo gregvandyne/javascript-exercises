@@ -78,6 +78,15 @@ test('the plan page: /manipulatives and /figures for a teacher without the plan 
   // In Spanish.
   const es = await fetch(base + '/figures', { headers: { cookie: `${cookieFor(free.id)}; lang=es` } });
   assert.match(await es.text(), /Figuras es parte del plan Docente/);
+  // A teacher whose free trial is used: the plan itself, never another trial offer.
+  const STR = await import('../../server/services/stripe.js').catch(() => null);
+  const live = STR && STR.currentLivemode ? STR.currentLivemode() : 0;
+  q.run("INSERT INTO teacher_trials(id, owner_kind, owner_id, user_id, livemode, created_at) VALUES ('tt-used','user',?,?,?,?)", free.id, free.id, live ? 1 : 0, Date.now());
+  try {
+    const u = await as(free)('/figures');
+    assert.match(u.text, /Your free trial has ended/); assert.match(u.text, /href="\/trial"[^>]*>Get the Teacher plan/);
+    assert.doesNotMatch(u.text, /Start my free trial|free for 14 days/);
+  } finally { q.run("DELETE FROM teacher_trials WHERE id='tt-used'"); }
   // With the plan: the tools themselves.
   assert.doesNotMatch((await as(paid)('/manipulatives')).text, /part of the Teacher plan/);
   assert.equal((await as(paid)('/api/manipulatives/state')).status, 200);

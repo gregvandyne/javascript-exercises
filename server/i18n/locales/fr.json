@@ -12869,6 +12869,8 @@
       "leadManip": "Utilisez des manipulables virtuels au tableau, enregistrez des tableaux à partager et animez des séances en direct avec vos classes.",
       "trial": "Essayez la formule Enseignant gratuitement pendant {days} jours. Aucune carte n’est demandée pour commencer.",
       "kept": "Tout ce que vous avez déjà donné à vos élèves continue de fonctionner pour eux.",
+      "trialUsed": "Votre essai gratuit est terminé. Prenez la formule Enseignant pour continuer à l'utiliser.",
+      "get": "Prendre la formule Enseignant",
       "start": "Commencer mon essai gratuit",
       "plans": "Voir les formules",
       "api": "Cela fait partie de la formule Enseignant."

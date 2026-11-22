@@ -12869,6 +12869,8 @@
       "leadManip": "Use manipulativos virtuales en la pizarra, guarde tableros para compartir y haga sesiones en vivo con sus clases.",
       "trial": "Pruebe el plan Docente gratis durante {days} días. No hace falta tarjeta para empezar.",
       "kept": "Todo lo que ya asignó sigue funcionando para sus alumnos.",
+      "trialUsed": "Tu prueba gratuita ha terminado. Obtén el plan Docente para seguir usándolo.",
+      "get": "Obtener el plan Docente",
       "start": "Empezar mi prueba gratis",
       "plans": "Ver los planes",
       "api": "Esto es parte del plan Docente."

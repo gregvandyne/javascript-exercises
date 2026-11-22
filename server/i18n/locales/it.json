@@ -12870,6 +12870,8 @@
       "leadManip": "Usa materiali manipolativi virtuali alla lavagna, salva lavagne da condividere e conduci sessioni dal vivo con le tue classi.",
       "trial": "Prova il piano Insegnante gratis per {days} giorni. Non serve una carta per iniziare.",
       "kept": "Tutto ciò che hai già assegnato continua a funzionare per i tuoi studenti.",
+      "trialUsed": "La tua prova gratuita è terminata. Passa al piano Insegnante per continuare a usarlo.",
+      "get": "Passa al piano Insegnante",
       "start": "Inizia la prova gratuita",
       "plans": "Vedi i piani",
       "api": "Questo fa parte del piano Insegnante."

@@ -13588,6 +13588,8 @@
       "leadManip": "Use virtual manipulatives on the board, save boards to share, and run live sessions with your classes.",
       "trial": "Try the Teacher plan free for {days} days. No card needed to start.",
       "kept": "Anything you already assigned keeps working for your students.",
+      "trialUsed": "Your free trial has ended. Get the Teacher plan to keep using it.",
+      "get": "Get the Teacher plan",
       "start": "Start my free trial",
       "plans": "See the plans",
       "api": "This is part of the Teacher plan."
