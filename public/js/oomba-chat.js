@@ -61,6 +61,7 @@ export function mountChat(o) {
   if (o.bubbleHost) o.bubbleHost.appendChild(root.querySelector('#oc-bubble'));
   const $ = id => root.querySelector(`#${id}`) || document.getElementById(id);
   C.el = { panel: $('oc'), log: $('oc-log'), form: $('oc-form'), input: $('oc-in'), send: $('oc-send'), err: $('oc-err'), quote: $('oc-quote'), bubble: $('oc-bubble') };
+  if (o.alwaysBubble) C.el.bubble.hidden = false;
   const draftKey = `oc-draft:${o.id}`;
   C.el.input.value = store.get(draftKey) || '';
 

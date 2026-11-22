@@ -355,6 +355,9 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   // Staff (and the platform admin) who signed in with a short password are asked for a longer one on every page.
   const shortPw = !bare && u && u.password_short && longPasswordKind(u) ? html`<p class="notice warn pagenote">${tHtml(t, accountKind(u) === 'grownup' ? 'layout.shortPasswordGrownup' : 'layout.shortPassword', { min: STAFF_PASSWORD_MIN, href: grownup ? '/family/account#password' : '/me/settings#password' })}</p>` : '';
   const oc = u && !u.is_guest ? companionPage(req, { bare, companion, scripts }) : null;
+  // The companion's microphone (tap to speak) needs this page, and only this page, to allow it ('self', never '*'):
+  // only for Teacher plan staff on a page with the bubble; every other page keeps the site's microphone=().
+  if (oc && req.res && !req.res.headersSent) { const pp = String(req.res.get('Permissions-Policy') || ''); if (pp.includes('microphone=()')) req.res.set('Permissions-Policy', pp.replace('microphone=()', 'microphone=(self)')); }
   if (oc) { scripts = [...scripts, '/js/companion.js']; i18n = [...i18n, 'js.oomba-chat']; head = `${head}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}"><link rel="stylesheet" href="/css/companion.css?v=${VERSION}">`; }
   const prefixes = ['js.app', ...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
   // An explicit Light or Dark choice is on <html> before any CSS loads, so the first paint is right (no flash, no JS).

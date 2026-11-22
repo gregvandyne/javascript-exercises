@@ -12,7 +12,6 @@ body.oc-hide #oc-root,body.oc-hide .oc-bubble{display:none!important}
 .dash-foot .oc-bubble{position:static;width:48px;height:48px;flex:none;box-shadow:0 3px 10px rgba(20,20,20,.18);margin-inline-start:4px}
 .dash-foot .oc-bubble .oc-mark{width:48px;height:48px}
 body.dash-page .oc{top:0}
-@media (min-width:900px){body.dash-page.oc-on .dash{margin-inline-end:var(--oc-w)}}
 .dash-w.oc-hl{box-shadow:0 0 0 4px var(--spark),0 0 0 9px color-mix(in srgb,var(--spark) 40%,transparent);transition:box-shadow .3s}
 
 .oc-ctx{display:inline-flex;align-items:center;gap:6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
