@@ -1775,7 +1775,7 @@
       "activity": "Classroom activity · results go to Progress",
       "board": "Classroom activity · on the board",
       "arcade": "Arcade game · made for your class",
-      "toArcade": "Make it an arcade game instead",
+      "toArcade": "Make it an arcade game",
       "toArcadeAsk": "Make it an arcade game instead: a quiz, running or catching game that asks the same problems.",
       "toCanvas": "Make it a classroom activity",
       "toCanvasAsk": "Make it a classroom activity instead: a hands-on canvas with the same questions, steps and hints."
@@ -1993,7 +1993,8 @@
       "invitePlay": "Let's play!",
       "inviteNo": "Not now",
       "ok": "OK",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "fullExit": "Exit full screen"
     },
     "game": {
       "needSignIn": "Tap “Play as guest” or sign in first.",
@@ -2012,8 +2013,6 @@
     "play": {
       "saveFailed": "Could not save your progress.",
       "newBest": "New best: {score}!",
-      "noFullscreen": "Full screen is not available here.",
-      "tapFullscreen": "Tap the full screen button to go big.",
       "signInToLike": "Sign in or play as a guest to save favorites.",
       "signInToRate": "Sign in or play as a guest to rate games.",
       "liked": "Added to your favorites!",
@@ -2114,7 +2113,6 @@
       "fixButton": "Ask the Builder to fix it",
       "fixMessage": "Please fix the safety check problems in version {number}:",
       "buildFirst": "Build something first!",
-      "noFullscreen": "Full screen is not allowed here.",
       "roundOver": "Round over! Score: {score}",
       "noAnswer": "The Builder could not answer. Please try again.",
       "signInAgain": "Sign in again",
@@ -2174,8 +2172,8 @@
         "publishBtn": "Publish",
         "fix": "Live, but needs a fix: {issue}",
         "fixBtn": "Fix it",
-        "off": "Not a live game",
-        "make": "Make it live"
+        "make": "Make it a live game",
+        "game": "Live game"
       },
       "safety": {
         "chipPass": "Safe",
@@ -2608,7 +2606,7 @@
       "world2dUse": "Use the 2D world {name}.",
       "animal2dUse": "Make the hero this animal: {name}.",
       "sparks": "{n, plural, one {# Spark Pack message} other {# Spark Pack messages}}",
-      "activityEdit": "Edit activity",
+      "activityEdit": "Edit lesson",
       "asStudent": "As a student",
       "activitySaveFirst": "Save or undo your Activity panel changes first."
     },

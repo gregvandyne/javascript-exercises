@@ -3,6 +3,7 @@
 import { api, toast, sheet, pageData, refreshLive, tappedJustNow, $, t, esc } from '/js/app.js';
 import { openLobby, startRelay } from '/js/match.js';
 import { ttsBlob, ttsCheck, voiceMode, setVoiceMode, saveData } from '/js/tts.js';
+import { fullScreen } from '/js/fullscreen.js';
 const d = pageData();
 // The game frame waits in a <template> until its 'load' listener is on (below), so its first load is never missed.
 const frame = document.importNode($('#gameframe-tpl').content.firstElementChild, true), stage = $('#stage');
@@ -243,7 +244,7 @@ addEventListener('message', e => {
     // lesson launch has somewhere to go back to, and only on a real tap (the retry rule): a game must
     // never be able to yank the student out of a session on its own.
     case 'brb:back': if ((d.cstep || d.lesson) && d.backHref && tappedJustNow()) location.href = d.backHref; break;
-    case 'brb:fullscreen': m.on ? goFull() : (document.fullscreenElement && document.exitFullscreen().catch(() => {})); break;
+    case 'brb:fullscreen': m.on ? goFull() : fs.exit(); break;
     case 'brb:orientation': if (m.value.startsWith('landscape')) { $('#orient').classList.add('show'); orientDismissed = false; orientSync(); } break;
     // "Try again" on the 3D card: reload the page, which makes a fresh frame link and sends the sign-in cookie.
     case 'brb:retry': if (tappedJustNow()) location.reload(); break;
@@ -265,11 +266,10 @@ addEventListener('message', e => {
 addEventListener('pagehide', () => { if (pendingSave) { navigator.sendBeacon && fetch(`/api/games/${d.gameId}/save`, { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ data: pendingSave }) }); } });
 
 // ---- bar buttons ----
-function goFull() {
-  const el = stage; const req = el.requestFullscreen || el.webkitRequestFullscreen;
-  if (!req) return toast(t('js.play.noFullscreen'));
-  Promise.resolve(req.call(el)).then(() => { try { screen.orientation.lock && screen.orientation.lock(document.body.classList.contains('wants-landscape') ? 'landscape' : 'any').catch(() => {}); } catch { /* ignore */ } }).catch(() => toast(t('js.play.tapFullscreen')));
-}
+// Full screen: the Fullscreen API, or (iPhone Safari has none for a page, or a refused request) the stage filling the
+// window with its own "✕ Exit full screen" button (public/js/fullscreen.js).
+const fs = fullScreen(stage, { onEnter: () => { try { screen.orientation.lock && screen.orientation.lock(document.body.classList.contains('wants-landscape') ? 'landscape' : 'any').catch(() => {}); } catch { /* ignore */ } } });
+const goFull = () => fs.enter();
 $('#p-full').addEventListener('click', goFull);
 // The turn-your-device hint (a dialog over the stage): while it is actually on screen — the CSS shows it only
 // in portrait on a narrow screen — keyboard focus belongs on its OK button, not inside the game it covers

@@ -8915,6 +8915,24 @@ There is now one drag for games (public/js/folder-drop.js), the one a folder wit
 - Every Builder playtest checks the layout at 390x844 (a phone held upright, tap targets 40 px) and 1280x800 first, then phone landscape and tablet portrait, in the same page and browser (one resize each); a classroom activity is also played to its end card and that card checked at both sizes. Findings ("At 390px wide (phone portrait, 390x844): the buttons "Try new ones" and "Print worksheet" overlap") go back to the model like the other playtest problems (a fix round; the version is still saved). Rows that scroll sideways on purpose, content passing under a sticky bar and a page scrolled down are not findings; on an activity pinned to an older kit, the kit's own parts are left out (the model may not change the kit). — "Make sure the builder is optimizing for both mobile and desktop." About 1.5 s more per activity build, about 0.5 s per arcade build.
 - CANVAS_RULES gain one line (390 px phone and 1280 px desktop, no fixed widths for buttons); the arcade SYSTEM_PROMPT and TOOLS are unchanged (their hash is pinned), so arcade games get this only through the playtest's feedback.
 - The play page's title wraps to two lines on a phone instead of "Co…" beside the icon buttons.
+## The Studio on a phone: Edit lesson inline, one row of buttons, full screen on iPhone (19 Nov 2026)
+
+On a phone (below the Studio's two columns, 960 px) "🧮 Edit lesson" runs the width of the preview card and opens the
+Activity panel right under it as an accordion (aria-expanded, a turning chevron); the full-height sheet is gone. The
+panel's changes, Undo and Save work the same open or closed, Save and Undo stay in view at the bottom while it is open,
+and editing one problem still opens its own sheet. A desktop keeps the Builder | Activity switch.
+
+Under it, on a phone and a desktop alike, one row of two equal buttons replaces the two chip lines: "🎮 Make it an arcade
+game" (the same fixed message as before) and the live button. A live game (ready, waiting to be published, or needing a
+fix) reads "📡 Live game" in Spark, the Publish yellow, and does the one next thing (Host, Publish, Fix it; a kid is told a
+grown-up hosts it); anything else reads "📡 Make it a live game" in the plain white and does what "Make it live" did. "Not
+a live game" is gone; where the line stands ("Classroom activity · results go to Progress", "Publish it to host it live")
+is a small caption under the row. At 320 px the words shrink and may wrap between words, never inside one.
+
+Full screen (public/js/fullscreen.js, the Studio's preview and the play page's stage) keeps the Fullscreen API
+(`requestFullscreen`, `webkitRequestFullscreen`). Where there is none (iPhone Safari allows it on video only) or the
+request is refused, the element is fixed over the window (inset 0, 100dvh, above everything), the page is locked, and
+"✕ Exit full screen" sits in the top corner inside the safe area; Esc and that button leave it.
 ## Classroom setup in four steps (19 Nov 2026)
 
 A Classroom lesson in /build/new now has 4 steps: what you are making → your lesson → "How will students use it?" →

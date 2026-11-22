@@ -1992,7 +1992,8 @@
       "invitePlay": "來玩吧！",
       "inviteNo": "現在不要",
       "ok": "確定",
-      "cancel": "取消"
+      "cancel": "取消",
+      "fullExit": "離開全螢幕"
     },
     "game": {
       "needSignIn": "請點「用訪客身分玩」或先登入。",
@@ -2011,8 +2012,6 @@
     "play": {
       "saveFailed": "無法儲存你的進度。",
       "newBest": "新紀錄：{score}！",
-      "noFullscreen": "這裡不能使用全螢幕。",
-      "tapFullscreen": "點全螢幕按鈕，把畫面變大。",
       "signInToLike": "登入或用訪客身分玩，就能收藏最愛。",
       "signInToRate": "登入或用訪客身分玩，就能幫遊戲評分。",
       "liked": "已加入你的最愛！",
@@ -2101,7 +2100,6 @@
       "fixButton": "請小幫手修好",
       "fixMessage": "請修好版本 {number} 的安全檢查問題：",
       "buildFirst": "先做出一些東西吧！",
-      "noFullscreen": "這裡不允許全螢幕。",
       "roundOver": "這回合結束！分數：{score}",
       "noAnswer": "小幫手沒辦法回答。請再試一次。",
       "signInAgain": "重新登入",
@@ -2161,8 +2159,8 @@
         "publishBtn": "發布",
         "fix": "是直播遊戲，但需要修一下：{issue}",
         "fixBtn": "修好它",
-        "off": "不是直播遊戲",
-        "make": "變成直播遊戲"
+        "make": "變成直播遊戲",
+        "game": "直播遊戲"
       },
       "safety": {
         "chipPass": "安全",
@@ -2595,7 +2593,7 @@
       "world2dUse": "使用 2D 世界「{name}」。",
       "animal2dUse": "讓這隻動物當主角：{name}。",
       "sparks": "{n, plural, other {火花包 # 次}}",
-      "activityEdit": "編輯活動",
+      "activityEdit": "編輯課程",
       "asStudent": "以學生身分",
       "activitySaveFirst": "請先儲存或復原活動面板中的修改。"
     },

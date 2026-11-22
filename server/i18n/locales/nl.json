@@ -1775,7 +1775,7 @@
       "activity": "Klasactiviteit · resultaten gaan naar Voortgang",
       "board": "Klasactiviteit · op het bord",
       "arcade": "Arcadespel · gemaakt voor je klas",
-      "toArcade": "Maak er toch een arcadespel van",
+      "toArcade": "Maak er een arcadespel van",
       "toArcadeAsk": "Maak er toch een arcadespel van: een quiz-, ren- of vangspel met dezelfde opgaven.",
       "toCanvas": "Maak er een klasactiviteit van",
       "toCanvasAsk": "Maak er toch een klasactiviteit van: een werkvlak met dezelfde vragen, stappen en tips."
@@ -1993,7 +1993,8 @@
       "invitePlay": "We gaan spelen!",
       "inviteNo": "Nu niet",
       "ok": "OK",
-      "cancel": "Annuleren"
+      "cancel": "Annuleren",
+      "fullExit": "Groot scherm sluiten"
     },
     "game": {
       "needSignIn": "Tik eerst op “Speel als gast” of log in.",
@@ -2012,8 +2013,6 @@
     "play": {
       "saveFailed": "Je voortgang kon niet worden opgeslagen.",
       "newBest": "Nieuw record: {score}!",
-      "noFullscreen": "Volledig scherm werkt hier niet.",
-      "tapFullscreen": "Tik op de knop Groot scherm om het groot te maken.",
       "signInToLike": "Log in of speel als gast om favorieten te bewaren.",
       "signInToRate": "Log in of speel als gast om games te beoordelen.",
       "liked": "Toegevoegd aan je favorieten!",
@@ -2102,7 +2101,6 @@
       "fixButton": "Laat de Bouwer het repareren",
       "fixMessage": "Repareer alsjeblieft de problemen uit de veiligheidscheck in versie {number}:",
       "buildFirst": "Bouw eerst iets!",
-      "noFullscreen": "Volledig scherm mag hier niet.",
       "roundOver": "Ronde voorbij! Score: {score}",
       "noAnswer": "De Bouwer kon geen antwoord geven. Probeer het nog eens.",
       "signInAgain": "Opnieuw inloggen",
@@ -2162,8 +2160,8 @@
         "publishBtn": "Publiceren",
         "fix": "Live, maar er moet iets gerepareerd worden: {issue}",
         "fixBtn": "Repareren",
-        "off": "Geen live spel",
-        "make": "Maak het live"
+        "make": "Maak er een live spel van",
+        "game": "Live spel"
       },
       "safety": {
         "chipPass": "Veilig",
@@ -2596,7 +2594,7 @@
       "world2dUse": "Gebruik de 2D-wereld {name}.",
       "animal2dUse": "Maak dit dier de held: {name}.",
       "sparks": "{n, plural, one {# bericht uit Vonkpakketten} other {# berichten uit Vonkpakketten}}",
-      "activityEdit": "Activiteit bewerken",
+      "activityEdit": "Les bewerken",
       "asStudent": "Als leerling",
       "activitySaveFirst": "Sla eerst je wijzigingen in het activiteitenpaneel op of maak ze ongedaan."
     },
