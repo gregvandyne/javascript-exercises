@@ -194,6 +194,8 @@ document.title = CONFIG.title; $('title').textContent = CONFIG.title;
 for (const [id, k] of [['sound', 'sound'], ['full', 'full'], ['startH', 'startH'], ['startP', 'startP'], ['caller', 'caller'], ['player', 'player'], ['callerP', 'callerP'], ['playerP', 'playerP'], ['nextCall', 'next'], ['undo', 'undo'], ['showAns', 'showAns'], ['read', 'read'], ['newCard', 'newCard'], ['callKeys', 'callKeys']]) $(id).textContent = tr(k);
 $('called').setAttribute('aria-label', tr('calledList')); $('read').hidden = !(CONFIG.readAloud && B.speak);
 $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted)));
-window.__brbTest = { state: () => ({ screen: S.screen, called: S.at + 1, current: S.at >= 0 ? S.deck[S.at].call : null, marked: S.marked.filter(Boolean).length, bingo: S.bingo, size: N }), start() { startCalling(); nextCall(); } };
+window.__brbTest = { state: () => ({ screen: S.screen, called: S.at + 1, current: S.at >= 0 ? S.deck[S.at].call : null, marked: S.marked.filter(Boolean).length, bingo: S.bingo, size: N }), start() { startCalling(); nextCall(); },
+  // the platform's playthrough (services/playthrough.js): a card with its top row marked, the way a player gets bingo
+  win() { if (S.screen !== 'playing') newCard(); for (let i = 0; i < N; i++) S.marked[i] = true; paintCard(); check(); } };
 go('start');
 </script>

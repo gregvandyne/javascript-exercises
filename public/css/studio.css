@@ -268,6 +268,8 @@ button.stp-line{cursor:pointer}
 .st-safety{padding:8px 10px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:600;font-size:.95rem}
 .st-safety:empty{display:none}
 .st-safety ul{margin:0;padding-inline-start:20px;flex-basis:100%;font-weight:500}
+.st-safety .st-played{white-space:nowrap}
+.st-playblock{margin:0 0 4px;font-weight:600}
 /* Under the preview (public/js/studio.js renderActs): on a phone "🧮 Edit lesson" across the whole width, the Activity
    panel opening below it (.st-acc), then one row of two equal buttons (the activity switch, the live button), and a
    small line or two under it. The row never wraps: on a narrow phone the words get smaller and may break between

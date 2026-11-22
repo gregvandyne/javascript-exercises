@@ -1830,7 +1830,26 @@
     "liveFamily": "¡Publicado para su familia! Usted y los niños vinculados a su familia pueden jugarlo.",
     "liveConnections": "¡Compartido con sus contactos adultos! Solo usted y ellos pueden jugarlo.",
     "waitingTeam": "¡Tus amigos ya pueden jugarlo! Alguien del equipo Oomba revisa cada juego antes de que todo el mundo pueda jugarlo. Te enviaremos un mensaje cuando esté listo.",
-    "waitingTeamGrownup": "Tus contactos adultos ya pueden jugarlo. Alguien del equipo Oomba revisa cada juego antes de que todo el mundo pueda jugarlo, y te enviaremos un mensaje cuando esté listo."
+    "waitingTeamGrownup": "Tus contactos adultos ya pueden jugarlo. Alguien del equipo Oomba revisa cada juego antes de que todo el mundo pueda jugarlo, y te enviaremos un mensaje cuando esté listo.",
+    "play": {
+      "blocked": "El Constructor no pudo terminar tu juego: {why}. Pídele al Constructor que lo arregle y vuelve a publicarlo.",
+      "ask": "Al jugar mi juego hasta el final, {why}. Por favor, arréglalo para que se pueda jugar hasta el final.",
+      "busy": "El Constructor no pudo jugar tu juego completo ahora mismo. Inténtalo de nuevo en un minuto.",
+      "why": {
+        "error": "hubo un error ({error})",
+        "errorAt": "hubo un error en el nivel {level} ({error})",
+        "stuck": "se quedó atascado",
+        "stuckAt": "se quedó atascado en el nivel {level}",
+        "stuckProblem": "se quedó atascado en la pregunta {n}",
+        "noend": "no llegó al final en {secs} segundos de juego",
+        "noGameOver": "el juego nunca avisó de que había terminado",
+        "noScore": "el juego terminó sin puntuación",
+        "hint": "no apareció ninguna pista después de una respuesta incorrecta",
+        "answer": "no se pudo dar la respuesta correcta a la pregunta {n}",
+        "start": "el juego no empezó",
+        "failed": "el juego se congeló mientras se jugaba"
+      }
+    }
   },
   "builder": {
     "kindRefusal": "Con eso no te puedo ayudar. Mejor hagamos algo divertido. ¿Qué tipo de juego te gustaría?",
@@ -2595,7 +2614,16 @@
       "sparks": "{n, plural, one {# mensaje de Paquetes Chispa} other {# mensajes de Paquetes Chispa}}",
       "activityEdit": "Editar lección",
       "asStudent": "Como estudiante",
-      "activitySaveFirst": "Primero guarda o deshaz los cambios del panel de actividad."
+      "activitySaveFirst": "Primero guarda o deshaz los cambios del panel de actividad.",
+      "play": {
+        "pass": "Jugado hasta el final",
+        "endless": "Jugado sin problemas (no tiene final)",
+        "title": "Todavía no se puede publicar",
+        "fix": "Arreglar con el Constructor",
+        "anyway": "Publicar de todos modos",
+        "confirm": "¿Publicar sin haberlo jugado hasta el final? Los jugadores podrían quedarse atascados.",
+        "checking": "Primero jugamos tu juego hasta el final…"
+      }
     },
     "character": {
       "unsaved": "Sin guardar",

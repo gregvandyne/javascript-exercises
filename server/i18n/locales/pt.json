@@ -1831,7 +1831,26 @@
     "liveFamily": "No ar para sua família! Você e as crianças vinculadas à sua família podem jogar.",
     "liveConnections": "Compartilhado com seus contatos adultos! Só você e eles podem jogar.",
     "waitingTeam": "Seus amigos já podem jogar! Alguém da equipe Oomba confere cada jogo antes que todo mundo possa jogar. Vamos mandar uma mensagem quando terminar.",
-    "waitingTeamGrownup": "Seus contatos adultos já podem jogar. Alguém da equipe Oomba confere cada jogo antes que todo mundo possa jogar, e vamos mandar uma mensagem quando terminar."
+    "waitingTeamGrownup": "Seus contatos adultos já podem jogar. Alguém da equipe Oomba confere cada jogo antes que todo mundo possa jogar, e vamos mandar uma mensagem quando terminar.",
+    "play": {
+      "blocked": "O Construtor não conseguiu terminar seu jogo: {why}. Peça ao Construtor para consertar e depois publique de novo.",
+      "ask": "Quando você jogou meu jogo até o fim, {why}. Por favor, conserte para que dê para jogar até o final.",
+      "busy": "O Construtor não conseguiu jogar seu jogo até o fim agora. Tente de novo daqui a um minuto.",
+      "why": {
+        "error": "deu um erro ({error})",
+        "errorAt": "deu um erro no nível {level} ({error})",
+        "stuck": "o jogo travou",
+        "stuckAt": "o jogo travou no nível {level}",
+        "stuckProblem": "o jogo travou na pergunta {n}",
+        "noend": "o jogo não chegou ao fim em {secs} segundos de jogo",
+        "noGameOver": "o jogo nunca avisou que tinha acabado",
+        "noScore": "o jogo acabou sem pontuação",
+        "hint": "nenhuma dica apareceu depois de uma resposta errada",
+        "answer": "não deu para dar a resposta certa na pergunta {n}",
+        "start": "o jogo não começou",
+        "failed": "o jogo congelou no meio da partida"
+      }
+    }
   },
   "builder": {
     "kindRefusal": "Com esse eu não posso ajudar. Vamos criar algo divertido! Que tipo de jogo você quer?",
@@ -2596,7 +2615,16 @@
       "sparks": "{n, plural, one {# mensagem de Pacotes Faísca} other {# mensagens de Pacotes Faísca}}",
       "activityEdit": "Editar aula",
       "asStudent": "Como aluno",
-      "activitySaveFirst": "Primeiro salve ou desfaça as mudanças do painel da atividade."
+      "activitySaveFirst": "Primeiro salve ou desfaça as mudanças do painel da atividade.",
+      "play": {
+        "pass": "Jogado até o fim",
+        "endless": "Jogado sem problemas (não tem fim)",
+        "title": "Ainda não dá para publicar",
+        "fix": "Pedir conserto ao Construtor",
+        "anyway": "Publicar mesmo assim",
+        "confirm": "Publicar sem ter jogado até o fim? Os jogadores podem ficar travados.",
+        "checking": "Primeiro vamos jogar seu jogo até o fim…"
+      }
     },
     "character": {
       "unsaved": "Ainda não salvo",

@@ -53,3 +53,32 @@ test('two wrong Checks show the worked answer and count as not yet; no text fiel
   await page.click('.oc-primary');
   expect(await page.evaluate(() => window.__over)).toEqual([{ won: false, score: 0 }]);
 });
+
+// Oomba Canvas 1.4.1 on a phone (390 px), as the owner saw it: a fraction activity with a generator, a printable
+// worksheet and the teacher's controls. The top strip is one row of status chips and one row of actions (no button
+// alone on a line), and the end card's three buttons stack full width, primary first: nothing overlaps or is cut off.
+test('1.4.1 at 390 px: the toolbar rows and the end card never overlap or clip', async ({ page, baseURL }) => {
+  const { layoutProblems } = await import('../../server/services/layout-check.js');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/health');
+  const html = page$(baseURL, { config: { support: 'own', supports: ['count', 'guided', 'own'], count: 3, fresh: true, purpose: ['screen', 'worksheet', 'generator'] }, task: { title: 'Common Denominator Builder' },
+    problems: [], gen: { tool: 'fractions.equiv', dens: [2, 3, 4], mult: [2, 3] } })
+    .replace("theme:'light',", "theme:'light',canTeach:true,canPrint:true,back(){},print(){return {ok:true}},");
+  await page.setContent(html, { waitUntil: 'load' });
+  expect(await page.evaluate(() => Oc.version)).toBe('1.4.1');
+  const rows = () => page.evaluate(() => [...document.querySelectorAll('.oc-stat > :not([hidden]), .oc-acts > :not([hidden])')].map(e => { const r = e.getBoundingClientRect(); return [e.parentElement.className, Math.round(r.top + r.height / 2)]; }));
+  // each group is one row: its items share one middle line
+  for (const g of ['oc-stat', 'oc-acts']) expect(new Set((await rows()).filter(([c]) => c === g).map(([, t]) => t)).size).toBe(1);
+  expect(await page.evaluate(() => [...document.querySelectorAll('.oc-acts > button')].map(b => b.getAttribute('aria-label') || b.textContent.trim()))).toEqual(['New sheet', 'Print worksheet', 'Teacher', '⌨ Keypad']);
+  expect(await page.evaluate(() => [...document.querySelectorAll('.oc-strip button')].filter(b => b.getClientRects().length).every(b => b.getBoundingClientRect().height >= 44))).toBe(true);
+  expect(await page.evaluate(layoutProblems, { minTap: 40 })).toEqual([]);
+  // the end card
+  for (let i = 0; i < 12 && !(await page.locator('.oc-end').isVisible()); i++) await page.click('.oc-band .oc-primary');
+  const btns = page.locator('.oc-end .oc-btn');
+  await expect(btns).toHaveText(['🎲 Try new ones', '🖨 Print worksheet', '← Back']);
+  const boxes = await btns.evaluateAll(els => els.map(b => { const r = b.getBoundingClientRect(); return { x: Math.round(r.left), w: Math.round(r.width), top: r.top, bottom: r.bottom, fits: b.scrollWidth <= b.clientWidth }; }));
+  expect(new Set(boxes.map(b => `${b.x}/${b.w}`)).size).toBe(1);   // stacked, full width
+  for (let i = 1; i < boxes.length; i++) expect(boxes[i].top).toBeGreaterThanOrEqual(boxes[i - 1].bottom);
+  expect(boxes.every(b => b.fits)).toBe(true);
+  expect(await page.evaluate(layoutProblems, { minTap: 40 })).toEqual([]);
+});

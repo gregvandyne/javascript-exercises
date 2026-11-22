@@ -3,6 +3,9 @@
 // Rules:
 //  - current_version_id is what the Studio edits; published_version_id is what players get.
 //  - Every version must pass the static scan before it can go live at any level.
+//  - ...and the Builder's playthrough (services/playthrough.js): it was played all the way to its end. A version with no
+//    result yet is played now; a failure is refused with what happened and the words for "Ask the Builder to fix it".
+//    Only a platform admin may publish anyway (opts.override, after a confirm on the page), and that is audited.
 //  - Private / Friends: static scan is enough; goes live at once (a grown-up's friends are other grown-ups only).
 //  - Family / Class / School (a group of children who didn't opt in): a clean ('pass') or already-approved version goes
 //    live at once; a flagged one waits for a human, like public. 'family' is a grown-up builder's linked children;
@@ -27,6 +30,7 @@ import { getUser, isGrownup } from '../auth.js';
 import * as team from './team.js';
 import { REVIEW_REASONS } from './chat.js';
 import { alert as adminAlert } from './admin-alerts.js';
+import * as playthrough from './playthrough.js';
 
 const CLASS_ERRORS = { pickClass: 'studio.api.pickClass', classGone: 'studio.api.classGone', classRemoved: 'studio.api.classRemoved' };
 
@@ -71,9 +75,12 @@ export function approvalCovers(scope, visibility, classIds = []) {
  * Publish the game's current version at a sharing level.
  * classIds (visibility 'class' only): the classes to share with (an array of ids, checked against the owner's classes).
  * Left out, the game keeps its current list (Studio "Update", re-sending a waiting request).
- * Returns { ok, state: 'live'|'in_review'|'rejected'|'blocked', message, game }. message is in the language of opts.t.
+ * Returns { ok, state: 'live'|'in_review'|'rejected'|'blocked'|'unplayed', message, game }. message is in the language of
+ * opts.t. 'unplayed' (the playthrough did not reach the end) also has code ('playthrough', or 'playBusy' when no browser
+ * was free), ask (the chat message that asks the Builder to fix it) and canOverride (an admin).
+ * override: an admin publishes a version that was not played all the way through (never a teacher or a kid).
  */
-export async function publish(user, gameId, visibility, { versionId = null, t = tEn, classIds } = {}) {
+export async function publish(user, gameId, visibility, { versionId = null, t = tEn, classIds, override = false } = {}) {
   let game = getGame(gameId);
   if (!game) return { ok: false, state: 'blocked', message: t('game.api.notFound') };
   if (!VISIBILITIES.includes(visibility)) return { ok: false, state: 'blocked', message: t('studio.api.pickWho') };
@@ -93,6 +100,18 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
   version = ensureScanned(version);
   if (version.safety_status === 'fail') {
     return { ok: false, state: 'blocked', message: t('publish.failedScan'), report: JSON.parse(version.safety_report || '{}') };
+  }
+  // Played all the way through: this exact version reached the game's end (played now if it never was).
+  const admin = !!user && user.role === 'admin';
+  if (override && admin && playthrough.resultOf(version).status !== 'pass') {
+    audit(user.id, 'game.playthrough_override', game.id, { version: version.number, was: playthrough.resultOf(version).status || 'none' });
+  } else {
+    const played = await playthrough.ensure(version, game);
+    if (!played.ok) {
+      const w = playthrough.blockedWords(played, t);
+      return { ok: false, state: 'unplayed', code: played.code === 'busy' ? 'playBusy' : 'playthrough', message: w.message, ask: w.ask, canOverride: admin };
+    }
+    game = getGame(gameId) || game;   // the playthrough took a while: what the game looks like now
   }
   const wasLive = game.status === 'published' && !!game.published_version_id;
 
@@ -228,8 +247,8 @@ export function reject(admin, gameId, note = '', reason = '') {
 }
 /** Change who can see a live game without changing its version (and, for 'class', which classes). Moving to public
  *  re-reviews an unreviewed version. */
-export async function setVisibility(user, gameId, visibility, t = tEn, classIds) {
+export async function setVisibility(user, gameId, visibility, t = tEn, classIds, { override = false } = {}) {
   const game = getGame(gameId); if (!game) return { ok: false, message: t('game.api.notFound') };
-  if (!game.published_version_id || game.status !== 'published') return publish(user, gameId, visibility, { t, classIds });
-  return publish(user, gameId, visibility, { versionId: game.published_version_id, t, classIds });
+  if (!game.published_version_id || game.status !== 'published') return publish(user, gameId, visibility, { t, classIds, override });
+  return publish(user, gameId, visibility, { versionId: game.published_version_id, t, classIds, override });
 }

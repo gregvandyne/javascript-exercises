@@ -225,7 +225,7 @@ test('the mock Builder: a figure topic with a worksheet purpose builds a figure 
   assert.ok([200, 202].includes(sent.status), sent.text);
   await runner.idle(g.json.id);
   const game = games.getGame(g.json.id), v = games.getVersion(game.current_version_id);
-  assert.equal(canvasVersion(v.html), '1.4.0', 'new activities pin the newest kit'); assert.equal(scanVersion(v.html).status, 'pass', JSON.stringify(scanVersion(v.html).issues));
+  assert.equal(canvasVersion(v.html), '1.4.1', 'new activities pin the newest kit'); assert.equal(scanVersion(v.html).status, 'pass', JSON.stringify(scanVersion(v.html).issues));
   // the core's tag and exactly the packs its figures need (figTag picks them from the kinds), then the kit
   const kindsUsed = [...new Set(activityData(v.html).data.problems.map(p => p.fig.kind))], figTagUsed = figTag('oomba-figures', undefined, { kinds: kindsUsed });
   assert.ok(v.html.indexOf(figTagUsed) >= 0 && v.html.indexOf(figTagUsed) < v.html.indexOf(canvasTag()), 'Oomba Figures (and its packs) first, then the kit');

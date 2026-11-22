@@ -889,6 +889,13 @@ window.__brbTest = {
       drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles };
   },
   start() { testStart(); },
+  // the platform's playthrough (services/playthrough.js): finish the round the way a player does, by taking the last star
+  win() {
+    if (S.screen !== 'play') testStart();
+    const left = stars.filter(st => !st.taken), last = left.pop();
+    for (const st of left) { st.taken = true; st.mesh.visible = st.glow.visible = false; S.got++; }
+    if (last) { hero.pos.set(last.mesh.position.x, last.mesh.position.y - 0.62, last.mesh.position.z); hero.vy = 0; }
+  },
 };
 toTitle();
 if (window.__islandStartWanted) testStart();

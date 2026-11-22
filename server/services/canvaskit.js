@@ -32,8 +32,14 @@ export const CANVAS_VERSIONS = Object.freeze({
   // screen under a class code and open, print, share, copy, rename and delete them (routes/games.js, game-sets.js
   // cleanCanvasItems). 1.0.0 to 1.3.0 stay as they are.
   '1.4.0': 'sha384-Y4NDaUea8geoQMey83n3qeyjeGgNI0T+/kUIa0VOPEZkTuq4e0CYZGS1JrsOILgV',
+  // 1.4.1: 1.4.0 with the phone layout. The top strip in three groups (title; help mode, ✓, ✗, to go; New sheet, Print,
+  // Teacher, Keypad), each one row that scrolls sideways rather than leaving a button alone on a line; short labels on
+  // narrow phones; 44 px tap targets; the end card's buttons stacked full width on a narrow card, never overlapping or
+  // cut. Same data, same behaviour as 1.4.0 (worksheets included). Older activities move to it when saved from the
+  // Activity panel. (First made as 1.3.1 on 1.3.0; it never shipped, so it became 1.4.1 after 1.4.0.)
+  '1.4.1': 'sha384-wzvc0d09Zsgwhy5EGhbOKY8uqE54j+hFLKKY+yYsVUAd9M6oMG+qNCy1j1DXt5mT',
 });
-export const CANVAS_LATEST = '1.4.0';
+export const CANVAS_LATEST = '1.4.1';
 export const canvasSrc = (v = CANVAS_LATEST) => `${CANVAS_PATH}${v}/oomba-canvas.js`;
 const PUBLIC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
 

@@ -99,7 +99,7 @@ test('report: errors, a dead start button, a blank screen, a frozen game, ignore
   assert.ok(keys(over).includes('over')); assert.match(over.problems.join(' '), /ended 1 s after it started/);
 
   const lay = buildReport(good({ layout: [{ key: 'tablet-portrait', label: 'Tablet portrait', width: 820, height: 1180, problems: ['too small to tap (30x30px, needs 44): "Go"'] }] }), {});
-  assert.deepEqual(keys(lay), ['layout:Tablet portrait']); assert.match(lay.problems[0], /On tablet portrait \(820x1180\): too small to tap/);
+  assert.deepEqual(keys(lay), ['layout:Tablet portrait']); assert.match(lay.problems[0], /At 820px wide \(tablet portrait, 820x1180\): too small to tap/);
 
   assert.ok(keys(buildReport(good({ fps: 4 }), {})).includes('slow'));
   const failed = buildReport({ failed: 'Screenshot timed out' }, { version: 2 });

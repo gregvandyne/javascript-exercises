@@ -8910,6 +8910,17 @@ The disappearing games were not the drag and nothing was lost on the server. Eac
 
 There is now one drag for games (public/js/folder-drop.js), the one a folder with a single game always had: the row fades in place, a small round picture of the game follows the pointer, and a folder under it lights up. In a folder that can be put in order, the faded row also moves to where it will land while the pointer is over the list; over a folder or outside the list it goes back to its place, and Escape cancels. reorder.js keeps the folder chips' drag and Alt and the arrow keys, and saves one order at a time; a save that fails puts the list back in the order the server last saved, with no reload.
 
+## Phones and desktops: Oomba Canvas 1.3.1 and the Builder's layout check (19 Nov 2026)
+- Oomba Canvas 1.3.1 is the phone layout only (same data and behaviour as 1.3.0): the top strip is three groups (title; help mode, ✓, ✗, to go; New sheet, Print, Teacher, Keypad), each one row that scrolls sideways if it ever cannot fit, never a lone button on a line; short labels under 480 px; 44 px tap targets; the end card's buttons stack full width (primary first) on a card under 480 px and otherwise wrap whole, never overlapping or cut. — The owner saw "Try new or" / "Print workshe" overlapping and "Keypad" alone on a third line on an iPhone. 1.0.0 to 1.3.0 never change (saved activities pin their hash); a 1.3.x activity gets the fix when it is saved from the Studio's Activity panel.
+- Every Builder playtest checks the layout at 390x844 (a phone held upright, tap targets 40 px) and 1280x800 first, then phone landscape and tablet portrait, in the same page and browser (one resize each); a classroom activity is also played to its end card and that card checked at both sizes. Findings ("At 390px wide (phone portrait, 390x844): the buttons "Try new ones" and "Print worksheet" overlap") go back to the model like the other playtest problems (a fix round; the version is still saved). Rows that scroll sideways on purpose, content passing under a sticky bar and a page scrolled down are not findings; on an activity pinned to an older kit, the kit's own parts are left out (the model may not change the kit). — "Make sure the builder is optimizing for both mobile and desktop." About 1.5 s more per activity build, about 0.5 s per arcade build.
+- CANVAS_RULES gain one line (390 px phone and 1280 px desktop, no fixed widths for buttons); the arcade SYSTEM_PROMPT and TOOLS are unchanged (their hash is pinned), so arcade games get this only through the playtest's feedback.
+- The play page's title wraps to two lines on a phone instead of "Co…" beside the icon buttons.
+
+## Phones and desktops: Oomba Canvas 1.4.1 and the Builder's layout check (19 Nov 2026)
+- Oomba Canvas 1.4.1 is 1.4.0 (worksheets) with the phone layout only (same data and behaviour as 1.4.0). It was first made as 1.3.1 on 1.3.0, but 1.4.0 shipped before it did; a 1.3.1 after 1.4.0 would be out of order and would have no worksheets, so the layout was carried onto 1.4.0's sources and shipped as 1.4.1 instead, and 1.3.1 never shipped. 1.0.0 to 1.4.0 stay byte for byte; activities pinned to them keep their pin until they are saved from the Activity panel. 1.4.1: the top strip is three groups (title; help mode, ✓, ✗, to go; New sheet, Print, Teacher, Keypad), each one row that scrolls sideways if it ever cannot fit, never a lone button on a line; short labels under 480 px; 44 px tap targets; the end card's buttons stack full width (primary first) on a card under 480 px and otherwise wrap whole, never overlapping or cut. — The owner saw "Try new or" / "Print workshe" overlapping and "Keypad" alone on a third line on an iPhone. 1.0.0 to 1.3.0 never change (saved activities pin their hash); a 1.3.x activity gets the fix when it is saved from the Studio's Activity panel.
+- Every Builder playtest checks the layout at 390x844 (a phone held upright, tap targets 40 px) and 1280x800 first, then phone landscape and tablet portrait, in the same page and browser (one resize each); a classroom activity is also played to its end card and that card checked at both sizes. Findings ("At 390px wide (phone portrait, 390x844): the buttons "Try new ones" and "Print worksheet" overlap") go back to the model like the other playtest problems (a fix round; the version is still saved). Rows that scroll sideways on purpose, content passing under a sticky bar and a page scrolled down are not findings; on an activity pinned to an older kit, the kit's own parts are left out (the model may not change the kit). — "Make sure the builder is optimizing for both mobile and desktop." About 1.5 s more per activity build, about 0.5 s per arcade build.
+- CANVAS_RULES gain one line (390 px phone and 1280 px desktop, no fixed widths for buttons); the arcade SYSTEM_PROMPT and TOOLS are unchanged (their hash is pinned), so arcade games get this only through the playtest's feedback.
+- The play page's title wraps to two lines on a phone instead of "Co…" beside the icon buttons.
 ## The Studio on a phone: Edit lesson inline, one row of buttons, full screen on iPhone (19 Nov 2026)
 
 On a phone (below the Studio's two columns, 960 px) "🧮 Edit lesson" runs the width of the preview card and opens the
@@ -8958,6 +8969,37 @@ message is a box the teacher may edit, with Reset; their words go as plan.told a
 (builder/runner.js submit; classroom activities only), the plan still with them, their students' names taken out and
 screened like any typed message. Step 3 starts on "On their devices" again.
 
+## Played all the way through before it is published (19 Nov 2026)
+The owner: "Make sure the builder plays the game all the way through before officially releasing." Before this, the
+Builder's playtest (builder/autotest.js, snapshot.js autoplay) played about 18 s of random input plus the layout check
+(and, on Oomba Canvas 1.3.1, clicked "Check" twice per problem to reach the results card's layout); it never needed a
+game to reach its end, and publishing (services/publish.js) checked only the safety scan and, for groups and public,
+the review.
+
+- **The rule:** a version goes live (Publish, Update live game, a new audience, a review request, a class hand-in,
+  sharing with a school) only if the Builder's playthrough of that exact version reached the end: BRB.gameOver or the
+  results card, no uncaught error (including errors the kit catches in a game's setup/update and only warns about), no
+  stuck screen, and a score where the game sends one (BRB.score). The result is kept on the version (migration
+  0102: game_versions.playthrough_status / playthrough_report); a copy of the same code (Save version, Restore) shares it.
+- **How it plays** (services/playthrough-play.js, from outside, no kit changes): a Canvas activity is answered with
+  its own worked answers (the kit's Oc.logic solve() of the set dealt from the seed state() reports), tapped and typed
+  like a student, with one wrong answer and the Hint first, through the results card on a phone (390x844) and again on
+  a desktop (1280x800); a kit game (Oomba.game) is seeded, started and stepped level by level with a simple bot, and a
+  level the bot cannot finish in its share is cleared with the kit's own __brbTest.win(), so every level is loaded,
+  played and its results card passed; a game whose test hook has win() (the 3D starters, Star Island, Bingo now have
+  one) is played a while, then asked to win; anything else gets a bot (the game's own buttons, least-pressed first;
+  keys, taps, swipes) with its clocks 3x faster (not 3D), until BRB.gameOver. A page with no BRB.gameOver anywhere and
+  no kit (a spinner, a scoreboard) has no end by design: it is played 6 s and must not break ("Played with no
+  problems"). At most 60 s of play (a 72 s job).
+- **In a build:** after the playtest, when the build has 150 s left, the version is played through; a failure is a hard
+  finding in the fix-it report ("Played all the way through: it did not reach the end ... give window.__brbTest a
+  win() ..."), so the Builder repairs it like any playtest problem.
+- **At publish:** no result yet (older versions, or no time in the build) means it is played then; a stored failure is
+  played again. Refused: "The Builder couldn't finish your game: it got stuck on level 2. Ask the Builder to fix it,
+  then publish again." with "Ask the Builder to fix it" (that finding as a chat message). No browser free: "try again
+  in a minute". An admin may "Publish anyway" after a confirm (audited game.playthrough_override); teachers and kids
+  cannot. A server without a browser (BRB_SNAPSHOTS off: development, unit tests) does not check, and says nothing.
+- **Shown:** "✅ Played all the way through" after "Safety check passed for version N".
 ## Story Library: open-licensed picture books to read, hear and answer (19 Nov 2026)
 
 Owner: kids read illustrated open-licensed picture books one page at a time (big text, optional read-aloud), answer 3

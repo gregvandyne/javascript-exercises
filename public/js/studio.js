@@ -296,10 +296,47 @@ function renderSafety() {
   if (!c) { box.innerHTML = ''; return; }
   const list = c.issues.length ? `<ul dir="ltr" lang="en">${c.issues.map(i => `<li>${esc(i.message)}</li>`).join('')}</ul>` : '';
   const fixBtn = `<button class="btn btn-sm" type="button" data-act="fix">${ico('🛠️')} ${E('js.studio.fixButton')}</button>`;
-  if (c.safety === 'pass') box.innerHTML = `${ico('✅')} ${E('js.studio.safety.pass', { number: c.number })}`;
+  if (c.safety === 'pass') box.innerHTML = `${ico('✅')} ${E('js.studio.safety.pass', { number: c.number })}${playedLine(c)}`;
   else if (c.safety === 'flag') box.innerHTML = `${ico('⚠️')} ${E('js.studio.safety.flag', { number: c.number })} ${fixBtn}${list}`;
   else if (c.safety === 'fail') box.innerHTML = `${ico('⛔')} ${E('js.studio.safety.fail', { number: c.number })} ${fixBtn}${list}`;
   else box.innerHTML = E('js.studio.safety.checking', { number: c.number });
+}
+
+// ---------------------------------------------------------------- played all the way through (services/playthrough.js)
+// The Builder plays every version to its end; publishing needs that. One short line under the safety line when it passed,
+// and, when Publish or Update is refused because it did not, a sheet saying what happened with "Ask the Builder to fix it"
+// (that finding as a chat message) and, for an admin only, "Publish anyway" after a confirm.
+function playedLine(c) {
+  if (c.played !== 'pass' && c.played !== 'endless') return '';
+  return `<span class="st-played">${ico('✅')} ${E(c.played === 'endless' ? 'js.studio.play.endless' : 'js.studio.play.pass')}</span>`;
+}
+/** A 'playtest' event of the build: the playthrough's result for the version on show. */
+function playedNow(d) {
+  if (!d || !d.played || !S.current || d.version !== S.current.number) return;
+  S.current = { ...S.current, played: d.played }; renderSafety();
+}
+/** Before a publish: a version not played yet is played first, which takes a little while: the button says so until
+ *  the answer comes. -> put the button back. */
+function playChecking(btn) {
+  if (!btn || !S.current || S.current.played) return () => {};
+  const was = btn.innerHTML; btn.textContent = t('js.studio.play.checking');
+  return () => { btn.innerHTML = was; };
+}
+/** A refused publish (er.data.code 'playthrough' or 'playBusy'): the sheet. retry(true) sends it again with override (an
+ *  admin's "Publish anyway"). -> true when handled. */
+function playBlocked(er, retry) {
+  const d = er && er.data; if (!d || (d.code !== 'playthrough' && d.code !== 'playBusy')) return false;
+  const fix = d.ask ? `<button class="btn btn-primary" type="button" data-play="fix">${ico('🛠️')} ${E('js.studio.play.fix')}</button>` : '';
+  const any = d.canOverride ? `<button class="btn" type="button" data-play="anyway">${E('js.studio.play.anyway')}</button>` : '';
+  const s = sheet({ title: `🎮 ${t('js.studio.play.title')}`, content: `<p class="st-playblock">${esc(d.error || er.message)}</p><div class="sheet-actions">${any}${fix}</div>` });
+  s.el.addEventListener('click', async e => {
+    const b = e.target.closest('[data-play]'); if (!b) return;
+    if (b.dataset.play === 'fix') { s.close(); send(d.ask); return; }
+    if (!confirm(t('js.studio.play.confirm'))) return;
+    b.disabled = true;
+    try { const r = await retry(true); applyState(r.state); toast(r.message, { ms: 5000 }); s.close(); } catch (err) { b.disabled = false; toast(err.message, { bad: true, ms: 6000 }); }
+  });
+  return true;
 }
 
 // ---------------------------------------------------------------- preview
@@ -1216,7 +1253,7 @@ function onEvent(ev, d) {
   else if (ev === 'version') { endBubble(); versionCard(d, true); if (LIVE.replaying) LIVE.replayVersion = d; else { setPreview(d.preview, d.id); refreshLiveLine(); } }
   else if (ev === 'meta') { endBubble(); metaCard(d); S.game = { ...S.game, ...d }; renderTop(); }
   else if (ev === 'notes') { endBubble(); notesCard(d.checklist); }
-  else if (ev === 'playtest') endBubble();   // not drawn, but the saved reply starts a new part after it, as after any card
+  else if (ev === 'playtest') { endBubble(); playedNow(d); }   // not drawn, but the saved reply starts a new part after it, as after any card
   else if (ev === 'refused') { endBubble(); bubble('bot refused', `${d.message} ${d.suggestion}`); if (d.chips && d.chips.length) chips(d.chips, true); }
   else if (ev === 'error') { endBubble(); bubble('err', d.message); if (live) live.stop(); LIVE.lastErr = d.message; }
   else if (ev === 'done') {
@@ -1977,13 +2014,16 @@ function shareSheet(mode) {
       const now = new Set(classShare().live.map(c => c.id));
       if (live && live.visibility === 'class' && classIds.length === now.size && classIds.every(id => now.has(id))) { s.close(); return; }
     } else if (live && pick === live.visibility) { s.close(); return; }
-    go.disabled = true;
+    go.disabled = true; const back = playChecking(go);
+    const goes = override => api(`/api/studio/${ID}/${live ? 'visibility' : 'publish'}`, { method: 'POST', body: { visibility: pick, ...(classIds ? { classIds } : {}), ...(override ? { override } : {}) } });
     try {
-      const r = await api(`/api/studio/${ID}/${live ? 'visibility' : 'publish'}`, { method: 'POST', body: { visibility: pick, ...(classIds ? { classIds } : {}) } });
+      const r = await goes(); back();
       applyState(r.state); toast(r.message, { ms: 5000 }); s.close();
     } catch (er) {
+      back();
       if (er.signedOut) return failed(er);
       applyState(er.data && er.data.state); go.disabled = false;
+      if (playBlocked(er, goes)) { s.close(); return; }
       // A class can't be picked any more (left it, or a teacher took the game off it): show the list as it is now and
       // say why next to it.
       if (pick === 'class' && CLASS_CODES.includes(er.data && er.data.code) && many()) {
@@ -2004,9 +2044,10 @@ async function updateLive() {
   const s = sheet({ title: `⬆️ ${t('js.studio.update.title')}`, content: `<p>${t('js.studio.update.text', { live: `<b>${E('js.studio.update.version', { number: S.live.number })}</b>`, number: `<b>${E('js.studio.update.version', { number: S.current.number })}</b>` })}</p><p>${text}</p><div class="sheet-actions"><button class="btn" type="button" data-close>${E('js.studio.update.notYet')}</button><button class="btn btn-hot" type="button" id="upd-go">${ico('⬆️')} ${E('js.studio.update.button')}</button></div>` });
   s.el.querySelector('[data-close]').addEventListener('click', s.close);
   $('#upd-go', s.el).addEventListener('click', async e => {
-    e.target.disabled = true;
-    try { const r = await api(`/api/studio/${ID}/update`, { method: 'POST', body: {} }); applyState(r.state); toast(r.message, { ms: 5000 }); s.close(); }
-    catch (err) { if (err.signedOut) return failed(err); applyState(err.data && err.data.state); toast(err.message, { bad: true, ms: 6000 }); e.target.disabled = false; }
+    e.target.disabled = true; const back = playChecking(e.target);
+    const goes = override => api(`/api/studio/${ID}/update`, { method: 'POST', body: override ? { override } : {} });
+    try { const r = await goes(); back(); applyState(r.state); toast(r.message, { ms: 5000 }); s.close(); }
+    catch (err) { back(); if (err.signedOut) return failed(err); applyState(err.data && err.data.state); if (playBlocked(err, goes)) { s.close(); return; } toast(err.message, { bad: true, ms: 6000 }); e.target.disabled = false; }
   });
 }
 $('#st-share').addEventListener('click', () => shareSheet('share'));

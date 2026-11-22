@@ -1,7 +1,7 @@
 // The automatic playtest (docs/decisions.md "The Builder playtests every build"). After the AI finishes a build that
 // saved a new version, and before the build ends, the platform plays the game like a kid would (snapshot.js autoplay():
-// about 18 s of keys, taps, swipes, the game's own buttons and mouse movement, then the layout at phone landscape,
-// tablet portrait and desktop). buildReport() turns those raw facts into a short report: what happened, and the
+// about 18 s of keys, taps, swipes, the game's own buttons and mouse movement, then the layout at a phone held upright
+// (390x844) and desktop (1280x800), phone landscape and tablet portrait, and a classroom activity's end card). buildReport() turns those raw facts into a short report: what happened, and the
 // problems that are clearly real (errors, it never started, a blank or frozen screen, input ignored, a score that never
 // changes in a scoring game, a game over within seconds, layout problems, very slow). claude.js sends the report to the
 // AI as a platform note to fix, re-tests the fixed version, and stops when the test is clean or the rounds are used up
@@ -35,6 +35,27 @@ export const fixRounds = u => (trustedMaker(u) ? 3 : 1);
 export const FIX_NEEDS_MS = 4 * 60_000;
 /** ...and this much to run the playtest at all. */
 export const TEST_NEEDS_MS = 75_000;
+/** ...and this much more to also play it all the way through (services/playthrough.js: up to 60 s of play, plus loading). */
+export const PLAY_NEEDS_MS = 75_000;
+
+// ---- Played all the way through (services/playthrough.js) ------------------------------------------------------------
+// After the playtest, the platform plays the version to its end (an activity answered through its results card, a kit
+// game level by level, any other game until BRB.gameOver). Not reaching the end is a hard problem: publishing needs it.
+const PLAY_FIX = {
+  error: 'Find and fix the cause (the quote is from the game\'s console).',
+  stuck: 'Make sure every level and round can be finished and ends with BRB.gameOver({ won, score }) and a results screen. If a round is long or needs real skill, give window.__brbTest a win() that finishes the round the way a player would (for example: take what is left, then the game\'s own ending), so the platform can play it to the end.',
+  nogameover: 'Call BRB.gameOver({ won, score }) when a round ends (also on the results screen of the last level).',
+  noscore: 'Send the score at the end: BRB.gameOver({ won, score }).',
+  start: 'Make sure a round starts from __brbTest.start() and from the game\'s Play button.',
+  canvas: 'Fix the activity data (PROBLEMS or GEN, steps and hints; never the kit) so every problem can be answered on screen and the hint shows after a wrong answer.',
+};
+/** The playthrough's finding for the model, or '' when it passed (or could not run). */
+export function playthroughProblem(pt) {
+  if (!pt || pt.ok || pt.code === 'busy') return '';
+  const fix = pt.code === 'error' ? PLAY_FIX.error : pt.code === 'nogameover' ? PLAY_FIX.nogameover : pt.code === 'noscore' ? PLAY_FIX.noscore
+    : pt.code === 'start' ? PLAY_FIX.start : pt.kind === 'canvas' ? PLAY_FIX.canvas : pt.code === 'failed' ? 'The game may freeze or loop forever: check the start-up code and any while/for loops.' : PLAY_FIX.stuck;
+  return `Played all the way through: it did not reach the end. The platform played it to the end like a player${pt.kind === 'canvas' ? ' (every problem answered with its own worked answer, one wrong answer first)' : pt.kind === 'kit' ? ' (level by level)' : ''}, and ${cleanNote(pt.text, 260)}. ${fix} A version that cannot be played to the end cannot be published.`;
+}
 
 const q = (s, n = 140) => `"${cleanNote(String(s || ''), n).replace(/"/g, '\'')}"`;
 const num = x => (typeof x === 'number' && Number.isFinite(x) ? x : null);
@@ -126,7 +147,9 @@ export function buildReport(raw, o = {}) {
   // the test machine has no graphics card, so only a game that barely moves there is called slow.
   const slowAt = /\bfrom\s*["']oomba3d["']/.test(html) ? 3 : 8;
   if (fps !== null && fps > 0 && fps < slowAt) add('slow', `It ran at about ${fps} frames a second on the test machine: far too slow. Draw less each frame (fewer objects, smaller canvases, no work that grows every frame).`);
-  for (const v of layout) if (v.problems.length) add(`layout:${v.label}`, `On ${v.label.toLowerCase()} (${v.width}x${v.height}): ${v.problems.join('; ')}.`);
+  // e.g. "At 390px wide (phone portrait, 390x844): the buttons "Try new ones" and "Print worksheet" overlap." Layout
+  // findings are hard ones, like before: they start a fix round, and the version is still saved.
+  for (const v of layout) if (v.problems.length) add(`layout:${v.label}`, `At ${v.width}px wide (${v.label.toLowerCase()}, ${v.width}x${v.height}): ${v.problems.join('; ')}.`);
   for (const w of (raw.kitWarnings || []).slice(0, 3)) add(`kit:${cleanNote(w, 40)}`, `Oomba Kit warning: ${q(w)}.`);
   // A classroom activity: the kit's self-test of its answer key (a hard problem: the same check refuses to save it).
   const canvas = canvasSelfTest(html);
@@ -140,14 +163,18 @@ export function buildReport(raw, o = {}) {
     else if (lacks.length) add('figures', `The game draws ${lacks.flatMap(m => m.kinds).join(', ')} but does not load the Oomba Figures pack${lacks.length > 1 ? 's' : ''} they are in: add ${lacks.map(m => m.tag).join(' and ')} right after the Oomba Figures tag.`);
     else if (figureLibs(html)['oomba-figures'] && !blank && !readings.some(r => (r.svgs || 0) > 0) && !(raw.s0 && raw.s0.svgs > 0)) add('figures', 'The game loads Oomba Figures but no figure (an <svg>) was on screen while it was played: check that OF.draw(...) is called and its result is added to the page, and that OF.check(kind, data) is [] for the data.');
   }
+  const pt = o.playthrough || null, ptText = playthroughProblem(pt);
+  if (ptText) add('playthrough', ptText);
   const problems = issues.map(i => i.text);
 
   const seen = [
     `Started: ${started ? 'yes' : 'no'} (${facts.startedHow}). Input made a difference: ${input}. Score changed: ${scoreChanged ? 'yes' : 'no'}${numbersChanged ? '; numbers on screen changed' : ''}.`,
     scenes.length ? `Scenes seen: ${scenes.join(' → ')}.` : '',
     facts.gameOver ? `Game over: ${firstOver !== null ? `after ${Math.round(firstOver / 1000)} s` : 'reached'}.` : 'Game over: not reached in the playtest.',
+    pt && pt.code !== 'busy' ? `Played all the way through: ${pt.ok ? `yes, ${cleanNote(pt.text, 120)}` : 'no'}.` : '',
     `Screen movement (share of the screen that changed between pictures): with no input ${pct(idle)}, while playing ${pct(avgPlay)} on average, ${pct(maxPlay)} at most.${fps ? ` About ${fps} frames a second on a slow test machine.` : ''}`,
   ].filter(Boolean);
+  if (pt) facts.playthrough = pt.ok ? 'pass' : pt.code;
   return { facts, issues, problems, forModel: text(o.version, problems, seen), clean: problems.length === 0 };
 }
 
@@ -156,7 +183,7 @@ const pct = x => `${Math.round(x * 100)}%`;
 
 function text(version, problems, seen) {
   const out = [
-    `[Automatic playtest from the platform, of version ${version || '?'}: it played the game for about 18 s like a kid would (arrow keys, WASD, space, Enter, taps across the screen, swipes, the game's own answer/move buttons, mouse movement), then checked the layout on phone landscape, tablet portrait and desktop.]`,
+    `[Automatic playtest from the platform, of version ${version || '?'}: it played the game for about 18 s like a kid would (arrow keys, WASD, space, Enter, taps across the screen, swipes, the game's own answer/move buttons, mouse movement), then checked the layout on a phone held upright (390 px wide), a desktop (1280 px), phone landscape and tablet portrait.]`,
     ...seen,
     problems.length ? `Problems found:\n- ${problems.join('\n- ')}` : 'No problems found.',
     problems.length ? 'Fix the real problems now with edit_game (or write_game for big ones), keeping everything that works. Judge each one against what this game is meant to be: some can be false alarms (a calm game with no score, a quiz or story waiting for an answer, a game played only by dragging). Skip those, and do not mention them. The platform plays the fixed version again by itself, so do not call playtest_game for this. Any question you already asked stays on screen: do not ask again. End with one short, honest sentence to the builder about what you fixed.' : '',

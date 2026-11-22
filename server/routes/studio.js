@@ -10,6 +10,7 @@ import { page, notFound } from '../views/layout.js';
 import { visLabel, categoryLabel } from '../views/components.js';
 import * as games from '../services/games.js';
 import { publish, setVisibility } from '../services/publish.js';
+import { resultOf as playthroughResult } from '../services/playthrough.js';
 import { cleanText } from '../services/textfilter.js';
 import { REVIEW_REASONS } from '../services/chat.js';
 import { requireBuilder, getUser, isGrownup } from '../auth.js';
@@ -140,6 +141,7 @@ function themePicker(t, current, k2, hasGame) {
     ])}
   </div>`;
 }
+const playedOf = v => { const r = playthroughResult(v); return r.status === 'pass' ? (r.report && r.report.endless ? 'endless' : 'pass') : r.status; };
 /** Everything the Studio client needs, as JSON. t: the reader's language (labels, share texts, preview language).
  *  req: the request, for what depends on the visitor (grownUpLink). */
 export function studioState(user, gameId, t = tEn, req = null) {
@@ -157,7 +159,9 @@ export function studioState(user, gameId, t = tEn, req = null) {
     theme: themeOf(cur && cur.html),
     // The game's Kit 2 world and hero (builder/kit2.js), or null for a game on the old kit or no game yet.
     kit2: cur ? kit2Of(cur.html) : null,
-    current: cur ? { id: cur.id, number: cur.number, safety: cur.safety_status, issues: (report.issues || []).map(i => ({ level: i.level, code: i.code, message: i.message })) } : null,
+    // played: the Builder's playthrough of this version (services/playthrough.js): 'pass', 'endless' (a page with no end,
+    // played with no errors), 'fail' or '' (not played yet: publishing plays it)
+    current: cur ? { id: cur.id, number: cur.number, safety: cur.safety_status, played: playedOf(cur), issues: (report.issues || []).map(i => ({ level: i.level, code: i.code, message: i.message })) } : null,
     live: g.status === 'published' && g.published_version_id ? { number: num(g.published_version_id), visibility: g.visibility, id: g.published_version_id } : null,
     pending: g.pending_version_id ? { number: num(g.pending_version_id), id: g.pending_version_id, visibility: g.pending_visibility || 'public' } : null,
     preview: cur ? previewUrl(cur, g, user.id, t.locale) : null,
@@ -483,12 +487,14 @@ function shareRequest(req) {
   if (!Array.isArray(body.classIds)) return { error: req.t('studio.api.pickClass') };
   return { vis, classIds: body.classIds };
 }
+// "Publish anyway" after the playthrough did not reach the end: an admin only (services/publish.js checks the role too).
+const overrideOf = req => !!(req.body && req.body.override === true && req.user.role === 'admin');
 const shareReply = (req, res, g, r) => res.status(r.ok ? 200 : 400).json({ ...r, game: undefined, error: r.ok ? undefined : r.message, state: studioState(req.user, g.id, req.t, req) });
 // Publish the version being edited. Body: { visibility, classIds? } (classIds: the chosen classes, for 'class').
 router.post('/api/studio/:id/publish', requireBuilder, rateLimit('studio-publish', 20, 60e3), async (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   const sr = shareRequest(req); if (sr.error) return res.status(400).json({ error: sr.error });
-  shareReply(req, res, g, await publish(req.user, g.id, sr.vis, { t: req.t, classIds: sr.classIds }));
+  shareReply(req, res, g, await publish(req.user, g.id, sr.vis, { t: req.t, classIds: sr.classIds, override: overrideOf(req) }));
 });
 // Update an already-live game to the version being edited, at its current sharing level (a 'class' game keeps its classes).
 router.post('/api/studio/:id/update', requireBuilder, rateLimit('studio-publish', 20, 60e3), async (req, res) => {
@@ -499,9 +505,9 @@ router.post('/api/studio/:id/update', requireBuilder, rateLimit('studio-publish'
   // its current level: update the live game now AND send the new version for that check, so the builder's request is
   // not lost (and is never turned into a request for some other audience).
   const want = g.pending_version_id && (g.pending_visibility || 'public') !== g.visibility ? (g.pending_visibility || 'public') : null;
-  let r = await publish(req.user, g.id, g.visibility, { t });
+  let r = await publish(req.user, g.id, g.visibility, { t, override: overrideOf(req) });
   if (r.ok && want) {
-    const p = await publish(req.user, g.id, want, { t });
+    const p = await publish(req.user, g.id, want, { t, override: overrideOf(req) });
     // A grown-up's family or connections game: "more people" (their family or connections already have the update).
     const wide = want !== 'public' || g.visibility === 'family' || (g.visibility === 'friends' && isGrownup(getUser(g.owner_id)));
     r = { ...p, ok: true, message: p.state === 'live' ? p.message : t(wide ? 'studio.api.updatedNowWaiting' : g.visibility === 'friends' ? 'studio.api.updatedFriends' : 'studio.api.updatedYou') };
@@ -512,7 +518,7 @@ router.post('/api/studio/:id/update', requireBuilder, rateLimit('studio-publish'
 router.post('/api/studio/:id/visibility', requireBuilder, rateLimit('studio-publish', 20, 60e3), async (req, res) => {
   const g = loadEditable(req, res); if (!g) return;
   const sr = shareRequest(req); if (sr.error) return res.status(400).json({ error: sr.error });
-  shareReply(req, res, g, await setVisibility(req.user, g.id, sr.vis, req.t, sr.classIds));
+  shareReply(req, res, g, await setVisibility(req.user, g.id, sr.vis, req.t, sr.classIds, { override: overrideOf(req) }));
 });
 
 // ---- Speech to text (services/stt.js). Raw body: one recorded clip (WebM, MP4/AAC or Ogg), at most

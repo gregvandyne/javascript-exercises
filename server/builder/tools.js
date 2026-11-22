@@ -18,6 +18,7 @@ import { templateHtml, templateInfo, BUILDER_TEMPLATE_KEYS, CLASSROOM_TEMPLATE_K
 import { NO_STEPS, cleanNote } from './steps.js';
 import { stripLinks } from './search.js';
 import * as autotest from './autotest.js';
+import * as playthrough from '../services/playthrough.js';
 import { WORLD_IDS, worldById, heroesOf, creaturesOf, creatureFor, heroFor, DEFAULT_WORLD } from './kit2.js';
 import { ART2D_TEMPLATES, ART2D_WORLD_IDS, ART2D_CHARACTER_IDS, art2dWorld, art2dCharacter, art2dFriends, art2dMissing } from './art2d.js';
 import { planArt2d, playFor, isActivity, canvasActivity } from './plan.js';
@@ -298,8 +299,10 @@ export function toolbox(ctx) {
 
   /** The automatic playtest of the current version (autotest.js), run by the platform, never by the model: a row of its
    *  own ('autotest', with the problems it found), and the report. -> { ran: false } when it can't run here (screenshots
-   *  off, the worker down, the build stopped), else { ran: true, version, ...buildReport() }. */
-  async function autoPlaytest() {
+   *  off, the worker down, the build stopped), else { ran: true, version, ...buildReport() }.
+   *  opts.playthrough (default on): then also play it all the way through (services/playthrough.js), keep that result on
+   *  the version (publishing needs a pass) and add a failure to the report. */
+  async function autoPlaytest(opts = {}) {
     const cur = current(), g = game();
     if (!cur || !g || stopped()) return { ran: false };
     if (!autotest.hooks.raw && !snapshot.enabled()) return { ran: false };
@@ -314,9 +317,15 @@ export function toolbox(ctx) {
       raw = { failed: String((e && e.message) || e).split('\n')[0] };
     }
     if (stopped()) return { ran: false };
-    const rep = autotest.buildReport(raw, { html: cur.html, version: cur.number });
+    let pt = null;
+    if (opts.playthrough !== false && !raw.failed && playthrough.available()) {
+      pt = await playthrough.play(cur.html, { orientation: g.orientation, lang: ctx.locale || 'en', dir: localeInfo(ctx.locale || 'en').dir, title: g.title });
+      if (stopped()) return { ran: false };
+      playthrough.record(cur.id, pt);
+    }
+    const rep = autotest.buildReport(raw, { html: cur.html, version: cur.number, playthrough: pt });
     steps.info({ probs: rep.problems.length }, row);
-    ctx.emit('playtest', { version: cur.number, problems: rep.problems.length, auto: true });
+    ctx.emit('playtest', { version: cur.number, problems: rep.problems.length, auto: true, ...(pt && pt.code !== 'busy' ? { played: pt.ok ? (pt.endless ? 'endless' : 'pass') : 'fail' } : {}) });
     return { ran: true, version: cur.number, ...rep };
   }
 

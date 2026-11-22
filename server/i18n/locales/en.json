@@ -1831,7 +1831,26 @@
     "liveFamily": "Live for your family! You and the kids linked to your family can play it.",
     "liveConnections": "Shared with your grown-up connections! Only they and you can play it.",
     "waitingTeam": "Your friends can play it now! Someone from the Oomba team checks every game before everyone can play it. We'll send you a message when it's done.",
-    "waitingTeamGrownup": "Your grown-up connections can play it now. Someone from the Oomba team checks every game before everyone can play it, and we'll send you a message when it's done."
+    "waitingTeamGrownup": "Your grown-up connections can play it now. Someone from the Oomba team checks every game before everyone can play it, and we'll send you a message when it's done.",
+    "play": {
+      "blocked": "The Builder couldn’t finish your game: {why}. Ask the Builder to fix it, then publish again.",
+      "ask": "When you played my game all the way through, {why}. Please fix it so it can be played to the end.",
+      "busy": "The Builder couldn’t play your game all the way through just now. Try again in a minute.",
+      "why": {
+        "error": "it hit an error ({error})",
+        "errorAt": "it hit an error on level {level} ({error})",
+        "stuck": "it got stuck",
+        "stuckAt": "it got stuck on level {level}",
+        "stuckProblem": "it got stuck on question {n}",
+        "noend": "it didn’t reach the end in {secs} seconds of play",
+        "noGameOver": "the game never said it was over",
+        "noScore": "the game ended without a score",
+        "hint": "no hint showed after a wrong answer",
+        "answer": "it couldn’t give the right answer to question {n}",
+        "start": "the game didn’t start",
+        "failed": "the game froze while it was being played"
+      }
+    }
   },
   "builder": {
     "kindRefusal": "I can’t help with that one. Let’s build something fun instead. What kind of game would you like?",
@@ -2608,7 +2627,16 @@
       "sparks": "{n, plural, one {# Spark Pack message} other {# Spark Pack messages}}",
       "activityEdit": "Edit lesson",
       "asStudent": "As a student",
-      "activitySaveFirst": "Save or undo your Activity panel changes first."
+      "activitySaveFirst": "Save or undo your Activity panel changes first.",
+      "play": {
+        "pass": "Played all the way through",
+        "endless": "Played with no problems (it has no end)",
+        "title": "Not ready to publish yet",
+        "fix": "Ask the Builder to fix it",
+        "anyway": "Publish anyway",
+        "confirm": "Publish without a full playthrough? Players may get stuck.",
+        "checking": "Playing your game all the way through first…"
+      }
     },
     "character": {
       "unsaved": "Not saved yet",
