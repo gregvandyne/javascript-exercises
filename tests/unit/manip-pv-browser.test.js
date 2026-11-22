@@ -92,7 +92,9 @@ async function columns(page, scope = '#mp-content') {
     const bad = [];
     for (const el of document.querySelectorAll(`${sc} .mp-piece`)) {
       const b = el.getBoundingClientRect(), cx = b.x + b.width / 2, cy = b.y + b.height / 2;
-      const c = cols.find(k => cx >= k.r.left && cx <= k.r.right && cy >= k.r.top && cy <= k.r.bottom); if (!c) continue;
+      const c = cols.find(k => cx >= k.r.left && cx <= k.r.right && cy >= k.r.top && cy <= k.r.bottom);
+      // A block in no column must not reach into one either (straddling a column's border).
+      if (!c) { for (const k of cols) if (b.left < k.r.right - 0.5 && k.r.left < b.right - 0.5 && b.top < k.r.bottom - 0.5 && k.r.top < b.bottom - 0.5) bad.push(`${el.textContent} across the border of ${k.name}`); continue; }
       if (b.left < c.r.left - 0.5 || b.right > c.r.right + 0.5 || b.top < c.r.top - 0.5 || b.bottom > c.r.bottom + 0.5) bad.push(`${el.textContent} outside ${c.name}`);
       for (const o of c.boxes) if (b.left < o.right - 0.5 && o.left < b.right - 0.5 && b.top < o.bottom - 0.5 && o.top < b.bottom - 0.5) bad.push(`${el.textContent} on another in ${c.name}`);
       c.labels.push(el.textContent.trim()); c.boxes.push(b);
@@ -185,4 +187,41 @@ test('the live room: a student\'s trade in their square is saved for everyone, i
   assert.deepEqual(errors, []);
   await ctx.close();
   M.end(boss, s.id);
+});
+
+test('iPhone 13 (touch), default zoom: one rod dragged into Tens, then nine taps of Rod: all ten inside Tens; a Unit tap is not forced there', async t => {
+  if (skip) return t.skip(skip);
+  const { ctx, page, errors, cdp } = await open(boss, '#base-ten-blocks', PHONE());
+  await page.waitForSelector('#mp-content .mp-obj .mp-pvchart'); await page.waitForTimeout(400);
+  const btn = label => page.locator('#mp-palette [data-pal]', { hasText: label }).first();
+  const tapBtn = async label => {
+    const b = btn(label); await b.scrollIntoViewIfNeeded(); const r = await b.boundingBox();
+    await touch(cdp, 'touchStart', [[r.x + r.width / 2, r.y + r.height / 2]]); await page.waitForTimeout(60); await touch(cdp, 'touchEnd', []); await page.waitForTimeout(300);
+  };
+  // The first rod: held on the palette, dragged into Tens.
+  const rod = btn('Rod'); await rod.scrollIntoViewIfNeeded();
+  const rb = await rod.boundingBox(), [x1, y1] = await colCenter(page, 2), x0 = rb.x + rb.width / 2, y0 = rb.y + rb.height / 2;
+  await touch(cdp, 'touchStart', [[x0, y0]]); await page.waitForTimeout(450);
+  for (let i = 1; i <= 14; i++) { await touch(cdp, 'touchMove', [[x0 + ((x1 - x0) * i) / 14, y0 + ((y1 - y0) * i) / 14]]); await page.waitForTimeout(20); }
+  await touch(cdp, 'touchEnd', []); await page.waitForTimeout(300);
+  let c = await columns(page); assert.deepEqual(c.Tens.labels, ['10'], 'the dragged rod is in Tens');
+  for (let n = 2; n <= 10; n++) {
+    await tapBtn('Rod');
+    c = await columns(page);
+    assert.deepEqual(c.Tens.labels, Array(n).fill('10'), `${n} rods in Tens`); assert.deepEqual(c.Ones.labels, [], 'nothing in Ones');
+    if ([4, 5, 10].includes(n)) { await toBoard(page); await shot(page, `pv-tap-${n}-rods`); }
+  }
+  assert.equal(await page.locator('#mp-content .mp-piece').count(), 10, 'every rod is in the chart');
+  assert.match(await chartTotal(page), /Total 100/);
+  // A unit: another value, so the usual place (never into Tens).
+  await tapBtn('Unit');
+  c = await columns(page);
+  assert.deepEqual(c.Tens.labels, Array(10).fill('10'), 'the unit did not go into Tens');
+  assert.equal(await page.locator('#mp-content .mp-piece').count(), 11);
+  // One Undo takes back that one add.
+  await page.locator('[data-tool="undo"]').click(); await page.waitForTimeout(150);
+  assert.equal(await page.locator('#mp-content .mp-piece').count(), 10);
+  assert.match(await chartTotal(page), /Total 100/);
+  assert.deepEqual(errors, []);
+  await ctx.close();
 });

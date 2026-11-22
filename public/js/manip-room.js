@@ -13,7 +13,7 @@ import { iconHtml } from '/js/icons.js';
 import { toolOf, roomLayout, layoutOf, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H } from '/js/manip-data.js';
 import { WORLD, migrate, fitInto, newBoard, objectTool, kindOf, objSize, objRect, boxesOf, bbox, spotIn, slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, OBJ_MAX, OBJ_MAX_SQUARE, S_MIN, S_MAX,
   snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, freeResize } from '/js/manip-board.js';
-import { inChart } from '/js/manip-pv.js';
+import { inChart, sameValueHome, placeAtHome } from '/js/manip-pv.js';
 import { openWheel, closeWheel, startHold, shake, SLOP } from '/js/manip-wheel.js';
 
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
@@ -460,7 +460,11 @@ function palette(A) {
 }
 /** A new piece in the first free spot of the area: never on a piece, an object or a note already there. */
 function place(A, d) {
-  const ws = workSize(A), at = nextPieceSpot(R.room.tool, A.st, d, { x: 0, y: 0, w: ws.w, h: ws.h }, A.lastAdd);
+  const ws = workSize(A);
+  // The block before it went into a chart's column and this one is worth the same: into that column too.
+  const home = sameValueHome(R.room.tool, A.st, A.lastAdd, d);
+  if (home) { const q = R.deps.mkPiece(d, 0, 0); placeAtHome(home, [q], ws); A.lastAdd = { id: q.id, runX: q.x }; return q; }
+  const at = nextPieceSpot(R.room.tool, A.st, d, { x: 0, y: 0, w: ws.w, h: ws.h }, A.lastAdd);
   const p = R.deps.mkPiece(d, Math.min(at.x, Math.max(0, ws.w - d.w)), Math.min(at.y, Math.max(0, ws.h - d.h)));
   A.lastAdd = { id: p.id, runX: at.runX };
   return p;
@@ -715,6 +719,7 @@ function up(e) {
           R.snapped = new Set(g.members.map(q => q.m.id));
         }
       }
+      A.lastAdd = { id: g.p.id, runX: g.p.x };   // the last block placed in this square
       settle(A);
       R.hist.push([g.key, g.before]); if (R.hist.length > 60) R.hist.shift(); queueSave(g.key);
     }
