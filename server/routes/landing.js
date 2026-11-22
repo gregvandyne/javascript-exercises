@@ -40,6 +40,7 @@ import { enabled as classroomOn } from '../services/gclassroom.js';
 import { config } from '../config.js';
 import { LAYOUT_TEMPLATES, WIDGETS } from '../services/dash.js';
 import { ico } from '../views/icon.js';
+import { seeIt } from '../views/see-it.js';
 
 /** Where "Just Play" goes: the games for kids, no sign-up. */
 export const JUST_PLAY_URL = '/play';
@@ -320,6 +321,9 @@ export function renderLanding(req, res) {
   </div>
 </section>` : '';
 
+  // See it in action (views/see-it.js): the short videos of the teaching tools, with the page's own trial button.
+  const videosSec = seeIt(req, { variant: 'landing', cta: cta(TRIAL_URL, t('landing.hero.cta'), { big: true }) });
+
   const why = html`<section class="lp-sec" id="why" aria-labelledby="why-h">
   <div class="lp-wrap">
     <header class="lp-sec-head"><p class="lp-eyebrow">${t('landing.why.kicker')}</p><h2 id="why-h">${t('landing.why.h')}</h2><p>${t('landing.why.lead')}</p></header>
@@ -452,7 +456,7 @@ export function renderLanding(req, res) {
     seo.faqLd(faq.map(([q, a]) => [q, seo.plainText(a)])),
   ]);
 
-  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${dashSec}${dtourSec}${builder}${liveSec}${kidsSec}${loopSec}${courses}${classroomSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
+  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${dashSec}${dtourSec}${builder}${liveSec}${videosSec}${kidsSec}${loopSec}${courses}${classroomSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
   const head = seo.seoHead(req, { index: true, path: '/', langs, image: '/og/landing.jpg', imageAlt: t('landing.meta.imageAlt'), jsonld: [jsonld] }, { title, description });
   res.status(200).type('html').set('Vary', 'Cookie, Accept-Language').send(`<!doctype html>
 <html lang="${esc(locale)}" dir="${esc(info.dir)}" data-theme="${theme}" class="lp-html${theme === 'light' ? ' lp-light' : ''}">

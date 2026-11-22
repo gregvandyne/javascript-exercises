@@ -5861,6 +5861,25 @@
     },
     "quotes": {
       "h": "O que dizem os professores"
+    },
+    "videos": {
+      "kicker": "Veja na prática",
+      "h": "As novas ferramentas para ensinar, um minuto cada",
+      "lead": "Vídeos curtos gravados no app de verdade, com legendas em inglês. O som fica desligado até você ligá-lo.",
+      "manipulatives": {
+        "title": "Materiais manipuláveis virtuais de matemática",
+        "p": "Material dourado, frações, relógios e mais em um só quadro, sem caixas de material para distribuir."
+      },
+      "figures": {
+        "title": "Oomba Figuras",
+        "p": "Diagramas exatos de matemática e ciências com as respostas resolvidas, prontos para imprimir ou atribuir."
+      },
+      "room": {
+        "title": "Salas de matemática ao vivo",
+        "p": "Cada aluno trabalha no próprio quadrado enquanto você vê a turma toda em uma só tela."
+      },
+      "plan": "Os materiais manipuláveis, suas salas ao vivo e Figuras fazem parte do plano Professor.",
+      "testing": "Estas ferramentas estão sendo testadas agora em algumas turmas."
     }
   },
   "learn": {

@@ -5860,6 +5860,25 @@
     },
     "quotes": {
       "h": "Wat leerkrachten zeggen"
+    },
+    "videos": {
+      "kicker": "Zie het in actie",
+      "h": "De nieuwe lesmiddelen, een minuut per stuk",
+      "lead": "Korte video’s opgenomen in de echte app, met Engelse ondertiteling. Het geluid blijft uit tot u het aanzet.",
+      "manipulatives": {
+        "title": "Virtuele rekenmaterialen",
+        "p": "MAB-blokken, breukdelen, klokken en meer op één bord, zonder bakken materiaal uit te delen."
+      },
+      "figures": {
+        "title": "Oomba Figuren",
+        "p": "Exacte reken- en natuurwetenschapstekeningen met uitgewerkte antwoorden, klaar om te printen of toe te wijzen."
+      },
+      "room": {
+        "title": "Live rekenruimtes",
+        "p": "Elke leerling werkt in een eigen vak, terwijl u de hele klas op één scherm ziet."
+      },
+      "plan": "De manipulatieven, hun live ruimtes en Figuren horen bij het Leerkracht-abonnement.",
+      "testing": "Deze hulpmiddelen worden nu in een paar klassen uitgeprobeerd."
     }
   },
   "learn": {

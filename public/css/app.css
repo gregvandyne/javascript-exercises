@@ -1001,6 +1001,16 @@ ol.steps li{margin-bottom:var(--s2)}
 .lp-sec>p{margin:0 0 var(--s4);color:var(--text-2);max-width:70ch}
 .lp-video{display:block;width:100%;max-width:960px;height:auto;aspect-ratio:16/9;margin:0 0 var(--s3);border-radius:var(--r);border:3px solid var(--text);background:var(--card);box-shadow:var(--shadow)}
 .lp-demo>p.small{color:var(--muted);margin-top:0}
+/* See it in action (server/views/see-it.js): the tool videos, a grid of 3 (or 2 by 2 with a fourth). */
+.pv-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s4)}
+@media (min-width:720px){.pv-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pv-grid>.pv-item:last-child:nth-child(odd){grid-column:1/-1;justify-self:center;width:calc(50% - var(--s4)/2)}}
+@media (min-width:1080px){.pv-grid[data-n="3"]{grid-template-columns:repeat(3,minmax(0,1fr))}.pv-grid[data-n="3"]>.pv-item:last-child:nth-child(odd){grid-column:auto;width:auto}}
+.pv-item{min-width:0;display:flex;flex-direction:column;gap:var(--s2)}
+.pv-video{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:var(--r-sm);border:2px solid var(--text);background:var(--card);box-shadow:var(--shadow)}
+.pv-h{display:flex;align-items:center;gap:8px;font-size:1.1rem;margin:0}
+.pv-p{margin:0;color:var(--text-2)}
+.pv .pv-plan{margin:var(--s4) 0 0}
+.pv-cta{margin-top:var(--s3)}
 .lp-games{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:var(--s4)}
 .lp-game{display:grid;grid-template-columns:84px minmax(0,1fr);gap:var(--s3);align-items:start;height:100%;padding:var(--s3);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);color:var(--text)}
 .lp-game:hover{text-decoration:none;box-shadow:var(--shadow-lg)}

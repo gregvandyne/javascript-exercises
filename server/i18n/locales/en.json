@@ -6465,6 +6465,25 @@
     },
     "quotes": {
       "h": "What teachers say"
+    },
+    "videos": {
+      "kicker": "See it in action",
+      "h": "The new teaching tools, a minute each",
+      "lead": "Short videos recorded in the real app, with captions in English. The sound stays off until you turn it on.",
+      "manipulatives": {
+        "title": "Virtual Math Manipulatives",
+        "p": "Base ten blocks, fraction pieces, clocks and more on one board, with no bins of blocks to hand out."
+      },
+      "figures": {
+        "title": "Oomba Figures",
+        "p": "Exact math and science diagrams with the answers worked out, ready to print or assign."
+      },
+      "room": {
+        "title": "Live math rooms",
+        "p": "Each student works in their own square while you see the whole class on one screen."
+      },
+      "plan": "The Manipulatives, their live rooms and Figures are part of the Teacher plan.",
+      "testing": "These tools are being tried out in a few classrooms now."
     }
   },
   "learn": {

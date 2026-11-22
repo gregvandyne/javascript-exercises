@@ -5859,6 +5859,25 @@
     },
     "quotes": {
       "h": "Lo que dicen los docentes"
+    },
+    "videos": {
+      "kicker": "Véalo en acción",
+      "h": "Las nuevas herramientas para enseñar, un minuto cada una",
+      "lead": "Videos cortos grabados en la aplicación real, con subtítulos en inglés. El sonido queda apagado hasta que usted lo active.",
+      "manipulatives": {
+        "title": "Manipulativos matemáticos virtuales",
+        "p": "Bloques de base diez, fracciones, relojes y más en un solo tablero, sin cajas de material que repartir."
+      },
+      "figures": {
+        "title": "Oomba Figuras",
+        "p": "Diagramas exactos de matemáticas y ciencias con las respuestas resueltas, listos para imprimir o asignar."
+      },
+      "room": {
+        "title": "Salas de matemáticas en vivo",
+        "p": "Cada estudiante trabaja en su propio recuadro y usted ve a toda la clase en una sola pantalla."
+      },
+      "plan": "Los manipulativos, sus salas en vivo y Figuras son parte del plan Docente.",
+      "testing": "Estas herramientas se están probando ahora en algunas clases."
     }
   },
   "learn": {

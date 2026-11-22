@@ -5860,6 +5860,25 @@
     },
     "quotes": {
       "h": "Cosa dicono gli insegnanti"
+    },
+    "videos": {
+      "kicker": "Guardi come funziona",
+      "h": "I nuovi strumenti per insegnare, un minuto ciascuno",
+      "lead": "Brevi video registrati nella vera app, con sottotitoli in inglese. L’audio resta spento finché non lo attiva Lei.",
+      "manipulatives": {
+        "title": "Materiali manipolativi virtuali di matematica",
+        "p": "Blocchi in base dieci, frazioni, orologi e altro su un’unica lavagna, senza scatole di materiale da distribuire."
+      },
+      "figures": {
+        "title": "Oomba Figure",
+        "p": "Disegni esatti di matematica e scienze con le risposte già calcolate, pronti da stampare o assegnare."
+      },
+      "room": {
+        "title": "Stanze di matematica dal vivo",
+        "p": "Ogni studente lavora nel proprio riquadro e Lei vede tutta la classe su un solo schermo."
+      },
+      "plan": "I materiali manipolativi, le loro stanze dal vivo e Figure fanno parte del piano Insegnante.",
+      "testing": "Questi strumenti sono ora in prova in alcune classi."
     }
   },
   "learn": {

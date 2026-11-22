@@ -5860,6 +5860,25 @@
     },
     "quotes": {
       "h": "Das sagen Lehrkräfte"
+    },
+    "videos": {
+      "kicker": "So sieht es aus",
+      "h": "Die neuen Unterrichtswerkzeuge, je eine Minute",
+      "lead": "Kurze Videos aus der echten App, mit englischen Untertiteln. Der Ton bleibt aus, bis Sie ihn einschalten.",
+      "manipulatives": {
+        "title": "Virtuelle Mathe-Arbeitsmittel",
+        "p": "Zehnersystem-Blöcke, Bruchteile, Uhren und mehr auf einer Tafel, ohne Kisten voller Material."
+      },
+      "figures": {
+        "title": "Oomba Figuren",
+        "p": "Exakte Mathe- und Naturwissenschafts-Zeichnungen mit fertig gerechneten Lösungen, zum Drucken oder Zuweisen."
+      },
+      "room": {
+        "title": "Live-Mathe-Räume",
+        "p": "Jedes Kind arbeitet in seinem eigenen Feld, und Sie sehen die ganze Klasse auf einem Bildschirm."
+      },
+      "plan": "Die Arbeitsmittel, ihre Live-Räume und Figuren gehören zum Lehrkraft-Plan.",
+      "testing": "Diese Werkzeuge werden gerade in einigen Klassen erprobt."
     }
   },
   "learn": {
