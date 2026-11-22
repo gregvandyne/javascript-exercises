@@ -20,6 +20,9 @@ import { config } from '../config.js';
 import { tEn, tFor, normalizeCode, localeInfo, keepLang } from '../i18n/index.js';
 import { fileFor } from '../services/shots.js';
 import * as progress from '../services/progress.js';
+import * as L from '../services/lessons.js';
+import * as PS from '../services/proof-steps.js';
+import * as proofAi from '../services/proof-ai.js';
 import { characterOf } from '../services/character.js';
 import * as match from '../services/match.js';
 import * as polls from '../services/polls.js';
@@ -276,7 +279,10 @@ router.get('/play/:slug', (req, res) => {
   // hosted-live step (Quest Race, Would You Rather Live…): the teacher's live run writes that cell, so a hand-typed URL
   // plays the game without the lesson context (services/progress.js hostedLive).
   const lc = req.query.lesson && req.query.step && u ? progress.context(u, String(req.query.lesson), String(req.query.step)) : null;
-  const lesson = lc && lc.ok && lc.step.kind === 'game' && lc.step.game_id === g.id && !progress.hostedLive(lc.step) ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}` } : null;
+  // A graded Mistake Hunt step (services/proof-steps.js) opens the game in its hand-in mode: proof marks it, and the frame
+  // gets the step's passages (never the key until it is allowed) instead of a game score.
+  const proofStep = !!(lc && lc.ok && lc.step.kind === L.PROOF_KIND && g.slug === PS.SLUG && g.source === 'seed');
+  const lesson = lc && lc.ok && ((lc.step.kind === 'game' && lc.step.game_id === g.id && !progress.hostedLive(lc.step)) || proofStep) ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}#step-${lc.step.id}`, ...(proofStep ? { proof: true } : {}) } : null;
   const asked = req.query.course ? courses.getCourse(String(req.query.course)) : null;
   let cstep = null;
   // The step context is honoured for every signed-in player who arrives with one, the game's owner and
@@ -309,7 +315,7 @@ router.get('/play/:slug', (req, res) => {
   // Lesson parameters (?chapter=&band=&mode=&level=&lock=, services/play-params.js): a lesson step's Play link says where
   // the game opens. Only the five known keys with valid values go into the token (o), nothing else from the URL.
   const o = packParams(parseParams(req.query));
-  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale, ...(inMatch ? { m: inMatch.id } : {}), ...(o ? { o } : {}) }, 15 * 60);
+  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale, ...(inMatch ? { m: inMatch.id } : {}), ...(o ? { o } : {}), ...(lesson && lesson.proof ? { pf: [lesson.cl, lesson.step] } : {}) }, 15 * 60);
   // An art style the page asks for (?style=cartoon): it goes on to the frame as the Oomba Kit's ?okStyle=, and a game that
   // offers that style (Oomba.three's styles) draws it; every other game ignores it. Only the known style names pass.
   const frameQ = FRAME_STYLES.includes(String(req.query.style || '')) ? `?okStyle=${req.query.style}` : '';
@@ -418,6 +424,12 @@ router.get('/frame/:token', (req, res) => {
     // Mistake Hunt's "Upload a passage" (BRB.canReadDocs / BRB.textFromDoc): the text of a PDF or Word file, no AI, for the
     // same grown-ups as Crossword's word lists (who may host), where the fence lets the call through.
     ...(!preview && docTextGame(g) && liveCanHost(u) && fenceLets(u, 'POST', `/api/games/${g.id}/text-from-doc`) ? { docText: true } : {}),
+    // Mistake Hunt's AI tools (BRB.proofAi; services/proof-ai.js): teachers only (school staff and the platform admin),
+    // with how many free requests are left today (null: the Teacher plan, no daily cap) and whether plans are on.
+    ...(!preview && docTextGame(g) && proofAi.aiInfo(u) && fenceLets(u, 'POST', `/api/games/${g.id}/proof/draft`) ? { proofAi: proofAi.aiInfo(u) } : {}),
+    // A graded Mistake Hunt step (BRB.proofStep; services/proof-steps.js viewFor): the words students see and their
+    // saved fixes, never the key or the why lines before they are allowed. Only for the student the token was made for.
+    ...(!preview && tok.pf && u && docTextGame(g) ? (() => { const r = progress.proofFor(u, String(tok.pf[0]), String(tok.pf[1])); return r.ok ? { proofStep: r.view } : {}; })() : {}),
     // Print (BRB.canPrint / BRB.print; Crossword, The Big Divide, Mistake Hunt): the play page prints for the frame (POST /api/games/:id/print).
     ...(!preview && printGame(g) ? { print: true } : {}),
     // A classroom activity that prints (canvas-print.js), in the Studio's preview too (its maker): printKey offers the
@@ -628,6 +640,38 @@ router.post('/api/games/:id/text-from-doc', requireUser, rateLimit('game-doc', 2
   if (!r.ok) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
   audit(req.user.id, 'game.doc_text', g.id, { kind: b.kind, chars: r.text.length, cut: r.cut });
   res.json({ text: r.text, cut: r.cut });
+});
+// Mistake Hunt's AI tools (docs/decisions.md "Mistake Hunt, Phase 2"; services/proof-ai.js): Power with AI passages,
+// Check my passage and why lines. Teachers only (school staff and the platform admin; students, kids, family grown-ups
+// and guests get 403 notAllowed); free teachers have a daily cap (config.proofAiFreePerDay: 429 code 'cap'), Teacher
+// plan holders none. Nothing here is stored: the teacher reviews everything before saving the set.
+const proofAiReply = (req, res, r, data) => {
+  if (r.ok) return res.json(data(r));
+  const status = r.code === 'notAllowed' ? 403 : r.code === 'cap' ? 429 : 400;
+  res.status(status).json({ error: req.t('errors.api.badRequest'), code: r.code, ...(r.code === 'cap' ? { left: 0 } : {}) });
+};
+router.post('/api/games/:id/proof/draft', requireUser, rateLimit('proof-ai', 30, 3600e3), async (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!docTextGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  const b = req.body || {};
+  if (typeof b.topic !== 'string' || b.topic.length > 400) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'topic' });
+  const r = await proofAi.draftPassages(req.user, { topic: b.topic, grade: b.grade, length: b.length, n: b.n, types: b.types, count: b.count, seed: b.seed });
+  proofAiReply(req, res, r, x => ({ passages: x.passages, ai: x.ai, ...(x.reason ? { reason: x.reason } : {}), ...(x.dropped ? { dropped: x.dropped } : {}), left: Number.isFinite(x.left) ? x.left : null }));
+});
+router.post('/api/games/:id/proof/scan', requireUser, rateLimit('proof-ai', 30, 3600e3), async (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!docTextGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  const b = req.body || {};
+  if (typeof b.text !== 'string' || b.text.length > 8000) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'short' });
+  const r = await proofAi.scanPassage(req.user, { text: b.text });
+  proofAiReply(req, res, r, x => ({ flags: x.flags, ai: x.ai, ...(x.reason ? { reason: x.reason } : {}), left: Number.isFinite(x.left) ? x.left : null }));
+});
+router.post('/api/games/:id/proof/why', requireUser, rateLimit('proof-ai', 30, 3600e3), async (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!docTextGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  const b = req.body || {};
+  const r = await proofAi.whyLines(req.user, { grade: b.grade, items: b.items });
+  proofAiReply(req, res, r, x => ({ lines: x.lines, ai: x.ai, ...(x.reason ? { reason: x.reason } : {}) }));
 });
 // Print (services/game-print.js): a game's own data -> { html }, the printable page the play page prints for the frame, in
 // the viewer's language. Crossword: its puzzle (its words and clues, the word bank option and the layout as numbers;

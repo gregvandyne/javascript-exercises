@@ -4531,7 +4531,8 @@
       "question": "Rispondi a una domanda",
       "quiz": "Rispondi alle domande del quiz",
       "figures": "Rispondere a domande sulle figure",
-      "figureStep": "Domande con figure"
+      "figureStep": "Domande con figure",
+      "proofread": "Correzione di testi"
     },
     "library": {
       "title": "Biblioteca delle lezioni",
@@ -12951,6 +12952,47 @@
   "manip": {
     "errors": {
       "chatBusy": "Oomba sta ancora rispondendo al tuo ultimo messaggio. Aspetta un momento."
+    }
+  },
+  "proof": {
+    "assign": {
+      "title": "Consegna per un voto",
+      "untitled": "Mistake Hunt",
+      "opens": "Si apre",
+      "showHint": "Disattivato di base. Attivo: passata la scadenza, chi ha consegnato vede le correzioni e perché ognuna è giusta.",
+      "snapshotNote": "Gli studenti ricevono questa raccolta così com'è ora. Le modifiche successive non cambiano ciò che ha ricevuto la classe. I risultati vanno in Progressi e nel registro.",
+      "submit": "Assegna",
+      "practiceInstead": "Esercitarsi nel gioco invece (senza voto)",
+      "practiceHint": "Gli studenti giocano la raccolta come un gioco, controllano strada facendo e ricevono suggerimenti. Conta come fatto quando finiscono."
+    },
+    "step": {
+      "score": "Hai trovato {found} errori su {total} ({pct}%).",
+      "seeAnswers": "Vedi le risposte",
+      "seeWork": "Vedi il mio lavoro",
+      "answersLater": "Il tuo insegnante mostrerà le risposte dopo la scadenza.",
+      "noAnswers": "Il tuo insegnante ha le risposte e potrebbe rivederle con la classe.",
+      "passagesN": "{count, plural, one {# testo} other {# testi}}",
+      "mistakesN": "{count, plural, one {# errore} other {# errori}}",
+      "handInHint": "Correggi gli errori, poi consegna. La consegna è definitiva.",
+      "answersReady": "Le risposte sono pronte. Consegna il tuo lavoro per vederle.",
+      "keepGoing": "Continua",
+      "start": "Inizia",
+      "teacherNote": "Gli studenti correggono questi testi in Mistake Hunt e consegnano una volta; Oomba valuta ogni errore.",
+      "passageN": "Testo {n}",
+      "foundMissed": "{found} trovati · {missed} mancati",
+      "showAnswersHint": "Disattivato di base. Attivo: passata la scadenza, ogni studente che ha consegnato vede le correzioni e perché ognuna è giusta.",
+      "handedInOf": "{done} su {total} hanno consegnato",
+      "ofFound": "degli errori trovati",
+      "byKind": "Per tipo di errore",
+      "byKindHint": "Conteggi per tutta la classe: trovati e mancati, in tutti i testi.",
+      "studentsTable": "Il risultato di ogni studente",
+      "found": "Trovati",
+      "changed": "Parole giuste cambiate",
+      "notYet": "Non ancora consegnato",
+      "changedHint": "Cambiare parole che erano giuste non abbassa il punteggio; il conteggio è qui per parlarne.",
+      "errors": {
+        "words": "Quella correzione contiene parole che non possiamo usare. Prova altre parole."
+      }
     }
   }
 }

@@ -97,7 +97,7 @@ async function start() {
 }
 start();
 // Opened from a lesson: play time and scores also count for that lesson step (see server/services/progress.js).
-const lessonEvent = body => { if (d.lesson) api(`/api/progress/${d.lesson.cl}/${d.lesson.step}/game`, { method: 'POST', body, active: playing() }).catch(() => {}); };
+const lessonEvent = body => { if (d.lesson && !d.lesson.proof) api(`/api/progress/${d.lesson.cl}/${d.lesson.step}/game`, { method: 'POST', body, active: playing() }).catch(() => {}); };
 lessonEvent({ event: 'start' });
 setInterval(() => {
   if (document.hidden) return;
@@ -144,6 +144,10 @@ const TYPES = {
   // BRB.writeClues (Crossword): the teacher's words, for AI clues (the server checks who may ask).
   'brb:clues': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.words) && m.words.length >= 1 && m.words.length <= 30
     && m.words.every(w => typeof w === 'string' && w.length <= 40) && typeof m.level === 'string' && m.level.length <= 60,
+  // Mistake Hunt (docs/sdk.md "Mistake Hunt"): BRB.proofAsk (the server checks who may ask) and a graded step's fixes.
+  'brb:proofai': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && ['draft', 'scan', 'why'].includes(m.op) && !!m.body && typeof m.body === 'object' && !Array.isArray(m.body) && JSON.stringify(m.body).length <= 60000,
+  'brb:proof': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.edits) && JSON.stringify(m.edits).length <= 60000 && typeof m.handIn === 'boolean',
+  'brb:trial': m => true,
   // BRB.print (Crossword): the puzzle as plain data, at most 20,000 characters (the server checks every part of it).
   'brb:print': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && !!m.doc && typeof m.doc === 'object' && !Array.isArray(m.doc) && JSON.stringify(m.doc).length <= 20000,
 };
@@ -261,6 +265,10 @@ addEventListener('message', e => {
     case 'brb:clues': cluesForGame(m); break;
     case 'brb:doc': docForGame(m); break;
     case 'brb:textdoc': textDocForGame(m); break;
+    case 'brb:proofai': proofAiForGame(m); break;
+    case 'brb:proof': proofForGame(m); break;
+    // The Teacher plan's trial page (Mistake Hunt's daily AI cap), only right after a tap.
+    case 'brb:trial': if (tappedJustNow('brb-trial-at', 2000)) location.href = '/trial'; break;
     // BRB.print (Crossword): the frame can't print, so the page does, only right after a tap.
     case 'brb:print': printForGame(m, tappedJustNow('brb-print-at', 2000)); break;
     // BRB.assign (a teacher in a set game): after a tap, the game's Assign page with the problem or set it opens at.
@@ -396,6 +404,22 @@ async function textDocForGame(m) {
     out = { text: String(r.text || ''), cut: r.cut === true };
   } catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'docBad' : 'offline') }; }
   toFrame({ type: 'brb:textdoc-done', id: m.id, ...out });
+}
+/** BRB.proofAsk (Mistake Hunt's AI tools): the server answers; the answer (or { error }) goes back as brb:proofai-done. */
+async function proofAiForGame(m) {
+  let r;
+  try { r = await api(`/api/games/${d.gameId}/proof/${m.op}`, { method: 'POST', body: m.body, active: playing() }); }
+  catch (e) { r = { error: (e.data && e.data.code) || (e.status === 429 ? 'slow' : 'offline'), ...(e.data && e.data.left === 0 ? { left: 0 } : {}) }; }
+  toFrame({ type: 'brb:proofai-done', id: m.id, r });
+}
+/** BRB.proofSave (a graded Mistake Hunt step): save or hand in the fixes; the step as it is now goes back. */
+async function proofForGame(m) {
+  const done = out => toFrame({ type: 'brb:proof-done', id: m.id, ...out });
+  if (!d.lesson || !d.lesson.proof) return done({ error: 'notAllowed' });
+  try {
+    const r = await api(`/api/progress/${d.lesson.cl}/${d.lesson.step}/proofread`, { method: 'POST', body: { edits: m.edits, handIn: m.handIn }, active: playing() });
+    done({ view: r.view });
+  } catch (e) { done({ error: (e.data && e.data.code) || 'offline' }); }
 }
 /** BRB.print (docs/sdk.md "Printing"): the server checks the puzzle (its words and clues through the text filter, the
  *  layout, the answer key for teachers only) and makes the printable page in the viewer's language; it goes into a

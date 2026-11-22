@@ -37,8 +37,16 @@ export const QUIZ_KIND = 'quiz';
  *  edited like a quiz step's. Answers are marked by the server (progress.figuresAnswer); show_answers is the teacher's
  *  "Show answers after the due date". */
 export const FIGURES_KIND = 'figures';
+/** A Mistake Hunt passage set handed in for a grade (services/proof-steps.js): made only by "Assign to class" with
+ *  "Hand in for a grade", always with a snapshot of the passages, their mistakes, keys and why lines
+ *  (lesson_steps.items), so later edits to the set never change it. Marked by the server (progress.proofAnswer);
+ *  show_answers is the teacher's "Show answers after the due date", as for a figures step. */
+export const PROOF_KIND = 'proofread';
 /** Step kinds made from a snapshot (never from the step editor): their questions can't be edited there. */
-export const SNAPSHOT_KINDS = [QUIZ_KIND, FIGURES_KIND];
+export const SNAPSHOT_KINDS = [QUIZ_KIND, FIGURES_KIND, PROOF_KIND];
+/** Snapshot kinds a student hands in once and the server marks (marks '1'/'0', score = % right), with "Show answers
+ *  after the due date" (lesson_steps.show_answers). */
+export const HANDIN_KINDS = [FIGURES_KIND, PROOF_KIND];
 const ok = (extra = {}) => ({ ok: true, ...extra });
 const fail = code => ({ ok: false, code });
 const clip = (s, n) => String(s == null ? '' : s).replace(/[ \t]+/g, ' ').trim().slice(0, n);
@@ -159,7 +167,7 @@ export function cleanLesson(fields = {}, old = {}) {
 /** What a lesson row is (0085_game_folders): 'game' (one assigned game), 'course' (a ready-made course's copy),
  *  'homework' (a live question set sent as homework), 'lesson' (a teacher-made lesson, no longer offered), 'story' (one
  *  Story Library book: services/library.js), 'figures' (a Figures worksheet: services/figures-steps.js). */
-export const LESSON_KINDS = ['lesson', 'game', 'course', 'homework', 'story', 'figures'];
+export const LESSON_KINDS = ['lesson', 'game', 'course', 'homework', 'story', 'figures', 'proofread'];
 export function createLesson(u, schoolId, { title, folderId = null, summary = '', subject = '', grade = '', objectives = '', templateKey = '', templateVersion = 0, kind = '' }) {
   if (!isStaffOf(u, schoolId)) return fail('notFound');
   const c = cleanLesson({ title, summary, subject, grade, objectives, templateKey, templateVersion }); if (!c.ok) return c;
@@ -272,10 +280,10 @@ export function copyLesson(u, lessonId, { folderId } = {}) {
       const id = uid(10); stepIds.set(s.id, id);
       q.run(`INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, set_id, items, options, standards, template, rubric, rubric_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         id, r.lesson.id, s.position, s.kind, s.title, s.body, s.game_id, s.minutes, now(),
-        SNAPSHOT_KINDS.includes(s.kind) ? s.set_id || null : null, s.kind === QUIZ_KIND ? quizItemsFor(s) : s.kind === FIGURES_KIND ? s.items || '' : '', s.options || '', s.standards || '', s.template || '', s.rubric || '',
+        SNAPSHOT_KINDS.includes(s.kind) ? s.set_id || null : null, s.kind === QUIZ_KIND ? quizItemsFor(s) : HANDIN_KINDS.includes(s.kind) ? s.items || '' : '', s.options || '', s.standards || '', s.template || '', s.rubric || '',
         R.STEP_KINDS.includes(s.kind) ? rubricFor(s.rubric_id) : null);
       // A figures step keeps its snapshot as it is (the worksheet may have changed since), its version and its switch.
-      if (s.kind === FIGURES_KIND) q.run('UPDATE lesson_steps SET of_version=?, show_answers=? WHERE id=?', s.of_version || '', s.show_answers ? 1 : 0, id);
+      if (HANDIN_KINDS.includes(s.kind)) q.run('UPDATE lesson_steps SET of_version=?, show_answers=? WHERE id=?', s.of_version || '', s.show_answers ? 1 : 0, id);
     }
     // Common Core tags (lesson_standards, services/standards-ccss.js) come along, on the copied steps.
     for (const t of q.all('SELECT step_id, framework, code FROM lesson_standards WHERE lesson_id=?', l.id)) {
@@ -323,7 +331,7 @@ function cleanStep(u, input, old = {}, schoolId = null) {
   const kind = input.kind !== undefined ? input.kind : old.kind;
   if (!STEP_KINDS.includes(kind) && !(SNAPSHOT_KINDS.includes(kind) && old.kind === kind)) return fail('stepKind');
   // A figures step stays a figures step (its questions are its snapshot's).
-  if (old.kind === FIGURES_KIND && kind !== FIGURES_KIND) return fail('stepKind');
+  if (HANDIN_KINDS.includes(old.kind) && kind !== old.kind) return fail('stepKind');
   const v = {
     kind,
     title: input.title !== undefined ? clip(input.title, 100) : old.title || '',
@@ -389,6 +397,17 @@ export function addFiguresStep(u, lessonId, { title = '', setId = null, items, o
   q.run('INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, set_id, items, of_version, show_answers) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
     id, l.id, nextPos('lesson_steps', 'lesson_id=?', l.id), FIGURES_KIND, clip(title, 100), clipText(body, 4000), null, Math.max(0, Math.min(240, Math.round(+minutes || 0))), now(), setId || null,
     JSON.stringify(items), String(ofVersion), showAnswers ? 1 : 0);
+  touch(l.id);
+  return ok({ step: getStep(id) });
+}
+/** A proofread step from a Mistake Hunt passage set's snapshot (services/proof-steps.js snapshot). -> { ok, step } */
+export function addProofStep(u, lessonId, { title = '', setId = null, items, showAnswers = false, minutes = 0, body = '' }) {
+  const l = getLesson(lessonId); if (!canEditLesson(u, l)) return fail('notFound');
+  if (!Array.isArray(items) || !items.length) return fail('stepKind');
+  const id = uid(10);
+  q.run('INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, set_id, items, show_answers) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+    id, l.id, nextPos('lesson_steps', 'lesson_id=?', l.id), PROOF_KIND, clip(title, 100), clipText(body, 4000), null, Math.max(0, Math.min(240, Math.round(+minutes || 0))), now(), setId || null,
+    JSON.stringify(items), showAnswers ? 1 : 0);
   touch(l.id);
   return ok({ step: getStep(id) });
 }

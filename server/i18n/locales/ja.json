@@ -4530,7 +4530,8 @@
       "question": "しつもんにこたえる",
       "quiz": "クイズにこたえる",
       "figures": "図の問題にこたえる",
-      "figureStep": "図の問題"
+      "figureStep": "図の問題",
+      "proofread": "文章の校正"
     },
     "library": {
       "title": "レッスンライブラリ",
@@ -12950,6 +12951,47 @@
   "manip": {
     "errors": {
       "chatBusy": "Oombaは前のメッセージにまだ返事をしています。少し待ってください。"
+    }
+  },
+  "proof": {
+    "assign": {
+      "title": "提出して採点する",
+      "untitled": "Mistake Hunt",
+      "opens": "公開日",
+      "showHint": "初期設定はオフ。オンにすると、締め切り後に提出した生徒は直し方とその理由を見られます。",
+      "snapshotNote": "生徒には今のままのセットが届きます。あとで編集しても、クラスに配ったものは変わりません。結果は進み具合と成績表に入ります。",
+      "submit": "課題にする",
+      "practiceInstead": "代わりにゲームで練習する（採点なし）",
+      "practiceHint": "生徒はゲームとしてセットに取り組み、途中で確かめたりヒントを見たりできます。終わると完了になります。"
+    },
+    "step": {
+      "score": "{total}個の間違いのうち{found}個見つけました（{pct}%）。",
+      "seeAnswers": "答えを見る",
+      "seeWork": "自分の答えを見る",
+      "answersLater": "締め切りのあとで先生が答えを見せてくれます。",
+      "noAnswers": "答えは先生が持っていて、クラスで一緒に確かめるかもしれません。",
+      "passagesN": "{count, plural, other {文章 #件}}",
+      "mistakesN": "{count, plural, other {間違い #個}}",
+      "handInHint": "間違いを直してから提出しよう。提出したら変えられません。",
+      "answersReady": "答えの準備ができました。提出すると見られます。",
+      "keepGoing": "続ける",
+      "start": "はじめる",
+      "teacherNote": "生徒は Mistake Hunt でこれらの文章を直して一度だけ提出し、Oomba が間違いごとに採点します。",
+      "passageN": "文章 {n}",
+      "foundMissed": "見つけた {found} · 見落とし {missed}",
+      "showAnswersHint": "初期設定はオフ。オンにすると、締め切り後に提出した各生徒は直し方とその理由を見られます。",
+      "handedInOf": "{total}人中{done}人が提出",
+      "ofFound": "の間違いを発見",
+      "byKind": "間違いの種類ごと",
+      "byKindHint": "クラス全体の数：すべての文章で見つけた数と見落とした数。",
+      "studentsTable": "生徒ごとの結果",
+      "found": "見つけた",
+      "changed": "正しい語を変えた数",
+      "notYet": "まだ提出していません",
+      "changedHint": "正しい語を変えても点数は下がりません。話し合いのために数を表示しています。",
+      "errors": {
+        "words": "その直しには使えない言葉が入っています。別の言葉にしてみよう。"
+      }
     }
   }
 }

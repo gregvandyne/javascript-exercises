@@ -4530,7 +4530,8 @@
       "question": "回答問題",
       "quiz": "回答測驗題目",
       "figures": "回答圖形題",
-      "figureStep": "圖形題"
+      "figureStep": "圖形題",
+      "proofread": "文章校對"
     },
     "library": {
       "title": "課程庫",
@@ -12950,6 +12951,47 @@
   "manip": {
     "errors": {
       "chatBusy": "Oomba 還在回覆你上一則訊息,請稍等。"
+    }
+  },
+  "proof": {
+    "assign": {
+      "title": "繳交並評分",
+      "untitled": "Mistake Hunt",
+      "opens": "開放日期",
+      "showHint": "預設關閉。開啟後：截止日期過後，已繳交的學生可以看到修正和每個修正的原因。",
+      "snapshotNote": "學生拿到的是這組題目現在的樣子。之後的修改不會改變班級已拿到的內容。結果會進入進度和成績簿。",
+      "submit": "指派",
+      "practiceInstead": "改為在遊戲中練習（不評分）",
+      "practiceHint": "學生把這組題目當遊戲玩，可以邊做邊檢查並取得提示。做完就算完成。"
+    },
+    "step": {
+      "score": "你找到了 {total} 個錯誤中的 {found} 個（{pct}%）。",
+      "seeAnswers": "看答案",
+      "seeWork": "看我的作答",
+      "answersLater": "老師會在截止日期後公布答案。",
+      "noAnswers": "答案在老師那裡，老師可能會和全班一起檢討。",
+      "passagesN": "{count, plural, other {# 篇短文}}",
+      "mistakesN": "{count, plural, other {# 個錯誤}}",
+      "handInHint": "把錯誤改好，然後繳交。繳交後就不能再改。",
+      "answersReady": "答案準備好了。繳交你的作業就能看到。",
+      "keepGoing": "繼續",
+      "start": "開始",
+      "teacherNote": "學生在 Mistake Hunt 修改這些短文並繳交一次；Oomba 會為每個錯誤評分。",
+      "passageN": "短文 {n}",
+      "foundMissed": "找到 {found} · 漏掉 {missed}",
+      "showAnswersHint": "預設關閉。開啟後：截止日期過後，每位已繳交的學生可以看到修正和每個修正的原因。",
+      "handedInOf": "{total} 人中有 {done} 人繳交",
+      "ofFound": "的錯誤被找到",
+      "byKind": "依錯誤種類",
+      "byKindHint": "全班的數字：所有短文中找到和漏掉的數量。",
+      "studentsTable": "每位學生的結果",
+      "found": "找到",
+      "changed": "改動的正確字詞",
+      "notYet": "尚未繳交",
+      "changedHint": "改動原本正確的字詞不會扣分；數字放在這裡方便討論。",
+      "errors": {
+        "words": "這個修正含有不能使用的字詞，請換別的字詞。"
+      }
     }
   }
 }

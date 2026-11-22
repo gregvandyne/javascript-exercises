@@ -7,6 +7,7 @@
 //   build     the student hands in the game they made (it is shared with their school so the teacher can play it)
 //   quiz      every question is answered (checked here, once each)
 //   figures   the student hands in their answers to a Figures worksheet (marked here: services/figures-steps.js)
+//   proofread the student hands in their fixes to a Mistake Hunt passage set (marked here: services/proof-steps.js)
 // Teachers (and school admins) see everything for their class, can write feedback on answers and mark them reviewed.
 // Students see only their own progress. Removing a lesson from a class keeps its progress (it comes back if the
 // lesson is assigned again); deleting a step or a lesson deletes the progress on it.
@@ -18,6 +19,7 @@ import { MODES } from './classlive-access.js';
 import * as R from './rubrics.js';
 import * as SC from './scores.js';
 import * as FS from './figures-steps.js';
+import * as PS from './proof-steps.js';
 
 const ok = (extra = {}) => ({ ok: true, ...extra });
 const fail = code => ({ ok: false, code });
@@ -73,7 +75,7 @@ export function markDone(u, clId, stepId, isDone = true) {
   const c = context(u, clId, stepId); if (!c.ok) return c;
   if (c.step.kind === 'question') return fail('answerFirst');
   if (c.step.kind === 'story') return fail('notFound');   // done by reading to the end and answering (storyStep)
-  if (c.step.kind === L.FIGURES_KIND) return fail('notFound');   // done by handing in (figuresAnswer)
+  if (L.HANDIN_KINDS.includes(c.step.kind)) return fail('notFound');   // done by handing in (figuresAnswer, proofAnswer)
   if (hostedLive(c.step)) return fail('notFound');   // the live run writes this cell
   const old = get(clId, stepId, u.id);
   if (!isDone) return ok({ row: upsert(clId, stepId, u.id, { status: 'started', done_at: null }) });
@@ -145,6 +147,33 @@ export function figuresAnswer(u, clId, stepId, answers, { handIn = false } = {})
   upsert(clId, stepId, u.id, { answer: text, score, label: 'figures', ...done(old) });
   q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', marks, clId, stepId, u.id);
   return ok({ row: get(clId, stepId, u.id), handedIn: true, score });
+}
+/** A proofread step for the student (services/proof-steps.js viewFor): the words they see, their fixes so far, their
+ *  marks once handed in, the key and why lines only once allowed. */
+export function proofFor(u, clId, stepId) {
+  const c = context(u, clId, stepId); if (!c.ok) return c;
+  if (c.step.kind !== L.PROOF_KIND) return fail('notFound');
+  return ok({ view: PS.viewFor(c.step, c.cl, get(clId, stepId, u.id)), cl: c.cl, step: c.step });
+}
+/** A proofread step's fixes: edits[i] is passage i's list of { a, b, s }. Save keeps them (started); handIn marks every
+ *  mistake once (marks '1'/'0' in reading order, score = % found, label 'proofread') and the step is done. After
+ *  handing in nothing changes. -> { ok, handedIn, score, view } */
+export function proofAnswer(u, clId, stepId, edits, { handIn = false } = {}) {
+  const c = context(u, clId, stepId); if (!c.ok) return c;
+  if (c.step.kind !== L.PROOF_KIND) return fail('notFound');
+  const ce = PS.cleanEdits(c.step, edits); if (!ce.ok) return ce;
+  const old = get(clId, stepId, u.id);
+  if (PS.handedIn(old)) return fail('handedIn');
+  const text = JSON.stringify(ce.edits), any = ce.edits.some(e => e.length);
+  if (!handIn) {
+    if (!old && !any) return ok({ handedIn: false, score: null, view: PS.viewFor(c.step, c.cl, null) });
+    const row = upsert(clId, stepId, u.id, { answer: text });
+    return ok({ handedIn: false, score: null, view: PS.viewFor(c.step, c.cl, row) });
+  }
+  const r = PS.markAll(c.step, ce.edits);
+  upsert(clId, stepId, u.id, { answer: text, score: r.score, label: 'proofread', ...done(old) });
+  q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', r.marks, clId, stepId, u.id);
+  return ok({ handedIn: true, score: r.score, view: PS.viewFor(c.step, c.cl, get(clId, stepId, u.id)) });
 }
 /** A Story Library step (services/library.js): the student is reading the step's book, or has finished it. The book's
  *  progress lives in story_reads; this row is the class's copy: started, then done with marks (first try per question,
@@ -308,7 +337,7 @@ export function classProgress(classId, t = now()) {
   const lessons = L.classPlan(classId).flatMap(g => g.lessons.map(cl => ({ ...cl, unit: g.unit, locked: !L.isOpen(cl, t), due: L.dueState(cl, t) })));
   const students = studentsOf(classId);
   const counts = q.all(`SELECT p.class_lesson_id cl, p.user_id u, SUM(p.status='done') done, SUM(p.answer!='' AND p.reviewed_at IS NULL AND s.kind='question') toread, MAX(p.updated_at) last,
-      AVG(CASE WHEN s.kind IN ('quiz','figures') AND p.status='done' AND p.score IS NOT NULL THEN p.score END) quiz, SUM(s.kind IN ('quiz','figures') AND p.status='done' AND p.score IS NOT NULL) quizzes,
+      AVG(CASE WHEN s.kind IN ('quiz','figures','proofread') AND p.status='done' AND p.score IS NOT NULL THEN p.score END) quiz, SUM(s.kind IN ('quiz','figures','proofread') AND p.status='done' AND p.score IS NOT NULL) quizzes,
       SUM(p.helped) helped
     FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
     WHERE c.class_id=? GROUP BY p.class_lesson_id, p.user_id`, classId);
@@ -317,7 +346,7 @@ export function classProgress(classId, t = now()) {
   const pts = R.classTotals(classId), withRubric = R.lessonsWithRubrics([...new Set(lessons.map(cl => cl.lesson_id))]);
   // Quiz and figures steps (checked by the site: score = % right): the lesson's quiz score is the mean of its finished ones.
   const lessonIds = [...new Set(lessons.map(cl => cl.lesson_id))];
-  const withQuiz = new Set(lessonIds.length ? q.all(`SELECT DISTINCT lesson_id FROM lesson_steps WHERE kind IN ('quiz','figures') AND lesson_id IN (${lessonIds.map(() => '?').join(',')})`, ...lessonIds).map(r => r.lesson_id) : []);
+  const withQuiz = new Set(lessonIds.length ? q.all(`SELECT DISTINCT lesson_id FROM lesson_steps WHERE kind IN ('quiz','figures','proofread') AND lesson_id IN (${lessonIds.map(() => '?').join(',')})`, ...lessonIds).map(r => r.lesson_id) : []);
   for (const cl of lessons) { cl.hasRubric = withRubric.has(cl.lesson_id); cl.hasQuiz = withQuiz.has(cl.lesson_id); }
   // Scores (services/scores.js): the scored items of each lesson, and steps first done after the due day ended.
   const items = SC.classItems(classId), lateN = SC.lateSteps(classId, lessons);
