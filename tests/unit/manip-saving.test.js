@@ -16,6 +16,7 @@ const { createUser, startSession, getUser } = await import('../../server/auth.js
 const S = await import('../../server/services/schools.js');
 const M = await import('../../server/services/manipulatives.js');
 const D = await import('../../server/services/manip-drafts.js');
+const AI = await import('../../server/services/ai-call.js');
 const { createApp } = await import('../../server/app.js');
 
 let server, base;
@@ -115,15 +116,17 @@ test('a draft job: queued, running through its steps, done as a recent board ("N
   } finally { M.hooks.create = null; }
 });
 
-test('a draft that fails: failed with its reason, the words kept for Try again; names and bad words never stored or sent', async () => {
+test('the AI fails: the draft ends done with the starting board and the reason; names and bad words never stored or sent', async () => {
   const { boss, kids } = world();
   const ai = standIn({ fail: true });
   try {
     const r = await as(boss)('/api/manipulatives/draft', { method: 'POST', body: { tool: 'clock', brief: 'Six clocks to the quarter hour', grade: '3' } });
     await D.settled(r.json.job.id);
     const job = (await as(boss)('/api/manipulatives/draft')).json.job;
-    assert.equal(job.status, 'failed'); assert.equal(job.error, 'aiFailed'); assert.equal(job.brief, 'Six clocks to the quarter hour'); assert.equal(job.grade, '3');
-    assert.equal(q.get("SELECT COUNT(*) n FROM manip_boards WHERE owner_id=? AND kind='recent'", boss.id).n, 0);
+    assert.equal(job.status, 'done'); assert.equal(job.error, null); assert.equal(job.brief, 'Six clocks to the quarter hour'); assert.equal(job.grade, '3');
+    assert.equal(job.result.ai, false); assert.equal(job.result.reason, 'busy', 'overloaded: the AI was busy');
+    assert.equal(ai.calls.length, 2, 'busy: tried once more after a short pause, then the starting board');
+    assert.equal(q.get("SELECT COUNT(*) n FROM manip_boards WHERE owner_id=? AND kind='recent'", boss.id).n, 1, 'the starting board is in My boards');
     // A failed draft doesn't block the next one.
     const before = q.get('SELECT COUNT(*) n FROM manip_drafts').n, calls = ai.calls.length;
     const named = await as(boss)('/api/manipulatives/draft', { method: 'POST', body: { tool: 'clock', brief: `Clocks for ${kids[0].roster_name || 'Ada Apple'}` } });
@@ -143,6 +146,55 @@ test('a draft that fails: failed with its reason, the words kept for Try again; 
   const z = S.createSchoolAccount(late.boss, late.oak.id, { rosterName: 'Zed Zebra' }).user; S.addToClass(late.boss, late.A.id, z.id);
   D.recover(); await D.settled('zed1');
   assert.equal(D.get('zed1').status, 'failed'); assert.equal(D.get('zed1').error, 'names');
+});
+
+test('the AI times out, is rate limited or sends bad JSON: one call within one budget (no SDK retries), the starting board, one warn line without the brief', async () => {
+  const { boss } = world();
+  const lines = [], saved = { ...AI.AI_CALL };
+  AI.hooks.log = (msg, f) => lines.push({ msg, ...f });
+  const brief = 'Secret brief words about quarter hours';
+  const draft = async () => { const id = D.start(boss, { tool: 'clock', brief }).job.id; await D.settled(id); return D.view(D.get(id)); };
+  try {
+    // A call that never answers: the budget ends it once, with no second wait.
+    Object.assign(AI.AI_CALL, { timeoutMs: 120, busyPauseMs: 10, minRetryMs: 50 });
+    const opts = [];
+    M.hooks.create = (params, o) => { opts.push(o); return new Promise(() => {}); };
+    const t0 = Date.now(), slow = await draft();
+    assert.ok(Date.now() - t0 < 1000, 'ends at the budget, not twice it');
+    assert.equal(slow.status, 'done'); assert.equal(slow.result.ai, false); assert.equal(slow.result.reason, 'timeout');
+    assert.equal(opts.length, 1, 'a timeout is not tried again');
+    assert.deepEqual(opts[0], { timeout: 120, maxRetries: 0 });
+    const board = M.ownBoard(boss, slow.boardId);
+    assert.ok(board, 'the starting board is saved'); assert.ok(JSON.stringify(board.state).includes(brief), 'the brief is its step');
+    assert.equal(lines.length, 1); assert.equal(lines[0].msg, 'manipulatives draft ai failed'); assert.equal(lines[0].kind, 'timeout');
+    assert.equal(lines[0].draft, slow.id); assert.equal(lines[0].tool, 'clock'); assert.ok(lines[0].ms >= 100);
+    assert.ok(!JSON.stringify(lines).includes('Secret'), 'the brief is never logged');
+    // The SDK's own timeout error: the same.
+    lines.length = 0; opts.length = 0;
+    M.hooks.create = async (params, o) => { opts.push(o); const e = new Error('Request timed out.'); e.name = 'APIConnectionTimeoutError'; throw e; };
+    const sdk = await draft();
+    assert.equal(sdk.result.reason, 'timeout'); assert.equal(opts.length, 1); assert.equal(lines[0].kind, 'timeout');
+    // A rate limit: tried once more while the budget allows, then the starting board.
+    Object.assign(AI.AI_CALL, { timeoutMs: 2000, busyPauseMs: 10, minRetryMs: 50 });
+    lines.length = 0; opts.length = 0;
+    M.hooks.create = async (params, o) => { opts.push(o); const e = new Error('429 rate_limit_error'); e.status = 429; throw e; };
+    const limited = await draft();
+    assert.equal(limited.status, 'done'); assert.equal(limited.result.reason, 'busy'); assert.equal(opts.length, 2);
+    assert.ok(opts.every(o => o.maxRetries === 0)); assert.ok(opts[1].timeout < 2000, 'the retry gets what is left of the budget');
+    assert.equal(lines.length, 1); assert.equal(lines[0].kind, 'rate_limit'); assert.equal(lines[0].status, 429);
+    // Bad JSON: no retry, reason error.
+    lines.length = 0; opts.length = 0;
+    M.hooks.create = async (params, o) => { opts.push(o); return { model: params.model, usage: { input_tokens: 5, output_tokens: 5 }, content: [{ type: 'text', text: '{"title": "cut' }] }; };
+    const bad = await draft();
+    assert.equal(bad.status, 'done'); assert.equal(bad.result.reason, 'error'); assert.equal(opts.length, 1); assert.equal(lines[0].kind, 'bad_json');
+    // No key or the budget resting: the starting board, and nothing logged.
+    M.hooks.create = null; lines.length = 0;
+    const rest = await draft();
+    assert.equal(rest.status, 'done'); assert.equal(rest.result.reason, 'resting'); assert.equal(lines.length, 0);
+    // The page never gives up first: the estimate carries the longest a draft takes (the AI budget and a margin).
+    Object.assign(AI.AI_CALL, saved);
+    assert.ok(D.eta().max > AI.AI_CALL.timeoutMs);
+  } finally { Object.assign(AI.AI_CALL, saved); AI.hooks.log = null; M.hooks.create = null; }
 });
 
 test('shutdown and boot: a running draft is handed off (interrupted), run again at boot if recent, else ended as failed', async () => {

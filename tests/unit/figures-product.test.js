@@ -1,5 +1,6 @@
 // Figures, the standalone product (services/figures.js, routes/figures.js; docs/decisions.md "Figures, the standalone
-// product"): hidden like the Manipulatives (the normal 404 with noindex for everyone but the testers), the menu and the
+// product" and "Figures opens to all teachers"): every school staff member and the platform admin (the normal 404 with
+// noindex for everyone else, the sign-in page when signed out, FIGURES=0 hides it from everyone), the menu and the
 // editor for kinds from every pack (only the packs a page needs, pinned with SRI), the catalog's generators and presets,
 // the export notice in the SVG and PNG bytes, worksheets (create, change, reorder, regenerate, delete, owner only, print
 // with the answer key for the owner only, answers worked out on the server), presets, the "Power with AI" switch, the AI
@@ -24,6 +25,10 @@ const { createApp } = await import('../../server/app.js');
 const CAT = await import('../../public/js/figures-catalog.js');
 const { pngWithNotice, pngText, crc32 } = await import('../../public/js/figures-export.js');
 const OF = figuresKit(FIG_LATEST['oomba-figures']);
+const TOOLS = await import('./_tools-plan.js');
+// Paid plans on for everyone (docs/decisions.md "Figures and the Manipulatives: Teacher plan only"); T and T2 have the
+// Teacher plan, so they make figures as any teacher with the plan does.
+TOOLS.plansOn();
 
 let server, base;
 test.before(async () => { server = createApp().listen(0); server.keepAliveTimeout = 0; await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
@@ -47,6 +52,7 @@ const T = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Tom Teacher
 const T2 = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Tia Teacher', role: 'teacher' }).user.id);
 const kid = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Zelda Quokka' }).user.id);
 S.addToClass(boss, A.id, kid.id);
+TOOLS.givePlan(T.id); TOOLS.givePlan(T2.id);
 
 test('migration 0095: once, after the manipulatives, its tables exist', () => {
   const names = MIGRATIONS.map(m => m[0]);
@@ -56,35 +62,91 @@ test('migration 0095: once, after the manipulatives, its tables exist', () => {
   assert.ok(q.all('PRAGMA table_info(question_sets)').some(c => c.name === 'purpose'), 'one question-set model: purpose');
 });
 
-test('hidden: signed out, guests, grown-ups, students and teachers off the list get the normal 404; testers get noindex pages', async () => {
+test('who can open it (docs/decisions.md "Figures and the Manipulatives: Teacher plan only"): staff with the Teacher plan (paid, trial, school seat), testers and the platform admin; staff without it see the plan page; guests, grown-ups, students and banned accounts the normal 404; FIGURES=0 hides it from everyone', async () => {
   const grown = createUser({ username: 'FigParent', password: 'secret123', accountType: 'grownup' });
   const guest = createUser({ username: 'FigGuest', isGuest: true });
-  for (const who of [null, guest, grown, kid, T]) {
-    for (const p of ['/figures', '/figures/triangle', '/figures/worksheets/new', '/figures/thumb/triangle.svg']) {
+  const head = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Hana Head', role: 'admin' }).user.id);
+  const trial = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Tara Trial', role: 'teacher' }).user.id);
+  const seat = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Sam Seat', role: 'teacher' }).user.id);
+  const free = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Fred Free', role: 'teacher' }).user.id);
+  const tester = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Tess Tester', role: 'teacher' }).user.id);
+  TOOLS.givePlan(head.id); TOOLS.giveTrial(trial.id); TOOLS.giveSeat(oak.id, seat.id, boss.id);
+  const PAGES = ['/figures', '/figures/triangle', '/figures/worksheets/new', '/figures/tests/new', '/figures/terms', '/figures/thumb/triangle.svg'];
+  for (const who of [guest, grown, kid]) {
+    for (const p of PAGES) {
       const r = await as(who)(p);
-      assert.equal(r.status, 404, `${p} for ${who ? who.username : 'signed out'}`);
-      assert.doesNotMatch(r.text, /figures\.css|figures-editor\.js|Build a worksheet/, 'the normal 404 page, nothing of the product');
+      assert.equal(r.status, 404, `${p} for ${who.username}`);
+      assert.doesNotMatch(r.text, /figures\.css|figures-editor\.js|Build a worksheet|Teacher plan/, 'the normal 404 page, nothing of the product or the plan');
       if (p !== '/figures/thumb/triangle.svg') assert.match(r.text, /<meta name="robots" content="noindex/, 'the 404 page is not indexed either');
     }
     assert.equal((await as(who)('/api/figures/state')).status, 404);
     assert.equal((await as(who)('/api/figures/worksheets', { body: { title: 'x' } })).status, 404);
   }
-  const ok = await as(boss)('/figures');
-  assert.equal(ok.status, 200);
-  assert.match(ok.headers.get('x-robots-tag'), /noindex/);
-  assert.match(ok.headers.get('cache-control'), /no-store/);
-  assert.match(ok.text, /<meta name="robots" content="noindex/);
-  assert.match(ok.text, /\/js\/figures\.js/);
-  await withFlags({ figures: false }, async () => assert.equal((await as(boss)('/figures')).status, 404, 'FIGURES=0 hides it from the admin too'));
-  await withFlags({ manipulativesUsers: [T.username.toLowerCase(), kid.username.toLowerCase()] }, async () => {
-    assert.equal((await as(T)('/figures')).status, 200, 'a teacher on the Manipulatives tester list');
-    assert.equal((await as(kid)('/figures')).status, 404, 'the list is for school staff only');
+  // Signed out: like a /teach page, the sign-in page (coming back here), and a 401 from the APIs; never indexed.
+  for (const p of PAGES) {
+    const r = await as(null)(p);
+    assert.equal(r.status, 302, p); assert.equal(r.headers.get('location'), `/login?next=${encodeURIComponent(p)}`);
+    assert.match(r.headers.get('x-robots-tag'), /noindex/);
+  }
+  assert.equal((await as(null)('/api/figures/state')).status, 401);
+  // The Teacher plan (paid, a trial, a school seat), a school admin with it, the platform admin and a tester: every page.
+  await withFlags({ manipulativesUsers: [tester.username.toLowerCase()] }, async () => {
+    for (const who of [T, head, trial, seat, tester, boss]) {
+      assert.equal(F.canMake(who), true, who.username);
+      for (const p of PAGES) assert.equal((await as(who)(p)).status, 200, `${p} for ${who.username}`);
+      const ok = await as(who)('/figures');
+      assert.match(ok.headers.get('x-robots-tag'), /noindex/);
+      assert.match(ok.headers.get('cache-control'), /no-store/);
+      assert.match(ok.text, /<meta name="robots" content="noindex/);
+      assert.match(ok.text, /\/js\/figures\.js/);
+      assert.doesNotMatch(ok.text, /fg-testing|only you can see this|part of the Teacher plan/, 'no tester banner, no plan page');
+      assert.equal((await as(who)('/api/figures/state')).status, 200);
+    }
   });
-  const banned = createUser({ username: 'FigBanned', password: 'secret123', role: 'admin' });
+  // A teacher without the plan: the calm plan page (200, not a 404) on every page, the trial and /plans, never a price.
+  assert.equal(F.canMake(free), false); assert.equal(F.roleOf(free), 'plan');
+  for (const p of PAGES.filter(x => !x.endsWith('.svg'))) {
+    const r = await as(free)(p);
+    assert.equal(r.status, 200, p);
+    assert.match(r.text, /Figures is part of the Teacher plan/); assert.match(r.text, /href="\/trial"/); assert.match(r.text, /href="\/plans"/);
+    assert.doesNotMatch(r.text, /\$\d|figures-editor\.js|Build a worksheet/, 'no price, nothing of the product');
+    assert.doesNotMatch(r.text, /\u2014/);
+  }
+  const api = await as(free)('/api/figures/state');
+  assert.equal(api.status, 403); assert.equal(api.json.code, 'teacherPlan');
+  assert.equal((await as(free)('/api/figures/worksheets', { body: { title: 'x' } })).status, 403);
+  assert.equal(F.createWorksheet(free, { title: 'x' }).ok, false, 'the services refuse too');
+  // A lapsed plan: the plan page again.
+  const lapse = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Lee Lapse', role: 'teacher' }).user.id);
+  const sid = TOOLS.givePlan(lapse.id);
+  assert.equal(F.canMake(lapse), true);
+  TOOLS.endPlan(sid);
+  assert.equal(F.canMake(lapse), false); assert.equal(F.roleOf(lapse), 'plan');
+  // Paid plans off (no billing, or not yet public): the tester list alone, as before billing; a free teacher gets the 404.
+  for (const off of [() => TOOLS.plansOn(false), () => { config.billingPublic = false; }]) {
+    off();
+    try {
+      assert.equal((await as(free)('/figures')).status, 404);
+      assert.equal((await as(T)('/figures')).status, 404, 'the plan counts only while plans are on for everyone');
+      assert.equal((await as(boss)('/figures')).status, 200);
+      await withFlags({ manipulativesUsers: [T.username.toLowerCase()] }, async () => assert.equal((await as(T)('/figures')).status, 200, 'a tester'));
+    } finally { TOOLS.plansOn(); }
+  }
+  await withFlags({ figures: false }, async () => {
+    for (const who of [boss, T, trial, free, null]) {
+      assert.equal((await as(who)('/figures')).status, 404, `FIGURES=0 hides it from ${who ? who.username : 'signed out'}`);
+      assert.equal((await as(who)('/api/figures/state')).status, 404);
+    }
+  });
+  const banned = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Bo Banned', role: 'teacher' }).user.id);
+  TOOLS.givePlan(banned.id);
+  assert.equal(F.canMake(banned), true);
   q.run('UPDATE users SET banned=1 WHERE id=?', banned.id);
-  assert.equal(F.canMake(getUser(banned.id)), false);
-  assert.equal(F.canMake(guest), false);
-  assert.equal(F.canMake(grown), false);
+  assert.equal(F.canMake(getUser(banned.id)), false, 'a banned teacher'); assert.equal(F.roleOf(getUser(banned.id)), null);
+  const bannedAdmin = createUser({ username: 'FigBanned', password: 'secret123', role: 'admin' });
+  q.run('UPDATE users SET banned=1 WHERE id=?', bannedAdmin.id);
+  assert.equal(F.canMake(getUser(bannedAdmin.id)), false);
+  for (const u of [guest, grown, kid, createUser({ username: 'FigKid', password: 'secret123' })]) { assert.equal(F.canMake(u), false, u.username); assert.equal(F.roleOf(u), null, u.username); }
 });
 
 test('the menu: every catalog kind as a card with a server-drawn thumbnail; every subject open, Economics since 1.4.0, and nothing Coming soon', async () => {
@@ -320,9 +382,9 @@ test('Power with AI (mocked): catalog kinds only, every item checked with OF.che
     const a = q.get("SELECT details FROM audit_log WHERE action='figures.draft' AND target=? ORDER BY rowid DESC", id);
     assert.deepEqual(JSON.parse(a.details), { ai: true, added: 4, repaired: 3, dropped: 1 });
     // a failing call falls back to the starter set
-    F.hooks.create = async () => { throw new Error('overloaded'); };
+    F.hooks.create = async () => { const e = new Error('529 overloaded_error'); e.status = 529; throw e; };
     const f = await B(`/api/figures/worksheets/${id}/draft`, { body: { brief: 'box plots and histograms', count: 2 } });
-    assert.equal(f.json.ai, false); assert.equal(f.json.added, 2);
+    assert.equal(f.json.ai, false); assert.equal(f.json.added, 2); assert.equal(f.json.reason, 'busy');
   } finally { F.hooks.create = null; F.hooks.log = null; }
 });
 
@@ -343,6 +405,10 @@ test('Power with AI without a key: a template starter set from the generators; n
 });
 
 test('the teaching tools switcher shows only to someone who can open both tools', async () => {
+  // The Teacher plan opens both tools (one rule, services/teacher-tools.js): the switcher shows; with the Manipulatives
+  // off it does not.
+  assert.match((await as(T)('/figures')).text, /class="fg-tools"[\s\S]*href="\/manipulatives"/);
+  assert.equal((await as(T)('/manipulatives')).status, 200, 'the Teacher plan opens the Manipulatives too');
   let r = await as(boss)('/figures');
   assert.match(r.text, /class="fg-tools"[\s\S]*href="\/manipulatives"[\s\S]*href="\/figures"/);
   r = await as(boss)('/manipulatives');

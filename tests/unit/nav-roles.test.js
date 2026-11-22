@@ -60,8 +60,8 @@ const guest = auth.createGuest();
 const ON = {
   out: { tabs: ['/', '/learn', '/build', '/parents', '/login'], top: ['/', '/learn', '/build', '/parents', '/teachers'] },
   grownup: { tabs: ['/family', '/play', '/learn', '/build', '/family/account'], top: ['/family', '/play', '/learn', '/build'] },
-  schoolAdmin: { tabs: ['/teach', '/build', '/live', '/me'], top: ['/teach', '/build', '/live'] },
-  teacher: { tabs: ['/teach', '/build', '/live', '/me'], top: ['/teach', '/build', '/live'] },
+  schoolAdmin: { tabs: ['/teach', '/build', '/figures', '/live', '/me'], top: ['/teach', '/build', '/figures', '/live'] },
+  teacher: { tabs: ['/teach', '/build', '/figures', '/live', '/me'], top: ['/teach', '/build', '/figures', '/live'] },
   admin: { tabs: ['/', '/learn', '/build', '/admin/schools', '/me'], top: ['/', '/learn', '/build', '/admin/schools'] },
   student: { tabs: ['/classes', '/play', '/learn', '/build', '/me'], top: ['/classes', '/play', '/learn', '/build', '/friends'] },
   kid: { tabs: ['/', '/learn', '/build', '/friends', '/me'], top: ['/', '/learn', '/build', '/friends'] },
@@ -69,8 +69,8 @@ const ON = {
 const KEYS = {
   out: ['play', 'learn', 'build', 'grownups', 'signin'],
   grownup: ['family', 'play', 'learn', 'build', 'account'],
-  schoolAdmin: ['classroom', 'build', 'live', 'me'],
-  teacher: ['classroom', 'build', 'live', 'me'],
+  schoolAdmin: ['classroom', 'build', 'tools', 'live', 'me'],
+  teacher: ['classroom', 'build', 'tools', 'live', 'me'],
   admin: ['play', 'learn', 'build', 'schools', 'me'],
   student: ['class', 'play', 'learn', 'build', 'me'],
   kid: ['play', 'learn', 'build', 'friends', 'me'],
@@ -82,7 +82,8 @@ const PEOPLE = [['out', null], ['out', guest], ['grownup', mum], ['schoolAdmin',
 const playOf = role => (LANDS[role] ? '/play' : '/');
 const KID_TAB = "<nav class=\"tabbar\" aria-label=\"Main\">\n    <a class=\"tab\" href=\"/\" aria-current=\"page\"><span class=\"emo\" aria-hidden=\"true\">🎮</span><span class=\"tab-t\">Play</span></a><a class=\"tab\" href=\"/learn\" ><span class=\"emo\" aria-hidden=\"true\">📚</span><span class=\"tab-t\">Learn</span></a><a class=\"tab\" href=\"/build\" ><span class=\"emo\" aria-hidden=\"true\">🛠️</span><span class=\"tab-t\">Build</span></a><a class=\"tab\" href=\"/friends\" ><span class=\"emo\" aria-hidden=\"true\">👫</span><span class=\"tab-t\">Friends</span></a>\n    <a class=\"tab\" href=\"/me\" ><span class=\"emo\" aria-hidden=\"true\">🦊</span><span class=\"tab-t\">Me</span></a>\n  </nav>";
 const KID_TOP = "<nav class=\"topnav\" aria-label=\"Main\">\n      <a class=\"navlink\" href=\"/\" aria-current=\"page\"><span class=\"emo\" aria-hidden=\"true\">🎮</span>Play</a><a class=\"navlink\" href=\"/learn\" ><span class=\"emo\" aria-hidden=\"true\">📚</span>Learn</a><a class=\"navlink\" href=\"/build\" ><span class=\"emo\" aria-hidden=\"true\">🛠️</span>Build</a><a class=\"navlink\" href=\"/friends\" ><span class=\"emo\" aria-hidden=\"true\">👫</span>Friends</a>\n    </nav>";
-const off = list => list.filter(h => h !== '/plans');
+// Paid plans off: no Plans, and no Teaching tools for staff off the tester list (services/teacher-tools.js).
+const off = list => list.filter(h => h !== '/plans' && h !== '/figures');
 
 test('shellFor: every role\'s tab keys, in order, the same with paid-plan pages on and off; never Plans or School', () => {
   const req = {};
@@ -91,11 +92,12 @@ test('shellFor: every role\'s tab keys, in order, the same with paid-plan pages 
     for (const [role, u] of PEOPLE) {
       const s = shellFor(u, req);
       assert.equal(s.role, role, u ? u.username : 'signed out');
-      assert.deepEqual(s.tabs.map(([k]) => k), KEYS[role], `${role}, plans ${on ? 'on' : 'off'}`);
+      assert.deepEqual(s.tabs.map(([k]) => k), on ? KEYS[role] : KEYS[role].filter(k => k !== 'tools'), `${role}, plans ${on ? 'on' : 'off'}`);
       for (const k of ['plans', 'school']) assert.ok(!s.tabs.some(([x]) => x === k) && !s.top.some(([x]) => x === k), `${role}: no ${k} in either bar`);
     }
   }
-  // Five tabs for everyone but staff: Classroom · Build · Live · Me for teachers and school admins.
+  // Plans off (as now): Classroom · Build · Live · Me for teachers and school admins (Teaching tools needs plans on,
+  // or the tester list); five for everyone else. With plans on, staff have five too (above).
   assert.equal(shellFor(mum, req).tabs.length, 5); assert.equal(shellFor(head, req).tabs.length, 4); assert.equal(shellFor(teacher, req).tabs.length, 4);
   assert.equal(shellFor(pupil, req).tabs.length, 5); assert.equal(shellFor(kid, req).tabs.length, 5); assert.equal(shellFor(null, req).tabs.length, 5);
   assert.equal(shellFor(boss, req).tabs.length, 5);
@@ -399,4 +401,38 @@ test('the settings pages: Appearance for everyone, Plans for adults (staff on /m
   config.stripeApiKey = '';
   assert.doesNotMatch((await get(mum, '/family/account')).text, /id="plans"/, 'plans off: no Plans section');
   assert.doesNotMatch((await get(teacher, '/me/settings')).text, /id="plans"/);
+});
+
+test('Teaching tools (docs/decisions.md "Figures opens to all teachers"): staff only, current on /figures, FIGURES=0 hides it, in the account menu when the phone bar is full', async () => {
+  const toolsLink = /class="navlink" href="\/figures"/;
+  const menu = s => (/<details class="acctpick" data-acctpick>[\s\S]*?<\/details>/.exec(s) || [''])[0];
+  for (const [role, u] of PEOPLE) {
+    const page = (await get(u, playOf(role))).text, staff = role === 'teacher' || role === 'schoolAdmin';
+    assert.equal(toolsLink.test(topnav(page)), staff, `${role}: Teaching tools in the top bar`);
+    assert.equal(/class="tab" href="\/figures"/.test(tabbar(page)), staff, `${role}: Teaching tools in the tab bar`);
+  }
+  const t = (await get(teacher, '/figures')).text;
+  assert.match(topnav(t), /<a class="navlink" href="\/figures" aria-current="page"><span class="emo" aria-hidden="true">[\s\S]*?<\/span>Teaching tools<\/a>/);
+  assert.match(tabbar(t), /<a class="tab" href="\/figures" aria-current="page">[\s\S]*?<span class="tab-t">Tools<\/span><\/a>/);
+  assert.doesNotMatch(menu(t), /href="\/figures"/, 'room in the tab bar: not in the account menu');
+  // Translated: the label is the language's own.
+  assert.match(topnav((await get(teacher, '/figures', { lang: 'es' })).text), /Herramientas docentes<\/a>/);
+  // The Story Builder on as well: six would not fit the phone bar, so Teaching tools moves to the account menu (phones).
+  config.storyBuilder = true;
+  try {
+    const s = shellFor(teacher, {});
+    assert.deepEqual(s.tabs.map(([k]) => k), ['classroom', 'build', 'stories', 'live', 'me']); assert.ok(s.top.some(([k]) => k === 'tools')); assert.equal(s.toolsInMenu, true);
+    const p = (await get(teacher, '/teach')).text;
+    assert.match(menu(p), /<li class="acct-phone"><a href="\/figures" [^>]*>[\s\S]*?<span>Teaching tools<\/span><\/a><\/li>/);
+    assert.doesNotMatch(tabbar(p), /href="\/figures"/);
+  } finally { config.storyBuilder = false; }
+  // FIGURES=0: nowhere.
+  config.figures = false;
+  try {
+    for (const u of [teacher, head]) {
+      const p = (await get(u, '/teach')).text;
+      assert.doesNotMatch(`${topnav(p)}${tabbar(p)}${menu(p)}`, /href="\/figures"/, u.username);
+      assert.deepEqual(shellFor(u, {}).tabs.map(([k]) => k), ['classroom', 'build', 'live', 'me']);
+    }
+  } finally { config.figures = true; }
 });

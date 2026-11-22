@@ -148,7 +148,7 @@ router.post('/api/lessons/draft', requireUser, rateLimit('lesson-ai', 30, 3600e3
   const r = L.createLesson(req.user, schoolId, { title: d.draft.title || topic, folderId: folderId || null, summary: d.draft.summary, subject: subject || d.draft.subject || '', grade: grade || d.draft.grade || '', objectives: d.draft.objectives });
   if (!r.ok) return err(req, res, r.code);
   for (const s of d.draft.steps || []) {
-    if (s.kind === L.FIGURES_KIND) { FS.draftedStep(req.user, r.lesson.id, s); continue; }
+    if (s.kind === L.FIGURES_KIND) { FS.draftedStep(req.user, r.lesson.id, s, { lang: req.locale }); continue; }
     L.addStep(req.user, r.lesson.id, { kind: s.kind, title: s.title, body: s.body, minutes: s.minutes, gameId: s.gameId || null });
   }
   audit(req.user.id, 'lesson.draft', r.lesson.id, { ai: d.ai });
@@ -186,8 +186,8 @@ router.post('/api/lessons/:id/delete', requireUser, (req, res) => {
 // step with the Type select, and the CSS hides the Game field for other types (it also follows the select without JS).
 const KIND_ORDER = ['text', 'question', 'game', 'build'];
 const BODY_LABEL = { text: 'lessons.step.bodyText', question: 'lessons.step.bodyQuestion', build: 'lessons.step.bodyBuild', game: 'lessons.step.bodyGame', figures: 'lessons.step.bodyFigures' };
-/** "Figure questions" in the step editor: only for someone the Figures gate lets in (services/figures.js canMake, the
- *  one place that opens Figures to everyone). Adding one opens the Figures builder for the step's questions. */
+/** "Figure questions" in the step editor: only for someone the Figures gate lets in (services/figures.js canMake: every
+ *  school staff member and the platform admin, while FIGURES is on). Adding one opens the Figures builder for the step's questions. */
 const figureSteps = u => F.canMake(u);
 /** The step form's Rubric select (question and build steps): the teacher's rubrics, and the one on the step now. */
 function rubricField(t, rubrics, current, idp, kinds, forKind) {
@@ -371,14 +371,14 @@ router.post('/api/lessons/:id/steps', requireUser, (req, res) => {
   // to lesson"). Anyone the Figures gate does not let in is refused like any unknown step kind.
   if (b(req).kind === L.FIGURES_KIND) {
     if (!figureSteps(req.user)) return stepErr(req, res, { ok: false, code: 'stepKind' });
-    const r = FS.newLessonSet(req.user, req.params.id, { title: String(b(req).title || '').trim() });
+    const r = FS.newLessonSet(req.user, req.params.id, { title: String(b(req).title || '').trim(), lang: req.locale });
     return r.ok ? res.json({ ok: true, redirect: `/figures/worksheets/${r.id}` }) : send(req, res, r);
   }
   const r = L.addStep(req.user, req.params.id, stepInput(b(req))); return r.ok ? res.json({ ok: true }) : stepErr(req, res, r);
 });
 /** "Edit questions" on a Figure step: the Figures builder on the step's lesson set (made from its snapshot if needed). */
 router.post('/api/lesson-steps/:id/figures-edit', requireUser, (req, res) => {
-  const r = FS.editStepSet(req.user, req.params.id);
+  const r = FS.editStepSet(req.user, req.params.id, { lang: req.locale });
   return r.ok ? res.json({ ok: true, redirect: `/figures/worksheets/${r.id}` }) : no(req, res);
 });
 /** A Figure step's printable student sheet (?key=1: with the answer key), black on white: the lesson's editors. */

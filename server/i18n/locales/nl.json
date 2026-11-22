@@ -77,7 +77,9 @@
     "learn": "Leren",
     "class": "Klas",
     "classroom": "Klaslokaal",
-    "live": "Live"
+    "live": "Live",
+    "tools": "Lesmiddelen",
+    "toolsTab": "Lesmiddelen"
   },
   "errors": {
     "goHome": "Naar de start",
@@ -3391,7 +3393,8 @@
           "guessUnder": "Vaak minder dan een minuut",
           "guess": "{n, plural, one {Ongeveer een minuut} other {Ongeveer # minuten}}",
           "longer": "Duurt iets langer dan normaal",
-          "soFar": "{time} tot nu toe"
+          "soFar": "{time} tot nu toe",
+          "longerMax": "{n, plural, one {Dit duurt langer dan normaal. Binnen een minuut heb je hoe dan ook een bord.} other {Dit duurt langer dan normaal. Binnen # minuten heb je hoe dan ook een bord.}}"
         },
         "step": {
           "check": {
@@ -3425,7 +3428,18 @@
           "names": "Laat namen van leerlingen uit de beschrijving: namen gaan nooit naar de AI.",
           "words": "Sommige woorden in de beschrijving zijn niet toegestaan. Pas ze aan en probeer het opnieuw.",
           "personal": "Laat telefoonnummers, e-mails, links en codes weg en probeer het opnieuw.",
-          "other": "Er ging iets mis. Probeer het zo opnieuw."
+          "other": "Er ging iets mis. Probeer het zo opnieuw.",
+          "notFound": "Dit account kan nu geen borden met AI opstellen. Vraag degene die je toegang tot het materiaal gaf om je toegang na te kijken.",
+          "badTool": "Dit hulpmiddel kan niet met AI worden opgesteld. Open een ander hulpmiddel en probeer het daar.",
+          "brief": "De beschrijving was te kort. Schrijf een paar woorden over de les en probeer het opnieuw.",
+          "badState": "Het opgestelde bord kon niet worden opgeslagen. Probeer het opnieuw, of vraag om minder opgaven.",
+          "tooBig": "Het opgestelde bord was te groot om op te slaan. Vraag om minder opgaven en probeer het opnieuw."
+        },
+        "fallback": {
+          "resting": "De AI rust nu even, dus hier is een startbord. Je kunt het later opnieuw met AI proberen.",
+          "timeout": "De AI antwoordde niet op tijd, dus hier is een startbord. Je kunt het opnieuw met AI proberen.",
+          "busy": "De AI is nu erg druk, dus hier is een startbord. Probeer het over een paar minuten opnieuw met AI.",
+          "error": "De AI kon dit niet opstellen, dus hier is een startbord. Je kunt het opnieuw met AI proberen."
         }
       },
       "save": {
@@ -3790,7 +3804,8 @@
       "removeTestQ": "Deze toets verwijderen?",
       "removeLesson": "Deze vragen verwijderen",
       "removeLessonQ": "Deze vragen bij figuren verwijderen?",
-      "removeLessonText": "De figuurstap van de les houdt de vragen waarmee hij het laatst is opgeslagen. Dit kan niet ongedaan worden."
+      "removeLessonText": "De figuurstap van de les houdt de vragen waarmee hij het laatst is opgeslagen. Dit kan niet ongedaan worden.",
+      "fallback": "De AI antwoordde deze keer niet, dus hier is een startset ({count, plural, one {# vraag} other {# vragen}}). Je kunt het opnieuw proberen."
     }
   },
   "favorites": {
@@ -12373,7 +12388,6 @@
       "9-12": "Groep 9-12"
     },
     "menu": {
-      "testing": "In test: alleen jij ziet dit",
       "pitch": "Exacte figuren op schaal voor werkbladen, toetsen en dia's. Klaar om te printen, met uitgewerkte antwoorden.",
       "buildTitle": "Een werkblad maken",
       "buildText": "Kies figuren zelf, of beschrijf wat je nodig hebt en laat AI de vragen opstellen. Elk getal wordt gecontroleerd, zodat elke figuur echt getekend kan worden.",
@@ -12820,6 +12834,19 @@
       "care3": "Deze voorwaarden gaan over de figuren die je exporteert. Voor de rest van Oomba Academy gelden de voorwaarden van de site.",
       "siteTerms": "Lees de voorwaarden van de site",
       "back": "Terug naar Figuren"
+    },
+    "plan": {
+      "titleFigures": "Figuren",
+      "titleManip": "Manipulatieven",
+      "headingFigures": "Figuren hoort bij het Leerkracht-abonnement",
+      "headingManip": "De manipulatieven horen bij het Leerkracht-abonnement",
+      "leadFigures": "Maak exacte figuren voor wiskunde, data, natuurwetenschappen en economie, maak er werkbladen en toetsen van en voeg figuurvragen toe aan je lessen.",
+      "leadManip": "Gebruik virtuele manipulatieven op het bord, bewaar borden om te delen en geef live sessies met je klassen.",
+      "trial": "Probeer het Leerkracht-abonnement {days} dagen gratis. Je hebt geen kaart nodig om te beginnen.",
+      "kept": "Alles wat je al hebt opgegeven, blijft werken voor je leerlingen.",
+      "start": "Mijn gratis proefperiode starten",
+      "plans": "Abonnementen bekijken",
+      "api": "Dit hoort bij het Leerkracht-abonnement."
     }
   }
 }

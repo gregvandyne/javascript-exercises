@@ -654,6 +654,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.95rem}
 .lang-list a:hover,.lang-list a:focus-visible,.acct-list a:hover,.acct-list a:focus-visible{background:var(--hover);text-decoration:none}
 .lang-list a[aria-current="true"],.acct-list a[aria-current]{color:var(--link);background:var(--accent-soft)}
 .acct-list .badge{margin-inline-start:auto}
+/* Teaching tools in the account menu: only on phones, where the tab bar has no room for it (the top bar has it). */
+@media (min-width:821px){.acct-phone{display:none}}
 .acct-themes{margin-bottom:4px}
 .acct-themes a{min-height:40px;padding-inline-start:20px}
 .lang-check{flex:none;width:1.2em;text-align:center;font-weight:800}
