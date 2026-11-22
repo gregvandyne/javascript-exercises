@@ -149,9 +149,18 @@ test('a board saves itself ("Saved") and comes back after a refresh; Save as tem
   await row.locator('[data-act="rename"]').click();
   await page.fill('#mp-rn', 'Clock warm-up 2'); await page.press('#mp-rn', 'Enter');
   await page.waitForSelector('.mp-brow:has-text("Clock warm-up 2")');
-  page.once('dialog', d => d.accept());
+  // Delete asks in the site's own question box (Cancel focused first): Cancel keeps it, Delete deletes it.
+  const box = page.locator('dialog.ob-dialog[open]');
   await page.locator('.mp-brow:has-text("Clock warm-up 2") .mp-more').click();
   await page.locator('.mp-brow:has-text("Clock warm-up 2") [data-act="delete"]').click();
+  await box.waitFor();
+  assert.equal(await page.evaluate(() => document.activeElement.dataset.ob), 'cancel');
+  await box.locator('[data-ob="cancel"]').click();
+  await box.waitFor({ state: 'detached' });
+  assert.ok(M.ownBoard(boss, tpl.id), 'cancel keeps the board');
+  await page.locator('.mp-brow:has-text("Clock warm-up 2") .mp-more').click();
+  await page.locator('.mp-brow:has-text("Clock warm-up 2") [data-act="delete"]').click();
+  await box.locator('[data-ob="ok"]').click();
   await page.waitForFunction(() => !/Clock warm-up 2/.test(document.querySelector('.mp-boards').textContent));
   assert.equal(M.ownBoard(boss, tpl.id), null);
   assert.deepEqual(errors, []);

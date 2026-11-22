@@ -7,7 +7,7 @@
 // Hosts (teachers testing it) save boards with share codes, run sessions and draft with AI; students only see their
 // own square in a session's room. Chrome strings are i18n keys (js.manip.*); tool names, tool help and the task library are
 // English data (public/js/manip-data.js, public/js/manip-tasks.js).
-import { t, api, toast, esc, pageData } from '/js/app.js';
+import { t, api, toast, esc, pageData, ask } from '/js/app.js';
 import { iconHtml, toolIconHtml } from '/js/icons.js';
 import { TOOLS, CATS, toolOf, pieceDefs, allPieceDefs, BREAKS, FRACTION_DENS, fracLabel, hexValue, paletteName } from '/js/manip-data.js';
 import { TASKS } from '/js/manip-tasks.js';
@@ -1996,7 +1996,8 @@ async function boardAction(r, act, li) {
   try {
     if (act === 'rename') return renameRow(r, li, base);
     if (act === 'delete') {
-      if (!window.confirm(t(r.type === 'room' ? 'js.manip.boards.deleteRoom' : 'js.manip.boards.deleteConfirm', { title: r.title }))) return;
+      // The site's own question box (app.js ask(), not the browser's confirm()): Cancel has the focus first.
+      if (!await ask({ text: t(r.type === 'room' ? 'js.manip.boards.deleteRoom' : 'js.manip.boards.deleteConfirm', { title: r.title }), ok: t('js.manip.boards.delete'), danger: true })) return;
       await api(`${base}/delete`, { method: 'POST', body: {} });
     } else if (act === 'duplicate') {
       await api(`${base}/duplicate`, { method: 'POST', body: {} });

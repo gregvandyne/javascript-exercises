@@ -228,11 +228,26 @@ test('an admin is offered "Publish anyway", which asks first, then publishes', {
   const { ctx, page } = await studio(admin, g.id, { width: 1280, height: 800 });
   await page.click('#st-publish'); await page.click('#vis-go');
   await page.locator('.sheet [data-play="anyway"]').waitFor();
-  const asked = [];
-  page.on('dialog', d => { asked.push(d.message()); d.accept(); });
+  // It asks in the site's own question box (never the browser's confirm()), with Cancel focused first.
+  const browserBoxes = [];
+  page.on('dialog', d => { browserBoxes.push(d.message()); d.dismiss(); });
+  const box = page.locator('dialog.ob-dialog[open]');
   await page.click('.sheet [data-play="anyway"]');
+  await box.waitFor();
+  assert.equal(await box.locator('.ob-dialog-text').textContent(), 'Publish without a full playthrough? Players may get stuck.');
+  assert.equal(await page.evaluate(() => document.activeElement.dataset.ob), 'cancel', 'Cancel has the focus first');
+  assert.equal(await box.locator('[data-ob="ok"]').textContent(), 'Publish anyway');
+  // Cancel keeps it unpublished, and the sheet stays open.
+  await box.locator('[data-ob="cancel"]').click();
+  await box.waitFor({ state: 'detached' });
+  await page.waitForTimeout(300);
+  assert.notEqual(games.getGame(g.id).status, 'published', 'cancel publishes nothing');
+  assert.equal(await page.locator('.sheet [data-play="anyway"]').count(), 1, 'the sheet is still open');
+  // Publish anyway publishes.
+  await page.click('.sheet [data-play="anyway"]');
+  await box.locator('[data-ob="ok"]').click();
   for (let i = 0; i < 50 && games.getGame(g.id).status !== 'published'; i++) await page.waitForTimeout(100);
-  assert.deepEqual(asked, ['Publish without a full playthrough? Players may get stuck.']);
   assert.equal(games.getGame(g.id).status, 'published');
+  assert.deepEqual(browserBoxes, [], 'no browser dialog');
   await ctx.close();
 });

@@ -208,12 +208,26 @@ test('the page\'s ⋯ menu: rename, duplicate and delete in place; a title opens
   assert.equal(await tpl.locator('.mp-brow').count(), 9);
   assert.equal(await tpl.locator('.mp-tgroup').first().getAttribute('data-tool'), 'clock');
   assert.match(await tpl.locator('.mp-tgroup[data-tool="clock"] .mp-tname').textContent(), /3 boards/);
-  // Delete the oldest recent board.
+  // Delete the oldest recent board: the site's own question box (never the browser's confirm()), Cancel focused first.
   const rec = page.locator('#mp-allrecent');
-  page.once('dialog', d => d.accept());
+  const browserBoxes = []; page.on('dialog', d => { browserBoxes.push(d.message()); d.dismiss(); });
   await menu(rec, 'Recent 1', 'delete');
+  const box = page.locator('dialog.ob-dialog[open]');
+  await box.waitFor();
+  assert.equal(await box.locator('.ob-dialog-text').textContent(), 'Delete "Recent 1"? This can’t be undone.');
+  assert.equal(await page.evaluate(() => document.activeElement.dataset.ob), 'cancel', 'Cancel has the focus first');
+  assert.equal(await box.locator('[data-ob="ok"]').textContent(), 'Delete');
+  // Cancel (Escape) keeps it.
+  await page.keyboard.press('Escape');
+  await box.waitFor({ state: 'detached' });
+  assert.equal(q.get("SELECT COUNT(*) n FROM manip_boards WHERE owner_id=? AND title='Recent 1'", boss.id).n, 1, 'cancel keeps the board');
+  assert.equal(await rec.locator('.mp-brow').count(), 13);
+  // Delete deletes it.
+  await menu(rec, 'Recent 1', 'delete');
+  await box.locator('[data-ob="ok"]').click();
   await page.waitForFunction(() => ![...document.querySelectorAll('#mp-allrecent .mp-blink')].some(b => b.textContent === 'Recent 1'));
   assert.equal(await rec.locator('.mp-brow').count(), 12);
+  assert.deepEqual(browserBoxes, [], 'no browser dialog');
   assert.equal(q.get("SELECT COUNT(*) n FROM manip_boards WHERE owner_id=? AND title='Recent 1'", boss.id).n, 0);
   // A recent board's title opens it on the manipulatives page.
   const r2 = q.get("SELECT id FROM manip_boards WHERE owner_id=? AND title='Recent 2'", boss.id).id;
