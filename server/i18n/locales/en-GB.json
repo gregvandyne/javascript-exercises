@@ -306,6 +306,17 @@
       "faq": {
         "q1": "Do I need to be a maths specialist?"
       }
+    },
+    "videos": {
+      "manipulatives": {
+        "title": "Virtual Maths Manipulatives"
+      },
+      "figures": {
+        "p": "Exact maths and science diagrams with the answers worked out, ready to print or assign."
+      },
+      "room": {
+        "title": "Live maths rooms"
+      }
     }
   },
   "learn": {

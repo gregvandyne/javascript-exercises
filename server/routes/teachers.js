@@ -41,6 +41,7 @@ import { HUBS, hubBySlug, LEARNING, TEACHER_GAMES, HUB_FAQ, TEACHER_FAQ, HOME_TI
 import { teacherLoop } from '../views/teacher-loop.js';
 import { loopLinks } from '../services/teach-loop.js';
 import { LOOP_CSS } from './teach-loop.js';
+import { seeIt } from '../views/see-it.js';
 import { enabled as classroomOn } from '../services/gclassroom.js';
 
 export const router = Router();
@@ -347,6 +348,7 @@ router.get('/teachers', (req, res) => {
   </section>
 
   ${teacherLoop(t, { variant: 'page', cls: 'lp-sec', links: isSchoolStaff(req.user) ? loopLinks(req.user) : null, live: liveOn() })}
+  ${seeIt(req, { cta: plans ? html`<a class="btn btn-primary" href="/trial">${t('plans.teacher.start')}</a>` : html`<a class="btn btn-primary" href="#start">${t('teachers.cta.start')}</a>` })}
   ${classroomSection(req)}
 
   <div class="lp-cols">

@@ -5859,6 +5859,25 @@
     },
     "quotes": {
       "h": "Ce qu’en disent les enseignants"
+    },
+    "videos": {
+      "kicker": "En action",
+      "h": "Les nouveaux outils pour enseigner, une minute chacun",
+      "lead": "De courtes vidéos tournées dans la vraie application, sous-titrées en anglais. Le son reste coupé tant que vous ne l’activez pas.",
+      "manipulatives": {
+        "title": "Manipulables mathématiques virtuels",
+        "p": "Blocs base dix, fractions, horloges et plus encore sur un seul tableau, sans bacs de matériel à distribuer."
+      },
+      "figures": {
+        "title": "Oomba Figures",
+        "p": "Des schémas exacts de maths et de sciences, avec les réponses calculées, prêts à imprimer ou à donner à la classe."
+      },
+      "room": {
+        "title": "Salles de maths en direct",
+        "p": "Chaque élève travaille dans sa propre case, et vous voyez toute la classe sur un seul écran."
+      },
+      "plan": "Les manipulables, leurs salles en direct et Figures font partie de la formule Enseignant.",
+      "testing": "Ces outils sont en cours d’essai dans quelques classes."
     }
   },
   "learn": {

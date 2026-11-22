@@ -11254,3 +11254,24 @@ tools (Power with AI, Check my passage, why lines, the free daily cap) are uncha
   `tests/unit/proof-chat-browser.test.js` (Chromium: the laptop panel docked beside the builder, a new passage as one
   change, Undo and Put it back, Escape; the iPhone 13 sheet and bubble; the plan note; the progress page's card before
   and after Ask Oomba). `proof-ai.test.js` checks the frame's new `chat` field.
+
+## Tool videos on the teacher pages: "See it in action" (22 Nov 2026)
+
+- **What:** the owner approved showing the new promo videos publicly. One section, `#see-it` ("See it in action: The new
+  teaching tools, a minute each"), from one partial (`server/views/see-it.js`, like `views/teacher-loop.js`) in two looks:
+  on the teacher landing at "/" between Live games and Students build (landing.css), and on `/teachers` after the
+  teaching loop (app.css). A grid of the videos: one column on a phone, two at 720 px, three at 1080 px (a fourth makes
+  it 2 by 2). Each has a short title with its Fluent icon and one plain line. Under them a note and the page's own
+  sign-up button (the landing's trial, `/teachers`' "#start" or `/trial` when paid plans are on). No prices, no links into
+  the tools.
+- **Videos:** `public/video/oomba-manipulatives.mp4`, `oomba-figures.mp4`, `oomba-room.mp4` (the 720p web cuts as made,
+  3.4, 4.3 and 4.2 MB), each with a `-poster.jpg` (a frame just after the hook card) and `.en.vtt` (checked against the
+  burned-in captions of the web cut). The same markup as the `/teachers/live` demo: `controls muted playsinline
+  preload="none"`, poster, a captions track, named by its title and described by its line. A video shows only when all
+  three of its files are there; the Classroom Dashboard video is one commented entry in `VIDEOS`, plus its files and
+  `teachers.videos.dashboard.*`.
+- **Gating unchanged.** Showing a video opens nothing: `services/teacher-tools.js toolAccess` is as it was. The note
+  follows the same switch: with paid plans on for everyone, "The Manipulatives, their live rooms and Figures are part of
+  the Teacher plan."; off (only the tester list can use them), "These tools are being tried out in a few classrooms now."
+- **Words:** `teachers.videos.*` in all 13 locales (en-GB: maths). Captions stay English and the lead says so. Music
+  credit in `docs/media-credits.md`. Test: `tests/unit/see-it-videos.test.js`.

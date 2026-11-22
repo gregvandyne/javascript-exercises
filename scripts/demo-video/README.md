@@ -37,6 +37,8 @@ timeline (`glide`, `setCursor`).
    `fit-music.mjs teacher <track> --hit 101.16 --fade-in 0.5` and `fit-music.mjs parents <track> --hit 101.16 --fade-in 0.5`.
 6. Mix: `node scripts/demo-video/mix.mjs <teacher|parents>` (music only) writes `<prefix>-16x9.mp4`, `-9x16.mp4` and the
    720p `-web.mp4`, normalised to -16 LUFS. Copy the web cut, poster and captions to `public/video/`.
+   The tool videos in "See it in action" (`server/views/see-it.js`) are `public/video/oomba-<id>.mp4`, `-poster.jpg`
+   and `.en.vtt`; a new one is one entry in its `VIDEOS` list plus `teachers.videos.<id>.*` in the locale files.
 7. Check: `node scripts/demo-video/sheet.mjs 0.5 5x5 384 <video>` makes a contact sheet; look at it, and run
    `ffmpeg -i <video> -vf freezedetect=n=0.001:d=0.5 -an -f null -` over the game scenes (only still UI may freeze).
 

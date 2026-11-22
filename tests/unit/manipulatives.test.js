@@ -90,7 +90,10 @@ test('hidden: signed out, students without a session, teachers, grown-ups get th
 });
 
 test('no link to it anywhere: menus, the home page, the sitemap and robots.txt', async () => {
-  for (const p of ['/', '/sitemap.xml', '/robots.txt', '/teachers']) assert.doesNotMatch((await as(boss)(p)).text, /manipulatives/i, p);
+  for (const p of ['/sitemap.xml', '/robots.txt']) assert.doesNotMatch((await as(boss)(p)).text, /manipulatives/i, p);
+  // The teacher pages show the tool's video ("See it in action", server/views/see-it.js, approved by the owner on
+  // 22 Nov 2026) but never link into the tool.
+  for (const p of ['/', '/teachers']) assert.doesNotMatch((await as(boss)(p)).text, /href="[^"]*\/manipulatives/i, p);
   for (const f of ['server/views/layout.js', 'server/seo.js', 'server/routes/seo.js']) assert.doesNotMatch(fs.readFileSync(path.join(ROOT, f), 'utf8'), /manipulatives/i, f);
 });
 
