@@ -11277,6 +11277,13 @@ tools (Power with AI, Check my passage, why lines, the free daily cap) are uncha
   the Teacher plan."; off (only the tester list can use them), "These tools are being tried out in a few classrooms now."
 - **Words:** `teachers.videos.*` in all 13 locales (en-GB: maths). Captions stay English and the lead says so. Music
   credit in `docs/media-credits.md`. Test: `tests/unit/see-it-videos.test.js`.
+- **The fourth video, Classroom Dashboard (22 Nov 2026):** `public/video/oomba-dashboard.mp4` (3.1 MB, 52 s), its
+  poster (the full board with the timer, just after the hook card) and captions (checked against the burned-in text),
+  last in `VIDEOS`; the grid is now 2 by 2 on wide screens. The dashboard is not gated like the others: every class's
+  teacher has it, free (routes/dash.js, no plan check). So the note under the grid now says that first: "The Classroom
+  Dashboard is free for every class." then, with paid plans on, "The Manipulatives, their live rooms and Figures are part
+  of the Teacher plan." or, off, "The other three tools are being tried out in a few classrooms now." Same music
+  (AtlasAudio via Pixabay), added to the credits row.
 
 ## Classroom dashboards: Eyes up on top, class lists on a layout switch, sent tools' names (22 Nov 2026)
 

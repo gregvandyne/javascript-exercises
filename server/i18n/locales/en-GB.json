@@ -316,6 +316,9 @@
       },
       "room": {
         "title": "Live maths rooms"
+      },
+      "dashboard": {
+        "p": "Timers, jobs, check-ins and maths tools for your whole class day, on one screen."
       }
     }
   },

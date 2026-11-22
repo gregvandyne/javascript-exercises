@@ -5877,8 +5877,12 @@
         "title": "Live rekenruimtes",
         "p": "Elke leerling werkt in een eigen vak, terwijl u de hele klas op één scherm ziet."
       },
-      "plan": "De manipulatieven, hun live ruimtes en Figuren horen bij het Leerkracht-abonnement.",
-      "testing": "Deze hulpmiddelen worden nu in een paar klassen uitgeprobeerd."
+      "dashboard": {
+        "title": "Klasdashboard",
+        "p": "Timers, klassentaken, check-ins en rekenhulpmiddelen voor de hele schooldag, op één scherm."
+      },
+      "plan": "Het klasdashboard is gratis voor elke klas. De manipulatieven, hun live ruimtes en Figuren horen bij het Leerkracht-abonnement.",
+      "testing": "Het klasdashboard is gratis voor elke klas. De andere drie hulpmiddelen worden nu in een paar klassen uitgeprobeerd."
     }
   },
   "learn": {
