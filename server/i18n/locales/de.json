@@ -77,7 +77,9 @@
     "learn": "Lernen",
     "class": "Klasse",
     "classroom": "Klassenraum",
-    "live": "Live"
+    "live": "Live",
+    "tools": "Unterrichtswerkzeuge",
+    "toolsTab": "Werkzeuge"
   },
   "errors": {
     "goHome": "Zur Startseite",
@@ -12373,7 +12375,6 @@
       "9-12": "Klassen 9-12"
     },
     "menu": {
-      "testing": "Im Test: nur du siehst das",
       "pitch": "Exakte, maßstabsgetreue Figuren für Arbeitsblätter, Tests und Folien. Druckfertig, mit ausgerechneten Lösungen.",
       "buildTitle": "Arbeitsblatt erstellen",
       "buildText": "Wähle Figuren selbst aus oder beschreibe, was du brauchst, und lass die KI die Fragen entwerfen. Jede Zahl wird geprüft, damit jede Figur wirklich gezeichnet werden kann.",

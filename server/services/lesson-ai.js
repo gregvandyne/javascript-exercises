@@ -2,8 +2,8 @@
 // from the ones this teacher can use. The teacher edits the draft before using it. Counts towards the AI spending cap.
 // Without an API key (or when the AI budget is resting) a simple template draft is made instead.
 //
-// Figure questions (docs/decisions.md "Figures: the lesson Figure step and Build a test"): for a Figures tester the
-// caller also passes the figure catalog (services/figures.js figureCatalog: kinds with a generator, each with its id, a
+// Figure questions (docs/decisions.md "Figures: the lesson Figure step and Build a test"): for a teacher Figures lets in
+// (services/figures.js canMake: every school staff member) the caller also passes the figure catalog (services/figures.js figureCatalog: kinds with a generator, each with its id, a
 // line about it, its parameter schema and its OF.solve keys), the same way it passes the game catalog. Claude may then
 // add "figures" steps whose figures come only from that catalog. Every figure is checked here (F.repairDraft: OF.check
 // with the pinned Oomba Figures, the answerKey an OF.solve value, choices, words): a bad one is replaced by its kind's
@@ -128,7 +128,7 @@ export function templateDraft({ topic, grade, subject, minutes = 40 }, catalog =
     { kind: 'text', title: t('lessons.template.warmup'), body: t('lessons.template.warmupText', { topic }), w: 1, gameId: '' },
     match && { kind: 'game', title: t('lessons.template.play', { title: match.title }), body: '', w: 2, gameId: match.id },
     { kind: 'build', title: t('lessons.template.build'), body: t('lessons.template.buildText', { topic }), w: 4, gameId: '' },
-    // A Figures tester whose topic points at figures (services/figures.js templateTest: its words, the grade band)
+    // A teacher Figures lets in, whose topic points at figures (services/figures.js templateTest: its words, the grade band)
     // gets a starter Figure step dealt from the generators.
     ...figureTemplate({ topic, subject, grade }, figures, t),
     { kind: 'question', title: t('lessons.template.exit'), body: t('lessons.template.exitText', { topic }), w: 1, gameId: '' },

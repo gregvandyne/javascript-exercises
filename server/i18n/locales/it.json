@@ -77,7 +77,9 @@
     "learn": "Impara",
     "class": "Classe",
     "classroom": "La mia classe",
-    "live": "Live"
+    "live": "Live",
+    "tools": "Strumenti didattici",
+    "toolsTab": "Strumenti"
   },
   "errors": {
     "goHome": "Torna alla home",
@@ -12373,7 +12375,6 @@
       "9-12": "Classi 9-12"
     },
     "menu": {
-      "testing": "In prova: solo tu puoi vederlo",
       "pitch": "Figure esatte e in scala per schede, verifiche e presentazioni. Pronte da stampare, con le risposte svolte.",
       "buildTitle": "Crea una scheda",
       "buildText": "Scegli tu le figure, oppure descrivi ciò che ti serve e lascia che l'IA scriva le domande. Ogni numero viene controllato perché ogni figura si possa davvero disegnare.",

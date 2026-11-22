@@ -12,10 +12,10 @@
 // done, scored like a quiz step in the gradebook and the Score.
 //
 // Who can do what:
-//   a Figures tester (services/figures.js canMake) who teaches the class   assign their own worksheet
+//   a teacher Figures lets in (services/figures.js canMake) who teaches it assign their own worksheet
 //   the class's managers                                                   see answers, turn "Show answers" on or off
-//   the class's students                                                   answer and hand in (no tester list here: the
-//                                                                          step exists only because a tester assigned it)
+//   the class's students                                                   answer and hand in (no Figures gate here: the
+//                                                                          step exists only because a teacher assigned it)
 // The answers never reach a student's page before they are allowed: the server leaves out answer, value, the right
 // option and worked lines (a choice question's options are sent, in their fixed order, never which one is right), and sends each figure as an SVG drawn here with the hidden parts left out and the figure's data-* attributes
 // (some carry values) removed, never the figure's data (which holds the answer for many kinds, a ruler's reading say).
@@ -83,8 +83,8 @@ export function assignWorksheet(u, worksheetId, classId, { opensAt = null, dueAt
 }
 
 // ---------------------------------------------------------------- a lesson's Figure step (the lesson editor)
-// "Figure questions" is a step kind the lesson editor offers to Figures testers (the same gate as /figures: F.canMake,
-// the one place to open it to everyone). Its questions are edited in the Figures builder as a question set of purpose
+// "Figure questions" is a step kind the lesson editor offers to every teacher Figures lets in (the same gate as
+// /figures: F.canMake). Its questions are edited in the Figures builder as a question set of purpose
 // 'lesson' (question_sets.lesson_id names the lesson); "Save to lesson" snapshots them into the step exactly as Assign
 // does, so the student page, marking, the gradebook and print are the same. A step whose students have started cannot
 // have its questions changed (their marks would no longer match): the teacher makes a copy of the lesson instead.

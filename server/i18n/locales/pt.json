@@ -77,7 +77,9 @@
     "learn": "Aprender",
     "class": "Turma",
     "classroom": "Minha sala",
-    "live": "Ao vivo"
+    "live": "Ao vivo",
+    "tools": "Ferramentas de ensino",
+    "toolsTab": "Ferramentas"
   },
   "errors": {
     "goHome": "Ir para o início",
@@ -12374,7 +12376,6 @@
       "9-12": "Anos 9-12"
     },
     "menu": {
-      "testing": "Em teste: só você vê isto",
       "pitch": "Figuras exatas e em escala para atividades, provas e slides. Prontas para imprimir, com as respostas resolvidas.",
       "buildTitle": "Criar uma atividade",
       "buildText": "Escolha as figuras você mesmo, ou descreva o que precisa e deixe a IA escrever as perguntas. Cada número é conferido para que cada figura possa mesmo ser desenhada.",

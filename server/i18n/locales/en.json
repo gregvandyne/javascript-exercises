@@ -77,7 +77,9 @@
     "learn": "Learn",
     "class": "Class",
     "classroom": "Classroom",
-    "live": "Live"
+    "live": "Live",
+    "tools": "Teaching tools",
+    "toolsTab": "Tools"
   },
   "errors": {
     "goHome": "Go home",
@@ -13092,7 +13094,6 @@
       "9-12": "Grades 9-12"
     },
     "menu": {
-      "testing": "Testing: only you can see this",
       "pitch": "Exact, to-scale figures for worksheets, tests and slides. Print-ready, with the answers worked out.",
       "buildTitle": "Build a worksheet",
       "buildText": "Pick figures by hand, or describe what you need and let AI draft the questions. Every number is checked so each figure can really be drawn.",

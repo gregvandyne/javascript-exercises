@@ -314,9 +314,9 @@ export const config = {
   // gets the normal 404. MANIPULATIVES=0 turns it off for everyone.
   manipulatives: manipulatives.on,
   manipulativesUsers: String(process.env.MANIPULATIVES_USERS || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean),
-  // Figures, the standalone product (docs/decisions.md "Figures, the standalone product"; services/figures.js), hidden
-  // while it is tested exactly like the manipulatives: /figures answers only the platform admin and the school staff in
-  // MANIPULATIVES_USERS (the same tester list, no new variable). Everyone else gets the normal 404. FIGURES=0 turns it off.
+  // Figures, the standalone product (docs/decisions.md "Figures opens to all teachers"; services/figures.js): /figures
+  // answers the platform admin and every school staff member; everyone else gets the normal 404. FIGURES=0 is the kill
+  // switch: it hides Figures (and its "Teaching tools" menu entry) from everyone, the platform admin included.
   figures: figures.on,
   liveMaxPlayers: Math.min(100, Math.max(2, Math.floor(num(process.env.LIVE_MAX_PLAYERS, 60)))),
   liveMaxSessions: Math.max(1, Math.floor(num(process.env.LIVE_MAX_SESSIONS, 60))),

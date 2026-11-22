@@ -29,6 +29,8 @@ const NAV = [
   ['build', '/build', '🛠️'],
   ['friends', '/friends', '👫'],
 ];
+/** School staff's "Teaching tools": the Figures menu (/figures), which also links to the other tools a teacher may open. */
+const TOOLS = Object.freeze(['tools', '/figures', '🧰']);
 export const VERSION = Date.now().toString(36); // cache-buster per boot
 
 /** Grown-up accounts, school staff and the platform admin: the readers of /terms, /refunds and the billing parts of
@@ -109,12 +111,17 @@ export function shellFor(u) {
     return { role: 'grownup', tabs: [...top, ['account', '/family/account', '⚙️']], top, meHref: '/family/account' };
   }
   if (isSchoolStaff(u)) {
-    // Classroom · Build · Live: no Learn or Play for staff (docs/decisions.md "Teachers' top bar: Classroom, Build, Live").
-    const head = [classroom, build, ...stories];
-    // A school admin: School is in the account menu (accountMenu); otherwise the teacher's bars.
-    if (adminSchools(u).length > 0) return { role: 'schoolAdmin', tabs: [...head, ...live, me], top: [...head, ...live], meHref: '/me' };
+    // Classroom · Build · Teaching tools · Live: no Learn or Play for staff (docs/decisions.md "Teachers' top bar:
+    // Classroom, Build, Live" and "Figures opens to all teachers"). Teaching tools (/figures) is there while FIGURES is
+    // on. The phone's tab bar takes it while it has room (five tabs at most, as for every other role); with the Story
+    // Builder on as well it is in the account menu instead (toolsInMenu).
+    const tools = config.figures && !u.banned ? [TOOLS] : [];
+    const head = [classroom, build, ...tools, ...stories];
     const top = [...head, ...live];
-    return { role: 'teacher', tabs: [...top, me], top, meHref: '/me' };
+    const roomy = [...top, me].length <= 5;
+    const tabs = roomy ? [...top, me] : [...top.filter(x => x !== TOOLS), me];
+    // A school admin: School is in the account menu (accountMenu); otherwise the teacher's bars.
+    return { role: adminSchools(u).length > 0 ? 'schoolAdmin' : 'teacher', tabs, top, meHref: '/me', toolsInMenu: tools.length > 0 && !roomy };
   }
   if (isPlatformAdmin(u)) {
     // No Friends tab: the platform admin is staff, and staff have no friends (services/schools.js noFriendsAccount).
@@ -194,7 +201,7 @@ export const plansInMenu = (u, req) => legalReader(u) && familiesOn(req);
  */
 export function accountMenu(req, { shell, name, badge, active, unread = 0 }) {
   const t = tReq(req); const u = req.user;
-  if (shell.role === 'teacher' || shell.role === 'schoolAdmin') return staffMenu(req, { name, badge, active, unread });
+  if (shell.role === 'teacher' || shell.role === 'schoolAdmin') return staffMenu(req, { name, badge, active, unread, tools: !!shell.toolsInMenu });
   const grownup = shell.role === 'grownup';
   const settingsHref = grownup ? '/family/account' : '/me/settings';
   const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
@@ -227,14 +234,14 @@ export function accountMenu(req, { shell, name, badge, active, unread = 0 }) {
  * (a school admin), Plans (plansInMenu), Settings and Sign out, and the theme as one Auto / Light / Dark switch at the
  * bottom (plain links, as in themeLinks, so it works with no JavaScript; app.js switches at once).
  */
-function staffMenu(req, { name, badge, active, unread }) {
+function staffMenu(req, { name, badge, active, unread, tools = false }) {
   const t = tReq(req); const u = req.user;
   const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   const school = (schoolsOf(u.id)[0] || {}).name || '';
   const admin = adminSchools(u).length > 0;
   const plansKey = tabKey(t, 'plans'), playKey = tabKey(t, 'play'), learnKey = tabKey(t, 'learn');
   const here = href => req.path === href || req.path.startsWith(`${href}/`);
-  const item = (href, emo, label, { on = here(href), attr = '' } = {}) => html`<li><a href="${href}" ${on ? raw('aria-current="page"') : ''}${attr}><span class="theme-ico" aria-hidden="true">${ico(emo, { size: 20 })}</span><span>${label}</span></a></li>`;
+  const item = (href, emo, label, { on = here(href), attr = '', cls = '' } = {}) => html`<li${cls ? html` class="${cls}"` : ''}><a href="${href}" ${on ? raw('aria-current="page"') : ''}${attr}><span class="theme-ico" aria-hidden="true">${ico(emo, { size: 20 })}</span><span>${label}</span></a></li>`;
   const cur = THEMES.includes(req.theme) ? req.theme : 'system';
   const short = th => t(th === 'system' ? 'layout.acct.themeAuto' : `layout.theme.${th}`);
   return html`<details class="acctpick" data-acctpick>
@@ -246,6 +253,7 @@ function staffMenu(req, { name, badge, active, unread }) {
         <a href="/learn" ${here('/learn') ? raw('aria-current="page"') : ''}${en(learnKey)}><span class="acct-tile-e" aria-hidden="true">${ico('📚', { size: 32 })}</span>${t(learnKey)}</a>
       </div>
       <ul class="acct-list acct-links">
+        ${tools ? item('/figures', '🧰', t(tabKey(t, 'tools')), { attr: en(tabKey(t, 'tools')), cls: 'acct-phone' }) : ''}
         ${admin ? item('/school', '🏛️', t('me.tiles.school')) : ''}
         ${plansInMenu(u, req) ? item('/plans', '⭐', t(plansKey), { attr: en(plansKey) }) : ''}
         ${item('/me/settings', '⚙️', t('me.settings.title'))}
@@ -304,7 +312,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     // The signed-out "Sign in" tab is current on the sign-in and sign-up pages, never on a guest's own Me page.
     if (k === 'signin') return html`<a class="tab" href="${href}" ${req.path === '/me' ? '' : cur('me')}><span class="emo" aria-hidden="true">${ico(emo, { size: 30 })}</span><span class="tab-t">${signIn}</span></a>`;
     if (k === 'me') return html`<a class="tab" href="${href}" ${cur('me')}>${u.photo_at ? html`<span class="emo">${avatar(u, 28)}</span>` : html`<span class="emo" aria-hidden="true">${u.avatar}</span>`}<span class="tab-t">${t('nav.me')}</span>${badge('me')}</a>`;
-    const l = label(k);
+    const l = k === 'tools' && t.own('nav.toolsTab') ? { key: 'nav.toolsTab', attr: '' } : label(k);
     return html`<a class="tab" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${ico(emo, { size: 30 })}</span><span class="tab-t">${t(l.key)}</span>${badge(k)}</a>`;
   };
   const nav = bare ? '' : html`

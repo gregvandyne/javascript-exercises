@@ -76,7 +76,9 @@
     "learn": "Apprendre",
     "class": "Classe",
     "classroom": "Ma classe",
-    "live": "En direct"
+    "live": "En direct",
+    "tools": "Outils pédagogiques",
+    "toolsTab": "Outils"
   },
   "errors": {
     "goHome": "Retour à l’accueil",
@@ -12372,7 +12374,6 @@
       "9-12": "Niveaux 9-12"
     },
     "menu": {
-      "testing": "En test : vous seul le voyez",
       "pitch": "Des figures exactes et à l'échelle pour vos fiches, contrôles et diaporamas. Prêtes à imprimer, avec les réponses détaillées.",
       "buildTitle": "Créer une fiche",
       "buildText": "Choisissez les figures vous-même, ou décrivez ce qu'il vous faut et laissez l'IA rédiger les questions. Chaque nombre est vérifié pour que chaque figure puisse vraiment être tracée.",

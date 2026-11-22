@@ -1,7 +1,9 @@
-// Figures, the standalone product (services/figures.js; docs/decisions.md "Figures, the standalone product"). Hidden
-// while it is tested: every address here answers only someone services/figures.js roleOf lets in (the platform admin and
-// the school staff on the manipulatives' tester list); everyone else falls through to the site's normal 404. Never
-// linked from any menu, the sitemap or search, and never indexed (X-Robots-Tag and the layout's noindex).
+// Figures, the standalone product (services/figures.js; docs/decisions.md "Figures, the standalone product" and "Figures
+// opens to all teachers"). Every address here answers only someone services/figures.js roleOf lets in (the platform
+// admin and every school staff member); signed out, a page goes to the sign-in page and an API answers 401 (as the /teach
+// pages do); everyone else signed in falls through to the site's normal 404. FIGURES=0 is the normal 404 for everyone.
+// The "Teaching tools" menu entry (views/layout.js) links here; never in the sitemap or search, and never indexed
+// (X-Robots-Tag and the layout's noindex).
 //   GET  /figures                                  the menu: every kind as a card, the teacher's worksheets
 //   GET  /figures/thumb/<kind>.svg                 a card's picture (the kind's example, drawn on the server, cached)
 //   GET  /figures/terms                            what teachers may do with the figures they export (plain words)
@@ -34,6 +36,7 @@ import { figTag } from '../services/figlibs.js';
 import * as F from '../services/figures.js';
 import * as FS from '../services/figures-steps.js';
 import { canHost as manipHost } from '../services/manipulatives.js';
+import { requireUser } from '../auth.js';
 import { decodeData, SOON } from '../../public/js/figures-catalog.js';
 
 export const router = Router();
@@ -43,9 +46,11 @@ const ASSIGN_ERRORS = ['empty', 'noAnswer', 'noClass', 'badDate', 'dueBeforeOpen
 const fail = (req, res, r) => res.status(STATUS[r.code] || 400).json({ error: req.t(`figures.errors.${r.code}`), code: r.code, ...(r.problems ? { problems: r.problems } : {}) });
 const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
 
-// The gate: anyone else goes on to the next router, and so to the site's 404 (the page's, or the API's JSON one).
+// The gate: signed out (Figures on), the sign-in page or a 401, like a /teach page; anyone else goes on to the next
+// router, and so to the site's 404 (the page's, or the API's JSON one).
 router.use(['/figures', '/api/figures'], (req, res, next) => {
   const role = F.roleOf(req.user);
+  if (!role && !req.user && F.on()) { res.set({ 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'no-store' }); return requireUser(req, res, next); }
   if (!role) return next('router');
   req.figRole = role;
   res.set({ 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'no-store' });
@@ -55,7 +60,7 @@ router.use(['/figures', '/api/figures'], (req, res, next) => {
 const CSS = raw(`<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`);
 const kindName = (t, id) => t(`figures.kinds.${id}.name`);
 const subjName = (t, s) => t(`figures.subjects.${s}`);
-/** "Teaching tools: Manipulatives · Figures", for someone who can open both (both are hidden while they are tested). */
+/** "Teaching tools: Manipulatives · Figures", only for someone who can open both (Manipulatives keeps its tester list). */
 export function teachingTools(req, current) {
   const u = req.user;
   if (!(manipHost(u) && F.canMake(u))) return '';
@@ -86,10 +91,10 @@ router.get('/figures', (req, res) => {
         <small>${[w.purpose === 'test' ? t('figures.menu.isTest') : '', w.grade ? t('figures.menu.gradeOf', { grade: w.grade }) : '', t('figures.menu.edited', { date: dateOf(req, w.updated_at) })].filter(Boolean).join(' · ')}</small></span></li>`)}</ul>`
     : html`<p class="muted">${t('figures.menu.noSheets')}</p>`;
   page(req, res, {
-    title: t('figures.title'), active: null, head: CSS, scripts: ['/js/figures.js'], bodyClass: 'fg-page',
+    title: t('figures.title'), active: 'tools', head: CSS, scripts: ['/js/figures.js'], bodyClass: 'fg-page',
     body: html`${teachingTools(req, 'figures')}
       <header class="fg-hero"><span class="fg-logo" aria-hidden="true"><svg viewBox="0 0 40 40" width="40" height="40"><path d="M8 32 L32 8 L32 32 Z" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/><path d="M25 32 v-7 h7" fill="none" stroke="currentColor" stroke-width="3"/></svg></span>
-        <h1>${t('figures.title')}</h1><span class="fg-testing">${t('figures.menu.testing')}</span></header>
+        <h1>${t('figures.title')}</h1></header>
       <p class="fg-lead">${t('figures.menu.pitch')}</p>
       <div class="fg-top">
         <section class="fg-build"><h2>${t('figures.menu.buildTitle')}</h2><p>${t('figures.menu.buildText')}</p>
@@ -123,7 +128,7 @@ router.get('/figures/terms', (req, res) => {
   const t = req.t, notice = F.kitFor().notice, CC0 = 'https://creativecommons.org/publicdomain/zero/1.0/';
   const li = keys => html`<ul class="fg-terms-list">${keys.map(k => html`<li>${t(`figures.terms.${k}`)}</li>`)}</ul>`;
   page(req, res, {
-    title: t('figures.terms.title'), active: null, head: CSS, bodyClass: 'fg-page',
+    title: t('figures.terms.title'), active: 'tools', head: CSS, bodyClass: 'fg-page',
     body: html`${teachingTools(req, 'figures')}
       ${crumbs(t, [['/figures', t('figures.title')], [null, t('figures.terms.crumb')]])}
       <article class="fg-terms">
@@ -149,7 +154,7 @@ function builder(req, res, w, { purpose = w ? w.purpose : 'worksheet' } = {}) {
   const test = purpose === 'test';
   const crumb = lesson ? [[`/teach/lessons/${lesson.id}`, lesson.title], [null, t('figures.sheet.crumbLesson')]] : [['/figures', t('figures.title')], [null, t(test ? 'figures.sheet.crumbTest' : 'figures.sheet.crumb')]];
   page(req, res, {
-    title: w ? w.title : t(test ? 'figures.sheet.newTest' : 'figures.sheet.newTitle'), active: null, head: CSS, scripts: ['/js/figures-sheet.js'], bodyClass: 'fg-page',
+    title: w ? w.title : t(test ? 'figures.sheet.newTest' : 'figures.sheet.newTitle'), active: 'tools', head: CSS, scripts: ['/js/figures-sheet.js'], bodyClass: 'fg-page',
     body: html`${teachingTools(req, 'figures')}
       ${crumbs(t, crumb)}
       ${jsonData('fg-sheet', { id: w ? w.id : null, purpose, lesson, ai: F.aiPref(u), startAi: req.query.ai === '1', kinds, subjects: Object.fromEntries(F.SUBJECTS.map(s => [s, subjName(t, s)])), untitled: t(test ? 'figures.sheet.untitledTest' : 'figures.sheet.untitled'),
@@ -165,7 +170,7 @@ router.get('/figures/worksheets/:id/print', (req, res, next) => {
   const t = req.t, key = req.query.key === '1', info = localeInfo(req.locale);
   const frag = F.printHtml(w, F.itemsOf(w.id), { t, lang: req.locale || 'en', dir: info.dir, key });
   page(req, res, {
-    title: key ? t('figures.print.keyTitle', { title: w.title }) : w.title, active: null, head: CSS, scripts: ['/js/figures-print.js'], bodyClass: 'fg-page fg-printpage',
+    title: key ? t('figures.print.keyTitle', { title: w.title }) : w.title, active: 'tools', head: CSS, scripts: ['/js/figures-print.js'], bodyClass: 'fg-page fg-printpage',
     body: html`<div class="fg-printbar noprint">${crumbs(t, [['/figures', t('figures.title')], [`/figures/worksheets/${w.id}`, w.title], [null, t('figures.print.crumb')]])}
       <div class="row"><a class="chip${key ? '' : ' on'}" href="?key=0">${t('figures.print.sheetOnly')}</a><a class="chip${key ? ' on' : ''}" href="?key=1">${t('figures.print.withKey')}</a>
       <button class="btn btn-primary" type="button" data-print>🖨️ ${t('figures.print.print')}</button></div></div>${raw(frag)}`,
@@ -183,7 +188,7 @@ router.get('/figures/:kind', (req, res, next) => {
   else if (req.query.d) { const d = decodeData(req.query.d); const c = d ? F.cleanData(d) : null; if (c && c.data) start = { data: c.data }; }
   const presets = K.presets.map((d, i) => ({ name: t('figures.editor.example', { n: i + 1 }), data: d }));
   page(req, res, {
-    title: kindName(t, K.id), active: null, bodyClass: 'fg-page', scripts: ['/js/figures-editor.js'],
+    title: kindName(t, K.id), active: 'tools', bodyClass: 'fg-page', scripts: ['/js/figures-editor.js'],
     head: raw(`${CSS}\n${figTag('oomba-figures', F.OF_VERSION, { kinds: [K.id] })}`),
     body: html`${teachingTools(req, 'figures')}
       ${crumbs(t, [['/figures', t('figures.title')], [`/figures#${K.subject}`, subjName(t, K.subject)], [null, kindName(t, K.id)]])}

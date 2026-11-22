@@ -76,7 +76,9 @@
     "learn": "Aprender",
     "class": "Clase",
     "classroom": "Mi aula",
-    "live": "En vivo"
+    "live": "En vivo",
+    "tools": "Herramientas docentes",
+    "toolsTab": "Herramientas"
   },
   "errors": {
     "goHome": "Ir al inicio",
@@ -12372,7 +12374,6 @@
       "9-12": "Grados 9-12"
     },
     "menu": {
-      "testing": "En prueba: solo tú puedes verlo",
       "pitch": "Figuras exactas y a escala para fichas, exámenes y presentaciones. Listas para imprimir, con las respuestas resueltas.",
       "buildTitle": "Crear una ficha",
       "buildText": "Elige las figuras tú mismo, o describe lo que necesitas y deja que la IA redacte las preguntas. Cada número se comprueba para que cada figura se pueda dibujar de verdad.",

@@ -186,8 +186,8 @@ router.post('/api/lessons/:id/delete', requireUser, (req, res) => {
 // step with the Type select, and the CSS hides the Game field for other types (it also follows the select without JS).
 const KIND_ORDER = ['text', 'question', 'game', 'build'];
 const BODY_LABEL = { text: 'lessons.step.bodyText', question: 'lessons.step.bodyQuestion', build: 'lessons.step.bodyBuild', game: 'lessons.step.bodyGame', figures: 'lessons.step.bodyFigures' };
-/** "Figure questions" in the step editor: only for someone the Figures gate lets in (services/figures.js canMake, the
- *  one place that opens Figures to everyone). Adding one opens the Figures builder for the step's questions. */
+/** "Figure questions" in the step editor: only for someone the Figures gate lets in (services/figures.js canMake: every
+ *  school staff member and the platform admin, while FIGURES is on). Adding one opens the Figures builder for the step's questions. */
 const figureSteps = u => F.canMake(u);
 /** The step form's Rubric select (question and build steps): the teacher's rubrics, and the one on the step now. */
 function rubricField(t, rubrics, current, idp, kinds, forKind) {

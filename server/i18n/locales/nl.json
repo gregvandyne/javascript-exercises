@@ -77,7 +77,9 @@
     "learn": "Leren",
     "class": "Klas",
     "classroom": "Klaslokaal",
-    "live": "Live"
+    "live": "Live",
+    "tools": "Lesmiddelen",
+    "toolsTab": "Lesmiddelen"
   },
   "errors": {
     "goHome": "Naar de start",
@@ -12373,7 +12375,6 @@
       "9-12": "Groep 9-12"
     },
     "menu": {
-      "testing": "In test: alleen jij ziet dit",
       "pitch": "Exacte figuren op schaal voor werkbladen, toetsen en dia's. Klaar om te printen, met uitgewerkte antwoorden.",
       "buildTitle": "Een werkblad maken",
       "buildText": "Kies figuren zelf, of beschrijf wat je nodig hebt en laat AI de vragen opstellen. Elk getal wordt gecontroleerd, zodat elke figuur echt getekend kan worden.",

@@ -1,11 +1,11 @@
 // Figures, the standalone product (docs/decisions.md "Figures, the standalone product"; routes/figures.js): the menu of
 // figure kinds, one editor for every kind, worksheets of figure questions (print a student sheet and an answer key), the
-// teacher's own presets, and "Power with AI" (a worksheet drafted from a brief). Hidden while it is tested
-// (config.figures), exactly like the manipulatives.
+// teacher's own presets, and "Power with AI" (a worksheet drafted from a brief). FIGURES=0 (config.figures) hides it
+// from everyone, the platform admin included (docs/decisions.md "Figures opens to all teachers").
 //
-// Who may use it: the platform admin, and school staff whose username is in MANIPULATIVES_USERS (the same tester list as
-// the manipulatives); never a guest, a banned account or a grown-up (family) account. Everyone else gets the normal 404,
-// on the pages and on every API. Students never open /figures: a worksheet reaches a class through Assign to class
+// Who may use it: the platform admin, and every school staff member (a teacher or a school admin); never a guest, a
+// banned account, a student or kid account, or a grown-up (family) account. Signed out, a page asks to sign in (like the
+// /teach pages); everyone else signed in gets the normal 404, on the pages and on every API. Students never open /figures: a worksheet reaches a class through Assign to class
 // (services/figures-steps.js), as a lesson step on the class's own lesson page.
 // What each person sees: a worksheet is its owner's. Only the owner lists, opens, edits, prints (the student sheet and
 // the answer key) or deletes it; for anyone else it is the same 404 as a wrong id. A preset is its owner's too.
@@ -37,11 +37,11 @@ const clipStr = (s, n) => String(s ?? '').replace(/[\u0000-\u0008\u000b\u000c\u0
 
 // ---------------------------------------------------------------- who may use it
 export const on = () => !!config.figures;
-/** May this account make figures and worksheets? The manipulatives' host rule, with the same tester list. */
+/** May this account make figures and worksheets? The manipulatives' host rule without its tester list: the platform
+ *  admin and every school staff member (S.isSchoolStaff: an active membership that is not a student's). */
 export function canMake(u) {
   if (!on() || !u || u.is_guest || u.banned || isGrownup(u)) return false;
-  if (S.isPlatformAdmin(u)) return true;
-  return config.manipulativesUsers.includes(String(u.username || '').toLowerCase()) && S.isSchoolStaff(u);
+  return S.isPlatformAdmin(u) || S.isSchoolStaff(u);
 }
 /** 'teacher' | null (null: the normal 404). */
 export const roleOf = u => (canMake(u) ? 'teacher' : null);

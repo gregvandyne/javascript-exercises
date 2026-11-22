@@ -31,7 +31,7 @@ const TEMPLATE_KEY = /^[a-z0-9][a-z0-9._-]{0,59}$/;
  *  edited like any step; its questions can't. Answers are checked by the server (progress.quizAnswer). */
 export const QUIZ_KIND = 'quiz';
 /** Figure questions (services/figures-steps.js): made by Assign in the Figures worksheet builder, or by "Save to lesson"
- *  from the lesson editor's "Figure questions" step (Figures testers: the same gate as /figures), always with a snapshot
+ *  from the lesson editor's "Figure questions" step (the same gate as /figures: every school staff member), always with a snapshot
  *  of the questions (lesson_steps.items) and the Oomba Figures version they are drawn with (of_version), so later set
  *  edits never change it until the teacher saves again. Never made by addStep; its title, text and minutes can be
  *  edited like a quiz step's. Answers are marked by the server (progress.figuresAnswer); show_answers is the teacher's
