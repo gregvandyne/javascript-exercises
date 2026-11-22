@@ -3840,6 +3840,59 @@
       "removeLessonQ": "Diese Fragen zu Abbildungen löschen?",
       "removeLessonText": "Der Abbildungs-Schritt der Lektion behält die Fragen, mit denen er zuletzt gespeichert wurde. Das lässt sich nicht rückgängig machen.",
       "fallback": "Die KI hat diesmal nicht geantwortet, hier ist ein Startset ({count, plural, one {# Frage} other {# Fragen}}). Du kannst es nochmal versuchen."
+    },
+    "manip-chat": {
+      "title": "Oomba",
+      "button": "Oomba",
+      "knows": "Kennt deine {tool}-Tafel",
+      "minimize": "Minimieren",
+      "close": "Oomba schließen",
+      "inputLabel": "Nachricht an Oomba",
+      "send": "Senden",
+      "private": "Oomba sieht diese Tafel und deine Worte, nie die Namen oder Arbeiten der Schüler.",
+      "reopen": "Oomba öffnen",
+      "reopenNew": "Oomba öffnen: eine neue Antwort",
+      "thinking": "Oomba denkt nach · {time}",
+      "longer": "Dauert etwas länger · {time}",
+      "leave": "Du kannst diese Seite schließen. Die Antwort wartet hier.",
+      "needText": "Schreib zuerst ein paar Worte für Oomba.",
+      "err": {
+        "names": "Lass die Namen der Schüler weg: Namen gehen nie an die KI. Deine Nachricht ist noch da.",
+        "words": "Einige Wörter in deiner Nachricht sind nicht erlaubt. Ändere sie und sende sie noch einmal.",
+        "personal": "Lass Telefonnummern, E-Mails, Links und Codes weg und sende sie noch einmal.",
+        "brief": "Schreib zuerst ein paar Worte für Oomba.",
+        "chatBusy": "Oomba beantwortet noch deine letzte Nachricht. Warte einen Moment.",
+        "badTool": "Bei diesem Werkzeug kann Oomba nicht helfen. Öffne ein anderes Werkzeug und versuche es dort.",
+        "notFound": "Dieses Konto kann Oomba bei den Manipulativen gerade nicht nutzen.",
+        "slow": "Das sind viele Nachrichten in einer Stunde. Warte ein wenig und versuche es dann noch einmal.",
+        "other": "Etwas ist schiefgelaufen. Deine Nachricht ist noch da: versuche es gleich noch einmal."
+      },
+      "fail": {
+        "error": "Oomba konnte diesmal nicht antworten; deine Tafel ist unverändert.",
+        "timeout": "Oomba hat nicht rechtzeitig geantwortet; deine Tafel ist unverändert.",
+        "busy": "Oomba ist gerade sehr beschäftigt; deine Tafel ist unverändert. Versuche es in ein paar Minuten noch einmal.",
+        "resting": "Oomba ruht sich gerade aus; deine Tafel ist unverändert. Versuche es später noch einmal.",
+        "restart": "Unser Server wurde neu gestartet, bevor Oomba geantwortet hat; deine Tafel ist unverändert."
+      },
+      "retry": "Noch einmal versuchen",
+      "edit": "Bearbeiten",
+      "changedTitle": "Tafel aktualisiert: {title}",
+      "changed": "{n, plural, one {# Aufgabe} other {# Aufgaben}}, {steps, plural, one {# Schritt} other {# Schritte}}",
+      "undoneTitle": "Änderung rückgängig gemacht. Deine Tafel ist wie vorher.",
+      "undo": "Oombas Änderung rückgängig machen",
+      "redo": "Wiederherstellen",
+      "use": "Auf meine Tafel legen",
+      "notBuilt": "Diese Aufgaben haben die Prüfungen der Tafel nicht bestanden, deshalb ist deine Tafel unverändert.",
+      "helloEmpty": "Hallo! Sag mir, welche Stunde du auf dieser {tool}-Tafel möchtest, und ich richte sie ein.",
+      "hello": "Hallo! Ich sehe deine {tool}-Tafel. Bitte mich, etwas zu ändern, oder frag mich etwas dazu.",
+      "ideas": "Ideen",
+      "idea": {
+        "more": "Füge zwei weitere Aufgaben hinzu",
+        "easier": "Mach sie etwas leichter",
+        "steps": "Schreib klarere Schritte für meine Schüler"
+      },
+      "placeholder": "Bitte Oomba, die Tafel zu ändern",
+      "placeholderEmpty": "Beschreib die Stunde, die du auf dieser Tafel möchtest"
     }
   },
   "favorites": {
@@ -12883,6 +12936,11 @@
       "start": "Kostenlosen Test starten",
       "plans": "Pläne ansehen",
       "api": "Das gehört zum Lehrkraft-Plan."
+    }
+  },
+  "manip": {
+    "errors": {
+      "chatBusy": "Oomba beantwortet noch deine letzte Nachricht. Warte einen Moment."
     }
   }
 }

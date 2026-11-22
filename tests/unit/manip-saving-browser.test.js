@@ -54,6 +54,9 @@ function gatedAi() {
   return release;
 }
 const clocks = page => page.locator('#mp-content .mp-obj').count();
+// Draft with AI opens Oomba's chat now (tests/unit/manip-chat-browser.test.js); a draft job (services/manip-drafts.js)
+// started by the API still shows its progress, notice and fallback here.
+const startDraft = (page, brief) => page.evaluate(async b => { const r = await fetch('/api/manipulatives/draft', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tool: 'clock', brief: b }) }); return r.status; }, brief);
 const liveDraft = () => q.get("SELECT * FROM manip_drafts WHERE owner_id=? ORDER BY created_at DESC, rowid DESC LIMIT 1", boss.id);
 
 test('an AI draft keeps going through a refresh: its progress shows again, then it lands on the board (Undo keeps the old one)', { skip }, async () => {
@@ -62,14 +65,11 @@ test('an AI draft keeps going through a refresh: its progress shows again, then 
     const { ctx, page, errors } = await open(boss, '#clock');
     await page.waitForSelector('#mp-board');
     const before = await clocks(page);
-    await page.click('[data-tool="draft"]');
-    await page.fill('#mp-brief', 'Three clocks at half past for grade 2');
-    await page.click('#mp-dgo');
-    await page.waitForSelector('.mp-dprog');
-    assert.match(await page.textContent('[data-tool="draft"]'), /Drafting/);
+    assert.equal(await startDraft(page, 'Three clocks at half past for grade 2'), 200);
     // The refresh: the draft is still going on the server, and the page shows it again.
     await page.reload();
     await page.waitForSelector('.mp-dprog');
+    assert.match(await page.textContent('[data-tool="draft"]'), /Drafting/);
     assert.match(await page.textContent('.mp-dprog'), /Three clocks at half past/);
     assert.match(await page.textContent('.mp-dstep.cur'), /AI is choosing/);
     assert.match(await page.textContent('#mp-deta'), /less than a minute/i);
@@ -94,10 +94,7 @@ test('a draft that finished while the teacher was away: one notice; "Put it on m
   try {
     const a = await open(boss, '#clock');
     await a.page.waitForSelector('#mp-board');
-    await a.page.click('[data-tool="draft"]');
-    await a.page.fill('#mp-brief', 'Three clocks for after lunch');
-    await a.page.click('#mp-dgo');
-    await a.page.waitForSelector('.mp-dprog');
+    assert.equal(await startDraft(a.page, 'Three clocks for after lunch'), 200);
     await a.ctx.close();   // the teacher leaves
     release();
     const job = liveDraft(); await D.settled(job.id);
@@ -193,13 +190,12 @@ test('after recess: the room ended, the teacher reopens it from My boards, and a
 });
 
 test('the AI does not answer: the starting board opens with a calm note (Try again keeps the words); a refused draft says why', { skip }, async () => {
-  M.hooks.create = async () => { const e = new Error('Request timed out.'); e.name = 'APIConnectionTimeoutError'; throw e; };
+  M.hooks.create = async () => { await new Promise(r => setTimeout(r, 2500)); const e = new Error('Request timed out.'); e.name = 'APIConnectionTimeoutError'; throw e; };
   try {
     const { ctx, page, errors } = await open(boss, '#clock');
     await page.waitForSelector('#mp-board');
-    await page.click('[data-tool="draft"]');
-    await page.fill('#mp-brief', 'Four clocks to the quarter hour');
-    await page.click('#mp-dgo');
+    assert.equal(await startDraft(page, 'Four clocks to the quarter hour'), 200);
+    await page.reload();
     await page.waitForSelector('.mp-dfall', { timeout: 15000 });
     assert.match(await page.textContent('.mp-dfall'), /didn’t answer in time, so here’s a starting board\. You can try Draft with AI again\./);
     const job = liveDraft();

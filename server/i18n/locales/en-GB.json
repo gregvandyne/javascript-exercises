@@ -185,6 +185,10 @@
           "practise": "Practise"
         }
       }
+    },
+    "manip": {},
+    "manip-chat": {
+      "minimize": "Minimise"
     }
   },
   "favorites": {

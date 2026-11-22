@@ -3839,6 +3839,59 @@
       "removeLessonQ": "Supprimer ces questions avec figures ?",
       "removeLessonText": "L'étape Figure de la leçon garde les questions de son dernier enregistrement. C'est définitif.",
       "fallback": "L’IA n’a pas répondu cette fois, voici une série de départ ({count, plural, one {# question} other {# questions}}). Vous pouvez réessayer."
+    },
+    "manip-chat": {
+      "title": "Oomba",
+      "button": "Oomba",
+      "knows": "Connaît ton tableau {tool}",
+      "minimize": "Réduire",
+      "close": "Fermer Oomba",
+      "inputLabel": "Message pour Oomba",
+      "send": "Envoyer",
+      "private": "Oomba voit ce tableau et tes mots, jamais les noms ni le travail des élèves.",
+      "reopen": "Ouvrir Oomba",
+      "reopenNew": "Ouvrir Oomba : une nouvelle réponse",
+      "thinking": "Oomba réfléchit · {time}",
+      "longer": "Cela prend un peu plus de temps · {time}",
+      "leave": "Tu peux fermer cette page. La réponse t’attendra ici.",
+      "needText": "Écris d’abord quelques mots pour Oomba.",
+      "err": {
+        "names": "Laisse de côté les noms des élèves : les noms ne vont jamais à l’IA. Ton message est toujours là.",
+        "words": "Certains mots de ton message ne sont pas autorisés. Change-les et renvoie-le.",
+        "personal": "Laisse de côté les numéros de téléphone, e-mails, liens et codes, puis renvoie-le.",
+        "brief": "Écris d’abord quelques mots pour Oomba.",
+        "chatBusy": "Oomba répond encore à ton dernier message. Attends un instant.",
+        "badTool": "Oomba ne peut pas aider avec cet outil. Ouvre un autre outil et essaie là.",
+        "notFound": "Ce compte ne peut pas utiliser Oomba dans les Manipulations pour le moment.",
+        "slow": "Cela fait beaucoup de messages en une heure. Attends un peu, puis réessaie.",
+        "other": "Un problème est survenu. Ton message est toujours là : réessaie dans un instant."
+      },
+      "fail": {
+        "error": "Oomba n’a pas pu répondre cette fois ; ton tableau n’a pas changé.",
+        "timeout": "Oomba n’a pas répondu à temps ; ton tableau n’a pas changé.",
+        "busy": "Oomba est très occupé en ce moment ; ton tableau n’a pas changé. Réessaie dans quelques minutes.",
+        "resting": "Oomba se repose en ce moment ; ton tableau n’a pas changé. Réessaie plus tard.",
+        "restart": "Notre serveur a redémarré avant la réponse d’Oomba ; ton tableau n’a pas changé."
+      },
+      "retry": "Réessayer",
+      "edit": "Modifier",
+      "changedTitle": "Tableau mis à jour : {title}",
+      "changed": "{n, plural, one {# problème} other {# problèmes}}, {steps, plural, one {# étape} other {# étapes}}",
+      "undoneTitle": "Changement annulé. Ton tableau est comme avant.",
+      "undo": "Annuler le changement d’Oomba",
+      "redo": "Le remettre",
+      "use": "Le mettre sur mon tableau",
+      "notBuilt": "Ces problèmes n’ont pas passé les vérifications du tableau, donc ton tableau n’a pas changé.",
+      "helloEmpty": "Bonjour ! Dis-moi quelle leçon tu veux sur ce tableau {tool}, et je la prépare.",
+      "hello": "Bonjour ! Je vois ton tableau {tool}. Demande-moi de changer quelque chose, ou pose-moi une question à son sujet.",
+      "ideas": "Idées",
+      "idea": {
+        "more": "Ajoute deux problèmes de plus",
+        "easier": "Rends-les un peu plus faciles",
+        "steps": "Écris des étapes plus claires pour mes élèves"
+      },
+      "placeholder": "Demande à Oomba de changer le tableau",
+      "placeholderEmpty": "Décris la leçon que tu veux sur ce tableau"
     }
   },
   "favorites": {
@@ -12882,6 +12935,11 @@
       "start": "Commencer mon essai gratuit",
       "plans": "Voir les formules",
       "api": "Cela fait partie de la formule Enseignant."
+    }
+  },
+  "manip": {
+    "errors": {
+      "chatBusy": "Oomba répond encore à ton dernier message. Attends un instant."
     }
   }
 }
