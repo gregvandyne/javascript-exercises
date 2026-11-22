@@ -189,6 +189,9 @@
     "manip": {},
     "manip-chat": {
       "minimize": "Minimise"
+    },
+    "oomba-chat": {
+      "minimize": "Minimise"
     }
   },
   "favorites": {

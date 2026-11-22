@@ -11316,3 +11316,91 @@ Three things found while filming the dashboard promo.
   middle and corners over an open sheet, taps, clicks and Escape reach nothing, and the sheet is as it was afterwards;
   the same over a copy filling the screen and a question box; a layout switch on a slow network never shows the empty
   text and the names come at once; the banner, tray and copy titles equal the teacher's widget titles in every mode.
+
+## Figures: Oomba's chat and the shared chat engine (22 Nov 2026)
+
+The owner: Figures should be "hooked up to AI the same way Manipulatives is", with "a chat on the side where the teacher
+can refine and adjust the draft if they don't like the initial output". Then GO on the design with four calls: no silent
+starter set when the AI rests or fails on a first draft (one "Add a starter set instead" button); on a laptop with the
+chat open, a "Questions | Print preview" switch; keep the Worksheet/Test toggle on the menu's box; build ONE shared chat
+engine (server service and client component) that Figures uses now and the site-wide teacher companion uses next.
+
+- **The shared engine** (`server/services/oomba-chat.js`, `public/js/oomba-chat.js`, `public/css/oomba-chat.css`). A
+  surface is defined once with `defineSurface({ id, live, steps, may, context, check, quote?, answer, undo? })`: who may
+  use it, the context a key names (only the teacher's own), the word and name checks, what a message quotes, the AI call
+  (`answer` returns the reply and an `apply()` that writes), and undo. The engine does the rest the same way for every
+  surface: one conversation per teacher, surface and context key (`oomba_chats`); each message a job (`oomba_turns`)
+  answered in this process apart from any request, with progress (the surface's steps and when each began) and an
+  estimate from the surface's own timed turns; the one-live-turn rule is the surface's (`live: 'owner'` one per teacher,
+  `'chat'` one per conversation) held by a partial unique index on `live_key`; `apply()`, Oomba's turn and the job's end
+  in one transaction, only while that attempt is still current (an `apply()` that throws is rolled back and the turn
+  fails calmly); `handOff()` at shutdown and `recover()` at boot (a recent turn runs once more, an older one ends as
+  failed 'restart' with Try again); `ready()` and `dismiss()` for "finished while you were away"; `prune()`, `forgetKey()`
+  and `forgetUser()`. Exports: `defineSurface, surfaceOf, send, current, undo, addTurn, ready, dismiss, eta, run,
+  recover, handOff, busy, settled, allSettled, prune, forgetKey, forgetUser`. The client's `mountChat({ id, url, ensure,
+  opener, sub, privacy, leave, hello, ideas, ideasAfter, placeholder, stepText, quoteText, change, changeLinks, note,
+  extra, onAct, onAnswer, onUndo, onMode, onQuote, onSync, start })` draws the Manipulatives chat's panel: docked on the
+  right from 900 px (the page narrows), a sheet above the tab bar on phones that minimizes to the Oomba bubble with a dot,
+  Escape minimizes, the progress card while a turn runs, failed turns with Try again and Edit, "What changed" with Undo,
+  and a quote above the message box. The Manipulatives and Mistake Hunt chats keep their own code for now; moving them
+  onto the engine is a later change (their tables and pages differ, and moving them here was not trivial).
+- **Migration** `0106_figures_chat`: `oomba_chats(owner_id, surface, ctx_key, turns, updated_at)` (unique per owner,
+  surface and key) and `oomba_turns(chat_id, owner_id, surface, live_key, me_id, status, step, steps, attempt, error,
+  created_at, started_at, ended_at, seen_at)`. Generic names on purpose: the companion chat uses the same tables.
+- **Figures as a surface** (`server/services/figures-chat.js`). The first message on an empty worksheet or test drafts
+  it; every later one adjusts it. The AI answers plain JSON (no strict json_schema: it hung in production for the
+  Manipulatives) `{ reply, title?, grade?, units?, edits: [{ op: 'add', after?, item } | { op: 'replace', n, item } |
+  { op: 'remove', n }] }`. n is the question's number as the teacher saw it, turned into its id at once, so a question
+  moved, edited or deleted while Oomba thought is not mistaken for another. An item is a generator (`{ gen }`) or a
+  figure question of its own; both go through the draft checks (`repairTestDraft` / `repairDraft`: OF.check, OF.solve
+  answer keys, options, words; a bad one is replaced by its kind's generator and logged without the words). Units are
+  the app's: every figure that takes a unit gets it and its answer is worked out again with OF.solve (a generator
+  question without an answer key gets the key whose value equals its generator's answer). Questions the teacher did not
+  name are never sent back through the AI. At most 12 added in one answer, 40 on a sheet. The reply's "What changed"
+  lists added, changed and removed numbers, the units ("inches", from the browser's own unit names), title, grade, any
+  repairs, and "Every answer worked out from its figure"; the page marks only the questions Oomba rewrote or added
+  ("Changed by Oomba"; a first draft marks nothing) until the teacher edits them.
+- **Undo** per turn (the newest 5 changes keep their undo data): each question goes back only while it is still as
+  Oomba left it (a hash of its fields); one edited by hand since is kept and the card says how many were kept. A removed
+  question comes back in its place; title and grade the same way.
+- **What the AI gets**: the sheet's kind (worksheet, test or lesson's figure questions), title, grade and language, and
+  each question numbered with its kind, data, question, answer type, options, answer key and worked answer; the figure
+  catalog and the generators (the grade's band, every band without a grade); the conversation's newest 8 turns. A
+  title, question or option that fails the word rules or names one of the teacher's students is "(left out)". Never
+  classes, assignments, students' answers or results. The teacher's message passes the word rules and the name check
+  before anything is stored or sent, and again when its job starts. "Ask Oomba about this" (a question's More menu)
+  quotes it: the server builds the quote from the stored question ("About question 4: ...").
+- **Limits**: one live turn per teacher across their worksheets (409 `chatBusy` for the same sheet, `otherBusy` with the
+  other sheet's id); the figures-ai rate bucket (30 an hour, shared with the menu's box and the old drafts); one AI call
+  per turn within the one 90 s budget (`services/ai-call.js`), the 'free' pool, `config.builderModel`, max_tokens 6000,
+  effort low. The budget resting: the chat says "Oomba is resting right now, so nothing was changed. You can keep
+  working by hand..." and the builder works as before. On an empty sheet a failed or resting first draft offers "Add a
+  starter set instead" once (the generators the words point at, `templateItems` / `templateTest`, undoable); nothing is
+  added by itself any more.
+- **Kept**: the newest 30 turns per worksheet; finished jobs 7 days (for the menu's notice); a conversation untouched
+  for 60 days goes; it goes with its worksheet (`deleteWorksheet`) and with the account (`figures.forgetUser`, and the
+  users foreign keys). Teachers only (the Teacher plan gate, their own worksheets); students and kids never see it.
+- **The page.** The menu's dark card is one "Describe what you need" box: Worksheet or Test, the grade, "Draft it";
+  "Start from scratch" and "Blank test" are links under it (they replace "Draft with AI", "Start from scratch" and
+  "Build a test"). It makes the worksheet or test (`POST /api/figures/start`; refused words make nothing) and opens the
+  builder with the chat running. "My worksheets" shows "'...' is ready. Oomba finished it while you were away" (or that
+  it couldn't finish) with Open it and Dismiss; opening the worksheet counts as seen. In the builder the "Power with AI"
+  switch, the brief box and the test's topic, subject and count boxes are gone: the Oomba button opens the chat
+  (`figure_prefs.ai` now remembers whether it opens by itself on a new, empty worksheet or test on a laptop; a lesson's
+  figure questions start by hand). With the chat open from 900 px, a "Questions | Print preview" switch shows one half
+  at a time. The privacy line under the message box: "Oomba sees this worksheet and your words, never students' names or
+  work." 13 locales (`js.oomba-chat`, `js.figures-sheet`, `js.figures`, `figures.menu`).
+- **Endpoints**: `POST /api/figures/start`, `GET|POST /api/figures/worksheets/:id/chat`, `POST .../chat/undo`,
+  `.../chat/starter`, `.../chat/dismiss`. `POST .../draft` and `.../draft-test` stay one release for pages still open
+  (the page no longer calls them; their service functions and tests are unchanged).
+- **Also fixed**: `bandOf('')` read an empty grade as K-2 (`Number('')` is 0), so the test drafter without a grade only
+  saw two K-2 generators; an empty grade is now every band.
+- **Tests**: `tests/unit/figures-chat.test.js` (the migration; a first draft as a job with steps and an estimate and
+  no names to the AI; a refine turn changing only 3 and 7 and the units with the answers worked out again; repairs,
+  drops, the 12-question cap and remove; Undo keeping a question edited by hand; names and personal details refused
+  before anything is stored, a question naming a student left out, the check again when a job starts; students, guests,
+  teachers without the plan and other teachers refused; one live turn per teacher; bad JSON and a timeout with Try
+  again; the budget resting and the starter set; a restart; the rate limit; the menu's box and the ready notice; what
+  is kept; the answer reader; a second surface with one live turn per conversation) and
+  `tests/unit/figures-chat-browser.test.js` (Chromium on a laptop and an iPhone 13). `figures-browser`,
+  `figures-lesson-step-browser`, `figures-product` and `figures-lesson-step` now drive the chat and the menu's box.

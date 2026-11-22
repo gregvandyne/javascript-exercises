@@ -55,6 +55,31 @@
 .fg-card-d{font-size:.9rem;color:var(--text-2)}
 .fg-none{margin-top:24px}
 @media (max-width:760px){.fg-top{grid-template-columns:1fr}.fg-build .row .btn{width:100%}}
+/* "Describe what you need" (services/figures-chat.js start): one box on the dark card, Worksheet or Test, the grade. */
+.fgd-in{display:block;width:100%;min-height:92px;resize:vertical;padding:12px 14px;border-radius:14px;border:2px solid #4A4A44;background:#23231F;color:#F6F1E3;font:inherit;line-height:1.4}
+.fgd-in::placeholder{color:#B9B3A3;opacity:1}
+.fgd-in:focus{outline:3px solid var(--focus);outline-offset:2px;border-color:#F6F1E3}
+.fgd-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-top:12px}
+.fgd-seg{display:inline-flex;border-radius:999px;background:#2C2C27;padding:3px}
+.fgd-seg label{position:relative;display:inline-flex}
+.fgd-seg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.fgd-seg span{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;color:#E3DED0;font-weight:700;font-size:.95rem}
+.fgd-seg input:checked+span{background:#F6F1E3;color:#141414}
+.fgd-seg input:focus-visible+span{outline:3px solid var(--focus);outline-offset:2px}
+.fgd-grade{display:inline-flex;align-items:center;gap:8px;color:#E3DED0;font-weight:700}
+.fgd-grade select{width:auto;min-height:44px;background:#23231F;color:#F6F1E3;border-color:#4A4A44}
+.fgd-go{margin-inline-start:auto}
+.fg-build p.fgd-priv{display:flex;gap:6px;align-items:flex-start;font-size:.86rem;color:#B9B3A3;margin:10px 0 0}
+.fg-build p.fgd-err{margin:10px 0 0;padding:8px 12px;border-radius:var(--r-sm);background:#5A1F1F;color:#FFE9E5;font-weight:700}
+.fg-build p.fgd-err[hidden]{display:none}
+.fg-build p.fgd-scratch{margin:14px 0 0;font-size:.95rem}
+.fg-build p.fgd-scratch a{color:#F6F1E3;font-weight:700}
+.fgd-away{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:var(--r-sm);background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent-line);margin:0 0 12px}
+.fgd-away[hidden]{display:none}
+.fgd-away.bad{background:var(--spark-soft);box-shadow:inset 0 0 0 2px var(--line)}
+.fgd-away p{margin:0}
+.fgd-away .row{margin-top:8px;gap:8px}
+@media (max-width:560px){.fgd-go{width:100%;margin-inline-start:0}.fgd-row{gap:10px}}
 
 /* ---- shared controls */
 .fg-h{font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
@@ -156,12 +181,25 @@
 .fg-titlein:hover,.fg-titlein:focus{border-color:var(--edge);background:var(--card-2)}
 .fg-grade{display:flex;align-items:center;gap:8px;font-weight:700}
 .fg-grade select{width:auto;min-height:44px}
-.fg-aiswitch{padding:6px 14px;border-radius:999px;background:var(--accent-soft);margin:0}
 .fg-sh-grid{display:grid;gap:16px;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}
+/* Oomba's button (it opens the chat: public/js/oomba-chat.js) and, with the chat open on a laptop, one half at a time:
+   the questions or the print preview, so neither is squeezed beside the panel. */
+.fg-oomba{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 8px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--text);font:700 .95rem var(--font);cursor:pointer}
+.fg-oomba:hover{background:var(--hover)}
+.fg-oomba.on{border-color:var(--accent-line);background:var(--accent-soft)}
+.fg-halves{display:none;margin:0 0 12px}
+@media (min-width:900px){
+  body.oc-on .fg-halves{display:flex}
+  body.oc-on .fg-sh-grid{grid-template-columns:minmax(0,1fr)}
+  body.oc-on:not(.fg-half-preview) .fg-preview{display:none}
+  body.oc-on.fg-half-preview .fg-sh-main{display:none}
+  body.oc-on .fg-preview{position:static}
+}
+.fg-item.fg-marked{box-shadow:inset 0 0 0 3px var(--accent-line),var(--shadow);background:color-mix(in srgb,var(--accent-soft) 55%,var(--card))}
+.fg-item.fg-quoted{box-shadow:inset 0 0 0 3px #FFD23F,var(--shadow)}
+.fg-badge{display:inline-flex;align-items:center;margin-inline-start:6px;padding:2px 8px;border-radius:999px;background:var(--accent-press,#1F9D63);color:#fff;font-size:.72rem;letter-spacing:.02em;text-transform:none;vertical-align:middle}
+.fg-badge.q{background:#FFD23F;color:#141414}
 .fg-sh-main{min-width:0;display:flex;flex-direction:column;gap:12px}
-.fg-aibox{border:2px solid var(--brand-mint);background:var(--card);border-radius:var(--r);padding:16px 18px}
-.fg-aibox h2{font-size:1.1rem;margin:0 0 8px}
-.fg-aibox .row{margin-top:8px}
 .fg-count{display:flex;align-items:center;gap:8px;font-weight:700}
 .fg-count select{width:auto;min-height:44px}
 .fg-items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
@@ -258,7 +296,6 @@ a.fg-ithumb:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 }
 
 /* ---- Build a test, a lesson's Figure step (docs/decisions.md "Figures: the lesson Figure step and Build a test") */
-.fg-testline{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:16px 0 0;padding-top:16px;border-top:1px solid #3A3830;color:#E3DED0}
 .fg-picktabs{flex:1 1 100%;margin:0}
 
 /* ---- Phase 4 (docs/decisions.md "Figures Phase 4: polish"): the ⋯ More menus (public/js/figures-menu.js), undo and

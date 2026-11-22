@@ -3760,18 +3760,6 @@
       "grade": "Classe",
       "anyGrade": "Qualsiasi classe",
       "gradeN": "Classe {grade}",
-      "powerAi": "Con l'IA",
-      "briefLabel": "Argomento, classe, quante domande",
-      "briefHint": "Classe 7, area di rettangoli e trapezi, più un box plot.",
-      "howMany": "Domande",
-      "draft": "Scrivi la bozza",
-      "budget": "Usa il budget IA. Se è in pausa, ricevi una serie iniziale.",
-      "drafting": "Sto scrivendo le domande…",
-      "briefFirst": "Prima descrivi la scheda in poche parole.",
-      "drafted": "{count, plural, one {# domanda scritta.} other {# domande scritte.}} Oomba Figures ha controllato ogni figura e calcolato ogni risposta.",
-      "resting": "L'IA è in pausa, ecco una serie iniziale ({count, plural, one {# domanda} other {# domande}}).",
-      "repaired": "{count, plural, one {# figura non si poteva disegnare ed è stata sostituita.} other {# figure non si potevano disegnare e sono state sostituite.}}",
-      "dropped": "{count, plural, one {# domanda è stata tolta.} other {# domande sono state tolte.}}",
       "addLabel": "Aggiungi una domanda con figura",
       "add": "Aggiungi",
       "empty": "Ancora nessuna domanda. Aggiungi una domanda con figura o falle scrivere all'IA.",
@@ -3822,16 +3810,6 @@
       "fromFigure": "L’opzione giusta è ricavata dalla figura. Cambia un’opzione o segnane un’altra per sceglierla tu.",
       "needTwo": "Scrivi almeno 2 opzioni.",
       "needRight": "Segna l’opzione giusta.",
-      "testAiTitle": "Abbozza una verifica",
-      "topicLabel": "Argomento",
-      "topicHint": "Per esempio: area di rettangoli e triangoli",
-      "subject": "Materia",
-      "anySubject": "Qualsiasi materia",
-      "draftTest": "Abbozza la verifica",
-      "testBudget": "Fatta con i generatori di domande, così puoi estrarre nuovi numeri per ogni domanda. Conta nel limite dell'IA; senza IA viene estratta una verifica iniziale.",
-      "byHand": "A mano: scegli una materia, aggiungi domande con figure, poi imposta ogni figura e la sua risposta.",
-      "checkFirst": "Controlla ogni domanda prima di assegnarla.",
-      "topicFirst": "Scrivi prima l'argomento della verifica.",
       "saveLesson": "Salva nella lezione",
       "saveLessonHint": "Mette queste domande in {title}. Nella lezione non cambia nulla finché non salvi.",
       "saveLessonAgain": "Salvare di nuovo sostituisce le domande in {title}.",
@@ -3853,7 +3831,57 @@
       "removeLesson": "Elimina queste domande",
       "removeLessonQ": "Eliminare queste domande con figure?",
       "removeLessonText": "Il passaggio Figure della lezione mantiene le domande con cui è stato salvato l'ultima volta. Non si può annullare.",
-      "fallback": "L’IA non ha risposto questa volta, ecco un set di partenza ({count, plural, one {# domanda} other {# domande}}). Puoi riprovare."
+      "oomba": "Oomba",
+      "halves": "Mostra",
+      "halfSheet": "Domande",
+      "byOomba": "Cambiata da Oomba",
+      "inChat": "Nella chat",
+      "askOomba": "Chiedi a Oomba",
+      "draftingHere": "Oomba sta scrivendo le tue domande. Appariranno qui.",
+      "chatSub": "Conosce questa scheda",
+      "chatSubTest": "Conosce questa verifica",
+      "chatPrivate": "Oomba vede questa scheda e le tue parole, mai i nomi o il lavoro degli studenti.",
+      "chatLeave": "Puoi chiudere questa pagina. Le tue domande saranno qui quando torni.",
+      "helloEmpty": "Ciao! Dimmi cosa ti serve in questa scheda: l’argomento, la classe, quante domande. La scrivo io, poi puoi chiedermi di cambiare quello che vuoi.",
+      "helloEmptyTest": "Ciao! Dimmi cosa deve coprire questa verifica: l’argomento, la classe, quante domande. La scrivo io, poi puoi chiedermi di cambiare quello che vuoi.",
+      "hello": "Ciao! Vedo le tue domande. Chiedimi di cambiarne alcune, aggiungerne altre o cambiare le unità o la classe.",
+      "ideaHarder": "Rendile un po’ più difficili",
+      "ideaWords": "Aggiungi altri 2 problemi",
+      "ideaEasier": "Rendile un po’ più facili",
+      "placeholder": "Di’ a Oomba cosa cambiare",
+      "placeholderEmpty": "Descrivi cosa ti serve",
+      "step": {
+        "check": {
+          "now": "Controllo dei nomi degli studenti nelle tue parole",
+          "done": "Nomi degli studenti controllati nelle tue parole"
+        },
+        "ai": {
+          "now": "Oomba sta scegliendo le domande",
+          "done": "Oomba ha scelto le domande"
+        },
+        "build": {
+          "now": "Disegno delle figure e calcolo delle risposte",
+          "done": "Figure disegnate e risposte calcolate"
+        },
+        "save": {
+          "now": "Le metto nella tua scheda",
+          "done": "Messe nella tua scheda"
+        }
+      },
+      "quoteN": "Domanda {n}: {text}",
+      "showMe": "Mostrami",
+      "starterDone": "Ecco una serie iniziale dai generatori di figure, fatta senza l’IA. Controlla ogni domanda prima di usarla.",
+      "starter": "Aggiungi una serie iniziale",
+      "chTitleWhat": "Cosa è cambiato",
+      "chAddedAll": "{count, plural, one {# domanda aggiunta} other {# domande aggiunte}}",
+      "chAdded": "{count, plural, one {Domanda aggiunta: {list}} other {Domande aggiunte: {list}}}",
+      "chChanged": "{count, plural, one {Domanda cambiata: {list}} other {Domande cambiate: {list}}}",
+      "chRemoved": "{count, plural, one {Domanda tolta: {list}} other {Domande tolte: {list}}}",
+      "chUnits": "Unità: {unit} in {count, plural, one {# domanda} other {# domande}}",
+      "chTitle": "Titolo: {title}",
+      "chGrade": "Classe: {grade}",
+      "chRepaired": "{count, plural, one {# figura non si poteva disegnare ed è stata sostituita o tolta} other {# figure non si potevano disegnare e sono state sostituite o tolte}}",
+      "chAnswers": "Ogni risposta calcolata dalla sua figura"
     },
     "manip-chat": {
       "title": "Oomba",
@@ -3907,6 +3935,79 @@
       },
       "placeholder": "Chiedi a Oomba di cambiare la lavagna",
       "placeholderEmpty": "Descrivi la lezione che vuoi su questa lavagna"
+    },
+    "oomba-chat": {
+      "title": "Oomba",
+      "minimize": "Riduci",
+      "close": "Chiudi Oomba",
+      "inputLabel": "Messaggio per Oomba",
+      "send": "Invia",
+      "private": "Oomba vede ciò che hai aperto e le tue parole, mai i nomi o il lavoro degli studenti.",
+      "reopen": "Apri Oomba",
+      "reopenNew": "Apri Oomba: una nuova risposta",
+      "leave": "Puoi chiudere questa pagina. La risposta ti aspetterà qui.",
+      "needText": "Prima scrivi qualche parola per Oomba.",
+      "retry": "Riprova",
+      "edit": "Modifica",
+      "undo": "Annulla",
+      "undone": "Modifica annullata.",
+      "undoneKept": "{count, plural, one {# cosa che hai cambiato dopo è stata mantenuta.} other {# cose che hai cambiato dopo sono state mantenute.}}",
+      "ideas": "Idee",
+      "unquote": "Togli la citazione",
+      "eta": {
+        "under": "Di solito circa {n} secondi",
+        "guessUnder": "Spesso circa {n} secondi",
+        "about": "{n, plural, one {Di solito circa un minuto} other {Di solito circa # minuti}}",
+        "longer": "Ci vuole un po’ più del solito",
+        "soFar": "{time} finora"
+      },
+      "step": {
+        "check": {
+          "now": "Controllo dei nomi degli studenti nelle tue parole",
+          "done": "Nomi degli studenti controllati nelle tue parole"
+        },
+        "ai": {
+          "now": "Oomba sta pensando",
+          "done": "Oomba ha risposto"
+        },
+        "build": {
+          "now": "Controllo della risposta",
+          "done": "Risposta controllata"
+        },
+        "save": {
+          "now": "Salvataggio",
+          "done": "Salvato"
+        }
+      },
+      "fail": {
+        "error": "Oomba non è riuscito a rispondere questa volta. Non è cambiato niente.",
+        "timeout": "Oomba non ha risposto in tempo. Non è cambiato niente.",
+        "busy": "Oomba è molto occupato adesso. Non è cambiato niente. Riprova tra qualche minuto.",
+        "resting": "Oomba si sta riposando, quindi non è cambiato niente. Puoi continuare a mano e riprovare con Oomba più tardi.",
+        "restart": "Il nostro server si è riavviato prima della risposta di Oomba. Non è cambiato niente.",
+        "names": "Non scrivere i nomi degli studenti: i nomi non vanno mai all’IA. Non è stato inviato niente.",
+        "words": "Alcune parole del tuo messaggio non sono consentite. Non è stato inviato niente.",
+        "personal": "Non scrivere numeri di telefono, email, link e codici. Non è stato inviato niente.",
+        "notFound": "Non è più qui, quindi non è cambiato niente."
+      },
+      "err": {
+        "names": "Non scrivere i nomi degli studenti: i nomi non vanno mai all’IA. Il tuo messaggio è ancora qui.",
+        "words": "Alcune parole del tuo messaggio non sono consentite. Cambiale e invialo di nuovo.",
+        "personal": "Togli numeri di telefono, email, link e codici, poi invialo di nuovo.",
+        "brief": "Prima scrivi qualche parola per Oomba.",
+        "chatBusy": "Oomba sta ancora rispondendo al tuo ultimo messaggio. Aspetta un momento.",
+        "otherBusy": "Oomba sta ancora lavorando a un’altra delle tue schede. Aspetta un momento, poi invia questo.",
+        "notFound": "Questo account non può usare Oomba qui per ora.",
+        "notEmpty": "Questa scheda ha già delle domande.",
+        "tooMany": "Hai tutte le schede che puoi tenere. Eliminane una e riprova.",
+        "slow": "Sono tanti messaggi in un’ora. Aspetta un po’ e riprova.",
+        "other": "Qualcosa è andato storto. Il tuo messaggio è ancora qui: riprova tra un momento."
+      }
+    },
+    "figures": {
+      "needText": "Prima scrivi qualche parola per Oomba.",
+      "slow": "Sono tanti messaggi in un’ora. Aspetta un po’ e riprova.",
+      "other": "Qualcosa è andato storto. Il tuo messaggio è ancora qui: riprova tra un momento."
     }
   },
   "favorites": {
@@ -12517,9 +12618,6 @@
     },
     "menu": {
       "pitch": "Figure esatte e in scala per schede, verifiche e presentazioni. Pronte da stampare, con le risposte svolte.",
-      "buildTitle": "Crea una scheda",
-      "buildText": "Scegli tu le figure, oppure descrivi ciò che ti serve e lascia che l'IA scriva le domande. Ogni numero viene controllato perché ogni figura si possa davvero disegnare.",
-      "draftAi": "Bozza con l'IA",
       "scratch": "Parti da zero",
       "mine": "Le mie schede",
       "noSheets": "Ancora nessuna scheda. Quelle che crei compaiono qui.",
@@ -12534,9 +12632,25 @@
       "searchHint": "Cerca le figure, per esempio cilindro o box plot",
       "count": "{count, plural, one {# figura} other {# figure}}",
       "nothing": "Nessuna figura corrisponde. Prova un'altra parola o classe.",
-      "buildTest": "Crea una verifica",
-      "buildTestText": "Una verifica intera di domande con figure, abbozzata con l'IA o fatta a mano.",
-      "isTest": "Verifica"
+      "isTest": "Verifica",
+      "describeTitle": "Crea una scheda o una verifica",
+      "describeText": "Di’ cosa ti serve. Oomba scrive le domande, Figures disegna ogni figura e calcola ogni risposta, e puoi continuare a sistemare nella chat.",
+      "describeLabel": "Descrivi cosa ti serve",
+      "describeHint": "Descrivi cosa ti serve, per esempio: classe quarta, area e perimetro dei rettangoli, 8 domande, due problemi",
+      "makeA": "Crea",
+      "worksheet": "Scheda",
+      "test": "Verifica",
+      "grade": "Classe",
+      "anyGrade": "Tutte",
+      "gradeN": "Classe {grade}",
+      "draftIt": "Scrivi",
+      "privacy": "Solo queste parole vanno all’IA. Non scrivere i nomi degli studenti: non vanno mai all’IA.",
+      "blankTest": "Verifica vuota",
+      "readyTitle": "«{title}» è pronta.",
+      "readyText": "Oomba l’ha finita mentre non c’eri: {count, plural, one {# domanda.} other {# domande.}}",
+      "readyFailed": "Oomba non è riuscito a finire «{title}». Aprila per riprovare.",
+      "readyOpen": "Apri",
+      "readyDismiss": "Nascondi"
     },
     "sheet": {
       "newTitle": "Nuova scheda",

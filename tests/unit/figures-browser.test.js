@@ -2,7 +2,7 @@
 // by subject and search with no sideways scroll; a card opens its editor; editing a number redraws the figure; numbers
 // that cannot make the figure show the cannot-draw panel and turn export off, and Undo brings the figure back; the SVG
 // and PNG downloads carry Oomba's CC0 notice in their bytes; "Add to worksheet" makes a worksheet; the builder shows its
-// questions and the print preview (student sheet and answer key), Power with AI (mocked) adds checked questions; the
+// questions and the print preview (student sheet and answer key), Oomba's chat (mocked) adds checked questions; the
 // print page. FIG_SHOTS=<dir> also saves pictures at twice the pixels. Skipped when no Chromium is installed.
 import './_setup.js';
 import test from 'node:test';
@@ -168,24 +168,26 @@ test('on a phone: add a figure to a new worksheet, see it in the builder with it
   await ctx.close();
 });
 
-test('the worksheet builder on a laptop: Power with AI (mocked) adds checked questions; reorder, new numbers; print preview', { skip }, async () => {
-  F.hooks.create = async () => ({ model: config.builderModel, usage: { input_tokens: 1, output_tokens: 1 }, content: [{ type: 'text', text: JSON.stringify({ title: 'Area and volume practice', items: [
+test('the worksheet builder on a laptop: Oomba\'s chat (mocked) adds checked questions; reorder, new numbers; print preview', { skip }, async () => {
+  F.hooks.create = async () => ({ model: config.builderModel, usage: { input_tokens: 1, output_tokens: 1 }, content: [{ type: 'text', text: JSON.stringify({ reply: 'Here are 5 questions.', title: 'Area and volume practice', edits: [
     { kind: 'rectangle', question: 'Find the area of the rectangle.', data: JSON.stringify({ AB: 6, BC: 2, unit: 'm' }), answerKey: 'area' },
     { kind: 'prism', question: 'A gift box has these measurements. How much space is inside it?', data: JSON.stringify({ length: 5, width: 2, height: 3, unit: 'in' }), answerKey: 'volume' },
     { kind: 'triangle', question: 'Find CA.', data: JSON.stringify({ AB: 1, BC: 2, CA: 10 }), answerKey: 'sides.CA' },
     { kind: 'cylinder', question: 'Find the volume of the cylinder. Round to the nearest tenth.', data: JSON.stringify({ radius: 4, height: 11, unit: 'm' }), answerKey: 'volume' },
     { kind: 'boxPlot', question: 'What is the interquartile range?', data: JSON.stringify({ summary: [12, 18, 23, 29, 40], values: true }), answerKey: 'iqr' },
-  ] }) }] });
+  ].map(item => ({ op: 'add', item })) }) }] });
   try {
     const { ctx, page, errors } = await open('/figures/worksheets/new?ai=1');
-    await page.waitForSelector('#fg-brief');
-    assert.equal(await page.isVisible('#fg-aibox'), true);
-    await page.fill('#fg-brief', 'Grade 7, area and volume of rectangles, prisms and cylinders, plus one box plot.');
-    await page.selectOption('#fg-count', '5');
-    await page.click('[data-act="draft"]');
+    await page.waitForSelector('#oc-in');
+    assert.equal(await page.isVisible('#oc'), true, 'Oomba opens on a new worksheet');
+    await page.fill('#oc-in', 'Grade 7, area and volume of rectangles, prisms and cylinders, plus one box plot. 5 questions.');
+    await page.click('#oc-send');
     await page.waitForSelector('.fg-item:nth-child(5)');
     assert.match(page.url(), /\/figures\/worksheets\/[A-Za-z0-9]+$/);
-    assert.match(await page.textContent('#fg-note'), /5 questions drafted[\s\S]*1 figure couldn't be drawn and was replaced/);
+    await page.waitForSelector('.oc-change');
+    assert.match(await page.textContent('.oc-change'), /Added 5 questions[\s\S]*1 figure couldn’t be drawn and was replaced or left out/);
+    // The print preview is the other half while the chat is open on a laptop; closing the chat shows both again.
+    await page.click('#oc [data-c="close"]');
     const answers = await page.$$eval('.fg-ians b', bs => bs.map(b => b.textContent));
     assert.equal(answers[0], '12 m²'); assert.equal(answers[1], '30 in³'); assert.equal(answers[4], '11');
     assert.match(await page.inputValue('#fg-title'), /Area and volume practice/);

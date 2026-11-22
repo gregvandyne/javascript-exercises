@@ -1,6 +1,6 @@
 // Figures, the standalone product (docs/decisions.md "Figures, the standalone product"; routes/figures.js): the menu of
 // figure kinds, one editor for every kind, worksheets of figure questions (print a student sheet and an answer key), the
-// teacher's own presets, and "Power with AI" (a worksheet drafted from a brief). FIGURES=0 (config.figures) hides it
+// teacher's own presets, and the AI drafters Oomba's chat uses (services/figures-chat.js). FIGURES=0 (config.figures) hides it
 // from everyone, the platform admin included.
 //
 // Who may use it (services/teacher-tools.js toolAccess, the same rule as the Manipulatives; docs/decisions.md "Figures
@@ -26,6 +26,7 @@ import { figuresKit, FIG_LATEST, FIG_VERSIONS } from './figlibs.js';
 import { canvasKit } from './canvaskit.js';
 import { log } from './log.js';
 import { callAi, logAiFail, fallbackReason } from './ai-call.js';
+import { forgetKey as forgetChat, forgetUser as forgetChats } from './oomba-chat.js';
 import { tEn } from '../i18n/index.js';
 import { KINDS, SUBJECTS, GRADE_BANDS, kindOf, genOf, flatSolve, solveOf, numText, PAST_GENS } from '../../public/js/figures-catalog.js';
 import { localGen, genLang, labelLangs, isGenChoices, GEN_LANGS } from '../../public/js/figures-gen-words/index.js';
@@ -303,9 +304,10 @@ export function listWorksheets(u, { purposes = ['worksheet', 'test'] } = {}) {
   return q.all(`SELECT s.id, s.title, s.grade, s.subject, s.purpose, s.updated_at, (SELECT COUNT(*) FROM question_set_items i WHERE i.set_id=s.id) n
     FROM question_sets s WHERE s.owner_id=? AND s.purpose IN (${ps.map(() => '?').join(',')}) ORDER BY s.updated_at DESC LIMIT 100`, u.id, ...ps);
 }
-const storeItem = (setId, pos, it) => q.run(`INSERT INTO question_set_items(id, set_id, pos, kind, data, gen, seed, hide, question, answer_key, answer, work, answer_type, choices, correct, points)
-  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)`, uid(12), setId, pos, it.kind, JSON.stringify(it.data), it.gen, it.seed, it.hide === false ? null : String(it.hide), it.question, it.answerKey, it.answer, JSON.stringify(it.work),
-  it.answerType === 'choice' ? 'choice' : 'number', JSON.stringify(it.choices || []), Number.isInteger(it.correct) ? it.correct : null);
+/** Store a question at a position. -> its id. */
+const storeItem = (setId, pos, it, id = uid(12)) => (q.run(`INSERT INTO question_set_items(id, set_id, pos, kind, data, gen, seed, hide, question, answer_key, answer, work, answer_type, choices, correct, points)
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)`, id, setId, pos, it.kind, JSON.stringify(it.data), it.gen, it.seed, it.hide === false ? null : String(it.hide), it.question, it.answerKey, it.answer, JSON.stringify(it.work),
+  it.answerType === 'choice' ? 'choice' : 'number', JSON.stringify(it.choices || []), Number.isInteger(it.correct) ? it.correct : null), id);
 /** Write a question's worked-out fields back to its row. */
 const rewrite = (id, it) => q.run('UPDATE question_set_items SET data=?, gen=?, seed=?, hide=?, question=?, answer_key=?, answer=?, work=?, answer_type=?, choices=?, correct=? WHERE id=?',
   JSON.stringify(it.data), it.gen, it.seed, it.hide === false ? null : String(it.hide), it.question, it.answerKey, it.answer, JSON.stringify(it.work),
@@ -345,6 +347,7 @@ export function deleteWorksheet(u, id) {
   const w = ownWorksheet(u, id); if (!w) return fail('notFound');
   q.run('DELETE FROM question_set_items WHERE set_id=?', w.id);
   q.run('DELETE FROM question_sets WHERE id=?', w.id);
+  forgetChat('figures', w.id);
   audit(u.id, 'figures.worksheet.delete', w.id, {});
   return ok();
 }
@@ -639,7 +642,8 @@ export function templateItems({ brief = '', grade = '', count = 6, lang = 'en' }
   return out;
 }
 export function bandOf(g) {
-  const s = String(g || '').toUpperCase();
+  const s = String(g || '').trim().toUpperCase();
+  if (!s) return '';   // no grade: every band (Number('') is 0, which read as K-2)
   if (GRADE_BANDS.includes(s)) return s;
   if (s === 'K' || s === '1' || s === '2') return 'K-2';
   const n = Number(s); if (!Number.isInteger(n)) return '';
@@ -905,4 +909,7 @@ export function forgetUser(userId) {
   q.run('DELETE FROM question_sets WHERE owner_id=?', userId);
   q.run('DELETE FROM figure_presets WHERE owner_id=?', userId);
   q.run('DELETE FROM figure_prefs WHERE user_id=?', userId);
+  forgetChats(userId);
 }
+/** For Oomba's chat on a worksheet (services/figures-chat.js): the sheet's own writers, used inside its transactions. */
+export const _sheet = Object.freeze({ storeItem, rewrite, touch, resubject, cleanGrade, cleanTitle, canon, rowItem });

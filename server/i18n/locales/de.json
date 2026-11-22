@@ -3760,18 +3760,6 @@
       "grade": "Klasse",
       "anyGrade": "Jede Klasse",
       "gradeN": "Klasse {grade}",
-      "powerAi": "Mit KI",
-      "briefLabel": "Thema, Klasse, wie viele Fragen",
-      "briefHint": "Klasse 7, Flächeninhalt von Rechtecken und Trapezen, dazu ein Boxplot.",
-      "howMany": "Fragen",
-      "draft": "Entwerfen",
-      "budget": "Nutzt das KI-Budget. Wenn es pausiert, bekommst du ein Startset.",
-      "drafting": "Deine Fragen werden entworfen…",
-      "briefFirst": "Beschreibe das Arbeitsblatt zuerst in ein paar Worten.",
-      "drafted": "{count, plural, one {# Frage entworfen.} other {# Fragen entworfen.}} Oomba Figures hat jede Figur geprüft und jede Antwort ausgerechnet.",
-      "resting": "Die KI macht Pause, hier ist ein Startset ({count, plural, one {# Frage} other {# Fragen}}).",
-      "repaired": "{count, plural, one {# Figur konnte nicht gezeichnet werden und wurde ersetzt.} other {# Figuren konnten nicht gezeichnet werden und wurden ersetzt.}}",
-      "dropped": "{count, plural, one {# Frage wurde weggelassen.} other {# Fragen wurden weggelassen.}}",
       "addLabel": "Frage mit Figur hinzufügen",
       "add": "Hinzufügen",
       "empty": "Noch keine Fragen. Füge eine Frage mit Figur hinzu oder lass die KI welche entwerfen.",
@@ -3822,16 +3810,6 @@
       "fromFigure": "Die richtige Option wird aus der Abbildung ermittelt. Ändere eine Option oder markiere eine andere, um selbst zu wählen.",
       "needTwo": "Schreibe mindestens 2 Optionen.",
       "needRight": "Markiere die richtige Option.",
-      "testAiTitle": "Einen Test entwerfen",
-      "topicLabel": "Thema",
-      "topicHint": "Zum Beispiel: Flächeninhalt von Rechtecken und Dreiecken",
-      "subject": "Fach",
-      "anySubject": "Jedes Fach",
-      "draftTest": "Test entwerfen",
-      "testBudget": "Aus den Fragengeneratoren gebaut, so kannst du für jede Frage neue Zahlen ziehen. Zählt zum KI-Limit; ohne KI wird ein Starttest gezogen.",
-      "byHand": "Von Hand: Wähle ein Fach, füge Fragen zu Abbildungen hinzu und stelle dann jede Abbildung und ihre Antwort ein.",
-      "checkFirst": "Prüfe jede Frage, bevor du sie zuweist.",
-      "topicFirst": "Schreib zuerst das Thema des Tests.",
       "saveLesson": "In der Lektion speichern",
       "saveLessonHint": "Legt diese Fragen in {title}. In der Lektion ändert sich nichts, bis du speicherst.",
       "saveLessonAgain": "Erneutes Speichern ersetzt die Fragen in {title}.",
@@ -3853,7 +3831,57 @@
       "removeLesson": "Diese Fragen löschen",
       "removeLessonQ": "Diese Fragen zu Abbildungen löschen?",
       "removeLessonText": "Der Abbildungs-Schritt der Lektion behält die Fragen, mit denen er zuletzt gespeichert wurde. Das lässt sich nicht rückgängig machen.",
-      "fallback": "Die KI hat diesmal nicht geantwortet, hier ist ein Startset ({count, plural, one {# Frage} other {# Fragen}}). Du kannst es nochmal versuchen."
+      "oomba": "Oomba",
+      "halves": "Zeigen",
+      "halfSheet": "Fragen",
+      "byOomba": "Von Oomba geändert",
+      "inChat": "Im Chat",
+      "askOomba": "Oomba dazu fragen",
+      "draftingHere": "Oomba entwirft deine Fragen. Sie erscheinen hier.",
+      "chatSub": "Kennt dieses Arbeitsblatt",
+      "chatSubTest": "Kennt diesen Test",
+      "chatPrivate": "Oomba sieht dieses Arbeitsblatt und deine Worte, nie die Namen oder Arbeiten der Schüler.",
+      "chatLeave": "Du kannst diese Seite schließen. Deine Fragen sind hier, wenn du zurückkommst.",
+      "helloEmpty": "Hallo! Sag mir, was auf dieses Arbeitsblatt soll: das Thema, die Klasse, wie viele Fragen. Ich entwerfe es, dann kannst du mich bitten, alles zu ändern.",
+      "helloEmptyTest": "Hallo! Sag mir, was dieser Test abdecken soll: das Thema, die Klasse, wie viele Fragen. Ich entwerfe ihn, dann kannst du mich bitten, alles zu ändern.",
+      "hello": "Hallo! Ich sehe deine Fragen. Bitte mich, einige zu ändern, mehr hinzuzufügen oder die Einheiten oder die Klasse zu ändern.",
+      "ideaHarder": "Mach sie etwas schwerer",
+      "ideaWords": "Füge 2 weitere Textaufgaben hinzu",
+      "ideaEasier": "Mach sie etwas leichter",
+      "placeholder": "Sag Oomba, was sich ändern soll",
+      "placeholderEmpty": "Beschreibe, was du brauchst",
+      "step": {
+        "check": {
+          "now": "Deine Worte werden auf Schülernamen geprüft",
+          "done": "Deine Worte auf Schülernamen geprüft"
+        },
+        "ai": {
+          "now": "Oomba wählt die Fragen",
+          "done": "Oomba hat die Fragen gewählt"
+        },
+        "build": {
+          "now": "Jede Figur wird gezeichnet und jede Antwort ausgerechnet",
+          "done": "Jede Figur gezeichnet und jede Antwort ausgerechnet"
+        },
+        "save": {
+          "now": "Sie kommen auf dein Arbeitsblatt",
+          "done": "Auf dein Arbeitsblatt gesetzt"
+        }
+      },
+      "quoteN": "Frage {n}: {text}",
+      "showMe": "Zeig es mir",
+      "starterDone": "Hier ist ein Startset aus den Figurengeneratoren, ohne KI gemacht. Prüfe jede Frage, bevor du sie verwendest.",
+      "starter": "Stattdessen ein Startset hinzufügen",
+      "chTitleWhat": "Was sich geändert hat",
+      "chAddedAll": "{count, plural, one {# Frage hinzugefügt} other {# Fragen hinzugefügt}}",
+      "chAdded": "{count, plural, one {Frage {list} hinzugefügt} other {Fragen {list} hinzugefügt}}",
+      "chChanged": "{count, plural, one {Frage {list} geändert} other {Fragen {list} geändert}}",
+      "chRemoved": "{count, plural, one {Frage {list} entfernt} other {Fragen {list} entfernt}}",
+      "chUnits": "Einheiten: {unit} bei {count, plural, one {# Frage} other {# Fragen}}",
+      "chTitle": "Titel: {title}",
+      "chGrade": "Klasse: {grade}",
+      "chRepaired": "{count, plural, one {# Figur ließ sich nicht zeichnen und wurde ersetzt oder weggelassen} other {# Figuren ließen sich nicht zeichnen und wurden ersetzt oder weggelassen}}",
+      "chAnswers": "Jede Antwort aus ihrer Figur ausgerechnet"
     },
     "manip-chat": {
       "title": "Oomba",
@@ -3907,6 +3935,79 @@
       },
       "placeholder": "Bitte Oomba, die Tafel zu ändern",
       "placeholderEmpty": "Beschreib die Stunde, die du auf dieser Tafel möchtest"
+    },
+    "oomba-chat": {
+      "title": "Oomba",
+      "minimize": "Minimieren",
+      "close": "Oomba schließen",
+      "inputLabel": "Nachricht an Oomba",
+      "send": "Senden",
+      "private": "Oomba sieht, was du geöffnet hast, und deine Worte, nie die Namen oder Arbeiten der Schüler.",
+      "reopen": "Oomba öffnen",
+      "reopenNew": "Oomba öffnen: eine neue Antwort",
+      "leave": "Du kannst diese Seite schließen. Die Antwort wartet hier.",
+      "needText": "Schreib zuerst ein paar Worte für Oomba.",
+      "retry": "Noch einmal",
+      "edit": "Bearbeiten",
+      "undo": "Rückgängig",
+      "undone": "Änderung rückgängig gemacht.",
+      "undoneKept": "{count, plural, one {# Sache, die du seitdem geändert hast, blieb erhalten.} other {# Sachen, die du seitdem geändert hast, blieben erhalten.}}",
+      "ideas": "Ideen",
+      "unquote": "Zitat entfernen",
+      "eta": {
+        "under": "Meist etwa {n} Sekunden",
+        "guessUnder": "Oft etwa {n} Sekunden",
+        "about": "{n, plural, one {Meist etwa eine Minute} other {Meist etwa # Minuten}}",
+        "longer": "Dauert etwas länger als sonst",
+        "soFar": "bisher {time}"
+      },
+      "step": {
+        "check": {
+          "now": "Deine Worte werden auf Schülernamen geprüft",
+          "done": "Deine Worte auf Schülernamen geprüft"
+        },
+        "ai": {
+          "now": "Oomba denkt nach",
+          "done": "Oomba hat geantwortet"
+        },
+        "build": {
+          "now": "Die Antwort wird geprüft",
+          "done": "Antwort geprüft"
+        },
+        "save": {
+          "now": "Wird gespeichert",
+          "done": "Gespeichert"
+        }
+      },
+      "fail": {
+        "error": "Oomba konnte diesmal nicht antworten. Nichts wurde geändert.",
+        "timeout": "Oomba hat nicht rechtzeitig geantwortet. Nichts wurde geändert.",
+        "busy": "Oomba ist gerade sehr beschäftigt. Nichts wurde geändert. Versuch es in ein paar Minuten noch einmal.",
+        "resting": "Oomba ruht sich gerade aus, deshalb wurde nichts geändert. Du kannst von Hand weiterarbeiten und Oomba später noch einmal fragen.",
+        "restart": "Unser Server wurde neu gestartet, bevor Oomba geantwortet hat. Nichts wurde geändert.",
+        "names": "Lass die Namen der Schüler weg: Namen gehen nie an die KI. Nichts wurde gesendet.",
+        "words": "Einige Wörter in deiner Nachricht sind nicht erlaubt. Nichts wurde gesendet.",
+        "personal": "Lass Telefonnummern, E-Mails, Links und Codes weg. Nichts wurde gesendet.",
+        "notFound": "Das gibt es nicht mehr, deshalb wurde nichts geändert."
+      },
+      "err": {
+        "names": "Lass die Namen der Schüler weg: Namen gehen nie an die KI. Deine Nachricht ist noch da.",
+        "words": "Einige Wörter in deiner Nachricht sind nicht erlaubt. Ändere sie und sende sie noch einmal.",
+        "personal": "Lass Telefonnummern, E-Mails, Links und Codes weg und sende sie dann noch einmal.",
+        "brief": "Schreib zuerst ein paar Worte für Oomba.",
+        "chatBusy": "Oomba antwortet noch auf deine letzte Nachricht. Warte einen Moment.",
+        "otherBusy": "Oomba arbeitet noch an einem anderen deiner Arbeitsblätter. Warte einen Moment und sende das dann.",
+        "notFound": "Dieses Konto kann Oomba hier gerade nicht nutzen.",
+        "notEmpty": "Dieses Arbeitsblatt hat schon Fragen.",
+        "tooMany": "Du hast so viele Arbeitsblätter, wie du behalten kannst. Lösche eines und versuch es dann noch einmal.",
+        "slow": "Das sind viele Nachrichten in einer Stunde. Warte ein bisschen und versuch es dann noch einmal.",
+        "other": "Etwas ist schiefgelaufen. Deine Nachricht ist noch da: Versuch es gleich noch einmal."
+      }
+    },
+    "figures": {
+      "needText": "Schreib zuerst ein paar Worte für Oomba.",
+      "slow": "Das sind viele Nachrichten in einer Stunde. Warte ein bisschen und versuch es dann noch einmal.",
+      "other": "Etwas ist schiefgelaufen. Deine Nachricht ist noch da: Versuch es gleich noch einmal."
     }
   },
   "favorites": {
@@ -12517,9 +12618,6 @@
     },
     "menu": {
       "pitch": "Exakte, maßstabsgetreue Figuren für Arbeitsblätter, Tests und Folien. Druckfertig, mit ausgerechneten Lösungen.",
-      "buildTitle": "Arbeitsblatt erstellen",
-      "buildText": "Wähle Figuren selbst aus oder beschreibe, was du brauchst, und lass die KI die Fragen entwerfen. Jede Zahl wird geprüft, damit jede Figur wirklich gezeichnet werden kann.",
-      "draftAi": "Mit KI entwerfen",
       "scratch": "Neu beginnen",
       "mine": "Meine Arbeitsblätter",
       "noSheets": "Noch keine Arbeitsblätter. Die du erstellst, erscheinen hier.",
@@ -12534,9 +12632,25 @@
       "searchHint": "Figuren suchen, z. B. Zylinder oder Boxplot",
       "count": "{count, plural, one {# Figur} other {# Figuren}}",
       "nothing": "Keine Figur passt. Probiere ein anderes Wort oder eine andere Klasse.",
-      "buildTest": "Einen Test erstellen",
-      "buildTestText": "Ein ganzer Test mit Fragen zu Abbildungen, mit KI entworfen oder von Hand gebaut.",
-      "isTest": "Test"
+      "isTest": "Test",
+      "describeTitle": "Arbeitsblatt oder Test erstellen",
+      "describeText": "Sag, was du brauchst. Oomba entwirft die Fragen, Figures zeichnet jede Figur und rechnet jede Antwort aus, und im Chat kannst du weiter anpassen.",
+      "describeLabel": "Beschreibe, was du brauchst",
+      "describeHint": "Beschreibe, was du brauchst, z. B.: Klasse 4, Fläche und Umfang von Rechtecken, 8 Fragen, zwei Textaufgaben",
+      "makeA": "Erstellen",
+      "worksheet": "Arbeitsblatt",
+      "test": "Test",
+      "grade": "Klasse",
+      "anyGrade": "Alle",
+      "gradeN": "Klasse {grade}",
+      "draftIt": "Entwerfen",
+      "privacy": "Nur diese Worte gehen an die KI. Lass die Namen der Schüler weg: Sie gehen nie an die KI.",
+      "blankTest": "Leerer Test",
+      "readyTitle": "„{title}“ ist fertig.",
+      "readyText": "Oomba hat es fertiggestellt, während du weg warst: {count, plural, one {# Frage.} other {# Fragen.}}",
+      "readyFailed": "Oomba konnte „{title}“ nicht fertigstellen. Öffne es, um es noch einmal zu versuchen.",
+      "readyOpen": "Öffnen",
+      "readyDismiss": "Ausblenden"
     },
     "sheet": {
       "newTitle": "Neues Arbeitsblatt",

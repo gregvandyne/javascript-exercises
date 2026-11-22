@@ -11,7 +11,7 @@ try {
   mods = {
     ...(await import('./app.js')), ...(await import('./db.js')), ...(await import('./auth.js')), ...(await import('./services/jobs.js')),
     ...(await import('./services/shots.js')), ...(await import('./services/snapshot.js')), ...(await import('./builder/runner.js')), ...(await import('./shutdown.js')),
-    manipDrafts: await import('./services/manip-drafts.js'),
+    manipDrafts: await import('./services/manip-drafts.js'), oombaChat: await import('./services/oomba-chat.js'), figuresChat: await import('./services/figures-chat.js'),
     ...(await import('./domain.js')), ...(await import('./site.js')), ...(await import('./oidc.js')), ...(await import('./services/stt-live.js')),
     attachUpgrades: (await import('./services/upgrade.js')).attachUpgrades, classLive: await import('./services/classlive-socket.js'), manipSocket: await import('./services/manip-socket.js'),
     billingMode: (await import('./services/stripe.js')).billingMode, checkTax: (await import('./services/billing.js')).checkTax, checkPrices: (await import('./services/billing.js')).checkPrices,
@@ -21,7 +21,7 @@ try {
   log('error', 'startup failed', { error: e.message });
   process.exit(1);
 }
-const { createApp, trustProxySetting, db, JOURNAL_MODE, secretSource, startJobs, startSweeper, stopSweeper, closeBrowser, busyCount, makeShutdown, recover, startRunner, drain, handOff, startHostCheck, stopHostCheck, legacyHosts, googleEnabled, billingMode, checkTax, checkPrices, route: sttRoute, drainLive, attachUpgrades, classLive, manipSocket, manipDrafts } = mods;
+const { createApp, trustProxySetting, db, JOURNAL_MODE, secretSource, startJobs, startSweeper, stopSweeper, closeBrowser, busyCount, makeShutdown, recover, startRunner, drain, handOff, startHostCheck, stopHostCheck, legacyHosts, googleEnabled, billingMode, checkTax, checkPrices, route: sttRoute, drainLive, attachUpgrades, classLive, manipSocket, manipDrafts, oombaChat } = mods;
 
 if (secretSource !== 'env' && config.env === 'production') {
   log('warn', 'SESSION_SECRET is not set: sessions are signed with a secret stored in the database. Set SESSION_SECRET (scripts/export-session-secret.js copies the current one, so nobody is signed out) and REQUIRE_SESSION_SECRET=1.', { secretSource });
@@ -35,6 +35,8 @@ const app = createApp();
 try { recover(); } catch (e) { log('error', 'builder recovery failed', { error: e.message }); }
 // The manipulatives' AI drafts the same way (services/manip-drafts.js: run again once if recent, else ended).
 try { manipDrafts.recover(); } catch (e) { log('error', 'manipulatives draft recovery failed', { error: e.message }); }
+// Oomba's chat turns the same way (services/oomba-chat.js; its surfaces, like services/figures-chat.js, are loaded above).
+try { oombaChat.recover(); } catch (e) { log('error', 'oomba chat recovery failed', { error: e.message }); }
 const server = app.listen(config.port, () => {
   log('info', 'listening', {
     port: config.port, builder: config.anthropicKey ? 'claude' : 'mock', journalMode: JOURNAL_MODE, trustProxy: trustProxySetting(),
@@ -78,7 +80,7 @@ if (config.storyBuilder && config.storyWorker === 'inline') {
 const stopJobs = startJobs();
 startSweeper();
 const shutdown = makeShutdown({
-  server, graceMs: config.shutdownGraceMs, busy: () => busyCount() + manipDrafts.busy(), drain, handOff: () => handOff() + manipDrafts.handOff(), log,
+  server, graceMs: config.shutdownGraceMs, busy: () => busyCount() + manipDrafts.busy() + oombaChat.busy(), drain, handOff: () => handOff() + manipDrafts.handOff() + oombaChat.handOff(), log,
   // Open live mic sockets are closed first (their pages upload the clip instead), so they never hold server.close().
   // Live sessions are saved, and their devices told to come back (bye restart), before their sockets close.
   stop: () => { drainLive(); classLive.drainLive(); if (storyLoop) storyLoop.stop(); stopJobs(); stopSweeper(); stopHostCheck(); },
