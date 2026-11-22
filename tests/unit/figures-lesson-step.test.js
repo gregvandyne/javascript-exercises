@@ -43,6 +43,9 @@ const T = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Tom Teacher
 S.createClass(boss, oak.id, { name: '8B', teacherId: T.id });
 const kid = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Quinn Kid' }).user.id);
 S.addToClass(boss, A.id, kid.id);
+// T has the Teacher plan, with paid plans on for everyone (docs/decisions.md "Figures and the Manipulatives: Teacher plan only").
+const TOOLS = await import('./_tools-plan.js');
+TOOLS.plansOn(); TOOLS.givePlan(T.id);
 const lessonOf = (u, title = 'Shapes and forces') => L.createLesson(u, oak.id, { title, kind: 'lesson', grade: '7' }).lesson;
 const hookAI = (fn, logs) => { F.hooks.create = fn; F.hooks.log = logs ? x => logs.push(x) : null; LA.hooks.create = fn; LA.hooks.log = logs ? x => logs.push(x) : null; };
 const unhook = () => { F.hooks.create = null; F.hooks.log = null; LA.hooks.create = null; LA.hooks.log = null; };

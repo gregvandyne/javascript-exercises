@@ -12821,6 +12821,19 @@
       "care3": "Deze voorwaarden gaan over de figuren die je exporteert. Voor de rest van Oomba Academy gelden de voorwaarden van de site.",
       "siteTerms": "Lees de voorwaarden van de site",
       "back": "Terug naar Figuren"
+    },
+    "plan": {
+      "titleFigures": "Figuren",
+      "titleManip": "Manipulatieven",
+      "headingFigures": "Figuren hoort bij het Leerkracht-abonnement",
+      "headingManip": "De manipulatieven horen bij het Leerkracht-abonnement",
+      "leadFigures": "Maak exacte figuren voor wiskunde, data, natuurwetenschappen en economie, maak er werkbladen en toetsen van en voeg figuurvragen toe aan je lessen.",
+      "leadManip": "Gebruik virtuele manipulatieven op het bord, bewaar borden om te delen en geef live sessies met je klassen.",
+      "trial": "Probeer het Leerkracht-abonnement {days} dagen gratis. Je hebt geen kaart nodig om te beginnen.",
+      "kept": "Alles wat je al hebt opgegeven, blijft werken voor je leerlingen.",
+      "start": "Mijn gratis proefperiode starten",
+      "plans": "Abonnementen bekijken",
+      "api": "Dit hoort bij het Leerkracht-abonnement."
     }
   }
 }

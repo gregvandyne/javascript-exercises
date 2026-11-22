@@ -12820,6 +12820,19 @@
       "care3": "Ces conditions concernent les figures que vous exportez. Le reste d'Oomba Academy suit les conditions d'utilisation du site.",
       "siteTerms": "Lire les conditions d'utilisation du site",
       "back": "Retour aux Figures"
+    },
+    "plan": {
+      "titleFigures": "Figures",
+      "titleManip": "Manipulables",
+      "headingFigures": "Figures fait partie de la formule Enseignant",
+      "headingManip": "Les manipulables font partie de la formule Enseignant",
+      "leadFigures": "Créez des figures exactes en maths, statistiques, sciences et économie, faites-en des fiches et des évaluations, et ajoutez des questions à figures à vos leçons.",
+      "leadManip": "Utilisez des manipulables virtuels au tableau, enregistrez des tableaux à partager et animez des séances en direct avec vos classes.",
+      "trial": "Essayez la formule Enseignant gratuitement pendant {days} jours. Aucune carte n’est demandée pour commencer.",
+      "kept": "Tout ce que vous avez déjà donné à vos élèves continue de fonctionner pour eux.",
+      "start": "Commencer mon essai gratuit",
+      "plans": "Voir les formules",
+      "api": "Cela fait partie de la formule Enseignant."
     }
   }
 }

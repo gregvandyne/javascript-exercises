@@ -37,6 +37,8 @@ import * as F from '../services/figures.js';
 import * as FS from '../services/figures-steps.js';
 import { canHost as manipHost } from '../services/manipulatives.js';
 import { requireUser } from '../auth.js';
+import { config } from '../config.js';
+import { ico } from '../views/icon.js';
 import { decodeData, SOON } from '../../public/js/figures-catalog.js';
 
 export const router = Router();
@@ -52,10 +54,32 @@ router.use(['/figures', '/api/figures'], (req, res, next) => {
   const role = F.roleOf(req.user);
   if (!role && !req.user && F.on()) { res.set({ 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'no-store' }); return requireUser(req, res, next); }
   if (!role) return next('router');
-  req.figRole = role;
   res.set({ 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'no-store' });
+  // School staff without the Teacher plan (while paid plans are on): every page is the calm plan page, every API says so.
+  if (role === 'plan') return planReply(req, res, 'figures');
+  req.figRole = role;
   next();
 });
+
+/** A teaching tool for school staff without the Teacher plan (services/teacher-tools.js 'plan'): a page that says it is
+ *  part of the Teacher plan, with the free trial (/trial) and the plans (/plans); no price here (prices are on /plans
+ *  only). An API answers 403 with the same words. Only school staff ever get here: never a student, kid or grown-up. */
+export function planReply(req, res, tool) {
+  const t = req.t;
+  if (req.originalUrl.startsWith('/api/')) return res.status(403).json({ error: t('figures.plan.api'), code: 'teacherPlan' });
+  if (req.method !== 'GET' && req.method !== 'HEAD') return next404(req, res);
+  return page(req, res, {
+    title: t(tool === 'manip' ? 'figures.plan.titleManip' : 'figures.plan.titleFigures'), active: 'tools', head: CSS, bodyClass: 'fg-page',
+    body: html`<section class="panel fg-plan" aria-labelledby="fg-plan-h">
+      <h1 id="fg-plan-h">${ico(tool === 'manip' ? '🧮' : '📐', { size: 32 })} ${t(tool === 'manip' ? 'figures.plan.headingManip' : 'figures.plan.headingFigures')}</h1>
+      <p class="lead">${t(tool === 'manip' ? 'figures.plan.leadManip' : 'figures.plan.leadFigures')}</p>
+      <p>${t('figures.plan.trial', { days: config.teacherTrialDays })}</p>
+      <p class="muted">${t('figures.plan.kept')}</p>
+      <div class="row"><a class="btn btn-primary" href="/trial">${t('figures.plan.start')}</a><a class="btn" href="/plans">${t('figures.plan.plans')}</a></div>
+    </section>`,
+  });
+}
+const next404 = (req, res) => res.status(404).json({ error: req.t('errors.api.notFound') });
 
 const CSS = raw(`<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`);
 const kindName = (t, id) => t(`figures.kinds.${id}.name`);

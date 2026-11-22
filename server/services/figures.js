@@ -1,11 +1,13 @@
 // Figures, the standalone product (docs/decisions.md "Figures, the standalone product"; routes/figures.js): the menu of
 // figure kinds, one editor for every kind, worksheets of figure questions (print a student sheet and an answer key), the
 // teacher's own presets, and "Power with AI" (a worksheet drafted from a brief). FIGURES=0 (config.figures) hides it
-// from everyone, the platform admin included (docs/decisions.md "Figures opens to all teachers").
+// from everyone, the platform admin included.
 //
-// Who may use it: the platform admin, and every school staff member (a teacher or a school admin); never a guest, a
-// banned account, a student or kid account, or a grown-up (family) account. Signed out, a page asks to sign in (like the
-// /teach pages); everyone else signed in gets the normal 404, on the pages and on every API. Students never open /figures: a worksheet reaches a class through Assign to class
+// Who may use it (services/teacher-tools.js toolAccess, the same rule as the Manipulatives; docs/decisions.md "Figures
+// and the Manipulatives: Teacher plan only"): the platform admin, school staff on the tester list, and, while paid plans
+// are on, school staff with the Teacher plan (a trial and a school seat count). Other school staff see the "part of the
+// Teacher plan" page; never a guest, a banned account, a student or kid account, or a grown-up (family) account (the
+// normal 404, on the pages and on every API). Signed out, a page asks to sign in (like the /teach pages). Students never open /figures: a worksheet reaches a class through Assign to class
 // (services/figures-steps.js), as a lesson step on the class's own lesson page.
 // What each person sees: a worksheet is its owner's. Only the owner lists, opens, edits, prints (the student sheet and
 // the answer key) or deletes it; for anyone else it is the same 404 as a wrong id. A preset is its owner's too.
@@ -15,8 +17,8 @@
 // The AI never sees students' names: a brief that names a student of the teacher's classes is refused.
 import { q, uid, now, audit } from '../db.js';
 import { config } from '../config.js';
-import { isGrownup } from '../auth.js';
 import * as S from './schools.js';
+import { toolAccess } from './teacher-tools.js';
 import { anthropic } from '../builder/anthropic.js';
 import * as aiBudget from './ai-budget.js';
 import { hasProfanity, personalInfo } from './textfilter.js';
@@ -40,14 +42,13 @@ const clipStr = (s, n) => String(s ?? '').replace(/[\u0000-\u0008\u000b\u000c\u0
 
 // ---------------------------------------------------------------- who may use it
 export const on = () => !!config.figures;
-/** May this account make figures and worksheets? The manipulatives' host rule without its tester list: the platform
- *  admin and every school staff member (S.isSchoolStaff: an active membership that is not a student's). */
-export function canMake(u) {
-  if (!on() || !u || u.is_guest || u.banned || isGrownup(u)) return false;
-  return S.isPlatformAdmin(u) || S.isSchoolStaff(u);
+/** May this account make figures and worksheets? (services/teacher-tools.js toolAccess, shared with the Manipulatives.) */
+export const canMake = u => toolAccess(u, on()) === 'yes';
+/** 'teacher' | 'plan' (school staff without the Teacher plan: the plan page) | null (the normal 404). */
+export function roleOf(u) {
+  const a = toolAccess(u, on());
+  return a === 'yes' ? 'teacher' : a === 'plan' ? 'plan' : null;
 }
-/** 'teacher' | null (null: the normal 404). */
-export const roleOf = u => (canMake(u) ? 'teacher' : null);
 
 // ---------------------------------------------------------------- Oomba Figures on the server
 export const OF_VERSION = FIG_LATEST['oomba-figures'];

@@ -126,6 +126,9 @@ S.addMember(boss, oak.id, boss.id, 'teacher', { rosterName: 'Ms Words' });
 const A = S.createClass(boss, oak.id, { name: '9A' }).class;
 const T = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Tomas Teacher', role: 'teacher' }).user.id);
 const LT = getUser(T.id);
+// T has the Teacher plan, with paid plans on for everyone (docs/decisions.md "Figures and the Manipulatives: Teacher plan only").
+const TOOLS = await import('./_tools-plan.js');
+TOOLS.plansOn(); TOOLS.givePlan(T.id);
 
 test('migration 0101: question_sets.lang, English for every older set', () => {
   assert.ok(q.all('PRAGMA table_info(question_sets)').some(c => c.name === 'lang' && c.dflt_value === "'en'"));

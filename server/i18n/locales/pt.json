@@ -12822,6 +12822,19 @@
       "care3": "Estes termos tratam das figuras que você exporta. O resto da Oomba Academy segue os termos do site.",
       "siteTerms": "Ler os termos do site",
       "back": "Voltar para Figuras"
+    },
+    "plan": {
+      "titleFigures": "Figuras",
+      "titleManip": "Materiais manipuláveis",
+      "headingFigures": "Figuras faz parte do plano Professor",
+      "headingManip": "Os materiais manipuláveis fazem parte do plano Professor",
+      "leadFigures": "Crie figuras exatas de matemática, dados, ciências e economia, monte com elas fichas e provas, e adicione perguntas com figuras às suas aulas.",
+      "leadManip": "Use materiais manipuláveis virtuais na lousa, salve quadros para compartilhar e faça sessões ao vivo com suas turmas.",
+      "trial": "Experimente o plano Professor grátis por {days} dias. Não precisa de cartão para começar.",
+      "kept": "Tudo o que você já atribuiu continua funcionando para seus alunos.",
+      "start": "Começar meu teste grátis",
+      "plans": "Ver os planos",
+      "api": "Isto faz parte do plano Professor."
     }
   }
 }

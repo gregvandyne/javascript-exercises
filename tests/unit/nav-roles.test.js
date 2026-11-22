@@ -82,7 +82,8 @@ const PEOPLE = [['out', null], ['out', guest], ['grownup', mum], ['schoolAdmin',
 const playOf = role => (LANDS[role] ? '/play' : '/');
 const KID_TAB = "<nav class=\"tabbar\" aria-label=\"Main\">\n    <a class=\"tab\" href=\"/\" aria-current=\"page\"><span class=\"emo\" aria-hidden=\"true\">🎮</span><span class=\"tab-t\">Play</span></a><a class=\"tab\" href=\"/learn\" ><span class=\"emo\" aria-hidden=\"true\">📚</span><span class=\"tab-t\">Learn</span></a><a class=\"tab\" href=\"/build\" ><span class=\"emo\" aria-hidden=\"true\">🛠️</span><span class=\"tab-t\">Build</span></a><a class=\"tab\" href=\"/friends\" ><span class=\"emo\" aria-hidden=\"true\">👫</span><span class=\"tab-t\">Friends</span></a>\n    <a class=\"tab\" href=\"/me\" ><span class=\"emo\" aria-hidden=\"true\">🦊</span><span class=\"tab-t\">Me</span></a>\n  </nav>";
 const KID_TOP = "<nav class=\"topnav\" aria-label=\"Main\">\n      <a class=\"navlink\" href=\"/\" aria-current=\"page\"><span class=\"emo\" aria-hidden=\"true\">🎮</span>Play</a><a class=\"navlink\" href=\"/learn\" ><span class=\"emo\" aria-hidden=\"true\">📚</span>Learn</a><a class=\"navlink\" href=\"/build\" ><span class=\"emo\" aria-hidden=\"true\">🛠️</span>Build</a><a class=\"navlink\" href=\"/friends\" ><span class=\"emo\" aria-hidden=\"true\">👫</span>Friends</a>\n    </nav>";
-const off = list => list.filter(h => h !== '/plans');
+// Paid plans off: no Plans, and no Teaching tools for staff off the tester list (services/teacher-tools.js).
+const off = list => list.filter(h => h !== '/plans' && h !== '/figures');
 
 test('shellFor: every role\'s tab keys, in order, the same with paid-plan pages on and off; never Plans or School', () => {
   const req = {};
@@ -91,12 +92,13 @@ test('shellFor: every role\'s tab keys, in order, the same with paid-plan pages 
     for (const [role, u] of PEOPLE) {
       const s = shellFor(u, req);
       assert.equal(s.role, role, u ? u.username : 'signed out');
-      assert.deepEqual(s.tabs.map(([k]) => k), KEYS[role], `${role}, plans ${on ? 'on' : 'off'}`);
+      assert.deepEqual(s.tabs.map(([k]) => k), on ? KEYS[role] : KEYS[role].filter(k => k !== 'tools'), `${role}, plans ${on ? 'on' : 'off'}`);
       for (const k of ['plans', 'school']) assert.ok(!s.tabs.some(([x]) => x === k) && !s.top.some(([x]) => x === k), `${role}: no ${k} in either bar`);
     }
   }
-  // Five tabs for everyone: Classroom · Build · Teaching tools · Live · Me for teachers and school admins.
-  assert.equal(shellFor(mum, req).tabs.length, 5); assert.equal(shellFor(head, req).tabs.length, 5); assert.equal(shellFor(teacher, req).tabs.length, 5);
+  // Plans off (as now): Classroom · Build · Live · Me for teachers and school admins (Teaching tools needs plans on,
+  // or the tester list); five for everyone else. With plans on, staff have five too (above).
+  assert.equal(shellFor(mum, req).tabs.length, 5); assert.equal(shellFor(head, req).tabs.length, 4); assert.equal(shellFor(teacher, req).tabs.length, 4);
   assert.equal(shellFor(pupil, req).tabs.length, 5); assert.equal(shellFor(kid, req).tabs.length, 5); assert.equal(shellFor(null, req).tabs.length, 5);
   assert.equal(shellFor(boss, req).tabs.length, 5);
   // Search is never a tab: it is the top bar's field (and round button) for everyone.

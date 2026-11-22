@@ -12821,6 +12821,19 @@
       "care3": "Diese Bedingungen gelten für die Abbildungen, die du exportierst. Für alles andere bei Oomba Academy gelten die Nutzungsbedingungen der Website.",
       "siteTerms": "Nutzungsbedingungen der Website lesen",
       "back": "Zurück zu Figuren"
+    },
+    "plan": {
+      "titleFigures": "Figuren",
+      "titleManip": "Arbeitsmittel",
+      "headingFigures": "Figuren gehört zum Lehrkraft-Plan",
+      "headingManip": "Die Arbeitsmittel gehören zum Lehrkraft-Plan",
+      "leadFigures": "Erstelle genaue Figuren für Mathe, Daten, Naturwissenschaften und Wirtschaft, mache daraus Arbeitsblätter und Tests und füge Figurenfragen in deine Lektionen ein.",
+      "leadManip": "Nutze virtuelle Arbeitsmittel an der Tafel, speichere Tafeln zum Teilen und leite Live-Sitzungen mit deinen Klassen.",
+      "trial": "Teste das Lehrkraft-Plan {days} Tage kostenlos. Zum Start ist keine Karte nötig.",
+      "kept": "Alles, was du schon zugewiesen hast, funktioniert für deine Schülerinnen und Schüler weiter.",
+      "start": "Kostenlosen Test starten",
+      "plans": "Pläne ansehen",
+      "api": "Das gehört zum Lehrkraft-Plan."
     }
   }
 }

@@ -9,6 +9,7 @@
 //        Without it a page is noindex: new pages stay out of search results until they opt in.
 import { html, raw, esc, jsonData } from './html.js';
 import { ico } from './icon.js';
+import { toolAccess } from '../services/teacher-tools.js';
 import { avatar, BRAND, wordmark, appMark } from './components.js';
 import { accountKind, STAFF_PASSWORD_MIN, isGrownup, longPasswordKind } from '../auth.js';
 import { config } from '../config.js';
@@ -113,9 +114,11 @@ export function shellFor(u) {
   if (isSchoolStaff(u)) {
     // Classroom · Build · Teaching tools · Live: no Learn or Play for staff (docs/decisions.md "Teachers' top bar:
     // Classroom, Build, Live" and "Figures opens to all teachers"). Teaching tools (/figures) is there while FIGURES is
-    // on. The phone's tab bar takes it while it has room (five tabs at most, as for every other role); with the Story
+    // on (see tools below). The phone's tab bar takes it while it has room (five tabs at most, as for every other role); with the Story
     // Builder on as well it is in the account menu instead (toolsInMenu).
-    const tools = config.figures && !u.banned ? [TOOLS] : [];
+    // Teaching tools (services/teacher-tools.js): for staff who may use Figures, and as the door to the plan page for
+    // staff without the Teacher plan while paid plans are on; not while FIGURES=0, nor (plans off) for non-testers.
+    const tools = toolAccess(u, config.figures) ? [TOOLS] : [];
     const head = [classroom, build, ...tools, ...stories];
     const top = [...head, ...live];
     const roomy = [...top, me].length <= 5;
