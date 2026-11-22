@@ -11,8 +11,11 @@
 // The same builder makes a test ("Build a test", purpose 'test': with "Power with AI" on, a topic, a grade and a subject
 // draft a whole test from the question generators, so each question can be dealt new numbers) and a lesson's Figure
 // step (purpose 'lesson': "Save to lesson" puts the questions in the step, in place of Assign). Kinds are picked by
-// subject; a question's ⋯ menu swaps its figure for another kind.
-import { t, api, toast, esc, pageData, ask } from '/js/app.js';
+// subject. A question's row is kept quiet (the owner's "less busy" rule): the row or its figure opens the editor, ⟳
+// deals new numbers (only for a question from a generator), and ⋯ More has Move up, Move down, Swap figure and Delete
+// (last, red, after a question). Alt+Arrow Up and Down move the question the keyboard is in.
+import { t, api, toast, esc, pageData, ask, sheet } from '/js/app.js';
+import { moreMenu, menuItem, menuSep, bindMenus } from '/js/figures-menu.js';
 
 const P = pageData('fg-sheet');
 const app = document.getElementById('fg-sheet-app');
@@ -70,6 +73,9 @@ async function call(path, body = {}) {
 
 /** The kinds of one subject, as the Add picker's and Swap's options. */
 const kindOptions = (s, sel = '') => P.kinds.filter(k => k.subject === s).map(k => `<option value="${esc(k.id)}"${k.id === sel ? ' selected' : ''}>${esc(k.name)}</option>`).join('');
+const editHref = it => `/figures/${encodeURIComponent(it.kind)}?ws=${encodeURIComponent(W.id)}&item=${encodeURIComponent(it.id)}`;
+/** The words for this set: a worksheet, a test or a lesson's figure questions. */
+const NOUN = LESSON ? 'Lesson' : TEST ? 'Test' : '';
 const allKindOptions = sel => Object.entries(P.subjects).map(([s, name]) => `<optgroup label="${esc(name)}">${kindOptions(s, sel)}</optgroup>`).join('');
 /** "Power with AI" for a test: topic, subject, how many (the grade is the page's). */
 const testAiBox = () => `<section class="fg-aibox" id="fg-aibox"${ai ? '' : ' hidden'}><h2>${esc(t('js.figures-sheet.testAiTitle'))}</h2>
@@ -98,7 +104,7 @@ function shell() {
       <button class="btn btn-primary" type="button" data-act="draft">✨ ${esc(t('js.figures-sheet.draft'))}</button></div>
       <p class="muted fg-small">${esc(t('js.figures-sheet.budget'))}</p></section>`}
     ${handNote()}
-    <div id="fg-note" role="status"></div>
+    <div id="fg-note" role="status"></div><p class="sr-only" id="fg-moved" role="status" aria-live="polite"></p>
     <ol class="fg-items" id="fg-items"></ol>
     <div class="panel fg-addq">${tabs}<label class="fg-block"><span>${esc(t('js.figures-sheet.addLabel'))}</span><select class="input" id="fg-addkind">${kindOptions(pickSubject)}</select></label>
       <button class="btn btn-primary" type="button" data-act="add">+ ${esc(t('js.figures-sheet.add'))}</button></div>
@@ -132,28 +138,24 @@ function draw(wait = false) {
   // Redrawing the list keeps the keyboard where it was (the same box, by its id).
   const had = document.activeElement && document.getElementById('fg-items').contains(document.activeElement) ? document.activeElement.id : '';
   document.getElementById('fg-items').innerHTML = items.length ? items.map((it, i) => `<li class="fg-item" data-id="${esc(it.id)}">
-    <span class="fg-n" aria-hidden="true">${i + 1}</span><div class="fg-ithumb">${it.svg}</div>
+    <span class="fg-n" aria-hidden="true">${i + 1}</span><a class="fg-ithumb" id="fg-e-${esc(it.id)}" href="${esc(editHref(it))}" aria-label="${esc(t('js.figures-sheet.editN', { n: i + 1, kind: kindName(it.kind) }))}" title="${esc(t('js.figures-sheet.edit'))}">${it.svg}</a>
     <div class="fg-itext"><span class="fg-ikind">${esc(kindName(it.kind))}</span>
       <label class="sr-only" for="fg-q-${esc(it.id)}">${esc(t('js.figures-sheet.questionN', { n: i + 1 }))}</label>
       <textarea class="input fg-iq" id="fg-q-${esc(it.id)}" rows="2" maxlength="400" data-q placeholder="${esc(t('js.figures-sheet.questionHint'))}">${esc(it.question)}</textarea>
       ${answerUi(it, i)}
       <p class="fg-ians">${it.answer ? `${esc(t('js.figures-sheet.answer'))} <b>${esc(it.answer)}</b>` : `<span class="muted">${esc(t('js.figures-sheet.noAnswer'))}</span>`}</p></div>
     <div class="fg-iacts">
-      <button class="btn fg-icon" type="button" data-act="up" aria-label="${esc(t('js.figures-sheet.up'))}" title="${esc(t('js.figures-sheet.up'))}"${i ? '' : ' disabled'}>↑</button>
-      <button class="btn fg-icon" type="button" data-act="down" aria-label="${esc(t('js.figures-sheet.down'))}" title="${esc(t('js.figures-sheet.down'))}"${i < items.length - 1 ? '' : ' disabled'}>↓</button>
-      <button class="btn fg-icon" type="button" data-act="regen" aria-label="${esc(t('js.figures-sheet.regen'))}" title="${esc(t('js.figures-sheet.regen'))}"${it.hasGen ? '' : ' disabled'}>⟳</button>
-      <a class="btn fg-icon" href="/figures/${esc(it.kind)}?ws=${esc(W.id)}&amp;item=${esc(it.id)}" aria-label="${esc(t('js.figures-sheet.edit'))}" title="${esc(t('js.figures-sheet.edit'))}">✏️</a>
-      <button class="btn fg-icon" type="button" data-act="del" aria-label="${esc(t('js.figures-sheet.delete'))}" title="${esc(t('js.figures-sheet.delete'))}">🗑️</button>
-      <details class="fg-more"><summary class="btn fg-icon" aria-label="${esc(t('js.figures-sheet.more'))}" title="${esc(t('js.figures-sheet.more'))}">⋯</summary>
-        <div class="fg-moremenu"><label class="fg-block"><span>${esc(t('js.figures-sheet.swapLabel'))}</span><select class="input" id="fg-sw-${esc(it.id)}" data-swapkind>${allKindOptions(it.kind)}</select></label>
-          <button class="btn btn-sm" type="button" data-act="swap">${esc(t('js.figures-sheet.swap'))}</button></div></details></div></li>`).join('')
+      ${it.hasGen ? `<button class="btn fg-icon" type="button" id="fg-rg-${esc(it.id)}" data-act="regen" aria-label="${esc(t('js.figures-sheet.regenN', { n: i + 1 }))}" title="${esc(t('js.figures-sheet.regen'))}"><span aria-hidden="true">⟳</span></button>` : ''}
+      ${moreMenu({ label: t('js.figures-sheet.moreN', { n: i + 1 }), btnId: `fg-mb-${it.id}`, items: menuItem('up', t('js.figures-sheet.up'), { icon: '↑', attrs: i ? ' aria-keyshortcuts="Alt+ArrowUp"' : ' disabled' })
+        + menuItem('down', t('js.figures-sheet.down'), { icon: '↓', attrs: i < items.length - 1 ? ' aria-keyshortcuts="Alt+ArrowDown"' : ' disabled' })
+        + menuItem('swap', t('js.figures-sheet.swapMenu'), { icon: '⇄' }) + menuSep() + menuItem('del', t('js.figures-sheet.delete'), { danger: true, icon: '🗑' }) })}</div></li>`).join('')
     : `<li class="fg-empty muted">${esc(t('js.figures-sheet.empty'))}</li>`;
   if (had && document.getElementById(had)) document.getElementById(had).focus({ preventScroll: true });
   for (const b of app.querySelectorAll('[data-tab]')) { const on = b.dataset.tab === tab; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }
   document.getElementById('fg-paper').innerHTML = W && items.length ? (tab === 'key' ? W.preview.key : W.preview.sheet) : `<p class="muted">${esc(t('js.figures-sheet.previewEmpty'))}</p>`;
   document.getElementById('fg-pv-actions').innerHTML = W && items.length ? `<a class="btn btn-primary" href="/figures/worksheets/${esc(W.id)}/print?key=0">🖨️ ${esc(t('js.figures-sheet.print'))}</a>
     <a class="btn" href="/figures/worksheets/${esc(W.id)}/print?key=1">${esc(t('js.figures-sheet.printKey'))}</a>
-    <button class="btn fg-danger" type="button" data-act="remove">${esc(t('js.figures-sheet.remove'))}</button>` : '';
+    <button class="btn fg-danger" type="button" data-act="remove">${esc(t(`js.figures-sheet.remove${NOUN}`))}</button>` : '';
   for (const b of app.querySelectorAll('button[data-act]')) if (wait) b.setAttribute('aria-busy', 'true'); else b.removeAttribute('aria-busy');
   // Assign to class: once the worksheet has questions, for a teacher with a class.
   const why = !(W && items.length) ? t('js.figures-sheet.assignEmpty') : !(P.classes || []).length ? t('js.figures-sheet.assignNoClasses') : '';
@@ -185,8 +187,8 @@ function assignUi() {
 const itemId = el => el.closest('[data-id]')?.dataset.id;
 const ACTS = {
   async add() { const r = await call('/items', { kind: document.getElementById('fg-addkind').value }); if (r) { note = ''; draw(); } },
-  up: b => call(`/items/${encodeURIComponent(itemId(b))}/move`, { dir: 'up' }),
-  down: b => call(`/items/${encodeURIComponent(itemId(b))}/move`, { dir: 'down' }),
+  up: b => move(itemId(b), 'up', b),
+  down: b => move(itemId(b), 'down', b),
   regen: b => call(`/items/${encodeURIComponent(itemId(b))}/regen`),
   oadd(b) {
     const li = b.closest('[data-id]'), id = li.dataset.id, it = W.items.find(x => x.id === id); if (!it) return;
@@ -202,14 +204,32 @@ const ACTS = {
     await saveOpts(li, texts, correct === k ? null : correct !== null && correct > k ? correct - 1 : correct);
     document.getElementById(`fg-oadd-${id}`)?.focus();
   },
-  async del(b) { if (await ask({ title: t('js.figures-sheet.deleteQ'), ok: t('js.figures-sheet.delete'), danger: true })) call(`/items/${encodeURIComponent(itemId(b))}/delete`); },
+  async del(b) {
+    const id = itemId(b), i = W.items.findIndex(x => x.id === id);
+    if (!(await ask({ title: t('js.figures-sheet.deleteQ', { n: i + 1 }), text: t('js.figures-sheet.deleteText'), ok: t('js.figures-sheet.delete'), danger: true }))) return;
+    const r = await call(`/items/${encodeURIComponent(id)}/delete`); if (!r) return;
+    // The keyboard goes to the question that took its place (or the one before it, or Add).
+    const next = W.items[Math.min(i, W.items.length - 1)];
+    (next ? document.getElementById(`fg-mb-${next.id}`) : document.getElementById('fg-addkind'))?.focus();
+  },
   async remove() {
-    if (!(await ask({ title: t('js.figures-sheet.removeQ'), text: t('js.figures-sheet.removeText'), ok: t('js.figures-sheet.remove'), danger: true }))) return;
+    if (!(await ask({ title: t(`js.figures-sheet.remove${NOUN}Q`), text: t(LESSON ? 'js.figures-sheet.removeLessonText' : 'js.figures-sheet.removeText'), ok: t(`js.figures-sheet.remove${NOUN}`), danger: true }))) return;
     try { await api(`/api/figures/worksheets/${encodeURIComponent(W.id)}/delete`, { method: 'POST', body: {} }); location.href = LESSON ? `/teach/lessons/${encodeURIComponent(P.lesson.id)}` : '/figures'; } catch (e) { toast(e.message, { bad: true }); }
   },
+  /** Swap figure: another kind in the same place (a box with the kinds, by subject). */
   swap(b) {
-    const li = b.closest('[data-id]'), kind = li.querySelector('[data-swapkind]').value;
-    return call(`/items/${encodeURIComponent(li.dataset.id)}/swap`, { kind });
+    const id = itemId(b), it = W.items.find(x => x.id === id); if (!it) return;
+    const n = W.items.indexOf(it) + 1;
+    const sh = sheet({ title: t('js.figures-sheet.swapTitle', { n }), content: `<form class="fg-swapform" novalidate><label class="fg-block"><span>${esc(t('js.figures-sheet.swapLabel'))}</span><select class="input" id="fg-swapkind" data-swapkind>${allKindOptions(it.kind)}</select></label>
+      <p class="muted fg-small">${esc(t('js.figures-sheet.swapHint'))}</p><div class="row"><button class="btn btn-primary" type="submit">${esc(t('js.figures-sheet.swap'))}</button></div></form>` });
+    setTimeout(() => sh.el.querySelector('#fg-swapkind')?.focus(), 40);
+    sh.el.querySelector('form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const kind = sh.el.querySelector('#fg-swapkind').value;
+      sh.close();
+      await call(`/items/${encodeURIComponent(id)}/swap`, { kind });
+      document.getElementById(`fg-mb-${id}`)?.focus();
+    });
   },
   async draftTest() {
     const topic = document.getElementById('fg-topic').value.trim();
@@ -235,6 +255,16 @@ const ACTS = {
     note = `<p class="notice ${r.ai ? 'good' : ''} fg-small">${esc(bits.join(' '))}</p>`; draw();
   },
 };
+/** Move a question up or down (⋯ More, or Alt+Arrow): the keyboard stays with it, and a screen reader hears where. */
+async function move(id, dir, from) {
+  const i = W.items.findIndex(x => x.id === id), j = dir === 'up' ? i - 1 : i + 1;
+  if (i < 0 || j < 0 || j >= W.items.length) return;
+  const focusId = from && from.id && from.id.startsWith('fg-') && !from.closest('.fg-mm-list') ? from.id : `fg-mb-${id}`;
+  const r = await call(`/items/${encodeURIComponent(id)}/move`, { dir });
+  if (!r) return;
+  document.getElementById(focusId)?.focus({ preventScroll: false });
+  const said = document.getElementById('fg-moved'); if (said) { said.textContent = ''; setTimeout(() => { said.textContent = t('js.figures-sheet.movedTo', { n: j + 1 }); }, 30); }
+}
 function lessonUi() {
   const go = document.getElementById('fg-save-lesson'); if (!go) return;
   go.addEventListener('click', async () => {
@@ -257,8 +287,17 @@ async function boot() {
     const tb = e.target.closest('[data-tab]'); if (tb) { tab = tb.dataset.tab; draw(); return; }
     const pk = e.target.closest('[data-pick]');
     if (pk) { pickSubject = pk.dataset.pick; for (const c of app.querySelectorAll('[data-pick]')) { const on = c === pk; c.classList.toggle('on', on); c.setAttribute('aria-pressed', String(on)); } document.getElementById('fg-addkind').innerHTML = kindOptions(pickSubject); return; }
-    const b = e.target.closest('button[data-act]'); if (!b || b.disabled || busy) return;
-    const f = ACTS[b.dataset.act]; if (f) f(b);
+    const b = e.target.closest('button[data-act]'); if (b) { if (!b.disabled && !busy) { const f = ACTS[b.dataset.act]; if (f) f(b); } return; }
+    // The row itself opens the figure in the editor (not its boxes, buttons, links or menu).
+    const li = e.target.closest('.fg-item[data-id]');
+    if (li && !e.target.closest('a,button,input,textarea,select,label,fieldset,.fg-mm') && W) { const it = W.items.find(x => x.id === li.dataset.id); if (it) location.href = editHref(it); }
+  });
+  bindMenus(app, it => { if (busy) return; const f = ACTS[it.dataset.mi]; if (f) f(it); });
+  // Alt+Arrow Up/Down moves the question the keyboard is in (not while typing in a box, where the keys move the caret).
+  app.addEventListener('keydown', e => {
+    if (!e.altKey || e.ctrlKey || e.metaKey || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
+    const li = e.target.closest('.fg-item[data-id]'); if (!li || e.target.closest('input[type="text"],input:not([type]),textarea,.fg-mm-list') || busy) return;
+    e.preventDefault(); move(li.dataset.id, e.key === 'ArrowUp' ? 'up' : 'down', e.target);
   });
   document.getElementById('fg-ai').addEventListener('change', async e => {
     ai = e.target.checked; document.getElementById('fg-aibox').hidden = !ai;

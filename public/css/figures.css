@@ -46,9 +46,12 @@
 .fg-card{display:flex;flex-direction:column;gap:4px;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:12px 12px 16px;color:var(--text)}
 .fg-card:hover{text-decoration:none;box-shadow:inset 0 0 0 2px var(--accent-line),var(--shadow)}
 .fg-card[hidden]{display:none}
-.fg-thumb{display:grid;place-items:center;height:150px;border-radius:14px;background:#FFFDF2;margin-bottom:6px;overflow:hidden}
-.fg-thumb img{max-width:100%;max-height:146px;object-fit:contain}
-.fg-card-t{font-weight:800;font-size:1.05rem}
+/* The card's picture is the figure on its cream paper (#FFFDF2, as Oomba Figures draws it), framed by a thin line so
+   it reads as paper on the card in both themes, and scaled to fill its box (small figures grow, wide ones were stacked
+   on the server: services/figures.js thumbSvg). */
+.fg-thumb{display:block;height:160px;padding:8px;border-radius:14px;background:#FFFDF2;box-shadow:inset 0 0 0 1px var(--line);margin-bottom:8px;overflow:hidden}
+.fg-thumb img{display:block;width:100%;height:100%;object-fit:contain}
+.fg-card-t{font-weight:800;font-size:1.1rem;letter-spacing:-.01em;line-height:1.2}
 .fg-card-g{font-size:.82rem;font-weight:700;color:var(--accent-ink)}
 .fg-card-d{font-size:.9rem;color:var(--text-2)}
 .fg-none{margin-top:24px}
@@ -75,7 +78,6 @@
 .fg-ed-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
 .fg-ed-head h1{margin:0;font-size:clamp(1.8rem,5vw,2.6rem)}
 .fg-ed-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.fg-presets select{min-width:200px;min-height:44px}
 .fg-ed-grid{display:grid;gap:16px;grid-template-columns:minmax(250px,1fr) minmax(0,2fr) minmax(260px,1.1fr);align-items:start}
 .fg-ed-controls,.fg-ed-side{min-width:0}
 .fg-ed-stage{min-width:0;display:flex;flex-direction:column;gap:12px}
@@ -146,7 +148,7 @@
   .fg-ed-stage{order:1}.fg-ed-controls{order:2}.fg-ed-side{order:3}
   .fg-ed-figure{min-height:220px}
 }
-@media (max-width:480px){.fg-presets{flex:1}.fg-presets select{min-width:0;width:100%}.fg-ed-actions{width:100%}}
+@media (max-width:480px){.fg-ed-actions{width:100%}}
 
 /* ---- the worksheet builder */
 .fg-sh-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin-bottom:16px}
@@ -184,8 +186,15 @@
 .fg-opt b{min-width:1.4em;text-align:center}
 .fg-opt .input{min-height:36px;padding:4px 8px}
 .fg-opts .fg-small{margin:0}
-.fg-iacts{display:grid;grid-template-columns:repeat(2,44px);gap:6px}
-.fg-iacts .btn{min-height:40px}
+.fg-item{cursor:pointer}
+.fg-item:hover{box-shadow:inset 0 0 0 2px var(--accent-line),var(--shadow)}
+.fg-item :is(textarea,input,select,label,fieldset){cursor:auto}
+.fg-item label{cursor:pointer}
+a.fg-ithumb{color:inherit;text-decoration:none;box-shadow:inset 0 0 0 1px var(--line)}
+a.fg-ithumb:hover{box-shadow:inset 0 0 0 2px var(--accent-line)}
+a.fg-ithumb:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.fg-iacts{display:flex;flex-direction:column;align-items:center;gap:6px;align-self:start}
+.fg-iacts .btn{min-height:44px}
 .fg-empty{padding:16px;background:var(--card);border-radius:var(--r)}
 .fg-addq{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end}
 .fg-addq .fg-block{flex:1 1 220px;margin:0}
@@ -209,8 +218,7 @@
 @media (max-width:560px){
   .fg-item{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"n thumb" "text text" "acts acts"}
   .fg-n{grid-area:n}.fg-ithumb{grid-area:thumb}.fg-itext{grid-area:text}
-  .fg-iacts{grid-area:acts;grid-template-columns:repeat(6,44px)}
-  .fg-moremenu{inset-inline-end:auto;inset-inline-start:0}
+  .fg-iacts{grid-area:acts;flex-direction:row;justify-content:flex-end}
   .fg-titlein{font-size:1.2rem}
 }
 
@@ -253,10 +261,38 @@
 /* ---- Build a test, a lesson's Figure step (docs/decisions.md "Figures: the lesson Figure step and Build a test") */
 .fg-testline{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:16px 0 0;padding-top:16px;border-top:1px solid #3A3830;color:#E3DED0}
 .fg-picktabs{flex:1 1 100%;margin:0}
-.fg-more{position:relative}
-.fg-more>summary{list-style:none;display:inline-flex;align-items:center;justify-content:center;min-height:40px;cursor:pointer}
-.fg-more>summary::-webkit-details-marker{display:none}
-.fg-moremenu{position:absolute;z-index:5;inset-inline-end:0;top:calc(100% + 6px);width:260px;max-width:80vw;display:grid;gap:8px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 8px 24px rgba(20,20,20,.16)}
-.fg-moremenu .fg-block{margin:0}
+
+/* ---- Phase 4 (docs/decisions.md "Figures Phase 4: polish"): the ⋯ More menus (public/js/figures-menu.js), undo and
+   redo, the presets */
+.fg-mm{position:relative;display:inline-flex}
+.fg-mm-btn{font-size:1.25rem;font-weight:800}
+.fg-mm-btn.fg-mm-text{width:auto;padding:0 16px;gap:6px;font-size:1rem}
+.fg-mm-btn[aria-expanded="true"]{box-shadow:inset 0 0 0 2px var(--accent-line)}
+.fg-mm-list{position:absolute;z-index:30;inset-inline-end:0;top:calc(100% + 6px);display:flex;flex-direction:column;min-width:240px;max-width:min(320px,calc(100vw - 32px));max-height:min(420px,70vh);overflow:auto;padding:6px;background:var(--card);border-radius:var(--r-sm);box-shadow:var(--shadow-lg),0 0 0 1px var(--line)}
+.fg-mm-list.up{top:auto;bottom:calc(100% + 6px)}
+.fg-mm-list[hidden]{display:none}
+.fg-mi{display:flex;align-items:center;gap:10px;width:100%;text-align:start;min-height:44px;padding:0 12px;border:0;border-radius:10px;background:none;color:var(--text);font:700 .95rem var(--font);cursor:pointer}
+.fg-mi:hover:not(:disabled),.fg-mi:focus-visible{background:var(--hover);outline:none}
+.fg-mi:focus-visible{box-shadow:inset 0 0 0 2px var(--focus)}
+.fg-mi:disabled{opacity:.45;cursor:default}
+.fg-mi.bad{color:var(--bad-ink)}
+.fg-mi-ico{display:inline-grid;place-items:center;width:1.4em;flex:none;font-size:1.05rem}
+.fg-mg-h{padding:8px 12px 4px;font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fg-msep{height:1px;margin:6px 4px;background:var(--line)}
+.fg-hist{display:inline-flex;gap:6px}
+.fg-svgi{display:block}
+.fg-plist{list-style:none;margin:0;padding:0}
+.fg-plist li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.fg-swapform{display:grid;gap:8px}
+.fg-swapform .fg-block{margin:0}
 .fg-tolesson .btn-primary{width:100%}
 .fg-tolesson .btn-sm{margin-top:6px}
+/* ---- the reuse terms page (/figures/terms) */
+.fg-terms{max-width:760px;display:flex;flex-direction:column;gap:14px}
+.fg-terms-hero h1{margin:4px 0 8px}
+.fg-terms .panel h2{font-size:1.25rem;margin:0 0 8px}
+.fg-terms .panel p{margin:0 0 8px}
+.fg-terms .panel p:last-child{margin-bottom:0}
+.fg-terms-can{border:2px solid var(--brand-mint)}
+.fg-terms-list{margin:0;padding-inline-start:1.2em;display:grid;gap:6px}
+.fg-terms-notice{margin:8px 0 12px;padding:12px 16px;border-inline-start:4px solid var(--brand-leaf);border-radius:0 var(--r-sm) var(--r-sm) 0;background:var(--hover);font-size:.95rem;overflow-wrap:anywhere;text-align:left}

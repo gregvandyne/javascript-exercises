@@ -813,12 +813,46 @@ export function fromSnapshot(it, v) {
 }
 
 // ---------------------------------------------------------------- thumbnails (the menu's cards), cached
+// A card is about 1.4 times as wide as it is tall. A kind whose example is a long strip (a number line, a motion map,
+// an orbital diagram) would be a thin line on its card, so its card stacks two or three of its examples instead (its
+// other presets, then THUMB_MORE), centered, until the picture is about as tall as the card. Every extra is checked with
+// OF.check and left out if it cannot be drawn. The figures stay Oomba Figures' own drawings (cream paper, Ink lines,
+// Mint fills, Leaf accents); nothing is cropped.
+const THUMB_MORE = {
+  motionMap: [{ segments: [{ kind: 'forward', speed: 1, duration: 2 }, { kind: 'forward', speed: 3, duration: 2 }], dt: 1, labels: 'times' }],
+  segmentAddition: [{ points: ['P', 'Q', 'R'], unknown: { y: 4 }, parts: [{ expr: [3, 0] }, { expr: [1, 5] }], spans: [{ from: 'P', to: 'R', label: 21 }] }],
+  tableOfValues: [{ rule: 'x^2', from: 0, to: 4 }],
+  projectile: [{ speed: 15, angle: 60, height: 0, g: 9.8, positions: 3 }],
+};
+const WIDE = 3, ENOUGH = 1.9;
+const sizeOf = svg => { const m = /viewBox="([^"]+)"/.exec(svg); const v = m ? m[1].trim().split(/\s+/).map(Number) : []; return v.length === 4 && v.every(Number.isFinite) ? v : null; };
+/** One figure inside the stack: its own <svg> at (x, y), its title left out (the stack has one). */
+const placed = (svg, x, y) => { const v = sizeOf(svg); return `<svg x="${x}" y="${y}" width="${v[2]}" height="${v[3]}" viewBox="${v.join(' ')}">${svg.replace(/^<svg\b[^>]*>/, '').replace(/<\/svg>\s*$/, '').replace(/<title>[\s\S]*?<\/title>/, '')}</svg>`; };
+export function thumbSvg(K, lang = 'en') {
+  const F = kit(), title = tEn(`figures.kinds.${K.id}.name`);
+  const first = F.svg(K.id, K.presets[0], { lang, title }), v0 = sizeOf(first);
+  if (!v0 || v0[2] / v0[3] <= WIDE) return first;
+  const rows = [first];
+  for (const d of [...K.presets.slice(1), ...(THUMB_MORE[K.id] || [])]) {
+    const W = Math.max(...rows.map(r => sizeOf(r)[2])), H = rows.reduce((n, r) => n + sizeOf(r)[3], 0);
+    if (rows.length >= 3 || W / H <= ENOUGH) break;
+    let bad; try { bad = F.check(K.id, d); } catch { bad = ['error']; }
+    if (bad.length) continue;
+    const svg = F.svg(K.id, d, { lang, title }), v = sizeOf(svg);
+    if (v && v[2] / v[3] > 1.2) rows.push(svg);
+  }
+  if (rows.length === 1) return first;
+  const GAP = 16, W = Math.max(...rows.map(r => sizeOf(r)[2]));
+  let y = 0; const parts = rows.map(r => { const v = sizeOf(r), out = placed(r, Math.round((W - v[2]) / 2), y); y += v[3] + GAP; return out; });
+  const H = y - GAP, font = (/font-family="([^"]*)"/.exec(first) || [])[1] || 'system-ui, sans-serif';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(title)}" class="of-fig of-thumb" font-family="${font}" data-of="${K.id}"><title>${esc(title)}</title>${parts.join('')}</svg>`;
+}
 const thumbs = new Map();
 /** A kind's card picture: its example drawn by the server's pinned Oomba Figures, once per kind and language. */
 export function thumbnail(kind, lang = 'en') {
   const K = kindOf(kind); if (!K) return null;
   const k = `${K.id}|${lang}`;
-  if (!thumbs.has(k)) thumbs.set(k, kit().svg(K.id, K.presets[0], { lang, title: tEn(`figures.kinds.${K.id}.name`) }));
+  if (!thumbs.has(k)) thumbs.set(k, thumbSvg(K, lang));
   return thumbs.get(k);
 }
 

@@ -3454,7 +3454,6 @@
     "figures-editor": {
       "undo": "Annulla",
       "redo": "Ripeti",
-      "presets": "Preimpostazioni…",
       "examples": "Esempi",
       "mine": "Le mie preimpostazioni",
       "randomize": "Casuale",
@@ -3678,7 +3677,21 @@
         "addGrid": "Aggiungi la figura del piano a una scheda",
         "drawInstead": "Disegnala invece su una griglia"
       },
-      "choiceNote": "Questa è una domanda a scelta multipla. Le opzioni e quella giusta si impostano nella scheda."
+      "choiceNote": "Questa è una domanda a scelta multipla. Le opzioni e quella giusta si impostano nella scheda.",
+      "history": "Annulla e ripeti",
+      "undoTip": "Annulla (Ctrl+Z)",
+      "redoTip": "Ripeti (Ctrl+Maiusc+Z)",
+      "undone": "Annullato.",
+      "redone": "Ripetuto.",
+      "moreLabel": "Preimpostazioni: gli esempi, le tue, salva ed elimina",
+      "deletePresets": "Elimina una preimpostazione…",
+      "deletePreset": "Elimina",
+      "deletePresetQ": "Eliminare la preimpostazione «{name}»?",
+      "deletePresetText": "Sparisce dalle tue preimpostazioni per questo tipo di figura. Le schede che l'hanno usata mantengono le loro figure.",
+      "presetDeleted": "Preimpostazione eliminata.",
+      "noPresets": "Non hai ancora preimpostazioni per questo tipo di figura.",
+      "reuseLink": "Cosa puoi fare con le tue figure",
+      "presetsBtn": "Preimpostazioni"
     },
     "figures-sheet": {
       "title": "Titolo della scheda",
@@ -3763,9 +3776,21 @@
       "lessonStarted": "Gli studenti hanno già iniziato questo passo, quindi le domande restano come sono. Fai una copia della lezione per cambiarle.",
       "backToLesson": "Torna alla lezione",
       "subjects": "Materie",
-      "more": "Altro",
       "swapLabel": "Sostituisci la figura con",
-      "swap": "Sostituisci figura"
+      "swap": "Sostituisci figura",
+      "editN": "Modifica la figura della domanda {n} ({kind})",
+      "regenN": "Nuovi numeri per la domanda {n}",
+      "moreN": "Altro per la domanda {n}",
+      "swapMenu": "Sostituisci la figura…",
+      "swapTitle": "Sostituisci la figura della domanda {n}",
+      "swapHint": "La domanda riceve una nuova figura di quel tipo, con la sua domanda e la sua risposta. Puoi modificarle dopo.",
+      "deleteText": "La domanda e la sua figura verranno eliminate. Non si può annullare.",
+      "movedTo": "Ora è la domanda {n}.",
+      "removeTest": "Elimina la verifica",
+      "removeTestQ": "Eliminare questa verifica?",
+      "removeLesson": "Elimina queste domande",
+      "removeLessonQ": "Eliminare queste domande con figure?",
+      "removeLessonText": "Il passaggio Figure della lezione mantiene le domande con cui è stato salvato l'ultima volta. Non si può annullare."
     }
   },
   "favorites": {
@@ -12770,6 +12795,31 @@
         "needsDue": "Imposta una data di consegna per mostrare le risposte dopo.",
         "started": "Gli studenti hanno già iniziato questo passo, quindi le domande restano come sono. Fai una copia della lezione per cambiarle."
       }
+    },
+    "terms": {
+      "title": "Riutilizzare le tue figure",
+      "crumb": "Condizioni di riutilizzo",
+      "lead": "Ogni figura che crei in Figure è libera da usare. Ecco che cosa significa, in parole semplici.",
+      "canTitle": "Che cosa puoi fare",
+      "can1": "Usare le tue figure in classe, su schede e verifiche, nelle presentazioni e sui siti web.",
+      "can2": "Copiarle, stamparle e condividerle con chiunque: studenti, famiglie e altri insegnanti.",
+      "can3": "Modificarle: ritagliarle, aggiungere etichette o inserirle nei tuoi materiali.",
+      "can4": "Usarle in materiali che pubblichi o vendi.",
+      "can5": "Fare tutto questo senza chiederci il permesso e senza citarci. Una menzione fa piacere, ma non è mai obbligatoria.",
+      "noticeTitle": "La nota nel file",
+      "noticeText": "Ogni SVG o PNG che scarichi o copi contiene questa nota, scritta nel file stesso, dove la cercano i programmi di grafica e i motori di ricerca. È in inglese, così si legge uguale ovunque:",
+      "noticeMeans": "Significa che Oomba Academy rinuncia a ogni diritto sulla sua parte della figura (il disegno, l'impaginazione e le etichette che crea), così chiunque può riutilizzarla. Puoi tenere la nota o toglierla.",
+      "cc0Title": "Che cosa significa CC0",
+      "cc0Text": "CC0 1.0 è una dedica al pubblico dominio di Creative Commons. Per la nostra parte di una figura non c'è alcuna condizione: nessuna citazione, nessuna licenza da seguire, in tutto il mondo, nei limiti consentiti dalla legge.",
+      "cc0Link": "Leggi CC0 1.0 sul sito di Creative Commons",
+      "yoursTitle": "Che cosa resta tuo",
+      "yoursText": "Tutto ciò che aggiungi di originale è tuo: la tua domanda, le tue etichette e i tuoi dati, i tuoi disegni. Sei tu a decidere se altri possono riutilizzare queste parti.",
+      "careTitle": "Buono a sapersi",
+      "care1": "Controlla una figura prima di usarla. Controlliamo le figure con cura, ma non possiamo promettere che ogni figura vada bene per ogni uso.",
+      "care2": "Non inserire nomi o dati personali degli studenti nelle figure che condividi.",
+      "care3": "Queste condizioni riguardano le figure che esporti. Per il resto di Oomba Academy valgono i termini del sito.",
+      "siteTerms": "Leggi i termini del sito",
+      "back": "Torna a Figure"
     }
   }
 }
