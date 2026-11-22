@@ -5878,8 +5878,12 @@
         "title": "Salas de matemática ao vivo",
         "p": "Cada aluno trabalha no próprio quadrado enquanto você vê a turma toda em uma só tela."
       },
-      "plan": "Os materiais manipuláveis, suas salas ao vivo e Figuras fazem parte do plano Professor.",
-      "testing": "Estas ferramentas estão sendo testadas agora em algumas turmas."
+      "dashboard": {
+        "title": "Painel da turma",
+        "p": "Timers, tarefas, check-ins e ferramentas de matemática para o dia todo da turma, em uma só tela."
+      },
+      "plan": "O painel da turma é grátis para toda turma. Os materiais manipuláveis, suas salas ao vivo e Figuras fazem parte do plano Professor.",
+      "testing": "O painel da turma é grátis para toda turma. As outras três ferramentas estão sendo testadas agora em algumas turmas."
     }
   },
   "learn": {

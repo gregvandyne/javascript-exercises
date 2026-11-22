@@ -19,30 +19,30 @@ test.after(() => server.close());
 test.beforeEach(() => { process.env.LANDING_AT_ROOT = '1'; resetLimits(); });
 const get = async path => { const r = await fetch(base + path, { headers: { accept: 'text/html' } }); return { status: r.status, text: await r.text(), type: r.headers.get('content-type') }; };
 
-const THREE = ['manipulatives', 'figures', 'room'];
+const ALL = ['manipulatives', 'figures', 'room', 'dashboard'];
 
-test('the three videos, their posters and captions are in public/video and ready', () => {
-  for (const id of THREE) {
+test('the four videos, their posters and captions are in public/video and ready', () => {
+  for (const id of ALL) {
     for (const f of videoFiles(id)) assert.ok(fs.existsSync(new URL(`../../public/video/${f}`, import.meta.url)), f);
     const vtt = fs.readFileSync(new URL(`../../public/video/oomba-${id}.en.vtt`, import.meta.url), 'utf8');
     assert.match(vtt, /^WEBVTT\n/, `${id}: a WebVTT file`);
-    assert.doesNotMatch(vtt, /—/, `${id}: no em dashes in the captions`);
+    assert.doesNotMatch(vtt, /\u2014/, `${id}: no em dashes in the captions`);
   }
-  assert.deepEqual(readyVideos().map(v => v.id), THREE);
+  assert.deepEqual(readyVideos().map(v => v.id), ALL);
   // A listed video without its files is left out, never an empty player.
   assert.ok(VIDEOS.every(v => readyVideos().includes(v) || !videoFiles(v.id).every(f => fs.existsSync(new URL(`../../public/video/${f}`, import.meta.url)))));
 });
 
 for (const path of ['/', '/teachers']) {
-  test(`${path}: the "See it in action" section with the three videos`, async () => {
+  test(`${path}: the "See it in action" section with the four videos`, async () => {
     const page = await get(path);
     assert.equal(page.status, 200);
     const sec = (page.text.match(/<section class="lp-sec pv[^"]*" id="see-it"[\s\S]*?<\/section>/) || [])[0];
     assert.ok(sec, 'the section is on the page');
     assert.match(sec, /<h2 id="see-it-h">The new teaching tools, a minute each<\/h2>/);
-    assert.match(sec, /<ul class="pv-grid" data-n="3">/);
-    assert.equal((sec.match(/<video /g) || []).length, 3);
-    for (const id of THREE) {
+    assert.match(sec, /<ul class="pv-grid" data-n="4">/);
+    assert.equal((sec.match(/<video /g) || []).length, 4);
+    for (const id of ALL) {
       assert.match(sec, new RegExp(`<video class="pv-video" controls muted playsinline preload="none" width="1280" height="720" poster="/video/oomba-${id}-poster\\.jpg" aria-labelledby="pv-${id}-h" aria-describedby="pv-${id}-p">`));
       assert.match(sec, new RegExp(`<source src="/video/oomba-${id}\\.mp4" type="video/mp4">`));
       assert.match(sec, new RegExp(`<track kind="captions" src="/video/oomba-${id}\\.en\\.vtt" srclang="en" label="English">`));
@@ -51,12 +51,15 @@ for (const path of ['/', '/teachers']) {
     assert.doesNotMatch(sec, /autoplay/);
     assert.match(sec, /Virtual Math Manipulatives/);
     assert.match(sec, /Oomba Figures/);
-    // Billing is off in the tests: the tools are with the testers only, and the note says so (no plan, no price).
-    assert.match(sec, /These tools are being tried out in a few classrooms now\./);
+    assert.match(sec, /Classroom Dashboard/);
+    // Billing is off in the tests (no plan, no price on the note).
+    // The dashboard is free for every class (routes/dash.js); the note says so and keeps the others with the testers.
+    assert.match(sec, /The Classroom Dashboard is free for every class\. The other three tools are being tried out in a few classrooms now\./);
+    assert.doesNotMatch(sec, /Teacher plan/);
     assert.doesNotMatch(sec, /\$\d/);
-    assert.doesNotMatch(sec, /—/);
+    assert.doesNotMatch(sec, /\u2014/);
     // The page's own sign-up, never a link into the tools.
-    assert.doesNotMatch(sec, /href="\/(manipulatives|figures)/);
+    assert.doesNotMatch(sec, /href="\/(manipulatives|figures|dashboard|class\/)/);
     assert.match(sec, path === '/' ? /href="\/signup\?trial=1"/ : /href="#start"/);
   });
 }
@@ -64,13 +67,14 @@ for (const path of ['/', '/teachers']) {
 test('in another language: translated words, English captions', async () => {
   const sec = (await get('/es/teachers')).text.match(/id="see-it"[\s\S]*?<\/section>/)[0];
   assert.match(sec, /Manipulativos matemáticos virtuales/);
+  assert.match(sec, /Panel de clase/);
   assert.match(sec, /srclang="en"/);
   const gb = (await get('/en-GB/teachers'));
-  if (gb.status === 200) assert.match(gb.text, /Virtual Maths Manipulatives/);
+  if (gb.status === 200) { assert.match(gb.text, /Virtual Maths Manipulatives/); assert.match(gb.text, /maths tools for your whole class day/); }
 });
 
 test('the files are served with the right types', async () => {
-  for (const id of THREE) {
+  for (const id of ALL) {
     const [mp4, poster, vtt] = videoFiles(id).map(f => `/video/${f}`);
     assert.match((await get(mp4)).type, /^video\/mp4/);
     assert.match((await get(poster)).type, /^image\/jpeg/);

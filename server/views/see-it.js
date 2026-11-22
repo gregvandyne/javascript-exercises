@@ -22,7 +22,7 @@ export const VIDEOS = [
   { id: 'manipulatives', emoji: '🧮' },
   { id: 'figures', emoji: '📐' },
   { id: 'room', emoji: '📡' },
-  // The Classroom Dashboard video goes here when it is made: { id: 'dashboard', emoji: '📊' },
+  { id: 'dashboard', emoji: '🖥️' },
 ];
 export const videoFiles = id => [`oomba-${id}.mp4`, `oomba-${id}-poster.jpg`, `oomba-${id}.en.vtt`];
 /** The videos whose files are all there (read once: the files ship with the build). */
@@ -36,7 +36,8 @@ const tx = (t, tag, key, attrs = '') => raw(`<${tag}${attrs}${fb(t, key)}>${tHtm
 /**
  * The section, or '' when no video is ready.
  * cta: the call to action under the grid (markup, the page's own sign-up button). The note under the grid says who can use
- * the tools today, by the same switch as toolAccess: with paid plans on for everyone, "part of the Teacher plan"; off, only
+ * the tools today: the Classroom Dashboard is free for every class's teacher (routes/dash.js, no plan); the Manipulatives,
+ * their live rooms and Figures follow toolAccess: with paid plans on for everyone, "part of the Teacher plan"; off, only
  * the tester list may use them, so it says they are being tried out in a few classrooms.
  */
 export function seeIt(req, { variant = 'page', cta = '' } = {}) {

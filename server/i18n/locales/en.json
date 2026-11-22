@@ -6482,8 +6482,12 @@
         "title": "Live math rooms",
         "p": "Each student works in their own square while you see the whole class on one screen."
       },
-      "plan": "The Manipulatives, their live rooms and Figures are part of the Teacher plan.",
-      "testing": "These tools are being tried out in a few classrooms now."
+      "dashboard": {
+        "title": "Classroom Dashboard",
+        "p": "Timers, jobs, check-ins and math tools for your whole class day, on one screen."
+      },
+      "plan": "The Classroom Dashboard is free for every class. The Manipulatives, their live rooms and Figures are part of the Teacher plan.",
+      "testing": "The Classroom Dashboard is free for every class. The other three tools are being tried out in a few classrooms now."
     }
   },
   "learn": {

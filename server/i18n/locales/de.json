@@ -5877,8 +5877,12 @@
         "title": "Live-Mathe-Räume",
         "p": "Jedes Kind arbeitet in seinem eigenen Feld, und Sie sehen die ganze Klasse auf einem Bildschirm."
       },
-      "plan": "Die Arbeitsmittel, ihre Live-Räume und Figuren gehören zum Lehrkraft-Plan.",
-      "testing": "Diese Werkzeuge werden gerade in einigen Klassen erprobt."
+      "dashboard": {
+        "title": "Klassen-Dashboard",
+        "p": "Timer, Klassendienste, Stimmungsabfragen und Mathe-Werkzeuge für den ganzen Schultag, auf einem Bildschirm."
+      },
+      "plan": "Das Klassen-Dashboard ist für jede Klasse kostenlos. Die Arbeitsmittel, ihre Live-Räume und Figuren gehören zum Lehrkraft-Plan.",
+      "testing": "Das Klassen-Dashboard ist für jede Klasse kostenlos. Die anderen drei Werkzeuge werden gerade in einigen Klassen erprobt."
     }
   },
   "learn": {
