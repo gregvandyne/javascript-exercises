@@ -10864,11 +10864,12 @@ a student see it? I am thinking we need to put the steps on the actual board."
   by default a coordinate grid can fill a phone's screen, and one finger must still move the view.
 - **The steps card** (`manip-room.js` `stepCardHtml`, one design with the live square's strip: its tint, 📌 and words).
   Pinned above the board and joined to its top edge, so nothing on the board is ever under it (it is not a piece and
-  the board's own space does not change). "Step 2 of 4" and the step big (24 px, 20 on phones); ◀ ▶ (the viewer moves
-  through their own board's steps); "All steps" opens the numbered list with the current one marked; one step shows
-  as "Instructions" with no buttons. The teacher can fold it to one slim line ("Show steps"). Hidden entirely when the
-  board has no steps; it follows the Steps editor as the teacher types. Phones: the heading and ✕ on one line, All
-  steps and ◀ ▶ on the next, every button 44 px. Right to left: Back is on the right and points right. Printed, it
+  the board's own space does not change). Calm and slim (the owner dislikes busy UI): one header row, "📌 Step 2 of 4",
+  "All steps" as a quiet text link (it opens the numbered list with the current one marked), ◀ ▶ as light outline
+  chips like the board's zoom buttons (the viewer moves through their own board's steps) and a quiet ✕ for the
+  teacher, then the step (20 px, 18 on phones). One step shows as "Instructions" with no buttons. Folded: one slim
+  line ("Show steps"). Hidden entirely when the board has no steps; it follows the Steps editor as the teacher types.
+  The same row on phones and laptops, every button 44 px. Right to left: Back is on the right and points right. Printed, it
   lists every step. 13 locales (the strip's "Step {n} of {total}" and "Instructions" now translated too).
 - **Where steps show.** The teacher's own board and any board opened from a share code or a saved board: the card.
   A live session (a session started from a board, or a pushed board's steps as the deck): unchanged, the strip in

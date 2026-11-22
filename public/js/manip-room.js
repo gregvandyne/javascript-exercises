@@ -976,15 +976,15 @@ export function stepCardHtml({ list = [], i = 0, total = list.length, move = tru
   const print = `<ol class="mp-sc-print">${list.map(x => `<li>${esc(x.text)}</li>`).join('')}</ol>`;
   if (folded) {
     return `<section class="mp-stepcard folded" aria-label="${esc(t('js.manip-room.steps'))}"><div class="mp-sc-row"><span class="mp-sc-no">${iconHtml('📌', { size: 18 })} ${esc(label)}</span>
-      <span class="mp-sc-grow"></span>${btn('mp-sc-btn wide', 'data-sc="unfold" aria-expanded="false"', esc(t('js.manip-room.showSteps')))}</div>${print}</section>`;
+      <span class="mp-sc-grow"></span>${btn('mp-sc-link', 'data-sc="unfold" aria-expanded="false"', esc(t('js.manip-room.showSteps')))}</div>${print}</section>`;
   }
-  const nav = move && total > 1 ? `<span class="mp-sc-nav">${btn('mp-sc-btn', `data-sc="prev"${n ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.prevStep'))}" title="${esc(t('js.manip-room.prevStep'))}"`, rtl ? '▶' : '◀')}${btn('mp-sc-btn', `data-sc="next"${n + 1 < total ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.nextStep'))}" title="${esc(t('js.manip-room.nextStep'))}"`, rtl ? '◀' : '▶')}</span>` : '';
-  const all = list.length > 1 ? btn('mp-sc-btn wide', `data-sc="all" aria-expanded="${!!open}"`, esc(open ? t('js.manip-room.thisStep') : t('js.manip-room.allSteps'))) : '';
-  const foldBtn = fold ? btn('mp-sc-btn', `data-sc="fold" aria-label="${esc(t('js.manip-room.hideSteps'))}" title="${esc(t('js.manip-room.hideSteps'))}"`, '✕') : '';
+  const nav = move && total > 1 ? `<span class="mp-sc-nav">${btn('chip mp-sc-arrow', `data-sc="prev"${n ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.prevStep'))}" title="${esc(t('js.manip-room.prevStep'))}"`, rtl ? '▶' : '◀')}${btn('chip mp-sc-arrow', `data-sc="next"${n + 1 < total ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.nextStep'))}" title="${esc(t('js.manip-room.nextStep'))}"`, rtl ? '◀' : '▶')}</span>` : '';
+  const all = list.length > 1 ? btn('mp-sc-link', `data-sc="all" aria-expanded="${!!open}"`, esc(open ? t('js.manip-room.thisStep') : t('js.manip-room.allSteps'))) : '';
+  const foldBtn = fold ? btn('mp-sc-quiet', `data-sc="fold" aria-label="${esc(t('js.manip-room.hideSteps'))}" title="${esc(t('js.manip-room.hideSteps'))}"`, '✕') : '';
   const body = open ? `<ol class="mp-sc-list">${list.map((x, j) => `<li${j === n ? ' aria-current="step" class="now"' : ''}>${esc(x.text)}</li>`).join('')}</ol>`
     : `<p class="mp-sc-text" aria-live="polite">${esc(list[n] ? list[n].text : '')}</p>`;
   return `<section class="mp-stepcard${open ? ' open' : ''}" aria-label="${esc(t('js.manip-room.steps'))}"><div class="mp-sc-row"><span class="mp-sc-no">${iconHtml('📌', { size: 18 })} ${esc(label)}</span>
-    <span class="mp-sc-grow"></span>${foldBtn}<span class="mp-sc-break" aria-hidden="true"></span>${all}${nav}</div>${body}${print}</section>`;
+    ${all}<span class="mp-sc-grow"></span>${nav}${foldBtn}</div>${body}${print}</section>`;
 }
 
 // ---------------------------------------------------------------- the steps editor (the room and the tool on its own)

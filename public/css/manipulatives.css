@@ -61,28 +61,25 @@
    piece. The live square's strip look: a soft spark tint, a 📌 heading, the step big. */
 #mp-stepcard{margin-bottom:-12px}
 #mp-stepcard:not(:empty)+.mp-board{border-top-left-radius:0;border-top-right-radius:0}
-.mp-stepcard{background:color-mix(in srgb,var(--spark) 22%,var(--card));border-bottom:2px solid var(--spark-press);border-radius:var(--r) var(--r) 0 0;box-shadow:var(--shadow),inset 0 0 0 1px var(--line);padding:8px 12px 10px;color:var(--text)}
-.mp-sc-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;min-height:44px}
-.mp-sc-no{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:14px;letter-spacing:.02em}
+.mp-stepcard{background:color-mix(in srgb,var(--spark) 16%,var(--card));border-bottom:1px solid color-mix(in srgb,var(--spark-press) 60%,transparent);border-radius:var(--r) var(--r) 0 0;box-shadow:inset 0 0 0 1px var(--line);padding:2px 8px 8px 14px;color:var(--text)}
+.mp-sc-row{display:flex;flex-wrap:wrap;align-items:center;gap:2px;min-height:44px}
+.mp-sc-no{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:14px;white-space:nowrap;color:var(--text-2,var(--text))}
 .mp-sc-grow{flex:1 1 0}
-.mp-sc-nav{display:inline-flex;gap:6px}
-.mp-sc-btn{min-height:44px;min-width:44px;padding:0 10px;border-radius:999px;border:0;background:var(--current);color:var(--on-current);font:800 15px var(--font);cursor:pointer}
-.mp-sc-btn.wide{padding:0 14px;font-size:14px}
-.mp-sc-btn:disabled{opacity:.35;cursor:default}
-.mp-sc-btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.mp-sc-text{margin:4px 0 0;font-size:24px;line-height:1.3;font-weight:800;overflow-wrap:anywhere}
-.mp-sc-list{margin:6px 0 0;padding-inline-start:26px;font-size:17px;line-height:1.4;font-weight:700;overflow-wrap:anywhere}
-.mp-sc-list li{padding:2px 0;opacity:.8}
+.mp-sc-nav{display:inline-flex;gap:4px}
+.mp-sc-arrow.chip{min-height:44px;min-width:44px;padding:0;justify-content:center;font-size:13px;background:transparent}
+.mp-sc-link,.mp-sc-quiet{min-height:44px;min-width:44px;padding:0 8px;border:0;background:transparent;color:var(--text);font:700 14px var(--font);cursor:pointer;white-space:nowrap}
+.mp-sc-link{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.mp-sc-quiet{font-size:16px;color:var(--muted)}
+.mp-sc-quiet:hover{color:var(--text)}.mp-sc-link:hover{text-decoration-thickness:2px}
+.mp-sc-link:focus-visible,.mp-sc-quiet:focus-visible{outline:3px solid var(--focus);outline-offset:-3px;border-radius:999px}
+.mp-sc-text{margin:0 0 2px;font-size:20px;line-height:1.3;font-weight:800;overflow-wrap:anywhere}
+.mp-sc-list{margin:0 0 2px;padding-inline-start:24px;font-size:16px;line-height:1.4;font-weight:700;overflow-wrap:anywhere}
+.mp-sc-list li{padding:2px 0;opacity:.75}
 .mp-sc-list li.now{opacity:1;font-weight:900;text-decoration:underline;text-decoration-color:var(--spark-press);text-decoration-thickness:3px;text-underline-offset:4px}
 .mp-sc-print{display:none}
-/* Wide: one row (the heading, then All steps, ◀ ▶ and ✕ at the end). Phones: the heading and ✕ on the first line, All
-   steps and ◀ ▶ on the second, so every button keeps its 44 px. */
-.mp-sc-break{display:none}
-.mp-sc-row>[data-sc="fold"]{order:3}
-@media (max-width:899px){.mp-sc-break{display:block;flex-basis:100%;height:0}.mp-sc-row>[data-sc="fold"]{order:0}.mp-sc-row>.mp-sc-break~*{order:1}.mp-sc-row>[data-sc="all"]{margin-inline-end:auto}}
-.mp-stepcard.folded{padding:2px 12px}
-@media (max-width:899px){.mp-sc-text{font-size:20px}.mp-sc-list{font-size:16px}}
-@media print{.mp-stepcard .mp-sc-btn,.mp-stepcard .mp-sc-text,.mp-stepcard .mp-sc-list{display:none}.mp-stepcard .mp-sc-print{display:block;margin:4px 0 0;padding-inline-start:24px;font-size:14pt;font-weight:700}.mp-stepcard{box-shadow:none;border:1px solid #888}}
+.mp-stepcard.folded{padding-bottom:2px}
+@media (max-width:899px){.mp-stepcard{padding-inline-start:10px;padding-inline-end:4px}.mp-sc-text{font-size:18px}.mp-sc-list{font-size:15px}.mp-sc-no{font-size:13px}.mp-sc-link{padding:0 6px;font-size:13px}}
+@media print{.mp-stepcard button,.mp-stepcard .mp-sc-text,.mp-stepcard .mp-sc-list{display:none}.mp-stepcard .mp-sc-print{display:block;margin:4px 0 0;padding-inline-start:24px;font-size:14pt;font-weight:700}.mp-stepcard{box-shadow:none;border:1px solid #888}}
 .mp-content.mp-abs{position:absolute;inset:0;min-height:0}
 .mp-pad{padding:16px}
 .mp-scrollx{overflow-x:auto}
