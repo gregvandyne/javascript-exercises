@@ -3,8 +3,11 @@
 // words a text box, and lists and objects live in "Advanced (data)", a JSON box checked as it is typed. The figure is
 // drawn live by the pinned Oomba Figures (the page loads only the pack this kind needs); data that cannot be drawn shows
 // OF.check's reason in plain words and turns export off. Worked answers come from OF.solve. Undo and redo stay in the
-// browser; a figure can be linked (?d=), downloaded as SVG or PNG with Oomba's CC0 notice in the file, copied, saved
-// as one of the teacher's presets, or added to a worksheet (where the server checks and answers it again).
+// browser (public/js/figures-history.js: the last 100 changes, Ctrl/Cmd+Z, Shift+Ctrl/Cmd+Z and Ctrl/Cmd+Y; the
+// cannot-draw panel's Undo my last change is the same history). A figure can be linked (?d=), downloaded as SVG or PNG
+// with Oomba's CC0 notice in the file (what that means: /figures/terms), copied, or added to a worksheet (where the
+// server checks and answers it again). The ⋯ Presets menu lists the kind's examples first, then the teacher's own
+// presets, with Save as my preset and Delete a preset.
 // "Draw it" (triangles, the quadrilaterals and the coordinate grid): the teacher draws the shape on a dot grid
 // (public/js/figures-draw.js) and its measures are worked out exactly (public/js/figures-draw-geom.js) and filled in as
 // the kind's real data; a drawing that is not a shape, or not this kind of shape, says so and never changes the figure.

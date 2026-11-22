@@ -294,5 +294,5 @@ a.fg-ithumb:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .fg-terms .panel p{margin:0 0 8px}
 .fg-terms .panel p:last-child{margin-bottom:0}
 .fg-terms-can{border:2px solid var(--brand-mint)}
-.fg-terms-list{margin:0;padding-inline-start:1.2em;display:grid;gap:6px}
+.fg-terms-list{margin:0 0 10px;padding-inline-start:1.2em;display:grid;gap:6px}
 .fg-terms-notice{margin:8px 0 12px;padding:12px 16px;border-inline-start:4px solid var(--brand-leaf);border-radius:0 var(--r-sm) var(--r-sm) 0;background:var(--hover);font-size:.95rem;overflow-wrap:anywhere;text-align:left}
