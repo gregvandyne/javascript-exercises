@@ -359,7 +359,23 @@ main.rm-main .fg-tools{margin-bottom:0}
 .rm-menu-body{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;display:flex;flex-direction:column;gap:4px}
 .rm-menu-body>*{flex:none}
 .rm-menu-foot{flex:none;margin-top:6px;padding-top:6px;border-top:1px solid var(--line);display:flex;flex-direction:column}
-.rm-checklist{padding:6px 12px}
+/* "Answers checked: 12 of 16": one line in the menu that opens to the names (a native details), those who need help
+   first; each row a name (cut short with an ellipsis) and a score with its mark, in two columns. */
+.rm-checks{min-width:0}
+.rm-checks>summary,.rm-checks-none{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:var(--r-sm);font:700 .95rem var(--font);color:var(--text)}
+.rm-checks>summary{cursor:pointer;list-style:none}
+.rm-checks>summary::-webkit-details-marker{display:none}
+.rm-checks>summary::after{content:'';margin-inline-start:auto;width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .15s;flex:none}
+.rm-checks[open]>summary::after{transform:rotate(-135deg)}
+.rm-checks>summary:hover{background:var(--hover)}
+.rm-checks>summary span,.rm-checks-none span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rm-checks ul{list-style:none;margin:2px 0 6px;padding:0 12px 0 40px;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;row-gap:2px}
+.rm-checks li{display:contents}
+.rm-cname,.rm-cscore{min-height:28px;display:flex;align-items:center}
+.rm-cname{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;line-height:28px;font-weight:600}
+.rm-cscore{justify-content:flex-end;gap:6px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rm-checks li.help .rm-cscore{color:var(--warn-ink)}
+@media (prefers-reduced-motion:reduce){.rm-checks>summary::after{transition:none}}
 .rm-mi{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:0;border-radius:var(--r-sm);background:transparent;color:var(--text);font:700 .95rem var(--font);text-align:start;cursor:pointer;text-decoration:none}
 .rm-mi:hover{background:var(--hover);text-decoration:none}
 .rm-mi.bad{color:var(--danger)}
@@ -499,8 +515,6 @@ main.rm-main .fg-tools{margin-bottom:0}
 .mp-ansbox.again .mp-checkmark{background:#FCE3CC;color:#7A3E0A}
 .rm-checkbadge{margin-inline-start:6px;background:var(--hover);border-radius:999px;padding:0 6px;font-size:.8em}
 .rm-checkbadge.all{background:#1F9D63;color:#fff}
-.rm-checklist ul{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:2px;font-weight:600}
-.rm-checklist li{display:flex;align-items:center;gap:6px}
 .mp-ansbox .mp-checkmark{position:absolute;top:-27px;inset-inline-end:6px}
 .mp-eq .mp-ansbox .mp-checkmark{position:static}
 

@@ -3507,7 +3507,10 @@
       "hideSteps": "Скрыть шаги",
       "showSteps": "Показать шаги",
       "checkResult": "Верно {right} из {total}. Попробуй ещё раз остальные.",
-      "checkAll": "{total, plural, one {Всё верно!} few {Все # верно!} many {Все # верно!} other {Все # верно!}}"
+      "checkAll": "{total, plural, one {Всё верно!} few {Все # верно!} many {Все # верно!} other {Все # верно!}}",
+      "checksSummary": "{total, plural, one {Ответы проверили: {checked} из #} few {Ответы проверили: {checked} из #} many {Ответы проверили: {checked} из #} other {Ответы проверили: {checked} из #}}",
+      "checkAllRight": "Всё верно",
+      "checkNeedsHelp": "Нужна помощь"
     },
     "figures-editor": {
       "undo": "Отменить",

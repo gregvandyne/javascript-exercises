@@ -3508,7 +3508,10 @@
       "hideSteps": "Nascondi i passaggi",
       "showSteps": "Mostra i passaggi",
       "checkResult": "{right} su {total} giuste. Riprova con le altre.",
-      "checkAll": "{total, plural, one {Tutto giusto!} other {Tutte e # giuste!}}"
+      "checkAll": "{total, plural, one {Tutto giusto!} other {Tutte e # giuste!}}",
+      "checksSummary": "{total, plural, one {Risposte controllate: {checked} su #} other {Risposte controllate: {checked} su #}}",
+      "checkAllRight": "Tutto giusto",
+      "checkNeedsHelp": "Ha bisogno di aiuto"
     },
     "figures-editor": {
       "undo": "Annulla",

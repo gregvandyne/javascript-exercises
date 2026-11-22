@@ -3507,7 +3507,10 @@
       "hideSteps": "Masquer les étapes",
       "showSteps": "Afficher les étapes",
       "checkResult": "{right} sur {total} justes. Réessaie les autres.",
-      "checkAll": "{total, plural, one {Tout est juste !} other {Les # sont justes !}}"
+      "checkAll": "{total, plural, one {Tout est juste !} other {Les # sont justes !}}",
+      "checksSummary": "{total, plural, one {Réponses vérifiées : {checked} sur #} other {Réponses vérifiées : {checked} sur #}}",
+      "checkAllRight": "Tout juste",
+      "checkNeedsHelp": "A besoin d'aide"
     },
     "figures-editor": {
       "undo": "Annuler",

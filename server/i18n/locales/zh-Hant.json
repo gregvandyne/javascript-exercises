@@ -3507,7 +3507,10 @@
       "hideSteps": "隱藏步驟",
       "showSteps": "顯示步驟",
       "checkResult": "{total} 題答對 {right} 題。再試試其他題。",
-      "checkAll": "{total, plural, other {# 題全部答對！}}"
+      "checkAll": "{total, plural, other {# 題全部答對！}}",
+      "checksSummary": "{total, plural, other {已檢查答案：# 人中 {checked} 人}}",
+      "checkAllRight": "全部答對",
+      "checkNeedsHelp": "需要幫忙"
     },
     "figures-editor": {
       "undo": "復原",

@@ -3508,7 +3508,10 @@
       "hideSteps": "إخفاء الخطوات",
       "showSteps": "إظهار الخطوات",
       "checkResult": "{right} من {total} صحيحة. حاول مرة أخرى في الباقي.",
-      "checkAll": "{total, plural, one {كلها صحيحة!} other {كلها صحيحة: #!}}"
+      "checkAll": "{total, plural, one {كلها صحيحة!} other {كلها صحيحة: #!}}",
+      "checksSummary": "{total, plural, zero {تحقق من الإجابات: {checked} من #} one {تحقق من الإجابات: {checked} من #} two {تحقق من الإجابات: {checked} من #} few {تحقق من الإجابات: {checked} من #} many {تحقق من الإجابات: {checked} من #} other {تحقق من الإجابات: {checked} من #}}",
+      "checkAllRight": "كلها صحيحة",
+      "checkNeedsHelp": "يحتاج إلى مساعدة"
     },
     "figures-editor": {
       "undo": "تراجع",

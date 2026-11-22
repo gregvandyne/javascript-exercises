@@ -3508,7 +3508,10 @@
       "hideSteps": "Schritte ausblenden",
       "showSteps": "Schritte zeigen",
       "checkResult": "{right} von {total} richtig. Versuch es bei den anderen noch einmal.",
-      "checkAll": "{total, plural, one {Alles richtig!} other {Alle # richtig!}}"
+      "checkAll": "{total, plural, one {Alles richtig!} other {Alle # richtig!}}",
+      "checksSummary": "{total, plural, one {Antworten geprüft: {checked} von #} other {Antworten geprüft: {checked} von #}}",
+      "checkAllRight": "Alles richtig",
+      "checkNeedsHelp": "Braucht Hilfe"
     },
     "figures-editor": {
       "undo": "Rückgängig",
