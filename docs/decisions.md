@@ -10551,3 +10551,26 @@ sets, the Figures builder, the `figures` lesson step and its snapshot, Assign, a
   test on and off, swap, re-deal, edit, delete, assign with dates, the student) and figures-lesson-step-browser
   (Chromium: the editor step built by hand and printed; a test drafted with AI, edited, switched to by hand, assigned,
   answered and handed in).
+
+## Virtual math manipulatives: tap to add follows the last block into its column (22 Nov 2026)
+
+On an iPhone a teacher dragged a rod into the chart's Tens column and then tapped Rod again and again. The 4th rod sat
+across the Tens/Ones border and the 5th landed in Ones and broke into ten units. Why: a palette tap places a block next
+to the last one added (manip-board.js nextPieceSpot). In a column it only looked for room under the last block at full
+size; with the column already laid out there was none, so it put the rod to the right of the last one. Its middle fell
+in the 6 px gap between two columns (in no column, so the layout left it across the border) or in Ones (one place
+bigger, so it broke into ten).
+
+- **The rule (manip-pv.js sameValueHome).** When a block is added from the palette (tap, Enter, or dragged off it) and
+  the block placed just before it sits in a chart's column and is worth the same, the new block goes into that same
+  column, and the column is laid out again so all fit. The block placed before is the last one added or dropped on that
+  board (solo: per board; live room: per square; a dragged block counts once it is dropped). Any other case, the usual
+  placement: another value (a Unit after a Rod), nothing placed yet, that block gone or moved out of the chart, or its
+  chart deleted. Ten taps of Rod after a rod in Tens give ten rods in Tens (their own column: they never trade, they
+  shrink to fit); after a rod waiting in Hundreds they join it there and trade at ten, as on a drop. One Undo takes back
+  one add.
+- **A middle in the gap between two columns** now belongs to the nearer column (columnOf), so a block can never be left
+  across a column's border; past the chart's outer edge is still no column.
+- **Tests:** manip-pv (the rule, ten taps, the value from the other block set, waiting in Hundreds, every fallback, the
+  gap) and manip-pv-browser (iPhone 13, default zoom: one rod dragged into Tens, nine taps of Rod, all ten inside Tens
+  with none across a border and nothing in Ones, Total 100; a Unit tap is not forced into Tens; Undo takes it back).

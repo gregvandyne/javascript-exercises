@@ -6,7 +6,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { allPieceDefs } from '../../public/js/manip-data.js';
 import { snapFor, slotsOf, fitInto, pieceBox, WORLD } from '../../public/js/manip-board.js';
-import { FIT, fitColumn, settleCharts, columnsOf, columnOf, totalOf, stepsApart, placeOf, chartInfo, strayIds, homeFor, placeAtHome, columnHome, inChart, defFor } from '../../public/js/manip-pv.js';
+import { FIT, fitColumn, settleCharts, columnsOf, columnOf, totalOf, stepsApart, placeOf, chartInfo, strayIds, homeFor, placeAtHome, columnHome, sameValueHome, inChart, defFor } from '../../public/js/manip-pv.js';
 
 const BT = 'base-ten-blocks', PVD = 'place-value-disks';
 const PV10 = ['Thousands', 'Hundreds', 'Tens', 'Ones'];
@@ -265,4 +265,49 @@ test('fitInto keeps a shrunken block\'s own size at the same scale; the server k
   assert.deepEqual([c.pieces[0].nw, c.pieces[0].nh], [30, 150]);
   assert.equal(c.pieces[1].nw, undefined); assert.equal(c.pieces[1].nh, undefined);
   assert.deepEqual([c.pieces[2].nw, c.pieces[2].nh], [WORLD.w, 4]);
+});
+
+// ---------------------------------------------------------------- tap to add after a block placed in a column
+test('a palette add worth the same as the last block placed goes into that block\'s column; anything else: the usual place', () => {
+  const st = { objects: [chart()], pieces: [] };
+  const first = dropIn(BT, st, 'rod', 2); settle(BT, st);
+  let last = { id: first.id };
+  // Nine taps of Rod: each one into Tens (never Ones), all fitted, nothing traded (rods in Tens are in their own column).
+  for (let i = 0; i < 9; i++) {
+    const home = sameValueHome(BT, st, last, def(BT, 'rod'));
+    assert.equal(home && home.col.name, 'Tens', `tap ${i + 2}`);
+    const q = make(def(BT, 'rod'), 0, 0); placeAtHome(home, [q], WORLD); st.pieces.push(q); last = { id: q.id };
+    const r = settle(BT, st); assert.deepEqual(r.events, []);
+    assertTidy(BT, st, `tap ${i + 2}`);
+  }
+  assert.deepEqual(kindsIn(BT, st, 'Tens'), Array(10).fill('rod')); assert.deepEqual(kindsIn(BT, st, 'Ones'), []);
+  assert.equal(totalOf(BT, st), 100);
+  // Another value (a unit after a rod): no column of its own, the usual placement.
+  assert.equal(sameValueHome(BT, st, last, def(BT, 'unit')), null);
+  assert.equal(sameValueHome(BT, st, last, def(BT, 'flat')), null);
+  // The same value from the other block set (a decimal "one" after a unit) counts as the same.
+  const u = dropIn(BT, st, 'unit', 3); settle(BT, st);
+  assert.equal(sameValueHome(BT, st, { id: u.id }, def(BT, 'one')).col.name, 'Ones');
+  // A rod waiting in Hundreds: the next rod joins it there (and ten of them trade, as on a drop).
+  const s2 = { objects: [chart()], pieces: [] }; const w = dropIn(BT, s2, 'rod', 1); settle(BT, s2);
+  assert.equal(sameValueHome(BT, s2, { id: w.id }, def(BT, 'rod')).col.name, 'Hundreds');
+  // Fallbacks: nothing placed yet, the block gone, moved out of the chart, its chart deleted.
+  assert.equal(sameValueHome(BT, st, null, def(BT, 'rod')), null);
+  assert.equal(sameValueHome(BT, st, { id: 'gone' }, def(BT, 'rod')), null);
+  const out = st.pieces.find(p => p.id === last.id); out.x = 3000; out.y = 2000; settle(BT, st);
+  assert.equal(sameValueHome(BT, st, last, def(BT, 'rod')), null, 'moved out of the chart');
+  const s3 = { objects: [chart()], pieces: [] }; const r3 = dropIn(BT, s3, 'rod', 2); settle(BT, s3);
+  s3.objects = [];
+  assert.equal(sameValueHome(BT, s3, { id: r3.id }, def(BT, 'rod')), null, 'chart deleted');
+});
+
+test('a block whose middle is in the gap between two columns belongs to the nearer one and is pulled inside', () => {
+  const st = { objects: [chart()], pieces: [] }, cols = columnsOf(BT, st), tens = cols[2].slot, ones = cols[3].slot;
+  const gapMid = (tens.x + tens.w + ones.x) / 2;
+  const a = make(def(BT, 'rod'), gapMid - 1 - 15, tens.y + 20); st.pieces.push(a);   // middle 1 px left of the gap's middle
+  assert.equal(columnOf(cols, a).name, 'Tens');
+  settle(BT, st); assertTidy(BT, st);
+  assert.deepEqual(kindsIn(BT, st, 'Tens'), ['rod']);
+  // Outside the chart (past the outer edge, or above it): no column.
+  assert.equal(columnOf(cols, make(def(BT, 'unit'), ones.x + ones.w + 20, ones.y + 10)), null);
 });
