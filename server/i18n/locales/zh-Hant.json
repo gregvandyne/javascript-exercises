@@ -12994,6 +12994,27 @@
       "errors": {
         "words": "這個修正含有不能使用的字詞，請換別的字詞。"
       }
+    },
+    "insight": {
+      "title": "Oomba 的解讀",
+      "planNote": "Oomba 對全班結果的解讀是教師方案的功能。",
+      "tryPlan": "試用教師方案",
+      "noneYet": "有人繳交後，Oomba 就能解讀結果。",
+      "foundLine": "{total} 人中有 {done} 人繳交。大家一共找到 {pct}% 的錯誤。",
+      "missedLine": "最常漏掉：{list}。",
+      "missedItem": "{kind}（{all} 次中漏掉 {missed} 次）",
+      "foundWell": "找得很好：{kind}。",
+      "allFound": "每一種錯誤每次都被找到了。",
+      "tipHarder": "下次可以試試更多錯誤，或更高年級的錯誤種類。",
+      "tipSet": "試試只有「{kind}」錯誤的短短一組（{code}），再一起討論原因。",
+      "tipAloud": "全班一起朗讀一篇短文，每遇到「{kind}」錯誤就停下來。",
+      "aiNote": "Oomba 只根據全班的數字寫了這些。沒有任何名字或學生作品傳給 AI。",
+      "stale": "在 Oomba 上次解讀之後，又有新的作業繳交。",
+      "ask": "問問 Oomba",
+      "privacy": "傳給 Oomba 的只有每種錯誤的數字，絕不包含名字或作品。",
+      "ready": "Oomba 已解讀結果。",
+      "resting": "Oomba 正在休息。以下是根據數字的解讀。",
+      "failed": "這次 Oomba 無法解讀結果。以下是根據數字的解讀。"
     }
   }
 }

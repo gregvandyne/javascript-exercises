@@ -42,7 +42,9 @@ import * as LIB from '../services/library.js';
 import * as FS from '../services/figures-steps.js';
 import { figuresStepHtml } from '../views/figures-step.js';
 import * as PS from '../services/proof-steps.js';
-import { proofStudentHtml, proofTeacherHtml, proofResultsHtml } from '../views/proof-step.js';
+import { proofStudentHtml, proofTeacherHtml, proofResultsHtml, proofInsightHtml } from '../views/proof-step.js';
+import * as PI from '../services/proof-insights.js';
+import { plansOn } from '../services/teacher-tools.js';
 /** The class teams editor's script (Oomba Live part 3; the page shows the saved state without it). */
 const CLASS_TEAMS_JS = fs.existsSync(fileURLToPath(new URL('../../public/js/live-class-teams.js', import.meta.url)));
 const liveHostOk = u => liveOn() && liveCanHost(u);
@@ -407,7 +409,9 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   const proofs = lp.steps.map((s, i) => ({ s, i })).filter(({ s }) => s.kind === L.PROOF_KIND).map(({ s, i }) => {
     const full = fullSteps.find(x => x.id === s.id) || s, cells = lp.students.map(p => p.cells[i]);
     return proofResultsHtml(t, { step: full, cl: lp.cl, totals: PS.typeTotals(full, cells.filter(Boolean)), rows: lp.students.map((p, k) => ({ p, result: PS.resultOf(full, cells[k]) })),
-      studentsN: lp.students.length, lang: req.locale || 'en', nameOf: p => html`<span class="pp">${avatar(p, 28)}${staffStudentName(p)}</span>` });
+      studentsN: lp.students.length, lang: req.locale || 'en', nameOf: p => html`<span class="pp">${avatar(p, 28)}${staffStudentName(p)}</span>`,
+      // Oomba's read (Phase 3): counts only to the AI, the code's own read as the fallback; Teacher plan.
+      insight: (() => { const c = PI.card(req.user, lp.cl.id, s.id, { t, lang: req.locale || 'en' }); return c.ok ? proofInsightHtml(t, c, { cl: lp.cl, step: s, plans: plansOn() }) : ''; })() });
   });
   // The whole lesson's rubric: one card per student, scored with the levels, a comment per criterion and feedback.
   const lessonRb = libRubric(l.rubric_id);
@@ -639,6 +643,20 @@ router.post('/api/progress/:clid/:sid/proofread', requireUser, rateLimit('progre
   if (!r.ok) return r.code === 'notFound' ? no(req, res) : res.status(400).json({ error: req.t(r.code === 'handedIn' ? 'figures.step.errors.handedIn' : r.code === 'words' ? 'proof.step.errors.words' : 'errors.api.badRequest'), code: r.code });
   res.set('Cache-Control', 'no-store');
   res.json({ ok: true, handedIn: r.handedIn, score: r.score, view: r.view });
+});
+/** Oomba's read of a graded Mistake Hunt step (services/proof-insights.js; docs/decisions.md "Mistake Hunt, Phase 3"):
+ *  the class's teachers with the Teacher plan. GET -> { facts (counts only), summary (the code's read), insight (Oomba's
+ *  fresh read or null), stale }; POST asks Oomba (counts only go to the AI) and caches it until a new hand-in. */
+router.get('/api/proof/insights/:clid/:sid', requireUser, (req, res) => {
+  const r = PI.card(req.user, req.params.clid, req.params.sid, { t: req.t, lang: req.locale || 'en' });
+  if (!r.ok) return r.code === 'notFound' ? no(req, res) : res.status(403).json({ error: req.t('errors.api.badRequest'), code: r.code });
+  res.set('Cache-Control', 'no-store');
+  res.json({ access: r.access, ...(r.access === 'yes' ? { facts: r.facts, summary: r.summary, insight: r.insight, stale: r.stale } : {}) });
+});
+router.post('/api/proof/insights/:clid/:sid', requireUser, rateLimit('proof-ai', 30, 3600e3), async (req, res) => {
+  const r = await PI.ask(req.user, req.params.clid, req.params.sid, { lang: req.locale || 'en' });
+  if (!r.ok) return r.code === 'notFound' ? no(req, res) : res.status(r.code === 'noneYet' ? 400 : 403).json({ error: req.t(r.code === 'teacherPlan' ? 'proof.insight.planNote' : 'errors.api.badRequest'), code: r.code });
+  res.json({ ok: true, ai: r.ai, insight: r.insight, ...(r.reason ? { reason: r.reason } : {}), toast: req.t(r.ai ? 'proof.insight.ready' : r.reason === 'resting' ? 'proof.insight.resting' : 'proof.insight.failed') });
 });
 /** "Show answers after the due date" for one assigned worksheet (the class's teachers and school admins): { on }. */
 router.post('/api/progress/:clid/:sid/show-answers', requireUser, (req, res) => {

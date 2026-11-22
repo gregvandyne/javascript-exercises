@@ -12995,6 +12995,27 @@
       "errors": {
         "words": "Diese Verbesserung enthält Wörter, die wir nicht verwenden können. Versuch andere Wörter."
       }
+    },
+    "insight": {
+      "title": "Oombas Einschätzung",
+      "planNote": "Oombas Einschätzung der Klassenergebnisse gehört zum Lehrkräfte-Tarif.",
+      "tryPlan": "Lehrkräfte-Tarif testen",
+      "noneYet": "Oomba kann die Ergebnisse lesen, sobald jemand abgegeben hat.",
+      "foundLine": "{done} von {total} haben abgegeben. Zusammen haben sie {pct} % der Fehler gefunden.",
+      "missedLine": "Am häufigsten übersehen: {list}.",
+      "missedItem": "{kind} ({missed} von {all} Mal übersehen)",
+      "foundWell": "Gut gefunden: {kind}.",
+      "allFound": "Jede Fehlerart wurde jedes Mal gefunden.",
+      "tipHarder": "Versuchen Sie nächstes Mal mehr Fehler oder Fehlerarten einer höheren Klassenstufe.",
+      "tipSet": "Versuchen Sie eine kurze Sammlung nur mit Fehlern der Art {kind} ({code}) und besprechen Sie danach gemeinsam die Begründungen.",
+      "tipAloud": "Lesen Sie gemeinsam einen Text laut vor und halten Sie bei jedem Fehler der Art {kind} an.",
+      "aiNote": "Oomba hat das nur aus den Zahlen der Klasse geschrieben. Keine Namen und keine Arbeiten von Schülerinnen und Schülern gingen an die KI.",
+      "stale": "Seit Oombas letzter Einschätzung wurde Neues abgegeben.",
+      "ask": "Oomba fragen",
+      "privacy": "Nur die Zahlen je Fehlerart gehen an Oomba, nie Namen oder Arbeiten.",
+      "ready": "Oomba hat die Ergebnisse gelesen.",
+      "resting": "Oomba ruht sich gerade aus. Hier ist die Einschätzung aus den Zahlen.",
+      "failed": "Oomba konnte die Ergebnisse diesmal nicht lesen. Hier ist die Einschätzung aus den Zahlen."
     }
   }
 }

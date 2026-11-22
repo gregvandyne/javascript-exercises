@@ -1199,6 +1199,19 @@ export const MIGRATIONS = [
   // Mistake Hunt (seed-games/mistake-hunt.json, docs/decisions.md "Mistake Hunt") is a Learn game: its own shelf step, as
   // each new Learn game gets (0062 is never edited). Its passage sets live in game_sets (0097's title); no new table.
   ['0104_mistake_hunt_shelf', "UPDATE games SET shelf='learn' WHERE source='seed' AND slug='mistake-hunt';"],
+  // Mistake Hunt, Phase 3 (docs/decisions.md "Mistake Hunt, Phase 3"). proof_chats: Oomba's chat on a passage set
+  // (services/proof-chat.js), one per teacher and set (set_key: the saved set's id, or 'new' before its first save), the
+  // newest 20 turns as JSON, like manip_chats; never student names or work; goes with the set and the account.
+  // proof_insights: "Oomba's read" of a graded proofread step (services/proof-insights.js), cached per assigned lesson
+  // and step until a new hand-in arrives (handed: how many had handed in when it was made). Counts only went to the AI;
+  // the row holds Oomba's few sentences, no names.
+  ['0105_mistake_hunt_chat', `
+    CREATE TABLE IF NOT EXISTS proof_chats (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      set_key TEXT NOT NULL, grade TEXT NOT NULL DEFAULT '', turns TEXT NOT NULL DEFAULT '[]',
+      pending_id TEXT, pending_at INTEGER, updated_at INTEGER NOT NULL);
+    CREATE UNIQUE INDEX IF NOT EXISTS proof_chats_set ON proof_chats(owner_id, set_key);
+    CREATE TABLE IF NOT EXISTS proof_insights (class_lesson_id TEXT NOT NULL, step_id TEXT NOT NULL, lang TEXT NOT NULL DEFAULT 'en',
+      handed INTEGER NOT NULL, body TEXT NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY (class_lesson_id, step_id));`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

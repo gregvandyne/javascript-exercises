@@ -426,6 +426,8 @@ function own(gameId, ownerId, id) {
 export function remove(gameId, ownerId, id) {
   if (!own(gameId, ownerId, id)) return false;
   q.run('DELETE FROM game_sets WHERE id=? AND owner_id=?', id, ownerId);
+  // Oomba's chat on a Mistake Hunt set goes with the set (services/proof-chat.js).
+  q.run('DELETE FROM proof_chats WHERE owner_id=? AND set_key=?', ownerId, id);
   return true;
 }
 /** Rename the owner's set ('' takes the name away). Crossword's name is its puzzle's title, so that changes too.
@@ -455,7 +457,7 @@ export function duplicate(gameId, ownerId, id, title, slug = 'algebra-builder') 
 }
 
 /** An account's sets go with it. */
-export function forgetUser(userId) { q.run('DELETE FROM game_sets WHERE owner_id=?', userId); }
+export function forgetUser(userId) { q.run('DELETE FROM game_sets WHERE owner_id=?', userId); q.run('DELETE FROM proof_chats WHERE owner_id=?', userId); }
 
 const ACT_NAME = { solve: 'Solve', multiply: 'Multiply', factor: 'Factor' };
 const FROM = { p: '+', q: '=', e: '^', o: '(', c: ')' };

@@ -1153,6 +1153,17 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .pf-kline .small{white-space:nowrap}
 .pf-bar{height:12px;border-radius:999px;background:var(--bad-bg);overflow:hidden;margin-top:4px}
 .pf-bar span{display:block;height:100%;background:var(--ok);border-radius:999px}
+/* Oomba's read (Mistake Hunt, Phase 3): a calm card above the counts; Oomba's mark, a few sentences, one or two ideas. */
+.pf-insight{display:flex;flex-direction:column;gap:var(--s2);margin:var(--s3) 0;padding:var(--s3) var(--s4);border-radius:var(--r);background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line)}
+.pf-insight.is-ai{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent-line) 45%,var(--line))}
+.pf-insight p{margin:0}
+.pf-insight .pf-ins-h{display:flex;align-items:center;gap:10px;margin:0}
+.pf-mark{flex:none;vertical-align:middle}
+.pf-tips{margin:0;padding-inline-start:1.2em;display:grid;gap:4px}
+.pf-ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.pf-ask .btn{display:inline-flex;align-items:center;gap:8px}
+.pf-ask .form-err{flex-basis:100%;margin:0}
+.pf-ask .form-err:empty{display:none}
 .pf-step>*+*{margin-top:var(--s3)}
 .pf-plist{margin:0;padding-inline-start:1.4em;display:grid;gap:4px}
 .pf-plist li span{margin-inline-start:6px}
