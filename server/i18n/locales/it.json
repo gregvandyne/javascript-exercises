@@ -3840,6 +3840,59 @@
       "removeLessonQ": "Eliminare queste domande con figure?",
       "removeLessonText": "Il passaggio Figure della lezione mantiene le domande con cui è stato salvato l'ultima volta. Non si può annullare.",
       "fallback": "L’IA non ha risposto questa volta, ecco un set di partenza ({count, plural, one {# domanda} other {# domande}}). Puoi riprovare."
+    },
+    "manip-chat": {
+      "title": "Oomba",
+      "button": "Oomba",
+      "knows": "Conosce la tua lavagna {tool}",
+      "minimize": "Riduci",
+      "close": "Chiudi Oomba",
+      "inputLabel": "Messaggio per Oomba",
+      "send": "Invia",
+      "private": "Oomba vede questa lavagna e le tue parole, mai i nomi o il lavoro degli studenti.",
+      "reopen": "Apri Oomba",
+      "reopenNew": "Apri Oomba: una nuova risposta",
+      "thinking": "Oomba sta pensando · {time}",
+      "longer": "Ci vuole un po’ di più · {time}",
+      "leave": "Puoi chiudere questa pagina. La risposta ti aspetterà qui.",
+      "needText": "Scrivi prima qualche parola per Oomba.",
+      "err": {
+        "names": "Lascia fuori i nomi degli studenti: i nomi non vanno mai all’IA. Il tuo messaggio è ancora qui.",
+        "words": "Alcune parole del tuo messaggio non sono permesse. Cambiale e invialo di nuovo.",
+        "personal": "Lascia fuori numeri di telefono, email, link e codici, poi invialo di nuovo.",
+        "brief": "Scrivi prima qualche parola per Oomba.",
+        "chatBusy": "Oomba sta ancora rispondendo al tuo ultimo messaggio. Aspetta un momento.",
+        "badTool": "Oomba non può aiutare con questo strumento. Apri un altro strumento e prova lì.",
+        "notFound": "Questo account non può usare Oomba nei Manipolativi in questo momento.",
+        "slow": "Sono tanti messaggi in un’ora. Aspetta un po’, poi riprova.",
+        "other": "Qualcosa è andato storto. Il tuo messaggio è ancora qui: riprova tra un momento."
+      },
+      "fail": {
+        "error": "Oomba non è riuscito a rispondere questa volta; la tua lavagna non è cambiata.",
+        "timeout": "Oomba non ha risposto in tempo; la tua lavagna non è cambiata.",
+        "busy": "Oomba è molto occupato ora; la tua lavagna non è cambiata. Riprova tra qualche minuto.",
+        "resting": "Oomba sta riposando ora; la tua lavagna non è cambiata. Riprova più tardi.",
+        "restart": "Il nostro server si è riavviato prima che Oomba rispondesse; la tua lavagna non è cambiata."
+      },
+      "retry": "Riprova",
+      "edit": "Modifica",
+      "changedTitle": "Lavagna aggiornata: {title}",
+      "changed": "{n, plural, one {# problema} other {# problemi}}, {steps, plural, one {# passo} other {# passi}}",
+      "undoneTitle": "Modifica annullata. La tua lavagna è com’era.",
+      "undo": "Annulla la modifica di Oomba",
+      "redo": "Rimettila",
+      "use": "Mettila sulla mia lavagna",
+      "notBuilt": "Quei problemi non hanno superato i controlli della lavagna, quindi la tua lavagna non è cambiata.",
+      "helloEmpty": "Ciao! Dimmi quale lezione vuoi su questa lavagna {tool} e la preparo io.",
+      "hello": "Ciao! Vedo la tua lavagna {tool}. Chiedimi di cambiare qualcosa, o chiedimi qualsiasi cosa al riguardo.",
+      "ideas": "Idee",
+      "idea": {
+        "more": "Aggiungi altri due problemi",
+        "easier": "Rendili un po’ più facili",
+        "steps": "Scrivi passi più chiari per i miei studenti"
+      },
+      "placeholder": "Chiedi a Oomba di cambiare la lavagna",
+      "placeholderEmpty": "Descrivi la lezione, per esempio: 4 orologi alla mezz’ora"
     }
   },
   "favorites": {
@@ -12883,6 +12936,11 @@
       "start": "Inizia la prova gratuita",
       "plans": "Vedi i piani",
       "api": "Questo fa parte del piano Insegnante."
+    }
+  },
+  "manip": {
+    "errors": {
+      "chatBusy": "Oomba sta ancora rispondendo al tuo ultimo messaggio. Aspetta un momento."
     }
   }
 }

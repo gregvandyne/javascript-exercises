@@ -1187,6 +1187,15 @@ export const MIGRATIONS = [
   // game's end, 'fail' it did not (playthrough_report says why). Publishing needs a pass. (First numbered 0091 on its
   // branch; 0091 to 0101 were taken first.)
   ['0102_version_playthrough', "ALTER TABLE game_versions ADD COLUMN playthrough_status TEXT NOT NULL DEFAULT ''; ALTER TABLE game_versions ADD COLUMN playthrough_report TEXT NOT NULL DEFAULT '';"],
+  // Oomba on the Manipulatives board (docs/decisions.md "Virtual math manipulatives: Oomba chat", services/manip-chat.js):
+  // one conversation per teacher and board (board_key: a recent board's id, or 'new:<tool>' before its first save). turns:
+  // the newest 20 as JSON ({ id, role 'me'|'oomba', text, at, change?, failed?, applied? }); pending_id: the teacher's
+  // message whose answer is on its way (one at a time). Never student names or work. Goes with the board and the account.
+  ['0103_manipulatives_chat', `
+    CREATE TABLE IF NOT EXISTS manip_chats (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      board_key TEXT NOT NULL, tool TEXT NOT NULL, grade TEXT NOT NULL DEFAULT '', turns TEXT NOT NULL DEFAULT '[]',
+      pending_id TEXT, pending_at INTEGER, updated_at INTEGER NOT NULL);
+    CREATE UNIQUE INDEX IF NOT EXISTS manip_chats_board ON manip_chats(owner_id, board_key);`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

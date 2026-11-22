@@ -3840,6 +3840,59 @@
       "removeLessonQ": "Deze vragen bij figuren verwijderen?",
       "removeLessonText": "De figuurstap van de les houdt de vragen waarmee hij het laatst is opgeslagen. Dit kan niet ongedaan worden.",
       "fallback": "De AI antwoordde deze keer niet, dus hier is een startset ({count, plural, one {# vraag} other {# vragen}}). Je kunt het opnieuw proberen."
+    },
+    "manip-chat": {
+      "title": "Oomba",
+      "button": "Oomba",
+      "knows": "Kent je {tool}-bord",
+      "minimize": "Minimaliseren",
+      "close": "Oomba sluiten",
+      "inputLabel": "Bericht aan Oomba",
+      "send": "Versturen",
+      "private": "Oomba ziet dit bord en je woorden, nooit de namen of het werk van leerlingen.",
+      "reopen": "Oomba openen",
+      "reopenNew": "Oomba openen: een nieuw antwoord",
+      "thinking": "Oomba denkt na · {time}",
+      "longer": "Het duurt iets langer · {time}",
+      "leave": "Je kunt deze pagina sluiten. Het antwoord wacht hier.",
+      "needText": "Schrijf eerst een paar woorden voor Oomba.",
+      "err": {
+        "names": "Laat de namen van leerlingen weg: namen gaan nooit naar de AI. Je bericht staat er nog.",
+        "words": "Sommige woorden in je bericht zijn niet toegestaan. Pas ze aan en verstuur het opnieuw.",
+        "personal": "Laat telefoonnummers, e-mails, links en codes weg en verstuur het opnieuw.",
+        "brief": "Schrijf eerst een paar woorden voor Oomba.",
+        "chatBusy": "Oomba beantwoordt je vorige bericht nog. Wacht even.",
+        "badTool": "Oomba kan niet helpen met dit hulpmiddel. Open een ander hulpmiddel en probeer het daar.",
+        "notFound": "Dit account kan Oomba nu niet gebruiken bij de Manipulatieven.",
+        "slow": "Dat zijn veel berichten in een uur. Wacht even en probeer het dan opnieuw.",
+        "other": "Er ging iets mis. Je bericht staat er nog: probeer het zo opnieuw."
+      },
+      "fail": {
+        "error": "Oomba kon deze keer niet antwoorden; je bord is niet veranderd.",
+        "timeout": "Oomba antwoordde niet op tijd; je bord is niet veranderd.",
+        "busy": "Oomba is nu erg druk; je bord is niet veranderd. Probeer het over een paar minuten opnieuw.",
+        "resting": "Oomba rust nu uit; je bord is niet veranderd. Probeer het later opnieuw.",
+        "restart": "Onze server is opnieuw opgestart voordat Oomba antwoordde; je bord is niet veranderd."
+      },
+      "retry": "Opnieuw proberen",
+      "edit": "Bewerken",
+      "changedTitle": "Bord bijgewerkt: {title}",
+      "changed": "{n, plural, one {# opgave} other {# opgaven}}, {steps, plural, one {# stap} other {# stappen}}",
+      "undoneTitle": "Wijziging ongedaan gemaakt. Je bord is zoals het was.",
+      "undo": "Wijziging van Oomba ongedaan maken",
+      "redo": "Terugzetten",
+      "use": "Op mijn bord zetten",
+      "notBuilt": "Die opgaven kwamen niet door de controles van het bord, dus je bord is niet veranderd.",
+      "helloEmpty": "Hoi! Vertel me welke les je op dit {tool}-bord wilt, dan zet ik het klaar.",
+      "hello": "Hoi! Ik zie je {tool}-bord. Vraag me iets te veranderen, of vraag me er iets over.",
+      "ideas": "Ideeën",
+      "idea": {
+        "more": "Voeg nog twee opgaven toe",
+        "easier": "Maak ze iets makkelijker",
+        "steps": "Schrijf duidelijkere stappen voor mijn leerlingen"
+      },
+      "placeholder": "Vraag Oomba het bord te veranderen",
+      "placeholderEmpty": "Beschrijf de les, bijvoorbeeld: 4 klokken op het halve uur"
     }
   },
   "favorites": {
@@ -12883,6 +12936,11 @@
       "start": "Mijn gratis proefperiode starten",
       "plans": "Abonnementen bekijken",
       "api": "Dit hoort bij het Leerkracht-abonnement."
+    }
+  },
+  "manip": {
+    "errors": {
+      "chatBusy": "Oomba beantwoordt je vorige bericht nog. Wacht even."
     }
   }
 }

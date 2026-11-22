@@ -4121,6 +4121,63 @@
       "removeLessonQ": "Delete these figure questions?",
       "removeLessonText": "The lesson's Figure step keeps the questions it was last saved with. This cannot be undone.",
       "fallback": "The AI didn’t answer this time, so here is a starter set ({count, plural, one {# question} other {# questions}}). You can try again."
+    },
+    "manip-chat": {
+      "title": "Oomba",
+      "button": "Oomba",
+      "knows": "Knows your {tool} board",
+      "minimize": "Minimize",
+      "close": "Close Oomba",
+      "inputLabel": "Message to Oomba",
+      "send": "Send",
+      "private": "Oomba sees this board and your words, never students’ names or work.",
+      "reopen": "Open Oomba",
+      "reopenNew": "Open Oomba: a new answer",
+      "thinking": "Oomba is thinking · {time}",
+      "longer": "Taking a little longer · {time}",
+      "leave": "You can close this page. The answer will wait here.",
+      "needText": "Write a few words for Oomba first.",
+      "err": {
+        "names": "Leave students’ names out: names never go to the AI. Your message is still here.",
+        "words": "Some words in your message aren’t allowed. Change them and send it again.",
+        "personal": "Leave out phone numbers, emails, links and codes, then send it again.",
+        "brief": "Write a few words for Oomba first.",
+        "chatBusy": "Oomba is still answering your last message. Wait a moment.",
+        "badTool": "Oomba can’t help with this tool. Open another tool and try there.",
+        "notFound": "This account can’t use Oomba on the Manipulatives right now.",
+        "slow": "That’s a lot of messages for one hour. Wait a little, then try again.",
+        "other": "Something went wrong. Your message is still here: try again in a moment."
+      },
+      "fail": {
+        "error": "Oomba couldn’t answer this time; your board is unchanged.",
+        "timeout": "Oomba didn’t answer in time; your board is unchanged.",
+        "busy": "Oomba is very busy right now; your board is unchanged. Try again in a few minutes.",
+        "resting": "Oomba is resting right now; your board is unchanged. Try again later.",
+        "restart": "Our server restarted before Oomba answered; your board is unchanged."
+      },
+      "retry": "Try again",
+      "edit": "Edit",
+      "changedTitle": "Board updated: {title}",
+      "changed": "{n, plural, one {# problem} other {# problems}}, {steps, plural, one {# step} other {# steps}}",
+      "undoneTitle": "Change undone. Your board is as it was.",
+      "undo": "Undo Oomba’s change",
+      "redo": "Put it back",
+      "use": "Put it on my board",
+      "notBuilt": "Those problems didn’t pass the board’s checks, so your board is unchanged.",
+      "helloEmpty": "Hi! Tell me the lesson you’d like on this {tool} board, and I’ll set it up.",
+      "hello": "Hi! I can see your {tool} board. Ask me to change something, or ask me anything about it.",
+      "ideas": "Ideas",
+      "idea": {
+        "more": "Add two more problems",
+        "easier": "Make these a little easier",
+        "steps": "Write clearer steps for my students"
+      },
+      "placeholder": "Ask Oomba to change the board",
+      "placeholderEmpty": "Describe the lesson, for example: 4 clocks to the half hour",
+      "gradeLabel": "Grade",
+      "anyGrade": "Any",
+      "grade": "Grade {grade}",
+      "capped": "At most {max} problems fit on one board, so it has {max}."
     }
   },
   "favorites": {
@@ -13114,7 +13171,8 @@
       "checkSlow": "You've checked a lot. Wait a minute, look again, then check.",
       "noAnswers": "There are no answers to check on this board.",
       "noTitle": "Type a name first.",
-      "notEnded": "End the room before you delete it."
+      "notEnded": "End the room before you delete it.",
+      "chatBusy": "Oomba is still answering your last message. Wait a moment."
     }
   },
   "figures": {
