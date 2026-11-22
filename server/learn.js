@@ -13,6 +13,7 @@ export const LEARNING = {
   'shark-plank': { key: 'sharkPlank', teaches: ['Spelling', 'Letter sounds', 'Early reading'], level: 'Grades K-3' },
   'word-peek': { key: 'wordPeek', teaches: ['Spelling', 'Vocabulary', 'Logical reasoning'], level: 'Grades 3-8' },
   'crossword': { key: 'crossword', teaches: ['Vocabulary', 'Spelling', 'Reading comprehension'], level: 'Grades 2-8' },
+  'mistake-hunt': { key: 'mistakeHunt', teaches: ['Proofreading', 'Grammar', 'Spelling', 'Punctuation', 'Capitalization'], level: 'Grades 1-8' },
   'castle-clash': { key: 'castleClash', teaches: ['Chess', 'Strategic thinking', 'Planning ahead'], level: 'Grades 2-8' },
   'connect-four': { key: 'connectFour', teaches: ['Strategic thinking', 'Pattern recognition'], level: 'Grades 1-8' },
   'brick-drop': { key: 'brickDrop', teaches: ['Spatial reasoning', 'Pattern recognition'], level: 'Grades 2-8' },
@@ -61,7 +62,7 @@ export const isLearningGame = slug => !!LEARNING[slug] && !LEARNING[slug].fun;
 /** The subject pages, in menu order. path: /learn/<slug>; key: locale key under learn.hubs.*; games: launch-game slugs. */
 export const HUBS = [
   { slug: 'math-games', key: 'math', emoji: '➗', games: ['sum-racer', 'tug-of-math'], extra: 'tracks' },
-  { slug: 'word-games', key: 'words', emoji: '🔤', games: ['word-trail', 'shark-plank', 'word-hunt', 'word-peek', 'crossword', 'doodle-hoot'] },
+  { slug: 'word-games', key: 'words', emoji: '🔤', games: ['word-trail', 'shark-plank', 'word-hunt', 'word-peek', 'crossword', 'mistake-hunt', 'doodle-hoot'] },
   { slug: 'strategy-games', key: 'strategy', emoji: '♟️', games: ['castle-clash', 'connect-four', 'brick-drop'] },
   { slug: 'music-games', key: 'music', emoji: '🎵', games: ['loop-lab', 'beat-lanes'] },
   // The four CS Quest games; the page also points teachers at the program (/teachers/cs-quest).
@@ -136,7 +137,7 @@ export const SUBJECTS = [
 const band = s => { const m = /^(K|\d+)-(\d+)$/.exec(s); return { from: m[1] === 'K' ? 0 : +m[1], to: +m[2] }; };
 /** Each Learn-shelf launch game: subject ('any' = live quizzes for any subject) and grades. */
 export const SHELF_INFO = Object.fromEntries(Object.entries({
-  'shark-plank': ['words', 'K-3'], 'word-hunt': ['words', '1-5'], 'word-peek': ['words', '3-8'], 'word-trail': ['words', 'K-3'], 'crossword': ['words', '2-8'], 'doodle-hoot': ['words', '1-8'],
+  'shark-plank': ['words', 'K-3'], 'word-hunt': ['words', '1-5'], 'word-peek': ['words', '3-8'], 'word-trail': ['words', 'K-3'], 'crossword': ['words', '2-8'], 'mistake-hunt': ['words', '1-8'], 'doodle-hoot': ['words', '1-8'],
   'sum-racer': ['math', '1-5'], 'fraction-factory': ['math', '3-6'], 'tug-of-math': ['math', '1-8'], 'garden-count': ['math', 'K-1'], 'lily-hop': ['math', 'K-1'], 'crate-stacker': ['math', '1-2'], 'balance-bridge': ['math', '1-2'], 'rocket-supply': ['math', '2-2'], 'shape-hunt': ['math', 'K-2'], 'kitchen-rush': ['math', 'K-2'], 'lantern-mix': ['math', '6-6'], 'sub-zero': ['math', '6-7'], 'machine-line': ['math', '6-7'], 'scale-scout': ['math', '7-7'], 'sky-lines': ['math', '8-8'], 'keep-builder': ['math', '6-8'], 'launch-lab': ['math', '6-8'],
   'castle-clash': ['thinking', '2-8'], 'sudoku': ['thinking', 'K-8'], 'sum-spotter': ['math', '1-5'], 'loop-lab': ['music', '2-8'],
   'atlas-quest': ['maps', '3-8'], 'atlas-quest-live': ['maps', '3-8'],

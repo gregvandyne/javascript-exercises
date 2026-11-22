@@ -5893,7 +5893,8 @@
       "sudoku": "Logikrätsel vom Mini-4×4 mit Bildern bis zum klassischen 9×9: In jeder Reihe, Spalte und jedem Kästchen steht jede Zahl einmal.",
       "sumSpotter": "Finde die Zahl, die zwei andere zusammen (oder mal genommen) ergeben, von Summen bis 10 bis zum Einmaleins, mit einem 60-Sekunden-Tempolauf.",
       "wordTrail": "Die häufigsten englischen Wörter (Sichtwörter) von der Vorschule bis Klasse 3 auf einem Märchenpfad mit Bramble, dem Igel: Wort hören und antippen, Satz ergänzen, mit Buchstaben legen, in kurzen Lektionen mit Tagesserie.",
-      "crossword": "Mach aus jeder Vokabelliste ein Kreuzworträtsel: Wörter eintippen oder hochladen, Hinweise ergänzen oder von der KI schreiben lassen und mit der Klasse teilen."
+      "crossword": "Mach aus jeder Vokabelliste ein Kreuzworträtsel: Wörter eintippen oder hochladen, Hinweise ergänzen oder von der KI schreiben lassen und mit der Klasse teilen.",
+      "mistakeHunt": "Finde und verbessere die Fehler in einem kurzen Text: Lehrkräfte fügen ihren eigenen Text ein, bauen Rechtschreib-, Grammatik- und Zeichensetzungsfehler ein und teilen, verteilen oder drucken ihn."
     },
     "hubs": {
       "math": {

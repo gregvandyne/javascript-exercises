@@ -193,12 +193,23 @@ function lockedCodes(slug, framework, options) {
   if (slug === 'launch-lab') { const ch = p.get('chapter') || ''; return Object.hasOwn(LAB_CHAPTERS, ch) ? [...LAB_CHAPTERS[ch]] : null; }
   return null;
 }
+/** Games whose codes are their saved set's own (Mistake Hunt: the types of the mistakes a teacher planted, each with its
+ *  Language code): slug -> { framework, codes(setId) -> [code] }. Registered by services/game-sets.js, which reads the
+ *  set; a step that opens no set (no "chapter=s-..." in its options) practises nothing. */
+export const SET_CODES = new Map();
+export const useSetCodes = (slug, framework, codes) => SET_CODES.set(slug, { framework, codes });
+function setStepCodes(slug, framework, options) {
+  const s = SET_CODES.get(slug), ch = optionsOf(options).get('chapter') || '';
+  if (!s || s.framework !== framework || !/^s-[a-z0-9]{10}$/.test(ch)) return [];
+  try { return [...s.codes(ch)]; } catch { return []; }
+}
 /** The codes a lesson's game step practises (counted as practice when a student finishes it). A game played at one
  *  level (Shark Plank, Word Peek) gives all its codes. A levelled game (LEVELLED) gives only what the step is known to
  *  play: the track or chapter the step is locked to (options "lock=1&level=4", "lock=1&chapter=recipe"), else its codes
  *  of the lesson's grade ("3", "K"; Tug of Math: that grade's question kinds), else nothing: a step never claims every
  *  grade a game spans, because it does not record which track the student played. */
 export function stepGameCodes(slug, framework, grade = '', options = '') {
+  if (SET_CODES.has(slug)) return setStepCodes(slug, framework, options);
   if (!LEVELLED.includes(slug)) return gameCodes(slug, framework);
   const locked = lockedCodes(slug, framework, options);
   if (locked) return locked;
