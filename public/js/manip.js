@@ -17,6 +17,7 @@ import { stepsOf } from '/js/manip-data.js';
 import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSector, addMinutes, migrate, newBoard, boxesOf, bbox, spotIn, placeObject,
   slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, S_MIN, S_FLOOR, S_MAX, OBJ_MAX, OBJ_HEAD, UNDER, parseFrac, EQ_BAR,
   snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, TEXT_SIZES, textFont, stepTextSize, textResize, textRect, snapBox, textBoxFields, xyRange, xyLines, xySnap, xyMoveLine } from '/js/manip-board.js';
+import { settleCharts, chartInfo, strayIds, inChart, homeFor, placeAtHome, columnHome } from '/js/manip-pv.js';
 import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP } from '/js/manip-wheel.js';
 
 const ROOT = document.getElementById('manip');
@@ -58,7 +59,7 @@ function piecesTool({ slug, opts = () => ({}), init = {}, total, settings = () =
     total,
     palette: st => [
       ...defsOf(st).map(d => ({ label: d.label, color: d.color, run: s => { s.pieces.push(placePiece(s, d)); } })),
-      ...(breaks ? [{ label: 'Regroup 10 → 1', run: (s, v) => regroup(s, v, slug) }] : []),
+      ...(breaks ? [{ label: 'Regroup 10 → 1', run: (s, v) => regroup(s, v, slug, WORLD) }] : []),
     ],
     settings,
   };
@@ -80,26 +81,58 @@ function pieceHtml(p, view) {
   const face = `<div class="mp-face" style="${shape}background:${p.filled ? esc(p.color) : 'transparent'};color:${p.filled ? '#fff' : 'var(--text)'};font-size:${pieceFont(p)}px">${SHAPES[p.kind] || p.kind === 'sq' || !p.label || p.label === '•' ? '' : `<span class="mp-lab">${esc(p.label)}</span>`}</div>`;
   const lock = p.locked ? `<span class="mp-lockb" aria-hidden="true" style="rotate:${-(+p.rot || 0)}deg">${icon('lock')}</span>` : '';
   const lifted = view.lifted === p.id, flipIn = view.flipIn === p.id;
-  return `<div class="mp-piece${on ? ' on' : ''}${p.locked ? ' locked' : ''}${p.g ? ' grouped' : ''}${lifted ? ' lifted' : ''}${flipIn ? ' flipin' : ''}${view.snapped && view.snapped.has(p.id) ? ' snapped' : ''}${view.fresh === p.id ? ' fresh' : ''}" data-pid="${esc(p.id)}" role="button" tabindex="${view.readOnly ? -1 : 0}" aria-haspopup="menu" aria-label="${esc(p.locked ? t('js.manip.wheel.pieceLocked', { label: p.label }) : t('js.manip.piece.label', { label: p.label }))}"
+  return `<div class="mp-piece${on ? ' on' : ''}${p.locked ? ' locked' : ''}${p.g ? ' grouped' : ''}${lifted ? ' lifted' : ''}${flipIn ? ' flipin' : ''}${view.snapped && view.snapped.has(p.id) ? ' snapped' : ''}${view.fresh === p.id ? ' fresh' : ''}${view.traded && view.traded.has(p.id) ? ' traded' : ''}${view.strays && view.strays.has(p.id) ? ' stray' : ''}" data-pid="${esc(p.id)}" role="button" tabindex="${view.readOnly ? -1 : 0}" aria-haspopup="menu" aria-label="${esc(p.locked ? t('js.manip.wheel.pieceLocked', { label: p.label }) : t('js.manip.piece.label', { label: p.label }))}"
     style="left:${p.x}px;top:${p.y}px;width:${p.w}px;height:${p.h}px;transform:rotate(${+p.rot || 0}deg)">${face}${lock}</div>`;
 }
-function breakPiece(st, v, slug) {
+function breakPiece(st, v, slug, space = null) {
   const p = st.pieces.find(x => x.id === v.sel); const to = p && BREAKS[slug][p.kind];
   if (!to) { toast(t('js.manip.piece.pickBreak')); return false; }
   const d = allPieceDefs(slug).find(x => x.kind === to);
+  // In a place-value chart the ten pieces go into the column for their value (a rod in Tens: ten units in Ones).
+  const home = homeFor(slug, st, p, d.value);
   st.pieces = st.pieces.filter(x => x.id !== p.id);
-  for (let i = 0; i < 10; i++) st.pieces.push(mkPiece(d, p.x + (i % 5) * (d.w + 6), p.y + Math.floor(i / 5) * (d.h + 6)));
-  v.sel = null; return true;
+  const news = Array.from({ length: 10 }, (_, i) => mkPiece(d, p.x + (i % 5) * (d.w + 6), p.y + Math.floor(i / 5) * (d.h + 6)));
+  if (home) placeAtHome(home, news, space);
+  st.pieces.push(...news);
+  v.sel = null; if (home) v.traded = new Set(news.map(q => q.id)); return true;
 }
-function regroup(st, v, slug) {
+function regroup(st, v, slug, space = null) {
   const p = st.pieces.find(x => x.id === v.sel);
   const up = p && Object.keys(BREAKS[slug]).find(k => BREAKS[slug][k] === p.kind);
-  const same = p ? st.pieces.filter(x => x.kind === p.kind) : [];
+  // The selected piece first, then the ones nearest it (in a chart: the ones in its own column come first).
+  const near = q => Math.hypot(q.x - p.x, q.y - p.y);
+  const same = p ? st.pieces.filter(x => x.kind === p.kind && !x.locked).sort((a, b) => (a === p ? -1 : b === p ? 1 : near(a) - near(b))) : [];
   if (!up || same.length < 10) { toast(t('js.manip.piece.pickRegroup')); return false; }
-  const gone = new Set(same.slice(0, 10).map(x => x.id));
+  const gone = new Set(same.slice(0, 10).map(x => x.id)), d = allPieceDefs(slug).find(x => x.kind === up);
+  // In a place-value chart the new piece goes into the column for its value (ten units in Ones: a rod in Tens).
+  const home = homeFor(slug, st, p, d.value);
   st.pieces = st.pieces.filter(x => !gone.has(x.id));
-  st.pieces.push(mkPiece(allPieceDefs(slug).find(x => x.kind === up), same[0].x, same[0].y));
-  v.sel = null; return true;
+  const q = mkPiece(d, same[0].x, same[0].y);
+  if (home) placeAtHome(home, [q], space);
+  st.pieces.push(q);
+  v.sel = null; if (home) v.traded = new Set([q.id]); return true;
+}
+/**
+ * After a change to a piece tool's board: what sits in a place-value chart's columns regroups and every column is laid
+ * out again (manip-pv.js). The new pieces get a short "traded" pop (none with reduced motion) and one line says what
+ * happened. Shared with the room (st: a square's state, space: its work space). v: the view holder ({ traded }).
+ */
+function settleBoard(slug, st, v, space) {
+  if (!IMPL[slug] || !IMPL[slug].pieces || !Array.isArray(st.pieces)) return;
+  const r = settleCharts(slug, st, { make: mkPiece, space });
+  if (r.fresh.length) v.traded = new Set([...(v.traded || []), ...r.fresh]);
+  const e = r.events[r.events.length - 1];
+  if (e && e.kind === 'traded') toast(t('js.manip.pv.traded', { n: e.n, from: e.from, m: e.m, to: e.to }));
+  else if (e && e.kind === 'broke') toast(t('js.manip.pv.broke', { from: e.from, n: e.n, to: e.to }));
+  else if (e && e.kind === 'moved') toast(t('js.manip.pv.moved', { label: e.label, col: e.col }));
+}
+/** A chart made bigger or smaller: the pieces in its columns keep their places in it (then the columns are laid out). */
+function scaleWithChart(slug, o, s0, pieces) {
+  const s = +o.s || 1; if (!s0 || s === s0) return;
+  for (const p of inChart(slug, { ...o, s: s0 }, pieces)) {
+    const cx = p.x + p.w / 2, cy = p.y + p.h / 2, k = s / s0;
+    p.x = o.x + (cx - o.x) * k - p.w / 2; p.y = o.y + (cy - o.y) * k - p.h / 2;
+  }
 }
 const fmtTotal = n => (Number.isInteger(n) ? n.toLocaleString('en-US') : round3(n).toLocaleString('en-US', { maximumFractionDigits: 3 }));
 
@@ -107,10 +140,10 @@ const IMPL = {
   'base-ten-blocks': piecesTool({ slug: 'base-ten-blocks', init: { decimal: false }, opts: st => ({ decimal: st.decimal }),
     total: st => `Total ${fmtTotal(sum(st.pieces))}`,
     settings: st => sel('decimal', [['', 'Whole numbers'], ['1', 'Decimals']], st.decimal ? '1' : '', 'Number set'),
-    hint: 'Hold a block and pick Break to split it into ten of the next size. Tap one of ten blocks, then Regroup joins them back into one. The total stays the same.',
+    hint: 'Hold a block and pick Break to split it into ten of the next size. Tap one of ten blocks, then Regroup joins them back into one. In the place-value chart, ten blocks in the next column up trade for one, and a block dropped one column down breaks into ten. The total stays the same.',
     note: 'Drop blocks into the place-value chart\'s columns to build, compare and regroup numbers. Add more charts or a work mat from the palette.' }),
   'place-value-disks': piecesTool({ slug: 'place-value-disks', total: st => `Total ${fmtTotal(sum(st.pieces))}`,
-    hint: 'Hold a disk and pick Break to make ten disks of the next place. Tap one of ten disks, then Regroup makes them one.',
+    hint: 'Hold a disk and pick Break to make ten disks of the next place. Tap one of ten disks, then Regroup makes them one. In a place-value chart, ten disks in the next column up trade for one.',
     note: 'Disks from 1,000,000 down to 0.001. Their size does not show their value: the label does.' }),
   'two-color-counters': piecesTool({ slug: 'two-color-counters',
     total: st => { const pos = count(st.pieces, 'pos'), neg = count(st.pieces, 'neg'); return `Value ${pos - neg} · Zero pairs ${Math.min(pos, neg)}`; },
@@ -493,6 +526,7 @@ function loadState(obj) {
   V.steps = stepsOf(o);   // the exercise's steps travel with the board (saves, share codes, pushes)
   const rest = { ...o }; delete rest.__ann; delete rest.__steps;
   V.st = normalize(V.tool.slug, V.impl, rest);
+  if (V.impl.pieces) settleCharts(V.tool.slug, V.st, { trade: false, space: WORLD });   // blocks fit their chart's columns
   V.sel = null; V.osel = null; V.editing = null; V.hist = []; V.annHist = []; V.textEdit = null;
 }
 function pushHistory(snapshot) { V.hist.push(snapshot); if (V.hist.length > 40) V.hist.shift(); }
@@ -501,6 +535,7 @@ function change(fn) {
   const before = JSON.stringify(V.st);
   const r = fn(V.st, V);
   if (r === false) return;
+  settleBoard(V.tool.slug, V.st, V, WORLD);
   pushHistory(before);
   renderBoard(); renderChrome();
 }
@@ -568,7 +603,7 @@ function paletteFor(slug, impl, st, ctx) {
   } else {
     for (const d of impl.defs(st)) { const nm = paletteName(slug, d); out.push({ group: 'piece', label: nm.aria, face: nm.face, text: nm.text, mini: d, color: d.color, run: (s, v) => { const p = ctx.place(d); s.pieces.push(p); v.fresh = p.id; } }); }
     // Break is on a piece's wheel (hold it); Regroup, which takes ten pieces, stays here.
-    if (BREAKS[slug]) out.push({ group: 'piece', label: 'Regroup 10 → 1', run: (s, v) => regroup(s, v, slug) });
+    if (BREAKS[slug]) out.push({ group: 'piece', label: 'Regroup 10 → 1', run: (s, v) => regroup(s, v, slug, ctx.space) });
   }
   return out;
 }
@@ -631,11 +666,19 @@ function palButton(p, i, aria) {
   const text = p.mini ? p.text : p.label;
   return btn(`mp-pal${p.hot ? ' hot' : ''}${p.plus ? ' add' : ''}${p.mini ? ' piece' : ''}`, `data-pal="${i}"${p.pressed ? ' aria-pressed="true"' : ''} aria-label="${esc(aria)}"`, `${lead}${text ? `<span>${esc(text)}</span>` : ''}`);
 }
+/** A chart column's foot: "Needs 10 to trade" while it holds fewer than ten blocks one place smaller; or, when its
+ *  blocks are at their smallest, how many it holds. */
+function pvFoot(c) {
+  if (!c || !c.n) return '';
+  if (c.waiting) return `<span class="mp-pvfoot">${esc(t('js.manip.pv.needTen'))}</span>`;
+  if (c.cramped) return `<span class="mp-pvfoot" aria-label="${esc(t('js.manip.pv.count', { n: c.n, col: c.name }))}">×${c.n}</span>`;
+  return '';
+}
 /** A piece tool's own mats: the place-value chart's columns, a frame's cells, a plain work mat. */
-function matHtml(o, view = {}) {
+function matHtml(o, view = {}, cols = null) {
   if (o.k === 'answer') return answerHtml(o, view);
   if (o.k === 'frac-eq') return fracEqHtml(o, view);
-  if (o.k === 'pv-chart') return `<div class="mp-pvchart">${(o.st.cols || []).map(c => `<div>${esc(c)}</div>`).join('')}</div>`;
+  if (o.k === 'pv-chart') return `<div class="mp-pvchart">${(o.st.cols || []).map((c, i) => `<div><span class="mp-pvname">${esc(c)}</span>${pvFoot(cols && cols[i])}</div>`).join('')}</div>`;
   if (o.k === 'ten-frame' || o.k === 'five-frame') return `<div class="mp-frame">${'<div></div>'.repeat(o.k === 'five-frame' ? 5 : 10)}</div>`;
   if (o.k === 'double-ten-frame') return `<div class="mp-frame2"><div class="mp-frame">${'<div></div>'.repeat(10)}</div><div class="mp-frame">${'<div></div>'.repeat(10)}</div></div>`;
   if (o.k === 'ppw') return `<div class="mp-ppw"><div>${esc(t('js.manip.obj.whole'))}</div><div>${esc(t('js.manip.obj.part'))}</div><div>${esc(t('js.manip.obj.part'))}</div></div>`;
@@ -708,7 +751,7 @@ function objHtml(slug, impl, o, view, st = {}) {
   const K = kindOf(slug, o.k); if (!K) return '';
   const z = K.size(o.st), s = +o.s || 1, on = !view.readOnly && view.osel === o.id;
   // A practice question is read-only (a clock to read is not a clock to set): its own controls are off for everyone.
-  const inner = o.k === slug ? impl.board(o.st, { ...view, oid: o.id, readOnly: view.readOnly || !!o.st.q }) : matHtml(o, view);
+  const inner = o.k === slug ? impl.board(o.st, { ...view, oid: o.id, readOnly: view.readOnly || !!o.st.q }) : matHtml(o, view, o.k === 'pv-chart' && impl.pieces ? chartInfo(slug, st, o) : null);
   const name = objName(slug, o);
   const key = view.showKeys && o.st && o.st.key ? `<span class="mp-key">${iconHtml('✓', { size: 18 })} ${esc(o.st.key)}</span>` : '';
   const tot = view.totals ? objTotal(slug, impl, o, st) : '';
@@ -721,7 +764,9 @@ function objHtml(slug, impl, o, view, st = {}) {
 /** Everything on a board: objects (mats under the rest), then pieces. view: { sel, osel, readOnly }. */
 function boardHtml(slug, impl, st, view) {
   const objs = [...(st.objects || [])].sort((a, b) => (UNDER.has(a.k) ? 0 : 1) - (UNDER.has(b.k) ? 0 : 1));
-  return objs.map(o => objHtml(slug, impl, o, view, st)).join('') + (st.pieces || []).map(p => pieceHtml(p, view)).join('');
+  // Blocks in a chart's column that do not belong there yet (waiting for ten to trade) are drawn a little softer.
+  const pv = impl.pieces && objs.some(o => o.k === 'pv-chart') ? { ...view, strays: strayIds(slug, st) } : view;
+  return objs.map(o => objHtml(slug, impl, o, pv, st)).join('') + (st.pieces || []).map(p => pieceHtml(p, pv)).join('');
 }
 
 // ---------------------------------------------------------------- drawing the tool view
@@ -767,8 +812,8 @@ function renderBoard() {
   board.classList.toggle('texting', !!V.textMode);
   const content = document.getElementById('mp-content');
   const slug = V.tool.slug;
-  content.innerHTML = boardHtml(slug, V.impl, V.st, { sel: V.sel, osel: V.osel, readOnly: false, snapped: V.snapped, showKeys: V.showKeys, totals: V.totals !== false, fresh: V.fresh, checked: V.checked, lifted: V.lifted, flipIn: V.flipIn });
-  V.fresh = null;
+  content.innerHTML = boardHtml(slug, V.impl, V.st, { sel: V.sel, osel: V.osel, readOnly: false, snapped: V.snapped, showKeys: V.showKeys, totals: V.totals !== false, fresh: V.fresh, checked: V.checked, lifted: V.lifted, flipIn: V.flipIn, traded: V.traded });
+  V.fresh = null; V.traded = null;
   // The hint only on a truly empty board, in the middle of the window (never on top of anything).
   const empty = !V.st.objects.length && !(V.st.pieces || []).length && !V.ann.notes.length && !V.ann.texts.length && !V.ann.strokes.length;
   let hint = board.querySelector('.mp-boardhint');
@@ -1217,14 +1262,19 @@ function liftPiece(st, p, space) {
 function pieceAction(st, k, id, v, place, slug = V && V.tool.slug, space = WORLD) {
   const p = st.pieces.find(x => x.id === id); if (!p) return false;
   if (p.locked && k !== 'unlock') return false;
-  if (k === 'copy') { const c = place ? place(p) : { x: p.x + 24, y: p.y + 24 }; const q = { ...p, id: newId(), x: c.x, y: c.y, locked: false }; delete q.g; delete q.lockBy; st.pieces.push(q); v.fresh = q.id; v.sel = null; }
+  if (k === 'copy') {
+    const c = place ? place(p) : { x: p.x + 24, y: p.y + 24 }; const q = { ...p, id: newId(), x: c.x, y: c.y, locked: false }; delete q.g; delete q.lockBy;
+    // A copy of a block in a chart's column goes into the same column (never next door, where it would regroup).
+    const home = columnHome(slug, st, p); if (home) placeAtHome(home, [q], space);
+    st.pieces.push(q); v.fresh = q.id; v.sel = null;
+  }
   else if (k === 'flip') return flipPiece(slug, p);
   else if (k === 'rotate') { p.rot = ((+p.rot || 0) + (TURN[slug] || 90)) % 360; separate(st, p); }
   else if (k === 'fill') p.filled = !p.filled;
   else if (k === 'lock') p.locked = true;
   else if (k === 'unlock') { p.locked = false; delete p.lockBy; }
   else if (k === 'lift') return liftPiece(st, p, space);
-  else if (k === 'break') { v.sel = id; return breakPiece(st, v, slug); }
+  else if (k === 'break') { v.sel = id; return breakPiece(st, v, slug, space); }
   else if (k === 'separate') separate(st, p);
   else if (k === 'delete') { st.pieces = st.pieces.filter(x => x.id !== id); separate(st, p); v.sel = null; }
   else return false;
@@ -1373,7 +1423,7 @@ function bindPlane() {
       } else {
         g.el = objElOf(g.o.id) || g.el; g.x0 = g.o.x; g.y0 = g.o.y;
         // An unlocked frame takes the counters seated in its cells along (owner, 21 Nov 2026).
-        g.carry = FRAMES.has(g.o.k) ? seatedIn(slug, g.o, V.st.pieces).map(m => ({ m, x0: m.x, y0: m.y, el: pieceElOf(m.id) })) : [];
+        g.carry = (FRAMES.has(g.o.k) ? seatedIn(slug, g.o, V.st.pieces) : g.o.k === 'pv-chart' ? inChart(slug, g.o, V.st.pieces) : []).map(m => ({ m, x0: m.x, y0: m.y, el: pieceElOf(m.id) }));
       }
       g.moved = true;
     }
@@ -1412,17 +1462,17 @@ function bindPlane() {
     pointers.delete(e.pointerId);
     if (!g) return;
     if (g.kind === 'pinch') { if (pointers.size < 2) g = null; return; }
-    const x = g; g = null; ghost().hidden = true;
+    const x = g, slug = V.tool.slug; g = null; ghost().hidden = true;
     if (x.hold) x.hold.cancel();
     if (x.kind === 'dead') { V.justMoved = true; return; }
     if (x.moved) V.justMoved = true;
     if (x.kind === 'pan') { if (!x.moved && (V.sel || V.osel) && !V.textMode) { V.sel = null; V.osel = null; renderBoard(); renderChrome(); } return; }
-    if (x.kind === 'resize') { if (x.o.s !== x.s0 || JSON.stringify(x.o.st) !== x.st0) { pushHistory(x.before); renderBoard(); renderChrome(); } return; }
+    if (x.kind === 'resize') { if (x.o.s !== x.s0 || JSON.stringify(x.o.st) !== x.st0) { scaleWithChart(slug, x.o, x.s0, V.st.pieces); settleBoard(slug, V.st, V, WORLD); pushHistory(x.before); renderBoard(); renderChrome(); } return; }
     // Held: the wheel stays open after the finger lifts.
     if ((x.kind === 'obj' || x.kind === 'piece') && !x.moved && (x.held || e.type === 'pointercancel')) { V.justMoved = true; return; }
     if (x.kind === 'obj') {
       // A tap selects it (a corner to resize it); a drag only moves it.
-      if (x.moved) pushHistory(x.before); else { V.osel = x.o.locked ? null : x.o.id; V.sel = null; }
+      if (x.moved) { settleBoard(slug, V.st, V, WORLD); pushHistory(x.before); } else { V.osel = x.o.locked ? null : x.o.id; V.sel = null; }
       renderBoard(); renderChrome(); return;
     }
     if (x.kind === 'piece') {
@@ -1437,6 +1487,7 @@ function bindPlane() {
             V.snapped = new Set(x.members.map(q => q.m.id));
           }
         }
+        settleBoard(slug, V.st, V, WORLD);
         pushHistory(x.before);
       }
       // A tap selects the piece (a green outline, no buttons).
@@ -1736,7 +1787,7 @@ async function liveRoom(id, joinFirst) {
   clear(); V = null;
   try {
     if (joinFirst) { await api('/api/manipulatives/live/join', { method: 'POST', body: { id } }); history.replaceState(null, '', `#live/${id}`); }
-    await ROOM.open(ROOT, id, { palButton, bindTrayDrag, dropAt, IMPL, mkPiece, breakPiece, regroup, newId, boards: STATE.boards, normalize, boardHtml, paletteFor, pieceAction, objectAction, joinGroup, target, inkLine, pieceWheel, objWheel, wheelItems, wheelRun, wheelKey, objName, growAnswer, growAnswers, sizeObjEl, textBoxHtml, textBoxPointer, textSizeButton, growText, snapText, othersThan });
+    await ROOM.open(ROOT, id, { palButton, bindTrayDrag, dropAt, IMPL, mkPiece, breakPiece, regroup, settleBoard, scaleWithChart, newId, boards: STATE.boards, normalize, boardHtml, paletteFor, pieceAction, objectAction, joinGroup, target, inkLine, pieceWheel, objWheel, wheelItems, wheelRun, wheelKey, objName, growAnswer, growAnswers, sizeObjEl, textBoxHtml, textBoxPointer, textSizeButton, growText, snapText, othersThan });
   } catch (e) { ROOT.innerHTML = `<div class="empty"><h1>${esc(e.status === 409 ? t('js.manip.live.ended') : t('js.manip.live.gone'))}</h1><p><a href="#">${esc(t('js.manip.nav.back'))}</a></p></div>`; }
 }
 

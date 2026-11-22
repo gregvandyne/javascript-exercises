@@ -3436,6 +3436,13 @@
         "done": "Bewaard als sjabloon ‘{title}’. Code {code}",
         "savedAt": "Bewaard {time}",
         "notYet": "Nog niet bewaard. Opnieuw proberen…"
+      },
+      "pv": {
+        "traded": "{n} × {from} geruild voor {m} × {to}.",
+        "broke": "{from} werd {n} × {to}.",
+        "moved": "{label} ging naar de kolom {col}.",
+        "needTen": "Er zijn 10 nodig om te ruilen",
+        "count": "{n} stukken in {col}"
       }
     },
     "manip-room": {

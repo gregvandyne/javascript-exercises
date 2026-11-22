@@ -3435,6 +3435,13 @@
         "done": "Enregistré comme modèle « {title} ». Code {code}",
         "savedAt": "Enregistré à {time}",
         "notYet": "Pas encore enregistré. Nouvel essai…"
+      },
+      "pv": {
+        "traded": "{n} × {from} échangés contre {m} × {to}.",
+        "broke": "{from} est devenu {n} × {to}.",
+        "moved": "{label} est allé dans la colonne {col}.",
+        "needTen": "Il en faut 10 pour échanger",
+        "count": "{n} pièces dans {col}"
       }
     },
     "manip-room": {

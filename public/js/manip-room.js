@@ -13,6 +13,7 @@ import { iconHtml } from '/js/icons.js';
 import { toolOf, roomLayout, layoutOf, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H } from '/js/manip-data.js';
 import { WORLD, migrate, fitInto, newBoard, objectTool, kindOf, objSize, objRect, boxesOf, bbox, spotIn, slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, nextPieceSpot, OBJ_MAX, OBJ_MAX_SQUARE, S_MIN, S_MAX,
   snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, freeResize } from '/js/manip-board.js';
+import { inChart } from '/js/manip-pv.js';
 import { openWheel, closeWheel, startHold, shake, SLOP } from '/js/manip-wheel.js';
 
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
@@ -186,7 +187,7 @@ function areaInner(A) {
   if (A.hidden) return `<div class="rm-body">${stripHtml(A)}<div class="rm-in rm-frost" style="top:${topOf(A)}px"><span>${iconHtml('🔒', { size: 18 })} ${esc(t('js.manip-room.hiddenWork'))}</span></div></div>`;
   const sel = R.sel && R.sel.key === A.key ? R.sel.id : null, osel = R.osel && R.osel.key === A.key ? R.osel.id : null, ws = workSize(A);
   const lifted = R.lifted && R.lifted.key === A.key ? R.lifted.id : null, flipIn = R.flipIn && R.flipIn.key === A.key ? R.flipIn.id : null;
-  return `<div class="rm-body">${stripHtml(A)}<div class="rm-in" style="top:${topOf(A)}px"><div class="mp-content mp-abs">${R.deps.boardHtml(R.room.tool, R.impl, A.st, { sel, osel, readOnly: !A.editable || R.room.status !== 'active', snapped: R.snapped, fresh: R.fresh, totals: totalsOn(), checked: A.key === R.me ? R.checked : null, lifted, flipIn })}</div>
+  return `<div class="rm-body">${stripHtml(A)}<div class="rm-in" style="top:${topOf(A)}px"><div class="mp-content mp-abs">${R.deps.boardHtml(R.room.tool, R.impl, A.st, { sel, osel, readOnly: !A.editable || R.room.status !== 'active', snapped: R.snapped, fresh: R.fresh, traded: R.traded && R.traded.key === A.key ? R.traded.ids : null, totals: totalsOn(), checked: A.key === R.me ? R.checked : null, lifted, flipIn })}</div>
     <svg class="mp-ink" viewBox="0 0 ${ws.w} ${ws.h}" aria-hidden="true">${inkOf(A)}</svg>
     <div class="mp-texts">${A.ann.texts.map(x => textHtml(A, x)).join('')}</div><div class="mp-notes">${A.ann.notes.map((n, i) => noteHtml(A, n, i)).join('')}</div></div></div>`;
 }
@@ -218,7 +219,7 @@ function renderArea(key) {
   if (!A || !el) return;
   el.classList.toggle('active', R.role === 'teacher' && R.active === key);
   el.querySelector('.rm-body').outerHTML = areaInner(A);
-  bindArea(key); R.fresh = null;
+  bindArea(key); R.fresh = null; if (R.traded && R.traded.key === key) R.traded = null;
   if (!A.hidden) R.deps.growAnswers(el, A.st, workSize(A));   // a long answer shows whole (its box grows; saved with its next change)
   const ta = el.querySelector('textarea.mp-notetext, textarea.mp-textin'); if (ta) ta.focus({ preventScroll: true });
 }
@@ -235,11 +236,17 @@ function edit(key, fn) {
   const before = JSON.stringify({ st: A.st, ann: A.ann });
   const sel = { sel: R.sel && R.sel.key === key ? R.sel.id : null, osel: R.osel && R.osel.key === key ? R.osel.id : null };
   if (fn(A.st, sel, A) === false) return;
+  settle(A, sel);
   R.sel = sel.sel ? { key, id: sel.sel } : R.sel && R.sel.key === key ? null : R.sel;
   R.osel = sel.osel ? { key, id: sel.osel } : R.osel && R.osel.key === key ? null : R.osel;
   R.fresh = sel.fresh || null; if (sel.lastAdd) A.lastAdd = sel.lastAdd;   // a new piece or object: a soft highlight where it landed, never its buttons
   R.hist.push([key, before]); if (R.hist.length > 60) R.hist.shift();
   renderArea(key); renderPal(); queueSave(key);
+}
+/** Regroup and lay out the square's place-value charts after a change (manip.js settleBoard); the new pieces pop. */
+function settle(A, v = {}) {
+  R.deps.settleBoard(R.room.tool, A.st, v, workSize(A));
+  if (v.traded && v.traded.size) R.traded = { key: A.key, ids: v.traded };
 }
 function queueSave(key) {
   const A = R.areas.get(key); if (!A) return;
@@ -626,7 +633,8 @@ function move(e) {
     } else {
       g.el = objElIn(g.key, g.o.id) || g.el; g.x0 = g.o.x; g.y0 = g.o.y;
       // An unlocked frame takes the counters seated in its cells along.
-      g.carry = FRAMES.has(g.o.k) ? seatedIn(R.room.tool, g.o, A0.st.pieces).map(m => ({ m, x0: m.x, y0: m.y, el: pieceElIn(g.key, m.id) })) : [];
+      // A place-value chart takes the blocks in its columns along.
+      g.carry = (FRAMES.has(g.o.k) ? seatedIn(R.room.tool, g.o, A0.st.pieces) : g.o.k === 'pv-chart' ? inChart(R.room.tool, g.o, A0.st.pieces) : []).map(m => ({ m, x0: m.x, y0: m.y, el: pieceElIn(g.key, m.id) }));
     }
     g.moved = true;
   }
@@ -686,7 +694,12 @@ function up(e) {
   if (g.kind === 'ink') { const A = R.areas.get(g.key); A.ann.strokes = A.ann.strokes.filter(s => s.pts.length > 1); renderArea(g.key); renderPal(); queueSave(g.key); return; }
   if (g.kind === 'obj' || g.kind === 'resize') {
     // A tap selects (its buttons open); a drag only moves it.
-    if (g.moved) { R.hist.push([g.key, g.before]); queueSave(g.key); } else if (g.o && !g.o.locked) { R.osel = { key: g.key, id: g.o.id }; R.sel = null; }
+    if (g.moved) {
+      const A = R.areas.get(g.key);
+      if (A && g.kind === 'resize') R.deps.scaleWithChart(R.room.tool, g.o, g.s0, A.st.pieces);
+      if (A) settle(A);
+      R.hist.push([g.key, g.before]); queueSave(g.key);
+    } else if (g.o && !g.o.locked) { R.osel = { key: g.key, id: g.o.id }; R.sel = null; }
     renderArea(g.key); renderPal(); R.justPanned = true; return;
   }
   if (g.kind === 'piece') {
@@ -702,6 +715,7 @@ function up(e) {
           R.snapped = new Set(g.members.map(q => q.m.id));
         }
       }
+      settle(A);
       R.hist.push([g.key, g.before]); if (R.hist.length > 60) R.hist.shift(); queueSave(g.key);
     }
     if (!g.moved) { R.sel = { key: g.key, id: g.p.id }; R.osel = null; } else if (R.sel && R.sel.key === g.key && R.sel.id !== g.p.id) R.sel = null;

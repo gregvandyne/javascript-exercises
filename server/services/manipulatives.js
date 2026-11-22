@@ -177,6 +177,14 @@ export function cleanState(raw, bounds = null, tool = null) {
   // In a live room a square's pieces stay inside it: their places are clamped to the square (bounds: its size); on a
   // format-2 board, inside the big board.
   if ((bounds || v2) && Array.isArray(st.pieces)) st.pieces = st.pieces.map(p => { const w = num(p.w, 4, space.w, 50), h = num(p.h, 4, space.h, 50); return { ...p, w, h, x: num(p.x, 0, space.w - w), y: num(p.y, 0, space.h - h) }; });
+  // A block made smaller in a place-value chart's column keeps its own size (nw, nh: public/js/manip-pv.js): numbers
+  // inside the space, or not kept at all.
+  if (Array.isArray(st.pieces)) st.pieces = st.pieces.map(p => {
+    if (p.nw === undefined && p.nh === undefined) return p;
+    const q = { ...p }; delete q.nw; delete q.nh;
+    if (Number.isFinite(+p.nw) && Number.isFinite(+p.nh)) { q.nw = num(p.nw, 4, space.w, 50); q.nh = num(p.nh, 4, space.h, 50); }
+    return q;
+  });
   const ann = st.__ann && typeof st.__ann === 'object' ? st.__ann : null;
   if (ann) {
     st.__ann = {

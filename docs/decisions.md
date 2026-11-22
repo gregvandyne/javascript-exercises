@@ -10314,6 +10314,50 @@ weren't saved at all unless the teacher pressed Save, which made a new share cod
   print, hide, languages, the generators), figures-econ-words (12 languages and look-alikes), figures-scrub, and the
   Economics tab and its editors in Chromium (figures-browser).
 
+## Virtual math manipulatives: place-value charts fit and regroup (22 Nov 2026)
+
+Testing Base Ten Blocks on an iPhone, rods dropped into the chart's Tens column spilled over its edges and lay on top of
+each other, and a rod broken into ten units left the units outside the chart. A drop into a column now lays the column
+out and regroups it, by fixed rules (public/js/manip-pv.js, shared by the solo board, the live room and the tests).
+
+- **Fit.** The blocks in a column sit in tidy rows inside it (under its heading, centered), all made smaller by one
+  factor as more come in, never bigger than their own size, so none crosses the column's edges or covers another. The
+  layout runs after every change: a drop, a palette add, Copy, Delete, Break, Regroup, a chart moved (it carries the
+  blocks in its columns, like a frame) or resized, and when a board is opened (layout only, no trades). A block made
+  smaller keeps its own size (nw, nh; the server keeps them bounded) and gets it back when dragged out of the chart.
+  Below 0.4 of a block's size the column shows how many it holds ("×37"); past that the gaps close up and, only for
+  hundreds of blocks, the rows overlap a little, still inside. A drop inside a column no longer snaps edge to edge to a
+  neighbor (that was what pulled rods over the edge). Every chart on every tool with one (Base Ten Blocks, Place Value
+  Disks, practice "Build 346" charts) works this way.
+- **Regroup on drop: one place at a time, the total never changes.** A column's place comes from its heading (Ones,
+  Tens, Hundreds, Thousands, Tenths... up to Millions). For each block in a column:
+  - its own column (a rod in Tens): it just stays;
+  - one place smaller (a rod in Hundreds): it waits there, drawn softer, and the column says "Needs 10 to trade"; as
+    soon as the column holds ten of them, each ten trade for one of the column's block (ten rods become one flat),
+    leftovers stay waiting (23 units in Tens: two rods and three units). So ten 1s in Tens make a 10, ten 10s in
+    Hundreds a 100, ten 100s in Thousands a 1,000;
+  - one place bigger (a flat in Tens, a cube in Hundreds, a rod in Ones): it breaks into ten of the column's block,
+    right there;
+  - two or more places away (a cube in Tens, a unit in Hundreds): it goes to its own column of that chart with a short
+    note ("1,000 moved to the Thousands column"); a chart without that column leaves it where it was, marked.
+  We chose one place at a time because each step is the ten-for-one trade children are learning; breaking a cube into
+  100 rods, or waiting for 100 units in Hundreds, would hide it. Waiting (rather than sending a rod in Hundreds back to
+  Tens) lets a child collect ten and see the trade happen. Locked blocks are never traded, moved or resized.
+- **Break and Regroup on a chart.** Break (the wheel's "Break into 10") on a block in a chart puts the ten pieces into
+  the column for their value in the same chart (a rod in Tens: ten units in Ones; a flat: ten rods in Tens; a cube: ten
+  flats in Hundreds). Regroup (ten of a kind into one) puts the new block in its column too (ten units in Ones: a rod in
+  Tens). A chart without that column gets them just under it, so they are not traded straight back; off a chart both
+  work as before. A copy of a block in a column stays in that column.
+- **One step, everywhere.** A regroup happens inside the change that caused it, so one Undo takes back the drop and its
+  trade together. New blocks from a trade pop in (none with reduced motion) and one toast says what happened ("Traded
+  10 × 10 for 1 × 100."). In a live room the square's state is regrouped in the browser that made the change and saved
+  as usual (the server validates it as before); everyone else just sees the result.
+- **Words** in all 13 languages under js.manip.pv.* (en-GB uses the English). **Tests:** manip-pv (the fit math, every
+  block x column pair, ten-for-one trades in every column, decimals and disks, Break and Regroup homes, carry and snap,
+  fitInto and the server's bounds) and manip-pv-browser (an iPhone 13 with touch and a laptop: ten rods into Hundreds
+  become a flat and Undo takes it back, the flat into Tens becomes ten rods inside it, Break on a rod in Tens puts ten
+  units inside Ones, nothing drawn outside its column; and a student's trade saved in a live room).
+
 ## Algebra Builder builds again: the math field's files are in the repository (22 Nov 2026)
 
 - **Why it could not build.** `tools/algebra-builder/.gitignore` said `dist/`, meant for Vite's output, but it also

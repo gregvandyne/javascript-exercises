@@ -3435,6 +3435,13 @@
         "done": "Guardada como plantilla «{title}». Código {code}",
         "savedAt": "Guardado {time}",
         "notYet": "Aún no se guardó. Intentando de nuevo…"
+      },
+      "pv": {
+        "traded": "Cambiaste {n} × {from} por {m} × {to}.",
+        "broke": "{from} se convirtió en {n} × {to}.",
+        "moved": "{label} pasó a la columna {col}.",
+        "needTen": "Hacen falta 10 para cambiar",
+        "count": "{n} piezas en {col}"
       }
     },
     "manip-room": {
