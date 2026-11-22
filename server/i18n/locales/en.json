@@ -13343,6 +13343,34 @@
       "osmosis": {
         "name": "Osmosis",
         "desc": "Cells, U-tubes and bags in solutions"
+      },
+      "supplyDemand": {
+        "name": "Supply and demand",
+        "desc": "Shifts, price controls, taxes and surplus"
+      },
+      "moneyMarket": {
+        "name": "Money markets",
+        "desc": "Money, loanable funds and reserves"
+      },
+      "businessCycle": {
+        "name": "Business cycle",
+        "desc": "Peaks, troughs and phases around a trend"
+      },
+      "phillipsCurve": {
+        "name": "Phillips curve",
+        "desc": "Short and long run, shifts and expectations"
+      },
+      "possibilitiesCurve": {
+        "name": "Production possibilities",
+        "desc": "Trade-offs, growth and comparative advantage"
+      },
+      "adAs": {
+        "name": "AD-AS model",
+        "desc": "Output gaps, shocks and policy"
+      },
+      "costCurves": {
+        "name": "Cost and revenue curves",
+        "desc": "MC, ATC, profit and market structures"
       }
     },
     "step": {

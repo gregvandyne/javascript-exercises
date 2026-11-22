@@ -12624,6 +12624,34 @@
       "osmosis": {
         "name": "Osmose",
         "desc": "Zellen, U-Rohre und Beutel in Lösungen"
+      },
+      "supplyDemand": {
+        "name": "Angebot und Nachfrage",
+        "desc": "Verschiebungen, Preiskontrollen, Steuern und Renten"
+      },
+      "moneyMarket": {
+        "name": "Geldmärkte",
+        "desc": "Geld, leihbare Mittel und Reserven"
+      },
+      "businessCycle": {
+        "name": "Konjunkturzyklus",
+        "desc": "Hoch- und Tiefpunkte und Phasen um einen Trend"
+      },
+      "phillipsCurve": {
+        "name": "Phillips-Kurve",
+        "desc": "Kurze und lange Frist, Verschiebungen und Erwartungen"
+      },
+      "possibilitiesCurve": {
+        "name": "Produktionsmöglichkeiten",
+        "desc": "Zielkonflikte, Wachstum und komparativer Vorteil"
+      },
+      "adAs": {
+        "name": "AD-AS-Modell",
+        "desc": "Produktionslücken, Schocks und Politik"
+      },
+      "costCurves": {
+        "name": "Kosten- und Erlöskurven",
+        "desc": "Grenzkosten, Durchschnittskosten, Gewinn und Marktformen"
       }
     },
     "step": {

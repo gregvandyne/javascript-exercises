@@ -1,4 +1,4 @@
-# Oomba Figures API (1.3.0)
+# Oomba Figures API (1.4.0)
 
 Oomba Figures draws the figures science, maths and graph worksheets need, as accessible SVG, from plain data: free-body
 diagrams, vectors, inclined planes, pulleys, ray diagrams, circuits, motion graphs, a coordinate grid, half-life and
@@ -19,7 +19,8 @@ beakers, gas syringes, digital and triple beam balances, digital thermometers, p
 displacement), orbital diagrams for all 118 elements, Bohr ion marks, several half-life curves on one graph, titration
 curves from measured pH, and more Lewis molecules); and biology (since 1.3.0: population growth and predator-prey graphs,
 enzyme activity and photosynthesis rate graphs, Punnett squares, pedigrees, protein synthesis, gel electrophoresis and
-osmosis, and the micropipette reading). Skeletal structures come from SMILES through SmilesDrawer, and interactive boards from
+osmosis, and the micropipette reading); and economics (since 1.4.0: supply and demand, the money markets, the business
+cycle, the Phillips curve, production possibilities, the AD-AS model and the firm's cost and revenue curves). Skeletal structures come from SMILES through SmilesDrawer, and interactive boards from
 JSXGraph. Classroom activities (Oomba Canvas 1.2.0, `docs/canvas-api.md`) and arcade games can both use it.
 
 - Source: `figures/src/` (`svg.js` the drawing core and colours, `physics.js`, `graphs.js`, `chem.js`, `readings.js`,
@@ -43,15 +44,15 @@ JSXGraph. Classroom activities (Oomba Canvas 1.2.0, `docs/canvas-api.md`) and ar
   and their configurations; since 1.3.0 `ecology.js` population growth and predator-prey (`ported/growth.js`,
   `ported/lotka.js`), `rates.js` enzyme activity and photosynthesis (`ported/rates.js`), `genetics.js` Punnett squares and
   pedigrees (`ported/punnett.js`, `ported/pedigree.js`), `molecular.js` protein synthesis and gels (`ported/dna.js`,
-  `ported/gel.js`), `osmosis.js` osmosis (`ported/osmosis.js`) and `pipette.js` the micropipette (`ported/pipette.js`); `core.js` the global and the registry, `packs/*.js` each
+  `ported/gel.js`), `osmosis.js` osmosis (`ported/osmosis.js`) and `pipette.js` the micropipette (`ported/pipette.js`); since 1.4.0 `econ.js` what every economics graph is drawn with (`ported/econcurves.js` the curve math), `markets.js` supply and demand and the money markets (`ported/markets.js`), `macro.js` AD-AS, the Phillips curve and the business cycle (`ported/macro.js`) and `firm.js` the cost and revenue curves and production possibilities (`ported/firm.js`); `core.js` the global and the registry, `packs/*.js` each
   pack's registration, `index.js` everything at once for the tests), plus `canvas/src/expr.js` (the small safe formula language it shares with Oomba Canvas). `scripts/build-figures.js` bundles it into
   `public/vendor/oomba-figures/<version>/oomba-figures.js` (with its LICENSE and `manifest.json`) and writes
   `figures/SHIPPED.json`, the lock for it and for the vendored libraries (1.0.0 and 1.1.0 stay byte for byte; 1.1.0 adds the
-  number line, the shapes and the notice, 1.2.0 the chemistry kinds and lab readings, 1.3.0 the biology pack and the micropipette, and its LICENSE file carries the Apache License 2.0 after ours; 1.1.0 is minified
+  number line, the shapes and the notice, 1.2.0 the chemistry kinds and lab readings, 1.3.0 the biology pack and the micropipette, 1.4.0 the economics pack, and its LICENSE file carries the Apache License 2.0 after ours; 1.1.0 is minified
   by esbuild, its legal comments kept: the header and each ported file's Apache 2.0 note) (`scripts/vendor-figures.js` copies JSXGraph
   and SmilesDrawer from npm; licences in `docs/third-party.md`).
 - Split by subject (since 1.1.0, "The core and its packs" below): `oomba-figures.js` is the core, and `packs/math.js`,
-  `packs/data.js`, `packs/physics.js`, `packs/chem.js`, `packs/bio.js` (1.3.0) and `packs/measure.js` in the same version folder each add their
+  `packs/data.js`, `packs/physics.js`, `packs/chem.js`, `packs/bio.js` (1.3.0), `packs/econ.js` (1.4.0) and `packs/measure.js` in the same version folder each add their
   kinds; each file has its own pinned tag.
 - Platform: `server/services/figlibs.js` (the pinned tags, the scanner's `checkFigures`, the server's copy of the frozen
   file for printed worksheets and the activity self-test), `server/builder/figures.js` (when the FIGURE RULES are sent),
@@ -106,6 +107,9 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
   enzymeActivity { graph: "temperature", curves: [{ enzyme: "human" }, { enzyme: "taq" }], axes: "numbered", marks: true } (enzymes human, taq, pepsin, amylase, trypsin, catalase, or { name, opt, width }; graph "pH"; graph "substrate" with curves [{ km: 2, inhibitor: "competitive" }]; OF.solve gives optimum, denatured, vmax, km)    photosynthesis { graph: "light", curves: [{ co2: 0.1, temp: 25 }, { co2: 0.04, temp: 25 }] } (each curve gives the two factors not on the axis: light, co2 (%), temp; graph "co2" or "temperature"; lightAxis: "distance"; net: true; OF.solve gives plateau, saturation, compensation, optimum)
   punnett { parents: [["T", "t"], ["T", "t"]], names: { T: "tall", t: "short" } } (alleles: T, t; C^R, C^W with dominance "incomplete"; I^A, I^B, i with "codominance"; R, r, Y, y for a dihybrid; cross: "x-linked" with X^H, X^h, Y; or letters: ["T"] with parents [[1], [0]]; the ratios are worked out; OF.solve gives genotypes, phenotypes, percents, recessivePercent; hide: "cells", "gametes", "ratios")    pedigree { mode: "ar", seed: 7, generations: 3 } (a random family that fits the mode; or family: "m-F3fcMm-f2mfd", one line: sex m f u, upper case affected, c carrier, d deceased, p proband, then - and the partner and how many children; a family given with a mode must fit it; carriers, numbers, genotypes: true; OF.solve gives fits, tells, modeNumber, genotypes; hide: "genotypes", "affected")
   proteinSynthesis { coding: "ATGGCCTTTAAAGGGTAA", rows: ["template", "mrna", "trna", "amino"] } (or template (3' to 5') or mrna; up to 36 bases; frame "aug" | "first"; codons: n; blanks: { mrna: 50 } with seed; hide: a row)    gel { lanes: [{ ladder: "1kb" }, { label: "Suspect 1", bands: [5200, 3100, 900] }], gel: "1" } (ladders 1kb, 100bp, lambda; gel 0.8, 1, 1.5, 2 %; every band at its distance for its size; values, ruler, look: "glow"; OF.solve gives each band's cm and each sample lane's total; hide: "sizes", "labels")    osmosis { scene: "blood", solutes: [{ name: "salt", inside: 0.9, outside: 3 }], view: "both" } (scenes blood, plant, beaker, utube, bag; cross: true for a solute that passes the membrane; the tonicity, the water's movement and the result are worked out; OF.solve gives tonicity, water, outcome; hide: "tonicity", "arrows", "result")
+  Economics (1.4.0, the econ pack; schematic graphs on a hidden 0-to-10 grid unless numbers are given; every equilibrium, quantity and area is worked out from the curves): supplyDemand { shift: { demand: "increase" } } (demand, supply: "normal" | "steep" | "flat" | "vertical" | "horizontal"; numbered: demand { at: 10, slope: -0.1 }, supply { at: 2, slope: 0.1 } or { q: 500 }, or schedule: [[price, qd, qs], ...], a numbered shift is how far across; control: { type: "ceiling" | "floor", at } (schematic: a share of the price axis; numbered: the price); tax: { type: "tax" | "subsidy", amount }; shade: ["cs", "ps", "dwl", "revenue"]; OF.solve gives equilibrium, after, control (qd, qs, shortage or surplus), tax (buyers, sellers, quantity), cs, ps, dwl, revenue; hide: "values", "after", "areas", "names")    moneyMarket { graph: "money" | "funds" | "reserves", regime: "ample" | "limited", shift: { supply: "increase", demand: "decrease" } } (OF.solve gives rate, quantity, after, rateChange; hide: "values", "after")
+  businessCycle { cycles: 2, start: "peak", shade: true, phases: ["expansion", "contraction", "recession", "recovery"] } (cycles 1 to 4 by halves; amplitude, trend, irregularity with seed; style: "letters" for a quiz; OF.solve gives peaks, troughs, recessions, letters; hide: "labels")    phillipsCurve { movement: "along", along: "up", longRun: true } (movement "srpc" with side and cause "shock" | "expectations", "lrpc" with side; numbered in %: { nru: 5, expected: 2, u2: 3, pi2: 6, ... }; OF.solve gives A, B, C (u, inflation), nruAfter, expectedAfter; hide: "values", "after")
+  possibilitiesCurve { points: [{ name: "A", at: 0.2 }, { name: "B", place: "inside", at: 0.5 }], steps: true } (shape "out" | "straight" | "in"; xMax, yMax for numbers; shift: { which: "both" | "x" | "y", dir: "out" | "in" }; or countries: [{ name: "Country A", x: 40, y: 20 }, { name: "Country B", x: 30, y: 30 }], goods: ["Wheat", "Cloth"], layout: "side"; OF.solve gives points (status), steps (opportunity cost), countryA, countryB (costX, costY), advantageX, advantageY)    adAs { start: "recession", shift: { ad: "full" } } (as: "three" for the Keynesian curve; shift ad, sras "left" | "right" | "full", lras "left" | "right"; numbered: schedule: [[price level, AD, AS], ...], potential; OF.solve gives start, end, potential, gap, gapSize, gapType; hide: "values", "after", "gap")    costCurves { market: "perfect", price: "profit", shade: ["profit"] } (market "costs" | "perfect" | "monopoly" | "monopolistic"; atc: { q, cost } where ATC bottoms out, mcSlope, fixed; price: "profit" | "breakeven" | "loss" | "shutdownPoint" | "shutdown" or a number; demand: { top, end } and regulation "optimal" | "fair" for a monopoly; run "long" for a monopolistic competitor; OF.solve gives q, price, atc, profit, breakEven, shutdown, socialOptimum, fairReturn, cs, dwl, excessCapacity; hide: "values", "areas", "names")
   numberLine { from: -5, to: 5, step: 1, every: 1, intervals: [{ from: -3, to: 4, fromClosed: false }], points: [{ at: [3, 4], label: "P" }], sequence: { expr: "1/n", from: 1, to: 5 } } (a value is a number, a fraction [n, d] or { pi: k }; leave out an interval's from or to to run off that end; ends are closed unless fromClosed or toClosed is false; every: a number at every nth tick; numbering: "decimal" | "fraction" | "pi" | "degree"; hide: true for a numbered line to graph on, "graph", "points", "values"). A line for the student to tap or jump on is the Oomba Canvas tool (numberline.point, numberline.jump), not a figure.
   triangle { AB: 3, BC: 4, B: 90, labels: { CA: "x" } } (any three of the angles A, B, C and the sides AB, BC, CA that make a triangle; more must agree; other: true for the second triangle of the ambiguous case)
   rectangle { AB: 12, BC: 5, unit: "cm" } (a square: { AB: 6, square: true })    parallelogram { AB: 12, DA: 10, A: 30, heights: ["D"], labels: { hD: true } } (a rhombus: { AB: 6, A: 70, rhombus: true })
@@ -211,6 +215,13 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
 | `proteinSynthesis` (1.3.0) | `coding`, `template` or `mrna`; `rows`, `frame`, `codons`, `names`, `blanks`, `seed` | a row's name, `true` |
 | `gel` (1.3.0) | `lanes: [{ ladder } \| { label, bands }]`, `gel`, `look`, `sizes`, `values`, `ruler`, `electrodes`, `numbers` | `sizes`, `labels`, `values`, `true` |
 | `osmosis` (1.3.0) | `scene`, `solutes: [{ name, inside, outside, cross }]`, `unit`, `view`, `particles`, `arrows`, `labels`, `burst`, `seed` | `tonicity`, `arrows`, `result`, `true` |
+| `supplyDemand` (1.4.0) | `demand`, `supply` (a shape; numbered `{ at, slope }` or `{ q }`) or `schedule`; `shift`, `control`, `tax`, `shade`, `x`, `y`, `guides`, `star`, `from`, `labels`, titles | `values`, `after`, `areas`, `names`, `true` |
+| `moneyMarket` (1.4.0) | `graph` (`money`, `funds`, `reserves`), `regime`, `shift`, `guides`, `star`, `from`, `labels`, titles | `values`, `after`, `names`, `true` |
+| `businessCycle` (1.4.0) | `cycles`, `start`, `amplitude`, `trend`, `irregularity`, `seed`, `style`, `phases`, `every`, `dots`, `shade`, `trendLine`, `names`, titles | `labels`, `true` |
+| `phillipsCurve` (1.4.0) | `movement`, `along`, `side`, `cause`, `size`, `longRun`, `withSrpc`, `curvature`; numbered: `nru`, `expected`, `u2`, `pi2`, `expected2`, `uShock`, `nru2`, `x`, `y`; `srpc`, `lrpc`, `guides`, `arrows`, `labels` | `values`, `after`, `names`, `true` |
+| `possibilitiesCurve` (1.4.0) | `shape`, `bow`, `xMax`, `yMax`, `points`, `shift`, `steps`, `guides`; or `countries` with `layout`; `goods`, `name`, `heading` | `captions`, `costs`, `after`, `names`, `true` |
+| `adAs` (1.4.0) | `as`, `lras`, `start`, `gap`, `shift` (`ad`, `sras`, `lras`, `size`); numbered: `schedule`, `potential`, `smooth`, `x`, `y`; `brace`, `guides`, `star`, `from`, `labels`, titles | `values`, `after`, `gap`, `names`, `true` |
+| `costCurves` (1.4.0) | `market`, `atc`, `mcSlope`, `fixed`, `avc`, `afc`, `price`, `demand`, `regulation`, `run`, `outcome`, `shade`, `minimums`, `guides`, `axes`, `labels`, titles | `values`, `areas`, `names`, `true` |
 | `particles` (1.2.0) | `particles: [{ count, shape, look, outer, name, after }]`, `state`, `seed`, `boxes`, `afterState`, `arrow`; or `lattice`; `border`, `heading` | `names`, `true` |
 
 `opts.print` draws black on white with grey fills (the printed worksheet). Colours otherwise are the site's: green,
@@ -895,6 +906,58 @@ site language (`server/builder/figures.js`).
 {"tool": "figure.number", "vars": {"a": [5,30], "b": [5,30]}, "where": "(a - b >= 4) + (b - a >= 4)", "q": "A plasmid was cut into the pieces in lane 2. How long was the plasmid, in bp?", "fig": {"kind": "gel", "gel": "1", "lanes": [{"ladder": "1kb"},{"label": "Digest", "bands": ["{=100*a}", "{=100*b}"]}], "values": true}, "answer": "100*(a + b)", "dp": 0, "unit": "bp", "work": ["The pieces add up to the whole plasmid.", "{=100*a} + {=100*b}", "= {=100*(a + b)} bp"]}
 {"tool": "figure.number", "vars": {"a": [3,30], "b": [1,20], "c": [5,30]}, "q": "Only the solutes that cannot cross the membrane count toward tonicity. What is their total concentration outside the cell, in %?", "fig": {"kind": "osmosis", "scene": "blood", "solutes": [{"name": "salt", "inside": 0.9, "outside": "{=a/10}"},{"name": "sucrose", "inside": 0, "outside": "{=b/10}"},{"name": "urea", "inside": 1, "outside": "{=c/10}", "cross": true}], "particles": false, "hide": "tonicity"}, "answer": "(a + b)/10", "dp": 1, "unit": "%", "work": ["Urea crosses the membrane, so it does not count.", "{=a/10} + {=b/10}", "= {=(a + b)/10}%"]}
 {"tool": "figure.number", "vars": {"m": [20,200]}, "q": "What volume is the micropipette set to, in µL?", "fig": {"kind": "reading", "type": "micropipette", "model": "P20", "value": "{=m/10}", "hide": "value"}, "answer": "m/10", "dp": 1, "unit": "µL", "work": ["A P20 reads tens, ones and tenths of a µL.", "The red wheel, below the line, is the tenths.", "The volume is {=m/10} µL."]}
+```
+
+## Economics (1.4.0)
+
+The economics site's seven live generators, ported where Oomba had none (a new `econ` pack). Oomba Figures 1.4.0 is a new
+version folder (the core and its seven packs); 1.0.0 to 1.3.0 have shipped and stay byte for byte, and every figure 1.3.0
+drew draws the same bytes in 1.4.0 (`tests/unit/figures-v140.test.js`). New builds and the Figures product get 1.4.0.
+Economics graphs are schematic (no numbers on the axes, on a hidden 0-to-10 grid) unless numbers are given, so
+"truthful" means that every equilibrium, quantity, shift and shaded area is worked out from the curves, never placed by
+eye, and data the curves cannot honor is refused:
+
+- `supplyDemand`: schematic shapes (normal, steep, flat, upright, level) or numbered curves (a price intercept and slope,
+  an upright quantity, or a schedule, run on to the axes for the surplus); a shift of either or both; a price ceiling or
+  floor (a control that does not bind says so, and the quantities demanded and supplied are read off the curves); a tax
+  or subsidy (the buyers' and sellers' prices and the quantity from the shifted supply curve); consumer and producer
+  surplus, deadweight loss and tax revenue shaded, their areas exact (each corner of a schedule's curve is kept). Curves
+  that do not cross, cross off the graph or below 0, a tax with a control, and surplus with an upright or flat curve
+  are refused.
+- `moneyMarket`: the money market (an upright money supply), loanable funds and the market for reserves (the demand for
+  reserves flat, sloping, then flat; ample reserves keep the rate on the flat bottom, limited ones on the slope), with
+  shifts; OF.solve gives which way the rate and quantity move.
+- `businessCycle`: real GDP around a rising trend, irregular cycles from a seed; the peaks, troughs, expansions,
+  contractions, recessions and recoveries are found on the wave as drawn; a trend that rises faster than the cycle
+  falls is refused. Letters for a quiz, or each label a line to write on.
+- `phillipsCurve`: the short-run curve crosses the long-run curve at the natural rate and expected inflation; along it
+  A to B, back to the long run at C (expected inflation catches up), a supply shock or new expectations, or the natural
+  rate moving; numbered from the rates in %, with a short-run curve that must slope down through both points.
+- `possibilitiesCurve`: bowed out, straight or bowed in; points on, inside or outside every curve drawn; a shift out or in
+  or a pivot; each step's opportunity cost from the points' own amounts; two countries' straight curves with each one's
+  opportunity costs and comparative advantage (equal costs, where neither has one, are refused).
+- `adAs`: AD, SRAS (straight or three ranges) and LRAS; a recessionary or inflationary gap; shifts by a size or as far as
+  closes the gap ("full"), worked out on the curves; numbered from a schedule of price levels (a smooth curve through
+  the rows that never overshoots them) and potential GDP. An inflationary gap on the three-range curve is refused.
+- `costCurves`: MC, ATC, AVC and AFC from one cubic total cost, so MC crosses AVC and ATC at their lowest points exactly;
+  a price taker (P = MC, or shut down below the lowest AVC), a monopoly (MR = MC, regulated at P = MC or P = ATC) or a
+  monopolistic competitor (short run, or long run with demand tangent to ATC and its excess capacity); profit or loss,
+  consumer surplus and deadweight loss shaded. MC dipping below the axis, or an outcome off the graph, is refused.
+
+In print every curve is black and is told apart by its name and its dash; each shaded region is a gray with its own
+hatching (consumer surplus at 45 degrees, producer surplus at -45, deadweight loss level, revenue upright), so no
+meaning is carried by color alone. Not ported: the source's label placer and panel layout (Oomba places its own), the
+perfectly competitive firm beside its market panel, the AD-AS callout, and a schedule's dots. Builder trigger words for
+these figures are in every site language (`server/builder/figures.js`).
+
+```json
+{"tool":"figure.number","vars":{"p":[2,8],"q":{"of":[20,30,40,50,60]}},"q":"Demand meets the price axis at ${=p + q/10}. What is the consumer surplus at the equilibrium, in dollars?","fig":{"kind":"supplyDemand","demand":{"at":"{=p + q/10}","slope":-0.1},"supply":{"at":"{=p - q/20}","slope":0.05},"shade":["cs"],"xtitle":"Quantity","ytitle":"Price ($)"},"answer":"q*q/20","dp":0,"unit":"$","work":["Consumer surplus is the triangle under demand and over the price.","Its height is {=p + q/10} − {p} = {=q/10}, its base {q}.","½ × {q} × {=q/10} = {=q*q/20}"]}
+{"tool":"figure.number","vars":{"s":{"of":[1,-1]},"d":{"of":[1,-1]}},"q":"Money supply and money demand both shift as shown. Write 1 if the nominal interest rate rises, 2 if it ends where it started, or 3 if it falls.","fig":{"kind":"moneyMarket","graph":"money","shift":{"supply":"{s}","demand":"{d}"}},"answer":"2 - (d - s)/2","dp":0,"work":["More money supplied lowers the interest rate; more money demanded raises it.","Compare i₁ and i₂ on the graph.","The answer is {=2 - (d - s)/2}."]}
+{"tool":"figure.number","vars":{"n":[1,4],"s":[1,900]},"q":"How many recessions (a fall from a peak to the next trough) does the graph show?","fig":{"kind":"businessCycle","cycles":"{n}","start":"peak","irregularity":0.5,"seed":"{s}","shade":false,"hide":"labels"},"answer":"n","dp":0,"work":["Find each peak.","Count each fall from a peak down to the next trough.","There are {n}."]}
+{"tool":"figure.number","vars":{"u":{"of":[4,5,6]},"e":[1,4],"k":[2,5]},"q":"The economy moves along the short-run Phillips curve from A to B, then expectations catch up and it moves to C. What is inflation at C, in %?","fig":{"kind":"phillipsCurve","nru":"{u}","expected":"{e}","u2":"{=u - 2}","pi2":"{=e + k}","movement":"along","longRun":true,"hide":"values"},"answer":"e + k","dp":0,"unit":"%","work":["C is on the long-run curve, at the natural rate.","Inflation at C is the same as at B: expected inflation has caught up.","Read B: {=e + k}%."]}
+{"tool":"figure.number","vars":{"a":{"of":[10,20,30,40,60]},"b":{"of":[10,20,40,50,60]}},"where":"a != b","q":"What is Country A's opportunity cost of 1 ton of wheat, in tons of cloth?","fig":{"kind":"possibilitiesCurve","countries":[{"name":"Country A","x":"{a}","y":"{b}"},{"name":"Country B","x":30,"y":30}],"goods":["Wheat (tons)","Cloth (tons)"]},"answer":"b/a","dp":2,"unit":"tons of cloth","work":["Country A gives up {b} tons of cloth to make {a} tons of wheat.","One ton of wheat costs {b} ÷ {a} tons of cloth.","= {=round(b/a, 2)}"]}
+{"tool":"figure.number","vars":{"p":{"of":[80,90,100,110]},"y":[80,94]},"q":"Potential GDP is 9,500 (billions of dollars). How large is the recessionary gap, potential GDP minus real GDP at the equilibrium, in billions?","fig":{"kind":"adAs","schedule":[[70,"{=100*y - 60*(70 - p)}","{=100*y + 40*(70 - p)}"],[80,"{=100*y - 60*(80 - p)}","{=100*y + 40*(80 - p)}"],[90,"{=100*y - 60*(90 - p)}","{=100*y + 40*(90 - p)}"],[100,"{=100*y - 60*(100 - p)}","{=100*y + 40*(100 - p)}"],[110,"{=100*y - 60*(110 - p)}","{=100*y + 40*(110 - p)}"],[120,"{=100*y - 60*(120 - p)}","{=100*y + 40*(120 - p)}"],[130,"{=100*y - 60*(130 - p)}","{=100*y + 40*(130 - p)}"]],"potential":9500,"xtitle":"Real GDP (billions)","ytitle":"Price level"},"answer":"9500 - 100*y","dp":0,"unit":"billion","work":["Read real GDP where AD crosses SRAS: {=100*y}.","Subtract it from potential GDP: 9,500 − {=100*y}.","= {=9500 - 100*y}"]}
+{"tool":"figure.number","vars":{"c":{"of":[3,3.5,4,4.5,5]},"q":{"of":[4,5,6,7]}},"q":"This perfectly competitive firm is in long-run equilibrium: the price is at the lowest point of ATC. What is the price?","fig":{"kind":"costCurves","market":"perfect","price":"breakeven","atc":{"q":"{q}","cost":"{c}"},"mcSlope":1,"axes":"numbered","hide":"values"},"answer":"c","dp":2,"unit":"$","work":["In the long run, entry and exit push the price to the lowest ATC.","Find where MC crosses ATC: the lowest point of ATC.","Read across: ${c}."]}
 ```
 
 ## Radians (1.1.0)

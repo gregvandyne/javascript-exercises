@@ -10262,6 +10262,58 @@ weren't saved at all unless the teacher pressed Save, which made a new share cod
   tests/unit/manip-saving-browser.test.js (Chromium: a refresh mid-draft, a draft that finished while away, autosave and
   Save as template, My boards, a room reopened after recess).
 
+## Figures 1.4.0: economics (21 Nov 2026)
+
+- **A new version, like 1.3.0.** Oomba Figures 1.4.0 is a new version folder: the core and seven packs, `econ` new
+  (`packs/econ.js`). 1.0.0 to 1.3.0 have shipped and stay byte for byte (the lock, and git at the 1.3.0 release); every
+  catalog figure 1.3.0 drew (each preset and two generator figures per generator, in every mode) draws the same bytes in
+  1.4.0, and checks and solves the same (`tests/unit/figures-v140.test.js`). New builds, the Builder's tags and the
+  Figures product pin 1.4.0; the CSP, the scanner and the screenshot worker list the eight new files. Minified with the
+  pinned esbuild; each ported file keeps its Apache 4(b) note as a legal comment.
+- **What was ported, and what is Oomba's own.** Only the models (`figures/src/ported/`: econcurves, markets, macro,
+  firm); reading the data, the checks with their "cannot be drawn" reasons, the answers (`OF.solve`), hide, print, the
+  label placement, the shift arrows, the hatching and the drawing are Oomba's (`econ.js`, `markets.js`, `macro.js`,
+  `firm.js`). The source's label placer, panel layout, settings and address format are not used.
+- **Truthful for a schematic subject.** Economics graphs have no numbers on their axes, so "to scale" means every
+  equilibrium, quantity, shift and shaded area is computed from the curves: crossings are found on the curves, a
+  control's quantities read off them, a tax's prices from the shifted supply curve, the areas from exact polygons (a
+  schedule's corners kept). Curves that never cross, cross off the graph or below 0, a control on a curve that never
+  reaches it, an inflationary gap on the three-range curve, MC dipping below the axis and countries with equal
+  opportunity costs are refused with their reason.
+- **Print needs no color.** Every curve is black in print, told apart by its name and its dash (AVC dashed, AFC dotted,
+  MR dashed, a taxed supply dashed); each shaded region is its own gray with its own hatching (consumer surplus at 45
+  degrees, producer surplus at -45, deadweight loss level, revenue upright, profit and loss each their own), a test reads
+  every hex color in the print SVG.
+- **Figures product.** Economics leaves Coming soon: `SOON` is now empty, and the menu renders no Coming soon chip (the
+  mechanism stays for a future subject; with an empty list nothing is drawn). The seven kinds have presets, options,
+  hide parts, grades (supply and demand and production possibilities 6-8 and 9-12, the rest 9-12) and one figure
+  question generator whose answer is its OF.solve value (`tests/unit/_econ-gens.js`, the same in docs/figures-api.md).
+  Names and descriptions in all 12 site languages, and the figure's own words (axis titles, Shortage, Price ceiling,
+  Recessionary gap, Peak, Efficient and the rest) in words.js. The template drafter's keywords know the economics words.
+  Builder trigger words in 12 languages, checked against look-alikes (school supplies, a market day, a balloon's
+  inflation); a kit topic stays a Canvas activity (plan.js unchanged).
+
+| Source generator | Status | Oomba | Notes |
+| --- | --- | --- | --- |
+| Supply and demand | Ported | `supplyDemand` (new) | Five schematic shapes, numbered lines or a schedule; shifts; ceiling and floor with shortage or surplus; tax and subsidy; CS, PS, DWL, revenue shaded with exact areas. The schedule's dots and the numbered shift "to the next row" are not ported (a numbered shift is how far across). |
+| Money markets | Ported | `moneyMarket` (new) | Money market, loanable funds, market for reserves (ample, limited); shifts; which way the rate and quantity move. Schematic only, as in the source. |
+| Business cycle | Ported | `businessCycle` (new) | Seeded irregular cycles, trend, turns and phases found on the wave; words or letters; recessions shaded. |
+| Phillips curve | Ported | `phillipsCurve` (new) | Along SRPC, back to LRPC, supply shock, expectations, LRPC shift; schematic or numbered in %. The percent-placement choice is not ported (numbers always carry %). |
+| Production possibilities | Ported | `possibilitiesCurve` (new) | Bowed out, straight, bowed in; points on, inside, outside; shifts and pivots; opportunity cost steps; two countries together or side by side. |
+| AD-AS | Ported | `adAs` (new) | Straight or three-range AS, gaps, shifts by size or "full", LRAS shifts, the gap braced; numbered from a schedule. The callout and the schedule's dots are not ported. |
+| Cost and revenue curves | Ported | `costCurves` (new) | Cost curves, perfect competition (five price cases or any price), monopoly with regulation (P = MC or P = ATC), monopolistic competition short and long run; profit or loss, CS, DWL. The "both regulations marked" view and the market panel beside the firm are partial: one regulated outcome per figure, no market panel. |
+
+- **Judgment calls.** The production possibilities kind is `possibilitiesCurve`, not `productionPossibilities`: Oomba
+  Canvas (frozen) takes kind names of at most 20 letters. A money market's shift also takes 1 and -1 (as the pedigree's
+  mode takes its number) so a generator can deal one, and its answer is 1, 2 or 3 (rises, the same, falls) because
+  the worksheets' keypad has no minus sign; for the same reason the AD-AS generator asks for the size of a recessionary
+  gap (`gapSize`). Economics names default to the English letters textbooks use everywhere (D, S, AD, SRAS, MC);
+  data can give its own (`labels`).
+- **Tests.** figures-v140 (frozen versions, latest pin, byte-identical 1.3.0 figures), figures-econ-markets,
+  figures-econ-macro, figures-econ-firm (computed equilibria, areas and shifts against the algebra, cannot-be-drawn,
+  print, hide, languages, the generators), figures-econ-words (12 languages and look-alikes), figures-scrub, and the
+  Economics tab and its editors in Chromium (figures-browser).
+
 ## Algebra Builder builds again: the math field's files are in the repository (22 Nov 2026)
 
 - **Why it could not build.** `tools/algebra-builder/.gitignore` said `dist/`, meant for Vite's output, but it also
