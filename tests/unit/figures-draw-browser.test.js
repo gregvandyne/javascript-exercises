@@ -233,21 +233,22 @@ test('quadrilaterals: only that kind is taken; "That shape is a parallelogram, n
 test('presets: a drawn example, and a teacher preset saved in Draw it, reopen their drawings', { skip }, async () => {
   const { ctx, page, errors } = await open('/figures/kite');
   await page.waitForSelector('#fg-figure svg');
-  await page.selectOption('#fg-preset', 'd0');
+  const preset = async sel => { await page.click('.fg-presetmenu .fg-mm-btn'); await page.click(`.fg-presetmenu ${sel}`); };
+  await preset('[data-p="d0"]');
   await page.waitForFunction(() => /Filled in/.test(document.getElementById('fg-dmsg').textContent));
   assert.deepEqual(await data(page), { AB: { sqrt: 2, times: 2 }, DA: { sqrt: 10, times: 2 }, B: 90 });
-  await page.click('[data-act="preset"]');
+  await preset('[data-mi="preset"]');
   await page.fill('dialog.ob-dialog input', 'My kite');
   await page.keyboard.press('Enter');
-  await page.waitForFunction(() => [...document.querySelectorAll('#fg-preset option')].some(o => o.textContent === 'My kite'));
+  await page.waitForFunction(() => [...document.querySelectorAll('.fg-presetmenu [data-mi="apply"]')].some(o => o.textContent === 'My kite'));
   const saved = F.listPresets(boss, 'kite').find(p => p.name === 'My kite');
   assert.deepEqual(saved.draw, { pts: [[5, 1], [7, 3], [5, 9], [3, 3]], n: 10, o: [0, 0] });
   assert.equal(saved.data._draw, undefined);
   await page.click('[data-act="mode"][data-mode="type"]');
-  await page.selectOption('#fg-preset', 'x0');
+  await preset('[data-p="x0"]');
   await page.waitForFunction(() => document.getElementById('fg-draw').hidden);
-  const id = await page.$eval('#fg-preset', s => [...s.options].find(o => o.textContent === 'My kite').value);
-  await page.selectOption('#fg-preset', id);
+  const id = await page.$$eval('.fg-presetmenu [data-mi="apply"]', s => s.find(o => o.textContent === 'My kite').dataset.p);
+  await preset(`[data-p="${id}"]`);
   await page.waitForSelector('#fg-draw:not([hidden])');
   assert.match(await page.textContent('#fg-dm'), /A\(3, 3\)/);
   assert.deepEqual(errors, []);
