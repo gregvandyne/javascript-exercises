@@ -1,0 +1,87 @@
+/* Oomba, the teaching companion (public/js/companion.js), on top of the shared chat panel (public/css/oomba-chat.css):
+   the bubble always at the bottom right (above the phone's tab bar), the panel a little wider, and what the companion's
+   answers have: the steps it took, game and book cards, web sources, a dashboard change to apply and a hand-off card.
+   On the class dashboard the bubble sits at the end of the layout bar and everything hides in Projector, Eyes up and
+   full screen (body.oc-hide). Tokens only (dark mode), logical properties (right-to-left). */
+:root{--oc-w:420px}
+@media (min-width:900px) and (max-width:1100px){:root{--oc-w:360px}}
+.oc-bubble{z-index:46}
+@media (max-width:820px){.oc-bubble{width:56px;height:56px;inset-inline-end:14px;bottom:calc(var(--oc-bottom) + 14px)}.oc-bubble .oc-mark{width:56px;height:56px}}
+body.oc-hide #oc-root,body.oc-hide .oc-bubble{display:none!important}
+/* The dashboard: the bubble ends the layout bar, never over a widget; the panel runs the full height (no top bar). */
+.dash-foot .oc-bubble{position:static;width:48px;height:48px;flex:none;box-shadow:0 3px 10px rgba(20,20,20,.18);margin-inline-start:4px}
+.dash-foot .oc-bubble .oc-mark{width:48px;height:48px}
+body.dash-page .oc{top:0}
+@media (min-width:900px){body.dash-page.oc-on .dash{margin-inline-end:var(--oc-w)}}
+.dash-w.oc-hl{box-shadow:0 0 0 4px var(--spark),0 0 0 9px color-mix(in srgb,var(--spark) 40%,transparent);transition:box-shadow .3s}
+
+.oc-ctx{display:inline-flex;align-items:center;gap:6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.oc-ctx i{flex:none;display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent-press)}
+.oc-ctx b{font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis}
+.oc-msg.bot{max-width:calc(100% - 36px)}
+.oc-p{margin:0}
+.oc-ul{margin:0;padding-inline-start:18px;display:flex;flex-direction:column;gap:4px}
+sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1px}
+
+/* The steps Oomba took. */
+.oc-did{display:flex;flex-direction:column;gap:2px;padding:6px 10px;border-radius:12px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);font-size:.86rem;font-weight:700;color:var(--text-2)}
+.oc-did ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.oc-did li{display:flex;gap:6px;align-items:flex-start}
+.oc-did li .fx{flex:none;margin-top:2px}
+.oc-sum{font-weight:600;color:var(--muted);font-size:.8rem}
+
+/* Cards. */
+.oc-cards{display:flex;flex-direction:column;gap:8px}
+.oc-card{display:flex;gap:10px;padding:8px;border-radius:14px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);min-width:0}
+.oc-card>img,.oc-card>.oc-ico{flex:none;width:64px;height:64px;border-radius:10px;object-fit:cover;background:var(--accent-soft);display:grid;place-items:center}
+.oc-card.book>img{width:54px;height:68px}
+.oc-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.oc-b h4{margin:0;font-size:.97rem;line-height:1.2;overflow-wrap:anywhere}
+.oc-b p{margin:0;font-size:.82rem;color:var(--text-2);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.oc-meta{display:flex;flex-wrap:wrap;gap:4px}
+.oc-meta span{font-size:.72rem;font-weight:800;padding:2px 7px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);color:var(--text-2)}
+.oc-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}
+.oc-acts .btn{min-height:36px;padding:3px 12px;font-size:.85rem}
+
+/* From the web. */
+.oc-web{border-radius:14px;padding:8px 10px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);display:flex;flex-direction:column;gap:6px}
+.oc-webh{display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:800;color:var(--text-2)}
+.oc-tag{padding:2px 8px;border-radius:999px;background:var(--hover);color:var(--text);font-size:.72rem}
+.oc-li{display:flex;flex-direction:column;gap:1px;padding-inline-start:24px;position:relative;min-width:0}
+.oc-li a{font-size:.88rem;font-weight:700;color:var(--text);text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+.oc-li .n{position:absolute;inset-inline-start:0;top:1px;width:18px;height:18px;border-radius:50%;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-size:.7rem;display:grid;place-items:center}
+.oc-src,.oc-warn{font-size:.76rem;color:var(--muted);font-weight:600}
+
+/* A dashboard change to apply, and a hand-off. */
+.oc-prop .oc-acts{margin-top:2px}
+.oc-state{display:flex;align-items:center;gap:6px;font-weight:700;color:var(--text-2)}
+.oc-hand{display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:14px;background:var(--card);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent-line) 55%,var(--line))}
+.oc-hand h4{margin:0;font-size:.97rem;display:flex;align-items:center;gap:6px}
+.oc-hsub{margin:0;font-size:.8rem;color:var(--muted);font-weight:700}
+.oc-hand dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:.84rem}
+.oc-hand dt{font-weight:800;color:var(--text-2)}
+.oc-hand dd{margin:0;overflow-wrap:anywhere}
+.oc-brief{font-size:.84rem;padding:8px 10px;border-radius:10px;background:var(--card-2);line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
+
+/* The message box: attach, the microphone, web search and the note under it. */
+.oc-file{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:12px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);color:var(--text);font-size:.85rem;font-weight:700;max-width:88%;overflow-wrap:anywhere}
+.oc-file small,.oc-chipfile small{font-weight:600;color:var(--muted)}
+.oc-attach[hidden],.oc-listen[hidden]{display:none}
+.oc-chipfile{display:inline-flex;align-items:center;gap:6px;padding:2px 2px 2px 10px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);font-size:.84rem;font-weight:700;max-width:100%}
+.oc-chipfile>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.oc-x{width:36px;height:36px;font-size:.85rem}
+.oc-ibtn{flex:none;width:44px;height:48px;border:0;border-radius:14px;background:transparent;color:var(--text-2);cursor:pointer;display:grid;place-items:center}
+.oc-ibtn:hover{background:var(--hover)}
+.oc-ibtn[hidden]{display:none}
+.oc-ibtn:focus-visible,.oc-pill:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.oc-mic-on{background:var(--bad, #D93B3B)!important;border-radius:999px;box-shadow:0 0 0 6px color-mix(in srgb,var(--bad, #D93B3B) 25%,transparent)}
+.oc-listen{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;background:var(--bad-bg);font-size:.86rem;font-weight:800;color:var(--text)}
+.oc-wave{display:inline-flex;gap:3px;align-items:center;height:18px}
+.oc-wave i{width:3px;border-radius:2px;background:var(--bad, #D93B3B)}
+.oc-listen small{font-weight:600;color:var(--muted);margin-inline-start:auto;white-space:nowrap}
+.oc-foot{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.oc-pill{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:2px 10px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--text-2);font:700 .8rem var(--font);cursor:pointer}
+.oc-pill.on{border-color:var(--accent-line);background:var(--accent-soft);color:var(--text)}
+.oc-pill:disabled{cursor:default;opacity:.8}
+.oc-attachnote{font-size:.78rem;color:var(--muted);font-weight:600;flex:1 1 180px}
+@media (max-width:899px){.oc-row{flex-wrap:wrap}.oc-row .oc-in{flex-basis:100%;order:-1}.oc-row .oc-send{margin-inline-start:auto}}

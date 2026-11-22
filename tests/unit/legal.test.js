@@ -164,7 +164,7 @@ test('the legal text never takes a language out of the picker; Hebrew legal page
   const r = await get('/privacy?for=grownups', { cookie: 'lang=he' });
   assert.equal(r.status, 200);
   assert.match(r.text, /<html[^>]*dir="rtl"/);
-  assert.match(r.text, /<time datetime="2026-11-20">/);
+  assert.match(r.text, /<time datetime="2026-11-22">/);
   // Every section is translated now: nothing on the Hebrew pages is marked as English.
   assert.match(r.text, /<section class="panel" id="payments"><h2>/);
   assert.match(r.text, /<section class="panel" id="stored"><h2>/);

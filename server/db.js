@@ -1242,6 +1242,19 @@ export const MIGRATIONS = [
     CREATE UNIQUE INDEX IF NOT EXISTS oomba_turns_one_live ON oomba_turns(live_key) WHERE status IN ('queued','running','interrupted');
     CREATE INDEX IF NOT EXISTS idx_oomba_turns_owner ON oomba_turns(owner_id, surface, ended_at);
     CREATE INDEX IF NOT EXISTS idx_oomba_turns_chat ON oomba_turns(chat_id);`],
+  // Oomba, the teaching companion (services/companion.js; docs/decisions.md "Oomba teaching companion"), a surface of the
+  // shared chat engine. oomba_chats.opts: a conversation's own switches as JSON ({ web: false } when the teacher turned
+  // web search off for it). oomba_files: what a teacher attached to a conversation: a document's text (read and scrubbed
+  // on upload, at most 10,000 characters; the file itself is never kept) or a picture (a cleaned JPEG with no metadata,
+  // kept only until the answer that reads it is done and never longer than a day: then bytes is emptied and only its
+  // name and size stay). Both go with the conversation (and with the account).
+  ['0108_teacher_companion', `
+    ALTER TABLE oomba_chats ADD COLUMN opts TEXT NOT NULL DEFAULT '{}';
+    CREATE TABLE IF NOT EXISTS oomba_files (id TEXT PRIMARY KEY, chat_id TEXT NOT NULL REFERENCES oomba_chats(id) ON DELETE CASCADE,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, kind TEXT NOT NULL, name TEXT NOT NULL DEFAULT '', meta TEXT NOT NULL DEFAULT '{}',
+      text TEXT, bytes BLOB, used_at INTEGER, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_oomba_files_chat ON oomba_files(chat_id);
+    CREATE INDEX IF NOT EXISTS idx_oomba_files_owner ON oomba_files(owner_id, created_at);`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

@@ -1116,6 +1116,14 @@
         "h": "Math manipulatives in class",
         "p1": "<b>Live class sessions:</b> when a teacher runs a live math manipulatives session, each student's board in it (their pieces, sticky notes, text and answers) is kept for their teacher and deleted 30 days after the session ends. Where students point (their cursors) and raised hands are not stored.",
         "p2": "<b>Drafting a board with AI:</b> a teacher can describe a lesson and have the AI draft a board for it. Only the teacher's description is sent to our AI provider, Anthropic. Student work and names are never sent."
+      },
+      "companion": {
+        "h": "Oomba, the teaching companion",
+        "p1": "Teachers with the Teacher plan can chat with Oomba from a bubble on their own pages. Students and children never see it. A teacher's messages, the text of a document they attach and a picture they attach are sent to our AI provider, Anthropic, to make the answer. Before anything is sent, we take out the names of the teacher's students, emails, phone numbers and links. Pictures that show a person are refused and never kept.",
+        "p2": "Oomba sees only what a teacher has open and safe facts about it (a class's grade and size, a dashboard's widgets), never students' names, answers or work. It changes a dashboard only after the teacher taps Apply, and the change can be undone.",
+        "p3": "When web search is on, Oomba may send short searches to Anthropic's web search. They never include names or a location, sites for adults, gambling, social networks and the like are blocked, and every search is logged for our team without the teacher's name. Pages found on the web are shown as sources Oomba hasn't checked.",
+        "p4": "A teacher can speak instead of typing: the recording is sent to {provider} to turn it into words, and the audio is never kept, by us or by them. The words go into the message box for the teacher to check.",
+        "p5": "We keep a teacher's chat, with the text of what they attached, for 60 days after it was last used (a school can choose from 7 to 365 days); a picture is deleted once Oomba has answered, and within a day at the latest. A teacher can delete the chat with New chat, and it is deleted with the account. A school admin can turn Oomba or its web search off for the school."
       }
     }
   },
@@ -4289,6 +4297,180 @@
       "needText": "Write a few words for Oomba first.",
       "slow": "That’s a lot of messages for one hour. Wait a little, then try again.",
       "other": "Something went wrong. Your message is still here: try again in a moment."
+    },
+    "companion": {
+      "sees": "Sees:",
+      "dashOf": "{name} dashboard",
+      "newChat": "New chat",
+      "newChatAsk": "Start a new chat? This conversation and anything you attached to it will be deleted.",
+      "newChatOk": "Start a new chat",
+      "hello": "Hi! I'm Oomba, your teaching sidekick. Ask me for a game, a book, a change to your dashboard or help with a lesson.",
+      "idea": {
+        "game": {
+          "label": "Find a game",
+          "text": "Give me a game for 3rd grade fractions, about 10 minutes"
+        },
+        "book": {
+          "label": "Find a book",
+          "text": "Show me a book about animals for a level M reader"
+        },
+        "dash": {
+          "label": "Change my dashboard",
+          "text": "Add a 5 minute timer and class jobs to my dashboard"
+        },
+        "plan": {
+          "label": "Plan a lesson",
+          "text": "Help me plan a 30 minute lesson on "
+        },
+        "dashTimer": {
+          "label": "Add a 5 minute timer",
+          "text": "Add a 5 minute timer"
+        },
+        "dashJobs": {
+          "label": "Add class jobs",
+          "text": "Add a 5 minute timer and class jobs"
+        }
+      },
+      "placeholder": "Ask Oomba…",
+      "leave": "You can close this. The answer will wait here.",
+      "attach": "Attach a lesson plan, a document or a picture",
+      "attachNote": "No student names, work or photos of people, please. We remove any we find.",
+      "fileNote": "The file isn't kept. Only its text stays with this chat.",
+      "imageNote": "The picture is kept only until Oomba answers, then deleted.",
+      "removeFile": "Remove the attachment",
+      "reading": "Reading {name}…",
+      "removed": "{count, plural, one {We took out # name or contact detail.} other {We took out # names or contact details.}}",
+      "pages": "{n, plural, one {# page} other {# pages}}",
+      "file": {
+        "docType": "Attach a PDF, Word (.docx), text or Markdown file, or a picture.",
+        "docBig": "That file is over 5 MB.",
+        "docPages": "That PDF has more than 10 pages.",
+        "docScan": "That PDF looks like a scan, so its text can't be read. Try a Word file or copy the text in.",
+        "docBad": "That file can't be opened. It may be damaged or locked.",
+        "docEmpty": "That file has no text to read.",
+        "docLimit": "That's all the files you can attach today. Try again tomorrow.",
+        "blocked": "Some words in that file aren't allowed here, so it wasn't attached.",
+        "imgType": "That picture can't be read. Try a JPEG or PNG.",
+        "imgBig": "That picture is too big.",
+        "imgLimit": "That's all the pictures you can attach today. Try again tomorrow.",
+        "imgPerson": "That picture shows a person, so it wasn't attached. Oomba only takes pictures without people, like a worksheet or a diagram.",
+        "imgPersonal": "That picture shows private details, like a name or a school logo, so it wasn't attached.",
+        "imgUnsafe": "That picture isn't right for a school site, so it wasn't attached.",
+        "imgResting": "Pictures can't be checked right now, so they can't be attached. Try again later.",
+        "other": "That didn't work. Try again in a moment."
+      },
+      "mic": {
+        "start": "Speak instead of typing",
+        "stop": "Stop listening",
+        "listening": "Listening… tap stop when you're done",
+        "kept": "audio isn't kept",
+        "denied": "The microphone is blocked for this site. Allow it in your browser, then try again.",
+        "failed": "Oomba couldn't hear that. Try again, or type it.",
+        "tooLong": "That was too long. Speak for up to a minute.",
+        "tooFast": "That's a lot of recordings in a minute. Wait a moment.",
+        "daily": "That's all the speaking for today. You can still type.",
+        "busy": "Speaking isn't available right now. You can still type."
+      },
+      "web": {
+        "on": "Web search on",
+        "off": "Web search off",
+        "offSchool": "Web search is off for your school",
+        "from": "From the web",
+        "notOn": "Not on Oomba",
+        "warn": "Oomba hasn't checked these pages, so look before sharing them with your class."
+      },
+      "step": {
+        "explain": "Looked up how Oomba Academy works",
+        "page": "Read this page",
+        "dash": "Read your {q} layout ({n} widgets)",
+        "games": "Searched games: {q}",
+        "books": "Searched the Story Library",
+        "booksLevel": "Matched reading level {q}",
+        "lessons": "Searched lessons and worksheets",
+        "propose": "Got a change ready for you to check",
+        "dashNo": "Couldn't plan that dashboard change",
+        "brief": "Wrote a brief",
+        "briefNo": "Couldn't write that brief",
+        "read": "Read your file ({n, plural, one {# page} other {# pages}}, text only)",
+        "readNo": "Couldn't find that file",
+        "readImage": "Looked at your picture",
+        "web": "Searched the web ({n, plural, one {# search} other {# searches}})",
+        "webNo": "Searched the web, but left out what it found",
+        "toolNo": "One step didn't work"
+      },
+      "stepsSum": "{n, plural, one {# step} other {# steps}} · {s} s",
+      "prog": {
+        "check": {
+          "now": "Taking out students' names",
+          "done": "Took out students' names"
+        },
+        "ai": {
+          "now": "Oomba is thinking",
+          "done": "Oomba thought it over"
+        },
+        "tools": {
+          "now": "Looking things up",
+          "done": "Looked things up"
+        },
+        "answer": {
+          "now": "Writing the answer",
+          "done": "Answered"
+        }
+      },
+      "card": {
+        "grade": "Grade {g}",
+        "minutes": "About {n} min",
+        "live": "Live in class",
+        "play": "Play",
+        "host": "Host live",
+        "assign": "Assign",
+        "read": "Read",
+        "open": "Open",
+        "lessonKind": "CS Quest lesson",
+        "genKind": "Figures worksheet"
+      },
+      "dash": {
+        "set": "change it: {what}",
+        "add": "add it {what}",
+        "remove": "take it off",
+        "minutes": "{n, plural, one {# minute} other {# minutes}}",
+        "apply": "Apply",
+        "notNow": "Not now",
+        "applied": "Applied",
+        "declined": "Not changed",
+        "done": "Done. Changed on your dashboard:",
+        "highlighted": "Highlighted on your screen for a moment.",
+        "openDash": "Open the dashboard"
+      },
+      "hand": {
+        "builder": "Classroom activity in the Builder",
+        "figures": "Worksheet in Figures",
+        "manipulatives": "Board in the Manipulatives",
+        "open": {
+          "builder": "Open the Builder",
+          "figures": "Open Figures",
+          "manipulatives": "Open the Manipulatives"
+        },
+        "change": "Change the brief",
+        "changeText": "Change the brief: ",
+        "grade": "Grade",
+        "practice": "Practice",
+        "help": "Help",
+        "length": "Length",
+        "fromPlan": "From your plan",
+        "filled": "Oomba filled in your brief. Check it, then press the button to make it."
+      },
+      "err": {
+        "words": "Some words in your message aren't allowed. Change them and send it again.",
+        "personal": "Leave out phone numbers, emails and links, then send it again.",
+        "brief": "Write a few words for Oomba first.",
+        "chatBusy": "Oomba is still answering your last message. Wait a moment.",
+        "otherBusy": "Oomba is still answering your last message. Wait a moment.",
+        "notFound": "This account can't use Oomba right now.",
+        "slow": "That's a lot of messages for one hour. Wait a little, then try again.",
+        "fileGone": "That attachment isn't here anymore. Attach it again.",
+        "other": "Something went wrong. Your message is still here: try again in a moment."
+      }
     }
   },
   "favorites": {
@@ -13882,6 +14064,30 @@
       "ready": "Oomba read the results.",
       "resting": "Oomba is resting right now. Here is the read from the numbers.",
       "failed": "Oomba couldn't read the results this time. Here is the read from the numbers."
+    }
+  },
+  "companion": {
+    "settings": {
+      "title": "Oomba, the teaching companion",
+      "text": "Teachers with the Teacher plan can ask Oomba for games, books, dashboard changes and lesson help from a bubble on their pages. Students never see it. Their messages, attached text and pictures go to our AI provider, Anthropic, with students' names taken out.",
+      "on": "Oomba for this school's teachers",
+      "onHint": "Off: no Oomba bubble for any teacher in this school.",
+      "web": "Web search",
+      "webHint": "On: Oomba may search the web for teaching questions and shows its sources. Searches never include names.",
+      "retentionDays": "Days a chat is kept",
+      "retentionDaysHint": "A chat nobody used for this many days is deleted, with what was attached to it. {min} to {max}; we suggest {def}.",
+      "keep": "Messages kept in a chat",
+      "keepHint": "Older messages are deleted. {min} to {max}; we suggest {def}.",
+      "send": "Messages Oomba reads back",
+      "sendHint": "How many earlier messages go to the AI with a new one. {min} to {max}, and no more than the messages kept; we suggest {def}.",
+      "steps": "Steps for one answer",
+      "stepsHint": "The most look-ups Oomba may make for one answer. {min} to {max}; we suggest {def}.",
+      "perHour": "Messages a teacher may send in an hour",
+      "perHourHint": "{min} to {max}; we suggest {def}.",
+      "err": {
+        "bounds": "Choose a number from {min} to {max}.",
+        "sendKeep": "Choose a number from {min} to {max}: no more than the messages kept."
+      }
     }
   }
 }
