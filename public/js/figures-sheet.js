@@ -263,7 +263,7 @@ const UNIT_NAMES = { mm: 'millimeter', cm: 'centimeter', m: 'meter', km: 'kilome
 function unitName(u) {
   try { const p = new Intl.NumberFormat(document.documentElement.lang || 'en', { style: 'unit', unit: UNIT_NAMES[u], unitDisplay: 'long' }).formatToParts(2).find(x => x.type === 'unit'); return p ? p.value : u; } catch { return u; }
 }
-async function reload() { if (!W) return; try { W = (await api(`/api/figures/worksheets/${encodeURIComponent(W.id)}`, { background: true })).worksheet; } catch { /* next time */ } draw(); }
+async function reload() { if (!W) return; try { W = (await api(`/api/figures/worksheets/${encodeURIComponent(W.id)}`, { background: true })).worksheet; } catch { /* next time */ } BUS.setPage(BUS.page()); draw(); }
 function showMarked() {
   half = 'sheet'; draw();
   const first = W && W.items.find(x => marked.has(x.id));

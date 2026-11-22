@@ -402,7 +402,7 @@ ${scripts.map(s => `<script type="module" src="${esc(s)}?v=${VERSION}"></script>
 // every teacher page for Teacher plan staff, on every device. Never on a bare page (a game playing, a live player, a quest
 // player) unless the page asks for it (the class dashboard's teacher screen: companion 'dash', at the end of its layout
 // bar), never on a print page or a student view of a lesson. One chat everywhere: a Figures worksheet and the
-// Manipulatives have no panel of their own, the companion offers their workflow there (their page scripts register it:
+// math boards have no panel of their own, the companion offers their workflow there (their page scripts register it:
 // public/js/oomba-bus.js). The dashboard hides it again in Projector and Eyes up (public/js/companion.js).
 const NO_COMPANION = /(^|\/)print(\/|$)|^\/class\/[^/]+\/lessons\/|^\/play\/|^\/live\/(play|frame|host|cohost)\/|^\/number-quest\/|^\/cs-quest\/play/;
 const OWN_CHAT = [];
@@ -414,7 +414,7 @@ export function companionPage(req, { bare = false, companion = null, scripts = [
   if (!companionFor(req.user)) return null;
   const fs = /^\/figures\/worksheets\/([A-Za-z0-9_-]{1,64})$/.exec(p);
   if (fs && fs[1] !== 'new') return { type: 'figures-sheet', sheetId: fs[1] };
-  if (/^\/manipulatives/.test(p)) return { type: 'tools' };
+  if (/^\/manip/.test(p)) return { type: 'tools' };
   const m = /^\/class\/([A-Za-z0-9_-]{1,64})(\/dashboard)?/.exec(p);
   if (m) return { type: m[2] ? 'dashboard' : 'class', classId: m[1] };
   const cls = typeof (req.query || {}).class === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(req.query.class) ? req.query.class : undefined;
