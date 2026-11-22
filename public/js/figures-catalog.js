@@ -104,6 +104,14 @@ export const kindOf = id => BY_ID.get(String(id || '')) || null;
 const GENS = new Map(KINDS.flatMap(k => k.gens.map(g => [g.id, { ...g, kind: k.id }])));
 /** A generator by its id ('triangle', 'reading.caliper'). */
 export const genOf = id => GENS.get(String(id || '')) || null;
+/** Earlier definitions of generators changed after worksheets were saved with them (newest first). A saved question
+ *  (its gen and seed) whose figure is what one of these dealt for that seed is still its generator's: the server marks
+ *  it and keeps its answer, worked lines and link (services/figures.js dealtFor). Only ever add to this list. */
+export const PAST_GENS = Object.freeze({
+  "freeBody": [{"id":"freeBody","tool":"figure.number","vars":{"m":[2,10],"a":[1,5]},"where":"m*a <= 40","q":"A {m} kg cart speeds up at {a} m/s². What is the net force on it?","fig":{"kind":"freeBody","body":"box","label":"{m} kg","forces":[{"name":"F","dir":"right","size":"{=m*a}"}]},"answer":"m*a","dp":0,"unit":"N","work":["F = m × a","= {m} × {a}","= {=m*a} N"],"kind":"freeBody"}],
+  "supplyDemand": [{"id":"supplyDemand","tool":"figure.number","vars":{"p":[2,8],"q":{"of":[20,30,40,50,60]}},"q":"Demand meets the price axis at ${=p + q/10}. What is the consumer surplus at the equilibrium, in dollars?","answer":"q*q/20","dp":0,"unit":"$","work":["Consumer surplus is the triangle under demand and over the price.","Its height is {=p + q/10} − {p} = {=q/10}, its base {q}.","½ × {q} × {=q/10} = {=q*q/20}"],"key":"cs","fig":{"kind":"supplyDemand","demand":{"at":"{=p + q/10}","slope":-0.1},"supply":{"at":"{=p - q/20}","slope":0.05},"shade":["cs"],"xtitle":"Quantity","ytitle":"Price ($)"},"kind":"supplyDemand"}],
+  "angles": [{"id":"angles","tool":"figure.number","vars":{"a":[20,70,5]},"q":"The two angles together make a right angle. Find x.","fig":{"kind":"angles","rays":[0,"{a}",90],"angles":[{"from":0,"to":1,"label":"{a}"},{"from":1,"to":2,"label":"x"},{"from":0,"to":2,"label":false}]},"answer":"90 - a","dp":0,"unit":"°","work":["Complementary angles add up to 90°.","x = 90° − {a}°","x = {=90 - a}°"],"kind":"angles"}]
+});
 
 /** Every number in a solve result, by its dotted path ({ sides: { CA: 5 } } -> { 'sides.CA': 5 }); arrays are skipped. */
 export function flatSolve(o, p = '', out = {}) {
