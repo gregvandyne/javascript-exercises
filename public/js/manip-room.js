@@ -600,7 +600,7 @@ function down(e) {
         e.preventDefault();
         if (e.button === 2) { objMenu(A.key, o.id, e.clientX, e.clientY); return; }
         if (e.button > 0) return;
-        const gg = R.gesture = { kind: 'obj', key: A.key, o, el: objEl, x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before };
+        const gg = R.gesture = { kind: 'obj', key: A.key, o, el: objEl, head: !!e.target.closest('.mp-ohead'), x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before };
         gg.hold = startHold(e.clientX, e.clientY, () => { if (R && R.gesture === gg && !gg.moved) { gg.held = true; objMenu(gg.key, o.id, gg.sx, gg.sy); } });
         rm.setPointerCapture(e.pointerId); return;
       }
@@ -628,6 +628,9 @@ function move(e) {
     if (Math.hypot(dx, dy) < SLOP) return;
     g.hold.cancel();
     const A0 = R.areas.get(g.key); if (!A0) { R.gesture = null; return; }
+    // A locked chart, grid or mat dragged by its body pans the room (backdrops start locked); by its handle bar, or a
+    // locked piece: a small shake.
+    if (g.kind === 'obj' && g.o.locked && !g.held && !g.head) { R.gesture = { kind: 'pan', sx: g.sx, sy: g.sy, x0: R.view.x, y0: R.view.y, moved: true }; R.view.x += dx; R.view.y += dy; applyView(); return; }
     if (g.kind === 'piece' ? g.p.locked : g.o.locked) { if (!g.held) shake(g.kind === 'piece' ? pieceElIn(g.key, g.p.id) : objElIn(g.key, g.o.id)); R.gesture = { kind: 'dead', key: g.key }; return; }
     if (g.held) { closeWheel({ focus: false }); g.before = JSON.stringify({ st: A0.st, ann: A0.ann }); }
     if (g.kind === 'piece') {

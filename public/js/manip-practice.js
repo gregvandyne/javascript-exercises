@@ -6,7 +6,7 @@
 // count is capped, and the board is laid out by one fixed recipe (a tidy grid, centered, nothing overlapping). Pure
 // functions, shared by the server (services/manipulatives.js builds the board) and the tests.
 import { pieceDefs, allPieceDefs, FRACTION_DENS, hexValue } from './manip-data.js';
-import { WORLD, OBJECTS, OBJ_HEAD, kindOf, addMinutes, parseFrac, fracRows, EQ_BAR, ANSWER } from './manip-board.js';
+import { WORLD, OBJECTS, OBJ_HEAD, kindOf, addMinutes, parseFrac, fracRows, EQ_BAR, ANSWER, startLock } from './manip-board.js';
 
 const ANS_GAP = 4;
 const objSizeOf = (slug, o) => { const K = kindOf(slug, o.k); return K ? K.size(o.st).h : 0; };
@@ -363,7 +363,7 @@ function layout(slug, T, list, title) {
     const cx = x0 + (i % cols) * (cw + GX), cy = y0 + TITLE + Math.floor(i / cols) * (ch + GY);
     if (cell.label) board.__ann.texts.push({ id: id('t'), text: cell.label, x: cx / WORLD.w, y: cy / WORLD.h, by: 't', cell: i });
     const ox = cx + Math.round((cw - cell.c.w) / 2), oy = cy + LABEL;
-    for (const o of cell.c.objects) board.objects.push({ id: id('o'), k: o.k, x: ox + o.x, y: oy + o.y, s: 1, st: { ...o.st, cell: i } });
+    for (const o of cell.c.objects) board.objects.push({ id: id('o'), k: o.k, x: ox + o.x, y: oy + o.y, s: 1, st: { ...o.st, cell: i }, ...startLock(o.k) });
     for (const p of cell.c.pieces) { const d = defs.find(x => x.kind === p.kind); if (d) board.pieces.push({ id: id('p'), kind: d.kind, x: Math.round(ox + p.x), y: Math.round(oy + p.y), rot: 0, flipped: false, filled: true, locked: false, color: d.color, label: d.label, value: d.value, w: d.w, h: d.h, cell: i, ...(p.g ? { g: p.g } : {}) }); }
     if (cell.ans) board.objects.push({ id: id('o'), k: 'answer', x: cx + Math.round((cw - cell.az.w) / 2), y: oy + cell.c.h + ANS_GAP, s: 1, st: { ...cell.ans.st, cell: i } });
   });

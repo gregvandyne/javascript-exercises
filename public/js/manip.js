@@ -1399,7 +1399,7 @@ function bindPlane() {
       e.preventDefault();
       if (e.button === 2) { soloObjMenu(o.id, e.clientX, e.clientY); return; }
       if (e.button > 0) return;
-      const gg = g = { kind: 'obj', o, el: objEl, x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before: JSON.stringify(V.st) };
+      const gg = g = { kind: 'obj', o, el: objEl, head: !!e.target.closest('.mp-ohead'), x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before: JSON.stringify(V.st) };
       gg.hold = startHold(e.clientX, e.clientY, () => { if (g !== gg || gg.moved) return; gg.held = true; soloObjMenu(o.id, gg.sx, gg.sy); });
       board.setPointerCapture(e.pointerId); return;
     }
@@ -1420,6 +1420,9 @@ function bindPlane() {
       // A piece or object starts to move after 10 px; before that it may still become a hold.
       if (Math.hypot(dx, dy) < SLOP) return;
       g.hold.cancel();
+      // A locked chart, grid or mat dragged by its body pans the board (backdrops start locked and can fill a phone's
+      // screen); by its handle bar, or a locked piece: a small shake.
+      if (g.kind === 'obj' && g.o.locked && !g.held && !g.head) { g = { kind: 'pan', sx: g.sx, sy: g.sy, x0: V.view.x, y0: V.view.y, moved: true }; V.view.x = g.x0 + dx; V.view.y = g.y0 + dy; applyView(); return; }
       if (g.kind === 'piece' ? g.p.locked : g.o.locked) { if (!g.held) shake(g.kind === 'piece' ? pieceElOf(g.p.id) : objElOf(g.o.id)); g = { kind: 'dead' }; return; }
       if (g.held) { closeWheel({ focus: false }); g.before = JSON.stringify(V.st); }
       if (g.kind === 'piece') {
