@@ -15,6 +15,7 @@ const R = await import('../../server/services/rubrics.js');
 const AI = await import('../../server/services/rubric-ai.js');
 const { tEn } = await import('../../server/i18n/index.js');
 const { createApp } = await import('../../server/app.js');
+const { deicon } = await import('../support/deicon.js');
 
 let server, base;
 test.before(async () => { server = createApp().listen(0); await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
@@ -23,8 +24,8 @@ const cookieFor = id => { let c = ''; startSession({ append: (k, v) => { c = v.s
 const as = who => async (path, { method = 'GET', body } = {}) => {
   const headers = who ? { cookie: cookieFor(who.id) } : {}; if (body !== undefined) headers['content-type'] = 'application/json';
   const r = await fetch(base + path, { method, headers, body: body !== undefined ? JSON.stringify(body) : undefined, redirect: 'manual' });
-  const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
-  return { status: r.status, text, json, headers: r.headers };
+  const raw = await r.text(); let json = null; try { json = JSON.parse(raw); } catch { /* html */ }
+  return { status: r.status, text: deicon(raw), json, headers: r.headers };   // icons read back as the emoji they stand for
 };
 
 const boss = createUser({ username: 'RubBoss', password: 'secret123', role: 'admin' });

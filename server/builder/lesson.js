@@ -125,14 +125,17 @@ const PHONE = [
 ];
 /**
  * Text -> the same text with these names, emails, phone numbers and links taken out -> { text, removed: { names,
- * emails, phones, links } }. names: from studentNames (or namesFrom for a test).
+ * emails, phones, links } }. names: from studentNames (or namesFrom for a test). contacts: false takes out only the
+ * names (a typed Builder message: its emails, phone numbers and links are refused by the Builder's screening instead).
  */
-export function scrub(text, names = []) {
+export function scrub(text, names = [], { contacts = true } = {}) {
   let s = String(text || '');
   const removed = { names: 0, emails: 0, phones: 0, links: 0 };
-  s = s.replace(EMAIL, () => { removed.emails++; return '[email]'; });
-  s = s.replace(LINK, () => { removed.links++; return '[link]'; });
-  for (const re of PHONE) s = s.replace(re, () => { removed.phones++; return '[phone]'; });
+  if (contacts) {
+    s = s.replace(EMAIL, () => { removed.emails++; return '[email]'; });
+    s = s.replace(LINK, () => { removed.links++; return '[link]'; });
+    for (const re of PHONE) s = s.replace(re, () => { removed.phones++; return '[phone]'; });
+  }
   const loose = names.filter(n => !n.strict), strict = names.filter(n => n.strict);
   const run = (list, flags, cap) => {
     for (let i = 0; i < list.length; i += 400) {

@@ -14,7 +14,8 @@
 //   { id } of CANVAS_TOPICS still works), tool the kit tool a CANVAS_TOPICS id means ('' for typed words: the Builder
 //   picks), help the support modes the activity offers, in SUPPORTS order ('watch' | 'count' | 'guided' | 'own'; at
 //   least one; an older page's single support is read as [support]), support the first of them (where it starts),
-//   played 'devices' | 'board' | 'both', grade the class's grade ('K', '1'...'8' or ''). lesson ("Your lesson", all
+//   purpose what it is for (PURPOSES: 'screen' | 'worksheet' | 'generator'), played 'devices' | 'board' | 'both' (since
+//   the four-step setup both come from "How will students use it?": usesPlan), grade the class's grade ('K', '1'...'8' or ''). lesson ("Your lesson", all
 //   optional): { goal, mistakes, vocabulary, avoid, details, doc: { name, kind, pages, text } | null }, the teacher's
 //   description split at its headings and the text read from their file (never the file itself). Only the topic, the
 //   grade and the lesson (after builder/lesson.js took out names, emails and phone numbers) reach the model: never the
@@ -144,8 +145,10 @@ export function helpOf(help, support) {
   const out = SUPPORTS.filter(s => raw.includes(s));
   return out.length ? out : ['guided'];
 }
-/** "How will it be played?" for an activity: on their own devices (results to Progress), on the board together (the
- *  teacher drives, no score), or both. Live comes later (phase 3). */
+/** How an activity is played: on their own devices (results to Progress), on the board together (the teacher drives,
+ *  no score), or both. Live comes later (phase 3). The setup no longer asks it (docs/decisions.md "Classroom setup in
+ *  four steps"): "How will students use it?" sets it (usesPlan), and every activity has Board mode under the kit's
+ *  Teacher button (Oomba Canvas 1.3.0). An older page's or saved plan's answer is still read as it was. */
 export const CANVAS_PLAYS = ['devices', 'board', 'both'];
 /** "What is it for?" (the step after "Your lesson"): practice on screen, a printable worksheet (questions with figures and
  *  an answer key on its own page), a question generator (each "New sheet" a fresh set, on screen or on paper). One or
@@ -159,6 +162,23 @@ export function purposeOf(raw) {
 }
 /** Does the purpose ask for printing (a worksheet or a generator)? */
 export const printsPurpose = purpose => purposeOf(purpose).some(p => p !== 'screen');
+/** "How will students use it?" (the setup's step 3): on their devices ('screen'), on paper ('worksheet'), or both; at
+ *  least one. A question generator is no longer a choice: it is on whenever the problems allow one (the Studio's
+ *  Activity panel switch "New ones for each student", and the teacher's "New set", use it). */
+export const CANVAS_USES = ['screen', 'worksheet'];
+/** The uses the page sent -> the plan's purpose and played: 'generator' always (the Builder writes one whenever it can);
+ *  on their devices is played 'both' (their own copy, and Board mode is always there under the Teacher button); on
+ *  paper only is played 'board' (nobody plays it on their own device: the teacher's screen, no score sent). */
+export function usesPlan(uses) {
+  const u = CANVAS_USES.filter(x => Array.isArray(uses) && uses.includes(x)), use = u.length ? u : ['screen'];
+  return { purpose: [...use, 'generator'], played: use.includes('screen') ? 'both' : 'board' };
+}
+/** A plan's purpose (also an older one's, from the five-step setup) as uses: on paper when it prints a worksheet; on
+ *  their devices when it practises on screen, or when it has no worksheet (a generator alone was used on screen too). */
+export function usesOf(plan) {
+  const pu = purposeOf(plan && plan.purpose);
+  return CANVAS_USES.filter(x => (x === 'worksheet' ? pu.includes('worksheet') : pu.includes('screen') || !pu.includes('worksheet')));
+}
 export const GRADES = ['K', '1', '2', '3', '4', '5', '6', '7', '8'];
 /** The class's grade as the steps use it: 'K', '1'...'8', or '' (a grade of another shape, or none). */
 export const gradeOf = g => { const v = String(g ?? '').trim().toUpperCase().replace(/^GRADE\s*/, '').replace(/^0+(?=\d)/, ''); return GRADES.includes(v) ? v : ''; };
@@ -309,7 +329,10 @@ function activityPlan(raw) {
   };
   // the plan flag for figures (builder/figures.js): the topic, the lesson or the note calls for science, maths or graph
   // figures, in any site language; then the FIGURE RULES go with the build
-  if (figureWords(planText(plan))) plan.figures = true;
+  // A topic that one of the kit's own tools covers ("fractions on a number line": numberline.point) stays a Canvas
+  // activity: its words alone do not make it a figure build (the lesson or the note still can).
+  const kitTopic = !!(chip || topicFor(text, grade));
+  if (figureWords(planText(kitTopic ? { ...plan, topic: null } : plan))) plan.figures = true;
   return plan;
 }
 
@@ -383,10 +406,13 @@ export function planSentence(plan, t = tEn, { files = 0 } = {}) {
     out[0] = t('buildSetup.say.activity');   // "Here is my plan: a classroom activity."
     if (plan.grade) out.push(plan.grade === 'K' ? t('buildSetup.say.gradeK') : t('buildSetup.say.grade', { grade: plan.grade }));
     if (plan.topic) out.push(t('buildSetup.say.practise', { topic: topicLabel(plan.topic, t) }));
-    const pu = purposeOf(plan.purpose);
-    if (pu.join() !== 'screen') out.push(t('buildSetup.say.purpose', { list: listOf(pu.map(p => t(`buildSetup.canvas.purpose.${p}.title`)), loc) }));
+    // how students use it (an older plan's "On the board" on screen still says so, and paper too if it had a
+    // worksheet), then the help, and fresh sets whenever the plan asks for a generator
+    const pu = purposeOf(plan.purpose), uses = usesOf(plan);
+    if (plan.played === 'board' && uses.includes('screen')) out.push(t('buildSetup.say.played.board'), ...(uses.includes('worksheet') ? [t('buildSetup.say.use.worksheet')] : []));
+    else out.push(t(`buildSetup.say.use.${uses.length > 1 ? 'both' : uses[0]}`));
     out.push(t('buildSetup.say.help', { help: listOf(helpOf(plan.help, plan.support).map(h => t(`buildSetup.canvas.help.${h}.title`)), loc) }));
-    out.push(t(`buildSetup.say.played.${plan.played}`));
+    if (pu.includes('generator')) out.push(t('buildSetup.say.fresh'));
     if (plan.lesson) out.push(t(plan.lesson.doc ? 'buildSetup.say.lessonDoc' : 'buildSetup.say.lesson'));
     if (files > 0) out.push(t('buildSetup.say.file'));
     if (plan.notes) out.push(/[.!?。！？]$/.test(plan.notes) ? plan.notes : `${plan.notes}.`);
@@ -544,13 +570,15 @@ const HELP_BRIEF = { watch: 'WATCH (the kit shows each worked answer first, then
 const PURPOSE_BRIEF = {
   screen: 'PRACTICE ON SCREEN (each student works through it on their device)',
   worksheet: 'A PRINTABLE WORKSHEET (the kit prints the questions with their figures, and the answer key on its own page)',
-  generator: 'A QUESTION GENERATOR (each New sheet is a fresh set from the generator, on screen or printed)',
+  generator: 'FRESH SETS FROM A QUESTION GENERATOR whenever the problems allow one (each new set or New sheet is fresh from "gen", on screen or printed)',
 };
 const PLAYED_BRIEF = {
   devices: 'ON THEIR OWN DEVICES: each student their own copy; the end result goes to Progress (config.board false)',
   board: 'ON THE BOARD TOGETHER: the teacher drives on the big screen, big type, no score sent (config.board true)',
-  both: 'BOTH: on their own devices (config.board false); the teacher may also show it on the board',
+  both: 'ON THEIR OWN DEVICES: each student their own copy; the end result goes to Progress (config.board false). The teacher can also show it on the board with the kit\'s Board mode (under its Teacher button): never build a board view of your own',
 };
+/** On paper only (played 'board' without practice on screen): nobody plays it on their own device. */
+const PAPER_BRIEF = 'NOT PLAYED ON STUDENTS\' DEVICES: it is used on paper (the teacher opens it to print worksheets, and may show it on the board), so nothing goes to Progress (config.board true: big type, no score sent)';
 /** The SETUP CHOICES block of a classroom activity's first build (planNote), then its LESSON CONTEXT (lessonContext). */
 function canvasNote(plan) {
   const chip = plan.topic && plan.topic.id ? topicById(plan.topic.id) : null, lines = [], help = helpOf(plan.help, plan.support);
@@ -563,8 +591,8 @@ function canvasNote(plan) {
   lines.push(help.length > 1
     ? `- Help: the activity offers ${help.map(h => HELP_BRIEF[h]).join(', ')}. Students (or the teacher on the board) switch between them with the kit's switcher -> config.supports ${JSON.stringify(help)}, config.support ${q(help[0])} (where it starts: the first of them).`
     : `- Help: ${HELP_BRIEF[help[0]]} only -> config.support ${q(help[0])}, config.supports ${JSON.stringify(help)} (no switcher).`);
-  lines.push(`- How it is played: ${PLAYED_BRIEF[plan.played]}. Not live.`);
   const pu = purposeOf(plan.purpose);
+  lines.push(`- How it is played: ${plan.played === 'board' && !pu.includes('screen') && pu.includes('worksheet') ? PAPER_BRIEF : PLAYED_BRIEF[plan.played]}. Not live.`);
   lines.push(`- What it is for: ${pu.map(p => PURPOSE_BRIEF[p]).join(', ')} -> config.purpose ${JSON.stringify(pu)}.`);
   if (plan.figures) lines.push('- Figures: the topic or the lesson calls for science, maths or graph figures: use figure questions drawn by Oomba Figures (the FIGURE RULES), correct to scale.');
   if (plan.notes) lines.push(`- Their note: ${q(plan.notes)}`);
@@ -576,9 +604,8 @@ function canvasNote(plan) {
     plan.lesson ? 'Write task.title and task.say in the builder\'s language (config.lang too). Leave steps empty: the kit writes them in every language. Hints: the kit\'s own, unless the lesson context names common mistakes; then up to 3 short hints of your own for that tool that speak to those mistakes, in the builder\'s language.'
       : 'Write task.title and task.say in the builder\'s language (config.lang too). Leave steps and hints empty: the kit writes them in every language.',
   ];
-  if (printsPurpose(pu)) how.push(pu.includes('generator')
-    ? 'It prints worksheets and makes fresh sets: give a generator ("gen"), so each New sheet is a new set, and make sure every problem has a worked answer for the answer key (figure questions: "work" lines ending on the answer). Never build printing of your own: the kit prints.'
-    : 'It prints a worksheet: give a generator ("gen") or at least config.count problems, each with a worked answer for the answer key (figure questions: "work" lines ending on the answer). Never build printing of your own: the kit prints.');
+  if (pu.includes('worksheet')) how.push('It prints a worksheet: give a generator ("gen") or at least config.count problems, each with a worked answer for the answer key (figure questions: "work" lines ending on the answer). Never build printing of your own: the kit prints.');
+  if (pu.includes('generator')) how.push(`Fresh sets whenever possible: give a generator ("gen") when the problems allow one, so each new set${pu.includes('worksheet') ? ' and each New sheet' : ''} is fresh, with a worked answer for every problem (figure questions: "work" lines ending on the answer). If no generator fits these problems, give at least config.count fixed problems and leave "generator" out of config.purpose (the kit refuses "generator" without "gen").${pu.includes('worksheet') ? '' : ' Never build printing of your own: the kit prints.'}`);
   if (plan.lesson) how.push('Use the LESSON CONTEXT below to choose the tool, the numbers, the difficulty and the words of task.title and task.say (its goal and its words or examples first). If it asks for something the kit cannot check, use the nearest tool and say so in one short sentence.');
   return `SETUP CHOICES (the builder picked these in the setup steps before this chat; their first message says the same in words).
 ${lines.join('\n')}

@@ -9,7 +9,9 @@
 // the owner's own (F.foldersOf) or shared with their school (F.sharedWith, F.gamesIn: only games they can open), Assign
 // is for school staff, sharing needs a school one is staff of, and students never see a teacher's folders or Assign
 // (the class page's shelf is behind its manager check; a student's Build shelf holds only their own folders).
+import * as LIB from '../services/library.js';
 import { html, raw } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { coverArt, emptyState } from '../views/components.js';
 import { accountKind } from '../auth.js';
 import * as S from '../services/schools.js';
@@ -30,6 +32,7 @@ const ICON = {
   folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
   assigned: '<path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/>',
   find: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+  book: '<path d="M4 5a2 2 0 0 1 2-2h5v17H6a2 2 0 0 0-2 2z"/><path d="M20 5a2 2 0 0 0-2-2h-5v17h5a2 2 0 0 1 2 2z"/>',
   students: '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14 20c0-2.5 1.5-4.5 3.5-5"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
 };
@@ -115,7 +118,8 @@ function side(req, ctx, sel, mine, shared) {
     ${top}
     <nav class="shelf-nav" aria-label="${ctx.kind === 'build' ? t('folders.myGamesFolders') : t('folders.sideClass')}">
       <ul class="shelf-group${ctx.kind === 'class' ? ' shelf-cltop' : ''}">${first.map(it => html`<li>${item(req, ctx, sel, it)}</li>`)}
-        ${oombaOn(ctx) ? html`<li>${item(req, ctx, sel, { key: 'oomba', href: `${ctx.base}?view=oomba`, icon: 'find', name: t('folders.findOomba') })}</li>` : ''}</ul>
+        ${oombaOn(ctx) ? html`<li>${item(req, ctx, sel, { key: 'oomba', href: `${ctx.base}?view=oomba`, icon: 'find', name: t('folders.findOomba') })}</li>` : ''}
+        ${ctx.kind === 'class' && ctx.staff ? html`<li>${item(req, ctx, sel, { key: 'library', href: `/library?class=${ctx.c.id}`, icon: 'book', name: t('library.findStories') })}</li>` : ''}</ul>
       ${ctx.folders ? html`<p class="shelf-lab" id="shelf-lab-mine">${t('folders.title')}</p>
       ${mine.length ? html`<ul class="shelf-group" aria-labelledby="shelf-lab-mine"${mine.length > 1 ? html` data-reorder="/api/game-folders/order" data-moved="${movedTpl(t)}" aria-describedby="shelf-order"` : ''}>${mine.map(f => html`<li data-id="${f.id}">${item(req, ctx, sel, fItem(f), { grip: mine.length > 1, drop: f.id })}</li>`)}</ul>
       <p class="small muted shelf-drophint">${t('folders.dropHint')}</p>
@@ -139,13 +143,13 @@ const menu = (label, items) => html`<details class="shelf-menu"><summary class="
 function assignHere(req, ctx, g, folderId) {
   const t = req.t, c = ctx.c, u = req.user;
   const label = t('folders.assignTo', { class: c.name });
-  if (setGame(g) || liveOnly(g) || !F.assignable(u, g, c).ok) return html`<a class="btn btn-primary" href="/teach/assign?id=${g.id}&amp;class=${c.id}">📌 ${label}</a>`;
-  if (F.assignmentOf(c.id, g.id)) return html`<span class="stchip good shelf-done">✅ ${t('folders.assignedChip')}</span>`;
-  return html`<details class="shelf-pop"><summary class="btn btn-primary">📌 ${label}</summary>
+  if (setGame(g) || liveOnly(g) || !F.assignable(u, g, c).ok) return html`<a class="btn btn-primary" href="/teach/assign?id=${g.id}&amp;class=${c.id}">${ico('📌', { size: 18 })} ${label}</a>`;
+  if (F.assignmentOf(c.id, g.id)) return html`<span class="stchip good shelf-done">${ico('✅', { size: 18 })} ${t('folders.assignedChip')}</span>`;
+  return html`<details class="shelf-pop"><summary class="btn btn-primary">${ico('📌', { size: 18 })} ${label}</summary>
     <form class="shelf-pop-panel" data-api="/api/teach/assign-game" novalidate><input type="hidden" name="gameId" value="${g.id}"><input type="hidden" name="classId" value="${c.id}">${folderId ? html`<input type="hidden" name="folder" value="${folderId}">` : ''}
       <div class="field"><label for="sa-d-${g.id}">${t('lessons.assign.due')}</label><input class="input" id="sa-d-${g.id}" name="dueAt" type="date"></div>
       ${gcAssignField(req, c)}
-      <button class="btn btn-primary" type="submit">📌 ${t('teach.assign.submit')}</button><p class="form-err err" role="alert"></p></form></details>`;
+      <button class="btn btn-primary" type="submit">${ico('📌', { size: 18 })} ${t('teach.assign.submit')}</button><p class="form-err err" role="alert"></p></form></details>`;
 }
 
 /** One game: cover, title, what it is, Edit (one's own, on Build), Play, Assign, and ⋯ (Remove from folder, Save to
@@ -156,11 +160,11 @@ function gameRow(req, ctx, g0, { folder = null, own = false, grip = false } = {}
   const kind = g.source === 'seed' ? `🦉 ${t('folders.oombaGame')}` : mineGame ? `🛠️ ${t('folders.myGame')}` : '';
   const assign = !ctx.staff ? ''
     : ctx.kind === 'class' ? assignHere(req, ctx, g0, folder && folder.id)
-      : folder || g.source === 'seed' || g.published_version_id ? html`<a class="btn btn-primary" href="/teach/assign?id=${g.id}">📌 ${t('folders.assign')}</a>` : '';
+      : folder || g.source === 'seed' || g.published_version_id ? html`<a class="btn btn-primary" href="/teach/assign?id=${g.id}">${ico('📌', { size: 18 })} ${t('folders.assign')}</a>` : '';
   const more = [
     folder && own ? html`<form data-api="/api/game-folders/${folder.id}/games/${g.id}/delete" data-reload><button class="btn" type="submit">${t('folders.removeGame')}</button></form>` : '',
-    html`<a class="btn" href="/build/save?id=${g.id}">📁 ${folder && own ? t('folders.saveAnother') : t('folders.save')}</a>`,
-    ctx.kind === 'build' && mineGame ? html`<button class="btn" type="button" data-rename>🏷️ ${t('build.rename')}</button><button class="btn mg-del" type="button" data-delete>🗑️ ${t('build.delete')}</button>` : '',
+    html`<a class="btn" href="/build/save?id=${g.id}">${ico('📁', { size: 18 })} ${folder && own ? t('folders.saveAnother') : t('folders.save')}</a>`,
+    ctx.kind === 'build' && mineGame ? html`<button class="btn" type="button" data-rename>${ico('🏷️', { size: 18 })} ${t('build.rename')}</button><button class="btn mg-del" type="button" data-delete>${ico('🗑️', { size: 18 })} ${t('build.delete')}</button>` : '',
   ];
   const live = mineGame && g.status === 'published' && g.published_version_id;
   return html`<li class="mygame shelf-game" data-id="${g.id}" data-title="${g.title}" data-published="${live ? '1' : ''}"${folder && own ? html` data-folder="${folder.id}" data-folder-name="${folder.name}"` : ''}>
@@ -170,7 +174,7 @@ function gameRow(req, ctx, g0, { folder = null, own = false, grip = false } = {}
       ${kind ? html`<p class="small muted shelf-kind">${kind}</p>` : ''}
       ${mineGame && ctx.status ? ctx.status(g0) : ''}</div>
     <div class="mg-actions"><div class="mg-row">
-      ${mineGame && ctx.kind === 'build' ? html`<a class="btn" href="/studio/${g.id}">✏️ ${t('game.edit')}</a>` : ''}
+      ${mineGame && ctx.kind === 'build' ? html`<a class="btn" href="/studio/${g.id}">${ico('✏️', { size: 18 })} ${t('game.edit')}</a>` : ''}
       ${!mineGame || ctx.kind !== 'build' || g.published_version_id ? html`<a class="btn" href="${play}">${PLAY} ${t('game.play')}</a>` : ''}
       ${assign}
       ${menu(t('folders.more', { name: g.title }), more)}
@@ -179,7 +183,7 @@ function gameRow(req, ctx, g0, { folder = null, own = false, grip = false } = {}
 
 /** The right side's head: the name, a line under it, and its buttons. */
 const head = (title, meta, tools) => html`<div class="shelf-head"><div class="shelf-title"><h2 id="shelf-h" tabindex="-1" dir="auto">${title}</h2>${meta ? html`<p class="small muted">${meta}</p>` : ''}</div>${tools ? html`<div class="shelf-tools">${tools}</div>` : ''}</div>`;
-const findBtn = (t, ctx = null) => html`<a class="btn" href="${ctx && oombaOn(ctx) ? `${ctx.base}?view=oomba` : '/learn'}"${ctx && oombaOn(ctx) ? raw(' data-shelf-go') : ''}>🦉 ${t('folders.findOomba')}</a>`;
+const findBtn = (t, ctx = null) => html`<a class="btn" href="${ctx && oombaOn(ctx) ? `${ctx.base}?view=oomba` : '/learn'}"${ctx && oombaOn(ctx) ? raw(' data-shelf-go') : ''}>${ico('🦉', { size: 18 })} ${t('folders.findOomba')}</a>`;
 
 /** One Oomba game on the right side: cover, title, "Subject · Grades" (and Live), Try it, the main action (Host live for
  *  a live game, else Assign) and ⋯ (Save to folder; Assign for a live game that can also be assigned). */
@@ -190,17 +194,17 @@ function oombaRow(req, ctx, g0, idp) {
   const grades = gr && gr.from === gr.to ? (gr.from === 'K' ? t('learn.tab.gradeK') : t('learn.tab.gradeN', { n: gr.from })) : gr ? t('learn.grades', gr) : '';
   const meta = info ? t('learn.tab.meta', { subject: t(`learn.tab.subjects.${info.subject}`), grades }) : '';
   const assign = ctx.kind === 'class' ? assignHere(req, ctx, g0, null)
-    : html`<a class="btn btn-primary" href="/teach/assign?game=${g0.slug}">📌 ${t('learn.tab.assign')}</a>`;
-  const main = live ? html`<a class="btn btn-hot" href="/live?mode=${lg.mode}">📡 ${t('learn.tab.host')}</a>` : lg && !lg.play ? '' : assign;
+    : html`<a class="btn btn-primary" href="/teach/assign?game=${g0.slug}">${ico('📌', { size: 18 })} ${t('learn.tab.assign')}</a>`;
+  const main = live ? html`<a class="btn btn-hot" href="/live?mode=${lg.mode}">${ico('📡', { size: 18 })} ${t('learn.tab.host')}</a>` : lg && !lg.play ? '' : assign;
   const more = [
-    live && !liveOnly(g0) ? (ctx.kind === 'class' ? html`<a class="btn" href="/teach/assign?id=${g0.id}&amp;class=${ctx.c.id}">📌 ${t('folders.assignTo', { class: ctx.c.name })}</a>` : html`<a class="btn" href="/teach/assign?game=${g0.slug}">📌 ${t('learn.tab.assign')}</a>`) : '',
-    html`<a class="btn" href="/build/save?id=${g0.id}">📁 ${t('folders.save')}</a>`,
+    live && !liveOnly(g0) ? (ctx.kind === 'class' ? html`<a class="btn" href="/teach/assign?id=${g0.id}&amp;class=${ctx.c.id}">${ico('📌', { size: 18 })} ${t('folders.assignTo', { class: ctx.c.name })}</a>` : html`<a class="btn" href="/teach/assign?game=${g0.slug}">${ico('📌', { size: 18 })} ${t('learn.tab.assign')}</a>`) : '',
+    html`<a class="btn" href="/build/save?id=${g0.id}">${ico('📁', { size: 18 })} ${t('folders.save')}</a>`,
   ];
   const tryHref = `/play/${lg && lg.solo ? lg.solo : g0.slug}`;
   return html`<li class="mygame shelf-game oomba-game" data-id="${g0.id}" data-q="${`${g.title} ${meta}`.toLowerCase()}">
     <a class="mg-cover" href="/g/${g0.slug}" tabindex="-1" aria-hidden="true">${coverArt(g, '')}</a>
     <div class="mg-body"><h3><a href="/g/${g0.slug}" dir="auto">${g.title}</a></h3>
-      <p class="small muted shelf-kind">${meta}${live ? html` · <span class="oomba-live">📡 ${t('folders.oomba.live')}</span>` : ''}</p></div>
+      <p class="small muted shelf-kind">${meta}${live ? html` · <span class="oomba-live">${ico('📡', { size: 18 })} ${t('folders.oomba.live')}</span>` : ''}</p></div>
     <div class="mg-actions"><div class="mg-row">
       <a class="btn" href="${tryHref}">${PLAY} ${t('learn.tab.try')}</a>
       ${main}
@@ -217,7 +221,7 @@ function oombaPane(req, ctx, { idp = 'oo', heading = 'shelf-h' } = {}) {
   const list = all.filter(g => oombaFits(SHELF_INFO[g.slug], f) && (!q || games.localizeGame(g).title.toLowerCase().includes(q)));
   const chip = (on, href, label, emoji = '') => html`<a class="chip${on ? ' on' : ''}" href="${href}" data-shelf-go${on ? raw(' aria-current="true"') : ''}>${emoji ? html`<span aria-hidden="true">${emoji}</span> ` : ''}${label}</a>`;
   const gradeLabel = g => (g === 'K' ? t('learn.tab.gradeK') : t('learn.tab.gradeN', { n: g }));
-  return html`<div class="shelf-head"><div class="shelf-title"><h2 id="${heading}" tabindex="-1">🦉 ${t('folders.oomba.title')}</h2><p class="small muted" data-oomba-count data-one="${t('folders.gamesN', { count: 1 })}" data-many="${t('folders.gamesN', { count: 2 }).replace('2', '{n}')}">${t('folders.gamesN', { count: list.length })}</p></div></div>
+  return html`<div class="shelf-head"><div class="shelf-title"><h2 id="${heading}" tabindex="-1">${ico('🦉', { size: 28 })} ${t('folders.oomba.title')}</h2><p class="small muted" data-oomba-count data-one="${t('folders.gamesN', { count: 1 })}" data-many="${t('folders.gamesN', { count: 2 }).replace('2', '{n}')}">${t('folders.gamesN', { count: list.length })}</p></div></div>
     <form class="oomba-bar" method="get" action="${ctx.base}" role="search" data-oomba-form>
       <input type="hidden" name="view" value="oomba">${f.subject ? html`<input type="hidden" name="subject" value="${f.subject}">` : ''}
       <label class="sr-only" for="${idp}-q">${t('folders.oomba.search')}</label>
@@ -238,12 +242,12 @@ function oombaPane(req, ctx, { idp = 'oo', heading = 'shelf-h' } = {}) {
 function assignAll(req, ctx, f, list, idp = 'sa-all-d') {
   const t = req.t, c = ctx.c;
   if (!ctx.staff || !list.length) return '';
-  return html`<details class="shelf-pop"><summary class="btn">📌 ${t('folders.assignAll', { count: list.length })}</summary>
+  return html`<details class="shelf-pop"><summary class="btn">${ico('📌', { size: 18 })} ${t('folders.assignAll', { count: list.length })}</summary>
     <form class="shelf-pop-panel" data-api="/api/teach/assign-folder" novalidate><input type="hidden" name="folderId" value="${f.id}"><input type="hidden" name="classId" value="${c.id}">
       <p class="small muted">${t('folders.assignAllNote', { class: c.name })}</p>
       <div class="field"><label for="${idp}">${t('lessons.assign.due')}</label><input class="input" id="${idp}" name="dueAt" type="date"></div>
       ${gcAssignField(req, c)}
-      <button class="btn btn-primary" type="submit">📌 ${t('folders.assignAll', { count: list.length })}</button><p class="form-err err" role="alert"></p></form></details>`;
+      <button class="btn btn-primary" type="submit">${ico('📌', { size: 18 })} ${t('folders.assignAll', { count: list.length })}</button><p class="form-err err" role="alert"></p></form></details>`;
 }
 
 /** The owner's folder menu: Rename, Share or Stop sharing, Move up / down, Delete. */
@@ -253,13 +257,13 @@ function folderMenu(req, ctx, f, mine, idp = 'shelf') {
   const share = !schools.length ? ''
     : f.school_id ? html`<form data-api="/api/game-folders/${f.id}/share" data-reload><input type="hidden" name="schoolId" value=""><button class="btn" type="submit">${t('folders.unshare')}</button></form>`
       : html`<form class="shelf-share" data-api="/api/game-folders/${f.id}/share" data-reload>${schools.length > 1 ? html`<label class="sr-only" for="${idp}-share-s">${t('folders.shareTitle')}</label><select class="input" id="${idp}-share-s" name="schoolId">${schools.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select>` : html`<input type="hidden" name="schoolId" value="${schools[0].id}">`}
-        <button class="btn" type="submit">🤝 ${schools.length > 1 ? t('folders.shareTitle') : t('folders.shareWith', { school: schools[0].name })}</button></form>`;
+        <button class="btn" type="submit">${ico('🤝', { size: 18 })} ${schools.length > 1 ? t('folders.shareTitle') : t('folders.shareWith', { school: schools[0].name })}</button></form>`;
   return menu(t('folders.more', { name: f.name }), [
-    html`<form class="shelf-rename" data-api="/api/game-folders/${f.id}" data-reload><label for="${idp}-rn">🏷️ ${t('build.rename')}</label><div class="row"><input class="input grow" id="${idp}-rn" name="name" value="${f.name}" maxlength="60"><button class="btn btn-primary" type="submit">${t('school.save')}</button></div></form>`,
+    html`<form class="shelf-rename" data-api="/api/game-folders/${f.id}" data-reload><label for="${idp}-rn">${ico('🏷️', { size: 18 })} ${t('build.rename')}</label><div class="row"><input class="input grow" id="${idp}-rn" name="name" value="${f.name}" maxlength="60"><button class="btn btn-primary" type="submit">${t('school.save')}</button></div></form>`,
     share, schools.length ? html`<p class="small muted">${t('folders.shareNote')}</p>` : '',
     i > 0 ? html`<form data-api="/api/game-folders/${f.id}/up" data-reload><button class="btn" type="submit">↑ ${t('folders.moveUp')}</button></form>` : '',
     i >= 0 && i < mine.length - 1 ? html`<form data-api="/api/game-folders/${f.id}/down" data-reload><button class="btn" type="submit">↓ ${t('folders.moveDown')}</button></form>` : '',
-    html`<form data-api="/api/game-folders/${f.id}/delete" data-confirm="${t('folders.deleteConfirm', { name: f.name })}">${back}<button class="btn btn-danger" type="submit">🗑️ ${t('folders.delete')}</button></form>`,
+    html`<form data-api="/api/game-folders/${f.id}/delete" data-confirm="${t('folders.deleteConfirm', { name: f.name })}">${back}<button class="btn btn-danger" type="submit">${ico('🗑️', { size: 18 })} ${t('folders.delete')}</button></form>`,
   ]);
 }
 
@@ -270,7 +274,7 @@ function folderPane(req, ctx, sel, mine) {
   const meta = [t('folders.gamesN', { count: list.length }), own ? '' : t('folders.by', { name: f.owner_name || '' }), school ? t('folders.sharedWithSchool', { school }) : ''].filter(Boolean).join(' · ');
   const tools = [
     ctx.kind === 'class' ? assignAll(req, ctx, f, list) : findBtn(t, ctx),
-    own ? folderMenu(req, ctx, f, mine) : html`<form data-api="/api/game-folders/${f.id}/copy">${ctx.c ? html`<input type="hidden" name="classId" value="${ctx.c.id}">` : ''}<button class="btn btn-primary" type="submit">📁 ${t('folders.copy')}</button></form>`,
+    own ? folderMenu(req, ctx, f, mine) : html`<form data-api="/api/game-folders/${f.id}/copy">${ctx.c ? html`<input type="hidden" name="classId" value="${ctx.c.id}">` : ''}<button class="btn btn-primary" type="submit">${ico('📁', { size: 18 })} ${t('folders.copy')}</button></form>`,
   ];
   const drag = own && list.length > 1;
   return html`${head(f.name, meta, tools)}
@@ -334,6 +338,7 @@ function libList(req, ctx, mine, shared, myGames) {
       ${shared.map(f => libItem(req, { href: fHref(f), emo: '🤝', name: f.name, sub: t('folders.phone.byReadOnly', { name: f.owner_name || '' }), count: f.games }))}
       ${libItem(req, { href: `${base}?view=students`, emo: '🎒', name: t('folders.studentShared'), sub: t('folders.phone.studentsSub', { class: c.name }), count: ctx.students.count })}
       ${ctx.staff ? libItem(req, { href: `${base}?view=oomba`, emo: '🦉', name: t('folders.phone.oomba'), sub: t('folders.phone.oombaSub') }) : ''}
+      ${ctx.staff ? libItem(req, { href: `/library?class=${c.id}`, emo: '📚', name: t('library.findStories'), sub: t('library.door.staff', { count: LIB.books().length }) }) : ''}
     </ul>`;
 }
 
@@ -368,9 +373,9 @@ function libGame(req, ctx, g0, i, ids, { folder = null, own = false, reorder = f
     toggle = libToggle(req, ctx, g0, folder && folder.id);
     acts = html`${menu(t('folders.more', { name: g.title }), [
       html`<a class="btn" href="${play}">${PLAY} ${t('game.play')}</a>`,
-      ctx.staff && (setGame(g0) || liveOnly(g0)) ? html`<a class="btn" href="/teach/assign?id=${g.id}&amp;class=${ctx.c.id}">📌 ${t('folders.assignTo', { class: ctx.c.name })}</a>` : '',
+      ctx.staff && (setGame(g0) || liveOnly(g0)) ? html`<a class="btn" href="/teach/assign?id=${g.id}&amp;class=${ctx.c.id}">${ico('📌', { size: 18 })} ${t('folders.assignTo', { class: ctx.c.name })}</a>` : '',
       folder && own ? html`<form data-api="/api/game-folders/${folder.id}/games/${g.id}/delete" data-reload><button class="btn" type="submit">${t('folders.removeGame')}</button></form>` : '',
-      html`<a class="btn" href="/build/save?id=${g.id}">📁 ${folder && own ? t('folders.saveAnother') : t('folders.save')}</a>`,
+      html`<a class="btn" href="/build/save?id=${g.id}">${ico('📁', { size: 18 })} ${folder && own ? t('folders.saveAnother') : t('folders.save')}</a>`,
     ])}`;
   }
   return html`<li class="lib-row${reorder ? ' is-moving' : ''}" data-id="${g.id}">
@@ -384,22 +389,22 @@ function libFolder(req, ctx, sel, mine, myGames) {
   const t = req.t, base = ctx.base, reorder = String(req.query.reorder || '') === '1';
   const back = html`<a class="lib-back" href="${base}?view=library">${BACK} ${t('folders.phone.library')}</a>`;
   if (sel.view === 'all') {
-    return html`${back}<div class="lib-head"><div class="lib-title"><h2 id="lib-h" dir="auto">🛠️ ${t('folders.allGames')}</h2><p>${t('folders.gamesN', { count: myGames.length })}</p></div></div>
+    return html`${back}<div class="lib-head"><div class="lib-title"><h2 id="lib-h" dir="auto">${ico('🛠️', { size: 28 })} ${t('folders.allGames')}</h2><p>${t('folders.gamesN', { count: myGames.length })}</p></div></div>
       ${myGames.length ? html`<ul class="lib-list">${myGames.map((g, i) => libGame(req, ctx, g, i, []))}</ul>`
-        : html`<div class="cl-none lib-none"><span class="emo" aria-hidden="true">🌱</span><div><b>${t('folders.phone.allEmpty')}</b><p class="small"><a href="/build/new">${t('folders.buildNew')}</a></p></div></div>`}`;
+        : html`<div class="cl-none lib-none"><span class="emo" aria-hidden="true">${ico('🌱', { size: 32 })}</span><div><b>${t('folders.phone.allEmpty')}</b><p class="small"><a href="/build/new">${t('folders.buildNew')}</a></p></div></div>`}`;
   }
   const f = sel.folder, own = sel.own, list = F.gamesIn(req.user, f.id), ids = list.map(g => g.id);
   const canMove = own && list.length > 1, moving = canMove && reorder;
   const school = f.school_id ? (S.getSchool(f.school_id) || {}).name || '' : '';
   const meta = [t('folders.gamesN', { count: list.length }), own ? (school ? `🤝 ${t('folders.sharedWithSchool', { school })}` : '') : t('folders.phone.byReadOnly', { name: f.owner_name || '' })].filter(Boolean).join(' · ');
   const more = own ? folderMenu(req, ctx, f, mine, 'lib')
-    : menu(t('folders.more', { name: f.name }), [html`<form data-api="/api/game-folders/${f.id}/copy"><input type="hidden" name="classId" value="${ctx.c.id}"><button class="btn" type="submit">📁 ${t('folders.copy')}</button></form>`]);
-  const tools = moving ? html`<a class="btn btn-primary lib-tool" href="${base}?folder=${encodeURIComponent(f.id)}">✓ ${t('folders.phone.done')}</a>`
+    : menu(t('folders.more', { name: f.name }), [html`<form data-api="/api/game-folders/${f.id}/copy"><input type="hidden" name="classId" value="${ctx.c.id}"><button class="btn" type="submit">${ico('📁', { size: 18 })} ${t('folders.copy')}</button></form>`]);
+  const tools = moving ? html`<a class="btn btn-primary lib-tool" href="${base}?folder=${encodeURIComponent(f.id)}">${ico('✓', { size: 18 })} ${t('folders.phone.done')}</a>`
     : html`${ctx.kind === 'class' ? assignAll(req, ctx, f, list, 'lib-all-d') : ''}${canMove ? html`<a class="btn lib-tool" href="${base}?folder=${encodeURIComponent(f.id)}&amp;reorder=1">↕ ${t('folders.phone.reorder')}</a>` : ''}`;
   return html`${back}<div class="lib-head"><div class="lib-title lib-ftitle"><h2 id="lib-h" dir="auto"><span aria-hidden="true">${own ? '📁' : '🤝'}</span> ${f.name}</h2><p dir="auto">${meta}</p></div><div class="lib-fmore">${more}</div>
     ${String(tools).trim() ? html`<div class="lib-tools">${tools}</div>` : ''}</div>
     ${list.length ? html`<ul class="lib-list">${list.map((g, i) => libGame(req, ctx, g, i, ids, { folder: f, own, reorder: moving }))}</ul>`
-      : html`<div class="cl-none lib-none"><span class="emo" aria-hidden="true">📁</span><div><b>${t('folders.phone.collectionEmpty')}</b><p class="small muted">${own ? t('folders.emptyText') : t('folders.sharedEmpty')}</p></div></div>`}`;
+      : html`<div class="cl-none lib-none"><span class="emo" aria-hidden="true">${ico('📁', { size: 32 })}</span><div><b>${t('folders.phone.collectionEmpty')}</b><p class="small muted">${own ? t('folders.emptyText') : t('folders.sharedEmpty')}</p></div></div>`}`;
 }
 
 /** The phone's Games tab: the two-part switch and the picked part. */

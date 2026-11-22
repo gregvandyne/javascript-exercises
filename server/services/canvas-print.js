@@ -23,19 +23,32 @@ export function canvasPrintable(html) {
   const pu = d.data.config && Array.isArray(d.data.config.purpose) ? d.data.config.purpose : [];
   return pu.some(x => PURPOSE_PRINTS.includes(x)) ? { v, data: d.data } : null;
 }
-/** The frame's request -> { ok, doc: { k, seed, n, paper, key } } or { ok: false, code: 'bad' }. Numbers only. */
+/** The frame's request -> { ok, doc: { k, seed, n, paper, key } } (a sheet dealt from its number) or { ok, doc: { k,
+ *  set, n, paper, key } } (1.4.0: a teacher's saved worksheet, by its code; the route reads its questions) or
+ *  { ok: false, code: 'bad' }. Numbers, a fixed paper word and a set's code only. */
 export function cleanCanvasPrintDoc(raw) {
   const r = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : null;
-  if (!r || r.k !== 'canvas' || !Number.isInteger(r.seed) || r.seed < 1 || r.seed > 999999 || !Number.isInteger(r.n) || r.n < 1 || r.n > 30) return { ok: false, code: 'bad' };
+  if (!r || r.k !== 'canvas' || !Number.isInteger(r.n) || r.n < 1 || r.n > 30) return { ok: false, code: 'bad' };
+  const bySet = r.set !== undefined;
+  if (bySet ? typeof r.set !== 'string' || !/^s-[a-z0-9]{10}$/.test(r.set) || r.seed !== undefined : !Number.isInteger(r.seed) || r.seed < 1 || r.seed > 999999) return { ok: false, code: 'bad' };
   if (r.paper !== undefined && r.paper !== 'a4' && r.paper !== 'letter') return { ok: false, code: 'bad' };
-  const extra = Object.keys(r).filter(k => !['k', 'seed', 'n', 'paper', 'key'].includes(k));
+  const extra = Object.keys(r).filter(k => !['k', 'seed', 'set', 'n', 'paper', 'key'].includes(k));
   if (extra.length) return { ok: false, code: 'bad' };
-  return { ok: true, doc: { k: 'canvas', seed: r.seed, n: r.n, paper: r.paper === 'letter' ? 'letter' : 'a4', key: r.key === true } };
+  return { ok: true, doc: { k: 'canvas', ...(bySet ? { set: r.set } : { seed: r.seed }), n: r.n, paper: r.paper === 'letter' ? 'letter' : 'a4', key: r.key === true } };
 }
 
 /** Pieces (strings and { frac: [n, d] }) -> HTML. */
 const pcs = list => (Array.isArray(list) ? list : []).map(x => (x && typeof x === 'object' && Array.isArray(x.frac) ? `<span class="ocp-frac" role="img" aria-label="${esc(`${x.frac[0]}/${x.frac[1]}`)}"><span>${esc(x.frac[0])}</span><span>${esc(x.frac[1])}</span></span>` : esc(x))).join('');
 const svgBox = (w, h, body, label) => `<svg class="ocp-svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${esc(label)}">${body}</svg>`;
+// The number line on a sheet is Oomba Figures' own numberLine (one way to draw a number line, docs/figures-api.md), from
+// the first version that has it, so a sheet prints the same line whichever figure version the activity pins: lo to hi,
+// each whole cut into sub parts, a number under every whole, black on white, 360 wide as before.
+export const LINE_FIGURES = '1.1.0';
+export const lineData = pic => ({ from: pic.lo, to: pic.hi, step: [1, pic.sub], every: pic.sub, values: false, size: 'large' });
+const lineFigure = (pic, lang, labelText) => {
+  const F = figuresKit(LINE_FIGURES);
+  return `<div class="ocp-svg ocp-line">${F.svg('numberLine', lineData(pic), { print: true, lang, title: labelText, width: 360 })}</div>`;
+};
 /** A plain picture of the manipulative (black lines on white): bars, a number line, columns, tiles. */
 function picture(pic, F, lang, labelText) {
   if (!pic) return '';
@@ -47,12 +60,7 @@ function picture(pic, F, lang, labelText) {
   switch (pic.pic) {
     case 'choices': return choices(pic.choices);
     case 'bars': return svgBox(320, pic.bars.length * 44, pic.bars.map(([n, d], k) => Array.from({ length: d }, (_, i) => `<rect x="${(i * 320) / d + 1}" y="${k * 44 + 4}" width="${320 / d - 2}" height="30" fill="${i < n ? '#bbb' : '#fff'}" stroke="#000" stroke-width="1.5"/>`).join('')).join(''), labelText);
-    case 'line': {
-      const ticks = (pic.hi - pic.lo) * pic.sub, W = 360, X = t => 14 + (t * (W - 28)) / ticks;
-      let b = `<line x1="6" y1="30" x2="${W - 6}" y2="30" stroke="#000" stroke-width="2"/>`;
-      for (let t = 0; t <= ticks; t++) { const whole = t % pic.sub === 0; b += `<line x1="${X(t)}" y1="${whole ? 18 : 23}" x2="${X(t)}" y2="${whole ? 42 : 37}" stroke="#000" stroke-width="${whole ? 2 : 1.2}"/>${whole ? `<text x="${X(t)}" y="58" text-anchor="middle" font-size="13">${esc(pic.lo + t / pic.sub)}</text>` : ''}`; }
-      return svgBox(W, 66, b, labelText);
-    }
+    case 'line': return lineFigure(pic, lang, labelText);
     case 'columns': {
       const S = 26, cols = pic.cols + 1, sign = { add: '+', sub: '−', mul: '×' }[pic.op] || '+', W = cols * S + 4;
       const row = (n, y) => String(n).split('').reverse().map((c, i) => `<text x="${(cols - i - 0.5) * S}" y="${y}" text-anchor="middle" font-size="18" font-family="Courier New, monospace" font-weight="700">${c}</text>`).join('');
@@ -68,14 +76,18 @@ const choices = list => `<ol class="ocp-choices" type="A">${(list || []).map(c =
 /**
  * The printable page (a fragment for the page's print area): the questions on their own page(s), then the answer key
  * on a page of its own when asked. -> HTML, or null when the version does not print.
+ * set (1.4.0, a saved worksheet): { items, code, link }: its own questions in their order (the route read them from the
+ * set, cleaned when saved), with its class code and link in the footer instead of a sheet number.
  */
-export function canvasPrintHtml(html, doc, { t, dir = 'ltr', lang = 'en' }) {
+export function canvasPrintHtml(html, doc, { t, dir = 'ltr', lang = 'en', set = null }) {
   const pr = canvasPrintable(html); if (!pr) return null;
-  const kit = canvasKit(pr.v), s = kit.sheet(pr.data, { seed: doc.seed, n: doc.n, lang });
+  const data = set ? { ...pr.data, config: { ...(pr.data.config || {}), fresh: false }, problems: set.items, gen: null } : pr.data;
+  const kit = canvasKit(pr.v), s = kit.sheet(data, set ? { seed: 1, n: Math.min(doc.n, set.items.length), lang } : { seed: doc.seed, n: doc.n, lang });
   const F = s.items.some(it => it.picture && it.picture.fig) ? figuresKit(figureLibs(html)['oomba-figures'] || FIG_LATEST['oomba-figures']) : null;
   const title = s.title || t('play.printCanvas.untitled'), code = String(s.seed);
   const head = h1 => `<header class="cwp-head"><h1 dir="auto">${esc(h1)}</h1>${h1 === title ? `<p class="cwp-lines"><span class="cwp-line">${esc(t('play.print.name'))}<i class="cwp-blank cwp-blank-name"></i></span><span class="cwp-line">${esc(t('play.print.date'))}<i class="cwp-blank"></i></span></p>` : ''}</header>`;
-  const foot = `<footer class="cwp-foot"><span>${esc(t('play.print.made'))}</span><span class="ocp-code">${esc(t('play.printCanvas.sheet', { code }))}</span></footer>`;
+  const foot = set ? `<footer class="cwp-foot"><span>${esc(t('play.print.made'))}</span><span class="ocp-code">${esc(t('play.print.code', { code: set.code }))}</span>${set.link ? `<span dir="ltr" class="cwp-link">${esc(set.link)}</span>` : ''}</footer>`
+    : `<footer class="cwp-foot"><span>${esc(t('play.print.made'))}</span><span class="ocp-code">${esc(t('play.printCanvas.sheet', { code }))}</span></footer>`;
   const answerLine = it => (it.tool === 'figure.number' ? `<p class="ocp-ans"><b>${esc(t('play.printCanvas.answer'))}</b> <i class="cwp-blank"></i>${it.unit ? ` <span dir="auto">${esc(it.unit)}</span>` : ''}</p>`
     : it.tool === 'figure.choice' ? `<p class="ocp-ans ocp-small">${esc(t('play.printCanvas.choose'))}</p>`
       : it.tool.startsWith('digits.') ? '' : `<p class="ocp-ans"><b>${esc(t('play.printCanvas.answer'))}</b> <i class="cwp-blank ocp-wide"></i></p>`);

@@ -5,6 +5,7 @@
 // answers at once, and each Studio tab follows it on GET /live (builder/live.js), which replays a running build in full.
 import express, { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
+import { ico } from '../views/icon.js';
 import { page, notFound } from '../views/layout.js';
 import { visLabel, categoryLabel } from '../views/components.js';
 import * as games from '../services/games.js';
@@ -23,7 +24,7 @@ import { config } from '../config.js';
 import { audit } from '../db.js';
 import { templateHtml, templateInfo, TEMPLATE_KEYS, CANVAS_TEMPLATE_KEYS } from '../builder/catalog.js';
 import { canvasVersion, canvasSrc } from '../services/canvaskit.js';
-import { figureLibs, figSrc } from '../services/figlibs.js';
+import { figureLibs, figSrc, figPackSrc, FIG_PACKS } from '../services/figlibs.js';
 import { panelOf, PANEL_KIT } from '../builder/activity-data.js';
 import { scanVersion } from '../services/scanner.js';
 import { THEMES, ALIAS as THEME_ALIAS } from '../../kit/packs/dress.js';
@@ -197,7 +198,7 @@ export function studioState(user, gameId, t = tEn, req = null) {
 export function activityPanelState(user, g, cur, t) {
   const p = panelOf(cur.html); if (!p) return null;
   const fv = figureLibs(cur.html)['oomba-figures'];
-  return { base: cur.id, number: cur.number, kit: p.kit, latest: PANEL_KIT, data: p.data, kitSrc: canvasSrc(PANEL_KIT), figures: fv ? figSrc('oomba-figures', fv) : null, studentPreview: previewUrl(cur, g, user.id, t.locale, true) };
+  return { base: cur.id, number: cur.number, kit: p.kit, latest: PANEL_KIT, data: p.data, kitSrc: canvasSrc(PANEL_KIT), figures: fv ? figSrc('oomba-figures', fv) : null, figurePacks: fv ? Object.keys(FIG_PACKS[fv] || {}).map(p => figPackSrc(p, fv)) : [], studentPreview: previewUrl(cur, g, user.id, t.locale, true) };
 }
 /**
  * The live line: one of
@@ -241,15 +242,16 @@ export function canvasLineState(cur, t, state = {}) {
 // ---------------------------------------------------------------- pages
 /** The Builder chip on a "My games" card: building, ready, a question, or stopped (text and emoji, never colour alone). */
 const BUILD_TONE = { building: 'warn', ready: 'good', question: 'good', stopped: 'bad' };
-const buildChip = (st, t) => (st ? html`<span class="stchip ${BUILD_TONE[st]}">${t(`build.status.${st}`)}</span>` : '');
+const BUILD_ICON = { building: '🛠️', ready: '✨', question: '💬', stopped: '⚠️' };
+const buildChip = (st, t) => (st ? html`<span class="stchip ${BUILD_TONE[st]}">${ico(BUILD_ICON[st], { size: 16 })} ${t(`build.status.${st}`)}</span>` : '');
 
 router.get('/build', requireBuilder, (req, res) => {
   const t = req.t;
   const mine = games.myGames(req.user.id, 100);
   const news = turns.buildStatus(req.user.id);
   const staff = S.isSchoolStaff(req.user);
-  const status = g => { const s = studioStatus(g, t); return html`<div class="mg-status"><span class="stchip ${s.tone}">${s.label}</span>${buildChip(news.get(g.id), t)}${g.pending_version_id ? html`<span class="stchip warn">⏳ ${t('build.updateWaiting')}</span>` : ''}</div>
-        ${g.review_note ? html`<p class="mg-note">💬 ${t('game.reviewer', { note: g.review_note })}</p>` : ''}
+  const status = g => { const s = studioStatus(g, t); return html`<div class="mg-status"><span class="stchip ${s.tone}">${s.label}</span>${buildChip(news.get(g.id), t)}${g.pending_version_id ? html`<span class="stchip warn">${ico('⏳', { size: 18 })} ${t('build.updateWaiting')}</span>` : ''}</div>
+        ${g.review_note ? html`<p class="mg-note">${ico('💬', { size: 18 })} ${t('game.reviewer', { note: g.review_note })}</p>` : ''}
         <p class="small muted">${t('build.changed', { when: req.fmt.ago(g.updated_at) })}</p>`; };
   const opts = { title: t('nav.build'), active: 'build', head: raw('<link rel="stylesheet" href="/css/studio.css">'), scripts: ['/js/build.js'] };
   // The folder shelf (docs/decisions.md "Folders in a sidebar, on Build and the class page"), for every builder, kids and
@@ -259,7 +261,7 @@ router.get('/build', requireBuilder, (req, res) => {
   const ctx = { kind: 'build', base: '/build', folders: true, staff, adult: shelfOn(req.user), mine, allCount: mine.length, status,
     top: html`<p class="build-hero build-hero-compact"><b>${t('build.hero.heading')}</b> <span>${t('build.hero.text')}</span></p>` };
   if (shelfReply(req, res, ctx)) return;
-  const body = html`<div class="pagehead"><h1>🛠️ ${t('build.title')}</h1></div>${shelf(req, ctx)}`;
+  const body = html`<div class="pagehead"><h1>${ico('🛠️', { size: 36 })} ${t('build.title')}</h1></div>${shelf(req, ctx)}`;
   page(req, res, { ...opts, body, scripts: ['/js/build.js', '/js/shelf.js'] });
 });
 
@@ -282,24 +284,24 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
       <label class="sr-only" for="st-title">${t('studio.top.name')}</label>
       <input class="st-title" id="st-title" maxlength="60" value="${g.title}" dir="auto" autocomplete="off" spellcheck="false">
       <div class="st-actions" role="toolbar" aria-label="${t('studio.top.tools')}">
-        <button class="iconbtn" type="button" id="st-save"><span class="emo" aria-hidden="true">💾</span>${t('studio.top.save')}</button>
-        <button class="iconbtn" type="button" id="st-history"><span class="emo" aria-hidden="true">🕘</span>${t('studio.top.versions')}</button>
-        <button class="iconbtn" type="button" id="st-settings"><span class="emo" aria-hidden="true">⚙️</span>${t('studio.top.settings')}</button>
-        <button class="iconbtn" type="button" id="st-share"><span class="emo" aria-hidden="true">🔗</span>${t('game.share')}</button>
-        <button class="btn btn-hot st-publish" type="button" id="st-publish">🚀 ${t('studio.top.publish')}</button>
+        <button class="iconbtn" type="button" id="st-save"><span class="emo">${ico('💾', { size: 20 })}</span>${t('studio.top.save')}</button>
+        <button class="iconbtn" type="button" id="st-history"><span class="emo">${ico('🕘', { size: 20 })}</span>${t('studio.top.versions')}</button>
+        <button class="iconbtn" type="button" id="st-settings"><span class="emo">${ico('⚙️', { size: 20 })}</span>${t('studio.top.settings')}</button>
+        <button class="iconbtn" type="button" id="st-share"><span class="emo">${ico('🔗', { size: 20 })}</span>${t('game.share')}</button>
+        <button class="btn btn-hot st-publish" type="button" id="st-publish">${ico('🚀', { size: 18 })} ${t('studio.top.publish')}</button>
       </div>
     </div>
-    ${step ? html`<div class="st-lesson" id="st-lesson">📚 ${t('studio.lesson.step', { title: step.title || t('lessons.kinds.build') })} <a class="btn btn-sm" href="${step.href}">← ${t('studio.lesson.back')}</a> <a class="btn btn-sm" href="${step.href}">📤 ${t('studio.lesson.handIn')}</a></div>` : ''}
+    ${step ? html`<div class="st-lesson" id="st-lesson">${ico('📚', { size: 18 })} ${t('studio.lesson.step', { title: step.title || t('lessons.kinds.build') })} <a class="btn btn-sm" href="${step.href}">← ${t('studio.lesson.back')}</a> <a class="btn btn-sm" href="${step.href}">${ico('📤', { size: 18 })} ${t('studio.lesson.handIn')}</a></div>` : ''}
     <div class="st-live" id="st-live" aria-live="polite"></div>
     <p class="sr-only" id="st-steps-live" aria-live="polite" aria-atomic="true"></p>
     <div class="st-main">
       <section class="st-chat" aria-label="${t('studio.chat.label')}">
         <div class="st-chat-head">
-          <span class="st-bot" aria-hidden="true">🤖</span><b>${t('studio.chat.builder')}</b>
+          <span class="st-bot" aria-hidden="true">${ico('🤖', { size: 24 })}</span><b>${t('studio.chat.builder')}</b>
           <span class="st-turns" id="st-turns"${t.own('js.studio.turnsLeftToday') ? '' : html` data-class-en`}></span>
           ${trustedMaker(req.user)
-            ? html`<span class="st-pro st-pro-incl" id="st-pro-incl" title="${t(proKey)}"><span aria-hidden="true">✨</span> ${t('studio.chat.pro')} <span aria-hidden="true">✓</span><span class="sr-only">: ${t(proKey)}</span></span>`
-            : html`<button class="st-pro" type="button" id="st-pro" aria-pressed="false" title="${t('studio.chat.proTitle')}">✨ ${t('studio.chat.pro')}</button>`}
+            ? html`<span class="st-pro st-pro-incl" id="st-pro-incl" title="${t(proKey)}">${ico('✨', { size: 18 })} ${t('studio.chat.pro')} <span aria-hidden="true">✓</span><span class="sr-only">: ${t(proKey)}</span></span>`
+            : html`<button class="st-pro" type="button" id="st-pro" aria-pressed="false" title="${t('studio.chat.proTitle')}">${ico('✨', { size: 18 })} ${t('studio.chat.pro')}</button>`}
         </div>
         <div class="st-log" id="st-log" role="log" aria-live="polite"></div>
         <form class="st-compose" id="st-compose" autocomplete="off">
@@ -307,11 +309,11 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
           <div class="st-attach" id="st-attach" hidden></div>
           ${themePicker(t, state.theme, state.kit2, !!state.current)}
           <div class="st-row">
-            <button class="st-clip" type="button" id="st-clip" aria-label="${t('studio.chat.attach')}" title="${t('studio.chat.attach')}">📎</button>
+            <button class="st-clip" type="button" id="st-clip" aria-label="${t('studio.chat.attach')}" title="${t('studio.chat.attach')}">${ico('📎', { size: 18 })}</button>
             <input type="file" id="st-file" hidden multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,.txt,.md,.csv,.json,text/plain,text/markdown,text/csv,application/json">
             <label class="sr-only" for="st-input">${t('studio.chat.inputLabel')}</label>
             <textarea class="st-input" id="st-input" rows="1" maxlength="2000" dir="auto" placeholder="${t('studio.chat.placeholder')}" data-short="${t('studio.chat.placeholderShort')}"></textarea>
-            ${state.mic ? html`<button class="st-mic" type="button" id="st-mic" aria-pressed="false" aria-describedby="st-mic-status" aria-label="${t('studio.mic.start')}" title="${t('studio.mic.start')}" hidden><span class="st-mic-ico" aria-hidden="true">🎤</span></button>` : ''}
+            ${state.mic ? html`<button class="st-mic" type="button" id="st-mic" aria-pressed="false" aria-describedby="st-mic-status" aria-label="${t('studio.mic.start')}" title="${t('studio.mic.start')}" hidden><span class="st-mic-ico" aria-hidden="true">${ico('🎤', { size: 18 })}</span></button>` : ''}
             <button class="btn btn-primary st-send" type="submit" id="st-send">${t('chat.thread.send')}</button>
           </div>
           ${state.mic ? html`<p class="st-mic-status" id="st-mic-status" role="status" aria-live="polite"></p><p class="sr-only" id="st-mic-said" aria-live="polite" aria-atomic="true"></p>` : ''}
@@ -320,13 +322,13 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
       <section class="st-preview" aria-label="${t('studio.preview.label')}">
         <div class="st-prev-head">
           <div class="seg" role="group" aria-label="${t('studio.preview.size')}">
-            <button type="button" data-size="phone" aria-pressed="true">📱 ${t('studio.preview.phone')}</button><button type="button" data-size="tablet" aria-pressed="false">${t('studio.preview.tablet')}</button><button type="button" data-size="landscape" aria-pressed="false">↔️ ${t('studio.preview.sideways')}</button>
+            <button type="button" data-size="phone" aria-pressed="true">${ico('📱', { size: 18 })} ${t('studio.preview.phone')}</button><button type="button" data-size="tablet" aria-pressed="false">${t('studio.preview.tablet')}</button><button type="button" data-size="landscape" aria-pressed="false">↔️ ${t('studio.preview.sideways')}</button>
           </div>
           <span class="st-prev-tools"><button class="btn btn-sm" type="button" id="st-reload">↻ ${t('studio.preview.reload')}</button><button class="btn btn-sm" type="button" id="st-full">⛶ ${t('play.fullScreen')}</button></span>
         </div>
         <div class="st-stage" id="st-stage" dir="ltr"><div class="st-device" id="st-device" data-size="phone">
           <iframe id="st-frame" title="${t('studio.preview.label')}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer" ${state.preview ? raw(`src="${state.preview}"`) : ''}></iframe>
-          <div class="st-empty" id="st-empty" dir="${req.dir}" ${state.preview ? raw('hidden') : ''}><div class="emo" aria-hidden="true">🎨</div><p><b>${t('studio.preview.emptyTitle')}</b></p><p>${t('studio.preview.emptyText')}</p></div>
+          <div class="st-empty" id="st-empty" dir="${req.dir}" ${state.preview ? raw('hidden') : ''}><div class="emo">${ico('🎨', { size: 56 })}</div><p><b>${t('studio.preview.emptyTitle')}</b></p><p>${t('studio.preview.emptyText')}</p></div>
         </div></div>
         <div class="st-safety" id="st-safety" aria-live="polite"></div>
       </section>

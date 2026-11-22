@@ -20,6 +20,7 @@ export const DATA = fs.mkdtempSync(path.join(os.tmpdir(), 'brb-made-'));
 process.env.BRB_DATA_DIR = DATA;
 export const { config } = await import('../../server/config.js');
 const { createApp } = await import('../../server/app.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 export const db = await import('../../server/db.js');
 export const auth = await import('../../server/auth.js');
 export const F = await import('../../server/services/family.js');
@@ -42,7 +43,7 @@ export const sessionIdOf = cookie => decodeURIComponent(cookie.split('=')[1]).sp
 export async function call(cookie, path, { method = 'GET', body, headers = {} } = {}) {
   const h = { ...headers, ...(cookie ? { cookie } : {}) }; if (body !== undefined) h['content-type'] = 'application/json';
   const r = await fetch(ctx.base + path, { method, headers: h, body: body !== undefined ? JSON.stringify(body) : undefined, redirect: 'manual' });
-  const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
+  const raw = await r.text(), text = deicon(raw); let json = null; try { json = JSON.parse(raw, (k, v) => typeof v === 'string' ? deicon(v) : v); } catch { /* html */ }
   const setCookies = r.headers.getSetCookie();
   const set = setCookies.map(c => c.split(';')[0]).find(c => c.startsWith('brb_session=') && c !== 'brb_session=');
   return { status: r.status, text, json, location: r.headers.get('location'), cookie: set || null, setCookies };

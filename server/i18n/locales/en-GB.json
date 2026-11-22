@@ -865,12 +865,6 @@
       "practise": {
         "heading": "What should students practise?",
         "label": "What should students practise?"
-      },
-      "purpose": {
-        "hint": "Pick one or more. Practise on screen is where students start.",
-        "screen": {
-          "title": "Practise on screen"
-        }
       }
     },
     "say": {
@@ -977,6 +971,13 @@
       "rods": {
         "desc": "Coloured rods from 1 to 20: build trains, compare lengths and model equations.",
         "typeBad": "That can't be modelled. Use + and whole numbers, one ?, and up to 20 a side."
+      },
+      "stickers": {
+        "favorites": "Favourites",
+        "star": "Add {name} to Favourites",
+        "unstar": "Remove {name} from Favourites",
+        "th_maths-stem": "Maths and STEM",
+        "th_transport": "Transport"
       }
     },
     "tools": {
@@ -991,6 +992,20 @@
       "math": {
         "name": "Maths"
       }
+    }
+  },
+  "library": {
+    "door": {
+      "staff": "{count} levelled picture books with questions. Assign one to a class."
+    },
+    "credits": {
+      "changesBloomSA": "Oomba resized the pictures and shows the book one page at a time; these adapted pages are shared under the same licence, {license}. Bloom Library, SIL Global and the book's publisher do not endorse Oomba."
+    },
+    "footSources": "Stories and pictures: Pratham Books (StoryWeaver) and the authors and publishers on Bloom Library, each book under its own open licence, shown with the book."
+  },
+  "figures": {
+    "subjects": {
+      "math": "Maths"
     }
   }
 }

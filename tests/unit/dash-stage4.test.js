@@ -516,7 +516,7 @@ test('safety: no AI, no network or storage in the tools, no prices, no "Pro", no
   for (const who of [w.a1, w.a2]) { const page = (await as(who)(`/class/${w.A.id}/dashboard`)).text; assert.doesNotMatch(page, w.REAL); assert.doesNotMatch(page, money); }
   // No new route: stage 4 rides on the stage 1-3 addresses.
   const routes = fs.readFileSync('server/routes/dash.js', 'utf8').match(/router\.(get|post|put|delete|patch)\(/g).length;
-  assert.equal(routes, 47, 'the same 35 addresses as stage 3, stage 5\'s 7 (hall pass, points, mood, site windows), ready-made layouts\' 1, Build it\'s 2 (progress, check) and the schedule\'s connected calendar\'s 2 (connect, disconnect)');
+  assert.equal(routes, 49, 'the same 35 addresses as stage 3, stage 5\'s 7 (hall pass, points, mood, site windows), ready-made layouts\' 1, Build it\'s 2 (progress, check), the schedule\'s connected calendar\'s 2 (connect, disconnect) and the Class Board PDF widget\'s 2 (upload, fetch)');
 });
 
 test('every stage 4 string is translated into every locale', async () => {

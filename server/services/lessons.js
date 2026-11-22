@@ -30,6 +30,15 @@ const TEMPLATE_KEY = /^[a-z0-9][a-z0-9._-]{0,59}$/;
  *  items (lesson_steps.items), so later set edits never change work in progress. Its title, text and minutes can be
  *  edited like any step; its questions can't. Answers are checked by the server (progress.quizAnswer). */
 export const QUIZ_KIND = 'quiz';
+/** Figure questions (services/figures-steps.js): made by Assign in the Figures worksheet builder, or by "Save to lesson"
+ *  from the lesson editor's "Figure questions" step (Figures testers: the same gate as /figures), always with a snapshot
+ *  of the questions (lesson_steps.items) and the Oomba Figures version they are drawn with (of_version), so later set
+ *  edits never change it until the teacher saves again. Never made by addStep; its title, text and minutes can be
+ *  edited like a quiz step's. Answers are marked by the server (progress.figuresAnswer); show_answers is the teacher's
+ *  "Show answers after the due date". */
+export const FIGURES_KIND = 'figures';
+/** Step kinds made from a snapshot (never from the step editor): their questions can't be edited there. */
+export const SNAPSHOT_KINDS = [QUIZ_KIND, FIGURES_KIND];
 const ok = (extra = {}) => ({ ok: true, ...extra });
 const fail = code => ({ ok: false, code });
 const clip = (s, n) => String(s == null ? '' : s).replace(/[ \t]+/g, ' ').trim().slice(0, n);
@@ -148,8 +157,9 @@ export function cleanLesson(fields = {}, old = {}) {
   return ok({ v });
 }
 /** What a lesson row is (0085_game_folders): 'game' (one assigned game), 'course' (a ready-made course's copy),
- *  'homework' (a live question set sent as homework), 'lesson' (a teacher-made lesson, no longer offered). */
-export const LESSON_KINDS = ['lesson', 'game', 'course', 'homework'];
+ *  'homework' (a live question set sent as homework), 'lesson' (a teacher-made lesson, no longer offered), 'story' (one
+ *  Story Library book: services/library.js), 'figures' (a Figures worksheet: services/figures-steps.js). */
+export const LESSON_KINDS = ['lesson', 'game', 'course', 'homework', 'story', 'figures'];
 export function createLesson(u, schoolId, { title, folderId = null, summary = '', subject = '', grade = '', objectives = '', templateKey = '', templateVersion = 0, kind = '' }) {
   if (!isStaffOf(u, schoolId)) return fail('notFound');
   const c = cleanLesson({ title, summary, subject, grade, objectives, templateKey, templateVersion }); if (!c.ok) return c;
@@ -185,6 +195,9 @@ export function deleteLesson(u, lessonId) {
     q.run('DELETE FROM gc_grades WHERE class_lesson_id IN (SELECT id FROM class_lessons WHERE lesson_id=?)', l.id); // and the grades they sent
     q.run('DELETE FROM class_lessons WHERE lesson_id=?', l.id); q.run('DELETE FROM lesson_steps WHERE lesson_id=?', l.id); q.run('DELETE FROM lessons WHERE id=?', l.id);
     q.run('DELETE FROM lesson_standards WHERE lesson_id=?', l.id);
+    // A Figure step's questions while they were edited (question_sets of purpose 'lesson', services/figures-steps.js).
+    q.run("DELETE FROM question_set_items WHERE set_id IN (SELECT id FROM question_sets WHERE lesson_id=? AND purpose='lesson')", l.id);
+    q.run("DELETE FROM question_sets WHERE lesson_id=? AND purpose='lesson'", l.id);
   });
   audit(u.id, 'lesson.delete', l.id, { title: l.title });
   return ok();
@@ -259,8 +272,10 @@ export function copyLesson(u, lessonId, { folderId } = {}) {
       const id = uid(10); stepIds.set(s.id, id);
       q.run(`INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, set_id, items, options, standards, template, rubric, rubric_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         id, r.lesson.id, s.position, s.kind, s.title, s.body, s.game_id, s.minutes, now(),
-        s.kind === QUIZ_KIND ? s.set_id || null : null, s.kind === QUIZ_KIND ? quizItemsFor(s) : '', s.options || '', s.standards || '', s.template || '', s.rubric || '',
+        SNAPSHOT_KINDS.includes(s.kind) ? s.set_id || null : null, s.kind === QUIZ_KIND ? quizItemsFor(s) : s.kind === FIGURES_KIND ? s.items || '' : '', s.options || '', s.standards || '', s.template || '', s.rubric || '',
         R.STEP_KINDS.includes(s.kind) ? rubricFor(s.rubric_id) : null);
+      // A figures step keeps its snapshot as it is (the worksheet may have changed since), its version and its switch.
+      if (s.kind === FIGURES_KIND) q.run('UPDATE lesson_steps SET of_version=?, show_answers=? WHERE id=?', s.of_version || '', s.show_answers ? 1 : 0, id);
     }
     // Common Core tags (lesson_standards, services/standards-ccss.js) come along, on the copied steps.
     for (const t of q.all('SELECT step_id, framework, code FROM lesson_standards WHERE lesson_id=?', l.id)) {
@@ -306,7 +321,9 @@ export const rubricOf = step => { try { const x = JSON.parse((step && step.rubri
 export const quizItemsOf = step => { try { const x = JSON.parse((step && step.items) || '[]'); return Array.isArray(x) ? x : []; } catch { return []; } };
 function cleanStep(u, input, old = {}, schoolId = null) {
   const kind = input.kind !== undefined ? input.kind : old.kind;
-  if (!STEP_KINDS.includes(kind) && !(kind === QUIZ_KIND && old.kind === QUIZ_KIND)) return fail('stepKind');
+  if (!STEP_KINDS.includes(kind) && !(SNAPSHOT_KINDS.includes(kind) && old.kind === kind)) return fail('stepKind');
+  // A figures step stays a figures step (its questions are its snapshot's).
+  if (old.kind === FIGURES_KIND && kind !== FIGURES_KIND) return fail('stepKind');
   const v = {
     kind,
     title: input.title !== undefined ? clip(input.title, 100) : old.title || '',
@@ -364,6 +381,17 @@ export function addQuizStep(u, lessonId, { title = '', setId, items, minutes = 0
   touch(l.id);
   return ok({ step: getStep(id) });
 }
+/** A figures step from a Figures worksheet's snapshot (services/figures-steps.js snapshot). -> { ok, step } */
+export function addFiguresStep(u, lessonId, { title = '', setId = null, items, ofVersion = '', showAnswers = false, minutes = 0, body = '' }) {
+  const l = getLesson(lessonId); if (!canEditLesson(u, l)) return fail('notFound');
+  if (!Array.isArray(items) || !items.length || !ofVersion) return fail('stepKind');
+  const id = uid(10);
+  q.run('INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, set_id, items, of_version, show_answers) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+    id, l.id, nextPos('lesson_steps', 'lesson_id=?', l.id), FIGURES_KIND, clip(title, 100), clipText(body, 4000), null, Math.max(0, Math.min(240, Math.round(+minutes || 0))), now(), setId || null,
+    JSON.stringify(items), String(ofVersion), showAnswers ? 1 : 0);
+  touch(l.id);
+  return ok({ step: getStep(id) });
+}
 export function updateStep(u, stepId, input) {
   const s = getStep(stepId); const l = s && getLesson(s.lesson_id); if (!canEditLesson(u, l)) return fail('notFound');
   const c = cleanStep(u, input || {}, s, l.school_id); if (!c.ok) return c;
@@ -374,7 +402,11 @@ export function updateStep(u, stepId, input) {
 }
 export function deleteStep(u, stepId) {
   const s = getStep(stepId); const l = s && getLesson(s.lesson_id); if (!canEditLesson(u, l)) return fail('notFound');
-  tx(() => { q.run('DELETE FROM step_progress WHERE step_id=?', s.id); R.forgetStep(s.id); q.run('DELETE FROM lesson_standards WHERE step_id=?', s.id); q.run('DELETE FROM lesson_steps WHERE id=?', s.id); }); touch(l.id);
+  tx(() => {
+    q.run('DELETE FROM step_progress WHERE step_id=?', s.id); R.forgetStep(s.id); q.run('DELETE FROM lesson_standards WHERE step_id=?', s.id); q.run('DELETE FROM lesson_steps WHERE id=?', s.id);
+    // A Figure step's own lesson set goes with it (a worksheet or a test it was assigned from stays).
+    if (s.kind === FIGURES_KIND && s.set_id) { q.run("DELETE FROM question_set_items WHERE set_id IN (SELECT id FROM question_sets WHERE id=? AND purpose='lesson' AND lesson_id=?)", s.set_id, l.id); q.run("DELETE FROM question_sets WHERE id=? AND purpose='lesson' AND lesson_id=?", s.set_id, l.id); }
+  }); touch(l.id);
   return ok();
 }
 export function reorderStep(u, stepId, dir) {
@@ -411,6 +443,7 @@ export function gamesForPicker(u, schoolId) {
 export const unitsOf = classId => q.all('SELECT * FROM class_units WHERE class_id=? ORDER BY position, created_at', classId);
 export const classLessons = classId => withZones(q.all(`SELECT cl.*, l.title, l.summary, l.subject, l.grade, l.owner_id, l.school_id, l.kind, sch.settings school_settings,
     (SELECT s.game_id FROM lesson_steps s WHERE s.lesson_id=l.id AND s.kind='game' ORDER BY s.position LIMIT 1) first_game,
+    (SELECT s.story_id FROM lesson_steps s WHERE s.lesson_id=l.id AND s.kind='story' ORDER BY s.position LIMIT 1) first_story,
     (SELECT COUNT(*) FROM lesson_steps s WHERE s.lesson_id=l.id) steps, (SELECT COALESCE(SUM(minutes),0) FROM lesson_steps s WHERE s.lesson_id=l.id) minutes
   FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id ${SCHOOL_OF} WHERE cl.class_id=? AND cl.removed_at IS NULL ORDER BY cl.position, cl.assigned_at`, classId));
 

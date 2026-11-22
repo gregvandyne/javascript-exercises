@@ -20,6 +20,7 @@ const S = await import('../../server/services/stripe.js');
 const { readiness } = await import('../../server/services/billing-ready.js');
 const { withoutKeys } = await import('../support/i18n-gaps.js');
 const SC = await import('../../server/services/schools.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 let server, base;
 test.before(async () => {
@@ -36,7 +37,7 @@ test.beforeEach(() => { Object.assign(config, defaults); S._reset(); q.run('DELE
 function signIn(u) { let c = ''; auth.startSession({ append: (k, v) => { c = v.split(';')[0]; } }, u.id); return { cookie: c }; }
 async function get(who, path) {
   const r = await fetch(base + path, { headers: who ? { cookie: who.cookie } : {}, redirect: 'manual' });
-  return { status: r.status, text: await r.text() };
+  return { status: r.status, text: deicon(await r.text()) };
 }
 const admin = () => signIn(auth.createUser({ username: `Rdy${uid(4)}`, password: 'admin-password-1', role: 'admin' }));
 const byId = r => Object.fromEntries(r.rows.map(x => [x.id, x]));

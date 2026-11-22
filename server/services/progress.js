@@ -5,6 +5,8 @@
 //   question  the student sends an answer (they can change it; a changed answer goes back to the teacher to review)
 //   game      the game reports a score or the end of a game, the student has played for 2 minutes, or marks it done
 //   build     the student hands in the game they made (it is shared with their school so the teacher can play it)
+//   quiz      every question is answered (checked here, once each)
+//   figures   the student hands in their answers to a Figures worksheet (marked here: services/figures-steps.js)
 // Teachers (and school admins) see everything for their class, can write feedback on answers and mark them reviewed.
 // Students see only their own progress. Removing a lesson from a class keeps its progress (it comes back if the
 // lesson is assigned again); deleting a step or a lesson deletes the progress on it.
@@ -15,6 +17,7 @@ import * as games from './games.js';
 import { MODES } from './classlive-access.js';
 import * as R from './rubrics.js';
 import * as SC from './scores.js';
+import * as FS from './figures-steps.js';
 
 const ok = (extra = {}) => ({ ok: true, ...extra });
 const fail = code => ({ ok: false, code });
@@ -69,6 +72,8 @@ const done = old => ({ status: 'done', done_at: (old && old.done_at) || now() })
 export function markDone(u, clId, stepId, isDone = true) {
   const c = context(u, clId, stepId); if (!c.ok) return c;
   if (c.step.kind === 'question') return fail('answerFirst');
+  if (c.step.kind === 'story') return fail('notFound');   // done by reading to the end and answering (storyStep)
+  if (c.step.kind === L.FIGURES_KIND) return fail('notFound');   // done by handing in (figuresAnswer)
   if (hostedLive(c.step)) return fail('notFound');   // the live run writes this cell
   const old = get(clId, stepId, u.id);
   if (!isDone) return ok({ row: upsert(clId, stepId, u.id, { status: 'started', done_at: null }) });
@@ -110,6 +115,53 @@ export function quizAnswer(u, clId, stepId, i, c) {
   upsert(clId, stepId, u.id, finished ? { score, label: 'quiz', ...done(old) } : {});
   q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', marks, clId, stepId, u.id);
   return ok({ right, answer: items[i].answer, next: marks.indexOf('-'), score });
+}
+/** A figures step for the student (services/figures-steps.js viewFor): figures as SVGs, questions, units, what they
+ *  typed; marks once handed in; answers and worked lines only once allowed (never before the due date is over). */
+export function figuresFor(u, clId, stepId, { lang = 'en' } = {}) {
+  const c = context(u, clId, stepId); if (!c.ok) return c;
+  if (c.step.kind !== L.FIGURES_KIND) return fail('notFound');
+  return ok({ view: FS.viewFor(c.step, c.cl, get(clId, stepId, u.id), { lang }) });
+}
+/** A figures step's answers: answers[i] is what the student typed for question i (a string, at most FS.ANSWER_CHARS).
+ *  Save keeps them (started); handIn marks every question once (marks '1'/'0', score = % right, label 'figures') and the
+ *  step is done. After handing in nothing changes. -> { ok, row, handedIn, score } */
+export function figuresAnswer(u, clId, stepId, answers, { handIn = false } = {}) {
+  const c = context(u, clId, stepId); if (!c.ok) return c;
+  if (c.step.kind !== L.FIGURES_KIND) return fail('notFound');
+  const items = FS.itemsOf(c.step);
+  if (!items.length || !Array.isArray(answers) || answers.length > items.length) return fail('badRequest');
+  const list = items.map((_, i) => String(answers[i] == null ? '' : answers[i]).replace(/[\u0000-\u001f]/g, '').trim().slice(0, FS.ANSWER_CHARS));
+  const old = get(clId, stepId, u.id);
+  if (FS.handedIn(old)) return fail('handedIn');
+  if (handIn && !list.some(Boolean)) return fail('answerEmpty');
+  const text = JSON.stringify(list);
+  if (!handIn) {
+    if (!old && !list.some(Boolean)) return ok({ row: null, handedIn: false, score: null });
+    return ok({ row: upsert(clId, stepId, u.id, { answer: text }), handedIn: false, score: null });
+  }
+  const marks = FS.markAll(items, list);
+  const score = Math.round((100 * [...marks].filter(m => m === '1').length) / items.length);
+  upsert(clId, stepId, u.id, { answer: text, score, label: 'figures', ...done(old) });
+  q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', marks, clId, stepId, u.id);
+  return ok({ row: get(clId, stepId, u.id), handedIn: true, score });
+}
+/** A Story Library step (services/library.js): the student is reading the step's book, or has finished it. The book's
+ *  progress lives in story_reads; this row is the class's copy: started, then done with marks (first try per question,
+ *  '1'/'0'), score (% right first time) and label ('aloud' when Read to me was used, else 'own').
+ *  -> { ok, row } | { ok: false, code } */
+export function storyStep(u, clId, stepId, { bookId, done: isDone = false, marks = '', aloud = false } = {}) {
+  const c = context(u, clId, stepId); if (!c.ok) return c;
+  if (c.step.kind !== 'story' || c.step.story_id !== bookId) return fail('notFound');
+  const old = get(clId, stepId, u.id);
+  if (old && old.status === 'done') return ok({ row: old });   // the first finished reading is the one that counts
+  const label = aloud || (old && old.label === 'aloud') ? 'aloud' : 'own';
+  if (!isDone) return ok({ row: upsert(clId, stepId, u.id, { label }) });
+  const m = String(marks || '');
+  const score = m && !/[^01]/.test(m) ? Math.round((100 * [...m].filter(x => x === '1').length) / m.length) : null;
+  upsert(clId, stepId, u.id, { label, score, ...done(old) });
+  q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', m, clId, stepId, u.id);
+  return ok({ row: get(clId, stepId, u.id) });
 }
 /** The student opened a game step's game from the lesson. */
 export function gameStarted(u, clId, stepId) {
@@ -256,16 +308,16 @@ export function classProgress(classId, t = now()) {
   const lessons = L.classPlan(classId).flatMap(g => g.lessons.map(cl => ({ ...cl, unit: g.unit, locked: !L.isOpen(cl, t), due: L.dueState(cl, t) })));
   const students = studentsOf(classId);
   const counts = q.all(`SELECT p.class_lesson_id cl, p.user_id u, SUM(p.status='done') done, SUM(p.answer!='' AND p.reviewed_at IS NULL AND s.kind='question') toread, MAX(p.updated_at) last,
-      AVG(CASE WHEN s.kind='quiz' AND p.status='done' AND p.score IS NOT NULL THEN p.score END) quiz, SUM(s.kind='quiz' AND p.status='done' AND p.score IS NOT NULL) quizzes,
+      AVG(CASE WHEN s.kind IN ('quiz','figures') AND p.status='done' AND p.score IS NOT NULL THEN p.score END) quiz, SUM(s.kind IN ('quiz','figures') AND p.status='done' AND p.score IS NOT NULL) quizzes,
       SUM(p.helped) helped
     FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
     WHERE c.class_id=? GROUP BY p.class_lesson_id, p.user_id`, classId);
   const by = new Map(counts.map(r => [`${r.u}:${r.cl}`, r]));
   // Rubric scores (services/rubrics.js): points / most possible per lesson, on lessons with a rubric (hasRubric).
   const pts = R.classTotals(classId), withRubric = R.lessonsWithRubrics([...new Set(lessons.map(cl => cl.lesson_id))]);
-  // Quiz steps (checked by the site: score = % right): the lesson's quiz score is the mean of its finished quizzes.
+  // Quiz and figures steps (checked by the site: score = % right): the lesson's quiz score is the mean of its finished ones.
   const lessonIds = [...new Set(lessons.map(cl => cl.lesson_id))];
-  const withQuiz = new Set(lessonIds.length ? q.all(`SELECT DISTINCT lesson_id FROM lesson_steps WHERE kind='quiz' AND lesson_id IN (${lessonIds.map(() => '?').join(',')})`, ...lessonIds).map(r => r.lesson_id) : []);
+  const withQuiz = new Set(lessonIds.length ? q.all(`SELECT DISTINCT lesson_id FROM lesson_steps WHERE kind IN ('quiz','figures') AND lesson_id IN (${lessonIds.map(() => '?').join(',')})`, ...lessonIds).map(r => r.lesson_id) : []);
   for (const cl of lessons) { cl.hasRubric = withRubric.has(cl.lesson_id); cl.hasQuiz = withQuiz.has(cl.lesson_id); }
   // Scores (services/scores.js): the scored items of each lesson, and steps first done after the due day ended.
   const items = SC.classItems(classId), lateN = SC.lateSteps(classId, lessons);

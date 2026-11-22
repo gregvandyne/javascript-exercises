@@ -31,6 +31,7 @@ const { toolbox } = await import('../../server/builder/tools.js');
 const { saveChat } = await import('../../server/builder/chat.js');
 const { loadTemplate } = await import('../../server/builder/templates/index.js');
 const { CODES, tFor } = await import('../../server/i18n/index.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 // The live pack is not in kit/SHIPPED.json yet: the tests pin a hash for it, as tests/unit/_live.js does.
 const PACK_HASH = 'sha384-live-pack-test-hash';
@@ -176,7 +177,7 @@ function client() {
     if (body !== undefined) h['content-type'] = 'application/json';
     const res = await fetch(BASE + p, { method, headers: h, body: body !== undefined ? JSON.stringify(body) : undefined, redirect: 'manual' });
     for (const k of res.headers.getSetCookie ? res.headers.getSetCookie() : []) { const kv = k.split(';')[0]; if (kv.startsWith('brb_session=')) cookie = kv; }
-    const text = await res.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
+    const raw = await res.text(), text = deicon(raw); let json = null; try { json = JSON.parse(raw, (k, v) => typeof v === 'string' ? deicon(v) : v); } catch { /* html */ }
     return { status: res.status, text, json };
   };
   c.cookie = () => cookie;
@@ -339,11 +340,14 @@ for (const [label, opts] of VIEWS) {
       const { ctx, page, errors } = await pageFor(c, opts);
       const line = async id => {
         await page.goto(`${BASE}/studio/${id}`); await page.waitForSelector('#st-livebtn');
-        return page.$eval('#st-livebtn', el => {
+        // The row's icons are Fluent pictures now: read them back as the emoji they stand for (tests/support/deicon.js).
+        const txt = h => deicon(h).replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/\s+/g, ' ').trim();
+        const r = await page.$eval('#st-livebtn', el => {
           const cap = document.getElementById('st-live-cap');
-          return { line: el.dataset.line, text: el.textContent.replace(/\s+/g, ' ').trim(), act: el.dataset.act, tag: el.tagName, live: el.classList.contains('btn-hot'),
-            cap: cap ? cap.textContent.replace(/\s+/g, ' ').trim() : null, bg: getComputedStyle(el).backgroundColor };
+          return { line: el.dataset.line, html: el.innerHTML, act: el.dataset.act, tag: el.tagName, live: el.classList.contains('btn-hot'),
+            capHtml: cap ? cap.innerHTML : null, bg: getComputedStyle(el).backgroundColor };
         });
+        return { ...r, text: txt(r.html), cap: r.capHtml == null ? null : txt(r.capHtml) };
       };
       const YELLOW = 'rgb(255, 210, 63)';   // --spark, the Publish button's yellow
       const host = await line(G.host.id);

@@ -48,10 +48,10 @@
       "schools": "Voor scholen"
     },
     "build": {
-      "ready": "✨ Je game “{title}” is klaar! <a href=\"{href}\">Open hem</a>",
-      "question": "💬 De Bouwer heeft een vraag over “{title}”. <a href=\"{href}\">Open hem</a>",
-      "stopped": "⚠️ “{title}” is gestopt voordat hij af was. <a href=\"{href}\">Open hem om verder te gaan</a>",
-      "many": "✨ De Bouwer heeft nieuws over een paar van je games. <a href=\"{href}\">Bekijk Mijn games</a>"
+      "ready": "Je game “{title}” is klaar! <a href=\"{href}\">Open hem</a>",
+      "question": "De Bouwer heeft een vraag over “{title}”. <a href=\"{href}\">Open hem</a>",
+      "stopped": "“{title}” is gestopt voordat hij af was. <a href=\"{href}\">Open hem om verder te gaan</a>",
+      "many": "De Bouwer heeft nieuws over een paar van je games. <a href=\"{href}\">Bekijk Mijn games</a>"
     },
     "shortPasswordGrownup": "Het wachtwoord is korter dan {min} tekens. <a href=\"{href}\">Kies een langer wachtwoord</a>."
   },
@@ -1109,6 +1109,11 @@
         "li5": "Voordat de volwassene het account maakt, leest die een melding over wat we bewaren en vinkt die aan dat die de melding heeft gelezen en de ouder of wettelijke voogd van het kind is. Daarvan houden we een registratie bij: wanneer, en welke versie van de melding. Dit is geen controle van ouderlijke toestemming volgens privacywetten voor kinderen, en we behandelen het ook niet zo. Betalen voor een abonnement is dat evenmin.",
         "li9": "De volwassene kan deze aantallen zien en het account verwijderen op de gezinspagina: alles wat het kind heeft gemaakt, geschreven en geüpload, verdwijnt meteen. We bewaren een korte registratie dat het account heeft bestaan en wie het heeft gemaakt, de oude gebruikersnaam wordt 90 dagen vastgehouden zodat niemand anders hem kan nemen, en een klas waarin het kind vroeger zat, houdt haar eigen gegevens. Zit het kind nu in een schoolklas, dan haalt de leerkracht het kind eerst uit de klas.",
         "li7": "Hoe lang: zolang het account bestaat. We hebben nog geen automatische verwijdertermijnen."
+      },
+      "manip": {
+        "h": "Rekenmaterialen in de klas",
+        "p1": "<b>Live lessen:</b> als een leraar een live les met de rekenmaterialen geeft, wordt het bord van elke leerling (blokjes, plakbriefjes, tekst en antwoorden) voor de leraar bewaard en 30 dagen na het einde van de les verwijderd. Waar leerlingen wijzen (hun cursor) en opgestoken handen worden niet bewaard.",
+        "p2": "<b>Een bord laten maken door AI:</b> een leraar kan een les beschrijven en de AI er een bord voor laten maken. Alleen de beschrijving van de leraar gaat naar onze AI-leverancier, Anthropic. Werk en namen van leerlingen worden nooit verstuurd."
       }
     }
   },
@@ -1187,7 +1192,10 @@
     },
     "makeLike": "Maak zelf zo'n game",
     "makeLikeShort": "Maak er zo een",
-    "grownupBuilder": "Volwassen bouwer"
+    "grownupBuilder": "Volwassen bouwer",
+    "sets": {
+      "copyOf": "Kopie van {title}"
+    }
   },
   "play": {
     "backTo": "Terug naar {title}",
@@ -1481,10 +1489,10 @@
     "rename": "Naam wijzigen",
     "delete": "Verwijderen",
     "status": {
-      "building": "🛠️ Bouwen…",
-      "ready": "✨ Klaar",
-      "question": "💬 Heeft een vraag",
-      "stopped": "⚠️ Gestopt"
+      "building": "Bouwen…",
+      "ready": "Klaar",
+      "question": "Heeft een vraag",
+      "stopped": "Gestopt"
     }
   },
   "studio": {
@@ -2473,8 +2481,8 @@
           "learn": "Na elke bouwbeurt speelt de app het spel zo’n 20 seconden zelf: toetsen, tikken, vegen, en kijkt of de score verandert en niets kapotgaat."
         }
       },
-      "resumed": "🔄 De server is opnieuw opgestart, dus de Bouwer ging verder waar hij was.",
-      "resumedV": "🔄 De server is opnieuw opgestart, dus de Bouwer ging verder vanaf versie {v}.",
+      "resumed": "De server is opnieuw opgestart, dus de Bouwer ging verder waar hij was.",
+      "resumedV": "De server is opnieuw opgestart, dus de Bouwer ging verder vanaf versie {v}.",
       "stopped": {
         "restart": "De Bouwer stopte toen onze server opnieuw opstartte. Alles wat hij gemaakt heeft, is bewaard.",
         "ai": "De Bouwer stopte toen onze server opnieuw opstartte, en de AI-Bouwer rust nu even uit. Alles wat hij gemaakt heeft, is bewaard."
@@ -2531,7 +2539,7 @@
       },
       "stillWorking": "Even geduld, de Bouwer is nog bezig!",
       "resting": {
-        "text": "😴 De AI-Bouwer rust nu even uit. Hij is {when} terug. Je game en je berichten aan de Bouwer zijn bewaard, dus kom dan terug!",
+        "text": "De AI-Bouwer rust nu even uit. Hij is {when} terug. Je game en je berichten aan de Bouwer zijn bewaard, dus kom dan terug!",
         "today": "vandaag om {time}",
         "tomorrow": "morgen om {time}",
         "date": "op {date} om {time}"
@@ -2768,7 +2776,8 @@
         "opening": "De Bouwer wordt geopend…",
         "files": "{count, plural, one {# bestand} other {# bestanden}}",
         "nothing": "Niets toegevoegd",
-        "empty": "Je hebt nog niets gekozen. De Bouwer vraagt je wat je wilt maken."
+        "empty": "Je hebt nog niets gekozen. De Bouwer vraagt je wat je wilt maken.",
+        "toldResetDone": "Het bericht staat weer zoals het was."
       },
       "gettingReady": "Even klaarmaken…",
       "all": {
@@ -2787,9 +2796,13 @@
           "kind": "Wat",
           "practise": "Oefenen",
           "help": "Hulp",
-          "played": "Gespeeld",
           "lesson": "Les",
-          "purpose": "Voor"
+          "use": "Gebruik"
+        },
+        "use": {
+          "screen": "Op hun apparaat",
+          "worksheet": "Op papier",
+          "both": "Op hun apparaat en op papier"
         }
       },
       "lesson": {
@@ -2806,11 +2819,6 @@
         "gone": "Bestand weggehaald.",
         "none": "Niet toegevoegd",
         "notes": "Je notities",
-        "details": "Andere details",
-        "from": "Uit {name}",
-        "sumHeading": "Wat de Builder over je les leest",
-        "sumNote": "We hebben gezocht naar namen van leerlingen, e-mailadressen en telefoonnummers. De Builder gebruikt het als achtergrond, nooit als opdracht.",
-        "sumRemoved": "{count, plural, one {We hebben # naam of contactgegeven weggehaald.} other {We hebben # namen of contactgegevens weggehaald.}} De Builder gebruikt het als achtergrond, nooit als opdracht.",
         "blockedPlan": "Sommige woorden in je les kunnen niet, dus de Builder krijgt hem niet. Pas ze aan, of open de Builder zonder.",
         "err": {
           "docType": "Dit soort bestand kan niet gelezen worden. Gebruik een PDF-, Word- (.docx), tekst- of Markdown-bestand.",
@@ -2823,7 +2831,11 @@
           "blocked": "Sommige woorden in dat bestand kunnen hier niet, dus we hebben het weggelaten.",
           "notAllowed": "Alleen leerkrachten kunnen hier een bestand toevoegen.",
           "failed": "Dat lukte niet. Probeer het nog eens."
-        }
+        },
+        "lineNotes": "Plus je lesnotities. De Builder leest ze helemaal.",
+        "lineCut": "Plus je lesbestand: {name}. Het is lang, dus de Builder leest het eerste deel.",
+        "linePages": "Plus je lesbestand: {name}, {count, plural, one {# pagina} other {# pagina’s}}. De Builder leest het helemaal.",
+        "lineAll": "Plus je lesbestand: {name}. De Builder leest het helemaal."
       }
     },
     "dash": {
@@ -3217,7 +3229,7 @@
       "editN": "Opgave {n} bewerken",
       "add": "Opgave toevoegen",
       "copyN": "Opgave {n} kopiëren",
-      "editTitle": "✏️ Opgave {n} van {total}",
+      "editTitle": "Opgave {n} van {total}",
       "kind": {
         "reading": "Een schaal aflezen",
         "thermometer": "thermometer",
@@ -3296,6 +3308,487 @@
       "genWorkAns": "Het antwoord is {v}{u}.",
       "gVar": "Het getal {x} in de figuur",
       "gDigits": "Cijfers per getal"
+    },
+    "library": {
+      "pageOf": "Bladzijde {page} van {pages}",
+      "backToQuestions": "Terug naar de vragen",
+      "toQuestions": "Vragen",
+      "next": "Volgende",
+      "stop": "Stop",
+      "readToMe": "Lees voor",
+      "answered": "Deze heb je al beantwoord.",
+      "readQuestion": "Lees voor",
+      "readFirst": "Lees eerst het verhaal tot de laatste bladzijde.",
+      "right": "Ja, goed zo!",
+      "tryAgain": "Probeer het nog eens! Kijk op bladzijde {page}.",
+      "lookAt": "Kijk op bladzijde {page}",
+      "doneMsg": "Klaar! {right} van {total} in één keer goed. Goed gelezen!",
+      "doneShort": "Klaar! Goed gelezen!",
+      "pagesOf": "Pagina’s {from}-{to} van {pages}"
+    },
+    "manip": {
+      "board": {
+        "pieceHint": "Tik op een stuk om het te kiezen en sleep het om het te verplaatsen. Houd het ingedrukt, klik met rechts of druk op Shift+F10 voor de acties. Plakbriefjes kun je overal heen slepen; tik op een briefje om te typen."
+      },
+      "wheel": {
+        "menu": "Acties voor {label}",
+        "copy": "Kopiëren",
+        "fill": "Vullen",
+        "rotate": "Draaien",
+        "flip": "Omdraaien",
+        "break": "In 10 breken",
+        "lock": "Vastzetten",
+        "unlock": "Losmaken",
+        "delete": "Verwijderen",
+        "deleted": "{label} verwijderd",
+        "undo": "Ongedaan maken",
+        "lockedHint": "Vastgezet. Houd het ingedrukt om het los te maken.",
+        "pieceLocked": "Stuk {label}, vastgezet",
+        "objLocked": "{name}, vastgezet"
+      },
+      "text": {
+        "move": "Sleep om deze tekst te verplaatsen",
+        "resize": "Sleep om de grootte van dit vak te wijzigen",
+        "smaller": "Kleinere tekst",
+        "bigger": "Grotere tekst"
+      },
+      "boards": {
+        "title": "Mijn borden",
+        "none": "Borden waaraan je werkt, worden vanzelf bewaard en staan hier. Met ‘Bewaren als sjabloon’ houd je een schoon startpunt.",
+        "templates": "Sjablonen",
+        "templatesSub": "opent elke keer een nieuwe kopie",
+        "recent": "Recente borden",
+        "recentSub": "bewaard terwijl je werkt",
+        "code": "code {code}",
+        "edited": "bewerkt {when}",
+        "aiDraft": "AI-ontwerp, klaar {when}",
+        "roomLive": "Live ruimte · {klass} · {n, plural, one {# leerling} other {# leerlingen}}",
+        "roomEnded": "Live ruimte · {klass} · gestopt {when} · {n, plural, one {# vak bewaard} other {# vakken bewaard}}",
+        "live": "Live",
+        "new": "Nieuw",
+        "more": "Meer voor {title}",
+        "start": "Een live ruimte ermee starten",
+        "rename": "Naam wijzigen",
+        "duplicate": "Dupliceren",
+        "reopen": "Ruimte heropenen",
+        "deleteConfirm": "‘{title}’ verwijderen? Dit kan niet ongedaan worden.",
+        "deleteRoom": "De ruimte ‘{title}’ en het vak van elke leerling erin verwijderen? Dit kan niet ongedaan worden.",
+        "pickClass": "Kies de klas voor deze ruimte en start hem dan."
+      },
+      "share": {
+        "save": "Bewaren als sjabloon"
+      },
+      "draft": {
+        "progress": "Je bord wordt ontworpen",
+        "drafting": "Bezig…",
+        "quote": "‘{brief}’",
+        "leave": "Je kunt deze pagina sluiten of vernieuwen. Het ontwerp gaat door op onze server en staat in Mijn borden als het klaar is.",
+        "eta": {
+          "under": "Meestal minder dan een minuut",
+          "about": "{n, plural, one {Meestal ongeveer een minuut} other {Meestal ongeveer # minuten}}",
+          "guessUnder": "Vaak minder dan een minuut",
+          "guess": "{n, plural, one {Ongeveer een minuut} other {Ongeveer # minuten}}",
+          "longer": "Duurt iets langer dan normaal",
+          "soFar": "{time} tot nu toe"
+        },
+        "step": {
+          "check": {
+            "now": "Je woorden worden gecontroleerd op namen van leerlingen",
+            "done": "Je woorden gecontroleerd op namen van leerlingen"
+          },
+          "ai": {
+            "now": "De AI kiest de opgaven",
+            "done": "De AI heeft de opgaven gekozen"
+          },
+          "build": {
+            "now": "Bord en stappen worden ingedeeld",
+            "done": "Bord en stappen ingedeeld"
+          },
+          "save": {
+            "now": "Wordt bewaard in Mijn borden",
+            "done": "Bewaard in Mijn borden"
+          }
+        },
+        "away": "Je AI-ontwerp ‘{title}’ werd klaar terwijl je weg was.",
+        "awayN": "{n, plural, one {# opgave} other {# opgaven}} en {steps, plural, one {# stap} other {# stappen}}.",
+        "inBoards": "Het staat in Mijn borden.",
+        "use": "Op mijn bord zetten",
+        "dismiss": "Sluiten",
+        "failedAway": "Je AI-ontwerp voor {tool} kon niet klaar worden.",
+        "failed": "Het ontwerp kon niet klaar worden.",
+        "retry": "Opnieuw proberen",
+        "err": {
+          "aiFailed": "De AI kon het nu niet ontwerpen. Je woorden staan er nog: probeer het zo opnieuw.",
+          "restart": "Onze server is herstart tijdens het ontwerpen. Je woorden staan er nog: probeer het opnieuw.",
+          "names": "Laat namen van leerlingen uit de beschrijving: namen gaan nooit naar de AI.",
+          "words": "Sommige woorden in de beschrijving zijn niet toegestaan. Pas ze aan en probeer het opnieuw.",
+          "personal": "Laat telefoonnummers, e-mails, links en codes weg en probeer het opnieuw.",
+          "other": "Er ging iets mis. Probeer het zo opnieuw."
+        }
+      },
+      "save": {
+        "name": "Naam van het sjabloon",
+        "what": "Een sjabloon is een schoon startpunt: openen, of er een ruimte mee starten, geeft altijd een nieuwe kopie. Dit bord blijft bewaard terwijl je werkt.",
+        "go": "Bewaren",
+        "cancel": "Annuleren",
+        "done": "Bewaard als sjabloon ‘{title}’. Code {code}",
+        "savedAt": "Bewaard {time}",
+        "notYet": "Nog niet bewaard. Opnieuw proberen…"
+      },
+      "pv": {
+        "traded": "{n} × {from} geruild voor {m} × {to}.",
+        "broke": "{from} werd {n} × {to}.",
+        "moved": "{label} ging naar de kolom {col}.",
+        "needTen": "Er zijn 10 nodig om te ruilen",
+        "count": "{n} stukken in {col}"
+      }
+    },
+    "manip-room": {
+      "actionsFor": "Acties voor {label}",
+      "teacherLock": "Je leraar heeft dit vastgezet.",
+      "reopen": "Ruimte heropenen",
+      "reopened": "De ruimte is weer open. Iedereen gaat terug naar het eigen vak."
+    },
+    "figures-editor": {
+      "undo": "Ongedaan maken",
+      "redo": "Opnieuw",
+      "examples": "Voorbeelden",
+      "mine": "Mijn voorinstellingen",
+      "randomize": "Willekeurig",
+      "controls": "Instellingen van de figuur",
+      "measures": "Maten",
+      "leaveEmpty": "Vul de maten in die je weet. Laat de rest leeg.",
+      "options": "Opties",
+      "show": "Tonen",
+      "default": "(standaard)",
+      "advanced": "Geavanceerd (gegevens)",
+      "advancedHelp": "Alle gegevens van de figuur als JSON. Lijsten en groepen bewerk je hier.",
+      "jsonObject": "De gegevens moeten één { ... }-object zijn.",
+      "jsonBad": "Dat is nog geen geldige JSON: {why}",
+      "display": "Weergave",
+      "print": "Printmodus (zwart op wit)",
+      "nts": "\"Niet op schaal\" vermelden",
+      "figure": "De figuur",
+      "answers": "Vraag en antwoorden",
+      "question": "Vraag",
+      "questionHint": "Schrijf de vraag die leerlingen over deze figuur beantwoorden.",
+      "worked": "Uitgewerkte antwoorden (OF.solve)",
+      "answerIs": "Het antwoord is",
+      "pickAnswer": "Kies het antwoord…",
+      "noAnswers": "Geen uitgewerkte antwoorden voor deze figuur",
+      "facts": "Alles erover",
+      "answersWait": "De antwoorden verschijnen zodra de figuur getekend kan worden. Oomba tekent nooit een verkeerde figuur.",
+      "pickHelp": "Kies welk getal je vraag beantwoordt, of tik op Willekeurig voor een kant-en-klare vraag.",
+      "noSolve": "Deze figuur heeft geen berekende getallen om uit te kiezen.",
+      "hide": "Antwoord verbergen voor leerlingen",
+      "hideWhat": "Wat verbergen",
+      "hideAll": "Alle maten",
+      "ofSays": "Oomba Figures zegt: {reason}",
+      "undoLast": "Mijn laatste wijziging ongedaan maken",
+      "backToExample": "Terug naar het voorbeeld",
+      "add": "Aan werkblad toevoegen",
+      "newSheet": "Een nieuw werkblad",
+      "qs": "{count, plural, one {# vraag} other {# vragen}}",
+      "added": "Toegevoegd aan {title}.",
+      "openSheet": "Werkblad openen",
+      "saveBack": "Opslaan in {title}",
+      "svg": "SVG downloaden",
+      "png": "PNG downloaden",
+      "copy": "Afbeelding kopiëren",
+      "link": "Link kopiëren",
+      "savePreset": "Opslaan als mijn voorinstelling",
+      "presetName": "Geef je voorinstelling een naam",
+      "presetSaved": "Voorinstelling opgeslagen.",
+      "notice": "Downloads vermelden dat wat Oomba Academy toevoegt in het publieke domein is (CC0); wat jij zelf origineel toevoegt, is van jou.",
+      "noGen": "Nog geen generator voor deze figuur: hier is een ander voorbeeld.",
+      "pngFailed": "De PNG kon niet worden gemaakt. Probeer SVG downloaden.",
+      "copied": "Afbeelding gekopieerd.",
+      "copiedSvg": "Gekopieerd als SVG-tekst.",
+      "copyFailed": "Kopiëren lukte niet. Probeer te downloaden.",
+      "linkCopied": "Link gekopieerd.",
+      "why": {
+        "triangle": {
+          "t": "Deze zijden vormen geen driehoek",
+          "p": "Twee zijden van een driehoek moeten samen langer zijn dan de derde, anders raken de uiteinden elkaar nooit."
+        },
+        "angles": {
+          "t": "Deze hoeken passen niet",
+          "p": "De hoeken van een driehoek zijn samen precies 180°. Controleer de hoeken die je gaf."
+        },
+        "short": {
+          "t": "Een zijde is te kort",
+          "p": "Met deze getallen bereikt een zijde nooit het andere uiteinde. Maak hem langer of verander een hoek."
+        },
+        "agree": {
+          "t": "Deze maten zijn het niet eens",
+          "p": "Je gaf meer maten dan de figuur nodig heeft, en ze kloppen niet samen. Laat er één weg."
+        },
+        "drawAs": {
+          "t": "Controleer \"Niet op schaal\"",
+          "p": "Andere tekenverhoudingen werken alleen met \"Niet op schaal\" aan, en de markeringen moeten in beide kloppen."
+        },
+        "positive": {
+          "t": "Een getal moet groter dan nul zijn",
+          "p": "Lengtes, maten en aantallen zijn groter dan nul."
+        },
+        "range": {
+          "t": "Een getal valt buiten het bereik",
+          "p": "Een van de getallen is te groot of te klein voor deze figuur."
+        },
+        "extra": {
+          "t": "Te veel maten",
+          "p": "Deze figuur neemt maar een paar van deze maten samen. Laat er één weg."
+        },
+        "data": {
+          "t": "De gegevens kunnen niet gelezen worden",
+          "p": "Controleer het vak Geavanceerd (gegevens)."
+        },
+        "generic": {
+          "t": "Deze figuur kan niet getekend worden",
+          "p": "Oomba tekent nooit een verkeerde figuur. Verander de getallen zodat ze bij elkaar passen."
+        }
+      },
+      "f": {
+        "unit": "Eenheid",
+        "round": "Decimalen",
+        "mass": "Massa",
+        "angle": "Hoek",
+        "speed": "Snelheid",
+        "height": "Hoogte",
+        "width": "Breedte",
+        "length": "Lengte",
+        "radius": "Straal",
+        "value": "Waarde",
+        "min": "Laagste",
+        "max": "Hoogste",
+        "step": "Stap",
+        "type": "Soort",
+        "element": "Element"
+      },
+      "k": {
+        "area": "Oppervlakte",
+        "perimeter": "Omtrek",
+        "volume": "Inhoud",
+        "surfaceArea": "Totale oppervlakte",
+        "angles": "Hoek",
+        "sides": "Zijde",
+        "total": "Totaal",
+        "mean": "Gemiddelde",
+        "median": "Mediaan",
+        "range": "Spreidingsbreedte",
+        "interior": "Binnenhoek",
+        "value": "Waarde"
+      },
+      "hp": {
+        "sides": "De zijden",
+        "angles": "De hoeken",
+        "heights": "De hoogtes",
+        "value": "De waarde",
+        "image": "Het beeld",
+        "electrons": "De elektronen",
+        "values": "De waarden",
+        "reading": "De aflezing"
+      },
+      "draw": {
+        "modeLabel": "Hoe je de figuur maakt",
+        "type": "Maten typen",
+        "draw": "Tekenen",
+        "title": "Teken het op het puntenrooster",
+        "size": "Grootte van het rooster",
+        "sizeOpt": "{n} bij {n}",
+        "clear": "Wissen",
+        "help": {
+          "triangle": "Tik op drie punten om een driehoek te maken. Sleep een hoekpunt om het te verplaatsen.",
+          "quad": "Tik op volgorde rond de vorm op vier punten. Sleep een hoekpunt om het te verplaatsen.",
+          "grid": "Tik op volgorde rond de vorm op de punten, tot 10 hoekpunten. Sleep een hoekpunt om het te verplaatsen."
+        },
+        "keys": "Met het toetsenbord: de pijltjestoetsen bewegen, Enter zet een hoekpunt neer of pakt het op, en dan verschuiven de pijltjestoetsen het.",
+        "board": "Puntenrooster, {n} bij {n}",
+        "corner": "Hoekpunt {name} op ({x}, {y})",
+        "placed": "{name} neergezet op ({x}, {y})",
+        "moved": "{name} verplaatst naar ({x}, {y})",
+        "picked": "{name} opgepakt. Verplaats het met de pijltjestoetsen en zet het neer met Enter.",
+        "removed": "{name} weggehaald",
+        "corners": "Hoekpunten",
+        "sides": "Zijden",
+        "angles": "Hoeken",
+        "kind": "Soort",
+        "perimeter": "Omtrek",
+        "area": "Oppervlakte",
+        "sqUnits": "{area} vierkante eenheden",
+        "more": "{count, plural, one {Tik nog op # punt.} other {Tik nog op # punten.}}",
+        "filled": "Ingevuld vanuit je tekening.",
+        "keep": "De figuur hieronder houdt je laatste goede vorm.",
+        "same": "Twee hoekpunten staan op hetzelfde punt. Sleep er een naar een ander punt.",
+        "line": "Drie hoekpunten liggen op een rechte lijn, dus ze maken geen vorm. Zet er een van de lijn af.",
+        "cross": "Twee zijden kruisen elkaar. Verplaats een hoekpunt zodat de zijden elkaar alleen in de hoekpunten raken.",
+        "cannot": "Oomba Figures kan deze niet tekenen. Verplaats eens een hoekpunt.",
+        "isNot": "Die vorm is {is} en niet {want}.",
+        "special": "Die vorm is {is}, en Oomba Figures tekent die met een eigen editor.",
+        "open": {
+          "rectangle": "Openen in de editor Rechthoek",
+          "parallelogram": "Openen in de editor Parallellogram",
+          "trapezoid": "Openen in de editor Trapezium",
+          "kite": "Openen in de editor Vlieger",
+          "grid": "Uitzetten in een assenstelsel"
+        },
+        "a": {
+          "square": "een vierkant",
+          "rectangle": "een rechthoek",
+          "rhombus": "een ruit",
+          "parallelogram": "een parallellogram",
+          "trapezoid": "een trapezium",
+          "kite": "een vlieger",
+          "quad": "een vierhoek zonder speciale naam",
+          "concave": "een concave vierhoek"
+        },
+        "t": {
+          "square": "Vierkant",
+          "rectangle": "Rechthoek",
+          "rhombus": "Ruit",
+          "parallelogram": "Parallellogram",
+          "trapezoid": "Trapezium",
+          "isoTrapezoid": "Gelijkbenig trapezium",
+          "rightTrapezoid": "Rechthoekig trapezium",
+          "kite": "Vlieger",
+          "quad": "Vierhoek",
+          "concave": "Concave vierhoek",
+          "polygon": "{count, plural, one {Veelhoek met # zijde} other {Veelhoek met # zijden}}"
+        },
+        "tri": {
+          "right": "Rechthoekig",
+          "acute": "Scherphoekig",
+          "obtuse": "Stomphoekig",
+          "scalene": "Ongelijkzijdig",
+          "isosceles": "Gelijkbenig",
+          "equilateral": "Gelijkzijdig"
+        },
+        "ex": {
+          "right": "Rechthoekige driehoek",
+          "isosceles": "Gelijkbenige driehoek",
+          "obtuse": "Stomphoekige driehoek",
+          "pentagon": "Vijfhoek"
+        },
+        "examples": "Getekend op het puntenrooster",
+        "gridOut": "Ook in een assenstelsel laten zien",
+        "gridTitle": "In een assenstelsel",
+        "addGrid": "De figuur in het assenstelsel aan een werkblad toevoegen",
+        "drawInstead": "In plaats daarvan op een rooster tekenen"
+      },
+      "choiceNote": "Dit is een meerkeuzevraag. De opties en de juiste stel je in het werkblad in.",
+      "history": "Ongedaan maken en opnieuw",
+      "undoTip": "Ongedaan maken (Ctrl+Z)",
+      "redoTip": "Opnieuw (Ctrl+Shift+Z)",
+      "undone": "Ongedaan gemaakt.",
+      "redone": "Opnieuw gedaan.",
+      "moreLabel": "Voorinstellingen: de voorbeelden, je eigen, opslaan en verwijderen",
+      "deletePresets": "Een voorinstelling verwijderen…",
+      "deletePreset": "Verwijderen",
+      "deletePresetQ": "De voorinstelling \"{name}\" verwijderen?",
+      "deletePresetText": "Hij verdwijnt uit je voorinstellingen voor dit soort figuur. Werkbladen die hem gebruikten houden hun figuren.",
+      "presetDeleted": "Voorinstelling verwijderd.",
+      "noPresets": "Je hebt nog geen voorinstellingen voor dit soort figuur.",
+      "reuseLink": "Wat je met je figuren mag doen",
+      "presetsBtn": "Voorinstellingen"
+    },
+    "figures-sheet": {
+      "title": "Titel van het werkblad",
+      "grade": "Groep",
+      "anyGrade": "Elke groep",
+      "gradeN": "Groep {grade}",
+      "powerAi": "Met AI",
+      "briefLabel": "Onderwerp, groep, hoeveel vragen",
+      "briefHint": "Groep 7, oppervlakte van rechthoeken en trapezia, plus één boxplot.",
+      "howMany": "Vragen",
+      "draft": "Opstellen",
+      "budget": "Gebruikt het AI-budget. Als het pauzeert, krijg je een startset.",
+      "drafting": "Je vragen worden opgesteld…",
+      "briefFirst": "Beschrijf het werkblad eerst in een paar woorden.",
+      "drafted": "{count, plural, one {# vraag opgesteld.} other {# vragen opgesteld.}} Oomba Figures controleerde elke figuur en rekende elk antwoord uit.",
+      "resting": "De AI pauzeert, hier is een startset ({count, plural, one {# vraag} other {# vragen}}).",
+      "repaired": "{count, plural, one {# figuur kon niet getekend worden en is vervangen.} other {# figuren konden niet getekend worden en zijn vervangen.}}",
+      "dropped": "{count, plural, one {# vraag is weggelaten.} other {# vragen zijn weggelaten.}}",
+      "addLabel": "Een vraag met figuur toevoegen",
+      "add": "Toevoegen",
+      "empty": "Nog geen vragen. Voeg een vraag met figuur toe, of laat AI er een paar opstellen.",
+      "questionN": "Vraag {n}",
+      "questionHint": "Schrijf de vraag…",
+      "answer": "Antwoord:",
+      "noAnswer": "Nog geen antwoord gekozen: open hem in de editor.",
+      "up": "Omhoog",
+      "down": "Omlaag",
+      "regen": "Nieuwe getallen",
+      "edit": "Figuur bewerken",
+      "delete": "Verwijderen",
+      "deleteQ": "Deze vraag verwijderen?",
+      "remove": "Werkblad verwijderen",
+      "removeQ": "Dit werkblad verwijderen?",
+      "removeText": "De vragen gaan ook weg. Dit kan niet ongedaan worden.",
+      "preview": "Afdrukvoorbeeld",
+      "paper": "Letter, zwart op wit",
+      "studentSheet": "Leerlingblad",
+      "answerKey": "Antwoorden",
+      "previewEmpty": "Het printbare blad verschijnt hier zodra er een vraag is.",
+      "print": "Printen",
+      "printKey": "Printen met antwoorden",
+      "assign": "Aan een klas toewijzen",
+      "assignTitle": "Opgeven aan een klas",
+      "assignClass": "Klas",
+      "assignOpens": "Start (optioneel)",
+      "assignDue": "Inleveren (optioneel)",
+      "assignShow": "Antwoorden tonen na de inleverdatum",
+      "assignShowHint": "Standaard uit. Aan: na de inleverdatum zien leerlingen die hebben ingeleverd de antwoorden en de uitwerking.",
+      "assignSnapshot": "Leerlingen krijgen het werkblad zoals het nu is. Latere wijzigingen veranderen het niet.",
+      "assignGo": "Opgeven",
+      "assignCancel": "Annuleren",
+      "assignEmpty": "Voeg eerst vragen toe en geef dan het werkblad op.",
+      "assignNoClasses": "Je geeft nog geen les aan een klas. Maak eerst een klas en geef dan op.",
+      "assignDone": "Opgegeven aan {class}.",
+      "assignSee": "Bekijk het als leerling",
+      "assignProgress": "Voortgang bekijken",
+      "answerType": "Antwoord",
+      "typeNumber": "Getal",
+      "typeChoice": "Meerkeuze",
+      "options": "Opties (vink de juiste aan)",
+      "optionN": "Optie {letter} van vraag {n}",
+      "rightN": "Optie {letter} is het goede antwoord",
+      "markRight": "Het goede antwoord",
+      "addOption": "Optie toevoegen",
+      "removeOption": "Optie {letter} verwijderen",
+      "fromFigure": "De goede optie wordt uit de figuur afgeleid. Verander een optie of vink een andere aan om zelf te kiezen.",
+      "needTwo": "Schrijf minstens 2 opties.",
+      "needRight": "Vink de juiste optie aan.",
+      "testAiTitle": "Een toets als concept",
+      "topicLabel": "Onderwerp",
+      "topicHint": "Bijvoorbeeld: oppervlakte van rechthoeken en driehoeken",
+      "subject": "Vak",
+      "anySubject": "Elk vak",
+      "draftTest": "Concept maken",
+      "testBudget": "Gemaakt met de vraaggeneratoren, dus je kunt voor elke vraag nieuwe getallen trekken. Telt mee voor de AI-limiet; zonder AI wordt een starttoets getrokken.",
+      "byHand": "Met de hand: kies een vak, voeg vragen bij figuren toe en stel daarna elke figuur en het antwoord in.",
+      "checkFirst": "Controleer elke vraag voordat je hem toewijst.",
+      "topicFirst": "Schrijf eerst het onderwerp van de toets.",
+      "saveLesson": "Opslaan in de les",
+      "saveLessonHint": "Zet deze vragen in {title}. In de les verandert niets tot je opslaat.",
+      "saveLessonAgain": "Opnieuw opslaan vervangt de vragen in {title}.",
+      "lessonStarted": "Leerlingen zijn aan deze stap begonnen, dus de vragen blijven zoals ze zijn. Maak een kopie van de les om ze te veranderen.",
+      "backToLesson": "Terug naar de les",
+      "subjects": "Vakken",
+      "swapLabel": "Figuur vervangen door",
+      "swap": "Figuur vervangen",
+      "editN": "Figuur van vraag {n} bewerken ({kind})",
+      "regenN": "Nieuwe getallen voor vraag {n}",
+      "moreN": "Meer voor vraag {n}",
+      "swapMenu": "Figuur vervangen…",
+      "swapTitle": "Figuur van vraag {n} vervangen",
+      "swapHint": "De vraag krijgt een nieuwe figuur van dat soort, met een eigen vraag en antwoord. Je kunt ze daarna bewerken.",
+      "deleteText": "De vraag en de figuur gaan weg. Dit kan niet ongedaan worden.",
+      "movedTo": "Nu vraag {n}.",
+      "removeTest": "Toets verwijderen",
+      "removeTestQ": "Deze toets verwijderen?",
+      "removeLesson": "Deze vragen verwijderen",
+      "removeLessonQ": "Deze vragen bij figuren verwijderen?",
+      "removeLessonText": "De figuurstap van de les houdt de vragen waarmee hij het laatst is opgeslagen. Dit kan niet ongedaan worden."
     }
   },
   "favorites": {
@@ -3923,7 +4416,9 @@
       "build": "Bouw een game",
       "text": "Lees of doe",
       "question": "Beantwoord een vraag",
-      "quiz": "Quizvragen beantwoorden"
+      "quiz": "Quizvragen beantwoorden",
+      "figures": "Vragen over figuren beantwoorden",
+      "figureStep": "Vragen bij figuren"
     },
     "library": {
       "title": "Lessenbibliotheek",
@@ -4002,7 +4497,14 @@
       "newGameLink": "Maak een nieuwe game voor leerlingen",
       "deleteWorkConfirm": "Deze stap verwijderen? Het werk van {n, plural, one {# leerling} other {# leerlingen}} aan deze stap wordt verwijderd. Dit kan niet ongedaan worden gemaakt.",
       "liveGames": "Live klassenspellen (jij leidt ze)",
-      "otherGames": "Meer spellen"
+      "otherGames": "Meer spellen",
+      "bodyFigures": "Instructies voor leerlingen (optioneel)",
+      "figuresHint": "Daarna opent de figurenbouwer: kies figuren, stel getallen en antwoorden in en kies dan Opslaan in de les.",
+      "editFigures": "Vragen bewerken",
+      "printFigures": "Afdrukken",
+      "figuresStarted": "Leerlingen zijn aan deze stap begonnen, dus de vragen blijven zoals ze zijn.",
+      "more": "Meer",
+      "figuresSaved": "Vragen bij figuren opgeslagen in de les."
     },
     "ai": {
       "button": "Opzet met AI",
@@ -4081,7 +4583,9 @@
       "build": "Bouw je eigen game",
       "buildText": "Een quizgame met 6 vragen over {topic}",
       "exit": "Exitticket",
-      "exitText": "In twee of drie zinnen: wat is het belangrijkste dat je vandaag over {topic} hebt geleerd?"
+      "exitText": "In twee of drie zinnen: wat is het belangrijkste dat je vandaag over {topic} hebt geleerd?",
+      "figures": "Vragen bij figuren",
+      "figuresText": "Beantwoord de vraag onder elke figuur."
     },
     "errors": {
       "notFound": "We konden dat niet vinden, of je kunt het niet openen.",
@@ -9467,7 +9971,9 @@
       "headingActivity": "Dit is je activiteitenplan",
       "text": "Verander wat je wilt, of open de Bouwer en ga daar verder.",
       "told": "Dit krijgt de Bouwer te horen",
-      "open": "Open de Bouwer"
+      "open": "Open de Bouwer",
+      "toldHelp": "Je kunt dit bericht aanpassen voordat het wordt verstuurd.",
+      "toldReset": "Terugzetten"
     },
     "say": {
       "start": "Dit is mijn gameplan.",
@@ -9487,13 +9993,16 @@
       "practise": "Oefenen: {topic}.",
       "help": "Hulp: {help}.",
       "played": {
-        "devices": "Leerlingen spelen het op hun eigen apparaat.",
-        "board": "We spelen het samen op het bord.",
-        "both": "Leerlingen spelen het op hun eigen apparaat, en we laten het ook op het bord zien."
+        "board": "We spelen het samen op het bord."
       },
       "lesson": "Ik heb mijn les beschreven.",
       "lessonDoc": "Ik heb mijn lesplan toegevoegd.",
-      "purpose": "Voor: {list}."
+      "use": {
+        "screen": "Leerlingen gebruiken het op hun eigen apparaat.",
+        "worksheet": "Leerlingen gebruiken het op papier: een werkblad om af te drukken, met antwoordblad.",
+        "both": "Leerlingen gebruiken het op hun eigen apparaat en op papier."
+      },
+      "fresh": "Maak waar het kan een nieuwe set vragen."
     },
     "flatNote": "In 2D kunnen voorlopig alleen ren- en vanggames onze werelden en figuren gebruiken. Bij andere games gebruikt de Bouwer zijn klassieke uiterlijk.",
     "typeGroups": {
@@ -9539,7 +10048,6 @@
     },
     "canvas": {
       "nextHelp": "Volgende: hoeveel hulp",
-      "nextPlayed": "Volgende: hoe het gespeeld wordt",
       "practise": {
         "heading": "Wat moeten leerlingen oefenen?",
         "text": "Typ een onderwerp. De Builder maakt 5 opgaven met stappen en hints.",
@@ -9569,22 +10077,6 @@
           "text": "De stappen blijven verborgen tot leerlingen erom vragen."
         }
       },
-      "played": {
-        "heading": "Hoe wordt het gespeeld?",
-        "hint": "Live spelen met activiteiten komt later.",
-        "devices": {
-          "title": "Op hun eigen apparaat",
-          "text": "Elke leerling werkt aan een eigen kopie. De resultaten gaan naar Voortgang."
-        },
-        "board": {
-          "title": "Op het bord",
-          "text": "Jullie doen het samen op het grote scherm. Zonder scores."
-        },
-        "both": {
-          "title": "Allebei",
-          "text": "Op hun eigen apparaat, en op het bord wanneer je wilt."
-        }
-      },
       "topics": {
         "evenOdd": "Even en oneven",
         "orderNumbers": "Getallen ordenen",
@@ -9601,20 +10093,17 @@
         "bigAdd": "Grote getallen optellen"
       },
       "nextLesson": "Volgende: je les",
-      "purpose": {
-        "heading": "Waarvoor is het?",
-        "hint": "Kies er één of meer. Leerlingen beginnen met oefenen op het scherm.",
+      "use": {
+        "heading": "Hoe gebruiken leerlingen het?",
+        "hint": "Kies er één of allebei.",
+        "note": "Je kunt het altijd op het bord laten zien met de knop Leraar, en waar het kan komt er een nieuwe set vragen.",
         "screen": {
-          "title": "Oefenen op het scherm",
-          "text": "Leerlingen werken op hun eigen apparaat, met stappen en hints."
+          "title": "Op hun apparaat",
+          "text": "Elke leerling werkt aan een eigen kopie, met stappen en hints. De resultaten gaan naar Voortgang."
         },
         "worksheet": {
-          "title": "Werkblad om af te drukken",
-          "text": "Vragen met figuren om af te drukken, plus een antwoordblad."
-        },
-        "generator": {
-          "title": "Vragengenerator",
-          "text": "Elke keer dat je op Nieuw blad drukt, komt er een nieuwe set, op het scherm of op papier."
+          "title": "Op papier",
+          "text": "Een werkblad om af te drukken, met antwoordblad."
         }
       }
     },
@@ -11332,6 +11821,117 @@
         "howto": "Tik of sleep een staaf naar het bord. Bouw even lange treinen.",
         "helpUse": "Tik een staaf aan en kies Draaien, Kopiëren of Verwijderen; pijltjes verplaatsen.\nTreinen tonen legt beide kanten van de som; vul het vakje in.\nDe langere staaf staat aan het eind van de rij; het menu kiest 11 tot 20.",
         "helpIdeas": "Welke twee staven maken samen een trein zo lang als de 10?"
+      },
+      "pdf": {
+        "name": "Pdf",
+        "desc": "Blader door een pdf die je uploadt, zoals een lesplan of werkblad.",
+        "s": {
+          "doc": "Pdf-bestand",
+          "title": "Titel"
+        },
+        "empty": "Upload een pdf om hem hier te tonen.",
+        "upload": "Pdf uploaden",
+        "uploading": "Je pdf wordt geüpload…",
+        "replace": "Pdf wijzigen",
+        "note": "Tot 10 MB. Alleen jij kunt hem openen, en hij is nooit te zien op schermen van leerlingen.",
+        "prev": "Vorige pagina",
+        "next": "Volgende pagina",
+        "page": "Pagina {n} van {total}",
+        "loading": "Pdf wordt geopend…",
+        "bad": "Deze pdf ging niet open. Probeer een ander bestand.",
+        "gone": "Deze pdf is er niet meer. Upload hem opnieuw.",
+        "pages": "Pdf",
+        "tooBig": "Deze pdf is te groot. De grens is 10 MB."
+      },
+      "link": {
+        "name": "Link",
+        "desc": "Een tegel die een website opent in een nieuw tabblad.",
+        "s": {
+          "title": "Titel",
+          "url": "Webadres"
+        },
+        "empty": "Voeg een titel en een webadres toe in de instellingen van deze widget.",
+        "opens": "Opent in een nieuw tabblad",
+        "bad": "Gebruik een webadres dat begint met http:// of https://",
+        "note": "Opent in een nieuw tabblad. Nooit te zien op schermen van leerlingen."
+      },
+      "stickers": {
+        "name": "Stickers",
+        "desc": "Plak stickers overal op het bord. Maak elke sticker groter of kleiner, draai hem en leg hem voor of achter.",
+        "s": {
+          "k": "Sticker",
+          "x": "Horizontaal",
+          "y": "Verticaal",
+          "size": "Grootte",
+          "r": "Draaiing",
+          "back": "Achter de widgets"
+        },
+        "open": "Stickers",
+        "heading": "Stickers",
+        "search": "Stickers zoeken",
+        "theme": "Thema",
+        "allThemes": "Alle thema's",
+        "language": "Taal",
+        "allLanguages": "Alle talen",
+        "shape": "Vorm",
+        "allShapes": "Alle vormen",
+        "count": "{n, plural, one {# sticker} other {# stickers}}",
+        "none": "Geen stickers gevonden voor \"{q}\"",
+        "noneFilters": "Geen stickers passen bij deze filters.",
+        "clear": "Zoekopdracht wissen",
+        "recent": "Recent",
+        "favorites": "Favorieten",
+        "all": "Alle stickers",
+        "more": "Meer tonen",
+        "star": "{name} toevoegen aan Favorieten",
+        "unstar": "{name} uit Favorieten halen",
+        "add": "{name} op het bord zetten",
+        "placed": "{name} staat op het bord.",
+        "hint": "Tik op een sticker om hem op het bord te zetten, of sleep hem erheen. Tik op een sticker op het bord om hem te verplaatsen, te vergroten of te draaien.",
+        "close": "Stickers sluiten",
+        "loading": "Stickers laden…",
+        "failed": "De stickers zijn niet geladen. Probeer het opnieuw.",
+        "full": "Dit bord heeft {n} stickers, het maximum. Verwijder er eerst een.",
+        "duplicate": "Dupliceren",
+        "remove": "Verwijderen",
+        "removed": "{name} verwijderd.",
+        "resize": "Sleep om de grootte te wijzigen",
+        "rotate": "Sleep om te draaien",
+        "role": "sticker",
+        "toolsFor": "Stickerknoppen: {name}",
+        "moved": "{name} verplaatst.",
+        "sized": "{name} nu grootte {size}.",
+        "turned": "{name} {deg} graden gedraaid.",
+        "th_oomba": "Oomba",
+        "th_praise": "Complimenten",
+        "th_classroom": "Klas",
+        "th_animals-nature": "Dieren en natuur",
+        "th_maths-stem": "Rekenen en STEM",
+        "th_seasons-holidays": "Seizoenen en feestdagen",
+        "th_food": "Eten",
+        "th_sports-play": "Sport en spel",
+        "th_space-weather": "Ruimte en weer",
+        "th_music-arts": "Muziek en kunst",
+        "th_transport": "Vervoer",
+        "th_emotions": "Gevoelens",
+        "th_letters-numbers": "Letters en cijfers",
+        "th_good-morning": "Goedemorgen",
+        "th_praise-words": "Complimentwoorden",
+        "th_hello-welcome": "Hallo en welkom",
+        "th_goodbye": "Tot ziens",
+        "th_greetings": "Groeten",
+        "lang_English": "Engels",
+        "lang_Italian": "Italiaans",
+        "lang_Spanish": "Spaans",
+        "lang_French": "Frans",
+        "lang_German": "Duits",
+        "lang_Dutch": "Nederlands",
+        "lang_Portuguese": "Portugees",
+        "lang_Swedish": "Zweeds",
+        "lang_Turkish": "Turks",
+        "shape_rect": "Afgerond",
+        "shape_circle": "Cirkel",
+        "shape_bubble": "Tekstballon"
       }
     },
     "push": {
@@ -11377,7 +11977,9 @@
       "feedAddress": "Dat is geen agenda-adres. Plak de https://- of webcal://-link naar een .ics-agenda.",
       "feedTooMany": "Deze klas heeft te veel gekoppelde agenda's. Ontkoppel er eerst een.",
       "feedNotCalendar": "Dat adres is geen agendabestand (.ics). Kijk of het het iCal-adres is en niet de webpagina van de agenda.",
-      "feedUnreachable": "We konden die agenda niet bereiken. Controleer het adres en of de agenda gedeeld is, en probeer het opnieuw."
+      "feedUnreachable": "We konden die agenda niet bereiken. Controleer het adres en of de agenda gedeeld is, en probeer het opnieuw.",
+      "pdf_tooBig": "Deze pdf is te groot. De grens is 10 MB.",
+      "pdf_badType": "Dit bestand is geen pdf."
     },
     "tools": {
       "send": "Naar de klas sturen",
@@ -11617,6 +12219,605 @@
       "oombaSub": "Bekijk alle Oomba-spellen",
       "collectionEmpty": "Deze collectie is nog leeg",
       "allEmpty": "Je hebt nog geen spel gebouwd."
+    }
+  },
+  "library": {
+    "title": "Verhalenbibliotheek",
+    "lead": "Prentenboeken om zelf te lezen of voor te laten lezen, met 3 vragen aan het eind. {count} gratis verhalen.",
+    "grades": {
+      "gk": "Kleuters/K",
+      "g1": "Leerjaar 1",
+      "g2": "Leerjaar 2",
+      "g3": "Leerjaar 3",
+      "g45": "Leerjaar 4-5"
+    },
+    "gradesLabel": "Leerjaar (VS)",
+    "allGrades": "Alle leerjaren",
+    "gradeWhy": "Over het leerjaar",
+    "gradeNote": "Het leerjaar is een schatting van Oomba van het Amerikaanse leerjaar waarvoor dit boek past, berekend uit de tekst. Het is geen Lexile-, Guided Reading- of Fountas & Pinnell-niveau.",
+    "measures": "Woorden: {words} · Woorden per bladzijde: {perPage} · Woorden per zin: {perSentence} · Lettergrepen per woord: {syllables} · Flesch-Kincaid-niveau: {fk} · Niet op de woordenlijsten van Dolch of Fry: {notSight}%",
+    "meta": "{pages, plural, one {# bladzijde} other {# bladzijden}} · 🔊 Lees voor · {questions, plural, one {# vraag} other {# vragen}}",
+    "words": "{count, plural, one {# woord} other {# woorden}}",
+    "read": "Lezen",
+    "continue": "Verder lezen (bladzijde {page})",
+    "assign": "Toewijzen",
+    "state": {
+      "done": "Gelezen · {right} van {total} goed",
+      "quiz": "Vragen nog open",
+      "reading": "Bladzijde {page} van {pages}"
+    },
+    "forClass": "Kies een verhaal om toe te wijzen aan {class}.",
+    "backToClass": "Terug naar de klas",
+    "searchLabel": "Verhalen zoeken",
+    "searchPlaceholder": "Verhalen zoeken",
+    "searchGo": "Zoeken",
+    "found": "{count, plural, one {# verhaal} other {# verhalen}}",
+    "none": "Geen verhalen gevonden",
+    "noneText": "Probeer andere woorden of kijk bij alle leerjaren.",
+    "footQuestions": "Bij elk boek staan de schrijver, tekenaar en vertaler. De vragen aan het eind zijn van Oomba en horen niet bij de boeken.",
+    "glossary": "Woorden om te kennen",
+    "glossaryNote": "Uitleg van Oomba bij woorden uit India.",
+    "aboutTitle": "Over dit boek",
+    "aboutQuestions": "Na de laatste bladzijde komen 3 vragen. Die zijn geschreven door Oomba Academy en horen niet bij het boek.",
+    "credits": {
+      "text": "Verhaal: {names}",
+      "illustration": "Tekeningen: {names}",
+      "translation": "Vertaling: {names}",
+      "changes": "Oomba heeft de plaatjes kleiner gemaakt en toont het boek bladzijde voor bladzijde. Pratham Books staat niet achter Oomba.",
+      "corrected": "Oomba heeft de spelling en leestekens verbeterd.",
+      "notes": "Over de auteur en uitgever",
+      "factCorrected": "Oomba heeft een historisch feit verbeterd.",
+      "original": "Bekijk het originele boek.",
+      "from": "Gebaseerd op een boek van {name}",
+      "changesBloom": "Oomba heeft de plaatjes kleiner gemaakt en laat het boek pagina voor pagina zien. Bloom Library, SIL Global en de uitgever van het boek steunen Oomba niet officieel.",
+      "changesBloomSA": "Oomba heeft de plaatjes kleiner gemaakt en laat het boek pagina voor pagina zien; deze bewerkte pagina’s worden gedeeld onder dezelfde licentie, {license}. Bloom Library, SIL Global en de uitgever van het boek steunen Oomba niet officieel.",
+      "originalBloom": "Bekijk het originele boek op Bloom Library.",
+      "publicDomain": "Publiek domein",
+      "firstPublished": "Voor het eerst verschenen in {year} ({edition}).",
+      "changesClassic": "Oomba heeft het verhaal in pagina’s verdeeld en de plaatjes verkleind. De woorden zijn van de schrijver.",
+      "changesClassicCut": "Oomba heeft het verhaal in pagina's verdeeld, de plaatjes kleiner gemaakt en één regel weggelaten. Alle andere woorden zijn van de schrijver."
+    },
+    "readToMe": "Lees voor",
+    "pagesLabel": "Bladzijden",
+    "back": "Terug",
+    "next": "Volgende",
+    "toQuestions": "Vragen",
+    "pageOf": "Bladzijde {page} van {pages}",
+    "finished": "Je hebt “{title}” uit!",
+    "questionsLead": "{count, plural, one {# vraag} other {# vragen}} over het verhaal",
+    "readAgain": "Nog eens lezen",
+    "backTo": "Terug naar {name}",
+    "moreBooks": "Meer verhalen",
+    "needJs": "Voor de vragen moet JavaScript aan staan.",
+    "errors": {
+      "readFirst": "Lees eerst het verhaal tot de laatste bladzijde.",
+      "alreadyAssigned": "Dit verhaal is al toegewezen aan {class}.",
+      "pickStory": "Kies een verhaal uit de bibliotheek."
+    },
+    "assignTitle": "“{title}” toewijzen",
+    "assignNote": "Leerlingen zien het op de klaspagina. Ze lezen het, beantwoorden 3 vragen en u ziet bij Voortgang wie het las en hoe het ging.",
+    "preview": "Eerst zelf lezen",
+    "kindStory": "Verhaal",
+    "findStories": "Verhalenbibliotheek",
+    "door": {
+      "title": "Verhalenbibliotheek",
+      "kids": "{count} prentenboeken. Lees ze, of tik op Lees voor!",
+      "staff": "{count} prentenboeken op niveau, met vragen. Wijs er een toe aan een klas."
+    },
+    "results": {
+      "withAloud": "met Lees voor",
+      "onOwn": "zelf",
+      "questionsLeft": "Gelezen, vragen open",
+      "pageOf": "bladzijde {page} van {pages}",
+      "usedAloud": "Gebruikte Lees voor",
+      "notStarted": "niet begonnen",
+      "qN": "Vraag {n}",
+      "summary": "{started} van {total} begonnen · {finished} klaar",
+      "readTogether": "Samen lezen",
+      "assignAnother": "Ander verhaal toewijzen",
+      "read": "Gelezen",
+      "questions": "Vragen",
+      "rightOf": "{right} / {total}",
+      "firstTry": "in één keer goed",
+      "key": "Een vraag telt als hij in één keer goed is (✓ goed, ✗ moest nog eens proberen). Wie opnieuw probeert, kan het boek toch afmaken.",
+      "byQuestion": "De vragen",
+      "hardest": "Vraag {n} was het moeilijkst voor de klas.",
+      "answer": "Antwoord: {answer}",
+      "page": "bladzijde {page}",
+      "missed": "{count} hadden het de eerste keer fout"
+    },
+    "footSources": "Verhalen en plaatjes: Pratham Books (StoryWeaver) en de schrijvers en uitgevers op Bloom Library, elk boek onder een eigen open licentie, die bij het boek staat.",
+    "glossaryNoteAll": "Uitleg van Oomba bij woorden die kinderen misschien niet kennen.",
+    "footCredit": "Verhalen en tekeningen: Pratham Books, StoryWeaver. Licentie:",
+    "wish": {
+      "label": "Wat wil je vandaag lezen?",
+      "placeholder": "dinosaurussen, een grappig verhaal, iets over de ruimte...",
+      "go": "Boeken zoeken",
+      "busy": "Even zoeken...",
+      "heading": "Boeken voor jou",
+      "back": "Alle boeken",
+      "tryOther": "Laten we andere woorden proberen. Waar wil je dat het verhaal over gaat?",
+      "none": "We hebben daar nog geen boek over gevonden. Hier zijn boeken die veel lezers leuk vinden.",
+      "found": "We hebben {count, plural, one {# boek} other {# boeken}} voor je gevonden.",
+      "empty": "Schrijf waarover je wilt lezen.",
+      "error": "Er ging iets mis. Probeer het nog eens."
+    },
+    "sources": {
+      "classics": "Klassiekers"
+    },
+    "footClassics": "Klassiekers: oude boeken uit het publieke domein, met hun oorspronkelijke tekeningen."
+  },
+  "figures": {
+    "title": "Figuren",
+    "loading": "Figuren laden…",
+    "crumbs": "Je bent hier",
+    "tools": {
+      "label": "Lesmiddelen",
+      "manipulatives": "Manipulatieven",
+      "figures": "Figuren"
+    },
+    "subjects": {
+      "math": "Wiskunde",
+      "data": "Data en statistiek",
+      "physics": "Natuurkunde",
+      "chem": "Scheikunde",
+      "biology": "Biologie",
+      "economics": "Economie"
+    },
+    "grades": {
+      "K-2": "K-2",
+      "3-5": "Groep 3-5",
+      "6-8": "Groep 6-8",
+      "9-12": "Groep 9-12"
+    },
+    "menu": {
+      "testing": "In test: alleen jij ziet dit",
+      "pitch": "Exacte figuren op schaal voor werkbladen, toetsen en dia's. Klaar om te printen, met uitgewerkte antwoorden.",
+      "buildTitle": "Een werkblad maken",
+      "buildText": "Kies figuren zelf, of beschrijf wat je nodig hebt en laat AI de vragen opstellen. Elk getal wordt gecontroleerd, zodat elke figuur echt getekend kan worden.",
+      "draftAi": "Opstellen met AI",
+      "scratch": "Helemaal opnieuw",
+      "mine": "Mijn werkbladen",
+      "noSheets": "Nog geen werkbladen. De werkbladen die je maakt, staan hier.",
+      "questions": "{count, plural, one {# V} other {# V}}",
+      "gradeOf": "Groep {grade}",
+      "edited": "bewerkt op {date}",
+      "subjects": "Vakken",
+      "all": "Alle figuren",
+      "soon": "Binnenkort",
+      "grades": "Groepen",
+      "search": "Figuren zoeken",
+      "searchHint": "Figuren zoeken, zoals cilinder of boxplot",
+      "count": "{count, plural, one {# figuur} other {# figuren}}",
+      "nothing": "Geen figuren gevonden. Probeer een ander woord of een andere groep.",
+      "buildTest": "Een toets maken",
+      "buildTestText": "Een hele toets met vragen bij figuren, als concept met AI of met de hand gebouwd.",
+      "isTest": "Toets"
+    },
+    "sheet": {
+      "newTitle": "Nieuw werkblad",
+      "crumb": "Werkbladmaker",
+      "untitled": "Werkblad zonder titel",
+      "untitledTest": "Toets zonder titel",
+      "newTest": "Nieuwe toets",
+      "crumbTest": "Toetsbouwer",
+      "crumbLesson": "Vragen bij figuren"
+    },
+    "editor": {
+      "example": "Voorbeeld {n}"
+    },
+    "print": {
+      "figure": "Figuur bij vraag {n}",
+      "keyTag": "Antwoorden",
+      "keyTitle": "{title}: antwoorden",
+      "name": "Naam",
+      "date": "Datum",
+      "made": "Gemaakt met Oomba Academy",
+      "noQuestion": "Kijk naar de figuur.",
+      "noAnswer": "Nog geen antwoord gekozen",
+      "crumb": "Printen",
+      "sheetOnly": "Leerlingblad",
+      "withKey": "Met de antwoorden",
+      "print": "Printen",
+      "options": "Opties",
+      "rightOne": "(het goede antwoord)"
+    },
+    "errors": {
+      "notFound": "Dat is hier niet.",
+      "badKind": "Dat is geen van de figuren.",
+      "badData": "De gegevens van die figuur konden niet worden gelezen.",
+      "tooBig": "Die figuur is te groot om op te slaan.",
+      "words": "Sommige woorden zijn niet toegestaan. Verander ze en probeer het opnieuw.",
+      "personal": "Laat telefoonnummers, e-mails, links en codes weg en probeer het opnieuw.",
+      "cannotDraw": "Deze figuur kan met deze getallen niet getekend worden. Verander ze en probeer het opnieuw.",
+      "tooMany": "Je hebt al veel opgeslagen. Verwijder eerst iets.",
+      "fullSheet": "Dit werkblad is vol. Begin een nieuw.",
+      "noGen": "Deze figuur heeft nog geen vragengenerator.",
+      "name": "Geef het eerst een naam.",
+      "brief": "Beschrijf het werkblad eerst in een paar woorden.",
+      "names": "Laat namen van leerlingen uit de beschrijving: namen gaan nooit naar de AI.",
+      "sameChoices": "Twee opties zijn hetzelfde. Maak ze allemaal anders.",
+      "topic": "Schrijf eerst waar de toets over gaat."
+    },
+    "kinds": {
+      "numberLine": {
+        "name": "Getallenlijn",
+        "desc": "Getallen, intervallen en punten op een lijn"
+      },
+      "triangle": {
+        "name": "Driehoek",
+        "desc": "Elke driehoek uit drie maten"
+      },
+      "rectangle": {
+        "name": "Rechthoek",
+        "desc": "Rechthoeken en vierkanten"
+      },
+      "parallelogram": {
+        "name": "Parallellogram",
+        "desc": "Parallellogrammen en ruiten, met hoogtes"
+      },
+      "trapezoid": {
+        "name": "Trapezium",
+        "desc": "Trapezia: willekeurig, gelijkbenig of rechthoekig"
+      },
+      "kite": {
+        "name": "Vlieger",
+        "desc": "Vliegers met hun gelijke zijden gemarkeerd"
+      },
+      "regularPolygon": {
+        "name": "Regelmatige veelhoek",
+        "desc": "Regelmatige veelhoeken met apothema en straal"
+      },
+      "angles": {
+        "name": "Hoeken",
+        "desc": "Hoeken tussen halve lijnen"
+      },
+      "parallelLines": {
+        "name": "Evenwijdige lijnen en een snijlijn",
+        "desc": "Evenwijdige lijnen gesneden door een transversaal"
+      },
+      "segmentAddition": {
+        "name": "Lijnstukken optellen",
+        "desc": "Lijnstukken optellen met algebra"
+      },
+      "circle": {
+        "name": "Cirkel",
+        "desc": "Cirkels met koorden, raaklijnen en hoeken"
+      },
+      "compositeShape": {
+        "name": "Samengestelde figuur",
+        "desc": "Figuren gemaakt van eenvoudigere figuren"
+      },
+      "grid": {
+        "name": "Assenstelsel",
+        "desc": "Punten, lijnen en transformaties in een assenstelsel"
+      },
+      "protractor": {
+        "name": "Gradenboog",
+        "desc": "Een hoek aflezen op een gradenboog"
+      },
+      "prism": {
+        "name": "Prisma",
+        "desc": "Prisma's en kubussen in 3D"
+      },
+      "cylinder": {
+        "name": "Cilinder",
+        "desc": "Cilinders in 3D"
+      },
+      "pyramid": {
+        "name": "Piramide",
+        "desc": "Piramides in 3D"
+      },
+      "cone": {
+        "name": "Kegel",
+        "desc": "Kegels in 3D"
+      },
+      "sphere": {
+        "name": "Bol",
+        "desc": "Bollen en halve bollen"
+      },
+      "net": {
+        "name": "Uitslag",
+        "desc": "Uitslagen die tot ruimtefiguren vouwen"
+      },
+      "mappingDiagram": {
+        "name": "Pijlendiagram",
+        "desc": "Invoer gekoppeld aan uitvoer"
+      },
+      "barGraph": {
+        "name": "Staafdiagram",
+        "desc": "Staafdiagrammen, dubbel en gestapeld"
+      },
+      "dotPlot": {
+        "name": "Stippendiagram",
+        "desc": "Stippendiagrammen van een dataset"
+      },
+      "histogram": {
+        "name": "Histogram",
+        "desc": "Histogrammen met gelijke of ongelijke klassen"
+      },
+      "boxPlot": {
+        "name": "Boxplot",
+        "desc": "Boxplots met kwartielen"
+      },
+      "scatterPlot": {
+        "name": "Spreidingsdiagram",
+        "desc": "Spreidingsdiagrammen met een trendlijn"
+      },
+      "stemAndLeaf": {
+        "name": "Stam-en-bladdiagram",
+        "desc": "Stam-en-bladdiagrammen"
+      },
+      "pieChart": {
+        "name": "Cirkeldiagram",
+        "desc": "Cirkeldiagrammen met hoeken en procenten"
+      },
+      "cumulativeFrequency": {
+        "name": "Cumulatieve frequentie",
+        "desc": "Grafieken van cumulatieve frequentie"
+      },
+      "normalCurve": {
+        "name": "Normale verdeling",
+        "desc": "Normale krommen met gearceerde gebieden"
+      },
+      "treeDiagram": {
+        "name": "Boomdiagram",
+        "desc": "Kansbomen"
+      },
+      "vennDiagram": {
+        "name": "Venndiagram",
+        "desc": "Venndiagrammen met twee of drie verzamelingen"
+      },
+      "twoWayTable": {
+        "name": "Kruistabel",
+        "desc": "Kruistabellen met totalen"
+      },
+      "tableOfValues": {
+        "name": "Tabel met waarden",
+        "desc": "Tabellen van waarden uit een regel"
+      },
+      "freeBody": {
+        "name": "Krachtendiagram",
+        "desc": "De krachten op een voorwerp"
+      },
+      "vectors": {
+        "name": "Vectoren",
+        "desc": "Vectoren en hun resultante"
+      },
+      "inclinedPlane": {
+        "name": "Hellend vlak",
+        "desc": "Een blok op een helling, met zijn krachten"
+      },
+      "pulley": {
+        "name": "Katrollen",
+        "desc": "Katrollen en hangende massa's"
+      },
+      "rays": {
+        "name": "Stralengang",
+        "desc": "Stralengangen voor lenzen en spiegels"
+      },
+      "circuit": {
+        "name": "Schakelschema",
+        "desc": "Stroomkringen in serie en parallel"
+      },
+      "motionGraph": {
+        "name": "Bewegingsgrafiek",
+        "desc": "Grafieken van afstand, snelheid en versnelling"
+      },
+      "motionMap": {
+        "name": "Bewegingsdiagram",
+        "desc": "Bewegingskaarten met stippen en pijlen"
+      },
+      "projectile": {
+        "name": "Kogelbaan",
+        "desc": "De baan van een projectiel, op schaal"
+      },
+      "waves": {
+        "name": "Golven",
+        "desc": "Transversale en longitudinale golven"
+      },
+      "reading": {
+        "name": "Een schaal aflezen",
+        "desc": "Thermometers, maatcilinders, linialen en schuifmaten"
+      },
+      "bohr": {
+        "name": "Bohrmodel",
+        "desc": "Bohrmodellen van atomen en ionen"
+      },
+      "orbitals": {
+        "name": "Orbitaaldiagram",
+        "desc": "Orbitaaldiagrammen met hokjes"
+      },
+      "lewis": {
+        "name": "Lewisstructuur",
+        "desc": "Lewisstructuren van moleculen"
+      },
+      "halfLife": {
+        "name": "Halveringstijd",
+        "desc": "Krommen van radioactief verval"
+      },
+      "titration": {
+        "name": "Titratiekromme",
+        "desc": "Titratiekrommen"
+      },
+      "massSpectrum": {
+        "name": "Massaspectrum",
+        "desc": "Isotooppieken en relatieve atoommassa"
+      },
+      "heatingCurve": {
+        "name": "Opwarmings- en afkoelingskromme",
+        "desc": "De temperatuur bij opwarmen of afkoelen, op schaal"
+      },
+      "energyProfile": {
+        "name": "Energiediagram van een reactie",
+        "desc": "Energieprofielen met Ea en ΔH"
+      },
+      "nuclide": {
+        "name": "Nuclidenotatie",
+        "desc": "Symbolen van isotopen, ionen en deeltjes"
+      },
+      "lineSpectrum": {
+        "name": "Lijnenspectrum",
+        "desc": "Emissie- en absorptielijnen van elementen"
+      },
+      "photoelectron": {
+        "name": "Foto-elektronenspectrum",
+        "desc": "Eén piek per subschil, H tot Xe"
+      },
+      "particles": {
+        "name": "Deeltjesmodel",
+        "desc": "Atomen, ionen en moleculen in een vak of rooster"
+      },
+      "dotCross": {
+        "name": "Stip-kruisdiagram",
+        "desc": "Gedeelde en overgedragen elektronen in schillen"
+      },
+      "skeletal": {
+        "name": "Organische structuren",
+        "desc": "Skelet-, beknopte en volledige structuurformules"
+      },
+      "energyLevels": {
+        "name": "Energieniveaus van het atoom",
+        "desc": "Elektronenovergangen, golflengten en reeksen"
+      },
+      "populationGrowth": {
+        "name": "Populatiegroei",
+        "desc": "J- en S-curven, K en de groeifasen"
+      },
+      "predatorPrey": {
+        "name": "Roofdier en prooi",
+        "desc": "Populatiecycli, de roofdieren een stap later"
+      },
+      "enzymeActivity": {
+        "name": "Enzymactiviteit",
+        "desc": "Snelheid tegen temperatuur, pH of substraat"
+      },
+      "photosynthesis": {
+        "name": "Fotosynthesesnelheid",
+        "desc": "Licht, CO₂ en temperatuur als beperkende factoren"
+      },
+      "punnett": {
+        "name": "Kruisingsschema",
+        "desc": "Kruisingen met de verhoudingen uitgerekend"
+      },
+      "pedigree": {
+        "name": "Stamboom",
+        "desc": "Families die bij een overervingspatroon passen"
+      },
+      "proteinSynthesis": {
+        "name": "Eiwitsynthese",
+        "desc": "Van DNA via mRNA naar aminozuren, met open vakjes"
+      },
+      "gel": {
+        "name": "Gelelektroforese",
+        "desc": "Banden op schaal naast een DNA-marker"
+      },
+      "osmosis": {
+        "name": "Osmose",
+        "desc": "Cellen, U-buizen en zakjes in oplossingen"
+      },
+      "supplyDemand": {
+        "name": "Vraag en aanbod",
+        "desc": "Verschuivingen, prijsregulering, belastingen en surplus"
+      },
+      "moneyMarket": {
+        "name": "Geldmarkten",
+        "desc": "Geld, uitleenbare middelen en reserves"
+      },
+      "businessCycle": {
+        "name": "Conjunctuurcyclus",
+        "desc": "Pieken, dalen en fasen rond een trend"
+      },
+      "phillipsCurve": {
+        "name": "Phillipscurve",
+        "desc": "Korte en lange termijn, verschuivingen en verwachtingen"
+      },
+      "possibilitiesCurve": {
+        "name": "Productiemogelijkheden",
+        "desc": "Afwegingen, groei en comparatief voordeel"
+      },
+      "adAs": {
+        "name": "AD-AS-model",
+        "desc": "Productiekloven, schokken en beleid"
+      },
+      "costCurves": {
+        "name": "Kosten- en opbrengstcurven",
+        "desc": "MK, GTK, winst en marktvormen"
+      }
+    },
+    "step": {
+      "answerLabel": "Jouw antwoord op vraag {n}",
+      "right": "Goed",
+      "notRight": "Niet goed",
+      "answer": "Antwoord:",
+      "teacherAnswer": "Antwoordblad:",
+      "score": "Je hebt {right} van de {total} goed ({pct}%).",
+      "answersLater": "Je leraar laat de antwoorden zien na de inleverdatum.",
+      "noAnswers": "Je leraar heeft de antwoorden en bespreekt ze misschien met de klas.",
+      "teacherNote": "Dit zien leerlingen, met het antwoord onder elke vraag voor jou.",
+      "showOnNote": "Leerlingen zien de antwoorden na de inleverdatum.",
+      "showOffNote": "Leerlingen zien de antwoorden nooit.",
+      "handInHint": "Sla tussendoor op. Als je inlevert, worden je antwoorden nagekeken en kun je ze niet meer veranderen.",
+      "answersReady": "De antwoorden staan klaar. Lever je werk in om ze te zien.",
+      "save": "Opslaan",
+      "handIn": "Inleveren",
+      "handInConfirm": "Je antwoorden inleveren? Daarna kun je ze niet meer veranderen.",
+      "saved": "Opgeslagen",
+      "handedIn": "Ingeleverd",
+      "showIsOn": "Antwoorden komen na de inleverdatum",
+      "showIsOff": "Antwoorden zijn verborgen voor leerlingen",
+      "errors": {
+        "handedIn": "Je hebt dit al ingeleverd.",
+        "empty": "Schrijf eerst minstens één antwoord."
+      },
+      "showAnswers": "Antwoorden tonen na de inleverdatum",
+      "showAnswersHint": "Standaard uit. Aan: na de inleverdatum ziet elke leerling die heeft ingeleverd de antwoorden en de uitwerking.",
+      "showNeedsDue": "Geef deze les een inleverdatum om de antwoorden daarna te tonen.",
+      "handedInCount": "Ingeleverd: {done} van {total}",
+      "questionN": "Vraag {n}",
+      "rightOf": "{right} van {total} goed",
+      "answersTable": "De antwoorden van elke leerling",
+      "noneYet": "Nog niemand heeft ingeleverd.",
+      "questions": "{count, plural, one {# vraag over een figuur} other {# vragen over figuren}}",
+      "sign": "Negatief of positief maken",
+      "signLabel": "Je antwoord op vraag {n} wisselen tussen negatief en positief",
+      "rightOption": "Goed antwoord"
+    },
+    "assign": {
+      "errors": {
+        "empty": "Voeg een vraag toe voordat je dit werkblad opgeeft.",
+        "noAnswer": "Elke vraag heeft een antwoord nodig voordat je hem opgeeft. Kies er een voor vraag {list} in de editor.",
+        "noClass": "Kies een van je klassen.",
+        "badDate": "Die datum klopt niet.",
+        "dueBeforeOpen": "De inleverdatum ligt voor de startdatum.",
+        "needsDue": "Kies een inleverdatum om de antwoorden daarna te tonen.",
+        "started": "Leerlingen zijn aan deze stap begonnen, dus de vragen blijven zoals ze zijn. Maak een kopie van de les om ze te veranderen."
+      }
+    },
+    "terms": {
+      "title": "Je figuren hergebruiken",
+      "crumb": "Voorwaarden voor hergebruik",
+      "lead": "Elke figuur die je in Figuren maakt, mag je vrij gebruiken. Dit is wat dat betekent, in gewone woorden.",
+      "canTitle": "Wat je mag",
+      "can1": "Je figuren gebruiken in de klas, op werkbladen en toetsen, in presentaties en op websites.",
+      "can2": "Ze kopiëren, printen en delen met iedereen: leerlingen, ouders en andere leraren.",
+      "can3": "Ze aanpassen: bijsnijden, labels toevoegen of in je eigen lesmateriaal verwerken.",
+      "can4": "Ze gebruiken in materiaal dat je publiceert of verkoopt.",
+      "can5": "Dit allemaal zonder het ons te vragen en zonder ons te noemen. Een vermelding is welkom, maar nooit verplicht.",
+      "noticeTitle": "De notitie in het bestand",
+      "noticeText": "Elk SVG- of PNG-bestand dat je downloadt of kopieert, bevat deze notitie in het bestand zelf, waar beeldprogramma's en zoekmachines kijken. Hij is in het Engels, zodat hij overal hetzelfde leest:",
+      "noticeMeans": "Hij betekent dat Oomba Academy afziet van alle rechten op haar deel van de figuur (de tekening, de opmaak en de labels die ze maakt), zodat iedereen dat deel mag hergebruiken. Je mag de notitie laten staan of weghalen.",
+      "cc0Title": "Wat CC0 betekent",
+      "cc0Text": "CC0 1.0 is een verklaring van Creative Commons waarmee iets in het publieke domein komt. Voor ons deel van een figuur gelden geen voorwaarden: geen naamsvermelding, geen licentie om te volgen, overal ter wereld, voor zover de wet dat toelaat.",
+      "cc0Link": "Lees CC0 1.0 op de website van Creative Commons",
+      "yoursTitle": "Wat van jou blijft",
+      "yoursText": "Alles wat je zelf origineel toevoegt, is van jou: je eigen vraag, je eigen labels en gegevens en je eigen tekeningen. Of anderen die delen mogen hergebruiken, bepaal jij.",
+      "careTitle": "Goed om te weten",
+      "care1": "Controleer een figuur voordat je hem gebruikt. We controleren figuren zorgvuldig, maar we kunnen niet beloven dat elke figuur voor elk doel klopt.",
+      "care2": "Zet geen namen of persoonlijke gegevens van leerlingen in figuren die je deelt.",
+      "care3": "Deze voorwaarden gaan over de figuren die je exporteert. Voor de rest van Oomba Academy gelden de voorwaarden van de site.",
+      "siteTerms": "Lees de voorwaarden van de site",
+      "back": "Terug naar Figuren"
     }
   }
 }

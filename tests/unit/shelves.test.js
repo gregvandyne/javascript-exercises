@@ -18,6 +18,7 @@ const { LIVE_GAMES } = await import('../../server/live/live-games.js');
 const { COURSE_GAME_SLUGS } = await import('../../server/services/course-catalog.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
 const C = await import('../../server/services/courses.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 seed({ quiet: true });
 let server, base;
@@ -26,10 +27,10 @@ test.after(() => server.close());
 test.beforeEach(() => resetLimits());
 const cookieFor = id => { let c = ''; auth.startSession({ append: (k, v) => { c = v.split(';')[0]; } }, id); return c; };
 const H = { accept: 'text/html', 'user-agent': 'Mozilla/5.0 Chrome/141.0' };
-const get = async (path, u) => { const r = await fetch(base + path, { headers: { ...H, ...(u ? { cookie: cookieFor(u.id) } : {}) }, redirect: 'manual' }); return { status: r.status, text: await r.text(), location: r.headers.get('location') }; };
+const get = async (path, u) => { const r = await fetch(base + path, { headers: { ...H, ...(u ? { cookie: cookieFor(u.id) } : {}) }, redirect: 'manual' }); return { status: r.status, text: deicon(await r.text()), location: r.headers.get('location') }; };
 const post = async (path, u, body) => {
   const r = await fetch(base + path, { method: 'POST', redirect: 'manual', headers: { ...H, 'sec-fetch-site': 'same-origin', 'content-type': 'application/json', ...(u ? { cookie: cookieFor(u.id) } : {}) }, body: JSON.stringify(body) });
-  const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
+  const raw = await r.text(), text = deicon(raw); let json = null; try { json = JSON.parse(raw, (k, v) => typeof v === 'string' ? deicon(v) : v); } catch { /* html */ }
   return { status: r.status, json };
 };
 /** The game slugs linked from one section (by its id) of a page. */

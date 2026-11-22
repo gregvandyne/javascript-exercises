@@ -19,6 +19,7 @@ const F = await import('../../server/services/family.js');
 const SC = await import('../../server/services/schools.js');
 const { grownupMay } = await import('../../server/routes/family.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 let server, base;
 test.before(async () => { server = createApp().listen(0); server.keepAliveTimeout = 0; await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
@@ -28,7 +29,7 @@ test.beforeEach(() => { config.stripeApiKey = 'rk_test_fake'; resetLimits(); });
 const cookieFor = id => { let c = ''; auth.startSession({ append: (k, v) => { c = v.split(';')[0]; } }, id); return c; };
 async function get(u, path) {
   const r = await fetch(base + path, { headers: u ? { cookie: cookieFor(u.id) } : {}, redirect: 'manual' });
-  return { status: r.status, text: await r.text(), location: r.headers.get('location') };
+  return { status: r.status, text: deicon(await r.text()), location: r.headers.get('location') };
 }
 let n = 0;
 const grownup = () => { const u = auth.createUser({ username: `AcctMum${++n}`, password: 'a-long-password-1', accountType: 'grownup' }); F.ensureFamily(u); return auth.getUser(u.id); };

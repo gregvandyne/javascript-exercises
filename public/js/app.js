@@ -2,6 +2,7 @@
 //   import { api, toast, sheet, pageData, $, $$ } from '/js/app.js';
 // Text for the reader's language comes from /js/i18n.js (t, fmtNum).
 import { t, fmtNum, RTL } from '/js/i18n.js';
+import { iconHtml, leadIcon, iconLine } from '/js/icons.js';
 export { t };
 // The page loads /js/app.js?v=… and page scripts import '/js/app.js': two copies of this module. Only the first one
 // adds the page-wide listeners below, so one click or one form submit is handled once.
@@ -42,7 +43,7 @@ export async function api(url, { method = 'GET', body, signal, background = fals
 }
 export function toast(msg, { bad = false, ms = 2800 } = {}) {
   const box = document.getElementById('toasts'); if (!box) return;
-  const t = document.createElement('div'); t.className = 'toast' + (bad ? ' bad' : ''); t.textContent = msg; box.appendChild(t);
+  const t = document.createElement('div'); t.className = 'toast' + (bad ? ' bad' : ''); if (leadIcon(msg)) t.innerHTML = iconLine(msg, 20); else t.textContent = msg; box.appendChild(t);
   liftToasts();
   setTimeout(() => t.remove(), ms);
 }
@@ -61,7 +62,7 @@ function liftToasts() {
 export function sheet({ title, content, onClose } = {}) {
   const prev = document.activeElement;
   const bg = document.createElement('div'); bg.className = 'sheet-bg';
-  bg.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"><button class="iconbtn close" type="button" aria-label="${esc(t('js.app.close'))}"><span class="emo">✖️</span></button><h2 id="sheet-title">${esc(title)}</h2><div class="sheet-body">${content}</div></div>`;
+  bg.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"><button class="iconbtn close" type="button" aria-label="${esc(t('js.app.close'))}"><span class="emo">${iconHtml('✖️', { size: 20 })}</span></button><h2 id="sheet-title">${iconLine(title, 28)}</h2><div class="sheet-body">${content}</div></div>`;
   document.body.appendChild(bg);
   requestAnimationFrame(liftToasts); setTimeout(liftToasts, 300);   // after the sheet's slide-up
   // A field still being typed in lets go first, so its change is kept (closing by Escape, ✕ or a tap outside never
@@ -200,8 +201,9 @@ on(document, 'submit', async e => {
   e.preventDefault();
   // A chosen <option data-confirm> (e.g. merging accounts) asks its own question, read at submit time.
   // The main button says what the form's button says ("Remove from class"); data-confirm-ok gives other words.
-  const q = (f.querySelector('select option:checked[data-confirm]') || {}).dataset?.confirm || f.dataset.confirm;
+  // A submit button with its own data-confirm (Hand in, beside Save) asks only when it is the one pressed.
   const btn = e.submitter || f.querySelector('[type=submit]');
+  const q = (f.querySelector('select option:checked[data-confirm]') || {}).dataset?.confirm || (e.submitter && e.submitter.dataset.confirm) || f.dataset.confirm;
   if (q) {
     if (f.dataset.asking) return;   // the question is already open
     f.dataset.asking = '1';

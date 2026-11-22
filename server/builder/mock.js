@@ -458,7 +458,9 @@ async function buildCanvas(ctx, m) {
   if (!s.ok) { await say(ctx, 'Hmm, I could not start the activity. Ask me again!'); return; }
   // a plan that calls for figures (plan.figures): figure questions drawn by Oomba Figures, and its pinned tag first
   if (p.figures) Object.assign(data, figureSample(data));
-  const cur0 = ctx.tools.current(), withFigs = p.figures ? cur0.html.replace(/(<script\b[^>]*\/vendor\/oomba-canvas\/)/, `${figTag('oomba-figures')}\n$1`) : cur0.html;
+  // (the core's tag and exactly the packs its figures' kinds need: figTag adds them from the kinds)
+  const kinds = p.figures ? [...(data.problems || []), ...(data.gen ? [data.gen] : [])].map(q => q && q.fig && q.fig.kind).filter(Boolean) : [];
+  const cur0 = ctx.tools.current(), withFigs = p.figures ? cur0.html.replace(/(<script\b[^>]*\/vendor\/oomba-canvas\/)/, `${figTag('oomba-figures', undefined, { kinds })}\n$1`) : cur0.html;
   const cur = { ...cur0, html: withFigs }, html = withActivityData(cur.html, data).replace(/<title>[^<]*<\/title>/, `<title>${title.replace(/[<&]/g, '')}</title>`);
   const r = ctx.tools.exec('write_game', { html, notes: `${title}: a fresh set for each student` });
   if (!r.ok) { await say(ctx, 'Hmm, the activity check found a problem. Ask me to fix it and I will!'); return; }

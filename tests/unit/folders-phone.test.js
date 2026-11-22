@@ -10,9 +10,11 @@ import fs from 'node:fs';
 const { q } = await import('../../server/db.js');
 const { createUser, startSession } = await import('../../server/auth.js');
 const S = await import('../../server/services/schools.js');
+const LIB = await import('../../server/services/library.js');
 const F = await import('../../server/services/game-folders.js');
 const games = await import('../../server/services/games.js');
 const { createApp } = await import('../../server/app.js');
+const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
 
 let server, base;
 test.before(async () => { server = createApp().listen(0); server.keepAliveTimeout = 0; await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
@@ -21,7 +23,7 @@ const cookieFor = id => { let c = ''; startSession({ append: (k, v) => { c = v.s
 const as = who => async (path, { method = 'GET', body } = {}) => {
   const h = { cookie: cookieFor(who.id) }; if (body !== undefined) h['content-type'] = 'application/json';
   const r = await fetch(base + path, { method, headers: h, body: body !== undefined ? JSON.stringify(body) : undefined, redirect: 'manual' });
-  const text = await r.text(); let json = null; try { json = JSON.parse(text); } catch { /* html */ }
+  const raw = await r.text(), text = deicon(raw); let json = null; try { json = JSON.parse(raw, (k, v) => typeof v === 'string' ? deicon(v) : v); } catch { /* html */ }
   return { status: r.status, text, json };
 };
 /** The phone block alone (it comes before the sidebar's shelf). */
@@ -100,7 +102,7 @@ test('Reorder mode: 48px ↑/↓ buttons labelled for screen readers on each row
   await as(ana)(`/api/class-lessons/${a2.id}/down`, { method: 'POST', body: {} });
 });
 
-test('My library: All my games, own collections (shared marked), New collection, From others with read-only colleagues, students, Oomba games', async () => {
+test('My library: All my games, own collections (shared marked), New collection, From others with read-only colleagues, students, Oomba games, the Story Library', async () => {
   const p = lib((await as(ana)(`/class/${cls.id}?view=library`)).text).html;
   assert.match(p, /<p>Collections only sort your games\. Assign from inside one\.<\/p>/);
   const items = [...p.matchAll(/<a class="lib-item" href="([^"]+)">[\s\S]*?<span class="lib-name" dir="auto">([^<]*)<\/span>(?:<span class="lib-sub">([^<]*)<\/span>)?/g)].map(m => [m[1].replace(/&amp;/g, '&'), m[2], m[3] || '']);
@@ -111,6 +113,8 @@ test('My library: All my games, own collections (shared marked), New collection,
     [`/class/${cls.id}?folder=${benF.id}`, 'Spelling warm-ups', 'by Ben Patel · read only'],
     [`/class/${cls.id}?view=students`, 'Games students shared', 'Made by Ana 5C students'],
     [`/class/${cls.id}?view=oomba`, 'Oomba games', 'Browse every Oomba game'],
+    // The Story Library (routes/library.js), with the class kept for Assign.
+    [`/library?class=${cls.id}`, 'Story Library', `${LIB.books().length} leveled picture books with questions. Assign one to a class.`],
   ]);
   assert.match(p, /<span class="lib-name">New collection<\/span>/);
   assert.match(p, new RegExp(`<form class="lib-newf-panel" data-api="/api/game-folders" novalidate><input type="hidden" name="classId" value="${cls.id}">`));

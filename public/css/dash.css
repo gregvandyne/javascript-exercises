@@ -195,6 +195,7 @@ body.dash-page{padding-bottom:0}
 .dash-eyes[hidden]{display:none}
 .dash-eyescard{display:flex;flex-direction:column;align-items:center;gap:var(--s3)}
 .dash-eyesmark{font-size:clamp(4rem,14vw,10rem);line-height:1}
+.dash-eyesmark img.fx{width:clamp(4rem,14vw,10rem);height:auto}
 .dash-eyes h2{font-size:clamp(2.6rem,9vw,7rem);margin:0;letter-spacing:-.02em}
 .dash-eyes p{font-size:clamp(1.1rem,3vw,2rem);margin:0;font-weight:600}
 .dash-eyes:focus{outline:none}
@@ -2139,3 +2140,89 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 /* The calendar address gets the card's full width when the settings panel is narrow; Connect wraps below it. */
 .dash-mod .dash-findrow{flex-wrap:wrap}
 .dash-mod .dash-findrow > .input{flex:1 1 220px;min-width:0}
+
+/* ---------- Class Board parity: the PDF widget, the link tile and stickers (docs/decisions.md "Class Board: PDF,
+   link tile and stickers"). Only the site's tokens. ---------- */
+/* The PDF widget: Previous, "Page 2 of 5", Next over the page, which is fitted inside the widget (public/js/dash-pdf.js). */
+.dw-pdf{display:flex;flex-direction:column;gap:var(--s2);overflow:hidden}
+.dw-pdfbar{flex:none;display:flex;align-items:center;justify-content:center;gap:var(--s2)}
+.dw-pdfbar .btn{min-width:48px;min-height:44px;font-size:1.4rem;line-height:1;padding:0 12px}
+.dw-pdfpage{min-width:8em;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
+.dw-pdfarea{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);background:var(--card-2);box-shadow:inset 0 0 0 2px var(--line);overflow:hidden}
+.dw-pdfarea:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.dw-pdfcanvas{display:block;background:#fff;box-shadow:var(--shadow)}
+.dw-pdfmsg{margin:0;color:var(--danger);font-weight:700}
+.dw-pdfmsg:empty{display:none}
+.dash-pdfedit .dash-fieldmsg.err,.dash-pdfedit .dash-fieldmsg.err{color:var(--danger)}
+/* The link tile: one big tap target, the title and the site, opening in a new tab. */
+.dw-link{display:flex}
+.dw-linktile{flex:1 1 auto;min-height:0;position:relative;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:var(--s3) calc(var(--s3) + 40px) var(--s3) var(--s4);border-radius:var(--r-sm);background:var(--card-2);color:var(--text);text-decoration:none;box-shadow:inset 0 0 0 2px var(--line)}
+.dw-linktile:hover{background:var(--hover);box-shadow:inset 0 0 0 2px var(--accent-line)}
+.dw-linktile:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.dw-linktitle{font-size:clamp(1rem,min(14cqh,7cqi),1.8rem);font-weight:800;line-height:1.15;overflow-wrap:anywhere}
+.dw-linkhost{color:var(--text-2);font-weight:700;font-size:.9rem;overflow-wrap:anywhere}
+.dw-linkgo{position:absolute;inset-inline-end:var(--s3);top:50%;transform:translateY(-50%);display:grid;place-items:center;width:36px;height:36px;border-radius:999px;background:var(--accent);color:var(--on-accent);font-weight:800}
+[dir="rtl"] .dw-linkgo{transform:translateY(-50%) scaleX(-1)}
+
+/* Stickers: two layers over the grid, behind the widgets and in front of them (public/js/dash-stickers.js). */
+.dash-page-teacher .dash-grid{position:relative;isolation:isolate}
+/* Clipped at the board's sides (never a page wider than the screen), free above and below. */
+.dash-stklayer{position:absolute;inset:0;pointer-events:none;overflow-x:clip}
+.dash-stkback{z-index:-1}
+.dash-stkfront{z-index:20}
+.dash-stk{position:absolute;pointer-events:auto;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;border-radius:var(--r-sm);transform-origin:50% 50%}
+.dash-stk.is-dragging{cursor:grabbing}
+.dash-stkimg{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(20,20,20,.18))}
+.dash-stk:focus{outline:none}
+.dash-stk:focus-visible,.dash-stk.is-selected{outline:3px dashed var(--accent-line);outline-offset:4px}
+.dash-stkresize,.dash-stkrotate{position:absolute;width:28px;height:28px;border-radius:999px;background:var(--card);box-shadow:0 0 0 3px var(--accent-line),var(--shadow);touch-action:none}
+.dash-stkresize{right:-16px;bottom:-16px;cursor:nwse-resize}
+.dash-stkresize::after{content:"";position:absolute;inset:8px;border-right:3px solid var(--accent-ink);border-bottom:3px solid var(--accent-ink)}
+.dash-stkrotate{left:calc(50% - 14px);top:-46px;cursor:grab}
+.dash-stkrotate::before{content:"";position:absolute;left:50%;top:28px;width:3px;height:16px;margin-left:-1.5px;background:var(--accent-line)}
+.dash-stkrotate::after{content:"⟳";position:absolute;inset:0;display:grid;place-items:center;font-weight:800;color:var(--accent-ink)}
+@media (pointer:coarse){.dash-stkresize,.dash-stkrotate{width:36px;height:36px}.dash-stkresize{right:-20px;bottom:-20px}.dash-stkrotate{left:calc(50% - 18px);top:-54px}.dash-stkrotate::before{top:36px}}
+.dash-stkbar{position:absolute;pointer-events:auto;z-index:1;display:flex;flex-wrap:wrap;gap:4px;padding:6px;border-radius:999px;background:var(--card);box-shadow:var(--shadow-lg);max-width:min(440px,100%)}
+.dash-stkbtn{min-width:44px;min-height:44px;padding:0 10px;font-size:1.05rem}
+.dash-stkbtn[aria-pressed="true"]{background:var(--current);border-color:var(--current);color:var(--on-current)}
+.dash-stkghost{position:fixed;z-index:1000;width:96px;height:96px;object-fit:contain;transform:translate(-50%,-50%);pointer-events:none;opacity:.9;filter:drop-shadow(0 6px 12px rgba(20,20,20,.25))}
+/* The panel: a drawer at the side of the board (the board makes room for it), a sheet at the bottom on a phone. */
+.dash-stkpanel{position:fixed;z-index:60;top:var(--s4);bottom:var(--s4);inset-inline-end:var(--s4);width:360px;display:flex;flex-direction:column;gap:var(--s2);background:var(--card);color:var(--text);border-radius:var(--r);padding:var(--s4);box-shadow:var(--shadow-lg)}
+.dash-stkpanel[hidden]{display:none}
+.dash-stk-open .dash{padding-inline-end:calc(360px + 2 * var(--s4))}
+.dash-stkhead{display:flex;align-items:center;justify-content:space-between;gap:var(--s2)}
+.dash-stktop{display:flex;flex-direction:column;gap:var(--s2);flex:none}
+.dash-stkq{width:100%}
+.dash-stkfilters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.dash-stkfilters #dash-stk-theme{grid-column:1 / -1}
+.dash-stkfilter{min-width:0;font-size:.85rem;padding-inline:8px}
+.dash-stkcount{margin:0;font-weight:800;color:var(--text-2);font-size:.9rem}
+.dash-stklist{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;padding:2px}
+.dash-stksec{margin-bottom:var(--s2)}
+.dash-stksech{margin:var(--s2) 0 6px;font-size:.85rem;font-weight:800;color:var(--muted)}
+.dash-stkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
+.dash-stkcell{position:relative}
+.dash-stkitem{display:grid;place-items:center;width:100%;aspect-ratio:1;padding:6px;border:0;border-radius:var(--r-sm);background:var(--card-2);cursor:pointer;touch-action:pan-y}
+.dash-stkitem:hover{background:var(--hover)}
+.dash-stkitem:focus-visible,.dash-stkstar:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.dash-stkitem img{width:100%;height:100%;object-fit:contain;pointer-events:none}
+.dash-stkstar{position:absolute;top:2px;inset-inline-end:2px;width:30px;height:30px;display:grid;place-items:center;border:0;border-radius:999px;background:color-mix(in srgb,var(--card) 85%,transparent);color:var(--text-2);font-size:1rem;cursor:pointer}
+.dash-stkstar[aria-pressed="true"]{color:#C99A00}
+.dash-stkmore{width:100%;margin-top:var(--s2)}
+.dash-stkempty{display:flex;flex-direction:column;align-items:center;gap:var(--s2);padding:var(--s4) var(--s2);text-align:center;color:var(--text-2);font-weight:700}
+.dash-stkempty p{margin:0;overflow-wrap:anywhere}
+.dash-stkhint{margin:0;flex:none}
+@media (max-width:719px){
+  .dash-stkpanel{top:auto;bottom:0;inset-inline:0;width:auto;height:min(64vh,560px);gap:6px;border-radius:var(--r) var(--r) 0 0;padding:var(--s2) 16px calc(var(--s2) + env(safe-area-inset-bottom))}
+  .dash-stk-open .dash{padding-inline-end:20px;padding-bottom:calc(min(64vh,560px) + var(--s4))}
+  .dash-stktop{gap:6px}
+  .dash-stkfilters{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .dash-stkfilters #dash-stk-theme{grid-column:auto}
+  .dash-stkfilter{font-size:.8rem;min-height:40px;padding-inline:6px}
+  .dash-stkgrid{grid-template-columns:repeat(auto-fill,minmax(72px,1fr))}
+  .dash-stkhint{display:none}
+  .dash-stkbar.is-docked{position:fixed;z-index:30;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));max-width:none;justify-content:center;border-radius:999px}
+}
+[dir="rtl"] .dw-pdfprev,[dir="rtl"] .dw-pdfnext{transform:scaleX(-1)}
+/* Icons (public/js/icons.js) that stand in for a big emoji take the emoji's size: 1em of the box's own font size. */
+.dw-wicon img.fx,.dw-symicon img.fx,.dw5-bigic img.fx,.dw-noise-face img.fx,.dw-pickname img.fx{width:1em;height:1em}

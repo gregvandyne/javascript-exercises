@@ -12,6 +12,7 @@
     "dev": "node --watch server/index.js",
     "seed": "node scripts/seed.js",
     "import-game": "node scripts/import-game.js",
+    "import-stories": "node scripts/import-stories.js",
     "backup": "node scripts/backup.js",
     "rollup": "node scripts/rollup.js",
     "test": "node --test tests/unit/*.test.js tests/safety/*.test.js",

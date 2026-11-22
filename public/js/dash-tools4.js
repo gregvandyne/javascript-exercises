@@ -14,6 +14,7 @@ import { format } from './i18n-format.js';
 import { geoboard } from './dash-shapeboard.js';
 import { tip } from './dash-tip.js';
 import { numParse } from './dash-num.js';
+import { setIcon, setLabel } from './icons.js';
 
 const { shell, field, selectOf, numberIn, checkRow, roving, stacked, el, svg, btn, ltr, svgPoint, iso } = parts;
 const minus = v => String(v).replace(/^-/, '−');
@@ -21,7 +22,7 @@ const projecting = () => document.body.classList.contains('dash-projector');
 /** A button with an icon and words; on a narrow tool only the icon shows (the button keeps its name). */
 function ibtn(icon, text, cls = 'btn btn-sm') {
   const b = tip(btn('', cls, text), text);
-  const i = el('span', 'dt-ic', icon), l = el('span', 'dt-lbl', text);
+  const i = setIcon(el('span', 'dt-ic'), icon), l = el('span', 'dt-lbl', text);
   i.setAttribute('aria-hidden', 'true'); l.setAttribute('aria-hidden', 'true');
   b.append(i, l); return b;
 }
@@ -324,7 +325,7 @@ function solids(body, s, ctx) {
   T.draw = () => {
     shape.value = st.shape; mark.value = st.mark;
     const l = foldB.querySelector('.dt-lbl'), i = foldB.querySelector('.dt-ic');
-    const folding = st.fold < 50; l.textContent = folding ? W.fold : W.unfold; i.textContent = folding ? '📦' : '📄'; foldB.setAttribute('aria-label', folding ? W.fold : W.unfold);
+    const folding = st.fold < 50; l.textContent = folding ? W.fold : W.unfold; setIcon(i, folding ? '📦' : '📄'); foldB.setAttribute('aria-label', folding ? W.fold : W.unfold);
     const model = G.solidModel(st.shape), info = G.SOLIDS[st.shape], t = st.fold / 100;
     // Never look along a side face (it would show as a line and the solid would look flat): turn a little further.
     let yd = st.yaw;
@@ -740,7 +741,7 @@ function balance(body, s, ctx) {
     tray.sync(sel);
     for (const b of tray.tiles) b.disabled = off();
     away.hidden = !sel || sel.from === 'tray';
-    if (sel && sel.from !== 'tray') { const t = fill(W.takeAway, { t: tileSym(sel.k, sel.neg) }); away.textContent = `🗑️ ${t}`; }
+    if (sel && sel.from !== 'tray') { const t = fill(W.takeAway, { t: tileSym(sel.k, sel.neg) }); setLabel(away, `🗑️ ${t}`); }
     div.hidden = n < 2 || !G.balanceOp(l, r, 'div', 'both', n); div.textContent = `÷ ${n}`; div.setAttribute('aria-label', fill(W.div, { n: Math.max(2, n) })); tip(div, div.getAttribute('aria-label'));
     undo.disabled = !st.hist.length; zero.disabled = !(G.sidePairs(l) + G.sidePairs(r));
     tryS.sync(); check.disabled = off();
@@ -755,7 +756,7 @@ function balance(body, s, ctx) {
     const pans = el('div', 'dt-bpans'), lp = panOf('left'), rp = panOf('right');
     pans.append(lp, rp);
     const both = btn('', 'btn btn-sm dt-bboth'); both.dataset.zone = 'both';
-    both.append(el('span', 'dt-bbothn', `⚖️ ${W.both}`), el('span', 'dt-bbothh', sel ? fill(sel.from === 'tray' ? W.bothPut : W.bothOff, { t: tileSym(sel.k, sel.neg) }) : W.bothHint));
+    both.append(setLabel(el('span', 'dt-bbothn'), `⚖️ ${W.both}`), el('span', 'dt-bbothh', sel ? fill(sel.from === 'tray' ? W.bothPut : W.bothOff, { t: tileSym(sel.k, sel.neg) }) : W.bothHint));
     both.removeAttribute('title'); both.setAttribute('aria-label', sel ? fill(sel.from === 'tray' ? W.bothPut : W.bothOff, { t: tileSym(sel.k, sel.neg) }) : `${W.both}: ${W.bothHint}`);
     if (off()) both.disabled = true;
     both.addEventListener('click', () => { if (sel) act(sel, 'both'); else ctx.say(W.pickFirst); });

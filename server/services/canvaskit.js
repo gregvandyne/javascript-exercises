@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
-import { figureLibs, figuresKit } from './figlibs.js';
+import { figureLibs, figuresKit, missingFigurePacks } from './figlibs.js';
 
 export const CANVAS_PATH = '/vendor/oomba-canvas/';
 // version -> sha384 of oomba-canvas.js (tests/unit/canvas-kit.test.js checks these against the files on disk).
@@ -27,8 +27,13 @@ export const CANVAS_VERSIONS = Object.freeze({
   // marked helped when the teacher showed an answer. Older activities move to it only when saved from the Studio's
   // Activity panel (server/builder/activity-data.js), never on their own.
   '1.3.0': 'sha384-Y9ODTlYNiRPfeIC7I1iKqhk8Eu55RJ8/xuCQGDe/Px6xCVU0+oT1yYiOyntno79+',
+  // 1.4.0: worksheets (canvas/src/sets.js). A link with a teacher's saved worksheet (BRB.questionSet) plays exactly its
+  // questions; school staff get "My worksheets" in the teacher's controls (BRB.canListSets) to save the questions on
+  // screen under a class code and open, print, share, copy, rename and delete them (routes/games.js, game-sets.js
+  // cleanCanvasItems). 1.0.0 to 1.3.0 stay as they are.
+  '1.4.0': 'sha384-Y4NDaUea8geoQMey83n3qeyjeGgNI0T+/kUIa0VOPEZkTuq4e0CYZGS1JrsOILgV',
 });
-export const CANVAS_LATEST = '1.3.0';
+export const CANVAS_LATEST = '1.4.0';
 export const canvasSrc = (v = CANVAS_LATEST) => `${CANVAS_PATH}${v}/oomba-canvas.js`;
 const PUBLIC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
 
@@ -123,7 +128,9 @@ export function selfTestHtml(html) {
 /**
  * 1.2.0: the activity's figures. Every problem with a "fig" (the fixed ones, and three sets from a generator) needs the
  * pinned Oomba Figures tag on the page, and its data must pass that version's own check() (an element it knows, a ray
- * diagram with an image, a reading on its scale, electrons that add up...): a wrong figure is never saved.
+ * diagram with an image, a reading on its scale, electrons that add up...): a wrong figure is never saved. From Oomba
+ * Figures 1.1.0 a kind lives in a subject pack: the page must load the pinned tag of each pack its figures use (the
+ * server's copy has every pack, so the data check alone would not see a missing tag).
  */
 export function figureProblems(v, data, html) {
   const kit = canvasKit(v); if (!kit || !kit.logic || typeof kit.sheet !== 'function') return [];
@@ -135,6 +142,8 @@ export function figureProblems(v, data, html) {
   const fv = figureLibs(html)['oomba-figures'];
   if (!fv) return [{ at: 'figures', why: 'the activity draws figures but the page does not load Oomba Figures: add its pinned tag (the FIGURE RULES) before the kit\'s' }];
   const F = figuresKit(fv);
+  for (const m of missingFigurePacks(html, [...new Set(withFig.map(([, p]) => p.fig.kind))])) out.push({ at: 'figures', why: `its figures (${m.kinds.slice(0, 4).join(', ')}) need the Oomba Figures ${m.pack} pack: add its pinned tag right after the Oomba Figures tag: ${m.tag}` });
+  if (out.length) return out;
   for (const [at, p] of withFig) {
     const { kind, hide, ...rest } = p.fig, why = F.check(kind, { kind, ...rest });
     const key = `${at}:${why.join(';')}`;

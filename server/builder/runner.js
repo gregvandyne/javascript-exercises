@@ -37,7 +37,7 @@ import { getUpload, LIMITS as UPLOADS } from './uploads.js';
 import { maxStepsFor } from './claude.js';
 import { executeTurn, endBuild, refundable, providerName, providerKind, hooks, MAX_INPUT } from './agent.js';
 import { normalisePlan, planSentence } from './plan.js';
-import { scrubPlan } from './lesson.js';
+import { scrubPlan, scrub, studentNames } from './lesson.js';
 export { registerProvider } from './agent.js';
 
 export const LIMITS = {
@@ -117,6 +117,9 @@ const wake = job => { const w = job.waiters.splice(0); for (const f of w) f(); }
  * Start a build (or answer why not). opts: { user, game, text, pro, uploadIds, cid, continueOf, t, provider?, compat?, plan? }.
  * plan: the choices of the setup steps (builder/plan.js). The message is then the plan's own sentence, in the builder's
  * language (whatever text came with it is not used), screened like any typed message; the plan rides on the build's row.
+ * A classroom activity's plan may carry told: the first message as the teacher edited it on the plan screen. It is
+ * sent instead of the sentence (the plan and its LESSON CONTEXT still go with it), with the names of this teacher's
+ * students taken out, and screened like any typed message (emails, phone numbers and links are refused there).
  * A plan only ever starts a game's first build: it is dropped when the game already has a version or is building.
  * -> { status, body, code?, job? }: 202 with the job when a build started. compat: the streamed POST of old pages and
  * runTurn, which answers builder.errors.busy while the game is building. Steps 3-6 never await, so two requests at
@@ -129,13 +132,14 @@ export async function submit({ user, game, text = '', pro = false, uploadIds = [
   // Trusted makers (the admin, school staff, class teachers) always build with the Pro model (usage.js trustedMaker).
   if (trustedMaker(user)) pro = true;
   // The teacher-only classroom types (a class survey, an exit ticket) come only from staff and class teachers.
+  const told = plan && plan.kind === 'activity' && typeof plan.told === 'string' ? plan.told.replace(/\r\n/g, '\n').trim().slice(0, MAX_INPUT) : '';
   plan = plan && !game.current_version_id && !jobs.has(game.id) ? normalisePlan(plan, { forKid: !teacherHost(user) }) : null;
   // A classroom activity's typed words and lesson: the names of this teacher's students, emails, phone numbers and links
   // taken out, and a lesson that fails the Builder's pre-filter left out (builder/lesson.js). The row keeps this plan.
   if (plan) plan = scrubPlan(plan, user).plan;
   text = String(text || '').replace(/\r\n/g, '\n').trim().slice(0, MAX_INPUT);
   const wanted = (Array.isArray(uploadIds) ? uploadIds : []).slice(0, UPLOADS.perMessage).map(getUpload).filter(u => u && u.game_id === game.id && !u.used_at);
-  if (plan) text = planSentence(plan, t, { files: wanted.length }).slice(0, MAX_INPUT);
+  if (plan) text = told && plan.kind === 'activity' ? scrub(told, studentNames(user), { contacts: false }).text : planSentence(plan, t, { files: wanted.length }).slice(0, MAX_INPUT);
   if (!text && !wanted.length) return err(400, 'builder.errors.empty', 'empty');
   cid = typeof cid === 'string' && CID.test(cid) ? cid : null;
   // 2. Shutting down: the text goes back in the box.

@@ -17,6 +17,7 @@ import * as seo from '../seo.js';
 import { el, lp, faqBlock, launchGame } from './teachers.js';
 import * as V from '../views/cs-quest.js';
 import { crewArt } from '../views/components.js';
+import { ico } from '../views/icon.js';
 
 export const router = Router();
 const K = 'teachers.cd';
@@ -76,12 +77,12 @@ function trickPackBody(req, cat) {
     <p class="cdt-meta" lang="en" dir="ltr"><b>From:</b> ${c.from}${c.subject ? html`<br><b>Subject:</b> ${c.subject}` : ''}</p>
     <p class="cdt-body" lang="en" dir="ltr">${c.body}</p>
     ${c.button ? html`<p><span class="cdt-btn" lang="en" dir="ltr">${c.button}</span></p>` : ''}
-    <p class="cdt-moves">✂️ What should a Defender do? ${(pack.moves || []).join(' · ')}</p></article>`;
+    <p class="cdt-moves">${ico('✂️', { size: 18 })} What should a Defender do? ${(pack.moves || []).join(' · ')}</p></article>`;
   const key = (pack.cards || []).map(c => html`<li lang="en" dir="ltr"><b>Card ${c.n} — ${c.from}:</b> <b>${c.answer.move}</b>${c.answer.alsoFine && c.answer.alsoFine.length ? html` (also fine: ${c.answer.alsoFine.join(', ')})` : ''}. ${c.answer.clues && c.answer.clues.length ? html`Clues: ${c.answer.clues.join('; ')}. ` : 'No hidden clues — this one is safe. '}${c.answer.why}</li>`).join('');
-  return html`<div class="printdoc csq-print"><div class="cdt-head"><h1 lang="en" dir="ltr">🔍 Spot the Trick — printable cards</h1>
+  return html`<div class="printdoc csq-print"><div class="cdt-head"><h1 lang="en" dir="ltr">${ico('🔍', { size: 36 })} Spot the Trick — printable cards</h1>
     <p>Cyber Defenders · the offline Trick Inbox. Cut out the cards, mix them up, and sort them as a class: which are tricks, which are safe, and what is the right move for each? The answers are on the last page — teachers only.</p></div>
     <div class="cdt-card-grid">${raw((pack.cards || []).map(card).join(''))}</div>
-    <section class="cdt-key"><h2>🔑 Answer key (teachers only)</h2><ol>${raw(key)}</ol>
+    <section class="cdt-key"><h2>${ico('🔑', { size: 28 })} Answer key (teachers only)</h2><ol>${raw(key)}</ol>
     <p class="small muted" lang="en" dir="ltr">The calm routine for every trick: do not reply, do not tap, tell a trusted adult. Cards are the Trick Inbox game's own messages — the same ones students meet in Unit 4 and the boss round.</p></section></div>`;
 }
 
@@ -91,7 +92,7 @@ router.get('/teachers/cyber-defenders', (req, res) => {
     return page(req, res, { title: `${t(`${K}.title`)} — Spot the Trick pack`, body: trickPackBody(req, cat), head: V.CSS + TRICK_CSS, bare: true, bodyClass: 'printpage', scripts: ['/js/print.js'] });
   }
   if (req.query.print === '1') {
-    const body = html`<div class="printdoc csq-print"><h1 lang="en" dir="ltr">🦉 ${cat.program.name} — ${t(`${K}.print.h`)}</h1>
+    const body = html`<div class="printdoc csq-print"><h1 lang="en" dir="ltr">${ico('🦉', { size: 36 })} ${cat.program.name} — ${t(`${K}.print.h`)}</h1>
       <p class="muted" lang="en" dir="ltr">${cat.program.standards}</p>${mapAndNotes(req, cat)}</div>`;
     return page(req, res, { title: `${t(`${K}.title`)} — ${t(`${K}.print.h`)}`, body, head: V.CSS, bare: true, bodyClass: 'printpage', scripts: ['/js/print.js'] });
   }
@@ -102,7 +103,7 @@ router.get('/teachers/cyber-defenders', (req, res) => {
     { slug: 'trick-inbox', key: 'trickInbox', emoji: '📥', title: 'Trick Inbox' },
     { slug: 'escape-the-post-office', key: 'escape', emoji: '🔐', title: 'Escape the Post Office' },
   ].map(c => ({ ...c, live: launchGame(c.slug) }));
-  const unitItem = u => html`<li class="panel"><b lang="en" dir="ltr">${t('cs.unit.n', { n: u.n })} · ${u.title}</b>${u.stamp ? html` <span class="chip-s">🏅 ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
+  const unitItem = u => html`<li class="panel"><b lang="en" dir="ltr">${t('cs.unit.n', { n: u.n })} · ${u.title}</b>${u.stamp ? html` <span class="chip-s">${ico('🏅', { size: 18 })} ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
     <ol class="csq-lessons" lang="en" dir="ltr">${(u.steps || []).map(s => html`<li>${s.n} ${(s.titles || {})['1b'] || s.n}${(s.titles || {})['2'] && s.titles['2'] !== s.titles['1b'] ? html` <span class="small muted">(Pro: ${s.titles['2']})</span>` : ''}</li>`)}</ol></li>`;
   const faqPairs = [1, 2, 3, 4, 5, 6].map(n => [`${K}.faq.q${n}`, `${K}.faq.a${n}`]).filter(([qk, ak]) => t.own(qk) && t.own(ak));
   const faq = faqBlock(req, faqPairs, `${K}.faq.h`, { teachers: lp(req, '/teachers') });
@@ -116,14 +117,14 @@ router.get('/teachers/cyber-defenders', (req, res) => {
     ${el(t, 'h1', `${K}.h1`, {}, ' id="lp-h1"')}
     ${el(t, 'p', `${K}.lead`, {}, ' class="lead"')}
     <ul class="lp-badges">${['steps', 'units', 'games', 'minutes', 'free'].map(x => html`<li>${el(t, 'span', `${K}.badges.${x}`)}</li>`)}</ul>
-    <div class="row lp-cta"><a class="btn btn-primary btn-big" href="${lp(req, '/courses/cyber-defenders')}">🦉 ${t(`${K}.cta.open`)}</a><a class="btn btn-big" href="${path}?print=1" target="_blank" rel="noopener">🖨️ ${t(`${K}.print.button`)}</a></div>
+    <div class="row lp-cta"><a class="btn btn-primary btn-big" href="${lp(req, '/courses/cyber-defenders')}">${ico('🦉', { size: 18 })} ${t(`${K}.cta.open`)}</a><a class="btn btn-big" href="${path}?print=1" target="_blank" rel="noopener">${ico('🖨️', { size: 18 })} ${t(`${K}.print.button`)}</a></div>
   </section>
   <section class="lp-sec" id="promise" aria-labelledby="promise-h">${el(t, 'h2', `${K}.promise.h`, {}, ' id="promise-h"')}
     <ul class="lp-list">${[1, 2, 3, 4, 5, 6].map(n => el(t, 'li', `${K}.promise.li${n}`))}</ul></section>
   <section class="lp-sec" id="crew" aria-labelledby="crew-h">${el(t, 'h2', `${K}.crew.h`, {}, ' id="crew-h"')}${el(t, 'p', `${K}.crew.p`)}
     <ul class="csq-crew">${crew.map(c => html`<li class="panel">${crewArt(c.slug, c.emoji)}<h3 lang="en" dir="ltr">${c.title}</h3>
       ${el(t, 'p', `${K}.crew.${c.key}`, {}, ' class="small"')}
-      <div class="row">${c.live ? html`<a class="btn btn-primary" href="/play/${c.slug}" rel="nofollow">▶ ${t(`${K}.crew.try`)}</a>` : html`<a class="btn" href="${lp(req, '/courses/cyber-defenders')}">🦉 ${t(`${K}.crew.inCourse`)}</a>`}</div></li>`)}</ul></section>
+      <div class="row">${c.live ? html`<a class="btn btn-primary" href="/play/${c.slug}" rel="nofollow">▶ ${t(`${K}.crew.try`)}</a>` : html`<a class="btn" href="${lp(req, '/courses/cyber-defenders')}">${ico('🦉', { size: 18 })} ${t(`${K}.crew.inCourse`)}</a>`}</div></li>`)}</ul></section>
   <section class="lp-sec" id="units" aria-labelledby="units-h">${el(t, 'h2', `${K}.units.h`, {}, ' id="units-h"')}${el(t, 'p', `${K}.units.p`)}
     <ul class="csq-public-units">${cat.units.map(unitItem)}</ul></section>
   <section class="lp-sec" id="finale" aria-labelledby="finale-h">${el(t, 'h2', `${K}.finale.h`, {}, ' id="finale-h"')}${el(t, 'p', `${K}.finale.p`)}
@@ -135,11 +136,11 @@ router.get('/teachers/cyber-defenders', (req, res) => {
       <ul class="lp-list">${[1, 2, 3, 4].map(n => el(t, 'li', `${K}.safety.li${n}`))}</ul></section>
     <section class="panel" id="print" aria-labelledby="print-h">${el(t, 'h2', `${K}.print.h`, {}, ' id="print-h"')}
       ${el(t, 'p', `${K}.print.p`)}
-      <p class="row"><a class="btn" href="${path}?print=1" target="_blank" rel="noopener">🖨️ ${t(`${K}.print.button`)}</a><a class="btn" href="${path}?print=tricks" target="_blank" rel="noopener">🔍 ${t(`${K}.print.tricks`)}</a><a class="btn" href="/teachers/spot-the-trick-pack.pdf" download>⬇️ ${t(`${K}.print.pdf`)}</a></p></section>
+      <p class="row"><a class="btn" href="${path}?print=1" target="_blank" rel="noopener">${ico('🖨️', { size: 18 })} ${t(`${K}.print.button`)}</a><a class="btn" href="${path}?print=tricks" target="_blank" rel="noopener">${ico('🔍', { size: 18 })} ${t(`${K}.print.tricks`)}</a><a class="btn" href="/teachers/spot-the-trick-pack.pdf" download>${ico('⬇️', { size: 18 })} ${t(`${K}.print.pdf`)}</a></p></section>
   </div>
   ${faq.markup}
   <section class="panel lp-start" id="start" aria-labelledby="start-h">${el(t, 'h2', `${K}.start.h`, {}, ' id="start-h"')}${el(t, 'p', staff ? `${K}.start.staff` : `${K}.start.p`)}
-    <div class="row"><a class="btn btn-primary btn-big" href="${lp(req, '/courses/cyber-defenders')}">🦉 ${t(`${K}.cta.open`)}</a></div></section>
+    <div class="row"><a class="btn btn-primary btn-big" href="${lp(req, '/courses/cyber-defenders')}">${ico('🦉', { size: 18 })} ${t(`${K}.cta.open`)}</a></div></section>
   </div>`;
   const course = {
     '@type': ['Course', 'LearningResource'], '@id': seo.abs(req, `${path}#course`), url: seo.abs(req, path), name: 'Cyber Defenders', description: t(`${K}.description`),
@@ -179,11 +180,11 @@ router.get('/teach/cyber-defenders', requireUser, staffPage, (req, res) => {
   ].map(g => ({ ...g, live: launchGame(g.slug) }));
   const stepsIn = band => C.steps(C.getCourse('cyber-defenders'), band).length;
   const body = html`
-  <div class="pagehead"><h1>🦉 ${t(`${TK}.title`)}</h1><div class="row"><a class="btn btn-primary" href="/courses/cyber-defenders">${t(`${TK}.cta.open`)}</a><a class="btn" href="/teachers/cyber-defenders">${t(`${TK}.cta.public`)}</a><a class="btn" href="/teachers/cyber-defenders?print=1" target="_blank" rel="noopener">🖨️ ${t(`${TK}.cta.print`)}</a><a class="btn" href="/teachers/cyber-defenders?print=tricks" target="_blank" rel="noopener">🖨️ ${t(`${TK}.cta.tricks`)}</a></div></div>
+  <div class="pagehead"><h1>${ico('🦉', { size: 36 })} ${t(`${TK}.title`)}</h1><div class="row"><a class="btn btn-primary" href="/courses/cyber-defenders">${t(`${TK}.cta.open`)}</a><a class="btn" href="/teachers/cyber-defenders">${t(`${TK}.cta.public`)}</a><a class="btn" href="/teachers/cyber-defenders?print=1" target="_blank" rel="noopener">${ico('🖨️', { size: 18 })} ${t(`${TK}.cta.print`)}</a><a class="btn" href="/teachers/cyber-defenders?print=tricks" target="_blank" rel="noopener">${ico('🖨️', { size: 18 })} ${t(`${TK}.cta.tricks`)}</a></div></div>
   <p class="lead">${t(`${TK}.lead`)}</p>
   <div class="csq-stats"><div class="csq-stat"><b dir="ltr">${stepsIn('1b')}</b><span>${t(`${K}.badges.steps`)}</span></div><div class="csq-stat"><b dir="ltr">${cat.registry.cyberorgCodes['1b'].length}</b>${el(t, 'span', `${K}.standards.b1`)}</div><div class="csq-stat"><b dir="ltr">${cat.registry.cyberorgCodes['2'].length}</b>${el(t, 'span', `${K}.standards.b2`)}</div><div class="csq-stat"><b dir="ltr">${cat.registry.frameworks.commonSense.topics.length}</b>${el(t, 'span', `${K}.standards.topics`)}</div></div>
   <h2>${t(`${TK}.units.h`)}</h2>
-  <ul class="plain">${cat.units.map(u => html`<li class="panel"><b lang="en" dir="ltr">${t('cs.unit.n', { n: u.n })} · ${u.title}</b>${u.stamp ? html` <span class="chip-s">🏅 ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
+  <ul class="plain">${cat.units.map(u => html`<li class="panel"><b lang="en" dir="ltr">${t('cs.unit.n', { n: u.n })} · ${u.title}</b>${u.stamp ? html` <span class="chip-s">${ico('🏅', { size: 18 })} ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
     <ol class="csq-lessons" lang="en" dir="ltr">${(u.steps || []).map(s => html`<li>${s.n} ${(s.titles || {})['1b'] || s.n}${(s.titles || {})['2'] && s.titles['2'] !== s.titles['1b'] ? html` <span class="small muted">(Pro: ${s.titles['2']})</span>` : ''}</li>`)}</ol></li>`)}</ul>
   <h2>${t(`${TK}.games.h`)}</h2>
   <ul class="csq-crew">${games.map(g => html`<li class="panel">${crewArt(g.slug, g.emoji)}<h3 lang="en" dir="ltr">${g.title}</h3>

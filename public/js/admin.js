@@ -1,6 +1,9 @@
 // Admin panel actions. Every button posts to /api/admin/... and reloads; risky ones ask first.
 import { api, toast, sheet, esc, tappedJustNow, $ } from '/js/app.js';
 import '/js/admin-ui.js';
+import { iconHtml } from '/js/icons.js';
+/** A Fluent icon for an emoji (decorative; public/js/icons.js). */
+const ico = (e, size = 18) => iconHtml(e, { size });
 
 const ROUTES = {
   approve: id => `/api/admin/games/${id}/approve`, reject: id => `/api/admin/games/${id}/reject`,
@@ -81,7 +84,7 @@ if (ann) {
     try { p = await api('/api/admin/announcements/preview', { method: 'POST', body }); } catch (ex) { toast(ex.message, { bad: true }); return; }
     const label = ann.audience.selectedOptions[0].textContent + (body.audience === 'school' && ann.schoolId ? ` (${ann.schoolId.selectedOptions[0].textContent})` : '');
     const wait = p.limits && p.limits.nextAt ? `<p class="notice warn small">The last announcement was under 10 minutes ago, so this one can't go yet.</p>` : '';
-    const s = sheet({ title: `Send to ${p.count} ${p.count === 1 ? 'person' : 'people'}?`, content: `<p><b>${esc(label)}</b> will see this from “Oomba team ✓”:</p><blockquote class="panel" dir="auto">${esc(body.text)}</blockquote>${wait}<div class="row"><button class="btn btn-primary" type="button" id="yes" ${p.count ? '' : 'disabled'}>📣 Send to ${p.count}</button><button class="btn" type="button" id="no">Cancel</button></div>` });
+    const s = sheet({ title: `Send to ${p.count} ${p.count === 1 ? 'person' : 'people'}?`, content: `<p><b>${esc(label)}</b> will see this from “Oomba team ✓”:</p><blockquote class="panel" dir="auto">${esc(body.text)}</blockquote>${wait}<div class="row"><button class="btn btn-primary" type="button" id="yes" ${p.count ? '' : 'disabled'}>${ico('📣')} Send to ${p.count}</button><button class="btn" type="button" id="no">Cancel</button></div>` });
     $('#no', s.el).addEventListener('click', () => s.close());
     $('#yes', s.el).addEventListener('click', async ev => {
       ev.target.disabled = true;

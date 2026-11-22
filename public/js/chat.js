@@ -2,6 +2,9 @@
 // sends text / quick messages / game invites, report and block. All user text is set with textContent or esc().
 import { api, toast, sheet, pageData, esc, $, t } from '/js/app.js';
 import { timeAgo as ago, INTL } from '/js/i18n.js';
+import { iconHtml } from '/js/icons.js';
+/** A Fluent icon for an emoji (decorative; public/js/icons.js). */
+const ico = (e, size = 18) => iconHtml(e, { size });
 const d = pageData();
 
 const clock = at => new Date(at).toLocaleTimeString(INTL, { hour: 'numeric', minute: '2-digit' });
@@ -12,7 +15,7 @@ const avatarHtml = (a, c, s, photo) => photo && /^\/avatars\/[\w-]+\?v=\w+$/.tes
 // ---------------- Inbox ----------------
 if (d.mode === 'inbox') {
   const box = $('#inbox');
-  const row = th => `<li><a class="inboxrow ${th.unread ? 'unread' : ''}${th.team ? ' teamrow' : ''}" href="/chat/${encodeURIComponent(th.username)}" data-thread="${esc(th.username)}">${avatarHtml(th.avatar, th.color, 48, th.photo)}<span class="who"><span class="nm">${esc(th.displayName)}${th.team ? `<span class="verified" title="${esc(t('js.chat.verified'))}"><span aria-hidden="true">✓</span><span class="sr-only">${esc(t('js.chat.verified'))}</span></span>` : ''}</span><span class="sub">${esc(th.preview || (th.chatOn ? t('js.chat.sayHi') : t('js.chat.chatOff')))}</span></span><span class="meta">${th.last ? `<span class="time">${esc(ago(th.last))}</span>` : ''}${th.unread ? `<span class="badge" aria-label="${esc(t('js.chat.newCount', { count: th.unread }))}">${th.unread > 9 ? '9+' : th.unread}</span>` : ''}</span></a></li>`;
+  const row = th => `<li><a class="inboxrow ${th.unread ? 'unread' : ''}${th.team ? ' teamrow' : ''}" href="/chat/${encodeURIComponent(th.username)}" data-thread="${esc(th.username)}">${avatarHtml(th.avatar, th.color, 48, th.photo)}<span class="who"><span class="nm">${esc(th.displayName)}${th.team ? `<span class="verified" title="${esc(t('js.chat.verified'))}">${ico('✓')}<span class="sr-only">${esc(t('js.chat.verified'))}</span></span>` : ''}</span><span class="sub">${esc(th.preview || (th.chatOn ? t('js.chat.sayHi') : t('js.chat.chatOff')))}</span></span><span class="meta">${th.last ? `<span class="time">${esc(ago(th.last))}</span>` : ''}${th.unread ? `<span class="badge" aria-label="${esc(t('js.chat.newCount', { count: th.unread }))}">${th.unread > 9 ? '9+' : th.unread}</span>` : ''}</span></a></li>`;
   let last = box ? box.innerHTML : '';
   const refresh = async () => {
     if (!box || document.hidden) return;
@@ -40,7 +43,7 @@ if (d.mode === 'thread') {
       const g = m.game;
       el.innerHTML = g
         ? `<div class="gameinvite"><span class="gi-art cover-${esc(g.cover)}" aria-hidden="true">${esc(g.icon)}</span><span class="gi-t">${esc(g.title)}</span><a class="btn btn-primary btn-sm" href="/play/${encodeURIComponent(g.slug)}">▶ ${esc(t('js.chat.play'))}</a></div>`
-        : `<div class="gameinvite gone">🎮 ${esc(t('js.chat.gameGone'))}</div>`;
+        : `<div class="gameinvite gone">${ico('🎮')} ${esc(t('js.chat.gameGone'))}</div>`;
     } else {
       const b = document.createElement('div'); b.className = 'bubble'; b.dir = 'auto'; b.textContent = m.body;
       if (EMOJI_ONLY.test(m.body)) el.classList.add('emoji');
@@ -149,7 +152,7 @@ if (d.mode === 'thread') {
 
   const blockBtn = $('#blockbtn');
   if (blockBtn) blockBtn.addEventListener('click', () => {
-    const s = sheet({ title: t('js.chat.blockTitle', { name: other.displayName }), content: `<p>${esc(t('js.chat.blockText', { name: other.displayName }))}</p><div class="row"><button class="btn btn-danger" type="button" id="yes">🚫 ${esc(t('js.chat.block'))}</button><button class="btn" type="button" id="no">${esc(t('js.chat.cancel'))}</button></div>` });
+    const s = sheet({ title: t('js.chat.blockTitle', { name: other.displayName }), content: `<p>${esc(t('js.chat.blockText', { name: other.displayName }))}</p><div class="row"><button class="btn btn-danger" type="button" id="yes">${ico('🚫')} ${esc(t('js.chat.block'))}</button><button class="btn" type="button" id="no">${esc(t('js.chat.cancel'))}</button></div>` });
     s.el.querySelector('#no').addEventListener('click', () => s.close());
     s.el.querySelector('#yes').addEventListener('click', async () => {
       try { const r = await api(`/api/chat/${encodeURIComponent(other.username)}/block`, { method: 'POST', body: {} }); s.close(); toast(r.message); setTimeout(() => location.reload(), 700); }

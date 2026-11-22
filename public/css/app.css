@@ -39,6 +39,7 @@
   --font:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --top:64px; --tabbar:66px;
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
+  --fx-plate:transparent; --tile-tint:16%;
   color-scheme:light;
 }
 /* Dark palette (the board's reversed look), written twice with the same body: when following a dark device (unless Light
@@ -58,6 +59,7 @@
   --gb0:#6FB2FF; --gb1:#FF7AA8; --gb2:#5FD38D; --gb3:#FFA24D; --gb4:#C49BFF; --gb5:#4FD1DC; --gb6:#D9A37A; --gb-angle:#FF9CC8;
   --dt-vowel:#FF7AA8; --dt-ocean:#BFE3FF; --dt-ocean-halo:rgba(0,0,0,.6); --dt-hidden-edge:#FFFDF2;
   --shadow:0 1px 0 rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.32); --shadow-lg:0 12px 32px rgba(0,0,0,.55);
+  --fx-plate:#E3DED0; --tile-tint:26%;
   color-scheme:dark;
 }}
 @media screen{:root[data-theme="dark"]{
@@ -73,6 +75,7 @@
   --gb0:#6FB2FF; --gb1:#FF7AA8; --gb2:#5FD38D; --gb3:#FFA24D; --gb4:#C49BFF; --gb5:#4FD1DC; --gb6:#D9A37A; --gb-angle:#FF9CC8;
   --dt-vowel:#FF7AA8; --dt-ocean:#BFE3FF; --dt-ocean-halo:rgba(0,0,0,.6); --dt-hidden-edge:#FFFDF2;
   --shadow:0 1px 0 rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.32); --shadow-lg:0 12px 32px rgba(0,0,0,.55);
+  --fx-plate:#E3DED0; --tile-tint:26%;
   color-scheme:dark;
 }}
 *,*::before,*::after{box-sizing:border-box}
@@ -128,6 +131,8 @@ a:not([class]):focus-visible{outline-offset:1px;border-radius:4px}
 .topsearch-btn:hover{background:var(--hover);text-decoration:none}
 @media (max-width:359px){.topsearch{display:none}.topsearch-btn{display:flex;margin-inline-start:auto}}
 .topnav{display:flex;gap:4px;margin-inline-start:auto}
+/* The sign-in page's bar has no links (views/layout.js signinPage): the language and Play now still sit at the right. */
+.topbar:not(:has(.topnav)) .langpick{margin-inline-start:auto}
 .navlink{display:flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;color:var(--text-2);font-weight:700;position:relative}
 .navlink:hover{background:var(--hover);text-decoration:none}
 .navlink[aria-current="page"]{background:var(--current);color:var(--on-current)}
@@ -2199,3 +2204,15 @@ body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;curs
 .oomba-live{color:var(--accent-ink);font-weight:700}
 .lib-oomba .shelf-head{padding:4px 0 12px;border-bottom:0}
 .lib-oomba .oomba-bar,.lib-oomba .oomba-subjects{margin:0 0 12px}
+
+/* Icons (public/js/icons.js, server/views/icon.js): Fluent Emoji 3D (28 px and up) and Flat (smaller), and the
+   manipulatives' drawn icons. The <img> carries its size; it sits on the text's middle like the emoji it replaced. */
+img.fx{display:inline-block;vertical-align:middle;flex:none;max-width:none;height:auto;object-fit:contain}
+img.fx-flat{vertical-align:-.2em}
+.emo img.fx,.classtile-e img.fx,.acct-tile-e img.fx,.door-e img.fx{vertical-align:middle}
+/* Live: the antenna is pale grey; a soft sky backing makes it read on light and dark bars. */
+img.fx[src*="satellite-antenna"]{background:radial-gradient(circle at 50% 52%,#BFE3FF 0 54%,transparent 56%);border-radius:50%}
+/* Dark theme: Fluent draws a few icons in near-black (the mortarboard, footprints, the ninja, the pirate flag, the traffic
+   light, the phone, the students' gowns at Flat size) and no bright version exists. A soft light disc behind them
+   (--fx-plate: none in the light theme) keeps them readable on the dark bars and cards. */
+img.fx[src*="/graduation-cap"],img.fx[src*="/footprints"],img.fx[src*="/ninja"],img.fx[src*="/pirate-flag"],img.fx[src*="/vertical-traffic-light"],img.fx[src*="/mobile-phone"],img.fx[src*="flat/woman-student"],img.fx[src*="flat/student"]{background:radial-gradient(circle at 50% 52%,var(--fx-plate) 0 56%,transparent 58%);border-radius:50%}

@@ -127,3 +127,30 @@ test('the printed worksheet (print media): its own page(s), N questions with fig
     }
   }
 });
+
+test('the worksheet number line is Oomba Figures\' numberLine in print: the same ticks and numbers as before, one way to draw a line', async () => {
+  const { lineData, LINE_FIGURES } = await import('../../server/services/canvas-print.js');
+  const { figuresKit } = await import('../../server/services/figlibs.js');
+  const data = { config: { lang: 'en', count: 2, purpose: ['screen', 'worksheet'] }, task: { title: 'Fractions on a line' },
+    problems: [{ tool: 'numberline.point', at: [3, 4], lo: 0, hi: 2, sub: 4 }, { tool: 'numberline.jump', from: -2, by: [3, 2], lo: -3, hi: 2, sub: 2 }], gen: null, steps: {}, hints: {} };
+  const page = `<title>Lines</title>\n${canvasTag()}\n<div id="oc-app"></div>\n<script type="application/json" id="oc-activity">\n${JSON.stringify(data)}\n</script>\n<script>Oc.activity(JSON.parse(document.getElementById('oc-activity').textContent));</script>`;
+  for (const lang of ['en', 'de', 'ar']) {
+    const html = canvasPrintHtml(page, { k: 'canvas', seed: 3, n: 2, paper: 'a4', key: false }, { t: tFor('en'), dir: 'ltr', lang });
+    const lines = [...html.matchAll(/<div class="ocp-svg ocp-line">(<svg[\s\S]*?<\/svg>)<\/div>/g)].map(m => m[1]);
+    assert.equal(lines.length, 2, 'each question draws its line');
+    for (const s of lines) {
+      assert.match(s, /class="of-fig of-numberLine of-print"/); assert.match(s, /width="360"/, '360 wide, as the old drawing');
+      assert.doesNotMatch(s, /#1F9D63|#FFFDF2|of-end|of-graph|class="of-val"/, 'black on white, nothing marked: the student finds the point');
+      assert.match(s, /aria-label="Figure \d"|aria-label="[^"]+"/);
+    }
+    const ticks = s => (/class="of-ticks">(.*?)<\/g>/.exec(s)[1].match(/<line /g) || []).length;
+    const nums = s => [...s.matchAll(/class="of-num">(.*?)<\/g>/g)].map(m => [...m[1].matchAll(/>([^<]+)<\/text>/g)].map(x => x[1]).join('').replace(/\u200e/g, ''));   // Arabic: Intl's invisible left-to-right mark before a minus
+    // the old drawer: (hi - lo) * sub + 1 ticks, a number under every whole from lo to hi
+    const byTicks = Object.fromEntries(lines.map(s => [ticks(s), nums(s)]));
+    assert.deepEqual(byTicks[9], ['0', '1', '2']); assert.deepEqual(byTicks[11], ['−3', '−2', '−1', '0', '1', '2'], 'a true minus sign');
+  }
+  assert.equal(LINE_FIGURES, '1.1.0'); assert.deepEqual(lineData({ lo: 0, hi: 2, sub: 4 }), { from: 0, to: 2, step: [1, 4], every: 4, values: false, size: 'large' });
+  assert.equal(figuresKit(LINE_FIGURES).check('numberLine', lineData({ lo: -20, hi: 0, sub: 3 })).length, 0, 'the largest line a tool allows (60 ticks) draws');
+  const src = fs.readFileSync(path.join(ROOT, 'server/services/canvas-print.js'), 'utf8');
+  assert.doesNotMatch(src, /case 'line': \{/, 'no second number line drawer');
+});

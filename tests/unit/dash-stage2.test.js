@@ -94,7 +94,7 @@ test('the registry: every stage 2 type has a renderer and English words; who may
   // Students may add only things that stay on their own screen.
   assert.deepEqual(D.WIDGETS.filter(x => D.canAdd(x, 'student') && !['teach', 'words'].includes(x.group)).map(x => x.id), ['clock', 'ican', 'timer', 'dice', 'random', 'breathe'], 'stage 3 and 4 add the teaching tools (tests/unit/dash-stage3.test.js, dash-stage4.test.js); stage 5 the breathing circle (dash-stage5.test.js)');
   // Never pinned to student screens: the picker, the noise meter, QR, the quick check widget.
-  assert.deepEqual(D.WIDGETS.filter(x => !D.canPin(x) && !['teach', 'words'].includes(x.group)).map(x => x.id).sort(), ['camera', 'check', 'dice', 'groups', 'noise', 'note', 'picker', 'qr', 'random', 'site', 'video'], 'stage 3 and 4\'s teaching tools are sent, never pinned; stage 5\'s video, site window, camera and sticky note are the teacher\'s screen only');
+  assert.deepEqual(D.WIDGETS.filter(x => !D.canPin(x) && !['teach', 'words'].includes(x.group)).map(x => x.id).sort(), ['camera', 'check', 'dice', 'groups', 'link', 'noise', 'note', 'pdf', 'picker', 'qr', 'random', 'site', 'stickers', 'video'], 'stage 3 and 4\'s teaching tools are sent, never pinned; stage 5\'s video, site window, camera and sticky note, and the Class Board\'s PDF, link tile and stickers, are the teacher\'s screen only');
   const tw = D.cleanWidgets(['picker', 'noise', 'qr', 'check', 'help', 'timer'].map((type, i) => ({ id: `w${i}`, type, pin: true })), 'teacher');
   assert.deepEqual(tw.filter(x => x.pin).map(x => x.type), ['help', 'timer']);
   assert.equal(D.registryFor(t, 'teacher').types.find(x => x.id === 'help').pinDef, true, 'the help queue is pinned when added');
@@ -644,9 +644,13 @@ test('every stage 2 string is translated into every locale', async () => {
 test('more everyday widgets: registry, settings rebuilt on the server, and the maths behind them', () => {
   const ids = ['countdown', 'calendar', 'symbols', 'light', 'dice', 'random', 'groups', 'score'];
   for (const id of ids) { assert.ok(D.widgetType(id), id); assert.equal(typeof W.RENDER[id], 'function', `renderer for ${id}`); }
-  // The stickers widget was removed (docs/decisions.md "Stickers widget removed"): not in the registry, no renderer.
-  assert.equal(D.widgetType('stickers'), null); assert.equal(W.RENDER.stickers, undefined);
-  assert.ok(!D.WIDGETS.some(x => x.id === 'stickers'));
+  // The stickers widget was removed on 16 Nov 2026 and is back on 21 Nov 2026 (docs/decisions.md "Class Board: PDF, link
+  // tile and stickers"): in the registry again, as placed stickers (a free type, drawn over the grid by
+  // public/js/dash-stickers.js, so no grid renderer), teacher only and never pinned. The old emoji widget stays dropped
+  // (the tests below).
+  const st = D.widgetType('stickers');
+  assert.ok(st); assert.equal(st.free, true); assert.equal(st.who, 'teacher'); assert.equal(D.canPin(st), false);
+  assert.equal(W.RENDER.stickers, undefined);
   const c = (type, s) => D.cleanSettings(D.widgetType(type), s);
   // Visual timer and spinner wheel are modes of the timer and the picker.
   assert.equal(c('timer', { view: 'ring' }).view, 'ring'); assert.equal(c('timer', { view: 'lava lamp' }).view, 'digits');
@@ -762,7 +766,7 @@ test('symbols, traffic light and scoreboard the teacher taps reach student scree
     { id: 'dc', type: 'dice', pin: true }, { id: 'gr', type: 'groups', pin: true }, { id: 'rn', type: 'random', pin: true }]);
   const pins = (await as(w.a1)(`/api/dash/${w.A.id}/pins`)).json.pins;
   assert.deepEqual(pins.map(p => p.type), ['symbols', 'light', 'score']);
-  // The stickers widget is gone: one sent is dropped like any unknown type, never stored.
+  // An old emoji stickers widget (no sticker from the library) is dropped, never stored.
   assert.ok(!D.layoutsOf(w.A.id, w.T.id)[0].widgets.some(x => x.type === 'stickers'));
   assert.equal(pins.find(p => p.type === 'light').s.red, 'Eyes on me');
   assert.deepEqual(pins.find(p => p.type === 'score').s.scores, [2, 5]);

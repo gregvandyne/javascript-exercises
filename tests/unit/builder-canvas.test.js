@@ -80,7 +80,7 @@ test('the plan for the model: SETUP CHOICES name the canvas tool and its generat
   const note = plan.planNote(p);
   assert.match(note, /CLASSROOM ACTIVITY on Oomba Canvas/); assert.match(note, /start_from_template "canvas"/); assert.match(note, /"tool":"fractions\.equiv"/);
   assert.match(note, /never write a checker of your own|never add the kit/i);
-  assert.equal(plan.planSentence(p, tFor('en')), 'Here is my plan: a classroom activity. For grade 4. Practice: Equivalent fractions. Help: Guided. Students play it on their own devices.');
+  assert.equal(plan.planSentence(p, tFor('en')), 'Here is my plan: a classroom activity. For grade 4. Practice: Equivalent fractions. Students use it on their own devices. Help: Guided.');
   assert.doesNotMatch(plan.planSentence(p, tFor('en')) + note, /4B|CanvasTeacher/, 'never the class name or the teacher');
   const st = {}; assert.equal(plan.engineFor(st, p, '', null), null);
   assert.equal(st.canvas, true); assert.equal(st.fromClass, true); assert.equal(st.wantsLive, undefined);
@@ -108,10 +108,22 @@ test('the arcade prompt is unchanged: SYSTEM_PROMPT and TOOLS never name the can
   assert.match(claude, /wantsCanvas\(st, ctx\.text, cur\) \? \[\{ type: 'text', text: CANVAS_RULES \}\]/, 'one block, no cache point of its own, only when wantsCanvas');
 });
 
+test('the CANVAS RULES tell the Builder that lesson activities keep worksheets by themselves (Oomba Canvas 1.4.0)', () => {
+  const r = prompt.CANVAS_RULES;
+  assert.match(r, /- Saved worksheets \(1\.4\.0\): every lesson activity a teacher builds with questions lets them save worksheets, and the kit does all of it/);
+  assert.match(r, /"Save as worksheet"/); assert.match(r, /"My worksheets"/); assert.match(r, /class code/);
+  assert.match(r, /keep every question as data in the oc-activity block/);
+  assert.match(r, /never build saving, class codes, links, a worksheet list or a print button of your own/);
+  assert.match(r, /New activities use Oomba Canvas 1\.4\.0/);
+  assert.ok(r.includes(canvasTag('1.4.0')), 'the pinned tag is the 1.4.0 one');
+  assert.match(fs.readFileSync(path.join(ROOT, 'docs/canvas-api.md'), 'utf8'), /<!-- builder:rules -->[\s\S]*Saved worksheets \(1\.4\.0\)[\s\S]*<!-- \/builder -->/, 'generated from the page');
+  assert.doesNotMatch(prompt.SYSTEM_PROMPT, /Save as worksheet|My worksheets/, 'the arcade prompt is untouched');
+});
+
 // ---------------------------------------------------------------- the starter, the self-test, the save
 test('the activity starter: pinned tag, data as JSON, scanned clean, and it passes the self-test', async () => {
   const html = loadTemplate('canvas');
-  assert.equal(canvasVersion(html), CANVAS_LATEST); assert.equal(CANVAS_LATEST, '1.3.0', 'new activities pin Oomba Canvas 1.3.0');
+  assert.equal(canvasVersion(html), CANVAS_LATEST); assert.equal(CANVAS_LATEST, '1.4.0', 'new activities pin Oomba Canvas 1.4.0 (worksheets)');
   assert.ok(activityData(html).data.problems.length >= 3);
   assert.deepEqual(autotest.canvasSelfTest(html), { ok: true, problems: [] });
   assert.equal(autotest.canvasSelfTest('<p>arcade</p>'), null);
@@ -143,7 +155,8 @@ test('/build/new: both cards; Classroom activity for a teacher and from their cl
     assert.match(h, /data-kind="classgame"/);
     assert.match(h, />Classroom lesson</); assert.match(h, />Classroom game</); assert.match(h, />Arcade game</);
     assert.doesNotMatch(h, /id="su-tools"/, 'Classroom game is its own card now, not a link');
-    assert.ok(h.includes('data-screen="lesson"') && h.includes('data-screen="help"') && h.includes('data-screen="played"'));
+    assert.ok(h.includes('data-screen="lesson"') && h.includes('data-screen="help"') && h.includes('data-screen="use"'));
+    assert.ok(!h.includes('data-screen="played"') && !h.includes('data-screen="purpose"'), 'no "How will it be played?" or "What is it for?" step for an activity');
     // the owner's change: one text box, no starter chips ("Even and odd", "Order numbers", "Add in columns"...)
     assert.doesNotMatch(h, /data-topic=|class="su-chips"|>Even and odd<|>Order numbers<|>Add in columns</, 'no topic chips');
     assert.doesNotMatch(h, /id="su-topic-in"|What should students practice\?/, 'no topic box on the first step: "Your lesson" asks for it all');
@@ -163,7 +176,7 @@ test('/build/new: both cards; Classroom activity for a teacher and from their cl
   assert.match(c, /data-kind="activity" aria-pressed="true"/);
   assert.match(c, /<span class="su-for">[\s\S]*?For 4B · Grade 4<\/span>/); assert.match(c, /Make something for your class/);
   const d = pageData(c);
-  assert.deepEqual(d.canvas, { kind: 'activity', supports: ['watch', 'count', 'guided', 'own'], help: ['guided'], purposes: ['screen', 'worksheet', 'generator'], purpose: ['screen'], plays: ['devices', 'board', 'both'], grade: '4', forClass: true });
+  assert.deepEqual(d.canvas, { kind: 'activity', supports: ['watch', 'count', 'guided', 'own'], help: ['guided'], uses: ['screen', 'worksheet'], use: ['screen'], grade: '4', forClass: true });
   assert.doesNotMatch(JSON.stringify(d), new RegExp(cls.id), 'the class id is not in the page data the plan is made from');
   assert.match(c, new RegExp(`href="/class/${cls.id}"`), 'the way back is the class');
   // a class this user does not teach: the page opens as usual (no grade, no chip)
@@ -199,7 +212,7 @@ test('POST /api/build/plan and the first build: an activity plan builds an Oomba
 test('every language has the new words of the start, the activity steps and the Studio line', () => {
   const keys = ['buildSetup.kind.heading', 'buildSetup.kind.activity.title', 'buildSetup.kind.arcade.title', 'buildSetup.kind.classgame.title', 'buildSetup.kind.classgame.text', 'buildSetup.start.direct', 'buildSetup.canvas.practise.heading', 'buildSetup.canvas.practise.privacy',
     ...plan.SUPPORTS.map(s => `buildSetup.canvas.help.${s}.title`), 'buildSetup.lesson.heading', 'buildSetup.lesson.safe', 'buildSetup.lesson.fileText', ...plan.LESSON_HEADS.flatMap(k => [`buildSetup.lesson.heads.${k}`, `buildSetup.lesson.prompt.${k}`]),
-    'js.buildsetup.lesson.readPages', 'js.buildsetup.lesson.err.docBig', 'js.buildsetup.lesson.err.docType', 'js.buildsetup.lesson.sumHeading', 'js.buildsetup.canvas.rows.lesson', ...plan.CANVAS_PLAYS.map(s => `buildSetup.canvas.played.${s}.text`), ...plan.CANVAS_TOPICS.map(x => `buildSetup.canvas.topics.${x.id}`),
+    'js.buildsetup.lesson.readPages', 'js.buildsetup.lesson.err.docBig', 'js.buildsetup.lesson.err.docType', 'js.buildsetup.lesson.linePages', 'js.buildsetup.lesson.lineCut', 'buildSetup.plan.toldHelp', 'buildSetup.plan.toldReset', 'js.buildsetup.canvas.rows.lesson', ...plan.CANVAS_USES.flatMap(s => [`buildSetup.canvas.use.${s}.title`, `buildSetup.canvas.use.${s}.text`, `buildSetup.say.use.${s}`, `js.buildsetup.canvas.use.${s}`]), 'buildSetup.canvas.use.heading', 'buildSetup.canvas.use.note', 'buildSetup.say.use.both', 'buildSetup.say.fresh', 'js.buildsetup.canvas.use.both', 'js.buildsetup.canvas.rows.use', ...plan.CANVAS_TOPICS.map(x => `buildSetup.canvas.topics.${x.id}`),
     'buildSetup.say.activity', 'buildSetup.play.why.canvas', 'studio.canvasLine.activity', 'studio.canvasLine.toArcadeAsk', 'studio.canvasLine.toCanvasAsk', 'js.buildsetup.canvas.rows.practise'];
   for (const code of CODES) for (const k of keys) assert.ok(tFor(code).has(k) || code === 'en-GB', `${code} ${k}`);
   for (const code of CODES.filter(c => !c.startsWith('en'))) assert.notEqual(tFor(code)('buildSetup.kind.activity.title'), 'Classroom activity', code);

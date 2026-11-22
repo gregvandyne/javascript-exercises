@@ -38,6 +38,8 @@ import { storyDir } from './story-jobs.js';
 import { forgetUser as forgetClassroom } from './gclassroom.js';
 import { forgetUser as forgetDash } from './dash.js';
 import { forgetUser as forgetGameSets } from './game-sets.js';
+import { forgetUser as forgetManipulatives } from './manipulatives.js';
+import { forgetUser as forgetFigures } from './figures.js';
 
 const DAY = 86400e3;
 /** How long a deleted child's old username can't be taken. */
@@ -99,7 +101,7 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     // 6. the child's rows on other games
     for (const r of q.all('SELECT game_id FROM likes WHERE user_id=?', u.id)) q.run('UPDATE games SET likes=MAX(0, likes-1) WHERE id=?', r.game_id);
     for (const r of q.all('SELECT game_id, stars FROM ratings WHERE user_id=?', u.id)) q.run('UPDATE games SET rating_sum=MAX(0, rating_sum-?), rating_count=MAX(0, rating_count-1) WHERE id=?', r.stars, r.game_id);
-    for (const tbl of ['saves', 'scores', 'ratings', 'likes', 'builder_uploads', 'course_progress', 'course_bands', 'course_pending_wins', 'nq_xp_events', 'nq_daily_goals', 'nq_daily_activity', 'nq_laps', 'nq_placement', 'nq_sort_runs', 'nq_testout', 'user_days', 'sign_ins', 'team_welcomes', 'email_prefs', 'email_log', 'trial_emails', 'trial_nudges']) q.run(`DELETE FROM ${tbl} WHERE user_id=?`, u.id);
+    for (const tbl of ['saves', 'scores', 'ratings', 'likes', 'builder_uploads', 'course_progress', 'course_bands', 'course_pending_wins', 'story_reads', 'nq_xp_events', 'nq_daily_goals', 'nq_daily_activity', 'nq_laps', 'nq_placement', 'nq_sort_runs', 'nq_testout', 'user_days', 'sign_ins', 'team_welcomes', 'email_prefs', 'email_log', 'trial_emails', 'trial_nudges']) q.run(`DELETE FROM ${tbl} WHERE user_id=?`, u.id);
     // their game folders (services/game-folders.js): the folders and what they hold; the games themselves are handled above
     q.run('DELETE FROM game_folder_items WHERE folder_id IN (SELECT id FROM game_folders WHERE owner_id=?)', u.id);
     q.run('DELETE FROM game_folders WHERE owner_id=?', u.id);
@@ -121,6 +123,10 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     q.run('INSERT INTO reserved_names(name, until) VALUES (?,?) ON CONFLICT(name) DO UPDATE SET until=excluded.until', u.username, t + RESERVE_DAYS * DAY);
     // 11b. question sets they kept in official games (their links stop opening a set)
     forgetGameSets(u.id);
+    // 11c. virtual math manipulatives: their saved boards, their work in sessions, the sessions they ran
+    forgetManipulatives(u.id);
+    // 11d. Figures: their worksheets (question sets), presets and "Power with AI" switch
+    forgetFigures(u.id);
     // 12. the audit (ids only, never the old name)
     audit(actor ? actor.id : null, 'user.delete', u.id, { by: actor ? actor.id : null, kind: by, ...(parentMade ? { parentMade: true } : {}) });
   });
