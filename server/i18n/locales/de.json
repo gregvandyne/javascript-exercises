@@ -3506,7 +3506,9 @@
       "allSteps": "Alle Schritte",
       "thisStep": "Nur dieser Schritt",
       "hideSteps": "Schritte ausblenden",
-      "showSteps": "Schritte zeigen"
+      "showSteps": "Schritte zeigen",
+      "checkResult": "{right} von {total} richtig. Versuch es bei den anderen noch einmal.",
+      "checkAll": "{total, plural, one {Alles richtig!} other {Alle # richtig!}}"
     },
     "figures-editor": {
       "undo": "Rückgängig",

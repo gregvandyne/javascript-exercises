@@ -11,7 +11,7 @@
 //      - a block two or more places away (a cube in Tens, a unit in Hundreds) goes to its own column of that chart,
 //        if the chart has one; if not, it stays where it was dropped.
 //   Locked blocks are left as they are (never traded, moved or resized).
-import { slotsOf, PV_COL } from './manip-board.js';
+import { slotsOf, PV_COL, nextPieceSpot } from './manip-board.js';
 import { allPieceDefs, pieceDefs } from './manip-data.js';
 
 const num = (v, d = 0) => (Number.isFinite(+v) ? +v : d);
@@ -285,6 +285,28 @@ export function sameValueHome(slug, st, last, d) {
   if (!L || !d) return null;
   const v = valueOf(slug, L); if (Math.abs(v - d.value) > Math.abs(v) * 1e-9) return null;
   return columnHome(slug, st, L);
+}
+/** The column of a chart on the board made for a block worth d.value (a rod: Tens), as a home, or null. */
+export function valueHome(slug, st, d) {
+  const c = d && columnsOf(slug, st).find(x => x.place != null && stepsApart(d.value, x.place) === 0);
+  return c ? { col: c } : null;
+}
+/**
+ * A block added from the palette, on the solo board and in a live room's square alike (docs/decisions.md "Virtual math
+ * manipulatives: place-value charts fit and regroup"): into the column of the block added just before it when that one
+ * is worth the same (sameValueHome); else the next free spot (manip-board.js nextPieceSpot: never on a chart); and when
+ * the region has no free spot left (a square the chart fills), into the chart's column for its value if it has one.
+ * mk(d, x, y) makes the piece; space: the board's or square's size (kept inside it). -> { p, last } (last: the next
+ * add's `last`)
+ */
+export function paletteAdd(slug, st, d, region, last, mk, space = null) {
+  const home = sameValueHome(slug, st, last, d) || null;
+  const at = home ? null : nextPieceSpot(slug, st, d, region, last);
+  const into = home || (at.full ? valueHome(slug, st, d) : null);
+  if (into) { const p = mk(d, 0, 0); placeAtHome(into, [p], space); return { p, last: { id: p.id, runX: p.x } }; }
+  const x = space ? Math.min(at.x, Math.max(0, space.w - d.w)) : at.x, y = space ? Math.min(at.y, Math.max(0, space.h - d.h)) : at.y;
+  const p = mk(d, x, y);
+  return { p, last: { id: p.id, runX: at.runX } };
 }
 /** Put new pieces at a home from homeFor: in the column (at its end) or in rows of five under the chart. */
 export function placeAtHome(home, news, space = null) {

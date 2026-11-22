@@ -3506,7 +3506,9 @@
       "allSteps": "Alle stappen",
       "thisStep": "Alleen deze stap",
       "hideSteps": "Stappen verbergen",
-      "showSteps": "Stappen tonen"
+      "showSteps": "Stappen tonen",
+      "checkResult": "{right} van de {total} goed. Probeer de andere nog eens.",
+      "checkAll": "{total, plural, one {Alles goed!} other {Alle # goed!}}"
     },
     "figures-editor": {
       "undo": "Ongedaan maken",
