@@ -1684,7 +1684,7 @@ function etaNow() {
   const e = DJ.eta || { src: 'default', p50: 25e3, p75: 40e3 }, el = draftElapsed(), guess = e.src !== 'data';
   // Past the usual time: the server's longest (its AI budget and a margin, manip-drafts.js longest) says when the
   // teacher has a board either way. The page never stops asking while the draft runs.
-  if (el > e.p75 + Math.max(15e3, 0.15 * e.p75)) return { state: 'longer', text: e.max ? t('js.manip.draft.eta.longerMax', { n: Math.max(1, Math.ceil(e.max / 60e3)) }) : t('js.manip.draft.eta.longer') };
+  if (el > e.p75 + Math.max(15e3, 0.15 * e.p75)) return { state: 'longer', text: e.max ? t('js.manip.draft.eta.longerMax', { n: Math.max(1, Math.ceil((e.max - el) / 60e3)) }) : t('js.manip.draft.eta.longer') };
   if (e.p75 <= 50e3) return { state: 'on', text: t(guess ? 'js.manip.draft.eta.guessUnder' : 'js.manip.draft.eta.under') };
   return { state: 'on', text: t(guess ? 'js.manip.draft.eta.guess' : 'js.manip.draft.eta.about', { n: Math.ceil(e.p75 / 60e3) }) };
 }
