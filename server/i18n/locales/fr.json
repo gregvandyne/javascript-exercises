@@ -5965,24 +5965,19 @@
   },
   "teachers": {
     "title": "Jeux éducatifs interactifs pour la classe",
-    "description": "Jeux éducatifs gratuits et sans publicité pour les 5-14 ans, dans tout navigateur et sur Chromebook : maths, lecture, échecs, musique et un Constructeur IA.",
+    "description": "Des jeux éducatifs sans publicité pour les 5-14 ans, dans n’importe quel navigateur, Chromebooks compris, avec des manipulables de maths, un tableau de bord de la classe et un Constructeur de jeux, une IA.",
     "kicker": "🍎 Pour les enseignants",
     "h1": "Des jeux éducatifs interactifs que vos élèves vont réclamer",
-    "lead": "Oomba Academy est un site gratuit de jeux éducatifs pour les 5-14 ans. Les élèves jouent directement dans le navigateur, et votre classe peut créer ses propres jeux en les décrivant à notre Constructeur, une IA.",
+    "lead": "Des jeux éducatifs, des manipulables de maths à utiliser en direct avec votre classe et un tableau de bord pour toute la journée, pour les 5-14 ans. Tout fonctionne dans le navigateur, Chromebooks compris, et votre classe peut créer ses propres jeux avec notre Constructeur, une IA.",
     "badges": {
-      "free": "Gratuit pour commencer",
       "ads": "Sans publicité",
       "browser": "Fonctionne dans tout navigateur, même sur Chromebook",
       "google": "Se connecter avec Google",
       "ages": "Conçu pour les 5-14 ans"
     },
     "cta": {
-      "start": "Obtenir un compte école gratuit",
+      "start": "Créer un compte enseignant",
       "try": "Essayer un jeu, sans inscription"
-    },
-    "play": {
-      "h": "Jouer pour apprendre",
-      "p": "Des jeux courts auxquels les élèves ont envie de rejouer, et qui font chacun travailler une vraie compétence. Ils s’ouvrent en quelques secondes dans le navigateur, sans rien installer."
     },
     "subjects": {
       "h": "Jeux par matière"
@@ -6056,9 +6051,8 @@
       "p": "Tout le site fonctionne en {count} langues, dont l’espagnol, le portugais, le français, l’arabe et l’hébreu, ce qui aide les élèves qui apprennent encore l’anglais. Chaque élève choisit la sienne, et le Constructeur lui répond dans cette langue."
     },
     "start": {
-      "h": "Inscrire votre école (gratuit)",
-      "p1": "Jouer est gratuit pour tout le monde, et les élèves peuvent essayer n’importe quel jeu tout de suite, sans inscription.",
-      "p2": "Pour les classes, les leçons et les comptes école, écrivez à {email} en indiquant le nom de votre école et la personne qui s’en occupera. Nous créons votre école et le compte de son admin, qui ajoute ensuite les enseignants et les élèves. L’inscription d’une école est gratuite.",
+      "h": "Inscrire votre école",
+      "p1": "Les élèves peuvent essayer n’importe quel jeu tout de suite, sans inscription.",
       "plans": "Envie de plus pour vos classes ? Essayez la formule Enseignant gratuitement pendant {days} jours, sans carte : élèves illimités et {daily} créations IA par jour pour la classe.",
       "email": "Écrivez-nous pour inscrire votre école",
       "subject": "Inscrire mon école sur Oomba Academy",
@@ -6077,8 +6071,8 @@
       "q5": "Pour quels âges et quels niveaux ?",
       "a5": "Oomba Academy est conçue de la maternelle à la 4e, soit environ pour les 5-14 ans. Des jeux comme Shark Plank et les premiers circuits de Sum Racer conviennent aux plus jeunes. Number Quest, le cours de maths, va de la grande section à la 4e, et CS Quest et Cyber Defenders commencent au CE2.",
       "q6": "Comment ajouter ma classe ?",
-      "a6": "D’abord, écrivez-nous pour inscrire votre école (c’est gratuit). Ensuite, créez une classe et partagez son code de classe avec les élèves qui ont leur propre compte, ou créez des comptes école pour toute la classe et imprimez les cartes de connexion.",
-      "a6google": "D’abord, écrivez-nous pour inscrire votre école (c’est gratuit). Ensuite, créez une classe et partagez son code de classe avec les élèves qui ont leur propre compte, ou créez des comptes école pour toute la classe et imprimez les cartes de connexion. Les écoles qui utilisent Google peuvent permettre aux élèves de se connecter avec Google.",
+      "a6": "D’abord, écrivez-nous pour inscrire votre école. Ensuite, créez une classe et partagez son code de classe avec les élèves qui ont leur propre compte, ou créez des comptes école pour toute la classe et imprimez les cartes de connexion.",
+      "a6google": "D’abord, écrivez-nous pour inscrire votre école. Ensuite, créez une classe et partagez son code de classe avec les élèves qui ont leur propre compte, ou créez des comptes école pour toute la classe et imprimez les cartes de connexion. Les écoles qui utilisent Google peuvent permettre aux élèves de se connecter avec Google.",
       "q7": "Les élèves peuvent-ils créer leurs propres jeux ? Qui les voit ?",
       "a7": "Oui. Un nouveau jeu est privé : seul l’élève qui l’a créé le voit. Il peut le partager avec sa classe, et un jeu destiné à tout le monde est vérifié avant que d’autres puissent y jouer.",
       "q8": "Puis-je suivre la progression et les scores ?",
@@ -6090,7 +6084,7 @@
       "a1paid": "Jouer, les classes, les leçons, le suivi des progrès et Oomba Live sont gratuits, et chaque élève reçoit chaque jour des messages gratuits pour le Constructeur. La formule Enseignant, facultative, ajoute pour vos classes une réserve quotidienne partagée de créations IA, avec des élèves illimités. Essayez-la gratuitement pendant 14 jours, sans carte. Les prix sont sur la page des formules."
     },
     "setup": {
-      "lead": "Parlez-nous un peu de votre école. Nous l’inscrirons en 1 jour d’école maximum et répondrons à votre e-mail en indiquant la marche à suivre. Inscrire une école est gratuit.",
+      "lead": "Parlez-nous un peu de votre école. Nous l’inscrirons en 1 jour d’école maximum et répondrons à votre e-mail en indiquant la marche à suivre.",
       "school": "Nom de l’école",
       "role": "Votre rôle",
       "rolePick": "Choisissez",
@@ -6139,7 +6133,7 @@
       "submitStaff": "Envoyer",
       "privacySignup": "Nous utilisons votre e-mail pour vous envoyer le guide de bienvenue, réinitialiser un mot de passe oublié et vous répondre. Consultez notre <a href=\"{privacy}\">Politique de confidentialité</a>.",
       "emailHintSignup": "L'e-mail de votre école. Nous y envoyons le guide de bienvenue, et nous l'utilisons si vous oubliez votre mot de passe.",
-      "signupLead": "Créez votre compte enseignant, puis créez ou rejoignez votre école et ajoutez vos classes. Cela prend environ deux minutes, et c’est gratuit.",
+      "signupLead": "Créez votre compte enseignant, puis créez ou rejoignez votre école et ajoutez vos classes. Cela prend environ deux minutes.",
       "signupCta": "Créer mon compte enseignant"
     },
     "live": {
@@ -6153,11 +6147,7 @@
     "cs": {
       "cstaNote": "Normes : CSTA K-12 Computer Science Standards (2017), niveaux 1B et 2. Ce programme n’est ni créé, ni relu, ni approuvé par la CSTA."
     },
-    "leaderLine": "Direction ou informatique ? <a href=\"{href}\">Configure ton école</a> : c'est gratuit.",
-    "free": {
-      "line": "Toujours gratuit : tous les jeux, vos classes, les leçons, la progression et le carnet de notes, ainsi que des messages quotidiens gratuits du Builder pour vous et vos élèves. L’offre Enseignant ajoute {daily} créations de jeux par IA par jour, partagées entre vos classes. <a href=\"{plans}\">Voir les prix dans Offres</a>.",
-      "lineOff": "Toujours gratuit : tous les jeux, vos classes, les leçons, la progression et le carnet de notes, ainsi que des messages quotidiens gratuits du Builder pour vous et vos élèves."
-    },
+    "leaderLine": "Direction ou informatique ? <a href=\"{href}\">Inscrivez votre école</a>.",
     "classroom": {
       "kicker": "Google Classroom",
       "h": "Fonctionne avec votre Google Classroom",
@@ -6198,6 +6188,31 @@
       },
       "plan": "Le tableau de bord de la classe est gratuit pour chaque classe. Les manipulables, leurs salles en direct et Figures font partie de la formule Enseignant.",
       "testing": "Le tableau de bord de la classe est gratuit pour chaque classe. Les trois autres outils sont en cours d’essai dans quelques classes."
+    },
+    "tools": {
+      "h": "Nouveau pour votre classe",
+      "lead": "De vrais écrans d’une classe de démonstration : un tableau de maths qu’Oomba construit avec vous, le même tableau en direct sur l’appareil de chaque élève, et un tableau de bord pour toute la journée de classe.",
+      "board": {
+        "h": "Les manipulables de maths avec Oomba",
+        "p": "Blocs base dix, fractions, horloges et plus encore sur un seul tableau. Dites à Oomba la leçon, et il prépare le tableau pour vous.",
+        "alt": "Les manipulables sur un ordinateur portable : quatre horloges à la demie, chacune avec une case réponse, et à côté le chat d’Oomba qui dit avoir fait le tableau.",
+        "open": "Ouvrir les manipulables"
+      },
+      "room": {
+        "h": "Les manipulables en direct",
+        "p": "Envoyez un tableau à votre classe. Chaque élève travaille dans sa propre case sur son appareil, et vous voyez toutes les cases sur un seul écran.",
+        "alt": "La salle en direct d’un enseignant : en haut le tableau et sa première étape, en dessous les cases de six élèves, avec leurs réponses sous les horloges.",
+        "open": "Lancer une salle en direct"
+      },
+      "dash": {
+        "h": "Tableau de bord de la classe",
+        "p": "Minuteurs, responsabilités, météo des émotions et outils de maths pour toute la journée de classe, au tableau et sur l’écran de chaque élève.",
+        "alt": "Un tableau de bord de classe au vidéoprojecteur : l’horloge, l’objectif du jour, l’emploi du temps avec Maths maintenant et Récréation ensuite, les responsabilités et la météo des émotions.",
+        "open": "Ouvrir Mes classes"
+      },
+      "watch": "Voir la vidéo d’une minute",
+      "plan": "Le tableau de bord de la classe est inclus avec chaque classe. Les manipulables et leurs salles en direct font partie de la formule Enseignant.",
+      "testing": "Le tableau de bord de la classe est inclus avec chaque classe. Les manipulables et leurs salles en direct sont en test dans quelques classes."
     }
   },
   "learn": {
@@ -6616,13 +6631,12 @@
     }
   },
   "parents": {
-    "title": "Jeux éducatifs gratuits et sûrs, 5-14 ans",
-    "description": "Jeux éducatifs gratuits pour les 5-14 ans, dans le navigateur : maths, mots, échecs, musique. Sans pub ni inconnus, et ils peuvent créer leurs propres jeux.",
+    "title": "Jeux éducatifs sûrs pour les 5-14 ans",
+    "description": "Jeux éducatifs pour les 5-14 ans, dans le navigateur : maths, mots, échecs, musique. Sans pub ni inconnus, et ils peuvent créer leurs propres jeux.",
     "kicker": "👪 Pour les parents",
     "h1": "Des jeux éducatifs amusants pour les 5-14 ans, sûrs dès la conception",
     "lead": "Oomba Academy est un site de petits jeux éducatifs auxquels les enfants jouent directement dans le navigateur : courses de calcul, énigmes de mots, échecs et musique. Quand ils sont prêts, ils peuvent créer leurs propres jeux en les décrivant à notre Constructeur IA.",
     "badges": {
-      "free": "Gratuit",
       "ads": "Sans publicité",
       "buy": "Rien à acheter pour les enfants",
       "strangers": "Pas de chat avec des inconnus",
@@ -6630,20 +6644,13 @@
       "languages": "{count} langues"
     },
     "cta": {
-      "start": "Commencer gratuitement",
+      "start": "Inscrire votre enfant",
       "try": "Essayer un jeu, sans inscription",
       "grownup": "Créer un compte adulte",
       "lead": "Vous en avez assez vu ? Essayez un jeu avec votre enfant dès maintenant.",
-      "setup": "Inscrire votre enfant, gratuit"
+      "setup": "Créer le compte de votre enfant"
     },
     "teachers": "Vous êtes enseignant ? Découvrez <a href=\"{href}\">Oomba Academy pour les enseignants</a>.",
-    "play": {
-      "h": "Apprendre en jouant",
-      "p": "Chaque jeu fait travailler une vraie compétence en quelques minutes, et les enfants y reviennent parce que c’est amusant. Choisissez-en un à essayer ensemble."
-    },
-    "subjects": {
-      "h": "Choisir par matière"
-    },
     "how": {
       "h": "Comment fonctionne Oomba Academy",
       "lead": "Voici ce que voit votre enfant, étape par étape. Ce sont de vrais écrans du site, remplis avec des noms inventés.",
@@ -9336,8 +9343,7 @@
     "final": {
       "h": "Votre prochaine leçon sera peut-être celle qu’ils voudront rejouer",
       "p": "Gratuit pendant 14 jours. Sans carte, sans frais par élève.",
-      "cta": "Commencer l’essai gratuit de 14 jours",
-      "pFree": "Les jeux, les classes, les leçons et la progression sont toujours gratuits. Essayez l’offre Enseignant gratuitement pendant 14 jours, sans carte et sans frais par élève."
+      "cta": "Commencer l’essai gratuit de 14 jours"
     },
     "play": {
       "h": "Tu viens pour jouer ?",

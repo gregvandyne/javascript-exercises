@@ -43,14 +43,14 @@ test('structured data and language addresses work in the browser', async ({ page
   await page.goto('/teachers');
   const data = await page.locator('script[type="application/ld+json"]').allTextContents();
   const types = data.flatMap(d => JSON.parse(d)['@graph'].map(n => n['@type']));
-  expect(types).toEqual(expect.arrayContaining(['FAQPage', 'BreadcrumbList', 'Organization', 'WebSite', 'ItemList']));
+  expect(types).toEqual(expect.arrayContaining(['FAQPage', 'BreadcrumbList', 'Organization', 'WebSite']));
   // No script error from the data blocks under the site's CSP.
   const errors = []; page.on('pageerror', e => errors.push(e.message)); page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
   await page.goto('/g/sum-racer'); await page.goto('/learn/music-games');
   expect(errors).toEqual([]);
-  // The hero's call to action jumps to the "start" section.
+  // The hero's call to action (billing is off in this run: "Create a teacher account") jumps to the "start" section.
   await page.goto('/teachers');
-  await page.getByRole('link', { name: 'Get a free school account' }).first().click();
+  await page.getByRole('link', { name: 'Create a teacher account' }).first().click();
   await expect(page.locator('#start')).toBeInViewport();
   // /fr/g/sum-racer is French, without changing the visitor's saved language.
   await page.goto('/fr/g/sum-racer');

@@ -160,7 +160,10 @@ test('the landing at "/": one teaching-loop section after the students build, wi
   assert.ok(!/Lesson library|Draft with AI/.test(sec), 'games, not lessons');
   assert.doesNotMatch(sec, /href="\/(?:class|teach)\//, 'no links into teacher-only pages for signed-out visitors');
   assert.match(sec, /href="\/signup\?trial=1" data-cta="trial"/);
-  for (const [name] of V.SHOTS) {
+  // Two screens side by side (the owner: "only keep two photos here", "The first and 3rd"): the gradebook and the feedback.
+  assert.deepEqual(V.PAIR, ['gradebook', 'feedback']);
+  assert.deepEqual([...sec.matchAll(/teach-loop\/(\w+)\.webp/g)].map(m => m[1]), V.PAIR);
+  for (const name of V.PAIR) {
     const img = new RegExp(`<img src="/img/teach-loop/${name}\\.webp\\?v=\\d+" width="1280" height="800" [^>]*alt="([^"]{30,})" loading="lazy"`).exec(sec);
     assert.ok(img, name);
     const file = path.resolve('public/img/teach-loop', `${name}.webp`);

@@ -160,18 +160,20 @@ test('staff only: a student gets "not found" for /teach/loop and never sees the 
   await ctx.close();
 });
 
-test('/teachers (and the landing at "/", when it is on): the section with the four screens, at every size', async ({ browser }) => {
+test('/teachers (and the landing at "/", when it is on): the section with its two screens, at every size', async ({ browser }) => {
   const ctx = await browser.newContext(); const p = await ctx.newPage();
   await p.goto('/teachers');
   const sec = p.locator('#teach-loop');
   await expect(sec.locator('h2')).toContainText('Plan → Play → Check → Feedback');
   await expect(sec.locator('.tl-step')).toHaveCount(4);
   await expect(sec.locator('a')).toHaveCount(0);
+  // Two screens side by side: the gradebook and the written feedback (teacher-loop.js PAIR).
+  await expect(sec.locator('.tl-shot img')).toHaveCount(2);
   const landing = await p.goto('/').then(() => p.locator('#loop').count());
   const paths = ['/teachers', ...(landing ? ['/'] : [])];
   if (landing) {
     await expect(p.locator('#loop .lp-loop-step')).toHaveCount(4);
-    await expect(p.locator('#loop .lp-loop-shot img')).toHaveCount(4);
+    await expect(p.locator('#loop .lp-loop-shot img')).toHaveCount(2);
     for (const alt of await p.locator('#loop img').evaluateAll(l => l.map(i => i.alt))) expect(alt.length).toBeGreaterThan(30);
   }
   await ctx.close();

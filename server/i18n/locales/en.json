@@ -6257,24 +6257,19 @@
   },
   "teachers": {
     "title": "Fun interactive learning games for classrooms",
-    "description": "Free, ad-free learning games for ages 5 to 14 that run in any browser, Chromebooks too: math, reading, chess and music, plus an AI game Builder.",
+    "description": "Ad-free learning games for ages 5 to 14 that run in any browser, Chromebooks too, plus math manipulatives, a Classroom Dashboard and an AI game Builder.",
     "kicker": "🍎 For teachers",
     "h1": "Fun, interactive learning games your class will ask for",
-    "lead": "Oomba Academy is a free website of learning games for ages 5 to 14. Students play right in the browser, and your class can make its own games by describing them to our AI Builder.",
+    "lead": "Learning games, math manipulatives you can run live with your class, and a Classroom Dashboard for the whole day, for ages 5 to 14. It all runs in the browser, on Chromebooks too, and your class can make its own games with our AI Builder.",
     "badges": {
-      "free": "Free to start",
       "ads": "No ads",
       "browser": "Runs in any browser, Chromebooks too",
       "google": "Sign in with Google",
       "ages": "Made for ages 5 to 14"
     },
     "cta": {
-      "start": "Get a free school account",
+      "start": "Create a teacher account",
       "try": "Try a game now, no sign-up"
-    },
-    "play": {
-      "h": "Play to learn",
-      "p": "Short games students want to play again, each practicing a real skill. They open in seconds in the browser, with nothing to install."
     },
     "subjects": {
       "h": "Games by subject"
@@ -6348,9 +6343,8 @@
       "p": "The whole site works in {count} languages, including Spanish, Portuguese, French, Arabic and Hebrew, which helps students who are still learning English. Each student picks their own, and the Builder answers in it."
     },
     "start": {
-      "h": "Set up your school (free)",
-      "p1": "Playing is free for everyone, and students can try any game straight away, without signing up.",
-      "p2": "For classes, lessons and school accounts, write to {email} with your school’s name and who will look after it. We set up your school and your school admin’s account, and they add teachers and students. Setting up a school is free.",
+      "h": "Set up your school",
+      "p1": "Students can try any game straight away, without signing up.",
       "plans": "Want more for your classes? Try the Teacher plan free for {days} days, no card needed: unlimited students and {daily} AI builds a day for the class.",
       "email": "Email us to set up your school",
       "subject": "Setting up my school on Oomba Academy",
@@ -6369,8 +6363,8 @@
       "q5": "What ages and grades is it for?",
       "a5": "Oomba Academy is made for kindergarten to grade 8, about ages 5 to 14. Games such as Shark Plank and the first Sum Racer tracks suit the youngest players. Number Quest, the math course, runs from kindergarten to grade 8, and CS Quest and Cyber Defenders start in grade 3.",
       "q6": "How do I add my class?",
-      "a6": "First, email us to set up your school (it’s free). Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards.",
-      "a6google": "First, email us to set up your school (it’s free). Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards. Schools that use Google can let students sign in with Google.",
+      "a6": "First, email us to set up your school. Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards.",
+      "a6google": "First, email us to set up your school. Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards. Schools that use Google can let students sign in with Google.",
       "q7": "Can students make their own games? Who sees them?",
       "a7": "Yes. A new game is private to the student who made it. They can share it with their class, and a game for everyone is reviewed before anyone else can play it.",
       "q8": "Can I track progress and scores?",
@@ -6382,7 +6376,7 @@
       "a1paid": "Playing, classes, lessons, progress and Oomba Live are free, and every student gets free Builder messages each day. The optional Teacher plan adds a shared daily pool of AI builds for your classes, with unlimited students. Try it free for 14 days, no card needed. Prices are on the plans page."
     },
     "setup": {
-      "lead": "Tell us a little about your school. We'll set it up within 1 school day and reply to your email with what to do next. Setting up a school is free.",
+      "lead": "Tell us a little about your school. We'll set it up within 1 school day and reply to your email with what to do next.",
       "school": "School name",
       "role": "Your role",
       "rolePick": "Choose one",
@@ -6431,7 +6425,7 @@
       "submitStaff": "Send",
       "privacySignup": "We use your email to send your welcome guide, to reset a forgotten password and to answer you. See our <a href=\"{privacy}\">Privacy Policy</a>.",
       "emailHintSignup": "Your school email. We send your welcome guide there, and use it if you forget your password.",
-      "signupLead": "Make your teacher account, then create or join your school and add your classes. It takes about two minutes, and it’s free.",
+      "signupLead": "Make your teacher account, then create or join your school and add your classes. It takes about two minutes.",
       "signupCta": "Create my teacher account"
     },
     "live": {
@@ -6759,11 +6753,7 @@
         "staff": "Open the course and walk the first step with your class. Kindergarten to grade 2 starts on the Launchpad street, grades 3 to 5 on the Explorer street and grades 6 to 8 on the Pro street; Tally's Sorting Game can choose for a learner who is not sure. The teacher notes for every welcome are above."
       }
     },
-    "leaderLine": "School leader or IT? <a href=\"{href}\">Set up your school</a>: it's free.",
-    "free": {
-      "line": "Always free: every game, your classes, lessons, progress and the gradebook, and free daily Builder messages for you and your students. The Teacher plan adds {daily} AI game builds a day shared by your classes. <a href=\"{plans}\">See prices on Plans</a>.",
-      "lineOff": "Always free: every game, your classes, lessons, progress and the gradebook, and free daily Builder messages for you and your students."
-    },
+    "leaderLine": "School leader or IT? <a href=\"{href}\">Set up your school</a>.",
     "classroom": {
       "kicker": "Google Classroom",
       "h": "Works with your Google Classroom",
@@ -6804,6 +6794,31 @@
       },
       "plan": "The Classroom Dashboard is free for every class. The Manipulatives, their live rooms and Figures are part of the Teacher plan.",
       "testing": "The Classroom Dashboard is free for every class. The other three tools are being tried out in a few classrooms now."
+    },
+    "tools": {
+      "h": "New for your classroom",
+      "lead": "Real screens from a demo class: a math board Oomba builds with you, the same board live on every student’s device, and a dashboard for the whole class day.",
+      "board": {
+        "h": "Math manipulatives with Oomba",
+        "p": "Base ten blocks, fraction pieces, clocks and more on one board. Tell Oomba the lesson, and it lays out the board for you.",
+        "alt": "The Manipulatives on a laptop: four clocks at half past, each with an answer box, and Oomba’s chat beside the board saying it made the board.",
+        "open": "Open the Manipulatives"
+      },
+      "room": {
+        "h": "Live manipulatives",
+        "p": "Push a board to your class. Each student works in their own square on their own device, and you see every square on one screen.",
+        "alt": "A teacher’s live room: the board and its first step at the top, and six students’ squares below it, with their answers under the clocks.",
+        "open": "Start a live room"
+      },
+      "dash": {
+        "h": "Classroom Dashboard",
+        "p": "Timers, jobs, check-ins and math tools for the whole class day, on the projector and on each student’s screen.",
+        "alt": "A class dashboard on the projector: the clock, today’s goal, the schedule with Math now and Recess next, class jobs and a mood check-in.",
+        "open": "Open My classes"
+      },
+      "watch": "Watch the one-minute video",
+      "plan": "The Classroom Dashboard comes with every class. The Manipulatives and their live rooms are part of the Teacher plan.",
+      "testing": "The Classroom Dashboard comes with every class. The Manipulatives and their live rooms are being tried out in a few classrooms now."
     }
   },
   "learn": {
@@ -7241,13 +7256,12 @@
     }
   },
   "parents": {
-    "title": "Safe, free learning games for kids 5–14",
-    "description": "Fun learning games for kids 5–14 that play free in the browser: math, words, chess and music. No ads, no stranger chat, and kids can build their own games.",
+    "title": "Safe learning games for kids 5–14",
+    "description": "Fun learning games for kids 5–14 that play in the browser: math, words, chess and music. No ads, no stranger chat, and kids can build their own games.",
     "kicker": "👪 For parents",
     "h1": "Fun learning games for kids 5–14, safe by design",
     "lead": "Oomba Academy is a website of short learning games that kids play right in the browser: math races, word puzzles, chess and music. When they’re ready, they can make their own games by describing them to our AI Builder.",
     "badges": {
-      "free": "Free to play",
       "ads": "No ads",
       "buy": "Nothing for kids to buy",
       "strangers": "No chat with strangers",
@@ -7255,20 +7269,13 @@
       "languages": "{count} languages"
     },
     "cta": {
-      "start": "Let your child start free",
+      "start": "Let your child sign up",
       "try": "Try a game now, no sign-up",
       "grownup": "Make a grown-up account",
       "lead": "Seen enough? Try a game with your child now.",
-      "setup": "Set up your child — free"
+      "setup": "Set up your child’s account"
     },
     "teachers": "Teaching a class? See <a href=\"{href}\">Oomba Academy for teachers</a>.",
-    "play": {
-      "h": "Learning that feels like play",
-      "p": "Each game practices a real skill in a few minutes, and kids come back because it’s fun. Pick one to try together."
-    },
-    "subjects": {
-      "h": "Pick by subject"
-    },
     "how": {
       "h": "How Oomba Academy works",
       "lead": "Here is what your child sees, step by step. These are real screens from the site, filled in with made-up names.",
@@ -10120,8 +10127,7 @@
     "final": {
       "h": "Your next lesson could be the one they ask to play again",
       "p": "Start free for 14 days. No card, no per-student fees.",
-      "cta": "Start your free 14-day trial",
-      "pFree": "Games, classes, lessons and progress are always free. Try the Teacher plan free for 14 days, with no card and no per-student fees."
+      "cta": "Start your free 14-day trial"
     },
     "play": {
       "h": "Here to play?",

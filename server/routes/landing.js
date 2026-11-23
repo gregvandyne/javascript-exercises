@@ -17,10 +17,9 @@
 // simple yearly price per teacher" and links to /plans; LANDING_SHOW_PRICE (off) is the one switch that would show the
 // amount here and add it to the structured data.
 //
-// Free and paid, one story (the same line as /teachers, teachers.free.line): what is always free (the games, classes,
-// lessons, progress, free daily Builder messages) and what the Teacher plan adds (the class's daily AI builds). The hero
-// says it in one line, the pricing section has a Free card beside the Teacher card, and nothing free is listed as a
-// Teacher plan feature.
+// Free and paid: no "always free" line in the hero or at the end (the owner, 23 Nov 2026: "everything isn't always free";
+// docs/decisions.md "Teachers and Parents pages: lead with the new tools, no 'always free'"). The pricing section has a
+// Free card beside the Teacher card, and nothing free is listed as a Teacher plan feature.
 //
 // Google Classroom (#classroom): shown only when the connection is on for this server (services/gclassroom.js enabled()),
 // like /teachers; its words are teachers.classroom.*, shared with /teachers, and each one matches what the code does.
@@ -37,7 +36,6 @@ import { countable } from '../services/traffic.js';
 import { teacherLoop, loopShots } from '../views/teacher-loop.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { enabled as classroomOn } from '../services/gclassroom.js';
-import { config } from '../config.js';
 import { LAYOUT_TEMPLATES, WIDGETS } from '../services/dash.js';
 import { ico } from '../views/icon.js';
 import { leadIcon } from '../../public/js/icons.js';
@@ -160,7 +158,6 @@ export function renderLanding(req, res) {
       <ul class="lp-trust">
         <li>${check}${t('landing.hero.trustCard')}</li><li>${check}${t('landing.hero.trustCancel')}</li><li>${check}${t('landing.hero.trustStudents')}</li>
       </ul>
-      <p class="lp-freeline"${fb('teachers.free.line')}>${tHtml(t, 'teachers.free.line', { daily: req.fmt.int(config.teacherDailyMessages), plans: '/plans' })}</p>
       <a class="lp-games" href="${JUST_PLAY_URL}" data-cta="play"><span class="lp-fan" aria-hidden="true">${HERO_FAN.map(s => cover(s, { eager: true }))}</span><span><b>30+</b> ${t('landing.facts.games')} ${ARROW}</span></a>
     </div>
     ${heroStage(t, fb)}
@@ -377,7 +374,7 @@ export function renderLanding(req, res) {
       <span class="lp-eyebrow">${kicker(t(`${k}.kicker`))}</span><h3>${t(`${k}.h1`)}</h3><p>${t(`${k}.description`)}</p>
       <ul class="lp-door-badges">${badges.map(b => html`<li><span aria-hidden="true">✓</span> ${t(`${k}.badges.${b}`)}</li>`)}</ul>
       <span class="lp-door-go" aria-hidden="true">${ARROW}</span></a>`;
-  const doors = [door('/parents', 'parents', ['free', 'ads', 'strangers']), door('/teachers', 'teachers', ['free', 'browser', 'google'])];
+  const doors = [door('/parents', 'parents', ['ads', 'buy', 'strangers']), door('/teachers', 'teachers', ['ads', 'browser', 'google'])];
   const faqSec = html`<section class="lp-sec" id="faq" aria-labelledby="faq-h">
   <div class="lp-wrap lp-narrow">
     <header class="lp-sec-head"><h2 id="faq-h">${t('landing.faq.h')}</h2></header>
@@ -389,7 +386,7 @@ export function renderLanding(req, res) {
   const final = html`<section class="lp-final" aria-labelledby="final-h">
   <div class="lp-glow lp-glow-c" aria-hidden="true" data-depth=".18"></div>
   <div class="lp-wrap lp-final-in rv">
-    <h2 id="final-h">${t('landing.final.h')}</h2><p>${t('landing.final.pFree')}</p>
+    <h2 id="final-h">${t('landing.final.h')}</h2><p>${t('landing.final.p')}</p>
     <div class="lp-ctas lp-ctas-c">${cta(TRIAL_URL, t('landing.final.cta'), { big: true })}<a class="lp-btn lp-btn-ghost lp-btn-big" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')} ${ARROW}</a></div>
   </div>
 </section>`;

@@ -33,20 +33,22 @@ import { allow, count, ipOf, SIGNUP } from '../services/ratelimit.js';
 import { siteHost } from '../site.js';
 import * as games from '../services/games.js';
 import * as seo from '../seo.js';
-import { howArt, howSteps, howHead, HOW_SCRIPT } from '../views/how.js';
+import { howArt, howSteps, howHead, howFiles, HOW_SCRIPT } from '../views/how.js';
 import * as OT from '../standards/official-tags.js';
 import { normId as stdNorm } from '../standards/ccss.js';
 import { codeChips, attribution as stdNotice } from '../views/standards.js';
 import { HUBS, hubBySlug, LEARNING, TEACHER_GAMES, HUB_FAQ, TEACHER_FAQ, HOME_TIPS, AGES, gradeBand, SUBJECTS, SHELF_INFO, shelfGrades, TWO_PLAYER } from '../learn.js';
-import { teacherLoop } from '../views/teacher-loop.js';
+import { teacherLoop, PAIR } from '../views/teacher-loop.js';
 import { loopLinks } from '../services/teach-loop.js';
 import { LOOP_CSS } from './teach-loop.js';
-import { seeIt } from '../views/see-it.js';
+import { seeIt, readyVideos } from '../views/see-it.js';
+import { plansOn, toolAccess } from '../services/teacher-tools.js';
 import { enabled as classroomOn } from '../services/gclassroom.js';
 
 export const router = Router();
 export const contactEmail = () => config.contactEmail || 'greg@oomba.ai';
 const OG_DIR = new URL('../../public/og/', import.meta.url);
+const HOW_DIR = new URL('../../public/img/how/', import.meta.url);
 /** Is there a share picture for this launch game (scripts/og-images.js)? */
 export const fsOg = slug => fs.existsSync(new URL(`${slug}.jpg`, OG_DIR));
 // The one-minute demo video on /teachers/live (public/video, made by recording the real app: docs/decisions.md).
@@ -282,7 +284,42 @@ function classroomSection(req) {
   </section>`;
 }
 
+/** The new teaching tools, right under the /teachers hero (docs/decisions.md "Teachers and Parents pages: lead with the
+ *  new tools, no 'always free'"): a real screenshot of each (scripts/tools-shots.js, scripts/how-shots.js --only dash),
+ *  a line, and a link. Someone who can open the tool goes to it (with paid plans on, school staff without the Teacher
+ *  plan get the plan page at the same address: routes/figures.js planReply); anyone else goes to the tool's one-minute
+ *  video lower on the page (views/see-it.js), or to nothing when the videos are missing. Who may use a tool is still teacher-tools.js toolAccess. */
+export const TOOL_CARDS = [
+  { id: 'board', icon: '🧮', shot: 'tools-board', staff: '/manipulatives', can: u => !!toolAccess(u, config.manipulatives) },
+  { id: 'room', icon: '📡', shot: 'tools-room', staff: '/manipulatives', can: u => !!toolAccess(u, config.manipulatives) },
+  { id: 'dash', icon: '🖥️', shot: 'dash-teacher', staff: '/teach', can: u => isSchoolStaff(u) },
+];
+function toolsShowcase(req) {
+  const t = req.t;
+  const cards = TOOL_CARDS.filter(c => howFiles(c.shot).slice(2).every(f => fs.existsSync(new URL(f, HOW_DIR))));
+  if (!cards.length) return '';
+  const video = readyVideos().length ? '#see-it' : '';
+  const card = c => {
+    const k = `teachers.tools.${c.id}`, staff = !!req.user && c.can(req.user), href = staff ? c.staff : video;
+    return html`<li class="panel tt-card">
+      <figure class="tt-shot"><img src="/img/how/${c.shot}-d-1024.webp" srcset="/img/how/${c.shot}-d-1024.webp 1024w, /img/how/${c.shot}-d-2048.webp 2048w" sizes="(min-width: 1000px) 340px, (min-width: 700px) 46vw, 92vw" width="1024" height="640" alt="${t(`${k}.alt`)}" loading="lazy" decoding="async"></figure>
+      ${raw(`<h3 class="tt-h"${fb(t, `${k}.h`)}>`)}${ico(c.icon, { size: 20 })} ${t(`${k}.h`)}${raw('</h3>')}
+      ${el(t, 'p', `${k}.p`, {}, ' class="tt-p"')}
+      ${href ? html`<p class="tt-link"><a href="${href}">${t(staff ? `${k}.open` : 'teachers.tools.watch')} <span class="flip" aria-hidden="true">→</span></a></p>` : ''}
+    </li>`;
+  };
+  return html`<section class="lp-sec tt" id="tools" aria-labelledby="tools-h">
+    ${el(t, 'h2', 'teachers.tools.h', {}, ' id="tools-h"')}${el(t, 'p', 'teachers.tools.lead', {}, ' class="tt-lead"')}
+    <ul class="plain tt-grid">${cards.map(card)}</ul>
+    ${el(t, 'p', plansOn() ? 'teachers.tools.plan' : 'teachers.tools.testing', {}, ' class="small muted tt-note"')}
+  </section>`;
+}
+
 // ---------------------------------------------------------------------------------------------------- /teachers
+// In order (the owner, 23 Nov 2026: "Overall just need to clean up this page"): the hero with the Manipulatives on a
+// laptop and a student's live room on a phone; the new tools; how it works; the teaching loop (two screens); the tool
+// videos; Google Classroom; a few folded panels; the start panel; the questions. No "always free": prices and what each
+// plan includes are on /plans only.
 router.get('/teachers', (req, res) => {
   const t = req.t;
   const google = googleEnabled();
@@ -290,16 +327,18 @@ router.get('/teachers', (req, res) => {
   const mail = html`<a href="mailto:${email}" dir="ltr">${email}</a>`;
   const langCount = availableLocales().length;
   const list = TEACHER_GAMES.map(launchGame).filter(Boolean);
-  const card = g => html`<li><a class="lp-game" href="${lp(req, `/g/${g.slug}`)}">${coverArt(g)}<span class="lp-game-text"><span class="lp-game-t">${g.title}</span>${el(t, 'span', `learn.games.${LEARNING[g.slug].key}`, {}, ' class="lp-game-d"')}</span></a></li>`;
-  const badges = [['✅', 'teachers.badges.free'], ['🚫', 'teachers.badges.ads'], ['💻', 'teachers.badges.browser'], ...(google ? [['🔑', 'teachers.badges.google']] : []), ['🎒', 'teachers.badges.ages']];
+  const badges = ['teachers.badges.ads', 'teachers.badges.browser', ...(google ? ['teachers.badges.google'] : []), 'teachers.badges.ages'];
   const classItems = ['li1', 'li2', ...(google ? ['li3'] : []), 'li4', 'li5'];
   // With Sign in with Google on, a student's school Google email is kept: answers that say otherwise have a Google version.
-  // With paid-plan pages on, the first question says what is free and what the Teacher plan adds (no prices: those are
-  // on /plans); off, the plain "yes, it's free" stays.
+  // With paid-plan pages on, the first question says what the Teacher plan adds (no prices: those are on /plans).
   const paidFaq = familiesOn(req);
   const faqPairs = Array.from({ length: TEACHER_FAQ }, (_, i) => [`teachers.faq.q${i + 1}${i === 0 && paidFaq ? 'paid' : ''}`, `teachers.faq.a${i + 1}${(i === 3 || i === 5) && google ? 'google' : ''}${i === 0 && paidFaq ? 'paid' : ''}`]);
   const faq = faqBlock(req, faqPairs, 'teachers.faq.h', { href: '/privacy', count: langCount, host: siteHost(req) }, { fold: true });
   const plans = familiesOn(req);
+  // The main button: with paid-plan pages on, the Teacher plan's trial (it starts at sign-up, no card: routes/teacher-plan.js
+  // /trial); off, a teacher account (the start panel below, with the school set-up).
+  const mainCta = plans ? html`<a class="btn btn-primary btn-big" href="/trial">${t('plans.teacher.start')}</a>` : html`<a class="btn btn-primary btn-big" href="#start">${t('teachers.cta.start')}</a>`;
+  const tryBtn = (cls = 'btn') => (list[0] ? html`<a class="${cls}" href="${keepLang(req, `/play/${list[0].slug}`)}" rel="nofollow">${ico('▶️', { size: 18 })} ${t('teachers.cta.try')}</a>` : '');
   // ?sent=1: the thank-you after the form (nothing it said is shown back); ?failed=1: a form sent without JavaScript
   // that needs fixing (the JavaScript form shows each field's own message instead).
   const sent = req.query.sent === '1', failed = req.query.failed === '1';
@@ -310,46 +349,28 @@ router.get('/teachers', (req, res) => {
     ${plans ? el(t, 'p', 'teachers.start.plans', { days: config.teacherTrialDays, daily: req.fmt.int(config.teacherDailyMessages) }) : ''}
     <div class="row">
       ${plans ? html`<a class="btn btn-primary" href="/trial">${t('plans.teacher.start')}</a> <a class="btn" href="/plans/schools">${t('teachers.start.plansLink')}</a>` : ''}
-      ${list[0] ? html`<a class="btn" href="${keepLang(req, `/play/${list[0].slug}`)}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
+      ${tryBtn()}
     </div>
     ${el(t, 'p', 'teachers.setup.questions', { email: mail }, ' class="small muted"')}
   </section>`;
   const body = html`<div class="lp">
   ${sent ? startPanel : ''}
   <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
-    ${el(t, 'p', 'teachers.kicker', {}, ' class="lp-kicker"')}
     ${el(t, 'h1', 'teachers.h1', {}, ' id="lp-h1"')}
     ${el(t, 'p', 'teachers.lead', {}, ' class="lead"')}
-    <p class="small lp-leader">${ico('🏫', { size: 18 })} ${tHtml(t, 'teachers.leaderLine', { href: '#start' })}</p>
-    <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${e}</span> ${el(t, 'span', k)}</li>`)}</ul>
-    ${el(t, 'p', plans ? 'teachers.free.line' : 'teachers.free.lineOff', { daily: req.fmt.int(config.teacherDailyMessages), plans: '/plans' }, ' class="lp-freeline"')}
+    <ul class="lp-badges">${badges.map(k => html`<li>${el(t, 'span', k)}</li>`)}</ul>
     <div class="row lp-cta">
-      <a class="btn btn-primary btn-big" href="#start">${t('teachers.cta.start')}</a>
+      ${mainCta}
       ${liveOn() && !(req.user && !req.user.is_guest && !canHost(req.user)) ? html`<a class="btn btn-hot btn-big" href="${canHost(req.user) ? '/live/quick' : '/teachers/host'}" id="host-now">${ico('📡', { size: 28 })} ${el(t, 'span', 'quickLive.cta')}</a>` : ''}
-      ${list[0] ? html`<a class="btn btn-big" href="${keepLang(req, `/play/${list[0].slug}`)}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
+      ${tryBtn('btn btn-big')}
     </div>
+    <p class="small lp-leader">${tHtml(t, 'teachers.leaderLine', { href: '#start' })}</p>
     ${howArt(req, 'teachers')}
   </section>
+  ${toolsShowcase(req)}
   ${howSteps(req, 'teachers')}
-
-  <section class="lp-sec" id="play" aria-labelledby="play-h">
-    ${el(t, 'h2', 'teachers.play.h', {}, ' id="play-h"')}${el(t, 'p', 'teachers.play.p')}
-    <ul class="lp-games">${list.map(card)}</ul>
-    <p class="lp-research">${ico('📚', { size: 18 })} <a href="/research">${t('teachers.research.link')}</a></p>
-  </section>
-
-  <section class="lp-sec" id="brain-breaks" aria-labelledby="bb-h">
-    ${folded(el(t, 'h2', 'move.teachersH', {}, ' id="bb-h"'), html`${el(t, 'p', 'move.teachersP')}
-    <p><a class="btn btn-primary" href="${lp(req, '/move')}">${t('move.title')}</a></p>`)}
-  </section>
-
-  <section class="lp-sec" id="subjects" aria-labelledby="subj-h">
-    ${folded(el(t, 'h2', 'teachers.subjects.h', {}, ' id="subj-h"'), html`<ul class="lp-hubs">${HUBS.map(h => html`<li><a class="lp-hub panel" href="${lp(req, `/learn/${h.slug}`)}"><span class="lp-hub-e" aria-hidden="true">${h.emoji}</span><span>${el(t, 'span', `learn.hubs.${h.key}.name`, {}, ' class="lp-hub-t"')}${el(t, 'span', `learn.hubs.${h.key}.short`, {}, ' class="lp-hub-d"')}</span></a></li>`)}</ul>`)}
-  </section>
-
-  ${teacherLoop(t, { variant: 'page', cls: 'lp-sec', links: isSchoolStaff(req.user) ? loopLinks(req.user) : null, live: liveOn() })}
-  ${seeIt(req, { cta: plans ? html`<a class="btn btn-primary" href="/trial">${t('plans.teacher.start')}</a>` : html`<a class="btn btn-primary" href="#start">${t('teachers.cta.start')}</a>` })}
-  <p class="lp-research lp-compare">${ico('⚖️', { size: 18 })} <a href="${lp(req, '/compare')}">${t('compare.link')}</a></p>
+  ${teacherLoop(t, { variant: 'page', cls: 'lp-sec', links: isSchoolStaff(req.user) ? loopLinks(req.user) : null, live: liveOn(), shotNames: PAIR })}
+  ${seeIt(req, { note: false })}
   ${classroomSection(req)}
 
   <div class="lp-cols">
@@ -372,7 +393,8 @@ router.get('/teachers', (req, res) => {
     <section class="panel" id="uses" aria-labelledby="uses-h">
       ${folded(el(t, 'h2', 'teachers.uses.h', {}, ' id="uses-h"'), html`${el(t, 'p', 'teachers.uses.p')}
       <ul class="lp-tags">${['li1', 'li2', 'li3', 'li4', 'li5', 'li6', 'li7'].map(k => el(t, 'li', `teachers.uses.${k}`))}</ul>
-      ${el(t, 'h2', 'teachers.languages.h', {}, ' class="lp-sub"')}${el(t, 'p', 'teachers.languages.p', { count: langCount })}`)}
+      ${el(t, 'h2', 'teachers.languages.h', {}, ' class="lp-sub"')}${el(t, 'p', 'teachers.languages.p', { count: langCount })}
+      <p><a href="/research">${t('teachers.research.link')}</a> · <a href="${lp(req, '/compare')}">${t('compare.link')}</a></p>`)}
     </section>
   </div>
 
@@ -381,7 +403,6 @@ router.get('/teachers', (req, res) => {
   ${faq.markup}
   </div>`;
   const crumbs = [[t('nav.home'), '/'], [t('nav.teachers'), '/teachers']];
-  const items = list.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: seo.abs(req, `/g/${g.slug}`), name: g.title }));
   page(req, res, {
     title: t('teachers.title'), description: t('teachers.description'), body, bodyClass: 'lp-page',
     head: html`${howHead()}${LOOP_CSS}`, scripts: [HOW_SCRIPT],
@@ -389,7 +410,6 @@ router.get('/teachers', (req, res) => {
       index: true, path: '/teachers', langs: seo.langsWithKey('teachers.h1'), image: '/og/teachers.jpg', imageAlt: t('seo.teachers.imageAlt'),
       jsonld: [seo.graph([
         { '@type': 'WebPage', '@id': seo.abs(req, '/teachers'), url: seo.abs(req, '/teachers'), name: t('teachers.title'), description: t('teachers.description'), isPartOf: { '@id': seo.abs(req, '/#website') }, publisher: { '@id': seo.orgId(req) }, audience: { '@type': 'EducationalAudience', educationalRole: 'teacher' } },
-        { '@type': 'ItemList', name: t('teachers.play.h'), itemListElement: items },
         faq.ld, seo.breadcrumbLd(req, crumbs), seo.organizationLd(req), seo.websiteLd(req, req.locale),
       ])],
     },

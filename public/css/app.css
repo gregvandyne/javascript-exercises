@@ -1065,8 +1065,7 @@ ol.steps li{margin-bottom:var(--s2)}
 .lp-detail h3{font-size:1.15rem}
 /* The tagline (/parents), the free-and-paid line and Google Classroom (/teachers), teacher quotes (hidden until real). */
 .lp-hero .lp-tagline{margin:0 0 var(--s3);font-weight:800;font-size:clamp(1.05rem,2.6vw,1.3rem);color:var(--accent-ink)}
-.lp-freeline{margin:var(--s4) 0 0;max-width:70ch;color:var(--text-2)}
-.lp-freeline a{font-weight:700}
+.lp-leader{margin:var(--s3) 0 0;color:var(--text-2)}
 .lp-research{margin:var(--s4) 0 0;font-weight:700}
 .lp-quote-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--s4)}
 .lp-quote{margin:0;height:100%;box-sizing:border-box}
@@ -2266,3 +2265,5 @@ img.fx[src*="satellite-antenna"]{background:radial-gradient(circle at 50% 52%,#B
    light, the phone, the students' gowns at Flat size) and no bright version exists. A soft light disc behind them
    (--fx-plate: none in the light theme) keeps them readable on the dark bars and cards. */
 img.fx[src*="/graduation-cap"],img.fx[src*="/footprints"],img.fx[src*="/ninja"],img.fx[src*="/pirate-flag"],img.fx[src*="/vertical-traffic-light"],img.fx[src*="/mobile-phone"],img.fx[src*="flat/woman-student"],img.fx[src*="flat/student"]{background:radial-gradient(circle at 50% 52%,var(--fx-plate) 0 56%,transparent 58%);border-radius:50%}
+/* Two-column panels on the marketing pages (/teachers, /parents): an odd last panel spans both columns, so none is left alone. */
+@media (min-width:821px){.lp-cols>:last-child:nth-child(odd){grid-column:1/-1}}

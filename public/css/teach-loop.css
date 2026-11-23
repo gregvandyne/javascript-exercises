@@ -76,3 +76,5 @@
 }
 /* In a grid the cards line up: no stacked-panel gap (app.css .panel+.panel) on the later ones. */
 .tl-steps>.tl-step,.tl-shots>.tl-shot{margin:0}
+/* A tool's name as words next to its check: the words wrap beside the check, never onto a line of their own under it. */
+.tl-tool>span{flex:1 1 0;min-width:0}

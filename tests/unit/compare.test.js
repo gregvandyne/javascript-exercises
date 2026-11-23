@@ -95,7 +95,7 @@ test('the table: one word per cell (plus the gate tag); each need opens its deta
   assert.equal((lead.match(/\.(\s|$)/g) || []).length, 1, 'one sentence');
   const why = /<ul class="cmp-why">([\s\S]*?)<\/ul>/.exec(h)[1].split('<li').slice(1).map(x => text(`<li${x}`).trim());
   assert.equal(why.length, 3); for (const w of why) assert.ok(w.length <= 80, w);
-  assert.match(h, /<a class="btn btn-primary btn-big" href="\/teachers#start">Get a free school account<\/a>|href="\/trial"/, 'the sign-up button');
+  assert.match(h, /<a class="btn btn-primary btn-big" href="\/teachers#start">Create a teacher account<\/a>|href="\/trial"/, 'the sign-up button');
   assert.match((await get('/compare')).text, /<script type="module" src="\/js\/compare-rows\.js\?v=/);
   assert.ok(text(h).includes('Tap or click a row to see the details and sources.'));
 });
@@ -169,7 +169,8 @@ test('the three names appear only on /compare: no other file the site serves, pr
 test('/teachers links to /compare once, calmly, and the link names no product', async () => {
   const h = main((await get('/teachers')).text);
   assert.equal((h.match(/href="\/compare"/g) || []).length, 1);
-  assert.match(h, /<p class="lp-research lp-compare">.*<a href="\/compare">How Oomba compares with other classroom tools<\/a><\/p>/);
+  // In the folded "Ways to use it" panel, next to the research link (the cleanup moved it there from a line of its own).
+  assert.match(h, /<section class="panel" id="uses"[\s\S]*?<a href="\/research">[^<]+<\/a> · <a href="\/compare">How Oomba compares with other classroom tools<\/a><\/p>/);
   const es = main((await get('/es/teachers')).text);
   assert.ok(es.includes('href="/es/compare"'));
 });

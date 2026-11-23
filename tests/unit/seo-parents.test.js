@@ -69,7 +69,7 @@ test('parent pages: indexed, own canonical, one H1, unique titles and descriptio
       assert.deepEqual([buf.readUInt16BE(i + 7), buf.readUInt16BE(i + 5)], [1200, 630], `${img} is 1200x630`);
     }
   }
-  assert.match((await get('/parents')).text, /<title>Safe, free learning games for kids 5–14 · Oomba Academy<\/title>/);
+  assert.match((await get('/parents')).text, /<title>Safe learning games for kids 5–14 · Oomba Academy<\/title>/, 'no "free" in the title (docs/decisions.md "Teachers and Parents pages: lead with the new tools, no \'always free\'")');
   assert.match((await get('/learn/games-for-10-and-11-year-olds')).text, /<h1 id="lp-h1"><span aria-hidden="true">🚀<\/span> Learning games for 10 and 11 year olds<\/h1>/);
   assert.equal((await get('/parents/nope')).status, 404);
   assert.equal((await get('/learn/games-for-99-year-olds')).status, 404);
@@ -110,8 +110,7 @@ test('structured data: FAQPage matches the questions on the page, breadcrumbs, i
   const par = (await get('/parents')).text;
   const pg = ofType(par, 'WebPage')[0];
   assert.deepEqual(pg.audience, { '@type': 'ParentAudience', childMinAge: 5, childMaxAge: 14 });
-  const list = ofType(par, 'ItemList')[0].itemListElement.map(i => i.url.slice(base.length));
-  assert.ok(list.includes('/g/sum-racer') && list.includes('/g/castle-clash'));
+  assert.equal(ofType(par, 'ItemList').length, 0, 'no game list on /parents any more, so no ItemList');
   const a8 = ofType((await get('/learn/games-for-8-and-9-year-olds')).text, 'CollectionPage')[0];
   assert.deepEqual(a8.audience[0], { '@type': 'PeopleAudience', suggestedMinAge: 8, suggestedMaxAge: 9 });
   assert.equal(a8.mainEntity.itemListElement[0].url, `${base}/g/sum-racer`);
@@ -143,7 +142,7 @@ test('no prices, no kids’ names or games, no promises the site doesn’t keep:
   }
   paid(true, true);
   const par = (await get('/parents')).text;
-  assert.match(par, /<a class="btn btn-primary btn-big" href="\/signup\/parent">Set up your child — free<\/a>/);
+  assert.match(par, /<a class="btn btn-primary btn-big" href="\/signup\/parent">Set up your child(?:’|&#39;)s account<\/a>/);
   assert.match(par, /<a class="btn btn-primary" href="\/plans">See plans and prices<\/a>/, 'the families section, as before');
   assert.ok(text(par).includes('A linked grown-up account sees only your child’s name'));
 });
@@ -167,12 +166,14 @@ test('/parents keeps every privacy and safety section, saying the same as /priva
   try { assert.match((await get('/parents')).text, /<section class="panel" id="contact"><h3>Contact us<\/h3>/); } finally { config.contactEmail = saved; }
 });
 
-test('calls to action and links: start free, try a game, teachers; menu, footer, home, subject and game pages', async () => {
+test('calls to action and links: sign up, try a game, teachers; menu, footer, home, subject and game pages', async () => {
   const par = (await get('/parents')).text;
-  assert.match(par, /<a class="btn btn-primary btn-big" href="\/signup\/kid">Let your child start free<\/a>/);
-  assert.match(par, /href="\/play\/sum-racer" rel="nofollow">▶ Try a game now, no sign-up/);
+  assert.match(par, /<a class="btn btn-primary btn-big" href="\/signup\/kid">Let your child sign up<\/a>/);
+  // (text reads icons back as their emoji: the raw page draws the Oomba play icon, never a raw ▶.)
+  assert.match(par, /href="\/play\/sum-racer" rel="nofollow">▶️ Try a game now, no sign-up/);
+  assert.match((await get('/parents')).raw, /href="\/play\/sum-racer" rel="nofollow"><svg class="fx fx-oo" data-fx="play-button"/);
   assert.match(par, /href="\/teachers">Oomba Academy for teachers<\/a>/);
-  for (const p of [...AGE_PAGES, ...GUIDES, '/learn/make-a-game', '/learn/math-games']) assert.ok(par.includes(`href="${p}"`), `/parents links ${p}`);
+  for (const p of [...AGE_PAGES, ...GUIDES, '/learn/make-a-game']) assert.ok(par.includes(`href="${p}"`), `/parents links ${p}`);
   // Signed out: Parents in the top menu and "For parents" in the footer; not in a child's menu.
   assert.match(par, /<a class="navlink" href="\/parents" aria-current="page"/);
   const home = (await get('/')).text;
@@ -312,11 +313,12 @@ test('one parent page: promise and buttons, safety, How it works, Plans, Family 
   const order = (h, ids) => { const at = ids.map(id => h.indexOf(id)); at.forEach((n, i) => assert.ok(n > 0 && (i === 0 || n > at[i - 1]), `${ids[i]} after ${ids[i - 1]}`)); };
   // Billing off: no Plans and no Family accounts, nothing that leads to a grown-up page or to /plans.
   const off = main((await get('/parents')).text);
-  order(off, ['id="lp-h1"', 'class="row lp-cta"', 'id="safe"', 'id="how-it-works"', 'id="play"', 'id="private"', 'id="details"', 'id="faq"']);
+  order(off, ['id="lp-h1"', 'class="row lp-cta"', 'id="safe"', 'id="how-it-works"', 'id="make"', 'id="private"', 'id="details"', 'id="faq"']);
   assert.doesNotMatch(off, /id="plans"|id="families"|href="\/plans"|href="\/grown-ups/);
   paid(true, true);
   const on = main((await get('/parents')).text);
-  order(on, ['id="lp-h1"', 'class="row lp-cta"', 'id="safe"', 'id="how-it-works"', 'id="plans"', 'id="families"', 'id="play"', 'id="details"', 'id="faq"']);
+  order(on, ['id="lp-h1"', 'class="row lp-cta"', 'id="safe"', 'id="how-it-works"', 'id="plans"', 'id="families"', 'id="make"', 'id="details"', 'id="faq"']);
+  assert.doesNotMatch(on, /id="play"|id="subjects"/, 'no game list and no "Pick by subject" (docs/decisions.md "Teachers and Parents pages: lead with the new tools, no \'always free\'")');
   // Plans: what a plan adds and the link to /plans; no amount (the PRICE test above covers every price shape).
   const plans = /<section class="panel" id="plans">[\s\S]*?<\/section>/.exec(on)[0];
   assert.ok(text(plans).includes('A plan adds extra Builder messages each month'));
@@ -370,11 +372,14 @@ test('a translated /parents with paid plans on stays in its language: no new Eng
 test('/parents and /teachers are short: the extra sections and every FAQ answer fold under their headings, still on the page', async () => {
   const folds = (h, id) => new RegExp(`id="${id}"[^>]*>\\s*<details class="lp-fold"><summary><h2`).test(h);
   const p = (await get('/parents')).text;
-  for (const id of ['ages', 'subjects', 'make', 'home', 'guides', 'private']) assert.ok(folds(p, id), `/parents #${id}`);
-  for (const id of ['safe', 'play']) assert.ok(!folds(p, id), `/parents #${id} stays open`);
+  for (const id of ['ages', 'make', 'home', 'guides', 'private']) assert.ok(folds(p, id), `/parents #${id}`);
+  for (const id of ['safe']) assert.ok(!folds(p, id), `/parents #${id} stays open`);
   const t = (await get('/teachers')).text;
-  for (const id of ['brain-breaks', 'subjects', 'build', 'class', 'safe', 'uses']) assert.ok(folds(t, id), `/teachers #${id}`);
-  assert.ok(!folds(t, 'play'), '/teachers #play stays open');
+  for (const id of ['build', 'class', 'safe', 'uses']) assert.ok(folds(t, id), `/teachers #${id}`);
+  assert.ok(!folds(t, 'tools'), '/teachers #tools (the new tools) stays open');
+  // Gone: the floating folded "For teachers" (Brain Breaks) and "Games by subject", and the game lists.
+  for (const id of ['brain-breaks', 'subjects', 'play']) assert.doesNotMatch(t, new RegExp(`id="${id}"`), `/teachers #${id}`);
+  for (const id of ['subjects', 'play']) assert.doesNotMatch(p, new RegExp(`id="${id}"`), `/parents #${id}`);
   for (const h of [p, t]) {
     const faq = /<section class="panel faq lp-faq" id="faq"[\s\S]*?<\/section>/.exec(h)[0];
     const qs = (faq.match(/<h3/g) || []).length;

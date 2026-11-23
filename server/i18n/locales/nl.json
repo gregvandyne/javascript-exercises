@@ -5966,24 +5966,19 @@
   },
   "teachers": {
     "title": "Leuke, interactieve leerspelletjes voor de klas",
-    "description": "Gratis leerspelletjes zonder reclame voor 5 tot 14 jaar, in elke browser en op Chromebooks: rekenen, Engels, schaken, muziek en een AI-Bouwer voor games.",
+    "description": "Reclamevrije leerspelletjes voor 5 tot 14 jaar in elke browser, ook op Chromebooks, plus rekenmaterialen, een klasdashboard en een AI-Bouwer voor games.",
     "kicker": "🍎 Voor leerkrachten",
     "h1": "Leuke, interactieve leerspelletjes waar je klas om vraagt",
-    "lead": "Oomba Academy is een gratis website met leerspelletjes voor kinderen van 5 tot 14 jaar. Leerlingen spelen direct in de browser, en je klas kan eigen games maken door ze te beschrijven aan onze AI-Bouwer.",
+    "lead": "Leerspelletjes, rekenmaterialen die je live met je klas gebruikt en een klasdashboard voor de hele dag, voor kinderen van 5 tot 14 jaar. Alles werkt in de browser, ook op Chromebooks, en je klas kan eigen games maken met onze AI-Bouwer.",
     "badges": {
-      "free": "Gratis om te beginnen",
       "ads": "Geen reclame",
       "browser": "Werkt in elke browser, ook op Chromebooks",
       "google": "Inloggen met Google",
       "ages": "Gemaakt voor 5 tot 14 jaar"
     },
     "cta": {
-      "start": "Vraag een gratis schoolaccount aan",
+      "start": "Maak een leerkrachtaccount",
       "try": "Probeer nu een game, zonder account"
-    },
-    "play": {
-      "h": "Spelend leren",
-      "p": "Korte games die leerlingen steeds opnieuw willen spelen, en elke game oefent een echte vaardigheid. Ze openen binnen een paar seconden in de browser, zonder iets te installeren."
     },
     "subjects": {
       "h": "Spelletjes per vak"
@@ -6057,9 +6052,8 @@
       "p": "De hele site werkt in {count} talen, waaronder Spaans, Portugees, Frans, Arabisch en Hebreeuws. Dat helpt leerlingen die nog Nederlands leren. Elke leerling kiest een eigen taal, en de Bouwer antwoordt in die taal."
     },
     "start": {
-      "h": "Zet je school op (gratis)",
-      "p1": "Spelen is gratis voor iedereen, en leerlingen kunnen meteen elke game proberen, zonder account.",
-      "p2": "Voor klassen, lessen en schoolaccounts mail je naar {email} met de naam van je school en wie de school gaat beheren. Wij zetten je school en het account van je schoolbeheerder op, en die voegt leerkrachten en leerlingen toe. Een school opzetten is gratis.",
+      "h": "Zet je school op",
+      "p1": "Leerlingen kunnen meteen elke game proberen, zonder account.",
       "plans": "Meer voor je klassen? Probeer het Leerkracht-abonnement {days} dagen gratis, zonder kaart: onbeperkt leerlingen en {daily} AI-bouwsels per dag voor de klas.",
       "email": "Mail ons om je school op te zetten",
       "subject": "Mijn school opzetten op Oomba Academy",
@@ -6078,8 +6072,8 @@
       "q5": "Voor welke leeftijden en groepen is het?",
       "a5": "Oomba Academy is gemaakt voor groep 2 tot en met de tweede klas, ongeveer 5 tot 14 jaar. Games zoals Shark Plank en de eerste banen van Sum Racer passen bij de jongsten. Number Quest, de rekencursus, loopt van groep 2 tot en met de tweede klas, en CS Quest en Cyber Defenders beginnen in groep 5.",
       "q6": "Hoe voeg ik mijn klas toe?",
-      "a6": "Mail ons eerst om je school op te zetten (dat is gratis). Maak daarna een klas aan en deel de klascode met leerlingen die een eigen account hebben, of maak schoolaccounts voor de hele klas en print inlogkaarten.",
-      "a6google": "Mail ons eerst om je school op te zetten (dat is gratis). Maak daarna een klas aan en deel de klascode met leerlingen die een eigen account hebben, of maak schoolaccounts voor de hele klas en print inlogkaarten. Scholen die Google gebruiken, kunnen leerlingen laten inloggen met Google.",
+      "a6": "Mail ons eerst om je school op te zetten. Maak daarna een klas aan en deel de klascode met leerlingen die een eigen account hebben, of maak schoolaccounts voor de hele klas en print inlogkaarten.",
+      "a6google": "Mail ons eerst om je school op te zetten. Maak daarna een klas aan en deel de klascode met leerlingen die een eigen account hebben, of maak schoolaccounts voor de hele klas en print inlogkaarten. Scholen die Google gebruiken, kunnen leerlingen laten inloggen met Google.",
       "q7": "Kunnen leerlingen hun eigen games maken? Wie ziet ze?",
       "a7": "Ja. Een nieuwe game is privé voor de leerling die hem gemaakt heeft. Die kan hem delen met de klas, en een game voor iedereen wordt gecontroleerd voordat anderen hem kunnen spelen.",
       "q8": "Kan ik voortgang en scores volgen?",
@@ -6091,7 +6085,7 @@
       "a1paid": "Spelen, klassen, lessen, voortgang en Oomba Live zijn gratis, en elke leerling krijgt elke dag gratis berichten aan de Bouwer. Het optionele Leerkracht-abonnement geeft je klassen een gedeelde dagelijkse voorraad AI-bouwsels, met onbeperkt leerlingen. Probeer het 14 dagen gratis, zonder kaart. De prijzen staan op de pagina met abonnementen."
     },
     "setup": {
-      "lead": "Vertel ons iets over je school. We zetten hem binnen 1 schooldag op en sturen je per e-mail wat je daarna moet doen. Een school opzetten is gratis.",
+      "lead": "Vertel ons iets over je school. We zetten hem binnen 1 schooldag op en sturen je per e-mail wat je daarna moet doen.",
       "school": "Naam van de school",
       "role": "Je functie",
       "rolePick": "Kies er een",
@@ -6140,7 +6134,7 @@
       "submitStaff": "Versturen",
       "privacySignup": "We gebruiken je e-mail om je de welkomsthandleiding te sturen, een vergeten wachtwoord te herstellen en je te antwoorden. Zie ons <a href=\"{privacy}\">privacybeleid</a>.",
       "emailHintSignup": "Je school-e-mailadres. Daar sturen we de welkomsthandleiding heen, en we gebruiken het als je je wachtwoord vergeet.",
-      "signupLead": "Maak je leerkrachtaccount, maak daarna je school aan of sluit je erbij aan en voeg je klassen toe. Het duurt ongeveer twee minuten en is gratis.",
+      "signupLead": "Maak je leerkrachtaccount, maak daarna je school aan of sluit je erbij aan en voeg je klassen toe. Het duurt ongeveer twee minuten.",
       "signupCta": "Mijn leerkrachtaccount maken"
     },
     "live": {
@@ -6154,11 +6148,7 @@
     "cs": {
       "cstaNote": "Standaarden: CSTA K-12 Computer Science Standards (2017), niveaus 1B en 2. Dit programma is niet gemaakt, beoordeeld of goedgekeurd door de CSTA."
     },
-    "leaderLine": "Schoolleiding of ICT? <a href=\"{href}\">Richt je school in</a>: het is gratis.",
-    "free": {
-      "line": "Altijd gratis: alle games, je klassen, lessen, voortgang en het cijferoverzicht, plus elke dag gratis Builder-berichten voor jou en je leerlingen. Het Leerkracht-abonnement voegt {daily} AI-gamebouwsels per dag toe, gedeeld door je klassen. <a href=\"{plans}\">Bekijk de prijzen bij Abonnementen</a>.",
-      "lineOff": "Altijd gratis: alle games, je klassen, lessen, voortgang en het cijferoverzicht, plus elke dag gratis Builder-berichten voor jou en je leerlingen."
-    },
+    "leaderLine": "Schoolleiding of ICT? <a href=\"{href}\">Zet je school op</a>.",
     "classroom": {
       "kicker": "Google Classroom",
       "h": "Werkt met je Google Classroom",
@@ -6199,6 +6189,31 @@
       },
       "plan": "Het klasdashboard is gratis voor elke klas. De manipulatieven, hun live ruimtes en Figuren horen bij het Leerkracht-abonnement.",
       "testing": "Het klasdashboard is gratis voor elke klas. De andere drie hulpmiddelen worden nu in een paar klassen uitgeprobeerd."
+    },
+    "tools": {
+      "h": "Nieuw voor je klas",
+      "lead": "Echte schermen uit een demoklas: een rekenbord dat Oomba met je maakt, hetzelfde bord live op het apparaat van elke leerling, en een dashboard voor de hele schooldag.",
+      "board": {
+        "h": "Rekenmaterialen met Oomba",
+        "p": "MAB-blokken, breukdelen, klokken en meer op één bord. Vertel Oomba wat je les is, en het zet het bord voor je klaar.",
+        "alt": "De rekenmaterialen op een laptop: vier klokken op half, elk met een antwoordvak, en ernaast de chat met Oomba die zegt dat het het bord heeft gemaakt.",
+        "open": "Open de rekenmaterialen"
+      },
+      "room": {
+        "h": "Rekenmaterialen live",
+        "p": "Stuur een bord naar je klas. Elke leerling werkt in een eigen vak op een eigen apparaat, en jij ziet alle vakken op één scherm.",
+        "alt": "De live ruimte van een leerkracht: bovenaan het bord met de eerste stap, daaronder de vakken van zes leerlingen, met hun antwoorden onder de klokken.",
+        "open": "Start een live ruimte"
+      },
+      "dash": {
+        "h": "Klasdashboard",
+        "p": "Timers, klassentaken, check-ins en rekenhulpmiddelen voor de hele schooldag, op het digibord en op het scherm van elke leerling.",
+        "alt": "Een klasdashboard op het digibord: de klok, het doel van vandaag, het rooster met nu Rekenen en daarna Pauze, klassentaken en een check-in van hoe het gaat.",
+        "open": "Open Mijn klassen"
+      },
+      "watch": "Bekijk de video van een minuut",
+      "plan": "Het klasdashboard hoort bij elke klas. De rekenmaterialen en hun live ruimtes horen bij het Leerkracht-abonnement.",
+      "testing": "Het klasdashboard hoort bij elke klas. De rekenmaterialen en hun live ruimtes worden nu in een paar klassen uitgeprobeerd."
     }
   },
   "learn": {
@@ -6617,13 +6632,12 @@
     }
   },
   "parents": {
-    "title": "Veilige, gratis leerspelletjes voor kinderen",
-    "description": "Leuke, gratis leerspelletjes voor 5 tot 14 jaar in de browser: rekenen, woorden, schaken en muziek. Geen reclame, geen chat met vreemden, en zelf games maken.",
+    "title": "Veilige leerspelletjes voor kinderen",
+    "description": "Leuke leerspelletjes voor 5 tot 14 jaar in de browser: rekenen, woorden, schaken en muziek. Geen reclame, geen chat met vreemden, en zelf games maken.",
     "kicker": "👪 Voor ouders",
     "h1": "Leuke leerspelletjes voor 5 tot 14 jaar, veilig vanaf het begin",
     "lead": "Oomba Academy is een website met korte leerspelletjes die kinderen direct in de browser spelen: rekenraces, woordpuzzels, schaken en muziek. Als ze eraan toe zijn, kunnen ze hun eigen games maken door ze te beschrijven aan onze AI-Bouwer.",
     "badges": {
-      "free": "Gratis te spelen",
       "ads": "Geen reclame",
       "buy": "Niets te koop voor kinderen",
       "strangers": "Geen chat met vreemden",
@@ -6631,20 +6645,13 @@
       "languages": "{count} talen"
     },
     "cta": {
-      "start": "Laat je kind gratis beginnen",
+      "start": "Laat je kind een account maken",
       "try": "Probeer nu een spel, zonder account",
       "grownup": "Maak een ouderaccount",
       "lead": "Genoeg gezien? Probeer nu samen met je kind een spelletje.",
-      "setup": "Meld je kind gratis aan"
+      "setup": "Maak een account voor je kind"
     },
     "teachers": "Geef je les? Bekijk <a href=\"{href}\">Oomba Academy voor leerkrachten</a>.",
-    "play": {
-      "h": "Leren dat voelt als spelen",
-      "p": "Elk spel oefent in een paar minuten een echte vaardigheid, en kinderen komen terug omdat het leuk is. Kies er een om samen te proberen."
-    },
-    "subjects": {
-      "h": "Kies per vak"
-    },
     "how": {
       "h": "Zo werkt Oomba Academy",
       "lead": "Dit ziet je kind, stap voor stap. Het zijn echte schermen van de site, ingevuld met verzonnen namen.",
@@ -9337,8 +9344,7 @@
     "final": {
       "h": "Je volgende les kan de les zijn die ze nog een keer willen spelen",
       "p": "14 dagen gratis. Geen creditcard, geen kosten per leerling.",
-      "cta": "Start je gratis proef van 14 dagen",
-      "pFree": "Games, klassen, lessen en voortgang zijn altijd gratis. Probeer het Leerkracht-abonnement 14 dagen gratis, zonder kaart en zonder kosten per leerling."
+      "cta": "Start je gratis proef van 14 dagen"
     },
     "play": {
       "h": "Kom je spelen?",

@@ -50,7 +50,7 @@ test('parent pages: structured data in the browser, the calls to action, and the
   const errors = []; page.on('pageerror', e => errors.push(e.message)); page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
   await page.goto('/parents');
   const types = (await page.locator('script[type="application/ld+json"]').allTextContents()).flatMap(d => JSON.parse(d)['@graph'].map(n => n['@type']));
-  expect(types).toEqual(expect.arrayContaining(['WebPage', 'FAQPage', 'BreadcrumbList', 'ItemList', 'Organization']));
+  expect(types).toEqual(expect.arrayContaining(['WebPage', 'FAQPage', 'BreadcrumbList', 'Organization']));
   // The privacy sections are still there under their old addresses (/parents#ai, the footer's /parents#contact).
   for (const id of ['what', 'stored', 'never', 'ai', 'keep', 'friends', 'builder', 'languages']) await expect(page.locator(`section#${id}`)).toHaveCount(1);
   // They are folded under their headings (the page is long on phones): closed until tapped, or opened by a link to them.
@@ -69,11 +69,13 @@ test('parent pages: structured data in the browser, the calls to action, and the
   // The old grown-ups page: a 301 to /parents (billing is off in this run, so no Family accounts section yet).
   const r = await page.request.get('/grown-ups?x=1', { maxRedirects: 0 });
   expect(r.status()).toBe(301); expect(r.headers().location).toBe('/parents?x=1#families');
-  // "Try a game now" opens a game without signing up; "Let your child start free" opens the kids' sign-up.
+  // "Try a game now" opens a game without signing up; "Let your child sign up" opens the kids' sign-up.
   await page.goto('/parents');
   // Once at the top, and again after the questions at the end.
-  await expect(page.getByRole('link', { name: 'Let your child start free' })).toHaveCount(2);
-  for (const l of await page.getByRole('link', { name: 'Let your child start free' }).all()) await expect(l).toHaveAttribute('href', '/signup/kid');
+  await expect(page.getByRole('link', { name: 'Let your child sign up' })).toHaveCount(2);
+  for (const l of await page.getByRole('link', { name: 'Let your child sign up' }).all()) await expect(l).toHaveAttribute('href', '/signup/kid');
+  // The age pages sit in the folded "Games for every age" panel: open it, then follow one.
+  await page.locator('section#ages > details > summary').click();
   await page.locator('a.lp-hub[href="/learn/games-for-8-and-9-year-olds"]').click();
   await expect(page).toHaveURL(/\/learn\/games-for-8-and-9-year-olds$/);
   await expect(page.locator('h1')).toContainText('Learning games for 8 and 9 year olds');
