@@ -86,3 +86,13 @@ sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1
 @media (max-width:899px){.oc-row{flex-wrap:wrap}.oc-row .oc-in{flex-basis:100%;order:-1}.oc-row .oc-send{margin-inline-start:auto}}
 /* Words still coming in from the live microphone: greyed and read-only until they settle. */
 .oc-in.interim{color:var(--text-2);font-style:italic;background:var(--hover)}
+/* A point given from the chat (docs/decisions.md "Points from the Oomba chat"): the reason's icon, who got it and what
+   for; a choice card's buttons when the class, the student or the reason wasn't clear. */
+.oc-point{display:flex;align-items:center;gap:10px}
+.oc-point>span{display:flex;flex-direction:column;min-width:0}
+.oc-point b{color:var(--text)}
+.oc-point small{font-size:.8rem;color:var(--muted);font-weight:600}
+.oc-pic{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--spark-soft)}
+.oc-picks{flex-wrap:wrap}
+.oc-pickb{min-height:40px}
+.oc-name{unicode-bidi:isolate}

@@ -155,7 +155,7 @@ test('names never reach the AI: taken out of the message; a step or title on the
   const calls = standIn({ reply: 'x' });
   try {
     const r = await say(boss, { text: 'Make it easier for Quinn please' });
-    assert.equal(r.json.chat.turns.at(-1).text, 'Make it easier for [student] please');
+    assert.equal(r.json.chat.turns.at(-1).text, 'Make it easier for [student 1] please');
     assert.equal((await say(boss, { text: 'x' })).json.code, 'brief');
     await C.allSettled();
     const st = clockBoard(); st.__steps.push({ id: 's2', text: 'Bea goes first' });

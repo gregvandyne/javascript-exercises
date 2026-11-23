@@ -1190,14 +1190,22 @@ details.coursepanel>summary>.small{flex:1 1 auto}
   .pf-pane>h3{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .assign-game:has(#pf-mode-grade:checked) #pf-pane-grade,.assign-game:has(#pf-mode-practice:checked) #pf-pane-practice{display:block}
 }
-/* "My points" on a student's class page (routes/schools.js myPointsPanel): their own points and the class's, calm. */
-.mypoints .mp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,16em),1fr));gap:var(--s4)}
-.mypoints .mp-col{min-width:0;padding:var(--s3) var(--s4);border-radius:var(--r-sm,14px);background:var(--card-2)}
-.mypoints .mp-big{margin:0;font-family:var(--font);font-weight:800;font-size:2.6rem;line-height:1.1;font-variant-numeric:tabular-nums}
-.mypoints .mp-clsline{margin:0;display:flex;align-items:center;gap:8px;font-size:1.15rem}
-.mypoints .mp-chips{display:flex;flex-wrap:wrap;gap:6px;margin:var(--s2) 0 0;padding:0}
-.mypoints .mp-chip{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-weight:700;font-size:.92rem}
-.mypoints .mp-h3{margin:var(--s3) 0 var(--s2);font-size:1rem}
+/* "My points" on a student's class page (routes/schools.js myPointsPanel), layout A: a Spark bar with all their points
+   on top, then "Just me" and "Whole class" as two matching cards (stacked on phones). Calm: no ranking, nobody else's. */
+.mypoints .mp-total{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);margin:0 0 var(--s4);padding:14px 18px;border-radius:16px;background:var(--spark-soft)}
+.mypoints .mp-tl{margin:0;min-width:0;font-size:1.05rem}
+.mypoints .mp-tl small{display:block;margin-top:2px;font-size:.85rem;font-weight:400;color:var(--muted)}
+.mypoints .mp-tn{margin:0;flex:none;font-family:var(--font);font-weight:800;font-size:2.75rem;line-height:1;font-variant-numeric:tabular-nums}
+.mypoints .mp-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:640px){.mypoints .mp-cols{grid-template-columns:minmax(0,1fr)}}
+.mypoints .mp-col{min-width:0;padding:var(--s4);border-radius:16px;background:var(--card-2)}
+.mypoints .mp-boxh{margin:0 0 var(--s1);display:flex;align-items:center;gap:6px;font-size:.95rem;font-weight:700;color:var(--muted)}
+.mypoints .mp-big{margin:2px 0 var(--s3);font-family:var(--font);font-weight:800;font-size:2.75rem;line-height:1;font-variant-numeric:tabular-nums}
+.mypoints .mp-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 var(--s3);padding:0}
+.mypoints .mp-chip{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-weight:700;font-size:.85rem}
+.mypoints .mp-h3{margin:0 0 6px;font-size:.9rem;font-weight:700}
 .mypoints .mp-list{display:flex;flex-direction:column;gap:6px;margin:0;padding:0}
-.mypoints .mp-list li{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.mypoints .mp-list li{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;min-width:0}
+.mypoints .mp-list li .fx,.mypoints .mp-list li img{align-self:center}
+.mypoints .mp-list small{font-size:.78rem}
 .mypoints .mp-note{margin:var(--s3) 0 0;display:flex;align-items:center;gap:6px}

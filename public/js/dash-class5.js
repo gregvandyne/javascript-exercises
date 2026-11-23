@@ -471,19 +471,23 @@ export function points(body, s, ctx) {
   const REASONS = Object.keys(REASON_ICON).filter(r => W[`r_${r}`]);
   const chips = (ul, r) => { ul.textContent = ''; for (const k of REASONS) if (r && r[k]) { const li = el('li', 'dw5-chip'); li.append(icon(REASON_ICON[k]), el('span', null, `${reasonWord(k)} ${r[k]}`)); ul.appendChild(li); } };
   if (!ctx.teacher) {
-    // A student: their own points and the class's. Never anyone else's.
+    // A student: their own points and the class's, and both together (the same numbers as "My points" on their class
+    // page: routes/schools.js myPointsPanel). Never anyone else's.
     const me = el('div', 'dw5-mine');
     const lab = el('span', 'dw5-minelab', W.mine), n = el('b', 'dw5-big');
     const why = el('ul', 'dw5-why');
     const cls = el('p', 'dw5-classtot dw5-clspts');
+    const all = el('p', 'dw5-classtot dw5-allmine');
     const tot = el('p', 'dw5-classtot');
     me.append(lab, n);
-    body.append(me, why, cls, tot);
+    body.append(me, why, cls, all, tot);
     const draw = live => {
       const p = ((live || ctx.live()).points) || { mine: 0, r: {}, total: 0 };
+      const clsN = (p.cls && p.cls.n) || 0;
       n.textContent = String(p.mine || 0);
       chips(why, p.r);
-      cls.textContent = ''; cls.append(icon('🎉'), el('span', null, fill(W.classPoints, { n: (p.cls && p.cls.n) || 0 })));
+      cls.textContent = ''; cls.append(icon('🎉'), el('span', null, fill(W.classPoints, { n: clsN })));
+      all.textContent = ''; all.append(icon('⭐'), el('span', null, fill(W.allMineN, { n: (p.mine || 0) + clsN })));
       tot.textContent = fill(W.classTotal, { n: p.total || 0 });
     };
     draw();

@@ -688,3 +688,13 @@ teacher speaks (never kept). The Figures and Manipulatives chats used to refuse 
 one chat now takes the names out before anything is kept or sent (the same protection, one rule). Question for the
 lawyer: is streaming a teacher's voice (rather than one recorded clip) covered by the existing speech-to-text wording
 and provider terms (zero retention)?
+
+### Oomba companion: points from the chat (2026-11-23; LAWYER REVIEW PENDING)
+
+Addendum to the entries above; LEGAL_UPDATED moved to 2026-11-23. /privacy "Oomba, the teaching companion" now also
+says that each student's name in a teacher's message becomes a placeholder like "[student 1]" whose student stays on
+our servers (so Oomba can give a dashboard point to the right student without the name being sent), and that Oomba can
+give a dashboard point to a student or the whole class when the teacher asks, with Undo (docs/decisions.md "Points from
+the Oomba chat"). What is sent to Anthropic is unchanged in kind: no names, no student ids. Question for the lawyer: is
+keeping the mapping from placeholder to student account id with the conversation (same retention as the chat) covered
+by the existing retention wording?

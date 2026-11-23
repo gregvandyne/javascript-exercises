@@ -3,7 +3,7 @@
 //   GET  /api/companion/chat?peek=1        the conversation ({ chat, web, webAllowed, unseen, mic, live }); peek: endings stay unseen
 //   POST /api/companion/chat               a message ({ text, page, file?, retry? }) -> a job (services/oomba-chat.js)
 //   POST /api/companion/chat/undo          Undo a change Oomba made ({ turnId })
-//   POST /api/companion/chat/act           a tap on a card ({ turnId, act: 'apply' | 'decline' | 'handoff' })
+//   POST /api/companion/chat/act           a tap on a card ({ turnId, act: 'apply' | 'decline' | 'handoff' | 'pick', pick? })
 //   POST /api/companion/chat/new           New chat (the conversation and its files go)
 //   POST /api/companion/web                web search on or off for this conversation ({ on })
 //   POST /api/companion/file?name=         a lesson plan or document (raw body): its text, scrubbed (builder/lesson.js)
@@ -29,24 +29,27 @@ const STATUS = { notFound: 404, chatBusy: 409, otherBusy: 409, slow: 429, fileGo
 const CODES = ['words', 'personal', 'brief', 'chatBusy', 'otherBusy', 'notFound', 'slow', 'fileGone'];
 const fail = (req, res, r) => res.status(STATUS[r.code] || 400).json({ error: req.t(`js.companion.err.${CODES.includes(r.code) ? r.code : 'other'}`), code: r.code });
 /** Only for Teacher plan staff: anyone else gets a 404 before anything is read. */
+/** The conversation as the page shows it: a point's card with the student's and the class's names and the reason's
+ *  word filled in here, for the teacher's own page only (services/companion.js dress). */
+const shown = (req, chat) => CO.dress(req.user, chat, req.t);
 const may = (req, res, next) => (req.user && CO.companionFor(req.user) ? next() : res.status(404).json({ error: req.t('errors.api.notFound'), code: 'notFound' }));
 
-router.get('/api/companion/chat', may, (req, res) => { const r = CO.current(req.user, { peek: req.query.peek === '1' }); return r.ok ? res.json({ ...r, mic: sttEnabled(), live: liveEnabled(), ...(liveEnabled() ? { rate: RATE[config.sttProvider], maxMs: config.sttMaxSeconds * 1000 } : {}) }) : fail(req, res, r); });
+router.get('/api/companion/chat', may, (req, res) => { const r = CO.current(req.user, { peek: req.query.peek === '1' }); return r.ok ? res.json({ ...r, chat: shown(req, r.chat), mic: sttEnabled(), live: liveEnabled(), ...(liveEnabled() ? { rate: RATE[config.sttProvider], maxMs: config.sttMaxSeconds * 1000 } : {}) }) : fail(req, res, r); });
 router.post('/api/companion/chat', may, rateLimit('companion-ai', 120, 3600e3), (req, res) => {
   const b = body(req);
   const r = CO.send(req.user, { text: b.text, page: b.page, board: b.board && typeof b.board === 'object' ? b.board : null, quote: typeof b.quote === 'string' ? b.quote : null, file: typeof b.file === 'string' ? b.file : null, lang: req.locale || 'en', retry: typeof b.retry === 'string' ? b.retry : null });
-  return r.ok ? res.json({ ok: true, chat: r.chat }) : fail(req, res, r);
+  return r.ok ? res.json({ ok: true, chat: shown(req, r.chat) }) : fail(req, res, r);
 });
 router.post('/api/companion/chat/undo', may, rateLimit('companion-act', 300, 3600e3), (req, res) => {
   const r = CO.undo(req.user, body(req).turnId);
-  return r.ok ? res.json({ ok: true, chat: r.chat, kept: r.kept }) : fail(req, res, r);
+  return r.ok ? res.json({ ok: true, chat: shown(req, r.chat), kept: r.kept }) : fail(req, res, r);
 });
 router.post('/api/companion/chat/act', may, rateLimit('companion-act', 300, 3600e3), (req, res) => {
   const b = body(req);
-  const r = CO.act(req.user, b.turnId, String(b.act || ''));
-  return r.ok ? res.json({ ok: true, ...(r.chat ? { chat: r.chat } : {}), ...(r.handoff ? { handoff: r.handoff } : {}) }) : fail(req, res, r);
+  const r = CO.act(req.user, b.turnId, String(b.act || ''), typeof b.pick === 'string' ? b.pick.slice(0, 64) : '');
+  return r.ok ? res.json({ ok: true, ...(r.chat ? { chat: shown(req, r.chat) } : {}), ...(r.handoff ? { handoff: r.handoff } : {}) }) : fail(req, res, r);
 });
-router.post('/api/companion/chat/new', may, (req, res) => { const r = CO.reset(req.user); return r.ok ? res.json({ ok: true, ...CO.current(req.user) }) : fail(req, res, r); });
+router.post('/api/companion/chat/new', may, (req, res) => { const r = CO.reset(req.user); if (!r.ok) return fail(req, res, r); const c = CO.current(req.user); return res.json({ ok: true, ...c, ...(c.chat ? { chat: shown(req, c.chat) } : {}) }); });
 router.post('/api/companion/web', may, (req, res) => res.json(CO.setWeb(req.user, !!body(req).on)));
 
 // A lesson plan or worksheet: the Builder's "Your lesson" reader and rules (builder/lesson.js), the same limits (5 MB, a

@@ -1119,8 +1119,8 @@
       },
       "companion": {
         "h": "Oomba, die Hilfe beim Unterrichten",
-        "p1": "Lehrkräfte mit dem Lehrkraft-Plan können über eine Blase auf ihren eigenen Seiten mit Oomba chatten. Schülerinnen, Schüler und Kinder sehen sie nie. Die Nachrichten einer Lehrkraft, der Text eines angehängten Dokuments und ein angehängtes Bild gehen an unseren KI-Anbieter Anthropic, um die Antwort zu erstellen. Bevor etwas gesendet wird, entfernen wir die Namen der Schülerinnen und Schüler der Lehrkraft, E-Mail-Adressen, Telefonnummern und Links. Bilder, auf denen eine Person zu sehen ist, werden abgelehnt und nie gespeichert.",
-        "p2": "Oomba sieht nur, was eine Lehrkraft geöffnet hat, und sichere Angaben dazu (die Klassenstufe und Größe einer Klasse, die Widgets eines Dashboards, die Fragen eines Figures-Arbeitsblatts, die Elemente und Schritte eines Bretts in den Manipulatives), nie Namen, Antworten oder Arbeiten von Schülerinnen und Schülern. Ein Dashboard ändert Oomba erst, wenn die Lehrkraft auf Übernehmen tippt. Auf einem Figures-Arbeitsblatt oder einem Brett macht Oomba die gewünschte Änderung sofort, und die Lehrkraft kann sie rückgängig machen.",
+        "p1": "Lehrkräfte mit dem Lehrkraft-Plan können über eine Blase auf ihren eigenen Seiten mit Oomba chatten. Schülerinnen, Schüler und Kinder sehen sie nie. Die Nachrichten einer Lehrkraft, der Text eines angehängten Dokuments und ein angehängtes Bild gehen an unseren KI-Anbieter Anthropic, um die Antwort zu erstellen. Bevor etwas gesendet wird, entfernen wir die Namen der Schülerinnen und Schüler der Lehrkraft, E-Mail-Adressen, Telefonnummern und Links. Bilder, auf denen eine Person zu sehen ist, werden abgelehnt und nie gespeichert. Jeder Name wird zu einem Platzhalter wie „[student 1]“. Für welches Kind er steht, bleibt auf unseren Servern. So kann Oomba dem richtigen Kind einen Punkt geben, ohne dass der Name je gesendet wird.",
+        "p2": "Oomba sieht nur, was eine Lehrkraft geöffnet hat, und sichere Angaben dazu (die Klassenstufe und Größe einer Klasse, die Widgets eines Dashboards, die Fragen eines Figures-Arbeitsblatts, die Elemente und Schritte eines Bretts in den Manipulatives), nie Namen, Antworten oder Arbeiten von Schülerinnen und Schülern. Ein Dashboard ändert Oomba erst, wenn die Lehrkraft auf Übernehmen tippt. Auf einem Figures-Arbeitsblatt oder einem Brett macht Oomba die gewünschte Änderung sofort, und die Lehrkraft kann sie rückgängig machen. Auf Wunsch der Lehrkraft kann Oomba auch einem Kind oder der ganzen Klasse einen Dashboard-Punkt geben; die Lehrkraft kann das rückgängig machen.",
         "p3": "Wenn die Websuche an ist, kann Oomba kurze Suchen an die Websuche von Anthropic senden. Sie enthalten nie Namen oder einen Standort, Seiten für Erwachsene, Glücksspiel, soziale Netzwerke und Ähnliches sind gesperrt, und jede Suche wird für unser Team ohne den Namen der Lehrkraft protokolliert. Im Web gefundene Seiten werden als Quellen gezeigt, die Oomba nicht geprüft hat.",
         "p4": "Eine Lehrkraft kann sprechen statt tippen: Der Ton wird an {provider} übertragen, um ihn schon beim Sprechen in Wörter umzuwandeln, und das Audio wird nie gespeichert, weder von uns noch von ihnen. Die Wörter landen im Nachrichtenfeld, damit die Lehrkraft sie prüfen kann.",
         "p5": "Wir speichern den Chat einer Lehrkraft mit dem Text ihrer Anhänge 60 Tage nach der letzten Nutzung (eine Schule kann 7 bis 365 Tage wählen); ein Bild wird gelöscht, sobald Oomba geantwortet hat, spätestens nach einem Tag. Eine Lehrkraft kann den Chat mit Neuer Chat löschen, und er wird mit dem Konto gelöscht. Eine Schuladministration kann Oomba oder seine Websuche für die Schule ausschalten."
@@ -4122,7 +4122,10 @@
         "edit": "Dein Arbeitsblatt geändert ({n} Änderungen)",
         "editNo": "Das Arbeitsblatt ließ sich nicht ändern",
         "board": "Das Brett gebaut ({n} Elemente)",
-        "boardNo": "Dieses Brett ließ sich nicht bauen"
+        "boardNo": "Dieses Brett ließ sich nicht bauen",
+        "point": "{n, plural, one {Einen Punkt vergeben} other {# Punkte vergeben}}",
+        "pointPick": "Eine Auswahl für dich vorbereitet",
+        "pointNo": "Konnte den Punkt nicht vergeben"
       },
       "stepsSum": "{n, plural, one {# Schritt} other {# Schritte}} · {s} s",
       "prog": {
@@ -4198,7 +4201,21 @@
         "other": "Etwas ist schiefgelaufen. Deine Nachricht ist noch da: Versuch es gleich noch einmal."
       },
       "quoteN": "Frage {n}: {text}",
-      "questionN": "Frage {n}"
+      "questionN": "Frage {n}",
+      "point": {
+        "given": "{name} hat einen Punkt für {reason} bekommen",
+        "classGiven": "Die ganze Klasse hat einen Punkt für {reason} bekommen",
+        "someone": "ein Kind",
+        "gc": "Wird auch in Google Classroom gepostet.",
+        "wholeClass": "Die ganze Klasse",
+        "picked": "Ausgewählt",
+        "nothingYet": "Vergeben wird erst, wenn du tippst.",
+        "pick": {
+          "class": "Für welche Klasse ist der Punkt?",
+          "student": "Welches Kind meinst du?",
+          "reason": "Wofür ist der Punkt?"
+        }
+      }
     }
   },
   "favorites": {
@@ -11135,7 +11152,12 @@
         "f_listening": "Zuhören",
         "f_responsible": "Verantwortung",
         "f_brave": "Mut zu Neuem",
-        "f_creative": "gute Ideen"
+        "f_creative": "gute Ideen",
+        "allMine": "Alle meine Punkte",
+        "allMineSum": "Meine eigenen {mine} + die der ganzen Klasse {cls}",
+        "allMineN": "Alle meine Punkte: {n}",
+        "justMe": "Nur ich",
+        "wholeClass": "Ganze Klasse"
       },
       "fractions": {
         "name": "Brüche",

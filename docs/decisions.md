@@ -11637,6 +11637,60 @@ This builds on stage 5's "Points for each student" (the scoreboard's Each studen
   `tests/unit/dash-stage5.test.js` where "everyone" changed. `npm run dash:fit` seeds whole-class points too, and
   `SIZES=stage5` checks only the stage 5 layouts.
 
+## My points: the total on top (23 Nov 2026)
+
+The owner chose layout A of three mockups for the student's "My points" card: "Let's go with A."
+
+- **The card** (routes/schools.js `myPointsPanel`, public/css/schools.css `.mypoints`): the title "My points", then a
+  Spark-tinted bar "All my points" with a small line "My own 4 + the whole class's 3" and the total big on the right
+  (the student's own points plus the whole class's points), then two matching cards side by side: "Just me" (the big
+  number, chips by reason, Recent) and "Whole class" (the same). A Recent row in the class's card shows the reason and
+  the day; the full sentence ("The whole class earned a point for teamwork") stays as its screen-reader text and title.
+  The footer "Only you and your teacher see your points." On phones (640 px and less) the two cards stack; nothing is
+  wider than the screen at 375 px.
+- **Unchanged:** never another student's name, id or points, never a ranking; the students' total ("Class total") is not
+  on the card. The in-dashboard student view adds the same total line, "All my points: 7" (own + class), under the
+  class's points.
+
+## Points from the Oomba chat (23 Nov 2026)
+
+The owner: "make sure that the teacher can add a point for a student from the oomba chat. Like 'give the whole class a
+point for xyz' or 'give x student a point for xyz'". Student names never go to the AI.
+
+- **Placeholders instead of names.** The companion's scrubber now puts a numbered placeholder where it takes out a
+  student's name: "Give Maya a point for teamwork" is kept and sent as "Give [student 1] a point for teamwork"
+  (builder/lesson.js `scrub` gained a `token` option; every other caller is unchanged and still gets "[student]"). Which
+  students a number stands for (their account ids, never their names) is kept with the message on the server only
+  (`meta._who`; the chat engine never shows meta keys starting with "_" to the page) and never goes to the AI. The same
+  student keeps the same number for the whole conversation (Try again and an edited message keep theirs). A name that
+  is not an account yet (a Google Classroom roster name waiting) stays a plain "[student]", which can't get a point.
+  **Decided:** a placeholder can stand for several students (a first name two students share); the server resolves it
+  in the class, and asks when it is still more than one.
+- **The tool** (`givePoint`, a general tool, not a page tool; services/companion.js `pointPlan`): target "class" or a
+  placeholder, a reason (the 12 keys; close words are read: "working together", "kindness", "hard work"...), an optional
+  class id from getPageContext. **Which class:** the one asked for, else the page's class (the dashboard, the class
+  page), else the teacher's only class; for a student, the only class of this teacher the student is in (decided: better
+  than asking when it is clear); else a class choice card. The AI gets back only "given" (to one student or the whole
+  class, the reason), "waiting for the teacher" (what to pick) or why not. **Class names:** shown to the teacher on the
+  cards; never in what this tool returns to the AI (they are teacher-written and could hold a name). At most 5 points in
+  one answer; a worksheet change and a point are not mixed in one answer.
+- **Giving.** Clear (one class, one student, a known reason): given at once when the answer is saved, through the
+  dashboard's own `pointsAction` (the history, the Recent lists, the class's Google Classroom switch and its posting
+  after the point is saved, the dashboard's hourly limit, the same bucket), audited `companion.point`. The card: "Gave
+  BouncyPenguin51 a point for Teamwork" or "The whole class got a point for Teamwork", with Undo (the dashboard's Undo:
+  the latest matching award and its Classroom post; audited `companion.point.undo`). The names on the card are filled in
+  by the server for the teacher's own page (`dress`), outside Oomba's words. **Unclear** (two students match, an
+  unknown reason, several classes): one short choice card with buttons; nothing is given until a tap; the tap gives it
+  as a turn of its own with Undo. A name that is not one of the teacher's students (so not a placeholder), or a student
+  not in the class: Oomba says so calmly and nothing is given.
+- **Who:** companion access (companionFor) and a class the teacher teaches and runs (`D.isTeacher` and
+  `S.canManageClass`); never an archived class.
+- **The dashboard:** a point given or taken back from the chat on that class's dashboard asks for the points at once
+  (an `oomba:points` event, the dashboard's own live check); other screens get it at the next check.
+- **Privacy:** /privacy "Oomba, the teaching companion" says names become placeholders kept only on our servers, and
+  that Oomba can give a point when the teacher asks, with Undo (all locales; LEGAL_UPDATED 2026-11-23,
+  docs/legal-review.md). Tests: tests/unit/companion-points.test.js.
+
 ## Icons: Oomba geometric for controls, Fluent 3D for big spots (22 Nov 2026)
 
 Follows "Icons: Fluent Emoji 3D". The owner felt the Fluent icons were "still too emoji" and compared six directions on

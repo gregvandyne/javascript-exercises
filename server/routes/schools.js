@@ -1091,9 +1091,10 @@ function studentClass(req, res, c) {
 }
 
 /** "My points" on a student's class page (docs/decisions.md "Dashboard points: reasons, whole-class points, the
- *  student's view and Google Classroom"): their own points by reason and their latest awards, and the whole class's
- *  points and latest class awards. Never another student's name or points, never a ranking. Only once the class has
- *  points at all (a class that doesn't use them sees nothing new). */
+ *  student's view and Google Classroom" and "My points: the total on top"): a Spark bar with all their points (their own
+ *  and the whole class's together), then two matching cards, "Just me" (their own points by reason and their latest
+ *  awards) and "Whole class" (the class's points by reason and its latest awards). Never another student's name or
+ *  points, never a ranking. Only once the class has points at all (a class that doesn't use them sees nothing new). */
 export function myPointsPanel(req, c) {
   if (!DASH.isStudent(req.user, c) || !DASH.hasPoints(c)) return '';
   const t = req.t, f = req.fmt, p = DASH.pointsMine(c, req.user.id);
@@ -1101,11 +1102,21 @@ export function myPointsPanel(req, c) {
   const day = at => f.date(at, { weekday: 'short', month: 'short', day: 'numeric', timeZone: tz });
   const word = r => t(`dash.w.score.r_${r}`), icon = r => REASON_ICON[r] || '⭐';
   const chips = r => { const keys = DASH.POINT_REASONS.filter(k => r[k]); return keys.length ? html`<ul class="plain mp-chips">${keys.map(k => html`<li class="mp-chip">${ico(icon(k), { size: 18 })} ${word(k)} <b>${f.int(r[k])}</b></li>`)}</ul>` : ''; };
+  // A Recent row: the reason and the day. In the class's card the full sentence ("The whole class earned a point for
+  // teamwork") is the row's accessible name; the card's title already says it is the class's.
+  const rows = (list, id, cls) => (list.length ? html`<ul class="plain mp-list" id="${id}">${list.map(a => {
+    const full = cls ? t('dash.w.score.classGiven', { reason: t(`dash.w.score.f_${a.reason}`) }) : '';
+    return html`<li${cls ? html` title="${full}"` : ''}>${ico(icon(a.reason), { size: 18 })} ${cls ? html`<span aria-hidden="true">${word(a.reason)}</span><span class="sr-only">${full}</span>` : html`<span>${word(a.reason)}</span>`} <small class="muted">${day(a.at)}</small></li>`;
+  })}</ul>` : html`<p class="small muted">${t('dash.w.score.recentNone')}</p>`);
+  const total = p.mine + p.cls.n;
   return html`<section class="panel mypoints" id="my-points" aria-labelledby="mp-h"><h2 id="mp-h">${ico('⭐', { size: 28 })} ${t('dash.w.score.mine')}</h2>
-    <div class="mp-cols"><div class="mp-col mp-me"><p class="mp-big" id="mp-mine"><b>${f.int(p.mine)}</b></p>${chips(p.r)}
-      <h3 class="mp-h3">${t('dash.w.score.recent')}</h3>${p.recent.length ? html`<ul class="plain mp-list" id="mp-recent">${p.recent.map(a => html`<li>${ico(icon(a.reason), { size: 18 })} <span>${word(a.reason)}</span> <span class="small muted">${day(a.at)}</span></li>`)}</ul>` : html`<p class="small muted">${t('dash.w.score.recentNone')}</p>`}</div>
-    <div class="mp-col mp-class"><p class="mp-clsline" id="mp-class">${ico('🎉', { size: 22 })} <b>${t('dash.w.score.classPoints', { n: f.int(p.cls.n) })}</b></p>${chips(p.cls.r)}
-      <h3 class="mp-h3">${t('dash.w.score.recentClass')}</h3>${p.classRecent.length ? html`<ul class="plain mp-list" id="mp-class-recent">${p.classRecent.map(a => html`<li>${ico(icon(a.reason), { size: 18 })} <span>${t('dash.w.score.classGiven', { reason: t(`dash.w.score.f_${a.reason}`) })}</span> <span class="small muted">${day(a.at)}</span></li>`)}</ul>` : html`<p class="small muted">${t('dash.w.score.recentNone')}</p>`}</div></div>
+    <div class="mp-total" id="mp-total"><p class="mp-tl"><b>${t('dash.w.score.allMine')}</b><small>${t('dash.w.score.allMineSum', { mine: f.int(p.mine), cls: f.int(p.cls.n) })}</small></p><p class="mp-tn"><b>${f.int(total)}</b></p></div>
+    <div class="mp-cols">
+      <div class="mp-col mp-me" aria-labelledby="mp-me-h"><h3 class="mp-boxh" id="mp-me-h">${ico('🙋', { size: 20 })} ${t('dash.w.score.justMe')}</h3><p class="mp-big" id="mp-mine"><b>${f.int(p.mine)}</b></p>${chips(p.r)}
+        <h4 class="mp-h3">${t('dash.w.score.recent')}</h4>${rows(p.recent, 'mp-recent', false)}</div>
+      <div class="mp-col mp-class" aria-labelledby="mp-cls-h"><h3 class="mp-boxh" id="mp-cls-h">${ico('🎉', { size: 20 })} ${t('dash.w.score.wholeClass')}</h3><p class="mp-big" id="mp-class"><b>${f.int(p.cls.n)}</b></p>${chips(p.cls.r)}
+        <h4 class="mp-h3">${t('dash.w.score.recent')}</h4>${rows(p.classRecent, 'mp-class-recent', true)}</div>
+    </div>
     <p class="small muted mp-note">${ico('🔒', { size: 18 })} ${t('dash.w.score.onlyYou')}</p></section>`;
 }
 

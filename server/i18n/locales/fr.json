@@ -1118,8 +1118,8 @@
       },
       "companion": {
         "h": "Oomba, l'assistant pour enseigner",
-        "p1": "Les enseignants avec la Formule Enseignant peuvent discuter avec Oomba depuis une bulle sur leurs propres pages. Les élèves et les enfants ne la voient jamais. Les messages d'un enseignant, le texte d'un document joint et une image jointe sont envoyés à notre fournisseur d'IA, Anthropic, pour produire la réponse. Avant tout envoi, nous retirons les noms des élèves de l'enseignant, les e-mails, les numéros de téléphone et les liens. Les images qui montrent une personne sont refusées et jamais conservées.",
-        "p2": "Oomba ne voit que ce que l'enseignant a ouvert et des informations sûres à ce sujet (le niveau et l'effectif d'une classe, les widgets d'un tableau de bord, les questions d'une fiche Figures, les éléments et étapes d'un plateau de manipulations), jamais les noms, réponses ou travaux des élèves. Il ne modifie un tableau de bord qu'après que l'enseignant a touché Appliquer. Sur une fiche Figures ou un plateau de manipulations, il fait tout de suite le changement demandé, et l'enseignant peut l'annuler.",
+        "p1": "Les enseignants avec la Formule Enseignant peuvent discuter avec Oomba depuis une bulle sur leurs propres pages. Les élèves et les enfants ne la voient jamais. Les messages d'un enseignant, le texte d'un document joint et une image jointe sont envoyés à notre fournisseur d'IA, Anthropic, pour produire la réponse. Avant tout envoi, nous retirons les noms des élèves de l'enseignant, les e-mails, les numéros de téléphone et les liens. Les images qui montrent une personne sont refusées et jamais conservées. Chaque nom devient un repère comme « [student 1] ». L'élève qu'il désigne reste sur nos serveurs : Oomba peut ainsi donner un point au bon élève sans que le nom soit jamais envoyé.",
+        "p2": "Oomba ne voit que ce que l'enseignant a ouvert et des informations sûres à ce sujet (le niveau et l'effectif d'une classe, les widgets d'un tableau de bord, les questions d'une fiche Figures, les éléments et étapes d'un plateau de manipulations), jamais les noms, réponses ou travaux des élèves. Il ne modifie un tableau de bord qu'après que l'enseignant a touché Appliquer. Sur une fiche Figures ou un plateau de manipulations, il fait tout de suite le changement demandé, et l'enseignant peut l'annuler. À la demande de l'enseignant, il peut aussi donner un point du tableau de bord à un élève ou à toute la classe, ce que l'enseignant peut annuler.",
         "p3": "Quand la recherche web est activée, Oomba peut envoyer de courtes recherches à la recherche web d'Anthropic. Elles ne contiennent jamais de noms ni de localisation ; les sites pour adultes, de jeux d'argent, les réseaux sociaux et autres sont bloqués, et chaque recherche est enregistrée pour notre équipe sans le nom de l'enseignant. Les pages trouvées sur le web sont présentées comme des sources qu'Oomba n'a pas vérifiées.",
         "p4": "Un enseignant peut parler au lieu d'écrire : le son est transmis à {provider} pour être transformé en mots pendant qu'il parle, et l'audio n'est jamais conservé, ni par nous ni par eux. Les mots arrivent dans la zone de message pour que l'enseignant les vérifie.",
         "p5": "Nous conservons la discussion d'un enseignant, avec le texte de ses pièces jointes, pendant 60 jours après sa dernière utilisation (une école peut choisir de 7 à 365 jours) ; une image est supprimée dès qu'Oomba a répondu, et au plus tard au bout d'un jour. Un enseignant peut supprimer la discussion avec Nouvelle discussion, et elle est supprimée avec le compte. Un administrateur de l'école peut désactiver Oomba ou sa recherche web pour l'école."
@@ -4121,7 +4121,10 @@
         "edit": "A modifié ta fiche ({n} changements)",
         "editNo": "N'a pas pu modifier la fiche",
         "board": "A préparé le plateau ({n} éléments)",
-        "boardNo": "N'a pas pu préparer ce plateau"
+        "boardNo": "N'a pas pu préparer ce plateau",
+        "point": "{n, plural, one {A donné un point} other {A donné # points}}",
+        "pointPick": "A préparé un choix pour vous",
+        "pointNo": "N'a pas pu donner ce point"
       },
       "stepsSum": "{n, plural, one {# étape} other {# étapes}} · {s} s",
       "prog": {
@@ -4197,7 +4200,21 @@
         "other": "Un problème est survenu. Ton message est toujours là : réessaie dans un instant."
       },
       "quoteN": "Question {n} : {text}",
-      "questionN": "Question {n}"
+      "questionN": "Question {n}",
+      "point": {
+        "given": "{name} a reçu un point pour {reason}",
+        "classGiven": "Toute la classe a reçu un point pour {reason}",
+        "someone": "un élève",
+        "gc": "Publié aussi dans Google Classroom.",
+        "wholeClass": "Toute la classe",
+        "picked": "Choisi",
+        "nothingYet": "Rien n'est donné tant que vous n'avez pas choisi.",
+        "pick": {
+          "class": "Pour quelle classe est ce point ?",
+          "student": "De quel élève parlez-vous ?",
+          "reason": "Ce point est pour quoi ?"
+        }
+      }
     }
   },
   "favorites": {
@@ -11134,7 +11151,12 @@
         "f_listening": "l’écoute",
         "f_responsible": "la responsabilité",
         "f_brave": "l’audace d’essayer",
-        "f_creative": "les bonnes idées"
+        "f_creative": "les bonnes idées",
+        "allMine": "Tous mes points",
+        "allMineSum": "Les miens {mine} + ceux de toute la classe {cls}",
+        "allMineN": "Tous mes points : {n}",
+        "justMe": "Rien que moi",
+        "wholeClass": "Toute la classe"
       },
       "fractions": {
         "name": "Fractions",

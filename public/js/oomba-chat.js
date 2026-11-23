@@ -31,7 +31,7 @@ const wide = () => window.matchMedia('(min-width: 900px)').matches;
  *   sub: the header's second line, opener: the page's own Oomba button (toggles), placeholder(chat), hello(chat) -> text,
  *   ideas(chat) -> [{ label, text }], change(turn) -> html of "What changed", extra(turn, chat) -> html (buttons with
  *   data-c="act" data-act), onAct(act, turn) -> Promise, onAnswer(turn, chat): a new answer arrived (reload the page's data),
- *   onUndo(result): an undo came back, onMode(mode): the panel opened or closed, onQuote(null): the quote went (sent or
+ *   onUndo(result, turnId): an undo came back, onMode(mode): the panel opened or closed, onQuote(null): the quote went (sent or
  *   removed), onSync(chat): a new copy of the conversation (a turn started or ended), start: 'open' | 'min' | 'closed',
  *   and for the site companion (public/js/companion.js): headExtra / aboveRow / toolsStart / toolsEnd / foot (html in the
  *   header and the message box), body() -> more fields for each message, meExtra(turn) -> html above a sent message,
@@ -95,7 +95,7 @@ export function mountChat(o) {
   function took(chat, { initial = false } = {}) {
     if (!chat) return;
     const before = new Set(C.chat.turns.map(x => x.id));
-    const sig = JSON.stringify([(chat.turns || []).map(x => [x.id, x.change && x.change.undone, x.starter]), chat.pending && [chat.pending.id, chat.pending.step]]);
+    const sig = JSON.stringify([(chat.turns || []).map(x => [x.id, x.change && x.change.undone, x.starter, x.note && x.note.pick && x.note.pick.state, x.note && x.note.pick && x.note.pick.need]), chat.pending && [chat.pending.id, chat.pending.step]]);
     if (chat.pending) C.skew = Date.now() - chat.pending.now;
     if (!initial && sig === C.sig) return;
     C.sig = sig;
@@ -137,7 +137,7 @@ export function mountChat(o) {
     try {
       const r = await api(`${o.url()}/undo`, { method: 'POST', body: { turnId: id } });
       took(r.chat);
-      if (o.onUndo) o.onUndo(r);
+      if (o.onUndo) o.onUndo(r, id);
       C.el.log.querySelector(`[data-undone="${CSS.escape(id)}"]`)?.focus();
     } catch (e) { showErr(e.message || t('js.oomba-chat.err.other')); if (btn) btn.disabled = false; }
   }
