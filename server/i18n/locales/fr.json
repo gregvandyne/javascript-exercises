@@ -13250,6 +13250,34 @@
         "name": "Ondes",
         "desc": "Ondes transversales et longitudinales"
       },
+      "circularMotion": {
+        "name": "Mouvement circulaire",
+        "desc": "Vitesse, accélération centripète et forces"
+      },
+      "fields": {
+        "name": "Champs électriques et magnétiques",
+        "desc": "Lignes de champ de charges, plaques, aimants et fils"
+      },
+      "lever": {
+        "name": "Leviers",
+        "desc": "Leviers des trois genres, force motrice calculée"
+      },
+      "torque": {
+        "name": "Moment de force",
+        "desc": "Poutres sur un pivot, deux appuis ou un mur"
+      },
+      "pendulum": {
+        "name": "Pendule",
+        "desc": "Une oscillation avec son angle, sa longueur et sa hauteur"
+      },
+      "spring": {
+        "name": "Ressorts",
+        "desc": "Loi de Hooke, en série et en parallèle, oscillation"
+      },
+      "rollerCoaster": {
+        "name": "Montagnes russes",
+        "desc": "Hauteurs, une boucle et vitesses par l'énergie"
+      },
       "reading": {
         "name": "Lecture d'une échelle",
         "desc": "Thermomètres, éprouvettes, règles et pieds à coulisse"
@@ -13377,6 +13405,10 @@
       "osmosis": {
         "name": "Osmose",
         "desc": "Cellules, tubes en U et sacs dans des solutions"
+      },
+      "cladogram": {
+        "name": "Cladogramme",
+        "desc": "Taxons, caractères partagés et arbres phylogénétiques"
       },
       "supplyDemand": {
         "name": "Offre et demande",

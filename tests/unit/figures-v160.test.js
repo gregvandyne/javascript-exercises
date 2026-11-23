@@ -1,8 +1,8 @@
 // Oomba Figures 1.6.0 (docs/figures-api.md "Chemistry: seven new figures (1.6.0)"): a new version folder, the core and the
 // same seven packs (chem gains chromatography, galvanicCell, phaseDiagram, bondEnergy, equilibrium, rateLaw and vsepr),
 // built and locked like 1.5.0. 1.0.0 to 1.5.0 have shipped and never change: their files are byte for byte what the lock
-// (and git) say. New builds (the Builder's tags, the Figures product, figuresKit by default) get 1.6.0, while a page
-// pinned to an older version keeps its own files. And every figure 1.5.0 drew (each catalog preset and generator figure,
+// (and git) say. New builds (the Builder's tags, the Figures product, figuresKit by default) got 1.6.0 until 1.7.0
+// (figures-v170.test.js), while a page pinned to an older version keeps its own files. And every figure 1.5.0 drew (each catalog preset and generator figure,
 // in every mode) draws the same SVG in 1.6.0, byte for byte, and checks and solves the same.
 import './_setup.js';
 import test from 'node:test';
@@ -41,23 +41,19 @@ test('1.0.0 to 1.5.0 are frozen: every file is what the lock says and what git h
   if (shipped) for (const [k, h] of Object.entries(shipped)) assert.deepEqual(L.FIG_LOCK.files[k], h, `${k}: its lock entry is unchanged`);
 });
 
-test('new builds pin 1.6.0: the latest version, the Builder\'s tags, the Figures product and the server\'s copy; the chem pack has the seven new kinds', () => {
-  assert.equal(version(), '1.6.0'); assert.equal(L.FIG_LATEST['oomba-figures'], '1.6.0'); assert.equal(OF.version, '1.6.0');
-  assert.match(L.figTags(), /\/vendor\/oomba-figures\/1\.6\.0\/oomba-figures\.js/);
-  assert.match(L.figTags(), /\/vendor\/oomba-figures\/1\.6\.0\/packs\/chem\.js/);
-  assert.doesNotMatch(L.figTags(), /\/1\.5\.0\//);
-  assert.equal(F.OF_VERSION, '1.6.0'); assert.equal(L.figuresKit().version, '1.6.0');
+test('1.6.0 shipped and is frozen like 1.5.0: pages pinned to it keep their own files, with the seven new chem kinds (new builds pin the latest: figures-v170.test.js)', () => {
+  assert.notEqual(version(), '1.6.0'); assert.equal(L.FIG_LATEST['oomba-figures'], version()); assert.equal(F.OF_VERSION, version());
   assert.deepEqual(Object.keys(L.FIG_PACKS['1.6.0']), ['math', 'data', 'physics', 'chem', 'bio', 'econ', 'measure'], 'no new pack');
   const chem = JSON.parse(fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-figures/1.6.0/manifest.json'), 'utf8')).packs.chem.kinds;
   assert.deepEqual(chem.slice(-7), NEW);
   assert.deepEqual(chem.slice(0, -7), JSON.parse(fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-figures/1.5.0/manifest.json'), 'utf8')).packs.chem.kinds, 'the chem pack keeps its kinds');
   for (const p of ['math', 'data', 'physics', 'bio', 'econ', 'measure']) assert.deepEqual(JSON.parse(fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-figures/1.6.0/manifest.json'), 'utf8')).packs[p].kinds, JSON.parse(fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-figures/1.5.0/manifest.json'), 'utf8')).packs[p].kinds, `the ${p} pack's kinds are 1.5.0's`);
-  assert.deepEqual(L.figPacksFor([...NEW, 'reading']), ['chem', 'measure']);
-  const t = L.figTag('oomba-figures', undefined, { kinds: ['vsepr'] });
+  assert.deepEqual(L.figPacksFor([...NEW, 'reading'], '1.6.0'), ['chem', 'measure']);
+  const t = L.figTag('oomba-figures', '1.6.0', { kinds: ['vsepr'] });
   assert.deepEqual(L.checkFigures(`<title>x</title>${t}<script>OF.draw('vsepr', { molecule: 'NH3' })</script>`).issues, []);
   // a 1.5.0 page knows nothing of the new kinds
   for (const k of NEW) assert.equal(L.figuresKit('1.5.0').kinds.includes(k), false, k);
-  for (const v of ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0']) assert.equal(L.figuresKit(v).version, v);
+  for (const v of ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0']) assert.equal(L.figuresKit(v).version, v);
   for (const k of NEW) assert.ok(k.length <= 20, `${k}: a kind name fits the Canvas kit (20 characters)`);
 });
 
@@ -76,7 +72,7 @@ test('every figure 1.5.0 drew draws the same bytes in 1.6.0, and checks and solv
     }
   }
   assert.ok(n > 1000, `${n} figures compared`);
-  // the source and the frozen 1.6.0 file draw the same, the new kinds included
+  // the frozen 1.6.0 file and the source draw the same, its seven new kinds included
   for (const K of CAT.KINDS.filter(k => NEW.includes(k.id))) for (const d of K.presets) for (const o of [{}, { print: true }, { hide: true, lang: 'he' }]) assert.equal(L.figuresKit('1.6.0').svg(K.id, d, o), OF.svg(K.id, d, o), K.id);
   assert.equal(CAT.KINDS.filter(k => NEW.includes(k.id)).length, 7, 'all seven new kinds are in the catalog');
 });

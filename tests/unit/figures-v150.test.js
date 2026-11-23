@@ -1,7 +1,7 @@
-// Oomba Figures 1.5.0 (shipped; new builds pin 1.6.0 since figures-v160.test.js) (docs/figures-api.md "Chemistry: organic structures and atomic energy levels (1.5.0)"): a new
+// Oomba Figures 1.5.0 (shipped) (docs/figures-api.md "Chemistry: organic structures and atomic energy levels (1.5.0)"): a new
 // version folder, the core and the same seven packs (chem gains skeletal and energyLevels), built and locked like 1.4.0.
 // 1.0.0 to 1.4.0 have shipped and never change: their files are byte for byte what the lock (and git) say. New builds
-// (the Builder's tags, the Figures product, figuresKit by default) get 1.5.0, while a page pinned to an older version
+// (the Builder's tags, the Figures product, figuresKit by default) got 1.5.0 until 1.6.0 (figures-v160.test.js; now the latest, figures-v170.test.js), while a page pinned to an older version
 // keeps its own files. And every figure 1.4.0 drew (each catalog preset and generator figure, in every mode) draws the
 // same SVG in 1.5.0, byte for byte, and checks and solves the same.
 import './_setup.js';
@@ -39,7 +39,7 @@ test('1.0.0 to 1.4.0 are frozen: every file is what the lock says and what git h
   if (shipped) for (const [k, h] of Object.entries(shipped)) assert.deepEqual(L.FIG_LOCK.files[k], h, `${k}: its lock entry is unchanged`);
 });
 
-test('1.5.0 shipped and is frozen like 1.4.0: pages pinned to it keep their own files, with the two new chem kinds (new builds pin 1.6.0: figures-v160.test.js)', () => {
+test('1.5.0 shipped and is frozen like 1.4.0: pages pinned to it keep their own files, with skeletal and energyLevels in the chem pack (new builds pin the latest: figures-v160.test.js and figures-v170.test.js)', () => {
   assert.notEqual(version(), '1.5.0'); assert.equal(L.FIG_LATEST['oomba-figures'], version()); assert.equal(F.OF_VERSION, version());
   assert.deepEqual(Object.keys(L.FIG_PACKS['1.5.0']), ['math', 'data', 'physics', 'chem', 'bio', 'econ', 'measure'], 'no new pack');
   const chem = JSON.parse(fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-figures/1.5.0/manifest.json'), 'utf8')).packs.chem.kinds;
@@ -69,7 +69,7 @@ test('every figure 1.4.0 drew draws the same bytes in 1.5.0, and checks and solv
     }
   }
   assert.ok(n > 1000, `${n} figures compared`);
-  // the frozen 1.5.0 file and the source draw the same, its two new kinds included
+  // the frozen 1.5.0 file and the latest draw the new kinds the same
   for (const K of CAT.KINDS.filter(k => ['skeletal', 'energyLevels'].includes(k.id))) for (const d of K.presets) for (const o of [{}, { print: true }]) assert.equal(L.figuresKit('1.5.0').svg(K.id, d, o), OF.svg(K.id, d, o), K.id);
   assert.equal(CAT.KINDS.filter(k => ['skeletal', 'energyLevels'].includes(k.id)).length, 2, 'both new kinds are in the catalog');
 });

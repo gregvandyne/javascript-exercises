@@ -13251,6 +13251,34 @@
         "name": "Wellen",
         "desc": "Transversal- und Longitudinalwellen"
       },
+      "circularMotion": {
+        "name": "Kreisbewegung",
+        "desc": "Geschwindigkeit, Zentripetalbeschleunigung und Kräfte"
+      },
+      "fields": {
+        "name": "Elektrische und magnetische Felder",
+        "desc": "Feldlinien von Ladungen, Platten, Magneten und Drähten"
+      },
+      "lever": {
+        "name": "Hebel",
+        "desc": "Hebel der 1., 2. und 3. Art mit berechneter Kraft"
+      },
+      "torque": {
+        "name": "Drehmoment",
+        "desc": "Balken auf einem Drehpunkt, zwei Auflagern oder an einer Wand"
+      },
+      "pendulum": {
+        "name": "Pendel",
+        "desc": "Eine Schwingung mit Winkel, Länge und Höhe"
+      },
+      "spring": {
+        "name": "Federn",
+        "desc": "Hookesches Gesetz, Reihe und parallel, Schwingung"
+      },
+      "rollerCoaster": {
+        "name": "Achterbahn",
+        "desc": "Höhen, ein Looping und Geschwindigkeiten aus der Energie"
+      },
       "reading": {
         "name": "Skala ablesen",
         "desc": "Thermometer, Messzylinder, Lineale und Messschieber"
@@ -13378,6 +13406,10 @@
       "osmosis": {
         "name": "Osmose",
         "desc": "Zellen, U-Rohre und Beutel in Lösungen"
+      },
+      "cladogram": {
+        "name": "Kladogramm",
+        "desc": "Taxa, gemeinsame Merkmale und Stammbäume"
       },
       "supplyDemand": {
         "name": "Angebot und Nachfrage",

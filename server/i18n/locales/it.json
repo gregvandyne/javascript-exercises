@@ -13251,6 +13251,34 @@
         "name": "Onde",
         "desc": "Onde trasversali e longitudinali"
       },
+      "circularMotion": {
+        "name": "Moto circolare",
+        "desc": "Velocità, accelerazione centripeta e forze"
+      },
+      "fields": {
+        "name": "Campi elettrici e magnetici",
+        "desc": "Linee di campo di cariche, piastre, magneti e fili"
+      },
+      "lever": {
+        "name": "Leve",
+        "desc": "Leve di primo, secondo e terzo genere"
+      },
+      "torque": {
+        "name": "Momento torcente",
+        "desc": "Travi su un perno, due appoggi o un muro"
+      },
+      "pendulum": {
+        "name": "Pendolo",
+        "desc": "Un'oscillazione con angolo, lunghezza e altezza"
+      },
+      "spring": {
+        "name": "Molle",
+        "desc": "Legge di Hooke, in serie e in parallelo, oscillazione"
+      },
+      "rollerCoaster": {
+        "name": "Montagne russe",
+        "desc": "Altezze, un giro della morte e velocità dall'energia"
+      },
       "reading": {
         "name": "Lettura di una scala",
         "desc": "Termometri, cilindri graduati, righelli e calibri"
@@ -13378,6 +13406,10 @@
       "osmosis": {
         "name": "Osmosi",
         "desc": "Cellule, tubi a U e sacchetti in soluzioni"
+      },
+      "cladogram": {
+        "name": "Cladogramma",
+        "desc": "Taxa, caratteri condivisi e alberi filogenetici"
       },
       "supplyDemand": {
         "name": "Domanda e offerta",

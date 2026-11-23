@@ -223,7 +223,7 @@ test('worksheets, Assign and the lesson step take the new kinds as they are: one
   const r = FS.assignWorksheet(boss, w.id, cls.id, {});
   assert.ok(r.ok, JSON.stringify(r));
   const step = L.getStep(r.step.id), snap = FS.itemsOf(step);
-  assert.equal(step.of_version, '1.6.0'); assert.equal(snap.length, gens.length);
+  assert.equal(step.of_version, F.OF_VERSION, 'the latest version (1.6.0 brought these kinds)'); assert.equal(snap.length, gens.length);
   snap.forEach((it, i) => {
     const g = F.generate(gens[i], 5);
     assert.equal(JSON.stringify(it.data), JSON.stringify(g.data), gens[i]); assert.equal(it.answer, g.answer);
