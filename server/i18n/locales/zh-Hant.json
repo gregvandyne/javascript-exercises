@@ -4158,7 +4158,11 @@
         "bookNo": "這本書無法這樣做",
         "booksMine": "看過你的書",
         "bookEdit": "改了「{q}」",
-        "redraw": "請重新畫第 {n} 頁"
+        "redraw": "請重新畫第 {n} 頁",
+        "bookDelAsk": "刪除「{q}」前先詢問",
+        "book_rename": "已重新命名「{q}」",
+        "book_duplicate": "已複製「{q}」",
+        "book_repaint": "已要求重新繪製「{q}」"
       },
       "stepsSum": "{n} 個步驟 · {s} 秒",
       "prog": {
@@ -4291,7 +4295,13 @@
         "adding": "正在加入你的書",
         "stopAdding": "停止加入這本書",
         "open": "打開這本書",
-        "make": "做一本書"
+        "make": "做一本書",
+        "delQ": "要刪除「{title}」嗎？",
+        "delText": "它的圖片、與班級的分享和學生讀到的位置也會一起刪除。",
+        "delete": "刪除",
+        "keep": "保留",
+        "deleted": "已刪除「{title}」。",
+        "kept": "已保留「{title}」。"
       }
     },
     "companion-greet": {
@@ -4523,6 +4533,20 @@
       "back": "上一頁",
       "next": "下一頁",
       "startOver": "從頭開始"
+    },
+    "storybook-books": {
+      "titleLabel": "書名",
+      "moreFor": "「{title}」的更多選項",
+      "noClasses": "你還沒有可以分享的班級。",
+      "shareTitle": "與班級分享",
+      "shareNote": "這些班級的學生可以在圖書館的「老師給你的」找到它。",
+      "shareSave": "儲存",
+      "sharedN": "已分享給 {count} 個班級",
+      "deleteQ": "要刪除「{title}」嗎？",
+      "deleteText": "它的圖片、與班級的分享和學生讀到的位置也會一起刪除。",
+      "deleteOk": "刪除",
+      "deleted": "已刪除「{title}」。",
+      "undo": "復原"
     }
   },
   "favorites": {
@@ -14076,7 +14100,10 @@
       "imgPerson": "請使用沒有人的圖片。",
       "imgPersonal": "這張圖片有個人資料。請換一張。",
       "imgUnsafe": "這張圖片不能在 Oomba Academy 使用。",
-      "imgResting": "現在無法檢查圖片,所以不能加入。請稍後再試。"
+      "imgResting": "現在無法檢查圖片,所以不能加入。請稍後再試。",
+      "title": "請幫書取個書名。",
+      "emptyCopy": "這本書還沒有可以複製的頁面。",
+      "notEmpty": "這本書已經有頁面了。"
     },
     "shareDone": "已分享給 {count} 個班級。",
     "shareNone": "沒有分享給任何班級。",
@@ -14115,7 +14142,8 @@
       "nokey": "這個網站還沒有設定繪圖 AI，所以頁面使用美術包的圖。",
       "resting": "繪圖 AI 正在休息，請稍後再試。",
       "limit": "你已經用完今天的圖片次數，明天再來。",
-      "off": "這本書的圖畫是你自己的(或沒有圖畫),所以 Oomba 不會畫。"
+      "off": "這本書的圖畫是你自己的(或沒有圖畫),所以 Oomba 不會畫。",
+      "none": "這本書的圖片都已經畫好了。"
     },
     "pictures": {
       "ai": "由 Oomba 畫",
@@ -14138,7 +14166,29 @@
       "tooManyPics": "新書不能再加入更多圖片了。",
       "tooManyFiles": "新書不能再加入更多檔案了。",
       "fileGone": "那個檔案已經不在了。請再附加一次。",
-      "nothingToAdd": "沒有要補充的"
+      "nothingToAdd": "沒有要補充的",
+      "renamed": "好了。這本書現在叫「{title}」。",
+      "duplicated": "好了。我做了一份副本：「{title}」。它沒有和任何班級分享。",
+      "opFailed": "這本書沒辦法這樣做。請再試一次。"
+    },
+    "copySuffix": "（副本）",
+    "books": {
+      "more": "更多",
+      "moreFor": "「{title}」的更多選項",
+      "open": "開啟",
+      "rename": "重新命名",
+      "share": "與班級分享",
+      "duplicate": "複製",
+      "delete": "刪除",
+      "repaint": "重新繪製圖片",
+      "writing": "Oomba 正在寫",
+      "unfinished": "沒有完成",
+      "unfinishedText": "Oomba 沒能完成第一份草稿。請再試一次，或刪除它。",
+      "tryAgain": "再試一次",
+      "renamed": "已重新命名。",
+      "duplicated": "已建立副本：「{title}」",
+      "repainting": "要重新繪製的圖片：{count} 張。完成後就會出現。",
+      "repaintSome": "要重新繪製的圖片：現在 {count} 張，明天再 {more} 張（今天的圖片已用完）。"
     }
   }
 }

@@ -4159,7 +4159,11 @@
         "bookNo": "Non sono riuscito a farlo con il libro",
         "booksMine": "Ho guardato i tuoi libri",
         "bookEdit": "Modificato «{q}»",
-        "redraw": "Chiesto di ridipingere la pagina {n}"
+        "redraw": "Chiesto di ridipingere la pagina {n}",
+        "bookDelAsk": "Ha chiesto prima di eliminare «{q}»",
+        "book_rename": "Ha rinominato «{q}»",
+        "book_duplicate": "Ha copiato «{q}»",
+        "book_repaint": "Ha chiesto di ridipingere «{q}»"
       },
       "stepsSum": "{n, plural, one {# passaggio} other {# passaggi}} · {s} s",
       "prog": {
@@ -4292,7 +4296,13 @@
         "adding": "Aggiunta al tuo libro",
         "stopAdding": "Smetti di aggiungere al libro",
         "open": "Apri il libro",
-        "make": "Crea un libro"
+        "make": "Crea un libro",
+        "delQ": "Eliminare «{title}»?",
+        "delText": "Vengono eliminate anche le sue immagini, le condivisioni con le classi e i punti di lettura degli studenti.",
+        "delete": "Elimina",
+        "keep": "Tieni",
+        "deleted": "«{title}» eliminato.",
+        "kept": "«{title}» tenuto."
       }
     },
     "companion-greet": {
@@ -4524,6 +4534,20 @@
       "back": "Indietro",
       "next": "Avanti",
       "startOver": "Ricomincia"
+    },
+    "storybook-books": {
+      "titleLabel": "Titolo del libro",
+      "moreFor": "Altro per {title}",
+      "noClasses": "Non hai ancora classi con cui condividere.",
+      "shareTitle": "Condividi con le classi",
+      "shareNote": "Gli studenti di queste classi lo trovano in biblioteca sotto «Dal tuo insegnante».",
+      "shareSave": "Salva",
+      "sharedN": "{count, plural, one {condiviso con # classe} other {condiviso con # classi}}",
+      "deleteQ": "Eliminare «{title}»?",
+      "deleteText": "Vengono eliminate anche le sue immagini, le condivisioni con le classi e i punti di lettura degli studenti.",
+      "deleteOk": "Elimina",
+      "deleted": "«{title}» eliminato.",
+      "undo": "Annulla"
     }
   },
   "favorites": {
@@ -14077,7 +14101,10 @@
       "imgPerson": "Usa un'immagine senza persone.",
       "imgPersonal": "Quell'immagine mostra dati personali. Usane un'altra.",
       "imgUnsafe": "Quell'immagine non si può usare su Oomba Academy.",
-      "imgResting": "Al momento le immagini non si possono controllare, quindi non si possono aggiungere. Riprova più tardi."
+      "imgResting": "Al momento le immagini non si possono controllare, quindi non si possono aggiungere. Riprova più tardi.",
+      "title": "Dai un titolo al libro, per favore.",
+      "emptyCopy": "Questo libro non ha ancora pagine da copiare.",
+      "notEmpty": "Questo libro ha già delle pagine."
     },
     "shareDone": "{count, plural, one {Condiviso con # classe.} other {Condiviso con # classi.}}",
     "shareNone": "Non condiviso con nessuna classe.",
@@ -14116,7 +14143,8 @@
       "nokey": "Il creatore di immagini non è configurato su questo sito, quindi le pagine usano i disegni dei pacchetti.",
       "resting": "Il creatore di immagini sta riposando. Riprova più tardi.",
       "limit": "Hai usato le immagini di oggi. Domani ce ne saranno altre.",
-      "off": "Le immagini di questo libro sono le tue (o non ce ne sono), quindi Oomba non le dipinge."
+      "off": "Le immagini di questo libro sono le tue (o non ce ne sono), quindi Oomba non le dipinge.",
+      "none": "Tutte le immagini di questo libro sono già dipinte."
     },
     "pictures": {
       "ai": "Le dipinge Oomba",
@@ -14139,7 +14167,29 @@
       "tooManyPics": "Un libro nuovo non può avere altre immagini.",
       "tooManyFiles": "Un libro nuovo non può avere altri file.",
       "fileGone": "Quel file non c'è più. Allegalo di nuovo.",
-      "nothingToAdd": "Niente da aggiungere"
+      "nothingToAdd": "Niente da aggiungere",
+      "renamed": "Fatto. Il libro ora si chiama «{title}».",
+      "duplicated": "Fatto. Ho fatto una copia: «{title}». Non è condivisa con nessuna classe.",
+      "opFailed": "Non sono riuscito a farlo con questo libro. Riprova, per favore."
+    },
+    "copySuffix": " (copia)",
+    "books": {
+      "more": "Altro",
+      "moreFor": "Altro per {title}",
+      "open": "Apri",
+      "rename": "Rinomina",
+      "share": "Condividi con le classi",
+      "duplicate": "Duplica",
+      "delete": "Elimina",
+      "repaint": "Ridipingi le immagini",
+      "writing": "Oomba lo sta scrivendo",
+      "unfinished": "Non finito",
+      "unfinishedText": "Oomba non è riuscito a finire la prima bozza. Riprova o eliminalo.",
+      "tryAgain": "Riprova",
+      "renamed": "Rinominato.",
+      "duplicated": "Copia fatta: «{title}»",
+      "repainting": "Immagini da ridipingere: {count}. Compaiono quando sono pronte.",
+      "repaintSome": "Immagini da ridipingere: {count} ora, altre {more} domani (le immagini di oggi sono finite)."
     }
   }
 }

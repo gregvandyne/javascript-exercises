@@ -21,7 +21,7 @@ import { warningsOf, mapLayout, numbering, LIMITS, MOODS, POSITIONS } from '/js/
 const D = pageData();
 const $ = id => document.getElementById(id);
 const cyoa = D.kind === 'cyoa';
-let B = D.book, rev = D.rev, sel = null, uploads = D.uploads || [], shared = D.shared || [], DR = D.draws || { pages: {}, cast: {} };
+let B = D.book, rev = D.rev, state = D.state || 'ready', sel = null, uploads = D.uploads || [], shared = D.shared || [], DR = D.draws || { pages: {}, cast: {} };
 const charName = id => (D.chars.find(c => c.id === id) || {}).name || id;
 
 // ---------------------------------------------------------------- saving
@@ -41,7 +41,7 @@ async function save() {
 }
 async function reload() {
   const r = await api(`/api/library/make/${D.id}`, { background: true });
-  B = r.book; rev = r.rev; uploads = r.uploads || []; shared = r.shared || []; if (r.draws) DR = r.draws;
+  B = r.book; rev = r.rev; uploads = r.uploads || []; shared = r.shared || []; if (r.draws) DR = r.draws; if (r.state) state = r.state;
   setLeft(r.left); watchDraws();
   if (!B.pages.find(p => p.id === sel)) sel = null;
   drawAll();
@@ -58,7 +58,7 @@ const artOf = (p, { decorative = true } = {}) => {
 };
 function drawAll() {
   const empty = !B.pages.length;
-  $('sb-wait').hidden = !empty; $('sb-ebody').hidden = empty;
+  $('sb-wait').hidden = !empty || state === 'unfinished'; $('sb-unfinished').hidden = !empty || state !== 'unfinished'; $('sb-ebody').hidden = empty;
   if (document.activeElement !== $('sb-title')) $('sb-title').value = B.title || '';
   if (!empty && !sel) sel = cyoa ? B.start || B.pages[0].id : B.pages[0].id;
   drawWarnings(); drawDrawLine(); drawMap(); drawList(); drawPage();
@@ -319,8 +319,24 @@ $('sb-share').addEventListener('click', () => {
   });
 });
 $('sb-delete').addEventListener('click', async () => {
+  closeMenu();
   if (!(await ask({ title: t('js.storybook-edit.deleteQ'), text: t('js.storybook-edit.deleteText'), ok: t('js.storybook-edit.deleteOk'), danger: true }))) return;
   try { const r = await api(`/api/library/make/${D.id}/delete`, { method: 'POST' }); location.href = r.redirect; } catch (e) { toast(e.message, { bad: true }); }
+});
+// The less-used actions (the More menu, as on the cards): Paint pictures again, Duplicate, and Try again for a book
+// whose first draft never came.
+const closeMenu = () => { const m = document.querySelector('.sb-emore'); if (m) m.open = false; };
+if ($('sb-repaint')) $('sb-repaint').addEventListener('click', async () => {
+  closeMenu();
+  try { const r = await api(`/api/library/make/${D.id}/repaint`, { method: 'POST' }); DR = r.draws; refreshPictures(); watchDraws(); toast(r.toast); } catch (e) { toast(e.message, { bad: true }); }
+});
+$('sb-duplicate').addEventListener('click', async () => {
+  closeMenu();
+  try { clearTimeout(timer); await save(); const r = await api(`/api/library/make/${D.id}/duplicate`, { method: 'POST' }); toast(r.toast); setTimeout(() => { location.href = r.href; }, 700); } catch (e) { toast(e.message, { bad: true }); }
+});
+$('sb-retry').addEventListener('click', async () => {
+  $('sb-retry').disabled = true;
+  try { await api(`/api/library/make/${D.id}/retry`, { method: 'POST' }); state = 'writing'; drawAll(); } catch (e) { $('sb-retry').disabled = false; toast(e.message, { bad: true }); }
 });
 $('sb-preview').addEventListener('click', async e => { if (timer) { e.preventDefault(); clearTimeout(timer); await save(); location.href = $('sb-preview').href; } });
 

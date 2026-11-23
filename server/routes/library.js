@@ -30,6 +30,7 @@ import { studentHref } from './student-report.js';
 import { wishBox, WISH_CSS } from './library-suggest.js';
 import * as SB from '../services/storybook.js';
 import { companionFor } from '../services/companion-settings.js';
+import { pageOf } from '../../public/js/storybook-core.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/library.css?v=${VERSION}">`);
@@ -123,17 +124,61 @@ export function bookCard(t, bk, { read = null, staff = false, forClass = null } 
       <div class="lb-acts"><a class="btn btn-primary btn-sm" href="/library/${bk.id}/read">${ico('📖', { size: 18 })} ${t('library.read')}</a>${staff ? html`<a class="btn btn-sm" href="${assignHref(bk, forClass)}">${ico('📌', { size: 18 })} ${t('library.assign')}</a>` : ''}</div></div></li>`;
 }
 
-/** The book maker's books on the library page (services/storybook.js): for a teacher, their own newest books; for a
- *  student, the books their teachers shared with their classes ("From your teacher"). Nobody else sees either. */
+/** A teacher's own book as a card, the same card as the library's books (cover, grade chip, title, meta line, actions):
+ *  the cover is the first page's picture as the reader shows it (painted, the teacher's own, or the art-pack drawing),
+ *  a calm placeholder when there is none; chips for the grade and the kind; pages, when it changed, the classes it is
+ *  shared with; Read and Open, and the less-used actions (Rename, Share, Duplicate, Delete) in a small More menu
+ *  (public/js/storybook-books.js). A book whose first draft never came says so, with Try again and Delete; one being
+ *  written says that. Only ever called with the teacher's own rows (storybook.js listBooks). */
+export function madeCard(req, row) {
+  const t = req.t, bk = SB.bookOf(row), setup = SB.setupOf(row), state = SB.stateOfBook(row, bk);
+  const title = bk.title || t('storybook.untitled');
+  const g = SB.GRADES.includes(setup.grade) ? setup.grade : '';
+  const shared = state === 'ready' ? SB.sharedWith(row.id) : [];
+  const first = state !== 'ready' ? null : bk.kind === 'cyoa' ? pageOf(bk, bk.start) || bk.pages[0] : bk.pages[0];
+  let pic = first ? SB.pictureHtml(row, bk, first, { decorative: true }) : '';
+  if (pic.startsWith('<svg')) pic = pic.replace('<svg ', '<svg preserveAspectRatio="xMidYMid slice" ');
+  const cover = pic ? raw(pic) : html`<span class="sb-bph" aria-hidden="true">${ico(state === 'unfinished' ? '⏳' : state === 'writing' ? '✨' : '📖', { size: 48 })}</span>`;
+  const meta = [t('storybook.pages', { count: bk.pages.length }), req.fmt.ago(row.updated_at), ...(shared.length ? [t('storybook.sharedN', { count: shared.length })] : [])].join(' · ');
+  const more = html`<details class="sb-bmore"><summary class="btn btn-sm btn-ghost sb-bmore-btn" aria-label="${t('storybook.books.moreFor', { title })}" title="${t('storybook.books.more')}"><span aria-hidden="true">⋯</span></summary>
+    <div class="sb-bmenu">
+      ${state === 'ready' ? html`<button type="button" class="sb-bitem" data-b="rename">${ico('✏️', { size: 18 })} ${t('storybook.books.rename')}</button>
+      <button type="button" class="sb-bitem" data-b="share">${ico('📌', { size: 18 })} ${t('storybook.books.share')}</button>
+      <button type="button" class="sb-bitem" data-b="duplicate">${ico('📋', { size: 18 })} ${t('storybook.books.duplicate')}</button>` : ''}
+      <button type="button" class="sb-bitem is-danger" data-b="delete">${ico('🗑️', { size: 18 })} ${t('storybook.books.delete')}</button></div></details>`;
+  const acts = state === 'ready'
+    ? html`<a class="btn btn-primary btn-sm" href="/library/made/${row.id}/read">${ico('📖', { size: 18 })} ${t('library.read')}</a><a class="btn btn-sm" href="/library/make/${row.id}">${ico('✏️', { size: 18 })} ${t('storybook.books.open')}</a>`
+    : state === 'writing' ? html`<a class="btn btn-sm" href="/library/make/${row.id}">${ico('✏️', { size: 18 })} ${t('storybook.books.open')}</a>`
+      : html`<button type="button" class="btn btn-primary btn-sm" data-b="retry">${ico('🔄', { size: 18 })} ${t('storybook.books.tryAgain')}</button><button type="button" class="btn btn-sm" data-b="delete">${ico('🗑️', { size: 18 })} ${t('storybook.books.delete')}</button>`;
+  return html`<li class="lb-card sb-bcard${state !== 'ready' ? ` is-${state}` : ''}" data-book="${row.id}" data-title="${title}" data-shared="${shared.map(c => c.id).join(',')}">
+    <a class="lb-cover sb-bcover" href="/library/make/${row.id}" tabindex="-1" aria-hidden="true">${cover}</a>
+    ${state === 'ready' ? more : ''}
+    <div class="lb-body"><div class="sb-bchips">${g ? html`<span class="lb-lvl lb-g${g.replace('-', '')}">${t(`storybook.grades.${g.replace('-', '')}`)}</span>` : ''}<span class="lb-lvl sb-bkind">${t(row.kind === 'cyoa' ? 'storybook.kind.cyoa' : 'storybook.kind.linear')}</span></div>
+      <h3 class="lb-title"><a href="/library/make/${row.id}" dir="auto">${title}</a></h3>
+      ${state === 'ready' ? html`<p class="lb-meta small muted">${meta}</p>`
+        : state === 'writing' ? html`<p class="lb-state">${ico('✨', { size: 18 })} ${t('storybook.books.writing')}</p>`
+          : html`<p class="lb-state sb-bwarn">${ico('⚠️', { size: 18 })} ${t('storybook.books.unfinished')}</p><p class="lb-meta small muted">${t('storybook.books.unfinishedText')}</p>`}
+      <div class="lb-acts">${acts}</div></div></li>`;
+}
+/** The teacher's books as cards (the library page and /library/make), with what the cards' script needs: the classes
+ *  they may share with. */
+export function madeGrid(req, rows, { id = 'sb-books' } = {}) {
+  return html`<ul class="lb-grid sb-books" id="${id}">${rows.map(r => madeCard(req, r))}</ul>
+    ${jsonData('sb-books-data', { classes: SB.shareClasses(req.user).map(c => ({ id: c.id, name: c.name })) })}`;
+}
+
+/** The book maker's books on the library page (services/storybook.js): for a teacher, their own newest books as cards
+ *  (the same cards as the library's books, with their own actions); for a student, the books their teachers shared with
+ *  their classes ("From your teacher"). Nobody else sees either. */
 function madeShelf(req) {
   const t = req.t, u = req.user;
   if (!u || u.is_guest) return '';
   if (SB.canMake(u)) {
-    const mine = SB.myBooks(u, 8);
+    const mine = SB.listBooks(u, 8);
     if (!mine.length) return '';
-    return html`<section class="lb-made" aria-labelledby="lb-made-h"><h2 id="lb-made-h">${ico('✨', { size: 24 })} ${t('storybook.shelfMine')}</h2>
-      <ul class="lb-made-list">${mine.map(r => { const bk = SB.bookOf(r); return html`<li><a class="lb-made-item" href="/library/make/${r.id}"><span dir="auto">${bk.title || t('storybook.untitled')}</span><span class="small muted">${t(r.kind === 'cyoa' ? 'storybook.kind.cyoa' : 'storybook.kind.linear')} · ${t('storybook.pages', { count: bk.pages.length })}</span></a></li>`; })}</ul>
-      <p><a href="/library/make">${t('storybook.allMine')}</a></p></section>`;
+    return html`<section class="lb-made sb-mybooks" aria-labelledby="lb-made-h"><div class="sb-mybooks-h"><h2 id="lb-made-h">${ico('✨', { size: 24 })} ${t('storybook.shelfMine')}</h2>
+      <a href="/library/make">${t('storybook.allMine')}</a></div>
+      ${madeGrid(req, mine)}</section>`;
   }
   const shared = SB.sharedBooks(u, 12).filter(x => x.book.pages.length);
   if (!shared.length) return '';
@@ -177,7 +222,7 @@ router.get('/library', (req, res) => {
       : html`<section class="panel">${emptyState({ emoji: '🔎', title: t('library.none'), text: t('library.noneText'), action: html`<a class="btn" href="/library">${t('library.allGrades')}</a>` })}</section>`}
     <p class="small muted lb-foot">${t('library.footSources')} ${t('library.footClassics')} · ${t('library.footQuestions')}</p>
   </div>`;
-  page(req, res, { title: t('library.title'), active: 'learn', body, head: raw(`${CSS}${WISH_CSS}`), scripts: ['/js/library-suggest.js'], description: t('library.lead', { count: LIB.books().length }) });
+  page(req, res, { title: t('library.title'), active: 'learn', body, head: raw(`${CSS}${WISH_CSS}`), scripts: ['/js/library-suggest.js', ...(SB.canMake(u) ? ['/js/storybook-books.js'] : [])], description: t('library.lead', { count: LIB.books().length }) });
 });
 
 // ---------------------------------------------------------------- one book

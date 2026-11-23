@@ -786,7 +786,7 @@ export function toolsFor(page, u = null) {
   return u && SB.canMake(u) ? [...base, ...BOOK_TOOLS()] : base;
 }
 /** The book tools (companion-book.js), built when asked for. */
-export const BOOK_TOOL_NAMES = Object.freeze(['makeBook', 'findMyBooks', 'changeBook', 'redrawPicture']);
+export const BOOK_TOOL_NAMES = Object.freeze(['makeBook', 'findMyBooks', 'changeBook', 'redrawPicture', 'renameBook', 'duplicateBook', 'deleteBook', 'repaintBook']);
 const BOOK_TOOLS = () => [BK.bookTool(), { name: 'findMyBooks', description: 'The teacher\'s own books from the book maker (made now or in the past): id, title, kind, last changed, pages, best match first. Use it to find which book they mean ("my water cycle book", "the dragon adventure from last week").', input_schema: { type: 'object', properties: { words: str('Words from the title or topic, optional.') } } }, ...BK.BOOK_PAGE_TOOLS];
 
 const EXPLAIN = [
@@ -959,6 +959,23 @@ export function runTool(name, input, ctx) {
       ctx.out.bookChange = { bookId: row.id, request };
       return { result: { done: true, book: cleanText(u, row.title, ctx.names) || '(untitled)' }, step: { k: 'bookEdit', q: clip(cleanText(u, row.title, ctx.names), 40) } };
     }
+    case 'renameBook': case 'duplicateBook': case 'deleteBook': case 'repaintBook': {
+      if (!SB.canMake(u)) return { result: { error: 'Books are made by teachers only.' }, step: { k: 'bookNo' } };
+      if (ctx.out.bookChange || ctx.out.book || ctx.out.ask || ctx.out.bookDelete || ctx.out.bookOp) return { result: { error: 'One book action per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'bookNo' } };
+      const op = { renameBook: 'rename', duplicateBook: 'duplicate', deleteBook: 'delete', repaintBook: 'repaint' }[name];
+      const title = op === 'rename' ? clip(cleanText(u, String(i.title || ''), ctx.names), 200).replace(/\s+/g, ' ').trim() : '';
+      if (op === 'rename' && !title) return { result: { error: 'Give the new title.' }, step: { k: 'bookNo' } };
+      const w = whichBook(u, ctx, i, { op, title });
+      if (w.out) return w.out;
+      if (op === 'delete') {
+        ctx.out.bookDelete = { id: uid(10), bookId: w.row.id, title: cleanText(u, w.row.title, ctx.names) || tFor(ctx.lang)('storybook.untitled'), state: 'open' };
+        return { result: { waitingForTeacher: true, book: ctx.out.bookDelete.title, note: 'Nothing is deleted yet: the teacher sees Delete and Keep on a card. Say so in one short sentence.' }, step: { k: 'bookDelAsk', q: clip(ctx.out.bookDelete.title, 40) } };
+      }
+      const r = BK.runOp(u, op, w.row.id, { title, lang: ctx.lang });
+      if (r.error) return { result: { error: r.error }, step: { k: 'bookNo' } };
+      ctx.out.bookOp = true; ctx.out.bookRef = r.ref;
+      return { result: r.result, step: { k: `book_${op}`, q: clip(cleanText(u, w.row.title, ctx.names), 40) } };
+    }
     case 'redrawPicture': {
       if (!SB.canMake(u)) return { result: { error: 'Books are made by teachers only.' }, step: { k: 'bookNo' } };
       const id = i.bookId ? String(i.bookId) : ctx.page.type === 'book' ? ctx.page.bookId : '';
@@ -969,6 +986,47 @@ export function runTool(name, input, ctx) {
     }
     default: return { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } };
   }
+}
+/** Which of the teacher's own books a rename, duplicate, delete or paint-again means: bookId (checked: their own), the
+ *  book of the page they are on, or their words (findMyBooks' matching). Several that fit: a choice card of their titles
+ *  (the tap runs the action, askPick); none: says so. -> { row } | { out: a tool result } */
+function whichBook(u, ctx, i, extra) {
+  if (i.bookId) { const row = SB.ownBook(u, String(i.bookId)); return row ? { row } : { out: { result: { error: 'That is not one of the teacher\'s books.' }, step: { k: 'bookNo' } } }; }
+  if (ctx.page.type === 'book' && !i.which) { const row = SB.ownBook(u, ctx.page.bookId); if (row) return { row }; }
+  const all = BK.findBooks(u, ''), fit = i.which ? BK.findBooks(u, String(i.which)) : all;
+  if (!fit.length) { ctx.out.bookNone = true; return { out: { result: { error: all.length ? 'None of the teacher\'s books fits those words. Say so in one sentence.' : 'The teacher has no books yet. Say so in one sentence; the card offers Make a book.' }, step: { k: 'bookNo' } } }; }
+  if (fit.length > 1) {
+    const tt = tFor(ctx.lang);
+    ctx.out.ask = { id: uid(10), kind: 'book', question: '', op: extra.op, ...(extra.title ? { title: extra.title } : {}), lang: ctx.lang, options: fit.slice(0, NAV_MAX).map(b => ({ label: cleanText(u, b.title, ctx.names) || tt('storybook.untitled'), kindText: tt(`storybook.kind.${b.kind}`), at: b.updated, book: b.id })), state: 'open' };
+    return { out: { result: { askedWhich: true, options: ctx.out.ask.options.map(o => o.label), note: 'The teacher picks the book on a card; nothing happens until they tap. Ask which book in one short sentence.' }, step: { k: 'which' } } };
+  }
+  return { row: SB.ownBook(u, fit[0].id) };
+}
+/** Delete / Keep on the chat's delete card: Delete runs the cards' own delete (storybook.js deleteBook: pictures,
+ *  shares, readers' places, its chat). Teachers only, their own book only. */
+function deleteAct(u, row, turn, a) {
+  const d = turn.note.bookDelete;
+  if (!d || d.state !== 'open' || !SB.canMake(u)) return { ok: false, code: 'notFound' };
+  if (a === 'bookKeep') return markNote(u, row, turn.id, { ...turn.note, bookDelete: { ...d, state: 'kept' } });
+  if (!SB.ownBook(u, d.bookId)) return markNote(u, row, turn.id, { ...turn.note, bookDelete: { ...d, state: 'gone' } });
+  const r = SB.deleteBook(u, d.bookId);
+  if (!r.ok) return { ok: false, code: 'notFound' };
+  audit(u.id, 'companion.book.delete', d.bookId, {});
+  return markNote(u, row, turn.id, { ...turn.note, bookDelete: { ...d, state: 'deleted' } });
+}
+/** Try again on a book whose first draft never came (the cards' and the book page's Try again, for a teacher with the
+ *  companion): one of today's turns, then the first draft as a turn of this chat on the book's page, as Make my book
+ *  does. -> the conversation | fail ('notFound' | 'notEmpty' | 'cap' | the engine's) */
+export function retryBook(u, bookId, { lang = 'en' } = {}) {
+  if (!companionFor(u) || !SB.canMake(u)) return { ok: false, code: 'notFound' };
+  const row = SB.ownBook(u, bookId); if (!row) return { ok: false, code: 'notFound' };
+  if (SB.stateOfBook(row) !== 'unfinished') return { ok: false, code: 'notEmpty' };
+  if (!SB.take(u)) return { ok: false, code: 'cap' };
+  ensureChat(u);
+  const r = send(u, { text: tFor(lang)('storybook.firstMessage'), page: { type: 'book', bookId: row.id }, lang, _bookFirst: row.id });
+  if (!r.ok) { SB.refund(u); return r; }
+  audit(u.id, 'storybook.retry', row.id, { companion: true });
+  return r;
 }
 /** The book being set up in this chat (opts.book): { turn, d } | null. */
 export function openDraft(u, row = chatRow(u)) {
@@ -999,6 +1057,7 @@ function system(u, lang, page, settings) {
     ...(SB.canMake(u) ? [
       'Books (the book maker: a picture book or a choose-your-own-adventure, every page illustrated): when the teacher asks for a book, a story or an adventure, or to turn their own story into one, call makeBook with only what they said. The card asks the rest, then shows exactly what will be sent; nothing is made until they tap Make my book. Never write a book in the chat. Students\' names and work never go into a book.',
       'Their books, made now or in the past: for a change ("make page 3 scarier", "add an ending to my dragon adventure"), call changeBook (findMyBooks first when you need to know which book; on a book\'s page it is that book). To paint one picture again, call redrawPicture. Say which book you changed; the card offers Undo and Open the book.',
+      'To rename a book call renameBook, to copy one duplicateBook, to paint again every picture that shows the art-pack drawing repaintBook, and to delete one deleteBook (it only shows a Delete / Keep card; the teacher decides there). Each finds the book as changeBook does.',
     ] : ['Books: the book maker is for teachers only. If asked, say so kindly.']),
     'Classes: when the teacher asks for a new class (a test class, a class to try the dashboard), call createClass; the card asks them to confirm. Ask the grade only when it matters to them.',
     'How-to: when the teacher asks how to do something, or asks for something you cannot do yourself (add students, print login cards, invite a co-teacher, assign, due dates, host live, progress, school settings, Google Classroom), call howTo and answer with its steps as a numbered list, keeping its links and bold labels exactly. Never invent a page, a link or a button name; links only from your tools. When one page covers it and the tool gives go, also call proposeNavigation for that page.',
@@ -1180,11 +1239,11 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const fin = finalText(res && res.content, ctx, web);
   let reply = cleanText(user, fin.text, names);
   const points = ctx.out.points || [];
-  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !points.length && !ctx.out.pick && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef) return { failed: 'error' };
+  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !points.length && !ctx.out.pick && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef && !ctx.out.bookDelete) return { failed: 'error' };
   if (!SR.textOk(reply.replace(MD_LINK, '$1'))) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
   const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}),
     ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}), ...(ctx.out.nav ? { nav: ctx.out.nav } : {}), ...(ctx.out.ask ? { ask: ctx.out.ask } : {}), ...(ctx.out.classNew ? { classNew: ctx.out.classNew } : {}),
-    ...(ctx.out.book ? { book: ctx.out.book } : {}), ...(ctx.out.bookNone ? { bookNone: true } : {}), ...(ctx.out.bookRef ? { bookRef: ctx.out.bookRef } : {}) };
+    ...(ctx.out.book ? { book: ctx.out.book } : {}), ...(ctx.out.bookNone ? { bookNone: true } : {}), ...(ctx.out.bookRef ? { bookRef: ctx.out.bookRef } : {}), ...(ctx.out.bookDelete ? { bookDelete: ctx.out.bookDelete } : {}) };
   log('info', 'companion answered', { turn: turnId, ms: note.ms, steps: steps.length, web: web.searches, page: page.type });
   if (ctx.out.manip) audit(user.id, 'manip.chat', ctx.out.manip.tool, { changed: true });
   const fig = ctx.out.figures;
@@ -1325,6 +1384,7 @@ export function act(u, turnId, a, value = '') {
   if (a === 'go' || a === 'notNow') return navAct(u, row, turn, a);
   if (a === 'askPick') return askPick(u, row, turn, value);
   if (a === 'create' || a === 'createNo') return createAct(u, row, turn, a);
+  if (a === 'bookDelete' || a === 'bookKeep') return deleteAct(u, row, turn, a);
   if (/^book[A-Z]/.test(a)) return bookAct(u, row, turn, a, value);
   if (a === 'manipApplied') {
     const m = note.manip; if (!m) return { ok: false, code: 'notFound' };
@@ -1363,6 +1423,20 @@ function askPick(u, row, turn, value) {
   const o = k.options[i];
   // A book picked for a change (changeBook with several books that fit): that book's own writer makes the change, as a
   // turn of this chat, with the day's turn spent now (as the book page spends it).
+  // A book picked for a rename, a copy, a paint-again (run now, the cards' own functions) or a delete (its Delete / Keep
+  // card first).
+  if (o.book && k.op) {
+    if (!SB.canMake(u) || !SB.ownBook(u, o.book)) return { ok: false, code: 'notFound' };
+    const mark = { id: turn.id, fields: { note: { ...turn.note, ask: { ...k, state: 'answered', chosen: i } } } };
+    if (k.op === 'delete') {
+      const b = SB.ownBook(u, o.book);
+      return C.addTurn(u, SURFACE, KEY, { mark, text: '', apply: () => ({ note: { bookDelete: { id: uid(10), bookId: b.id, title: cleanText(u, b.title) || tFor(k.lang || 'en')('storybook.untitled'), state: 'open' } } }) });
+    }
+    if (!BK.BOOK_OPS.includes(k.op)) return { ok: false, code: 'notFound' };
+    if (q.get("SELECT 1 FROM oomba_turns WHERE chat_id=? AND status IN ('queued','running','interrupted')", row.id)) return { ok: false, code: 'chatBusy' };
+    const r = BK.runOp(u, k.op, o.book, { title: k.title || '', lang: k.lang || 'en' });
+    return C.addTurn(u, SURFACE, KEY, { mark, text: r.error ? tFor(k.lang || 'en')('storybook.chat.opFailed') : r.text, apply: () => ({ note: { bookRef: r.ref || o.book } }) });
+  }
   if (o.book) {
     if (!SB.canMake(u) || !SB.ownBook(u, o.book)) return { ok: false, code: 'notFound' };
     if (!SB.take(u)) return { ok: false, code: 'cap' };

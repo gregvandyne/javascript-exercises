@@ -47,6 +47,7 @@ import { shapeBook, problemsOf, repairBook, warningsOf, textsOf, pageHash, LIMIT
 import { illustrator, catalog } from './storybook-illustrator.js';
 import { mockDraft, mockChange } from './storybook-mock.js';
 import * as Draw from './storybook-draw.js';
+import { register } from './jobs.js';
 
 export const SURFACE = 'storybook';
 /** Test hooks: create replaces the model call; classify the model classifier; screen the Builder's input screening;
@@ -247,8 +248,9 @@ export function saveBook(u, id, { book, rev } = {}) {
   return ok({ rev: row.rev + 1, book: b, warnings: warningsOf(b) });
 }
 
-export function deleteBook(u, id) {
-  const row = ownBook(u, id); if (!row) return fail('notFound');
+/** A book and everything under it: its pictures (the teacher's and the painted ones), its picture queue, shares,
+ *  readers' places and its own chat. */
+function removeBook(row) {
   db.transaction(() => {
     q.run('DELETE FROM made_book_reads WHERE book_id=?', row.id);
     q.run('DELETE FROM made_book_classes WHERE book_id=?', row.id);
@@ -257,8 +259,115 @@ export function deleteBook(u, id) {
     q.run('DELETE FROM made_books WHERE id=?', row.id);
   })();
   C.forgetKey(SURFACE, row.id);
+}
+/** Delete: the cards, the book page and the Oomba chat (after its Delete / Keep card) all come here. */
+export function deleteBook(u, id) {
+  const row = ownBook(u, id); if (!row) return fail('notFound');
+  removeBook(row);
   audit(u.id, 'storybook.delete', row.id);
-  return ok();
+  return ok({ title: row.title || '' });
+}
+
+// ---------------------------------------------------------------- rename, duplicate (the cards, the book page, the chat)
+/** A title the teacher typed: tidied, cut to the limit; the word rules and the names check. -> { title } | { code } */
+export function titleProblem(u, title) {
+  const v = tidy(title, LIMITS.title).replace(/\s+/g, ' ');
+  if (!v) return { code: 'title' };
+  if (textProblem(v)) return { code: 'words' };
+  if (namesIn(u, v)) return { code: 'names' };
+  return { title: v };
+}
+/** Rename a book (its title; the rest of the book stays). -> { ok, title, rev } | fail ('notFound' | 'title' | 'words' | 'names') */
+export function renameBook(u, id, title) {
+  const row = ownBook(u, id); if (!row) return fail('notFound');
+  const v = titleProblem(u, title); if (v.code) return fail(v.code);
+  const b = bookOf(row); b.title = v.title;
+  q.run('UPDATE made_books SET book=?, title=?, rev=rev+1, updated_at=? WHERE id=?', JSON.stringify(b), v.title, now(), row.id);
+  audit(u.id, 'storybook.rename', row.id);
+  return ok({ title: v.title, rev: row.rev + 1 });
+}
+/** "<title> (copy)", cut so the suffix always fits the title limit. */
+export function copyTitle(title, t = tEn) {
+  const suffix = t('storybook.copySuffix');
+  return `${String(title || t('storybook.untitled')).slice(0, Math.max(1, LIMITS.title - suffix.length)).trim()}${suffix}`;
+}
+/**
+ * Duplicate a book: a new book (new id) with the same setup, pages and cast, "(copy)" after its title, and copies of its
+ * pictures (the teacher's own, the painted pages and the character sheets, with their picture rows, so nothing is
+ * painted or counted again). Not shared, no readers' places, no chat. A book that never got its first draft can't be
+ * copied. No AI is used, so no daily turn is spent. -> { ok, id, title } | fail ('notFound' | 'empty')
+ */
+export function duplicateBook(u, id, { t = tEn } = {}) {
+  const row = ownBook(u, id); if (!row) return fail('notFound');
+  const b = bookOf(row); if (!b.pages.length) return fail('empty');
+  const nid = uid(12), t0 = now(), title = copyTitle(b.title, t);
+  const pics = new Map();
+  const src = q.all('SELECT * FROM made_book_pics WHERE book_id=? ORDER BY created_at', row.id);
+  for (const p of src) pics.set(p.id, uid(14));
+  const nb = { ...b, title, pages: b.pages.map(p => ({ ...p, upload: p.upload ? pics.get(p.upload) || null : null })) };
+  db.transaction(() => {
+    q.run('INSERT INTO made_books(id, owner_id, title, kind, source, setup, book, rev, created_at, updated_at) VALUES (?,?,?,?,?,?,?,0,?,?)', nid, u.id, title, row.kind, row.source, row.setup, JSON.stringify(nb), t0, t0);
+    for (const p of src) q.run('INSERT INTO made_book_pics(id, owner_id, book_id, name, width, height, bytes, created_at, kind, mime) VALUES (?,?,?,?,?,?,?,?,?,?)', pics.get(p.id), u.id, nid, p.name, p.width, p.height, p.bytes, p.created_at, p.kind, p.mime);
+    // the picture queue's finished rows (what was painted, or why not); a picture still waiting stays the original's
+    const synced = new Set(b.pages.filter(p => { const d = q.get('SELECT hash FROM made_book_draws WHERE book_id=? AND target=?', row.id, `page:${p.id}`); return d && d.hash && d.hash === Draw.pageHash(row.id, b, p); }).map(p => p.id));
+    for (const d of q.all("SELECT * FROM made_book_draws WHERE book_id=? AND state IN ('done','fallback')", row.id)) {
+      q.run('INSERT INTO made_book_draws(id, book_id, owner_id, target, state, reason, note, pic_id, hash, attempts, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+        uid(12), nid, u.id, d.target, d.state, d.reason, '', d.pic_id ? pics.get(d.pic_id) || null : null, d.hash, d.attempts, t0, t0);
+    }
+    // a page's fingerprint names its characters' sheets: the copy's sheets are new rows, so its in-sync pages say so again
+    for (const p of nb.pages) if (synced.has(p.id)) q.run('UPDATE made_book_draws SET hash=? WHERE book_id=? AND target=?', Draw.pageHash(nid, nb, p), nid, `page:${p.id}`);
+  })();
+  audit(u.id, 'storybook.duplicate', nid, { from: row.id, pics: pics.size });
+  return ok({ id: nid, title });
+}
+
+// ---------------------------------------------------------------- a book that never got its first draft
+/** The first draft of an empty book is being written now: its turn (the book page's own chat, or the Oomba chat's turn
+ *  for this book) is queued or running. */
+export function writingNow(row) {
+  const LIVE = "('queued','running','interrupted')";
+  if (q.get(`SELECT 1 FROM oomba_turns t JOIN oomba_chats c ON c.id=t.chat_id WHERE c.surface=? AND c.ctx_key=? AND t.status IN ${LIVE} LIMIT 1`, SURFACE, row.id)) return true;
+  for (const t of q.all(`SELECT t.me_id, c.turns FROM oomba_turns t JOIN oomba_chats c ON c.id=t.chat_id WHERE t.owner_id=? AND t.surface='companion' AND t.status IN ${LIVE}`, row.owner_id)) {
+    const me = (parse(t.turns, []) || []).find(x => x.id === t.me_id);
+    if (me && me.meta && (me.meta._bookFirst === row.id || me.meta._bookTarget === row.id)) return true;
+  }
+  return false;
+}
+/** 'ready' (it has pages), 'writing' (its first draft is on its way) or 'unfinished' (the first draft never came: the AI
+ *  resting, a time-out, an answer that could not be used, a restart). An unfinished book is never shown as a normal book:
+ *  its card says "Didn't finish" with Try again and Delete. */
+export function stateOfBook(row, b = bookOf(row)) {
+  if (b.pages.length) return 'ready';
+  return writingNow(row) ? 'writing' : 'unfinished';
+}
+export const EMPTY_KEEP_MS = 3600e3;
+/** Books that never got their first draft and are older than an hour go, with everything under them (at startup, every
+ *  hour, and whenever a teacher's books are listed). owner: only that teacher's. -> number removed */
+export function pruneEmpty({ owner = null, t = now() } = {}) {
+  let n = 0;
+  const rows = owner ? q.all('SELECT * FROM made_books WHERE owner_id=? AND created_at<? AND book LIKE \'%"pages":[]%\'', owner, t - EMPTY_KEEP_MS)
+    : q.all('SELECT * FROM made_books WHERE created_at<? AND book LIKE \'%"pages":[]%\'', t - EMPTY_KEEP_MS);
+  for (const row of rows) {
+    if (bookOf(row).pages.length || writingNow(row)) continue;
+    removeBook(row); n++;
+    audit(row.owner_id, 'storybook.empty.removed', row.id);
+  }
+  return n;
+}
+/** The teacher's books for the cards (and the chat's findMyBooks): empty ones older than an hour are cleaned up first. */
+export function listBooks(u, limit = 50) {
+  if (!canMake(u)) return [];
+  pruneEmpty({ owner: u.id });
+  return myBooks(u, limit);
+}
+/** Try again on an unfinished book (the page's own chat; the Oomba chat has its own, companion.js retryBook): one of
+ *  today's turns, then the first draft as a turn of the book's chat. -> { ok } | fail ('notFound' | 'notEmpty' | 'cap' | the engine's) */
+export function retryDraft(u, id, { t = tEn } = {}) {
+  const row = ownBook(u, id); if (!row) return fail('notFound');
+  if (stateOfBook(row) !== 'unfinished') return fail('notEmpty');
+  const r = sendMessage(u, id, { text: t('storybook.firstMessage') });
+  if (r.ok) audit(u.id, 'storybook.retry', row.id);
+  return r;
 }
 
 /** The classes this teacher may share a book with (the same rule as assigning a library book). */
@@ -672,6 +781,8 @@ export function forgetUser(userId) {
   q.run('DELETE FROM made_book_ai_days WHERE user_id=?', userId);
   Draw.forgetUser(userId);
 }
+// Books that never got their first draft: cleaned up soon after start-up and every hour (and whenever a teacher's books are listed).
+register('storybook-empty-drafts', 3600e3, () => { pruneEmpty(); }, { firstAfterMs: 60e3 });
 // A class that is deleted takes its shares with it (the books stay with their teacher).
 S.onClassLeave(x => { if (x && x.classId && !x.userId) q.run('DELETE FROM made_book_classes WHERE class_id=?', x.classId); });
 // A school account merged into the student's own account: their reading places move with them.

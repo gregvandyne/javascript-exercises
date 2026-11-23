@@ -4440,7 +4440,11 @@
         "bookNo": "Couldn't do that with the book",
         "booksMine": "Looked at your books",
         "bookEdit": "Changed “{q}”",
-        "redraw": "Asked for page {n} to be painted again"
+        "redraw": "Asked for page {n} to be painted again",
+        "bookDelAsk": "Asked before deleting “{q}”",
+        "book_rename": "Renamed “{q}”",
+        "book_duplicate": "Copied “{q}”",
+        "book_repaint": "Asked to paint “{q}” again"
       },
       "stepsSum": "{n, plural, one {# step} other {# steps}} · {s} s",
       "prog": {
@@ -4573,7 +4577,13 @@
         "adding": "Adding to your book",
         "stopAdding": "Stop adding to the book",
         "open": "Open the book",
-        "make": "Make a book"
+        "make": "Make a book",
+        "delQ": "Delete “{title}”?",
+        "delText": "Its pictures, its shares with classes and students' reading places are deleted too.",
+        "delete": "Delete",
+        "keep": "Keep",
+        "deleted": "Deleted “{title}”.",
+        "kept": "Kept “{title}”."
       }
     },
     "companion-greet": {
@@ -4805,6 +4815,20 @@
       "back": "Back",
       "next": "Next",
       "startOver": "Start over"
+    },
+    "storybook-books": {
+      "titleLabel": "Book title",
+      "moreFor": "More for {title}",
+      "noClasses": "You have no classes to share with yet.",
+      "shareTitle": "Share with classes",
+      "shareNote": "Students in these classes find it in the library under “From your teacher”.",
+      "shareSave": "Save",
+      "sharedN": "{count, plural, one {shared with # class} other {shared with # classes}}",
+      "deleteQ": "Delete “{title}”?",
+      "deleteText": "Its pictures, its shares with classes and students' reading places are deleted too.",
+      "deleteOk": "Delete",
+      "deleted": "Deleted “{title}”.",
+      "undo": "Undo"
     }
   },
   "favorites": {
@@ -14792,7 +14816,10 @@
       "imgPerson": "Please use a picture without people in it.",
       "imgPersonal": "That picture shows personal details. Please use another one.",
       "imgUnsafe": "That picture can't be used on Oomba Academy.",
-      "imgResting": "Pictures can't be checked right now, so they can't be added. Please try again later."
+      "imgResting": "Pictures can't be checked right now, so they can't be added. Please try again later.",
+      "title": "Please give the book a title.",
+      "emptyCopy": "This book has no pages to copy yet.",
+      "notEmpty": "This book already has pages."
     },
     "shareDone": "{count, plural, one {Shared with # class.} other {Shared with # classes.}}",
     "shareNone": "Not shared with any class.",
@@ -14831,7 +14858,8 @@
       "nokey": "The picture maker isn't set up on this site, so pages use the art-pack drawings.",
       "resting": "The picture maker is resting for now. Please try again later.",
       "limit": "You've used today's pictures. More tomorrow.",
-      "off": "This book's pictures are your own (or there are none), so Oomba doesn't paint them."
+      "off": "This book's pictures are your own (or there are none), so Oomba doesn't paint them.",
+      "none": "Every picture in this book is already painted."
     },
     "pictures": {
       "ai": "Oomba paints them",
@@ -14854,7 +14882,29 @@
       "tooManyPics": "That's as many pictures as a new book can take.",
       "tooManyFiles": "That's as many files as a new book can take.",
       "fileGone": "That file is no longer here. Please attach it again.",
-      "nothingToAdd": "Nothing to add"
+      "nothingToAdd": "Nothing to add",
+      "renamed": "Done. The book is now called “{title}”.",
+      "duplicated": "Done. I made a copy: “{title}”. It isn't shared with any class.",
+      "opFailed": "I couldn't do that with this book. Please try again."
+    },
+    "copySuffix": " (copy)",
+    "books": {
+      "more": "More",
+      "moreFor": "More for {title}",
+      "open": "Open",
+      "rename": "Rename",
+      "share": "Share with classes",
+      "duplicate": "Duplicate",
+      "delete": "Delete",
+      "repaint": "Paint pictures again",
+      "writing": "Oomba is writing it",
+      "unfinished": "Didn't finish",
+      "unfinishedText": "Oomba couldn't finish the first draft. Try again, or delete it.",
+      "tryAgain": "Try again",
+      "renamed": "Renamed.",
+      "duplicated": "Copy made: “{title}”",
+      "repainting": "Pictures to paint again: {count}. They show up as they're ready.",
+      "repaintSome": "Pictures to paint again: {count} now, {more} more tomorrow (today's pictures are used up)."
     }
   }
 }

@@ -4159,7 +4159,11 @@
         "bookNo": "Dat lukte niet met het boek",
         "booksMine": "Je boeken bekeken",
         "bookEdit": "‘{q}’ veranderd",
-        "redraw": "Pagina {n} opnieuw laten schilderen"
+        "redraw": "Pagina {n} opnieuw laten schilderen",
+        "bookDelAsk": "Gevraagd voor het verwijderen van ‘{q}’",
+        "book_rename": "‘{q}’ hernoemd",
+        "book_duplicate": "‘{q}’ gekopieerd",
+        "book_repaint": "Gevraagd om ‘{q}’ opnieuw te schilderen"
       },
       "stepsSum": "{n, plural, one {# stap} other {# stappen}} · {s} s",
       "prog": {
@@ -4292,7 +4296,13 @@
         "adding": "Toevoegen aan je boek",
         "stopAdding": "Stoppen met toevoegen aan het boek",
         "open": "Het boek openen",
-        "make": "Een boek maken"
+        "make": "Een boek maken",
+        "delQ": "‘{title}’ verwijderen?",
+        "delText": "De plaatjes, het delen met klassen en waar leerlingen aan het lezen waren, worden ook verwijderd.",
+        "delete": "Verwijderen",
+        "keep": "Houden",
+        "deleted": "‘{title}’ verwijderd.",
+        "kept": "‘{title}’ gehouden."
       }
     },
     "companion-greet": {
@@ -4524,6 +4534,20 @@
       "back": "Terug",
       "next": "Volgende",
       "startOver": "Opnieuw beginnen"
+    },
+    "storybook-books": {
+      "titleLabel": "Titel van het boek",
+      "moreFor": "Meer voor {title}",
+      "noClasses": "Je hebt nog geen klassen om mee te delen.",
+      "shareTitle": "Delen met klassen",
+      "shareNote": "Leerlingen van deze klassen vinden het in de bibliotheek onder ‘Van je leerkracht’.",
+      "shareSave": "Opslaan",
+      "sharedN": "{count, plural, one {gedeeld met # klas} other {gedeeld met # klassen}}",
+      "deleteQ": "‘{title}’ verwijderen?",
+      "deleteText": "De plaatjes, het delen met klassen en waar leerlingen aan het lezen waren, worden ook verwijderd.",
+      "deleteOk": "Verwijderen",
+      "deleted": "‘{title}’ verwijderd.",
+      "undo": "Ongedaan maken"
     }
   },
   "favorites": {
@@ -14077,7 +14101,10 @@
       "imgPerson": "Gebruik een plaatje zonder mensen.",
       "imgPersonal": "Dat plaatje toont persoonlijke gegevens. Gebruik een ander.",
       "imgUnsafe": "Dat plaatje kan niet op Oomba Academy.",
-      "imgResting": "Plaatjes kunnen nu niet worden gecontroleerd en dus niet worden toegevoegd. Probeer het later."
+      "imgResting": "Plaatjes kunnen nu niet worden gecontroleerd en dus niet worden toegevoegd. Probeer het later.",
+      "title": "Geef het boek een titel.",
+      "emptyCopy": "Dit boek heeft nog geen pagina's om te kopiëren.",
+      "notEmpty": "Dit boek heeft al pagina's."
     },
     "shareDone": "{count, plural, one {Gedeeld met # klas.} other {Gedeeld met # klassen.}}",
     "shareNone": "Met geen enkele klas gedeeld.",
@@ -14116,7 +14143,8 @@
       "nokey": "De plaatjesmaker is niet ingesteld op deze site, dus de pagina's gebruiken de tekeningen uit de pakketten.",
       "resting": "De plaatjesmaker rust even. Probeer het later opnieuw.",
       "limit": "Je hebt de plaatjes van vandaag gebruikt. Morgen weer nieuwe.",
-      "off": "De plaatjes in dit boek zijn van jou (of er zijn er geen), dus Oomba schildert ze niet."
+      "off": "De plaatjes in dit boek zijn van jou (of er zijn er geen), dus Oomba schildert ze niet.",
+      "none": "Alle plaatjes in dit boek zijn al geschilderd."
     },
     "pictures": {
       "ai": "Oomba schildert ze",
@@ -14139,7 +14167,29 @@
       "tooManyPics": "Meer plaatjes kan een nieuw boek niet hebben.",
       "tooManyFiles": "Meer bestanden kan een nieuw boek niet hebben.",
       "fileGone": "Dat bestand is er niet meer. Voeg het opnieuw toe.",
-      "nothingToAdd": "Niets toe te voegen"
+      "nothingToAdd": "Niets toe te voegen",
+      "renamed": "Klaar. Het boek heet nu ‘{title}’.",
+      "duplicated": "Klaar. Ik heb een kopie gemaakt: ‘{title}’. Die is met geen enkele klas gedeeld.",
+      "opFailed": "Dat lukte niet met dit boek. Probeer het opnieuw."
+    },
+    "copySuffix": " (kopie)",
+    "books": {
+      "more": "Meer",
+      "moreFor": "Meer voor {title}",
+      "open": "Openen",
+      "rename": "Naam wijzigen",
+      "share": "Delen met klassen",
+      "duplicate": "Kopiëren",
+      "delete": "Verwijderen",
+      "repaint": "Plaatjes opnieuw schilderen",
+      "writing": "Oomba schrijft het nu",
+      "unfinished": "Niet af",
+      "unfinishedText": "Oomba kon het eerste ontwerp niet afmaken. Probeer het opnieuw of verwijder het.",
+      "tryAgain": "Opnieuw proberen",
+      "renamed": "Naam gewijzigd.",
+      "duplicated": "Kopie gemaakt: ‘{title}’",
+      "repainting": "Plaatjes om opnieuw te schilderen: {count}. Ze verschijnen zodra ze klaar zijn.",
+      "repaintSome": "Plaatjes om opnieuw te schilderen: {count} nu, morgen nog {more} (de plaatjes van vandaag zijn op)."
     }
   }
 }
