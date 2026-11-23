@@ -11664,6 +11664,10 @@ point for xyz' or 'give x student a point for xyz'". Student names never go to t
   (`meta._who`; the chat engine never shows meta keys starting with "_" to the page) and never goes to the AI. The same
   student keeps the same number for the whole conversation (Try again and an edited message keep theirs). A name that
   is not an account yet (a Google Classroom roster name waiting) stays a plain "[student]", which can't get a point.
+  **On the teacher's own page** the names come back: the server puts each placeholder's student's current name (only
+  the teacher's own students) into the teacher's messages and into any placeholder in Oomba's words, as it fills in the
+  point cards (`dress`, `namesIn`). What is kept and what goes to the AI stay the placeholders. A placeholder standing
+  for two students shows both names.
   **Decided:** a placeholder can stand for several students (a first name two students share); the server resolves it
   in the class, and asks when it is still more than one.
 - **The tool** (`givePoint`, a general tool, not a page tool; services/companion.js `pointPlan`): target "class" or a

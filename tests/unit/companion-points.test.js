@@ -92,7 +92,7 @@ test('"give Maya a point for teamwork": the AI sees "[student 1]", never the nam
   const j = await say(x, 'Give Maya a point for teamwork', { type: 'dashboard', classId: x.A.id });
   // What is kept and shown: the placeholder, not the name; which student it is stays on the server.
   const me = j.chat.turns.at(-1);
-  assert.equal(me.text, 'Give [student 1] a point for teamwork');
+  assert.equal(me.text, `Give ${x.maya.display_name} a point for teamwork`, 'the teacher\'s page: the name back');
   assert.equal(me.meta._who, undefined, 'the page never gets the map');
   const row = q.get("SELECT turns FROM oomba_chats WHERE owner_id=? AND surface='companion'", x.teacher.id);
   assert.deepEqual(JSON.parse(row.turns).find(t => t.role === 'me').meta._who, { 1: [x.maya.id] }, 'kept on the server: ids only');
@@ -115,6 +115,25 @@ test('"give Maya a point for teamwork": the AI sees "[student 1]", never the nam
   assert.equal(bot.change.kind, 'point'); assert.equal(bot.change.canUndo, true);
   assert.deepEqual(bot.change.items.map(i => [i.name, i.word, i.user]), [[x.maya.display_name, 'Teamwork', x.maya.id]]);
   assert.equal(bot.change.items[0].className, 'Room 12 Owls');
+  // On the teacher's page the names come back (the current names on the class list), in their own words and in
+  // Oomba's; what is kept and what the AI got stay the placeholder.
+  const shownMe = (await chatOf(x.tc)).turns.find(t => t.role === 'me');
+  assert.equal(shownMe.text, `Give ${x.maya.display_name} a point for teamwork`);
+  assert.equal(shownMe.meta._who, undefined);
+  const c1 = givesPoint({ target: '[student 1]', reason: 'focus' }, 'Done: [student 1] got a point for focus.');
+  await say(x, 'Maya again, for focus', { type: 'class', classId: x.A.id });
+  assert.equal(c1[0].messages.at(-1).content.split('\n').at(-1), '[student 1] again, for focus', 'the AI still gets only the placeholder');
+  assert.doesNotMatch(JSON.stringify(c1), NAMES);
+  for (const v of [x.maya.id, x.maya.display_name]) assert.ok(!JSON.stringify(c1).includes(v));
+  const shown = (await chatOf(x.tc)).turns;
+  assert.equal(shown.filter(t => t.role === 'me').at(-1).text, `${x.maya.display_name} again, for focus`);
+  assert.equal(shown.at(-1).text, `Done: ${x.maya.display_name} got a point for focus.`, 'a placeholder in Oomba\'s words is dressed too');
+  const kept = q.get("SELECT turns FROM oomba_chats WHERE owner_id=? AND surface='companion'", x.teacher.id).turns;
+  assert.ok(!kept.includes(x.maya.display_name), 'stored with placeholders only');
+  assert.match(kept, /Done: \[student 1\] got a point for focus\./);
+  // Another teacher's page never gets this teacher's names (their own chat; dress only knows their own students).
+  assert.equal(CO.namesIn('Give [student 1] a point', { 1: [x.maya.id] }, new Map()), 'Give [student 1] a point');
+  await post('/api/companion/chat/undo', { turnId: shown.at(-1).id }, x.tc); await CO.settledPosts();
   // The next message: the same student keeps the same number; a new one gets the next.
   const c2 = givesPoint({ target: '[student 2]', reason: 'kindness' });
   await say(x, 'and maya again, then Leo Stone for kindness', { type: 'class', classId: x.A.id });

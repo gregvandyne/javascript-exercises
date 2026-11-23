@@ -545,14 +545,42 @@ export function undoPoints(u, data) {
 }
 /** What the page shows on a point card or a choice card: the names (the student's as on the class list, the class's),
  *  the reason's word and icon, in the teacher's language. Added for the page only, never kept, never sent to the AI. */
+/** The teacher's own students (the classes nameIndex reads): id -> the name the teacher sees on the class list. */
+function ownStudents(u) {
+  const out = new Map();
+  if (!u || u.is_guest) return out;
+  const ids = new Set(S.classesOf(u.id, 'teacher').map(c => c.id));
+  for (const s of S.schoolsOf(u.id)) if (s.role === 'admin') for (const c of S.classesOfSchool(s.id)) ids.add(c.id);
+  for (const id of [...ids].slice(0, 200)) for (const r of S.roster(id)) if (r.role === 'student' && !out.has(r.id)) out.set(r.id, r.display_name);
+  return out;
+}
+/** The placeholders in words, as names: { n: [ids] } -> the names of the teacher's own students ("A or B" when a
+ *  placeholder stands for two); a placeholder whose students aren't the teacher's any more stays as it is. */
+export function namesIn(text, who, own) {
+  return String(text || '').replace(TOKEN, (m, n) => {
+    const names = (who[n] || []).map(id => own.get(id)).filter(Boolean);
+    return names.length ? names.join(' / ') : m;
+  });
+}
 export function dress(u, chat, t) {
   if (!chat || !Array.isArray(chat.turns)) return chat;
+  // The names back in the teacher's own words and in Oomba's (for this page only: what is kept and what the AI gets
+  // stay the placeholders). The page's turns have no meta._who: it is read from the stored conversation.
+  const row = chatRow(u), stored = row ? parse(row.turns, []) || [] : [];
+  const whoOf = new Map(stored.filter(x => x.role === 'me' && x.meta && x.meta._who).map(x => [x.id, x.meta._who]));
+  const all = chatWho(u, row);
+  let own = null;
+  const named = (text, who) => { if (!TOKEN.test(String(text || ''))) return text; TOKEN.lastIndex = 0; own ||= ownStudents(u); return namesIn(text, who, own); };
   const classes = new Map(), kidsOf = new Map();
   const cls = id => { if (!classes.has(id)) { const c = S.getClass(id); classes.set(id, mayPoint(u, c) ? c : null); } return classes.get(id); };
   const kid = (classId, id) => { const c = cls(classId); if (!c) return ''; if (!kidsOf.has(classId)) kidsOf.set(classId, new Map(D.studentsOf(c).map(k => [k.id, k.name]))); return kidsOf.get(classId).get(id) || ''; };
   const word = r => ({ word: t(`dash.w.score.r_${r}`), icon: REASON_ICON[r] || '⭐' });
   const turns = chat.turns.map(x => {
     let y = x;
+    if (x.text && typeof x.text === 'string') {
+      const text = named(x.text, x.role === 'me' ? { ...all, ...(whoOf.get(x.id) || {}) } : all);
+      if (text !== x.text) y = { ...y, text };
+    }
     if (x.change && x.change.kind === 'point') {
       y = { ...y, change: { ...x.change, items: (x.change.items || []).map(it => ({ ...it, ...word(it.reason), name: it.user ? kid(it.classId, it.user) : '', className: (cls(it.classId) || {}).name || '' })) } };
     }
@@ -696,7 +724,8 @@ export function runTool(name, input, ctx) {
       }
       if (!allow(`dash-points:${u.id}`, POINTS_PER_HOUR, 3600e3)) return { result: { error: 'Too many points this hour. Nothing was given.' }, step: { k: 'pointNo' } };
       (ctx.out.points ||= []).push(r.give);
-      return { result: { done: true, to: r.give.user === 'class' ? 'the whole class' : 'one student', reason: r.give.reason, note: 'Given when you answer. The card in the chat shows who got it, with Undo. In your answer, never write a name or a placeholder like [student 1].' }, step: { k: 'point', n: ctx.out.points.length } };
+      const note = r.give.user === 'class' ? 'The whole class gets one point, given when you answer.' : 'One student (not the whole class) gets the point, given when you answer: speak of one student, not of everyone.';
+      return { result: { done: true, to: r.give.user === 'class' ? 'the whole class' : 'one student', reason: r.give.reason, note: `${note} The card in the chat shows who got it, with Undo. In your answer, never write a name or a placeholder like [student 1].` }, step: { k: 'point', n: ctx.out.points.length } };
     }
     case 'editWorksheet': {
       if (ctx.out.points || ctx.out.pick) return { result: { error: 'Change the worksheet in a new message, not with a point.' }, step: { k: 'editNo' } };

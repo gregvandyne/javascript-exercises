@@ -221,7 +221,8 @@ test('names and personal details never reach the AI: taken out before anything i
     const id = F.createWorksheet(boss, {}).id;
     const r = await say(boss, id, { text: 'Make a sheet for Quinn Marsh and bea, email a@b.co' });
     assert.equal(r.status, 200);
-    assert.equal(r.json.chat.turns.at(-1).text, 'Make a sheet for [student 1] and [student 2], email [email]');
+    assert.equal(JSON.parse(q.get("SELECT turns FROM oomba_chats WHERE owner_id=? AND surface='companion'", boss.id).turns).filter(t => t.role === 'me').at(-1).text, 'Make a sheet for [student 1] and [student 2], email [email]');
+    assert.doesNotMatch(r.json.chat.turns.at(-1).text, /Quinn Marsh|\[student/, 'the page shows the current names, not the typed ones');
     await C.allSettled();
     assert.doesNotMatch(JSON.stringify(calls), /Quinn|Marsh|a@b\.co/);
     assert.equal((await say(boss, id, { text: 'x' })).json.code, 'brief');

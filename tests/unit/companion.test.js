@@ -146,7 +146,8 @@ test('a message: names taken out before it is kept or sent; the loop answers wit
     const r = await say(paid, { text: 'Give Quinn Marsh and bea tumble a game for 3rd grade fractions, 10 minutes', page: { type: 'class', classId: cls.id } });
     assert.equal(r.status, 200, JSON.stringify(r.json));
     const me = r.json.chat.turns.at(-1);
-    assert.equal(me.text, 'Give [student 1] and [student 2] a game for 3rd grade fractions, 10 minutes', 'each name a numbered placeholder');
+    assert.equal(JSON.parse(q.get("SELECT turns FROM oomba_chats WHERE owner_id=? AND surface='companion'", paid.id).turns).filter(t => t.role === 'me').at(-1).text, 'Give [student 1] and [student 2] a game for 3rd grade fractions, 10 minutes', 'kept: each name a numbered placeholder');
+    assert.equal(me.text, `Give ${quinn.display_name} and ${bea.display_name} a game for 3rd grade fractions, 10 minutes`, 'the teacher\'s page shows the names');
     assert.equal(me.meta._who, undefined, 'which students the placeholders stand for stays on the server');
     assert.deepEqual(me.meta.page, { type: 'class', classId: cls.id });
     await C.allSettled();
