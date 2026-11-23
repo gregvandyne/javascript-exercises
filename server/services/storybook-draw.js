@@ -12,21 +12,29 @@
 //     check (the one teachers' uploads pass: companion.js screenImage) refuses, is never kept: the same fallback.
 //   - What is kept: the picture as WebP (made_book_pics, kind 'page' | 'sheet'), at most 1600 px wide (the reader and the
 //     print copy), with the fingerprint of what it drew (hash) so the editor can say when a page changed since.
+//   - Google's rate limits (docs/storybook-builder.md "Pictures: rate limits and quota"): a 429 pauses the whole queue
+//     (this process) until Google's retry time (RetryInfo / Retry-After) or an exponential backoff with jitter, then
+//     draws one at a time for a while. The picture goes back to the queue with a not-before time, its attempts not
+//     used, and the editor says "Waiting for Google"; it falls back to the art pack only after PACE.waitMaxMs of
+//     waiting. A quota of zero (billing not enabled on the key's Google project) falls back at once ('notset'), is
+//     logged at most once an hour, and raises one admin alert a day. A call that made no picture is never counted.
 import { spawn } from 'node:child_process';
-import { q, uid, now, today, audit } from '../db.js';
+import { q, uid, now, today, audit, setting } from '../db.js';
 import { config } from '../config.js';
 import { getUser } from '../auth.js';
 import * as aiBudget from './ai-budget.js';
 import { scrub, studentNames } from '../builder/lesson.js';
 import { screenImage as companionScreenImage } from './companion.js';
 import { log } from './log.js';
+import * as Alerts from './admin-alerts.js';
 import * as G from './storybook-gemini.js';
 import * as SB from './storybook.js';
 import { catalog } from './storybook-illustrator.js';
 
 /** Test hook: screenImage(bytes, mime) for the picture check. */
-export const hooks = { screenImage: null };
-export const REASONS = ['nokey', 'resting', 'limit', 'blocked', 'refused', 'error'];
+export const hooks = { screenImage: null, log: null };
+export const REASONS = ['nokey', 'resting', 'limit', 'blocked', 'refused', 'error', 'busy', 'notset'];
+const warn = (msg, fields) => (hooks.log ? hooks.log(msg, fields) : log('warn', msg, fields));
 const NOTE_MAX = 200;
 const fail = (code, x = {}) => ({ ok: false, code, ...x });
 
@@ -60,10 +68,10 @@ const targets = b => [...b.cast.map(c => `cast:${lower(c.name)}`), ...b.pages.fi
 function upsertQueued(row, target, note = '') {
   const t = now();
   return q.run(`INSERT INTO made_book_draws(id, book_id, owner_id, target, state, note, created_at, updated_at) VALUES (?,?,?,?, 'queued', ?, ?, ?)
-    ON CONFLICT(book_id, target) DO UPDATE SET state='queued', reason='', note=excluded.note, attempts=0, updated_at=excluded.updated_at
+    ON CONFLICT(book_id, target) DO UPDATE SET state='queued', reason='', note=excluded.note, attempts=0, not_before=NULL, wait_since=NULL, updated_at=excluded.updated_at
     WHERE made_book_draws.state NOT IN ('queued', 'drawing')`, uid(12), row.id, row.owner_id, target, note, t, t).changes === 1;
 }
-const AGAIN = new Set(['nokey', 'resting', 'limit', 'error']);   // a fallback worth trying again on the next change
+const AGAIN = new Set(['nokey', 'resting', 'limit', 'error', 'busy', 'notset']);   // a fallback worth trying again on the next change
 /**
  * Queue what a book needs drawn after Oomba changed it: character sheets that are new or whose look changed, and page
  * pictures that are new or whose scene changed (or fell back for a reason that may have passed). Pictures of pages and
@@ -119,12 +127,14 @@ export function stateOf(u, row, b = SB.bookOf(row)) {
   const choice = SB.picturesOf(SB.setupOf(row));
   const st = choice === 'ai' ? active() : { on: false, reason: choice }, cap = capOf(u), l = left(u);
   const rows = new Map(q.all('SELECT * FROM made_book_draws WHERE book_id=?', row.id).map(d => [d.target, d]));
-  const one = (d, hash) => (d ? { state: d.state, reason: d.reason || '', pic: d.pic_id || null, stale: !!(d.pic_id && d.hash && d.hash !== hash && d.state !== 'queued' && d.state !== 'drawing'), note: !!d.note } : null);
+  // a picture waiting in the queue while Google asked us to wait says so ('google': "Waiting for Google")
+  const waiting = now() < pace.until;
+  const one = (d, hash) => (d ? { state: d.state, reason: d.state === 'queued' && waiting ? 'google' : d.reason || '', pic: d.pic_id || null, stale: !!(d.pic_id && d.hash && d.hash !== hash && d.state !== 'queued' && d.state !== 'drawing'), note: !!d.note } : null);
   const pages = {}, cast = {};
   for (const p of b.pages) { const x = one(rows.get(`page:${p.id}`), pageHash(row.id, b, p)); if (x) pages[p.id] = x; }
   for (const c of b.cast) { const x = one(rows.get(`cast:${lower(c.name)}`), castHash(c)); if (x) cast[c.name] = x; }
   const all = [...Object.values(pages), ...Object.values(cast)];
-  return { on: st.on, reason: st.on ? (l <= 0 ? 'limit' : null) : st.reason, left: l, cap, pages, cast,
+  return { on: st.on, reason: st.on ? (l <= 0 ? 'limit' : quotaHeld() ? 'notset' : null) : st.reason, left: l, cap, pages, cast,
     total: all.length, done: all.filter(x => x.state === 'done' || x.state === 'fallback').length, busy: all.filter(x => x.state === 'queued' || x.state === 'drawing').length };
 }
 
@@ -133,31 +143,89 @@ let running = 0, recovered = false;
 const waiters = [];
 /** Claim the next picture: character sheets first; a page only once its book's sheets are drawn. Synchronous. */
 function claim() {
+  const t = now();
   return q.get(`UPDATE made_book_draws SET state='drawing', attempts=attempts+1, updated_at=? WHERE id=(
-      SELECT d.id FROM made_book_draws d WHERE d.state='queued' AND (d.target LIKE 'cast:%' OR NOT EXISTS (
+      SELECT d.id FROM made_book_draws d WHERE d.state='queued' AND (d.not_before IS NULL OR d.not_before<=?) AND (d.target LIKE 'cast:%' OR NOT EXISTS (
         SELECT 1 FROM made_book_draws c WHERE c.book_id=d.book_id AND c.target LIKE 'cast:%' AND c.state IN ('queued','drawing')))
-      ORDER BY (d.target LIKE 'cast:%') DESC, d.updated_at LIMIT 1) AND state='queued' RETURNING *`, now()) || null;
+      ORDER BY (d.target LIKE 'cast:%') DESC, d.updated_at LIMIT 1) AND state='queued' RETURNING *`, t, t) || null;
 }
 /** Pictures that were drawing when the server stopped go back in the queue (once, at the first kick). */
 export function recover() {
   recovered = true;
   q.run("UPDATE made_book_draws SET state='queued', updated_at=? WHERE state='drawing'", now());
 }
-/** Start drawing what is queued, up to STORYBOOK_DRAW_AT_ONCE at a time. */
+
+// ---------------------------------------------------------------- pacing: Google's rate limits, process-wide
+/** waitMaxMs: how long one picture may wait for Google before the art pack; slowMs: one at a time for this long after a
+ *  429; quotaHoldMs: after a quota of zero, pictures fall back without asking Google for this long; baseMs/maxMs: the
+ *  backoff when Google gives no retry time; errorMs: the pause before the second try after another failure. */
+export const PACE = { waitMaxMs: 30 * 60e3, slowMs: 10 * 60e3, quotaHoldMs: 10 * 60e3, baseMs: 2e3, maxMs: 5 * 60e3, errorMs: 3e3 };
+const HOUR = 3600e3;
+const pace = { until: 0, slowUntil: 0, streak: 0, quotaAt: 0, quotaLogAt: 0 };
+/** Google said the quota is zero less than PACE.quotaHoldMs ago. */
+const quotaHeld = () => !!pace.quotaAt && now() - pace.quotaAt < PACE.quotaHoldMs;
+export const QUOTA_ALERT_KEY = 'storybook.pictures.quota_alert_day';
+/** The pacing state (tests and the admin). */
+export const paceState = () => ({ ...pace });
+export function _resetPace() { Object.assign(pace, { until: 0, slowUntil: 0, streak: 0, quotaAt: 0, quotaLogAt: 0 }); clearTimeout(wake); wake = null; wakeT = 0; }
+/** Google said 429: the whole queue pauses until its retry time (or an exponential backoff, whichever is later), with
+ *  up to 25% jitter, then draws one at a time for PACE.slowMs. -> the time the queue starts again (ms) */
+function rateLimited(retryMs) {
+  const t = now();
+  const back = Math.min(PACE.maxMs, PACE.baseMs * 2 ** Math.min(pace.streak, 16));
+  const wait = Math.min(PACE.waitMaxMs, Math.max(retryMs || 0, back) * (1 + Math.random() * 0.25));
+  pace.until = Math.max(pace.until, Math.round(t + wait));
+  pace.slowUntil = pace.until + PACE.slowMs;
+  pace.streak++;
+  return pace.until;
+}
+/** Google said the quota is zero (billing not enabled on the key's project): no use asking again for a while. One warn
+ *  line an hour at most, and one admin alert a day. */
+function quotaZero(fields) {
+  const t = now();
+  pace.quotaAt = t;
+  if (!pace.quotaLogAt || t - pace.quotaLogAt >= HOUR) {
+    pace.quotaLogAt = t;
+    warn('storybook pictures: google quota is zero (billing not enabled on the key\'s project?)', { model: G.model(), metric: fields.metric, quota: fields.quotaId, limit: fields.limit });
+  }
+  try {
+    const day = today();
+    if (setting(QUOTA_ALERT_KEY) !== day) {
+      setting(QUOTA_ALERT_KEY, day);
+      Alerts.alert('service', { ref: 'storybook-pictures', summary: 'Book pictures: Google image quota is zero. Turn on billing for the Gemini key\'s Google Cloud project.', url: '/admin' });
+    }
+  } catch { /* an alert never stops the queue */ }
+}
+let wake = null, wakeT = 0;
+/** Kick the queue again at time t (ms), once (the earliest asked for wins). */
+function wakeAt(t) {
+  if (wake && wakeT <= t) return;
+  clearTimeout(wake);
+  wakeT = t;
+  wake = setTimeout(() => { wake = null; wakeT = 0; kick(); }, Math.max(10, t - now()));
+  if (wake.unref) wake.unref();
+}
+/** Start drawing what is queued, up to STORYBOOK_DRAW_AT_ONCE at a time (one at a time for a while after a 429; none
+ *  while Google asked us to wait). Pictures waiting for a not-before time get a timer. */
 export function kick() {
   if (!recovered) recover();
-  while (running < config.storybookDrawAtOnce) {
+  const t = now();
+  if (t < pace.until) { wakeAt(pace.until); return; }
+  const most = t < pace.slowUntil ? 1 : config.storybookDrawAtOnce;
+  while (running < most) {
     const job = claim(); if (!job) break;
     running++;
     drawJob(job).catch(e => { log('warn', 'storybook picture failed', { book: job.book_id, kind: e && e.name }); end(job, 'fallback', 'error'); })
       .finally(() => { running--; kick(); if (!running) waiters.splice(0).forEach(r => r()); });
   }
+  const next = (q.get("SELECT MIN(not_before) t FROM made_book_draws WHERE state='queued' AND not_before>?", t) || {}).t;
+  if (next) wakeAt(Math.max(next, pace.until));
 }
 /** Resolves once nothing is drawing (tests and the screenshots). */
 export const settle = () => new Promise(r => { if (!running) r(); else waiters.push(r); });
 
 function end(job, state, reason = '', extra = {}) {
-  const sets = ['state=?', 'reason=?', 'updated_at=?'], vals = [state, reason, now()];
+  const sets = ['state=?', 'reason=?', 'updated_at=?', 'not_before=NULL', 'wait_since=NULL'], vals = [state, reason, now()];
   for (const [k, v] of Object.entries(extra)) { sets.push(`${k}=?`); vals.push(v); }
   q.run(`UPDATE made_book_draws SET ${sets.join(', ')} WHERE id=? AND state='drawing'`, ...vals, job.id);
 }
@@ -193,16 +261,32 @@ async function drawJob(job) {
     hash = pageHash(row.id, b, p); label = 'page';
   }
   const st = active(); if (!st.on) return end(job, 'fallback', st.reason);
+  // Google said lately that the key's project has no picture quota: the art pack, without asking (or counting) again
+  if (quotaHeld()) return end(job, 'fallback', 'notset');
   if (!SB.take(u, { key: dayKey(), cap: capOf(u) })) return end(job, 'fallback', 'limit');
   const r = await G.generate({ prompt, refs, aspect });
   if (r.usage || r.ok || r.code === 'blocked') aiBudget.recordImage(G.model(), r.usage, r.ok ? 1 : 0);
   if (!r.ok) {
     if (r.code === 'blocked') { audit(u.id, 'storybook.draw.blocked', row.id, { what: label, why: String(r.why || '').slice(0, 40) }); return end(job, 'fallback', 'blocked', { hash }); }
     giveBack(u);   // nothing was made: the picture is not counted
-    log('warn', 'storybook picture model failed', { book: row.id, why: r.why, attempt: job.attempts });
-    if (job.attempts < 2 && r.code !== 'nokey') { q.run("UPDATE made_book_draws SET state='queued', updated_at=? WHERE id=? AND state='drawing'", now(), job.id); return; }
+    // what Google said, in fixed fields only (never the key, never the prompt)
+    warn('storybook picture model failed', { book: row.id, why: r.why, code: r.code, attempt: job.attempts,
+      ...(r.http ? { http: r.http, status: r.gstatus || null, metric: r.metric || null, quota: r.quotaId || null, limit: r.limit, retryMs: r.retryMs } : {}) });
+    if (r.code === 'quota_zero') { quotaZero(r); return end(job, 'fallback', 'notset'); }
+    if (r.code === 'rate_limited') {
+      // back to the queue, its attempt not used, not before the queue starts again; the art pack only after a long wait
+      const until = rateLimited(r.retryMs), since = job.wait_since || now();
+      if (until - since > PACE.waitMaxMs) return end(job, 'fallback', 'busy');
+      q.run("UPDATE made_book_draws SET state='queued', reason='google', attempts=MAX(0, attempts-1), not_before=?, wait_since=?, updated_at=? WHERE id=? AND state='drawing'", until, since, now(), job.id);
+      return;
+    }
+    if (job.attempts < 2 && r.code !== 'nokey') {
+      q.run("UPDATE made_book_draws SET state='queued', not_before=?, updated_at=? WHERE id=? AND state='drawing'", now() + Math.round(PACE.errorMs * (1 + Math.random())), now(), job.id);
+      return;
+    }
     return end(job, 'fallback', r.code === 'nokey' ? 'nokey' : 'error');
   }
+  pace.streak = 0; pace.quotaAt = 0;   // Google answered: the backoff starts small again (and the quota is there)
   let img;
   try { img = await toWebp(r.bytes); } catch { img = null; }
   if (!img) return end(job, 'fallback', 'error', { hash });

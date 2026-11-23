@@ -105,7 +105,14 @@ steps above and the editor's own chat.
 ## The AI
 
 - One call per attempt through `services/ai-call.js` (`callAi`: one time budget, no SDK retries), `config.builderModel`
-  (no model id here), effort low, plain JSON read with `jsonIn`. The AI budget: `anthropic('free')` is null while it
+  (no model id here), effort low (as every drafter in the repo), `max_tokens` 16000. The current Sonnet runs adaptive
+  thinking when `thinking` is left out, and its thinking counts against `max_tokens`, so a long adventure could be cut
+  off before its JSON was complete. The answer is read with `answerJson`: every text block joined (thinking blocks
+  skipped), the JSON object found inside code fences or words, a raw line break or tab inside a string escaped and a
+  trailing comma dropped. An answer that still can't be read is logged (`storybook ai failed`, `kind: bad_json`, with
+  `stop` (the stop reason), `chars`, `outTokens` and `maxTokens`, never its words) and retried once with a message that
+  says what went wrong: cut off at the limit (`stop: max_tokens`) asks for a shorter answer and gives it 24000 tokens;
+  anything else asks for one JSON object only. No made-up `{}` answer is put in the conversation. The AI budget: `anthropic('free')` is null while it
   rests (the turn fails calmly as `resting`), and every call's usage is recorded.
 - The model answers `{ reply, book }` (a first draft or a rewrite) or `{ reply, edits: { title?, cast?, start?, pages,
   remove, after } }` (only the pages that change). A question back with no book changes nothing.
@@ -190,7 +197,8 @@ a real image generator with a kids' book drawing skill, Google's. The skill is o
   (`page:<id>`). Oomba's turns queue what is new or changed (a page whose scene, setting, mood, characters, their looks
   or their sheets changed; a fallback for no key, resting, the limit or an error is tried again); the teacher's words
   alone never redraw a picture. Drawn in this process, `STORYBOOK_DRAW_AT_ONCE` (2) at a time, sheets first; a picture
-  that was drawing when the server stopped goes back in the queue. A network failure is tried once more.
+  that was drawing when the server stopped goes back in the queue. A network failure is tried once more, a few seconds
+  later. Google's rate limits and quota: next section.
 - **Kept like the teacher's uploads**: in `made_book_pics` (`kind` `page` or `sheet`, `mime` `image/webp`), converted
   with ffmpeg to WebP at most 1600 px wide (a 1K picture is 1024 px wide: the reader and the print copy), served to
   whoever may read the book. The reader and the print copy show a kept picture before the art-pack drawing; the
@@ -221,6 +229,37 @@ a real image generator with a kids' book drawing skill, Google's. The skill is o
   drawing, why it fell back, changed since) and **Redraw** with an optional note ("make it a sunny morning": the word
   rules and names check, then scrubbed). The editor asks how drawing is going every few seconds while anything is
   queued. Characters: each one's look and reference picture, with Redraw. The teacher's own upload works as before.
+
+## Pictures: rate limits and quota
+
+Google answers a call it won't take now with HTTP 429 (`RESOURCE_EXHAUSTED`). Before, every picture of a book went out
+at once, each 429 was tried again 100 ms later and then fell back to the art pack, so a book got art-pack pictures only.
+
+- **What Google said** (`storybook-gemini.js readError`): the error body's `error.status`, the quota that was hit
+  (`google.rpc.QuotaFailure`: `quotaMetric`, `quotaId`, `quotaValue`, or `limit: N` in the message) and when to try
+  again (`google.rpc.RetryInfo.retryDelay`, the `Retry-After` header, or "Please retry in Ns" in the message). The warn
+  line `storybook picture model failed` carries `code`, `http`, `status`, `metric`, `quota`, `limit` and `retryMs`; never
+  the key, never the prompt.
+- **`rate_limited`** (any other 429): the whole picture queue in this process pauses until Google's retry time or an
+  exponential backoff (2 s doubling, at most 5 minutes), whichever is later, plus up to 25% jitter; then it draws one
+  picture at a time for 10 minutes. The picture goes back to the queue with `not_before` (migration 0112), its attempt
+  not used, and the editor shows **"Waiting for Google. The picture will appear soon."** under it. It keeps waiting for
+  up to 30 minutes from its first 429 (`wait_since`), then falls back to the art pack (`busy`: "Google was too busy to
+  paint this one... Try Redraw later."). The next change of the book tries it again.
+- **`quota_zero`** (a quota whose limit is 0, or a free-tier quota: image models have no free tier): the key's Google
+  Cloud project has no picture quota, which means billing is not enabled there. No use waiting: the picture falls back
+  at once (`notset`: "Painted pictures aren't set up yet, so this shows the art-pack drawing."), the editor's line says
+  so too, and for 10 minutes pictures fall back without calling Google. One warn line `storybook pictures: google quota
+  is zero (billing not enabled on the key's project?)` at most once an hour, and one admin email alert a day (kind
+  `service`, "Service set-up problems" on /admin/emails).
+- **Never counted**: a call that made no picture (a 429, a network failure) gives the day's picture back.
+
+What the owner checks on Google's side when the log says `quota_zero` (or `rate_limited` all day): in Google AI Studio
+(aistudio.google.com), **API keys** shows the Google Cloud project the key belongs to and its plan ("Free tier" or a paid
+tier); **Set up billing** there (or Google Cloud console, Billing, linked to that project) turns on the paid tier. The
+project's limits per model are on AI Studio's **Rate limit** page, and in Google Cloud console under APIs and Services,
+**Generative Language API**, **Quotas and system limits** (filter by the image model). These names are as of this
+writing and may move.
 
 ## The editor
 
@@ -281,5 +320,5 @@ entry for the lawyer. Nothing a student does is sent to either.
 | `GEMINI_API_KEY` | unset | **Secret.** Turns the picture model on. Set only in the host's dashboard. Unset: the art packs. |
 | `STORYBOOK_IMAGE_MODEL` | `gemini-3.1-flash-image` | The Gemini image model id. |
 | `STORYBOOK_PICTURES_PLAN_PER_DAY` / `STORYBOOK_PICTURES_FREE_PER_DAY` | `40` / `10` | Pictures a teacher may have drawn a UTC day, with / without the Teacher plan. |
-| `STORYBOOK_DRAW_AT_ONCE` | `2` | Pictures drawn at the same time, site-wide (1 to 8). |
+| `STORYBOOK_DRAW_AT_ONCE` | `2` | Pictures drawn at the same time, in this process (1 to 8); 1 for 10 minutes after a 429. |
 | `STORYBOOK_ILLUSTRATOR` | unset | `packs` forces the art-pack drawings even with a key. |

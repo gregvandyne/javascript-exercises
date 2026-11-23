@@ -4496,7 +4496,9 @@
           "limit": "Las imágenes de hoy ya se usaron, así que se muestra el dibujo del paquete.",
           "blocked": "El creador de imágenes no pudo dibujar esta, así que se muestra el dibujo del paquete.",
           "refused": "La nueva imagen no pasó nuestra revisión, así que no se guardó.",
-          "error": "Algo salió mal al dibujar. Prueba Volver a dibujar."
+          "error": "Algo salió mal al dibujar. Prueba Volver a dibujar.",
+          "busy": "Google estaba demasiado ocupado para pintar esta, así que se muestra el dibujo del paquete. Prueba a redibujar más tarde.",
+          "notset": "Las imágenes pintadas aún no están configuradas, así que se muestra el dibujo del paquete."
         },
         "keptOld": "Se queda la imagen anterior.",
         "stale": "Esta página cambió desde que se dibujó su imagen.",
@@ -4508,7 +4510,9 @@
         "look": "Cómo es",
         "sheetAlt": "Imagen de referencia de {name}",
         "lineOwn": "Elegiste poner tus propios dibujos: usa Tu dibujo en cada página.",
-        "lineNone": "Este libro no tiene dibujos."
+        "lineNone": "Este libro no tiene dibujos.",
+        "waitGoogle": "Esperando a Google. La imagen aparecerá pronto.",
+        "lineNotSet": "Las imágenes pintadas aún no están configuradas, así que las imágenes vienen de los paquetes de arte."
       }
     },
     "storybook-read": {

@@ -4496,7 +4496,9 @@
           "limit": "Les images du jour étaient utilisées : voici le dessin du pack.",
           "blocked": "Le créateur d'images n'a pas pu dessiner celle-ci : voici le dessin du pack.",
           "refused": "La nouvelle image n'a pas passé notre vérification : elle n'a pas été gardée.",
-          "error": "Un problème est survenu pendant le dessin. Essayez Redessiner."
+          "error": "Un problème est survenu pendant le dessin. Essayez Redessiner.",
+          "busy": "Google était trop occupé pour peindre celle-ci : voici le dessin du pack. Réessayez plus tard avec Redessiner.",
+          "notset": "Les images peintes ne sont pas encore configurées : voici le dessin du pack."
         },
         "keptOld": "L'image précédente reste.",
         "stale": "Cette page a changé depuis le dessin de son image.",
@@ -4508,7 +4510,9 @@
         "look": "Son apparence",
         "sheetAlt": "Image de référence de {name}",
         "lineOwn": "Vous avez choisi d'ajouter vos propres images : utilisez Votre image sur chaque page.",
-        "lineNone": "Ce livre n'a pas d'images."
+        "lineNone": "Ce livre n'a pas d'images.",
+        "waitGoogle": "En attente de Google. L'image va bientôt apparaître.",
+        "lineNotSet": "Les images peintes ne sont pas encore configurées : les images viennent des packs."
       }
     },
     "storybook-read": {

@@ -54,24 +54,41 @@ export function paint(prompt, { w = 1024, h = 576 } = {}) {
   return png(w, h, px);
 }
 
+/** Google's 429 answer body: 'rate-limited' (a per-minute quota, RetryInfo retryDelay `retry`) or 'quota-zero' (the
+ *  free-tier quota with limit 0: billing not enabled on the key's project). */
+export function googleError(kind, { retry = '2s' } = {}) {
+  const zero = kind === 'quota-zero';
+  const metric = zero ? 'generativelanguage.googleapis.com/generate_content_free_tier_requests' : 'generativelanguage.googleapis.com/generate_content_paid_tier_requests';
+  const quotaId = zero ? 'GenerateRequestsPerDayPerProjectPerModel-FreeTier' : 'GenerateRequestsPerMinutePerProjectPerModel';
+  return { error: { code: 429, status: 'RESOURCE_EXHAUSTED',
+    message: `You exceeded your current quota, please check your plan and billing details.\n* Quota exceeded for metric: ${metric}, limit: ${zero ? 0 : 10}, model: gemini-3.1-flash-image\nPlease retry in ${parseFloat(retry)}s.`,
+    details: [
+      { '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaMetric: metric, quotaId, quotaDimensions: { location: 'global', model: 'gemini-3.1-flash-image' }, quotaValue: zero ? '0' : '10' }] },
+      { '@type': 'type.googleapis.com/google.rpc.Help', links: [{ description: 'Learn more about Gemini API quotas', url: 'https://ai.google.dev/gemini-api/docs/rate-limits' }] },
+      { '@type': 'type.googleapis.com/google.rpc.RetryInfo', retryDelay: retry },
+    ] } };
+}
+
 /**
  * Install the stand-in: G.hooks.generate answers like Google. mode: 'ok' | 'blocked' (a finished candidate with
- * finishReason IMAGE_SAFETY) | 'prompt-blocked' (promptFeedback.blockReason) | 'error' (throws) | fn(body) -> mode.
+ * finishReason IMAGE_SAFETY) | 'prompt-blocked' (promptFeedback.blockReason) | 'error' (throws) | 'rate-limited' |
+ * 'quota-zero' (an HTTP 429 with Google's error body, googleError; retry: the RetryInfo delay) | fn(body) -> mode.
  * -> { calls: [{ body, model, headers }], set(mode), delay(ms) }
  */
-export function fakeGemini(G, { mode = 'ok', delayMs = 0 } = {}) {
-  const st = { calls: [], mode, delayMs };
+export function fakeGemini(G, { mode = 'ok', delayMs = 0, retry = '2s' } = {}) {
+  const st = { calls: [], mode, delayMs, retry };
   G.hooks.generate = async (body, o) => {
     st.calls.push({ body, model: o.model, headers: o.headers });
     if (st.delayMs) await new Promise(r => setTimeout(r, st.delayMs));
     const m = typeof st.mode === 'function' ? st.mode(body) : st.mode;
     const usageMetadata = { promptTokenCount: 600, candidatesTokenCount: m === 'ok' ? 1120 : 0 };
     if (m === 'error') throw new Error('stub network error');
+    if (m === 'rate-limited' || m === 'quota-zero') throw Object.assign(new Error('http 429'), { httpStatus: 429, body: googleError(m, { retry: st.retry }) });
     if (m === 'prompt-blocked') return { promptFeedback: { blockReason: 'SAFETY' }, usageMetadata };
     if (m === 'blocked') return { candidates: [{ finishReason: 'IMAGE_SAFETY', content: { parts: [] } }], usageMetadata };
     const text = body.contents[0].parts[0].text, sq = body.generationConfig.imageConfig.aspectRatio === '1:1';
     const data = paint(text, sq ? { w: 512, h: 512 } : { w: 1024, h: 576 }).toString('base64');
     return { candidates: [{ finishReason: 'STOP', content: { role: 'model', parts: [{ inlineData: { mimeType: 'image/png', data } }] } }], usageMetadata };
   };
-  return { calls: st.calls, set: m => { st.mode = m; }, delay: ms => { st.delayMs = ms; }, off: () => { G.hooks.generate = null; } };
+  return { calls: st.calls, set: m => { st.mode = m; }, retry: r => { st.retry = r; }, delay: ms => { st.delayMs = ms; }, off: () => { G.hooks.generate = null; } };
 }
