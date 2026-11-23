@@ -14122,8 +14122,8 @@
     "chat": {
       "hello": "Laten we een boek maken.",
       "noTheme": "Geen thema",
-      "contextAi": "Typ je ideeën in het vak hieronder en stuur ze, of voeg met de paperclip bestanden en plaatjes toe. Ze gaan in je boek, niet naar de chat. Controleer daarna wat er verstuurd wordt.",
-      "contextUpload": "Plak je verhaal in het vak hieronder en stuur het, of voeg het met de paperclip toe als bestand (plaatjes ook). Het gaat in je boek, niet naar de chat. Controleer daarna wat er verstuurd wordt.",
+      "contextAi": "Typ je ideeën in het vak hieronder en stuur ze, of voeg met de paperclip bestanden en plaatjes toe. Ze gaan in je boek, niet naar de chat. Daarna laat Oomba je precies zien wat er verstuurd wordt.",
+      "contextUpload": "Plak je verhaal in het vak hieronder en stuur het, of voeg het met de paperclip toe als bestand (plaatjes ook). Het gaat in je boek, niet naar de chat. Daarna laat Oomba je precies zien wat er verstuurd wordt.",
       "added": "Aan je boek toegevoegd.",
       "picsN": "{count, plural, one {# plaatje} other {# plaatjes}}",
       "stop": "Stoppen",
@@ -14134,7 +14134,8 @@
       "picGone": "Een plaatje dat je toevoegde, is niet meer bewaard. Voeg het opnieuw toe.",
       "tooManyPics": "Meer plaatjes kan een nieuw boek niet hebben.",
       "tooManyFiles": "Meer bestanden kan een nieuw boek niet hebben.",
-      "fileGone": "Dat bestand is er niet meer. Voeg het opnieuw toe."
+      "fileGone": "Dat bestand is er niet meer. Voeg het opnieuw toe.",
+      "nothingToAdd": "Niets toe te voegen"
     }
   }
 }

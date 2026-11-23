@@ -229,12 +229,13 @@ export function viewOf(d, t) {
   const s = d.setup, st = d.state;
   const known = BOOK_STEPS.filter(k => d.given.includes(k) && !(k === 'endings' && s.kind !== 'cyoa') && !(k === 'theme' && s.source !== 'ai')).map(k => labelOf(t, s, k, s[k]));
   const out = { id: d.id, v: d.v, state: st, known, error: d.error || '', L: {
-    stop: t('storybook.chat.stop'), check: t('storybook.toCheck'), clear: t('storybook.chat.clear'), edit: t('js.storybook-setup.edit'), go: t('storybook.check.go'),
+    stop: t('storybook.chat.stop'), skip: t('storybook.chat.nothingToAdd'), clear: t('storybook.chat.clear'), edit: t('js.storybook-setup.edit'), go: t('storybook.check.go'),
     never: t('storybook.check.never'), privacy: t('storybook.privacy'), checking: t('js.storybook-setup.checking'), stopped: t('storybook.chat.stopped'), started: t('storybook.chat.startedCard'),
   } };
   if (BOOK_STEPS.includes(st)) { out.question = t(QUESTION[st]); out.options = optionsOf(t, s, st); }
   if (st === 'context') {
     out.question = t(s.source === 'upload' ? 'storybook.context.titleUpload' : 'storybook.context.titleAi');
+    out.canSkip = s.source === 'ai';   // Have AI make one may go on with nothing typed; Upload your own book needs its story
     out.hint = t(s.source === 'upload' ? 'storybook.chat.contextUpload' : 'storybook.chat.contextAi');
     const w = words(s.source === 'upload' ? s.story : s.about);
     out.have = [w ? t('js.storybook-setup.words', { count: w }) : '', ...d.files.map(f => f.name), d.pics.length ? t('storybook.chat.picsN', { count: d.pics.length }) : ''].filter(Boolean);

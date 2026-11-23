@@ -1465,6 +1465,7 @@ async function bookAct(u, row, turn, a, value) {
     const n = JSON.parse(JSON.stringify(d));
     const why = BK.attach(u, n, fileOf(u, value));
     if (why) return oops(`storybook.chat.${why}`);
+    n.ctxDone = true; n.state = BK.needOf(n);   // a file or picture added: straight on to the check
     n.v = (d.v || 1) + 1; n.error = ''; n.check = null;
     if (n.state === 'check') return save(await BK.runCheck(u, n));
     return save(n);
@@ -1497,7 +1498,7 @@ export function newBook(u, { lang = 'en' } = {}) {
  *  to the AI. Their message shows in the chat; a fresh card (with what it has now) follows. -> the conversation | null */
 function bookWords(u, body) {
   const open = SB.canMake(u) ? openDraft(u) : null;
-  if (!open || open.d.id !== body.book || open.d.state !== 'context') return null;
+  if (!open || open.d.id !== body.book || (open.d.state !== 'context' && open.d.state !== 'check')) return null;   // at the check: added, checked again
   const text = tokenize(u, wordsOf(body.text)).text.trim();
   if (text.length < 2) return { ok: false, code: 'brief' };
   if (wordsProblem(text)) return { ok: false, code: 'words' };
@@ -1505,6 +1506,9 @@ function bookWords(u, body) {
   BK.addWords(n, text);
   const f = typeof body.file === 'string' && body.file ? fileOf(u, body.file) : null;
   if (f) BK.attach(u, n, f);
+  // Their words go straight on to the check (no "Check" button; the owner, 23 Nov 2026): the card that follows is the
+  // check card, which checks itself once (public/js/companion.js autoCheck). Edit on it brings the words back.
+  n.ctxDone = true; n.check = null; n.state = BK.needOf(n);
   n.v = (n.v || 1) + 1; n.error = '';
   const lang = typeof body.lang === 'string' ? body.lang : 'en';
   return C.addTurn(u, SURFACE, KEY, {

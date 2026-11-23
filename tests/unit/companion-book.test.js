@@ -135,6 +135,8 @@ test('"make a book": every card; your words and files go into the book, never to
   assert.equal(c.b.options[0].label, 'Upload your own book'); assert.equal(c.b.options[1].label, 'Have AI make one');
   c = await pickAll(u, ['upload', 'linear', '2', 'short', 'growing', 'ai']);
   assert.equal(c.b.state, 'context', 'upload: no theme step');
+  assert.equal(c.b.canSkip, false, 'Upload your own book: no Nothing to add, the story is needed');
+  assert.equal(c.b.L.check, undefined, 'no Check button');
   // Check before a story: the page's own rule
   c = card((await act(u, c.turn, 'bookCheck')).json.chat);
   assert.equal(c.b.ok, false); assert.ok(c.b.notes.some(n => /add your story/.test(n.text)));
@@ -148,13 +150,15 @@ test('"make a book": every card; your words and files go into the book, never to
   assert.equal(calls.length, n0, 'never to the chat\'s AI');
   assert.doesNotMatch(JSON.stringify(w.json.chat), /Quinn|Marsh/);
   c = card(w.json.chat);
-  assert.equal(c.b.state, 'context'); assert.ok(c.b.have.some(h => /words/.test(h)));
-  // a document attached: its text goes in too (the companion's upload, the Builder's lesson reader)
+  // No Check button (the owner, 23 Nov 2026): the words go straight on to the check card, which checks itself once
+  // (public/js/companion.js autoCheck posts bookCheck, as here); the card at Your words has no Check button.
+  assert.equal(c.b.state, 'check', 'words sent: straight on to the check'); assert.ok(!c.b.rows, 'checked by the page itself');
+  c = card((await act(u, c.turn, 'bookCheck')).json.chat);
+  assert.equal(c.b.state, 'check'); assert.equal(c.b.ok, true);
+  // a document attached: its text goes in too (the companion's upload, the Builder's lesson reader), checked again
   const f = await as(u)('/api/companion/file?name=more.txt', { raw: Buffer.from('The seed became a sunflower and fed the birds in winter.') });
   assert.equal(f.status, 200, f.text);
   c = card((await act(u, c.turn, 'bookFile', f.json.file.id)).json.chat);
-  assert.ok(c.b.have.includes('more.txt'));
-  c = card((await act(u, c.turn, 'bookCheck')).json.chat);
   assert.equal(c.b.state, 'check'); assert.equal(c.b.ok, true);
   const sent = c.b.rows.find(x => x.label === 'Your story').text;
   assert.match(sent, /\[student\] found a tiny seed/); assert.match(sent, /sunflower/);
@@ -180,7 +184,7 @@ test('a picture attached goes on the book\'s first page through the page\'s own 
   const img = await as(u)('/api/companion/image?name=fox.jpg', { raw: jpeg, type: 'image/jpeg' });
   assert.equal(img.status, 200, img.text);
   c = card((await act(u, c.turn, 'bookFile', img.json.file.id)).json.chat);
-  assert.ok(c.b.have.some(h => /1 picture/.test(h)));
+  assert.equal(c.b.state, 'check', 'a picture added: straight on to the check');
   c = card((await act(u, c.turn, 'bookCheck')).json.chat);
   assert.match(c.b.rows.find(x => x.label === 'Your pictures').value, /^1 picture/);
   const s = await act(u, c.turn, 'bookStart'); assert.equal(s.status, 200, s.text);

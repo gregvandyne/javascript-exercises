@@ -14121,8 +14121,8 @@
     "chat": {
       "hello": "Faisons un livre.",
       "noTheme": "Sans thème",
-      "contextAi": "Écrivez vos idées dans la zone ci-dessous et envoyez-les, ou joignez des fichiers et des images avec le trombone. Ils vont dans votre livre, pas dans la discussion. Vérifiez ensuite ce qui sera envoyé.",
-      "contextUpload": "Collez votre histoire dans la zone ci-dessous et envoyez-la, ou joignez-la en fichier avec le trombone (des images aussi). Elle va dans votre livre, pas dans la discussion. Vérifiez ensuite ce qui sera envoyé.",
+      "contextAi": "Écrivez vos idées dans la zone ci-dessous et envoyez-les, ou joignez des fichiers et des images avec le trombone. Ils vont dans votre livre, pas dans la discussion. Oomba vous montre ensuite exactement ce qui sera envoyé.",
+      "contextUpload": "Collez votre histoire dans la zone ci-dessous et envoyez-la, ou joignez-la en fichier avec le trombone (des images aussi). Elle va dans votre livre, pas dans la discussion. Oomba vous montre ensuite exactement ce qui sera envoyé.",
       "added": "Ajouté à votre livre.",
       "picsN": "{count, plural, one {# image} other {# images}}",
       "stop": "Arrêter",
@@ -14133,7 +14133,8 @@
       "picGone": "Une image que vous avez ajoutée n'est plus gardée. Ajoutez-la à nouveau.",
       "tooManyPics": "Un nouveau livre ne peut pas prendre plus d'images.",
       "tooManyFiles": "Un nouveau livre ne peut pas prendre plus de fichiers.",
-      "fileGone": "Ce fichier n'est plus là. Joignez-le à nouveau."
+      "fileGone": "Ce fichier n'est plus là. Joignez-le à nouveau.",
+      "nothingToAdd": "Rien à ajouter"
     }
   }
 }

@@ -428,7 +428,7 @@ function start() {
 
   // ---------------------------------------------------------------- the book maker (services/companion-book.js)
   /** The card of the book being set up, when it is the newest turn and waits for the teacher's own words. */
-  const bookTurn = (c = chat.state().chat) => { const last = [...(c.turns || [])].reverse().find(x => x.role === 'oomba'); const b = last && last.note && last.note.book; return b && b.state === 'context' && (c.turns || [])[c.turns.length - 1] === last ? last : null; };
+  const bookTurn = (c = chat.state().chat) => { const last = [...(c.turns || [])].reverse().find(x => x.role === 'oomba'); const b = last && last.note && last.note.book; return b && (b.state === 'context' || b.state === 'check') && (c.turns || [])[c.turns.length - 1] === last ? last : null; };   // at the check too: more words or files still go into the book
   const bookMode = () => { const x = bookTurn(); return x && S.bookOff !== x.note.book.id ? x.note.book.id : null; };
   function drawBookMode() {
     const el = $('oc-bookmode'); if (!el) return;
@@ -463,7 +463,7 @@ function start() {
     if (b.state === 'context') {
       const have = b.have.length ? `<ul class="oc-bhave">${b.have.map(h => `<li>${ic('✓', 14)} <span dir="auto">${esc(h)}</span></li>`).join('')}</ul>` : '';
       return `<div class="oc-ask oc-book">${known}<p class="oc-askq">${esc(b.question)}</p><p class="oc-bhint">${esc(b.hint)}</p>${have}<p class="oc-bnote">${ic('🔒', 14)} ${esc(b.L.privacy)}</p>${err}
-        <div class="oc-acts">${btn('bookCheck', b.L.check, { primary: true })}${b.have.length ? btn('bookClear', b.L.clear) : ''}${stop}</div></div>`;
+        <div class="oc-acts">${b.canSkip ? btn('bookCheck', b.L.skip) : ''}${b.have.length ? btn('bookClear', b.L.clear) : ''}${stop}</div></div>`;
     }
     // check
     if (!b.rows) return `<div class="oc-ask oc-book"><p class="oc-askq">${esc(b.title)}</p><p class="oc-hsub">${esc(b.L.checking)}</p></div>`;
