@@ -86,9 +86,12 @@ const SAFETY = ['HARM_CATEGORY_HARASSMENT', 'HARM_CATEGORY_HATE_SPEECH', 'HARM_C
  * inlineData), the answer asked for as an image only, the aspect ratio and size, and the strictest safety settings.
  * refs: [{ label, mime, bytes }]
  */
-export function requestBody({ prompt, refs = [], aspect = '16:9' }) {
+export function requestBody({ prompt, refs = [], aspect = '16:9', plain = false }) {
   const parts = [{ text: prompt }];
   refs.forEach((r, i) => parts.push({ text: `Reference picture ${i + 1}: ${clean(r.label)}.` }, { inlineData: { mimeType: r.mime, data: Buffer.from(r.bytes).toString('base64') } }));
+  // plain: the smallest request the model surely takes (both kinds of answer, only the aspect ratio, Google's default
+  // safety settings); used once Google refuses the full one as INVALID_ARGUMENT (see generate).
+  if (plain) return { contents: [{ role: 'user', parts }], generationConfig: { responseModalities: ['TEXT', 'IMAGE'], imageConfig: { aspectRatio: aspect } } };
   return {
     contents: [{ role: 'user', parts }],
     generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: aspect, imageSize: '1K' } },
@@ -138,7 +141,9 @@ export function readError(status, j, headers = null) {
   const limit = quota.quotaValue != null && quota.quotaValue !== '' ? String(quota.quotaValue) : limitM ? limitM[1] : null;
   const metric = short(quota.quotaMetric || (/metric:\s*([\w./-]+)/i.exec(msg) || [])[1] || '');
   const quotaId = short(quota.quotaId || '');
-  const out = { ok: false, http: status, gstatus: short(e.status, 40), metric, quotaId, limit, retryMs, why: `http ${status}` };
+  // Google's own words (cleaned, cut short; they name the field it refused, never the key or the prompt) for the log.
+  const gmsg = String(msg).replace(/AIza[\w-]{20,}/g, '[key]').replace(/[^\w.,:;'"()\[\]/@=+ -]+/g, ' ').trim().slice(0, 240);
+  const out = { ok: false, http: status, gstatus: short(e.status, 40), gmsg, metric, quotaId, limit, retryMs, why: `http ${status}` };
   if (status === 429 || e.status === 'RESOURCE_EXHAUSTED') {
     const zero = limit === '0' || /free_?tier/i.test(`${metric} ${quotaId}`) || /limit:\s*0\b/.test(msg);
     return { ...out, code: zero ? 'quota_zero' : 'rate_limited' };
@@ -150,19 +155,24 @@ export function readError(status, j, headers = null) {
 
 /** Ask Google for one picture. -> readAnswer's result, or { ok: false, code: 'error' | 'nokey' | 'rate_limited' |
  *  'quota_zero', why, ... } (nothing came back; readError's fields for an HTTP error). */
-export async function generate({ prompt, refs = [], aspect = '16:9' }) {
-  const body = requestBody({ prompt, refs, aspect });
+// What this process learned from Google's refusals (production, 23 Nov 2026: every call came back 400 INVALID_ARGUMENT):
+// plain: the full request was refused, so the plain one is used; alt: the model id was not found, so its '-preview'
+// twin (or the id without it) is used. Kept until a restart; reset() for tests.
+const learned = { plain: false, alt: null };
+export function resetLearned() { learned.plain = false; learned.alt = null; }
+const twin = id => (/-preview$/.test(id) ? id.replace(/-preview$/, '') : `${id}-preview`);
+/** One call. -> { ok, ... } as readAnswer / readError. */
+async function once(body, id) {
   if (hooks.generate) {
-    try { return readAnswer(await hooks.generate(body, { model: model(), headers: { 'x-goog-api-key': 'stub' } })); } catch (e) {
+    try { return readAnswer(await hooks.generate(body, { model: id, headers: { 'x-goog-api-key': 'stub' } })); } catch (e) {
       // the stand-in answers an HTTP error by throwing { httpStatus, body, headers }
       if (e && e.httpStatus) return readError(e.httpStatus, e.body, e.headers || null);
       return { ok: false, code: 'error', why: String(e && e.message || e).slice(0, 80) };
     }
   }
-  if (!config.geminiKey) return { ok: false, code: 'nokey', why: 'no key' };
   let res;
   try {
-    res = await fetch(`${API}/models/${encodeURIComponent(model())}:generateContent`, {
+    res = await fetch(`${API}/models/${encodeURIComponent(id)}:generateContent`, {
       method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': config.geminiKey },
       body: JSON.stringify(body), signal: AbortSignal.timeout(TIMEOUT_MS),
     });
@@ -170,4 +180,22 @@ export async function generate({ prompt, refs = [], aspect = '16:9' }) {
   const j = await res.json().catch(() => null);
   if (!res.ok) return readError(res.status, j, res.headers);
   return readAnswer(j);
+}
+export async function generate({ prompt, refs = [], aspect = '16:9' }) {
+  if (!hooks.generate && !config.geminiKey) return { ok: false, code: 'nokey', why: 'no key' };
+  const id = () => learned.alt || model();
+  let r = await once(requestBody({ prompt, refs, aspect, plain: learned.plain }), id());
+  // The model id unknown (404): try its twin with or without '-preview' once, and keep whichever works.
+  if (!r.ok && r.http === 404 && !learned.alt) {
+    const t = twin(model());
+    const r2 = await once(requestBody({ prompt, refs, aspect, plain: learned.plain }), t);
+    if (r2.ok || r2.http !== 404) { learned.alt = t; r = r2; }
+  }
+  // The request refused as INVALID_ARGUMENT (a field this model does not take): the plain request once, kept if it works.
+  if (!r.ok && r.http === 400 && r.code === 'error' && !learned.plain) {
+    const r2 = await once(requestBody({ prompt, refs, aspect, plain: true }), id());
+    if (r2.ok || r2.http !== 400) learned.plain = true;
+    if (r2.ok || r2.http !== 400) r = r2; else r = { ...r2, gmsgFull: r.gmsg };
+  }
+  return r;
 }
