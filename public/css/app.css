@@ -1792,9 +1792,14 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 @media (max-width:480px){.mehead>.btn,.mehead>a.btn{flex:1 1 100%}}
 
 /* Sign in: the password box with its Show button beside it. */
-.pw-row{display:flex;gap:var(--s2);align-items:stretch}
-.pw-row .input{flex:1 1 auto;min-width:0}
-.pw-toggle{flex:none;white-space:nowrap}
+.pw-row{position:relative;display:block}
+.pw-row .input{width:100%;padding-inline-end:52px}
+/* Show / hide password: a plain eye inside the field, not a button box. The label stays for screen readers (font-size 0). */
+.pw-row .pw-toggle{position:absolute;top:50%;translate:0 -50%;inset-inline-end:4px;margin:0;width:44px;height:44px;min-height:0;padding:0;border:0;border-radius:50%;background:none;box-shadow:none;color:var(--muted);font-size:0;line-height:0;display:grid;place-items:center;transform:none}
+.pw-row .pw-toggle::before{content:"";position:absolute;inset:0;margin:auto;width:22px;height:22px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E") center/contain no-repeat}
+.pw-row .pw-toggle[aria-pressed="true"]::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.6 5.1A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-2.6 3.6M6.6 6.6C3.7 8.4 2 12 2 12s3.6 7 10 7c1.9 0 3.6-.6 5-1.5M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.6 5.1A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-2.6 3.6M6.6 6.6C3.7 8.4 2 12 2 12s3.6 7 10 7c1.9 0 3.6-.6 5-1.5M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18'/%3E%3C/svg%3E")}
+.pw-row .pw-toggle:hover{color:var(--text);background:none}
+.pw-row .pw-toggle:active{transform:none;box-shadow:none}
 /* A lesson step's "Read to me" sits at the end of the step's heading row. */
 .sc-read{margin-inline-start:auto}
 .lp-about{font-size:1rem;margin:0 0 var(--s1)}
