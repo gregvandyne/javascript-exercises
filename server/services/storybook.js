@@ -408,6 +408,45 @@ export function changeMessage(b, text, history = []) {
 }
 
 // ---------------------------------------------------------------- the AI: the answer, checked
+/** The answer's JSON object from the model's text: as it is, inside code fences or words, or with the slips a long
+ *  JSON answer can have (a raw line break or tab inside a string, a comma before a closing bracket). Throws SyntaxError
+ *  when there is no complete object (an answer cut off at the length limit). */
+export function answerJson(text) {
+  const t = String(text || '');
+  try { return jsonIn(t); } catch { /* look closer */ }
+  const a = t.indexOf('{');
+  if (a < 0) throw new SyntaxError('no JSON object');
+  // the first complete object, read with strings in mind; raw control characters inside strings are escaped
+  let depth = 0, inStr = false, esc = false, out = '', end = -1;
+  for (let i = a; i < t.length; i++) {
+    const ch = t[i];
+    if (inStr) {
+      if (esc) { esc = false; out += ch; continue; }
+      if (ch === '\\') { esc = true; out += ch; continue; }
+      if (ch === '"') { inStr = false; out += ch; continue; }
+      if (ch === '\n') { out += '\\n'; continue; }
+      if (ch === '\r') { out += '\\r'; continue; }
+      if (ch === '\t') { out += '\\t'; continue; }
+      out += ch < ' ' ? ' ' : ch;
+      continue;
+    }
+    if (ch === '"') inStr = true;
+    else if (ch === '{' || ch === '[') depth++;
+    else if (ch === '}' || ch === ']') depth--;
+    out += ch;
+    if (depth === 0) { end = i; break; }
+  }
+  if (end < 0) throw new SyntaxError('the JSON object is not complete');
+  return JSON.parse(out.replace(/,(\s*[}\]])/g, '$1'));
+}
+/** The model's answer text: every text block, in order (thinking blocks are not the answer). */
+const answerText = res => ((res && res.content) || []).filter(c => c && c.type === 'text').map(c => c.text || '').join('');
+/** What to tell the model when its answer could not be read (sent with the retry). */
+function unreadable(stop) {
+  return stop === 'max_tokens'
+    ? 'Your last answer was cut off at the length limit before the JSON was complete, so nothing could be used. Send the whole answer again as ONE complete JSON object, shorter: keep each page\'s words, each "scene" and each "look" brief, and think only briefly.'
+    : 'Your last answer could not be read as one JSON object. Send the whole answer again as ONE JSON object only: no code fences and no words before or after it, every double quote inside a string escaped as \\" and no line breaks inside strings.';
+}
 /** The model's answer -> { reply, book: the whole new book (unchecked) | null (a question, nothing changed) }. Throws
  *  SyntaxError when there is neither. */
 export function readAnswer(raw, current) {
@@ -456,6 +495,9 @@ function placePics(row, b) {
   b.pages.forEach((p, i) => { if (pics[i]) p.upload = pics[i]; });
 }
 
+/** The answer's room (output tokens, the model's thinking included), and the room for a retry after an answer was cut off
+ *  at the limit (the call has a time budget, services/ai-call.js, so not more). */
+export const MAX_TOKENS = 16000, MAX_TOKENS_RETRY = 24000;
 /**
  * One Oomba turn's book: the model (or the stand-in without a key), checked, sent back once with its problems, then
  * repaired. -> { reply, book | null, repaired } | { failed: 'resting' | 'timeout' | 'busy' | 'error' | 'unsafe' }
@@ -469,23 +511,34 @@ export async function writeBook(u, row, { text, history = [] }) {
   const messages = [{ role: 'user', content: first ? draftMessage(setup) : changeMessage(cur, text, history) }];
   const client = hooks.create ? { messages: { create: hooks.create } } : config.anthropicKey ? anthropic('free') : null;
   if (!client && config.anthropicKey) return { failed: 'resting' };
-  let last = null;
+  let last = null, maxTokens = MAX_TOKENS;
   for (let attempt = 1; attempt <= 2; attempt++) {
     let raw;
     if (client) {
       const t0 = Date.now();
+      let res;
       try {
-        const res = await callAi(client, { model: config.builderModel, max_tokens: 16000, output_config: { effort: 'low' }, system, messages: [...messages] }, { timeoutMs: 150e3 });
-        if (res && res.usage) aiBudget.recordUsage(res.model || config.builderModel, res.usage);
-        if (res && res.stop_reason === 'refusal') return { failed: 'unsafe' };
-        const block = ((res && res.content) || []).find(c => c.type === 'text');
-        raw = jsonIn(block ? block.text : '');
-        messages.push({ role: 'assistant', content: block ? block.text : '{}' });
+        // effort low, as every drafter here (services/ai-call.js callers); the model's adaptive thinking counts against
+        // max_tokens, so a long adventure plus its thinking can reach the limit: see the max_tokens retry below
+        res = await callAi(client, { model: config.builderModel, max_tokens: maxTokens, output_config: { effort: 'low' }, system, messages: [...messages] }, { timeoutMs: 150e3 });
       } catch (e) {
-        const kind = logAiFail('storybook ai failed', { book: row.id, attempt }, e, t0);
-        if (kind === 'bad_json' && attempt === 1) { messages.push({ role: 'assistant', content: '{}' }, { role: 'user', content: 'That was not one JSON object. Send the answer again as ONE JSON object only.' }); continue; }
-        return { failed: last && last.book ? 'error' : fallbackReason(kind) };
+        return { failed: last && last.book ? 'error' : fallbackReason(logAiFail('storybook ai failed', { book: row.id, attempt }, e, t0)) };
       }
+      if (res && res.usage) aiBudget.recordUsage(res.model || config.builderModel, res.usage);
+      if (res && res.stop_reason === 'refusal') return { failed: 'unsafe' };
+      const out = answerText(res), stop = (res && res.stop_reason) || null;
+      try { raw = answerJson(out); } catch (e) {
+        // why it could not be read, for the log: how the answer ended and how long it was (never its words)
+        logAiFail('storybook ai failed', { book: row.id, attempt, stop, chars: out.length, outTokens: (res && res.usage && res.usage.output_tokens) || null, maxTokens }, e, t0);
+        if (attempt === 1) {
+          // cut off at the limit: more room, and asked for a shorter answer; either way the retry says what went wrong
+          if (stop === 'max_tokens') maxTokens = MAX_TOKENS_RETRY;
+          messages.push({ role: 'user', content: unreadable(stop) });
+          continue;
+        }
+        return { failed: 'error' };
+      }
+      messages.push({ role: 'assistant', content: out });
     } else raw = first ? mockDraft(setup) : mockChange(cur, text);
     let a;
     try { a = readAnswer(raw, cur); } catch { a = null; }

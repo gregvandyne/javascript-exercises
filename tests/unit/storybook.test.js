@@ -17,6 +17,7 @@ import * as C from '../../server/services/oomba-chat.js';
 import * as CORE from '../../public/js/storybook-core.js';
 import { BY_CLASS } from '../../server/services/school-delete.js';
 import { deleteAccount } from '../../server/services/account-delete.js';
+import * as AI from '../../server/services/ai-call.js';
 
 const answer = obj => ({ content: [{ type: 'text', text: typeof obj === 'string' ? obj : JSON.stringify(obj) }], usage: { input_tokens: 10, output_tokens: 10 }, model: 'test' });
 const pic = (chars = []) => ({ world: 'wild-woods', mood: 'bright', chars, props: ['oak'] });
@@ -155,6 +156,57 @@ test('kid safety: words that fail the Story Builder rules or the classifier go b
   fake((p, n) => answer({ reply: 'Ok', book: n === 1 ? { ...ADV, cast: [{ name: 'Mia', art: 'fox' }], pages: ADV.pages.map(pg => ({ ...pg, pic: pic() })) } : ADV }));
   id = await start();
   assert.match(calls[1].params.messages.at(-1).content, /name of a real child/);
+});
+
+test('answerJson: the answer inside code fences or words, raw line breaks in strings, a trailing comma; a cut-off answer throws', () => {
+  const o = { reply: 'Hi', book: { title: 'T' } };
+  assert.deepEqual(SB.answerJson('```json\n' + JSON.stringify(o) + '\n```'), o);
+  assert.deepEqual(SB.answerJson('Here is the book:\n```json\n' + JSON.stringify(o) + '\n```\nI hope you like it {smile}.'), o);
+  assert.deepEqual(SB.answerJson('Sure! ' + JSON.stringify(o) + ' Enjoy {the} book.'), o);
+  assert.deepEqual(SB.answerJson('{"reply": "Line one\nline two\tend", "book": {"title": "T",},}'), { reply: 'Line one\nline two\tend', book: { title: 'T' } });
+  assert.deepEqual(SB.answerJson('{"reply": "a } inside \\" quotes", "book": null} trailing words }'), { reply: 'a } inside " quotes', book: null });
+  assert.throws(() => SB.answerJson('{"reply": "Here", "book": {"title": "The Ber'), SyntaxError);
+  assert.throws(() => SB.answerJson('I cannot write that.'), SyntaxError);
+});
+
+test('the model\'s answer: fences and words around the JSON are read; several text blocks are joined; thinking blocks are skipped', async () => {
+  const text = 'Here is your adventure!\n```json\n' + JSON.stringify({ reply: 'Here it is.', book: ADV }) + '\n```';
+  fake(() => ({ content: [{ type: 'thinking', thinking: '' }, { type: 'text', text: text.slice(0, 50) }, { type: 'text', text: text.slice(50) }], stop_reason: 'end_turn', usage: { input_tokens: 10, output_tokens: 10 }, model: 'test' }));
+  const id = await start();
+  assert.equal(calls.length, 1, 'read the first time, no retry');
+  assert.equal((await call(`/api/library/make/${id}`, { user: teacher })).json.book.pages.length, 4);
+});
+
+test('an answer cut off at max_tokens: logged with how it ended, retried with more room and asked to be shorter; unreadable twice fails calmly', async () => {
+  const lines = []; AI.hooks.log = (msg, f) => lines.push({ msg, ...f });
+  try {
+    const whole = JSON.stringify({ reply: 'Here it is.', book: ADV });
+    fake((p, n) => (n === 1
+      ? { content: [{ type: 'thinking', thinking: '' }, { type: 'text', text: whole.slice(0, 120) }], stop_reason: 'max_tokens', usage: { input_tokens: 10, output_tokens: 16000 }, model: 'test' }
+      : answer({ reply: 'Here it is.', book: ADV })));
+    const id = await start();
+    assert.equal(calls.length, 2);
+    assert.equal(calls[0].params.max_tokens, SB.MAX_TOKENS); assert.equal(calls[1].params.max_tokens, SB.MAX_TOKENS_RETRY);
+    assert.ok(SB.MAX_TOKENS_RETRY > SB.MAX_TOKENS);
+    const retry = calls[1].params.messages;
+    assert.equal(retry.at(-1).role, 'user'); assert.match(retry.at(-1).content, /cut off at the length limit/); assert.match(retry.at(-1).content, /shorter/);
+    assert.ok(!retry.some(m => m.role === 'assistant' && m.content === '{}'), 'no made-up "{}" answer in the conversation');
+    const bad = lines.find(l => l.kind === 'bad_json');
+    assert.ok(bad, JSON.stringify(lines));
+    assert.equal(bad.stop, 'max_tokens'); assert.equal(bad.chars, 120); assert.equal(bad.outTokens, 16000); assert.equal(bad.attempt, 1);
+    assert.doesNotMatch(JSON.stringify(bad), /Berry|Pip/, 'never the answer\'s words');
+    assert.equal((await call(`/api/library/make/${id}`, { user: teacher })).json.book.pages.length, 4, 'the second answer is used');
+    // words with no JSON at all, twice: the retry says what was wrong, then the turn fails with nothing saved
+    lines.length = 0;
+    fake(() => ({ content: [{ type: 'text', text: 'I would love to write this book for you!' }], stop_reason: 'end_turn', usage: { input_tokens: 10, output_tokens: 10 }, model: 'test' }));
+    const id2 = await start();
+    assert.equal(calls.length, 2); assert.equal(calls[1].params.max_tokens, SB.MAX_TOKENS);
+    assert.match(calls[1].params.messages.at(-1).content, /could not be read as one JSON object/);
+    assert.deepEqual(lines.map(l => [l.kind, l.stop, l.attempt]), [['bad_json', 'end_turn', 1], ['bad_json', 'end_turn', 2]]);
+    const chat = (await call(`/api/library/make/${id2}/chat`, { user: teacher })).json.chat;
+    assert.equal(chat.turns.at(-1).failed, 'error');
+    assert.equal((await call(`/api/library/make/${id2}`, { user: teacher })).json.book.pages.length, 0);
+  } finally { AI.hooks.log = null; }
 });
 
 test('a change: only the pages Oomba touched change, the teacher\'s edits made meanwhile stay, and Undo puts back only what is still as Oomba left it', async () => {

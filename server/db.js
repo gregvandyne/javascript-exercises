@@ -1312,6 +1312,13 @@ export const MIGRATIONS = [
       attempts INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, UNIQUE (book_id, target));
     CREATE INDEX IF NOT EXISTS idx_made_book_draws_state ON made_book_draws(state, created_at);
     CREATE INDEX IF NOT EXISTS idx_made_book_draws_owner ON made_book_draws(owner_id);`],
+  // Book pictures and Google's rate limits (services/storybook-draw.js; docs/storybook-builder.md "Pictures: rate limits
+  // and quota"): a picture Google answered with a 429 goes back to the queue with not_before (ms: not tried before then)
+  // and wait_since (ms: when it first had to wait), so it is tried again later without using up its attempts, and falls
+  // back to the art pack only once it has waited too long.
+  ['0112_storybook_draw_wait', `
+    ALTER TABLE made_book_draws ADD COLUMN not_before INTEGER;
+    ALTER TABLE made_book_draws ADD COLUMN wait_since INTEGER;`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

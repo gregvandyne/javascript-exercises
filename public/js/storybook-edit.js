@@ -71,6 +71,7 @@ function drawDrawLine() {
   if (!DR.on) text = DR.reason === 'own' ? t('js.storybook-edit.draw.lineOwn') : DR.reason === 'none' ? t('js.storybook-edit.draw.lineNone') : DR.reason === 'resting' ? t('js.storybook-edit.draw.lineResting') : DR.total ? t('js.storybook-edit.draw.lineOff') : '';
   else if (DR.busy) { icon = '🎨'; text = t('js.storybook-edit.draw.lineBusy', { done: DR.done, total: DR.total }); }
   else if (DR.reason === 'limit') text = t('js.storybook-edit.draw.lineLimit', { count: DR.cap });
+  else if (DR.reason === 'notset') text = t('js.storybook-edit.draw.lineNotSet');
   else { icon = '✨'; text = t('js.storybook-edit.draw.lineOn', { count: DR.left }); }
   el.hidden = !text || !B.pages.length;
   el.innerHTML = text ? `${iconHtml(icon, { size: 16 })} ${esc(text)}` : '';
@@ -78,7 +79,7 @@ function drawDrawLine() {
 /** One picture's state under it (a page or a character's reference picture), and its Redraw button. */
 function drawState(d, { target, has }) {
   const out = [];
-  if (busy(d)) out.push(`<p class="sb-dstate is-busy">${iconHtml(d.state === 'drawing' ? '🎨' : '⏳', { size: 16 })} ${esc(t(`js.storybook-edit.draw.${d.state}`))}</p>`);
+  if (busy(d)) out.push(`<p class="sb-dstate is-busy">${iconHtml(d.state === 'drawing' ? '🎨' : '⏳', { size: 16 })} ${esc(t(d.state === 'queued' && d.reason === 'google' ? 'js.storybook-edit.draw.waitGoogle' : `js.storybook-edit.draw.${d.state}`))}</p>`);
   else if (d && d.state === 'fallback') out.push(`<p class="sb-dstate">${iconHtml('ℹ️', { size: 16 })} ${esc(t(`js.storybook-edit.draw.why.${d.reason || 'error'}`))}${d.pic ? ` ${esc(t('js.storybook-edit.draw.keptOld'))}` : ''}</p>`);
   else if (d && d.stale) out.push(`<p class="sb-dstate">${iconHtml('ℹ️', { size: 16 })} ${esc(t('js.storybook-edit.draw.stale'))}</p>`);
   if (DR.on && !busy(d)) out.push(`<button type="button" class="btn btn-sm" data-act="redraw" data-target="${esc(target)}">${iconHtml('🔁', { size: 16 })} ${esc(t(has ? 'js.storybook-edit.draw.redraw' : 'js.storybook-edit.draw.draw'))}</button>`);

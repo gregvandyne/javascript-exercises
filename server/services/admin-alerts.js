@@ -1,5 +1,6 @@
 // Admin alerts by email (docs/decisions.md "Admin alerts by email"). When something needs the platform admin (a game
-// waiting for review, a new account, a message to the Oomba team, a school request, a safety report, a billing problem),
+// waiting for review, a new account, a message to the Oomba team, a school request, a safety report, a billing problem,
+// a service set-up problem such as the book pictures' Google quota being zero),
 // the code that made it calls alert(kind, { ref, summary, url }), which only adds one row to admin_alerts. A job every
 // 10 minutes claims every waiting row and sends ONE summary email for all of them, grouped by kind with counts and up to
 // LINES_PER_KIND lines each, every line linking to the admin page that handles it. A burst (500 sign-ups) is still one
@@ -51,6 +52,7 @@ export const KINDS = {
   school_request: { label: 'School set-up requests', path: '/admin?tab=schoolreq', count: n => `${n} school request${s(n)}` },
   report: { label: 'Safety reports (games, chat, live games, family links)', path: '/admin?tab=reports', count: n => `${n} new safety report${s(n)}` },
   billing: { label: 'Billing problems and invoice requests', path: '/admin/billing', count: n => `${n} billing event${s(n)} to look at` },
+  service: { label: 'Service set-up problems (e.g. book pictures: Google quota)', path: '/admin', count: n => `${n} service problem${s(n)} to look at` },
 };
 export const KIND_ORDER = Object.keys(KINDS);
 

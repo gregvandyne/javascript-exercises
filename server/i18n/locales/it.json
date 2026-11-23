@@ -4497,7 +4497,9 @@
           "limit": "Le immagini di oggi erano finite, quindi si vede il disegno del pacchetto.",
           "blocked": "Il creatore di immagini non è riuscito a disegnare questa, quindi si vede il disegno del pacchetto.",
           "refused": "La nuova immagine non ha superato il nostro controllo, quindi non è stata tenuta.",
-          "error": "Qualcosa è andato storto durante il disegno. Prova Ridisegna."
+          "error": "Qualcosa è andato storto durante il disegno. Prova Ridisegna.",
+          "busy": "Google era troppo occupato per dipingere questa, quindi si vede il disegno del pacchetto. Riprova più tardi con Ridisegna.",
+          "notset": "Le immagini dipinte non sono ancora configurate, quindi si vede il disegno del pacchetto."
         },
         "keptOld": "Resta l'immagine di prima.",
         "stale": "Questa pagina è cambiata da quando è stata disegnata la sua immagine.",
@@ -4509,7 +4511,9 @@
         "look": "Com'è fatto",
         "sheetAlt": "Immagine di riferimento di {name}",
         "lineOwn": "Hai scelto di aggiungere le tue immagini: usa La tua immagine su ogni pagina.",
-        "lineNone": "Questo libro non ha immagini."
+        "lineNone": "Questo libro non ha immagini.",
+        "waitGoogle": "In attesa di Google. L'immagine apparirà presto.",
+        "lineNotSet": "Le immagini dipinte non sono ancora configurate, quindi le immagini vengono dai pacchetti."
       }
     },
     "storybook-read": {

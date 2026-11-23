@@ -4497,7 +4497,9 @@
           "limit": "De plaatjes van vandaag waren op, dus hier staat de tekening uit het pakket.",
           "blocked": "De plaatjesmaker kon dit plaatje niet tekenen, dus hier staat de tekening uit het pakket.",
           "refused": "Het nieuwe plaatje kwam niet door onze controle en is niet bewaard.",
-          "error": "Er ging iets mis bij het tekenen. Probeer Opnieuw tekenen."
+          "error": "Er ging iets mis bij het tekenen. Probeer Opnieuw tekenen.",
+          "busy": "Google had het te druk om dit plaatje te schilderen, dus hier staat de tekening uit het pakket. Probeer het later opnieuw met Opnieuw tekenen.",
+          "notset": "Geschilderde plaatjes zijn nog niet ingesteld, dus hier staat de tekening uit het pakket."
         },
         "keptOld": "Het eerdere plaatje blijft.",
         "stale": "Deze pagina is veranderd sinds het plaatje is getekend.",
@@ -4509,7 +4511,9 @@
         "look": "Hoe ze eruitzien",
         "sheetAlt": "Voorbeeldplaatje van {name}",
         "lineOwn": "Je koos voor je eigen plaatjes: gebruik Jouw plaatje op elke pagina.",
-        "lineNone": "Dit boek heeft geen plaatjes."
+        "lineNone": "Dit boek heeft geen plaatjes.",
+        "waitGoogle": "Wacht op Google. Het plaatje verschijnt zo.",
+        "lineNotSet": "Geschilderde plaatjes zijn nog niet ingesteld, dus de plaatjes komen uit de pakketten."
       }
     },
     "storybook-read": {

@@ -4497,7 +4497,9 @@
           "limit": "Die Bilder für heute waren verbraucht, deshalb steht hier die Zeichnung aus dem Paket.",
           "blocked": "Der Bildermacher konnte dieses Bild nicht malen, deshalb steht hier die Zeichnung aus dem Paket.",
           "refused": "Das neue Bild hat unsere Bildprüfung nicht bestanden und wurde nicht behalten.",
-          "error": "Beim Malen ist etwas schiefgegangen. Versuche Neu malen."
+          "error": "Beim Malen ist etwas schiefgegangen. Versuche Neu malen.",
+          "busy": "Google war zu beschäftigt, um dieses Bild zu malen, deshalb steht hier die Zeichnung aus dem Paket. Versuche es später mit Neu malen.",
+          "notset": "Gemalte Bilder sind noch nicht eingerichtet, deshalb steht hier die Zeichnung aus dem Paket."
         },
         "keptOld": "Das frühere Bild bleibt.",
         "stale": "Diese Seite hat sich geändert, seit ihr Bild gemalt wurde.",
@@ -4509,7 +4511,9 @@
         "look": "Wie die Figur aussieht",
         "sheetAlt": "Referenzbild von {name}",
         "lineOwn": "Du fügst eigene Bilder hinzu: Nutze Dein Bild auf jeder Seite.",
-        "lineNone": "Dieses Buch hat keine Bilder."
+        "lineNone": "Dieses Buch hat keine Bilder.",
+        "waitGoogle": "Wartet auf Google. Das Bild erscheint bald.",
+        "lineNotSet": "Gemalte Bilder sind noch nicht eingerichtet, deshalb kommen die Bilder aus den Bilderpaketen."
       }
     },
     "storybook-read": {

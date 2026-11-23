@@ -113,11 +113,51 @@ export function readAnswer(j) {
   return { ok: false, code: !cand || BLOCKED.has(reason) || (reason && reason !== 'STOP' && reason !== 'MAX_TOKENS') ? 'blocked' : 'error', why: reason || 'no image', usage };
 }
 
-/** Ask Google for one picture. -> readAnswer's result, or { ok: false, code: 'error' | 'nokey', why } (nothing came back). */
+// ---------------------------------------------------------------- Google saying no: 429s and quota
+// A refused call comes back as { error: { code, status, message, details } }. For a 429 (RESOURCE_EXHAUSTED) the details
+// say which quota was hit (google.rpc.QuotaFailure: violations[].quotaMetric, quotaId, quotaValue) and when to try
+// again (google.rpc.RetryInfo: retryDelay, e.g. "39s"); the HTTP Retry-After header may say it too. A quota whose limit
+// is 0, or a free-tier quota (image models have no free tier), means the key's Google Cloud project has no picture
+// quota at all: billing is not enabled there. That is 'quota_zero' (no use waiting); any other 429 is 'rate_limited'
+// (wait, then try again). Only these fixed fields are kept for the log: never the key, never the prompt.
+const seconds = v => { const m = /^\s*(\d+(?:\.\d+)?)\s*s?\s*$/.exec(String(v ?? '')); return m ? Math.round(+m[1] * 1000) : null; };
+const short = (v, n = 80) => String(v ?? '').replace(/[^\w.:/@ -]+/g, ' ').trim().slice(0, n);
+/** Google's error answer (status, the parsed body, the headers) -> { ok: false, code, why, http, gstatus, metric,
+ *  quotaId, limit, retryMs }. code: 'quota_zero' | 'rate_limited' | 'blocked' | 'error'. */
+export function readError(status, j, headers = null) {
+  const e = (j && typeof j === 'object' && j.error && typeof j.error === 'object') ? j.error : {};
+  const details = Array.isArray(e.details) ? e.details : [];
+  const type = d => String((d && d['@type']) || '');
+  const quota = details.filter(d => /QuotaFailure$/.test(type(d))).flatMap(d => (Array.isArray(d.violations) ? d.violations : []))[0] || {};
+  const retry = details.find(d => /RetryInfo$/.test(type(d)));
+  const msg = String(e.message || '');
+  const fromMsg = /Please retry in ([\d.]+)s/i.exec(msg);
+  const header = headers && typeof headers.get === 'function' ? headers.get('retry-after') : headers && headers['retry-after'];
+  const retryMs = seconds(retry && retry.retryDelay) ?? seconds(header) ?? (fromMsg ? seconds(fromMsg[1]) : null);
+  const limitM = /limit:\s*(\d+)/i.exec(msg);
+  const limit = quota.quotaValue != null && quota.quotaValue !== '' ? String(quota.quotaValue) : limitM ? limitM[1] : null;
+  const metric = short(quota.quotaMetric || (/metric:\s*([\w./-]+)/i.exec(msg) || [])[1] || '');
+  const quotaId = short(quota.quotaId || '');
+  const out = { ok: false, http: status, gstatus: short(e.status, 40), metric, quotaId, limit, retryMs, why: `http ${status}` };
+  if (status === 429 || e.status === 'RESOURCE_EXHAUSTED') {
+    const zero = limit === '0' || /free_?tier/i.test(`${metric} ${quotaId}`) || /limit:\s*0\b/.test(msg);
+    return { ...out, code: zero ? 'quota_zero' : 'rate_limited' };
+  }
+  // A prompt Google refuses for safety comes back as a 400 with a safety reason in some versions: the same as a block.
+  if (status === 400 && /safety|prohibited|blocked/i.test(`${e.status || ''} ${msg}`)) return { ...out, code: 'blocked' };
+  return { ...out, code: 'error' };
+}
+
+/** Ask Google for one picture. -> readAnswer's result, or { ok: false, code: 'error' | 'nokey' | 'rate_limited' |
+ *  'quota_zero', why, ... } (nothing came back; readError's fields for an HTTP error). */
 export async function generate({ prompt, refs = [], aspect = '16:9' }) {
   const body = requestBody({ prompt, refs, aspect });
   if (hooks.generate) {
-    try { return readAnswer(await hooks.generate(body, { model: model(), headers: { 'x-goog-api-key': 'stub' } })); } catch (e) { return { ok: false, code: 'error', why: String(e && e.message || e).slice(0, 80) }; }
+    try { return readAnswer(await hooks.generate(body, { model: model(), headers: { 'x-goog-api-key': 'stub' } })); } catch (e) {
+      // the stand-in answers an HTTP error by throwing { httpStatus, body, headers }
+      if (e && e.httpStatus) return readError(e.httpStatus, e.body, e.headers || null);
+      return { ok: false, code: 'error', why: String(e && e.message || e).slice(0, 80) };
+    }
   }
   if (!config.geminiKey) return { ok: false, code: 'nokey', why: 'no key' };
   let res;
@@ -128,10 +168,6 @@ export async function generate({ prompt, refs = [], aspect = '16:9' }) {
     });
   } catch (e) { return { ok: false, code: 'error', why: e && e.name === 'TimeoutError' ? 'timeout' : 'network' }; }
   const j = await res.json().catch(() => null);
-  if (!res.ok) {
-    // A prompt Google refuses for safety comes back as a 400 with a safety reason in some versions: the same as a block.
-    const msg = String((j && j.error && (j.error.status || j.error.message)) || '').slice(0, 120);
-    return { ok: false, code: res.status === 400 && /safety|prohibited|blocked/i.test(msg) ? 'blocked' : 'error', why: `http ${res.status}` };
-  }
+  if (!res.ok) return readError(res.status, j, res.headers);
   return readAnswer(j);
 }

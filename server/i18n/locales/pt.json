@@ -4497,7 +4497,9 @@
           "limit": "As imagens de hoje já foram usadas, então aparece o desenho do pacote.",
           "blocked": "O criador de imagens não conseguiu desenhar esta, então aparece o desenho do pacote.",
           "refused": "A nova imagem não passou na nossa verificação, então não foi guardada.",
-          "error": "Algo deu errado ao desenhar. Tente Redesenhar."
+          "error": "Algo deu errado ao desenhar. Tente Redesenhar.",
+          "busy": "O Google estava ocupado demais para pintar esta, então aparece o desenho do pacote. Tente redesenhar mais tarde.",
+          "notset": "As imagens pintadas ainda não estão configuradas, então aparece o desenho do pacote."
         },
         "keptOld": "A imagem anterior fica.",
         "stale": "Esta página mudou desde que a imagem foi desenhada.",
@@ -4509,7 +4511,9 @@
         "look": "Como é",
         "sheetAlt": "Imagem de referência de {name}",
         "lineOwn": "Você escolheu colocar suas próprias imagens: use Sua imagem em cada página.",
-        "lineNone": "Este livro não tem imagens."
+        "lineNone": "Este livro não tem imagens.",
+        "waitGoogle": "Esperando o Google. A imagem vai aparecer em breve.",
+        "lineNotSet": "As imagens pintadas ainda não estão configuradas, então as imagens vêm dos pacotes de arte."
       }
     },
     "storybook-read": {

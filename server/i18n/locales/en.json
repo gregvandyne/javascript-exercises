@@ -4778,7 +4778,9 @@
           "limit": "Today's pictures were used, so this shows the art-pack drawing.",
           "blocked": "The picture maker couldn't draw this one, so this shows the art-pack drawing.",
           "refused": "The new picture didn't pass our picture check, so it was not kept.",
-          "error": "Something went wrong while drawing. Try Redraw."
+          "error": "Something went wrong while drawing. Try Redraw.",
+          "busy": "Google was too busy to paint this one, so this shows the art-pack drawing. Try Redraw later.",
+          "notset": "Painted pictures aren't set up yet, so this shows the art-pack drawing."
         },
         "keptOld": "The earlier picture stays.",
         "stale": "This page changed since its picture was drawn.",
@@ -4790,7 +4792,9 @@
         "look": "How they look",
         "sheetAlt": "{name}'s reference picture",
         "lineOwn": "You chose to add your own pictures: use Your picture on each page.",
-        "lineNone": "This book has no pictures."
+        "lineNone": "This book has no pictures.",
+        "waitGoogle": "Waiting for Google. The picture will appear soon.",
+        "lineNotSet": "Painted pictures aren't set up yet, so pictures come from the art packs."
       }
     },
     "storybook-read": {
