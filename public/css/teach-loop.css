@@ -76,3 +76,5 @@
 }
 /* In a grid the cards line up: no stacked-panel gap (app.css .panel+.panel) on the later ones. */
 .tl-steps>.tl-step,.tl-shots>.tl-shot{margin:0}
+/* The themed screenshots (server/views/shot.js) are <picture>s: they lay out like the <img> inside. */
+.tl-shot picture{display:contents}

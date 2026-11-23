@@ -5970,7 +5970,7 @@
       "s1": {
         "h": "Al je klassen op één plek",
         "p": "Zodra je school is ingesteld, voegt je schoolbeheerder leerkrachten toe, en elke leerkracht maakt zijn of haar klassen aan op Mijn klassen.",
-        "alt": "Mijn klassen van een leerkracht op Sunny Hill Demo School: drie klaskaarten, Coding Club, Ms. Rivera’s Class (5 leerlingen, 1 verzoek om mee te doen, 2 antwoorden om na te kijken) en Reading Rockets, en een knop Lessenbibliotheek."
+        "alt": "De Klaslokaal-startpagina van Ms. Rivera: drie klassen en twee antwoorden die wachten, knoppen voor het weekoverzicht en een live spel, en de kaart van de lescyclus met Plannen, Spelen, Controleren en Feedback."
       },
       "s2": {
         "h": "Leerlingen doen mee met een code of inlogkaarten",
@@ -5991,7 +5991,12 @@
       "s5": {
         "h": "Bekijk de voortgang en het cijferoverzicht",
         "p": "Het cijferoverzicht toont de voortgang, spelscores en schriftelijke antwoorden van elke leerling. Geef feedback, of download het als CSV-bestand.",
-        "alt": "Het tabblad Voortgang van de klas: een cijferoverzicht met hoeveel stappen elke leerling in elke les heeft gedaan, een knop Downloaden (CSV) en een link naar de schriftelijke antwoorden die nog nagekeken moeten worden."
+        "alt": "Het tabblad Voortgang van de klas: links naar de cursussen en de geschiedenis van live spellen, een knop Downloaden (CSV), de antwoorden om na te kijken en het cijferoverzicht met de stappen die elke leerling in elke les heeft gedaan."
+      },
+      "s6": {
+        "h": "Lesgeven met de tools",
+        "p": "Vraag Oomba in de chat om een werkblad: Oomba schrijft de vragen, Figures tekent elke figuur op schaal en rekent de antwoorden uit. Of start een live rekenlokaal met virtueel materiaal.",
+        "alt": "De werkbladmaker van Figures met de chat van Oomba ernaast open: een werkblad met de naam Area and volume practice, de eerste vraag met een rechthoek op schaal en het antwoord 12 m², en de lijst met wat er in de chat veranderd is."
       }
     },
     "build": {
@@ -6627,7 +6632,7 @@
       "s1": {
         "h": "Gratis beginnen met een verzonnen naam",
         "p": "Je kind kiest een verzonnen naam en een wachtwoord. We vragen kinderen nooit om een e-mailadres, leeftijd of adres.",
-        "alt": "De aanmeldpagina van Oomba Academy, “Maak een gratis account”, met de verzonnen naam PixelPanda ingetypt en een verborgen wachtwoord. Er wordt alleen gevraagd om een leuke naam en een wachtwoord."
+        "alt": "De aanmeldpagina van Oomba Academy, stap 1 van 2, ‘Make a free account’, met de verzonnen naam PixelPanda ingevuld en een verborgen wachtwoord. Er wordt alleen om een leuke naam en een wachtwoord gevraagd."
       },
       "s2": {
         "h": "Leerspelletjes spelen",
@@ -6652,7 +6657,7 @@
       "s6": {
         "h": "Koppel je ouderaccount (optioneel)",
         "p": "Je kind krijgt een eenmalige code op de pagina Ik en geeft die persoonlijk aan jou. Jij typt de code op je gezinspagina, en je kind zegt ja. Je gezinspagina toont daarna je kind en zijn of haar extra berichten aan de Bouwer tot en met gisteren.",
-        "alt": "De gezinspagina van de ouder: onder Kinderen is Pixel Panda gekoppeld, met de extra berichten aan de Bouwer van gisteren en van deze maand, een knop Ontkoppelen en een knop Kind koppelen."
+        "alt": "De gezinspagina van de volwassene: onder ‘Children’ is Pixel Panda gekoppeld, met de extra Builder-berichten van gisteren en deze maand en een knop Ontkoppelen."
       }
     },
     "ages": {
@@ -8152,12 +8157,12 @@
       "s1": {
         "h": "Kies een spel en je vragen",
         "p": "Kies Questrace, Vragenduel of Breinbord en daarna de vragen: de vragenbank per vak en leeftijd (6 tot 14 jaar), je eigen vragenset, een set die een collega heeft gedeeld of de vragen uit een van je lessen.",
-        "alt": "De pagina “Een livespel leiden”: spelmodi om uit te kiezen, een vragenset en wie mee mag doen."
+        "alt": "De eerste stap om een live spel te starten, ‘Wat wil je spelen?’: Quest Race, Question Battle en Brain Board, elk met het aantal spelers waarvoor het werkt."
       },
       "s2": {
         "h": "Laat de code op het bord zien",
         "p": "Leerlingen gaan op hun apparaat naar de meedoenpagina en typen de code van 7 cijfers, of scannen de QR-code. Hun namen verschijnen zodra ze meedoen.",
-        "alt": "Het scherm op het digibord voordat het spel begint: een grote code van 7 cijfers, een QR-code en de leerlingen die al meedoen."
+        "alt": "Het beamerscherm voordat het spel begint: een tekenfilmfiguur waartegen de hele klas speelt, een grote code van 7 cijfers, een QR-code en hoeveel spelers er al zijn."
       },
       "s3": {
         "h": "Leerlingen doen binnen seconden mee",
@@ -8167,7 +8172,7 @@
       "s4": {
         "h": "Iedereen antwoordt tegelijk",
         "p": "De vraag staat op het bord en de antwoordknoppen staan op elk apparaat. Hoe sneller een goed antwoord, hoe meer punten.",
-        "alt": "De telefoon van een leerling tijdens een vraag, met vier antwoordknoppen."
+        "alt": "De telefoon van een leerling tijdens een vraag: bovenaan de tekenfilmfiguur waartegen de klas speelt, dan de vraag en vier antwoordknoppen."
       },
       "s5": {
         "h": "Zie wie wat weet",
@@ -9083,8 +9088,8 @@
       "li2": "Gebruik een kant-en-klare vragenset, typ je eigen of laat AI een concept maken dat je aanpast",
       "li3": "Scores komen direct in je cijferoverzicht",
       "li4": "Klasspellen: alleen je ingelogde leerlingen. Gastspellen: veilige, verzonnen namen. Geen chat en geen vrije tekst, in geen van beide",
-      "shotAlt": "De wachtruimte van een live Question Battle: vijf leerling-avatars wachten terwijl het grote scherm de spelcode en een QR-code toont.",
-      "link": "Zo werken live games"
+      "link": "Zo werken live games",
+      "shotAlt": "De wachtkamer van een live Question Battle: het grote scherm toont de tekenfilmfiguur waartegen de klas speelt, de spelcode en een QR-code."
     },
     "why": {
       "kicker": "Waarom games werken",
@@ -9235,6 +9240,18 @@
       "li4": "Privé tot het gedeeld wordt: met de klas, of met iedereen pas nadat iemand van ons team het heeft bekeken",
       "shotAlt": "De Studio van een leerling: de Builder meldt dat versie 2 klaar is, en het spel draait in een voorbeeld op telefoonformaat.",
       "caption": "De Studio van een leerling: beschrijven, de Builder bouwt, zelf testen."
+    },
+    "tools": {
+      "kicker": "Lestools",
+      "h": "Rekenen met je handen, met alle leerlingen tegelijk",
+      "lead": "Virtueel materiaal dat je leerlingen zelf verplaatsen, een live lokaal waar je het werk van iedereen op één scherm ziet, en Oomba om werkbladen met figuren op schaal op te stellen.",
+      "li1": "18 soorten virtueel materiaal, van MAB-blokken die je kunt inwisselen tot breukdelen en klokken",
+      "li2": "Live rekenlokalen: elke leerling bouwt in een eigen vak terwijl jij alle vakken op het bord ziet",
+      "li3": "Opgeslagen borden met deelcodes, en 300 kant-en-klare opdrachten voor groep 1 tot en met de tweede klas",
+      "li4": "Oomba, je lesassistent: beschrijf een werkblad en krijg exacte figuren met uitgewerkte antwoorden",
+      "shotAlt": "Een live sessie met MAB-blokken op het scherm van de leerkracht: bovenaan het deel van de leerkracht en daaronder de vakken van vier leerlingen, elk met honderdplaten en tienstaven in een plaatswaardekaart.",
+      "plan": "Het materiaal, de live lokalen, Figures en Oomba horen bij het Leerkrachtabonnement.",
+      "testing": "Het materiaal, de live lokalen, Figures en Oomba worden nu in een paar klassen uitgeprobeerd."
     }
   },
   "teach": {

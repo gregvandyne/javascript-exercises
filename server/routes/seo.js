@@ -73,7 +73,7 @@ export function sitemapEntries() {
     ...AGES.map(a => ({ path: `/learn/${a.slug}`, langs: langsWithKey(`learn.ages.${a.key}.h1`), lastmod: CONTENT_UPDATED, images: [`/og/ages-${a.min}-${a.max}.jpg`] })),
     { path: '/privacy', lastmod: LEGAL_UPDATED }, { path: '/terms', lastmod: LEGAL_UPDATED }, { path: '/refunds', lastmod: LEGAL_UPDATED },
     { path: '/sdk/' },
-    ...(billingOn() && config.billingPublic ? [{ path: '/plans' }, { path: '/plans/schools' }] : []),
+    ...(billingOn() && config.billingPublic ? [{ path: '/plans', images: ['/og/plans.jpg'] }, { path: '/plans/schools', images: ['/og/plans.jpg'] }] : []),
   ];
   return out;
 }

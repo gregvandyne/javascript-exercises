@@ -35,6 +35,8 @@ import { liveOn } from '../services/classlive-sessions.js';
 import * as funnel from '../services/funnel.js';
 import { countable } from '../services/traffic.js';
 import { teacherLoop, loopShots } from '../views/teacher-loop.js';
+import { themedPicture, hasFile } from '../views/shot.js';
+import { plansOn } from '../services/teacher-tools.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { enabled as classroomOn } from '../services/gclassroom.js';
 import { config } from '../config.js';
@@ -87,7 +89,21 @@ const check = raw('<svg class="lp-check" viewBox="0 0 20 20" aria-hidden="true" 
 /** A cover picture, sized so nothing moves when it loads. */
 const cover = (slug, { w = 240, eager = false, cls = '' } = {}) => raw(`<img class="${cls}" src="${COVER(slug)}-${w}.webp" srcset="${COVER(slug)}-240.webp 240w, ${COVER(slug)}-480.webp 480w" sizes="${w}px" width="${w}" height="${Math.round(w * 4 / 3)}" alt="" decoding="async"${eager ? '' : ' loading="lazy"'}>`);
 /** A screenshot from public/img/how (1024 and 2048 wide, 16:10). */
-const shot = (name, alt, cls = '') => html`<img class="${cls}" src="/img/how/${name}-d-1024.webp" srcset="/img/how/${name}-d-1024.webp 1024w, /img/how/${name}-d-2048.webp 2048w" sizes="(min-width: 1100px) 560px, 92vw" width="1024" height="640" alt="${alt}" loading="lazy" decoding="async">`;
+// The real screenshots (scripts/how-shots.js), in the page's theme: the dark captures on the dark landing, the light ones
+// with Light picked (views/shot.js; a missing dark file falls back to the light one).
+const HOW = '/img/how/';
+const howSet = (name, kind, widths) => widths.map(w => `${HOW}${name}-${kind}-${w}.webp ${w}w`).join(', ');
+const darkName = name => (hasFile(`${HOW}${name}-dark-d-1024.webp`) || hasFile(`${HOW}${name}-dark-p-390.webp`) ? `${name}-dark` : null);
+/** A desktop capture (1024×640). */
+const shot = (theme, name, alt, { cls = '', sizes = '(min-width: 1100px) 560px, 92vw', lazy = true, priority = false } = {}) => {
+  const dk = darkName(name);
+  return raw(themedPicture({ scheme: theme, img: { cls, src: `${HOW}${name}-d-1024.webp`, srcset: howSet(name, 'd', [1024, 2048]), sizes, width: 1024, height: 640, alt, lazy, priority, type: 'image/webp', dark: dk && { srcset: howSet(dk, 'd', [1024, 2048]) } } }));
+};
+/** A phone capture (390×844), decoration beside a desktop one (the caller marks it aria-hidden). */
+const phoneShot = (theme, name, { sizes = '170px', lazy = true } = {}) => {
+  const dk = darkName(name);
+  return raw(themedPicture({ scheme: theme, img: { src: `${HOW}${name}-p-390.webp`, srcset: howSet(name, 'p', [390, 780]), sizes, width: 390, height: 844, alt: '', lazy, type: 'image/webp', dark: dk && { srcset: howSet(dk, 'p', [390, 780]) } } }));
+};
 
 /** The landing's words for this request: t, plus English-fallback marking for a key this language doesn't have yet. */
 function words(req) {
@@ -163,7 +179,7 @@ export function renderLanding(req, res) {
       <p class="lp-freeline"${fb('teachers.free.line')}>${tHtml(t, 'teachers.free.line', { daily: req.fmt.int(config.teacherDailyMessages), plans: '/plans' })}</p>
       <a class="lp-games" href="${JUST_PLAY_URL}" data-cta="play"><span class="lp-fan" aria-hidden="true">${HERO_FAN.map(s => cover(s, { eager: true }))}</span><span><b>30+</b> ${t('landing.facts.games')} ${ARROW}</span></a>
     </div>
-    ${heroStage(t, fb)}
+    ${heroStage(t, fb, theme)}
   </div>
 </section>`;
 
@@ -196,7 +212,7 @@ export function renderLanding(req, res) {
   // "The teaching loop"): right after how it works.
   // The gradebook and feedback screenshots sit under Google Classroom when it is on here; otherwise in the loop section.
   const gcOn = classroomOn();
-  const loopSec = teacherLoop(t, { variant: 'landing', id: 'loop', live, shots: !gcOn, cta: cta(TRIAL_URL, t('landing.hero.cta'), { big: true }) });
+  const loopSec = teacherLoop(t, { variant: 'landing', id: 'loop', live, shots: !gcOn, scheme: theme, cta: cta(TRIAL_URL, t('landing.hero.cta'), { big: true }) });
 
   const builder = html`<section class="lp-sec lp-split" id="builder" aria-labelledby="builder-h">
   <div class="lp-glow lp-glow-a" aria-hidden="true" data-depth=".25"></div>
@@ -221,8 +237,8 @@ export function renderLanding(req, res) {
       ${cta(TRIAL_URL, t('landing.hero.cta'))}
     </div>
     <figure class="lp-device lp-device-live rv">
-      <div class="lp-screen">${shot('dash-teacher', t('landing.dash.shotAlt'))}</div>
-      <div class="lp-phone" data-depth=".16" aria-hidden="true"><img src="/img/how/dash-student-p-390.webp" srcset="/img/how/dash-student-p-390.webp 390w, /img/how/dash-student-p-780.webp 780w" sizes="170px" width="390" height="844" alt="" loading="lazy" decoding="async"></div>
+      <div class="lp-screen">${shot(theme, 'dash-teacher', t('landing.dash.shotAlt'))}</div>
+      <div class="lp-phone" data-depth=".16" aria-hidden="true">${phoneShot(theme, 'dash-student')}</div>
     </figure>
   </div>
 </section>`;
@@ -244,7 +260,7 @@ export function renderLanding(req, res) {
         const types = [...new Set(x.widgets(t).map(([type]) => type))];
         return html`<li class="lp-dt-item" data-i="${i}">
         <div class="lp-dt-text"><p class="lp-dt-n" aria-hidden="true" dir="ltr">0${i + 1}<span> / 0${LAYOUT_TEMPLATES.length}</span></p><h3><span aria-hidden="true">${ico(x.icon, { size: 34 })}</span> ${t(`dash.tpl.${x.id}.name`)}</h3><p>${t(`dash.tpl.${x.id}.desc`)}</p><ul class="lp-dt-chips">${types.map(chip)}</ul></div>
-        <figure class="lp-dt-fig"><div class="lp-screen">${shot(`dash-layout-${x.id}`, `${t(`dash.tpl.${x.id}.name`)}: ${t(`dash.tpl.${x.id}.desc`)}`)}</div></figure>
+        <figure class="lp-dt-fig"><div class="lp-screen">${shot(theme, `dash-layout-${x.id}`, `${t(`dash.tpl.${x.id}.name`)}: ${t(`dash.tpl.${x.id}.desc`)}`)}</div></figure>
       </li>`;
       })}</ol>
       <ol class="lp-dt-dots" aria-hidden="true">${LAYOUT_TEMPLATES.map(x => html`<li><span>${ico(x.icon, { size: 20 })}</span></li>`)}</ol>
@@ -267,7 +283,7 @@ export function renderLanding(req, res) {
       ${cta(TRIAL_URL, t('landing.hero.cta'))}
     </div>
     <figure class="lp-device rv">
-      <div class="lp-screen">${shot('parents-build', t('landing.kids.shotAlt'))}</div>
+      <div class="lp-screen">${shot(theme, 'parents-build', t('landing.kids.shotAlt'))}</div>
       <figcaption${fb('landing.kids.caption')}>${t('landing.kids.caption')}</figcaption>
     </figure>
   </div>
@@ -282,7 +298,7 @@ export function renderLanding(req, res) {
       <ul class="lp-list lp-list-2">${['li1', 'li2', 'li3', 'li4', 'li5'].map(k => html`<li>${check}<span${fb(`teachers.classroom.${k}`)}>${t(`teachers.classroom.${k}`)}</span></li>`)}</ul>
       <p class="lp-small"${fb('teachers.classroom.note')}>${t('teachers.classroom.note')} <a href="/privacy#google">${t('teachers.classroom.privacy')}</a></p>
     </div>
-    ${loopShots(t, ['gradebook', 'feedback'])}
+    ${loopShots(t, ['gradebook', 'feedback'], theme)}
   </div>
 </section>` : '';
 
@@ -300,8 +316,26 @@ export function renderLanding(req, res) {
       <a class="lp-more" href="${lp('/teachers/live')}">${t('landing.live.link')} ${ARROW}</a>
     </div>
     <figure class="lp-device lp-device-live rv">
-      <div class="lp-screen">${shot('live-lobby', t('landing.live.shotAlt'))}</div>
-      <div class="lp-phone" data-depth=".16" aria-hidden="true"><img src="/img/how/live-play-p-390.webp" srcset="/img/how/live-play-p-390.webp 390w, /img/how/live-play-p-780.webp 780w" sizes="170px" width="390" height="844" alt="" loading="lazy" decoding="async"></div>
+      <div class="lp-screen">${shot(theme, 'live-lobby', t('landing.live.shotAlt'))}</div>
+      <div class="lp-phone" data-depth=".16" aria-hidden="true">${phoneShot(theme, 'live-play')}</div>
+    </figure>
+  </div>
+</section>` : '';
+
+  // The teaching tools (#tools): a live math room on the teacher's screen with every student's square, and one student's
+  // own square on a phone (real captures, scripts/how-shots.js --only tools). Who may use them: the same rule and words
+  // as the videos below (services/teacher-tools.js plansOn).
+  const toolsSec = hasFile(`${HOW}tools-room-d-1024.webp`) && hasFile(`${HOW}tools-room-p-390.webp`) ? html`<section class="lp-sec lp-split" id="tools" aria-labelledby="tools-h">
+  <div class="lp-glow lp-glow-a" aria-hidden="true" data-depth=".25"></div>
+  <div class="lp-wrap lp-split-in">
+    <div class="lp-split-text rv">
+      <p class="lp-eyebrow"${fb('landing.tools.kicker')}>${t('landing.tools.kicker')}</p><h2 id="tools-h"${fb('landing.tools.h')}>${t('landing.tools.h')}</h2><p${fb('landing.tools.lead')}>${t('landing.tools.lead')}</p>
+      <ul class="lp-list">${[1, 2, 3, 4].map(i => html`<li>${check}<span${fb(`landing.tools.li${i}`)}>${t(`landing.tools.li${i}`)}</span></li>`)}</ul>
+      <p class="lp-note"${fb(plansOn() ? 'landing.tools.plan' : 'landing.tools.testing')}>${t(plansOn() ? 'landing.tools.plan' : 'landing.tools.testing')}</p>
+    </div>
+    <figure class="lp-device lp-device-live rv">
+      <div class="lp-screen">${shot(theme, 'tools-room', t('landing.tools.shotAlt'))}</div>
+      <div class="lp-phone" data-depth=".16" aria-hidden="true">${phoneShot(theme, 'tools-room')}</div>
     </figure>
   </div>
 </section>` : '';
@@ -443,7 +477,7 @@ export function renderLanding(req, res) {
     seo.faqLd(faq.map(([q, a]) => [q, seo.plainText(a)])),
   ]);
 
-  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${dashSec}${dtourSec}${builder}${liveSec}${videosSec}${kidsSec}${loopSec}${classroomSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
+  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${dashSec}${dtourSec}${builder}${liveSec}${toolsSec}${videosSec}${kidsSec}${loopSec}${classroomSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
   const head = seo.seoHead(req, { index: true, path: '/', langs, image: '/og/landing.jpg', imageAlt: t('landing.meta.imageAlt'), jsonld: [jsonld] }, { title, description });
   res.status(200).type('html').set('Vary', 'Cookie, Accept-Language').send(`<!doctype html>
 <html lang="${esc(locale)}" dir="${esc(info.dir)}" data-theme="${theme}" class="lp-html${theme === 'light' ? ' lp-light' : ''}">
@@ -475,10 +509,10 @@ const HERO_FAN = ['beat-lanes', 'robo-route', 'fraction-factory', 'atlas-quest',
 /** The hero's picture: the class dashboard on the projector (a real capture, scripts/how-shots.js), a student's own screen
  *  on a phone, and around it the rest of the day: a game the Builder just made and a live game starting. The cards move
  *  at their own depth as the page scrolls (data-depth, public/js/landing.js); without script they simply sit there. */
-function heroStage(t, fb) {
+function heroStage(t, fb, theme) {
   return html`<figure class="lp-hstage">
-  <div class="lp-screen lp-hs-screen"><img src="/img/how/dash-teacher-d-1024.webp" srcset="/img/how/dash-teacher-d-1024.webp 1024w, /img/how/dash-teacher-d-2048.webp 2048w" sizes="(min-width: 1024px) 600px, 92vw" width="1024" height="640" alt="${t('landing.dash.shotAlt')}" fetchpriority="high" decoding="async"></div>
-  <div class="lp-hs-phone" data-depth=".1" aria-hidden="true"><img src="/img/how/dash-student-p-390.webp" srcset="/img/how/dash-student-p-390.webp 390w, /img/how/dash-student-p-780.webp 780w" sizes="150px" width="390" height="844" alt="" decoding="async"></div>
+  <div class="lp-screen lp-hs-screen">${shot(theme, 'dash-teacher', t('landing.dash.shotAlt'), { sizes: '(min-width: 1024px) 600px, 92vw', lazy: false, priority: true })}</div>
+  <div class="lp-hs-phone" data-depth=".1" aria-hidden="true">${phoneShot(theme, 'dash-student', { sizes: '150px', lazy: false })}</div>
   <div class="lp-glass lp-hs-card lp-hs-build" data-depth="-.14">
     ${cover('fraction-factory', { eager: true, w: 240, cls: 'lp-hs-cover' })}
     <div><p class="lp-d-tag"${fb('landing.hero.cBuildTag')}>${ico('✨', { size: 18 })} ${t('landing.hero.cBuildTag')}</p><p class="lp-hs-t"${fb('landing.hero.cBuild')}>${t('landing.hero.cBuild')}</p></div>

@@ -323,6 +323,19 @@
       "dashboard": {
         "p": "Timers, jobs, check-ins and maths tools for your whole class day, on one screen."
       }
+    },
+    "how": {
+      "s1": {
+        "alt": "The Classroom home for Ms. Rivera: three classes and two answers waiting, buttons for this week’s summary and a live game, and the teaching loop card with Plan, Play, Check and Feedback."
+      },
+      "s5": {
+        "alt": "The class Progress tab: links to the courses and the live games history, a Download (CSV) button, the answers waiting for review and the gradebook table with each student’s steps done in each lesson."
+      },
+      "s6": {
+        "h": "Teach with the tools",
+        "p": "Ask Oomba for a worksheet in the chat: it drafts the questions, Figures draws every figure to scale and works out the answers. Or run a live math room with virtual manipulatives.",
+        "alt": "The Figures worksheet builder with Oomba’s chat open beside it: a worksheet called Area and volume practice, its first question with a rectangle drawn to scale and the answer 12 m², and the chat’s list of what changed."
+      }
     }
   },
   "learn": {
@@ -417,6 +430,12 @@
       "s2": {
         "p": "Maths, reading, logic and music games run right in the browser on phones, tablets, Chromebooks and computers. Kids can try one without signing up.",
         "alt": "Sum Racer, a maths racing game, in the middle of a race: cartoon cars on a road, an addition question and four big answer buttons."
+      },
+      "s1": {
+        "alt": "The Oomba Academy sign-up page, step 1 of 2, “Make a free account”, with the made-up name PixelPanda typed in and a hidden password. It asks only for a fun name and a password."
+      },
+      "s6": {
+        "alt": "The grown-up’s family page: under Children, Pixel Panda is linked, with their extra Builder messages yesterday and this month and an Unlink button."
       }
     },
     "home": {
@@ -513,6 +532,17 @@
     "own": {
       "p": "Write quizzes for any subject and any age, from early reading to secondary-school chemistry.",
       "li3": "Describe a topic and a year group, and AI drafts the questions for you to check and edit."
+    },
+    "how": {
+      "s1": {
+        "alt": "The first step of hosting a live game, “What do you want to play?”: Quest Race, Question Battle and Brain Board, each with how many players it suits."
+      },
+      "s2": {
+        "alt": "The projector screen before the game starts: a cartoon character the whole class plays against, a big 7-digit code, a QR code and how many players have joined."
+      },
+      "s4": {
+        "alt": "A student’s phone during a question: the cartoon character the class plays against at the top, then the question and four answer buttons."
+      }
     }
   },
   "tts": {
@@ -832,6 +862,21 @@
     "faq": {
       "a1": "A game-based learning platform for ages 5 to 14. Teachers turn their own lessons into interactive games with an AI Builder, run live class games, and use ready-made courses in maths, computing and online safety.",
       "a4": "Almost any lesson: paste the text, upload a PDF, a picture or a text file, or describe the topic and what your class should practise. The Builder uses your material as a reference and makes a game around it."
+    },
+    "live": {
+      "shotAlt": "A live Question Battle lobby: the big screen shows the cartoon character the class plays against, the game code and a QR code."
+    },
+    "tools": {
+      "kicker": "Teaching tools",
+      "h": "Hands-on math, every student at once",
+      "lead": "Virtual manipulatives your students move themselves, a live room where you see everyone’s work on one screen, and Oomba to draft worksheets with figures drawn to scale.",
+      "li1": "18 virtual manipulatives, from base ten blocks that regroup to fraction pieces and clocks",
+      "li2": "Live math rooms: each student builds in their own square while you see every square on the board",
+      "li3": "Saved boards with share codes, and 300 ready-made tasks for grades K-8",
+      "li4": "Oomba, your teaching companion: describe a worksheet and get exact figures with the answers worked out",
+      "shotAlt": "A live Base Ten Blocks session on the teacher’s screen: the teacher’s area at the top and four students’ squares below, each with hundreds flats and tens rods in a place-value chart.",
+      "plan": "The Manipulatives, their live rooms, Figures and Oomba are part of the Teacher plan.",
+      "testing": "The Manipulatives, their live rooms, Figures and Oomba are being tried out in a few classrooms now."
     }
   },
   "standards": {

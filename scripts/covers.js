@@ -14,10 +14,11 @@ import { chromium } from '@playwright/test';
 import { frameDocument, frameCsp, SANDBOX } from '../server/services/frame.js';
 import { vendorFile } from '../server/services/snapshot.js';
 import { SEED_GAMES } from './seed.js';
+import { chromiumPath } from './chromium.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'public', 'covers');
-const EXE = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const EXE = chromiumPath();   // BRB_CHROMIUM, else the pre-installed Chromium, else Playwright's own (scripts/chromium.js)
 const PORTRAIT = { width: 360, height: 480 };
 const LANDSCAPE = { width: 640, height: 480 };
 const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -251,6 +252,6 @@ async function capture(browser, slug) {
 }
 
 const wanted = process.argv.slice(2).length ? process.argv.slice(2) : SEED_GAMES;
-const browser = await chromium.launch(fs.existsSync(EXE) ? { executablePath: EXE } : {});
+const browser = await chromium.launch(EXE ? { executablePath: EXE } : {});
 for (const slug of wanted) await capture(browser, slug);
 await browser.close();

@@ -535,3 +535,5 @@ main{position:relative;z-index:1}
 .pv-p{margin:0;color:var(--text-2)}
 .pv-landing .pv-plan{text-align:center;margin-top:28px}
 .pv-landing .pv-cta{margin-top:16px}
+/* The themed screenshots (server/views/shot.js) are <picture>s: they lay out like the <img> inside. */
+.lp-screen picture,.lp-phone picture,.lp-hs-phone picture{display:contents}

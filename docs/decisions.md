@@ -11664,3 +11664,35 @@ the hybrid: our own Oomba icons for every control, and the Fluent 3D pictures on
 - **Landing.** The layout tour's titles, widget chips and dots, the "Why games work" cards and the how-it-works steps
   printed raw emoji; they go through the helper now. The hero live card's faces (the demo class) are Fluent pictures.
 - Credits: `docs/media-credits.md` (the Oomba icons are ours; Fluent stays credited, MIT).
+
+## Marketing pictures refresh: current screens, light and dark, the teaching tools (23 Nov 2026)
+
+- **What:** the owner approved refreshing every picture on the public pages after the icon, Classroom, live game and
+  Builder changes. The "How it works" screenshots (`public/img/how`, `scripts/how-shots.js`) and the teaching loop's
+  (`public/img/teach-loop`, `scripts/teach-loop-shots.js`) are taken again from the current app, same sizes and format,
+  with the fun demo names only (the loop's seed classmates are renamed to Comet Fox, Maple Koala, Nova Newt and Star
+  Gecko in its throwaway database; no realistic full names in a public picture).
+- **Light and dark.** Both scripts take `--theme dark` and write the same files with `-dark` after the name. One helper,
+  `server/views/shot.js` `themedPicture`, draws a screenshot as a `<picture>` in the page's theme: the theme the reader
+  picked (Light or Dark) gets only those files; "Same as my device" gets a `prefers-color-scheme: dark` source in front of
+  each light one. Each dark `<source>` carries `data-scheme="dark"` and its own condition in `data-media`, so
+  `public/js/app.js` `applyTheme` retargets it at once when the theme is changed on the page. The landing is dark unless
+  Light is picked, so it shows the dark captures by default. A missing dark file just means the light one.
+- **The teaching tools get pictures.** `how-shots.js --only tools` (Ms. Rivera on the tester list, Oomba's AI replaced by
+  `scripts/how-ai-standin.mjs`, never loaded by the site): a live Base Ten Blocks room with four students' squares on the
+  teacher's screen and one student's square on a phone, and a Figures worksheet Oomba drafted in the chat. The room is a
+  new split section on the landing, `#tools`, between Live games and "See it in action", with the same plan/testing note
+  rule as the videos; the worksheet is step 6 of "How it works" on `/teachers`.
+- **Share pictures.** `og/teachers.jpg` shows the dashboard instead of game covers; new `og/teachers-live.jpg`
+  (referenced before but missing), `og/teachers-host.jpg` and `og/plans.jpg`, all from the real screens, no prices.
+  A page that is not indexed (/teachers/host) now still gets share tags when it names a picture (`server/seo.js`).
+- **Removed:** the ten course covers in `public/img/landing` (unused since the courses section left the landing) and
+  `teach-loop/standards.webp` (never shown). The quiet-time games' covers are 3:4 like every other cover (they were 16:9
+  and cropped in the cards).
+- **Raw emoji** left on /teachers, /teachers/live, /parents and the info pages (badges, live modes, subject and age
+  cards, page kickers, the /safety heading) go through the icon helper.
+- **Scripts:** `scripts/chromium.js` finds the pre-installed Chromium (BRB_CHROMIUM first) for how-shots, teach-loop-shots,
+  covers and og-images instead of a pinned version; how-shots clicks "Arcade game" before "I'll just describe it" (the
+  Builder asks first now) and lets the demo lessons' titles through its name check.
+- Tests: `tests/unit/marketing-images.test.js` (every picture a marketing page points at is a file, in each theme, plans
+  off and on; alt text; the themed sources; the share pictures).
