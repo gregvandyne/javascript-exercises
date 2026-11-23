@@ -358,7 +358,9 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   // The companion's microphone (tap to speak) needs this page, and only this page, to allow it ('self', never '*'):
   // only for Teacher plan staff on a page with the bubble; every other page keeps the site's microphone=().
   if (oc && req.res && !req.res.headersSent) { const pp = String(req.res.get('Permissions-Policy') || ''); if (pp.includes('microphone=()')) req.res.set('Permissions-Policy', pp.replace('microphone=()', 'microphone=(self)')); }
-  if (oc) { scripts = [...scripts, '/js/companion.js']; i18n = [...i18n, 'js.oomba-chat']; head = `${head}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}"><link rel="stylesheet" href="/css/companion.css?v=${VERSION}">`; }
+  // The greeting uses the name the site already shows this teacher (their own, from the header): the first word.
+  if (oc) oc.name = String(myName || '').trim().split(/\s+/)[0].slice(0, 40);
+  if (oc) { scripts = [...scripts, '/js/companion.js']; i18n = [...i18n, 'js.oomba-chat', 'js.companion-greet']; head = `${head}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}"><link rel="stylesheet" href="/css/companion.css?v=${VERSION}">`; }
   const prefixes = ['js.app', ...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
   // An explicit Light or Dark choice is on <html> before any CSS loads, so the first paint is right (no flash, no JS).
   const theme = req.theme === 'light' || req.theme === 'dark' ? req.theme : null;

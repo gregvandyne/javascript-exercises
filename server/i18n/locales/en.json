@@ -4173,7 +4173,10 @@
       "chTitle": "Title: {title}",
       "chGrade": "Grade: {grade}",
       "chRepaired": "{count, plural, one {# figure couldn’t be drawn and was replaced or left out} other {# figures couldn’t be drawn and were replaced or left out}}",
-      "chAnswers": "Every answer worked out from its figure"
+      "chAnswers": "Every answer worked out from its figure",
+      "greetLine": "Tell me what this worksheet needs: the topic, the grade, how many questions.",
+      "greetLineTest": "Tell me what this test should cover: the topic, the grade, how many questions.",
+      "greetLineHas": "Ask me to change some questions, add more, or change the units or the grade."
     },
     "manip-chat": {
       "title": "Oomba",
@@ -4232,7 +4235,9 @@
       "grade": "Grade {grade}",
       "capped": "At most {max} problems fit on one board, so it has {max}.",
       "boardOf": "{tool} board",
-      "liveRoom": "Live room"
+      "liveRoom": "Live room",
+      "greetLine": "Tell me the lesson you’d like on this {tool} board.",
+      "greetLineHas": "Ask me to change something on your {tool} board."
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4413,7 +4418,12 @@
         "boardNo": "Couldn't build that board",
         "point": "{n, plural, one {Gave a point} other {Gave # points}}",
         "pointPick": "Got a choice ready for you",
-        "pointNo": "Couldn't give that point"
+        "pointNo": "Couldn't give that point",
+        "places": "Looked at your classes and pages",
+        "nav": "Got the page ready to open",
+        "navNo": "Couldn't find that page",
+        "which": "Asked which one",
+        "askNo": "Couldn't ask that"
       },
       "stepsSum": "{n, plural, one {# step} other {# steps}} · {s} s",
       "prog": {
@@ -4503,7 +4513,51 @@
           "student": "Which student did you mean?",
           "reason": "What is the point for?"
         }
+      },
+      "nav": {
+        "offer": "I'll open {page} and do this there.",
+        "go": "Go there",
+        "notNow": "Not now",
+        "went": "Opened {page}.",
+        "declined": "Stayed here.",
+        "expired": "That was a while ago, so I didn't open it. Ask again when you're ready.",
+        "dashboard": "the {name} dashboard",
+        "class": "{name}",
+        "sheet": "“{name}”",
+        "board": "the {name} board"
+      },
+      "which": {
+        "dashboard": "Which class's dashboard?",
+        "class": "Which class?",
+        "sheet": "Which worksheet?",
+        "board": "Which board?"
+      },
+      "ask": {
+        "other": "Something else"
       }
+    },
+    "companion-greet": {
+      "morning": "Good morning, {name}",
+      "morningPlain": "Good morning",
+      "afternoon": "Good afternoon, {name}",
+      "afternoonPlain": "Good afternoon",
+      "evening": "Evening, {name}",
+      "eveningPlain": "Good evening",
+      "night": "Working late, {name}?",
+      "nightPlain": "Working late?",
+      "back": "Back at it, {name}",
+      "backPlain": "Back at it",
+      "hi": "Hi, {name}",
+      "hiPlain": "Hi there",
+      "friday": "Happy Friday, {name}",
+      "fridayPlain": "Happy Friday",
+      "monday": "Fresh week, {name}",
+      "mondayPlain": "Fresh week",
+      "weekend": "Weekend planning, {name}?",
+      "weekendPlain": "Weekend planning?",
+      "line0": "What can I help with?",
+      "line1": "What are we working on?",
+      "line2": "Where should we start?"
     }
   },
   "favorites": {

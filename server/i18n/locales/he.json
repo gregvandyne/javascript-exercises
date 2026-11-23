@@ -3896,7 +3896,10 @@
       "chTitle": "כותרת: {title}",
       "chGrade": "כיתה: {grade}",
       "chRepaired": "{count, plural, one {צורה אחת לא ניתנה לשרטוט והוחלפה או הושמטה} other {# צורות לא ניתנו לשרטוט והוחלפו או הושמטו}}",
-      "chAnswers": "כל תשובה חושבה מתוך הצורה שלה"
+      "chAnswers": "כל תשובה חושבה מתוך הצורה שלה",
+      "greetLine": "ספרו לי מה צריך בדף הזה: הנושא, הכיתה, כמה שאלות.",
+      "greetLineTest": "ספרו לי מה המבחן צריך לכסות: הנושא, הכיתה, כמה שאלות.",
+      "greetLineHas": "בקשו ממני לשנות שאלות, להוסיף עוד או לשנות יחידות או כיתה."
     },
     "manip-chat": {
       "title": "Oomba",
@@ -3951,7 +3954,9 @@
       "placeholder": "בקשו מ-Oomba לשנות את הלוח",
       "placeholderEmpty": "תארו את השיעור שתרצו על הלוח הזה",
       "boardOf": "לוח {tool}",
-      "liveRoom": "חדר חי"
+      "liveRoom": "חדר חי",
+      "greetLine": "ספרו לי איזה שיעור תרצו בלוח {tool} הזה.",
+      "greetLineHas": "ספרו לי מה לשנות בלוח {tool} שלכם."
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4132,7 +4137,12 @@
         "boardNo": "לא הצליח להכין את הלוח הזה",
         "point": "{n, plural, one {נתן נקודה} other {נתן # נקודות}}",
         "pointPick": "הכין לך בחירה",
-        "pointNo": "לא הצליח לתת את הנקודה"
+        "pointNo": "לא הצליח לתת את הנקודה",
+        "places": "עבר על הכיתות והדפים שלך",
+        "nav": "הכין את הדף לפתיחה",
+        "navNo": "לא מצא את הדף הזה",
+        "which": "שאל איזה",
+        "askNo": "לא הצליח לשאול"
       },
       "stepsSum": "{n, plural, one {שלב אחד} other {# שלבים}} · {s} שנ'",
       "prog": {
@@ -4222,7 +4232,51 @@
           "student": "לאיזה תלמיד או תלמידה התכוונת?",
           "reason": "על מה הנקודה?"
         }
+      },
+      "nav": {
+        "offer": "אפתח את {page} ואעשה את זה שם.",
+        "go": "לעבור לשם",
+        "notNow": "לא עכשיו",
+        "went": "נפתח: {page}.",
+        "declined": "נשארנו כאן.",
+        "expired": "עבר זמן, אז לא פתחתי. בקשו שוב כשתהיו מוכנים.",
+        "dashboard": "הלוח של {name}",
+        "class": "{name}",
+        "sheet": "״{name}״",
+        "board": "הלוח {name}"
+      },
+      "which": {
+        "dashboard": "הלוח של איזו כיתה?",
+        "class": "איזו כיתה?",
+        "sheet": "איזה דף עבודה?",
+        "board": "איזה לוח?"
+      },
+      "ask": {
+        "other": "משהו אחר"
       }
+    },
+    "companion-greet": {
+      "morning": "בוקר טוב, {name}",
+      "morningPlain": "בוקר טוב",
+      "afternoon": "צהריים טובים, {name}",
+      "afternoonPlain": "צהריים טובים",
+      "evening": "ערב טוב, {name}",
+      "eveningPlain": "ערב טוב",
+      "night": "עובדים עד מאוחר, {name}?",
+      "nightPlain": "עובדים עד מאוחר?",
+      "back": "חוזרים לעבודה, {name}",
+      "backPlain": "חוזרים לעבודה",
+      "hi": "היי, {name}",
+      "hiPlain": "היי",
+      "friday": "סוף שבוע נעים, {name}",
+      "fridayPlain": "סוף שבוע נעים",
+      "monday": "שבוע חדש, {name}",
+      "mondayPlain": "שבוע חדש",
+      "weekend": "מתכננים בסוף השבוע, {name}?",
+      "weekendPlain": "מתכננים בסוף השבוע?",
+      "line0": "במה אפשר לעזור?",
+      "line1": "על מה עובדים?",
+      "line2": "מאיפה מתחילים?"
     }
   },
   "favorites": {

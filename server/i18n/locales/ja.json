@@ -3895,7 +3895,10 @@
       "chTitle": "タイトル：{title}",
       "chGrade": "学年：{grade}",
       "chRepaired": "描けなかった図が{count}つあり、置き換えるか外しました",
-      "chAnswers": "すべての答えを図から計算しました"
+      "chAnswers": "すべての答えを図から計算しました",
+      "greetLine": "このプリントに必要なことを教えてください。テーマ、学年、問題の数など。",
+      "greetLineTest": "このテストの範囲を教えてください。テーマ、学年、問題の数など。",
+      "greetLineHas": "問題の変更や追加、単位や学年の変更を頼んでください。"
     },
     "manip-chat": {
       "title": "Oomba",
@@ -3950,7 +3953,9 @@
       "placeholder": "ボードの変更をOombaに頼む",
       "placeholderEmpty": "このボードでやりたい授業を書いてください",
       "boardOf": "{tool}のボード",
-      "liveRoom": "ライブルーム"
+      "liveRoom": "ライブルーム",
+      "greetLine": "この{tool}ボードでやりたい授業を教えてください。",
+      "greetLineHas": "{tool}ボードで変えたいことを教えてください。"
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4131,7 +4136,12 @@
         "boardNo": "そのボードは作れませんでした",
         "point": "{n, plural, other {# ポイントあげました}}",
         "pointPick": "選択肢を用意しました",
-        "pointNo": "そのポイントをあげられませんでした"
+        "pointNo": "そのポイントをあげられませんでした",
+        "places": "クラスとページを確認しました",
+        "nav": "開くページを用意しました",
+        "navNo": "そのページが見つかりませんでした",
+        "which": "どれか聞きました",
+        "askNo": "聞けませんでした"
       },
       "stepsSum": "{n}ステップ · {s}秒",
       "prog": {
@@ -4221,7 +4231,51 @@
           "student": "どの生徒のことですか？",
           "reason": "何のポイントですか？"
         }
+      },
+      "nav": {
+        "offer": "{page}を開いて、そこで行います。",
+        "go": "移動する",
+        "notNow": "今はしない",
+        "went": "{page}を開きました。",
+        "declined": "このページのままです。",
+        "expired": "時間がたったので開きませんでした。準備ができたら、もう一度頼んでください。",
+        "dashboard": "{name}のダッシュボード",
+        "class": "{name}",
+        "sheet": "「{name}」",
+        "board": "{name}のボード"
+      },
+      "which": {
+        "dashboard": "どのクラスのダッシュボードですか?",
+        "class": "どのクラスですか?",
+        "sheet": "どのプリントですか?",
+        "board": "どのボードですか?"
+      },
+      "ask": {
+        "other": "その他"
       }
+    },
+    "companion-greet": {
+      "morning": "おはようございます、{name}さん",
+      "morningPlain": "おはようございます",
+      "afternoon": "こんにちは、{name}さん",
+      "afternoonPlain": "こんにちは",
+      "evening": "こんばんは、{name}さん",
+      "eveningPlain": "こんばんは",
+      "night": "遅くまでお疲れさまです、{name}さん",
+      "nightPlain": "遅くまでお疲れさまです",
+      "back": "おかえりなさい、{name}さん",
+      "backPlain": "おかえりなさい",
+      "hi": "こんにちは、{name}さん",
+      "hiPlain": "こんにちは",
+      "friday": "金曜日ですね、{name}さん",
+      "fridayPlain": "金曜日ですね",
+      "monday": "新しい一週間ですね、{name}さん",
+      "mondayPlain": "新しい一週間ですね",
+      "weekend": "週末の準備ですか、{name}さん",
+      "weekendPlain": "週末の準備ですか",
+      "line0": "何をお手伝いしましょう?",
+      "line1": "今日は何に取り組みますか?",
+      "line2": "どこから始めましょう?"
     }
   },
   "favorites": {
