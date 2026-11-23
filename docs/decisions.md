@@ -11664,3 +11664,54 @@ the hybrid: our own Oomba icons for every control, and the Fluent 3D pictures on
 - **Landing.** The layout tour's titles, widget chips and dots, the "Why games work" cards and the how-it-works steps
   printed raw emoji; they go through the helper now. The hero live card's faces (the demo class) are Fluent pictures.
 - Credits: `docs/media-credits.md` (the Oomba icons are ours; Fluent stays credited, MIT).
+
+## Comparison page: the one page that names other products (22 Nov 2026)
+
+The site's rule stays: **never name other products**, in any page, string, prompt or test fixture. The owner made one
+exception, for one page only: `/compare`, "How Oomba compares", may name **Kahoot!** (live quiz games),
+**Classroomscreen** (class dashboard and whiteboard widgets) and **Brainingcamp** (virtual math manipulatives).
+
+- **Where the names live.** Only `server/routes/compare.js` (`COMPETITORS`) and its test. The locale strings never
+  hold them: the trademark notice gets the names as `{names}` (joined for each language). `tests/unit/compare.test.js`
+  scans every text file in the repository outside `docs/` and fails if any other file names them, and checks that the
+  pages around it (/teachers, /research, /compliance, /safety, /privacy, /parents, /learn) never do.
+- **The page.** Public and indexable, with language addresses (`/es/compare`) and a sitemap entry, built like
+  /research and /compliance (routes/trust.js): a short intro of what Oomba is, a table by classroom need (columns Oomba,
+  Kahoot!, Classroomscreen, Brainingcamp), three "Why teachers pick Oomba" points, the /teachers sign-up button (or
+  `/trial` with paid plans on), "Last checked: <date>" (`COMPARE_CHECKED`) and the trademark notice with the site's
+  contact address. /teachers has one link to it, under "See it in action". All 13 locales (en-GB: maths).
+- **The cells.** Yes, Partial, No or Not stated, each with a Fluent mark and its word (never color alone). Another
+  product's cell is only what its own public website clearly states, with the address, the day and the exact words
+  (`CELLS`, docs/compare-sources.md), shown as a footnote; anything not confirmed there is Not stated, never a guess.
+  No prices, theirs or ours (prices stay on /plans; the Free row links there when paid plans are on). The cells were
+  read on 2026-11-22 from each product's own pages (rendered in a browser, folded FAQ answers opened); each footnote
+  shows the address, the day and the quoted words. Pricing pages were read only to see whether a free option exists,
+  and no source links to a pricing page. Pages on other hosts (trust.kahoot.com, support.kahoot.com,
+  media.brainingcamp.com) could not be checked; nothing depends on them.
+- **Oomba's cells** say only what is live. The Manipulatives, their live rooms, place-value regrouping, Figures, the AI
+  drafting and Oomba the teaching companion carry the gate's tag, worded like the "See it in action" note
+  (views/see-it.js): "Teacher plan" while paid plans are on for everyone, "In testing" while only testers have them.
+  The companion row describes the teaching companion as it is on main today ("Oomba teaching companion: one chat
+  everywhere, and live speech"): one chat that knows the page, Figures and the Manipulatives included, words shown as
+  the teacher speaks, audio not kept.
+- **Table on phones.** The table scrolls inside its own box with the need column kept in view (sticky), so the page
+  never scrolls sideways; the box can be reached and scrolled by keyboard.
+- **Legal.** docs/legal-review.md "Comparison page naming Kahoot!, Classroomscreen, Brainingcamp: lawyer review
+  pending".
+- **Simpler (23 Nov 2026).** The owner: "needs to be much more simple". Each cell is now its mark and one word (Yes,
+  Partial, Not stated) and, on Oomba's teaching tools, the small "In testing" / "Teacher plan" tag; no footnote numbers
+  or long text in the table. The detail moved behind a small "i" button in the cell (`public/js/compare-info.js`): a
+  real button with `aria-expanded` and `aria-controls`, its note right after it (so Tab goes into it), opened by tap,
+  click or keyboard, closed by Escape (focus back on the button), a tap outside or Tab past it; placed with
+  `position: fixed` so the table's scroll box never cuts it off. Oomba's note is the cell's detail; another product's
+  Yes or Partial note is the quote, the day it was read and a link to their page. The sources are one native
+  `<details>` at the end, collapsed by default ("Sources and how we checked (24)"). The intro is one sentence, "Why
+  teachers pick Oomba" three short lines, then the sign-up button; "Last checked" and the trademark notice are one
+  short line under the table. Tests: `tests/unit/compare.test.js` and `tests/unit/compare-browser.test.js`.
+- **Rows that open (23 Nov 2026).** The owner: too many "i" boxes. The "i" buttons and their notes are gone. Each need's
+  label is a button with a chevron (`aria-expanded`, `aria-controls`; the whole label is clickable, Enter and Space
+  work), closed by default; it opens a detail row right under it, spanning the table: Oomba's detail, then for each
+  product with Yes or Partial its quoted words, the day read and "Open their page", or "Not stated on their site".
+  Several rows may be open. On phones the detail is pinned to the start of the table's scroll box (sticky, as wide as
+  the box), so it stays readable however the columns are scrolled. `public/js/compare-rows.js` replaces
+  `compare-info.js`.

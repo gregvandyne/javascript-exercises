@@ -44,6 +44,7 @@ import { router as teacherPlanRoutes } from './routes/teacher-plan.js';
 import { router as teacherRoutes } from './routes/teachers.js';
 import { router as parentRoutes } from './routes/parents.js';
 import { router as trustRoutes } from './routes/trust.js';
+import { router as compareRoutes } from './routes/compare.js';
 import { router as seoRoutes } from './routes/seo.js';
 import { router as kitRoutes } from './routes/kit.js';
 import { router as liveRoutes } from './routes/live.js';
@@ -216,7 +217,7 @@ export function createApp() {
   // Oomba Live before the Google routes: /join takes live codes and hands class codes on (routes/live.js).
   // LANDING HOOK (routes/landing.js): just before the home route, "/" with no session is the teacher landing page and
   // /play is today's guest home ("Just Play"). Everyone with a session gets the home route below, unchanged.
-  for (const r of [authRoutes, onboardingRoutes, passwordResetRoutes, familyRoutes, plansRoutes, teacherPlanRoutes, schoolBillingRoutes, quickLiveRoutes, liveRoutes, googleRoutes, gclassroomRoutes, landingRoutes, discoverRoutes, courseRoutes, parentRoutes, trustRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, buildSetupRoutes, studioRoutes, activityPanelRoutes, gameFolderRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, teachLoopRoutes, dashRoutes, manipRoutes, figuresRoutes, companionRoutes, staffInviteRoutes, schoolRoutes, standardsRoutes, csQuestRoutes, cyberRoutes, numberQuestRoutes, moveRoutes, storyRoutes, libraryRoutes, librarySuggestRoutes, progressRoutes, rubricRoutes, lessonRoutes, digestRoutes, infoRoutes, kitRoutes]) app.use(r);
+  for (const r of [authRoutes, onboardingRoutes, passwordResetRoutes, familyRoutes, plansRoutes, teacherPlanRoutes, schoolBillingRoutes, quickLiveRoutes, liveRoutes, googleRoutes, gclassroomRoutes, landingRoutes, discoverRoutes, courseRoutes, parentRoutes, trustRoutes, compareRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, buildSetupRoutes, studioRoutes, activityPanelRoutes, gameFolderRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, teachLoopRoutes, dashRoutes, manipRoutes, figuresRoutes, companionRoutes, staffInviteRoutes, schoolRoutes, standardsRoutes, csQuestRoutes, cyberRoutes, numberQuestRoutes, moveRoutes, storyRoutes, libraryRoutes, librarySuggestRoutes, progressRoutes, rubricRoutes, lessonRoutes, digestRoutes, infoRoutes, kitRoutes]) app.use(r);
 
   app.use('/api', (req, res) => res.status(404).json({ error: tReq(req)('errors.api.notFound') }));
   app.use((req, res) => notFound(req, res));

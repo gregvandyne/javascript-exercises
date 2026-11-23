@@ -451,6 +451,26 @@
       "p1": "Oomba Academy is made for kids aged about 5 to 14, so many of them are under 13. This is how their information is handled today:"
     }
   },
+  "compare": {
+    "title": "How Oomba compares: games, a class dashboard and maths tools in one place",
+    "description": "Oomba Academy beside three other classroom tools, by classroom need: live games, a class dashboard, virtual maths manipulatives, worksheets and an AI teaching companion.",
+    "lead": "Oomba Academy puts learning games, a class dashboard, maths manipulatives, worksheets and a teaching companion in one place.",
+    "rows": {
+      "games": {
+        "oomba": "Learning games for maths, reading, logic and music, and live class games on the big screen.",
+        "oombaNoLive": "Learning games for maths, reading, logic and music."
+      },
+      "manip": {
+        "need": "Virtual maths manipulatives"
+      },
+      "figures": {
+        "oomba": "Exact maths and science diagrams, printable worksheets and tests with answer keys."
+      }
+    },
+    "why": {
+      "l1": "Games, a class dashboard and maths tools with one sign-in."
+    }
+  },
   "live": {
     "starter": {
       "title": {

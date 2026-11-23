@@ -6981,6 +6981,122 @@
       "p": "Schreib an {email}. Für die Daten eines Schulkontos meldet sich die Schule bei uns. Siehe auch unsere <a href=\"{privacy}\">Datenschutzerklärung</a> und wie wir Kinder <a href=\"{safety}\">schützen</a>."
     }
   },
+  "compare": {
+    "name": "Oomba im Vergleich",
+    "link": "Oomba im Vergleich mit anderen Werkzeugen für den Unterricht",
+    "title": "Oomba im Vergleich: Spiele, ein Klassen-Dashboard und Mathe-Werkzeuge an einem Ort",
+    "description": "Oomba Academy neben drei anderen Werkzeugen für den Unterricht, nach Bedarf im Klassenzimmer: Live-Spiele, ein Klassen-Dashboard, virtuelle Mathe-Arbeitsmittel, Arbeitsblätter und eine KI-Begleitung für Lehrkräfte.",
+    "kicker": "Für Lehrkräfte",
+    "h1": "Oomba im Vergleich",
+    "lead": "Oomba Academy vereint Lernspiele, ein Klassen-Dashboard, Mathe-Arbeitsmittel, Arbeitsblätter und eine Begleitung beim Unterrichten an einem Ort.",
+    "table": {
+      "h": "Nebeneinander, nach Bedarf im Klassenzimmer",
+      "caption": "Was jedes Produkt für häufige Bedürfnisse im Klassenzimmer bietet. Die Angaben zu den anderen Produkten stammen von ihren eigenen öffentlichen Websites.",
+      "need": "Bedarf im Klassenzimmer",
+      "hint": "Schieben Sie die Tabelle zur Seite, um alle Produkte zu sehen.",
+      "legend": "Nicht angegeben heißt: Wir haben es auf ihrer öffentlichen Website nicht gefunden.",
+      "open": "Tippen oder klicken Sie auf eine Zeile, um Details und Quellen zu sehen."
+    },
+    "status": {
+      "yes": "Ja",
+      "partial": "Teilweise",
+      "no": "Nein",
+      "notStated": "Nicht angegeben"
+    },
+    "gate": {
+      "plan": "Lehrkraft-Plan",
+      "testing": "In Erprobung"
+    },
+    "rows": {
+      "games": {
+        "need": "Live-Spiele und Quizze",
+        "oomba": "Lernspiele für Mathe, Lesen, Logik und Musik und Live-Klassenspiele auf der großen Leinwand.",
+        "oombaNoLive": "Lernspiele für Mathe, Lesen, Logik und Musik."
+      },
+      "build": {
+        "need": "Schüler bauen eigene Spiele",
+        "oomba": "Der Baumeister: Schüler beschreiben ein Spiel mit eigenen Worten, und er baut es."
+      },
+      "dashboard": {
+        "need": "Widgets für ein Klassen-Dashboard",
+        "oomba": "Das Klassen-Dashboard, kostenlos für jede Klasse."
+      },
+      "routines": {
+        "need": "Timer, Klassendienste und Stimmungsabfragen",
+        "oomba": "Timer, Klassendienste und Stimmungsabfragen auf dem Dashboard."
+      },
+      "eyes": {
+        "need": "Bildschirme anhalten und Werkzeuge an Schüler senden",
+        "oomba": "„Augen nach vorn“ hält jeden Schülerbildschirm an, und „An die Klasse senden“ bringt ein Werkzeug auf ihre Geräte."
+      },
+      "manip": {
+        "need": "Virtuelle Mathe-Arbeitsmittel",
+        "oomba": "18 Werkzeuge, mit Vorlagen, Tafeln, die beim Arbeiten speichern, und Meine Tafeln."
+      },
+      "room": {
+        "need": "Ein Live-Raum, der die Arbeit jedes Schülers zeigt",
+        "oomba": "Jeder Schüler arbeitet in seinem eigenen Feld, während Sie die ganze Klasse sehen. Schüler prüfen ihre Antworten, und Sie öffnen den Raum nach der Pause wieder."
+      },
+      "regroup": {
+        "need": "Bündeln und Entbündeln im Stellenwert",
+        "oomba": "Zehnersystem-Blöcke bündeln sich in Stellenwerttafeln, wenn Schüler tauschen."
+      },
+      "figures": {
+        "need": "Mathe- und Naturwissenschafts-Grafiken, druckbare Arbeitsblätter mit Lösungen",
+        "oomba": "Genaue Diagramme für Mathe und Naturwissenschaften, druckbare Arbeitsblätter und Tests mit Lösungsblatt."
+      },
+      "aiDraft": {
+        "need": "KI-Entwürfe für Arbeitsblätter und Übungen",
+        "oomba": "Beschreiben Sie, was Sie brauchen, und verfeinern Sie es im Chat, mit Rückgängig für jede Änderung. Die App rechnet die Lösungen aus, und ein Entwurf läuft weiter, wenn Sie neu laden."
+      },
+      "companion": {
+        "need": "Eine Begleitung beim Unterrichten (KI-Chat)",
+        "oomba": "Ein Chat in der ganzen App, der weiß, auf welcher Seite Sie sind, auch in Figuren und bei den Arbeitsmitteln. Er findet Spiele nach Klassenstufe, Standard und Zeit und Bücher nach Lesestufe, liest Ihre Unterrichtspläne und Bilder und sucht im Web mit angezeigten Quellen. Ihr Dashboard ändert er nur, wenn Sie bestätigen, mit Rückgängig. Bei der Spracheingabe erscheinen Ihre Worte, während Sie sprechen, und der Ton wird nicht gespeichert. Ihre Schule kann die Grenzen festlegen."
+      },
+      "videos": {
+        "need": "Kurze Videos zu jedem Werkzeug",
+        "oomba": "Einminütige Videos mit Untertiteln, aufgenommen in der echten App."
+      },
+      "grades": {
+        "need": "Vom Kindergarten bis Klasse 8",
+        "oomba": "Für 5- bis 14-Jährige, vom Kindergarten bis Klasse 8."
+      },
+      "languages": {
+        "need": "Angebotene Sprachen",
+        "oomba": "Die ganze Website in {count} Sprachen."
+      },
+      "devices": {
+        "need": "Läuft auf Chromebooks und Handys",
+        "oomba": "Läuft in jedem aktuellen Browser, ohne Installation."
+      },
+      "privacy": {
+        "need": "Datenschutz für Schüler",
+        "oomba": "Keine Werbung, keine Werbe- oder Tracking-Cookies, und wir verkaufen nie persönliche Daten. Keine E-Mail-Adresse der Schüler nötig."
+      },
+      "free": {
+        "need": "Ein kostenloses Angebot",
+        "oomba": "Alle Spiele, Ihre Klassen, Lektionen, das Notenbuch und das Klassen-Dashboard sind kostenlos.",
+        "oombaPlans": "Alle Spiele, Ihre Klassen, Lektionen, das Notenbuch und das Klassen-Dashboard sind kostenlos. Der Lehrkraft-Plan fügt die Unterrichtswerkzeuge hinzu: <a href=\"{plans}\">die Pläne ansehen</a>."
+      }
+    },
+    "why": {
+      "h": "Warum Lehrkräfte Oomba wählen",
+      "l1": "Spiele, ein Klassen-Dashboard und Mathe-Werkzeuge mit einer Anmeldung.",
+      "l2": "Schüler bauen eigene Spiele, statt sie nur zu spielen.",
+      "l3": "Keine Werbung, und wir verkaufen nie Daten, in {count} Sprachen."
+    },
+    "sources": {
+      "read": "gelesen am {date}",
+      "sites": "Ihre öffentlichen Websites:",
+      "summary": "Quellen und wie wir geprüft haben ({count})",
+      "how": "Wir haben am {date} die eigenen öffentlichen Seiten jedes Produkts gelesen. Jedes Ja oder Teilweise zeigt die Worte auf ihrer Seite, die es belegen. Nicht angegeben heißt: Wir haben es dort nicht gefunden."
+    },
+    "line": "Zuletzt geprüft: {date}. {names} sind Marken ihrer Inhaber; Oomba ist nicht mit ihnen verbunden. <a href=\"{href}\">Sagen Sie uns, wenn sich etwas geändert hat</a>.",
+    "detail": {
+      "link": "Ihre Seite öffnen",
+      "notStated": "Auf ihrer Website nicht angegeben"
+    }
+  },
   "connections": {
     "title": "Erwachsenen-Kontakte",
     "heading": "Meine Erwachsenen-Kontakte",
