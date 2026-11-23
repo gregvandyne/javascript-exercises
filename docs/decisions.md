@@ -11696,3 +11696,7 @@ the hybrid: our own Oomba icons for every control, and the Fluent 3D pictures on
   Builder asks first now) and lets the demo lessons' titles through its name check.
 - Tests: `tests/unit/marketing-images.test.js` (every picture a marketing page points at is a file, in each theme, plans
   off and on; alt text; the themed sources; the share pictures).
+- **The two older videos** (/teachers/live `oomba-demo`, /parents `oomba-parents`) are recorded again on the current app with
+  scripts/demo-video (the live host's steps, the Builder, sign-up, friends and publish as they are now), with the owner's
+  AtlasAudio track. Titles, cards and captions have no em dashes, and the live video says what joining is now: students
+  join an open room with a code and get a safe made-up name (a class game is the signed-in class).

@@ -1,12 +1,13 @@
 // Oomba Live, frame by frame: the teacher picks Quest Race + Science / Ages 10-11 and opens a room; a phone types the
 // code and joins (two more join off screen); a question is answered and the race moves. Clips: live-pick, live-lobby(-host,-phone), live-game(-host,-phone).
 import { chromium } from 'playwright';
+import { launchOptions } from '../chromium.js';
 import fs from 'node:fs';
 import { Capture, VCLOCK, cursorInit, setCursor, glide } from './vc.mjs';
 const B = process.env.LIVE_B || 'http://localhost:3350';
 const login = async (page, u, pw) => { await page.goto(B + '/login'); await page.fill('#username', u); await page.fill('#password', pw); await Promise.all([page.waitForURL(x => !x.pathname.startsWith('/login')), page.click('button[type=submit]')]); };
 const C = '/tmp/claude-0/demo2/clips';
-const br = await chromium.launch({ args: ['--use-gl=angle', '--ignore-gpu-blocklist'] });
+const br = await chromium.launch(launchOptions({ args: ['--use-gl=angle', '--ignore-gpu-blocklist'] }, { headless: true }));
 const hc = await br.newContext({ viewport: { width: 1440, height: 810 }, deviceScaleFactor: 4 / 3, extraHTTPHeaders: { 'x-forwarded-for': '10.6.7.1' } });
 await hc.addInitScript(() => {
   const fix = root => { const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); for (let n; (n = w.nextNode());) if (/localhost:33\d\d/.test(n.nodeValue)) n.nodeValue = n.nodeValue.replace(/(https?:\/\/)?localhost:33\d\d/g, 'oomba.ai'); };
@@ -29,13 +30,16 @@ let cap = new Capture([host], `${C}/tmp-pick`);
 await cap.advance(600); await cursorInit(host); await host.evaluate(() => window.scrollTo(0, 0)); await setCursor(host, 1440 * 0.62, 810 * 0.72);
 await cap.seconds(0.4);
 await glide(cap, host, host.locator('label:has(input[value="mode:quest-race"])').first(), { sec: 0.5 }); await cap.seconds(0.25);
+// The host page is a few steps now (game, questions, who can join, open): Next between them.
+const next = async () => { await glide(cap, host, host.locator('[data-go="next"]:visible').first(), { sec: 0.4 }); await cap.seconds(0.35); };
+await next();
 await glide(cap, host, host.locator('#lv-bank-subject'), { sec: 0.45 }); await host.selectOption('#lv-bank-subject', { label: 'Science' }); await cap.seconds(0.3);
 await glide(cap, host, host.locator('#lv-bank-level'), { sec: 0.4 }); await host.selectOption('#lv-bank-level', { label: 'Ages 10–11' }); await cap.seconds(0.25);
 await glide(cap, host, host.locator('#lv-bank-count'), { sec: 0.35 }); await host.selectOption('#lv-bank-count', { label: '5' }); await cap.seconds(0.2);
-// scroll down smoothly, driven per frame (the cursor stays put on screen)
-{ const maxY = await host.evaluate(() => document.documentElement.scrollHeight - innerHeight); const y0 = await host.evaluate(() => scrollY); const n = 16;
-  await cap.frames(n, i => host.evaluate(y => window.scrollTo(0, y), y0 + (maxY - y0) * (1 - Math.pow(1 - (i + 1) / n, 3)))); }
+await next();
+// Who can join: anyone with the code, as guests with safe made-up names (a class game is the signed-in class only).
 await glide(cap, host, host.locator('label:has(input[value="open"])').first(), { sec: 0.4 }); await host.check('input[value="open"]').catch(() => {}); await cap.seconds(0.2);
+await next();
 const open = host.locator('button:has-text("Open the room")').first();
 await glide(cap, host, open, { sec: 0.45, click: false }); await cap.seconds(0.15);
 cap.encode('live-pick', { host: [1920, 1080] }); log('pick captured');

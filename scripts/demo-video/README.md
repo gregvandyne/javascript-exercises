@@ -13,6 +13,8 @@ timeline (`glide`, `setCursor`).
 
 ## Steps
 
+The recording scripts launch the pre-installed Chromium (`scripts/chromium.js`: BRB_CHROMIUM, else /opt/pw-browsers).
+
 1. Run a local server with demo data and the mock Builder (no AI key needed), e.g.
    `PORT=3349 BRB_DATA_DIR=/tmp/claude-0/demo2/data BRB_SNAPSHOTS=0 node server/index.js`
    (seed the official games with `node scripts/seed.js` against that data dir and make the made-up accounts used by the
@@ -22,7 +24,8 @@ timeline (`glide`, `setCursor`).
 2. Record the clips (each takes `land` or `port`):
    - `node scripts/demo-video/rec-games.mjs land` - Gulp City, Atlas Quest, Would You Rather, Castle Clash
    - `node scripts/demo-video/rec-builder.mjs land` - a kid types an idea, the build and the automatic playtest, playing it
-   - `node scripts/demo-video/rec-live.mjs land` - Oomba Live: picking a game, a phone joining, a question and the race
+   - `LIVE_B=http://localhost:3350 node scripts/demo-video/rec-live.mjs land` - Oomba Live: the host steps (game, questions,
+     an open room for guests, so phones join with a code and a made-up name), a phone joining, a question and the race
    - `node scripts/demo-video/rec-safety.mjs land` - sign-up with a made-up name, a friend code, the publish choices
 3. Captions and cards: `node scripts/demo-video/cards.mjs` (teacher) and `node scripts/demo-video/cards-parents.mjs`.
 4. Cut the silent masters: `node scripts/demo-video/assemble.mjs land|port` (teacher, into `/tmp/claude-0/demo/v2`)
@@ -36,7 +39,9 @@ timeline (`glide`, `setCursor`).
    (101.16 s into the track) on each end card:
    `fit-music.mjs teacher <track> --hit 101.16 --fade-in 0.5` and `fit-music.mjs parents <track> --hit 101.16 --fade-in 0.5`.
 6. Mix: `node scripts/demo-video/mix.mjs <teacher|parents>` (music only) writes `<prefix>-16x9.mp4`, `-9x16.mp4` and the
-   720p `-web.mp4`, normalised to -16 LUFS. Copy the web cut, poster and captions to `public/video/`.
+   720p `-web.mp4`, normalised to -16 LUFS. Copy the web cut, poster and captions to `public/video/`. The poster is the
+   title frame of the web cut: `ffmpeg -ss 3.2 -i <prefix>-web.mp4 -frames:v 1 -q:v 3 <prefix>-poster.jpg`; the captions
+   are the assemble script's `video-16x9.en.vtt`. No em dashes in titles, cards or captions (a comma or a colon).
    The tool videos in "See it in action" (`server/views/see-it.js`) are `public/video/oomba-<id>.mp4`, `-poster.jpg`
    and `.en.vtt`; a new one is one entry in its `VIDEOS` list plus `teachers.videos.<id>.*` in the locale files.
 7. Check: `node scripts/demo-video/sheet.mjs 0.5 5x5 384 <video>` makes a contact sheet; look at it, and run

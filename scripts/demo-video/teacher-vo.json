@@ -1,7 +1,7 @@
 [
   { "start": 0.45, "scene": "hook: Gulp City (0.00)", "text": "Want your whole class cheering during a quiz? Meet Oomba Live." },
   { "start": 5.2, "scene": "teacher picks subject and level (4.85)", "text": "Pick any subject and any level, and you're ready in seconds." },
-  { "start": 10.2, "scene": "students join with a code (9.90)", "text": "Students join with a simple code. No accounts, no setup." },
+  { "start": 10.2, "scene": "students join with a code (9.90)", "text": "Students join with a simple code and get a safe made-up name. No setup." },
   { "start": 14.7, "scene": "the race (14.35)", "text": "Every right answer moves their racer forward, so the whole room is in the race, and everyone is learning." },
   { "start": 22.5, "scene": "the Builder: a kid types an idea (22.15)", "text": "And when the quiz is over? Kids become the makers." },
   { "start": 26.3, "scene": "the Builder builds and playtests", "text": "They describe a game in their own words. The Builder makes it, then plays it to check that it works." },

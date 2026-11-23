@@ -27,11 +27,11 @@ function seg(name, inputs, filter, d, text) {
 const bj = JSON.parse(fs.readFileSync(`${C}/builder-${O}.json`, 'utf8'));
 const D = { hook: 5.0, learn: 11.0, build: 14.0, play: 4.6, signup: 5.0, friends: 3.4, publish: 3.746, end: 5.0 };
 const CAP = {
-  hook: 'Screen time you can feel good about. Learning games kids love — and they can build their own.',
+  hook: 'Screen time you can feel good about. Learning games kids love, and they can build their own.',
   learn: 'Learning games they actually want to play.',
   play: 'Then they play it!',
-  signup: 'A made-up name — no email, no age.',
-  friends: 'Friends only with a code — no chat with strangers.',
+  signup: 'A made-up name: no email, no age.',
+  friends: 'Friends only with a code: no chat with strangers.',
   publish: 'Games stay private until they choose to share.',
   end: 'Screen time you can feel good about. Free to play, no ads: oomba.ai/parents',
 };
@@ -89,6 +89,6 @@ let vtt = 'WEBVTT\n\n';
 segs.forEach((sg, i) => {
   const a = starts[i] + (i ? X : 0) + 0.2, b = starts[i] + sg.d - 0.1;
   if (sg.text) vtt += `${ts(a)} --> ${ts(b)}\n${sg.text}\n\n`;
-  else if (sg.name === '3a-build') { const mid = starts[i] + buildCut; vtt += `${ts(a)} --> ${ts(mid)}\nThen they build their own — just by describing it.\n\n${ts(mid)} --> ${ts(b)}\nThe Builder makes it — and plays it to check it works.\n\n`; }
+  else if (sg.name === '3a-build') { const mid = starts[i] + buildCut; vtt += `${ts(a)} --> ${ts(mid)}\nThen they build their own, just by describing it.\n\n${ts(mid)} --> ${ts(b)}\nThe Builder makes it, and plays it to check it works.\n\n`; }
 });
 fs.writeFileSync(out.replace(/\.mp4$/, '.en.vtt'), vtt);
