@@ -31,5 +31,65 @@ export default {
     ],
     "unit": "tonnes of cloth",
     "fig": { "Wheat (tons)": "Wheat (tonnes)", "Cloth (tons)": "Cloth (tonnes)" }
+  },
+  "chromatography.contains": {
+    "work": [
+      "A dye in X is a known dye only if its spot is the same colour and has travelled the same distance (the same Rf).",
+      "Compare each spot of X with the spots of A, B and C.",
+      "Dye {choice} is not in ink X."
+    ]
+  },
+  "phaseDiagram": {
+    "work": [
+      "The solid is left of the fusion line, the liquid between it and the vaporisation curve, and the gas below and to the right.",
+      "Find which region point A is in.",
+      "At point A the substance is a {choice}."
+    ]
+  },
+  "phaseDiagram.change": {
+    "choices": [
+      "melting",
+      "vaporisation",
+      "sublimation"
+    ]
+  },
+  "equilibrium.shift": {
+    "q": "N₂ + 3H₂ ⇌ 2NH₃ (the forward reaction is exothermic). At 8 minutes the equilibrium was disturbed as labelled. Which way did it shift?",
+    "choices": [
+      "forward, towards the products",
+      "in reverse, towards the reactants"
+    ]
+  },
+  "circularMotion.direction": {
+    "q": "The object goes round anticlockwise at a steady speed. Which way does its acceleration point at this moment?",
+    "work": [
+      "In uniform circular motion the acceleration points to the centre of the circle.",
+      "From where the object is, the centre is {choice}.",
+      "Answer: {choice}."
+    ]
+  },
+  "fields": {
+    "q": "The current in the wire flows out of the page. Which way does the magnetic field point at P?",
+    "work": [
+      "Right-hand grip rule: point your thumb out of the page, and your fingers curl anticlockwise.",
+      "Going anticlockwise around the wire, the field at P points {choice}.",
+      "Answer: {choice}."
+    ]
+  },
+  "torque": {
+    "q": "Take clockwise as positive. What is the resultant moment on the beam about the pivot?",
+    "work": [
+      "Clockwise: {w2} × {=(b - 5)/10} = {=w2*(b - 5)/10} N·m",
+      "Anticlockwise: {w1} × {=(5 - a)/10} = {=w1*(5 - a)/10} N·m",
+      "Resultant = {=w2*(b - 5)/10} − {=w1*(5 - a)/10} = {=(w2*(b - 5) - w1*(5 - a))/10} N·m"
+    ]
+  },
+  "torque.balance": {
+    "q": "Where must the {=g*n1} N load hang to balance the beam? Give its distance x from the pivot.",
+    "work": [
+      "Balanced: the clockwise moment equals the anticlockwise moment.",
+      "{=g*n1} × x = {=g*n2} × {=n1/10}",
+      "x = {=g*n2*n1/10} ÷ {=g*n1} = {=n2/10} m"
+    ]
   }
 };

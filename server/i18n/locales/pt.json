@@ -3659,7 +3659,14 @@
         "image": "A imagem",
         "electrons": "Os elétrons",
         "values": "Os valores",
-        "reading": "A leitura"
+        "reading": "A leitura",
+        "regions": "As regiões",
+        "stresses": "As perturbações",
+        "formulas": "As fórmulas",
+        "names": "Os nomes",
+        "data": "Os dados",
+        "name": "O nome da forma",
+        "electrodes": "Os eletrodos"
       },
       "draw": {
         "modeLabel": "Como fazer a figura",
@@ -13299,6 +13306,34 @@
         "name": "Ondas",
         "desc": "Ondas transversais e longitudinais"
       },
+      "circularMotion": {
+        "name": "Movimento circular",
+        "desc": "Velocidade, aceleração centrípeta e forças"
+      },
+      "fields": {
+        "name": "Campos elétricos e magnéticos",
+        "desc": "Linhas de campo de cargas, placas, ímãs e fios"
+      },
+      "lever": {
+        "name": "Alavancas",
+        "desc": "Alavancas interfixas, inter-resistentes e interpotentes"
+      },
+      "torque": {
+        "name": "Torque",
+        "desc": "Vigas sobre um pivô, dois apoios ou uma parede"
+      },
+      "pendulum": {
+        "name": "Pêndulo",
+        "desc": "Uma oscilação com ângulo, comprimento e altura"
+      },
+      "spring": {
+        "name": "Molas",
+        "desc": "Lei de Hooke, em série e em paralelo, oscilação"
+      },
+      "rollerCoaster": {
+        "name": "Montanha-russa",
+        "desc": "Alturas, um loop e rapidezes pela energia"
+      },
       "reading": {
         "name": "Leitura de escala",
         "desc": "Termômetros, provetas, réguas e paquímetros"
@@ -13363,6 +13398,34 @@
         "name": "Níveis de energia do átomo",
         "desc": "Transições eletrônicas, comprimentos de onda e séries"
       },
+      "chromatography": {
+        "name": "Cromatografia",
+        "desc": "Cromatogramas em papel com medidas de Rf"
+      },
+      "galvanicCell": {
+        "name": "Pilhas eletroquímicas",
+        "desc": "Pilhas galvânicas com ponte salina e medidor"
+      },
+      "phaseDiagram": {
+        "name": "Diagrama de fases",
+        "desc": "Pressão em função da temperatura, pontos triplo e crítico"
+      },
+      "bondEnergy": {
+        "name": "Curva de energia de ligação",
+        "desc": "Energia potencial em função da distância internuclear"
+      },
+      "equilibrium": {
+        "name": "Gráfico de equilíbrio",
+        "desc": "Concentração em função do tempo e princípio de Le Châtelier"
+      },
+      "rateLaw": {
+        "name": "Gráficos da lei de velocidade",
+        "desc": "[A], ln[A] e 1/[A] em função do tempo, conforme a ordem"
+      },
+      "vsepr": {
+        "name": "Geometria VSEPR",
+        "desc": "Formas das moléculas em 3D, ângulos de ligação e pares isolados"
+      },
       "populationGrowth": {
         "name": "Crescimento populacional",
         "desc": "Curvas J e S, K e as fases de crescimento"
@@ -13398,6 +13461,10 @@
       "osmosis": {
         "name": "Osmose",
         "desc": "Células, tubos em U e sacos em soluções"
+      },
+      "cladogram": {
+        "name": "Cladograma",
+        "desc": "Táxons, características compartilhadas e árvores filogenéticas"
       },
       "supplyDemand": {
         "name": "Oferta e procura",

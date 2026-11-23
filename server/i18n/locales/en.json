@@ -3936,7 +3936,14 @@
         "image": "The image",
         "electrons": "The electrons",
         "values": "The values",
-        "reading": "The reading"
+        "reading": "The reading",
+        "regions": "The regions",
+        "stresses": "The stresses",
+        "formulas": "The formulas",
+        "names": "The names",
+        "data": "The data",
+        "name": "The shape's name",
+        "electrodes": "The electrodes"
       },
       "draw": {
         "modeLabel": "How to make the figure",
@@ -14018,6 +14025,34 @@
         "name": "Waves",
         "desc": "Transverse and longitudinal waves"
       },
+      "circularMotion": {
+        "name": "Circular motion",
+        "desc": "Velocity, centripetal acceleration and forces"
+      },
+      "fields": {
+        "name": "Electric and magnetic fields",
+        "desc": "Field lines of charges, plates, magnets and wires"
+      },
+      "lever": {
+        "name": "Levers",
+        "desc": "Class 1, 2 and 3 levers with the effort worked out"
+      },
+      "torque": {
+        "name": "Torque",
+        "desc": "Beams on a pivot, two supports or a wall"
+      },
+      "pendulum": {
+        "name": "Pendulum",
+        "desc": "A swing with its angle, length and height"
+      },
+      "spring": {
+        "name": "Springs",
+        "desc": "Hooke's law, series and parallel, oscillation"
+      },
+      "rollerCoaster": {
+        "name": "Roller coaster",
+        "desc": "Heights, a loop and speeds from energy"
+      },
       "reading": {
         "name": "Reading a scale",
         "desc": "Thermometers, cylinders, rulers and calipers"
@@ -14082,6 +14117,34 @@
         "name": "Atomic energy levels",
         "desc": "Electron transitions, wavelengths and series"
       },
+      "chromatography": {
+        "name": "Chromatography",
+        "desc": "Paper chromatograms with Rf measurements"
+      },
+      "galvanicCell": {
+        "name": "Electrochemical cells",
+        "desc": "Galvanic cells with a salt bridge and a meter"
+      },
+      "phaseDiagram": {
+        "name": "Phase diagram",
+        "desc": "Pressure against temperature, triple and critical points"
+      },
+      "bondEnergy": {
+        "name": "Bond energy curve",
+        "desc": "Potential energy against internuclear distance"
+      },
+      "equilibrium": {
+        "name": "Equilibrium graph",
+        "desc": "Concentration against time and Le Châtelier's principle"
+      },
+      "rateLaw": {
+        "name": "Rate law graphs",
+        "desc": "[A], ln[A] and 1/[A] against time, by order"
+      },
+      "vsepr": {
+        "name": "VSEPR shapes",
+        "desc": "3D molecular shapes, bond angles and lone pairs"
+      },
       "populationGrowth": {
         "name": "Population growth",
         "desc": "J- and S-curves, K and the growth phases"
@@ -14117,6 +14180,10 @@
       "osmosis": {
         "name": "Osmosis",
         "desc": "Cells, U-tubes and bags in solutions"
+      },
+      "cladogram": {
+        "name": "Cladogram",
+        "desc": "Taxa, shared traits and phylogenetic trees"
       },
       "supplyDemand": {
         "name": "Supply and demand",

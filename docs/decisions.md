@@ -11810,3 +11810,124 @@ felt like homework, and open questions made the teacher type what a tap could sa
   (laptop and iPhone 13: greeting with no chips; School page to dashboard with Go there, the confirm card without
   retyping, Apply, Undo; two classes give a choice card first; Not now leaves nothing pending; no console errors, no
   sideways scroll).
+## Oomba Figures 1.6.0: seven new chemistry kinds (23 Nov 2026)
+
+The owner: "Watch this video end to end and include everything they have ... Also visit the site [the source's chemistry
+site] and [its physics site] to make sure we have everything" (the sites' names left out, as docs/third-party.md asks), and then: "Update based on the repo if all of it is there."
+The source project (the one ported since 1.1.0, docs/third-party.md) added seven chemistry generators after our port
+at `3bb43190`; at `9ed3093` its chemistry site lists them beside the ones we have: Chromatography, Electrochemical
+Cells, Phase Diagram, Bond Energy Curve, Equilibrium Graph, Rate Law Graphs and VSEPR Shapes. Every other generator on
+that site is already in Oomba Figures. The physics generators it added (and the biology cladogram) are a
+separate batch, 1.7.0.
+
+- **A new version, like 1.5.0.** Oomba Figures 1.6.0 is a new version folder: the core and the same seven packs (no new
+  pack; the chem pack gains `chromatography`, `galvanicCell`, `phaseDiagram`, `bondEnergy`, `equilibrium`, `rateLaw`
+  and `vsepr`). 1.0.0 to 1.5.0 have shipped and stay byte for byte (the lock, and git at the 1.5.0 release); every
+  catalog figure 1.5.0 drew draws the same bytes in 1.6.0 and checks and solves the same (`tests/unit/figures-v160.test.js`).
+  New builds, the Builder's tags and the Figures product pin 1.6.0; the CSP, the scanner and the screenshot worker list
+  the eight new files.
+- **Ported: the science only.** Each new kind's pure logic is ported into `figures/src/ported/` with its note
+  (`chromatography.js`, `cells.js`, `phase.js`, `morse.js`, `equilibrium.js`, `kinetics.js`, `vsepr.js`), from the
+  source's state after its own review fixes (`6e613e8`: niceRange down to 0.000001, a·r₀ = 3 for the Morse wells, the
+  zero-order data stopping before [A] reaches 0, ln[A] to 3 decimal places, XeOF₄'s O at the apex, radicals' angles).
+  The checks, the answers (`OF.solve`), the label placement and every drawing are Oomba's own (`figures/src/
+  chromatography.js`, `cells.js`, `phase.js`, `chemgraphs.js`, `vsepr.js`); no Svelte component, settings panel, page
+  address, example or preview picture is taken.
+- **Judgment calls.** VSEPR: the source builds each molecule from its Lewis structure engine, which is not ported (too
+  large for one kind); Oomba has its own table of 48 molecules and ions (each one's central atom, outer atoms, bond
+  orders, lone pairs and charge) and takes one's own `{ central, outer, lone }`, refused unless the electrons add up.
+  The source's drag-to-turn view is `yaw` and `pitch`. Phase diagram: a lettered mark names a region ("liquid") rather
+  than a temperature and pressure, since a real substance's diagram is not to scale and a point would be drawn where it
+  is not; the place is found well inside the region, clear of the boundaries, guides and labels. The kind names fit the
+  Canvas kit's 20 characters (`galvanicCell` for Electrochemical Cells, `bondEnergy`, `rateLaw`). Generators deal a
+  metal by atomic number and a substance, mark, stress kind or molecule by its place in the kind's list, as the
+  pedigree's mode is dealt, because the gen language's answers are numbers; the figures still take the words.
+- **Grayscale.** VSEPR's ball-and-stick prints (and with `gray: true` shows) one gray per element, set apart by hand
+  as the source does (C and O, N and H, S and F never print alike); the equilibrium and bond energy lines are told apart
+  by dash as well as color; a chromatogram's spots keep their color with a darker edge, and dyes are matched by how far
+  they traveled, so a gray copy still answers its questions.
+- **Generators (21).** Rf of a dye, which known dye a mixture lacks (a spot of the same color at another height is
+  another dye); E°cell from the potentials shown, the anode, the electrons' way along the wire, the anode's E° (negative
+  answers); the phase at a lettered point, the change of state along an arrow, the triple point read off a grid
+  (negative temperatures); the bond length, the energy at the bottom of the well (negative), the strongest bond; Kc from
+  the graph's levels, the shift after a labeled stress, the stress that was made (hidden); the order from the three
+  graphs, k from the ln[A] slope, the half-life. Each key is its figure's OF.solve value, and the generator audit
+  (`figures-gen-audit`) checks the student sheet never shows the answer. Choice generators keep to 4 options (Oomba
+  Canvas's self-test takes 2 to 4): the change of state is asked for heating (melting, vaporization, sublimation) and
+  the VSEPR shape among bent, trigonal planar, trigonal pyramidal and tetrahedral. Number generators whose answers can
+  be negative are checked in every language the way the Figures product deals them (the last worked line says the
+  answer), since Oomba Canvas's keypad has no minus sign (`figures-gen-words`).
+- **The product.** Catalog entries with presets (the first is each card's default, its switches that default on given
+  as true so the editor shows them on), options and hide parts; names and descriptions and the new hide parts' names
+  in the 12 site languages; the generators' words in all 13; figure words in 12; Builder trigger words and the template
+  drafter's topics. The "Draw it" grid stays with the shapes and the coordinate grid: none of these figures is drawn
+  corner by corner. Print, Assign and the lesson Figure step needed no change (tested).
+- **Fixes to kinds already ported.** Every source commit since `3bb43190` was read. Only two touch code we ported:
+  `88ba74d`/`6e613e8` move the heating curve's `niceRange` into shared code and let it reach steps down to 0.000001
+  with tidied products (our `hcNiceRange` never sees spans that small, and its rounding already removes the noise, so
+  the heating curve draws the same; the new kinds use the new range), and `0838979` writes a graph's corner numbers on
+  their own lines when its axes meet at two different values (Oomba's axes always did). The rest are the new
+  generators, examples, previews, help text in the settings panels (`f7be0c7`, `4e74759`), the physics generators'
+  own fixes (`86d40c0`, `9e725a0`) and moving the pulley's support drawing into shared code (`f337ad2`; Oomba's pulley
+  is its own). No fix applied to 1.6.0's older kinds, so they draw as in 1.5.0.
+- **Tests.** figures-v160 (frozen versions, latest pin, byte-identical 1.5.0 figures, the new kinds in the frozen file),
+  figures-chem16 (the science against known values, refusals, solve, hide, print grays, languages, the generators,
+  worksheets with Assign and the lesson step), figures-chem16-words (12 languages and look-alikes), the generator audit,
+  figures-gen-words, and the new editors in Chromium (figures-browser).
+
+## Oomba Figures 1.7.0: seven new physics kinds and the cladogram (23 Nov 2026)
+
+- **What the owner asked.** "include everything they have" and "Update based on the repo if all of it is there". The
+  source project (docs/third-party.md, "ported") added eight generators outside chemistry since our port at
+  `3bb43190`: circular motion, electric and magnetic fields, the lever, torque, the pendulum, the spring and the roller
+  coaster on the physics site, and the cladogram on the biology site, with review fixes (`9e725a0`, `86d40c0`,
+  `4e74759`) and shared support code (`f337ad2`). All eight are in, at `9ed3093`. Its seven new chemistry kinds are
+  Figures 1.6.0, built at the same time on its own branch; this is 1.7.0 so 1.6.0 can merge first.
+- **A new version, like 1.5.0.** Oomba Figures 1.7.0 is a new version folder: the core and the same seven packs (no new
+  pack; physics gains `circularMotion`, `fields`, `lever`, `torque`, `pendulum`, `spring`, `rollerCoaster`; bio gains
+  `cladogram`). 1.0.0 to 1.6.0 stay byte for byte (1.6.0 merged first and is frozen like the rest; 1.7.0 carries its
+  chemistry too). Every figure 1.6.0 draws, its seven chemistry kinds included, draws the same bytes in 1.7.0
+  (`tests/unit/figures-v170.test.js` compares against 1.6.0). Built by script only: until 1.7.0 ships, drop its lock entries and rebuild (`node -e` on
+  `figures/SHIPPED.json`, then `node scripts/build-figures.js`; the command is in the commit message).
+- **Ported: logic and layout; Oomba's own: data, checks, answers, drawing.** The source draws these figures from labels:
+  its lever works out the effort, and its torque generator works out moments, but its circular motion, pendulum, spring
+  and roller coaster compute nothing (k, v, h and the like are typed words). Oomba's data is numbers, so `OF.solve`
+  gives the answers: v²/r and mv²/r and the tension at the top and bottom of a vertical circle; the field's direction
+  and strength at a point; the effort and mechanical advantage; net torque, the balancing value and place, support and
+  cable forces; the period 2π√(L/g), the drop L(1 − cos θ) and the speed √(2gh); kx, ½kx², series and parallel k;
+  speeds on the track by energy, the fastest point and the loop's least height 2.5R; how many taxa share a trait, which
+  trait came first, a taxon's closest relative.
+- **Refused, not drawn wrong.** A car too fast over a hill or too slow at the top of a loop, a point on a charge, arms
+  that do not suit the lever's class, a cable that would push, two supports in one place, a hanging spring given both a
+  mass and an extension, a rough stretch (the speeds stop there: friction takes energy the figure cannot know), a mark
+  naming a trait the tree has twice.
+
+| Source item | Status | Oomba | Notes |
+| --- | --- | --- | --- |
+| Circular Motion: top view (nothing, string, turntable, road; up to 8 places), vertical circle (string, loop, hill, dip), conical pendulum | Ported layout | `circularMotion` | Arrow sizes and contact forces ported; numbers, directions and drawing Oomba's. The source's notation choice (arrow over or bold) is left out. |
+| Electric and Magnetic Field: one, opposite, like charges; plates; bar magnet; wire | Ported | `fields` | Field tracing ported; added: up to 4 charges of any size up to ±3 and named points with their field. |
+| Lever: class 1, 2, 3; load as block or arrow; units | Ported | `lever` | Arms that do not suit the class are refused instead of swapped. Label sizes left out. |
+| Torque: pivot, two supports, wall with or without cable; up to 6 loads; beam weight; masses | Ported | `torque` | Mirroring left out; the balancing place added. |
+| Pendulum: one bob with forces, the swing with A, B, C | Ported layout | `pendulum` | Length, mass and g added for the answers. |
+| Spring: hanging or horizontal; one, before and after, three positions; 1 to 3 springs in series or parallel | Ported coil | `spring` | k, extension and mass added for the answers; the layout is Oomba's. |
+| Roller Coaster: points, loop, object, velocity, rough stretches | Ported curve | `rollerCoaster` | Speeds and the loop's least height added; the length mark under a rough stretch is a μₖ label only. |
+| Cladogram: diagonal or rectangular; ready-made trees; blank names and traits; node numbers | Ported | `cladogram` | The tree editor's pointer edits become data (a nested tree, a ladder or letters); marks added for questions. |
+| Shared support hatching, label placer, settings and address format | Not ported | | Oomba draws its own hatching and places its labels. |
+
+- **Questions.** Three generators per kind, 24 in all, each answer its figure's `OF.solve` value: circular motion
+  (centripetal acceleration, the net force, the acceleration's direction), fields (the field's direction at P by the
+  right-hand rule, attract or repel from the lines with the signs hidden, which point is stronger), lever (the effort,
+  the mechanical advantage, the class), torque (net torque, where a load must hang to balance, the force at a support),
+  pendulum (the period, the speed at the bottom, the energy at the top), spring (F = kx, ½kx², a hanging mass's stretch),
+  roller coaster (the speed at a point, where it is fastest, the loop's least height), cladogram (how many animals share
+  a boxed trait, which of two traits came first, the closest relative). Words in all 12 other site languages, en-GB for
+  anticlockwise and centre.
+- **Judgment calls.** The net torque question keeps clockwise positive and, since the merge with 1.6.0, deals
+  counterclockwise (negative) answers too, as `OF.solve.torque.net` is signed: Oomba Canvas's keypad has no minus key,
+  so a number generator that can deal a negative answer is checked the way the Figures product deals it, by its last
+  worked line in every language (`figures-gen-words`, the rule 1.6.0 brought). Choice generators keep 2 to 4 options
+  for the Canvas self-test. "Draw it" (the dot grid) is for shapes and the coordinate
+  grid only, so these kinds use the typed editor. The kind is `fields` (the source's name); the catalog calls it
+  "Electric and magnetic fields".
+- **Tests.** figures-phys17 (answers against the formulas, refusals, hide, grayscale print, languages, generators),
+  figures-v170 (frozen versions, the latest pin, byte-identical earlier figures), the gen audit and the gen words.
