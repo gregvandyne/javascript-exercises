@@ -631,9 +631,9 @@ function pickOne(u, row, turn, value) {
 }
 
 // ---------------------------------------------------------------- the AI's tools
-export const TOOL_NAMES = Object.freeze(['explainOomba', 'getPageContext', 'searchGames', 'searchBooks', 'searchLessons', 'proposeDashboardChange', 'startBuild', 'readUpload', 'givePoint']);
+export const TOOL_NAMES = Object.freeze(['explainOomba', 'getPageContext', 'searchGames', 'searchBooks', 'searchLessons', 'proposeDashboardChange', 'startBuild', 'readUpload', 'givePoint', 'findMyPages', 'proposeNavigation', 'askChoice']);
 const str = (description, extra = {}) => ({ type: 'string', description, ...extra });
-export const TOOLS = Object.freeze([
+const TOOLS_BASE = Object.freeze([
   { name: 'explainOomba', description: 'What Oomba Academy offers teachers and what you (Oomba) can and cannot do. Use it when the teacher asks how something on the site works.', input_schema: { type: 'object', properties: { topic: str('What they asked about, in a few words.') } } },
   { name: 'getPageContext', description: 'The page the teacher has open: its kind, the class (id, grade, subject, number of students: never names) and, on a class dashboard, the current layout with its widgets (ids, types, sizes, safe settings) and the widget library.', input_schema: { type: 'object', properties: {} } },
   { name: 'searchGames', description: 'Search Oomba\'s official games by topic, grade, subject, standard (CCSS id like 3.NF.A.1) and minutes. Returns ids you can show as cards.', input_schema: { type: 'object', properties: { topic: str('Topic words, like "fractions" or "telling time".'), grade: str('K or 1 to 12.'), subject: str('math, ela, science, social studies, computer science.'), standard: str('A standard id, optional.'), minutes: { type: 'integer', description: 'About how long, optional.' }, live: { type: 'boolean', description: 'Only live class games.' } } } },
@@ -647,6 +647,37 @@ export const TOOLS = Object.freeze([
 ]);
 
 // The page tools: offered only on their own page (the teacher's own worksheet; a host's own board).
+// Navigate-then-do and choice cards (docs/decisions.md "Oomba companion: navigate-then-do and choice cards").
+export const NAV_TYPES = Object.freeze(['dashboard', 'class', 'figures-sheet', 'manip']);
+const TOOLS_MORE = [
+  { name: 'findMyPages', description: 'The teacher\'s own places to go: their classes (each with its dashboard), their Figures worksheets and tests, their Manipulatives boards. Ids, names and grades only. Use it before proposeNavigation when you need a target.', input_schema: { type: 'object', properties: { kind: { type: 'string', enum: ['class', 'dashboard', 'figures-sheet', 'manip'] } } } },
+  { name: 'proposeNavigation', description: 'When the request needs a page the teacher is not on (their class dashboard, a class, a Figures worksheet, a Manipulatives board), offer to open it and do the request there: the teacher sees "I\'ll open <page> and do this there" with Go there and Not now, and once that page opens the same request continues by itself. Never tell the teacher to go there and ask again. Leave id out when you do not know which one: the app asks the teacher to pick when there are several.', input_schema: { type: 'object', required: ['pageType'], properties: { pageType: { type: 'string', enum: NAV_TYPES }, id: str('The class, worksheet or board id (from findMyPages), when you know it.'), request: str('The teacher\'s request to carry out there, in their own words (when it was not their last message).') } } },
+  { name: 'askChoice', description: 'Ask the teacher one short question with 2 to 5 tappable options (a decision or a missing detail: which class, which grade, which of two readings). Use it instead of asking a long question in words. The app adds "Something else". Their tap comes back as their next message.', input_schema: { type: 'object', required: ['question', 'options'], properties: { question: str('One short question.'), options: { type: 'array', minItems: 2, maxItems: 5, items: { type: 'string' } } } } },
+];
+export const TOOLS = Object.freeze([...TOOLS_BASE, ...TOOLS_MORE]);
+export const NAV_KEEP_MS = 10 * 60e3;   // a request carried to another page runs only within this
+const NAV_MAX = 5;
+/** The teacher's own places of one kind, newest first: [{ pageType, id, name, grade?, tool? }] (names scrubbed). */
+export function navTargets(u, pageType, names = studentNames(u)) {
+  if (pageType === 'dashboard' || pageType === 'class') {
+    return S.classesOf(u.id, 'teacher').filter(c => !c.archived_at && (pageType === 'class' || D.isTeacher(u, c)))
+      .map(c => ({ pageType, id: c.id, name: cleanText(u, c.name, names), grade: c.grade || '' }));
+  }
+  if (pageType === 'figures-sheet') return F.canMake(u) ? F.listWorksheets(u).slice(0, 20).map(w => ({ pageType, id: w.id, name: cleanText(u, w.title || '', names) })) : [];
+  if (pageType === 'manip') return M.listRecent(u).slice(0, 20).map(b => ({ pageType, id: b.id, name: cleanText(u, b.title || '', names), tool: b.tool }));
+  return [];
+}
+/** One place to go, only the teacher's own: { pageType, id, name, href, page } | null. */
+export function navTarget(u, pageType, id, names) {
+  const t = navTargets(u, pageType, names).find(x => x.id === String(id || ''));
+  if (!t) return null;
+  const href = pageType === 'dashboard' ? `/class/${t.id}/dashboard` : pageType === 'class' ? `/class/${t.id}` : pageType === 'figures-sheet' ? `/figures/worksheets/${t.id}` : `/manipulatives#board/${t.id}`;
+  const page = pageType === 'dashboard' || pageType === 'class' ? { type: pageType, classId: t.id } : pageType === 'figures-sheet' ? { type: 'figures-sheet', sheetId: t.id } : { type: 'manip', tool: t.tool, boardId: t.id };
+  return { ...t, href, page };
+}
+/** The page a request was carried to is the page the teacher is on now (the same kind and the same id). */
+export const samePage = (a, b) => !!a && !!b && a.type === b.type && ['classId', 'sheetId', 'boardId'].every(k => (a[k] || '') === (b[k] || ''));
+const navNote = (t, request) => ({ id: uid(10), pageType: t.pageType, targetId: t.id, name: t.name, href: t.href, page: t.page, request, state: 'open', at: now() });
 export const PAGE_TOOLS = Object.freeze({
   'figures-sheet': { name: 'editWorksheet', description: 'Draft or change the Figures worksheet or test the teacher has open (this page only). Only for requests about this worksheet\'s questions, title, grade or units. The change is made at once and the teacher can Undo it.', input_schema: { type: 'object', required: ['edits'], properties: {
     title: { type: 'string' }, grade: { type: 'string' }, units: { type: 'string', enum: FC.UNITS },
@@ -727,6 +758,33 @@ export function runTool(name, input, ctx) {
       const note = r.give.user === 'class' ? 'The whole class gets one point, given when you answer.' : 'One student (not the whole class) gets the point, given when you answer: speak of one student, not of everyone.';
       return { result: { done: true, to: r.give.user === 'class' ? 'the whole class' : 'one student', reason: r.give.reason, note: `${note} The card in the chat shows who got it, with Undo. In your answer, never write a name or a placeholder like [student 1].` }, step: { k: 'point', n: ctx.out.points.length } };
     }
+    case 'findMyPages': {
+      const kinds = i.kind && NAV_TYPES.includes(i.kind) ? [i.kind] : ['dashboard', 'figures-sheet', 'manip'];
+      const out = {};
+      for (const k of kinds) out[k] = navTargets(u, k, ctx.names).slice(0, 20).map(({ pageType, ...x }) => x);
+      return { result: out, step: { k: 'places' } };
+    }
+    case 'proposeNavigation': {
+      const type = NAV_TYPES.includes(i.pageType) ? i.pageType : null;
+      if (!type) return { result: { error: 'Unknown kind of page.' }, step: { k: 'navNo' } };
+      const request = clip(cleanText(u, typeof i.request === 'string' && i.request.trim() ? i.request : ctx.text || '', ctx.names), 1000).replace(/\s+/g, ' ').trim();
+      if (request.length < 2) return { result: { error: 'Say what to do there.' }, step: { k: 'navNo' } };
+      const one = i.id ? navTarget(u, type, i.id, ctx.names) : null;
+      const all = one ? [one] : navTargets(u, type, ctx.names);
+      if (!all.length) return { result: { error: 'The teacher has no such page of their own.' }, step: { k: 'navNo' } };
+      const pick = all.length === 1 ? navTarget(u, type, all[0].id, ctx.names) : null;
+      if (pick && samePage(pick.page, ctx.page)) return { result: { error: 'The teacher is on that page already: do it here.' }, step: { k: 'navNo' } };
+      if (pick) { ctx.out.nav = navNote(pick, request); return { result: { offered: true, page: pick.name, note: 'The teacher sees Go there / Not now. Say in one short sentence that you will do it there.' }, step: { k: 'nav' } }; }
+      // Several fit: the teacher picks first; each option carries its target, so the tap goes straight to Go there.
+      ctx.out.ask = { id: uid(10), kind: type, question: '', options: all.slice(0, NAV_MAX).map(t => ({ label: t.name || t.id, sub: t.grade ? `grade ${t.grade}` : '', nav: { pageType: type, id: t.id } })), request, state: 'open' };
+      return { result: { askedWhich: true, options: ctx.out.ask.options.map(o => o.label), note: 'The teacher sees a choice card. Ask which one in one short sentence.' }, step: { k: 'which' } };
+    }
+    case 'askChoice': {
+      const opts = (Array.isArray(i.options) ? i.options : []).map(o => clip(cleanText(u, String(o || ''), ctx.names), 80).trim()).filter(Boolean).filter((o, k, a) => a.indexOf(o) === k).slice(0, 5);
+      if (opts.length < 2) return { result: { error: 'Give 2 to 5 options.' }, step: { k: 'askNo' } };
+      ctx.out.ask = { id: uid(10), question: clip(cleanText(u, String(i.question || ''), ctx.names), 200), options: opts.map(label => ({ label })), state: 'open' };
+      return { result: { shown: true, note: 'Do not repeat the options in words; the card shows them. Ask the question in one short sentence.' }, step: null };
+    }
     case 'editWorksheet': {
       if (ctx.out.points || ctx.out.pick) return { result: { error: 'Change the worksheet in a new message, not with a point.' }, step: { k: 'editNo' } };
       const w = ctx.page.type === 'figures-sheet' ? F.ownWorksheet(u, ctx.page.sheetId) : null;
@@ -763,6 +821,8 @@ function system(u, lang, page, settings) {
     'Web search, when you have it: only for teaching questions Oomba\'s own tools cannot answer (methods, background facts). Short plain queries, never anything personal, never a person, a school or a town. Say the answer in your own words; the app shows the sources. Never write links or site names in your answer.',
     `Pages and limits: the teacher is on a "${page.type}" page. You may use at most ${settings.steps} tool steps for one answer.`,
     'Never pretend: if you could not find something on Oomba, say so.',
+    'Another page: when a request needs a page the teacher is not on (their class dashboard, a class, a Figures worksheet, a Manipulatives board), call proposeNavigation (findMyPages first when you need ids). Never tell the teacher to open it and ask again: the app opens it when they tap Go there and carries the request.',
+    'Questions: when you need a decision or a missing detail, call askChoice with 2 to 5 short options instead of asking in a long sentence.',
     ...(page.rules ? [
       'Routing: this page has its own tool (below). Use it only for requests about what is on this page. Anything else (a book, a game, the dashboard, how the site works, a teaching question) is answered with the general tools, and the page is left as it is. When you cannot tell whether the teacher means this page or something else, ask one short question and change nothing.',
       page.rules,
@@ -862,7 +922,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const files = row ? q.all('SELECT * FROM oomba_files WHERE chat_id=? ORDER BY created_at', row.id) : [];
   const file = meta && meta.file ? files.find(f => f.id === meta.file.id) : null;
   const image = file && file.kind === 'image' && file.bytes ? Buffer.from(file.bytes) : null;
-  const ctx = { user, page, lang, names, files, seen: new Map(), out: {}, lastList: null, meta: meta || {}, who: chatWho(user, row) };
+  const ctx = { user, page, lang, names, files, seen: new Map(), out: {}, lastList: null, meta: meta || {}, who: chatWho(user, row), text };
   const web = { turnId, names: [...names.map(n => n.name), ...SR.namesOf(user)], searches: 0, queries: new Map(), found: new Map(), flagged: false };
   let useWeb = webOn(user, row) && !webBroken;
   const tools = () => (useWeb ? [...toolsFor(page), { ...SR.WEB_SEARCH_TOOL, max_uses: 3 }] : toolsFor(page));
@@ -902,10 +962,10 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const fin = finalText(res && res.content, ctx, web);
   let reply = cleanText(user, fin.text, names);
   const points = ctx.out.points || [];
-  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !points.length && !ctx.out.pick) return { failed: 'error' };
+  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !points.length && !ctx.out.pick && !ctx.out.nav && !ctx.out.ask) return { failed: 'error' };
   if (!SR.textOk(reply)) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
   const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}),
-    ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}) };
+    ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}), ...(ctx.out.nav ? { nav: ctx.out.nav } : {}), ...(ctx.out.ask ? { ask: ctx.out.ask } : {}) };
   log('info', 'companion answered', { turn: turnId, ms: note.ms, steps: steps.length, web: web.searches, page: page.type });
   if (ctx.out.manip) audit(user.id, 'manip.chat', ctx.out.manip.tool, { changed: true });
   const fig = ctx.out.figures;
@@ -991,7 +1051,8 @@ export function current(u, { peek = false } = {}) {
   const n = peek ? unseen(u) : 0;
   const r = C.current(u, SURFACE, KEY, { see: !peek }); if (!r.ok) return r;
   const row = chatRow(u);
-  return { ...r, web: webOn(u, row), webAllowed: !!config.companionWebSearch && limitsOf(u).web, unseen: n };
+  const p = row && optsOf(row).pending;
+  return { ...r, web: webOn(u, row), webAllowed: !!config.companionWebSearch && limitsOf(u).web, unseen: n, pending: !!(p && now() - p.at <= NAV_KEEP_MS) };
 }
 export function send(u, body) {
   if (!companionFor(u)) return { ok: false, code: 'notFound' };
@@ -1029,6 +1090,8 @@ export function act(u, turnId, a, value = '') {
     return C.addTurn(u, SURFACE, KEY, { mark: { id: turn.id, fields: { note: { ...note, proposal: { ...p, state: 'applied' } } } }, apply: () => applyProposal(u, p), text: '' });
   }
   if (a === 'pick') return pickOne(u, row, turn, value);
+  if (a === 'go' || a === 'notNow') return navAct(u, row, turn, a);
+  if (a === 'askPick') return askPick(u, row, turn, value);
   if (a === 'manipApplied') {
     const m = note.manip; if (!m) return { ok: false, code: 'notFound' };
     return markNote(u, row, turn.id, { ...note, manip: { ...m, applied: true } });
@@ -1039,6 +1102,50 @@ export function act(u, turnId, a, value = '') {
     return { ok: true, handoff: h };
   }
   return { ok: false, code: 'notFound' };
+}
+/** Go there / Not now on a navigation card. Go there: the request is kept with the conversation for that exact page
+ *  (opts.pending), for NAV_KEEP_MS; -> { href }. Not now: nothing is pending. */
+function navAct(u, row, turn, a) {
+  const n = turn.note.nav;
+  if (!n || n.state !== 'open') return { ok: false, code: 'notFound' };
+  const t = navTarget(u, n.pageType, n.targetId);   // still theirs
+  if (a === 'notNow' || !t) {
+    q.run('UPDATE oomba_chats SET opts=? WHERE id=?', JSON.stringify({ ...optsOf(row), pending: null }), row.id);
+    return markNote(u, row, turn.id, { ...turn.note, nav: { ...n, state: t ? 'declined' : 'gone' } });
+  }
+  if (now() - n.at > NAV_KEEP_MS) return markNote(u, row, turn.id, { ...turn.note, nav: { ...n, state: 'expired' } });
+  q.run('UPDATE oomba_chats SET opts=? WHERE id=?', JSON.stringify({ ...optsOf(row), pending: { nav: n.id, turn: turn.id, page: t.page, request: n.request, at: now() } }), row.id);
+  audit(u.id, 'companion.nav', t.id, { pageType: t.pageType });
+  const r = markNote(u, row, turn.id, { ...turn.note, nav: { ...n, state: 'going' } });
+  return { ...r, href: t.href };
+}
+/** A tap on a choice card: the option is marked; one that carries a target makes the navigation card at once (a turn
+ *  of its own); any other comes back as text for the page to send as the teacher's answer. */
+function askPick(u, row, turn, value) {
+  const k = turn.note.ask, i = parseInt(value, 10);
+  if (!k || k.state !== 'open' || !Number.isInteger(i) || !k.options[i]) return { ok: false, code: 'notFound' };
+  const o = k.options[i];
+  if (o.nav) {
+    const t = navTarget(u, o.nav.pageType, o.nav.id);
+    if (!t) return { ok: false, code: 'notFound' };
+    return C.addTurn(u, SURFACE, KEY, { mark: { id: turn.id, fields: { note: { ...turn.note, ask: { ...k, state: 'answered', chosen: i } } } }, text: '', apply: () => ({ note: { nav: navNote(t, k.request) } }) });
+  }
+  const r = markNote(u, row, turn.id, { ...turn.note, ask: { ...k, state: 'answered', chosen: i } });
+  return { ...r, text: o.label };
+}
+/** The page loaded: a request carried here runs now, once, if this is the exact page it was carried to and it is not
+ *  older than NAV_KEEP_MS. body: the page and what goes with a message there (a board). -> { ok, resumed, chat? } */
+export function resume(u, body = {}) {
+  if (!companionFor(u)) return { ok: false, code: 'notFound' };
+  const row = chatRow(u); const p = row && optsOf(row).pending;
+  if (!p) return { ok: true, resumed: false };
+  const clear = () => q.run('UPDATE oomba_chats SET opts=? WHERE id=?', JSON.stringify({ ...optsOf(chatRow(u)), pending: null }), row.id);
+  if (now() - p.at > NAV_KEEP_MS) { clear(); return { ok: true, resumed: false, expired: true }; }
+  const here = pageOf(u, body.page);
+  if (!samePage(here, p.page)) return { ok: true, resumed: false };
+  clear();
+  const r = send(u, { ...body, text: p.request, page: body.page });
+  return r.ok ? { ok: true, resumed: true, chat: r.chat } : r;
 }
 /** "Add a starter set instead" after a first draft Oomba couldn't make on an empty worksheet: the generators its words
  *  point at, without the AI, once per failed answer, with Undo. */

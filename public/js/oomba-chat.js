@@ -180,7 +180,7 @@ export function mountChat(o) {
     const log = C.el.log, atEnd = log.scrollHeight - log.scrollTop - log.clientHeight < 40;
     const turns = C.chat.turns, parts = [];
     if (!turns.length && !C.chat.pending) {
-      parts.push(bot(`<span>${esc(o.hello ? o.hello(C.chat) : '')}</span>`));
+      parts.push(bot(o.helloHtml ? o.helloHtml(C.chat) : `<span>${esc(o.hello ? o.hello(C.chat) : '')}</span>`));
       const ideas = o.ideas ? o.ideas(C.chat) : [];
       if (ideas.length) parts.push(`<div class="oc-chips" role="group" aria-label="${esc(t('js.oomba-chat.ideas'))}">${ideas.map(x => `<button type="button" class="chip" data-c="chip" data-text="${esc(x.text)}">${esc(x.label)}</button>`).join('')}</div>`);
     }

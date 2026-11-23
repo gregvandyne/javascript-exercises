@@ -3888,7 +3888,10 @@
       "chTitle": "Título: {title}",
       "chGrade": "Grado: {grade}",
       "chRepaired": "{count, plural, one {# figura no se pudo dibujar y se reemplazó o se quitó} other {# figuras no se pudieron dibujar y se reemplazaron o se quitaron}}",
-      "chAnswers": "Cada respuesta calculada a partir de su figura"
+      "chAnswers": "Cada respuesta calculada a partir de su figura",
+      "greetLine": "Dime qué necesita esta hoja: el tema, el grado y cuántas preguntas.",
+      "greetLineTest": "Dime qué debe cubrir esta prueba: el tema, el grado y cuántas preguntas.",
+      "greetLineHas": "Pídeme cambiar preguntas, agregar más o cambiar las unidades o el grado."
     },
     "manip-chat": {
       "title": "Oomba",
@@ -3943,7 +3946,9 @@
       "placeholder": "Pide a Oomba que cambie el tablero",
       "placeholderEmpty": "Describe la clase que quieres en este tablero",
       "boardOf": "Tablero de {tool}",
-      "liveRoom": "Sala en vivo"
+      "liveRoom": "Sala en vivo",
+      "greetLine": "Dime qué clase quieres en este tablero de {tool}.",
+      "greetLineHas": "Dime qué cambio en tu tablero de {tool}."
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4124,7 +4129,12 @@
         "boardNo": "No pudo armar ese tablero",
         "point": "{n, plural, one {Dio un punto} other {Dio # puntos}}",
         "pointPick": "Preparó una elección para ti",
-        "pointNo": "No pudo dar ese punto"
+        "pointNo": "No pudo dar ese punto",
+        "places": "Miró tus clases y páginas",
+        "nav": "Preparó la página para abrirla",
+        "navNo": "No encontró esa página",
+        "which": "Preguntó cuál",
+        "askNo": "No pudo preguntar eso"
       },
       "stepsSum": "{n, plural, one {# paso} other {# pasos}} · {s} s",
       "prog": {
@@ -4214,7 +4224,51 @@
           "student": "¿A qué alumno te refieres?",
           "reason": "¿Por qué es el punto?"
         }
+      },
+      "nav": {
+        "offer": "Abriré {page} y lo haré allí.",
+        "go": "Ir allí",
+        "notNow": "Ahora no",
+        "went": "Abrí {page}.",
+        "declined": "Me quedé aquí.",
+        "expired": "Pasó un rato, así que no lo abrí. Vuelve a pedirlo cuando quieras.",
+        "dashboard": "el panel de {name}",
+        "class": "{name}",
+        "sheet": "«{name}»",
+        "board": "el tablero de {name}"
+      },
+      "which": {
+        "dashboard": "¿El panel de qué clase?",
+        "class": "¿Qué clase?",
+        "sheet": "¿Qué hoja?",
+        "board": "¿Qué tablero?"
+      },
+      "ask": {
+        "other": "Otra cosa"
       }
+    },
+    "companion-greet": {
+      "morning": "Buenos días, {name}",
+      "morningPlain": "Buenos días",
+      "afternoon": "Buenas tardes, {name}",
+      "afternoonPlain": "Buenas tardes",
+      "evening": "Buenas noches, {name}",
+      "eveningPlain": "Buenas noches",
+      "night": "¿Trabajando hasta tarde, {name}?",
+      "nightPlain": "¿Trabajando hasta tarde?",
+      "back": "De vuelta, {name}",
+      "backPlain": "De vuelta",
+      "hi": "Hola, {name}",
+      "hiPlain": "Hola",
+      "friday": "¡Feliz viernes, {name}!",
+      "fridayPlain": "¡Feliz viernes!",
+      "monday": "Semana nueva, {name}",
+      "mondayPlain": "Semana nueva",
+      "weekend": "¿Planeando el fin de semana, {name}?",
+      "weekendPlain": "¿Planeando el fin de semana?",
+      "line0": "¿En qué te ayudo?",
+      "line1": "¿En qué trabajamos?",
+      "line2": "¿Por dónde empezamos?"
     }
   },
   "favorites": {

@@ -3,7 +3,9 @@
 //   GET  /api/companion/chat?peek=1        the conversation ({ chat, web, webAllowed, unseen, mic, live }); peek: endings stay unseen
 //   POST /api/companion/chat               a message ({ text, page, file?, retry? }) -> a job (services/oomba-chat.js)
 //   POST /api/companion/chat/undo          Undo a change Oomba made ({ turnId })
-//   POST /api/companion/chat/act           a tap on a card ({ turnId, act: 'apply' | 'decline' | 'handoff' | 'pick', pick? })
+//   POST /api/companion/chat/act           a tap on a card ({ turnId, act: 'apply' | 'decline' | 'handoff' | 'pick' | 'go' |
+//                                          'notNow' | 'askPick', pick? | value? })
+//   POST /api/companion/resume             the page loaded: a request carried here by Go there continues ({ page, board? })
 //   POST /api/companion/chat/new           New chat (the conversation and its files go)
 //   POST /api/companion/web                web search on or off for this conversation ({ on })
 //   POST /api/companion/file?name=         a lesson plan or document (raw body): its text, scrubbed (builder/lesson.js)
@@ -46,8 +48,15 @@ router.post('/api/companion/chat/undo', may, rateLimit('companion-act', 300, 360
 });
 router.post('/api/companion/chat/act', may, rateLimit('companion-act', 300, 3600e3), (req, res) => {
   const b = body(req);
-  const r = CO.act(req.user, b.turnId, String(b.act || ''), typeof b.pick === 'string' ? b.pick.slice(0, 64) : '');
-  return r.ok ? res.json({ ok: true, ...(r.chat ? { chat: shown(req, r.chat) } : {}), ...(r.handoff ? { handoff: r.handoff } : {}) }) : fail(req, res, r);
+  const v = typeof b.pick === 'string' ? b.pick : typeof b.value === 'string' || typeof b.value === 'number' ? String(b.value) : '';
+  const r = CO.act(req.user, b.turnId, String(b.act || ''), v.slice(0, 64));
+  return r.ok ? res.json({ ok: true, ...(r.chat ? { chat: shown(req, r.chat) } : {}), ...(r.handoff ? { handoff: r.handoff } : {}), ...(r.href ? { href: r.href } : {}), ...(r.text ? { text: r.text } : {}) }) : fail(req, res, r);
+});
+// The page loaded: a request Oomba carried here (Go there) continues, once, on this exact page.
+router.post('/api/companion/resume', may, rateLimit('companion-act', 300, 3600e3), (req, res) => {
+  const b = body(req);
+  const r = CO.resume(req.user, { page: b.page, board: b.board && typeof b.board === 'object' ? b.board : null, lang: req.locale || 'en' });
+  return r.ok ? res.json({ ok: true, resumed: !!r.resumed, ...(r.chat ? { chat: shown(req, r.chat) } : {}) }) : fail(req, res, r);
 });
 router.post('/api/companion/chat/new', may, (req, res) => { const r = CO.reset(req.user); if (!r.ok) return fail(req, res, r); const c = CO.current(req.user); return res.json({ ok: true, ...c, ...(c.chat ? { chat: shown(req, c.chat) } : {}) }); });
 router.post('/api/companion/web', may, (req, res) => res.json(CO.setWeb(req.user, !!body(req).on)));

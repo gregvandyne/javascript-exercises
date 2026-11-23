@@ -8,7 +8,6 @@
 // refresh), with Undo and Redo under the answer and the board's own Undo; an answer that came while the page was
 // closed offers "Put it on my board". Hosts only: manip.js attaches it on a teacher's own board; students never get it.
 import { t, api, esc } from '/js/app.js';
-import { TASKS } from '/js/manip-tasks.js';
 import * as BUS from '/js/oomba-bus.js';
 
 let A = null;   // the attached board: { ctx, waiting, undo: Map, undone: Set }
@@ -22,12 +21,7 @@ export function attach(ctx) {
     page: () => { const g = ctx.get(); return { type: 'manip', tool: ctx.slug, ...(g.boardId ? { boardId: g.boardId } : {}) }; },
     body: () => { const g = ctx.get(); A.waiting = true; return { board: { tool: ctx.slug, boardId: g.boardId || null, title: g.title || '', state: g.state } }; },
     label: () => { const g = ctx.get(); return g.title ? `${ctx.name} · ${g.title}` : t('js.manip-chat.boardOf', { tool: ctx.name }); },
-    hello: () => t(ctx.get().empty ? 'js.manip-chat.helloEmpty' : 'js.manip-chat.hello', { tool: ctx.name }),
-    ideas: () => {
-      const tasks = ctx.get().empty ? (TASKS[ctx.slug] || []).slice(0, 3) : [];
-      return tasks.length ? tasks.map(x => ({ label: x.title, text: `${x.title}: ${x.prompt}` }))
-        : [t('js.manip-chat.idea.more'), t('js.manip-chat.idea.easier'), t('js.manip-chat.idea.steps')].map(s => ({ label: s, text: s }));
-    },
+    hello: () => t(ctx.get().empty ? 'js.manip-chat.greetLine' : 'js.manip-chat.greetLineHas', { tool: ctx.name }),
     placeholder: c => t(c.turns.length || !ctx.get().empty ? 'js.manip-chat.placeholder' : 'js.manip-chat.placeholderEmpty'),
     note: x => (x.note && x.note.manip ? card(x) : ''),
     onAct(act, turn) {

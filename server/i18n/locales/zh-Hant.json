@@ -3888,7 +3888,10 @@
       "chTitle": "標題:{title}",
       "chGrade": "年級:{grade}",
       "chRepaired": "有 {count} 個圖形畫不出來,已替換或移除",
-      "chAnswers": "每個答案都由它的圖形算出"
+      "chAnswers": "每個答案都由它的圖形算出",
+      "greetLine": "告訴我這份學習單需要什麼:主題、年級、題數。",
+      "greetLineTest": "告訴我這份測驗要涵蓋什麼:主題、年級、題數。",
+      "greetLineHas": "請我修改題目、加題,或改單位、年級。"
     },
     "manip-chat": {
       "title": "Oomba",
@@ -3943,7 +3946,9 @@
       "placeholder": "請 Oomba 修改板子",
       "placeholderEmpty": "描述你想在這個板子上上的課",
       "boardOf": "{tool} 板",
-      "liveRoom": "直播教室"
+      "liveRoom": "直播教室",
+      "greetLine": "告訴我你想在這個{tool}板子上做什麼課。",
+      "greetLineHas": "告訴我要改你{tool}板子上的什麼。"
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4124,7 +4129,12 @@
         "boardNo": "無法做出那個板子",
         "point": "{n, plural, other {給了 # 分}}",
         "pointPick": "幫你準備好選項",
-        "pointNo": "沒辦法給這一分"
+        "pointNo": "沒辦法給這一分",
+        "places": "看了你的班級和頁面",
+        "nav": "準備好要打開的頁面",
+        "navNo": "找不到那個頁面",
+        "which": "問了是哪一個",
+        "askNo": "無法提問"
       },
       "stepsSum": "{n} 個步驟 · {s} 秒",
       "prog": {
@@ -4214,7 +4224,51 @@
           "student": "你指的是哪位學生？",
           "reason": "這一分是為了什麼？"
         }
+      },
+      "nav": {
+        "offer": "我會打開{page},在那裡完成。",
+        "go": "前往",
+        "notNow": "先不要",
+        "went": "已打開{page}。",
+        "declined": "留在這裡。",
+        "expired": "已經過了一段時間,所以我沒有打開。準備好時再問我一次。",
+        "dashboard": "{name}的儀表板",
+        "class": "{name}",
+        "sheet": "「{name}」",
+        "board": "{name}板子"
+      },
+      "which": {
+        "dashboard": "哪個班級的儀表板?",
+        "class": "哪個班級?",
+        "sheet": "哪份學習單?",
+        "board": "哪個板子?"
+      },
+      "ask": {
+        "other": "其他"
       }
+    },
+    "companion-greet": {
+      "morning": "早安,{name}",
+      "morningPlain": "早安",
+      "afternoon": "午安,{name}",
+      "afternoonPlain": "午安",
+      "evening": "晚安,{name}",
+      "eveningPlain": "晚安",
+      "night": "這麼晚還在忙,{name}?",
+      "nightPlain": "這麼晚還在忙?",
+      "back": "歡迎回來,{name}",
+      "backPlain": "歡迎回來",
+      "hi": "嗨,{name}",
+      "hiPlain": "嗨",
+      "friday": "星期五快樂,{name}",
+      "fridayPlain": "星期五快樂",
+      "monday": "新的一週,{name}",
+      "mondayPlain": "新的一週",
+      "weekend": "週末也在備課,{name}?",
+      "weekendPlain": "週末也在備課?",
+      "line0": "需要我幫什麼忙?",
+      "line1": "今天要做什麼?",
+      "line2": "從哪裡開始?"
     }
   },
   "favorites": {

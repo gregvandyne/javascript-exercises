@@ -3889,7 +3889,10 @@
       "chTitle": "Titel: {title}",
       "chGrade": "Leerjaar: {grade}",
       "chRepaired": "{count, plural, one {# figuur kon niet getekend worden en is vervangen of weggelaten} other {# figuren konden niet getekend worden en zijn vervangen of weggelaten}}",
-      "chAnswers": "Elk antwoord uitgerekend uit zijn figuur"
+      "chAnswers": "Elk antwoord uitgerekend uit zijn figuur",
+      "greetLine": "Vertel wat dit werkblad nodig heeft: het onderwerp, het leerjaar, hoeveel vragen.",
+      "greetLineTest": "Vertel wat deze toets moet behandelen: het onderwerp, het leerjaar, hoeveel vragen.",
+      "greetLineHas": "Vraag me vragen aan te passen, meer toe te voegen of eenheden of leerjaar te wijzigen."
     },
     "manip-chat": {
       "title": "Oomba",
@@ -3944,7 +3947,9 @@
       "placeholder": "Vraag Oomba het bord te veranderen",
       "placeholderEmpty": "Beschrijf de les die je op dit bord wilt",
       "boardOf": "Bord {tool}",
-      "liveRoom": "Live-ruimte"
+      "liveRoom": "Live-ruimte",
+      "greetLine": "Vertel welke les je op dit bord {tool} wilt.",
+      "greetLineHas": "Vertel wat ik op je bord {tool} moet aanpassen."
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4125,7 +4130,12 @@
         "boardNo": "Kon dat bord niet maken",
         "point": "{n, plural, one {Een punt gegeven} other {# punten gegeven}}",
         "pointPick": "Een keuze voor je klaargezet",
-        "pointNo": "Kon dat punt niet geven"
+        "pointNo": "Kon dat punt niet geven",
+        "places": "Je klassen en pagina’s bekeken",
+        "nav": "De pagina klaargezet om te openen",
+        "navNo": "Kon die pagina niet vinden",
+        "which": "Gevraagd welke",
+        "askNo": "Kon dat niet vragen"
       },
       "stepsSum": "{n, plural, one {# stap} other {# stappen}} · {s} s",
       "prog": {
@@ -4215,7 +4225,51 @@
           "student": "Welke leerling bedoel je?",
           "reason": "Waarvoor is het punt?"
         }
+      },
+      "nav": {
+        "offer": "Ik open {page} en doe het daar.",
+        "go": "Ga erheen",
+        "notNow": "Nu niet",
+        "went": "{page} geopend.",
+        "declined": "Hier gebleven.",
+        "expired": "Dat is al even geleden, dus ik heb het niet geopend. Vraag het gerust opnieuw.",
+        "dashboard": "het dashboard van {name}",
+        "class": "{name}",
+        "sheet": "‘{name}’",
+        "board": "het bord {name}"
+      },
+      "which": {
+        "dashboard": "Het dashboard van welke klas?",
+        "class": "Welke klas?",
+        "sheet": "Welk werkblad?",
+        "board": "Welk bord?"
+      },
+      "ask": {
+        "other": "Iets anders"
       }
+    },
+    "companion-greet": {
+      "morning": "Goedemorgen, {name}",
+      "morningPlain": "Goedemorgen",
+      "afternoon": "Goedemiddag, {name}",
+      "afternoonPlain": "Goedemiddag",
+      "evening": "Goedenavond, {name}",
+      "eveningPlain": "Goedenavond",
+      "night": "Nog laat bezig, {name}?",
+      "nightPlain": "Nog laat bezig?",
+      "back": "Daar ben je weer, {name}",
+      "backPlain": "Daar ben je weer",
+      "hi": "Hoi, {name}",
+      "hiPlain": "Hoi",
+      "friday": "Fijne vrijdag, {name}",
+      "fridayPlain": "Fijne vrijdag",
+      "monday": "Nieuwe week, {name}",
+      "mondayPlain": "Nieuwe week",
+      "weekend": "Weekend aan het plannen, {name}?",
+      "weekendPlain": "Weekend aan het plannen?",
+      "line0": "Waarmee kan ik helpen?",
+      "line1": "Waar werken we aan?",
+      "line2": "Waar beginnen we?"
     }
   },
   "favorites": {
