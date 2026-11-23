@@ -4,9 +4,9 @@
 // live; and Full screen without the Fullscreen API (iPhone Safari): the preview covers the window, ✕ and Esc leave it.
 import { test, expect } from '@playwright/test';
 import { teacherSignup, templateGame } from './helpers.js';
-// Icons are Fluent pictures (public/js/icons.js): a button reads "<img> Edit lesson", so its words and its picture are
+// Icons are Oomba icons or Fluent pictures (public/js/icons.js): a button reads "<svg> Edit lesson", so its words and its picture are
 // checked apart.
-const icon = (loc, name) => expect(loc.locator(`img.fx[src*="/${name}"]`)).toHaveCount(1);
+const icon = (loc, name) => expect(loc.locator(`:is(img.fx[src*="/${name}"], svg.fx[data-fx^="${name}"])`)).toHaveCount(1);
 
 // Spark (the Publish button's yellow) and the site's white card (Cream, #FFFDF2, in the light theme)
 const YELLOW = 'rgb(255, 210, 63)', WHITE = 'rgb(255, 253, 242)';

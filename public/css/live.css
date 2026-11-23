@@ -246,7 +246,7 @@ body.lv-offline .lv-stage { outline: 4px dashed var(--edge); }
 .lv-team-btn:disabled:not([aria-pressed="true"]) { opacity: .5; }
 .lv-eyes { position: fixed; inset: 0; z-index: 980; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 24px; background: var(--bg); color: var(--text); text-align: center; }
 .lv-eyes-icon { font-size: clamp(5rem, 30vw, 10rem); margin: 0; line-height: 1; }
-.lv-eyes-icon img.fx { width: 1em; height: 1em; }
+.lv-eyes-icon .fx { width: 1em; height: 1em; }
 .lv-eyes-text { font-size: clamp(1.8rem, 8vw, 3rem); font-weight: 800; margin: 0; }
 .lv-read { align-self: center; min-block-size: 48px; }
 .lv-end-team { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 14px; border-inline-start: 8px solid var(--team); background: var(--card-2); font-weight: 800; }

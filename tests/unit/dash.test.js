@@ -104,9 +104,9 @@ test('layouts on a phone: one layout switcher (a nav labelled "Layout", New and 
   assert.ok(sw, 'the switcher is the footer\'s first part, before Eyes up and Push');
   assert.match(sw[1], /<span class="dash-lab" id="dash-layouts-l">Layout<\/span>/);
   assert.match(sw[1], /<nav class="dash-layouts" id="dash-layouts" aria-labelledby="dash-layouts-l"><\/nav>/);
-  // ➕ is the Fluent plus now (an <img>, decorative): read back as its emoji through tests/support/deicon.js.
+  // ➕ is the Oomba plus now (an inline <svg>, decorative): read back as its emoji through tests/support/deicon.js.
   assert.match(deicon(sw[1]), /id="dash-layout-new"><span>➕ <span class="dash-lnewt">New<\/span><\/span><\/button>/);
-  assert.match(sw[1], /id="dash-layout-new"><span><img class="fx fx-flat" src="\/icons\/fluent\/flat\/plus\.svg"[^>]* aria-hidden="true"[^>]*> <span class="dash-lnewt">/);
+  assert.match(sw[1], /id="dash-layout-new"><span><svg class="fx fx-oo" data-fx="plus"[^>]* aria-hidden="true"[^>]*><use href="\/icons\/oomba\/plus\.svg[^"]*"\/><\/svg> <span class="dash-lnewt">/);
   assert.match(sw[1], /id="dash-layout-more" aria-label="Rename or delete this layout"/);
   for (const id of ['dash-switch', 'dash-layouts', 'dash-layout-new', 'dash-layout-more', 'dash-eyes-btn', 'dash-push']) assert.equal(t.split(`id="${id}"`).length, 2, `one ${id}`);
   const s = (await as(w.a1)(url)).text;

@@ -1,41 +1,97 @@
-// The site's icons (docs/decisions.md "Icons: Fluent Emoji 3D"): one map, one helper, the files it points at, the
-// license, a size budget, and no emoji left as icons in the shared chrome (the header, menus, tab bar, footer, cards).
+// The site's icons (docs/decisions.md "Icons: Oomba geometric for controls, Fluent 3D for big spots"): one map, one helper,
+// the files it points at (our Oomba icons below 40 px, Fluent 3D at 40 px and up, Fluent for content-like pictures), the
+// license, a size budget, the drawing rules, and no emoji left as icons in the shared chrome (header, menus, tab bar, cards).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FLUENT, TOOL_ICONS, iconHtml, toolIconHtml, hasIcon } from '../../public/js/icons.js';
+import { FLUENT, TOOL_ICONS, OOMBA, iconHtml, toolIconHtml, hasIcon, oombaIcon } from '../../public/js/icons.js';
+import { OOMBA_V } from '../../public/js/icons-oomba.js';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const PUB = path.join(ROOT, 'public');
 
-test('every icon in the map has its files: Flat SVG always, 3D WebP at 1x and 2x where marked', () => {
+test('every icon in the map has its files: an Oomba icon or a Flat SVG, 3D WebP at 1x and 2x where marked', () => {
   assert.ok(Object.keys(FLUENT).length > 100);
   for (const [e, [name, has3d]] of Object.entries(FLUENT)) {
-    assert.ok(fs.existsSync(path.join(PUB, 'icons/fluent/flat', `${name}.svg`)), `${e} flat`);
-    assert.match(fs.readFileSync(path.join(PUB, 'icons/fluent/flat', `${name}.svg`), 'utf8'), /^<svg[\s\S]*<\/svg>$/);
+    if (OOMBA[name]) assert.ok(fs.existsSync(path.join(PUB, 'icons/oomba', `${OOMBA[name]}.svg`)), `${e} oomba ${OOMBA[name]}`);
+    else {
+      assert.ok(fs.existsSync(path.join(PUB, 'icons/fluent/flat', `${name}.svg`)), `${e} flat`);
+      assert.match(fs.readFileSync(path.join(PUB, 'icons/fluent/flat', `${name}.svg`), 'utf8'), /^<svg[\s\S]*<\/svg>$/);
+    }
     if (has3d) for (const px of [64, 128]) {
       const b = fs.readFileSync(path.join(PUB, 'icons/fluent/3d', `${name}-${px}.webp`));
       assert.equal(b.subarray(0, 4).toString(), 'RIFF', `${e} ${px} is WebP`); assert.equal(b.subarray(8, 12).toString(), 'WEBP');
     }
   }
+  // A name drawn as an Oomba icon never draws its Flat picture: that file is not shipped.
+  for (const n of Object.keys(OOMBA)) assert.ok(!fs.existsSync(path.join(PUB, 'icons/fluent/flat', `${n}.svg`)), `${n}.svg is shipped but never drawn`);
   for (const slug of TOOL_ICONS) assert.ok(fs.existsSync(path.join(PUB, 'icons/tools', `${slug}.svg`)) || fs.existsSync(path.join(PUB, 'icons/tools', `${slug}-64.webp`)), slug);
-  // The license travels with the pictures; the credits page lists them.
+  // The license travels with the pictures; the credits page lists them, and the Oomba icons as ours.
   assert.match(fs.readFileSync(path.join(PUB, 'icons/fluent/LICENSE.txt'), 'utf8'), /MIT License[\s\S]*Microsoft Corporation/);
-  assert.match(fs.readFileSync(path.join(ROOT, 'docs/media-credits.md'), 'utf8'), /Fluent Emoji[\s\S]*MIT/);
+  const credits = fs.readFileSync(path.join(ROOT, 'docs/media-credits.md'), 'utf8');
+  assert.match(credits, /Fluent Emoji[\s\S]*MIT/); assert.match(credits, /Oomba icons[\s\S]*ours/i);
 });
 
-test('the one helper: 3D WebP with 1x/2x at 28 px and up, Flat SVG below; decorative unless labelled; lazy on request', () => {
-  const big = iconHtml('🍎', { size: 28 });
-  assert.match(big, /^<img class="fx fx-3d" src="\/icons\/fluent\/3d\/red-apple-64\.webp" srcset="[^"]*red-apple-64\.webp 1x, [^"]*red-apple-128\.webp 2x" width="28" height="28" alt="" aria-hidden="true"/);
-  const small = iconHtml('⚙️', { size: 18 });
-  assert.match(small, /class="fx fx-flat" src="\/icons\/fluent\/flat\/gear\.svg" width="18" height="18" alt="" aria-hidden="true"/);
+test('the Oomba icons: every mapped name has a drawing, each file is one valid symbol, and the map is the built one', async () => {
+  const { ART, CONCEPT } = await import('../../scripts/icons/oomba-art.mjs');
+  assert.deepEqual(OOMBA, Object.fromEntries(Object.entries(CONCEPT).sort()), 'public/js/icons-oomba.js is built from scripts/icons/oomba-art.mjs (node scripts/icons/build_oomba.mjs)');
+  const names = new Set(Object.values(FLUENT).map(([n]) => n));
+  for (const n of Object.keys(OOMBA)) assert.ok(names.has(n), `${n} is not in the Fluent map`);
+  const files = fs.readdirSync(path.join(PUB, 'icons/oomba')).filter(f => f.endsWith('.svg'));
+  assert.deepEqual(files.map(f => f.slice(0, -4)).sort(), Object.keys(ART).sort(), 'one file per drawing, no strays');
+  assert.ok(files.length >= 120, `${files.length} icons`);
+  assert.match(OOMBA_V, /^[0-9a-f]{10}$/);
+  for (const f of files) {
+    const svg = fs.readFileSync(path.join(PUB, 'icons/oomba', f), 'utf8');
+    assert.match(svg, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 24 24"><symbol id="i" viewBox="0 0 24 24">[\s\S]*<\/symbol><use href="#i"\/><\/svg>\n$/, f);
+    assert.doesNotMatch(svg, /<script|<image|href="(?!#i")|on[a-z]+=|style=/i, `${f}: plain shapes only`);
+    assert.equal((svg.match(/<symbol/g) || []).length, 1, f);
+    // The drawing rules: the brand colors, ink, cream highlights and the text color, nothing else; strokes 1.2 and up.
+    const colors = new Set([...svg.matchAll(/(?:fill|stroke)="([^"]+)"/g)].map(m => m[1]).filter(c => c !== 'none'));
+    for (const c of colors) assert.ok(['#66C792', '#FFD23F', '#FF8A6B', '#141414', '#FFFDF2', 'currentColor'].includes(c), `${f}: color ${c}`);
+    const brand = [...colors].filter(c => ['#66C792', '#FFD23F', '#FF8A6B'].includes(c));
+    assert.ok(brand.length <= (f === 'traffic.svg' ? 3 : 2), `${f}: ${brand.join(' ')}`);   // the traffic light needs its three
+    for (const m of svg.matchAll(/stroke-width="([\d.]+)"/g)) assert.ok(+m[1] >= 1 || /stroke="#(66C792|FFD23F|FF8A6B)"[^>]*stroke-width="[\d.]+"/.test(svg), `${f}: stroke ${m[1]}`);
+    // Spark yellow is faint on cream: a yellow piece always has ink on or beside it.
+    if (brand.length === 1 && brand[0] === '#FFD23F') assert.ok(colors.has('#141414') || colors.has('currentColor'), `${f}: yellow with no ink`);
+  }
+  // Owl eyes (the logo's) only on Me, Classroom and Eyes up.
+  const owl = f => /<circle[^>]*stroke="#141414"[^>]*\/><circle[^>]*stroke="#141414"[^>]*\/><circle[^>]*fill="#141414"\/><circle[^>]*fill="#141414"\/>/.test(fs.readFileSync(path.join(PUB, 'icons/oomba', f), 'utf8'));
+  assert.deepEqual(files.filter(owl).sort(), ['classroom.svg', 'eyes.svg', 'me.svg']);
+});
+
+test('the one helper: the Oomba icon below 40 px, Fluent 3D at 40 and up; content stays Fluent; decorative unless labelled', () => {
+  const v = `\\?v=${OOMBA_V}`;
+  // Below 40 px: an inline <svg> that draws our file, with the Fluent name it stands for.
+  assert.match(iconHtml('⚙️', { size: 18 }), new RegExp(`^<svg class="fx fx-oo" data-fx="gear" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><use href="/icons/oomba/settings\\.svg${v}#i"/></svg>$`));
+  assert.match(iconHtml('🍎', { size: 30 }), /<use href="\/icons\/oomba\/classroom\.svg[^"]*#i"\/>/);
+  assert.match(iconHtml('📚', { size: 39 }), /fx-oo/);
+  // 40 px and up: the 3D picture where there is one; else the Oomba icon (it scales).
+  const big = iconHtml('🍎', { size: 40 });
+  assert.match(big, /^<img class="fx fx-3d" src="\/icons\/fluent\/3d\/red-apple-64\.webp" srcset="[^"]*red-apple-64\.webp 1x, [^"]*red-apple-128\.webp 2x" width="40" height="40" alt="" aria-hidden="true"/);
+  assert.match(iconHtml('📚', { size: 64, lazy: true }), /fx-3d[^>]*loading="lazy"/);
+  assert.match(iconHtml('⚙️', { size: 48 }), /fx-3d/); assert.match(iconHtml('🖨️', { size: 48 }), /<svg class="fx fx-oo" data-fx="printer"[^>]*width="48"/);
+  // Content-like pictures (animals, food, weather, faces) have no Oomba icon: Fluent as before, 3D at 28 px and up.
+  assert.equal(oombaIcon('🐻'), null); assert.equal(oombaIcon('⚙️'), 'settings');
+  assert.match(iconHtml('🐻', { size: 18 }), /class="fx fx-flat" src="\/icons\/fluent\/flat\/bear\.svg" width="18" height="18" alt="" aria-hidden="true"/);
+  assert.match(iconHtml('🐻', { size: 28 }), /class="fx fx-3d" src="\/icons\/fluent\/3d\/bear-64\.webp"/);
+  // A label makes it an image with a name; otherwise decorative.
   const labelled = iconHtml('🔎', { size: 20, label: 'Search' });
-  assert.match(labelled, /alt="Search"/); assert.doesNotMatch(labelled, /aria-hidden/);
-  assert.match(iconHtml('📚', { size: 32, lazy: true }), /loading="lazy"/);
+  assert.match(labelled, /role="img" aria-label="Search"/); assert.doesNotMatch(labelled, /aria-hidden/);
+  assert.match(iconHtml('🐻', { size: 20, label: 'Bear' }), /alt="Bear"/);
+  assert.match(iconHtml('⚙️', { cls: 'x"y' }), /class="fx fx-oo x&quot;y"/);
   // An emoji with no icon (an avatar, a game's own emoji) stays as it was, escaped.
   assert.equal(iconHtml('<b>'), '&lt;b&gt;'); assert.equal(hasIcon('🦜'), false);
   assert.match(toolIconHtml('geoboard'), /src="\/icons\/tools\/geoboard\.svg"/); assert.match(toolIconHtml('clock'), /clock-64\.webp/); assert.equal(toolIconHtml('nope'), '');
+});
+
+test('the Oomba icon takes the text color: ink on the page is currentColor, ink on a colored piece stays ink', () => {
+  const css = fs.readFileSync(path.join(PUB, 'css/app.css'), 'utf8');
+  assert.match(css, /svg\.fx-oo\{display:inline-block;flex:none;max-width:none;overflow:visible\}/);
+  for (const f of ['search', 'live', 'progress', 'calendar']) assert.match(fs.readFileSync(path.join(PUB, 'icons/oomba', `${f}.svg`), 'utf8'), /="currentColor"/, f);
+  // No stylesheet sizes an icon in a place as an <img> only (the Oomba icon there is an <svg>): ".tab .fx", not ".tab img.fx".
+  for (const f of fs.readdirSync(path.join(PUB, 'css'))) assert.doesNotMatch(fs.readFileSync(path.join(PUB, 'css', f), 'utf8'), /[ >]img\.fx(?![-\w[])/, `${f}: img.fx inside a place`);
 });
 
 test('size budget: the icons the site ships stay small (each page loads only its own)', () => {
@@ -43,6 +99,8 @@ test('size budget: the icons the site ships stay small (each page loads only its
   walk(path.join(PUB, 'icons'));
   assert.ok(total < 1_100_000, `public/icons is ${total} bytes`);
   for (const f of fs.readdirSync(path.join(PUB, 'icons/fluent/3d'))) assert.ok(fs.statSync(path.join(PUB, 'icons/fluent/3d', f)).size < 24_000, f);
+  let oo = 0; for (const f of fs.readdirSync(path.join(PUB, 'icons/oomba'))) { const n = fs.statSync(path.join(PUB, 'icons/oomba', f)).size; oo += n; assert.ok(n < 1_200, `${f} is ${n} bytes`); }
+  assert.ok(oo < 90_000, `public/icons/oomba is ${oo} bytes`);
 });
 
 test('the shared chrome has no emoji left as icons (avatars, game covers and people\'s words are not icons)', () => {
@@ -70,7 +128,7 @@ const CONVERTED = {
   'server/routes/number-quest.js': [], 'server/routes/cs-quest.js': [], 'server/routes/cyber-defenders.js': [], 'server/routes/dash.js': ['✔'],
   'server/routes/student-report.js': ['✓'], 'server/routes/digest.js': [], 'server/routes/social.js': [], 'server/routes/chat.js': ['✓'],
   'server/routes/stories.js': ['🐾', '🧒'], 'server/routes/plans.js': ['✓'], 'server/routes/progress.js': ['✓'], 'server/routes/school-billing.js': [],
-  'server/routes/staff-invites.js': [], 'server/routes/trust.js': [], 'server/routes/landing.js': ['✓', '🐼', '🦊', '🐨', '🦦'],
+  'server/routes/staff-invites.js': [], 'server/routes/trust.js': [], 'server/routes/landing.js': ['✓'],
   'server/views/live.js': ['✓', '✗'], 'server/views/rubrics.js': ['✔'], 'server/views/standards.js': ['✓', '✕'], 'server/views/teacher-loop.js': [],
   'public/js/studio.js': ['✕'], 'public/js/dash.js': ['🌐'], 'public/js/dash-widgets.js': [], 'public/js/dash-tools.js': [],
   'public/js/dash-tools4.js': [], 'public/js/dash-class5.js': [], 'public/js/app.js': [], 'public/js/course.js': [],
@@ -79,7 +137,7 @@ const CONVERTED = {
 };
 // Why each one stays: ✓ ✔ ✕ ✗ ☐ are text glyphs (a done or verified mark, close, wrong, a box to tick on paper); 🌐 is a select <option> (text only);
 // 🪨 and 🐾 are Number Quest's own game pictures (a unit's stamp stone, the placement trail); 🧒🐶… and 🐾 on the Story
-// Builder are the story's characters; 🐼🦊🐨🦦 on the landing page are the demo class's avatars.
+// Builder are the story's characters.
 test('the rest of the app has no emoji left as icons, apart from the listed ones (and why they stay)', () => {
   for (const [f, allowed] of Object.entries(CONVERTED)) {
     const src = fs.readFileSync(path.join(ROOT, f), 'utf8');
@@ -100,7 +158,7 @@ test('leadIcon / iconLine: "✅ Saved" becomes the icon and the words; plain wor
   assert.deepEqual(leadIcon('✅ Saved'), ['✅', 'Saved']);
   assert.deepEqual(leadIcon('🗑️ Deleted'), ['🗑️', 'Deleted']);
   assert.equal(leadIcon('Saved'), null); assert.equal(leadIcon('🦜 Polly'), null); assert.equal(leadIcon('✅'), null);
-  assert.match(iconLine('✅ <b>Saved</b>'), /^<img class="fx fx-flat" src="\/icons\/fluent\/flat\/check-mark-button\.svg"[^>]*> &lt;b&gt;Saved&lt;\/b&gt;$/);
+  assert.match(iconLine('✅ <b>Saved</b>'), /^<svg class="fx fx-oo" data-fx="check-mark-button"[^>]*><use href="\/icons\/oomba\/check\.svg[^"]*"\/><\/svg> &lt;b&gt;Saved&lt;\/b&gt;$/);
   assert.equal(iconLine('a <b>'), 'a &lt;b&gt;');
 });
 

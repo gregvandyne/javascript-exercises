@@ -11636,3 +11636,31 @@ This builds on stage 5's "Points for each student" (the scoreboard's Each studen
 - Migration `0109_dash_point_awards`. Tests: `tests/unit/dash-points.test.js` (with the fakes in `tests/support`), and
   `tests/unit/dash-stage5.test.js` where "everyone" changed. `npm run dash:fit` seeds whole-class points too, and
   `SIZES=stage5` checks only the stage 5 layouts.
+
+## Icons: Oomba geometric for controls, Fluent 3D for big spots (22 Nov 2026)
+
+Follows "Icons: Fluent Emoji 3D". The owner felt the Fluent icons were "still too emoji" and compared six directions on
+real pages (soft line tiles, brand circles, ink and spot, our own geometric set, soft 3D objects, and a hybrid). He chose
+the hybrid: our own Oomba icons for every control, and the Fluent 3D pictures only for big decorative spots.
+- **The rule, in the one helper.** `iconHtml` (and `ico`, `leadIcon`, `iconLine`, `setIcon`, `setLabel`, unchanged for
+  their callers) draws an emoji below 40 px as its Oomba icon, and at 40 px and up as its Fluent 3D picture (tool cards,
+  page headings, empty states, rewards). A name with no 3D picture keeps its Oomba icon at any size.
+- **Content stays Fluent.** Animals, food, weather, characters, faces, hands as gestures, colour swatches and the like
+  have no Oomba icon on purpose: they are pictures of things, not controls, and draw as before (3D at 28 px and up, Flat
+  below). Avatars, game covers and anything people wrote were never icons and are unchanged. The 18 manipulative tool
+  pictures stay.
+- **The set.** 159 icons, drawn in `scripts/icons/oomba-art.mjs` and built by `scripts/icons/build_oomba.mjs` into
+  `public/icons/oomba/<name>.svg` (one `<symbol id="i">` each) and `public/js/icons-oomba.js` (Fluent name to icon, and
+  a cache version). 181 of the 249 Fluent names in the map are drawn; 68 stay Fluent as content. Their Fluent Flat files
+  are no longer shipped, which keeps `public/icons` under its budget.
+- **The style.** A 24-unit grid, chunky rounded shapes (corners about 2.5 to 3.5), strokes 2 to 2.6 with round ends,
+  one brand color per icon (mint, spark, or coral for live, record and stop signals) plus ink. Spark yellow never
+  carries the meaning alone (it is faint on cream): ink always sits on it, like the logo. The logo's owl eyes appear only
+  on Me, Classroom and Eyes up.
+- **Light and dark.** The page draws the icon as an inline `<svg><use href="/icons/oomba/<name>.svg#i">`, so the ink that
+  sits on the page is `currentColor`: dark on cream, cream on the dark theme, cream on the black "current" pill. Ink on a
+  colored piece is always #141414, so it reads on mint, spark and coral in both themes. The `data-fx` attribute names the
+  Fluent picture the icon stands for (tests read pages through `tests/support/deicon.js`).
+- **Landing.** The layout tour's titles, widget chips and dots, the "Why games work" cards and the how-it-works steps
+  printed raw emoji; they go through the helper now. The hero live card's faces (the demo class) are Fluent pictures.
+- Credits: `docs/media-credits.md` (the Oomba icons are ours; Fluent stays credited, MIT).

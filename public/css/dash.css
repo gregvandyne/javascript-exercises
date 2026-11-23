@@ -199,7 +199,7 @@ body.dash-page{padding-bottom:0}
 .dash-eyes::backdrop{background:var(--brand-ink)}
 .dash-eyescard{display:flex;flex-direction:column;align-items:center;gap:var(--s3)}
 .dash-eyesmark{font-size:clamp(4rem,14vw,10rem);line-height:1}
-.dash-eyesmark img.fx{width:clamp(4rem,14vw,10rem);height:auto}
+.dash-eyesmark .fx{width:clamp(4rem,14vw,10rem);height:auto}
 .dash-eyes h2{font-size:clamp(2.6rem,9vw,7rem);margin:0;letter-spacing:-.02em}
 .dash-eyes p{font-size:clamp(1.1rem,3vw,2rem);margin:0;font-weight:600}
 .dash-eyes:focus{outline:none}
@@ -2250,5 +2250,5 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 }
 [dir="rtl"] .dw-pdfprev,[dir="rtl"] .dw-pdfnext{transform:scaleX(-1)}
 /* Icons (public/js/icons.js) that stand in for a big emoji take the emoji's size: 1em of the box's own font size. */
-.dw-wicon img.fx,.dw-symicon img.fx,.dw5-bigic img.fx,.dw-noise-face img.fx,.dw-pickname img.fx{width:1em;height:1em}
-.dw5-classbig .dw5-ic,.dw5-classbig .dw5-ic img{width:.8em;height:.8em}
+.dw-wicon .fx,.dw-symicon .fx,.dw5-bigic .fx,.dw-noise-face .fx,.dw-pickname .fx{width:1em;height:1em}
+.dw5-classbig .dw5-ic,.dw5-classbig .dw5-ic .fx{width:.8em;height:.8em}

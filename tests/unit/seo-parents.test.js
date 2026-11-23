@@ -300,8 +300,8 @@ test('localized pages stay in one language: no untranslated additions on game, s
     assert.match(gap, /<span class="door-h">Para las familias<\/span>/, 'the parent door, until "I’m a parent" is translated');
     assert.doesNotMatch(gap, /lang="en"[^>]*>For parents|>Parents<|I’m a parent/);
   });
-  // 👪 is drawn as Fluent's house with garden (Fluent has no family emoji).
-  assert.match((await get('/es/teachers')).raw, /<a class="navlink" href="\/parents"[^>]*><span class="emo" aria-hidden="true"><img class="fx fx-3d" src="\/icons\/fluent\/3d\/house-with-garden-64\.webp"[^>]*><\/span>Familias<\/a>/);
+  // 👪 is drawn as the Oomba Grown-ups icon in the top bar (it stands for Fluent's house with garden).
+  assert.match((await get('/es/teachers')).raw, /<a class="navlink" href="\/parents"[^>]*><span class="emo" aria-hidden="true"><svg class="fx fx-oo" data-fx="house-with-garden"[^>]*><use href="\/icons\/oomba\/grownups\.svg[^"]*"\/><\/svg><\/span>Familias<\/a>/);
   // English keeps all of it.
   assert.match((await get('/g/sum-racer')).text, /Ages 6–11/);
   assert.match((await get('/learn/math-games')).text, /id="home"/);
