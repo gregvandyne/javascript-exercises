@@ -9553,6 +9553,7 @@
         "lead": "Essayez chaque étape une fois avec {class}. Chacune se coche toute seule au fil de l'eau.",
         "leadNoClass": "Créez votre première classe, puis essayez chaque étape une fois. Chacune se coche toute seule au fil de l'eau.",
         "makeClass": "Créez votre première classe",
+        "askAdmin": "Dans ton école, c'est l'administrateur qui crée les classes. Demande-lui de créer la tienne, puis essaie chaque étape une fois.",
         "count": "{done} sur {total} faites",
         "done": "Fait",
         "todo": "Pas encore fait",

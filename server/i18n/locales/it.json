@@ -9554,6 +9554,7 @@
         "lead": "Prova ogni passo una volta con {class}. Ognuno si spunta da solo man mano.",
         "leadNoClass": "Crea la tua prima classe, poi prova ogni passo una volta. Ognuno si spunta da solo man mano.",
         "makeClass": "Crea la tua prima classe",
+        "askAdmin": "Nella tua scuola le classi le crea l'amministratore scolastico. Chiedigli di creare la tua, poi prova ogni passaggio una volta.",
         "count": "{done} di {total} fatti",
         "done": "Fatto",
         "todo": "Non ancora fatto",

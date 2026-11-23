@@ -9555,6 +9555,7 @@
         "lead": "Experimente cada passo uma vez com {class}. Cada um se marca sozinho conforme você avança.",
         "leadNoClass": "Crie sua primeira turma e experimente cada passo uma vez. Cada um se marca sozinho conforme você avança.",
         "makeClass": "Crie sua primeira turma",
+        "askAdmin": "Na sua escola, o administrador escolar cria as turmas. Peça para ele criar a sua e depois experimente cada etapa uma vez.",
         "count": "{done} de {total} feitos",
         "done": "Feito",
         "todo": "Ainda não feito",

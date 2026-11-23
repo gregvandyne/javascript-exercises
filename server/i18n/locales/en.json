@@ -9571,6 +9571,7 @@
         "lead": "Try each step once with {class}. Each one ticks itself off as you go.",
         "leadNoClass": "Make your first class, then try each step once. Each one ticks itself off as you go.",
         "makeClass": "Make your first class",
+        "askAdmin": "At your school, the school admin makes classes. Ask them to make yours, then try each step once.",
         "count": "{done} of {total} done",
         "done": "Done",
         "todo": "Not done yet",

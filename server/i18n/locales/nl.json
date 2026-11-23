@@ -9554,6 +9554,7 @@
         "lead": "Probeer elke stap één keer met {class}. Elke stap vinkt zichzelf af.",
         "leadNoClass": "Maak je eerste klas en probeer dan elke stap één keer. Elke stap vinkt zichzelf af.",
         "makeClass": "Maak je eerste klas",
+        "askAdmin": "Op jouw school maakt de schoolbeheerder de klassen aan. Vraag of die de jouwe aanmaakt en probeer dan elke stap één keer.",
         "count": "{done} van {total} gedaan",
         "done": "Gedaan",
         "todo": "Nog niet gedaan",

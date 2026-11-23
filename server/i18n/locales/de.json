@@ -9554,6 +9554,7 @@
         "lead": "Probiere jeden Schritt einmal mit {class} aus. Jeder hakt sich von selbst ab.",
         "leadNoClass": "Lege deine erste Klasse an und probiere dann jeden Schritt einmal aus. Jeder hakt sich von selbst ab.",
         "makeClass": "Erste Klasse anlegen",
+        "askAdmin": "An deiner Schule legt die Schulverwaltung die Klassen an. Bitte sie, deine anzulegen, und probiere dann jeden Schritt einmal aus.",
         "count": "{done} von {total} erledigt",
         "done": "Erledigt",
         "todo": "Noch nicht erledigt",

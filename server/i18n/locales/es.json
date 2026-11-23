@@ -9553,6 +9553,7 @@
         "lead": "Prueba cada paso una vez con {class}. Cada uno se marca solo a medida que avanzas.",
         "leadNoClass": "Crea tu primera clase y luego prueba cada paso una vez. Cada uno se marca solo a medida que avanzas.",
         "makeClass": "Crea tu primera clase",
+        "askAdmin": "En tu escuela, el administrador escolar crea las clases. Pídele que cree la tuya y luego prueba cada paso una vez.",
         "count": "{done} de {total} hechos",
         "done": "Hecho",
         "todo": "Aún no hecho",

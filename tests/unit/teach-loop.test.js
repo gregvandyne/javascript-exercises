@@ -225,6 +225,25 @@ test('no class yet: the class tools are plain words and one "Make your first cla
   }
 });
 
+test('no class, and only the school admin makes classes: no Make your first class button, one line to ask the admin', async () => {
+  const strict = SC.createSchool(boss, { name: 'Admins Make Classes' }).school;
+  SC.updateSchool(boss, strict.id, { settings: { teachersCreateClasses: false } });
+  const sam = SC.createSchoolAccount(boss, strict.id, { rosterName: 'Sam Asks', role: 'teacher' }).user;
+  const links = TL.loopLinks(auth.getUser(sam.id));
+  assert.equal(links.makeClass, null, 'the form would refuse them');
+  assert.equal(links.askAdmin, true);
+  for (const p of ['/teach?all=1', '/teach/loop']) {
+    const r = await get(p, sam); assert.equal(r.status, 200, p);
+    const c = p !== '/teach/loop' ? card(r.text) : r.text.slice(r.text.indexOf('id="teach-loop"'));
+    assert.doesNotMatch(c, /href="\/teach\?new=class"|Make your first class/, `${p}: no button`);
+    assert.equal((c.match(/the school admin makes classes/g) || []).length, 1, `${p}: one line to ask the admin`);
+  }
+  // The same school's admin still gets the button.
+  const adm = SC.createSchoolAccount(boss, strict.id, { rosterName: 'Ada Admin', role: 'admin' }).user;
+  assert.equal(TL.loopLinks(auth.getUser(adm.id)).makeClass, '/teach?new=class');
+  assert.equal(TL.loopLinks(auth.getUser(adm.id)).askAdmin, false);
+});
+
 test('deleting an account removes its teaching-loop row', async () => {
   const { deleteAccount } = await import('../../server/services/account-delete.js');
   const u = auth.createUser({ username: 'LoopLeaver', password: 'leaver-pass-123', accountType: 'grownup' });
