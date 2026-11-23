@@ -698,3 +698,34 @@ give a dashboard point to a student or the whole class when the teacher asks, wi
 the Oomba chat"). What is sent to Anthropic is unchanged in kind: no names, no student ids. Question for the lawyer: is
 keeping the mapping from placeholder to student account id with the conversation (same retention as the chat) covered
 by the existing retention wording?
+### Comparison page naming Kahoot!, Classroomscreen, Brainingcamp: lawyer review pending (2026-11-22)
+
+`/compare` ("How Oomba compares", server/routes/compare.js) is a public, indexable page for teachers that names three
+other products, Kahoot!, Classroomscreen and Brainingcamp, in a table by classroom need. The owner approved naming
+these three on this page only (docs/decisions.md "Comparison page: the one page that names other products"). What the
+page does to stay factual:
+
+- Each other product's cell is Yes, Partial, No or Not stated. Any cell other than Not stated must carry a source on
+  that product's own public website (address, day read, exact supporting words), shown as a numbered footnote; the
+  sources are kept in docs/compare-sources.md. Not stated is defined on the page as "we have not confirmed it from their
+  public website". No prices (theirs or ours), no opinions, no disparaging words.
+- The product names are shown as plain text (no logos), with the notice: "Kahoot!, Classroomscreen and Brainingcamp are
+  trademarks of their owners. Oomba is not affiliated with them. Comparison based on their public websites as of
+  <date>; tell us if something changed." with a link to the site's contact address.
+- The cells were read on 2026-11-22 from each product's own pages; each footnote shows the page's address, the day
+  and the quoted words. Where a row is only partly confirmed the cell says Partial (for example a free trial but no
+  free plan stated); where nothing on the pages read says it, Not stated. Their privacy policies on other hosts
+  (trust.kahoot.com) could not be read; the Kahoot! privacy cell quotes its safety center on kahoot.com instead.
+
+Questions for the lawyer:
+
+1. Comparative advertising: is naming the three products in a factual table, with the trademark notice above and no
+   logos, fine under US law (nominative fair use, the Lanham Act's false-advertising rules) and, for visitors in the
+   EU and UK, the comparative-advertising rules (Directive 2006/114/EC; the UK's Business Protection from Misleading
+   Marketing Regulations 2008)?
+2. Is "Not stated", defined as "we have not confirmed it from their public website", safe wording, or could a reader
+   take it as a claim that the product lacks the feature?
+3. How often must the cells be re-checked to keep the "Last checked" date honest, and should the page come down or say
+   so when a check is overdue?
+4. Do the trademark notice and the "tell us if something changed" link need any change, for example a named contact
+   for takedown or correction requests?
