@@ -20,6 +20,11 @@
 //   teacher opens the Builder (or Figures) with the brief filled in and presses its final button there. givePoint gives
 //   a dashboard point when the teacher asks for one (with Undo; a choice card when anything is unclear). Every applied
 //   change, point, undo, hand-off and refused picture is in the audit log.
+// - Books (docs/storybook-builder.md "In the Oomba chat"; services/companion-book.js): for teachers who may make books
+//   (storybook.canMake, checked by every book tool, tap and route), Make a book is a card in this chat that asks only
+//   what is missing, takes the teacher's own words and files into the book (never to the AI), shows exactly what will
+//   be sent (the page's own scrubber and screening) and makes the book through storybook.createBook; its first draft
+//   and every later change, from its page or any other, are turns here (storybook.writeBook, applyBook, Undo).
 // - Uploads (oomba_files, migration 0108): a document's text (the Builder's lesson reader, scrubbed and screened, at most
 //   10,000 characters; the file itself is never kept) stays with the conversation; a picture (a cleaned JPEG, no
 //   metadata, no people) is kept only until the answer that reads it is done, at most a day.
@@ -49,6 +54,8 @@ import * as FC from './figures-chat.js';
 import * as M from './manipulatives.js';
 import * as MC from './manip-chat.js';
 import * as H from './companion-help.js';
+import * as SB from './storybook.js';
+import * as BK from './companion-book.js';
 import { toolOf } from '../../public/js/manip-data.js';
 import { REASON_ICON } from '../../public/js/dash-class5.js';
 
@@ -126,7 +133,7 @@ const wordsProblem = text => (hasProfanity(String(text || '')) ? 'words' : null)
 // figures-sheet: a Figures worksheet, test or lesson set (sheetId); manip: a host's Manipulatives board (tool, boardId);
 // manip-live: the live room's teacher view (tool). These pages have their own workflow (services/figures-chat.js,
 // services/manip-chat.js): the companion offers it there, and only there.
-export const PAGES = Object.freeze(['class', 'dashboard', 'library', 'teach', 'build', 'figures', 'figures-sheet', 'tools', 'manip', 'manip-live', 'school', 'live', 'other']);
+export const PAGES = Object.freeze(['class', 'dashboard', 'library', 'teach', 'build', 'figures', 'figures-sheet', 'tools', 'manip', 'manip-live', 'book', 'school', 'live', 'other']);
 const ID = /^[A-Za-z0-9_-]{1,64}$/;
 /** The page context as the browser sent it, checked: only a class this teacher teaches, only their own layout. */
 export function pageOf(u, raw) {
@@ -145,6 +152,11 @@ export function pageOf(u, raw) {
   if (type === 'figures-sheet') {
     const w = typeof p.sheetId === 'string' && ID.test(p.sheetId) && F.canMake(u) ? F.ownWorksheet(u, p.sheetId) : null;
     if (w) out.sheetId = w.id; else out.type = 'figures';
+  }
+  // book: the book maker's editor of one of the teacher's own books (docs/storybook-builder.md "In the Oomba chat").
+  if (type === 'book') {
+    const row = typeof p.bookId === 'string' && ID.test(p.bookId) ? SB.ownBook(u, p.bookId) : null;
+    if (row) out.bookId = row.id; else out.type = 'library';
   }
   if (type === 'manip' || type === 'manip-live') {
     const tl = M.canHost(u) ? toolOf(p.tool) : null;
@@ -586,6 +598,14 @@ export function dress(u, chat, t) {
     if (x.change && x.change.kind === 'point') {
       y = { ...y, change: { ...x.change, items: (x.change.items || []).map(it => ({ ...it, ...word(it.reason), name: it.user ? kid(it.classId, it.user) : '', className: (cls(it.classId) || {}).name || '' })) } };
     }
+    // The book maker: the card in the teacher's language, a book change's lines, and which book a turn was about.
+    if (x.note && (x.note.book || x.note.bookRef)) {
+      const n = { ...y.note };
+      if (x.note.book) n.book = BK.viewOf(x.note.book, t);
+      if (x.note.bookRef) { const r = SB.ownBook(u, x.note.bookRef); n.bookRef = r ? { id: r.id, title: r.title || t('storybook.untitled'), href: `/library/make/${r.id}` } : null; }
+      y = { ...y, note: n };
+    }
+    if (x.change && x.change.kind === 'book') y = { ...y, change: { ...x.change, lines: bookLines(x.change, t) } };
     const p = x.note && x.note.pick;
     if (p) {
       const need = pickNeeds(p);
@@ -600,6 +620,18 @@ export function dress(u, chat, t) {
     return y;
   });
   return { ...chat, turns };
+}
+/** What a book change did, in the teacher's language (the book page's own words). */
+export function bookLines(c, t) {
+  const out = [];
+  if (c.first) out.push(c.bookKind === 'cyoa' ? t('js.storybook-edit.ch.firstCyoa', { pages: c.pages, endings: c.endings }) : t('js.storybook-edit.ch.first', { pages: c.pages }));
+  if (c.added && c.added.length) out.push(t('js.storybook-edit.ch.added', { pages: c.added.join(', ') }));
+  if (c.changed && c.changed.length) out.push(t('js.storybook-edit.ch.changed', { pages: c.changed.join(', ') }));
+  if (c.removed) out.push(t('js.storybook-edit.ch.removed', { count: c.removed }));
+  if (c.kept) out.push(t('js.storybook-edit.ch.kept', { count: c.kept }));
+  if (c.repaired) out.push(t('js.storybook-edit.ch.repaired'));
+  if (!out.length) out.push(t('js.storybook-edit.ch.none'));
+  return { title: t('js.storybook-edit.ch.title'), items: out };
 }
 /** A tap on a choice card: the class, the student or the reason. Once the card has all three the point is given (a turn
  *  of its own, with Undo). -> the conversation | fail */
@@ -663,9 +695,9 @@ const TOOLS_BASE = Object.freeze([
 
 // The page tools: offered only on their own page (the teacher's own worksheet; a host's own board).
 // Navigate-then-do and choice cards (docs/decisions.md "Oomba companion: navigate-then-do and choice cards").
-export const NAV_TYPES = Object.freeze(['dashboard', 'class', 'figures-sheet', 'manip']);
+export const NAV_TYPES = Object.freeze(['dashboard', 'class', 'figures-sheet', 'manip', 'book']);
 const TOOLS_MORE = [
-  { name: 'findMyPages', description: 'The teacher\'s own places to go: their classes (each with its dashboard), their Figures worksheets and tests, their Manipulatives boards. Ids, names and grades only. Use it before proposeNavigation when you need a target.', input_schema: { type: 'object', properties: { kind: { type: 'string', enum: ['class', 'dashboard', 'figures-sheet', 'manip'] } } } },
+  { name: 'findMyPages', description: 'The teacher\'s own places to go: their classes (each with its dashboard), their Figures worksheets and tests, their Manipulatives boards, their books. Ids, names and grades only. Use it before proposeNavigation when you need a target.', input_schema: { type: 'object', properties: { kind: { type: 'string', enum: ['class', 'dashboard', 'figures-sheet', 'manip', 'book'] } } } },
   { name: 'proposeNavigation', description: 'When the request needs a page the teacher is not on (their class dashboard, a class, a Figures worksheet, a Manipulatives board), offer to open it and do the request there: the teacher sees "I\'ll open <page> and do this there" with Go there and Not now, and once that page opens the same request continues by itself. Never tell the teacher to go there and ask again. Leave id out when you do not know which one: the app asks the teacher to pick when there are several.', input_schema: { type: 'object', required: ['pageType'], properties: { pageType: { type: 'string', enum: NAV_TYPES }, id: str('The class, worksheet or board id (from findMyPages), when you know it.'), request: str('The teacher\'s request to carry out there, in their own words (when it was not their last message).') } } },
   { name: 'howTo', description: `How to do something on Oomba Academy that you cannot do yourself: the real steps, with links to the teacher's own pages and the buttons' real names. Show the steps as a numbered list exactly as given (links and bold kept; translate the plain words only). Tasks: ${H.TASKS.join(', ')}.`, input_schema: { type: 'object', required: ['task'], properties: { task: { type: 'string', enum: H.TASKS } } } },
   { name: 'createClass', description: 'Make a new class for the teacher (they are its teacher; no students are added). The teacher sees "Create class ...?" with Create and Not now; nothing is made until they tap Create, and Undo deletes it while it has no students. Use it when they ask for a class, a test class or a practice class. When they did not say a name, use "Test class" for a test or practice class.', input_schema: { type: 'object', properties: { name: str('The class name, short, no student names.'), grade: str('K or 1 to 12, optional.'), school: str('The school\'s name, only when the teacher is at more than one.') } } },
@@ -682,18 +714,19 @@ export function navTargets(u, pageType, names = studentNames(u)) {
   }
   if (pageType === 'figures-sheet') return F.canMake(u) ? F.listWorksheets(u).slice(0, 20).map(w => ({ pageType, id: w.id, name: cleanText(u, w.title || '', names) })) : [];
   if (pageType === 'manip') return M.listRecent(u).slice(0, 20).map(b => ({ pageType, id: b.id, name: cleanText(u, b.title || '', names), tool: b.tool }));
+  if (pageType === 'book') return SB.myBooks(u, 20).map(r => ({ pageType, id: r.id, name: cleanText(u, r.title || '', names) || tFor('en')('storybook.untitled') }));
   return [];
 }
 /** One place to go, only the teacher's own: { pageType, id, name, href, page } | null. */
 export function navTarget(u, pageType, id, names) {
   const t = navTargets(u, pageType, names).find(x => x.id === String(id || ''));
   if (!t) return null;
-  const href = pageType === 'dashboard' ? `/class/${t.id}/dashboard` : pageType === 'class' ? `/class/${t.id}` : pageType === 'figures-sheet' ? `/figures/worksheets/${t.id}` : `/manipulatives#board/${t.id}`;
-  const page = pageType === 'dashboard' || pageType === 'class' ? { type: pageType, classId: t.id } : pageType === 'figures-sheet' ? { type: 'figures-sheet', sheetId: t.id } : { type: 'manip', tool: t.tool, boardId: t.id };
+  const href = pageType === 'dashboard' ? `/class/${t.id}/dashboard` : pageType === 'class' ? `/class/${t.id}` : pageType === 'figures-sheet' ? `/figures/worksheets/${t.id}` : pageType === 'book' ? `/library/make/${t.id}` : `/manipulatives#board/${t.id}`;
+  const page = pageType === 'dashboard' || pageType === 'class' ? { type: pageType, classId: t.id } : pageType === 'figures-sheet' ? { type: 'figures-sheet', sheetId: t.id } : pageType === 'book' ? { type: 'book', bookId: t.id } : { type: 'manip', tool: t.tool, boardId: t.id };
   return { ...t, href, page };
 }
 /** The page a request was carried to is the page the teacher is on now (the same kind and the same id). */
-export const samePage = (a, b) => !!a && !!b && a.type === b.type && ['classId', 'sheetId', 'boardId'].every(k => (a[k] || '') === (b[k] || ''));
+export const samePage = (a, b) => !!a && !!b && a.type === b.type && ['classId', 'sheetId', 'boardId', 'bookId'].every(k => (a[k] || '') === (b[k] || ''));
 const navNote = (t, request) => ({ id: uid(10), pageType: t.pageType, targetId: t.id, name: t.name, href: t.href, page: t.page, request, state: 'open', at: now() });
 // A new class (docs/decisions.md "Oomba companion: how-to answers with links, Create class and Copy"): the same rule and
 // service as My classes' New class (routes/schools.js POST /api/classes: canCreateClass, createClass, its rate limit).
@@ -747,11 +780,18 @@ export const PAGE_TOOLS = Object.freeze({
     title: { type: 'string' }, steps: { type: 'array', items: { type: 'string' } }, items: { type: 'array', items: { type: 'object' } } } } },
 });
 /** The tools for a page: the general ones and, on a worksheet or board, that page's own. */
-export const toolsFor = page => (PAGE_TOOLS[page.type] ? [...TOOLS, PAGE_TOOLS[page.type]] : [...TOOLS]);
+export function toolsFor(page, u = null) {
+  const base = PAGE_TOOLS[page.type] ? [...TOOLS, PAGE_TOOLS[page.type]] : [...TOOLS];
+  // The book maker's tools: teachers only (storybook.canMake), checked again when each one runs.
+  return u && SB.canMake(u) ? [...base, ...BOOK_TOOLS()] : base;
+}
+/** The book tools (companion-book.js), built when asked for. */
+export const BOOK_TOOL_NAMES = Object.freeze(['makeBook', 'findMyBooks', 'changeBook', 'redrawPicture']);
+const BOOK_TOOLS = () => [BK.bookTool(), { name: 'findMyBooks', description: 'The teacher\'s own books from the book maker (made now or in the past): id, title, kind, last changed, pages, best match first. Use it to find which book they mean ("my water cycle book", "the dragon adventure from last week").', input_schema: { type: 'object', properties: { words: str('Words from the title or topic, optional.') } } }, ...BK.BOOK_PAGE_TOOLS];
 
 const EXPLAIN = [
   'Oomba Academy is a kid-safe site with learning games, a Story Library of free picture books, ready-made lessons (CS Quest, Number Quest), classes with assignments and progress, Oomba Live (host a game for the whole class), classroom dashboards with widgets for the projector, Figures (printable worksheets and tests with drawn figures), Math Manipulatives, Mistake Hunt and the AI Builder that makes games and classroom activities from a lesson.',
-  'You (Oomba) can: find games, books and lessons; change the teacher\'s class dashboard after they tap Apply (with Undo); give a dashboard point to a student or the whole class when the teacher asks (with Undo); make a new class after the teacher taps Create (with Undo while it is empty); open the teacher\'s own pages (Go there); give real steps with links for anything else (howTo); read a lesson plan they attach (text only) or a picture without people; search the web when it is on, with sources; hand off a build to the Builder, Figures or the Manipulatives with a brief.',
+  'You (Oomba) can: find games, books and lessons; change the teacher\'s class dashboard after they tap Apply (with Undo); give a dashboard point to a student or the whole class when the teacher asks (with Undo); make a new class after the teacher taps Create (with Undo while it is empty); open the teacher\'s own pages (Go there); give real steps with links for anything else (howTo); read a lesson plan they attach (text only) or a picture without people; search the web when it is on, with sources; hand off a build to the Builder, Figures or the Manipulatives with a brief; make a book with the book maker (cards for its choices, a check of what will be sent, then Make my book) and change the teacher\'s books, new or old, with Undo.',
   'You cannot: see students\' names, answers or work; add students or make their accounts; assign, grade or message students; invite people; change school settings; make a new kind of dashboard widget; change the dashboard\'s layout without the teacher\'s tap. For these, call howTo and give its steps.',
   'Privacy: students\' names are taken out of messages and uploads (each name becomes a placeholder like [student 1], so a point can go to the right student without the name ever reaching the AI); audio from the microphone is never kept; a school admin can turn Oomba or its web search off and set how long chats are kept.',
 ].join('\n');
@@ -820,7 +860,7 @@ export function runTool(name, input, ctx) {
       return { result: { done: true, to: r.give.user === 'class' ? 'the whole class' : 'one student', reason: r.give.reason, note: `${note} The card in the chat shows who got it, with Undo. In your answer, never write a name or a placeholder like [student 1].` }, step: { k: 'point', n: ctx.out.points.length } };
     }
     case 'findMyPages': {
-      const kinds = i.kind && NAV_TYPES.includes(i.kind) ? [i.kind] : ['dashboard', 'figures-sheet', 'manip'];
+      const kinds = i.kind && NAV_TYPES.includes(i.kind) ? [i.kind] : ['dashboard', 'figures-sheet', 'manip', ...(SB.canMake(u) ? ['book'] : [])];
       const out = {};
       for (const k of kinds) out[k] = navTargets(u, k, ctx.names).slice(0, 20).map(({ pageType, ...x }) => x);
       return { result: out, step: { k: 'places' } };
@@ -883,9 +923,62 @@ export function runTool(name, input, ctx) {
       ctx.out.manip = { tool: b.tool, boardId: ctx.page.boardId || null, ...r.change };
       return { result: { done: true, items: r.change.n, steps: r.change.steps, capped: r.change.capped }, step: { k: 'board', n: r.change.n } };
     }
+    // ---------------------------------------------------------------- the book maker (companion-book.js)
+    case 'makeBook': {
+      if (!SB.canMake(u)) return { result: { error: 'Books are made by teachers only. Say kindly that the book maker is for teachers.' }, step: { k: 'bookNo' } };
+      if (ctx.out.book || ctx.out.bookChange) return { result: { error: 'One book at a time: the card is already in the chat.' }, step: { k: 'bookNo' } };
+      const open = openDraft(u);
+      ctx.out.book = BK.fromInput(u, ctx, i, open ? open.d : null);
+      if (open) ctx.out.bookPrev = open.turn.id;
+      return { result: { waitingForTeacher: true, asking: ctx.out.book.state, note: 'The teacher answers on the card in the chat, then checks exactly what will be sent and taps Make my book. Nothing is made before that. Say so in one short sentence; do not ask the card\'s questions yourself and do not repeat its options.' }, step: { k: 'book' } };
+    }
+    case 'findMyBooks': {
+      if (!SB.canMake(u)) return { result: { error: 'Books are made by teachers only.' }, step: { k: 'bookNo' } };
+      const list = BK.findBooks(u, String(i.words || '')).slice(0, 10);
+      return { result: { books: list.map(b => ({ id: b.id, title: cleanText(u, b.title, ctx.names) || '(untitled)', kind: b.kind === 'cyoa' ? 'choose-your-own-adventure' : 'picture book', updated: new Date(b.updated).toISOString().slice(0, 10), pages: b.pages })) }, step: { k: 'booksMine', n: list.length } };
+    }
+    case 'changeBook': {
+      if (!SB.canMake(u)) return { result: { error: 'Books are made by teachers only.' }, step: { k: 'bookNo' } };
+      if (ctx.out.bookChange || ctx.out.book || ctx.out.ask) return { result: { error: 'One book change per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'bookNo' } };
+      const request = clip(cleanText(u, String(i.request || ctx.text || ''), ctx.names), 1000).replace(/\s+/g, ' ').trim();
+      if (request.length < 2) return { result: { error: 'Say what to change.' }, step: { k: 'bookNo' } };
+      let row = null;
+      if (i.bookId) { row = SB.ownBook(u, String(i.bookId)); if (!row) return { result: { error: 'That is not one of the teacher\'s books.' }, step: { k: 'bookNo' } }; }
+      else if (ctx.page.type === 'book' && !i.which) row = SB.ownBook(u, ctx.page.bookId);
+      if (!row) {
+        const all = BK.findBooks(u, ''), fit = i.which ? BK.findBooks(u, String(i.which)) : all;
+        if (!fit.length) { ctx.out.bookNone = true; return { result: { error: all.length ? 'None of the teacher\'s books fits those words. Say so in one sentence; the card offers Make a book and their books are on the library page.' : 'The teacher has no books yet. Say so in one sentence; the card offers Make a book.' }, step: { k: 'bookNo' } }; }
+        if (fit.length > 1) {
+          const tt = tFor(ctx.lang);
+          ctx.out.ask = { id: uid(10), kind: 'book', question: '', request, page: ctx.page, lang: ctx.lang, options: fit.slice(0, NAV_MAX).map(b => ({ label: cleanText(u, b.title, ctx.names) || tt('storybook.untitled'), kindText: tt(`storybook.kind.${b.kind}`), at: b.updated, book: b.id })), state: 'open' };
+          return { result: { askedWhich: true, options: ctx.out.ask.options.map(o => o.label), note: 'The teacher picks the book on a card; the change is made once they tap. Ask which book in one short sentence.' }, step: { k: 'which' } };
+        }
+        row = SB.ownBook(u, fit[0].id);
+      }
+      if (!SB.take(u)) return { result: { error: 'The teacher has used today\'s book turns (the same daily number as on the book page). Nothing was changed. They can still edit the book by hand.' }, step: { k: 'bookNo' } };
+      ctx.out.bookChange = { bookId: row.id, request };
+      return { result: { done: true, book: cleanText(u, row.title, ctx.names) || '(untitled)' }, step: { k: 'bookEdit', q: clip(cleanText(u, row.title, ctx.names), 40) } };
+    }
+    case 'redrawPicture': {
+      if (!SB.canMake(u)) return { result: { error: 'Books are made by teachers only.' }, step: { k: 'bookNo' } };
+      const id = i.bookId ? String(i.bookId) : ctx.page.type === 'book' ? ctx.page.bookId : '';
+      const r = BK.redrawPage(u, id, i.page, clip(cleanText(u, String(i.note || ''), ctx.names), 200));
+      if (r.error) return { result: { error: r.error }, step: { k: 'bookNo' } };
+      ctx.out.bookRef = id;
+      return { result: { done: true, note: 'The picture is being painted again; the book page shows it when it is ready.' }, step: { k: 'redraw', n: Number(i.page) || 0 } };
+    }
     default: return { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } };
   }
 }
+/** The book being set up in this chat (opts.book): { turn, d } | null. */
+export function openDraft(u, row = chatRow(u)) {
+  const id = row && (optsOf(row).book || {}).id;
+  if (!id) return null;
+  const turns = parse(row.turns, []) || [];
+  for (let k = turns.length - 1; k >= 0; k--) { const d = turns[k].note && turns[k].note.book; if (d && d.id === id) return BK.isOpen(d) ? { turn: turns[k], d } : null; }
+  return null;
+}
+const setOpen = (u, id) => { const row = ensureChat(u); q.run('UPDATE oomba_chats SET opts=? WHERE id=?', JSON.stringify({ ...optsOf(row), book: id ? { id } : null }), row.id); };
 
 // ---------------------------------------------------------------- the answer: the tool-use loop
 function system(u, lang, page, settings) {
@@ -903,6 +996,10 @@ function system(u, lang, page, settings) {
     'Never pretend: if you could not find something on Oomba, say so.',
     'Another page: when a request needs a page the teacher is not on (their class dashboard, a class, a Figures worksheet, a Manipulatives board), call proposeNavigation (findMyPages first when you need ids). Never tell the teacher to open it and ask again: the app opens it when they tap Go there and carries the request.',
     'Questions: when you need a decision or a missing detail, call askChoice with 2 to 5 short options instead of asking in a long sentence.',
+    ...(SB.canMake(u) ? [
+      'Books (the book maker: a picture book or a choose-your-own-adventure, every page illustrated): when the teacher asks for a book, a story or an adventure, or to turn their own story into one, call makeBook with only what they said. The card asks the rest, then shows exactly what will be sent; nothing is made until they tap Make my book. Never write a book in the chat. Students\' names and work never go into a book.',
+      'Their books, made now or in the past: for a change ("make page 3 scarier", "add an ending to my dragon adventure"), call changeBook (findMyBooks first when you need to know which book; on a book\'s page it is that book). To paint one picture again, call redrawPicture. Say which book you changed; the card offers Undo and Open the book.',
+    ] : ['Books: the book maker is for teachers only. If asked, say so kindly.']),
     'Classes: when the teacher asks for a new class (a test class, a class to try the dashboard), call createClass; the card asks them to confirm. Ask the grade only when it matters to them.',
     'How-to: when the teacher asks how to do something, or asks for something you cannot do yourself (add students, print login cards, invite a co-teacher, assign, due dates, host live, progress, school settings, Google Classroom), call howTo and answer with its steps as a numbered list, keeping its links and bold labels exactly. Never invent a page, a link or a button name; links only from your tools. When one page covers it and the tool gives go, also call proposeNavigation for that page.',
     ...(page.rules ? [
@@ -996,7 +1093,33 @@ function cardOf(it) {
 let webBroken = null;
 export const _resetWeb = () => { webBroken = null; };
 const aiClient = () => (hooks.create ? (aiBudget.ok() ? { messages: { create: hooks.create } } : null) : anthropic());
+/**
+ * A book's turn in this chat: the book maker's own writer (storybook.js writeBook: its prompt, checks, retry and repair,
+ * the AI budget) and applyBook (the merge, Undo, the picture queue), exactly as the book page's own chat did. The day's
+ * turn was spent before (createBook for a first draft; changeBook or the book card's pick for a change).
+ */
+async function bookAnswer(user, bookId, { text, history, step, reply0 = '' }) {
+  const row = SB.ownBook(user, bookId); if (!row) return { failed: 'notFound' };
+  const base = SB.bookOf(row);
+  step(2);
+  const r = await SB.writeBook(user, row, { text, history: (history || []).filter(x => x.text && !x.failed).slice(-8).map(x => ({ role: x.role, text: x.text })) });
+  if (r.failed) return { failed: r.failed };
+  step(3);
+  const ref = { bookRef: bookId };
+  if (!r.book) return { reply: r.reply || reply0, apply: () => ({ note: ref }) };
+  return {
+    reply: r.reply || reply0,
+    apply: () => {
+      const a = SB.applyBook(user, bookId, base, r.book, { repaired: r.repaired });
+      if (a.code) return { note: ref };
+      return { note: ref, change: { kind: 'book', bookId, bookKind: row.kind, ...a.change }, undo: { kind: 'book', bookId, ...a.undo } };
+    },
+  };
+}
 async function answer({ user, text, meta, quote, history, step, turnId }) {
+  // A book's first draft (Make my book) or a change the teacher picked the book for on a card: straight to the book's
+  // own writer (the teacher's words are the request; nothing else to decide).
+  if (meta && (meta._bookFirst || meta._bookTarget)) return bookAnswer(user, meta._bookFirst || meta._bookTarget, { text, history, step });
   const client = aiClient();
   if (!client) return { failed: 'resting' };
   const settings = limitsOf(user), lang = (meta && meta.lang) || 'en';
@@ -1011,7 +1134,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const ctx = { user, page, lang, names, files, seen: new Map(), out: {}, lastList: null, meta: meta || {}, who: chatWho(user, row), text, links: new Set() };
   const web = { turnId, names: [...names.map(n => n.name), ...SR.namesOf(user)], searches: 0, queries: new Map(), found: new Map(), flagged: false };
   let useWeb = webOn(user, row) && !webBroken;
-  const tools = () => (useWeb ? [...toolsFor(page), { ...SR.WEB_SEARCH_TOOL, max_uses: 3 }] : toolsFor(page));
+  const tools = () => (useWeb ? [...toolsFor(page, user), { ...SR.WEB_SEARCH_TOOL, max_uses: 3 }] : toolsFor(page, user));
   const msgs = messagesFor(history, text, meta, image, quote);
   const steps = [];
   const model = config.companionModel || config.builderModel;
@@ -1034,30 +1157,46 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
       const results = [];
       for (const tu of uses) {
         let r;
-        try { r = TOOL_NAMES.includes(tu.name) || Object.values(PAGE_TOOLS).some(x => x.name === tu.name) ? runTool(tu.name, tu.input, ctx) : { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } }; } catch (e) { log('warn', 'companion tool failed', { tool: tu.name, error: e.message }); r = { result: { error: 'That did not work.' }, step: { k: 'toolNo' } }; }
+        try { r = TOOL_NAMES.includes(tu.name) || BOOK_TOOL_NAMES.includes(tu.name) || Object.values(PAGE_TOOLS).some(x => x.name === tu.name) ? runTool(tu.name, tu.input, ctx) : { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } }; } catch (e) { log('warn', 'companion tool failed', { tool: tu.name, error: e.message }); r = { result: { error: 'That did not work.' }, step: { k: 'toolNo' } }; }
         if (r.step && !['unknown'].includes(r.step.k)) steps.push(r.step);
         results.push({ type: 'tool_result', tool_use_id: tu.id, content: JSON.stringify(r.result).slice(0, 20000) });
       }
       msgs.push({ role: 'user', content: results });
+      // A book change: the book's own writer answers it (below), not another round of this loop.
+      if (ctx.out.bookChange) break;
     }
   } catch (e) {
     return { failed: fallbackReason(logAiFail('companion ai failed', { turn: turnId }, e, t0)) };
+  }
+  if (ctx.out.bookChange) {
+    const b = await bookAnswer(user, ctx.out.bookChange.bookId, { text: ctx.out.bookChange.request, history, step });
+    if (b.failed) return b;
+    const extra = { steps: steps.slice(0, 16), ms: Date.now() - t0 };
+    log('info', 'companion changed a book', { turn: turnId, page: page.type });
+    return { reply: cleanText(user, b.reply, names), apply: () => { const a = b.apply(); return { ...a, note: { ...extra, ...(a.note || {}) } }; } };
   }
   step(3);
   if (web.searches) steps.unshift({ k: web.flagged ? 'webNo' : 'web', n: web.searches });
   const fin = finalText(res && res.content, ctx, web);
   let reply = cleanText(user, fin.text, names);
   const points = ctx.out.points || [];
-  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !points.length && !ctx.out.pick && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew) return { failed: 'error' };
+  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !points.length && !ctx.out.pick && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef) return { failed: 'error' };
   if (!SR.textOk(reply.replace(MD_LINK, '$1'))) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
   const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}),
-    ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}), ...(ctx.out.nav ? { nav: ctx.out.nav } : {}), ...(ctx.out.ask ? { ask: ctx.out.ask } : {}), ...(ctx.out.classNew ? { classNew: ctx.out.classNew } : {}) };
+    ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}), ...(ctx.out.nav ? { nav: ctx.out.nav } : {}), ...(ctx.out.ask ? { ask: ctx.out.ask } : {}), ...(ctx.out.classNew ? { classNew: ctx.out.classNew } : {}),
+    ...(ctx.out.book ? { book: ctx.out.book } : {}), ...(ctx.out.bookNone ? { bookNone: true } : {}), ...(ctx.out.bookRef ? { bookRef: ctx.out.bookRef } : {}) };
   log('info', 'companion answered', { turn: turnId, ms: note.ms, steps: steps.length, web: web.searches, page: page.type });
   if (ctx.out.manip) audit(user.id, 'manip.chat', ctx.out.manip.tool, { changed: true });
   const fig = ctx.out.figures;
   return {
     reply, apply: () => {
-      if (image && file) dropBytes(file.id);
+      // A picture taken into a book being set up stays until Make my book (at most a day); any other goes now.
+      if (image && file && !(ctx.out.book && ctx.out.book.pics.some(p => p.id === file.id))) dropBytes(file.id);
+      if (ctx.out.book) {
+        if (ctx.out.bookPrev) moveCard(user, ctx.out.bookPrev);
+        setOpen(user, ctx.out.book.id);
+        audit(user.id, 'companion.book.draft', ctx.out.book.id, { asking: ctx.out.book.state });
+      }
       // Points: given here, in the engine's transaction with Oomba's turn, with Undo (Google Classroom after it).
       if (points.length) { const a = awardPoints(user, points.map(x => ({ ...x, user: x.user === 'class' ? null : x.user })), lang); return a ? { note, ...a } : { note }; }
       if (!fig) return { note };
@@ -1093,6 +1232,10 @@ export const surface = C.defineSurface({
     for (const [, n] of tk.text.matchAll(TOKEN)) if (!who[n] && prev[n]) who[n] = prev[n];
     if (Object.keys(who).length) out._who = who;
     if (body.file) { const f = fileOf(u, String(body.file)); if (!f) return { code: 'fileGone' }; out.file = fileRef(f); }
+    // Set only by this file (Make my book, a book picked on a card), never from a request's body (routes/companion.js
+    // passes named fields only): the turn goes straight to that book's own writer.
+    if (body._bookFirst && SB.ownBook(u, body._bookFirst)) out._bookFirst = body._bookFirst;
+    if (body._bookTarget && SB.ownBook(u, body._bookTarget)) out._bookTarget = body._bookTarget;
     // On a board: the board as the AI may see it, built here from what the page sent (manip-chat.js pageBoard).
     if (out.page.type === 'manip' && body.board && typeof body.board === 'object') { const b = MC.pageBoard(u, { ...body.board, tool: out.page.tool, boardId: out.page.boardId }); if (b) out.page.board = b; }
     return out;
@@ -1103,6 +1246,7 @@ export const surface = C.defineSurface({
     if (data && data.kind === 'figures') { const w = F.ownWorksheet(u, data.sheetId); return w ? FC.undoPlan(u, w, data) : { ok: false, code: 'notFound' }; }
     if (data && data.kind === 'point') return undoPoints(u, data);
     if (data && data.kind === 'class') return undoClass(u, data);
+    if (data && data.kind === 'book') return SB.undoChange(u, data.bookId, data);
     return undoProposal(u, data);
   },
   // "Ask Oomba about this" on a Figures question: ref "<worksheet>:<question>", only the teacher's own.
@@ -1143,6 +1287,7 @@ export function current(u, { peek = false } = {}) {
 }
 export function send(u, body) {
   if (!companionFor(u)) return { ok: false, code: 'notFound' };
+  if (typeof body.book === 'string' && body.book) { const r = bookWords(u, body); if (r) return r; }
   const per = limitsOf(u).perHour;
   const n = q.get("SELECT COUNT(*) n FROM oomba_turns WHERE owner_id=? AND surface=? AND created_at>?", u.id, SURFACE, now() - 3600e3).n;
   if (n >= per) return { ok: false, code: 'slow' };
@@ -1180,6 +1325,7 @@ export function act(u, turnId, a, value = '') {
   if (a === 'go' || a === 'notNow') return navAct(u, row, turn, a);
   if (a === 'askPick') return askPick(u, row, turn, value);
   if (a === 'create' || a === 'createNo') return createAct(u, row, turn, a);
+  if (/^book[A-Z]/.test(a)) return bookAct(u, row, turn, a, value);
   if (a === 'manipApplied') {
     const m = note.manip; if (!m) return { ok: false, code: 'notFound' };
     return markNote(u, row, turn.id, { ...note, manip: { ...m, applied: true } });
@@ -1215,6 +1361,16 @@ function askPick(u, row, turn, value) {
   const k = turn.note.ask, i = parseInt(value, 10);
   if (!k || k.state !== 'open' || !Number.isInteger(i) || !k.options[i]) return { ok: false, code: 'notFound' };
   const o = k.options[i];
+  // A book picked for a change (changeBook with several books that fit): that book's own writer makes the change, as a
+  // turn of this chat, with the day's turn spent now (as the book page spends it).
+  if (o.book) {
+    if (!SB.canMake(u) || !SB.ownBook(u, o.book)) return { ok: false, code: 'notFound' };
+    if (!SB.take(u)) return { ok: false, code: 'cap' };
+    markNote(u, row, turn.id, { ...turn.note, ask: { ...k, state: 'answered', chosen: i } });
+    const r = send(u, { text: k.request, page: k.page, lang: k.lang || 'en', _bookTarget: o.book });
+    if (!r.ok) SB.refund(u);
+    return r;
+  }
   if (o.nav) {
     const t = navTarget(u, o.nav.pageType, o.nav.id);
     if (!t) return { ok: false, code: 'notFound' };
@@ -1286,6 +1442,84 @@ export function startSheet(u, { text, purpose = 'worksheet', grade = '', lang = 
   const r = send(u, { text: v, page: { type: 'figures-sheet', sheetId: made.id }, lang });
   if (!r.ok) { F.deleteWorksheet(u, made.id); return r; }
   return { ok: true, id: made.id };
+}
+// ---------------------------------------------------------------- the book maker's card (companion-book.js)
+/** The card's buttons: a pick, Edit, Clear my words, Check, Stop, a file attached, Make my book. Teachers only, only
+ *  the open draft. -> the conversation (| { href } after Make my book) | fail */
+async function bookAct(u, row, turn, a, value) {
+  if (!SB.canMake(u)) return { ok: false, code: 'notFound' };
+  const d = turn.note.book;
+  if (!d || !BK.isOpen(d) || (optsOf(row).book || {}).id !== d.id) return { ok: false, code: 'notFound' };
+  const tt = tFor(d.lang || 'en');
+  const save = n => markNote(u, row, turn.id, { ...turn.note, book: n });
+  const oops = key => save({ ...d, v: (d.v || 1) + 1, error: tt(key) });
+  if (a === 'bookPick' || a === 'bookEdit') {
+    const n = a === 'bookPick' ? BK.pick(d, value) : BK.edit(d, value);
+    if (n.error) return { ok: false, code: 'notFound' };
+    return save(n.state === 'check' ? await BK.runCheck(u, n) : n);
+  }
+  if (a === 'bookClear') return save(BK.clearWords(d));
+  if (a === 'bookCheck') { if (BK.needOf({ ...d, ctxDone: true }) !== 'check') return { ok: false, code: 'notFound' }; return save(await BK.runCheck(u, d)); }
+  if (a === 'bookStop') { setOpen(u, null); audit(u.id, 'companion.book.stop', d.id, {}); return save({ ...d, v: (d.v || 1) + 1, state: 'cancelled' }); }
+  if (a === 'bookFile') {
+    const n = JSON.parse(JSON.stringify(d));
+    const why = BK.attach(u, n, fileOf(u, value));
+    if (why) return oops(`storybook.chat.${why}`);
+    n.v = (d.v || 1) + 1; n.error = ''; n.check = null;
+    if (n.state === 'check') return save(await BK.runCheck(u, n));
+    return save(n);
+  }
+  if (a === 'bookStart') {
+    if (d.state !== 'check' || !d.check || !d.check.ok) return { ok: false, code: 'notFound' };
+    if (q.get("SELECT 1 FROM oomba_turns WHERE chat_id=? AND status IN ('queued','running','interrupted')", row.id)) return { ok: false, code: 'chatBusy' };
+    const r = await BK.start(u, d);
+    if (r.error) return save({ ...d, v: (d.v || 1) + 1, error: r.error });
+    setOpen(u, null);
+    const lang = d.lang || 'en';
+    C.addTurn(u, SURFACE, KEY, { mark: { id: turn.id, fields: { note: { ...turn.note, book: { ...d, v: (d.v || 1) + 1, state: 'started', bookId: r.id, check: null } } } }, text: tt('storybook.chat.started'), apply: () => ({ note: { bookRef: r.id } }) });
+    // The first draft: a turn of this chat on the book's page (bookAnswer), so the book's conversation is this one.
+    const sent = send(u, { text: tt('storybook.firstMessage'), page: { type: 'book', bookId: r.id }, lang, _bookFirst: r.id });
+    if (!sent.ok) { SB.refund(u); log('warn', 'companion book first draft not stored', { book: r.id, code: sent.code }); return { ...C.current(u, SURFACE, KEY), href: `/library/make/${r.id}` }; }
+    return { ...sent, href: `/library/make/${r.id}` };
+  }
+  return { ok: false, code: 'notFound' };
+}
+/** Make a book (the library's button, /library/make): the first card of a new book in this chat, without the AI. A book
+ *  already being set up here is carried on instead. -> the conversation | fail */
+export function newBook(u, { lang = 'en' } = {}) {
+  if (!companionFor(u) || !SB.canMake(u)) return { ok: false, code: 'notFound' };
+  ensureChat(u);
+  if (openDraft(u)) return C.current(u, SURFACE, KEY);
+  const d = BK.fromInput(u, { lang, meta: {} }, {}, null);
+  return C.addTurn(u, SURFACE, KEY, { text: tFor(lang)('storybook.chat.hello'), apply: () => { setOpen(u, d.id); audit(u.id, 'companion.book.new', d.id, {}); return { note: { book: d } }; } });
+}
+/** The teacher's words while the card waits for them (the client sends them with book: <draft id>): into the book, never
+ *  to the AI. Their message shows in the chat; a fresh card (with what it has now) follows. -> the conversation | null */
+function bookWords(u, body) {
+  const open = SB.canMake(u) ? openDraft(u) : null;
+  if (!open || open.d.id !== body.book || open.d.state !== 'context') return null;
+  const text = tokenize(u, wordsOf(body.text)).text.trim();
+  if (text.length < 2) return { ok: false, code: 'brief' };
+  if (wordsProblem(text)) return { ok: false, code: 'words' };
+  const n = JSON.parse(JSON.stringify(open.d));
+  BK.addWords(n, text);
+  const f = typeof body.file === 'string' && body.file ? fileOf(u, body.file) : null;
+  if (f) BK.attach(u, n, f);
+  n.v = (n.v || 1) + 1; n.error = '';
+  const lang = typeof body.lang === 'string' ? body.lang : 'en';
+  return C.addTurn(u, SURFACE, KEY, {
+    me: { text, meta: { page: pageOf(u, body.page), lang, book: n.id, ...(f ? { file: fileRef(f) } : {}) } },
+    mark: { id: open.turn.id, fields: { note: { ...open.turn.note, book: { ...open.d, state: 'moved' } } } },
+    text: tFor(lang)('storybook.chat.added'), apply: () => ({ note: { book: n } }),
+  });
+}
+/** An earlier card of the same book, replaced by a newer one (inside the engine's transaction). */
+function moveCard(u, turnId) {
+  const row = chatRow(u); if (!row) return;
+  const turns = parse(row.turns, []), x = turns.find(y => y.id === turnId);
+  if (!x || !x.note || !x.note.book) return;
+  x.note = { ...x.note, book: { ...x.note.book, state: 'moved' } };
+  q.run('UPDATE oomba_chats SET turns=? WHERE id=?', JSON.stringify(turns), row.id);
 }
 function markNote(u, row, turnId, note) {
   db.transaction(() => {

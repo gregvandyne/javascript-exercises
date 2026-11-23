@@ -3,14 +3,17 @@
 // them), the pages, and one page at a time: its picture (a drawn one from the art packs: world, mood, characters and
 // spots; or the teacher's own upload), alt text, title, words, and for an adventure its choices, ending and start.
 // Every edit is saved a moment later (POST .../save with the version it was made on; a newer version, Oomba's, wins and
-// the page reloads it). Beside it, Oomba's chat (the shared chat client, public/js/oomba-chat.js): each answer is a new
-// version of the book, with Undo. Preview opens the reader as students see it; Print makes the numbered print copy.
+// the page reloads it). Beside it, Oomba's chat: for a teacher with the companion, the one Oomba chat of the whole site
+// (public/js/companion.js; this page tells it which book it is through public/js/oomba-bus.js, and every AI change to the
+// book is a turn there, with Undo); otherwise the book's own chat panel (the shared chat client, public/js/oomba-chat.js).
+// Each answer is a new version of the book, with Undo. Preview opens the reader as students see it; Print makes the numbered print copy.
 // With the picture model on (services/storybook-draw.js), each page's picture is painted in the background: the line
 // under the warnings says how far it is (or, calmly, why the art-pack drawings are used), each page shows its own state,
 // and Redraw (with an optional note) paints a page or a character's reference picture again.
 import { api, t, esc, pageData, toast, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { mountChat } from '/js/oomba-chat.js';
+import * as BUS from '/js/oomba-bus.js';
 import { uploadPic } from '/js/storybook-pic.js';
 import { pictureSvg } from '/js/storybook-art.js';
 import { warningsOf, mapLayout, numbering, LIMITS, MOODS, POSITIONS } from '/js/storybook-core.js';
@@ -65,7 +68,7 @@ const busy = d => !!d && (d.state === 'queued' || d.state === 'drawing');
 function drawDrawLine() {
   const el = $('sb-drawline'); if (!el) return;
   let icon = 'ℹ️', text = '';
-  if (!DR.on) text = DR.reason === 'resting' ? t('js.storybook-edit.draw.lineResting') : DR.total ? t('js.storybook-edit.draw.lineOff') : '';
+  if (!DR.on) text = DR.reason === 'own' ? t('js.storybook-edit.draw.lineOwn') : DR.reason === 'none' ? t('js.storybook-edit.draw.lineNone') : DR.reason === 'resting' ? t('js.storybook-edit.draw.lineResting') : DR.total ? t('js.storybook-edit.draw.lineOff') : '';
   else if (DR.busy) { icon = '🎨'; text = t('js.storybook-edit.draw.lineBusy', { done: DR.done, total: DR.total }); }
   else if (DR.reason === 'limit') text = t('js.storybook-edit.draw.lineLimit', { count: DR.cap });
   else { icon = '✨'; text = t('js.storybook-edit.draw.lineOn', { count: DR.left }); }
@@ -120,7 +123,7 @@ function drawMap() {
   if (!cyoa) return;
   const box = $('sb-map');
   if (!B.pages.length) { box.innerHTML = ''; return; }
-  const L = mapLayout(B), NW = 132, NH = 66, GX = 52, GY = 16;
+  const L = mapLayout(B), NW = 196, NH = 66, GX = 52, GY = 16;
   const pos = new Map(L.nodes.map(x => [x.id, { x: x.col * (NW + GX) + 8, y: x.row * (NH + GY) + 8 }]));
   const W = L.cols * (NW + GX) - GX + 16, H = L.rows * (NH + GY) - GY + 16;
   const edges = L.edges.map(e => {
@@ -132,7 +135,7 @@ function drawMap() {
   const page = id => B.pages.find(p => p.id === id);
   box.innerHTML = `<div class="sb-map-in" style="width:${W}px;height:${H}px">
     <svg class="sb-edges" width="${W}" height="${H + 40}" aria-hidden="true"><defs><marker id="sb-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>${edges}</svg>
-    ${L.nodes.map(x => { const p = page(x.id), at = pos.get(x.id); return `<button type="button" class="sb-node${x.end ? ' is-end' : ''}${x.start ? ' is-start' : ''}${x.lost ? ' is-lost' : ''}${x.id === sel ? ' is-sel' : ''}" data-sel="${esc(x.id)}" style="left:${at.x}px;top:${at.y}px;width:${NW}px;height:${NH}px"${x.id === sel ? ' aria-current="true"' : ''}><b>${x.n}</b><span dir="auto">${esc(p.title || p.text.slice(0, 40) || t('js.storybook-edit.noWords'))}</span>${x.end ? `<i>${esc(t('js.storybook-edit.end'))}</i>` : x.start ? `<i>${esc(t('js.storybook-edit.start'))}</i>` : ''}</button>`; }).join('')}
+    ${L.nodes.map(x => { const p = page(x.id), at = pos.get(x.id); return `<button type="button" class="sb-node${x.end ? ' is-end' : ''}${x.start ? ' is-start' : ''}${x.lost ? ' is-lost' : ''}${x.id === sel ? ' is-sel' : ''}" data-sel="${esc(x.id)}" style="left:${at.x}px;top:${at.y}px;width:${NW}px;height:${NH}px"${x.id === sel ? ' aria-current="true"' : ''}>${p.pic || p.upload ? `<span class="sb-nthumb" aria-hidden="true">${artOf(p)}</span>` : ''}<span class="sb-ntext"><b>${x.n}</b><span dir="auto">${esc(p.title || p.text.slice(0, 40) || t('js.storybook-edit.noWords'))}</span>${x.end ? `<i>${esc(t('js.storybook-edit.end'))}</i>` : x.start ? `<i>${esc(t('js.storybook-edit.start'))}</i>` : ''}</span></button>`; }).join('')}
   </div>`;
 }
 function drawList() {
@@ -322,9 +325,26 @@ $('sb-preview').addEventListener('click', async e => { if (timer) { e.preventDef
 
 // ---------------------------------------------------------------- Oomba's chat
 let left = D.left;
-function setLeft(n) { if (typeof n === 'number') left = n; const sub = document.querySelector('#oc .oc-sub'); if (sub) sub.textContent = t('js.storybook-edit.chatSub', { count: left }); }
+function setLeft(n) { if (typeof n === 'number') left = n; if (document.body.dataset.oc) return; const sub = document.querySelector('#oc .oc-sub'); if (sub) sub.textContent = t('js.storybook-edit.chatSub', { count: left }); }
 const FAILS = ['timeout', 'busy', 'resting', 'restart', 'error', 'names', 'words', 'personal', 'notFound'];
-const chat = mountChat({
+// One chat only (docs/decisions.md "The book maker in the Oomba chat"): with the companion on this page, the book is its
+// page (type 'book'): its changes come back as the companion's turns, and this page reloads the book after each one.
+const COMPANION = !!document.body.dataset.oc;
+if (COMPANION) {
+  const mine = x => x && x.change && x.change.kind === 'book' && x.change.bookId === D.id;
+  BUS.setPage({
+    page: () => ({ type: 'book', bookId: D.id }),
+    label: () => B.title || document.title.split('·')[0].trim(),
+    ready: () => true,
+    start: () => 'open',
+    hello: () => t('js.storybook-edit.hello'),
+    placeholder: () => t('js.storybook-edit.placeholder'),
+    onAnswer: x => { if (mine(x) || (x.note && x.note.bookRef && x.note.bookRef.id === D.id)) reload().catch(() => {}); },
+    onUndo: () => { reload().catch(() => {}); },
+  });
+  BUS.whenChat(c => { $('sb-oomba').addEventListener('click', () => c.setMode(c.state().mode === 'open' ? 'closed' : 'open')); });
+}
+const chat = COMPANION ? null : mountChat({
   id: `storybook:${D.id}`, url: () => `/api/library/make/${D.id}/chat`, opener: $('sb-oomba'),
   sub: t('js.storybook-edit.chatSub', { count: left }), privacy: t('js.storybook-edit.chatPrivate'), leave: t('js.storybook-edit.leave'),
   hello: () => t('js.storybook-edit.hello'),

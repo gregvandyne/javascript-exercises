@@ -1,8 +1,9 @@
 # The book maker (Story Library)
 
-Teachers make their own books in the Reading section: upload a story they wrote or have Oomba write one, as a normal
-illustrated book or a choose-your-own-adventure (CYOA), shape it in a book editor and in a chat with Oomba, then share
-it with a class. Students read it in the library reader. Owner's decision and the reasons: docs/decisions.md "Story
+Teachers make their own books in the Reading section: upload a story they wrote or have Oomba write one, as a picture
+book or a choose-your-own-adventure (CYOA), illustrated on every page and every path either way, shape it in a book
+editor and in a chat with Oomba, then share it with a class. With the Oomba chat (Teacher plan), the whole workflow is
+in that one chat ("In the Oomba chat" below). Students read it in the library reader. Owner's decision and the reasons: docs/decisions.md "Story
 Library: the book maker".
 
 | Where | What |
@@ -14,6 +15,7 @@ Library: the book maker".
 | `server/services/storybook-draw.js` | The picture queue and drawer: what to draw, the daily picture count, the picture check, WebP, Redraw, the editor's state |
 | `tests/support/fake-gemini.js` | Google's stand-in for tests and screenshots (paints a placeholder PNG scene) |
 | `server/services/storybook-mock.js` | The AI stand-in when no `ANTHROPIC_API_KEY` is set |
+| `server/services/companion-book.js` | The book maker in the Oomba chat: the draft and its card, the tools (`makeBook`, `findMyBooks`, `changeBook`, `redrawPicture`), the check and Start through this file's functions |
 | `public/js/storybook-core.js` | The book's shape and rules, shared by server and browser: `shapeBook`, `warningsOf`, `problemsOf`, `repairBook`, `numbering`, `mapLayout` |
 | `public/js/storybook-art.js` | Draws a page's picture as SVG (server and editor) |
 | `public/js/storybook-setup.js`, `storybook-edit.js`, `storybook-read.js`, `storybook-pic.js` | The setup steps, the book editor, the reader (and the print button), picture upload |
@@ -21,7 +23,8 @@ Library: the book maker".
 | Migration `0110_storybooks` | `made_books`, `made_book_pics`, `made_book_classes`, `made_book_reads`, `made_book_ai_days` |
 | Migration `0111_storybook_draws` | `made_book_draws` (the picture queue); `made_book_pics.kind` and `.mime` |
 | `tests/unit/storybook.test.js` | Access, rules, AI checks and retry, screening, the cap, reader, print, pictures, delete lists |
-| `tests/unit/storybook-pictures.test.js` | The picture model: request shape, blocks and refusals, the picture count, no key, Redraw, access |
+| `tests/unit/storybook-pictures.test.js` | The picture model: request shape, blocks and refusals, the picture count, no key, Redraw, access; an adventure painted on every page and ending (reader and print); the Pictures choice |
+| `tests/unit/companion-book.test.js`, `companion-book-browser.test.js` | The chat: cards skip what the request answered, words and files into the book, the check and screening, Start and the cap, teachers only, changes from any page with Undo, books made in the past |
 
 ## Who
 
@@ -36,8 +39,10 @@ Library: the book maker".
 
 1. **Start**: two big cards, "Upload your own book" or "Have AI make one".
 2. **Choices**: the kind (upload: "Keep it as a normal book" or "Turn it into a choose-your-own-adventure"; AI:
-   "Illustrated book" or "Choose-your-own-adventure"), then chips: grade (K to 6-8), length (short, medium, long),
-   endings (2 to 4, CYOA only), reading level (early, growing, confident), and a theme (AI only, optional).
+   "Picture book" or "Choose-your-own-adventure"; each says every page, and every path, is illustrated), then chips:
+   grade (K to 6-8), length (short, medium, long), endings (2 to 4, CYOA only), reading level (early, growing,
+   confident), a theme (AI only, optional) and **Pictures** (both kinds, both ways in): "Oomba paints them" (the
+   default), "I'll add my own" or "No pictures".
 3. **Your words**: the story (upload: required), an "about" box, a document (.txt, .md, .docx, .pdf: read on the server
    with the Builder's lesson reader, never kept, its text put into the box so the teacher sees it) and pictures (put on
    the first pages in order; never sent to the AI). The note: no students' names or work.
@@ -51,6 +56,47 @@ Library: the book maker".
 
 The choices live in the browser tab (sessionStorage) until Start; only pictures are stored earlier (checked, kept a day
 until a book claims them).
+
+## In the Oomba chat
+
+The owner: "Make sure you can do this same process from the oomba chat." Then: "Clicking the make a book button should
+just open up the chat and you should do the whole workflow there. The back and forth between the chat and the page is
+confusing." And: "Users should also be able to ask the oomba chat to make edits to a book they've made currently but
+also in the past". For a teacher with the companion (`companionFor`: the Teacher plan rule), the book maker IS the
+companion chat (`services/companion-book.js`, wired in `services/companion.js`); a teacher without it keeps the page
+steps above and the editor's own chat.
+
+- **Make a book** (`/library`, `/library/make?new=1`, which redirects to `/library?make=1`) opens the chat with the first
+  card, without the AI (`POST /api/companion/book/new`). A request in words ("make a choose your own adventure about the
+  water cycle for grade 3", "turn this story into a choose-your-own-adventure" with the story pasted or a file attached,
+  "make a book") makes the AI call `makeBook` with only what the teacher said. `/library/make` lists their books.
+- **One card, the page's steps.** A draft lives on one Oomba turn (`note.book`), the open one named in the chat's
+  `opts.book`. It asks only what is missing, in the page's order: Upload your own book or Have AI make one, the kind,
+  grade, length, endings (CYOA), reading level, theme (AI, and only when no topic was given), Pictures. A tap answers
+  (`act: bookPick`, no AI); the labels are the page's own strings, filled in by the server in the teacher's language.
+- **Your words.** While the card waits for them, what the teacher types goes into the book (`POST /api/companion/chat`
+  with `book`: the story for Upload your own book, the notes otherwise), never to the chat's AI ("Adding to your book"
+  above the box, with ✕ to talk to Oomba instead). Attached documents (the companion's upload: the Builder's lesson
+  reader, scrubbed, screened) add their text after the typed words, as the page puts a file's text in its box; attached
+  pictures (the companion's no-people check) go on the first pages. Limits are the page's (`SETUP_LIMITS`).
+- **Check** (`act: bookCheck`, and by itself once every answer is in): `storybook.cleanSetup`, `setupProblems`,
+  `screenSetup`, exactly as `POST /api/library/make/check`. The card lists what will be sent (the start, the kind, the
+  choices, the words after the scrubber, the file names, the pictures), each with Edit, the names-taken-out count, any
+  problem, the reminder never to include students' names or work, and Make my book (off until it passes and a turn is
+  left). Stop closes the draft; nothing is kept.
+- **Make my book** (`act: bookStart`): the pictures through `storybook.addPic` (the page's check and limits), then
+  `storybook.createBook` (the same checks again, one of today's turns, the row). The chat says the book is on its way with
+  **Open the book**, and the first draft is a turn of the same chat on the book's page (`storybook.writeBook` and
+  `applyBook`: the AI budget, the checks, the picture queue), with Undo.
+- **One chat.** The book editor no longer has its own panel for these teachers: it is the companion's page `book`
+  (`views/layout.js companionPage`, `public/js/oomba-bus.js`), the panel open beside the book (a sheet on a phone).
+  Changes there and from any other page use `changeBook` (`writeBook`, `applyBook`, Undo through `undoChange`, one of
+  today's turns as on the page) and `redrawPicture` (`storybook-draw.js redraw`, the picture count). A book made in the
+  past is found among the teacher's own books only (`findMyBooks`, `storybook.myBooks`); several that fit become a
+  choice card of their titles, kinds and dates (a tap makes the change in that book); none says so with Make a book.
+  The editor still works by hand without the chat.
+- **Teachers only**: the tools are offered only to `storybook.canMake` accounts and every tool, tap and route checks it
+  again on the server. The AI never talks to students; students' names and work never go into a book.
 
 ## The AI
 
@@ -159,6 +205,11 @@ a real image generator with a kids' book drawing skill, Google's. The skill is o
   about **$0.067 a picture** for Gemini 3.1 Flash Image at 1K (1,120 output tokens at $60 per million, Google's Gemini
   API price list; third-party price lists round it to $0.07) plus the input tokens (about $0.50 per million). A
   10-page book with 2 characters is 12 pictures, about $0.80. While the free budget rests, nothing is drawn.
+- **The Pictures choice**: only "Oomba paints them" queues or spends a picture (`queueBook`, `redraw`). "I'll add my own"
+  keeps the art-pack drawing in each place until the teacher adds their own (Redraw is off); "No pictures" takes every
+  page's picture off (a page without one is not a problem sent back to the model). The editor says which in its line.
+- **Every kind is illustrated**: an adventure's branch pages and endings are queued and painted like any other page, and
+  the reader, the print copy and the story map (a picture in each page's box) show them.
 - **When it is not drawn**: no `GEMINI_API_KEY`, the budget resting, or the day's pictures used: the art-pack drawing,
   and the editor says why in one calm line under the warnings.
 - **The editor**: the line under the warnings ("Drawing the pictures: 3 of 12 ready", the pictures left today, or why

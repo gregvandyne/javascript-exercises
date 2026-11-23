@@ -202,8 +202,10 @@ export function send(u, sid, key, body = {}) {
 }
 
 /** A turn the surface adds without the AI (Figures: "Add a starter set instead"): { reply, apply() } run like an
- *  answer, in one transaction. mark: { id, fields } changes an existing turn (the failed answer that offered it). */
-export function addTurn(u, sid, key, { text = '', apply = null, mark = null } = {}) {
+ *  answer, in one transaction. mark: { id, fields } changes an existing turn (the failed answer that offered it). me:
+ *  { text, meta? } the teacher's own message before it (already checked by the surface: the companion's words added to a
+ *  book being set up, which never go to the AI). */
+export function addTurn(u, sid, key, { text = '', apply = null, mark = null, me = null } = {}) {
   const s = surfaceOf(sid); if (!s || !u || !s.may(u)) return fail('notFound');
   const ctx = s.context(u, key); if (!ctx) return fail('notFound');
   const row = chatRow(u, sid, key); if (!row) return fail('notFound');
@@ -216,6 +218,7 @@ export function addTurn(u, sid, key, { text = '', apply = null, mark = null } = 
       if (mark) { const m = turns.find(x => x.id === mark.id); if (!m) { out = fail('notFound'); return; } Object.assign(m, mark.fields); }
       const a = (apply ? apply() : {}) || {};
       if (a.code) { out = fail(a.code); throw ROLLBACK; }
+      if (me) turns.push({ id: uid(10), role: 'me', text: clip(me.text, s.textMax), at: now(), ...(me.meta ? { meta: me.meta } : {}) });
       turns.push({ id: uid(10), role: 'oomba', text: clip(text, s.replyMax), at: now(), ...(a.change ? { change: a.change } : {}), ...(a.undo ? { undo: a.undo } : {}), ...(a.note ? { note: a.note } : {}) });
       q.run('UPDATE oomba_chats SET turns=?, updated_at=? WHERE id=?', JSON.stringify(trim(lim(s, u), turns)), now(), row.id);
       out = ok();

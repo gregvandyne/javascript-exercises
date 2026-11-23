@@ -9,7 +9,11 @@
 //     Oomba"), a dashboard change to Apply (then Undo), and a hand-off card that opens the Builder or Figures with the
 //     brief filled in (the teacher presses the final button there), and a point given to a student or the whole class
 //     (the names are filled in by the server for this page only; the AI never sees them), with Undo, or a short choice
-//     card when the class, the student or the reason isn't clear.
+//     card when the class, the student or the reason isn't clear;
+//   - the book maker (services/companion-book.js): Make a book opens this panel with the first card; the card asks only
+//     what is missing (labels dressed by the server in the teacher's language), then waits for the teacher's words (what
+//     they type then, and what they attach, goes into the book, never to the AI: "Adding to your book" above the box),
+//     then shows exactly what will be sent with Edit and Make my book; a book's changes come back with Undo and Open the book.
 import { t, api, esc, toast, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { mountChat } from '/js/oomba-chat.js';
@@ -62,7 +66,7 @@ function start() {
     bubbleHost: dash ? document.getElementById('dash-foot') : null,
     subHtml: `<span class="oc-ctx"><i aria-hidden="true"></i>${esc(L('sees'))} <b id="oc-sees">${esc(label())}</b></span>`,
     headExtra: `<button type="button" class="oc-hbtn" id="oc-new" aria-label="${esc(L('newChat'))}" title="${esc(L('newChat'))}">${ic('✏️', 20)}</button>`,
-    aboveRow: '<div class="oc-attach" id="oc-attach" hidden></div><div class="oc-listen" id="oc-listen" role="status" hidden></div>',
+    aboveRow: '<div class="oc-bookmode" id="oc-bookmode" hidden></div><div class="oc-attach" id="oc-attach" hidden></div><div class="oc-listen" id="oc-listen" role="status" hidden></div>',
     toolsStart: `<button type="button" class="oc-ibtn" id="oc-attach-btn" aria-label="${esc(L('attach'))}" title="${esc(L('attach'))}">${ic('📎', 22)}</button><input type="file" id="oc-file" accept="${DOC_ACCEPT},${IMG_ACCEPT}" hidden>`,
     toolsEnd: `<button type="button" class="oc-ibtn" id="oc-mic" aria-label="${esc(L('mic.start'))}" title="${esc(L('mic.start'))}" hidden>${ic('🎤', 22)}</button>`,
     foot: `<div class="oc-foot"><button type="button" class="oc-pill on" id="oc-web" role="switch" aria-checked="true">${ic('🌐', 16)} <span>${esc(L('web.on'))}</span></button><span class="oc-attachnote" id="oc-note">${esc(L('attachNote'))}</span></div>`,
@@ -76,15 +80,15 @@ function start() {
     stepText: (k, state) => t(`js.companion.prog.${k}.${state === 'done' ? 'done' : 'now'}`),
     quoteText: q => (q.text ? t('js.companion.quoteN', { n: q.n, text: q.text }) : t('js.companion.questionN', { n: q.n })),
     beforeSend: () => via('ensure'),
-    body: () => { S.sent = true; stopMic({ cancel: true }); return { page: pageNow(), ...(via('body') || {}), ...(S.file ? { file: S.file.id } : {}) }; },
+    body: () => { S.sent = true; stopMic({ cancel: true }); const bk = bookMode(); return { page: pageNow(), ...(via('body') || {}), ...(S.file ? { file: S.file.id } : {}), ...(bk ? { book: bk } : {}) }; },
     errText: code => (['slow', 'fileGone'].includes(code) ? L(`err.${code}`) : null),
     meExtra: x => (x.meta && x.meta.file ? `<span class="oc-file">${ic(x.meta.file.kind === 'image' ? '🖼️' : '📄', 18)} ${esc(x.meta.file.name)}${x.meta.file.pages ? ` <small>${esc(t('js.companion.pages', { n: x.meta.file.pages }))}</small>` : ''}</span>` : ''),
     format: (text, x) => `${x.note && x.note.steps ? stepsHtml(x.note) : ''}${formatText(text)}`,
     // Copy on each answer: its words as clean text (links as "words (address)", steps numbered).
     copyText: x => copyText(x.text, location.origin),
     note: x => noteHtml(x) + (via('note', x) || ''),
-    change: x => (x.change && x.change.kind === 'point' ? pointHtml(x) : x.change && x.change.kind === 'class' ? classDoneHtml(x) : x.change && x.change.kind === 'dash' ? changeHtml(x) : via('change', x) || changeHtml(x)),
-    changeLinks: x => (x.change && x.change.kind === 'class' ? openDashHtml(x) : via('changeLinks', x) || ''),
+    change: x => (x.change && x.change.kind === 'point' ? pointHtml(x) : x.change && x.change.kind === 'class' ? classDoneHtml(x) : x.change && x.change.kind === 'dash' ? changeHtml(x) : x.change && x.change.kind === 'book' ? bookChangeHtml(x) : via('change', x) || changeHtml(x)),
+    changeLinks: x => (x.change && x.change.kind === 'class' ? openDashHtml(x) : x.change && x.change.kind === 'book' ? openBookHtml(x) : via('changeLinks', x) || ''),
     extra: (x, c) => via('extra', x, c) || '',
     onAct: async (act, turn, btn) => { const r = await via('onAct', act, turn, btn); return r === undefined ? onAct(act, turn, btn) : r; },
     onAnswer: (x, c) => { if (x.change && x.change.kind === 'dash') afterDash(x.change); if (x.change && x.change.kind === 'point') afterPoint(x.change); via('onAnswer', x, c); },
@@ -98,7 +102,7 @@ function start() {
     },
     onQuote: q => via('onQuote', q),
     onMode: m => { if (m !== 'open') stopMic(); via('onMode', m); },
-    onSync: c => { if (S.sent) { S.sent = false; setFile(null); } via('onSync', c); },
+    onSync: c => { if (S.sent) { S.sent = false; setFile(null); } drawBookMode(c); autoCheck(c); via('onSync', c); },
   });
   ref.chat = chat;
   BUS.setChat(chat);
@@ -164,8 +168,11 @@ function start() {
         const jpg = await toJpeg(f);
         r = await upload(`/api/companion/image?name=${encodeURIComponent(f.name.replace(/\.[^.]+$/, '') + '.jpg')}`, jpg, 'image/jpeg');
       } else r = await upload(`/api/companion/file?name=${encodeURIComponent(f.name)}`, f, 'application/octet-stream');
-      setFile(r.file);
       if (r.removed) toast(t('js.companion.removed', { count: r.removed }));
+      // A book being set up waits for the teacher's own words: the file goes into the book (never to the AI).
+      const bk = bookMode();
+      if (bk) { setFile(null); const turn = bookTurn(); const x = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act: 'bookFile', value: r.file.id } }); chat.took(x.chat); $('oc-in').focus(); return; }
+      setFile(r.file);
       $('oc-in').focus();
     } catch (err) { setFile(S.file && S.file.id ? S.file : null); chat.showErr(err.message || L('file.other')); }
   });
@@ -309,6 +316,9 @@ function start() {
     if (n.ask) parts.push(askHtml(x, n.ask));
     if (n.classNew) parts.push(classHtml(x, n.classNew));
     if (n.nav && !n.nav.open) parts.push(navHtml(x, n.nav));
+    if (n.book) parts.push(bookHtml(x, n.book));
+    if (n.bookNone) parts.push(`<div class="oc-acts"><a class="btn btn-sm btn-primary" href="/library/make?new=1" data-oc-book>${ic('✨', 16)} ${esc(L('book.make'))}</a></div>`);
+    if (n.bookRef && !x.change) parts.push(`<div class="oc-acts"><a class="btn btn-sm btn-primary" href="${esc(n.bookRef.href)}">${ic('📖', 16)} ${esc(L('book.open'))}</a></div>`);
     return parts.join('');
   }
   const meta = list => `<div class="oc-meta">${list.filter(Boolean).map(m => `<span>${esc(m)}</span>`).join('')}</div>`;
@@ -363,7 +373,7 @@ function start() {
   // Navigate-then-do: "I'll open <page> and do this there" with Go there and Not now. Go there keeps the request with
   // the conversation for that exact page (the server), and this page opens it; there the panel opens and the request
   // continues by itself (tryResume below).
-  const navName = n => t(`js.companion.nav.${n.pageType === 'dashboard' ? 'dashboard' : n.pageType === 'class' ? 'class' : n.pageType === 'figures-sheet' ? 'sheet' : 'board'}`, { name: n.name || '' });
+  const navName = n => t(`js.companion.nav.${n.pageType === 'dashboard' ? 'dashboard' : n.pageType === 'class' ? 'class' : n.pageType === 'figures-sheet' ? 'sheet' : n.pageType === 'book' ? 'book' : 'board'}`, { name: n.name || '' });
   // A new class: "Create the class ...?" with Create and Not now; once made, Undo and a card to open its dashboard.
   function classHtml(x, p) {
     const q = t(p.grade ? 'js.companion.cls.askGrade' : 'js.companion.cls.ask', { name: p.name, grade: p.grade });
@@ -384,11 +394,11 @@ function start() {
   }
   // A choice card: 2 to 5 options and "Something else" (it puts the caret in the box). A tap is the teacher's answer.
   function askHtml(x, k) {
-    const q = k.question || (k.kind ? t(`js.companion.which.${k.kind === 'dashboard' ? 'dashboard' : k.kind === 'class' ? 'class' : k.kind === 'figures-sheet' ? 'sheet' : 'board'}`) : '');
+    const q = k.question || (k.kind ? t(`js.companion.which.${k.kind === 'dashboard' ? 'dashboard' : k.kind === 'class' ? 'class' : k.kind === 'figures-sheet' ? 'sheet' : k.kind === 'book' ? 'book' : 'board'}`) : '');
     if (k.state !== 'open') { const o = k.options[k.chosen]; return `<div class="oc-ask done">${q ? `<p class="oc-askq">${esc(q)}</p>` : ''}${o ? `<p class="oc-state">${ic('✓', 16)} ${esc(o.label)}</p>` : ''}</div>`; }
     // An option that only says what the last button says ("Something else") is not shown twice (turns saved before the server dropped it).
     const same = o => String(o.label || '').toLowerCase().replace(/[\s.!?:;,"'()]+/g, '') === String(L('ask.other')).toLowerCase().replace(/[\s.!?:;,"'()]+/g, '');
-    const btns = k.options.map((o, i) => same(o) ? '' : `<button type="button" class="btn btn-sm oc-pickb" data-c="act" data-act="askPick" data-turn="${esc(x.id)}" data-v="${i}"><span>${esc(o.label)}</span>${o.sub ? ` <small>${esc(t('js.companion.card.grade', { g: o.sub.replace(/^grade /, '') }))}</small>` : ''}</button>`).join('');
+    const btns = k.options.map((o, i) => same(o) ? '' : `<button type="button" class="btn btn-sm oc-pickb" data-c="act" data-act="askPick" data-turn="${esc(x.id)}" data-v="${i}"><span dir="auto">${esc(o.label)}</span>${o.sub ? ` <small>${esc(t('js.companion.card.grade', { g: o.sub.replace(/^grade /, '') }))}</small>` : ''}${o.kindText ? ` <small>${esc(o.kindText)}${o.at ? ` · ${esc(new Date(o.at).toLocaleDateString(document.documentElement.lang || undefined, { month: 'short', day: 'numeric' }))}` : ''}</small>` : ''}</button>`).join('');
     return `<div class="oc-ask" role="group"${q ? ` aria-label="${esc(q)}"` : ''}>${q ? `<p class="oc-askq">${esc(q)}</p>` : ''}<div class="oc-acts">${btns}<button type="button" class="btn btn-sm btn-ghost" data-c="act" data-act="askOther" data-turn="${esc(x.id)}">${esc(L('ask.other'))}</button></div></div>`;
   }
   async function onAct(act, turn, btn) {
@@ -396,7 +406,8 @@ function start() {
     if (act === 'askOther') { const box = $('oc-in'); box.focus(); return null; }
     if (act === 'rebrief') { const box = $('oc-in'); box.value = L('hand.changeText'); box.dispatchEvent(new Event('input')); box.focus(); return null; }
     try {
-      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...(act === 'askPick' && btn ? { value: btn.dataset.v } : {}) } });
+      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...((act === 'askPick' || /^book[A-Z]/.test(act)) && btn && btn.dataset.v !== undefined ? { value: btn.dataset.v } : {}) } });
+      if (act === 'bookStart' && r.chat) { chat.took(r.chat); return null; }
       if (act === 'go' && r.href) { chat.took(r.chat); store.set('oc:companion', 'open'); location.href = r.href; return null; }
       // An option without a target: sent as the teacher's answer, as if typed.
       if (act === 'askPick' && r.text) { chat.took(r.chat); setTimeout(() => chat.send(r.text), 0); return null; }
@@ -413,6 +424,70 @@ function start() {
     if (!dash || c.classId !== PAGE.classId) return;
     store.set('oc-hl', JSON.stringify(c.ids || []));
     setTimeout(() => location.reload(), 400);
+  }
+
+  // ---------------------------------------------------------------- the book maker (services/companion-book.js)
+  /** The card of the book being set up, when it is the newest turn and waits for the teacher's own words. */
+  const bookTurn = (c = chat.state().chat) => { const last = [...(c.turns || [])].reverse().find(x => x.role === 'oomba'); const b = last && last.note && last.note.book; return b && b.state === 'context' && (c.turns || [])[c.turns.length - 1] === last ? last : null; };
+  const bookMode = () => { const x = bookTurn(); return x && S.bookOff !== x.note.book.id ? x.note.book.id : null; };
+  function drawBookMode() {
+    const el = $('oc-bookmode'); if (!el) return;
+    const id = bookMode();
+    el.hidden = !id;
+    el.innerHTML = id ? `<span class="oc-chipfile oc-bookchip">${ic('📖', 18)} <span>${esc(L('book.adding'))}</span><button type="button" class="oc-hbtn oc-x" id="oc-bookoff" aria-label="${esc(L('book.stopAdding'))}" title="${esc(L('book.stopAdding'))}">✕</button></span>` : '';
+  }
+  $('oc-bookmode').addEventListener('click', e => { if (e.target.closest('#oc-bookoff')) { const x = bookTurn(); if (x) S.bookOff = x.note.book.id; drawBookMode(); $('oc-in').focus(); } });
+  // A card at Check with nothing checked yet (the AI filled the last answer in): it checks once by itself.
+  const checked = new Set();
+  function autoCheck(c) {
+    for (const x of c.turns || []) {
+      const b = x.note && x.note.book;
+      if (!b || b.state !== 'check' || b.rows || checked.has(`${b.id}:${b.v}`)) continue;
+      checked.add(`${b.id}:${b.v}`);
+      api('/api/companion/chat/act', { method: 'POST', body: { turnId: x.id, act: 'bookCheck' } }).then(r => chat.took(r.chat)).catch(e => chat.showErr(e.message));
+    }
+  }
+  function bookHtml(x, b) {
+    const id = esc(x.id);
+    const btn = (act, label, { v = '', primary = false, ghost = false, icon = '', off = false } = {}) => `<button type="button" class="btn btn-sm${primary ? ' btn-primary' : ''}${ghost ? ' btn-ghost' : ''}" data-c="act" data-act="${act}" data-turn="${id}"${v !== '' ? ` data-v="${esc(v)}"` : ''}${off ? ' disabled' : ''}>${icon ? `${ic(icon, 16)} ` : ''}${esc(label)}</button>`;
+    if (b.state === 'moved') return '';
+    if (b.state === 'cancelled') return `<div class="oc-ask oc-book done"><p class="oc-state">${ic('➖', 16)} ${esc(b.L.stopped)}</p></div>`;
+    if (b.state === 'started') return `<div class="oc-ask oc-book done"><p class="oc-state">${ic('✓', 16)} ${esc(b.L.started)}</p>${b.known.length ? `<p class="oc-hsub">${esc(b.known.join(' · '))}</p>` : ''}</div>`;
+    const known = b.known.length ? `<p class="oc-hsub oc-bknown">${esc(b.known.join(' · '))}</p>` : '';
+    const err = b.error ? `<p class="oc-berr" role="alert">${esc(b.error)}</p>` : '';
+    const stop = btn('bookStop', b.L.stop, { ghost: true });
+    if (b.options) {
+      const opts = b.options.map(o => `<button type="button" class="btn btn-sm oc-pickb${o.sub ? ' oc-bigb' : ''}" data-c="act" data-act="bookPick" data-turn="${id}" data-v="${esc(o.v)}">${o.icon ? `${ic(o.icon, o.sub ? 28 : 18)} ` : ''}<span>${esc(o.label)}${o.sub ? `<small>${esc(o.sub)}</small>` : ''}</span></button>`).join('');
+      return `<div class="oc-ask oc-book" role="group" aria-label="${esc(b.question)}">${known}<p class="oc-askq">${esc(b.question)}</p><div class="oc-acts${b.options.some(o => o.sub) ? ' oc-bigs' : ''}">${opts}</div>${err}<div class="oc-bfoot">${stop}</div></div>`;
+    }
+    if (b.state === 'context') {
+      const have = b.have.length ? `<ul class="oc-bhave">${b.have.map(h => `<li>${ic('✓', 14)} <span dir="auto">${esc(h)}</span></li>`).join('')}</ul>` : '';
+      return `<div class="oc-ask oc-book">${known}<p class="oc-askq">${esc(b.question)}</p><p class="oc-bhint">${esc(b.hint)}</p>${have}<p class="oc-bnote">${ic('🔒', 14)} ${esc(b.L.privacy)}</p>${err}
+        <div class="oc-acts">${btn('bookCheck', b.L.check, { primary: true })}${b.have.length ? btn('bookClear', b.L.clear) : ''}${stop}</div></div>`;
+    }
+    // check
+    if (!b.rows) return `<div class="oc-ask oc-book"><p class="oc-askq">${esc(b.title)}</p><p class="oc-hsub">${esc(b.L.checking)}</p></div>`;
+    const rows = b.rows.map(r => `<div class="oc-brow"><dt>${esc(r.label)}</dt><dd>${r.text !== undefined ? (r.text ? `<div class="oc-bsent" dir="auto" tabindex="0">${esc(r.text)}</div>` : `<span class="oc-hsub">${esc(r.none)}</span>`) : `<span dir="auto">${esc(r.value)}</span>`}</dd><dd class="oc-bedit">${btn('bookEdit', b.L.edit, { v: r.part, ghost: true, icon: '✏️' })}</dd></div>`).join('');
+    const notes = (b.notes || []).map(n => `<p class="oc-bnote ${n.kind === 'warn' ? 'warn' : ''}"${n.kind === 'warn' ? ' role="alert"' : ''}>${ic(n.kind === 'warn' ? '⚠️' : '🔒', 14)} ${esc(n.text)}</p>`).join('');
+    return `<div class="oc-ask oc-book oc-bcheck"><p class="oc-askq">${esc(b.title)}</p><p class="oc-hsub">${esc(b.lead)}</p><dl class="oc-bsum">${rows}</dl>${notes}<p class="oc-bnote">${ic('🔒', 14)} ${esc(b.L.never)}</p>${err}
+      <div class="oc-acts">${btn('bookStart', b.L.go, { primary: true, icon: '✨', off: !b.ok })}${stop}</div></div>`;
+  }
+  function bookChangeHtml(x) {
+    const c = x.change, l = c.lines || { title: '', items: [] };
+    return `<p class="oc-ch-h"><b>${esc(l.title)}</b></p><ul class="oc-ch-list">${l.items.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`;
+  }
+  const openBookHtml = x => (PAGE && pageNow().type === 'book' && pageNow().bookId === x.change.bookId ? '' : `<a class="btn btn-sm btn-primary oc-open" href="/library/make/${encodeURIComponent(x.change.bookId)}">${ic('📖', 16)} ${esc(L('book.open'))}</a>`);
+  /** Make a book: the first card in this panel (the library's button, and /library?make=1 after /library/make?new=1). */
+  async function makeBook() {
+    try { const r = await api('/api/companion/book/new', { method: 'POST', body: {} }); chat.took(r.chat); chat.setMode('open', { focus: false }); } catch (e) { chat.setMode('open', { focus: false }); chat.showErr(e.message); }
+  }
+  document.addEventListener('click', e => {
+    const a = e.target.closest('[data-oc-book]'); if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault(); makeBook();
+  });
+  if (new URLSearchParams(location.search).get('make') === '1') {
+    const u = new URL(location.href); u.searchParams.delete('make'); history.replaceState(history.state, '', u.pathname + u.search + u.hash);
+    makeBook();
   }
 
   // ---------------------------------------------------------------- the dashboard: hidden while students can see it

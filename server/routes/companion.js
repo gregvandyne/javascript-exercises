@@ -1,11 +1,14 @@
 // Oomba, the teaching companion's API (services/companion.js; docs/decisions.md "Oomba teaching companion"). Teacher plan
 // staff only (companionFor); everyone else gets the normal 404, never an upsell.
 //   GET  /api/companion/chat?peek=1        the conversation ({ chat, web, webAllowed, unseen, mic, live }); peek: endings stay unseen
-//   POST /api/companion/chat               a message ({ text, page, file?, retry? }) -> a job (services/oomba-chat.js)
+//   POST /api/companion/chat               a message ({ text, page, file?, retry?, book? }) -> a job (services/oomba-chat.js);
+//                                          book: the words go into the book being set up (no AI)
 //   POST /api/companion/chat/undo          Undo a change Oomba made ({ turnId })
 //   POST /api/companion/chat/act           a tap on a card ({ turnId, act: 'apply' | 'decline' | 'handoff' | 'pick' | 'go' |
-//                                          'notNow' | 'askPick', pick? | value? })
+//                                          'notNow' | 'askPick' | 'bookPick' | 'bookEdit' | 'bookCheck' | 'bookClear' | 'bookFile' |
+//                                          'bookStop' | 'bookStart', pick? | value? })
 //   POST /api/companion/resume             the page loaded: a request carried here by Go there continues ({ page, board? })
+//   POST /api/companion/book/new           Make a book: the book maker's first card in this chat
 //   POST /api/companion/chat/new           New chat (the conversation and its files go)
 //   POST /api/companion/web                web search on or off for this conversation ({ on })
 //   POST /api/companion/file?name=         a lesson plan or document (raw body): its text, scrubbed (builder/lesson.js)
@@ -27,8 +30,8 @@ import { audit } from '../db.js';
 
 export const router = Router();
 const body = req => (req.body && typeof req.body === 'object' && !Buffer.isBuffer(req.body) ? req.body : {});
-const STATUS = { notFound: 404, chatBusy: 409, otherBusy: 409, slow: 429, fileGone: 410 };
-const CODES = ['words', 'personal', 'brief', 'chatBusy', 'otherBusy', 'notFound', 'slow', 'fileGone'];
+const STATUS = { notFound: 404, chatBusy: 409, otherBusy: 409, slow: 429, fileGone: 410, cap: 429 };
+const CODES = ['words', 'personal', 'brief', 'chatBusy', 'otherBusy', 'notFound', 'slow', 'fileGone', 'cap'];
 const fail = (req, res, r) => res.status(STATUS[r.code] || 400).json({ error: req.t(`js.companion.err.${CODES.includes(r.code) ? r.code : 'other'}`), code: r.code });
 /** Only for Teacher plan staff: anyone else gets a 404 before anything is read. */
 /** The conversation as the page shows it: a point's card with the student's and the class's names and the reason's
@@ -39,17 +42,17 @@ const may = (req, res, next) => (req.user && CO.companionFor(req.user) ? next() 
 router.get('/api/companion/chat', may, (req, res) => { const r = CO.current(req.user, { peek: req.query.peek === '1' }); return r.ok ? res.json({ ...r, chat: shown(req, r.chat), mic: sttEnabled(), live: liveEnabled(), ...(liveEnabled() ? { rate: RATE[config.sttProvider], maxMs: config.sttMaxSeconds * 1000 } : {}) }) : fail(req, res, r); });
 router.post('/api/companion/chat', may, rateLimit('companion-ai', 120, 3600e3), (req, res) => {
   const b = body(req);
-  const r = CO.send(req.user, { text: b.text, page: b.page, board: b.board && typeof b.board === 'object' ? b.board : null, quote: typeof b.quote === 'string' ? b.quote : null, file: typeof b.file === 'string' ? b.file : null, lang: req.locale || 'en', retry: typeof b.retry === 'string' ? b.retry : null });
+  const r = CO.send(req.user, { text: b.text, page: b.page, board: b.board && typeof b.board === 'object' ? b.board : null, quote: typeof b.quote === 'string' ? b.quote : null, file: typeof b.file === 'string' ? b.file : null, lang: req.locale || 'en', retry: typeof b.retry === 'string' ? b.retry : null, book: typeof b.book === 'string' ? b.book.slice(0, 64) : null });
   return r.ok ? res.json({ ok: true, chat: shown(req, r.chat) }) : fail(req, res, r);
 });
 router.post('/api/companion/chat/undo', may, rateLimit('companion-act', 300, 3600e3), (req, res) => {
   const r = CO.undo(req.user, body(req).turnId);
   return r.ok ? res.json({ ok: true, chat: shown(req, r.chat), kept: r.kept }) : fail(req, res, r);
 });
-router.post('/api/companion/chat/act', may, rateLimit('companion-act', 300, 3600e3), (req, res) => {
+router.post('/api/companion/chat/act', may, rateLimit('companion-act', 300, 3600e3), async (req, res) => {
   const b = body(req);
   const v = typeof b.pick === 'string' ? b.pick : typeof b.value === 'string' || typeof b.value === 'number' ? String(b.value) : '';
-  const r = CO.act(req.user, b.turnId, String(b.act || ''), v.slice(0, 64));
+  const r = await CO.act(req.user, b.turnId, String(b.act || ''), v.slice(0, 64));
   return r.ok ? res.json({ ok: true, ...(r.chat ? { chat: shown(req, r.chat) } : {}), ...(r.handoff ? { handoff: r.handoff } : {}), ...(r.href ? { href: r.href } : {}), ...(r.text ? { text: r.text } : {}) }) : fail(req, res, r);
 });
 // The page loaded: a request Oomba carried here (Go there) continues, once, on this exact page.
@@ -57,6 +60,11 @@ router.post('/api/companion/resume', may, rateLimit('companion-act', 300, 3600e3
   const b = body(req);
   const r = CO.resume(req.user, { page: b.page, board: b.board && typeof b.board === 'object' ? b.board : null, lang: req.locale || 'en' });
   return r.ok ? res.json({ ok: true, resumed: !!r.resumed, ...(r.chat ? { chat: shown(req, r.chat) } : {}) }) : fail(req, res, r);
+});
+// Make a book (the library's button): the book maker's first card in this chat (services/companion.js newBook).
+router.post('/api/companion/book/new', may, rateLimit('companion-act', 300, 3600e3), (req, res) => {
+  const r = CO.newBook(req.user, { lang: req.locale || 'en' });
+  return r.ok ? res.json({ ok: true, chat: shown(req, r.chat) }) : fail(req, res, r);
 });
 router.post('/api/companion/chat/new', may, (req, res) => { const r = CO.reset(req.user); if (!r.ok) return fail(req, res, r); const c = CO.current(req.user); return res.json({ ok: true, ...c, ...(c.chat ? { chat: shown(req, c.chat) } : {}) }); });
 router.post('/api/companion/web', may, (req, res) => res.json(CO.setWeb(req.user, !!body(req).on)));

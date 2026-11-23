@@ -64,6 +64,11 @@ export const LENGTHS = ['short', 'medium', 'long'];
 export const ENDINGS = [2, 3, 4];
 export const LEVELS = ['early', 'growing', 'confident'];
 export const THEMES = ['animals', 'space', 'sea', 'dinosaurs', 'castles', 'friendship', 'seasons', 'feelings'];
+/** Pictures (both kinds, both ways in): 'ai' Oomba paints every page (the picture model, else the art packs), 'own' the
+ *  teacher adds their own (the art-pack drawing holds the place; nothing is painted), 'none' a book without pictures.
+ *  Only 'ai' ever spends a picture. A book made before this choice is 'ai'. */
+export const PICTURES = ['ai', 'own', 'none'];
+export const picturesOf = setup => (PICTURES.includes(setup && setup.pictures) ? setup.pictures : 'ai');
 export const SETUP_LIMITS = Object.freeze({ about: 1500, story: 12000, storyMin: 40, files: 4, fileName: 80, pics: 12 });
 export const PIC_LIMITS = Object.freeze({ maxBytes: 1536 * 1024, maxSide: 1600, perBook: 40, perDay: 30 });
 const LANGS = { en: 'English (US)', 'en-GB': 'British English', pt: 'Brazilian Portuguese', fr: 'French', es: 'Spanish', de: 'German', he: 'Hebrew', ja: 'Japanese', ar: 'Arabic', ru: 'Russian', it: 'Italian', 'zh-Hant': 'Traditional Chinese', nl: 'Dutch' };
@@ -97,7 +102,7 @@ export function take(u, { key = today(), cap = capOf(u) } = {}) {
   return q.run('INSERT INTO made_book_ai_days(user_id, day, n) VALUES (?,?,1) ON CONFLICT(user_id, day) DO UPDATE SET n=n+1 WHERE n<?', u.id, key, cap).changes === 1;
 }
 /** Give back a turn that could not even be stored (it never reached the AI). */
-const refund = (u, key = today()) => q.run('UPDATE made_book_ai_days SET n=MAX(0, n-1) WHERE user_id=? AND day=?', u.id, key);
+export const refund = (u, key = today()) => q.run('UPDATE made_book_ai_days SET n=MAX(0, n-1) WHERE user_id=? AND day=?', u.id, key);
 
 // ---------------------------------------------------------------- the teacher's words: scrubbed and screened
 const tidy = (s, n) => String(s ?? '').normalize('NFC').replace(/\r\n?/g, '\n').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f‪-‮⁦-⁩]/g, '').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim().slice(0, n);
@@ -121,6 +126,7 @@ export function cleanSetup(u, b = {}, { names = studentNames(u), lang = 'en' } =
     endings: kind === 'cyoa' ? (ENDINGS.includes(+b.endings) ? +b.endings : 2) : 0,
     level: LEVELS.includes(b.level) ? b.level : 'growing',
     theme: source === 'ai' && THEMES.includes(b.theme) ? b.theme : '',
+    pictures: PICTURES.includes(b.pictures) ? b.pictures : 'ai',
     about: sc(tidy(b.about, SETUP_LIMITS.about)),
     story: source === 'upload' ? sc(tidy(b.story, SETUP_LIMITS.story)) : '',
     files, pics, lang: LANGS[lang] ? lang : 'en',
@@ -187,6 +193,15 @@ export function sharedBooks(u, limit = 24) {
 /** Start a book from the checked setup: the cap, the book row, its pictures claimed, and Oomba's first turn as a job.
  *  -> { ok, id } | fail ('cap' | 'storyNeeded' | 'blocked' + message | 'error') */
 export async function startBook(u, body, { t = tEn, lang = 'en' } = {}) {
+  const r = await createBook(u, body, { t, lang }); if (!r.ok) return r;
+  const sent = C.send(u, SURFACE, r.id, { text: t('storybook.firstMessage') });
+  if (!sent.ok) { refund(u); log('warn', 'storybook first turn not stored', { book: r.id, code: sent.code }); }
+  return ok({ id: r.id });
+}
+/** The book itself from the checked setup, as startBook makes it (the scrubber, setupProblems, the screening, one of
+ *  today's turns, the row, its pictures claimed), without Oomba's first turn: the Oomba chat (services/companion.js)
+ *  asks for the first draft in its own conversation. -> { ok, id } | fail (as startBook) */
+export async function createBook(u, body, { t = tEn, lang = 'en' } = {}) {
   if (!canMake(u)) return fail('notFound');
   const { setup } = cleanSetup(u, body, { lang });
   const need = setupProblems(setup); if (need) return fail(need);
@@ -198,9 +213,7 @@ export async function startBook(u, body, { t = tEn, lang = 'en' } = {}) {
     q.run('INSERT INTO made_books(id, owner_id, title, kind, source, setup, book, rev, created_at, updated_at) VALUES (?,?,?,?,?,?,?,0,?,?)', id, u.id, '', setup.kind, setup.source, JSON.stringify(setup), JSON.stringify(empty), t0, t0);
     for (const p of setup.pics) q.run('UPDATE made_book_pics SET book_id=? WHERE id=? AND owner_id=? AND book_id IS NULL', id, p, u.id);
   })();
-  const r = C.send(u, SURFACE, id, { text: t('storybook.firstMessage') });
-  if (!r.ok) { refund(u); log('warn', 'storybook first turn not stored', { book: id, code: r.code }); }
-  audit(u.id, 'storybook.start', id, { source: setup.source, kind: setup.kind, words: setup.story.split(/\s+/).filter(Boolean).length, pics: setup.pics.length });
+  audit(u.id, 'storybook.start', id, { source: setup.source, kind: setup.kind, pictures: setup.pictures, words: setup.story.split(/\s+/).filter(Boolean).length, pics: setup.pics.length });
   return ok({ id });
 }
 
@@ -449,6 +462,8 @@ function placePics(row, b) {
  */
 export async function writeBook(u, row, { text, history = [] }) {
   const setup = setupOf(row), cur = bookOf(row), first = !cur.pages.length;
+  const noPics = picturesOf(setup) === 'none';
+  const unpic = b => { if (noPics) for (const p of b.pages) p.pic = null; return b; };
   const art = illustrator().art();
   const system = systemPrompt(setup);
   const messages = [{ role: 'user', content: first ? draftMessage(setup) : changeMessage(cur, text, history) }];
@@ -484,10 +499,11 @@ export async function writeBook(u, row, { text, history = [] }) {
     if (first) { placePics(row, b); if (setup.source === 'upload' && setup.kind === 'linear' && !b.title) b.title = 'My story'; }
     for (const p of b.pages) if (p.upload && !q.get('SELECT 1 FROM made_book_pics WHERE id=? AND book_id=?', p.upload, row.id)) p.upload = null;
     const safety = safetyProblems(u, b);
-    const problems = [...fixes, ...problemsOf(b), ...safety];
+    // "No pictures": a page without one is right (the pictures are taken off below), so that is not a problem to send back.
+    const problems = [...fixes, ...problemsOf(b).filter(x => !(noPics && / needs a "pic"$/.test(x))), ...safety];
     if (!safety.length) { const cat = await classify(b); if (cat) safety.push(`the book is not suitable for children (${cat}): make it gentle`), problems.push(safety[safety.length - 1]); }
     last = { reply: a.reply, book: b, problems, safety };
-    if (!problems.length) return { reply: a.reply, book: b, repaired: 0 };
+    if (!problems.length) return { reply: a.reply, book: unpic(b), repaired: 0 };
     if (client && attempt === 1) { messages.push({ role: 'user', content: `Please fix these problems and send the answer again (the whole book, or edits with every page that changes):\n- ${problems.slice(0, 20).join('\n- ')}` }); continue; }
     break;
   }
@@ -495,7 +511,7 @@ export async function writeBook(u, row, { text, history = [] }) {
   if (last.safety && last.safety.length) { log('warn', 'storybook answer refused by the word rules', { book: row.id, problems: last.safety.length }); return { failed: 'unsafe' }; }
   const r = repairBook(last.book);
   if (!r.book.pages.length) return { failed: 'error' };
-  return { reply: last.reply, book: r.book, repaired: r.repaired + (last.problems.length ? 1 : 0) };
+  return { reply: last.reply, book: unpic(r.book), repaired: r.repaired + (last.problems.length ? 1 : 0) };
 }
 
 // ---------------------------------------------------------------- applying a turn, and undo

@@ -79,7 +79,8 @@ export function queueBook(row, b = SB.bookOf(row)) {
     q.run('DELETE FROM made_book_draws WHERE id=?', d.id);
     if (d.pic_id) q.run("DELETE FROM made_book_pics WHERE id=? AND kind!='upload'", d.pic_id);
   }
-  if (!active().on) return 0;
+  // The teacher's Pictures choice: only "Oomba paints them" ever paints (or spends) a picture.
+  if (SB.picturesOf(SB.setupOf(row)) !== 'ai' || !active().on) return 0;
   let n = 0;
   const due = (target, hash) => { const d = q.get('SELECT state, reason, hash, pic_id FROM made_book_draws WHERE book_id=? AND target=?', row.id, target); return !d || (d.state !== 'queued' && d.state !== 'drawing' && (d.hash !== hash || (d.state === 'fallback' && !d.pic_id && AGAIN.has(d.reason)))); };
   for (const c of b.cast) if (due(`cast:${lower(c.name)}`, castHash(c)) && upsertQueued(row, `cast:${lower(c.name)}`)) n++;
@@ -98,6 +99,7 @@ export function redraw(u, bookId, target, note = '') {
   if (m[1] === 'page') { const p = b.pages.find(x => x.id === m[2]); if (!p || !p.pic || p.upload) return fail('notFound'); }
   else if (!b.cast.some(c => lower(c.name) === lower(m[2]))) return fail('notFound');
   const key = m[1] === 'cast' ? `cast:${lower(m[2])}` : target;
+  if (SB.picturesOf(SB.setupOf(row)) !== 'ai') return fail('off');
   const st = active(); if (!st.on) return fail(st.reason);
   if (left(u) <= 0) return fail('limit');
   const text = String(note || '').normalize('NFC').replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, NOTE_MAX);
@@ -111,10 +113,11 @@ export function redraw(u, bookId, target, note = '') {
 // ---------------------------------------------------------------- what the editor and the reader see
 /** The kept picture of a page (a made_book_pics id), or null. */
 export const drawnPic = (bookId, pageId) => (q.get("SELECT pic_id FROM made_book_draws WHERE book_id=? AND target=? AND pic_id IS NOT NULL", bookId, `page:${pageId}`) || {}).pic_id || null;
-/** The book's pictures for the editor: { on, reason, left, cap, pages: { id: { state, reason, pic, stale } },
+/** The book's pictures for the editor (reason 'own' | 'none': the teacher's Pictures choice): { on, reason, left, cap, pages: { id: { state, reason, pic, stale } },
  *  cast: { name: ... }, total, done, busy } */
 export function stateOf(u, row, b = SB.bookOf(row)) {
-  const st = active(), cap = capOf(u), l = left(u);
+  const choice = SB.picturesOf(SB.setupOf(row));
+  const st = choice === 'ai' ? active() : { on: false, reason: choice }, cap = capOf(u), l = left(u);
   const rows = new Map(q.all('SELECT * FROM made_book_draws WHERE book_id=?', row.id).map(d => [d.target, d]));
   const one = (d, hash) => (d ? { state: d.state, reason: d.reason || '', pic: d.pic_id || null, stale: !!(d.pic_id && d.hash && d.hash !== hash && d.state !== 'queued' && d.state !== 'drawing'), note: !!d.note } : null);
   const pages = {}, cast = {};

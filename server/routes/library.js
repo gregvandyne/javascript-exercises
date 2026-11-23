@@ -29,6 +29,7 @@ import { gcAssignField, gcAfterAssign } from './gclassroom.js';
 import { studentHref } from './student-report.js';
 import { wishBox, WISH_CSS } from './library-suggest.js';
 import * as SB from '../services/storybook.js';
+import { companionFor } from '../services/companion-settings.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/library.css?v=${VERSION}">`);
@@ -128,7 +129,7 @@ function madeShelf(req) {
   const t = req.t, u = req.user;
   if (!u || u.is_guest) return '';
   if (SB.canMake(u)) {
-    const mine = SB.myBooks(u, 6);
+    const mine = SB.myBooks(u, 8);
     if (!mine.length) return '';
     return html`<section class="lb-made" aria-labelledby="lb-made-h"><h2 id="lb-made-h">${ico('✨', { size: 24 })} ${t('storybook.shelfMine')}</h2>
       <ul class="lb-made-list">${mine.map(r => { const bk = SB.bookOf(r); return html`<li><a class="lb-made-item" href="/library/make/${r.id}"><span dir="auto">${bk.title || t('storybook.untitled')}</span><span class="small muted">${t(r.kind === 'cyoa' ? 'storybook.kind.cyoa' : 'storybook.kind.linear')} · ${t('storybook.pages', { count: bk.pages.length })}</span></a></li>`; })}</ul>
@@ -158,7 +159,7 @@ router.get('/library', (req, res) => {
   const card = bk => bookCard(t, bk, { read: reads.get(bk.id), staff, forClass });
   const body = html`<div class="slib">
     <div class="pagehead lb-head"><div><h1>${ico('📚', { size: 36 })} ${t('library.title')}</h1><p class="muted">${t('library.lead', { count: LIB.books().length })}</p></div>
-      ${SB.canMake(u) ? html`<a class="btn btn-primary" href="/library/make" id="lb-make">${ico('✨', { size: 18 })} ${t('storybook.makeBook')}</a>` : ''}</div>
+      ${SB.canMake(u) ? (companionFor(u) ? html`<a class="btn btn-primary" href="/library/make?new=1" id="lb-make" data-oc-book>${ico('✨', { size: 18 })} ${t('storybook.makeBook')}</a>` : html`<a class="btn btn-primary" href="/library/make" id="lb-make">${ico('✨', { size: 18 })} ${t('storybook.makeBook')}</a>`) : ''}</div>
     ${madeShelf(req)}
     ${forClass ? html`<p class="notice lb-forclass">${ico('📌', { size: 18 })} ${t('library.forClass', { class: forClass.name })} <a href="/class/${forClass.id}">${t('library.backToClass')}</a></p>` : ''}
     ${wishBox(t, grade, forClass)}

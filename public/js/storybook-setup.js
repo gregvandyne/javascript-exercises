@@ -1,6 +1,6 @@
 // The book maker's setup steps (/library/make; server/routes/storybook.js, docs/storybook-builder.md), in the Builder's
 // step-by-step pattern: 1 start (Upload your own book or Have AI make one), 2 a few choices (the kind of book, grade,
-// length, endings, reading level, a theme), 3 the teacher's own words, files and pictures, 4 check exactly what Oomba
+// length, endings, reading level, a theme, pictures), 3 the teacher's own words, files and pictures, 4 check exactly what Oomba
 // will get (the server scrubs and screens it), then Make my book. Nothing is stored until then, except pictures (checked
 // and kept for a day until the book claims them). The choices live in this tab (sessionStorage) so a refresh keeps them.
 import { api, t, esc, pageData, toast } from '/js/app.js';
@@ -11,7 +11,7 @@ const D = pageData();
 const root = document.getElementById('sb-setup');
 const KEY = 'sb-setup';
 const store = { get: () => { try { return JSON.parse(sessionStorage.getItem(KEY) || 'null'); } catch { return null; } }, set: v => { try { sessionStorage.setItem(KEY, JSON.stringify(v)); } catch { /* no storage */ } }, clear: () => { try { sessionStorage.removeItem(KEY); } catch { /* no storage */ } } };
-const S = { step: 'start', source: '', kind: '', grade: '2', length: 'short', endings: '2', level: 'growing', theme: '', story: '', about: '', files: [], pics: [], ...(store.get() || {}) };
+const S = { step: 'start', source: '', kind: '', grade: '2', length: 'short', endings: '2', level: 'growing', theme: '', pictures: 'ai', story: '', about: '', files: [], pics: [], ...(store.get() || {}) };
 const $ = id => document.getElementById(id);
 const STEPS = ['start', 'options', 'context', 'check'];
 
@@ -96,7 +96,7 @@ $('sb-pic').addEventListener('change', async () => {
 });
 
 // ---------------------------------------------------------------- check: exactly what will be sent
-const setupBody = () => ({ source: S.source, kind: S.kind, grade: S.grade, length: S.length, endings: S.endings, level: S.level, theme: S.theme, about: $('sb-about').value, story: $('sb-story').value, files: S.files.map(f => ({ name: f.name })), pics: S.pics.map(p => p.id) });
+const setupBody = () => ({ source: S.source, kind: S.kind, grade: S.grade, length: S.length, endings: S.endings, level: S.level, theme: S.theme, pictures: S.pictures, about: $('sb-about').value, story: $('sb-story').value, files: S.files.map(f => ({ name: f.name })), pics: S.pics.map(p => p.id) });
 const chipName = (g, v) => { const el = root.querySelector(`[data-g="${g}"][data-v="${CSS.escape(String(v))}"]${g === 'kind' ? `[data-src="${S.source}"]` : ''}`); return el ? (el.querySelector('.sb-card-t') || el).textContent.trim() : ''; };
 let checked = null;
 async function check() {
@@ -108,7 +108,7 @@ async function check() {
     const edit = step => `<button type="button" class="btn btn-sm btn-ghost sb-editlink" data-go="${step}">${iconHtml('✏️', { size: 16 })} ${esc(t('js.storybook-setup.edit'))}</button>`;
     const row = (label, value, step) => `<div class="sb-sum-row"><dt>${esc(label)}</dt><dd>${value}</dd><dd class="sb-sum-edit">${edit(step)}</dd></div>`;
     const text = v => (v ? `<div class="sb-sent" dir="auto" tabindex="0">${esc(v)}</div>` : `<span class="muted">${esc(t('js.storybook-setup.none'))}</span>`);
-    const opts = [chipName('grade', s.grade), chipName('length', s.length), s.kind === 'cyoa' ? t('js.storybook-setup.endingsN', { count: s.endings }) : '', chipName('level', s.level), s.theme ? chipName('theme', s.theme) : ''].filter(Boolean).map(esc).join(' · ');
+    const opts = [chipName('grade', s.grade), chipName('length', s.length), s.kind === 'cyoa' ? t('js.storybook-setup.endingsN', { count: s.endings }) : '', chipName('level', s.level), s.theme ? chipName('theme', s.theme) : '', chipName('pictures', s.pictures)].filter(Boolean).map(esc).join(' · ');
     box.innerHTML = `<dl class="sb-sum">
       ${row(t('js.storybook-setup.sum.start'), esc(chipName('source', s.source)), 'start')}
       ${row(t('js.storybook-setup.sum.kind'), esc(r.labels.kind), 'options')}

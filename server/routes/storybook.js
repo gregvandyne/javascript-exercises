@@ -32,6 +32,7 @@ import { characterName } from '../builder/plan.js';
 import * as SB from '../services/storybook.js';
 import * as C from '../services/oomba-chat.js';
 import * as Draw from '../services/storybook-draw.js';
+import { companionFor } from '../services/companion-settings.js';
 import { numbering, reachable, pageOf } from '../../public/js/storybook-core.js';
 
 export const router = Router();
@@ -62,6 +63,18 @@ const chip = (group, v, label, on = false) => html`<button type="button" class="
 router.get('/library/make', teacher, (req, res) => {
   const t = req.t, u = req.user;
   const mine = SB.myBooks(u, 30);
+  // With the Oomba chat (the owner: "Clicking the make a book button should just open up the chat and you should do the
+  // whole workflow there"): Make a book opens the chat on the library with the book maker's first card
+  // (public/js/companion.js ?make=1); this page is the teacher's books. Without it, the steps below, as before.
+  if (companionFor(u)) {
+    if (req.query.new) return res.redirect('/library?make=1');
+    const body = html`<div class="sb sb-setup">
+      <div class="pagehead"><div><h1>${ico('📚', { size: 36 })} ${t('storybook.mine')}</h1><p class="muted">${t('storybook.lead')}</p></div>
+        <a class="btn btn-primary" href="/library/make?new=1" data-oc-book>${ico('✨', { size: 18 })} ${t('storybook.makeBook')}</a></div>
+      <section class="panel sb-mine" aria-label="${t('storybook.mine')}">
+        ${mine.length ? html`<ul class="sb-mine-list">${mine.map(r => bookItem(req, r))}</ul>` : html`<p class="muted">${t('storybook.mineNone')}</p>`}</section></div>`;
+    return page(req, res, { title: t('storybook.mine'), active: 'learn', body, head: CSS, back: '/library', backLabel: t('library.title'), mid: true });
+  }
   const card = (v, emo, title, text) => html`<button type="button" class="sb-card" data-g="source" data-v="${v}" aria-pressed="false"><span class="sb-card-i" aria-hidden="true">${ico(emo, { size: 56 })}</span><span class="sb-card-t">${title}</span><span class="sb-card-s">${text}</span></button>`;
   const kcard = (src, v, emo, title, text) => html`<button type="button" class="sb-card sb-kind" data-src="${src}" data-g="kind" data-v="${v}" aria-pressed="false"><span class="sb-card-i" aria-hidden="true">${ico(emo, { size: 44 })}</span><span class="sb-card-t">${title}</span><span class="sb-card-s">${text}</span></button>`;
   const group = (key, label, items, extra = '') => html`<fieldset class="sb-group" data-group="${key}"${extra ? raw(` ${extra}`) : ''}><legend>${label}</legend><div class="chips sb-chips">${items}</div></fieldset>`;
@@ -87,6 +100,7 @@ router.get('/library/make', teacher, (req, res) => {
       ${group('endings', t('storybook.options.endings'), SB.ENDINGS.map(n => chip('endings', String(n), String(n), n === 2)), 'hidden')}
       ${group('level', t('storybook.options.level'), SB.LEVELS.map(l => chip('level', l, t(`storybook.levels.${l}`), l === 'growing')))}
       ${group('theme', t('storybook.options.theme'), SB.THEMES.map(x => chip('theme', x, t(`storybook.themes.${x}`))), 'data-ai')}
+      ${group('pictures', t('storybook.options.pictures'), SB.PICTURES.map(x => chip('pictures', x, t(`storybook.pictures.${x}`), x === 'ai')))}
       <p class="form-err err" id="sb-opt-err" role="alert"></p>
       <div class="sb-nav"><button type="button" class="btn" data-go="start">${t('storybook.back')}</button><button type="button" class="btn btn-primary" data-go="context">${t('storybook.next')}</button></div>
     </section>
@@ -220,7 +234,7 @@ router.get('/library/make/:id', teacher, (req, res) => {
     <input type="file" id="sb-pagepic" accept="image/*" hidden>
   </div>
   ${jsonData('page-data', data)}`;
-  page(req, res, { title: bk.title || t('storybook.title'), active: 'learn', body, head: raw(`${CSS}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}">`), scripts: ['/js/storybook-edit.js'], i18n: ['js.oomba-chat'], back: '/library/make', backLabel: t('storybook.title'), companion: false, bodyClass: 'sb-editor' });
+  page(req, res, { title: bk.title || t('storybook.title'), active: 'learn', body, head: raw(`${CSS}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}">`), scripts: ['/js/storybook-edit.js'], i18n: ['js.oomba-chat'], back: '/library/make', backLabel: t('storybook.title'), bodyClass: 'sb-editor' });
 });
 const own = (req, res) => { const row = SB.ownBook(req.user, req.params.id); if (!row) nope(req, res); return row; };
 router.get('/api/library/make/:id', teacher, (req, res) => { const row = own(req, res); if (!row) return; const d = editorData(req, row); delete d.catalog; res.json(d); });
@@ -245,7 +259,7 @@ router.post('/api/library/make/:id/draw', teacher, rateLimit('storybook-draw', 3
   if (r.ok) { const row = SB.ownBook(req.user, req.params.id); return res.json({ ok: true, draws: Draw.stateOf(req.user, row) }); }
   if (r.code === 'notFound') return nope(req, res);
   if (r.code === 'words' || r.code === 'names' || r.code === 'personal') return err(req, res, 400, r.code === 'names' ? 'names' : 'words');
-  return res.status(r.code === 'limit' ? 429 : 503).json({ error: req.t(`storybook.draw.${r.code}`), code: r.code });
+  return res.status(r.code === 'limit' ? 429 : r.code === 'off' ? 409 : 503).json({ error: req.t(`storybook.draw.${r.code}`), code: r.code });
 });
 router.post('/api/library/make/:id/pic/:pic/remove', teacher, (req, res) => { const r = SB.removePic(req.user, req.params.id, req.params.pic); return r.ok ? res.json(r) : nope(req, res); });
 

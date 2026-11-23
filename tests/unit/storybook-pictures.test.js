@@ -261,3 +261,39 @@ test('readAnswer: Google\'s shapes (inlineData and inline_data, finish reasons, 
     assert.match(s, /no words, letters/); assert.doesNotMatch(s, /in the style of|Disney|Pixar|Ghibli|Seuss|Potter/i);
   }
 });
+
+test('a choose-your-own-adventure is illustrated too: every page, every branch and every ending painted; the reader and the print copy show them', async () => {
+  const id = await start(teacher, { ...SETUP, kind: 'cyoa', endings: 3, length: 'medium', about: 'A lost kite finds its way home.' });
+  const row = q.get('SELECT * FROM made_books WHERE id=?', id), book = SB.bookOf(row);
+  const ends = book.pages.filter(p => p.end), branches = book.pages.filter(p => p.choices.length > 1);
+  assert.equal(ends.length, 3); assert.ok(branches.length >= 1);
+  assert.ok(book.pages.every(p => p.pic && p.pic.scene), 'Oomba wrote a scene for every page');
+  const pages = draws(id).filter(d => d.target.startsWith('page:'));
+  assert.deepEqual(pages.map(d => d.target.slice(5)).sort(), book.pages.map(p => p.id).sort(), 'every page was queued');
+  assert.ok(pages.every(d => d.state === 'done' && d.pic_id), 'and painted, endings and branches included');
+  const pr = (await call(`/library/made/${id}/print`, { user: teacher })).text;
+  for (const d of pages) {
+    const pid = d.target.slice(5);
+    const rd = await call(`/library/made/${id}/read?p=${encodeURIComponent(pid)}`, { user: teacher });
+    assert.match(rd.text, new RegExp(`<figure class="rd-pic sb-rpic"><img class="sb-art" src="/library/made/${id}/pic/${d.pic_id}"`), `the reader shows page ${pid}'s picture`);
+    assert.match(pr, new RegExp(`/pic/${d.pic_id}`), `the print copy shows page ${pid}'s picture`);
+  }
+});
+
+test('the Pictures choice: "I\'ll add my own" and "No pictures" never paint or spend a picture; "No pictures" leaves every page without one', async () => {
+  for (const pictures of ['own', 'none']) {
+    const n0 = fake.calls.length, u0 = used(teacher);
+    const id = await start(teacher, { ...SETUP, kind: 'cyoa', pictures });
+    const row = q.get('SELECT * FROM made_books WHERE id=?', id);
+    assert.equal(SB.setupOf(row).pictures, pictures);
+    assert.equal(fake.calls.length, n0, `${pictures}: nothing painted`); assert.equal(used(teacher), u0, 'nothing spent');
+    assert.equal(draws(id).length, 0);
+    const ed = (await call(`/api/library/make/${id}`, { user: teacher })).json;
+    assert.equal(ed.draws.on, false); assert.equal(ed.draws.reason, pictures);
+    const b = SB.bookOf(row);
+    const rd = await call(`/api/library/make/${id}/draw`, { method: 'POST', user: teacher, body: { target: `page:${b.pages[0].id}` } });
+    assert.equal(rd.status, pictures === 'own' ? 409 : 404, 'Redraw is refused');
+    if (pictures === 'none') assert.ok(b.pages.length && b.pages.every(p => !p.pic && !p.upload), 'no picture on any page');
+    else assert.ok(b.pages.every(p => p.pic), 'the art-pack drawing holds each place until the teacher adds their own');
+  }
+});

@@ -93,9 +93,14 @@
 .sb-edges{position:absolute;inset:0;pointer-events:none;color:var(--edge);overflow:visible}
 .sb-edge{fill:none;stroke:currentColor;stroke-width:2}
 .sb-edge.on{stroke:var(--accent-press);stroke-width:3;color:var(--accent-press)}
-.sb-node{position:absolute;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;padding:4px 10px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--text);font:600 .8rem/1.2 var(--font);text-align:start;cursor:pointer;overflow:hidden}
+.sb-node{position:absolute;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;padding:4px 8px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--text);font:600 .8rem/1.2 var(--font);text-align:start;cursor:pointer;overflow:hidden}
+.sb-ntext{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0;flex:1}
+/* Each page's picture on the story map (an adventure is illustrated on every page and every path). */
+.sb-nthumb{flex:0 0 72px;width:72px;line-height:0;border-radius:8px;overflow:hidden}
+.sb-nthumb img.sb-art{aspect-ratio:16/9;object-fit:cover;width:100%;height:auto}
+.sb-nthumb svg{width:100%;height:auto;display:block}
 .sb-node b{font-size:.95rem}
-.sb-node span{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;max-width:100%}
+.sb-ntext>span{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;max-width:100%}
 .sb-node i{font-style:normal;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
 .sb-node.is-start{border-color:var(--accent-line)}
 .sb-node.is-end{background:var(--spark-soft);border-color:var(--spark-press)}
