@@ -1118,8 +1118,8 @@
       },
       "companion": {
         "h": "Oomba, l'assistant pour enseigner",
-        "p1": "Les enseignants avec la Formule Enseignant peuvent discuter avec Oomba depuis une bulle sur leurs propres pages. Les élèves et les enfants ne la voient jamais. Les messages d'un enseignant, le texte d'un document joint et une image jointe sont envoyés à notre fournisseur d'IA, Anthropic, pour produire la réponse. Avant tout envoi, nous retirons les noms des élèves de l'enseignant, les e-mails, les numéros de téléphone et les liens. Les images qui montrent une personne sont refusées et jamais conservées.",
-        "p2": "Oomba ne voit que ce que l'enseignant a ouvert et des informations sûres à ce sujet (le niveau et l'effectif d'une classe, les widgets d'un tableau de bord, les questions d'une fiche Figures, les éléments et étapes d'un plateau de manipulations), jamais les noms, réponses ou travaux des élèves. Il ne modifie un tableau de bord qu'après que l'enseignant a touché Appliquer. Sur une fiche Figures ou un plateau de manipulations, il fait tout de suite le changement demandé, et l'enseignant peut l'annuler.",
+        "p1": "Les enseignants avec la Formule Enseignant peuvent discuter avec Oomba depuis une bulle sur leurs propres pages. Les élèves et les enfants ne la voient jamais. Les messages d'un enseignant, le texte d'un document joint et une image jointe sont envoyés à notre fournisseur d'IA, Anthropic, pour produire la réponse. Avant tout envoi, nous retirons les noms des élèves de l'enseignant, les e-mails, les numéros de téléphone et les liens. Les images qui montrent une personne sont refusées et jamais conservées. Chaque nom devient un repère comme « [student 1] ». L'élève qu'il désigne reste sur nos serveurs : Oomba peut ainsi donner un point au bon élève sans que le nom soit jamais envoyé.",
+        "p2": "Oomba ne voit que ce que l'enseignant a ouvert et des informations sûres à ce sujet (le niveau et l'effectif d'une classe, les widgets d'un tableau de bord, les questions d'une fiche Figures, les éléments et étapes d'un plateau de manipulations), jamais les noms, réponses ou travaux des élèves. Il ne modifie un tableau de bord qu'après que l'enseignant a touché Appliquer. Sur une fiche Figures ou un plateau de manipulations, il fait tout de suite le changement demandé, et l'enseignant peut l'annuler. À la demande de l'enseignant, il peut aussi donner un point du tableau de bord à un élève ou à toute la classe, ce que l'enseignant peut annuler.",
         "p3": "Quand la recherche web est activée, Oomba peut envoyer de courtes recherches à la recherche web d'Anthropic. Elles ne contiennent jamais de noms ni de localisation ; les sites pour adultes, de jeux d'argent, les réseaux sociaux et autres sont bloqués, et chaque recherche est enregistrée pour notre équipe sans le nom de l'enseignant. Les pages trouvées sur le web sont présentées comme des sources qu'Oomba n'a pas vérifiées.",
         "p4": "Un enseignant peut parler au lieu d'écrire : le son est transmis à {provider} pour être transformé en mots pendant qu'il parle, et l'audio n'est jamais conservé, ni par nous ni par eux. Les mots arrivent dans la zone de message pour que l'enseignant les vérifie.",
         "p5": "Nous conservons la discussion d'un enseignant, avec le texte de ses pièces jointes, pendant 60 jours après sa dernière utilisation (une école peut choisir de 7 à 365 jours) ; une image est supprimée dès qu'Oomba a répondu, et au plus tard au bout d'un jour. Un enseignant peut supprimer la discussion avec Nouvelle discussion, et elle est supprimée avec le compte. Un administrateur de l'école peut désactiver Oomba ou sa recherche web pour l'école."
@@ -4121,7 +4121,10 @@
         "edit": "A modifié ta fiche ({n} changements)",
         "editNo": "N'a pas pu modifier la fiche",
         "board": "A préparé le plateau ({n} éléments)",
-        "boardNo": "N'a pas pu préparer ce plateau"
+        "boardNo": "N'a pas pu préparer ce plateau",
+        "point": "{n, plural, one {A donné un point} other {A donné # points}}",
+        "pointPick": "A préparé un choix pour vous",
+        "pointNo": "N'a pas pu donner ce point"
       },
       "stepsSum": "{n, plural, one {# étape} other {# étapes}} · {s} s",
       "prog": {
@@ -4197,7 +4200,21 @@
         "other": "Un problème est survenu. Ton message est toujours là : réessaie dans un instant."
       },
       "quoteN": "Question {n} : {text}",
-      "questionN": "Question {n}"
+      "questionN": "Question {n}",
+      "point": {
+        "given": "{name} a reçu un point pour {reason}",
+        "classGiven": "Toute la classe a reçu un point pour {reason}",
+        "someone": "un élève",
+        "gc": "Publié aussi dans Google Classroom.",
+        "wholeClass": "Toute la classe",
+        "picked": "Choisi",
+        "nothingYet": "Rien n'est donné tant que vous n'avez pas choisi.",
+        "pick": {
+          "class": "Pour quelle classe est ce point ?",
+          "student": "De quel élève parlez-vous ?",
+          "reason": "Ce point est pour quoi ?"
+        }
+      }
     }
   },
   "favorites": {
@@ -6983,6 +7000,122 @@
     "contact": {
       "h": "Questions",
       "p": "Écrivez à {email}. Pour les données d’un compte scolaire, c’est l’école qui nous contacte. Voir aussi notre <a href=\"{privacy}\">Politique de confidentialité</a> et comment nous protégeons les enfants <a href=\"{safety}\">en ligne</a>."
+    }
+  },
+  "compare": {
+    "name": "Oomba comparé",
+    "link": "Oomba comparé aux autres outils pour la classe",
+    "title": "Oomba comparé : des jeux, un tableau de bord de classe et des outils de maths au même endroit",
+    "description": "Oomba Academy à côté de trois autres outils pour la classe, besoin par besoin : jeux en direct, tableau de bord de classe, manipulables mathématiques virtuels, fiches d’exercices et un compagnon d’enseignement avec IA.",
+    "kicker": "Pour les enseignants",
+    "h1": "Oomba comparé",
+    "lead": "Oomba Academy réunit des jeux éducatifs, un tableau de bord de classe, des manipulables mathématiques, des fiches et un compagnon pour enseigner au même endroit.",
+    "table": {
+      "h": "Côte à côte, besoin par besoin",
+      "caption": "Ce que chaque produit propose pour des besoins courants en classe. Les cases des autres produits viennent de leurs propres sites web publics.",
+      "need": "Besoin en classe",
+      "hint": "Faites glisser le tableau sur le côté pour voir tous les produits.",
+      "legend": "Non indiqué signifie que nous ne l’avons pas trouvé sur leur site web public.",
+      "open": "Touchez ou cliquez sur une ligne pour voir les détails et les sources."
+    },
+    "status": {
+      "yes": "Oui",
+      "partial": "Partiel",
+      "no": "Non",
+      "notStated": "Non indiqué"
+    },
+    "gate": {
+      "plan": "Formule Enseignant",
+      "testing": "En essai"
+    },
+    "rows": {
+      "games": {
+        "need": "Jeux et quiz en direct",
+        "oomba": "Des jeux éducatifs de maths, lecture, logique et musique, et des jeux de classe en direct sur le grand écran.",
+        "oombaNoLive": "Des jeux éducatifs de maths, lecture, logique et musique."
+      },
+      "build": {
+        "need": "Les élèves créent leurs propres jeux",
+        "oomba": "Le Constructeur : les élèves décrivent un jeu avec leurs mots et il le crée."
+      },
+      "dashboard": {
+        "need": "Widgets de tableau de bord de classe",
+        "oomba": "Le tableau de bord de la classe, gratuit pour chaque classe."
+      },
+      "routines": {
+        "need": "Minuteurs, responsabilités et météo de la classe",
+        "oomba": "Minuteurs, responsabilités de classe et météo des émotions sur le tableau de bord."
+      },
+      "eyes": {
+        "need": "Mettre les écrans en pause et envoyer des outils aux élèves",
+        "oomba": "« Les yeux ici » met en pause l’écran de chaque élève, et « Envoyer à la classe » met un outil sur leurs appareils."
+      },
+      "manip": {
+        "need": "Manipulables mathématiques virtuels",
+        "oomba": "18 outils, avec des modèles, des tableaux qui s’enregistrent pendant que vous travaillez, et Mes tableaux."
+      },
+      "room": {
+        "need": "Une salle en direct qui montre le travail de chaque élève",
+        "oomba": "Chaque élève travaille dans sa propre case pendant que vous voyez toute la classe. Les élèves vérifient leurs réponses, et vous rouvrez la salle après la récréation."
+      },
+      "regroup": {
+        "need": "Groupements et échanges en numération",
+        "oomba": "Les blocs de base dix se regroupent dans les tableaux de numération quand les élèves échangent."
+      },
+      "figures": {
+        "need": "Figures de maths et de sciences, fiches imprimables avec corrigé",
+        "oomba": "Des schémas exacts de maths et de sciences, des fiches et des contrôles imprimables avec corrigé."
+      },
+      "aiDraft": {
+        "need": "Brouillons de fiches et d’exercices avec l’IA",
+        "oomba": "Décrivez ce qu’il vous faut, puis affinez-le dans un chat, avec Annuler pour chaque modification. L’appli calcule les réponses, et un brouillon continue si vous actualisez la page."
+      },
+      "companion": {
+        "need": "Un compagnon pour enseigner (chat avec IA)",
+        "oomba": "Un seul chat dans toute l’appli, qui sait sur quelle page vous êtes, y compris dans Figures et les manipulables. Il trouve des jeux par niveau, norme et durée, et des livres par niveau de lecture, lit vos préparations et vos images, et cherche sur le web en montrant ses sources. Il ne modifie votre tableau de bord que si vous confirmez, avec Annuler. Avec la saisie vocale, vos mots s’affichent pendant que vous parlez, et l’audio n’est pas conservé. Votre école peut fixer ses limites."
+      },
+      "videos": {
+        "need": "De courtes vidéos de chaque outil",
+        "oomba": "Des vidéos d’une minute avec sous-titres, enregistrées dans la vraie appli."
+      },
+      "grades": {
+        "need": "De la maternelle à la 8e année",
+        "oomba": "Conçu pour les 5 à 14 ans, de la maternelle à la 8e année."
+      },
+      "languages": {
+        "need": "Langues proposées",
+        "oomba": "Tout le site en {count} langues."
+      },
+      "devices": {
+        "need": "Fonctionne sur Chromebook et téléphone",
+        "oomba": "Fonctionne dans tout navigateur à jour, sans rien installer."
+      },
+      "privacy": {
+        "need": "Vie privée des élèves",
+        "oomba": "Pas de publicité, pas de cookies publicitaires ni de suivi, et nous ne vendons jamais les informations personnelles de personne. Pas besoin de l’e-mail des élèves."
+      },
+      "free": {
+        "need": "Une option gratuite",
+        "oomba": "Tous les jeux, vos classes, les leçons, le carnet de notes et le tableau de bord de la classe sont gratuits.",
+        "oombaPlans": "Tous les jeux, vos classes, les leçons, le carnet de notes et le tableau de bord de la classe sont gratuits. La formule Enseignant ajoute les outils pour enseigner : <a href=\"{plans}\">voir les formules</a>."
+      }
+    },
+    "why": {
+      "h": "Pourquoi les enseignants choisissent Oomba",
+      "l1": "Des jeux, un tableau de bord de classe et des outils de maths avec une seule connexion.",
+      "l2": "Les élèves créent leurs propres jeux, pas seulement y jouer.",
+      "l3": "Pas de publicité, et nous ne vendons jamais les informations de personne, en {count} langues."
+    },
+    "sources": {
+      "read": "lu le {date}",
+      "sites": "Leurs sites web publics :",
+      "summary": "Sources et méthode de vérification ({count})",
+      "how": "Nous avons lu les pages publiques de chaque produit le {date}. Chaque Oui ou Partiel montre les mots de leur page qui l’appuient. Non indiqué signifie que nous ne l’y avons pas trouvé."
+    },
+    "line": "Dernière vérification : {date}. {names} sont des marques de leurs propriétaires ; Oomba n’est pas affilié à eux. <a href=\"{href}\">Dites-nous si quelque chose a changé</a>.",
+    "detail": {
+      "link": "Ouvrir leur page",
+      "notStated": "Non indiqué sur leur site"
     }
   },
   "connections": {
@@ -11151,7 +11284,12 @@
         "f_listening": "l’écoute",
         "f_responsible": "la responsabilité",
         "f_brave": "l’audace d’essayer",
-        "f_creative": "les bonnes idées"
+        "f_creative": "les bonnes idées",
+        "allMine": "Tous mes points",
+        "allMineSum": "Les miens {mine} + ceux de toute la classe {cls}",
+        "allMineN": "Tous mes points : {n}",
+        "justMe": "Rien que moi",
+        "wholeClass": "Toute la classe"
       },
       "fractions": {
         "name": "Fractions",

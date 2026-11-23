@@ -11637,6 +11637,64 @@ This builds on stage 5's "Points for each student" (the scoreboard's Each studen
   `tests/unit/dash-stage5.test.js` where "everyone" changed. `npm run dash:fit` seeds whole-class points too, and
   `SIZES=stage5` checks only the stage 5 layouts.
 
+## My points: the total on top (23 Nov 2026)
+
+The owner chose layout A of three mockups for the student's "My points" card: "Let's go with A."
+
+- **The card** (routes/schools.js `myPointsPanel`, public/css/schools.css `.mypoints`): the title "My points", then a
+  Spark-tinted bar "All my points" with a small line "My own 4 + the whole class's 3" and the total big on the right
+  (the student's own points plus the whole class's points), then two matching cards side by side: "Just me" (the big
+  number, chips by reason, Recent) and "Whole class" (the same). A Recent row in the class's card shows the reason and
+  the day; the full sentence ("The whole class earned a point for teamwork") stays as its screen-reader text and title.
+  The footer "Only you and your teacher see your points." On phones (640 px and less) the two cards stack; nothing is
+  wider than the screen at 375 px.
+- **Unchanged:** never another student's name, id or points, never a ranking; the students' total ("Class total") is not
+  on the card. The in-dashboard student view adds the same total line, "All my points: 7" (own + class), under the
+  class's points.
+
+## Points from the Oomba chat (23 Nov 2026)
+
+The owner: "make sure that the teacher can add a point for a student from the oomba chat. Like 'give the whole class a
+point for xyz' or 'give x student a point for xyz'". Student names never go to the AI.
+
+- **Placeholders instead of names.** The companion's scrubber now puts a numbered placeholder where it takes out a
+  student's name: "Give Maya a point for teamwork" is kept and sent as "Give [student 1] a point for teamwork"
+  (builder/lesson.js `scrub` gained a `token` option; every other caller is unchanged and still gets "[student]"). Which
+  students a number stands for (their account ids, never their names) is kept with the message on the server only
+  (`meta._who`; the chat engine never shows meta keys starting with "_" to the page) and never goes to the AI. The same
+  student keeps the same number for the whole conversation (Try again and an edited message keep theirs). A name that
+  is not an account yet (a Google Classroom roster name waiting) stays a plain "[student]", which can't get a point.
+  **On the teacher's own page** the names come back: the server puts each placeholder's student's current name (only
+  the teacher's own students) into the teacher's messages and into any placeholder in Oomba's words, as it fills in the
+  point cards (`dress`, `namesIn`). What is kept and what goes to the AI stay the placeholders. A placeholder standing
+  for two students shows both names.
+  **Decided:** a placeholder can stand for several students (a first name two students share); the server resolves it
+  in the class, and asks when it is still more than one.
+- **The tool** (`givePoint`, a general tool, not a page tool; services/companion.js `pointPlan`): target "class" or a
+  placeholder, a reason (the 12 keys; close words are read: "working together", "kindness", "hard work"...), an optional
+  class id from getPageContext. **Which class:** the one asked for, else the page's class (the dashboard, the class
+  page), else the teacher's only class; for a student, the only class of this teacher the student is in (decided: better
+  than asking when it is clear); else a class choice card. The AI gets back only "given" (to one student or the whole
+  class, the reason), "waiting for the teacher" (what to pick) or why not. **Class names:** shown to the teacher on the
+  cards; never in what this tool returns to the AI (they are teacher-written and could hold a name). At most 5 points in
+  one answer; a worksheet change and a point are not mixed in one answer.
+- **Giving.** Clear (one class, one student, a known reason): given at once when the answer is saved, through the
+  dashboard's own `pointsAction` (the history, the Recent lists, the class's Google Classroom switch and its posting
+  after the point is saved, the dashboard's hourly limit, the same bucket), audited `companion.point`. The card: "Gave
+  BouncyPenguin51 a point for Teamwork" or "The whole class got a point for Teamwork", with Undo (the dashboard's Undo:
+  the latest matching award and its Classroom post; audited `companion.point.undo`). The names on the card are filled in
+  by the server for the teacher's own page (`dress`), outside Oomba's words. **Unclear** (two students match, an
+  unknown reason, several classes): one short choice card with buttons; nothing is given until a tap; the tap gives it
+  as a turn of its own with Undo. A name that is not one of the teacher's students (so not a placeholder), or a student
+  not in the class: Oomba says so calmly and nothing is given.
+- **Who:** companion access (companionFor) and a class the teacher teaches and runs (`D.isTeacher` and
+  `S.canManageClass`); never an archived class.
+- **The dashboard:** a point given or taken back from the chat on that class's dashboard asks for the points at once
+  (an `oomba:points` event, the dashboard's own live check); other screens get it at the next check.
+- **Privacy:** /privacy "Oomba, the teaching companion" says names become placeholders kept only on our servers, and
+  that Oomba can give a point when the teacher asks, with Undo (all locales; LEGAL_UPDATED 2026-11-23,
+  docs/legal-review.md). Tests: tests/unit/companion-points.test.js.
+
 ## Icons: Oomba geometric for controls, Fluent 3D for big spots (22 Nov 2026)
 
 Follows "Icons: Fluent Emoji 3D". The owner felt the Fluent icons were "still too emoji" and compared six directions on
@@ -11700,3 +11758,54 @@ the hybrid: our own Oomba icons for every control, and the Fluent 3D pictures on
   scripts/demo-video (the live host's steps, the Builder, sign-up, friends and publish as they are now), with the owner's
   AtlasAudio track. Titles, cards and captions have no em dashes, and the live video says what joining is now: students
   join an open room with a code and get a safe made-up name (a class game is the signed-in class).
+
+## Comparison page: the one page that names other products (22 Nov 2026)
+
+The site's rule stays: **never name other products**, in any page, string, prompt or test fixture. The owner made one
+exception, for one page only: `/compare`, "How Oomba compares", may name **Kahoot!** (live quiz games),
+**Classroomscreen** (class dashboard and whiteboard widgets) and **Brainingcamp** (virtual math manipulatives).
+
+- **Where the names live.** Only `server/routes/compare.js` (`COMPETITORS`) and its test. The locale strings never
+  hold them: the trademark notice gets the names as `{names}` (joined for each language). `tests/unit/compare.test.js`
+  scans every text file in the repository outside `docs/` and fails if any other file names them, and checks that the
+  pages around it (/teachers, /research, /compliance, /safety, /privacy, /parents, /learn) never do.
+- **The page.** Public and indexable, with language addresses (`/es/compare`) and a sitemap entry, built like
+  /research and /compliance (routes/trust.js): a short intro of what Oomba is, a table by classroom need (columns Oomba,
+  Kahoot!, Classroomscreen, Brainingcamp), three "Why teachers pick Oomba" points, the /teachers sign-up button (or
+  `/trial` with paid plans on), "Last checked: <date>" (`COMPARE_CHECKED`) and the trademark notice with the site's
+  contact address. /teachers has one link to it, under "See it in action". All 13 locales (en-GB: maths).
+- **The cells.** Yes, Partial, No or Not stated, each with a Fluent mark and its word (never color alone). Another
+  product's cell is only what its own public website clearly states, with the address, the day and the exact words
+  (`CELLS`, docs/compare-sources.md), shown as a footnote; anything not confirmed there is Not stated, never a guess.
+  No prices, theirs or ours (prices stay on /plans; the Free row links there when paid plans are on). The cells were
+  read on 2026-11-22 from each product's own pages (rendered in a browser, folded FAQ answers opened); each footnote
+  shows the address, the day and the quoted words. Pricing pages were read only to see whether a free option exists,
+  and no source links to a pricing page. Pages on other hosts (trust.kahoot.com, support.kahoot.com,
+  media.brainingcamp.com) could not be checked; nothing depends on them.
+- **Oomba's cells** say only what is live. The Manipulatives, their live rooms, place-value regrouping, Figures, the AI
+  drafting and Oomba the teaching companion carry the gate's tag, worded like the "See it in action" note
+  (views/see-it.js): "Teacher plan" while paid plans are on for everyone, "In testing" while only testers have them.
+  The companion row describes the teaching companion as it is on main today ("Oomba teaching companion: one chat
+  everywhere, and live speech"): one chat that knows the page, Figures and the Manipulatives included, words shown as
+  the teacher speaks, audio not kept.
+- **Table on phones.** The table scrolls inside its own box with the need column kept in view (sticky), so the page
+  never scrolls sideways; the box can be reached and scrolled by keyboard.
+- **Legal.** docs/legal-review.md "Comparison page naming Kahoot!, Classroomscreen, Brainingcamp: lawyer review
+  pending".
+- **Simpler (23 Nov 2026).** The owner: "needs to be much more simple". Each cell is now its mark and one word (Yes,
+  Partial, Not stated) and, on Oomba's teaching tools, the small "In testing" / "Teacher plan" tag; no footnote numbers
+  or long text in the table. The detail moved behind a small "i" button in the cell (`public/js/compare-info.js`): a
+  real button with `aria-expanded` and `aria-controls`, its note right after it (so Tab goes into it), opened by tap,
+  click or keyboard, closed by Escape (focus back on the button), a tap outside or Tab past it; placed with
+  `position: fixed` so the table's scroll box never cuts it off. Oomba's note is the cell's detail; another product's
+  Yes or Partial note is the quote, the day it was read and a link to their page. The sources are one native
+  `<details>` at the end, collapsed by default ("Sources and how we checked (24)"). The intro is one sentence, "Why
+  teachers pick Oomba" three short lines, then the sign-up button; "Last checked" and the trademark notice are one
+  short line under the table. Tests: `tests/unit/compare.test.js` and `tests/unit/compare-browser.test.js`.
+- **Rows that open (23 Nov 2026).** The owner: too many "i" boxes. The "i" buttons and their notes are gone. Each need's
+  label is a button with a chevron (`aria-expanded`, `aria-controls`; the whole label is clickable, Enter and Space
+  work), closed by default; it opens a detail row right under it, spanning the table: Oomba's detail, then for each
+  product with Yes or Partial its quoted words, the day read and "Open their page", or "Not stated on their site".
+  Several rows may be open. On phones the detail is pinned to the start of the table's scroll box (sticky, as wide as
+  the box), so it stays readable however the columns are scrolled. `public/js/compare-rows.js` replaces
+  `compare-info.js`.

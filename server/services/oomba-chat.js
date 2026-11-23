@@ -107,13 +107,15 @@ function trim(s, turns) {
   for (let i = out.length - 1; i >= 0; i--) if (out[i].undo) { if (++kept > s.undoKept) { const { undo, ...rest } = out[i]; out[i] = rest; } }
   return out;
 }
-/** What the page gets: the turns (a change's undo data stays here: only whether it can be undone), the turn running. */
+/** What the page gets: the turns (a change's undo data stays here: only whether it can be undone; a message's meta keys
+ *  starting with "_" are the server's own, like the companion's placeholders' students), the turn running. */
+const shownMeta = m => Object.fromEntries(Object.entries(m).filter(([k]) => !k.startsWith('_')));
 export function view(sid, row) {
   const s = surfaceOf(sid);
   if (!row) return { id: null, turns: [], pending: null };
   const turns = parse(row.turns, []).map(x => {
     const { undo, ...rest } = x;
-    return { ...rest, ...(x.change ? { change: { ...x.change, canUndo: !!undo && !x.change.undone } } : {}) };
+    return { ...rest, ...(x.meta ? { meta: shownMeta(x.meta) } : {}), ...(x.change ? { change: { ...x.change, canUndo: !!undo && !x.change.undone } } : {}) };
   });
   const live = liveOf(row.id);
   const pending = live ? { id: live.id, me: live.me_id, step: live.step, steps: parse(live.steps, []), names: (s || DEFAULTS).steps, at: live.started_at || live.created_at, now: now(), eta: eta(sid) } : null;

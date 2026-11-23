@@ -197,8 +197,15 @@ test('the student\'s "My points": their own points and the class\'s on their cla
   assert.match(card, /My points/);
   assert.match(card, /id="mp-mine"><b>3<\/b>/);
   assert.match(card, /Kindness <b>2<\/b>/); assert.match(card, /Teamwork <b>1<\/b>/);
-  assert.match(card, /Whole-class points: 2/); assert.match(card, /Focus <b>2<\/b>/);
-  assert.match(card, /The whole class earned a point for focus/);
+  assert.match(card, /id="mp-class"><b>2<\/b>/); assert.match(card, /Focus <b>2<\/b>/);
+  assert.match(card, /The whole class earned a point for focus/, 'the full sentence stays, for screen readers and as the row\'s title');
+  // Layout A ("Let's go with A."): all my points on top (own + the whole class's), then "Just me" and "Whole class" cards.
+  assert.match(card, /class="mp-total" id="mp-total"><p class="mp-tl"><b>All my points<\/b><small>My own 3 \+ the whole class&#39;s 2<\/small><\/p><p class="mp-tn"><b>5<\/b><\/p>/);
+  assert.ok(card.indexOf('mp-total') < card.indexOf('mp-me') && card.indexOf('mp-me') < card.indexOf('mp-class'), 'the total first, then Just me, then Whole class');
+  assert.match(card, /class="mp-col mp-me"[^>]*><h3 class="mp-boxh"[^>]*>[\s\S]{0,400}Just me<\/h3>/);
+  assert.match(card, /class="mp-col mp-class"[^>]*><h3 class="mp-boxh"[^>]*>[\s\S]{0,400}Whole class<\/h3>/);
+  assert.equal((card.match(/<h4 class="mp-h3">Recent<\/h4>/g) || []).length, 2, 'both cards have Recent');
+  const p0 = D.pointsMine(x.c, x.a.id); assert.equal(p0.mine + p0.cls.n, 5);
   assert.match(card, /Only you and your teacher see your points/);
   // Another student's points are never in the page: not their reason, count, name or id.
   assert.doesNotMatch(card, /Leadership/);
@@ -214,7 +221,7 @@ test('the student\'s "My points": their own points and the class\'s on their cla
   assert.ok(mine.recent.every(a => Object.keys(a).sort().join() === 'at,reason'), 'only the reason and the day');
   // Ben's card shows his own.
   const bcard = await (await get(`/class/${x.c.id}`, x.bc)).text();
-  assert.match(bcard, /id="mp-mine"><b>7<\/b>/); assert.doesNotMatch(bcard.slice(bcard.indexOf('id="my-points"')), /Kindness <b>2/);
+  assert.match(bcard, /id="mp-mine"><b>7<\/b>/); assert.match(bcard, /class="mp-tn"><b>9<\/b>/, 'Ben: his 7 and the class\'s 2'); assert.doesNotMatch(bcard.slice(bcard.indexOf('id="my-points"')), /Kindness <b>2/);
   // The Classes tab links to it.
   assert.match(await (await get('/classes', x.ac)).text(), new RegExp(`href="/class/${x.c.id}#my-points"[^>]*>[\\s\\S]{0,200}My points: 3`));
   // The teacher's own class page has no student card.

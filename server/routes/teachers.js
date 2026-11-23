@@ -353,6 +353,7 @@ router.get('/teachers', (req, res) => {
 
   ${teacherLoop(t, { variant: 'page', cls: 'lp-sec', links: isSchoolStaff(req.user) ? loopLinks(req.user) : null, live: liveOn(), scheme: shotScheme(req) })}
   ${seeIt(req, { cta: plans ? html`<a class="btn btn-primary" href="/trial">${t('plans.teacher.start')}</a>` : html`<a class="btn btn-primary" href="#start">${t('teachers.cta.start')}</a>` })}
+  <p class="lp-research lp-compare">${ico('⚖️', { size: 18 })} <a href="${lp(req, '/compare')}">${t('compare.link')}</a></p>
   ${classroomSection(req)}
 
   <div class="lp-cols">

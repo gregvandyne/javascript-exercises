@@ -1127,6 +1127,8 @@ function start() {
   }
   setInterval(poll, POLL_MS);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
+  // A point given or taken back in Oomba's chat on this page (public/js/companion.js): the points now, not at the next check.
+  document.addEventListener('oomba:points', () => poll());
 
   // ---------------------------------------------------------------- the teacher: layouts, Eyes up, Push to students
   const currentName = () => (S.layouts.find(l => l.id === S.layoutId) || {}).name || '';

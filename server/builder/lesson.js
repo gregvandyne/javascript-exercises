@@ -127,8 +127,10 @@ const PHONE = [
  * Text -> the same text with these names, emails, phone numbers and links taken out -> { text, removed: { names,
  * emails, phones, links } }. names: from studentNames (or namesFrom for a test). contacts: false takes out only the
  * names (a typed Builder message: its emails, phone numbers and links are refused by the Builder's screening instead).
+ * token: (the matched name, without a trailing "'s") -> the placeholder put there instead of "[student]" (Oomba, the
+ * teaching companion: "[student 1]", services/companion.js tokenize). Every other caller leaves it out: "[student]".
  */
-export function scrub(text, names = [], { contacts = true } = {}) {
+export function scrub(text, names = [], { contacts = true, token = null } = {}) {
   let s = String(text || '');
   const removed = { names: 0, emails: 0, phones: 0, links: 0 };
   if (contacts) {
@@ -141,7 +143,12 @@ export function scrub(text, names = [], { contacts = true } = {}) {
     for (let i = 0; i < list.length; i += 400) {
       const alt = list.slice(i, i + 400).map(n => (cap ? `${esc(n.name[0].toLocaleUpperCase())}${esc(n.name.slice(1))}` : esc(n.name).replace(/ /g, '\\s+'))).join('|');
       const re = new RegExp(`(?<!${LETTER})(?:${alt})(?:['’]s)?(?!${LETTER})`, flags);
-      s = s.replace(re, () => { removed.names++; return '[student]'; });
+      s = s.replace(re, m => {
+        removed.names++;
+        if (!token) return '[student]';
+        const own = /['’]s$/u.exec(m);
+        return `${token(own ? m.slice(0, -2) : m)}${own ? own[0] : ''}`;
+      });
     }
   };
   run(loose, 'giu', false);

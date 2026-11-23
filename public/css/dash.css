@@ -1683,7 +1683,8 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
 .dash-projector .dw-points .dw5-clsbox .dw5-why:not(:empty){display:flex;justify-content:center}
 .dash-projector .dw-points .dw5-clsline{font-size:clamp(1.3rem,min(18cqh,8cqi),3.6rem)}
 @container (max-height:300px){.dash-projector .dw-points .dw5-clsbox .dw5-why:not(:empty){display:none}}
-.dw5-clspts{justify-content:center}
+.dw5-clspts,.dw5-allmine{justify-content:center}
+.dw5-allmine{font-weight:800}
 .dw5-ric{font-size:1.5rem;line-height:1}
 .dw5-gc{margin-top:var(--s3);padding:12px 14px;border-radius:var(--r-sm);background:var(--card-2)}
 .dw5-gc p{margin:4px 0 0}

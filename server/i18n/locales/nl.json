@@ -1119,8 +1119,8 @@
       },
       "companion": {
         "h": "Oomba, je hulpje bij het lesgeven",
-        "p1": "Leerkrachten met het Leerkracht-abonnement kunnen via een bolletje op hun eigen pagina's met Oomba chatten. Leerlingen en kinderen zien het nooit. De berichten van een leerkracht, de tekst van een bijgevoegd document en een bijgevoegde afbeelding gaan naar onze AI-leverancier, Anthropic, om het antwoord te maken. Voordat er iets wordt verstuurd, halen we de namen van de leerlingen van de leerkracht, e-mailadressen, telefoonnummers en links weg. Afbeeldingen waarop een persoon staat, worden geweigerd en nooit bewaard.",
-        "p2": "Oomba ziet alleen wat een leerkracht open heeft en veilige gegevens daarover (het leerjaar en de grootte van een klas, de widgets van een dashboard, de vragen van een Figures-werkblad, de onderdelen en stappen van een bord bij de manipulatieven), nooit namen, antwoorden of werk van leerlingen. Een dashboard wordt pas aangepast nadat de leerkracht op Toepassen tikt. Op een Figures-werkblad of een bord voert Oomba de gevraagde wijziging meteen uit, en de leerkracht kan die ongedaan maken.",
+        "p1": "Leerkrachten met het Leerkracht-abonnement kunnen via een bolletje op hun eigen pagina's met Oomba chatten. Leerlingen en kinderen zien het nooit. De berichten van een leerkracht, de tekst van een bijgevoegd document en een bijgevoegde afbeelding gaan naar onze AI-leverancier, Anthropic, om het antwoord te maken. Voordat er iets wordt verstuurd, halen we de namen van de leerlingen van de leerkracht, e-mailadressen, telefoonnummers en links weg. Afbeeldingen waarop een persoon staat, worden geweigerd en nooit bewaard. Elke naam wordt een plaatshouder zoals \"[student 1]\". Welke leerling dat is, blijft op onze servers, zodat Oomba de juiste leerling een punt kan geven zonder dat de naam ooit wordt verstuurd.",
+        "p2": "Oomba ziet alleen wat een leerkracht open heeft en veilige gegevens daarover (het leerjaar en de grootte van een klas, de widgets van een dashboard, de vragen van een Figures-werkblad, de onderdelen en stappen van een bord bij de manipulatieven), nooit namen, antwoorden of werk van leerlingen. Een dashboard wordt pas aangepast nadat de leerkracht op Toepassen tikt. Op een Figures-werkblad of een bord voert Oomba de gevraagde wijziging meteen uit, en de leerkracht kan die ongedaan maken. Als de leerkracht het vraagt, kan Oomba ook een dashboardpunt geven aan een leerling of aan de hele klas, wat de leerkracht ongedaan kan maken.",
         "p3": "Als zoeken op internet aan staat, kan Oomba korte zoekopdrachten naar de webzoekfunctie van Anthropic sturen. Die bevatten nooit namen of een locatie; sites voor volwassenen, gokken, sociale netwerken en dergelijke zijn geblokkeerd, en elke zoekopdracht wordt voor ons team vastgelegd zonder de naam van de leerkracht. Pagina's van internet worden getoond als bronnen die Oomba niet heeft gecontroleerd.",
         "p4": "Een leerkracht kan praten in plaats van typen: het geluid gaat naar {provider} om er al tijdens het praten woorden van te maken, en de audio wordt nooit bewaard, niet door ons en niet door hen. De woorden komen in het berichtvak, zodat de leerkracht ze kan controleren.",
         "p5": "We bewaren de chat van een leerkracht, met de tekst van de bijlagen, 60 dagen na het laatste gebruik (een school kan 7 tot 365 dagen kiezen); een afbeelding wordt verwijderd zodra Oomba heeft geantwoord, uiterlijk na een dag. Een leerkracht kan de chat verwijderen met Nieuwe chat, en hij wordt verwijderd met het account. Een schoolbeheerder kan Oomba of het zoeken op internet uitzetten voor de school."
@@ -4122,7 +4122,10 @@
         "edit": "Je werkblad aangepast ({n} wijzigingen)",
         "editNo": "Kon het werkblad niet aanpassen",
         "board": "Het bord gemaakt ({n} onderdelen)",
-        "boardNo": "Kon dat bord niet maken"
+        "boardNo": "Kon dat bord niet maken",
+        "point": "{n, plural, one {Een punt gegeven} other {# punten gegeven}}",
+        "pointPick": "Een keuze voor je klaargezet",
+        "pointNo": "Kon dat punt niet geven"
       },
       "stepsSum": "{n, plural, one {# stap} other {# stappen}} · {s} s",
       "prog": {
@@ -4198,7 +4201,21 @@
         "other": "Er ging iets mis. Je bericht staat er nog: probeer het zo meteen opnieuw."
       },
       "quoteN": "Vraag {n}: {text}",
-      "questionN": "Vraag {n}"
+      "questionN": "Vraag {n}",
+      "point": {
+        "given": "{name} kreeg een punt voor {reason}",
+        "classGiven": "De hele klas kreeg een punt voor {reason}",
+        "someone": "een leerling",
+        "gc": "Wordt ook in Google Classroom geplaatst.",
+        "wholeClass": "De hele klas",
+        "picked": "Gekozen",
+        "nothingYet": "Er wordt niets gegeven tot je tikt.",
+        "pick": {
+          "class": "Voor welke klas is het punt?",
+          "student": "Welke leerling bedoel je?",
+          "reason": "Waarvoor is het punt?"
+        }
+      }
     }
   },
   "favorites": {
@@ -6984,6 +7001,122 @@
     "contact": {
       "h": "Vragen",
       "p": "Mail {email}. Voor de gegevens van een schoolaccount neemt de school contact met ons op. Zie ook ons <a href=\"{privacy}\">privacybeleid</a> en hoe we kinderen <a href=\"{safety}\">veilig</a> houden."
+    }
+  },
+  "compare": {
+    "name": "Oomba vergeleken",
+    "link": "Oomba vergeleken met andere hulpmiddelen voor de klas",
+    "title": "Oomba vergeleken: games, een klasdashboard en rekentools op één plek",
+    "description": "Oomba Academy naast drie andere hulpmiddelen voor de klas, per behoefte: live games, een klasdashboard, virtuele rekenmaterialen, werkbladen en een AI-maatje voor leerkrachten.",
+    "kicker": "Voor leerkrachten",
+    "h1": "Oomba vergeleken",
+    "lead": "Oomba Academy brengt leergames, een klasdashboard, rekenmaterialen, werkbladen en een maatje bij het lesgeven samen op één plek.",
+    "table": {
+      "h": "Naast elkaar, per behoefte in de klas",
+      "caption": "Wat elk product biedt voor veelvoorkomende behoeften in de klas. De vakjes van de andere producten komen van hun eigen openbare websites.",
+      "need": "Behoefte in de klas",
+      "hint": "Schuif de tabel opzij om alle producten te zien.",
+      "legend": "Niet vermeld betekent dat we het niet op hun openbare website vonden.",
+      "open": "Tik of klik op een rij om de details en bronnen te zien."
+    },
+    "status": {
+      "yes": "Ja",
+      "partial": "Deels",
+      "no": "Nee",
+      "notStated": "Niet vermeld"
+    },
+    "gate": {
+      "plan": "Leerkracht-abonnement",
+      "testing": "In test"
+    },
+    "rows": {
+      "games": {
+        "need": "Live games en quizzen",
+        "oomba": "Leergames voor rekenen, lezen, logica en muziek, en live klassengames op het grote scherm.",
+        "oombaNoLive": "Leergames voor rekenen, lezen, logica en muziek."
+      },
+      "build": {
+        "need": "Leerlingen maken hun eigen games",
+        "oomba": "De Bouwer: leerlingen beschrijven een game in hun eigen woorden en hij maakt hem."
+      },
+      "dashboard": {
+        "need": "Widgets voor een klasdashboard",
+        "oomba": "Het klasdashboard, gratis voor elke klas."
+      },
+      "routines": {
+        "need": "Timers, klassentaken en check-ins",
+        "oomba": "Timers, klassentaken en check-ins op het dashboard."
+      },
+      "eyes": {
+        "need": "Schermen pauzeren en hulpmiddelen naar leerlingen sturen",
+        "oomba": "\"Ogen hierheen\" pauzeert het scherm van elke leerling, en \"Naar de klas sturen\" zet een hulpmiddel op hun apparaten."
+      },
+      "manip": {
+        "need": "Virtuele rekenmaterialen",
+        "oomba": "18 hulpmiddelen, met sjablonen, borden die opslaan terwijl je werkt, en Mijn borden."
+      },
+      "room": {
+        "need": "Een live ruimte die het werk van elke leerling laat zien",
+        "oomba": "Elke leerling werkt in een eigen vak terwijl jij de hele klas ziet. Leerlingen controleren hun antwoorden, en je opent de ruimte weer na de pauze."
+      },
+      "regroup": {
+        "need": "Inwisselen bij plaatswaarde",
+        "oomba": "MAB-blokken wisselen in bij plaatswaardekaarten als leerlingen ruilen."
+      },
+      "figures": {
+        "need": "Reken- en wetenschapsfiguren, printbare werkbladen met antwoorden",
+        "oomba": "Exacte diagrammen voor rekenen en wetenschap, printbare werkbladen en toetsen met antwoordblad."
+      },
+      "aiDraft": {
+        "need": "AI-concepten van werkbladen en oefeningen",
+        "oomba": "Beschrijf wat je nodig hebt en verfijn het in een chat, met Ongedaan maken voor elke wijziging. De app rekent de antwoorden uit, en een concept loopt door als je de pagina vernieuwt."
+      },
+      "companion": {
+        "need": "Een maatje bij het lesgeven (AI-chat)",
+        "oomba": "Eén chat in de hele app die weet op welke pagina je bent, ook in Figuren en bij de rekenmaterialen. Hij vindt games op groep, doel en tijd, en boeken op leesniveau, leest je lesplannen en afbeeldingen, en zoekt op het web met de bronnen erbij. Je dashboard verandert hij alleen als je bevestigt, met Ongedaan maken. Bij spraakinvoer verschijnen je woorden terwijl je praat, en de audio wordt niet bewaard. Je school kan de grenzen instellen."
+      },
+      "videos": {
+        "need": "Korte video’s van elk hulpmiddel",
+        "oomba": "Video’s van een minuut met ondertiteling, opgenomen in de echte app."
+      },
+      "grades": {
+        "need": "Van kleuterklas tot grade 8",
+        "oomba": "Gemaakt voor kinderen van 5 tot 14 jaar, van kleuterklas tot grade 8."
+      },
+      "languages": {
+        "need": "Aangeboden talen",
+        "oomba": "De hele site in {count} talen."
+      },
+      "devices": {
+        "need": "Werkt op Chromebooks en telefoons",
+        "oomba": "Werkt in elke actuele browser, zonder iets te installeren."
+      },
+      "privacy": {
+        "need": "Privacy van leerlingen",
+        "oomba": "Geen advertenties, geen advertentie- of trackingcookies, en we verkopen nooit iemands persoonsgegevens. Geen e-mailadres van leerlingen nodig."
+      },
+      "free": {
+        "need": "Een gratis optie",
+        "oomba": "Alle games, je klassen, lessen, het cijferboek en het klasdashboard zijn gratis.",
+        "oombaPlans": "Alle games, je klassen, lessen, het cijferboek en het klasdashboard zijn gratis. Het Leerkracht-abonnement voegt de lestools toe: <a href=\"{plans}\">bekijk de abonnementen</a>."
+      }
+    },
+    "why": {
+      "h": "Waarom leerkrachten voor Oomba kiezen",
+      "l1": "Games, een klasdashboard en rekentools met één login.",
+      "l2": "Leerlingen maken hun eigen games, niet alleen spelen.",
+      "l3": "Geen advertenties, en we verkopen nooit iemands gegevens, in {count} talen."
+    },
+    "sources": {
+      "read": "gelezen op {date}",
+      "sites": "Hun openbare websites:",
+      "summary": "Bronnen en hoe we het controleerden ({count})",
+      "how": "We lazen op {date} de eigen openbare pagina’s van elk product. Elk Ja of Deels toont de woorden op hun pagina die het onderbouwen. Niet vermeld betekent dat we het daar niet vonden."
+    },
+    "line": "Laatst gecontroleerd: {date}. {names} zijn handelsmerken van hun eigenaren; Oomba is niet aan hen verbonden. <a href=\"{href}\">Laat het ons weten als er iets veranderd is</a>.",
+    "detail": {
+      "link": "Hun pagina openen",
+      "notStated": "Niet vermeld op hun site"
     }
   },
   "connections": {
@@ -11152,7 +11285,12 @@
         "f_listening": "luisteren",
         "f_responsible": "verantwoordelijkheid",
         "f_brave": "iets nieuws proberen",
-        "f_creative": "goede ideeën"
+        "f_creative": "goede ideeën",
+        "allMine": "Al mijn punten",
+        "allMineSum": "Mijn eigen {mine} + die van de hele klas {cls}",
+        "allMineN": "Al mijn punten: {n}",
+        "justMe": "Alleen ik",
+        "wholeClass": "Hele klas"
       },
       "fractions": {
         "name": "Breuken",

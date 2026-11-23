@@ -1119,8 +1119,8 @@
       },
       "companion": {
         "h": "Oomba, o ajudante para ensinar",
-        "p1": "Professores com o Plano Professor podem conversar com o Oomba por uma bolha nas próprias páginas. Alunos e crianças nunca a veem. As mensagens de um professor, o texto de um documento anexado e uma imagem anexada são enviados ao nosso provedor de IA, a Anthropic, para criar a resposta. Antes de enviar qualquer coisa, removemos os nomes dos alunos do professor, e-mails, telefones e links. Imagens que mostram uma pessoa são recusadas e nunca guardadas.",
-        "p2": "O Oomba vê só o que o professor tem aberto e dados seguros sobre isso (o ano e o tamanho de uma turma, os widgets de um painel, as perguntas de uma folha do Figures, os itens e passos de um quadro dos manipulativos), nunca nomes, respostas ou trabalhos dos alunos. Ele só muda um painel depois que o professor toca em Aplicar. Numa folha do Figures ou num quadro dos manipulativos, faz na hora a mudança pedida, e o professor pode desfazê-la.",
+        "p1": "Professores com o Plano Professor podem conversar com o Oomba por uma bolha nas próprias páginas. Alunos e crianças nunca a veem. As mensagens de um professor, o texto de um documento anexado e uma imagem anexada são enviados ao nosso provedor de IA, a Anthropic, para criar a resposta. Antes de enviar qualquer coisa, removemos os nomes dos alunos do professor, e-mails, telefones e links. Imagens que mostram uma pessoa são recusadas e nunca guardadas. Cada nome vira um marcador como \"[student 1]\". Qual aluno ele representa fica nos nossos servidores, para que o Oomba possa dar um ponto ao aluno certo sem que o nome seja enviado.",
+        "p2": "O Oomba vê só o que o professor tem aberto e dados seguros sobre isso (o ano e o tamanho de uma turma, os widgets de um painel, as perguntas de uma folha do Figures, os itens e passos de um quadro dos manipulativos), nunca nomes, respostas ou trabalhos dos alunos. Ele só muda um painel depois que o professor toca em Aplicar. Numa folha do Figures ou num quadro dos manipulativos, faz na hora a mudança pedida, e o professor pode desfazê-la. Se o professor pedir, ele também pode dar um ponto do painel a um aluno ou à turma toda, e o professor pode desfazer.",
         "p3": "Quando a busca na web está ligada, o Oomba pode enviar buscas curtas para a busca na web da Anthropic. Elas nunca incluem nomes nem uma localização; sites para adultos, de apostas, redes sociais e parecidos são bloqueados, e cada busca é registrada para nossa equipe sem o nome do professor. As páginas encontradas na web aparecem como fontes que o Oomba não verificou.",
         "p4": "Um professor pode falar em vez de digitar: o som é enviado para {provider} para virar palavras enquanto ele fala, e o áudio nunca é guardado, nem por nós nem por eles. As palavras vão para a caixa de mensagem para o professor conferir.",
         "p5": "Guardamos a conversa de um professor, com o texto do que ele anexou, por 60 dias após o último uso (uma escola pode escolher de 7 a 365 dias); uma imagem é apagada assim que o Oomba responde, no máximo em um dia. Um professor pode apagar a conversa com Nova conversa, e ela é apagada junto com a conta. Um administrador da escola pode desligar o Oomba ou a busca na web dele para a escola."
@@ -4122,7 +4122,10 @@
         "edit": "Mudou sua folha ({n} mudanças)",
         "editNo": "Não conseguiu mudar a folha",
         "board": "Montou o quadro ({n} itens)",
-        "boardNo": "Não conseguiu montar esse quadro"
+        "boardNo": "Não conseguiu montar esse quadro",
+        "point": "{n, plural, one {Deu um ponto} other {Deu # pontos}}",
+        "pointPick": "Preparou uma escolha para você",
+        "pointNo": "Não conseguiu dar esse ponto"
       },
       "stepsSum": "{n, plural, one {# etapa} other {# etapas}} · {s} s",
       "prog": {
@@ -4198,7 +4201,21 @@
         "other": "Algo deu errado. Sua mensagem continua aqui: tente de novo daqui a pouco."
       },
       "quoteN": "Pergunta {n}: {text}",
-      "questionN": "Pergunta {n}"
+      "questionN": "Pergunta {n}",
+      "point": {
+        "given": "{name} ganhou um ponto por {reason}",
+        "classGiven": "A turma toda ganhou um ponto por {reason}",
+        "someone": "um aluno",
+        "gc": "Também vai para o Google Classroom.",
+        "wholeClass": "A turma toda",
+        "picked": "Escolhido",
+        "nothingYet": "Nada é dado até você tocar.",
+        "pick": {
+          "class": "Para qual turma é o ponto?",
+          "student": "Qual aluno você quis dizer?",
+          "reason": "O ponto é pelo quê?"
+        }
+      }
     }
   },
   "favorites": {
@@ -6985,6 +7002,122 @@
     "contact": {
       "h": "Dúvidas",
       "p": "Escreva para {email}. Para os dados de uma conta escolar, é a escola que entra em contato conosco. Veja também a nossa <a href=\"{privacy}\">Política de Privacidade</a> e como mantemos as crianças <a href=\"{safety}\">seguras</a>."
+    }
+  },
+  "compare": {
+    "name": "Como o Oomba se compara",
+    "link": "Como o Oomba se compara a outras ferramentas para a sala de aula",
+    "title": "Como o Oomba se compara: jogos, um painel da turma e ferramentas de matemática em um só lugar",
+    "description": "O Oomba Academy ao lado de outras três ferramentas para a sala de aula, por necessidade da turma: jogos ao vivo, um painel da turma, materiais manipuláveis virtuais de matemática, folhas de atividades e um companheiro de ensino com IA.",
+    "kicker": "Para professores",
+    "h1": "Como o Oomba se compara",
+    "lead": "O Oomba Academy reúne jogos educativos, um painel da turma, materiais manipuláveis de matemática, folhas de atividades e um companheiro de ensino em um só lugar.",
+    "table": {
+      "h": "Lado a lado, por necessidade da turma",
+      "caption": "O que cada produto oferece para necessidades comuns da sala de aula. Os dados dos outros produtos vêm dos próprios sites públicos deles.",
+      "need": "Necessidade da turma",
+      "hint": "Deslize a tabela para o lado para ver todos os produtos.",
+      "legend": "Não informado significa que não encontramos isso no site público deles.",
+      "open": "Toque ou clique em uma linha para ver os detalhes e as fontes."
+    },
+    "status": {
+      "yes": "Sim",
+      "partial": "Parcial",
+      "no": "Não",
+      "notStated": "Não informado"
+    },
+    "gate": {
+      "plan": "Plano Professor",
+      "testing": "Em teste"
+    },
+    "rows": {
+      "games": {
+        "need": "Jogos e quizzes ao vivo",
+        "oomba": "Jogos educativos de matemática, leitura, lógica e música, e jogos de turma ao vivo na tela grande.",
+        "oombaNoLive": "Jogos educativos de matemática, leitura, lógica e música."
+      },
+      "build": {
+        "need": "Os alunos criam os próprios jogos",
+        "oomba": "O Construtor: os alunos descrevem um jogo com as próprias palavras e ele cria o jogo."
+      },
+      "dashboard": {
+        "need": "Widgets de painel da turma",
+        "oomba": "O painel da turma, grátis para toda turma."
+      },
+      "routines": {
+        "need": "Cronômetros, tarefas da turma e check-ins",
+        "oomba": "Cronômetros, tarefas da turma e check-ins no painel."
+      },
+      "eyes": {
+        "need": "Pausar telas e enviar ferramentas aos alunos",
+        "oomba": "\"Olhos aqui\" pausa a tela de cada aluno, e \"Enviar para a turma\" coloca uma ferramenta nos aparelhos deles."
+      },
+      "manip": {
+        "need": "Materiais manipuláveis virtuais de matemática",
+        "oomba": "18 ferramentas, com modelos, quadros que salvam enquanto você trabalha e Meus quadros."
+      },
+      "room": {
+        "need": "Uma sala ao vivo que mostra o trabalho de cada aluno",
+        "oomba": "Cada aluno trabalha no próprio quadrinho enquanto você vê a turma toda. Os alunos conferem as respostas, e você reabre a sala depois do recreio."
+      },
+      "regroup": {
+        "need": "Agrupar e desagrupar no valor posicional",
+        "oomba": "Os blocos de base dez se reagrupam nos quadros de valor posicional quando os alunos trocam."
+      },
+      "figures": {
+        "need": "Figuras de matemática e ciências, folhas imprimíveis com gabarito",
+        "oomba": "Diagramas exatos de matemática e ciências, folhas de atividades e provas imprimíveis com gabarito."
+      },
+      "aiDraft": {
+        "need": "Rascunhos com IA de folhas de atividades e prática",
+        "oomba": "Descreva o que você precisa e ajuste em um chat, com Desfazer para cada mudança. O app calcula as respostas, e um rascunho continua se você recarregar a página."
+      },
+      "companion": {
+        "need": "Um companheiro para ensinar (chat com IA)",
+        "oomba": "Um só chat no app inteiro que sabe em que página você está, inclusive em Figuras e nos materiais manipuláveis. Ele encontra jogos por ano, habilidade e tempo, e livros por nível de leitura, lê seus planos de aula e imagens, e pesquisa na web mostrando as fontes. Ele só muda o seu painel quando você confirma, com Desfazer. Na entrada por voz, suas palavras aparecem enquanto você fala, e o áudio não é guardado. Sua escola pode definir os limites."
+      },
+      "videos": {
+        "need": "Vídeos curtos de cada ferramenta",
+        "oomba": "Vídeos de um minuto com legendas, gravados no app de verdade."
+      },
+      "grades": {
+        "need": "Da educação infantil ao 8.º ano",
+        "oomba": "Feito para crianças de 5 a 14 anos, da educação infantil ao 8.º ano."
+      },
+      "languages": {
+        "need": "Idiomas oferecidos",
+        "oomba": "O site inteiro em {count} idiomas."
+      },
+      "devices": {
+        "need": "Funciona em Chromebooks e celulares",
+        "oomba": "Funciona em qualquer navegador atualizado, sem instalar nada."
+      },
+      "privacy": {
+        "need": "Privacidade dos alunos",
+        "oomba": "Sem anúncios, sem cookies de publicidade ou rastreamento, e nunca vendemos informações pessoais de ninguém. Não precisa do e-mail dos alunos."
+      },
+      "free": {
+        "need": "Uma opção grátis",
+        "oomba": "Todos os jogos, suas turmas, as lições, o diário de notas e o painel da turma são grátis.",
+        "oombaPlans": "Todos os jogos, suas turmas, as lições, o diário de notas e o painel da turma são grátis. O plano Professor acrescenta as ferramentas de ensino: <a href=\"{plans}\">veja os planos</a>."
+      }
+    },
+    "why": {
+      "h": "Por que os professores escolhem o Oomba",
+      "l1": "Jogos, um painel da turma e ferramentas de matemática com um só login.",
+      "l2": "Os alunos criam os próprios jogos, não só jogam.",
+      "l3": "Sem anúncios, e nunca vendemos informações de ninguém, em {count} idiomas."
+    },
+    "sources": {
+      "read": "lido em {date}",
+      "sites": "Os sites públicos deles:",
+      "summary": "Fontes e como verificamos ({count})",
+      "how": "Lemos as páginas públicas de cada produto em {date}. Cada Sim ou Parcial mostra as palavras da página deles que o comprovam. Não informado significa que não encontramos isso lá."
+    },
+    "line": "Última verificação: {date}. {names} são marcas de seus donos; o Oomba não é afiliado a eles. <a href=\"{href}\">Avise-nos se algo mudou</a>.",
+    "detail": {
+      "link": "Abrir a página deles",
+      "notStated": "Não informado no site deles"
     }
   },
   "connections": {
@@ -11153,7 +11286,12 @@
         "f_listening": "ouvir",
         "f_responsible": "responsabilidade",
         "f_brave": "tentar algo novo",
-        "f_creative": "boas ideias"
+        "f_creative": "boas ideias",
+        "allMine": "Todos os meus pontos",
+        "allMineSum": "Os meus {mine} + os da turma toda {cls}",
+        "allMineN": "Todos os meus pontos: {n}",
+        "justMe": "Só eu",
+        "wholeClass": "Turma toda"
       },
       "fractions": {
         "name": "Frações",
