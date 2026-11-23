@@ -264,7 +264,17 @@ async function drawJob(job) {
   // Google said lately that the key's project has no picture quota: the art pack, without asking (or counting) again
   if (quotaHeld()) return end(job, 'fallback', 'notset');
   if (!SB.take(u, { key: dayKey(), cap: capOf(u) })) return end(job, 'fallback', 'limit');
-  const r = await G.generate({ prompt, refs, aspect });
+  // Reference pictures go to Google as PNG: in production every page call with our WebP sheets came back 400 "Unable to
+  // process input image" (23 Nov 2026). Each is converted once here; one Google cannot take is dropped and that
+  // character is described in words only (the prompt already carries its look).
+  const sent = [];
+  for (const x of refs) { const png = await toPng(x.bytes).catch(() => null); if (png) sent.push({ ...x, mime: 'image/png', bytes: png }); }
+  let r = await G.generate({ prompt, refs: sent, aspect });
+  if (!r.ok && r.http === 400 && sent.length && /input image/i.test(`${r.gmsg || ''} ${r.gmsgFull || ''}`)) {
+    warn('storybook picture refs refused, drawing from words', { book: row.id, refs: sent.length, sig: sent.map(x => x.bytes.subarray(0, 4).toString('hex')), sizes: sent.map(x => x.bytes.length) });
+    r = await G.generate({ prompt, refs: [], aspect });
+  }
+  if (r.ok) log('info', 'storybook picture drawn', { book: row.id, what: label, refs: sent.length });
   if (r.usage || r.ok || r.code === 'blocked') aiBudget.recordImage(G.model(), r.usage, r.ok ? 1 : 0);
   if (!r.ok) {
     if (r.code === 'blocked') { audit(u.id, 'storybook.draw.blocked', row.id, { what: label, why: String(r.why || '').slice(0, 40) }); return end(job, 'fallback', 'blocked', { hash }); }
@@ -322,6 +332,21 @@ export function toWebp(bytes) {
     });
     ff.stdin.on('error', () => {});
     ff.stdin.end(bytes);
+  });
+}
+/** Image bytes (WebP, PNG, JPEG) -> PNG bytes through ffmpeg; a PNG comes back as it is. */
+export function toPng(bytes) {
+  const b = Buffer.from(bytes);
+  if (pngSize(b)) return Promise.resolve(b);
+  return new Promise((resolve, reject) => {
+    let ff;
+    try { ff = spawn('ffmpeg', ['-v', 'error', '-i', 'pipe:0', '-frames:v', '1', '-f', 'image2pipe', '-c:v', 'png', 'pipe:1'], { stdio: ['pipe', 'pipe', 'ignore'] }); } catch (e) { reject(e); return; }
+    const out = [];
+    ff.on('error', reject);
+    ff.stdout.on('data', d => out.push(d));
+    ff.on('close', code => { const buf = Buffer.concat(out); if (code === 0 && pngSize(buf)) resolve(buf); else reject(new Error(`ffmpeg ${code}`)); });
+    ff.stdin.on('error', () => {});
+    ff.stdin.end(b);
   });
 }
 export function pngSize(b) { return b && b.length > 24 && b.readUInt32BE(0) === 0x89504e47 ? { width: b.readUInt32BE(16), height: b.readUInt32BE(20) } : null; }
