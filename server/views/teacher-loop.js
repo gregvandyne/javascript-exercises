@@ -1,7 +1,7 @@
 // The teaching loop, Plan → Play → Check → Feedback (docs/decisions.md "The teaching loop"): one partial, three looks.
 //
 //   teacherLoop(t, { variant: 'landing' })  the section on the teacher landing at "/" (server/routes/landing.js), in the
-//                                           landing's own lp-* look (public/css/landing.css), with the four screenshots
+//                                           landing's own lp-* look (public/css/landing.css), with two screenshots (PAIR)
 //   teacherLoop(t, { variant: 'page' })     /teach/loop ("How Oomba fits your week") and /teachers, in the app's look
 //                                           (public/css/teach-loop.css)
 //   teacherLoop(t, { variant: 'compact' })  the card near the top of the Classroom home (/teach) for new teachers: each
@@ -25,6 +25,9 @@ export const LOOP = [
 /** The screenshots in public/img/teach-loop (scripts/teach-loop-shots.js): name, the step it shows. 1280x800, 16:10.
  *  Each also as <name>-dark.webp (--theme dark), shown when the page is dark (views/shot.js; scheme below). */
 export const SHOTS = [['gradebook', 'check'], ['attention', 'check'], ['feedback', 'feedback']];
+/** The two screens /teachers and the landing show side by side (the owner, 23 Nov 2026: "only keep two photos here",
+ *  "the first and 3rd"): the gradebook and the written feedback. /teach/loop keeps all three. */
+export const PAIR = ['gradebook', 'feedback'];
 export const SHOT_W = 1280, SHOT_H = 800;
 const SHOT_V = '3';
 
@@ -43,10 +46,10 @@ const img = (t, name, sizes, scheme = 'auto') => raw(themedPicture({ scheme,
     dark: hasFile(shotUrl(`${name}-dark`)) ? { srcset: `${shotUrl(`${name}-dark`)}?v=${SHOT_V}` } : null } }));
 
 export function teacherLoop(t, opts = {}) {
-  const { variant = 'page', links = null, state = null, live = true, shots = variant !== 'compact', cta = '', id = 'teach-loop', headingTag = 'h2', cls = '', scheme = 'auto' } = opts;
+  const { variant = 'page', links = null, state = null, live = true, shots = variant !== 'compact', shotNames = SHOTS.map(([n]) => n), cta = '', id = 'teach-loop', headingTag = 'h2', cls = '', scheme = 'auto' } = opts;
   if (variant === 'landing') return landing(t, { live, cta, id, shots, scheme });
   if (variant === 'compact') return compact(t, { links, state, live, id });
-  return pageLook(t, { links, state, live, shots, id, headingTag, cls, scheme });
+  return pageLook(t, { links, state, live, shots, shotNames, id, headingTag, cls, scheme });
 }
 
 /** The landing's screenshot pair or grid: the named shots (default all), each with its caption. scheme: the landing's theme. */
@@ -54,7 +57,7 @@ export const loopShots = (t, names = SHOTS.map(([n]) => n), scheme = 'auto') => 
       ${names.map(name => html`<figure class="lp-device lp-loop-shot rv"><div class="lp-screen">${img(t, name, '(min-width: 1100px) 540px, (min-width: 760px) 46vw, 92vw', scheme)}</div><figcaption>${t(`teach.loop.shots.${name}.caption`)}</figcaption></figure>`)}
     </div>`;
 
-/** On the landing: numbered cards like "How it works", then the four screens, then the trial button. */
+/** On the landing: numbered cards like "How it works", then the two screens (PAIR), then the trial button. */
 function landing(t, { live, cta, id, shots = true, scheme = 'auto' }) {
   return html`<section class="lp-sec lp-loop" id="${id}" aria-labelledby="${id}-h">
   <div class="lp-wrap">
@@ -64,7 +67,7 @@ function landing(t, { live, cta, id, shots = true, scheme = 'auto' }) {
         <h3>${t(`teach.loop.steps.${s.step}.name`)}</h3><p>${t(`teach.loop.steps.${s.step}.benefit`)}</p>
         <ul class="lp-loop-tools">${toolsOf(s, live).map(k => html`<li>${lpCheck}<span>${plainName(t, k)}</span></li>`)}</ul></li>`)}
     </ol>
-    ${shots ? loopShots(t, undefined, scheme) : ''}
+    ${shots ? loopShots(t, PAIR, scheme) : ''}
     ${cta ? html`<div class="lp-ctas lp-ctas-c lp-loop-cta">${cta}</div>` : ''}
   </div>
 </section>`;
@@ -85,7 +88,7 @@ const makeClass = (t, links) => links && links.makeClass ? html`<p class="tl-mak
 const tick = (t, on) => html`<span class="tl-tick${on ? ' on' : ''}" aria-hidden="true">${on ? check : ''}</span><span class="sr-only">${on ? t('teach.loop.home.done') : t('teach.loop.home.todo')}</span>`;
 
 /** /teach/loop and /teachers: four panels in the app's look, then the screenshots. */
-function pageLook(t, { links, state, live, shots, id, headingTag, cls, scheme = 'auto' }) {
+function pageLook(t, { links, state, live, shots, shotNames, id, headingTag, cls, scheme = 'auto' }) {
   const H = raw(headingTag);
   return html`<section class="tl tl-page${cls ? ` ${cls}` : ''}" id="${id}" aria-labelledby="${id}-h">
   <${H} id="${id}-h" class="tl-h">${ico('🔁', { size: 28 })} ${t('teach.loop.h')}</${H}>
@@ -96,7 +99,7 @@ function pageLook(t, { links, state, live, shots, id, headingTag, cls, scheme = 
       <div class="tl-step-head"><span class="tl-e" aria-hidden="true">${ico(s.emoji, { size: 28 })}</span><h3 class="tl-step-t"><span class="tl-n" aria-hidden="true">${i + 1}</span> ${t(`teach.loop.steps.${s.step}.name`)}</h3>${state ? tick(t, on) : ''}</div>
       <p>${t(`teach.loop.steps.${s.step}.benefit`)}</p>
       <ul class="plain tl-tools">${toolsOf(s, live).map(k => tool(t, k, links))}</ul></li>`; })}</ol>
-  ${shots ? html`<div class="tl-shots">${SHOTS.map(([name]) => html`<figure class="panel tl-shot">${img(t, name, '(min-width: 1000px) 480px, (min-width: 700px) 46vw, 92vw', scheme)}<figcaption class="small muted">${t(`teach.loop.shots.${name}.caption`)}</figcaption></figure>`)}</div>` : ''}
+  ${shots ? html`<div class="tl-shots" data-n="${shotNames.length}">${shotNames.map(name => html`<figure class="panel tl-shot">${img(t, name, '(min-width: 1000px) 480px, (min-width: 700px) 46vw, 92vw', scheme)}<figcaption class="small muted">${t(`teach.loop.shots.${name}.caption`)}</figcaption></figure>`)}</div>` : ''}
 </section>`;
 }
 

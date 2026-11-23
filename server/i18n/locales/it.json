@@ -6020,24 +6020,19 @@
   },
   "teachers": {
     "title": "Giochi educativi interattivi per la classe",
-    "description": "Giochi didattici gratis e senza pubblicità dai 5 ai 14 anni, in ogni browser e su Chromebook: matematica, inglese, scacchi, musica e un Costruttore IA.",
+    "description": "Giochi educativi senza pubblicità dai 5 ai 14 anni, in qualsiasi browser e anche sui Chromebook, con materiali manipolativi di matematica, una bacheca di classe e un Costruttore di giochi IA.",
     "kicker": "🍎 Per gli insegnanti",
     "h1": "Giochi educativi interattivi che la sua classe vorrà rifare",
-    "lead": "Oomba Academy è un sito gratuito di giochi educativi dai 5 ai 14 anni. Gli studenti giocano direttamente nel browser, e la sua classe può creare i propri giochi descrivendoli al nostro Costruttore IA.",
+    "lead": "Giochi educativi, materiali manipolativi di matematica da usare dal vivo con la classe e una bacheca di classe per tutta la giornata, dai 5 ai 14 anni. Tutto funziona nel browser, anche sui Chromebook, e la sua classe può creare i propri giochi con il nostro Costruttore IA.",
     "badges": {
-      "free": "Gratis per iniziare",
       "ads": "Senza pubblicità",
       "browser": "Funziona in ogni browser, anche su Chromebook",
       "google": "Accesso con Google",
       "ages": "Pensato per 5-14 anni"
     },
     "cta": {
-      "start": "Attivi un account scolastico gratuito",
+      "start": "Crei un account insegnante",
       "try": "Provi un gioco ora, senza registrarsi"
-    },
-    "play": {
-      "h": "Giocare per imparare",
-      "p": "Giochi brevi che gli studenti vogliono rifare, e ognuno allena una competenza vera. Si aprono in pochi secondi nel browser, senza installare niente."
     },
     "subjects": {
       "h": "Giochi per materia"
@@ -6116,9 +6111,8 @@
       "p": "Tutto il sito funziona in {count} lingue, tra cui spagnolo, portoghese, francese, arabo ed ebraico: un aiuto per gli studenti che stanno ancora imparando l'italiano. Ogni studente sceglie la sua, e il Costruttore risponde in quella lingua."
     },
     "start": {
-      "h": "Attivi la sua scuola (gratis)",
-      "p1": "Giocare è gratis per tutti, e gli studenti possono provare qualsiasi gioco subito, senza registrarsi.",
-      "p2": "Per classi, lezioni e account scolastici, scriva a {email} con il nome della scuola e chi se ne occuperà. Noi configuriamo la scuola e l'account dell'admin della scuola, che poi aggiunge insegnanti e studenti. Attivare una scuola è gratis.",
+      "h": "Attivi la sua scuola",
+      "p1": "Gli studenti possono provare qualsiasi gioco subito, senza registrarsi.",
       "plans": "Vuoi di più per le tue classi? Prova gratis il piano Insegnante per {days} giorni, senza carta: studenti illimitati e {daily} creazioni con l'IA al giorno per la classe.",
       "email": "Ci scriva per attivare la scuola",
       "subject": "Attivare la mia scuola su Oomba Academy",
@@ -6137,8 +6131,8 @@
       "q5": "Per quali età e classi è pensato?",
       "a5": "Oomba Academy è pensato dalla scuola dell’infanzia alla terza media, più o meno dai 5 ai 14 anni. Giochi come Shark Plank e le prime piste di Sum Racer vanno bene per i più piccoli. Number Quest, il corso di matematica, va dall’ultimo anno della scuola dell’infanzia alla terza media, mentre CS Quest e Cyber Defenders iniziano dalla terza elementare.",
       "q6": "Come aggiungo la mia classe?",
-      "a6": "Prima ci scriva per attivare la sua scuola (è gratis). Poi crei una classe e condivida il codice classe con gli studenti che hanno un account personale, oppure crei account scolastici per tutta la classe e stampi le schede di accesso.",
-      "a6google": "Prima ci scriva per attivare la sua scuola (è gratis). Poi crei una classe e condivida il codice classe con gli studenti che hanno un account personale, oppure crei account scolastici per tutta la classe e stampi le schede di accesso. Le scuole che usano Google possono far accedere gli studenti con Google.",
+      "a6": "Prima ci scriva per attivare la sua scuola. Poi crei una classe e condivida il codice classe con gli studenti che hanno un account personale, oppure crei account scolastici per tutta la classe e stampi le schede di accesso.",
+      "a6google": "Prima ci scriva per attivare la sua scuola. Poi crei una classe e condivida il codice classe con gli studenti che hanno un account personale, oppure crei account scolastici per tutta la classe e stampi le schede di accesso. Le scuole che usano Google possono far accedere gli studenti con Google.",
       "q7": "Gli studenti possono creare i propri giochi? Chi li vede?",
       "a7": "Sì. Un gioco nuovo è privato e lo vede solo lo studente che l'ha creato. Può condividerlo con la sua classe, e un gioco per tutti viene controllato prima che altri possano giocarci.",
       "q8": "Posso seguire progressi e punteggi?",
@@ -6150,7 +6144,7 @@
       "a1paid": "Giocare, le classi, le lezioni, i progressi e Oomba Live sono gratis, e ogni studente riceve ogni giorno messaggi gratuiti al Costruttore. Il piano Insegnante, facoltativo, aggiunge per le tue classi una scorta giornaliera condivisa di creazioni con l'IA, con studenti illimitati. Provalo gratis per 14 giorni, senza carta. I prezzi sono nella pagina dei piani."
     },
     "setup": {
-      "lead": "Ci racconti qualcosa della sua scuola. La attiveremo entro 1 giorno di scuola e le risponderemo via email con i passaggi successivi. Attivare una scuola è gratis.",
+      "lead": "Ci racconti qualcosa della sua scuola. La attiveremo entro 1 giorno di scuola e le risponderemo via email con i passaggi successivi.",
       "school": "Nome della scuola",
       "role": "Il suo ruolo",
       "rolePick": "Scelga un'opzione",
@@ -6199,7 +6193,7 @@
       "submitStaff": "Invia",
       "privacySignup": "Usiamo la tua email per inviarti la guida di benvenuto, reimpostare una password dimenticata e risponderti. Leggi la nostra <a href=\"{privacy}\">Informativa sulla privacy</a>.",
       "emailHintSignup": "La tua email della scuola. Ti mandiamo lì la guida di benvenuto e la usiamo se dimentichi la password.",
-      "signupLead": "Crea il tuo account insegnante, poi crea la tua scuola o unisciti a essa e aggiungi le tue classi. Ci vogliono circa due minuti ed è gratis.",
+      "signupLead": "Crea il tuo account insegnante, poi crea la tua scuola o unisciti a essa e aggiungi le tue classi. Ci vogliono circa due minuti.",
       "signupCta": "Crea il mio account insegnante"
     },
     "live": {
@@ -6213,11 +6207,7 @@
     "cs": {
       "cstaNote": "Standard: CSTA K-12 Computer Science Standards (2017), livelli 1B e 2. Questo programma non è creato, revisionato né approvato dalla CSTA."
     },
-    "leaderLine": "Dirigente o informatica? <a href=\"{href}\">Configura la tua scuola</a>: è gratis.",
-    "free": {
-      "line": "Sempre gratis: tutti i giochi, le Sue classi, le lezioni, i progressi e il registro, più messaggi gratuiti ogni giorno del Builder per Lei e i Suoi studenti. Il piano Insegnante aggiunge {daily} giochi creati con l’IA al giorno, condivisi tra le Sue classi. <a href=\"{plans}\">Veda i prezzi in Piani</a>.",
-      "lineOff": "Sempre gratis: tutti i giochi, le Sue classi, le lezioni, i progressi e il registro, più messaggi gratuiti ogni giorno del Builder per Lei e i Suoi studenti."
-    },
+    "leaderLine": "Dirigente o informatica? <a href=\"{href}\">Attivi la sua scuola</a>.",
     "classroom": {
       "kicker": "Google Classroom",
       "h": "Funziona con il Suo Google Classroom",
@@ -6258,6 +6248,31 @@
       },
       "plan": "La bacheca di classe è gratuita per ogni classe. I materiali manipolativi, le loro stanze dal vivo e Figure fanno parte del piano Insegnante.",
       "testing": "La bacheca di classe è gratuita per ogni classe. Gli altri tre strumenti sono ora in prova in alcune classi."
+    },
+    "tools": {
+      "h": "Novità per la sua classe",
+      "lead": "Schermate reali di una classe di prova: una lavagna di matematica che Oomba prepara con Lei, la stessa lavagna dal vivo sul dispositivo di ogni studente e una bacheca per tutta la giornata di classe.",
+      "board": {
+        "h": "Materiali manipolativi di matematica con Oomba",
+        "p": "Blocchi in base dieci, frazioni, orologi e altro su un’unica lavagna. Dica a Oomba la lezione, e lui prepara la lavagna per Lei.",
+        "alt": "I materiali manipolativi su un portatile: quattro orologi alla mezza, ciascuno con una casella di risposta, e accanto la chat di Oomba che dice di aver preparato la lavagna.",
+        "open": "Apri i materiali manipolativi"
+      },
+      "room": {
+        "h": "Materiali manipolativi dal vivo",
+        "p": "Invii una lavagna alla classe. Ogni studente lavora nel proprio riquadro sul proprio dispositivo, e Lei vede tutti i riquadri su un solo schermo.",
+        "alt": "La stanza dal vivo di un insegnante: in alto la lavagna con il primo passo, sotto i riquadri di sei studenti, con le loro risposte sotto gli orologi.",
+        "open": "Avvia una stanza dal vivo"
+      },
+      "dash": {
+        "h": "Bacheca di classe",
+        "p": "Timer, incarichi, appelli dell’umore e strumenti di matematica per tutta la giornata di classe, sul proiettore e sullo schermo di ogni studente.",
+        "alt": "Una bacheca di classe sul proiettore: l’orologio, l’obiettivo del giorno, l’orario con Matematica ora e poi Ricreazione, gli incarichi di classe e un appello dell’umore.",
+        "open": "Apri Le mie classi"
+      },
+      "watch": "Guarda il video di un minuto",
+      "plan": "La bacheca di classe è inclusa in ogni classe. I materiali manipolativi e le loro stanze dal vivo fanno parte del piano Insegnante.",
+      "testing": "La bacheca di classe è inclusa in ogni classe. I materiali manipolativi e le loro stanze dal vivo sono ora in prova in alcune classi."
     }
   },
   "learn": {
@@ -6676,13 +6691,12 @@
     }
   },
   "parents": {
-    "title": "Giochi educativi gratis e sicuri per bambini",
-    "description": "Giochi educativi gratis per 5-14 anni nel browser: matematica, parole, scacchi e musica. Niente pubblicità né chat con sconosciuti, e si creano giochi.",
+    "title": "Giochi educativi sicuri per bambini",
+    "description": "Giochi educativi per 5-14 anni nel browser: matematica, parole, scacchi e musica. Niente pubblicità né chat con sconosciuti, e si creano giochi.",
     "kicker": "👪 Per i genitori",
     "h1": "Giochi educativi divertenti dai 5 ai 14 anni, sicuri per come sono fatti",
     "lead": "Oomba Academy è un sito di brevi giochi educativi a cui i ragazzi giocano direttamente nel browser: gare di calcolo, giochi di parole, scacchi e musica. Quando sono pronti, possono creare i propri giochi descrivendoli al nostro Costruttore IA.",
     "badges": {
-      "free": "Gratis",
       "ads": "Senza pubblicità",
       "buy": "Niente da comprare per i bambini",
       "strangers": "Nessuna chat con sconosciuti",
@@ -6690,20 +6704,13 @@
       "languages": "{count} lingue"
     },
     "cta": {
-      "start": "Fate iniziare gratis vostro figlio",
+      "start": "Fate registrare vostro figlio",
       "try": "Provate un gioco ora, senza registrarvi",
       "grownup": "Crea un account genitore",
       "lead": "Visto abbastanza? Provate subito un gioco con vostro figlio o figlia.",
-      "setup": "Registratevi: è gratis"
+      "setup": "Create l’account di vostro figlio"
     },
     "teachers": "Siete insegnanti? Scoprite <a href=\"{href}\">Oomba Academy per gli insegnanti</a>.",
-    "play": {
-      "h": "Imparare giocando, per davvero",
-      "p": "Ogni gioco allena una vera abilità in pochi minuti, e i ragazzi tornano perché è divertente. Sceglietene uno da provare insieme."
-    },
-    "subjects": {
-      "h": "Scegli per materia"
-    },
     "how": {
       "h": "Come funziona Oomba Academy",
       "lead": "Ecco cosa vede vostro figlio o figlia, passo dopo passo. Sono schermate reali del sito, con nomi inventati.",
@@ -9396,8 +9403,7 @@
     "final": {
       "h": "La tua prossima lezione potrebbe essere quella che ti chiedono di rigiocare",
       "p": "Gratis per 14 giorni. Niente carta, niente costi per studente.",
-      "cta": "Inizia la prova gratuita di 14 giorni",
-      "pFree": "Giochi, classi, lezioni e progressi sono sempre gratis. Prova il piano Insegnante gratis per 14 giorni, senza carta e senza costi per studente."
+      "cta": "Inizia la prova gratuita di 14 giorni"
     },
     "play": {
       "h": "Sei qui per giocare?",

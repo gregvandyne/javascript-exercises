@@ -1,7 +1,7 @@
 // "How it works" on /parents and /teachers (server/views/how.js): the steps render in order under one h2, every
 // screenshot exists on disk with width, height, alt text and lazy loading, the hero picture is decoration only, the
 // family step shows only while paid-plan pages are public, the words promise nothing the site doesn't do and show no
-// price, the page's section ids are all still there, and right-to-left pages render.
+// price, the page's section ids are all still there (but the removed game lists), and right-to-left pages render.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -43,17 +43,21 @@ for (const page of ['parents', 'teachers']) {
     const h = await get(`/${page}`);
     const sec = element(h, '<section class="lp-sec how" id="how-it-works"');
     assert.ok(sec, 'the section is there');
-    assert.ok(h.indexOf('id="how-it-works"') < h.indexOf('id="play"'), 'before the games');
+    // What comes next: on /parents the folded panels, on /teachers the teaching loop (the game lists are gone: docs/
+    // decisions.md "Teachers and Parents pages: lead with the new tools, no 'always free'").
+    const END = page === 'parents' ? '<div class="lp-cols">' : 'id="teach-loop"';
+    assert.ok(h.indexOf('id="how-it-works"') < h.indexOf(END), `before ${END}`);
     assert.ok(h.indexOf('class="lp-hero lp-hero-how"') < h.indexOf('id="how-it-works"'), 'after the hero');
-    // Headings in order: the page's one h1, (on /parents: "See it in under a minute" and "What makes it safe", two h2s),
-    // then this h2, then one h3 per step.
-    const before = page === 'parents' ? [1, 2, 2] : [1];
+    // Headings in order: the page's one h1, (on /parents: "See it in under a minute" and "What makes it safe", two h2s;
+    // on /teachers: the new tools, an h2 and three h3 cards), then this h2, then one h3 per step.
+    const before = page === 'parents' ? [1, 2, 2] : [1, 2, 3, 3, 3];
+    if (page === 'teachers') assert.ok(h.indexOf('id="tools"') < h.indexOf('id="how-it-works"'), 'the new tools come first');
     if (page === 'parents') {
       const at = s => h.indexOf(s);
       assert.ok(at('class="lp-hero lp-hero-how"') < at('id="video"') && at('id="video"') < at('id="safe"') && at('id="safe"') < at('id="how-it-works"'), 'the one parent page: hero, video, safety, How it works');
       assert.match(h.slice(at('id="video"'), at('id="safe"')), /<h2 id="video-h">[^<]+<\/h2>/);
     }
-    const heads = [...h.slice(h.indexOf('<main'), h.indexOf('id="play"')).matchAll(/<h([1-6])[\s>]/g)].map(m => +m[1]);
+    const heads = [...h.slice(h.indexOf('<main'), h.indexOf(END)).matchAll(/<h([1-6])[\s>]/g)].map(m => +m[1]);
     assert.deepEqual(heads, [...before, 2, ...Array(heads.length - before.length - 1).fill(3)]);
     assert.match(sec, /<h2 id="how-h">[^<]+<\/h2>/);
     const steps = [...sec.matchAll(/<li class="how-step" id="how-(\d+)" data-step="(\d+)">/g)];
@@ -88,7 +92,12 @@ for (const page of ['parents', 'teachers']) {
     for (const img of art.match(/<img\b[^>]*>/g)) assert.equal(attr(img, 'loading'), undefined);
     // The step counter reads "3 / 5" in right-to-left pages too.
     assert.match(sec, /<span class="how-count" dir="ltr">/);
-    for (const src of [...art.matchAll(/\bsrcset="([^"]+)"/g)].flatMap(m => m[1].split(',').map(s => s.trim().split(' ')[0]))) assert.ok(sec.includes(src), `${src} is a step's picture too`);
+    // /parents: the same files as the steps; /teachers: the new tools (scripts/tools-shots.js), the board also in its card.
+    const shown = page === 'parents' ? sec : element(h, '<section class="lp-sec tt" id="tools"');
+    for (const src of [...art.matchAll(/\bsrcset="([^"]+)"/g)].flatMap(m => m[1].split(',').map(s => s.trim().split(' ')[0]))) {
+      assert.ok(fs.existsSync(path.join(ROOT, 'public', src)), `${src} exists`);
+      if (page === 'parents' || src.includes('-d-')) assert.ok(shown.includes(src), `${src} is on the page below too`);
+    }
     // Its own stylesheet and script, nothing inline.
     assert.match(h, /<link rel="stylesheet" href="\/css\/how\.css\?v=[^"]+">/);
     assert.match(h, /<script type="module" src="\/js\/how\.js\?v=[^"]+"><\/script>/);
@@ -123,14 +132,14 @@ test('/parents: the family step shows only while paid-plan pages are public', as
 
 test('/parents and /teachers keep every section id', async () => {
   const par = await get('/parents');
-  for (const id of ['lp-h1', 'how-it-works', 'play', 'ages', 'subjects', 'make', 'safe', 'private', 'home', 'guides', 'details', 'faq', 'what', 'stored', 'never', 'ai', 'keep', 'friends', 'builder', 'languages']) assert.match(par, new RegExp(`id="${id}"`), `/parents #${id}`);
+  for (const id of ['lp-h1', 'how-it-works', 'ages', 'make', 'safe', 'private', 'home', 'guides', 'details', 'faq', 'what', 'stored', 'never', 'ai', 'keep', 'friends', 'builder', 'languages']) assert.match(par, new RegExp(`id="${id}"`), `/parents #${id}`);
   // While paid-plan pages are on, also Plans and Family accounts (what /grown-ups said; /grown-ups#… had no ids).
   paid(true);
   const on = await get('/parents');
   for (const id of ['plans', 'families']) assert.match(on, new RegExp(`id="${id}"`), `/parents #${id}`);
   paid(false);
   const tea = await get('/teachers');
-  for (const id of ['lp-h1', 'how-it-works', 'play', 'subjects', 'build', 'class', 'safe', 'uses', 'start', 'faq']) assert.match(tea, new RegExp(`id="${id}"`), `/teachers #${id}`);
+  for (const id of ['lp-h1', 'tools', 'how-it-works', 'build', 'class', 'safe', 'uses', 'start', 'faq']) assert.match(tea, new RegExp(`id="${id}"`), `/teachers #${id}`);
 });
 
 test('every step has its four pictures in public/img/how, and English words', () => {
@@ -150,7 +159,7 @@ test('right-to-left pages render the steps', async () => {
     assert.match(h, /id="how-it-works"/);
     // Translated: no English heading left in the walkthrough.
     assert.match(h, /<h2 id="how-h">/);
-    assert.doesNotMatch(h.slice(h.indexOf('id="how-it-works"'), h.indexOf('id="how-it-works"') + 20000), /lang="en"/);
+    assert.doesNotMatch(element(h, '<section class="lp-sec how" id="how-it-works"'), /\slang="en"/);
   }
 });
 

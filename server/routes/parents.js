@@ -17,15 +17,15 @@
 import fs from 'node:fs';
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
-import { ico } from '../views/icon.js';
+import { ico, textIcons, hasIcon } from '../views/icon.js';
 import { page, notFound, parentsLabel } from '../views/layout.js';
 import { coverArt } from '../views/components.js';
 import { tHtml, availableLocales, fmt, localeInfo, DEFAULT_LOCALE, keepLang } from '../i18n/index.js';
 import { familiesOn, madeOn } from '../services/family.js';
 import { isGrownup } from '../auth.js';
 import * as seo from '../seo.js';
-import { HUBS, AGES, ageBySlug, PARENT_GUIDES, guideBySlug, PARENT_GAMES, PARENTS_FAQ, TWO_PLAYER, gameKey, CONTENT_UPDATED } from '../learn.js';
-import { launchGame, faqBlock, el, kickerEl, fb, lp, contactEmail, inClassLine } from './teachers.js';
+import { HUBS, AGES, ageBySlug, PARENT_GUIDES, guideBySlug, PARENTS_FAQ, TWO_PLAYER, gameKey, CONTENT_UPDATED } from '../learn.js';
+import { launchGame, faqBlock, el, fb, lp, contactEmail, inClassLine } from './teachers.js';
 import { section, parentSections, googlePrivacy, contact, setupLink, folded } from './info.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { familyOnSale } from './family.js';
@@ -59,13 +59,14 @@ function ctaRow(req, { game = tryGame() } = {}) {
   const t = req.t; const g = game; const setup = setupLink(req);
   return html`<div class="row lp-cta">
     <a class="btn btn-primary btn-big" href="${setup.href}"${fb(t, setup.key)}>${setup.label}</a>
-    ${g ? html`<a class="btn btn-big" href="${keepLang(req, `/play/${g.slug}`)}" rel="nofollow">▶ ${t('parents.cta.try')}</a>` : ''}
+    ${g ? html`<a class="btn btn-big" href="${keepLang(req, `/play/${g.slug}`)}" rel="nofollow">${ico('▶️', { size: 18 })} ${t('parents.cta.try')}</a>` : ''}
   </div>`;
 }
 /** The end of a parent page, after the details and questions: a one-line lead and the same buttons. */
 const ctaEnd = req => html`<section class="lp-sec lp-end" aria-label="${setupLink(req).label}">${el(req.t, 'p', 'parents.cta.lead', {}, ' class="lead"')}${ctaRow(req)}</section>`;
-/** Cards linking to pages: [{ href, emoji, nameKey, shortKey }]. */
-const linkCards = (t, cards) => html`<ul class="lp-hubs">${cards.map(c => html`<li><a class="lp-hub panel" href="${c.href}"><span class="lp-hub-e" aria-hidden="true">${ico(c.emoji, { size: 32 })}</span><span>${el(t, 'span', c.name, {}, ' class="lp-hub-t"')}${el(t, 'span', c.short, {}, ' class="lp-hub-d"')}</span></a></li>`)}</ul>`;
+/** Cards linking to pages: [{ href, emoji, nameKey, shortKey }]. The emoji is drawn as its icon, or left out when there is
+ *  none (no raw emoji on the parent pages). */
+const linkCards = (t, cards) => html`<ul class="lp-hubs">${cards.map(c => html`<li><a class="lp-hub panel" href="${c.href}">${hasIcon(c.emoji) ? html`<span class="lp-hub-e" aria-hidden="true">${ico(c.emoji, { size: 28 })}</span>` : ''}<span>${el(t, 'span', c.name, {}, ' class="lp-hub-t"')}${el(t, 'span', c.short, {}, ' class="lp-hub-d"')}</span></a></li>`)}</ul>`;
 const ageCards = req => linkCards(req.t, AGES.map(a => ({ href: lp(req, `/learn/${a.slug}`), emoji: a.emoji, name: `learn.ages.${a.key}.name`, short: `learn.ages.${a.key}.short` })));
 const guideCards = (req, except) => linkCards(req.t, PARENT_GUIDES.filter(g => g !== except).map(g => ({ href: lp(req, `/parents/${g.slug}`), emoji: g.emoji, name: `parents.${g.key}.name`, short: `parents.${g.key}.short` })));
 const itemList = (req, list, name) => ({ '@type': 'ItemList', ...(name ? { name } : {}), itemListElement: list.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: seo.abs(req, `/g/${g.slug}`), name: g.title })) });
@@ -132,21 +133,23 @@ router.get('/parents', async (req, res) => {
   // "Not on sale yet" unless this visitor can buy a plan now (familyOnSale: the same rule as /plans and the /family checklist).
   const sale = paid && await familyOnSale(req.user);
   const count = availableLocales().length;
-  const list = PARENT_GAMES.map(launchGame).filter(Boolean);
-  const card = g => html`<li><a class="lp-game" href="${lp(req, `/g/${g.slug}`)}">${coverArt(g)}<span class="lp-game-text"><span class="lp-game-t">${g.title}</span>${el(t, 'span', `learn.games.${gameKey(g.slug)}`, {}, ' class="lp-game-d"')}</span></a></li>`;
-  const badges = [['✅', 'parents.badges.free'], ['🚫', 'parents.badges.ads'], ['🛍️', 'parents.badges.buy'], ['💬', 'parents.badges.strangers'], ['💻', 'parents.badges.browser'], ['🌐', 'parents.badges.languages']];
+  // Plain chips, no icons, and no "free" (the owner, 23 Nov 2026: "everything isn't always free"; "do the same with the
+  // parents page").
+  const badges = ['parents.badges.ads', 'parents.badges.buy', 'parents.badges.strangers', 'parents.badges.browser', 'parents.badges.languages'];
   const vars = { count, plans: '/plans', ai: lp(req, '/parents/ai-builder-safety'), screen: lp(req, '/parents/safety-and-screen-time') };
   const faqPairs = Array.from({ length: PARENTS_FAQ }, (_, i) => [`parents.faq.q${i + 1}`, `parents.faq.a${i + 1}${paid && (i === 0 || i === 6) ? 'paid' : ''}`]);
   const faq = faqBlock(req, faqPairs, 'parents.faq.h', vars, { fold: true });
+  // In order: the promise, the picture and two buttons; the video; a short safety section; "How it works"; Plans and
+  // Family accounts (paid-plan pages on); four short panels (making games, at home, ages, guides); privacy; the details;
+  // the questions; the buttons again. The game list and "Pick by subject" are gone (the same cleanup as /teachers).
   const body = html`<div class="lp">
   <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
-    ${kickerEl(t, 'parents.kicker')}
     ${el(t, 'h1', 'parents.h1', {}, ' id="lp-h1"')}
     ${el(t, 'p', 'brand.tagline', {}, ' class="lp-tagline"')}
     ${el(t, 'p', 'parents.lead', {}, ' class="lead"')}
     ${ctaRow(req)}
+    <ul class="lp-badges">${badges.map(k => html`<li>${el(t, 'span', k, { count })}</li>`)}</ul>
     ${el(t, 'p', 'parents.teachers', { href: lp(req, '/teachers') }, ' class="lp-aside small"')}
-    <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${ico(e, { size: 20 })}</span> ${el(t, 'span', k, { count })}</li>`)}</ul>
     ${howArt(req, 'parents')}
   </section>
   ${parentsVideo(req)}
@@ -160,35 +163,22 @@ router.get('/parents', async (req, res) => {
   ${paid ? plansSection(req, sale) : ''}
   ${paid ? familiesSection(req) : ''}
 
-  <section class="lp-sec" id="play" aria-labelledby="play-h">
-    ${el(t, 'h2', 'parents.play.h', {}, ' id="play-h"')}${el(t, 'p', 'parents.play.p')}
-    <ul class="lp-games">${list.map(card)}</ul>
-  </section>
-
-  <section class="lp-sec" id="ages" aria-labelledby="ages-h">
-    ${folded(el(t, 'h2', 'parents.ages.h', {}, ' id="ages-h"'), html`${el(t, 'p', 'parents.ages.p')}
-    ${ageCards(req)}`)}
-  </section>
-
-  <section class="lp-sec" id="subjects" aria-labelledby="subj-h">
-    ${folded(el(t, 'h2', 'parents.subjects.h', {}, ' id="subj-h"'),
-      linkCards(t, HUBS.map(h => ({ href: lp(req, `/learn/${h.slug}`), emoji: h.emoji, name: `learn.hubs.${h.key}.name`, short: `learn.hubs.${h.key}.short` }))))}
-  </section>
-
   <div class="lp-cols">
     <section class="panel" id="make" aria-labelledby="make-h">
       ${folded(el(t, 'h2', 'parents.make.h', {}, ' id="make-h"'), html`${el(t, 'p', 'parents.make.p1')}${el(t, 'p', 'parents.make.p2')}
-      <p class="row"><a class="btn" href="${lp(req, '/learn/make-a-game')}">${ico('🛠️', { size: 18 })} ${t('parents.make.link')}</a><a class="btn" href="${lp(req, '/parents/ai-builder-safety')}">${ico('🤖', { size: 18 })} ${t('parents.make.safe')}</a></p>`)}
+      <p class="row"><a class="btn" href="${lp(req, '/learn/make-a-game')}">${ico('🛠️', { size: 18 })} ${t('parents.make.link')}</a><a class="btn" href="${lp(req, '/parents/ai-builder-safety')}">${ico('🛡️', { size: 18 })} ${t('parents.make.safe')}</a></p>`)}
     </section>
     <section class="panel" id="home" aria-labelledby="home-h">
       ${folded(el(t, 'h2', 'parents.home.h', {}, ' id="home-h"'), html`${el(t, 'p', 'parents.home.p')}
       <ul class="lp-tags">${['li1', 'li2', 'li3', 'li4', 'li5', 'li6', 'li7'].map(k => el(t, 'li', `parents.home.${k}`))}</ul>`)}
     </section>
+    <section class="panel" id="ages" aria-labelledby="ages-h">
+      ${folded(el(t, 'h2', 'parents.ages.h', {}, ' id="ages-h"'), html`${el(t, 'p', 'parents.ages.p')}${ageCards(req)}`)}
+    </section>
+    <section class="panel" id="guides" aria-labelledby="guides-h">
+      ${folded(el(t, 'h2', 'parents.guides.h', {}, ' id="guides-h"'), guideCards(req))}
+    </section>
   </div>
-
-  <section class="lp-sec" id="guides" aria-labelledby="guides-h">
-    ${folded(el(t, 'h2', 'parents.guides.h', {}, ' id="guides-h"'), guideCards(req))}
-  </section>
 
   <section class="panel" id="private" aria-labelledby="private-h">
     ${folded(el(t, 'h2', 'parents.private.h', {}, ' id="private-h"'), html`${el(t, 'p', 'parents.private.p1')}${el(t, 'p', 'parents.private.p2')}
@@ -197,12 +187,12 @@ router.get('/parents', async (req, res) => {
 
   <section class="lp-sec lp-detail" id="details" aria-labelledby="details-h">
     ${el(t, 'h2', 'parents.detail.h', {}, ' id="details-h"')}${el(t, 'p', 'parents.detail.p', { href: '/privacy' })}
-    ${parentSections(req).map(s => section(req, `info.parents.${s}`, { id: s, level: 3, fold: true }))}
+    ${textIcons(html`${parentSections(req).map(s => section(req, `info.parents.${s}`, { id: s, level: 3, fold: true }))}
     ${madeOn(req) ? section(req, 'info.parents.made', { id: 'made', level: 3, fold: true }) : ''}
     ${liveOn() ? section(req, 'info.parents.live', { id: 'live', level: 3, fold: true }) : ''}
-    ${googlePrivacy(req, 3, { fold: true })}${contact(req, 3)}
+    ${googlePrivacy(req, 3, { fold: true })}${contact(req, 3)}`)}
   </section>
-  ${faq.markup}
+  ${textIcons(faq.markup)}
   ${ctaEnd(req)}
   </div>`;
   const crumbs = [[t('nav.home'), '/'], [parentsLabel(t), '/parents']];
@@ -213,7 +203,6 @@ router.get('/parents', async (req, res) => {
       index: true, path: '/parents', langs: seo.langsWithKey('parents.h1'), image: '/og/parents.jpg', imageAlt: t('parents.h1'),
       jsonld: [seo.graph([
         { '@type': 'WebPage', '@id': seo.abs(req, '/parents'), url: seo.abs(req, '/parents'), name: t('parents.title'), description: t('parents.description'), isPartOf: { '@id': seo.abs(req, '/#website') }, publisher: { '@id': seo.orgId(req) }, audience: parentAudience() },
-        itemList(req, list, t('parents.play.h')),
         faq.ld, seo.breadcrumbLd(req, crumbs), seo.organizationLd(req), seo.websiteLd(req, req.locale),
       ])],
     },

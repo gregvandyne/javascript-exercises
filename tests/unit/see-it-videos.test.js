@@ -54,13 +54,20 @@ for (const path of ['/', '/teachers']) {
     assert.match(sec, /Classroom Dashboard/);
     // Billing is off in the tests (no plan, no price on the note).
     // The dashboard is free for every class (routes/dash.js); the note says so and keeps the others with the testers.
-    assert.match(sec, /The Classroom Dashboard is free for every class\. The other three tools are being tried out in a few classrooms now\./);
+    // On /teachers the new-tools section above the videos says who can use them, so the videos leave their note out.
+    if (path === '/') assert.match(sec, /The Classroom Dashboard is free for every class\. The other three tools are being tried out in a few classrooms now\./);
+    else {
+      assert.doesNotMatch(sec, /pv-plan/);
+      assert.match(page.text, /<p class="small muted tt-note">The Classroom Dashboard comes with every class\. The Manipulatives and their live rooms are being tried out in a few classrooms now\.<\/p>/);
+    }
     assert.doesNotMatch(sec, /Teacher plan/);
     assert.doesNotMatch(sec, /\$\d/);
     assert.doesNotMatch(sec, /\u2014/);
-    // The page's own sign-up, never a link into the tools.
+    // Never a link into the tools. "/": the page's own sign-up under the videos; /teachers keeps its buttons in the hero
+    // and the start panel (one fewer button: docs/decisions.md "Teachers and Parents pages: lead with the new tools").
     assert.doesNotMatch(sec, /href="\/(manipulatives|figures|dashboard|class\/)/);
-    assert.match(sec, path === '/' ? /href="\/signup\?trial=1"/ : /href="#start"/);
+    if (path === '/') assert.match(sec, /href="\/signup\?trial=1"/);
+    else assert.doesNotMatch(sec, /pv-cta/);
   });
 }
 

@@ -6020,24 +6020,19 @@
   },
   "teachers": {
     "title": "Interaktive Lernspiele für den Unterricht",
-    "description": "Kostenlose, werbefreie Lernspiele für 5- bis 14-Jährige, im Browser und auf Chromebooks: Mathe, Lesen, Schach und Musik, dazu ein KI-Baumeister.",
+    "description": "Werbefreie Lernspiele für 5- bis 14-Jährige, die in jedem Browser laufen, auch auf Chromebooks, dazu Mathe-Arbeitsmittel, ein Klassen-Dashboard und ein KI-Baumeister für Spiele.",
     "kicker": "🍎 Für Lehrkräfte",
     "h1": "Interaktive Lernspiele, die Ihre Klasse lieben wird",
-    "lead": "Oomba Academy ist eine kostenlose Website mit Lernspielen für 5- bis 14-Jährige. Die Schüler spielen direkt im Browser, und Ihre Klasse kann eigene Spiele bauen, indem sie sie unserem KI-Baumeister beschreibt.",
+    "lead": "Lernspiele, Mathe-Arbeitsmittel, die Sie live mit Ihrer Klasse nutzen, und ein Klassen-Dashboard für den ganzen Tag, für 5- bis 14-Jährige. Alles läuft im Browser, auch auf Chromebooks, und Ihre Klasse kann mit unserem KI-Baumeister eigene Spiele bauen.",
     "badges": {
-      "free": "Kostenlos starten",
       "ads": "Keine Werbung",
       "browser": "Läuft in jedem Browser, auch auf Chromebooks",
       "google": "Über Google anmelden",
       "ages": "Für 5- bis 14-Jährige"
     },
     "cta": {
-      "start": "Kostenloses Schulkonto anfragen",
+      "start": "Lehrkraft-Konto erstellen",
       "try": "Jetzt ein Spiel testen, ohne Anmeldung"
-    },
-    "play": {
-      "h": "Spielend lernen",
-      "p": "Kurze Spiele, die die Schüler immer wieder spielen wollen, und jedes übt eine echte Fähigkeit. Sie öffnen sich in Sekunden im Browser, ohne Installation."
     },
     "subjects": {
       "h": "Lernspiele nach Fächern"
@@ -6116,9 +6111,8 @@
       "p": "Die ganze Website funktioniert in {count} Sprachen, darunter Englisch, Arabisch, Russisch, Französisch und Spanisch. Das hilft Schülern, die noch Deutsch lernen. Jeder Schüler wählt seine Sprache, und der Baumeister antwortet darin."
     },
     "start": {
-      "h": "Ihre Schule einrichten (kostenlos)",
-      "p1": "Spielen ist für alle kostenlos, und Schüler können jedes Spiel sofort ausprobieren, ohne Anmeldung.",
-      "p2": "Für Klassen, Lektionen und Schulkonten schreiben Sie an {email}: den Namen Ihrer Schule und wer sich um sie kümmert. Wir richten Ihre Schule und das Konto Ihres Schuladmins ein, und der Schuladmin fügt Lehrkräfte und Schüler hinzu. Das Einrichten einer Schule ist kostenlos.",
+      "h": "Ihre Schule einrichten",
+      "p1": "Schüler können jedes Spiel sofort ausprobieren, ohne Anmeldung.",
       "plans": "Mehr für deine Klassen? Teste den Lehrkraft-Plan {days} Tage kostenlos, ohne Karte: unbegrenzt viele Schülerinnen und Schüler und {daily} KI-Spielbauten am Tag für die Klasse.",
       "email": "Schreiben Sie uns, um Ihre Schule einzurichten",
       "subject": "Meine Schule bei Oomba Academy einrichten",
@@ -6137,8 +6131,8 @@
       "q5": "Für welches Alter und welche Klassen ist es gedacht?",
       "a5": "Oomba Academy ist für die Vorschule bis Klasse 8 gemacht, also für etwa 5- bis 14-Jährige. Spiele wie Shark Plank und die ersten Strecken von Sum Racer passen zu den Jüngsten. Number Quest, der Mathekurs, reicht von der Vorschule bis Klasse 8, CS Quest und Cyber Defenders beginnen ab Klasse 3.",
       "q6": "Wie füge ich meine Klasse hinzu?",
-      "a6": "Schreiben Sie uns zuerst, damit wir Ihre Schule einrichten (das ist kostenlos). Legen Sie dann eine Klasse an und geben Sie den Klassencode an Schüler mit eigenem Konto weiter, oder legen Sie Schulkonten für die ganze Klasse an und drucken Sie Anmeldekarten aus.",
-      "a6google": "Schreiben Sie uns zuerst, damit wir Ihre Schule einrichten (das ist kostenlos). Legen Sie dann eine Klasse an und geben Sie den Klassencode an Schüler mit eigenem Konto weiter, oder legen Sie Schulkonten für die ganze Klasse an und drucken Sie Anmeldekarten aus. Schulen, die Google nutzen, können Schüler auch über Google anmelden lassen.",
+      "a6": "Schreiben Sie uns zuerst, damit wir Ihre Schule einrichten. Legen Sie dann eine Klasse an und geben Sie den Klassencode an Schüler mit eigenem Konto weiter, oder legen Sie Schulkonten für die ganze Klasse an und drucken Sie Anmeldekarten aus.",
+      "a6google": "Schreiben Sie uns zuerst, damit wir Ihre Schule einrichten. Legen Sie dann eine Klasse an und geben Sie den Klassencode an Schüler mit eigenem Konto weiter, oder legen Sie Schulkonten für die ganze Klasse an und drucken Sie Anmeldekarten aus. Schulen, die Google nutzen, können Schüler auch über Google anmelden lassen.",
       "q7": "Können Schüler eigene Spiele bauen? Wer sieht sie?",
       "a7": "Ja. Ein neues Spiel sieht nur der Schüler, der es gebaut hat. Er kann es mit seiner Klasse teilen, und ein Spiel für alle wird geprüft, bevor andere es spielen können.",
       "q8": "Kann ich Fortschritt und Punkte verfolgen?",
@@ -6150,7 +6144,7 @@
       "a1paid": "Spielen, Klassen, Lektionen, Lernfortschritt und Oomba Live sind kostenlos, und alle Schülerinnen und Schüler bekommen jeden Tag kostenlose Nachrichten an den Baumeister. Der optionale Lehrkraft-Plan fügt für deine Klassen einen gemeinsamen täglichen Vorrat an KI-Spielbauten hinzu, mit unbegrenzt vielen Schülerinnen und Schülern. Teste ihn 14 Tage kostenlos, ohne Karte. Die Preise stehen auf der Seite mit den Plänen."
     },
     "setup": {
-      "lead": "Erzählen Sie uns kurz von Ihrer Schule. Wir richten sie innerhalb von 1 Schultag ein und antworten Ihnen per E-Mail mit den nächsten Schritten. Das Einrichten einer Schule ist kostenlos.",
+      "lead": "Erzählen Sie uns kurz von Ihrer Schule. Wir richten sie innerhalb von 1 Schultag ein und antworten Ihnen per E-Mail mit den nächsten Schritten.",
       "school": "Name der Schule",
       "role": "Ihre Funktion",
       "rolePick": "Bitte wählen",
@@ -6199,7 +6193,7 @@
       "submitStaff": "Senden",
       "privacySignup": "Wir nutzen deine E-Mail, um dir die Willkommensanleitung zu schicken, ein vergessenes Passwort zurückzusetzen und dir zu antworten. Siehe unsere <a href=\"{privacy}\">Datenschutzerklärung</a>.",
       "emailHintSignup": "Deine Schul-E-Mail. Dorthin schicken wir die Willkommensanleitung, und wir nutzen sie, falls du dein Passwort vergisst.",
-      "signupLead": "Erstelle dein Lehrkräftekonto, lege dann deine Schule an oder tritt ihr bei und füge deine Klassen hinzu. Das dauert etwa zwei Minuten und ist kostenlos.",
+      "signupLead": "Erstelle dein Lehrkräftekonto, lege dann deine Schule an oder tritt ihr bei und füge deine Klassen hinzu. Das dauert etwa zwei Minuten.",
       "signupCta": "Mein Lehrkräftekonto erstellen"
     },
     "live": {
@@ -6213,11 +6207,7 @@
     "cs": {
       "cstaNote": "Standards: CSTA K-12 Computer Science Standards (2017), Stufen 1B und 2. Dieses Programm wurde nicht von der CSTA erstellt, geprüft oder empfohlen."
     },
-    "leaderLine": "Schulleitung oder IT? <a href=\"{href}\">Richte deine Schule ein</a>: Es ist kostenlos.",
-    "free": {
-      "line": "Immer kostenlos: alle Spiele, Ihre Klassen, Unterrichtseinheiten, der Fortschritt und die Notenübersicht, dazu täglich kostenlose Builder-Nachrichten für Sie und Ihre Schüler. Das Lehrkraft-Abo bringt {daily} KI-Spielbauten pro Tag, die sich Ihre Klassen teilen. <a href=\"{plans}\">Preise unter Abos ansehen</a>.",
-      "lineOff": "Immer kostenlos: alle Spiele, Ihre Klassen, Unterrichtseinheiten, der Fortschritt und die Notenübersicht, dazu täglich kostenlose Builder-Nachrichten für Sie und Ihre Schüler."
-    },
+    "leaderLine": "Schulleitung oder IT? <a href=\"{href}\">Richten Sie Ihre Schule ein</a>.",
     "classroom": {
       "kicker": "Google Classroom",
       "h": "Funktioniert mit Ihrem Google Classroom",
@@ -6258,6 +6248,31 @@
       },
       "plan": "Das Klassen-Dashboard ist für jede Klasse kostenlos. Die Arbeitsmittel, ihre Live-Räume und Figuren gehören zum Lehrkraft-Plan.",
       "testing": "Das Klassen-Dashboard ist für jede Klasse kostenlos. Die anderen drei Werkzeuge werden gerade in einigen Klassen erprobt."
+    },
+    "tools": {
+      "h": "Neu für Ihren Unterricht",
+      "lead": "Echte Bildschirme aus einer Demo-Klasse: eine Mathe-Tafel, die Oomba mit Ihnen baut, dieselbe Tafel live auf dem Gerät jedes Kindes und ein Dashboard für den ganzen Schultag.",
+      "board": {
+        "h": "Mathe-Arbeitsmittel mit Oomba",
+        "p": "Zehnersystem-Blöcke, Bruchteile, Uhren und mehr auf einer Tafel. Sagen Sie Oomba, was Sie vorhaben, und es legt die Tafel für Sie an.",
+        "alt": "Die Arbeitsmittel auf einem Laptop: vier Uhren auf halb, jede mit einem Antwortfeld, und daneben der Chat mit Oomba, der sagt, dass er die Tafel gemacht hat.",
+        "open": "Arbeitsmittel öffnen"
+      },
+      "room": {
+        "h": "Arbeitsmittel live",
+        "p": "Schicken Sie eine Tafel an Ihre Klasse. Jedes Kind arbeitet in seinem eigenen Feld auf dem eigenen Gerät, und Sie sehen alle Felder auf einem Bildschirm.",
+        "alt": "Der Live-Raum einer Lehrkraft: oben die Tafel mit dem ersten Schritt, darunter die Felder von sechs Kindern mit ihren Antworten unter den Uhren.",
+        "open": "Live-Raum starten"
+      },
+      "dash": {
+        "h": "Klassen-Dashboard",
+        "p": "Timer, Klassendienste, Stimmungsabfragen und Mathe-Werkzeuge für den ganzen Schultag, am Beamer und auf dem Bildschirm jedes Kindes.",
+        "alt": "Ein Klassen-Dashboard am Beamer: die Uhr, das Tagesziel, der Stundenplan mit Mathe jetzt und danach Pause, Klassendienste und eine Stimmungsabfrage.",
+        "open": "Meine Klassen öffnen"
+      },
+      "watch": "Das Video ansehen (eine Minute)",
+      "plan": "Das Klassen-Dashboard gehört zu jeder Klasse. Die Arbeitsmittel und ihre Live-Räume gehören zum Lehrkraft-Plan.",
+      "testing": "Das Klassen-Dashboard gehört zu jeder Klasse. Die Arbeitsmittel und ihre Live-Räume werden gerade in einigen Klassen erprobt."
     }
   },
   "learn": {
@@ -6676,13 +6691,12 @@
     }
   },
   "parents": {
-    "title": "Sichere Lernspiele für Kinder 5–14, kostenlos",
-    "description": "Lernspiele für Kinder von 5 bis 14, kostenlos im Browser: Mathe, Wörter, Schach und Musik. Keine Werbung, kein Chat mit Fremden, und eigene Spiele bauen.",
+    "title": "Sichere Lernspiele für Kinder von 5 bis 14",
+    "description": "Lernspiele für Kinder von 5 bis 14 im Browser: Mathe, Wörter, Schach und Musik. Keine Werbung, kein Chat mit Fremden, und eigene Spiele bauen.",
     "kicker": "👪 Für Eltern",
     "h1": "Lernspiele für 5- bis 14-Jährige: mit Spaß und von Grund auf sicher",
     "lead": "Oomba Academy ist eine Website mit kurzen Lernspielen, die Kinder direkt im Browser spielen: Matherennen, Worträtsel, Schach und Musik. Wenn sie so weit sind, können sie eigene Spiele bauen, indem sie sie unserem KI-Baumeister beschreiben.",
     "badges": {
-      "free": "Kostenlos spielen",
       "ads": "Keine Werbung",
       "buy": "Kinder können nichts kaufen",
       "strangers": "Kein Chat mit Fremden",
@@ -6690,20 +6704,13 @@
       "languages": "{count} Sprachen"
     },
     "cta": {
-      "start": "Ihr Kind kostenlos starten lassen",
+      "start": "Ihr Kind anmelden lassen",
       "try": "Jetzt ein Spiel testen, ohne Anmeldung",
       "grownup": "Erwachsenenkonto erstellen",
       "lead": "Genug gesehen? Probieren Sie jetzt gemeinsam mit Ihrem Kind ein Spiel aus.",
-      "setup": "Kind einrichten – kostenlos"
+      "setup": "Konto für Ihr Kind einrichten"
     },
     "teachers": "Sie unterrichten eine Klasse? Hier geht es zu <a href=\"{href}\">Oomba Academy für Lehrkräfte</a>.",
-    "play": {
-      "h": "Lernen, das sich wie Spielen anfühlt",
-      "p": "Jedes Spiel übt in wenigen Minuten eine echte Fähigkeit, und Kinder kommen wieder, weil es Spaß macht. Suchen Sie eins aus und probieren Sie es gemeinsam."
-    },
-    "subjects": {
-      "h": "Nach Fach auswählen"
-    },
     "how": {
       "h": "So funktioniert Oomba Academy",
       "lead": "Das sieht Ihr Kind, Schritt für Schritt. Es sind echte Ansichten der Website, ausgefüllt mit ausgedachten Namen.",
@@ -9396,8 +9403,7 @@
     "final": {
       "h": "Deine nächste Stunde könnte die sein, die sie nochmal spielen wollen",
       "p": "14 Tage kostenlos. Keine Karte, keine Gebühr pro Kind.",
-      "cta": "14 Tage kostenlos testen",
-      "pFree": "Spiele, Klassen, Unterrichtseinheiten und Fortschritt sind immer kostenlos. Teste das Lehrkraft-Abo 14 Tage kostenlos, ohne Karte und ohne Gebühren pro Schüler."
+      "cta": "14 Tage kostenlos testen"
     },
     "play": {
       "h": "Nur zum Spielen hier?",

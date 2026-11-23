@@ -109,3 +109,15 @@
   .how-reveal .how-rv:not(.is-in){opacity:0;transform:translate3d(0,20px,0)}
 }
 @media print{.how-rv{opacity:1!important;transform:none!important}.how-art,.how-stage{display:none!important}}
+
+/* ---------- The new teaching tools on /teachers (routes/teachers.js toolsShowcase): three cards with a real screen ---------- */
+.tt-lead{margin:0 0 var(--s4);color:var(--text-2);max-width:70ch}
+.tt-grid{display:grid;gap:var(--s4);margin:0;padding:0;list-style:none}
+.tt-card{display:flex;flex-direction:column;margin:0;padding:var(--s4);min-width:0}
+.tt-shot{margin:0 0 var(--s3);border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--card-2)}
+.tt-shot img{display:block;width:100%;height:auto}
+.tt-h{display:flex;align-items:center;gap:8px;margin:0 0 var(--s2);font-size:1.15rem}
+.tt-p{margin:0;color:var(--text-2)}
+.tt-link{margin:auto 0 0;padding-top:var(--s3);font-weight:700}
+.tt-note{margin:var(--s3) 0 0}
+@media (min-width:900px){.tt-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}

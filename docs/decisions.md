@@ -11967,3 +11967,46 @@ separate batch, 1.7.0.
   "Electric and magnetic fields".
 - **Tests.** figures-phys17 (answers against the formulas, refusals, hide, grayscale print, languages, generators),
   figures-v170 (frozen versions, the latest pin, byte-identical earlier figures), the gen audit and the gen words.
+
+## Teachers and Parents pages: lead with the new tools, no 'always free' (23 Nov 2026)
+
+The owner, looking at /teachers on a laptop: "Games by subject seems like it's just floating here, remove that. Also
+remove For Teachers and the Play to Learn Section. Let's lead with the new manipulatives, dashboard, and live
+manipulatives views up top with at least one in the hero photo. Also, everything isn't always free, so let's remove
+that, as well. Overall just need to clean up this page. Do the same with the parents page." Then: "Also there are still
+emojis shown here", and of the teaching-loop screens: "only keep two photos here", "The first and 3rd".
+
+- **/teachers, removed.** The kicker pill ("For teachers"); the folded Brain Breaks section, whose heading was the
+  floating "For teachers"; the folded "Games by subject" section; the "Play to learn" game list and its ItemList data
+  (the research link moved into "Ways to use it", next to the compare link); the "Free to start" chip; the "Always
+  free: ..." line (teachers.free.*); "it's free" on the school line, in the start panel's heading and text, the setup
+  form's lead, the sign-up lead and the add-my-class answer. The FAQ's first answer with paid plans on (what the Teacher
+  plan adds, no prices) stays: it is a true answer to a real question.
+- **/teachers, the new order.** Hero (Manipulatives with Oomba on the laptop, a student's square in a live room on the
+  phone); "New for your classroom": three cards, Math manipulatives with Oomba, Live manipulatives, Classroom Dashboard,
+  each a real screen with alt text and a link (school staff: the tool, or the plan page at the same address; visitors:
+  the tool's one-minute video lower on the page); How it works; the teaching loop; the videos (their own plan note left
+  out: the tools section says it); Google Classroom; the folded panels (an odd last one spans both columns); the start
+  panel; the questions. The note under the tools says the Dashboard comes with every class and the Manipulatives and
+  their live rooms are part of the Teacher plan (no prices; while plans are off, that they are being tried out).
+- **The main button.** With paid-plan pages on, "Start free trial" (/trial): the Teacher plan's trial starts at sign-up
+  with no card (routes/teacher-plan.js), so the words are true. Off, "Create a teacher account" (the start panel). Never
+  "Get a free school account".
+- **Screens.** scripts/tools-shots.js makes tools-board, tools-live (1280 x 800 at 2x, saved 1024 and 2048 wide) and
+  tools-student (390 x 844 at 2x, saved 390 and 780 wide) in public/img/how, from the real app in-process with a
+  throwaway in-memory database: Ms. Rivera's Class at Sunny Hill Demo School, students with demo names, a clock board
+  Oomba drafts (the AI is a stand-in with fixed words, as in tests/unit/manip-chat-browser.test.js), pushed to the class,
+  each student loading it on a phone. The Dashboard card reuses dash-teacher (scripts/how-shots.js --only dash).
+- **The teaching loop on /teachers and "/".** Two screens, side by side: the gradebook and the written feedback
+  (teacher-loop.js PAIR). /teach/loop keeps all three.
+- **/parents.** Removed: the kicker pill, the "Free to play" chip, the game list ("Learning that feels like play") and
+  "Pick by subject" (both the same floating pattern as /teachers). "Games for every age" and "Guides for parents" are
+  now panels beside "From playing to making" and "At home and for homeschool". Title, description and the set-up
+  buttons say nothing about free ("Set up your child's account", "Let your child sign up"); the old "Set up your child,
+  free" button, which had an em dash, is gone.
+- **"/".** The hero's "Always free" line and the closing "Games, classes, lessons and progress are always free" are gone
+  (the closing line is the trial's). The doors under the questions show no "Free" badge. Left as they are, matching
+  /plans: the pricing section's Free card ("Always free") and its lead.
+- **No raw emoji.** The chips are plain words; every other icon on both pages is ico() (the Oomba icon set), and an
+  emoji inside a translated sentence ("the 🌐 button") is drawn as its icon by views/icon.js textIcons. Cards whose
+  emoji has no icon show no icon. tests/unit/teachers-parents-clean.test.js checks both pages in three languages.

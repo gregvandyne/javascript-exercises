@@ -222,7 +222,10 @@ test('teacher and subject pages: one H1, real launch games only, links in the me
   const t = await get('/teachers');
   assert.equal((t.text.match(/<h1[\s>]/g) || []).length, 1);
   assert.match(t.text, /<h1 id="lp-h1">Fun, interactive learning games your class will ask for<\/h1>/);
-  for (const slug of ['sum-racer', 'word-hunt', 'castle-clash', 'loop-lab']) assert.ok(t.text.includes(`href="/g/${slug}"`), slug);
+  // The "Play to learn" game list is gone (docs/decisions.md "Teachers and Parents pages: lead with the new tools, no
+  // 'always free'"): one launch game to try, never a game a child made.
+  assert.match(t.text, /href="\/play\/sum-racer" rel="nofollow"/);
+  assert.doesNotMatch(t.text, /class="lp-games"/);
   assert.ok(!t.text.includes(kidPublic.slug));
   assert.match(t.text, /<a class="btn btn-primary btn-big" href="\/signup\/for\/teacher" id="setup-signup"/, 'a working way to start: the teacher sign-up');
   assert.match(t.text, /<a class="navlink" href="\/teachers"/, 'top menu, signed out');
@@ -347,7 +350,8 @@ test('structured data: no Software App fields without a rating; game pages show 
 
 test('/teachers: honest privacy wording with Sign in with Google, and a call to action that matches what happens', async () => {
   const plain = (await get('/teachers')).text;
-  assert.match(plain, /Get a free school account/);
+  assert.match(plain, /<a class="btn btn-primary btn-big" href="#start">Create a teacher account<\/a>/, 'billing off: the start panel, never "free"');
+  assert.doesNotMatch(plain, /Get a free school account/);
   assert.match(plain, /First, email us to set up your school/);
   assert.match(plain, /We never ask students for an email address/);
   const { config } = await import('../../server/config.js');

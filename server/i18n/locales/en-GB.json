@@ -278,10 +278,7 @@
     }
   },
   "teachers": {
-    "description": "Free, ad-free learning games for ages 5 to 14 that run in any browser, Chromebooks too: maths, reading, chess and music, plus an AI game Builder.",
-    "play": {
-      "p": "Short games students want to play again, each practising a real skill. They open in seconds in the browser, with nothing to install."
-    },
+    "description": "Ad-free learning games for ages 5 to 14 that run in any browser, Chromebooks too, plus maths manipulatives, a Classroom Dashboard and an AI game Builder.",
     "safe": {
       "li2google": "Students never type an email address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognise their account. A student’s real name, if you add one, is seen only by your school’s staff."
     },
@@ -322,6 +319,17 @@
       },
       "dashboard": {
         "p": "Timers, jobs, check-ins and maths tools for your whole class day, on one screen."
+      }
+    },
+    "lead": "Learning games, maths manipulatives you can run live with your class, and a Classroom Dashboard for the whole day, for ages 5 to 14. It all runs in the browser, on Chromebooks too, and your class can make its own games with our AI Builder.",
+    "tools": {
+      "lead": "Real screens from a demo class: a maths board Oomba builds with you, the same board live on every student’s device, and a dashboard for the whole class day.",
+      "board": {
+        "h": "Maths manipulatives with Oomba"
+      },
+      "dash": {
+        "p": "Timers, jobs, check-ins and maths tools for the whole class day, on the projector and on each student’s screen.",
+        "alt": "A class dashboard on the projector: the clock, today’s goal, the timetable with Maths now and Break next, class jobs and a mood check-in."
       }
     },
     "how": {
@@ -421,11 +429,8 @@
     }
   },
   "parents": {
-    "description": "Fun learning games for kids 5–14 that play free in the browser: maths, words, chess and music. No ads, no stranger chat, and kids can build their own games.",
+    "description": "Fun learning games for kids 5–14 that play in the browser: maths, words, chess and music. No ads, no stranger chat, and kids can build their own games.",
     "lead": "Oomba Academy is a website of short learning games that kids play right in the browser: maths races, word puzzles, chess and music. When they’re ready, they can make their own games by describing them to our AI Builder.",
-    "play": {
-      "p": "Each game practises a real skill in a few minutes, and kids come back because it’s fun. Pick one to try together."
-    },
     "how": {
       "s2": {
         "p": "Maths, reading, logic and music games run right in the browser on phones, tablets, Chromebooks and computers. Kids can try one without signing up.",

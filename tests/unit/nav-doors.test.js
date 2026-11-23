@@ -87,11 +87,12 @@ test('a kid with an account keeps their tab bar (Friends, Me) and no grown-up do
   assert.deepEqual([...tabbar(off.text).matchAll(/class="tab" href="([^"]+)"/g)].map(m => m[1]), ['/', '/learn', '/build', '/parents', '/login']);
 });
 
-test('/parents: "Set up your child — free" (grown-up sign-up) and "Try a game" at the top; before plans are public, the child sign-up', async () => {
+test('/parents: "Set up your child’s account" (grown-up sign-up) and "Try a game" at the top; before plans are public, the child sign-up', async () => {
   const on = await call(null, '/parents');
   const hero = /<section class="lp-hero[ "][\s\S]*?<\/section>/.exec(on.text)[0];
-  assert.match(hero, /<a class="btn btn-primary btn-big" href="\/signup\/parent">Set up your child — free<\/a>/);
-  assert.match(hero, /href="\/play\/[a-z0-9-]+" rel="nofollow">▶ /);
+  assert.match(hero, /<a class="btn btn-primary btn-big" href="\/signup\/parent">Set up your child(?:’|&#39;)s account<\/a>/, 'no "free" (docs/decisions.md "Teachers and Parents pages: lead with the new tools, no \'always free\'")');
+  assert.match(hero, /href="\/play\/[a-z0-9-]+" rel="nofollow">▶️ /, 'the play icon (read back as its emoji)');
+  assert.match(on.raw, /href="\/play\/[a-z0-9-]+" rel="nofollow"><svg class="fx fx-oo" data-fx="play-button"/, 'drawn as the Oomba icon, not a raw ▶');
   assert.match(hero, /href="\/teachers"/, 'the teacher link sits right under the buttons');
   assert.ok(hero.indexOf('lp-cta') < hero.indexOf('lp-badges'), 'buttons before the badges, so they show on a phone');
   assert.match(on.text, /id="families"[\s\S]*?href="\/plans"/, 'the Plans card links to /plans');
@@ -100,7 +101,7 @@ test('/parents: "Set up your child — free" (grown-up sign-up) and "Try a game"
   assert.match((await as(g)('/parents')).text, /<a class="btn btn-primary btn-big" href="\/family">/, 'a signed-in grown-up goes to their family');
   config.stripeApiKey = '';
   const off = await call(null, '/parents');
-  assert.match(off.text, /<a class="btn btn-primary btn-big" href="\/signup\/kid">Let your child start free<\/a>/);
+  assert.match(off.text, /<a class="btn btn-primary btn-big" href="\/signup\/kid">Let your child sign up<\/a>/);
   assert.doesNotMatch(off.text, /href="\/grown-ups/);
 });
 

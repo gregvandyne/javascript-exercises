@@ -1,6 +1,7 @@
 // The teacher marketing pages ("/" and /teachers) and /parents: the Google Classroom section (only when Classroom is on
-// here, every line matching services/gclassroom.js), one free-and-paid line with no price amount (amounts live on /plans
-// only, even with billing on and Stripe prices set), the brand tagline, the link to /research, and the teacher quotes
+// here, every line matching services/gclassroom.js), no "always free" line and no price amount (amounts live on /plans
+// only, even with billing on and Stripe prices set; docs/decisions.md "Teachers and Parents pages: lead with the new tools,
+// no 'always free'"), the brand tagline, the link to /research, and the teacher quotes
 // section that stays hidden until real quotes exist (docs/decisions.md "Teacher marketing: Classroom, free and paid").
 import './_setup.js';
 import test from 'node:test';
@@ -73,16 +74,21 @@ test('Google Classroom on "/": the gradebook and feedback screenshots sit under 
   assert.doesNotMatch(s.slice(at, s.indexOf('</section>', at)), /lp-loop-shots/, 'no screenshots in the loop section');
   config.googleClassroom = false;
   const off = (await get('/')).text, o = off.indexOf('id="loop"');
-  assert.match(off.slice(o, off.indexOf('</section>', o)), /lp-loop-shots/, 'Classroom off: the screenshots stay in the loop section');
+  const loop = off.slice(o, off.indexOf('</section>', o));
+  assert.match(loop, /lp-loop-shots/, 'Classroom off: the screenshots stay in the loop section');
+  assert.deepEqual([...loop.matchAll(/teach-loop\/(\w+)\.webp/g)].map(m => m[1]), ['gradebook', 'feedback'], 'two screens, side by side: the gradebook and the feedback');
 });
 
-test('free and paid: one line on "/" and /teachers saying what is always free and what the Teacher plan adds; no amount on either', async () => {
-  const want = /Always free: every game, your classes, lessons, progress and the gradebook, and free daily Builder messages for you and your students\. The Teacher plan adds 300 AI game builds a day shared by your classes\. <a href="\/plans">See prices on Plans<\/a>\./;
+test('free and paid: no "always free" line on "/" or /teachers (the owner: "everything isn\'t always free"); /teachers says which tools need the Teacher plan; no amount on either', async () => {
   for (const path of ['/', '/teachers']) {
     const s = (await get(path)).text;
-    assert.match(s, want, `${path}: the free-and-paid line`);
+    assert.doesNotMatch(s, /lp-freeline|Always free: every game/, `${path}: no free-and-paid line`);
     assert.doesNotMatch(s, AMOUNT, `${path}: no price amount (prices live on /plans only)`);
   }
+  const tp = (await get('/teachers')).text;
+  assert.match(tp, /<p class="small muted tt-note">The Classroom Dashboard comes with every class\. The Manipulatives and their live rooms are part of the Teacher plan\.<\/p>/);
+  assert.doesNotMatch(tp, /Free to start|free website|it(?:’|&#39;)s free|Get a free school account|Set up your school \(free\)/, '/teachers: no blanket free claims');
+  assert.doesNotMatch((await get('/')).text, /are always free\. Try the Teacher plan/, '"/": the closing line is the trial, not "always free"');
   const s = (await get('/')).text;
   const pricing = section(s, 'pricing');
   assert.match(pricing, /<h3 id="plan-free">Free<\/h3>\s*<p class="lp-price">Always free<\/p>/, 'a Free card');
@@ -95,12 +101,14 @@ test('free and paid: one line on "/" and /teachers saying what is always free an
   assert.match((await get('/plans')).text, /\$\s?119|119/);
 });
 
-test('/teachers with paid plans off: the free line without the plan or a link to /plans', async () => {
+test('/teachers with paid plans off: no free line, no trial; the first button makes a teacher account and the tools are being tried out', async () => {
   const was = config.billingPublic; config.billingPublic = false;
   try {
     const s = (await get('/teachers')).text;
-    assert.match(s, /<p class="lp-freeline">Always free: every game, your classes, lessons, progress and the gradebook, and free daily Builder messages for you and your students\.<\/p>/);
-    assert.doesNotMatch(s, /The Teacher plan adds/);
+    assert.doesNotMatch(s, /lp-freeline|Always free/);
+    assert.doesNotMatch(s, /The Teacher plan adds|href="\/trial"/);
+    assert.match(s, /<div class="row lp-cta">\s*<a class="btn btn-primary btn-big" href="#start">Create a teacher account<\/a>/);
+    assert.match(s, /The Manipulatives and their live rooms are being tried out in a few classrooms now\./);
   } finally { config.billingPublic = was; }
 });
 

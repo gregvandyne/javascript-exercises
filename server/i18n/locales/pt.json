@@ -6021,24 +6021,19 @@
   },
   "teachers": {
     "title": "Jogos educativos interativos para a sala de aula",
-    "description": "Jogos educativos grátis e sem anúncios para 5 a 14 anos, em qualquer navegador e no Chromebook: matemática, leitura, xadrez, música e um Construtor com IA.",
+    "description": "Jogos educativos sem anúncios para 5 a 14 anos que rodam em qualquer navegador, inclusive Chromebooks, com materiais manipuláveis de matemática, um painel da turma e um Construtor de jogos com IA.",
     "kicker": "🍎 Para professores",
     "h1": "Jogos educativos divertidos e interativos que a turma vai pedir para jogar",
-    "lead": "A Oomba Academy é um site grátis de jogos educativos para crianças de 5 a 14 anos. Os alunos jogam direto no navegador, e a turma pode criar os próprios jogos descrevendo-os para o nosso Construtor com IA.",
+    "lead": "Jogos educativos, materiais manipuláveis de matemática para usar ao vivo com a turma e um painel da turma para o dia todo, para crianças de 5 a 14 anos. Tudo roda no navegador, inclusive em Chromebooks, e a turma pode criar os próprios jogos com o nosso Construtor com IA.",
     "badges": {
-      "free": "Grátis para começar",
       "ads": "Sem anúncios",
       "browser": "Funciona em qualquer navegador, até no Chromebook",
       "google": "Login com o Google",
       "ages": "Feito para 5 a 14 anos"
     },
     "cta": {
-      "start": "Peça uma conta grátis para a escola",
+      "start": "Crie uma conta de professor",
       "try": "Experimente um jogo agora, sem cadastro"
-    },
-    "play": {
-      "h": "Jogar para aprender",
-      "p": "Jogos curtos que os alunos querem jogar de novo, cada um treinando uma habilidade de verdade. Eles abrem em segundos no navegador, sem instalar nada."
     },
     "subjects": {
       "h": "Jogos por disciplina"
@@ -6117,9 +6112,8 @@
       "p": "O site inteiro funciona em {count} idiomas, entre eles espanhol, português, francês, árabe e hebraico, o que ajuda os alunos que ainda estão aprendendo inglês. Cada aluno escolhe o seu, e o Construtor responde nesse idioma."
     },
     "start": {
-      "h": "Cadastre a sua escola (grátis)",
-      "p1": "Jogar é grátis para todos, e os alunos podem experimentar qualquer jogo na hora, sem cadastro.",
-      "p2": "Para turmas, aulas e contas da escola, escreva para {email} com o nome da sua escola e quem vai cuidar dela. Nós cadastramos a sua escola e a conta do admin da escola, que adiciona os professores e os alunos. Cadastrar uma escola é grátis.",
+      "h": "Cadastre a sua escola",
+      "p1": "Os alunos podem experimentar qualquer jogo na hora, sem cadastro.",
       "plans": "Quer mais para suas turmas? Teste o plano Professor grátis por {days} dias, sem cartão: alunos ilimitados e {daily} criações com IA por dia para a turma.",
       "email": "Escreva para cadastrar a sua escola",
       "subject": "Cadastrar minha escola na Oomba Academy",
@@ -6138,8 +6132,8 @@
       "q5": "Para quais idades e anos escolares ela é indicada?",
       "a5": "A Oomba Academy é feita da educação infantil ao 8º ano, mais ou menos dos 5 aos 14 anos. Jogos como Shark Plank e as primeiras pistas do Sum Racer servem para os mais novos. Number Quest, o curso de matemática, vai da educação infantil ao 8º ano, e CS Quest e Cyber Defenders começam no 3º ano.",
       "q6": "Como adiciono a minha turma?",
-      "a6": "Primeiro, escreva para nós para cadastrar a sua escola (é grátis). Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso.",
-      "a6google": "Primeiro, escreva para nós para cadastrar a sua escola (é grátis). Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso. Escolas que usam o Google podem deixar os alunos entrarem com o login com o Google.",
+      "a6": "Primeiro, escreva para nós para cadastrar a sua escola. Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso.",
+      "a6google": "Primeiro, escreva para nós para cadastrar a sua escola. Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso. Escolas que usam o Google podem deixar os alunos entrarem com o login com o Google.",
       "q7": "Os alunos podem criar os próprios jogos? Quem vê esses jogos?",
       "a7": "Sim. Um jogo novo é privado: só o aluno que o criou pode jogar. Ele pode compartilhar o jogo com a turma, e um jogo para todos é revisado antes que outras pessoas possam jogar.",
       "q8": "Posso acompanhar o progresso e as pontuações?",
@@ -6151,7 +6145,7 @@
       "a1paid": "Jogar, as turmas, as aulas, o progresso e o Oomba Live são grátis, e cada aluno ganha mensagens grátis para o Construtor todos os dias. O plano Professor, opcional, adiciona para as suas turmas uma reserva diária compartilhada de criações com IA, com alunos ilimitados. Teste grátis por 14 dias, sem cartão. Os preços estão na página de planos."
     },
     "setup": {
-      "lead": "Conte um pouco sobre a sua escola. Vamos configurá-la em até 1 dia letivo e responder ao seu e-mail com os próximos passos. Configurar uma escola é grátis.",
+      "lead": "Conte um pouco sobre a sua escola. Vamos configurá-la em até 1 dia letivo e responder ao seu e-mail com os próximos passos.",
       "school": "Nome da escola",
       "role": "Sua função",
       "rolePick": "Escolha uma",
@@ -6200,7 +6194,7 @@
       "submitStaff": "Enviar",
       "privacySignup": "Usamos seu e-mail para enviar o guia de boas-vindas, redefinir uma senha esquecida e responder você. Veja nossa <a href=\"{privacy}\">Política de Privacidade</a>.",
       "emailHintSignup": "Seu e-mail da escola. Enviamos o guia de boas-vindas para ele e o usamos se você esquecer a senha.",
-      "signupLead": "Crie sua conta de professor, depois crie ou entre na sua escola e adicione suas turmas. Leva uns dois minutos e é grátis.",
+      "signupLead": "Crie sua conta de professor, depois crie ou entre na sua escola e adicione suas turmas. Leva uns dois minutos.",
       "signupCta": "Criar minha conta de professor"
     },
     "live": {
@@ -6214,11 +6208,7 @@
     "cs": {
       "cstaNote": "Padrões: CSTA K-12 Computer Science Standards (2017), níveis 1B e 2. Este programa não foi criado, revisto nem aprovado pela CSTA."
     },
-    "leaderLine": "Direção ou TI? <a href=\"{href}\">Configure sua escola</a>: é grátis.",
-    "free": {
-      "line": "Sempre grátis: todos os jogos, suas turmas, aulas, o progresso e o boletim, além de mensagens diárias grátis do Builder para você e seus alunos. O plano Professor adiciona {daily} jogos criados com IA por dia, compartilhados entre suas turmas. <a href=\"{plans}\">Veja os preços em Planos</a>.",
-      "lineOff": "Sempre grátis: todos os jogos, suas turmas, aulas, o progresso e o boletim, além de mensagens diárias grátis do Builder para você e seus alunos."
-    },
+    "leaderLine": "Direção ou TI? <a href=\"{href}\">Cadastre a sua escola</a>.",
     "classroom": {
       "kicker": "Google Classroom",
       "h": "Funciona com o seu Google Classroom",
@@ -6259,6 +6249,31 @@
       },
       "plan": "O painel da turma é grátis para toda turma. Os materiais manipuláveis, suas salas ao vivo e Figuras fazem parte do plano Professor.",
       "testing": "O painel da turma é grátis para toda turma. As outras três ferramentas estão sendo testadas agora em algumas turmas."
+    },
+    "tools": {
+      "h": "Novidades para a sua turma",
+      "lead": "Telas reais de uma turma de demonstração: um quadro de matemática que a Oomba monta com você, o mesmo quadro ao vivo no aparelho de cada aluno e um painel para o dia todo da turma.",
+      "board": {
+        "h": "Materiais manipuláveis de matemática com a Oomba",
+        "p": "Material dourado, frações, relógios e mais em um só quadro. Conte a aula para a Oomba, e ela monta o quadro para você.",
+        "alt": "Os materiais manipuláveis em um notebook: quatro relógios marcando meia hora, cada um com uma caixa de resposta, e ao lado o chat da Oomba dizendo que montou o quadro.",
+        "open": "Abrir os materiais manipuláveis"
+      },
+      "room": {
+        "h": "Materiais manipuláveis ao vivo",
+        "p": "Envie um quadro para a turma. Cada aluno trabalha no próprio quadrado, no próprio aparelho, e você vê todos os quadrados em uma só tela.",
+        "alt": "A sala ao vivo de um professor: em cima o quadro e o primeiro passo, embaixo os quadrados de seis alunos, com as respostas sob os relógios.",
+        "open": "Abrir uma sala ao vivo"
+      },
+      "dash": {
+        "h": "Painel da turma",
+        "p": "Timers, tarefas, check-ins e ferramentas de matemática para o dia todo da turma, no projetor e na tela de cada aluno.",
+        "alt": "Um painel da turma no projetor: o relógio, a meta do dia, a agenda com Matemática agora e Recreio depois, as tarefas da turma e um check-in de humor.",
+        "open": "Abrir Minhas turmas"
+      },
+      "watch": "Ver o vídeo de um minuto",
+      "plan": "O painel da turma vem com toda turma. Os materiais manipuláveis e suas salas ao vivo fazem parte do plano Professor.",
+      "testing": "O painel da turma vem com toda turma. Os materiais manipuláveis e suas salas ao vivo estão em teste em algumas turmas agora."
     }
   },
   "learn": {
@@ -6677,13 +6692,12 @@
     }
   },
   "parents": {
-    "title": "Jogos educativos seguros e grátis (5–14 anos)",
-    "description": "Jogos educativos grátis no navegador para 5 a 14 anos: matemática, palavras, xadrez e música. Sem anúncios, sem chat com estranhos e com criação de jogos.",
+    "title": "Jogos educativos seguros (5–14 anos)",
+    "description": "Jogos educativos no navegador para 5 a 14 anos: matemática, palavras, xadrez e música. Sem anúncios, sem chat com estranhos e com criação de jogos.",
     "kicker": "👪 Para pais",
     "h1": "Jogos educativos divertidos para 5 a 14 anos, seguros desde o início",
     "lead": "A Oomba Academy é um site de jogos educativos curtos que as crianças jogam direto no navegador: corridas de matemática, desafios de palavras, xadrez e música. Quando estiverem prontas, elas podem criar os próprios jogos descrevendo-os para o nosso Construtor com IA.",
     "badges": {
-      "free": "Grátis para jogar",
       "ads": "Sem anúncios",
       "buy": "Nada para a criança comprar",
       "strangers": "Sem chat com desconhecidos",
@@ -6691,20 +6705,13 @@
       "languages": "{count} idiomas"
     },
     "cta": {
-      "start": "Deixe seu filho começar grátis",
+      "start": "Deixe seu filho se cadastrar",
       "try": "Teste um jogo agora, sem cadastro",
       "grownup": "Criar uma conta de adulto",
       "lead": "Já viu o suficiente? Experimente um jogo com seu filho agora.",
-      "setup": "Cadastre seu filho — grátis"
+      "setup": "Crie a conta do seu filho"
     },
     "teachers": "Dá aula para uma turma? Veja a <a href=\"{href}\">Oomba Academy para professores</a>.",
-    "play": {
-      "h": "Aprender com cara de brincadeira",
-      "p": "Cada jogo treina uma habilidade de verdade em poucos minutos, e as crianças voltam porque é divertido. Escolha um para experimentarem juntos."
-    },
-    "subjects": {
-      "h": "Escolha por matéria"
-    },
     "how": {
       "h": "Como a Oomba Academy funciona",
       "lead": "Veja o que a criança vê, passo a passo. Estas são telas reais do site, preenchidas com nomes inventados.",
@@ -9397,8 +9404,7 @@
     "final": {
       "h": "Sua próxima aula pode ser aquela que eles pedem para jogar de novo",
       "p": "Grátis por 14 dias. Sem cartão, sem cobrança por aluno.",
-      "cta": "Comece seu teste grátis de 14 dias",
-      "pFree": "Jogos, turmas, aulas e progresso são sempre grátis. Experimente o plano Professor grátis por 14 dias, sem cartão e sem taxa por aluno."
+      "cta": "Comece seu teste grátis de 14 dias"
     },
     "play": {
       "h": "Veio jogar?",

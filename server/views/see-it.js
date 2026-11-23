@@ -35,12 +35,13 @@ const tx = (t, tag, key, attrs = '') => raw(`<${tag}${attrs}${fb(t, key)}>${tHtm
 
 /**
  * The section, or '' when no video is ready.
- * cta: the call to action under the grid (markup, the page's own sign-up button). The note under the grid says who can use
+ * cta: the call to action under the grid (markup, the page's own sign-up button). note: false leaves out the note (on
+ * /teachers the new-tools section above says it). The note under the grid says who can use
  * the tools today: the Classroom Dashboard is free for every class's teacher (routes/dash.js, no plan); the Manipulatives,
  * their live rooms and Figures follow toolAccess: with paid plans on for everyone, "part of the Teacher plan"; off, only
  * the tester list may use them, so it says they are being tried out in a few classrooms.
  */
-export function seeIt(req, { variant = 'page', cta = '' } = {}) {
+export function seeIt(req, { variant = 'page', cta = '', note = true } = {}) {
   const list = readyVideos();
   if (!list.length) return '';
   const t = req.t;
@@ -62,7 +63,7 @@ export function seeIt(req, { variant = 'page', cta = '' } = {}) {
     ? html`<header class="lp-sec-head">${tx(t, 'p', 'teachers.videos.kicker', ' class="lp-eyebrow"')}${tx(t, 'h2', 'teachers.videos.h', ' id="see-it-h"')}${tx(t, 'p', 'teachers.videos.lead')}</header>`
     : html`${tx(t, 'h2', 'teachers.videos.h', ' id="see-it-h"')}${tx(t, 'p', 'teachers.videos.lead')}`;
   const grid = html`<ul class="pv-grid" data-n="${list.length}">${list.map(item)}</ul>
-    ${tx(t, 'p', plansOn() ? 'teachers.videos.plan' : 'teachers.videos.testing', ` class="${landing ? 'lp-note ' : 'small muted '}pv-plan"`)}
+    ${note ? tx(t, 'p', plansOn() ? 'teachers.videos.plan' : 'teachers.videos.testing', ` class="${landing ? 'lp-note ' : 'small muted '}pv-plan"`) : ''}
     ${cta ? html`<div class="${landing ? 'lp-ctas lp-ctas-c' : 'row'} pv-cta">${cta}</div>` : ''}`;
   return landing
     ? html`<section class="lp-sec pv pv-landing" id="see-it" aria-labelledby="see-it-h"><div class="lp-wrap">${head}${grid}</div></section>`

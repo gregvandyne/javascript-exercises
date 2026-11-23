@@ -20,6 +20,8 @@ export const IMG = '/img/how/';
 /** Every file one step's pictures need. */
 export const howFiles = slug => [`${slug}-p-390.webp`, `${slug}-p-780.webp`, `${slug}-d-1024.webp`, `${slug}-d-2048.webp`];
 const have = slug => howFiles(slug).every(f => fs.existsSync(new URL(f, DIR)));
+/** Only the phone ('p') or only the desktop ('d') captures of a screen: the hero needs one of each. */
+const haveKind = (slug, kind) => howFiles(slug).filter(f => f.startsWith(`${slug}-${kind}-`)).every(f => fs.existsSync(new URL(f, DIR)));
 
 /** The steps, in order. `when` hides a step whose screen is off on this server; `p` picks the caption's key. */
 export const STEPS = {
@@ -50,8 +52,10 @@ export const STEPS = {
     { n: 's5', slug: 'live-results' },
   ],
 };
-/** The hero picture: a wide screen (desktop capture) and a phone (phone capture), reusing the steps' files. */
-const ART = { parents: { laptop: 'parents-build', phone: 'parents-play' }, teachers: { laptop: 'teachers-gradebook', phone: 'teachers-student' }, teachersLive: { laptop: 'live-lobby', phone: 'live-play' } };
+/** The hero picture: a wide screen (desktop capture) and a phone (phone capture). /teachers shows the new tools
+ *  (scripts/tools-shots.js): the Manipulatives board with Oomba on the laptop, a student's square in the teacher's live
+ *  room on the phone; the others reuse their steps' files. */
+export const ART = { parents: { laptop: 'parents-build', phone: 'parents-play' }, teachers: { laptop: 'tools-board', phone: 'tools-student' }, teachersLive: { laptop: 'live-lobby', phone: 'live-play' } };
 
 /** The steps shown on this page for this request. */
 export const howStepList = (req, page) => STEPS[page].filter(s => (!s.when || s.when(req)) && have(s.slug));
@@ -78,7 +82,7 @@ export function picture(slug, alt, { lazy = true, scheme = 'auto', deskSizes = '
 /** The hero's layered picture (decoration: aria-hidden, empty alt). Brand shapes at the back, a wide screen, a phone. */
 export function howArt(req, page) {
   const a = ART[page];
-  if (!a || !have(a.laptop) || !have(a.phone)) return '';
+  if (!a || !haveKind(a.laptop, 'd') || !haveKind(a.phone, 'p')) return '';
   // Under 960px the wide screen is not shown, and its <img> points at an empty pixel so phones don't download it.
   const blank = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
   const scheme = shotScheme(req), lapDark = darkOf(a.laptop), phDark = darkOf(a.phone);
