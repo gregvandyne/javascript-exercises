@@ -12132,3 +12132,39 @@ Built as described in docs/storybook-builder.md "Pictures". The calls made along
 - Tests: `tests/unit/storybook-pictures.test.js` (8, with a stand-in for Google: request shape, house style and seed,
   references, the key header, no student names; blocks and picture check refusals; the daily count under parallel
   requests; no key and the budget resting; Redraw and sheets; access; deleting).
+
+## The book maker in the Oomba chat (23 Nov 2026)
+
+The owner: "Make sure you can do this same process from the oomba chat." Then: "Clicking the make a book button should
+just open up the chat and you should do the whole workflow there. The back and forth between the chat and the page is
+confusing." Then: "Users should also be able to ask the oomba chat to make edits to a book they've made currently but
+also in the past". And: "Choose your own adventure should also be able to be illustrated."
+
+Built as described in docs/storybook-builder.md "In the Oomba chat". The calls made along the way:
+
+- **One chat, the companion's.** For a teacher with the companion, Make a book opens the companion with the book
+  maker's first card, the whole workflow is cards in that chat, and the book editor is a companion page (`book`): the
+  editor's own Oomba panel is gone for them, so there is never a second chat. Every AI change to a book, from its page
+  or any other, is a companion turn that runs the book maker's own functions (`writeBook`, `applyBook`, `undoChange`,
+  `redraw`). An earlier draft of this design routed requests to the editor's own panel; the owner's second message
+  replaced it. A book's earlier conversation in its own panel (made before this change) is kept in the database but not
+  shown to these teachers.
+- **Teachers without the companion** (no Teacher plan) keep the page steps and the editor's own chat: the book maker is
+  for every teacher, the companion is not. Open for the owner: whether they should get the chat flow too.
+- **Same service, no copied logic.** The cards use the page's lists and words; the check calls `cleanSetup`,
+  `setupProblems` and `screenSetup`; Make my book calls `addPic` and `createBook` (split from `startBook`, which the page
+  still uses); the daily turn cap and the picture count are the page's. Cards are answered without the AI; only the
+  teacher's first message (and later change requests) go to the chat's AI, which fills in `makeBook` with what they said.
+- **Your words never reach the chat's AI.** While the card waits for them, typed words and attachments go into the book
+  only. One exception, noted: a picture attached to the very first message is read by the chat's AI, as every companion
+  picture is (after the no-people check), before the book flow starts.
+- **Books made in the past** are found among the teacher's own books only (`findMyBooks`); several that fit give a
+  choice card (title, kind, date), none gives Make a book. Each change costs one of the day's turns wherever it is asked.
+- **Pictures for every kind.** The normal kind is now "Picture book", and both kinds say every page (and every path) is
+  illustrated. A Pictures choice (Oomba paints them, I'll add my own, No pictures) is on the page and in the chat, kept
+  with the book; only the first ever paints or spends. The story map shows each page's picture.
+- **Teachers only on the server**: the book tools are offered only to `storybook.canMake` accounts and refused by the
+  tool runner, every card tap and every route for anyone else (a family grown-up tester with the companion included).
+- Tests: `tests/unit/companion-book.test.js` (7), `tests/unit/companion-book-browser.test.js` (3, laptop and a 390 px
+  phone), two more in `tests/unit/storybook-pictures.test.js` (an adventure painted on every page and ending, shown by
+  the reader and the print copy; the Pictures choice).

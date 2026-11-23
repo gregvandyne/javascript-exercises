@@ -417,6 +417,8 @@ export function companionPage(req, { bare = false, companion = null, scripts = [
   const fs = /^\/figures\/worksheets\/([A-Za-z0-9_-]{1,64})$/.exec(p);
   if (fs && fs[1] !== 'new') return { type: 'figures-sheet', sheetId: fs[1] };
   if (/^\/manip/.test(p)) return { type: 'tools' };
+  const bk = /^\/library\/make\/([A-Za-z0-9_-]{6,40})$/.exec(p);
+  if (bk) return { type: 'book', bookId: bk[1] };
   const m = /^\/class\/([A-Za-z0-9_-]{1,64})(\/dashboard)?/.exec(p);
   if (m) return { type: m[2] ? 'dashboard' : 'class', classId: m[1] };
   const cls = typeof (req.query || {}).class === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(req.query.class) ? req.query.class : undefined;

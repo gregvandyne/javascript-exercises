@@ -4153,7 +4153,12 @@
         "howto": "Encontré los pasos",
         "howNo": "No encontré esos pasos",
         "classNew": "Preparé una clase nueva para que la revises",
-        "classNo": "No se pudo crear esa clase"
+        "classNo": "No se pudo crear esa clase",
+        "book": "Preparé la tarjeta de tu libro",
+        "bookNo": "No pude hacer eso con el libro",
+        "booksMine": "Miré tus libros",
+        "bookEdit": "Cambié «{q}»",
+        "redraw": "Pedí pintar de nuevo la página {n}"
       },
       "stepsSum": "{n, plural, one {# paso} other {# pasos}} · {s} s",
       "prog": {
@@ -4226,7 +4231,8 @@
         "notFound": "Esta cuenta no puede usar Oomba ahora.",
         "slow": "Son muchos mensajes para una hora. Espera un poco y vuelve a intentarlo.",
         "fileGone": "Ese adjunto ya no está. Adjúntalo otra vez.",
-        "other": "Algo salió mal. Tu mensaje sigue aquí: inténtalo de nuevo en un momento."
+        "other": "Algo salió mal. Tu mensaje sigue aquí: inténtalo de nuevo en un momento.",
+        "cap": "Ya usaste los turnos de Oomba de hoy para libros. Puedes seguir editando tus libros a mano. Mañana hay más turnos."
       },
       "quoteN": "Pregunta {n}: {text}",
       "questionN": "Pregunta {n}",
@@ -4254,13 +4260,15 @@
         "dashboard": "el panel de {name}",
         "class": "{name}",
         "sheet": "«{name}»",
-        "board": "el tablero de {name}"
+        "board": "el tablero de {name}",
+        "book": "el libro «{name}»"
       },
       "which": {
         "dashboard": "¿El panel de qué clase?",
         "class": "¿Qué clase?",
         "sheet": "¿Qué hoja?",
-        "board": "¿Qué tablero?"
+        "board": "¿Qué tablero?",
+        "book": "¿Qué libro?"
       },
       "ask": {
         "other": "Otra cosa"
@@ -4278,6 +4286,12 @@
         "denied": "En tu escuela solo un administrador puede crear clases.",
         "done": "Clase {name} creada. Aún no tiene estudiantes.",
         "openDash": "Abrir su panel"
+      },
+      "book": {
+        "adding": "Añadiendo a tu libro",
+        "stopAdding": "Dejar de añadir al libro",
+        "open": "Abrir el libro",
+        "make": "Hacer un libro"
       }
     },
     "companion-greet": {
@@ -4492,7 +4506,9 @@
         "notePh": "Por ejemplo: que sea una mañana soleada",
         "cancel": "Cancelar",
         "look": "Cómo es",
-        "sheetAlt": "Imagen de referencia de {name}"
+        "sheetAlt": "Imagen de referencia de {name}",
+        "lineOwn": "Elegiste poner tus propios dibujos: usa Tu dibujo en cada página.",
+        "lineNone": "Este libro no tiene dibujos."
       }
     },
     "storybook-read": {
@@ -13936,7 +13952,7 @@
   },
   "storybook": {
     "title": "Crear un libro",
-    "lead": "Sube un cuento que escribiste o escribe uno con Oomba. Hazlo un libro ilustrado normal o una historia de elige tu propia aventura, y compártelo con tu clase.",
+    "lead": "Sube un cuento que escribiste o escribe uno con Oomba. Hazlo un libro ilustrado o una historia de elige tu propia aventura, con un dibujo en cada página, y compártelo con tu clase.",
     "makeBook": "Crear un libro",
     "shelfMine": "Tus libros",
     "shelfShared": "De tu maestro",
@@ -13963,25 +13979,26 @@
     "start": {
       "title": "¿Cómo quieres empezar?",
       "upload": "Subir tu propio libro",
-      "uploadText": "Trae un cuento que escribiste. Déjalo como un libro normal o conviértelo en una historia de elige tu propia aventura.",
+      "uploadText": "Trae un cuento que escribiste. Déjalo como libro ilustrado o conviértelo en una historia de elige tu propia aventura. Ilustrado de las dos formas.",
       "ai": "Que lo haga la IA",
-      "aiText": "Oomba escribe contigo un libro ilustrado o una historia de elige tu propia aventura."
+      "aiText": "Oomba escribe contigo un libro ilustrado o una historia de elige tu propia aventura, con un dibujo en cada página."
     },
     "options": {
       "title": "¿Qué tipo de libro?",
       "keep": "Dejarlo como un libro normal",
-      "keepText": "Tus palabras quedan como están. Oomba las reparte en páginas y añade dibujos.",
+      "keepText": "Tus palabras quedan como están, repartidas en páginas. Cada página ilustrada.",
       "turn": "Convertirlo en elige tu propia aventura",
-      "turnText": "Oomba conserva tu cuento y añade opciones y finales.",
+      "turnText": "Oomba conserva tu cuento y añade opciones y finales. Cada página y cada camino ilustrados.",
       "illustrated": "Libro ilustrado",
-      "illustratedText": "Una historia que se lee de la primera a la última página, con un dibujo en cada página.",
+      "illustratedText": "Se lee de la primera página a la última. Cada página ilustrada.",
       "cyoa": "Elige tu propia aventura",
-      "cyoaText": "Los lectores eligen qué pasa después y encuentran finales distintos.",
+      "cyoaText": "Los lectores eligen qué pasa después y encuentran finales distintos. Cada página y cada camino ilustrados.",
       "grade": "Grado",
       "length": "Extensión",
       "endings": "Finales",
       "level": "Nivel de lectura",
-      "theme": "Tema (opcional)"
+      "theme": "Tema (opcional)",
+      "pictures": "Dibujos"
     },
     "grades": {
       "k": "Preescolar/K",
@@ -14093,7 +14110,30 @@
     "draw": {
       "nokey": "El creador de imágenes no está configurado en este sitio, así que las páginas usan los dibujos de los paquetes.",
       "resting": "El creador de imágenes está descansando por ahora. Inténtalo más tarde.",
-      "limit": "Ya usaste las imágenes de hoy. Mañana habrá más."
+      "limit": "Ya usaste las imágenes de hoy. Mañana habrá más.",
+      "off": "Los dibujos de este libro son tuyos (o no tiene), así que Oomba no los pinta."
+    },
+    "pictures": {
+      "ai": "Oomba los pinta",
+      "own": "Pondré los míos",
+      "none": "Sin dibujos"
+    },
+    "chat": {
+      "hello": "Hagamos un libro.",
+      "noTheme": "Sin tema",
+      "contextAi": "Escribe tus ideas en el cuadro de abajo y envíalas, o adjunta archivos y dibujos con el clip. Van a tu libro, no al chat. Después revisa lo que se enviará.",
+      "contextUpload": "Pega tu cuento en el cuadro de abajo y envíalo, o adjúntalo como archivo con el clip (también dibujos). Va a tu libro, no al chat. Después revisa lo que se enviará.",
+      "added": "Añadido a tu libro.",
+      "picsN": "{count, plural, one {# dibujo} other {# dibujos}}",
+      "stop": "Parar",
+      "stopped": "Parado. No se envió nada.",
+      "clear": "Borrar mis palabras",
+      "started": "Tu libro está en camino. Oomba lo está escribiendo ahora. Ábrelo cuando quieras y pídeme cambios aquí.",
+      "startedCard": "Libro empezado",
+      "picGone": "Un dibujo que añadiste ya no se guarda. Vuelve a añadirlo.",
+      "tooManyPics": "Un libro nuevo no admite más dibujos.",
+      "tooManyFiles": "Un libro nuevo no admite más archivos.",
+      "fileGone": "Ese archivo ya no está. Vuelve a adjuntarlo."
     }
   }
 }

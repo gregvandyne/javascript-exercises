@@ -4154,7 +4154,12 @@
         "howto": "Stappen gevonden",
         "howNo": "Die stappen niet gevonden",
         "classNew": "Een nieuwe klas klaargezet om te controleren",
-        "classNo": "Die klas kon niet worden gemaakt"
+        "classNo": "Die klas kon niet worden gemaakt",
+        "book": "De kaart voor je boek staat klaar",
+        "bookNo": "Dat lukte niet met het boek",
+        "booksMine": "Je boeken bekeken",
+        "bookEdit": "‘{q}’ veranderd",
+        "redraw": "Pagina {n} opnieuw laten schilderen"
       },
       "stepsSum": "{n, plural, one {# stap} other {# stappen}} · {s} s",
       "prog": {
@@ -4227,7 +4232,8 @@
         "notFound": "Dit account kan Oomba nu niet gebruiken.",
         "slow": "Dat zijn veel berichten in een uur. Wacht even en probeer het dan opnieuw.",
         "fileGone": "Die bijlage is er niet meer. Voeg hem opnieuw toe.",
-        "other": "Er ging iets mis. Je bericht staat er nog: probeer het zo meteen opnieuw."
+        "other": "Er ging iets mis. Je bericht staat er nog: probeer het zo meteen opnieuw.",
+        "cap": "Je hebt de Oomba-beurten van vandaag voor boeken gebruikt. Je kunt je boeken nog met de hand bewerken. Morgen zijn er nieuwe beurten."
       },
       "quoteN": "Vraag {n}: {text}",
       "questionN": "Vraag {n}",
@@ -4255,13 +4261,15 @@
         "dashboard": "het dashboard van {name}",
         "class": "{name}",
         "sheet": "‘{name}’",
-        "board": "het bord {name}"
+        "board": "het bord {name}",
+        "book": "het boek ‘{name}’"
       },
       "which": {
         "dashboard": "Het dashboard van welke klas?",
         "class": "Welke klas?",
         "sheet": "Welk werkblad?",
-        "board": "Welk bord?"
+        "board": "Welk bord?",
+        "book": "Welk boek?"
       },
       "ask": {
         "other": "Iets anders"
@@ -4279,6 +4287,12 @@
         "denied": "Op jouw school kan alleen een schoolbeheerder klassen maken.",
         "done": "De klas {name} is gemaakt. Er zitten nog geen leerlingen in.",
         "openDash": "Het dashboard openen"
+      },
+      "book": {
+        "adding": "Toevoegen aan je boek",
+        "stopAdding": "Stoppen met toevoegen aan het boek",
+        "open": "Het boek openen",
+        "make": "Een boek maken"
       }
     },
     "companion-greet": {
@@ -4493,7 +4507,9 @@
         "notePh": "Bijvoorbeeld: maak er een zonnige ochtend van",
         "cancel": "Annuleren",
         "look": "Hoe ze eruitzien",
-        "sheetAlt": "Voorbeeldplaatje van {name}"
+        "sheetAlt": "Voorbeeldplaatje van {name}",
+        "lineOwn": "Je koos voor je eigen plaatjes: gebruik Jouw plaatje op elke pagina.",
+        "lineNone": "Dit boek heeft geen plaatjes."
       }
     },
     "storybook-read": {
@@ -13937,7 +13953,7 @@
   },
   "storybook": {
     "title": "Maak een boek",
-    "lead": "Upload een verhaal dat je zelf schreef, of laat Oomba er een met je schrijven. Maak er een gewoon prentenboek of een kies-je-eigen-avontuur van en deel het met je klas.",
+    "lead": "Upload een verhaal dat je zelf schreef, of laat Oomba er een met je schrijven. Maak er een prentenboek of een kies-je-eigen-avontuur van, met een plaatje op elke pagina, en deel het met je klas.",
     "makeBook": "Maak een boek",
     "shelfMine": "Jouw boeken",
     "shelfShared": "Van je leerkracht",
@@ -13964,25 +13980,26 @@
     "start": {
       "title": "Hoe wil je beginnen?",
       "upload": "Upload je eigen boek",
-      "uploadText": "Neem een verhaal mee dat je zelf schreef. Laat het een gewoon boek of maak er een kies-je-eigen-avontuur van.",
+      "uploadText": "Neem een verhaal mee dat je zelf schreef. Laat het een prentenboek of maak er een kies-je-eigen-avontuur van. Allebei met plaatjes.",
       "ai": "Laat AI er een maken",
-      "aiText": "Oomba schrijft samen met jou een prentenboek of een kies-je-eigen-avontuur."
+      "aiText": "Oomba schrijft samen met jou een prentenboek of een kies-je-eigen-avontuur, met een plaatje op elke pagina."
     },
     "options": {
       "title": "Wat voor boek?",
       "keep": "Laat het een gewoon boek",
-      "keepText": "Je woorden blijven zoals ze zijn. Oomba verdeelt ze over pagina's en voegt plaatjes toe.",
+      "keepText": "Je woorden blijven zoals ze zijn, verdeeld over pagina's. Elke pagina met een plaatje.",
       "turn": "Maak er een kies-je-eigen-avontuur van",
-      "turnText": "Oomba houdt je verhaal en voegt keuzes en eindes toe.",
+      "turnText": "Oomba houdt je verhaal en voegt keuzes en eindes toe. Elke pagina en elk pad met een plaatje.",
       "illustrated": "Prentenboek",
-      "illustratedText": "Een verhaal dat je van de eerste tot de laatste pagina leest, met een plaatje op elke pagina.",
+      "illustratedText": "Lees je van de eerste tot de laatste pagina. Elke pagina met een plaatje.",
       "cyoa": "Kies-je-eigen-avontuur",
-      "cyoaText": "Lezers kiezen wat er gebeurt en vinden verschillende eindes.",
+      "cyoaText": "Lezers kiezen wat er gebeurt en vinden verschillende eindes. Elke pagina en elk pad met een plaatje.",
       "grade": "Leerjaar",
       "length": "Lengte",
       "endings": "Eindes",
       "level": "Leesniveau",
-      "theme": "Thema (niet verplicht)"
+      "theme": "Thema (niet verplicht)",
+      "pictures": "Plaatjes"
     },
     "grades": {
       "k": "Kleuters/K",
@@ -14094,7 +14111,30 @@
     "draw": {
       "nokey": "De plaatjesmaker is niet ingesteld op deze site, dus de pagina's gebruiken de tekeningen uit de pakketten.",
       "resting": "De plaatjesmaker rust even. Probeer het later opnieuw.",
-      "limit": "Je hebt de plaatjes van vandaag gebruikt. Morgen weer nieuwe."
+      "limit": "Je hebt de plaatjes van vandaag gebruikt. Morgen weer nieuwe.",
+      "off": "De plaatjes in dit boek zijn van jou (of er zijn er geen), dus Oomba schildert ze niet."
+    },
+    "pictures": {
+      "ai": "Oomba schildert ze",
+      "own": "Ik voeg mijn eigen toe",
+      "none": "Geen plaatjes"
+    },
+    "chat": {
+      "hello": "Laten we een boek maken.",
+      "noTheme": "Geen thema",
+      "contextAi": "Typ je ideeën in het vak hieronder en stuur ze, of voeg met de paperclip bestanden en plaatjes toe. Ze gaan in je boek, niet naar de chat. Controleer daarna wat er verstuurd wordt.",
+      "contextUpload": "Plak je verhaal in het vak hieronder en stuur het, of voeg het met de paperclip toe als bestand (plaatjes ook). Het gaat in je boek, niet naar de chat. Controleer daarna wat er verstuurd wordt.",
+      "added": "Aan je boek toegevoegd.",
+      "picsN": "{count, plural, one {# plaatje} other {# plaatjes}}",
+      "stop": "Stoppen",
+      "stopped": "Gestopt. Er is niets verstuurd.",
+      "clear": "Mijn woorden wissen",
+      "started": "Je boek komt eraan. Oomba schrijft het nu. Open het wanneer je wilt en vraag mij hier om wijzigingen.",
+      "startedCard": "Boek begonnen",
+      "picGone": "Een plaatje dat je toevoegde, is niet meer bewaard. Voeg het opnieuw toe.",
+      "tooManyPics": "Meer plaatjes kan een nieuw boek niet hebben.",
+      "tooManyFiles": "Meer bestanden kan een nieuw boek niet hebben.",
+      "fileGone": "Dat bestand is er niet meer. Voeg het opnieuw toe."
     }
   }
 }
