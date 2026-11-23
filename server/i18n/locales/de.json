@@ -6988,14 +6988,13 @@
     "description": "Oomba Academy neben drei anderen Werkzeugen für den Unterricht, nach Bedarf im Klassenzimmer: Live-Spiele, ein Klassen-Dashboard, virtuelle Mathe-Arbeitsmittel, Arbeitsblätter und eine KI-Begleitung für Lehrkräfte.",
     "kicker": "Für Lehrkräfte",
     "h1": "Oomba im Vergleich",
-    "lead": "Oomba Academy ist ein Ort für Ihre Klasse: Lernspiele und Live-Klassenspiele, ein Klassen-Dashboard, virtuelle Mathe-Arbeitsmittel mit Live-Räumen, Oomba Figuren für Diagramme und Arbeitsblätter, der Baumeister, mit dem Schüler eigene Spiele bauen, und Oomba, Ihre Begleitung beim Unterrichten.",
-    "checked": "Zuletzt geprüft: {date}",
+    "lead": "Oomba Academy vereint Lernspiele, ein Klassen-Dashboard, Mathe-Arbeitsmittel, Arbeitsblätter und eine Begleitung beim Unterrichten an einem Ort.",
     "table": {
       "h": "Nebeneinander, nach Bedarf im Klassenzimmer",
       "caption": "Was jedes Produkt für häufige Bedürfnisse im Klassenzimmer bietet. Die Angaben zu den anderen Produkten stammen von ihren eigenen öffentlichen Websites.",
       "need": "Bedarf im Klassenzimmer",
       "hint": "Schieben Sie die Tabelle zur Seite, um alle Produkte zu sehen.",
-      "legend": "Ja: angeboten. Teilweise: zum Teil angeboten. Nein: nicht angeboten. Nicht angegeben: Wir haben es auf ihrer öffentlichen Website nicht bestätigt."
+      "legend": "Nicht angegeben heißt: Wir haben es auf ihrer öffentlichen Website nicht gefunden."
     },
     "status": {
       "yes": "Ja",
@@ -7081,27 +7080,22 @@
     },
     "why": {
       "h": "Warum Lehrkräfte Oomba wählen",
-      "one": {
-        "h": "Ein Ort für den ganzen Schultag",
-        "p": "Spiele, das Klassen-Dashboard, Mathe-Arbeitsmittel und Arbeitsblätter teilen eine Anmeldung und eine Klassenliste, so gibt es weniger einzurichten und zu wechseln."
-      },
-      "make": {
-        "h": "Schüler erschaffen, nicht nur spielen",
-        "p": "Mit dem Baumeister beschreiben Schüler ein Spiel mit eigenen Worten und testen es: planen, schreiben und Fehler finden, ohne vorher programmieren zu können."
-      },
-      "safe": {
-        "h": "Für Kinder gemacht, in ihren Sprachen",
-        "p": "Keine Werbung, kein Verkauf von Daten und keine E-Mail-Adresse der Schüler nötig, vom Kindergarten bis Klasse 8, in {count} Sprachen."
-      }
+      "l1": "Spiele, ein Klassen-Dashboard und Mathe-Werkzeuge mit einer Anmeldung.",
+      "l2": "Schüler bauen eigene Spiele, statt sie nur zu spielen.",
+      "l3": "Keine Werbung, und wir verkaufen nie Daten, in {count} Sprachen."
     },
     "sources": {
-      "h": "Quellen und Hinweis",
-      "p": "Jede Angabe zu einem anderen Produkt, die nicht „Nicht angegeben“ lautet, hat eine nummerierte Anmerkung mit einem Link zur Seite auf dessen eigener Website, die sie belegt.",
-      "fnLabel": "Quelle {n}",
       "read": "gelesen am {date}",
-      "sites": "Ihre öffentlichen Websites:"
+      "sites": "Ihre öffentlichen Websites:",
+      "summary": "Quellen und wie wir geprüft haben ({count})",
+      "how": "Wir haben am {date} die eigenen öffentlichen Seiten jedes Produkts gelesen. Jedes Ja oder Teilweise zeigt die Worte auf ihrer Seite, die es belegen. Nicht angegeben heißt: Wir haben es dort nicht gefunden."
     },
-    "notice": "{names} sind Marken ihrer Inhaber. Oomba ist nicht mit ihnen verbunden. Der Vergleich beruht auf ihren öffentlichen Websites mit Stand {date}; <a href=\"{href}\">sagen Sie uns, wenn sich etwas geändert hat</a>."
+    "line": "Zuletzt geprüft: {date}. {names} sind Marken ihrer Inhaber; Oomba ist nicht mit ihnen verbunden. <a href=\"{href}\">Sagen Sie uns, wenn sich etwas geändert hat</a>.",
+    "info": {
+      "label": "Mehr zu {product}: {need}",
+      "source": "Auf ihrer Website, gelesen am {date}:",
+      "link": "Ihre Seite öffnen"
+    }
   },
   "connections": {
     "title": "Erwachsenen-Kontakte",

@@ -454,7 +454,7 @@
   "compare": {
     "title": "How Oomba compares: games, a class dashboard and maths tools in one place",
     "description": "Oomba Academy beside three other classroom tools, by classroom need: live games, a class dashboard, virtual maths manipulatives, worksheets and an AI teaching companion.",
-    "lead": "Oomba Academy is one place for your class: learning games and live class games, a class dashboard, virtual maths manipulatives with live rooms, Oomba Figures for diagrams and worksheets, the Builder where students make their own games, and Oomba, your teaching companion.",
+    "lead": "Oomba Academy puts learning games, a class dashboard, maths manipulatives, worksheets and a teaching companion in one place.",
     "rows": {
       "games": {
         "oomba": "Learning games for maths, reading, logic and music, and live class games on the big screen.",
@@ -468,9 +468,7 @@
       }
     },
     "why": {
-      "one": {
-        "p": "Games, the class dashboard, maths manipulatives and worksheets share one sign-in and one class list, so there is less to set up and switch between."
-      }
+      "l1": "Games, a class dashboard and maths tools with one sign-in."
     }
   },
   "live": {

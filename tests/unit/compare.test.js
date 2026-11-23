@@ -49,38 +49,59 @@ test('/compare: 200, indexable, one H1, canonical, breadcrumbs under Teachers, i
     const seg = c.toLowerCase(); const p = await get(`/${seg}/compare`);
     assert.equal(p.status, 200, `/${seg}/compare`);
     // Only the product names (never translated) and the quoted words from their websites are marked English.
-    const rest = main(p.text).replace(/<(th|span)[^>]*lang="en" dir="ltr">(?:Kahoot!|Classroomscreen|Brainingcamp)<\/\1>/g, '').replace(/<q class="cmp-quote" lang="en" dir="ltr">[^<]*<\/q>/g, '');
+    const rest = main(p.text).replace(/<(th|span)[^>]*lang="en" dir="ltr">(?:Kahoot!|Classroomscreen|Brainingcamp)<\/\1>/g, '').replace(/<q( class="cmp-quote")? lang="en" dir="ltr">[^<]*<\/q>/g, '');
     assert.doesNotMatch(rest, /lang="en"/, `/${seg}/compare: every string translated`);
   }
 });
 
-test('the table: real table markup, a header per product, a row header per need, a text label in every cell, legend and gate wording', async () => {
+// One <td>: its visible text (the "i" note left out), and its note, if it has one.
+const cellParts = td => {
+  const pop = /<div class="cmp-pop" id="([^"]+)" hidden>([\s\S]*?)<\/div>/.exec(td);
+  const btn = /<button type="button" class="cmp-i" aria-expanded="false" aria-controls="([^"]+)" aria-label="([^"]+)">/.exec(td);
+  return { visible: text(`<td${td}`.replace(/<div class="cmp-pop"[\s\S]*?<\/div>/, '').replace(/<button[\s\S]*?<\/button>/, '')).trim(), pop: pop && { id: pop[1], html: pop[2] }, btn: btn && { controls: btn[1], label: btn[2] } };
+};
+const tableRows = h => h.slice(h.indexOf('<tbody>'), h.indexOf('</tbody>')).split('<tr ').slice(1);
+
+test('the table: real table markup, one word per cell (plus the gate tag), details behind an accessible "i", legend and one notice line', async () => {
   const h = main((await get('/compare')).text);
   assert.match(h, /<table class="cmp-table">\s*<caption>/);
   const heads = [...h.matchAll(/<th scope="col"[^>]*>([^<]*)<\/th>/g)].map(m => m[1]);
   assert.deepEqual(heads, ['Classroom need', 'Oomba', 'Kahoot!', 'Classroomscreen', 'Brainingcamp']);
-  const body = h.slice(h.indexOf('<tbody>'), h.indexOf('</tbody>'));
-  const trs = body.split('<tr ').slice(1);
+  const trs = tableRows(h);
   assert.equal(trs.length, rows().length);
+  const gated = new Set(C.ROWS.filter(r => r.gated).map(r => r.id));
   for (const tr of trs) {
+    const id = /id="row-([a-zA-Z]+)"/.exec(tr)[1];
     assert.equal((tr.match(/<th scope="row"/g) || []).length, 1);
+    assert.doesNotMatch(tr, /<sup|cmp-fn|cmp-detail/, `${id}: no footnote numbers or long text in the table`);
     const tds = tr.split('<td').slice(1);
     assert.equal(tds.length, 4, 'Oomba and three products');
-    for (const td of tds) assert.match(td, /<span class="cmp-mark cmp-(yes|partial|no|notStated)">(?:<img[^>]*alt=""[^>]*aria-hidden="true"[^>]*>)?<b>(Yes|Partial|No|Not stated)<\/b>/, 'a word, never color or an icon alone');
+    for (const td of tds) {
+      assert.match(td, /<span class="cmp-mark cmp-(yes|partial|no|notStated)">(?:<svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>|<img[^>]*aria-hidden="true"[^>]*>)?<b>(Yes|Partial|No|Not stated)<\/b>/, 'a word, never color or an icon alone');
+      const p = cellParts(td);
+      assert.match(p.visible, /^(Yes|Partial|No|Not stated)( In testing)?$/, `${id}: only the word (and the tag): "${p.visible}"`);
+      if (p.btn) { assert.ok(p.pop && p.btn.controls === p.pop.id, `${id}: the button controls its note`); assert.match(p.btn.label, /^More about .+: .+/); assert.match(td, /class="cmp-i"[^>]*>(<svg|<img)[^>]*aria-hidden="true"/, 'the icon is decorative; the button has its name'); }
+    }
+    // Oomba: Yes, the tag on the teaching tools (plans are off in unit tests: "In testing"), its detail behind the "i".
+    const us = cellParts(tds[0]);
+    assert.equal(us.visible, gated.has(id) ? 'Yes In testing' : 'Yes', id);
+    assert.ok(us.btn && us.pop && text(us.pop.html).trim().length > 10, `${id}: Oomba's detail is behind its "i"`);
   }
-  assert.ok(text(h).includes('Not stated: we have not confirmed it from their public website.'), 'the legend says what Not stated means');
-  assert.match(h, /role="region" aria-labelledby="table-h" tabindex="0"/, 'the scroll box can be reached by keyboard');
-  // Plans are off in unit tests: the teaching tools are "In testing", like the See it in action note.
-  const gated = new Set(C.ROWS.filter(r => r.gated).map(r => r.id));
-  for (const tr of trs) { const id = /id="row-([a-zA-Z]+)"/.exec(tr)[1]; assert.equal(tr.includes('<span class="cmp-tag">In testing</span>'), gated.has(id), id); }
+  assert.ok(text(h).includes('Not stated means we did not find it on their public website.'));
   assert.ok(!h.includes('Teacher plan</span>'));
-  for (const s of ['Last checked:', 'Why teachers pick Oomba', 'Kahoot!, Classroomscreen and Brainingcamp are trademarks of their owners. Oomba is not affiliated with them. Comparison based on their public websites as of'])
-    assert.ok(text(h).includes(s), s);
-  assert.match(h, /<a href="mailto:[^"]+">tell us if something changed<\/a>/, 'the notice links the site contact address');
+  const line = /<p class="cmp-line" id="notice">([\s\S]*?)<\/p>/.exec(h)[1];
+  assert.match(text(line).replace(/ ([.;])/g, '$1').trim(), /^Last checked November 22, 2026\. Kahoot!, Classroomscreen and Brainingcamp are trademarks of their owners; Oomba is not affiliated with them\. Tell us if something changed\.$/);
+  assert.match(line, /<a href="mailto:[^"]+">Tell us if something changed<\/a>/, 'the notice links the site contact address');
+  // Short: a one-sentence intro, three short lines, the sign-up button.
+  const lead = /<p class="lead">([\s\S]*?)<\/p>/.exec(h)[1];
+  assert.equal((lead.match(/\.(\s|$)/g) || []).length, 1, 'one sentence');
+  const why = /<ul class="cmp-why">([\s\S]*?)<\/ul>/.exec(h)[1].split('<li').slice(1).map(x => text(`<li${x}`).trim());
+  assert.equal(why.length, 3); for (const w of why) assert.ok(w.length <= 80, w);
   assert.match(h, /<a class="btn btn-primary btn-big" href="\/teachers#start">Get a free school account<\/a>|href="\/trial"/, 'the sign-up button');
+  assert.match((await get('/compare')).text, /<script type="module" src="\/js\/compare-info\.js\?v=/);
 });
 
-test('every claim about another product has a source on its own website, shown as a footnote; Not stated has none', async () => {
+test('every claim about another product has a source: behind its cell\'s "i" and in the Sources, collapsed by default', async () => {
   assert.ok(Object.values(C.CELLS).some(r => Object.values(r).some(c => c.s !== 'notStated')), 'the researched cells are there');
   const sites = Object.fromEntries(C.COMPETITORS.map(c => [c.id, new URL(c.site).hostname.replace(/^www\./, '')]));
   for (const [rowId, byComp] of Object.entries(C.CELLS)) {
@@ -98,30 +119,36 @@ test('every claim about another product has a source on its own website, shown a
     }
   }
   const h = main((await get('/compare')).text);
-  const body = h.slice(h.indexOf('<tbody>'), h.indexOf('</tbody>'));
-  for (const tr of body.split('<tr ').slice(1)) {
-    for (const td of tr.split('<td').slice(2)) {
-      const claim = !td.includes('cmp-notStated');
-      const fn = /<a href="#fn-(\d+)"/.exec(td);
-      assert.equal(!!fn, claim, 'a footnote exactly when the cell claims something');
-      if (fn) assert.match(h, new RegExp(`<li id="fn-${fn[1]}">`));
-    }
+  const esc = s => s.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  for (const tr of tableRows(h)) {
+    const id = /id="row-([a-zA-Z]+)"/.exec(tr)[1];
+    tr.split('<td').slice(2).forEach((td, i) => {
+      const comp = C.COMPETITORS[i]; const cell = C.cellOf(id, comp.id); const p = cellParts(td);
+      if (cell.s === 'notStated') { assert.ok(!p.btn, `${id}.${comp.id}: Not stated makes no claim and has no "i"`); return; }
+      assert.ok(p.btn && p.pop, `${id}.${comp.id}: the claim's source is reachable from its cell`);
+      assert.ok(p.pop.html.includes(`<q lang="en" dir="ltr">${esc(cell.src.quote)}</q>`), `${id}.${comp.id}: the quote`);
+      assert.ok(p.pop.html.includes(`href="${cell.src.url}"`), `${id}.${comp.id}: the link to their page`);
+      assert.ok(text(p.pop.html).includes('November 22, 2026'), `${id}.${comp.id}: the day it was read`);
+    });
   }
-  // Each footnote shows the exact words from their page.
-  for (const f of C.footnotes().list) assert.ok(h.includes(`<li id="fn-${f.n}">`) && h.includes(`<q class="cmp-quote" lang="en" dir="ltr">${f.quote.replace(/'/g, '&#39;')}</q>`), `footnote ${f.n} quotes its source`);
-  // The footnote numbering itself: one number per source (address and words), in table order.
+  // The Sources: a native <details>, collapsed by default, with every source's words, address and day.
+  const det = /<details class="panel cmp-src" id="sources">([\s\S]*?)<\/details>/.exec(h);
+  assert.ok(det, 'Sources is a <details> with no open attribute: collapsed by default');
+  const list = C.footnotes(C.CELLS, rows()).list;
+  assert.match(det[1], new RegExp(`<summary>Sources and how we checked \\(${list.length}\\)</summary>`));
+  for (const f of list) assert.ok(det[1].includes(`<q class="cmp-quote" lang="en" dir="ltr">${esc(f.quote)}</q>`) && det[1].includes(`href="${f.url}"`), `source ${f.n} in the Sources`);
+  // The sources list itself: one entry per source (address and words), in table order.
   const fake = { games: { kahoot: { s: 'yes', src: { url: 'https://kahoot.com/a', checked: '2026-11-01', quote: 'supporting words' } } },
     build: { kahoot: { s: 'partial', src: { url: 'https://kahoot.com/a', checked: '2026-11-01', quote: 'more words here' } }, brainingcamp: { s: 'no', src: { url: 'https://www.brainingcamp.com/b', checked: '2026-11-01', quote: 'other words' } } } };
   const n = C.footnotes(fake);
   assert.deepEqual(n.list.map(f => [f.n, f.url]), [[1, 'https://kahoot.com/a'], [2, 'https://kahoot.com/a'], [3, 'https://www.brainingcamp.com/b']]);
   assert.equal(n.numOf('games', 'kahoot'), 1); assert.equal(n.numOf('build', 'kahoot'), 2); assert.equal(n.numOf('build', 'brainingcamp'), 3); assert.equal(n.numOf('games', 'classroomscreen'), 0);
-  const again = C.footnotes({ games: fake.games, build: { kahoot: fake.games.kahoot } });
-  assert.equal(again.list.length, 1, 'the same source twice is one footnote');
+  assert.equal(C.footnotes({ games: fake.games, build: { kahoot: fake.games.kahoot } }).list.length, 1, 'the same source twice is one entry');
   assert.deepEqual(C.cellOf('free', 'kahoot', {}), { s: 'notStated' });
 });
 
 test('the three names appear only on /compare: no other file the site serves, prompts or tests, and no locale string', async () => {
-  const ALLOWED = new Set(['server/routes/compare.js', 'tests/unit/compare.test.js']);
+  const ALLOWED = new Set(['server/routes/compare.js', 'tests/unit/compare.test.js', 'tests/unit/compare-browser.test.js']);
   const TEXT = /\.(js|mjs|cjs|json|html|css|txt|md|svg|vtt|yaml|yml|csv|py|sh)$/i;
   const files = execFileSync('git', ['ls-files', '-z'], { cwd: ROOT, maxBuffer: 1 << 28 }).toString().split('\0').filter(Boolean);
   const scanned = files.filter(f => !f.startsWith('docs/') && TEXT.test(f) && !ALLOWED.has(f));

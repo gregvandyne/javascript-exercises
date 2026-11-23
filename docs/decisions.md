@@ -11698,3 +11698,13 @@ exception, for one page only: `/compare`, "How Oomba compares", may name **Kahoo
   never scrolls sideways; the box can be reached and scrolled by keyboard.
 - **Legal.** docs/legal-review.md "Comparison page naming Kahoot!, Classroomscreen, Brainingcamp: lawyer review
   pending".
+- **Simpler (23 Nov 2026).** The owner: "needs to be much more simple". Each cell is now its mark and one word (Yes,
+  Partial, Not stated) and, on Oomba's teaching tools, the small "In testing" / "Teacher plan" tag; no footnote numbers
+  or long text in the table. The detail moved behind a small "i" button in the cell (`public/js/compare-info.js`): a
+  real button with `aria-expanded` and `aria-controls`, its note right after it (so Tab goes into it), opened by tap,
+  click or keyboard, closed by Escape (focus back on the button), a tap outside or Tab past it; placed with
+  `position: fixed` so the table's scroll box never cuts it off. Oomba's note is the cell's detail; another product's
+  Yes or Partial note is the quote, the day it was read and a link to their page. The sources are one native
+  `<details>` at the end, collapsed by default ("Sources and how we checked (24)"). The intro is one sentence, "Why
+  teachers pick Oomba" three short lines, then the sign-up button; "Last checked" and the trademark notice are one
+  short line under the table. Tests: `tests/unit/compare.test.js` and `tests/unit/compare-browser.test.js`.

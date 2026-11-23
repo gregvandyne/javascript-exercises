@@ -6987,14 +6987,13 @@
     "description": "Oomba Academy junto a otras tres herramientas para el aula, según cada necesidad de la clase: juegos en vivo, un panel de clase, manipulativos matemáticos virtuales, hojas de trabajo y un compañero docente con IA.",
     "kicker": "Para docentes",
     "h1": "Cómo se compara Oomba",
-    "lead": "Oomba Academy es un solo lugar para su clase: juegos educativos y juegos de clase en vivo, un panel de clase, manipulativos matemáticos virtuales con salas en vivo, Oomba Figuras para diagramas y hojas de trabajo, el Constructor donde los estudiantes crean sus propios juegos y Oomba, su compañero para enseñar.",
-    "checked": "Última revisión: {date}",
+    "lead": "Oomba Academy reúne juegos educativos, un panel de clase, manipulativos matemáticos, hojas de trabajo y un compañero para enseñar en un solo lugar.",
     "table": {
       "h": "Lado a lado, por necesidad de la clase",
       "caption": "Lo que ofrece cada producto para necesidades comunes del aula. Los datos de los otros productos vienen de sus propios sitios web públicos.",
       "need": "Necesidad de la clase",
       "hint": "Deslice la tabla hacia un lado para ver todos los productos.",
-      "legend": "Sí: lo ofrece. Parcial: lo ofrece en parte. No: no lo ofrece. No indicado: no lo hemos confirmado en su sitio web público."
+      "legend": "No indicado significa que no lo encontramos en su sitio web público."
     },
     "status": {
       "yes": "Sí",
@@ -7080,27 +7079,22 @@
     },
     "why": {
       "h": "Por qué los docentes eligen Oomba",
-      "one": {
-        "h": "Un solo lugar para todo el día de clase",
-        "p": "Los juegos, el panel de clase, los manipulativos y las hojas de trabajo comparten un inicio de sesión y una lista de clase, así hay menos que preparar y menos cambios entre herramientas."
-      },
-      "make": {
-        "h": "Los estudiantes crean, no solo juegan",
-        "p": "Con el Constructor, los estudiantes describen un juego con sus propias palabras y lo prueban: planificar, escribir y depurar sin saber programar."
-      },
-      "safe": {
-        "h": "Hecho para niños, en sus idiomas",
-        "p": "Sin anuncios, sin vender la información de nadie y sin pedir el correo de los estudiantes, de kínder a 8.º grado, en {count} idiomas."
-      }
+      "l1": "Juegos, un panel de clase y herramientas de matemáticas con un solo inicio de sesión.",
+      "l2": "Los estudiantes crean sus propios juegos, no solo los juegan.",
+      "l3": "Sin anuncios, y nunca vendemos la información de nadie, en {count} idiomas."
     },
     "sources": {
-      "h": "Fuentes y aviso",
-      "p": "Cada dato de otro producto que no dice \"No indicado\" tiene una nota numerada con un enlace a la página de su propio sitio web que lo respalda.",
-      "fnLabel": "Fuente {n}",
       "read": "leído el {date}",
-      "sites": "Sus sitios web públicos:"
+      "sites": "Sus sitios web públicos:",
+      "summary": "Fuentes y cómo lo revisamos ({count})",
+      "how": "Leímos las páginas públicas de cada producto el {date}. Cada Sí o Parcial muestra las palabras de su página que lo respaldan. No indicado significa que no lo encontramos allí."
     },
-    "notice": "{names} son marcas de sus dueños. Oomba no está afiliado con ellos. Comparación basada en sus sitios web públicos al {date}; <a href=\"{href}\">avísenos si algo cambió</a>."
+    "line": "Última revisión: {date}. {names} son marcas de sus dueños; Oomba no está afiliado con ellos. <a href=\"{href}\">Avísenos si algo cambió</a>.",
+    "info": {
+      "label": "Más sobre {product}: {need}",
+      "source": "En su sitio web, leído el {date}:",
+      "link": "Abrir su página"
+    }
   },
   "connections": {
     "title": "Contactos adultos",

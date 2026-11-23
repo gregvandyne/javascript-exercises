@@ -6988,14 +6988,13 @@
     "description": "Oomba Academy accanto ad altri tre strumenti per la classe, bisogno per bisogno: giochi dal vivo, una bacheca di classe, materiali manipolativi virtuali di matematica, schede e un compagno per insegnare con l’IA.",
     "kicker": "Per gli insegnanti",
     "h1": "Oomba a confronto",
-    "lead": "Oomba Academy è un solo posto per la sua classe: giochi educativi e giochi di classe dal vivo, una bacheca di classe, materiali manipolativi virtuali di matematica con stanze dal vivo, Oomba Figure per diagrammi e schede, il Costruttore dove gli studenti creano i propri giochi e Oomba, il suo compagno per insegnare.",
-    "checked": "Ultimo controllo: {date}",
+    "lead": "Oomba Academy riunisce giochi educativi, una bacheca di classe, materiali manipolativi di matematica, schede e un compagno per insegnare in un solo posto.",
     "table": {
       "h": "Fianco a fianco, per bisogno della classe",
       "caption": "Cosa offre ogni prodotto per i bisogni comuni della classe. Le caselle degli altri prodotti vengono dai loro siti web pubblici.",
       "need": "Bisogno della classe",
       "hint": "Faccia scorrere la tabella di lato per vedere tutti i prodotti.",
-      "legend": "Sì: offerto. In parte: offerto in parte. No: non offerto. Non indicato: non l’abbiamo confermato sul loro sito web pubblico."
+      "legend": "Non indicato significa che non l’abbiamo trovato sul loro sito web pubblico."
     },
     "status": {
       "yes": "Sì",
@@ -7081,27 +7080,22 @@
     },
     "why": {
       "h": "Perché gli insegnanti scelgono Oomba",
-      "one": {
-        "h": "Un solo posto per tutta la giornata di classe",
-        "p": "Giochi, bacheca di classe, materiali manipolativi e schede condividono un accesso e un elenco della classe: meno da preparare e meno passaggi tra strumenti."
-      },
-      "make": {
-        "h": "Gli studenti creano, non solo giocano",
-        "p": "Con il Costruttore, gli studenti descrivono un gioco con parole loro e lo provano: pianificare, scrivere e correggere errori senza saper programmare."
-      },
-      "safe": {
-        "h": "Fatto per i bambini, nelle loro lingue",
-        "p": "Niente pubblicità, nessuna vendita di informazioni e nessuna e-mail degli studenti, dall’infanzia all’ottavo anno, in {count} lingue."
-      }
+      "l1": "Giochi, una bacheca di classe e strumenti di matematica con un solo accesso.",
+      "l2": "Gli studenti creano i propri giochi, non si limitano a giocarli.",
+      "l3": "Niente pubblicità, e non vendiamo mai le informazioni di nessuno, in {count} lingue."
     },
     "sources": {
-      "h": "Fonti e avviso",
-      "p": "Ogni casella di un altro prodotto che non dice \"Non indicato\" ha una nota numerata con un link alla pagina del suo sito che la conferma.",
-      "fnLabel": "Fonte {n}",
       "read": "letto il {date}",
-      "sites": "I loro siti web pubblici:"
+      "sites": "I loro siti web pubblici:",
+      "summary": "Fonti e come abbiamo controllato ({count})",
+      "how": "Il {date} abbiamo letto le pagine pubbliche di ogni prodotto. Ogni Sì o In parte mostra le parole della loro pagina che lo confermano. Non indicato significa che non l’abbiamo trovato lì."
     },
-    "notice": "{names} sono marchi dei rispettivi proprietari. Oomba non è affiliato con loro. Confronto basato sui loro siti web pubblici al {date}; <a href=\"{href}\">ci dica se qualcosa è cambiato</a>."
+    "line": "Ultimo controllo: {date}. {names} sono marchi dei rispettivi proprietari; Oomba non è affiliato con loro. <a href=\"{href}\">Ci dica se qualcosa è cambiato</a>.",
+    "info": {
+      "label": "Altro su {product}: {need}",
+      "source": "Sul loro sito, letto il {date}:",
+      "link": "Apri la loro pagina"
+    }
   },
   "connections": {
     "title": "Contatti adulti",

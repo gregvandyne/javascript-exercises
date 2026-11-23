@@ -6988,14 +6988,13 @@
     "description": "Oomba Academy naast drie andere hulpmiddelen voor de klas, per behoefte: live games, een klasdashboard, virtuele rekenmaterialen, werkbladen en een AI-maatje voor leerkrachten.",
     "kicker": "Voor leerkrachten",
     "h1": "Oomba vergeleken",
-    "lead": "Oomba Academy is één plek voor je klas: leergames en live klassengames, een klasdashboard, virtuele rekenmaterialen met live ruimtes, Oomba Figuren voor diagrammen en werkbladen, de Bouwer waarmee leerlingen hun eigen games maken, en Oomba, je maatje bij het lesgeven.",
-    "checked": "Laatst gecontroleerd: {date}",
+    "lead": "Oomba Academy brengt leergames, een klasdashboard, rekenmaterialen, werkbladen en een maatje bij het lesgeven samen op één plek.",
     "table": {
       "h": "Naast elkaar, per behoefte in de klas",
       "caption": "Wat elk product biedt voor veelvoorkomende behoeften in de klas. De vakjes van de andere producten komen van hun eigen openbare websites.",
       "need": "Behoefte in de klas",
       "hint": "Schuif de tabel opzij om alle producten te zien.",
-      "legend": "Ja: aangeboden. Deels: gedeeltelijk aangeboden. Nee: niet aangeboden. Niet vermeld: we hebben het niet bevestigd op hun openbare website."
+      "legend": "Niet vermeld betekent dat we het niet op hun openbare website vonden."
     },
     "status": {
       "yes": "Ja",
@@ -7081,27 +7080,22 @@
     },
     "why": {
       "h": "Waarom leerkrachten voor Oomba kiezen",
-      "one": {
-        "h": "Eén plek voor de hele schooldag",
-        "p": "Games, het klasdashboard, rekenmaterialen en werkbladen delen één login en één klassenlijst, dus er is minder in te stellen en minder te wisselen."
-      },
-      "make": {
-        "h": "Leerlingen maken, niet alleen spelen",
-        "p": "Met de Bouwer beschrijven leerlingen een game in hun eigen woorden en testen ze hem: plannen, schrijven en fouten zoeken, zonder eerst te kunnen programmeren."
-      },
-      "safe": {
-        "h": "Gemaakt voor kinderen, in hun talen",
-        "p": "Geen advertenties, geen verkoop van gegevens en geen e-mailadres van leerlingen nodig, van kleuterklas tot grade 8, in {count} talen."
-      }
+      "l1": "Games, een klasdashboard en rekentools met één login.",
+      "l2": "Leerlingen maken hun eigen games, niet alleen spelen.",
+      "l3": "Geen advertenties, en we verkopen nooit iemands gegevens, in {count} talen."
     },
     "sources": {
-      "h": "Bronnen en vermelding",
-      "p": "Elk vakje van een ander product dat niet \"Niet vermeld\" zegt, heeft een genummerde noot met een link naar de pagina op hun eigen website die het onderbouwt.",
-      "fnLabel": "Bron {n}",
       "read": "gelezen op {date}",
-      "sites": "Hun openbare websites:"
+      "sites": "Hun openbare websites:",
+      "summary": "Bronnen en hoe we het controleerden ({count})",
+      "how": "We lazen op {date} de eigen openbare pagina’s van elk product. Elk Ja of Deels toont de woorden op hun pagina die het onderbouwen. Niet vermeld betekent dat we het daar niet vonden."
     },
-    "notice": "{names} zijn handelsmerken van hun eigenaren. Oomba is niet aan hen verbonden. Vergelijking op basis van hun openbare websites per {date}; <a href=\"{href}\">laat het ons weten als er iets veranderd is</a>."
+    "line": "Laatst gecontroleerd: {date}. {names} zijn handelsmerken van hun eigenaren; Oomba is niet aan hen verbonden. <a href=\"{href}\">Laat het ons weten als er iets veranderd is</a>.",
+    "info": {
+      "label": "Meer over {product}: {need}",
+      "source": "Op hun website, gelezen op {date}:",
+      "link": "Hun pagina openen"
+    }
   },
   "connections": {
     "title": "Volwassen contacten",

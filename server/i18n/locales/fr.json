@@ -6987,14 +6987,13 @@
     "description": "Oomba Academy à côté de trois autres outils pour la classe, besoin par besoin : jeux en direct, tableau de bord de classe, manipulables mathématiques virtuels, fiches d’exercices et un compagnon d’enseignement avec IA.",
     "kicker": "Pour les enseignants",
     "h1": "Oomba comparé",
-    "lead": "Oomba Academy réunit tout pour votre classe : des jeux éducatifs et des jeux de classe en direct, un tableau de bord de classe, des manipulables mathématiques virtuels avec des salles en direct, Oomba Figures pour les schémas et les fiches, le Constructeur où les élèves créent leurs propres jeux, et Oomba, votre compagnon pour enseigner.",
-    "checked": "Dernière vérification : {date}",
+    "lead": "Oomba Academy réunit des jeux éducatifs, un tableau de bord de classe, des manipulables mathématiques, des fiches et un compagnon pour enseigner au même endroit.",
     "table": {
       "h": "Côte à côte, besoin par besoin",
       "caption": "Ce que chaque produit propose pour des besoins courants en classe. Les cases des autres produits viennent de leurs propres sites web publics.",
       "need": "Besoin en classe",
       "hint": "Faites glisser le tableau sur le côté pour voir tous les produits.",
-      "legend": "Oui : proposé. Partiel : proposé en partie. Non : pas proposé. Non indiqué : nous ne l’avons pas confirmé sur leur site web public."
+      "legend": "Non indiqué signifie que nous ne l’avons pas trouvé sur leur site web public."
     },
     "status": {
       "yes": "Oui",
@@ -7080,27 +7079,22 @@
     },
     "why": {
       "h": "Pourquoi les enseignants choisissent Oomba",
-      "one": {
-        "h": "Un seul endroit pour toute la journée de classe",
-        "p": "Les jeux, le tableau de bord, les manipulables et les fiches partagent une connexion et une liste de classe : moins à préparer, moins d’allers-retours."
-      },
-      "make": {
-        "h": "Les élèves créent, pas seulement jouer",
-        "p": "Avec le Constructeur, les élèves décrivent un jeu avec leurs mots et le testent : planifier, écrire et corriger, sans savoir coder au départ."
-      },
-      "safe": {
-        "h": "Fait pour les enfants, dans leurs langues",
-        "p": "Pas de publicité, aucune vente d’informations et pas d’e-mail d’élève, de la maternelle à la 8e année, en {count} langues."
-      }
+      "l1": "Des jeux, un tableau de bord de classe et des outils de maths avec une seule connexion.",
+      "l2": "Les élèves créent leurs propres jeux, pas seulement y jouer.",
+      "l3": "Pas de publicité, et nous ne vendons jamais les informations de personne, en {count} langues."
     },
     "sources": {
-      "h": "Sources et mention",
-      "p": "Chaque case d’un autre produit qui n’indique pas « Non indiqué » a une note numérotée avec un lien vers la page de son propre site qui l’appuie.",
-      "fnLabel": "Source {n}",
       "read": "lu le {date}",
-      "sites": "Leurs sites web publics :"
+      "sites": "Leurs sites web publics :",
+      "summary": "Sources et méthode de vérification ({count})",
+      "how": "Nous avons lu les pages publiques de chaque produit le {date}. Chaque Oui ou Partiel montre les mots de leur page qui l’appuient. Non indiqué signifie que nous ne l’y avons pas trouvé."
     },
-    "notice": "{names} sont des marques de leurs propriétaires. Oomba n’est pas affilié à eux. Comparaison fondée sur leurs sites web publics au {date} ; <a href=\"{href}\">dites-nous si quelque chose a changé</a>."
+    "line": "Dernière vérification : {date}. {names} sont des marques de leurs propriétaires ; Oomba n’est pas affilié à eux. <a href=\"{href}\">Dites-nous si quelque chose a changé</a>.",
+    "info": {
+      "label": "En savoir plus sur {product} : {need}",
+      "source": "Sur leur site, lu le {date} :",
+      "link": "Ouvrir leur page"
+    }
   },
   "connections": {
     "title": "Contacts adultes",
