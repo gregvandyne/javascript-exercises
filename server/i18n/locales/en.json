@@ -4229,7 +4229,7 @@
       "capped": "At most {max} problems fit on one board, so it has {max}.",
       "boardOf": "{tool} board",
       "liveRoom": "Live room",
-      "greetLine": "Tell me the lesson you'd like on this {tool} board.",
+      "greetLine": "Tell me the lesson you’d like on this {tool} board.",
       "greetLineHas": "Ask me to change something on your {tool} board."
     },
     "oomba-chat": {
