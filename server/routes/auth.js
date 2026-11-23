@@ -3,6 +3,7 @@ import express, { Router } from 'express';
 import fs from 'node:fs';
 import { html, raw } from '../views/html.js';
 import { page, landingFor, VERSION, plansInMenu, tabKey } from '../views/layout.js';
+import { wordmark } from '../views/brand.js';
 import { avatar, notYou, makeGameBtn } from '../views/components.js';
 import * as auth from '../auth.js';
 import { q, audit } from '../db.js';
@@ -78,7 +79,7 @@ function loginPage(req, res) {
   }
   if (u && !u.is_guest) return res.redirect(nextFor(u, wantedNext(req.query.next)) || homeFor(u));
   const body = html`<div class="authbox"><div class="panel">
-      <div class="center" style="font-size:3rem" aria-hidden="true">👋</div>
+      <div class="auth-logo" aria-hidden="true">${wordmark()}<span class="auth-logo-sub">Academy</span></div>
       <h1 class="center">${t('auth.page.headingLogin')}</h1>
       ${req.query.signedout === '1' || req.sessionEnded ? html`<p class="notice warn" role="status">${t('auth.page.signedOut')}</p>` : ''}
       ${req.query.reset === '1' ? html`<p class="notice good" role="status" id="reset-done">${t('auth.reset.done')}</p>` : ''}
