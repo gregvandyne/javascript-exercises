@@ -104,7 +104,9 @@ export function clip(s, n = 155) {
  * than one written language), Open Graph, Twitter card and JSON-LD.
  */
 export function seoHead(req, seo, { title, description }) {
-  if (!seo || !seo.index) return `<meta name="robots" content="${seo && seo.robots ? esc(seo.robots) : 'noindex'}">`;
+  // Not for search engines, but still a share picture when the page names one (a link pasted into a chat or a post):
+  // the title, description and picture only, no canonical or hreflang.
+  if (!seo || !seo.index) return [`<meta name="robots" content="${seo && seo.robots ? esc(seo.robots) : 'noindex'}">`, ...(seo && seo.image ? shareTags(req, seo, { title, description }) : [])].join('\n');
   // The page's language is the address's, never the visitor's header, cookie or account: a plain address is always the
   // English (x-default) page, indexable and its own canonical, whoever asks for it.
   const loc = req.pathLocale || DEFAULT_LOCALE;
@@ -142,6 +144,25 @@ export function seoHead(req, seo, { title, description }) {
   );
   for (const d of seo.jsonld || []) out.push(ldScript(d));
   return out.join('\n');
+}
+
+/** The share tags of a page that is not indexed but has a picture (seo.image). */
+function shareTags(req, seo, { title, description }) {
+  const image = abs(req, seo.image);
+  return [
+    `<meta property="og:site_name" content="${BRAND}">`,
+    `<meta property="og:type" content="${esc(seo.type || 'website')}">`,
+    `<meta property="og:title" content="${esc(title)}">`,
+    `<meta property="og:description" content="${esc(description)}">`,
+    `<meta property="og:image" content="${esc(image)}">`,
+    ...(String(seo.image).startsWith('/og/') ? [`<meta property="og:image:width" content="${OG_W}">`, `<meta property="og:image:height" content="${OG_H}">`] : []),
+    `<meta property="og:image:alt" content="${esc(seo.imageAlt || title)}">`,
+    '<meta name="twitter:card" content="summary_large_image">',
+    `<meta name="twitter:title" content="${esc(title)}">`,
+    `<meta name="twitter:description" content="${esc(description)}">`,
+    `<meta name="twitter:image" content="${esc(image)}">`,
+    `<meta name="twitter:image:alt" content="${esc(seo.imageAlt || title)}">`,
+  ];
 }
 
 // ---------------------------------------------------------------------------------------------------- structured data

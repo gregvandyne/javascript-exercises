@@ -13,6 +13,7 @@ import express, { Router } from 'express';
 import fs from 'node:fs';
 import { html, raw } from '../views/html.js';
 import { ico } from '../views/icon.js';
+import { iconLine } from '../../public/js/icons.js';
 import { folded } from './info.js';
 import { page, notFound, parentsLabel, signedOut, VERSION } from '../views/layout.js';
 import { coverArt, gameCard, rail } from '../views/components.js';
@@ -39,6 +40,7 @@ import { normId as stdNorm } from '../standards/ccss.js';
 import { codeChips, attribution as stdNotice } from '../views/standards.js';
 import { HUBS, hubBySlug, LEARNING, TEACHER_GAMES, HUB_FAQ, TEACHER_FAQ, HOME_TIPS, AGES, gradeBand, SUBJECTS, SHELF_INFO, shelfGrades, TWO_PLAYER } from '../learn.js';
 import { teacherLoop } from '../views/teacher-loop.js';
+import { shotScheme } from '../views/shot.js';
 import { loopLinks } from '../services/teach-loop.js';
 import { LOOP_CSS } from './teach-loop.js';
 import { seeIt } from '../views/see-it.js';
@@ -70,6 +72,8 @@ function demoVideo(req) {
 export const fb = (t, key) => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
 /** One string as an element, marked when it is the English fallback. */
 export const el = (t, tag, key, vars, attrs = '') => raw(`<${tag}${attrs}${fb(t, key)}>${tHtml(t, key, vars)}</${tag}>`);
+/** The pill above a page's heading ("🍎 For teachers"): its leading emoji drawn as the site's icon (public/js/icons.js). */
+export const kickerEl = (t, key) => raw(`<p class="lp-kicker"${fb(t, key)}>${iconLine(t(key), 18)}</p>`);
 /** A page's links stay in the language address the reader came in on (/es/learn/… -> /es/g/…). */
 export const lp = (req, path) => (req.pathLocale && seo.localizable(path) ? seo.localeUrl(path, req.pathLocale) : path);
 
@@ -317,11 +321,11 @@ router.get('/teachers', (req, res) => {
   const body = html`<div class="lp">
   ${sent ? startPanel : ''}
   <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
-    ${el(t, 'p', 'teachers.kicker', {}, ' class="lp-kicker"')}
+    ${kickerEl(t, 'teachers.kicker')}
     ${el(t, 'h1', 'teachers.h1', {}, ' id="lp-h1"')}
     ${el(t, 'p', 'teachers.lead', {}, ' class="lead"')}
     <p class="small lp-leader">${ico('🏫', { size: 18 })} ${tHtml(t, 'teachers.leaderLine', { href: '#start' })}</p>
-    <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${e}</span> ${el(t, 'span', k)}</li>`)}</ul>
+    <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${ico(e, { size: 20 })}</span> ${el(t, 'span', k)}</li>`)}</ul>
     ${el(t, 'p', plans ? 'teachers.free.line' : 'teachers.free.lineOff', { daily: req.fmt.int(config.teacherDailyMessages), plans: '/plans' }, ' class="lp-freeline"')}
     <div class="row lp-cta">
       <a class="btn btn-primary btn-big" href="#start">${t('teachers.cta.start')}</a>
@@ -344,10 +348,10 @@ router.get('/teachers', (req, res) => {
   </section>
 
   <section class="lp-sec" id="subjects" aria-labelledby="subj-h">
-    ${folded(el(t, 'h2', 'teachers.subjects.h', {}, ' id="subj-h"'), html`<ul class="lp-hubs">${HUBS.map(h => html`<li><a class="lp-hub panel" href="${lp(req, `/learn/${h.slug}`)}"><span class="lp-hub-e" aria-hidden="true">${h.emoji}</span><span>${el(t, 'span', `learn.hubs.${h.key}.name`, {}, ' class="lp-hub-t"')}${el(t, 'span', `learn.hubs.${h.key}.short`, {}, ' class="lp-hub-d"')}</span></a></li>`)}</ul>`)}
+    ${folded(el(t, 'h2', 'teachers.subjects.h', {}, ' id="subj-h"'), html`<ul class="lp-hubs">${HUBS.map(h => html`<li><a class="lp-hub panel" href="${lp(req, `/learn/${h.slug}`)}"><span class="lp-hub-e" aria-hidden="true">${ico(h.emoji, { size: 32 })}</span><span>${el(t, 'span', `learn.hubs.${h.key}.name`, {}, ' class="lp-hub-t"')}${el(t, 'span', `learn.hubs.${h.key}.short`, {}, ' class="lp-hub-d"')}</span></a></li>`)}</ul>`)}
   </section>
 
-  ${teacherLoop(t, { variant: 'page', cls: 'lp-sec', links: isSchoolStaff(req.user) ? loopLinks(req.user) : null, live: liveOn() })}
+  ${teacherLoop(t, { variant: 'page', cls: 'lp-sec', links: isSchoolStaff(req.user) ? loopLinks(req.user) : null, live: liveOn(), scheme: shotScheme(req) })}
   ${seeIt(req, { cta: plans ? html`<a class="btn btn-primary" href="/trial">${t('plans.teacher.start')}</a>` : html`<a class="btn btn-primary" href="#start">${t('teachers.cta.start')}</a>` })}
   <p class="lp-research lp-compare">${ico('⚖️', { size: 18 })} <a href="${lp(req, '/compare')}">${t('compare.link')}</a></p>
   ${classroomSection(req)}
@@ -414,15 +418,15 @@ router.get('/teachers/live', (req, res, next) => {
   const faq = faqBlock(req, [1, 2, 3, 4, 5].map(n => [`teachersLive.faq.q${n}`, `teachersLive.faq.a${n}`]), 'teachersLive.faq.h', vars);
   // Each mode says how many players it is made for (classlive-access.js CAPACITY, docs/live-capacity.md).
   const MODE_ID = { race: 'quest-race', battle: 'battle', board: 'board', wyr: 'wyr', atlas: 'atlas', tug: 'tug', doodle: 'doodle' };
-  const mode = (emoji, k) => { const c = capacityFor({ mode: MODE_ID[k] }); return html`<section class="panel lp-mode"><h3><span aria-hidden="true">${emoji}</span> ${el(t, 'span', `teachersLive.modes.${k}.h`)}</h3>${el(t, 'p', `teachersLive.modes.${k}.p`)}<p class="small lp-mode-players">${ico('👥', { size: 18 })} ${t('live.landing.best', { min: c.best[0], max: c.best[1] })}</p></section>`; };
+  const mode = (emoji, k) => { const c = capacityFor({ mode: MODE_ID[k] }); return html`<section class="panel lp-mode"><h3><span aria-hidden="true">${ico(emoji, { size: 24 })}</span> ${el(t, 'span', `teachersLive.modes.${k}.h`)}</h3>${el(t, 'p', `teachersLive.modes.${k}.p`)}<p class="small lp-mode-players">${ico('👥', { size: 18 })} ${t('live.landing.best', { min: c.best[0], max: c.best[1] })}</p></section>`; };
   const startBtns = kid ? html`<a class="btn btn-primary btn-big" href="/join">${t('teachersLive.cta.join')}</a>`
     : html`<a class="btn btn-primary btn-big" href="${hostHref}">${t('teachersLive.cta.host')}</a>`;
   const body = html`<div class="lp">
   <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
-    ${el(t, 'p', 'teachersLive.kicker', {}, ' class="lp-kicker"')}
+    ${kickerEl(t, 'teachersLive.kicker')}
     ${el(t, 'h1', 'teachersLive.h1', {}, ' id="lp-h1"')}
     ${el(t, 'p', 'teachersLive.lead', {}, ' class="lead"')}
-    <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${e}</span> ${el(t, 'span', `teachersLive.badges.${k}`, { count: langCount })}</li>`)}</ul>
+    <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${ico(e, { size: 20 })}</span> ${el(t, 'span', `teachersLive.badges.${k}`, { count: langCount })}</li>`)}</ul>
     <div class="row lp-cta">
       ${kid ? '' : html`<a class="btn btn-primary btn-big" href="${hostHref}">▶ ${t('teachersLive.cta.host')}</a>`}
       <a class="btn btn-big" href="#how-it-works">${t('teachersLive.cta.how')}</a>
@@ -556,7 +560,7 @@ router.get('/learn', (req, res) => {
   const subjName = k => t(`learn.tab.subjects.${k}`);
   const meta = g => { const i = SHELF_INFO[g.slug]; const gr = shelfGrades(g.slug); return i ? t('learn.tab.meta', { subject: subjName(i.subject), grades: t('learn.grades', gr) }) : null; };
   const href = over => { const p = { ...f, ...over }; p.grade = gradeQ(p.grade); const qs = new URLSearchParams(Object.entries(p).filter(([, v]) => v)).toString(); return lp(req, '/learn') + (qs ? `?${qs}` : '') + '#filters'; };
-  const card = (href, emoji, name, short) => html`<li><a class="lp-hub panel" href="${lp(req, href)}"><span class="lp-hub-e" aria-hidden="true">${emoji}</span><span>${el(t, 'span', name, {}, ' class="lp-hub-t"')}${el(t, 'span', short, {}, ' class="lp-hub-d"')}</span></a></li>`;
+  const card = (href, emoji, name, short) => html`<li><a class="lp-hub panel" href="${lp(req, href)}"><span class="lp-hub-e" aria-hidden="true">${ico(emoji, { size: 32 })}</span><span>${el(t, 'span', name, {}, ' class="lp-hub-t"')}${el(t, 'span', short, {}, ' class="lp-hub-d"')}</span></a></li>`;
   const crumbs = [[t('nav.home'), '/'], [t('learn.index.crumb'), '/learn']];
   // Learn is a tab: signed in, it needs no breadcrumb ("Home" is another tab, or another first page, for them).
   const seenCrumbs = out ? crumbs : [];
@@ -611,7 +615,7 @@ router.get('/learn', (req, res) => {
   const NAMED = ['thinking', 'code'];
   const hubCard = h => { const sx = SUBJECTS.find(x => x.hub === h.slug);
     if (!sx || !NAMED.includes(sx.key)) return card(`/learn/${h.slug}`, h.emoji, `learn.hubs.${h.key}.name`, `learn.hubs.${h.key}.short`);
-    return html`<li><a class="lp-hub panel" href="${lp(req, `/learn/${h.slug}`)}"><span class="lp-hub-e" aria-hidden="true">${h.emoji}</span><span><span class="lp-hub-t">${t('learn.tab.hubNamed', { subject: subjName(sx.key), hub: t(`learn.hubs.${h.key}.name`) })}</span>${el(t, 'span', `learn.hubs.${h.key}.short`, {}, ' class="lp-hub-d"')}</span></a></li>`; };
+    return html`<li><a class="lp-hub panel" href="${lp(req, `/learn/${h.slug}`)}"><span class="lp-hub-e" aria-hidden="true">${ico(h.emoji, { size: 32 })}</span><span><span class="lp-hub-t">${t('learn.tab.hubNamed', { subject: subjName(sx.key), hub: t(`learn.hubs.${h.key}.name`) })}</span>${el(t, 'span', `learn.hubs.${h.key}.short`, {}, ' class="lp-hub-d"')}</span></a></li>`; };
   const forVisitors = out || staff || isGrownup(u);
   const kidEnd = !out && !staff && !isGrownup(u);
   const liveSec = liveList.length ? html`<section class="lp-sec" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">${ico('📡', { size: 28 })} ${t('learn.tab.live')}</h2>

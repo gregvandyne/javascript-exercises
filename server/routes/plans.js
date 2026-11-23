@@ -179,7 +179,7 @@ router.get('/plans', on, async (req, res) => {
       <p class="small">${T('plans.fine.tax')}</p>
       <p class="small" style="margin-bottom:0">${TH('plans.fine.legal')}</p></section>
   </div>`;
-  page(req, res, { title: t('plans.title'), active: 'plans', description: t('plans.description'), body, seo: { index: config.billingPublic, path: '/plans' } });
+  page(req, res, { title: t('plans.title'), active: 'plans', description: t('plans.description'), body, seo: { index: config.billingPublic, path: '/plans', image: '/og/plans.jpg', imageAlt: t('plans.title') } });
 });
 
 /** The seat calculator's numbers: teachers as asked (1 to SEAT_CALC_MAX; null when none or not a number), the seats a
@@ -230,7 +230,7 @@ router.get('/plans/schools', on, async (req, res) => {
       ${target.school ? html`<p style="margin-bottom:0"><a class="btn btn-primary" href="${target.href}">${T('plans.schools.toBilling')}</a></p>` : ''}</section>
     <section class="panel" id="contact"><h2>${T('plans.schools.contact.h')}</h2><p style="margin-bottom:0">${TH('plans.schools.contact.p1', { email: mail })}</p></section>
     <p class="small">${tHtml(t, 'school.billing.legal')}</p></div>`;
-  page(req, res, { title: t('plans.schools.title'), back: '/plans', backLabel: t('plans.title'), active: 'plans', description: t('plans.schools.description'), body, seo: { index: config.billingPublic, path: '/plans/schools' } });
+  page(req, res, { title: t('plans.schools.title'), back: '/plans', backLabel: t('plans.title'), active: 'plans', description: t('plans.schools.description'), body, seo: { index: config.billingPublic, path: '/plans/schools', image: '/og/plans.jpg', imageAlt: t('plans.schools.title') } });
 });
 
 /** "Send this to my admin": one printable page (the print stylesheet hides the menus) with the seat price, the total

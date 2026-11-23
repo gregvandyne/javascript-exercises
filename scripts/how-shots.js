@@ -4,11 +4,15 @@
 // Steps 1-5 come from a server with paid-plan pages off (as the live site is today: no Plans in the menu); only the
 // family step, which the page shows only while they are on, comes from a second run with them on (against a fake Stripe).
 // Real captures of the running app, from made-up demo people in a throwaway database (never a real DB or a real child):
-// Pixel Panda, Rocket Otter, Ms. Rivera's Class at Sunny Hill Demo School... Light theme only (the page frames them).
+// Pixel Panda, Rocket Otter, Ms. Rivera's Class at Sunny Hill Demo School... Each step in the light theme, and with --theme dark in the dark one
+// (<slug>-dark-p-390.webp ...; views/how.js shows those when the page is dark).
 //
-// Usage: npm run how-shots [-- --only parents|teachers|live|dash] [-- --keep]     (--keep leaves the temp data and PNGs)
+// Usage: npm run how-shots [-- --only parents|teachers|live|dash|tools] [-- --theme dark] [-- --keep]     (--keep leaves the temp data and PNGs)
 //        HOW_PORT=5990 (the server; the fake Stripe for the family step uses HOW_PORT + 1)
 //        HOW_REAL_BUILDER=1 with ANTHROPIC_API_KEY set: the Builder step from Claude (not deterministic: check it by eye).
+// The tools group (the landing and /teachers): a live math room with every student's square, and a Figures worksheet
+// drafted in Oomba's chat. Ms. Rivera is on the tester list for it (MANIPULATIVES_USERS), and Oomba's AI is the stand-in
+// in scripts/how-ai-standin.mjs (no AI call, no key).
 // Needs ImageMagick `convert` with WebP (else Chromium encodes) and the Playwright Chromium (BRB_CHROMIUM or /opt/pw-browsers).
 // Every shot is checked for prices and for names outside the demo list before it is saved: a bad shot throws.
 import fs from 'node:fs';
@@ -17,13 +21,19 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { chromiumPath } from './chromium.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'public', 'img', 'how');
 const args = process.argv.slice(2);
 const PASS = 'how-demo-pass-1';
+/** light (the default) or dark: the theme every shot is taken in. Dark files get -dark after the slug. */
+const THEME = args.includes('--theme') && args[args.indexOf('--theme') + 1] === 'dark' ? 'dark' : 'light';
+const SUFFIX = THEME === 'dark' ? '-dark' : '';
 // The demo people. Every name a roster or friends shot shows must be one of these.
 const NAMES = ['Pixel Panda', 'Rocket Otter', 'Comet Fox', 'Maple Koala', 'Nova Newt', 'Star Gecko', 'Ms. Rivera', 'PandaGrownup', 'Oomba Academy', 'Coding Club', 'Reading Rockets', "Ms. Rivera's Class"];
+// Not names: the demo lessons' titles (scripts/seed.js seedDemoLessons), which class cards show in a <bdi> too.
+const TITLES = ['Adding fractions with the same denominator', 'Word detectives: spelling patterns'];
 const STUDENTS = [['Pixel Panda', 'CosmicPanda21'], ['Rocket Otter', 'SwiftOtter34'], ['Comet Fox', 'BrightFox57'], ['Maple Koala', 'CozyKoala18'], ['Nova Newt', 'ShinyNewt62']];
 
 // ---------------------------------------------------------------- seed (a child process, with the temp env set)
@@ -123,7 +133,7 @@ async function main() {
     let app = await startApp(env);
 
     const { chromium } = await import('@playwright/test');
-    const exe = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell', '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => p && fs.existsSync(p));
+    const exe = chromiumPath({ headless: true });
     browser = await chromium.launch(exe ? { executablePath: exe } : {});
     const shooter = makeShooter({ browser, BASE, PNG });
     const made = [];
@@ -137,6 +147,11 @@ async function main() {
       const morning = nextSchoolMorning();
       app = await startApp({ ...env, HOW_CLOCK: morning, NODE_OPTIONS: `--import ${path.join(ROOT, 'scripts', 'how-clock.mjs')}` });
       made.push(...await dashShots(shooter, ids, morning));
+    }
+    if (!only || only === 'tools') {
+      await stop(app);
+      app = await startApp({ ...env, MANIPULATIVES_USERS: 'msrivera', NODE_OPTIONS: `--import ${path.join(ROOT, 'scripts', 'how-ai-standin.mjs')}` });
+      made.push(...await toolShots(shooter, ids));
     }
     if (!only || only === 'parents') {
       // The same database, now with paid-plan pages on, for the family step.
@@ -169,11 +184,11 @@ function makeShooter({ browser, BASE, PNG }) {
   const WIDE = { viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1.28 };
   /** A signed-in (or signed-out) page for one person on one device. */
   async function person(kind, username, { timezoneId } = {}) {
-    const ctx = await browser.newContext({ ...(kind === 'phone' ? PHONE : kind === 'wide' ? WIDE : DESK), baseURL: BASE, colorScheme: 'light', locale: 'en-US', reducedMotion: 'reduce', ...(timezoneId ? { timezoneId } : {}) });
+    const ctx = await browser.newContext({ ...(kind === 'phone' ? PHONE : kind === 'wide' ? WIDE : DESK), baseURL: BASE, colorScheme: THEME, locale: 'en-US', reducedMotion: 'reduce', ...(timezoneId ? { timezoneId } : {}) });
     await ctx.setExtraHTTPHeaders({ 'X-Forwarded-For': randomIp() });
     const page = await ctx.newPage();
     page.setDefaultTimeout(20_000);
-    await page.goto('/?theme=light');
+    await page.goto(`/?theme=${THEME}`);
     if (username) {
       await page.goto('/login');
       await page.fill('#username', username); await page.fill('#password', PASS);
@@ -198,7 +213,7 @@ function makeShooter({ browser, BASE, PNG }) {
     if (!plans && await page.locator('a[href="/plans"]:visible').count()) throw new Error(`${name}: the menu shows Plans`);
     if (names) {
       const shown = await page.evaluate(() => [...document.querySelectorAll('.pp b, bdi')].filter(e => e.offsetParent).map(e => e.textContent.trim().replace(/^@/, '')).filter(Boolean));
-      const odd = shown.filter(n => !NAMES.includes(n) && !STUDENTS.some(([, u]) => u === n) && !/^@?(PixelPanda|RocketOtter|StarGecko|MsRivera|PandaGrownup)$/.test(n));
+      const odd = shown.filter(n => !NAMES.includes(n) && !TITLES.includes(n) && !STUDENTS.some(([, u]) => u === n) && !/^@?(PixelPanda|RocketOtter|StarGecko|MsRivera|PandaGrownup)$/.test(n));
       if (odd.length) throw new Error(`${name}: names outside the demo list: ${odd.join(', ')}`);
     }
     const vp = page.viewportSize();
@@ -253,7 +268,8 @@ async function parentShots({ person, shot }) {
   {
     const desk = await person('desk', 'PixelPanda');
     await desk.goto('/build');
-    await desk.click('#newgame'); await Promise.all([desk.waitForURL(/\/studio\//), desk.click('#su-direct')]);   // New game, then "I know what I want"
+    await desk.click('#newgame'); await desk.locator('.su-kind', { hasText: 'Arcade game' }).click();   // New game, an arcade game (not a classroom lesson)
+    await Promise.all([desk.waitForURL(/\/studio\//), desk.click('#su-direct')]);   // then "I'll just describe it"
     const studio = desk.url();
     await idle(desk);
     await say(desk, 'a game where a panda catches falling stars');
@@ -314,7 +330,8 @@ async function familyShots({ person, shot }) {
     await p.goto('/family');
     // The help panel shows this throwaway server's contact address: left out.
     await p.evaluate(() => { for (const el of document.querySelectorAll('main section')) if (el.textContent.includes('@example.com')) el.style.display = 'none'; });
-    made.push({ slug: 'parents-family', kind, png: await shot(p, `parents-family-${kind}`, { hide: ['#plan'], plans: true }) });
+    // Left out: the plan panel and the getting-started list (it talks about plans), and the team's welcome message link.
+    made.push({ slug: 'parents-family', kind, png: await shot(p, `parents-family-${kind}`, { hide: ['#plan', '#famcheck', '.teamlink'], plans: true }) });
     await p.context().close();
   }
   return made;
@@ -388,6 +405,8 @@ async function teacherShots({ person, shot }, ids) {
   });
   await both('teachers-gradebook', async kind => {
     const p = await person(kind, 'MsRivera'); await p.goto(`/class/${ids.classId}/progress`);
+    // "How to read it" opens by itself on a wide screen: closed here, so the table shows.
+    await p.evaluate(() => { for (const d of document.querySelectorAll('details.gbhelp')) d.open = false; });
     // From the tab bar down: the gradebook table and its Download (CSV) button.
     const f = await shot(p, `teachers-gradebook-${kind}`, { names: true, focus: 'main .tabs, main .gb-tools', offset: 12 }); await p.context().close(); return f;
   });
@@ -662,6 +681,63 @@ async function dashShots({ person, shot }, ids, morning) {
   return made;
 }
 
+// 7. The teaching tools. A live math room (Base Ten Blocks): four students join from their phones and build numbers in
+// their own squares; the picture is the teacher's screen with every square, and a student's phone with their own. Then a
+// Figures worksheet that Oomba drafted in the chat (the stand-in AI), with the chat open beside it.
+async function toolShots({ person, shot }) {
+  const made = [];
+  const teacher = await person('desk', 'MsRivera');
+  await teacher.goto('/manipulatives');
+  // Her class (the list says "class · school"), not the first one in it.
+  const classSel = teacher.locator('select').filter({ has: teacher.locator('option', { hasText: "Ms. Rivera's Class" }) }).first();
+  const classVal = await classSel.evaluate(sel => Array.from(sel.options).find(o => o.textContent.startsWith("Ms. Rivera's Class")).value);
+  await classSel.selectOption(classVal);
+  await teacher.locator('select').filter({ has: teacher.locator('option', { hasText: 'Base Ten Blocks' }) }).first().selectOption({ label: 'Base Ten Blocks' });
+  await Promise.all([teacher.waitForURL(/#live\//), teacher.getByRole('button', { name: 'Start the session' }).click()]);
+  await teacher.waitForTimeout(1500);
+  // Each student shows a number: [flats, rods] in the chart the room gives every square.
+  const plan = [['CosmicPanda21', 1, 3], ['SwiftOtter34', 2, 0], ['BrightFox57', 1, 2], ['CozyKoala18', 0, 4]];
+  const kids = [];
+  for (const [user, flats, rods] of plan) {
+    const k = await person('phone', user);
+    await k.goto('/manipulatives');
+    await Promise.all([k.waitForURL(/#live\//), k.locator('main a', { hasText: /^Join$/ }).first().click()]);
+    await k.waitForTimeout(1200);
+    for (const [name, n] of [['Flat', flats], ['Rod', rods]]) for (let i = 0; i < n; i++) { await k.locator('#rm-pal button', { hasText: new RegExp(`${name}$`) }).first().click(); await k.waitForTimeout(250); }
+    await k.waitForTimeout(800);
+    kids.push(k);
+  }
+  await kids[0].getByRole('button', { name: /My square/ }).click().catch(() => {});
+  await kids[0].waitForTimeout(600);
+  made.push({ slug: 'tools-room', kind: 'phone', png: await shot(kids[0], 'tools-room-phone') });
+  // The teacher's screen: zoomed (the wheel, as a person would) until the first row of squares (the four who joined) fills it.
+  await teacher.waitForTimeout(2000);
+  await teacher.getByRole('button', { name: /Fit/ }).click(); await teacher.waitForTimeout(400);
+  for (let i = 0; i < 40; i++) {
+    const bb = await teacher.evaluate(() => { const all = Array.from(document.querySelectorAll('#rm .rm-area:not(.teach)')).map(e => e.getBoundingClientRect()); const top = Math.min(...all.map(r => r.top)); const rs = all.filter(r => r.top < top + 10); return rs.length ? { x: Math.min(...rs.map(r => r.left)), y: Math.min(...rs.map(r => r.top)), r: Math.max(...rs.map(r => r.right)), b: Math.max(...rs.map(r => r.bottom)) } : null; });
+    if (!bb) throw new Error('tools: no student squares in the room');
+    if (bb.r - bb.x > 800 || bb.b - bb.y > 360) break;
+    await teacher.mouse.move((bb.x + bb.r) / 2, bb.y + 20); await teacher.mouse.wheel(0, -40); await teacher.waitForTimeout(200);
+  }
+  await teacher.mouse.move(1, 1);
+  made.push({ slug: 'tools-room', kind: 'desk', png: await shot(teacher, 'tools-room-desk') });
+  for (const k of kids) await k.context().close();
+  await teacher.context().close();
+
+  for (const kind of ['phone', 'desk']) {
+    const p = await person(kind, 'MsRivera');
+    await p.goto('/figures/worksheets/new?ai=1');
+    await p.locator('#oc-in').fill('Grade 6, area and volume: rectangles, boxes and a cylinder. 5 questions.');
+    await p.click('#oc-send');
+    await p.waitForSelector('.fg-item:nth-child(5)', { timeout: 30_000 });
+    await p.waitForSelector('.oc-change');
+    await p.waitForTimeout(1200);
+    made.push({ slug: 'tools-figures', kind, png: await shot(p, `tools-figures-${kind}`) });
+    await p.context().close();
+  }
+  return made;
+}
+
 // ---------------------------------------------------------------- encode
 const SIZES = { phone: [['p', 390], ['p', 780]], desk: [['d', 1024], ['d', 2048]], wide: [['d', 1024], ['d', 2048]] };
 function hasMagick() { try { return /WEBP/i.test(execFileSync('convert', ['-list', 'format'], { encoding: 'utf8' })) ? 'convert' : null; } catch { return null; } }
@@ -671,7 +747,7 @@ async function encodeAll(made, PNG) {
   const files = [];
   let page = null, browser = null;
   for (const m of made) for (const [tag, w] of SIZES[m.kind]) {
-    const out = path.join(OUT, `${m.slug}-${tag}-${w}.webp`);
+    const out = path.join(OUT, `${m.slug}${SUFFIX}-${tag}-${w}.webp`);
     if (magick) execFileSync(magick, [m.png, '-resize', `${w}x`, '-strip', '-define', 'webp:method=6', '-quality', '72', out]);
     else {
       if (!page) { const { chromium } = await import('@playwright/test'); browser = await chromium.launch(); page = await browser.newPage(); }
@@ -693,7 +769,7 @@ function report(files) {
   const kb = n => `${(n / 1024).toFixed(0)} KB`;
   for (const f of files) console.log(`${path.relative(ROOT, f.file).padEnd(48)} ${kb(f.bytes).padStart(7)}`);
   let over = false;
-  for (const pg of ['parents', 'teachers', 'live', 'dash']) {
+  for (const pg of ['parents', 'teachers', 'live', 'dash', 'tools']) {
     const mine = files.filter(f => f.slug.startsWith(pg + '-'));
     if (!mine.length) continue;
     const phone = mine.filter(f => f.tag === 'p' && f.w === 780).reduce((a, f) => a + f.bytes, 0);

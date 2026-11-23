@@ -6047,7 +6047,7 @@
       "s1": {
         "h": "Toutes vos classes au même endroit",
         "p": "Une fois votre école inscrite, l’admin de l’école ajoute les enseignants, et chaque enseignant crée ses classes sur Mes classes.",
-        "alt": "Mes classes pour un enseignant de Sunny Hill Demo School : trois cartes de classe, Coding Club, Ms. Rivera’s Class (5 élèves, 1 demande pour rejoindre la classe, 2 réponses à relire) et Reading Rockets, et un bouton « Lesson library »."
+        "alt": "L’accueil Classe de Ms. Rivera : trois classes et deux réponses en attente, des boutons pour le résumé de la semaine et une partie en direct, et la carte de la boucle d’enseignement avec Préparer, Jouer, Vérifier et Commenter."
       },
       "s2": {
         "h": "Les élèves rejoignent la classe avec un code ou une carte de connexion",
@@ -6068,7 +6068,12 @@
       "s5": {
         "h": "Suivre la progression et le carnet de notes",
         "p": "Le carnet de notes montre la progression de chaque élève, ses scores aux jeux et ses réponses écrites. Laissez des commentaires, ou téléchargez-le en CSV.",
-        "alt": "L’onglet Progression de la classe : un tableau de notes indiquant combien d’étapes chaque élève a faites dans chaque leçon, un bouton « Download (CSV) » et un lien vers les réponses écrites à relire."
+        "alt": "L’onglet Progression de la classe : des liens vers les parcours et l’historique des parties en direct, un bouton Télécharger (CSV), les réponses à relire et le carnet de notes avec les étapes faites par chaque élève dans chaque leçon."
+      },
+      "s6": {
+        "h": "Enseigner avec les outils",
+        "p": "Demandez une fiche à Oomba dans le chat : il rédige les questions, Figures dessine chaque figure à l’échelle et calcule les réponses. Ou lancez une salle de maths en direct avec des manipulables virtuels.",
+        "alt": "Le créateur de fiches Figures avec le chat d’Oomba ouvert à côté : une fiche intitulée Area and volume practice, sa première question avec un rectangle dessiné à l’échelle et la réponse 12 m², et la liste de ce qui a changé dans le chat."
       }
     },
     "build": {
@@ -6704,7 +6709,7 @@
       "s1": {
         "h": "Commencer gratuitement avec un nom inventé",
         "p": "Votre enfant choisit un nom inventé et un mot de passe. Nous ne demandons jamais aux enfants leur adresse e-mail, leur âge ni leur adresse postale.",
-        "alt": "La page d’inscription d’Oomba Academy, « Make a free account », avec le nom inventé PixelPanda saisi et un mot de passe masqué. Elle demande seulement un nom amusant et un mot de passe."
+        "alt": "La page d’inscription d’Oomba Academy, étape 1 sur 2, « Make a free account », avec le nom inventé PixelPanda saisi et un mot de passe masqué. Elle ne demande qu’un nom amusant et un mot de passe."
       },
       "s2": {
         "h": "Jouer à des jeux éducatifs",
@@ -6729,7 +6734,7 @@
       "s6": {
         "h": "Relier votre compte adulte (facultatif)",
         "p": "Votre enfant obtient un code à usage unique sur sa page Moi et vous le donne en personne. Vous le tapez sur votre page famille, et votre enfant dit oui. Votre page famille affiche alors votre enfant et ses messages supplémentaires pour le Constructeur jusqu’à hier.",
-        "alt": "La page famille de l’adulte : sous « Children », Pixel Panda est relié, avec ses messages supplémentaires pour le Builder hier et ce mois-ci, un bouton « Unlink » et un bouton « Link a child »."
+        "alt": "La page famille de l’adulte : sous « Children », Pixel Panda est relié, avec ses messages supplémentaires pour le Builder hier et ce mois-ci, et un bouton Délier."
       }
     },
     "ages": {
@@ -8345,12 +8350,12 @@
       "s1": {
         "h": "Choisissez un jeu et vos questions",
         "p": "Choisissez Course aux quêtes, Bataille de questions ou Plateau Cerveau, puis les questions : la banque de questions par matière et par âge (de 6 à 14 ans), votre propre série, une série partagée par un collègue ou les questions de l’une de vos leçons.",
-        "alt": "La page « Animer une partie en direct » : les modes de jeu au choix, une série de questions et qui peut rejoindre."
+        "alt": "La première étape pour lancer une partie en direct, « Qu’est-ce que vous voulez jouer ? » : Quest Race, Question Battle et Brain Board, chacun avec le nombre de joueurs qui lui convient."
       },
       "s2": {
         "h": "Affichez le code au tableau",
         "p": "Les élèves ouvrent la page pour rejoindre sur leur appareil et tapent le code à 7 chiffres, ou scannent le QR code. Leurs noms apparaissent à mesure qu’ils arrivent.",
-        "alt": "L’écran du vidéoprojecteur avant le début de la partie : un grand code à 7 chiffres, un QR code et les élèves déjà arrivés."
+        "alt": "L’écran du projecteur avant le début de la partie : un personnage de dessin animé contre lequel toute la classe joue, un grand code à 7 chiffres, un code QR et le nombre de joueurs déjà là."
       },
       "s3": {
         "h": "Les élèves rejoignent en quelques secondes",
@@ -8360,7 +8365,7 @@
       "s4": {
         "h": "Tout le monde répond en même temps",
         "p": "La question est au tableau et les boutons de réponse sont sur chaque appareil. Plus une bonne réponse arrive vite, plus elle rapporte de points.",
-        "alt": "Le téléphone d’un élève pendant une question, avec quatre boutons de réponse."
+        "alt": "Le téléphone d’un élève pendant une question : en haut, le personnage de dessin animé contre lequel la classe joue, puis la question et quatre boutons de réponse."
       },
       "s5": {
         "h": "Voyez qui sait quoi",
@@ -9276,8 +9281,8 @@
       "li2": "Utilisez une série de questions toute prête, écrivez la vôtre ou laissez l’IA en proposer une à modifier",
       "li3": "Les scores arrivent directement dans votre carnet de notes",
       "li4": "Jeux de classe : seulement vos élèves connectés. Jeux avec invités : des noms inventés, sans risque. Ni chat ni texte libre dans les deux cas",
-      "shotAlt": "Le salon d’attente de Question Battle en direct : cinq avatars d’élèves attendent pendant que le grand écran affiche le code de la partie et un QR code.",
-      "link": "Comment marchent les jeux en direct"
+      "link": "Comment marchent les jeux en direct",
+      "shotAlt": "Le salon d’une partie Question Battle en direct : le grand écran montre le personnage de dessin animé contre lequel la classe joue, le code de la partie et un code QR."
     },
     "why": {
       "kicker": "Pourquoi les jeux marchent",
@@ -9428,6 +9433,18 @@
       "li4": "Privé jusqu’au partage : avec la classe, ou avec tout le monde seulement après la vérification d’une personne de notre équipe",
       "shotAlt": "Le Studio d’un élève : le Builder annonce que la version 2 est prête, et le jeu tourne dans un aperçu au format téléphone.",
       "caption": "Le Studio d’un élève : il décrit, le Builder crée, il teste."
+    },
+    "tools": {
+      "kicker": "Outils pédagogiques",
+      "h": "Des maths concrètes, pour tous les élèves à la fois",
+      "lead": "Des manipulables virtuels que vos élèves déplacent eux-mêmes, une salle en direct où vous voyez le travail de chacun sur un seul écran, et Oomba pour rédiger des fiches avec des figures à l’échelle.",
+      "li1": "18 manipulables virtuels, des blocs de base dix qui se regroupent aux fractions et aux horloges",
+      "li2": "Salles de maths en direct : chaque élève construit dans son propre carré pendant que vous voyez tous les carrés au tableau",
+      "li3": "Des tableaux enregistrés avec des codes de partage, et 300 activités prêtes à l’emploi pour la maternelle à la 4e",
+      "li4": "Oomba, votre assistant pédagogique : décrivez une fiche et obtenez des figures exactes avec les réponses calculées",
+      "shotAlt": "Une séance en direct de blocs de base dix sur l’écran de l’enseignant : l’espace de l’enseignant en haut et les carrés de quatre élèves en dessous, chacun avec des plaques de centaines et des barres de dizaines dans un tableau de numération.",
+      "plan": "Les manipulables, leurs salles en direct, Figures et Oomba font partie du forfait Enseignant.",
+      "testing": "Les manipulables, leurs salles en direct, Figures et Oomba sont en test dans quelques classes en ce moment."
     }
   },
   "teach": {

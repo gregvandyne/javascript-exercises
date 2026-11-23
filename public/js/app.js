@@ -322,6 +322,10 @@ function applyTheme(theme) {
   if (pinned) document.documentElement.dataset.theme = theme; else delete document.documentElement.dataset.theme;
   const meta = $('meta[name="color-scheme"]'); if (meta) meta.content = pinned ? theme : 'light dark';
   setThemeColor(pinned ? theme : null);
+  // Screenshots in the page's theme (server/views/shot.js): a dark <source> matches Dark always, Light never, else the device.
+  for (const s of $$('source[data-scheme="dark"]')) {
+    s.media = theme === 'light' ? 'not all' : [theme === 'dark' ? '' : '(prefers-color-scheme: dark)', s.dataset.media || ''].filter(Boolean).join(' and ') || 'all';
+  }
   for (const a of $$('a[data-theme-choice]')) {
     const on = a.dataset.themeChoice === theme;
     if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');

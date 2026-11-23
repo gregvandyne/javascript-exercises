@@ -3,10 +3,11 @@
 // SIMULATED: this server has no AI key, so the real build is done by the offline building blocks and the page's live
 // stream is replayed slowly with the AI Builder's step rows (think, write, name, check, autotest) around the real version.
 import { chromium } from 'playwright';
+import { launchOptions } from '../chromium.js';
 import fs from 'node:fs';
 import { B, login } from './lib.mjs';
 import { Capture, VCLOCK, cursorInit, setCursor, glide } from './vc.mjs';
-const br = await chromium.launch({ args: ['--use-gl=angle', '--ignore-gpu-blocklist'] });
+const br = await chromium.launch(launchOptions({ args: ['--use-gl=angle', '--ignore-gpu-blocklist'] }, { headless: true }));
 const orient = process.argv[2] || 'land';
 const V = orient === 'land' ? { viewport: { width: 1440, height: 810 }, deviceScaleFactor: 8 / 3, out: [3840, 2160] } : { viewport: { width: 540, height: 960 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, out: [1080, 1920] };
 const ctx = await br.newContext({ viewport: V.viewport, deviceScaleFactor: V.deviceScaleFactor, isMobile: !!V.isMobile, hasTouch: !!V.hasTouch, extraHTTPHeaders: { 'x-forwarded-for': '10.5.5.' + (orient === 'land' ? 1 : 2) } });

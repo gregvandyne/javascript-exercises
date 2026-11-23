@@ -2,7 +2,7 @@
 // flying out of its lifted lid into the striped bowl, the "Too loud!" bubble up and the clock stopped. The covers server
 // makes frames with no play page, so the game is in its demo there (no microphone), which is what we want.
 export default {
-  'popcorn-hush': { viewport: { width: 1280, height: 720 }, scale: 1, touch: true, async prep(f) {
+  'popcorn-hush': { viewport: { width: 360, height: 480 }, scale: 1.5, touch: true, async prep(f) {
     await f.waitForFunction(() => window.__brbTest && window.__brbTest.demoStart && document.querySelector('.ok-title-screen .ok-hot'), null, { timeout: 60000 });
     await f.evaluate(() => { const t = window.__brbTest; t.setup({ preset: 'quiet', goal: 600, base: 30 }); document.querySelector('.ok-title-screen .ok-hot').click(); });
     await f.waitForFunction(() => window.__brbTest.state().screen === 'setup', null, { timeout: 15000 });

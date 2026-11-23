@@ -1,12 +1,13 @@
 // Official games, frame by frame (virtual clock): Gulp City (hook + big hole), Atlas Quest, Would You Rather, Castle Clash.
 // node .demo2/rec-games.mjs land|port [only]
 import { chromium } from 'playwright';
+import { launchOptions } from '../chromium.js';
 import { Capture } from './vc.mjs';
 import { B, login, gameFrame, fullGame } from './lib.mjs';
 const orient = process.argv[2] || 'land', only = process.argv[3];
 const V = orient === 'land' ? { viewport: { width: 1440, height: 810 }, deviceScaleFactor: 4 / 3, out: [1920, 1080] } : { viewport: { width: 540, height: 960 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, out: [1080, 1920] };
 const C = '/tmp/claude-0/demo2/clips';
-const br = await chromium.launch({ args: ['--use-gl=angle', '--ignore-gpu-blocklist'] });
+const br = await chromium.launch(launchOptions({ args: ['--use-gl=angle', '--ignore-gpu-blocklist'] }, { headless: true }));
 const ctx = await br.newContext({ viewport: V.viewport, deviceScaleFactor: V.deviceScaleFactor, isMobile: !!V.isMobile, hasTouch: !!V.hasTouch, extraHTTPHeaders: { 'x-forwarded-for': '10.7.9.' + (orient === 'land' ? 1 : 2) } });
 const p = await ctx.newPage(); p.__name = 'g';
 await login(p, 'MayaMakes', 'secret123');

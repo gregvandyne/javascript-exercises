@@ -6048,7 +6048,7 @@
       "s1": {
         "h": "Le sue classi in un unico posto",
         "p": "Una volta configurata la scuola, l'admin della scuola aggiunge gli insegnanti, e ogni insegnante crea le proprie classi in Le mie classi.",
-        "alt": "La pagina My classes di un'insegnante della Sunny Hill Demo School: tre schede di classe, Coding Club, Ms. Rivera’s Class (5 studenti, 1 richiesta di iscrizione, 2 risposte da rivedere) e Reading Rockets, e un pulsante Lesson library."
+        "alt": "La home Classe di Ms. Rivera: tre classi e due risposte in attesa, i pulsanti per il riepilogo della settimana e per una partita dal vivo, e la scheda del ciclo didattico con Pianifica, Gioca, Verifica e Commenta."
       },
       "s2": {
         "h": "Gli studenti entrano con un codice o con le schede di accesso",
@@ -6069,7 +6069,12 @@
       "s5": {
         "h": "Veda i progressi e il registro",
         "p": "Il registro mostra i progressi, i punteggi nei giochi e le risposte scritte di ogni studente. Lasci un commento, oppure lo scarichi come CSV.",
-        "alt": "La sezione Progress della classe: una tabella del registro con quanti passaggi ha fatto ogni studente in ogni lezione, un pulsante Download (CSV) e un link alle risposte scritte in attesa di revisione."
+        "alt": "La scheda Progressi della classe: link ai percorsi e allo storico delle partite dal vivo, un pulsante Scarica (CSV), le risposte da rivedere e il registro con i passaggi completati da ogni studente in ogni lezione."
+      },
+      "s6": {
+        "h": "Insegna con gli strumenti",
+        "p": "Chiedi a Oomba una scheda nella chat: scrive le domande, Figures disegna ogni figura in scala e calcola le risposte. Oppure apri un’aula di matematica dal vivo con materiali manipolabili virtuali.",
+        "alt": "Il creatore di schede di Figures con la chat di Oomba aperta accanto: una scheda intitolata Area and volume practice, la prima domanda con un rettangolo disegnato in scala e la risposta 12 m², e l’elenco di cosa è cambiato nella chat."
       }
     },
     "build": {
@@ -6705,7 +6710,7 @@
       "s1": {
         "h": "Si inizia gratis con un nome inventato",
         "p": "Vostro figlio o figlia sceglie un nome inventato e una password. Non chiediamo mai ai bambini indirizzo email, età o indirizzo di casa.",
-        "alt": "La pagina di registrazione di Oomba Academy, “Make a free account”, con il nome inventato PixelPanda già scritto e una password nascosta. Chiede solo un nome divertente e una password."
+        "alt": "La pagina di iscrizione di Oomba Academy, passo 1 di 2, «Make a free account», con il nome inventato PixelPanda scritto e una password nascosta. Chiede solo un nome divertente e una password."
       },
       "s2": {
         "h": "Giocare imparando",
@@ -6730,7 +6735,7 @@
       "s6": {
         "h": "Collegate il vostro account genitore (facoltativo)",
         "p": "Vostro figlio o figlia riceve un codice da usare una sola volta nella propria pagina Io e ve lo dà di persona. Lo scrivete nella pagina della vostra famiglia, e lui o lei conferma. La pagina della vostra famiglia mostra poi vostro figlio o figlia e i suoi messaggi extra al Costruttore fino a ieri.",
-        "alt": "La pagina della famiglia dell'adulto: sotto Children, Pixel Panda è collegato, con i suoi messaggi extra al Builder di ieri e di questo mese, un pulsante Unlink e un pulsante Link a child."
+        "alt": "La pagina famiglia dell’adulto: sotto «Children», Pixel Panda è collegato, con i messaggi extra del Builder di ieri e di questo mese, e un pulsante Scollega."
       }
     },
     "ages": {
@@ -8346,12 +8351,12 @@
       "s1": {
         "h": "Scelga un gioco e le domande",
         "p": "Scelga Corsa delle missioni, Sfida a domande o Tabellone Cervello, poi le domande: la banca di domande per materia ed età (dai 6 ai 14 anni), una sua serie, una condivisa da un collega o le domande di una delle sue lezioni.",
-        "alt": "La pagina «Guida una partita dal vivo»: le modalità di gioco tra cui scegliere, una serie di domande e chi può entrare."
+        "alt": "Il primo passo per avviare una partita dal vivo, «A cosa vuoi giocare?»: Quest Race, Question Battle e Brain Board, ognuno con il numero di giocatori adatto."
       },
       "s2": {
         "h": "Mostri il codice alla lavagna",
         "p": "Gli studenti aprono la pagina per entrare sul proprio dispositivo e scrivono il codice di 7 cifre, oppure inquadrano il codice QR. I loro nomi compaiono man mano che entrano.",
-        "alt": "Lo schermo del proiettore prima dell’inizio della partita: un grande codice di 7 cifre, un codice QR e gli studenti già entrati."
+        "alt": "Lo schermo del proiettore prima dell’inizio: un personaggio dei cartoni contro cui gioca tutta la classe, un grande codice di 7 cifre, un codice QR e quanti giocatori sono entrati."
       },
       "s3": {
         "h": "Gli studenti entrano in pochi secondi",
@@ -8361,7 +8366,7 @@
       "s4": {
         "h": "Tutti rispondono insieme",
         "p": "La domanda è alla lavagna e i pulsanti di risposta sono su ogni dispositivo. Più una risposta giusta arriva in fretta, più punti vale.",
-        "alt": "Il telefono di uno studente durante una domanda, con quattro pulsanti di risposta."
+        "alt": "Il telefono di uno studente durante una domanda: in alto il personaggio dei cartoni contro cui gioca la classe, poi la domanda e quattro pulsanti di risposta."
       },
       "s5": {
         "h": "Veda chi sa cosa",
@@ -9277,8 +9282,8 @@
       "li2": "Usa un set di domande pronto, scrivi il tuo o fai preparare una bozza all’IA da modificare",
       "li3": "I punteggi finiscono direttamente nel tuo registro",
       "li4": "Giochi di classe: solo i tuoi studenti che hanno effettuato l’accesso. Giochi con ospiti: nomi inventati e sicuri. Niente chat e niente testo libero in entrambi",
-      "shotAlt": "La sala d’attesa di un Question Battle dal vivo: cinque avatar di studenti aspettano mentre lo schermo grande mostra il codice della partita e un codice QR.",
-      "link": "Come funzionano i giochi dal vivo"
+      "link": "Come funzionano i giochi dal vivo",
+      "shotAlt": "La sala d’attesa di una partita dal vivo di Question Battle: il grande schermo mostra il personaggio dei cartoni contro cui gioca la classe, il codice della partita e un codice QR."
     },
     "why": {
       "kicker": "Perché i giochi funzionano",
@@ -9429,6 +9434,18 @@
       "li4": "Privato finché non viene condiviso: con la classe, o con tutti solo dopo il controllo di una persona del nostro team",
       "shotAlt": "Lo Studio di uno studente: il Builder dice che la versione 2 è pronta e il gioco gira in un’anteprima formato telefono.",
       "caption": "Lo Studio di uno studente: descrive, il Builder crea, lui prova."
+    },
+    "tools": {
+      "kicker": "Strumenti per insegnare",
+      "h": "Matematica da toccare, con tutti gli studenti insieme",
+      "lead": "Materiali manipolabili virtuali che i tuoi studenti muovono da soli, un’aula dal vivo dove vedi il lavoro di tutti su un solo schermo, e Oomba per preparare schede con figure in scala.",
+      "li1": "18 materiali manipolabili virtuali, dai blocchi in base dieci che si raggruppano alle frazioni e agli orologi",
+      "li2": "Aule di matematica dal vivo: ogni studente costruisce nel proprio riquadro mentre tu vedi tutti i riquadri sulla lavagna",
+      "li3": "Lavagne salvate con codici di condivisione, e 300 attività pronte dalla scuola dell’infanzia alla terza media",
+      "li4": "Oomba, il tuo assistente didattico: descrivi una scheda e ottieni figure esatte con le risposte già calcolate",
+      "shotAlt": "Una sessione dal vivo con i blocchi in base dieci sullo schermo dell’insegnante: in alto lo spazio dell’insegnante e sotto i riquadri di quattro studenti, ognuno con piastre delle centinaia e barre delle decine in una tabella del valore posizionale.",
+      "plan": "I materiali manipolabili, le loro aule dal vivo, Figures e Oomba fanno parte del piano Insegnante.",
+      "testing": "I materiali manipolabili, le loro aule dal vivo, Figures e Oomba sono in prova in alcune classi in questo momento."
     }
   },
   "teach": {

@@ -6339,7 +6339,7 @@
       "s1": {
         "h": "Your classes in one place",
         "p": "Once your school is set up, your school admin adds teachers, and each teacher makes their classes on My classes.",
-        "alt": "My classes for a teacher at Sunny Hill Demo School: three class cards, Coding Club, Ms. Rivera’s Class (5 students, 1 join request, 2 answers to review) and Reading Rockets, and a Lesson library button."
+        "alt": "The Classroom home for Ms. Rivera: three classes and two answers waiting, buttons for this week’s summary and a live game, and the teaching loop card with Plan, Play, Check and Feedback."
       },
       "s2": {
         "h": "Students join with a code or login cards",
@@ -6360,7 +6360,12 @@
       "s5": {
         "h": "See progress and the gradebook",
         "p": "The gradebook shows each student’s progress, game scores and written answers. Leave feedback, or download it as a CSV.",
-        "alt": "The class Progress tab: a gradebook table with how many steps each student has done in each lesson, a Download (CSV) button and a link to the written answers waiting for review."
+        "alt": "The class Progress tab: links to the courses and the live games history, a Download (CSV) button, the answers waiting for review and the gradebook table with each student’s steps done in each lesson."
+      },
+      "s6": {
+        "h": "Teach with the tools",
+        "p": "Ask Oomba for a worksheet in the chat: it drafts the questions, Figures draws every figure to scale and works out the answers. Or run a live math room with virtual manipulatives.",
+        "alt": "The Figures worksheet builder with Oomba’s chat open beside it: a worksheet called Area and volume practice, its first question with a rectangle drawn to scale and the answer 12 m², and the chat’s list of what changed."
       }
     },
     "build": {
@@ -7329,7 +7334,7 @@
       "s1": {
         "h": "Start free with a made-up name",
         "p": "Your child picks a made-up name and a password. We never ask kids for an email address, age or home address.",
-        "alt": "The Oomba Academy sign-up page, “Make a free account”, with the made-up name PixelPanda typed in and a hidden password. It asks only for a fun name and a password."
+        "alt": "The Oomba Academy sign-up page, step 1 of 2, “Make a free account”, with the made-up name PixelPanda typed in and a hidden password. It asks only for a fun name and a password."
       },
       "s2": {
         "h": "Play learning games",
@@ -7354,7 +7359,7 @@
       "s6": {
         "h": "Link your grown-up account (optional)",
         "p": "Your child gets a one-time code on their Me page and gives it to you face to face. You type it on your family page, and they say yes. Your family page then lists them and their extra Builder messages up to yesterday.",
-        "alt": "The grown-up’s family page: under Children, Pixel Panda is linked, with their extra Builder messages yesterday and this month, an Unlink button and a Link a child button."
+        "alt": "The grown-up’s family page: under Children, Pixel Panda is linked, with their extra Builder messages yesterday and this month and an Unlink button."
       }
     },
     "ages": {
@@ -8970,12 +8975,12 @@
       "s1": {
         "h": "Pick a game and your questions",
         "p": "Choose Quest Race, Question Battle or Brain Board, then the questions: the question bank by subject and age (6 to 14), your own set, one a colleague shared, or the questions from one of your lessons.",
-        "alt": "The Host a live game page: game modes to pick from, a question set and who can join."
+        "alt": "The first step of hosting a live game, “What do you want to play?”: Quest Race, Question Battle and Brain Board, each with how many players it suits."
       },
       "s2": {
         "h": "Show the code on the board",
         "p": "Students go to the join page on their device and type the 7-digit code, or scan the QR code. Their names appear as they join.",
-        "alt": "The projector screen before the game starts: a big 7-digit code, a QR code and the students who have joined."
+        "alt": "The projector screen before the game starts: a cartoon character the whole class plays against, a big 7-digit code, a QR code and how many players have joined."
       },
       "s3": {
         "h": "Students join in seconds",
@@ -8985,7 +8990,7 @@
       "s4": {
         "h": "Everyone answers at once",
         "p": "The question is on the board and the answer buttons are on every device. Right answers score more the faster they come.",
-        "alt": "A student's phone during a question, with four answer buttons."
+        "alt": "A student’s phone during a question: the cartoon character the class plays against at the top, then the question and four answer buttons."
       },
       "s5": {
         "h": "See who knows what",
@@ -10060,7 +10065,7 @@
       "li2": "Use a starter question set, type your own, or let AI draft one for you to edit",
       "li3": "Scores go straight into your gradebook",
       "li4": "Class games: your signed-in students only. Guest games: safe made-up names. No chat and no typing in either",
-      "shotAlt": "A live Question Battle lobby: five student avatars wait while the big screen shows the game code and a QR code.",
+      "shotAlt": "A live Question Battle lobby: the big screen shows the cartoon character the class plays against, the game code and a QR code.",
       "link": "How live games work"
     },
     "why": {
@@ -10212,6 +10217,18 @@
       "li4": "Private until shared: with their class, or with everyone only after a person on our team reviews it",
       "shotAlt": "A student’s Studio: the Builder chat says version 2 is ready, and the student’s game runs in a phone-sized preview.",
       "caption": "A student’s Studio: they describe it, the Builder builds it, they test it."
+    },
+    "tools": {
+      "kicker": "Teaching tools",
+      "h": "Hands-on math, every student at once",
+      "lead": "Virtual manipulatives your students move themselves, a live room where you see everyone’s work on one screen, and Oomba to draft worksheets with figures drawn to scale.",
+      "li1": "18 virtual manipulatives, from base ten blocks that regroup to fraction pieces and clocks",
+      "li2": "Live math rooms: each student builds in their own square while you see every square on the board",
+      "li3": "Saved boards with share codes, and 300 ready-made tasks for grades K-8",
+      "li4": "Oomba, your teaching companion: describe a worksheet and get exact figures with the answers worked out",
+      "shotAlt": "A live Base Ten Blocks session on the teacher’s screen: the teacher’s area at the top and four students’ squares below, each with hundreds flats and tens rods in a place-value chart.",
+      "plan": "The Manipulatives, their live rooms, Figures and Oomba are part of the Teacher plan.",
+      "testing": "The Manipulatives, their live rooms, Figures and Oomba are being tried out in a few classrooms now."
     }
   },
   "rubrics": {

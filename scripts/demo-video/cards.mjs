@@ -1,13 +1,14 @@
 // Caption overlays, the end card, a title card and a phone bezel, rendered as PNGs (transparent where they overlay video).
 import { chromium } from 'playwright';
+import { launchOptions } from '../chromium.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { B, OUT } from './lib.mjs';
 const DIR = path.join(OUT, 'cards'); fs.mkdirSync(DIR, { recursive: true });
 const FONT = path.resolve('public/fonts/bricolage-grotesque-latin-opsz-normal.woff2');
-const br = await chromium.launch();
+const br = await chromium.launch(launchOptions({}, { headless: true }));
 const pg = await (await br.newContext({ deviceScaleFactor: 5, viewport: { width: 1440, height: 800 } })).newPage();
-await pg.goto(B + '/'); const logoPng = await pg.locator('a.logo').first().screenshot({ omitBackground: true });
+await pg.goto(B + '/play'); const logoPng = await pg.locator('a.logo').first().screenshot({ omitBackground: true });
 const logo = `<img src="data:image/png;base64,${logoPng.toString('base64')}" style="height:100%">`;
 const CSS = `@font-face{font-family:B;src:url(data:font/woff2;base64,${fs.readFileSync(FONT).toString('base64')}) format('woff2');font-weight:200 800}
 *{box-sizing:border-box;margin:0}html,body{background:transparent;font-family:B,sans-serif;color:#141414}
@@ -25,10 +26,10 @@ async function png(name, w, h, html, transparent = true) {
 }
 const CAPS = {
   live1: 'Pick <b>any subject</b>, any level',
-  live2: 'Students join with a code — <b>no accounts</b>',
+  live2: 'Students join with a code: <b>a safe made-up name</b>',
   live3: 'Everyone answers. <b>The race is on!</b>',
   build1: 'Kids describe a game in their own words',
-  build2: 'The Builder makes it — and <b>plays it to check it works</b>',
+  build2: 'The Builder makes it, and <b>plays it to check it works</b>',
   build3: 'Then they play it!',
   games: '<b>Learning games</b> in 13 languages',
 };
@@ -40,14 +41,14 @@ for (const [k, t] of Object.entries(CAPS)) {
 const hook = (W, H, fs1, fs2, pad) => `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,20,20,0) 35%,rgba(20,20,20,.78) 100%)"></div>
 <div style="position:absolute;left:${pad}px;right:${pad}px;bottom:${pad}px;color:#FFFDF2">
 <div style="font-size:${fs1}px;font-weight:800;line-height:1;letter-spacing:-.02em;text-shadow:0 4px 18px rgba(0,0,0,.35)">Live class games<br>your students <span style="color:#FFD23F">love</span></div>
-<div style="font-size:${fs2}px;font-weight:650;margin-top:.45em;color:#DDF3E6">— and they can build their own.</div></div>`;
+<div style="font-size:${fs2}px;font-weight:650;margin-top:.45em;color:#DDF3E6">And they can build their own.</div></div>`;
 await png('hook-land', 1920, 1080, hook(1920, 1080, 128, 56, 90));
 await png('hook-port', 1080, 1920, hook(1080, 1920, 118, 54, 70));
 // End card (opaque)
 const end = (W, H, port) => `<div style="position:absolute;inset:0;background:#FFFDF2"></div>
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:${port ? 56 : 40}px;padding:0 70px">
 <div class="logo" style="height:${port ? 150 : 130}px;font-size:${port ? 150 : 130}px">${logo}</div>
-<div style="font-size:${port ? 78 : 74}px;font-weight:800;line-height:1.05;letter-spacing:-.02em;max-width:${port ? 940 : 1500}px">Live class games your students love — <span style="color:#1F9D63">and they can build their own.</span></div>
+<div style="font-size:${port ? 78 : 74}px;font-weight:800;line-height:1.05;letter-spacing:-.02em;max-width:${port ? 940 : 1500}px">Live class games your students love, <span style="color:#1F9D63">and they can build their own.</span></div>
 <div style="display:flex;gap:22px;flex-wrap:wrap;justify-content:center;font-size:${port ? 44 : 42}px;font-weight:700">
 <span style="background:#66C792;border:5px solid #141414;border-radius:999px;padding:.25em .9em;box-shadow:0 7px 0 #141414">Free for teachers</span>
 <span style="background:#FFD23F;border:5px solid #141414;border-radius:999px;padding:.25em .9em;box-shadow:0 7px 0 #141414">oomba.ai/teachers/live</span></div></div>`;

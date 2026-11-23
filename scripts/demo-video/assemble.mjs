@@ -82,12 +82,12 @@ ff([...segs.flatMap(s => ['-i', s.out]), '-filter_complex', f.replace(/;$/, ''),
 fs.writeFileSync(path.join(V2, 'timeline.json'), JSON.stringify(segs.map((s, i) => ({ scene: s.name, start: starts[i], dur: s.d })), null, 1));
 console.log(out, dur(out).toFixed(2) + 's', (fs.statSync(out).size / 1e6).toFixed(1) + ' MB', 'end card at', starts[starts.length - 1]);
 // Captions as WebVTT (the same words as on screen)
-const TEXT = ['Live class games your students love — and they can build their own.', 'Pick any subject, any level.', 'Students join with a code — no accounts.', 'Everyone answers. The race is on!', null, 'Then they play it!', 'Learning games in 13 languages.', 'Live class games your students love — and they can build their own. Free for teachers: oomba.ai/teachers/live'];
+const TEXT = ['Live class games your students love, and they can build their own.', 'Pick any subject, any level.', 'Students join with a code and get a safe made-up name.', 'Everyone answers. The race is on!', null, 'Then they play it!', 'Learning games in 13 languages.', 'Live class games your students love, and they can build their own. Free for teachers: oomba.ai/teachers/live'];
 const ts = x => { const m = Math.floor(x / 60), sec = x - m * 60; return `00:${String(m).padStart(2, '0')}:${sec.toFixed(3).padStart(6, '0')}`; };
 let vtt = 'WEBVTT\n\n';
 segs.forEach((sg, i) => {
   const a = starts[i] + (i ? X : 0) + 0.2, b = starts[i] + sg.d - 0.1;
   if (TEXT[i]) vtt += `${ts(a)} --> ${ts(b)}\n${TEXT[i]}\n\n`;
-  else { const mid = starts[i] + Math.min(sg.d - 0.5, (bj.send - 0.25) / Math.max(1, (bj.done + 0.5 - 0.25) / D.build) + 1.4); vtt += `${ts(a)} --> ${ts(mid)}\nKids describe a game in their own words.\n\n${ts(mid)} --> ${ts(b)}\nThe Builder makes it — and plays it to check it works.\n\n`; }
+  else { const mid = starts[i] + Math.min(sg.d - 0.5, (bj.send - 0.25) / Math.max(1, (bj.done + 0.5 - 0.25) / D.build) + 1.4); vtt += `${ts(a)} --> ${ts(mid)}\nKids describe a game in their own words.\n\n${ts(mid)} --> ${ts(b)}\nThe Builder makes it, and plays it to check it works.\n\n`; }
 });
 fs.writeFileSync(out.replace(/\.mp4$/, '.en.vtt'), vtt);

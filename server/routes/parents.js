@@ -25,7 +25,7 @@ import { familiesOn, madeOn } from '../services/family.js';
 import { isGrownup } from '../auth.js';
 import * as seo from '../seo.js';
 import { HUBS, AGES, ageBySlug, PARENT_GUIDES, guideBySlug, PARENT_GAMES, PARENTS_FAQ, TWO_PLAYER, gameKey, CONTENT_UPDATED } from '../learn.js';
-import { launchGame, faqBlock, el, fb, lp, contactEmail, inClassLine } from './teachers.js';
+import { launchGame, faqBlock, el, kickerEl, fb, lp, contactEmail, inClassLine } from './teachers.js';
 import { section, parentSections, googlePrivacy, contact, setupLink, folded } from './info.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { familyOnSale } from './family.js';
@@ -65,7 +65,7 @@ function ctaRow(req, { game = tryGame() } = {}) {
 /** The end of a parent page, after the details and questions: a one-line lead and the same buttons. */
 const ctaEnd = req => html`<section class="lp-sec lp-end" aria-label="${setupLink(req).label}">${el(req.t, 'p', 'parents.cta.lead', {}, ' class="lead"')}${ctaRow(req)}</section>`;
 /** Cards linking to pages: [{ href, emoji, nameKey, shortKey }]. */
-const linkCards = (t, cards) => html`<ul class="lp-hubs">${cards.map(c => html`<li><a class="lp-hub panel" href="${c.href}"><span class="lp-hub-e" aria-hidden="true">${c.emoji}</span><span>${el(t, 'span', c.name, {}, ' class="lp-hub-t"')}${el(t, 'span', c.short, {}, ' class="lp-hub-d"')}</span></a></li>`)}</ul>`;
+const linkCards = (t, cards) => html`<ul class="lp-hubs">${cards.map(c => html`<li><a class="lp-hub panel" href="${c.href}"><span class="lp-hub-e" aria-hidden="true">${ico(c.emoji, { size: 32 })}</span><span>${el(t, 'span', c.name, {}, ' class="lp-hub-t"')}${el(t, 'span', c.short, {}, ' class="lp-hub-d"')}</span></a></li>`)}</ul>`;
 const ageCards = req => linkCards(req.t, AGES.map(a => ({ href: lp(req, `/learn/${a.slug}`), emoji: a.emoji, name: `learn.ages.${a.key}.name`, short: `learn.ages.${a.key}.short` })));
 const guideCards = (req, except) => linkCards(req.t, PARENT_GUIDES.filter(g => g !== except).map(g => ({ href: lp(req, `/parents/${g.slug}`), emoji: g.emoji, name: `parents.${g.key}.name`, short: `parents.${g.key}.short` })));
 const itemList = (req, list, name) => ({ '@type': 'ItemList', ...(name ? { name } : {}), itemListElement: list.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: seo.abs(req, `/g/${g.slug}`), name: g.title })) });
@@ -140,13 +140,13 @@ router.get('/parents', async (req, res) => {
   const faq = faqBlock(req, faqPairs, 'parents.faq.h', vars, { fold: true });
   const body = html`<div class="lp">
   <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
-    ${el(t, 'p', 'parents.kicker', {}, ' class="lp-kicker"')}
+    ${kickerEl(t, 'parents.kicker')}
     ${el(t, 'h1', 'parents.h1', {}, ' id="lp-h1"')}
     ${el(t, 'p', 'brand.tagline', {}, ' class="lp-tagline"')}
     ${el(t, 'p', 'parents.lead', {}, ' class="lead"')}
     ${ctaRow(req)}
     ${el(t, 'p', 'parents.teachers', { href: lp(req, '/teachers') }, ' class="lp-aside small"')}
-    <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${e}</span> ${el(t, 'span', k, { count })}</li>`)}</ul>
+    <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${ico(e, { size: 20 })}</span> ${el(t, 'span', k, { count })}</li>`)}</ul>
     ${howArt(req, 'parents')}
   </section>
   ${parentsVideo(req)}
@@ -263,7 +263,7 @@ router.get('/parents/:guide', (req, res) => {
   const body = html`<div class="lp">
     ${crumbsNav(req, crumbs)}
     <section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
-      ${raw(`<h1 id="lp-h1"${fb(t, `${k}.h1`)}><span aria-hidden="true">${guide.emoji}</span> ${tHtml(t, `${k}.h1`)}</h1>`)}
+      ${raw(`<h1 id="lp-h1"${fb(t, `${k}.h1`)}><span aria-hidden="true">${ico(guide.emoji, { size: 36 })}</span> ${tHtml(t, `${k}.h1`)}</h1>`)}
       ${el(t, 'p', `${k}.lead`, {}, ' class="lead"')}
       ${updated(req)}
     </section>
@@ -318,7 +318,7 @@ router.get('/learn/:slug', (req, res, next) => {
   const body = html`<div class="lp">
     ${crumbsNav(req, crumbs)}
     <section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
-      ${raw(`<h1 id="lp-h1"${fb(t, `${k}.h1`)}><span aria-hidden="true">${age.emoji}</span> ${tHtml(t, `${k}.h1`)}</h1>`)}
+      ${raw(`<h1 id="lp-h1"${fb(t, `${k}.h1`)}><span aria-hidden="true">${ico(age.emoji, { size: 36 })}</span> ${tHtml(t, `${k}.h1`)}</h1>`)}
       ${el(t, 'p', `${k}.lead`, {}, ' class="lead"')}
       ${age.key === 'a10' ? el(t, 'p', `${k}.abcya`, {}, ' class="lp-aside"') : ''}
       <p class="lp-grades">${ico('🎒', { size: 18 })} ${el(t, 'span', 'learn.ages.line', range)}</p>
@@ -329,14 +329,14 @@ router.get('/learn/:slug', (req, res, next) => {
     ${age.make === 'after' ? make : ''}
     <div class="lp-cols">
       <section class="panel" id="skills" aria-labelledby="skills-h">${el(t, 'h2', 'learn.ages.skills.h', {}, ' id="skills-h"')}
-        <ul class="lp-list">${skills.map(([h, gs]) => html`<li><a href="${lp(req, `/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span> ${t(`learn.hubs.${h.key}.name`)}</a>${gs.length ? html`: ${gs.map(g => g.title).join(', ')}` : ''}</li>`)}</ul></section>
+        <ul class="lp-list">${skills.map(([h, gs]) => html`<li><a href="${lp(req, `/learn/${h.slug}`)}"><span aria-hidden="true">${ico(h.emoji, { size: 20 })}</span> ${t(`learn.hubs.${h.key}.name`)}</a>${gs.length ? html`: ${gs.map(g => g.title).join(', ')}` : ''}</li>`)}</ul></section>
       ${together.length ? html`<section class="panel" id="together" aria-labelledby="together-h">${el(t, 'h2', 'learn.ages.together.h', {}, ' id="together-h"')}${el(t, 'p', 'learn.ages.together.p', { count: together.length, games: listOf(req, 'learn.ages.together.p', together.map(g => g.title)) })}</section>` : ''}
       <section class="panel" id="safe" aria-labelledby="safe-h">${el(t, 'h2', 'learn.ages.safe.h', {}, ' id="safe-h"')}${el(t, 'p', 'learn.ages.safe.p', { href: lp(req, '/parents') })}</section>
     </div>
     ${faq.markup}
     ${inClassLine(req)}
     <section class="lp-sec" aria-labelledby="more-h">${el(t, 'h2', 'learn.ages.moreHeading', {}, ' id="more-h"')}
-      <ul class="chips lp-more">${AGES.filter(a => a !== age).map(a => html`<li><a class="chip" href="${lp(req, `/learn/${a.slug}`)}"><span aria-hidden="true">${a.emoji}</span>${t(`learn.ages.${a.key}.name`)}</a></li>`)}
+      <ul class="chips lp-more">${AGES.filter(a => a !== age).map(a => html`<li><a class="chip" href="${lp(req, `/learn/${a.slug}`)}"><span aria-hidden="true">${ico(a.emoji, { size: 18 })}</span>${t(`learn.ages.${a.key}.name`)}</a></li>`)}
         <li><a class="chip" href="${lp(req, '/parents')}">${ico('👪', { size: 18 })}${t('learn.parentsLink')}</a></li></ul>
     </section>
   </div>`;

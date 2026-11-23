@@ -1,6 +1,7 @@
 // Share pictures (Open Graph / Twitter cards, 1200x630) for the home page, /teachers, the parent pages and each launch
-// game: public/og/site.jpg, teachers.jpg, parents.jpg, parents-<guide>.jpg, ages-<min>-<max>.jpg, research.jpg, compliance.jpg and <slug>.jpg. Built from the brand (server/views/brand.js, the
-// Bricolage font, the brand colours) and the launch games' cover screenshots (public/covers, `npm run covers`).
+// game: public/og/site.jpg, teachers.jpg, teachers-live.jpg, teachers-host.jpg, plans.jpg, parents.jpg, parents-<guide>.jpg, ages-<min>-<max>.jpg, research.jpg, compliance.jpg and <slug>.jpg. Built from the brand (server/views/brand.js, the
+// Bricolage font, the brand colors) and the launch games' cover screenshots (public/covers, `npm run covers`); the teacher
+// cards show the real screens of the teaching tools instead (public/img/how, `npm run how-shots`). No prices on any card.
 // Never made for a game a child built: those pages are not indexed and show no share picture.
 //
 // Usage: node scripts/og-images.js            (run again after `npm run covers` or a brand change)
@@ -11,16 +12,19 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
 import { appMark, wordmark } from '../server/views/brand.js';
+import { chromiumPath } from './chromium.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'public', 'og');
 const COVERS = path.join(ROOT, 'public', 'covers');
-const EXE = ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome', process.env.BRB_CHROMIUM].find(p => p && fs.existsSync(p));
+const EXE = chromiumPath();   // BRB_CHROMIUM, else the pre-installed Chromium, else Playwright's own (scripts/chromium.js)
 const INK = '#141414', CREAM = '#FFFDF2', MINT = '#66C792', SPARK = '#FFD23F', LEAF = '#1F9D63';
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const dataUrl = (file, type) => `data:${type};base64,${fs.readFileSync(file).toString('base64')}`;
 const font = dataUrl(path.join(ROOT, 'public/fonts/bricolage-grotesque-latin-opsz-normal.woff2'), 'font/woff2');
 const cover = slug => dataUrl(path.join(COVERS, `${slug}.jpg`), 'image/jpeg');
+/** A real screen of the site (public/img/how, light theme): a desktop capture or a phone capture. */
+const how = (slug, kind) => dataUrl(path.join(ROOT, 'public', 'img', 'how', `${slug}-${kind === 'phone' ? 'p-780' : 'd-1024'}.webp`), 'image/webp');
 const seed = slug => JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-games', `${slug}.json`), 'utf8'));
 
 const CSS = `@font-face{font-family:B;src:url(${font}) format('woff2');font-weight:200 800}
@@ -45,7 +49,12 @@ h1{font-size:68px;line-height:1.02;font-weight:800;letter-spacing:-.03em}
 .stack img:nth-child(3){left:215px;top:150px;transform:rotate(9deg);z-index:3}
 .one{display:flex;justify-content:center}
 .one img{width:330px;height:440px;object-fit:cover;object-position:top;border-radius:26px;border:8px solid #fff;box-shadow:0 22px 50px rgba(20,20,20,.3);transform:rotate(3deg)}
-.url{position:absolute;left:64px;bottom:40px;font-size:24px;font-weight:700;color:${LEAF}}`;
+.url{position:absolute;left:64px;bottom:40px;font-size:24px;font-weight:700;color:${LEAF}}
+.card.screens{grid-template-columns:500px 1fr;padding-right:0;gap:28px}
+.card.screens h1{font-size:54px;line-height:1.03}
+.shots{position:relative;height:520px}
+.shots .lap{position:absolute;left:0;top:80px;width:540px;border-radius:18px;border:7px solid ${INK};box-shadow:0 22px 50px rgba(20,20,20,.3)}
+.shots .ph{position:absolute;left:420px;top:150px;width:160px;border-radius:24px;border:7px solid ${INK};box-shadow:0 22px 50px rgba(20,20,20,.3)}`;
 
 const brand = () => `<div class="brand">${appMark()}${wordmark()}<b>Academy</b></div>`;
 const page = inner => `<!doctype html><html><head><meta charset="utf-8"><style>${CSS}</style></head><body>${inner}</body></html>`;
@@ -53,8 +62,14 @@ const page = inner => `<!doctype html><html><head><meta charset="utf-8"><style>$
 const CARDS = [
   { file: 'site.jpg', html: page(`<div class="card"><div>${brand()}<h1>Fun learning games for kids</h1><p class="sub">Play free in the browser, and build your own games with AI.</p><div class="pills"><span>Grades K–8</span><span>No ads</span><span>Free</span></div></div>
     <div class="stack"><img src="${cover('castle-clash')}"><img src="${cover('sum-racer')}"><img src="${cover('word-hunt')}"></div><p class="url">oomba.ai</p></div>`) },
-  { file: 'teachers.jpg', html: page(`<div class="card"><div>${brand()}<span class="kicker">For teachers</span><h1 style="font-size:58px">Fun, interactive learning games for the classroom</h1><div class="pills"><span>Free to start</span><span>No ads</span><span>Grades K–8</span></div></div>
-    <div class="stack"><img src="${cover('loop-lab')}"><img src="${cover('sum-racer')}"><img src="${cover('word-peek')}"></div><p class="url">oomba.ai/teachers</p></div>`) },
+  // The teacher pages: the real screens of the tools (a desktop capture with a phone beside it), not game covers.
+  ...[
+    { file: 'teachers.jpg', kicker: 'For teachers', h1: 'One screen to run your class. Games to make it stick.', pills: ['Class dashboards', 'Math manipulatives', 'Live games'], lap: 'dash-teacher', phone: 'dash-student', url: 'oomba.ai/teachers' },
+    { file: 'teachers-live.jpg', kicker: 'Live class games', h1: 'The whole class plays on the big screen, together.', pills: ['A code on the board', 'Phones or laptops', 'Grades K–8'], lap: 'live-lobby', phone: 'live-play', url: 'oomba.ai/teachers/live' },
+    { file: 'teachers-host.jpg', kicker: 'Host a live game', h1: 'Pick a game, put the code on the board, play.', pills: ['Ready in a minute', 'Made-up names', 'Grades K–8'], lap: 'live-pick', phone: 'live-join', url: 'oomba.ai/teachers/host' },
+    { file: 'plans.jpg', kicker: 'Plans for teachers and schools', h1: 'Free for every class. More when you want it.', pills: ['Free plan', 'Teacher plan', 'Schools and districts'], lap: 'teachers-gradebook', phone: 'teachers-student', url: 'oomba.ai/plans' },
+  ].map(c => ({ file: c.file, html: page(`<div class="card screens"><div>${brand()}<span class="kicker">${esc(c.kicker)}</span><h1>${esc(c.h1)}</h1><div class="pills">${c.pills.map(p => `<span>${esc(p)}</span>`).join('')}</div></div>
+    <div class="shots"><img class="lap" src="${how(c.lap, 'desk')}" alt=""><img class="ph" src="${how(c.phone, 'phone')}" alt=""></div><p class="url">${esc(c.url)}</p></div>`) })),
   ...[
     { file: 'parents.jpg', kicker: 'For parents', h1: 'Fun learning games for K–8 kids, safe by design', pills: ['Free', 'No ads', 'No stranger chat'], covers: ['word-hunt', 'sum-racer', 'castle-clash'], url: 'oomba.ai/parents' },
     { file: 'parents-ai-builder-safety.jpg', kicker: 'For parents', h1: 'Is the AI Builder safe for my child?', pills: ['What it sees', 'The rules it follows'], covers: ['hero-of-sunvale', 'loop-lab', 'munch-maze'], url: 'oomba.ai/parents' },

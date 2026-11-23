@@ -6048,7 +6048,7 @@
       "s1": {
         "h": "Ihre Klassen an einem Ort",
         "p": "Sobald Ihre Schule eingerichtet ist, fügt Ihr Schuladmin die Lehrkräfte hinzu, und jede Lehrkraft legt ihre Klassen unter „Meine Klassen“ an.",
-        "alt": "„Meine Klassen“ einer Lehrkraft der Sunny Hill Demo School: drei Klassenkarten, Coding Club, Ms. Rivera’s Class (5 Schüler, 1 Beitrittsanfrage, 2 Antworten zu prüfen) und Reading Rockets, dazu ein Knopf „Lektionsbibliothek“."
+        "alt": "Die Klassenraum-Startseite von Ms. Rivera: drei Klassen und zwei wartende Antworten, Schaltflächen für den Wochenüberblick und ein Live-Spiel sowie die Karte des Unterrichtskreislaufs mit Planen, Spielen, Prüfen und Rückmelden."
       },
       "s2": {
         "h": "Schüler treten mit einem Code oder mit Anmeldekarten bei",
@@ -6069,7 +6069,12 @@
       "s5": {
         "h": "Fortschritt und Notenübersicht ansehen",
         "p": "Die Notenübersicht zeigt Fortschritt, Spielpunkte und schriftliche Antworten jedes Schülers. Geben Sie Feedback oder laden Sie sie als CSV herunter.",
-        "alt": "Der Reiter „Fortschritt“ der Klasse: eine Notenübersicht, die zeigt, wie viele Schritte jeder Schüler in jeder Lektion erledigt hat, ein Knopf „Herunterladen (CSV)“ und ein Link zu den schriftlichen Antworten, die auf Prüfung warten."
+        "alt": "Der Tab Fortschritt der Klasse: Links zu den Kursen und zum Verlauf der Live-Spiele, eine Schaltfläche Herunterladen (CSV), die Antworten zum Durchsehen und die Notentabelle mit den erledigten Schritten jedes Kindes in jeder Lektion."
+      },
+      "s6": {
+        "h": "Mit den Werkzeugen unterrichten",
+        "p": "Bitte Oomba im Chat um ein Arbeitsblatt: Es schreibt die Aufgaben, Figures zeichnet jede Figur maßstabsgetreu und rechnet die Lösungen aus. Oder starte einen Live-Matheraum mit virtuellem Material.",
+        "alt": "Der Arbeitsblatt-Editor von Figures mit Oombas Chat daneben: ein Arbeitsblatt namens Area and volume practice, die erste Aufgabe mit einem maßstabsgetreuen Rechteck und der Lösung 12 m² sowie die Liste der Änderungen im Chat."
       }
     },
     "build": {
@@ -6705,7 +6710,7 @@
       "s1": {
         "h": "Kostenlos starten mit einem ausgedachten Namen",
         "p": "Ihr Kind wählt einen ausgedachten Namen und ein Passwort. Wir fragen Kinder nie nach einer E-Mail-Adresse, dem Alter oder der Wohnadresse.",
-        "alt": "Die Anmeldeseite von Oomba Academy, „Mach dir ein kostenloses Konto“, mit dem eingetippten ausgedachten Namen PixelPanda und einem verdeckten Passwort. Gefragt wird nur nach einem lustigen Namen und einem Passwort."
+        "alt": "Die Anmeldeseite von Oomba Academy, Schritt 1 von 2, „Make a free account“, mit dem ausgedachten Namen PixelPanda und einem verdeckten Passwort. Sie fragt nur nach einem lustigen Namen und einem Passwort."
       },
       "s2": {
         "h": "Lernspiele spielen",
@@ -6730,7 +6735,7 @@
       "s6": {
         "h": "Ihr Erwachsenenkonto verbinden (freiwillig)",
         "p": "Ihr Kind bekommt auf seiner Seite „Ich“ einen einmaligen Code und gibt ihn Ihnen persönlich. Sie tippen ihn auf Ihrer Familienseite ein, und Ihr Kind sagt Ja. Ihre Familienseite zeigt dann Ihr Kind und seine zusätzlichen Nachrichten an den Baumeister bis gestern.",
-        "alt": "Die Familienseite des Erwachsenen: Unter „Kinder“ ist Pixel Panda verbunden, mit den zusätzlichen Nachrichten an den Baumeister von gestern und diesem Monat, einem Knopf „Trennen“ und einem Knopf „Kind verbinden“."
+        "alt": "Die Familienseite des Erwachsenen: Unter „Children“ ist Pixel Panda verknüpft, mit den zusätzlichen Builder-Nachrichten von gestern und diesem Monat und einer Schaltfläche Verknüpfung lösen."
       }
     },
     "ages": {
@@ -8346,12 +8351,12 @@
       "s1": {
         "h": "Spiel und Fragen auswählen",
         "p": "Wählen Sie Quest-Rennen, Fragen-Duell oder Denkbrett und dann die Fragen: die Fragenbank nach Fach und Alter (6 bis 14), Ihr eigenes Fragenset, eines, das eine Kollegin oder ein Kollege geteilt hat, oder die Fragen aus einer Ihrer Unterrichtseinheiten.",
-        "alt": "Die Seite „Live-Spiel leiten“: Spielmodi zur Auswahl, ein Fragenset und wer beitreten kann."
+        "alt": "Der erste Schritt, um ein Live-Spiel zu starten, „Was möchtest du spielen?“: Quest Race, Question Battle und Brain Board, jeweils mit der passenden Spielerzahl."
       },
       "s2": {
         "h": "Den Code an der Tafel zeigen",
         "p": "Die Schülerinnen und Schüler öffnen auf ihrem Gerät die Beitrittsseite und geben den 7-stelligen Code ein oder scannen den QR-Code. Ihre Namen erscheinen, sobald sie beitreten.",
-        "alt": "Der Beamer-Bildschirm vor Spielbeginn: ein großer 7-stelliger Code, ein QR-Code und die Schülerinnen und Schüler, die schon beigetreten sind."
+        "alt": "Der Beamer-Bildschirm vor dem Spielstart: eine Zeichentrickfigur, gegen die die ganze Klasse spielt, ein großer 7-stelliger Code, ein QR-Code und wie viele schon beigetreten sind."
       },
       "s3": {
         "h": "In Sekunden dabei",
@@ -8361,7 +8366,7 @@
       "s4": {
         "h": "Alle antworten gleichzeitig",
         "p": "Die Frage steht an der Tafel, die Antwortknöpfe sind auf jedem Gerät. Richtige Antworten bringen umso mehr Punkte, je schneller sie kommen.",
-        "alt": "Das Handy eines Kindes während einer Frage, mit vier Antwortknöpfen."
+        "alt": "Das Handy eines Kindes während einer Frage: oben die Zeichentrickfigur, gegen die die Klasse spielt, dann die Frage und vier Antwortknöpfe."
       },
       "s5": {
         "h": "Sehen, wer was weiß",
@@ -9277,8 +9282,8 @@
       "li2": "Nimm einen fertigen Fragensatz, schreib deinen eigenen oder lass die KI einen Entwurf zum Bearbeiten machen",
       "li3": "Punkte landen direkt in deiner Notenübersicht",
       "li4": "Klassenspiele: nur Ihre angemeldeten Schülerinnen und Schüler. Gästespiele: sichere, erfundene Namen. Kein Chat und kein Freitext, in beiden",
-      "shotAlt": "Die Lobby eines Live-Question-Battle: Fünf Schüler-Avatare warten, während der große Bildschirm den Spielcode und einen QR-Code zeigt.",
-      "link": "So funktionieren Live-Spiele"
+      "link": "So funktionieren Live-Spiele",
+      "shotAlt": "Die Lobby eines Live-Spiels Question Battle: Der große Bildschirm zeigt die Zeichentrickfigur, gegen die die Klasse spielt, den Spielcode und einen QR-Code."
     },
     "why": {
       "kicker": "Warum Spiele wirken",
@@ -9429,6 +9434,18 @@
       "li4": "Privat, bis es geteilt wird: mit der Klasse oder mit allen erst, nachdem jemand aus unserem Team es geprüft hat",
       "shotAlt": "Das Studio eines Kindes: Der Builder meldet, dass Version 2 fertig ist, und das Spiel läuft in einer Vorschau in Handygröße.",
       "caption": "Das Studio eines Kindes: beschreiben, der Builder baut, selbst testen."
+    },
+    "tools": {
+      "kicker": "Unterrichtswerkzeuge",
+      "h": "Mathe zum Anfassen, für alle Kinder gleichzeitig",
+      "lead": "Virtuelles Material, das deine Schülerinnen und Schüler selbst bewegen, ein Live-Raum, in dem du die Arbeit aller auf einem Bildschirm siehst, und Oomba, das Arbeitsblätter mit maßstabsgetreuen Figuren entwirft.",
+      "li1": "18 virtuelle Materialien, von Zehnersystem-Blöcken, die bündeln und entbündeln, bis zu Bruchteilen und Uhren",
+      "li2": "Live-Matheräume: Jedes Kind baut in seinem eigenen Feld, während du alle Felder an der Tafel siehst",
+      "li3": "Gespeicherte Tafeln mit Teilen-Codes und 300 fertige Aufgaben für die Klassen K bis 8",
+      "li4": "Oomba, dein Unterrichtsbegleiter: Beschreib ein Arbeitsblatt und bekomm exakte Figuren mit ausgerechneten Lösungen",
+      "shotAlt": "Eine Live-Sitzung mit Zehnersystem-Blöcken auf dem Bildschirm der Lehrkraft: oben der Bereich der Lehrkraft, darunter die Felder von vier Kindern, jedes mit Hunderterplatten und Zehnerstangen in einer Stellenwerttafel.",
+      "plan": "Das Material, seine Live-Räume, Figures und Oomba gehören zum Lehrkräfte-Plan.",
+      "testing": "Das Material, seine Live-Räume, Figures und Oomba werden gerade in einigen Klassen ausprobiert."
     }
   },
   "teach": {
