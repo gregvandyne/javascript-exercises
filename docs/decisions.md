@@ -11773,3 +11773,59 @@ exception, for one page only: `/compare`, "How Oomba compares", may name **Kahoo
   Several rows may be open. On phones the detail is pinned to the start of the table's scroll box (sticky, as wide as
   the box), so it stays readable however the columns are scrolled. `public/js/compare-rows.js` replaces
   `compare-info.js`.
+
+## Oomba Figures 1.7.0: seven new physics figures and the cladogram (23 Nov 2026)
+
+- **What the owner asked.** "include everything they have" and "Update based on the repo if all of it is there". The
+  source project (docs/third-party.md, "ported") added eight generators outside chemistry since our port at
+  `3bb43190`: circular motion, electric and magnetic fields, the lever, torque, the pendulum, the spring and the roller
+  coaster on the physics site, and the cladogram on the biology site, with review fixes (`9e725a0`, `86d40c0`,
+  `4e74759`) and shared support code (`f337ad2`). All eight are in, at `9ed3093`. Its seven new chemistry kinds are
+  Figures 1.6.0, built at the same time on its own branch; this is 1.7.0 so 1.6.0 can merge first.
+- **A new version, like 1.5.0.** Oomba Figures 1.7.0 is a new version folder: the core and the same seven packs (no new
+  pack; physics gains `circularMotion`, `fields`, `lever`, `torque`, `pendulum`, `spring`, `rollerCoaster`; bio gains
+  `cladogram`). 1.0.0 to 1.5.0 stay byte for byte. Every figure the previous version drew draws the same bytes in 1.7.0
+  (`tests/unit/figures-v170.test.js` compares against the newest version before 1.7.0, so it follows 1.6.0 once that is
+  merged). Built by script only: until 1.7.0 ships, drop its lock entries and rebuild (`node -e` on
+  `figures/SHIPPED.json`, then `node scripts/build-figures.js`; the command is in the commit message).
+- **Ported: logic and layout; Oomba's own: data, checks, answers, drawing.** The source draws these figures from labels:
+  its lever works out the effort, and its torque generator works out moments, but its circular motion, pendulum, spring
+  and roller coaster compute nothing (k, v, h and the like are typed words). Oomba's data is numbers, so `OF.solve`
+  gives the answers: v²/r and mv²/r and the tension at the top and bottom of a vertical circle; the field's direction
+  and strength at a point; the effort and mechanical advantage; net torque, the balancing value and place, support and
+  cable forces; the period 2π√(L/g), the drop L(1 − cos θ) and the speed √(2gh); kx, ½kx², series and parallel k;
+  speeds on the track by energy, the fastest point and the loop's least height 2.5R; how many taxa share a trait, which
+  trait came first, a taxon's closest relative.
+- **Refused, not drawn wrong.** A car too fast over a hill or too slow at the top of a loop, a point on a charge, arms
+  that do not suit the lever's class, a cable that would push, two supports in one place, a hanging spring given both a
+  mass and an extension, a rough stretch (the speeds stop there: friction takes energy the figure cannot know), a mark
+  naming a trait the tree has twice.
+
+| Source item | Status | Oomba | Notes |
+| --- | --- | --- | --- |
+| Circular Motion: top view (nothing, string, turntable, road; up to 8 places), vertical circle (string, loop, hill, dip), conical pendulum | Ported layout | `circularMotion` | Arrow sizes and contact forces ported; numbers, directions and drawing Oomba's. The source's notation choice (arrow over or bold) is left out. |
+| Electric and Magnetic Field: one, opposite, like charges; plates; bar magnet; wire | Ported | `fields` | Field tracing ported; added: up to 4 charges of any size up to ±3 and named points with their field. |
+| Lever: class 1, 2, 3; load as block or arrow; units | Ported | `lever` | Arms that do not suit the class are refused instead of swapped. Label sizes left out. |
+| Torque: pivot, two supports, wall with or without cable; up to 6 loads; beam weight; masses | Ported | `torque` | Mirroring left out; the balancing place added. |
+| Pendulum: one bob with forces, the swing with A, B, C | Ported layout | `pendulum` | Length, mass and g added for the answers. |
+| Spring: hanging or horizontal; one, before and after, three positions; 1 to 3 springs in series or parallel | Ported coil | `spring` | k, extension and mass added for the answers; the layout is Oomba's. |
+| Roller Coaster: points, loop, object, velocity, rough stretches | Ported curve | `rollerCoaster` | Speeds and the loop's least height added; the length mark under a rough stretch is a μₖ label only. |
+| Cladogram: diagonal or rectangular; ready-made trees; blank names and traits; node numbers | Ported | `cladogram` | The tree editor's pointer edits become data (a nested tree, a ladder or letters); marks added for questions. |
+| Shared support hatching, label placer, settings and address format | Not ported | | Oomba draws its own hatching and places its labels. |
+
+- **Questions.** Three generators per kind, 24 in all, each answer its figure's `OF.solve` value: circular motion
+  (centripetal acceleration, the net force, the acceleration's direction), fields (the field's direction at P by the
+  right-hand rule, attract or repel from the lines with the signs hidden, which point is stronger), lever (the effort,
+  the mechanical advantage, the class), torque (net torque, where a load must hang to balance, the force at a support),
+  pendulum (the period, the speed at the bottom, the energy at the top), spring (F = kx, ½kx², a hanging mass's stretch),
+  roller coaster (the speed at a point, where it is fastest, the loop's least height), cladogram (how many animals share
+  a boxed trait, which of two traits came first, the closest relative). Words in all 12 other site languages, en-GB for
+  anticlockwise and centre.
+- **Judgment calls.** The net torque question keeps clockwise positive but deals only clockwise answers: the Oomba Canvas
+  self-test that every catalog generator passes refuses a negative answer (Canvas has no minus key), so a negative net
+  torque would fail it; `OF.solve.torque.net` itself is signed, and a teacher's own figure can ask for a negative answer.
+  Choice generators keep 2 to 4 options for the same reason. "Draw it" (the dot grid) is for shapes and the coordinate
+  grid only, so these kinds use the typed editor. The kind is `fields` (the source's name); the catalog calls it
+  "Electric and magnetic fields".
+- **Tests.** figures-phys17 (answers against the formulas, refusals, hide, grayscale print, languages, generators),
+  figures-v170 (frozen versions, the latest pin, byte-identical earlier figures), the gen audit and the gen words.

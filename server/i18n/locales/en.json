@@ -13964,6 +13964,34 @@
         "name": "Waves",
         "desc": "Transverse and longitudinal waves"
       },
+      "circularMotion": {
+        "name": "Circular motion",
+        "desc": "Velocity, centripetal acceleration and forces"
+      },
+      "fields": {
+        "name": "Electric and magnetic fields",
+        "desc": "Field lines of charges, plates, magnets and wires"
+      },
+      "lever": {
+        "name": "Levers",
+        "desc": "Class 1, 2 and 3 levers with the effort worked out"
+      },
+      "torque": {
+        "name": "Torque",
+        "desc": "Beams on a pivot, two supports or a wall"
+      },
+      "pendulum": {
+        "name": "Pendulum",
+        "desc": "A swing with its angle, length and height"
+      },
+      "spring": {
+        "name": "Springs",
+        "desc": "Hooke's law, series and parallel, oscillation"
+      },
+      "rollerCoaster": {
+        "name": "Roller coaster",
+        "desc": "Heights, a loop and speeds from energy"
+      },
       "reading": {
         "name": "Reading a scale",
         "desc": "Thermometers, cylinders, rulers and calipers"
@@ -14063,6 +14091,10 @@
       "osmosis": {
         "name": "Osmosis",
         "desc": "Cells, U-tubes and bags in solutions"
+      },
+      "cladogram": {
+        "name": "Cladogram",
+        "desc": "Taxa, shared traits and phylogenetic trees"
       },
       "supplyDemand": {
         "name": "Supply and demand",

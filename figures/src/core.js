@@ -29,9 +29,11 @@ export const KIND_PACKS = Object.freeze({
   stemAndLeaf: 'data', pieChart: 'data', cumulativeFrequency: 'data', normalCurve: 'data', treeDiagram: 'data', vennDiagram: 'data', twoWayTable: 'data',
   tableOfValues: 'data', protractor: 'measure', prism: 'math', cylinder: 'math', pyramid: 'math', cone: 'math', sphere: 'math', net: 'math', mappingDiagram: 'math',
   motionMap: 'physics', projectile: 'physics', waves: 'physics',
+  circularMotion: 'physics', fields: 'physics', lever: 'physics', torque: 'physics', pendulum: 'physics', spring: 'physics', rollerCoaster: 'physics',
   massSpectrum: 'chem', heatingCurve: 'chem', energyProfile: 'chem', nuclide: 'chem', lineSpectrum: 'chem', photoelectron: 'chem', particles: 'chem', dotCross: 'chem',
   skeletal: 'chem', energyLevels: 'chem',
   populationGrowth: 'bio', predatorPrey: 'bio', enzymeActivity: 'bio', photosynthesis: 'bio', punnett: 'bio', pedigree: 'bio', proteinSynthesis: 'bio', gel: 'bio', osmosis: 'bio',
+  cladogram: 'bio',
   supplyDemand: 'econ', moneyMarket: 'econ', businessCycle: 'econ', phillipsCurve: 'econ', possibilitiesCurve: 'econ', adAs: 'econ', costCurves: 'econ',
 });
 /** The packs, in the order a page loads their tags (after the core's). */

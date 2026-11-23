@@ -74,6 +74,9 @@ const SAMPLES = {
   possibilitiesCurve: { points: [{ name: 'A', at: 0.5 }] }, adAs: { start: 'recession' }, costCurves: { market: 'perfect' },
   // 1.5.0 chemistry (tests/unit/figures-chem-organic.test.js, figures-chem-levels.test.js)
   skeletal: { smiles: 'CCO' }, energyLevels: { transitions: [{ from: 3, to: 2 }] },
+  // 1.7.0 physics and the cladogram (tests/unit/figures-phys17.test.js)
+  circularMotion: { radius: 2, speed: 4 }, fields: { setup: 'opposite' }, lever: { effortArm: 1.5, loadArm: 0.5, load: 300 }, torque: { loads: [{ at: 0.3, value: 6 }] },
+  pendulum: { length: 1, angle: 30 }, spring: { k: 200, mass: 2 }, rollerCoaster: { points: [{ height: 40 }, { height: 10 }] }, cladogram: { setup: 'apes' },
 };
 
 test('every kind: plain data in, one accessible <svg> out, no problems for good data', () => {

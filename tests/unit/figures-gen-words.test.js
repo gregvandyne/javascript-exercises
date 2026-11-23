@@ -31,7 +31,7 @@ const strings = w => [w.q, ...(w.work || []), ...(w.choices || []), w.unit, ...O
 test('the 13 site languages: English is the catalog, the other 12 have a table', () => {
   assert.deepEqual([...W.GEN_LANGS].sort(), ['ar', 'de', 'en', 'en-GB', 'es', 'fr', 'he', 'it', 'ja', 'nl', 'pt', 'ru', 'zh-Hant']);
   assert.equal(W.genLang('xx'), 'en'); assert.equal(W.genLang('es'), 'es'); assert.equal(W.genLang(undefined), 'en');
-  assert.equal(GENS.length, 83);
+  assert.equal(GENS.length, 107);
 });
 
 test('every generator in every language, with the English placeholders line by line and the options in order', () => {

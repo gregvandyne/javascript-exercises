@@ -13244,6 +13244,34 @@
         "name": "Golven",
         "desc": "Transversale en longitudinale golven"
       },
+      "circularMotion": {
+        "name": "Cirkelbeweging",
+        "desc": "Snelheid, middelpuntzoekende versnelling en krachten"
+      },
+      "fields": {
+        "name": "Elektrische en magnetische velden",
+        "desc": "Veldlijnen van ladingen, platen, magneten en draden"
+      },
+      "lever": {
+        "name": "Hefbomen",
+        "desc": "Hefbomen van klasse 1, 2 en 3 met de kracht berekend"
+      },
+      "torque": {
+        "name": "Moment",
+        "desc": "Balken op een draaipunt, twee steunpunten of een muur"
+      },
+      "pendulum": {
+        "name": "Slinger",
+        "desc": "Een slingering met hoek, lengte en hoogte"
+      },
+      "spring": {
+        "name": "Veren",
+        "desc": "Wet van Hooke, serie en parallel, trilling"
+      },
+      "rollerCoaster": {
+        "name": "Achtbaan",
+        "desc": "Hoogtes, een looping en snelheden uit energie"
+      },
       "reading": {
         "name": "Een schaal aflezen",
         "desc": "Thermometers, maatcilinders, linialen en schuifmaten"
@@ -13343,6 +13371,10 @@
       "osmosis": {
         "name": "Osmose",
         "desc": "Cellen, U-buizen en zakjes in oplossingen"
+      },
+      "cladogram": {
+        "name": "Cladogram",
+        "desc": "Taxa, gedeelde kenmerken en stambomen"
       },
       "supplyDemand": {
         "name": "Vraag en aanbod",

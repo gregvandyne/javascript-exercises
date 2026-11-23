@@ -176,7 +176,7 @@ test('the notice: Oomba\'s exact CC0 words, in the SVG bytes as <metadata>, from
 });
 
 test('the frozen files: 1.1.0 draws what the source draws; 1.0.0 is untouched and does not know the number line', () => {
-  assert.ok(['1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0'].includes(FIG_LATEST['oomba-figures']), 'the number line came in 1.1.0, and the latest has it');
+  assert.ok(['1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0'].includes(FIG_LATEST['oomba-figures']), 'the number line came in 1.1.0, and the latest has it');
   const F = figuresKit('1.1.0');
   for (const d of [GE, OR, QUARTERS, SEQUENCE]) { assert.equal(F.svg('numberLine', d), OF.svg('numberLine', d)); assert.equal(F.check('numberLine', d).length, 0); }
   const old = figuresKit('1.0.0');

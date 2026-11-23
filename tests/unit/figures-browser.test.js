@@ -57,12 +57,12 @@ test('the menu on a laptop and a phone: subject tabs, grade chips and search fil
     const { ctx, page, errors } = await open('/figures', opts);
     await page.waitForSelector('.fg-card');
     await noSideScroll(page);
-    assert.equal((await visibleKinds(page)).length, 76, 'every kind in the catalog (1.2.0 added eight chemistry kinds, 1.3.0 nine biology kinds, 1.4.0 seven economics kinds, 1.5.0 two chemistry kinds)');
+    assert.equal((await visibleKinds(page)).length, 84, 'every kind in the catalog (1.2.0 added eight chemistry kinds, 1.3.0 nine biology kinds, 1.4.0 seven economics kinds, 1.5.0 two chemistry kinds, 1.7.0 seven physics kinds and the cladogram)');
     await shot(page, `menu-${label}`);
     if (label === 'laptop') await shot(page, 'menu-laptop-full', true);
     await page.click('[data-tab="physics"]');
     const phys = await visibleKinds(page);
-    assert.ok(phys.length >= 10 && phys.every(k => ['freeBody', 'vectors', 'inclinedPlane', 'pulley', 'rays', 'circuit', 'motionGraph', 'motionMap', 'projectile', 'waves', 'reading'].includes(k)), phys.join());
+    assert.ok(phys.length >= 10 && phys.every(k => ['freeBody', 'vectors', 'inclinedPlane', 'pulley', 'rays', 'circuit', 'motionGraph', 'motionMap', 'projectile', 'waves', 'circularMotion', 'fields', 'lever', 'torque', 'pendulum', 'spring', 'rollerCoaster', 'reading'].includes(k)), phys.join());
     await page.click('[data-tab="chem"]');
     const chem = await visibleKinds(page);
     for (const k of ['massSpectrum', 'heatingCurve', 'energyProfile', 'nuclide', 'lineSpectrum', 'photoelectron', 'particles', 'dotCross']) assert.ok(chem.includes(k), `the Chemistry tab has ${k}`);
@@ -256,7 +256,7 @@ test('the 1.3.0 Biology tab (no longer Coming soon) and its editors: each kind d
     assert.equal(await page.$('.fg-soon:has-text("Biology")'), null, 'Biology is not Coming soon');
     await page.click('[data-tab="biology"]');
     const bio = await visibleKinds(page);
-    assert.deepEqual(bio.filter(k => k !== 'reading').sort(), [...BIO].sort()); assert.ok(bio.includes('reading'), 'the readings (the micropipette) are under Biology too');
+    assert.deepEqual(bio.filter(k => k !== 'reading' && k !== 'cladogram').sort(), [...BIO].sort()); assert.ok(bio.includes('cladogram'), 'the cladogram (1.7.0) too'); assert.ok(bio.includes('reading'), 'the readings (the micropipette) are under Biology too');
     await noSideScroll(page);
     await shot(page, `menu-biology-${label}`);
     assert.deepEqual(errors, [], label);
@@ -375,4 +375,42 @@ test('the 1.5.0 chemistry editors: organic structures and atomic energy levels d
   await p2.waitForFunction(() => document.getElementById('fg-cant').hidden);
   assert.deepEqual(e2, []);
   await c2.close();
+});
+
+test('the 1.7.0 editors: circular motion, fields, the lever, torque, the pendulum, springs, the roller coaster and the cladogram draw, randomize, print, and refuse what cannot be drawn', { skip }, async () => {
+  const PHYS = ['circularMotion', 'fields', 'lever', 'torque', 'pendulum', 'spring', 'rollerCoaster'];
+  const { ctx: c0, page: p0, errors: e0 } = await open('/figures', LAPTOP());
+  await p0.waitForSelector('.fg-card');
+  await p0.click('[data-tab="physics"]');
+  const phys = await visibleKinds(p0);
+  for (const k of PHYS) assert.ok(phys.includes(k), `${k} is on the Physics tab`);
+  await p0.click('[data-tab="biology"]');
+  assert.ok((await visibleKinds(p0)).includes('cladogram'), 'the cladogram is on the Biology tab');
+  assert.deepEqual(e0, []); await c0.close();
+  for (const kind of [...PHYS, 'cladogram']) for (const [label, opts] of [['laptop', LAPTOP()], ['phone', PHONE()]]) {
+    const { ctx, page, errors } = await open(`/figures/${kind}`, opts);
+    await page.waitForSelector('#fg-figure svg');
+    assert.equal(await page.isHidden('#fg-cant'), true, kind);
+    await noSideScroll(page);
+    await shot(page, `editor-v170-${kind}-${label}`);
+    if (label === 'laptop') {
+      await page.check('#fg-print'); await page.waitForSelector('#fg-figure svg.of-print');
+      await page.uncheck('#fg-print');
+      await page.click('[data-act="random"]'); await page.waitForFunction(() => document.getElementById('fg-question').value.length > 5);
+      await page.waitForTimeout(150);
+      assert.equal(await page.isHidden('#fg-cant'), true, `${kind}: a new question draws`);
+    }
+    assert.deepEqual(errors, [], `${kind} ${label}`);
+    await ctx.close();
+  }
+  // a class 2 lever whose effort arm is the shorter shows the panel, and Undo brings the figure back
+  const { ctx, page, errors } = await open('/figures/lever');
+  await page.waitForSelector('#fg-figure svg');
+  await page.click('#fg-adv summary');
+  await page.fill('#fg-json', JSON.stringify({ class: 2, effortArm: 0.2, loadArm: 0.5, load: 100 }));
+  await page.waitForSelector('#fg-cant:not([hidden])');
+  await page.click('[data-act="undo"]');
+  await page.waitForFunction(() => document.getElementById('fg-cant').hidden);
+  assert.deepEqual(errors, []);
+  await ctx.close();
 });

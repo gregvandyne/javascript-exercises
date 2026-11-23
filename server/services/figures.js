@@ -614,6 +614,11 @@ const KEYWORDS = [
   [/population|carrying capacity|logistic|exponential growth/, ['populationGrowth']], [/predator|prey|lotka/, ['predatorPrey']], [/enzyme|denatur|substrate/, ['enzymeActivity']],
   [/photosynth|limiting factor/, ['photosynthesis']], [/punnett|genotype|phenotype|allele|dominant|recessive|mendel/, ['punnett']], [/pedigree|inheritance|heredit/, ['pedigree']],
   [/transcription|translation|codon|mrna|protein synthesis|\bdna\b/, ['proteinSynthesis']], [/electrophoresis|\bgel\b|dna fingerprint/, ['gel']], [/osmosis|tonicity|hypertonic|hypotonic|diffusion/, ['osmosis']], [/pipette/, ['reading']],
+  // physics and biology (1.7.0)
+  [/circular motion|centripetal|conical pendulum|vertical circle/, ['circularMotion']], [/field line|electric field|magnetic field|bar magnet|right-hand rule/, ['fields']],
+  [/lever|fulcrum|mechanical advantage/, ['lever']], [/torque|moment|pivot|seesaw|beam/, ['torque']], [/pendulum|period of oscillation/, ['pendulum']],
+  [/spring|hooke|elastic potential/, ['spring']], [/roller coaster|conservation of energy|kinetic energy|potential energy|loop the loop/, ['rollerCoaster']],
+  [/cladogram|phylogen|common ancestor|derived trait|evolutionary tree/, ['cladogram']],
   // chemistry (1.5.0)
   [/skeletal|structural formula|condensed formula|organic|hydrocarbon|alkane|alkene|alkyne|functional group|isomer/, ['skeletal']], [/energy level|electron transition|emission line|balmer|lyman|photon/, ['energyLevels']],
   // economics (1.4.0)
