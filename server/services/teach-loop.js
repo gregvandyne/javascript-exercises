@@ -64,10 +64,13 @@ export function loopLinks(u) {
   const latest = c ? L.classLessons(c.id).filter(cl => !cl.removed_at).sort((a, z) => (z.assigned_at || 0) - (a.assigned_at || 0))[0] : null;
   const host = liveOn() && liveCanHost(u);
   // No class yet: the class tools have nowhere to go, so they are left out (the view lists them as plain words) and one
-  // "Make your first class" button goes to the form on the Classroom home.
+  // "Make your first class" button goes to the form on the Classroom home. Where only the school admin makes classes,
+  // there is no button (the form would refuse them): one calm line says the admin makes it instead.
+  const canMake = !c && S.classSchoolsFor(u).length > 0;
   return {
     class: c ? { id: c.id, name: c.name } : null,
-    makeClass: c ? null : '/teach?new=class',
+    makeClass: canMake ? '/teach?new=class' : null,
+    askAdmin: !c && !canMake,
     // Games, not lessons: the library is Build (folders of games), drafting and building are the Builder, and Assign is
     // the class page (its assigned games, New game, Assign a game).
     library: '/build',

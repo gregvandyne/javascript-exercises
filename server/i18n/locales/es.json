@@ -4023,7 +4023,10 @@
         "tooMany": "Tienes todas las hojas que puedes guardar. Borra una y vuelve a intentarlo.",
         "slow": "Son muchos mensajes en una hora. Espera un poco y vuelve a intentarlo.",
         "other": "Algo salió mal. Tu mensaje sigue aquí: inténtalo de nuevo en un momento."
-      }
+      },
+      "copy": "Copiar",
+      "copyFailed": "No se pudo copiar. Selecciona el texto.",
+      "copied": "Copiado"
     },
     "figures": {
       "needText": "Primero escribe unas palabras para Oomba.",
@@ -4141,7 +4144,11 @@
         "nav": "Preparó la página para abrirla",
         "navNo": "No encontró esa página",
         "which": "Preguntó cuál",
-        "askNo": "No pudo preguntar eso"
+        "askNo": "No pudo preguntar eso",
+        "howto": "Encontré los pasos",
+        "howNo": "No encontré esos pasos",
+        "classNew": "Preparé una clase nueva para que la revises",
+        "classNo": "No se pudo crear esa clase"
       },
       "stepsSum": "{n, plural, one {# paso} other {# pasos}} · {s} s",
       "prog": {
@@ -4252,6 +4259,20 @@
       },
       "ask": {
         "other": "Otra cosa"
+      },
+      "cls": {
+        "default": "Clase de prueba",
+        "whichSchool": "¿Para qué escuela es la clase?",
+        "ask": "¿Crear la clase «{name}»?",
+        "askGrade": "¿Crear la clase «{name}» (grado {grade})?",
+        "at": "En {school}",
+        "create": "Crear",
+        "notNow": "Ahora no",
+        "created": "Creada",
+        "declined": "No se creó",
+        "denied": "En tu escuela solo un administrador puede crear clases.",
+        "done": "Clase {name} creada. Aún no tiene estudiantes.",
+        "openDash": "Abrir su panel"
       }
     },
     "companion-greet": {
@@ -9532,6 +9553,7 @@
         "lead": "Prueba cada paso una vez con {class}. Cada uno se marca solo a medida que avanzas.",
         "leadNoClass": "Crea tu primera clase y luego prueba cada paso una vez. Cada uno se marca solo a medida que avanzas.",
         "makeClass": "Crea tu primera clase",
+        "askAdmin": "En tu escuela, el administrador escolar crea las clases. Pídele que cree la tuya y luego prueba cada paso una vez.",
         "count": "{done} de {total} hechos",
         "done": "Hecho",
         "todo": "Aún no hecho",

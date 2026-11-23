@@ -15,6 +15,7 @@ import { iconHtml } from '/js/icons.js';
 import { mountChat } from '/js/oomba-chat.js';
 import * as BUS from '/js/oomba-bus.js';
 import { greeting } from '/js/companion-greet.js';
+import { formatText, copyText } from '/js/oomba-text.js';
 
 const raw = document.body.dataset.oc;
 const PAGE = raw ? (() => { try { return JSON.parse(raw); } catch { return null; } })() : null;
@@ -79,15 +80,19 @@ function start() {
     errText: code => (['slow', 'fileGone'].includes(code) ? L(`err.${code}`) : null),
     meExtra: x => (x.meta && x.meta.file ? `<span class="oc-file">${ic(x.meta.file.kind === 'image' ? '🖼️' : '📄', 18)} ${esc(x.meta.file.name)}${x.meta.file.pages ? ` <small>${esc(t('js.companion.pages', { n: x.meta.file.pages }))}</small>` : ''}</span>` : ''),
     format: (text, x) => `${x.note && x.note.steps ? stepsHtml(x.note) : ''}${formatText(text)}`,
+    // Copy on each answer: its words as clean text (links as "words (address)", steps numbered).
+    copyText: x => copyText(x.text, location.origin),
     note: x => noteHtml(x) + (via('note', x) || ''),
-    change: x => (x.change && x.change.kind === 'point' ? pointHtml(x) : x.change && x.change.kind === 'dash' ? changeHtml(x) : via('change', x) || changeHtml(x)),
-    changeLinks: x => via('changeLinks', x) || '',
+    change: x => (x.change && x.change.kind === 'point' ? pointHtml(x) : x.change && x.change.kind === 'class' ? classDoneHtml(x) : x.change && x.change.kind === 'dash' ? changeHtml(x) : via('change', x) || changeHtml(x)),
+    changeLinks: x => (x.change && x.change.kind === 'class' ? openDashHtml(x) : via('changeLinks', x) || ''),
     extra: (x, c) => via('extra', x, c) || '',
     onAct: async (act, turn, btn) => { const r = await via('onAct', act, turn, btn); return r === undefined ? onAct(act, turn, btn) : r; },
     onAnswer: (x, c) => { if (x.change && x.change.kind === 'dash') afterDash(x.change); if (x.change && x.change.kind === 'point') afterPoint(x.change); via('onAnswer', x, c); },
     onUndo: (r, id) => {
       const u = ((r && r.chat && r.chat.turns) || []).find(x => x.id === id);
       if (u && u.change && u.change.kind === 'point') { afterPoint(u.change); return; }
+      // A class Oomba made, deleted: leave its own pages (they are gone with it).
+      if (u && u.change && u.change.kind === 'class') { if (PAGE.classId === u.change.classId) location.href = '/teach?all=1'; return; }
       if (dash) { store.set('oc-hl', '[]'); location.reload(); return; }
       via('onUndo', r);
     },
@@ -302,7 +307,8 @@ function start() {
     if (n.handoff) parts.push(handoffHtml(x, n.handoff));
     if (n.pick) parts.push(pickHtml(x, n.pick));
     if (n.ask) parts.push(askHtml(x, n.ask));
-    if (n.nav) parts.push(navHtml(x, n.nav));
+    if (n.classNew) parts.push(classHtml(x, n.classNew));
+    if (n.nav && !n.nav.open) parts.push(navHtml(x, n.nav));
     return parts.join('');
   }
   const meta = list => `<div class="oc-meta">${list.filter(Boolean).map(m => `<span>${esc(m)}</span>`).join('')}</div>`;
@@ -358,6 +364,19 @@ function start() {
   // the conversation for that exact page (the server), and this page opens it; there the panel opens and the request
   // continues by itself (tryResume below).
   const navName = n => t(`js.companion.nav.${n.pageType === 'dashboard' ? 'dashboard' : n.pageType === 'class' ? 'class' : n.pageType === 'figures-sheet' ? 'sheet' : 'board'}`, { name: n.name || '' });
+  // A new class: "Create the class ...?" with Create and Not now; once made, Undo and a card to open its dashboard.
+  function classHtml(x, p) {
+    const q = t(p.grade ? 'js.companion.cls.askGrade' : 'js.companion.cls.ask', { name: p.name, grade: p.grade });
+    if (p.state !== 'open') return `<div class="oc-change oc-cls done"><p class="oc-state">${ic(p.state === 'created' ? '✓' : '➖', 16)} ${esc(L(`cls.${p.state === 'created' ? 'created' : p.state === 'denied' ? 'denied' : 'declined'}`))}</p></div>`;
+    return `<div class="oc-change oc-cls"><p>${ic('🏫', 20)} <b dir="auto">${esc(q)}</b></p>${p.school ? `<p class="oc-hsub">${esc(t('js.companion.cls.at', { school: p.school }))}</p>` : ''}<div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="create" data-turn="${esc(x.id)}">${ic('➕', 16)} ${esc(L('cls.create'))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="createNo" data-turn="${esc(x.id)}">${esc(L('cls.notNow'))}</button></div></div>`;
+  }
+  // Beside its Undo: Open its dashboard (Go there, so the panel opens there too; a plain link once used).
+  const openDashHtml = x => {
+    const n = x.note && x.note.nav;
+    return n && n.open && n.state === 'open' ? `<button type="button" class="btn btn-sm btn-primary oc-open" data-c="act" data-act="go" data-turn="${esc(x.id)}">${ic('🖥️', 16)} ${esc(L('cls.openDash'))}</button>`
+      : `<a class="btn btn-sm oc-open" href="/class/${encodeURIComponent(x.change.classId)}/dashboard">${ic('🖥️', 16)} ${esc(L('cls.openDash'))}</a>`;
+  };
+  const classDoneHtml = x => `<p>${ic('🏫', 18)} <b dir="auto">${esc(t('js.companion.cls.done', { name: x.change.name }))}</b></p>`;
   function navHtml(x, n) {
     const where = navName(n);
     if (n.state === 'open') return `<div class="oc-nav"><p>${ic('🧭', 18)} <span>${esc(t('js.companion.nav.offer', { page: where }))}</span></p><p class="oc-navq" dir="auto">${esc(n.request)}</p><div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="go" data-turn="${esc(x.id)}">${esc(L('nav.go'))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="notNow" data-turn="${esc(x.id)}">${esc(L('nav.notNow'))}</button></div></div>`;
@@ -430,15 +449,4 @@ function start() {
     } else if (!x || Date.now() - x.at >= 10 * 60e3) store.set('oomba-handoff', null);
   }
   void root;
-}
-
-/** Oomba's words as html: escaped first, then **bold**, "- " lists, paragraphs and [^n] citation numbers. */
-export function formatText(text) {
-  const blocks = String(text || '').split(/\n{2,}/);
-  return blocks.map(b => {
-    const lines = b.split('\n');
-    const inline = s => esc(s).replace(/\*\*([^*]{1,200})\*\*/g, '<b>$1</b>').replace(/\s?\[\^(\d{1,2})\]/g, '<sup class="oc-c">$1</sup>');
-    if (lines.every(l => /^\s*(?:[-•*]|\d+[.)])\s+/.test(l))) return `<ul class="oc-ul">${lines.map(l => `<li>${inline(l.replace(/^\s*(?:[-•*]|\d+[.)])\s+/, ''))}</li>`).join('')}</ul>`;
-    return `<p class="oc-p" dir="auto">${lines.map(inline).join('<br>')}</p>`;
-  }).join('');
 }

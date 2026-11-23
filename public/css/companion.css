@@ -20,6 +20,16 @@ body.dash-page .oc{top:0}
 .oc-msg.bot{max-width:calc(100% - 36px)}
 .oc-p{margin:0}
 .oc-ul{margin:0;padding-inline-start:18px;display:flex;flex-direction:column;gap:4px}
+.oc-ol{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:6px}
+.oc-ol li::marker{font-weight:800;color:var(--text-2)}
+.oc-p a,.oc-ul a,.oc-ol a{color:var(--link);font-weight:700;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+/* Copy under each answer: a small icon button, "Copied" beside it for a moment. */
+.oc-copyrow{display:flex;align-items:center;gap:6px;margin-top:-2px}
+.oc-copy{display:inline-grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer}
+.oc-copy:hover,.oc-copy:focus-visible{background:var(--accent-soft);color:var(--text)}
+.oc-copy.done{color:var(--accent-press)}
+.oc-copied{font-size:.8rem;font-weight:700;color:var(--muted)}
+.oc-cls .oc-acts .btn .fx{margin-inline-end:2px}
 sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1px}
 
 /* The steps Oomba took. */

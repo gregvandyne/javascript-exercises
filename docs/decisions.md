@@ -12010,3 +12010,47 @@ emojis shown here", and of the teaching-loop screens: "only keep two photos here
 - **No raw emoji.** The chips are plain words; every other icon on both pages is ico() (the Oomba icon set), and an
   emoji inside a translated sentence ("the 🌐 button") is drawn as its icon by views/icon.js textIcons. Cards whose
   emoji has no icon show no icon. tests/unit/teachers-parents-clean.test.js checks both pages in three languages.
+
+## Oomba companion: how-to answers with links, Create class and Copy (23 Nov 2026)
+
+Owner example: a teacher typed "Can you make me a test classroom so I can check out your dashboard?" and Oomba said it
+couldn't, with words to follow but no link and nothing to copy.
+
+- **Create class (Oomba does it).** A `createClass` tool proposes a card: "Create the class “Test class”?" (the name
+  the teacher gave, else "Test class" in their language; a grade only when they said one), with Create and Not now.
+  Create makes the class through the same rule and service as My classes' New class (`canCreateClass`: admins, and
+  teachers where the school lets teachers make classes; `createClass` with the teacher as its teacher; the same
+  `class-new` hourly limit), audited (`class.create` and `companion.class.create`). No students are made and a
+  student's name is never a class name. The answer then shows "Made the class ..." with Undo (deletes the class
+  while it never had a student, as Delete on My classes does; a class with a student stays) and Open its dashboard
+  (Go there with nothing to carry: the teacher lands on the new class's dashboard with the panel open). At more than
+  one school where they may make classes, a choice card asks which. Where they may not, there is no card: the answer
+  is numbered steps with links (ask a school admin).
+- **How-to answers (Oomba explains).** `server/services/companion-help.js` is the one source of truth for steps: each
+  task's steps name real pages (paths of the router) and real buttons (locale keys the site's own code uses), and
+  `howTo` fills in the teacher's own links (their class, their school) and the labels in their language. Without one
+  class in mind it starts with "Open your classes and open the class" and names tabs instead of linking. School
+  settings for a teacher who isn't an admin, and anything for a teacher without a school, say who can do it. When
+  one page covers the task the tool offers Go there.
+- **Which requests are handled.** Done by Oomba: make a class (new), open a class, its dashboard, a worksheet or a
+  board (Go there), dashboard changes, points, finding games, books and lessons, hand-offs to the Builder, Figures
+  and the Manipulatives. Answered with linked steps: add students and their login cards, print login cards again,
+  add a co-teacher (or invite a teacher to the school), assign a game or lesson, set due dates, host a live game,
+  see progress and the gradebook, give students a Figures worksheet, school settings, connect Google Classroom (when
+  it is on), find a book. Left as steps on purpose: anything that would send student names to the AI (adding
+  students), invite people by email, change school settings, post to Google Classroom, or assign and grade (each
+  has its own confirm page today; they may become tools later).
+- **Links in answers.** The server keeps a Markdown link only when a tool gave that exact path in this answer (the
+  teacher's own pages); every other link is cut to its words, as before. The page renders a small, safe Markdown
+  (`public/js/oomba-text.js`): everything escaped, numbered and bulleted lists, bold, and links only to a same-site
+  path (same tab) or https (a new tab). The conversation is kept, so a link and the way back lose nothing.
+- **Copy.** Each Oomba answer (never the teacher's own words) has a small Copy icon button (aria-label "Copy"). It
+  copies the words as clean text: steps numbered, links as "words (address)" with the site's address, no bold marks,
+  citation numbers or buttons, and says "Copied" for a moment. `navigator.clipboard`, with a hidden text box and
+  `execCommand('copy')` where that isn't there (older iPhone Safari, plain http).
+- Tests: `tests/unit/companion-help.test.js` (every help page opens with 200 for a teacher, every label is in all 13
+  languages and used by the site's code; steps and links per teacher; links an answer may keep; the Markdown
+  sanitizer; Copy text; createClass's card, rule, audit, Undo, Open its dashboard, Not now, the admin-only school)
+  and `tests/unit/companion-help-browser.test.js` (laptop and iPhone 13: the owner's exact ask, Create, the class,
+  Open its dashboard, Undo; the admin-only variant's linked steps all 200; a how-to answer's link opens in the same
+  tab with the conversation kept; Copy's clipboard text; no console errors, no sideways scroll).

@@ -84,7 +84,8 @@ function tool(t, k, links) {
   return html`<li class="tl-tool"><a class="btn btn-sm" href="${href}">${label}</a>${extra}</li>`;
 }
 /** No class yet: one button to make it, instead of class tools that would all go to the same place. */
-const makeClass = (t, links) => links && links.makeClass ? html`<p class="tl-make"><a class="btn btn-primary" href="${links.makeClass}">${ico('🍎', { size: 18 })} ${t('teach.loop.home.makeClass')}</a></p>` : '';
+const makeClass = (t, links) => links && links.makeClass ? html`<p class="tl-make"><a class="btn btn-primary" href="${links.makeClass}">${ico('🍎', { size: 18 })} ${t('teach.loop.home.makeClass')}</a></p>`
+  : links && links.askAdmin ? html`<p class="small muted tl-make">${t('teach.loop.home.askAdmin')}</p>` : '';
 const tick = (t, on) => html`<span class="tl-tick${on ? ' on' : ''}" aria-hidden="true">${on ? check : ''}</span><span class="sr-only">${on ? t('teach.loop.home.done') : t('teach.loop.home.todo')}</span>`;
 
 /** /teach/loop and /teachers: four panels in the app's look, then the screenshots. */
@@ -109,11 +110,11 @@ function compact(t, { links, state, live, id }) {
   const st = state || { done: {}, count: 0 };
   // On a phone only the next step to do shows its words and tools (public/css/teach-loop.css), so My classes stays near the top.
   const nextStep = (LOOP.find(s => !st.done[s.step]) || {}).step;
-  const lead = links && links.class ? t('teach.loop.home.lead', { class: links.class.name }) : t('teach.loop.home.leadNoClass');
+  const lead = links && links.class ? t('teach.loop.home.lead', { class: links.class.name }) : links && links.askAdmin ? t('teach.loop.home.askAdmin') : t('teach.loop.home.leadNoClass');
   return html`<section class="panel tl tl-compact" id="${id}" aria-labelledby="${id}-h">
   <div class="tl-top"><h2 id="${id}-h">${ico('🔁', { size: 28 })} ${t('teach.loop.home.h')}</h2><span class="chip-s tl-count">${t('teach.loop.home.count', { done: st.count, total: LOOP.length })}</span></div>
   <p class="small muted tl-sub">${lead}</p>
-  ${makeClass(t, links)}
+  ${links && links.askAdmin ? '' : makeClass(t, links)}
   <ol class="plain tl-mini">${LOOP.map(s => { const on = !!st.done[s.step], next = s.step === nextStep;
     return html`<li class="tl-mstep${on ? ' is-done' : ''}${next ? ' is-next' : ''}">${tick(t, on)}<span class="tl-mtext"><b>${ico(s.emoji, { size: 18 })} ${t(`teach.loop.steps.${s.step}.name`)}</b><span class="small muted">${t(`teach.loop.steps.${s.step}.benefit`)}</span>
       <span class="tl-mtools">${toolsOf(s, live).filter(k => links && links[k]).map(k => html`<a class="chip" href="${links[k]}">${toolName(t, k)}</a>`)}</span></span></li>`; })}</ol>

@@ -4024,7 +4024,10 @@
         "tooMany": "Você tem o máximo de folhas que pode guardar. Apague uma e tente de novo.",
         "slow": "São muitas mensagens em uma hora. Espere um pouco e tente de novo.",
         "other": "Algo deu errado. Sua mensagem ainda está aqui: tente de novo em um momento."
-      }
+      },
+      "copy": "Copiar",
+      "copyFailed": "Não foi possível copiar. Selecione o texto.",
+      "copied": "Copiado"
     },
     "figures": {
       "needText": "Escreva algumas palavras para o Oomba primeiro.",
@@ -4142,7 +4145,11 @@
         "nav": "Preparou a página para abrir",
         "navNo": "Não encontrou essa página",
         "which": "Perguntou qual",
-        "askNo": "Não conseguiu perguntar isso"
+        "askNo": "Não conseguiu perguntar isso",
+        "howto": "Encontrei os passos",
+        "howNo": "Não encontrei esses passos",
+        "classNew": "Preparei uma turma nova para você conferir",
+        "classNo": "Não foi possível criar a turma"
       },
       "stepsSum": "{n, plural, one {# etapa} other {# etapas}} · {s} s",
       "prog": {
@@ -4253,6 +4260,20 @@
       },
       "ask": {
         "other": "Outra coisa"
+      },
+      "cls": {
+        "default": "Turma de teste",
+        "whichSchool": "Para qual escola é a turma?",
+        "ask": "Criar a turma “{name}”?",
+        "askGrade": "Criar a turma “{name}” (ano {grade})?",
+        "at": "Em {school}",
+        "create": "Criar",
+        "notNow": "Agora não",
+        "created": "Criada",
+        "declined": "Não criada",
+        "denied": "Na sua escola, só um administrador pode criar turmas.",
+        "done": "Turma {name} criada. Ainda não tem alunos.",
+        "openDash": "Abrir o painel dela"
       }
     },
     "companion-greet": {
@@ -9534,6 +9555,7 @@
         "lead": "Experimente cada passo uma vez com {class}. Cada um se marca sozinho conforme você avança.",
         "leadNoClass": "Crie sua primeira turma e experimente cada passo uma vez. Cada um se marca sozinho conforme você avança.",
         "makeClass": "Crie sua primeira turma",
+        "askAdmin": "Na sua escola, o administrador escolar cria as turmas. Peça para ele criar a sua e depois experimente cada etapa uma vez.",
         "count": "{done} de {total} feitos",
         "done": "Feito",
         "todo": "Ainda não feito",

@@ -4024,7 +4024,10 @@
         "tooMany": "Hai tutte le schede che puoi tenere. Eliminane una e riprova.",
         "slow": "Sono tanti messaggi in un’ora. Aspetta un po’ e riprova.",
         "other": "Qualcosa è andato storto. Il tuo messaggio è ancora qui: riprova tra un momento."
-      }
+      },
+      "copy": "Copia",
+      "copyFailed": "Impossibile copiare. Seleziona il testo.",
+      "copied": "Copiato"
     },
     "figures": {
       "needText": "Prima scrivi qualche parola per Oomba.",
@@ -4142,7 +4145,11 @@
         "nav": "Ha preparato la pagina da aprire",
         "navNo": "Non ha trovato quella pagina",
         "which": "Ha chiesto quale",
-        "askNo": "Non è riuscito a chiederlo"
+        "askNo": "Non è riuscito a chiederlo",
+        "howto": "Trovati i passaggi",
+        "howNo": "Passaggi non trovati",
+        "classNew": "Nuova classe pronta da controllare",
+        "classNo": "Impossibile creare la classe"
       },
       "stepsSum": "{n, plural, one {# passaggio} other {# passaggi}} · {s} s",
       "prog": {
@@ -4253,6 +4260,20 @@
       },
       "ask": {
         "other": "Altro"
+      },
+      "cls": {
+        "default": "Classe di prova",
+        "whichSchool": "Per quale scuola è la classe?",
+        "ask": "Creare la classe «{name}»?",
+        "askGrade": "Creare la classe «{name}» (classe {grade})?",
+        "at": "Presso {school}",
+        "create": "Crea",
+        "notNow": "Non ora",
+        "created": "Creata",
+        "declined": "Non creata",
+        "denied": "Nella tua scuola solo un amministratore può creare classi.",
+        "done": "Classe {name} creata. Non ha ancora studenti.",
+        "openDash": "Apri la sua dashboard"
       }
     },
     "companion-greet": {
@@ -9533,6 +9554,7 @@
         "lead": "Prova ogni passo una volta con {class}. Ognuno si spunta da solo man mano.",
         "leadNoClass": "Crea la tua prima classe, poi prova ogni passo una volta. Ognuno si spunta da solo man mano.",
         "makeClass": "Crea la tua prima classe",
+        "askAdmin": "Nella tua scuola le classi le crea l'amministratore scolastico. Chiedigli di creare la tua, poi prova ogni passaggio una volta.",
         "count": "{done} di {total} fatti",
         "done": "Fatto",
         "todo": "Non ancora fatto",

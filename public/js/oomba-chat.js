@@ -13,6 +13,7 @@
 // Teachers only: a surface mounts it only on a teacher's own page.
 import { t, api, esc } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
+import { toClipboard } from '/js/oomba-text.js';
 
 /** The Oomba mark (public/icons/icon.svg): the yellow square with its two eyes. round: the bubble's circle. */
 export const oombaMark = (size = 32, round = false) => `<svg class="oc-mark" width="${size}" height="${size}" viewBox="0 0 240 240" aria-hidden="true" focusable="false"><rect width="240" height="240" rx="${round ? 120 : 56}" fill="#FFD23F"/><g transform="${round ? 'translate(24 24) scale(.8)' : ''}"><g fill="none" stroke="#141414" stroke-width="30"><circle cx="66" cy="120" r="36"/><circle cx="178" cy="120" r="36"/></g><g fill="#141414"><circle cx="73" cy="114" r="13"/><circle cx="185" cy="114" r="13"/></g></g></svg>`;
@@ -175,6 +176,16 @@ export function mountChat(o) {
     if (ch.undone) return `<div class="oc-change undone" tabindex="-1" data-undone="${esc(x.id)}"><p><b>${esc(t('js.oomba-chat.undone'))}</b>${ch.kept ? ` <span>${esc(t('js.oomba-chat.undoneKept', { count: ch.kept }))}</span>` : ''}</p></div>`;
     return `<div class="oc-change">${o.change ? o.change(x) : ''}${ch.canUndo ? `<div class="oc-ch-row"><button type="button" class="btn btn-sm" data-c="undo" data-id="${esc(x.id)}">${iconHtml('↩', { size: 16 })} ${esc(t('js.oomba-chat.undo'))}</button>${o.changeLinks ? o.changeLinks(x) : ''}</div>` : ''}</div>`;
   }
+  // Copy on Oomba's answers (never on the teacher's own words): a small icon button, then "Copied" for a moment.
+  const copyBtn = x => `<div class="oc-copyrow"><button type="button" class="oc-copy" data-c="copy" data-id="${esc(x.id)}" aria-label="${esc(t('js.oomba-chat.copy'))}" title="${esc(t('js.oomba-chat.copy'))}">${iconHtml('📋', { size: 16 })}</button><span class="oc-copied" role="status" aria-live="polite"></span></div>`;
+  async function copy(turn, b) {
+    const done = await toClipboard(o.copyText(turn));
+    const say = b.parentElement && b.parentElement.querySelector('.oc-copied');
+    if (!say) return;
+    say.textContent = done ? t('js.oomba-chat.copied') : t('js.oomba-chat.copyFailed');
+    b.classList.toggle('done', done);
+    clearTimeout(b._t); b._t = setTimeout(() => { say.textContent = ''; b.classList.remove('done'); }, 2000);
+  }
   function render() {
     if (C.mode !== 'open') return;
     const log = C.el.log, atEnd = log.scrollHeight - log.scrollTop - log.clientHeight < 40;
@@ -193,7 +204,7 @@ export function mountChat(o) {
       } else if (x.failed) {
         parts.push(`<div class="oc-turn bot"><span class="oc-av sm">${oombaMark(28)}</span><div class="oc-msg bot calm"><span>${esc(o.failText ? o.failText(x) : failText(x.failed))}</span>${o.extra ? o.extra(x, C.chat) : ''}</div></div>`);
       } else {
-        parts.push(bot(`${x.text ? (o.format ? o.format(x.text, x) : `<span dir="auto">${esc(x.text)}</span>`) : ''}${o.note ? o.note(x) : ''}${x.change ? changeCard(x) : ''}${o.extra ? o.extra(x, C.chat) : ''}`));
+        parts.push(bot(`${x.text ? (o.format ? o.format(x.text, x) : `<span dir="auto">${esc(x.text)}</span>`) : ''}${o.note ? o.note(x) : ''}${x.change ? changeCard(x) : ''}${o.extra ? o.extra(x, C.chat) : ''}${x.text && o.copyText ? copyBtn(x) : ''}`));
       }
     }
     if (C.chat.pending) parts.push(progress());
@@ -216,6 +227,7 @@ export function mountChat(o) {
     if (k === 'unquote') { C.quote = null; drawQuote(); if (o.onQuote) o.onQuote(null); C.el.input.focus(); return; }
     if (k === 'chip') { C.el.input.value = b.dataset.text; autosize(); C.el.input.focus(); return; }
     if (k === 'undo') return undo(id, b);
+    if (k === 'copy' && turn && o.copyText) return copy(turn, b);
     if (k === 'retry' && turn) return send(turn.text, { retry: turn.id });
     if (k === 'edit' && turn) { C.el.input.value = turn.text; autosize(); C.el.input.focus(); return; }
     if (k === 'act' && o.onAct) { const tt = C.chat.turns.find(x => x.id === b.dataset.turn); b.disabled = true; Promise.resolve(o.onAct(b.dataset.act, tt, b)).then(r => { if (r && r.chat) took(r.chat); }).finally(() => { b.disabled = false; }); }

@@ -4024,7 +4024,10 @@
         "tooMany": "Je hebt zoveel werkbladen als je kunt bewaren. Verwijder er een en probeer het opnieuw.",
         "slow": "Dat zijn veel berichten in een uur. Wacht even en probeer het dan opnieuw.",
         "other": "Er ging iets mis. Je bericht staat er nog: probeer het zo opnieuw."
-      }
+      },
+      "copy": "Kopiëren",
+      "copyFailed": "Kopiëren lukte niet. Selecteer de tekst.",
+      "copied": "Gekopieerd"
     },
     "figures": {
       "needText": "Schrijf eerst een paar woorden voor Oomba.",
@@ -4142,7 +4145,11 @@
         "nav": "De pagina klaargezet om te openen",
         "navNo": "Kon die pagina niet vinden",
         "which": "Gevraagd welke",
-        "askNo": "Kon dat niet vragen"
+        "askNo": "Kon dat niet vragen",
+        "howto": "Stappen gevonden",
+        "howNo": "Die stappen niet gevonden",
+        "classNew": "Een nieuwe klas klaargezet om te controleren",
+        "classNo": "Die klas kon niet worden gemaakt"
       },
       "stepsSum": "{n, plural, one {# stap} other {# stappen}} · {s} s",
       "prog": {
@@ -4253,6 +4260,20 @@
       },
       "ask": {
         "other": "Iets anders"
+      },
+      "cls": {
+        "default": "Testklas",
+        "whichSchool": "Voor welke school is de klas?",
+        "ask": "De klas “{name}” maken?",
+        "askGrade": "De klas “{name}” (groep {grade}) maken?",
+        "at": "Bij {school}",
+        "create": "Maken",
+        "notNow": "Nu niet",
+        "created": "Gemaakt",
+        "declined": "Niet gemaakt",
+        "denied": "Op jouw school kan alleen een schoolbeheerder klassen maken.",
+        "done": "De klas {name} is gemaakt. Er zitten nog geen leerlingen in.",
+        "openDash": "Het dashboard openen"
       }
     },
     "companion-greet": {
@@ -9533,6 +9554,7 @@
         "lead": "Probeer elke stap één keer met {class}. Elke stap vinkt zichzelf af.",
         "leadNoClass": "Maak je eerste klas en probeer dan elke stap één keer. Elke stap vinkt zichzelf af.",
         "makeClass": "Maak je eerste klas",
+        "askAdmin": "Op jouw school maakt de schoolbeheerder de klassen aan. Vraag of die de jouwe aanmaakt en probeer dan elke stap één keer.",
         "count": "{done} van {total} gedaan",
         "done": "Gedaan",
         "todo": "Nog niet gedaan",
