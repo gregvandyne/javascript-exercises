@@ -386,7 +386,9 @@ function start() {
   function askHtml(x, k) {
     const q = k.question || (k.kind ? t(`js.companion.which.${k.kind === 'dashboard' ? 'dashboard' : k.kind === 'class' ? 'class' : k.kind === 'figures-sheet' ? 'sheet' : 'board'}`) : '');
     if (k.state !== 'open') { const o = k.options[k.chosen]; return `<div class="oc-ask done">${q ? `<p class="oc-askq">${esc(q)}</p>` : ''}${o ? `<p class="oc-state">${ic('✓', 16)} ${esc(o.label)}</p>` : ''}</div>`; }
-    const btns = k.options.map((o, i) => `<button type="button" class="btn btn-sm oc-pickb" data-c="act" data-act="askPick" data-turn="${esc(x.id)}" data-v="${i}"><span>${esc(o.label)}</span>${o.sub ? ` <small>${esc(t('js.companion.card.grade', { g: o.sub.replace(/^grade /, '') }))}</small>` : ''}</button>`).join('');
+    // An option that only says what the last button says ("Something else") is not shown twice (turns saved before the server dropped it).
+    const same = o => String(o.label || '').toLowerCase().replace(/[\s.!?:;,"'()]+/g, '') === String(L('ask.other')).toLowerCase().replace(/[\s.!?:;,"'()]+/g, '');
+    const btns = k.options.map((o, i) => same(o) ? '' : `<button type="button" class="btn btn-sm oc-pickb" data-c="act" data-act="askPick" data-turn="${esc(x.id)}" data-v="${i}"><span>${esc(o.label)}</span>${o.sub ? ` <small>${esc(t('js.companion.card.grade', { g: o.sub.replace(/^grade /, '') }))}</small>` : ''}</button>`).join('');
     return `<div class="oc-ask" role="group"${q ? ` aria-label="${esc(q)}"` : ''}>${q ? `<p class="oc-askq">${esc(q)}</p>` : ''}<div class="oc-acts">${btns}<button type="button" class="btn btn-sm btn-ghost" data-c="act" data-act="askOther" data-turn="${esc(x.id)}">${esc(L('ask.other'))}</button></div></div>`;
   }
   async function onAct(act, turn, btn) {
