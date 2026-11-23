@@ -252,6 +252,10 @@ test('iPhone 13 (dark): the bubble above the tab bar, the panel a sheet with gam
     await bubble.click();
     const sheet = await page.locator('#oc').boundingBox();
     assert.ok(sheet.width >= 389 && sheet.y > 100, 'a sheet across the screen');
+    // The tab bar steps aside while the chat is open, so the sheet reaches the bottom of the screen; it comes back on close.
+    assert.equal(await page.locator('.tabbar').isVisible(), false, 'no tab bar over the chat');
+    const vh = page.viewportSize().height;
+    assert.ok(sheet.y + sheet.height >= vh - 40, `the sheet reaches the bottom (${sheet.y + sheet.height} of ${vh})`);
     await ask(page, 'Give me a game for 3rd grade fractions, 10 minutes');
     await page.locator('.oc-card').first().waitFor({ timeout: 15000 });
     await page.evaluate(() => { document.getElementById('oc-log').scrollTop = 0; });

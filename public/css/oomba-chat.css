@@ -5,6 +5,9 @@
    the tab bar, minimized to a round bubble at the bottom right. The progress card, quotes and "What changed" are below. */
 :root{--oc-w:380px;--oc-bottom:0px}
 @media (max-width:820px){:root{--oc-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom))}}
+/* Phones: while the chat is open the tab bar steps aside, so the sheet and the typing box get the whole bottom of the
+   screen and the bar never floats over the chat above the keyboard (the owner, 23 Nov 2026: "Yes hide it"). */
+@media (max-width:820px){body.oc-on .tabbar{display:none}body.oc-on{--oc-bottom:env(safe-area-inset-bottom);padding-bottom:env(safe-area-inset-bottom)}}
 
 .oc-open{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 8px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--text);font:700 .95rem var(--font);cursor:pointer}
 .oc-open:hover{background:var(--hover)}
