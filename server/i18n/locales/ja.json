@@ -14183,7 +14183,7 @@
       "repaint": "絵を描き直す",
       "writing": "Oombaが書いています",
       "unfinished": "完成しませんでした",
-      "unfinishedText": "Oombaは最初の下書きを完成できませんでした。もう一度試すか、削除してください。",
+      "unfinishedText": "Oombaは最初の下書きを完成できませんでした。",
       "tryAgain": "もう一度試す",
       "renamed": "名前を変更しました。",
       "duplicated": "コピーを作りました：「{title}」",

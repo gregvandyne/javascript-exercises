@@ -14183,7 +14183,7 @@
       "repaint": "Repeindre les images",
       "writing": "Oomba est en train de l’écrire",
       "unfinished": "Pas terminé",
-      "unfinishedText": "Oomba n’a pas pu finir le premier jet. Réessaie, ou supprime-le.",
+      "unfinishedText": "Oomba n’a pas pu finir le premier jet.",
       "tryAgain": "Réessayer",
       "renamed": "Renommé.",
       "duplicated": "Copie faite : « {title} »",

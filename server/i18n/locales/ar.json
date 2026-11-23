@@ -14184,7 +14184,7 @@
       "repaint": "رسم الصور من جديد",
       "writing": "Oomba يكتبه الآن",
       "unfinished": "لم يكتمل",
-      "unfinishedText": "لم يستطع Oomba إنهاء المسودة الأولى. حاول مرة أخرى أو احذفه.",
+      "unfinishedText": "لم يستطع Oomba إنهاء المسودة الأولى.",
       "tryAgain": "حاول مرة أخرى",
       "renamed": "تمت إعادة التسمية.",
       "duplicated": "تم عمل نسخة: «{title}»",

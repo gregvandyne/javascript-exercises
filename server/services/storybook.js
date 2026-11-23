@@ -300,7 +300,7 @@ export function copyTitle(title, t = tEn) {
 export function duplicateBook(u, id, { t = tEn } = {}) {
   const row = ownBook(u, id); if (!row) return fail('notFound');
   const b = bookOf(row); if (!b.pages.length) return fail('empty');
-  const nid = uid(12), t0 = now(), title = copyTitle(b.title, t);
+  const nid = uid(12), t0 = now(), title = copyTitle(row.title || b.title, t);
   const pics = new Map();
   const src = q.all('SELECT * FROM made_book_pics WHERE book_id=? ORDER BY created_at', row.id);
   for (const p of src) pics.set(p.id, uid(14));
@@ -358,7 +358,9 @@ export function pruneEmpty({ owner = null, t = now() } = {}) {
 export function listBooks(u, limit = 50) {
   if (!canMake(u)) return [];
   pruneEmpty({ owner: u.id });
-  return myBooks(u, limit);
+  // a book that didn't finish goes after the others (it is not a book yet); one being written stays where it is
+  const rows = myBooks(u, limit), late = rows.filter(r => !bookOf(r).pages.length && stateOfBook(r) === 'unfinished');
+  return [...rows.filter(r => !late.includes(r)), ...late];
 }
 /** Try again on an unfinished book (the page's own chat; the Oomba chat has its own, companion.js retryBook): one of
  *  today's turns, then the first draft as a turn of the book's chat. -> { ok } | fail ('notFound' | 'notEmpty' | 'cap' | the engine's) */

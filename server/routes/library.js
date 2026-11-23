@@ -153,7 +153,7 @@ export function madeCard(req, row) {
   return html`<li class="lb-card sb-bcard${state !== 'ready' ? ` is-${state}` : ''}" data-book="${row.id}" data-title="${title}" data-shared="${shared.map(c => c.id).join(',')}">
     <a class="lb-cover sb-bcover" href="/library/make/${row.id}" tabindex="-1" aria-hidden="true">${cover}</a>
     ${state === 'ready' ? more : ''}
-    <div class="lb-body"><div class="sb-bchips">${g ? html`<span class="lb-lvl lb-g${g.replace('-', '')}">${t(`storybook.grades.${g.replace('-', '')}`)}</span>` : ''}<span class="lb-lvl sb-bkind">${t(row.kind === 'cyoa' ? 'storybook.kind.cyoa' : 'storybook.kind.linear')}</span></div>
+    <div class="lb-body"><div class="sb-bchips">${g ? html`<span class="lb-lvl lb-g${g.replace('-', '')}">${t(`storybook.grades.${g.replace('-', '')}`)}</span>` : ''}<span class="lb-lvl sb-bkind" title="${t(row.kind === 'cyoa' ? 'storybook.kind.cyoa' : 'storybook.kind.linear')}">${t(row.kind === 'cyoa' ? 'storybook.kind.cyoa' : 'storybook.kind.linear')}</span></div>
       <h3 class="lb-title"><a href="/library/make/${row.id}" dir="auto">${title}</a></h3>
       ${state === 'ready' ? html`<p class="lb-meta small muted">${meta}</p>`
         : state === 'writing' ? html`<p class="lb-state">${ico('✨', { size: 18 })} ${t('storybook.books.writing')}</p>`

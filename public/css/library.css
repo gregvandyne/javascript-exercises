@@ -47,7 +47,7 @@
    cover (the first page's picture), chips for the grade and the kind, and a small More menu over the cover */
 .lb-g68{background:color-mix(in srgb,var(--gb2) 18%,var(--card))}
 .sb-mybooks{margin:0 0 24px}
-.sb-mybooks-h{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;margin:0 0 10px}
+.sb-mybooks-h{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 16px;margin:0 0 10px}
 .sb-mybooks-h h2{font-size:1.2rem;margin:0;display:flex;align-items:center;gap:8px}
 .sb-bcard{position:relative;overflow:visible}
 .sb-bcard[hidden]{display:none}
@@ -56,7 +56,7 @@
 .sb-bcover .sb-art{display:block;width:100%;height:100%;object-fit:cover}
 .sb-bph{display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:var(--text-2);background:var(--card-2)}
 .sb-bchips{display:flex;flex-wrap:wrap;gap:6px}
-.sb-bkind{background:var(--card-2);white-space:normal}
+.sb-bkind{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;background:var(--card-2)}
 .sb-bwarn{color:var(--warn-ink)}
 .sb-bcard.is-unfinished .sb-bph{background:var(--warn-bg);color:var(--warn-ink)}
 .sb-bmore{position:absolute;top:8px;inset-inline-end:8px;z-index:3}

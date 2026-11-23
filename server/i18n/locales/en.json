@@ -14899,7 +14899,7 @@
       "repaint": "Paint pictures again",
       "writing": "Oomba is writing it",
       "unfinished": "Didn't finish",
-      "unfinishedText": "Oomba couldn't finish the first draft. Try again, or delete it.",
+      "unfinishedText": "Oomba couldn't finish the first draft.",
       "tryAgain": "Try again",
       "renamed": "Renamed.",
       "duplicated": "Copy made: “{title}”",

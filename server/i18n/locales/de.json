@@ -14184,7 +14184,7 @@
       "repaint": "Bilder neu malen",
       "writing": "Oomba schreibt es gerade",
       "unfinished": "Nicht fertig geworden",
-      "unfinishedText": "Oomba konnte den ersten Entwurf nicht fertigstellen. Versuche es noch einmal oder lösche es.",
+      "unfinishedText": "Oomba konnte den ersten Entwurf nicht fertigstellen.",
       "tryAgain": "Noch einmal versuchen",
       "renamed": "Umbenannt.",
       "duplicated": "Kopie erstellt: „{title}“",

@@ -68,7 +68,7 @@ router.get('/library/make', teacher, (req, res) => {
     const body = html`<div class="sb sb-setup">
       <div class="pagehead"><div><h1>${ico('📚', { size: 36 })} ${t('storybook.mine')}</h1><p class="muted">${t('storybook.lead')}</p></div>
         <a class="btn btn-primary" href="/library/make?new=1" data-oc-book>${ico('✨', { size: 18 })} ${t('storybook.makeBook')}</a></div>
-      <section class="panel sb-mine" aria-label="${t('storybook.mine')}">
+      <section class="sb-mine sb-mybooks" aria-label="${t('storybook.mine')}">
         ${mine.length ? madeGrid(req, mine) : html`<p class="muted">${t('storybook.mineNone')}</p>`}</section></div>`;
     return page(req, res, { title: t('storybook.mine'), active: 'learn', body, head: CSS, scripts: ['/js/storybook-books.js'], back: '/library', backLabel: t('library.title') });
   }
@@ -127,7 +127,7 @@ router.get('/library/make', teacher, (req, res) => {
       <div class="sb-nav"><button type="button" class="btn" data-go="context">${t('storybook.back')}</button><button type="button" class="btn btn-hot" id="sb-go">${ico('✨', { size: 18 })} ${t('storybook.check.go')}</button></div>
       <p class="small muted sb-left">${t('storybook.left', { count: left })}</p>
     </section>
-    <section class="panel sb-mine" aria-labelledby="sb-mine-h"><h2 id="sb-mine-h">${ico('📖', { size: 28 })} ${t('storybook.mine')}</h2>
+    <section class="sb-mine sb-mybooks" aria-labelledby="sb-mine-h"><h2 id="sb-mine-h">${ico('📖', { size: 28 })} ${t('storybook.mine')}</h2>
       ${mine.length ? madeGrid(req, mine) : html`<p class="muted">${t('storybook.mineNone')}</p>`}</section>
   </div>
   ${jsonData('page-data', { left, limits: SB.SETUP_LIMITS, file: { bytes: FILE_LIMITS.bytes }, pic: SB.PIC_LIMITS })}`;

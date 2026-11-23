@@ -14183,7 +14183,7 @@
       "repaint": "Volver a pintar las imágenes",
       "writing": "Oomba lo está escribiendo",
       "unfinished": "No se terminó",
-      "unfinishedText": "Oomba no pudo terminar el primer borrador. Inténtalo de nuevo o elimínalo.",
+      "unfinishedText": "Oomba no pudo terminar el primer borrador.",
       "tryAgain": "Intentar de nuevo",
       "renamed": "Nombre cambiado.",
       "duplicated": "Copia hecha: «{title}»",

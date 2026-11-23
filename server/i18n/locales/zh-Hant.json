@@ -14183,7 +14183,7 @@
       "repaint": "重新繪製圖片",
       "writing": "Oomba 正在寫",
       "unfinished": "沒有完成",
-      "unfinishedText": "Oomba 沒能完成第一份草稿。請再試一次，或刪除它。",
+      "unfinishedText": "Oomba 沒能完成第一份草稿。",
       "tryAgain": "再試一次",
       "renamed": "已重新命名。",
       "duplicated": "已建立副本：「{title}」",
