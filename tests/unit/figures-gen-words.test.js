@@ -31,7 +31,7 @@ const strings = w => [w.q, ...(w.work || []), ...(w.choices || []), w.unit, ...O
 test('the 13 site languages: English is the catalog, the other 12 have a table', () => {
   assert.deepEqual([...W.GEN_LANGS].sort(), ['ar', 'de', 'en', 'en-GB', 'es', 'fr', 'he', 'it', 'ja', 'nl', 'pt', 'ru', 'zh-Hant']);
   assert.equal(W.genLang('xx'), 'en'); assert.equal(W.genLang('es'), 'es'); assert.equal(W.genLang(undefined), 'en');
-  assert.equal(GENS.length, 83);
+  assert.equal(GENS.length, 128);
 });
 
 test('every generator in every language, with the English placeholders line by line and the options in order', () => {
@@ -110,8 +110,19 @@ test('the Oomba Canvas self-test passes in every language (as in English): a num
     }
     return { config: { count: 6, purpose: ['screen', 'worksheet'] }, task: { title: 'Practice' }, problems };
   };
+  // Oomba Canvas is frozen and its keypad has no minus sign, so a number generator whose answers can be negative (the
+  // Figures product takes them: docs/decisions.md "Figures: multiple choice and negative answers") is checked the way
+  // the product deals it: in every language each question's last worked line says its answer.
+  const negative = g => g.tool === 'figure.number' && Array.from({ length: 30 }, (_, i) => L.TOOLS[g.tool].gen(L.seeded((i + 1) * 7919), g).answer).some(a => a < 0);
   let n = 0;
   for (const g of GENS) {
+    if (negative(g)) {
+      for (const lang of ['en', ...FULL, 'en-GB']) for (let seed = 1; seed <= 12; seed++) {
+        const x = F.generate(g.id, seed * 7919, undefined, null, lang);
+        assert.ok(x && x.work.at(-1).replace(/−/g, '-').includes(CAT.numText(x.value, x.dp)), `${g.id} in ${lang}, seed ${seed}: the last line says the answer`);
+      }
+      n += 12; continue;
+    }
     const en = selfTestHtml(page(activity(g)));
     assert.deepEqual(en, { ok: true, problems: [] }, `${g.id} in English`);
     for (const lang of [...FULL, 'en-GB']) { assert.deepEqual(selfTestHtml(page(activity(W.localGen(g, lang)))), { ok: true, problems: [] }, `${g.id} in ${lang}`); n++; }

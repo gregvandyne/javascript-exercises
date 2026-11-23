@@ -1,4 +1,4 @@
-# Oomba Figures API (1.5.0)
+# Oomba Figures API (1.7.0)
 
 Oomba Figures draws the figures science, maths and graph worksheets need, as accessible SVG, from plain data: free-body
 diagrams, vectors, inclined planes, pulleys, ray diagrams, circuits, motion graphs, a coordinate grid, half-life and
@@ -93,6 +93,9 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
   motionMap { segments: [...as above], dt: 1, labels: "times" | "letters", acceleration: true } (a dot every dt at the true position, velocity arrows on one scale, a new row when it turns back; the durations must add up to whole steps of dt; hide: "arrows")
   projectile { speed: 20, angle: 30, height: 0, g: 9.8, positions: 4, letters: true, components: true, gravity: true, marks: ["range", "height", "cliff"] } (angle 5 to 85 from the ground, 0 to 85 from a cliff (height above the ground in m); the real parabola, drawn to scale; OF.solve.projectile gives range, maxHeight, time, vx, vy; hide: "range" (its letter R instead of the value), "path", or true)
   waves { wave: "transverse" | "longitudinal" | "both", amplitude: 3, wavelength: 4, cycles: 2, labels: ["crest", "trough", "compression", "rarefaction"], yunit: "cm" } (along time: axis: "time" with period; marks: ["wavelength", "amplitude"] by default, [] for none; speed gives the frequency in OF.solve.waves; hide: true, "marks", "labels")
+  Physics (1.7.0, the physics pack): circularMotion { radius: 2, speed: 4, mass: 1.5 } (view "top" (around "nothing" | "string" | "turntable" | "road", positions 1 to 8, start in degrees, direction "ccw" | "cw") | "vertical" (held "string" | "loop" | "hill" | "dip", at "top" | "bottom" | "side" | "topBottom" | "all") | "conical" (length, angle 15 to 60); speed or period; velocity, acceleration, force, forces, components, letters, values; OF.solve.circularMotion gives acceleration, force, period, omega, contactTop and contactBottom, velocityDir, accelerationDir; hide: "values", "acceleration", "velocity")    fields { setup: "opposite" } (setup "charge" | "opposite" | "like" (sign "+" | "-") | "plates" | "magnet" | "wire" (current "out" | "in"), or charges: [{ q: 1, x: -130, y: 0 }] from the middle, y up; points: [{ name: "P", x: 0, y: 100 }]; lines "fewer" | "normal" | "more"; OF.solve.fields gives points.P.direction ("up", "down", "left", "right"; direction for the first point), strength, stronger, force ("attract" | "repel"); hide: true (no lines), "arrows", "signs")
+  lever { class: 1, effortArm: 1.5, loadArm: 0.5, load: 300, loadUnit: "N" } (class 2 has the longer effort arm, class 3 the longer load arm; loadUnit N, lb, kg, g; loadShown "block" | "arrow"; labels: { effort: "?" }; OF.solve.lever gives effort, advantage, class, weight; hide: "effort", "arms", "load", true)    torque { loads: [{ at: 0.3, value: 6 }, { at: 0.9, value: 3, kind: "resting" }] } (support "pivot" (pivot) | "two" (supportA, supportB) | "wall" (cable, cableAt, cableAngle); length, unit; valueUnit N, kg, g with g; beam: its own weight; a load's distanceLabel: "x"; supportForces; OF.solve.torque gives net (clockwise positive), turns, balanceDistance.2, balanceValue.2, forceA, forceB, tension; hide: "distances", "values", "forces", true)
+  pendulum { length: 2, angle: 30, mass: 0.5, letters: true } (picture "swing" (A, B, C) | "one" (forces "tensionWeight" | "components"); side; arc, angleMark, heightMark, velocity; OF.solve.pendulum gives period, height, speed, energy, tensionBottom; hide: "height", "length", "angle", "values", true)    spring { k: 200, mass: 2 } (orientation "hanging" | "horizontal"; picture "beforeAfter" | "one" | "positions"; springs 1 to 3 joined "series" | "parallel"; stretch: the drawing's share; extension in m (negative squashes); appliedForce, motion, equilibriumLine; OF.solve.spring gives k (combined), extension, force, energy, period; hide: "force", "extension", "values", true)    rollerCoaster { points: [{ height: 40 }, { height: 10 }, { height: 25 }] } (2 to 8 points, each with a name and mark: true | false | "h"; loop: { at: 3, radius: 8 }; object, objectAt, speed, mass, rough: [2]; OF.solve.rollerCoaster gives speeds.C, fastest, loopMinHeight, makesLoop; hide: "heights", "radius", true)
   grid { x: [-5, 5], y: [-5, 5], points: [{ x: 2, y: 3, label: "A", coords: true }], fns: [{ expr: "2*x - 1", label: "y = 2x − 1" }], segments: [{ from: [0, 0], to: [3, 4] }], shapes: [{ points: [[0, 0], [3, 0], [0, 4]] }] }
   halfLife { halfLife: 5, start: 80, unit: "days", yunit: "g" }
   titration { acid: "weak", base: "strong", pKa: 4.76, ca: 0.1, cb: 0.1, v0: 25 } (flask: "acid" or "base"; never weak with weak)
@@ -106,12 +109,16 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
   particles { particles: [{ count: 8, shape: "bent", look: { size: "m", shade: "gray" }, outer: { size: "s", shade: "white" }, name: "Water" }], state: "gas" } (shapes single, pair, bent, line, triangle, cross; sizes xs to xl; shades white, light, gray, dark, black; charge "+", "-", "2+"...; state gas, liquid, solid; boxes: 2 with each kind's after count: atoms are conserved; or lattice: { pattern: "alternate", rows: 4, columns: 5, main, second }; every particle must fit; hide: "names")
   Chemistry (1.5.0, the chem pack): skeletal { smiles: "CC(=O)O", name: "Ethanoic acid", formula: true } (an organic structure from SMILES-lite: C N O S P F Cl Br I, R and X for any group, c and n in rings of six, branches, - = #, ring digits, "." between molecules; no brackets, charges or stereo marks; single rings of 3 to 8, never rings that share atoms; or chain: 5 with double: [2], triple, groups: [{ at: 4, group: "OH" }] (OH, NH2, F, Cl, Br, I, CH3, C2H5, =O); or atoms: [{ el: "C", x: 0, y: 0 }] (bond lengths, y up) with bonds: [[1, 2, 2]]; view "skeletal" | "carbons" | "condensed" | "full", layout "zigzag" | "straight", ends, numbers, acids, chiral: [atoms]; hydrogens are worked out from each atom's valence; OF.solve gives formula, atoms.C, atoms.H, hydrogens, mass, unsaturation and groups.alcohol etc.); hide: "name", "formula". It is drawn by Oomba, so it prints and draws on the server: use it, not OF.structure, for worksheets.
   energyLevels { transitions: [{ from: 3, to: 2 }, { from: 4, to: 2 }], series: true } (hydrogen, or z: 2 for He+ and on: E = -13.6 Z²/n² eV, top: the highest n, 2 to 7; or levels: [-10.4, -5.5, -3.7] in eV for any atom; to: "inf" ionizes; cascade: 4 every way down; show "wavelength" | "energy" | "both" | "none"; unit "eV" | "J"; levels too close for an arrow are refused: make height larger; OF.solve gives wavelength (nm), energy (eV), joules, frequency (Hz) of the first transition, and lines); hide: "values", "levels".
+  Chemistry (1.6.0, the chem pack): chromatography { samples: [{ name: "A", spots: [{ color: "blue", distance: 5.6 }, { color: "yellow", distance: 2.4 }] }], front: 8, measure: true } (1 to 6 inks of 1 to 5 dyes, distances in cm from the origin line, never past front; show "both", setup: false for the paper alone, labels; OF.solve gives rf.A.blue, contains, absent); hide: "values".    galvanicCell { left: "Zn", right: "Cu", meter: "digital" } (Mg, Al, Zn, Fe, Ni, Pb, Cu, Ag; meter "dial" or "coil"; the lower E° is the anode, E°cell worked out; electrodes, flow, potentials: true); hide: "reading", "electrodes".
+  phaseDiagram { substance: "water", isobar: true } (co2, nitrogen, oxygen, argon, methane, ammonia; not to scale; or your own tripleT, tripleP, critT, critP, nmp, nbp with axes: "numbered"; regions and points "names" | "letters" | "blank" | "none"; marks: [{ name: "A", at: "liquid" }]; path: { from: "solid", to: "liquid" }); hide: "values", "regions".    bondEnergy { bonds: [{ name: "H–H", length: 74, energy: 436 }] } (up to 3; pm and kJ/mol; guides, dots, regions; names: false gives Bond A, B, C); hide: "values", "names".
+  equilibrium { reaction: "ammonia", stresses: [{ kind: "add", at: 8, species: 1, amount: 0.5 }] } (hi, n2o4, so3, pcl5, fescn; kinds add, remove, volume, raise, lower; solved from K, never typed levels); hide: "stresses", "formulas".    rateLaw { order: 1, a0: 1, k: 0.02 } (graphs "all" | "conc" | "ln" | "inv"; points, table, guides: 2 half-lives); hide: "values".    vsepr { molecule: "NH3", angles: true } (48 molecules and ions, style "wedge" | "ball", lonePairs "lobes" | "dots" | "none", geometry, axe; OF.solve gives shape, angle, lonePairs); hide: "name", "angles".
   A micropipette is a reading type too (1.3.0): { type: "micropipette", model: "P20", value: 12.5 } (models P2, P10, P20, P100, P200, P1000; a volume the model can be set to; hide: "value").
   The chemistry readings are reading types (the measure pack): { type: "buret", value: 24.65, initial: 1.20, max: 50 } (reads down, to 0.05 mL; OF.solve gives the titre), { type: "beaker", value: 175, max: 250, step: 25 }, { type: "syringe", value: 43.5, max: 100, setup: true }, { type: "balance", value: 24.73, decimals: 2 }, { type: "tripleBeam", value: 347.65 } (to 0.05 g), { type: "thermometer", digital: true, value: 23.4, unit: "°C" | "K" | "°F" }, { type: "pH", meter: "digital" | "analog" | "paper", value: 4.62 } (analog to 0.1, paper whole numbers), { type: "displacement", before: 42, after: 50, max: 100, step: 1, major: 10, object: "rock" | "marbles" } (OF.solve gives the volume). Also bohr { element: "Na", charge: 1, ionMarks: true }, orbitals { element: "Ag", core: true, arrangement: "energy" } (H to Og), halfLife { isotopes: [{ halfLife: 5, name: "A" }, { halfLife: 12, name: "B" }] }, titration { points: [[0, 2.9], [5, 4.1], ...] } (measured pH), and more Lewis molecules: H2S, PH3, PCl3, NF3, OF2, SiH4, CF4, CH3Cl, H2O2, C2H6, HOCl, CO, CN, H3O, HCHO.
   Biology (1.3.0, the bio pack): populationGrowth { model: "logistic", n0: 20, r: 0.4, k: 500, span: 30, unit: "years", inflection: true } (model logistic, exponential, both, overshoot (lag), crash (k is the peak); graph "size" | "rate" | "perCapita", against: "size" for a rate against N; census: { every, noise, seed }; phases: true; OF.solve gives k, maxRate (rK/4), doubling, inflection, final; hide: "k")    predatorPrey { pair: "hare-lynx", names: ["Hares", "Lynx"] } (or prey: { average, start }, predators: { average, start }, period, span; scale: "two" for two axes; OF.solve gives period, lag, each one's high and low; hide: "predators")
   enzymeActivity { graph: "temperature", curves: [{ enzyme: "human" }, { enzyme: "taq" }], axes: "numbered", marks: true } (enzymes human, taq, pepsin, amylase, trypsin, catalase, or { name, opt, width }; graph "pH"; graph "substrate" with curves [{ km: 2, inhibitor: "competitive" }]; OF.solve gives optimum, denatured, vmax, km)    photosynthesis { graph: "light", curves: [{ co2: 0.1, temp: 25 }, { co2: 0.04, temp: 25 }] } (each curve gives the two factors not on the axis: light, co2 (%), temp; graph "co2" or "temperature"; lightAxis: "distance"; net: true; OF.solve gives plateau, saturation, compensation, optimum)
   punnett { parents: [["T", "t"], ["T", "t"]], names: { T: "tall", t: "short" } } (alleles: T, t; C^R, C^W with dominance "incomplete"; I^A, I^B, i with "codominance"; R, r, Y, y for a dihybrid; cross: "x-linked" with X^H, X^h, Y; or letters: ["T"] with parents [[1], [0]]; the ratios are worked out; OF.solve gives genotypes, phenotypes, percents, recessivePercent; hide: "cells", "gametes", "ratios")    pedigree { mode: "ar", seed: 7, generations: 3 } (a random family that fits the mode; or family: "m-F3fcMm-f2mfd", one line: sex m f u, upper case affected, c carrier, d deceased, p proband, then - and the partner and how many children; a family given with a mode must fit it; carriers, numbers, genotypes: true; OF.solve gives fits, tells, modeNumber, genotypes; hide: "genotypes", "affected")
   proteinSynthesis { coding: "ATGGCCTTTAAAGGGTAA", rows: ["template", "mrna", "trna", "amino"] } (or template (3' to 5') or mrna; up to 36 bases; frame "aug" | "first"; codons: n; blanks: { mrna: 50 } with seed; hide: a row)    gel { lanes: [{ ladder: "1kb" }, { label: "Suspect 1", bands: [5200, 3100, 900] }], gel: "1" } (ladders 1kb, 100bp, lambda; gel 0.8, 1, 1.5, 2 %; every band at its distance for its size; values, ruler, look: "glow"; OF.solve gives each band's cm and each sample lane's total; hide: "sizes", "labels")    osmosis { scene: "blood", solutes: [{ name: "salt", inside: 0.9, outside: 3 }], view: "both" } (scenes blood, plant, beaker, utube, bag; cross: true for a solute that passes the membrane; the tonicity, the water's movement and the result are worked out; OF.solve gives tonicity, water, outcome; hide: "tonicity", "arrows", "result")
+  cladogram { setup: "vertebrates" } (setup "vertebrates" | "plants" | "apes" | "letters", or taxa: [...] with traits: [...] (a ladder: traits[i] shared by taxa[i] and every taxon after it), or letters: 6, or tree: { trait, children: [{ name }, ...] }; style "diagonal" | "rectangular"; taxaLabels, traitLabels "names" | "blank" | "ticks" | "none"; numbers; mark: ["Jaws"] or [{ trait: 3 }] or [{ tip: 2 }]; OF.solve.cladogram gives shared, first, outgroup, marked.shared, firstTrait, sister; hide: "traits", "taxa", true) (1.7.0, the bio pack)
   Economics (1.4.0, the econ pack; schematic graphs on a hidden 0-to-10 grid unless numbers are given; every equilibrium, quantity and area is worked out from the curves): supplyDemand { shift: { demand: "increase" } } (demand, supply: "normal" | "steep" | "flat" | "vertical" | "horizontal"; numbered: demand { at: 10, slope: -0.1 }, supply { at: 2, slope: 0.1 } or { q: 500 }, or schedule: [[price, qd, qs], ...], a numbered shift is how far across; control: { type: "ceiling" | "floor", at } (schematic: a share of the price axis; numbered: the price); tax: { type: "tax" | "subsidy", amount }; shade: ["cs", "ps", "dwl", "revenue"]; OF.solve gives equilibrium, after, control (qd, qs, shortage or surplus), tax (buyers, sellers, quantity), cs, ps, dwl, revenue; hide: "values", "after", "areas", "names")    moneyMarket { graph: "money" | "funds" | "reserves", regime: "ample" | "limited", shift: { supply: "increase", demand: "decrease" } } (OF.solve gives rate, quantity, after, rateChange; hide: "values", "after")
   businessCycle { cycles: 2, start: "peak", shade: true, phases: ["expansion", "contraction", "recession", "recovery"] } (cycles 1 to 4 by halves; amplitude, trend, irregularity with seed; style: "letters" for a quiz; OF.solve gives peaks, troughs, recessions, letters; hide: "labels")    phillipsCurve { movement: "along", along: "up", longRun: true } (movement "srpc" with side and cause "shock" | "expectations", "lrpc" with side; numbered in %: { nru: 5, expected: 2, u2: 3, pi2: 6, ... }; OF.solve gives A, B, C (u, inflation), nruAfter, expectedAfter; hide: "values", "after")
   possibilitiesCurve { points: [{ name: "A", at: 0.2 }, { name: "B", place: "inside", at: 0.5 }], steps: true } (shape "out" | "straight" | "in"; xMax, yMax for numbers; shift: { which: "both" | "x" | "y", dir: "out" | "in" }; or countries: [{ name: "Country A", x: 40, y: 20 }, { name: "Country B", x: 30, y: 30 }], goods: ["Wheat", "Cloth"], layout: "side"; OF.solve gives points (status), steps (opportunity cost), countryA, countryB (costX, costY), advantageX, advantageY)    adAs { start: "recession", shift: { ad: "full" } } (as: "three" for the Keynesian curve; shift ad, sras "left" | "right" | "full", lras "left" | "right"; numbered: schedule: [[price level, AD, AS], ...], potential; OF.solve gives start, end, potential, gap, gapSize, gapType; hide: "values", "after", "gap")    costCurves { market: "perfect", price: "profit", shade: ["profit"] } (market "costs" | "perfect" | "monopoly" | "monopolistic"; atc: { q, cost } where ATC bottoms out, mcSlope, fixed; price: "profit" | "breakeven" | "loss" | "shutdownPoint" | "shutdown" or a number; demand: { top, end } and regulation "optimal" | "fair" for a monopoly; run "long" for a monopolistic competitor; OF.solve gives q, price, atc, profit, breakEven, shutdown, socialOptimum, fairReturn, cs, dwl, excessCapacity; hide: "values", "areas", "names")
@@ -164,6 +171,13 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
 | `motionMap` | `segments`, `start`, `dt`, `labels`, `arrows`, `acceleration`, `numbers`, `heading` | `true` / `arrows`, `positions` |
 | `projectile` | `speed`, `angle`, `height`, `g`, `positions`, `letters`, `path`, `velocity`, `components`, `gravity`, `angleMark`, `marks`, `unit`, `heading` | `true`, `path`, `range`, `height`, `cliff` |
 | `waves` | `wave`, `axis`, `amplitude`, `wavelength` or `period`, `speed`, `cycles`, `marks`, `labels`, `xunit`, `yunit`, `heading` | `true`, `marks`, `labels` |
+| `circularMotion` (1.7.0) | `view`, `radius`, `speed` or `period`, `mass`, `g`, `around`, `positions`, `start`, `direction`, `held`, `at`, `angle`, `length`, `object`, `velocity`, `acceleration`, `force`, `forces`, `components`, `radiusMark`, `letters`, `values`, `heading` | `true`, `values`, `acceleration`, `velocity` |
+| `fields` (1.7.0) | `setup` or `charges: [{ q, x, y }]`, `sign`, `current`, `lines`, `fieldLines`, `arrows`, `points: [{ name, x, y }]`, `heading` | `true`, `arrows`, `signs` |
+| `lever` (1.7.0) | `class`, `effortArm`, `loadArm`, `unit`, `load`, `loadUnit`, `loadShown`, `names`, `values`, `arms`, `labels`, `heading` | `effort`, `arms`, `load`, `true` |
+| `torque` (1.7.0) | `support`, `length`, `unit`, `pivot`, `supportA`, `supportB`, `loads: [{ at, value, kind, label, distanceLabel }]`, `valueUnit`, `g`, `beam`, `distances`, `supportForces`, `cable`, `cableAt`, `cableAngle`, `values`, `lengthMark`, `heading` | `distances`, `values`, `forces`, `true` |
+| `pendulum` (1.7.0) | `picture`, `angle`, `side`, `length`, `mass`, `g`, `arc`, `angleMark`, `heightMark`, `letters`, `forces`, `velocity`, `values`, `heading` | `true`, `values`, `height`, `length`, `angle` |
+| `spring` (1.7.0) | `orientation`, `picture`, `springs`, `joined`, `stretch`, `k`, `extension`, `mass`, `g`, `object`, `coils`, `extensionMark`, `lengthMark`, `equilibriumLine`, `appliedForce`, `motion`, `moving`, `values`, `heading` | `true`, `force`, `extension`, `values` |
+| `rollerCoaster` (1.7.0) | `points: [{ height, name, mark }]`, `unit`, `loop: { at, radius }`, `object`, `objectAt`, `speed`, `mass`, `g`, `ground`, `rough`, `velocity`, `values`, `heading` | `heights`, `radius`, `true` |
 | `grid` | `x`, `y`, `step`, `points`, `segments`, `fns`, `shapes`; since 1.1.0 `xstep`, `ystep`, `numbering`, `xtitle`, `ytitle`, `inequalities`, `verticals`, `asymptotes`, a function's `fromClosed`, `toClosed`, `holes`, a shape's `names` and `transform` | `labels`, `image`, `true` (a blank grid) |
 | `halfLife` | `halfLife`, `start`, `tmax`, `unit`, `yunit`; 1.2.0 `isotopes` (up to 3) | `marks` |
 | `titration` | `acid`, `base`, `flask`, `ca`, `cb`, `v0`, `vmax`, `pKa`, `pKb`; 1.2.0 `points` (measured) | `marks` |
@@ -213,6 +227,13 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
 | `dotCross` (1.2.0) | `molecule` (or `atoms` + `bonds`, no charge), or `ions: [{ element, count }]` (a metal and a non-metal) | `true` |
 | `skeletal` (1.5.0) | `smiles`, or `chain` with `double`, `triple`, `groups`, or `atoms` + `bonds`; `view`, `layout`, `ends`, `rings`, `acids`, `reverse`, `numbers`, `flip`, `chiral`, `name`, `formula` | `name`, `formula`, `true` |
 | `energyLevels` (1.5.0) | `z`, `top` or `levels`; `transitions` or `cascade`; `show`, `unit`, `series`, `ionization`, `height`, `heading` | `values`, `levels`, `true` |
+| `chromatography` (1.6.0) | `samples` (`name`, `spots`: `color`, `distance`), `front`, `show`, `setup`, `measure`, `labels`, `solvent`, `heading` | `values`, `true` |
+| `galvanicCell` (1.6.0) | `left`, `right`, `meter`, `voltage`, `labels`, `electrodes`, `flow`, `potentials`, `heading` | `reading`, `electrodes`, `true` |
+| `phaseDiagram` (1.6.0) | `substance`, or `tripleT`, `tripleP`, `critT`, `critP`, `nmp`, `nbp` (+ `name`, `axes`, `x`, `y`); `tUnit`, `pUnit`, `regions`, `points`, `values`, `isobar`, `supercritical`, `marks`, `path`, `heading` | `values`, `regions`, `true` |
+| `bondEnergy` (1.6.0) | `bonds` (`name`, `length`, `energy`), `unit`, `axes`, `guides`, `dots`, `regions`, `names`, `x`, `y`, `heading` | `values`, `names`, `true` |
+| `equilibrium` (1.6.0) | `reaction`, `start`, `k`, `heat`, `established`, `stresses` (`kind`, `at`, `species`, `amount`, `text`), `formulas`, `until`, `y`, `timeUnit`, `heading` | `stresses`, `formulas`, `true` |
+| `rateLaw` (1.6.0) | `order`, `a0`, `k`, `graphs`, `curve`, `points`, `count`, `noise`, `seed`, `table`, `guides`, `species`, `concUnit`, `timeUnit`, `numbers`, `heading` | `values`, `data`, `true` |
+| `vsepr` (1.6.0) | `molecule`, or `central`, `outer`, `lone`, `single`, `charge`; `style`, `lonePairs`, `outerPairs`, `symbols`, `gray`, `yaw`, `pitch`, `name`, `geometry`, `axe`, `angles`, `heading` | `name`, `angles`, `true` |
 | `populationGrowth` (1.3.0) | `model`, `n0`, `r`, `k`, `lag`, `span`, `unit`, `graph`, `against`, `census`, `kLine`, `inflection`, `phases`, `names`, `heading` | `k`, `curve`, `true` |
 | `predatorPrey` (1.3.0) | `pair`, or `prey` + `predators` (`average`, `start`) + `period`; `span`, `unit`, `scale`, `names`, `peaks`, `heading` | `predators`, `true` |
 | `enzymeActivity` (1.3.0) | `graph` (`temperature`, `pH`, `substrate`), `curves` (`enzyme`, or `opt` + `width`; or `km`, `inhibitor`, `strength`), `axes`, `unit`, `marks`, `x` | `marks`, `curves`, `true` |
@@ -222,6 +243,7 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
 | `proteinSynthesis` (1.3.0) | `coding`, `template` or `mrna`; `rows`, `frame`, `codons`, `names`, `blanks`, `seed` | a row's name, `true` |
 | `gel` (1.3.0) | `lanes: [{ ladder } \| { label, bands }]`, `gel`, `look`, `sizes`, `values`, `ruler`, `electrodes`, `numbers` | `sizes`, `labels`, `values`, `true` |
 | `osmosis` (1.3.0) | `scene`, `solutes: [{ name, inside, outside, cross }]`, `unit`, `view`, `particles`, `arrows`, `labels`, `burst`, `seed` | `tonicity`, `arrows`, `result`, `true` |
+| `cladogram` (1.7.0) | `setup`, `tree`, `taxa` + `traits`, or `letters`; `style`, `taxaLabels`, `traitLabels`, `numbers`, `mark`, `heading` | `traits`, `taxa`, `true` |
 | `supplyDemand` (1.4.0) | `demand`, `supply` (a shape; numbered `{ at, slope }` or `{ q }`) or `schedule`; `shift`, `control`, `tax`, `shade`, `x`, `y`, `guides`, `star`, `from`, `labels`, titles | `values`, `after`, `areas`, `names`, `true` |
 | `moneyMarket` (1.4.0) | `graph` (`money`, `funds`, `reserves`), `regime`, `shift`, `guides`, `star`, `from`, `labels`, titles | `values`, `after`, `names`, `true` |
 | `businessCycle` (1.4.0) | `cycles`, `start`, `amplitude`, `trend`, `irregularity`, `seed`, `style`, `phases`, `every`, `dots`, `shade`, `trendLine`, `names`, titles | `labels`, `true` |
@@ -967,6 +989,72 @@ these figures are in every site language (`server/builder/figures.js`).
 {"tool":"figure.number","vars":{"c":{"of":[3,3.5,4,4.5,5]},"q":{"of":[4,5,6,7]}},"q":"This perfectly competitive firm is in long-run equilibrium: the price is at the lowest point of ATC. What is the price?","fig":{"kind":"costCurves","market":"perfect","price":"breakeven","atc":{"q":"{q}","cost":"{c}"},"mcSlope":1,"axes":"numbered","hide":"values"},"answer":"c","dp":2,"unit":"$","work":["In the long run, entry and exit push the price to the lowest ATC.","Find where MC crosses ATC: the lowest point of ATC.","Read across: ${c}."]}
 ```
 
+## Physics and the cladogram (1.7.0)
+
+Seven physics kinds in the physics pack and the cladogram in the bio pack. Oomba Figures 1.7.0 is a new version folder
+(the core and its seven packs, no new pack); 1.0.0 to 1.6.0 have shipped and stay byte for byte, and every catalog figure
+1.6.0 drew, its chemistry kinds included, draws the same bytes in 1.7.0 (`tests/unit/figures-v170.test.js`). New builds
+and the Figures product get 1.7.0. Only the logic and layout are ported (`docs/third-party.md`): the field tracing (`ported/fields.js`),
+circular motion's arrow sizes (`ported/circular.js`), the lever's sums and drawn arms (`ported/lever.js`), the beam's
+torques (`ported/moments.js`), the pendulum's layout (`ported/pendulum.js`), the spring's coil (`ported/spring.js`), the
+roller coaster's track curve (`ported/track.js`) and the cladogram's tree and layout (`ported/clado.js`). Reading the
+data, the checks, the answers (`OF.solve`) and every drawing are Oomba's own (`circular.js`, `fields.js`, `lever.js`,
+`torque.js`, `pendulum.js`, `spring.js`, `coaster.js`, `cladogram.js`; `mech.js` their words and shared parts).
+
+- `circularMotion`: a top view (an object on a dashed circle, a string, a turntable or a curved road, at up to 8
+  places), a vertical circle (a ball on a string, a car in a loop, over a hill or through a dip) or a conical pendulum.
+  Velocity and acceleration are dashed (motion), forces solid. With `radius` and `speed` (or `period`) and `mass`,
+  `OF.solve.circularMotion` gives `acceleration` (v²/r), `force` (mv²/r), `period`, `omega`, the tension or normal
+  force at the top and bottom (`contactTop`, `contactBottom`), a conical pendulum's `radius`, `speed` and `tension`, and
+  `velocityDir` and `accelerationDir` where the object is first drawn. A car too fast for the top of a hill, or too slow
+  for the top of a vertical circle, is refused with the speed that would work.
+- `fields`: field lines traced through the real field (charges fall off as 1/r², so they curve truthfully and never
+  cross): one charge, opposite or like charges, up to 4 charges of the teacher's own (`charges`, sizes up to ±3, more
+  lines from a bigger charge), parallel plates, a bar magnet (north on the right) or a wire seen end-on. `points` mark
+  named spots; `OF.solve.fields` gives each one's field `direction`, `angle` and relative `strength`, which of the first
+  two is `stronger`, and whether two charges `attract` or `repel`. A point on a charge, wire or magnet is refused.
+- `lever`: a class 1, 2 or 3 lever drawn to scale from its arms (no arm shorter than 15% of the beam), the load a block
+  or an arrow, the effort's arrow, the names and values, and the arms' dimension lines. The effort is never given:
+  `OF.solve.lever` works it out (weight × load arm ÷ effort arm; a mass is weighed at 9.8 N/kg) with the mechanical
+  advantage. Arms that do not suit the class are refused (class 2 has the longer effort arm, class 3 the longer load arm).
+- `torque`: a beam on a pivot, two supports or a wall (with or without a cable), up to 6 loads (hanging, resting, or a
+  force down or up), the beam's own weight, and dimension lines from the pivot, support A or the wall. `OF.solve.torque`
+  gives each load's torque (clockwise positive), the `net` torque and which way it `turns`, the pivot's force, the value
+  (`balanceValue`) and distance from the pivot (`balanceDistance`) that would balance each load (numbered from 1), the
+  forces at two supports, and the cable's tension and the wall's force. A cable that would have to push is refused.
+- `pendulum`: the swing (A where it is released, B at the bottom, C on the far side) or one bob with its forces (tension
+  and weight, and weight's components along the string and the path). With `length` (m), `OF.solve.pendulum` gives the
+  `period` 2π√(L/g), the drop `height` L(1 − cos θ) and the `speed` at the bottom √(2gh); with `mass`, the `energy` and
+  the tensions.
+- `spring`: hanging or on a floor, one copy, before and after, or three positions of an oscillation; 1 to 3 springs in
+  series or parallel. `stretch` is only the drawing; the numbers are `k`, `extension` (m) or a hanging `mass`.
+  `OF.solve.spring` gives the combined `k`, the `extension`, the `force` kx, the elastic `energy` ½kx² and the `period`.
+- `rollerCoaster`: a smooth track through 2 to 8 points that never overshoots them, a loop standing on a point, a cart,
+  ball or block, rough stretches and height marks. `OF.solve.rollerCoaster` works the `speeds` out from the
+  conservation of energy (no friction, moving right from where the object is), the `fastest` and `slowest` points, the
+  energies with a mass, and for a loop the least starting height that carries it round from rest (`loopMinHeight`,
+  2.5R above the loop's base) and whether it does. A rough stretch ends the sums there.
+- `cladogram`: a cladogram (taxa along the top) or a phylogenetic tree (`style: "rectangular"`) of up to 16 taxa with
+  their traits ticked on the branches, from a ready-made `setup`, a ladder of `taxa` and `traits`, `letters` (A, B, C...
+  with numbered traits) or the teacher's `tree`. `mark` boxes traits or taxa, and `OF.solve.cladogram` answers about
+  them: how many taxa share the first (`marked.shared`), which of two came first (`firstTrait`), a taxon's
+  closest relative (`sister`); and `shared`, `first` and `outgroup` for the whole tree. hide `"traits"` leaves
+  numbered blank lines for the traits (the key names them).
+
+Each kind has three figure question generators in the catalog (24 in all: the number answers and the choices above);
+the first of each:
+
+```json
+{"tool":"figure.number","vars":{"v":[2,12],"r":[1,6]},"where":"v != r","q":"The object goes round the circle at a steady speed. What is its centripetal acceleration?","fig":{"kind":"circularMotion","radius":"{r}","speed":"{v}"},"answer":"v*v/r","dp":2,"unit":"m/s²","work":["a = v² ÷ r","= {v}² ÷ {r}","= {=round(v*v/r, 2)} m/s²"]}
+{"tool":"figure.choice","vars":{"p":{"of":[0,1,2,3]}},"q":"The current in the wire flows out of the page. Which way does the magnetic field point at P?","fig":{"kind":"fields","setup":"wire","current":"out","points":[{"name":"P","x":"{=110*(p == 3) - 110*(p == 1)}","y":"{=110*(p == 0) - 110*(p == 2)}"}],"hide":"arrows"},"choices":["up","down","left","right"],"answer":"2*(p == 0) + (p == 1) + 3*(p == 2)","work":["Right-hand rule: point your thumb out of the page, and your fingers curl counterclockwise.","Going counterclockwise around the wire, the field at P points {choice}.","Answer: {choice}."]}
+{"tool":"figure.number","vars":{"L":[50,500,50],"d":[2,8],"e":[10,20]},"q":"The lever balances. What effort does it need?","fig":{"kind":"lever","class":1,"effortArm":"{=e/10}","loadArm":"{=d/10}","load":"{L}","hide":"effort"},"answer":"L*d/e","dp":1,"unit":"N","work":["Load × load arm = effort × effort arm","{L} × {=d/10} = effort × {=e/10}","Effort = {=round(L*d/e, 1)} N"]}
+{"tool":"figure.number","vars":{"w1":[2,10],"w2":[2,10],"a":[1,4],"b":[6,9]},"where":"(w2*(b - 5) - w1*(5 - a) != 0) * (w2*(b - 5) - w1*(5 - a) != 5 - a) * (w2*(b - 5) - w1*(5 - a) != b - 5) * (w2*(b - 5) - w1*(5 - a) != 10*w1) * (w2*(b - 5) - w1*(5 - a) != 10*w2)","q":"Take clockwise as positive. What is the net torque on the beam about the pivot?","fig":{"kind":"torque","loads":[{"at":"{=a/10}","value":"{w1}"},{"at":"{=b/10}","value":"{w2}"}]},"answer":"(w2*(b - 5) - w1*(5 - a))/10","dp":2,"unit":"N·m","work":["Clockwise: {w2} × {=(b - 5)/10} = {=w2*(b - 5)/10} N·m","Counterclockwise: {w1} × {=(5 - a)/10} = {=w1*(5 - a)/10} N·m","Net = {=w2*(b - 5)/10} − {=w1*(5 - a)/10} = {=(w2*(b - 5) - w1*(5 - a))/10} N·m"]}
+{"tool":"figure.number","vars":{"L":[2,40]},"q":"What is the period of this pendulum? (g = 9.8 m/s²)","fig":{"kind":"pendulum","picture":"one","angle":10,"length":"{=L/10}"},"answer":"2*pi*sqrt(L/98)","dp":2,"unit":"s","work":["T = 2π √(L ÷ g)","= 2π √({=L/10} ÷ 9.8)","= {=round(2*pi*sqrt(L/98), 2)} s"]}
+{"tool":"figure.number","vars":{"k":[50,400,50],"x":[2,20]},"q":"The spring is stretched by the force F. How big is F?","fig":{"kind":"spring","orientation":"horizontal","picture":"one","k":"{k}","extension":"{=x/100}","appliedForce":true,"hide":"force"},"answer":"k*x/100","dp":1,"unit":"N","work":["Hooke's law: F = k x","= {k} × {=x/100}","= {=k*x/100} N"]}
+{"tool":"figure.number","vars":{"a":[30,60],"b":[0,10],"c":[10,25],"e":[0,9]},"where":"(round(sqrt(19.6*(a - c)), 1) != a) * (round(sqrt(19.6*(a - c)), 1) != b) * (round(sqrt(19.6*(a - c)), 1) != c) * (round(sqrt(19.6*(a - c)), 1) != e)","q":"The cart starts from rest at A. How fast is it going at C? (g = 9.8 m/s², no friction)","fig":{"kind":"rollerCoaster","points":[{"height":"{a}"},{"height":"{b}"},{"height":"{c}"},{"height":"{e}"}]},"answer":"sqrt(19.6*(a - c))","dp":1,"unit":"m/s","work":["Energy is kept: g h_A = g h_C + ½ v²","v = √(2 × 9.8 × ({a} − {c}))","= {=round(sqrt(19.6*(a - c)), 1)} m/s"]}
+{"tool":"figure.number","vars":{"k":[1,7]},"q":"How many of the animals in the cladogram have the boxed trait?","fig":{"kind":"cladogram","taxa":["Lancelet","Lamprey","Shark","Perch","Frog","Lizard","Mouse"],"traits":["Notochord","Vertebrae","Jaws","Bony skeleton","Four limbs","Amniotic egg","Hair"],"mark":[{"trait":"{k}"}]},"answer":"8 - k","dp":0,"work":["A trait is gained on the branch where its tick is.","Every animal that branches off above that tick has it.","Animals with the boxed trait: {=8 - k}"]}
+```
+
 ## Figure question generators in Figures worksheets
 
 The generators in this page (and in the Figures product's catalog, `public/js/figures-catalog.js`) are written in the
@@ -1057,6 +1145,97 @@ Builder trigger words for both are in every site language (`server/builder/figur
 {"tool":"figure.number","vars":{"n":[3,6],"m":[1,2]},"q":"The electron in a hydrogen atom falls from n = {n} to n = {m}. What is the wavelength of the light it gives out, in nm? (Eₙ = −13.6 ÷ n² eV, hc = 1239.84 eV·nm)","fig":{"kind":"energyLevels","transitions":[{"from":"{n}","to":"{m}"}],"hide":"values"},"answer":"1239.84198/(13.6*(1/(m*m) - 1/(n*n)))","dp":0,"unit":"nm","work":["ΔE = 13.6 × (1/{m}² − 1/{n}²) = {=round(13.6*(1/(m*m) - 1/(n*n)), 3)} eV","λ = hc ÷ ΔE = 1239.84 ÷ {=round(13.6*(1/(m*m) - 1/(n*n)), 3)}","= {=round(1239.84198/(13.6*(1/(m*m) - 1/(n*n))), 0)} nm"]}
 ```
 
+## Chemistry: seven new figures (1.6.0)
+
+Seven chemistry kinds in the chem pack, the generators the source added after the 1.5.0 port. Oomba Figures 1.6.0 is a
+new version folder (the core and its seven packs, no new pack); 1.0.0 to 1.5.0 have shipped and stay byte for byte, and
+every catalog figure 1.5.0 drew draws the same bytes in 1.6.0 (`tests/unit/figures-v160.test.js`). New builds and the
+Figures product got 1.6.0 until 1.7.0. In each, the science is ported (`figures/src/ported/`, each file's note says from where and
+what changed) and the checks, the answers (`OF.solve`) and the drawing are Oomba's own.
+
+- `chromatography`: a paper chromatogram. `samples` are 1 to 6 inks, each a `name` (up to 12 characters) and 1 to 5
+  `spots` `{ color, distance }` (black, blue, red, yellow, green, purple, orange, pink, brown; the distance in cm from the
+  pencil origin line, 0 for a dye that stays put; one dye of each color per ink, at least 0.6 cm apart). `front` (4 to
+  15 cm) is the solvent front; a spot past it is refused. `show: "both"` draws the paper before (each ink one spot of its
+  dyes mixed, on the origin line) beside after; `setup: false` draws the paper alone (by default it hangs from a glass
+  rod in a beaker of `solvent` that stays below the origin line); `measure: true` draws an arrow from the origin line to
+  each moved spot and to the front, labeled to 0.1 cm; `labels: true` names the parts. `OF.solve.chromatography` gives
+  `rf.<ink>.<color>`, `distance.<ink>.<color>`, `contains.<ink>` (1 when every dye of that ink is in the first ink, the
+  same color as far up) and `absent` (the other inks the first does not contain). hide: "values" (the measured
+  distances). In print a spot keeps its color with a darker edge, so a grayscale copy still shows it; dyes are matched
+  by how far they traveled.
+- `galvanicCell`: two beakers, each a metal in a 1 M solution of its ion (Mg, Al, Zn, Fe, Ni, Pb, Cu, Ag; by symbol or
+  atomic number), a salt bridge, and a `meter`: "digital", "dial" (0 to 4 V) or "coil". The metal with the lower
+  standard reduction potential is the anode; E°cell (the meter's reading, + terminal to the cathode) is the difference,
+  or the teacher's own `voltage`. `labels` (the metals, their ions and the salt bridge), `electrodes: true` (anode and
+  cathode with their signs), `flow: true` (electron arrows along the wire), `potentials: true` (each ion's E° under its
+  beaker; "cathode" or "anode" for one). `OF.solve.galvanicCell` gives `voltage`, `anode`, `cathode`, `anodeSide`,
+  `flow` (the electrons' way along the wire), `anodePotential`, `cathodePotential`, `electrons`, and the `oxidation`,
+  `reduction` and balanced `overall` reactions. hide: "reading" (the meter blank), "electrodes" (no signs, names or
+  electron arrows), `true`.
+- `phaseDiagram`: a pressure-temperature phase diagram of `substance` (water, co2, nitrogen, oxygen, argon, methane,
+  ammonia; values from the NIST Chemistry WebBook's reference equations of state), not to scale as textbooks draw it,
+  with the triple and critical points' values at the axes; or one's own substance from `tripleT`, `tripleP`, `critT`,
+  `critP`, `nmp`, `nbp` (in `tUnit` "C" | "K" and `pUnit` "atm" | "kPa"), not to scale or on a numbered grid (`axes:
+  "numbered"`, `x` and `y` its ranges). The vaporization curve bends upward through the boiling point; a typed set
+  that cannot make one (a boiling point at or below the straight line, a triple point at or above 1 atm, a fusion line
+  that would cross the vaporization curve) is refused with the reason. `regions` and `points`: "names", "letters",
+  "blank" or "none"; `isobar: true` the dashed 1 atm line with the normal melting and boiling points (or the
+  sublimation point); `supercritical: true`; `marks: [{ name: "A", at: "solid" | "liquid" | "gas" | "supercritical" |
+  "triple" | "critical" }]` a lettered dot placed well inside its region (not a temperature and pressure: the diagram
+  is not to scale); `path: { from, to }` an arrow at constant pressure across one boundary. `OF.solve.phaseDiagram`
+  gives the values, `lean` and `denserSolid`, `sublimesAt1atm`, `marks.<letter>`, `mark` (the first) and `change`
+  (melting, freezing, vaporization, condensation, sublimation, deposition). hide: "values", "regions", `true`.
+- `bondEnergy`: potential energy against internuclear distance for 1 to 3 `bonds` `{ name, length (pm), energy
+  (kJ/mol) }`, each a Morse curve whose lowest point is exactly at its bond length and minus its bond energy. `unit`
+  ("pm", "angstrom", "nm"), `axes: "shape"` (no numbers or grid), `guides` (dashed lines from each minimum to the axes,
+  with its values when the axes have no numbers), `dots`, `regions` (repulsion and attraction, one bond), `names: false`
+  (Bond A, B, C). `OF.solve.bondEnergy` gives `length`, `energy`, `minimum` (minus the energy), `zero`, `bonds.<A|B|C>`,
+  `strongest`, `weakest`, `shortest`, `longest`. hide: "values", "names", `true`.
+- `equilibrium`: concentration against time for a reversible `reaction` (ammonia, hi, n2o4, so3, pcl5, fescn, or abc:
+  A + B ⇌ C with `heat`) settling from `start` with `k` (example values, not measured constants), first within 1% at
+  `established`, then answering up to 3 `stresses` `{ kind: "add" | "remove" (species, amount in mol/L) | "volume"
+  (amount: the factor) | "raise" | "lower" (amount: how many times K changes), at }`. The graph is solved from K (every
+  level stretch gives K), so the lines always move in the ratio of the coefficients; heating an exothermic reaction
+  lowers K. `formulas: true` names each line. `OF.solve.equilibrium` gives `k`, `equilibrium.<formula>` (the first
+  equilibrium), `shift` and `shifts.<n>` ("forward", "reverse", "none"), `stress` (addReactant, addProduct,
+  removeReactant, removeProduct, volumeDown, volumeUp, raise, lower), `kAfter`. hide: "stresses" (each a "?"),
+  "formulas", `true`.
+- `rateLaw`: A → products with rate = k[A]^`order` (0, 1, 2) from `a0` and `k`: [A], ln[A] and 1/[A] against time
+  (`graphs: "all"`, or "conc", "ln", "inv"), the time axis to when a tenth is left. `points` (data scattered by `noise`
+  0, 1, 2 or 5 % from `seed`, rounded as a student would; none after a zero-order reaction ends), `table` ("conc" or
+  "all"), `guides` (1 to 3 half-lives, on the [A] graph), `species` (its formula), `concUnit`, `timeUnit`, `numbers:
+  false` (sketches). Times with long strings of digits are refused with what to change. `OF.solve.rateLaw` gives
+  `order`, `k`, `kUnit`, `halfLife`, `halfLives.<n>`, `straight`, `slope`, `intercept`, `at.<n>`. hide: "values" (the
+  guides' times), "data" (the table's [A] after the first), `true`.
+- `vsepr`: a molecule's 3D shape, `style` "wedge" (wedge-and-dash) or "ball" (ball-and-stick, one color per element, one
+  gray in print or with `gray: true`), for `molecule` (48 molecules and ions, from CO2 to ICl4; by formula or its place
+  in the list) or one's own `{ central, outer, lone, single, charge }` (refused unless the electrons add up).
+  `lonePairs` "lobes", "dots" or "none"; `outerPairs`; `name` (the shape's name under it), `geometry`, `axe`,
+  `angles` (the ideal angle, with "<" where lone pairs squeeze it); `yaw` and `pitch` turn the view. A trigonal
+  bipyramid puts the most electronegative atoms axial; a square pyramid puts the odd atom out at its apex (O in XeOF4);
+  a lone electron squeezes no angle (NO2), and CH3 is planar. `OF.solve.vsepr` gives `shape`, `geometry`, `axe`,
+  `atoms`, `lonePairs`, `groups`, `angle`, `angles.<n>`, `squeezed`. hide: "name" (every line under it blank),
+  "angles", `true`.
+
+Each has generators in the Figures catalog (21 in all: Rf, which dye a mixture lacks; E°cell, the anode, the electrons'
+way, the anode's E°; the phase at a point, the change along an arrow, the triple point read off a grid; the bond length,
+the energy at the well's bottom, the strongest bond; Kc from the graph, the shift, the stress; the order, k from the
+slope, the half-life; the shape, the bond angle, the lone pairs), each answer its figure's OF.solve value. Generators
+deal a metal, substance, mark, stress kind or molecule by number (an atomic number, or its place in the kind's list),
+as the pedigree's mode is dealt. Builder trigger words for all seven are in every site language
+(`server/builder/figures.js`).
+
+```json
+{"tool":"figure.number","vars":{"f":{"of":[8,10,12]},"d":[1.5,7.5,0.1],"e":[1,7,0.1],"r":[1.5,7,0.5]},"where":"(abs(d - e) >= 1)*(d <= f - 0.5)","q":"The distances on this chromatogram are in cm. What is the Rf value of the blue dye in ink A?","fig":{"kind":"chromatography","samples":[{"name":"A","spots":[{"color":"blue","distance":"{d}"},{"color":"yellow","distance":"{e}"}]},{"name":"B","spots":[{"color":"red","distance":"{r}"}]}],"front":"{f}","setup":false,"measure":true},"answer":"d/f","dp":2,"work":["Rf = distance moved by the dye ÷ distance moved by the solvent","= {d} ÷ {f}","= {=round(d/f, 2)}"]}
+{"tool":"figure.number","vars":{"u":{"of":[12063,13134,30224,26256,28275,82287,29334,47380]},"v":{"of":[12063,13134,30224,26256,28275,82287,29334,47380]}},"where":"u != v","q":"Each ion's standard reduction potential is shown under its beaker. What does the voltmeter read (E°cell), in V?","fig":{"kind":"galvanicCell","left":"{=floor(u/1000)}","right":"{=floor(v/1000)}","potentials":true,"hide":"reading"},"answer":"abs(u % 1000 - v % 1000)/100","dp":2,"unit":"V","work":["The metal with the lower E° is the anode; the other is the cathode.","E°cell = E°(cathode) − E°(anode) = {=max(u % 1000, v % 1000)/100 - 3} − ({=min(u % 1000, v % 1000)/100 - 3})","= {=abs(u % 1000 - v % 1000)/100} V"]}
+{"tool":"figure.choice","vars":{"s":[0,6],"m":[0,2]},"q":"Which phase is the substance in at point A?","fig":{"kind":"phaseDiagram","substance":"{s}","regions":"none","marks":[{"name":"A","at":"{m}"}]},"choices":["solid","liquid","gas"],"answer":"m","work":["The solid is left of the fusion line, the liquid between it and the vaporization curve, and the gas below and to the right.","Find which region point A is in.","At point A the substance is a {choice}."]}
+{"tool":"figure.number","vars":{"l":[60,240,20],"e":[150,500,50]},"q":"The graph shows the potential energy of two bonded atoms against the distance between their nuclei. What is the bond length, in pm?","fig":{"kind":"bondEnergy","bonds":[{"length":"{l}","energy":"{e}"}],"dots":true},"answer":"l","dp":0,"unit":"pm","work":["The bond length is the distance at the lowest point of the curve.","Read down from the lowest point to the distance axis.","The bond length is {l} pm."]}
+{"tool":"figure.number","vars":{"a":{"of":[1,1.2,1.6,2]},"x":{"of":[0.2,0.3,0.4]}},"q":"The graph shows N₂O₄ ⇌ 2NO₂ reaching equilibrium. Read the equilibrium concentrations and work out Kc.","fig":{"kind":"equilibrium","reaction":"n2o4","start":["{a}",0],"k":"{=4*x*x/(a - x)}"},"answer":"4*x*x/(a - x)","dp":2,"work":["At equilibrium [N₂O₄] = {=a - x} mol/L and [NO₂] = {=2*x} mol/L.","Kc = [NO₂]² ÷ [N₂O₄] = {=2*x}² ÷ {=a - x}","= {=round(4*x*x/(a - x), 2)}"]}
+{"tool":"figure.choice","vars":{"o":[0,2],"m":{"of":[1,2,4,5]}},"q":"For the reaction A → products, which order is the reaction in A? Use the three graphs.","fig":{"kind":"rateLaw","order":"{o}","a0":1,"k":"{=if(o == 0, 0.01, if(o == 1, 0.02, 0.05))*m}"},"choices":["zero order","first order","second order"],"answer":"o","work":["Zero order makes [A] against time straight, first order ln[A], second order 1/[A].","Find the graph that is a straight line.","The reaction is {choice}."]}
+{"tool":"figure.choice","vars":{"k":[0,3],"v":[0,2]},"q":"What is the shape of this molecule?","fig":{"kind":"vsepr","molecule":"{=3*k + 3 + v}","name":false},"choices":["bent","trigonal planar","trigonal pyramidal","tetrahedral"],"answer":"k","work":["Count the atoms bonded to the central atom and the lone pairs on it.","The lone pairs push the atoms but are not part of the shape's name.","The shape is {choice}."]}
+```
+
 ## Radians (1.1.0)
 
 The formula language (`canvas/src/expr.js`) works in degrees, as school trigonometry does, and stays so: it is frozen
@@ -1100,6 +1279,7 @@ chunk (`public/js/figures-export.js`).
 
 Organic structures print since 1.5.0 (`skeletal`); rings that share atoms (naphthalene, steroids, bridged rings) are not
 laid out automatically: give them as `atoms` with places, or draw them with `OF.structure` (SmilesDrawer, browser only).
-Atomic energy levels with transitions came in 1.5.0 (`energyLevels`). Optics with thick lenses, 3D molecules and moving physics (Phaser's
+Atomic energy levels with transitions came in 1.5.0 (`energyLevels`), and 3D molecular shapes (VSEPR, `vsepr`) in 1.6.0.
+Optics with thick lenses and moving physics (Phaser's
 built-in Matter physics already serves arcade games) are later. Compound circuits beyond one level of branches came in
 1.1.0 (`circuit` with `layout: "network"`, series-parallel only: a bridge circuit, which is neither, is not drawn).

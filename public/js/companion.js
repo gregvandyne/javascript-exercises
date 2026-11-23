@@ -14,6 +14,7 @@ import { t, api, esc, toast, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { mountChat } from '/js/oomba-chat.js';
 import * as BUS from '/js/oomba-bus.js';
+import { greeting } from '/js/companion-greet.js';
 
 const raw = document.body.dataset.oc;
 const PAGE = raw ? (() => { try { return JSON.parse(raw); } catch { return null; } })() : null;
@@ -64,9 +65,11 @@ function start() {
     toolsStart: `<button type="button" class="oc-ibtn" id="oc-attach-btn" aria-label="${esc(L('attach'))}" title="${esc(L('attach'))}">${ic('📎', 22)}</button><input type="file" id="oc-file" accept="${DOC_ACCEPT},${IMG_ACCEPT}" hidden>`,
     toolsEnd: `<button type="button" class="oc-ibtn" id="oc-mic" aria-label="${esc(L('mic.start'))}" title="${esc(L('mic.start'))}" hidden>${ic('🎤', 22)}</button>`,
     foot: `<div class="oc-foot"><button type="button" class="oc-pill on" id="oc-web" role="switch" aria-checked="true">${ic('🌐', 16)} <span>${esc(L('web.on'))}</span></button><span class="oc-attachnote" id="oc-note">${esc(L('attachNote'))}</span></div>`,
-    hello: c => via('hello', c) || L('hello'),
-    ideas: c => via('ideas', c) || (dash ? ['dashTimer', 'dashJobs', 'game', 'plan'] : ['game', 'book', 'dash', 'plan']).map(k => ({ label: L(`idea.${k}.label`), text: L(`idea.${k}.text`) })),
-    ideasAfter: c => via('ideasAfter', c) || [],
+    // The empty panel: a greeting with the teacher's own name by their local time, no example prompts (the owner's call:
+    // nothing is typed for the teacher). A page with its own workflow gives the second line.
+    helloHtml: c => { const g = greeting(t, new Date(), PAGE.name || '', via('hello', c) || ''); return `<span class="oc-greet"><b>${esc(g.title)}</b><span>${esc(g.line)}</span></span>`; },
+    ideas: () => [],
+    ideasAfter: () => [],
     placeholder: c => via('placeholder', c) || L('placeholder'),
     leave: L('leave'),
     stepText: (k, state) => t(`js.companion.prog.${k}.${state === 'done' ? 'done' : 'now'}`),
@@ -105,7 +108,23 @@ function start() {
     $('oc-mic').hidden = !(r.mic && navigator.mediaDevices && (window.MediaRecorder || (r.live && AC)));
     // An answer that ended while the teacher was away: the bubble's dot.
     if (r.unseen && chat.state().mode !== 'open') { chat.state().unread = true; chat.setMode(chat.state().mode, { focus: false, user: false }); }
+    if (r.pending) tryResume();
   }).catch(() => {});
+  // A request Oomba carried here (Go there): once this page knows what it is (a worksheet or a board says so through
+  // the bus), it continues on its own, once. The server runs it only on the exact page it was carried to.
+  let resumed = false;
+  async function tryResume() {
+    if (resumed) return;
+    const a = BUS.page();
+    if (a && a.ready && !a.ready()) return;
+    try {
+      const r = await api('/api/companion/resume', { method: 'POST', body: { page: pageNow(), ...(via('body') || {}) } });
+      if (!r.resumed) return;
+      resumed = true;
+      chat.took(r.chat); chat.setMode('open', { focus: false });
+    } catch { /* it waits for the next page load */ }
+  }
+  BUS.onPage(() => { if (!resumed) tryResume(); });
   function drawWeb() {
     const b = $('oc-web'); if (!b) return;
     b.classList.toggle('on', S.web); b.setAttribute('aria-checked', String(S.web)); b.disabled = !S.webAllowed;
@@ -282,6 +301,8 @@ function start() {
     if (n.proposal) parts.push(proposalHtml(x, n.proposal));
     if (n.handoff) parts.push(handoffHtml(x, n.handoff));
     if (n.pick) parts.push(pickHtml(x, n.pick));
+    if (n.ask) parts.push(askHtml(x, n.ask));
+    if (n.nav) parts.push(navHtml(x, n.nav));
     return parts.join('');
   }
   const meta = list => `<div class="oc-meta">${list.filter(Boolean).map(m => `<span>${esc(m)}</span>`).join('')}</div>`;
@@ -333,11 +354,31 @@ function start() {
     if (!dash || !(c.items || []).some(it => it.classId === PAGE.classId)) return;
     document.dispatchEvent(new CustomEvent('oomba:points', { detail: { classId: PAGE.classId } }));
   }
+  // Navigate-then-do: "I'll open <page> and do this there" with Go there and Not now. Go there keeps the request with
+  // the conversation for that exact page (the server), and this page opens it; there the panel opens and the request
+  // continues by itself (tryResume below).
+  const navName = n => t(`js.companion.nav.${n.pageType === 'dashboard' ? 'dashboard' : n.pageType === 'class' ? 'class' : n.pageType === 'figures-sheet' ? 'sheet' : 'board'}`, { name: n.name || '' });
+  function navHtml(x, n) {
+    const where = navName(n);
+    if (n.state === 'open') return `<div class="oc-nav"><p>${ic('🧭', 18)} <span>${esc(t('js.companion.nav.offer', { page: where }))}</span></p><p class="oc-navq" dir="auto">${esc(n.request)}</p><div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="go" data-turn="${esc(x.id)}">${esc(L('nav.go'))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="notNow" data-turn="${esc(x.id)}">${esc(L('nav.notNow'))}</button></div></div>`;
+    return `<div class="oc-nav done"><p class="oc-state">${ic(n.state === 'going' ? '🧭' : '➖', 16)} ${esc(t(`js.companion.nav.${n.state === 'going' ? 'went' : n.state === 'expired' ? 'expired' : 'declined'}`, { page: where }))}</p></div>`;
+  }
+  // A choice card: 2 to 5 options and "Something else" (it puts the caret in the box). A tap is the teacher's answer.
+  function askHtml(x, k) {
+    const q = k.question || (k.kind ? t(`js.companion.which.${k.kind === 'dashboard' ? 'dashboard' : k.kind === 'class' ? 'class' : k.kind === 'figures-sheet' ? 'sheet' : 'board'}`) : '');
+    if (k.state !== 'open') { const o = k.options[k.chosen]; return `<div class="oc-ask done">${q ? `<p class="oc-askq">${esc(q)}</p>` : ''}${o ? `<p class="oc-state">${ic('✓', 16)} ${esc(o.label)}</p>` : ''}</div>`; }
+    const btns = k.options.map((o, i) => `<button type="button" class="btn btn-sm oc-pickb" data-c="act" data-act="askPick" data-turn="${esc(x.id)}" data-v="${i}"><span>${esc(o.label)}</span>${o.sub ? ` <small>${esc(t('js.companion.card.grade', { g: o.sub.replace(/^grade /, '') }))}</small>` : ''}</button>`).join('');
+    return `<div class="oc-ask" role="group"${q ? ` aria-label="${esc(q)}"` : ''}>${q ? `<p class="oc-askq">${esc(q)}</p>` : ''}<div class="oc-acts">${btns}<button type="button" class="btn btn-sm btn-ghost" data-c="act" data-act="askOther" data-turn="${esc(x.id)}">${esc(L('ask.other'))}</button></div></div>`;
+  }
   async function onAct(act, turn, btn) {
     if (!turn) return null;
+    if (act === 'askOther') { const box = $('oc-in'); box.focus(); return null; }
     if (act === 'rebrief') { const box = $('oc-in'); box.value = L('hand.changeText'); box.dispatchEvent(new Event('input')); box.focus(); return null; }
     try {
-      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}) } });
+      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...(act === 'askPick' && btn ? { value: btn.dataset.v } : {}) } });
+      if (act === 'go' && r.href) { chat.took(r.chat); store.set('oc:companion', 'open'); location.href = r.href; return null; }
+      // An option without a target: sent as the teacher's answer, as if typed.
+      if (act === 'askPick' && r.text) { chat.took(r.chat); setTimeout(() => chat.send(r.text), 0); return null; }
       if (act === 'handoff' && r.handoff) {
         store.set('oomba-handoff', JSON.stringify({ tool: r.handoff.tool, text: handoffText(r.handoff), at: Date.now() }));
         location.href = r.handoff.href;

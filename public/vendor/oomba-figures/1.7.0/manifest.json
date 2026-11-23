@@ -1,0 +1,177 @@
+{
+  "name": "oomba-figures",
+  "version": "1.7.0",
+  "license": "MIT AND Apache-2.0",
+  "source": "figures/src (this repository; figures/src/ported is Apache-2.0, docs/third-party.md)",
+  "core": {
+    "file": "oomba-figures.js",
+    "kinds": [
+      "grid"
+    ]
+  },
+  "packs": {
+    "math": {
+      "file": "packs/math.js",
+      "kinds": [
+        "numberLine",
+        "triangle",
+        "rectangle",
+        "parallelogram",
+        "trapezoid",
+        "kite",
+        "regularPolygon",
+        "angles",
+        "parallelLines",
+        "segmentAddition",
+        "circle",
+        "compositeShape",
+        "prism",
+        "cylinder",
+        "pyramid",
+        "cone",
+        "sphere",
+        "net",
+        "mappingDiagram"
+      ]
+    },
+    "data": {
+      "file": "packs/data.js",
+      "kinds": [
+        "barGraph",
+        "dotPlot",
+        "histogram",
+        "boxPlot",
+        "scatterPlot",
+        "stemAndLeaf",
+        "pieChart",
+        "cumulativeFrequency",
+        "normalCurve",
+        "treeDiagram",
+        "vennDiagram",
+        "twoWayTable",
+        "tableOfValues"
+      ]
+    },
+    "physics": {
+      "file": "packs/physics.js",
+      "kinds": [
+        "freeBody",
+        "vectors",
+        "inclinedPlane",
+        "pulley",
+        "rays",
+        "circuit",
+        "motionGraph",
+        "motionMap",
+        "projectile",
+        "waves",
+        "circularMotion",
+        "fields",
+        "lever",
+        "torque",
+        "pendulum",
+        "spring",
+        "rollerCoaster"
+      ]
+    },
+    "chem": {
+      "file": "packs/chem.js",
+      "kinds": [
+        "halfLife",
+        "titration",
+        "bohr",
+        "orbitals",
+        "lewis",
+        "massSpectrum",
+        "heatingCurve",
+        "energyProfile",
+        "nuclide",
+        "lineSpectrum",
+        "photoelectron",
+        "particles",
+        "dotCross",
+        "skeletal",
+        "energyLevels",
+        "chromatography",
+        "galvanicCell",
+        "phaseDiagram",
+        "bondEnergy",
+        "equilibrium",
+        "rateLaw",
+        "vsepr"
+      ]
+    },
+    "bio": {
+      "file": "packs/bio.js",
+      "kinds": [
+        "populationGrowth",
+        "predatorPrey",
+        "enzymeActivity",
+        "photosynthesis",
+        "punnett",
+        "pedigree",
+        "proteinSynthesis",
+        "gel",
+        "osmosis",
+        "cladogram"
+      ]
+    },
+    "econ": {
+      "file": "packs/econ.js",
+      "kinds": [
+        "supplyDemand",
+        "moneyMarket",
+        "businessCycle",
+        "phillipsCurve",
+        "possibilitiesCurve",
+        "adAs",
+        "costCurves"
+      ]
+    },
+    "measure": {
+      "file": "packs/measure.js",
+      "kinds": [
+        "reading",
+        "protractor"
+      ]
+    }
+  },
+  "files": {
+    "oomba-figures.js": {
+      "sha256": "521668278ad412b2db84813f956fe39949c6507f02d59cec182cb1c957cea16e",
+      "sri": "sha384-kfIhL9t54vl/7/I+v18dChusFZeOJPbePk32ANnMQzKmDRxfgI0x5UZx1/9AqYqP"
+    },
+    "packs/math.js": {
+      "sha256": "950c7877f5331e7bedd52a94465e2f944db7b75599cc4c47c794fa14244af2d3",
+      "sri": "sha384-kz5BzX2cxdA6BlBOnaRVnD9e/rh3xMXc9O6RfX4IHdE1IcNKYPwNQFFZXBgrbtpN"
+    },
+    "packs/data.js": {
+      "sha256": "15cbddfdf5b765e754c2019dbfa3bb3f2bfd2f9c8ac0d956d6f185a1983a07f1",
+      "sri": "sha384-rQ1OSneJmIBgV3qs11++SRHAmcaUDxnSZghp4A26dhzDfJgDUUIDq29eUaQwJB9Y"
+    },
+    "packs/physics.js": {
+      "sha256": "4a9b5fd5d05a6a1325715a393ba04a4df4d2a192882e3cb91e91bfdf5c8d79bd",
+      "sri": "sha384-GW2DHLQqvZqcN4B/rrKyIKl6m6NxsD5cpu4/7cRHCQIVQs0jbFMhuDsi1cgxpv76"
+    },
+    "packs/chem.js": {
+      "sha256": "94910ed9a2ab3db118067cba2f0fdf04e21fee152c9d22e15bd3d674d959b5e4",
+      "sri": "sha384-sqfLCjUePrI1XlSaHnSL/Geb+9VsJkJ7r4O17gqDNQ7SrE/SBupusvHipVIWnACv"
+    },
+    "packs/bio.js": {
+      "sha256": "8f556e74bc7f53aaa375ac3a2bfef62b2020c73a7b58e077920d7471cdee19d2",
+      "sri": "sha384-SJ8K/1PsCTcbghTirsARpu53smM61qkjqEAQzGqM4U13RO+gNHrAyHnVnJMjBZ5x"
+    },
+    "packs/econ.js": {
+      "sha256": "d655807ed0996517ba2a53db134012ae411eae1b5eb4f06a9240b4c8d379645a",
+      "sri": "sha384-HJ6YWrifauz192YDRfAP1XrOAfU++xWLw6uPFHFOGOByQmqWVGMjAKKuayp/qLXl"
+    },
+    "packs/measure.js": {
+      "sha256": "f5a6bfa84115f1e2164f4ef079c756b08d56568304f3fdb66fa3cc21388adc12",
+      "sri": "sha384-AkXWZa0+OAwi9nHL1vlGcaDtBc5dDnHBppvLd7CfhNQla6W7Lt0ZByA1QsuspOiK"
+    },
+    "LICENSE": {
+      "sha256": "a222c2b3e67474e441a6f0e41413985087c96b45488fe32b49a586cdc777dd6f",
+      "sri": "sha384-GVE87+94tY+GH6kPj/5F4mVZ3fUo64AudYGl24gX1sN2WeTkyxTEScA3xssYqkY2"
+    }
+  }
+}

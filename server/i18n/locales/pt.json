@@ -3659,7 +3659,14 @@
         "image": "A imagem",
         "electrons": "Os elétrons",
         "values": "Os valores",
-        "reading": "A leitura"
+        "reading": "A leitura",
+        "regions": "As regiões",
+        "stresses": "As perturbações",
+        "formulas": "As fórmulas",
+        "names": "Os nomes",
+        "data": "Os dados",
+        "name": "O nome da forma",
+        "electrodes": "Os eletrodos"
       },
       "draw": {
         "modeLabel": "Como fazer a figura",
@@ -3889,7 +3896,10 @@
       "chTitle": "Título: {title}",
       "chGrade": "Ano: {grade}",
       "chRepaired": "{count, plural, one {# figura não pôde ser desenhada e foi trocada ou deixada de fora} other {# figuras não puderam ser desenhadas e foram trocadas ou deixadas de fora}}",
-      "chAnswers": "Cada resposta calculada a partir da sua figura"
+      "chAnswers": "Cada resposta calculada a partir da sua figura",
+      "greetLine": "Me diga o que esta folha precisa: o tema, o ano, quantas perguntas.",
+      "greetLineTest": "Me diga o que esta prova deve cobrir: o tema, o ano, quantas perguntas.",
+      "greetLineHas": "Peça para mudar perguntas, adicionar mais ou mudar as unidades ou o ano."
     },
     "manip-chat": {
       "title": "Oomba",
@@ -3944,7 +3954,9 @@
       "placeholder": "Peça ao Oomba para mudar o quadro",
       "placeholderEmpty": "Descreva a aula que você quer neste quadro",
       "boardOf": "Quadro de {tool}",
-      "liveRoom": "Sala ao vivo"
+      "liveRoom": "Sala ao vivo",
+      "greetLine": "Me diga a aula que você quer neste quadro de {tool}.",
+      "greetLineHas": "Me diga o que mudar no seu quadro de {tool}."
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4125,7 +4137,12 @@
         "boardNo": "Não conseguiu montar esse quadro",
         "point": "{n, plural, one {Deu um ponto} other {Deu # pontos}}",
         "pointPick": "Preparou uma escolha para você",
-        "pointNo": "Não conseguiu dar esse ponto"
+        "pointNo": "Não conseguiu dar esse ponto",
+        "places": "Olhou suas turmas e páginas",
+        "nav": "Preparou a página para abrir",
+        "navNo": "Não encontrou essa página",
+        "which": "Perguntou qual",
+        "askNo": "Não conseguiu perguntar isso"
       },
       "stepsSum": "{n, plural, one {# etapa} other {# etapas}} · {s} s",
       "prog": {
@@ -4215,7 +4232,51 @@
           "student": "Qual aluno você quis dizer?",
           "reason": "O ponto é pelo quê?"
         }
+      },
+      "nav": {
+        "offer": "Vou abrir {page} e fazer isso lá.",
+        "go": "Ir para lá",
+        "notNow": "Agora não",
+        "went": "Abri {page}.",
+        "declined": "Ficamos aqui.",
+        "expired": "Já faz um tempo, então não abri. Peça de novo quando quiser.",
+        "dashboard": "o painel de {name}",
+        "class": "{name}",
+        "sheet": "“{name}”",
+        "board": "o quadro {name}"
+      },
+      "which": {
+        "dashboard": "O painel de qual turma?",
+        "class": "Qual turma?",
+        "sheet": "Qual folha?",
+        "board": "Qual quadro?"
+      },
+      "ask": {
+        "other": "Outra coisa"
       }
+    },
+    "companion-greet": {
+      "morning": "Bom dia, {name}",
+      "morningPlain": "Bom dia",
+      "afternoon": "Boa tarde, {name}",
+      "afternoonPlain": "Boa tarde",
+      "evening": "Boa noite, {name}",
+      "eveningPlain": "Boa noite",
+      "night": "Trabalhando até tarde, {name}?",
+      "nightPlain": "Trabalhando até tarde?",
+      "back": "De volta, {name}",
+      "backPlain": "De volta",
+      "hi": "Oi, {name}",
+      "hiPlain": "Oi",
+      "friday": "Boa sexta, {name}",
+      "fridayPlain": "Boa sexta",
+      "monday": "Semana nova, {name}",
+      "mondayPlain": "Semana nova",
+      "weekend": "Planejando no fim de semana, {name}?",
+      "weekendPlain": "Planejando no fim de semana?",
+      "line0": "Como posso ajudar?",
+      "line1": "No que vamos trabalhar?",
+      "line2": "Por onde começamos?"
     }
   },
   "favorites": {
@@ -13262,6 +13323,34 @@
         "name": "Ondas",
         "desc": "Ondas transversais e longitudinais"
       },
+      "circularMotion": {
+        "name": "Movimento circular",
+        "desc": "Velocidade, aceleração centrípeta e forças"
+      },
+      "fields": {
+        "name": "Campos elétricos e magnéticos",
+        "desc": "Linhas de campo de cargas, placas, ímãs e fios"
+      },
+      "lever": {
+        "name": "Alavancas",
+        "desc": "Alavancas interfixas, inter-resistentes e interpotentes"
+      },
+      "torque": {
+        "name": "Torque",
+        "desc": "Vigas sobre um pivô, dois apoios ou uma parede"
+      },
+      "pendulum": {
+        "name": "Pêndulo",
+        "desc": "Uma oscilação com ângulo, comprimento e altura"
+      },
+      "spring": {
+        "name": "Molas",
+        "desc": "Lei de Hooke, em série e em paralelo, oscilação"
+      },
+      "rollerCoaster": {
+        "name": "Montanha-russa",
+        "desc": "Alturas, um loop e rapidezes pela energia"
+      },
       "reading": {
         "name": "Leitura de escala",
         "desc": "Termômetros, provetas, réguas e paquímetros"
@@ -13326,6 +13415,34 @@
         "name": "Níveis de energia do átomo",
         "desc": "Transições eletrônicas, comprimentos de onda e séries"
       },
+      "chromatography": {
+        "name": "Cromatografia",
+        "desc": "Cromatogramas em papel com medidas de Rf"
+      },
+      "galvanicCell": {
+        "name": "Pilhas eletroquímicas",
+        "desc": "Pilhas galvânicas com ponte salina e medidor"
+      },
+      "phaseDiagram": {
+        "name": "Diagrama de fases",
+        "desc": "Pressão em função da temperatura, pontos triplo e crítico"
+      },
+      "bondEnergy": {
+        "name": "Curva de energia de ligação",
+        "desc": "Energia potencial em função da distância internuclear"
+      },
+      "equilibrium": {
+        "name": "Gráfico de equilíbrio",
+        "desc": "Concentração em função do tempo e princípio de Le Châtelier"
+      },
+      "rateLaw": {
+        "name": "Gráficos da lei de velocidade",
+        "desc": "[A], ln[A] e 1/[A] em função do tempo, conforme a ordem"
+      },
+      "vsepr": {
+        "name": "Geometria VSEPR",
+        "desc": "Formas das moléculas em 3D, ângulos de ligação e pares isolados"
+      },
       "populationGrowth": {
         "name": "Crescimento populacional",
         "desc": "Curvas J e S, K e as fases de crescimento"
@@ -13361,6 +13478,10 @@
       "osmosis": {
         "name": "Osmose",
         "desc": "Células, tubos em U e sacos em soluções"
+      },
+      "cladogram": {
+        "name": "Cladograma",
+        "desc": "Táxons, características compartilhadas e árvores filogenéticas"
       },
       "supplyDemand": {
         "name": "Oferta e procura",

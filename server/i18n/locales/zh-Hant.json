@@ -3658,7 +3658,14 @@
         "image": "像",
         "electrons": "電子",
         "values": "數值",
-        "reading": "讀數"
+        "reading": "讀數",
+        "regions": "區域",
+        "stresses": "外加的改變",
+        "formulas": "化學式",
+        "names": "名稱",
+        "data": "數據",
+        "name": "形狀名稱",
+        "electrodes": "電極"
       },
       "draw": {
         "modeLabel": "如何做出圖形",
@@ -3888,7 +3895,10 @@
       "chTitle": "標題:{title}",
       "chGrade": "年級:{grade}",
       "chRepaired": "有 {count} 個圖形畫不出來,已替換或移除",
-      "chAnswers": "每個答案都由它的圖形算出"
+      "chAnswers": "每個答案都由它的圖形算出",
+      "greetLine": "告訴我這份學習單需要什麼:主題、年級、題數。",
+      "greetLineTest": "告訴我這份測驗要涵蓋什麼:主題、年級、題數。",
+      "greetLineHas": "請我修改題目、加題,或改單位、年級。"
     },
     "manip-chat": {
       "title": "Oomba",
@@ -3943,7 +3953,9 @@
       "placeholder": "請 Oomba 修改板子",
       "placeholderEmpty": "描述你想在這個板子上上的課",
       "boardOf": "{tool} 板",
-      "liveRoom": "直播教室"
+      "liveRoom": "直播教室",
+      "greetLine": "告訴我你想在這個{tool}板子上做什麼課。",
+      "greetLineHas": "告訴我要改你{tool}板子上的什麼。"
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4124,7 +4136,12 @@
         "boardNo": "無法做出那個板子",
         "point": "{n, plural, other {給了 # 分}}",
         "pointPick": "幫你準備好選項",
-        "pointNo": "沒辦法給這一分"
+        "pointNo": "沒辦法給這一分",
+        "places": "看了你的班級和頁面",
+        "nav": "準備好要打開的頁面",
+        "navNo": "找不到那個頁面",
+        "which": "問了是哪一個",
+        "askNo": "無法提問"
       },
       "stepsSum": "{n} 個步驟 · {s} 秒",
       "prog": {
@@ -4214,7 +4231,51 @@
           "student": "你指的是哪位學生？",
           "reason": "這一分是為了什麼？"
         }
+      },
+      "nav": {
+        "offer": "我會打開{page},在那裡完成。",
+        "go": "前往",
+        "notNow": "先不要",
+        "went": "已打開{page}。",
+        "declined": "留在這裡。",
+        "expired": "已經過了一段時間,所以我沒有打開。準備好時再問我一次。",
+        "dashboard": "{name}的儀表板",
+        "class": "{name}",
+        "sheet": "「{name}」",
+        "board": "{name}板子"
+      },
+      "which": {
+        "dashboard": "哪個班級的儀表板?",
+        "class": "哪個班級?",
+        "sheet": "哪份學習單?",
+        "board": "哪個板子?"
+      },
+      "ask": {
+        "other": "其他"
       }
+    },
+    "companion-greet": {
+      "morning": "早安,{name}",
+      "morningPlain": "早安",
+      "afternoon": "午安,{name}",
+      "afternoonPlain": "午安",
+      "evening": "晚安,{name}",
+      "eveningPlain": "晚安",
+      "night": "這麼晚還在忙,{name}?",
+      "nightPlain": "這麼晚還在忙?",
+      "back": "歡迎回來,{name}",
+      "backPlain": "歡迎回來",
+      "hi": "嗨,{name}",
+      "hiPlain": "嗨",
+      "friday": "星期五快樂,{name}",
+      "fridayPlain": "星期五快樂",
+      "monday": "新的一週,{name}",
+      "mondayPlain": "新的一週",
+      "weekend": "週末也在備課,{name}?",
+      "weekendPlain": "週末也在備課?",
+      "line0": "需要我幫什麼忙?",
+      "line1": "今天要做什麼?",
+      "line2": "從哪裡開始?"
     }
   },
   "favorites": {
@@ -13260,6 +13321,34 @@
         "name": "波",
         "desc": "橫波和縱波"
       },
+      "circularMotion": {
+        "name": "圓周運動",
+        "desc": "速度、向心加速度與力"
+      },
+      "fields": {
+        "name": "電場與磁場",
+        "desc": "電荷、平行板、磁鐵與導線的場線"
+      },
+      "lever": {
+        "name": "槓桿",
+        "desc": "第一、二、三類槓桿與所需施力"
+      },
+      "torque": {
+        "name": "力矩",
+        "desc": "支在支點、兩個支撐或牆上的棒"
+      },
+      "pendulum": {
+        "name": "單擺",
+        "desc": "有擺角、擺長與高度的擺動"
+      },
+      "spring": {
+        "name": "彈簧",
+        "desc": "虎克定律、串聯與並聯、振動"
+      },
+      "rollerCoaster": {
+        "name": "雲霄飛車",
+        "desc": "高度、迴圈與由能量求速率"
+      },
       "reading": {
         "name": "讀取刻度",
         "desc": "溫度計、量筒、尺和游標卡尺"
@@ -13324,6 +13413,34 @@
         "name": "原子能階",
         "desc": "電子躍遷、波長與譜系"
       },
+      "chromatography": {
+        "name": "層析",
+        "desc": "附 Rf 值測量的紙層析圖"
+      },
+      "galvanicCell": {
+        "name": "電化學電池",
+        "desc": "附鹽橋和電表的伽凡尼電池"
+      },
+      "phaseDiagram": {
+        "name": "相圖",
+        "desc": "壓力對溫度，三相點與臨界點"
+      },
+      "bondEnergy": {
+        "name": "鍵能曲線",
+        "desc": "位能對核間距離"
+      },
+      "equilibrium": {
+        "name": "平衡圖",
+        "desc": "濃度對時間與勒沙特列原理"
+      },
+      "rateLaw": {
+        "name": "速率定律圖",
+        "desc": "依反應級數畫 [A]、ln[A] 與 1/[A] 對時間"
+      },
+      "vsepr": {
+        "name": "VSEPR 分子形狀",
+        "desc": "立體分子形狀、鍵角與孤對電子"
+      },
       "populationGrowth": {
         "name": "族群成長",
         "desc": "J 形與 S 形曲線、K 與成長階段"
@@ -13359,6 +13476,10 @@
       "osmosis": {
         "name": "滲透",
         "desc": "溶液中的細胞、U 形管與袋子"
+      },
+      "cladogram": {
+        "name": "分支圖",
+        "desc": "分類群、共有特徵與親緣關係樹"
       },
       "supplyDemand": {
         "name": "供給與需求",

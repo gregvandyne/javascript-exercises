@@ -297,9 +297,9 @@ function chatUi() {
     page: () => (W ? { type: 'figures-sheet', sheetId: W.id } : { type: 'figures' }),
     label: () => (W && W.title) || document.getElementById('fg-title')?.value || P.untitled,
     ensure: async () => { await ensure(); },
-    hello: () => t(empty() ? (TEST ? 'js.figures-sheet.helloEmptyTest' : 'js.figures-sheet.helloEmpty') : 'js.figures-sheet.hello'),
-    ideas: () => (empty() ? [] : ['ideaHarder', 'ideaWords', 'ideaEasier'].map(k => ({ label: t(`js.figures-sheet.${k}`), text: t(`js.figures-sheet.${k}`) }))),
-    ideasAfter: c => { const last = c.turns[c.turns.length - 1]; return last && mine(last) && last.change.first && !last.change.undone ? ['ideaHarder', 'ideaWords', 'ideaEasier'].map(k => ({ label: t(`js.figures-sheet.${k}`), text: t(`js.figures-sheet.${k}`) })) : null; },
+    // The second line under Oomba's greeting on this page (no example prompts: nothing is typed for the teacher).
+    hello: () => t(empty() ? (TEST ? 'js.figures-sheet.greetLineTest' : 'js.figures-sheet.greetLine') : 'js.figures-sheet.greetLineHas'),
+    ready: () => !P.id || !!W,
     placeholder: () => t(empty() ? 'js.figures-sheet.placeholderEmpty' : 'js.figures-sheet.placeholder'),
     change: x => (x.change && x.change.kind === 'figures' ? changeHtml(x) : undefined),
     changeLinks: x => (mine(x) && !x.change.first && x.change.ids && x.change.ids.length ? `<a href="#fg-items" data-c="act" data-act="show" data-turn="${esc(x.id)}">${esc(t('js.figures-sheet.showMe'))}</a>` : ''),
