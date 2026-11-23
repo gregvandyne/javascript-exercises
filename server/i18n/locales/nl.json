@@ -6994,7 +6994,8 @@
       "caption": "Wat elk product biedt voor veelvoorkomende behoeften in de klas. De vakjes van de andere producten komen van hun eigen openbare websites.",
       "need": "Behoefte in de klas",
       "hint": "Schuif de tabel opzij om alle producten te zien.",
-      "legend": "Niet vermeld betekent dat we het niet op hun openbare website vonden."
+      "legend": "Niet vermeld betekent dat we het niet op hun openbare website vonden.",
+      "open": "Tik of klik op een rij om de details en bronnen te zien."
     },
     "status": {
       "yes": "Ja",
@@ -7091,10 +7092,9 @@
       "how": "We lazen op {date} de eigen openbare pagina’s van elk product. Elk Ja of Deels toont de woorden op hun pagina die het onderbouwen. Niet vermeld betekent dat we het daar niet vonden."
     },
     "line": "Laatst gecontroleerd: {date}. {names} zijn handelsmerken van hun eigenaren; Oomba is niet aan hen verbonden. <a href=\"{href}\">Laat het ons weten als er iets veranderd is</a>.",
-    "info": {
-      "label": "Meer over {product}: {need}",
-      "source": "Op hun website, gelezen op {date}:",
-      "link": "Hun pagina openen"
+    "detail": {
+      "link": "Hun pagina openen",
+      "notStated": "Niet vermeld op hun site"
     }
   },
   "connections": {

@@ -49,43 +49,41 @@ test('/compare: 200, indexable, one H1, canonical, breadcrumbs under Teachers, i
     const seg = c.toLowerCase(); const p = await get(`/${seg}/compare`);
     assert.equal(p.status, 200, `/${seg}/compare`);
     // Only the product names (never translated) and the quoted words from their websites are marked English.
-    const rest = main(p.text).replace(/<(th|span)[^>]*lang="en" dir="ltr">(?:Kahoot!|Classroomscreen|Brainingcamp)<\/\1>/g, '').replace(/<q( class="cmp-quote")? lang="en" dir="ltr">[^<]*<\/q>/g, '');
+    const rest = main(p.text).replace(/<(th|span|b)[^>]*lang="en" dir="ltr">(?:Kahoot!|Classroomscreen|Brainingcamp)<\/\1>/g, '').replace(/<q( class="cmp-quote")? lang="en" dir="ltr">[^<]*<\/q>/g, '');
     assert.doesNotMatch(rest, /lang="en"/, `/${seg}/compare: every string translated`);
   }
 });
 
-// One <td>: its visible text (the "i" note left out), and its note, if it has one.
-const cellParts = td => {
-  const pop = /<div class="cmp-pop" id="([^"]+)" hidden>([\s\S]*?)<\/div>/.exec(td);
-  const btn = /<button type="button" class="cmp-i" aria-expanded="false" aria-controls="([^"]+)" aria-label="([^"]+)">/.exec(td);
-  return { visible: text(`<td${td}`.replace(/<div class="cmp-pop"[\s\S]*?<\/div>/, '').replace(/<button[\s\S]*?<\/button>/, '')).trim(), pop: pop && { id: pop[1], html: pop[2] }, btn: btn && { controls: btn[1], label: btn[2] } };
-};
-const tableRows = h => h.slice(h.indexOf('<tbody>'), h.indexOf('</tbody>')).split('<tr ').slice(1);
+// The table's rows: each need's row and, right after it, its detail row.
+const tbody = h => h.slice(h.indexOf('<tbody>'), h.indexOf('</tbody>'));
+const tableRows = h => tbody(h).split('<tr ').slice(1).filter(x => x.startsWith('id="row-'));
+const detailOf = (h, id) => { const m = new RegExp(`<tr class="cmp-det" id="det-${id}" hidden><td colspan="5">([\\s\\S]*?)</td></tr>`).exec(h); return m && m[1]; };
 
-test('the table: real table markup, one word per cell (plus the gate tag), details behind an accessible "i", legend and one notice line', async () => {
+test('the table: one word per cell (plus the gate tag); each need opens its detail row, closed by default; one notice line', async () => {
   const h = main((await get('/compare')).text);
   assert.match(h, /<table class="cmp-table">\s*<caption>/);
   const heads = [...h.matchAll(/<th scope="col"[^>]*>([^<]*)<\/th>/g)].map(m => m[1]);
   assert.deepEqual(heads, ['Classroom need', 'Oomba', 'Kahoot!', 'Classroomscreen', 'Brainingcamp']);
+  assert.doesNotMatch(h, /cmp-i\b|cmp-pop|<sup|cmp-fn/, 'no "i" buttons, notes or footnote numbers');
   const trs = tableRows(h);
   assert.equal(trs.length, rows().length);
+  assert.equal((tbody(h).match(/<tr class="cmp-det"/g) || []).length, rows().length, 'a detail row for every need');
   const gated = new Set(C.ROWS.filter(r => r.gated).map(r => r.id));
   for (const tr of trs) {
     const id = /id="row-([a-zA-Z]+)"/.exec(tr)[1];
-    assert.equal((tr.match(/<th scope="row"/g) || []).length, 1);
-    assert.doesNotMatch(tr, /<sup|cmp-fn|cmp-detail/, `${id}: no footnote numbers or long text in the table`);
-    const tds = tr.split('<td').slice(1);
-    assert.equal(tds.length, 4, 'Oomba and three products');
-    for (const td of tds) {
+    // The need's label is the toggle: a real button, closed, controlling the detail row right under it.
+    assert.match(tr, new RegExp(`<th scope="row" class="cmp-need"><button type="button" class="cmp-tog" aria-expanded="false" aria-controls="det-${id}">(<svg[^>]*aria-hidden="true"[\\s\\S]*?</svg>|<img[^>]*aria-hidden="true"[^>]*>)<span>[^<]+</span></button></th>`), `${id}: the label is the toggle button`);
+    assert.match(tbody(h), new RegExp(`<tr id="row-${id}" class="cmp-row">(?:(?!<tr )[\\s\\S])*?</tr>\\s*<tr class="cmp-det" id="det-${id}" hidden>`), `${id}: its detail row follows, hidden`);
+    const cells = tr.split('</tr>')[0].split('<td').slice(1);
+    assert.equal(cells.length, 4, 'Oomba and three products');
+    cells.forEach((td, i) => {
       assert.match(td, /<span class="cmp-mark cmp-(yes|partial|no|notStated)">(?:<svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>|<img[^>]*aria-hidden="true"[^>]*>)?<b>(Yes|Partial|No|Not stated)<\/b>/, 'a word, never color or an icon alone');
-      const p = cellParts(td);
-      assert.match(p.visible, /^(Yes|Partial|No|Not stated)( In testing)?$/, `${id}: only the word (and the tag): "${p.visible}"`);
-      if (p.btn) { assert.ok(p.pop && p.btn.controls === p.pop.id, `${id}: the button controls its note`); assert.match(p.btn.label, /^More about .+: .+/); assert.match(td, /class="cmp-i"[^>]*>(<svg|<img)[^>]*aria-hidden="true"/, 'the icon is decorative; the button has its name'); }
-    }
-    // Oomba: Yes, the tag on the teaching tools (plans are off in unit tests: "In testing"), its detail behind the "i".
-    const us = cellParts(tds[0]);
-    assert.equal(us.visible, gated.has(id) ? 'Yes In testing' : 'Yes', id);
-    assert.ok(us.btn && us.pop && text(us.pop.html).trim().length > 10, `${id}: Oomba's detail is behind its "i"`);
+      const visible = text(`<td${td}`).trim();
+      assert.equal(visible, i === 0 ? (gated.has(id) ? 'Yes In testing' : 'Yes') : { yes: 'Yes', partial: 'Partial', notStated: 'Not stated' }[C.cellOf(id, C.COMPETITORS[i - 1].id).s], `${id}: only the word (and the tag)`);
+    });
+    // Oomba's detail is the first line of the detail row.
+    const det = detailOf(h, id); assert.ok(det, id);
+    assert.match(text(det).replace(/ :/g, ":").trim(), /^Oomba: .{15,}/, `${id}: Oomba's detail`);
   }
   assert.ok(text(h).includes('Not stated means we did not find it on their public website.'));
   assert.ok(!h.includes('Teacher plan</span>'));
@@ -98,10 +96,11 @@ test('the table: real table markup, one word per cell (plus the gate tag), detai
   const why = /<ul class="cmp-why">([\s\S]*?)<\/ul>/.exec(h)[1].split('<li').slice(1).map(x => text(`<li${x}`).trim());
   assert.equal(why.length, 3); for (const w of why) assert.ok(w.length <= 80, w);
   assert.match(h, /<a class="btn btn-primary btn-big" href="\/teachers#start">Get a free school account<\/a>|href="\/trial"/, 'the sign-up button');
-  assert.match((await get('/compare')).text, /<script type="module" src="\/js\/compare-info\.js\?v=/);
+  assert.match((await get('/compare')).text, /<script type="module" src="\/js\/compare-rows\.js\?v=/);
+  assert.ok(text(h).includes('Tap or click a row to see the details and sources.'));
 });
 
-test('every claim about another product has a source: behind its cell\'s "i" and in the Sources, collapsed by default', async () => {
+test('every claim about another product has a source: in its row\'s detail and in the Sources, collapsed by default', async () => {
   assert.ok(Object.values(C.CELLS).some(r => Object.values(r).some(c => c.s !== 'notStated')), 'the researched cells are there');
   const sites = Object.fromEntries(C.COMPETITORS.map(c => [c.id, new URL(c.site).hostname.replace(/^www\./, '')]));
   for (const [rowId, byComp] of Object.entries(C.CELLS)) {
@@ -120,16 +119,17 @@ test('every claim about another product has a source: behind its cell\'s "i" and
   }
   const h = main((await get('/compare')).text);
   const esc = s => s.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-  for (const tr of tableRows(h)) {
-    const id = /id="row-([a-zA-Z]+)"/.exec(tr)[1];
-    tr.split('<td').slice(2).forEach((td, i) => {
-      const comp = C.COMPETITORS[i]; const cell = C.cellOf(id, comp.id); const p = cellParts(td);
-      if (cell.s === 'notStated') { assert.ok(!p.btn, `${id}.${comp.id}: Not stated makes no claim and has no "i"`); return; }
-      assert.ok(p.btn && p.pop, `${id}.${comp.id}: the claim's source is reachable from its cell`);
-      assert.ok(p.pop.html.includes(`<q lang="en" dir="ltr">${esc(cell.src.quote)}</q>`), `${id}.${comp.id}: the quote`);
-      assert.ok(p.pop.html.includes(`href="${cell.src.url}"`), `${id}.${comp.id}: the link to their page`);
-      assert.ok(text(p.pop.html).includes('November 22, 2026'), `${id}.${comp.id}: the day it was read`);
-    });
+  for (const r of rows()) {
+    const det = detailOf(h, r.id);
+    for (const comp of C.COMPETITORS) {
+      const cell = C.cellOf(r.id, comp.id);
+      const line = new RegExp(`<li[^>]*><b lang="en" dir="ltr">${comp.name.replace('!', '\\!')}</b>([\\s\\S]*?)</li>`).exec(det);
+      assert.ok(line, `${r.id}.${comp.id}: a line in the row's detail`);
+      if (cell.s === 'notStated') { assert.equal(text(line[1]).trim(), ': Not stated on their site', `${r.id}.${comp.id}`); continue; }
+      assert.ok(line[1].includes(`<q lang="en" dir="ltr">${esc(cell.src.quote)}</q>`), `${r.id}.${comp.id}: the quote in its row's detail`);
+      assert.ok(line[1].includes(`href="${cell.src.url}"`) && text(line[1]).includes('Open their page'), `${r.id}.${comp.id}: the link to their page`);
+      assert.ok(text(line[1]).includes('read on November 22, 2026'), `${r.id}.${comp.id}: the day it was read`);
+    }
   }
   // The Sources: a native <details>, collapsed by default, with every source's words, address and day.
   const det = /<details class="panel cmp-src" id="sources">([\s\S]*?)<\/details>/.exec(h);

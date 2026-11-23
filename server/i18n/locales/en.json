@@ -7618,7 +7618,8 @@
       "caption": "What each product offers for common classroom needs. Cells for the other products come from their own public websites.",
       "need": "Classroom need",
       "hint": "Slide the table sideways to see every product.",
-      "legend": "Not stated means we did not find it on their public website."
+      "legend": "Not stated means we did not find it on their public website.",
+      "open": "Tap or click a row to see the details and sources."
     },
     "status": {
       "yes": "Yes",
@@ -7715,10 +7716,9 @@
       "how": "We read each product’s own public pages on {date}. Each Yes or Partial shows the words on their page that support it. Not stated means we did not find it there."
     },
     "line": "Last checked {date}. {names} are trademarks of their owners; Oomba is not affiliated with them. <a href=\"{href}\">Tell us if something changed</a>.",
-    "info": {
-      "label": "More about {product}: {need}",
-      "source": "On their website, read {date}:",
-      "link": "Open their page"
+    "detail": {
+      "link": "Open their page",
+      "notStated": "Not stated on their site"
     }
   },
   "connections": {

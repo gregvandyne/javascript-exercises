@@ -6993,7 +6993,8 @@
       "caption": "Lo que ofrece cada producto para necesidades comunes del aula. Los datos de los otros productos vienen de sus propios sitios web públicos.",
       "need": "Necesidad de la clase",
       "hint": "Deslice la tabla hacia un lado para ver todos los productos.",
-      "legend": "No indicado significa que no lo encontramos en su sitio web público."
+      "legend": "No indicado significa que no lo encontramos en su sitio web público.",
+      "open": "Toque o haga clic en una fila para ver los detalles y las fuentes."
     },
     "status": {
       "yes": "Sí",
@@ -7090,10 +7091,9 @@
       "how": "Leímos las páginas públicas de cada producto el {date}. Cada Sí o Parcial muestra las palabras de su página que lo respaldan. No indicado significa que no lo encontramos allí."
     },
     "line": "Última revisión: {date}. {names} son marcas de sus dueños; Oomba no está afiliado con ellos. <a href=\"{href}\">Avísenos si algo cambió</a>.",
-    "info": {
-      "label": "Más sobre {product}: {need}",
-      "source": "En su sitio web, leído el {date}:",
-      "link": "Abrir su página"
+    "detail": {
+      "link": "Abrir su página",
+      "notStated": "No indicado en su sitio"
     }
   },
   "connections": {

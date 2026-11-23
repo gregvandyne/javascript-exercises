@@ -11708,3 +11708,10 @@ exception, for one page only: `/compare`, "How Oomba compares", may name **Kahoo
   `<details>` at the end, collapsed by default ("Sources and how we checked (24)"). The intro is one sentence, "Why
   teachers pick Oomba" three short lines, then the sign-up button; "Last checked" and the trademark notice are one
   short line under the table. Tests: `tests/unit/compare.test.js` and `tests/unit/compare-browser.test.js`.
+- **Rows that open (23 Nov 2026).** The owner: too many "i" boxes. The "i" buttons and their notes are gone. Each need's
+  label is a button with a chevron (`aria-expanded`, `aria-controls`; the whole label is clickable, Enter and Space
+  work), closed by default; it opens a detail row right under it, spanning the table: Oomba's detail, then for each
+  product with Yes or Partial its quoted words, the day read and "Open their page", or "Not stated on their site".
+  Several rows may be open. On phones the detail is pinned to the start of the table's scroll box (sticky, as wide as
+  the box), so it stays readable however the columns are scrolled. `public/js/compare-rows.js` replaces
+  `compare-info.js`.

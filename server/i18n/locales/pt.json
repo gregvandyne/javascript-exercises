@@ -6995,7 +6995,8 @@
       "caption": "O que cada produto oferece para necessidades comuns da sala de aula. Os dados dos outros produtos vêm dos próprios sites públicos deles.",
       "need": "Necessidade da turma",
       "hint": "Deslize a tabela para o lado para ver todos os produtos.",
-      "legend": "Não informado significa que não encontramos isso no site público deles."
+      "legend": "Não informado significa que não encontramos isso no site público deles.",
+      "open": "Toque ou clique em uma linha para ver os detalhes e as fontes."
     },
     "status": {
       "yes": "Sim",
@@ -7092,10 +7093,9 @@
       "how": "Lemos as páginas públicas de cada produto em {date}. Cada Sim ou Parcial mostra as palavras da página deles que o comprovam. Não informado significa que não encontramos isso lá."
     },
     "line": "Última verificação: {date}. {names} são marcas de seus donos; o Oomba não é afiliado a eles. <a href=\"{href}\">Avise-nos se algo mudou</a>.",
-    "info": {
-      "label": "Mais sobre {product}: {need}",
-      "source": "No site deles, lido em {date}:",
-      "link": "Abrir a página deles"
+    "detail": {
+      "link": "Abrir a página deles",
+      "notStated": "Não informado no site deles"
     }
   },
   "connections": {

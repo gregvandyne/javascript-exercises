@@ -10,8 +10,8 @@
 // - Only what their own public website clearly states, with the page's address, the day we read it and the exact words
 //   that support the cell (docs/compare-sources.md has every cell). Never a guess, never a price, never an opinion.
 // - Not stated: we have not confirmed it from their public website. A cell stays Not stated until someone has read the
-//   supporting words on their site; every other cell must carry a source, shown by the cell's "i" button (the quote and
-//   a link to their page) and in the Sources list (collapsed at the end of the page).
+//   supporting words on their site; every other cell must carry a source, shown in its row's detail (the row opens: the
+//   quote, the day and a link to their page) and in the Sources list (collapsed at the end of the page).
 // Oomba's cells say only what is live: the Manipulatives, their live rooms, Figures, the AI drafting and Oomba, the
 // teaching companion, follow services/teacher-tools.js toolAccess, worded like the "See it in action" note
 // (views/see-it.js): "Teacher plan" while paid plans are on for everyone, "In testing" while only testers have them.
@@ -29,8 +29,8 @@ import { readyVideos } from '../views/see-it.js';
 
 export const router = Router();
 export const PATH = '/compare';
-/** The page's script: the "i" notes (public/js/compare-info.js). */
-export const SCRIPT = '/js/compare-info.js';
+/** The page's script: the rows that open (public/js/compare-rows.js). */
+export const SCRIPT = '/js/compare-rows.js';
 
 /** The day the other products' websites were last checked for this page (the "Last checked" line, the notice, the
  *  sitemap). Change it whenever CELLS is checked again. */
@@ -143,10 +143,6 @@ function mark(t, s) {
   const key = `compare.status.${s}`;
   return html`<span class="cmp-mark cmp-${s}">${STATUSES[s] ? ico(STATUSES[s], { size: 18 }) : ''}<b${fb(t, key)}>${t(key)}</b></span>`;
 }
-/** The small "i" button and the short note it opens (public/js/compare-info.js: tap, click or keyboard; Escape or a tap
- *  outside closes it). The note sits right after its button, so Tab goes from the button into it. */
-const info = (t, id, label, body) => html`<button type="button" class="cmp-i" aria-expanded="false" aria-controls="${id}" aria-label="${label}">${ico('ℹ️', { size: 16 })}</button><div class="cmp-pop" id="${id}" hidden>${body}</div>`;
-
 /** The page's own CSS. Colors are the site's tokens (light and dark). The table scrolls inside its own box on narrow
  *  screens with the need column kept in view; the page itself never scrolls sideways. */
 const CSS = raw(`<style>
@@ -165,17 +161,26 @@ const CSS = raw(`<style>
 .cmp-mark .fx{flex:none}
 .cmp-notStated b{font-weight:600;color:var(--muted)}
 .cmp-tag{display:inline-block;padding:0 7px;border-radius:999px;background:var(--warn-bg);color:var(--warn-ink);font-size:.75rem;font-weight:700;white-space:nowrap}
-.cmp-i{display:inline-grid;place-items:center;width:28px;height:28px;margin:-4px 0;padding:0;border:0;border-radius:999px;background:transparent;color:var(--muted);cursor:pointer;flex:none}
-.cmp-i:hover,.cmp-i[aria-expanded=true]{background:var(--hover)}
-.cmp-i:focus-visible{outline:3px solid var(--current);outline-offset:1px}
-.cmp-pop{position:fixed;z-index:60;max-width:min(320px,calc(100vw - 24px));padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);box-shadow:var(--shadow);font-size:.9rem;font-weight:400;line-height:1.45;white-space:normal;text-align:start}
-.cmp-pop p{margin:0}
-.cmp-pop p+p{margin-top:6px}
-.cmp-pop q{color:var(--text-2)}
-.cmp-pop a{overflow-wrap:anywhere}
+.cmp-table th.cmp-need{padding:0}
+.cmp-tog{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:10px 12px;border:0;background:transparent;color:inherit;font:inherit;font-weight:700;text-align:start;cursor:pointer}
+.cmp-tog:hover{background:var(--hover)}
+.cmp-tog:focus-visible{outline:3px solid var(--current);outline-offset:-3px}
+.cmp-tog .fx{flex:none;transition:transform .15s;transform:rotate(-90deg)}
+[dir=rtl] .cmp-tog .fx{transform:rotate(90deg)}
+.cmp-tog[aria-expanded=true] .fx{transform:none}
+@media (prefers-reduced-motion:reduce){.cmp-tog .fx{transition:none}}
+.cmp-row.cmp-open>*{background-image:linear-gradient(var(--hover),var(--hover))}
+.cmp-table tr.cmp-det>td{padding:0;border-top:0;background:var(--card-2)}
+.cmp-det-in{position:sticky;inset-inline-start:0;box-sizing:border-box;max-width:calc(100vw - 34px);padding:10px 14px 14px;white-space:normal;font-size:.9rem;line-height:1.45}
+.cmp-det-in ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.cmp-det-in li{margin:0}
+.cmp-det-in q{color:var(--text-2)}
+.cmp-det-in a{white-space:nowrap}
+.cmp-det-ns{color:var(--muted)}
 .cmp-legend,.cmp-line{margin:10px 0 0;color:var(--muted);font-size:.85rem}
-.cmp-hint{display:none;margin:0 0 8px;color:var(--muted);font-size:.85rem}
-@media (max-width:820px){.cmp-hint{display:block}.cmp-table th[scope=row]{min-width:124px;max-width:150px;font-size:.9rem}}
+.cmp-open-hint{margin:0 0 8px;color:var(--muted);font-size:.85rem}
+.cmp-hint{display:none}
+@media (max-width:820px){.cmp-hint{display:inline}.cmp-table th[scope=row]{min-width:132px;max-width:160px;font-size:.9rem}}
 .cmp-why{list-style:none;padding:0;margin:0 0 16px;display:grid;gap:10px}
 .cmp-why li{display:flex;gap:10px;align-items:center;margin:0;font-weight:600}
 .cmp-why .fx{flex:none}
@@ -197,20 +202,25 @@ router.get(PATH, (req, res) => {
   const notes = footnotes(CELLS, rows);
   const dayOf = d => fmt(req.locale || DEFAULT_LOCALE).day(Date.parse(`${d}T00:00:00Z`), { year: 'numeric', month: 'long', day: 'numeric' });
   const need = r => t(`compare.rows.${r.id}.need`);
-  // Oomba's own cell: Yes, the gate's tag for the teaching tools, and its detail behind the "i".
+  // Oomba's detail for a need (the cell itself is Yes, with the gate's tag on the teaching tools).
   const oombaKey = r => {
     if (r.id === 'games' && !liveOn()) return 'compare.rows.games.oombaNoLive';
     if (r.id === 'free' && plans) return 'compare.rows.free.oombaPlans';
     return `compare.rows.${r.id}.oomba`;
   };
-  const usCell = r => html`<td class="cmp-us"><span class="cmp-cell">${mark(t, 'yes')}${r.gated ? el(t, 'span', gate, {}, ' class="cmp-tag"') : ''}${info(t, `pop-${r.id}-oomba`, t('compare.info.label', { product: 'Oomba', need: need(r) }), el(t, 'p', oombaKey(r), vars))}</span></td>`;
-  // Another product's cell: its word, and for a Yes or Partial the "i" with the words from their page and a link to it.
-  const theirCell = (r, c) => {
-    const cell = cellOf(r.id, c.id);
-    const src = cell.s !== 'notStated' && cell.src;
-    return html`<td><span class="cmp-cell">${mark(t, cell.s)}${src ? info(t, `pop-${r.id}-${c.id}`, t('compare.info.label', { product: c.name, need: need(r) }), html`${el(t, 'p', 'compare.info.source', { date: dayOf(src.checked) })}<p><q lang="en" dir="ltr">${src.quote}</q></p><p><a href="${src.url}" rel="noopener nofollow" target="_blank"${fb(t, 'compare.info.link')}>${t('compare.info.link')}</a></p>`) : ''}</span></td>`;
-  };
-  const table = html`<p class="cmp-hint" aria-hidden="true"${fb(t, 'compare.table.hint')}>${t('compare.table.hint')}</p>
+  const usCell = r => html`<td class="cmp-us"><span class="cmp-cell">${mark(t, 'yes')}${r.gated ? el(t, 'span', gate, {}, ' class="cmp-tag"') : ''}</span></td>`;
+  const theirCell = (r, c) => html`<td><span class="cmp-cell">${mark(t, cellOf(r.id, c.id).s)}</span></td>`;
+  // The row's detail, under it when opened: Oomba's detail, then each product's words from their page with the day and
+  // a link, or "Not stated on their site".
+  const detail = r => html`<tr class="cmp-det" id="det-${r.id}" hidden><td colspan="${COMPETITORS.length + 2}"><div class="cmp-det-in"><ul>
+    <li><b>Oomba</b>: ${tHtml(t, oombaKey(r), vars)}</li>
+    ${COMPETITORS.map(c => {
+      const cell = cellOf(r.id, c.id); const src = cell.s !== 'notStated' && cell.src;
+      return src ? html`<li><b lang="en" dir="ltr">${c.name}</b> (${t(`compare.status.${cell.s}`)}): <q lang="en" dir="ltr">${src.quote}</q> <span class="muted">(${t('compare.sources.read', { date: dayOf(src.checked) })})</span> <a href="${src.url}" rel="noopener nofollow" target="_blank"${fb(t, 'compare.detail.link')}>${t('compare.detail.link')}</a></li>`
+        : html`<li class="cmp-det-ns"><b lang="en" dir="ltr">${c.name}</b>: ${el(t, 'span', 'compare.detail.notStated')}</li>`;
+    })}
+  </ul></div></td></tr>`;
+  const table = html`<p class="cmp-open-hint">${el(t, 'span', 'compare.table.open')} <span class="cmp-hint"${fb(t, 'compare.table.hint')}>${t('compare.table.hint')}</span></p>
     <div class="cmp-scroll" role="region" aria-labelledby="table-h" tabindex="0">
     <table class="cmp-table">
       <caption${fb(t, 'compare.table.caption')}>${t('compare.table.caption')}</caption>
@@ -219,10 +229,10 @@ router.get(PATH, (req, res) => {
         <th scope="col" class="cmp-us">Oomba</th>
         ${COMPETITORS.map(c => html`<th scope="col" lang="en" dir="ltr">${c.name}</th>`)}
       </tr></thead>
-      <tbody>${rows.map(r => html`<tr id="row-${r.id}">
-        <th scope="row"${fb(t, `compare.rows.${r.id}.need`)}>${need(r)}</th>
+      <tbody>${rows.map(r => html`<tr id="row-${r.id}" class="cmp-row">
+        <th scope="row" class="cmp-need"><button type="button" class="cmp-tog" aria-expanded="false" aria-controls="det-${r.id}">${ico('⬇️', { size: 16 })}<span${fb(t, `compare.rows.${r.id}.need`)}>${need(r)}</span></button></th>
         ${usCell(r)}${COMPETITORS.map(c => theirCell(r, c))}
-      </tr>`)}</tbody>
+      </tr>${detail(r)}`)}</tbody>
     </table></div>
     ${el(t, 'p', 'compare.table.legend', {}, ' class="cmp-legend"')}
     <p class="cmp-line" id="notice"${fb(t, 'compare.line')}>${tHtml(t, 'compare.line', { date: html`<time datetime="${COMPARE_CHECKED}">${dayOf(COMPARE_CHECKED)}</time>`, names: namesList(req), href: `mailto:${contactEmail()}` })}</p>`;

@@ -6994,7 +6994,8 @@
       "caption": "Was jedes Produkt für häufige Bedürfnisse im Klassenzimmer bietet. Die Angaben zu den anderen Produkten stammen von ihren eigenen öffentlichen Websites.",
       "need": "Bedarf im Klassenzimmer",
       "hint": "Schieben Sie die Tabelle zur Seite, um alle Produkte zu sehen.",
-      "legend": "Nicht angegeben heißt: Wir haben es auf ihrer öffentlichen Website nicht gefunden."
+      "legend": "Nicht angegeben heißt: Wir haben es auf ihrer öffentlichen Website nicht gefunden.",
+      "open": "Tippen oder klicken Sie auf eine Zeile, um Details und Quellen zu sehen."
     },
     "status": {
       "yes": "Ja",
@@ -7091,10 +7092,9 @@
       "how": "Wir haben am {date} die eigenen öffentlichen Seiten jedes Produkts gelesen. Jedes Ja oder Teilweise zeigt die Worte auf ihrer Seite, die es belegen. Nicht angegeben heißt: Wir haben es dort nicht gefunden."
     },
     "line": "Zuletzt geprüft: {date}. {names} sind Marken ihrer Inhaber; Oomba ist nicht mit ihnen verbunden. <a href=\"{href}\">Sagen Sie uns, wenn sich etwas geändert hat</a>.",
-    "info": {
-      "label": "Mehr zu {product}: {need}",
-      "source": "Auf ihrer Website, gelesen am {date}:",
-      "link": "Ihre Seite öffnen"
+    "detail": {
+      "link": "Ihre Seite öffnen",
+      "notStated": "Auf ihrer Website nicht angegeben"
     }
   },
   "connections": {
