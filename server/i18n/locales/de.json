@@ -3659,7 +3659,14 @@
         "image": "Das Bild",
         "electrons": "Die Elektronen",
         "values": "Die Werte",
-        "reading": "Die Ablesung"
+        "reading": "Die Ablesung",
+        "regions": "Die Bereiche",
+        "stresses": "Die Störungen",
+        "formulas": "Die Formeln",
+        "names": "Die Namen",
+        "data": "Die Daten",
+        "name": "Der Name der Form",
+        "electrodes": "Die Elektroden"
       },
       "draw": {
         "modeLabel": "Wie die Figur entsteht",
@@ -13307,6 +13314,34 @@
       "energyLevels": {
         "name": "Energieniveaus des Atoms",
         "desc": "Elektronenübergänge, Wellenlängen und Serien"
+      },
+      "chromatography": {
+        "name": "Chromatografie",
+        "desc": "Papierchromatogramme mit Rf-Werten"
+      },
+      "galvanicCell": {
+        "name": "Elektrochemische Zellen",
+        "desc": "Galvanische Zellen mit Salzbrücke und Messgerät"
+      },
+      "phaseDiagram": {
+        "name": "Phasendiagramm",
+        "desc": "Druck gegen Temperatur, Tripelpunkt und kritischer Punkt"
+      },
+      "bondEnergy": {
+        "name": "Bindungsenergiekurve",
+        "desc": "Potenzielle Energie gegen den Kernabstand"
+      },
+      "equilibrium": {
+        "name": "Gleichgewichtsdiagramm",
+        "desc": "Konzentration gegen Zeit und das Prinzip von Le Chatelier"
+      },
+      "rateLaw": {
+        "name": "Diagramme zum Geschwindigkeitsgesetz",
+        "desc": "[A], ln[A] und 1/[A] gegen die Zeit, nach Ordnung"
+      },
+      "vsepr": {
+        "name": "VSEPR-Strukturen",
+        "desc": "Räumlicher Bau von Molekülen, Bindungswinkel und freie Elektronenpaare"
       },
       "populationGrowth": {
         "name": "Populationswachstum",

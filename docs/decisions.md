@@ -11773,3 +11773,68 @@ exception, for one page only: `/compare`, "How Oomba compares", may name **Kahoo
   Several rows may be open. On phones the detail is pinned to the start of the table's scroll box (sticky, as wide as
   the box), so it stays readable however the columns are scrolled. `public/js/compare-rows.js` replaces
   `compare-info.js`.
+
+## Oomba Figures 1.6.0: seven new chemistry figures (23 Nov 2026)
+
+The owner: "Watch this video end to end and include everything they have ... Also visit the site [the source's chemistry
+site] and [its physics site] to make sure we have everything" (the sites' names left out, as docs/third-party.md asks), and then: "Update based on the repo if all of it is there."
+The source project (the one ported since 1.1.0, docs/third-party.md) added seven chemistry generators after our port
+at `3bb43190`; at `9ed3093` its chemistry site lists them beside the ones we have: Chromatography, Electrochemical
+Cells, Phase Diagram, Bond Energy Curve, Equilibrium Graph, Rate Law Graphs and VSEPR Shapes. Every other generator on
+that site is already in Oomba Figures. The physics generators it added (and the biology cladogram) are a
+separate batch, 1.7.0.
+
+- **A new version, like 1.5.0.** Oomba Figures 1.6.0 is a new version folder: the core and the same seven packs (no new
+  pack; the chem pack gains `chromatography`, `galvanicCell`, `phaseDiagram`, `bondEnergy`, `equilibrium`, `rateLaw`
+  and `vsepr`). 1.0.0 to 1.5.0 have shipped and stay byte for byte (the lock, and git at the 1.5.0 release); every
+  catalog figure 1.5.0 drew draws the same bytes in 1.6.0 and checks and solves the same (`tests/unit/figures-v160.test.js`).
+  New builds, the Builder's tags and the Figures product pin 1.6.0; the CSP, the scanner and the screenshot worker list
+  the eight new files.
+- **Ported: the science only.** Each new kind's pure logic is ported into `figures/src/ported/` with its note
+  (`chromatography.js`, `cells.js`, `phase.js`, `morse.js`, `equilibrium.js`, `kinetics.js`, `vsepr.js`), from the
+  source's state after its own review fixes (`6e613e8`: niceRange down to 0.000001, a·r₀ = 3 for the Morse wells, the
+  zero-order data stopping before [A] reaches 0, ln[A] to 3 decimal places, XeOF₄'s O at the apex, radicals' angles).
+  The checks, the answers (`OF.solve`), the label placement and every drawing are Oomba's own (`figures/src/
+  chromatography.js`, `cells.js`, `phase.js`, `chemgraphs.js`, `vsepr.js`); no Svelte component, settings panel, page
+  address, example or preview picture is taken.
+- **Judgment calls.** VSEPR: the source builds each molecule from its Lewis structure engine, which is not ported (too
+  large for one kind); Oomba has its own table of 48 molecules and ions (each one's central atom, outer atoms, bond
+  orders, lone pairs and charge) and takes one's own `{ central, outer, lone }`, refused unless the electrons add up.
+  The source's drag-to-turn view is `yaw` and `pitch`. Phase diagram: a lettered mark names a region ("liquid") rather
+  than a temperature and pressure, since a real substance's diagram is not to scale and a point would be drawn where it
+  is not; the place is found well inside the region, clear of the boundaries, guides and labels. The kind names fit the
+  Canvas kit's 20 characters (`galvanicCell` for Electrochemical Cells, `bondEnergy`, `rateLaw`). Generators deal a
+  metal by atomic number and a substance, mark, stress kind or molecule by its place in the kind's list, as the
+  pedigree's mode is dealt, because the gen language's answers are numbers; the figures still take the words.
+- **Grayscale.** VSEPR's ball-and-stick prints (and with `gray: true` shows) one gray per element, set apart by hand
+  as the source does (C and O, N and H, S and F never print alike); the equilibrium and bond energy lines are told apart
+  by dash as well as color; a chromatogram's spots keep their color with a darker edge, and dyes are matched by how far
+  they traveled, so a gray copy still answers its questions.
+- **Generators (21).** Rf of a dye, which known dye a mixture lacks (a spot of the same color at another height is
+  another dye); E°cell from the potentials shown, the anode, the electrons' way along the wire, the anode's E° (negative
+  answers); the phase at a lettered point, the change of state along an arrow, the triple point read off a grid
+  (negative temperatures); the bond length, the energy at the bottom of the well (negative), the strongest bond; Kc from
+  the graph's levels, the shift after a labeled stress, the stress that was made (hidden); the order from the three
+  graphs, k from the ln[A] slope, the half-life. Each key is its figure's OF.solve value, and the generator audit
+  (`figures-gen-audit`) checks the student sheet never shows the answer. Choice generators keep to 4 options (Oomba
+  Canvas's self-test takes 2 to 4): the change of state is asked for heating (melting, vaporization, sublimation) and
+  the VSEPR shape among bent, trigonal planar, trigonal pyramidal and tetrahedral. Number generators whose answers can
+  be negative are checked in every language the way the Figures product deals them (the last worked line says the
+  answer), since Oomba Canvas's keypad has no minus sign (`figures-gen-words`).
+- **The product.** Catalog entries with presets (the first is each card's default, its switches that default on given
+  as true so the editor shows them on), options and hide parts; names and descriptions and the new hide parts' names
+  in the 12 site languages; the generators' words in all 13; figure words in 12; Builder trigger words and the template
+  drafter's topics. The "Draw it" grid stays with the shapes and the coordinate grid: none of these figures is drawn
+  corner by corner. Print, Assign and the lesson Figure step needed no change (tested).
+- **Fixes to kinds already ported.** Every source commit since `3bb43190` was read. Only two touch code we ported:
+  `88ba74d`/`6e613e8` move the heating curve's `niceRange` into shared code and let it reach steps down to 0.000001
+  with tidied products (our `hcNiceRange` never sees spans that small, and its rounding already removes the noise, so
+  the heating curve draws the same; the new kinds use the new range), and `0838979` writes a graph's corner numbers on
+  their own lines when its axes meet at two different values (Oomba's axes always did). The rest are the new
+  generators, examples, previews, help text in the settings panels (`f7be0c7`, `4e74759`), the physics generators'
+  own fixes (`86d40c0`, `9e725a0`) and moving the pulley's support drawing into shared code (`f337ad2`; Oomba's pulley
+  is its own). No fix applied to 1.6.0's older kinds, so they draw as in 1.5.0.
+- **Tests.** figures-v160 (frozen versions, latest pin, byte-identical 1.5.0 figures, the new kinds in the frozen file),
+  figures-chem16 (the science against known values, refusals, solve, hide, print grays, languages, the generators,
+  worksheets with Assign and the lesson step), figures-chem16-words (12 languages and look-alikes), the generator audit,
+  figures-gen-words, and the new editors in Chromium (figures-browser).

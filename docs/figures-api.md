@@ -106,6 +106,9 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
   particles { particles: [{ count: 8, shape: "bent", look: { size: "m", shade: "gray" }, outer: { size: "s", shade: "white" }, name: "Water" }], state: "gas" } (shapes single, pair, bent, line, triangle, cross; sizes xs to xl; shades white, light, gray, dark, black; charge "+", "-", "2+"...; state gas, liquid, solid; boxes: 2 with each kind's after count: atoms are conserved; or lattice: { pattern: "alternate", rows: 4, columns: 5, main, second }; every particle must fit; hide: "names")
   Chemistry (1.5.0, the chem pack): skeletal { smiles: "CC(=O)O", name: "Ethanoic acid", formula: true } (an organic structure from SMILES-lite: C N O S P F Cl Br I, R and X for any group, c and n in rings of six, branches, - = #, ring digits, "." between molecules; no brackets, charges or stereo marks; single rings of 3 to 8, never rings that share atoms; or chain: 5 with double: [2], triple, groups: [{ at: 4, group: "OH" }] (OH, NH2, F, Cl, Br, I, CH3, C2H5, =O); or atoms: [{ el: "C", x: 0, y: 0 }] (bond lengths, y up) with bonds: [[1, 2, 2]]; view "skeletal" | "carbons" | "condensed" | "full", layout "zigzag" | "straight", ends, numbers, acids, chiral: [atoms]; hydrogens are worked out from each atom's valence; OF.solve gives formula, atoms.C, atoms.H, hydrogens, mass, unsaturation and groups.alcohol etc.); hide: "name", "formula". It is drawn by Oomba, so it prints and draws on the server: use it, not OF.structure, for worksheets.
   energyLevels { transitions: [{ from: 3, to: 2 }, { from: 4, to: 2 }], series: true } (hydrogen, or z: 2 for He+ and on: E = -13.6 Z²/n² eV, top: the highest n, 2 to 7; or levels: [-10.4, -5.5, -3.7] in eV for any atom; to: "inf" ionizes; cascade: 4 every way down; show "wavelength" | "energy" | "both" | "none"; unit "eV" | "J"; levels too close for an arrow are refused: make height larger; OF.solve gives wavelength (nm), energy (eV), joules, frequency (Hz) of the first transition, and lines); hide: "values", "levels".
+  Chemistry (1.6.0, the chem pack): chromatography { samples: [{ name: "A", spots: [{ color: "blue", distance: 5.6 }, { color: "yellow", distance: 2.4 }] }], front: 8, measure: true } (1 to 6 inks of 1 to 5 dyes, distances in cm from the origin line, never past front; show "both", setup: false for the paper alone, labels; OF.solve gives rf.A.blue, contains, absent); hide: "values".    galvanicCell { left: "Zn", right: "Cu", meter: "digital" } (Mg, Al, Zn, Fe, Ni, Pb, Cu, Ag; meter "dial" or "coil"; the lower E° is the anode, E°cell worked out; electrodes, flow, potentials: true); hide: "reading", "electrodes".
+  phaseDiagram { substance: "water", isobar: true } (co2, nitrogen, oxygen, argon, methane, ammonia; not to scale; or your own tripleT, tripleP, critT, critP, nmp, nbp with axes: "numbered"; regions and points "names" | "letters" | "blank" | "none"; marks: [{ name: "A", at: "liquid" }]; path: { from: "solid", to: "liquid" }); hide: "values", "regions".    bondEnergy { bonds: [{ name: "H–H", length: 74, energy: 436 }] } (up to 3; pm and kJ/mol; guides, dots, regions; names: false gives Bond A, B, C); hide: "values", "names".
+  equilibrium { reaction: "ammonia", stresses: [{ kind: "add", at: 8, species: 1, amount: 0.5 }] } (hi, n2o4, so3, pcl5, fescn; kinds add, remove, volume, raise, lower; solved from K, never typed levels); hide: "stresses", "formulas".    rateLaw { order: 1, a0: 1, k: 0.02 } (graphs "all" | "conc" | "ln" | "inv"; points, table, guides: 2 half-lives); hide: "values".    vsepr { molecule: "NH3", angles: true } (48 molecules and ions, style "wedge" | "ball", lonePairs "lobes" | "dots" | "none", geometry, axe; OF.solve gives shape, angle, lonePairs); hide: "name", "angles".
   A micropipette is a reading type too (1.3.0): { type: "micropipette", model: "P20", value: 12.5 } (models P2, P10, P20, P100, P200, P1000; a volume the model can be set to; hide: "value").
   The chemistry readings are reading types (the measure pack): { type: "buret", value: 24.65, initial: 1.20, max: 50 } (reads down, to 0.05 mL; OF.solve gives the titre), { type: "beaker", value: 175, max: 250, step: 25 }, { type: "syringe", value: 43.5, max: 100, setup: true }, { type: "balance", value: 24.73, decimals: 2 }, { type: "tripleBeam", value: 347.65 } (to 0.05 g), { type: "thermometer", digital: true, value: 23.4, unit: "°C" | "K" | "°F" }, { type: "pH", meter: "digital" | "analog" | "paper", value: 4.62 } (analog to 0.1, paper whole numbers), { type: "displacement", before: 42, after: 50, max: 100, step: 1, major: 10, object: "rock" | "marbles" } (OF.solve gives the volume). Also bohr { element: "Na", charge: 1, ionMarks: true }, orbitals { element: "Ag", core: true, arrangement: "energy" } (H to Og), halfLife { isotopes: [{ halfLife: 5, name: "A" }, { halfLife: 12, name: "B" }] }, titration { points: [[0, 2.9], [5, 4.1], ...] } (measured pH), and more Lewis molecules: H2S, PH3, PCl3, NF3, OF2, SiH4, CF4, CH3Cl, H2O2, C2H6, HOCl, CO, CN, H3O, HCHO.
   Biology (1.3.0, the bio pack): populationGrowth { model: "logistic", n0: 20, r: 0.4, k: 500, span: 30, unit: "years", inflection: true } (model logistic, exponential, both, overshoot (lag), crash (k is the peak); graph "size" | "rate" | "perCapita", against: "size" for a rate against N; census: { every, noise, seed }; phases: true; OF.solve gives k, maxRate (rK/4), doubling, inflection, final; hide: "k")    predatorPrey { pair: "hare-lynx", names: ["Hares", "Lynx"] } (or prey: { average, start }, predators: { average, start }, period, span; scale: "two" for two axes; OF.solve gives period, lag, each one's high and low; hide: "predators")
@@ -213,6 +216,13 @@ FIGURE RULES (Oomba Figures: this build needs science, maths or graph figures). 
 | `dotCross` (1.2.0) | `molecule` (or `atoms` + `bonds`, no charge), or `ions: [{ element, count }]` (a metal and a non-metal) | `true` |
 | `skeletal` (1.5.0) | `smiles`, or `chain` with `double`, `triple`, `groups`, or `atoms` + `bonds`; `view`, `layout`, `ends`, `rings`, `acids`, `reverse`, `numbers`, `flip`, `chiral`, `name`, `formula` | `name`, `formula`, `true` |
 | `energyLevels` (1.5.0) | `z`, `top` or `levels`; `transitions` or `cascade`; `show`, `unit`, `series`, `ionization`, `height`, `heading` | `values`, `levels`, `true` |
+| `chromatography` (1.6.0) | `samples` (`name`, `spots`: `color`, `distance`), `front`, `show`, `setup`, `measure`, `labels`, `solvent`, `heading` | `values`, `true` |
+| `galvanicCell` (1.6.0) | `left`, `right`, `meter`, `voltage`, `labels`, `electrodes`, `flow`, `potentials`, `heading` | `reading`, `electrodes`, `true` |
+| `phaseDiagram` (1.6.0) | `substance`, or `tripleT`, `tripleP`, `critT`, `critP`, `nmp`, `nbp` (+ `name`, `axes`, `x`, `y`); `tUnit`, `pUnit`, `regions`, `points`, `values`, `isobar`, `supercritical`, `marks`, `path`, `heading` | `values`, `regions`, `true` |
+| `bondEnergy` (1.6.0) | `bonds` (`name`, `length`, `energy`), `unit`, `axes`, `guides`, `dots`, `regions`, `names`, `x`, `y`, `heading` | `values`, `names`, `true` |
+| `equilibrium` (1.6.0) | `reaction`, `start`, `k`, `heat`, `established`, `stresses` (`kind`, `at`, `species`, `amount`, `text`), `formulas`, `until`, `y`, `timeUnit`, `heading` | `stresses`, `formulas`, `true` |
+| `rateLaw` (1.6.0) | `order`, `a0`, `k`, `graphs`, `curve`, `points`, `count`, `noise`, `seed`, `table`, `guides`, `species`, `concUnit`, `timeUnit`, `numbers`, `heading` | `values`, `data`, `true` |
+| `vsepr` (1.6.0) | `molecule`, or `central`, `outer`, `lone`, `single`, `charge`; `style`, `lonePairs`, `outerPairs`, `symbols`, `gray`, `yaw`, `pitch`, `name`, `geometry`, `axe`, `angles`, `heading` | `name`, `angles`, `true` |
 | `populationGrowth` (1.3.0) | `model`, `n0`, `r`, `k`, `lag`, `span`, `unit`, `graph`, `against`, `census`, `kLine`, `inflection`, `phases`, `names`, `heading` | `k`, `curve`, `true` |
 | `predatorPrey` (1.3.0) | `pair`, or `prey` + `predators` (`average`, `start`) + `period`; `span`, `unit`, `scale`, `names`, `peaks`, `heading` | `predators`, `true` |
 | `enzymeActivity` (1.3.0) | `graph` (`temperature`, `pH`, `substrate`), `curves` (`enzyme`, or `opt` + `width`; or `km`, `inhibitor`, `strength`), `axes`, `unit`, `marks`, `x` | `marks`, `curves`, `true` |
@@ -1057,6 +1067,97 @@ Builder trigger words for both are in every site language (`server/builder/figur
 {"tool":"figure.number","vars":{"n":[3,6],"m":[1,2]},"q":"The electron in a hydrogen atom falls from n = {n} to n = {m}. What is the wavelength of the light it gives out, in nm? (Eₙ = −13.6 ÷ n² eV, hc = 1239.84 eV·nm)","fig":{"kind":"energyLevels","transitions":[{"from":"{n}","to":"{m}"}],"hide":"values"},"answer":"1239.84198/(13.6*(1/(m*m) - 1/(n*n)))","dp":0,"unit":"nm","work":["ΔE = 13.6 × (1/{m}² − 1/{n}²) = {=round(13.6*(1/(m*m) - 1/(n*n)), 3)} eV","λ = hc ÷ ΔE = 1239.84 ÷ {=round(13.6*(1/(m*m) - 1/(n*n)), 3)}","= {=round(1239.84198/(13.6*(1/(m*m) - 1/(n*n))), 0)} nm"]}
 ```
 
+## Chemistry: seven new figures (1.6.0)
+
+Seven chemistry kinds in the chem pack, the generators the source added after the 1.5.0 port. Oomba Figures 1.6.0 is a
+new version folder (the core and its seven packs, no new pack); 1.0.0 to 1.5.0 have shipped and stay byte for byte, and
+every catalog figure 1.5.0 drew draws the same bytes in 1.6.0 (`tests/unit/figures-v160.test.js`). New builds and the
+Figures product get 1.6.0. In each, the science is ported (`figures/src/ported/`, each file's note says from where and
+what changed) and the checks, the answers (`OF.solve`) and the drawing are Oomba's own.
+
+- `chromatography`: a paper chromatogram. `samples` are 1 to 6 inks, each a `name` (up to 12 characters) and 1 to 5
+  `spots` `{ color, distance }` (black, blue, red, yellow, green, purple, orange, pink, brown; the distance in cm from the
+  pencil origin line, 0 for a dye that stays put; one dye of each color per ink, at least 0.6 cm apart). `front` (4 to
+  15 cm) is the solvent front; a spot past it is refused. `show: "both"` draws the paper before (each ink one spot of its
+  dyes mixed, on the origin line) beside after; `setup: false` draws the paper alone (by default it hangs from a glass
+  rod in a beaker of `solvent` that stays below the origin line); `measure: true` draws an arrow from the origin line to
+  each moved spot and to the front, labeled to 0.1 cm; `labels: true` names the parts. `OF.solve.chromatography` gives
+  `rf.<ink>.<color>`, `distance.<ink>.<color>`, `contains.<ink>` (1 when every dye of that ink is in the first ink, the
+  same color as far up) and `absent` (the other inks the first does not contain). hide: "values" (the measured
+  distances). In print a spot keeps its color with a darker edge, so a grayscale copy still shows it; dyes are matched
+  by how far they traveled.
+- `galvanicCell`: two beakers, each a metal in a 1 M solution of its ion (Mg, Al, Zn, Fe, Ni, Pb, Cu, Ag; by symbol or
+  atomic number), a salt bridge, and a `meter`: "digital", "dial" (0 to 4 V) or "coil". The metal with the lower
+  standard reduction potential is the anode; E°cell (the meter's reading, + terminal to the cathode) is the difference,
+  or the teacher's own `voltage`. `labels` (the metals, their ions and the salt bridge), `electrodes: true` (anode and
+  cathode with their signs), `flow: true` (electron arrows along the wire), `potentials: true` (each ion's E° under its
+  beaker; "cathode" or "anode" for one). `OF.solve.galvanicCell` gives `voltage`, `anode`, `cathode`, `anodeSide`,
+  `flow` (the electrons' way along the wire), `anodePotential`, `cathodePotential`, `electrons`, and the `oxidation`,
+  `reduction` and balanced `overall` reactions. hide: "reading" (the meter blank), "electrodes" (no signs, names or
+  electron arrows), `true`.
+- `phaseDiagram`: a pressure-temperature phase diagram of `substance` (water, co2, nitrogen, oxygen, argon, methane,
+  ammonia; values from the NIST Chemistry WebBook's reference equations of state), not to scale as textbooks draw it,
+  with the triple and critical points' values at the axes; or one's own substance from `tripleT`, `tripleP`, `critT`,
+  `critP`, `nmp`, `nbp` (in `tUnit` "C" | "K" and `pUnit` "atm" | "kPa"), not to scale or on a numbered grid (`axes:
+  "numbered"`, `x` and `y` its ranges). The vaporization curve bends upward through the boiling point; a typed set
+  that cannot make one (a boiling point at or below the straight line, a triple point at or above 1 atm, a fusion line
+  that would cross the vaporization curve) is refused with the reason. `regions` and `points`: "names", "letters",
+  "blank" or "none"; `isobar: true` the dashed 1 atm line with the normal melting and boiling points (or the
+  sublimation point); `supercritical: true`; `marks: [{ name: "A", at: "solid" | "liquid" | "gas" | "supercritical" |
+  "triple" | "critical" }]` a lettered dot placed well inside its region (not a temperature and pressure: the diagram
+  is not to scale); `path: { from, to }` an arrow at constant pressure across one boundary. `OF.solve.phaseDiagram`
+  gives the values, `lean` and `denserSolid`, `sublimesAt1atm`, `marks.<letter>`, `mark` (the first) and `change`
+  (melting, freezing, vaporization, condensation, sublimation, deposition). hide: "values", "regions", `true`.
+- `bondEnergy`: potential energy against internuclear distance for 1 to 3 `bonds` `{ name, length (pm), energy
+  (kJ/mol) }`, each a Morse curve whose lowest point is exactly at its bond length and minus its bond energy. `unit`
+  ("pm", "angstrom", "nm"), `axes: "shape"` (no numbers or grid), `guides` (dashed lines from each minimum to the axes,
+  with its values when the axes have no numbers), `dots`, `regions` (repulsion and attraction, one bond), `names: false`
+  (Bond A, B, C). `OF.solve.bondEnergy` gives `length`, `energy`, `minimum` (minus the energy), `zero`, `bonds.<A|B|C>`,
+  `strongest`, `weakest`, `shortest`, `longest`. hide: "values", "names", `true`.
+- `equilibrium`: concentration against time for a reversible `reaction` (ammonia, hi, n2o4, so3, pcl5, fescn, or abc:
+  A + B ⇌ C with `heat`) settling from `start` with `k` (example values, not measured constants), first within 1% at
+  `established`, then answering up to 3 `stresses` `{ kind: "add" | "remove" (species, amount in mol/L) | "volume"
+  (amount: the factor) | "raise" | "lower" (amount: how many times K changes), at }`. The graph is solved from K (every
+  level stretch gives K), so the lines always move in the ratio of the coefficients; heating an exothermic reaction
+  lowers K. `formulas: true` names each line. `OF.solve.equilibrium` gives `k`, `equilibrium.<formula>` (the first
+  equilibrium), `shift` and `shifts.<n>` ("forward", "reverse", "none"), `stress` (addReactant, addProduct,
+  removeReactant, removeProduct, volumeDown, volumeUp, raise, lower), `kAfter`. hide: "stresses" (each a "?"),
+  "formulas", `true`.
+- `rateLaw`: A → products with rate = k[A]^`order` (0, 1, 2) from `a0` and `k`: [A], ln[A] and 1/[A] against time
+  (`graphs: "all"`, or "conc", "ln", "inv"), the time axis to when a tenth is left. `points` (data scattered by `noise`
+  0, 1, 2 or 5 % from `seed`, rounded as a student would; none after a zero-order reaction ends), `table` ("conc" or
+  "all"), `guides` (1 to 3 half-lives, on the [A] graph), `species` (its formula), `concUnit`, `timeUnit`, `numbers:
+  false` (sketches). Times with long strings of digits are refused with what to change. `OF.solve.rateLaw` gives
+  `order`, `k`, `kUnit`, `halfLife`, `halfLives.<n>`, `straight`, `slope`, `intercept`, `at.<n>`. hide: "values" (the
+  guides' times), "data" (the table's [A] after the first), `true`.
+- `vsepr`: a molecule's 3D shape, `style` "wedge" (wedge-and-dash) or "ball" (ball-and-stick, one color per element, one
+  gray in print or with `gray: true`), for `molecule` (48 molecules and ions, from CO2 to ICl4; by formula or its place
+  in the list) or one's own `{ central, outer, lone, single, charge }` (refused unless the electrons add up).
+  `lonePairs` "lobes", "dots" or "none"; `outerPairs`; `name` (the shape's name under it), `geometry`, `axe`,
+  `angles` (the ideal angle, with "<" where lone pairs squeeze it); `yaw` and `pitch` turn the view. A trigonal
+  bipyramid puts the most electronegative atoms axial; a square pyramid puts the odd atom out at its apex (O in XeOF4);
+  a lone electron squeezes no angle (NO2), and CH3 is planar. `OF.solve.vsepr` gives `shape`, `geometry`, `axe`,
+  `atoms`, `lonePairs`, `groups`, `angle`, `angles.<n>`, `squeezed`. hide: "name" (every line under it blank),
+  "angles", `true`.
+
+Each has generators in the Figures catalog (21 in all: Rf, which dye a mixture lacks; E°cell, the anode, the electrons'
+way, the anode's E°; the phase at a point, the change along an arrow, the triple point read off a grid; the bond length,
+the energy at the well's bottom, the strongest bond; Kc from the graph, the shift, the stress; the order, k from the
+slope, the half-life; the shape, the bond angle, the lone pairs), each answer its figure's OF.solve value. Generators
+deal a metal, substance, mark, stress kind or molecule by number (an atomic number, or its place in the kind's list),
+as the pedigree's mode is dealt. Builder trigger words for all seven are in every site language
+(`server/builder/figures.js`).
+
+```json
+{"tool":"figure.number","vars":{"f":{"of":[8,10,12]},"d":[1.5,7.5,0.1],"e":[1,7,0.1],"r":[1.5,7,0.5]},"where":"(abs(d - e) >= 1)*(d <= f - 0.5)","q":"The distances on this chromatogram are in cm. What is the Rf value of the blue dye in ink A?","fig":{"kind":"chromatography","samples":[{"name":"A","spots":[{"color":"blue","distance":"{d}"},{"color":"yellow","distance":"{e}"}]},{"name":"B","spots":[{"color":"red","distance":"{r}"}]}],"front":"{f}","setup":false,"measure":true},"answer":"d/f","dp":2,"work":["Rf = distance moved by the dye ÷ distance moved by the solvent","= {d} ÷ {f}","= {=round(d/f, 2)}"]}
+{"tool":"figure.number","vars":{"u":{"of":[12063,13134,30224,26256,28275,82287,29334,47380]},"v":{"of":[12063,13134,30224,26256,28275,82287,29334,47380]}},"where":"u != v","q":"Each ion's standard reduction potential is shown under its beaker. What does the voltmeter read (E°cell), in V?","fig":{"kind":"galvanicCell","left":"{=floor(u/1000)}","right":"{=floor(v/1000)}","potentials":true,"hide":"reading"},"answer":"abs(u % 1000 - v % 1000)/100","dp":2,"unit":"V","work":["The metal with the lower E° is the anode; the other is the cathode.","E°cell = E°(cathode) − E°(anode) = {=max(u % 1000, v % 1000)/100 - 3} − ({=min(u % 1000, v % 1000)/100 - 3})","= {=abs(u % 1000 - v % 1000)/100} V"]}
+{"tool":"figure.choice","vars":{"s":[0,6],"m":[0,2]},"q":"Which phase is the substance in at point A?","fig":{"kind":"phaseDiagram","substance":"{s}","regions":"none","marks":[{"name":"A","at":"{m}"}]},"choices":["solid","liquid","gas"],"answer":"m","work":["The solid is left of the fusion line, the liquid between it and the vaporization curve, and the gas below and to the right.","Find which region point A is in.","At point A the substance is a {choice}."]}
+{"tool":"figure.number","vars":{"l":[60,240,20],"e":[150,500,50]},"q":"The graph shows the potential energy of two bonded atoms against the distance between their nuclei. What is the bond length, in pm?","fig":{"kind":"bondEnergy","bonds":[{"length":"{l}","energy":"{e}"}],"dots":true},"answer":"l","dp":0,"unit":"pm","work":["The bond length is the distance at the lowest point of the curve.","Read down from the lowest point to the distance axis.","The bond length is {l} pm."]}
+{"tool":"figure.number","vars":{"a":{"of":[1,1.2,1.6,2]},"x":{"of":[0.2,0.3,0.4]}},"q":"The graph shows N₂O₄ ⇌ 2NO₂ reaching equilibrium. Read the equilibrium concentrations and work out Kc.","fig":{"kind":"equilibrium","reaction":"n2o4","start":["{a}",0],"k":"{=4*x*x/(a - x)}"},"answer":"4*x*x/(a - x)","dp":2,"work":["At equilibrium [N₂O₄] = {=a - x} mol/L and [NO₂] = {=2*x} mol/L.","Kc = [NO₂]² ÷ [N₂O₄] = {=2*x}² ÷ {=a - x}","= {=round(4*x*x/(a - x), 2)}"]}
+{"tool":"figure.choice","vars":{"o":[0,2],"m":{"of":[1,2,4,5]}},"q":"For the reaction A → products, which order is the reaction in A? Use the three graphs.","fig":{"kind":"rateLaw","order":"{o}","a0":1,"k":"{=if(o == 0, 0.01, if(o == 1, 0.02, 0.05))*m}"},"choices":["zero order","first order","second order"],"answer":"o","work":["Zero order makes [A] against time straight, first order ln[A], second order 1/[A].","Find the graph that is a straight line.","The reaction is {choice}."]}
+{"tool":"figure.choice","vars":{"k":[0,3],"v":[0,2]},"q":"What is the shape of this molecule?","fig":{"kind":"vsepr","molecule":"{=3*k + 3 + v}","name":false},"choices":["bent","trigonal planar","trigonal pyramidal","tetrahedral"],"answer":"k","work":["Count the atoms bonded to the central atom and the lone pairs on it.","The lone pairs push the atoms but are not part of the shape's name.","The shape is {choice}."]}
+```
+
 ## Radians (1.1.0)
 
 The formula language (`canvas/src/expr.js`) works in degrees, as school trigonometry does, and stays so: it is frozen
@@ -1100,6 +1201,7 @@ chunk (`public/js/figures-export.js`).
 
 Organic structures print since 1.5.0 (`skeletal`); rings that share atoms (naphthalene, steroids, bridged rings) are not
 laid out automatically: give them as `atoms` with places, or draw them with `OF.structure` (SmilesDrawer, browser only).
-Atomic energy levels with transitions came in 1.5.0 (`energyLevels`). Optics with thick lenses, 3D molecules and moving physics (Phaser's
+Atomic energy levels with transitions came in 1.5.0 (`energyLevels`), and 3D molecular shapes (VSEPR, `vsepr`) in 1.6.0.
+Optics with thick lenses and moving physics (Phaser's
 built-in Matter physics already serves arcade games) are later. Compound circuits beyond one level of branches came in
 1.1.0 (`circuit` with `layout: "network"`, series-parallel only: a bridge circuit, which is neither, is not drawn).

@@ -3658,7 +3658,14 @@
         "image": "像",
         "electrons": "電子",
         "values": "値",
-        "reading": "読み"
+        "reading": "読み",
+        "regions": "領域",
+        "stresses": "加えた変化",
+        "formulas": "化学式",
+        "names": "名前",
+        "data": "データ",
+        "name": "形の名前",
+        "electrodes": "電極"
       },
       "draw": {
         "modeLabel": "図形の作り方",
@@ -13306,6 +13313,34 @@
       "energyLevels": {
         "name": "原子のエネルギー準位",
         "desc": "電子の遷移、波長、系列"
+      },
+      "chromatography": {
+        "name": "クロマトグラフィー",
+        "desc": "Rf値を測るペーパークロマトグラフィー"
+      },
+      "galvanicCell": {
+        "name": "電池（電気化学セル）",
+        "desc": "塩橋と計器のあるガルバニ電池"
+      },
+      "phaseDiagram": {
+        "name": "状態図",
+        "desc": "温度と圧力、三重点と臨界点"
+      },
+      "bondEnergy": {
+        "name": "結合エネルギー曲線",
+        "desc": "原子核間距離とポテンシャルエネルギー"
+      },
+      "equilibrium": {
+        "name": "平衡のグラフ",
+        "desc": "濃度の時間変化とルシャトリエの原理"
+      },
+      "rateLaw": {
+        "name": "速度式のグラフ",
+        "desc": "反応次数ごとの[A]、ln[A]、1/[A]と時間"
+      },
+      "vsepr": {
+        "name": "VSEPRによる分子の形",
+        "desc": "分子の立体的な形、結合角、非共有電子対"
       },
       "populationGrowth": {
         "name": "個体群の成長",

@@ -1,7 +1,7 @@
 // Oomba Figures, the core (docs/figures-api.md "The core and its packs"): the global a page uses, window.OombaFigures
 // (alias OF), the drawing core (svg.js), the default words, the math label typesetter, the formula language, the notice
 // an exported figure carries, the coordinate grid, and the registry the subject packs add their kinds to. Each pack (a
-// classic script, loaded after the core: math, data, physics, chem, bio (1.3.0), econ (1.4.0), measure; chem gained skeletal and energyLevels in 1.5.0) registers its kinds with register() below.
+// classic script, loaded after the core: math, data, physics, chem, bio (1.3.0), econ (1.4.0), measure; chem gained skeletal and energyLevels in 1.5.0, and seven kinds in 1.6.0) registers its kinds with register() below.
 //   OF.draw(kind, data, opts) -> an <svg> element        OF.svg(kind, data, opts) -> the same figure as SVG text
 //   OF.check(kind, data) -> [what is wrong] ([] = fine)   OF.kinds (the kinds loaded), OF.version, OF.colours
 //   OF.packs (the packs loaded), OF.packOf(kind) (the pack a kind is in: 'core', 'math', ...; null for no kind)
@@ -31,6 +31,7 @@ export const KIND_PACKS = Object.freeze({
   motionMap: 'physics', projectile: 'physics', waves: 'physics',
   massSpectrum: 'chem', heatingCurve: 'chem', energyProfile: 'chem', nuclide: 'chem', lineSpectrum: 'chem', photoelectron: 'chem', particles: 'chem', dotCross: 'chem',
   skeletal: 'chem', energyLevels: 'chem',
+  chromatography: 'chem', galvanicCell: 'chem', phaseDiagram: 'chem', bondEnergy: 'chem', equilibrium: 'chem', rateLaw: 'chem', vsepr: 'chem',
   populationGrowth: 'bio', predatorPrey: 'bio', enzymeActivity: 'bio', photosynthesis: 'bio', punnett: 'bio', pedigree: 'bio', proteinSynthesis: 'bio', gel: 'bio', osmosis: 'bio',
   supplyDemand: 'econ', moneyMarket: 'econ', businessCycle: 'econ', phillipsCurve: 'econ', possibilitiesCurve: 'econ', adAs: 'econ', costCurves: 'econ',
 });

@@ -26,7 +26,7 @@ const QUARTERS = { from: 0, to: 2, step: [1, 4], every: 4, points: [{ at: [3, 4]
 const SEQUENCE = { from: 0, to: 1, step: 0.1, sequence: { expr: '1/n', numbering: 'fraction' } };   // 1, 1/2, ..., 1/5
 
 test('good data: no problems, one accessible <svg>, and the kind is listed', () => {
-  assert.ok(OF.kinds.includes('numberLine')); assert.equal(OF.version, FIG_LATEST['oomba-figures'], 'the latest version (1.1.0 brought the number line; 1.5.0 is the latest)');
+  assert.ok(OF.kinds.includes('numberLine')); assert.equal(OF.version, FIG_LATEST['oomba-figures'], 'the latest version (1.1.0 brought the number line; 1.6.0 is the latest)');
   for (const d of [GE, COMPOUND, OR, QUARTERS, SEQUENCE, { from: 0, to: { pi: 2 }, step: { pi: [1, 4] } }, { from: 0, to: 360, step: 30, every: 3, numbering: 'degree' }, { from: -10, to: 10, intervals: [{}] }]) {
     assert.deepEqual(OF.check('numberLine', d), [], JSON.stringify(d));
     const s = OF.svg('numberLine', d, { title: 'A number line' });
@@ -176,7 +176,7 @@ test('the notice: Oomba\'s exact CC0 words, in the SVG bytes as <metadata>, from
 });
 
 test('the frozen files: 1.1.0 draws what the source draws; 1.0.0 is untouched and does not know the number line', () => {
-  assert.ok(['1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0'].includes(FIG_LATEST['oomba-figures']), 'the number line came in 1.1.0, and the latest has it');
+  assert.ok(['1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0'].includes(FIG_LATEST['oomba-figures']), 'the number line came in 1.1.0, and the latest has it');
   const F = figuresKit('1.1.0');
   for (const d of [GE, OR, QUARTERS, SEQUENCE]) { assert.equal(F.svg('numberLine', d), OF.svg('numberLine', d)); assert.equal(F.check('numberLine', d).length, 0); }
   const old = figuresKit('1.0.0');

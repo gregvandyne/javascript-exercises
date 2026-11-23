@@ -3659,7 +3659,14 @@
         "image": "Het beeld",
         "electrons": "De elektronen",
         "values": "De waarden",
-        "reading": "De aflezing"
+        "reading": "De aflezing",
+        "regions": "De gebieden",
+        "stresses": "De verstoringen",
+        "formulas": "De formules",
+        "names": "De namen",
+        "data": "De gegevens",
+        "name": "De naam van de vorm",
+        "electrodes": "De elektroden"
       },
       "draw": {
         "modeLabel": "Hoe je de figuur maakt",
@@ -13307,6 +13314,34 @@
       "energyLevels": {
         "name": "Energieniveaus van het atoom",
         "desc": "Elektronenovergangen, golflengten en reeksen"
+      },
+      "chromatography": {
+        "name": "Chromatografie",
+        "desc": "Papierchromatogrammen met Rf-waarden"
+      },
+      "galvanicCell": {
+        "name": "Elektrochemische cellen",
+        "desc": "Galvanische cellen met een zoutbrug en een meter"
+      },
+      "phaseDiagram": {
+        "name": "Fasediagram",
+        "desc": "Druk tegen temperatuur, tripelpunt en kritisch punt"
+      },
+      "bondEnergy": {
+        "name": "Bindingsenergiekromme",
+        "desc": "Potentiële energie tegen de afstand tussen de kernen"
+      },
+      "equilibrium": {
+        "name": "Evenwichtsgrafiek",
+        "desc": "Concentratie tegen tijd en het principe van Le Chatelier"
+      },
+      "rateLaw": {
+        "name": "Grafieken van de snelheidsvergelijking",
+        "desc": "[A], ln[A] en 1/[A] tegen de tijd, per orde"
+      },
+      "vsepr": {
+        "name": "VSEPR-vormen",
+        "desc": "Ruimtelijke bouw van moleculen, bindingshoeken en vrije elektronenparen"
       },
       "populationGrowth": {
         "name": "Populatiegroei",

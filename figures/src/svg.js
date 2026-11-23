@@ -1,7 +1,7 @@
 // Oomba Figures: the drawing core. Every figure is built as a small tree of SVG nodes ({ tag, attrs, kids }) by a pure
 // function, then turned into text (svgText: the server's printable worksheets, the unit tests) or into a real SVG
 // element (toElement: in the browser). No DOM, no network, no clock in here.
-export const FIG_VERSION = '1.5.0';
+export const FIG_VERSION = '1.6.0';
 export const SVG_NS = 'http://www.w3.org/2000/svg';
 
 /** The Oomba colours (the site's tokens, darkened where a thin line needs contrast on the cream paper). Print: black on
