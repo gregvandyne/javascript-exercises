@@ -1119,8 +1119,8 @@
       },
       "companion": {
         "h": "Oomba, the teaching companion",
-        "p1": "Teachers with the Teacher plan can chat with Oomba from a bubble on their own pages. Students and children never see it. A teacher's messages, the text of a document they attach and a picture they attach are sent to our AI provider, Anthropic, to make the answer. Before anything is sent, we take out the names of the teacher's students, emails, phone numbers and links. Pictures that show a person are refused and never kept.",
-        "p2": "Oomba sees only what a teacher has open and safe facts about it (a class's grade and size, a dashboard's widgets, a Figures worksheet's questions, a manipulatives board's items and steps), never students' names, answers or work. It changes a dashboard only after the teacher taps Apply. On a Figures worksheet or a manipulatives board, it makes the change the teacher asks for right away, and the teacher can undo it.",
+        "p1": "Teachers with the Teacher plan can chat with Oomba from a bubble on their own pages. Students and children never see it. A teacher's messages, the text of a document they attach and a picture they attach are sent to our AI provider, Anthropic, to make the answer. Before anything is sent, we take out the names of the teacher's students, emails, phone numbers and links. Pictures that show a person are refused and never kept. Each name becomes a placeholder like \"[student 1]\". Which student it stands for stays on our servers, so Oomba can give a point to the right student without the name ever being sent.",
+        "p2": "Oomba sees only what a teacher has open and safe facts about it (a class's grade and size, a dashboard's widgets, a Figures worksheet's questions, a manipulatives board's items and steps), never students' names, answers or work. It changes a dashboard only after the teacher taps Apply. On a Figures worksheet or a manipulatives board, it makes the change the teacher asks for right away, and the teacher can undo it. When a teacher asks, it can also give a dashboard point to a student or to the whole class, which the teacher can undo.",
         "p3": "When web search is on, Oomba may send short searches to Anthropic's web search. They never include names or a location, sites for adults, gambling, social networks and the like are blocked, and every search is logged for our team without the teacher's name. Pages found on the web are shown as sources Oomba hasn't checked.",
         "p4": "A teacher can speak instead of typing: the sound is streamed to {provider} to turn it into words as they speak, and the audio is never kept, by us or by them. The words go into the message box for the teacher to check.",
         "p5": "We keep a teacher's chat, with the text of what they attached, for 60 days after it was last used (a school can choose from 7 to 365 days); a picture is deleted once Oomba has answered, and within a day at the latest. A teacher can delete the chat with New chat, and it is deleted with the account. A school admin can turn Oomba or its web search off for the school."
@@ -4403,7 +4403,10 @@
         "edit": "Changed your worksheet ({n} changes)",
         "editNo": "Couldn't change the worksheet",
         "board": "Made the board ({n} items)",
-        "boardNo": "Couldn't build that board"
+        "boardNo": "Couldn't build that board",
+        "point": "{n, plural, one {Gave a point} other {Gave # points}}",
+        "pointPick": "Got a choice ready for you",
+        "pointNo": "Couldn't give that point"
       },
       "stepsSum": "{n, plural, one {# step} other {# steps}} · {s} s",
       "prog": {
@@ -4479,7 +4482,21 @@
         "other": "Something went wrong. Your message is still here: try again in a moment."
       },
       "quoteN": "Question {n}: {text}",
-      "questionN": "Question {n}"
+      "questionN": "Question {n}",
+      "point": {
+        "given": "Gave {name} a point for {reason}",
+        "classGiven": "The whole class got a point for {reason}",
+        "someone": "a student",
+        "gc": "Also posting it to Google Classroom.",
+        "wholeClass": "The whole class",
+        "picked": "Picked",
+        "nothingYet": "Nothing is given until you tap.",
+        "pick": {
+          "class": "Which class is the point for?",
+          "student": "Which student did you mean?",
+          "reason": "What is the point for?"
+        }
+      }
     }
   },
   "favorites": {
@@ -11940,7 +11957,12 @@
         "f_listening": "listening",
         "f_responsible": "being responsible",
         "f_brave": "trying something new",
-        "f_creative": "good ideas"
+        "f_creative": "good ideas",
+        "allMine": "All my points",
+        "allMineSum": "My own {mine} + the whole class's {cls}",
+        "allMineN": "All my points: {n}",
+        "justMe": "Just me",
+        "wholeClass": "Whole class"
       },
       "fractions": {
         "name": "Fractions",

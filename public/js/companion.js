@@ -7,7 +7,9 @@
 //     words land in the box to edit; audio isn't kept);
 //   - Oomba's answers: the steps it took, game and book cards (Play, Host live, Assign), sources from the web ("Not on
 //     Oomba"), a dashboard change to Apply (then Undo), and a hand-off card that opens the Builder or Figures with the
-//     brief filled in (the teacher presses the final button there).
+//     brief filled in (the teacher presses the final button there), and a point given to a student or the whole class
+//     (the names are filled in by the server for this page only; the AI never sees them), with Undo, or a short choice
+//     card when the class, the student or the reason isn't clear.
 import { t, api, esc, toast, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { mountChat } from '/js/oomba-chat.js';
@@ -75,12 +77,17 @@ function start() {
     meExtra: x => (x.meta && x.meta.file ? `<span class="oc-file">${ic(x.meta.file.kind === 'image' ? '🖼️' : '📄', 18)} ${esc(x.meta.file.name)}${x.meta.file.pages ? ` <small>${esc(t('js.companion.pages', { n: x.meta.file.pages }))}</small>` : ''}</span>` : ''),
     format: (text, x) => `${x.note && x.note.steps ? stepsHtml(x.note) : ''}${formatText(text)}`,
     note: x => noteHtml(x) + (via('note', x) || ''),
-    change: x => (x.change && x.change.kind === 'dash' ? changeHtml(x) : via('change', x) || changeHtml(x)),
+    change: x => (x.change && x.change.kind === 'point' ? pointHtml(x) : x.change && x.change.kind === 'dash' ? changeHtml(x) : via('change', x) || changeHtml(x)),
     changeLinks: x => via('changeLinks', x) || '',
     extra: (x, c) => via('extra', x, c) || '',
     onAct: async (act, turn, btn) => { const r = await via('onAct', act, turn, btn); return r === undefined ? onAct(act, turn, btn) : r; },
-    onAnswer: (x, c) => { if (x.change && x.change.kind === 'dash') afterDash(x.change); via('onAnswer', x, c); },
-    onUndo: r => { if (dash) { store.set('oc-hl', '[]'); location.reload(); return; } via('onUndo', r); },
+    onAnswer: (x, c) => { if (x.change && x.change.kind === 'dash') afterDash(x.change); if (x.change && x.change.kind === 'point') afterPoint(x.change); via('onAnswer', x, c); },
+    onUndo: (r, id) => {
+      const u = ((r && r.chat && r.chat.turns) || []).find(x => x.id === id);
+      if (u && u.change && u.change.kind === 'point') { afterPoint(u.change); return; }
+      if (dash) { store.set('oc-hl', '[]'); location.reload(); return; }
+      via('onUndo', r);
+    },
     onQuote: q => via('onQuote', q),
     onMode: m => { if (m !== 'open') stopMic(); via('onMode', m); },
     onSync: c => { if (S.sent) { S.sent = false; setFile(null); } via('onSync', c); },
@@ -274,6 +281,7 @@ function start() {
     if (n.sources && n.sources.length) parts.push(webHtml(n.sources));
     if (n.proposal) parts.push(proposalHtml(x, n.proposal));
     if (n.handoff) parts.push(handoffHtml(x, n.handoff));
+    if (n.pick) parts.push(pickHtml(x, n.pick));
     return parts.join('');
   }
   const meta = list => `<div class="oc-meta">${list.filter(Boolean).map(m => `<span>${esc(m)}</span>`).join('')}</div>`;
@@ -302,11 +310,34 @@ function start() {
     return `<div class="oc-hand"><h4>${ic('🛠️', 18)} ${esc(h.title || L(`hand.${h.tool}`))}</h4>${h.title ? `<p class="oc-hsub">${esc(L(`hand.${h.tool}`))}</p>` : ''}${facts.length ? `<dl>${facts.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}<div class="oc-brief" dir="auto">${esc(h.brief)}</div>
       <div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="handoff" data-turn="${esc(x.id)}">${esc(L(`hand.open.${h.tool}`))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="rebrief" data-turn="${esc(x.id)}">${esc(L('hand.change'))}</button></div></div>`;
   }
-  async function onAct(act, turn) {
+  // ---------------------------------------------------------------- points (docs/decisions.md "Points from the Oomba chat")
+  const reasonIc = it => `<span class="oc-pic" aria-hidden="true">${ic(it.icon || '⭐', 22)}</span>`;
+  function pointHtml(x) {
+    const c = x.change; if (!c || c.kind !== 'point') return '';
+    const here = dash && (c.items || []).every(it => it.classId === PAGE.classId);
+    const someone = L('point.someone');
+    const line = it => (it.user ? t('js.companion.point.given', { name: it.name || someone, reason: it.word || '' }) : t('js.companion.point.classGiven', { reason: it.word || '' }));
+    const rows = (c.items || []).map(it => `<p class="oc-point">${reasonIc(it)}<span><b>${esc(line(it))}</b>${it.className && !here ? `<small>${esc(it.className)}</small>` : ''}</span></p>`).join('');
+    const gc = (c.items || []).some(it => it.gc) ? `<span class="oc-note">${esc(L('point.gc'))}</span>` : '';
+    const open = !here && c.items && c.items[0] ? `<a class="btn btn-sm" href="/class/${encodeURIComponent(c.items[0].classId)}/dashboard">${esc(L('dash.openDash'))}</a>` : '';
+    return `${rows}${gc}${open ? `<div class="oc-acts">${open}</div>` : ''}`;
+  }
+  function pickHtml(x, p) {
+    const known = [p.cls ? L('point.wholeClass') : p.name, p.word, p.className].filter(Boolean);
+    if (p.state !== 'open') return `<div class="oc-change oc-pick"><p class="oc-state">${ic('✓', 16)} ${esc(L('point.picked'))}</p></div>`;
+    const btns = (p.options || []).map(o => `<button type="button" class="btn btn-sm oc-pickb" data-c="act" data-act="pick" data-turn="${esc(x.id)}" data-v="${esc(o.v)}">${o.icon ? `${ic(o.icon, 18)} ` : ''}<span${p.need === 'student' ? ' class="oc-name"' : ''}>${esc(o.label)}</span></button>`).join('');
+    return `<div class="oc-change oc-pick"><p><b>${esc(L(`point.pick.${p.need || 'reason'}`))}</b></p>${known.length ? `<p class="oc-hsub">${esc(known.join(' · '))}</p>` : ''}<div class="oc-acts oc-picks">${btns}</div><span class="oc-note">${esc(L('point.nothingYet'))}</span></div>`;
+  }
+  /** A point given or taken back: the dashboard on this page asks for its points now (public/js/dash.js listens). */
+  function afterPoint(c) {
+    if (!dash || !(c.items || []).some(it => it.classId === PAGE.classId)) return;
+    document.dispatchEvent(new CustomEvent('oomba:points', { detail: { classId: PAGE.classId } }));
+  }
+  async function onAct(act, turn, btn) {
     if (!turn) return null;
     if (act === 'rebrief') { const box = $('oc-in'); box.value = L('hand.changeText'); box.dispatchEvent(new Event('input')); box.focus(); return null; }
     try {
-      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act } });
+      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}) } });
       if (act === 'handoff' && r.handoff) {
         store.set('oomba-handoff', JSON.stringify({ tool: r.handoff.tool, text: handoffText(r.handoff), at: Date.now() }));
         location.href = r.handoff.href;

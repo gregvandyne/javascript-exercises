@@ -273,7 +273,7 @@ export const WIDGETS = [
     'reason', 'award', 'awardAll', 'everyone', 'undo', 'undone', 'classTotal', 'mine', 'given', 'resetAll', 'resetConfirm', 'hidden', 'nobody', 'loading', 'pick',
     // whole-class points, the Recent list and Google Classroom (docs/decisions.md "Dashboard points: reasons, ...")
     'classPoints', 'classGiven', 'classPick', 'recent', 'recentClass', 'recentNone', 'gcPost', 'gcPostHint', 'gcAllow', 'gcPosted', 'gcPending', 'gcFailed',
-    'gcNotOnClassroom', 'gcTooMany', 'gcReconnect', 'gcOff', 'gcOn', 'onlyYou',
+    'gcNotOnClassroom', 'gcTooMany', 'gcReconnect', 'gcOff', 'gcOn', 'onlyYou', 'allMineN',
     ...POINT_REASONS.map(r => `r_${r}`), ...POINT_REASONS.map(r => `f_${r}`)], settings: [
     { key: 'mode', type: 'select', options: ['teams', 'students'], def: 'teams' },
     { key: 'teams', type: 'textarea', max: 240, def: '' },

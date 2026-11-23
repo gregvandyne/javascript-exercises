@@ -10,14 +10,16 @@
 //   defaults): turns kept and sent to the AI, days kept, tool steps per answer, messages an hour. One live answer per
 //   teacher (live: 'owner').
 // - Privacy: the teacher's words are kept and sent only after the scrubber (builder/lesson.js scrub) took out the names
-//   of their students (roster names, display names, usernames), emails, phone numbers and links. Tool results give the
+//   of their students (roster names, display names, usernames; each becomes a numbered placeholder, see tokenize),
+//   emails, phone numbers and links. Tool results give the
 //   AI ids and safe fields only: never a roster, a student's name, answers or work (safeSettings keeps a widget's
 //   numbers, switches and choices, never its text). Web searches can only carry what the AI saw, so never a name; each
 //   is logged (builder/search.js logSearch) and screened, and a search that looks personal or unsafe shows no sources.
 // - Writes: Oomba never changes anything by itself. proposeDashboardChange makes a confirm card; only the teacher's tap
 //   applies it (act 'apply'), on their own layout of a class they teach, with Undo. startBuild makes a hand-off card; the
-//   teacher opens the Builder (or Figures) with the brief filled in and presses its final button there. Every applied
-//   change, undo, hand-off and refused picture is in the audit log.
+//   teacher opens the Builder (or Figures) with the brief filled in and presses its final button there. givePoint gives
+//   a dashboard point when the teacher asks for one (with Undo; a choice card when anything is unclear). Every applied
+//   change, point, undo, hand-off and refused picture is in the audit log.
 // - Uploads (oomba_files, migration 0108): a document's text (the Builder's lesson reader, scrubbed and screened, at most
 //   10,000 characters; the file itself is never kept) stays with the conversation; a picture (a cleaned JPEG, no
 //   metadata, no people) is kept only until the answer that reads it is done, at most a day.
@@ -37,7 +39,8 @@ import { hasProfanity } from './textfilter.js';
 import * as CS from './companion-settings.js';
 import { GAMES_META } from './companion-games.js';
 import * as C from './oomba-chat.js';
-import { studentNames, scrub, screenLesson } from '../builder/lesson.js';
+import { studentNames, namesFrom, scrub, screenLesson } from '../builder/lesson.js';
+import { allow } from './ratelimit.js';
 import * as SR from '../builder/search.js';
 import { prefilter } from '../builder/screen.js';
 import { tFor } from '../i18n/index.js';
@@ -46,6 +49,7 @@ import * as FC from './figures-chat.js';
 import * as M from './manipulatives.js';
 import * as MC from './manip-chat.js';
 import { toolOf } from '../../public/js/manip-data.js';
+import { REASON_ICON } from '../../public/js/dash-class5.js';
 
 export const SURFACE = 'companion';
 export const KEY = 'main';
@@ -64,6 +68,57 @@ export const limitsOf = u => CS.settingsFor(u);
 // ---------------------------------------------------------------- names and words
 /** The teacher's words with their students' names, emails, phone numbers and links taken out. */
 export function cleanText(u, text, names = studentNames(u)) { return scrub(String(text || ''), names).text; }
+
+// Placeholders (docs/decisions.md "Points from the Oomba chat"): in a teacher's message each student's name becomes
+// "[student 1]", "[student 2]"... instead of "[student]", so Oomba can say which student a point is for without ever
+// seeing a name. The same student keeps the same number for the whole conversation. Which students a number stands for
+// (their account ids, never their names) is kept with the message on the server only (meta._who: the engine never
+// shows meta keys starting with "_" to the page) and never goes to the AI. A name the scrubber takes out that is not an
+// account (a Google Classroom roster name still waiting) stays a plain "[student]".
+const nameKey = s => String(s || '').normalize('NFC').replace(/\s+/g, ' ').trim().toLocaleLowerCase();
+/** Every way a name can be written that the scrubber takes out -> the ids of the students it may be (the classes
+ *  studentNames reads: the teacher's own, and every class of a school they run). */
+export function nameIndex(u) {
+  const out = new Map();
+  if (!u || u.is_guest) return out;
+  const ids = new Set(S.classesOf(u.id, 'teacher').map(c => c.id));
+  for (const s of S.schoolsOf(u.id)) if (s.role === 'admin') for (const c of S.classesOfSchool(s.id)) ids.add(c.id);
+  for (const id of [...ids].slice(0, 200)) {
+    for (const r of S.roster(id)) {
+      if (r.role !== 'student') continue;
+      for (const n of namesFrom([r.roster_name, r.display_name, r.username].filter(Boolean))) {
+        const k = nameKey(n.name); if (!out.has(k)) out.set(k, new Set()); out.get(k).add(r.id);
+      }
+    }
+  }
+  return out;
+}
+export const TOKEN = /\[student (\d{1,3})\]/g;
+/** The numbers already used in this conversation: { n: [ids] } from its messages' meta._who. */
+export function chatWho(u, row = chatRow(u)) {
+  const out = {};
+  for (const x of (row ? parse(row.turns, []) : []) || []) if (x.role === 'me' && x.meta && x.meta._who) for (const [n, ids] of Object.entries(x.meta._who)) if (!out[n]) out[n] = ids;
+  return out;
+}
+/** The words with each name as its placeholder. -> { text, who: { n: [ids] } (only the numbers in these words) } */
+export function tokenize(u, text, { names = studentNames(u), index = nameIndex(u), prev = chatWho(u) } = {}) {
+  const known = new Map(Object.entries(prev).map(([n, ids]) => [ids.join(','), n]));
+  let next = Math.max(0, ...Object.keys(prev).map(Number));
+  const who = {};
+  const r = scrub(String(text || ''), names, {
+    token: m => {
+      const ids = [...(index.get(nameKey(m)) || [])].sort();
+      if (!ids.length) return '[student]';
+      const key = ids.join(',');
+      let n = known.get(key);
+      if (!n) { n = String(++next); known.set(key, n); }
+      who[n] = ids;
+      return `[student ${n}]`;
+    },
+  });
+  return { text: r.text, who };
+}
+const wordsOf = text => clip(text, 1000).replace(/\s+/g, ' ').trim();
 const wordsProblem = text => (hasProfanity(String(text || '')) ? 'words' : null);
 
 // ---------------------------------------------------------------- the page the teacher has open
@@ -390,8 +445,193 @@ function handoffOf(u, page, input) {
   return { handoff: { id: uid(10), tool, title, grade: grade === null ? '' : gradeLabel(grade), facts, brief, href } };
 }
 
+// ---------------------------------------------------------------- points from the chat
+// docs/decisions.md "Points from the Oomba chat": "give the whole class a point for teamwork", "give [student 1] a point
+// for kindness". The same award as the dashboard's (services/dash.js pointsAction: the history, the class's Google
+// Classroom switch and its posting, the dashboard's hourly limit), for a class the teacher teaches and runs
+// (D.isTeacher and S.canManageClass). When it is clear (one class, one student, a known reason) the point is given at
+// once with Undo; otherwise one short choice card, and nothing is given until the teacher taps. The AI never sees a
+// name, an id or a class's name here: only "given", "waiting for the teacher" or why not.
+export const POINTS_PER_HOUR = 1200;   // the dashboard's own limit (routes/dash.js 'dash-points'), the same bucket
+const MAX_POINTS_PER_ANSWER = 5;
+/** May this teacher give points in this class? */
+export const mayPoint = (u, c) => !!c && !c.archived_at && D.isTeacher(u, c) && S.canManageClass(u, c);
+const pointClasses = u => S.classesOf(u.id, 'teacher').map(c => S.getClass(c.id)).filter(c => mayPoint(u, c));
+// Close words for a reason, besides services/dash.js POINT_ALIASES.
+const REASON_WORDS = { 'team work': 'teamwork', 'working together': 'teamwork', 'being kind': 'kind', kindness: 'kind', concentration: 'focus', concentrating: 'focus', focusing: 'focus',
+  'hard work': 'effort', 'working hard': 'effort', 'trying hard': 'effort', help: 'helpful', helping: 'helpful', 'helping others': 'helpful', 'good listening': 'listening', listen: 'listening',
+  responsibility: 'responsible', 'being responsible': 'responsible', bravery: 'brave', courage: 'brave', 'trying something new': 'brave', creativity: 'creative', 'good ideas': 'creative',
+  'good example': 'example', 'setting a good example': 'example', 'role model': 'example', leading: 'leadership', 'taking part': 'participation', participating: 'participation' };
+/** A reason the teacher (or the AI) wrote -> its key, or ''. */
+export function reasonOf(v) {
+  const k = String(v || '').toLowerCase().replace(/[^a-z\s-]+/g, ' ').replace(/\s+/g, ' ').trim();
+  return D.pointReason(k) || D.pointReason(k.replace(/[\s-]+/g, '')) || D.pointReason(k.replace(/\s+/g, '-')) || (Object.hasOwn(REASON_WORDS, k) ? REASON_WORDS[k] : '');
+}
+/** The students a placeholder stands for: this message's numbers first, then the conversation's. -> ids | null */
+function idsOfToken(ctx, target) {
+  const m = /^\s*\[?\s*student\s+(\d{1,3})\s*\]?\s*$/i.exec(String(target || ''));
+  if (!m) return null;
+  const mine = (ctx.meta && ctx.meta._who) || {};
+  return mine[m[1]] || ctx.who[m[1]] || null;
+}
+/** What to do with a givePoint call. -> { give: { classId, user, reason } } | { pick } | { error } */
+export function pointPlan(u, ctx, input) {
+  const target = String(input.target || '').trim();
+  const cls = /^(class|the class|whole class|the whole class|everyone|all)$/i.test(target);
+  const cand = cls ? null : idsOfToken(ctx, target);
+  if (!cls && !cand) return { error: 'That is not a student placeholder from the teacher\'s message (like [student 1]) or "class". Nothing was given. If the teacher wrote a name, it is not one of their students: tell them calmly.' };
+  const reason = reasonOf(input.reason);
+  const mine = pointClasses(u);
+  if (!mine.length) return { error: 'The teacher has no class of their own to give points in. Nothing was given.' };
+  // Which class: the one asked for, the page's, or the teacher's only class (for a student: the only one they are in).
+  let classId = null, classes = [];
+  const ref = String(input.classRef || '');
+  if (ref) { const c = mine.find(x => x.id === ref); if (!c) return { error: 'Not a class this teacher can give points in. Nothing was given.' }; classId = c.id; }
+  else if (ctx.page.classId && mine.some(x => x.id === ctx.page.classId)) classId = ctx.page.classId;
+  else {
+    const list = cand ? mine.filter(c => D.studentsOf(c).some(k => cand.includes(k.id))) : mine;
+    if (!list.length) return { error: 'That student is not in any of the teacher\'s classes. Nothing was given.' };
+    if (list.length === 1) classId = list[0].id; else classes = list.map(c => c.id);
+  }
+  const pick = { id: uid(10), cand, classId, classes, users: [], user: cls ? 'class' : null, reason: reason || null, state: 'open', v: 1 };
+  if (classId && !cls) {
+    const kids = D.studentsOf(S.getClass(classId)).filter(k => cand.includes(k.id));
+    if (!kids.length) return { error: 'That student is not in this class. Nothing was given.' };
+    if (kids.length === 1) pick.user = kids[0].id; else pick.users = kids.map(k => k.id);
+  }
+  if (pick.classId && pick.user && pick.reason) return { give: { classId: pick.classId, user: pick.user, reason: pick.reason } };
+  return { pick };
+}
+/** What the choice card still needs: 'class' | 'student' | 'reason' | null (complete). */
+export const pickNeeds = p => (!p.classId ? 'class' : !p.user ? 'student' : !p.reason ? 'reason' : null);
+
+// Google Classroom posts and their deletes go after the award is saved (after the engine's transaction), never holding
+// up the chat. Tests wait for them with settledPosts().
+const posts = new Set();
+function later(fn) {
+  const p = new Promise(r => setImmediate(r)).then(fn).catch(e => log('warn', 'companion point post failed', { error: e && e.message })).finally(() => posts.delete(p));
+  posts.add(p);
+}
+export const settledPosts = () => Promise.all([...posts]);
+/** Gives the points (inside the engine's transaction). -> { change, undo } | null */
+export function awardPoints(u, items, lang = 'en') {
+  const done = [];
+  for (const it of items) {
+    const c = S.getClass(it.classId);
+    if (!mayPoint(u, c)) continue;
+    const r = D.pointsAction(u, c, { action: 'award', user: it.user || 'class', reason: it.reason });
+    if (r.error || !r.award) continue;
+    const award = r.award;
+    const gc = D.pointsGcOn(c) && D.gcState(u, c).show;
+    done.push({ classId: c.id, user: award.user || null, reason: award.reason, gc });
+    audit(u.id, 'companion.point', c.id, { to: award.user ? 'student' : 'class', reason: award.reason, award: award.id });
+    if (gc) later(() => (q.get('SELECT 1 FROM dash_point_awards WHERE id=?', award.id) ? D.postPoint(u, c, award, tFor(lang)) : null));
+  }
+  if (!done.length) return null;
+  return { change: { kind: 'point', items: done }, undo: { kind: 'point', items: done.map(({ classId, user, reason }) => ({ classId, user, reason })) } };
+}
+/** Undo: the same as the dashboard's (the latest matching award goes, and its Classroom post). -> { ok, skipped } */
+export function undoPoints(u, data) {
+  let skipped = 0;
+  for (const it of [...(data.items || [])].reverse()) {
+    const c = S.getClass(it.classId);
+    if (!mayPoint(u, c)) { skipped++; continue; }
+    const r = D.pointsAction(u, c, { action: 'undo', user: it.user || 'class', reason: it.reason });
+    if (r.error) { skipped++; continue; }
+    audit(u.id, 'companion.point.undo', c.id, { to: it.user ? 'student' : 'class', reason: it.reason });
+    if (r.award && r.award.gcId) { const award = r.award; later(() => D.unpostPoint(u, c, award)); }
+  }
+  return { ok: true, skipped };
+}
+/** What the page shows on a point card or a choice card: the names (the student's as on the class list, the class's),
+ *  the reason's word and icon, in the teacher's language. Added for the page only, never kept, never sent to the AI. */
+/** The teacher's own students (the classes nameIndex reads): id -> the name the teacher sees on the class list. */
+function ownStudents(u) {
+  const out = new Map();
+  if (!u || u.is_guest) return out;
+  const ids = new Set(S.classesOf(u.id, 'teacher').map(c => c.id));
+  for (const s of S.schoolsOf(u.id)) if (s.role === 'admin') for (const c of S.classesOfSchool(s.id)) ids.add(c.id);
+  for (const id of [...ids].slice(0, 200)) for (const r of S.roster(id)) if (r.role === 'student' && !out.has(r.id)) out.set(r.id, r.display_name);
+  return out;
+}
+/** The placeholders in words, as names: { n: [ids] } -> the names of the teacher's own students ("A or B" when a
+ *  placeholder stands for two); a placeholder whose students aren't the teacher's any more stays as it is. */
+export function namesIn(text, who, own) {
+  return String(text || '').replace(TOKEN, (m, n) => {
+    const names = (who[n] || []).map(id => own.get(id)).filter(Boolean);
+    return names.length ? names.join(' / ') : m;
+  });
+}
+export function dress(u, chat, t) {
+  if (!chat || !Array.isArray(chat.turns)) return chat;
+  // The names back in the teacher's own words and in Oomba's (for this page only: what is kept and what the AI gets
+  // stay the placeholders). The page's turns have no meta._who: it is read from the stored conversation.
+  const row = chatRow(u), stored = row ? parse(row.turns, []) || [] : [];
+  const whoOf = new Map(stored.filter(x => x.role === 'me' && x.meta && x.meta._who).map(x => [x.id, x.meta._who]));
+  const all = chatWho(u, row);
+  let own = null;
+  const named = (text, who) => { if (!TOKEN.test(String(text || ''))) return text; TOKEN.lastIndex = 0; own ||= ownStudents(u); return namesIn(text, who, own); };
+  const classes = new Map(), kidsOf = new Map();
+  const cls = id => { if (!classes.has(id)) { const c = S.getClass(id); classes.set(id, mayPoint(u, c) ? c : null); } return classes.get(id); };
+  const kid = (classId, id) => { const c = cls(classId); if (!c) return ''; if (!kidsOf.has(classId)) kidsOf.set(classId, new Map(D.studentsOf(c).map(k => [k.id, k.name]))); return kidsOf.get(classId).get(id) || ''; };
+  const word = r => ({ word: t(`dash.w.score.r_${r}`), icon: REASON_ICON[r] || '⭐' });
+  const turns = chat.turns.map(x => {
+    let y = x;
+    if (x.text && typeof x.text === 'string') {
+      const text = named(x.text, x.role === 'me' ? { ...all, ...(whoOf.get(x.id) || {}) } : all);
+      if (text !== x.text) y = { ...y, text };
+    }
+    if (x.change && x.change.kind === 'point') {
+      y = { ...y, change: { ...x.change, items: (x.change.items || []).map(it => ({ ...it, ...word(it.reason), name: it.user ? kid(it.classId, it.user) : '', className: (cls(it.classId) || {}).name || '' })) } };
+    }
+    const p = x.note && x.note.pick;
+    if (p) {
+      const need = pickNeeds(p);
+      const c = p.classId ? cls(p.classId) : null;
+      const options = p.state !== 'open' ? []
+        : need === 'class' ? p.classes.map(id => cls(id)).filter(Boolean).map(k => ({ v: k.id, label: k.name }))
+          : need === 'student' ? p.users.map(id => ({ v: id, label: kid(p.classId, id) })).filter(o => o.label)
+            : need === 'reason' ? D.POINT_REASONS.map(r => ({ v: r, label: word(r).word, icon: word(r).icon })) : [];
+      const show = { id: p.id, state: p.state, need, options, cls: p.user === 'class', className: c ? c.name : '', name: p.user && p.user !== 'class' && p.classId ? kid(p.classId, p.user) : '', ...(p.reason ? word(p.reason) : {}) };
+      y = { ...y, note: { ...x.note, pick: show } };
+    }
+    return y;
+  });
+  return { ...chat, turns };
+}
+/** A tap on a choice card: the class, the student or the reason. Once the card has all three the point is given (a turn
+ *  of its own, with Undo). -> the conversation | fail */
+function pickOne(u, row, turn, value) {
+  const p = turn.note.pick;
+  if (!p || p.state !== 'open') return { ok: false, code: 'notFound' };
+  const v = String(value || ''), need = pickNeeds(p), next = { ...p, v: (p.v || 1) + 1 };
+  if (need === 'class') {
+    if (!p.classes.includes(v) || !mayPoint(u, S.getClass(v))) return { ok: false, code: 'notFound' };
+    next.classId = v;
+    if (p.cand) {
+      const kids = D.studentsOf(S.getClass(v)).filter(k => p.cand.includes(k.id));
+      if (!kids.length) return { ok: false, code: 'notFound' };
+      if (kids.length === 1) next.user = kids[0].id; else next.users = kids.map(k => k.id);
+    }
+  } else if (need === 'student') {
+    if (!p.users.includes(v)) return { ok: false, code: 'notFound' };
+    next.user = v;
+  } else if (need === 'reason') {
+    if (!D.POINT_REASONS.includes(v)) return { ok: false, code: 'notFound' };
+    next.reason = v;
+  } else return { ok: false, code: 'notFound' };
+  if (pickNeeds(next)) return markNote(u, row, turn.id, { ...turn.note, pick: next });
+  if (!mayPoint(u, S.getClass(next.classId))) return { ok: false, code: 'notFound' };
+  if (!allow(`dash-points:${u.id}`, POINTS_PER_HOUR, 3600e3)) return { ok: false, code: 'slow' };
+  const lang = (turn.note && turn.note.lang) || 'en';
+  return C.addTurn(u, SURFACE, KEY, {
+    mark: { id: turn.id, fields: { note: { ...turn.note, pick: { ...next, state: 'done' } } } }, text: '',
+    apply: () => awardPoints(u, [{ classId: next.classId, user: next.user === 'class' ? null : next.user, reason: next.reason }], lang) || { code: 'notFound' },
+  });
+}
+
 // ---------------------------------------------------------------- the AI's tools
-export const TOOL_NAMES = Object.freeze(['explainOomba', 'getPageContext', 'searchGames', 'searchBooks', 'searchLessons', 'proposeDashboardChange', 'startBuild', 'readUpload']);
+export const TOOL_NAMES = Object.freeze(['explainOomba', 'getPageContext', 'searchGames', 'searchBooks', 'searchLessons', 'proposeDashboardChange', 'startBuild', 'readUpload', 'givePoint']);
 const str = (description, extra = {}) => ({ type: 'string', description, ...extra });
 export const TOOLS = Object.freeze([
   { name: 'explainOomba', description: 'What Oomba Academy offers teachers and what you (Oomba) can and cannot do. Use it when the teacher asks how something on the site works.', input_schema: { type: 'object', properties: { topic: str('What they asked about, in a few words.') } } },
@@ -402,6 +642,8 @@ export const TOOLS = Object.freeze([
   { name: 'proposeDashboardChange', description: 'Propose a change to the class dashboard the teacher has open. Nothing changes until the teacher taps Apply on the card. Prefer changing a widget already on the layout over adding a second of the same type. There is no way to make a new kind of widget: if none fits, suggest existing widgets or a combination.', input_schema: { type: 'object', required: ['changes'], properties: { layoutId: str('The layout to change; the one on screen when left out.'), changes: { type: 'array', items: { type: 'object', required: ['op'], properties: { op: { type: 'string', enum: ['set', 'add', 'remove'] }, widgetId: str('For set and remove.'), type: str('For add: a widget type from the library.'), settings: { type: 'object', description: 'Only number, switch and choice settings, like {"minutes": 5}.' }, allowDuplicate: { type: 'boolean' } } } } } } },
   { name: 'startBuild', description: 'Prepare a hand-off card for a game or classroom activity made in the Builder, a printable worksheet in Figures, or a board in the Manipulatives. The teacher opens it with the brief filled in and presses the final button there. Never for a dashboard widget.', input_schema: { type: 'object', required: ['tool', 'brief'], properties: { tool: { type: 'string', enum: HANDOFF_TOOLS }, title: str('A short title.'), grade: str('K or 1 to 12.'), brief: str('What to make, in a few sentences, no names.'), practice: str('What students practice.'), help: str('How much help, like "Guided, then On my own".'), length: str('About how long.'), fromPlan: str('One thing from the teacher\'s lesson plan to keep in mind.') } } },
   { name: 'readUpload', description: 'Read the text of a document the teacher attached to this chat (by its file id). Names of students were already taken out.', input_schema: { type: 'object', required: ['fileId'], properties: { fileId: str('The file id.') } } },
+  { name: 'givePoint', description: `Give one dashboard point, for a reason, to one student or to the whole class, when the teacher asks for it ("give the whole class a point for teamwork", "give [student 1] a point for kindness"). The same point as on the class dashboard: the teacher sees a card with who got it and Undo. When the class, the student or the reason is not clear, the app shows the teacher a choice card and nothing is given until they tap. Reasons: ${D.POINT_REASONS.join(', ')} (close words are fine). Call it once for each student.`, input_schema: { type: 'object', required: ['target', 'reason'], properties: {
+    target: str('"class" for the whole class, or the student placeholder exactly as in the teacher\'s message, like "[student 1]".'), reason: str('What the point is for, like "teamwork".'), classRef: str('A class id from getPageContext, optional: the page\'s class (or the teacher\'s only class) when left out.') } } },
 ]);
 
 // The page tools: offered only on their own page (the teacher's own worksheet; a host's own board).
@@ -417,9 +659,9 @@ export const toolsFor = page => (PAGE_TOOLS[page.type] ? [...TOOLS, PAGE_TOOLS[p
 
 const EXPLAIN = [
   'Oomba Academy is a kid-safe site with learning games, a Story Library of free picture books, ready-made lessons (CS Quest, Number Quest), classes with assignments and progress, Oomba Live (host a game for the whole class), classroom dashboards with widgets for the projector, Figures (printable worksheets and tests with drawn figures), Math Manipulatives, Mistake Hunt and the AI Builder that makes games and classroom activities from a lesson.',
-  'You (Oomba) can: find games, books and lessons; change the teacher\'s class dashboard after they tap Apply (with Undo); read a lesson plan they attach (text only) or a picture without people; search the web when it is on, with sources; hand off a build to the Builder, Figures or the Manipulatives with a brief.',
-  'You cannot: see students\' names, answers or work; assign, grade or message students; make a new kind of dashboard widget; change anything without the teacher\'s tap.',
-  'Privacy: students\' names are taken out of messages and uploads; audio from the microphone is never kept; a school admin can turn Oomba or its web search off and set how long chats are kept.',
+  'You (Oomba) can: find games, books and lessons; change the teacher\'s class dashboard after they tap Apply (with Undo); give a dashboard point to a student or the whole class when the teacher asks (with Undo); read a lesson plan they attach (text only) or a picture without people; search the web when it is on, with sources; hand off a build to the Builder, Figures or the Manipulatives with a brief.',
+  'You cannot: see students\' names, answers or work; assign, grade or message students; make a new kind of dashboard widget; change the dashboard\'s layout without the teacher\'s tap.',
+  'Privacy: students\' names are taken out of messages and uploads (each name becomes a placeholder like [student 1], so a point can go to the right student without the name ever reaching the AI); audio from the microphone is never kept; a school admin can turn Oomba or its web search off and set how long chats are kept.',
 ].join('\n');
 
 /** Runs one tool call. ctx: { user, page, lang, names, files, seen, cards, out } -> { result (object for the model), step } */
@@ -472,7 +714,21 @@ export function runTool(name, input, ctx) {
       if (f.kind === 'image') return { result: { note: 'This is a picture; it is in the teacher\'s message when it is still kept.' }, step: { k: 'readImage' } };
       return { result: { name: f.name, pages: parse(f.meta, {}).pages || 1, text: f.text || '' }, step: { k: 'read', n: parse(f.meta, {}).pages || 1, q: f.name } };
     }
+    case 'givePoint': {
+      if (ctx.out.figures || ctx.out.pick || (ctx.out.points || []).length >= MAX_POINTS_PER_ANSWER) return { result: { error: 'Not in this answer: ask the teacher to send that point in a new message. Nothing was given.' }, step: { k: 'pointNo' } };
+      const r = pointPlan(u, ctx, i);
+      if (r.error) return { result: { error: r.error }, step: { k: 'pointNo' } };
+      if (r.pick) {
+        ctx.out.pick = r.pick;
+        return { result: { waitingForTeacher: true, choose: pickNeeds(r.pick), note: 'The teacher picks on the card in the chat. Nothing is given until they tap. Say so in a few words, never a name or a placeholder.' }, step: { k: 'pointPick' } };
+      }
+      if (!allow(`dash-points:${u.id}`, POINTS_PER_HOUR, 3600e3)) return { result: { error: 'Too many points this hour. Nothing was given.' }, step: { k: 'pointNo' } };
+      (ctx.out.points ||= []).push(r.give);
+      const note = r.give.user === 'class' ? 'The whole class gets one point, given when you answer.' : 'One student (not the whole class) gets the point, given when you answer: speak of one student, not of everyone.';
+      return { result: { done: true, to: r.give.user === 'class' ? 'the whole class' : 'one student', reason: r.give.reason, note: `${note} The card in the chat shows who got it, with Undo. In your answer, never write a name or a placeholder like [student 1].` }, step: { k: 'point', n: ctx.out.points.length } };
+    }
     case 'editWorksheet': {
+      if (ctx.out.points || ctx.out.pick) return { result: { error: 'Change the worksheet in a new message, not with a point.' }, step: { k: 'editNo' } };
       const w = ctx.page.type === 'figures-sheet' ? F.ownWorksheet(u, ctx.page.sheetId) : null;
       if (!w) return { result: { error: 'There is no worksheet open on this page.' }, step: { k: 'editNo' } };
       let plan;
@@ -499,9 +755,10 @@ function system(u, lang, page, settings) {
   return [
     'You are Oomba, a warm and practical teaching sidekick on Oomba Academy, talking with a teacher. Help them find games, books and lessons on Oomba, change their classroom dashboard, and plan lessons. Be brief: two to five short sentences, or a short list.',
     `Write in ${L[lang] || 'English (US)'} unless the teacher writes in another language. Plain words. Never use em dashes.`,
-    'Students\' names are never sent to you: "[student]" stands where one was. Never ask for, guess or repeat a student\'s name, and never ask for students\' work, answers or photos of people.',
+    'Students\' names are never sent to you: a placeholder like "[student 1]" stands where one was (the same number is the same student in this chat; a plain "[student]" is someone Oomba cannot give points to). Never ask for, guess or repeat a student\'s name, and never ask for students\' work, answers or photos of people.',
+    'Points: when the teacher asks to give a point to a student or the whole class, call givePoint (target "class" or the placeholder exactly as written, and the reason). The card in the chat shows who got it, with Undo, or a short choice when something is unclear. In your answer say it briefly ("Done!" or "Pick on the card"), never the placeholder. If the teacher named someone who is not a placeholder, that person is not one of their students: say so calmly and give nothing.',
     'Use your tools before you answer: getPageContext to see where the teacher is, the search tools to find real things on Oomba. Only recommend games, books and lessons your tools returned. Mention one as a card by writing its marker on its own line: [[game:<id>]], [[book:<id>]], [[lesson:<id>]] or [[gen:<id>]]. At most four cards. Say why the best one fits (grade, standard, minutes).',
-    'Changes: you never change anything yourself. For the dashboard call proposeDashboardChange; the teacher sees a card and taps Apply. Prefer changing a widget already on the layout (for example the timer\'s minutes) over adding a second one. There is no way to build a new kind of widget: if nothing fits, suggest existing widgets or a combination of them (a checklist, the scoreboard, a text widget...).',
+    'Changes: you never change the dashboard\'s layout yourself. For the dashboard call proposeDashboardChange; the teacher sees a card and taps Apply. Prefer changing a widget already on the layout (for example the timer\'s minutes) over adding a second one. There is no way to build a new kind of widget: if nothing fits, suggest existing widgets or a combination of them (a checklist, the scoreboard, a text widget...).',
     'Builds: for a new game or classroom activity, a printable worksheet or a manipulatives board, call startBuild with a short brief; the teacher opens it and presses the final button. Offer an existing game first when one fits.',
     'Web search, when you have it: only for teaching questions Oomba\'s own tools cannot answer (methods, background facts). Short plain queries, never anything personal, never a person, a school or a town. Say the answer in your own words; the app shows the sources. Never write links or site names in your answer.',
     `Pages and limits: the teacher is on a "${page.type}" page. You may use at most ${settings.steps} tool steps for one answer.`,
@@ -605,7 +862,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const files = row ? q.all('SELECT * FROM oomba_files WHERE chat_id=? ORDER BY created_at', row.id) : [];
   const file = meta && meta.file ? files.find(f => f.id === meta.file.id) : null;
   const image = file && file.kind === 'image' && file.bytes ? Buffer.from(file.bytes) : null;
-  const ctx = { user, page, lang, names, files, seen: new Map(), out: {}, lastList: null };
+  const ctx = { user, page, lang, names, files, seen: new Map(), out: {}, lastList: null, meta: meta || {}, who: chatWho(user, row) };
   const web = { turnId, names: [...names.map(n => n.name), ...SR.namesOf(user)], searches: 0, queries: new Map(), found: new Map(), flagged: false };
   let useWeb = webOn(user, row) && !webBroken;
   const tools = () => (useWeb ? [...toolsFor(page), { ...SR.WEB_SEARCH_TOOL, max_uses: 3 }] : toolsFor(page));
@@ -644,16 +901,19 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   if (web.searches) steps.unshift({ k: web.flagged ? 'webNo' : 'web', n: web.searches });
   const fin = finalText(res && res.content, ctx, web);
   let reply = cleanText(user, fin.text, names);
-  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip) return { failed: 'error' };
+  const points = ctx.out.points || [];
+  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !points.length && !ctx.out.pick) return { failed: 'error' };
   if (!SR.textOk(reply)) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
   const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}),
-    ...(ctx.out.manip ? { manip: ctx.out.manip } : {}) };
+    ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}) };
   log('info', 'companion answered', { turn: turnId, ms: note.ms, steps: steps.length, web: web.searches, page: page.type });
   if (ctx.out.manip) audit(user.id, 'manip.chat', ctx.out.manip.tool, { changed: true });
   const fig = ctx.out.figures;
   return {
     reply, apply: () => {
       if (image && file) dropBytes(file.id);
+      // Points: given here, in the engine's transaction with Oomba's turn, with Undo (Google Classroom after it).
+      if (points.length) { const a = awardPoints(user, points.map(x => ({ ...x, user: x.user === 'class' ? null : x.user })), lang); return a ? { note, ...a } : { note }; }
       if (!fig) return { note };
       // A worksheet's change: written in the engine's transaction, with its Undo (only what is still as Oomba left it).
       const w = F.ownWorksheet(user, fig.sheetId); if (!w) return { note };
@@ -674,11 +934,18 @@ export const surface = C.defineSurface({
   keepDays: CS.BOUNDS.retentionDays[1],
   may: u => companionFor(u),
   context: (u, key) => (key === KEY ? { key } : null),
-  clean: (u, text) => cleanText(u, text),
+  // Names become placeholders ("[student 1]"); which students each stands for is kept by meta() below, server-side.
+  clean: (u, text) => tokenize(u, text).text,
   // Checked again when the job starts: a student may have joined a class since (the words were cleaned on sending).
   check: (u, text) => wordsProblem(text) || (cleanText(u, text) !== text ? 'names' : null),
   meta(u, ctx, body) {
     const out = { page: pageOf(u, body.page), lang: typeof body.lang === 'string' && /^[a-zA-Z-]{2,8}$/.test(body.lang) ? body.lang : 'en' };
+    // The placeholders' students (ids only; the same words and conversation as clean() saw, so the same numbers). A
+    // message sent again (Try again) keeps the numbers its words already carry.
+    const row = chatRow(u), prev = chatWho(u, row), tk = tokenize(u, wordsOf(body.text), { prev });
+    const who = { ...tk.who };
+    for (const [, n] of tk.text.matchAll(TOKEN)) if (!who[n] && prev[n]) who[n] = prev[n];
+    if (Object.keys(who).length) out._who = who;
     if (body.file) { const f = fileOf(u, String(body.file)); if (!f) return { code: 'fileGone' }; out.file = fileRef(f); }
     // On a board: the board as the AI may see it, built here from what the page sent (manip-chat.js pageBoard).
     if (out.page.type === 'manip' && body.board && typeof body.board === 'object') { const b = MC.pageBoard(u, { ...body.board, tool: out.page.tool, boardId: out.page.boardId }); if (b) out.page.board = b; }
@@ -688,6 +955,7 @@ export const surface = C.defineSurface({
   answer,
   undo: (u, ctx, data) => {
     if (data && data.kind === 'figures') { const w = F.ownWorksheet(u, data.sheetId); return w ? FC.undoPlan(u, w, data) : { ok: false, code: 'notFound' }; }
+    if (data && data.kind === 'point') return undoPoints(u, data);
     return undoProposal(u, data);
   },
   // "Ask Oomba about this" on a Figures question: ref "<worksheet>:<question>", only the teacher's own.
@@ -744,8 +1012,9 @@ export function reset(u) {
   return { ok: true };
 }
 
-/** A tap on a card. act: 'apply' | 'decline' (a dashboard proposal), 'handoff' (the teacher opens a hand-off). */
-export function act(u, turnId, a) {
+/** A tap on a card. act: 'apply' | 'decline' (a dashboard proposal), 'handoff' (the teacher opens a hand-off), 'pick'
+ *  (a point's choice card: value is the class, the student or the reason). */
+export function act(u, turnId, a, value = '') {
   if (!companionFor(u)) return { ok: false, code: 'notFound' };
   const row = chatRow(u); if (!row) return { ok: false, code: 'notFound' };
   const turns = parse(row.turns, []);
@@ -759,6 +1028,7 @@ export function act(u, turnId, a) {
     if (a === 'decline') return markNote(u, row, turn.id, { ...note, proposal: { ...p, state: 'declined' } });
     return C.addTurn(u, SURFACE, KEY, { mark: { id: turn.id, fields: { note: { ...note, proposal: { ...p, state: 'applied' } } } }, apply: () => applyProposal(u, p), text: '' });
   }
+  if (a === 'pick') return pickOne(u, row, turn, value);
   if (a === 'manipApplied') {
     const m = note.manip; if (!m) return { ok: false, code: 'notFound' };
     return markNote(u, row, turn.id, { ...note, manip: { ...m, applied: true } });
