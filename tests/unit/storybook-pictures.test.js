@@ -11,6 +11,7 @@
 import './_live.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
 import { call, teacher, teacher2, mia, kid, mum, cls, q, RL, config, cookieFor, ctx } from './_live.js';
 import * as SB from '../../server/services/storybook.js';
 import * as C from '../../server/services/oomba-chat.js';
@@ -76,7 +77,7 @@ test('a new book: character sheets first, then every page with its characters\' 
   const two = pages.find(c => c.body.contents[0].parts.filter(p => p.inlineData).length === 2);
   assert.ok(two, 'a page with two characters has two reference pictures');
   const parts = two.body.contents[0].parts;
-  assert.match(parts[1].text, /^Reference picture 1: /); assert.equal(parts[2].inlineData.mimeType, 'image/webp'); assert.ok(parts[2].inlineData.data.length > 100);
+  assert.match(parts[1].text, /^Reference picture 1: /); assert.equal(parts[2].inlineData.mimeType, 'image/png'); assert.ok(parts[2].inlineData.data.length > 100);
   // every picture passed the picture check as WebP, and is kept
   assert.equal(checks.length, fake.calls.length); assert.ok(checks.every(m => m === 'image/webp'));
   assert.ok(draws(id).every(d => d.state === 'done' && d.pic_id));
@@ -469,4 +470,15 @@ test('Google refuses the full request (400 INVALID_ARGUMENT): its message is kep
     await G.generate({ prompt: 'z' });
     assert.match(models.at(-1), /-preview$/, 'kept');
   } finally { G.hooks.generate = prev; G.resetLearned(); }
+});
+
+test('reference pictures go to Google as PNG; refused as "Unable to process input image": drawn again from words only', async () => {
+  const webp = await new Promise((res, rej) => {
+    const ff = spawn('ffmpeg', ['-v', 'error', '-f', 'lavfi', '-i', 'color=c=red:s=32x32', '-frames:v', '1', '-c:v', 'libwebp', '-f', 'webp', 'pipe:1']);
+    const out = []; ff.stdout.on('data', d => out.push(d)); ff.on('error', rej); ff.on('close', () => res(Buffer.concat(out)));
+  }).catch(() => null);
+  if (!webp || !webp.length) return;   // no ffmpeg here
+  const png = await D.toPng(webp);
+  assert.ok(D.pngSize(png), 'converted to PNG');
+  assert.ok((await D.toPng(png)).equals(png), 'a PNG stays as it is');
 });
