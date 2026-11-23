@@ -3659,7 +3659,14 @@
         "image": "L'immagine",
         "electrons": "Gli elettroni",
         "values": "I valori",
-        "reading": "La lettura"
+        "reading": "La lettura",
+        "regions": "Le regioni",
+        "stresses": "Le perturbazioni",
+        "formulas": "Le formule",
+        "names": "I nomi",
+        "data": "I dati",
+        "name": "Il nome della forma",
+        "electrodes": "Gli elettrodi"
       },
       "draw": {
         "modeLabel": "Come creare la figura",
@@ -13244,6 +13251,34 @@
         "name": "Onde",
         "desc": "Onde trasversali e longitudinali"
       },
+      "circularMotion": {
+        "name": "Moto circolare",
+        "desc": "Velocità, accelerazione centripeta e forze"
+      },
+      "fields": {
+        "name": "Campi elettrici e magnetici",
+        "desc": "Linee di campo di cariche, piastre, magneti e fili"
+      },
+      "lever": {
+        "name": "Leve",
+        "desc": "Leve di primo, secondo e terzo genere"
+      },
+      "torque": {
+        "name": "Momento torcente",
+        "desc": "Travi su un perno, due appoggi o un muro"
+      },
+      "pendulum": {
+        "name": "Pendolo",
+        "desc": "Un'oscillazione con angolo, lunghezza e altezza"
+      },
+      "spring": {
+        "name": "Molle",
+        "desc": "Legge di Hooke, in serie e in parallelo, oscillazione"
+      },
+      "rollerCoaster": {
+        "name": "Montagne russe",
+        "desc": "Altezze, un giro della morte e velocità dall'energia"
+      },
       "reading": {
         "name": "Lettura di una scala",
         "desc": "Termometri, cilindri graduati, righelli e calibri"
@@ -13308,6 +13343,34 @@
         "name": "Livelli energetici dell'atomo",
         "desc": "Transizioni elettroniche, lunghezze d'onda e serie"
       },
+      "chromatography": {
+        "name": "Cromatografia",
+        "desc": "Cromatogrammi su carta con misure di Rf"
+      },
+      "galvanicCell": {
+        "name": "Celle elettrochimiche",
+        "desc": "Pile galvaniche con ponte salino e strumento di misura"
+      },
+      "phaseDiagram": {
+        "name": "Diagramma di stato",
+        "desc": "Pressione in funzione della temperatura, punto triplo e critico"
+      },
+      "bondEnergy": {
+        "name": "Curva dell'energia di legame",
+        "desc": "Energia potenziale in funzione della distanza internucleare"
+      },
+      "equilibrium": {
+        "name": "Grafico dell'equilibrio",
+        "desc": "Concentrazione nel tempo e principio di Le Châtelier"
+      },
+      "rateLaw": {
+        "name": "Grafici della legge cinetica",
+        "desc": "[A], ln[A] e 1/[A] nel tempo, secondo l'ordine"
+      },
+      "vsepr": {
+        "name": "Geometrie VSEPR",
+        "desc": "Forme delle molecole in 3D, angoli di legame e coppie solitarie"
+      },
       "populationGrowth": {
         "name": "Crescita della popolazione",
         "desc": "Curve a J e a S, K e le fasi di crescita"
@@ -13343,6 +13406,10 @@
       "osmosis": {
         "name": "Osmosi",
         "desc": "Cellule, tubi a U e sacchetti in soluzioni"
+      },
+      "cladogram": {
+        "name": "Cladogramma",
+        "desc": "Taxa, caratteri condivisi e alberi filogenetici"
       },
       "supplyDemand": {
         "name": "Domanda e offerta",

@@ -3659,7 +3659,14 @@
         "image": "Het beeld",
         "electrons": "De elektronen",
         "values": "De waarden",
-        "reading": "De aflezing"
+        "reading": "De aflezing",
+        "regions": "De gebieden",
+        "stresses": "De verstoringen",
+        "formulas": "De formules",
+        "names": "De namen",
+        "data": "De gegevens",
+        "name": "De naam van de vorm",
+        "electrodes": "De elektroden"
       },
       "draw": {
         "modeLabel": "Hoe je de figuur maakt",
@@ -13244,6 +13251,34 @@
         "name": "Golven",
         "desc": "Transversale en longitudinale golven"
       },
+      "circularMotion": {
+        "name": "Cirkelbeweging",
+        "desc": "Snelheid, middelpuntzoekende versnelling en krachten"
+      },
+      "fields": {
+        "name": "Elektrische en magnetische velden",
+        "desc": "Veldlijnen van ladingen, platen, magneten en draden"
+      },
+      "lever": {
+        "name": "Hefbomen",
+        "desc": "Hefbomen van klasse 1, 2 en 3 met de kracht berekend"
+      },
+      "torque": {
+        "name": "Moment",
+        "desc": "Balken op een draaipunt, twee steunpunten of een muur"
+      },
+      "pendulum": {
+        "name": "Slinger",
+        "desc": "Een slingering met hoek, lengte en hoogte"
+      },
+      "spring": {
+        "name": "Veren",
+        "desc": "Wet van Hooke, serie en parallel, trilling"
+      },
+      "rollerCoaster": {
+        "name": "Achtbaan",
+        "desc": "Hoogtes, een looping en snelheden uit energie"
+      },
       "reading": {
         "name": "Een schaal aflezen",
         "desc": "Thermometers, maatcilinders, linialen en schuifmaten"
@@ -13308,6 +13343,34 @@
         "name": "Energieniveaus van het atoom",
         "desc": "Elektronenovergangen, golflengten en reeksen"
       },
+      "chromatography": {
+        "name": "Chromatografie",
+        "desc": "Papierchromatogrammen met Rf-waarden"
+      },
+      "galvanicCell": {
+        "name": "Elektrochemische cellen",
+        "desc": "Galvanische cellen met een zoutbrug en een meter"
+      },
+      "phaseDiagram": {
+        "name": "Fasediagram",
+        "desc": "Druk tegen temperatuur, tripelpunt en kritisch punt"
+      },
+      "bondEnergy": {
+        "name": "Bindingsenergiekromme",
+        "desc": "Potentiële energie tegen de afstand tussen de kernen"
+      },
+      "equilibrium": {
+        "name": "Evenwichtsgrafiek",
+        "desc": "Concentratie tegen tijd en het principe van Le Chatelier"
+      },
+      "rateLaw": {
+        "name": "Grafieken van de snelheidsvergelijking",
+        "desc": "[A], ln[A] en 1/[A] tegen de tijd, per orde"
+      },
+      "vsepr": {
+        "name": "VSEPR-vormen",
+        "desc": "Ruimtelijke bouw van moleculen, bindingshoeken en vrije elektronenparen"
+      },
       "populationGrowth": {
         "name": "Populatiegroei",
         "desc": "J- en S-curven, K en de groeifasen"
@@ -13343,6 +13406,10 @@
       "osmosis": {
         "name": "Osmose",
         "desc": "Cellen, U-buizen en zakjes in oplossingen"
+      },
+      "cladogram": {
+        "name": "Cladogram",
+        "desc": "Taxa, gedeelde kenmerken en stambomen"
       },
       "supplyDemand": {
         "name": "Vraag en aanbod",

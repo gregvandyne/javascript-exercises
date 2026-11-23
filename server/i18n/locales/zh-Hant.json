@@ -3658,7 +3658,14 @@
         "image": "像",
         "electrons": "電子",
         "values": "數值",
-        "reading": "讀數"
+        "reading": "讀數",
+        "regions": "區域",
+        "stresses": "外加的改變",
+        "formulas": "化學式",
+        "names": "名稱",
+        "data": "數據",
+        "name": "形狀名稱",
+        "electrodes": "電極"
       },
       "draw": {
         "modeLabel": "如何做出圖形",
@@ -13243,6 +13250,34 @@
         "name": "波",
         "desc": "橫波和縱波"
       },
+      "circularMotion": {
+        "name": "圓周運動",
+        "desc": "速度、向心加速度與力"
+      },
+      "fields": {
+        "name": "電場與磁場",
+        "desc": "電荷、平行板、磁鐵與導線的場線"
+      },
+      "lever": {
+        "name": "槓桿",
+        "desc": "第一、二、三類槓桿與所需施力"
+      },
+      "torque": {
+        "name": "力矩",
+        "desc": "支在支點、兩個支撐或牆上的棒"
+      },
+      "pendulum": {
+        "name": "單擺",
+        "desc": "有擺角、擺長與高度的擺動"
+      },
+      "spring": {
+        "name": "彈簧",
+        "desc": "虎克定律、串聯與並聯、振動"
+      },
+      "rollerCoaster": {
+        "name": "雲霄飛車",
+        "desc": "高度、迴圈與由能量求速率"
+      },
       "reading": {
         "name": "讀取刻度",
         "desc": "溫度計、量筒、尺和游標卡尺"
@@ -13307,6 +13342,34 @@
         "name": "原子能階",
         "desc": "電子躍遷、波長與譜系"
       },
+      "chromatography": {
+        "name": "層析",
+        "desc": "附 Rf 值測量的紙層析圖"
+      },
+      "galvanicCell": {
+        "name": "電化學電池",
+        "desc": "附鹽橋和電表的伽凡尼電池"
+      },
+      "phaseDiagram": {
+        "name": "相圖",
+        "desc": "壓力對溫度，三相點與臨界點"
+      },
+      "bondEnergy": {
+        "name": "鍵能曲線",
+        "desc": "位能對核間距離"
+      },
+      "equilibrium": {
+        "name": "平衡圖",
+        "desc": "濃度對時間與勒沙特列原理"
+      },
+      "rateLaw": {
+        "name": "速率定律圖",
+        "desc": "依反應級數畫 [A]、ln[A] 與 1/[A] 對時間"
+      },
+      "vsepr": {
+        "name": "VSEPR 分子形狀",
+        "desc": "立體分子形狀、鍵角與孤對電子"
+      },
       "populationGrowth": {
         "name": "族群成長",
         "desc": "J 形與 S 形曲線、K 與成長階段"
@@ -13342,6 +13405,10 @@
       "osmosis": {
         "name": "滲透",
         "desc": "溶液中的細胞、U 形管與袋子"
+      },
+      "cladogram": {
+        "name": "分支圖",
+        "desc": "分類群、共有特徵與親緣關係樹"
       },
       "supplyDemand": {
         "name": "供給與需求",

@@ -3658,7 +3658,14 @@
         "image": "La imagen",
         "electrons": "Los electrones",
         "values": "Los valores",
-        "reading": "La lectura"
+        "reading": "La lectura",
+        "regions": "Las regiones",
+        "stresses": "Los cambios",
+        "formulas": "Las fórmulas",
+        "names": "Los nombres",
+        "data": "Los datos",
+        "name": "El nombre de la forma",
+        "electrodes": "Los electrodos"
       },
       "draw": {
         "modeLabel": "Cómo hacer la figura",
@@ -13243,6 +13250,34 @@
         "name": "Ondas",
         "desc": "Ondas transversales y longitudinales"
       },
+      "circularMotion": {
+        "name": "Movimiento circular",
+        "desc": "Velocidad, aceleración centrípeta y fuerzas"
+      },
+      "fields": {
+        "name": "Campos eléctricos y magnéticos",
+        "desc": "Líneas de campo de cargas, placas, imanes y cables"
+      },
+      "lever": {
+        "name": "Palancas",
+        "desc": "Palancas de primera, segunda y tercera clase"
+      },
+      "torque": {
+        "name": "Momento de fuerza",
+        "desc": "Vigas sobre un pivote, dos apoyos o una pared"
+      },
+      "pendulum": {
+        "name": "Péndulo",
+        "desc": "Una oscilación con su ángulo, longitud y altura"
+      },
+      "spring": {
+        "name": "Resortes",
+        "desc": "Ley de Hooke, en serie y en paralelo, oscilación"
+      },
+      "rollerCoaster": {
+        "name": "Montaña rusa",
+        "desc": "Alturas, un rizo y rapideces a partir de la energía"
+      },
       "reading": {
         "name": "Lectura de una escala",
         "desc": "Termómetros, probetas, reglas y calibres"
@@ -13307,6 +13342,34 @@
         "name": "Niveles de energía atómicos",
         "desc": "Transiciones electrónicas, longitudes de onda y series"
       },
+      "chromatography": {
+        "name": "Cromatografía",
+        "desc": "Cromatogramas en papel con medidas de Rf"
+      },
+      "galvanicCell": {
+        "name": "Pilas electroquímicas",
+        "desc": "Pilas galvánicas con puente salino y medidor"
+      },
+      "phaseDiagram": {
+        "name": "Diagrama de fases",
+        "desc": "Presión frente a temperatura, puntos triple y crítico"
+      },
+      "bondEnergy": {
+        "name": "Curva de energía de enlace",
+        "desc": "Energía potencial frente a distancia internuclear"
+      },
+      "equilibrium": {
+        "name": "Gráfica de equilibrio",
+        "desc": "Concentración frente a tiempo y principio de Le Châtelier"
+      },
+      "rateLaw": {
+        "name": "Gráficas de la ley de velocidad",
+        "desc": "[A], ln[A] y 1/[A] frente al tiempo, según el orden"
+      },
+      "vsepr": {
+        "name": "Geometría VSEPR",
+        "desc": "Formas moleculares en 3D, ángulos de enlace y pares solitarios"
+      },
       "populationGrowth": {
         "name": "Crecimiento de la población",
         "desc": "Curvas J y S, K y las fases de crecimiento"
@@ -13342,6 +13405,10 @@
       "osmosis": {
         "name": "Ósmosis",
         "desc": "Células, tubos en U y bolsas en soluciones"
+      },
+      "cladogram": {
+        "name": "Cladograma",
+        "desc": "Taxones, caracteres compartidos y árboles filogenéticos"
       },
       "supplyDemand": {
         "name": "Oferta y demanda",

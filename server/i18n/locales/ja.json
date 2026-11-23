@@ -3658,7 +3658,14 @@
         "image": "像",
         "electrons": "電子",
         "values": "値",
-        "reading": "読み"
+        "reading": "読み",
+        "regions": "領域",
+        "stresses": "加えた変化",
+        "formulas": "化学式",
+        "names": "名前",
+        "data": "データ",
+        "name": "形の名前",
+        "electrodes": "電極"
       },
       "draw": {
         "modeLabel": "図形の作り方",
@@ -13243,6 +13250,34 @@
         "name": "波",
         "desc": "横波と縦波"
       },
+      "circularMotion": {
+        "name": "円運動",
+        "desc": "速度、向心加速度と力"
+      },
+      "fields": {
+        "name": "電場と磁場",
+        "desc": "電荷、極板、磁石、導線のまわりの力線"
+      },
+      "lever": {
+        "name": "てこ",
+        "desc": "第1種・第2種・第3種のてこと必要な力"
+      },
+      "torque": {
+        "name": "力のモーメント",
+        "desc": "支点、2つの支え、壁で支えた棒"
+      },
+      "pendulum": {
+        "name": "振り子",
+        "desc": "角度、長さ、高さのある振り子の運動"
+      },
+      "spring": {
+        "name": "ばね",
+        "desc": "フックの法則、直列と並列、単振動"
+      },
+      "rollerCoaster": {
+        "name": "ジェットコースター",
+        "desc": "高さ、宙返り、エネルギーから求める速さ"
+      },
       "reading": {
         "name": "目盛りの読み取り",
         "desc": "温度計、メスシリンダー、定規、ノギス"
@@ -13307,6 +13342,34 @@
         "name": "原子のエネルギー準位",
         "desc": "電子の遷移、波長、系列"
       },
+      "chromatography": {
+        "name": "クロマトグラフィー",
+        "desc": "Rf値を測るペーパークロマトグラフィー"
+      },
+      "galvanicCell": {
+        "name": "電池（電気化学セル）",
+        "desc": "塩橋と計器のあるガルバニ電池"
+      },
+      "phaseDiagram": {
+        "name": "状態図",
+        "desc": "温度と圧力、三重点と臨界点"
+      },
+      "bondEnergy": {
+        "name": "結合エネルギー曲線",
+        "desc": "原子核間距離とポテンシャルエネルギー"
+      },
+      "equilibrium": {
+        "name": "平衡のグラフ",
+        "desc": "濃度の時間変化とルシャトリエの原理"
+      },
+      "rateLaw": {
+        "name": "速度式のグラフ",
+        "desc": "反応次数ごとの[A]、ln[A]、1/[A]と時間"
+      },
+      "vsepr": {
+        "name": "VSEPRによる分子の形",
+        "desc": "分子の立体的な形、結合角、非共有電子対"
+      },
       "populationGrowth": {
         "name": "個体群の成長",
         "desc": "J字とS字の曲線、Kと成長の段階"
@@ -13342,6 +13405,10 @@
       "osmosis": {
         "name": "浸透",
         "desc": "溶液の中の細胞・U字管・袋"
+      },
+      "cladogram": {
+        "name": "分岐図",
+        "desc": "分類群、共有形質と系統樹"
       },
       "supplyDemand": {
         "name": "需要と供給",

@@ -3659,7 +3659,14 @@
         "image": "Das Bild",
         "electrons": "Die Elektronen",
         "values": "Die Werte",
-        "reading": "Die Ablesung"
+        "reading": "Die Ablesung",
+        "regions": "Die Bereiche",
+        "stresses": "Die Störungen",
+        "formulas": "Die Formeln",
+        "names": "Die Namen",
+        "data": "Die Daten",
+        "name": "Der Name der Form",
+        "electrodes": "Die Elektroden"
       },
       "draw": {
         "modeLabel": "Wie die Figur entsteht",
@@ -13244,6 +13251,34 @@
         "name": "Wellen",
         "desc": "Transversal- und Longitudinalwellen"
       },
+      "circularMotion": {
+        "name": "Kreisbewegung",
+        "desc": "Geschwindigkeit, Zentripetalbeschleunigung und Kräfte"
+      },
+      "fields": {
+        "name": "Elektrische und magnetische Felder",
+        "desc": "Feldlinien von Ladungen, Platten, Magneten und Drähten"
+      },
+      "lever": {
+        "name": "Hebel",
+        "desc": "Hebel der 1., 2. und 3. Art mit berechneter Kraft"
+      },
+      "torque": {
+        "name": "Drehmoment",
+        "desc": "Balken auf einem Drehpunkt, zwei Auflagern oder an einer Wand"
+      },
+      "pendulum": {
+        "name": "Pendel",
+        "desc": "Eine Schwingung mit Winkel, Länge und Höhe"
+      },
+      "spring": {
+        "name": "Federn",
+        "desc": "Hookesches Gesetz, Reihe und parallel, Schwingung"
+      },
+      "rollerCoaster": {
+        "name": "Achterbahn",
+        "desc": "Höhen, ein Looping und Geschwindigkeiten aus der Energie"
+      },
       "reading": {
         "name": "Skala ablesen",
         "desc": "Thermometer, Messzylinder, Lineale und Messschieber"
@@ -13308,6 +13343,34 @@
         "name": "Energieniveaus des Atoms",
         "desc": "Elektronenübergänge, Wellenlängen und Serien"
       },
+      "chromatography": {
+        "name": "Chromatografie",
+        "desc": "Papierchromatogramme mit Rf-Werten"
+      },
+      "galvanicCell": {
+        "name": "Elektrochemische Zellen",
+        "desc": "Galvanische Zellen mit Salzbrücke und Messgerät"
+      },
+      "phaseDiagram": {
+        "name": "Phasendiagramm",
+        "desc": "Druck gegen Temperatur, Tripelpunkt und kritischer Punkt"
+      },
+      "bondEnergy": {
+        "name": "Bindungsenergiekurve",
+        "desc": "Potenzielle Energie gegen den Kernabstand"
+      },
+      "equilibrium": {
+        "name": "Gleichgewichtsdiagramm",
+        "desc": "Konzentration gegen Zeit und das Prinzip von Le Chatelier"
+      },
+      "rateLaw": {
+        "name": "Diagramme zum Geschwindigkeitsgesetz",
+        "desc": "[A], ln[A] und 1/[A] gegen die Zeit, nach Ordnung"
+      },
+      "vsepr": {
+        "name": "VSEPR-Strukturen",
+        "desc": "Räumlicher Bau von Molekülen, Bindungswinkel und freie Elektronenpaare"
+      },
       "populationGrowth": {
         "name": "Populationswachstum",
         "desc": "J- und S-Kurven, K und die Wachstumsphasen"
@@ -13343,6 +13406,10 @@
       "osmosis": {
         "name": "Osmose",
         "desc": "Zellen, U-Rohre und Beutel in Lösungen"
+      },
+      "cladogram": {
+        "name": "Kladogramm",
+        "desc": "Taxa, gemeinsame Merkmale und Stammbäume"
       },
       "supplyDemand": {
         "name": "Angebot und Nachfrage",
