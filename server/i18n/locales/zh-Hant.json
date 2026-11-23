@@ -4023,7 +4023,10 @@
         "tooMany": "你的學習單已達上限。刪除一份後再試一次。",
         "slow": "一小時內的訊息太多了。請稍等一下再試。",
         "other": "出了點問題。你的訊息還在:請稍後再試。"
-      }
+      },
+      "copy": "複製",
+      "copyFailed": "無法複製，請改為選取文字。",
+      "copied": "已複製"
     },
     "figures": {
       "needText": "請先寫幾個字給 Oomba。",
@@ -4141,7 +4144,11 @@
         "nav": "準備好要打開的頁面",
         "navNo": "找不到那個頁面",
         "which": "問了是哪一個",
-        "askNo": "無法提問"
+        "askNo": "無法提問",
+        "howto": "找到步驟了",
+        "howNo": "找不到這些步驟",
+        "classNew": "新班級已準備好，請確認",
+        "classNo": "無法建立這個班級"
       },
       "stepsSum": "{n} 個步驟 · {s} 秒",
       "prog": {
@@ -4252,6 +4259,20 @@
       },
       "ask": {
         "other": "其他"
+      },
+      "cls": {
+        "default": "測試班級",
+        "whichSchool": "這個班級屬於哪所學校？",
+        "ask": "要建立班級「{name}」嗎？",
+        "askGrade": "要建立班級「{name}」（{grade} 年級）嗎？",
+        "at": "在 {school}",
+        "create": "建立",
+        "notNow": "先不要",
+        "created": "已建立",
+        "declined": "未建立",
+        "denied": "在你的學校，只有學校管理員可以建立班級。",
+        "done": "已建立班級 {name}，目前還沒有學生。",
+        "openDash": "開啟它的儀表板"
       }
     },
     "companion-greet": {

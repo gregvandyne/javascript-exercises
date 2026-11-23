@@ -4023,7 +4023,10 @@
         "tooMany": "Tu as atteint le nombre maximum de fiches. Supprimes-en une, puis réessaie.",
         "slow": "Cela fait beaucoup de messages en une heure. Attends un peu, puis réessaie.",
         "other": "Un problème est survenu. Ton message est toujours là : réessaie dans un instant."
-      }
+      },
+      "copy": "Copier",
+      "copyFailed": "Impossible de copier. Sélectionnez le texte.",
+      "copied": "Copié"
     },
     "figures": {
       "needText": "Écris d’abord quelques mots pour Oomba.",
@@ -4141,7 +4144,11 @@
         "nav": "A préparé la page à ouvrir",
         "navNo": "N’a pas trouvé cette page",
         "which": "A demandé laquelle",
-        "askNo": "N’a pas pu poser la question"
+        "askNo": "N’a pas pu poser la question",
+        "howto": "Étapes trouvées",
+        "howNo": "Étapes introuvables",
+        "classNew": "Nouvelle classe prête à vérifier",
+        "classNo": "Impossible de créer cette classe"
       },
       "stepsSum": "{n, plural, one {# étape} other {# étapes}} · {s} s",
       "prog": {
@@ -4252,6 +4259,20 @@
       },
       "ask": {
         "other": "Autre chose"
+      },
+      "cls": {
+        "default": "Classe test",
+        "whichSchool": "Pour quelle école est la classe ?",
+        "ask": "Créer la classe « {name} » ?",
+        "askGrade": "Créer la classe « {name} » (niveau {grade}) ?",
+        "at": "À {school}",
+        "create": "Créer",
+        "notNow": "Pas maintenant",
+        "created": "Créée",
+        "declined": "Pas créée",
+        "denied": "Dans votre école, seul un administrateur peut créer des classes.",
+        "done": "La classe {name} est créée. Elle n’a pas encore d’élèves.",
+        "openDash": "Ouvrir son tableau de bord"
       }
     },
     "companion-greet": {

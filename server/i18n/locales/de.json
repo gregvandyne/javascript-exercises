@@ -4024,7 +4024,10 @@
         "tooMany": "Du hast so viele Arbeitsblätter, wie du behalten kannst. Lösche eines und versuch es dann noch einmal.",
         "slow": "Das sind viele Nachrichten in einer Stunde. Warte ein bisschen und versuch es dann noch einmal.",
         "other": "Etwas ist schiefgelaufen. Deine Nachricht ist noch da: Versuch es gleich noch einmal."
-      }
+      },
+      "copy": "Kopieren",
+      "copyFailed": "Kopieren hat nicht geklappt. Markiere den Text stattdessen.",
+      "copied": "Kopiert"
     },
     "figures": {
       "needText": "Schreib zuerst ein paar Worte für Oomba.",
@@ -4142,7 +4145,11 @@
         "nav": "Die Seite zum Öffnen vorbereitet",
         "navNo": "Diese Seite wurde nicht gefunden",
         "which": "Gefragt, welche",
-        "askNo": "Das ließ sich nicht fragen"
+        "askNo": "Das ließ sich nicht fragen",
+        "howto": "Die Schritte gefunden",
+        "howNo": "Die Schritte nicht gefunden",
+        "classNew": "Eine neue Klasse zum Prüfen vorbereitet",
+        "classNo": "Die Klasse konnte nicht angelegt werden"
       },
       "stepsSum": "{n, plural, one {# Schritt} other {# Schritte}} · {s} s",
       "prog": {
@@ -4253,6 +4260,20 @@
       },
       "ask": {
         "other": "Etwas anderes"
+      },
+      "cls": {
+        "default": "Testklasse",
+        "whichSchool": "Für welche Schule ist die Klasse?",
+        "ask": "Die Klasse „{name}“ anlegen?",
+        "askGrade": "Die Klasse „{name}“ (Klasse {grade}) anlegen?",
+        "at": "An der Schule {school}",
+        "create": "Anlegen",
+        "notNow": "Jetzt nicht",
+        "created": "Angelegt",
+        "declined": "Nicht angelegt",
+        "denied": "An deiner Schule können nur Schuladmins Klassen anlegen.",
+        "done": "Die Klasse {name} ist angelegt. Sie hat noch keine Schüler.",
+        "openDash": "Ihr Dashboard öffnen"
       }
     },
     "companion-greet": {

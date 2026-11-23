@@ -48,6 +48,7 @@ import { register } from './jobs.js';
 import * as FC from './figures-chat.js';
 import * as M from './manipulatives.js';
 import * as MC from './manip-chat.js';
+import * as H from './companion-help.js';
 import { toolOf } from '../../public/js/manip-data.js';
 import { REASON_ICON } from '../../public/js/dash-class5.js';
 
@@ -631,7 +632,7 @@ function pickOne(u, row, turn, value) {
 }
 
 // ---------------------------------------------------------------- the AI's tools
-export const TOOL_NAMES = Object.freeze(['explainOomba', 'getPageContext', 'searchGames', 'searchBooks', 'searchLessons', 'proposeDashboardChange', 'startBuild', 'readUpload', 'givePoint', 'findMyPages', 'proposeNavigation', 'askChoice']);
+export const TOOL_NAMES = Object.freeze(['explainOomba', 'getPageContext', 'searchGames', 'searchBooks', 'searchLessons', 'proposeDashboardChange', 'startBuild', 'readUpload', 'givePoint', 'findMyPages', 'proposeNavigation', 'askChoice', 'howTo', 'createClass']);
 const str = (description, extra = {}) => ({ type: 'string', description, ...extra });
 const TOOLS_BASE = Object.freeze([
   { name: 'explainOomba', description: 'What Oomba Academy offers teachers and what you (Oomba) can and cannot do. Use it when the teacher asks how something on the site works.', input_schema: { type: 'object', properties: { topic: str('What they asked about, in a few words.') } } },
@@ -652,6 +653,8 @@ export const NAV_TYPES = Object.freeze(['dashboard', 'class', 'figures-sheet', '
 const TOOLS_MORE = [
   { name: 'findMyPages', description: 'The teacher\'s own places to go: their classes (each with its dashboard), their Figures worksheets and tests, their Manipulatives boards. Ids, names and grades only. Use it before proposeNavigation when you need a target.', input_schema: { type: 'object', properties: { kind: { type: 'string', enum: ['class', 'dashboard', 'figures-sheet', 'manip'] } } } },
   { name: 'proposeNavigation', description: 'When the request needs a page the teacher is not on (their class dashboard, a class, a Figures worksheet, a Manipulatives board), offer to open it and do the request there: the teacher sees "I\'ll open <page> and do this there" with Go there and Not now, and once that page opens the same request continues by itself. Never tell the teacher to go there and ask again. Leave id out when you do not know which one: the app asks the teacher to pick when there are several.', input_schema: { type: 'object', required: ['pageType'], properties: { pageType: { type: 'string', enum: NAV_TYPES }, id: str('The class, worksheet or board id (from findMyPages), when you know it.'), request: str('The teacher\'s request to carry out there, in their own words (when it was not their last message).') } } },
+  { name: 'howTo', description: `How to do something on Oomba Academy that you cannot do yourself: the real steps, with links to the teacher's own pages and the buttons' real names. Show the steps as a numbered list exactly as given (links and bold kept; translate the plain words only). Tasks: ${H.TASKS.join(', ')}.`, input_schema: { type: 'object', required: ['task'], properties: { task: { type: 'string', enum: H.TASKS } } } },
+  { name: 'createClass', description: 'Make a new class for the teacher (they are its teacher; no students are added). The teacher sees "Create class ...?" with Create and Not now; nothing is made until they tap Create, and Undo deletes it while it has no students. Use it when they ask for a class, a test class or a practice class. When they did not say a name, use "Test class" for a test or practice class.', input_schema: { type: 'object', properties: { name: str('The class name, short, no student names.'), grade: str('K or 1 to 12, optional.'), school: str('The school\'s name, only when the teacher is at more than one.') } } },
   { name: 'askChoice', description: 'Ask the teacher one short question with 2 to 5 tappable options (a decision or a missing detail: which class, which grade, which of two readings). Use it instead of asking a long question in words. The app adds "Something else". Their tap comes back as their next message.', input_schema: { type: 'object', required: ['question', 'options'], properties: { question: str('One short question.'), options: { type: 'array', minItems: 2, maxItems: 5, items: { type: 'string' } } } } },
 ];
 export const TOOLS = Object.freeze([...TOOLS_BASE, ...TOOLS_MORE]);
@@ -678,6 +681,50 @@ export function navTarget(u, pageType, id, names) {
 /** The page a request was carried to is the page the teacher is on now (the same kind and the same id). */
 export const samePage = (a, b) => !!a && !!b && a.type === b.type && ['classId', 'sheetId', 'boardId'].every(k => (a[k] || '') === (b[k] || ''));
 const navNote = (t, request) => ({ id: uid(10), pageType: t.pageType, targetId: t.id, name: t.name, href: t.href, page: t.page, request, state: 'open', at: now() });
+// A new class (docs/decisions.md "Oomba companion: how-to answers with links, Create class and Copy"): the same rule and
+// service as My classes' New class (routes/schools.js POST /api/classes: canCreateClass, createClass, its rate limit).
+export const createSchools = u => S.schoolsOf(u.id).filter(s => s.role && s.role !== 'student' && S.canCreateClass(u, s.id));
+function classPlan(u, ctx, i) {
+  const all = createSchools(u);
+  if (!all.length) return { error: S.isSchoolStaff(u) ? 'At this school only a school admin can make classes.' : 'The teacher has no school on Oomba yet.' };
+  const name = clip(cleanText(u, String(i.name || ''), ctx.names), 60).replace(/\s+/g, ' ').trim() || tFor(ctx.lang)('js.companion.cls.default');
+  if (/\[student/.test(name)) return { error: 'A class name cannot be a student\'s name.' };
+  const g = gradeNum(i.grade);
+  let s = all.length === 1 ? all[0] : null;
+  if (!s && i.school) { const w = fold(i.school); s = all.find(x => x.id === String(i.school) || fold(x.name) === w) || null; }
+  if (!s && ctx.page.classId) { const c = S.getClass(ctx.page.classId); s = c ? all.find(x => x.id === c.school_id) || null : null; }
+  if (!s) return { ask: { id: uid(10), question: tFor(ctx.lang)('js.companion.cls.whichSchool'), options: all.slice(0, 5).map(x => ({ label: cleanText(u, x.name, ctx.names) })), state: 'open' } };
+  return { plan: { id: uid(10), schoolId: s.id, school: all.length > 1 ? cleanText(u, s.name, ctx.names) : '', name, grade: g === null ? '' : gradeLabel(g), state: 'open' } };
+}
+/** Create on the card: made now, as My classes' New class makes it, with Undo (delete while it has no students) and a
+ *  Go there card for its dashboard. */
+function createAct(u, row, turn, a) {
+  const p = turn.note.classNew;
+  if (!p || p.state !== 'open') return { ok: false, code: 'notFound' };
+  if (a === 'createNo') return markNote(u, row, turn.id, { ...turn.note, classNew: { ...p, state: 'declined' } });
+  if (!S.canCreateClass(u, p.schoolId)) return markNote(u, row, turn.id, { ...turn.note, classNew: { ...p, state: 'denied' } });
+  if (!allow(`class-new:${u.id}`, 60, 3600e3)) return { ok: false, code: 'slow' };
+  return C.addTurn(u, SURFACE, KEY, {
+    mark: { id: turn.id, fields: { note: { ...turn.note, classNew: { ...p, state: 'created' } } } }, text: '',
+    apply: () => {
+      const r = S.createClass(u, p.schoolId, { name: p.name, grade: p.grade });
+      if (!r.ok) return { code: r.code === 'className' ? 'error' : r.code };
+      audit(u.id, 'companion.class.create', r.class.id, { school: p.schoolId });
+      const t = navTarget(u, 'dashboard', r.class.id);
+      return { change: { kind: 'class', classId: r.class.id, name: r.class.name, grade: r.class.grade || '' }, undo: { kind: 'class', classId: r.class.id }, ...(t ? { note: { nav: { ...navNote(t, ''), open: true } } } : {}) };
+    },
+  });
+}
+/** Undo a class Oomba made: deleted while no student was ever in it (as My classes' Delete); otherwise it stays. */
+export function undoClass(u, data) {
+  const c = S.getClass(data.classId);
+  if (!c || !S.canManageClass(u, c)) return { ok: false, code: 'notFound' };
+  if (S.everHadStudents(c.id)) return { ok: false, code: 'classHasStudents' };
+  const r = S.deleteClass(u, c.id);
+  if (!r.ok) return { ok: false, code: r.code };
+  audit(u.id, 'companion.class.undo', c.id, {});
+  return { ok: true, skipped: 0 };
+}
 export const PAGE_TOOLS = Object.freeze({
   'figures-sheet': { name: 'editWorksheet', description: 'Draft or change the Figures worksheet or test the teacher has open (this page only). Only for requests about this worksheet\'s questions, title, grade or units. The change is made at once and the teacher can Undo it.', input_schema: { type: 'object', required: ['edits'], properties: {
     title: { type: 'string' }, grade: { type: 'string' }, units: { type: 'string', enum: FC.UNITS },
@@ -690,8 +737,8 @@ export const toolsFor = page => (PAGE_TOOLS[page.type] ? [...TOOLS, PAGE_TOOLS[p
 
 const EXPLAIN = [
   'Oomba Academy is a kid-safe site with learning games, a Story Library of free picture books, ready-made lessons (CS Quest, Number Quest), classes with assignments and progress, Oomba Live (host a game for the whole class), classroom dashboards with widgets for the projector, Figures (printable worksheets and tests with drawn figures), Math Manipulatives, Mistake Hunt and the AI Builder that makes games and classroom activities from a lesson.',
-  'You (Oomba) can: find games, books and lessons; change the teacher\'s class dashboard after they tap Apply (with Undo); give a dashboard point to a student or the whole class when the teacher asks (with Undo); read a lesson plan they attach (text only) or a picture without people; search the web when it is on, with sources; hand off a build to the Builder, Figures or the Manipulatives with a brief.',
-  'You cannot: see students\' names, answers or work; assign, grade or message students; make a new kind of dashboard widget; change the dashboard\'s layout without the teacher\'s tap.',
+  'You (Oomba) can: find games, books and lessons; change the teacher\'s class dashboard after they tap Apply (with Undo); give a dashboard point to a student or the whole class when the teacher asks (with Undo); make a new class after the teacher taps Create (with Undo while it is empty); open the teacher\'s own pages (Go there); give real steps with links for anything else (howTo); read a lesson plan they attach (text only) or a picture without people; search the web when it is on, with sources; hand off a build to the Builder, Figures or the Manipulatives with a brief.',
+  'You cannot: see students\' names, answers or work; add students or make their accounts; assign, grade or message students; invite people; change school settings; make a new kind of dashboard widget; change the dashboard\'s layout without the teacher\'s tap. For these, call howTo and give its steps.',
   'Privacy: students\' names are taken out of messages and uploads (each name becomes a placeholder like [student 1], so a point can go to the right student without the name ever reaching the AI); audio from the microphone is never kept; a school admin can turn Oomba or its web search off and set how long chats are kept.',
 ].join('\n');
 
@@ -785,6 +832,23 @@ export function runTool(name, input, ctx) {
       ctx.out.ask = { id: uid(10), question: clip(cleanText(u, String(i.question || ''), ctx.names), 200), options: opts.map(label => ({ label })), state: 'open' };
       return { result: { shown: true, note: 'Do not repeat the options in words; the card shows them. Ask the question in one short sentence.' }, step: null };
     }
+    case 'howTo': {
+      const r = H.howTo(u, String(i.task || ''), { page: ctx.page, lang: ctx.lang });
+      if (r.error) return { result: { error: r.error }, step: { k: 'howNo' } };
+      for (const l of r.links) ctx.links.add(l);
+      return { result: { title: r.title, steps: r.steps.map((x, k) => `${k + 1}. ${x}`), ...(r.go ? { go: r.go, note: 'One page covers it: you may also call proposeNavigation with this pageType and id.' } : {}), ...(r.action === 'createClass' && !r.noSchool && !r.denied ? { note: 'You can make the class yourself with createClass.' } : {}) }, step: { k: 'howto' } };
+    }
+    case 'createClass': {
+      const r = classPlan(u, ctx, i);
+      if (r.error) {
+        const help = H.howTo(u, 'create-class', { page: ctx.page, lang: ctx.lang });
+        for (const l of help.links || []) ctx.links.add(l);
+        return { result: { error: r.error, steps: (help.steps || []).map((x, k) => `${k + 1}. ${x}`), note: 'Give these steps as a numbered list, links kept.' }, step: { k: 'classNo' } };
+      }
+      if (r.ask) { ctx.out.ask = r.ask; return { result: { askedWhich: true, note: 'The teacher picks the school on the card. Ask in one short sentence.' }, step: { k: 'which' } }; }
+      ctx.out.classNew = r.plan;
+      return { result: { waitingForTeacher: true, name: r.plan.name, grade: r.plan.grade || null, note: 'The teacher sees Create and Not now. Say so in one short sentence. Once it is made, the card offers to open its dashboard.' }, step: { k: 'classNew' } };
+    }
     case 'editWorksheet': {
       if (ctx.out.points || ctx.out.pick) return { result: { error: 'Change the worksheet in a new message, not with a point.' }, step: { k: 'editNo' } };
       const w = ctx.page.type === 'figures-sheet' ? F.ownWorksheet(u, ctx.page.sheetId) : null;
@@ -823,6 +887,8 @@ function system(u, lang, page, settings) {
     'Never pretend: if you could not find something on Oomba, say so.',
     'Another page: when a request needs a page the teacher is not on (their class dashboard, a class, a Figures worksheet, a Manipulatives board), call proposeNavigation (findMyPages first when you need ids). Never tell the teacher to open it and ask again: the app opens it when they tap Go there and carries the request.',
     'Questions: when you need a decision or a missing detail, call askChoice with 2 to 5 short options instead of asking in a long sentence.',
+    'Classes: when the teacher asks for a new class (a test class, a class to try the dashboard), call createClass; the card asks them to confirm. Ask the grade only when it matters to them.',
+    'How-to: when the teacher asks how to do something, or asks for something you cannot do yourself (add students, print login cards, invite a co-teacher, assign, due dates, host live, progress, school settings, Google Classroom), call howTo and answer with its steps as a numbered list, keeping its links and bold labels exactly. Never invent a page, a link or a button name; links only from your tools. When one page covers it and the tool gives go, also call proposeNavigation for that page.',
     ...(page.rules ? [
       'Routing: this page has its own tool (below). Use it only for requests about what is on this page. Anything else (a book, a game, the dashboard, how the site works, a teaching question) is answered with the general tools, and the page is left as it is. When you cannot tell whether the teacher means this page or something else, ask one short question and change nothing.',
       page.rules,
@@ -870,6 +936,7 @@ function collectWeb(content, web) {
   }
 }
 /** The final text: markers to cards, citations to [^n], no links. -> { text, cards, sources } */
+const MD_LINK = /\[([^\]\n]{1,120})\]\(([^)\s]{1,300})\)/g;
 export function finalText(content, ctx, web) {
   const sources = [];
   const num = c => {
@@ -895,7 +962,10 @@ export function finalText(content, ctx, web) {
   });
   if (!cards.length && ctx.lastList && !ctx.out.proposal && !ctx.out.handoff) for (const k of ctx.lastList.slice(0, 3)) cards.push(ctx.seen.get(k));
   if (!sources.length && web.found.size && web.searches) for (const s of [...web.found.values()].slice(0, 3)) sources.push(s);
-  text = SR.stripLinks(text).replace(/\n{3,}/g, '\n\n').replace(/[ \t]+\n/g, '\n').trim();
+  // Links: only those a tool gave in this answer (the teacher's own pages, from the help map or a navigation target).
+  const kept = [];
+  text = text.replace(MD_LINK, (m, words, href) => (ctx.links && ctx.links.has(href) && words.trim() ? `\u0001${kept.push(`[${words.replace(/[[\]\u0001]/g, '').trim()}](${href})`) - 1}\u0001` : m));
+  text = SR.stripLinks(text).replace(/\u0001(\d+)\u0001/g, (m, n) => kept[Number(n)] || '').replace(/\n{3,}/g, '\n\n').replace(/[ \t]+\n/g, '\n').trim();
   return { text, cards: cards.filter(Boolean).map(cardOf), sources: sources.slice(0, 5) };
 }
 /** What a card carries to the page (ids, titles, safe facts and links). */
@@ -922,7 +992,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const files = row ? q.all('SELECT * FROM oomba_files WHERE chat_id=? ORDER BY created_at', row.id) : [];
   const file = meta && meta.file ? files.find(f => f.id === meta.file.id) : null;
   const image = file && file.kind === 'image' && file.bytes ? Buffer.from(file.bytes) : null;
-  const ctx = { user, page, lang, names, files, seen: new Map(), out: {}, lastList: null, meta: meta || {}, who: chatWho(user, row), text };
+  const ctx = { user, page, lang, names, files, seen: new Map(), out: {}, lastList: null, meta: meta || {}, who: chatWho(user, row), text, links: new Set() };
   const web = { turnId, names: [...names.map(n => n.name), ...SR.namesOf(user)], searches: 0, queries: new Map(), found: new Map(), flagged: false };
   let useWeb = webOn(user, row) && !webBroken;
   const tools = () => (useWeb ? [...toolsFor(page), { ...SR.WEB_SEARCH_TOOL, max_uses: 3 }] : toolsFor(page));
@@ -962,10 +1032,10 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const fin = finalText(res && res.content, ctx, web);
   let reply = cleanText(user, fin.text, names);
   const points = ctx.out.points || [];
-  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !points.length && !ctx.out.pick && !ctx.out.nav && !ctx.out.ask) return { failed: 'error' };
-  if (!SR.textOk(reply)) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
+  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !points.length && !ctx.out.pick && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew) return { failed: 'error' };
+  if (!SR.textOk(reply.replace(MD_LINK, '$1'))) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
   const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}),
-    ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}), ...(ctx.out.nav ? { nav: ctx.out.nav } : {}), ...(ctx.out.ask ? { ask: ctx.out.ask } : {}) };
+    ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}), ...(ctx.out.nav ? { nav: ctx.out.nav } : {}), ...(ctx.out.ask ? { ask: ctx.out.ask } : {}), ...(ctx.out.classNew ? { classNew: ctx.out.classNew } : {}) };
   log('info', 'companion answered', { turn: turnId, ms: note.ms, steps: steps.length, web: web.searches, page: page.type });
   if (ctx.out.manip) audit(user.id, 'manip.chat', ctx.out.manip.tool, { changed: true });
   const fig = ctx.out.figures;
@@ -1016,6 +1086,7 @@ export const surface = C.defineSurface({
   undo: (u, ctx, data) => {
     if (data && data.kind === 'figures') { const w = F.ownWorksheet(u, data.sheetId); return w ? FC.undoPlan(u, w, data) : { ok: false, code: 'notFound' }; }
     if (data && data.kind === 'point') return undoPoints(u, data);
+    if (data && data.kind === 'class') return undoClass(u, data);
     return undoProposal(u, data);
   },
   // "Ask Oomba about this" on a Figures question: ref "<worksheet>:<question>", only the teacher's own.
@@ -1092,6 +1163,7 @@ export function act(u, turnId, a, value = '') {
   if (a === 'pick') return pickOne(u, row, turn, value);
   if (a === 'go' || a === 'notNow') return navAct(u, row, turn, a);
   if (a === 'askPick') return askPick(u, row, turn, value);
+  if (a === 'create' || a === 'createNo') return createAct(u, row, turn, a);
   if (a === 'manipApplied') {
     const m = note.manip; if (!m) return { ok: false, code: 'notFound' };
     return markNote(u, row, turn.id, { ...note, manip: { ...m, applied: true } });
@@ -1113,7 +1185,9 @@ function navAct(u, row, turn, a) {
     q.run('UPDATE oomba_chats SET opts=? WHERE id=?', JSON.stringify({ ...optsOf(row), pending: null }), row.id);
     return markNote(u, row, turn.id, { ...turn.note, nav: { ...n, state: t ? 'declined' : 'gone' } });
   }
-  if (now() - n.at > NAV_KEEP_MS) return markNote(u, row, turn.id, { ...turn.note, nav: { ...n, state: 'expired' } });
+  if (now() - n.at > NAV_KEEP_MS && !n.open) return markNote(u, row, turn.id, { ...turn.note, nav: { ...n, state: 'expired' } });
+  // Only opening a page (a class just made): nothing to carry there.
+  if (!n.request) { audit(u.id, 'companion.nav', t.id, { pageType: t.pageType }); return { ...markNote(u, row, turn.id, { ...turn.note, nav: { ...n, state: 'going' } }), href: t.href }; }
   q.run('UPDATE oomba_chats SET opts=? WHERE id=?', JSON.stringify({ ...optsOf(row), pending: { nav: n.id, turn: turn.id, page: t.page, request: n.request, at: now() } }), row.id);
   audit(u.id, 'companion.nav', t.id, { pageType: t.pageType });
   const r = markNote(u, row, turn.id, { ...turn.note, nav: { ...n, state: 'going' } });

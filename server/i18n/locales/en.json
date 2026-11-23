@@ -4305,7 +4305,10 @@
         "tooMany": "You have as many worksheets as you can keep. Delete one, then try again.",
         "slow": "That’s a lot of messages for one hour. Wait a little, then try again.",
         "other": "Something went wrong. Your message is still here: try again in a moment."
-      }
+      },
+      "copy": "Copy",
+      "copyFailed": "Couldn't copy. Select the text instead.",
+      "copied": "Copied"
     },
     "figures": {
       "needText": "Write a few words for Oomba first.",
@@ -4423,7 +4426,11 @@
         "nav": "Got the page ready to open",
         "navNo": "Couldn't find that page",
         "which": "Asked which one",
-        "askNo": "Couldn't ask that"
+        "askNo": "Couldn't ask that",
+        "howto": "Found the steps",
+        "howNo": "Couldn't find those steps",
+        "classNew": "Got a new class ready for you to check",
+        "classNo": "Couldn't make that class"
       },
       "stepsSum": "{n, plural, one {# step} other {# steps}} · {s} s",
       "prog": {
@@ -4534,6 +4541,20 @@
       },
       "ask": {
         "other": "Something else"
+      },
+      "cls": {
+        "default": "Test class",
+        "whichSchool": "Which school is the class for?",
+        "ask": "Create the class “{name}”?",
+        "askGrade": "Create the class “{name}” (grade {grade})?",
+        "at": "At {school}",
+        "create": "Create",
+        "notNow": "Not now",
+        "created": "Created",
+        "declined": "Not made",
+        "denied": "At your school only a school admin can make classes.",
+        "done": "Made the class {name}. It has no students yet.",
+        "openDash": "Open its dashboard"
       }
     },
     "companion-greet": {
