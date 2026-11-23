@@ -14837,8 +14837,8 @@
     "chat": {
       "hello": "Let's make a book.",
       "noTheme": "No theme",
-      "contextAi": "Type your ideas in the box below and send them, or attach files and pictures with the paperclip. They go into your book, not to the chat. Then check what will be sent.",
-      "contextUpload": "Paste your story in the box below and send it, or attach it as a file with the paperclip (pictures too). It goes into your book, not to the chat. Then check what will be sent.",
+      "contextAi": "Type your ideas in the box below and send them, or attach files and pictures with the paperclip. They go into your book, not to the chat. Oomba then shows you exactly what will be sent.",
+      "contextUpload": "Paste your story in the box below and send it, or attach it as a file with the paperclip (pictures too). It goes into your book, not to the chat. Oomba then shows you exactly what will be sent.",
       "added": "Added to your book.",
       "picsN": "{count, plural, one {# picture} other {# pictures}}",
       "stop": "Stop",
@@ -14849,7 +14849,8 @@
       "picGone": "A picture you added is no longer kept. Please add it again.",
       "tooManyPics": "That's as many pictures as a new book can take.",
       "tooManyFiles": "That's as many files as a new book can take.",
-      "fileGone": "That file is no longer here. Please attach it again."
+      "fileGone": "That file is no longer here. Please attach it again.",
+      "nothingToAdd": "Nothing to add"
     }
   }
 }

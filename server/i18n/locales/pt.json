@@ -14123,8 +14123,8 @@
     "chat": {
       "hello": "Vamos fazer um livro.",
       "noTheme": "Sem tema",
-      "contextAi": "Digite suas ideias na caixa abaixo e envie, ou anexe arquivos e imagens com o clipe. Elas vão para o seu livro, não para o chat. Depois confira o que será enviado.",
-      "contextUpload": "Cole sua história na caixa abaixo e envie, ou anexe como arquivo com o clipe (imagens também). Ela vai para o seu livro, não para o chat. Depois confira o que será enviado.",
+      "contextAi": "Digite suas ideias na caixa abaixo e envie, ou anexe arquivos e imagens com o clipe. Elas vão para o seu livro, não para o chat. Depois o Oomba mostra exatamente o que será enviado.",
+      "contextUpload": "Cole sua história na caixa abaixo e envie, ou anexe como arquivo com o clipe (imagens também). Ela vai para o seu livro, não para o chat. Depois o Oomba mostra exatamente o que será enviado.",
       "added": "Adicionado ao seu livro.",
       "picsN": "{count, plural, one {# imagem} other {# imagens}}",
       "stop": "Parar",
@@ -14135,7 +14135,8 @@
       "picGone": "Uma imagem que você adicionou não está mais guardada. Adicione de novo.",
       "tooManyPics": "Um livro novo não aceita mais imagens.",
       "tooManyFiles": "Um livro novo não aceita mais arquivos.",
-      "fileGone": "Esse arquivo não está mais aqui. Anexe de novo."
+      "fileGone": "Esse arquivo não está mais aqui. Anexe de novo.",
+      "nothingToAdd": "Nada a acrescentar"
     }
   }
 }

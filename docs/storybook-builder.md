@@ -79,7 +79,11 @@ steps above and the editor's own chat.
   above the box, with ✕ to talk to Oomba instead). Attached documents (the companion's upload: the Builder's lesson
   reader, scrubbed, screened) add their text after the typed words, as the page puts a file's text in its box; attached
   pictures (the companion's no-people check) go on the first pages. Limits are the page's (`SETUP_LIMITS`).
-- **Check** (`act: bookCheck`, and by itself once every answer is in): `storybook.cleanSetup`, `setupProblems`,
+- **Check** (no button: the owner, 23 Nov 2026, "Let's ditch the check what Oomba sees button and just automatically go
+  to the check"). The first words or file the teacher sends move the card straight on to the check, which checks itself
+  once (`act: bookCheck` from the page); a book made by AI with nothing to add has "Nothing to add" instead. While the
+  check card is the last message, more words or files still go into the book and it checks again; Edit brings back Your
+  words. The check: `storybook.cleanSetup`, `setupProblems`,
   `screenSetup`, exactly as `POST /api/library/make/check`. The card lists what will be sent (the start, the kind, the
   choices, the words after the scrubber, the file names, the pictures), each with Edit, the names-taken-out count, any
   problem, the reminder never to include students' names or work, and Make my book (off until it passes and a turn is

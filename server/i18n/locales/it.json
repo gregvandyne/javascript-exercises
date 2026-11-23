@@ -14122,8 +14122,8 @@
     "chat": {
       "hello": "Facciamo un libro.",
       "noTheme": "Nessun tema",
-      "contextAi": "Scrivi le tue idee nel riquadro qui sotto e inviale, oppure allega file e immagini con la graffetta. Vanno nel tuo libro, non nella chat. Poi controlla cosa verrà inviato.",
-      "contextUpload": "Incolla la tua storia nel riquadro qui sotto e inviala, oppure allegala come file con la graffetta (anche immagini). Va nel tuo libro, non nella chat. Poi controlla cosa verrà inviato.",
+      "contextAi": "Scrivi le tue idee nel riquadro qui sotto e inviale, oppure allega file e immagini con la graffetta. Vanno nel tuo libro, non nella chat. Poi Oomba ti mostra esattamente cosa verrà inviato.",
+      "contextUpload": "Incolla la tua storia nel riquadro qui sotto e inviala, oppure allegala come file con la graffetta (anche immagini). Va nel tuo libro, non nella chat. Poi Oomba ti mostra esattamente cosa verrà inviato.",
       "added": "Aggiunto al tuo libro.",
       "picsN": "{count, plural, one {# immagine} other {# immagini}}",
       "stop": "Ferma",
@@ -14134,7 +14134,8 @@
       "picGone": "Un'immagine che hai aggiunto non è più conservata. Aggiungila di nuovo.",
       "tooManyPics": "Un libro nuovo non può avere altre immagini.",
       "tooManyFiles": "Un libro nuovo non può avere altri file.",
-      "fileGone": "Quel file non c'è più. Allegalo di nuovo."
+      "fileGone": "Quel file non c'è più. Allegalo di nuovo.",
+      "nothingToAdd": "Niente da aggiungere"
     }
   }
 }

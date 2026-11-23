@@ -123,12 +123,15 @@ test('laptop: a request skips what it answered, the cards, notes and a file, the
     // Your words: typed notes and a file go into the book, never to the AI
     await page.locator('#oc-bookmode:not([hidden])').waitFor();
     assert.match(await page.locator('#oc-bookmode').textContent(), /Adding to your book/);
-    await say(page, 'The water cycle, told by a raindrop called Drip who travels from a puddle to a cloud.');
-    await page.locator('.oc-book .oc-bhave').last().waitFor();
-    await page.setInputFiles('#oc-file', { name: 'raindrop-notes.txt', mimeType: 'text/plain', buffer: Buffer.from('Evaporation: the sun warms the water. Condensation: clouds form. Precipitation: rain falls back down.') });
-    await page.locator('.oc-book .oc-bhave', { hasText: 'raindrop-notes.txt' }).waitFor({ timeout: 10000 });
+    // No Check button (the owner, 23 Nov 2026): the card at Your words has none; sending goes straight on to the check.
+    assert.equal(await bookCard(page).locator('[data-act="bookCheck"]', { hasText: /Check/ }).count(), 0, 'no Check button');
     await shot(page, 'cb-3-attach');
-    await bookCard(page).locator('[data-act="bookCheck"]').click();
+    await say(page, 'The water cycle, told by a raindrop called Drip who travels from a puddle to a cloud.');
+    await page.locator('.oc-bcheck [data-act="bookStart"]:not([disabled])').last().waitFor({ timeout: 15000 });
+    // Still adding to the book at the check: a file goes in and the card checks again
+    assert.match(await page.locator('#oc-bookmode').textContent(), /Adding to your book/);
+    await page.setInputFiles('#oc-file', { name: 'raindrop-notes.txt', mimeType: 'text/plain', buffer: Buffer.from('Evaporation: the sun warms the water. Condensation: clouds form. Precipitation: rain falls back down.') });
+    await page.locator('.oc-bcheck', { hasText: 'raindrop-notes.txt' }).last().waitFor({ timeout: 15000 });
     const check = page.locator('.oc-bcheck').last();
     await check.locator('[data-act="bookStart"]:not([disabled])').waitFor({ timeout: 15000 });
     assert.match(await check.textContent(), /raindrop called Drip/);
@@ -186,8 +189,6 @@ test('phone (390 px): Make a book on the library opens the chat sheet with the f
     await pick(page, 'Have AI make one'); await pick(page, 'Picture book');
     await pick(page, 'Grade 2'); await pick(page, 'Short'); await pick(page, 'Early reader'); await pick(page, 'Animals'); await pick(page, 'Oomba paints them');
     await say(page, 'A shy hedgehog learns to share apples with the other animals in the woods.');
-    await page.locator('.oc-book .oc-bhave').last().waitFor();
-    await bookCard(page).locator('[data-act="bookCheck"]').click();
     await page.locator('.oc-bcheck [data-act="bookStart"]:not([disabled])').last().waitFor({ timeout: 15000 });
     await noSideScroll(page);
     await shot(page, 'cb-6-phone');
