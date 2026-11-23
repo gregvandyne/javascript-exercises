@@ -319,6 +319,23 @@ export const config = {
   // (Power with AI passages and Check my passage together) a teacher without the Teacher plan may make a day. Teacher
   // plan holders have no daily cap (the site's AI budget still applies).
   proofAiFreePerDay: Math.max(0, Math.floor(+(process.env.PROOF_AI_FREE_PER_DAY ?? 3)) || 0),
+  // The book maker in the Story Library (docs/storybook-builder.md; services/storybook.js): Oomba turns a teacher may
+  // send a UTC day (a first draft and every change asked for in its chat count one each), counted in the database so a
+  // restart never resets it. Teachers without the Teacher plan get the first number, Teacher plan holders, testers and
+  // the platform admin the second. 0 turns the AI off for that group (the book editor still works by hand).
+  storybookFreePerDay: Math.max(0, Math.floor(+(process.env.STORYBOOK_FREE_PER_DAY ?? 10)) || 0),
+  storybookPlanPerDay: Math.max(0, Math.floor(+(process.env.STORYBOOK_PLAN_PER_DAY ?? 60)) || 0),
+  // The book maker's picture model (docs/storybook-builder.md "Pictures"; services/storybook-gemini.js): Google's Gemini
+  // API draws each book's character sheets and page pictures in one picture-book style. Off (the art-pack drawings) until
+  // GEMINI_API_KEY is set. STORYBOOK_IMAGE_MODEL: the Gemini image model id. Pictures a teacher may have drawn a UTC day
+  // (character sheets and Redraws count), counted in the database: STORYBOOK_PICTURES_PLAN_PER_DAY for Teacher plan
+  // holders, testers and the platform admin, STORYBOOK_PICTURES_FREE_PER_DAY for other teachers. STORYBOOK_DRAW_AT_ONCE:
+  // how many pictures are drawn at the same time, site-wide.
+  geminiKey: process.env.GEMINI_API_KEY || '',
+  storybookImageModel: String(process.env.STORYBOOK_IMAGE_MODEL || 'gemini-3.1-flash-image').trim(),
+  storybookPicturesFreePerDay: Math.max(0, Math.floor(+(process.env.STORYBOOK_PICTURES_FREE_PER_DAY ?? 10)) || 0),
+  storybookPicturesPlanPerDay: Math.max(0, Math.floor(+(process.env.STORYBOOK_PICTURES_PLAN_PER_DAY ?? 40)) || 0),
+  storybookDrawAtOnce: Math.min(8, Math.max(1, Math.floor(+(process.env.STORYBOOK_DRAW_AT_ONCE ?? 2)) || 2)),
   manipulativesUsers: String(process.env.MANIPULATIVES_USERS || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean),
   // Figures, the standalone product (docs/decisions.md "Figures opens to all teachers"; services/figures.js): /figures
   // answers the platform admin and every school staff member; everyone else gets the normal 404. FIGURES=0 is the kill

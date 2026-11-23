@@ -39,6 +39,25 @@ export function costOf(model, usage = {}) {
   return Number.isFinite(usd) ? usd : 0;
 }
 
+// Picture models (the book maker's pictures, services/storybook-draw.js): US dollars per picture made (output) and per
+// million input tokens (the prompt and the reference pictures). Gemini 3.1 Flash Image at 1K: 1,120 output tokens at
+// $60 per million, about $0.067 a picture (Google's Gemini API price list; third-party lists round it to $0.07).
+export const IMAGE_PRICES = {
+  'gemini-3.1-flash-image': { image: 0.067, input: 0.5 },
+  'gemini-3.1-flash-image-preview': { image: 0.067, input: 0.5 },
+};
+// A picture model we don't know is priced high, so the cap errs on the safe side.
+const UNKNOWN_IMAGE = { image: 0.15, input: 2 };
+/** Dollars for one picture call: usage is Google's usageMetadata (promptTokenCount); images: pictures that came back
+ *  (a refused call still pays for its input). */
+export function imageCostOf(model, usage = {}, images = 1) {
+  const p = IMAGE_PRICES[String(model || '')] || UNKNOWN_IMAGE;
+  const usd = ((usage && usage.promptTokenCount) || 0) * p.input / 1e6 + Math.max(0, images) * p.image;
+  return Number.isFinite(usd) ? usd : 0;
+}
+/** Record one picture call (labelled image:<model> on the admin stats page). Returns the cost. */
+export const recordImage = (model, usage, images = 1) => recordSpend(`image:${String(model || 'unknown').slice(0, 50)}`, imageCostOf(model, usage, images));
+
 export const POOLS = ['free', 'paid'];
 /** Record one API response. model: the model that served it (res.model) or the one requested. pool: the money pool
  *  that pays ('free' for everything today; paid plans add 'paid'). Returns the cost. */

@@ -28,6 +28,7 @@ import { zoneNote, dueChip } from './lessons.js';
 import { gcAssignField, gcAfterAssign } from './gclassroom.js';
 import { studentHref } from './student-report.js';
 import { wishBox, WISH_CSS } from './library-suggest.js';
+import * as SB from '../services/storybook.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/library.css?v=${VERSION}">`);
@@ -121,6 +122,24 @@ export function bookCard(t, bk, { read = null, staff = false, forClass = null } 
       <div class="lb-acts"><a class="btn btn-primary btn-sm" href="/library/${bk.id}/read">${ico('📖', { size: 18 })} ${t('library.read')}</a>${staff ? html`<a class="btn btn-sm" href="${assignHref(bk, forClass)}">${ico('📌', { size: 18 })} ${t('library.assign')}</a>` : ''}</div></div></li>`;
 }
 
+/** The book maker's books on the library page (services/storybook.js): for a teacher, their own newest books; for a
+ *  student, the books their teachers shared with their classes ("From your teacher"). Nobody else sees either. */
+function madeShelf(req) {
+  const t = req.t, u = req.user;
+  if (!u || u.is_guest) return '';
+  if (SB.canMake(u)) {
+    const mine = SB.myBooks(u, 6);
+    if (!mine.length) return '';
+    return html`<section class="lb-made" aria-labelledby="lb-made-h"><h2 id="lb-made-h">${ico('✨', { size: 24 })} ${t('storybook.shelfMine')}</h2>
+      <ul class="lb-made-list">${mine.map(r => { const bk = SB.bookOf(r); return html`<li><a class="lb-made-item" href="/library/make/${r.id}"><span dir="auto">${bk.title || t('storybook.untitled')}</span><span class="small muted">${t(r.kind === 'cyoa' ? 'storybook.kind.cyoa' : 'storybook.kind.linear')} · ${t('storybook.pages', { count: bk.pages.length })}</span></a></li>`; })}</ul>
+      <p><a href="/library/make">${t('storybook.allMine')}</a></p></section>`;
+  }
+  const shared = SB.sharedBooks(u, 12).filter(x => x.book.pages.length);
+  if (!shared.length) return '';
+  return html`<section class="lb-made" aria-labelledby="lb-made-h"><h2 id="lb-made-h">${ico('🧑‍🏫', { size: 24 })} ${t('storybook.shelfShared')}</h2>
+    <ul class="lb-made-list">${shared.map(x => html`<li><a class="lb-made-item" href="/library/made/${x.row.id}/read"><span dir="auto">${x.book.title}</span><span class="small muted">${t(x.row.kind === 'cyoa' ? 'storybook.kind.cyoa' : 'storybook.kind.linear')}${x.read ? html` · ${x.read.finished_at ? t('storybook.readDone') : t('storybook.reading')}` : ''}</span></a></li>`)}</ul></section>`;
+}
+
 // ---------------------------------------------------------------- the library
 router.get('/library', (req, res) => {
   const t = req.t, u = req.user;
@@ -138,7 +157,9 @@ router.get('/library', (req, res) => {
   const chip = (on, href, label) => html`<a class="chip${on ? ' on' : ''}" href="${href}"${on ? raw(' aria-current="true"') : ''}>${label}</a>`;
   const card = bk => bookCard(t, bk, { read: reads.get(bk.id), staff, forClass });
   const body = html`<div class="slib">
-    <div class="pagehead lb-head"><div><h1>${ico('📚', { size: 36 })} ${t('library.title')}</h1><p class="muted">${t('library.lead', { count: LIB.books().length })}</p></div></div>
+    <div class="pagehead lb-head"><div><h1>${ico('📚', { size: 36 })} ${t('library.title')}</h1><p class="muted">${t('library.lead', { count: LIB.books().length })}</p></div>
+      ${SB.canMake(u) ? html`<a class="btn btn-primary" href="/library/make" id="lb-make">${ico('✨', { size: 18 })} ${t('storybook.makeBook')}</a>` : ''}</div>
+    ${madeShelf(req)}
     ${forClass ? html`<p class="notice lb-forclass">${ico('📌', { size: 18 })} ${t('library.forClass', { class: forClass.name })} <a href="/class/${forClass.id}">${t('library.backToClass')}</a></p>` : ''}
     ${wishBox(t, grade, forClass)}
     <form class="lb-tools" method="get" action="/library" role="search" aria-label="${t('library.searchLabel')}">

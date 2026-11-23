@@ -1270,6 +1270,48 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS dash_class_points (class_id TEXT NOT NULL, reason TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, at INTEGER NOT NULL,
       PRIMARY KEY (class_id, reason));
     ALTER TABLE dash_class ADD COLUMN points_gc INTEGER NOT NULL DEFAULT 0;`],
+  // The book maker in the Story Library (services/storybook.js; docs/storybook-builder.md). made_books: a teacher's own
+  // books (the book as JSON: pages, words, choices, picture specs; setup: what the teacher chose and typed before the
+  // first draft, already scrubbed of names, emails, phone numbers and links; rev: bumped on every save, for conflicts).
+  // made_book_pics: the teacher's own pictures (a cleaned JPEG with no metadata, checked for people; book_id NULL while
+  // the setup steps hold it, claimed by the book on Start, and dropped after a day if never claimed). made_book_classes:
+  // the classes a book is shared with (students of those classes read it in the library). made_book_reads: where each
+  // reader is (the page, the way they came: a CYOA trail, and the endings found). made_book_ai_days: a teacher's Oomba
+  // turns on one UTC day (the daily cap: one atomic upsert, never in memory).
+  ['0110_storybooks', `
+    CREATE TABLE IF NOT EXISTS made_books (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      title TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL DEFAULT 'linear', source TEXT NOT NULL DEFAULT 'ai', setup TEXT NOT NULL DEFAULT '{}',
+      book TEXT NOT NULL DEFAULT '{}', rev INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_made_books_owner ON made_books(owner_id, updated_at);
+    CREATE TABLE IF NOT EXISTS made_book_pics (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      book_id TEXT REFERENCES made_books(id) ON DELETE CASCADE, name TEXT NOT NULL DEFAULT '', width INTEGER NOT NULL DEFAULT 0,
+      height INTEGER NOT NULL DEFAULT 0, bytes BLOB NOT NULL, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_made_book_pics_book ON made_book_pics(book_id);
+    CREATE INDEX IF NOT EXISTS idx_made_book_pics_owner ON made_book_pics(owner_id, created_at);
+    CREATE TABLE IF NOT EXISTS made_book_classes (book_id TEXT NOT NULL REFERENCES made_books(id) ON DELETE CASCADE, class_id TEXT NOT NULL,
+      shared_by TEXT, shared_at INTEGER NOT NULL, PRIMARY KEY (book_id, class_id));
+    CREATE INDEX IF NOT EXISTS idx_made_book_classes_class ON made_book_classes(class_id);
+    CREATE TABLE IF NOT EXISTS made_book_reads (user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, book_id TEXT NOT NULL REFERENCES made_books(id) ON DELETE CASCADE,
+      page_id TEXT NOT NULL DEFAULT '', trail TEXT NOT NULL DEFAULT '', endings TEXT NOT NULL DEFAULT '', finished_at INTEGER,
+      started_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (user_id, book_id));
+    CREATE INDEX IF NOT EXISTS idx_made_book_reads_book ON made_book_reads(book_id);
+    CREATE TABLE IF NOT EXISTS made_book_ai_days (user_id TEXT NOT NULL, day TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (user_id, day));
+    CREATE INDEX IF NOT EXISTS idx_made_book_ai_days_day ON made_book_ai_days(day);`],
+  // The book maker's picture maker (services/storybook-draw.js; docs/storybook-builder.md "Pictures"). made_book_pics
+  // also holds the pictures the picture model drew (kind 'page' or 'sheet', a checked WebP; mime says which file type a
+  // row holds; 'upload' is the teacher's own JPEG). made_book_draws: one row per picture to draw for a book (target
+  // 'page:<page id>' or 'cast:<name>'), the queue the in-process drawer works through (state queued, drawing, done or
+  // fallback with a reason), the picture kept (pic_id), the fingerprint of what it drew (hash) and the teacher's
+  // Redraw note (scrubbed). The daily picture count is a made_book_ai_days row ('<day>:draw').
+  ['0111_storybook_draws', `
+    ALTER TABLE made_book_pics ADD COLUMN kind TEXT NOT NULL DEFAULT 'upload';
+    ALTER TABLE made_book_pics ADD COLUMN mime TEXT NOT NULL DEFAULT 'image/jpeg';
+    CREATE TABLE IF NOT EXISTS made_book_draws (id TEXT PRIMARY KEY, book_id TEXT NOT NULL REFERENCES made_books(id) ON DELETE CASCADE,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, target TEXT NOT NULL, state TEXT NOT NULL DEFAULT 'queued',
+      reason TEXT NOT NULL DEFAULT '', note TEXT NOT NULL DEFAULT '', pic_id TEXT, hash TEXT NOT NULL DEFAULT '',
+      attempts INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, UNIQUE (book_id, target));
+    CREATE INDEX IF NOT EXISTS idx_made_book_draws_state ON made_book_draws(state, created_at);
+    CREATE INDEX IF NOT EXISTS idx_made_book_draws_owner ON made_book_draws(owner_id);`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

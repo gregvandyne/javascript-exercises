@@ -1124,6 +1124,11 @@
         "p3": "When web search is on, Oomba may send short searches to Anthropic's web search. They never include names or a location, sites for adults, gambling, social networks and the like are blocked, and every search is logged for our team without the teacher's name. Pages found on the web are shown as sources Oomba hasn't checked.",
         "p4": "A teacher can speak instead of typing: the sound is streamed to {provider} to turn it into words as they speak, and the audio is never kept, by us or by them. The words go into the message box for the teacher to check.",
         "p5": "We keep a teacher's chat, with the text of what they attached, for 60 days after it was last used (a school can choose from 7 to 365 days); a picture is deleted once Oomba has answered, and within a day at the latest. A teacher can delete the chat with New chat, and it is deleted with the account. A school admin can turn Oomba or its web search off for the school."
+      },
+      "storybook": {
+        "h": "The book maker",
+        "p1": "Teachers can make picture books in the Story Library with Oomba. A teacher's words for the book are sent to our AI provider, Anthropic, to write it. Before anything is sent, we take out the names of the teacher's students, emails, phone numbers and links. Students only read the finished books their teacher shares with their class; nothing a student does is sent.",
+        "p2": "<b>Book pictures:</b> to draw a book's pictures, we send Google (the Gemini API) the book's own words about each picture (what happens, where, and how each made-up character looks), our picture style, and for a page the pictures of its characters drawn before. Never a student's name or work, the teacher's name or a class. Google may keep what we send for a limited time to check for misuse and does not use it to train its systems. Every picture is checked before it is shown; a picture that doesn't pass is not kept. The pictures are kept with the book and deleted with it."
       }
     }
   },
@@ -4579,6 +4584,207 @@
       "line0": "What can I help with?",
       "line1": "What are we working on?",
       "line2": "Where should we start?"
+    },
+    "storybook-setup": {
+      "words": "{count, plural, one {# word} other {# words}}",
+      "remove": "Remove",
+      "needKind": "Please pick a kind of book.",
+      "needStory": "Please add your story first (a few sentences at least).",
+      "tooManyFiles": "{count, plural, one {You can add # file.} other {You can add up to # files.}}",
+      "reading": "Reading the file...",
+      "fileFailed": "That file didn't work. Please try another one.",
+      "fileCut": "Added. The file was long, so only the first part was used.",
+      "fileIn": "Added. Check the words in the box.",
+      "tooManyPics": "{count, plural, one {You can add # picture.} other {You can add up to # pictures.}}",
+      "checkingPic": "Checking the picture...",
+      "picFailed": "That picture didn't work. Please try another one.",
+      "checking": "Checking...",
+      "edit": "Edit",
+      "none": "Nothing",
+      "endingsN": "{count, plural, one {# ending} other {# endings}}",
+      "sum": {
+        "start": "Start",
+        "kind": "Kind of book",
+        "options": "Choices",
+        "story": "Your story",
+        "notes": "Your notes",
+        "about": "What it is about",
+        "files": "Files",
+        "pics": "Your pictures",
+        "picsN": "{count, plural, one {# picture. It stays with your book and is not sent to the AI.} other {# pictures. They stay with your book and are not sent to the AI.}}"
+      },
+      "removed": "{count, plural, one {We took out # name, email, phone number or link. What you see is what Oomba gets.} other {We took out # names, emails, phone numbers or links. What you see is what Oomba gets.}}",
+      "noneLeft": "You've used today's Oomba turns for books. Come back tomorrow."
+    },
+    "storybook-edit": {
+      "unsaved": "Not saved yet",
+      "saving": "Saving...",
+      "saved": "Saved",
+      "reloaded": "Oomba changed the book. You're seeing the newest version.",
+      "pageN": "Page {n}",
+      "noPic": "No picture",
+      "allGood": "Every page is ready.",
+      "warnings": "{count, plural, one {# thing to check} other {# things to check}}",
+      "warnNote": "These never stop you from saving or sharing.",
+      "warn": {
+        "noPages": "The book has no pages.",
+        "noStart": "Pick a start page.",
+        "noEnding": "No ending can be reached yet. Mark a page as an ending.",
+        "unreachable": "Page {page}: no choice leads here.",
+        "noText": "Page {page} has no words.",
+        "deadEnd": "Page {page} has no choices and is not an ending.",
+        "choiceNoText": "Page {page}: choice {n} has no words.",
+        "choiceNowhere": "Page {page}: choice {n} doesn't lead anywhere.",
+        "noAlt": "Page {page}: the picture needs a description."
+      },
+      "noWords": "(no words yet)",
+      "end": "End",
+      "start": "Start",
+      "hasWarning": "Something to check",
+      "who": "Who",
+      "spot": "Where",
+      "spots": {
+        "left": "Left",
+        "center": "Middle",
+        "right": "Right"
+      },
+      "remove": "Remove",
+      "upload": "Your picture",
+      "useDrawn": "Use a drawn picture",
+      "removePic": "No picture",
+      "addDrawn": "Add a drawn picture",
+      "drawn": "Drawn picture",
+      "world": "Place",
+      "mood": "Mood",
+      "moods": {
+        "bright": "Bright",
+        "warm": "Warm",
+        "dusk": "Sunset",
+        "night": "Night",
+        "gloomy": "Gloomy",
+        "magic": "Magic"
+      },
+      "inPicture": "In the picture",
+      "nobody": "Nobody yet.",
+      "addChar": "Add a character",
+      "alt": "Picture description",
+      "altHint": "One sentence for readers who can't see the picture.",
+      "pageTitle": "Page title (optional)",
+      "words": "Words on the page",
+      "isEnding": "This page is an ending",
+      "isStart": "Readers start here.",
+      "makeStart": "Make this the start page",
+      "choices": "Choices",
+      "choiceN": "Choice {n}",
+      "leadsTo": "Leads to...",
+      "newPage": "A new page",
+      "addChoice": "Add a choice",
+      "earlier": "Move earlier",
+      "later": "Move later",
+      "deletePage": "Delete page",
+      "deletePageQ": "Delete this page?",
+      "cast": "{count, plural, one {Characters (#)} other {Characters (#)}}",
+      "castNote": "Each character always looks the same on every page.",
+      "castName": "Name",
+      "castArt": "Looks like",
+      "addCast": "Add a character",
+      "castDefault": "Friend {n}",
+      "full": "{count, plural, other {A book can have up to # pages.}}",
+      "checkingPic": "Checking the picture...",
+      "picFailed": "That picture didn't work. Please try another one.",
+      "noClasses": "You don't have a class to share with yet.",
+      "shareTitle": "Share with a class",
+      "shareLead": "Students in these classes can read the book in the Story Library.",
+      "shareNote": "Students only read the book. They never talk to Oomba.",
+      "shareSave": "Save",
+      "deleteQ": "Delete this book?",
+      "deleteText": "The book, its pictures and its chat are deleted. Students can't read it any more.",
+      "deleteOk": "Delete",
+      "chatSub": "{count, plural, one {Your book helper · # turn left today} other {Your book helper · # turns left today}}",
+      "chatPrivate": "Oomba sees this book and your words, never students' names or work.",
+      "leave": "You can keep editing or leave this page. The book updates when Oomba is done.",
+      "hello": "Tell me what to change, like \"make page 3 scarier\" or \"simpler words for grade 2\".",
+      "placeholder": "What should Oomba change?",
+      "step": {
+        "check": {
+          "now": "Checking your words",
+          "done": "Checked your words"
+        },
+        "ai": {
+          "now": "Writing the book",
+          "done": "Wrote the book"
+        },
+        "build": {
+          "now": "Checking every page",
+          "done": "Checked every page"
+        },
+        "save": {
+          "now": "Saving",
+          "done": "Saved"
+        }
+      },
+      "fail": {
+        "unsafe": "Oomba's words didn't pass the safety check, so nothing was changed. Try asking another way."
+      },
+      "cap": "You've used today's Oomba turns for books. You can still edit by hand.",
+      "ch": {
+        "title": "What changed",
+        "first": "{pages, plural, one {A new book with # page.} other {A new book with # pages.}}",
+        "firstCyoa": "A new adventure: {pages} pages, {endings} endings.",
+        "added": "New pages: {pages}",
+        "changed": "Changed pages: {pages}",
+        "removed": "{count, plural, one {Removed # page.} other {Removed # pages.}}",
+        "kept": "{count, plural, one {Kept # page you changed meanwhile.} other {Kept # pages you changed meanwhile.}}",
+        "repaired": "Oomba fixed a few links so every page works.",
+        "none": "Nothing changed."
+      },
+      "ideas": {
+        "scarier": "Make page 3 scarier",
+        "scarierText": "Make page 3 a little scarier, but still fine for kids.",
+        "ending": "Add a third ending",
+        "endingText": "Add a third ending.",
+        "simpler": "Simpler words",
+        "simplerText": "Use simpler words for grade 2.",
+        "longer": "Add a page",
+        "longerText": "Add one more page before the end.",
+        "title": "New title",
+        "titleText": "Give the book a better title."
+      },
+      "draw": {
+        "lineOff": "Pictures come from the art packs: the picture maker isn't set up on this site.",
+        "lineResting": "The picture maker is resting for now, so new pictures come from the art packs.",
+        "lineBusy": "Drawing the pictures: {done} of {total} ready. You can keep working.",
+        "lineLimit": "Today's pictures are used, so new pictures come from the art packs. More tomorrow.",
+        "lineOn": "Pictures are painted in one picture-book style and checked before they are shown. Pictures left today: {count}",
+        "queued": "Waiting to be drawn",
+        "drawing": "Drawing this picture now",
+        "why": {
+          "nokey": "The picture maker isn't set up, so this shows the art-pack drawing.",
+          "resting": "The picture maker was resting, so this shows the art-pack drawing.",
+          "limit": "Today's pictures were used, so this shows the art-pack drawing.",
+          "blocked": "The picture maker couldn't draw this one, so this shows the art-pack drawing.",
+          "refused": "The new picture didn't pass our picture check, so it was not kept.",
+          "error": "Something went wrong while drawing. Try Redraw."
+        },
+        "keptOld": "The earlier picture stays.",
+        "stale": "This page changed since its picture was drawn.",
+        "redraw": "Redraw",
+        "draw": "Draw this picture",
+        "note": "What should change? (optional)",
+        "notePh": "For example: make it a sunny morning",
+        "cancel": "Cancel",
+        "look": "How they look",
+        "sheetAlt": "{name}'s reference picture"
+      }
+    },
+    "storybook-read": {
+      "pageN": "Page {n}",
+      "theEnd": "The End",
+      "choices": "What happens next?",
+      "pages": "Pages",
+      "back": "Back",
+      "next": "Next",
+      "startOver": "Start over"
     }
   },
   "favorites": {
@@ -14442,6 +14648,168 @@
         "bounds": "Choose a number from {min} to {max}.",
         "sendKeep": "Choose a number from {min} to {max}: no more than the messages kept."
       }
+    }
+  },
+  "storybook": {
+    "title": "Make a book",
+    "lead": "Upload a story you wrote, or have Oomba write one with you. Make it a normal picture book or a choose-your-own-adventure, then share it with your class.",
+    "makeBook": "Make a book",
+    "shelfMine": "Your books",
+    "shelfShared": "From your teacher",
+    "allMine": "All your books",
+    "untitled": "Untitled book",
+    "pages": "{count, plural, one {# page} other {# pages}}",
+    "sharedN": "{count, plural, one {shared with # class} other {shared with # classes}}",
+    "readDone": "Finished",
+    "reading": "Reading",
+    "mine": "Your books",
+    "mineNone": "No books yet. Your books will show here.",
+    "left": "{count, plural, one {# Oomba turn left today} other {# Oomba turns left today}}",
+    "kind": {
+      "linear": "Picture book",
+      "cyoa": "Choose-your-own-adventure"
+    },
+    "steps": {
+      "label": "Steps",
+      "start": "Start",
+      "options": "Choices",
+      "context": "Your words",
+      "check": "Check"
+    },
+    "start": {
+      "title": "How do you want to start?",
+      "upload": "Upload your own book",
+      "uploadText": "Bring a story you wrote. Keep it as a normal book or turn it into a choose-your-own-adventure.",
+      "ai": "Have AI make one",
+      "aiText": "Oomba writes an illustrated book or a choose-your-own-adventure with you."
+    },
+    "options": {
+      "title": "What kind of book?",
+      "keep": "Keep it as a normal book",
+      "keepText": "Your words stay as they are. Oomba splits them into pages and adds pictures.",
+      "turn": "Turn it into a choose-your-own-adventure",
+      "turnText": "Oomba keeps your story and adds choices and endings.",
+      "illustrated": "Illustrated book",
+      "illustratedText": "A story that reads from the first page to the last, with a picture on every page.",
+      "cyoa": "Choose-your-own-adventure",
+      "cyoaText": "Readers pick what happens next and find different endings.",
+      "grade": "Grade",
+      "length": "Length",
+      "endings": "Endings",
+      "level": "Reading level",
+      "theme": "Theme (optional)"
+    },
+    "grades": {
+      "k": "K",
+      "1": "Grade 1",
+      "2": "Grade 2",
+      "3": "Grade 3",
+      "45": "Grades 4-5",
+      "68": "Grades 6-8"
+    },
+    "lengths": {
+      "short": "Short",
+      "medium": "Medium",
+      "long": "Long"
+    },
+    "levels": {
+      "early": "Early reader",
+      "growing": "Growing reader",
+      "confident": "Confident reader"
+    },
+    "themes": {
+      "animals": "Animals",
+      "space": "Space",
+      "sea": "Under the sea",
+      "dinosaurs": "Dinosaurs",
+      "castles": "Castles",
+      "friendship": "Friendship",
+      "seasons": "Seasons",
+      "feelings": "Feelings"
+    },
+    "back": "Back",
+    "next": "Next",
+    "toCheck": "Check what goes to Oomba",
+    "context": {
+      "titleUpload": "Your story",
+      "titleAi": "Your ideas",
+      "story": "Your story (needed)",
+      "storyHint": "Paste or type it here, or add a file. Leave a blank line between paragraphs.",
+      "aboutUpload": "Anything else Oomba should know? (optional)",
+      "aboutAi": "What should the book be about? (optional)",
+      "aboutHint": "For example: the water cycle, told by a raindrop. Use made-up names only.",
+      "addFile": "Add a file",
+      "fileHint": ".txt, .docx, .pdf or .md. Its words go into the box above so you can check them.",
+      "addPic": "Add pictures",
+      "picHint": "Your pictures go on the first pages, in order. They are never sent to the AI. No photos of people."
+    },
+    "privacy": "Do not include students' names or their work. Names of your students, emails, phone numbers and links are taken out before anything is sent.",
+    "check": {
+      "title": "Check what Oomba will get",
+      "lead": "This is exactly what goes to the AI. Use Edit to change anything.",
+      "never": "Oomba only sees what is listed here. Never include students' names or their work.",
+      "go": "Make my book"
+    },
+    "blocked": {
+      "personal": "Please take out personal details (names, addresses, phone numbers, links) and try again.",
+      "words": "Some of these words can't be used on Oomba Academy. Please change them and try again."
+    },
+    "firstMessage": "Please make my book.",
+    "errors": {
+      "storyNeeded": "Please add your story first (a few sentences at least).",
+      "cap": "You've used today's Oomba turns for books. You can still edit your books by hand. More turns tomorrow.",
+      "notFound": "We couldn't find that book.",
+      "error": "Something went wrong. Please try again.",
+      "stale": "Oomba changed the book meanwhile. Here it is again.",
+      "words": "Some words on this page can't be used on Oomba Academy. Please change them.",
+      "names": "Please use made-up names, not your students' names.",
+      "empty": "Make some pages before you share the book.",
+      "imgType": "Please pick a picture (JPEG, PNG or WebP).",
+      "imgBig": "That picture is too big.",
+      "imgLimit": "You've added the most pictures for today. Try again tomorrow.",
+      "imgFull": "This book has as many pictures as it can hold.",
+      "imgPerson": "Please use a picture without people in it.",
+      "imgPersonal": "That picture shows personal details. Please use another one.",
+      "imgUnsafe": "That picture can't be used on Oomba Academy.",
+      "imgResting": "Pictures can't be checked right now, so they can't be added. Please try again later."
+    },
+    "shareDone": "{count, plural, one {Shared with # class.} other {Shared with # classes.}}",
+    "shareNone": "Not shared with any class.",
+    "edit": {
+      "titleLabel": "Book title",
+      "oomba": "Oomba",
+      "preview": "Preview",
+      "print": "Print",
+      "share": "Share",
+      "delete": "Delete book",
+      "map": "Story map",
+      "pages": "Pages",
+      "addPage": "Add a page",
+      "waiting": "Oomba is writing your book. It will show here when it is ready."
+    },
+    "read": {
+      "backToEditor": "Back to the editor",
+      "preview": "Preview: as students will see it",
+      "pageN": "Page {n}",
+      "theEnd": "The End",
+      "choices": "What happens next?",
+      "back": "Back",
+      "startOver": "Start over"
+    },
+    "print": {
+      "go": "Print or save as PDF",
+      "hint": "In the print window, pick Save as PDF to make a file.",
+      "how": "You choose what happens! At the end of a page, pick a choice and turn to the page it tells you.",
+      "made": "Made with Oomba Academy",
+      "turn": "{choice}: turn to page {page}"
+    },
+    "warn": {
+      "unreachable": "No choice leads to this page yet."
+    },
+    "draw": {
+      "nokey": "The picture maker isn't set up on this site, so pages use the art-pack drawings.",
+      "resting": "The picture maker is resting for now. Please try again later.",
+      "limit": "You've used today's pictures. More tomorrow."
     }
   }
 }

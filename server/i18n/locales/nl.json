@@ -1124,6 +1124,11 @@
         "p3": "Als zoeken op internet aan staat, kan Oomba korte zoekopdrachten naar de webzoekfunctie van Anthropic sturen. Die bevatten nooit namen of een locatie; sites voor volwassenen, gokken, sociale netwerken en dergelijke zijn geblokkeerd, en elke zoekopdracht wordt voor ons team vastgelegd zonder de naam van de leerkracht. Pagina's van internet worden getoond als bronnen die Oomba niet heeft gecontroleerd.",
         "p4": "Een leerkracht kan praten in plaats van typen: het geluid gaat naar {provider} om er al tijdens het praten woorden van te maken, en de audio wordt nooit bewaard, niet door ons en niet door hen. De woorden komen in het berichtvak, zodat de leerkracht ze kan controleren.",
         "p5": "We bewaren de chat van een leerkracht, met de tekst van de bijlagen, 60 dagen na het laatste gebruik (een school kan 7 tot 365 dagen kiezen); een afbeelding wordt verwijderd zodra Oomba heeft geantwoord, uiterlijk na een dag. Een leerkracht kan de chat verwijderen met Nieuwe chat, en hij wordt verwijderd met het account. Een schoolbeheerder kan Oomba of het zoeken op internet uitzetten voor de school."
+      },
+      "storybook": {
+        "h": "De boekenmaker",
+        "p1": "Leraren kunnen met Oomba prentenboeken maken in de Verhalenbibliotheek. De woorden van de leraar voor het boek worden naar onze AI-aanbieder Anthropic gestuurd om het te schrijven. Voordat er iets wordt verstuurd, halen we de namen van de leerlingen van de leraar, e-mailadressen, telefoonnummers en links eruit. Leerlingen lezen alleen de klaar boeken die hun leraar met hun klas deelt; niets wat een leerling doet wordt verstuurd.",
+        "p2": "<b>Plaatjes in boeken:</b> om de plaatjes van een boek te tekenen, sturen we Google (de Gemini API) de eigen woorden van het boek over elk plaatje (wat er gebeurt, waar, en hoe elk verzonnen personage eruitziet), onze tekenstijl en voor een pagina de eerder getekende plaatjes van de personages. Nooit de naam of het werk van een leerling, de naam van de leraar of een klas. Google mag wat we sturen een beperkte tijd bewaren om misbruik te controleren en gebruikt het niet om zijn systemen te trainen. Elk plaatje wordt gecontroleerd voordat het te zien is; een plaatje dat niet door de controle komt, wordt niet bewaard. De plaatjes worden met het boek bewaard en ermee verwijderd."
       }
     }
   },
@@ -4298,6 +4303,207 @@
       "line0": "Waarmee kan ik helpen?",
       "line1": "Waar werken we aan?",
       "line2": "Waar beginnen we?"
+    },
+    "storybook-setup": {
+      "words": "{count, plural, one {# woord} other {# woorden}}",
+      "remove": "Weghalen",
+      "needKind": "Kies een soort boek.",
+      "needStory": "Voeg eerst je verhaal toe (minstens een paar zinnen).",
+      "tooManyFiles": "{count, plural, one {Je kunt # bestand toevoegen.} other {Je kunt tot # bestanden toevoegen.}}",
+      "reading": "Bestand lezen...",
+      "fileFailed": "Dat bestand werkte niet. Probeer een ander.",
+      "fileCut": "Toegevoegd. Het bestand was lang, dus alleen het eerste deel is gebruikt.",
+      "fileIn": "Toegevoegd. Kijk de woorden in het vak na.",
+      "tooManyPics": "{count, plural, one {Je kunt # plaatje toevoegen.} other {Je kunt tot # plaatjes toevoegen.}}",
+      "checkingPic": "Plaatje controleren...",
+      "picFailed": "Dat plaatje werkte niet. Probeer een ander.",
+      "checking": "Controleren...",
+      "edit": "Bewerken",
+      "none": "Niets",
+      "endingsN": "{count, plural, one {# einde} other {# eindes}}",
+      "sum": {
+        "start": "Begin",
+        "kind": "Soort boek",
+        "options": "Keuzes",
+        "story": "Jouw verhaal",
+        "notes": "Jouw notities",
+        "about": "Waar het over gaat",
+        "files": "Bestanden",
+        "pics": "Jouw plaatjes",
+        "picsN": "{count, plural, one {# plaatje. Het blijft bij je boek en gaat niet naar de AI.} other {# plaatjes. Ze blijven bij je boek en gaan niet naar de AI.}}"
+      },
+      "removed": "{count, plural, one {We hebben # naam, e-mailadres, telefoonnummer of link weggehaald. Wat je ziet, krijgt Oomba.} other {We hebben # namen, e-mailadressen, telefoonnummers of links weggehaald. Wat je ziet, krijgt Oomba.}}",
+      "noneLeft": "Je hebt de Oomba-beurten voor boeken van vandaag gebruikt. Kom morgen terug."
+    },
+    "storybook-edit": {
+      "unsaved": "Nog niet bewaard",
+      "saving": "Bewaren...",
+      "saved": "Bewaard",
+      "reloaded": "Oomba heeft het boek veranderd. Je ziet de nieuwste versie.",
+      "pageN": "Pagina {n}",
+      "noPic": "Geen plaatje",
+      "allGood": "Alle pagina's zijn klaar.",
+      "warnings": "{count, plural, one {# ding om na te kijken} other {# dingen om na te kijken}}",
+      "warnNote": "Dit houdt je nooit tegen om te bewaren of te delen.",
+      "warn": {
+        "noPages": "Het boek heeft geen pagina's.",
+        "noStart": "Kies een beginpagina.",
+        "noEnding": "Je kunt nog bij geen enkel einde komen. Markeer een pagina als einde.",
+        "unreachable": "Pagina {page}: geen enkele keuze leidt hierheen.",
+        "noText": "Pagina {page} heeft geen woorden.",
+        "deadEnd": "Pagina {page} heeft geen keuzes en is geen einde.",
+        "choiceNoText": "Pagina {page}: keuze {n} heeft geen woorden.",
+        "choiceNowhere": "Pagina {page}: keuze {n} leidt nergens heen.",
+        "noAlt": "Pagina {page}: het plaatje heeft een beschrijving nodig."
+      },
+      "noWords": "(nog geen woorden)",
+      "end": "Einde",
+      "start": "Begin",
+      "hasWarning": "Iets om na te kijken",
+      "who": "Wie",
+      "spot": "Waar",
+      "spots": {
+        "left": "Links",
+        "center": "Midden",
+        "right": "Rechts"
+      },
+      "remove": "Weghalen",
+      "upload": "Jouw plaatje",
+      "useDrawn": "Getekend plaatje gebruiken",
+      "removePic": "Geen plaatje",
+      "addDrawn": "Getekend plaatje toevoegen",
+      "drawn": "Getekend plaatje",
+      "world": "Plek",
+      "mood": "Sfeer",
+      "moods": {
+        "bright": "Zonnig",
+        "warm": "Warm",
+        "dusk": "Zonsondergang",
+        "night": "Nacht",
+        "gloomy": "Somber",
+        "magic": "Magisch"
+      },
+      "inPicture": "Op het plaatje",
+      "nobody": "Nog niemand.",
+      "addChar": "Personage toevoegen",
+      "alt": "Beschrijving van het plaatje",
+      "altHint": "Eén zin voor lezers die het plaatje niet kunnen zien.",
+      "pageTitle": "Paginatitel (niet verplicht)",
+      "words": "Woorden op de pagina",
+      "isEnding": "Deze pagina is een einde",
+      "isStart": "Lezers beginnen hier.",
+      "makeStart": "Maak dit de beginpagina",
+      "choices": "Keuzes",
+      "choiceN": "Keuze {n}",
+      "leadsTo": "Leidt naar...",
+      "newPage": "Een nieuwe pagina",
+      "addChoice": "Keuze toevoegen",
+      "earlier": "Naar voren",
+      "later": "Naar achteren",
+      "deletePage": "Pagina verwijderen",
+      "deletePageQ": "Deze pagina verwijderen?",
+      "cast": "{count, plural, one {Personages (#)} other {Personages (#)}}",
+      "castNote": "Elk personage ziet er op elke pagina hetzelfde uit.",
+      "castName": "Naam",
+      "castArt": "Ziet eruit als",
+      "addCast": "Personage toevoegen",
+      "castDefault": "Vriend {n}",
+      "full": "{count, plural, other {Een boek kan tot # pagina's hebben.}}",
+      "checkingPic": "Plaatje controleren...",
+      "picFailed": "Dat plaatje werkte niet. Probeer een ander.",
+      "noClasses": "Je hebt nog geen klas om mee te delen.",
+      "shareTitle": "Delen met een klas",
+      "shareLead": "Leerlingen in deze klassen kunnen het boek lezen in de Verhalenbibliotheek.",
+      "shareNote": "Leerlingen lezen het boek alleen. Ze praten nooit met Oomba.",
+      "shareSave": "Bewaren",
+      "deleteQ": "Dit boek verwijderen?",
+      "deleteText": "Het boek, de plaatjes en de chat worden verwijderd. Leerlingen kunnen het niet meer lezen.",
+      "deleteOk": "Verwijderen",
+      "chatSub": "{count, plural, one {Je boekhulp · nog # beurt vandaag} other {Je boekhulp · nog # beurten vandaag}}",
+      "chatPrivate": "Oomba ziet dit boek en jouw woorden, nooit namen of werk van leerlingen.",
+      "leave": "Je kunt verder bewerken of deze pagina verlaten. Het boek wordt bijgewerkt als Oomba klaar is.",
+      "hello": "Vertel me wat ik moet veranderen, zoals \"maak pagina 3 spannender\" of \"eenvoudigere woorden voor leerjaar 2\".",
+      "placeholder": "Wat moet Oomba veranderen?",
+      "step": {
+        "check": {
+          "now": "Je woorden controleren",
+          "done": "Je woorden zijn gecontroleerd"
+        },
+        "ai": {
+          "now": "Het boek schrijven",
+          "done": "Het boek is geschreven"
+        },
+        "build": {
+          "now": "Elke pagina controleren",
+          "done": "Elke pagina is gecontroleerd"
+        },
+        "save": {
+          "now": "Bewaren",
+          "done": "Bewaard"
+        }
+      },
+      "fail": {
+        "unsafe": "De woorden van Oomba kwamen niet door de veiligheidscontrole, dus er is niets veranderd. Vraag het eens anders."
+      },
+      "cap": "Je hebt de Oomba-beurten voor boeken van vandaag gebruikt. Met de hand bewerken kan nog wel.",
+      "ch": {
+        "title": "Wat er veranderd is",
+        "first": "{pages, plural, one {Een nieuw boek met # pagina.} other {Een nieuw boek met # pagina's.}}",
+        "firstCyoa": "Een nieuw avontuur: {pages} pagina's, {endings} eindes.",
+        "added": "Nieuwe pagina's: {pages}",
+        "changed": "Veranderde pagina's: {pages}",
+        "removed": "{count, plural, one {# pagina weggehaald.} other {# pagina's weggehaald.}}",
+        "kept": "{count, plural, one {# pagina die jij intussen veranderde is bewaard.} other {# pagina's die jij intussen veranderde zijn bewaard.}}",
+        "repaired": "Oomba heeft een paar verbindingen gerepareerd, zodat elke pagina werkt.",
+        "none": "Er is niets veranderd."
+      },
+      "ideas": {
+        "scarier": "Pagina 3 spannender",
+        "scarierText": "Maak pagina 3 een beetje spannender, maar nog steeds goed voor kinderen.",
+        "ending": "Een derde einde",
+        "endingText": "Voeg een derde einde toe.",
+        "simpler": "Eenvoudigere woorden",
+        "simplerText": "Gebruik eenvoudigere woorden voor leerjaar 2.",
+        "longer": "Een pagina erbij",
+        "longerText": "Voeg nog een pagina toe voor het einde.",
+        "title": "Nieuwe titel",
+        "titleText": "Geef het boek een betere titel."
+      },
+      "draw": {
+        "lineOff": "De plaatjes komen uit de tekenpakketten: de plaatjesmaker is niet ingesteld op deze site.",
+        "lineResting": "De plaatjesmaker rust even, dus nieuwe plaatjes komen uit de tekenpakketten.",
+        "lineBusy": "Plaatjes tekenen: {done} van {total} klaar. Je kunt verder werken.",
+        "lineLimit": "De plaatjes van vandaag zijn op, dus nieuwe plaatjes komen uit de tekenpakketten. Morgen weer nieuwe.",
+        "lineOn": "De plaatjes worden in één prentenboekstijl geschilderd en gecontroleerd voordat ze te zien zijn. Plaatjes over vandaag: {count}",
+        "queued": "Wacht om getekend te worden",
+        "drawing": "Dit plaatje wordt nu getekend",
+        "why": {
+          "nokey": "De plaatjesmaker is niet ingesteld, dus hier staat de tekening uit het pakket.",
+          "resting": "De plaatjesmaker rustte, dus hier staat de tekening uit het pakket.",
+          "limit": "De plaatjes van vandaag waren op, dus hier staat de tekening uit het pakket.",
+          "blocked": "De plaatjesmaker kon dit plaatje niet tekenen, dus hier staat de tekening uit het pakket.",
+          "refused": "Het nieuwe plaatje kwam niet door onze controle en is niet bewaard.",
+          "error": "Er ging iets mis bij het tekenen. Probeer Opnieuw tekenen."
+        },
+        "keptOld": "Het eerdere plaatje blijft.",
+        "stale": "Deze pagina is veranderd sinds het plaatje is getekend.",
+        "redraw": "Opnieuw tekenen",
+        "draw": "Dit plaatje tekenen",
+        "note": "Wat moet er anders? (niet verplicht)",
+        "notePh": "Bijvoorbeeld: maak er een zonnige ochtend van",
+        "cancel": "Annuleren",
+        "look": "Hoe ze eruitzien",
+        "sheetAlt": "Voorbeeldplaatje van {name}"
+      }
+    },
+    "storybook-read": {
+      "pageN": "Pagina {n}",
+      "theEnd": "Einde",
+      "choices": "Wat gebeurt er nu?",
+      "pages": "Pagina's",
+      "back": "Terug",
+      "next": "Volgende",
+      "startOver": "Opnieuw beginnen"
     }
   },
   "favorites": {
@@ -13727,6 +13933,168 @@
         "bounds": "Kies een getal van {min} tot {max}.",
         "sendKeep": "Kies een getal van {min} tot {max}: niet meer dan de bewaarde berichten."
       }
+    }
+  },
+  "storybook": {
+    "title": "Maak een boek",
+    "lead": "Upload een verhaal dat je zelf schreef, of laat Oomba er een met je schrijven. Maak er een gewoon prentenboek of een kies-je-eigen-avontuur van en deel het met je klas.",
+    "makeBook": "Maak een boek",
+    "shelfMine": "Jouw boeken",
+    "shelfShared": "Van je leerkracht",
+    "allMine": "Al je boeken",
+    "untitled": "Boek zonder titel",
+    "pages": "{count, plural, one {# pagina} other {# pagina's}}",
+    "sharedN": "{count, plural, one {gedeeld met # klas} other {gedeeld met # klassen}}",
+    "readDone": "Uitgelezen",
+    "reading": "Bezig met lezen",
+    "mine": "Jouw boeken",
+    "mineNone": "Nog geen boeken. Je boeken verschijnen hier.",
+    "left": "{count, plural, one {Nog # Oomba-beurt vandaag} other {Nog # Oomba-beurten vandaag}}",
+    "kind": {
+      "linear": "Prentenboek",
+      "cyoa": "Kies-je-eigen-avontuur"
+    },
+    "steps": {
+      "label": "Stappen",
+      "start": "Begin",
+      "options": "Keuzes",
+      "context": "Jouw woorden",
+      "check": "Controleren"
+    },
+    "start": {
+      "title": "Hoe wil je beginnen?",
+      "upload": "Upload je eigen boek",
+      "uploadText": "Neem een verhaal mee dat je zelf schreef. Laat het een gewoon boek of maak er een kies-je-eigen-avontuur van.",
+      "ai": "Laat AI er een maken",
+      "aiText": "Oomba schrijft samen met jou een prentenboek of een kies-je-eigen-avontuur."
+    },
+    "options": {
+      "title": "Wat voor boek?",
+      "keep": "Laat het een gewoon boek",
+      "keepText": "Je woorden blijven zoals ze zijn. Oomba verdeelt ze over pagina's en voegt plaatjes toe.",
+      "turn": "Maak er een kies-je-eigen-avontuur van",
+      "turnText": "Oomba houdt je verhaal en voegt keuzes en eindes toe.",
+      "illustrated": "Prentenboek",
+      "illustratedText": "Een verhaal dat je van de eerste tot de laatste pagina leest, met een plaatje op elke pagina.",
+      "cyoa": "Kies-je-eigen-avontuur",
+      "cyoaText": "Lezers kiezen wat er gebeurt en vinden verschillende eindes.",
+      "grade": "Leerjaar",
+      "length": "Lengte",
+      "endings": "Eindes",
+      "level": "Leesniveau",
+      "theme": "Thema (niet verplicht)"
+    },
+    "grades": {
+      "k": "Kleuters/K",
+      "1": "Leerjaar 1",
+      "2": "Leerjaar 2",
+      "3": "Leerjaar 3",
+      "45": "Leerjaar 4-5",
+      "68": "Leerjaar 6-8"
+    },
+    "lengths": {
+      "short": "Kort",
+      "medium": "Middel",
+      "long": "Lang"
+    },
+    "levels": {
+      "early": "Beginnende lezer",
+      "growing": "Groeiende lezer",
+      "confident": "Vlotte lezer"
+    },
+    "themes": {
+      "animals": "Dieren",
+      "space": "De ruimte",
+      "sea": "Onder de zee",
+      "dinosaurs": "Dinosaurussen",
+      "castles": "Kastelen",
+      "friendship": "Vriendschap",
+      "seasons": "Seizoenen",
+      "feelings": "Gevoelens"
+    },
+    "back": "Terug",
+    "next": "Volgende",
+    "toCheck": "Controleer wat naar Oomba gaat",
+    "context": {
+      "titleUpload": "Jouw verhaal",
+      "titleAi": "Jouw ideeën",
+      "story": "Jouw verhaal (nodig)",
+      "storyHint": "Plak of typ het hier, of voeg een bestand toe. Laat een lege regel tussen alinea's.",
+      "aboutUpload": "Moet Oomba nog iets weten? (niet verplicht)",
+      "aboutAi": "Waar moet het boek over gaan? (niet verplicht)",
+      "aboutHint": "Bijvoorbeeld: de waterkringloop, verteld door een regendruppel. Gebruik alleen verzonnen namen.",
+      "addFile": "Bestand toevoegen",
+      "fileHint": ".txt, .docx, .pdf of .md. De woorden komen in het vak hierboven, zodat je ze kunt nakijken.",
+      "addPic": "Plaatjes toevoegen",
+      "picHint": "Je plaatjes komen op volgorde op de eerste pagina's. Ze worden nooit naar de AI gestuurd. Geen foto's van mensen."
+    },
+    "privacy": "Zet er geen namen van leerlingen of hun werk in. Namen van je leerlingen, e-mailadressen, telefoonnummers en links worden eruit gehaald voordat er iets wordt verstuurd.",
+    "check": {
+      "title": "Controleer wat Oomba krijgt",
+      "lead": "Dit gaat precies zo naar de AI. Gebruik Bewerken om iets te veranderen.",
+      "never": "Oomba ziet alleen wat hier staat. Zet er nooit namen van leerlingen of hun werk in.",
+      "go": "Maak mijn boek"
+    },
+    "blocked": {
+      "personal": "Haal persoonlijke gegevens weg (namen, adressen, telefoonnummers, links) en probeer het opnieuw.",
+      "words": "Sommige van deze woorden kunnen niet op Oomba Academy. Verander ze en probeer het opnieuw."
+    },
+    "firstMessage": "Maak mijn boek, alsjeblieft.",
+    "errors": {
+      "storyNeeded": "Voeg eerst je verhaal toe (minstens een paar zinnen).",
+      "cap": "Je hebt de Oomba-beurten voor boeken van vandaag gebruikt. Je kunt je boeken nog met de hand bewerken. Morgen zijn er nieuwe beurten.",
+      "notFound": "We konden dat boek niet vinden.",
+      "error": "Er ging iets mis. Probeer het opnieuw.",
+      "stale": "Oomba heeft het boek intussen veranderd. Hier is het opnieuw.",
+      "words": "Sommige woorden op deze pagina kunnen niet op Oomba Academy. Verander ze alsjeblieft.",
+      "names": "Gebruik verzonnen namen, niet de namen van je leerlingen.",
+      "empty": "Maak eerst een paar pagina's voordat je het boek deelt.",
+      "imgType": "Kies een plaatje (JPEG, PNG of WebP).",
+      "imgBig": "Dat plaatje is te groot.",
+      "imgLimit": "Je hebt vandaag het maximale aantal plaatjes toegevoegd. Probeer het morgen.",
+      "imgFull": "Er passen geen plaatjes meer in dit boek.",
+      "imgPerson": "Gebruik een plaatje zonder mensen.",
+      "imgPersonal": "Dat plaatje toont persoonlijke gegevens. Gebruik een ander.",
+      "imgUnsafe": "Dat plaatje kan niet op Oomba Academy.",
+      "imgResting": "Plaatjes kunnen nu niet worden gecontroleerd en dus niet worden toegevoegd. Probeer het later."
+    },
+    "shareDone": "{count, plural, one {Gedeeld met # klas.} other {Gedeeld met # klassen.}}",
+    "shareNone": "Met geen enkele klas gedeeld.",
+    "edit": {
+      "titleLabel": "Titel van het boek",
+      "oomba": "Oomba",
+      "preview": "Voorbeeld",
+      "print": "Afdrukken",
+      "share": "Delen",
+      "delete": "Boek verwijderen",
+      "map": "Verhaalkaart",
+      "pages": "Pagina's",
+      "addPage": "Pagina toevoegen",
+      "waiting": "Oomba schrijft je boek. Het verschijnt hier zodra het klaar is."
+    },
+    "read": {
+      "backToEditor": "Terug naar de editor",
+      "preview": "Voorbeeld: zoals leerlingen het zien",
+      "pageN": "Pagina {n}",
+      "theEnd": "Einde",
+      "choices": "Wat gebeurt er nu?",
+      "back": "Terug",
+      "startOver": "Opnieuw beginnen"
+    },
+    "print": {
+      "go": "Afdrukken of als pdf opslaan",
+      "hint": "Kies in het afdrukvenster Opslaan als pdf om een bestand te maken.",
+      "how": "Jij kiest wat er gebeurt! Kies aan het eind van een pagina een keuze en ga naar de pagina die erbij staat.",
+      "made": "Gemaakt met Oomba Academy",
+      "turn": "{choice}: ga naar pagina {page}"
+    },
+    "warn": {
+      "unreachable": "Nog geen enkele keuze leidt naar deze pagina."
+    },
+    "draw": {
+      "nokey": "De plaatjesmaker is niet ingesteld op deze site, dus de pagina's gebruiken de tekeningen uit de pakketten.",
+      "resting": "De plaatjesmaker rust even. Probeer het later opnieuw.",
+      "limit": "Je hebt de plaatjes van vandaag gebruikt. Morgen weer nieuwe."
     }
   }
 }

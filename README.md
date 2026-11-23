@@ -85,6 +85,11 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 | `BUILDER_SCREEN_MODEL` | built in | Small model for input screening and picture checks. |
 | `REVIEW_MODEL` | `BUILDER_MODEL` | Model for the automatic review of public games. |
 | `BUILDER_FALLBACKS` | on | `0` turns off the API's server-side model fallback for Builder turns (used when the first model is overloaded). |
+| `STORYBOOK_FREE_PER_DAY` / `STORYBOOK_PLAN_PER_DAY` | `10` / `60` | The book maker in the Story Library (docs/storybook-builder.md): Oomba turns a teacher may use a UTC day (a first draft and each change), for teachers without / with the Teacher plan (testers and the admin: the second). Counted in the database. `0` turns the AI off for that group; the editor still works by hand. |
+| `GEMINI_API_KEY` | – | **Secret.** Turns on the book maker's picture model (Google's Gemini API; docs/storybook-builder.md "Pictures"): each book's characters and pages are painted in one picture-book style and checked before they are shown. Set only in the host's dashboard. Unset: the art-pack drawings. Never logged. |
+| `STORYBOOK_IMAGE_MODEL` | `gemini-3.1-flash-image` | The Gemini image model the book maker uses (Gemini 3.1 Flash Image, about $0.067 a 1K picture). |
+| `STORYBOOK_PICTURES_FREE_PER_DAY` / `STORYBOOK_PICTURES_PLAN_PER_DAY` | `10` / `40` | Pictures the picture model may draw for a teacher a UTC day (character sheets and Redraws count), without / with the Teacher plan (testers and the admin: the second). Counted in the database. At the limit pages use the art-pack drawings. |
+| `STORYBOOK_DRAW_AT_ONCE` | `2` | How many book pictures are drawn at the same time, site-wide (1 to 8). |
 | `BUILDER_DAILY_TURNS` | `60` | Builder messages per user per UTC day (the free allowance; `server/builder/usage.js` `allowanceFor`). |
 | `PRO_TURN_WEIGHT` | `1` | Messages one "Pro quality" message counts as (1 to 10). Paid plans will set `2` (docs/decisions.md "Paid plans", D5). |
 | `BUILDER_MAX_TOKENS` | `64000` | Max output tokens per Builder turn. |

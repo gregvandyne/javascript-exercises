@@ -12054,3 +12054,81 @@ couldn't, with words to follow but no link and nothing to copy.
   and `tests/unit/companion-help-browser.test.js` (laptop and iPhone 13: the owner's exact ask, Create, the class,
   Open its dashboard, Undo; the admin-only variant's linked steps all 200; a how-to answer's link opens in the same
   tab with the conversation kept; Copy's clipboard text; no console errors, no sideways scroll).
+
+## Story Library: the book maker (23 Nov 2026)
+
+The owner: "Build this into Oomba in the reading section. This is a builder task where users can either upload a story
+they want to make choose your own adventure or have ai generate an illustrated book that can either be a normal flowing
+book or a choose your own adventure. Again, this should be an iterative build process like the normal builder...
+starting off with a few generic options, then lets the user provide their own context (and attachments), check what
+will be submitted and the begin the builder conversation." Then: "Upload your own book or have ai generate would be good
+as a first option." Then: "Make this only available to teachers".
+
+Built as described in docs/storybook-builder.md. The calls made along the way:
+
+- **Where**: the Story Library. Teachers get a "Make a book" button on `/library` and their newest books there;
+  `/library/make` is the start (two cards, then Choices, Your words, Check). Students see books shared with their class
+  under "From your teacher" and read them in the library reader. Registered before the library's own routes, so
+  `/library/make` is never read as a book id.
+- **Teachers only** (`storybook.canMake`: school staff and the platform admin), checked by one middleware on every page
+  and API; everyone else gets the normal 404 (signed out: sign in). Not behind the Teacher plan: every teacher may make
+  books, the plan only raises the daily number of Oomba turns (10 without, 60 with; `STORYBOOK_FREE_PER_DAY`,
+  `STORYBOOK_PLAN_PER_DAY`), in the database like Mistake Hunt's free cap so it can't be reset or raced.
+- **One chat engine**: the book's conversation is a surface of `services/oomba-chat.js` (jobs, progress card, Try again,
+  Undo), shown with the shared panel. The site-wide companion is turned off on the book maker's pages (`companion:
+  false`) so two Oomba panels never compete for the same side of the screen (the same reason as the Figures and
+  Manipulatives pages before they folded in). Folding the book maker into the companion later is possible: its workflow
+  (`writeBook`, `applyBook`, `undoChange`) is separate from the surface.
+- **Screening and privacy**: everything the teacher typed or added is scrubbed (students' names, emails, phone numbers,
+  links), the Builder's pre-filter reads all of it and the Builder's full input screening reads the teacher's own words
+  and the story's opening, before the check step shows it and again on Start. Pictures the teacher adds are never sent
+  to the book AI (only to the existing picture check, which refuses any person). The AI's book passes the Story
+  Builder's word rules and classifier before a teacher sees it; words that fail twice end the turn with nothing saved.
+- **Illustrations without an image model**: the AI picks scenes from the 2D art packs and the app draws them (SVG), the
+  same characters on every page; a teacher may upload their own picture per page. The drawing sits behind a small
+  illustrator interface so an image model can be added later (the owner's decision: cost and a new data flow).
+- **Reading progress** has its own table (`made_book_reads`: page, trail, endings) rather than `story_reads`, whose
+  rows are the manifest's books with question marks; it behaves the same way (the book opens where the reader stopped).
+  Sharing is a class list, not a gradebook lesson; assigning with a due date and results like the library's books is a
+  possible next step.
+- **Open for the owner**: (1) the privacy page lists teacher AI tools one by one; the book maker sends the same kinds
+  of data to the same processor, so it was not changed, but the owner may want a line for it (that would bump
+  `LEGAL_UPDATED` and go in docs/legal-review.md). (2) Whether to add an image model. (3) Whether shared books should
+  become gradebook assignments.
+- Tests: `tests/unit/storybook.test.js` (12: access on every route for students, kids, grown-ups and signed-out
+  visitors; the core rules; the first draft's prompt and drawn pictures; one retry with listed problems and repair;
+  kid safety (word rules, classifier, students' names); merge, Undo and stale saves; scrubbing and screening before
+  anything is sent; the cap (database, concurrency, nothing at the cap); the reader's choices, Back, The End, Start over
+  and remembered place; print numbering and "turn to page N"; teacher pictures; class, school and account deletes).
+
+## Book pictures: Google's Gemini image model (23 Nov 2026)
+
+The owner: "The book maker should be deployed with an actual image generator that has a kids book drawing skill." Then:
+"Moving forward with Google".
+
+Built as described in docs/storybook-builder.md "Pictures". The calls made along the way:
+
+- **Which model**: Gemini 3.1 Flash Image ("Nano Banana 2") on the Gemini API, model id `gemini-3.1-flash-image` (the
+  generally available id; `STORYBOOK_IMAGE_MODEL` changes it), called over REST with the key in the `x-goog-api-key`
+  header. It takes reference pictures in the same request, which is what keeps a book's characters the same on every
+  page. About $0.067 a picture at 1K (Google's price list: 1,120 output tokens at $60 per million).
+- **The drawing skill is ours**, not a hosted "style" product: one fixed picture-book house style in the prompt, a style
+  seed per book, the safety rules in every prompt (no text in pictures, no real people, no brand characters, nothing
+  scary), no living artist or book series named. Character sheets are drawn first from the look Oomba wrote for each
+  character and sent with every page that shows them.
+- **Safety is the same as for teachers' uploads**: only the picture prompts (book words that already passed the word
+  rules, scrubbed of students' names again) and the book's own sheets go to Google; every picture that comes back passes
+  the companion's picture check before it is kept or shown; Google's safety settings are at their strictest, and a
+  block or a refusal falls back to the art-pack drawing with a calm note. The art packs stay as the fallback for no key,
+  the budget resting and the daily limit.
+- **Limits**: a daily picture count per teacher in the database (10 without the Teacher plan, 40 with; sheets and
+  Redraws count), taken atomically at the moment of drawing, and every call through the AI budget (`recordImage`).
+- **When pictures are drawn**: after each Oomba turn, only what is new or changed (a page's scene, characters, their
+  looks or sheets); the teacher's own edits to the words never spend a picture. Redraw (with an optional note) is the
+  teacher's way to ask again.
+- **Privacy**: Google (the Gemini API) is a new processor for book pictures: a section on /privacy ("The book maker"),
+  `LEGAL_UPDATED` 2026-11-23, and docs/legal-review.md "Book pictures". The owner sets `GEMINI_API_KEY` on Render; on
+  the paid Gemini API, Google does not use prompts or pictures to improve its products (to confirm in the lawyer review).
+- Tests: `tests/unit/storybook-pictures.test.js` (8, with a stand-in for Google: request shape, house style and seed,
+  references, the key header, no student names; blocks and picture check refusals; the daily count under parallel
+  requests; no key and the budget resting; Redraw and sheets; access; deleting).

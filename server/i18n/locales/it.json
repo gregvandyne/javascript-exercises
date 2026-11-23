@@ -1124,6 +1124,11 @@
         "p3": "Quando la ricerca web è attiva, Oomba può inviare brevi ricerche alla ricerca web di Anthropic. Non contengono mai nomi né una posizione; i siti per adulti, di scommesse, i social network e simili sono bloccati, e ogni ricerca viene registrata per il nostro team senza il nome dell'insegnante. Le pagine trovate sul web sono mostrate come fonti che Oomba non ha controllato.",
         "p4": "Un insegnante può parlare invece di scrivere: il suono viene inviato a {provider} per trasformarlo in parole mentre parla, e l'audio non viene mai conservato, né da noi né da loro. Le parole finiscono nella casella del messaggio perché l'insegnante le controlli.",
         "p5": "Conserviamo la chat di un insegnante, con il testo dei suoi allegati, per 60 giorni dall'ultimo uso (una scuola può scegliere da 7 a 365 giorni); un'immagine viene eliminata appena Oomba ha risposto, al più tardi entro un giorno. Un insegnante può eliminare la chat con Nuova chat, e viene eliminata con l'account. Un amministratore della scuola può spegnere Oomba o la sua ricerca web per la scuola."
+      },
+      "storybook": {
+        "h": "Il creatore di libri",
+        "p1": "Gli insegnanti possono creare libri illustrati nella Biblioteca delle storie con Oomba. Le parole dell'insegnante per il libro sono inviate al nostro fornitore di IA, Anthropic, per scriverlo. Prima di inviare qualsiasi cosa, togliamo i nomi degli studenti dell'insegnante, le email, i numeri di telefono e i link. Gli studenti leggono solo i libri finiti che il loro insegnante condivide con la classe; nulla di ciò che fa uno studente viene inviato.",
+        "p2": "<b>Immagini dei libri:</b> per disegnare le immagini di un libro, inviamo a Google (l'API Gemini) le parole del libro su ogni immagine (cosa succede, dove e com'è ogni personaggio inventato), il nostro stile di immagine e, per una pagina, le immagini dei suoi personaggi già disegnate. Mai il nome o il lavoro di uno studente, il nome dell'insegnante o una classe. Google può conservare ciò che inviamo per un periodo limitato per controllare gli abusi e non lo usa per addestrare i suoi sistemi. Ogni immagine viene controllata prima di essere mostrata; un'immagine che non passa non viene tenuta. Le immagini restano con il libro e vengono eliminate con esso."
       }
     }
   },
@@ -4298,6 +4303,207 @@
       "line0": "Come posso aiutarti?",
       "line1": "Su cosa lavoriamo?",
       "line2": "Da dove partiamo?"
+    },
+    "storybook-setup": {
+      "words": "{count, plural, one {# parola} other {# parole}}",
+      "remove": "Togli",
+      "needKind": "Scegli un tipo di libro.",
+      "needStory": "Prima aggiungi la tua storia (almeno qualche frase).",
+      "tooManyFiles": "{count, plural, one {Puoi aggiungere # file.} other {Puoi aggiungere fino a # file.}}",
+      "reading": "Lettura del file...",
+      "fileFailed": "Quel file non ha funzionato. Provane un altro.",
+      "fileCut": "Aggiunto. Il file era lungo, quindi è stata usata solo la prima parte.",
+      "fileIn": "Aggiunto. Controlla le parole nel riquadro.",
+      "tooManyPics": "{count, plural, one {Puoi aggiungere # immagine.} other {Puoi aggiungere fino a # immagini.}}",
+      "checkingPic": "Controllo dell'immagine...",
+      "picFailed": "Quell'immagine non ha funzionato. Provane un'altra.",
+      "checking": "Controllo...",
+      "edit": "Modifica",
+      "none": "Niente",
+      "endingsN": "{count, plural, one {# finale} other {# finali}}",
+      "sum": {
+        "start": "Inizio",
+        "kind": "Tipo di libro",
+        "options": "Scelte",
+        "story": "La tua storia",
+        "notes": "Le tue note",
+        "about": "Di cosa parla",
+        "files": "File",
+        "pics": "Le tue immagini",
+        "picsN": "{count, plural, one {# immagine. Resta con il tuo libro e non viene inviata all'IA.} other {# immagini. Restano con il tuo libro e non vengono inviate all'IA.}}"
+      },
+      "removed": "{count, plural, one {Abbiamo tolto # nome, email, numero di telefono o link. Ciò che vedi è ciò che riceve Oomba.} other {Abbiamo tolto # nomi, email, numeri di telefono o link. Ciò che vedi è ciò che riceve Oomba.}}",
+      "noneLeft": "Hai usato i turni di Oomba di oggi per i libri. Torna domani."
+    },
+    "storybook-edit": {
+      "unsaved": "Non ancora salvato",
+      "saving": "Salvataggio...",
+      "saved": "Salvato",
+      "reloaded": "Oomba ha cambiato il libro. Stai vedendo la versione più recente.",
+      "pageN": "Pagina {n}",
+      "noPic": "Nessuna immagine",
+      "allGood": "Tutte le pagine sono pronte.",
+      "warnings": "{count, plural, one {# cosa da controllare} other {# cose da controllare}}",
+      "warnNote": "Non ti impediscono mai di salvare o condividere.",
+      "warn": {
+        "noPages": "Il libro non ha pagine.",
+        "noStart": "Scegli una pagina di inizio.",
+        "noEnding": "Ancora non si può arrivare a nessun finale. Segna una pagina come finale.",
+        "unreachable": "Pagina {page}: nessuna scelta porta qui.",
+        "noText": "La pagina {page} non ha parole.",
+        "deadEnd": "La pagina {page} non ha scelte e non è un finale.",
+        "choiceNoText": "Pagina {page}: la scelta {n} non ha parole.",
+        "choiceNowhere": "Pagina {page}: la scelta {n} non porta da nessuna parte.",
+        "noAlt": "Pagina {page}: l'immagine ha bisogno di una descrizione."
+      },
+      "noWords": "(ancora senza parole)",
+      "end": "Fine",
+      "start": "Inizio",
+      "hasWarning": "Qualcosa da controllare",
+      "who": "Chi",
+      "spot": "Dove",
+      "spots": {
+        "left": "Sinistra",
+        "center": "Centro",
+        "right": "Destra"
+      },
+      "remove": "Togli",
+      "upload": "La tua immagine",
+      "useDrawn": "Usa un disegno",
+      "removePic": "Nessuna immagine",
+      "addDrawn": "Aggiungi un disegno",
+      "drawn": "Disegno",
+      "world": "Luogo",
+      "mood": "Atmosfera",
+      "moods": {
+        "bright": "Luminosa",
+        "warm": "Calda",
+        "dusk": "Tramonto",
+        "night": "Notte",
+        "gloomy": "Cupa",
+        "magic": "Magica"
+      },
+      "inPicture": "Nel disegno",
+      "nobody": "Ancora nessuno.",
+      "addChar": "Aggiungi un personaggio",
+      "alt": "Descrizione dell'immagine",
+      "altHint": "Una frase per chi non può vedere l'immagine.",
+      "pageTitle": "Titolo della pagina (facoltativo)",
+      "words": "Parole della pagina",
+      "isEnding": "Questa pagina è un finale",
+      "isStart": "I lettori iniziano qui.",
+      "makeStart": "Rendila la pagina di inizio",
+      "choices": "Scelte",
+      "choiceN": "Scelta {n}",
+      "leadsTo": "Porta a...",
+      "newPage": "Una nuova pagina",
+      "addChoice": "Aggiungi una scelta",
+      "earlier": "Sposta prima",
+      "later": "Sposta dopo",
+      "deletePage": "Elimina pagina",
+      "deletePageQ": "Eliminare questa pagina?",
+      "cast": "{count, plural, one {Personaggi (#)} other {Personaggi (#)}}",
+      "castNote": "Ogni personaggio ha sempre lo stesso aspetto su ogni pagina.",
+      "castName": "Nome",
+      "castArt": "Aspetto",
+      "addCast": "Aggiungi un personaggio",
+      "castDefault": "Amico {n}",
+      "full": "{count, plural, other {Un libro può avere fino a # pagine.}}",
+      "checkingPic": "Controllo dell'immagine...",
+      "picFailed": "Quell'immagine non ha funzionato. Provane un'altra.",
+      "noClasses": "Non hai ancora una classe con cui condividere.",
+      "shareTitle": "Condividi con una classe",
+      "shareLead": "Gli studenti di queste classi possono leggere il libro nella Biblioteca delle storie.",
+      "shareNote": "Gli studenti leggono soltanto il libro. Non parlano mai con Oomba.",
+      "shareSave": "Salva",
+      "deleteQ": "Eliminare questo libro?",
+      "deleteText": "Il libro, le sue immagini e la sua chat vengono eliminati. Gli studenti non potranno più leggerlo.",
+      "deleteOk": "Elimina",
+      "chatSub": "{count, plural, one {Il tuo aiutante per i libri · oggi ti resta # turno} other {Il tuo aiutante per i libri · oggi ti restano # turni}}",
+      "chatPrivate": "Oomba vede questo libro e le tue parole, mai i nomi o i lavori degli studenti.",
+      "leave": "Puoi continuare a modificare o lasciare questa pagina. Il libro si aggiorna quando Oomba ha finito.",
+      "hello": "Dimmi cosa cambiare, per esempio \"rendi la pagina 3 più paurosa\" o \"parole più semplici per la classe 2\".",
+      "placeholder": "Cosa deve cambiare Oomba?",
+      "step": {
+        "check": {
+          "now": "Controllo delle tue parole",
+          "done": "Parole controllate"
+        },
+        "ai": {
+          "now": "Scrittura del libro",
+          "done": "Libro scritto"
+        },
+        "build": {
+          "now": "Controllo di ogni pagina",
+          "done": "Ogni pagina controllata"
+        },
+        "save": {
+          "now": "Salvataggio",
+          "done": "Salvato"
+        }
+      },
+      "fail": {
+        "unsafe": "Le parole di Oomba non hanno superato il controllo di sicurezza, quindi non è cambiato nulla. Prova a chiedere in un altro modo."
+      },
+      "cap": "Hai usato i turni di Oomba di oggi per i libri. Puoi ancora modificare a mano.",
+      "ch": {
+        "title": "Cosa è cambiato",
+        "first": "{pages, plural, one {Un nuovo libro di # pagina.} other {Un nuovo libro di # pagine.}}",
+        "firstCyoa": "Una nuova avventura: {pages} pagine, {endings} finali.",
+        "added": "Pagine nuove: {pages}",
+        "changed": "Pagine cambiate: {pages}",
+        "removed": "{count, plural, one {Tolta # pagina.} other {Tolte # pagine.}}",
+        "kept": "{count, plural, one {Tenuta # pagina che hai cambiato nel frattempo.} other {Tenute # pagine che hai cambiato nel frattempo.}}",
+        "repaired": "Oomba ha sistemato alcuni collegamenti perché ogni pagina funzioni.",
+        "none": "Non è cambiato niente."
+      },
+      "ideas": {
+        "scarier": "Pagina 3 più paurosa",
+        "scarierText": "Rendi la pagina 3 un po' più paurosa, ma sempre adatta ai bambini.",
+        "ending": "Aggiungi un terzo finale",
+        "endingText": "Aggiungi un terzo finale.",
+        "simpler": "Parole più semplici",
+        "simplerText": "Usa parole più semplici per la classe 2.",
+        "longer": "Aggiungi una pagina",
+        "longerText": "Aggiungi un'altra pagina prima della fine.",
+        "title": "Nuovo titolo",
+        "titleText": "Dai al libro un titolo migliore."
+      },
+      "draw": {
+        "lineOff": "Le immagini vengono dai pacchetti di disegni: il creatore di immagini non è configurato su questo sito.",
+        "lineResting": "Il creatore di immagini sta riposando, quindi le nuove immagini vengono dai pacchetti di disegni.",
+        "lineBusy": "Disegno delle immagini: {done} di {total} pronte. Puoi continuare a lavorare.",
+        "lineLimit": "Le immagini di oggi sono state usate, quindi le nuove vengono dai pacchetti di disegni. Domani ce ne saranno altre.",
+        "lineOn": "Le immagini sono dipinte in un unico stile da libro illustrato e controllate prima di essere mostrate. Immagini rimaste oggi: {count}",
+        "queued": "In attesa di essere disegnata",
+        "drawing": "Disegno di questa immagine in corso",
+        "why": {
+          "nokey": "Il creatore di immagini non è configurato, quindi si vede il disegno del pacchetto.",
+          "resting": "Il creatore di immagini stava riposando, quindi si vede il disegno del pacchetto.",
+          "limit": "Le immagini di oggi erano finite, quindi si vede il disegno del pacchetto.",
+          "blocked": "Il creatore di immagini non è riuscito a disegnare questa, quindi si vede il disegno del pacchetto.",
+          "refused": "La nuova immagine non ha superato il nostro controllo, quindi non è stata tenuta.",
+          "error": "Qualcosa è andato storto durante il disegno. Prova Ridisegna."
+        },
+        "keptOld": "Resta l'immagine di prima.",
+        "stale": "Questa pagina è cambiata da quando è stata disegnata la sua immagine.",
+        "redraw": "Ridisegna",
+        "draw": "Disegna questa immagine",
+        "note": "Cosa deve cambiare? (facoltativo)",
+        "notePh": "Per esempio: una mattina di sole",
+        "cancel": "Annulla",
+        "look": "Com'è fatto",
+        "sheetAlt": "Immagine di riferimento di {name}"
+      }
+    },
+    "storybook-read": {
+      "pageN": "Pagina {n}",
+      "theEnd": "Fine",
+      "choices": "Cosa succede dopo?",
+      "pages": "Pagine",
+      "back": "Indietro",
+      "next": "Avanti",
+      "startOver": "Ricomincia"
     }
   },
   "favorites": {
@@ -13727,6 +13933,168 @@
         "bounds": "Scegli un numero da {min} a {max}.",
         "sendKeep": "Scegli un numero da {min} a {max}: non più dei messaggi conservati."
       }
+    }
+  },
+  "storybook": {
+    "title": "Crea un libro",
+    "lead": "Carica una storia che hai scritto o scrivine una con Oomba. Rendila un libro illustrato normale o un libro-game in cui si sceglie la propria avventura, poi condividila con la tua classe.",
+    "makeBook": "Crea un libro",
+    "shelfMine": "I tuoi libri",
+    "shelfShared": "Dal tuo insegnante",
+    "allMine": "Tutti i tuoi libri",
+    "untitled": "Libro senza titolo",
+    "pages": "{count, plural, one {# pagina} other {# pagine}}",
+    "sharedN": "{count, plural, one {condiviso con # classe} other {condiviso con # classi}}",
+    "readDone": "Finito",
+    "reading": "In lettura",
+    "mine": "I tuoi libri",
+    "mineNone": "Ancora nessun libro. I tuoi libri appariranno qui.",
+    "left": "{count, plural, one {Oggi ti resta # turno di Oomba} other {Oggi ti restano # turni di Oomba}}",
+    "kind": {
+      "linear": "Libro illustrato",
+      "cyoa": "Scegli la tua avventura"
+    },
+    "steps": {
+      "label": "Passaggi",
+      "start": "Inizio",
+      "options": "Scelte",
+      "context": "Le tue parole",
+      "check": "Controlla"
+    },
+    "start": {
+      "title": "Come vuoi iniziare?",
+      "upload": "Carica il tuo libro",
+      "uploadText": "Porta una storia che hai scritto. Lasciala come libro normale o trasformala in una storia scegli la tua avventura.",
+      "ai": "Fallo creare all'IA",
+      "aiText": "Oomba scrive con te un libro illustrato o una storia scegli la tua avventura."
+    },
+    "options": {
+      "title": "Che tipo di libro?",
+      "keep": "Lascialo come libro normale",
+      "keepText": "Le tue parole restano come sono. Oomba le divide in pagine e aggiunge le immagini.",
+      "turn": "Trasformalo in scegli la tua avventura",
+      "turnText": "Oomba mantiene la tua storia e aggiunge scelte e finali.",
+      "illustrated": "Libro illustrato",
+      "illustratedText": "Una storia che si legge dalla prima all'ultima pagina, con un'immagine su ogni pagina.",
+      "cyoa": "Scegli la tua avventura",
+      "cyoaText": "I lettori scelgono cosa succede dopo e scoprono finali diversi.",
+      "grade": "Classe",
+      "length": "Lunghezza",
+      "endings": "Finali",
+      "level": "Livello di lettura",
+      "theme": "Tema (facoltativo)"
+    },
+    "grades": {
+      "k": "Infanzia/K",
+      "1": "Classe 1",
+      "2": "Classe 2",
+      "3": "Classe 3",
+      "45": "Classi 4-5",
+      "68": "Classi 6-8"
+    },
+    "lengths": {
+      "short": "Breve",
+      "medium": "Medio",
+      "long": "Lungo"
+    },
+    "levels": {
+      "early": "Lettore alle prime armi",
+      "growing": "Lettore in crescita",
+      "confident": "Lettore sicuro"
+    },
+    "themes": {
+      "animals": "Animali",
+      "space": "Spazio",
+      "sea": "Sotto il mare",
+      "dinosaurs": "Dinosauri",
+      "castles": "Castelli",
+      "friendship": "Amicizia",
+      "seasons": "Stagioni",
+      "feelings": "Emozioni"
+    },
+    "back": "Indietro",
+    "next": "Avanti",
+    "toCheck": "Controlla cosa riceve Oomba",
+    "context": {
+      "titleUpload": "La tua storia",
+      "titleAi": "Le tue idee",
+      "story": "La tua storia (obbligatoria)",
+      "storyHint": "Incollala o scrivila qui, oppure aggiungi un file. Lascia una riga vuota tra i paragrafi.",
+      "aboutUpload": "C'è altro che Oomba dovrebbe sapere? (facoltativo)",
+      "aboutAi": "Di cosa deve parlare il libro? (facoltativo)",
+      "aboutHint": "Per esempio: il ciclo dell'acqua, raccontato da una goccia di pioggia. Usa solo nomi inventati.",
+      "addFile": "Aggiungi un file",
+      "fileHint": ".txt, .docx, .pdf o .md. Le sue parole vanno nel riquadro sopra, così puoi controllarle.",
+      "addPic": "Aggiungi immagini",
+      "picHint": "Le tue immagini vanno sulle prime pagine, in ordine. Non vengono mai inviate all'IA. Niente foto di persone."
+    },
+    "privacy": "Non inserire i nomi degli studenti né i loro lavori. I nomi dei tuoi studenti, le email, i numeri di telefono e i link vengono tolti prima di inviare qualsiasi cosa.",
+    "check": {
+      "title": "Controlla cosa riceverà Oomba",
+      "lead": "Questo è esattamente ciò che va all'IA. Usa Modifica per cambiare qualcosa.",
+      "never": "Oomba vede solo ciò che è elencato qui. Non inserire mai i nomi degli studenti né i loro lavori.",
+      "go": "Crea il mio libro"
+    },
+    "blocked": {
+      "personal": "Togli i dati personali (nomi, indirizzi, numeri di telefono, link) e riprova.",
+      "words": "Alcune di queste parole non si possono usare su Oomba Academy. Cambiale e riprova."
+    },
+    "firstMessage": "Per favore, crea il mio libro.",
+    "errors": {
+      "storyNeeded": "Prima aggiungi la tua storia (almeno qualche frase).",
+      "cap": "Hai usato i turni di Oomba di oggi per i libri. Puoi ancora modificare i tuoi libri a mano. Domani ci saranno altri turni.",
+      "notFound": "Non abbiamo trovato quel libro.",
+      "error": "Qualcosa è andato storto. Riprova.",
+      "stale": "Nel frattempo Oomba ha cambiato il libro. Eccolo di nuovo.",
+      "words": "Alcune parole di questa pagina non si possono usare su Oomba Academy. Cambiale, per favore.",
+      "names": "Usa nomi inventati, non quelli dei tuoi studenti.",
+      "empty": "Crea qualche pagina prima di condividere il libro.",
+      "imgType": "Scegli un'immagine (JPEG, PNG o WebP).",
+      "imgBig": "Quell'immagine è troppo grande.",
+      "imgLimit": "Hai aggiunto il massimo di immagini per oggi. Riprova domani.",
+      "imgFull": "Questo libro ha già tutte le immagini che può contenere.",
+      "imgPerson": "Usa un'immagine senza persone.",
+      "imgPersonal": "Quell'immagine mostra dati personali. Usane un'altra.",
+      "imgUnsafe": "Quell'immagine non si può usare su Oomba Academy.",
+      "imgResting": "Al momento le immagini non si possono controllare, quindi non si possono aggiungere. Riprova più tardi."
+    },
+    "shareDone": "{count, plural, one {Condiviso con # classe.} other {Condiviso con # classi.}}",
+    "shareNone": "Non condiviso con nessuna classe.",
+    "edit": {
+      "titleLabel": "Titolo del libro",
+      "oomba": "Oomba",
+      "preview": "Anteprima",
+      "print": "Stampa",
+      "share": "Condividi",
+      "delete": "Elimina libro",
+      "map": "Mappa della storia",
+      "pages": "Pagine",
+      "addPage": "Aggiungi una pagina",
+      "waiting": "Oomba sta scrivendo il tuo libro. Apparirà qui quando sarà pronto."
+    },
+    "read": {
+      "backToEditor": "Torna all'editor",
+      "preview": "Anteprima: come lo vedranno gli studenti",
+      "pageN": "Pagina {n}",
+      "theEnd": "Fine",
+      "choices": "Cosa succede dopo?",
+      "back": "Indietro",
+      "startOver": "Ricomincia"
+    },
+    "print": {
+      "go": "Stampa o salva come PDF",
+      "hint": "Nella finestra di stampa, scegli Salva come PDF per creare un file.",
+      "how": "Scegli tu cosa succede! Alla fine di una pagina, scegli un'opzione e vai alla pagina indicata.",
+      "made": "Creato con Oomba Academy",
+      "turn": "{choice}: vai a pagina {page}"
+    },
+    "warn": {
+      "unreachable": "Ancora nessuna scelta porta a questa pagina."
+    },
+    "draw": {
+      "nokey": "Il creatore di immagini non è configurato su questo sito, quindi le pagine usano i disegni dei pacchetti.",
+      "resting": "Il creatore di immagini sta riposando. Riprova più tardi.",
+      "limit": "Hai usato le immagini di oggi. Domani ce ne saranno altre."
     }
   }
 }
