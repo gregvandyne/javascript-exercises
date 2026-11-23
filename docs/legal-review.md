@@ -729,3 +729,25 @@ Questions for the lawyer:
    so when a check is overdue?
 4. Do the trademark notice and the "tell us if something changed" link need any change, for example a named contact
    for takedown or correction requests?
+### Book pictures: Google (Gemini API) as a processor (2026-11-23; LAWYER REVIEW PENDING)
+
+Addendum; LEGAL_UPDATED is 2026-11-23. The book maker (teachers only; docs/storybook-builder.md "Pictures") now has its
+pictures painted by Google's Gemini image model through the Gemini API (docs/decisions.md "Book pictures: Google's
+Gemini image model"). /privacy has a new section, "The book maker" (`info.privacy.storybook`), naming Anthropic for the
+words and Google (the Gemini API) for the pictures. What is sent to Google: our fixed picture style, the book's own words
+about each picture (what happens, where, how each made-up character looks: words that passed our word rules and from
+which the teacher's students' names are taken out again), and the book's own earlier character pictures. Never a
+student's name or work, the teacher's name or a class. Every picture that comes back passes the same picture check as a
+teacher's upload before it is kept; refused pictures are not kept. Pictures are kept with the book and deleted with it
+(and with the teacher's account).
+
+Questions for the lawyer:
+
+1. The privacy text says Google "may keep what we send for a limited time to check for misuse and does not use it to
+   train its systems". That is our reading of the Gemini API terms for paid use (the key must be on a billed Google Cloud
+   project, not the free tier, where Google may use content to improve its products). Is the wording right, and does
+   the owner need a data processing agreement with Google (the Google Cloud data processing terms) before turning it on?
+2. Nothing personal is sent (made-up characters only); is naming Google as a processor for "book pictures" enough, or
+   should the school data agreement list it too?
+3. Generated pictures: who owns them, and does the Gemini API's generated-content policy (including the invisible
+   SynthID watermark Google adds) need a line for teachers who print or share the books?

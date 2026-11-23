@@ -5,6 +5,9 @@
 // Every edit is saved a moment later (POST .../save with the version it was made on; a newer version, Oomba's, wins and
 // the page reloads it). Beside it, Oomba's chat (the shared chat client, public/js/oomba-chat.js): each answer is a new
 // version of the book, with Undo. Preview opens the reader as students see it; Print makes the numbered print copy.
+// With the picture model on (services/storybook-draw.js), each page's picture is painted in the background: the line
+// under the warnings says how far it is (or, calmly, why the art-pack drawings are used), each page shows its own state,
+// and Redraw (with an optional note) paints a page or a character's reference picture again.
 import { api, t, esc, pageData, toast, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { mountChat } from '/js/oomba-chat.js';
@@ -15,7 +18,7 @@ import { warningsOf, mapLayout, numbering, LIMITS, MOODS, POSITIONS } from '/js/
 const D = pageData();
 const $ = id => document.getElementById(id);
 const cyoa = D.kind === 'cyoa';
-let B = D.book, rev = D.rev, sel = null, uploads = D.uploads || [], shared = D.shared || [];
+let B = D.book, rev = D.rev, sel = null, uploads = D.uploads || [], shared = D.shared || [], DR = D.draws || { pages: {}, cast: {} };
 const charName = id => (D.chars.find(c => c.id === id) || {}).name || id;
 
 // ---------------------------------------------------------------- saving
@@ -35,8 +38,8 @@ async function save() {
 }
 async function reload() {
   const r = await api(`/api/library/make/${D.id}`, { background: true });
-  B = r.book; rev = r.rev; uploads = r.uploads || []; shared = r.shared || [];
-  setLeft(r.left);
+  B = r.book; rev = r.rev; uploads = r.uploads || []; shared = r.shared || []; if (r.draws) DR = r.draws;
+  setLeft(r.left); watchDraws();
   if (!B.pages.find(p => p.id === sel)) sel = null;
   drawAll();
 }
@@ -44,8 +47,10 @@ async function reload() {
 // ---------------------------------------------------------------- drawing
 const num = () => numbering(B);
 const pageLabel = (p, n = num()) => `${t('js.storybook-edit.pageN', { n: n.get(p.id) })}${p.title ? `: ${p.title}` : p.text ? `: ${p.text.slice(0, 32)}${p.text.length > 32 ? '…' : ''}` : ''}`;
+const drawnOf = p => (!p.upload && p.pic && DR.pages[p.id] && DR.pages[p.id].pic) || null;
 const artOf = (p, { decorative = true } = {}) => {
   if (p.upload) return `<img class="sb-art" src="/library/made/${esc(D.id)}/pic/${esc(p.upload)}" alt="${decorative ? '' : esc(p.alt)}">`;
+  if (drawnOf(p)) return `<img class="sb-art" src="/library/made/${esc(D.id)}/pic/${esc(drawnOf(p))}" alt="${decorative ? '' : esc(p.alt)}" width="800" height="450">`;
   return p.pic ? pictureSvg(p.pic, B.cast, D.catalog, { key: `${D.id}:${p.id}`, label: p.alt, decorative }) : `<div class="sb-nopic">${esc(t('js.storybook-edit.noPic'))}</div>`;
 };
 function drawAll() {
@@ -53,7 +58,57 @@ function drawAll() {
   $('sb-wait').hidden = !empty; $('sb-ebody').hidden = empty;
   if (document.activeElement !== $('sb-title')) $('sb-title').value = B.title || '';
   if (!empty && !sel) sel = cyoa ? B.start || B.pages[0].id : B.pages[0].id;
-  drawWarnings(); drawMap(); drawList(); drawPage();
+  drawWarnings(); drawDrawLine(); drawMap(); drawList(); drawPage();
+}
+// ---------------------------------------------------------------- the picture model's pictures
+const busy = d => !!d && (d.state === 'queued' || d.state === 'drawing');
+function drawDrawLine() {
+  const el = $('sb-drawline'); if (!el) return;
+  let icon = 'ℹ️', text = '';
+  if (!DR.on) text = DR.reason === 'resting' ? t('js.storybook-edit.draw.lineResting') : DR.total ? t('js.storybook-edit.draw.lineOff') : '';
+  else if (DR.busy) { icon = '🎨'; text = t('js.storybook-edit.draw.lineBusy', { done: DR.done, total: DR.total }); }
+  else if (DR.reason === 'limit') text = t('js.storybook-edit.draw.lineLimit', { count: DR.cap });
+  else { icon = '✨'; text = t('js.storybook-edit.draw.lineOn', { count: DR.left }); }
+  el.hidden = !text || !B.pages.length;
+  el.innerHTML = text ? `${iconHtml(icon, { size: 16 })} ${esc(text)}` : '';
+}
+/** One picture's state under it (a page or a character's reference picture), and its Redraw button. */
+function drawState(d, { target, has }) {
+  const out = [];
+  if (busy(d)) out.push(`<p class="sb-dstate is-busy">${iconHtml(d.state === 'drawing' ? '🎨' : '⏳', { size: 16 })} ${esc(t(`js.storybook-edit.draw.${d.state}`))}</p>`);
+  else if (d && d.state === 'fallback') out.push(`<p class="sb-dstate">${iconHtml('ℹ️', { size: 16 })} ${esc(t(`js.storybook-edit.draw.why.${d.reason || 'error'}`))}${d.pic ? ` ${esc(t('js.storybook-edit.draw.keptOld'))}` : ''}</p>`);
+  else if (d && d.stale) out.push(`<p class="sb-dstate">${iconHtml('ℹ️', { size: 16 })} ${esc(t('js.storybook-edit.draw.stale'))}</p>`);
+  if (DR.on && !busy(d)) out.push(`<button type="button" class="btn btn-sm" data-act="redraw" data-target="${esc(target)}">${iconHtml('🔁', { size: 16 })} ${esc(t(has ? 'js.storybook-edit.draw.redraw' : 'js.storybook-edit.draw.draw'))}</button>`);
+  return out.join('');
+}
+const pageState = p => (p.upload || !p.pic ? '' : drawState(DR.pages[p.id], { target: `page:${p.id}`, has: !!drawnOf(p) }));
+let drawTimer = null;
+/** While pictures are being drawn, ask how it is going every few seconds and show each one as it arrives. */
+function watchDraws() {
+  clearTimeout(drawTimer);
+  if (!DR.busy) return;
+  drawTimer = setTimeout(async () => {
+    try {
+      const was = JSON.stringify(DR.pages) + JSON.stringify(DR.cast);
+      DR = await api(`/api/library/make/${D.id}/draws`, { background: true });
+      if (was !== JSON.stringify(DR.pages) + JSON.stringify(DR.cast)) refreshPictures();
+      else drawDrawLine();
+    } catch { /* try again on the next tick */ }
+    watchDraws();
+  }, 2500);
+}
+/** New pictures or states: the line, the page list, the open page's picture and state (never the fields being typed in). */
+function refreshPictures() {
+  drawDrawLine(); drawList();
+  const p = cur(); if (!p) return;
+  const f = document.querySelector('.sb-fig'); if (f) f.innerHTML = artOf(p, { decorative: false });
+  const st = $('sb-dst'); if (st && !st.querySelector('form')) st.innerHTML = pageState(p);
+  document.querySelectorAll('[data-sheet]').forEach(el => { const c = B.cast[+el.dataset.sheet]; if (c && !el.querySelector('form')) el.innerHTML = sheetHtml(c); });
+}
+function sheetHtml(c) {
+  const d = DR.cast[c.name];
+  const img = d && d.pic ? `<img class="sb-sheet-img" src="/library/made/${esc(D.id)}/pic/${esc(d.pic)}" alt="${esc(t('js.storybook-edit.draw.sheetAlt', { name: c.name }))}" width="72" height="72">` : '';
+  return `${img}<div class="sb-sheet-st">${drawState(d, { target: `cast:${c.name}`, has: !!(d && d.pic) })}</div>`;
 }
 function drawWarnings() {
   const n = num(), w = B.pages.length ? warningsOf(B) : [];
@@ -85,6 +140,7 @@ function drawList() {
   const order = cyoa ? [...B.pages].sort((a, b) => n.get(a.id) - n.get(b.id)) : B.pages;
   $('sb-plist').innerHTML = order.map(p => `<li><button type="button" class="sb-pitem${p.id === sel ? ' on' : ''}" data-sel="${esc(p.id)}"${p.id === sel ? ' aria-current="true"' : ''}>
     <span class="sb-pthumb" aria-hidden="true">${artOf(p)}</span><span class="sb-pltext"><b>${n.get(p.id)}</b> <span dir="auto">${esc(p.title || p.text.slice(0, 60) || t('js.storybook-edit.noWords'))}</span></span>
+    ${busy(DR.pages[p.id]) && !p.upload ? `<span class="sb-pdraw">${iconHtml('⏳', { size: 16 })}<span class="sr-only">${esc(t('js.storybook-edit.draw.queued'))}</span></span>` : ''}
     ${bad.has(p.id) ? `<span class="sb-pwarn" title="${esc(t('js.storybook-edit.hasWarning'))}">${iconHtml('⚠️', { size: 16 })}<span class="sr-only">${esc(t('js.storybook-edit.hasWarning'))}</span></span>` : ''}</button></li>`).join('');
 }
 const opt = (v, label, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(label)}</option>`;
@@ -102,6 +158,7 @@ function drawPage() {
       <button type="button" class="btn btn-sm btn-ghost" data-act="char-rm" data-i="${i}">${esc(t('js.storybook-edit.remove'))}</button></div>`).join('');
   box.innerHTML = `<div class="sb-pedit">
     <div class="sb-pic-col"><figure class="sb-fig">${artOf(p, { decorative: false })}</figure>
+      <div class="sb-dst" id="sb-dst">${pageState(p)}</div>
       <div class="sb-picbtns"><button type="button" class="btn btn-sm" data-act="upload">${iconHtml('🖼️', { size: 16 })} ${esc(t('js.storybook-edit.upload'))}</button>
         ${p.upload ? `<button type="button" class="btn btn-sm" data-act="drawn">${iconHtml('🎨', { size: 16 })} ${esc(t('js.storybook-edit.useDrawn'))}</button>` : ''}
         ${p.pic || p.upload ? `<button type="button" class="btn btn-sm btn-ghost" data-act="nopic">${esc(t('js.storybook-edit.removePic'))}</button>` : `<button type="button" class="btn btn-sm" data-act="drawn">${iconHtml('🎨', { size: 16 })} ${esc(t('js.storybook-edit.addDrawn'))}</button>`}</div>
@@ -131,8 +188,10 @@ function drawPage() {
     </div></div>
     <details class="sb-cast"><summary>${esc(t('js.storybook-edit.cast', { count: B.cast.length }))}</summary>
       <p class="small muted">${esc(t('js.storybook-edit.castNote'))}</p>
-      ${B.cast.map((c, i) => `<div class="sb-crow"><label class="sr-only" for="sb-cn${i}">${esc(t('js.storybook-edit.castName'))}</label><input class="input" id="sb-cn${i}" data-f="cast-name" data-i="${i}" value="${esc(c.name)}" maxlength="${L.castName}" dir="auto">
-        <label class="sr-only" for="sb-ca${i}">${esc(t('js.storybook-edit.castArt'))}</label><select class="input" id="sb-ca${i}" data-f="cast-art" data-i="${i}">${D.chars.map(x => opt(x.id, x.name, x.id === c.art)).join('')}</select></div>`).join('')}
+      ${B.cast.map((c, i) => `<div class="sb-castrow"><div class="sb-crow"><label class="sr-only" for="sb-cn${i}">${esc(t('js.storybook-edit.castName'))}</label><input class="input" id="sb-cn${i}" data-f="cast-name" data-i="${i}" value="${esc(c.name)}" maxlength="${L.castName}" dir="auto">
+        <label class="sr-only" for="sb-ca${i}">${esc(t('js.storybook-edit.castArt'))}</label><select class="input" id="sb-ca${i}" data-f="cast-art" data-i="${i}">${D.chars.map(x => opt(x.id, x.name, x.id === c.art)).join('')}</select></div>
+        <label class="sr-only" for="sb-cl${i}">${esc(t('js.storybook-edit.draw.look'))}</label><input class="input sb-look" id="sb-cl${i}" data-f="cast-look" data-i="${i}" value="${esc(c.look || '')}" maxlength="${L.look}" placeholder="${esc(t('js.storybook-edit.draw.look'))}" dir="auto">
+        ${DR.on || (DR.cast[c.name] && DR.cast[c.name].pic) ? `<div class="sb-sheet" data-sheet="${i}">${sheetHtml(c)}</div>` : ''}</div>`).join('')}
       ${B.cast.length < L.cast ? `<button type="button" class="btn btn-sm" data-act="cast-add">${iconHtml('➕', { size: 16 })} ${esc(t('js.storybook-edit.addCast'))}</button>` : ''}
     </details>`;
 }
@@ -156,6 +215,8 @@ document.addEventListener('click', async e => {
   const a = e.target.closest('[data-act]'); if (!a || !a.closest('#sb-page')) return;
   const p = cur(); if (!p) return;
   const i = +a.dataset.i, act = a.dataset.act;
+  if (act === 'redraw') { openRedraw(a); return; }
+  if (act === 'redraw-cancel') { refreshPictures(); return; }
   if (act === 'upload') { $('sb-pagepic').click(); return; }
   if (act === 'drawn') { p.upload = null; if (!p.pic) p.pic = { world: D.worlds[0].id, mood: 'bright', chars: [], props: [] }; }
   if (act === 'nopic') { p.upload = null; p.pic = null; }
@@ -186,6 +247,7 @@ document.addEventListener('input', e => {
     case 'title': p.title = v; break;
     case 'text': p.text = v; break;
     case 'alt': p.alt = v; break;
+    case 'cast-look': B.cast[i].look = v; break;
     case 'choice-text': p.choices[i].text = v; break;
     case 'cast-name': { const old = B.cast[i].name, nv = v.trim(); if (!nv || B.cast.some((c, k) => k !== i && c.name.toLowerCase() === nv.toLowerCase())) return; B.cast[i].name = nv; for (const pg of B.pages) if (pg.pic) for (const c of pg.pic.chars) if (c.name === old) c.name = nv; break; }
     default: return;
@@ -216,6 +278,24 @@ $('sb-pagepic').addEventListener('change', async () => {
     const pic = await uploadPic(f, `/api/library/make/${D.id}/pic`, { failText: t('js.storybook-edit.picFailed') });
     uploads.push(pic); p.upload = pic.id; drawPage(); changed({ now: true });
   } catch (e) { status(''); toast(e.message, { bad: true }); }
+});
+// Redraw: an optional note ("make it sunnier"), then the picture goes back in the queue.
+function openRedraw(btn) {
+  const box = btn.parentElement, target = btn.dataset.target;
+  box.innerHTML = `<form class="sb-redraw" data-target="${esc(target)}"><label for="sb-rnote">${esc(t('js.storybook-edit.draw.note'))}</label>
+    <input class="input" id="sb-rnote" name="note" maxlength="200" placeholder="${esc(t('js.storybook-edit.draw.notePh'))}" dir="auto">
+    <div class="row"><button class="btn btn-sm btn-primary" type="submit">${iconHtml('🔁', { size: 16 })} ${esc(t('js.storybook-edit.draw.redraw'))}</button><button class="btn btn-sm btn-ghost" type="button" data-act="redraw-cancel">${esc(t('js.storybook-edit.draw.cancel'))}</button></div></form>`;
+  box.querySelector('input').focus();
+}
+document.addEventListener('submit', async e => {
+  const f = e.target.closest('.sb-redraw'); if (!f) return;
+  e.preventDefault();
+  const btn = f.querySelector('[type=submit]'); btn.disabled = true;
+  try {
+    clearTimeout(timer); await save();   // a character's new look is saved before it is drawn
+    const r = await api(`/api/library/make/${D.id}/draw`, { method: 'POST', body: { target: f.dataset.target, note: f.note.value } });
+    DR = r.draws; refreshPictures(); watchDraws();
+  } catch (er) { btn.disabled = false; toast(er.message, { bad: true }); }
 });
 $('sb-add').addEventListener('click', () => { const p = addPage(); if (!p) return; sel = p.id; drawAll(); changed(); $('sb-page-h').focus(); });
 
@@ -276,4 +356,5 @@ const IDEAS = () => {
 // Oomba is writing the first draft: look again until it is there (the chat polls its own job too).
 if (!B.pages.length) { const iv = setInterval(async () => { await reload().catch(() => {}); if (B.pages.length) clearInterval(iv); }, 3000); }
 drawAll();
+watchDraws();
 void chat;

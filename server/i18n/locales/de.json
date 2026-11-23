@@ -1124,6 +1124,11 @@
         "p3": "Wenn die Websuche an ist, kann Oomba kurze Suchen an die Websuche von Anthropic senden. Sie enthalten nie Namen oder einen Standort, Seiten für Erwachsene, Glücksspiel, soziale Netzwerke und Ähnliches sind gesperrt, und jede Suche wird für unser Team ohne den Namen der Lehrkraft protokolliert. Im Web gefundene Seiten werden als Quellen gezeigt, die Oomba nicht geprüft hat.",
         "p4": "Eine Lehrkraft kann sprechen statt tippen: Der Ton wird an {provider} übertragen, um ihn schon beim Sprechen in Wörter umzuwandeln, und das Audio wird nie gespeichert, weder von uns noch von ihnen. Die Wörter landen im Nachrichtenfeld, damit die Lehrkraft sie prüfen kann.",
         "p5": "Wir speichern den Chat einer Lehrkraft mit dem Text ihrer Anhänge 60 Tage nach der letzten Nutzung (eine Schule kann 7 bis 365 Tage wählen); ein Bild wird gelöscht, sobald Oomba geantwortet hat, spätestens nach einem Tag. Eine Lehrkraft kann den Chat mit Neuer Chat löschen, und er wird mit dem Konto gelöscht. Eine Schuladministration kann Oomba oder seine Websuche für die Schule ausschalten."
+      },
+      "storybook": {
+        "h": "Der Buchmacher",
+        "p1": "Lehrkräfte können mit Oomba in der Geschichtenbibliothek Bilderbücher machen. Die Worte der Lehrkraft für das Buch werden an unseren KI-Anbieter Anthropic geschickt, um es zu schreiben. Bevor etwas geschickt wird, entfernen wir die Namen der Schülerinnen und Schüler der Lehrkraft, E-Mail-Adressen, Telefonnummern und Links. Schülerinnen und Schüler lesen nur die fertigen Bücher, die ihre Lehrkraft mit ihrer Klasse teilt; nichts, was sie tun, wird geschickt.",
+        "p2": "<b>Bilder in Büchern:</b> Um die Bilder eines Buches zu malen, schicken wir Google (der Gemini API) die eigenen Worte des Buches zu jedem Bild (was passiert, wo, und wie jede erfundene Figur aussieht), unseren Bildstil und für eine Seite die schon gemalten Bilder ihrer Figuren. Nie den Namen oder die Arbeit einer Schülerin oder eines Schülers, den Namen der Lehrkraft oder eine Klasse. Google darf das Gesendete für begrenzte Zeit aufbewahren, um Missbrauch zu prüfen, und nutzt es nicht zum Trainieren seiner Systeme. Jedes Bild wird vor dem Anzeigen geprüft; ein Bild, das nicht besteht, wird nicht behalten. Die Bilder werden mit dem Buch aufbewahrt und mit ihm gelöscht."
       }
     }
   },
@@ -4463,6 +4468,32 @@
         "longerText": "Füge vor dem Ende noch eine Seite hinzu.",
         "title": "Neuer Titel",
         "titleText": "Gib dem Buch einen besseren Titel."
+      },
+      "draw": {
+        "lineOff": "Die Bilder kommen aus den Bilderpaketen: Der Bildermacher ist auf dieser Seite nicht eingerichtet.",
+        "lineResting": "Der Bildermacher macht gerade Pause, deshalb kommen neue Bilder aus den Bilderpaketen.",
+        "lineBusy": "Bilder werden gemalt: {done} von {total} fertig. Du kannst weiterarbeiten.",
+        "lineLimit": "Die Bilder für heute sind verbraucht, deshalb kommen neue Bilder aus den Bilderpaketen. Morgen gibt es neue.",
+        "lineOn": "Die Bilder werden in einem gemeinsamen Bilderbuchstil gemalt und vor dem Anzeigen geprüft. Bilder für heute übrig: {count}",
+        "queued": "Wartet darauf, gemalt zu werden",
+        "drawing": "Dieses Bild wird gerade gemalt",
+        "why": {
+          "nokey": "Der Bildermacher ist nicht eingerichtet, deshalb steht hier die Zeichnung aus dem Paket.",
+          "resting": "Der Bildermacher hat Pause gemacht, deshalb steht hier die Zeichnung aus dem Paket.",
+          "limit": "Die Bilder für heute waren verbraucht, deshalb steht hier die Zeichnung aus dem Paket.",
+          "blocked": "Der Bildermacher konnte dieses Bild nicht malen, deshalb steht hier die Zeichnung aus dem Paket.",
+          "refused": "Das neue Bild hat unsere Bildprüfung nicht bestanden und wurde nicht behalten.",
+          "error": "Beim Malen ist etwas schiefgegangen. Versuche Neu malen."
+        },
+        "keptOld": "Das frühere Bild bleibt.",
+        "stale": "Diese Seite hat sich geändert, seit ihr Bild gemalt wurde.",
+        "redraw": "Neu malen",
+        "draw": "Dieses Bild malen",
+        "note": "Was soll anders sein? (freiwillig)",
+        "notePh": "Zum Beispiel: ein sonniger Morgen",
+        "cancel": "Abbrechen",
+        "look": "Wie die Figur aussieht",
+        "sheetAlt": "Referenzbild von {name}"
       }
     },
     "storybook-read": {
@@ -14059,6 +14090,11 @@
     },
     "warn": {
       "unreachable": "Noch keine Entscheidung führt zu dieser Seite."
+    },
+    "draw": {
+      "nokey": "Der Bildermacher ist auf dieser Seite nicht eingerichtet, deshalb zeigen die Seiten die Zeichnungen aus den Bilderpaketen.",
+      "resting": "Der Bildermacher macht gerade Pause. Bitte versuche es später noch einmal.",
+      "limit": "Du hast die Bilder für heute verbraucht. Morgen gibt es neue."
     }
   }
 }

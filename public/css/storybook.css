@@ -188,3 +188,19 @@
   .sb-cover{display:flex;flex-direction:column;justify-content:center;min-height:9in}
   .sb-ppic .sb-art{max-height:4.4in;width:auto;max-width:100%;margin:0 auto}
 }
+/* The picture model's pictures (docs/storybook-builder.md "Pictures"): the line under the warnings, each picture's state
+   and Redraw, the characters' reference pictures. */
+.sb-drawline{display:flex;gap:6px;align-items:center;margin:0 0 10px;padding:8px 12px;border-radius:var(--r-sm);background:var(--card-2);color:var(--text)}
+.sb-dst{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:0 0 8px}
+.sb-dstate{margin:0;display:flex;gap:6px;align-items:center;font-size:.9rem;color:var(--muted)}
+.sb-dstate.is-busy{color:var(--text);font-weight:700}
+.sb-redraw{display:grid;gap:6px;width:100%}
+.sb-redraw label{font-weight:700;font-size:.9rem}
+.sb-pdraw{flex:0 0 auto;line-height:0}
+.sb-castrow{display:grid;gap:6px;padding:8px 0;border-bottom:1px solid var(--line)}
+.sb-castrow:last-of-type{border-bottom:0}
+.sb-look{width:100%}
+.sb-sheet{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sb-sheet-img{width:72px;height:72px;object-fit:cover;border-radius:8px;background:var(--card-2)}
+.sb-sheet-st{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:1 1 160px}
+.sb-pitem .sb-pthumb img.sb-art{aspect-ratio:16/9;object-fit:cover}

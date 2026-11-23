@@ -1124,6 +1124,11 @@
         "p3": "When web search is on, Oomba may send short searches to Anthropic's web search. They never include names or a location, sites for adults, gambling, social networks and the like are blocked, and every search is logged for our team without the teacher's name. Pages found on the web are shown as sources Oomba hasn't checked.",
         "p4": "A teacher can speak instead of typing: the sound is streamed to {provider} to turn it into words as they speak, and the audio is never kept, by us or by them. The words go into the message box for the teacher to check.",
         "p5": "We keep a teacher's chat, with the text of what they attached, for 60 days after it was last used (a school can choose from 7 to 365 days); a picture is deleted once Oomba has answered, and within a day at the latest. A teacher can delete the chat with New chat, and it is deleted with the account. A school admin can turn Oomba or its web search off for the school."
+      },
+      "storybook": {
+        "h": "The book maker",
+        "p1": "Teachers can make picture books in the Story Library with Oomba. A teacher's words for the book are sent to our AI provider, Anthropic, to write it. Before anything is sent, we take out the names of the teacher's students, emails, phone numbers and links. Students only read the finished books their teacher shares with their class; nothing a student does is sent.",
+        "p2": "<b>Book pictures:</b> to draw a book's pictures, we send Google (the Gemini API) the book's own words about each picture (what happens, where, and how each made-up character looks), our picture style, and for a page the pictures of its characters drawn before. Never a student's name or work, the teacher's name or a class. Google may keep what we send for a limited time to check for misuse and does not use it to train its systems. Every picture is checked before it is shown; a picture that doesn't pass is not kept. The pictures are kept with the book and deleted with it."
       }
     }
   },
@@ -4744,6 +4749,32 @@
         "longerText": "Add one more page before the end.",
         "title": "New title",
         "titleText": "Give the book a better title."
+      },
+      "draw": {
+        "lineOff": "Pictures come from the art packs: the picture maker isn't set up on this site.",
+        "lineResting": "The picture maker is resting for now, so new pictures come from the art packs.",
+        "lineBusy": "Drawing the pictures: {done} of {total} ready. You can keep working.",
+        "lineLimit": "Today's pictures are used, so new pictures come from the art packs. More tomorrow.",
+        "lineOn": "Pictures are painted in one picture-book style and checked before they are shown. Pictures left today: {count}",
+        "queued": "Waiting to be drawn",
+        "drawing": "Drawing this picture now",
+        "why": {
+          "nokey": "The picture maker isn't set up, so this shows the art-pack drawing.",
+          "resting": "The picture maker was resting, so this shows the art-pack drawing.",
+          "limit": "Today's pictures were used, so this shows the art-pack drawing.",
+          "blocked": "The picture maker couldn't draw this one, so this shows the art-pack drawing.",
+          "refused": "The new picture didn't pass our picture check, so it was not kept.",
+          "error": "Something went wrong while drawing. Try Redraw."
+        },
+        "keptOld": "The earlier picture stays.",
+        "stale": "This page changed since its picture was drawn.",
+        "redraw": "Redraw",
+        "draw": "Draw this picture",
+        "note": "What should change? (optional)",
+        "notePh": "For example: make it a sunny morning",
+        "cancel": "Cancel",
+        "look": "How they look",
+        "sheetAlt": "{name}'s reference picture"
       }
     },
     "storybook-read": {
@@ -14774,6 +14805,11 @@
     },
     "warn": {
       "unreachable": "No choice leads to this page yet."
+    },
+    "draw": {
+      "nokey": "The picture maker isn't set up on this site, so pages use the art-pack drawings.",
+      "resting": "The picture maker is resting for now. Please try again later.",
+      "limit": "You've used today's pictures. More tomorrow."
     }
   }
 }

@@ -21,7 +21,8 @@
 //     upsert in made_book_ai_days before the turn is stored; refunded only when the turn could not be stored at all), and
 //     the AI call itself goes through the AI budget (anthropic('free') is null while it rests; recordUsage).
 //   - Pictures (storybook-illustrator.js): the AI picks a world, a mood, characters of the cast and props per page; the
-//     app draws them. A teacher may upload their own picture for any page (a cleaned JPEG, checked for people by the
+//     app draws them. With the picture model (storybook-draw.js, storybook-gemini.js) the AI also says what each picture
+//     shows and how each character looks, and Oomba's turns queue character sheets and page pictures to be painted. A teacher may upload their own picture for any page (a cleaned JPEG, checked for people by the
 //     companion's picture check) or remove a picture.
 import { q, db, uid, now, today, audit } from '../db.js';
 import { config } from '../config.js';
@@ -45,6 +46,7 @@ import { log } from './log.js';
 import { shapeBook, problemsOf, repairBook, warningsOf, textsOf, pageHash, LIMITS, KINDS } from '../../public/js/storybook-core.js';
 import { illustrator, catalog } from './storybook-illustrator.js';
 import { mockDraft, mockChange } from './storybook-mock.js';
+import * as Draw from './storybook-draw.js';
 
 export const SURFACE = 'storybook';
 /** Test hooks: create replaces the model call; classify the model classifier; screen the Builder's input screening;
@@ -221,7 +223,7 @@ export function saveBook(u, id, { book, rev } = {}) {
   if (Number(rev) !== row.rev) return fail('stale', { rev: row.rev });
   const art = illustrator().art();
   const { book: b } = shapeBook(book, { kind: row.kind, art });
-  const mine = new Set(q.all('SELECT id FROM made_book_pics WHERE book_id=?', row.id).map(r => r.id));
+  const mine = new Set(q.all("SELECT id FROM made_book_pics WHERE book_id=? AND kind='upload'", row.id).map(r => r.id));
   for (const p of b.pages) if (p.upload && !mine.has(p.upload)) p.upload = null;
   for (const [where, text] of textsOf(b)) {
     if (textProblem(text)) return fail('words', { where });
@@ -238,6 +240,7 @@ export function deleteBook(u, id) {
     q.run('DELETE FROM made_book_reads WHERE book_id=?', row.id);
     q.run('DELETE FROM made_book_classes WHERE book_id=?', row.id);
     q.run('DELETE FROM made_book_pics WHERE book_id=?', row.id);
+    Draw.forgetBook(row.id);
     q.run('DELETE FROM made_books WHERE id=?', row.id);
   })();
   C.forgetKey(SURFACE, row.id);
@@ -281,7 +284,7 @@ export async function addPic(u, bookId, bytes, name = '') {
   if (bookId) { book = ownBook(u, bookId); if (!book) return fail('notFound'); }
   let clean;
   try { clean = cleanJpeg(bytes, { maxBytes: PIC_LIMITS.maxBytes, maxSide: PIC_LIMITS.maxSide }); } catch (e) { return fail(e instanceof PhotoError && e.code === 'tooBig' ? 'imgBig' : 'imgType'); }
-  const n = book ? q.get('SELECT COUNT(*) n FROM made_book_pics WHERE book_id=?', book.id).n : q.get('SELECT COUNT(*) n FROM made_book_pics WHERE owner_id=? AND book_id IS NULL', u.id).n;
+  const n = book ? q.get("SELECT COUNT(*) n FROM made_book_pics WHERE book_id=? AND kind='upload'", book.id).n : q.get('SELECT COUNT(*) n FROM made_book_pics WHERE owner_id=? AND book_id IS NULL', u.id).n;
   if (n >= (book ? PIC_LIMITS.perBook : SETUP_LIMITS.pics)) return fail('imgFull');
   if (!take(u, { key: `${today()}:pic`, cap: PIC_LIMITS.perDay })) return fail('imgLimit');
   const verdict = hooks.screenImage ? await hooks.screenImage(clean) : await companionScreenImage(clean);
@@ -295,10 +298,10 @@ export async function addPic(u, bookId, bytes, name = '') {
   return ok({ pic: { id, name: shown, width: size.width || 0, height: size.height || 0 } });
 }
 /** A book's own pictures (for the editor's picker). */
-export const picsOf = bookId => q.all('SELECT id, name, width, height FROM made_book_pics WHERE book_id=? ORDER BY created_at', bookId);
+export const picsOf = bookId => q.all("SELECT id, name, width, height FROM made_book_pics WHERE book_id=? AND kind='upload' ORDER BY created_at", bookId);
 /** Remove a picture the teacher added (and from any page using it). */
 export function removePic(u, bookId, picId) {
-  const p = picOf(picId); if (!p || p.owner_id !== u.id) return fail('notFound');
+  const p = picOf(picId); if (!p || p.owner_id !== u.id || p.kind !== 'upload') return fail('notFound');
   if (bookId ? p.book_id !== bookId : p.book_id) return fail('notFound');
   if (p.book_id) {
     const row = ownBook(u, p.book_id); if (!row) return fail('notFound');
@@ -309,12 +312,15 @@ export function removePic(u, bookId, picId) {
   q.run('DELETE FROM made_book_pics WHERE id=?', p.id);
   return ok();
 }
-/** A page's picture as HTML: the teacher's own (an <img>) or the drawn one (SVG). */
+/** A page's picture as HTML: the teacher's own (an <img>), the picture model's kept picture (an <img>), or the art-pack
+ *  drawing (SVG). */
 export function pictureHtml(row, b, page, { decorative = false } = {}) {
+  const img = p => `<img class="sb-art" src="/library/made/${row.id}/pic/${p.id}" alt="${decorative ? '' : String(page.alt || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')}" width="${p.width || 800}" height="${p.height || 450}" loading="lazy">`;
   if (page.upload) {
     const p = picOf(page.upload);
-    if (p && p.book_id === row.id) return `<img class="sb-art" src="/library/made/${row.id}/pic/${p.id}" alt="${decorative ? '' : String(page.alt || '').replace(/"/g, '&quot;')}" width="${p.width || 800}" height="${p.height || 450}" loading="lazy">`;
+    if (p && p.book_id === row.id) return img(p);
   }
+  if (page.pic) { const d = Draw.drawnPic(row.id, page.id), p = d && picOf(d); if (p && p.book_id === row.id) return img(p); }
   if (!page.pic) return '';
   const r = illustrator().render(page.pic, b.cast, { key: `${row.id}:${page.id}`, label: page.alt, decorative });
   return r.kind === 'svg' ? r.svg : `<img class="sb-art" src="${r.src}" alt="${decorative ? '' : page.alt}">`;
@@ -537,6 +543,7 @@ export function applyBook(u, id, base, next, { repaired = 0 } = {}) {
     title: head.title !== undefined ? final.title : '', kept, repaired, warnings: warningsOf(final).length,
   };
   audit(u.id, 'storybook.change', row.id, { first, added: added.length, changed: changed.length, removed: removed.length, kept, repaired });
+  change.drawing = Draw.queueBook(row, final);
   return { change, undo: { before, after, head, order: cur.pages.map(p => p.id) } };
 }
 /** Undo a turn: each page still as Oomba left it goes back (an added page goes, a removed one comes back in its place);
@@ -587,13 +594,14 @@ C.defineSurface({
 /** An account is deleted: its books, their pictures, shares, readers' places and chats; its own reading places. */
 export function forgetUser(userId) {
   for (const r of q.all('SELECT id FROM made_books WHERE owner_id=?', userId)) {
-    q.run('DELETE FROM made_book_reads WHERE book_id=?', r.id); q.run('DELETE FROM made_book_classes WHERE book_id=?', r.id);
+    Draw.forgetBook(r.id); q.run('DELETE FROM made_book_reads WHERE book_id=?', r.id); q.run('DELETE FROM made_book_classes WHERE book_id=?', r.id);
     q.run('DELETE FROM made_book_pics WHERE book_id=?', r.id); C.forgetKey(SURFACE, r.id);
   }
   q.run('DELETE FROM made_books WHERE owner_id=?', userId);
   q.run('DELETE FROM made_book_pics WHERE owner_id=?', userId);
   q.run('DELETE FROM made_book_reads WHERE user_id=?', userId);
   q.run('DELETE FROM made_book_ai_days WHERE user_id=?', userId);
+  Draw.forgetUser(userId);
 }
 // A class that is deleted takes its shares with it (the books stay with their teacher).
 S.onClassLeave(x => { if (x && x.classId && !x.userId) q.run('DELETE FROM made_book_classes WHERE class_id=?', x.classId); });

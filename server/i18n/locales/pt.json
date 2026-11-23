@@ -1124,6 +1124,11 @@
         "p3": "Quando a busca na web está ligada, o Oomba pode enviar buscas curtas para a busca na web da Anthropic. Elas nunca incluem nomes nem uma localização; sites para adultos, de apostas, redes sociais e parecidos são bloqueados, e cada busca é registrada para nossa equipe sem o nome do professor. As páginas encontradas na web aparecem como fontes que o Oomba não verificou.",
         "p4": "Um professor pode falar em vez de digitar: o som é enviado para {provider} para virar palavras enquanto ele fala, e o áudio nunca é guardado, nem por nós nem por eles. As palavras vão para a caixa de mensagem para o professor conferir.",
         "p5": "Guardamos a conversa de um professor, com o texto do que ele anexou, por 60 dias após o último uso (uma escola pode escolher de 7 a 365 dias); uma imagem é apagada assim que o Oomba responde, no máximo em um dia. Um professor pode apagar a conversa com Nova conversa, e ela é apagada junto com a conta. Um administrador da escola pode desligar o Oomba ou a busca na web dele para a escola."
+      },
+      "storybook": {
+        "h": "O criador de livros",
+        "p1": "Professores podem criar livros ilustrados na Biblioteca de histórias com o Oomba. As palavras do professor para o livro são enviadas ao nosso provedor de IA, a Anthropic, para escrevê-lo. Antes de enviar qualquer coisa, tiramos os nomes dos alunos do professor, e-mails, números de telefone e links. Os alunos só leem os livros prontos que o professor compartilha com a turma; nada do que um aluno faz é enviado.",
+        "p2": "<b>Imagens dos livros:</b> para desenhar as imagens de um livro, enviamos ao Google (a API Gemini) as palavras do próprio livro sobre cada imagem (o que acontece, onde e como é cada personagem inventado), nosso estilo de imagem e, para uma página, as imagens dos personagens já desenhadas. Nunca o nome ou o trabalho de um aluno, o nome do professor ou uma turma. O Google pode guardar o que enviamos por um tempo limitado para verificar abusos e não usa isso para treinar seus sistemas. Cada imagem é verificada antes de aparecer; uma imagem que não passa não é guardada. As imagens ficam com o livro e são apagadas com ele."
       }
     }
   },
@@ -4463,6 +4468,32 @@
         "longerText": "Adicione mais uma página antes do final.",
         "title": "Título novo",
         "titleText": "Dê um título melhor ao livro."
+      },
+      "draw": {
+        "lineOff": "As imagens vêm dos pacotes de desenhos: o criador de imagens não está configurado neste site.",
+        "lineResting": "O criador de imagens está descansando, então as novas imagens vêm dos pacotes de desenhos.",
+        "lineBusy": "Desenhando as imagens: {done} de {total} prontas. Você pode continuar trabalhando.",
+        "lineLimit": "As imagens de hoje já foram usadas, então as novas vêm dos pacotes de desenhos. Amanhã tem mais.",
+        "lineOn": "As imagens são pintadas em um mesmo estilo de livro ilustrado e verificadas antes de aparecer. Imagens restantes hoje: {count}",
+        "queued": "Esperando para ser desenhada",
+        "drawing": "Desenhando esta imagem agora",
+        "why": {
+          "nokey": "O criador de imagens não está configurado, então aparece o desenho do pacote.",
+          "resting": "O criador de imagens estava descansando, então aparece o desenho do pacote.",
+          "limit": "As imagens de hoje já foram usadas, então aparece o desenho do pacote.",
+          "blocked": "O criador de imagens não conseguiu desenhar esta, então aparece o desenho do pacote.",
+          "refused": "A nova imagem não passou na nossa verificação, então não foi guardada.",
+          "error": "Algo deu errado ao desenhar. Tente Redesenhar."
+        },
+        "keptOld": "A imagem anterior fica.",
+        "stale": "Esta página mudou desde que a imagem foi desenhada.",
+        "redraw": "Redesenhar",
+        "draw": "Desenhar esta imagem",
+        "note": "O que deve mudar? (opcional)",
+        "notePh": "Por exemplo: uma manhã de sol",
+        "cancel": "Cancelar",
+        "look": "Como é",
+        "sheetAlt": "Imagem de referência de {name}"
       }
     },
     "storybook-read": {
@@ -14060,6 +14091,11 @@
     },
     "warn": {
       "unreachable": "Ainda nenhuma escolha leva a esta página."
+    },
+    "draw": {
+      "nokey": "O criador de imagens não está configurado neste site, então as páginas usam os desenhos dos pacotes.",
+      "resting": "O criador de imagens está descansando agora. Tente de novo mais tarde.",
+      "limit": "Você já usou as imagens de hoje. Amanhã tem mais."
     }
   }
 }

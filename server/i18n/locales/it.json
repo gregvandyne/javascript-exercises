@@ -1124,6 +1124,11 @@
         "p3": "Quando la ricerca web è attiva, Oomba può inviare brevi ricerche alla ricerca web di Anthropic. Non contengono mai nomi né una posizione; i siti per adulti, di scommesse, i social network e simili sono bloccati, e ogni ricerca viene registrata per il nostro team senza il nome dell'insegnante. Le pagine trovate sul web sono mostrate come fonti che Oomba non ha controllato.",
         "p4": "Un insegnante può parlare invece di scrivere: il suono viene inviato a {provider} per trasformarlo in parole mentre parla, e l'audio non viene mai conservato, né da noi né da loro. Le parole finiscono nella casella del messaggio perché l'insegnante le controlli.",
         "p5": "Conserviamo la chat di un insegnante, con il testo dei suoi allegati, per 60 giorni dall'ultimo uso (una scuola può scegliere da 7 a 365 giorni); un'immagine viene eliminata appena Oomba ha risposto, al più tardi entro un giorno. Un insegnante può eliminare la chat con Nuova chat, e viene eliminata con l'account. Un amministratore della scuola può spegnere Oomba o la sua ricerca web per la scuola."
+      },
+      "storybook": {
+        "h": "Il creatore di libri",
+        "p1": "Gli insegnanti possono creare libri illustrati nella Biblioteca delle storie con Oomba. Le parole dell'insegnante per il libro sono inviate al nostro fornitore di IA, Anthropic, per scriverlo. Prima di inviare qualsiasi cosa, togliamo i nomi degli studenti dell'insegnante, le email, i numeri di telefono e i link. Gli studenti leggono solo i libri finiti che il loro insegnante condivide con la classe; nulla di ciò che fa uno studente viene inviato.",
+        "p2": "<b>Immagini dei libri:</b> per disegnare le immagini di un libro, inviamo a Google (l'API Gemini) le parole del libro su ogni immagine (cosa succede, dove e com'è ogni personaggio inventato), il nostro stile di immagine e, per una pagina, le immagini dei suoi personaggi già disegnate. Mai il nome o il lavoro di uno studente, il nome dell'insegnante o una classe. Google può conservare ciò che inviamo per un periodo limitato per controllare gli abusi e non lo usa per addestrare i suoi sistemi. Ogni immagine viene controllata prima di essere mostrata; un'immagine che non passa non viene tenuta. Le immagini restano con il libro e vengono eliminate con esso."
       }
     }
   },
@@ -4463,6 +4468,32 @@
         "longerText": "Aggiungi un'altra pagina prima della fine.",
         "title": "Nuovo titolo",
         "titleText": "Dai al libro un titolo migliore."
+      },
+      "draw": {
+        "lineOff": "Le immagini vengono dai pacchetti di disegni: il creatore di immagini non è configurato su questo sito.",
+        "lineResting": "Il creatore di immagini sta riposando, quindi le nuove immagini vengono dai pacchetti di disegni.",
+        "lineBusy": "Disegno delle immagini: {done} di {total} pronte. Puoi continuare a lavorare.",
+        "lineLimit": "Le immagini di oggi sono state usate, quindi le nuove vengono dai pacchetti di disegni. Domani ce ne saranno altre.",
+        "lineOn": "Le immagini sono dipinte in un unico stile da libro illustrato e controllate prima di essere mostrate. Immagini rimaste oggi: {count}",
+        "queued": "In attesa di essere disegnata",
+        "drawing": "Disegno di questa immagine in corso",
+        "why": {
+          "nokey": "Il creatore di immagini non è configurato, quindi si vede il disegno del pacchetto.",
+          "resting": "Il creatore di immagini stava riposando, quindi si vede il disegno del pacchetto.",
+          "limit": "Le immagini di oggi erano finite, quindi si vede il disegno del pacchetto.",
+          "blocked": "Il creatore di immagini non è riuscito a disegnare questa, quindi si vede il disegno del pacchetto.",
+          "refused": "La nuova immagine non ha superato il nostro controllo, quindi non è stata tenuta.",
+          "error": "Qualcosa è andato storto durante il disegno. Prova Ridisegna."
+        },
+        "keptOld": "Resta l'immagine di prima.",
+        "stale": "Questa pagina è cambiata da quando è stata disegnata la sua immagine.",
+        "redraw": "Ridisegna",
+        "draw": "Disegna questa immagine",
+        "note": "Cosa deve cambiare? (facoltativo)",
+        "notePh": "Per esempio: una mattina di sole",
+        "cancel": "Annulla",
+        "look": "Com'è fatto",
+        "sheetAlt": "Immagine di riferimento di {name}"
       }
     },
     "storybook-read": {
@@ -14059,6 +14090,11 @@
     },
     "warn": {
       "unreachable": "Ancora nessuna scelta porta a questa pagina."
+    },
+    "draw": {
+      "nokey": "Il creatore di immagini non è configurato su questo sito, quindi le pagine usano i disegni dei pacchetti.",
+      "resting": "Il creatore di immagini sta riposando. Riprova più tardi.",
+      "limit": "Hai usato le immagini di oggi. Domani ce ne saranno altre."
     }
   }
 }

@@ -12100,3 +12100,35 @@ Built as described in docs/storybook-builder.md. The calls made along the way:
   kid safety (word rules, classifier, students' names); merge, Undo and stale saves; scrubbing and screening before
   anything is sent; the cap (database, concurrency, nothing at the cap); the reader's choices, Back, The End, Start over
   and remembered place; print numbering and "turn to page N"; teacher pictures; class, school and account deletes).
+
+## Book pictures: Google's Gemini image model (23 Nov 2026)
+
+The owner: "The book maker should be deployed with an actual image generator that has a kids book drawing skill." Then:
+"Moving forward with Google".
+
+Built as described in docs/storybook-builder.md "Pictures". The calls made along the way:
+
+- **Which model**: Gemini 3.1 Flash Image ("Nano Banana 2") on the Gemini API, model id `gemini-3.1-flash-image` (the
+  generally available id; `STORYBOOK_IMAGE_MODEL` changes it), called over REST with the key in the `x-goog-api-key`
+  header. It takes reference pictures in the same request, which is what keeps a book's characters the same on every
+  page. About $0.067 a picture at 1K (Google's price list: 1,120 output tokens at $60 per million).
+- **The drawing skill is ours**, not a hosted "style" product: one fixed picture-book house style in the prompt, a style
+  seed per book, the safety rules in every prompt (no text in pictures, no real people, no brand characters, nothing
+  scary), no living artist or book series named. Character sheets are drawn first from the look Oomba wrote for each
+  character and sent with every page that shows them.
+- **Safety is the same as for teachers' uploads**: only the picture prompts (book words that already passed the word
+  rules, scrubbed of students' names again) and the book's own sheets go to Google; every picture that comes back passes
+  the companion's picture check before it is kept or shown; Google's safety settings are at their strictest, and a
+  block or a refusal falls back to the art-pack drawing with a calm note. The art packs stay as the fallback for no key,
+  the budget resting and the daily limit.
+- **Limits**: a daily picture count per teacher in the database (10 without the Teacher plan, 40 with; sheets and
+  Redraws count), taken atomically at the moment of drawing, and every call through the AI budget (`recordImage`).
+- **When pictures are drawn**: after each Oomba turn, only what is new or changed (a page's scene, characters, their
+  looks or sheets); the teacher's own edits to the words never spend a picture. Redraw (with an optional note) is the
+  teacher's way to ask again.
+- **Privacy**: Google (the Gemini API) is a new processor for book pictures: a section on /privacy ("The book maker"),
+  `LEGAL_UPDATED` 2026-11-23, and docs/legal-review.md "Book pictures". The owner sets `GEMINI_API_KEY` on Render; on
+  the paid Gemini API, Google does not use prompts or pictures to improve its products (to confirm in the lawyer review).
+- Tests: `tests/unit/storybook-pictures.test.js` (8, with a stand-in for Google: request shape, house style and seed,
+  references, the key header, no student names; blocks and picture check refusals; the daily count under parallel
+  requests; no key and the budget resting; Redraw and sheets; access; deleting).

@@ -1123,6 +1123,11 @@
         "p3": "Quand la recherche web est activée, Oomba peut envoyer de courtes recherches à la recherche web d'Anthropic. Elles ne contiennent jamais de noms ni de localisation ; les sites pour adultes, de jeux d'argent, les réseaux sociaux et autres sont bloqués, et chaque recherche est enregistrée pour notre équipe sans le nom de l'enseignant. Les pages trouvées sur le web sont présentées comme des sources qu'Oomba n'a pas vérifiées.",
         "p4": "Un enseignant peut parler au lieu d'écrire : le son est transmis à {provider} pour être transformé en mots pendant qu'il parle, et l'audio n'est jamais conservé, ni par nous ni par eux. Les mots arrivent dans la zone de message pour que l'enseignant les vérifie.",
         "p5": "Nous conservons la discussion d'un enseignant, avec le texte de ses pièces jointes, pendant 60 jours après sa dernière utilisation (une école peut choisir de 7 à 365 jours) ; une image est supprimée dès qu'Oomba a répondu, et au plus tard au bout d'un jour. Un enseignant peut supprimer la discussion avec Nouvelle discussion, et elle est supprimée avec le compte. Un administrateur de l'école peut désactiver Oomba ou sa recherche web pour l'école."
+      },
+      "storybook": {
+        "h": "Le créateur de livres",
+        "p1": "Les enseignants peuvent créer des albums dans la Bibliothèque d'histoires avec Oomba. Les mots de l'enseignant pour le livre sont envoyés à notre fournisseur d'IA, Anthropic, pour l'écrire. Avant tout envoi, nous retirons les noms des élèves de l'enseignant, les e-mails, les numéros de téléphone et les liens. Les élèves lisent seulement les livres terminés que leur enseignant partage avec leur classe ; rien de ce que fait un élève n'est envoyé.",
+        "p2": "<b>Images des livres :</b> pour dessiner les images d'un livre, nous envoyons à Google (l'API Gemini) les mots du livre sur chaque image (ce qui se passe, où, et à quoi ressemble chaque personnage inventé), notre style d'image et, pour une page, les images de ses personnages déjà dessinées. Jamais le nom ou le travail d'un élève, le nom de l'enseignant ou une classe. Google peut garder ce que nous envoyons pendant une durée limitée pour détecter les abus et ne l'utilise pas pour entraîner ses systèmes. Chaque image est vérifiée avant d'être montrée ; une image qui ne passe pas n'est pas gardée. Les images sont gardées avec le livre et supprimées avec lui."
       }
     }
   },
@@ -4462,6 +4467,32 @@
         "longerText": "Ajoute une page de plus avant la fin.",
         "title": "Nouveau titre",
         "titleText": "Donne au livre un meilleur titre."
+      },
+      "draw": {
+        "lineOff": "Les images viennent des packs de dessins : le créateur d'images n'est pas configuré sur ce site.",
+        "lineResting": "Le créateur d'images se repose pour le moment : les nouvelles images viennent des packs de dessins.",
+        "lineBusy": "Dessin des images : {done} sur {total} prêtes. Vous pouvez continuer à travailler.",
+        "lineLimit": "Les images du jour sont utilisées : les nouvelles images viennent des packs de dessins. D'autres demain.",
+        "lineOn": "Les images sont peintes dans un même style d'album et vérifiées avant d'être montrées. Images restantes aujourd'hui : {count}",
+        "queued": "En attente de dessin",
+        "drawing": "Dessin de cette image en cours",
+        "why": {
+          "nokey": "Le créateur d'images n'est pas configuré : voici le dessin du pack.",
+          "resting": "Le créateur d'images se reposait : voici le dessin du pack.",
+          "limit": "Les images du jour étaient utilisées : voici le dessin du pack.",
+          "blocked": "Le créateur d'images n'a pas pu dessiner celle-ci : voici le dessin du pack.",
+          "refused": "La nouvelle image n'a pas passé notre vérification : elle n'a pas été gardée.",
+          "error": "Un problème est survenu pendant le dessin. Essayez Redessiner."
+        },
+        "keptOld": "L'image précédente reste.",
+        "stale": "Cette page a changé depuis le dessin de son image.",
+        "redraw": "Redessiner",
+        "draw": "Dessiner cette image",
+        "note": "Que faut-il changer ? (facultatif)",
+        "notePh": "Par exemple : un matin ensoleillé",
+        "cancel": "Annuler",
+        "look": "Son apparence",
+        "sheetAlt": "Image de référence de {name}"
       }
     },
     "storybook-read": {
@@ -14058,6 +14089,11 @@
     },
     "warn": {
       "unreachable": "Aucun choix ne mène encore à cette page."
+    },
+    "draw": {
+      "nokey": "Le créateur d'images n'est pas configuré sur ce site : les pages utilisent les dessins des packs.",
+      "resting": "Le créateur d'images se repose pour le moment. Réessayez plus tard.",
+      "limit": "Vous avez utilisé les images du jour. D'autres demain."
     }
   }
 }

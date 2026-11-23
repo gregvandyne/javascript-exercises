@@ -156,7 +156,9 @@ export const fullPrivacy = req => legalReader(req.user) || req.query.for === 'gr
 router.get('/privacy', legalPage('privacy', '🔒', req => {
   const full = fullPrivacy(req);
   return ['intro',
-    ...['stored', 'never', 'ai', 'keep'].map(s => section(req, `info.parents.${s}`, { id: s })), 'manip', 'companion', googlePrivacy(req),
+    ...['stored', 'never', 'ai', 'keep'].map(s => section(req, `info.parents.${s}`, { id: s })), 'manip', 'companion',
+    // The book maker (docs/storybook-builder.md): Anthropic writes the books, Google (the Gemini API) draws their pictures.
+    'storybook', googlePrivacy(req),
     // Parent-made child accounts (docs/decisions.md): only while they are on (madeOn). No plan names, so for every reader.
     madeOn(req) ? 'made' : null,
     ...(full ? ['grownups', 'linking', 'payments', 'schoolBilling', 'schoolSetup'] : []), 'children', ...(full ? ['billingKeep', 'where'] : []),

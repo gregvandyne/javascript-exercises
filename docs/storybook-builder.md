@@ -9,14 +9,19 @@ Library: the book maker".
 |---|---|
 | `server/routes/storybook.js` | Pages and APIs (all listed at the top of the file) |
 | `server/services/storybook.js` | Access, the daily cap, setup scrubbing and screening, books, sharing, pictures, reading places, the AI prompt and answer checks, the chat surface, apply and undo, delete hooks |
-| `server/services/storybook-illustrator.js` | The illustrator interface and the art-pack illustrator (catalog from `public/vendor/art2d`) |
+| `server/services/storybook-illustrator.js` | The illustrator interface, the art-pack illustrator (catalog from `public/vendor/art2d`) and the `gemini` one (the same, plus scenes and looks for the picture model) |
+| `server/services/storybook-gemini.js` | The picture model: the house style, the per-book style seed, the character sheet and page prompts, the Gemini API request and answer |
+| `server/services/storybook-draw.js` | The picture queue and drawer: what to draw, the daily picture count, the picture check, WebP, Redraw, the editor's state |
+| `tests/support/fake-gemini.js` | Google's stand-in for tests and screenshots (paints a placeholder PNG scene) |
 | `server/services/storybook-mock.js` | The AI stand-in when no `ANTHROPIC_API_KEY` is set |
 | `public/js/storybook-core.js` | The book's shape and rules, shared by server and browser: `shapeBook`, `warningsOf`, `problemsOf`, `repairBook`, `numbering`, `mapLayout` |
 | `public/js/storybook-art.js` | Draws a page's picture as SVG (server and editor) |
 | `public/js/storybook-setup.js`, `storybook-edit.js`, `storybook-read.js`, `storybook-pic.js` | The setup steps, the book editor, the reader (and the print button), picture upload |
 | `public/css/storybook.css` | All of it, tokens only, 375 px and up |
 | Migration `0110_storybooks` | `made_books`, `made_book_pics`, `made_book_classes`, `made_book_reads`, `made_book_ai_days` |
+| Migration `0111_storybook_draws` | `made_book_draws` (the picture queue); `made_book_pics.kind` and `.mime` |
 | `tests/unit/storybook.test.js` | Access, rules, AI checks and retry, screening, the cap, reader, print, pictures, delete lists |
+| `tests/unit/storybook-pictures.test.js` | The picture model: request shape, blocks and refusals, the picture count, no key, Redraw, access |
 
 ## Who
 
@@ -76,11 +81,14 @@ holders, testers and the platform admin. The count is a database row (`made_book
 upsert before the message is stored and before any `await` (`take`), so a restart, a second tab or many requests at
 once can't get more; it is given back only when the message could not be stored at all. A message refused by the word
 or name checks, or a setup refused by the screening, costs nothing. At the cap the editor still works by hand. Picture
-checks have their own count (`<day>:pic`, 30 a day) in the same table.
+checks have their own count (`<day>:pic`, 30 a day) in the same table, and so do pictures the picture model draws
+(`<day>:draw`, below).
 
 ## Illustrations
 
-There is no image-generation service and adding a paid one is the owner's decision, so no image API is called.
+Two ways a page gets its picture: painted by the picture model (Google's Gemini image model, "Pictures" below) when it
+is set up, otherwise drawn from the art packs. The art-pack drawing is always there underneath, so a page never goes
+without a picture.
 
 - **The illustrator interface** (`server/services/storybook-illustrator.js`): `{ id, prompt(), art(), render(spec,
   cast, o) -> { kind: 'svg', svg } | { kind: 'image', src } }`. `prompt()` tells the AI what it can ask for, `art()`
@@ -96,10 +104,68 @@ There is no image-generation service and adding a paid one is the owner's decisi
 - **The teacher's own picture** for any page (Your picture): a JPEG made in the browser, cleaned (no metadata) and
   checked by the companion's picture check (no person at all, nothing private or unsafe); a refused picture is never
   kept. "No picture" removes it; "Use a drawn picture" goes back to the drawn one. Alt text on every picture.
-- **Adding an image model later**: write a second illustrator whose `render()` returns `{ kind: 'image', src }` from a
-  stored file (made once per page spec and kept with the book), pick it with `STORYBOOK_ILLUSTRATOR`, and keep the
-  spec in the book so the art-pack drawing still works as a fallback. Its cost, data flow (a prompt to another
-  provider) and the privacy text are the owner's decisions first.
+- **The picture model** is a second illustrator, `gemini` (below): it is chosen while `GEMINI_API_KEY` is set (unless
+  `STORYBOOK_ILLUSTRATOR=packs`), and keeps the art-pack spec in the book as the fallback.
+
+## Pictures (the picture model)
+
+The owner's decision (docs/decisions.md "Book pictures: Google's Gemini image model"): the book maker is deployed with
+a real image generator with a kids' book drawing skill, Google's. The skill is ours (`storybook-gemini.js`):
+
+- **One house style** (`HOUSE_STYLE`): a warm, hand-painted picture-book illustration (soft gouache and watercolor,
+  paper texture, gentle rounded shapes, gentle colors, friendly faces, age-appropriate), and the rules every picture
+  keeps: no words, letters or signs in the picture, no logos, no real people or celebrities, no characters from films,
+  books or games, nothing scary or violent, no weapons. No artist or book series is ever named. **A per-book style
+  seed** (`styleOf(book id)`: a palette, a paper and a light, and a style code) is in every prompt of one book, so its
+  pictures match.
+- **What Oomba writes for it**: with the `gemini` illustrator, the book AI also gives every `pic` a `scene` (one or two
+  sentences: where, who, what they do, the feeling; never words to write in the picture) and every cast member a `look`
+  (one sentence: kind, colors, clothes, one detail). Both are book words: they pass the same word rules, the names check
+  and the classifier as every other word (`textsOf`), and the teacher can change a character's look in the editor.
+- **Character sheets first**: each cast member gets one reference picture (1:1, neutral pose, plain background) from
+  their look. A page is only drawn once its book's sheets are done, and it sends the sheets of the characters in it as
+  reference pictures (inline data after a "Reference picture N: Name" label), so a character looks the same on every
+  page. A teacher can redraw a sheet; the pages showing that character then say they changed since, and can be redrawn.
+- **Page pictures** (16:9, like the art-pack drawings): the scene, the setting (the world's name), the mood, who is in it
+  and where (left, middle, right), a composition line (characters clear, a calm uncluttered area kept free), and the
+  teacher's Redraw note when there is one.
+- **The request** (`requestBody`, `generate`): `POST https://generativelanguage.googleapis.com/v1beta/models/<model>:generateContent`,
+  the key in the `x-goog-api-key` header (never in the address or a log), body `{ contents: [{ role: 'user', parts: [{ text },
+  { text: label }, { inlineData: { mimeType, data } }...] }], generationConfig: { responseModalities: ['IMAGE'],
+  imageConfig: { aspectRatio, imageSize: '1K' } }, safetySettings: [4 categories at BLOCK_LOW_AND_ABOVE] }`. The
+  picture comes back as `candidates[0].content.parts[].inlineData` (base64). A `promptFeedback.blockReason`, a safety
+  finish reason (`SAFETY`, `IMAGE_SAFETY`, `PROHIBITED_CONTENT`...) or a 400 for safety counts as **blocked**. The model
+  id is `STORYBOOK_IMAGE_MODEL` (default `gemini-3.1-flash-image`, Gemini 3.1 Flash Image, "Nano Banana 2").
+- **The queue** (`storybook-draw.js`, table `made_book_draws`): one row per sheet (`cast:<name>`) and page
+  (`page:<id>`). Oomba's turns queue what is new or changed (a page whose scene, setting, mood, characters, their looks
+  or their sheets changed; a fallback for no key, resting, the limit or an error is tried again); the teacher's words
+  alone never redraw a picture. Drawn in this process, `STORYBOOK_DRAW_AT_ONCE` (2) at a time, sheets first; a picture
+  that was drawing when the server stopped goes back in the queue. A network failure is tried once more.
+- **Kept like the teacher's uploads**: in `made_book_pics` (`kind` `page` or `sheet`, `mime` `image/webp`), converted
+  with ffmpeg to WebP at most 1600 px wide (a 1K picture is 1024 px wide: the reader and the print copy), served to
+  whoever may read the book. The reader and the print copy show a kept picture before the art-pack drawing; the
+  teacher's own picture wins over both. Deleted with the book and the account.
+- **Safety**: only the prompt (the house style, the seed, the scene and look words, which passed the word rules and are
+  scrubbed of the teacher's students' names once more on the way out) and the book's own sheets go to Google. Never a
+  student's name or work, the teacher's name or a class. Every picture that comes back passes **the same picture check
+  as the teacher's uploads** (`companion.js screenImage`, as WebP) before it is kept or shown. A refused or blocked
+  picture is dropped; the page keeps its earlier picture or the art-pack drawing, and says why.
+- **The daily picture count**: every picture (character sheets and Redraws included) costs one for the UTC day,
+  `STORYBOOK_PICTURES_PLAN_PER_DAY` (40) for Teacher plan holders, testers and the admin, `STORYBOOK_PICTURES_FREE_PER_DAY`
+  (10) for other teachers. It is a `made_book_ai_days` row (`<day>:draw`), taken with one conditional upsert at the
+  moment of drawing, so parallel requests, tabs or restarts can't get more; it is given back when nothing came back
+  (a network failure). Redraw at the limit is refused at once.
+- **The AI budget**: every call is recorded (`ai-budget.js recordImage`, `image:<model>` on the admin stats page):
+  about **$0.067 a picture** for Gemini 3.1 Flash Image at 1K (1,120 output tokens at $60 per million, Google's Gemini
+  API price list; third-party price lists round it to $0.07) plus the input tokens (about $0.50 per million). A
+  10-page book with 2 characters is 12 pictures, about $0.80. While the free budget rests, nothing is drawn.
+- **When it is not drawn**: no `GEMINI_API_KEY`, the budget resting, or the day's pictures used: the art-pack drawing,
+  and the editor says why in one calm line under the warnings.
+- **The editor**: the line under the warnings ("Drawing the pictures: 3 of 12 ready", the pictures left today, or why
+  the art packs are used), an hourglass on each page still waiting in the page list, under the picture its state (waiting,
+  drawing, why it fell back, changed since) and **Redraw** with an optional note ("make it a sunny morning": the word
+  rules and names check, then scrubbed). The editor asks how drawing is going every few seconds while anything is
+  queued. Characters: each one's look and reference picture, with Redraw. The teacher's own upload works as before.
 
 ## The editor
 
@@ -148,7 +214,17 @@ ending", "page N" and "simpler words". The end-to-end flow and the screenshots r
 
 ## Privacy
 
-The book maker reuses the existing AI processor (Anthropic) and the existing kinds of data sent by teacher tools: a
-teacher's own words and documents (scrubbed), and a teacher's own pictures for the companion's picture check. Nothing a
-student does is sent. The privacy page was not changed; the owner may want a line naming the book maker next to the
-other teacher AI tools (docs/decisions.md lists it as an open point).
+The book's words go to the existing AI processor (Anthropic), scrubbed. The pictures go to a second processor, Google
+(the Gemini API), with only the picture prompts and the book's own character sheets (above). The privacy page has a
+section for the book maker ("The book maker", `info.privacy.storybook`) naming both, and docs/legal-review.md has the
+entry for the lawyer. Nothing a student does is sent to either.
+
+## Environment
+
+| Variable | Default | What |
+|---|---|---|
+| `GEMINI_API_KEY` | unset | **Secret.** Turns the picture model on. Set only in the host's dashboard. Unset: the art packs. |
+| `STORYBOOK_IMAGE_MODEL` | `gemini-3.1-flash-image` | The Gemini image model id. |
+| `STORYBOOK_PICTURES_PLAN_PER_DAY` / `STORYBOOK_PICTURES_FREE_PER_DAY` | `40` / `10` | Pictures a teacher may have drawn a UTC day, with / without the Teacher plan. |
+| `STORYBOOK_DRAW_AT_ONCE` | `2` | Pictures drawn at the same time, site-wide (1 to 8). |
+| `STORYBOOK_ILLUSTRATOR` | unset | `packs` forces the art-pack drawings even with a key. |

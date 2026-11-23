@@ -1297,6 +1297,21 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS idx_made_book_reads_book ON made_book_reads(book_id);
     CREATE TABLE IF NOT EXISTS made_book_ai_days (user_id TEXT NOT NULL, day TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (user_id, day));
     CREATE INDEX IF NOT EXISTS idx_made_book_ai_days_day ON made_book_ai_days(day);`],
+  // The book maker's picture maker (services/storybook-draw.js; docs/storybook-builder.md "Pictures"). made_book_pics
+  // also holds the pictures the picture model drew (kind 'page' or 'sheet', a checked WebP; mime says which file type a
+  // row holds; 'upload' is the teacher's own JPEG). made_book_draws: one row per picture to draw for a book (target
+  // 'page:<page id>' or 'cast:<name>'), the queue the in-process drawer works through (state queued, drawing, done or
+  // fallback with a reason), the picture kept (pic_id), the fingerprint of what it drew (hash) and the teacher's
+  // Redraw note (scrubbed). The daily picture count is a made_book_ai_days row ('<day>:draw').
+  ['0111_storybook_draws', `
+    ALTER TABLE made_book_pics ADD COLUMN kind TEXT NOT NULL DEFAULT 'upload';
+    ALTER TABLE made_book_pics ADD COLUMN mime TEXT NOT NULL DEFAULT 'image/jpeg';
+    CREATE TABLE IF NOT EXISTS made_book_draws (id TEXT PRIMARY KEY, book_id TEXT NOT NULL REFERENCES made_books(id) ON DELETE CASCADE,
+      owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, target TEXT NOT NULL, state TEXT NOT NULL DEFAULT 'queued',
+      reason TEXT NOT NULL DEFAULT '', note TEXT NOT NULL DEFAULT '', pic_id TEXT, hash TEXT NOT NULL DEFAULT '',
+      attempts INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, UNIQUE (book_id, target));
+    CREATE INDEX IF NOT EXISTS idx_made_book_draws_state ON made_book_draws(state, created_at);
+    CREATE INDEX IF NOT EXISTS idx_made_book_draws_owner ON made_book_draws(owner_id);`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

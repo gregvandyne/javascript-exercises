@@ -5,17 +5,17 @@
 //     art() -> { worlds, chars, props(world) }   the ids shapeBook (public/js/storybook-core.js) keeps
 //     render(spec, cast, o) -> { kind: 'svg', svg } | { kind: 'image', src }   one page's picture }
 //
-// Today there is one: 'packs', which draws every picture from the 2D art packs the games already use (no picture model,
+// 'packs' draws every picture from the 2D art packs the games already use (no picture model,
 // no new service, nothing paid): the AI picks a world, a mood, up to 3 characters of the book's cast with their spots,
 // and up to 3 props; public/js/storybook-art.js draws it the same way on the server and in the editor. Characters stay
-// the same across pages because the cast fixes each name to one sprite. Adding an image model later: a second
-// illustrator whose render() returns { kind: 'image', src } (a stored file), chosen by a setting; the owner decides.
+// the same across pages because the cast fixes each name to one sprite. 'gemini' (below) adds the picture model.
 import fs from 'node:fs';
 import path from 'node:path';
 import { ART2D_WORLDS, ART2D_CHARACTERS, ART2D_VERSIONS } from '../builder/art2d-catalog.js';
 import { ART2D_DIR, ART2D_PATH } from './art2d.js';
 import { pictureSvg } from '../../public/js/storybook-art.js';
 import { MOODS, POSITIONS } from '../../public/js/storybook-core.js';
+import { configured } from './storybook-gemini.js';
 
 const PX = 96;   // a pack's cell in pixels (oomba2d: the ground strip is cells * PX wide, over + PX tall)
 const readPack = (id, v) => { try { return JSON.parse(fs.readFileSync(path.join(ART2D_DIR, id, v, 'pack.json'), 'utf8')); } catch { return null; } };
@@ -67,6 +67,22 @@ const packs = {
   render(spec, cast, o = {}) { return { kind: 'svg', svg: pictureSvg(spec, cast, catalog(), o) }; },
 };
 
-export const ILLUSTRATORS = { packs };
-/** The illustrator in use (only 'packs' today; STORYBOOK_ILLUSTRATOR could pick another once one exists). */
-export const illustrator = () => ILLUSTRATORS[process.env.STORYBOOK_ILLUSTRATOR] || packs;
+// 'gemini': the picture model draws every page (services/storybook-draw.js, storybook-gemini.js). The AI still picks the
+// art-pack parts (they are the picture whenever a drawn one is not there: no key, the day's pictures used, a picture
+// refused), and also writes what each picture shows in words ("scene") and how each character looks ("look"), which
+// is all the picture model is told. render() is the art-pack fallback; the reader shows a kept drawn picture first.
+const gemini = {
+  ...packs,
+  id: 'gemini',
+  images: true,
+  prompt() {
+    return [packs.prompt().replace('drawn by the app from ready-made art (you never draw or describe images)', 'painted by a picture maker in one picture-book style, and also drawn from ready-made art when it cannot paint'),
+      'SCENES AND LOOKS (for the picture maker; only these words are sent to it): give every "pic" a "scene": one or two plain sentences saying what the picture shows (where it is, who is there, what they are doing, the feeling), never any words or letters to write in the picture, and never a real person. Give every cast member a "look": one short sentence on how they look (kind of animal or person, colors, clothes, one special detail), e.g. "a small red fox with a white-tipped tail and a green scarf". Keep the look the same for the whole book. Never name a real person, a brand or a character from films, books or games.',
+    ].join('\n');
+  },
+};
+
+export const ILLUSTRATORS = { packs, gemini };
+/** The illustrator in use: 'gemini' while the picture model is there (GEMINI_API_KEY, or the tests' stand-in), unless
+ *  STORYBOOK_ILLUSTRATOR=packs; otherwise 'packs'. */
+export const illustrator = () => (process.env.STORYBOOK_ILLUSTRATOR !== 'packs' && configured() ? gemini : packs);

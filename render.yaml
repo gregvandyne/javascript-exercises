@@ -65,3 +65,11 @@ services:
         value: openai
       - key: STT_API_KEY
         sync: false
+      # The book maker's pictures (docs/storybook-builder.md "Pictures"; docs/legal-review.md "Book pictures"): Google's
+      # Gemini image model paints each book's characters and pages. Off (the art-pack drawings) until GEMINI_API_KEY is
+      # set in the dashboard; never put the key in this file. About $0.067 a picture, through the AI budget; a teacher's
+      # daily pictures: STORYBOOK_PICTURES_FREE_PER_DAY (10) and STORYBOOK_PICTURES_PLAN_PER_DAY (40), defaults in code.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: STORYBOOK_IMAGE_MODEL
+        value: gemini-3.1-flash-image

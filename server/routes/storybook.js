@@ -13,6 +13,8 @@
 //   GET  /api/library/make/:id                the book now   POST .../save { book, rev }   POST .../delete
 //   GET|POST /api/library/make/:id/chat       Oomba's chat (services/oomba-chat.js)   POST .../chat/undo { turnId }
 //   POST /api/library/make/:id/pic?name=      a picture for a page          POST .../pic/:pic/remove
+//   GET  /api/library/make/:id/draws          the book's pictures (the picture model: drawing, done, why not)
+//   POST /api/library/make/:id/draw           { target: 'page:<id>' | 'cast:<name>', note } Redraw one picture
 //   POST /api/library/make/:id/share          { classIds }
 //   GET  /library/made/:id/read               the reader (?p= a page, ?t= the trail; the owner or the class)
 //   GET  /library/made/:id/print              print or save as PDF (the owner, or staff of a class it is shared with)
@@ -29,6 +31,7 @@ import { FILE_LIMITS, FILE_ACCEPT, kindOf, readLessonFile, scrub, screenLesson, 
 import { characterName } from '../builder/plan.js';
 import * as SB from '../services/storybook.js';
 import * as C from '../services/oomba-chat.js';
+import * as Draw from '../services/storybook-draw.js';
 import { numbering, reachable, pageOf } from '../../public/js/storybook-core.js';
 
 export const router = Router();
@@ -147,7 +150,7 @@ async function takePic(req, res, bookId) {
   res.json(r);
 }
 router.post('/api/library/make/pic', teacher, rateLimit('storybook-pic', 20, 60e3), picBody, (req, res) => takePic(req, res, null));
-function sendPic(res, p) { res.set('Cache-Control', 'private, max-age=86400').type('image/jpeg').send(p.bytes); }
+function sendPic(res, p) { res.set('Cache-Control', 'private, max-age=86400').type(p.mime || 'image/jpeg').send(p.bytes); }
 router.get('/api/library/make/pic/:pic', teacher, (req, res) => {
   const p = SB.picOf(req.params.pic);
   if (!p || p.owner_id !== req.user.id || p.book_id) return nope(req, res);
@@ -185,6 +188,7 @@ function editorData(req, row) {
     uploads: SB.picsOf(row.id),
     classes: SB.shareClasses(req.user).map(c => ({ id: c.id, name: c.name })), shared: SB.sharedWith(row.id).map(c => c.id),
     limits: SB.LIMITS,
+    draws: Draw.stateOf(req.user, row),
   };
 }
 router.get('/library/make/:id', teacher, (req, res) => {
@@ -205,6 +209,7 @@ router.get('/library/make/:id', teacher, (req, res) => {
       </div>
     </div>
     <div class="sb-warn" id="sb-warn" aria-live="polite"></div>
+    <p class="sb-drawline small" id="sb-drawline" role="status" aria-live="polite" hidden></p>
     <div class="sb-ebody" id="sb-ebody">
       <section class="panel sb-mapp" id="sb-mapp" aria-labelledby="sb-map-h"${row.kind === 'cyoa' ? '' : raw(' hidden')}><h2 id="sb-map-h">${ico('🗺️', { size: 24 })} ${t('storybook.edit.map')}</h2><div class="sb-map" id="sb-map"></div></section>
       <section class="panel sb-list" aria-labelledby="sb-list-h"><h2 id="sb-list-h">${ico('📖', { size: 24 })} ${t('storybook.edit.pages')}</h2><ol class="sb-plist" id="sb-plist"></ol>
@@ -233,6 +238,15 @@ router.post('/api/library/make/:id/share', teacher, (req, res) => {
   res.json({ ok: true, shared: r.classes.map(c => c.id), toast: r.classes.length ? req.t('storybook.shareDone', { count: r.classes.length }) : req.t('storybook.shareNone') });
 });
 router.post('/api/library/make/:id/pic', teacher, rateLimit('storybook-pic', 20, 60e3), picBody, (req, res) => takePic(req, res, req.params.id));
+// The picture model's pictures (services/storybook-draw.js): how drawing is going, and Redraw.
+router.get('/api/library/make/:id/draws', teacher, (req, res) => { const row = own(req, res); if (!row) return; res.json(Draw.stateOf(req.user, row)); });
+router.post('/api/library/make/:id/draw', teacher, rateLimit('storybook-draw', 30, 60e3), (req, res) => {
+  const r = Draw.redraw(req.user, req.params.id, String(b(req).target || ''), typeof b(req).note === 'string' ? b(req).note : '');
+  if (r.ok) { const row = SB.ownBook(req.user, req.params.id); return res.json({ ok: true, draws: Draw.stateOf(req.user, row) }); }
+  if (r.code === 'notFound') return nope(req, res);
+  if (r.code === 'words' || r.code === 'names' || r.code === 'personal') return err(req, res, 400, r.code === 'names' ? 'names' : 'words');
+  return res.status(r.code === 'limit' ? 429 : 503).json({ error: req.t(`storybook.draw.${r.code}`), code: r.code });
+});
 router.post('/api/library/make/:id/pic/:pic/remove', teacher, (req, res) => { const r = SB.removePic(req.user, req.params.id, req.params.pic); return r.ok ? res.json(r) : nope(req, res); });
 
 // Oomba's chat about a book (the shared engine; the daily cap is spent before a message is stored).

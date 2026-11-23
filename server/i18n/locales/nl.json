@@ -1124,6 +1124,11 @@
         "p3": "Als zoeken op internet aan staat, kan Oomba korte zoekopdrachten naar de webzoekfunctie van Anthropic sturen. Die bevatten nooit namen of een locatie; sites voor volwassenen, gokken, sociale netwerken en dergelijke zijn geblokkeerd, en elke zoekopdracht wordt voor ons team vastgelegd zonder de naam van de leerkracht. Pagina's van internet worden getoond als bronnen die Oomba niet heeft gecontroleerd.",
         "p4": "Een leerkracht kan praten in plaats van typen: het geluid gaat naar {provider} om er al tijdens het praten woorden van te maken, en de audio wordt nooit bewaard, niet door ons en niet door hen. De woorden komen in het berichtvak, zodat de leerkracht ze kan controleren.",
         "p5": "We bewaren de chat van een leerkracht, met de tekst van de bijlagen, 60 dagen na het laatste gebruik (een school kan 7 tot 365 dagen kiezen); een afbeelding wordt verwijderd zodra Oomba heeft geantwoord, uiterlijk na een dag. Een leerkracht kan de chat verwijderen met Nieuwe chat, en hij wordt verwijderd met het account. Een schoolbeheerder kan Oomba of het zoeken op internet uitzetten voor de school."
+      },
+      "storybook": {
+        "h": "De boekenmaker",
+        "p1": "Leraren kunnen met Oomba prentenboeken maken in de Verhalenbibliotheek. De woorden van de leraar voor het boek worden naar onze AI-aanbieder Anthropic gestuurd om het te schrijven. Voordat er iets wordt verstuurd, halen we de namen van de leerlingen van de leraar, e-mailadressen, telefoonnummers en links eruit. Leerlingen lezen alleen de klaar boeken die hun leraar met hun klas deelt; niets wat een leerling doet wordt verstuurd.",
+        "p2": "<b>Plaatjes in boeken:</b> om de plaatjes van een boek te tekenen, sturen we Google (de Gemini API) de eigen woorden van het boek over elk plaatje (wat er gebeurt, waar, en hoe elk verzonnen personage eruitziet), onze tekenstijl en voor een pagina de eerder getekende plaatjes van de personages. Nooit de naam of het werk van een leerling, de naam van de leraar of een klas. Google mag wat we sturen een beperkte tijd bewaren om misbruik te controleren en gebruikt het niet om zijn systemen te trainen. Elk plaatje wordt gecontroleerd voordat het te zien is; een plaatje dat niet door de controle komt, wordt niet bewaard. De plaatjes worden met het boek bewaard en ermee verwijderd."
       }
     }
   },
@@ -4463,6 +4468,32 @@
         "longerText": "Voeg nog een pagina toe voor het einde.",
         "title": "Nieuwe titel",
         "titleText": "Geef het boek een betere titel."
+      },
+      "draw": {
+        "lineOff": "De plaatjes komen uit de tekenpakketten: de plaatjesmaker is niet ingesteld op deze site.",
+        "lineResting": "De plaatjesmaker rust even, dus nieuwe plaatjes komen uit de tekenpakketten.",
+        "lineBusy": "Plaatjes tekenen: {done} van {total} klaar. Je kunt verder werken.",
+        "lineLimit": "De plaatjes van vandaag zijn op, dus nieuwe plaatjes komen uit de tekenpakketten. Morgen weer nieuwe.",
+        "lineOn": "De plaatjes worden in één prentenboekstijl geschilderd en gecontroleerd voordat ze te zien zijn. Plaatjes over vandaag: {count}",
+        "queued": "Wacht om getekend te worden",
+        "drawing": "Dit plaatje wordt nu getekend",
+        "why": {
+          "nokey": "De plaatjesmaker is niet ingesteld, dus hier staat de tekening uit het pakket.",
+          "resting": "De plaatjesmaker rustte, dus hier staat de tekening uit het pakket.",
+          "limit": "De plaatjes van vandaag waren op, dus hier staat de tekening uit het pakket.",
+          "blocked": "De plaatjesmaker kon dit plaatje niet tekenen, dus hier staat de tekening uit het pakket.",
+          "refused": "Het nieuwe plaatje kwam niet door onze controle en is niet bewaard.",
+          "error": "Er ging iets mis bij het tekenen. Probeer Opnieuw tekenen."
+        },
+        "keptOld": "Het eerdere plaatje blijft.",
+        "stale": "Deze pagina is veranderd sinds het plaatje is getekend.",
+        "redraw": "Opnieuw tekenen",
+        "draw": "Dit plaatje tekenen",
+        "note": "Wat moet er anders? (niet verplicht)",
+        "notePh": "Bijvoorbeeld: maak er een zonnige ochtend van",
+        "cancel": "Annuleren",
+        "look": "Hoe ze eruitzien",
+        "sheetAlt": "Voorbeeldplaatje van {name}"
       }
     },
     "storybook-read": {
@@ -14059,6 +14090,11 @@
     },
     "warn": {
       "unreachable": "Nog geen enkele keuze leidt naar deze pagina."
+    },
+    "draw": {
+      "nokey": "De plaatjesmaker is niet ingesteld op deze site, dus de pagina's gebruiken de tekeningen uit de pakketten.",
+      "resting": "De plaatjesmaker rust even. Probeer het later opnieuw.",
+      "limit": "Je hebt de plaatjes van vandaag gebruikt. Morgen weer nieuwe."
     }
   }
 }
