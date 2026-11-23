@@ -11723,6 +11723,42 @@ the hybrid: our own Oomba icons for every control, and the Fluent 3D pictures on
   printed raw emoji; they go through the helper now. The hero live card's faces (the demo class) are Fluent pictures.
 - Credits: `docs/media-credits.md` (the Oomba icons are ours; Fluent stays credited, MIT).
 
+## Marketing pictures refresh: current screens, light and dark, the teaching tools (23 Nov 2026)
+
+- **What:** the owner approved refreshing every picture on the public pages after the icon, Classroom, live game and
+  Builder changes. The "How it works" screenshots (`public/img/how`, `scripts/how-shots.js`) and the teaching loop's
+  (`public/img/teach-loop`, `scripts/teach-loop-shots.js`) are taken again from the current app, same sizes and format,
+  with the fun demo names only (the loop's seed classmates are renamed to Comet Fox, Maple Koala, Nova Newt and Star
+  Gecko in its throwaway database; no realistic full names in a public picture).
+- **Light and dark.** Both scripts take `--theme dark` and write the same files with `-dark` after the name. One helper,
+  `server/views/shot.js` `themedPicture`, draws a screenshot as a `<picture>` in the page's theme: the theme the reader
+  picked (Light or Dark) gets only those files; "Same as my device" gets a `prefers-color-scheme: dark` source in front of
+  each light one. Each dark `<source>` carries `data-scheme="dark"` and its own condition in `data-media`, so
+  `public/js/app.js` `applyTheme` retargets it at once when the theme is changed on the page. The landing is dark unless
+  Light is picked, so it shows the dark captures by default. A missing dark file just means the light one.
+- **The teaching tools get pictures.** `how-shots.js --only tools` (Ms. Rivera on the tester list, Oomba's AI replaced by
+  `scripts/how-ai-standin.mjs`, never loaded by the site): a live Base Ten Blocks room with four students' squares on the
+  teacher's screen and one student's square on a phone, and a Figures worksheet Oomba drafted in the chat. The room is a
+  new split section on the landing, `#tools`, between Live games and "See it in action", with the same plan/testing note
+  rule as the videos; the worksheet is step 6 of "How it works" on `/teachers`.
+- **Share pictures.** `og/teachers.jpg` shows the dashboard instead of game covers; new `og/teachers-live.jpg`
+  (referenced before but missing), `og/teachers-host.jpg` and `og/plans.jpg`, all from the real screens, no prices.
+  A page that is not indexed (/teachers/host) now still gets share tags when it names a picture (`server/seo.js`).
+- **Removed:** the ten course covers in `public/img/landing` (unused since the courses section left the landing) and
+  `teach-loop/standards.webp` (never shown). The quiet-time games' covers are 3:4 like every other cover (they were 16:9
+  and cropped in the cards).
+- **Raw emoji** left on /teachers, /teachers/live, /parents and the info pages (badges, live modes, subject and age
+  cards, page kickers, the /safety heading) go through the icon helper.
+- **Scripts:** `scripts/chromium.js` finds the pre-installed Chromium (BRB_CHROMIUM first) for how-shots, teach-loop-shots,
+  covers and og-images instead of a pinned version; how-shots clicks "Arcade game" before "I'll just describe it" (the
+  Builder asks first now) and lets the demo lessons' titles through its name check.
+- Tests: `tests/unit/marketing-images.test.js` (every picture a marketing page points at is a file, in each theme, plans
+  off and on; alt text; the themed sources; the share pictures).
+- **The two older videos** (/teachers/live `oomba-demo`, /parents `oomba-parents`) are recorded again on the current app with
+  scripts/demo-video (the live host's steps, the Builder, sign-up, friends and publish as they are now), with the owner's
+  AtlasAudio track. Titles, cards and captions have no em dashes, and the live video says what joining is now: students
+  join an open room with a code and get a safe made-up name (a class game is the signed-in class).
+
 ## Comparison page: the one page that names other products (22 Nov 2026)
 
 The site's rule stays: **never name other products**, in any page, string, prompt or test fixture. The owner made one
@@ -11774,6 +11810,42 @@ exception, for one page only: `/compare`, "How Oomba compares", may name **Kahoo
   the box), so it stays readable however the columns are scrolled. `public/js/compare-rows.js` replaces
   `compare-info.js`.
 
+## Oomba companion: navigate-then-do and choice cards (23 Nov 2026)
+
+Owner feedback after one chat everywhere (#532): the idea chips felt like a form, "open the dashboard and ask again"
+felt like homework, and open questions made the teacher type what a tap could say.
+
+- **A greeting, no chips.** The empty panel shows no example prompts anywhere (the companion, Figures and math boards
+  alike). It greets the teacher by their own first name as the site shows it (`views/layout.js` gives the panel the
+  signed-in teacher's display name, never a student's): "Good morning, Greg", "Back at it, Greg", "Happy Friday,
+  Greg", then one short line such as "What can I help with?". `public/js/companion-greet.js` picks by the browser's
+  local time (morning, afternoon, evening, night; Friday, Monday morning and the weekend have their own), seeded by
+  the local date so it stays the same all day and never flickers. Without a name the plain form is used. All 13
+  locales, written for each language rather than word for word. A page with its own line (Figures: "Ask for a
+  worksheet..."; a math board: the tool in use) replaces only the second line.
+- **Navigate-then-do.** When a request needs a page the teacher is not on, the AI calls `proposeNavigation`
+  (`findMyPages` first when it needs ids) instead of telling the teacher to go there and ask again. The card says
+  "I'll open the 3B dashboard and do this there", shows the request, and offers Go there and Not now. Targets are only
+  the teacher's own pages: their classes' dashboards (where they are a teacher of the class) and class pages, their
+  Figures worksheets and their math boards; never a student view. When several fit ("my dashboard" with two classes)
+  a choice card asks which first; each option carries its target, so a tap makes the Go there card at once.
+- **The request is carried server side.** Go there stores `pending = { page, request, at }` on the teacher's companion
+  chat (the `opts` column; no migration) and navigates in the same tab. On load the page asks
+  `POST /api/companion/resume` with the page it is on; only that exact page (type and class, worksheet or board id)
+  runs it, once, as the teacher's turn, and the panel opens by itself. It expires after 10 minutes; Not now, a new
+  Go there or a target that is no longer theirs clears it. Confirm-before-write and Undo are unchanged: on the
+  dashboard the same Apply card appears without retyping. Go there is audited (`companion.nav`).
+- **Choice cards.** For a decision with a few clear answers the AI calls `askChoice` (2 to 5 short options, names
+  scrubbed like every other output). The card shows them as buttons plus "Something else", which puts the caret in
+  the box. A tap is sent as the teacher's answer, as if typed; the card then shows the pick.
+- **Client.** `oomba-chat.js` now redraws when any card's state changes (not only point picks), so Not now and a
+  picked option show at once.
+- Tests: `tests/unit/companion-nav.test.js` (greeting by hour, day and locale with only the teacher's name; Go there
+  stored, resumes only on the matching page, once, and expires; Not now; the choice card's answer as a turn and as a
+  target; scope: never another teacher's class or a student page) and `tests/unit/companion-nav-browser.test.js`
+  (laptop and iPhone 13: greeting with no chips; School page to dashboard with Go there, the confirm card without
+  retyping, Apply, Undo; two classes give a choice card first; Not now leaves nothing pending; no console errors, no
+  sideways scroll).
 ## Oomba Figures 1.6.0: seven new chemistry kinds (23 Nov 2026)
 
 The owner: "Watch this video end to end and include everything they have ... Also visit the site [the source's chemistry
@@ -11920,7 +11992,7 @@ emojis shown here", and of the teaching-loop screens: "only keep two photos here
 - **The main button.** With paid-plan pages on, "Start free trial" (/trial): the Teacher plan's trial starts at sign-up
   with no card (routes/teacher-plan.js), so the words are true. Off, "Create a teacher account" (the start panel). Never
   "Get a free school account".
-- **Screens.** scripts/tools-shots.js makes tools-board, tools-room (1280 x 800 at 2x, saved 1024 and 2048 wide) and
+- **Screens.** scripts/tools-shots.js makes tools-board, tools-live (1280 x 800 at 2x, saved 1024 and 2048 wide) and
   tools-student (390 x 844 at 2x, saved 390 and 780 wide) in public/img/how, from the real app in-process with a
   throwaway in-memory database: Ms. Rivera's Class at Sunny Hill Demo School, students with demo names, a clock board
   Oomba drafts (the AI is a stand-in with fixed words, as in tests/unit/manip-chat-browser.test.js), pushed to the class,

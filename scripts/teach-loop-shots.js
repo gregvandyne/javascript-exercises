@@ -1,12 +1,12 @@
 // Screenshots for the teaching loop (server/views/teacher-loop.js, docs/decisions.md "The teaching loop"):
-// public/img/teach-loop/{gradebook,attention,feedback,standards}.webp, 1280x800, each under 80 KB: captured at 2x from a
+// public/img/teach-loop/{gradebook,attention,feedback}.webp (and -dark.webp with --theme dark), 1280x800, each under 80 KB: captured at 2x from a
 // 960x600 desktop window (1920x1200) and scaled down, so text stays sharp where the pages show them about 540-640 px wide.
 // Real captures of the running app from a throwaway database with the seeded demo school (DemoTeacher, "Demo Class" and
-// its made-up demo students), plus one CS Quest lesson with some work so the Standards tab has something to show.
-// Light theme only (the landing and /teachers frame them). Every shot is checked for prices and for names outside the
+// its students, renamed here to the fun demo nicknames: no realistic full names), plus one CS Quest lesson with some work.
+// Light by default; --theme dark takes the same shots in the dark theme (views/teacher-loop.js shows them on dark pages). Every shot is checked for prices and for names outside the
 // demo list before it is saved: a bad shot throws.
 //
-// Usage: node scripts/teach-loop-shots.js [--keep]      TL_SHOTS_PORT=8040 (the server)
+// Usage: node scripts/teach-loop-shots.js [--theme dark] [--keep]      TL_SHOTS_PORT=8040 (the server)
 // Needs ImageMagick `convert` with WebP and the Playwright Chromium (BRB_CHROMIUM or /opt/pw-browsers).
 import fs from 'node:fs';
 import os from 'node:os';
@@ -14,13 +14,16 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { chromiumPath } from './chromium.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'public', 'img', 'teach-loop');
 const PASS = crypto.randomBytes(9).toString('hex');
 const MAX_BYTES = 80 * 1024;
 /** Every name a shot may show: the demo school's made-up people (scripts/seed.js seedDemoTeacher). */
-const NAMES = ['Demo Teacher', 'Demo Student', 'Ava Lopez', 'Noah Kim', 'Mia Patel', 'Leo Chen', 'Demo Class', 'Oomba Academy Demo School'];
+const NICKS = ['Comet Fox', 'Maple Koala', 'Nova Newt', 'Star Gecko'];
+const NAMES = ['Demo Teacher', 'Demo Student', ...NICKS, 'Demo Class', 'Oomba Academy Demo School'];
+const THEME = process.argv.includes('--theme') && process.argv[process.argv.indexOf('--theme') + 1] === 'dark' ? 'dark' : 'light';
 const PRICE = /[$€£¥₹]\s?\d|\d+[.,]\d{2}\s*(USD|EUR|GBP)|\/(month|year|mo|yr)\b|per (month|year)/i;
 const HIDE_CSS = '*{caret-color:transparent!important} #toasts,.toast,.tabbar{display:none!important} .topbar,.foot,footer{display:none!important} main{padding-bottom:600px!important}';
 
@@ -38,6 +41,9 @@ async function seedMode() {
   const made = must(T.materialise(teacher, cls.school_id, 'csq-1b-1.1'), 'CS Quest lesson');
   const cl = must(L.assign(teacher, cls.id, made.lesson.id, {}), 'assign').classLesson;
   const kids = S.roster(cls.id).filter(p => p.role === 'student' && p.username !== 'DemoStudent');
+  // The seed's classmates have realistic made-up names; the shots use the fun demo nicknames instead.
+  const { q } = await import('../server/db.js');
+  kids.forEach((k, i) => q.run('UPDATE school_members SET roster_name=? WHERE user_id=? AND school_id=?', NICKS[i % NICKS.length], k.id, cls.school_id));
   const steps = L.steps(made.lesson.id);
   kids.forEach((k, ki) => steps.slice(0, [steps.length, steps.length - 1, 3, 1][ki % 4]).forEach(s => {
     if (s.kind === 'game') { P.gameStarted(k, cl.id, s.id); P.gameScore(k, cl.id, s.id, 40 + ki * 3); P.markDone(k, cl.id, s.id); }
@@ -46,9 +52,6 @@ async function seedMode() {
   }));
   // The fractions lesson (scripts/seed.js): the lesson whose answers and "Needs attention first" the shots show.
   const fr = L.classLessons(cls.id).find(x => x.title.startsWith('Adding fractions'));
-  // The Standards shot shows the same fractions lesson as the others, so tag it with its Common Core standards.
-  const CC = await import('../server/services/standards-ccss.js');
-  for (const code of ['4.NF.A.1', '4.NF.B.3']) must(CC.addTag(teacher, fr.lesson_id, { framework: 'ccss-math', code }), `tag ${code}`);
   process.stdout.write(JSON.stringify({ classId: cls.id, fractions: fr.id }));
 }
 
@@ -69,14 +72,14 @@ async function main() {
     app = spawn(process.execPath, ['server/index.js'], { cwd: ROOT, env, stdio: ['ignore', 'ignore', 'inherit'] });
     for (const t0 = Date.now(); ;) { try { if ((await fetch(`${BASE}/health`)).ok) break; } catch { /* starting */ } if (Date.now() - t0 > 60e3) throw new Error('server did not start'); await new Promise(r => setTimeout(r, 200)); }
     const { chromium } = await import('@playwright/test');
-    const exe = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell', '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => p && fs.existsSync(p));
+    const exe = chromiumPath({ headless: true });
     browser = await chromium.launch(exe ? { executablePath: exe } : {});
-    const ctx = await browser.newContext({ viewport: { width: 960, height: 600 }, deviceScaleFactor: 2, baseURL: BASE, colorScheme: 'light', locale: 'en-US', reducedMotion: 'reduce' });
+    const ctx = await browser.newContext({ viewport: { width: 960, height: 600 }, deviceScaleFactor: 2, baseURL: BASE, colorScheme: THEME, locale: 'en-US', reducedMotion: 'reduce' });
     await ctx.setExtraHTTPHeaders({ 'X-Forwarded-For': `10.77.${crypto.randomInt(250)}.${1 + crypto.randomInt(250)}` });
     const page = await ctx.newPage();
     await page.goto('/login'); await page.fill('#username', 'DemoTeacher'); await page.fill('#password', PASS);
     await Promise.all([page.waitForURL(u => !u.pathname.startsWith('/login')), page.click('button[type=submit]')]);
-    await page.goto('/?theme=light');
+    await page.goto(`/?theme=${THEME}`);
     const PNG = path.join(DATA, 'png'); fs.mkdirSync(PNG);
     const shot = async (name, url, focus, before, offset = 16) => {
       await page.goto(url); await page.waitForLoadState('networkidle').catch(() => {});
@@ -103,14 +106,11 @@ async function main() {
         await page.waitForFunction(() => document.querySelector('#needs-attention [aria-pressed="true"]'));
       }),
       feedback: await shot('feedback', lesson, '#answers .answers h2'),
-      // Common Core Math (the subject of the other three shots): the first standard the class has worked on, with its
-      // group's heading and the table's column names above it.
-      standards: await shot('standards', `/class/${ids.classId}/standards?fw=ccss-math`, '.csq-std-id', null, 150),
     };
     await browser.close(); browser = null;
     fs.mkdirSync(OUT, { recursive: true });
     for (const [name, png] of Object.entries(pngs)) {
-      const out = path.join(OUT, `${name}.webp`);
+      const out = path.join(OUT, `${name}${THEME === 'dark' ? '-dark' : ''}.webp`);
       for (const quality of [74, 66, 58, 50]) {
         execFileSync('convert', [png, '-resize', '1280x800', '-strip', '-define', 'webp:method=6', '-quality', String(quality), out]);
         if (fs.statSync(out).size <= MAX_BYTES) break;

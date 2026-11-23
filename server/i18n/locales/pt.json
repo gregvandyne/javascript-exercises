@@ -3896,7 +3896,10 @@
       "chTitle": "Título: {title}",
       "chGrade": "Ano: {grade}",
       "chRepaired": "{count, plural, one {# figura não pôde ser desenhada e foi trocada ou deixada de fora} other {# figuras não puderam ser desenhadas e foram trocadas ou deixadas de fora}}",
-      "chAnswers": "Cada resposta calculada a partir da sua figura"
+      "chAnswers": "Cada resposta calculada a partir da sua figura",
+      "greetLine": "Me diga o que esta folha precisa: o tema, o ano, quantas perguntas.",
+      "greetLineTest": "Me diga o que esta prova deve cobrir: o tema, o ano, quantas perguntas.",
+      "greetLineHas": "Peça para mudar perguntas, adicionar mais ou mudar as unidades ou o ano."
     },
     "manip-chat": {
       "title": "Oomba",
@@ -3951,7 +3954,9 @@
       "placeholder": "Peça ao Oomba para mudar o quadro",
       "placeholderEmpty": "Descreva a aula que você quer neste quadro",
       "boardOf": "Quadro de {tool}",
-      "liveRoom": "Sala ao vivo"
+      "liveRoom": "Sala ao vivo",
+      "greetLine": "Me diga a aula que você quer neste quadro de {tool}.",
+      "greetLineHas": "Me diga o que mudar no seu quadro de {tool}."
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4132,7 +4137,12 @@
         "boardNo": "Não conseguiu montar esse quadro",
         "point": "{n, plural, one {Deu um ponto} other {Deu # pontos}}",
         "pointPick": "Preparou uma escolha para você",
-        "pointNo": "Não conseguiu dar esse ponto"
+        "pointNo": "Não conseguiu dar esse ponto",
+        "places": "Olhou suas turmas e páginas",
+        "nav": "Preparou a página para abrir",
+        "navNo": "Não encontrou essa página",
+        "which": "Perguntou qual",
+        "askNo": "Não conseguiu perguntar isso"
       },
       "stepsSum": "{n, plural, one {# etapa} other {# etapas}} · {s} s",
       "prog": {
@@ -4222,7 +4232,51 @@
           "student": "Qual aluno você quis dizer?",
           "reason": "O ponto é pelo quê?"
         }
+      },
+      "nav": {
+        "offer": "Vou abrir {page} e fazer isso lá.",
+        "go": "Ir para lá",
+        "notNow": "Agora não",
+        "went": "Abri {page}.",
+        "declined": "Ficamos aqui.",
+        "expired": "Já faz um tempo, então não abri. Peça de novo quando quiser.",
+        "dashboard": "o painel de {name}",
+        "class": "{name}",
+        "sheet": "“{name}”",
+        "board": "o quadro {name}"
+      },
+      "which": {
+        "dashboard": "O painel de qual turma?",
+        "class": "Qual turma?",
+        "sheet": "Qual folha?",
+        "board": "Qual quadro?"
+      },
+      "ask": {
+        "other": "Outra coisa"
       }
+    },
+    "companion-greet": {
+      "morning": "Bom dia, {name}",
+      "morningPlain": "Bom dia",
+      "afternoon": "Boa tarde, {name}",
+      "afternoonPlain": "Boa tarde",
+      "evening": "Boa noite, {name}",
+      "eveningPlain": "Boa noite",
+      "night": "Trabalhando até tarde, {name}?",
+      "nightPlain": "Trabalhando até tarde?",
+      "back": "De volta, {name}",
+      "backPlain": "De volta",
+      "hi": "Oi, {name}",
+      "hiPlain": "Oi",
+      "friday": "Boa sexta, {name}",
+      "fridayPlain": "Boa sexta",
+      "monday": "Semana nova, {name}",
+      "mondayPlain": "Semana nova",
+      "weekend": "Planejando no fim de semana, {name}?",
+      "weekendPlain": "Planejando no fim de semana?",
+      "line0": "Como posso ajudar?",
+      "line1": "No que vamos trabalhar?",
+      "line2": "Por onde começamos?"
     }
   },
   "favorites": {
@@ -5990,7 +6044,7 @@
       "s1": {
         "h": "Suas turmas em um só lugar",
         "p": "Depois que a sua escola está configurada, o admin da escola adiciona os professores, e cada professor cria as próprias turmas em Minhas turmas.",
-        "alt": "Minhas turmas de um professor da Sunny Hill Demo School: três cartões de turma, Coding Club, Ms. Rivera’s Class (5 alunos, 1 pedido para entrar, 2 respostas para revisar) e Reading Rockets, e um botão Lesson library."
+        "alt": "O início da Sala de Aula de Ms. Rivera: três turmas e duas respostas à espera, botões para o resumo da semana e um jogo ao vivo, e o cartão do ciclo de ensino com Planejar, Jogar, Verificar e Comentar."
       },
       "s2": {
         "h": "Os alunos entram com um código ou com cartões de acesso",
@@ -6011,7 +6065,12 @@
       "s5": {
         "h": "Veja o progresso e o boletim de notas",
         "p": "O boletim de notas mostra o progresso, as pontuações nos jogos e as respostas por escrito de cada aluno. Deixe comentários ou baixe tudo em CSV.",
-        "alt": "A aba Progress da turma: uma tabela do boletim de notas com quantas etapas cada aluno fez em cada aula, um botão Download (CSV) e um link para as respostas por escrito esperando revisão."
+        "alt": "A aba Progresso da turma: links para os cursos e para o histórico de jogos ao vivo, um botão Baixar (CSV), as respostas para revisar e o boletim com os passos que cada aluno fez em cada lição."
+      },
+      "s6": {
+        "h": "Ensine com as ferramentas",
+        "p": "Peça uma folha de atividades ao Oomba no chat: ele escreve as questões, o Figures desenha cada figura em escala e calcula as respostas. Ou abra uma sala de matemática ao vivo com materiais manipuláveis virtuais.",
+        "alt": "O criador de folhas do Figures com o chat do Oomba aberto ao lado: uma folha chamada Area and volume practice, a primeira questão com um retângulo desenhado em escala e a resposta 12 m², e a lista do que mudou no chat."
       }
     },
     "build": {
@@ -6659,7 +6718,7 @@
       "s1": {
         "h": "Comece grátis com um nome inventado",
         "p": "A criança escolhe um nome inventado e uma senha. Nunca pedimos às crianças e-mail, idade ou endereço residencial.",
-        "alt": "A página de cadastro da Oomba Academy, “Make a free account”, com o nome inventado PixelPanda digitado e uma senha oculta. Ela pede só um nome divertido e uma senha."
+        "alt": "A página de cadastro da Oomba Academy, passo 1 de 2, “Make a free account”, com o nome inventado PixelPanda digitado e uma senha oculta. Ela pede só um nome divertido e uma senha."
       },
       "s2": {
         "h": "Jogue jogos educativos",
@@ -6684,7 +6743,7 @@
       "s6": {
         "h": "Vincule a sua conta de adulto (opcional)",
         "p": "A criança recebe um código de uso único na página Eu e entrega para você pessoalmente. Você digita o código na página da sua família, e a criança diz sim. A página da sua família passa a mostrar a criança e as mensagens extras dela para o Construtor até ontem.",
-        "alt": "A página da família do adulto: em Children, Pixel Panda aparece vinculado, com as mensagens extras para o Construtor de ontem e deste mês, um botão Unlink e um botão Link a child."
+        "alt": "A página da família do adulto: em “Children”, Pixel Panda está vinculado, com as mensagens extras do Builder de ontem e deste mês, e um botão Desvincular."
       }
     },
     "ages": {
@@ -8300,12 +8359,12 @@
       "s1": {
         "h": "Escolha um jogo e as suas perguntas",
         "p": "Escolha Corrida de Missões, Batalha de Perguntas ou Tabuleiro Cérebro e depois as perguntas: o banco de perguntas por matéria e idade (de 6 a 14 anos), o seu próprio conjunto, um que um colega compartilhou ou as perguntas de uma das suas aulas.",
-        "alt": "A página “Conduzir um jogo ao vivo”: os modos de jogo para escolher, um conjunto de perguntas e quem pode entrar."
+        "alt": "O primeiro passo para iniciar um jogo ao vivo, “O que você quer jogar?”: Quest Race, Question Battle e Brain Board, cada um com quantos jogadores combinam com ele."
       },
       "s2": {
         "h": "Mostre o código na lousa",
         "p": "Os alunos abrem a página de entrada no aparelho e digitam o código de 7 dígitos, ou leem o QR code. Os nomes aparecem conforme eles entram.",
-        "alt": "A tela do projetor antes de o jogo começar: um código grande de 7 dígitos, um QR code e os alunos que já entraram."
+        "alt": "A tela do projetor antes de o jogo começar: um personagem de desenho contra quem a turma toda joga, um grande código de 7 dígitos, um código QR e quantos jogadores já entraram."
       },
       "s3": {
         "h": "Os alunos entram em segundos",
@@ -8315,7 +8374,7 @@
       "s4": {
         "h": "Todos respondem ao mesmo tempo",
         "p": "A pergunta fica na lousa e os botões de resposta, em cada aparelho. Quanto mais rápida a resposta certa, mais pontos ela vale.",
-        "alt": "O celular de um aluno durante uma pergunta, com quatro botões de resposta."
+        "alt": "O celular de um aluno durante uma pergunta: no alto, o personagem de desenho contra quem a turma joga; depois a pergunta e quatro botões de resposta."
       },
       "s5": {
         "h": "Veja quem sabe o quê",
@@ -9231,8 +9290,8 @@
       "li2": "Use um conjunto de perguntas pronto, escreva o seu ou deixe a IA fazer um rascunho para você editar",
       "li3": "As pontuações vão direto para o seu boletim",
       "li4": "Jogos da turma: só os seus alunos com sessão iniciada. Jogos com convidados: nomes inventados e seguros. Sem chat e sem texto livre em ambos",
-      "shotAlt": "A sala de espera de um Question Battle ao vivo: cinco avatares de alunos esperam enquanto a tela grande mostra o código do jogo e um QR code.",
-      "link": "Como funcionam os jogos ao vivo"
+      "link": "Como funcionam os jogos ao vivo",
+      "shotAlt": "O saguão de um jogo ao vivo de Question Battle: a tela grande mostra o personagem de desenho contra quem a turma joga, o código do jogo e um código QR."
     },
     "why": {
       "kicker": "Por que os jogos funcionam",
@@ -9382,6 +9441,18 @@
       "li4": "Privado até ser compartilhado: com a turma, ou com todos só depois que uma pessoa da nossa equipe revisar",
       "shotAlt": "O Studio de um aluno: o Builder avisa que a versão 2 está pronta, e o jogo roda numa prévia do tamanho de um celular.",
       "caption": "O Studio de um aluno: ele descreve, o Builder cria, ele testa."
+    },
+    "tools": {
+      "kicker": "Ferramentas de ensino",
+      "h": "Matemática na mão, com todos os alunos ao mesmo tempo",
+      "lead": "Materiais manipuláveis virtuais que seus alunos movem sozinhos, uma sala ao vivo onde você vê o trabalho de todos em uma tela só, e o Oomba para criar folhas de atividades com figuras em escala.",
+      "li1": "18 materiais manipuláveis virtuais, do material dourado que reagrupa a peças de frações e relógios",
+      "li2": "Salas de matemática ao vivo: cada aluno monta no seu próprio quadrado enquanto você vê todos os quadrados no quadro",
+      "li3": "Quadros salvos com códigos de compartilhamento, e 300 atividades prontas da educação infantil ao 8.º ano",
+      "li4": "Oomba, seu companheiro de ensino: descreva uma folha de atividades e receba figuras exatas com as respostas resolvidas",
+      "shotAlt": "Uma sessão ao vivo de material dourado na tela do professor: a área do professor no alto e os quadrados de quatro alunos embaixo, cada um com placas de centenas e barras de dezenas num quadro de valor posicional.",
+      "plan": "Os materiais manipuláveis, suas salas ao vivo, o Figures e o Oomba fazem parte do plano Professor.",
+      "testing": "Os materiais manipuláveis, suas salas ao vivo, o Figures e o Oomba estão sendo testados em algumas turmas agora."
     }
   },
   "teach": {

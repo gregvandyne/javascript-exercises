@@ -4,6 +4,7 @@
 //   publish - the Studio's share sheet: Only me / Friends / Everyone
 // node scripts/demo-video/rec-safety.mjs land|port [only]
 import { chromium } from 'playwright';
+import { launchOptions } from '../chromium.js';
 import { Capture, cursorInit, glide, setCursor } from './vc.mjs';
 import { B, login, sleep } from './lib.mjs';
 const orient = process.argv[2] || 'land', only = process.argv[3];
@@ -11,7 +12,7 @@ const L = orient === 'land';
 const V = L ? { viewport: { width: 1440, height: 810 }, deviceScaleFactor: 4 / 3, out: [1920, 1080] } : { viewport: { width: 540, height: 960 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, out: [1080, 1920] };
 const C = process.env.DEMO_CLIPS || '/tmp/claude-0/demo2/clips';
 const STUDIO = process.env.DEMO_STUDIO || 'X8wmna93Vk';
-const br = await chromium.launch({ args: ['--use-gl=angle', '--ignore-gpu-blocklist'] });
+const br = await chromium.launch(launchOptions({ args: ['--use-gl=angle', '--ignore-gpu-blocklist'] }, { headless: true }));
 const mk = async (signedIn) => {
   const ctx = await br.newContext({ viewport: V.viewport, deviceScaleFactor: V.deviceScaleFactor, isMobile: !!V.isMobile, hasTouch: !!V.hasTouch, extraHTTPHeaders: { 'x-forwarded-for': '10.7.8.' + (L ? 1 : 2) } });
   const p = await ctx.newPage(); p.__name = 'g';

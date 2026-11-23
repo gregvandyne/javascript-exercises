@@ -96,3 +96,14 @@ sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1
 .oc-picks{flex-wrap:wrap}
 .oc-pickb{min-height:40px}
 .oc-name{unicode-bidi:isolate}
+/* The empty panel's greeting; navigate-then-do ("I'll open ... and do this there") and choice cards. */
+.oc-greet{display:flex;flex-direction:column;gap:2px}
+.oc-greet b{font-size:1.08rem}
+.oc-greet span{color:var(--text-2)}
+.oc-nav,.oc-ask{display:flex;flex-direction:column;gap:6px;padding:8px 10px;border-radius:14px;background:var(--card);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent-line) 45%,var(--line))}
+.oc-nav.done,.oc-ask.done{box-shadow:inset 0 0 0 2px var(--line)}
+.oc-nav p,.oc-ask p{margin:0}
+.oc-nav p:first-child{display:flex;gap:6px;align-items:flex-start;font-weight:700}
+.oc-navq{font-size:.86rem;color:var(--text-2);padding:6px 8px;border-radius:10px;background:var(--card-2);overflow-wrap:anywhere}
+.oc-askq{font-weight:700}
+.oc-ask .oc-pickb small{color:var(--muted);font-weight:600}

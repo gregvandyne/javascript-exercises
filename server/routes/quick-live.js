@@ -73,7 +73,7 @@ router.get(HOST_URL, on, (req, res) => {
   const t = req.t, u = req.user;
   res.set({ 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' });
   if (A.canHost(u)) return res.redirect(302, QUICK_URL);
-  const show = body => page(req, res, { title: t('quickLive.host.title'), description: t('quickLive.host.lead'), head: HEAD, body: html`<div class="ql">${body}</div>`, seo: { index: false, path: HOST_URL } });
+  const show = body => page(req, res, { title: t('quickLive.host.title'), description: t('quickLive.host.lead'), head: HEAD, body: html`<div class="ql">${body}</div>`, seo: { index: false, path: HOST_URL, image: '/og/teachers-host.jpg', imageAlt: t('quickLive.host.title') } });
   // A child's account (or a school student): kids never host. They join with the code.
   if (!signedOut(u)) {
     return show(html`<section class="panel" role="status"><h1>${ico('📡', { size: 36 })} ${el(t, 'span', 'quickLive.kid.h')}</h1>${el(t, 'p', 'quickLive.kid.p')}

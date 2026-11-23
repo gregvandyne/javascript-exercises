@@ -1,14 +1,15 @@
 // The parents video's captions, hook and end card (PNG overlays like cards.mjs, prefixed p-).
 // Every claim matches the parents page (server/i18n/locales/en.json "parents": badges, safe.li1-li5).
 import { chromium } from 'playwright';
+import { launchOptions } from '../chromium.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { B, OUT } from './lib.mjs';
 const DIR = path.join(OUT, 'cards'); fs.mkdirSync(DIR, { recursive: true });
 const FONT = path.resolve('public/fonts/bricolage-grotesque-latin-opsz-normal.woff2');
-const br = await chromium.launch();
+const br = await chromium.launch(launchOptions({}, { headless: true }));
 const pg = await (await br.newContext({ deviceScaleFactor: 5, viewport: { width: 1440, height: 800 } })).newPage();
-await pg.goto(B + '/'); const logoPng = await pg.locator('a.logo').first().screenshot({ omitBackground: true });
+await pg.goto(B + '/play'); const logoPng = await pg.locator('a.logo').first().screenshot({ omitBackground: true });
 const logo = `<img src="data:image/png;base64,${logoPng.toString('base64')}" style="height:100%">`;
 const CSS = `@font-face{font-family:B;src:url(data:font/woff2;base64,${fs.readFileSync(FONT).toString('base64')}) format('woff2');font-weight:200 800}
 *{box-sizing:border-box;margin:0}html,body{background:transparent;font-family:B,sans-serif;color:#141414}
@@ -24,11 +25,11 @@ async function png(name, w, h, html, transparent = true) {
 }
 export const PCAPS = {
   learn: '<b>Learning games</b> they actually want to play',
-  build1: 'Then they build their own — <b>just by describing it</b>',
-  build2: 'The Builder makes it — and <b>plays it to check it works</b>',
+  build1: 'Then they build their own, <b>just by describing it</b>',
+  build2: 'The Builder makes it, and <b>plays it to check it works</b>',
   play: 'Then they play it!',
-  signup: 'A made-up name — <b>no email, no age</b>',
-  friends: 'Friends only with a code — <b>no chat with strangers</b>',
+  signup: 'A made-up name: <b>no email, no age</b>',
+  friends: 'Friends only with a code: <b>no chat with strangers</b>',
   publish: 'Games stay <b>private</b> until they choose to share',
 };
 for (const [k, t] of Object.entries(PCAPS)) {
@@ -38,7 +39,7 @@ for (const [k, t] of Object.entries(PCAPS)) {
 const hook = (fs1, fs2, pad) => `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,20,20,0) 35%,rgba(20,20,20,.78) 100%)"></div>
 <div style="position:absolute;left:${pad}px;right:${pad}px;bottom:${pad}px;color:#FFFDF2">
 <div style="font-size:${fs1}px;font-weight:800;line-height:1;letter-spacing:-.02em;text-shadow:0 4px 18px rgba(0,0,0,.35)">Screen time you can<br><span style="color:#FFD23F">feel good about</span></div>
-<div style="font-size:${fs2}px;font-weight:650;margin-top:.45em;color:#DDF3E6">Learning games kids love — and they can build their own.</div></div>`;
+<div style="font-size:${fs2}px;font-weight:650;margin-top:.45em;color:#DDF3E6">Learning games kids love, and they can build their own.</div></div>`;
 await png('p-hook-land', 1920, 1080, hook(128, 52, 90));
 await png('p-hook-port', 1080, 1920, hook(112, 50, 70));
 const end = port => `<div style="position:absolute;inset:0;background:#FFFDF2"></div>

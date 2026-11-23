@@ -3,7 +3,7 @@
 // student's own screen, <slug>-p-390/-p-780.webp (an iPhone-sized 390 x 844 screen, 2x), the same names and sizes as
 // scripts/how-shots.js, so server/views/how.js and the landing can show them the same way.
 //   tools-board    the Manipulatives board with Oomba, the companion chat, docked beside it (a clock board it drafted)
-//   tools-room     the teacher's live room: the board pushed to the class, every student's square on one screen
+//   tools-live     the teacher's live room: the board pushed to the class, every student's square on one screen
 //   tools-student  a student's phone in the same room: their own square, with the board their teacher pushed
 // The Classroom Dashboard shots are scripts/how-shots.js --only dash (dash-teacher, dash-student).
 //
@@ -134,7 +134,7 @@ try {
     const { ctx, page, errors } = await open(teacher, `#live/${s.id}`, LAPTOP);
     await page.waitForSelector('.rm-area[data-key]'); await page.waitForTimeout(900);
     if (await page.locator('[data-rtool="fit"]').count()) { await page.locator('[data-rtool="fit"]').first().click(); await page.waitForTimeout(500); }
-    await shot(page, 'tools-room', 'desk');
+    await shot(page, 'tools-live', 'desk');
     if (errors.length) throw new Error(`room: ${errors.join('; ')}`);
     await ctx.close();
   }

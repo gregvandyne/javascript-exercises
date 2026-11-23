@@ -75,7 +75,7 @@ export function section(req, prefix, { id, paid = familiesOn(req), made = madeOn
 export const folded = (head, body) => html`<details class="lp-fold"><summary>${head}</summary><div class="lp-fold-body">${body}</div></details>`;
 /** sections: section keys under info.<pageKey>; extra: more sections after them. */
 function info(req, pageKey, emoji, sections, extra = '') {
-  return html`<div class="wrap narrow" style="padding:0"><h1>${emoji} ${req.t(`info.${pageKey}.heading`)}</h1>${sections.map(s => section(req, `info.${pageKey}.${s}`, { id: s }))}${extra}</div>`;
+  return html`<div class="wrap narrow" style="padding:0"><h1>${ico(emoji, { size: 32 })} ${req.t(`info.${pageKey}.heading`)}</h1>${sections.map(s => section(req, `info.${pageKey}.${s}`, { id: s }))}${extra}</div>`;
 }
 const codeBlock = s => html`<code dir="ltr">${s}</code>`;
 

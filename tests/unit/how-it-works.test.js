@@ -77,7 +77,11 @@ for (const page of ['parents', 'teachers']) {
       assert.ok(fs.existsSync(path.join(ROOT, 'public', src)), `${src} exists`);
       const r = await fetch(base + src); assert.equal(r.status, 200, src); assert.match(r.headers.get('content-type'), /image\/webp/);
     }
-    for (const s of sec.matchAll(/<source\b[^>]*>/g)) { assert.equal(attr(s[0], 'width'), '1024'); assert.equal(attr(s[0], 'height'), '640'); }
+    // The desktop sources (from 960px) are 1024x640; a dark phone source (views/shot.js) is the phone's 390x844.
+    for (const s of sec.matchAll(/<source\b[^>]*>/g)) {
+      const desk = /min-width:960px/.test(attr(s[0], 'data-media') ?? attr(s[0], 'media') ?? '');
+      assert.equal(attr(s[0], 'width'), desk ? '1024' : '390'); assert.equal(attr(s[0], 'height'), desk ? '640' : '844');
+    }
     // The stage that how.js fills is hidden and silent until then.
     assert.match(sec, /<div class="how-stage" aria-hidden="true" hidden>/);
     // The hero picture is decoration: hidden from screen readers, empty alt, the same files as the steps.

@@ -252,7 +252,7 @@ router.get('/parents/:guide', (req, res) => {
   const body = html`<div class="lp">
     ${crumbsNav(req, crumbs)}
     <section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
-      ${raw(`<h1 id="lp-h1"${fb(t, `${k}.h1`)}><span aria-hidden="true">${guide.emoji}</span> ${tHtml(t, `${k}.h1`)}</h1>`)}
+      ${raw(`<h1 id="lp-h1"${fb(t, `${k}.h1`)}><span aria-hidden="true">${ico(guide.emoji, { size: 36 })}</span> ${tHtml(t, `${k}.h1`)}</h1>`)}
       ${el(t, 'p', `${k}.lead`, {}, ' class="lead"')}
       ${updated(req)}
     </section>
@@ -307,7 +307,7 @@ router.get('/learn/:slug', (req, res, next) => {
   const body = html`<div class="lp">
     ${crumbsNav(req, crumbs)}
     <section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
-      ${raw(`<h1 id="lp-h1"${fb(t, `${k}.h1`)}><span aria-hidden="true">${age.emoji}</span> ${tHtml(t, `${k}.h1`)}</h1>`)}
+      ${raw(`<h1 id="lp-h1"${fb(t, `${k}.h1`)}><span aria-hidden="true">${ico(age.emoji, { size: 36 })}</span> ${tHtml(t, `${k}.h1`)}</h1>`)}
       ${el(t, 'p', `${k}.lead`, {}, ' class="lead"')}
       ${age.key === 'a10' ? el(t, 'p', `${k}.abcya`, {}, ' class="lp-aside"') : ''}
       <p class="lp-grades">${ico('🎒', { size: 18 })} ${el(t, 'span', 'learn.ages.line', range)}</p>
@@ -318,14 +318,14 @@ router.get('/learn/:slug', (req, res, next) => {
     ${age.make === 'after' ? make : ''}
     <div class="lp-cols">
       <section class="panel" id="skills" aria-labelledby="skills-h">${el(t, 'h2', 'learn.ages.skills.h', {}, ' id="skills-h"')}
-        <ul class="lp-list">${skills.map(([h, gs]) => html`<li><a href="${lp(req, `/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span> ${t(`learn.hubs.${h.key}.name`)}</a>${gs.length ? html`: ${gs.map(g => g.title).join(', ')}` : ''}</li>`)}</ul></section>
+        <ul class="lp-list">${skills.map(([h, gs]) => html`<li><a href="${lp(req, `/learn/${h.slug}`)}"><span aria-hidden="true">${ico(h.emoji, { size: 20 })}</span> ${t(`learn.hubs.${h.key}.name`)}</a>${gs.length ? html`: ${gs.map(g => g.title).join(', ')}` : ''}</li>`)}</ul></section>
       ${together.length ? html`<section class="panel" id="together" aria-labelledby="together-h">${el(t, 'h2', 'learn.ages.together.h', {}, ' id="together-h"')}${el(t, 'p', 'learn.ages.together.p', { count: together.length, games: listOf(req, 'learn.ages.together.p', together.map(g => g.title)) })}</section>` : ''}
       <section class="panel" id="safe" aria-labelledby="safe-h">${el(t, 'h2', 'learn.ages.safe.h', {}, ' id="safe-h"')}${el(t, 'p', 'learn.ages.safe.p', { href: lp(req, '/parents') })}</section>
     </div>
     ${faq.markup}
     ${inClassLine(req)}
     <section class="lp-sec" aria-labelledby="more-h">${el(t, 'h2', 'learn.ages.moreHeading', {}, ' id="more-h"')}
-      <ul class="chips lp-more">${AGES.filter(a => a !== age).map(a => html`<li><a class="chip" href="${lp(req, `/learn/${a.slug}`)}"><span aria-hidden="true">${a.emoji}</span>${t(`learn.ages.${a.key}.name`)}</a></li>`)}
+      <ul class="chips lp-more">${AGES.filter(a => a !== age).map(a => html`<li><a class="chip" href="${lp(req, `/learn/${a.slug}`)}"><span aria-hidden="true">${ico(a.emoji, { size: 18 })}</span>${t(`learn.ages.${a.key}.name`)}</a></li>`)}
         <li><a class="chip" href="${lp(req, '/parents')}">${ico('👪', { size: 18 })}${t('learn.parentsLink')}</a></li></ul>
     </section>
   </div>`;

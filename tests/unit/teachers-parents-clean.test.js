@@ -54,7 +54,7 @@ test('/teachers: the removed sections are gone; the new tools lead, with real sc
   assert.match(after, /^<section class="lp-sec tt" id="tools"/, 'the tools come straight after the hero');
   const tools = /<section class="lp-sec tt" id="tools"[\s\S]*?<\/section>/.exec(m)[0];
   const shots = [...tools.matchAll(/<img src="\/img\/how\/([\w-]+)-d-1024\.webp"[^>]*alt="([^"]+)"/g)].map(x => [x[1], x[2]]);
-  assert.deepEqual(shots.map(x => x[0]), ['tools-board', 'tools-room', 'dash-teacher']);
+  assert.deepEqual(shots.map(x => x[0]), ['tools-board', 'tools-live', 'dash-teacher']);
   assert.ok(shots.every(([, alt]) => alt.length > 40), 'each screen has real alt text');
   assert.match(tools, /Math manipulatives with Oomba[\s\S]*Live manipulatives[\s\S]*Classroom Dashboard/);
   assert.match(tools, /href="#see-it">Watch the one-minute video/, 'a visitor goes to the video');
@@ -81,7 +81,7 @@ test('/teachers, school staff: each tool card opens the real page', async () => 
 test('/parents: no kicker, no game list, no "Pick by subject", no "free" in the hero or the title; four panels, none alone', async () => {
   const s = await get('/parents');
   const m = mainOf(s);
-  for (const gone of [/class="lp-kicker"/, /id="play"/, /id="subjects"/, /class="lp-games"/, /Pick by subject/, /Free to play/, /start free<\/a>/i, /— free/]) assert.doesNotMatch(m, gone, String(gone));
+  for (const gone of [/class="lp-kicker"/, /id="play"/, /id="subjects"/, /class="lp-games"/, /Pick by subject/, /Free to play/, /start free<\/a>/i, /\u2014 free/]) assert.doesNotMatch(m, gone, String(gone));
   assert.doesNotMatch(heroOf(m), /\bfree\b/i, 'no "free" in the hero');
   assert.doesNotMatch(/<title>([^<]*)<\/title>/.exec(s)[1], /free/i);
   const cols = /<div class="lp-cols">([\s\S]*?)<\/div>\s*<section class="panel" id="private"/.exec(m)[1];
