@@ -1,8 +1,14 @@
-// The site's icons (docs/decisions.md "Icons: Fluent Emoji 3D"): Microsoft's Fluent Emoji (MIT; public/icons/fluent/
-// LICENSE.txt), 3D at 28 px and up, Flat below, and the manipulatives' own drawn icons (public/icons/tools/). One map from
-// the emoji the code used to write to its files, and one way to draw an icon, shared by the server (server/views/icon.js)
-// and the pages. An emoji that isn't here stays as it was (avatars, game covers, anything people wrote: never icons).
-// Built by scripts/icons/build_fluent.py.
+// The site's icons (docs/decisions.md "Icons: Oomba geometric for controls, Fluent 3D for big spots"). Two sets: our own
+// Oomba icons (public/icons/oomba/, drawn by scripts/icons/oomba-art.mjs) for everything below 40 px (the nav, the tab bar,
+// menus, buttons, tabs, chips, small inline icons), and Microsoft's Fluent Emoji 3D (MIT; public/icons/fluent/LICENSE.txt)
+// for the big pictures, 40 px and up (tool cards, page headings, empty states, rewards). Content-like emoji (animals, food,
+// weather, characters, faces) have no Oomba drawing and stay Fluent at every size, as before: 3D at 28 px and up, Flat
+// below. The manipulatives keep their own drawn icons (public/icons/tools/). One map from the emoji the code used to write
+// to its files, and one way to draw an icon, shared by the server (server/views/icon.js) and the pages. An emoji that
+// isn't here stays as it was (avatars, game covers, anything people wrote: never icons).
+// FLUENT is built by scripts/icons/build_fluent.py, OOMBA by scripts/icons/build_oomba.mjs.
+import { OOMBA, OOMBA_V } from './icons-oomba.js';
+export { OOMBA };
 
 /** emoji -> [file name, has a 3D picture] */
 export const FLUENT = {
@@ -270,14 +276,22 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const entry = e => FLUENT[e] || FLUENT[String(e || '').replace(/\uFE0F/g, '')] || FLUENT[`${String(e || '')}\uFE0F`] || null;
 /** Is there an icon for this emoji? */
 export const hasIcon = e => !!entry(e);
+/** Is this emoji drawn as an Oomba icon below 40 px? -> the Oomba icon's name, else null. */
+export const oombaIcon = e => { const x = entry(e); return (x && OOMBA[x[0]]) || null; };
 /**
- * An icon as HTML: an <img> with its width and height. size (CSS px): 28 and up draws the 3D picture (WebP, 1x and 2x),
- * smaller the Flat one (SVG). label: what it says when it stands alone (else alt="" and aria-hidden: decorative). lazy:
- * below the fold. cls: extra classes. An emoji with no icon comes back as the emoji itself (escaped).
+ * An icon as HTML. size (CSS px): below 40 the Oomba icon, an inline <svg> that draws public/icons/oomba/<name>.svg (its
+ * ink follows the text color); 40 and up the Fluent 3D picture (WebP, 1x and 2x). An emoji with no Oomba icon, or no 3D
+ * picture at 40 and up, draws as before: 3D at 28 px and up, Flat below. data-fx names the Fluent picture it stands for.
+ * label: what it says when it stands alone (else decorative: alt="" or aria-hidden). lazy: below the fold (pictures).
+ * cls: extra classes. An emoji with no icon comes back as the emoji itself (escaped).
  */
 export function iconHtml(e, { size = 20, label = '', lazy = false, cls = '' } = {}) {
   const x = entry(e); if (!x) return esc(e);
-  const [name, has3d] = x, big = size >= 28 && has3d;
+  const [name, has3d] = x, oo = OOMBA[name];
+  if (oo && !(size >= 40 && has3d)) {
+    return `<svg class="fx fx-oo${cls ? ` ${esc(cls)}` : ''}" data-fx="${name}" viewBox="0 0 24 24" width="${size}" height="${size}"${label ? ` role="img" aria-label="${esc(label)}"` : ' aria-hidden="true"'} focusable="false"><use href="/icons/oomba/${oo}.svg?v=${OOMBA_V}#i"/></svg>`;
+  }
+  const big = size >= 28 && has3d;
   const src = big ? `/icons/fluent/3d/${name}-64.webp` : `/icons/fluent/flat/${name}.svg`;
   return `<img class="fx ${big ? 'fx-3d' : 'fx-flat'}${cls ? ` ${esc(cls)}` : ''}" src="${src}"${big ? ` srcset="/icons/fluent/3d/${name}-64.webp 1x, /icons/fluent/3d/${name}-128.webp 2x"` : ''} width="${size}" height="${size}" alt="${esc(label)}"${label ? '' : ' aria-hidden="true"'}${lazy ? ' loading="lazy"' : ''} decoding="async">`;
 }

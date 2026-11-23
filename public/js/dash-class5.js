@@ -25,7 +25,9 @@ const empty = (body, text) => { const p = el('p', 'dw-empty dw5-empty', text); b
 
 // ---------------------------------------------------------------- video (teacher and projector only)
 export const PASS_ICON = { bathroom: '🚻', water: '🚰', nurse: '🩹', office: '🏫', library: '📚' };
-export const REASON_ICON = { kind: '💛', helpful: '🤝', teamwork: '🧩', effort: '💪', listening: '👂', responsible: '✅', brave: '🦁', creative: '🎨' };
+/** The reasons for a point, in the picker's order (services/dash.js POINT_REASONS, the same keys), and their icons. */
+export const REASON_ICON = { leadership: '🧭', teamwork: '🧩', focus: '🎯', kind: '💛', example: '🌟', effort: '💪', participation: '🙋', helpful: '🤝',
+  listening: '👂', responsible: '✅', brave: '🦁', creative: '🎨' };
 export const MOOD_ICON = ['😄', '🙂', '😐', '😕', '😢'];
 export const MOOD_KEYS = ['great', 'good', 'okay', 'meh', 'sad'];
 
@@ -452,44 +454,74 @@ function jobs(body, s, ctx) {
 }
 
 // ---------------------------------------------------------------- points for each student (the scoreboard, "Students")
+// docs/decisions.md "Dashboard points: reasons, whole-class points, the student's view and Google Classroom": a tap on a
+// student (or Whole class) opens a short grid of reasons, one tap gives the point. The class's own points are their own
+// tally, shown big (the projector too). The teacher's list is in name order, never ranked; the Recent sheet lists the
+// latest awards. A student sees only their own points and the class's.
+/** "Tue, Nov 22" in the page's language and the school's zone. */
+export const awardDay = (at, intl, tz) => { try { return new Intl.DateTimeFormat(intl || undefined, { weekday: 'short', month: 'short', day: 'numeric', ...(tz ? { timeZone: tz } : {}) }).format(new Date(at)); } catch { return new Date(at).toDateString(); } };
+/** The calm line for what happened in Google Classroom after a point (the point itself is always saved). */
+export const gcLine = (W, g) => (!g ? '' : g.pending ? W.gcPending : g.ok ? W.gcPosted : g.code === 'notOnClassroom' ? W.gcNotOnClassroom
+  : g.code === 'tooManyAnnouncements' ? W.gcTooMany : ['reconnect', 'needsScope', 'notConnected'].includes(g.code) ? W.gcReconnect : W.gcFailed);
 export function points(body, s, ctx) {
   const W = ctx.type.words;
   body.classList.add('dw-points', 'dw5');
   const reasonWord = r => W[`r_${r}`] || r;
-  const REASONS = Object.keys(REASON_ICON);
+  const reasonFor = r => W[`f_${r}`] || reasonWord(r);
+  const REASONS = Object.keys(REASON_ICON).filter(r => W[`r_${r}`]);
+  const chips = (ul, r) => { ul.textContent = ''; for (const k of REASONS) if (r && r[k]) { const li = el('li', 'dw5-chip'); li.append(icon(REASON_ICON[k]), el('span', null, `${reasonWord(k)} ${r[k]}`)); ul.appendChild(li); } };
   if (!ctx.teacher) {
-    // A student: their own points and the class's total. Never anyone else's.
+    // A student: their own points and the class's. Never anyone else's.
     const me = el('div', 'dw5-mine');
     const lab = el('span', 'dw5-minelab', W.mine), n = el('b', 'dw5-big');
     const why = el('ul', 'dw5-why');
+    const cls = el('p', 'dw5-classtot dw5-clspts');
     const tot = el('p', 'dw5-classtot');
     me.append(lab, n);
-    body.append(me, why, tot);
+    body.append(me, why, cls, tot);
     const draw = live => {
       const p = ((live || ctx.live()).points) || { mine: 0, r: {}, total: 0 };
       n.textContent = String(p.mine || 0);
-      why.textContent = '';
-      for (const r of REASONS) if (p.r && p.r[r]) { const li = el('li', 'dw5-chip'); li.append(icon(REASON_ICON[r]), el('span', null, `${reasonWord(r)} ${p.r[r]}`)); why.appendChild(li); }
+      chips(why, p.r);
+      cls.textContent = ''; cls.append(icon('🎉'), el('span', null, fill(W.classPoints, { n: (p.cls && p.cls.n) || 0 })));
       tot.textContent = fill(W.classTotal, { n: p.total || 0 });
     };
     draw();
     return { live: draw };
   }
   const top = el('div', 'dw5-ptop');
-  const total = el('p', 'dw5-classtot dw5-classbig');
-  top.appendChild(total);
+  const clsBox = el('div', 'dw5-clsbox');
+  const clsLine = el('p', 'dw5-classtot dw5-classbig dw5-clsline');
+  const clsWhy = el('ul', 'dw5-why dw5-clswhy');
+  const total = el('p', 'dw5-classtot dw5-stutot');
+  clsBox.append(clsLine, clsWhy, total);
+  top.appendChild(clsBox);
   const list = el('ul', 'dw5-plist dw-scroll dw-private');
   const hidden = el('p', 'dw-public small muted', W.hidden);
   body.append(top, list, hidden);
   let last = null, sig = '';
+  const cur = () => (ctx.live().points) || { list: [], total: 0, cls: { n: 0, r: {} }, recent: [], gc: { show: false } };
+  const done = (r, msg) => {
+    ctx.live().points = r; sig = ''; draw();
+    const g = gcLine(W, r.gcPost);
+    ctx.say(g ? `${msg} ${g}` : msg);
+    if (r.gcPost && !r.gcPost.ok) ctx.toast?.(g);
+  };
   const give = (user, name) => {
-    const sh = ctx.sheet({ title: user === 'all' ? W.awardAll : fill(W.award, { name }), content: `<p class="small muted">${ctx.esc(W.pick)}</p><div class="dw5-reasons" role="group" aria-label="${ctx.esc(W.reason)}">${REASONS.map(r => `<button class="btn dw5-reason" type="button" data-r="${r}"><span aria-hidden="true">${REASON_ICON[r]}</span> <span>${ctx.esc(reasonWord(r))}</span></button>`).join('')}</div>` });
+    const gc = cur().gc || { show: false };
+    const gcBox = !gc.show ? '' : `<div class="dw5-gc"><label class="dw5-gcl"><input type="checkbox" class="dw5-gcon"${gc.on && gc.ready ? ' checked' : ''}${gc.ready ? '' : ' disabled'}> <span>${ctx.esc(W.gcPost)}</span></label>
+      <p class="small muted">${ctx.esc(W.gcPostHint)}</p>${gc.ready ? '' : `<p class="small"><a href="${ctx.esc(gc.allow)}">${ctx.esc(W.gcAllow)}</a></p>`}</div>`;
+    const sh = ctx.sheet({ title: user === 'class' ? W.classPick : fill(W.award, { name }), content: `<p class="small muted">${ctx.esc(W.pick)}</p><div class="dw5-reasons" role="group" aria-label="${ctx.esc(W.reason)}">${REASONS.map(r => `<button class="btn dw5-reason" type="button" data-r="${r}"><span class="dw5-ric" aria-hidden="true">${REASON_ICON[r]}</span> <span>${ctx.esc(reasonWord(r))}</span></button>`).join('')}</div>${gcBox}` });
     sh.el.querySelector('.dw5-reason')?.focus();
+    sh.el.querySelector('.dw5-gcon')?.addEventListener('change', async e => {
+      const r = await ctx.act('/points', { action: 'gc', on: e.target.checked });
+      if (r) { ctx.live().points = r; ctx.say(e.target.checked ? W.gcOn : W.gcOff); }
+    });
     sh.el.addEventListener('click', async e => {
       const b = e.target.closest('[data-r]'); if (!b) return;
       sh.close();
       const r = await ctx.act('/points', { action: 'award', user, reason: b.dataset.r });
-      if (r) { last = { user, reason: b.dataset.r }; ctx.live().points = r; sig = ''; draw(); ctx.say(fill(W.given, { name: user === 'all' ? W.everyone : name, reason: reasonWord(b.dataset.r) })); }
+      if (r) { last = { user, reason: b.dataset.r }; done(r, user === 'class' ? fill(W.classGiven, { reason: reasonFor(b.dataset.r) }) : fill(W.given, { name, reason: reasonWord(b.dataset.r) })); }
     });
   };
   const draw = live => {
@@ -498,38 +530,52 @@ export function points(body, s, ctx) {
     const got = (live || ctx.live()).points;
     const p = got || { list: [], total: 0 };
     const s2 = got ? JSON.stringify(p) : 'loading'; if (s2 === sig) return; sig = s2;
-    total.textContent = '';
-    if (got) total.append(icon('🏆'), el('span', null, fill(W.classTotal, { n: p.total || 0 })));
+    clsLine.textContent = ''; total.textContent = '';
+    if (got) {
+      clsLine.append(icon('🎉'), el('span', null, fill(W.classPoints, { n: (p.cls && p.cls.n) || 0 })));
+      total.append(icon('🏆'), el('span', null, fill(W.classTotal, { n: p.total || 0 })));
+    }
+    chips(clsWhy, p.cls && p.cls.r);
     list.textContent = '';
     if (!got) list.appendChild(el('li', 'dw-empty dw-loading', W.loading));
     else if (!p.list.length) list.appendChild(el('li', 'dw-empty', W.nobody));
     for (const k of p.list) {
       const li = el('li', 'dw5-prow');
-      li.append(el('span', 'dw5-name dw5-iso', k.name), el('b', 'dw5-pn', String(k.n)));
-      const plus = btn('+1', 'btn btn-sm dw5-plus', fill(W.award, { name: k.name }));
-      if (ctx.editing) plus.disabled = true;
-      plus.addEventListener('click', () => give(k.id, k.name));
-      li.appendChild(plus);
+      // The whole row is the button: a tap on a student opens the reasons.
+      const b = btn('', 'btn dw5-pbtn', fill(W.award, { name: k.name }));
+      b.append(el('span', 'dw5-name dw5-iso', k.name), el('b', 'dw5-pn', String(k.n)), el('span', 'dw5-plus', '+1'));
+      b.querySelectorAll('span,b').forEach(x => x.setAttribute('aria-hidden', 'true'));
+      if (ctx.editing) b.disabled = true;
+      b.addEventListener('click', () => give(k.id, k.name));
+      li.appendChild(b);
       list.appendChild(li);
     }
     allB.disabled = !p.list.length;
     undo.disabled = !last;
+    recentB.disabled = !got;
   };
+  // Three buttons fit the smallest scoreboard: Start again (rare, and it clears everything) is in the Recent sheet.
   const foot = el('div', 'dw-row dw-foot dw-private');
-  const allB = ibtn('🎉', W.awardAll, 'btn btn-sm btn-primary'), undo = ibtn('↶', W.undo, 'btn btn-sm'), reset = ibtn('↺', W.resetAll, 'btn btn-sm');
-  foot.append(allB, undo, reset);
+  const allB = ibtn('🎉', W.awardAll, 'btn btn-sm btn-primary'), undo = ibtn('↶', W.undo, 'btn btn-sm'), recentB = ibtn('🕘', W.recent, 'btn btn-sm');
+  foot.append(allB, undo, recentB);
   if (!ctx.editing) body.appendChild(foot);
-  allB.addEventListener('click', () => give('all', W.everyone));
+  allB.addEventListener('click', () => give('class', W.everyone));
   undo.addEventListener('click', async () => {
     if (!last) return;
     const r = await ctx.act('/points', { action: 'undo', ...last });
-    if (r) { last = null; ctx.live().points = r; sig = ''; draw(); ctx.say(W.undone); }
+    if (r) { last = null; done({ ...r, gcPost: null }, W.undone); }
   });
-  reset.addEventListener('click', async () => {
-    // the site's own question box (app.js ask, passed in as ctx.ask: this file is also loaded by the Node tests)
-    if (!(await ctx.ask({ text: W.resetConfirm, ok: W.resetAll, danger: true }))) return;
-    const r = await ctx.act('/points', { action: 'reset' });
-    if (r) { last = null; ctx.live().points = r; sig = ''; draw(); }
+  recentB.addEventListener('click', () => {
+    const p = cur();
+    const rows = (p.recent || []).map(a => `<li class="dw5-rrow"><span class="dw5-ric" aria-hidden="true">${REASON_ICON[a.reason] || '⭐'}</span><span class="dw5-rwhat">${a.user ? `<b class="dw5-iso">${ctx.esc(a.name || '')}</b> · ${ctx.esc(reasonWord(a.reason))}` : ctx.esc(fill(W.classGiven, { reason: reasonFor(a.reason) }))}</span><span class="small muted">${ctx.esc(awardDay(a.at, ctx.intl, ctx.tz))}${a.gc === 'posted' ? ' · 📣' : ''}</span></li>`).join('');
+    const sh = ctx.sheet({ title: W.recent, content: `${rows ? `<ul class="dw5-recent">${rows}</ul>` : `<p class="muted">${ctx.esc(W.recentNone)}</p>`}<div class="dw5-rfoot"><button class="btn btn-sm dw5-reset" type="button"><span aria-hidden="true">↺</span> <span>${ctx.esc(W.resetAll)}</span></button></div>` });
+    sh.el.querySelector('.dw5-reset').addEventListener('click', async () => {
+      // the site's own question box (app.js ask, passed in as ctx.ask: this file is also loaded by the Node tests)
+      if (!(await ctx.ask({ text: W.resetConfirm, ok: W.resetAll, danger: true }))) return;
+      sh.close();
+      const r = await ctx.act('/points', { action: 'reset' });
+      if (r) { last = null; ctx.live().points = r; sig = ''; draw(); }
+    });
   });
   draw();
   return { live: draw };

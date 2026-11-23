@@ -42,7 +42,8 @@
 // Stage 5 (docs/decisions.md "Classroom dashboards, stage 5"):
 //   POST /api/dash/:id/pass                   a student: ask for a pass (a fixed place), cancel, I'm back, dismiss
 //   POST /api/dash/:id/pass/teacher           the teacher: approve, decline, back, clear
-//   POST /api/dash/:id/points                 the teacher: one point (positive reasons only), undo one, reset
+//   POST /api/dash/:id/points                 the teacher: one point (positive reasons only) to a student or the whole
+//                                             class, undo one, reset, and the class's Google Classroom switch (gc)
 //   POST /api/dash/:id/mood                   a student taps a face (their own, today)
 //   GET  /api/dash/:id/mood/names             the teacher: who chose which face (their own class)
 //   GET  /api/dash/:id/site/:wid              the teacher: may this site window's address be shown in a frame?
@@ -474,10 +475,18 @@ router.post('/api/dash/:id/pass/teacher', requireUser, rateLimit('dash-pass-teac
   const b = body(req);
   send(req, res, D.passTeacher(req.user, x.c, { action: String(b.action || ''), pass: b.pass }));
 });
-router.post('/api/dash/:id/points', requireUser, rateLimit('dash-points', 1200, 3600e3), (req, res) => {
+router.post('/api/dash/:id/points', requireUser, rateLimit('dash-points', 1200, 3600e3), async (req, res) => {
   const x = load(req, res, { teacher: true }); if (!x) return;
-  const b = body(req);
-  send(req, res, D.pointsAction(req.user, x.c, { action: String(b.action || ''), user: b.user, reason: String(b.reason || '') }));
+  const b = body(req), action = String(b.action || '');
+  // "Also post to Google Classroom" for this class (docs/decisions.md "Dashboard points: reasons, whole-class points,
+  // the student's view and Google Classroom").
+  if (action === 'gc') return send(req, res, D.setPointsGc(req.user, x.c, b.on === true));
+  const r = D.pointsAction(req.user, x.c, { action, user: b.user, reason: String(b.reason || '') });
+  if (r.error) return send(req, res, r);
+  // The point is saved first; Google Classroom never holds it up or undoes it (a calm line says what happened there).
+  const { award, ...view } = r;
+  const gcPost = action === 'award' ? await D.postPoint(req.user, x.c, award, req.t) : action === 'undo' ? await D.unpostPoint(req.user, x.c, award) : null;
+  send(req, res, { ...(action === 'award' || action === 'undo' ? D.pointsAll(x.c, req.user) : view), ...(gcPost ? { gcPost } : {}) });
 });
 router.post('/api/dash/:id/mood', requireUser, rateLimit('dash-mood', 120, 3600e3), (req, res) => {
   const x = load(req, res, { student: true }); if (!x) return;

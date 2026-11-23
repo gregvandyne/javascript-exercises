@@ -295,7 +295,7 @@ test('a Builder game made live-ready in the Studio (mock Builder), shared with t
   await expect(kid.locator('#st-livebtn[data-act="make-live"]')).toHaveText('Make it a live game');
   await kid.click('#st-livebtn[data-act="make-live"]');
   await expect(kid.locator('#st-live-cap')).toContainText('Publish it so a teacher or grown-up can host it live', { timeout: 60_000 });   // a kid never hosts
-  await expect(kid.locator('#st-livebtn')).toHaveText('Live game'); await expect(kid.locator('#st-livebtn img.fx[src*="/satellite-antenna"]')).toHaveCount(1);
+  await expect(kid.locator('#st-livebtn')).toHaveText('Live game'); await expect(kid.locator('#st-livebtn :is(img.fx[src*="/satellite-antenna"], svg.fx[data-fx*="satellite-antenna"])')).toHaveCount(1);
   await expect(kid.locator('#st-acts [data-act="host-live"]')).toHaveCount(0);
   await kid.click('#st-publish');
   const sheet = kid.locator('.sheet').filter({ has: kid.locator('#vis-go') });

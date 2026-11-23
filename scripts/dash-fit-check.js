@@ -334,7 +334,7 @@ const schoolTime = hhmm => {
   return t;
 };
 const wantSizes = (process.env.SIZES || '') ? process.env.SIZES.split(',') : null;
-const RUN = wantSizes ? LAYOUTS.filter(l => wantSizes.includes(l.key) || wantSizes.includes(l.key.split('-')[0])) : LAYOUTS;
+const RUN = wantSizes ? LAYOUTS.filter(l => wantSizes.includes(l.key) || wantSizes.includes(l.key.split('-')[0]) || (wantSizes.includes('stage5') && l.stage5)) : LAYOUTS;
 D.updateLayout(T, C, first.id, { name: LAYOUTS[0].key, widgets: LAYOUTS[0].widgets });
 D.useLayout(T, C, first.id);
 D.timerAction(T, C, 'wtimer', { action: 'start' }, Date.now() - 65e3);
@@ -354,7 +354,10 @@ function seed5() {
   const t0 = Date.now(), day = D.dayOf(C);
   const pass = (k, place, state, ago) => q.run('INSERT INTO dash_passes(id, class_id, user_id, place, day, state, asked_at, out_at) VALUES (?,?,?,?,?,?,?,?)', `p${k.id.slice(0, 8)}`, C.id, k.id, place, day, state, t0 - ago - 5e3, state === 'out' ? t0 - ago : null);
   pass(kids[0], 'nurse', 'out', 11 * 60e3); pass(kids[1], 'bathroom', 'out', 95e3); pass(kids[2], 'library', 'asked', 30e3); pass(kids[3], 'office', 'asked', 20e3); pass(kids[4], 'water', 'asked', 10e3);
-  kids.forEach((k, i) => { for (let j = 0; j <= i % 4; j++) D.pointsAction(T, C, { action: 'award', user: k.id, reason: D.POINT_REASONS[(i + j) % 8] }); });
+  kids.forEach((k, i) => { for (let j = 0; j <= i % 4; j++) D.pointsAction(T, C, { action: 'award', user: k.id, reason: D.POINT_REASONS[(i + j) % D.POINT_REASONS.length] }); });
+  // Whole-class points with the longest reasons (their chips sit over the list).
+  q.run('DELETE FROM dash_class_points WHERE class_id=?', C.id);
+  for (const r of ['example', 'participation', 'brave', 'leadership']) D.pointsAction(T, C, { action: 'award', user: 'class', reason: r });
   kids.slice(0, 8).forEach((k, i) => D.setMood(k, C, i % 5));
 }
 await new Promise(r => setTimeout(r, 30));

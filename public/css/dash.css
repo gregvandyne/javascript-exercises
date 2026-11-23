@@ -199,7 +199,7 @@ body.dash-page{padding-bottom:0}
 .dash-eyes::backdrop{background:var(--brand-ink)}
 .dash-eyescard{display:flex;flex-direction:column;align-items:center;gap:var(--s3)}
 .dash-eyesmark{font-size:clamp(4rem,14vw,10rem);line-height:1}
-.dash-eyesmark img.fx{width:clamp(4rem,14vw,10rem);height:auto}
+.dash-eyesmark .fx{width:clamp(4rem,14vw,10rem);height:auto}
 .dash-eyes h2{font-size:clamp(2.6rem,9vw,7rem);margin:0;letter-spacing:-.02em}
 .dash-eyes p{font-size:clamp(1.1rem,3vw,2rem);margin:0;font-weight:600}
 .dash-eyes:focus{outline:none}
@@ -1668,17 +1668,38 @@ input.dt-orgtitle::placeholder{color:var(--muted)}
 .dash-projector .dw-points .dw5-classbig{flex-direction:column;font-size:clamp(1.4rem,min(22cqh,10cqi),4rem);margin:auto;text-align:center}
 .dash-projector .dw-points .dw5-ptop{flex:1 1 auto}
 .dw5-plist{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,17em),1fr));align-content:start;gap:6px}
-.dw5-prow{display:flex;align-items:center;gap:var(--s2);padding:4px 4px 4px 12px;border-radius:var(--r-sm);background:var(--card-2)}
-.dw5-prow .dw5-name{flex:1 1 auto;min-width:0}
+.dw5-prow{display:flex;border-radius:var(--r-sm)}
+.dw5-pbtn.btn{flex:1 1 auto;min-width:0;min-height:48px;justify-content:flex-start;gap:var(--s2);padding:4px 6px 4px 12px;border-radius:var(--r-sm);background:var(--card-2);box-shadow:none;font-weight:700}
+.dw5-pbtn .dw5-name{flex:1 1 auto;min-width:0;text-align:start;white-space:normal;overflow-wrap:anywhere}
 .dw5-pn{min-width:1.6em;text-align:end;font-variant-numeric:tabular-nums;font-size:1.2rem}
-.dw5-plus{min-width:52px;padding:0 10px;font-weight:800;font-size:1rem;background:var(--accent-soft)!important}
+.dw5-plus{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:36px;padding:0 8px;border-radius:999px;font-weight:800;font-size:1rem;background:var(--accent-soft);color:var(--accent-ink)}
+/* The teacher's screen: one line (the class's points, then every student's together); the projector: the class's points
+   big with their reasons (hidden when the box is short), then the students' total. */
+.dw5-clsbox{display:flex;flex-wrap:wrap;align-items:center;column-gap:var(--s3);row-gap:2px;min-width:0;flex:1 1 auto}
+.dw5-clsbox .dw5-why{justify-content:flex-start;display:none}
+.dw-points .dw5-clsline{font-size:clamp(.95rem,min(8cqh,4.6cqi),1.4rem)}
+.dw5-stutot{font-size:clamp(.85rem,min(6cqh,3.8cqi),1.05rem)}
+.dash-projector .dw-points .dw5-clsbox{flex-direction:column;flex-wrap:nowrap;align-items:center;text-align:center;justify-content:center}
+.dash-projector .dw-points .dw5-clsbox .dw5-why:not(:empty){display:flex;justify-content:center}
+.dash-projector .dw-points .dw5-clsline{font-size:clamp(1.3rem,min(18cqh,8cqi),3.6rem)}
+@container (max-height:300px){.dash-projector .dw-points .dw5-clsbox .dw5-why:not(:empty){display:none}}
+.dw5-clspts{justify-content:center}
+.dw5-ric{font-size:1.5rem;line-height:1}
+.dw5-gc{margin-top:var(--s3);padding:12px 14px;border-radius:var(--r-sm);background:var(--card-2)}
+.dw5-gc p{margin:4px 0 0}
+.dw5-gcl{display:flex;align-items:center;gap:10px;font-weight:700;min-height:44px}
+.dw5-gcl input{width:22px;height:22px;accent-color:var(--accent)}
+.dw5-recent{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.dw5-rrow{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--r-sm);background:var(--card-2)}
+.dw5-rwhat{flex:1 1 auto;min-width:0}
+.dw5-rfoot{display:flex;justify-content:flex-end;margin-top:var(--s3)}
 .dw5-mine{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;flex:1 1 auto;justify-content:safe center}
 .dw5-minelab{font-weight:800;color:var(--accent-ink);font-size:clamp(1rem,min(9cqh,5cqi),1.6rem)}
-.dw5-big{font-family:var(--font);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1.05;font-size:clamp(2rem,min(32cqh,20cqi),7rem)}
+.dw5-big{font-family:var(--font);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1.05;font-size:clamp(1.8rem,min(26cqh,20cqi),7rem)}
 .dw5-why{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;flex:none}
 .dw5-chip{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-weight:700;font-size:.9rem}
 .dw-points>.dw5-classtot{justify-content:center;flex:none}
-.dw5-reasons{display:grid;grid-template-columns:repeat(auto-fill,minmax(10em,1fr));gap:var(--s2);margin-top:var(--s2)}
+.dw5-reasons{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,9.5em),1fr));gap:var(--s2);margin-top:var(--s2)}
 .dw5-reason{min-height:56px;justify-content:flex-start;text-align:start;white-space:normal;gap:8px}
 /* mood check-in */
 .dw5-moodq{margin:0;flex:none;font-weight:800;font-size:clamp(1rem,min(9cqh,5cqi),1.7rem)}
@@ -2229,4 +2250,5 @@ button.dw5-clbox:focus-visible{outline:3px solid var(--focus);outline-offset:2px
 }
 [dir="rtl"] .dw-pdfprev,[dir="rtl"] .dw-pdfnext{transform:scaleX(-1)}
 /* Icons (public/js/icons.js) that stand in for a big emoji take the emoji's size: 1em of the box's own font size. */
-.dw-wicon img.fx,.dw-symicon img.fx,.dw5-bigic img.fx,.dw-noise-face img.fx,.dw-pickname img.fx{width:1em;height:1em}
+.dw-wicon .fx,.dw-symicon .fx,.dw5-bigic .fx,.dw-noise-face .fx,.dw-pickname .fx{width:1em;height:1em}
+.dw5-classbig .dw5-ic,.dw5-classbig .dw5-ic .fx{width:.8em;height:.8em}

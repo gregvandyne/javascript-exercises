@@ -9821,7 +9821,8 @@
         "settings": "自動同期を変更",
         "topic": "トピック名を変更",
         "removeLeft": "Classroom を抜けた生徒を外した",
-        "keepLeft": "Classroom を抜けた生徒を残した"
+        "keepLeft": "Classroom を抜けた生徒を残した",
+        "pointPost": "クラスダッシュボードのポイント"
       }
     },
     "errors": {
@@ -11201,7 +11202,7 @@
         },
         "reason": "理由",
         "award": "{name}に1ポイント",
-        "awardAll": "全員に1ポイント",
+        "awardAll": "クラス全員",
         "everyone": "全員",
         "undo": "取り消す",
         "undone": "さっきのポイントを取り消しました。",
@@ -11221,7 +11222,41 @@
         "r_listening": "よく聞く",
         "r_responsible": "責任感",
         "r_brave": "ちょうせん",
-        "r_creative": "いいアイデア"
+        "r_creative": "いいアイデア",
+        "classPoints": "クラス全員のポイント：{n}",
+        "classGiven": "クラス全員が{reason}で1ポイントもらいました",
+        "classPick": "クラス全員に1ポイント",
+        "recent": "さいきん",
+        "recentClass": "クラスのさいきんのポイント",
+        "recentNone": "まだポイントはありません。",
+        "gcPost": "Google Classroom にも投稿する",
+        "gcPostHint": "クラス全員のポイントはクラスのストリームに、ひとりのポイントはその子だけに届きます。名前や順位はのせません。",
+        "gcAllow": "Google Classroom への投稿を許可する",
+        "gcPosted": "Google Classroom に投稿しました。",
+        "gcPending": "Google Classroom に投稿しています…",
+        "gcFailed": "いまは Google Classroom に投稿できませんでした。ポイントは保存されています。",
+        "gcNotOnClassroom": "投稿していません：この子は Google Classroom とつながっていません。ポイントは保存されています。",
+        "gcTooMany": "Google Classroom への投稿はしばらくお休みです（1時間に10件まで）。ポイントは保存されています。",
+        "gcReconnect": "投稿するには Google Classroom をもう一度つないでください。ポイントは保存されています。",
+        "gcOn": "ポイントは Google Classroom にも届きます。",
+        "gcOff": "ポイントは Oomba の中だけです。",
+        "onlyYou": "あなたのポイントを見られるのは、あなたと先生だけです。",
+        "r_leadership": "リーダーシップ",
+        "r_focus": "しゅうちゅう",
+        "r_example": "よいお手本",
+        "r_participation": "さんか",
+        "f_leadership": "リーダーシップ",
+        "f_teamwork": "チームワーク",
+        "f_focus": "しゅうちゅう",
+        "f_kind": "やさしさ",
+        "f_example": "よいお手本",
+        "f_effort": "がんばり",
+        "f_participation": "さんか",
+        "f_helpful": "お手伝い",
+        "f_listening": "よく聞くこと",
+        "f_responsible": "責任感",
+        "f_brave": "ちょうせん",
+        "f_creative": "いいアイデア"
       },
       "fractions": {
         "name": "分数",
@@ -12657,6 +12692,12 @@
         "red": "しずかにしよう",
         "yellow": "小さな声で",
         "green": "ペアで話そう"
+      }
+    },
+    "points": {
+      "gc": {
+        "class": "わたしたちのクラスが{reason}で1ポイントもらいました！🎉",
+        "student": "{reason}で1ポイントもらいました！🌟"
       }
     }
   },

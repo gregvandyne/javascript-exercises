@@ -1255,6 +1255,21 @@ export const MIGRATIONS = [
       text TEXT, bytes BLOB, used_at INTEGER, created_at INTEGER NOT NULL);
     CREATE INDEX IF NOT EXISTS idx_oomba_files_chat ON oomba_files(chat_id);
     CREATE INDEX IF NOT EXISTS idx_oomba_files_owner ON oomba_files(owner_id, created_at);`],
+  // Dashboard points: reasons, whole-class points, the student's view and Google Classroom (services/dash.js;
+  // docs/decisions.md "Dashboard points: reasons, whole-class points, the student's view and Google Classroom").
+  // dash_point_awards: one row per point given (who gave it, the student or NULL for the whole class, the reason, when;
+  // gc: '' not posted, 'posted' or 'failed', gc_id the Classroom announcement's id so Undo can take it back), for the
+  // Recent lists and Undo. At most a year and 2,000 rows per class. dash_class_points: the whole class's points per
+  // reason (one point for the class is one row's count, never one per student). dash_class.points_gc: "Also post to
+  // Google Classroom" for this class (off unless a teacher turns it on).
+  ['0109_dash_point_awards', `
+    CREATE TABLE IF NOT EXISTS dash_point_awards (id TEXT PRIMARY KEY, class_id TEXT NOT NULL, user_id TEXT, reason TEXT NOT NULL, by_id TEXT,
+      at INTEGER NOT NULL, gc TEXT NOT NULL DEFAULT '', gc_id TEXT);
+    CREATE INDEX IF NOT EXISTS idx_dash_point_awards_class ON dash_point_awards(class_id, at);
+    CREATE INDEX IF NOT EXISTS idx_dash_point_awards_user ON dash_point_awards(user_id);
+    CREATE TABLE IF NOT EXISTS dash_class_points (class_id TEXT NOT NULL, reason TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, at INTEGER NOT NULL,
+      PRIMARY KEY (class_id, reason));
+    ALTER TABLE dash_class ADD COLUMN points_gc INTEGER NOT NULL DEFAULT 0;`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

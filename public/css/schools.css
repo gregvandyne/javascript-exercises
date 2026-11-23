@@ -1190,3 +1190,14 @@ details.coursepanel>summary>.small{flex:1 1 auto}
   .pf-pane>h3{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .assign-game:has(#pf-mode-grade:checked) #pf-pane-grade,.assign-game:has(#pf-mode-practice:checked) #pf-pane-practice{display:block}
 }
+/* "My points" on a student's class page (routes/schools.js myPointsPanel): their own points and the class's, calm. */
+.mypoints .mp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,16em),1fr));gap:var(--s4)}
+.mypoints .mp-col{min-width:0;padding:var(--s3) var(--s4);border-radius:var(--r-sm,14px);background:var(--card-2)}
+.mypoints .mp-big{margin:0;font-family:var(--font);font-weight:800;font-size:2.6rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.mypoints .mp-clsline{margin:0;display:flex;align-items:center;gap:8px;font-size:1.15rem}
+.mypoints .mp-chips{display:flex;flex-wrap:wrap;gap:6px;margin:var(--s2) 0 0;padding:0}
+.mypoints .mp-chip{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-weight:700;font-size:.92rem}
+.mypoints .mp-h3{margin:var(--s3) 0 var(--s2);font-size:1rem}
+.mypoints .mp-list{display:flex;flex-direction:column;gap:6px;margin:0;padding:0}
+.mypoints .mp-list li{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.mypoints .mp-note{margin:var(--s3) 0 0;display:flex;align-items:center;gap:6px}

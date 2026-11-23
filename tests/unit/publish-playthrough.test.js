@@ -165,7 +165,7 @@ for (const [width, height] of [[390, 844], [1280, 800]]) {
     const line = page.locator('#st-safety .st-played');
     await line.waitFor();
     assert.equal((await line.textContent()).trim(), 'Played all the way through');
-    assert.equal(await line.locator('img.fx[src$="/check-mark-button.svg"]').count(), 1, 'the ✅ is the Fluent icon (no emoji in the chrome)');
+    assert.equal(await line.locator('.fx[data-fx="check-mark-button"]').count(), 1, 'the ✅ is the Oomba icon (no emoji in the chrome)');
     assert.match(await page.locator('#st-safety').textContent(), /Safety check passed for version 1\./);
     const m = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
     assert.ok(m.sw <= m.cw, 'no sideways scroll');
@@ -207,7 +207,7 @@ test('the Studio in Hebrew and Arabic: the line and the refusal read right to le
     assert.equal(await page.evaluate(() => document.documentElement.dir), 'rtl');
     const line = (await page.locator('#st-safety .st-played').textContent()).trim();
     assert.equal(line, tFor(lang)('js.studio.play.pass'));
-    assert.equal(await page.locator('#st-safety .st-played img.fx[src$="/check-mark-button.svg"]').count(), 1, 'the ✅ is the Fluent icon');
+    assert.equal(await page.locator('#st-safety .st-played .fx[data-fx="check-mark-button"]').count(), 1, 'the ✅ is the Oomba icon');
     await shot(page, `played-line-390-${lang}.png`);
     await ctx.close();
     version(g, GAME + `BROKEN ${lang}`);

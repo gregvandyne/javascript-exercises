@@ -38,6 +38,7 @@ import * as TL from '../services/teach-loop.js';
 import { teacherLoop } from '../views/teacher-loop.js';
 import { LOOP_CSS } from './teach-loop.js';
 import * as DASH from '../services/dash.js';
+import { REASON_ICON } from '../../public/js/dash-class5.js';
 import { emailInvitesPanel } from './staff-invites.js';
 import { companionSettings } from '../views/companion-settings.js';
 import { openCount as openEmailInvites } from '../services/staff-email-invites.js';
@@ -867,7 +868,7 @@ const CLASS_TABS = ['lessons', 'progress', 'students', 'settings'];
 function schoolLink(req, s) {
   if (s.archived_at) return s.name;
   if (S.canManageSchool(req.user, s.id)) return html`<a href="/school/${s.slug}">${s.name}</a>`;
-  return staffHere(req.user, s.id) ? html`<a href="/school/${s.slug}/invite" id="school-invite-link">${s.name} · ✉️ ${req.t('school.emailInvite.teacherLink')}</a>` : s.name;
+  return staffHere(req.user, s.id) ? html`<a href="/school/${s.slug}/invite" id="school-invite-link">${s.name} · ${ico('✉️', { size: 16 })} ${req.t('school.emailInvite.teacherLink')}</a>` : s.name;
 }
 /** Phones only (public/css/schools.css .classtiles; docs/decisions.md "Action tiles on the class page, on phones"): a
  *  2×2 grid of Host a live game, Class dashboard, Build new game and Find Oomba games, under the class header on every
@@ -904,7 +905,7 @@ export function classHeader(req, c, active) {
     ${chip || host || dash ? html`<div class="row classacts">${chip}${dash ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">${ico('🖥️', { size: 18 })} ${t('dash.entry.teacher')}</a>` : ''}${host ? html`<a class="btn btn-primary" href="/live?class=${c.id}">${ico('📡', { size: 18 })} ${t('live.entry.host')}</a>` : ''}</div>` : ''}</div>
   ${c.archived_at ? html`<div class="notice warn archbanner"><span>${ico('🗄️', { size: 18 })} ${t('school.class.archivedBanner')}</span><form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form></div>` : ''}
   ${classTiles(req, c, { host, dash })}
-  <nav class="tabs classtabs" aria-label="${c.name}">${CLASS_TABS.map(k => html`<a href="${href[k]}" ${k === active ? raw('aria-current="page"') : ''}><span aria-hidden="true">${icon[k]}</span> ${k === 'lessons' ? t('school.classTabs.games') : t(`school.classTabs.${k}`)}${badge[k] || ''}</a>`)}</nav>`;
+  <nav class="tabs classtabs" aria-label="${c.name}">${CLASS_TABS.map(k => html`<a href="${href[k]}" ${k === active ? raw('aria-current="page"') : ''}><span aria-hidden="true">${ico(icon[k], { size: 18 })}</span> ${k === 'lessons' ? t('school.classTabs.games') : t(`school.classTabs.${k}`)}${badge[k] || ''}</a>`)}</nav>`;
 }
 
 function requestsPanel(req, c, s, people) {
@@ -1081,11 +1082,31 @@ function studentClass(req, res, c) {
     <p class="muted">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</p></div>${DASH.isStudent(req.user, c) ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">${ico('🖥️', { size: 18 })} ${t('dash.entry.student')}</a>` : ''}${studentNotYou(req, S.classMember(c.id, req.user.id)?.role === 'student')}</div>
   ${classLiveBanner(req, c)}
   ${manipBanner(req, c)}
+  ${myPointsPanel(req, c)}
   ${studentLessonsPanel(req, c)}
   ${studentGamesPanel(req, c, teachers)}
   <div class="cols2"><section class="panel"><h2>${ico('🍎', { size: 28 })} ${t('school.class.teachers')}</h2><ul class="plain chips-list">${teachers.map(p => html`<li class="pp">${avatar(p, 28)} ${nameOf(p)}</li>`)}</ul></section>
   <section class="panel"><h2>${ico('👫', { size: 28 })} ${t('classes.classmates', { count: classmates.length })}</h2>${classmates.length ? html`<ul class="plain chips-list">${classmates.map(p => html`<li class="pp">${avatar(p, 28)} ${p.display_name}</li>`)}</ul>` : ''}</section></div>`;
   page(req, res, { title: c.name, active: 'classes', body, head: CSS, back: '/classes', backLabel: t('nav.classes'), scripts: liveOn() ? ['/js/class-live.js'] : [] });
+}
+
+/** "My points" on a student's class page (docs/decisions.md "Dashboard points: reasons, whole-class points, the
+ *  student's view and Google Classroom"): their own points by reason and their latest awards, and the whole class's
+ *  points and latest class awards. Never another student's name or points, never a ranking. Only once the class has
+ *  points at all (a class that doesn't use them sees nothing new). */
+export function myPointsPanel(req, c) {
+  if (!DASH.isStudent(req.user, c) || !DASH.hasPoints(c)) return '';
+  const t = req.t, f = req.fmt, p = DASH.pointsMine(c, req.user.id);
+  const tz = S.zoneOf(S.getSchool(c.school_id)) || DASH.FALLBACK_TZ;
+  const day = at => f.date(at, { weekday: 'short', month: 'short', day: 'numeric', timeZone: tz });
+  const word = r => t(`dash.w.score.r_${r}`), icon = r => REASON_ICON[r] || '⭐';
+  const chips = r => { const keys = DASH.POINT_REASONS.filter(k => r[k]); return keys.length ? html`<ul class="plain mp-chips">${keys.map(k => html`<li class="mp-chip">${ico(icon(k), { size: 18 })} ${word(k)} <b>${f.int(r[k])}</b></li>`)}</ul>` : ''; };
+  return html`<section class="panel mypoints" id="my-points" aria-labelledby="mp-h"><h2 id="mp-h">${ico('⭐', { size: 28 })} ${t('dash.w.score.mine')}</h2>
+    <div class="mp-cols"><div class="mp-col mp-me"><p class="mp-big" id="mp-mine"><b>${f.int(p.mine)}</b></p>${chips(p.r)}
+      <h3 class="mp-h3">${t('dash.w.score.recent')}</h3>${p.recent.length ? html`<ul class="plain mp-list" id="mp-recent">${p.recent.map(a => html`<li>${ico(icon(a.reason), { size: 18 })} <span>${word(a.reason)}</span> <span class="small muted">${day(a.at)}</span></li>`)}</ul>` : html`<p class="small muted">${t('dash.w.score.recentNone')}</p>`}</div>
+    <div class="mp-col mp-class"><p class="mp-clsline" id="mp-class">${ico('🎉', { size: 22 })} <b>${t('dash.w.score.classPoints', { n: f.int(p.cls.n) })}</b></p>${chips(p.cls.r)}
+      <h3 class="mp-h3">${t('dash.w.score.recentClass')}</h3>${p.classRecent.length ? html`<ul class="plain mp-list" id="mp-class-recent">${p.classRecent.map(a => html`<li>${ico(icon(a.reason), { size: 18 })} <span>${t('dash.w.score.classGiven', { reason: t(`dash.w.score.f_${a.reason}`) })}</span> <span class="small muted">${day(a.at)}</span></li>`)}</ul>` : html`<p class="small muted">${t('dash.w.score.recentNone')}</p>`}</div></div>
+    <p class="small muted mp-note">${ico('🔒', { size: 18 })} ${t('dash.w.score.onlyYou')}</p></section>`;
 }
 
 /** A class's open live room, for its students: "Your teacher started a live game · Join now" (to /join with the code in
@@ -1291,7 +1312,7 @@ function classSection(req, c, i, many) {
       ${todo.length ? html`<ol class="plain ct-list">${todo.map(row)}</ol>` : html`<p class="ct-done">${ico('🎉', { size: 18 })} ${t('classes.tab.allDone')}</p>`}</section>
     <section class="ct-games" aria-labelledby="ct-${c.id}-games"><div class="rail-head"><h3 id="ct-${c.id}-games">${ico('🎮', { size: 22 })} ${t('classes.games.heading')}</h3>${list.length > 8 ? html`<a class="more" href="/class/${c.id}">${t('cards.seeAll')}</a>` : ''}</div>
       ${list.length ? cardGrid(list.slice(0, 8), { classPill: false }) : html`<p class="small muted">${t('classes.games.emptyText')}</p>`}</section>
-    ${DASH.isStudent(u, S.getClass(c.id)) ? html`<p class="ct-dash"><a class="btn btn-sm" href="/class/${c.id}/dashboard">${ico('🖥️', { size: 18 })} ${t('dash.entry.student')}</a></p>` : ''}
+    ${DASH.isStudent(u, S.getClass(c.id)) ? html`<p class="ct-dash"><a class="btn btn-sm" href="/class/${c.id}/dashboard">${ico('🖥️', { size: 18 })} ${t('dash.entry.student')}</a>${DASH.hasPoints(c) ? html` <a class="btn btn-sm" href="/class/${c.id}#my-points">${ico('⭐', { size: 18 })} ${t('dash.w.score.mine')}: ${req.fmt.int(DASH.pointsMine(c, u.id).mine)}</a>` : ''}</p>` : ''}
   </section>`;
 }
 router.get('/classes', requireUser, (req, res) => {

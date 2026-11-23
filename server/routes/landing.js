@@ -40,6 +40,7 @@ import { enabled as classroomOn } from '../services/gclassroom.js';
 import { config } from '../config.js';
 import { LAYOUT_TEMPLATES, WIDGETS } from '../services/dash.js';
 import { ico } from '../views/icon.js';
+import { leadIcon } from '../../public/js/icons.js';
 import { seeIt } from '../views/see-it.js';
 
 /** Where "Just Play" goes: the games for kids, no sign-up. */
@@ -181,7 +182,7 @@ export function renderLanding(req, res) {
     <header class="lp-sec-head"><p class="lp-eyebrow"${fb('landing.how.kicker')}>${t('landing.how.kicker')}</p><h2 id="how-h"${fb('landing.how.h')}>${t('landing.how.h')}</h2><p${fb('landing.how.lead')}>${t('landing.how.lead')}</p></header>
     <ol class="lp-jsteps" data-journey>
       ${STEPS.map(([e, href], i) => html`<li class="lp-jstep rv" style="--i:${i}"><a class="lp-jlink" href="${href}">
-        <span class="lp-jbadge" aria-hidden="true"><span class="lp-jemoji">${e}</span></span>
+        <span class="lp-jbadge" aria-hidden="true"><span class="lp-jemoji">${ico(e, { size: 34 })}</span></span>
         <span class="lp-jn" aria-hidden="true" dir="ltr">0${i + 1}</span>
         <h3${fb(`landing.how.s${i + 1}.h`)}>${t(`landing.how.s${i + 1}.h`)}</h3>
         <p${fb(`landing.how.s${i + 1}.p`)}>${t(`landing.how.s${i + 1}.p`)}</p>
@@ -232,7 +233,7 @@ export function renderLanding(req, res) {
   // turns it into a deck that plays as the page scrolls (.is-tour) and slides the widget rows.
   const wname = id => t(`dash.w.${id}.name`);
   const icon = id => (WIDGETS.find(w => w.id === id) || {}).icon || '▫️';
-  const chip = id => html`<li><span aria-hidden="true">${icon(id)}</span>${wname(id)}</li>`;
+  const chip = id => html`<li><span aria-hidden="true">${ico(icon(id), { size: 20 })}</span>${wname(id)}</li>`;
   const tourWidgets = WIDGETS.map(w => w.id);
   const half = Math.ceil(tourWidgets.length / 2);
   const dtourSec = html`<section class="lp-sec lp-dtour" id="dash-tour" aria-labelledby="dtour-h">
@@ -242,11 +243,11 @@ export function renderLanding(req, res) {
       <ol class="lp-dt-list">${LAYOUT_TEMPLATES.map((x, i) => {
         const types = [...new Set(x.widgets(t).map(([type]) => type))];
         return html`<li class="lp-dt-item" data-i="${i}">
-        <div class="lp-dt-text"><p class="lp-dt-n" aria-hidden="true" dir="ltr">0${i + 1}<span> / 0${LAYOUT_TEMPLATES.length}</span></p><h3><span aria-hidden="true">${x.icon}</span> ${t(`dash.tpl.${x.id}.name`)}</h3><p>${t(`dash.tpl.${x.id}.desc`)}</p><ul class="lp-dt-chips">${types.map(chip)}</ul></div>
+        <div class="lp-dt-text"><p class="lp-dt-n" aria-hidden="true" dir="ltr">0${i + 1}<span> / 0${LAYOUT_TEMPLATES.length}</span></p><h3><span aria-hidden="true">${ico(x.icon, { size: 34 })}</span> ${t(`dash.tpl.${x.id}.name`)}</h3><p>${t(`dash.tpl.${x.id}.desc`)}</p><ul class="lp-dt-chips">${types.map(chip)}</ul></div>
         <figure class="lp-dt-fig"><div class="lp-screen">${shot(`dash-layout-${x.id}`, `${t(`dash.tpl.${x.id}.name`)}: ${t(`dash.tpl.${x.id}.desc`)}`)}</div></figure>
       </li>`;
       })}</ol>
-      <ol class="lp-dt-dots" aria-hidden="true">${LAYOUT_TEMPLATES.map(x => html`<li><span>${x.icon}</span></li>`)}</ol>
+      <ol class="lp-dt-dots" aria-hidden="true">${LAYOUT_TEMPLATES.map(x => html`<li><span>${ico(x.icon, { size: 20 })}</span></li>`)}</ol>
     </div></div>
   </div>
   <div class="lp-dt-widgets">
@@ -312,7 +313,7 @@ export function renderLanding(req, res) {
   <div class="lp-wrap">
     <header class="lp-sec-head"><p class="lp-eyebrow">${t('landing.why.kicker')}</p><h2 id="why-h">${t('landing.why.h')}</h2><p>${t('landing.why.lead')}</p></header>
     <div class="lp-why">
-      ${[['b1', '🧠'], ['b2', '⚡'], ['b3', '🔁'], ['b4', '🙋'], ['b5', '🛠️']].map(([k, e]) => html`<article class="lp-card lp-why-card rv"><span class="lp-why-e" aria-hidden="true">${e}</span><h3>${t(`landing.why.${k}.h`)}</h3><p>${t(`landing.why.${k}.p`)}</p></article>`)}
+      ${[['b1', '🧠'], ['b2', '⚡'], ['b3', '🔁'], ['b4', '🙋'], ['b5', '🛠️']].map(([k, e]) => html`<article class="lp-card lp-why-card rv"><span class="lp-why-e" aria-hidden="true">${ico(e, { size: 36 })}</span><h3>${t(`landing.why.${k}.h`)}</h3><p>${t(`landing.why.${k}.p`)}</p></article>`)}
     </div>
     <p class="lp-sources"><span>${t('landing.why.sources')}:</span> <a href="https://doi.org/10.1111/j.1467-9280.2006.01693.x" rel="noopener" lang="en" dir="ltr">Roediger &amp; Karpicke (2006), Test-enhanced learning, <i>Psychological Science</i></a> <a href="https://doi.org/10.3102/003465430298487" rel="noopener" lang="en" dir="ltr">Hattie &amp; Timperley (2007), The power of feedback, <i>Review of Educational Research</i></a></p>
     <p class="lp-research"><a class="lp-more" href="/research">${t('teachers.research.link')} ${ARROW}</a></p>
@@ -370,8 +371,10 @@ export function renderLanding(req, res) {
 
   // Under the questions: a box each for the parents' and the teachers' pages, in their own words (their kicker, heading,
   // description and three badges, so every language has them), the whole box a link.
+  // The kicker starts with its icon's emoji ("👪 For parents"): drawn as the icon.
+  const kicker = s => { const l = leadIcon(s); return l ? html`${ico(l[0], { size: 18 })} ${l[1]}` : s; };
   const door = (path, k, badges) => html`<a class="lp-card lp-door rv" href="${lp(path)}"${fb(`${k}.h1`)}>
-      <span class="lp-eyebrow">${t(`${k}.kicker`)}</span><h3>${t(`${k}.h1`)}</h3><p>${t(`${k}.description`)}</p>
+      <span class="lp-eyebrow">${kicker(t(`${k}.kicker`))}</span><h3>${t(`${k}.h1`)}</h3><p>${t(`${k}.description`)}</p>
       <ul class="lp-door-badges">${badges.map(b => html`<li><span aria-hidden="true">✓</span> ${t(`${k}.badges.${b}`)}</li>`)}</ul>
       <span class="lp-door-go" aria-hidden="true">${ARROW}</span></a>`;
   const doors = [door('/parents', 'parents', ['free', 'ads', 'strangers']), door('/teachers', 'teachers', ['free', 'browser', 'google'])];
@@ -483,7 +486,7 @@ function heroStage(t, fb) {
   <div class="lp-glass lp-hs-card lp-hs-live" data-depth="-.06">
     <span class="lp-hs-dot" aria-hidden="true"></span>
     <div><p class="lp-d-tag"${fb('landing.hero.cLiveTag')}>${ico('📡', { size: 18 })} ${t('landing.hero.cLiveTag')}</p><p class="lp-hs-t"${fb('landing.hero.cLive')}>${t('landing.hero.cLive')}</p></div>
-    <span class="lp-hs-faces" aria-hidden="true"><i>🐼</i><i>🦊</i><i>🐨</i><i>🦦</i></span>
+    <span class="lp-hs-faces" aria-hidden="true">${['🐼', '🦊', '🐻', '🐸'].map(e => html`<i>${ico(e, { size: 20 })}</i>`)}</span>
   </div>
 </figure>`;
 }
