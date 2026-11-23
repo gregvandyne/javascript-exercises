@@ -230,6 +230,15 @@ a real image generator with a kids' book drawing skill, Google's. The skill is o
   rules and names check, then scrubbed). The editor asks how drawing is going every few seconds while anything is
   queued. Characters: each one's look and reference picture, with Redraw. The teacher's own upload works as before.
 
+## Pictures: requests Google refuses (400, 404)
+
+On 23 Nov 2026 every live picture call came back `400 INVALID_ARGUMENT` (after billing was set up; before it, 429s).
+`storybook-gemini.js generate` now keeps Google's own message (cleaned: no key, cut short) in the log line's `message`
+field, and adapts once per process: a 400 refusal of the full request (image only, `imageSize`, our safety settings) is
+tried once as the plain request (`TEXT` and `IMAGE`, the aspect ratio only, Google's default safety settings) and the
+plain one is kept if it works; a 404 for the model id tries its twin with or without `-preview` and keeps whichever
+works. The picture check after every picture is unchanged.
+
 ## Pictures: rate limits and quota
 
 Google answers a call it won't take now with HTTP 429 (`RESOURCE_EXHAUSTED`). Before, every picture of a book went out

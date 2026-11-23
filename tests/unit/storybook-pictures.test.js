@@ -436,3 +436,37 @@ test('readError: Google\'s 429 bodies (QuotaFailure, RetryInfo, Retry-After, the
     assert.doesNotMatch(JSON.stringify(r), /test-key/);
   } finally { globalThis.fetch = real; config.geminiKey = ''; }
 });
+
+test('Google refuses the full request (400 INVALID_ARGUMENT): its message is kept; the plain request once, kept when it works; an unknown model id tries its -preview twin', async () => {
+  G.resetLearned();
+  const bodies = [], models = [];
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64').toString('base64');
+  const ok = { candidates: [{ finishReason: 'STOP', content: { parts: [{ inlineData: { mimeType: 'image/png', data: png } }] } }] };
+  const prev = G.hooks.generate;
+  try {
+    G.hooks.generate = async (b, o) => {
+      bodies.push(b); models.push(o.model);
+      if (b.safetySettings) throw { httpStatus: 400, body: { error: { code: 400, status: 'INVALID_ARGUMENT', message: 'Invalid JSON payload: unknown field "imageSize" key AIzaSyA1234567890abcdefghijk' } } };
+      return ok;
+    };
+    let r = await G.generate({ prompt: 'a fox in a meadow' });
+    assert.equal(r.ok, true, 'the plain request drew it');
+    assert.equal(bodies.length, 2);
+    assert.deepEqual(bodies[1].generationConfig.responseModalities, ['TEXT', 'IMAGE']);
+    assert.equal(bodies[1].safetySettings, undefined);
+    r = await G.generate({ prompt: 'a fox at night' });
+    assert.equal(r.ok, true); assert.equal(bodies.length, 3, 'learned: plain straight away');
+    // The message is kept (cleaned: no key) when both are refused
+    G.resetLearned(); bodies.length = 0;
+    G.hooks.generate = async () => { throw { httpStatus: 400, body: { error: { code: 400, status: 'INVALID_ARGUMENT', message: 'Bad thing; key AIzaSyA1234567890abcdefghijk' } } }; };
+    r = await G.generate({ prompt: 'x' });
+    assert.equal(r.ok, false); assert.equal(r.http, 400); assert.match(r.gmsg, /Bad thing/); assert.doesNotMatch(r.gmsg, /AIza/);
+    // A 404 for the model: its -preview twin, kept
+    G.resetLearned(); models.length = 0;
+    G.hooks.generate = async (b, o) => { models.push(o.model); if (!/-preview$/.test(o.model)) throw { httpStatus: 404, body: { error: { code: 404, status: 'NOT_FOUND', message: 'models/x is not found' } } }; return ok; };
+    r = await G.generate({ prompt: 'y' });
+    assert.equal(r.ok, true); assert.match(models[1], /-preview$/);
+    await G.generate({ prompt: 'z' });
+    assert.match(models.at(-1), /-preview$/, 'kept');
+  } finally { G.hooks.generate = prev; G.resetLearned(); }
+});

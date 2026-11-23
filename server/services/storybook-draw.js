@@ -271,7 +271,7 @@ async function drawJob(job) {
     giveBack(u);   // nothing was made: the picture is not counted
     // what Google said, in fixed fields only (never the key, never the prompt)
     warn('storybook picture model failed', { book: row.id, why: r.why, code: r.code, attempt: job.attempts,
-      ...(r.http ? { http: r.http, status: r.gstatus || null, metric: r.metric || null, quota: r.quotaId || null, limit: r.limit, retryMs: r.retryMs } : {}) });
+      ...(r.http ? { http: r.http, status: r.gstatus || null, message: r.gmsg || null, ...(r.gmsgFull ? { messageFull: r.gmsgFull } : {}), metric: r.metric || null, quota: r.quotaId || null, limit: r.limit, retryMs: r.retryMs } : {}) });
     if (r.code === 'quota_zero') { quotaZero(r); return end(job, 'fallback', 'notset'); }
     if (r.code === 'rate_limited') {
       // back to the queue, its attempt not used, not before the queue starts again; the art pack only after a long wait
