@@ -43,7 +43,7 @@ import { studentNames, namesFrom, scrub, screenLesson } from '../builder/lesson.
 import { allow } from './ratelimit.js';
 import * as SR from '../builder/search.js';
 import { prefilter } from '../builder/screen.js';
-import { tFor } from '../i18n/index.js';
+import { tFor, CODES } from '../i18n/index.js';
 import { register } from './jobs.js';
 import * as FC from './figures-chat.js';
 import * as M from './manipulatives.js';
@@ -633,6 +633,19 @@ function pickOne(u, row, turn, value) {
 }
 
 // ---------------------------------------------------------------- the AI's tools
+/** Is this choice-card option a catch-all ("Something else", "Other", "None of these") that the card already adds?
+ *  Compared without case, punctuation or spaces, against the card's own label in every site language plus a few
+ *  English variants. */
+const squash = s => String(s || '').toLowerCase().normalize('NFKC').replace(/[\s\p{P}\p{S}]+/gu, '');
+let otherLabels = null;
+export function isOtherOption(o) {
+  if (!otherLabels) {
+    otherLabels = new Set(['something else', 'other', 'others', 'anything else', 'none of these', 'none of the above', 'something different', 'else', 'other option', 'other (type it)', 'something else (type it)'].map(squash));
+    for (const c of CODES) { try { const l = tFor(c)('js.companion.ask.other'); if (l && l !== 'js.companion.ask.other') otherLabels.add(squash(l)); } catch { /* a missing locale is skipped */ } }
+  }
+  const k = squash(o);
+  return !!k && (otherLabels.has(k) || (/^(something|anything)else/.test(k) && k.length <= 24));
+}
 export const TOOL_NAMES = Object.freeze(['explainOomba', 'getPageContext', 'searchGames', 'searchBooks', 'searchLessons', 'proposeDashboardChange', 'startBuild', 'readUpload', 'givePoint', 'findMyPages', 'proposeNavigation', 'askChoice', 'howTo', 'createClass']);
 const str = (description, extra = {}) => ({ type: 'string', description, ...extra });
 const TOOLS_BASE = Object.freeze([
@@ -656,7 +669,7 @@ const TOOLS_MORE = [
   { name: 'proposeNavigation', description: 'When the request needs a page the teacher is not on (their class dashboard, a class, a Figures worksheet, a Manipulatives board), offer to open it and do the request there: the teacher sees "I\'ll open <page> and do this there" with Go there and Not now, and once that page opens the same request continues by itself. Never tell the teacher to go there and ask again. Leave id out when you do not know which one: the app asks the teacher to pick when there are several.', input_schema: { type: 'object', required: ['pageType'], properties: { pageType: { type: 'string', enum: NAV_TYPES }, id: str('The class, worksheet or board id (from findMyPages), when you know it.'), request: str('The teacher\'s request to carry out there, in their own words (when it was not their last message).') } } },
   { name: 'howTo', description: `How to do something on Oomba Academy that you cannot do yourself: the real steps, with links to the teacher's own pages and the buttons' real names. Show the steps as a numbered list exactly as given (links and bold kept; translate the plain words only). Tasks: ${H.TASKS.join(', ')}.`, input_schema: { type: 'object', required: ['task'], properties: { task: { type: 'string', enum: H.TASKS } } } },
   { name: 'createClass', description: 'Make a new class for the teacher (they are its teacher; no students are added). The teacher sees "Create class ...?" with Create and Not now; nothing is made until they tap Create, and Undo deletes it while it has no students. Use it when they ask for a class, a test class or a practice class. When they did not say a name, use "Test class" for a test or practice class.', input_schema: { type: 'object', properties: { name: str('The class name, short, no student names.'), grade: str('K or 1 to 12, optional.'), school: str('The school\'s name, only when the teacher is at more than one.') } } },
-  { name: 'askChoice', description: 'Ask the teacher one short question with 2 to 5 tappable options (a decision or a missing detail: which class, which grade, which of two readings). Use it instead of asking a long question in words. The app adds "Something else". Their tap comes back as their next message.', input_schema: { type: 'object', required: ['question', 'options'], properties: { question: str('One short question.'), options: { type: 'array', minItems: 2, maxItems: 5, items: { type: 'string' } } } } },
+  { name: 'askChoice', description: 'Ask the teacher one short question with 2 to 5 tappable options (a decision or a missing detail: which class, which grade, which of two readings). Use it instead of asking a long question in words. The app adds "Something else" itself, so never include an option like it. Their tap comes back as their next message.', input_schema: { type: 'object', required: ['question', 'options'], properties: { question: str('One short question.'), options: { type: 'array', minItems: 2, maxItems: 5, items: { type: 'string' } } } } },
 ];
 export const TOOLS = Object.freeze([...TOOLS_BASE, ...TOOLS_MORE]);
 export const NAV_KEEP_MS = 10 * 60e3;   // a request carried to another page runs only within this
@@ -828,7 +841,9 @@ export function runTool(name, input, ctx) {
       return { result: { askedWhich: true, options: ctx.out.ask.options.map(o => o.label), note: 'The teacher sees a choice card. Ask which one in one short sentence.' }, step: { k: 'which' } };
     }
     case 'askChoice': {
-      const opts = (Array.isArray(i.options) ? i.options : []).map(o => clip(cleanText(u, String(o || ''), ctx.names), 80).trim()).filter(Boolean).filter((o, k, a) => a.indexOf(o) === k).slice(0, 5);
+      // The card always ends with its own "Something else" (askHtml), so an option that says the same is dropped:
+      // the owner saw it twice (23 Nov 2026, "make sure this doesn't happen").
+      const opts = (Array.isArray(i.options) ? i.options : []).map(o => clip(cleanText(u, String(o || ''), ctx.names), 80).trim()).filter(Boolean).filter(o => !isOtherOption(o)).filter((o, k, a) => a.indexOf(o) === k).slice(0, 5);
       if (opts.length < 2) return { result: { error: 'Give 2 to 5 options.' }, step: { k: 'askNo' } };
       ctx.out.ask = { id: uid(10), question: clip(cleanText(u, String(i.question || ''), ctx.names), 200), options: opts.map(label => ({ label })), state: 'open' };
       return { result: { shown: true, note: 'Do not repeat the options in words; the card shows them. Ask the question in one short sentence.' }, step: null };

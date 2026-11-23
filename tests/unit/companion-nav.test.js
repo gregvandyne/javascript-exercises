@@ -203,6 +203,13 @@ test('askChoice: a compact card with 2 to 5 options (names taken out); a tap com
     assert.equal(pick.json.text, 'Grade 3');
     assert.equal(pick.json.chat.turns.find(x => x.id === turn.id).note.ask.chosen, 1);
     assert.equal((await as(u)('/api/companion/chat/act', { body: { turnId: turn.id, act: 'askPick', value: '0' } })).status, 404, 'once');
+    // The card adds its own "Something else": an option that says the same (any case, punctuation, language) is
+    // dropped, so it never shows twice (the owner, 23 Nov 2026). An ordinary option starting with "Other" stays.
+    standIn(() => ['askChoice', { question: 'What next?', options: ['Make practice questions', 'Something else', 'something else...', 'Otra cosa', 'Other planets'] }], 'What next?');
+    await as(u)('/api/companion/chat', { body: { text: 'change the board', page: { type: 'teach' } } }); await C.allSettled();
+    assert.deepEqual((await chatOf(u)).turns.at(-1).note.ask.options.map(o => o.label), ['Make practice questions', 'Other planets']);
+    for (const o of ['Something else', 'Something else.', 'Anything else?', 'None of these', 'Etwas anderes', 'その他']) assert.ok(CO.isOtherOption(o), o);
+    for (const o of ['Grade 3', 'Other planets', 'Something else about fractions and decimals']) assert.ok(!CO.isOtherOption(o), o);
     // Too few options: no card.
     standIn(() => ['askChoice', { question: 'Sure?', options: ['Yes'] }], 'Sure?');
     await as(u)('/api/companion/chat', { body: { text: 'another one', page: { type: 'teach' } } }); await C.allSettled();
