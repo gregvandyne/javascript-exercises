@@ -192,6 +192,9 @@
     },
     "oomba-chat": {
       "minimize": "Minimise"
+    },
+    "storybook-read": {
+      "startOver": "Start again"
     }
   },
   "favorites": {
@@ -1098,6 +1101,11 @@
   "figures": {
     "subjects": {
       "math": "Maths"
+    }
+  },
+  "storybook": {
+    "read": {
+      "startOver": "Start again"
     }
   }
 }

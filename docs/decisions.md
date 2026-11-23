@@ -12054,3 +12054,49 @@ couldn't, with words to follow but no link and nothing to copy.
   and `tests/unit/companion-help-browser.test.js` (laptop and iPhone 13: the owner's exact ask, Create, the class,
   Open its dashboard, Undo; the admin-only variant's linked steps all 200; a how-to answer's link opens in the same
   tab with the conversation kept; Copy's clipboard text; no console errors, no sideways scroll).
+
+## Story Library: the book maker (23 Nov 2026)
+
+The owner: "Build this into Oomba in the reading section. This is a builder task where users can either upload a story
+they want to make choose your own adventure or have ai generate an illustrated book that can either be a normal flowing
+book or a choose your own adventure. Again, this should be an iterative build process like the normal builder...
+starting off with a few generic options, then lets the user provide their own context (and attachments), check what
+will be submitted and the begin the builder conversation." Then: "Upload your own book or have ai generate would be good
+as a first option." Then: "Make this only available to teachers".
+
+Built as described in docs/storybook-builder.md. The calls made along the way:
+
+- **Where**: the Story Library. Teachers get a "Make a book" button on `/library` and their newest books there;
+  `/library/make` is the start (two cards, then Choices, Your words, Check). Students see books shared with their class
+  under "From your teacher" and read them in the library reader. Registered before the library's own routes, so
+  `/library/make` is never read as a book id.
+- **Teachers only** (`storybook.canMake`: school staff and the platform admin), checked by one middleware on every page
+  and API; everyone else gets the normal 404 (signed out: sign in). Not behind the Teacher plan: every teacher may make
+  books, the plan only raises the daily number of Oomba turns (10 without, 60 with; `STORYBOOK_FREE_PER_DAY`,
+  `STORYBOOK_PLAN_PER_DAY`), in the database like Mistake Hunt's free cap so it can't be reset or raced.
+- **One chat engine**: the book's conversation is a surface of `services/oomba-chat.js` (jobs, progress card, Try again,
+  Undo), shown with the shared panel. The site-wide companion is turned off on the book maker's pages (`companion:
+  false`) so two Oomba panels never compete for the same side of the screen (the same reason as the Figures and
+  Manipulatives pages before they folded in). Folding the book maker into the companion later is possible: its workflow
+  (`writeBook`, `applyBook`, `undoChange`) is separate from the surface.
+- **Screening and privacy**: everything the teacher typed or added is scrubbed (students' names, emails, phone numbers,
+  links), the Builder's pre-filter reads all of it and the Builder's full input screening reads the teacher's own words
+  and the story's opening, before the check step shows it and again on Start. Pictures the teacher adds are never sent
+  to the book AI (only to the existing picture check, which refuses any person). The AI's book passes the Story
+  Builder's word rules and classifier before a teacher sees it; words that fail twice end the turn with nothing saved.
+- **Illustrations without an image model**: the AI picks scenes from the 2D art packs and the app draws them (SVG), the
+  same characters on every page; a teacher may upload their own picture per page. The drawing sits behind a small
+  illustrator interface so an image model can be added later (the owner's decision: cost and a new data flow).
+- **Reading progress** has its own table (`made_book_reads`: page, trail, endings) rather than `story_reads`, whose
+  rows are the manifest's books with question marks; it behaves the same way (the book opens where the reader stopped).
+  Sharing is a class list, not a gradebook lesson; assigning with a due date and results like the library's books is a
+  possible next step.
+- **Open for the owner**: (1) the privacy page lists teacher AI tools one by one; the book maker sends the same kinds
+  of data to the same processor, so it was not changed, but the owner may want a line for it (that would bump
+  `LEGAL_UPDATED` and go in docs/legal-review.md). (2) Whether to add an image model. (3) Whether shared books should
+  become gradebook assignments.
+- Tests: `tests/unit/storybook.test.js` (12: access on every route for students, kids, grown-ups and signed-out
+  visitors; the core rules; the first draft's prompt and drawn pictures; one retry with listed problems and repair;
+  kid safety (word rules, classifier, students' names); merge, Undo and stale saves; scrubbing and screening before
+  anything is sent; the cap (database, concurrency, nothing at the cap); the reader's choices, Back, The End, Start over
+  and remembered place; print numbering and "turn to page N"; teacher pictures; class, school and account deletes).

@@ -4297,6 +4297,181 @@
       "line0": "需要我幫什麼忙?",
       "line1": "今天要做什麼?",
       "line2": "從哪裡開始?"
+    },
+    "storybook-setup": {
+      "words": "{count} 個字",
+      "remove": "移除",
+      "needKind": "請選擇書的種類。",
+      "needStory": "請先加入你的故事(至少幾句話)。",
+      "tooManyFiles": "最多可以加入 {count} 個檔案。",
+      "reading": "正在讀取檔案...",
+      "fileFailed": "這個檔案無法使用。請換一個。",
+      "fileCut": "已加入。檔案很長,所以只使用了前面的部分。",
+      "fileIn": "已加入。請檢查方框裡的文字。",
+      "tooManyPics": "最多可以加入 {count} 張圖片。",
+      "checkingPic": "正在檢查圖片...",
+      "picFailed": "這張圖片無法使用。請換一張。",
+      "checking": "檢查中...",
+      "edit": "編輯",
+      "none": "沒有",
+      "endingsN": "{count} 個結局",
+      "sum": {
+        "start": "開始",
+        "kind": "書的種類",
+        "options": "選擇",
+        "story": "你的故事",
+        "notes": "你的備註",
+        "about": "書的主題",
+        "files": "檔案",
+        "pics": "你的圖片",
+        "picsN": "{count} 張圖片。圖片會留在你的書裡,不會傳給 AI。"
+      },
+      "removed": "我們移除了 {count} 個名字、電子郵件、電話號碼或連結。你看到的就是 Oomba 會收到的內容。",
+      "noneLeft": "你今天製作書的 Oomba 次數已經用完了。明天再來。"
+    },
+    "storybook-edit": {
+      "unsaved": "尚未儲存",
+      "saving": "儲存中...",
+      "saved": "已儲存",
+      "reloaded": "Oomba 改了這本書。你看到的是最新版本。",
+      "pageN": "第 {n} 頁",
+      "noPic": "沒有圖片",
+      "allGood": "每一頁都準備好了。",
+      "warnings": "有 {count} 件事要檢查",
+      "warnNote": "這些不會阻止你儲存或分享。",
+      "warn": {
+        "noPages": "這本書沒有頁面。",
+        "noStart": "請選擇開始的頁面。",
+        "noEnding": "目前還走不到任何結局。請把一頁設為結局。",
+        "unreachable": "第 {page} 頁:沒有選項通到這裡。",
+        "noText": "第 {page} 頁沒有文字。",
+        "deadEnd": "第 {page} 頁沒有選項,也不是結局。",
+        "choiceNoText": "第 {page} 頁:選項 {n} 沒有文字。",
+        "choiceNowhere": "第 {page} 頁:選項 {n} 沒有通到任何地方。",
+        "noAlt": "第 {page} 頁:圖片需要說明。"
+      },
+      "noWords": "(還沒有文字)",
+      "end": "結局",
+      "start": "開始",
+      "hasWarning": "有要檢查的地方",
+      "who": "誰",
+      "spot": "位置",
+      "spots": {
+        "left": "左邊",
+        "center": "中間",
+        "right": "右邊"
+      },
+      "remove": "移除",
+      "upload": "你的圖片",
+      "useDrawn": "改用繪製的圖",
+      "removePic": "不要圖片",
+      "addDrawn": "加入繪製的圖",
+      "drawn": "繪製的圖",
+      "world": "地點",
+      "mood": "氣氛",
+      "moods": {
+        "bright": "明亮",
+        "warm": "溫暖",
+        "dusk": "黃昏",
+        "night": "夜晚",
+        "gloomy": "陰暗",
+        "magic": "魔法"
+      },
+      "inPicture": "圖中人物",
+      "nobody": "還沒有人。",
+      "addChar": "加入角色",
+      "alt": "圖片說明",
+      "altHint": "給看不到圖片的讀者一句話說明。",
+      "pageTitle": "頁面標題(可不填)",
+      "words": "這一頁的文字",
+      "isEnding": "這一頁是結局",
+      "isStart": "讀者從這裡開始。",
+      "makeStart": "設為開始頁",
+      "choices": "選項",
+      "choiceN": "選項 {n}",
+      "leadsTo": "通到...",
+      "newPage": "新的一頁",
+      "addChoice": "新增選項",
+      "earlier": "往前移",
+      "later": "往後移",
+      "deletePage": "刪除這一頁",
+      "deletePageQ": "要刪除這一頁嗎?",
+      "cast": "角色({count})",
+      "castNote": "每個角色在每一頁看起來都一樣。",
+      "castName": "名字",
+      "castArt": "外觀",
+      "addCast": "加入角色",
+      "castDefault": "朋友 {n}",
+      "full": "一本書最多 {count} 頁。",
+      "checkingPic": "正在檢查圖片...",
+      "picFailed": "這張圖片無法使用。請換一張。",
+      "noClasses": "你還沒有可以分享的班級。",
+      "shareTitle": "分享給班級",
+      "shareLead": "這些班級的學生可以在故事圖書館讀這本書。",
+      "shareNote": "學生只會讀這本書,絕不會和 Oomba 對話。",
+      "shareSave": "儲存",
+      "deleteQ": "要刪除這本書嗎?",
+      "deleteText": "這本書、它的圖片和對話都會被刪除。學生將無法再讀它。",
+      "deleteOk": "刪除",
+      "chatSub": "你的做書小幫手 · 今天還有 {count} 次",
+      "chatPrivate": "Oomba 只看到這本書和你的文字,絕不會看到學生的名字或作品。",
+      "leave": "你可以繼續編輯或離開這一頁。Oomba 完成後,書會自動更新。",
+      "hello": "告訴我要改什麼,例如「讓第 3 頁更可怕一點」或「為二年級用簡單一點的字」。",
+      "placeholder": "要 Oomba 改什麼?",
+      "step": {
+        "check": {
+          "now": "正在檢查你的文字",
+          "done": "已檢查你的文字"
+        },
+        "ai": {
+          "now": "正在寫書",
+          "done": "書寫好了"
+        },
+        "build": {
+          "now": "正在檢查每一頁",
+          "done": "每一頁都檢查好了"
+        },
+        "save": {
+          "now": "儲存中",
+          "done": "已儲存"
+        }
+      },
+      "fail": {
+        "unsafe": "Oomba 寫的文字沒有通過安全檢查,所以沒有任何改變。換個方式問問看。"
+      },
+      "cap": "你今天製作書的 Oomba 次數已經用完了。你仍然可以手動編輯。",
+      "ch": {
+        "title": "改了什麼",
+        "first": "一本 {pages} 頁的新書。",
+        "firstCyoa": "一個新的冒險:{pages} 頁,{endings} 個結局。",
+        "added": "新的頁面:{pages}",
+        "changed": "改過的頁面:{pages}",
+        "removed": "移除了 {count} 頁。",
+        "kept": "保留了你在這段時間改過的 {count} 頁。",
+        "repaired": "Oomba 修好了一些連結,讓每一頁都能用。",
+        "none": "沒有任何改變。"
+      },
+      "ideas": {
+        "scarier": "讓第 3 頁更可怕",
+        "scarierText": "讓第 3 頁可怕一點,但仍然適合小孩。",
+        "ending": "加第三個結局",
+        "endingText": "加入第三個結局。",
+        "simpler": "簡單一點的字",
+        "simplerText": "為二年級用簡單一點的字。",
+        "longer": "多加一頁",
+        "longerText": "在結局前多加一頁。",
+        "title": "新書名",
+        "titleText": "幫這本書取一個更好的書名。"
+      }
+    },
+    "storybook-read": {
+      "pageN": "第 {n} 頁",
+      "theEnd": "故事結束",
+      "choices": "接下來會怎樣?",
+      "pages": "頁面",
+      "back": "上一頁",
+      "next": "下一頁",
+      "startOver": "從頭開始"
     }
   },
   "favorites": {
@@ -13726,6 +13901,163 @@
         "bounds": "請選擇 {min} 到 {max} 之間的數字。",
         "sendKeep": "請選擇 {min} 到 {max} 之間的數字:不能超過保留的訊息數。"
       }
+    }
+  },
+  "storybook": {
+    "title": "製作一本書",
+    "lead": "上傳你寫的故事,或和 Oomba 一起寫一個。可以做成一般的繪本,或讓讀者自己選擇劇情的冒險書,再分享給你的班級。",
+    "makeBook": "製作一本書",
+    "shelfMine": "你的書",
+    "shelfShared": "老師分享的書",
+    "allMine": "你所有的書",
+    "untitled": "未命名的書",
+    "pages": "{count} 頁",
+    "sharedN": "已分享給 {count} 個班級",
+    "readDone": "讀完了",
+    "reading": "閱讀中",
+    "mine": "你的書",
+    "mineNone": "還沒有書。你的書會顯示在這裡。",
+    "left": "今天還可以使用 Oomba {count} 次",
+    "kind": {
+      "linear": "繪本",
+      "cyoa": "自選冒險書"
+    },
+    "steps": {
+      "label": "步驟",
+      "start": "開始",
+      "options": "選擇",
+      "context": "你的文字",
+      "check": "確認"
+    },
+    "start": {
+      "title": "你想怎麼開始?",
+      "upload": "上傳你自己的書",
+      "uploadText": "帶來你寫的故事。可以保留成一般的書,或改成自選冒險書。",
+      "ai": "讓 AI 製作",
+      "aiText": "Oomba 會和你一起寫一本繪本或自選冒險書。"
+    },
+    "options": {
+      "title": "要做哪一種書?",
+      "keep": "保留成一般的書",
+      "keepText": "你的文字保持原樣。Oomba 會分成很多頁並加上圖畫。",
+      "turn": "改成自選冒險書",
+      "turnText": "Oomba 會保留你的故事,並加入選項和結局。",
+      "illustrated": "繪本",
+      "illustratedText": "從第一頁讀到最後一頁的故事,每一頁都有圖畫。",
+      "cyoa": "自選冒險書",
+      "cyoaText": "讀者選擇接下來發生什麼,找到不同的結局。",
+      "grade": "年級",
+      "length": "長度",
+      "endings": "結局",
+      "level": "閱讀程度",
+      "theme": "主題(可不選)"
+    },
+    "grades": {
+      "k": "學前/K",
+      "1": "一年級",
+      "2": "二年級",
+      "3": "三年級",
+      "45": "四至五年級",
+      "68": "六至八年級"
+    },
+    "lengths": {
+      "short": "短",
+      "medium": "中",
+      "long": "長"
+    },
+    "levels": {
+      "early": "初學閱讀",
+      "growing": "進步中的讀者",
+      "confident": "熟練的讀者"
+    },
+    "themes": {
+      "animals": "動物",
+      "space": "太空",
+      "sea": "海底",
+      "dinosaurs": "恐龍",
+      "castles": "城堡",
+      "friendship": "友誼",
+      "seasons": "季節",
+      "feelings": "情緒"
+    },
+    "back": "上一步",
+    "next": "下一步",
+    "toCheck": "確認要給 Oomba 的內容",
+    "context": {
+      "titleUpload": "你的故事",
+      "titleAi": "你的想法",
+      "story": "你的故事(必填)",
+      "storyHint": "貼上或輸入在這裡,或加入一個檔案。段落之間空一行。",
+      "aboutUpload": "還有什麼 Oomba 應該知道的嗎?(可不填)",
+      "aboutAi": "這本書要講什麼?(可不填)",
+      "aboutHint": "例如:由一滴雨講述的水循環。只用虛構的名字。",
+      "addFile": "加入檔案",
+      "fileHint": ".txt、.docx、.pdf 或 .md。裡面的文字會放進上面的方框,方便你檢查。",
+      "addPic": "加入圖片",
+      "picHint": "你的圖片會依序放在前幾頁。圖片絕不會傳給 AI。不要用有人的照片。"
+    },
+    "privacy": "請不要放入學生的名字或作品。你學生的名字、電子郵件、電話號碼和連結會在傳送前被移除。",
+    "check": {
+      "title": "確認 Oomba 會收到的內容",
+      "lead": "這就是要傳給 AI 的全部內容。要修改可以按「編輯」。",
+      "never": "Oomba 只會看到這裡列出的內容。絕對不要放入學生的名字或作品。",
+      "go": "製作我的書"
+    },
+    "blocked": {
+      "personal": "請移除個人資料(名字、地址、電話號碼、連結)後再試一次。",
+      "words": "這些字中有些不能在 Oomba Academy 使用。請修改後再試一次。"
+    },
+    "firstMessage": "請幫我製作我的書。",
+    "errors": {
+      "storyNeeded": "請先加入你的故事(至少幾句話)。",
+      "cap": "你今天製作書的 Oomba 次數已經用完了。你仍然可以手動編輯你的書。明天會有新的次數。",
+      "notFound": "找不到這本書。",
+      "error": "出了點問題。請再試一次。",
+      "stale": "Oomba 在這段時間改了這本書。這是最新的版本。",
+      "words": "這一頁有些字不能在 Oomba Academy 使用。請修改。",
+      "names": "請使用虛構的名字,不要用你學生的名字。",
+      "empty": "分享之前請先做幾頁。",
+      "imgType": "請選擇一張圖片(JPEG、PNG 或 WebP)。",
+      "imgBig": "這張圖片太大了。",
+      "imgLimit": "你今天加入的圖片已達上限。明天再試。",
+      "imgFull": "這本書已經放不下更多圖片了。",
+      "imgPerson": "請使用沒有人的圖片。",
+      "imgPersonal": "這張圖片有個人資料。請換一張。",
+      "imgUnsafe": "這張圖片不能在 Oomba Academy 使用。",
+      "imgResting": "現在無法檢查圖片,所以不能加入。請稍後再試。"
+    },
+    "shareDone": "已分享給 {count} 個班級。",
+    "shareNone": "沒有分享給任何班級。",
+    "edit": {
+      "titleLabel": "書名",
+      "oomba": "Oomba",
+      "preview": "預覽",
+      "print": "列印",
+      "share": "分享",
+      "delete": "刪除這本書",
+      "map": "故事地圖",
+      "pages": "頁面",
+      "addPage": "新增一頁",
+      "waiting": "Oomba 正在寫你的書。完成後會顯示在這裡。"
+    },
+    "read": {
+      "backToEditor": "回到編輯器",
+      "preview": "預覽:學生看到的樣子",
+      "pageN": "第 {n} 頁",
+      "theEnd": "故事結束",
+      "choices": "接下來會怎樣?",
+      "back": "上一頁",
+      "startOver": "從頭開始"
+    },
+    "print": {
+      "go": "列印或存成 PDF",
+      "hint": "在列印視窗選擇「另存為 PDF」就能得到檔案。",
+      "how": "由你決定發生什麼事!讀到一頁的最後,選一個選項,翻到它說的那一頁。",
+      "made": "用 Oomba Academy 製作",
+      "turn": "{choice}:翻到第 {page} 頁"
+    },
+    "warn": {
+      "unreachable": "目前還沒有選項通到這一頁。"
     }
   }
 }

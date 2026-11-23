@@ -85,6 +85,7 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 | `BUILDER_SCREEN_MODEL` | built in | Small model for input screening and picture checks. |
 | `REVIEW_MODEL` | `BUILDER_MODEL` | Model for the automatic review of public games. |
 | `BUILDER_FALLBACKS` | on | `0` turns off the API's server-side model fallback for Builder turns (used when the first model is overloaded). |
+| `STORYBOOK_FREE_PER_DAY` / `STORYBOOK_PLAN_PER_DAY` | `10` / `60` | The book maker in the Story Library (docs/storybook-builder.md): Oomba turns a teacher may use a UTC day (a first draft and each change), for teachers without / with the Teacher plan (testers and the admin: the second). Counted in the database. `0` turns the AI off for that group; the editor still works by hand. |
 | `BUILDER_DAILY_TURNS` | `60` | Builder messages per user per UTC day (the free allowance; `server/builder/usage.js` `allowanceFor`). |
 | `PRO_TURN_WEIGHT` | `1` | Messages one "Pro quality" message counts as (1 to 10). Paid plans will set `2` (docs/decisions.md "Paid plans", D5). |
 | `BUILDER_MAX_TOKENS` | `64000` | Max output tokens per Builder turn. |
