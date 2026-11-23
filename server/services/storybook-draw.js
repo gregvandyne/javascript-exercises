@@ -118,6 +118,32 @@ export function redraw(u, bookId, target, note = '') {
   return { ok: true };
 }
 
+/** The pictures of a book that show the art-pack drawing because painting fell back (or never ran: a book made while
+ *  the picture model was off): character sheets first, then pages. -> [target] */
+export function fallbacks(row, b = SB.bookOf(row)) {
+  const rows = new Map(q.all('SELECT target, state, pic_id FROM made_book_draws WHERE book_id=?', row.id).map(d => [d.target, d]));
+  return targets(b).filter(tg => { const d = rows.get(tg); return !d || (d.state === 'fallback' && !d.pic_id); });
+}
+/**
+ * "Paint pictures again" (the book page and the chat): every character sheet and page whose picture is an art-pack
+ * fallback goes back in the queue, through the same queue, daily picture count (taken when each is drawn) and AI budget.
+ * At most the pictures left today are queued (sheets first); the rest wait for the next Paint pictures again.
+ * -> { ok, queued, more } | fail ('notFound' | 'off' | 'nokey' | 'resting' | 'limit' | 'none')
+ */
+export function repaint(u, bookId) {
+  const row = SB.ownBook(u, bookId); if (!row) return fail('notFound');
+  if (SB.picturesOf(SB.setupOf(row)) !== 'ai') return fail('off');
+  const st = active(); if (!st.on) return fail(st.reason);
+  const want = fallbacks(row);
+  if (!want.length) return fail('none');
+  const l = left(u); if (l <= 0) return fail('limit');
+  let queued = 0;
+  for (const tg of want.slice(0, l)) if (upsertQueued(row, tg)) queued++;
+  audit(u.id, 'storybook.repaint', row.id, { queued, more: Math.max(0, want.length - l) });
+  if (queued) setImmediate(kick);
+  return { ok: true, queued, more: Math.max(0, want.length - l) };
+}
+
 // ---------------------------------------------------------------- what the editor and the reader see
 /** The kept picture of a page (a made_book_pics id), or null. */
 export const drawnPic = (bookId, pageId) => (q.get("SELECT pic_id FROM made_book_draws WHERE book_id=? AND target=? AND pic_id IS NOT NULL", bookId, `page:${pageId}`) || {}).pic_id || null;

@@ -209,3 +209,10 @@
 .sb-sheet-img{width:72px;height:72px;object-fit:cover;border-radius:8px;background:var(--card-2)}
 .sb-sheet-st{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:1 1 160px}
 .sb-pitem .sb-pthumb img.sb-art{aspect-ratio:16/9;object-fit:cover}
+
+/* the book page's More menu (Paint pictures again, Duplicate, Delete) and a book whose first draft never came */
+.sb-bmore.sb-emore{position:relative;top:auto;inset-inline-end:auto;z-index:5}
+.sb-emore>summary{box-shadow:none;background:transparent}
+.sb-unfinished{max-width:560px;margin:24px auto;padding:20px;border-radius:var(--r);background:var(--warn-bg);color:var(--warn-ink)}
+.sb-unfinished p{margin:0 0 8px}
+.sb-unfinished .muted{color:inherit;opacity:.85}

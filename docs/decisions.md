@@ -12168,3 +12168,42 @@ Built as described in docs/storybook-builder.md "In the Oomba chat". The calls m
 - Tests: `tests/unit/companion-book.test.js` (7), `tests/unit/companion-book-browser.test.js` (3, laptop and a 390 px
   phone), two more in `tests/unit/storybook-pictures.test.js` (an adventure painted on every page and ending, shown by
   the reader and the print copy; the Pictures choice).
+
+## Book maker: my books as cards, with create, read, update and delete (23 Nov 2026)
+
+The owner, with a phone screenshot of /library/make showing a plain list ("Milo and Zig Take Over the World · Picture
+book · 7 pages · just now", the same book twice, and "Untitled book · Picture book · 0 pages · 30 minutes ago"): "you
+should be able to perform crud on these books, and where My Books is shown in the library make sure they show up as
+cards like the rest of the books".
+
+- **The library's own card.** A teacher's books on /library (the newest 8) and /library/make are the Story Library's
+  `lb-card` (cover, grade chip, title, meta line, actions) in the same `lb-grid`, so they look and wrap like every other
+  book, two to a row on a phone. The cover is the first page's picture as the reader shows it (painted, the teacher's
+  own, or the art-pack drawing), a calm placeholder when there is none. Chips: the grade and the kind. Meta: pages, when
+  it changed, the classes it is shared with. (The old list's styles were in storybook.css, which /library never loaded:
+  that is why it showed as plain text.)
+- **Calm actions.** Read (as students see it) and Open (the editor) on the card; the less-used ones (Rename, Share with
+  classes, Duplicate, Delete) in a small More menu (⋯) over the cover. The book page has its own More menu: Paint
+  pictures again, Duplicate, Delete. Rename is in place (the title becomes a box). Delete asks in the site's own dialog,
+  then the card goes with an Undo message for six seconds; the book is deleted when the message ends or the page is left
+  (so Undo needs nothing on the server). Duplicate copies the pages, cast and every picture (nothing painted or counted
+  again), adds "(copy)", is never shared, and spends no turn (no AI). There is no per-teacher book limit to respect; the
+  route is rate-limited.
+- **In the Oomba chat** (teachers only, own books only, on the server): `renameBook`, `duplicateBook`, `deleteBook` and
+  `repaintBook` find the book as `changeBook` does (findMyBooks' matching, a choice card when several fit). They call the
+  same functions as the cards. `deleteBook` never deletes: it shows a Delete / Keep card, and only Delete runs the
+  delete.
+- **The "Untitled book · 0 pages" row.** The book row is made when the teacher starts (createBook: the setup, the claimed
+  pictures, one turn), and the first draft is a separate chat job keyed by the book. When that job failed (the AI
+  resting or timing out, an answer that could not be read, which the 23 Nov fix to the writer's JSON reading addressed,
+  a restart, or the turn not stored because the chat was busy), the empty row stayed and was listed as a normal book. Kept
+  the row (the draft's job and its pictures are keyed by it) but it is never shown as a book: "Oomba is writing it"
+  while its turn is live, otherwise "Didn't finish" with Try again (one turn, the first draft again) and Delete. Empty
+  books older than an hour that are not being written are removed with everything under them: a minute after start-up,
+  every hour, and whenever a teacher's books are listed.
+- **Paint pictures again** (the book page and the chat, "redraw all the pictures in my Kip book"): after Google
+  rejected the picture requests (fixed in #550 and #551), the owner's recent books fell back to the art pack. Every
+  character sheet and page that shows an art-pack fallback (or was never queued) goes back in the same picture queue,
+  at most as many as are left today (sheets first; the rest the next time), each counted when drawn, through the AI
+  budget. Painted pictures are left alone.
+- Tests: `tests/unit/storybook-books.test.js` (5), `tests/unit/companion-book-crud.test.js` (3), `tests/unit/storybook-books-browser.test.js` (3: laptop and a 390 px phone; `MY_BOOKS_SHOTS=<dir>` saves the pictures).

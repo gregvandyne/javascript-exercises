@@ -15,7 +15,8 @@ Library: the book maker".
 | `server/services/storybook-draw.js` | The picture queue and drawer: what to draw, the daily picture count, the picture check, WebP, Redraw, the editor's state |
 | `tests/support/fake-gemini.js` | Google's stand-in for tests and screenshots (paints a placeholder PNG scene) |
 | `server/services/storybook-mock.js` | The AI stand-in when no `ANTHROPIC_API_KEY` is set |
-| `server/services/companion-book.js` | The book maker in the Oomba chat: the draft and its card, the tools (`makeBook`, `findMyBooks`, `changeBook`, `redrawPicture`), the check and Start through this file's functions |
+| `server/services/companion-book.js` | The book maker in the Oomba chat: the draft and its card, the tools (`makeBook`, `findMyBooks`, `changeBook`, `redrawPicture`, `renameBook`, `duplicateBook`, `deleteBook`, `repaintBook`), the check and Start through this file's functions |
+| `server/routes/library.js` `madeCard`, `public/js/storybook-books.js` | The teacher's books as the library's cards, and the cards' actions (More menu, rename in place, share, duplicate, delete with Undo, Try again) |
 | `public/js/storybook-core.js` | The book's shape and rules, shared by server and browser: `shapeBook`, `warningsOf`, `problemsOf`, `repairBook`, `numbering`, `mapLayout` |
 | `public/js/storybook-art.js` | Draws a page's picture as SVG (server and editor) |
 | `public/js/storybook-setup.js`, `storybook-edit.js`, `storybook-read.js`, `storybook-pic.js` | The setup steps, the book editor, the reader (and the print button), picture upload |
@@ -24,6 +25,7 @@ Library: the book maker".
 | Migration `0111_storybook_draws` | `made_book_draws` (the picture queue); `made_book_pics.kind` and `.mime` |
 | `tests/unit/storybook.test.js` | Access, rules, AI checks and retry, screening, the cap, reader, print, pictures, delete lists |
 | `tests/unit/storybook-pictures.test.js` | The picture model: request shape, blocks and refusals, the picture count, no key, Redraw, access; an adventure painted on every page and ending (reader and print); the Pictures choice |
+| `tests/unit/storybook-books.test.js`, `companion-book-crud.test.js`, `storybook-books-browser.test.js` | Your books: the cards, rename, duplicate, delete, access on every new route and tool, unfinished books, Paint pictures again; the same from the chat |
 | `tests/unit/companion-book.test.js`, `companion-book-browser.test.js` | The chat: cards skip what the request answered, words and files into the book, the check and screening, Start and the cap, teachers only, changes from any page with Undo, books made in the past |
 
 ## Who
@@ -101,6 +103,46 @@ steps above and the editor's own chat.
   The editor still works by hand without the chat.
 - **Teachers only**: the tools are offered only to `storybook.canMake` accounts and every tool, tap and route checks it
   again on the server. The AI never talks to students; students' names and work never go into a book.
+
+## Your books (the cards, and create, read, update, delete)
+
+The owner: "you should be able to perform crud on these books, and where My Books is shown in the library make sure they
+show up as cards like the rest of the books" (docs/decisions.md "Book maker: my books as cards, with create, read,
+update and delete").
+
+- **Cards.** The teacher's books on `/library` ("Your books", the newest 8, with All your books) and on `/library/make`
+  are the library's own card (`routes/library.js madeCard`: `lb-card` in an `lb-grid`, library.css): the cover is the
+  first page's picture as the reader shows it (painted, the teacher's own, or the art-pack drawing, cut to the card's
+  4:3), a calm placeholder when there is none; chips for the grade and the kind; the title (to the editor); pages, when
+  it changed, the classes it is shared with. Only `storybook.listBooks` rows (the teacher's own) are ever rendered.
+- **Actions.** Create: Make a book (as before). Read (the reader, as students see it) and Open (the editor) on the card.
+  The More menu (⋯ over the cover): Rename (in place: Enter or leaving the box saves, Escape puts it back), Share with
+  classes (the editor's sheet), Duplicate, Delete. The book page's More menu: Paint pictures again (books whose pictures
+  Oomba paints), Duplicate, Delete.
+- **Rename** (`renameBook`, `POST /api/library/make/:id/rename`): the word rules and the names check, the title cut to
+  the limit; the book's own title too.
+- **Duplicate** (`duplicateBook`, `.../duplicate`, 20 an hour): a new book with the same setup, pages and cast,
+  "<title> (copy)" (cut so it fits), copies of every picture (the teacher's own, painted pages, character sheets) and of
+  the finished picture-queue rows, so nothing is painted or counted again. Never shared, no readers' places, no chat, no
+  turn spent. A book with no pages can't be copied.
+- **Delete** (`deleteBook`, `.../delete`): the site's own dialog (app.js `ask`), then the card goes with an Undo message
+  for six seconds; the delete is sent when the message ends or the page is left (`keepalive`). It removes the book, its
+  pictures, picture queue, shares, readers' places and chat (as before).
+- **A book whose first draft never came.** `createBook` makes the row before the first draft, which is a separate chat
+  job; when that job fails (AI resting or timing out, an unreadable answer, a restart, the turn not stored) the row stays
+  empty. `stateOfBook`: `ready` (it has pages), `writing` (its first-draft turn, on the book's chat or the Oomba chat, is
+  live) or `unfinished`. An unfinished book's card and editor say "Didn't finish" with Try again
+  (`POST .../retry`: one turn, the first draft again; the Oomba chat's `retryBook` for companion teachers) and Delete.
+  Empty books older than an hour that are not being written go (`pruneEmpty`): a minute after start-up, every hour, and
+  whenever the teacher's books are listed.
+- **Paint pictures again** (`storybook-draw.js repaint`, `.../repaint`): every character sheet and page whose picture is
+  an art-pack fallback (or was never queued) goes back in the picture queue, at most as many as the pictures left today
+  (sheets first; the rest the next time), each counted when drawn, through the AI budget. Painted pictures stay.
+- **In the Oomba chat**: `renameBook`, `duplicateBook`, `repaintBook` and `deleteBook` find the book as `changeBook`
+  does (the page's book, an id from findMyBooks, or the teacher's words; several that fit: a choice card whose tap does
+  it) and call the same functions. `deleteBook` only shows a Delete / Keep card; Delete runs `deleteBook`.
+- **Who**: every route checks `teacher` (staff and the platform admin) and `ownBook`; every tool and card tap checks
+  `canMake` and the teacher's own book again. Another teacher, a student, a kid, a grown-up get the normal 404.
 
 ## The AI
 

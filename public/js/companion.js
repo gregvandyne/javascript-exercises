@@ -317,6 +317,7 @@ function start() {
     if (n.classNew) parts.push(classHtml(x, n.classNew));
     if (n.nav && !n.nav.open) parts.push(navHtml(x, n.nav));
     if (n.book) parts.push(bookHtml(x, n.book));
+    if (n.bookDelete) parts.push(bookDelHtml(x, n.bookDelete));
     if (n.bookNone) parts.push(`<div class="oc-acts"><a class="btn btn-sm btn-primary" href="/library/make?new=1" data-oc-book>${ic('✨', 16)} ${esc(L('book.make'))}</a></div>`);
     if (n.bookRef && !x.change) parts.push(`<div class="oc-acts"><a class="btn btn-sm btn-primary" href="${esc(n.bookRef.href)}">${ic('📖', 16)} ${esc(L('book.open'))}</a></div>`);
     return parts.join('');
@@ -408,6 +409,12 @@ function start() {
     try {
       const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...((act === 'askPick' || /^book[A-Z]/.test(act)) && btn && btn.dataset.v !== undefined ? { value: btn.dataset.v } : {}) } });
       if (act === 'bookStart' && r.chat) { chat.took(r.chat); return null; }
+      // A book deleted from the chat: its card on this page goes; on its own page, back to the books.
+      if (act === 'bookDelete' && turn.note && turn.note.bookDelete) {
+        const id = turn.note.bookDelete.bookId;
+        document.querySelectorAll(`.sb-bcard[data-book="${CSS.escape(id)}"]`).forEach(el => el.remove());
+        if (PAGE && pageNow().type === 'book' && pageNow().bookId === id) { chat.took(r.chat); location.href = '/library/make'; return null; }
+      }
       if (act === 'go' && r.href) { chat.took(r.chat); store.set('oc:companion', 'open'); location.href = r.href; return null; }
       // An option without a target: sent as the teacher's answer, as if typed.
       if (act === 'askPick' && r.text) { chat.took(r.chat); setTimeout(() => chat.send(r.text), 0); return null; }
@@ -471,6 +478,12 @@ function start() {
     const notes = (b.notes || []).map(n => `<p class="oc-bnote ${n.kind === 'warn' ? 'warn' : ''}"${n.kind === 'warn' ? ' role="alert"' : ''}>${ic(n.kind === 'warn' ? '⚠️' : '🔒', 14)} ${esc(n.text)}</p>`).join('');
     return `<div class="oc-ask oc-book oc-bcheck"><p class="oc-askq">${esc(b.title)}</p><p class="oc-hsub">${esc(b.lead)}</p><dl class="oc-bsum">${rows}</dl>${notes}<p class="oc-bnote">${ic('🔒', 14)} ${esc(b.L.never)}</p>${err}
       <div class="oc-acts">${btn('bookStart', b.L.go, { primary: true, icon: '✨', off: !b.ok })}${stop}</div></div>`;
+  }
+  // Delete a book from the chat: never at once; Delete (the cards' own delete) or Keep.
+  function bookDelHtml(x, d) {
+    if (d.state !== 'open') return `<div class="oc-change oc-bdel done"><p class="oc-state">${ic(d.state === 'deleted' ? '✓' : '➖', 16)} ${esc(t(`js.companion.book.${d.state === 'deleted' ? 'deleted' : 'kept'}`, { title: d.title }))}</p></div>`;
+    return `<div class="oc-change oc-bdel" role="group" aria-label="${esc(t('js.companion.book.delQ', { title: d.title }))}"><p>${ic('🗑️', 20)} <b dir="auto">${esc(t('js.companion.book.delQ', { title: d.title }))}</b></p><p class="oc-hsub">${esc(L('book.delText'))}</p>
+      <div class="oc-acts"><button type="button" class="btn btn-sm btn-danger-solid" data-c="act" data-act="bookDelete" data-turn="${esc(x.id)}">${ic('🗑️', 16)} ${esc(L('book.delete'))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="bookKeep" data-turn="${esc(x.id)}">${esc(L('book.keep'))}</button></div></div>`;
   }
   function bookChangeHtml(x) {
     const c = x.change, l = c.lines || { title: '', items: [] };

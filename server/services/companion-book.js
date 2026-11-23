@@ -287,6 +287,14 @@ export const bookTool = () => ({
 export const BOOK_PAGE_TOOLS = Object.freeze([
   { name: 'changeBook', description: 'Change one of the teacher\'s own books (a page, words, choices, endings, characters, the title, the scenes of pictures), made now or in the past, from any page. On a book\'s page with no other book named, it is that book. Otherwise give bookId (from findMyBooks) or which (the words they used for it): when several books fit, the teacher picks on a card; when none does, say so. The book\'s own writer makes the change with the teacher\'s request; the teacher can Undo it and open the book. Costs one of their book turns for today.', input_schema: { type: 'object', required: ['request'], properties: {
     request: str('What to change, in the teacher\'s own words ("make page 3 scarier").'), bookId: str('The book id from findMyBooks, when you know it.'), which: str('The words the teacher used for the book ("my water cycle book"), when you do not know the id.') } } },
+  { name: 'renameBook', description: 'Rename one of the teacher\'s own books ("rename the Kip book to Kip and the Rainbow"). On a book\'s page with no other book named, it is that book; otherwise give bookId (from findMyBooks) or which (their words for it): when several fit, the teacher picks on a card. No turn is spent.', input_schema: { type: 'object', required: ['title'], properties: {
+    title: str('The new title, as the teacher said it.'), bookId: str('The book id, when you know it.'), which: str('The teacher\'s words for the book, when you do not know the id.') } } },
+  { name: 'duplicateBook', description: 'Make a copy of one of the teacher\'s own books ("make a copy of my dragon adventure"): the same pages, characters and pictures, "(copy)" after the title, not shared with any class. Find the book as for renameBook. No turn is spent.', input_schema: { type: 'object', properties: {
+    bookId: str('The book id, when you know it.'), which: str('The teacher\'s words for the book, when you do not know the id.') } } },
+  { name: 'deleteBook', description: 'Delete one of the teacher\'s own books ("delete my Milo and Zig book"). Nothing is deleted by this tool: the teacher sees a card with Delete and Keep and decides there. Find the book as for renameBook. Say in one short sentence that they can confirm on the card.', input_schema: { type: 'object', properties: {
+    bookId: str('The book id, when you know it.'), which: str('The teacher\'s words for the book, when you do not know the id.') } } },
+  { name: 'repaintBook', description: 'Paint again every picture of one of the teacher\'s own books that shows the art-pack drawing because painting did not work earlier ("redraw all the pictures in my Kip book"). Uses the teacher\'s pictures for today; only for books whose pictures Oomba paints. Find the book as for renameBook.', input_schema: { type: 'object', properties: {
+    bookId: str('The book id, when you know it.'), which: str('The teacher\'s words for the book, when you do not know the id.') } } },
   { name: 'redrawPicture', description: 'Paint one page\'s picture of a book again, with an optional note like "a sunny morning". Only when Oomba paints that book\'s pictures. Uses one of the teacher\'s pictures for today. On a book\'s page with no other book named, it is that book; otherwise give bookId.', input_schema: { type: 'object', required: ['page'], properties: { page: { type: 'integer', description: 'The page number as the editor shows it.' }, note: str('What to change in the picture, optional.'), bookId: str('The book id, when not on its page.') } } },
 ]);
 const fold = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^\p{L}\p{N}\s]+/gu, ' ').replace(/\s+/g, ' ').trim();
@@ -320,4 +328,30 @@ export function redrawPage(u, bookId, n, note) {
   if (r.ok) return { done: true };
   const why = { off: 'This book\'s pictures are the teacher\'s own (or none): Oomba does not paint them.', nokey: 'The picture maker is not set up on this site.', resting: 'The picture maker is resting; try later.', limit: 'The teacher has used today\'s pictures.', notFound: 'That page shows the teacher\'s own picture or none.' }[r.code];
   return { error: why || 'Those words cannot be used for a picture.' };
+}
+
+// ---------------------------------------------------------------- rename, duplicate, delete, paint again (from the chat)
+/** The chat's book actions besides changes: the same service functions as the cards and the book page (storybook.js
+ *  renameBook, duplicateBook; storybook-draw.js repaint). Delete is never run here: it becomes the Delete / Keep card
+ *  (companion.js), and only its Delete runs storybook.js deleteBook. -> { ok, text (for the teacher), ref (a book id), result (for the AI) } | { error } */
+export const BOOK_OPS = Object.freeze(['rename', 'duplicate', 'repaint']);
+export function runOp(u, op, bookId, { title = '', lang = 'en' } = {}) {
+  const t = tFor(lang);
+  const row = SB.ownBook(u, bookId); if (!row) return { error: 'That is not one of the teacher\'s books.' };
+  if (op === 'rename') {
+    const r = SB.renameBook(u, row.id, title);
+    if (!r.ok) return { error: r.code === 'title' ? 'Give the new title.' : r.code === 'names' ? 'The title uses the name of a real child: use a made-up name.' : 'Those words cannot be used in a title.' };
+    return { ok: true, ref: row.id, text: t('storybook.chat.renamed', { title: r.title }), result: { done: true, title: r.title } };
+  }
+  if (op === 'duplicate') {
+    const r = SB.duplicateBook(u, row.id, { t });
+    if (!r.ok) return { error: r.code === 'empty' ? 'That book has no pages yet, so there is nothing to copy.' : 'That did not work.' };
+    return { ok: true, ref: r.id, text: t('storybook.chat.duplicated', { title: r.title }), result: { done: true, copy: r.title, note: 'The copy is not shared with any class.' } };
+  }
+  if (op === 'repaint') {
+    const r = Draw.repaint(u, row.id);
+    if (!r.ok) return { error: { off: 'This book\'s pictures are the teacher\'s own (or none): Oomba does not paint them.', nokey: 'The picture maker is not set up on this site.', resting: 'The picture maker is resting; try later.', limit: 'The teacher has used today\'s pictures.', none: 'Every picture in this book is already painted.' }[r.code] || 'That did not work.' };
+    return { ok: true, ref: row.id, text: t(r.more ? 'storybook.books.repaintSome' : 'storybook.books.repainting', { count: r.queued, more: r.more }), result: { done: true, queued: r.queued, waitingForTomorrow: r.more } };
+  }
+  return { error: 'Unknown action.' };
 }
