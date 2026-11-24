@@ -5532,6 +5532,24 @@
     },
     "typing": {
       "title": "Typdieren",
+      "inAll": "in totaal",
+      "bestTest": "Beste toets",
+      "noTest": "Nog geen getimede toets",
+      "goalMet": "Doel gehaald",
+      "goalNotYet": "Nog niet",
+      "goalH": "Klasdoel",
+      "goalWpm": "Snelheid (wpm)",
+      "goalAcc": "Nauwkeurigheid (%)",
+      "goalSave": "Doel opslaan",
+      "goalHint": "Vergeleken met de beste getimede toets van elke leerling. Laat de snelheid leeg om het doel te verwijderen.",
+      "goalSummary": "doel {wpm} wpm bij {acc}%: {met} van {total} gehaald",
+      "goalArchived": "Deze klas is gearchiveerd.",
+      "goalSaved": "Doel opgeslagen",
+      "goalCleared": "Doel verwijderd",
+      "testN": "Toets van {n} minuten",
+      "trickyPractice": "Hun lastige toetsen (oefenen)",
+      "assignPick": "Wat leerlingen openen",
+      "assignFree": "Elke les (leerlingen kiezen)",
       "started": "{started} van {total} leerlingen hebben getypt",
       "lessons": "Lessen",
       "next": "Volgende",
@@ -5543,6 +5561,7 @@
       "last": "Laatst getypt",
       "lessonN": "Les {n}",
       "allDone": "Alles klaar",
+      "stars": "{n} van {max} sterren",
       "wpm": "{n} wpm",
       "minutes": "{n} min",
       "missed": "{pct}% van de keren gemist",
@@ -6672,7 +6691,7 @@
       "wordTrail": "De meest gebruikte Engelse woorden, van kleuter tot groep 5, op een sprookjespad met Bramble de egel: luister naar een woord en tik erop, maak een zin af, leg het met letters, in korte lessen met een dagreeks.",
       "crossword": "Maak van elke woordenlijst een kruiswoordpuzzel: typ of upload de woorden, voeg omschrijvingen toe of laat AI ze schrijven, en deel hem met de klas.",
       "mistakeHunt": "Vind en verbeter de fouten in een korte tekst: leraren plakken hun eigen tekst, zetten er spel-, grammatica- en interpunctiefouten in en delen, geven op of printen hem.",
-      "typingPets": "Leer typen, één toets tegelijk, met een kleur voor elke vinger: 20 korte lessen van de thuisrij tot zinnen, en na elke les een ei met een nieuw dier."
+      "typingPets": "Leer typen, één toets tegelijk, met een kleur voor elke vinger: 28 korte lessen van de thuisrij tot zinnen, en na elke les een ei met een nieuw dier."
     },
     "hubs": {
       "math": {

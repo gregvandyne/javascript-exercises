@@ -12957,3 +12957,24 @@ repo's own scripts, same names, formats and sizes as before:
 - **Not redone:** the demo and parents videos (`public/video/oomba-demo.mp4`, `oomba-parents.mp4`) still show Atlas
   Quest's globe and Would You Rather in the old look for a few seconds; they need the voice and music steps in
   scripts/demo-video/README.md. The four "See it in action" videos show only teaching tools.
+
+## Typing Pets, part 2: numbers and symbols, timed tests, tricky keys, goals, a lesson picker (24 Nov 2026)
+
+Owner: "Let's get this to the level of typing.com". The first batch toward that:
+- **Unit 5, Numbers and symbols** (lessons 21–28): the number row by finger pair, words with numbers, `?` and `!` (Shift),
+  apostrophe and dash. The on-screen keyboard has the number row and the apostrophe; a shifted symbol lights its key
+  and the other hand's Shift, like a big letter. Misses are kept per key (`/` for `?`). The game builds the number
+  row in code, because the scanner reads "1234567890" written out as a phone number.
+- **Timed tests** of 1, 3 and 5 minutes (`chapter=t1|t3|t5`), open once Lesson 12 is done. The clock starts with the
+  first key; speed is correct characters / 5 per minute. Each length keeps its best run and the save keeps the last
+  20 runs (`tests.log`). A test ends with an egg like a lesson.
+- **Practice my tricky keys** (`chapter=tricky`): on the map once a key has been missed often enough (the teacher
+  panel's rule: at least 8 tries, 1 in 20 missed), drills the worst 4.
+- **Assign picks what students open**: any lesson, a test or their tricky keys (`services/typing.js assignChoices`;
+  anything else sent is the whole game). Each choice is its own assignment, named "Typing Pets: Lesson 7: E and I".
+- **Class goal** (`typing_goals`, migration 0115): a speed and accuracy set on the progress page by the class's
+  teachers; each student's best timed test is checked against it ("Goal met" / "Not yet", and how many met it).
+- Panel: "Best test" replaces "Best speed"; time typed sits under "Last typed".
+- **Still not at typing.com's level**: no adaptive lessons beyond the tricky-key drill, no teacher-written lessons,
+  no intermediate/advanced paragraph units, no certificates, English and US QWERTY only.
+- Tests: `tests/unit/typing.test.js`.
