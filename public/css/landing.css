@@ -95,7 +95,7 @@ main{position:relative;z-index:1}
 @media (min-width:1366px){.lp-nav{display:flex}}
 
 .lp-actions{display:flex;align-items:center;gap:8px;margin-inline-start:auto}
-@media (min-width:1120px){.lp-actions{margin-inline-start:0}}
+@media (min-width:1366px){.lp-actions{margin-inline-start:0}}
 .lp-signin{display:none;color:var(--text);font-weight:600;font-size:15px;text-decoration:none;padding:8px 10px;border-radius:999px}
 .lp-signin:hover{text-decoration:underline}
 @media (min-width:780px){.lp-signin{display:inline-block}}

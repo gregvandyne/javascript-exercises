@@ -229,7 +229,7 @@ function drawPage() {
         <label class="sr-only" for="sb-ca${i}">${esc(t('js.storybook-edit.castArt'))}</label><select class="input" id="sb-ca${i}" data-f="cast-art" data-i="${i}">${D.chars.map(x => opt(x.id, x.name, x.id === c.art)).join('')}</select></div>
         <label class="sr-only" for="sb-cwh${i}">${esc(t('js.storybook-edit.castWhat'))}</label><input class="input sb-look" id="sb-cwh${i}" data-f="cast-what" data-i="${i}" value="${esc(c.what || '')}" maxlength="${L.what}" placeholder="${esc(t('js.storybook-edit.castWhatPh'))}" dir="auto">
         <label class="sr-only" for="sb-cl${i}">${esc(t('js.storybook-edit.draw.look'))}</label><input class="input sb-look" id="sb-cl${i}" data-f="cast-look" data-i="${i}" value="${esc(c.look || '')}" maxlength="${L.look}" placeholder="${esc(t('js.storybook-edit.draw.look'))}" dir="auto">
-        ${DR.on || (DR.cast[c.name] && DR.cast[c.name].pic) ? `<div class="sb-sheet" data-sheet="${i}">${sheetHtml(c)}</div>` : ''}</div>`).join('')}
+        ${DR.on || (DR.cast[c.name] && DR.cast[c.name].pic) ? `<div class="sb-charsheet" data-sheet="${i}">${sheetHtml(c)}</div>` : ''}</div>`).join('')}
       ${B.cast.length < L.cast ? `<button type="button" class="btn btn-sm" data-act="cast-add">${iconHtml('➕', { size: 16 })} ${esc(t('js.storybook-edit.addCast'))}</button>` : ''}
     </details>`;
 }
@@ -399,17 +399,16 @@ if (COMPANION) {
     label: () => B.title || document.title.split('·')[0].trim(),
     ready: () => true,
     // The book shows first: the chat waits as the bubble (the owner, 24 Nov 2026: "When you press open the book it
-    // should go to the book and close the chat"). A tap on the bubble or Oomba brings it back.
+    // should go to the book and close the chat"). A tap on the bubble brings it back.
     start: () => 'min',
     hello: () => t('js.storybook-edit.hello'),
     placeholder: () => t('js.storybook-edit.placeholder'),
     onAnswer: x => { if (mine(x) || (x.note && x.note.bookRef && x.note.bookRef.id === D.id)) reload().catch(() => {}); },
     onUndo: () => { reload().catch(() => {}); },
   });
-  BUS.whenChat(c => { $('sb-oomba').addEventListener('click', () => c.setMode(c.state().mode === 'open' ? 'closed' : 'open')); });
 }
 const chat = COMPANION ? null : mountChat({
-  id: `storybook:${D.id}`, url: () => `/api/library/make/${D.id}/chat`, opener: $('sb-oomba'),
+  id: `storybook:${D.id}`, url: () => `/api/library/make/${D.id}/chat`, alwaysBubble: true,
   sub: t('js.storybook-edit.chatSub', { count: left }), privacy: t('js.storybook-edit.chatPrivate'), leave: t('js.storybook-edit.leave'),
   hello: () => t('js.storybook-edit.hello'),
   ideas: () => (B.pages.length ? IDEAS() : []), ideasAfter: () => IDEAS().slice(0, 2),
