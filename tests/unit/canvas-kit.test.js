@@ -151,9 +151,9 @@ test('the server runs the kit\'s own frozen file: an activity page passes, a bro
 });
 
 // ---------------------------------------------------------------- the frozen file
-test('Oomba Canvas 1.0.0 to 1.4.1: the hashes in canvaskit.js and canvas/SHIPPED.json match the files, and a fresh build makes the latest\'s bytes', async () => {
-  assert.deepEqual(Object.keys(CANVAS_VERSIONS), ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.4.1']); assert.equal(CANVAS_LATEST, '1.4.1');
-  assert.deepEqual(Object.keys(JSON.parse(fs.readFileSync(path.join(ROOT, 'canvas/SHIPPED.json'), 'utf8')).versions), ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.4.1'], 'all six are locked');
+test('Oomba Canvas 1.0.0 to 1.5.0: the hashes in canvaskit.js and canvas/SHIPPED.json match the files, and a fresh build makes the latest\'s bytes', async () => {
+  assert.deepEqual(Object.keys(CANVAS_VERSIONS), ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.4.1', '1.5.0']); assert.equal(CANVAS_LATEST, '1.5.0');
+  assert.deepEqual(Object.keys(JSON.parse(fs.readFileSync(path.join(ROOT, 'canvas/SHIPPED.json'), 'utf8')).versions), ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.4.1', '1.5.0'], 'all seven are locked');
   const shipped = JSON.parse(fs.readFileSync(path.join(ROOT, 'canvas/SHIPPED.json'), 'utf8')).versions;
   for (const [v, h] of Object.entries(CANVAS_VERSIONS)) {
     const f = fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-canvas', v, 'oomba-canvas.js'));
@@ -179,7 +179,7 @@ test('Oomba Canvas 1.0.0 is byte-for-byte what shipped: its manifest, and every 
   for (const [f, want] of Object.entries(m.files)) assert.equal(h(fs.readFileSync(path.join(dir, f))), want, f);
   const all = []; const walk = d => { for (const e of fs.readdirSync(d, { withFileTypes: true })) e.isDirectory() ? walk(path.join(d, e.name)) : all.push(path.relative(dir, path.join(d, e.name))); }; walk(dir);
   assert.deepEqual(all.sort(), ['manifest.json', ...Object.keys(m.files)].sort(), 'nothing added to or taken from the 1.0.0 folder');
-  assert.equal(canvasKit('1.0.0').version, '1.0.0'); assert.equal(canvasKit('1.1.0').version, '1.1.0'); assert.equal(canvasKit('1.2.0').version, '1.2.0'); assert.equal(canvasKit('1.3.0').version, '1.3.0'); assert.equal(canvasKit('1.4.0').version, '1.4.0'); assert.equal(canvasKit('1.4.1').version, '1.4.1');
+  assert.equal(canvasKit('1.0.0').version, '1.0.0'); assert.equal(canvasKit('1.1.0').version, '1.1.0'); assert.equal(canvasKit('1.2.0').version, '1.2.0'); assert.equal(canvasKit('1.3.0').version, '1.3.0'); assert.equal(canvasKit('1.4.0').version, '1.4.0'); assert.equal(canvasKit('1.4.1').version, '1.4.1'); assert.equal(canvasKit('1.5.0').version, '1.5.0');
 });
 test('Oomba Canvas 1.1.0 is byte-for-byte what shipped (1.2.0 is in new files): its manifest, and every file the manifest names', () => {
   const dir = path.join(ROOT, 'public/vendor/oomba-canvas/1.1.0'), h = b => `sha384-${crypto.createHash('sha384').update(b).digest('base64')}`;
@@ -220,6 +220,42 @@ test('Oomba Canvas 1.4.0 is byte-for-byte what shipped (1.4.1 is in new files): 
   for (const [f, want] of Object.entries(m.files)) assert.equal(h(fs.readFileSync(path.join(dir, f))), want, f);
   const all = []; const walk = d => { for (const e of fs.readdirSync(d, { withFileTypes: true })) e.isDirectory() ? walk(path.join(d, e.name)) : all.push(path.relative(dir, path.join(d, e.name))); }; walk(dir);
   assert.deepEqual(all.sort(), ['manifest.json', ...Object.keys(m.files)].sort(), 'nothing added to or taken from the 1.4.0 folder');
+});
+test('Oomba Canvas 1.4.1 is byte-for-byte what shipped (1.5.0 is in new files): its manifest, and every file the manifest names', () => {
+  const dir = path.join(ROOT, 'public/vendor/oomba-canvas/1.4.1'), h = b => `sha384-${crypto.createHash('sha384').update(b).digest('base64')}`;
+  // the manifest as it shipped (the phone layout, #510)
+  assert.equal(h(fs.readFileSync(path.join(dir, 'manifest.json'))), 'sha384-UaVamZ+0EU39pNBRfkEUmfHaLQrsUBZHOPl816VoXvMfDTizcjPtZVDl9F9+myEg');
+  const m = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.json'), 'utf8'));
+  assert.equal(m.version, '1.4.1');
+  for (const [f, want] of Object.entries(m.files)) assert.equal(h(fs.readFileSync(path.join(dir, f))), want, f);
+  const all = []; const walk = d => { for (const e of fs.readdirSync(d, { withFileTypes: true })) e.isDirectory() ? walk(path.join(d, e.name)) : all.push(path.relative(dir, path.join(d, e.name))); }; walk(dir);
+  assert.deepEqual(all.sort(), ['manifest.json', ...Object.keys(m.files)].sort(), 'nothing added to or taken from the 1.4.1 folder');
+});
+test('Oomba Canvas 1.5.0 is the Crossword look: the dotted mint board, the problem line in the dark Now bar, Check a flat pill with an ink outline', () => {
+  const css = v => fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-canvas', v, 'oomba-canvas.css'), 'utf8');
+  const rule = (src, sel) => { const m = new RegExp(`(?:^|\\})${sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\{([^}]*)\\}`, 'm').exec(src); return m ? m[1] : ''; };
+  const now = css('1.5.0'), old = css('1.4.1');
+  // the board: mint paper with green dots (dark: dark green dots on near black), as Crossword and the classroom style
+  assert.match(TOKENS.light, /--paper:#E1F1E1;--dots:#66C792;/); assert.match(TOKENS.dark, /--paper:#141414;--dots:#2E5A41;/);
+  assert.match(rule(now, 'html,body'), /background-color:var\(--paper\);background-image:radial-gradient\(var\(--dots\) 1\.5px,transparent 1\.6px\);background-size:22px 22px/);
+  assert.doesNotMatch(rule(now, '.oc'), /linear-gradient|background/, 'no cream graph paper over the board');
+  assert.match(rule(old, '.oc'), /linear-gradient\(var\(--grid\)/, '1.4.1 keeps its graph paper');
+  // the problem line: the dark Now bar (the site's --current / --on-current: ink in light, mint in dark)
+  assert.match(TOKENS.light, /--current:#141414;--on-current:#FFFDF2;/); assert.match(TOKENS.dark, /--current:#66C792;--on-current:#141414;/);
+  assert.match(rule(now, '.oc-task'), /background:var\(--current\);color:var\(--on-current\)/);
+  assert.doesNotMatch(rule(now, '.oc-task'), /#E0699B/, 'no cream card with a pink edge');
+  assert.match(rule(now, '.oc-task .oc-n'), /color:inherit/);
+  assert.match(rule(old, '.oc-task'), /background:var\(--card\)/);
+  // Check: flat (no raised bottom edge), a pill with an ink outline
+  assert.match(rule(now, '.oc-primary'), /box-shadow:inset 0 0 0 2px var\(--text\)/);
+  assert.doesNotMatch(rule(now, '.oc-primary'), /-4px/);
+  assert.match(rule(now, '.oc-btn'), /border-radius:999px/);
+  assert.match(rule(now, '.oc-band .oc-btn,.oc-endbtns .oc-btn'), /inset 0 0 0 2px var\(--text\)/);
+  assert.match(rule(old, '.oc-primary'), /inset 0 -4px 0 var\(--accent-press\)/, '1.4.1 keeps its raised Check');
+  // style only: 1.5.0's script is 1.4.1's but for its version, its header comment and its styles
+  const js = v => fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-canvas', v, 'oomba-canvas.js'), 'utf8').replace(/^\/\/ ---- style\.js[\s\S]*?(?=^\/\/ ---- teach\.js)/m, '').replace(/^\/\/ 1\.5\.0: .*\n(\/\/ .*\n)?/m, '').replace(/^\/\*! Oomba Canvas [\d.]+ /, '').replace(/const VERSION = '[\d.]+';/, '');
+  assert.equal(js('1.5.0'), js('1.4.1'), 'no behavior changes');
+  assert.equal(canvasKit('1.5.0').version, '1.5.0');
 });
 test('1.1.0: config.supports, the help modes an activity offers; the self-test checks them; 1.0.0 ignores them', () => {
   const base = { config: { support: 'count', supports: ['count', 'guided'] }, problems: [{ tool: 'digits.add', a: 23, b: 45 }] };
@@ -262,13 +298,13 @@ test('the kit\'s colours are a copy of the site\'s tokens (light and dark)', () 
 test('the scanner admits exactly the pinned Oomba Canvas tag and refuses altered ones', () => {
   const page = tag => `<title>A</title>${tag}<div id="oc-app"></div><script>Oc.activity({})</script>`;
   // both pinned versions: a new activity pins 1.1.0, and every activity saved on 1.0.0 keeps working
-  for (const v of ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.4.1']) {
+  for (const v of ['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.4.1', '1.5.0']) {
     const good = scanVersion(page(canvasTag(v)));
     assert.equal(good.status, 'pass', `${v}: ${JSON.stringify(good.issues)}`);
     assert.deepEqual(checkCanvas(page(canvasTag(v))).issues, [], v);
     assert.equal(canvasVersion(page(canvasTag(v))), v);
   }
-  assert.equal(canvasTag(), canvasTag('1.4.1'));
+  assert.equal(canvasTag(), canvasTag('1.5.0'));
   const swapped = canvasTag('1.0.0').replace(CANVAS_VERSIONS['1.0.0'], CANVAS_VERSIONS['1.1.0']);
   assert.equal(scanVersion(page(swapped)).status, 'fail', 'one version\'s file with the other\'s hash');
   const h = CANVAS_VERSIONS[CANVAS_LATEST];

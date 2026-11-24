@@ -4,9 +4,9 @@
 import { test, expect } from '@playwright/test';
 import { canvasTag } from '../../server/services/canvaskit.js';
 
-const page$ = (base, activity) => `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Canvas</title>
+const page$ = (base, activity, v) => `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Canvas</title>
 <script>window.__over=[];window.BRB={user:{lang:'en',dir:'ltr'},theme:'light',storage:{_:{},get(k){return this._[k]},set(k,v){this._[k]=JSON.parse(JSON.stringify(v))}},gameOver(o){window.__over.push(o)},sfx:{play(){}}};</script>
-${canvasTag().replace('src="/', `src="${base}/`)}</head><body><div id="oc-app"></div><script type="application/json" id="oc-activity">${JSON.stringify(activity)}</script>
+${canvasTag(v).replace('src="/', `src="${base}/`)}</head><body><div id="oc-app"></div><script type="application/json" id="oc-activity">${JSON.stringify(activity)}</script>
 <script>Oc.activity(JSON.parse(document.getElementById('oc-activity').textContent));</script></body></html>`;
 
 test('fraction bars: build each answer, Check, and gameOver fires once with the score', async ({ page, baseURL }) => {
@@ -62,7 +62,7 @@ test('1.4.1 at 390 px: the toolbar rows and the end card never overlap or clip',
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/health');
   const html = page$(baseURL, { config: { support: 'own', supports: ['count', 'guided', 'own'], count: 3, fresh: true, purpose: ['screen', 'worksheet', 'generator'] }, task: { title: 'Common Denominator Builder' },
-    problems: [], gen: { tool: 'fractions.equiv', dens: [2, 3, 4], mult: [2, 3] } })
+    problems: [], gen: { tool: 'fractions.equiv', dens: [2, 3, 4], mult: [2, 3] } }, '1.4.1')
     .replace("theme:'light',", "theme:'light',canTeach:true,canPrint:true,back(){},print(){return {ok:true}},");
   await page.setContent(html, { waitUntil: 'load' });
   expect(await page.evaluate(() => Oc.version)).toBe('1.4.1');
