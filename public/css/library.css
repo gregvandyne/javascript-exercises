@@ -121,7 +121,7 @@
 .rd-dots i[hidden]{display:none}
 .rd-dots.more-l::before,.rd-dots.more-r::after{content:'…';color:var(--muted);font-weight:700;line-height:1}
 .rd-dots.sliding i.cur{width:14px;height:14px;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent-press) 30%,transparent)}
-.rd-count{grid-column:2;grid-row:1;text-align:center;align-self:end;transform:translateY(22px)}
+.rd-count{grid-column:2;grid-row:1;text-align:center;align-self:end;transform:translateY(22px);white-space:nowrap}
 .rd .lb-credit{margin-top:24px}
 @media (max-width:640px){
   .rd{padding:12px 12px 14px;border-radius:var(--r-sm)}
@@ -136,6 +136,10 @@
   .rd-nav .btn{padding:0 16px}
   .rd-dots{display:none}
   .rd-count{transform:none;align-self:center}
+  /* Looking back at a page from a question (the owner, 24 Nov 2026: it didn't fit): Back and the page count on one row,
+     "Back to the questions" across the whole width below them. */
+  .rd-nav:has(.rd-peek){grid-template-columns:auto 1fr;row-gap:8px}
+  .rd-nav .rd-peek{grid-column:1 / -1;grid-row:2;justify-content:center;white-space:normal}
 }
 @media (min-width:641px) and (max-width:1024px){.rd-pic img{max-height:44vh}}
 /* The words and the picture on one screen (owner, 20 Nov 2026). Longer pages get smaller type (data-len, set from the
