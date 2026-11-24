@@ -222,19 +222,34 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   // free play counts too. Shown once a student in this class has finished a typing lesson.
   const typing = gb.students.length ? TY.classTyping(gb.students) : null;
   const typingStarted = typing ? typing.rows.filter(r => r.typing).length : 0;
-  const typingPanel = typingStarted ? html`<details class="panel coursepanel" id="typing" open><summary><h2>${ico('⌨️', { size: 28 })} ${t('progress.typing.title')}</h2><span class="small muted">${t('progress.typing.started', { started: typingStarted, total: typing.rows.length })}</span></summary>
+  const typingGoal = typingStarted ? TY.getGoal(c.id) : null;
+  const canGoal = typingStarted && !c.archived_at && S.canManageClass(req.user, c);
+  const metGoal = typingGoal ? typing.rows.filter(r => TY.meetsGoal(r.typing, typingGoal)).length : 0;
+  // A student's best timed test (speed, accuracy, length) and, with a class goal, whether a test has met it.
+  const testCell = x => {
+    if (!x.bestTest) return html`<span class="muted" title="${t('progress.typing.noTest')}">–</span>`;
+    const met = TY.meetsGoal(x, typingGoal);
+    return html`<span class="ty-test" dir="ltr"><b>${t('progress.typing.wpm', { n: x.bestTest.wpm })}</b> <span class="small muted">${x.bestTest.acc}% · ${t('progress.typing.minutes', { n: x.bestTest.min })}</span></span>${met === true ? html`<span class="chip-s ty-goal">${ico('✅', { size: 18 })} ${t('progress.typing.goalMet')}</span>` : met === false ? html`<span class="chip-s warn ty-goal">${t('progress.typing.goalNotYet')}</span>` : ''}`;
+  };
+  const goalForm = canGoal ? html`<form class="ty-goalform" data-api="/api/class/${c.id}/typing-goal" data-reload novalidate>
+      <b>${t('progress.typing.goalH')}</b>
+      <label>${t('progress.typing.goalWpm')} <input class="input" type="number" name="wpm" min="${TY.GOAL_LIMITS.wpm[0]}" max="${TY.GOAL_LIMITS.wpm[1]}" inputmode="numeric" value="${typingGoal ? typingGoal.wpm : ''}"></label>
+      <label>${t('progress.typing.goalAcc')} <input class="input" type="number" name="acc" min="${TY.GOAL_LIMITS.acc[0]}" max="${TY.GOAL_LIMITS.acc[1]}" inputmode="numeric" value="${typingGoal ? typingGoal.acc : 90}"></label>
+      <button class="btn btn-sm" type="submit">${t('progress.typing.goalSave')}</button>
+      <span class="small muted">${t('progress.typing.goalHint')}</span><p class="err form-err" aria-live="polite"></p></form>` : '';
+  const typingPanel = typingStarted ? html`<details class="panel coursepanel" id="typing" open><summary><h2>${ico('⌨️', { size: 28 })} ${t('progress.typing.title')}</h2><span class="small muted">${t('progress.typing.started', { started: typingStarted, total: typing.rows.length })}${typingGoal ? html` · ${t('progress.typing.goalSummary', { wpm: typingGoal.wpm, acc: typingGoal.acc, met: metGoal, total: typing.rows.length })}` : ''}</span></summary>
+    ${goalForm}
     <div class="gbwrap" tabindex="0" role="region" aria-label="${t('progress.typing.title')}"><table class="tbl gradebook cptable" id="typing-table">
-      <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th><th scope="col">${t('progress.typing.lessons')}</th><th scope="col">${t('progress.typing.next')}</th><th scope="col">${t('progress.typing.speed')}</th><th scope="col">${t('progress.typing.acc')}</th><th scope="col">${t('progress.typing.tricky')}</th><th scope="col">${t('progress.typing.pets')}</th><th scope="col">${t('progress.typing.time')}</th><th scope="col">${t('progress.typing.last')}</th></tr></thead>
+      <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th><th scope="col">${t('progress.typing.lessons')}</th><th scope="col">${t('progress.typing.next')}</th><th scope="col">${t('progress.typing.bestTest')}</th><th scope="col">${t('progress.typing.acc')}</th><th scope="col">${t('progress.typing.tricky')}</th><th scope="col">${t('progress.typing.pets')}</th><th scope="col">${t('progress.typing.last')}</th></tr></thead>
       <tbody>${typing.rows.map(({ user, typing: x }) => html`<tr><th scope="row" class="gb-name"><span class="pp">${avatar(user, 28)}${staffStudentName(user, { href: studentHref(c, user) })}</span></th>
-        ${x ? html`<td data-label="${t('progress.typing.lessons')}"><span class="gb-num" dir="ltr">${x.done}/${x.total}</span>${bar(x.done, x.total)}<span class="small muted cp-band" dir="ltr">★ ${x.stars}/${x.done * 3}</span></td>
+        ${x ? html`<td data-label="${t('progress.typing.lessons')}"><span class="ty-lessons" dir="ltr"><span class="ty-lessons-top"><b>${x.done}/${x.total}</b><span class="ty-stars" title="${t('progress.typing.stars', { n: x.stars, max: x.done * 3 })}">★ ${x.stars}/${x.done * 3}</span></span>${bar(x.done, x.total)}</span></td>
           <td data-label="${t('progress.typing.next')}">${x.next ? t('progress.typing.lessonN', { n: x.next }) : html`${ico('✅', { size: 18 })} ${t('progress.typing.allDone')}`}</td>
-          <td data-label="${t('progress.typing.speed')}"><span dir="ltr">${t('progress.typing.wpm', { n: x.bestWpm })}</span></td>
+          <td data-label="${t('progress.typing.bestTest')}">${testCell(x)}</td>
           <td data-label="${t('progress.typing.acc')}"><span dir="ltr">${x.acc}%</span></td>
           <td data-label="${t('progress.typing.tricky')}">${x.tricky.length ? html`<span dir="ltr">${x.tricky.map((k, i) => html`${i ? ' ' : ''}<kbd class="ty-key" title="${t('progress.typing.missed', { pct: k.pct })}">${k.key}</kbd>`)}</span>` : html`<span class="muted">–</span>`}</td>
           <td data-label="${t('progress.typing.pets')}"><span dir="ltr">${x.pets}</span></td>
-          <td data-label="${t('progress.typing.time')}"><span dir="ltr">${t('progress.typing.minutes', { n: x.minutes })}</span></td>
-          <td data-label="${t('progress.typing.last')}">${x.last ? f.day(x.last, SHORT) : '–'}</td>`
-          : html`<td colspan="8" class="muted">${t('progress.typing.notYet')}</td>`}</tr>`)}</tbody></table></div>
+          <td data-label="${t('progress.typing.last')}">${x.last ? f.day(x.last, SHORT) : '–'}<span class="small muted ty-time" title="${t('progress.typing.time')}"><span dir="ltr">${t('progress.typing.minutes', { n: x.minutes })}</span> ${t('progress.typing.inAll')}</span></td>`
+          : html`<td colspan="7" class="muted">${t('progress.typing.notYet')}</td>`}</tr>`)}</tbody></table></div>
     <p class="small muted">${t('progress.typing.note')}${!c.archived_at && S.teaches(req.user, c.id) ? html` <a href="/teach/assign?id=${typing.game.id}&amp;class=${c.id}">${t('progress.typing.assign')}</a>` : ''}</p></details>` : '';
   // Oomba Live: the class's recent live games (results open from here; students' scores are in the saved run).
   // Part 3: a team row for team runs, "Teams for live games" (the class teams editor: live-class-teams.js) and, with
@@ -263,6 +278,16 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   // Jump chips to the sections below the gradebook (only the ones on this page).
   const nav = gb.students.length ? jumpNav(t, [gb.lessons.length ? ['gb', `🎮 ${t('school.classTabs.games')}`] : null, ...shownCourses.map(course => [`course-${course.slug}`, `${course.emoji} ${t(`${course.key}.title`)}`]), typingPanel ? ['typing', `⌨️ ${t('progress.typing.title')}`] : null, livePanel ? ['live-games', `📡 ${t('folders.liveHistory')}`] : null]) : '';
   page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${classHeader(req, c, 'progress')}${nav}${body}${coursePanels}${typingPanel}${livePanel}`, head: CSS, ...classBack(req, c), scripts: ['/js/schools.js'] });
+});
+
+/** Typing Pets class goal (services/typing.js): { wpm, acc }; an empty speed clears it. The class's own teachers and school
+ *  admins (canManageClass) only, never an archived class. */
+router.post('/api/class/:id/typing-goal', requireUser, rateLimit('typing-goal', 60, 3600e3), (req, res) => {
+  const c = S.getClass(String(req.params.id));
+  if (!c || !S.canManageClass(req.user, c)) return res.status(404).json({ error: req.t('lessons.errors.notFound') });
+  if (c.archived_at) return res.status(400).json({ error: req.t('progress.typing.goalArchived') });
+  const goal = TY.setGoal(c.id, { wpm: (req.body || {}).wpm, acc: (req.body || {}).acc });
+  res.json({ ok: true, goal, toast: req.t(goal ? 'progress.typing.goalSaved' : 'progress.typing.goalCleared') });
 });
 
 /** CSV: one row per student, one column per lesson (steps done of total, '–' before it opens), then Work done (the same

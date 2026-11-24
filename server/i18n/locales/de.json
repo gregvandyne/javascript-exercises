@@ -5532,6 +5532,24 @@
     },
     "typing": {
       "title": "Tipp-Tiere",
+      "inAll": "insgesamt",
+      "bestTest": "Bester Test",
+      "noTest": "Noch kein Zeittest",
+      "goalMet": "Ziel erreicht",
+      "goalNotYet": "Noch nicht",
+      "goalH": "Klassenziel",
+      "goalWpm": "Tempo (WpM)",
+      "goalAcc": "Genauigkeit (%)",
+      "goalSave": "Ziel speichern",
+      "goalHint": "Gemessen am besten Zeittest jedes Schülers. Tempo leer lassen, um das Ziel zu entfernen.",
+      "goalSummary": "Ziel {wpm} WpM bei {acc} %: {met} von {total} erreicht",
+      "goalArchived": "Diese Klasse ist archiviert.",
+      "goalSaved": "Ziel gespeichert",
+      "goalCleared": "Ziel entfernt",
+      "testN": "{n}-Minuten-Test",
+      "trickyPractice": "Ihre schwierigen Tasten (Üben)",
+      "assignPick": "Was die Schüler öffnen",
+      "assignFree": "Jede Lektion (Schüler wählen)",
       "started": "{started} von {total} Schülern haben getippt",
       "lessons": "Lektionen",
       "next": "Als Nächstes",
@@ -5543,6 +5561,7 @@
       "last": "Zuletzt getippt",
       "lessonN": "Lektion {n}",
       "allDone": "Alles geschafft",
+      "stars": "{n} von {max} Sternen",
       "wpm": "{n} WpM",
       "minutes": "{n} Min.",
       "missed": "In {pct}% der Fälle verfehlt",
@@ -6672,7 +6691,7 @@
       "wordTrail": "Die häufigsten englischen Wörter (Sichtwörter) von der Vorschule bis Klasse 3 auf einem Märchenpfad mit Bramble, dem Igel: Wort hören und antippen, Satz ergänzen, mit Buchstaben legen, in kurzen Lektionen mit Tagesserie.",
       "crossword": "Mach aus jeder Vokabelliste ein Kreuzworträtsel: Wörter eintippen oder hochladen, Hinweise ergänzen oder von der KI schreiben lassen und mit der Klasse teilen.",
       "mistakeHunt": "Finde und verbessere die Fehler in einem kurzen Text: Lehrkräfte fügen ihren eigenen Text ein, bauen Rechtschreib-, Grammatik- und Zeichensetzungsfehler ein und teilen, verteilen oder drucken ihn.",
-      "typingPets": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 20 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
+      "typingPets": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 28 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
     },
     "hubs": {
       "math": {

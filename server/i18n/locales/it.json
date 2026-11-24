@@ -5532,6 +5532,24 @@
     },
     "typing": {
       "title": "Cuccioli Tastiera",
+      "inAll": "in tutto",
+      "bestTest": "Miglior test",
+      "noTest": "Ancora nessun test a tempo",
+      "goalMet": "Obiettivo raggiunto",
+      "goalNotYet": "Non ancora",
+      "goalH": "Obiettivo della classe",
+      "goalWpm": "Velocità (parole/min)",
+      "goalAcc": "Precisione (%)",
+      "goalSave": "Salva obiettivo",
+      "goalHint": "Confrontato con il miglior test a tempo di ogni studente. Lascia vuota la velocità per togliere l’obiettivo.",
+      "goalSummary": "obiettivo {wpm} parole/min al {acc}%: {met} su {total} raggiunto",
+      "goalArchived": "Questa classe è archiviata.",
+      "goalSaved": "Obiettivo salvato",
+      "goalCleared": "Obiettivo tolto",
+      "testN": "Test di {n} minuti",
+      "trickyPractice": "I suoi tasti difficili (pratica)",
+      "assignPick": "Cosa aprono gli studenti",
+      "assignFree": "Qualsiasi lezione (scelgono gli studenti)",
       "started": "{started} studenti su {total} hanno scritto",
       "lessons": "Lezioni",
       "next": "Prossima",
@@ -5543,6 +5561,7 @@
       "last": "Ultima volta",
       "lessonN": "Lezione {n}",
       "allDone": "Tutto fatto",
+      "stars": "{n} stelle su {max}",
       "wpm": "{n} parole/min",
       "minutes": "{n} min",
       "missed": "Sbagliato il {pct}% delle volte",
@@ -6672,7 +6691,7 @@
       "wordTrail": "Le parole inglesi più frequenti, dalla scuola dell’infanzia alla terza, su un sentiero da fiaba con Bramble il riccio: ascolta una parola e toccala, completa una frase, componila con le lettere, in lezioni brevi con una serie giornaliera.",
       "crossword": "Trasforma qualsiasi lista di vocaboli in un cruciverba: scrivi o carica le parole, aggiungi le definizioni o lasciale scrivere all'IA e condividilo con la classe.",
       "mistakeHunt": "Trova e correggi gli errori in un breve testo: l'insegnante incolla il proprio testo, inserisce errori di ortografia, grammatica e punteggiatura, poi lo condivide, lo assegna o lo stampa.",
-      "typingPets": "Impara a scrivere un tasto alla volta, con un colore per ogni dito: 20 brevi lezioni dalla riga centrale alle frasi e, dopo ogni lezione, un uovo da rompere con un nuovo cucciolo."
+      "typingPets": "Impara a scrivere un tasto alla volta, con un colore per ogni dito: 28 brevi lezioni dalla riga centrale alle frasi e, dopo ogni lezione, un uovo da rompere con un nuovo cucciolo."
     },
     "hubs": {
       "math": {

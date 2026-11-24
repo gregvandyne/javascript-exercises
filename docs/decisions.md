@@ -12867,3 +12867,25 @@ the rest of the site is moving to (`seed-games/crossword.html`, the Builder's cl
   builder-layout-check (1.5.0 clean at 390 and 1280, end card included), and the version lines in builder-canvas,
   builder-figures and builder-activity-panel (a 1.4.1 activity saved from the panel moves to 1.5.0). The 390 px e2e
   stays on 1.4.1 as the owner saw it.
+
+
+## Typing Pets, part 2: numbers and symbols, timed tests, tricky keys, goals, a lesson picker (24 Nov 2026)
+
+Owner: "Let's get this to the level of typing.com". The first batch toward that:
+- **Unit 5, Numbers and symbols** (lessons 21–28): the number row by finger pair, words with numbers, `?` and `!` (Shift),
+  apostrophe and dash. The on-screen keyboard has the number row and the apostrophe; a shifted symbol lights its key
+  and the other hand's Shift, like a big letter. Misses are kept per key (`/` for `?`). The game builds the number
+  row in code, because the scanner reads "1234567890" written out as a phone number.
+- **Timed tests** of 1, 3 and 5 minutes (`chapter=t1|t3|t5`), open once Lesson 12 is done. The clock starts with the
+  first key; speed is correct characters / 5 per minute. Each length keeps its best run and the save keeps the last
+  20 runs (`tests.log`). A test ends with an egg like a lesson.
+- **Practice my tricky keys** (`chapter=tricky`): on the map once a key has been missed often enough (the teacher
+  panel's rule: at least 8 tries, 1 in 20 missed), drills the worst 4.
+- **Assign picks what students open**: any lesson, a test or their tricky keys (`services/typing.js assignChoices`;
+  anything else sent is the whole game). Each choice is its own assignment, named "Typing Pets: Lesson 7: E and I".
+- **Class goal** (`typing_goals`, migration 0115): a speed and accuracy set on the progress page by the class's
+  teachers; each student's best timed test is checked against it ("Goal met" / "Not yet", and how many met it).
+- Panel: "Best test" replaces "Best speed"; time typed sits under "Last typed".
+- **Still not at typing.com's level**: no adaptive lessons beyond the tricky-key drill, no teacher-written lessons,
+  no intermediate/advanced paragraph units, no certificates, English and US QWERTY only.
+- Tests: `tests/unit/typing.test.js`.
