@@ -31,7 +31,11 @@ test('a teacher: the globe and modes in the widget look, then a quiz made, arrow
   // the look: widgets on the dotted board, the globe on its own board card
   await expect(f.locator('#stage.cw-widget #board canvas#view')).toBeVisible();
   await expect(f.locator('#side .cw-widget .cw-wt').first()).toHaveText('Where to, pilot?');
-  expect(await f.evaluate(() => getComputedStyle(document.getElementById('board')).backgroundImage)).toContain('radial-gradient');
+  // the globe sits straight on the page's dotted board: no card behind it
+  expect(await f.evaluate(() => getComputedStyle(document.body).backgroundImage)).toContain('radial-gradient');
+  expect(await f.evaluate(() => getComputedStyle(document.getElementById('stage')).boxShadow)).toBe('none');
+  // the home names its groups: Region, Level, Pick a game
+  await expect(f.locator('#side .aq-lbl')).toHaveText(['Region', 'Level', 'Pick a game']);
   for (const m of ['tour', 'find', 'flags', 'caps', 'culture', 'daily', 'speed']) await expect(f.locator(`[data-mode="${m}"]`)).toBeVisible();
   // a mode played through: Flag match, every answer right, the results card
   await f.click('[data-mode="flags"]');
