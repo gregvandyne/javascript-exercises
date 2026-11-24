@@ -92,6 +92,10 @@ test('Oomba Canvas end card at 390 px: 1.3.0\'s three buttons are flagged, 1.3.1
   assert.deepEqual(await check(canvasPage('1.3.0'), { before: toEnd, skipKit: true }), [], 'an activity on an older kit: the kit\'s own parts are not the model\'s to fix');
   assert.deepEqual(await check(canvasPage('1.4.1'), { before: toEnd, width: 1280, height: 800, minTap: 44 }), []);
   assert.deepEqual(await check(canvasPage('1.4.1'), { before: p => p.waitForSelector('.oc-band .oc-primary') }), [], 'the activity itself at 390');
+  // 1.5.0 (the Crossword look) keeps 1.4.1's phone layout
+  assert.deepEqual(await check(canvasPage('1.5.0'), { before: toEnd }), [], '1.5.0 end card at 390');
+  assert.deepEqual(await check(canvasPage('1.5.0'), { before: toEnd, width: 1280, height: 800, minTap: 44 }), [], '1.5.0 end card at 1280');
+  assert.deepEqual(await check(canvasPage('1.5.0'), { before: p => p.waitForSelector('.oc-band .oc-primary') }), [], '1.5.0: the activity itself at 390');
 });
 
 test('the findings reach the model as a playtest problem, size by size; the playtest checks a phone upright and a desktop first', () => {

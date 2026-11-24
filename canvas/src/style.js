@@ -3,17 +3,21 @@
 // are COPIED here and frozen with the kit version (tests/unit/canvas-kit.test.js compares them with app.css). The kit
 // puts this in a <style> of its own; scripts/build-canvas.js also writes it next to the kit as oomba-canvas.css.
 // Theme: the site's (BRB.theme -> html[data-oc-theme]), else the device's.
-const LIGHT = '--bg:#F4F1E6;--card:#FFFDF2;--card-2:#F9F6EB;--line:#E2DDCB;--edge:#8A8573;--text:#141414;--text-2:#3B3A35;--muted:#5B584F;--accent:#66C792;--accent-press:#1F9D63;--accent-soft:#E1F1E1;--accent-ink:#0F5A37;--spark:#FFD23F;--spark-soft:#FFF3C4;--warn-bg:#FFF0B8;--warn-ink:#6B4C00;--bad-bg:#F9E3DC;--bad-ink:#A12A20;--focus:#141414;--shadow:0 1px 0 rgba(20,20,20,.04),0 4px 16px rgba(20,20,20,.06);color-scheme:light';
-const DARK = '--bg:#141414;--card:#1E1E1B;--card-2:#262622;--line:#36352F;--edge:#7E796C;--text:#FFFDF2;--text-2:#E3DED0;--muted:#B8B3A1;--accent-soft:#1E3326;--accent-ink:#9EDDBA;--spark-soft:#352E14;--warn-bg:#3A3113;--warn-ink:#FFD23F;--bad-bg:#3B201C;--bad-ink:#FFA294;--focus:#FFD23F;--shadow:0 1px 0 rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.32);color-scheme:dark';
+// 1.5.0: the Crossword look (seed-games/crossword.html, the Builder's classroom style 2): the page is the dotted mint
+// board (--paper, --dots), the problem line is the dark "Now" bar (--current, --on-current, the site's own tokens), and
+// Check is Crossword's green Go pill (--green, --on-green; flat, no raised edge); the band's other buttons and the end
+// card's take an ink outline. Everything else is as in 1.4.1.
+const LIGHT = '--bg:#F4F1E6;--card:#FFFDF2;--card-2:#F9F6EB;--line:#E2DDCB;--edge:#8A8573;--text:#141414;--text-2:#3B3A35;--muted:#5B584F;--accent:#66C792;--accent-press:#1F9D63;--accent-soft:#E1F1E1;--accent-ink:#0F5A37;--spark:#FFD23F;--spark-soft:#FFF3C4;--warn-bg:#FFF0B8;--warn-ink:#6B4C00;--bad-bg:#F9E3DC;--bad-ink:#A12A20;--focus:#141414;--paper:#E1F1E1;--dots:#66C792;--current:#141414;--on-current:#FFFDF2;--green:#1F9D63;--on-green:#fff;--shadow:0 1px 0 rgba(20,20,20,.04),0 4px 16px rgba(20,20,20,.06);color-scheme:light';
+const DARK = '--bg:#141414;--card:#1E1E1B;--card-2:#262622;--line:#36352F;--edge:#7E796C;--text:#FFFDF2;--text-2:#E3DED0;--muted:#B8B3A1;--accent-soft:#1E3326;--accent-ink:#9EDDBA;--spark-soft:#352E14;--warn-bg:#3A3113;--warn-ink:#FFD23F;--bad-bg:#3B201C;--bad-ink:#FFA294;--focus:#FFD23F;--paper:#141414;--dots:#2E5A41;--current:#66C792;--on-current:#141414;--green:#66C792;--on-green:#10261A;--shadow:0 1px 0 rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.32);color-scheme:dark';
 export const TOKENS = { light: LIGHT, dark: DARK };
 export const CSS = `:root{${LIGHT};--r:20px;--r-sm:12px;--font:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Hebrew","Noto Sans Arabic",sans-serif;
---c0:color-mix(in srgb,var(--accent) 88%,var(--card));--c1:color-mix(in srgb,var(--spark) 92%,var(--card));--c2:color-mix(in srgb,#5AA9D6 88%,var(--card));--grid:color-mix(in srgb,var(--line) 60%,transparent)}
+--c0:color-mix(in srgb,var(--accent) 88%,var(--card));--c1:color-mix(in srgb,var(--spark) 92%,var(--card));--c2:color-mix(in srgb,#5AA9D6 88%,var(--card))}
 @media (prefers-color-scheme:dark){:root:not([data-oc-theme="light"]){${DARK}}}
 :root[data-oc-theme="dark"]{${DARK}}
 *,*::before,*::after{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--card);color:var(--text);font:500 17px/1.45 var(--font);-webkit-font-smoothing:antialiased}
+html,body{margin:0;min-height:100%;background-color:var(--paper);background-image:radial-gradient(var(--dots) 1.5px,transparent 1.6px);background-size:22px 22px;color:var(--text);font:500 17px/1.45 var(--font);-webkit-font-smoothing:antialiased}
 [hidden]{display:none!important}
-.oc{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;background-color:var(--card);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.oc{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
 .oc-strip{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;padding:8px max(14px,env(safe-area-inset-right)) 8px max(14px,env(safe-area-inset-left));background:var(--card);border-bottom:2px solid var(--line)}
 .oc-strip h1{margin:0;font-size:1.15rem;font-weight:800;line-height:1.2;flex:1 1 14em;min-width:min(14em,100%);overflow-wrap:break-word}
 .oc-stat,.oc-acts{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;min-width:0;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding:4px;margin:-4px}
@@ -35,16 +39,19 @@ html,body{margin:0;min-height:100%;background:var(--card);color:var(--text);font
 .oc-btn:disabled{opacity:.5;cursor:default}
 .oc-btn:focus-visible,.oc-tile:focus-visible,.oc-part:focus-visible,.oc-tick:focus-visible,.oc-cell:focus-visible,.oc-box:focus-visible,.oc-slotbox:focus-visible,.oc-binlab:focus-visible,.oc-key:focus-visible,.oc-say:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 .oc-sm{min-height:44px;min-width:44px;padding:0 14px;font-size:.92rem}
-.oc-primary{background:var(--accent);color:#141414;box-shadow:inset 0 -4px 0 var(--accent-press);min-width:120px}
-.oc-primary:hover:not(:disabled){background:color-mix(in srgb,var(--accent) 85%,#fff)}
+.oc-primary{background:var(--green);color:var(--on-green);box-shadow:inset 0 0 0 2px var(--green);min-width:120px}
+.oc-band .oc-btn:not(.oc-primary),.oc-endbtns .oc-btn:not(.oc-primary){box-shadow:inset 0 0 0 2px var(--text)}
+.oc-primary:hover:not(:disabled){background:color-mix(in srgb,var(--green) 88%,var(--text))}
 .oc-lit{background:var(--spark);color:#141414;box-shadow:inset 0 0 0 2px #C99A00}
-.oc-task{display:flex;align-items:center;gap:14px;margin:14px 16px 0;padding:14px 18px;background:var(--card);border-radius:var(--r);box-shadow:inset 0 4px 0 #E0699B,0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent),var(--shadow)}
+.oc-task{display:flex;align-items:center;gap:14px;min-height:84px;margin:14px 16px 0;padding:14px 18px;background:var(--current);color:var(--on-current);border-radius:var(--r-sm)}
 .oc-taskt{min-width:0}
 .oc-n{display:block;font-size:.8rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.oc-task .oc-n{color:inherit;opacity:.9}
+.oc-task .oc-say:focus-visible{outline-color:var(--on-current)}
 .oc-task p{margin:2px 0 0;font-size:1.45rem;font-weight:800;line-height:1.25}
-.oc-say{margin-inline-start:auto;flex:none;width:48px;height:48px;border-radius:999px;border:0;background:var(--card-2);font-size:1.25rem;cursor:pointer}
+.oc-say{margin-inline-start:auto;flex:none;width:48px;height:48px;border-radius:999px;border:0;background:var(--card);box-shadow:inset 0 0 0 2px var(--on-current);font-size:1.25rem;cursor:pointer}
 .oc-main{flex:1 1 auto;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;padding:14px 16px;align-items:start}
-.oc-card{display:flex;flex-direction:column;gap:12px;min-width:0;background:color-mix(in srgb,var(--card) 88%,transparent);border-radius:var(--r);padding:16px 18px;box-shadow:0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent),var(--shadow)}
+.oc-card{display:flex;flex-direction:column;gap:12px;min-width:0;background:var(--card);border-radius:var(--r);padding:16px 18px;box-shadow:0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent),var(--shadow)}
 .oc-work{min-height:280px;justify-content:center}
 .oc-stack{display:flex;flex-direction:column;gap:16px}
 .oc-row{display:grid;grid-template-columns:76px minmax(0,1fr);align-items:center;gap:12px}
