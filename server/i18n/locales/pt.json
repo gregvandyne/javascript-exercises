@@ -5506,6 +5506,24 @@
     },
     "typing": {
       "title": "Bichinhos do Teclado",
+      "inAll": "no total",
+      "bestTest": "Melhor teste",
+      "noTest": "Ainda sem teste cronometrado",
+      "goalMet": "Meta atingida",
+      "goalNotYet": "Ainda não",
+      "goalH": "Meta da turma",
+      "goalWpm": "Velocidade (ppm)",
+      "goalAcc": "Precisão (%)",
+      "goalSave": "Salvar meta",
+      "goalHint": "Comparada com o melhor teste cronometrado de cada aluno. Deixe a velocidade vazia para remover a meta.",
+      "goalSummary": "meta {wpm} ppm com {acc}%: {met} de {total} atingiram",
+      "goalArchived": "Esta turma está arquivada.",
+      "goalSaved": "Meta salva",
+      "goalCleared": "Meta removida",
+      "testN": "Teste de {n} minutos",
+      "trickyPractice": "As teclas difíceis do aluno (treino)",
+      "assignPick": "O que os alunos abrem",
+      "assignFree": "Qualquer lição (os alunos escolhem)",
       "started": "{started} de {total} alunos já digitaram",
       "lessons": "Lições",
       "next": "A seguir",
@@ -6647,7 +6665,7 @@
       "wordTrail": "As palavras mais usadas do inglês, da pré-escola ao 3º ano, numa trilha de livro de histórias com Bramble, o ouriço: ouça uma palavra e toque nela, complete uma frase, soletre com letras, em lições curtas com sequência diária.",
       "crossword": "Transforme qualquer lista de vocabulário em palavras cruzadas: digite ou envie as palavras, escreva as dicas ou deixe a IA escrever e compartilhe com a turma.",
       "mistakeHunt": "Encontre e corrija os erros de um texto curto: o professor cola o próprio texto, planta erros de ortografia, gramática e pontuação e depois compartilha, atribui ou imprime.",
-      "typingPets": "Aprenda a digitar uma tecla de cada vez, com uma cor para cada dedo: 20 lições curtas da fileira do meio até frases e, depois de cada lição, um ovo com um bichinho novo."
+      "typingPets": "Aprenda a digitar uma tecla de cada vez, com uma cor para cada dedo: 28 lições curtas da fileira do meio até frases e, depois de cada lição, um ovo com um bichinho novo."
     },
     "hubs": {
       "math": {

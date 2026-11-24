@@ -1326,6 +1326,10 @@ export const MIGRATIONS = [
     ALTER TABLE made_book_draws ADD COLUMN prompt TEXT NOT NULL DEFAULT '';`],
   // Typing Pets (seed-games/typing-pets.json) is a Learn game: its own shelf step, as each new Learn game gets.
   ['0114_typing_pets_shelf', "UPDATE games SET shelf='learn' WHERE source='seed' AND slug='typing-pets';"],
+  // Typing Pets class goals (services/typing.js getGoal/setGoal): one speed and accuracy goal per class.
+  ['0115_typing_goals', `
+    CREATE TABLE IF NOT EXISTS typing_goals (class_id TEXT PRIMARY KEY REFERENCES classrooms(id) ON DELETE CASCADE,
+      wpm INTEGER NOT NULL, acc INTEGER NOT NULL, updated_at INTEGER NOT NULL);`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

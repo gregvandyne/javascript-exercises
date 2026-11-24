@@ -1218,3 +1218,11 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .ty-lessons-top b { font-size: 1.05em; }
 .ty-stars { font-size: .85em; color: var(--muted, #6b6658); white-space: nowrap; }
 .ty-lessons .pbar { width: 100%; height: 8px; margin: 0 !important; }
+.ty-test { display: block; white-space: nowrap; }
+.ty-goal { margin-top: 4px; }
+.ty-goalform { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 10px 0 12px; padding: 10px 12px; border-radius: 12px; background: var(--card-2, #f9f6eb); }
+.ty-goalform label { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.ty-goalform .input { width: 5.5em; }
+.ty-goalform .form-err:empty { display: none; }
+.ty-time { display: block; white-space: nowrap; }
+#typing-table .gb-name { white-space: nowrap; }

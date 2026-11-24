@@ -89,6 +89,15 @@
   .petcard.shiny { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(227,160,8,.22); }
   .petcard small { font-weight: 700; font-size: .78rem; color: var(--muted); }
   .note { background: var(--soft); border-radius: 14px; padding: 10px 14px; }
+  .tile .best { font-size: .85rem; font-weight: 700; color: var(--muted); margin-top: auto; }
+  .tile .ic { font-size: 1.6rem; line-height: 1; }
+  .tricky { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 12px; border-color: var(--gold); }
+  .tricky .big { font-size: 2.2rem; }
+  .tricky div { flex: 1; min-width: 200px; }
+  .keycap { display: inline-block; min-width: 1.7em; padding: 0 .35em; margin: 0 2px; border: 2px solid var(--line); border-bottom-width: 4px; border-radius: 7px; background: var(--card); font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 800; text-align: center; }
+  .timer { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 1.3rem; color: var(--ink); background: var(--soft); border-radius: 12px; padding: 4px 12px; }
+  .timer.low { color: var(--warn); }
+  .live { font-variant-numeric: tabular-nums; }
   @media (max-width: 560px) {
     .key { height: 44px; font-size: .9rem; border-radius: 8px; }
     .row, .kb { gap: 4px; }
@@ -166,7 +175,23 @@ var I18N = {
     "intro_l18": "Big letters: hold Shift with one pinky and press the letter with the other hand.",
     "intro_l19": "Type whole sentences with big letters and periods.",
     "intro_l20": "A speed run! Type carefully first, then get faster.",
-    "praise1": "Super!", "praise2": "Awesome typing!", "praise3": "You did it!"
+    "praise1": "Super!", "praise2": "Awesome typing!", "praise3": "You did it!",
+    "unit5": "Numbers and symbols",
+    "intro_l21": "Reach up from F to 4, and up from J to 7. Keep your other fingers home.",
+    "intro_l22": "Pointer fingers stretch to 5 and 6, in the middle of the number row.",
+    "intro_l23": "Middle fingers reach up to 3 and 8.",
+    "intro_l24": "Ring fingers reach up to 2 and 9.",
+    "intro_l25": "Pinkies reach up to 1 and 0.",
+    "intro_l26": "Words and numbers together, like 3 cats and 12 dogs.",
+    "intro_l27": "A question mark is Shift and the / key. An exclamation mark is Shift and 1.",
+    "intro_l28": "The apostrophe is next to ; and the dash is next to 0. Both use your right pinky.",
+    "testsH": "Typing tests", "testsSub": "Type as much as you can before the time runs out.",
+    "testN": "{n}-minute test", "testsLocked": "Finish Lesson 12 to open the typing tests.", "bestWpm": "Best: {n} wpm",
+    "intro_test": "Type as much as you can in {n} minutes. The clock starts with your first key. Fix any mistakes as you go.",
+    "timeUp": "Time's up!", "liveWpm": "{n} wpm",
+    "trickyH": "Practice my tricky keys", "trickySub": "The keys you miss most:", "trickyName": "Tricky keys",
+    "intro_tricky": "These are the keys you miss most. Go slowly and get each one right.",
+    "practiceDone": "Practice done!"
   }
 };
 // ==== I18N END ====
@@ -188,18 +213,24 @@ function sfx(n) { try { if (BRBx && BRBx.sfx) BRBx.sfx.play(n); } catch (e) { /*
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 // ---------------------------------------------------------------- the keyboard and the fingers (US QWERTY)
-const ROWS = ['qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./'];
+const NUMBER_ROW = Array.from({ length: 10 }, (_, i) => String((i + 1) % 10)).join('') + '-';   // 1 to 0, then the dash
+const ROWS = [NUMBER_ROW, 'qwertyuiop', "asdfghjkl;'", 'zxcvbnm,./'];
 const FINGER = {};
-'qaz'.split('').forEach(k => { FINGER[k] = 'lp'; });
-'wsx'.split('').forEach(k => { FINGER[k] = 'lr'; });
-'edc'.split('').forEach(k => { FINGER[k] = 'lm'; });
-'rfvtgb'.split('').forEach(k => { FINGER[k] = 'li'; });
-'yhnujm'.split('').forEach(k => { FINGER[k] = 'ri'; });
-'ik,'.split('').forEach(k => { FINGER[k] = 'rm'; });
-'ol.'.split('').forEach(k => { FINGER[k] = 'rr'; });
-'p;/'.split('').forEach(k => { FINGER[k] = 'rp'; });
+'1qaz'.split('').forEach(k => { FINGER[k] = 'lp'; });
+'2wsx'.split('').forEach(k => { FINGER[k] = 'lr'; });
+'3edc'.split('').forEach(k => { FINGER[k] = 'lm'; });
+'45rfvtgb'.split('').forEach(k => { FINGER[k] = 'li'; });
+'67yhnujm'.split('').forEach(k => { FINGER[k] = 'ri'; });
+'8ik,'.split('').forEach(k => { FINGER[k] = 'rm'; });
+'9ol.'.split('').forEach(k => { FINGER[k] = 'rr'; });
+"0-p;'/".split('').forEach(k => { FINGER[k] = 'rp'; });
 FINGER[' '] = 'th';
-const LEFT = new Set('qwertasdfgzxcvb'.split(''));
+const LEFT = new Set('12345qwertasdfgzxcvb'.split(''));
+// Characters typed with Shift that are not big letters, and the key each one is on.
+const SHIFT_OF = { '!': '1', '?': '/', '"': "'", '_': '-' };
+const UP = Object.fromEntries(Object.entries(SHIFT_OF).map(([a, b]) => [b, a]));
+/** The key a character is typed on (A -> a, ? -> /). */
+const baseKey = c => SHIFT_OF[c] || c.toLowerCase();
 
 // ---------------------------------------------------------------- lessons (ids shared with server/services/typing.js)
 const LESSONS = [
@@ -223,7 +254,19 @@ const LESSONS = [
   { id: 'l18', unit: 4, name: 'Big letters', keys: '', caps: true },
   { id: 'l19', unit: 4, name: 'Sentences', keys: '', sentences: true },
   { id: 'l20', unit: 4, name: 'Speed run', keys: '', sentences: true, speed: true },
+  { id: 'l21', unit: 5, name: '4 and 7', keys: '47' },
+  { id: 'l22', unit: 5, name: '5 and 6', keys: '56' },
+  { id: 'l23', unit: 5, name: '3 and 8', keys: '38' },
+  { id: 'l24', unit: 5, name: '2 and 9', keys: '29' },
+  { id: 'l25', unit: 5, name: '1 and 0', keys: '10' },
+  { id: 'l26', unit: 5, name: 'Words and numbers', keys: '', numWords: true },
+  { id: 'l27', unit: 5, name: '? and !', keys: '?!', marks: true },
+  { id: 'l28', unit: 5, name: "' and -", keys: "'-", apos: true },
 ];
+const UNITS = 5;
+/** Timed tests (chapter=t1, t3 or t5 opens one); open once Lesson 12 is done. */
+const TESTS = [{ id: 't1', min: 1 }, { id: 't3', min: 3 }, { id: 't5', min: 5 }];
+const TEST_AFTER = 'l12';
 // The keys each lesson may use: everything learned so far.
 (function () { let have = ''; for (const L of LESSONS) { have += L.keys; L.allowed = have; } })();
 
@@ -246,6 +289,10 @@ const SENTENCES = [
   'My pet is soft and kind.', 'The moon is bright at night.', 'I like green apples.', 'The bus is yellow.', 'Bees make sweet honey.',
   'A turtle walks slowly.', 'The owl hoots at night.', 'We plant seeds in spring.', 'Snow is cold and white.', 'Ducks swim in a row.',
 ];
+const MARKS = ['Can you see the moon?', 'What a big dog!', 'Is it time to eat?', 'We won the game!', 'Do you like frogs?',
+  'Look at that kite!', 'Where is my hat?', 'I found a shell!', 'Can we play now?', 'Wow, it is snowing!', 'Who ate the cake?', 'Run, run, run!'];
+const APOS = ["don't", "can't", "it's", "I'm", "we're", "you're", "let's", "isn't", "she's", "that's", 'ice-cream', 'well-done', 'x-ray',
+  'red-hot', 'mid-day', "dog's", "cat's", 'two-way', 'sing-song', "won't"];
 const PETS = [
   ['bunny', '🐰', 'Bunny'], ['puppy', '🐶', 'Puppy'], ['kitten', '🐱', 'Kitten'], ['chick', '🐥', 'Chick'], ['fox', '🦊', 'Fox'],
   ['panda', '🐼', 'Panda'], ['koala', '🐨', 'Koala'], ['tiger', '🐯', 'Tiger'], ['lion', '🦁', 'Lion'], ['frog', '🐸', 'Frog'],
@@ -258,13 +305,13 @@ const PETS = [
 ];
 
 // ---------------------------------------------------------------- the save
-function blankSave() { return { v: 1, done: {}, pets: {}, keys: {}, secs: 0, last: 0 }; }
+function blankSave() { return { v: 1, done: {}, pets: {}, keys: {}, tests: {}, practice: { n: 0, t: 0 }, secs: 0, last: 0 }; }
 function loadSave() {
   let s = null;
   try { s = BRBx && BRBx.storage ? BRBx.storage.get(SAVE_KEY) : JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch (e) { s = null; }
   if (!s || typeof s !== 'object' || s.v !== 1) return blankSave();
   const b = blankSave();
-  for (const k of ['done', 'pets', 'keys']) if (s[k] && typeof s[k] === 'object') b[k] = s[k];
+  for (const k of ['done', 'pets', 'keys', 'tests', 'practice']) if (s[k] && typeof s[k] === 'object') b[k] = s[k];
   b.secs = +s.secs || 0; b.last = +s.last || 0;
   return b;
 }
@@ -288,8 +335,21 @@ function fill(make) {
 }
 /** The lesson's lines: new keys first, then the new keys mixed with the known ones, then real words. */
 function drillsFor(L) {
-  const allowed = L.allowed.replace(/[^a-z;,.]/g, '');
+  const allowed = L.allowed.replace(/[^a-z0-9;,.'\-]/g, '');
+  const letters = allowed.replace(/[^a-z]/g, '');
   if (L.sentences) return shuffle(SENTENCES.slice()).slice(0, CONFIG.linesPerLesson + (L.speed ? 1 : 0)).map(s => s.length > 44 ? s.slice(0, 44) : s);
+  if (L.test) return [testLine(), testLine(), testLine()];
+  if (L.marks) return shuffle(MARKS.slice()).slice(0, CONFIG.linesPerLesson + 1);
+  if (L.apos) return [0, 1, 2].map(() => fill(() => pick(APOS)));
+  const digits = allowed.replace(/[^0-9]/g, '');
+  const num = () => { let n = pick(digits.split('')); if (Math.random() < .5) n += pick(digits.split('')); return n; };
+  if (L.numWords) return [0, 1, 2].map(() => fill(() => `${num()} ${pick(wordsWith(letters))}`));
+  if (L.tricky) {
+    const tk = L.keys.split(''), words = WORDS.filter(w => tk.some(k => w.includes(k)));
+    return [fill(() => { const k = pick(tk); return k + k + k; }),
+      fill(() => { let g = ''; for (let i = 0; i < 3; i++) g += Math.random() < .6 ? pick(tk) : pick('asdfjkl'.split('')); return g; }),
+      words.length >= 4 ? fill(() => pick(words)) : fill(() => pick(tk) + pick(tk) + pick(tk))];
+  }
   if (L.caps) {
     const ws = wordsWith('abcdefghijklmnopqrstuvwxyz');
     return [0, 1, 2].map(() => fill(() => { const w = pick(ws); return w[0].toUpperCase() + w.slice(1); }));
@@ -303,16 +363,36 @@ function drillsFor(L) {
   lines.push(fill(() => { let g = ''; const n = 2 + Math.floor(Math.random() * 3); for (let i = 0; i < n; i++) g += Math.random() < .55 ? pick(fresh) : pick(known); return g; }));
   // 3. real words with only the keys learned so far (made-up groups when there are too few words yet)
   const ws = wordsWith(allowed).filter(w => !L.keys || w.split('').some(c => fresh.includes(c)) || Math.random() < .3);
-  lines.push(ws.length >= 4 ? fill(() => pick(ws)) : fill(() => { let g = ''; for (let i = 0; i < 3; i++) g += pick(known); return g; }));
+  if (/[0-9]/.test(L.keys)) lines.push(fill(() => (Math.random() < .5 ? num() : pick(wordsWith(letters)))));   // numbers between words
+  else lines.push(ws.length >= 4 ? fill(() => pick(ws)) : fill(() => { let g = ''; for (let i = 0; i < 3; i++) g += pick(known); return g; }));
   if (L.words) lines[0] = fill(() => pick(wordsWith(allowed)));
   return lines;
 }
+
+/** One line of a timed test: a sentence, or a run of everyday words. */
+function testLine() {
+  if (Math.random() < .5) return pick(SENTENCES);
+  const ws = WORDS.filter(w => w.length > 2);
+  return fill(() => pick(ws));
+}
+/** The keys this player misses most (at least 8 tries and 1 in 20 missed), worst first, like the teacher's page. */
+function trickyKeys() {
+  return Object.entries(save.keys).filter(([k, v]) => FINGER[k] && Array.isArray(v) && v[0] + v[1] >= 8 && v[1] / (v[0] + v[1]) >= .05)
+    .sort((a, b) => b[1][1] / (b[1][0] + b[1][1]) - a[1][1] / (a[1][0] + a[1][1])).slice(0, 4).map(([k]) => k);
+}
+function trickyLesson() {
+  const keys = trickyKeys().join('');
+  return keys ? { id: 'tricky', name: t('trickyName'), keys, allowed: keys + 'asdfjkl', tricky: true } : null;
+}
+function testLesson(id) { const x = TESTS.find(T => T.id === id); return x ? { id: x.id, name: t('testN', { n: x.min }), min: x.min, test: true, keys: '', allowed: '' } : null; }
+/** Any lesson by id: the 28 lessons, a test or the tricky keys. */
+function lessonById(id) { return LESSONS.find(L => L.id === id) || testLesson(id) || (id === 'tricky' ? trickyLesson() : null); }
 
 // ---------------------------------------------------------------- screens
 const $ = id => document.getElementById(id);
 const screen = $('screen');
 const P = (BRBx && BRBx.params) || {};
-const locked = P.lock === 1 && LESSONS.some(L => L.id === P.chapter);
+const locked = P.lock === 1 && !!P.chapter && (LESSONS.some(L => L.id === P.chapter) || TESTS.some(x => x.id === P.chapter) || P.chapter === 'tricky');
 let cur = null;   // the lesson being typed
 
 function starsHtml(n) { let s = ''; for (let i = 1; i <= 3; i++) s += i <= n ? '★' : '<span class="off">★</span>'; return s; }
@@ -328,10 +408,12 @@ const unlocked = i => i === 0 || !!save.done[LESSONS[i - 1].id] || !!save.done[L
 
 function showMap() {
   cur = null; stopKeys();
-  if (locked) return showIntro(LESSONS.find(L => L.id === P.chapter));
+  if (locked) return showIntro(lessonById(P.chapter) || trickyLesson() || LESSONS[0]);
   const nextI = LESSONS.findIndex(L => !save.done[L.id]);
   let html = `<div class="card hello"><span class="big" aria-hidden="true">🥚</span><div><b>${esc(t('tag'))}</b><p class="muted" style="margin:.3em 0 0">${esc(t('hello'))}</p></div></div>`;
-  for (let u = 1; u <= 4; u++) {
+  const tk = trickyKeys();
+  if (tk.length) html += `<div class="card tricky"><span class="big" aria-hidden="true">🎯</span><div><b>${esc(t('trickyH'))}</b><p class="muted" style="margin:.3em 0 0">${esc(t('trickySub'))} ${tk.map(k => `<span class="keycap">${esc(k.toUpperCase())}</span>`).join('')}</p></div><button type="button" class="btn" data-lesson="tricky">${esc(t('startBtn'))}</button></div>`;
+  for (let u = 1; u <= UNITS; u++) {
     html += `<h2 class="unit">${esc(t('unit' + u))}</h2><div class="grid">`;
     LESSONS.forEach((L, i) => {
       if (L.unit !== u) return;
@@ -341,6 +423,16 @@ function showMap() {
         <span class="st" aria-label="${d ? d.s : 0} / 3">${starsHtml(d ? d.s : 0)}</span></button>`;
     });
     html += '</div>';
+    if (u === UNITS) {   // the timed tests (they open once the top row is done)
+      const open = !!save.done[TEST_AFTER];
+      html += `<h2 class="unit">${esc(t('testsH'))}</h2><p class="muted" style="margin:0 0 8px">${esc(open ? t('testsSub') : t('testsLocked'))}</p><div class="grid">`;
+      for (const x of TESTS) {
+        const r = save.tests[x.id];
+        html += `<button type="button" class="tile" data-lesson="${x.id}"${open ? '' : ` disabled title="${esc(t('testsLocked'))}"`}>${open ? '' : '<span class="lock" aria-hidden="true">🔒</span>'}
+          <span class="ic" aria-hidden="true">⏱️</span><span class="nm">${esc(t('testN', { n: x.min }))}</span>${r ? `<span class="best">${esc(t('bestWpm', { n: r.w }))} · ${r.a}%</span>` : ''}</button>`;
+      }
+      html += '</div>';
+    }
   }
   screen.innerHTML = html;
   drawTop();
@@ -349,24 +441,27 @@ function showMap() {
 function showIntro(L) {
   stopKeys();
   const i = LESSONS.indexOf(L);
-  cur = { L, i, lines: drillsFor(L), line: 0, pos: 0, errs: 0, ok: 0, ms: 0, t0: 0, typed: 0, miss: {}, hit: {}, wrongHere: false };
+  cur = { L, i, lines: drillsFor(L), line: 0, pos: 0, errs: 0, ok: 0, ms: 0, t0: 0, typed: 0, miss: {}, hit: {}, wrongHere: false, start: 0 };
   screen.innerHTML = `<div class="card">
-    <div class="lesson-h"><h2>${esc(t('lessonN', { n: i + 1 }))}: ${esc(L.name)}</h2>${locked ? '' : `<button type="button" class="pill" data-go="map">← ${esc(t('map'))}</button>`}</div>
-    <p class="tip">${esc(t('intro_' + L.id))}</p>
+    <div class="lesson-h"><h2>${esc(heading(cur))}</h2>${locked ? '' : `<button type="button" class="pill" data-go="map">← ${esc(t('map'))}</button>`}</div>
+    <p class="tip">${esc(introText(L))}</p>
     ${i === 0 ? `<p class="note">${esc(t('how1'))} ${esc(t('how2'))}</p>` : ''}
     ${L.caps ? `<p class="note">${esc(t('shiftHint'))}</p>` : ''}
     <div class="actions"><button type="button" class="btn" data-go="type">${esc(t('startBtn'))}</button></div>
     <p class="muted center">${esc(t('start'))}</p>
   </div>${keyboardHtml(L)}`;
-  say(t('intro_' + L.id));
+  say(introText(L));
   drawTop();
   listen(e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); startTyping(); } });
 }
 
+function heading(c) { return c.i >= 0 ? `${t('lessonN', { n: c.i + 1 })}: ${c.L.name}` : c.L.name; }
+function introText(L) { return L.test ? t('intro_test', { n: L.min }) : L.tricky ? t('intro_tricky') : t('intro_' + L.id); }
+let tick = 0;   // the test clock's timer
 function startTyping() {
   stopKeys();
   screen.innerHTML = `<div class="card">
-    <div class="lesson-h"><h2>${esc(t('lessonN', { n: cur.i + 1 }))}: ${esc(cur.L.name)}</h2><span class="dots" id="dots"></span>
+    <div class="lesson-h"><h2>${esc(heading(cur))}</h2>${cur.L.test ? `<span class="live" id="liveWpm"></span><span class="timer" id="timer" role="timer">${clock(cur.L.min * 60)}</span>` : '<span class="dots" id="dots"></span>'}
       ${locked ? '' : `<button type="button" class="pill" data-go="map">← ${esc(t('map'))}</button>`}</div>
     <p class="stats"><span id="lineOf"></span><span id="fingerTip" class="finger"></span></p>
     <div class="line" id="line" role="textbox" aria-readonly="true" aria-label="${esc(t('lineOf', { n: 1, total: cur.lines.length }))}"></div>
@@ -376,13 +471,24 @@ function startTyping() {
   drawLine();
   listen(onKey);
 }
+const clock = secs => `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+/** The test clock: starts with the first key, ends the test when the time is up. */
+function testTick() {
+  if (!cur || !cur.L.test || !cur.start) return;
+  const ms = performance.now() - cur.start, left = Math.max(0, Math.ceil((cur.L.min * 60000 - ms) / 1000));
+  const el = $('timer'); if (el) { el.textContent = clock(left); el.classList.toggle('low', left <= 10); }
+  const w = $('liveWpm'); if (w && ms > 3000) w.textContent = t('liveWpm', { n: Math.round((cur.typed / 5) / (ms / 60000)) });
+  if (left <= 0) { clearInterval(tick); tick = 0; cur.ms = cur.L.min * 60000; lessonDone(); }
+}
 function keyboardHtml(L) {
-  const allowed = new Set((L ? L.allowed : '').split(''));
-  const k = c => `<button type="button" class="key${'fj'.includes(c) ? ' home' : ''}${L && !L.caps && !L.sentences && !allowed.has(c) ? ' unused' : ''}" data-key="${esc(c)}" style="background:var(--f-${FINGER[c]})" tabindex="-1" aria-label="${esc(c)}">${esc(c.toUpperCase())}</button>`;
+  const allowed = new Set((L ? L.allowed : '').split('').map(baseKey));
+  const all = !L || L.caps || L.sentences || L.test || L.marks || L.apos || L.numWords;
+  const k = c => `<button type="button" class="key${'fj'.includes(c) ? ' home' : ''}${!all && !allowed.has(c) ? ' unused' : ''}" data-key="${esc(c)}" style="background:var(--f-${FINGER[c]})" tabindex="-1" aria-label="${esc(c)}">${esc(c.toUpperCase())}</button>`;
   return `<div class="kb" aria-hidden="true">
     <div class="row">${ROWS[0].split('').map(k).join('')}</div>
     <div class="row">${ROWS[1].split('').map(k).join('')}</div>
-    <div class="row"><button type="button" class="key wide" data-key="shiftL" style="background:var(--f-lp)" tabindex="-1">Shift</button>${ROWS[2].split('').map(k).join('')}<button type="button" class="key wide" data-key="shiftR" style="background:var(--f-rp)" tabindex="-1">Shift</button></div>
+    <div class="row">${ROWS[2].split('').map(k).join('')}</div>
+    <div class="row"><button type="button" class="key wide" data-key="shiftL" style="background:var(--f-lp)" tabindex="-1">Shift</button>${ROWS[3].split('').map(k).join('')}<button type="button" class="key wide" data-key="shiftR" style="background:var(--f-rp)" tabindex="-1">Shift</button></div>
     <div class="row"><button type="button" class="key space" data-key=" " style="background:var(--f-th)" tabindex="-1">space</button></div>
   </div>
   <div class="legend">${['lp', 'lr', 'lm', 'li', 'ri', 'rm', 'rr', 'rp'].map(f => `<span><i style="background:var(--f-${f})"></i>${esc(t('f_' + f))}</span>`).join('')}</div>`;
@@ -401,9 +507,10 @@ function drawLine() {
   if (inWord) h += '</b>';
   $('line').innerHTML = h;
   $('lineOf').textContent = t('lineOf', { n: cur.line + 1, total: cur.lines.length });
-  $('dots').innerHTML = cur.lines.map((_, i) => `<i class="${i < cur.line ? 'on' : ''}"></i>`).join('');
+  if ($('dots')) $('dots').innerHTML = cur.lines.map((_, i) => `<i class="${i < cur.line ? 'on' : ''}"></i>`).join('');
+  if (cur.L.test) $('lineOf').textContent = '';
   const want = s[cur.pos];
-  const low = want.toLowerCase();
+  const low = baseKey(want);
   const f = FINGER[low] || 'th';
   $('fingerTip').textContent = t('finger', { finger: t('f_' + f) });
   document.querySelectorAll('.key.hit').forEach(el => el.classList.remove('hit'));
@@ -414,7 +521,7 @@ function drawLine() {
 // ---------------------------------------------------------------- typing
 let keyFn = null;
 function listen(fn) { stopKeys(); keyFn = fn; document.addEventListener('keydown', keyFn); }
-function stopKeys() { if (keyFn) document.removeEventListener('keydown', keyFn); keyFn = null; }
+function stopKeys() { if (keyFn) document.removeEventListener('keydown', keyFn); keyFn = null; if (tick) { clearInterval(tick); tick = 0; } }
 function onKey(e) {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key.length !== 1) return;          // Shift, arrows and the like
@@ -426,7 +533,8 @@ function press(ch) {
   const s = cur.lines[cur.line], want = s[cur.pos];
   const now = performance.now();
   if (!cur.t0) cur.t0 = now;
-  const k = want.toLowerCase();
+  if (cur.L.test && !cur.start) { cur.start = now; tick = setInterval(testTick, 250); }
+  const k = baseKey(want);
   if (ch === want) {
     if (!cur.wrongHere) { cur.ok++; if (k !== ' ') cur.hit[k] = (cur.hit[k] || 0) + 1; }
     cur.wrongHere = false; cur.pos++; cur.typed++;
@@ -443,6 +551,7 @@ function press(ch) {
 function lineDone(now) {
   cur.ms += now - cur.t0; cur.t0 = 0;
   cur.line++; cur.pos = 0;
+  if (cur.L.test) cur.lines.push(testLine());
   if (cur.line >= cur.lines.length) return lessonDone();
   sfx('coin');
   drawLine();
@@ -454,20 +563,31 @@ function lessonDone() {
   const acc = Math.round((100 * cur.ok) / Math.max(1, cur.ok + cur.errs));
   const wpm = Math.min(200, Math.round((cur.typed / 5) / Math.max(1 / 60, cur.ms / 60000)));
   const stars = acc >= CONFIG.starsAt[0] ? 3 : acc >= CONFIG.starsAt[1] ? 2 : 1;
-  const prev = save.done[L.id];
-  save.done[L.id] = { s: Math.max(stars, prev ? prev.s : 0), w: Math.max(wpm, prev ? prev.w : 0), a: Math.max(acc, prev ? prev.a : 0), n: (prev ? prev.n : 0) + 1, t: Date.now(), la: acc, lw: wpm };
+  if (L.test) {
+    // A test keeps its best run (speed with that run's accuracy) and the last 20 runs, for the teacher's page.
+    const prev = save.tests[L.id];
+    const better = !prev || wpm > prev.w || (wpm === prev.w && acc > prev.a);
+    save.tests[L.id] = { w: better ? wpm : prev.w, a: better ? acc : prev.a, n: (prev ? prev.n : 0) + 1, t: Date.now(), lw: wpm, la: acc };
+    save.tests.log = (Array.isArray(save.tests.log) ? save.tests.log : []).concat([[L.min, wpm, acc, Date.now()]]).slice(-20);
+  } else if (L.tricky) {
+    save.practice = { n: ((save.practice && save.practice.n) || 0) + 1, t: Date.now() };
+  } else {
+    const prev = save.done[L.id];
+    save.done[L.id] = { s: Math.max(stars, prev ? prev.s : 0), w: Math.max(wpm, prev ? prev.w : 0), a: Math.max(acc, prev ? prev.a : 0), n: (prev ? prev.n : 0) + 1, t: Date.now(), la: acc, lw: wpm };
+  }
   for (const k in cur.hit) { const r = save.keys[k] || [0, 0]; r[0] += cur.hit[k]; save.keys[k] = r; }
   for (const k in cur.miss) { const r = save.keys[k] || [0, 0]; r[1] += cur.miss[k]; save.keys[k] = r; }
   save.secs += Math.round(cur.ms / 1000); save.last = Date.now();
   store();
   // For a class lesson step: the speed as the score, with accuracy and stars beside it (the teacher's gradebook).
   try {
-    if (BRBx && BRBx.score) BRBx.score.submit(wpm, `L${cur.i + 1} ${acc}% ${stars}* ${wpm} wpm`.slice(0, 40));
+    const what = L.test ? `Test ${L.min}m` : L.tricky ? 'Tricky keys' : `L${cur.i + 1}`;
+    if (BRBx && BRBx.score) BRBx.score.submit(wpm, `${what} ${acc}% ${stars}* ${wpm} wpm`.slice(0, 40));
     if (BRBx && BRBx.gameOver) BRBx.gameOver({ won: true, score: wpm });
   } catch (e) { /* preview */ }
   sfx('win');
   screen.innerHTML = `<div class="card center">
-    <h2 style="margin:0">${esc(t('doneH'))}</h2>
+    <h2 style="margin:0">${esc(L.test ? t('timeUp') : L.tricky ? t('practiceDone') : t('doneH'))}</h2>
     <div class="stars" aria-label="${stars} / 3">${starsHtml(stars)}</div>
     <p><b>${esc(stars === 3 ? t('great') : t('keepGoing'))}</b></p>
     <div class="nums"><div class="num">${esc(t('speed'))}<b>${esc(t('wpm', { n: wpm }))}</b></div><div class="num">${esc(t('acc'))}<b>${esc(t('pct', { n: acc }))}</b></div></div>
@@ -510,7 +630,7 @@ function hatch() {
   store();
   try { if (BRBx && BRBx.fx) BRBx.fx.confetti(); } catch (e) { /* reduced motion */ }
   sfx('powerup');
-  const L = cur.L, nextL = LESSONS[cur.i + 1];
+  const L = cur.L, nextL = cur.i >= 0 ? LESSONS[cur.i + 1] : null;
   $('egg').parentElement.innerHTML = `<div class="pet${shiny ? ' shiny' : ''}" aria-hidden="true">${pet[1]}</div><p style="font-size:1.3rem"><b>${esc(msg)}</b></p>`;
   say(msg + ' ' + pick([t('praise1'), t('praise2'), t('praise3')]));
   const acts = document.createElement('div');
@@ -538,22 +658,24 @@ document.addEventListener('click', e => {
   if (b.id === 'soundBtn') { if (BRBx && BRBx.sfx) BRBx.sfx.mute(); drawTop(); return; }
   if (b.id === 'petsBtn') { showPets(); return; }
   if (b.id === 'egg') { crack(); return; }
-  if (b.dataset.lesson) { const L = LESSONS.find(x => x.id === b.dataset.lesson); if (L) showIntro(L); return; }
+  if (b.dataset.lesson) { const L = lessonById(b.dataset.lesson); if (L) showIntro(L); return; }
   if (b.dataset.go === 'map') { showMap(); return; }
   if (b.dataset.go === 'pets') { showPets(); return; }
   if (b.dataset.go === 'type') { startTyping(); return; }
   if (b.dataset.key && cur && keyFn === onKey) {
     const k = b.dataset.key;
     if (k === 'shiftL' || k === 'shiftR') { shiftOn = !shiftOn; return; }
-    press(shiftOn ? k.toUpperCase() : k); shiftOn = false;
+    press(shiftOn ? (UP[k] || k.toUpperCase()) : k); shiftOn = false;
   }
 });
 let shiftOn = false;   // tapping Shift on the keyboard below, for a big letter
 
 // For cover pictures and tests (scripts/covers/typing-pets.recipe.js).
 window.__brbTest = {
-  lesson: id => showIntro(LESSONS.find(L => L.id === id) || LESSONS[0]),
-  type: id => { showIntro(LESSONS.find(L => L.id === id) || LESSONS[0]); startTyping(); },
+  lesson: id => showIntro(lessonById(id) || LESSONS[0]),
+  type: id => { showIntro(lessonById(id) || LESSONS[0]); startTyping(); },
+  // a test without waiting for the clock: type n characters, then the time is up
+  finishTest: () => { if (cur && cur.L.test) { cur.ms = cur.L.min * 60000; lessonDone(); } },
   typeAll: () => { if (!cur) return; while (cur && cur.line < cur.lines.length && keyFn === onKey) press(cur.lines[cur.line][cur.pos]); },
   crackAll: () => { while (egg && !egg.done) crack(); },
   pets: () => showPets(),

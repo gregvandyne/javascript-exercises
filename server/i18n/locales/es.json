@@ -5504,6 +5504,24 @@
     },
     "typing": {
       "title": "Mascotas Teclado",
+      "inAll": "en total",
+      "bestTest": "Mejor prueba",
+      "noTest": "Aún sin prueba cronometrada",
+      "goalMet": "Meta alcanzada",
+      "goalNotYet": "Todavía no",
+      "goalH": "Meta de la clase",
+      "goalWpm": "Velocidad (ppm)",
+      "goalAcc": "Precisión (%)",
+      "goalSave": "Guardar meta",
+      "goalHint": "Se compara con la mejor prueba cronometrada de cada estudiante. Deja la velocidad vacía para quitar la meta.",
+      "goalSummary": "meta {wpm} ppm con {acc} %: {met} de {total} la cumplen",
+      "goalArchived": "Esta clase está archivada.",
+      "goalSaved": "Meta guardada",
+      "goalCleared": "Meta quitada",
+      "testN": "Prueba de {n} minutos",
+      "trickyPractice": "Sus teclas difíciles (práctica)",
+      "assignPick": "Qué abren los estudiantes",
+      "assignFree": "Cualquier lección (eligen los estudiantes)",
       "started": "{started} de {total} estudiantes han escrito",
       "lessons": "Lecciones",
       "next": "Siguiente",
@@ -6645,7 +6663,7 @@
       "wordTrail": "Las palabras más frecuentes del inglés, de preescolar a 3.º grado, en un sendero de cuento con Bramble, el erizo: escucha una palabra y tócala, completa una frase, deletréala con fichas, en lecciones cortas con racha diaria.",
       "crossword": "Convierte cualquier lista de vocabulario en un crucigrama: escribe o sube las palabras, añade pistas o deja que la IA las escriba, y compártelo con la clase.",
       "mistakeHunt": "Encuentra y corrige los errores de un texto corto: el docente pega su propio texto, siembra errores de ortografía, gramática y puntuación, y luego lo comparte, lo asigna o lo imprime.",
-      "typingPets": "Aprende a escribir con el teclado tecla a tecla, con un color para cada dedo: 20 lecciones cortas de la fila central a las frases y, tras cada lección, un huevo con una mascota nueva."
+      "typingPets": "Aprende a escribir con el teclado tecla a tecla, con un color para cada dedo: 28 lecciones cortas de la fila central a las frases y, tras cada lección, un huevo con una mascota nueva."
     },
     "hubs": {
       "math": {
