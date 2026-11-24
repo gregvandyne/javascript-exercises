@@ -106,7 +106,8 @@
 .sb-node.is-end{background:var(--spark-soft);border-color:var(--spark-press)}
 .sb-node.is-lost{border-style:dashed;border-color:var(--danger)}
 .sb-node.is-sel{box-shadow:0 0 0 3px var(--focus);border-color:var(--focus)}
-.sb-plist{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:6px;max-height:560px;overflow:auto}
+/* Room on the scrolling side, so a scrollbar drawn over the list (macOS) never covers a page or its highlight. */
+.sb-plist{list-style:none;margin:0 0 10px;padding:0 14px 0 0;padding-inline:0 14px;display:flex;flex-direction:column;gap:6px;max-height:560px;overflow:auto}
 .sb-pitem{display:flex;align-items:center;gap:10px;width:100%;padding:6px;border-radius:var(--r-sm);border:2px solid transparent;background:var(--card-2);color:var(--text);font:inherit;text-align:start;cursor:pointer;min-height:48px}
 .sb-pitem:hover{background:var(--hover)}
 .sb-pitem.on{border-color:var(--current)}
@@ -142,7 +143,7 @@
 @media (max-width:980px){ .sb-pedit{grid-template-columns:1fr} }
 @media (max-width:899px){
   .sb-ebody{grid-template-columns:1fr;grid-template-areas:"map" "list" "page"}
-  .sb-plist{flex-direction:row;overflow-x:auto;max-height:none;padding-bottom:4px}
+  .sb-plist{flex-direction:row;overflow-x:auto;max-height:none;padding-inline:0;padding-bottom:14px}
   .sb-plist li{flex:0 0 200px}
 }
 @media (max-width:480px){
