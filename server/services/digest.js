@@ -119,17 +119,18 @@ export function classSummary(c, t = now(), zone = FALLBACK_TZ, { names = false }
   const due = gb.lessons.map((cl, i) => ({ cl, i })).filter(({ cl }) => cl.due_at && cl.due_at >= today && cl.due_at < today + WEEK);
   let done = 0, total = 0;
   const notStarted = [];
-  const openWork = gb.lessons.some(cl => !cl.locked && cl.steps > 0);
+  // A lesson assigned to some students counts only for them (their cells; the others' are na and empty), so a student
+  // with no open lesson of their own is never "not started".
   for (const p of gb.students) {
     let started = false;
-    for (const x of p.cells) { if (x.locked) continue; total += x.total; done += Math.min(x.done, x.total); if (x.done || x.last) started = true; }
-    if (openWork && !started) notStarted.push(p);
+    for (const x of p.cells) { if (x.locked || x.na) continue; total += x.total; done += Math.min(x.done, x.total); if (x.done || x.last) started = true; }
+    if (P.hasOpenWork(p) && !started) notStarted.push(p);
   }
   const toRead = P.toReadByClass([c.id])[c.id] || 0;
   const live = q.get('SELECT COUNT(*) n FROM live_runs WHERE class_id=? AND ended_at>=? AND ended_at<=?', c.id, t - WEEK, t).n;
   const recent = q.get(`SELECT COUNT(*) n FROM step_progress p JOIN class_lessons cl ON cl.id=p.class_lesson_id AND cl.removed_at IS NULL
     JOIN class_members m ON m.class_id=cl.class_id AND m.user_id=p.user_id AND m.status='active' AND m.role='student'
-    WHERE cl.class_id=? AND p.updated_at>=? AND p.updated_at<=?`, c.id, t - WEEK, t).n;
+    WHERE cl.class_id=? AND p.updated_at>=? AND p.updated_at<=? AND ${L.assignedSql('cl.id', 'p.user_id')}`, c.id, t - WEEK, t).n;
   const out = {
     id: c.id, name: c.name, school: c.school_name || '', students: gb.students.length,
     due: due.length, pct: total ? Math.round((100 * done) / total) : null, toRead, notStarted: notStarted.length, live, recent,

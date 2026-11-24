@@ -13005,6 +13005,61 @@ Owner: "Continue to work towards feature parity" (with typing.com).
   the pass mark, typing games, certificates.
 - Tests: `tests/unit/typing.test.js`.
 
+## Typing Pets, part 4: grades from pass marks, unlock minimums, paragraph units (24 Nov 2026)
+
+Owner: "Build 2 3 4 right now" (grades and course minimums; intermediate and advanced content; assigning to single
+students, which is its own entry).
+- **Grades from a pass mark**: the server now decides. A Typing Pets step assigned with a pass mark
+  (`mode=a90-w20`; `services/typing.js passOfStep`) is done only when a reported run reaches the mark; a bare game
+  over never finishes it. Its grade (`gradeOf`) is how close the best run came: half accuracy, half speed when both
+  are set, each capped at full marks, so a passing run is 100%. It counts in the class Score as a `typing` item worth
+  10 points (`services/scores.js`), and the student report lists it ("Typing pass mark"). The game reports every
+  finished run (`won` = passed) instead of only passing ones. Steps without a pass mark are unchanged.
+- **Minimums to open each next lesson** (typing.com's benchmarks): on the class goal form, accuracy and/or speed a
+  student needs in a lesson before the next opens (`typing_goals.unlock_acc/unlock_wpm`, migration 0117). The game
+  gets them as `BRB.classRules` (`{ acc, wpm }`, the strictest across the student's active classes; never for a
+  guest, a teacher or a preview; documented in docs/sdk.md). A lesson already done stays open; a locked tile says
+  what the teacher asks for, and the lesson's end says so too instead of offering Next.
+- **Units 6 and 7**: Paragraphs (lessons 29–34) and Longer reading (35–40), twelve passages written for the game
+  (animal facts, space, names and places, numbers, dialogue in quotes, science, history, instructions, a story,
+  semicolons and dashes, a final speed run). Only characters the keyboard types; a test runs each through the same
+  cleaner as a teacher's lesson. 40 lessons in all.
+- Tests: `tests/unit/typing.test.js`.
+
+## Assign to some students (24 Nov 2026)
+
+For parity with typing.com, which lets teachers assign work to individual students:
+- **Data** (`class_lesson_students`, migration 0120; 0116-0119 left for the typing branch): one row per student on a
+  class lesson's list. No rows = the whole class, so every assignment made before keeps working unchanged.
+- **Teachers**: "Assign to: Whole class (default) / Some students" with a tick list of the class's students (roster
+  names) on every assign form: the Assign page (`/teach/assign`, after the due date), the lesson page's Assign, the
+  class's Add lesson, and the ⋯ menu of an assigned lesson (desktop and phone), where the list can be changed or set back
+  to Whole class later. A form with a class picker has one list per class; only the picked class's list shows and is
+  sent (`public/js/app.js`). The Assigned list and the gradebook column say "N students".
+- **Rules** (`services/lessons.js` `setStudents`, `assign`, `updateAssignment`, `studentsInput`): only the class's
+  managers set it; every id must be an active student of the class, otherwise 400 and nothing changes (never quietly
+  dropped); "Some students" with none ticked is refused. A lesson removed and assigned again is for whoever the new
+  assign says. A student who leaves keeps their row (removing it could turn the lesson into a whole-class one) and stops
+  seeing the class, as before.
+- **Students** (`assignedTo`, `assignedSql`, `classPlan({ userId })`): the class page's lessons, To do (the Class tab,
+  the home strip), the lesson page and every progress API (`progress.context`: not found, as for another class's
+  lesson), so a live run or a Story Library book can't write their cell either. The class dashboard's push and tiles
+  offer only whole-class lessons (they reach every screen). Hidden games and course pages stay open only through a
+  lesson the student has.
+- **Gradebook** (`progress.classProgress`): a student a lesson leaves out has a `na` cell: an en dash with "Not
+  assigned" for screen readers ("Not assigned" in the CSV), counted nowhere: Work done, Score (`scores.js`), late counts,
+  rubric and quiz figures, standards evidence, answers to review. Work done before the list changed stays stored and
+  counts again if the student goes back on the list. The lesson's own progress page, the per-student report, the
+  Lessons tab counts and the teacher digest follow the same rule. Teachers can't review or rubric-score a student the
+  lesson leaves out.
+- **Google Classroom: the safe option.** A lesson for some students is never posted, shared as a material or announced
+  (`someStudents`; the toast and the Classroom page say why: in Classroom it would reach the whole course). Posting with
+  `assigneeMode: INDIVIDUAL_STUDENTS` was left out: only students linked to a Google account could be named, a later
+  change to the list would need `modifyAssignees` kept in step, and a mismatch would show work to the wrong children. A
+  lesson posted for the whole class before its list was set stays posted; its grades go only to the students on the
+  list. Nothing new goes to Google, so docs/legal-review.md is unchanged.
+- Tests: `tests/unit/assign-students.test.js`.
+
 
 ## Word Hunt and Crossword: the AI look and a focus line for the lesson upload (24 Nov 2026)
 

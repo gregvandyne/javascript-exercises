@@ -471,8 +471,76 @@ export const unitsOf = classId => q.all('SELECT * FROM class_units WHERE class_i
 export const classLessons = classId => withZones(q.all(`SELECT cl.*, l.title, l.summary, l.subject, l.grade, l.owner_id, l.school_id, l.kind, sch.settings school_settings,
     (SELECT s.game_id FROM lesson_steps s WHERE s.lesson_id=l.id AND s.kind='game' ORDER BY s.position LIMIT 1) first_game,
     (SELECT s.story_id FROM lesson_steps s WHERE s.lesson_id=l.id AND s.kind='story' ORDER BY s.position LIMIT 1) first_story,
-    (SELECT COUNT(*) FROM lesson_steps s WHERE s.lesson_id=l.id) steps, (SELECT COALESCE(SUM(minutes),0) FROM lesson_steps s WHERE s.lesson_id=l.id) minutes
+    (SELECT COUNT(*) FROM lesson_steps s WHERE s.lesson_id=l.id) steps, (SELECT COALESCE(SUM(minutes),0) FROM lesson_steps s WHERE s.lesson_id=l.id) minutes,
+    (SELECT COUNT(*) FROM class_lesson_students x WHERE x.class_lesson_id=cl.id) picked
   FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id ${SCHOOL_OF} WHERE cl.class_id=? AND cl.removed_at IS NULL ORDER BY cl.position, cl.assigned_at`, classId));
+
+// ---------------------------------------------------------------- some students (class_lesson_students, 0120)
+// A class lesson is for the whole class (no rows: every assignment made before this) or for the students listed. Every
+// place a student sees or works on assigned lessons asks assignedTo / assignedSql / classPlan({ userId }); the class's
+// staff still see every lesson, and the gradebook shows "not assigned" in the other students' cells (progress.js).
+// The list holds only active students of the class when it is set; a student who leaves keeps their row (taking it
+// away could turn the lesson into a whole-class one), and stops seeing the class anyway.
+/** SQL that is true when the student in userCol (a column) is assigned the class lesson in clCol: whole class, or listed. */
+export const assignedSql = (clCol, userCol) => `(NOT EXISTS (SELECT 1 FROM class_lesson_students cls WHERE cls.class_lesson_id=${clCol})
+  OR EXISTS (SELECT 1 FROM class_lesson_students cls WHERE cls.class_lesson_id=${clCol} AND cls.user_id=${userCol}))`;
+/** The students a class lesson is assigned to, by id; [] = the whole class. */
+export const studentsOfLesson = clId => (clId ? q.all('SELECT user_id FROM class_lesson_students WHERE class_lesson_id=?', clId).map(r => r.user_id) : []);
+/** Is this student assigned the class lesson (the whole class's, or one listing them)? */
+export function assignedTo(clId, userId) {
+  const ids = studentsOfLesson(typeof clId === 'object' && clId ? clId.id : clId);
+  return !ids.length || ids.includes(userId);
+}
+/** The class's lessons assigned to some students: Map clId -> Set of student ids (one query for the class). */
+export function picksIn(classId) {
+  const out = new Map();
+  for (const r of q.all('SELECT x.class_lesson_id cl, x.user_id u FROM class_lesson_students x JOIN class_lessons c ON c.id=x.class_lesson_id WHERE c.class_id=? AND c.removed_at IS NULL', classId)) {
+    let set = out.get(r.cl); if (!set) out.set(r.cl, set = new Set()); set.add(r.u);
+  }
+  return out;
+}
+/** At most this many students in one list (a class is never bigger). */
+export const MAX_PICKED = 500;
+/** "Assign to" from a form or the API: who 'all' = the whole class ([]), 'some' = the ids in students (one id or a
+ *  list; none ticked is an error), nothing sent = students as given (an API call), or undefined (unchanged; for a new
+ *  assignment, the whole class). -> { ok, students: [ids] | undefined } | { ok: false, code: 'pickStudents' | 'badRequest' } */
+export function studentsInput({ who, students } = {}) {
+  const list = students === undefined || students === null || students === '' ? [] : [].concat(students);
+  if (list.some(x => typeof x !== 'string' || !x || x.length > 64) || list.length > MAX_PICKED) return fail('badRequest');
+  const ids = [...new Set(list)];
+  if (who === 'all') return ok({ students: [] });
+  if (who === 'some') return ids.length ? ok({ students: ids }) : fail('pickStudents');
+  if (who !== undefined && who !== null && who !== '') return fail('badRequest');
+  return ok({ students: students === undefined ? undefined : ids });
+}
+/** Only active students of the class may be listed: anyone else (a teacher, another class's student, an unknown id)
+ *  is refused, never left out quietly. -> code | null */
+function checkStudents(classId, ids) {
+  if (!ids.length) return null;
+  if (ids.length > MAX_PICKED) return 'badRequest';
+  const inClass = new Set(S.roster(classId).filter(p => p.role === 'student').map(p => p.id));
+  return ids.every(id => inClass.has(id)) ? null : 'notInClass';
+}
+const writeStudents = (clId, ids) => tx(() => {
+  q.run('DELETE FROM class_lesson_students WHERE class_lesson_id=?', clId);
+  for (const id of ids) q.run('INSERT INTO class_lesson_students(class_lesson_id, user_id) VALUES (?,?)', clId, id);
+});
+/** Set who a class lesson is for: [] = the whole class, else these students of the class (the class's managers only).
+ *  -> { ok, students } | { ok: false, code: notFound | notInClass | badRequest } */
+export function setStudents(u, clId, students) {
+  const cl = getClassLesson(clId); if (!cl || !managed(u, cl.class_id)) return fail('notFound');
+  if (!Array.isArray(students) || students.some(x => typeof x !== 'string')) return fail('badRequest');
+  const ids = [...new Set(students)];
+  const bad = checkStudents(cl.class_id, ids); if (bad) return fail(bad);
+  writeStudents(cl.id, ids);
+  audit(u.id, 'lesson.students', cl.class_id, { classLesson: cl.id, students: ids.length });
+  return ok({ students: ids });
+}
+// A school account merged into the student's own one (schools.mergeIntoAccount): their place on lists moves with them.
+S.onAccountMerge(({ from, into }) => {
+  q.run('UPDATE OR IGNORE class_lesson_students SET user_id=? WHERE user_id=?', into, from);
+  q.run('DELETE FROM class_lesson_students WHERE user_id=?', from);
+});
 
 // ---------------------------------------------------------------- days in the school's time zone
 // opens_at / due_at are stored as the calendar day at 00:00 UTC and mean "this date". With a school time zone, the date
@@ -533,8 +601,10 @@ export function lateFrom(cl) {
   return tz ? dayBounds(cl.due_at, tz).end : cl.due_at + LATE_AFTER;
 }
 /** Units in order, each with its lessons; lessons without a unit come first (unit null). openOnly: what students see. */
-export function classPlan(classId, { openOnly = false } = {}) {
-  const ls = classLessons(classId).filter(cl => !openOnly || isOpen(cl));
+/** userId: only the lessons that student is assigned (the whole class's and those listing them), for what a student sees. */
+export function classPlan(classId, { openOnly = false, userId = null } = {}) {
+  const picks = userId ? picksIn(classId) : null;
+  const ls = classLessons(classId).filter(cl => (!openOnly || isOpen(cl)) && (!picks || !picks.has(cl.id) || picks.get(cl.id).has(userId)));
   const groups = [{ unit: null, lessons: ls.filter(cl => !cl.unit_id) }];
   for (const u of unitsOf(classId)) groups.push({ unit: u, lessons: ls.filter(cl => cl.unit_id === u.id) });
   return openOnly ? groups.filter(g => g.lessons.length) : groups;
@@ -573,7 +643,9 @@ export function reorderUnit(u, unitId, dir) {
   return ok();
 }
 /** Assign a lesson to a class. The teacher must be able to edit the lesson or see it shared in the class's school. */
-export function assign(u, classId, lessonId, { unitId = null, opensAt = null, dueAt = null } = {}) {
+/** students: who it is for ([] or left out = the whole class; else ids of the class's active students, checked first,
+ *  so a refused list assigns nothing). */
+export function assign(u, classId, lessonId, { unitId = null, opensAt = null, dueAt = null, students = [] } = {}) {
   const c = managed(u, classId); if (!c) return fail('notFound');
   const l = getLesson(lessonId);
   // Assigned before and removed: bring it back with its students' work (any teacher of the class may undo a removal).
@@ -584,11 +656,15 @@ export function assign(u, classId, lessonId, { unitId = null, opensAt = null, du
   const o = dateOrNull(opensAt), d = dateOrNull(dueAt);
   if (o === undefined || d === undefined) return fail('badDate');
   if (q.get('SELECT 1 FROM class_lessons WHERE class_id=? AND lesson_id=? AND removed_at IS NULL', c.id, l.id)) return { ok: false, code: 'alreadyAssigned', className: c.name };
+  const picked = Array.isArray(students) ? [...new Set(students.map(String))] : [];
+  const bad = checkStudents(c.id, picked); if (bad) return fail(bad);
   const pos = nextPos('class_lessons', 'class_id=? AND unit_id IS ? AND removed_at IS NULL', c.id, unitId || null);
   const id = old ? old.id : uid(10);
   if (old) q.run('UPDATE class_lessons SET removed_at=NULL, unit_id=?, position=?, opens_at=?, due_at=?, assigned_by=?, assigned_at=? WHERE id=?', unitId || null, pos, o, d, u.id, now(), id);
   else q.run('INSERT INTO class_lessons(id, class_id, lesson_id, unit_id, position, opens_at, due_at, assigned_by, assigned_at) VALUES (?,?,?,?,?,?,?,?,?)', id, c.id, l.id, unitId || null, pos, o, d, u.id, now());
-  audit(u.id, 'lesson.assign', c.id, { lesson: l.id, restored: !!old });
+  // A lesson brought back is for whoever this assign says (an earlier list is replaced).
+  if (old || picked.length) writeStudents(id, picked);
+  audit(u.id, 'lesson.assign', c.id, { lesson: l.id, restored: !!old, ...(picked.length ? { students: picked.length } : {}) });
   // restored: the row came back; workBack: and students had work in it.
   const workBack = !!old && !!q.get('SELECT 1 FROM step_progress WHERE class_lesson_id=? LIMIT 1', id);
   return ok({ classLesson: getClassLesson(id), restored: !!old, workBack });
@@ -649,8 +725,14 @@ export function assignUnitWithCadence(u, classId, lessonIds, { unitId = null, st
   });
   return ok({ assigned, skipped });
 }
-export function updateAssignment(u, clId, { unitId, opensAt, dueAt } = {}) {
+/** students: undefined = unchanged, [] = the whole class, else these students of the class (checked before anything
+ *  changes). */
+export function updateAssignment(u, clId, { unitId, opensAt, dueAt, students } = {}) {
   const cl = getClassLesson(clId); if (!cl || !managed(u, cl.class_id)) return fail('notFound');
+  if (students !== undefined) {
+    if (!Array.isArray(students)) return fail('badRequest');
+    const bad = checkStudents(cl.class_id, [...new Set(students.map(String))]); if (bad) return fail(bad);
+  }
   const v = { unit_id: cl.unit_id, opens_at: cl.opens_at, due_at: cl.due_at, position: cl.position };
   if (unitId !== undefined) {
     if (unitId) { const un = getUnit(unitId); if (!un || un.class_id !== cl.class_id) return fail('notFound'); }
@@ -659,6 +741,7 @@ export function updateAssignment(u, clId, { unitId, opensAt, dueAt } = {}) {
   if (opensAt !== undefined) { const o = dateOrNull(opensAt); if (o === undefined) return fail('badDate'); v.opens_at = o; }
   if (dueAt !== undefined) { const d = dateOrNull(dueAt); if (d === undefined) return fail('badDate'); v.due_at = d; }
   q.run('UPDATE class_lessons SET unit_id=?, position=?, opens_at=?, due_at=? WHERE id=?', v.unit_id, v.position, v.opens_at, v.due_at, cl.id);
+  if (students !== undefined) return setStudents(u, cl.id, students.map(String));
   return ok();
 }
 export function unassign(u, clId) {
@@ -678,7 +761,7 @@ export function canViewClassLesson(u, cl) {
   if (!u || !cl) return false;
   const c = S.getClass(cl.class_id); if (!c) return false;
   if (S.canManageClass(u, c)) return true;
-  return S.canViewClass(u, c) && isOpen(cl);
+  return S.canViewClass(u, c) && isOpen(cl) && assignedTo(cl.id, u.id);
 }
 /** Classes (managed by u) that a lesson is assigned to. */
 export const assignedClasses = lessonId => withZones(q.all(`SELECT cl.id, cl.class_id, cl.opens_at, cl.due_at, c.name, c.archived_at, sch.settings school_settings FROM class_lessons cl ${SCHOOL_OF} WHERE cl.lesson_id=? AND cl.removed_at IS NULL ORDER BY c.name`, lessonId));

@@ -5,15 +5,17 @@
 // Who may see it is the caller's job (routes/progress.js checkPage: the class's own teachers and school leaders).
 import * as games from './games.js';
 import { q } from '../db.js';
+import { parseParams } from './play-params.js';
 
 export const SLUG = 'typing-pets';
 export const SAVE_KEY = 'typing-pets-v1';
 /** The game's lessons, in order (LESSONS in the game; tests/unit/typing.test.js checks the two agree). */
-export const LESSONS = Array.from({ length: 28 }, (_, i) => `l${String(i + 1).padStart(2, '0')}`);
+export const LESSONS = Array.from({ length: 40 }, (_, i) => `l${String(i + 1).padStart(2, '0')}`);
 /** The game's lesson names, in order (the Assign picker; the game's own LESSONS hold the same). */
 export const LESSON_NAMES = ['F and J', 'D and K', 'S and L', 'A and ;', 'Home row words', 'G and H', 'E and I', 'R and U',
   'T and Y', 'W and O', 'Q and P', 'Top row words', 'V and M', 'C and comma', 'B and N', 'X, Z and period', 'Every row words',
-  'Big letters', 'Sentences', 'Speed run', '4 and 7', '5 and 6', '3 and 8', '2 and 9', '1 and 0', 'Words and numbers', '? and !', "' and -"];
+  'Big letters', 'Sentences', 'Speed run', '4 and 7', '5 and 6', '3 and 8', '2 and 9', '1 and 0', 'Words and numbers', '? and !', "' and -",
+  'Animal facts', 'Into space', 'Names and places', 'Numbers in words', 'Talking in quotes', 'Paragraph speed run', 'Science', 'A page of history', 'How to do it', 'A longer story', 'Tricky punctuation', 'Expert speed run'];
 /** The timed tests (minutes), chapter ids t1, t3, t5. */
 export const TESTS = [1, 3, 5];
 const KEYS = new Set("abcdefghijklmnopqrstuvwxyz0123456789;,./'-".split(''));
@@ -93,19 +95,28 @@ export function classTyping(students) {
 // ---------------------------------------------------------------- class goals
 // A class's typing goal (typing_goals, migration 0115): a speed (wpm) and an accuracy (%) a student's best test is
 // measured against on the progress page. Set by the class's teachers (the route checks canManageClass).
-export const GOAL_LIMITS = { wpm: [5, 120], acc: [50, 100], mins: [0, 60] };
+export const GOAL_LIMITS = { wpm: [5, 120], acc: [50, 100], mins: [0, 60], unlockAcc: [0, 100], unlockWpm: [0, 120] };
 export function getGoal(classId) {
-  const r = q.get('SELECT wpm, acc, mins FROM typing_goals WHERE class_id=?', classId);
-  return r ? { wpm: r.wpm, acc: r.acc, mins: r.mins } : null;
+  const r = q.get('SELECT wpm, acc, mins, unlock_acc, unlock_wpm FROM typing_goals WHERE class_id=?', classId);
+  return r ? { wpm: r.wpm, acc: r.acc, mins: r.mins, unlockAcc: r.unlock_acc, unlockWpm: r.unlock_wpm } : null;
 }
 /** Save (or, with no speed, clear) a class's goal. -> the goal, or null when cleared. */
 /** A speed goal needs a speed; a daily goal needs minutes; with neither, the goal is cleared (null). wpm 0 = no speed goal. */
-export function setGoal(classId, { wpm, acc, mins } = {}) {
+export function setGoal(classId, { wpm, acc, mins, unlockAcc, unlockWpm } = {}) {
   const blank = v => v === '' || v === undefined || v === null;
-  const g = { wpm: blank(wpm) ? 0 : int(wpm, ...GOAL_LIMITS.wpm), acc: blank(acc) ? 90 : int(acc, ...GOAL_LIMITS.acc), mins: blank(mins) ? 0 : int(mins, ...GOAL_LIMITS.mins) };
-  if (!g.wpm && !g.mins) { q.run('DELETE FROM typing_goals WHERE class_id=?', classId); return null; }
-  q.run('INSERT INTO typing_goals(class_id, wpm, acc, mins, updated_at) VALUES (?,?,?,?,?) ON CONFLICT(class_id) DO UPDATE SET wpm=excluded.wpm, acc=excluded.acc, mins=excluded.mins, updated_at=excluded.updated_at', classId, g.wpm, g.acc, g.mins, Date.now());
+  const g = { wpm: blank(wpm) ? 0 : int(wpm, ...GOAL_LIMITS.wpm), acc: blank(acc) ? 90 : int(acc, ...GOAL_LIMITS.acc), mins: blank(mins) ? 0 : int(mins, ...GOAL_LIMITS.mins),
+    unlockAcc: blank(unlockAcc) ? 0 : int(unlockAcc, ...GOAL_LIMITS.unlockAcc), unlockWpm: blank(unlockWpm) ? 0 : int(unlockWpm, ...GOAL_LIMITS.unlockWpm) };
+  if (!g.wpm && !g.mins && !g.unlockAcc && !g.unlockWpm) { q.run('DELETE FROM typing_goals WHERE class_id=?', classId); return null; }
+  q.run(`INSERT INTO typing_goals(class_id, wpm, acc, mins, unlock_acc, unlock_wpm, updated_at) VALUES (?,?,?,?,?,?,?) ON CONFLICT(class_id) DO UPDATE SET
+    wpm=excluded.wpm, acc=excluded.acc, mins=excluded.mins, unlock_acc=excluded.unlock_acc, unlock_wpm=excluded.unlock_wpm, updated_at=excluded.updated_at`, classId, g.wpm, g.acc, g.mins, g.unlockAcc, g.unlockWpm, Date.now());
   return g;
+}
+/** What the student needs to unlock each next lesson in the game (BRB.classRules): the strictest minimum among the
+ *  classes they are an active student of (classes not archived). -> { acc, wpm } or null when none of them sets one. */
+export function rulesFor(userId) {
+  const r = q.get(`SELECT MAX(g.unlock_acc) acc, MAX(g.unlock_wpm) wpm FROM typing_goals g JOIN class_members m ON m.class_id=g.class_id
+    JOIN classrooms c ON c.id=g.class_id WHERE m.user_id=? AND m.role='student' AND m.status='active' AND c.archived_at IS NULL`, userId);
+  return r && (r.acc || r.wpm) ? { acc: r.acc || 0, wpm: r.wpm || 0 } : null;
 }
 /** Days in the last week the student practiced at least the daily goal's minutes (null with no daily goal). */
 export function daysMet(summary, goal) {
@@ -145,3 +156,32 @@ export function passMode(rawAcc, rawWpm) {
 export function passLabel(t, p) {
   return [p.acc !== null ? `${p.acc}%` : '', p.wpm !== null ? t('progress.typing.wpm', { n: p.wpm }) : ''].filter(Boolean).join(', ').replace(/^/, `${t('progress.typing.passShort')} `);
 }
+
+// ---------------------------------------------------------------- grades from a pass mark (an assigned step)
+// A Typing Pets step assigned with a pass mark (its options carry mode=a90-w20) is done only once a run reaches the mark,
+// and its grade is how close the best run came: half for accuracy and half for speed when both are set (each part at
+// most full marks), the whole grade from the one part otherwise. A run reaching the mark scores 100%. The game reports
+// every finished run (its speed as the score, "... 93% ... wpm" in the label); the server decides, so the game's own
+// pass check is only for what the student sees.
+export const GRADE_POINTS = 10;   // a typing step's weight in the class Score, beside a quiz's 1 point a question
+/** The pass mark of a game step ({ acc, wpm } with null for a part left out), or null when it has none or isn't ours. */
+export function passOfStep(step) {
+  if (!step || step.kind !== 'game' || !step.game_id || !/(^|&)mode=/.test(step.options || '')) return null;
+  const g = q.get('SELECT slug, source FROM games WHERE id=?', step.game_id);
+  if (!g || g.slug !== SLUG || g.source !== 'seed') return null;
+  const m = /^(?:a(\d{2,3}))?-?(?:w(\d{1,3}))?$/.exec(parseParams(step.options).mode || '');
+  if (!m || (!m[1] && !m[2])) return null;
+  return { acc: m[1] ? Math.min(100, +m[1]) : null, wpm: m[2] ? +m[2] : null };
+}
+/** A run's accuracy from the game's label ("L7 93% 3* 21 wpm"), or null. */
+export const accOfLabel = label => { const m = /(\d{1,3})%/.exec(String(label || '')); return m ? Math.min(100, +m[1]) : null; };
+/** 0-100 for a run (score = speed) against a pass mark. */
+export function gradeOf(pass, score, label) {
+  if (!pass || score === null || score === undefined) return null;
+  const acc = accOfLabel(label), wpm = Math.max(0, Math.min(MAX_WPM, +score || 0));
+  const parts = [];
+  if (pass.acc !== null) parts.push(acc === null ? 0 : Math.min(1, acc / pass.acc));
+  if (pass.wpm !== null) parts.push(pass.wpm > 0 ? Math.min(1, wpm / pass.wpm) : 1);
+  return Math.floor((100 * parts.reduce((a, b) => a + b, 0)) / parts.length);
+}
+export const passes = (pass, score, label) => gradeOf(pass, score, label) === 100;

@@ -27,6 +27,7 @@ import * as proofChat from '../services/proof-chat.js';
 import { characterOf } from '../services/character.js';
 import * as match from '../services/match.js';
 import * as polls from '../services/polls.js';
+import * as TY from '../services/typing.js';
 import * as gameSets from '../services/game-sets.js';
 import { draftClues, DOC_FOCUS_MAX } from '../services/set-ai.js';
 import { wordsFromFile, textFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
@@ -427,6 +428,9 @@ router.get('/frame/:token', (req, res) => {
     save: u && !preview ? games.getSave(g.id, u.id) : {},
     canSave: !!u && !preview,
     preview,
+    // Typing Pets: what the student's teacher asks to unlock each next lesson (BRB.classRules: { acc, wpm }; services/typing.js
+    // rulesFor, the strictest among their classes), for a signed-in student only, never a preview.
+    ...(!preview && u && !u.is_guest && g.source === 'seed' && g.slug === TY.SLUG ? (r => (r ? { classRules: r } : {}))(TY.rulesFor(u.id)) : {}),
     // Lesson parameters from the token (BRB.params in the game; absent when the game was opened without any).
     ...(hasParams(unpackParams(tok.o)) ? { params: unpackParams(tok.o) } : {}),
     // A question set (services/game-sets.js) a teacher saved in this game, when the link's chapter is its code

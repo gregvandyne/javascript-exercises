@@ -5360,7 +5360,13 @@
       "zoneAsk": "Un administrador de la escuela puede configurarla en la Configuración de la escuela.",
       "doneHere": "Asignada a {class}. Los estudiantes ya la ven.",
       "seeStarted": "Ver quién ha empezado",
-      "doneLater": "Asignada a {class}. Los alumnos la verán a partir del {date}."
+      "doneLater": "Asignada a {class}. Los alumnos la verán a partir del {date}.",
+      "to": "Asignar a",
+      "wholeClass": "Toda la clase",
+      "someStudents": "Algunos alumnos",
+      "studentsOf": "Alumnos de {class}",
+      "someHint": "Solo lo ven los alumnos que marques, y solo ellos cuentan en el libro de calificaciones. Puedes cambiarlo después desde el menú ⋯.",
+      "noStudents": "Esta clase aún no tiene alumnos."
     },
     "class": {
       "title": "Lecciones",
@@ -5389,7 +5395,8 @@
       "late": "Con retraso",
       "removedGroup": "Quitadas de esta clase",
       "readyMade": "Usar una lección lista",
-      "unitWhy": "Las unidades agrupan las lecciones de esta clase, en el orden en que las ven los estudiantes. Las carpetas solo ordenan su propia biblioteca de lecciones."
+      "unitWhy": "Las unidades agrupan las lecciones de esta clase, en el orden en que las ven los estudiantes. Las carpetas solo ordenan su propia biblioteca de lecciones.",
+      "someStudents": "{count, plural, one {# alumno} other {# alumnos}}"
     },
     "view": {
       "teacherPreview": "Vista del estudiante. Los botones que guardan el trabajo están desactivados para usted.",
@@ -5428,7 +5435,9 @@
       "topic": "Escriba de qué trata la lección.",
       "aiFailed": "La IA no pudo preparar el borrador en este momento. Inténtelo de nuevo en un minuto o cree la lección usted mismo.",
       "questionText": "Escriba la pregunta que responderán los estudiantes.",
-      "alreadyAssigned": "Esta lección ya está en {class}. Cambie sus fechas desde el menú ⋯ de la pestaña Lecciones de la clase."
+      "alreadyAssigned": "Esta lección ya está en {class}. Cambie sus fechas desde el menú ⋯ de la pestaña Lecciones de la clase.",
+      "pickStudents": "Marca al menos un alumno o elige Toda la clase.",
+      "notInClass": "Solo puedes elegir alumnos de esta clase."
     },
     "editor": {
       "live": "Activa en {classes}. {count, plural, =0 {Ningún estudiante ha empezado todavía.} one {# estudiante ya empezó.} other {# estudiantes ya empezaron.}} Los cambios les aparecen al instante."
@@ -5531,6 +5540,8 @@
     },
     "typing": {
       "title": "Mascotas Teclado",
+      "unlockH": "Para abrir cada lección siguiente:",
+      "unlockSummary": "siguiente lección con {what}",
       "goalMins": "Minutos al día",
       "dailySummary": "meta diaria {n} min",
       "thisWeek": "{n} min esta semana",
@@ -5548,7 +5559,7 @@
       "goalWpm": "Velocidad (ppm)",
       "goalAcc": "Precisión (%)",
       "goalSave": "Guardar meta",
-      "goalHint": "Velocidad: se compara con la mejor prueba cronometrada de cada estudiante. Minutos al día: cuántos días de la última semana escribió ese tiempo. Deja ambos vacíos para quitar la meta.",
+      "goalHint": "Velocidad: se compara con la mejor prueba cronometrada de cada estudiante. Minutos al día: cuántos días de la última semana escribió ese tiempo. Para abrir cada lección siguiente: lo que necesita en la lección anterior. Deja todo vacío para quitar la meta.",
       "goalSummary": "meta {wpm} ppm con {acc} %: {met} de {total} la cumplen",
       "goalArchived": "Esta clase está archivada.",
       "goalSaved": "Meta guardada",
@@ -6698,7 +6709,7 @@
       "wordTrail": "Las palabras más frecuentes del inglés, de preescolar a 3.º grado, en un sendero de cuento con Bramble, el erizo: escucha una palabra y tócala, completa una frase, deletréala con fichas, en lecciones cortas con racha diaria.",
       "crossword": "Convierte cualquier lista de vocabulario en un crucigrama: escribe o sube las palabras, añade pistas o deja que la IA las escriba, y compártelo con la clase.",
       "mistakeHunt": "Encuentra y corrige los errores de un texto corto: el docente pega su propio texto, siembra errores de ortografía, gramática y puntuación, y luego lo comparte, lo asigna o lo imprime.",
-      "typingPets": "Aprende a escribir con el teclado tecla a tecla, con un color para cada dedo: 28 lecciones cortas de la fila central a las frases y, tras cada lección, un huevo con una mascota nueva."
+      "typingPets": "Aprende a escribir con el teclado tecla a tecla, con un color para cada dedo: 40 lecciones cortas de la fila central a las frases y, tras cada lección, un huevo con una mascota nueva."
     },
     "hubs": {
       "math": {
@@ -10296,7 +10307,9 @@
       "open": "Abrir en Classroom",
       "noLessons": "Aún no hay lecciones en esta clase. Asigna una en la pestaña Lecciones.",
       "doneScheduled": "Programada en Google Classroom: los alumnos la verán el {date}, cuando se abra la lección.",
-      "locked": "Para publicar lecciones, enviar notas y compartir material, permite que Oomba Academy publique en Classroom."
+      "locked": "Para publicar lecciones, enviar notas y compartir material, permite que Oomba Academy publique en Classroom.",
+      "someNot": "Asignada a algunos alumnos, así que no se publica: en Google Classroom llegaría a toda la clase.",
+      "somePosted": "Aquí está asignada a algunos alumnos. Antes se publicó para toda la clase en Google Classroom, y las notas solo se envían a los alumnos asignados."
     },
     "grades": {
       "text": "Es una nota de finalización: la parte de los pasos de la lección que ha hecho el alumno, sobre 100. No cuenta las respuestas correctas. Los alumnos que no la han empezado se dejan fuera.",
@@ -10365,7 +10378,8 @@
       "emptyNote": "Escribe primero tu mensaje.",
       "tooLong": "Los anuncios pueden tener como máximo {max} caracteres.",
       "hasName": "«{name}» en tu mensaje coincide con el nombre de un alumno. Los anuncios llegan a toda la clase: cámbialo o quítalo, por favor.",
-      "tooManyAnnouncements": "Ya van 10 anuncios en una hora para esta clase. Espera un poco."
+      "tooManyAnnouncements": "Ya van 10 anuncios en una hora para esta clase. Espera un poco.",
+      "someStudents": "Esta lección está asignada a algunos alumnos, así que no se publica en Google Classroom: allí llegaría a toda la clase."
     },
     "allow": {
       "heading": "Qué puede hacer Oomba Academy en tu Classroom",
@@ -10587,6 +10601,7 @@
     },
     "kind": {
       "quiz": "Cuestionario",
+      "typing": "Nota de mecanografía",
       "live": "Juego en vivo",
       "rubric": "Rúbrica",
       "marks": "Notas de rúbrica"
@@ -10617,7 +10632,8 @@
       "showNames": "Mostrar nombres de la lista de clase",
       "hideNames": "Ocultar nombres de la lista de clase",
       "namesHint": "Muestra el nombre de la lista de clase junto al nombre en el juego, solo en esta pantalla. La pantalla de la clase mantiene los nombres del juego."
-    }
+    },
+    "notAssigned": "No asignada"
   },
   "quickLive": {
     "cta": "Organiza un juego en vivo ahora",

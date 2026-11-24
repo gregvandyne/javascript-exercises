@@ -1411,6 +1411,8 @@
     preview: !!INIT.preview,
     // Lesson parameters ({ chapter, band, mode, level, lock }, see cleanParams above): frozen, {} when there are none.
     params: Object.freeze(cleanParams(INIT.params)),
+    // An official game's rule from the player's teacher (Typing Pets: { acc, wpm } to unlock each next lesson), or null.
+    classRules: INIT.classRules && typeof INIT.classRules === 'object' ? Object.freeze({ acc: Math.max(0, Math.min(100, +INIT.classRules.acc || 0)), wpm: Math.max(0, Math.min(200, +INIT.classRules.wpm || 0)) }) : null,
     // 3D games: what this browser can do ({webgl2, importmap}); null for 2D games. Live class games read it to pick their
     // 2D path (docs/kit-api.md "Live class games").
     device: DEV ? Object.freeze({ webgl2: devMissing.indexOf('webgl2') < 0, importmap: devMissing.indexOf('importmap') < 0 }) : null,

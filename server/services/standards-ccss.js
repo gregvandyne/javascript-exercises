@@ -145,7 +145,8 @@ export function classView(classId, framework, { grade = '' } = {}) {
   const mark = (code, u, right, answered, at) => { const c = cell(code, u); c.right += right; c.answered += answered; c.last = Math.max(c.last, at || 0); };
   // Lesson work.
   const prog = classId ? q.all(`SELECT p.step_id, p.user_id, p.status, p.marks, p.done_at, p.updated_at FROM step_progress p
-    JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id WHERE c.class_id=?`, classId) : [];
+    JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
+    WHERE c.class_id=? AND ${L.assignedSql('c.id', 'p.user_id')}`, classId) : [];
   for (const r of prog) {
     if (!sid.has(r.user_id)) continue;
     seen.add(r.user_id);
