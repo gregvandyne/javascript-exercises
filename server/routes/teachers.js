@@ -16,6 +16,7 @@ import { iconLine } from '../../public/js/icons.js';
 import { folded } from './info.js';
 import { page, notFound, parentsLabel, signedOut, VERSION, landingFor } from '../views/layout.js';
 import { focusSections, topicOf, buildBanner, classStrip, homeDoors } from './discover.js';
+import { courseOwned } from '../services/course-catalog.js';
 /** A Play topic's Learn subject (the filters' subjects), for the games with no Learn subject of their own. */
 const TOPIC_SUBJECT = { math: 'math', reading: 'words', geography: 'maps', strategy: 'thinking' };
 import { coverArt, gameCard, rail } from '../views/components.js';
@@ -587,7 +588,8 @@ export function learnPage(req, res, { landing = false } = {}) {
   const gradeQ = g => g || (defGrade ? 'any' : '');
   const live = liveOn();
   const subjName = k => t(`learn.tab.subjects.${k}`);
-  const meta = g => { const i = SHELF_INFO[g.slug]; const gr = shelfGrades(g.slug); return i ? t('learn.tab.meta', { subject: subjName(i.subject), grades: t('learn.grades', gr) }) : null; };
+  // A card's "Subject · Grades" line: the subject the filters use (subjectOf: Sudoku is Math), the Learn grades.
+  const meta = g => { const i = SHELF_INFO[g.slug]; const gr = shelfGrades(g.slug); return i ? t('learn.tab.meta', { subject: subjName(subjectOf(g)), grades: t('learn.grades', gr) }) : null; };
   const href = over => { const p = { ...f, ...over }; p.grade = gradeQ(p.grade); const qs = new URLSearchParams(Object.entries(p).filter(([, v]) => v)).toString(); return lp(req, '/learn') + (qs ? `?${qs}` : '') + '#filters'; };
   const card = (href, emoji, name, short) => html`<li><a class="lp-hub panel" href="${lp(req, href)}"><span class="lp-hub-e" aria-hidden="true">${ico(emoji, { size: 32 })}</span><span>${el(t, 'span', name, {}, ' class="lp-hub-t"')}${el(t, 'span', short, {}, ' class="lp-hub-d"')}</span></a></li>`;
   const crumbs = [[t('nav.home'), '/'], [t('learn.index.crumb'), '/learn']];
@@ -601,7 +603,8 @@ export function learnPage(req, res, { landing = false } = {}) {
   // (the same section it has on the topics view: Sudoku is Math), else its Learn subject (a live game, Coding); a game
   // without grades fits every grade.
   const subjectOf = g => TOPIC_SUBJECT[topicOf(g)] || (SHELF_INFO[g.slug] || {}).subject || '';
-  const all = games.listVisible(u, { official: true, order: 'plays', limit: 100 }).filter(g => subjectOf(g) || !(f.subject || std));
+  // Course-owned games are reached through their course (its card), never listed as games of their own.
+  const all = games.listVisible(u, { official: true, order: 'plays', limit: 100 }).filter(g => !courseOwned(g) && (subjectOf(g) || !(f.subject || std)));
   const infoOf = g => ({ from: 0, to: 8, ...SHELF_INFO[g.slug], subject: subjectOf(g) });
   // The grid (Learn's filtered view) for staff, and for anyone who picked a subject or a way to play; else the topics.
   const gridView = staff || !!(f.subject || f.how);
@@ -637,7 +640,7 @@ export function learnPage(req, res, { landing = false } = {}) {
   }
   // Games other players made (any kind: Play and Learn are one page), on the topics view: signed in only (an indexed page
   // never carries a child's name or words), and only while PUBLIC_GAMES is on (services/games.js openToAll).
-  const players = !config.publicGames || out || gridView ? [] : games.listVisible(u, { limit: 16, order: 'popular' }).filter(g => g.source !== 'seed');
+  const players = !config.publicGames || out || gridView ? [] : games.listVisible(u, { limit: 16, order: 'popular' }).filter(g => g.source !== 'seed' && !courseOwned(g));
   const subj = SUBJECTS.find(x => x.key === f.subject);
   // While the arcade is hidden (services/game-focus.js), the subject chips and pages with no game left are left out.
   const subjects = focus.openSubjects(SUBJECTS, SHELF_INFO), hubs = focus.openHubs(HUBS);
@@ -666,7 +669,7 @@ export function learnPage(req, res, { landing = false } = {}) {
   const topicSecs = gridView ? [] : focusSections(u).sections.map(sec => ({ ...sec, games: sec.games.filter(gradeFits) })).filter(sec => sec.games.length);
   if (liveFirst) topicSecs.sort((a, b) => (b.id === 'live') - (a.id === 'live'));
   // My favorites: the games this player tapped Favorite on (students too), that they may still open. No section until there is one.
-  const favs = gridView || out ? [] : games.favorites(u, u.id, 16);
+  const favs = gridView || out ? [] : games.favorites(u, u.id, 16).filter(g => !courseOwned(g));
   const mine = gridView || out ? [] : games.myGames(u.id, 12);
   // The home page's own heading, doors and join door: '/' signed out (where the teacher landing page is not at '/').
   const homeIntro = landing && out;

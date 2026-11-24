@@ -143,12 +143,12 @@ test('every role\'s tab bar (360) and top bar (1280): the right items, labels fi
   await signup(kidPage, uniq('Kid')); const kidState = await kidCtx.storageState(); await kidCtx.close();
   const state = async (u, pw) => { const x = await signIn(browser, u, pw); await x.ctx.close(); return x.state; };
   const ROLES = [
-    ['signed out', undefined, ['/', '/learn', '/build', '/parents', '/login'], ['/', '/learn', '/build', '/parents', '/teachers'], ['/', '/learn', '/login']],
-    ['kid', kidState, ['/', '/learn', '/build', '/friends', '/me'], ['/', '/learn', '/build', '/friends'], ['/', '/learn', '/me']],
-    ['student', await state('DemoStudent', DEMO), ['/classes', '/play', '/learn', '/build', '/me'], ['/classes', '/play', '/learn', '/build', '/friends'], ['/classes', '/play', '/learn', '/me']],
+    ['signed out', undefined, ['/learn', '/read', '/build', '/parents', '/login'], ['/learn', '/read', '/build', '/parents', '/teachers'], ['/', '/learn', '/read', '/login']],
+    ['kid', kidState, ['/learn', '/read', '/build', '/friends', '/me'], ['/learn', '/read', '/build', '/friends'], ['/', '/learn', '/read', '/me']],
+    ['student', await state('DemoStudent', DEMO), ['/classes', '/learn', '/read', '/build', '/me'], ['/classes', '/learn', '/read', '/build', '/friends'], ['/classes', '/learn', '/read', '/me']],
     ['teacher', await state('DemoTeacher', DEMO), ['/teach', '/learn', '/play', '/live', '/me'], ['/teach', '/learn', '/play', '/live'], ['/teach', '/learn', '/play', '/me']],
     ['school admin', headState, ['/school', '/teach', '/learn', '/play', '/me'], ['/school', '/teach', '/learn', '/play', '/live'], ['/teach', `/school/${school.slug}?tab=people`, '/learn', '/me']],
-    ['platform admin', await state(ADMIN.username, ADMIN.password), ['/', '/learn', '/build', '/admin/schools', '/me'], ['/', '/learn', '/build', '/admin/schools'], ['/', '/learn', '/me']],
+    ['platform admin', await state(ADMIN.username, ADMIN.password), ['/learn', '/read', '/build', '/admin/schools', '/me'], ['/learn', '/read', '/build', '/admin/schools'], ['/', '/learn', '/read', '/me']],
   ];
   const problems = [];
   for (const [who, st, tabs, top, pages] of ROLES) {

@@ -261,15 +261,15 @@ test('/plans/schools: the seat calculator (the Teacher price per teacher) and "S
 
 // Navigation weeks 3–4: a tab bar for each role, with Plans in every one. Each signed-in role's top bar fits from small
 // laptops to wide screens (en, de, ru), and its phone tab bar's labels fit at 360px (en, de, he, ar; light and dark).
-// No bar has Plans or School (docs/decisions.md "A quieter top bar": they are in the account menu). Play is '/' where
-// '/' is Play and /play for everyone whose first tab is another one; Live (hosting) while Oomba Live is on.
+// No bar has Plans or School (docs/decisions.md "A quieter top bar": they are in the account menu). Learn is /learn and
+// Read /read for every role that has them ("Learn and Read"); Live (hosting) while Oomba Live is on.
 const ROLE_BARS = {
-  kid: { tabs: ['/', '/learn', '/build', '/friends', '/me'], top: ['/', '/learn', '/build', '/friends'] },
-  student: { tabs: ['/classes', '/play', '/learn', '/build', '/me'], top: ['/classes', '/play', '/learn', '/build', '/friends'] },
+  kid: { tabs: ['/learn', '/read', '/build', '/friends', '/me'], top: ['/learn', '/read', '/build', '/friends'] },
+  student: { tabs: ['/classes', '/learn', '/read', '/build', '/me'], top: ['/classes', '/learn', '/read', '/build', '/friends'] },
   teacher: { tabs: ['/teach', '/learn', '/play', '/live', '/me'], top: ['/teach', '/learn', '/play', '/live'] },
   'school admin': { tabs: ['/teach', '/learn', '/play', '/me'], top: ['/teach', '/learn', '/play', '/live'] },
-  'grown-up': { tabs: ['/family', '/play', '/learn', '/build', '/family/account'], top: ['/family', '/play', '/learn', '/build'] },
-  'platform admin': { tabs: ['/', '/learn', '/build', '/admin/schools', '/me'], top: ['/', '/learn', '/build', '/admin/schools'] },
+  'grown-up': { tabs: ['/family', '/learn', '/build', '/family/account'], top: ['/family', '/learn', '/build'] },
+  'platform admin': { tabs: ['/learn', '/read', '/build', '/admin/schools', '/me'], top: ['/learn', '/read', '/build', '/admin/schools'] },
 };
 let roleStates = null;
 async function roles(browser) {
@@ -353,16 +353,16 @@ test('every signed-in role\'s phone tab bar at 360px: the right tabs, labels on 
   expect([...new Set(problems)]).toEqual([]);
 });
 
-test('signed out with Plans on: Play · Learn · Build · Parents · Teachers, Sign in and ▶ Play now fit (en, de, ru; light, dark); Plans in the footer', async ({ browser }) => {
+test('signed out with Plans on: Learn · Read · Build · Parents · Teachers, Sign in and ▶ Play now fit (en, de, ru; light, dark); Plans in the footer', async ({ browser }) => {
   const problems = [];
   for (const width of [821, 900, 1000, 1001, 1100, 1101, 1180, 1181, 1280, 1400, 1440, 1920]) {
     for (const [lang, scheme] of [['en', 'light'], ['de', 'dark'], ['ru', 'light']]) {
       const ctx = await browser.newContext({ baseURL: APP, viewport: { width, height: 800 }, colorScheme: scheme });
       await ctx.addCookies([{ name: 'lang', value: lang, url: APP }]);
       const page = await ctx.newPage();
-      // "/" is the teacher landing page for signed-out visitors (routes/landing.js); the app's top bar is on /play.
-      await page.goto('/play'); await page.evaluate(() => document.fonts.ready);
-      expect(await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/play', '/learn', '/build', '/parents', '/teachers']);
+      // "/" is the teacher landing page for signed-out visitors (routes/landing.js); the app's top bar is on /read.
+      await page.goto('/read'); await page.evaluate(() => document.fonts.ready);
+      expect(await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/learn', '/read', '/build', '/parents', '/teachers']);
       await expect(page.locator('footer.foot a[href="/plans"]')).toHaveCount(1);
       const r = await page.evaluate(topbarFit);
       if (r.tight || r.off || r.wide > 0 || r.cut || r.missing.length) problems.push(`${width}/${lang}: ${JSON.stringify(r)}`);

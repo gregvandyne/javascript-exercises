@@ -19,6 +19,7 @@ import { liveGameOf } from '../live/live-games.js';
 import { isStaff, classesOf } from '../services/schools.js';
 import { toDoFor } from '../services/progress.js';
 import { openForClass } from '../services/classlive-sessions.js';
+import { courseOwned } from '../services/course-catalog.js';
 /** A student in a class: "Your class" at the top of Home: a live game their teacher just opened, else the next lesson to
  *  do (soonest due) with Continue, so Home never pulls them away from what's assigned. '' for everyone else. */
 export function classStrip(req) {
@@ -104,7 +105,8 @@ export function topicOf(g) {
 }
 /** -> { sections: [{ id, key, emoji, games }] } from the official games this viewer may open, each in one section. */
 export function focusSections(u) {
-  const all = games.listVisible(u, { official: true, order: 'plays', limit: 100 });
+  // Course-owned games are reached through their course, never listed here.
+  const all = games.listVisible(u, { official: true, order: 'plays', limit: 100 }).filter(g => !courseOwned(g));
   const sections = TOPICS.map(sec => ({ ...sec, games: all.filter(g => topicOf(g) === sec.id) })).filter(sec => sec.games.length);
   return { hero: null, sections };
 }

@@ -1,7 +1,7 @@
 // Each role's first tab (docs/decisions.md "Play and Learn", part 2): '/' takes a teacher to the Classroom (/teach: hello,
 // class cards with what needs attention, courses, live games for the whole class, brain breaks, everything students
 // can play), a student to their Class tab (/classes: the live-game banner while the teacher's room is open, To do with
-// progress and Continue, games from the class), a grown-up to Family and a guest to Play. Both homes at 360, 390 and
+// progress and Continue, games from the class), a grown-up to Family and a guest to Learn (Play and Learn are one page: "Learn and Read"). Both homes at 360, 390 and
 // 1280 px, light and dark, and in Hebrew: no sideways scroll, nothing touches (touching.js), 44 px tap targets on phones.
 // The grown-up runs on its own server with billing on (family pages need it): E2E_PORT + 11, fake Stripe on + 12.
 import { test, expect } from '@playwright/test';
@@ -128,10 +128,10 @@ test('a student lands on Class: To do with progress and Continue, games from the
   await expect(go).toHaveText(/Start|Continue/);
   const href = await go.getAttribute('href');
   expect(href).toMatch(/^\/class\/[^/]+\/lessons\/[^/]+$/);
-  // Games from our class, and the way on to Play and Learn.
+  // Games from our class, and the way on to Learn and Read.
   await expect(sec.locator('.ct-games h3')).toHaveText(/Games from our class/);
-  await expect(s.locator('.ct-more a[href="/play"]')).toBeVisible();
   await expect(s.locator('.ct-more a[href="/learn"]')).toBeVisible();
+  await expect(s.locator('.ct-more a[href="/read"]')).toBeVisible();
   // No classmates' names on the page (only the class, the teacher and the student's own sign-in line).
   await expect(s.locator('main')).not.toContainText('Classmates');
   // The teacher opens a class room: the banner appears without a reload.
@@ -154,7 +154,7 @@ test('a student lands on Class: To do with progress and Continue, games from the
   await ctx.close(); await tctx.close();
 });
 
-test('a guest lands on Play', async ({ browser }) => {
+test('a guest lands on Learn (at \'/\', not a redirect)', async ({ browser }) => {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const g = await ctx.newPage();
   await ownIp(g);
   await g.goto('/g/shark-plank');
@@ -162,8 +162,9 @@ test('a guest lands on Play', async ({ browser }) => {
   await expect(g).toHaveURL(/\/play\/shark-plank/);
   await g.goto('/');
   expect(new URL(g.url()).pathname).toBe('/');
-  await expect(g.locator('.tabbar .tab[href="/"]')).toHaveAttribute('aria-current', 'page');
-  await expect(g.locator('.tabbar .tab[href="/learn"]')).toHaveCount(1);
+  await expect(g.locator('.tabbar .tab[href="/learn"]')).toHaveAttribute('aria-current', 'page');
+  await expect(g.locator('.tabbar .tab[href="/read"]')).toHaveCount(1);
+  await expect(g.locator('#play.learn-games-wrap')).toBeVisible();
   await ctx.close();
 });
 
@@ -191,7 +192,7 @@ test.describe('a grown-up', () => {
   });
   test.afterAll(async () => { await stop(app); await stop(stripe); if (DATA) fs.rmSync(DATA, { recursive: true, force: true }); });
 
-  test('lands on Family; Play is /play, current there', async ({ browser }) => {
+  test('lands on Family; Learn is /learn, current there (/play answers 301 to it)', async ({ browser }) => {
     const ctx = await browser.newContext({ baseURL: GB, viewport: { width: 390, height: 844 } }); const m = await ctx.newPage();
     await ownIp(m);
     await m.goto('/grown-ups/signup');
@@ -202,7 +203,9 @@ test.describe('a grown-up', () => {
     expect(new URL(m.url()).pathname).toBe('/family');
     await expect(m.locator('.tabbar .tab[href="/family"]')).toHaveAttribute('aria-current', 'page');
     await m.goto('/play');
-    await expect(m.locator('.tabbar .tab[href="/play"]')).toHaveAttribute('aria-current', 'page');
+    expect(new URL(m.url()).pathname).toBe('/learn');
+    await expect(m.locator('.tabbar .tab[href="/learn"]')).toHaveAttribute('aria-current', 'page');
+    await expect(m.locator('.tabbar .tab[href="/read"]')).toHaveCount(0);
     await ctx.close();
   });
 });

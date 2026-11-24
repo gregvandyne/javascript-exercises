@@ -13020,6 +13020,9 @@ Owner: "Continue to work towards feature parity" (with typing.com).
   The kid's Join door, the subject, "Also on Oomba" and (for visitors, staff and grown-ups) age pages follow as before.
   **Staff** get exactly the Learn they had: always the grid, filters open, Assign, Host live, Try it, Save and `?std=`.
   The Books door is gone from Learn. Signed out, `/learn` stays the indexed hub (heading, lead, CollectionPage, hreflang).
+  **Course-owned games** (a course's own games, `COURSE_GAME_SLUGS`, and any game flagged `course_only`) are reached
+  through their course only: `course-catalog.js courseOwned` keeps them out of the topics, the grid, My favorites and
+  players' games on Learn, for every role (the old Learn shelf's rule, now on the whole page).
 - **`/play`** answers 301 to `/learn` with its query string, for everyone; `/<language>/play` to `/<language>/learn`.
   `/play/<slug>` (playing a game) is another route and unchanged. **`/`** shows the Learn page (not a redirect) to those
   who land on it (`landingFor` null: guests, kids, the platform admin, and the signed out where the teacher landing page

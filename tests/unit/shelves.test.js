@@ -165,6 +165,34 @@ test('players\' games (any kind) are on Learn under Games by players, signed in 
   q.run("UPDATE games SET status='deleted' WHERE id IN (?, ?, ?)", quiz.id, arc.id, word.id);
 });
 
+test('course-owned games are never listed on Learn (topics, grid, favorites), for any role: a real course game and a course_only fixture', async () => {
+  const { courseOwned } = await import('../../server/services/course-catalog.js');
+  const real = COURSE_GAME_SLUGS.find(x => G.getGameBySlug(x));
+  assert.ok(real, 'a course game from the course data');
+  assert.ok(courseOwned(G.getGameBySlug(real)));
+  // The fixture: an official game flagged course_only (reached only through a course), favorited by the kid, as is the real one.
+  const fx = G.getGameBySlug('crossword');
+  q.run('UPDATE games SET course_only=1 WHERE id=?', fx.id);
+  for (const g of [fx, G.getGameBySlug(real)]) q.run('INSERT OR IGNORE INTO likes(game_id, user_id, created_at) VALUES (?,?,?)', g.id, kid.id, Date.now());
+  try {
+    for (const u of [null, kid, pupil, teacher, head, mum, boss, guest]) {
+      for (const p of ['/learn', '/learn?how=solo', '/learn?subject=words', '/learn?subject=code', '/learn?how=live', '/learn?grade=3', ...(u === null || u === kid || u === boss || u === guest ? ['/'] : [])]) {
+        const r = await get(p, u);
+        if (r.status !== 200) continue;
+        const main = r.text.slice(r.text.indexOf('<main'), r.text.indexOf('</main>'));
+        for (const slug of [real, 'crossword']) {
+          assert.ok(!main.includes(`href="/g/${slug}"`) && !main.includes(`href="/play/${slug}"`), `${slug} listed on ${p} for ${u ? u.username || 'a guest' : 'signed out'}`);
+        }
+      }
+    }
+    assert.ok(!(await get('/learn', kid)).text.includes('id="favorites-h"') || !slugsIn(section((await get('/learn', kid)).text, 'favorites')).some(x => x === real || x === 'crossword'), 'not even as a favorite');
+  } finally {
+    q.run('UPDATE games SET course_only=0 WHERE id=?', fx.id);
+    q.run('DELETE FROM likes WHERE user_id=?', kid.id);
+  }
+  assert.ok(topicSlugs((await get('/learn', kid)).text).includes('crossword'), 'back once the flag is off');
+});
+
 // ---------------------------------------------------------------- Learn
 const openLearn = LEARN.filter(s => !COURSE_GAME_SLUGS.includes(s) && !G.getGameBySlug(s).course_only);
 test('Learn: the filtered grid gives each game its subject and grades; courses first; the join door; the subject and age pages', async () => {

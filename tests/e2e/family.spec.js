@@ -290,12 +290,12 @@ test('the new pages: nothing touches, no sideways scroll (360 / 1280, light / da
   expect([...new Set(problems)]).toEqual([]);
 });
 
-test('the grown-up\'s menus: Family · Play · Learn · Build · Plans · Account; settings on /family/account; old /family# links land there', async ({ browser }) => {
+test('the grown-up\'s menus: Family · Learn · Build · Account; settings on /family/account; old /family# links land there', async ({ browser }) => {
   const mum = await person(browser, { viewport: { width: 360, height: 760 } });
   await grownupSignup(mum, uniq('Mum'));
   await mum.goto('/family');
   const tabs = () => mum.locator('.tabbar .tab').evaluateAll(l => l.map(a => [a.getAttribute('href'), a.querySelector('.tab-t').textContent]));
-  expect(await tabs()).toEqual([['/family', 'Family'], ['/play', 'Play'], ['/learn', 'Learn'], ['/build', 'Build'], ['/family/account', 'Account']]);
+  expect(await tabs()).toEqual([['/family', 'Family'], ['/learn', 'Learn'], ['/build', 'Build'], ['/family/account', 'Account']]);
   await expect(mum.locator('.tabbar .tab[href="/family"]')).toHaveAttribute('aria-current', 'page');
   // /family is about the children and the plan; the settings are one tap away.
   await expect(mum.locator('#famcheck')).toBeVisible();
@@ -304,22 +304,23 @@ test('the grown-up\'s menus: Family · Play · Learn · Build · Plans · Accoun
   await expect(mum.locator('h1')).toContainText('Your account');
   for (const id of ['#language', '#password', '#signout']) await expect(mum.locator(id)).toBeVisible();
   await expect(mum.locator('.tabbar .tab[href="/family/account"]')).toHaveAttribute('aria-current', 'page');
-  // '/' is their first tab, Family; the games are the Play tab (/play), current there.
+  // '/' is their first tab, Family; the games are the Learn tab (/learn; /play answers 301 there), current there.
   await mum.goto('/');
   expect(new URL(mum.url()).pathname).toBe('/family');
   await mum.goto('/play');
-  await expect(mum.locator('.tabbar .tab[href="/play"]')).toHaveAttribute('aria-current', 'page');
+  expect(new URL(mum.url()).pathname).toBe('/learn');
+  await expect(mum.locator('.tabbar .tab[href="/learn"]')).toHaveAttribute('aria-current', 'page');
   // Old links and bookmarks: /family#password, #language and #signout go on to the same panel on the Account page.
   for (const h of ['password', 'language', 'signout']) {
     await mum.goto(`/family#${h}`);
     await mum.waitForURL(new RegExp(`/family/account#${h}$`));
     await expect(mum.locator(`#${h}`)).toBeVisible();
   }
-  // Desktop: Family · Play · Learn · Build; the avatar opens the account menu (Plans and the Account page in it); it all fits (en, de, ru).
+  // Desktop: Family · Learn · Build; the avatar opens the account menu (Plans and the Account page in it); it all fits (en, de, ru).
   for (const lang of ['en', 'de', 'ru']) for (const width of [821, 1000, 1101, 1280, 1920]) {
     await mum.setViewportSize({ width, height: 760 });
     await mum.goto(`/family?lang=${lang}`); await mum.evaluate(() => document.fonts.ready);
-    expect(await mum.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/family', '/play', '/learn', '/build']);
+    expect(await mum.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/family', '/learn', '/build']);
     await expect(mum.locator('.topbar .acctpick a[href="/family/account"]')).toBeAttached();
     await expect(mum.locator('.topbar .acctpick a[href="/plans"]')).toBeAttached();
     const r = await mum.evaluate(topbarFit);
@@ -331,9 +332,9 @@ test('the grown-up\'s menus: Family · Play · Learn · Build · Plans · Accoun
 test('a grown-up meets no dead ends: every same-site link and form on their pages answers (no 404)', async ({ browser }) => {
   const mum = await person(browser);
   await grownupSignup(mum, uniq('Mum'));
-  await mum.goto('/play');
+  await mum.goto('/learn');
   const game = await mum.locator('a[href^="/g/"]').first().getAttribute('href');
-  const seeds = ['/', '/play', '/learn', '/search', '/search?q=a', '/family', '/family/link', '/family/account', '/parents', '/safety', game, game.replace('/g/', '/play/')];
+  const seeds = ['/', '/learn', '/search', '/search?q=a', '/family', '/family/link', '/family/account', '/parents', '/safety', game, game.replace('/g/', '/play/')];
   const hrefs = new Set(), apis = new Set();
   for (const p of seeds) {
     await mum.goto(p);

@@ -83,7 +83,7 @@ async function switchTo(page, row) {
   if (await gp.isVisible()) await gp.fill(PW);
   await Promise.all([page.waitForURL(u => u.pathname === '/'), sw.locator('button[type=submit]').click()]);
 }
-const TABS = [['/', 'Play'], ['/learn', 'Learn'], ['/build', 'Build'], ['/friends', 'Friends'], ['/me', 'Me']];
+const TABS = [['/learn', 'Learn'], ['/read', 'Read'], ['/build', 'Build'], ['/friends', 'Friends'], ['/me', 'Me']];
 const tabsOf = page => page.locator('.tabbar .tab').evaluateAll(l => l.map(a => [a.getAttribute('href'), a.querySelector('.tab-t').textContent]));
 
 test('a grown-up signs up, makes their child\'s account and switches; the child plays and builds; back to the grown-up with their password', async ({ browser }) => {

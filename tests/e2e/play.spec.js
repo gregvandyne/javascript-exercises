@@ -2,16 +2,16 @@
 import { test, expect } from '@playwright/test';
 import { gameFrame, signup, uniq, ownIp } from './helpers.js';
 
-test('Play (home) shows featured Play games; a learning game is on Learn', async ({ page }) => {
+test('the home page is Learn: every game by topic, a filter shows the grid; /play answers with Learn', async ({ page }) => {
   await page.goto('/');
-  const featured = page.locator('#featured');
-  // Jungle Cup is the hero above, so it is not repeated in Featured.
-  await expect(page.locator('.hero .hero-title')).toHaveText('Jungle Cup');
-  for (const t of ['Ring Rumble', 'Footy Tycoon']) await expect(featured.getByText(t, { exact: true })).toBeVisible();
-  await expect(featured.getByText('Jungle Cup', { exact: true })).toHaveCount(0);
-  await expect(featured.getByText('Shark Plank', { exact: true })).toHaveCount(0);
-  await page.goto('/learn');
-  await expect(page.locator('#learn-games').getByText('Shark Plank', { exact: true })).toBeVisible();
+  // Play and Learn are one page (docs/decisions.md "Learn and Read"): topic sections, no hero or Featured row.
+  await expect(page.locator('#play.learn-games-wrap')).toBeVisible();
+  await expect(page.locator('#sec-reading').getByText('Crossword', { exact: true })).toBeVisible();
+  await expect(page.locator('.hero, #featured')).toHaveCount(0);
+  await page.goto('/learn?subject=words');
+  await expect(page.locator('#learn-games').getByText('Crossword', { exact: true })).toBeVisible();
+  await page.goto('/play?subject=words');
+  expect(new URL(page.url()).pathname + new URL(page.url()).search).toBe('/learn?subject=words');
 });
 
 test('guest plays Shark Plank in one tap and a save round-trips', async ({ page }) => {
