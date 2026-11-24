@@ -608,6 +608,13 @@
     },
     "chips": {
       "two": "ふたりで"
+    },
+    "focus": {
+      "puzzles": "ことばゲームとパズル",
+      "mapsStrategy": "地図と作戦",
+      "tools": "授業ツール",
+      "more": "ほかのゲーム",
+      "players": "プレイヤーが作ったゲーム"
     }
   },
   "search": {

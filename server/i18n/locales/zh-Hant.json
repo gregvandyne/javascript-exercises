@@ -608,6 +608,13 @@
     },
     "chips": {
       "two": "雙人"
+    },
+    "focus": {
+      "puzzles": "文字遊戲與謎題",
+      "mapsStrategy": "地圖與策略",
+      "tools": "課堂工具",
+      "more": "更多遊戲",
+      "players": "玩家做的遊戲"
     }
   },
   "search": {

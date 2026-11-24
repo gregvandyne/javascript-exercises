@@ -609,6 +609,13 @@
     },
     "chips": {
       "two": "In due"
+    },
+    "focus": {
+      "puzzles": "Giochi di parole e rompicapi",
+      "mapsStrategy": "Mappe e strategia",
+      "tools": "Strumenti per la classe",
+      "more": "Altri giochi",
+      "players": "Giochi dei giocatori"
     }
   },
   "search": {

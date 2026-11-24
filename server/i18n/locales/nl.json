@@ -609,6 +609,13 @@
     },
     "chips": {
       "two": "Met z’n tweeën"
+    },
+    "focus": {
+      "puzzles": "Woordspellen en puzzels",
+      "mapsStrategy": "Kaarten en strategie",
+      "tools": "Klassentools",
+      "more": "Meer games",
+      "players": "Games van spelers"
     }
   },
   "search": {

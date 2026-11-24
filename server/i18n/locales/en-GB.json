@@ -32,6 +32,13 @@
   "home": {
     "rails": {
       "favorites": "My favourites"
+    },
+    "focus": {
+      "puzzles": "Word games and puzzles",
+      "mapsStrategy": "Maps and strategy",
+      "tools": "Classroom tools",
+      "more": "More games",
+      "players": "Games by players"
     }
   },
   "search": {

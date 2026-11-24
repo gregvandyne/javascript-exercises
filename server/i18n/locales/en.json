@@ -609,6 +609,13 @@
     },
     "chips": {
       "two": "2 players"
+    },
+    "focus": {
+      "puzzles": "Word games and puzzles",
+      "mapsStrategy": "Maps and strategy",
+      "tools": "Classroom tools",
+      "more": "More games",
+      "players": "Games by players"
     }
   },
   "search": {

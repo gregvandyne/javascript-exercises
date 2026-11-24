@@ -608,6 +608,13 @@
     },
     "chips": {
       "two": "À deux"
+    },
+    "focus": {
+      "puzzles": "Jeux de mots et casse-têtes",
+      "mapsStrategy": "Cartes et stratégie",
+      "tools": "Outils de classe",
+      "more": "Plus de jeux",
+      "players": "Jeux des joueurs"
     }
   },
   "search": {

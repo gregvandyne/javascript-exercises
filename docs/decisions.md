@@ -12325,7 +12325,10 @@ their education." And: "don't delete these games or these elements... just hide 
   Learn subject pages, age pages, the teachers' and parents' pages (`launchGame`), Play's "From Learn" shelf, Oomba's game
   search, the dashboard's "Practice it" links, the landing page's covers, Quest Race in the live and quick-live pickers,
   and new assignments (`/teach/assign`). Subject chips and `/learn/<hub>` pages with no game left (Music, Computer
-  science) and Play's genre chips with no game left are gone too.
+  science) are gone too. Play itself is laid out differently while the arcade is hidden: the hero (Crossword), then one
+  section per kind (Live class games, Word games and puzzles, Math games, Maps and strategy, Classroom tools), each
+  official game on the page once, then the viewer's own games and games by players; rails by plays, rating or date
+  would repeat the same few games (routes/discover.js focusPlay).
 - **Direct links**: `/g/<slug>` and `/play/<slug>` of a hidden official game show a calm "This game isn't available right
   now" page with the way to Play (404, so it is not indexed). **Exceptions**: the platform admin, and anyone in (or
   teaching, or who assigned) a class whose not-removed lesson has the game as a step; so every existing assignment keeps

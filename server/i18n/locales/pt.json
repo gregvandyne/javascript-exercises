@@ -609,6 +609,13 @@
     },
     "chips": {
       "two": "2 jogadores"
+    },
+    "focus": {
+      "puzzles": "Jogos de palavras e quebra-cabeças",
+      "mapsStrategy": "Mapas e estratégia",
+      "tools": "Ferramentas de sala de aula",
+      "more": "Mais jogos",
+      "players": "Jogos de jogadores"
     }
   },
   "search": {

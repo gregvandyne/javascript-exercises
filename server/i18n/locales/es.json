@@ -608,6 +608,13 @@
     },
     "chips": {
       "two": "2 jugadores"
+    },
+    "focus": {
+      "puzzles": "Juegos de palabras y pasatiempos",
+      "mapsStrategy": "Mapas y estrategia",
+      "tools": "Herramientas de clase",
+      "more": "Más juegos",
+      "players": "Juegos de jugadores"
     }
   },
   "search": {

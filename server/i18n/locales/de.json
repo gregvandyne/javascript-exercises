@@ -609,6 +609,13 @@
     },
     "chips": {
       "two": "Zu zweit"
+    },
+    "focus": {
+      "puzzles": "Wortspiele und Rätsel",
+      "mapsStrategy": "Karten und Strategie",
+      "tools": "Werkzeuge für die Klasse",
+      "more": "Mehr Spiele",
+      "players": "Spiele von Spielern"
     }
   },
   "search": {
