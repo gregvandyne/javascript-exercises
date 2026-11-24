@@ -210,6 +210,8 @@ function editorData(req, row) {
 }
 router.get('/library/make/:id', teacher, (req, res) => {
   const row = SB.ownBook(req.user, req.params.id); if (!row) return notFound(req, res);
+  // Pictures held back yesterday (the day's pictures were used) are painted now, when the book is opened again.
+  Draw.retryHeld(req.user, row);
   const t = req.t, data = editorData(req, row);
   const bk = data.book;
   const body = html`<div class="sb sb-edit" id="sb-edit">

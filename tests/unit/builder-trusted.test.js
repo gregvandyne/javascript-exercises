@@ -127,3 +127,14 @@ test('TRU-full everyone builds like a teacher with BUILDER_FULL_FOR_ALL on (the 
     assert.equal(maxStepsFor(usage.trustedMaker(kid.id)), MAX_STEPS_TRUSTED);
   } finally { config.builderFullForAll = false; }
 });
+
+test('TRU-admin the platform admin has no daily cap and nothing is counted (by user or by id); a teacher keeps the cap', () => {
+  const admin = newUser({ role: 'admin' }), plain = newUser();
+  const day = '2026-11-24', daily = usage.dailyTurns();
+  for (let i = 0; i < daily + 5; i++) assert.ok(usage.takeTurn(i % 2 ? admin : admin.id, day), `admin turn ${i}`);
+  assert.equal(usage.turnsUsed(admin.id, day), 0, 'nothing counted');
+  assert.equal(usage.allowanceFor(admin, day).left, Math.max(1, daily));
+  assert.equal(usage.turnsLeft(admin.id, day), Math.max(1, daily));
+  for (let i = 0; i < daily; i++) assert.ok(usage.takeTurn(plain.id, day));
+  assert.equal(usage.takeTurn(plain.id, day), false, 'everyone else stops at the cap');
+});

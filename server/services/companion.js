@@ -632,7 +632,9 @@ export function bookLines(c, t) {
   if (c.kept) out.push(t('js.storybook-edit.ch.kept', { count: c.kept }));
   if (c.repaired) out.push(t('js.storybook-edit.ch.repaired'));
   if (!out.length) out.push(t('js.storybook-edit.ch.none'));
-  return { title: t('js.storybook-edit.ch.title'), items: out };
+  // Pictures that could not be redrawn today (storybook.js applyBook noPics): said first and plainly, so the change
+  // never reads as if they were.
+  return { title: t('js.storybook-edit.ch.title'), items: out, ...(c.noPics ? { warn: t('js.storybook-edit.ch.noPics', { count: c.noPics }) } : {}) };
 }
 /** A tap on a choice card: the class, the student or the reason. Once the card has all three the point is given (a turn
  *  of its own, with Undo). -> the conversation | fail */
@@ -1350,7 +1352,7 @@ export function send(u, body) {
   if (typeof body.book === 'string' && body.book) { const r = bookWords(u, body); if (r) return r; }
   const per = limitsOf(u).perHour;
   const n = q.get("SELECT COUNT(*) n FROM oomba_turns WHERE owner_id=? AND surface=? AND created_at>?", u.id, SURFACE, now() - 3600e3).n;
-  if (n >= per) return { ok: false, code: 'slow' };
+  if (n >= per && !S.unlimitedAi(u)) return { ok: false, code: 'slow' };
   return C.send(u, SURFACE, KEY, body);
 }
 export const undo = (u, turnId) => C.undo(u, SURFACE, KEY, turnId);

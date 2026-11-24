@@ -4479,6 +4479,7 @@
         "firstCyoa": "Une nouvelle aventure : {pages} pages, {endings} fins.",
         "added": "Nouvelles pages : {pages}",
         "changed": "Pages modifiées : {pages}",
+        "noPics": "{count, plural, one {Les images du jour sont épuisées : # image n'a pas été redessinée et montre encore l'ancien dessin. Rouvrez le livre demain et elle sera redessinée.} other {Les images du jour sont épuisées : # images n'ont pas été redessinées et montrent encore les anciens dessins. Rouvrez le livre demain et elles seront redessinées.}}",
         "removed": "{count, plural, one {# page retirée.} other {# pages retirées.}}",
         "kept": "{count, plural, one {# page que vous avez modifiée entre-temps a été gardée.} other {# pages que vous avez modifiées entre-temps ont été gardées.}}",
         "repaired": "Oomba a réparé quelques liens pour que chaque page fonctionne.",

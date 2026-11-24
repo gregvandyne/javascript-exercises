@@ -4480,6 +4480,7 @@
         "firstCyoa": "Ein neues Abenteuer: {pages} Seiten, {endings} Enden.",
         "added": "Neue Seiten: {pages}",
         "changed": "Geänderte Seiten: {pages}",
+        "noPics": "{count, plural, one {Die Bilder für heute sind aufgebraucht, daher wurde # Bild nicht neu gezeichnet und zeigt noch die alte Zeichnung. Öffne das Buch morgen wieder, dann wird es neu gezeichnet.} other {Die Bilder für heute sind aufgebraucht, daher wurden # Bilder nicht neu gezeichnet und zeigen noch die alten Zeichnungen. Öffne das Buch morgen wieder, dann werden sie neu gezeichnet.}}",
         "removed": "{count, plural, one {# Seite entfernt.} other {# Seiten entfernt.}}",
         "kept": "{count, plural, one {# Seite, die du inzwischen geändert hast, wurde behalten.} other {# Seiten, die du inzwischen geändert hast, wurden behalten.}}",
         "repaired": "Oomba hat ein paar Verbindungen repariert, damit jede Seite funktioniert.",

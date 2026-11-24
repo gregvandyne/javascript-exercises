@@ -4480,6 +4480,7 @@
         "firstCyoa": "Uma aventura nova: {pages} páginas, {endings} finais.",
         "added": "Páginas novas: {pages}",
         "changed": "Páginas alteradas: {pages}",
+        "noPics": "{count, plural, one {As imagens de hoje acabaram, então # imagem não foi redesenhada e ainda mostra o desenho antigo. Abra o livro amanhã e ela será redesenhada.} other {As imagens de hoje acabaram, então # imagens não foram redesenhadas e ainda mostram os desenhos antigos. Abra o livro amanhã e elas serão redesenhadas.}}",
         "removed": "{count, plural, one {# página removida.} other {# páginas removidas.}}",
         "kept": "{count, plural, one {Mantida # página que você mudou enquanto isso.} other {Mantidas # páginas que você mudou enquanto isso.}}",
         "repaired": "O Oomba consertou alguns links para que todas as páginas funcionem.",

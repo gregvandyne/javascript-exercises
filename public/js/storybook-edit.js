@@ -425,7 +425,9 @@ const chat = COMPANION ? null : mountChat({
     if (c.kept) parts.push(t('js.storybook-edit.ch.kept', { count: c.kept }));
     if (c.repaired) parts.push(t('js.storybook-edit.ch.repaired'));
     if (!parts.length) parts.push(t('js.storybook-edit.ch.none'));
-    return `<p class="oc-ch-h"><b>${esc(t('js.storybook-edit.ch.title'))}</b></p><ul class="oc-ch-list">${parts.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`;
+    // Pictures that could not be redrawn today: said first and plainly, so the change never reads as if they were.
+    const warn = c.noPics ? `<p class="oc-bnote warn oc-ch-warn" role="status">${iconHtml('⚠️', { size: 16 })} ${esc(t('js.storybook-edit.ch.noPics', { count: c.noPics }))}</p>` : '';
+    return `${warn}<p class="oc-ch-h"><b>${esc(t('js.storybook-edit.ch.title'))}</b></p><ul class="oc-ch-list">${parts.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`;
   },
   onAnswer: () => { reload().catch(() => {}); },
   onUndo: () => { reload().catch(() => {}); },
