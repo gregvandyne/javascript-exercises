@@ -932,7 +932,7 @@ export const MAX_PUSHES_A_DAY = 40;
 /** A game students of the class can open: live, and public, shared with the school, or shared with this class. */
 export function pushableGame(c, g) {
   if (!g || g.status !== 'published' || !g.published_version_id || g.hidden_reason) return false;
-  if (g.visibility === 'public') return true;
+  if (g.visibility === 'public') return games.publicReachesClass(g, c.id);
   if (g.visibility === 'school') return !!S.membership(c.school_id, g.owner_id);
   if (g.visibility === 'class') return games.gameLiveInClass(g.id, c.id);
   return false;

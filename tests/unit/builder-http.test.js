@@ -1,6 +1,7 @@
 // Studio over HTTP: access rules, the SSE chat, the live stream (builds run on their own: sign-out, expiry and closed
 // pages never stop them), lists and notes, uploads, publishing and updating a live game.
 process.env.BRB_DB = ':memory:';
+process.env.PUBLIC_GAMES = '1';   // public games (off on the site by default: tests/unit/play-topics-private.test.js)
 process.env.BRB_SILENT = '1';
 process.env.LOG_REQUESTS = '0';
 process.env.BRB_MOCK_DELAY_MS = '0';

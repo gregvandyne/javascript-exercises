@@ -1,6 +1,7 @@
 // Schools: who can do what, school accounts, class codes and join requests (with matching to a school account),
 // moves between classes, and the school rules on the game site (friends, chat, sharing, photos).
 process.env.BRB_DB = ':memory:'; process.env.BRB_SILENT = '1'; process.env.LOG_REQUESTS = '0';
+process.env.PUBLIC_GAMES = '1';   // public games (off on the site by default: tests/unit/play-topics-private.test.js)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 const { q } = await import('../../server/db.js');

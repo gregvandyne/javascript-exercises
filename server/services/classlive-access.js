@@ -74,7 +74,11 @@ export function hostable(host, game, audience, { classId = null } = {}) {
   if (!game.published_version_id || game.status !== 'published' || game.hidden_reason) return { ok: false, code: 'notPublished' };
   if (!games.canView(host, game)) return { ok: false, code: 'notFound' };
   const vis = game.visibility;
-  if (vis === 'public') return { ok: true, versionId: game.published_version_id };
+  if (vis === 'public' && games.openToAll(game)) return { ok: true, versionId: game.published_version_id };
+  // PUBLIC_GAMES off: a player's game left at 'public' is for its maker's connections and classes (services/games.js):
+  // a class room of a class its maker is in, or a family room of the maker's own family.
+  if (vis === 'public' && audience === 'class') return classId && games.publicReachesClass(game, classId) ? { ok: true, versionId: game.published_version_id } : { ok: false, code: 'notShared' };
+  if (vis === 'public' && audience === 'family') return game.owner_id === host.id ? { ok: true, versionId: game.published_version_id } : { ok: false, code: 'notShared' };
   if (audience === 'open') return { ok: false, code: 'notPublic' };
   if (audience === 'class') {
     if (vis === 'class' && classId && games.gameLiveInClass(game.id, classId)) return { ok: true, versionId: game.published_version_id };

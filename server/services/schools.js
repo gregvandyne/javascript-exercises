@@ -717,7 +717,7 @@ export const inAnySchool = u => !!(u && q.get("SELECT 1 FROM school_members WHER
 
 /** Who a game can be shared with, for its owner (in games.VISIBILITIES order): private and friends always; 'class'
  *  for an active member (student or teacher) of at least one live class; 'school' for school members; 'public' unless
- *  the owner is a school account whose school keeps games inside the school. 'class' is narrower than both school
+ *  the owner is a school account whose school keeps games inside the school (and only while PUBLIC_GAMES is on). 'class' is narrower than both school
  *  settings ('school' and 'public'), so every school allows it; a future "private only" setting must turn it off too.
  *  A grown-up builder (they never join schools or classes): private, 'family' (their linked children; only while family
  *  pages are on), 'friends' (shown to them as "My grown-up connections": other grown-ups only) and public. A kid can
@@ -725,12 +725,14 @@ export const inAnySchool = u => !!(u && q.get("SELECT 1 FROM school_members WHER
  *  already live (or waiting) at 'family' keeps that level while family pages are off, so its updates still go out to
  *  the children who can play it (canView still serves them) and an approval for it is not turned into something else. */
 export function sharingOptions(owner, game = null) {
-  if (isGrownup(owner)) return familiesOn() || (game && (game.visibility === 'family' || game.pending_visibility === 'family')) ? ['private', 'family', 'friends', 'public'] : ['private', 'friends', 'public'];
+  // PUBLIC_GAMES off (config.publicGames; services/games.js openToAll): nobody may pick 'public' (Everyone).
+  const pub = config.publicGames ? ['public'] : [];
+  if (isGrownup(owner)) return familiesOn() || (game && (game.visibility === 'family' || game.pending_visibility === 'family')) ? ['private', 'family', 'friends', ...pub] : ['private', 'friends', ...pub];
   const opts = ['private', 'friends'];
   if (owner && shareableClasses(owner.id).length) opts.push('class');
   if (inAnySchool(owner)) opts.push('school');
   const rules = accountRules(owner);
-  if (!rules || rules.publishing === 'public') opts.push('public');
+  if (pub.length && (!rules || rules.publishing === 'public')) opts.push('public');
   return opts;
 }
 /** Where the share dialog starts for a game that isn't live yet: 'family' for a grown-up while family pages are on (their

@@ -16,11 +16,15 @@
 //    at once when it finds a problem, and its "allowed" is only a hint for the admin; the version always waits in the
 //    admin review queue (pending_version_id). A game that isn't live yet goes live for the builder's friends at once while
 //    it waits (friends sharing is instant anyway). Only a team approval (or a grandfathered or seed one) covers public.
+//  - PUBLIC_GAMES off (the default; services/games.js openToAll): 'public' is refused, except an official game and a
+//    player's game already live at 'public' from before (now its maker's connections and classes), which updates like a
+//    'class' game.
 //  - games.pending_visibility records what a waiting review is for; approval applies exactly that audience.
 //  - UPDATING a game that is already live: the old published version keeps playing for everyone
 //    while the new one is reviewed; when approved it replaces it. Builders can update forever.
 import { q, now, tx, audit } from '../db.js';
 import { getGame, getVersion, VISIBILITIES, liveClasses } from './games.js';
+import { config } from '../config.js';
 import { scanVersion } from './scanner.js';
 import { reviewVersion } from './review.js';
 import { tEn } from '../i18n/index.js';
@@ -86,7 +90,15 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
   if (!VISIBILITIES.includes(visibility)) return { ok: false, state: 'blocked', message: t('studio.api.pickWho') };
   // School accounts follow their school's rules (e.g. games stay inside the school); 'class' needs a class to be in.
   const owner = getUser(game.owner_id);
-  if (!sharingOptions(owner, game).includes(visibility)) return { ok: false, state: 'blocked', message: t(visibility === 'public' ? 'publish.schoolOnly' : visibility === 'class' ? 'studio.api.classGone' : 'studio.api.pickWho') };
+  // PUBLIC_GAMES off (services/games.js openToAll): nobody shares a game with everyone. Two exceptions keep 'public': an
+  // official game, and a player's game already live at 'public' from before (now its maker's connections and classes),
+  // so its maker can still update it without choosing again. It is then a group of people who didn't opt in, like 'class'.
+  const asGroup = visibility === 'public' && !config.publicGames && game.source !== 'seed';
+  const keepsPublic = visibility === 'public' && !config.publicGames && (game.source === 'seed' || (game.visibility === 'public' && game.status === 'published' && !!game.published_version_id));
+  if (!sharingOptions(owner, game).includes(visibility) && !keepsPublic) {
+    if (visibility === 'public' && !config.publicGames) return { ok: false, state: 'blocked', code: 'noPublic', message: t('publish.noPublic') };
+    return { ok: false, state: 'blocked', message: t(visibility === 'public' ? 'publish.schoolOnly' : visibility === 'class' ? 'studio.api.classGone' : 'studio.api.pickWho') };
+  }
   let pick = null;   // the new class list (null: keep the current one)
   // Re-sending a waiting class request (Studio "Update") keeps the class list that is waiting.
   if (visibility === 'class' && classIds === undefined && game.pending_visibility === 'class') classIds = pendingClasses(game) || undefined;
@@ -119,12 +131,12 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
   // it; a grown-up's game reaches their linked children's home pages), so a flagged (or not-yet-approved) version needs
   // a human look first, the same as public. Private and friends stay instant (both sides chose them); a clean or
   // already-approved family, school or class version is instant too.
-  const group = visibility === 'school' || visibility === 'class' || visibility === 'family';
+  const group = visibility === 'school' || visibility === 'class' || visibility === 'family' || asGroup;
   const scope = approvalScope(version);
   const covered = approvalCovers(scope, visibility, visibility === 'class' ? (pick || gameClassIds(game.id)) : []);
   const instant = visibility === 'private' || visibility === 'friends' || (group && (version.safety_status === 'pass' || covered));
   const classesLine = visibility === 'class' ? { classes: pick || undefined } : {};
-  if (visibility !== 'public' && instant) {
+  if ((visibility !== 'public' || asGroup) && instant) {
     tx(() => {
       if (pick) setGameClasses(game.id, pick, user.id);
       q.run("UPDATE games SET visibility=?, status='published', published_version_id=?, pending_version_id=NULL, pending_visibility='', pending_classes='', review_note='', review_reason='', published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?", visibility, version.id, now(), now(), game.id);
@@ -140,7 +152,7 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
   if (!covered) {
     const verdict = await reviewVersion(game, version);
     // Public waits for the team even when the model says "allowed" (kept on the version as a hint for the admin).
-    if (verdict.verdict === 'allowed' && visibility !== 'public') {
+    if (verdict.verdict === 'allowed' && (visibility !== 'public' || asGroup)) {
       q.run("UPDATE game_versions SET review_status='approved', review_report=? WHERE id=?", JSON.stringify(verdict), version.id);
       approved = true;
     } else if (verdict.verdict === 'needs_changes' || verdict.verdict === 'blocked') {
@@ -161,7 +173,7 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
     });
     audit(user.id, wasLive ? 'game.update' : 'game.publish', game.id, { visibility, version: version.number, reviewed: 'model', ...classesLine });
     queueShot(version.id);
-    return { ok: true, state: 'live', message: visibility !== 'public' ? liveMessage(visibility, game, t) : wasLive ? t('publish.updateLive') : t('publish.public'), game: getGame(game.id) };
+    return { ok: true, state: 'live', message: visibility !== 'public' || asGroup ? liveMessage(visibility, game, t) : wasLive ? t('publish.updateLive') : t('publish.public'), game: getGame(game.id) };
   }
   // Waiting for a human. If it was already live, it stays live (at its old visibility) on the old version.
   // pending_visibility says what the review is for. A new class list for a game already live at 'class' waits in
@@ -198,6 +210,8 @@ function liveMessage(visibility, game, t) {
     const names = liveClasses(gameId).map(c => c.name);
     return names.length ? t('publish.class', { count: names.length, name: names[0] }) : t('publish.private');
   }
+  // A player's game left at 'public' from before, while PUBLIC_GAMES is off: its maker's connections and classes.
+  if (!config.publicGames && game.source !== 'seed') return t('publish.liveConnectionsClasses');
   return t('publish.public');
 }
 
@@ -207,6 +221,13 @@ function approvedAudience(game) {
   const want = game.pending_visibility || 'public';
   const opts = sharingOptions(getUser(game.owner_id), game);
   if (opts.includes(want)) return want;
+  // PUBLIC_GAMES off: a request for everyone (sent before) never makes a game public. A game already live at 'public'
+  // keeps it (now its maker's connections and classes); any other keeps the level it is live at, else friends.
+  if (want === 'public' && !config.publicGames) {
+    const live = game.status === 'published' && !!game.published_version_id;
+    if (live && (game.visibility === 'public' || opts.includes(game.visibility))) return game.visibility;
+    return opts.includes('friends') ? 'friends' : 'private';
+  }
   if (want === 'public' && opts.includes('school')) return 'school';
   return 'private';
 }

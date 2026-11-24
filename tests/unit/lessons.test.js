@@ -1,6 +1,7 @@
 // Lesson plans: library folders and ordering, steps, sharing and copying, assigning to classes in units with dates,
 // what students see (only open lessons, playable games), build steps, the AI draft fallback, and who can do what.
 process.env.BRB_DB = ':memory:'; process.env.BRB_SILENT = '1'; process.env.LOG_REQUESTS = '0';
+process.env.PUBLIC_GAMES = '1';   // public games (off on the site by default: tests/unit/play-topics-private.test.js)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 const { config } = await import('../../server/config.js');

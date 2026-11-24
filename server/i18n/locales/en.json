@@ -533,7 +533,8 @@
     "public": "Everyone",
     "school": "My school",
     "family": "My family",
-    "connections": "My grown-up connections"
+    "connections": "My grown-up connections",
+    "connectionsClasses": "Friends and classes"
   },
   "status": {
     "hidden": "Hidden",
@@ -611,11 +612,16 @@
       "two": "2 players"
     },
     "focus": {
-      "puzzles": "Word games and puzzles",
-      "mapsStrategy": "Maps and strategy",
       "tools": "Classroom tools",
       "more": "More games",
       "players": "Games by players"
+    },
+    "topics": {
+      "label": "Topics",
+      "math": "Math",
+      "reading": "Reading and words",
+      "geography": "Geography",
+      "strategy": "Strategy"
     }
   },
   "search": {
@@ -1188,7 +1194,8 @@
       "public": "Anyone with the link can play this game.",
       "school": "Everyone at your school can find and play it.",
       "family": "Only the grown-up who made this game and their family can open this link.",
-      "connections": "Only the grown-up who made this game and their grown-up connections can open this link."
+      "connections": "Only the grown-up who made this game and their grown-up connections can open this link.",
+      "connectionsClasses": "Only the maker's friends and classmates can open this link."
     },
     "sharedWith": "Shared with:",
     "sharedWithMore": "{count, plural, one {and # other class} other {and # other classes}}",
@@ -1534,7 +1541,8 @@
       "public": "Everyone on Oomba Academy can find and play it, after a quick safety check.",
       "school": "Everyone at your school can find and play it.",
       "family": "You and the kids linked to your family can play it.",
-      "connections": "Only you and your grown-up connections can play it."
+      "connections": "Only you and your grown-up connections can play it.",
+      "connectionsClasses": "Only you, your friends and the people in your classes can play it."
     },
     "status": {
       "hidden": "Hidden for now",
@@ -1875,7 +1883,9 @@
         "start": "the game didn’t start",
         "failed": "the game froze while it was being played"
       }
-    }
+    },
+    "noPublic": "Games can be shared with your friends and your classes, not with everyone.",
+    "liveConnectionsClasses": "Shared with your friends and your classes! Only they and you can play it."
   },
   "builder": {
     "kindRefusal": "I can’t help with that one. Let’s build something fun instead. What kind of game would you like?",
@@ -2172,7 +2182,8 @@
         "public": "Everyone",
         "school": "My school",
         "family": "My family",
-        "connections": "My grown-up connections"
+        "connections": "My grown-up connections",
+        "connectionsClasses": "Friends and classes"
       },
       "top": {
         "inReview": "In review",

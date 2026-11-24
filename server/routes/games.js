@@ -172,7 +172,7 @@ router.get('/g/:slug', (req, res) => {
     </div>
     ${isOwner ? '' : html`<p class="reportline"><button class="linkbtn" type="button" id="reportbtn"><span class="emo">${ico('🚩', { size: 20 })}</span> ${t('game.report.button')}</button></p>`}
   </article>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, visibility: g.visibility, shareText: t(`game.shareText.${g.visibility === 'friends' && byGrownup ? 'connections' : g.visibility}`), reasons: reportReasons(t), signedIn: !!u })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, visibility: g.visibility, shareText: t(`game.shareText.${g.visibility === 'friends' && byGrownup ? 'connections' : games.legacyPublic(g) ? 'connectionsClasses' : g.visibility}`), reasons: reportReasons(t), signedIn: !!u })}`;
   if (!official) res.set('X-Robots-Tag', 'noindex, nofollow');
   // Search titles only where this language really has the wording (t.own alone is true for every key in English).
   const written = key => t.has(key) && t.own(key);
@@ -392,7 +392,7 @@ router.get('/shots/:file', (req, res) => {
   if (!live && !games.canEdit(req.user, g)) return res.status(404).end();
   const file = fileFor(v.id);
   if (!fs.existsSync(file)) return res.status(404).end();
-  const open = live && g.visibility === 'public' && g.status === 'published' && !g.hidden_reason;
+  const open = live && games.openToAll(g) && g.status === 'published' && !g.hidden_reason;
   res.set({ 'Cache-Control': open ? 'public, max-age=604800, immutable' : 'private, max-age=3600', 'X-Content-Type-Options': 'nosniff' });
   res.type('jpg').sendFile(file);
 });

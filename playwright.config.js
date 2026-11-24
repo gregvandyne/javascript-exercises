@@ -59,7 +59,7 @@ export default defineConfig({
       // (now /play) still open "/". Whoever merges the Play/Learn homes points them at /play and drops this line.
       LANDING_AT_ROOT: process.env.LANDING_AT_ROOT || '0',
       // The arcade games and the courses (services/game-focus.js) are hidden on the site by default; the specs cover them.
-      ARCADE: process.env.ARCADE || '1', COURSES: process.env.COURSES || '1',
+      ARCADE: process.env.ARCADE || '1', COURSES: process.env.COURSES || '1', PUBLIC_GAMES: process.env.PUBLIC_GAMES || '1',
       GOOGLE_CLIENT_ID: 'test-client.apps.googleusercontent.com', GOOGLE_CLIENT_SECRET: 'fake-test-secret', GOOGLE_OIDC_BASE: `http://127.0.0.1:${PORT + 1}` },
   }],
 });

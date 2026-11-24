@@ -533,7 +533,8 @@
     "public": "Iedereen",
     "school": "Mijn school",
     "family": "Mijn gezin",
-    "connections": "Mijn volwassen contacten"
+    "connections": "Mijn volwassen contacten",
+    "connectionsClasses": "Vrienden en klassen"
   },
   "status": {
     "hidden": "Verborgen",
@@ -611,11 +612,16 @@
       "two": "Met z’n tweeën"
     },
     "focus": {
-      "puzzles": "Woordspellen en puzzels",
-      "mapsStrategy": "Kaarten en strategie",
       "tools": "Klassentools",
       "more": "Meer games",
       "players": "Games van spelers"
+    },
+    "topics": {
+      "label": "Onderwerpen",
+      "math": "Rekenen",
+      "reading": "Lezen en woorden",
+      "geography": "Aardrijkskunde",
+      "strategy": "Strategie"
     }
   },
   "search": {
@@ -1188,7 +1194,8 @@
       "public": "Iedereen met de link kan deze game spelen.",
       "school": "Iedereen op je school kan hem vinden en spelen.",
       "family": "Alleen de volwassene die deze game heeft gemaakt en diens gezin kunnen deze link openen.",
-      "connections": "Alleen de volwassene die deze game heeft gemaakt en diens volwassen contacten kunnen deze link openen."
+      "connections": "Alleen de volwassene die deze game heeft gemaakt en diens volwassen contacten kunnen deze link openen.",
+      "connectionsClasses": "Alleen de vrienden en klasgenoten van de maker kunnen deze link openen."
     },
     "sharedWith": "Gedeeld met:",
     "sharedWithMore": "{count, plural, one {en # andere klas} other {en # andere klassen}}",
@@ -1534,7 +1541,8 @@
       "public": "Iedereen op Oomba Academy kan hem vinden en spelen, na een snelle veiligheidscheck.",
       "school": "Iedereen op je school kan hem vinden en spelen.",
       "family": "Jij en de kinderen die aan je gezin gekoppeld zijn, kunnen het spelen.",
-      "connections": "Alleen jij en je volwassen contacten kunnen het spelen."
+      "connections": "Alleen jij en je volwassen contacten kunnen het spelen.",
+      "connectionsClasses": "Alleen jij, je vrienden en de mensen in je klassen kunnen het spelen."
     },
     "status": {
       "hidden": "Even verborgen",
@@ -1875,7 +1883,9 @@
         "start": "het spel startte niet",
         "failed": "het spel liep vast tijdens het spelen"
       }
-    }
+    },
+    "noPublic": "Je kunt spellen delen met je vrienden en je klassen, niet met iedereen.",
+    "liveConnectionsClasses": "Gedeeld met je vrienden en je klassen! Alleen zij en jij kunnen het spelen."
   },
   "builder": {
     "kindRefusal": "Daar kan ik niet mee helpen. Laten we iets leuks bouwen! Wat voor game wil je graag?",
@@ -2160,7 +2170,8 @@
         "public": "Iedereen",
         "school": "Mijn school",
         "family": "Mijn gezin",
-        "connections": "Mijn volwassen contacten"
+        "connections": "Mijn volwassen contacten",
+        "connectionsClasses": "Vrienden en klassen"
       },
       "top": {
         "inReview": "Wordt bekeken",

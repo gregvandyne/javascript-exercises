@@ -149,7 +149,7 @@ export function assignable(u, g, c) {
   if (!g || g.status === 'deleted' || !games.canView(u, g)) return fail('pickGame');
   if (g.source === 'seed') return g.status === 'published' && g.visibility === 'public' && !g.course_only ? ok({ game: g }) : fail('pickGame');
   if (g.status !== 'published' || !g.published_version_id || g.hidden_reason) return fail('publishFirst');
-  if (g.visibility === 'public') return ok({ game: g });
+  if (g.visibility === 'public' && games.publicReachesClass(g, c.id)) return ok({ game: g });
   if (g.visibility === 'school') return S.membership(c.school_id, g.owner_id) ? ok({ game: g }) : fail('publishFirst');
   if (g.visibility === 'class') return g.owner_id === u.id || games.gameLiveInClass(g.id, c.id) ? ok({ game: g, share: !games.gameLiveInClass(g.id, c.id) }) : fail('publishFirst');
   return fail('publishFirst');

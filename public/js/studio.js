@@ -28,10 +28,12 @@ const VIS = { private: ['🔒', t('js.studio.vis.private')], family: ['🏠', t(
 /** A grown-up builder's 'friends' are their grown-up connections (S.grownup: set by the server for a grown-up's game). */
 const CONNECTIONS = ['🤝', t('js.studio.vis.connections')];
 /** [emoji, label] for a sharing level. 'class' says "My class" for one class and "My classes" for several. */
-const visOf = (k, count = 1) => (k === 'class' ? ['🎒', t('js.studio.vis.class', { count })] : k === 'friends' && S.grownup ? CONNECTIONS : VIS[k] || ['', k]);
+/** PUBLIC_GAMES off (S.publicGames false): a game left at 'public' from before is for its maker's connections and classes. */
+const LEGACY_PUBLIC = ['🤝', t('js.studio.vis.connectionsClasses')];
+const visOf = (k, count = 1) => (k === 'class' ? ['🎒', t('js.studio.vis.class', { count })] : k === 'friends' && S.grownup ? CONNECTIONS : k === 'public' && S.publicGames === false ? LEGACY_PUBLIC : VIS[k] || ['', k]);
 /** A grown-up's share dialog: one line under each choice saying exactly who that is (never their children's names). */
 const grownupHint = k => (!S.grownup ? '' : k === 'family' ? t('js.studio.share.hint.family') : k === 'friends' ? t('js.studio.share.hint.connections')
-  : k === 'public' ? t('js.studio.share.hint.publicGrownup', { name: S.grownup.name }) : '');
+  : k === 'public' && S.publicGames !== false ? t('js.studio.share.hint.publicGrownup', { name: S.grownup.name }) : '');
 // Idea chips: keys a, b, c... under a prefix (missing letters are skipped).
 const chipList = prefix => [...'abcdefgh'].map(k => t(`${prefix}.${k}`)).filter(x => !x.startsWith(prefix));
 const NEXT_CHIPS = chipList('js.studio.nextChips');
@@ -180,7 +182,7 @@ function renderLive() {
     if (S.pending && S.pending.id === S.live.id) parts.push(`<p class="note">${ico('⏳')} ${waitingText()}</p>`);
     else if (S.pending) parts.push(`<p class="note">${ico('⏳')} ${E('js.studio.live.pendingUpdate', { pending: S.pending.number, live: S.live.number })}</p>`);
     if (teamWait()) parts.push(teamNote());
-    else if (canUpdate) parts.push(`<p class="note info">${E('js.studio.live.playersOn', { live: S.live.number, number: S.current.number })}${S.live.visibility === 'public' ? ' ' + E('js.studio.live.publicCheck') : isGroup(S.live.visibility) && needsCheck(S.current.id) ? ' ' + E('js.studio.share.groupHint') : ''}</p>`);
+    else if (canUpdate) parts.push(`<p class="note info">${E('js.studio.live.playersOn', { live: S.live.number, number: S.current.number })}${S.live.visibility === 'public' && S.publicGames !== false ? ' ' + E('js.studio.live.publicCheck') : isGroup(S.live.visibility) && needsCheck(S.current.id) ? ' ' + E('js.studio.share.groupHint') : ''}</p>`);
   } else {
     parts.push(`<span class="stchip">${esc(S.status.label)}${S.status.code === 'draft' ? ' · ' + E('js.studio.live.onlyYou') : ''}</span><span class="vtag">${cur}</span>`);
     if (S.pending) parts.push(`<p class="note">${ico('⏳')} ${E('js.studio.live.pendingNew', { number: S.pending.number })}</p>`);
@@ -197,7 +199,7 @@ const LIST = typeof Intl.ListFormat === 'function' ? new Intl.ListFormat(INTL, {
 /** "5B, Art Club and Chess Club" in the reader's language. Class names are typed by teachers: escaped, and each kept
  *  whole inside right-to-left text. */
 const nameList = names => (LIST ? LIST.formatToParts(names).map(p => (p.type === 'element' ? `<bdi>${esc(p.value)}</bdi>` : esc(p.value))).join('') : names.map(n => `<bdi>${esc(n)}</bdi>`).join(', '));
-const isGroup = v => v === 'class' || v === 'school' || v === 'family';
+const isGroup = v => v === 'class' || v === 'school' || v === 'family' || (v === 'public' && S.publicGames === false);
 /** Would sharing this version with a class or the school wait for a person? Only a clean or approved version goes
  *  straight out (server/services/publish.js). */
 const needsCheck = id => { const v = (S.versions || []).find(x => x.id === id); return !!v && v.safety === 'flag' && v.review !== 'approved'; };
@@ -1938,7 +1940,7 @@ const CLASS_CODES = ['pickClass', 'classGone', 'classRemoved'];
 function shareSheet(mode) {
   if (!S.current) return toast(t('js.studio.share.buildFirst'));
   const live = S.live;
-  const options = () => S.shareOptions || ['private', 'friends', 'public'];   // read again after a refused request
+  const options = () => S.shareOptions || ['private', 'friends'];   // read again after a refused request
   // Before it is live, the dialog opens on what is waiting for a check (if anything), else on the game's level.
   // Never shared yet (still a draft): the server's starting choice (S.shareDefault: 'family' for a grown-up builder, else
   // 'private'). A game shared before (now suspended, rejected…) opens on its stored level, as it always did.
@@ -1974,7 +1976,7 @@ function shareSheet(mode) {
   const s = sheet({ title, content: `${live ? `<p>${E('js.studio.share.playersGet', { number: live.number })}</p>` : `<p>${E('js.studio.share.pickWho', { number: S.current.number })}</p>`}<div class="vischoice" role="group" aria-label="${E('js.studio.share.whoLabel')}">${optsHtml()}</div><p class="small muted" id="vis-hint"></p>${link}<div class="sheet-actions"><button class="btn btn-primary" type="button" id="vis-go">${live ? E('js.studio.share.save') : E('js.studio.top.publish')}</button></div>` });
   const choice = $('.vischoice', s.el);
   // Changing who can play a live game shares its live version; publishing shares the version being edited.
-  const hint = () => { $('#vis-hint', s.el).textContent = pick === 'public' ? t('js.studio.share.publicHint') : isGroup(pick) && needsCheck(live ? live.id : S.current.id) ? t('js.studio.share.groupHint') : ''; };
+  const hint = () => { $('#vis-hint', s.el).textContent = pick === 'public' && S.publicGames !== false ? t('js.studio.share.publicHint') : isGroup(pick) && needsCheck(live ? live.id : S.current.id) ? t('js.studio.share.groupHint') : ''; };
   const boxes = () => $$('input[data-class]', s.el);
   const err = msg => { const el = $('#cp-err', s.el); if (el) el.textContent = msg || ''; };
   const focusFirst = () => { const f = [$('#cp-all', s.el), ...boxes()].find(x => x && !x.disabled); if (f) f.focus(); };
@@ -2039,7 +2041,7 @@ function shareSheet(mode) {
 }
 async function updateLive() {
   if (!S.live || !S.current) return;
-  const pub = S.live.visibility === 'public';
+  const pub = S.live.visibility === 'public' && S.publicGames !== false;
   // A class or school game updates at once unless the safety robot flagged the new version (then a person checks it).
   const text = pub ? E('js.studio.update.publicText', { live: S.live.number }) : isGroup(S.live.visibility) && needsCheck(S.current.id) ? E('js.studio.update.groupText', { live: S.live.number }) : E('js.studio.update.now');
   const s = sheet({ title: `⬆️ ${t('js.studio.update.title')}`, content: `<p>${t('js.studio.update.text', { live: `<b>${E('js.studio.update.version', { number: S.live.number })}</b>`, number: `<b>${E('js.studio.update.version', { number: S.current.number })}</b>` })}</p><p>${text}</p><div class="sheet-actions"><button class="btn" type="button" data-close>${E('js.studio.update.notYet')}</button><button class="btn btn-hot" type="button" id="upd-go">${ico('⬆️')} ${E('js.studio.update.button')}</button></div>` });

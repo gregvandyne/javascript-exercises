@@ -620,7 +620,8 @@ router.get('/learn', (req, res) => {
     } catch (e) { log('error', 'learn courses', { error: e.message }); }
   }
   // Games other players made for learning: signed in only (an indexed page never carries a child's name or words).
-  const players = out || (filtered && !(f.grade === defGrade && !f.subject && !f.how)) ? [] : games.listVisible(u, { shelf: 'learn', limit: 12, order: 'popular' }).filter(g => g.source !== 'seed');
+  // Everyone's games only while PUBLIC_GAMES is on (services/games.js openToAll).
+  const players = !config.publicGames || out || (filtered && !(f.grade === defGrade && !f.subject && !f.how)) ? [] : games.listVisible(u, { shelf: 'learn', limit: 12, order: 'popular' }).filter(g => g.source !== 'seed');
   const subj = SUBJECTS.find(x => x.key === f.subject);
   // While the arcade is hidden (services/game-focus.js), the subject chips and pages with no game left are left out.
   const subjects = focus.openSubjects(SUBJECTS, SHELF_INFO), hubs = focus.openHubs(HUBS);
