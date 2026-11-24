@@ -12298,3 +12298,17 @@ What changed, when Oomba paints the pictures (`storybook.js paints`: "Oomba pain
   counted against the day's pictures like any other. An old book's characters gain `what` on the book's next change by
   Oomba (the check asks for it); a character whose words change is painted again then, as before.
 - Tests: `tests/unit/storybook-free-cast.test.js` (9).
+
+## Oomba chat history (2026-11-24)
+- **The owner:** "We need to include a chat history that users can go back to instead of deleting this all together
+  when you start a new chat."
+- **New chat** (services/companion.js `reset`) keeps the conversation: its row moves from `ctx_key 'main'` to
+  `'h:<its id>'`, with its files, so retention (`prune`: the school's days after it was last used) and the account
+  delete work as before. A chat with nothing said in it is just deleted. No question before New chat any more (nothing
+  is lost). Answers of a chat moved to the history count as seen (no "new answer" dot for it).
+- **Chat history** (🕘 in the panel's header, public/js/companion.js): the past chats in the conversation's place, newest
+  first, each with its first message (names as the teacher wrote them) and when it was last used. Opening one makes it
+  the conversation again (the open one goes to the history); each has Delete (asked first). At most 50 are kept (the
+  oldest go). Routes: `GET /api/companion/chats`, `POST /api/companion/chats/:id/open`, `POST .../delete`.
+- **Files:** a file is only usable from the open conversation (`fileOf`); a past chat's files come back with it.
+- **/privacy:** `info.privacy.companion.p5` says so (docs/legal-review.md "Oomba companion: chat history").

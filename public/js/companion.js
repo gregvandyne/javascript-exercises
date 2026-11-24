@@ -65,7 +65,7 @@ function start() {
     start: () => via('start') || 'closed',
     bubbleHost: dash ? document.getElementById('dash-foot') : null,
     subHtml: `<span class="oc-ctx"><i aria-hidden="true"></i>${esc(L('sees'))} <b id="oc-sees">${esc(label())}</b></span>`,
-    headExtra: `<button type="button" class="oc-hbtn" id="oc-new" aria-label="${esc(L('newChat'))}" title="${esc(L('newChat'))}">${ic('✏️', 20)}</button>`,
+    headExtra: `<button type="button" class="oc-hbtn" id="oc-hist-btn" aria-label="${esc(L('history'))}" title="${esc(L('history'))}" aria-expanded="false" aria-controls="oc-hist">${ic('🕘', 20)}</button><button type="button" class="oc-hbtn" id="oc-new" aria-label="${esc(L('newChat'))}" title="${esc(L('newChat'))}">${ic('✏️', 20)}</button>`,
     aboveRow: '<div class="oc-bookmode" id="oc-bookmode" hidden></div><div class="oc-attach" id="oc-attach" hidden></div><div class="oc-listen" id="oc-listen" role="status" hidden></div>',
     toolsStart: `<button type="button" class="oc-ibtn" id="oc-attach-btn" aria-label="${esc(L('attach'))}" title="${esc(L('attach'))}">${ic('📎', 22)}</button><input type="file" id="oc-file" accept="${DOC_ACCEPT},${IMG_ACCEPT}" hidden>`,
     toolsEnd: `<button type="button" class="oc-ibtn" id="oc-mic" aria-label="${esc(L('mic.start'))}" title="${esc(L('mic.start'))}" hidden>${ic('🎤', 22)}</button>`,
@@ -142,9 +142,49 @@ function start() {
   $('oc-web').addEventListener('click', async () => {
     try { const r = await api('/api/companion/web', { method: 'POST', body: { on: !S.web } }); S.web = !!r.web; drawWeb(); } catch (e) { chat.showErr(e.message); }
   });
+  // New chat: the one open goes to the chat history (nothing is lost, so no question first).
   $('oc-new').addEventListener('click', async () => {
-    if (!(await ask({ text: L('newChatAsk'), ok: L('newChatOk') }))) return;
-    try { const r = await api('/api/companion/chat/new', { method: 'POST', body: {} }); chat.took(r.chat, { initial: true }); setFile(null); } catch (e) { chat.showErr(e.message); }
+    try { const r = await api('/api/companion/chat/new', { method: 'POST', body: {} }); showHist(false); chat.took(r.chat, { initial: true }); setFile(null); } catch (e) { chat.showErr(e.message); }
+  });
+
+  // ---------------------------------------------------------------- chat history
+  // In the panel, in the conversation's place: the past chats (their first message and when), Open one again, Delete.
+  const hist = document.createElement('section');
+  hist.className = 'oc-hist'; hist.id = 'oc-hist'; hist.hidden = true; hist.setAttribute('aria-labelledby', 'oc-hist-h');
+  $('oc-log').before(hist);
+  const when = at => { const d = new Date(at), today = new Date().toDateString() === d.toDateString(), lang = document.documentElement.lang || undefined;
+    return today ? d.toLocaleTimeString(lang, { hour: 'numeric', minute: '2-digit' }) : d.toLocaleDateString(lang, { month: 'short', day: 'numeric', ...(d.getFullYear() !== new Date().getFullYear() ? { year: 'numeric' } : {}) }); };
+  function drawHist(list) {
+    const rows = list.map(c => `<li class="oc-hrow"><button type="button" class="oc-hopen" data-h="open" data-id="${esc(c.id)}"><span class="oc-htitle" dir="auto">${esc(c.title || L('history'))}</span><span class="oc-hwhen">${esc(when(c.at))}</span></button>
+      <button type="button" class="oc-hdel" data-h="del" data-id="${esc(c.id)}" aria-label="${esc(L('historyDelete'))}" title="${esc(L('historyDelete'))}">${ic('🗑️', 18)}</button></li>`).join('');
+    hist.innerHTML = `<div class="oc-hhead"><h3 id="oc-hist-h">${esc(L('history'))}</h3><button type="button" class="btn btn-sm" data-h="back">${esc(L('historyBack'))}</button></div>
+      ${list.length ? `<ul class="oc-hlist">${rows}</ul>` : `<p class="oc-hempty">${esc(L('historyEmpty'))}</p>`}`;
+  }
+  async function showHist(on) {
+    hist.hidden = !on; $('oc-log').hidden = on; $('oc-form').hidden = on;
+    $('oc-hist-btn').setAttribute('aria-expanded', String(on)); $('oc-hist-btn').classList.toggle('on', on);
+    if (!on) return;
+    hist.innerHTML = '';
+    try { const r = await api('/api/companion/chats'); drawHist(r.chats || []); hist.querySelector('[data-h="back"]').focus(); }
+    catch (e) { showHist(false); chat.showErr(e.message); }
+  }
+  $('oc-hist-btn').addEventListener('click', () => showHist(hist.hidden));
+  hist.addEventListener('click', async e => {
+    const b = e.target.closest('[data-h]'); if (!b) return;
+    if (b.dataset.h === 'back') { showHist(false); $('oc-in').focus(); return; }
+    const id = b.dataset.id;
+    if (b.dataset.h === 'open') {
+      b.disabled = true;
+      try { const r = await api(`/api/companion/chats/${encodeURIComponent(id)}/open`, { method: 'POST', body: {} }); showHist(false); chat.took(r.chat, { initial: true }); setFile(null); $('oc-in').focus(); }
+      catch (err) { b.disabled = false; showHist(false); chat.showErr(err.message); }
+      return;
+    }
+    if (b.dataset.h === 'del') {
+      if (!(await ask({ text: L('historyDeleteAsk'), ok: L('historyDeleteOk'), danger: true }))) return;
+      try { await api(`/api/companion/chats/${encodeURIComponent(id)}/delete`, { method: 'POST', body: {} }); const li = b.closest('li'), next = li.nextElementSibling || li.previousElementSibling; li.remove();
+        if (!hist.querySelector('.oc-hrow')) drawHist([]); (next && next.querySelector('.oc-hopen') || hist.querySelector('[data-h="back"]')).focus(); }
+      catch (err) { toast(err.message); }
+    }
   });
 
   // ---------------------------------------------------------------- attachments

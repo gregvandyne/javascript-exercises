@@ -228,6 +228,47 @@ test('laptop: a lesson plan attached becomes a Builder hand-off; the Builder ope
   } finally { await C.allSettled(); CO.reset(teacher); await ctx.close(); }
 });
 
+test('chat history: New chat keeps the chat; 🕘 lists it in the conversation\'s place; open it again; delete one (asked first)', { skip }, async () => {
+  ai();
+  q.run("DELETE FROM oomba_chats WHERE owner_id=? AND surface='companion'", teacher.id);
+  for (const [label, opts] of [['laptop', LAPTOP], ['phone', PHONE()]]) {
+    const { ctx, page, errors } = await open(teacher, `/class/${cls.id}`, opts);
+    try {
+      await page.locator('#oc-bubble').click();
+      await page.locator('#oc:not([hidden])').waitFor();
+      await ask(page, 'Give me a game for 3rd grade fractions, 10 minutes');
+      await page.locator('.oc-card').first().waitFor({ timeout: 15000 });
+      // New chat: no question, a fresh conversation.
+      await page.click('#oc-new');
+      await page.waitForFunction(() => !document.querySelector('#oc-log .oc-card'), null, { timeout: 10000 });
+      // The history: in the conversation's place, the chat with its first message.
+      await page.click('#oc-hist-btn');
+      await page.locator('#oc-hist:not([hidden]) .oc-hrow').first().waitFor({ timeout: 10000 });
+      assert.equal(await page.locator('#oc-log').isVisible(), false); assert.equal(await page.locator('#oc-form').isVisible(), false);
+      assert.equal(await page.locator('#oc-hist-btn').getAttribute('aria-expanded'), 'true');
+      assert.match(await page.locator('.oc-hrow .oc-htitle').first().textContent(), /3rd grade fractions/);
+      await noSideScroll(page);
+      await shot(page, `k_history_${label}`);
+      // Open it again: the conversation is back with its game card.
+      await page.locator('.oc-hopen').first().click();
+      await page.locator('#oc-log .oc-card').first().waitFor({ timeout: 10000 });
+      assert.equal(await page.locator('#oc-hist').isVisible(), false); assert.equal(await page.locator('#oc-form').isVisible(), true);
+      // Delete: a second chat in the history, deleted after the question.
+      await page.click('#oc-new');
+      await page.click('#oc-hist-btn');
+      await page.locator('#oc-hist .oc-hrow').first().waitFor();
+      const n = await page.locator('#oc-hist .oc-hrow').count();
+      await page.locator('.oc-hdel').first().click();
+      await page.locator('dialog[open] [data-ob="ok"]').click();
+      await page.waitForFunction(m => document.querySelectorAll('#oc-hist .oc-hrow').length === m - 1, n, { timeout: 10000 });
+      if (n === 1) assert.match(await page.locator('.oc-hempty').textContent(), /No past chats yet/);
+      await page.locator('#oc-hist [data-h="back"]').click();
+      assert.equal(await page.locator('#oc-form').isVisible(), true);
+      assert.deepEqual(errors, []);
+    } finally { await C.allSettled(); CO.reset(teacher); q.run("DELETE FROM oomba_chats WHERE owner_id=? AND surface='companion'", teacher.id); await ctx.close(); }
+  }
+});
+
 test('no bubble while a game plays, nor for a student', { skip }, async () => {
   const a = await open(teacher, '/play/fraction-factory');
   try { await a.page.waitForTimeout(3000); assert.equal(await a.page.locator('#oc-bubble').count(), 0); await shot(a.page, 'f_play'); } finally { await a.ctx.close(); }
@@ -262,8 +303,8 @@ test('iPhone 13 (dark): the bubble above the tab bar, the panel a sheet with gam
     await noSideScroll(page);
     await shot(page, 'g_sheet_dark');
     // The microphone: tap, "Listening", tap stop, the words in the box to edit.
-    await page.locator('#oc-new').click();
-    await page.locator('dialog.ob-dialog [data-ob="ok"]').click();
+    await page.locator('#oc-new').click();   // no question: the chat goes to the history
+    await page.waitForFunction(() => !document.querySelector('#oc-log .oc-card'), null, { timeout: 10000 });
     await page.locator('#oc-mic').waitFor();
     await page.locator('#oc-mic').click();
     await page.locator('#oc-listen').waitFor({ timeout: 5000 }).catch(async e => { throw new Error(`${e.message} err=${await page.locator('#oc-err').textContent()} ${errors.join('|')}`); });

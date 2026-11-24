@@ -1123,7 +1123,7 @@
         "p2": "Oomba sees only what a teacher has open and safe facts about it (a class's grade and size, a dashboard's widgets, a Figures worksheet's questions, a manipulatives board's items and steps), never students' names, answers or work. It changes a dashboard only after the teacher taps Apply. On a Figures worksheet or a manipulatives board, it makes the change the teacher asks for right away, and the teacher can undo it. When a teacher asks, it can also give a dashboard point to a student or to the whole class, which the teacher can undo.",
         "p3": "When web search is on, Oomba may send short searches to Anthropic's web search. They never include names or a location, sites for adults, gambling, social networks and the like are blocked, and every search is logged for our team without the teacher's name. Pages found on the web are shown as sources Oomba hasn't checked.",
         "p4": "A teacher can speak instead of typing: the sound is streamed to {provider} to turn it into words as they speak, and the audio is never kept, by us or by them. The words go into the message box for the teacher to check.",
-        "p5": "We keep a teacher's chat, with the text of what they attached, for 60 days after it was last used (a school can choose from 7 to 365 days); a picture is deleted once Oomba has answered, and within a day at the latest. A teacher can delete the chat with New chat, and it is deleted with the account. A school admin can turn Oomba or its web search off for the school."
+        "p5": "We keep a teacher's chat, with the text of what they attached, for 60 days after it was last used (a school can choose from 7 to 365 days); a picture is deleted once Oomba has answered, and within a day at the latest. New chat keeps the old chat in the teacher's chat history, under the same rule; a teacher can delete any chat there, and every chat is deleted with the account. A school admin can turn Oomba or its web search off for the school."
       },
       "storybook": {
         "h": "The book maker",
@@ -4324,8 +4324,12 @@
       "sees": "Sees:",
       "dashOf": "{name} dashboard",
       "newChat": "New chat",
-      "newChatAsk": "Start a new chat? This conversation and anything you attached to it will be deleted.",
-      "newChatOk": "Start a new chat",
+      "history": "Chat history",
+      "historyBack": "Back to the chat",
+      "historyEmpty": "No past chats yet. When you start a new chat, the one you had is kept here.",
+      "historyDelete": "Delete this chat",
+      "historyDeleteAsk": "Delete this chat for good? It can't be brought back.",
+      "historyDeleteOk": "Delete",
       "hello": "Hi! I'm Oomba, your teaching sidekick. Ask me for a game, a book, a change to your dashboard or help with a lesson.",
       "idea": {
         "game": {

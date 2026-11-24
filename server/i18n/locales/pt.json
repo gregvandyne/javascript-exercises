@@ -1123,7 +1123,7 @@
         "p2": "O Oomba vê só o que o professor tem aberto e dados seguros sobre isso (o ano e o tamanho de uma turma, os widgets de um painel, as perguntas de uma folha do Figures, os itens e passos de um quadro dos manipulativos), nunca nomes, respostas ou trabalhos dos alunos. Ele só muda um painel depois que o professor toca em Aplicar. Numa folha do Figures ou num quadro dos manipulativos, faz na hora a mudança pedida, e o professor pode desfazê-la. Se o professor pedir, ele também pode dar um ponto do painel a um aluno ou à turma toda, e o professor pode desfazer.",
         "p3": "Quando a busca na web está ligada, o Oomba pode enviar buscas curtas para a busca na web da Anthropic. Elas nunca incluem nomes nem uma localização; sites para adultos, de apostas, redes sociais e parecidos são bloqueados, e cada busca é registrada para nossa equipe sem o nome do professor. As páginas encontradas na web aparecem como fontes que o Oomba não verificou.",
         "p4": "Um professor pode falar em vez de digitar: o som é enviado para {provider} para virar palavras enquanto ele fala, e o áudio nunca é guardado, nem por nós nem por eles. As palavras vão para a caixa de mensagem para o professor conferir.",
-        "p5": "Guardamos a conversa de um professor, com o texto do que ele anexou, por 60 dias após o último uso (uma escola pode escolher de 7 a 365 dias); uma imagem é apagada assim que o Oomba responde, no máximo em um dia. Um professor pode apagar a conversa com Nova conversa, e ela é apagada junto com a conta. Um administrador da escola pode desligar o Oomba ou a busca na web dele para a escola."
+        "p5": "Guardamos a conversa de um professor, com o texto do que ele anexou, por 60 dias após o último uso (uma escola pode escolher de 7 a 365 dias); uma imagem é apagada assim que o Oomba responde, no máximo em um dia. Com Nova conversa, a conversa anterior fica no histórico de conversas do professor, com a mesma regra; lá ele pode apagar qualquer conversa, e todas são apagadas junto com a conta. Um administrador da escola pode desligar o Oomba ou a busca na web dele para a escola."
       },
       "storybook": {
         "h": "O criador de livros",
@@ -4043,8 +4043,12 @@
       "sees": "Vê:",
       "dashOf": "Painel de {name}",
       "newChat": "Nova conversa",
-      "newChatAsk": "Começar uma nova conversa? Esta conversa e tudo o que você anexou serão apagados.",
-      "newChatOk": "Começar uma nova conversa",
+      "history": "Histórico de conversas",
+      "historyBack": "Voltar à conversa",
+      "historyEmpty": "Ainda não há conversas anteriores. Quando você começa uma nova conversa, a anterior fica guardada aqui.",
+      "historyDelete": "Apagar esta conversa",
+      "historyDeleteAsk": "Apagar esta conversa para sempre? Ela não poderá ser recuperada.",
+      "historyDeleteOk": "Apagar",
       "hello": "Oi! Eu sou o Oomba, seu ajudante para ensinar. Peça um jogo, um livro, uma mudança no seu painel ou ajuda com uma aula.",
       "idea": {
         "game": {
