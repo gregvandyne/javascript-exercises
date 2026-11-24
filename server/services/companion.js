@@ -1568,6 +1568,21 @@ export function newBook(u, { lang = 'en' } = {}) {
   const d = BK.fromInput(u, { lang, meta: {} }, {}, null);
   return C.addTurn(u, SURFACE, KEY, { text: tFor(lang)('storybook.chat.hello'), apply: () => { setOpen(u, d.id); audit(u.id, 'companion.book.new', d.id, {}); return { note: { book: d } }; } });
 }
+/** A book from the Story Builder (routes/stories.js POST /api/stories/book; docs/story-builder.md "Picture books"): a new
+ *  card in this chat with what the Story Builder already knew (companion-book.js fromStory, through fromInput like a
+ *  teacher's first message), so it asks only the rest. A book already being set up here gives way to it (its card is
+ *  marked moved). -> the conversation | fail */
+export function storyBook(u, { lang = 'en', input = {} } = {}) {
+  if (!companionFor(u) || !SB.canMake(u) || !SB.pictureBooksFor(u)) return { ok: false, code: 'notFound' };
+  ensureChat(u);
+  const open = openDraft(u);
+  const d = BK.fromInput(u, { lang, meta: {} }, input, null);
+  return C.addTurn(u, SURFACE, KEY, {
+    ...(open ? { mark: { id: open.turn.id, fields: { note: { ...open.turn.note, book: { ...open.d, state: 'moved' } } } } } : {}),
+    text: tFor(lang)('storybook.chat.fromStory'),
+    apply: () => { setOpen(u, d.id); audit(u.id, 'companion.book.fromStory', d.id, { kind: d.setup.kind, asks: d.state }); return { note: { book: d } }; },
+  });
+}
 /** The teacher's words while the card waits for them (the client sends them with book: <draft id>): into the book, never
  *  to the AI. Their message shows in the chat; a fresh card (with what it has now) follows. -> the conversation | null */
 function bookWords(u, body) {

@@ -9211,6 +9211,22 @@
     "teachersP": "Las pausas activas no forman parte de los cursos, así que puede usar una entre cualquier par de clases. Dos posturas se detienen 10 segundos en «Tu turno», para que la clase haga la postura y no solo la mire."
   },
   "stories": {
+    "make": {
+      "h": "¿Qué quieres crear?",
+      "video": "Historia en video",
+      "videoText": "Un video narrado en un mundo de fieltro y papel.",
+      "book": "Libro ilustrado",
+      "bookText": "Oomba lo escribe y pinta una imagen para cada página.",
+      "cyoa": "Libro ilustrado de elige tu propia aventura",
+      "cyoaText": "Un libro ilustrado donde quien lee elige hacia dónde va la historia.",
+      "note": "El creador de libros hace unas preguntas más y te muestra exactamente lo que se enviará. No se crea nada hasta que tú lo digas.",
+      "go": "Seguir en el creador de libros"
+    },
+    "book": {
+      "feel": "Tipo de historia: {kind}. Sensación: {feel}.",
+      "who": "Quién sale: {text}",
+      "lesson": "Una lección para aprender: {text}"
+    },
     "title": "Creador de cuentos",
     "h": "Creador de cuentos para dormir",
     "sub": "Escribe una idea y recibe un acogedor vídeo de cuento para dormir: un mundo de fieltro y papel, una voz tranquila, música de cajita de música y las palabras en pantalla.",
@@ -14156,6 +14172,7 @@
       "none": "Sin dibujos"
     },
     "chat": {
+      "fromStory": "Aquí está tu libro del Creador de cuentos. Ya rellené lo que elegiste; responde el resto en la tarjeta.",
       "hello": "Hagamos un libro.",
       "noTheme": "Sin tema",
       "contextAi": "Escribe tus ideas en el cuadro de abajo y envíalas, o adjunta archivos y dibujos con el clip. Van a tu libro, no al chat. Después Oomba te muestra exactamente lo que se enviará.",

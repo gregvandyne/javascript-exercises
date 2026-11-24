@@ -9211,6 +9211,22 @@
     "teachersP": "Les pauses actives sont indépendantes des cours : vous pouvez en lancer une entre deux leçons, quelles qu’elles soient. Deux postures s’arrêtent 10 secondes sur « À toi », pour que la classe fasse la posture au lieu de seulement regarder."
   },
   "stories": {
+    "make": {
+      "h": "Que veux-tu créer ?",
+      "video": "Histoire en vidéo",
+      "videoText": "Une vidéo racontée dans un monde de feutre et de papier.",
+      "book": "Album illustré",
+      "bookText": "Oomba l’écrit et peint une image pour chaque page.",
+      "cyoa": "Album : histoire dont tu es le héros",
+      "cyoaText": "Un album illustré où les lecteurs choisissent la suite de l’histoire.",
+      "note": "Le créateur de livres pose encore quelques questions, puis te montre exactement ce qui sera envoyé. Rien n’est créé sans ton accord.",
+      "go": "Continuer dans le créateur de livres"
+    },
+    "book": {
+      "feel": "Genre d’histoire : {kind}. Ambiance : {feel}.",
+      "who": "Personnages : {text}",
+      "lesson": "Une leçon à retenir : {text}"
+    },
     "title": "Créateur d’histoires",
     "h": "Créateur d’histoires du soir",
     "sub": "Écris une idée et reçois une douce vidéo d’histoire du soir : un monde de feutre et de papier, une voix calme, une musique de boîte à musique et les mots à l’écran.",
@@ -14156,6 +14172,7 @@
       "none": "Sans images"
     },
     "chat": {
+      "fromStory": "Voici ton livre venu du Créateur d’histoires. J’ai rempli ce que tu avais déjà choisi ; réponds au reste sur la carte.",
       "hello": "Faisons un livre.",
       "noTheme": "Sans thème",
       "contextAi": "Écrivez vos idées dans la zone ci-dessous et envoyez-les, ou joignez des fichiers et des images avec le trombone. Ils vont dans votre livre, pas dans la discussion. Oomba vous montre ensuite exactement ce qui sera envoyé.",

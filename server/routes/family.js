@@ -99,12 +99,20 @@ const GROWNUP_BUILDER_GET = [/^\/stories(\/new|\/[^/]+(\/(edit|video\.mp4|poster
 const GROWNUP_BUILDER_POST = [/^\/api\/studio\/new$/, /^\/api\/studio\/[^/]+\/(chat|meta|delete|restore|save|publish|update|visibility|transcribe|uploads)$/,
   /^\/api\/friends\/add$/, /^\/api\/friends\/[^/]+\/(accept|decline|cancel|remove)$/,
   // Story Builder (routes/stories.js): grown-ups make stories, and say yes or no to their children's.
-  /^\/api\/stories(\/voice-sample|\/[^/]+\/(share|unshare|approve|decline|retry|delete|remake|rewrite|remake-retry|remake-dismiss))?$/];
+  /^\/api\/stories(\/voice-sample|\/book|\/[^/]+\/(share|unshare|approve|decline|retry|delete|remake|rewrite|remake-retry|remake-dismiss))?$/];
 const GROWNUP_BUILDER_DELETE = [/^\/api\/studio\/[^/]+\/uploads\/[^/]+$/];
+// The book maker (routes/storybook.js), only while STORY_PICTURE_BOOKS names 'parent' (docs/story-builder.md "Picture
+// books"): a grown-up makes, reads and prints their own books. Never Share with classes (grown-ups have no classes;
+// storybook.js canShare) and never /library itself. The routes check storybook.js canMake again.
+const GROWNUP_BOOK_GET = [/^\/library\/make(\/[^/]+)?$/, /^\/api\/library\/make\/pic\/[^/]+$/, /^\/api\/library\/make\/[^/]+(\/(draws|card|chat))?$/, /^\/library\/made\/[^/]+\/(read|print|pic\/[^/]+)$/];
+const GROWNUP_BOOK_POST = [/^\/api\/library\/make\/(file|pic|check|start)$/, /^\/api\/library\/make\/pic\/[^/]+\/remove$/,
+  /^\/api\/library\/make\/[^/]+\/(save|delete|rename|duplicate|retry|repaint|pic|draw|chat|chat\/undo|pic\/[^/]+\/remove)$/, /^\/api\/library\/made\/[^/]+\/progress$/];
+const booksOn = () => config.storyPictureBooks.includes('parent');
 /** May a grown-up account use this method and path? */
 export function grownupMay(method, path) {
   const get = method === 'GET' || method === 'HEAD';
-  const list = get ? [...GROWNUP_GET, ...GROWNUP_BUILDER_GET] : method === 'POST' ? [...GROWNUP_POST, ...GROWNUP_BUILDER_POST] : method === 'DELETE' ? GROWNUP_BUILDER_DELETE : [];
+  const books = booksOn();
+  const list = get ? [...GROWNUP_GET, ...GROWNUP_BUILDER_GET, ...(books ? GROWNUP_BOOK_GET : [])] : method === 'POST' ? [...GROWNUP_POST, ...GROWNUP_BUILDER_POST, ...(books ? GROWNUP_BOOK_POST : [])] : method === 'DELETE' ? GROWNUP_BUILDER_DELETE : [];
   return list.some(re => re.test(path));
 }
 /** Does the fence let this account use this method and path? Always for anyone but a grown-up. The game frame asks it

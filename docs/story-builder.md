@@ -257,6 +257,40 @@ row in `story_edits` (kept when the story is deleted, so deleting doesn't refund
 **Sharing.** When a new version replaces a kid's shared or waiting story, it goes back to "waiting for OK": the
 grown-up said yes to the old words. A grown-up's shared story stays shared. Only the owner can change a story.
 
+### 10. Picture books
+
+The owner: "Stories should also be able to be illustrative and choose your own journey." On who: "Let's not give kids
+the ability to build books. Keep it to just teachers right now. Put it behind a feature flag for teacher and parent
+accounts for now." On how: "Choose your own adventure should just be picture books with different options of where to
+take the story".
+
+- **What to make.** For someone `STORY_PICTURE_BOOKS` lets in (`storybook.js pictureBooksFor`), `/stories/new` starts with
+  three cards: **Video story** (picked first: everything below works exactly as before), **Illustrated picture book**
+  and **Choose-your-own-adventure picture book**. A picture book hides the video's own choices (narrator, music,
+  seconds, today's videos left) and shows a book length (Short, Medium, Long) instead; the button reads "Continue in the
+  book maker". Everyone else (kids, students, grown-ups the flag leaves out) sees the form as it was, with no new markup.
+- **Not a new renderer.** The two picture books are the book maker's own (docs/storybook-builder.md): Oomba writes it,
+  Google paints the pictures, and the book lives in the person's books (the library cards). `POST /api/stories/book`
+  `{ make: 'book' | 'cyoa', idea, ageBand, length, style, tone, characters, lesson }` turns what the Story Builder knows
+  into the book maker's first answers (`companion-book.js fromStory`, then `fromInput`, the same function the chat's
+  `makeBook` tool uses): Have AI make one; the kind (`linear` or `cyoa`); the grade from the age band (3 to 5: K, 6 to 8:
+  grade 2, 9 to 12: grades 4 to 5; Everyone: asked); the length; Oomba paints the pictures; and the teacher's words: the
+  idea, then "Kind of story: Adventure. Feeling: Brave.", who is in it and the lesson (labels in their language). The
+  words answer Your words and the theme (the idea is the topic), so the card asks only the reading level, the endings of
+  an adventure, and the grade when it was not known.
+- **Where it opens.** With the Oomba chat (`companionFor`), a new book card in that chat (`companion.js storyBook`; a book
+  already being set up there is marked moved), and the page goes to `/library?make=1`, which opens the chat on it.
+  Without the chat (a teacher without the Teacher plan, a grown-up), the setup page's own steps (`/library/make`) open on
+  the choices with these picked (the answers go in the tab's sessionStorage, the page's own store). Either way nothing is
+  sent to an AI until the book maker's check has shown exactly what will be sent and the person taps Make my book.
+- **Who, on the server.** `STORY_PICTURE_BOOKS` (default `teacher`; `teacher,parent`; `0`) is checked by the hand-off
+  route. Kids and students get 404 from it, and from every book maker page, API and chat tool, whatever the flag says:
+  `storybook.js canMake` never lets them in. With `parent`, a family grown-up may use the book maker too (the fence in
+  `routes/family.js` opens its paths only then): make, edit, read and print their own books, at the free daily numbers;
+  they have no classes, so Share with classes is hidden and refused (`canShare`), and `/library` itself stays closed.
+- Tests: `tests/unit/story-picture-books.test.js` (the flag, who sees what, refusals, the pre-filled card and its
+  skipped steps, the page path, a grown-up's book).
+
 ## Running it
 
 The site runs the story worker loop **in its own process** when `STORY_BUILDER=1` (`server/index.js`; nothing else

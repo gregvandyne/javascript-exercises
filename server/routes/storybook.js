@@ -132,7 +132,7 @@ router.get('/library/make', teacher, (req, res) => {
       ${mine.length ? madeGrid(req, mine) : html`<p class="muted">${t('storybook.mineNone')}</p>`}</section>
   </div>
   ${jsonData('page-data', { left, limits: SB.SETUP_LIMITS, file: { bytes: FILE_LIMITS.bytes }, pic: SB.PIC_LIMITS })}`;
-  page(req, res, { title: t('storybook.title'), active: 'learn', body, head: CSS, scripts: ['/js/storybook-setup.js', '/js/storybook-books.js'], back: '/library', backLabel: t('library.title'), mid: true, companion: false });
+  page(req, res, { title: t('storybook.title'), active: 'learn', body, head: CSS, scripts: ['/js/storybook-setup.js', '/js/storybook-books.js'], ...(SB.canShare(u) ? { back: '/library', backLabel: t('library.title') } : { back: '/stories', backLabel: t('stories.title') }), mid: true, companion: false });
 });
 
 // A document for the setup: read on the server (builder/lesson.js readLessonFile: no AI), scrubbed, never kept.
@@ -217,7 +217,7 @@ router.get('/library/make/:id', teacher, (req, res) => {
         <button type="button" class="btn btn-primary btn-sm" id="sb-oomba" aria-controls="oc">${ico('💬', { size: 18 })} ${t('storybook.edit.oomba')}</button>
         <a class="btn btn-sm" id="sb-preview" href="/library/made/${row.id}/read">${ico('👀', { size: 18 })} ${t('storybook.edit.preview')}</a>
         <a class="btn btn-sm" href="/library/made/${row.id}/print">${ico('🖨️', { size: 18 })} ${t('storybook.edit.print')}</a>
-        <button type="button" class="btn btn-sm" id="sb-share">${ico('📌', { size: 18 })} ${t('storybook.edit.share')}</button>
+        ${SB.canShare(req.user) ? html`<button type="button" class="btn btn-sm" id="sb-share">${ico('📌', { size: 18 })} ${t('storybook.edit.share')}</button>` : ''}
         <details class="sb-bmore sb-emore"><summary class="btn btn-sm btn-ghost sb-bmore-btn" aria-label="${t('storybook.books.more')}" title="${t('storybook.books.more')}"><span aria-hidden="true">⋯</span></summary>
           <div class="sb-bmenu">
             ${SB.picturesOf(SB.setupOf(row)) === 'ai' ? html`<button type="button" class="sb-bitem" id="sb-repaint">${ico('🎨', { size: 18 })} ${t('storybook.books.repaint')}</button>` : ''}

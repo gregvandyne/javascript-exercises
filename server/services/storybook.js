@@ -3,8 +3,9 @@
 // shapes it in the book editor and in a chat with Oomba, then shares it with a class; students read it in the library.
 //
 // Rules:
-//   - Teachers only (canMake): school staff and the platform admin. Never a student, a kid, a family grown-up, a guest
-//     or a banned account: every page and API answers them as if it were not there. Students only READ a finished book
+//   - Teachers only (canMake): school staff and the platform admin, and a family grown-up only while STORY_PICTURE_BOOKS
+//     names 'parent' (they make, read and print their own books; no classes, so no sharing: canShare). Never a student,
+//     a kid, a guest or a banned account: every page and API answers them as if it were not there. Students only READ a finished book
 //     their teacher shared with their class (canRead); the AI never talks to them.
 //   - What goes to the AI: the teacher's setup (kind, grade, length, endings, reading level, theme), their words (the
 //     "about" box and, for "Upload your own book", the story), and later the book itself and their chat messages. Every
@@ -76,11 +77,20 @@ export const PIC_LIMITS = Object.freeze({ maxBytes: 1536 * 1024, maxSide: 1600, 
 const LANGS = { en: 'English (US)', 'en-GB': 'British English', pt: 'Brazilian Portuguese', fr: 'French', es: 'Spanish', de: 'German', he: 'Hebrew', ja: 'Japanese', ar: 'Arabic', ru: 'Russian', it: 'Italian', 'zh-Hant': 'Traditional Chinese', nl: 'Dutch' };
 
 // ---------------------------------------------------------------- who
-/** May make books: school staff and the platform admin (never a guest, a banned account, a grown-up or a student). */
+/** May make books: school staff and the platform admin; a family grown-up only while STORY_PICTURE_BOOKS names
+ *  'parent' (config.storyPictureBooks; docs/story-builder.md "Picture books"). Never a guest, a banned account, a kid or
+ *  a student, whatever the flag says. */
 export function canMake(u) {
-  if (!u || u.is_guest || u.banned || isGrownup(u)) return false;
+  if (!u || u.is_guest || u.banned) return false;
+  if (isGrownup(u)) return config.storyPictureBooks.includes('parent');
   return S.isPlatformAdmin(u) || S.isSchoolStaff(u);
 }
+/** May share books with classes: a maker who is not a family grown-up (grown-ups have no classes; they read and print). */
+export const canShare = u => canMake(u) && !isGrownup(u);
+/** The kind of account STORY_PICTURE_BOOKS names for this person: 'teacher', 'parent', or '' (kids and students). */
+export const pictureBookKind = u => (!canMake(u) ? '' : isGrownup(u) ? 'parent' : 'teacher');
+/** Does the Story Builder's start offer this person the two picture books (a hand-off to this book maker)? */
+export const pictureBooksFor = u => { const k = pictureBookKind(u); return !!k && config.storyPictureBooks.includes(k); };
 /** Teacher plan holders (their plan, a trial, a seat), testers and the platform admin get the bigger daily number. */
 export const planHolder = u => S.isPlatformAdmin(u) || isTester(u) || teacherPlan(u.id).entitled;
 export const capOf = u => (planHolder(u) ? config.storybookPlanPerDay : config.storybookFreePerDay);
@@ -375,12 +385,14 @@ export function retryDraft(u, id, { t = tEn } = {}) {
 
 /** The classes this teacher may share a book with (the same rule as assigning a library book). */
 export function shareClasses(u) {
+  if (!canShare(u)) return [];
   const mine = S.classesOf(u.id, 'teacher');
   const more = S.adminSchools(u).flatMap(s => S.classesOfSchool(s.id)).filter(c => !mine.some(m => m.id === c.id));
   return [...mine, ...more].filter(c => !c.archived_at && S.canManageClass(u, c));
 }
 /** Share the book with exactly these classes (of the ones the teacher may share with). -> { ok, classes } */
 export function setShared(u, id, classIds) {
+  if (!canShare(u)) return fail('notFound');
   const row = ownBook(u, id); if (!row) return fail('notFound');
   const allowed = new Map(shareClasses(u).map(c => [c.id, c]));
   const want = new Set((Array.isArray(classIds) ? classIds : []).map(String).filter(x => allowed.has(x)));

@@ -9213,6 +9213,22 @@
     "teachersP": "As pausas ativas ficam fora dos cursos, então você pode usar uma entre quaisquer aulas. Em duas posturas o vídeo para por 10 segundos no “Sua vez”, para a turma fazer a postura, e não só assistir."
   },
   "stories": {
+    "make": {
+      "h": "O que você quer fazer?",
+      "video": "História em vídeo",
+      "videoText": "Um vídeo narrado em um mundo de feltro e papel.",
+      "book": "Livro ilustrado",
+      "bookText": "O Oomba escreve e pinta uma imagem para cada página.",
+      "cyoa": "Livro ilustrado de escolha sua aventura",
+      "cyoaText": "Um livro ilustrado em que quem lê escolhe para onde a história vai.",
+      "note": "O criador de livros faz mais algumas perguntas e mostra exatamente o que será enviado. Nada é feito até você dizer.",
+      "go": "Continuar no criador de livros"
+    },
+    "book": {
+      "feel": "Tipo de história: {kind}. Sentimento: {feel}.",
+      "who": "Quem está nela: {text}",
+      "lesson": "Uma lição para aprender: {text}"
+    },
     "title": "Criador de Histórias",
     "h": "Criador de Histórias para Dormir",
     "sub": "Escreva uma ideia e ganhe um vídeo aconchegante de história para dormir: um mundo de feltro e papel, uma voz calma, música de caixinha de música e as palavras na tela.",
@@ -14158,6 +14174,7 @@
       "none": "Sem imagens"
     },
     "chat": {
+      "fromStory": "Aqui está o seu livro do Criador de Histórias. Já preenchi o que você escolheu; responda o resto no cartão.",
       "hello": "Vamos fazer um livro.",
       "noTheme": "Sem tema",
       "contextAi": "Digite suas ideias na caixa abaixo e envie, ou anexe arquivos e imagens com o clipe. Elas vão para o seu livro, não para o chat. Depois o Oomba mostra exatamente o que será enviado.",

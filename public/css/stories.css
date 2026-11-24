@@ -48,6 +48,12 @@
 .sb-lbl { font-size: .95rem; }
 .sb-choice input:checked + label { background: var(--current); border-color: var(--current); color: var(--on-current); }
 .sb-choice input:focus-visible + label { outline: 3px solid var(--focus); outline-offset: 2px; }
+/* What to make (docs/story-builder.md "Picture books"): three wide cards, an icon, a name and one quiet line. */
+.sb-make .sb-chips { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.sb-make .sb-choice label { min-height: 128px; padding: 14px 12px; gap: 6px; hyphens: manual; }
+.sb-sub { font-size: .86rem; font-weight: 500; color: var(--text-2); line-height: 1.3; }
+.sb-choice input:checked + label .sb-sub { color: inherit; opacity: .9; }
+.sb-booknote { display: flex; align-items: center; gap: 8px; }
 /* Narrators: a wider card with a ▶ to hear a short sample (the button sits in the card's corner). */
 #sb-voice .sb-chips, #sb-edit-voice .sb-chips { grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
 .sb-choice:has(.sb-play) label { flex-direction: row; justify-content: flex-start; gap: 10px; min-height: 64px; padding-inline: 12px 54px; text-align: start; }
