@@ -162,7 +162,9 @@ async function takePic(req, res, bookId) {
   res.json(r);
 }
 router.post('/api/library/make/pic', teacher, rateLimit('storybook-pic', 20, 60e3), picBody, (req, res) => takePic(req, res, null));
-function sendPic(res, p) { res.set('Cache-Control', 'private, max-age=86400').type(p.mime || 'image/jpeg').send(p.bytes); }
+/** A picture's type from its own bytes (a row's mime can be wrong for older rows), never a guess. */
+const sniff = b => (b[0] === 0xff && b[1] === 0xd8 ? 'image/jpeg' : b.readUInt32BE(0) === 0x89504e47 ? 'image/png' : b.toString('ascii', 8, 12) === 'WEBP' ? 'image/webp' : 'application/octet-stream');
+function sendPic(res, p) { const b = Buffer.from(p.bytes); res.set('Cache-Control', 'private, max-age=86400').type(sniff(b)).send(b); }
 router.get('/api/library/make/pic/:pic', teacher, (req, res) => {
   const p = SB.picOf(req.params.pic);
   if (!p || p.owner_id !== req.user.id || p.book_id) return nope(req, res);
@@ -326,7 +328,8 @@ router.get('/library/made/:id/pic/:pic', (req, res) => {
   const row = req.user ? SB.readable(req.user, req.params.id) : null;
   const p = row ? SB.picOf(req.params.pic) : null;
   if (!p || p.book_id !== row.id) return res.status(404).send('Not found');
-  sendPic(res, p);
+  // A painted picture kept as WebP before 24 Nov 2026 is served (and kept from now on) as a JPEG: iPhones showed "?".
+  Draw.storeAsJpeg(p).then(x => sendPic(res, x), () => sendPic(res, p));
 });
 
 /** The reader's page: the picture on top, the title, the words, then the choices (CYOA) or Back and Next. Works without

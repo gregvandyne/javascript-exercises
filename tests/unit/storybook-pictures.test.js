@@ -78,8 +78,8 @@ test('a new book: character sheets first, then every page with its characters\' 
   assert.ok(two, 'a page with two characters has two reference pictures');
   const parts = two.body.contents[0].parts;
   assert.match(parts[1].text, /^Reference picture 1: /); assert.equal(parts[2].inlineData.mimeType, 'image/png'); assert.ok(parts[2].inlineData.data.length > 100);
-  // every picture passed the picture check as WebP, and is kept
-  assert.equal(checks.length, fake.calls.length); assert.ok(checks.every(m => m === 'image/webp'));
+  // every picture passed the picture check as JPEG, and is kept
+  assert.equal(checks.length, fake.calls.length); assert.ok(checks.every(m => m === 'image/jpeg'));
   assert.ok(draws(id).every(d => d.state === 'done' && d.pic_id));
   assert.equal(drawnPics(id), fake.calls.length);
   assert.equal(used(teacher), fake.calls.length, 'each picture counts, character sheets too');
@@ -95,8 +95,8 @@ test('a new book: character sheets first, then every page with its characters\' 
   const get = u => fetch(`${ctx.base}/library/made/${id}/pic/${p1}`, { headers: { cookie: cookieFor(u.id) } });
   assert.equal((await get(mia)).status, 404, 'not shared yet');
   await call(`/api/library/make/${id}/share`, { method: 'POST', user: teacher, body: { classIds: [cls.id] } });
-  const r = await get(mia); assert.equal(r.status, 200); assert.equal(r.headers.get('content-type'), 'image/webp');
-  const buf = Buffer.from(await r.arrayBuffer()); assert.equal(buf.toString('ascii', 8, 12), 'WEBP');
+  const r = await get(mia); assert.equal(r.status, 200); assert.equal(r.headers.get('content-type'), 'image/jpeg');
+  const buf = Buffer.from(await r.arrayBuffer()); assert.equal(buf[0], 0xff); assert.equal(buf[1], 0xd8);
   // the teacher's own picture still wins on a page, and the drawn pictures are not in the uploads list
   assert.equal(ed.uploads.length, 0);
 });
@@ -481,4 +481,21 @@ test('reference pictures go to Google as PNG; refused as "Unable to process inpu
   const png = await D.toPng(webp);
   assert.ok(D.pngSize(png), 'converted to PNG');
   assert.ok((await D.toPng(png)).equals(png), 'a PNG stays as it is');
+});
+
+test('painted pictures are kept as JPEG; a WebP kept before is served (and kept) as a JPEG; the type comes from the bytes', async () => {
+  const webp = await new Promise((res, rej) => {
+    const ff = spawn('ffmpeg', ['-v', 'error', '-f', 'lavfi', '-i', 'color=c=blue:s=64x36', '-frames:v', '1', '-c:v', 'libwebp', '-f', 'webp', 'pipe:1']);
+    const out = []; ff.stdout.on('data', d => out.push(d)); ff.on('error', rej); ff.on('close', () => res(Buffer.concat(out)));
+  }).catch(() => null);
+  if (!webp || !webp.length) return;   // no ffmpeg here
+  const j = await D.toJpeg(webp);
+  assert.equal(j.mime, 'image/jpeg'); assert.deepEqual([j.width, j.height], [64, 36]); assert.deepEqual(D.jpegSize(j.bytes), { width: 64, height: 36 });
+  const id = `oldwebp${Date.now().toString(36)}`.slice(0, 14);
+  q.run("INSERT INTO made_book_pics(id, owner_id, book_id, name, width, height, bytes, created_at, kind, mime) VALUES (?,?,NULL,'page.webp',64,36,?,?, 'page','image/webp')", id, teacher.id, webp, Date.now());
+  const row = q.get('SELECT * FROM made_book_pics WHERE id=?', id);
+  const x = await D.storeAsJpeg(row);
+  assert.equal(x.mime, 'image/jpeg'); assert.equal(x.bytes[0], 0xff);
+  assert.equal(q.get('SELECT mime FROM made_book_pics WHERE id=?', id).mime, 'image/jpeg', 'kept as JPEG');
+  q.run('DELETE FROM made_book_pics WHERE id=?', id);
 });

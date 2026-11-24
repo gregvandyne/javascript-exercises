@@ -380,7 +380,9 @@ if (COMPANION) {
     page: () => ({ type: 'book', bookId: D.id }),
     label: () => B.title || document.title.split('·')[0].trim(),
     ready: () => true,
-    start: () => 'open',
+    // The book shows first: the chat waits as the bubble (the owner, 24 Nov 2026: "When you press open the book it
+    // should go to the book and close the chat"). A tap on the bubble or Oomba brings it back.
+    start: () => 'min',
     hello: () => t('js.storybook-edit.hello'),
     placeholder: () => t('js.storybook-edit.placeholder'),
     onAnswer: x => { if (mine(x) || (x.note && x.note.bookRef && x.note.bookRef.id === D.id)) reload().catch(() => {}); },
