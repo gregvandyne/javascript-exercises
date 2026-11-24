@@ -13063,6 +13063,8 @@ Owner: "Continue to work towards feature parity" (with typing.com).
   Back and Learn tab, filters, roster grade, players' games), home-doors, nav-doors, focus-hide, play-topics-private,
   teacher-landing, library.test.js (the /library redirect), and the tests that opened /play or /library.
 
+
+
 ## Atlas Quest: blank maps that read on a phone, answer keys for grown-ups, and a five-step quiz maker (24 Nov 2026)
 
 Owner, on a phone: "Make sure the blank maps on mobile are correct. They don't look right to me and make sure there is an
@@ -13196,3 +13198,29 @@ of words...' or 'focus on this subject'."
   route: cleaned, capped, refused without AI, absent), `tests/unit/word-hunt-sets.test.js`,
   `tests/unit/word-hunt-browser.test.js` and the Crossword browser tests (the field and the AI look with AI, not
   without).
+
+## Typing Pets in other languages (24 Nov 2026)
+
+Owner: "Build for other languages now".
+- **Keyboards as data** (`seed-games/typing-pets-langs/layouts.json`): US QWERTY, German QWERTZ, French AZERTY,
+  Spanish, Italian, Brazilian ABNT2, Russian ЙЦУКЕН, Hebrew (SI-1452) and Arabic (101). Each row lists every key's
+  normal and Shift character by physical position; `lead` is the key left of 1 (ABNT2's ' ", ЙЦУКЕН's ё); `dead` lists
+  accent keys and the letters they make (Spanish/Portuguese á é í ó ú ã õ â ê ô, French â ê î ô û ë ï). A finger
+  belongs to a position, so the lessons teach the same places everywhere: lesson 1 is F and J on QWERTY and AZERTY,
+  А and О on ЙЦУКЕН, כ and ח in Hebrew; QWERTZ's lesson 9 is T and Z; lesson 28 becomes the layout's own extra letters
+  (ü ö ä ß, è ò à, ñ...). On AZERTY the digits need Shift and the lessons say so. Accented letters light the accent key
+  first, then the letter (dashed); a real keyboard's accent key arrives as `Dead`, a tapped one waits for its letter.
+  Arabic and Hebrew lines run right to left; a layout without capitals types more words in "Big letters".
+- **Language packs** (`seed-games/typing-pets-langs/<lang>.json`, one per site language): the game's text, 40 pet names,
+  and the typing content (150+ words, sentences, ? and ! lines, apostrophe/dash or extra-letter items, twelve
+  paragraphs written in the language, not translated). Japanese is typed in romaji (as its IME is), Chinese types
+  English letters on QWERTY (the base skill before Zhuyin or Pinyin), Dutch types on the US layout. Everything typed
+  uses only characters its layout can type (`tests/unit/typing.test.js` checks every pack).
+- `node scripts/typing-pets-langs.mjs` writes the packs into the game (the I18N block, and LAYOUTS / PACKS / PET_NAMES
+  between the PACKS markers); a test fails when the game is out of date.
+- **In the game**: the pack follows the player's language; "Keyboard" on the map picks another (kept in the save;
+  lesson progress is shared). Lesson intros come from the pack's language, since they name its keys. Teachers' own
+  lessons pick a keyboard too (the set's `l`); the server accepts letters of any script and the game checks the text
+  against that keyboard. Tricky keys count any letter (services/typing.js).
+- **Not done**: the server-side lesson names on Assign stay English; other variants (UK, Swiss, Canadian French,
+  Dvorak) and Zhuyin/Pinyin input are later work. AltGr characters are not taught.

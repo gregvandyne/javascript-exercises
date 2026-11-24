@@ -18,7 +18,9 @@ export const LESSON_NAMES = ['F and J', 'D and K', 'S and L', 'A and ;', 'Home r
   'Animal facts', 'Into space', 'Names and places', 'Numbers in words', 'Talking in quotes', 'Paragraph speed run', 'Science', 'A page of history', 'How to do it', 'A longer story', 'Tricky punctuation', 'Expert speed run'];
 /** The timed tests (minutes), chapter ids t1, t3, t5. */
 export const TESTS = [1, 3, 5];
-const KEYS = new Set("abcdefghijklmnopqrstuvwxyz0123456789;,./'-".split(''));
+// A key as the game counts it: one letter of any script (ä, ñ, ж, ש, ب...), a digit, or a punctuation key.
+const KEY_RE = /^(?:\p{L}|\p{N}|[;,./'\-\[\]=#])$/u;
+const KEYS = { has: k => typeof k === 'string' && KEY_RE.test(k) };
 const MAX_WPM = 200;
 
 const int = (v, lo, hi) => { const n = Math.floor(Number(v)); return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : lo; };

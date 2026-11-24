@@ -195,12 +195,17 @@ export function cleanCrossItems(raw) {
 }
 
 // ---------------------------------------------------------------- Typing Pets: a teacher's own typing lesson or test
-// [{ t: title ('' allowed), x: the text to type, k: 'lesson' | 'test', n: a test's minutes (1, 2, 3 or 5) }]. The text is
-// the teacher's own words, so it passes the site's text filter (refused, never changed). Only what the game's keyboard
-// can type: letters a-z and A-Z, digits, space, newline and . , ; : ' " - ! ? ( ). Curly quotes and dashes from a word
+// [{ t: title ('' allowed), x: the text to type, k: 'lesson' | 'test', n: a test's minutes (1, 2, 3 or 5), l?: its keyboard
+// (a layout id; none = US) }]. The text is
+// the teacher's own words, so it passes the site's text filter (refused, never changed). Only letters (any script),
+// digits, space, newline and . , ; : ' " - ! ? ( ) ¿ ¡ ، ؟; the game checks it against the chosen keyboard. Curly quotes and dashes from a word
 // processor are turned into the plain ones first; runs of spaces become one.
 export const TYPING = { min: 10, max: 1500, title: 60, lines: 40, minutes: [1, 2, 3, 5] };
-const TYPABLE = /^[A-Za-z0-9 .,;:'"!?()\-\n]+$/;
+// Letters of any script (Typing Pets has keyboards for 11 languages; the game checks the text against the teacher's
+// chosen keyboard), digits, and the punctuation the keyboards share (plus ¿ ¡ and Arabic ، ؛ ؟).
+const TYPABLE = /^[\p{L}\p{M}\p{N} .,;:'"!?()\-\n¿¡،؛؟]+$/u;
+/** The keyboards a teacher's lesson may be for (seed-games/typing-pets-langs/layouts.json). */
+export const TYPING_LAYOUTS = ['us', 'de', 'fr', 'es', 'it', 'pt', 'ru', 'he', 'ar'];
 export function cleanTypingItems(raw) {
   if (!Array.isArray(raw) || raw.length !== 1 || !raw[0] || typeof raw[0] !== 'object') return null;
   const it = raw[0];
@@ -218,7 +223,8 @@ export function cleanTypingItems(raw) {
     t = ct.value;
   }
   const k = it.k === 'test' ? 'test' : 'lesson';
-  return [{ t, x: cx.value, k, ...(k === 'test' ? { n: TYPING.minutes.includes(it.n) ? it.n : 1 } : {}) }];
+  const l = TYPING_LAYOUTS.includes(it.l) && it.l !== 'us' ? it.l : null;
+  return [{ t, x: cx.value, k, ...(k === 'test' ? { n: TYPING.minutes.includes(it.n) ? it.n : 1 } : {}), ...(l ? { l } : {}) }];
 }
 
 // ---------------------------------------------------------------- Word Hunt: one word search per set
