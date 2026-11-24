@@ -5532,6 +5532,8 @@
     },
     "typing": {
       "title": "Tipp-Tiere",
+      "unlockH": "Für jede nächste Lektion:",
+      "unlockSummary": "nächste Lektion ab {what}",
       "goalMins": "Minuten pro Tag",
       "dailySummary": "Tagesziel {n} Min.",
       "thisWeek": "{n} Min. diese Woche",
@@ -5549,7 +5551,7 @@
       "goalWpm": "Tempo (WpM)",
       "goalAcc": "Genauigkeit (%)",
       "goalSave": "Ziel speichern",
-      "goalHint": "Tempo: gemessen am besten Zeittest jedes Schülers. Minuten pro Tag: an wie vielen Tagen der letzten Woche so lange getippt wurde. Beide leer lassen, um das Ziel zu entfernen.",
+      "goalHint": "Tempo: gemessen am besten Zeittest jedes Schülers. Minuten pro Tag: an wie vielen Tagen der letzten Woche so lange getippt wurde. Für jede nächste Lektion: was in der Lektion davor nötig ist. Alle Felder leer lassen, um das Ziel zu entfernen.",
       "goalSummary": "Ziel {wpm} WpM bei {acc} %: {met} von {total} erreicht",
       "goalArchived": "Diese Klasse ist archiviert.",
       "goalSaved": "Ziel gespeichert",
@@ -6699,7 +6701,7 @@
       "wordTrail": "Die häufigsten englischen Wörter (Sichtwörter) von der Vorschule bis Klasse 3 auf einem Märchenpfad mit Bramble, dem Igel: Wort hören und antippen, Satz ergänzen, mit Buchstaben legen, in kurzen Lektionen mit Tagesserie.",
       "crossword": "Mach aus jeder Vokabelliste ein Kreuzworträtsel: Wörter eintippen oder hochladen, Hinweise ergänzen oder von der KI schreiben lassen und mit der Klasse teilen.",
       "mistakeHunt": "Finde und verbessere die Fehler in einem kurzen Text: Lehrkräfte fügen ihren eigenen Text ein, bauen Rechtschreib-, Grammatik- und Zeichensetzungsfehler ein und teilen, verteilen oder drucken ihn.",
-      "typingPets": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 28 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
+      "typingPets": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 40 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
     },
     "hubs": {
       "math": {
@@ -10588,6 +10590,7 @@
     },
     "kind": {
       "quiz": "Quiz",
+      "typing": "Tipp-Bestehensgrenze",
       "live": "Live-Spiel",
       "rubric": "Bewertungsraster",
       "marks": "Rasterpunkte"

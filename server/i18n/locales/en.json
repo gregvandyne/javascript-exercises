@@ -5743,6 +5743,8 @@
     },
     "typing": {
       "title": "Typing Pets",
+      "unlockH": "To open each next lesson:",
+      "unlockSummary": "next lesson needs {what}",
       "goalMins": "Minutes a day",
       "dailySummary": "daily goal {n} min",
       "thisWeek": "{n} min this week",
@@ -5760,7 +5762,7 @@
       "goalWpm": "Speed (wpm)",
       "goalAcc": "Accuracy (%)",
       "goalSave": "Save goal",
-      "goalHint": "Speed: checked against each student's best timed test. Minutes a day: how many days in the last week they typed that long. Leave both empty to remove the goal.",
+      "goalHint": "Speed: checked against each student's best timed test. Minutes a day: how many days in the last week they typed that long. To open each next lesson: what students need in the lesson before. Leave every box empty to remove the goal.",
       "goalSummary": "goal {wpm} wpm at {acc}%: {met} of {total} met",
       "goalArchived": "This class is archived.",
       "goalSaved": "Goal saved",
@@ -7304,7 +7306,7 @@
       "wordTrail": "The sight words, from Pre-primer to Grade 3, on a storybook trail with Bramble the hedgehog: hear a word and tap it, finish a sentence, spell it with letter tiles, in short lessons with a daily streak.",
       "crossword": "Turn any vocabulary list into a crossword: type or upload the words, add clues or let AI write them, and share it with the class.",
       "mistakeHunt": "Find and fix the mistakes in a short passage: teachers paste their own text, plant spelling, grammar and punctuation mistakes, then share, assign or print it.",
-      "typingPets": "Learn to type one key at a time, with colors for each finger: 28 short lessons from the home row to numbers and symbols, timed tests, and an egg to crack with a new pet after every lesson."
+      "typingPets": "Learn to type one key at a time, with colors for each finger: 40 short lessons from the home row to numbers and symbols, timed tests, and an egg to crack with a new pet after every lesson."
     },
     "hubs": {
       "math": {
@@ -11277,6 +11279,7 @@
     },
     "kind": {
       "quiz": "Quiz",
+      "typing": "Typing pass mark",
       "live": "Live game",
       "rubric": "Rubric",
       "marks": "Rubric marks"

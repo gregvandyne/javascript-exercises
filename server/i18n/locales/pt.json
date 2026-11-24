@@ -5533,6 +5533,8 @@
     },
     "typing": {
       "title": "Bichinhos do Teclado",
+      "unlockH": "Para abrir cada próxima lição:",
+      "unlockSummary": "próxima lição com {what}",
       "goalMins": "Minutos por dia",
       "dailySummary": "meta diária {n} min",
       "thisWeek": "{n} min nesta semana",
@@ -5550,7 +5552,7 @@
       "goalWpm": "Velocidade (ppm)",
       "goalAcc": "Precisão (%)",
       "goalSave": "Salvar meta",
-      "goalHint": "Velocidade: comparada com o melhor teste cronometrado de cada aluno. Minutos por dia: em quantos dias da última semana digitou esse tempo. Deixe os dois vazios para remover a meta.",
+      "goalHint": "Velocidade: comparada com o melhor teste cronometrado de cada aluno. Minutos por dia: em quantos dias da última semana digitou esse tempo. Para abrir cada próxima lição: o que é preciso na lição anterior. Deixe tudo vazio para remover a meta.",
       "goalSummary": "meta {wpm} ppm com {acc}%: {met} de {total} atingiram",
       "goalArchived": "Esta turma está arquivada.",
       "goalSaved": "Meta salva",
@@ -6700,7 +6702,7 @@
       "wordTrail": "As palavras mais usadas do inglês, da pré-escola ao 3º ano, numa trilha de livro de histórias com Bramble, o ouriço: ouça uma palavra e toque nela, complete uma frase, soletre com letras, em lições curtas com sequência diária.",
       "crossword": "Transforme qualquer lista de vocabulário em palavras cruzadas: digite ou envie as palavras, escreva as dicas ou deixe a IA escrever e compartilhe com a turma.",
       "mistakeHunt": "Encontre e corrija os erros de um texto curto: o professor cola o próprio texto, planta erros de ortografia, gramática e pontuação e depois compartilha, atribui ou imprime.",
-      "typingPets": "Aprenda a digitar uma tecla de cada vez, com uma cor para cada dedo: 28 lições curtas da fileira do meio até frases e, depois de cada lição, um ovo com um bichinho novo."
+      "typingPets": "Aprenda a digitar uma tecla de cada vez, com uma cor para cada dedo: 40 lições curtas da fileira do meio até frases e, depois de cada lição, um ovo com um bichinho novo."
     },
     "hubs": {
       "math": {
@@ -10589,6 +10591,7 @@
     },
     "kind": {
       "quiz": "Questionário",
+      "typing": "Nota de digitação",
       "live": "Jogo ao vivo",
       "rubric": "Rubrica",
       "marks": "Notas da rubrica"

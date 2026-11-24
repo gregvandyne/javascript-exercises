@@ -13004,3 +13004,24 @@ Owner: "Continue to work towards feature parity" (with typing.com).
 - **Not done**: assigning to single students (the platform assigns lessons to whole classes), automatic grades from
   the pass mark, typing games, certificates.
 - Tests: `tests/unit/typing.test.js`.
+
+## Typing Pets, part 4: grades from pass marks, unlock minimums, paragraph units (24 Nov 2026)
+
+Owner: "Build 2 3 4 right now" (grades and course minimums; intermediate and advanced content; assigning to single
+students, which is its own entry).
+- **Grades from a pass mark**: the server now decides. A Typing Pets step assigned with a pass mark
+  (`mode=a90-w20`; `services/typing.js passOfStep`) is done only when a reported run reaches the mark; a bare game
+  over never finishes it. Its grade (`gradeOf`) is how close the best run came: half accuracy, half speed when both
+  are set, each capped at full marks, so a passing run is 100%. It counts in the class Score as a `typing` item worth
+  10 points (`services/scores.js`), and the student report lists it ("Typing pass mark"). The game reports every
+  finished run (`won` = passed) instead of only passing ones. Steps without a pass mark are unchanged.
+- **Minimums to open each next lesson** (typing.com's benchmarks): on the class goal form, accuracy and/or speed a
+  student needs in a lesson before the next opens (`typing_goals.unlock_acc/unlock_wpm`, migration 0117). The game
+  gets them as `BRB.classRules` (`{ acc, wpm }`, the strictest across the student's active classes; never for a
+  guest, a teacher or a preview; documented in docs/sdk.md). A lesson already done stays open; a locked tile says
+  what the teacher asks for, and the lesson's end says so too instead of offering Next.
+- **Units 6 and 7**: Paragraphs (lessons 29–34) and Longer reading (35–40), twelve passages written for the game
+  (animal facts, space, names and places, numbers, dialogue in quotes, science, history, instructions, a story,
+  semicolons and dashes, a final speed run). Only characters the keyboard types; a test runs each through the same
+  cleaner as a teacher's lesson. 40 lessons in all.
+- Tests: `tests/unit/typing.test.js`.

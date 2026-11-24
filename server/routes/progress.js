@@ -236,9 +236,12 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
       <label>${t('progress.typing.goalWpm')} <input class="input" type="number" name="wpm" min="${TY.GOAL_LIMITS.wpm[0]}" max="${TY.GOAL_LIMITS.wpm[1]}" inputmode="numeric" value="${typingGoal && typingGoal.wpm ? typingGoal.wpm : ''}"></label>
       <label>${t('progress.typing.goalAcc')} <input class="input" type="number" name="acc" min="${TY.GOAL_LIMITS.acc[0]}" max="${TY.GOAL_LIMITS.acc[1]}" inputmode="numeric" value="${typingGoal ? typingGoal.acc : 90}"></label>
       <label>${t('progress.typing.goalMins')} <input class="input" type="number" name="mins" min="${TY.GOAL_LIMITS.mins[0]}" max="${TY.GOAL_LIMITS.mins[1]}" inputmode="numeric" value="${typingGoal && typingGoal.mins ? typingGoal.mins : ''}"></label>
+      <span class="ty-unlock"><b>${t('progress.typing.unlockH')}</b>
+        <label>${t('progress.typing.goalAcc')} <input class="input" type="number" name="unlockAcc" min="0" max="100" inputmode="numeric" value="${typingGoal && typingGoal.unlockAcc ? typingGoal.unlockAcc : ''}"></label>
+        <label>${t('progress.typing.goalWpm')} <input class="input" type="number" name="unlockWpm" min="0" max="120" inputmode="numeric" value="${typingGoal && typingGoal.unlockWpm ? typingGoal.unlockWpm : ''}"></label></span>
       <button class="btn btn-sm" type="submit">${t('progress.typing.goalSave')}</button>
       <span class="small muted">${t('progress.typing.goalHint')}</span><p class="err form-err" aria-live="polite"></p></form>` : '';
-  const typingPanel = typingStarted ? html`<details class="panel coursepanel" id="typing" open><summary><h2>${ico('⌨️', { size: 28 })} ${t('progress.typing.title')}</h2><span class="small muted">${t('progress.typing.started', { started: typingStarted, total: typing.rows.length })}${typingGoal && typingGoal.wpm ? html` · ${t('progress.typing.goalSummary', { wpm: typingGoal.wpm, acc: typingGoal.acc, met: metGoal, total: typing.rows.length })}` : ''}${typingGoal && typingGoal.mins ? html` · ${t('progress.typing.dailySummary', { n: typingGoal.mins })}` : ''}</span></summary>
+  const typingPanel = typingStarted ? html`<details class="panel coursepanel" id="typing" open><summary><h2>${ico('⌨️', { size: 28 })} ${t('progress.typing.title')}</h2><span class="small muted">${t('progress.typing.started', { started: typingStarted, total: typing.rows.length })}${typingGoal && typingGoal.wpm ? html` · ${t('progress.typing.goalSummary', { wpm: typingGoal.wpm, acc: typingGoal.acc, met: metGoal, total: typing.rows.length })}` : ''}${typingGoal && typingGoal.mins ? html` · ${t('progress.typing.dailySummary', { n: typingGoal.mins })}` : ''}${typingGoal && (typingGoal.unlockAcc || typingGoal.unlockWpm) ? html` · ${t('progress.typing.unlockSummary', { what: [typingGoal.unlockAcc ? `${typingGoal.unlockAcc}%` : '', typingGoal.unlockWpm ? t('progress.typing.wpm', { n: typingGoal.unlockWpm }) : ''].filter(Boolean).join(', ') })}` : ''}</span></summary>
     ${goalForm}
     <div class="gbwrap" tabindex="0" role="region" aria-label="${t('progress.typing.title')}"><table class="tbl gradebook cptable" id="typing-table">
       <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th><th scope="col">${t('progress.typing.lessons')}</th><th scope="col">${t('progress.typing.next')}</th><th scope="col">${t('progress.typing.bestTest')}</th><th scope="col">${t('progress.typing.acc')}</th><th scope="col">${t('progress.typing.tricky')}</th><th scope="col">${t('progress.typing.pets')}</th><th scope="col">${t('progress.typing.last')}</th></tr></thead>
@@ -287,7 +290,8 @@ router.post('/api/class/:id/typing-goal', requireUser, rateLimit('typing-goal', 
   const c = S.getClass(String(req.params.id));
   if (!c || !S.canManageClass(req.user, c)) return res.status(404).json({ error: req.t('lessons.errors.notFound') });
   if (c.archived_at) return res.status(400).json({ error: req.t('progress.typing.goalArchived') });
-  const goal = TY.setGoal(c.id, { wpm: (req.body || {}).wpm, acc: (req.body || {}).acc, mins: (req.body || {}).mins });
+  const x = req.body || {};
+  const goal = TY.setGoal(c.id, { wpm: x.wpm, acc: x.acc, mins: x.mins, unlockAcc: x.unlockAcc, unlockWpm: x.unlockWpm });
   res.json({ ok: true, goal, toast: req.t(goal ? 'progress.typing.goalSaved' : 'progress.typing.goalCleared') });
 });
 

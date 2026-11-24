@@ -5532,6 +5532,8 @@
     },
     "typing": {
       "title": "Cuccioli Tastiera",
+      "unlockH": "Per aprire ogni lezione successiva:",
+      "unlockSummary": "lezione successiva con {what}",
       "goalMins": "Minuti al giorno",
       "dailySummary": "obiettivo giornaliero {n} min",
       "thisWeek": "{n} min questa settimana",
@@ -5549,7 +5551,7 @@
       "goalWpm": "Velocità (parole/min)",
       "goalAcc": "Precisione (%)",
       "goalSave": "Salva obiettivo",
-      "goalHint": "Velocità: confrontata con il miglior test a tempo di ogni studente. Minuti al giorno: quanti giorni dell’ultima settimana ha scritto così a lungo. Lascia vuoti entrambi per togliere l’obiettivo.",
+      "goalHint": "Velocità: confrontata con il miglior test a tempo di ogni studente. Minuti al giorno: quanti giorni dell’ultima settimana ha scritto così a lungo. Per aprire ogni lezione successiva: cosa serve nella lezione prima. Lascia tutto vuoto per togliere l’obiettivo.",
       "goalSummary": "obiettivo {wpm} parole/min al {acc}%: {met} su {total} raggiunto",
       "goalArchived": "Questa classe è archiviata.",
       "goalSaved": "Obiettivo salvato",
@@ -6699,7 +6701,7 @@
       "wordTrail": "Le parole inglesi più frequenti, dalla scuola dell’infanzia alla terza, su un sentiero da fiaba con Bramble il riccio: ascolta una parola e toccala, completa una frase, componila con le lettere, in lezioni brevi con una serie giornaliera.",
       "crossword": "Trasforma qualsiasi lista di vocaboli in un cruciverba: scrivi o carica le parole, aggiungi le definizioni o lasciale scrivere all'IA e condividilo con la classe.",
       "mistakeHunt": "Trova e correggi gli errori in un breve testo: l'insegnante incolla il proprio testo, inserisce errori di ortografia, grammatica e punteggiatura, poi lo condivide, lo assegna o lo stampa.",
-      "typingPets": "Impara a scrivere un tasto alla volta, con un colore per ogni dito: 28 brevi lezioni dalla riga centrale alle frasi e, dopo ogni lezione, un uovo da rompere con un nuovo cucciolo."
+      "typingPets": "Impara a scrivere un tasto alla volta, con un colore per ogni dito: 40 brevi lezioni dalla riga centrale alle frasi e, dopo ogni lezione, un uovo da rompere con un nuovo cucciolo."
     },
     "hubs": {
       "math": {
@@ -10588,6 +10590,7 @@
     },
     "kind": {
       "quiz": "Quiz",
+      "typing": "Soglia di dattilografia",
       "live": "Gioco dal vivo",
       "rubric": "Rubrica",
       "marks": "Voti della rubrica"

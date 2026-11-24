@@ -21,7 +21,7 @@ export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
 export const studentHref = (c, p) => `/class/${c.id}/student/${p.id}`;
 const SHORT = { month: 'short', day: 'numeric' };
-const KIND_ICON = { quiz: '🧩', live: '📡', rubric: '📏', marks: '📏' };
+const KIND_ICON = { quiz: '🧩', live: '📡', rubric: '📏', marks: '📏', typing: '⌨️' };
 
 router.get('/class/:id/student/:uid', requireUser, (req, res) => {
   const t = req.t, f = req.fmt;

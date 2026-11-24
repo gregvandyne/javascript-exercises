@@ -1230,3 +1230,4 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .ty-pass legend { font-weight: 700; margin-bottom: 6px; }
 .ty-pass label { display: inline-flex; align-items: center; gap: 6px; }
 .ty-pass .input { width: 6em; }
+.ty-unlock { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; flex-basis: 100%; }

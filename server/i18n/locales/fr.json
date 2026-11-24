@@ -5531,6 +5531,8 @@
     },
     "typing": {
       "title": "Animaux Clavier",
+      "unlockH": "Pour ouvrir chaque leçon suivante :",
+      "unlockSummary": "leçon suivante à partir de {what}",
       "goalMins": "Minutes par jour",
       "dailySummary": "objectif quotidien {n} min",
       "thisWeek": "{n} min cette semaine",
@@ -5548,7 +5550,7 @@
       "goalWpm": "Vitesse (mots/min)",
       "goalAcc": "Précision (%)",
       "goalSave": "Enregistrer l’objectif",
-      "goalHint": "Vitesse : comparée au meilleur test chronométré de chaque élève. Minutes par jour : combien de jours de la dernière semaine il a tapé aussi longtemps. Laissez les deux vides pour retirer l’objectif.",
+      "goalHint": "Vitesse : comparée au meilleur test chronométré de chaque élève. Minutes par jour : combien de jours de la dernière semaine il a tapé aussi longtemps. Pour ouvrir chaque leçon suivante : ce qu’il faut dans la leçon d’avant. Laissez tout vide pour retirer l’objectif.",
       "goalSummary": "objectif {wpm} mots/min à {acc} % : {met} sur {total} l’ont atteint",
       "goalArchived": "Cette classe est archivée.",
       "goalSaved": "Objectif enregistré",
@@ -6698,7 +6700,7 @@
       "wordTrail": "Les mots anglais les plus fréquents, de la maternelle au CE2, sur un sentier de conte avec Bramble le hérisson : écoute un mot et touche-le, complète une phrase, écris-le avec des lettres, en petites leçons avec une série quotidienne.",
       "crossword": "Transforme n'importe quelle liste de vocabulaire en mots croisés : tape ou importe les mots, ajoute des définitions ou laisse l'IA les écrire, puis partage avec la classe.",
       "mistakeHunt": "Trouve et corrige les fautes d'un court texte : l'enseignant colle son propre texte, y place des fautes d'orthographe, de grammaire et de ponctuation, puis le partage, l'assigne ou l'imprime.",
-      "typingPets": "Apprends à taper une touche à la fois, avec une couleur par doigt : 28 petites leçons de la rangée de repos aux phrases, et après chaque leçon un œuf à casser avec un nouvel animal."
+      "typingPets": "Apprends à taper une touche à la fois, avec une couleur par doigt : 40 petites leçons de la rangée de repos aux phrases, et après chaque leçon un œuf à casser avec un nouvel animal."
     },
     "hubs": {
       "math": {
@@ -10587,6 +10589,7 @@
     },
     "kind": {
       "quiz": "Quiz",
+      "typing": "Seuil de frappe",
       "live": "Jeu en direct",
       "rubric": "Grille",
       "marks": "Notes de grille"

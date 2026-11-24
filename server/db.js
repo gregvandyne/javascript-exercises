@@ -1332,6 +1332,10 @@ export const MIGRATIONS = [
       wpm INTEGER NOT NULL, acc INTEGER NOT NULL, updated_at INTEGER NOT NULL);`],
   // A daily practice goal beside it (minutes a day; 0 = none).
   ['0116_typing_goal_minutes', "ALTER TABLE typing_goals ADD COLUMN mins INTEGER NOT NULL DEFAULT 0;"],
+  // A minimum to unlock each next Typing Pets lesson (accuracy %, speed wpm; 0 = none), for the class's students.
+  ['0117_typing_unlock', `
+    ALTER TABLE typing_goals ADD COLUMN unlock_acc INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE typing_goals ADD COLUMN unlock_wpm INTEGER NOT NULL DEFAULT 0;`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

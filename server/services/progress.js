@@ -13,6 +13,7 @@
 // lesson is assigned again); deleting a step or a lesson deletes the progress on it.
 import { q, now, audit } from '../db.js';
 import * as S from './schools.js';
+import * as TY from './typing.js';
 import * as L from './lessons.js';
 import * as games from './games.js';
 import { MODES } from './classlive-access.js';
@@ -237,6 +238,15 @@ export function gameScore(u, clId, stepId, score, label = '', helped = false) {
   if (c.step.kind !== 'game') return fail('notFound');
   const old = get(clId, stepId, u.id);
   const s = score === null || score === undefined || !Number.isFinite(+score) ? null : Math.max(0, Math.min(1e9, Math.floor(+score)));
+  // Typing Pets with a pass mark (services/typing.js): the best run is the one with the best grade, and the step is done
+  // only once a run reaches the mark (a bare game-over, with no run, never finishes it).
+  const pass = TY.passOfStep(c.step);
+  if (pass) {
+    const g = s === null ? null : TY.gradeOf(pass, s, label), og = old && old.score !== null ? TY.gradeOf(pass, old.score, old.label) : null;
+    const best = g !== null && (og === null || g > og || (g === og && s > old.score));
+    const fin = g === 100 || (old && old.status === 'done');
+    return ok({ row: upsert(clId, stepId, u.id, { ...(best ? { score: s, label: String(label || '').slice(0, 40) } : {}), ...(fin ? done(old) : {}) }) });
+  }
   const better = s !== null && (!old || old.score === null || s > old.score);
   const h = better ? { helped: helped ? 1 : 0 } : s !== null && old && s === old.score && old.helped && !helped ? { helped: 0 } : {};
   return ok({ row: upsert(clId, stepId, u.id, { ...(better ? { score: s, label: String(label || '').slice(0, 40) } : {}), ...h, ...done(old) }) });
