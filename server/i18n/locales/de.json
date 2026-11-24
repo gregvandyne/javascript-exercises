@@ -5492,6 +5492,26 @@
       "about": "Über diese Stunde",
       "readToMe": "Vorlesen"
     },
+    "typing": {
+      "title": "Tipp-Tiere",
+      "started": "{started} von {total} Schülern haben getippt",
+      "lessons": "Lektionen",
+      "next": "Als Nächstes",
+      "speed": "Bestes Tempo",
+      "acc": "Genauigkeit",
+      "tricky": "Schwierige Tasten",
+      "pets": "Tiere",
+      "time": "Tippzeit",
+      "last": "Zuletzt getippt",
+      "lessonN": "Lektion {n}",
+      "allDone": "Alles geschafft",
+      "wpm": "{n} WpM",
+      "minutes": "{n} Min.",
+      "missed": "In {pct}% der Fälle verfehlt",
+      "notYet": "Noch nicht begonnen",
+      "note": "Aus dem eigenen Tipp-Tiere-Fortschritt jedes Schülers, Üben zu Hause eingeschlossen. Tempo in Wörtern pro Minute (WpM); die Genauigkeit ist der Schnitt der besten Lektionen. Schwierige Tasten sind die, die am häufigsten verfehlt werden.",
+      "assign": "Eine Tipp-Lektion verteilen"
+    },
     "courses": {
       "started": "{started} von {total} begonnen"
     },
@@ -6613,7 +6633,8 @@
       "sumSpotter": "Finde die Zahl, die zwei andere zusammen (oder mal genommen) ergeben, von Summen bis 10 bis zum Einmaleins, mit einem 60-Sekunden-Tempolauf.",
       "wordTrail": "Die häufigsten englischen Wörter (Sichtwörter) von der Vorschule bis Klasse 3 auf einem Märchenpfad mit Bramble, dem Igel: Wort hören und antippen, Satz ergänzen, mit Buchstaben legen, in kurzen Lektionen mit Tagesserie.",
       "crossword": "Mach aus jeder Vokabelliste ein Kreuzworträtsel: Wörter eintippen oder hochladen, Hinweise ergänzen oder von der KI schreiben lassen und mit der Klasse teilen.",
-      "mistakeHunt": "Finde und verbessere die Fehler in einem kurzen Text: Lehrkräfte fügen ihren eigenen Text ein, bauen Rechtschreib-, Grammatik- und Zeichensetzungsfehler ein und teilen, verteilen oder drucken ihn."
+      "mistakeHunt": "Finde und verbessere die Fehler in einem kurzen Text: Lehrkräfte fügen ihren eigenen Text ein, bauen Rechtschreib-, Grammatik- und Zeichensetzungsfehler ein und teilen, verteilen oder drucken ihn.",
+      "typingPets": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 20 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
     },
     "hubs": {
       "math": {

@@ -5493,6 +5493,26 @@
       "about": "Sobre esta aula",
       "readToMe": "Ler para mim"
     },
+    "typing": {
+      "title": "Bichinhos do Teclado",
+      "started": "{started} de {total} alunos já digitaram",
+      "lessons": "Lições",
+      "next": "A seguir",
+      "speed": "Melhor velocidade",
+      "acc": "Precisão",
+      "tricky": "Teclas difíceis",
+      "pets": "Bichinhos",
+      "time": "Tempo digitando",
+      "last": "Última vez",
+      "lessonN": "Lição {n}",
+      "allDone": "Tudo feito",
+      "wpm": "{n} ppm",
+      "minutes": "{n} min",
+      "missed": "Errou {pct}% das vezes",
+      "notYet": "Ainda não começou",
+      "note": "Do progresso de cada aluno em Bichinhos do Teclado, incluindo o treino em casa. A velocidade é em palavras por minuto (ppm); a precisão é a média das melhores lições. Teclas difíceis são as que mais erram.",
+      "assign": "Atribuir uma lição de digitação"
+    },
     "courses": {
       "started": "{started} de {total} começaram"
     },
@@ -6614,7 +6634,8 @@
       "sumSpotter": "Encontre o número que é a soma (ou o produto) de outros dois, das somas até 10 à tabuada, com uma corrida de 60 segundos.",
       "wordTrail": "As palavras mais usadas do inglês, da pré-escola ao 3º ano, numa trilha de livro de histórias com Bramble, o ouriço: ouça uma palavra e toque nela, complete uma frase, soletre com letras, em lições curtas com sequência diária.",
       "crossword": "Transforme qualquer lista de vocabulário em palavras cruzadas: digite ou envie as palavras, escreva as dicas ou deixe a IA escrever e compartilhe com a turma.",
-      "mistakeHunt": "Encontre e corrija os erros de um texto curto: o professor cola o próprio texto, planta erros de ortografia, gramática e pontuação e depois compartilha, atribui ou imprime."
+      "mistakeHunt": "Encontre e corrija os erros de um texto curto: o professor cola o próprio texto, planta erros de ortografia, gramática e pontuação e depois compartilha, atribui ou imprime.",
+      "typingPets": "Aprenda a digitar uma tecla de cada vez, com uma cor para cada dedo: 20 lições curtas da fileira do meio até frases e, depois de cada lição, um ovo com um bichinho novo."
     },
     "hubs": {
       "math": {

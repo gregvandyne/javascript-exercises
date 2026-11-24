@@ -12407,3 +12407,21 @@ but still fun engaging and interactive".
 - **The Studio**: no "Make it an arcade game" switch and no worlds and heroes picker for a plain game; a new game can not
   start from a kit template (`/api/studio/new`).
 - Tests: `tests/unit/builder-focus.test.js`; the kit tests set `config.arcade = true`.
+
+## Typing Pets: a typing game with a pet in every egg (24 Nov 2026)
+
+- **Why our own**: the open-source typing tutors (Keybr, Monkeytype, Tux Typing, KTouch, Klavaro) are GPL or AGPL, so
+  none is copied; `seed-games/typing-pets.html` is written from scratch as a plain DOM seed game (no kit).
+- **Lessons**: 20, in four units (home row, top row, bottom row, big letters and sentences), each adding keys to the
+  ones before and unlocking in order. Three lines a lesson. A wrong key must be fixed and counts once per letter. The
+  next key is lit on a US QWERTY keyboard colored by finger, and the keys can be tapped (tablets).
+- **The reward**: every finished lesson gives an egg to crack (4 taps) with a pet inside, 40 to collect; 3 stars (95%
+  accuracy) gives a golden egg and a shiny pet. Stars are for accuracy, not speed, so slow careful typing is rewarded.
+- **Teachers**: the class progress page has a Typing Pets panel (`services/typing.js`) read from each student's own save
+  (`typing-pets-v1`), so practice at home counts: lessons done, up next, best speed, accuracy, tricky keys, pets, time and
+  the last day typed. It appears once a student in the class has finished a lesson. The save is written by the browser,
+  so the server only accepts the game's lesson ids and known keys and clamps every number (speed at most 200 wpm). When the
+  game is assigned, each finished lesson also sends the speed as the score, with the lesson, accuracy and stars in the
+  label (the gradebook). The game opens a single lesson for `chapter=l01..l20&lock=1`, but Assign has no lesson picker yet.
+- **Not yet**: the game's words are English only and the keyboard is US QWERTY; other layouts are later work.
+- Tests: `tests/unit/typing.test.js`.

@@ -1,0 +1,94 @@
+// Typing Pets (seed-games/typing-pets.html) and the teacher's typing panel on the class progress page
+// (services/typing.js, routes/progress.js): the game passes the scanner and its lessons match the server's list; a save is
+// read back as clean numbers whatever the browser wrote into it; the panel shows only the class's own students, only to
+// the people who may see the class's progress.
+import './_setup.js';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const { createApp } = await import('../../server/app.js');
+const { seed } = await import('../../scripts/seed.js');
+const { createUser, startSession } = await import('../../server/auth.js');
+const G = await import('../../server/services/games.js');
+const S = await import('../../server/services/schools.js');
+const TY = await import('../../server/services/typing.js');
+const { scanVersion } = await import('../../server/services/scanner.js');
+
+seed({ quiet: true });
+const html = fs.readFileSync('seed-games/typing-pets.html', 'utf8');
+
+let server, base;
+test.before(async () => { server = createApp().listen(0); server.keepAliveTimeout = 0; await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
+test.after(() => server.close());
+const cookieFor = id => { let c = ''; startSession({ append: (k, v) => { c = v.split(';')[0]; } }, id); return c; };
+const get = async (who, path) => { const r = await fetch(base + path, { headers: { cookie: cookieFor(who.id) }, redirect: 'manual' }); return { status: r.status, text: await r.text() }; };
+
+test('the game passes the scanner, starts the way seed games must, and its lessons are the server\'s', () => {
+  assert.equal(scanVersion(html).status, 'pass');
+  assert.match(html, /^<title>Typing Pets<\/title>\n<style>/);
+  const ids = [...html.matchAll(/\{ id: '(l\d\d)'/g)].map(m => m[1]);
+  assert.deepEqual(ids, TY.LESSONS, 'LESSONS in the game and in services/typing.js agree');
+  assert.match(html, new RegExp(`SAVE_KEY = '${TY.SAVE_KEY}'`));
+  const meta = JSON.parse(fs.readFileSync('seed-games/typing-pets.json', 'utf8'));
+  assert.equal(meta.shelf, 'learn');
+  assert.equal(G.getGameBySlug('typing-pets').shelf, 'learn');
+});
+
+test('a save reads back as clean numbers; a tampered one is clamped, never trusted', () => {
+  assert.equal(TY.summarize(null), null);
+  assert.equal(TY.summarize('not json'), null);
+  assert.equal(TY.summarize({ done: {} }), null, 'no lesson finished yet');
+  const ok = TY.summarize(JSON.stringify({ v: 1, done: { l01: { s: 3, w: 18, a: 97, n: 2, t: 1000 }, l02: { s: 2, w: 22, a: 89, n: 1, t: 2000 } },
+    pets: { cat: { s: 1 }, dog: { s: 0 } }, keys: { f: [40, 1], d: [20, 6], k: [30, 4], j: [3, 2] }, secs: 600, last: 2500 }));
+  assert.equal(ok.done, 2); assert.equal(ok.next, 3); assert.equal(ok.stars, 5);
+  assert.equal(ok.bestWpm, 22); assert.equal(ok.acc, 93); assert.equal(ok.pets, 2); assert.equal(ok.minutes, 10); assert.equal(ok.last, 2500);
+  assert.deepEqual(ok.tricky, [{ key: 'd', pct: 23 }, { key: 'k', pct: 12 }], 'f is fine; j has too few tries to judge');
+
+  const bad = TY.summarize({ done: { l01: { s: 99, w: 1e9, a: -5, n: 'x', t: 'y' }, l99: { s: 3 }, '__proto__': { s: 3 } },
+    pets: Object.fromEntries(Array.from({ length: 500 }, (_, i) => [`p${i}`, 1])),
+    keys: { '<script>': [1e9, 1e9], f: ['a', 'b'], k: 'nope' }, secs: -1, last: 'soon' });
+  assert.equal(bad.done, 1, 'only the game\'s own lesson ids');
+  assert.equal(bad.stars, 3); assert.equal(bad.bestWpm, 200); assert.equal(bad.acc, 0); assert.equal(bad.pets, 40); assert.equal(bad.minutes, 0);
+  assert.deepEqual(bad.tricky, [], 'unknown keys are dropped');
+  const all = TY.summarize({ done: Object.fromEntries(TY.LESSONS.map(id => [id, { s: 1, w: 10, a: 80 }])) });
+  assert.equal(all.next, null, 'every lesson done');
+});
+
+// A school, a class with two students (one has typed) and a teacher of another class.
+const boss = createUser({ username: 'TypeBoss', password: 'secret123', role: 'admin' });
+const school = S.createSchool(boss, { name: 'Keys Primary' }).school;
+const head = S.createSchoolAccount(boss, school.id, { rosterName: 'Mrs Keys', role: 'admin' }).user;
+const teacher = S.createSchoolAccount(head, school.id, { rosterName: 'Mr Home Row', role: 'teacher' }).user;
+const other = S.createSchoolAccount(head, school.id, { rosterName: 'Ms Elsewhere', role: 'teacher' }).user;
+const klass = S.createClass(teacher, school.id, { name: 'Typing 3A' }).class;
+S.createClass(other, school.id, { name: 'Other 3B' });
+const ada = S.createSchoolAccount(head, school.id, { rosterName: 'Ada Typer' }).user;
+const ben = S.createSchoolAccount(head, school.id, { rosterName: 'Ben Later' }).user;
+const outsider = S.createSchoolAccount(head, school.id, { rosterName: 'Olly Outside' }).user;
+for (const p of [ada, ben]) assert.ok(S.addToClass(teacher, klass.id, p.id).ok);
+const game = G.getGameBySlug('typing-pets');
+const putTyping = (u, save) => G.putSave(game.id, u.id, { [TY.SAVE_KEY]: JSON.stringify(save) });
+
+test('no typing yet: no typing panel on the class progress page', async () => {
+  const r = await get(teacher, `/class/${klass.id}/progress`);
+  assert.equal(r.status, 200);
+  assert.doesNotMatch(r.text, /id="typing"/);
+});
+
+test('the class\'s teacher sees each student\'s typing, including practice outside class; others do not', async () => {
+  putTyping(ada, { v: 1, done: { l01: { s: 3, w: 14, a: 96, n: 1, t: Date.now() } }, pets: { cat: { s: 1 } }, keys: { f: [30, 0], j: [20, 5] }, secs: 240, last: Date.now() });
+  putTyping(outsider, { v: 1, done: { l01: { s: 3, w: 99, a: 99 } } });   // not in the class
+  const r = await get(teacher, `/class/${klass.id}/progress`);
+  assert.equal(r.status, 200);
+  const panel = r.text.slice(r.text.indexOf('id="typing"'), r.text.indexOf('</details>', r.text.indexOf('id="typing"')));
+  assert.ok(panel.length > 100, 'the typing panel is there');
+  assert.match(panel, /1 of 2 students have typed/);
+  assert.match(panel, /Ada Typer[\s\S]*1\/20[\s\S]*Lesson 2[\s\S]*14 wpm[\s\S]*96%[\s\S]*<kbd[^>]*>j<\/kbd>[\s\S]*4 min/);
+  assert.match(panel, /Ben Later[\s\S]*Not started yet/);
+  assert.doesNotMatch(panel, /Olly Outside|99 wpm/, 'only this class\'s students');
+  assert.match(panel, new RegExp(`/teach/assign\\?id=${game.id}&amp;class=${klass.id}`));
+  assert.match(r.text, /href="#typing"/, 'a jump chip to the panel');
+
+  assert.notEqual((await get(other, `/class/${klass.id}/progress`)).status, 200, 'a teacher of another class');
+  assert.notEqual((await get(ada, `/class/${klass.id}/progress`)).status, 200, 'a student');
+});

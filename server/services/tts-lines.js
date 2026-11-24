@@ -166,6 +166,8 @@ export const GAMES = {
   // Mistake Hunt reads nothing aloud yet: its passages are the teacher's own words (a "proof" read-aloud context is Phase 4).
   'mistake-hunt': { title: 'Mistake Hunt', role: 'friendly', spoken: /(?!)/ },
   // Jungle Cup: the story, the people's lines and the finale (d.*, story.*, end.*), each speaker's role from its VOICES block.
+  // Typing Pets: its title, how-to cards, lesson intros and the lesson-end lines (praise, egg); never the typing lines.
+  'typing-pets': { title: 'Typing Pets', role: 'friendly', spoken: /^(?:title|tag|how\d|intro_l\d\d|praise\d|great|keepGoing|eggReady|goldEgg)$/ },
   'jungle-cup': { title: 'Jungle Cup', role: 'narrator', spoken: /^(?:d\.[a-z]+\.[a-z0-9]+|story\.\d+|end\.\d+|sign\.[a-z]+|lift\.(?:open|locked))$/ },
 };
 /** The official games that may use AI voices at all (routes/tts.js gameAllowed): only games listed in GAMES, whose

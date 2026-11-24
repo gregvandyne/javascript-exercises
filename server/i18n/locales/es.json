@@ -5491,6 +5491,26 @@
       "about": "Sobre esta lección",
       "readToMe": "Léemelo"
     },
+    "typing": {
+      "title": "Mascotas Teclado",
+      "started": "{started} de {total} estudiantes han escrito",
+      "lessons": "Lecciones",
+      "next": "Siguiente",
+      "speed": "Mejor velocidad",
+      "acc": "Precisión",
+      "tricky": "Teclas difíciles",
+      "pets": "Mascotas",
+      "time": "Tiempo escribiendo",
+      "last": "Última vez",
+      "lessonN": "Lección {n}",
+      "allDone": "Todo hecho",
+      "wpm": "{n} ppm",
+      "minutes": "{n} min",
+      "missed": "Fallada el {pct}% de las veces",
+      "notYet": "Aún no ha empezado",
+      "note": "Del propio progreso de cada estudiante en Mascotas Teclado, incluida la práctica en casa. La velocidad es en palabras por minuto (ppm); la precisión es la media de sus mejores lecciones. Las teclas difíciles son las que más fallan.",
+      "assign": "Asignar una lección de mecanografía"
+    },
     "courses": {
       "started": "{started} de {total} empezaron"
     },
@@ -6612,7 +6632,8 @@
       "sumSpotter": "Encuentra el número que es la suma (o el producto) de otros dos, desde sumas hasta 10 hasta las tablas, con una carrera de 60 segundos.",
       "wordTrail": "Las palabras más frecuentes del inglés, de preescolar a 3.º grado, en un sendero de cuento con Bramble, el erizo: escucha una palabra y tócala, completa una frase, deletréala con fichas, en lecciones cortas con racha diaria.",
       "crossword": "Convierte cualquier lista de vocabulario en un crucigrama: escribe o sube las palabras, añade pistas o deja que la IA las escriba, y compártelo con la clase.",
-      "mistakeHunt": "Encuentra y corrige los errores de un texto corto: el docente pega su propio texto, siembra errores de ortografía, gramática y puntuación, y luego lo comparte, lo asigna o lo imprime."
+      "mistakeHunt": "Encuentra y corrige los errores de un texto corto: el docente pega su propio texto, siembra errores de ortografía, gramática y puntuación, y luego lo comparte, lo asigna o lo imprime.",
+      "typingPets": "Aprende a escribir con el teclado tecla a tecla, con un color para cada dedo: 20 lecciones cortas de la fila central a las frases y, tras cada lección, un huevo con una mascota nueva."
     },
     "hubs": {
       "math": {
