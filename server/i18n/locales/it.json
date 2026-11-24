@@ -533,7 +533,8 @@
     "public": "Tutti",
     "school": "La mia scuola",
     "family": "La mia famiglia",
-    "connections": "I miei contatti adulti"
+    "connections": "I miei contatti adulti",
+    "connectionsClasses": "Amici e classi"
   },
   "status": {
     "hidden": "Nascosto",
@@ -611,11 +612,16 @@
       "two": "In due"
     },
     "focus": {
-      "puzzles": "Giochi di parole e rompicapi",
-      "mapsStrategy": "Mappe e strategia",
       "tools": "Strumenti per la classe",
       "more": "Altri giochi",
       "players": "Giochi dei giocatori"
+    },
+    "topics": {
+      "label": "Argomenti",
+      "math": "Matematica",
+      "reading": "Lettura e parole",
+      "geography": "Geografia",
+      "strategy": "Strategia"
     }
   },
   "search": {
@@ -1188,7 +1194,8 @@
       "public": "Chiunque abbia il link può giocare a questo gioco.",
       "school": "Tutti nella tua scuola possono trovarlo e giocarci.",
       "family": "Solo l’adulto che ha creato questo gioco e la sua famiglia possono aprire questo link.",
-      "connections": "Solo l’adulto che ha creato questo gioco e i suoi contatti adulti possono aprire questo link."
+      "connections": "Solo l’adulto che ha creato questo gioco e i suoi contatti adulti possono aprire questo link.",
+      "connectionsClasses": "Solo gli amici e i compagni di classe di chi ha creato il gioco possono aprire questo link."
     },
     "sharedWith": "Condiviso con:",
     "sharedWithMore": "{count, plural, one {e # altra classe} other {e altre # classi}}",
@@ -1534,7 +1541,8 @@
       "public": "Tutti su Oomba Academy possono trovarlo e giocarci, dopo un rapido controllo di sicurezza.",
       "school": "Tutti nella tua scuola possono trovarlo e giocarci.",
       "family": "Voi e i figli collegati alla vostra famiglia potete giocarci.",
-      "connections": "Solo voi e i vostri contatti adulti potete giocarci."
+      "connections": "Solo voi e i vostri contatti adulti potete giocarci.",
+      "connectionsClasses": "Solo tu, i tuoi amici e le persone delle tue classi possono giocarci."
     },
     "status": {
       "hidden": "Nascosto per ora",
@@ -1875,7 +1883,9 @@
         "start": "il gioco non è partito",
         "failed": "il gioco si è congelato mentre veniva giocato"
       }
-    }
+    },
+    "noPublic": "Puoi condividere i giochi con i tuoi amici e le tue classi, non con tutti.",
+    "liveConnectionsClasses": "Condiviso con i tuoi amici e le tue classi! Solo loro e tu potete giocarci."
   },
   "builder": {
     "kindRefusal": "Con questo non posso aiutarti. Creiamo invece qualcosa di divertente! Che tipo di gioco ti piacerebbe?",
@@ -2160,7 +2170,8 @@
         "public": "Tutti",
         "school": "La mia scuola",
         "family": "La mia famiglia",
-        "connections": "I miei contatti adulti"
+        "connections": "I miei contatti adulti",
+        "connectionsClasses": "Amici e classi"
       },
       "top": {
         "inReview": "In revisione",
@@ -6966,6 +6977,7 @@
     "tab": {
       "h1": "Impara",
       "lead": "Giochi e corsi che insegnano qualcosa. Scegli una materia, o semplicemente un gioco.",
+      "leadGames": "Giochi che insegnano qualcosa. Scegli una materia, o semplicemente un gioco.",
       "leadStaff": "La stessa biblioteca che vedono i tuoi studenti, con i pulsanti per assegnare e condurre dal vivo.",
       "filters": "Filtra i giochi",
       "subject": "Materia",

@@ -5,6 +5,7 @@ import os from 'node:os';
 const LOCAL = ['/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell'];
 const exe = process.env.BRB_CHROMIUM || LOCAL.find(f => fs.existsSync(f));
 process.env.BRB_DB = ':memory:'; process.env.BRB_SILENT = '1'; process.env.LOG_REQUESTS = '0';
+process.env.PUBLIC_GAMES = '1';   // public games (off on the site by default: tests/unit/play-topics-private.test.js)
 process.env.BRB_SNAPSHOTS = '1'; if (exe) process.env.BRB_CHROMIUM = exe;
 process.env.BRB_DATA_DIR = fs.mkdtempSync(os.tmpdir() + '/brb-shots-');
 import test, { mock } from 'node:test';

@@ -5,6 +5,7 @@
 // other game and page, an online match and the site-wide off switch get nothing. The frame's sandbox, CSP and iframe
 // attributes are exactly as for every other game, and the scanner still fails a game that asks for the mic itself.
 process.env.BRB_DB = ':memory:';
+process.env.PUBLIC_GAMES = '1';   // public games (off on the site by default: tests/unit/play-topics-private.test.js)
 process.env.BRB_SILENT = '1';
 process.env.LOG_REQUESTS = '0';
 process.env.BRB_DATA_DIR = (await import('node:os')).tmpdir() + '/brb-mic-scope-' + process.pid;
