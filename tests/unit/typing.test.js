@@ -115,8 +115,8 @@ test("a class goal: set by the class's teacher only, measured against each stude
   assert.equal((await post(ada, { wpm: 10 })).status, 404, 'a student');
   assert.equal(TY.getGoal(klass.id), null);
   const r = await post(teacher, { wpm: '20', acc: '90' });
-  assert.equal(r.status, 200, JSON.stringify(r.json)); assert.deepEqual(TY.getGoal(klass.id), { wpm: 20, acc: 90 });
-  assert.deepEqual((await post(teacher, { wpm: 9999, acc: -3 })).json.goal, { wpm: 120, acc: 50 }, 'clamped');
+  assert.equal(r.status, 200, JSON.stringify(r.json)); assert.deepEqual(TY.getGoal(klass.id), { wpm: 20, acc: 90, mins: 0 });
+  assert.deepEqual((await post(teacher, { wpm: 9999, acc: -3 })).json.goal, { wpm: 120, acc: 50, mins: 0 }, 'clamped');
   await post(teacher, { wpm: 20, acc: 90 });
   putTyping(ben, { v: 1, done: {}, tests: { t1: { w: 24, a: 93, n: 1, t: Date.now() } } });
   const page = (await get(teacher, `/class/${klass.id}/progress`)).text;
@@ -141,4 +141,78 @@ test('Assign: pick one lesson or test (checked against the list), or the whole g
   const { q } = await import('../../server/db.js');
   const steps = q.all("SELECT s.title, s.options FROM lesson_steps s JOIN lessons l ON l.id=s.lesson_id WHERE s.game_id=? ORDER BY l.created_at", game.id);
   assert.deepEqual(steps.map(x => [x.title, x.options]), [['Typing Pets', ''], ['Typing Pets: Lesson 7: E and I', 'chapter=l07&lock=1'], ['Typing Pets: 1-minute test', 'chapter=t1&lock=1']]);
+});
+
+// ---------------------------------------------------------------- part 3: teachers' own lessons, pass marks, daily goal
+const SETS = await import('../../server/services/game-sets.js');
+const post = async (who, path, body) => { const r = await fetch(base + path, { method: 'POST', headers: { cookie: cookieFor(who.id), 'content-type': 'application/json', origin: base }, body: JSON.stringify(body) }); return { status: r.status, json: await r.json().catch(() => ({})) }; };
+
+test('a teacher\'s own lesson: only what the keyboard can type, through the site\'s filter', () => {
+  assert.deepEqual(SETS.cleanTypingItems([{ t: 'Week 3', x: 'It’s “fun” to type—really…\r\n\r\n   Two   lines ', k: 'test', n: 3 }]),
+    [{ t: 'Week 3', x: 'It\'s "fun" to type-really...\nTwo lines', k: 'test', n: 3 }], 'curly marks made plain, spaces tidied');
+  assert.deepEqual(SETS.cleanTypingItems([{ x: 'hello there class', k: 'other' }]), [{ t: '', x: 'hello there class', k: 'lesson' }]);
+  assert.equal(SETS.cleanTypingItems([{ x: 'a test', k: 'test', n: 7 }]), null, 'too short');
+  assert.equal(SETS.cleanTypingItems([{ x: 'a fine test here', k: 'test', n: 7 }])[0].n, 1, 'an odd length is a minute');
+  for (const x of ['café au lait please', 'price is 5€ today', '<b>bold</b> words', 'x'.repeat(1501)]) assert.equal(SETS.cleanTypingItems([{ x }]), null, x.slice(0, 20));
+  assert.equal(SETS.cleanTypingItems([{ x: 'call me on 555 123 4567 now' }]), null, 'nothing personal');
+  assert.equal(SETS.cleanTypingItems([{ x: 'one' }, { x: 'two' }]), null, 'one lesson a set');
+  assert.ok(SETS.SET_GAMES.has('typing-pets') && SETS.OPEN_SET_GAMES.has('typing-pets'));
+});
+
+test('saving a lesson: teachers only; a student opens it by its code; Assign opens it', async () => {
+  const items = [{ t: 'Our poem', x: 'Roses are red, violets are blue.', k: 'lesson' }];
+  assert.equal((await post(ada, `/api/games/${game.id}/sets`, { items })).status, 403, 'not a student');
+  const r = await post(teacher, `/api/games/${game.id}/sets`, { items, title: 'Our poem' });
+  assert.equal(r.status, 200, JSON.stringify(r.json)); assert.match(r.json.id, SETS.SET_ID);
+  assert.equal((await post(teacher, `/api/games/${game.id}/sets`, { items: [{ x: 'naïve café' }] })).status, 400);
+  const play = (await get(ada, `/play/typing-pets?chapter=${r.json.id}&lock=1`)).status;
+  assert.equal(play, 200);
+  const page = (await get(teacher, `/teach/assign?id=${game.id}&class=${klass.id}&opts=chapter%3D${r.json.id}%26lock%3D1`)).text;
+  assert.match(page, /Our poem: typing lesson, 32 characters/);
+  assert.doesNotMatch(page, /id="ag-o"/, 'no built-in lesson picker beside a teacher\'s lesson');
+  assert.match(page, /name="passAcc"/);
+  const a = await post(teacher, '/api/teach/assign-game', { gameId: game.id, classId: klass.id, opts: `chapter=${r.json.id}&lock=1`, passAcc: '90', passWpm: '' });
+  assert.equal(a.status, 200, JSON.stringify(a.json));
+  const { q } = await import('../../server/db.js');
+  const step = q.get("SELECT s.title, s.options FROM lesson_steps s WHERE s.game_id=? AND s.options LIKE ?", game.id, `chapter=${r.json.id}%`);
+  assert.deepEqual(step, { title: 'Typing Pets: Our poem: typing lesson, 32 characters (pass 90%)', options: `chapter=${r.json.id}&mode=a90&lock=1` });
+});
+
+test('pass marks: clamped, either part optional, carried in mode', async () => {
+  assert.equal(TY.passMode('', ''), null);
+  assert.equal(TY.passMode('abc', undefined), null);
+  assert.deepEqual(TY.passMode('90', '20'), { acc: 90, wpm: 20, mode: 'a90-w20' });
+  assert.deepEqual(TY.passMode('5', '999'), { acc: 50, wpm: 120, mode: 'a50-w120' });
+  assert.deepEqual(TY.passMode('', '15'), { acc: null, wpm: 15, mode: 'w15' });
+  const a = await post(teacher, '/api/teach/assign-game', { gameId: game.id, classId: klass.id, opts: 'chapter=l03&lock=1', passAcc: '95', passWpm: '12' });
+  assert.equal(a.status, 200, JSON.stringify(a.json));
+  const { q } = await import('../../server/db.js');
+  assert.equal(q.get("SELECT options FROM lesson_steps WHERE game_id=? AND options LIKE 'chapter=l03%'", game.id).options, 'chapter=l03&mode=a95-w12&lock=1');
+  assert.match(html, /function readPass\(\)/, 'the game reads it');
+  assert.match(html, /if \(passed && BRBx && BRBx\.score\)/, 'and only reports a run that passed');
+});
+
+test('a daily practice goal: minutes a day, days met in the last week', async () => {
+  const day = n => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
+  const sum = TY.summarize({ done: { l01: { s: 3, w: 10, a: 95 } }, days: { [day(0)]: 700, [day(1)]: 300, [day(2)]: 650, [day(20)]: 9999, bogus: 5, [day(3)]: 1e9 } });
+  assert.deepEqual(sum.days.map(d => d.day), [day(3), day(2), day(1), day(0)], 'only the last week, real dates');
+  assert.equal(sum.week, Math.round((700 + 300 + 650 + 86400) / 60), 'a day is at most 24 hours');
+  assert.equal(TY.daysMet(sum, { mins: 10 }), 3);
+  assert.equal(TY.daysMet(sum, { mins: 0, wpm: 20 }), null, 'no daily goal');
+  const r = await post(teacher, `/api/class/${klass.id}/typing-goal`, { wpm: '', mins: '10' });
+  assert.deepEqual(r.json.goal, { wpm: 0, acc: 90, mins: 10 }, 'a daily goal alone');
+  putTyping(ada, { v: 1, done: { l01: { s: 3, w: 14, a: 96 } }, days: { [day(0)]: 900, [day(1)]: 120 } });
+  const page = (await get(teacher, `/class/${klass.id}/progress`)).text;
+  const panel = page.slice(page.indexOf('id="typing"'), page.indexOf('</details>', page.indexOf('id="typing"')));
+  assert.match(panel, /daily goal 10 min/);
+  assert.doesNotMatch(panel, /goal 0 wpm/, 'no speed goal shown');
+  assert.match(panel, /Ada Typer[\s\S]*17 min this week[\s\S]*1 of 7 days/);
+  assert.equal((await post(teacher, `/api/class/${klass.id}/typing-goal`, { wpm: '', mins: '' })).json.goal, null);
+});
+
+test('the game: every locked link opens from the map (a lesson, a test, tricky keys or a teacher\'s lesson)', () => {
+  assert.match(html, /\nshowMap\(\);/);
+  assert.doesNotMatch(html, /if \(locked\) showIntro\(LESSONS\.find/);
+  assert.doesNotMatch(html, /window\.confirm/, 'the frame has no confirm box');
+  for (const c of ['!', '?', '"', ':', '(', ')']) assert.ok(html.includes(`'${c}':`) || html.includes(`"${c}":`), `Shift for ${c}`);
 });

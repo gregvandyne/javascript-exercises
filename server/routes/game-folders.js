@@ -28,6 +28,8 @@ function setAssign(t, g, raw) {
   if (!setGameOf(g)) return null;
   const opts = cleanOptions(String(raw || '')) || '';
   if (!opts && gameSets.OPEN_SET_GAMES.has(g.slug)) return null;   // Word Hunt with no set: the game as it is
+  // Typing Pets: only a teacher's own lesson (a set code) goes this way; its built-in lessons and tests are the picker's.
+  if (g.slug === TY.SLUG && !gameSets.SET_ID.test(parseParams(opts).chapter || '')) return null;
   const what = gameSets.describe(g.id, parseParams(opts), g.slug);
   const label = what ? (what.kind === 'set' ? t('teach.assign.set', { count: what.n }) : what.label) : '';
   return { opts, what, label, title: what ? `${g.title}: ${label}` : '' };
@@ -141,7 +143,11 @@ router.get('/teach/assign', requireUser, (req, res) => {
   const proofSet = g0.slug === PS.SLUG && sa && sa.what ? PS.ownSet(u, parseParams(sa.opts).chapter) : null;
   const practiceForm = classes.length ? html`<form class="formgrid assigngrid" data-api="/api/teach/assign-game" novalidate><input type="hidden" name="gameId" value="${g0.id}">${sa && sa.opts ? html`<input type="hidden" name="opts" value="${sa.opts}">` : ''}
       <div class="field"><label for="ag-c">${t('teach.assign.pickClass')}</label><select class="input" id="ag-c" name="classId">${classes.map(c => html`<option value="${c.id}"${c.id === pre ? raw(' selected') : ''}>${c.name}</option>`)}</select></div>
-      ${g0.slug === TY.SLUG && g0.source === 'seed' ? html`<div class="field"><label for="ag-o">${t('progress.typing.assignPick')}</label><select class="input" id="ag-o" name="opts"><option value="">${t('progress.typing.assignFree')}</option>${TY.assignChoices(t).map(o => html`<option value="${o.value}">${o.label}</option>`)}</select></div>` : ''}
+      ${g0.slug === TY.SLUG && g0.source === 'seed' && !(sa && sa.opts) ? html`<div class="field"><label for="ag-o">${t('progress.typing.assignPick')}</label><select class="input" id="ag-o" name="opts"><option value="">${t('progress.typing.assignFree')}</option>${TY.assignChoices(t).map(o => html`<option value="${o.value}">${o.label}</option>`)}</select></div>` : ''}
+      ${g0.slug === TY.SLUG && g0.source === 'seed' ? html`<fieldset class="field wide ty-pass"><legend>${t('progress.typing.passH')}</legend>
+        <label>${t('progress.typing.goalAcc')} <input class="input" type="number" name="passAcc" min="${TY.PASS.acc[0]}" max="${TY.PASS.acc[1]}" inputmode="numeric" placeholder="90"></label>
+        <label>${t('progress.typing.goalWpm')} <input class="input" type="number" name="passWpm" min="${TY.PASS.wpm[0]}" max="${TY.PASS.wpm[1]}" inputmode="numeric" placeholder="20"></label>
+        <span class="small muted">${t('progress.typing.passHint')}</span></fieldset>` : ''}
       <div class="field"><label for="ag-d">${t('lessons.assign.due')}</label><input class="input" id="ag-d" name="dueAt" type="date"></div>
       ${gc}
       <div class="field end"><button class="btn btn-primary" type="submit" id="ag-go">${ico('📌', { size: 18 })} ${t('teach.assign.submit')}</button></div>
@@ -188,8 +194,12 @@ router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 
   const sa = setAssign(req.t, g, b(req).opts);
   if (sa && !sa.what) return res.status(400).json({ error: req.t('teach.assign.pickFirst') });
   // Typing Pets: one lesson or test (services/typing.js assignChoices), or the whole game when none is picked.
-  const tc = g && g.slug === TY.SLUG && g.source === 'seed' ? TY.assignChoice(req.t, b(req).opts) : null;
-  const extra = sa ? { options: sa.opts, title: sa.title } : tc ? { options: tc.value, title: `${g.title}: ${tc.label}` } : {};
+  const typing = !!g && g.slug === TY.SLUG && g.source === 'seed';
+  const tc = typing && !sa ? TY.assignChoice(req.t, b(req).opts) : null;
+  let extra = sa ? { options: sa.opts, title: sa.title } : tc ? { options: tc.value, title: `${g.title}: ${tc.label}` } : {};
+  // A pass mark (mode=a90-w20): the game reports the step done only for a run that reaches it.
+  const pass = typing ? TY.passMode(b(req).passAcc, b(req).passWpm) : null;
+  if (pass) extra = { options: `${extra.options ? `${extra.options}&` : ''}mode=${pass.mode}`, title: `${extra.title || g.title} (${TY.passLabel(req.t, pass)})`.slice(0, 100) };
   const r = F.assignGame(u, classId, g && g.id, { dueAt, ...extra });
   if (!r.ok) return fail(req, res, r);
   const also = await gcAfterAssign(req, r.classLesson);

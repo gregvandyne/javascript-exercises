@@ -1330,6 +1330,8 @@ export const MIGRATIONS = [
   ['0115_typing_goals', `
     CREATE TABLE IF NOT EXISTS typing_goals (class_id TEXT PRIMARY KEY REFERENCES classrooms(id) ON DELETE CASCADE,
       wpm INTEGER NOT NULL, acc INTEGER NOT NULL, updated_at INTEGER NOT NULL);`],
+  // A daily practice goal beside it (minutes a day; 0 = none).
+  ['0116_typing_goal_minutes', "ALTER TABLE typing_goals ADD COLUMN mins INTEGER NOT NULL DEFAULT 0;"],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

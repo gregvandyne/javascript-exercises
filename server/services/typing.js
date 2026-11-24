@@ -22,6 +22,18 @@ const MAX_WPM = 200;
 const int = (v, lo, hi) => { const n = Math.floor(Number(v)); return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : lo; };
 const obj = v => (v && typeof v === 'object' && !Array.isArray(v) ? v : {});
 
+/** The last 7 days' practice from a save's days ({ 'YYYY-MM-DD': seconds }, the student's own calendar day):
+ *  [{ day, secs }] for days within a week of today (a day either side of the server's date, for time zones). */
+export function practiceDays(raw, today = Date.now()) {
+  const d = obj(raw), out = [];
+  for (const [k, v] of Object.entries(d)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(k)) continue;
+    const at = Date.parse(`${k}T12:00:00Z`);
+    if (!Number.isFinite(at) || at > today + 1.5 * 864e5 || at < today - 7.5 * 864e5) continue;
+    out.push({ day: k, secs: int(v, 0, 86400) });
+  }
+  return out.sort((a, b) => (a.day < b.day ? -1 : 1)).slice(-8);
+}
 /** One save (the stored JSON string or object) -> a clean summary, or null when the student hasn't typed yet. */
 export function summarize(raw) {
   let s = raw;
@@ -36,7 +48,7 @@ export function summarize(raw) {
   const tests = obj(s.tests);
   const testBest = TESTS.map(m => { const r = obj(tests[`t${m}`]); return r.w !== undefined ? { min: m, wpm: int(r.w, 0, MAX_WPM), acc: int(r.a, 0, 100), runs: int(r.n, 1, 100000) } : null; }).filter(Boolean);
   const bestTest = testBest.slice().sort((a, b) => b.wpm - a.wpm || b.acc - a.acc)[0] || null;
-  if (!lessons.length && !bestTest) return null;
+  if (!lessons.length && !bestTest && !practiceDays(s.days).length) return null;
   const keyStats = Object.entries(obj(s.keys)).filter(([k, v]) => KEYS.has(k) && Array.isArray(v))
     .map(([k, v]) => ({ key: k, hits: int(v[0], 0, 1e7), misses: int(v[1], 0, 1e7) }));
   // Tricky keys: the ones missed most often for how often they came up (at least 8 tries and 1 in 20 missed), worst first.
@@ -54,6 +66,8 @@ export function summarize(raw) {
     tests: testBest,
     bestTest,
     practiced: int(obj(s.practice).n, 0, 100000),
+    days: practiceDays(s.days),
+    week: Math.round(practiceDays(s.days).reduce((n, d) => n + d.secs, 0) / 60),
     pets: Math.min(40, Object.keys(obj(s.pets)).length),
     tricky,
     minutes: Math.round(int(s.secs, 0, 1e8) / 60),
@@ -79,21 +93,28 @@ export function classTyping(students) {
 // ---------------------------------------------------------------- class goals
 // A class's typing goal (typing_goals, migration 0115): a speed (wpm) and an accuracy (%) a student's best test is
 // measured against on the progress page. Set by the class's teachers (the route checks canManageClass).
-export const GOAL_LIMITS = { wpm: [5, 120], acc: [50, 100] };
+export const GOAL_LIMITS = { wpm: [5, 120], acc: [50, 100], mins: [0, 60] };
 export function getGoal(classId) {
-  const r = q.get('SELECT wpm, acc FROM typing_goals WHERE class_id=?', classId);
-  return r ? { wpm: r.wpm, acc: r.acc } : null;
+  const r = q.get('SELECT wpm, acc, mins FROM typing_goals WHERE class_id=?', classId);
+  return r ? { wpm: r.wpm, acc: r.acc, mins: r.mins } : null;
 }
 /** Save (or, with no speed, clear) a class's goal. -> the goal, or null when cleared. */
-export function setGoal(classId, { wpm, acc } = {}) {
-  if (wpm === '' || wpm === undefined || wpm === null) { q.run('DELETE FROM typing_goals WHERE class_id=?', classId); return null; }
-  const g = { wpm: int(wpm, ...GOAL_LIMITS.wpm), acc: acc === '' || acc === undefined || acc === null ? 90 : int(acc, ...GOAL_LIMITS.acc) };
-  q.run('INSERT INTO typing_goals(class_id, wpm, acc, updated_at) VALUES (?,?,?,?) ON CONFLICT(class_id) DO UPDATE SET wpm=excluded.wpm, acc=excluded.acc, updated_at=excluded.updated_at', classId, g.wpm, g.acc, Date.now());
+/** A speed goal needs a speed; a daily goal needs minutes; with neither, the goal is cleared (null). wpm 0 = no speed goal. */
+export function setGoal(classId, { wpm, acc, mins } = {}) {
+  const blank = v => v === '' || v === undefined || v === null;
+  const g = { wpm: blank(wpm) ? 0 : int(wpm, ...GOAL_LIMITS.wpm), acc: blank(acc) ? 90 : int(acc, ...GOAL_LIMITS.acc), mins: blank(mins) ? 0 : int(mins, ...GOAL_LIMITS.mins) };
+  if (!g.wpm && !g.mins) { q.run('DELETE FROM typing_goals WHERE class_id=?', classId); return null; }
+  q.run('INSERT INTO typing_goals(class_id, wpm, acc, mins, updated_at) VALUES (?,?,?,?,?) ON CONFLICT(class_id) DO UPDATE SET wpm=excluded.wpm, acc=excluded.acc, mins=excluded.mins, updated_at=excluded.updated_at', classId, g.wpm, g.acc, g.mins, Date.now());
   return g;
+}
+/** Days in the last week the student practiced at least the daily goal's minutes (null with no daily goal). */
+export function daysMet(summary, goal) {
+  if (!goal || !goal.mins || !summary) return null;
+  return summary.days.filter(d => d.secs >= goal.mins * 60).length;
 }
 /** Has this student's best test met the goal? (true / false; null with no goal or no test yet) */
 export function meetsGoal(summary, goal) {
-  if (!goal || !summary || !summary.tests.length) return null;
+  if (!goal || !goal.wpm || !summary || !summary.tests.length) return null;
   return summary.tests.some(x => x.wpm >= goal.wpm && x.acc >= goal.acc);
 }
 
@@ -107,4 +128,20 @@ export function assignChoices(t) {
 /** A chosen option, checked against that list (anything else is free choice). -> { value, label } | null */
 export function assignChoice(t, raw) {
   return assignChoices(t).find(c => c.value === String(raw || '')) || null;
+}
+
+// ---------------------------------------------------------------- pass marks
+// A pass mark rides in an assignment's lesson parameters as mode=a<accuracy>-w<speed> (either part may be left out);
+// the game reports the step done only for a run that reaches it (seed-games/typing-pets.html passMark).
+export const PASS = { acc: [50, 100], wpm: [1, 120] };
+const num = v => (v === undefined || v === null || String(v).trim() === '' ? null : Number(v));
+/** -> { acc, wpm, mode } or null (no pass mark). Out-of-range numbers are clamped; a non-number counts as left out. */
+export function passMode(rawAcc, rawWpm) {
+  const a = num(rawAcc), w = num(rawWpm);
+  const acc = Number.isFinite(a) ? int(a, ...PASS.acc) : null, wpm = Number.isFinite(w) ? int(w, ...PASS.wpm) : null;
+  if (acc === null && wpm === null) return null;
+  return { acc, wpm, mode: [acc !== null ? `a${acc}` : '', wpm !== null ? `w${wpm}` : ''].filter(Boolean).join('-') };
+}
+export function passLabel(t, p) {
+  return [p.acc !== null ? `${p.acc}%` : '', p.wpm !== null ? t('progress.typing.wpm', { n: p.wpm }) : ''].filter(Boolean).join(', ').replace(/^/, `${t('progress.typing.passShort')} `);
 }

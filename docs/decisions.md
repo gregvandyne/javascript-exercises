@@ -12958,6 +12958,7 @@ repo's own scripts, same names, formats and sizes as before:
   Quest's globe and Would You Rather in the old look for a few seconds; they need the voice and music steps in
   scripts/demo-video/README.md. The four "See it in action" videos show only teaching tools.
 
+
 ## Typing Pets, part 2: numbers and symbols, timed tests, tricky keys, goals, a lesson picker (24 Nov 2026)
 
 Owner: "Let's get this to the level of typing.com". The first batch toward that:
@@ -12977,4 +12978,29 @@ Owner: "Let's get this to the level of typing.com". The first batch toward that:
 - Panel: "Best test" replaces "Best speed"; time typed sits under "Last typed".
 - **Still not at typing.com's level**: no adaptive lessons beyond the tricky-key drill, no teacher-written lessons,
   no intermediate/advanced paragraph units, no certificates, English and US QWERTY only.
+- Tests: `tests/unit/typing.test.js`.
+
+
+
+## Typing Pets, part 3: teachers' own lessons, pass marks, a daily goal (24 Nov 2026)
+
+Owner: "Continue to work towards feature parity" (with typing.com).
+- **Teachers write their own lessons and timed tests** in the game (BRB.canMake: grown-ups who may host, as Crossword's
+  "Make your own"). Typing Pets keeps question sets (`services/game-sets.js cleanTypingItems`): one item `{ t, x, k, n }`,
+  the text only what the game's keyboard types (letters, digits, space, newline, `. , ; : ' " - ! ? ( )`; curly quotes
+  and long dashes made plain), 10 to 1,500 characters, 40 lines, through the site's text filter. A saved lesson has a
+  class code students type on the map ("Got a code from your teacher?", BRB.findQuestionSet), a link, and Assign
+  (BRB.assign). "Your own typing lessons" lists them (BRB.mySets) with Try, Edit, Assign and Delete (tap twice: the
+  frame has no confirm box). It is an open set game like Word Hunt: the whole game is still assignable without a set.
+  Results go in the save's `custom` (best run per code, 30 kept).
+- **Pass marks on Assign**: accuracy and/or speed, carried as `mode=a90-w20`. The game only reports a run that
+  reaches it (a reported score marks the step done), shows the mark before the lesson, and without it says what is
+  missing and offers Try again instead of the egg. Each pass mark is its own assignment.
+- **Daily practice goal**: minutes a day beside the speed goal (`typing_goals.mins`, migration 0116). The game keeps
+  seconds typed per day on the student's own calendar (`days`, 14 kept); the panel shows minutes this week and
+  "N of 7 days" at the goal. Either goal may be set alone.
+- **Fixed**: an assigned timed test or tricky-keys step started on the built-in lesson list only and failed to open;
+  every locked link now opens from the map.
+- **Not done**: assigning to single students (the platform assigns lessons to whole classes), automatic grades from
+  the pass mark, typing games, certificates.
 - Tests: `tests/unit/typing.test.js`.
