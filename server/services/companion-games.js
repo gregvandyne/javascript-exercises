@@ -30,7 +30,7 @@ export const GAMES_META = Object.freeze([
   { slug: 'sudoku', subject: 'math', grades: [1, 8], topics: ['logic', 'number puzzle', 'reasoning'], standards: ['MP.1'], minutes: 10 },
   { slug: 'word-trail', subject: 'ela', grades: [0, 2], topics: ['sight words', 'reading', 'phonics', 'early reading'], standards: ['RF.K.3', 'RF.1.3', 'RF.2.3'], minutes: 8 },
   { slug: 'shark-plank', subject: 'ela', grades: [0, 2], topics: ['spelling', 'letters', 'early reading', 'hangman'], standards: ['RF.K.2', 'RF.1.2', 'L.1.2'], minutes: 5 },
-  { slug: 'word-hunt', subject: 'ela', grades: [1, 5], topics: ['word search', 'spelling', 'vocabulary', 'themes'], standards: ['L.2.2', 'L.3.2'], minutes: 5 },
+  { slug: 'word-hunt', subject: 'ela', grades: [1, 8], topics: ['word search', 'spelling', 'vocabulary', 'themes', 'your own word list'], standards: ['L.2.2', 'L.3.2'], minutes: 10 },
   { slug: 'word-peek', subject: 'ela', grades: [3, 8], topics: ['vocabulary', 'spelling', 'guess the word'], standards: ['L.3.2', 'L.4.2'], minutes: 5 },
   { slug: 'crossword', subject: 'ela', grades: [2, 8], topics: ['vocabulary', 'definitions', 'spelling', 'your own word list'], standards: ['L.3.4', 'L.4.4', 'L.5.4'], minutes: 15 },
   { slug: 'doodle-hoot', subject: 'ela', grades: [0, 5], topics: ['vocabulary', 'drawing', 'spelling', 'draw and guess'], standards: ['L.1.5', 'L.2.5'], minutes: 10, live: true },

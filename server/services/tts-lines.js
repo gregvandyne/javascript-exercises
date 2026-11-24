@@ -141,7 +141,9 @@ export const GAMES = {
   'trick-inbox': { title: 'Trick Inbox', role: 'wise', spoken: /./ },
   // Tug of Math reads no questions aloud (they are numbers); its words (the setup card, results) are all its own.
   'tug-of-math': { title: 'Tug of Math', role: 'bright', spoken: /./ },
-  'word-hunt': { title: 'Word Hunt', role: 'narrator', spoken: /./ },
+  // Word Hunt (rebuilt in Crossword's look, Nov 2026): only the lines it says (the tagline, the praise when a puzzle is
+  // solved, a hint, a race's turns). Its teacher tools (making a word hunt, sharing, My worksheets) are shown, never read.
+  'word-hunt': { title: 'Word Hunt', role: 'narrator', spoken: /^(?:tag|saySuper|sayAll|tie|hintSay|sayPass|sayWins)$/ },
   'word-peek': { title: 'Word Peek', role: 'narrator', spoken: /./ },
   'would-you-rather': { title: 'Would You Rather?', role: 'narrator', spoken: /./ },
   'would-you-rather-live': { title: 'Would You Rather? (Live)', role: 'narrator', spoken: /./ },

@@ -1263,6 +1263,17 @@
       "code": "Codice classe: {code}",
       "grid": "Griglia del cruciverba"
     },
+    "printHunt": {
+      "untitled": "Crucipuzzle",
+      "find": "Trova queste parole",
+      "hidden": "Parole nascoste nella griglia: {n}. Trovale tutte!",
+      "grid": "Griglia del crucipuzzle",
+      "how": {
+        "easy": "Le parole sono in orizzontale e in verticale.",
+        "medium": "Le parole sono in orizzontale, in verticale e in diagonale.",
+        "hard": "Le parole sono in tutte le direzioni, anche al contrario."
+      }
+    },
     "printBox": {
       "divide": "Divisione in colonna",
       "multiply": "Moltiplicazione",

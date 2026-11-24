@@ -12499,3 +12499,59 @@ but still fun engaging and interactive".
   label (the gradebook). The game opens a single lesson for `chapter=l01..l20&lock=1`, but Assign has no lesson picker yet.
 - **Not yet**: the game's words are English only and the keyboard is US QWERTY; other layouts are later work.
 - Tests: `tests/unit/typing.test.js`.
+## Word Hunt in Crossword's look, with your own words (24 Nov 2026)
+Owner: "Let's update word hunt to use a similar kit and set up to Crossword (with the grid background and all of the same
+my worksheets and make your own functionality)."
+- **The look.** `seed-games/word-hunt.html` is now hand-written outside the Oomba Kit, like Crossword: the dashboard
+  widgets' cream cards with a group colour on the top edge and the icon chip, the dark "Now" bar for what to do next
+  (help, "Now tap the last letter", a cheer, a hint), the dotted mint board, light and dark from `BRB.theme`, Bricolage
+  Grotesque, `BRB.sfx`, its own confetti (none with reduced motion). The kit worlds, the lion and the kit's title, pause
+  and results screens are gone; each theme keeps a picture (an emoji) and a widget colour. The letters sit on one framed
+  square with the found words' bands in an SVG under them (colour-blind-safe colours with dark outlines, as before).
+- **The play is the same.** Drag or tap the first and last letter (keyboard: arrows and Enter), the three levels and
+  their directions, 13 themes and Surprise, the daily puzzle, Hint, Read to me (`BRB.speak`, guarded), Relax, pause (P,
+  and it pauses when the page is hidden), Race a friend, `BRB.score.submit` and one `BRB.gameOver` per solve. The themes'
+  generator is copied unchanged into a `word-hunt-core` block, so a seed (and the daily puzzle) gives the same grid as
+  before (a unit test compares). The save key `word-hunt-v1` keeps its shape; `mine` is added (Your word hunts).
+- **Make your own, as Crossword.** The same people and tools as Crossword: anyone may make a word hunt in the game
+  (it stays in their own save); saving it as a set where the fence allows (`BRB.canSaveSet`); PDF or Word upload for
+  grown-ups who may host with AI on (`BRB.canWriteClues`; the frame's `clues` flag for word-hunt checks only the
+  words-from-doc call). Paste or type a list (one word a line or with commas; a "word - definition" line or a
+  spreadsheet's "word, definition" row gives the word), a .txt or .csv file, or a PDF or Word file through Crossword's
+  path (`POST /api/games/:id/words-from-doc`, `services/crossword-doc.js` and `set-ai.js` unchanged: no new prompt, its
+  limits, the 10 files a day and the AI spending cap; the route keeps the words only, 2 to 15 letters, at most 25, and
+  drops the clues). 3 to 25 words; options: grid size (Auto, the smallest that holds them, or 8, 10, 12, 15), directions
+  (Easy across and down, Medium with diagonals, Hard every way and backwards) and whether students see the word list
+  (hidden: they see how many are left and the ones found). The preview shows the answers (a toggle), Try another layout,
+  Play it, Print, the teacher's instructions box, and Save and get a link (the class code, the link, a QR code, Copy
+  and Assign to a class). Drafts save themselves to Your word hunts on the home; My worksheets (school staff) has Open,
+  Print, the answer key, Copy link, Duplicate, Rename and Delete exactly like Crossword's.
+- **Any script.** A teacher's words may be in any script, as Crossword's are. The grid holds each word's letters as
+  capitals (spaces, hyphens and apostrophes left out); the gaps are filled with the game's weighted A-Z for plain
+  English, with the words' own accented letters added for other Latin lists, and with the script's alphabet (Cyrillic,
+  Greek, Hebrew, Arabic, kana, common Traditional Chinese characters) and the words' own letters otherwise. A Hebrew or
+  Arabic list reads right to left ("across" runs that way). The themes' words stay English, as before.
+- **Checks.** The filler never spells a blocked word in any direction (the same internal list), and no word can be read
+  anywhere it wasn't put; a word inside another of the teacher's words (CAT in CATERPILLAR) is fine, and finding it in
+  either place counts. Words that can't fit the chosen grid are listed, never forced in; the editor warns first when a
+  word is longer than the chosen grid.
+- **Server.** `services/game-sets.js cleanHuntItems` (`[{ t, w: [word], s, d, r, b }]`; every word and the title through
+  `cleanText`), registered in `SET_GAMES`; named after its title like Crossword (rename changes the puzzle's title, a
+  copy is "Copy of ..."); `labelOf` "Habitats: word hunt, 12 words"; `sizeOf` its words. No migration.
+- **Still a whole game to assign.** Being a set game would have sent Word Hunt through the Assign page and refused it
+  without a set (as Crossword is), and skipped it in "Assign all". `game-sets.js OPEN_SET_GAMES` ('word-hunt') keeps it
+  assignable as it is, from the class page, a folder and `/api/teach/assign-game`; with a set chosen, the set opens.
+- **Print** (`services/word-hunt-print.js`, registered in `services/game-print.js`): the game sends only the words and
+  options; the server makes the grid itself by running the game's own `word-hunt-core` block with node:vm (read from
+  `seed-games/word-hunt.html`, already copied by the Dockerfile), so every printed letter is the server's and matches
+  the game. The page: title, Name and Date, the teacher's instructions (as Crossword's, `print-note.js`), how the words
+  run, the grid, the word list with tick boxes (or "Words hidden in the grid: 12"), the footer with the class code and
+  link; the answer key (school staff only, the route checks) rings each word. Words in all 13 locales (`play.printHunt.*`).
+- **Words.** The game's own words in all 13 site languages: its play words as before, Crossword's shared teacher words
+  (code box, sharing, My worksheets) and new ones for making a word hunt. AI voices read only the lines it says
+  (`services/tts-lines.js`: the tagline, the praise, a hint, a race's turns), not the teacher tools.
+- **The companion** knows Word Hunt takes your own word list (grades 1-8, `services/companion-games.js`).
+- Tests: tests/unit/word-hunt-sets.test.js (the core, the generator unchanged, any script, the list reader,
+  cleanHuntItems, the routes owner only, the frame's flags, words from a document, print and its route, the page),
+  tests/unit/word-hunt-browser.test.js (Chromium: play with a real drag and tap-tap, make, preview, save, My worksheets,
+  a student's set), tests/e2e/word-hunt.spec.js (rewritten for the new look, the same coverage).
