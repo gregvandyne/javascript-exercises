@@ -26,6 +26,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const DIR = path.join(ROOT, 'public/vendor/art2d');
 
 const { config } = await import('../../server/config.js');
+config.arcade = true;   // the arcade Builder (the kit, Kit 2, the 2D art); the classroom focus (ARCADE off): builder-focus.test.js
 config.anthropicKey = '';
 const S = await import('../../server/services/art2d.js');
 const A = await import('../../server/builder/art2d.js');

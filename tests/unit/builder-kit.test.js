@@ -23,6 +23,7 @@ import * as props from '../../kit/packs/art-props.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const { config } = await import('../../server/config.js');
+config.arcade = true;   // the arcade Builder (the kit, Kit 2, the 2D art); the classroom focus (ARCADE off): builder-focus.test.js
 config.anthropicKey = '';
 const auth = await import('../../server/auth.js');
 const games = await import('../../server/services/games.js');

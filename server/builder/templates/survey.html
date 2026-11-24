@@ -1,54 +1,29 @@
 <title>Class Survey</title>
+<!--CLASSROOM_STYLE-->
 <style>
 /* Class Survey: fixed-choice questions written by the teacher. "Count hands" (the teacher taps how many hands are up)
    or "Pass the device" (each student taps a choice in private). Only counts, only in this page's memory: no names, no
-   typing, nothing saved or sent. Big type for the board, keyboard and clicker keys. */
-:root{--bg:#fff7ec;--bg2:#ffe9cf;--ink:#2b1d12;--soft:#6b5443;--card:#ffffff;--edge:#2b1d12;--hot:#ff7a45;--hot-ink:#ffffff;
-  --c0:#ff7a45;--c1:#2fb5a5;--c2:#7a6cff;--c3:#f2b600}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
-body{background:linear-gradient(180deg,var(--bg),var(--bg2)) fixed}
-.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:14px;padding:max(10px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom))}
-.bar{display:flex;align-items:center;gap:10px}
-.bar h1{flex:1;min-width:0;margin:0;font-size:clamp(1.2rem,3.4vmin,2.4rem);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-button{font:inherit;font-weight:800;min-height:48px;min-width:48px;padding:8px 18px;border-radius:16px;border:3px solid var(--edge);background:var(--card);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--edge)}
-button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
-button:focus-visible{outline:5px solid var(--c2);outline-offset:3px}
-button[aria-pressed="true"]{background:var(--ink);color:var(--card)}
-button:disabled{opacity:.45;cursor:default}
-.small{min-height:44px;padding:6px 14px;font-size:clamp(.9rem,2vmin,1.2rem)}
-.hot{background:var(--hot);color:var(--hot-ink)}
-.big{font-size:clamp(1.1rem,3.4vmin,2.2rem);min-height:60px;padding:10px 24px}
-[hidden]{display:none!important}
-.screen{flex:1;display:flex;flex-direction:column;gap:clamp(10px,2.4vmin,24px);min-height:0}
-.card{margin:auto;width:min(100%,820px);background:var(--card);border:4px solid var(--edge);border-radius:28px;padding:clamp(18px,4vmin,40px);text-align:center;box-shadow:0 8px 0 var(--edge)}
-.card h2{margin:0 0 10px;font-size:clamp(1.8rem,6.4vmin,4.2rem);line-height:1.1}
-.card p{margin:10px 0;font-size:clamp(1.05rem,2.8vmin,1.8rem);color:var(--soft)}
-.note{font-weight:800;color:var(--ink)!important;background:var(--bg2);border-radius:14px;padding:8px 14px}
-.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-.count{font-weight:800;color:var(--soft);font-size:clamp(1rem,2.6vmin,1.6rem);margin:0}
-.q{margin:0;text-align:center;font-size:clamp(1.6rem,6.4vmin,4.6rem);font-weight:900;line-height:1.15;overflow-wrap:anywhere}
+   typing, nothing saved or sent. Big type for the board, keyboard and clicker keys.  In the Oomba classroom style (classroom-style.css). */
+:root{--c0:#2E9E6B;--c1:#C99A0B;--c2:#4F86C6;--c3:#D9614A}
 .choices{flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(10px,2vmin,20px);align-content:center}
-.choice{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"tag lab" "ctl ctl";align-items:center;gap:10px 14px;padding:12px 14px;border:4px solid var(--edge);border-radius:22px;background:var(--card);box-shadow:0 6px 0 var(--edge);min-height:84px}
-.choice .tag{grid-area:tag;display:grid;place-items:center;width:clamp(44px,8vmin,72px);height:clamp(44px,8vmin,72px);border-radius:50%;color:#fff;font-weight:900;font-size:clamp(1.2rem,4vmin,2.6rem)}
-.choice .lab{grid-area:lab;min-width:0;font-weight:900;font-size:clamp(1.2rem,4vmin,2.8rem);overflow-wrap:anywhere;text-align:start}
-.choice .num{font-weight:900;font-size:clamp(1.8rem,7vmin,5rem);font-variant-numeric:tabular-nums;min-width:1.6em;text-align:center}
+.choice{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"tag lab" "ctl ctl";align-items:center;gap:10px 14px;padding:12px 16px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--card);box-shadow:var(--lift);min-height:84px}
+.choice .tag{grid-area:tag;display:grid;place-items:center;width:clamp(44px,8vmin,72px);height:clamp(44px,8vmin,72px);border-radius:14px;color:#fff;font-weight:800;font-size:clamp(1.2rem,4vmin,2.6rem)}
+.choice .lab{grid-area:lab;min-width:0;font-weight:800;font-size:clamp(1.2rem,3.8vmin,2.7rem);overflow-wrap:anywhere;text-align:start}
+.choice .num{font-weight:800;font-size:clamp(1.8rem,7vmin,5rem);font-variant-numeric:tabular-nums;min-width:1.6em;text-align:center}
 .choice .ctl{grid-area:ctl;display:flex;align-items:center;justify-content:center;gap:clamp(12px,3vmin,32px)}
-.choice .ctl button{min-width:clamp(56px,9vmin,84px);min-height:clamp(56px,9vmin,84px);font-size:clamp(1.4rem,4.4vmin,3rem);padding:0}
+.choice .ctl button{min-width:clamp(56px,9vmin,84px);min-height:clamp(56px,9vmin,84px);font-size:clamp(1.4rem,4.4vmin,3rem);padding:0;border-radius:50%}
 .pick{width:100%;grid-template-areas:"tag lab";text-align:start;font-size:inherit}
 .bars{flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(10px,2vmin,20px)}
 .barrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:center}
-.barrow .lab{font-weight:900;font-size:clamp(1.1rem,3.6vmin,2.6rem);overflow-wrap:anywhere}
-.barrow .val{font-weight:900;font-size:clamp(1.1rem,3.6vmin,2.6rem);font-variant-numeric:tabular-nums}
-.track{grid-column:1/-1;height:clamp(22px,4.6vmin,48px);border-radius:999px;background:var(--bg2);border:3px solid var(--edge);overflow:hidden}
-.fill{height:100%;width:0;border-radius:999px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
-.keys{text-align:center;margin:0;font-size:clamp(.85rem,2vmin,1.2rem);font-weight:700;color:var(--soft)}
+.barrow .lab{font-weight:800;font-size:clamp(1.1rem,3.4vmin,2.5rem);overflow-wrap:anywhere}
+.barrow .val{font-weight:800;font-size:clamp(1.1rem,3.4vmin,2.5rem);font-variant-numeric:tabular-nums}
+.track{grid-column:1/-1;height:clamp(22px,4.4vmin,46px);border-radius:999px;background:var(--tint);overflow:hidden}
+.fill{height:100%;width:0;border-radius:999px;transition:width .7s var(--ease)}
 .summary{display:grid;gap:18px;width:min(100%,980px);margin:0 auto}
-.summary h3{margin:0 0 6px;font-size:clamp(1.2rem,3.6vmin,2.4rem)}
-@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+.summary h3{margin:0 0 6px;font-size:clamp(1.2rem,3.4vmin,2.3rem)}
 </style>
 <main class="app">
-  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="true"></button><button class="small" id="full"></button></header>
+  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
 
   <section class="screen" id="start">
     <div class="card"><h2 id="startH"></h2><p id="startP"></p><p class="note" id="privacy"></p>
@@ -96,6 +71,7 @@ button:disabled{opacity:.45;cursor:default}
 const CONFIG = {
   title: 'Class Survey',
   lang: 'en',
+  sound: false,
   minShown: 5,
   showPercent: true,
   thanksSeconds: 1.5,
@@ -129,7 +105,8 @@ const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
 const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
 document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
 const $ = id => document.getElementById(id);
-const sfx = name => { try { if (B.sfx) B.sfx.play(name); } catch (e) { /* no sound */ } };
+let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
+const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };
 const say = text => { try { if (CONFIG.readAloud && B.speak && !(B.sfx && B.sfx.muted)) B.speak(text, { lang: CONFIG.lang }); } catch (e) { /* no voice */ } };
 const QS = QUESTIONS.map(x => ({ q: x.q, choices: x.choices.slice(0, 4) })).filter(x => x.choices.length >= 2);
 
@@ -215,7 +192,7 @@ $('readyBtn').onclick = () => {
   $('prev').hidden = true; $('show').hidden = true; $('askKeys').hidden = true; go('ask'); say(x.q);
 };
 $('restart').onclick = () => { S.counts = []; go('start'); };
-$('sound').onclick = () => { try { if (B.sfx) B.sfx.mute(); } catch (e) { /* no sound */ } $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted))); };
+$('sound').onclick = () => { soundOn = !soundOn; $('sound').setAttribute('aria-pressed', String(soundOn)); sfx('click'); };
 $('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
 addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
@@ -233,7 +210,7 @@ addEventListener('keydown', e => {
 
 document.title = CONFIG.title; $('title').textContent = CONFIG.title;
 for (const [id, k] of [['sound', 'sound'], ['full', 'full'], ['startH', 'startH'], ['startP', 'startP'], ['privacy', 'privacy'], ['hands', 'hands'], ['private', 'private'], ['handsP', 'handsP'], ['privateP', 'privateP'], ['show', 'show'], ['prev', 'prev'], ['readyH', 'readyH'], ['readyP', 'readyP'], ['readyBtn', 'ready'], ['readyShow', 'show'], ['thanksH', 'thanksH'], ['thanksP', 'thanksP'], ['allH', 'allH'], ['restart', 'restart'], ['askKeys', 'askKeys']]) $(id).textContent = tr(k);
-$('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted)));
+$('sound').setAttribute('aria-pressed', String(soundOn));
 window.__brbTest = { state: () => ({ screen: S.screen, mode: S.mode, question: S.i + 1, counts: S.counts.map(c => c.slice()), total: S.counts.length ? total(S.i) : 0, shown: S.screen === 'results' && $('bars').children.length > 0 }), start() { begin('hands'); } };
 go('start');
 </script>

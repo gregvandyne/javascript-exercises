@@ -10922,7 +10922,8 @@
         "board": "Das läuft auf einem Bildschirm für den ganzen Raum.",
         "survey": "Umfrage-Antworten bleiben auf diesem Gerät und werden nie gesendet, darum wird sie nicht live gespielt.",
         "exitticket": "Ein Exit-Ticket bleibt auf einem Gerät. Für die Antworten jedes Kindes nimm einen Frageschritt in einer Klassenstunde.",
-        "canvas": "Klassenaktivitäten können noch nicht live gespielt werden."
+        "canvas": "Klassenaktivitäten können noch nicht live gespielt werden.",
+        "plain": "Live-Spiel gibt es für Klassenspiele noch nicht. Zeig es an der Tafel oder teile es, damit alle auf ihrem eigenen Gerät spielen."
       }
     },
     "learn": {

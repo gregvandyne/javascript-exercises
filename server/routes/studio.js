@@ -59,7 +59,8 @@ import { tEn } from '../i18n/index.js';
 import { familiesOn, isChildAccount, liveRowOf } from '../services/family.js';
 import { sharingOptions, shareDefault, shareableClasses, gameClassIds, removedClassIds } from '../services/schools.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
-import { LIVE_NOT, LIVE_NOT_ENGINE } from '../builder/plan.js';
+import { LIVE_NOT, LIVE_NOT_ENGINE, LIVE_NOT_PLAIN } from '../builder/plan.js';
+import { kitVersion } from '../services/kit.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { gameReady as gameLiveReady, checkHtml as checkLiveHtml } from '../services/classlive-check.js';
 
@@ -219,7 +220,8 @@ export function liveClassState(user, g, cur, t, state = {}) {
   const chk = checkLiveHtml(cur.html), first = chk.issues.find(i => i.level === 'fail');
   const loads = /\/packs\/live\.js/.test(cur.html), published = gameLiveReady(g), canHost = liveCanHost(user);
   const play = (state && state.play) || null;
-  const not = kit2Of(cur.html) ? LIVE_NOT_ENGINE.kit2 : canvasVersion(cur.html) ? LIVE_NOT_ENGINE.canvas : (play && play.type && LIVE_NOT[play.type]) || '';
+  // (the arcade side off: a plain classroom game has no live play; a game made on the Oomba Kit before still can)
+  const not = kit2Of(cur.html) ? LIVE_NOT_ENGINE.kit2 : canvasVersion(cur.html) ? LIVE_NOT_ENGINE.canvas : (play && play.type && LIVE_NOT[play.type]) || (!config.arcade && !kitVersion(cur.html) ? LIVE_NOT_PLAIN : '');
   const line = chk.ready ? (published ? 'host' : 'publish') : loads ? 'fix' : 'off';
   return {
     line, ready: chk.ready, started: loads, issue: loads && first ? t(`live.check.${first.code}`) : '', published, canHost,
@@ -313,7 +315,7 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
         <form class="st-compose" id="st-compose" autocomplete="off">
           <div class="st-limit" id="st-limit" role="status"${t.own('js.studio.limitCard.heading') ? '' : html` lang="en" dir="ltr"`} hidden></div>
           <div class="st-attach" id="st-attach" hidden></div>
-          ${themePicker(t, state.theme, state.kit2, !!state.current)}
+          ${config.arcade || state.kit2 || state.theme ? themePicker(t, state.theme, state.kit2, !!state.current) : ''}
           <div class="st-row">
             <button class="st-clip" type="button" id="st-clip" aria-label="${t('studio.chat.attach')}" title="${t('studio.chat.attach')}">${ico('📎', { size: 18 })}</button>
             <input type="file" id="st-file" hidden multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,.txt,.md,.csv,.json,text/plain,text/markdown,text/csv,application/json">
@@ -361,6 +363,8 @@ router.post('/api/studio/new', requireBuilder, rateLimit('studio-new', 30, 3600e
   const world = key === 'oomba3d' ? String((req.body || {}).world || '') : '';
   // (the classroom activity starter too: /build/new's "I’ll just describe it" with Classroom activity picked)
   if (key === 'oomba3d' ? !WORLD_IDS.includes(world) : key && !TEMPLATE_KEYS.includes(key) && !CANVAS_TEMPLATE_KEYS.includes(key)) return res.status(400).json({ error: t('studio.api.pickStarter') });
+  // The arcade side off: no new game on a kit template or in a 3D world (an empty game or a classroom lesson only).
+  if (!config.arcade && key && !CANVAS_TEMPLATE_KEYS.includes(key)) return res.status(400).json({ error: t('studio.api.pickStarter') });
   if (!req.user.builder_enabled) return res.status(403).json({ error: t('studio.api.buildingOff') });
   if (!key) {
     const g = games.createGame(req.user.id, { title: t('studio.newGameTitle'), icon: '🎮', cover: games.COVERS[Math.floor(Math.random() * games.COVERS.length)] });

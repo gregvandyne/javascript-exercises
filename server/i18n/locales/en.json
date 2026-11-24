@@ -11611,7 +11611,8 @@
         "board": "This one runs on one screen for the whole room.",
         "survey": "Survey answers stay on this device and are never sent, so it isn't played live.",
         "exitticket": "An exit ticket stays on one device. For each student's answers, use a question step in a class lesson.",
-        "canvas": "Classroom activities can't be played live yet."
+        "canvas": "Classroom activities can't be played live yet.",
+        "plain": "Live play is not available for classroom games yet. Show it on the board, or share it so everyone plays on their own device."
       }
     },
     "learn": {

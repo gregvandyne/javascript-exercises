@@ -10921,7 +10921,8 @@
         "board": "Celui-ci tourne sur un seul écran pour toute la salle.",
         "survey": "Les réponses du sondage restent sur cet appareil et ne sont jamais envoyées, donc il ne se joue pas en direct.",
         "exitticket": "Un ticket de sortie reste sur un seul appareil. Pour les réponses de chaque élève, utilise une étape question dans une leçon de classe.",
-        "canvas": "Les activités de classe ne se jouent pas encore en direct."
+        "canvas": "Les activités de classe ne se jouent pas encore en direct.",
+        "plain": "Le jeu en direct n'est pas encore disponible pour les jeux de classe. Affiche-le au tableau, ou partage-le pour que chacun joue sur son appareil."
       }
     },
     "learn": {

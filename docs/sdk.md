@@ -453,10 +453,14 @@ frame `{type:'brb:loudState', state}` and `{type:'brb:level', db}`.
 The AI Builder works with these tools: `ask_user(question, options)`, `write_game(html, notes)` (a whole new version),
 `edit_game(edits[{find, replace}], notes)` (each `find` must appear exactly once in the current game, otherwise nothing
 changes and the Builder is told why), `set_game(title, icon, description, category, tags, orientation, players)`,
-`playtest_game()`, `start_from_template(template, notes)` (copies a starter in as a new version on the server: the 2D kit templates, the 3D
-starters, and the classroom starters quiet, categories, survey, bingo, flashcards, exitticket, spinner and scoreboard)
+`playtest_game()`, `start_from_template(template, notes)` (copies a starter in as a new version on the server: the
+classroom starters quiet, categories, survey, bingo, flashcards, exitticket, spinner, scoreboard, classquiz, classmemory
+and classword, plain HTML in the Oomba classroom style; with `ARCADE=1` also the 2D kit templates and the 3D starters)
 and `test_notes(checklist)`. Every `write_game` / `edit_game` / `start_from_template` makes a new, safety-scanned version.
-The 3D rules are a separate fixed system block, sent only when the builder asks for 3D or the game is already 3D.
+With the arcade side off (the default, `config.arcade`), the Builder's fixed prompt and tools are the classroom ones
+(`prompt.js` `SYSTEM_PROMPT_FOCUS`, `TOOLS_FOCUS`): no kit, Kit 2, 2D art or 3D rules, and no kit template to start from;
+a game made on the kit before gets its own engine's rules as a separate block on its own turns only. With `ARCADE=1`, the
+3D rules are a separate fixed system block, sent only when the builder asks for 3D or the game is already 3D.
 
 `playtest_game()` plays the game on a phone (a picture of the title screen and one after pressing Play, errors, the kit's
 warnings and a short scripted round), then shows the same two moments on every device: phone portrait 390x844, tablet

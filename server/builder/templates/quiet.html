@@ -1,46 +1,38 @@
 <title>Quiet Stars</title>
+<!--CLASSROOM_STYLE-->
 <style>
 /* Quiet Stars: a classroom noise meter for the board. A night sky fills with stars while the room is quiet. Big type
-   (readable from the back of the room), keyboard and clicker keys, and it works as a calm quiet timer with no microphone. */
-:root{--ink:#fffdf5;--soft:#d9e2ff;--card:#1d2552;--card2:#28316a;--edge:#0b0f2a;--hot:#ffd65c;--hot-ink:#2a2000;--good:#7ee0b5;--warn:#ffb37a}
-*{box-sizing:border-box}
-html,body{margin:0;height:100%;overflow:hidden;background:#0b1030;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
+   (readable from the back of the room), keyboard and clicker keys, and it works as a calm quiet timer with no microphone.  In the Oomba classroom style (classroom-style.css). */
+:root{--sky-ink:#FFFDF2;--sky-soft:#D9E2FF;--sky-deep:#0B1030;--good:#66C792;--warn:#F2957C}
+html,body{height:100%;overflow:hidden;background:var(--sky-deep)}
+body{background:var(--sky-deep)}
 #sky{position:fixed;inset:0;width:100%;height:100%;display:block}
-.bar{position:fixed;inset-inline:0;top:0;display:flex;align-items:center;gap:10px;padding:max(10px,env(safe-area-inset-top)) 16px 10px;z-index:3}
-.bar h1{flex:1;min-width:0;margin:0;font-size:clamp(1.2rem,3.4vmin,2.4rem);font-weight:800;text-shadow:0 2px 0 var(--edge);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-button{font:inherit;font-weight:800;min-height:48px;min-width:48px;padding:8px 18px;border-radius:16px;border:3px solid var(--edge);background:var(--card2);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--edge)}
-button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
-button:focus-visible{outline:4px solid var(--hot);outline-offset:3px}
-button[aria-pressed="true"]{background:var(--hot);color:var(--hot-ink)}
-.hot{background:var(--hot);color:var(--hot-ink)}
-.small{min-height:44px;padding:6px 14px;font-size:clamp(.9rem,2vmin,1.2rem)}
+.bar{position:fixed;inset-inline:0;top:0;padding:max(12px,env(safe-area-inset-top)) clamp(12px,2.4vw,32px) 10px;z-index:3}
+.bar h1{color:var(--sky-ink)}
 .panel{position:fixed;inset:0;display:grid;place-items:center;padding:80px 16px 16px;z-index:2}
-.panel[hidden],[hidden]{display:none!important}
-.card{width:min(100%,760px);max-height:100%;overflow:auto;background:rgba(29,37,82,.94);border:4px solid var(--edge);border-radius:28px;padding:clamp(18px,4vmin,40px);text-align:center;box-shadow:0 10px 0 var(--edge)}
-.card h2{margin:0 0 8px;font-size:clamp(1.8rem,6vmin,4rem);line-height:1.1}
-.card p{margin:8px 0;font-size:clamp(1.05rem,2.8vmin,1.8rem);color:var(--soft)}
-.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:16px 0}
-.big{font-size:clamp(1.2rem,3.4vmin,2.2rem);min-height:64px;padding:10px 26px}
-.privacy{font-weight:700;color:var(--ink)!important;background:var(--edge);border-radius:14px;padding:8px 14px}
-.notice{color:var(--warn)!important;font-weight:800}
-.hud{position:fixed;inset-inline:0;bottom:0;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;padding:16px 16px max(16px,env(safe-area-inset-bottom));z-index:2;pointer-events:none}
+.panel[hidden]{display:none!important}
+.panel .card{width:min(100%,760px);max-height:100%;overflow:auto}
+.panel .row{margin:16px 0}
+.privacy{font-weight:600;color:var(--ink)!important;background:var(--mint-soft);border-radius:var(--r-sm);padding:10px 16px}
+.notice{color:#B4432A!important;font-weight:700}
+.hud{position:fixed;inset-inline:0;bottom:0;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;padding:16px clamp(12px,2.4vw,32px) max(16px,env(safe-area-inset-bottom));z-index:2;pointer-events:none;color:var(--sky-ink)}
 .hud>*{pointer-events:auto}
-.clock{font-size:clamp(2.4rem,11vmin,8rem);font-weight:900;line-height:1;font-variant-numeric:tabular-nums;text-shadow:0 4px 0 var(--edge)}
-.goal{font-size:clamp(1rem,2.8vmin,1.8rem);color:var(--soft);font-weight:700}
-.chip{display:inline-block;margin-top:6px;padding:6px 12px;border-radius:999px;background:var(--edge);font-weight:800;font-size:clamp(.9rem,2.2vmin,1.3rem)}
+.clock{font-size:clamp(2.4rem,11vmin,8rem);font-weight:800;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;text-shadow:0 4px 18px rgba(0,0,0,.35)}
+.goal{font-size:clamp(1rem,2.6vmin,1.7rem);color:var(--sky-soft);font-weight:600}
+.chip{display:inline-block;margin-top:6px;padding:6px 14px;border-radius:999px;background:rgba(255,253,242,.14);font-weight:700;font-size:clamp(.9rem,2.1vmin,1.25rem)}
 .side{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
-.stars{font-size:clamp(1.4rem,5vmin,3.2rem);font-weight:900;text-shadow:0 3px 0 var(--edge)}
-.gauge{width:clamp(180px,36vmin,420px);height:28px;border-radius:14px;background:var(--edge);position:relative;overflow:hidden;border:3px solid var(--edge)}
-.gauge i{position:absolute;inset-block:0;inset-inline-start:0;width:0;background:var(--good);border-radius:10px;transition:width .1s linear}
+.stars{font-size:clamp(1.4rem,5vmin,3.2rem);font-weight:800;text-shadow:0 3px 14px rgba(0,0,0,.35)}
+.gauge{width:clamp(180px,36vmin,420px);height:26px;border-radius:999px;background:rgba(255,253,242,.16);position:relative;overflow:hidden}
+.gauge i{position:absolute;inset-block:0;inset-inline-start:0;width:0;background:var(--good);border-radius:999px;transition:width .1s linear}
 .gauge.loud i{background:var(--warn)}
-.gauge b{position:absolute;inset-block:-2px;width:4px;background:var(--ink)}
-.zones{display:flex;justify-content:space-between;width:clamp(180px,36vmin,420px);font-weight:800;font-size:clamp(.85rem,2vmin,1.2rem);color:var(--soft)}
-.shh{position:fixed;inset-inline:0;top:24%;text-align:center;font-size:clamp(2rem,9vmin,6rem);font-weight:900;text-shadow:0 5px 0 var(--edge);z-index:2;pointer-events:none}
+.gauge b{position:absolute;inset-block:-2px;width:4px;background:var(--sky-ink)}
+.zones{display:flex;justify-content:space-between;width:clamp(180px,36vmin,420px);font-weight:700;font-size:clamp(.85rem,2vmin,1.2rem);color:var(--sky-soft)}
+.shh{position:fixed;inset-inline:0;top:24%;text-align:center;font-size:clamp(2rem,9vmin,6rem);font-weight:800;letter-spacing:-.03em;color:var(--sky-ink);text-shadow:0 5px 24px rgba(0,0,0,.4);z-index:2;pointer-events:none}
 .btns{display:flex;flex-wrap:wrap;gap:10px}
-@media (prefers-reduced-motion:reduce){.gauge i{transition:none}}
+#keys{font-size:clamp(.8rem,1.8vmin,1.1rem);font-weight:600}
 </style>
 <canvas id="sky" aria-hidden="true"></canvas>
-<header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="true"></button><button class="small" id="full"></button></header>
+<header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
 
 <section class="panel" id="setup">
   <div class="card" role="dialog" aria-labelledby="setupH">
@@ -81,6 +73,7 @@ button[aria-pressed="true"]{background:var(--hot);color:var(--hot-ink)}
 const CONFIG = {
   title: 'Quiet Stars',
   lang: 'en',
+  sound: false,
   goals: [2, 5, 10, 0],
   goal: 5,
   starEvery: 10,
@@ -113,7 +106,8 @@ const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
 const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
 document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
 const $ = id => document.getElementById(id);
-const sfx = name => { try { if (B.sfx) B.sfx.play(name); } catch (e) { /* no sound */ } };
+let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
+const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };
 const clock = s => { s = Math.max(0, Math.floor(s)); return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; };
 
 // ---- the state ----------------------------------------------------------------------------------------------------
@@ -141,7 +135,7 @@ function words() {
   }
   paintSound();
 }
-function paintSound() { $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted))); }
+function paintSound() { $('sound').setAttribute('aria-pressed', String(soundOn)); }
 
 // ---- screens ------------------------------------------------------------------------------------------------------
 function screen(name) {
@@ -290,7 +284,7 @@ $('timer').onclick = () => { sfx('click'); begin('timer'); };
 $('pause').onclick = togglePause; $('tooLoud').onclick = tooLoud; $('end').onclick = finish;
 $('again').onclick = () => { sfx('click'); if (S.mode === 'mic') startListening(); else begin('timer'); };
 $('change').onclick = () => { screen('setup'); words(); $('listen').focus(); };
-$('sound').onclick = () => { try { if (B.sfx) B.sfx.mute(); } catch (e) { /* no sound */ } paintSound(); };
+$('sound').onclick = () => { soundOn = !soundOn; paintSound(); sfx('click'); };
 $('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
 addEventListener('keydown', e => {
   if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
