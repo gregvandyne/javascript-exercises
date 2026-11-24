@@ -1295,6 +1295,21 @@
       "answer": "Resposta:",
       "choose": "Rodeia uma.",
       "figure": "Figura da pergunta {n}"
+    },
+    "printAtlas": {
+      "untitled": "Quiz de geografia",
+      "mapTitle": "Mapa: {region}",
+      "mapAlt": "Mapa mudo: {region}",
+      "mapH": "Complete o mapa",
+      "mapHow": "Escreva o nome de cada país numerado.",
+      "mapHowCo": "Os países pequenos têm uma seta para a própria linha.",
+      "questions": "Perguntas",
+      "capc": "{city} é a capital de qual país?",
+      "fam": "Qual país é famoso por {thing}?",
+      "region": {
+        "car": "Caribe",
+        "me": "Oriente Médio"
+      }
     }
   },
   "friends": {

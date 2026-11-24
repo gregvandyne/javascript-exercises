@@ -1295,6 +1295,21 @@
       "answer": "Antwoord:",
       "choose": "Omcirkel er één.",
       "figure": "Figuur bij vraag {n}"
+    },
+    "printAtlas": {
+      "untitled": "Aardrijkskundequiz",
+      "mapTitle": "Kaart: {region}",
+      "mapAlt": "Blinde kaart: {region}",
+      "mapH": "Vul de kaart in",
+      "mapHow": "Schrijf de naam van elk genummerd land op.",
+      "mapHowCo": "Kleine landen hebben een pijl naar hun eigen lijn.",
+      "questions": "Vragen",
+      "capc": "{city} is de hoofdstad van welk land?",
+      "fam": "Welk land is beroemd om {thing}?",
+      "region": {
+        "car": "Caribisch gebied",
+        "me": "Midden-Oosten"
+      }
     }
   },
   "friends": {

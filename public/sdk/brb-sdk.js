@@ -1089,6 +1089,7 @@
     else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
   });
   // Crossword's "Upload a word list" (the same grown-ups as writeClues): BRB.wordsFromDoc(file, { kind: 'pdf'|'docx', level })
+  // (Atlas Quest's "Upload a geography lesson" too, which may also send kind 'txt': its words are [question, answer]).
   // -> a Promise of { title, words: [[word, clue]], cut, ai } or { error } ('notAllowed', 'aiOff', 'aiFailed', 'docBad',
   // 'docBig', 'docType', 'docPages', 'docScan', 'docEmpty', 'docNone', 'docLimit', 'offline'). cut: only the first
   // pages were read; ai: the AI took the words out (false: a plain list, read as it is). The file (a Blob, at most
@@ -1098,7 +1099,7 @@
     if (typeof Promise !== 'function') return null;
     return new Promise(function (res) {
       if (INIT.clues !== true) return res({ error: 'notAllowed' });
-      var kind = opts && (opts.kind === 'pdf' || opts.kind === 'docx') ? opts.kind : '';
+      var kind = opts && (opts.kind === 'pdf' || opts.kind === 'docx' || opts.kind === 'txt') ? opts.kind : '';   // txt: Atlas Quest's lessons
       if (!kind || typeof Blob !== 'function' || !(file instanceof Blob)) return res({ error: 'docBad' });
       if (file.size > 2 * 1024 * 1024) return res({ error: 'docBig' });
       var level = opts && typeof opts.level === 'string' ? opts.level.slice(0, 60) : '';

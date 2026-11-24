@@ -30,6 +30,7 @@ import * as polls from '../services/polls.js';
 import * as gameSets from '../services/game-sets.js';
 import { draftClues } from '../services/set-ai.js';
 import { wordsFromFile, textFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
+import { quizFromFile } from '../services/atlas-doc.js';
 import { PRINTERS } from '../services/game-print.js';
 import { canvasPrintable, cleanCanvasPrintDoc, canvasPrintHtml } from '../services/canvas-print.js';
 import { canvasVersion, activityData } from '../services/canvaskit.js';
@@ -444,7 +445,8 @@ router.get('/frame/:token', (req, res) => {
     ...(!preview && !tok.st && kind && u && !u.is_guest && isStaff(u) && fenceLets(u, 'GET', `/api/games/${g.id}/sets`) ? { mySets: true } : {}),
     // Crossword's "Write clues with AI" (BRB.canWriteClues / BRB.writeClues): grown-ups who may host, with a model set.
     // The fence has the last word: a family grown-up may host, but these calls are school tools (routes/family.js).
-    ...(!preview && cluesGame(g) && liveCanHost(u) && hasModel() && fenceLets(u, 'POST', `/api/games/${g.id}/clues`) && fenceLets(u, 'POST', `/api/games/${g.id}/words-from-doc`) ? { clues: true } : {}),
+    // Atlas Quest's "Upload a geography lesson" rides on the same flag and the same document call (BRB.wordsFromDoc).
+    ...(!preview && (cluesGame(g) || atlasDocGame(g)) && liveCanHost(u) && hasModel() && fenceLets(u, 'POST', `/api/games/${g.id}/clues`) && fenceLets(u, 'POST', `/api/games/${g.id}/words-from-doc`) ? { clues: true } : {}),
     // Mistake Hunt's "Upload a passage" (BRB.canReadDocs / BRB.textFromDoc): the text of a PDF or Word file, no AI, for the
     // same grown-ups as Crossword's word lists (who may host), where the fence lets the call through.
     ...(!preview && docTextGame(g) && liveCanHost(u) && fenceLets(u, 'POST', `/api/games/${g.id}/text-from-doc`) ? { docText: true } : {}),
@@ -594,6 +596,8 @@ router.post('/api/games/:id/sets/:set/duplicate', requireUser, rateLimit('game-s
 // Crossword clues (services/set-ai.js draftClues): Claude writes a clue for each of the teacher's words, for the game's
 // word list only (nothing is saved here). Body { words: [string] (1-30), level }. -> { clues: [string] } | { code }.
 const cluesGame = g => setGame(g) && g.slug === 'crossword';
+/** Atlas Quest: questions from a teacher's geography lesson (services/atlas-doc.js quizFromFile), through words-from-doc. */
+const atlasDocGame = g => setGame(g) && g.slug === 'atlas-quest';
 /** Mistake Hunt: a passage from a teacher's document (services/crossword-doc.js textFromFile). */
 const docTextGame = g => setGame(g) && g.slug === 'mistake-hunt';
 /** A game that prints (services/game-print.js): Crossword's puzzles, The Big Divide's worksheets. */
@@ -630,19 +634,24 @@ router.post('/api/games/:id/clues', requireUser, rateLimit('game-clues', 30, 360
 // The file is never stored or logged (only its kind and how many words).
 router.post('/api/games/:id/words-from-doc', requireUser, rateLimit('game-doc', 20, 60e3), async (req, res) => {
   const g = apiGame(req, res); if (!g) return;
-  if (!cluesGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  const atlas = atlasDocGame(g);
+  if (!cluesGame(g) && !atlas) return res.status(404).json({ error: req.t('game.api.notFound') });
   if (!liveCanHost(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' });
   const b = req.body || {}, max = CW_DOC.bytes;   // 2 MB either way (base64 inside the site's 3 MB JSON limit)
-  if (!['pdf', 'docx'].includes(b.kind)) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'docType' });
+  // Atlas Quest also takes a plain text lesson (.txt).
+  if (!['pdf', 'docx'].includes(b.kind) && !(atlas && b.kind === 'txt')) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'docType' });
   if (typeof b.data !== 'string' || !/^[A-Za-z0-9+/]+=*$/.test(b.data)) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'docBad' });
   if (b.data.length > Math.ceil(max / 3) * 4 + 4) return res.status(413).json({ error: req.t('errors.api.badRequest'), code: 'docBig' });
   const day = `game-doc-day:${req.user.id}`;
   if (countLimit(day) >= CW_DOC.perDay) return res.status(429).json({ error: req.t('errors.api.slowDown'), code: 'docLimit' });
-  const r = await wordsFromFile({ kind: b.kind, buf: Buffer.from(b.data, 'base64'), level: typeof b.level === 'string' ? b.level : '', locale: req.locale });
+  // Atlas Quest: the lesson's questions in the same answer ([question, answer], or ['@kind', code] for a question about
+  // a country the game asks itself); a file is never stored or logged here either.
+  const r = atlas ? await quizFromFile({ kind: b.kind, buf: Buffer.from(b.data, 'base64'), level: typeof b.level === 'string' ? b.level : '', locale: req.locale })
+    : await wordsFromFile({ kind: b.kind, buf: Buffer.from(b.data, 'base64'), level: typeof b.level === 'string' ? b.level : '', locale: req.locale });
   // Every file read counts towards the day's 10 (a file turned away for its size, pages or type does not).
   if (r.ok || ['docNone', 'aiFailed'].includes(r.code)) allow(day, CW_DOC.perDay, 864e5);
   if (!r.ok) return res.status(r.code === 'aiOff' || r.code === 'aiFailed' ? 503 : 400).json({ error: req.t('errors.api.badRequest'), code: r.code });
-  audit(req.user.id, 'game.doc_words', g.id, { kind: b.kind, count: r.words.length, ai: r.ai, cut: r.cut });
+  audit(req.user.id, atlas ? 'game.doc_quiz' : 'game.doc_words', g.id, { kind: b.kind, count: r.words.length, ai: r.ai, cut: r.cut });
   res.json({ title: r.title, words: r.words, cut: r.cut, ai: r.ai });
 });
 // Mistake Hunt's passage from a document (services/crossword-doc.js textFromFile): the text of a PDF (at most 5 pages)

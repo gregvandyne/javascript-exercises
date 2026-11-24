@@ -34,7 +34,7 @@ export const GAMES_META = Object.freeze([
   { slug: 'word-peek', subject: 'ela', grades: [3, 8], topics: ['vocabulary', 'spelling', 'guess the word'], standards: ['L.3.2', 'L.4.2'], minutes: 5 },
   { slug: 'crossword', subject: 'ela', grades: [2, 8], topics: ['vocabulary', 'definitions', 'spelling', 'your own word list'], standards: ['L.3.4', 'L.4.4', 'L.5.4'], minutes: 15 },
   { slug: 'doodle-hoot', subject: 'ela', grades: [0, 5], topics: ['vocabulary', 'drawing', 'spelling', 'draw and guess'], standards: ['L.1.5', 'L.2.5'], minutes: 10, live: true },
-  { slug: 'atlas-quest', subject: 'social studies', grades: [3, 8], topics: ['geography', 'countries', 'flags', 'capitals', 'world map'], standards: ['geography'], minutes: 10 },
+  { slug: 'atlas-quest', subject: 'social studies', grades: [3, 8], topics: ['geography', 'countries', 'flags', 'capitals', 'world map', 'your own geography quiz', 'blank maps', 'printable worksheet'], standards: ['geography'], minutes: 10 },
   { slug: 'atlas-quest-live', subject: 'social studies', grades: [3, 8], topics: ['geography', 'countries', 'flags', 'capitals', 'map'], standards: ['geography'], minutes: 10, live: true },
   { slug: 'code-isle', subject: 'computer science', grades: [4, 8], topics: ['coding', 'javascript', 'loops', 'functions', 'programming'], standards: ['CSTA 1B-AP-10', 'CSTA 2-AP-12'], minutes: 15 },
   { slug: 'robo-route', subject: 'computer science', grades: [2, 5], topics: ['coding', 'blocks', 'loops', 'conditionals', 'sequencing'], standards: ['CSTA 1A-AP-10', 'CSTA 1B-AP-10'], minutes: 12 },

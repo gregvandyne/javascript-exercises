@@ -137,7 +137,7 @@ const TYPES = {
   'brb:set-find': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.code === 'string' && m.code.length <= 40,
   // BRB.wordsFromDoc (Crossword): a PDF or Word file of at most 2 MB, for AI words (the server checks who may ask).
   'brb:doc': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof Blob === 'function' && m.file instanceof Blob && m.file.size > 0 && m.file.size <= 2 * 1024 * 1024
-    && (m.kind === 'pdf' || m.kind === 'docx') && typeof m.level === 'string' && m.level.length <= 60,
+    && (m.kind === 'pdf' || m.kind === 'docx' || m.kind === 'txt') && typeof m.level === 'string' && m.level.length <= 60,
   // BRB.textFromDoc (Mistake Hunt): a PDF or Word file of at most 2 MB, for its text (the server checks who may ask).
   'brb:textdoc': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof Blob === 'function' && m.file instanceof Blob && m.file.size > 0 && m.file.size <= 2 * 1024 * 1024
     && (m.kind === 'pdf' || m.kind === 'docx'),

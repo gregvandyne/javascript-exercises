@@ -1294,6 +1294,21 @@
       "answer": "Respuesta:",
       "choose": "Rodea una.",
       "figure": "Figura de la pregunta {n}"
+    },
+    "printAtlas": {
+      "untitled": "Prueba de geografía",
+      "mapTitle": "Mapa de {region}",
+      "mapAlt": "Mapa mudo de {region}",
+      "mapH": "Rotula el mapa",
+      "mapHow": "Escribe el nombre de cada país numerado.",
+      "mapHowCo": "Los países pequeños tienen una flecha hacia su propia línea.",
+      "questions": "Preguntas",
+      "capc": "¿De qué país es capital {city}?",
+      "fam": "¿Qué país es famoso por {thing}?",
+      "region": {
+        "car": "Caribe",
+        "me": "Oriente Medio"
+      }
     }
   },
   "friends": {

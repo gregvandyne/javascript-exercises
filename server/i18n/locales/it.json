@@ -1295,6 +1295,21 @@
       "answer": "Risposta:",
       "choose": "Cerchia una risposta.",
       "figure": "Figura della domanda {n}"
+    },
+    "printAtlas": {
+      "untitled": "Quiz di geografia",
+      "mapTitle": "Carta: {region}",
+      "mapAlt": "Carta muta: {region}",
+      "mapH": "Completa la carta",
+      "mapHow": "Scrivi il nome di ogni paese numerato.",
+      "mapHowCo": "I paesi piccoli hanno una freccia verso la loro riga.",
+      "questions": "Domande",
+      "capc": "{city} è la capitale di quale paese?",
+      "fam": "Quale paese è famoso per {thing}?",
+      "region": {
+        "car": "Caraibi",
+        "me": "Medio Oriente"
+      }
     }
   },
   "friends": {

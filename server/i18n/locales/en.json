@@ -1295,6 +1295,21 @@
       "answer": "Answer:",
       "choose": "Circle one.",
       "figure": "Figure for question {n}"
+    },
+    "printAtlas": {
+      "untitled": "Geography quiz",
+      "mapTitle": "Map of {region}",
+      "mapAlt": "Outline map of {region}",
+      "mapH": "Label the map",
+      "mapHow": "Write the name of each numbered country.",
+      "mapHowCo": "Small countries have an arrow to their own line.",
+      "questions": "Questions",
+      "capc": "{city} is the capital of which country?",
+      "fam": "Which country is famous for {thing}?",
+      "region": {
+        "car": "Caribbean",
+        "me": "Middle East"
+      }
     }
   },
   "friends": {

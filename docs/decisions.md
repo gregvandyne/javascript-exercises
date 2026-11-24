@@ -12448,3 +12448,58 @@ but still fun engaging and interactive".
 - `PUBLIC_GAMES=1` brings back public games exactly as before. Tests: `tests/unit/play-topics-private.test.js`; the older
   unit tests and the e2e server run with `PUBLIC_GAMES=1` (`tests/unit/_setup.js`, `playwright.config.js`) since they
   describe public publishing.
+
+## Atlas Quest in Crossword's look, with a teacher's geography quizzes and printable maps (24 Nov 2026)
+
+Owner: "Let's do the same to Atlas Quest [as Crossword: its look and its teacher setup], where a teacher could upload a
+geography lesson, make geography quizzes, print off blank maps, etc. with a super comprehensive library of geography
+facts, etc. Students can be assigned and finish these assignments in the app of course but they can also be printed out
+for students to fill in. For small countries, add the ability to build arrows with input lines."
+- **The look.** Every screen is now the page's own DOM in Crossword's widget style (`.cw-*` tokens and classes copied
+  from crossword.html, plus `.aq-*`): the header with the lit count, passport, settings and sound; the 3D globe on a
+  board card (the dotted mint board behind a transparent renderer that follows the board's size, not the window); the
+  panel beside it (or below it on a phone) holds the home (regions, levels, the mode tiles with their group colour on
+  the icon chip), the question (the dark "Now" bar), results (stars, Play again, Home) and the teacher's widget; a
+  country's file, the passport, settings and Captain Skye are widget cards in a scrim (no browser dialogs; Start over
+  asks on the card). Every mode, its scoring, `BRB.score`/`BRB.gameOver` and the save key `atlas-quest-v1` are as
+  before (one field added: `mine`, the teacher's quizzes). **The kit is still loaded** for the reviewed language packs
+  (`Oomba.t`), the map palette, icons, sounds, the clock and read aloud; its title screen, dialogs, win screen and
+  settings modal are no longer used. New words are in a table of the page's own (`ATQ_I18N`, `tw()`), 13 languages; the
+  older words stay `tr()` so the packs' checksums (and tests/unit/atlas-quest.test.js) are untouched.
+- **Make your own geography quiz** (anyone, exactly as Crossword offers it; saving needs `BRB.canSaveSet`): question
+  types (label the country on a map, name the capital, capital to country, flag to country, which continent, famous
+  for, the teacher's own question and answer); a whole region (continents, the Caribbean, the Middle East: the game's
+  own country list), five at random, or hand-picked by search; up to 60 questions. Saved as a question set
+  (`game-sets.js cleanAtlasItems`: one item `{ t, r, q, a, h }`; countries are ISO codes checked against the game's list
+  (`live/atlas.js codes`), never names; the title, questions and answers through the site's text filter; capital
+  questions never about the two countries the game leaves them out for). The set's name is the quiz's title (as
+  Crossword's). Share (class code, link, QR, Copy, Assign), drafts in the game save, and My worksheets with Print, the
+  answer key, a blank map, Play, Copy link, Duplicate, Rename and Delete.
+- **Students** open a link or class code and play it on the globe: map questions are Find it, the others four choices,
+  the teacher's own a typed answer with Check (two tries; case, accents, "the" and punctuation don't count). Finishing
+  sends one `BRB.gameOver({ won: true, score })`.
+- **Printing** (`services/atlas-print.js`, through `BRB.print` and the game printers): the quiz worksheet (the map with
+  its numbered countries and a line for each, then the questions with a line each, flags shown), a blank map of any
+  region (numbered or bare), and the answer key on its own page for school staff only. The outline map is drawn on the
+  server from the game's own map data by the game's own map code: the `atlas-map` block in the page, run as it is with
+  node:vm, so the printed map is exactly the builder's. Black outlines on white, US Letter and A4.
+- **Arrows with answer lines.** A country too small to write on at the map's size (its largest piece under about 26 map
+  units, or no shape at all) gets an arrow from the country to an answer line placed in open space: candidates around
+  it, scored by how much land the line would cover, how far it is and whether its arrow crosses another line; failing
+  that, a free spot along the map's edge. In the builder's preview the teacher drags a line (or moves it with the arrow
+  keys), takes an arrow away or adds one to any map country, and can place them all again. Positions are kept with the
+  quiz (`a: [[code, lng*10, lat*10]]`) and printed as placed. The world map leaves its tiny countries off a blank map
+  (it says how many) since a hundred arrows can't fit.
+- **Upload a geography lesson** (PDF, Word or .txt; grown-ups who may host, the same flag, limits and daily counter as
+  Crossword's word lists, through `BRB.wordsFromDoc`, which now also takes `txt` for Atlas Quest only): one model call
+  (`set-ai.js draftGeoQuiz`, prompt `geoDocPrompt`: the lesson is data, every question must be answerable from it, no
+  sides on disputed borders) returns country questions as kind + ISO code (checked against the game's list) and the
+  teacher's kind as a short question and answer (through the text filter). They land in the list for the teacher to
+  check; nothing is saved by itself; the file is never stored or logged.
+- **The geography library**: every country (flag, capital, continent, population band, languages, neighbours, coast,
+  famous for, fun fact) from `AtlasData`, searchable and by continent; and a facts set (`window.AtlasFacts`, written by
+  hand in English): continents, oceans, 13 major rivers, mountain ranges, deserts and lakes, with only well-established
+  facts and rounded figures, each linked to its countries. The facts set is English only for now (it says so).
+- Tests: tests/unit/atlas-quiz.test.js (cleanAtlasItems, the routes, the map code and arrows, printing and the key,
+  the lesson upload), tests/e2e/atlas-quest-kit.spec.js (Chromium: a mode played, a quiz made, an arrow dragged, saved,
+  printed with its key, listed; a student plays the link to one gameOver).
