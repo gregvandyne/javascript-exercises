@@ -231,7 +231,7 @@ test('Oomba Canvas 1.4.1 is byte-for-byte what shipped (1.5.0 is in new files): 
   const all = []; const walk = d => { for (const e of fs.readdirSync(d, { withFileTypes: true })) e.isDirectory() ? walk(path.join(d, e.name)) : all.push(path.relative(dir, path.join(d, e.name))); }; walk(dir);
   assert.deepEqual(all.sort(), ['manifest.json', ...Object.keys(m.files)].sort(), 'nothing added to or taken from the 1.4.1 folder');
 });
-test('Oomba Canvas 1.5.0 is the Crossword look: the dotted mint board, the problem line in the dark Now bar, Check a flat pill with an ink outline', () => {
+test('Oomba Canvas 1.5.0 is the Crossword look: the dotted mint board, the problem line in the dark Now bar, Check Crossword\'s flat green Go pill', () => {
   const css = v => fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-canvas', v, 'oomba-canvas.css'), 'utf8');
   const rule = (src, sel) => { const m = new RegExp(`(?:^|\\})${sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\{([^}]*)\\}`, 'm').exec(src); return m ? m[1] : ''; };
   const now = css('1.5.0'), old = css('1.4.1');
@@ -246,11 +246,12 @@ test('Oomba Canvas 1.5.0 is the Crossword look: the dotted mint board, the probl
   assert.doesNotMatch(rule(now, '.oc-task'), /#E0699B/, 'no cream card with a pink edge');
   assert.match(rule(now, '.oc-task .oc-n'), /color:inherit/);
   assert.match(rule(old, '.oc-task'), /background:var\(--card\)/);
-  // Check: flat (no raised bottom edge), a pill with an ink outline
-  assert.match(rule(now, '.oc-primary'), /box-shadow:inset 0 0 0 2px var\(--text\)/);
+  // Check: Crossword's .cw-btn.cw-go, flat (no raised bottom edge): green fill and edge, white words (dark: mint, #10261A)
+  assert.match(TOKENS.light, /--green:#1F9D63;--on-green:#fff;/); assert.match(TOKENS.dark, /--green:#66C792;--on-green:#10261A;/);
+  assert.match(rule(now, '.oc-primary'), /background:var\(--green\);color:var\(--on-green\);box-shadow:inset 0 0 0 2px var\(--green\)/);
   assert.doesNotMatch(rule(now, '.oc-primary'), /-4px/);
   assert.match(rule(now, '.oc-btn'), /border-radius:999px/);
-  assert.match(rule(now, '.oc-band .oc-btn,.oc-endbtns .oc-btn'), /inset 0 0 0 2px var\(--text\)/);
+  assert.match(rule(now, '.oc-band .oc-btn:not(.oc-primary),.oc-endbtns .oc-btn:not(.oc-primary)'), /inset 0 0 0 2px var\(--text\)/, 'the other band and end buttons: an ink outline');
   assert.match(rule(old, '.oc-primary'), /inset 0 -4px 0 var\(--accent-press\)/, '1.4.1 keeps its raised Check');
   // style only: 1.5.0's script is 1.4.1's but for its version, its header comment and its styles
   const js = v => fs.readFileSync(path.join(ROOT, 'public/vendor/oomba-canvas', v, 'oomba-canvas.js'), 'utf8').replace(/^\/\/ ---- style\.js[\s\S]*?(?=^\/\/ ---- teach\.js)/m, '').replace(/^\/\/ 1\.5\.0: .*\n(\/\/ .*\n)?/m, '').replace(/^\/\*! Oomba Canvas [\d.]+ /, '').replace(/const VERSION = '[\d.]+';/, '');

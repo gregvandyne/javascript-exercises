@@ -12508,8 +12508,9 @@ the rest of the site is moving to (`seed-games/crossword.html`, the Builder's cl
   the page is the dotted mint board (`--paper` #E1F1E1 with #66C792 dots every 22 px; dark: #2E5A41 dots on #141414)
   instead of a cream square grid; the problem line ("Problem 2 of 5" over the task) sits in the dark Now bar (the
   site's own `--current` / `--on-current`: ink with cream words in light, mint with ink words in dark) instead of a
-  cream card with a pink top edge; and Check is a flat pill with an ink outline instead of a raised button. Small
-  things to match: the band's Hint and Clear and the end card's buttons take the same ink outline, the workspace cards
+  cream card with a pink top edge; and Check is Crossword's green Go pill, flat (`.cw-btn.cw-go`: #1F9D63 with white words;
+  dark #66C792 with #10261A), instead of a raised button (the owner asked for Crossword's green exactly). Small
+  things to match: the band's Hint and Clear and the end card's other buttons take an ink outline, the workspace cards
   are solid cream on the board (they were see-through over the grid), and the read-aloud button is a cream circle on
   the bar with a focus ring in the bar's text color.
 - **Style only.** Only `canvas/src/style.js` (and the version in `ui.js`) changed: same data, same behavior, same API,
@@ -12522,7 +12523,7 @@ the rest of the site is moving to (`seed-games/crossword.html`, the Builder's cl
   need 1.4.0 or later (`canvasSetVersion`), so 1.5.0 keeps them with no change there. The CANVAS RULES change only in
   the version line (generated from docs/canvas-api.md); the arcade SYSTEM_PROMPT and TOOLS are untouched. The layout
   check now treats 1.4.1 activities as an older kit (their kit parts are not the model's to fix), as it did 1.4.0.
-- **Tests.** canvas-kit (the 1.5.0 look: the board, the Now bar, the flat Check; 1.4.1 locked; no behavior change),
+- **Tests.** canvas-kit (the 1.5.0 look: the board, the Now bar, the flat green Check; 1.4.1 locked; no behavior change),
   builder-layout-check (1.5.0 clean at 390 and 1280, end card included), and the version lines in builder-canvas,
   builder-figures and builder-activity-panel (a 1.4.1 activity saved from the panel moves to 1.5.0). The 390 px e2e
   stays on 1.4.1 as the owner saw it.

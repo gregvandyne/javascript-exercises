@@ -13,7 +13,7 @@
 // scrolls sideways when it cannot fit, never a lone button on a line of its own; short labels on narrow phones; 44 px
 // tap targets; the end card's buttons stack full width on a narrow card and wrap whole otherwise (style.js).
 // 1.5.0: 1.4.1 in the Crossword look (style.js only): the dotted mint board, the problem line in the dark Now bar, and
-// Check a flat pill with an ink outline. Same data, same behavior as 1.4.1.
+// Check Crossword's flat green Go pill. Same data, same behavior as 1.4.1.
 import { TOOLS, SUPPORTS, PURPOSES, MAX_COUNT, MAX_PROBLEMS, deal, selfTest, seeded, manipulativeOf, cleanProblem, numText } from './logic.js';
 import { sheet } from './sheet.js';
 import { WORDS, wordsFor } from './words.js';

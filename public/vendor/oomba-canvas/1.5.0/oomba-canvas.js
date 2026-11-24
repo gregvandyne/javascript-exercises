@@ -1498,10 +1498,10 @@ function sheet(activity, { seed = 1, n = null, lang = 'en' } = {}) {
 // Theme: the site's (BRB.theme -> html[data-oc-theme]), else the device's.
 // 1.5.0: the Crossword look (seed-games/crossword.html, the Builder's classroom style 2): the page is the dotted mint
 // board (--paper, --dots), the problem line is the dark "Now" bar (--current, --on-current, the site's own tokens), and
-// Check is a flat pill with an ink outline (no raised edge); the band's other buttons and the end card's take the ink
-// outline too. Everything else is as in 1.4.1.
-const LIGHT = '--bg:#F4F1E6;--card:#FFFDF2;--card-2:#F9F6EB;--line:#E2DDCB;--edge:#8A8573;--text:#141414;--text-2:#3B3A35;--muted:#5B584F;--accent:#66C792;--accent-press:#1F9D63;--accent-soft:#E1F1E1;--accent-ink:#0F5A37;--spark:#FFD23F;--spark-soft:#FFF3C4;--warn-bg:#FFF0B8;--warn-ink:#6B4C00;--bad-bg:#F9E3DC;--bad-ink:#A12A20;--focus:#141414;--paper:#E1F1E1;--dots:#66C792;--current:#141414;--on-current:#FFFDF2;--shadow:0 1px 0 rgba(20,20,20,.04),0 4px 16px rgba(20,20,20,.06);color-scheme:light';
-const DARK = '--bg:#141414;--card:#1E1E1B;--card-2:#262622;--line:#36352F;--edge:#7E796C;--text:#FFFDF2;--text-2:#E3DED0;--muted:#B8B3A1;--accent-soft:#1E3326;--accent-ink:#9EDDBA;--spark-soft:#352E14;--warn-bg:#3A3113;--warn-ink:#FFD23F;--bad-bg:#3B201C;--bad-ink:#FFA294;--focus:#FFD23F;--paper:#141414;--dots:#2E5A41;--current:#66C792;--on-current:#141414;--shadow:0 1px 0 rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.32);color-scheme:dark';
+// Check is Crossword's green Go pill (--green, --on-green; flat, no raised edge); the band's other buttons and the end
+// card's take an ink outline. Everything else is as in 1.4.1.
+const LIGHT = '--bg:#F4F1E6;--card:#FFFDF2;--card-2:#F9F6EB;--line:#E2DDCB;--edge:#8A8573;--text:#141414;--text-2:#3B3A35;--muted:#5B584F;--accent:#66C792;--accent-press:#1F9D63;--accent-soft:#E1F1E1;--accent-ink:#0F5A37;--spark:#FFD23F;--spark-soft:#FFF3C4;--warn-bg:#FFF0B8;--warn-ink:#6B4C00;--bad-bg:#F9E3DC;--bad-ink:#A12A20;--focus:#141414;--paper:#E1F1E1;--dots:#66C792;--current:#141414;--on-current:#FFFDF2;--green:#1F9D63;--on-green:#fff;--shadow:0 1px 0 rgba(20,20,20,.04),0 4px 16px rgba(20,20,20,.06);color-scheme:light';
+const DARK = '--bg:#141414;--card:#1E1E1B;--card-2:#262622;--line:#36352F;--edge:#7E796C;--text:#FFFDF2;--text-2:#E3DED0;--muted:#B8B3A1;--accent-soft:#1E3326;--accent-ink:#9EDDBA;--spark-soft:#352E14;--warn-bg:#3A3113;--warn-ink:#FFD23F;--bad-bg:#3B201C;--bad-ink:#FFA294;--focus:#FFD23F;--paper:#141414;--dots:#2E5A41;--current:#66C792;--on-current:#141414;--green:#66C792;--on-green:#10261A;--shadow:0 1px 0 rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.32);color-scheme:dark';
 const TOKENS = { light: LIGHT, dark: DARK };
 const CSS = `:root{${LIGHT};--r:20px;--r-sm:12px;--font:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Hebrew","Noto Sans Arabic",sans-serif;
 --c0:color-mix(in srgb,var(--accent) 88%,var(--card));--c1:color-mix(in srgb,var(--spark) 92%,var(--card));--c2:color-mix(in srgb,#5AA9D6 88%,var(--card))}
@@ -1532,9 +1532,9 @@ html,body{margin:0;min-height:100%;background-color:var(--paper);background-imag
 .oc-btn:disabled{opacity:.5;cursor:default}
 .oc-btn:focus-visible,.oc-tile:focus-visible,.oc-part:focus-visible,.oc-tick:focus-visible,.oc-cell:focus-visible,.oc-box:focus-visible,.oc-slotbox:focus-visible,.oc-binlab:focus-visible,.oc-key:focus-visible,.oc-say:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 .oc-sm{min-height:44px;min-width:44px;padding:0 14px;font-size:.92rem}
-.oc-primary{background:var(--accent);color:#141414;box-shadow:inset 0 0 0 2px var(--text);min-width:120px}
-.oc-band .oc-btn,.oc-endbtns .oc-btn{box-shadow:inset 0 0 0 2px var(--text)}
-.oc-primary:hover:not(:disabled){background:color-mix(in srgb,var(--accent) 85%,#fff)}
+.oc-primary{background:var(--green);color:var(--on-green);box-shadow:inset 0 0 0 2px var(--green);min-width:120px}
+.oc-band .oc-btn:not(.oc-primary),.oc-endbtns .oc-btn:not(.oc-primary){box-shadow:inset 0 0 0 2px var(--text)}
+.oc-primary:hover:not(:disabled){background:color-mix(in srgb,var(--green) 88%,var(--text))}
 .oc-lit{background:var(--spark);color:#141414;box-shadow:inset 0 0 0 2px #C99A00}
 .oc-task{display:flex;align-items:center;gap:14px;min-height:84px;margin:14px 16px 0;padding:14px 18px;background:var(--current);color:var(--on-current);border-radius:var(--r-sm)}
 .oc-taskt{min-width:0}
@@ -2079,7 +2079,7 @@ function worksheets(o) {
 // scrolls sideways when it cannot fit, never a lone button on a line of its own; short labels on narrow phones; 44 px
 // tap targets; the end card's buttons stack full width on a narrow card and wrap whole otherwise (style.js).
 // 1.5.0: 1.4.1 in the Crossword look (style.js only): the dotted mint board, the problem line in the dark Now bar, and
-// Check a flat pill with an ink outline. Same data, same behavior as 1.4.1.
+// Check Crossword's flat green Go pill. Same data, same behavior as 1.4.1.
 
 const VERSION = '1.5.0';
 const SAVE_KEY = 'oc-progress-v1';

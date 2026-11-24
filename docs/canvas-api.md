@@ -161,8 +161,8 @@ a version that could be shared or published, and the automatic playtest (`server
   style), nothing else (same data, same behavior, worksheets and the phone layout included; printing is unchanged).
   The page is the dotted mint board (dark: dark green dots on near black) instead of cream graph paper; the problem
   line ("Problem 2 of 5" over the task) sits in the dark Now bar (mint in dark mode) instead of a cream card; Check is
-  a flat pill with an ink outline instead of a raised button, and the band's Hint and Clear and the end card's buttons
-  take the same ink outline. The workspace cards are solid cream on the board. 1.0.0 to 1.4.1 stay byte for byte as
+  Crossword's green Go pill (flat, #1F9D63 with white words; dark: #66C792 with #10261A) instead of a raised button,
+  and the band's Hint and Clear and the end card's other buttons take an ink outline. The workspace cards are solid cream on the board. 1.0.0 to 1.4.1 stay byte for byte as
   they shipped; the scanner admits all seven tags. An activity moves to 1.5.0 when it is saved from the Activity panel.
 - Read-aloud speaks the fixed `task.say` line only.
 
